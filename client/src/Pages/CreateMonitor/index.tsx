@@ -489,6 +489,90 @@ const CreateMonitorPage = () => {
 				}
 			/>
 
+			{/* Alert Thresholds - only for hardware type */}
+			{generalSettingsConfig.showSecret && (
+				<ConfigBox
+					title={t("pages.createMonitor.form.thresholds.title")}
+					subtitle={t("pages.createMonitor.form.thresholds.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(8)}>
+							<Controller
+								name="cpuAlertThreshold"
+								control={control}
+								render={({ field }) => (
+									<SliderWithLabel
+										{...field}
+										sliderMaxWidth={{ xs: "100%", md: "50%" }}
+										fieldLabel={t(
+											"pages.createMonitor.form.thresholds.option.cpuThreshold.label"
+										)}
+										min={0}
+										max={100}
+										step={1}
+										valueLabelDisplay="auto"
+										valueLabelFormat={(value) => `${value}%`}
+									/>
+								)}
+							/>
+							<Controller
+								name="memoryAlertThreshold"
+								control={control}
+								render={({ field }) => (
+									<SliderWithLabel
+										{...field}
+										sliderMaxWidth={{ xs: "100%", md: "50%" }}
+										fieldLabel={t(
+											"pages.createMonitor.form.thresholds.option.memoryThreshold.label"
+										)}
+										min={0}
+										max={100}
+										step={1}
+										valueLabelDisplay="auto"
+										valueLabelFormat={(value) => `${value}%`}
+									/>
+								)}
+							/>
+							<Controller
+								name="diskAlertThreshold"
+								control={control}
+								render={({ field }) => (
+									<SliderWithLabel
+										{...field}
+										sliderMaxWidth={{ xs: "100%", md: "50%" }}
+										fieldLabel={t(
+											"pages.createMonitor.form.thresholds.option.diskThreshold.label"
+										)}
+										min={0}
+										max={100}
+										step={1}
+										valueLabelDisplay="auto"
+										valueLabelFormat={(value) => `${value}%`}
+									/>
+								)}
+							/>
+							<Controller
+								name="tempAlertThreshold"
+								control={control}
+								render={({ field }) => (
+									<SliderWithLabel
+										{...field}
+										sliderMaxWidth={{ xs: "100%", md: "50%" }}
+										fieldLabel={t(
+											"pages.createMonitor.form.thresholds.option.tempThreshold.label"
+										)}
+										min={0}
+										max={100}
+										step={1}
+										valueLabelDisplay="auto"
+										valueLabelFormat={(value) => `${value}°C`}
+									/>
+								)}
+							/>
+						</Stack>
+					}
+				/>
+			)}
+
 			<ConfigBox
 				title={t("pages.createMonitor.form.incidents.title")}
 				subtitle={t("pages.createMonitor.form.incidents.description")}
