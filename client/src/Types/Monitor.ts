@@ -18,6 +18,7 @@ export const MonitorStatuses = [
 	"paused",
 	"initializing",
 	"maintenance",
+	"breached",
 ] as const;
 export type MonitorStatus = (typeof MonitorStatuses)[number];
 

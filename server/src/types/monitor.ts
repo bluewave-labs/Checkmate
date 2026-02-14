@@ -4,7 +4,7 @@ export type { CheckSnapshot } from "@/types/check.js";
 export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "unknown"] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
-export const MonitorStatuses = ["up", "down", "paused", "initializing", "maintenance"] as const;
+export const MonitorStatuses = ["up", "down", "paused", "initializing", "maintenance", "breached"] as const;
 export type MonitorStatus = (typeof MonitorStatuses)[number];
 
 export type MonitorMatchMethod = "equal" | "include" | "regex" | "";

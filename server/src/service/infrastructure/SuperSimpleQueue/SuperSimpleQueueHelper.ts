@@ -187,7 +187,7 @@ class SuperSimpleQueueHelper {
 	}
 
 	private evaluateMonitorAction(statusChangeResult: StatusChangeResult): MonitorActionDecision {
-		const { monitor, statusChanged, prevStatus, thresholdBreaches } = statusChangeResult;
+		const { monitor, statusChanged, prevStatus } = statusChangeResult;
 
 		// Initialize result
 		const decision: MonitorActionDecision = {
@@ -198,75 +198,28 @@ class SuperSimpleQueueHelper {
 			notificationReason: null,
 		};
 
-		// CASE 1: Non-hardware
-		if (monitor.type !== "hardware") {
-			if (statusChanged) {
-				// This is the current state of the monitor AFTER the most recent check
-				if (monitor.status === "down") {
-					decision.shouldCreateIncident = true;
-					decision.shouldSendNotification = true;
-					decision.incidentReason = "status_down";
-					decision.notificationReason = "status_change";
-				} else if (monitor.status === "up" && prevStatus === "down") {
-					decision.shouldResolveIncident = true;
-					decision.shouldSendNotification = true;
-					decision.notificationReason = "status_change";
-				}
-			}
+		// Simplified logic: Just check status changes
+		if (!statusChanged) {
 			return decision;
 		}
 
-		// CASE 2: Hardware
-		if (!thresholdBreaches) {
-			// No breach data available - still handle status changes
-			if (statusChanged && monitor.status === "down") {
-				decision.shouldCreateIncident = true;
-				decision.shouldSendNotification = true;
-				decision.incidentReason = "status_down";
-				decision.notificationReason = "status_change";
-			} else if (statusChanged && monitor.status === "up" && prevStatus === "down") {
-				decision.shouldResolveIncident = true;
-				decision.shouldSendNotification = true;
-				decision.notificationReason = "status_change";
-			}
-			return decision;
-		}
-
-		const anyThresholdBreached = Object.values(thresholdBreaches).some((b) => b);
-		const noThresholdsBreached = Object.values(thresholdBreaches).every((b) => !b);
-
-		// Check if countdown counter has reached zero for any breached threshold
-		const shouldNotifyThreshold =
-			(thresholdBreaches.cpu && monitor.cpuAlertCounter <= 0) ||
-			(thresholdBreaches.memory && monitor.memoryAlertCounter <= 0) ||
-			(thresholdBreaches.disk && monitor.diskAlertCounter <= 0) ||
-			(thresholdBreaches.temp && monitor.tempAlertCounter <= 0);
-
-		// Decision logic for hardware
-		if (statusChanged && monitor.status === "down") {
-			// Hardware service is DOWN (unreachable)
-			// Status down takes precedence over threshold breaches
+		if (monitor.status === "down") {
+			// Monitor went down (unreachable)
 			decision.shouldCreateIncident = true;
 			decision.shouldSendNotification = true;
 			decision.incidentReason = "status_down";
 			decision.notificationReason = "status_change";
-		} else if (statusChanged && monitor.status === "up" && prevStatus === "down") {
-			// Hardware service recovered
-			decision.shouldResolveIncident = true;
-			decision.shouldSendNotification = true;
-			decision.notificationReason = "status_change";
-		} else if (anyThresholdBreached && shouldNotifyThreshold) {
-			// Threshold breach: Counters have reached zero
-			// Create incident if service is UP but metrics exceed thresholds
+		} else if (monitor.status === "breached") {
+			// Hardware monitor exceeded thresholds
 			decision.shouldCreateIncident = true;
 			decision.shouldSendNotification = true;
 			decision.incidentReason = "threshold_breach";
 			decision.notificationReason = "threshold_breach";
-			decision.thresholdBreaches = thresholdBreaches;
-		} else if (noThresholdsBreached && !anyThresholdBreached) {
-			// All thresholds returned to normal - resolve any active threshold incidents
+		} else if (monitor.status === "up" && (prevStatus === "down" || prevStatus === "breached")) {
+			// Monitor recovered from down or breached state
 			decision.shouldResolveIncident = true;
-			// Don't send notification for resolution (can be added later if needed)
+			decision.shouldSendNotification = true;
+			decision.notificationReason = "status_change";
 		}
 
 		return decision;

@@ -387,6 +387,7 @@
 				},
 				"status": {
 					"down": "down",
+					"breached": "breached",
 					"initializing": "initializing",
 					"maintenance": "maintenance",
 					"paused": "paused",
