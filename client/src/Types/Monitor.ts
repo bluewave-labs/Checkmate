@@ -21,13 +21,6 @@ export const MonitorStatuses = [
 ] as const;
 export type MonitorStatus = (typeof MonitorStatuses)[number];
 
-export interface MonitorThresholds {
-	usage_cpu?: number;
-	usage_memory?: number;
-	usage_disk?: number;
-	usage_temperature?: number;
-}
-
 export type MonitorMatchMethod = "equal" | "include" | "regex" | "";
 
 export interface Monitor {
@@ -53,7 +46,6 @@ export interface Monitor {
 	uptimePercentage?: number;
 	notifications: string[];
 	secret?: string;
-	thresholds?: MonitorThresholds;
 	alertThreshold: number;
 	cpuAlertThreshold: number;
 	memoryAlertThreshold: number;

@@ -182,14 +182,6 @@ class SuperSimpleQueueHelper {
 		return maintenanceWindowIsActive;
 	}
 
-	/**
-	 * Evaluates what actions should be taken based on monitor status and hardware thresholds.
-	 * This is a pure decision function that returns what should happen without executing anything.
-	 *
-	 * @param statusChangeResult - Result from statusService.updateMonitorStatus()
-	 * @param networkResponse - Network response containing payload data
-	 * @returns Decision object indicating what actions to take
-	 */
 	private evaluateMonitorAction(statusChangeResult: StatusChangeResult, networkResponse: MonitorStatusResponse): MonitorActionDecision {
 		const { monitor, statusChanged, prevStatus } = statusChangeResult;
 
@@ -202,10 +194,10 @@ class SuperSimpleQueueHelper {
 			notificationReason: null,
 		};
 
-		// CASE 1: Non-hardware monitors (http, ping, port, docker, pagespeed, game)
+		// CASE 1: Non-hardware
 		if (monitor.type !== "hardware") {
-			// Only act on status changes
 			if (statusChanged) {
+				// This is the current state of the monitor AFTER the most recent check
 				if (monitor.status === "down") {
 					decision.shouldCreateIncident = true;
 					decision.shouldSendNotification = true;
@@ -220,7 +212,7 @@ class SuperSimpleQueueHelper {
 			return decision;
 		}
 
-		// CASE 2: Hardware monitors
+		// CASE 2: Hardware
 		const payload = networkResponse.payload as HardwareStatusPayload;
 		const metrics = payload?.data;
 
@@ -229,12 +221,11 @@ class SuperSimpleQueueHelper {
 		}
 
 		// Check if thresholds exist
-		const thresholds = monitor.thresholds || {};
 		const hasThresholds =
-			thresholds.usage_cpu !== undefined ||
-			thresholds.usage_memory !== undefined ||
-			thresholds.usage_disk !== undefined ||
-			thresholds.usage_temperature !== undefined;
+			monitor.cpuAlertThreshold !== undefined ||
+			monitor.memoryAlertThreshold !== undefined ||
+			monitor.diskAlertThreshold !== undefined ||
+			monitor.tempAlertThreshold !== undefined;
 
 		// Evaluate threshold breaches
 		const breaches = {
@@ -246,26 +237,31 @@ class SuperSimpleQueueHelper {
 
 		if (hasThresholds) {
 			// CPU check
-			if (thresholds.usage_cpu !== undefined) {
+			if (monitor.cpuAlertThreshold !== undefined) {
 				const cpuUsage = metrics.cpu?.usage_percent ?? -1;
-				breaches.cpu = cpuUsage !== -1 && cpuUsage > thresholds.usage_cpu;
+				// Convert threshold from percentage (0-100) to decimal (0-1) for comparison
+				breaches.cpu = cpuUsage !== -1 && cpuUsage > monitor.cpuAlertThreshold / 100;
 			}
 
 			// Memory check
-			if (thresholds.usage_memory !== undefined) {
+			if (monitor.memoryAlertThreshold !== undefined) {
 				const memoryUsage = metrics.memory?.usage_percent ?? -1;
-				breaches.memory = memoryUsage !== -1 && memoryUsage > thresholds.usage_memory;
+				// Convert threshold from percentage (0-100) to decimal (0-1) for comparison
+				breaches.memory = memoryUsage !== -1 && memoryUsage > monitor.memoryAlertThreshold / 100;
 			}
 
 			// Disk check
-			if (thresholds.usage_disk !== undefined) {
-				breaches.disk = metrics.disk?.some((d: any) => typeof d?.usage_percent === "number" && d.usage_percent > thresholds.usage_disk!) ?? false;
+			if (monitor.diskAlertThreshold !== undefined) {
+				// Convert threshold from percentage (0-100) to decimal (0-1) for comparison
+				breaches.disk =
+					metrics.disk?.some((d: any) => typeof d?.usage_percent === "number" && d.usage_percent > monitor.diskAlertThreshold / 100) ?? false;
 			}
 
 			// Temperature check (alert if ANY sensor exceeds threshold)
-			if (thresholds.usage_temperature !== undefined) {
+			if (monitor.tempAlertThreshold !== undefined) {
 				const temps = metrics.cpu?.temperature ?? [];
-				breaches.temp = temps.some((temp: number) => temp > thresholds.usage_temperature!);
+				// Temperature threshold is in Celsius, compare directly
+				breaches.temp = temps.some((temp: number) => temp > monitor.tempAlertThreshold);
 			}
 		}
 

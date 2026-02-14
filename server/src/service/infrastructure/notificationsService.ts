@@ -239,9 +239,14 @@ export class NotificationsService implements INotificationsService {
 
 		// Deal with hardware thresholds
 		if (type === "hardware") {
-			const thresholds = monitor.thresholds;
+			// Check if any thresholds are set
+			const hasThresholds =
+				monitor.cpuAlertThreshold !== undefined ||
+				monitor.memoryAlertThreshold !== undefined ||
+				monitor.diskAlertThreshold !== undefined ||
+				monitor.tempAlertThreshold !== undefined;
 
-			if (thresholds === undefined) return false; // No thresholds set, we're done
+			if (!hasThresholds) return false; // No thresholds set, we're done
 			const metrics = payload?.data ?? null;
 			if (metrics === null) return false; // No metrics, we're done
 

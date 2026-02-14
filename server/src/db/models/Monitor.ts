@@ -1,5 +1,5 @@
 import { Schema, model, Types, type UpdateQuery } from "mongoose";
-import type { Monitor, MonitorMatchMethod, MonitorThresholds, CheckSnapshot } from "@/types/monitor.js";
+import type { Monitor, MonitorMatchMethod, CheckSnapshot } from "@/types/monitor.js";
 import { MonitorTypes, MonitorStatuses } from "@/types/monitor.js";
 
 type CheckSnapshotDocument = Omit<CheckSnapshot, "createdAt"> & { createdAt: Date };
@@ -13,7 +13,6 @@ type MonitorDocumentBase = Omit<
 	notifications: Types.ObjectId[];
 	selectedDisks: string[];
 	matchMethod?: MonitorMatchMethod;
-	thresholds?: MonitorThresholds;
 };
 
 interface MonitorDocument extends MonitorDocumentBase {
@@ -23,16 +22,6 @@ interface MonitorDocument extends MonitorDocumentBase {
 	createdAt: Date;
 	updatedAt: Date;
 }
-
-const thresholdsSchema = new Schema<MonitorThresholds>(
-	{
-		usage_cpu: { type: Number },
-		usage_memory: { type: Number },
-		usage_disk: { type: Number },
-		usage_temperature: { type: Number },
-	},
-	{ _id: false }
-);
 
 const checkSnapshotSchema = new Schema<CheckSnapshotDocument>(
 	{
@@ -131,9 +120,6 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		],
 		secret: {
 			type: String,
-		},
-		thresholds: {
-			type: thresholdsSchema,
 		},
 		alertThreshold: {
 			type: Number,

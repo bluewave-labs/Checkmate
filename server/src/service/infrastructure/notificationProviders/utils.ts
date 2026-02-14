@@ -23,8 +23,10 @@ export const buildHardwareAlerts = (
 	monitor: Monitor,
 	networkResponse: MonitorStatusResponse
 ): { alertsToSend: string[]; discordPayload: any } => {
-	const thresholds = monitor.thresholds || {};
-	const { usage_cpu: cpuThreshold = -1, usage_memory: memoryThreshold = -1, usage_disk: diskThreshold = -1 } = thresholds;
+	// Thresholds are stored as percentages (0-100), convert to decimal (0-1) for comparison
+	const cpuThreshold = monitor.cpuAlertThreshold !== undefined ? monitor.cpuAlertThreshold / 100 : -1;
+	const memoryThreshold = monitor.memoryAlertThreshold !== undefined ? monitor.memoryAlertThreshold / 100 : -1;
+	const diskThreshold = monitor.diskAlertThreshold !== undefined ? monitor.diskAlertThreshold / 100 : -1;
 
 	const payload = networkResponse?.payload as HardwareStatusPayload;
 	const metrics = payload.data || {};
@@ -124,8 +126,10 @@ export const buildHardwareWebhookBody = (alerts: string[], monitor: Monitor): st
 };
 
 export const shouldSendHardwareAlert = (monitor: Monitor, networkResponse: MonitorStatusResponse): boolean => {
-	const thresholds = monitor.thresholds || {};
-	const { usage_cpu: cpuThreshold = -1, usage_memory: memoryThreshold = -1, usage_disk: diskThreshold = -1 } = thresholds;
+	// Thresholds are stored as percentages (0-100), convert to decimal (0-1) for comparison
+	const cpuThreshold = monitor.cpuAlertThreshold !== undefined ? monitor.cpuAlertThreshold / 100 : -1;
+	const memoryThreshold = monitor.memoryAlertThreshold !== undefined ? monitor.memoryAlertThreshold / 100 : -1;
+	const diskThreshold = monitor.diskAlertThreshold !== undefined ? monitor.diskAlertThreshold / 100 : -1;
 
 	const payload = networkResponse?.payload as HardwareStatusPayload;
 	const metrics = payload.data || {};
