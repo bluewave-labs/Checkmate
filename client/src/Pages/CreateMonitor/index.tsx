@@ -329,8 +329,11 @@ const CreateMonitorPage = () => {
 								render={({ field, fieldState }) => (
 									<TextField
 										{...field}
-										value={field.value ?? ""}
-										onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+										value={field.value === 0 ? "" : field.value}
+										onChange={(e) => {
+											const val = e.target.value;
+											field.onChange(val === "" ? 0 : Number(val));
+										}}
 										type="number"
 										fieldLabel={t("pages.createMonitor.form.general.option.port.label")}
 										placeholder={t(
