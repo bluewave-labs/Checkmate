@@ -32,7 +32,6 @@ export interface Monitor {
 	uptimePercentage?: number;
 	notifications: string[];
 	secret?: string;
-	alertThreshold: number;
 	cpuAlertThreshold: number;
 	memoryAlertThreshold: number;
 	diskAlertThreshold: number;

@@ -121,33 +121,21 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		secret: {
 			type: String,
 		},
-		alertThreshold: {
-			type: Number,
-			default: 5,
-		},
 		cpuAlertThreshold: {
 			type: Number,
-			default: function () {
-				return this.alertThreshold;
-			},
+			default: 100,
 		},
 		memoryAlertThreshold: {
 			type: Number,
-			default: function () {
-				return this.alertThreshold;
-			},
+			default: 100,
 		},
 		diskAlertThreshold: {
 			type: Number,
-			default: function () {
-				return this.alertThreshold;
-			},
+			default: 100,
 		},
 		tempAlertThreshold: {
 			type: Number,
-			default: function () {
-				return this.alertThreshold;
-			},
+			default: 100,
 		},
 		selectedDisks: {
 			type: [String],
@@ -174,33 +162,6 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		timestamps: true,
 	}
 );
-
-MonitorSchema.pre("save", function (next) {
-	if (!this.cpuAlertThreshold || this.isModified("alertThreshold")) {
-		this.cpuAlertThreshold = this.alertThreshold;
-	}
-	if (!this.memoryAlertThreshold || this.isModified("alertThreshold")) {
-		this.memoryAlertThreshold = this.alertThreshold;
-	}
-	if (!this.diskAlertThreshold || this.isModified("alertThreshold")) {
-		this.diskAlertThreshold = this.alertThreshold;
-	}
-	if (!this.tempAlertThreshold || this.isModified("alertThreshold")) {
-		this.tempAlertThreshold = this.alertThreshold;
-	}
-	next();
-});
-
-MonitorSchema.pre("findOneAndUpdate", function (next) {
-	const update = this.getUpdate() as UpdateQuery<MonitorDocument> | null;
-	if (update && !Array.isArray(update) && update.alertThreshold !== undefined) {
-		update.cpuAlertThreshold = update.alertThreshold;
-		update.memoryAlertThreshold = update.alertThreshold;
-		update.diskAlertThreshold = update.alertThreshold;
-		update.tempAlertThreshold = update.alertThreshold;
-	}
-	next();
-});
 
 MonitorSchema.index({ teamId: 1, type: 1 });
 
