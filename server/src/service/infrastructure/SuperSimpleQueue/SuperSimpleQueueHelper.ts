@@ -246,12 +246,12 @@ class SuperSimpleQueueHelper {
 
 		const anyThresholdBreached = Object.values(breaches).some((b) => b);
 
-		// Check if countdown has reached zero for any threshold
+		// Check if countdown counter has reached zero for any breached threshold
 		const shouldNotifyThreshold =
-			(breaches.cpu && monitor.cpuAlertThreshold <= 0) ||
-			(breaches.memory && monitor.memoryAlertThreshold <= 0) ||
-			(breaches.disk && monitor.diskAlertThreshold <= 0) ||
-			(breaches.temp && monitor.tempAlertThreshold <= 0);
+			(breaches.cpu && monitor.cpuAlertCounter <= 0) ||
+			(breaches.memory && monitor.memoryAlertCounter <= 0) ||
+			(breaches.disk && monitor.diskAlertCounter <= 0) ||
+			(breaches.temp && monitor.tempAlertCounter <= 0);
 
 		// Decision logic for hardware
 		if (statusChanged && monitor.status === "down") {
