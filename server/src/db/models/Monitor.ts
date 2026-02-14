@@ -125,17 +125,33 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			type: Number,
 			default: 100,
 		},
+		cpuAlertCounter: {
+			type: Number,
+			default: 5,
+		},
 		memoryAlertThreshold: {
 			type: Number,
 			default: 100,
+		},
+		memoryAlertCounter: {
+			type: Number,
+			default: 5,
 		},
 		diskAlertThreshold: {
 			type: Number,
 			default: 100,
 		},
+		diskAlertCounter: {
+			type: Number,
+			default: 5,
+		},
 		tempAlertThreshold: {
 			type: Number,
 			default: 100,
+		},
+		tempAlertCounter: {
+			type: Number,
+			default: 5,
 		},
 		selectedDisks: {
 			type: [String],

@@ -47,9 +47,13 @@ export interface Monitor {
 	notifications: string[];
 	secret?: string;
 	cpuAlertThreshold: number;
+	cpuAlertCounter: number;
 	memoryAlertThreshold: number;
+	memoryAlertCounter: number;
 	diskAlertThreshold: number;
+	diskAlertCounter: number;
 	tempAlertThreshold: number;
+	tempAlertCounter: number;
 	selectedDisks: string[];
 	gameId?: string;
 	group: string | null;
