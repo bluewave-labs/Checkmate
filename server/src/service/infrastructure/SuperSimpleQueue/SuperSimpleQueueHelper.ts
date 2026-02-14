@@ -218,10 +218,22 @@ class SuperSimpleQueueHelper {
 
 		// CASE 2: Hardware
 		if (!thresholdBreaches) {
-			return decision; // No breach data available
+			// No breach data available - still handle status changes
+			if (statusChanged && monitor.status === "down") {
+				decision.shouldCreateIncident = true;
+				decision.shouldSendNotification = true;
+				decision.incidentReason = "status_down";
+				decision.notificationReason = "status_change";
+			} else if (statusChanged && monitor.status === "up" && prevStatus === "down") {
+				decision.shouldResolveIncident = true;
+				decision.shouldSendNotification = true;
+				decision.notificationReason = "status_change";
+			}
+			return decision;
 		}
 
 		const anyThresholdBreached = Object.values(thresholdBreaches).some((b) => b);
+		const noThresholdsBreached = Object.values(thresholdBreaches).every((b) => !b);
 
 		// Check if countdown counter has reached zero for any breached threshold
 		const shouldNotifyThreshold =
@@ -233,6 +245,7 @@ class SuperSimpleQueueHelper {
 		// Decision logic for hardware
 		if (statusChanged && monitor.status === "down") {
 			// Hardware service is DOWN (unreachable)
+			// Status down takes precedence over threshold breaches
 			decision.shouldCreateIncident = true;
 			decision.shouldSendNotification = true;
 			decision.incidentReason = "status_down";
@@ -243,12 +256,17 @@ class SuperSimpleQueueHelper {
 			decision.shouldSendNotification = true;
 			decision.notificationReason = "status_change";
 		} else if (anyThresholdBreached && shouldNotifyThreshold) {
-			// Threshold breach alert (service is UP but metrics are high)
+			// Threshold breach: Counters have reached zero
+			// Create incident if service is UP but metrics exceed thresholds
 			decision.shouldCreateIncident = true;
 			decision.shouldSendNotification = true;
 			decision.incidentReason = "threshold_breach";
 			decision.notificationReason = "threshold_breach";
 			decision.thresholdBreaches = thresholdBreaches;
+		} else if (noThresholdsBreached && !anyThresholdBreached) {
+			// All thresholds returned to normal - resolve any active threshold incidents
+			decision.shouldResolveIncident = true;
+			// Don't send notification for resolution (can be added later if needed)
 		}
 
 		return decision;
