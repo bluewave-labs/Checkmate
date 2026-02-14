@@ -9,8 +9,8 @@ import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
 interface NotFoundProps {
-	title: string;
-	desc: string;
+	title?: string;
+	desc?: string;
 }
 
 const NotFoundPage = ({ title, desc }: NotFoundProps) => {
