@@ -115,6 +115,10 @@ class SuperSimpleQueueHelper {
 				// Step 4.  Update monitor status
 				const statusChangeResult = await this.statusService.updateMonitorStatus(status, check);
 
+				// Step 5.  Get decisions
+				const decision = this.evaluateMonitorAction(statusChangeResult);
+				console.log(JSON.stringify(decision, null, 2));
+
 				// Step 5 handle notifications (best effort, continue even in event of failure, don't wait)
 				this.notificationsService
 					.handleNotifications(statusChangeResult.monitor, status, statusChangeResult.prevStatus, statusChangeResult.statusChanged)
@@ -182,7 +186,7 @@ class SuperSimpleQueueHelper {
 		return maintenanceWindowIsActive;
 	}
 
-	private evaluateMonitorAction(statusChangeResult: StatusChangeResult, networkResponse: MonitorStatusResponse): MonitorActionDecision {
+	private evaluateMonitorAction(statusChangeResult: StatusChangeResult): MonitorActionDecision {
 		const { monitor, statusChanged, prevStatus, thresholdBreaches } = statusChangeResult;
 
 		// Initialize result
