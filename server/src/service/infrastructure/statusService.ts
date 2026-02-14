@@ -253,6 +253,61 @@ export class StatusService implements IStatusService {
 			}
 
 			monitor.status = newStatus;
+
+			// Evaluate hardware threshold breaches (only for hardware monitors)
+			let thresholdBreaches: { cpu: boolean; memory: boolean; disk: boolean; temp: boolean } | undefined;
+			if (monitor.type === "hardware" && statusResponse.payload) {
+				const payload = statusResponse.payload as HardwareStatusPayload;
+				const metrics = payload?.data;
+
+				if (metrics) {
+					// Evaluate threshold breaches
+					const cpuUsage = metrics.cpu?.usage_percent ?? -1;
+					const cpuBreach = cpuUsage !== -1 && cpuUsage > monitor.cpuAlertThreshold / 100;
+
+					const memoryUsage = metrics.memory?.usage_percent ?? -1;
+					const memoryBreach = memoryUsage !== -1 && memoryUsage > monitor.memoryAlertThreshold / 100;
+
+					const diskBreach =
+						metrics.disk?.some((d: any) => typeof d?.usage_percent === "number" && d.usage_percent > monitor.diskAlertThreshold / 100) ?? false;
+
+					const temps = metrics.cpu?.temperature ?? [];
+					const tempBreach = temps.some((temp: number) => temp > monitor.tempAlertThreshold);
+
+					thresholdBreaches = {
+						cpu: cpuBreach,
+						memory: memoryBreach,
+						disk: diskBreach,
+						temp: tempBreach,
+					};
+
+					// Update counters: decrement if breached, reset to 5 if not breached
+					if (cpuBreach) {
+						monitor.cpuAlertCounter = Math.max(0, monitor.cpuAlertCounter - 1);
+					} else {
+						monitor.cpuAlertCounter = 5;
+					}
+
+					if (memoryBreach) {
+						monitor.memoryAlertCounter = Math.max(0, monitor.memoryAlertCounter - 1);
+					} else {
+						monitor.memoryAlertCounter = 5;
+					}
+
+					if (diskBreach) {
+						monitor.diskAlertCounter = Math.max(0, monitor.diskAlertCounter - 1);
+					} else {
+						monitor.diskAlertCounter = 5;
+					}
+
+					if (tempBreach) {
+						monitor.tempAlertCounter = Math.max(0, monitor.tempAlertCounter - 1);
+					} else {
+						monitor.tempAlertCounter = 5;
+					}
+				}
+			}
+
 			const updated = await this.monitorsRepository.updateById(monitor.id, monitor.teamId, monitor);
 
 			return {
@@ -261,6 +316,7 @@ export class StatusService implements IStatusService {
 				prevStatus,
 				code,
 				timestamp: new Date().getTime(),
+				thresholdBreaches,
 			};
 		} catch (error: any) {
 			error.service = SERVICE_NAME;

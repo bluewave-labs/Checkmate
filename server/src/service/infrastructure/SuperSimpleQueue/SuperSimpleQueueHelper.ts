@@ -183,7 +183,7 @@ class SuperSimpleQueueHelper {
 	}
 
 	private evaluateMonitorAction(statusChangeResult: StatusChangeResult, networkResponse: MonitorStatusResponse): MonitorActionDecision {
-		const { monitor, statusChanged, prevStatus } = statusChangeResult;
+		const { monitor, statusChanged, prevStatus, thresholdBreaches } = statusChangeResult;
 
 		// Initialize result
 		const decision: MonitorActionDecision = {
@@ -213,45 +213,18 @@ class SuperSimpleQueueHelper {
 		}
 
 		// CASE 2: Hardware
-		const payload = networkResponse.payload as HardwareStatusPayload;
-		const metrics = payload?.data;
-
-		if (!metrics) {
-			return decision; // No metrics, can't evaluate
+		if (!thresholdBreaches) {
+			return decision; // No breach data available
 		}
 
-		// Evaluate threshold breaches
-		// CPU check
-		const cpuUsage = metrics.cpu?.usage_percent ?? -1;
-		const cpuBreach = cpuUsage !== -1 && cpuUsage > monitor.cpuAlertThreshold / 100;
-
-		// Memory check
-		const memoryUsage = metrics.memory?.usage_percent ?? -1;
-		const memoryBreach = memoryUsage !== -1 && memoryUsage > monitor.memoryAlertThreshold / 100;
-
-		// Disk check
-		const diskBreach =
-			metrics.disk?.some((d: any) => typeof d?.usage_percent === "number" && d.usage_percent > monitor.diskAlertThreshold / 100) ?? false;
-
-		// Temperature check (alert if ANY sensor exceeds threshold)
-		const temps = metrics.cpu?.temperature ?? [];
-		const tempBreach = temps.some((temp: number) => temp > monitor.tempAlertThreshold);
-
-		const breaches = {
-			cpu: cpuBreach,
-			memory: memoryBreach,
-			disk: diskBreach,
-			temp: tempBreach,
-		};
-
-		const anyThresholdBreached = Object.values(breaches).some((b) => b);
+		const anyThresholdBreached = Object.values(thresholdBreaches).some((b) => b);
 
 		// Check if countdown counter has reached zero for any breached threshold
 		const shouldNotifyThreshold =
-			(breaches.cpu && monitor.cpuAlertCounter <= 0) ||
-			(breaches.memory && monitor.memoryAlertCounter <= 0) ||
-			(breaches.disk && monitor.diskAlertCounter <= 0) ||
-			(breaches.temp && monitor.tempAlertCounter <= 0);
+			(thresholdBreaches.cpu && monitor.cpuAlertCounter <= 0) ||
+			(thresholdBreaches.memory && monitor.memoryAlertCounter <= 0) ||
+			(thresholdBreaches.disk && monitor.diskAlertCounter <= 0) ||
+			(thresholdBreaches.temp && monitor.tempAlertCounter <= 0);
 
 		// Decision logic for hardware
 		if (statusChanged && monitor.status === "down") {
@@ -271,7 +244,7 @@ class SuperSimpleQueueHelper {
 			decision.shouldSendNotification = true;
 			decision.incidentReason = "threshold_breach";
 			decision.notificationReason = "threshold_breach";
-			decision.thresholdBreaches = breaches;
+			decision.thresholdBreaches = thresholdBreaches;
 		}
 
 		return decision;

@@ -110,4 +110,10 @@ export type StatusChangeResult = {
 	prevStatus: MonitorStatus;
 	code: number;
 	timestamp: number;
+	thresholdBreaches?: {
+		cpu: boolean;
+		memory: boolean;
+		disk: boolean;
+		temp: boolean;
+	};
 };
