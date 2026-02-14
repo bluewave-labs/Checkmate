@@ -220,59 +220,38 @@ class SuperSimpleQueueHelper {
 			return decision; // No metrics, can't evaluate
 		}
 
-		// Check if thresholds exist
-		const hasThresholds =
-			monitor.cpuAlertThreshold !== undefined ||
-			monitor.memoryAlertThreshold !== undefined ||
-			monitor.diskAlertThreshold !== undefined ||
-			monitor.tempAlertThreshold !== undefined;
-
 		// Evaluate threshold breaches
+		// CPU check
+		const cpuUsage = metrics.cpu?.usage_percent ?? -1;
+		const cpuBreach = cpuUsage !== -1 && cpuUsage > monitor.cpuAlertThreshold / 100;
+
+		// Memory check
+		const memoryUsage = metrics.memory?.usage_percent ?? -1;
+		const memoryBreach = memoryUsage !== -1 && memoryUsage > monitor.memoryAlertThreshold / 100;
+
+		// Disk check
+		const diskBreach =
+			metrics.disk?.some((d: any) => typeof d?.usage_percent === "number" && d.usage_percent > monitor.diskAlertThreshold / 100) ?? false;
+
+		// Temperature check (alert if ANY sensor exceeds threshold)
+		const temps = metrics.cpu?.temperature ?? [];
+		const tempBreach = temps.some((temp: number) => temp > monitor.tempAlertThreshold);
+
 		const breaches = {
-			cpu: false,
-			memory: false,
-			disk: false,
-			temp: false,
+			cpu: cpuBreach,
+			memory: memoryBreach,
+			disk: diskBreach,
+			temp: tempBreach,
 		};
-
-		if (hasThresholds) {
-			// CPU check
-			if (monitor.cpuAlertThreshold !== undefined) {
-				const cpuUsage = metrics.cpu?.usage_percent ?? -1;
-				// Convert threshold from percentage (0-100) to decimal (0-1) for comparison
-				breaches.cpu = cpuUsage !== -1 && cpuUsage > monitor.cpuAlertThreshold / 100;
-			}
-
-			// Memory check
-			if (monitor.memoryAlertThreshold !== undefined) {
-				const memoryUsage = metrics.memory?.usage_percent ?? -1;
-				// Convert threshold from percentage (0-100) to decimal (0-1) for comparison
-				breaches.memory = memoryUsage !== -1 && memoryUsage > monitor.memoryAlertThreshold / 100;
-			}
-
-			// Disk check
-			if (monitor.diskAlertThreshold !== undefined) {
-				// Convert threshold from percentage (0-100) to decimal (0-1) for comparison
-				breaches.disk =
-					metrics.disk?.some((d: any) => typeof d?.usage_percent === "number" && d.usage_percent > monitor.diskAlertThreshold / 100) ?? false;
-			}
-
-			// Temperature check (alert if ANY sensor exceeds threshold)
-			if (monitor.tempAlertThreshold !== undefined) {
-				const temps = metrics.cpu?.temperature ?? [];
-				// Temperature threshold is in Celsius, compare directly
-				breaches.temp = temps.some((temp: number) => temp > monitor.tempAlertThreshold);
-			}
-		}
 
 		const anyThresholdBreached = Object.values(breaches).some((b) => b);
 
 		// Check if countdown has reached zero for any threshold
 		const shouldNotifyThreshold =
-			(breaches.cpu && (monitor.cpuAlertThreshold ?? 100) <= 0) ||
-			(breaches.memory && (monitor.memoryAlertThreshold ?? 100) <= 0) ||
-			(breaches.disk && (monitor.diskAlertThreshold ?? 100) <= 0) ||
-			(breaches.temp && (monitor.tempAlertThreshold ?? 100) <= 0);
+			(breaches.cpu && monitor.cpuAlertThreshold <= 0) ||
+			(breaches.memory && monitor.memoryAlertThreshold <= 0) ||
+			(breaches.disk && monitor.diskAlertThreshold <= 0) ||
+			(breaches.temp && monitor.tempAlertThreshold <= 0);
 
 		// Decision logic for hardware
 		if (statusChanged && monitor.status === "down") {

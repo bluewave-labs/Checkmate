@@ -88,7 +88,7 @@ export const buildHardwareAlerts = (
 		const thresholdKey = alertThresholdKeyMap[type];
 		// Iterate over each alert type to see if any need to be decremented
 		if (alerts[type] === true) {
-			const nextValue = ((monitor[thresholdKey] ?? 100) as number) - 1;
+			const nextValue = monitor[thresholdKey] - 1;
 			monitor[thresholdKey] = nextValue; // Decrement threshold if an alert is triggered
 
 			if (monitor[thresholdKey] <= 0) {
@@ -136,17 +136,17 @@ export const shouldSendHardwareAlert = (monitor: Monitor, networkResponse: Monit
 	const { cpu: { usage_percent: cpuUsage = -1 } = {}, memory: { usage_percent: memoryUsage = -1 } = {}, disk = [] } = metrics;
 
 	const cpuBreach = cpuThreshold !== -1 && cpuUsage > cpuThreshold;
-	if (cpuBreach && ((monitor.cpuAlertThreshold ?? 100) as number) - 1 <= 0) {
+	if (cpuBreach && monitor.cpuAlertThreshold - 1 <= 0) {
 		return true;
 	}
 
 	const memoryBreach = memoryThreshold !== -1 && memoryUsage > memoryThreshold;
-	if (memoryBreach && ((monitor.memoryAlertThreshold ?? 100) as number) - 1 <= 0) {
+	if (memoryBreach && monitor.memoryAlertThreshold - 1 <= 0) {
 		return true;
 	}
 
 	const diskBreach = disk?.some((d) => diskThreshold !== -1 && typeof d?.usage_percent === "number" && d?.usage_percent > diskThreshold);
-	if (diskBreach && ((monitor.diskAlertThreshold ?? 100) as number) - 1 <= 0) {
+	if (diskBreach && monitor.diskAlertThreshold - 1 <= 0) {
 		return true;
 	}
 
