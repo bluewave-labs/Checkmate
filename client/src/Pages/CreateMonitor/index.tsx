@@ -496,96 +496,72 @@ const CreateMonitorPage = () => {
 							<Controller
 								name="cpuAlertThreshold"
 								control={control}
-								render={({ field, fieldState }) => (
-									<TextField
+								render={({ field }) => (
+									<SliderWithLabel
 										{...field}
-										value={field.value === 0 ? "" : field.value}
-										onChange={(e) => {
-											const val = e.target.value;
-											field.onChange(val === "" ? 0 : Number(val));
-										}}
-										type="number"
+										sliderMaxWidth={{ xs: "100%", md: "50%" }}
 										fieldLabel={t(
 											"pages.createMonitor.form.thresholds.option.cpuThreshold.label"
 										)}
-										placeholder={t(
-											"pages.createMonitor.form.thresholds.option.cpuThreshold.placeholder"
-										)}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
+										min={0}
+										max={100}
+										step={1}
+										valueLabelDisplay="auto"
+										valueLabelFormat={(value) => `${value}%`}
 									/>
 								)}
 							/>
 							<Controller
 								name="memoryAlertThreshold"
 								control={control}
-								render={({ field, fieldState }) => (
-									<TextField
+								render={({ field }) => (
+									<SliderWithLabel
 										{...field}
-										value={field.value === 0 ? "" : field.value}
-										onChange={(e) => {
-											const val = e.target.value;
-											field.onChange(val === "" ? 0 : Number(val));
-										}}
-										type="number"
+										sliderMaxWidth={{ xs: "100%", md: "50%" }}
 										fieldLabel={t(
 											"pages.createMonitor.form.thresholds.option.memoryThreshold.label"
 										)}
-										placeholder={t(
-											"pages.createMonitor.form.thresholds.option.memoryThreshold.placeholder"
-										)}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
+										min={0}
+										max={100}
+										step={1}
+										valueLabelDisplay="auto"
+										valueLabelFormat={(value) => `${value}%`}
 									/>
 								)}
 							/>
 							<Controller
 								name="diskAlertThreshold"
 								control={control}
-								render={({ field, fieldState }) => (
-									<TextField
+								render={({ field }) => (
+									<SliderWithLabel
 										{...field}
-										value={field.value === 0 ? "" : field.value}
-										onChange={(e) => {
-											const val = e.target.value;
-											field.onChange(val === "" ? 0 : Number(val));
-										}}
-										type="number"
+										sliderMaxWidth={{ xs: "100%", md: "50%" }}
 										fieldLabel={t(
 											"pages.createMonitor.form.thresholds.option.diskThreshold.label"
 										)}
-										placeholder={t(
-											"pages.createMonitor.form.thresholds.option.diskThreshold.placeholder"
-										)}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
+										min={0}
+										max={100}
+										step={1}
+										valueLabelDisplay="auto"
+										valueLabelFormat={(value) => `${value}%`}
 									/>
 								)}
 							/>
 							<Controller
 								name="tempAlertThreshold"
 								control={control}
-								render={({ field, fieldState }) => (
-									<TextField
+								render={({ field }) => (
+									<SliderWithLabel
 										{...field}
-										value={field.value === 0 ? "" : field.value}
-										onChange={(e) => {
-											const val = e.target.value;
-											field.onChange(val === "" ? 0 : Number(val));
-										}}
-										type="number"
+										sliderMaxWidth={{ xs: "100%", md: "50%" }}
 										fieldLabel={t(
 											"pages.createMonitor.form.thresholds.option.tempThreshold.label"
 										)}
-										placeholder={t(
-											"pages.createMonitor.form.thresholds.option.tempThreshold.placeholder"
-										)}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
+										min={0}
+										max={100}
+										step={1}
+										valueLabelDisplay="auto"
+										valueLabelFormat={(value) => `${value}°C`}
 									/>
 								)}
 							/>
