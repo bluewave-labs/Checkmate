@@ -41,6 +41,7 @@ export class NotificationsService implements INotificationsService {
 			createdAt: number;
 		}
 	>;
+	private currentDecision?: MonitorActionDecision;
 
 	constructor(
 		notificationsRepository: INotificationsRepository,
@@ -83,17 +84,17 @@ export class NotificationsService implements INotificationsService {
 	private send = async (notification: Notification, monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): Promise<boolean> => {
 		switch (notification.type) {
 			case "email":
-				return await this.emailProvider.sendAlert(notification, monitor, monitorStatusResponse);
+				return await this.emailProvider.sendAlert(notification, monitor, monitorStatusResponse, this.currentDecision!);
 			case "slack":
-				return await this.slackProvider.sendAlert(notification, monitor, monitorStatusResponse);
+				return await this.slackProvider.sendAlert(notification, monitor, monitorStatusResponse, this.currentDecision!);
 			case "discord":
-				return await this.discordProvider.sendAlert(notification, monitor, monitorStatusResponse);
+				return await this.discordProvider.sendAlert(notification, monitor, monitorStatusResponse, this.currentDecision!);
 			case "pager_duty":
-				return await this.pagerDutyProvider.sendAlert(notification, monitor, monitorStatusResponse);
+				return await this.pagerDutyProvider.sendAlert(notification, monitor, monitorStatusResponse, this.currentDecision!);
 			case "matrix":
-				return await this.matrixProvider.sendAlert(notification, monitor, monitorStatusResponse);
+				return await this.matrixProvider.sendAlert(notification, monitor, monitorStatusResponse, this.currentDecision!);
 			case "webhook":
-				return await this.webhookProvider.sendAlert(notification, monitor, monitorStatusResponse);
+				return await this.webhookProvider.sendAlert(notification, monitor, monitorStatusResponse, this.currentDecision!);
 			default:
 				return false;
 		}
@@ -157,7 +158,15 @@ export class NotificationsService implements INotificationsService {
 				this.pendingEmailGroups.delete(key);
 
 				try {
-					await this.flushEmailGroup(notification, group.monitors, group.statusResponses);
+					// For grouped notifications (always DOWN), create a decision
+					const groupedDecision: MonitorActionDecision = {
+						shouldCreateIncident: false,
+						shouldResolveIncident: false,
+						shouldSendNotification: true,
+						incidentReason: "status_down",
+						notificationReason: "status_change",
+					};
+					await this.flushEmailGroup(notification, group.monitors, group.statusResponses, groupedDecision);
 				} catch (error: any) {
 					this.logger.error({
 						message: error?.message,
@@ -196,7 +205,12 @@ export class NotificationsService implements INotificationsService {
 	 * @param statusResponses Array of status responses (parallel to monitors)
 	 * @returns true if email was sent successfully, false otherwise
 	 */
-	private flushEmailGroup = async (notification: Notification, monitors: Monitor[], statusResponses: MonitorStatusResponse[]): Promise<boolean> => {
+	private flushEmailGroup = async (
+		notification: Notification,
+		monitors: Monitor[],
+		statusResponses: MonitorStatusResponse[],
+		decision: MonitorActionDecision
+	): Promise<boolean> => {
 		if (!monitors.length || !statusResponses.length) {
 			return false;
 		}
@@ -221,7 +235,7 @@ export class NotificationsService implements INotificationsService {
 		};
 
 		// Reuse existing email provider to send grouped notification.
-		return await this.emailProvider.sendAlert(notification, syntheticMonitor, baseStatus);
+		return await this.emailProvider.sendAlert(notification, syntheticMonitor, baseStatus, decision);
 	};
 
 	handleNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {
@@ -229,6 +243,9 @@ export class NotificationsService implements INotificationsService {
 		if (!decision.shouldSendNotification) {
 			return false;
 		}
+
+		// Store decision for use in send method
+		this.currentDecision = decision;
 
 		// Send notifications based on decision
 		return await this.sendNotifications(monitor, monitorStatusResponse);

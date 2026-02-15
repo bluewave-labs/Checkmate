@@ -123,8 +123,8 @@ export const buildHardwareNotificationMessage = (clientHost: string, alerts: any
 	return alertText.map((alert) => alert).join("\n");
 };
 
-export const buildHardwareWebhookBody = (alerts: string[], monitor: Monitor): string => {
-	const content = alerts.map((alert) => alert).join("\n");
+export const buildHardwareWebhookBody = (clientHost: string, alerts: string[], monitor: Monitor): string => {
+	const content = buildHardwareNotificationMessage(clientHost, alerts, monitor);
 	return content;
 };
 

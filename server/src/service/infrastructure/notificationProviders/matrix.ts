@@ -1,6 +1,7 @@
 const SERVICE_NAME = "MatrixProvider";
 import got from "got";
 import type { INotificationProvider } from "@/service/index.js";
+import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import type { Notification, Monitor, MonitorStatusResponse } from "@/types/index.js";
 import {
 	buildHardwareAlerts,
@@ -15,9 +16,19 @@ export class MatrixProvider implements INotificationProvider {
 	constructor(logger: any) {
 		this.logger = logger;
 	}
-	private getHardwareContent = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
+	private getHardwareContent = (
+		clientHost: string,
+		monitor: Monitor,
+		monitorStatusResponse: MonitorStatusResponse,
+		decision: MonitorActionDecision
+	) => {
+		// For status changes (recovery), use standard format
+		if (decision.notificationReason === "status_change") {
+			return buildWebhookBody(monitor, monitorStatusResponse);
+		}
+		// For threshold breaches, use hardware alert format
 		const { alertsToSend } = buildHardwareAlerts("HOST_PLACEHOLDER", monitor, monitorStatusResponse);
-		const body = buildHardwareWebhookBody(alertsToSend, monitor);
+		const body = buildHardwareWebhookBody(clientHost, alertsToSend, monitor);
 		return body;
 	};
 
@@ -26,12 +37,12 @@ export class MatrixProvider implements INotificationProvider {
 		return body;
 	};
 
-	sendAlert = async (notification: Notification, monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
+	sendAlert = async (notification: Notification, monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {
 		const { homeserverUrl, accessToken, roomId } = notification;
 
 		let content;
 		if (monitor.type === "hardware") {
-			content = this.getHardwareContent(monitor, monitorStatusResponse);
+			content = this.getHardwareContent("HOST_PLACEHOLDER", monitor, monitorStatusResponse, decision);
 		} else {
 			content = this.getContent(monitor, monitorStatusResponse);
 		}

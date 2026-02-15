@@ -1,6 +1,7 @@
 const SERVICE_NAME = "PagerDutyProvider";
 import got from "got";
 import type { Monitor, Notification, MonitorStatusResponse } from "@/types/index.js";
+import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import { INotificationProvider } from "@/service/index.js";
 import {
 	buildHardwareAlerts,
@@ -15,9 +16,19 @@ export class PagerDutyProvider implements INotificationProvider {
 	constructor(logger: any) {
 		this.logger = logger;
 	}
-	private getHardwareContent = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
+	private getHardwareContent = (
+		clientHost: string,
+		monitor: Monitor,
+		monitorStatusResponse: MonitorStatusResponse,
+		decision: MonitorActionDecision
+	) => {
+		// For status changes (recovery), use standard format
+		if (decision.notificationReason === "status_change") {
+			return buildWebhookBody(monitor, monitorStatusResponse);
+		}
+		// For threshold breaches, use hardware alert format
 		const { alertsToSend } = buildHardwareAlerts("HOST_PLACEHOLDER", monitor, monitorStatusResponse);
-		const body = buildHardwareWebhookBody(alertsToSend, monitor);
+		const body = buildHardwareWebhookBody(clientHost, alertsToSend, monitor);
 		return body;
 	};
 
@@ -26,10 +37,15 @@ export class PagerDutyProvider implements INotificationProvider {
 		return body;
 	};
 
-	async sendAlert(notification: Notification, monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): Promise<boolean> {
+	async sendAlert(
+		notification: Notification,
+		monitor: Monitor,
+		monitorStatusResponse: MonitorStatusResponse,
+		decision: MonitorActionDecision
+	): Promise<boolean> {
 		let body;
 		if (monitor.type === "hardware") {
-			body = this.getHardwareContent(monitor, monitorStatusResponse);
+			body = this.getHardwareContent("HOST_PLACEHOLDER", monitor, monitorStatusResponse, decision);
 		} else {
 			body = this.getContent(monitor, monitorStatusResponse);
 		}
