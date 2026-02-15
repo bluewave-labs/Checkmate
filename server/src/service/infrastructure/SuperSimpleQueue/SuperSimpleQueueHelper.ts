@@ -120,17 +120,15 @@ class SuperSimpleQueueHelper {
 
 				// Step 6. Handle notifications (best effort, continue even in event of failure, don't wait)
 				if (decision.shouldSendNotification) {
-					this.notificationsService
-						.handleNotifications(statusChangeResult.monitor, status, statusChangeResult.prevStatus, statusChangeResult.statusChanged)
-						.catch((error: any) => {
-							this.logger.error({
-								message: error.message,
-								service: SERVICE_NAME,
-								method: "getMonitorJob",
-								details: `Error sending notifications for job ${statusChangeResult.monitor.id}: ${error.message}`,
-								stack: error.stack,
-							});
+					this.notificationsService.handleNotifications(statusChangeResult.monitor, status, decision).catch((error: any) => {
+						this.logger.error({
+							message: error.message,
+							service: SERVICE_NAME,
+							method: "getMonitorJob",
+							details: `Error sending notifications for job ${statusChangeResult.monitor.id}: ${error.message}`,
+							stack: error.stack,
 						});
+					});
 				}
 
 				// Step 7. Handle incidents (best effort, don't wait)

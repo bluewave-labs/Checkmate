@@ -1,7 +1,7 @@
 import type { HardwareStatusPayload, Monitor, MonitorStatusResponse, Notification, MonitorStatus } from "@/types/index.js";
-import { shouldSendHardwareAlert } from "@/service/infrastructure/notificationProviders/utils.js";
 import { IMonitorsRepository, INotificationsRepository } from "@/repositories/index.js";
 import { INotificationProvider } from "./notificationProviders/INotificationProvider.js";
+import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 
 export interface INotificationsService {
 	createNotification: (notificationData: Partial<Notification>) => Promise<Notification>;
@@ -9,12 +9,7 @@ export interface INotificationsService {
 	findNotificationsByTeamId: (teamId: string) => Promise<Notification[]>;
 	updateById(id: string, teamId: string, updateData: Partial<Notification>): Promise<Notification>;
 	deleteById: (id: string, teamId: string) => Promise<Notification>;
-	handleNotifications: (
-		monitor: Monitor,
-		monitorStatusResponse: MonitorStatusResponse,
-		prevStatus: MonitorStatus,
-		statusChanged: boolean
-	) => Promise<boolean>;
+	handleNotifications: (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => Promise<boolean>;
 
 	sendTestNotification: (notification: Notification) => Promise<boolean>;
 	testAllNotifications: (notificationIds: string[]) => Promise<boolean>;
@@ -229,36 +224,13 @@ export class NotificationsService implements INotificationsService {
 		return await this.emailProvider.sendAlert(notification, syntheticMonitor, baseStatus);
 	};
 
-	handleNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, prevStatus: MonitorStatus, statusChanged: boolean) => {
-		const { type } = monitor;
-		const payload = monitorStatusResponse.payload as HardwareStatusPayload;
-		// If this is a non-hardeware type monitor and status did not change, we're done
-		if (type !== "hardware" && statusChanged === false) return false;
-		// if prevStatus is undefined, monitor is resuming, we're done
-		if (type !== "hardware" && prevStatus === undefined) return false;
-
-		// Deal with hardware thresholds
-		if (type === "hardware") {
-			// Check if any thresholds are set
-			const hasThresholds =
-				monitor.cpuAlertThreshold !== undefined ||
-				monitor.memoryAlertThreshold !== undefined ||
-				monitor.diskAlertThreshold !== undefined ||
-				monitor.tempAlertThreshold !== undefined;
-
-			if (!hasThresholds) return false; // No thresholds set, we're done
-			const metrics = payload?.data ?? null;
-			if (metrics === null) return false; // No metrics, we're done
-
-			// We should send a notificaiton
-
-			const shouldSend = shouldSendHardwareAlert(monitor, monitorStatusResponse);
-			if (shouldSend === false) return false;
-
-			return await this.sendNotifications(monitor, monitorStatusResponse);
+	handleNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {
+		// Early return if no notification should be sent
+		if (!decision.shouldSendNotification) {
+			return false;
 		}
 
-		// We should send a notification for non-hardware monitor status change
+		// Send notifications based on decision
 		return await this.sendNotifications(monitor, monitorStatusResponse);
 	};
 
