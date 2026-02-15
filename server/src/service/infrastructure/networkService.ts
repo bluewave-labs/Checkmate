@@ -1,3 +1,4 @@
+import amqp from "amqplib";
 import { HTTPError, RequestError } from "got";
 import type { Got, Response } from "got";
 import type { Monitor, MonitorStatusResponse } from "@/types/index.js";
@@ -42,6 +43,7 @@ class NetworkService implements INetworkService {
 	private TYPE_DOCKER: string;
 	private TYPE_PORT: string;
 	private TYPE_GAME: string;
+	private TYPE_RABBITMQ: string;
 	private SERVICE_NAME: string;
 	private NETWORK_ERROR: number;
 	private PING_ERROR: number;
@@ -56,6 +58,7 @@ class NetworkService implements INetworkService {
 	private Docker: any;
 	private net: any;
 	private settingsService: any;
+	private amqp: any;
 
 	private buildStatusResponse = <T>({
 		monitor,
@@ -135,6 +138,7 @@ class NetworkService implements INetworkService {
 		Docker: any;
 		net: any;
 		settingsService: any;
+		amqp: any;
 	}) {
 		this.TYPE_PING = "ping";
 		this.TYPE_HTTP = "http";
@@ -143,6 +147,7 @@ class NetworkService implements INetworkService {
 		this.TYPE_DOCKER = "docker";
 		this.TYPE_PORT = "port";
 		this.TYPE_GAME = "game";
+		this.TYPE_RABBITMQ = "rabbitMq";
 		this.SERVICE_NAME = SERVICE_NAME;
 		this.NETWORK_ERROR = 5000;
 		this.PING_ERROR = 5001;
@@ -155,6 +160,7 @@ class NetworkService implements INetworkService {
 		this.Docker = Docker;
 		this.net = net;
 		this.settingsService = settingsService;
+		this.amqp = amqp;
 
 		const cacheable = new CacheableLookup();
 
@@ -202,6 +208,8 @@ class NetworkService implements INetworkService {
 				return await this.requestPort(monitor);
 			case this.TYPE_GAME:
 				return await this.requestGame(monitor);
+			case this.TYPE_RABBITMQ:
+				return await this.requestRabbitMq(monitor);
 			default:
 				return this.handleUnsupportedType(type);
 		}
@@ -305,7 +313,7 @@ class NetworkService implements INetworkService {
 				timings: response.timings,
 			});
 
-			if (!useAdvancedMatching) {
+			if (!expectedValue && !jsonPath) {
 				return httpResponse;
 			}
 
@@ -624,6 +632,86 @@ class NetworkService implements INetworkService {
 			throw error;
 		}
 	}
+
+	private async requestRabbitMq(monitor: Monitor): Promise<MonitorStatusResponse> {
+		try {
+			const { url } = monitor;
+
+			// Helper to create a Got instance for RabbitMQ management API
+			const amqpClient = (rabbitMqUrl: string) => {
+				const { username, password, hostname, pathname } = new URL(rabbitMqUrl);
+				const vhost = pathname.slice(1); // remove leading "/"
+
+				return this.got.extend({
+					prefixUrl: `https://${hostname}/api/queues/${encodeURIComponent(vhost)}`,
+					username,
+					password,
+					retry: {
+						limit: 5,
+						maxRetryAfter: 1000,
+					},
+				});
+			};
+
+			// Fetch queue data
+			const fetchQueueData = async () => {
+				const client = amqpClient(url);
+				const response = await client.get(""); // fetch queues
+				const parsedData = JSON.parse(response.body);
+				const data = Array.isArray(parsedData) ? parsedData : [parsedData];
+				const finalData = data.filter((queue: any) => queue?.consumers);
+				return finalData.map((queue: any) => ({
+					queue: queue?.name || "unknown",
+					consumers: queue?.consumers ?? 0,
+				}));
+			};
+
+			const { response, responseTime, error } = await this.timeRequest(async (): Promise<{ success: boolean; data?: any[] }> => {
+				if (url.startsWith("amqps://") || url.startsWith("amqp://")) {
+					const data = await fetchQueueData();
+					const success = data.length > 0 && data.every((queue: any) => Number(queue?.consumers) > 0);
+					return { success, data };
+				}
+				return { success: false, data: [] };
+			});
+			const isSuccess = response?.success ?? false;
+
+			const rabbitMqResponse = this.buildStatusResponse({
+				monitor,
+				error: error as Error,
+				overrides: {
+					code: 200,
+					status: true,
+					message: "RabbitMQ check successful",
+					responseTime,
+					payload: response?.data,
+				},
+			});
+
+			if (error) {
+				rabbitMqResponse.status = false;
+				rabbitMqResponse.message = (error as Error).message || "RabbitMQ check failed";
+				return rabbitMqResponse;
+			}
+
+			if (!isSuccess) {
+				rabbitMqResponse.code = 500;
+				rabbitMqResponse.status = false;
+
+				const missingConsumers = response?.data?.filter((q: any) => q.consumers === 0).map((q: any) => q.queue) || [];
+				rabbitMqResponse.message = `RabbitMQ check failed: ${missingConsumers.length} queue(s) have 0 consumers (${missingConsumers.join(", ")})`;
+
+				return rabbitMqResponse;
+			}
+
+			return rabbitMqResponse;
+		} catch (err: any) {
+			err.service = this.SERVICE_NAME;
+			err.method = "requestRabbitMq";
+			throw err;
+		}
+	}
+
 	private async handleUnsupportedType(type: string): Promise<MonitorStatusResponse> {
 		return {
 			monitorId: "unknown",

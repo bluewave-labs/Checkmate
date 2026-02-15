@@ -40,6 +40,7 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { games, GameDig } from "gamedig";
 import jmespath from "jmespath";
+import amqp from "amqplib";
 
 // repositories
 import {
@@ -146,6 +147,7 @@ export const initializeServices = async ({
 		Docker,
 		net,
 		settingsService,
+		amqp,
 	});
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 

@@ -120,8 +120,8 @@ const getMonitorsByTeamIdQueryValidation = joi.object({
 	type: joi
 		.alternatives()
 		.try(
-			joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game"),
-			joi.array().items(joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game"))
+			joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game", "rabbitMq"),
+			joi.array().items(joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game", "rabbitMq"))
 		),
 	filter: joi.string().allow("", null),
 });
@@ -136,8 +136,8 @@ const getMonitorsWithChecksQueryValidation = joi.object({
 	type: joi
 		.alternatives()
 		.try(
-			joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game"),
-			joi.array().items(joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game"))
+			joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game", "rabbitMq"),
+			joi.array().items(joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game", "rabbitMq"))
 		)
 		.optional(),
 	explain: joi.boolean().optional(),
@@ -301,7 +301,7 @@ const getChecksParamValidation = joi.object({
 });
 
 const getChecksQueryValidation = joi.object({
-	type: joi.string().valid("http", "ping", "pagespeed", "hardware", "docker", "port", "game"),
+	type: joi.string().valid("http", "ping", "pagespeed", "hardware", "docker", "port", "game", "rabbitMq"),
 	sortOrder: joi.string().valid("asc", "desc"),
 	limit: joi.number(),
 	dateRange: joi.string().valid("recent", "hour", "day", "week", "month", "all"),

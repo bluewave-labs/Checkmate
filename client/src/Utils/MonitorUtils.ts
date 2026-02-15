@@ -76,7 +76,7 @@ export const getPageSpeedPalette = (score: number): PaletteKey => {
 export const formatUrl = (url: string, maxLength: number = 55) => {
 	if (!url) return "";
 
-	const strippedUrl = url.replace(/^https?:\/\//, "");
+	const strippedUrl = url.replace(/^(https?|amqps?):\/\//, "");
 	return strippedUrl.length > maxLength
 		? `${strippedUrl.slice(0, maxLength)}…`
 		: strippedUrl;

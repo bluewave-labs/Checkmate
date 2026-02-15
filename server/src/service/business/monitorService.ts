@@ -207,7 +207,8 @@ export class MonitorService implements IMonitorService {
 			checksData.monitorType !== "ping" &&
 			checksData.monitorType !== "docker" &&
 			checksData.monitorType !== "port" &&
-			checksData.monitorType !== "game"
+			checksData.monitorType !== "game" &&
+			checksData.monitorType !== "rabbitMq"
 		) {
 			throw new AppError({ message: `${monitor.type} monitors are not supported for uptime details`, status: 400 });
 		}

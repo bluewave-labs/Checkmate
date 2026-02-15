@@ -25,6 +25,7 @@
 	},
 	"dependencies": {
 		"@pulsecron/pulse": "1.6.8",
+		"amqplib": "^0.10.9",
 		"axios": "^1.7.2",
 		"bcryptjs": "3.0.2",
 		"bullmq": "5.41.2",
@@ -60,6 +61,7 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.17.0",
+		"@types/amqplib": "^0.10.8",
 		"@types/compression": "1.8.1",
 		"@types/cookie-parser": "1.4.10",
 		"@types/cors": "2.8.19",

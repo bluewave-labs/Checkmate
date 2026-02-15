@@ -469,6 +469,10 @@
 						"port": {
 							"label": "Port to monitor",
 							"placeholder": 80
+						},
+						"rabbitMqUrl": {
+							"label": "RabbitMQ URL",
+							"placeholder": "amqps://user:password@host/vhost"
 						}
 					},
 					"title": "General settings",
@@ -479,7 +483,8 @@
 						"docker": "Enter the Docker container name or ID. You can use either the container name (e.g., my-app) or the container ID (full 64-char ID or short ID).",
 						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type.",
 						"pagespeed": "Track page load performance, Core Web Vitals, and optimization scores for your website.",
-						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure."
+						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure.",
+						"rabbitMq": "Monitor RabbitMQ queues and consumers via the management API."
 					}
 				},
 				"ignoreTls": {
@@ -519,6 +524,8 @@
 					"optionPingDescription": "Use ICMP Ping to monitor if a server is online.",
 					"optionPort": "Port",
 					"optionPortDescription": "Monitor if a specific port on a server is open.",
+					"optionRabbitMq": "RabbitMQ",
+					"optionRabbitMqDescription": "Monitor RabbitMQ queue health and consumer counts.",
 					"title": "Type"
 				},
 				"thresholds": {

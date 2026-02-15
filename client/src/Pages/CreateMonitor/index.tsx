@@ -111,6 +111,17 @@ const getGeneralSettingsConfig = (
 			showGameSelect: false,
 			showSecret: true,
 		},
+		rabbitMq: {
+			urlLabel: t("pages.createMonitor.form.general.option.rabbitMqUrl.label"),
+			urlPlaceholder: t(
+				"pages.createMonitor.form.general.option.rabbitMqUrl.placeholder"
+			),
+			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
+			showUrl: true,
+			showPort: false,
+			showGameSelect: false,
+			showSecret: false,
+		},
 	};
 	return configs[type] || configs.http;
 };
@@ -286,6 +297,13 @@ const CreateMonitorPage = () => {
 											label={t("pages.createMonitor.form.type.optionGame")}
 											description={t(
 												"pages.createMonitor.form.type.optionGameDescription"
+											)}
+										/>
+										<RadioWithDescription
+											value="rabbitMq"
+											label={t("pages.createMonitor.form.type.optionRabbitMq")}
+											description={t(
+												"pages.createMonitor.form.type.optionRabbitMqDescription"
 											)}
 										/>
 									</RadioGroup>

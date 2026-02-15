@@ -8,6 +8,7 @@ export const MonitorTypes = [
 	"docker",
 	"port",
 	"game",
+	"rabbitMq",
 	"unknown",
 ] as const;
 export type MonitorType = (typeof MonitorTypes)[number];

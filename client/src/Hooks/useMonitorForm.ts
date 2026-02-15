@@ -90,6 +90,13 @@ export const useMonitorForm = ({
 					selectedDisks: data?.selectedDisks || [],
 				};
 				break;
+			case "rabbitMq":
+				defaults = {
+					...base,
+					type: "rabbitMq",
+					url: data?.url || "",
+				};
+				break;
 			default:
 				defaults = {
 					...base,

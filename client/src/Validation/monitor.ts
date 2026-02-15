@@ -96,6 +96,15 @@ const hardwareSchema = baseSchema.extend({
 	selectedDisks: z.array(z.string()),
 });
 
+// RabbitMQ monitor schema
+const rabbitMqSchema = baseSchema.extend({
+	type: z.literal("rabbitMq"),
+	url: z
+		.string()
+		.min(1, "RabbitMQ URL is required")
+		.regex(/^(amqp|amqps):\/\/.+/, "RabbitMQ URL must start with amqp:// or amqps://"),
+});
+
 // Discriminated union of all monitor types
 export const monitorSchema = z.discriminatedUnion("type", [
 	httpSchema,
@@ -105,6 +114,7 @@ export const monitorSchema = z.discriminatedUnion("type", [
 	gameSchema,
 	pagespeedSchema,
 	hardwareSchema,
+	rabbitMqSchema,
 ]);
 
 export type MonitorFormData = z.infer<typeof monitorSchema>;
@@ -118,4 +128,5 @@ export {
 	gameSchema,
 	pagespeedSchema,
 	hardwareSchema,
+	rabbitMqSchema,
 };

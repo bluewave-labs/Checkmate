@@ -100,6 +100,15 @@ class SuperSimpleQueueHelper {
 				// Step 4.  Update monitor status
 				const statusChangeResult = await this.statusService.updateMonitorStatus(status, check);
 
+				if (!statusChangeResult) {
+					this.logger.warn({
+						message: `Monitor ${monitorId} not found, stopping job execution.`,
+						service: SERVICE_NAME,
+						method: "getMonitorJob",
+					});
+					return;
+				}
+
 				// Step 5 handle notifications (best effort, continue even in event of failure, don't wait)
 				this.notificationsService
 					.handleNotifications(statusChangeResult.monitor, status, statusChangeResult.prevStatus, statusChangeResult.statusChanged)
