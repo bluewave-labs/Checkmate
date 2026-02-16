@@ -43,7 +43,7 @@ export class NotificationsService implements INotificationsService {
 		pagerDutyProvider: INotificationProvider,
 		matrixProvider: INotificationProvider,
 		settingsService: ISettingsService,
-		logger: any
+		logger: ILogger
 	) {
 		this.notificationsRepository = notificationsRepository;
 		this.monitorsRepository = monitorsRepository;
