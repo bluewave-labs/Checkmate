@@ -23,6 +23,7 @@ import MaintenanceWindowService from "../service/business/maintenanceWindowServi
 import { MonitorService } from "@/service/index.js";
 import { StatusPageService, IStatusPageService } from "../service/business/statusPageService.js";
 import IncidentService from "../service/business/incidentService.js";
+import { NotificationMessageBuilder, INotificationMessageBuilder } from "../service/infrastructure/notificationMessageBuilder.js";
 import axios from "axios";
 import got from "got";
 import ping from "ping";
@@ -88,6 +89,7 @@ export type InitializedServices = {
 	logger: any;
 	notificationsService: INotificationsService;
 	statusPageService: IStatusPageService;
+	notificationMessageBuilder: INotificationMessageBuilder;
 
 	// Repositories
 	monitorsRepository: IMonitorsRepository;
@@ -173,6 +175,8 @@ export const initializeServices = async ({
 	const pagerDutyProvider = new PagerDutyProvider(logger);
 	const matrixProvider = new MatrixProvider(logger);
 
+	const notificationMessageBuilder = new NotificationMessageBuilder();
+
 	const notificationsService = new NotificationsService(
 		notificationsRepository,
 		monitorsRepository,
@@ -183,7 +187,8 @@ export const initializeServices = async ({
 		pagerDutyProvider,
 		matrixProvider,
 		settingsService,
-		logger
+		logger,
+		notificationMessageBuilder
 	);
 
 	const superSimpleQueueHelper = new SuperSimpleQueueHelper({
@@ -262,6 +267,7 @@ export const initializeServices = async ({
 		logger,
 		notificationsService,
 		statusPageService,
+		notificationMessageBuilder,
 
 		// Repositories
 		monitorsRepository,

@@ -1,0 +1,281 @@
+import type { Monitor, MonitorStatusResponse } from "@/types/index.js";
+import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+import type {
+	NotificationMessage,
+	NotificationType,
+	NotificationSeverity,
+	ThresholdBreach,
+	NotificationContent,
+} from "@/types/notificationMessage.js";
+
+export interface INotificationMessageBuilder {
+	buildMessage(
+		monitor: Monitor,
+		monitorStatusResponse: MonitorStatusResponse,
+		decision: MonitorActionDecision,
+		clientHost: string
+	): NotificationMessage;
+}
+
+const SERVICE_NAME = "NotificationMessageBuilder";
+
+export class NotificationMessageBuilder implements INotificationMessageBuilder {
+	static SERVICE_NAME = SERVICE_NAME;
+
+	buildMessage(
+		monitor: Monitor,
+		monitorStatusResponse: MonitorStatusResponse,
+		decision: MonitorActionDecision,
+		clientHost: string
+	): NotificationMessage {
+		const type = this.determineNotificationType(decision, monitor);
+		const severity = this.determineSeverity(type, monitor.status);
+		const content = this.buildContent(type, monitor, monitorStatusResponse, decision, clientHost);
+
+		return {
+			type,
+			severity,
+			monitor: {
+				id: monitor.id,
+				name: monitor.name,
+				url: monitor.url,
+				type: monitor.type,
+				status: monitor.status,
+			},
+			content,
+			clientHost,
+			metadata: {
+				teamId: monitor.teamId,
+				notificationReason: decision.notificationReason || "status_change",
+			},
+		};
+	}
+
+	private determineNotificationType(decision: MonitorActionDecision, monitor: Monitor): NotificationType {
+		// Down status has highest priority (critical)
+		if (monitor.status === "down") {
+			return "monitor_down";
+		}
+
+		// Threshold breach (only if not down)
+		if (decision.notificationReason === "threshold_breach") {
+			return "threshold_breach";
+		}
+
+		// Recovery from threshold breach
+		if (decision.notificationReason === "status_change" && monitor.status === "up") {
+			return "threshold_resolved";
+		}
+
+		// Standard recovery (up)
+		if (monitor.status === "up") {
+			return "monitor_up";
+		}
+
+		// Default to monitor_up for any other case
+		return "monitor_up";
+	}
+
+	private determineSeverity(type: NotificationType, monitorStatus: string): NotificationSeverity {
+		switch (type) {
+			case "monitor_down":
+				return "critical";
+			case "threshold_breach":
+				return "warning";
+			case "monitor_up":
+			case "threshold_resolved":
+				return "success";
+			case "test":
+				return "info";
+			default:
+				return "info";
+		}
+	}
+
+	private buildContent(
+		type: NotificationType,
+		monitor: Monitor,
+		monitorStatusResponse: MonitorStatusResponse,
+		decision: MonitorActionDecision,
+		clientHost: string
+	): NotificationContent {
+		switch (type) {
+			case "monitor_down":
+				return this.buildMonitorDownContent(monitor, monitorStatusResponse, clientHost);
+			case "monitor_up":
+				return this.buildMonitorUpContent(monitor, clientHost);
+			case "threshold_breach":
+				return this.buildThresholdBreachContent(monitor, monitorStatusResponse, decision, clientHost);
+			case "threshold_resolved":
+				return this.buildThresholdResolvedContent(monitor, clientHost);
+			default:
+				return this.buildDefaultContent(monitor, clientHost);
+		}
+	}
+
+	private buildMonitorDownContent(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, clientHost: string): NotificationContent {
+		const title = `Monitor Down: ${monitor.name}`;
+		const summary = `Monitor "${monitor.name}" is currently down and unreachable.`;
+		const details = [`URL: ${monitor.url}`, `Status: Down`, `Type: ${monitor.type}`];
+
+		// Add response code if available
+		if (monitorStatusResponse.code) {
+			details.push(`Response Code: ${monitorStatusResponse.code}`);
+		}
+
+		// Add error message if available
+		if (monitorStatusResponse.message) {
+			details.push(`Error: ${monitorStatusResponse.message}`);
+		}
+
+		return {
+			title,
+			summary,
+			details,
+			timestamp: new Date(),
+		};
+	}
+
+	private buildMonitorUpContent(monitor: Monitor, clientHost: string): NotificationContent {
+		const title = `Monitor Recovered: ${monitor.name}`;
+		const summary = `Monitor "${monitor.name}" is back up and operational.`;
+		const details = [`URL: ${monitor.url}`, `Status: Up`, `Type: ${monitor.type}`];
+
+		return {
+			title,
+			summary,
+			details,
+			timestamp: new Date(),
+		};
+	}
+
+	private buildThresholdBreachContent(
+		monitor: Monitor,
+		monitorStatusResponse: MonitorStatusResponse,
+		decision: MonitorActionDecision,
+		clientHost: string
+	): NotificationContent {
+		const title = `Threshold Breach: ${monitor.name}`;
+		const summary = `Hardware monitor "${monitor.name}" has breached one or more thresholds.`;
+		const details = [`URL: ${monitor.url}`, `Status: Breached`, `Type: ${monitor.type}`];
+
+		const thresholds = this.extractThresholdBreaches(monitor, monitorStatusResponse);
+
+		return {
+			title,
+			summary,
+			details,
+			thresholds,
+			timestamp: new Date(),
+		};
+	}
+
+	private buildThresholdResolvedContent(monitor: Monitor, clientHost: string): NotificationContent {
+		const title = `Thresholds Resolved: ${monitor.name}`;
+		const summary = `Hardware monitor "${monitor.name}" thresholds have returned to normal.`;
+		const details = [`URL: ${monitor.url}`, `Status: Up`, `Type: ${monitor.type}`];
+
+		return {
+			title,
+			summary,
+			details,
+			timestamp: new Date(),
+		};
+	}
+
+	private buildDefaultContent(monitor: Monitor, clientHost: string): NotificationContent {
+		return {
+			title: `Monitor: ${monitor.name}`,
+			summary: `Status update for monitor "${monitor.name}".`,
+			details: [`URL: ${monitor.url}`, `Status: ${monitor.status}`, `Type: ${monitor.type}`],
+			timestamp: new Date(),
+		};
+	}
+
+	private extractThresholdBreaches(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): ThresholdBreach[] {
+		const breaches: ThresholdBreach[] = [];
+
+		// Check if this is a hardware monitor with threshold data
+		if (monitor.type !== "hardware" || !monitorStatusResponse.payload) {
+			return breaches;
+		}
+
+		// Cast to HardwareStatusPayload type
+		const payload = monitorStatusResponse.payload as { data?: any };
+		const hardware = payload.data;
+
+		if (!hardware) {
+			return breaches;
+		}
+
+		// CPU threshold breach
+		if (monitor.cpuAlertThreshold && hardware.cpu?.usage_percent !== undefined) {
+			const cpuPercent = hardware.cpu.usage_percent;
+			const threshold = monitor.cpuAlertThreshold;
+			if (cpuPercent >= threshold) {
+				breaches.push({
+					metric: "cpu",
+					currentValue: cpuPercent,
+					threshold,
+					unit: "%",
+					formattedValue: `${cpuPercent.toFixed(1)}%`,
+				});
+			}
+		}
+
+		// Memory threshold breach
+		if (monitor.memoryAlertThreshold && hardware.memory?.usage_percent !== undefined) {
+			const memoryPercent = hardware.memory.usage_percent;
+			const threshold = monitor.memoryAlertThreshold;
+			if (memoryPercent >= threshold) {
+				breaches.push({
+					metric: "memory",
+					currentValue: memoryPercent,
+					threshold,
+					unit: "%",
+					formattedValue: `${memoryPercent.toFixed(1)}%`,
+				});
+			}
+		}
+
+		// Disk threshold breach
+		if (monitor.diskAlertThreshold && Array.isArray(hardware.disk)) {
+			// Find the highest disk usage
+			let maxDiskUsage = 0;
+			for (const disk of hardware.disk) {
+				if (disk.usage_percent !== undefined && disk.usage_percent > maxDiskUsage) {
+					maxDiskUsage = disk.usage_percent;
+				}
+			}
+			const threshold = monitor.diskAlertThreshold;
+			if (maxDiskUsage >= threshold) {
+				breaches.push({
+					metric: "disk",
+					currentValue: maxDiskUsage,
+					threshold,
+					unit: "%",
+					formattedValue: `${maxDiskUsage.toFixed(1)}%`,
+				});
+			}
+		}
+
+		// Temperature threshold breach
+		if (monitor.tempAlertThreshold && hardware.cpu?.temperature) {
+			// Temperature is an array in cpu.temperature
+			const temps = Array.isArray(hardware.cpu.temperature) ? hardware.cpu.temperature : [hardware.cpu.temperature];
+			const maxTemp = Math.max(...temps.filter((t: number) => !isNaN(t)));
+			const threshold = monitor.tempAlertThreshold;
+			if (maxTemp >= threshold) {
+				breaches.push({
+					metric: "temp",
+					currentValue: maxTemp,
+					threshold,
+					unit: "°C",
+					formattedValue: `${maxTemp.toFixed(1)}°C`,
+				});
+			}
+		}
+
+		return breaches;
+	}
+}

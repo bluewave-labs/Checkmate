@@ -4,6 +4,7 @@ import { INotificationProvider } from "./notificationProviders/INotificationProv
 import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import type { ISettingsService } from "@/service/system/settingsService.js";
 import { ILogger } from "@/utils/logger.js";
+import type { INotificationMessageBuilder } from "@/service/infrastructure/notificationMessageBuilder.js";
 
 export interface INotificationsService {
 	createNotification: (notificationData: Partial<Notification>) => Promise<Notification>;
@@ -32,6 +33,7 @@ export class NotificationsService implements INotificationsService {
 	private matrixProvider: INotificationProvider;
 	private logger: ILogger;
 	private settingsService: ISettingsService;
+	private notificationMessageBuilder: INotificationMessageBuilder;
 
 	constructor(
 		notificationsRepository: INotificationsRepository,
@@ -43,7 +45,8 @@ export class NotificationsService implements INotificationsService {
 		pagerDutyProvider: INotificationProvider,
 		matrixProvider: INotificationProvider,
 		settingsService: ISettingsService,
-		logger: ILogger
+		logger: ILogger,
+		notificationMessageBuilder: INotificationMessageBuilder
 	) {
 		this.notificationsRepository = notificationsRepository;
 		this.monitorsRepository = monitorsRepository;
@@ -55,6 +58,7 @@ export class NotificationsService implements INotificationsService {
 		this.matrixProvider = matrixProvider;
 		this.settingsService = settingsService;
 		this.logger = logger;
+		this.notificationMessageBuilder = notificationMessageBuilder;
 	}
 
 	private send = async (
@@ -105,10 +109,13 @@ export class NotificationsService implements INotificationsService {
 	};
 
 	handleNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {
-		// Early return if no notification should be sent
 		if (!decision.shouldSendNotification) {
 			return false;
 		}
+
+		const settings = this.settingsService.getSettings();
+		const clientHost = settings.clientHost || "Host not defined";
+		const notificationMessage = this.notificationMessageBuilder.buildMessage(monitor, monitorStatusResponse, decision, clientHost);
 
 		// Send notifications based on decision
 		return await this.sendNotifications(monitor, monitorStatusResponse, decision);
