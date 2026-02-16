@@ -29,10 +29,10 @@ const SettingsDemoMonitors = ({ isAdmin, HEADER_SX, isLoading }) => {
 						component="h1"
 						variant="h2"
 					>
-						{t("settingsPage.demoMonitorsSettings.title")}
+						{t("pages.settings.demoMonitorsSettings.title")}
 					</Typography>
 					<Typography sx={HEADER_SX}>
-						{t("settingsPage.demoMonitorsSettings.description")}
+						{t("pages.settings.demoMonitorsSettings.description")}
 					</Typography>
 				</Box>
 				<Box>
@@ -45,7 +45,7 @@ const SettingsDemoMonitors = ({ isAdmin, HEADER_SX, isLoading }) => {
 						}}
 						sx={{ mt: theme.spacing(4) }}
 					>
-						{t("settingsPage.demoMonitorsSettings.buttonAddMonitors")}
+						{t("pages.settings.demoMonitorsSettings.buttonAddMonitors")}
 					</Button>
 				</Box>
 			</ConfigBox>
@@ -55,10 +55,10 @@ const SettingsDemoMonitors = ({ isAdmin, HEADER_SX, isLoading }) => {
 						component="h1"
 						variant="h2"
 					>
-						{t("settingsPage.systemResetSettings.title")}
+						{t("pages.settings.systemResetSettings.title")}
 					</Typography>
 					<Typography sx={{ mt: theme.spacing(2) }}>
-						{t("settingsPage.systemResetSettings.description")}
+						{t("pages.settings.systemResetSettings.description")}
 					</Typography>
 				</Box>
 				<Box>
@@ -69,15 +69,15 @@ const SettingsDemoMonitors = ({ isAdmin, HEADER_SX, isLoading }) => {
 						onClick={() => setIsOpen(true)}
 						sx={{ mt: theme.spacing(4) }}
 					>
-						{t("settingsPage.systemResetSettings.buttonRemoveAllMonitors")}
+						{t("pages.settings.systemResetSettings.buttonRemoveAllMonitors")}
 					</Button>
 				</Box>
 				<Dialog
 					open={isOpen}
 					theme={theme}
-					title={t("settingsPage.systemResetSettings.dialogTitle")}
+					title={t("pages.settings.systemResetSettings.dialogTitle")}
 					onCancel={() => setIsOpen(false)}
-					confirmationButtonLabel={t("settingsPage.systemResetSettings.dialogConfirm")}
+					confirmationButtonLabel={t("pages.settings.systemResetSettings.dialogConfirm")}
 					onConfirm={async () => {
 						await deleteAllMonitorsFn("/monitors/");
 						setIsOpen(false);

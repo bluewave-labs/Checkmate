@@ -114,7 +114,7 @@ const Settings = () => {
 	return (
 		<Stack gap={theme.spacing(10)}>
 			<Breadcrumbs list={BREADCRUMBS} />
-			<Typography variant="h1">{t("settingsPage.title")}</Typography>
+			<Typography variant="h1">{t("pages.settings.title")}</Typography>
 			<SettingsTimeZone HEADING_SX={HEADING_SX} />
 			<SettingsUI HEADING_SX={HEADING_SX} />
 			<SettingsPagespeed
@@ -201,7 +201,7 @@ const Settings = () => {
 					sx={{ px: theme.spacing(12), py: theme.spacing(8) }}
 					onClick={handleSubmit(onSubmit)}
 				>
-					{t("settingsPage.saveButtonLabel")}
+					{t("pages.settings.saveButtonLabel")}
 				</Button>
 			</Stack>
 		</Stack>

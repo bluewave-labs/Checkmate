@@ -37,11 +37,11 @@ const SettingsTimeZone = ({ HEADING_SX }) => {
 					component="h1"
 					variant="h2"
 				>
-					{t("settingsPage.timezoneSettings.title")}
+					{t("pages.settings.timezoneSettings.title")}
 				</Typography>
 				<Typography sx={HEADING_SX}>
 					<Typography component="span">
-						{t("settingsPage.timezoneSettings.description")}
+						{t("pages.settings.timezoneSettings.description")}
 					</Typography>
 				</Typography>
 			</Box>

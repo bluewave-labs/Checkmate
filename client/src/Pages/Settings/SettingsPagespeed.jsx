@@ -39,10 +39,10 @@ const SettingsPagespeed = ({
 					component="h1"
 					variant="h2"
 				>
-					{t("settingsPage.pageSpeedSettings.title")}
+					{t("pages.settings.pageSpeedSettings.title")}
 				</Typography>
 				<Typography sx={HEADING_SX}>
-					{t("settingsPage.pageSpeedSettings.description")}
+					{t("pages.settings.pageSpeedSettings.description")}
 				</Typography>
 			</Box>
 			<Stack gap={theme.spacing(20)}>
@@ -54,7 +54,7 @@ const SettingsPagespeed = ({
 						render={({ field, fieldState }) => (
 							<TextInput
 								{...field}
-								label={t("settingsPage.pageSpeedSettings.labelApiKey")}
+								label={t("pages.settings.pageSpeedSettings.labelApiKey")}
 								type={"password"}
 								optionalLabel="(Optional)"
 								endAdornment={<PasswordEndAdornment />}
@@ -67,7 +67,9 @@ const SettingsPagespeed = ({
 
 				{isApiKeySet === true && apiKeyHasBeenReset === false && (
 					<Box>
-						<Typography>{t("settingsPage.pageSpeedSettings.labelApiKeySet")}</Typography>
+						<Typography>
+							{t("pages.settings.pageSpeedSettings.labelApiKeySet")}
+						</Typography>
 						<Button
 							onClick={() => {
 								setValue("pagespeedApiKey", "");

@@ -20,10 +20,10 @@ const SettingsURL = ({ HEADING_SX, control, defaults }) => {
 					component="h1"
 					variant="h2"
 				>
-					{t("settingsPage.urlSettings.title")}
+					{t("pages.settings.urlSettings.title")}
 				</Typography>
 				<Typography sx={HEADING_SX}>
-					{t("settingsPage.urlSettings.description")}
+					{t("pages.settings.urlSettings.description")}
 				</Typography>
 			</Box>
 			<Stack gap={theme.spacing(20)}>
@@ -36,10 +36,10 @@ const SettingsURL = ({ HEADING_SX, control, defaults }) => {
 							{...field}
 							error={!!fieldState.error}
 							helperText={fieldState.error?.message}
-							label={t("settingsPage.urlSettings.label")}
+							label={t("pages.settings.urlSettings.label")}
 							items={[
-								{ _id: true, name: t("settingsPage.urlSettings.selectEnabled") },
-								{ _id: false, name: t("settingsPage.urlSettings.selectDisabled") },
+								{ _id: true, name: t("pages.settings.urlSettings.selectEnabled") },
+								{ _id: false, name: t("pages.settings.urlSettings.selectDisabled") },
 							]}
 						/>
 					)}

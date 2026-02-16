@@ -32,16 +32,16 @@ const SettingsUI = ({ HEADING_SX }) => {
 					component="h1"
 					variant="h2"
 				>
-					{t("settingsPage.uiSettings.title")}
+					{t("pages.settings.uiSettings.title")}
 				</Typography>
 				<Typography sx={HEADING_SX}>
-					{t("settingsPage.uiSettings.description")}
+					{t("pages.settings.uiSettings.description")}
 				</Typography>
 			</Box>
 			<Stack gap={theme.spacing(20)}>
 				<Select
 					name="mode"
-					label={t("settingsPage.uiSettings.labelTheme")}
+					label={t("pages.settings.uiSettings.labelTheme")}
 					value={mode}
 					onChange={(e) => dispatch(setMode(e.target.value))}
 					items={[
@@ -51,19 +51,19 @@ const SettingsUI = ({ HEADING_SX }) => {
 				></Select>
 				<Select
 					name="language"
-					label={t("settingsPage.uiSettings.labelLanguage")}
+					label={t("pages.settings.uiSettings.labelLanguage")}
 					value={language}
 					onChange={(e) => dispatch(setLanguage(e.target.value))}
 					items={languages.map((lang) => ({ _id: lang, name: lang.toUpperCase() }))}
 				></Select>
 				<Select
 					name="chartType"
-					label={t("settingsPage.uiSettings.labelChartType")}
+					label={t("pages.settings.uiSettings.labelChartType")}
 					value={chartType}
 					onChange={(e) => dispatch(setChartType(e.target.value))}
 					items={[
-						{ _id: "histogram", name: t("settingsPage.uiSettings.chartTypeHistogram") },
-						{ _id: "heatmap", name: t("settingsPage.uiSettings.chartTypeHeatmap") },
+						{ _id: "histogram", name: t("pages.settings.uiSettings.chartTypeHistogram") },
+						{ _id: "heatmap", name: t("pages.settings.uiSettings.chartTypeHeatmap") },
 					]}
 				></Select>
 				<ThemeProvider theme={v2Theme}>

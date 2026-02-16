@@ -30,11 +30,11 @@ const SettingsGlobalThresholds = ({
 					component="h1"
 					variant="h2"
 				>
-					{t("settingsPage.globalThresholds.title", "Global Thresholds")}
+					{t("pages.settings.globalThresholds.title", "Global Thresholds")}
 				</Typography>
 				<Typography sx={HEADING_SX}>
 					{t(
-						"settingsPage.globalThresholds.description",
+						"pages.settings.globalThresholds.description",
 						"Configure global CPU, Memory, Disk, and Temperature thresholds."
 					)}
 				</Typography>
