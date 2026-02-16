@@ -71,7 +71,7 @@ export class NotificationsService implements INotificationsService {
 		const settings = this.settingsService.getSettings();
 		const clientHost = settings.clientHost || "Host not defined";
 
-		// For webhook notifications, try new sendMessage method if available
+		// Route to new sendMessage method if provider supports it
 		if (notification.type === "webhook" && this.webhookProvider.sendMessage && notificationMessage) {
 			this.logger.info({
 				message: "[NEW] Using sendMessage for webhook",
@@ -79,6 +79,15 @@ export class NotificationsService implements INotificationsService {
 				method: "send",
 			});
 			return await this.webhookProvider.sendMessage(notification, notificationMessage);
+		}
+
+		if (notification.type === "slack" && this.slackProvider.sendMessage && notificationMessage) {
+			this.logger.info({
+				message: "[NEW] Using sendMessage for slack",
+				service: SERVICE_NAME,
+				method: "send",
+			});
+			return await this.slackProvider.sendMessage(notification, notificationMessage);
 		}
 
 		// Fallback to existing sendAlert for all providers

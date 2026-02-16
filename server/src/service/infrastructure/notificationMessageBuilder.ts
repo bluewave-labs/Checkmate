@@ -62,8 +62,8 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 			return "threshold_breach";
 		}
 
-		// Recovery from threshold breach
-		if (decision.notificationReason === "status_change" && monitor.status === "up") {
+		// Recovery from threshold breach (only for hardware monitors)
+		if (decision.notificationReason === "status_change" && monitor.status === "up" && monitor.type === "hardware") {
 			return "threshold_resolved";
 		}
 
@@ -156,7 +156,7 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		clientHost: string
 	): NotificationContent {
 		const title = `Threshold Breach: ${monitor.name}`;
-		const summary = `Hardware monitor "${monitor.name}" has breached one or more thresholds.`;
+		const summary = `Monitor "${monitor.name}" has breached one or more thresholds.`;
 		const details = [`URL: ${monitor.url}`, `Status: Breached`, `Type: ${monitor.type}`];
 
 		const thresholds = this.extractThresholdBreaches(monitor, monitorStatusResponse);
@@ -172,7 +172,7 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 
 	private buildThresholdResolvedContent(monitor: Monitor, clientHost: string): NotificationContent {
 		const title = `Thresholds Resolved: ${monitor.name}`;
-		const summary = `Hardware monitor "${monitor.name}" thresholds have returned to normal.`;
+		const summary = `Monitor "${monitor.name}" thresholds have returned to normal.`;
 		const details = [`URL: ${monitor.url}`, `Status: Up`, `Type: ${monitor.type}`];
 
 		return {
