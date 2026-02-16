@@ -99,6 +99,15 @@ export class NotificationsService implements INotificationsService {
 			return await this.matrixProvider.sendMessage(notification, notificationMessage);
 		}
 
+		if (notification.type === "pager_duty" && this.pagerDutyProvider.sendMessage && notificationMessage) {
+			this.logger.info({
+				message: "[NEW] Using sendMessage for pagerduty",
+				service: SERVICE_NAME,
+				method: "send",
+			});
+			return await this.pagerDutyProvider.sendMessage(notification, notificationMessage);
+		}
+
 		// Fallback to existing sendAlert for all providers
 		switch (notification.type) {
 			case "email":
