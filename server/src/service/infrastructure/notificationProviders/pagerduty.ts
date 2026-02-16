@@ -27,7 +27,7 @@ export class PagerDutyProvider implements INotificationProvider {
 			return buildWebhookBody(monitor, monitorStatusResponse);
 		}
 		// For threshold breaches, use hardware alert format
-		const { alertsToSend } = buildHardwareAlerts("HOST_PLACEHOLDER", monitor, monitorStatusResponse);
+		const { alertsToSend } = buildHardwareAlerts(clientHost, monitor, monitorStatusResponse);
 		const body = buildHardwareNotificationMessage(clientHost, alertsToSend, monitor);
 		return body;
 	};
@@ -41,11 +41,12 @@ export class PagerDutyProvider implements INotificationProvider {
 		notification: Notification,
 		monitor: Monitor,
 		monitorStatusResponse: MonitorStatusResponse,
-		decision: MonitorActionDecision
+		decision: MonitorActionDecision,
+		clientHost: string
 	): Promise<boolean> {
 		let body;
 		if (monitor.type === "hardware") {
-			body = this.getHardwareContent("HOST_PLACEHOLDER", monitor, monitorStatusResponse, decision);
+			body = this.getHardwareContent(clientHost, monitor, monitorStatusResponse, decision);
 		} else {
 			body = this.getContent(monitor, monitorStatusResponse);
 		}

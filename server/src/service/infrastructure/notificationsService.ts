@@ -2,6 +2,7 @@ import type { HardwareStatusPayload, Monitor, MonitorStatusResponse, Notificatio
 import { IMonitorsRepository, INotificationsRepository } from "@/repositories/index.js";
 import { INotificationProvider } from "./notificationProviders/INotificationProvider.js";
 import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+import type { ISettingsService } from "@/service/system/settingsService.js";
 
 export interface INotificationsService {
 	createNotification: (notificationData: Partial<Notification>) => Promise<Notification>;
@@ -29,6 +30,7 @@ export class NotificationsService implements INotificationsService {
 	private pagerDutyProvider: INotificationProvider;
 	private matrixProvider: INotificationProvider;
 	private logger: any;
+	private settingsService: ISettingsService;
 
 	// Email grouping (batching) configuration
 	private emailGroupingWindowMs: number;
@@ -52,6 +54,7 @@ export class NotificationsService implements INotificationsService {
 		discordProvider: INotificationProvider,
 		pagerDutyProvider: INotificationProvider,
 		matrixProvider: INotificationProvider,
+		settingsService: ISettingsService,
 		logger: any
 	) {
 		this.notificationsRepository = notificationsRepository;
@@ -62,6 +65,7 @@ export class NotificationsService implements INotificationsService {
 		this.discordProvider = discordProvider;
 		this.pagerDutyProvider = pagerDutyProvider;
 		this.matrixProvider = matrixProvider;
+		this.settingsService = settingsService;
 		this.logger = logger;
 
 		// Configure email grouping window (in milliseconds).
@@ -82,19 +86,21 @@ export class NotificationsService implements INotificationsService {
 	}
 
 	private send = async (notification: Notification, monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): Promise<boolean> => {
+		const settings = this.settingsService.getSettings();
+		const clientHost = settings.clientHost || "Host not defined";
 		switch (notification.type) {
 			case "email":
-				return await this.emailProvider.sendAlert(notification, monitor, monitorStatusResponse, this.currentDecision!);
+				return await this.emailProvider.sendAlert(notification, monitor, monitorStatusResponse, this.currentDecision!, clientHost);
 			case "slack":
-				return await this.slackProvider.sendAlert(notification, monitor, monitorStatusResponse, this.currentDecision!);
+				return await this.slackProvider.sendAlert(notification, monitor, monitorStatusResponse, this.currentDecision!, clientHost);
 			case "discord":
-				return await this.discordProvider.sendAlert(notification, monitor, monitorStatusResponse, this.currentDecision!);
+				return await this.discordProvider.sendAlert(notification, monitor, monitorStatusResponse, this.currentDecision!, clientHost);
 			case "pager_duty":
-				return await this.pagerDutyProvider.sendAlert(notification, monitor, monitorStatusResponse, this.currentDecision!);
+				return await this.pagerDutyProvider.sendAlert(notification, monitor, monitorStatusResponse, this.currentDecision!, clientHost);
 			case "matrix":
-				return await this.matrixProvider.sendAlert(notification, monitor, monitorStatusResponse, this.currentDecision!);
+				return await this.matrixProvider.sendAlert(notification, monitor, monitorStatusResponse, this.currentDecision!, clientHost);
 			case "webhook":
-				return await this.webhookProvider.sendAlert(notification, monitor, monitorStatusResponse, this.currentDecision!);
+				return await this.webhookProvider.sendAlert(notification, monitor, monitorStatusResponse, this.currentDecision!, clientHost);
 			default:
 				return false;
 		}
@@ -215,6 +221,12 @@ export class NotificationsService implements INotificationsService {
 			return false;
 		}
 
+		const { clientHost } = this.settingsService.getSettings();
+		if (!clientHost) {
+			this.logger.warn({ message: "CLIENT_HOST not configured", service: SERVICE_NAME, method: "flushEmailGroup" });
+			return false;
+		}
+
 		// Build a combined monitor name listing all affected services.
 		// Example: "Service A, Service B" (2 services) or "Service A" (1 service)
 		const uniqueNames = Array.from(new Set(monitors.map((m) => m.name)));
@@ -235,7 +247,7 @@ export class NotificationsService implements INotificationsService {
 		};
 
 		// Reuse existing email provider to send grouped notification.
-		return await this.emailProvider.sendAlert(notification, syntheticMonitor, baseStatus, decision);
+		return await this.emailProvider.sendAlert(notification, syntheticMonitor, baseStatus, decision, clientHost);
 	};
 
 	handleNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {

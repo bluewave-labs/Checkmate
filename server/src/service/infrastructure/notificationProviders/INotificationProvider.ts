@@ -6,7 +6,8 @@ export interface INotificationProvider {
 		notification: Notification,
 		monitor: Monitor,
 		monitorStatusResponse: MonitorStatusResponse,
-		decision: MonitorActionDecision
+		decision: MonitorActionDecision,
+		clientHost: string
 	) => Promise<boolean>;
 	sendTestAlert(notification: Notification): Promise<boolean>;
 }

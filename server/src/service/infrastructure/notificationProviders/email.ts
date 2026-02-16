@@ -13,13 +13,18 @@ export class EmailProvider implements INotificationProvider {
 		this.logger = logger;
 	}
 
-	private buildHardwareEmail = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {
+	private buildHardwareEmail = async (
+		clientHost: string,
+		monitor: Monitor,
+		monitorStatusResponse: MonitorStatusResponse,
+		decision: MonitorActionDecision
+	) => {
 		// For status changes (recovery), use standard email format
 		if (decision.notificationReason === "status_change") {
 			return await buildEmail(this.emailService, monitor);
 		}
 		// For threshold breaches, use hardware alert format
-		const { alertsToSend } = buildHardwareAlerts("HOST_PLACEHOLDER", monitor, monitorStatusResponse);
+		const { alertsToSend } = buildHardwareAlerts(clientHost, monitor, monitorStatusResponse);
 		const html = buildHardwareEmail(this.emailService, monitor, alertsToSend);
 		return html;
 	};
@@ -28,7 +33,8 @@ export class EmailProvider implements INotificationProvider {
 		notification: Notification,
 		monitor: Monitor,
 		monitorStatusResponse: MonitorStatusResponse,
-		decision: MonitorActionDecision
+		decision: MonitorActionDecision,
+		clientHost: string
 	): Promise<boolean> {
 		// For grouped notifications (identified by ":" in name), customize subject to indicate multiple services.
 		// Example: "2 services: Service A, Service B" becomes "Alert: 2 services are down"
@@ -48,7 +54,7 @@ export class EmailProvider implements INotificationProvider {
 
 		let html;
 		if (monitor.type === "hardware") {
-			html = await this.buildHardwareEmail(monitor, monitorStatusResponse, decision);
+			html = await this.buildHardwareEmail(clientHost, monitor, monitorStatusResponse, decision);
 		} else {
 			html = await buildEmail(this.emailService, monitor);
 		}
