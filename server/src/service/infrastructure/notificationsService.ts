@@ -3,6 +3,7 @@ import { IMonitorsRepository, INotificationsRepository } from "@/repositories/in
 import { INotificationProvider } from "./notificationProviders/INotificationProvider.js";
 import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import type { ISettingsService } from "@/service/system/settingsService.js";
+import { ILogger } from "@/utils/logger.js";
 
 export interface INotificationsService {
 	createNotification: (notificationData: Partial<Notification>) => Promise<Notification>;
@@ -29,7 +30,7 @@ export class NotificationsService implements INotificationsService {
 	private discordProvider: INotificationProvider;
 	private pagerDutyProvider: INotificationProvider;
 	private matrixProvider: INotificationProvider;
-	private logger: any;
+	private logger: ILogger;
 	private settingsService: ISettingsService;
 
 	constructor(
