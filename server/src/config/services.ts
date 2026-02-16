@@ -182,6 +182,7 @@ export const initializeServices = async ({
 		discordProvider,
 		pagerDutyProvider,
 		matrixProvider,
+		settingsService,
 		logger
 	);
 

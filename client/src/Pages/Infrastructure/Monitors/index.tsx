@@ -133,7 +133,10 @@ const InfrastructureMonitors = () => {
 				isLoading={isLoading}
 				isAdmin={isAdmin}
 			/>
-			<HeaderMonitorsSummary summary={summary} />
+			<HeaderMonitorsSummary
+				summary={summary}
+				showBreached={true}
+			/>
 			<Stack
 				direction={isSmall ? "column" : "row"}
 				justifyContent={isSmall ? "flex-start" : "space-between"}

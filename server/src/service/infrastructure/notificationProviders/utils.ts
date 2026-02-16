@@ -23,17 +23,26 @@ export const buildHardwareAlerts = (
 	monitor: Monitor,
 	networkResponse: MonitorStatusResponse
 ): { alertsToSend: string[]; discordPayload: any } => {
-	const thresholds = monitor.thresholds || {};
-	const { usage_cpu: cpuThreshold = -1, usage_memory: memoryThreshold = -1, usage_disk: diskThreshold = -1 } = thresholds;
+	// Thresholds are stored as percentages (0-100), convert to decimal (0-1) for comparison
+	const cpuThreshold = monitor.cpuAlertThreshold !== undefined ? monitor.cpuAlertThreshold / 100 : -1;
+	const memoryThreshold = monitor.memoryAlertThreshold !== undefined ? monitor.memoryAlertThreshold / 100 : -1;
+	const diskThreshold = monitor.diskAlertThreshold !== undefined ? monitor.diskAlertThreshold / 100 : -1;
+	const tempThreshold = monitor.tempAlertThreshold !== undefined ? monitor.tempAlertThreshold : -1;
 
 	const payload = networkResponse?.payload as HardwareStatusPayload;
 	const metrics = payload.data || {};
-	const { cpu: { usage_percent: cpuUsage = -1 } = {}, memory: { usage_percent: memoryUsage = -1 } = {}, disk = [] } = metrics;
+	const { cpu = {}, memory = {}, disk = [] } = metrics;
+	const cpuUsage = cpu.usage_percent ?? -1;
+	const memoryUsage = memory.usage_percent ?? -1;
+	// Get max temperature from CPU temperature sensors array
+	const temps = cpu.temperature ?? [];
+	const maxTemp = temps.length > 0 ? Math.max(...temps) : -1;
 
 	const alerts: Record<string, boolean> = {
 		cpu: cpuThreshold !== -1 && cpuUsage > cpuThreshold ? true : false,
 		memory: memoryThreshold !== -1 && memoryUsage > memoryThreshold ? true : false,
 		disk: disk?.some((d) => diskThreshold !== -1 && typeof d?.usage_percent === "number" && d?.usage_percent > diskThreshold) ?? false,
+		temp: tempThreshold !== -1 && maxTemp > tempThreshold ? true : false,
 	};
 
 	const alertsToSend = [];
@@ -43,6 +52,7 @@ export const buildHardwareAlerts = (
 		{ name: "URL", value: monitor.url, inline: false },
 	];
 	const goToIncidentField = { name: `Go to incident`, value: `${clientHost}/infrastructure/${monitor.id}` };
+
 	const formatDiscordAlert = {
 		cpu: () => ({
 			title: "CPU alert",
@@ -75,78 +85,42 @@ export const buildHardwareAlerts = (
 				goToIncidentField,
 			],
 		}),
+
+		temp: () => ({
+			title: "Temperature alert",
+			description: `Your current temperature (${maxTemp.toFixed(0)}°C) is above your threshold (${tempThreshold.toFixed(0)}°C)`,
+			color: 15548997,
+			fields: [...monitorInfoFields, goToIncidentField],
+			footer: { text: "Checkmate" },
+		}),
 	};
-	const alertTypes = ["cpu", "memory", "disk"] as const;
-	const alertThresholdKeyMap: Record<(typeof alertTypes)[number], "cpuAlertThreshold" | "memoryAlertThreshold" | "diskAlertThreshold"> = {
-		cpu: "cpuAlertThreshold",
-		memory: "memoryAlertThreshold",
-		disk: "diskAlertThreshold",
-	};
+
+	const alertTypes = ["cpu", "memory", "disk", "temp"] as const;
+
 	for (const type of alertTypes) {
-		const thresholdKey = alertThresholdKeyMap[type];
-		// Iterate over each alert type to see if any need to be decremented
 		if (alerts[type] === true) {
-			const nextValue = ((monitor[thresholdKey] ?? monitor.alertThreshold) as number) - 1;
-			monitor[thresholdKey] = nextValue; // Decrement threshold if an alert is triggered
-
-			if (monitor[thresholdKey] <= 0) {
-				// If threshold drops below 0, reset and send notification
-				monitor[thresholdKey] = monitor.alertThreshold;
-
-				const formatAlert = {
-					cpu: () => `Your current CPU usage (${(cpuUsage * 100).toFixed(0)}%) is above your threshold (${(cpuThreshold * 100).toFixed(0)}%)`,
-					memory: () =>
-						`Your current memory usage (${(memoryUsage * 100).toFixed(0)}%) is above your threshold (${(memoryThreshold * 100).toFixed(0)}%)`,
-					disk: () =>
-						`Your current disk usage: ${disk
-							.map((d, idx) => `(Disk${idx}: ${(d?.usage_percent ?? 0 * 100).toFixed(0)}%)`)
-							.join(", ")} is above your threshold (${(diskThreshold * 100).toFixed(0)}%)`,
-				};
-				alertsToSend.push(formatAlert[type]());
-				discordEmbeds.push(formatDiscordAlert[type]());
-			}
+			const formatAlert = {
+				cpu: () => `Your current CPU usage (${(cpuUsage * 100).toFixed(0)}%) is above your threshold (${(cpuThreshold * 100).toFixed(0)}%)`,
+				memory: () =>
+					`Your current memory usage (${(memoryUsage * 100).toFixed(0)}%) is above your threshold (${(memoryThreshold * 100).toFixed(0)}%)`,
+				disk: () =>
+					`Your current disk usage: ${disk.map((d, idx) => `(Disk${idx}: ${(d?.usage_percent ?? 0 * 100).toFixed(0)}%)`).join(", ")} is above your threshold (${(diskThreshold * 100).toFixed(0)}%)`,
+				temp: () => `Your current temperature (${maxTemp.toFixed(0)}°C) is above your threshold (${tempThreshold.toFixed(0)}°C)`,
+			};
+			alertsToSend.push(formatAlert[type]());
+			discordEmbeds.push(formatDiscordAlert[type]());
 		}
 	}
+
 	const discordPayload = discordEmbeds.length ? { embeds: discordEmbeds } : null;
 	return { alertsToSend, discordPayload };
 };
 
-export const buildHardwareNotificationMessage = (clientHost: string, alerts: any, monitor: Monitor) => {
+export const buildHardwareNotificationMessage = (clientHost: string, alerts: string[], monitor: Monitor): string => {
 	const alertsHeader = [`Monitor: ${monitor.name}`, `URL: ${monitor.url}`];
 	const alertFooter = [`Go to incident: ${clientHost}/infrastructure/${monitor.id}`];
 	const alertText = alerts.length > 0 ? [...alertsHeader, ...alerts, ...alertFooter] : [];
-	return alertText.map((alert) => alert).join("\n");
-};
-
-export const buildHardwareWebhookBody = (alerts: string[], monitor: Monitor): string => {
-	const content = alerts.map((alert) => alert).join("\n");
-	return content;
-};
-
-export const shouldSendHardwareAlert = (monitor: Monitor, networkResponse: MonitorStatusResponse): boolean => {
-	const thresholds = monitor.thresholds || {};
-	const { usage_cpu: cpuThreshold = -1, usage_memory: memoryThreshold = -1, usage_disk: diskThreshold = -1 } = thresholds;
-
-	const payload = networkResponse?.payload as HardwareStatusPayload;
-	const metrics = payload.data || {};
-	const { cpu: { usage_percent: cpuUsage = -1 } = {}, memory: { usage_percent: memoryUsage = -1 } = {}, disk = [] } = metrics;
-
-	const cpuBreach = cpuThreshold !== -1 && cpuUsage > cpuThreshold;
-	if (cpuBreach && ((monitor.cpuAlertThreshold ?? monitor.alertThreshold) as number) - 1 <= 0) {
-		return true;
-	}
-
-	const memoryBreach = memoryThreshold !== -1 && memoryUsage > memoryThreshold;
-	if (memoryBreach && ((monitor.memoryAlertThreshold ?? monitor.alertThreshold) as number) - 1 <= 0) {
-		return true;
-	}
-
-	const diskBreach = disk?.some((d) => diskThreshold !== -1 && typeof d?.usage_percent === "number" && d?.usage_percent > diskThreshold);
-	if (diskBreach && ((monitor.diskAlertThreshold ?? monitor.alertThreshold) as number) - 1 <= 0) {
-		return true;
-	}
-
-	return false;
+	return alertText.join("\n");
 };
 
 export const buildWebhookBody = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {

@@ -83,10 +83,10 @@ export const useMonitorForm = ({
 					type: "hardware",
 					url: data?.url || "",
 					secret: data?.secret || "",
-					cpuAlertThreshold: data?.cpuAlertThreshold ?? 80,
-					memoryAlertThreshold: data?.memoryAlertThreshold ?? 80,
-					diskAlertThreshold: data?.diskAlertThreshold ?? 80,
-					tempAlertThreshold: data?.tempAlertThreshold ?? 80,
+					cpuAlertThreshold: data?.cpuAlertThreshold ?? 100,
+					memoryAlertThreshold: data?.memoryAlertThreshold ?? 100,
+					diskAlertThreshold: data?.diskAlertThreshold ?? 100,
+					tempAlertThreshold: data?.tempAlertThreshold ?? 100,
 					selectedDisks: data?.selectedDisks || [],
 				};
 				break;

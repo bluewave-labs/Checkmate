@@ -3,6 +3,7 @@ import {
 	DownStatusBox,
 	PausedStatusBox,
 	InitializingStatusBox,
+	BreachedStatusBox,
 } from "@/Components/v2/design-elements";
 import Stack from "@mui/material/Stack";
 
@@ -11,9 +12,13 @@ import { useTheme } from "@mui/material";
 
 interface MonitorsSummaryProps {
 	summary: MonitorsSummary | null;
+	showBreached?: boolean;
 }
 
-export const HeaderMonitorsSummary = ({ summary }: MonitorsSummaryProps) => {
+export const HeaderMonitorsSummary = ({
+	summary,
+	showBreached = false,
+}: MonitorsSummaryProps) => {
 	const theme = useTheme();
 	return (
 		<Stack
@@ -22,6 +27,7 @@ export const HeaderMonitorsSummary = ({ summary }: MonitorsSummaryProps) => {
 		>
 			<UpStatusBox n={summary?.upMonitors || 0} />
 			<DownStatusBox n={summary?.downMonitors || 0} />
+			{showBreached && <BreachedStatusBox n={summary?.breachedMonitors || 0} />}
 			<PausedStatusBox n={summary?.pausedMonitors || 0} />
 			<InitializingStatusBox n={summary?.initializingMonitors || 0} />
 		</Stack>

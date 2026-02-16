@@ -252,13 +252,28 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 							$cond: [{ $eq: ["$status", "maintenance"] }, 1, 0],
 						},
 					},
+					breachedMonitors: {
+						$sum: {
+							$cond: [{ $eq: ["$status", "breached"] }, 1, 0],
+						},
+					},
 				},
 			},
 			{ $project: { _id: 0 } },
 		];
 
 		const [summary] = await MonitorModel.aggregate(pipeline);
-		return summary ?? { totalMonitors: 0, upMonitors: 0, downMonitors: 0, pausedMonitors: 0, initializingMonitors: 0, maintenanceMonitors: 0 };
+		return (
+			summary ?? {
+				totalMonitors: 0,
+				upMonitors: 0,
+				downMonitors: 0,
+				pausedMonitors: 0,
+				initializingMonitors: 0,
+				maintenanceMonitors: 0,
+				breachedMonitors: 0,
+			}
+		);
 	};
 
 	findGroupsByTeamId = async (teamId: string): Promise<string[]> => {
@@ -317,12 +332,14 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			uptimePercentage: doc.uptimePercentage ?? undefined,
 			notifications: notificationIds,
 			secret: doc.secret ?? undefined,
-			thresholds: doc.thresholds ?? undefined,
-			alertThreshold: doc.alertThreshold,
 			cpuAlertThreshold: doc.cpuAlertThreshold,
+			cpuAlertCounter: doc.cpuAlertCounter,
 			memoryAlertThreshold: doc.memoryAlertThreshold,
+			memoryAlertCounter: doc.memoryAlertCounter,
 			diskAlertThreshold: doc.diskAlertThreshold,
+			diskAlertCounter: doc.diskAlertCounter,
 			tempAlertThreshold: doc.tempAlertThreshold,
+			tempAlertCounter: doc.tempAlertCounter,
 			selectedDisks: doc.selectedDisks ?? [],
 			gameId: doc.gameId ?? undefined,
 			group: doc.group ?? null,
@@ -370,12 +387,14 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			uptimePercentage: doc.uptimePercentage ?? undefined,
 			notifications: notificationIds,
 			secret: doc.secret ?? undefined,
-			thresholds: doc.thresholds ?? undefined,
-			alertThreshold: doc.alertThreshold,
 			cpuAlertThreshold: doc.cpuAlertThreshold,
+			cpuAlertCounter: doc.cpuAlertCounter,
 			memoryAlertThreshold: doc.memoryAlertThreshold,
+			memoryAlertCounter: doc.memoryAlertCounter,
 			diskAlertThreshold: doc.diskAlertThreshold,
+			diskAlertCounter: doc.diskAlertCounter,
 			tempAlertThreshold: doc.tempAlertThreshold,
+			tempAlertCounter: doc.tempAlertCounter,
 			selectedDisks: doc.selectedDisks ?? [],
 			gameId: doc.gameId ?? undefined,
 			group: doc.group ?? null,

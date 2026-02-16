@@ -2,8 +2,23 @@ const SERVICE_NAME = "JobQueueHelper";
 import type { Monitor } from "@/types/monitor.js";
 import { AppError } from "@/utils/AppError.js";
 import { INetworkService, INotificationsService, IStatusService } from "@/service/index.js";
+import type { StatusChangeResult, MonitorStatusResponse, HardwareStatusPayload, MonitorStatus } from "@/types/index.js";
 import IncidentService from "@/service/business/incidentService.js";
 import { IMaintenanceWindowsRepository, IMonitorsRepository } from "@/repositories/index.js";
+
+export interface MonitorActionDecision {
+	shouldCreateIncident: boolean;
+	shouldResolveIncident: boolean;
+	shouldSendNotification: boolean;
+	incidentReason: "status_down" | "threshold_breach" | null;
+	notificationReason: "status_change" | "threshold_breach" | null;
+	thresholdBreaches?: {
+		cpu?: boolean;
+		memory?: boolean;
+		disk?: boolean;
+		temp?: boolean;
+	};
+}
 
 class SuperSimpleQueueHelper {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -100,10 +115,12 @@ class SuperSimpleQueueHelper {
 				// Step 4.  Update monitor status
 				const statusChangeResult = await this.statusService.updateMonitorStatus(status, check);
 
-				// Step 5 handle notifications (best effort, continue even in event of failure, don't wait)
-				this.notificationsService
-					.handleNotifications(statusChangeResult.monitor, status, statusChangeResult.prevStatus, statusChangeResult.statusChanged)
-					.catch((error: any) => {
+				// Step 5.  Get decisions
+				const decision = this.evaluateMonitorAction(statusChangeResult);
+
+				// Step 6. Handle notifications (best effort, continue even in event of failure, don't wait)
+				if (decision.shouldSendNotification) {
+					this.notificationsService.handleNotifications(statusChangeResult.monitor, status, decision).catch((error: any) => {
 						this.logger.error({
 							message: error.message,
 							service: SERVICE_NAME,
@@ -112,19 +129,18 @@ class SuperSimpleQueueHelper {
 							stack: error.stack,
 						});
 					});
-
-				// Step 6.  Handle incidents (best effort, don't wait)
-				if (statusChangeResult.statusChanged) {
-					this.incidentService.handleIncident(statusChangeResult.monitor, statusChangeResult.code).catch((error: any) => {
-						this.logger.warn({
-							message: error.message,
-							service: SERVICE_NAME,
-							method: "getMonitorJob",
-							details: `Error handling incident for job ${monitor.id}: ${error.message}`,
-							stack: error.stack,
-						});
-					});
 				}
+
+				// Step 7. Handle incidents (best effort, don't wait)
+				this.incidentService.handleIncident(statusChangeResult.monitor, statusChangeResult.code, decision).catch((error: any) => {
+					this.logger.warn({
+						message: error.message,
+						service: SERVICE_NAME,
+						method: "getMonitorJob",
+						details: `Error handling incident for job ${monitor.id}: ${error.message}`,
+						stack: error.stack,
+					});
+				});
 			} catch (error: any) {
 				this.logger.warn({
 					message: error.message,
@@ -165,6 +181,45 @@ class SuperSimpleQueueHelper {
 			return acc;
 		}, false);
 		return maintenanceWindowIsActive;
+	}
+
+	private evaluateMonitorAction(statusChangeResult: StatusChangeResult): MonitorActionDecision {
+		const { monitor, statusChanged, prevStatus } = statusChangeResult;
+
+		// Initialize result
+		const decision: MonitorActionDecision = {
+			shouldCreateIncident: false,
+			shouldResolveIncident: false,
+			shouldSendNotification: false,
+			incidentReason: null,
+			notificationReason: null,
+		};
+
+		// Simplified logic: Just check status changes
+		if (!statusChanged) {
+			return decision;
+		}
+
+		if (monitor.status === "down") {
+			// Monitor went down (unreachable)
+			decision.shouldCreateIncident = true;
+			decision.shouldSendNotification = true;
+			decision.incidentReason = "status_down";
+			decision.notificationReason = "status_change";
+		} else if (monitor.status === "breached") {
+			// Hardware monitor exceeded thresholds
+			decision.shouldCreateIncident = true;
+			decision.shouldSendNotification = true;
+			decision.incidentReason = "threshold_breach";
+			decision.notificationReason = "threshold_breach";
+		} else if (monitor.status === "up" && (prevStatus === "down" || prevStatus === "breached")) {
+			// Monitor recovered from down or breached state
+			decision.shouldResolveIncident = true;
+			decision.shouldSendNotification = true;
+			decision.notificationReason = "status_change";
+		}
+
+		return decision;
 	}
 }
 

@@ -252,7 +252,89 @@ export class StatusService implements IStatusService {
 				statusChanged = true;
 			}
 
+			// Evaluate hardware threshold breaches (only for hardware monitors)
+			let thresholdBreaches: { cpu: boolean; memory: boolean; disk: boolean; temp: boolean } | undefined;
+			if (monitor.type === "hardware" && statusResponse.payload) {
+				const payload = statusResponse.payload as HardwareStatusPayload;
+				const metrics = payload?.data;
+
+				if (metrics) {
+					// Evaluate threshold breaches
+					const cpuUsage = metrics.cpu?.usage_percent ?? -1;
+					const cpuBreach = cpuUsage !== -1 && cpuUsage > monitor.cpuAlertThreshold / 100;
+
+					const memoryUsage = metrics.memory?.usage_percent ?? -1;
+					const memoryBreach = memoryUsage !== -1 && memoryUsage > monitor.memoryAlertThreshold / 100;
+
+					const diskBreach =
+						metrics.disk?.some((d: any) => typeof d?.usage_percent === "number" && d.usage_percent > monitor.diskAlertThreshold / 100) ?? false;
+
+					const temps = metrics.cpu?.temperature ?? [];
+					const tempBreach = temps.some((temp: number) => temp > monitor.tempAlertThreshold);
+
+					thresholdBreaches = {
+						cpu: cpuBreach,
+						memory: memoryBreach,
+						disk: diskBreach,
+						temp: tempBreach,
+					};
+
+					// Update counters: decrement if breached, reset to 5 if not breached
+					if (cpuBreach) {
+						monitor.cpuAlertCounter = Math.max(0, monitor.cpuAlertCounter - 1);
+					} else {
+						monitor.cpuAlertCounter = 5;
+					}
+
+					if (memoryBreach) {
+						monitor.memoryAlertCounter = Math.max(0, monitor.memoryAlertCounter - 1);
+					} else {
+						monitor.memoryAlertCounter = 5;
+					}
+
+					if (diskBreach) {
+						monitor.diskAlertCounter = Math.max(0, monitor.diskAlertCounter - 1);
+					} else {
+						monitor.diskAlertCounter = 5;
+					}
+
+					if (tempBreach) {
+						monitor.tempAlertCounter = Math.max(0, monitor.tempAlertCounter - 1);
+					} else {
+						monitor.tempAlertCounter = 5;
+					}
+
+					// Check if any counter has reached zero (initial breach)
+					const anyCounterZero =
+						monitor.cpuAlertCounter === 0 || monitor.memoryAlertCounter === 0 || monitor.diskAlertCounter === 0 || monitor.tempAlertCounter === 0;
+
+					const anyThresholdBreached = cpuBreach || memoryBreach || diskBreach || tempBreach;
+					const allThresholdsNormal = !cpuBreach && !memoryBreach && !diskBreach && !tempBreach;
+
+					// Update monitor status based on threshold breach state
+					if (newStatus !== "down") {
+						// Don't override "down" status - service unreachable takes precedence
+						// Check current monitor status, not newStatus for comparison
+						if (anyCounterZero && anyThresholdBreached && monitor.status !== "breached") {
+							// Initial breach: counter hit zero, change status to breached
+							newStatus = "breached";
+							statusChanged = true;
+						} else if (anyCounterZero && anyThresholdBreached && monitor.status === "breached") {
+							// Already breached, keep status but don't mark as changed
+							newStatus = "breached";
+							// statusChanged remains false
+						} else if (allThresholdsNormal && monitor.status === "breached") {
+							// All thresholds returned to normal, recover from breached state
+							newStatus = "up";
+							statusChanged = true;
+						}
+					}
+				}
+			}
+
+			// Apply the final status
 			monitor.status = newStatus;
+
 			const updated = await this.monitorsRepository.updateById(monitor.id, monitor.teamId, monitor);
 
 			return {
@@ -261,6 +343,7 @@ export class StatusService implements IStatusService {
 				prevStatus,
 				code,
 				timestamp: new Date().getTime(),
+				thresholdBreaches,
 			};
 		} catch (error: any) {
 			error.service = SERVICE_NAME;
