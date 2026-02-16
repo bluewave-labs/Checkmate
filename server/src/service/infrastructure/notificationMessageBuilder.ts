@@ -208,11 +208,12 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 			return breaches;
 		}
 
-		// CPU threshold breach
-		if (monitor.cpuAlertThreshold && hardware.cpu?.usage_percent !== undefined) {
-			const cpuPercent = hardware.cpu.usage_percent;
+		// Note: usage_percent values in hardware payload are decimals (0-1)
+		if (monitor.cpuAlertThreshold !== undefined && monitor.cpuAlertThreshold !== null && hardware.cpu?.usage_percent !== undefined) {
+			const cpuUsageDecimal = hardware.cpu.usage_percent;
+			const cpuPercent = cpuUsageDecimal * 100;
 			const threshold = monitor.cpuAlertThreshold;
-			if (cpuPercent >= threshold) {
+			if (cpuPercent > threshold) {
 				breaches.push({
 					metric: "cpu",
 					currentValue: cpuPercent,
@@ -224,10 +225,11 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		}
 
 		// Memory threshold breach
-		if (monitor.memoryAlertThreshold && hardware.memory?.usage_percent !== undefined) {
-			const memoryPercent = hardware.memory.usage_percent;
+		if (monitor.memoryAlertThreshold !== undefined && monitor.memoryAlertThreshold !== null && hardware.memory?.usage_percent !== undefined) {
+			const memoryUsageDecimal = hardware.memory.usage_percent;
+			const memoryPercent = memoryUsageDecimal * 100;
 			const threshold = monitor.memoryAlertThreshold;
-			if (memoryPercent >= threshold) {
+			if (memoryPercent > threshold) {
 				breaches.push({
 					metric: "memory",
 					currentValue: memoryPercent,
@@ -239,28 +241,29 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		}
 
 		// Disk threshold breach
-		if (monitor.diskAlertThreshold && Array.isArray(hardware.disk)) {
+		if (monitor.diskAlertThreshold !== undefined && monitor.diskAlertThreshold !== null && Array.isArray(hardware.disk)) {
 			// Find the highest disk usage
-			let maxDiskUsage = 0;
+			let maxDiskUsageDecimal = 0;
 			for (const disk of hardware.disk) {
-				if (disk.usage_percent !== undefined && disk.usage_percent > maxDiskUsage) {
-					maxDiskUsage = disk.usage_percent;
+				if (disk.usage_percent !== undefined && disk.usage_percent > maxDiskUsageDecimal) {
+					maxDiskUsageDecimal = disk.usage_percent;
 				}
 			}
+			const maxDiskPercent = maxDiskUsageDecimal * 100;
 			const threshold = monitor.diskAlertThreshold;
-			if (maxDiskUsage >= threshold) {
+			if (maxDiskPercent > threshold) {
 				breaches.push({
 					metric: "disk",
-					currentValue: maxDiskUsage,
+					currentValue: maxDiskPercent,
 					threshold,
 					unit: "%",
-					formattedValue: `${maxDiskUsage.toFixed(1)}%`,
+					formattedValue: `${maxDiskPercent.toFixed(1)}%`,
 				});
 			}
 		}
 
 		// Temperature threshold breach
-		if (monitor.tempAlertThreshold && hardware.cpu?.temperature) {
+		if (monitor.tempAlertThreshold !== undefined && monitor.tempAlertThreshold !== null && hardware.cpu?.temperature) {
 			// Temperature is an array in cpu.temperature
 			const temps = Array.isArray(hardware.cpu.temperature) ? hardware.cpu.temperature : [hardware.cpu.temperature];
 			const maxTemp = Math.max(...temps.filter((t: number) => !isNaN(t)));

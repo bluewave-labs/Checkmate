@@ -65,11 +65,23 @@ export class NotificationsService implements INotificationsService {
 		notification: Notification,
 		monitor: Monitor,
 		monitorStatusResponse: MonitorStatusResponse,
-		decision: MonitorActionDecision
+		decision: MonitorActionDecision,
+		notificationMessage?: any
 	): Promise<boolean> => {
 		const settings = this.settingsService.getSettings();
 		const clientHost = settings.clientHost || "Host not defined";
 
+		// For webhook notifications, try new sendMessage method if available
+		if (notification.type === "webhook" && this.webhookProvider.sendMessage && notificationMessage) {
+			this.logger.info({
+				message: "[NEW] Using sendMessage for webhook",
+				service: SERVICE_NAME,
+				method: "send",
+			});
+			return await this.webhookProvider.sendMessage(notification, notificationMessage);
+		}
+
+		// Fallback to existing sendAlert for all providers
 		switch (notification.type) {
 			case "email":
 				return await this.emailProvider.sendAlert(notification, monitor, monitorStatusResponse, decision, clientHost);
@@ -92,7 +104,12 @@ export class NotificationsService implements INotificationsService {
 		const notificationIds = monitor.notifications ?? [];
 		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
 
-		const tasks = notifications.map((notification) => this.send(notification, monitor, monitorStatusResponse, decision));
+		// Build notification message once for all notifications
+		const settings = this.settingsService.getSettings();
+		const clientHost = settings.clientHost || "Host not defined";
+		const notificationMessage = this.notificationMessageBuilder.buildMessage(monitor, monitorStatusResponse, decision, clientHost);
+
+		const tasks = notifications.map((notification) => this.send(notification, monitor, monitorStatusResponse, decision, notificationMessage));
 
 		const outcomes = await Promise.all(tasks);
 		const succeeded = outcomes.filter(Boolean).length;
@@ -112,10 +129,6 @@ export class NotificationsService implements INotificationsService {
 		if (!decision.shouldSendNotification) {
 			return false;
 		}
-
-		const settings = this.settingsService.getSettings();
-		const clientHost = settings.clientHost || "Host not defined";
-		const notificationMessage = this.notificationMessageBuilder.buildMessage(monitor, monitorStatusResponse, decision, clientHost);
 
 		// Send notifications based on decision
 		return await this.sendNotifications(monitor, monitorStatusResponse, decision);
