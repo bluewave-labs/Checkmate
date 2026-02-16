@@ -4,32 +4,34 @@ import type { Settings } from "@/Types/Settings";
 import type { SettingsFormData } from "@/Validation/settings";
 
 interface UseSettingsFormOptions {
-    data?: Settings | null;
+	data?: Settings | null;
 }
 export const useSettingsForm = ({ data = null }: UseSettingsFormOptions = {}) => {
-    return useMemo(() => {
-        const defaults: SettingsFormData = {
-            systemEmailIgnoreTLS: data?.systemEmailIgnoreTLS || false,
-            systemEmailRequireTLS: data?.systemEmailRequireTLS || false,
-            systemEmailRejectUnauthorized: data?.systemEmailRejectUnauthorized || true,
-            systemEmailConnectionHost: data?.systemEmailConnectionHost || "",
-            systemEmailSecure: data?.systemEmailSecure || true,
-            systemEmailPool: data?.systemEmailPool || false,
-            showURL: data?.showURL || false,
-            //timezone: data?.timezone || "UTC",
-            language: data?.language || "en",
-            //chartType: data?.chartType || "histogram",
-            checkTTL: data?.checkTTL || 30,
-            pagespeedApiKey: data?.pagespeedApiKey || "",
-            systemEmailHost: data?.systemEmailHost || "",
-            systemEmailPort: data?.systemEmailPort || "",
-            systemEmailAddress: data?.systemEmailAddress || "",
-            systemEmailUser: data?.systemEmailUser || "",
-            systemEmailPassword: data?.systemEmailPassword || "",
-            
-        }
+	return useMemo(() => {
+		const defaults: SettingsFormData = {
+			systemEmailIgnoreTLS: data?.systemEmailIgnoreTLS || false,
+			systemEmailRequireTLS: data?.systemEmailRequireTLS || false,
+			systemEmailRejectUnauthorized: data?.systemEmailRejectUnauthorized || true,
+			systemEmailSecure: data?.systemEmailSecure || false,
+			systemEmailPool: data?.systemEmailPool || false,
+			showURL: data?.showURL || false,
+			systemEmailHost: data?.systemEmailHost || "",
+			systemEmailUser: data?.systemEmailUser || "",
+			systemEmailAddress: data?.systemEmailAddress || "",
+			systemEmailConnectionHost: data?.systemEmailConnectionHost || "localhost",
+			systemEmailTLSServername: data?.systemEmailTLSServername || "",
+			systemEmailPort: data?.systemEmailPort || "",
+			globalThresholds: {
+				cpu: data?.globalThresholds?.cpu || "",
+				memory: data?.globalThresholds?.memory || "",
+				disk: data?.globalThresholds?.disk || "",
+				temperature: data?.globalThresholds?.temperature || "",
+			},
+			checkTTL: data?.checkTTL || 30,
+			pagespeedApiKey: "",
+			systemEmailPassword: "",
+		};
 
-
-
-    }
-}
+		return { schema: settingsSchema, defaults };
+	}, [data]);
+};

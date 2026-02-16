@@ -8,10 +8,6 @@ export const settingsSchema = z.object({
 	systemEmailSecure: z.boolean().optional(),
 	systemEmailPool: z.boolean().optional(),
 	showURL: z.boolean().optional(),
-	timezone: z.string().min(1, "Timezone is required").optional(),
-	mode: z.enum(["light", "dark"]).optional(),
-	language: z.string().min(2, "Language is required"),
-	chartType: z.enum(["histogram", "heatmap"]).optional(),
 	checkTTL: z.coerce.number().int().min(1, "Please enter a value"),
 	pagespeedApiKey: z.string().optional().or(z.literal("")),
 	systemEmailHost: z.string().optional().or(z.literal("")),
@@ -26,10 +22,30 @@ export const settingsSchema = z.object({
 	systemEmailTLSServername: z.string().optional().or(z.literal("")),
 	globalThresholds: z
 		.object({
-			cpu: z.coerce.number().min(1).max(100).optional(),
-			memory: z.coerce.number().min(1).max(100).optional(),
-			disk: z.coerce.number().min(1).max(100).optional(),
-			temperature: z.coerce.number().min(1).max(150).optional(),
+			cpu: z.coerce
+				.number()
+				.min(1, "Min 1%")
+				.max(100, "Max 100%")
+				.optional()
+				.or(z.literal("")),
+			memory: z.coerce
+				.number()
+				.min(1, "Min 1%")
+				.max(100, "Max 100%")
+				.optional()
+				.or(z.literal("")),
+			disk: z.coerce
+				.number()
+				.min(1, "Min 1%")
+				.max(100, "Max 100%")
+				.optional()
+				.or(z.literal("")),
+			temperature: z.coerce
+				.number()
+				.min(1, "Min 1°C")
+				.max(150, "Max 150°C")
+				.optional()
+				.or(z.literal("")),
 		})
 		.optional(),
 });

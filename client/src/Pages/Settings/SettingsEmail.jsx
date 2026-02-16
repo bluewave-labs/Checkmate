@@ -15,16 +15,18 @@ import { PasswordEndAdornment } from "@/Components/v1/Inputs/TextInput/Adornment
 import { usePost } from "@/Hooks/UseApi";
 import { useSelector } from "react-redux";
 import { createToast } from "@/Utils/toastUtils.jsx";
+import { Controller } from "react-hook-form";
 
 const SettingsEmail = ({
 	isAdmin,
 	HEADER_SX,
-	handleChange,
-	settingsData,
-	setSettingsData,
 	isEmailPasswordSet,
 	emailPasswordHasBeenReset,
 	setEmailPasswordHasBeenReset,
+	control,
+	defaults,
+	formValues,
+	setValue,
 }) => {
 	// Setup
 	const { t } = useTranslation();
@@ -44,22 +46,13 @@ const SettingsEmail = ({
 		systemEmailIgnoreTLS = false,
 		systemEmailRequireTLS = false,
 		systemEmailRejectUnauthorized = true,
-	} = settingsData?.settings || {};
-	// Local state
-	const [password, setPassword] = useState("");
+	} = formValues || {};
 
 	// Network
 	const { post: sendTestEmailFn, loading: isSending } = usePost();
 	const user = useSelector((state) => state.auth.user);
 
 	// Handlers
-	const handlePasswordChange = (e) => {
-		setPassword(e.target.value);
-		setSettingsData({
-			...settingsData,
-			settings: { ...settingsData.settings, systemEmailPassword: e.target.value },
-		});
-	};
 
 	/**
 	 * Handle sending test email with current form values
@@ -70,7 +63,7 @@ const SettingsEmail = ({
 			!systemEmailHost ||
 			!systemEmailPort ||
 			!systemEmailAddress ||
-			!(password || systemEmailPassword)
+			!systemEmailPassword
 		) {
 			createToast({
 				body: t("settingsPage.emailSettings.toastEmailRequiredFieldsError"),
@@ -117,52 +110,87 @@ const SettingsEmail = ({
 			<Box>
 				<Stack gap={theme.spacing(10)}>
 					<Box>
-						<TextInput
-							label={t("settingsPage.emailSettings.labelHost")}
+						<Controller
 							name="systemEmailHost"
-							placeholder="smtp.gmail.com"
-							value={systemEmailHost}
-							onChange={handleChange}
+							control={control}
+							defaultValue={defaults.systemEmailHost}
+							render={({ field, fieldState }) => (
+								<TextInput
+									{...field}
+									label={t("settingsPage.emailSettings.labelHost")}
+									placeholder="smtp.gmail.com"
+									error={!!fieldState.error}
+									helperText={fieldState.error?.message}
+								/>
+							)}
 						/>
 					</Box>
 					<Box>
-						<TextInput
-							label={t("settingsPage.emailSettings.labelPort")}
+						<Controller
 							name="systemEmailPort"
-							placeholder="425"
-							type="number"
-							value={systemEmailPort}
-							onChange={handleChange}
+							control={control}
+							defaultValue={defaults.systemEmailPort}
+							render={({ field, fieldState }) => (
+								<TextInput
+									{...field}
+									label={t("settingsPage.emailSettings.labelPort")}
+									placeholder="425"
+									type="number"
+									error={!!fieldState.error}
+									helperText={fieldState.error?.message}
+								/>
+							)}
 						/>
 					</Box>
 					<Box>
-						<TextInput
-							label={t("settingsPage.emailSettings.labelUser")}
+						<Controller
 							name="systemEmailUser"
-							placeholder={t("settingsPage.emailSettings.placeholderUser")}
-							value={systemEmailUser}
-							onChange={handleChange}
+							control={control}
+							defaultValue={defaults.systemEmailUser}
+							render={({ field, fieldState }) => (
+								<TextInput
+									{...field}
+									label={t("settingsPage.emailSettings.labelUser")}
+									placeholder={t("settingsPage.emailSettings.placeholderUser")}
+									error={!!fieldState.error}
+									helperText={fieldState.error?.message}
+								/>
+							)}
 						/>
 					</Box>
 					<Box>
-						<TextInput
-							label={t("settingsPage.emailSettings.labelAddress")}
+						<Controller
 							name="systemEmailAddress"
-							placeholder="uptime@bluewavelabs.ca"
-							value={systemEmailAddress}
-							onChange={handleChange}
+							control={control}
+							defaultValue={defaults.systemEmailAddress}
+							render={({ field, fieldState }) => (
+								<TextInput
+									{...field}
+									label={t("settingsPage.emailSettings.labelAddress")}
+									placeholder="uptime@bluewavelabs.ca"
+									error={!!fieldState.error}
+									helperText={fieldState.error?.message}
+								/>
+							)}
 						/>
 					</Box>
 					{(isEmailPasswordSet === false || emailPasswordHasBeenReset === true) && (
 						<Box>
-							<TextInput
-								label={t("settingsPage.emailSettings.labelPassword")}
+							<Controller
 								name="systemEmailPassword"
-								type="password"
-								placeholder="123 456 789 101112"
-								value={password}
-								onChange={handlePasswordChange}
-								endAdornment={<PasswordEndAdornment />}
+								control={control}
+								defaultValue={defaults.systemEmailPassword}
+								render={({ field, fieldState }) => (
+									<TextInput
+										{...field}
+										label={t("settingsPage.emailSettings.labelPassword")}
+										type="password"
+										placeholder="123 456 789 101112"
+										endAdornment={<PasswordEndAdornment />}
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message}
+									/>
+								)}
 							/>
 						</Box>
 					)}
@@ -172,11 +200,6 @@ const SettingsEmail = ({
 							<Typography>{t("settingsPage.emailSettings.labelPasswordSet")}</Typography>
 							<Button
 								onClick={() => {
-									setPassword("");
-									setSettingsData({
-										...settingsData,
-										settings: { ...settingsData.settings, systemEmailPassword: "" },
-									});
 									setEmailPasswordHasBeenReset(true);
 								}}
 								variant="contained"
@@ -188,21 +211,33 @@ const SettingsEmail = ({
 						</Box>
 					)}
 					<Box>
-						<TextInput
-							label={t("settingsPage.emailSettings.labelTLSServername")}
+						<Controller
 							name="systemEmailTLSServername"
-							placeholder="bluewavelabs.ca"
-							value={systemEmailTLSServername}
-							onChange={handleChange}
+							control={control}
+							defaultValue={defaults.systemEmailTLSServername}
+							render={({ field, fieldState }) => (
+								<TextInput
+									{...field}
+									label={t("settingsPage.emailSettings.labelTLSServername")}
+									placeholder="bluewavelabs.ca"
+								/>
+							)}
 						/>
 					</Box>
 					<Box>
-						<TextInput
-							label={t("settingsPage.emailSettings.labelConnectionHost")}
+						<Controller
 							name="systemEmailConnectionHost"
-							placeholder="bluewavelabs.ca"
-							value={systemEmailConnectionHost}
-							onChange={handleChange}
+							control={control}
+							defaultValue={defaults.systemEmailConnectionHost}
+							render={({ field, fieldState }) => (
+								<TextInput
+									{...field}
+									label={t("settingsPage.emailSettings.labelConnectionHost")}
+									placeholder="bluewavelabs.ca"
+									error={!!fieldState.error}
+									helperText={fieldState.error?.message}
+								/>
+							)}
 						/>
 					</Box>
 					<Box
@@ -239,21 +274,29 @@ const SettingsEmail = ({
 								systemEmailRejectUnauthorized,
 							],
 						].map(([labelKey, name, value]) => (
-							<Box
+							<Controller
 								key={name}
-								sx={{
-									display: "flex",
-									alignItems: "center",
-									justifyContent: "space-between",
-								}}
-							>
-								<Typography>{t(labelKey)}</Typography>
-								<Switch
-									name={name}
-									checked={value}
-									onChange={handleChange}
-								/>
-							</Box>
+								name={name}
+								control={control}
+								defaultValue={defaults[name]}
+								render={({ field }) => (
+									<Box
+										key={name}
+										sx={{
+											display: "flex",
+											alignItems: "center",
+											justifyContent: "space-between",
+										}}
+									>
+										<Typography>{t(labelKey)}</Typography>
+
+										<Switch
+											{...field}
+											checked={field.value}
+										/>
+									</Box>
+								)}
+							/>
 						))}
 
 						<TextLink
@@ -299,9 +342,9 @@ const SettingsEmail = ({
 
 					<pre>
 						{JSON.stringify({
-							systemEmailHost,
-							systemEmailAddress,
-							systemEmailPassword,
+							systemEmailHost: systemEmailHost,
+							systemEmailAddress: systemEmailAddress,
+							systemEmailPassword: systemEmailPassword,
 						})}
 					</pre>
 
@@ -328,9 +371,6 @@ const SettingsEmail = ({
 
 SettingsEmail.propTypes = {
 	isAdmin: PropTypes.bool,
-	settingsData: PropTypes.object,
-	setSettingsData: PropTypes.func,
-	handleChange: PropTypes.func,
 	HEADER_SX: PropTypes.object,
 	isPasswordSet: PropTypes.bool,
 };

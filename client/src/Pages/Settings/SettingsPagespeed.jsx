@@ -10,30 +10,23 @@ import { useTheme } from "@emotion/react";
 import { PropTypes } from "prop-types";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Controller } from "react-hook-form";
 
 const SettingsPagespeed = ({
 	isAdmin,
 	HEADING_SX,
-	settingsData,
-	setSettingsData,
 	isApiKeySet,
 	apiKeyHasBeenReset,
 	setApiKeyHasBeenReset,
+	defaults,
+	control,
+	setValue,
 }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 
 	// Local state
 	const [apiKey, setApiKey] = useState("");
-
-	// Handler
-	const handleChange = (e) => {
-		setApiKey(e.target.value);
-		setSettingsData({
-			...settingsData,
-			settings: { ...settingsData.settings, pagespeedApiKey: e.target.value },
-		});
-	};
 
 	if (!isAdmin) {
 		return null;
@@ -54,14 +47,21 @@ const SettingsPagespeed = ({
 			</Box>
 			<Stack gap={theme.spacing(20)}>
 				{(isApiKeySet === false || apiKeyHasBeenReset === true) && (
-					<TextInput
+					<Controller
 						name="pagespeedApiKey"
-						label={t("settingsPage.pageSpeedSettings.labelApiKey")}
-						value={apiKey}
-						type={"password"}
-						onChange={handleChange}
-						optionalLabel="(Optional)"
-						endAdornment={<PasswordEndAdornment />}
+						control={control}
+						defaultValue={defaults.pagespeedApiKey}
+						render={({ field, fieldState }) => (
+							<TextInput
+								{...field}
+								label={t("settingsPage.pageSpeedSettings.labelApiKey")}
+								type={"password"}
+								optionalLabel="(Optional)"
+								endAdornment={<PasswordEndAdornment />}
+								error={!!fieldState.error}
+								helperText={fieldState.error?.message}
+							/>
+						)}
 					/>
 				)}
 
@@ -70,11 +70,7 @@ const SettingsPagespeed = ({
 						<Typography>{t("settingsPage.pageSpeedSettings.labelApiKeySet")}</Typography>
 						<Button
 							onClick={() => {
-								setApiKey("");
-								setSettingsData({
-									...settingsData,
-									settings: { ...settingsData.settings, pagespeedApiKey: "" },
-								});
+								setValue("pagespeedApiKey", "");
 								setApiKeyHasBeenReset(true);
 							}}
 							variant="contained"
@@ -93,8 +89,6 @@ const SettingsPagespeed = ({
 SettingsPagespeed.propTypes = {
 	isAdmin: PropTypes.bool,
 	HEADING_SX: PropTypes.object,
-	settingsData: PropTypes.object,
-	setSettingsData: PropTypes.func,
 	isApiKeySet: PropTypes.bool,
 	setIsApiKeySet: PropTypes.func,
 	apiKeyHasBeenReset: PropTypes.bool,

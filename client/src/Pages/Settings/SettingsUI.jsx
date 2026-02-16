@@ -11,11 +11,19 @@ import { lightTheme, darkTheme } from "@/Utils/Theme/v2Theme";
 import { useTheme } from "@emotion/react";
 import { PropTypes } from "prop-types";
 import { useTranslation } from "react-i18next";
+import { useSelector, useDispatch } from "react-redux";
+import { setMode, setLanguage, setChartType } from "@/Features/UI/uiSlice.js";
 
-const SettingsUI = ({ HEADING_SX, handleChange, mode, language, chartType }) => {
+const SettingsUI = ({ HEADING_SX }) => {
+	const {
+		mode,
+		language = "en",
+		chartType = "histogram",
+	} = useSelector((state) => state.ui);
 	const { t, i18n } = useTranslation();
 	const theme = useTheme();
 	const languages = Object.keys(i18n.options.resources || {});
+	const dispatch = useDispatch();
 	const v2Theme = mode === "dark" ? darkTheme : lightTheme;
 	return (
 		<ConfigBox>
@@ -35,7 +43,7 @@ const SettingsUI = ({ HEADING_SX, handleChange, mode, language, chartType }) => 
 					name="mode"
 					label={t("settingsPage.uiSettings.labelTheme")}
 					value={mode}
-					onChange={handleChange}
+					onChange={(e) => dispatch(setMode(e.target.value))}
 					items={[
 						{ _id: "light", name: "Light" },
 						{ _id: "dark", name: "Dark" },
@@ -45,14 +53,14 @@ const SettingsUI = ({ HEADING_SX, handleChange, mode, language, chartType }) => 
 					name="language"
 					label={t("settingsPage.uiSettings.labelLanguage")}
 					value={language}
-					onChange={handleChange}
+					onChange={(e) => dispatch(setLanguage(e.target.value))}
 					items={languages.map((lang) => ({ _id: lang, name: lang.toUpperCase() }))}
 				></Select>
 				<Select
 					name="chartType"
 					label={t("settingsPage.uiSettings.labelChartType")}
 					value={chartType}
-					onChange={handleChange}
+					onChange={(e) => dispatch(setChartType(e.target.value))}
 					items={[
 						{ _id: "histogram", name: t("settingsPage.uiSettings.chartTypeHistogram") },
 						{ _id: "heatmap", name: t("settingsPage.uiSettings.chartTypeHeatmap") },
@@ -68,10 +76,6 @@ const SettingsUI = ({ HEADING_SX, handleChange, mode, language, chartType }) => 
 
 SettingsUI.propTypes = {
 	HEADING_SX: PropTypes.object,
-	handleChange: PropTypes.func,
-	mode: PropTypes.string,
-	language: PropTypes.string,
-	chartType: PropTypes.string,
 };
 
 export default SettingsUI;

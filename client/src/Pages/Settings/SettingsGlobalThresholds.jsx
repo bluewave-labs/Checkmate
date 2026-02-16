@@ -7,38 +7,17 @@ import TextInput from "@/Components/v1/Inputs/TextInput/index.jsx";
 import { useTheme } from "@emotion/react";
 import { PropTypes } from "prop-types";
 import { useTranslation } from "react-i18next";
+import { Controller } from "react-hook-form";
 
 const SettingsGlobalThresholds = ({
 	isAdmin,
 	HEADING_SX,
-	settingsData,
-	setSettingsData,
+
+	control,
+	defaults,
 }) => {
 	const { t } = useTranslation(); // For language translation
 	const theme = useTheme(); // MUI theme access
-
-	// Handles input change and updates parent state
-	const handleChange = (e, min, max) => {
-		const { name, value } = e.target;
-
-		const numValue = parseFloat(value);
-		const isValidNumber =
-			value === "" ||
-			(!isNaN(numValue) && isFinite(numValue) && numValue >= min && numValue <= max);
-
-		if (isValidNumber) {
-			setSettingsData((prev) => ({
-				...prev,
-				settings: {
-					...prev.settings,
-					globalThresholds: {
-						...prev.settings?.globalThresholds,
-						[name]: value,
-					},
-				},
-			}));
-		}
-	};
 
 	// Only render this section for admins
 	if (!isAdmin) return null;
@@ -69,14 +48,21 @@ const SettingsGlobalThresholds = ({
 					["Disk Threshold (%)", "disk", 1, 100],
 					["Temperature Threshold (°C)", "temperature", 1, 150],
 				].map(([label, name, min, max]) => (
-					<TextInput
+					<Controller
 						key={name}
-						name={name}
-						label={label}
-						placeholder={`${min} - ${max}`}
-						type="number"
-						value={settingsData?.settings?.globalThresholds?.[name] || ""}
-						onChange={(e) => handleChange(e, min, max)}
+						name={`globalThresholds.${name}`}
+						control={control}
+						defaultValue={defaults.globalThresholds?.[name]}
+						render={({ field, fieldState }) => (
+							<TextInput
+								{...field}
+								label={label}
+								placeholder={`${min} - ${max}`}
+								type="number"
+								error={!!fieldState.error}
+								helperText={fieldState.error?.message}
+							/>
+						)}
 					/>
 				))}
 			</Stack>
@@ -88,8 +74,6 @@ const SettingsGlobalThresholds = ({
 SettingsGlobalThresholds.propTypes = {
 	isAdmin: PropTypes.bool,
 	HEADING_SX: PropTypes.object,
-	settingsData: PropTypes.object,
-	setSettingsData: PropTypes.func,
 };
 
 export default SettingsGlobalThresholds;
