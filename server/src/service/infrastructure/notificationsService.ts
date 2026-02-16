@@ -32,19 +32,6 @@ export class NotificationsService implements INotificationsService {
 	private logger: any;
 	private settingsService: ISettingsService;
 
-	// Email grouping (batching) configuration
-	private emailGroupingWindowMs: number;
-	private pendingEmailGroups: Map<
-		string,
-		{
-			monitors: Monitor[];
-			statusResponses: MonitorStatusResponse[];
-			decisions: MonitorActionDecision[];
-			timer: ReturnType<typeof setTimeout>;
-			createdAt: number;
-		}
-	>;
-
 	constructor(
 		notificationsRepository: INotificationsRepository,
 		monitorsRepository: IMonitorsRepository,
@@ -67,22 +54,6 @@ export class NotificationsService implements INotificationsService {
 		this.matrixProvider = matrixProvider;
 		this.settingsService = settingsService;
 		this.logger = logger;
-
-		// Configure email grouping window (in milliseconds).
-		// When > 0, multiple DOWN events for monitors that share the same
-		// email notification within this window will be batched into a single email.
-		const rawGroupingWindow = process.env.NOTIFICATION_GROUP_WINDOW_MS ?? process.env.NOTIFICATION_GROUP_WINDOW_SECONDS;
-		let groupingWindowMs = 0;
-		if (rawGroupingWindow) {
-			const parsed = Number(rawGroupingWindow);
-			if (!Number.isNaN(parsed) && parsed > 0) {
-				// If value looks like seconds (small number), convert to ms.
-				// This allows either milliseconds (e.g. 60000) or seconds (e.g. 60).
-				groupingWindowMs = parsed <= 300 ? parsed * 1000 : parsed;
-			}
-		}
-		this.emailGroupingWindowMs = groupingWindowMs;
-		this.pendingEmailGroups = new Map();
 	}
 
 	private send = async (
@@ -116,15 +87,7 @@ export class NotificationsService implements INotificationsService {
 		const notificationIds = monitor.notifications ?? [];
 		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
 
-		const tasks = notifications.map((notification) => {
-			// Only group emails, only for DOWN transitions, and only if a window is configured.
-			if (notification.type === "email" && this.emailGroupingWindowMs > 0 && monitorStatusResponse.status === false) {
-				return this.queueGroupedEmailNotification(notification, monitor, monitorStatusResponse, decision);
-			}
-
-			// For all other cases (UP notifications or non-email channels), send immediately.
-			return this.send(notification, monitor, monitorStatusResponse, decision);
-		});
+		const tasks = notifications.map((notification) => this.send(notification, monitor, monitorStatusResponse, decision));
 
 		const outcomes = await Promise.all(tasks);
 		const succeeded = outcomes.filter(Boolean).length;
@@ -133,124 +96,11 @@ export class NotificationsService implements INotificationsService {
 			this.logger.warn({
 				message: `Notification send completed with ${succeeded} success, ${failed} failure(s)`,
 				service: SERVICE_NAME,
-				method: "getMonitorJob",
+				method: "sendNotifications",
 			});
 		}
-		// Return true if all notificaitons succeeded
+		// Return true if all notifications succeeded
 		return succeeded === notifications.length;
-	};
-
-	/**
-	 * Queue a DOWN email notification to be potentially grouped with other
-	 * DOWN events for the same email notification within the configured window.
-	 *
-	 * This method returns immediately; the actual email is sent asynchronously
-	 * when the grouping window expires.
-	 */
-	private queueGroupedEmailNotification = async (
-		notification: Notification,
-		monitor: Monitor,
-		monitorStatusResponse: MonitorStatusResponse,
-		decision: MonitorActionDecision
-	): Promise<boolean> => {
-		// If grouping is disabled, fallback to immediate send.
-		if (this.emailGroupingWindowMs <= 0) {
-			return await this.send(notification, monitor, monitorStatusResponse, decision);
-		}
-
-		const key = notification.id;
-		const now = Date.now();
-		const existingGroup = this.pendingEmailGroups.get(key);
-
-		if (!existingGroup) {
-			// Create a new group and schedule a flush after the window expires.
-			const timer = setTimeout(async () => {
-				const group = this.pendingEmailGroups.get(key);
-				if (!group) return;
-
-				this.pendingEmailGroups.delete(key);
-
-				try {
-					// Use the first decision from the group (they should all be similar for grouped notifications)
-					const firstDecision = group.decisions[0]!;
-					await this.flushEmailGroup(notification, group.monitors, group.statusResponses, firstDecision);
-				} catch (error: any) {
-					this.logger.error({
-						message: error?.message,
-						service: SERVICE_NAME,
-						method: "flushEmailGroup",
-						stack: error?.stack,
-					});
-				}
-			}, this.emailGroupingWindowMs);
-
-			this.pendingEmailGroups.set(key, {
-				monitors: [monitor],
-				statusResponses: [monitorStatusResponse],
-				decisions: [decision],
-				timer,
-				createdAt: now,
-			});
-		} else {
-			// Append to existing group.
-			existingGroup.monitors.push(monitor);
-			existingGroup.statusResponses.push(monitorStatusResponse);
-			existingGroup.decisions.push(decision);
-		}
-
-		// Consider queueing as "succeeded" from the caller's perspective.
-		return true;
-	};
-
-	/**
-	 * Flush a grouped set of DOWN events into a single email.
-	 *
-	 * To avoid changing email templates, we construct a synthetic Monitor
-	 * whose name concisely lists all affected services. The existing
-	 * `serverIsDownTemplate` is then reused.
-	 *
-	 * @param notification The email notification to send to
-	 * @param monitors Array of monitors that went down
-	 * @param statusResponses Array of status responses (parallel to monitors)
-	 * @returns true if email was sent successfully, false otherwise
-	 */
-	private flushEmailGroup = async (
-		notification: Notification,
-		monitors: Monitor[],
-		statusResponses: MonitorStatusResponse[],
-		decision: MonitorActionDecision
-	): Promise<boolean> => {
-		if (!monitors.length || !statusResponses.length) {
-			return false;
-		}
-
-		const { clientHost } = this.settingsService.getSettings();
-		if (!clientHost) {
-			this.logger.warn({ message: "CLIENT_HOST not configured", service: SERVICE_NAME, method: "flushEmailGroup" });
-			return false;
-		}
-
-		// Build a combined monitor name listing all affected services.
-		// Example: "Service A, Service B" (2 services) or "Service A" (1 service)
-		const uniqueNames = Array.from(new Set(monitors.map((m) => m.name)));
-		const servicesCount = uniqueNames.length;
-		const servicesList = uniqueNames.join(", ");
-
-		const combinedName = servicesCount === 1 ? servicesList : `${servicesCount} services: ${servicesList}`;
-
-		// Use the first monitor as a base for URL and other fields.
-		const baseMonitor = monitors[0]!;
-		const baseStatus = statusResponses[0]!;
-
-		// Create a shallow clone so we don't mutate the original entity.
-		// This preserves monitor properties while overriding the name for grouped display.
-		const syntheticMonitor: Monitor = {
-			...baseMonitor,
-			name: combinedName,
-		};
-
-		// Reuse existing email provider to send grouped notification.
-		return await this.emailProvider.sendAlert(notification, syntheticMonitor, baseStatus, decision, clientHost);
 	};
 
 	handleNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {
