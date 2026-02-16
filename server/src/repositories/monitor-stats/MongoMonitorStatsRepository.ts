@@ -32,6 +32,11 @@ class MongoMonitorStatsRepository implements IMonitorStatsRepository {
 		};
 	};
 
+	create = async (data: Omit<MonitorStats, "id" | "createdAt" | "updatedAt">): Promise<MonitorStats> => {
+		const created = await MonitorStatsModel.create(data);
+		return this.toEntity(created);
+	};
+
 	findByMonitorId = async (monitorId: string): Promise<MonitorStats> => {
 		const monitorStats = await MonitorStatsModel.findOne({ monitorId: new mongoose.Types.ObjectId(monitorId) });
 		if (!monitorStats) {

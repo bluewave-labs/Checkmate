@@ -1,6 +1,4 @@
-import { IMonitorsRepository } from "@/repositories/index.js";
-import MonitorStats from "../../db/models/MonitorStats.js";
-import { CheckModel } from "@/db/models/index.js";
+import { IChecksRepository, IMonitorsRepository, IMonitorStatsRepository } from "@/repositories/index.js";
 import type {
 	Monitor,
 	MonitorStatus,
@@ -10,7 +8,9 @@ import type {
 	HardwareStatusPayload,
 	PageSpeedStatusPayload,
 	CheckSnapshot,
+	MonitorStats,
 } from "@/types/index.js";
+import { ILogger } from "@/utils/logger.js";
 const SERVICE_NAME = "StatusService";
 
 export interface IStatusService {
@@ -27,11 +27,21 @@ export class StatusService implements IStatusService {
 	private logger: any;
 	private buffer: any;
 	private monitorsRepository: IMonitorsRepository;
+	private monitorStatsRepository: IMonitorStatsRepository;
+	private checksRepository: IChecksRepository;
 
-	constructor({ logger, buffer, monitorsRepository }: { logger: any; buffer: any; monitorsRepository: IMonitorsRepository }) {
+	constructor(
+		logger: ILogger,
+		buffer: any,
+		monitorsRepository: IMonitorsRepository,
+		monitorStatsRepository: IMonitorStatsRepository,
+		checksRepository: IChecksRepository
+	) {
 		this.logger = logger;
 		this.buffer = buffer;
 		this.monitorsRepository = monitorsRepository;
+		this.monitorStatsRepository = monitorStatsRepository;
+		this.checksRepository = checksRepository;
 	}
 
 	get serviceName() {
@@ -42,18 +52,29 @@ export class StatusService implements IStatusService {
 		try {
 			const monitorId = monitor.id;
 			const { responseTime, status } = networkResponse;
-			// Get stats
-			let stats = await MonitorStats.findOne({ monitorId });
+			let stats: Omit<MonitorStats, "id" | "createdAt" | "updatedAt"> | null = null;
+			stats = await this.monitorStatsRepository
+				.findByMonitorId(monitorId)
+				.then((result) => result)
+				.catch(() => {
+					this.logger.debug({
+						service: SERVICE_NAME,
+						method: "updateRunningStats",
+						message: `No existing stats found for monitor ${monitorId}, initializing new stats.`,
+					});
+					return null;
+				});
 			if (!stats) {
-				stats = new MonitorStats({
+				stats = {
 					monitorId,
 					avgResponseTime: 0,
 					totalChecks: 0,
 					totalUpChecks: 0,
 					totalDownChecks: 0,
 					uptimePercentage: 0,
-					lastCheck: null,
-				});
+					lastResponseTime: 0,
+					lastCheckTimestamp: 0,
+				};
 			}
 
 			// Update stats
@@ -96,8 +117,7 @@ export class StatusService implements IStatusService {
 
 			// latest check
 			stats.lastCheckTimestamp = new Date().getTime();
-
-			await stats.save();
+			await this.monitorStatsRepository.create(stats);
 			return true;
 		} catch (error: any) {
 			this.logger.error({
@@ -112,11 +132,10 @@ export class StatusService implements IStatusService {
 
 	handleIncidentForCheck = async (check: Check, monitor: Monitor, action: any, errorContext = "incident handling") => {
 		try {
-			let savedCheck;
+			let savedCheck: Check | null = null;
 			if (!check.id) {
 				try {
-					const checkModel = new CheckModel(check);
-					savedCheck = await checkModel.save();
+					savedCheck = await this.checksRepository.create(check);
 
 					this.buffer.removeCheckFromBuffer(check);
 				} catch (checkError: any) {

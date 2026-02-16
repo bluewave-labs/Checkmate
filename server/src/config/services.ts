@@ -41,18 +41,6 @@ import crypto from "crypto";
 import { games, GameDig } from "gamedig";
 import jmespath from "jmespath";
 
-// DB Modules
-import { GenerateAvatarImage } from "../utils/imageProcessing.js";
-import { ParseBoolean } from "../utils/utils.js";
-
-// Models
-import InviteToken from "../db/models/Invite.js";
-import Team from "../db/models/Team.js";
-import MaintenanceWindow from "../db/models/MaintenanceWindow.js";
-import MonitorStats from "../db/models/MonitorStats.js";
-import NotificationModel from "../db/models/Notification.js";
-import RecoveryToken from "../db/models/RecoveryToken.js";
-
 // repositories
 import {
 	MongoMonitorsRepository,
@@ -176,7 +164,7 @@ export const initializeServices = async ({
 
 	const bufferService = new BufferService({ logger, checkService, settingsService });
 
-	const statusService = new StatusService({ logger, buffer: bufferService, monitorsRepository });
+	const statusService = new StatusService(logger, bufferService, monitorsRepository, monitorStatsRepository, checksRepository);
 
 	const webhookProvider = new WebhookProvider(logger);
 	const slackProvider = new SlackProvider(logger);

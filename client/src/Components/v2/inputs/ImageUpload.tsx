@@ -38,11 +38,11 @@ export const ImageUpload = ({
 			const isValidType = accept.some((type) => file.type.includes(type));
 			const isValidSize = file.size <= maxSize;
 			if (!isValidType) {
-				setLocalError(t("common.errors.invalidFileFormat"));
+				setLocalError(t("components.imageUpload.errors.invalidFileFormat"));
 				return;
 			}
 			if (!isValidSize) {
-				setLocalError(t("common.errors.invalidFileSize"));
+				setLocalError(t("components.imageUpload.errors.invalidFileSize"));
 				return;
 			}
 			setLocalError(null);
@@ -137,15 +137,15 @@ export const ImageUpload = ({
 							color="primary"
 							fontWeight={500}
 						>
-							{t("common.imageUpload.clickToUpload")}
+							{t("components.imageUpload.clickToUpload")}
 						</Typography>{" "}
-						{t("common.imageUpload.orDragAndDrop")}
+						{t("components.imageUpload.orDragAndDrop")}
 					</Typography>
 					<Typography
 						variant="caption"
 						color="text.disabled"
 					>
-						{accept.join(", ").toUpperCase()} • {t("common.imageUpload.maxSize")}{" "}
+						{accept.join(", ").toUpperCase()} • {t("components.imageUpload.maxSize")}{" "}
 						{Math.round(maxSize / 1024 / 1024)}MB
 					</Typography>
 				</Stack>

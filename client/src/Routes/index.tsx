@@ -3,6 +3,7 @@ import { ThemeProvider } from "@mui/material";
 import { lightTheme, darkTheme } from "@/Utils/Theme/v2Theme";
 
 import { useSelector } from "react-redux";
+import type { RootState } from "@/store";
 import { Navigate, Route, Routes as LibRoutes } from "react-router";
 import RootLayout from "@/Components/v2/layout/RootLayout";
 import NotFound from "@/Pages/NotFound";
@@ -59,7 +60,7 @@ import {
 import CreateMonitor from "@/Pages/CreateMonitor";
 
 const Routes = () => {
-	const mode = useSelector((state) => state.ui.mode);
+	const mode = useSelector((state: RootState) => state.ui.mode);
 	const v2theme = mode === "light" ? lightTheme : darkTheme;
 	return (
 		<LibRoutes>
@@ -390,12 +391,11 @@ const Routes = () => {
 			/>
 
 			<Route
-				exact
 				path="/register/:token"
 				element={
 					<>
 						<ThemeProvider theme={v2theme}>
-							<AuthRegister superAdminExists={true} />
+							<AuthRegister />
 						</ThemeProvider>
 					</>
 				}

@@ -2,7 +2,6 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { BaseBox } from "@/Components/v2/design-elements";
-import Background from "@/assets/Images/background-grid.svg?react";
 import { useTranslation } from "react-i18next";
 import type { SxProps } from "@mui/material";
 
@@ -18,6 +17,7 @@ export const BGBox = ({ children, sx }: StatusBoxProps) => {
 	return (
 		<BaseBox
 			sx={{
+				backgroundColor: theme.palette.background.default,
 				overflow: "hidden",
 				position: "relative",
 				flex: 1,
@@ -27,11 +27,23 @@ export const BGBox = ({ children, sx }: StatusBoxProps) => {
 		>
 			<Box
 				position="absolute"
-				top="-10%"
-				left="5%"
-			>
-				<Background />
-			</Box>
+				top={0}
+				left={0}
+				right={0}
+				bottom={0}
+				sx={{
+					pointerEvents: "none",
+					backgroundImage: `
+						linear-gradient(${theme.palette.divider} 1px, transparent 1px),
+						linear-gradient(90deg, ${theme.palette.divider} 1px, transparent 1px)
+					`,
+					backgroundSize: "24px 24px",
+					maskImage:
+						"linear-gradient(135deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.4) 100%)",
+					WebkitMaskImage:
+						"linear-gradient(135deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.4) 100%)",
+				}}
+			/>
 			{children}
 		</BaseBox>
 	);
