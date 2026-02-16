@@ -90,6 +90,15 @@ export class NotificationsService implements INotificationsService {
 			return await this.slackProvider.sendMessage(notification, notificationMessage);
 		}
 
+		if (notification.type === "matrix" && this.matrixProvider.sendMessage && notificationMessage) {
+			this.logger.info({
+				message: "[NEW] Using sendMessage for matrix",
+				service: SERVICE_NAME,
+				method: "send",
+			});
+			return await this.matrixProvider.sendMessage(notification, notificationMessage);
+		}
+
 		// Fallback to existing sendAlert for all providers
 		switch (notification.type) {
 			case "email":
