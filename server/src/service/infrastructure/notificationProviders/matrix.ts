@@ -5,7 +5,7 @@ import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimple
 import type { Notification, Monitor, MonitorStatusResponse } from "@/types/index.js";
 import {
 	buildHardwareAlerts,
-	buildHardwareWebhookBody,
+	buildHardwareNotificationMessage,
 	buildWebhookBody,
 	getTestMessage,
 } from "@/service/infrastructure/notificationProviders/utils.js";
@@ -28,7 +28,7 @@ export class MatrixProvider implements INotificationProvider {
 		}
 		// For threshold breaches, use hardware alert format
 		const { alertsToSend } = buildHardwareAlerts("HOST_PLACEHOLDER", monitor, monitorStatusResponse);
-		const body = buildHardwareWebhookBody(clientHost, alertsToSend, monitor);
+		const body = buildHardwareNotificationMessage(clientHost, alertsToSend, monitor);
 		return body;
 	};
 

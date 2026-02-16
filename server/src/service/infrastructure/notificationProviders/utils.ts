@@ -116,16 +116,11 @@ export const buildHardwareAlerts = (
 	return { alertsToSend, discordPayload };
 };
 
-export const buildHardwareNotificationMessage = (clientHost: string, alerts: any, monitor: Monitor) => {
+export const buildHardwareNotificationMessage = (clientHost: string, alerts: string[], monitor: Monitor): string => {
 	const alertsHeader = [`Monitor: ${monitor.name}`, `URL: ${monitor.url}`];
 	const alertFooter = [`Go to incident: ${clientHost}/infrastructure/${monitor.id}`];
 	const alertText = alerts.length > 0 ? [...alertsHeader, ...alerts, ...alertFooter] : [];
-	return alertText.map((alert) => alert).join("\n");
-};
-
-export const buildHardwareWebhookBody = (clientHost: string, alerts: string[], monitor: Monitor): string => {
-	const content = buildHardwareNotificationMessage(clientHost, alerts, monitor);
-	return content;
+	return alertText.join("\n");
 };
 
 export const buildWebhookBody = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
