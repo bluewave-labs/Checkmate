@@ -20,6 +20,7 @@ class MongoMonitorStatsRepository implements IMonitorStatsRepository {
 			id: toStringId(doc._id),
 			monitorId: toStringId(doc.monitorId),
 			avgResponseTime: doc.avgResponseTime,
+			maxResponseTime: doc.maxResponseTime,
 			totalChecks: doc.totalChecks,
 			totalUpChecks: doc.totalUpChecks,
 			totalDownChecks: doc.totalDownChecks,

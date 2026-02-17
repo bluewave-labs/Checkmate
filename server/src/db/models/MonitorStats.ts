@@ -24,6 +24,10 @@ const MonitorStatsSchema = new Schema<MonitorStatsDocument>(
 			type: Number,
 			default: 0,
 		},
+		maxResponseTime: {
+			type: Number,
+			default: 0,
+		},
 		totalChecks: {
 			type: Number,
 			default: 0,

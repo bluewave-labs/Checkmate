@@ -68,6 +68,7 @@ export class StatusService implements IStatusService {
 				stats = {
 					monitorId,
 					avgResponseTime: 0,
+					maxResponseTime: 0,
 					totalChecks: 0,
 					totalUpChecks: 0,
 					totalDownChecks: 0,
@@ -81,6 +82,11 @@ export class StatusService implements IStatusService {
 
 			// Last response time
 			stats.lastResponseTime = responseTime ?? 0;
+
+			// Max response time
+			if (responseTime && responseTime > stats.maxResponseTime) {
+				stats.maxResponseTime = responseTime;
+			}
 
 			// Avg response time:
 			let avgResponseTime = stats.avgResponseTime;
