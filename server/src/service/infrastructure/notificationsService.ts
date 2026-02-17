@@ -108,6 +108,15 @@ export class NotificationsService implements INotificationsService {
 			return await this.pagerDutyProvider.sendMessage(notification, notificationMessage);
 		}
 
+		if (notification.type === "discord" && this.discordProvider.sendMessage && notificationMessage) {
+			this.logger.info({
+				message: "[NEW] Using sendMessage for discord",
+				service: SERVICE_NAME,
+				method: "send",
+			});
+			return await this.discordProvider.sendMessage(notification, notificationMessage);
+		}
+
 		// Fallback to existing sendAlert for all providers
 		switch (notification.type) {
 			case "email":
