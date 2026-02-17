@@ -204,6 +204,7 @@ export const initializeServices = async ({
 		monitorsRepository,
 		teamsRepository,
 		monitorStatsRepository,
+		checksRepository,
 	});
 
 	const superSimpleQueue = await SuperSimpleQueue.create({

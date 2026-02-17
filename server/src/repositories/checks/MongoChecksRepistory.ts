@@ -417,6 +417,12 @@ class MongoChecksRepository implements IChecksRepository {
 		return deleteResult.deletedCount;
 	};
 
+	deleteByMonitorIdsNotIn = async (monitorIds: string[]): Promise<number> => {
+		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		const result = await CheckModel.deleteMany({ "metadata.monitorId": { $nin: objectIds } });
+		return result.deletedCount ?? 0;
+	};
+
 	private findUptimeDateRangeChecks = async (
 		monitorType: Exclude<MonitorType, "hardware" | "pagespeed">,
 		monitorObjectId: mongoose.Types.ObjectId,

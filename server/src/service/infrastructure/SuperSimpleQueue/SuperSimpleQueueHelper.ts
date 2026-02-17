@@ -4,7 +4,13 @@ import { AppError } from "@/utils/AppError.js";
 import { INetworkService, INotificationsService, IStatusService } from "@/service/index.js";
 import type { StatusChangeResult, MonitorStatusResponse, HardwareStatusPayload, MonitorStatus } from "@/types/index.js";
 import IncidentService from "@/service/business/incidentService.js";
-import { IMaintenanceWindowsRepository, IMonitorsRepository, ITeamsRepository, IMonitorStatsRepository } from "@/repositories/index.js";
+import {
+	IMaintenanceWindowsRepository,
+	IMonitorsRepository,
+	ITeamsRepository,
+	IMonitorStatsRepository,
+	IChecksRepository,
+} from "@/repositories/index.js";
 
 export interface MonitorActionDecision {
 	shouldCreateIncident: boolean;
@@ -34,6 +40,7 @@ class SuperSimpleQueueHelper {
 	private monitorsRepository: IMonitorsRepository;
 	private teamsRepository: ITeamsRepository;
 	private monitorStatsRepository: IMonitorStatsRepository;
+	private checksRepository: IChecksRepository;
 
 	constructor({
 		logger,
@@ -47,6 +54,7 @@ class SuperSimpleQueueHelper {
 		monitorsRepository,
 		teamsRepository,
 		monitorStatsRepository,
+		checksRepository,
 	}: {
 		logger: any;
 		networkService: INetworkService;
@@ -59,6 +67,7 @@ class SuperSimpleQueueHelper {
 		monitorsRepository: IMonitorsRepository;
 		teamsRepository: ITeamsRepository;
 		monitorStatsRepository: IMonitorStatsRepository;
+		checksRepository: IChecksRepository;
 	}) {
 		this.logger = logger;
 		this.networkService = networkService;
@@ -71,6 +80,7 @@ class SuperSimpleQueueHelper {
 		this.monitorsRepository = monitorsRepository;
 		this.teamsRepository = teamsRepository;
 		this.monitorStatsRepository = monitorStatsRepository;
+		this.checksRepository = checksRepository;
 	}
 
 	get serviceName() {
@@ -206,6 +216,15 @@ class SuperSimpleQueueHelper {
 				}
 
 				// Remove orphaned checks
+				const deletedChecksCount = await this.checksRepository.deleteByMonitorIdsNotIn(allMonitorIds);
+				if (deletedChecksCount > 0) {
+					this.logger.info({
+						message: `Deleted ${deletedChecksCount} orphaned checks`,
+						service: SERVICE_NAME,
+						method: "getCleanupOrphanedJob",
+					});
+				}
+
 				// Remove orphaned incidents
 
 				this.logger.info({

@@ -24,6 +24,5 @@ export interface IIncidentsRepository {
 	updateById(incidentId: string, teamId: string, updateData: Partial<Incident>): Promise<Incident>;
 	// delete
 	deleteByMonitorId(monitorId: string, teamId: string): Promise<number>;
-	deleteByMonitorIdsNotIn(monitorIds: string[]): Promise<number>;
 	// other
 }
