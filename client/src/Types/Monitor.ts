@@ -85,6 +85,7 @@ export interface MonitorStats {
 	id: string;
 	monitorId: string;
 	avgResponseTime: number;
+	maxResponseTime: number;
 	totalChecks: number;
 	totalUpChecks: number;
 	totalDownChecks: number;
