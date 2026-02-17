@@ -17,31 +17,23 @@ interface HistogramResponseTimeProps {
 }
 
 interface ResponseTimeStats {
-	max: number;
-	avg: number;
+	max: number | string;
+	avg: number | string;
 }
 
 const DEFAULT_HEIGHT = 50;
 
 const calculateResponseTimeStats = (checks: CheckSnapshot[]): ResponseTimeStats => {
 	if (!Array.isArray(checks) || checks.length === 0) {
-		return { max: 0, avg: 0 };
+		return { max: "-", avg: "-" };
 	}
 
-	const validChecks = checks.filter(
-		(check) =>
-			(check as any).status !== "placeholder" &&
-			(check.originalResponseTime != null || check.responseTime != null)
-	);
-
+	const validChecks = checks.filter((check) => check.originalResponseTime != null);
 	if (validChecks.length === 0) {
-		return { max: 0, avg: 0 };
+		return { max: "-", avg: "-" };
 	}
 
-	const responseTimes = validChecks.map(
-		(check) => check.originalResponseTime ?? check.responseTime ?? 0
-	);
-
+	const responseTimes = validChecks.map((check) => check.originalResponseTime);
 	const max = Math.max(...responseTimes);
 	const avg = Math.round(
 		responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length
@@ -72,48 +64,30 @@ export const HistogramResponseTime = ({
 	const chartHeight = typeof height === "number" ? `${height}px` : height;
 	const gridGap = gap ?? theme.spacing(0.5);
 
-	const statsContent = showStats && (stats.max > 0 || stats.avg > 0) && (
-		<Stack
-			justifyContent="center"
-			alignItems={statsPosition === "left" ? "flex-end" : "flex-start"}
-			sx={{
-				minWidth: 70,
-				pr: statsPosition === "left" ? theme.spacing(8) : 0,
-				pl: statsPosition === "right" ? theme.spacing(8) : 0,
-			}}
-		>
-			<Typography
-				variant="caption"
-				sx={{
-					color: theme.palette.text.secondary,
-					fontSize: "0.65rem",
-					fontWeight: 500,
-					pt: theme.spacing(2),
-				}}
+	const statsContent = showStats &&
+		(typeof stats.max === "number" || typeof stats.avg === "number") && (
+			<Stack
+				justifyContent="center"
+				alignItems={statsPosition === "left" ? "flex-end" : "flex-start"}
+				minWidth={70}
+				pr={statsPosition === "left" ? theme.spacing(8) : 0}
+				pl={statsPosition === "right" ? theme.spacing(8) : 0}
 			>
-				{t("common.charts.histogram.avg", { value: stats.avg })}
-			</Typography>
-			<Typography
-				variant="caption"
-				sx={{
-					color: theme.palette.text.secondary,
-					fontSize: "0.65rem",
-					fontWeight: 500,
-					pt: theme.spacing(2),
-				}}
-			>
-				{t("common.charts.histogram.max", { value: stats.max })}
-			</Typography>
-		</Stack>
-	);
+				<Typography variant="body2">
+					{t("common.charts.histogram.avg", { value: stats.avg })}
+				</Typography>
+				<Typography variant="body2">
+					{t("common.charts.histogram.max", { value: stats.max })}
+				</Typography>
+			</Stack>
+		);
 
 	return (
 		<Stack
-			direction="row"
+			direction={statsPosition === "left" ? "row-reverse" : "row"}
 			alignItems="center"
 			sx={{ width: "100%" }}
 		>
-			{statsPosition === "left" && statsContent}
 			<Box sx={{ flex: 1 }}>
 				<Box
 					sx={{
@@ -175,7 +149,7 @@ export const HistogramResponseTime = ({
 					})}
 				</Box>
 			</Box>
-			{statsPosition === "right" && statsContent}
+			{statsContent}
 		</Stack>
 	);
 };
