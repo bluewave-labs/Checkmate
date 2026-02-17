@@ -195,7 +195,6 @@ class SuperSimpleQueueHelper {
 			notificationReason: null,
 		};
 
-		// Simplified logic: Just check status changes
 		if (!statusChanged) {
 			return decision;
 		}
