@@ -13,7 +13,7 @@ import type {
 	GotTimings,
 	MonitorType,
 } from "@/types/index.js";
-import { CheckModel, type CheckDocument } from "@/db/models/index.js";
+import { CheckModel, MonitorModel, type CheckDocument } from "@/db/models/index.js";
 import mongoose from "mongoose";
 
 const SERVICE_NAME = "StatusService";
@@ -210,19 +210,16 @@ class MongoChecksRepository implements IChecksRepository {
 	private toDocument = (check: Partial<Check>): CheckDocument => {
 		// Map id to _id for MongoDB storage
 		const { id, metadata, ...rest } = check;
+		if (!metadata || !metadata.monitorId || !metadata.teamId) {
+			throw new Error(`Check must have valid metadata with monitorId and teamId. Got: ${JSON.stringify({ id, metadata })}`);
+		}
 		return {
 			_id: id ? new mongoose.Types.ObjectId(id) : new mongoose.Types.ObjectId(),
-			metadata: metadata
-				? {
-						monitorId: new mongoose.Types.ObjectId(metadata.monitorId),
-						teamId: new mongoose.Types.ObjectId(metadata.teamId),
-						type: metadata.type,
-					}
-				: {
-						monitorId: new mongoose.Types.ObjectId(),
-						teamId: new mongoose.Types.ObjectId(),
-						type: "http",
-					},
+			metadata: {
+				monitorId: new mongoose.Types.ObjectId(metadata.monitorId),
+				teamId: new mongoose.Types.ObjectId(metadata.teamId),
+				type: metadata.type,
+			},
 			...rest,
 		} as unknown as CheckDocument;
 	};
@@ -415,6 +412,12 @@ class MongoChecksRepository implements IChecksRepository {
 	deleteByTeamId = async (teamId: string) => {
 		const deleteResult = await CheckModel.deleteMany({ "metadata.teamId": teamId });
 		return deleteResult.deletedCount;
+	};
+
+	deleteByMonitorIdsNotIn = async (monitorIds: string[]): Promise<number> => {
+		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		const result = await CheckModel.deleteMany({ "metadata.monitorId": { $nin: objectIds } });
+		return result.deletedCount ?? 0;
 	};
 
 	private findUptimeDateRangeChecks = async (

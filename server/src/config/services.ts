@@ -202,6 +202,10 @@ export const initializeServices = async ({
 		incidentService,
 		maintenanceWindowsRepository,
 		monitorsRepository,
+		teamsRepository,
+		monitorStatsRepository,
+		checksRepository,
+		incidentsRepository,
 	});
 
 	const superSimpleQueue = await SuperSimpleQueue.create({

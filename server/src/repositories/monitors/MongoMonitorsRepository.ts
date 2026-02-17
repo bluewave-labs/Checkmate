@@ -431,6 +431,17 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			createdAt: toDateString(doc.createdAt),
 		};
 	};
+
+	deleteByTeamIdsNotIn = async (teamIds: string[]): Promise<number> => {
+		const objectIds = teamIds.map((id) => new mongoose.Types.ObjectId(id));
+		const result = await MonitorModel.deleteMany({ teamId: { $nin: objectIds } });
+		return result.deletedCount ?? 0;
+	};
+
+	findAllMonitorIds = async (): Promise<string[]> => {
+		const monitors = await MonitorModel.find({}, { _id: 1 }).lean();
+		return monitors.map((doc) => doc._id.toString());
+	};
 }
 
 export default MongoMonitorsRepository;

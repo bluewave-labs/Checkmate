@@ -4,7 +4,14 @@ import { AppError } from "@/utils/AppError.js";
 import { INetworkService, INotificationsService, IStatusService } from "@/service/index.js";
 import type { StatusChangeResult, MonitorStatusResponse, HardwareStatusPayload, MonitorStatus } from "@/types/index.js";
 import IncidentService from "@/service/business/incidentService.js";
-import { IMaintenanceWindowsRepository, IMonitorsRepository } from "@/repositories/index.js";
+import {
+	IMaintenanceWindowsRepository,
+	IMonitorsRepository,
+	ITeamsRepository,
+	IMonitorStatsRepository,
+	IChecksRepository,
+	IIncidentsRepository,
+} from "@/repositories/index.js";
 
 export interface MonitorActionDecision {
 	shouldCreateIncident: boolean;
@@ -32,6 +39,10 @@ class SuperSimpleQueueHelper {
 	private incidentService: IncidentService;
 	private maintenanceWindowsRepository: IMaintenanceWindowsRepository;
 	private monitorsRepository: IMonitorsRepository;
+	private teamsRepository: ITeamsRepository;
+	private monitorStatsRepository: IMonitorStatsRepository;
+	private checksRepository: IChecksRepository;
+	private incidentsRepository: IIncidentsRepository;
 
 	constructor({
 		logger,
@@ -43,6 +54,10 @@ class SuperSimpleQueueHelper {
 		incidentService,
 		maintenanceWindowsRepository,
 		monitorsRepository,
+		teamsRepository,
+		monitorStatsRepository,
+		checksRepository,
+		incidentsRepository,
 	}: {
 		logger: any;
 		networkService: INetworkService;
@@ -53,6 +68,10 @@ class SuperSimpleQueueHelper {
 		incidentService: IncidentService;
 		maintenanceWindowsRepository: IMaintenanceWindowsRepository;
 		monitorsRepository: IMonitorsRepository;
+		teamsRepository: ITeamsRepository;
+		monitorStatsRepository: IMonitorStatsRepository;
+		checksRepository: IChecksRepository;
+		incidentsRepository: IIncidentsRepository;
 	}) {
 		this.logger = logger;
 		this.networkService = networkService;
@@ -63,6 +82,10 @@ class SuperSimpleQueueHelper {
 		this.incidentService = incidentService;
 		this.maintenanceWindowsRepository = maintenanceWindowsRepository;
 		this.monitorsRepository = monitorsRepository;
+		this.teamsRepository = teamsRepository;
+		this.monitorStatsRepository = monitorStatsRepository;
+		this.checksRepository = checksRepository;
+		this.incidentsRepository = incidentsRepository;
 	}
 
 	get serviceName() {
@@ -111,7 +134,7 @@ class SuperSimpleQueueHelper {
 					return;
 				}
 				// Step 4 Add check to buffer
-				this.buffer.addToBuffer({ check });
+				this.buffer.addToBuffer(check);
 				// Step 4.  Update monitor status
 				const statusChangeResult = await this.statusService.updateMonitorStatus(status, check);
 
@@ -156,10 +179,72 @@ class SuperSimpleQueueHelper {
 	getCleanupOrphanedJob = () => {
 		return async () => {
 			try {
-				// Remove orphaned monitors
-				// remove orphaned monitorStats
+				this.logger.info({
+					message: "Starting cleanup of orphaned data",
+					service: SERVICE_NAME,
+					method: "getCleanupOrphanedJob",
+				});
+
+				// Get all valid team IDs
+				const validTeamIds = await this.teamsRepository.findAllTeamIds();
+				this.logger.debug({
+					message: `Found ${validTeamIds.length} valid teams`,
+					service: SERVICE_NAME,
+					method: "getCleanupOrphanedJob",
+				});
+
+				// Remove orphaned monitors (monitors without a valid team)
+				const deletedMonitorCount = await this.monitorsRepository.deleteByTeamIdsNotIn(validTeamIds);
+				if (deletedMonitorCount > 0) {
+					this.logger.info({
+						message: `Deleted ${deletedMonitorCount} orphaned monitors`,
+						service: SERVICE_NAME,
+						method: "getCleanupOrphanedJob",
+					});
+				}
+
+				// Remove orphaned monitorStats (stats without a valid monitor)
+				const allMonitorIds = await this.monitorsRepository.findAllMonitorIds();
+				this.logger.debug({
+					message: `Found ${allMonitorIds.length} valid monitors`,
+					service: SERVICE_NAME,
+					method: "getCleanupOrphanedJob",
+				});
+
+				const deletedStatsCount = await this.monitorStatsRepository.deleteByMonitorIdsNotIn(allMonitorIds);
+				if (deletedStatsCount > 0) {
+					this.logger.info({
+						message: `Deleted ${deletedStatsCount} orphaned monitor stats`,
+						service: SERVICE_NAME,
+						method: "getCleanupOrphanedJob",
+					});
+				}
+
 				// Remove orphaned checks
+				const deletedChecksCount = await this.checksRepository.deleteByMonitorIdsNotIn(allMonitorIds);
+				if (deletedChecksCount > 0) {
+					this.logger.info({
+						message: `Deleted ${deletedChecksCount} orphaned checks`,
+						service: SERVICE_NAME,
+						method: "getCleanupOrphanedJob",
+					});
+				}
+
 				// Remove orphaned incidents
+				const deletedIncidentsCount = await this.incidentsRepository.deleteByMonitorIdsNotIn(allMonitorIds);
+				if (deletedIncidentsCount > 0) {
+					this.logger.info({
+						message: `Deleted ${deletedIncidentsCount} orphaned incidents`,
+						service: SERVICE_NAME,
+						method: "getCleanupOrphanedJob",
+					});
+				}
+
+				this.logger.info({
+					message: "Cleanup of orphaned data completed",
+					service: SERVICE_NAME,
+					method: "getCleanupOrphanedJob",
+				});
 			} catch (error: any) {
 				this.logger.warn({
 					message: error.message,
