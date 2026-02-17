@@ -210,7 +210,9 @@ class MongoChecksRepository implements IChecksRepository {
 	private toDocument = (check: Partial<Check>): CheckDocument => {
 		// Map id to _id for MongoDB storage
 		const { id, metadata, ...rest } = check;
-
+		if (!metadata || !metadata.monitorId || !metadata.teamId) {
+			throw new Error(`Check must have valid metadata with monitorId and teamId. Got: ${JSON.stringify({ id, metadata })}`);
+		}
 		return {
 			_id: id ? new mongoose.Types.ObjectId(id) : new mongoose.Types.ObjectId(),
 			metadata: {
