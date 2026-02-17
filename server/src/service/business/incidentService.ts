@@ -6,6 +6,7 @@ import { ParseBoolean } from "@/utils/utils.js";
 import type { IIncidentsRepository, IMonitorsRepository, IUsersRepository } from "@/repositories/index.js";
 import type { Incident } from "@/types/index.js";
 import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+import type { INotificationMessageBuilder } from "@/service/infrastructure/notificationMessageBuilder.js";
 
 const dateRangeLookup: Record<string, Date | undefined> = {
 	recent: new Date(new Date().setHours(new Date().getHours() - 2)),
@@ -23,22 +24,26 @@ class IncidentService {
 	private incidentsRepository: IIncidentsRepository;
 	private monitorsRepository: IMonitorsRepository;
 	private usersRepository: IUsersRepository;
+	private notificationMessageBuilder: INotificationMessageBuilder;
 
 	constructor({
 		logger,
 		incidentsRepository,
 		monitorsRepository,
 		usersRepository,
+		notificationMessageBuilder,
 	}: {
 		logger: any;
 		incidentsRepository: IIncidentsRepository;
 		monitorsRepository: IMonitorsRepository;
 		usersRepository: IUsersRepository;
+		notificationMessageBuilder: INotificationMessageBuilder;
 	}) {
 		this.logger = logger;
 		this.incidentsRepository = incidentsRepository;
 		this.monitorsRepository = monitorsRepository;
 		this.usersRepository = usersRepository;
+		this.notificationMessageBuilder = notificationMessageBuilder;
 	}
 
 	get serviceName() {
@@ -96,69 +101,17 @@ class IncidentService {
 	};
 
 	private buildThresholdBreachMessage(monitor: Monitor, monitorStatusResponse?: MonitorStatusResponse): string {
-		const breaches: string[] = [];
-
-		if (!monitorStatusResponse?.payload || monitor.type !== "hardware") {
+		if (!monitorStatusResponse) {
 			return "Threshold breach detected";
 		}
 
-		const payload = monitorStatusResponse.payload as { data?: any };
-		const hardware = payload.data;
-
-		if (!hardware) {
-			return "Threshold breach detected";
-		}
-
-		// Check CPU breach
-		if (monitor.cpuAlertThreshold !== undefined && monitor.cpuAlertThreshold !== null && hardware.cpu?.usage_percent !== undefined) {
-			const cpuPercent = hardware.cpu.usage_percent * 100;
-			if (cpuPercent > monitor.cpuAlertThreshold) {
-				breaches.push(`CPU: ${cpuPercent.toFixed(1)}% (threshold: ${monitor.cpuAlertThreshold}%)`);
-			}
-		}
-
-		// Check Memory breach
-		if (monitor.memoryAlertThreshold !== undefined && monitor.memoryAlertThreshold !== null && hardware.memory?.usage_percent !== undefined) {
-			const memoryPercent = hardware.memory.usage_percent * 100;
-			if (memoryPercent > monitor.memoryAlertThreshold) {
-				breaches.push(`Memory: ${memoryPercent.toFixed(1)}% (threshold: ${monitor.memoryAlertThreshold}%)`);
-			}
-		}
-
-		// Check Disk breach
-		if (monitor.diskAlertThreshold !== undefined && monitor.diskAlertThreshold !== null && Array.isArray(hardware.disk)) {
-			let maxDiskPercent = 0;
-			for (const disk of hardware.disk) {
-				if (disk.usage_percent !== undefined) {
-					const diskPercent = disk.usage_percent * 100;
-					if (diskPercent > maxDiskPercent) {
-						maxDiskPercent = diskPercent;
-					}
-				}
-			}
-			if (maxDiskPercent > monitor.diskAlertThreshold) {
-				breaches.push(`Disk: ${maxDiskPercent.toFixed(1)}% (threshold: ${monitor.diskAlertThreshold}%)`);
-			}
-		}
-
-		// Check Temperature breach
-		if (monitor.tempAlertThreshold !== undefined && monitor.tempAlertThreshold !== null && Array.isArray(hardware.cpu?.temperature)) {
-			let maxTemp = 0;
-			for (const temp of hardware.cpu.temperature) {
-				if (temp.current !== undefined && temp.current > maxTemp) {
-					maxTemp = temp.current;
-				}
-			}
-			if (maxTemp > monitor.tempAlertThreshold) {
-				breaches.push(`Temperature: ${maxTemp.toFixed(1)}°C (threshold: ${monitor.tempAlertThreshold}°C)`);
-			}
-		}
+		const breaches = this.notificationMessageBuilder.extractThresholdBreaches(monitor, monitorStatusResponse);
 
 		if (breaches.length === 0) {
 			return "Threshold breach detected";
 		}
 
-		return breaches.join(", ");
+		return breaches.map((b) => `${b.metric.toUpperCase()}: ${b.formattedValue} (threshold: ${b.threshold}${b.unit})`).join(", ");
 	}
 
 	resolveIncident = async (incidentId: string, userId: string, teamId: string, comment?: string, userEmail?: string) => {

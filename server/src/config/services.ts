@@ -151,11 +151,14 @@ export const initializeServices = async ({
 	});
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 
+	const notificationMessageBuilder = new NotificationMessageBuilder();
+
 	const incidentService = new IncidentService({
 		logger,
 		incidentsRepository,
 		monitorsRepository,
 		usersRepository,
+		notificationMessageBuilder,
 	});
 
 	const checkService = new CheckService({
@@ -174,8 +177,6 @@ export const initializeServices = async ({
 	const discordProvider = new DiscordProvider(logger);
 	const pagerDutyProvider = new PagerDutyProvider(logger);
 	const matrixProvider = new MatrixProvider(logger);
-
-	const notificationMessageBuilder = new NotificationMessageBuilder();
 
 	const notificationsService = new NotificationsService(
 		notificationsRepository,
