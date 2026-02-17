@@ -7,5 +7,7 @@ export interface IMonitorStatsRepository {
 	// update
 	// delete
 	deleteByMonitorId(monitorId: string): Promise<MonitorStats>;
+	deleteByMonitorIds(monitorIds: string[]): Promise<number>;
+	deleteByMonitorIdsNotIn(monitorIds: string[]): Promise<number>;
 	// other
 }
