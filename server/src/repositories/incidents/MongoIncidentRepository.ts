@@ -273,5 +273,13 @@ class MongoIncidentRepository implements IIncidentsRepository {
 			})),
 		};
 	};
+
+	deleteByMonitorId = async (monitorId: string, teamId: string) => {
+		const result = await IncidentModel.deleteMany({
+			monitorId: new mongoose.Types.ObjectId(monitorId),
+			teamId: new mongoose.Types.ObjectId(teamId),
+		});
+		return result.deletedCount || 0;
+	};
 }
 export default MongoIncidentRepository;

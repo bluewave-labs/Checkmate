@@ -153,6 +153,25 @@ class SuperSimpleQueueHelper {
 		};
 	};
 
+	getCleanupOrphanedJob = () => {
+		return async () => {
+			try {
+				// Remove orphaned monitors
+				// remove orphaned monitorStats
+				// Remove orphaned checks
+				// Remove orphaned incidents
+			} catch (error: any) {
+				this.logger.warn({
+					message: error.message,
+					service: SERVICE_NAME,
+					method: "getCleanupOrphanedJob",
+					stack: error.stack,
+				});
+				throw error;
+			}
+		};
+	};
+
 	async isInMaintenanceWindow(monitorId: string, teamId: string) {
 		const maintenanceWindows = await this.maintenanceWindowsRepository.findByMonitorId(monitorId, teamId);
 		// Check for active maintenance window:
