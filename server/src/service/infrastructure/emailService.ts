@@ -65,6 +65,7 @@ class EmailService {
 			passwordResetTemplate: this.loadTemplate("passwordReset"),
 			hardwareIncidentTemplate: this.loadTemplate("hardwareIncident"),
 			testEmailTemplate: this.loadTemplate("testEmailTemplate"),
+			unifiedNotificationTemplate: this.loadTemplate("unifiedNotification"),
 		};
 	};
 
