@@ -79,6 +79,7 @@ export class StatusService implements IStatusService {
 			}
 
 			// Update stats
+			stats.totalChecks++;
 
 			// Last response time
 			stats.lastResponseTime = responseTime ?? 0;
@@ -100,7 +101,6 @@ export class StatusService implements IStatusService {
 			stats.avgResponseTime = avgResponseTime;
 
 			// Total checks
-			stats.totalChecks++;
 			if (status === true) {
 				stats.totalUpChecks++;
 				// Update the timeSinceLastFailure if needed
