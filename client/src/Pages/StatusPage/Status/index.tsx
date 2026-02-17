@@ -96,7 +96,6 @@ const StatusPageView = () => {
 					}}
 				/>
 			)}
-			<Typography variant="h2">{t("statusPageStatusServiceStatus")}</Typography>
 			<StatusBar monitors={monitors} />
 			<MonitorsList
 				statusPage={statusPage}

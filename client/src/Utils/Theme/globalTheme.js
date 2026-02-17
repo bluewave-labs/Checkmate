@@ -38,7 +38,6 @@ const baseTheme = (palette) => ({
 			fontWeight: 400,
 		},
 		label: {
-			fontSize: "var(--env-var-font-size-medium)",
 			color: palette.primary.contrastTextSecondary,
 			fontWeight: 500,
 		},
@@ -332,8 +331,6 @@ const baseTheme = (palette) => ({
 
 					"& .MuiInputBase-input": {
 						padding: ".75em",
-						minHeight: "var(--env-var-height-2)",
-						fontSize: "var(--env-var-font-size-medium)",
 						fontWeight: 400,
 						color: palette.primary.contrastTextSecondary,
 						"&.Mui-disabled": {
@@ -368,13 +365,12 @@ const baseTheme = (palette) => ({
 					"& .MuiFormHelperText-root": {
 						color: palette.error.main,
 						opacity: 0.8,
-						fontSize: "var(--env-var-font-size-medium)",
+						fontSize: "var()",
 						marginLeft: 0,
 					},
 
 					"& .MuiFormHelperText-root.Mui-error": {
 						opacity: 0.8,
-						fontSize: "var(--env-var-font-size-medium)",
 						color: palette.error.main,
 						whiteSpace: "nowrap",
 					},
@@ -762,7 +758,6 @@ const baseTheme = (palette) => ({
 						overflow: "hidden",
 						textOverflow: "ellipsis",
 						whiteSpace: "nowrap",
-						maxWidth: "calc((100vw - var(--env-var-width-2)) / 2)",
 					},
 				},
 				{
@@ -775,7 +770,6 @@ const baseTheme = (palette) => ({
 						overflow: "hidden",
 						textOverflow: "ellipsis",
 						whiteSpace: "nowrap",
-						maxWidth: "calc((100vw - var(--env-var-width-2)) / 2)",
 					},
 				},
 			],

@@ -1,13 +1,8 @@
 import Stack from "@mui/material/Stack";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import {
-	MonitorBasePageWithStates,
-	UpStatusBox,
-	DownStatusBox,
-	PausedStatusBox,
-} from "@/Components/v2/design-elements";
+import { MonitorBasePageWithStates } from "@/Components/v2/design-elements";
 import { HeaderCreate } from "@/Components/v2/common";
-import { ControlsFilter } from "@/Components/v2/monitors";
+import { ControlsFilter, HeaderMonitorsSummary } from "@/Components/v2/monitors";
 import { TextField, Dialog } from "@/Components/v2/inputs";
 
 import { useGet, useDelete } from "@/Hooks/UseApi";
@@ -99,7 +94,7 @@ const InfrastructureMonitors = () => {
 		{ refreshInterval: 5000, keepPreviousData: true }
 	);
 
-	const { summary, count } = monitorsWithChecksData ?? {};
+	const { summary, count } = monitorsWithChecksData ?? { summary: null, count: 0 };
 	const isLoading = monitorsWithChecksLoading;
 
 	// Check if any filters are active
@@ -138,14 +133,10 @@ const InfrastructureMonitors = () => {
 				isLoading={isLoading}
 				isAdmin={isAdmin}
 			/>
-			<Stack
-				direction={isSmall ? "column" : "row"}
-				gap={theme.spacing(8)}
-			>
-				<UpStatusBox n={summary?.upMonitors || 0} />
-				<DownStatusBox n={summary?.downMonitors || 0} />
-				<PausedStatusBox n={summary?.pausedMonitors || 0} />
-			</Stack>
+			<HeaderMonitorsSummary
+				summary={summary}
+				showBreached={true}
+			/>
 			<Stack
 				direction={isSmall ? "column" : "row"}
 				justifyContent={isSmall ? "flex-start" : "space-between"}

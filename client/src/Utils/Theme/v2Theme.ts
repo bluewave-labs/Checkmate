@@ -49,6 +49,13 @@ export const theme = (mode: string, palette: any) =>
 		},
 
 		components: {
+			MuiTouchRipple: {
+				styleOverrides: {
+					root: {
+						display: "none",
+					},
+				},
+			},
 			MuiButtonBase: {
 				defaultProps: {
 					disableRipple: true,

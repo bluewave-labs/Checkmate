@@ -55,7 +55,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 					query.isActive = filter === "true";
 					break;
 				case "status":
-					query.status = filter === "true";
+					query.status = filter;
 					break;
 				case "type":
 					query.type = filter;
@@ -181,7 +181,13 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 				{
 					$set: {
 						isActive: { $not: "$isActive" },
-						status: "$$REMOVE",
+						status: {
+							$cond: {
+								if: { $eq: ["$status", "paused"] },
+								then: "initializing",
+								else: "paused",
+							},
+						},
 					},
 				},
 			],
@@ -223,17 +229,32 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 					totalMonitors: { $sum: 1 },
 					upMonitors: {
 						$sum: {
-							$cond: [{ $eq: ["$status", true] }, 1, 0],
+							$cond: [{ $eq: ["$status", "up"] }, 1, 0],
 						},
 					},
 					downMonitors: {
 						$sum: {
-							$cond: [{ $eq: ["$status", false] }, 1, 0],
+							$cond: [{ $eq: ["$status", "down"] }, 1, 0],
 						},
 					},
 					pausedMonitors: {
 						$sum: {
-							$cond: [{ $eq: ["$isActive", false] }, 1, 0],
+							$cond: [{ $eq: ["$status", "paused"] }, 1, 0],
+						},
+					},
+					initializingMonitors: {
+						$sum: {
+							$cond: [{ $eq: ["$status", "initializing"] }, 1, 0],
+						},
+					},
+					maintenanceMonitors: {
+						$sum: {
+							$cond: [{ $eq: ["$status", "maintenance"] }, 1, 0],
+						},
+					},
+					breachedMonitors: {
+						$sum: {
+							$cond: [{ $eq: ["$status", "breached"] }, 1, 0],
 						},
 					},
 				},
@@ -242,7 +263,17 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		];
 
 		const [summary] = await MonitorModel.aggregate(pipeline);
-		return summary ?? { totalMonitors: 0, upMonitors: 0, downMonitors: 0, pausedMonitors: 0 };
+		return (
+			summary ?? {
+				totalMonitors: 0,
+				upMonitors: 0,
+				downMonitors: 0,
+				pausedMonitors: 0,
+				initializingMonitors: 0,
+				maintenanceMonitors: 0,
+				breachedMonitors: 0,
+			}
+		);
 	};
 
 	findGroupsByTeamId = async (teamId: string): Promise<string[]> => {
@@ -284,7 +315,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			teamId: toStringId(doc.teamId),
 			name: doc.name,
 			description: doc.description ?? undefined,
-			status: doc.status ?? undefined,
+			status: doc.status ?? "initializing",
 			statusWindow: doc.statusWindow ?? [],
 			statusWindowSize: doc.statusWindowSize,
 			statusWindowThreshold: doc.statusWindowThreshold,
@@ -301,12 +332,14 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			uptimePercentage: doc.uptimePercentage ?? undefined,
 			notifications: notificationIds,
 			secret: doc.secret ?? undefined,
-			thresholds: doc.thresholds ?? undefined,
-			alertThreshold: doc.alertThreshold,
 			cpuAlertThreshold: doc.cpuAlertThreshold,
+			cpuAlertCounter: doc.cpuAlertCounter,
 			memoryAlertThreshold: doc.memoryAlertThreshold,
+			memoryAlertCounter: doc.memoryAlertCounter,
 			diskAlertThreshold: doc.diskAlertThreshold,
+			diskAlertCounter: doc.diskAlertCounter,
 			tempAlertThreshold: doc.tempAlertThreshold,
+			tempAlertCounter: doc.tempAlertCounter,
 			selectedDisks: doc.selectedDisks ?? [],
 			gameId: doc.gameId ?? undefined,
 			group: doc.group ?? null,
@@ -331,45 +364,13 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 
 		const notificationIds = (doc.notifications ?? []).map((notification: unknown) => toStringId(notification));
 
-		const checks: Check[] = (doc.checks ?? []).map((check: any) => ({
-			id: toStringId(check._id),
-			metadata: {
-				monitorId: toStringId(check.metadata?.monitorId),
-				teamId: toStringId(check.metadata?.teamId),
-				type: check.metadata?.type,
-			},
-			status: check.status,
-			responseTime: check.responseTime,
-			timings: check.timings,
-			statusCode: check.statusCode,
-			message: check.message,
-			ack: check.ack,
-			ackAt: check.ackAt ?? null,
-			expiry: toDateString(check.expiry),
-			cpu: check.cpu,
-			memory: check.memory,
-			disk: check.disk,
-			host: check.host,
-			errors: check.errors,
-			capture: check.capture,
-			net: check.net,
-			accessibility: check.accessibility,
-			bestPractices: check.bestPractices,
-			seo: check.seo,
-			performance: check.performance,
-			audits: check.audits,
-			__v: check.__v,
-			createdAt: toDateString(check.createdAt),
-			updatedAt: toDateString(check.updatedAt),
-		}));
-
 		return {
 			id: toStringId(doc._id),
 			userId: toStringId(doc.userId),
 			teamId: toStringId(doc.teamId),
 			name: doc.name,
 			description: doc.description ?? undefined,
-			status: doc.status ?? undefined,
+			status: doc.status ?? "initializing",
 			statusWindow: doc.statusWindow ?? [],
 			statusWindowSize: doc.statusWindowSize,
 			statusWindowThreshold: doc.statusWindowThreshold,
@@ -386,12 +387,14 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			uptimePercentage: doc.uptimePercentage ?? undefined,
 			notifications: notificationIds,
 			secret: doc.secret ?? undefined,
-			thresholds: doc.thresholds ?? undefined,
-			alertThreshold: doc.alertThreshold,
 			cpuAlertThreshold: doc.cpuAlertThreshold,
+			cpuAlertCounter: doc.cpuAlertCounter,
 			memoryAlertThreshold: doc.memoryAlertThreshold,
+			memoryAlertCounter: doc.memoryAlertCounter,
 			diskAlertThreshold: doc.diskAlertThreshold,
+			diskAlertCounter: doc.diskAlertCounter,
 			tempAlertThreshold: doc.tempAlertThreshold,
+			tempAlertCounter: doc.tempAlertCounter,
 			selectedDisks: doc.selectedDisks ?? [],
 			gameId: doc.gameId ?? undefined,
 			group: doc.group ?? null,

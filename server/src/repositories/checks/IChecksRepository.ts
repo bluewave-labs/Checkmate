@@ -11,6 +11,7 @@ import type { LatestChecksMap } from "@/repositories/checks/MongoChecksRepistory
 
 export interface IChecksRepository {
 	// create
+	create(check: Check): Promise<Check>;
 	createChecks(checks: Check[]): Promise<Check[]>;
 
 	// single fetch

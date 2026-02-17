@@ -12,16 +12,16 @@ const getMonitorStatus = (monitors: Monitor[], theme: Theme, t: Function) => {
 		icon: <AlertTriangle size={24} />,
 	};
 
-	if (monitors.every((monitor) => monitor.status === true)) {
+	if (monitors.every((monitor) => monitor.status === "up")) {
 		monitorsStatus.msg = t("pages.statusPages.statusBar.allUp");
 		monitorsStatus.color = theme.palette.success.main;
 		monitorsStatus.icon = <CircleCheck size={24} />;
 		return monitorsStatus;
-	} else if (monitors.every((monitor) => monitor.status === false)) {
+	} else if (monitors.every((monitor) => monitor.status === "down")) {
 		monitorsStatus.msg = t("pages.statusPages.statusBar.allDown");
 		monitorsStatus.color = theme.palette.error.main;
 		return monitorsStatus;
-	} else if (monitors.some((monitor) => monitor.status === false)) {
+	} else if (monitors.some((monitor) => monitor.status === "down")) {
 		monitorsStatus.msg = t("pages.statusPages.statusBar.degraded");
 		monitorsStatus.color = theme.palette.warning.main;
 		return monitorsStatus;

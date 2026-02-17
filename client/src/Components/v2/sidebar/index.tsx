@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import Backdrop from "@mui/material/Backdrop";
 import Stack from "@mui/material/Stack";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
@@ -51,71 +52,80 @@ export const Sidebar = () => {
 	};
 
 	return (
-		<Stack
-			component="aside"
-			position={isSmall ? "fixed" : "sticky"}
-			top={0}
-			left={0}
-			minHeight={"100vh"}
-			maxHeight={"100vh"}
-			paddingTop={theme.spacing(6)}
-			paddingBottom={theme.spacing(6)}
-			gap={theme.spacing(6)}
-			borderRight={`1px solid ${theme.palette.divider}`}
-			width={width}
-			sx={{
-				transition: transition,
-				zIndex: isSmall ? (t) => t.zIndex.drawer : "auto",
-			}}
-		>
-			<List
-				component="nav"
-				disablePadding
+		<>
+			<Backdrop
+				open={!collapsed && isSmall}
+				onClick={() => dispatch(setCollapsed({ collapsed: true }))}
+				sx={{ zIndex: 999 }}
+			/>
+			<Stack
+				component="aside"
+				position={isSmall ? "fixed" : "sticky"}
+				top={0}
+				left={0}
+				minHeight={"100vh"}
+				maxHeight={"100vh"}
+				paddingTop={theme.spacing(6)}
+				paddingBottom={theme.spacing(6)}
+				gap={theme.spacing(6)}
+				borderRight={`1px solid ${theme.palette.divider}`}
+				width={width}
 				sx={{
-					px: theme.spacing(6),
-					flex: 1,
+					touchAction: "none",
+					transition: transition,
+					zIndex: 1000,
+					backdropFilter: "blur(8px)",
 				}}
 			>
-				<Logo
-					pt={theme.spacing(8)}
-					pb={theme.spacing(10)}
-				/>
-				{menu.map((item) => {
-					const selected = location.pathname.startsWith(`/${item.path}`);
-					return (
-						<NavItem
-							key={item.path}
-							item={item}
-							selected={selected}
-							onClick={() => handleNavClick(item.path)}
-						/>
-					);
-				})}
-			</List>
-			<StarPrompt />
-			<List
-				component="nav"
-				disablePadding
-				sx={{ px: theme.spacing(6) }}
-			>
-				{bottomMenu.map((item) => {
-					const selected = location.pathname.startsWith(`/${item.path}`);
-					return (
-						<NavItem
-							key={item.path}
-							item={item}
-							selected={selected}
-							onClick={() => handleNavClick(item.path)}
-						/>
-					);
-				})}
-			</List>
-			<Divider sx={{ borderColor: theme.palette.divider }} />
+				<List
+					component="nav"
+					disablePadding
+					sx={{
+						px: theme.spacing(6),
+						flex: 1,
+					}}
+				>
+					<Logo
+						pt={theme.spacing(8)}
+						pb={theme.spacing(10)}
+					/>
+					{menu.map((item) => {
+						const selected = location.pathname.startsWith(`/${item.path}`);
+						return (
+							<NavItem
+								key={item.path}
+								item={item}
+								selected={selected}
+								onClick={() => handleNavClick(item.path)}
+							/>
+						);
+					})}
+				</List>
+				<StarPrompt />
+				<List
+					component="nav"
+					disablePadding
+					sx={{ px: theme.spacing(6) }}
+				>
+					{bottomMenu.map((item) => {
+						const selected = location.pathname.startsWith(`/${item.path}`);
+						return (
+							<NavItem
+								key={item.path}
+								item={item}
+								selected={selected}
+								onClick={() => handleNavClick(item.path)}
+							/>
+						);
+					})}
+				</List>
+				<Divider sx={{ borderColor: theme.palette.divider }} />
 
-			<AuthFooter
-				collapsed={collapsed}
-				accountMenuItems={accountMenu}
-			/>
-		</Stack>
+				<AuthFooter
+					collapsed={collapsed}
+					accountMenuItems={accountMenu}
+				/>
+			</Stack>
+		</>
 	);
 };

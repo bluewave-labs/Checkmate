@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { useRegisterForm } from "@/Hooks/useRegisterForm";
 import type { RegisterFormData } from "@/Validation/register";
 import { useTranslation } from "react-i18next";
-import { usePost } from "@/Hooks/UseApi";
+import { usePost, useGet } from "@/Hooks/UseApi";
 import { setAuthState } from "@/Features/Auth/authSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -32,10 +32,20 @@ const RegisterPage = () => {
 	const { post: verifyToken } = usePost<{ token: string }, InviteVerifyResponse>();
 	const hasVerified = useRef(false);
 
+	const { data: superAdminExists, isLoading: isCheckingAdmin } = useGet<boolean>(
+		token ? null : "/auth/users/superadmin"
+	);
+
 	const { control, handleSubmit, setError, reset } = useForm<RegisterFormData>({
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
+
+	useEffect(() => {
+		if (superAdminExists === true) {
+			navigate("/login", { replace: true });
+		}
+	}, [superAdminExists, navigate]);
 
 	useEffect(() => {
 		if (!token || hasVerified.current) return;
@@ -52,6 +62,8 @@ const RegisterPage = () => {
 			}
 		});
 	}, [token]);
+
+	if (isCheckingAdmin) return null;
 
 	const onSubmit = async (data: RegisterFormData) => {
 		if (loading) return;

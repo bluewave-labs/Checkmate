@@ -1,9 +1,10 @@
 const SERVICE_NAME = "SlackProvider";
 import type { Monitor, Notification, MonitorStatusResponse } from "@/types/index.js";
 import { INotificationProvider } from "@/service/index.js";
+import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import {
 	buildHardwareAlerts,
-	buildHardwareWebhookBody,
+	buildHardwareNotificationMessage,
 	buildWebhookBody,
 	getTestMessage,
 } from "@/service/infrastructure/notificationProviders/utils.js";
@@ -15,9 +16,19 @@ export class SlackProvider implements INotificationProvider {
 	constructor(logger: any) {
 		this.logger = logger;
 	}
-	private getHardwareContent = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
-		const { alertsToSend } = buildHardwareAlerts("HOST_PLACEHOLDER", monitor, monitorStatusResponse);
-		const body = buildHardwareWebhookBody(alertsToSend, monitor);
+	private getHardwareContent = (
+		clientHost: string,
+		monitor: Monitor,
+		monitorStatusResponse: MonitorStatusResponse,
+		decision: MonitorActionDecision
+	) => {
+		// For status changes (recovery), use standard format
+		if (decision.notificationReason === "status_change") {
+			return buildWebhookBody(monitor, monitorStatusResponse);
+		}
+		// For threshold breaches, use hardware alert format
+		const { alertsToSend } = buildHardwareAlerts(clientHost, monitor, monitorStatusResponse);
+		const body = buildHardwareNotificationMessage(clientHost, alertsToSend, monitor);
 		return body;
 	};
 
@@ -26,10 +37,16 @@ export class SlackProvider implements INotificationProvider {
 		return body;
 	};
 
-	async sendAlert(notification: Notification, monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): Promise<boolean> {
+	async sendAlert(
+		notification: Notification,
+		monitor: Monitor,
+		monitorStatusResponse: MonitorStatusResponse,
+		decision: MonitorActionDecision,
+		clientHost: string
+	): Promise<boolean> {
 		let body;
 		if (monitor.type === "hardware") {
-			body = this.getHardwareContent(monitor, monitorStatusResponse);
+			body = this.getHardwareContent(clientHost, monitor, monitorStatusResponse, decision);
 		} else {
 			body = this.getContent(monitor, monitorStatusResponse);
 		}

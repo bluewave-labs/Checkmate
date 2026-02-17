@@ -18,7 +18,6 @@ export const HttpAdornment = ({ https }) => {
 		>
 			<Typography
 				component="h5"
-				paddingRight={"var(--env-var-spacing-1-minus)"}
 				color={theme.palette.primary.contrastTextSecondary}
 				sx={{ lineHeight: 1, opacity: 0.8 }}
 			>

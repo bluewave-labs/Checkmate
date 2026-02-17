@@ -196,13 +196,13 @@ export const MaintenanceWindowTable = ({
 			/>
 			<DialogInput
 				open={deleteDialogOpen}
-				title={t("maintenanceTableActionMenuDialogTitle")}
+				title={t("common.dialogs.delete.title")}
+				content={t("common.dialogs.delete.description")}
 				onCancel={() => {
 					setDeleteDialogOpen(false);
 					setSelectedWindow(null);
 				}}
 				onConfirm={handleDelete}
-				confirmText={t("delete")}
 				loading={deleteLoading}
 			/>
 		</Box>

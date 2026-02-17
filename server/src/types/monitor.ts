@@ -1,16 +1,11 @@
-import type { Check } from "@/types/check.js";
 import type { CheckSnapshot } from "@/types/check.js";
 export type { CheckSnapshot } from "@/types/check.js";
 
 export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "unknown"] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
-export interface MonitorThresholds {
-	usage_cpu?: number;
-	usage_memory?: number;
-	usage_disk?: number;
-	usage_temperature?: number;
-}
+export const MonitorStatuses = ["up", "down", "paused", "initializing", "maintenance", "breached"] as const;
+export type MonitorStatus = (typeof MonitorStatuses)[number];
 
 export type MonitorMatchMethod = "equal" | "include" | "regex" | "";
 
@@ -20,7 +15,7 @@ export interface Monitor {
 	teamId: string;
 	name: string;
 	description?: string;
-	status?: boolean;
+	status: MonitorStatus;
 	statusWindow: boolean[];
 	statusWindowSize: number;
 	statusWindowThreshold: number;
@@ -37,12 +32,14 @@ export interface Monitor {
 	uptimePercentage?: number;
 	notifications: string[];
 	secret?: string;
-	thresholds?: MonitorThresholds;
-	alertThreshold: number;
 	cpuAlertThreshold: number;
+	cpuAlertCounter: number;
 	memoryAlertThreshold: number;
+	memoryAlertCounter: number;
 	diskAlertThreshold: number;
+	diskAlertCounter: number;
 	tempAlertThreshold: number;
+	tempAlertCounter: number;
 	selectedDisks: string[];
 	gameId?: string;
 	group: string | null;
@@ -56,6 +53,9 @@ export interface MonitorsSummary {
 	upMonitors: number;
 	downMonitors: number;
 	pausedMonitors: number;
+	initializingMonitors: number;
+	maintenanceMonitors: number;
+	breachedMonitors: number;
 }
 
 export interface MonitorsWithChecksByTeamIdResult {

@@ -76,7 +76,7 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 			alignItems="center"
 			py={theme.spacing(4)}
 			px={theme.spacing(8)}
-			gap={theme.spacing(2)}
+			gap={theme.spacing(4)}
 		>
 			<Avatar
 				small

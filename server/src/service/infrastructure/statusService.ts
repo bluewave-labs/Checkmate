@@ -1,21 +1,20 @@
-import { IMonitorsRepository } from "@/repositories/index.js";
-import MonitorStats from "../../db/models/MonitorStats.js";
-import { CheckModel } from "@/db/models/index.js";
+import { IChecksRepository, IMonitorsRepository, IMonitorStatsRepository } from "@/repositories/index.js";
 import type {
-	CheckErrorInfo,
 	Monitor,
+	MonitorStatus,
 	MonitorStatusResponse,
 	StatusChangeResult,
 	Check,
 	HardwareStatusPayload,
 	PageSpeedStatusPayload,
 	CheckSnapshot,
+	MonitorStats,
 } from "@/types/index.js";
+import { ILogger } from "@/utils/logger.js";
 const SERVICE_NAME = "StatusService";
 
 export interface IStatusService {
 	updateRunningStats({ monitor, networkResponse }: { monitor: Monitor; networkResponse: any }): Promise<boolean>;
-	getStatusString(status: boolean | undefined): string;
 	handleIncidentForCheck(check: any, monitor: Monitor, action: any, errorContext?: string): Promise<void>;
 	updateMonitorStatus(
 		statusResponse: MonitorStatusResponse<PageSpeedStatusPayload | HardwareStatusPayload | undefined>,
@@ -28,39 +27,60 @@ export class StatusService implements IStatusService {
 	private logger: any;
 	private buffer: any;
 	private monitorsRepository: IMonitorsRepository;
+	private monitorStatsRepository: IMonitorStatsRepository;
+	private checksRepository: IChecksRepository;
 
-	constructor({ logger, buffer, monitorsRepository }: { logger: any; buffer: any; monitorsRepository: IMonitorsRepository }) {
+	constructor(
+		logger: ILogger,
+		buffer: any,
+		monitorsRepository: IMonitorsRepository,
+		monitorStatsRepository: IMonitorStatsRepository,
+		checksRepository: IChecksRepository
+	) {
 		this.logger = logger;
 		this.buffer = buffer;
 		this.monitorsRepository = monitorsRepository;
+		this.monitorStatsRepository = monitorStatsRepository;
+		this.checksRepository = checksRepository;
 	}
 
 	get serviceName() {
 		return StatusService.SERVICE_NAME;
 	}
 
-	async updateRunningStats({ monitor, networkResponse }: { monitor: Monitor; networkResponse: any }) {
+	async updateRunningStats({ monitor, networkResponse }: { monitor: Monitor; networkResponse: MonitorStatusResponse }) {
 		try {
 			const monitorId = monitor.id;
 			const { responseTime, status } = networkResponse;
-			// Get stats
-			let stats = await MonitorStats.findOne({ monitorId });
+			let stats: Omit<MonitorStats, "id" | "createdAt" | "updatedAt"> | null = null;
+			stats = await this.monitorStatsRepository
+				.findByMonitorId(monitorId)
+				.then((result) => result)
+				.catch(() => {
+					this.logger.debug({
+						service: SERVICE_NAME,
+						method: "updateRunningStats",
+						message: `No existing stats found for monitor ${monitorId}, initializing new stats.`,
+					});
+					return null;
+				});
 			if (!stats) {
-				stats = new MonitorStats({
+				stats = {
 					monitorId,
 					avgResponseTime: 0,
 					totalChecks: 0,
 					totalUpChecks: 0,
 					totalDownChecks: 0,
 					uptimePercentage: 0,
-					lastCheck: null,
-				});
+					lastResponseTime: 0,
+					lastCheckTimestamp: 0,
+				};
 			}
 
 			// Update stats
 
 			// Last response time
-			stats.lastResponseTime = responseTime;
+			stats.lastResponseTime = responseTime ?? 0;
 
 			// Avg response time:
 			let avgResponseTime = stats.avgResponseTime;
@@ -97,8 +117,7 @@ export class StatusService implements IStatusService {
 
 			// latest check
 			stats.lastCheckTimestamp = new Date().getTime();
-
-			await stats.save();
+			await this.monitorStatsRepository.create(stats);
 			return true;
 		} catch (error: any) {
 			this.logger.error({
@@ -111,19 +130,12 @@ export class StatusService implements IStatusService {
 		}
 	}
 
-	getStatusString = (status: boolean | undefined) => {
-		if (status === true) return "up";
-		if (status === false) return "down";
-		return "unknown";
-	};
-
 	handleIncidentForCheck = async (check: Check, monitor: Monitor, action: any, errorContext = "incident handling") => {
 		try {
-			let savedCheck;
+			let savedCheck: Check | null = null;
 			if (!check.id) {
 				try {
-					const checkModel = new CheckModel(check);
-					savedCheck = await checkModel.save();
+					savedCheck = await this.checksRepository.create(check);
 
 					this.buffer.removeCheckFromBuffer(check);
 				} catch (checkError: any) {
@@ -208,16 +220,13 @@ export class StatusService implements IStatusService {
 				monitor.recentChecks.shift();
 			}
 
-			if (monitor.status === undefined || monitor.status === null) {
-				monitor.status = status;
-			}
-
 			const prevStatus = monitor.status;
-			let newStatus = monitor.status;
+			let newStatus: MonitorStatus = status === true ? "up" : "down";
 			let statusChanged = false;
 
 			// Return early if not enough data points
 			if (monitor.statusWindow.length < monitor.statusWindowSize) {
+				monitor.status = newStatus;
 				const updated = await this.monitorsRepository.updateById(monitor.id, monitor.teamId, monitor);
 				return {
 					monitor: updated,
@@ -233,17 +242,99 @@ export class StatusService implements IStatusService {
 			const failureRate = (failures / monitor.statusWindow.length) * 100;
 
 			// If threshold has been met and the monitor is not already down, mark down:
-			if (failureRate >= monitor.statusWindowThreshold && monitor.status !== false) {
-				newStatus = false;
+			if (failureRate >= monitor.statusWindowThreshold && monitor.status !== "down") {
+				newStatus = "down";
 				statusChanged = true;
 			}
 			// If the failure rate is below the threshold and the monitor is down, recover:
-			else if (failureRate < monitor.statusWindowThreshold && monitor.status === false) {
-				newStatus = true;
+			else if (failureRate < monitor.statusWindowThreshold && monitor.status === "down") {
+				newStatus = "up";
 				statusChanged = true;
 			}
 
+			// Evaluate hardware threshold breaches (only for hardware monitors)
+			let thresholdBreaches: { cpu: boolean; memory: boolean; disk: boolean; temp: boolean } | undefined;
+			if (monitor.type === "hardware" && statusResponse.payload) {
+				const payload = statusResponse.payload as HardwareStatusPayload;
+				const metrics = payload?.data;
+
+				if (metrics) {
+					// Evaluate threshold breaches
+					const cpuUsage = metrics.cpu?.usage_percent ?? -1;
+					const cpuBreach = cpuUsage !== -1 && cpuUsage > monitor.cpuAlertThreshold / 100;
+
+					const memoryUsage = metrics.memory?.usage_percent ?? -1;
+					const memoryBreach = memoryUsage !== -1 && memoryUsage > monitor.memoryAlertThreshold / 100;
+
+					const diskBreach =
+						metrics.disk?.some((d: any) => typeof d?.usage_percent === "number" && d.usage_percent > monitor.diskAlertThreshold / 100) ?? false;
+
+					const temps = metrics.cpu?.temperature ?? [];
+					const tempBreach = temps.some((temp: number) => temp > monitor.tempAlertThreshold);
+
+					thresholdBreaches = {
+						cpu: cpuBreach,
+						memory: memoryBreach,
+						disk: diskBreach,
+						temp: tempBreach,
+					};
+
+					// Update counters: decrement if breached, reset to 5 if not breached
+					if (cpuBreach) {
+						monitor.cpuAlertCounter = Math.max(0, monitor.cpuAlertCounter - 1);
+					} else {
+						monitor.cpuAlertCounter = 5;
+					}
+
+					if (memoryBreach) {
+						monitor.memoryAlertCounter = Math.max(0, monitor.memoryAlertCounter - 1);
+					} else {
+						monitor.memoryAlertCounter = 5;
+					}
+
+					if (diskBreach) {
+						monitor.diskAlertCounter = Math.max(0, monitor.diskAlertCounter - 1);
+					} else {
+						monitor.diskAlertCounter = 5;
+					}
+
+					if (tempBreach) {
+						monitor.tempAlertCounter = Math.max(0, monitor.tempAlertCounter - 1);
+					} else {
+						monitor.tempAlertCounter = 5;
+					}
+
+					// Check if any counter has reached zero (initial breach)
+					const anyCounterZero =
+						monitor.cpuAlertCounter === 0 || monitor.memoryAlertCounter === 0 || monitor.diskAlertCounter === 0 || monitor.tempAlertCounter === 0;
+
+					const anyThresholdBreached = cpuBreach || memoryBreach || diskBreach || tempBreach;
+					const allThresholdsNormal = !cpuBreach && !memoryBreach && !diskBreach && !tempBreach;
+
+					// Update monitor status based on threshold breach state
+					if (newStatus !== "down") {
+						// Don't override "down" status - service unreachable takes precedence
+						// Check current monitor status, not newStatus for comparison
+						if (anyCounterZero && anyThresholdBreached && monitor.status !== "breached") {
+							// Initial breach: counter hit zero, change status to breached
+							newStatus = "breached";
+							statusChanged = true;
+						} else if (anyCounterZero && anyThresholdBreached && monitor.status === "breached") {
+							// Already breached, keep status but don't mark as changed
+							newStatus = "breached";
+							// statusChanged remains false
+						} else if (allThresholdsNormal && monitor.status === "breached") {
+							// All thresholds returned to normal, recover from breached state
+							newStatus = "up";
+							statusChanged = true;
+						}
+					}
+				}
+			}
+
+			// Apply the final status
 			monitor.status = newStatus;
+
 			const updated = await this.monitorsRepository.updateById(monitor.id, monitor.teamId, monitor);
 
 			return {
@@ -252,6 +343,7 @@ export class StatusService implements IStatusService {
 				prevStatus,
 				code,
 				timestamp: new Date().getTime(),
+				thresholdBreaches,
 			};
 		} catch (error: any) {
 			error.service = SERVICE_NAME;

@@ -4,6 +4,7 @@ import { AppError } from "@/utils/AppError.js";
 import { ParseBoolean } from "@/utils/utils.js";
 import type { IIncidentsRepository, IMonitorsRepository, IUsersRepository } from "@/repositories/index.js";
 import type { Incident } from "@/types/index.js";
+import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 
 const dateRangeLookup: Record<string, Date | undefined> = {
 	recent: new Date(new Date().setHours(new Date().getHours() - 2)),
@@ -43,10 +44,14 @@ class IncidentService {
 		return IncidentService.SERVICE_NAME;
 	}
 
-	handleIncident = async (monitor: Monitor, code: number): Promise<Incident | null> => {
+	handleIncident = async (monitor: Monitor, code: number, decision: MonitorActionDecision): Promise<Incident | null> => {
+		if (!decision.shouldCreateIncident && !decision.shouldResolveIncident) {
+			return null;
+		}
+
 		const activeIncident = await this.incidentsRepository.findActiveByMonitorId(monitor.id, monitor.teamId);
-		// Monitor is down, create an incident
-		if (monitor.status === false) {
+
+		if (decision.shouldCreateIncident) {
 			if (activeIncident) {
 				return activeIncident;
 			} else {
@@ -61,14 +66,17 @@ class IncidentService {
 			}
 		}
 
-		// Monitor is up, resolve active incidents
-		if (!activeIncident) {
-			return null;
+		if (decision.shouldResolveIncident) {
+			if (!activeIncident) {
+				return null;
+			}
+			activeIncident.status = false;
+			activeIncident.endTime = Date.now().toString();
+			activeIncident.resolutionType = "automatic";
+			return await this.incidentsRepository.updateById(activeIncident.id, activeIncident.teamId, activeIncident);
 		}
-		activeIncident.status = false;
-		activeIncident.endTime = Date.now().toString();
-		activeIncident.resolutionType = "automatic";
-		return await this.incidentsRepository.updateById(activeIncident.id, activeIncident.teamId, activeIncident);
+
+		return null;
 	};
 
 	resolveIncident = async (incidentId: string, userId: string, teamId: string, comment?: string, userEmail?: string) => {

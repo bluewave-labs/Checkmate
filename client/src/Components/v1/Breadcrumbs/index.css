@@ -6,7 +6,6 @@
 	min-height: 16px;
 }
 .MuiBreadcrumbs-root .MuiBreadcrumbs-li a {
-	font-size: var(--env-var-font-size-medium);
 	font-weight: 400;
 }
 .MuiBreadcrumbs-root .MuiBreadcrumbs-li:not(:last-child) {

@@ -1,9 +1,6 @@
 import { Schema, model, Types, type UpdateQuery } from "mongoose";
-import type { Monitor, MonitorMatchMethod, MonitorThresholds, CheckSnapshot } from "@/types/monitor.js";
-import { MonitorTypes } from "@/types/monitor.js";
-import Check from "./Check.js";
-import MonitorStats from "./MonitorStats.js";
-import StatusPage from "./StatusPage.js";
+import type { Monitor, MonitorMatchMethod, CheckSnapshot } from "@/types/monitor.js";
+import { MonitorTypes, MonitorStatuses } from "@/types/monitor.js";
 
 type CheckSnapshotDocument = Omit<CheckSnapshot, "createdAt"> & { createdAt: Date };
 
@@ -16,7 +13,6 @@ type MonitorDocumentBase = Omit<
 	notifications: Types.ObjectId[];
 	selectedDisks: string[];
 	matchMethod?: MonitorMatchMethod;
-	thresholds?: MonitorThresholds;
 };
 
 interface MonitorDocument extends MonitorDocumentBase {
@@ -26,16 +22,6 @@ interface MonitorDocument extends MonitorDocumentBase {
 	createdAt: Date;
 	updatedAt: Date;
 }
-
-const thresholdsSchema = new Schema<MonitorThresholds>(
-	{
-		usage_cpu: { type: Number },
-		usage_memory: { type: Number },
-		usage_disk: { type: Number },
-		usage_temperature: { type: Number },
-	},
-	{ _id: false }
-);
 
 const checkSnapshotSchema = new Schema<CheckSnapshotDocument>(
 	{
@@ -68,8 +54,9 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			type: String,
 		},
 		status: {
-			type: Boolean,
-			default: undefined,
+			type: String,
+			enum: MonitorStatuses,
+			default: "initializing",
 		},
 		statusWindow: {
 			type: [Boolean],
@@ -134,36 +121,37 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		secret: {
 			type: String,
 		},
-		thresholds: {
-			type: thresholdsSchema,
+		cpuAlertThreshold: {
+			type: Number,
+			default: 100,
 		},
-		alertThreshold: {
+		cpuAlertCounter: {
 			type: Number,
 			default: 5,
 		},
-		cpuAlertThreshold: {
-			type: Number,
-			default: function () {
-				return this.alertThreshold;
-			},
-		},
 		memoryAlertThreshold: {
 			type: Number,
-			default: function () {
-				return this.alertThreshold;
-			},
+			default: 100,
+		},
+		memoryAlertCounter: {
+			type: Number,
+			default: 5,
 		},
 		diskAlertThreshold: {
 			type: Number,
-			default: function () {
-				return this.alertThreshold;
-			},
+			default: 100,
+		},
+		diskAlertCounter: {
+			type: Number,
+			default: 5,
 		},
 		tempAlertThreshold: {
 			type: Number,
-			default: function () {
-				return this.alertThreshold;
-			},
+			default: 100,
+		},
+		tempAlertCounter: {
+			type: Number,
+			default: 5,
 		},
 		selectedDisks: {
 			type: [String],
@@ -190,33 +178,6 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		timestamps: true,
 	}
 );
-
-MonitorSchema.pre("save", function (next) {
-	if (!this.cpuAlertThreshold || this.isModified("alertThreshold")) {
-		this.cpuAlertThreshold = this.alertThreshold;
-	}
-	if (!this.memoryAlertThreshold || this.isModified("alertThreshold")) {
-		this.memoryAlertThreshold = this.alertThreshold;
-	}
-	if (!this.diskAlertThreshold || this.isModified("alertThreshold")) {
-		this.diskAlertThreshold = this.alertThreshold;
-	}
-	if (!this.tempAlertThreshold || this.isModified("alertThreshold")) {
-		this.tempAlertThreshold = this.alertThreshold;
-	}
-	next();
-});
-
-MonitorSchema.pre("findOneAndUpdate", function (next) {
-	const update = this.getUpdate() as UpdateQuery<MonitorDocument> | null;
-	if (update && !Array.isArray(update) && update.alertThreshold !== undefined) {
-		update.cpuAlertThreshold = update.alertThreshold;
-		update.memoryAlertThreshold = update.alertThreshold;
-		update.diskAlertThreshold = update.alertThreshold;
-		update.tempAlertThreshold = update.alertThreshold;
-	}
-	next();
-});
 
 MonitorSchema.index({ teamId: 1, type: 1 });
 
