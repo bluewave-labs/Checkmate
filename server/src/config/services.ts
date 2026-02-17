@@ -245,6 +245,7 @@ export const initializeServices = async ({
 		checksRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
+		incidentsRepository,
 	});
 
 	const statusPageService = new StatusPageService(statusPagesRepository);
