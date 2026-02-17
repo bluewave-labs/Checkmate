@@ -132,7 +132,7 @@ class SuperSimpleQueueHelper {
 				}
 
 				// Step 7. Handle incidents (best effort, don't wait)
-				this.incidentService.handleIncident(statusChangeResult.monitor, statusChangeResult.code, decision).catch((error: any) => {
+				this.incidentService.handleIncident(statusChangeResult.monitor, statusChangeResult.code, decision, status).catch((error: any) => {
 					this.logger.warn({
 						message: error.message,
 						service: SERVICE_NAME,

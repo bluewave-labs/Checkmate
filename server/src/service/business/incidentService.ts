@@ -1,5 +1,6 @@
 const SERVICE_NAME = "incidentService";
 import type { Monitor } from "@/types/monitor.js";
+import type { MonitorStatusResponse } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import { ParseBoolean } from "@/utils/utils.js";
 import type { IIncidentsRepository, IMonitorsRepository, IUsersRepository } from "@/repositories/index.js";
@@ -44,7 +45,12 @@ class IncidentService {
 		return IncidentService.SERVICE_NAME;
 	}
 
-	handleIncident = async (monitor: Monitor, code: number, decision: MonitorActionDecision): Promise<Incident | null> => {
+	handleIncident = async (
+		monitor: Monitor,
+		code: number,
+		decision: MonitorActionDecision,
+		monitorStatusResponse?: MonitorStatusResponse
+	): Promise<Incident | null> => {
 		if (!decision.shouldCreateIncident && !decision.shouldResolveIncident) {
 			return null;
 		}
@@ -55,12 +61,22 @@ class IncidentService {
 			if (activeIncident) {
 				return activeIncident;
 			} else {
+				let statusCode = code;
+				let message: string | undefined;
+
+				// For threshold breaches, use 9999 status code and build descriptive message
+				if (decision.incidentReason === "threshold_breach") {
+					statusCode = 9999;
+					message = this.buildThresholdBreachMessage(monitor, monitorStatusResponse);
+				}
+
 				const incident = {
 					monitorId: monitor.id,
 					teamId: monitor.teamId,
 					startTime: Date.now().toString(),
 					status: true,
-					statusCode: code,
+					statusCode,
+					message,
 				};
 				return await this.incidentsRepository.create(incident);
 			}
@@ -78,6 +94,72 @@ class IncidentService {
 
 		return null;
 	};
+
+	private buildThresholdBreachMessage(monitor: Monitor, monitorStatusResponse?: MonitorStatusResponse): string {
+		const breaches: string[] = [];
+
+		if (!monitorStatusResponse?.payload || monitor.type !== "hardware") {
+			return "Threshold breach detected";
+		}
+
+		const payload = monitorStatusResponse.payload as { data?: any };
+		const hardware = payload.data;
+
+		if (!hardware) {
+			return "Threshold breach detected";
+		}
+
+		// Check CPU breach
+		if (monitor.cpuAlertThreshold !== undefined && monitor.cpuAlertThreshold !== null && hardware.cpu?.usage_percent !== undefined) {
+			const cpuPercent = hardware.cpu.usage_percent * 100;
+			if (cpuPercent > monitor.cpuAlertThreshold) {
+				breaches.push(`CPU: ${cpuPercent.toFixed(1)}% (threshold: ${monitor.cpuAlertThreshold}%)`);
+			}
+		}
+
+		// Check Memory breach
+		if (monitor.memoryAlertThreshold !== undefined && monitor.memoryAlertThreshold !== null && hardware.memory?.usage_percent !== undefined) {
+			const memoryPercent = hardware.memory.usage_percent * 100;
+			if (memoryPercent > monitor.memoryAlertThreshold) {
+				breaches.push(`Memory: ${memoryPercent.toFixed(1)}% (threshold: ${monitor.memoryAlertThreshold}%)`);
+			}
+		}
+
+		// Check Disk breach
+		if (monitor.diskAlertThreshold !== undefined && monitor.diskAlertThreshold !== null && Array.isArray(hardware.disk)) {
+			let maxDiskPercent = 0;
+			for (const disk of hardware.disk) {
+				if (disk.usage_percent !== undefined) {
+					const diskPercent = disk.usage_percent * 100;
+					if (diskPercent > maxDiskPercent) {
+						maxDiskPercent = diskPercent;
+					}
+				}
+			}
+			if (maxDiskPercent > monitor.diskAlertThreshold) {
+				breaches.push(`Disk: ${maxDiskPercent.toFixed(1)}% (threshold: ${monitor.diskAlertThreshold}%)`);
+			}
+		}
+
+		// Check Temperature breach
+		if (monitor.tempAlertThreshold !== undefined && monitor.tempAlertThreshold !== null && Array.isArray(hardware.cpu?.temperature)) {
+			let maxTemp = 0;
+			for (const temp of hardware.cpu.temperature) {
+				if (temp.current !== undefined && temp.current > maxTemp) {
+					maxTemp = temp.current;
+				}
+			}
+			if (maxTemp > monitor.tempAlertThreshold) {
+				breaches.push(`Temperature: ${maxTemp.toFixed(1)}°C (threshold: ${monitor.tempAlertThreshold}°C)`);
+			}
+		}
+
+		if (breaches.length === 0) {
+			return "Threshold breach detected";
+		}
+
+		return breaches.join(", ");
+	}
 
 	resolveIncident = async (incidentId: string, userId: string, teamId: string, comment?: string, userEmail?: string) => {
 		try {
