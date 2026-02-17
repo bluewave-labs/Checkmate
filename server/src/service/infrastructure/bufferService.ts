@@ -60,9 +60,9 @@ class BufferService implements IBufferService {
 					return check.id.toString() === checkToRemove.id.toString();
 				}
 				return (
-					check.monitorId?.toString() === checkToRemove.metadata.monitorId &&
-					check.teamId?.toString() === checkToRemove.metadata.teamId &&
-					check.type === checkToRemove.metadata.type &&
+					check.metadata.monitorId?.toString() === checkToRemove.metadata.monitorId &&
+					check.metadata.teamId?.toString() === checkToRemove.metadata.teamId &&
+					check.metadata.type === checkToRemove.metadata.type &&
 					check.status === checkToRemove.status &&
 					check.statusCode === checkToRemove.statusCode &&
 					check.responseTime === checkToRemove.responseTime &&

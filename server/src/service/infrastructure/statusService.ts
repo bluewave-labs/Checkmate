@@ -362,7 +362,7 @@ export class StatusService implements IStatusService {
 				});
 				return false;
 			}
-			this.buffer.addToBuffer({ check });
+			this.buffer.addToBuffer(check);
 			return true;
 		} catch (error: any) {
 			this.logger.error({

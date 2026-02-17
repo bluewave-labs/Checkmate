@@ -210,19 +210,14 @@ class MongoChecksRepository implements IChecksRepository {
 	private toDocument = (check: Partial<Check>): CheckDocument => {
 		// Map id to _id for MongoDB storage
 		const { id, metadata, ...rest } = check;
+
 		return {
 			_id: id ? new mongoose.Types.ObjectId(id) : new mongoose.Types.ObjectId(),
-			metadata: metadata
-				? {
-						monitorId: new mongoose.Types.ObjectId(metadata.monitorId),
-						teamId: new mongoose.Types.ObjectId(metadata.teamId),
-						type: metadata.type,
-					}
-				: {
-						monitorId: new mongoose.Types.ObjectId(),
-						teamId: new mongoose.Types.ObjectId(),
-						type: "http",
-					},
+			metadata: {
+				monitorId: new mongoose.Types.ObjectId(metadata.monitorId),
+				teamId: new mongoose.Types.ObjectId(metadata.teamId),
+				type: metadata.type,
+			},
 			...rest,
 		} as unknown as CheckDocument;
 	};
