@@ -603,9 +603,10 @@
 			},
 			"summaryCard": {
 				"activeIncidents": {
-					"active_zero": "No active incidents",
 					"title": "Active Incidents",
-					"active": "active"
+					"active_zero": "No active incidents",
+					"active_one": "{{count}} active incident",
+					"active_other": "{{count}} active incidents"
 				},
 				"incidentStats": {
 					"avgResolutionTime": "Avg Resolution Time",
