@@ -97,6 +97,7 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 			this.scheduler.start();
 
 			this.scheduler.addTemplate("monitor-job", this.helper.getMonitorJob());
+			this.scheduler.addTemplate("cleanup-orphaned", this.helper.getCleanupOrphanedJob());
 			const monitors = await this.monitorsRepository.findAll();
 			if (!monitors) {
 				return true;
@@ -107,6 +108,8 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 					this.addJob(monitor.id, monitor);
 				}, randomOffset);
 			}
+
+			this.scheduler.addJob({ id: "cleanup-orphaned", template: "cleanup-orphaned", active: true });
 
 			return true;
 		} catch (error) {

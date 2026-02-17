@@ -10,6 +10,7 @@ import {
 	ITeamsRepository,
 	IMonitorStatsRepository,
 	IChecksRepository,
+	IIncidentsRepository,
 } from "@/repositories/index.js";
 
 export interface MonitorActionDecision {
@@ -41,6 +42,7 @@ class SuperSimpleQueueHelper {
 	private teamsRepository: ITeamsRepository;
 	private monitorStatsRepository: IMonitorStatsRepository;
 	private checksRepository: IChecksRepository;
+	private incidentsRepository: IIncidentsRepository;
 
 	constructor({
 		logger,
@@ -55,6 +57,7 @@ class SuperSimpleQueueHelper {
 		teamsRepository,
 		monitorStatsRepository,
 		checksRepository,
+		incidentsRepository,
 	}: {
 		logger: any;
 		networkService: INetworkService;
@@ -68,6 +71,7 @@ class SuperSimpleQueueHelper {
 		teamsRepository: ITeamsRepository;
 		monitorStatsRepository: IMonitorStatsRepository;
 		checksRepository: IChecksRepository;
+		incidentsRepository: IIncidentsRepository;
 	}) {
 		this.logger = logger;
 		this.networkService = networkService;
@@ -81,6 +85,7 @@ class SuperSimpleQueueHelper {
 		this.teamsRepository = teamsRepository;
 		this.monitorStatsRepository = monitorStatsRepository;
 		this.checksRepository = checksRepository;
+		this.incidentsRepository = incidentsRepository;
 	}
 
 	get serviceName() {
@@ -226,6 +231,14 @@ class SuperSimpleQueueHelper {
 				}
 
 				// Remove orphaned incidents
+				const deletedIncidentsCount = await this.incidentsRepository.deleteByMonitorIdsNotIn(allMonitorIds);
+				if (deletedIncidentsCount > 0) {
+					this.logger.info({
+						message: `Deleted ${deletedIncidentsCount} orphaned incidents`,
+						service: SERVICE_NAME,
+						method: "getCleanupOrphanedJob",
+					});
+				}
 
 				this.logger.info({
 					message: "Cleanup of orphaned data completed",

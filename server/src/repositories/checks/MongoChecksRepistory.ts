@@ -13,7 +13,7 @@ import type {
 	GotTimings,
 	MonitorType,
 } from "@/types/index.js";
-import { CheckModel, type CheckDocument } from "@/db/models/index.js";
+import { CheckModel, MonitorModel, type CheckDocument } from "@/db/models/index.js";
 import mongoose from "mongoose";
 
 const SERVICE_NAME = "StatusService";
