@@ -1,10 +1,12 @@
 const SERVICE_NAME = "incidentService";
 import type { Monitor } from "@/types/monitor.js";
+import type { MonitorStatusResponse } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import { ParseBoolean } from "@/utils/utils.js";
 import type { IIncidentsRepository, IMonitorsRepository, IUsersRepository } from "@/repositories/index.js";
 import type { Incident } from "@/types/index.js";
 import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+import type { INotificationMessageBuilder } from "@/service/infrastructure/notificationMessageBuilder.js";
 
 const dateRangeLookup: Record<string, Date | undefined> = {
 	recent: new Date(new Date().setHours(new Date().getHours() - 2)),
@@ -22,29 +24,38 @@ class IncidentService {
 	private incidentsRepository: IIncidentsRepository;
 	private monitorsRepository: IMonitorsRepository;
 	private usersRepository: IUsersRepository;
+	private notificationMessageBuilder: INotificationMessageBuilder;
 
 	constructor({
 		logger,
 		incidentsRepository,
 		monitorsRepository,
 		usersRepository,
+		notificationMessageBuilder,
 	}: {
 		logger: any;
 		incidentsRepository: IIncidentsRepository;
 		monitorsRepository: IMonitorsRepository;
 		usersRepository: IUsersRepository;
+		notificationMessageBuilder: INotificationMessageBuilder;
 	}) {
 		this.logger = logger;
 		this.incidentsRepository = incidentsRepository;
 		this.monitorsRepository = monitorsRepository;
 		this.usersRepository = usersRepository;
+		this.notificationMessageBuilder = notificationMessageBuilder;
 	}
 
 	get serviceName() {
 		return IncidentService.SERVICE_NAME;
 	}
 
-	handleIncident = async (monitor: Monitor, code: number, decision: MonitorActionDecision): Promise<Incident | null> => {
+	handleIncident = async (
+		monitor: Monitor,
+		code: number,
+		decision: MonitorActionDecision,
+		monitorStatusResponse?: MonitorStatusResponse
+	): Promise<Incident | null> => {
 		if (!decision.shouldCreateIncident && !decision.shouldResolveIncident) {
 			return null;
 		}
@@ -55,12 +66,22 @@ class IncidentService {
 			if (activeIncident) {
 				return activeIncident;
 			} else {
+				let statusCode = code;
+				let message: string | undefined;
+
+				// For threshold breaches, use 9999 status code and build descriptive message
+				if (decision.incidentReason === "threshold_breach") {
+					statusCode = 9999;
+					message = this.buildThresholdBreachMessage(monitor, monitorStatusResponse);
+				}
+
 				const incident = {
 					monitorId: monitor.id,
 					teamId: monitor.teamId,
 					startTime: Date.now().toString(),
 					status: true,
-					statusCode: code,
+					statusCode,
+					message,
 				};
 				return await this.incidentsRepository.create(incident);
 			}
@@ -78,6 +99,20 @@ class IncidentService {
 
 		return null;
 	};
+
+	private buildThresholdBreachMessage(monitor: Monitor, monitorStatusResponse?: MonitorStatusResponse): string {
+		if (!monitorStatusResponse) {
+			return "Threshold breach detected";
+		}
+
+		const breaches = this.notificationMessageBuilder.extractThresholdBreaches(monitor, monitorStatusResponse);
+
+		if (breaches.length === 0) {
+			return "Threshold breach detected";
+		}
+
+		return breaches.map((b) => `${b.metric.toUpperCase()}: ${b.formattedValue} (threshold: ${b.threshold}${b.unit})`).join(", ");
+	}
 
 	resolveIncident = async (incidentId: string, userId: string, teamId: string, comment?: string, userEmail?: string) => {
 		try {
