@@ -1,9 +1,11 @@
 import type { HardwareStatusPayload, Monitor, MonitorStatusResponse, Notification, MonitorStatus } from "@/types/index.js";
+import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { IMonitorsRepository, INotificationsRepository } from "@/repositories/index.js";
 import { INotificationProvider } from "./notificationProviders/INotificationProvider.js";
 import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import type { ISettingsService } from "@/service/system/settingsService.js";
 import { ILogger } from "@/utils/logger.js";
+import type { INotificationMessageBuilder } from "@/service/infrastructure/notificationMessageBuilder.js";
 
 export interface INotificationsService {
 	createNotification: (notificationData: Partial<Notification>) => Promise<Notification>;
@@ -32,6 +34,7 @@ export class NotificationsService implements INotificationsService {
 	private matrixProvider: INotificationProvider;
 	private logger: ILogger;
 	private settingsService: ISettingsService;
+	private notificationMessageBuilder: INotificationMessageBuilder;
 
 	constructor(
 		notificationsRepository: INotificationsRepository,
@@ -43,7 +46,8 @@ export class NotificationsService implements INotificationsService {
 		pagerDutyProvider: INotificationProvider,
 		matrixProvider: INotificationProvider,
 		settingsService: ISettingsService,
-		logger: any
+		logger: ILogger,
+		notificationMessageBuilder: INotificationMessageBuilder
 	) {
 		this.notificationsRepository = notificationsRepository;
 		this.monitorsRepository = monitorsRepository;
@@ -55,31 +59,45 @@ export class NotificationsService implements INotificationsService {
 		this.matrixProvider = matrixProvider;
 		this.settingsService = settingsService;
 		this.logger = logger;
+		this.notificationMessageBuilder = notificationMessageBuilder;
 	}
 
 	private send = async (
 		notification: Notification,
 		monitor: Monitor,
 		monitorStatusResponse: MonitorStatusResponse,
-		decision: MonitorActionDecision
+		decision: MonitorActionDecision,
+		notificationMessage: NotificationMessage | undefined
 	): Promise<boolean> => {
-		const settings = this.settingsService.getSettings();
-		const clientHost = settings.clientHost || "Host not defined";
+		if (!notificationMessage) {
+			this.logger.warn({
+				message: "Notification message not provided",
+				service: SERVICE_NAME,
+				method: "send",
+			});
+			return false;
+		}
 
+		// Route to provider based on notification type
 		switch (notification.type) {
-			case "email":
-				return await this.emailProvider.sendAlert(notification, monitor, monitorStatusResponse, decision, clientHost);
-			case "slack":
-				return await this.slackProvider.sendAlert(notification, monitor, monitorStatusResponse, decision, clientHost);
-			case "discord":
-				return await this.discordProvider.sendAlert(notification, monitor, monitorStatusResponse, decision, clientHost);
-			case "pager_duty":
-				return await this.pagerDutyProvider.sendAlert(notification, monitor, monitorStatusResponse, decision, clientHost);
-			case "matrix":
-				return await this.matrixProvider.sendAlert(notification, monitor, monitorStatusResponse, decision, clientHost);
 			case "webhook":
-				return await this.webhookProvider.sendAlert(notification, monitor, monitorStatusResponse, decision, clientHost);
+				return await this.webhookProvider.sendMessage!(notification, notificationMessage);
+			case "slack":
+				return await this.slackProvider.sendMessage!(notification, notificationMessage);
+			case "matrix":
+				return await this.matrixProvider.sendMessage!(notification, notificationMessage);
+			case "pager_duty":
+				return await this.pagerDutyProvider.sendMessage!(notification, notificationMessage);
+			case "discord":
+				return await this.discordProvider.sendMessage!(notification, notificationMessage);
+			case "email":
+				return await this.emailProvider.sendMessage!(notification, notificationMessage);
 			default:
+				this.logger.warn({
+					message: `Unknown notification type: ${notification.type}`,
+					service: SERVICE_NAME,
+					method: "send",
+				});
 				return false;
 		}
 	};
@@ -88,7 +106,12 @@ export class NotificationsService implements INotificationsService {
 		const notificationIds = monitor.notifications ?? [];
 		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
 
-		const tasks = notifications.map((notification) => this.send(notification, monitor, monitorStatusResponse, decision));
+		// Build notification message once for all notifications
+		const settings = this.settingsService.getSettings();
+		const clientHost = settings.clientHost || "Host not defined";
+		const notificationMessage = this.notificationMessageBuilder.buildMessage(monitor, monitorStatusResponse, decision, clientHost);
+
+		const tasks = notifications.map((notification) => this.send(notification, monitor, monitorStatusResponse, decision, notificationMessage));
 
 		const outcomes = await Promise.all(tasks);
 		const succeeded = outcomes.filter(Boolean).length;
@@ -105,7 +128,6 @@ export class NotificationsService implements INotificationsService {
 	};
 
 	handleNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {
-		// Early return if no notification should be sent
 		if (!decision.shouldSendNotification) {
 			return false;
 		}

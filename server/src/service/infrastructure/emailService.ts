@@ -60,11 +60,9 @@ class EmailService {
 			welcomeEmailTemplate: this.loadTemplate("welcomeEmail"),
 			employeeActivationTemplate: this.loadTemplate("employeeActivation"),
 			noIncidentsThisWeekTemplate: this.loadTemplate("noIncidentsThisWeek"),
-			serverIsDownTemplate: this.loadTemplate("serverIsDown"),
-			serverIsUpTemplate: this.loadTemplate("serverIsUp"),
 			passwordResetTemplate: this.loadTemplate("passwordReset"),
-			hardwareIncidentTemplate: this.loadTemplate("hardwareIncident"),
 			testEmailTemplate: this.loadTemplate("testEmailTemplate"),
+			unifiedNotificationTemplate: this.loadTemplate("unifiedNotification"),
 		};
 	};
 

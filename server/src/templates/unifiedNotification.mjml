@@ -34,9 +34,9 @@
 					font-weight="500"
 					padding="0px"
 					font-size="18px"
-					color="green"
+					color="{{headerColor}}"
 				>
-					{{ monitor }} is up
+					{{ title }}
 				</mj-text>
 				<mj-divider
 					border-width="2px"
@@ -47,10 +47,30 @@
 		<mj-section>
 			<mj-column width="100%">
 				<mj-text>
-					<p>Hello {{ name }}!</p>
-					<p>Your latest incident is resolved and your monitored service is up again.</p>
-					<p><b>Monitor name:</b> {{ monitor }}</p>
-					<p><b>URL:</b> {{ url }}</p>
+					<p>Hello!</p>
+					<p>{{ summary }}</p>
+					<p><b>Monitor name:</b> {{ monitorName }}</p>
+					<p><b>URL:</b> {{ monitorUrl }}</p>
+					<p><b>Type:</b> {{ monitorType }}</p>
+					<p><b>Status:</b> {{ monitorStatus }}</p>
+					{{#if thresholds}}
+					<p><b>Threshold Breaches:</b></p>
+					<ul>
+						{{#each thresholds}}
+						<li>
+							<b>{{ metric }}:</b> {{ formattedValue }} (threshold: {{ threshold }}{{ unit }})
+						</li>
+						{{/each}}
+					</ul>
+					{{/if}}
+					{{#if details}}
+					<p><b>Additional Details:</b></p>
+					<ul>
+						{{#each details}}
+						<li>{{ this }}</li>
+						{{/each}}
+					</ul>
+					{{/if}}
 				</mj-text>
 			</mj-column>
 			<mj-column width="100%">
@@ -58,7 +78,14 @@
 					border-width="1px"
 					border-color="#E0E0E0"
 				></mj-divider>
-				<mj-button background-color="#1570EF"> View incident details </mj-button>
+				{{#if incidentUrl}}
+				<mj-button
+					background-color="#1570EF"
+					href="{{incidentUrl}}"
+				>
+					View incident details
+				</mj-button>
+				{{/if}}
 				<mj-text font-size="12px">
 					<p>This email was sent by Checkmate.</p>
 				</mj-text>
