@@ -1,15 +1,9 @@
 const SERVICE_NAME = "MatrixProvider";
 import got from "got";
 import type { INotificationProvider } from "@/service/index.js";
-import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
-import type { Notification, Monitor, MonitorStatusResponse } from "@/types/index.js";
+import type { Notification } from "@/types/index.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
-import {
-	buildHardwareAlerts,
-	buildHardwareNotificationMessage,
-	buildWebhookBody,
-	getTestMessage,
-} from "@/service/infrastructure/notificationProviders/utils.js";
+import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
 
 export class MatrixProvider implements INotificationProvider {
 	private logger: any;
@@ -17,73 +11,6 @@ export class MatrixProvider implements INotificationProvider {
 	constructor(logger: any) {
 		this.logger = logger;
 	}
-	private getHardwareContent = (
-		clientHost: string,
-		monitor: Monitor,
-		monitorStatusResponse: MonitorStatusResponse,
-		decision: MonitorActionDecision
-	) => {
-		// For status changes (recovery), use standard format
-		if (decision.notificationReason === "status_change") {
-			return buildWebhookBody(monitor, monitorStatusResponse);
-		}
-		// For threshold breaches, use hardware alert format
-		const { alertsToSend } = buildHardwareAlerts(clientHost, monitor, monitorStatusResponse);
-		const body = buildHardwareNotificationMessage(clientHost, alertsToSend, monitor);
-		return body;
-	};
-
-	private getContent = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
-		const body = buildWebhookBody(monitor, monitorStatusResponse);
-		return body;
-	};
-
-	sendAlert = async (
-		notification: Notification,
-		monitor: Monitor,
-		monitorStatusResponse: MonitorStatusResponse,
-		decision: MonitorActionDecision,
-		clientHost: string
-	) => {
-		const { homeserverUrl, accessToken, roomId } = notification;
-
-		let content;
-		if (monitor.type === "hardware") {
-			content = this.getHardwareContent(clientHost, monitor, monitorStatusResponse, decision);
-		} else {
-			content = this.getContent(monitor, monitorStatusResponse);
-		}
-
-		const title = `Checkmate status for ${monitor.name}`;
-
-		const formattedMessage = `## ${title}\n${content}`;
-
-		const url = `${homeserverUrl}/_matrix/client/v3/rooms/${roomId}/send/m.room.message?access_token=${accessToken}`;
-		const body = {
-			msgtype: "m.text",
-			body: formattedMessage,
-			format: "org.matrix.custom.html",
-			formatted_body: formattedMessage,
-		};
-		try {
-			await got.post(url, {
-				json: body,
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
-			return true;
-		} catch (error) {
-			const err = error as Error;
-			this.logger.warn({
-				message: "Matrix alert failed",
-				service: SERVICE_NAME,
-				method: "sendAlert",
-				stack: err?.stack,
-			});
-			return false;
-		}
-	};
 
 	sendTestAlert = async (notification: Notification) => {
 		const { homeserverUrl, accessToken, roomId } = notification;
@@ -142,16 +69,11 @@ export class MatrixProvider implements INotificationProvider {
 					"Content-Type": "application/json",
 				},
 			});
-			this.logger.info({
-				message: "[NEW] Matrix notification sent via sendMessage",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-			});
 			return true;
 		} catch (error) {
 			const err = error as Error;
 			this.logger.warn({
-				message: "[NEW] Matrix alert failed via sendMessage",
+				message: "Matrix notification failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",
 				stack: err?.stack,

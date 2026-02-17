@@ -3,12 +3,7 @@ import type { Monitor, Alert, Notification, MonitorStatusResponse } from "@/type
 import { INotificationProvider } from "@/service/index.js";
 import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
-import {
-	buildHardwareAlerts,
-	buildHardwareNotificationMessage,
-	buildWebhookBody,
-	getTestMessage,
-} from "@/service/infrastructure/notificationProviders/utils.js";
+import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
 import got from "got";
 
 export class WebhookProvider implements INotificationProvider {
@@ -17,68 +12,7 @@ export class WebhookProvider implements INotificationProvider {
 	constructor(logger: any) {
 		this.logger = logger;
 	}
-	private getHardwareContent = (
-		clientHost: string,
-		monitor: Monitor,
-		monitorStatusResponse: MonitorStatusResponse,
-		decision: MonitorActionDecision
-	) => {
-		// For status changes (recovery), use standard format
-		if (decision.notificationReason === "status_change") {
-			return buildWebhookBody(monitor, monitorStatusResponse);
-		}
-		// For threshold breaches, use hardware alert format
-		const { alertsToSend } = buildHardwareAlerts(clientHost, monitor, monitorStatusResponse);
-		const body = buildHardwareNotificationMessage(clientHost, alertsToSend, monitor);
-		return body;
-	};
 
-	private getContent = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): string => {
-		const body = buildWebhookBody(monitor, monitorStatusResponse);
-		return body;
-	};
-
-	sendAlert = async (
-		notification: Notification,
-		monitor: Monitor,
-		monitorStatusResponse: MonitorStatusResponse,
-		decision: MonitorActionDecision,
-		clientHost: string
-	) => {
-		let body;
-		if (monitor.type === "hardware") {
-			body = this.getHardwareContent(clientHost, monitor, monitorStatusResponse, decision);
-		} else {
-			body = this.getContent(monitor, monitorStatusResponse);
-		}
-
-		if (!notification.address) {
-			return false;
-		}
-
-		try {
-			await got.post(notification.address, {
-				json: { text: body },
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
-			return true;
-		} catch (error) {
-			const err = error as Error;
-			this.logger.warn({
-				message: "Webhook alert failed",
-				service: SERVICE_NAME,
-				method: "sendAlert",
-				stack: err?.stack,
-			});
-			return false;
-		}
-	};
-
-	/**
-	 * New unified message format - builds webhook payload from NotificationMessage
-	 */
 	sendMessage = async (notification: Notification, message: NotificationMessage): Promise<boolean> => {
 		if (!notification.address) {
 			return false;
@@ -95,7 +29,7 @@ export class WebhookProvider implements INotificationProvider {
 				},
 			});
 			this.logger.info({
-				message: "[NEW] Webhook notification sent via sendMessage",
+				message: "Webhook notification sent",
 				service: SERVICE_NAME,
 				method: "sendMessage",
 			});
@@ -103,7 +37,7 @@ export class WebhookProvider implements INotificationProvider {
 		} catch (error) {
 			const err = error as Error;
 			this.logger.warn({
-				message: "[NEW] Webhook alert failed via sendMessage",
+				message: "Webhook alert failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",
 				stack: err?.stack,

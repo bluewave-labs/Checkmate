@@ -1,4 +1,5 @@
 import type { HardwareStatusPayload, Monitor, MonitorStatusResponse, Notification, MonitorStatus } from "@/types/index.js";
+import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { IMonitorsRepository, INotificationsRepository } from "@/repositories/index.js";
 import { INotificationProvider } from "./notificationProviders/INotificationProvider.js";
 import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
@@ -66,81 +67,37 @@ export class NotificationsService implements INotificationsService {
 		monitor: Monitor,
 		monitorStatusResponse: MonitorStatusResponse,
 		decision: MonitorActionDecision,
-		notificationMessage?: any
+		notificationMessage: NotificationMessage | undefined
 	): Promise<boolean> => {
-		const settings = this.settingsService.getSettings();
-		const clientHost = settings.clientHost || "Host not defined";
-
-		// Route to new sendMessage method if provider supports it
-		if (notification.type === "webhook" && this.webhookProvider.sendMessage && notificationMessage) {
-			this.logger.info({
-				message: "[NEW] Using sendMessage for webhook",
+		if (!notificationMessage) {
+			this.logger.warn({
+				message: "Notification message not provided",
 				service: SERVICE_NAME,
 				method: "send",
 			});
-			return await this.webhookProvider.sendMessage(notification, notificationMessage);
+			return false;
 		}
 
-		if (notification.type === "slack" && this.slackProvider.sendMessage && notificationMessage) {
-			this.logger.info({
-				message: "[NEW] Using sendMessage for slack",
-				service: SERVICE_NAME,
-				method: "send",
-			});
-			return await this.slackProvider.sendMessage(notification, notificationMessage);
-		}
-
-		if (notification.type === "matrix" && this.matrixProvider.sendMessage && notificationMessage) {
-			this.logger.info({
-				message: "[NEW] Using sendMessage for matrix",
-				service: SERVICE_NAME,
-				method: "send",
-			});
-			return await this.matrixProvider.sendMessage(notification, notificationMessage);
-		}
-
-		if (notification.type === "pager_duty" && this.pagerDutyProvider.sendMessage && notificationMessage) {
-			this.logger.info({
-				message: "[NEW] Using sendMessage for pagerduty",
-				service: SERVICE_NAME,
-				method: "send",
-			});
-			return await this.pagerDutyProvider.sendMessage(notification, notificationMessage);
-		}
-
-		if (notification.type === "discord" && this.discordProvider.sendMessage && notificationMessage) {
-			this.logger.info({
-				message: "[NEW] Using sendMessage for discord",
-				service: SERVICE_NAME,
-				method: "send",
-			});
-			return await this.discordProvider.sendMessage(notification, notificationMessage);
-		}
-
-		if (notification.type === "email" && this.emailProvider.sendMessage && notificationMessage) {
-			this.logger.info({
-				message: "[NEW] Using sendMessage for email",
-				service: SERVICE_NAME,
-				method: "send",
-			});
-			return await this.emailProvider.sendMessage(notification, notificationMessage);
-		}
-
-		// Fallback to existing sendAlert for all providers
+		// Route to provider based on notification type
 		switch (notification.type) {
-			case "email":
-				return await this.emailProvider.sendAlert(notification, monitor, monitorStatusResponse, decision, clientHost);
-			case "slack":
-				return await this.slackProvider.sendAlert(notification, monitor, monitorStatusResponse, decision, clientHost);
-			case "discord":
-				return await this.discordProvider.sendAlert(notification, monitor, monitorStatusResponse, decision, clientHost);
-			case "pager_duty":
-				return await this.pagerDutyProvider.sendAlert(notification, monitor, monitorStatusResponse, decision, clientHost);
-			case "matrix":
-				return await this.matrixProvider.sendAlert(notification, monitor, monitorStatusResponse, decision, clientHost);
 			case "webhook":
-				return await this.webhookProvider.sendAlert(notification, monitor, monitorStatusResponse, decision, clientHost);
+				return await this.webhookProvider.sendMessage!(notification, notificationMessage);
+			case "slack":
+				return await this.slackProvider.sendMessage!(notification, notificationMessage);
+			case "matrix":
+				return await this.matrixProvider.sendMessage!(notification, notificationMessage);
+			case "pager_duty":
+				return await this.pagerDutyProvider.sendMessage!(notification, notificationMessage);
+			case "discord":
+				return await this.discordProvider.sendMessage!(notification, notificationMessage);
+			case "email":
+				return await this.emailProvider.sendMessage!(notification, notificationMessage);
 			default:
+				this.logger.warn({
+					message: `Unknown notification type: ${notification.type}`,
+					service: SERVICE_NAME,
+					method: "send",
+				});
 				return false;
 		}
 	};
