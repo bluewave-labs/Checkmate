@@ -9,7 +9,12 @@ import { useSelector, useDispatch } from "react-redux";
 import DummyChart from "@/Pages/Settings/DummyChart";
 import { useGet } from "@/Hooks/UseApi";
 import { useSettingsForm } from "@/Hooks/useSettingsForm";
+import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
 import type { SettingsFormData } from "@/Validation/settings";
+import { useState } from "react";
+import { Controller } from "react-hook-form";
+import { TextField, Button } from "@/Components/v2/inputs";
+import { Typography, Box } from "@mui/material";
 
 import {
 	setTimezone,
@@ -27,13 +32,26 @@ interface Timezone {
 	name: string;
 }
 
+interface SettingsResponse {
+	settings: any;
+	pagespeedKeySet: boolean;
+	emailPasswordSet: boolean;
+}
+
 export const SettingsPage = () => {
 	const theme = useTheme();
 	const { t, i18n } = useTranslation();
 	const dispatch = useDispatch();
+	const isAdmin = useIsAdmin();
 
 	// Fetch settings data from API
-	const { data: fetchedSettings } = useGet<any>("/settings");
+	const { data: fetchedSettings } = useGet<SettingsResponse>("/settings");
+
+	// Local state for API key reset
+	const [isApiKeySet, setIsApiKeySet] = useState(
+		fetchedSettings?.pagespeedKeySet ?? false
+	);
+	const [apiKeyHasBeenReset, setApiKeyHasBeenReset] = useState(false);
 
 	// Initialize form with schema and defaults
 	const { schema, defaults } = useSettingsForm({ data: fetchedSettings?.settings });
@@ -47,6 +65,13 @@ export const SettingsPage = () => {
 	useEffect(() => {
 		form.reset(defaults);
 	}, [defaults, form]);
+
+	// Update isApiKeySet when fetchedSettings changes
+	useEffect(() => {
+		if (fetchedSettings) {
+			setIsApiKeySet(fetchedSettings.pagespeedKeySet);
+		}
+	}, [fetchedSettings]);
 
 	const {
 		timezone: selectedTimezoneId,
@@ -79,6 +104,11 @@ export const SettingsPage = () => {
 
 	const handleChartTypeChange = (e: SelectChangeEvent<ChartType>) => {
 		dispatch(setChartType(e.target.value));
+	};
+
+	const handleResetApiKey = () => {
+		form.setValue("pagespeedApiKey", "");
+		setApiKeyHasBeenReset(true);
 	};
 
 	const languages = Object.keys(i18n.options.resources || {});
@@ -151,6 +181,65 @@ export const SettingsPage = () => {
 						</Stack>
 					}
 				/>
+				{isAdmin && (
+					<ConfigBox
+						title={t("pages.settings.form.pagespeed.title")}
+						subtitle={t("pages.settings.form.pagespeed.description")}
+						rightContent={
+							<>
+								{(isApiKeySet === false || apiKeyHasBeenReset === true) && (
+									<Controller
+										name="pagespeedApiKey"
+										control={form.control}
+										defaultValue={defaults.pagespeedApiKey}
+										render={({ field, fieldState }) => (
+											<TextField
+												{...field}
+												fieldLabel={t(
+													"pages.settings.form.pagespeed.option.apiKey.label"
+												)}
+												type="password"
+												placeholder={t(
+													"pages.settings.form.pagespeed.option.apiKey.placeholder"
+												)}
+												error={!!fieldState.error}
+												helperText={fieldState.error?.message}
+											/>
+										)}
+									/>
+								)}
+
+								{isApiKeySet === true && apiKeyHasBeenReset === false && (
+									<Box>
+										<Typography sx={{ mb: theme.spacing(4) }}>
+											{t("pages.settings.pageSpeedSettings.labelApiKeySet")}
+										</Typography>
+										<Button
+											onClick={handleResetApiKey}
+											variant="contained"
+											color="error"
+										>
+											{t("common.buttons.reset")}
+										</Button>
+									</Box>
+								)}
+							</>
+						}
+					/>
+				)}
+				<Stack
+					direction="row"
+					justifyContent="flex-end"
+				>
+					<Button
+						loading={false}
+						type="submit"
+						variant="contained"
+						color="primary"
+					>
+						{t("common.buttons.save")}
+					</Button>
+				</Stack>
 			</Stack>
 		</BasePage>
 	);

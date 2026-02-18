@@ -38,7 +38,8 @@
 			"toggleTheme": "Toggles light & dark",
 			"flushQueue": "Flush queue",
 			"notFound": "Go to the main dashboard",
-			"resetPassword": "Reset password"
+			"resetPassword": "Reset password",
+			"reset": "Reset"
 		},
 		"charts": {
 			"labels": {
@@ -934,6 +935,16 @@
 							"label": "Chart type",
 							"histogram": "Histogram",
 							"heatmap": "Heatmap"
+						}
+					}
+				},
+				"pagespeed": {
+					"title": "Google PageSpeed API key",
+					"description": "Enter your Google PageSpeed API key to enable Google PageSpeed monitoring. Click Reset to update the key.",
+					"option": {
+						"apiKey": {
+							"label": "PageSpeed API key",
+							"placeholder": "Enter your Google PageSpeed API key"
 						}
 					}
 				}
