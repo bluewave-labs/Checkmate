@@ -18,6 +18,7 @@ const MonitorStatsSchema = new Schema<MonitorStatsDocument>(
 			ref: "Monitor",
 			immutable: true,
 			index: true,
+			unique: true,
 			required: true,
 		},
 		avgResponseTime: {
