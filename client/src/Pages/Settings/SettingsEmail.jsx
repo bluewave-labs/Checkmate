@@ -340,14 +340,6 @@ const SettingsEmail = ({
 					</Box>
 				</Box>
 
-				<pre>
-					{JSON.stringify({
-						systemEmailHost: systemEmailHost,
-						systemEmailAddress: systemEmailAddress,
-						systemEmailPassword: systemEmailPassword,
-					})}
-				</pre>
-
 				<Box>
 					{systemEmailHost &&
 						systemEmailPort &&
