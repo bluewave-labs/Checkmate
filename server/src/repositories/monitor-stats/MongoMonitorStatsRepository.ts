@@ -46,6 +46,14 @@ class MongoMonitorStatsRepository implements IMonitorStatsRepository {
 		return this.toEntity(monitorStats);
 	};
 
+	updateByMonitorId = async (monitorId: string, data: Omit<MonitorStats, "id" | "monitorId" | "createdAt" | "updatedAt">): Promise<MonitorStats> => {
+		const updated = await MonitorStatsModel.findOneAndUpdate({ monitorId: new mongoose.Types.ObjectId(monitorId) }, { $set: data }, { new: true });
+		if (!updated) {
+			throw new AppError({ message: "Monitor stats not found", status: 404 });
+		}
+		return this.toEntity(updated);
+	};
+
 	deleteByMonitorId = async (monitorId: string) => {
 		const deleted = await MonitorStatsModel.findOneAndDelete({ monitorId: new mongoose.Types.ObjectId(monitorId) });
 		if (!deleted) {

@@ -52,8 +52,8 @@ export class StatusService implements IStatusService {
 		try {
 			const monitorId = monitor.id;
 			const { responseTime, status } = networkResponse;
-			let stats: Omit<MonitorStats, "id" | "createdAt" | "updatedAt"> | null = null;
-			stats = await this.monitorStatsRepository
+			let existingStats: MonitorStats | null = null;
+			existingStats = await this.monitorStatsRepository
 				.findByMonitorId(monitorId)
 				.then((result) => result)
 				.catch(() => {
@@ -64,9 +64,12 @@ export class StatusService implements IStatusService {
 					});
 					return null;
 				});
-			if (!stats) {
+
+			let stats: Omit<MonitorStats, "id" | "monitorId" | "createdAt" | "updatedAt">;
+
+			if (!existingStats) {
+				// Initialize new stats
 				stats = {
-					monitorId,
 					avgResponseTime: 0,
 					maxResponseTime: 0,
 					totalChecks: 0,
@@ -75,6 +78,19 @@ export class StatusService implements IStatusService {
 					uptimePercentage: 0,
 					lastResponseTime: 0,
 					lastCheckTimestamp: 0,
+				};
+			} else {
+				// Use existing stats (omit id, monitorId, createdAt, updatedAt)
+				stats = {
+					avgResponseTime: existingStats.avgResponseTime,
+					maxResponseTime: existingStats.maxResponseTime,
+					totalChecks: existingStats.totalChecks,
+					totalUpChecks: existingStats.totalUpChecks,
+					totalDownChecks: existingStats.totalDownChecks,
+					uptimePercentage: existingStats.uptimePercentage,
+					lastResponseTime: existingStats.lastResponseTime,
+					lastCheckTimestamp: existingStats.lastCheckTimestamp,
+					timeOfLastFailure: existingStats.timeOfLastFailure,
 				};
 			}
 
@@ -123,7 +139,14 @@ export class StatusService implements IStatusService {
 
 			// latest check
 			stats.lastCheckTimestamp = new Date().getTime();
-			await this.monitorStatsRepository.create(stats);
+
+			// Create or update
+			if (!existingStats) {
+				await this.monitorStatsRepository.create({ monitorId, ...stats });
+			} else {
+				await this.monitorStatsRepository.updateByMonitorId(monitorId, stats);
+			}
+
 			return true;
 		} catch (error: any) {
 			this.logger.error({
