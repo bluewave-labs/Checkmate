@@ -75,7 +75,6 @@ const SettingsStats = ({ isAdmin, HEADING_SX, errors }) => {
 SettingsStats.propTypes = {
 	isAdmin: PropTypes.bool,
 	HEADING_SX: PropTypes.object,
-	errors: PropTypes.object,
 };
 
 export default SettingsStats;

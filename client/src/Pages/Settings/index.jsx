@@ -12,7 +12,6 @@ import SettingsGlobalThresholds from "./SettingsGlobalThresholds.jsx";
 import SettingsExport from "./SettingsExport.jsx";
 import Button from "@mui/material/Button";
 // Utils
-import { settingsValidation } from "@/Validation/validation.js";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSettingsForm } from "@/Hooks/useSettingsForm.js";
@@ -31,7 +30,6 @@ const BREADCRUMBS = [{ name: `Settings`, path: "/settings" }];
 const Settings = () => {
 	const { data: fetchedSettings, isLoading: isSettingsLoading } = useGet("/settings");
 	// Local state
-	const [errors, setErrors] = useState({});
 	const [isApiKeySet, setIsApiKeySet] = useState(
 		fetchedSettings?.pagespeedKeySet ?? false
 	);
@@ -57,10 +55,9 @@ const Settings = () => {
 		trigger,
 		getValues,
 		setValue,
-		formState: { dirtyFields },
 	} = form;
 	useEffect(() => {
-		reset(defaults);
+		reset(defaults, { keepDirtyValues: false });
 	}, [defaults, reset]);
 
 	useEffect(() => {
@@ -88,13 +85,23 @@ const Settings = () => {
 	};
 
 	const onSubmit = async (data) => {
-		const toSubmit = { ...data };
-		if (!form.formState.dirtyFields.systemEmailPassword) {
-			delete toSubmit.systemEmailPassword;
-		}
-		if (!form.formState.dirtyFields.pagespeedApiKey) {
-			delete toSubmit.pagespeedApiKey;
-		}
+		// Convert undefined to empty strings for proper unsetting on backend
+		const toSubmit = Object.fromEntries(
+			Object.entries(data).map(([key, value]) => {
+				if (value === undefined) return [key, ""];
+				if (typeof value === "object" && value !== null) {
+					// Handle nested objects like globalThresholds
+					return [
+						key,
+						Object.fromEntries(
+							Object.entries(value).map(([k, v]) => [k, v === undefined ? "" : v])
+						),
+					];
+				}
+				return [key, value];
+			})
+		);
+
 		saveSettings(toSubmit);
 	};
 
@@ -135,7 +142,6 @@ const Settings = () => {
 			<SettingsStats
 				isAdmin={isAdmin}
 				HEADING_SX={HEADING_SX}
-				errors={errors}
 			/>
 			<SettingsGlobalThresholds
 				isAdmin={isAdmin}
@@ -195,7 +201,7 @@ const Settings = () => {
 					loading={
 						isSaving || isDeletingMonitorStats || isSettingsLoading || isDeletingMonitors
 					}
-					disabled={Object.keys(errors).length > 0}
+					disabled={!form.formState.isValid}
 					variant="contained"
 					color="accent"
 					sx={{ px: theme.spacing(12), py: theme.spacing(8) }}

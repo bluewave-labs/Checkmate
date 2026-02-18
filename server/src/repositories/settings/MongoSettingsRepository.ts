@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import { ISettingsRepository } from "@/repositories/settings/ISettingsRepository.js";
 import type { Settings } from "@/types/index.js";
 import { AppSettingsModel, type AppSettingsDocument } from "@/db/models/index.js";
-import { SERVFAIL } from "dns";
 
 class MongoSettingsRepository implements ISettingsRepository {
 	private toStringId = (value?: mongoose.Types.ObjectId | string | null): string => {
@@ -61,16 +60,25 @@ class MongoSettingsRepository implements ISettingsRepository {
 	};
 
 	update = async (settings: Partial<Settings>) => {
-		const update: Record<string, any> = { $set: { ...settings } };
+		const update: Record<string, any> = { $set: {}, $unset: {} };
 
-		if (settings.pagespeedApiKey === "") {
-			update.$unset = { pagespeedApiKey: "" };
-			delete update.$set.pagespeedApiKey;
+		// Iterate through settings and separate into $set and $unset
+		Object.entries(settings).forEach(([key, value]) => {
+			if (value === undefined || value === "") {
+				// Unset undefined or empty string values
+				update.$unset[key] = "";
+			} else {
+				// Set defined values
+				update.$set[key] = value;
+			}
+		});
+
+		// Clean up empty operators
+		if (Object.keys(update.$set).length === 0) {
+			delete update.$set;
 		}
-
-		if (settings.systemEmailPassword === "") {
-			update.$unset = { systemEmailPassword: "" };
-			delete update.$set.systemEmailPassword;
+		if (Object.keys(update.$unset).length === 0) {
+			delete update.$unset;
 		}
 
 		await AppSettingsModel.findOneAndUpdate({}, update, {
