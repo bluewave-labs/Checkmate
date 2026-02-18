@@ -11,8 +11,9 @@ import { useTheme } from "@emotion/react";
 import { PropTypes } from "prop-types";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { useDelete } from "@/Hooks/UseApi";
 
-const SettingsStats = ({ isAdmin, HEADING_SX, handleChange, settingsData, errors }) => {
+const SettingsStats = ({ isAdmin, HEADING_SX, errors }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const [isOpen, setIsOpen] = useState(false);
@@ -20,6 +21,7 @@ const SettingsStats = ({ isAdmin, HEADING_SX, handleChange, settingsData, errors
 	if (!isAdmin) {
 		return null;
 	}
+	const { deleteFn: deleteMonitorStatsFn } = useDelete();
 
 	return (
 		<ConfigBox>
@@ -29,16 +31,16 @@ const SettingsStats = ({ isAdmin, HEADING_SX, handleChange, settingsData, errors
 					variant="h2"
 					sx={HEADING_SX}
 				>
-					{t("settingsPage.statsSettings.title")}
+					{t("pages.settings.statsSettings.title")}
 				</Typography>
 				<Typography sx={{ mt: theme.spacing(2) }}>
-					{t("settingsPage.statsSettings.description")}
+					{t("pages.settings.statsSettings.description")}
 				</Typography>
 			</Box>
 			<Stack gap={theme.spacing(20)}>
 				<Box>
 					<Typography>
-						{t("settingsPage.statsSettings.clearAllStatsDescription")}
+						{t("pages.settings.statsSettings.clearAllStatsDescription")}
 					</Typography>
 					<Button
 						variant="contained"
@@ -46,26 +48,22 @@ const SettingsStats = ({ isAdmin, HEADING_SX, handleChange, settingsData, errors
 						onClick={() => setIsOpen(true)}
 						sx={{ mt: theme.spacing(4) }}
 					>
-						{t("settingsPage.statsSettings.clearAllStatsButton")}
+						{t("pages.settings.statsSettings.clearAllStatsButton")}
 					</Button>
 				</Box>
 			</Stack>
 			<Dialog
 				open={isOpen}
 				theme={theme}
-				title={t("settingsPage.statsSettings.clearAllStatsDialogTitle")}
-				description={t("settingsPage.statsSettings.clearAllStatsDialogDescription")}
+				title={t("pages.settings.statsSettings.clearAllStatsDialogTitle")}
+				description={t("pages.settings.statsSettings.clearAllStatsDialogDescription")}
 				onCancel={() => setIsOpen(false)}
 				confirmationButtonLabel={t(
-					"settingsPage.statsSettings.clearAllStatsDialogConfirm"
+					"pages.settings.statsSettings.clearAllStatsDialogConfirm"
 				)}
-				onConfirm={() => {
-					const syntheticEvent = {
-						target: {
-							name: "deleteStats",
-						},
-					};
-					handleChange(syntheticEvent);
+				onConfirm={async () => {
+					await deleteMonitorStatsFn("/checks/team");
+
 					setIsOpen(false);
 				}}
 				isLoading={false}
@@ -77,8 +75,6 @@ const SettingsStats = ({ isAdmin, HEADING_SX, handleChange, settingsData, errors
 SettingsStats.propTypes = {
 	isAdmin: PropTypes.bool,
 	HEADING_SX: PropTypes.object,
-	handleChange: PropTypes.func,
-	settingsData: PropTypes.object,
 	errors: PropTypes.object,
 };
 

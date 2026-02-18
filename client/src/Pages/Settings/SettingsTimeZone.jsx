@@ -7,31 +7,28 @@ import timezones from "@/Utils/timezones.json";
 
 // Utils
 import { useTheme } from "@emotion/react";
+import { useSelector, useDispatch } from "react-redux";
+import { setTimezone } from "@/Features/UI/uiSlice.js";
 import { PropTypes } from "prop-types";
 import { useTranslation } from "react-i18next";
 import { useCallback, useMemo, useState } from "react";
-const SettingsTimeZone = ({ HEADING_SX, handleChange, timezone }) => {
+const SettingsTimeZone = ({ HEADING_SX }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const [rawInput, setRawInput] = useState("");
+	const dispatch = useDispatch();
+	const { timezone } = useSelector((state) => state.ui);
 
 	const selectedTimezone = useMemo(
 		() => timezones.find((tz) => tz._id === timezone) ?? null,
 		[timezone]
 	);
 
-	const handleTimezoneChange = useCallback(
-		(newValue) => {
-			setRawInput("");
-			handleChange({
-				target: {
-					name: "timezone",
-					value: newValue?._id ?? "",
-				},
-			});
-		},
-		[handleChange]
-	);
+	const handleTimezoneChange = (newValue) => {
+		setRawInput("");
+		const newId = newValue?._id ?? "";
+		dispatch(setTimezone({ timezone: newId }));
+	};
 
 	return (
 		<ConfigBox>
@@ -40,11 +37,11 @@ const SettingsTimeZone = ({ HEADING_SX, handleChange, timezone }) => {
 					component="h1"
 					variant="h2"
 				>
-					{t("settingsPage.timezoneSettings.title")}
+					{t("pages.settings.timezoneSettings.title")}
 				</Typography>
 				<Typography sx={HEADING_SX}>
 					<Typography component="span">
-						{t("settingsPage.timezoneSettings.description")}
+						{t("pages.settings.timezoneSettings.description")}
 					</Typography>
 				</Typography>
 			</Box>
@@ -68,8 +65,6 @@ const SettingsTimeZone = ({ HEADING_SX, handleChange, timezone }) => {
 
 SettingsTimeZone.propTypes = {
 	HEADING_SX: PropTypes.object,
-	handleChange: PropTypes.func,
-	timezone: PropTypes.string,
 };
 
 export default SettingsTimeZone;

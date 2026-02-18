@@ -8,8 +8,9 @@ import { PropTypes } from "prop-types";
 import { useTranslation } from "react-i18next";
 import Dialog from "@/Components/v1/Dialog/index.jsx";
 import { useState } from "react";
+import { useLazyGet } from "@/Hooks/UseApi";
 
-const SettingsDemoMonitors = ({ isAdmin, HEADER_SX, handleChange, isLoading }) => {
+const SettingsDemoMonitors = ({ isAdmin, HEADER_SX, isLoading }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	// Local state
@@ -18,6 +19,29 @@ const SettingsDemoMonitors = ({ isAdmin, HEADER_SX, handleChange, isLoading }) =
 	if (!isAdmin) {
 		return null;
 	}
+	const { get: fetchJson } = useLazyGet();
+
+	const handleExport = async () => {
+		const res = await fetchJson("/monitors/export/json");
+		const json = res?.data ?? [];
+		if (!json || json.length === 0) {
+			return;
+		}
+
+		const blob = new Blob([JSON.stringify(json, null, 2)], {
+			type: "application/json",
+		});
+		const url = URL.createObjectURL(blob);
+
+		const link = document.createElement("a");
+		link.href = url;
+		link.download = "monitors.json";
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		URL.revokeObjectURL(url);
+		return;
+	};
 
 	return (
 		<>
@@ -38,14 +62,7 @@ const SettingsDemoMonitors = ({ isAdmin, HEADER_SX, handleChange, isLoading }) =
 						variant="contained"
 						color="accent"
 						loading={isLoading}
-						onClick={() => {
-							const syntheticEvent = {
-								target: {
-									name: "export",
-								},
-							};
-							handleChange(syntheticEvent);
-						}}
+						onClick={handleExport}
 						sx={{ mt: theme.spacing(4) }}
 					>
 						Export Monitors to JSON
@@ -58,7 +75,6 @@ const SettingsDemoMonitors = ({ isAdmin, HEADER_SX, handleChange, isLoading }) =
 
 SettingsDemoMonitors.propTypes = {
 	isAdmin: PropTypes.bool,
-	handleChange: PropTypes.func,
 	HEADER_SX: PropTypes.object,
 };
 
