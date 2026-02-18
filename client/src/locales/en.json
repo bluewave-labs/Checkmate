@@ -544,6 +544,17 @@
 							"label": "Temperature alert threshold (°C)"
 						}
 					}
+				},
+				"url": {
+					"title": "Monitor IP/URL on Status Page",
+					"description": "Display the IP address or URL of monitor on the public Status page. If it's disabled, only the monitor name will be shown to protect sensitive information.",
+					"option": {
+						"showURL": {
+							"label": "Display IP/URL on status page",
+							"enabled": "Enabled",
+							"disabled": "Disabled"
+						}
+					}
 				}
 			}
 		},
@@ -946,6 +957,17 @@
 							"label": "PageSpeed API key",
 							"labelSet": "API key is set. Click Reset to change it.",
 							"placeholder": "Enter your Google PageSpeed API key"
+						}
+					}
+				},
+				"url": {
+					"title": "Monitor IP/URL on Status Page",
+					"description": "Display the IP address or URL of monitor on the public Status page. If it's disabled, only the monitor name will be shown to protect sensitive information.",
+					"option": {
+						"showURL": {
+							"label": "Display IP/URL on status page",
+							"enabled": "Enabled",
+							"disabled": "Disabled"
 						}
 					}
 				}

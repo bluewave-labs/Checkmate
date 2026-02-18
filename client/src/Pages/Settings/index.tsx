@@ -13,8 +13,8 @@ import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
 import type { SettingsFormData } from "@/Validation/settings";
 import { useState } from "react";
 import { Controller } from "react-hook-form";
-import { TextField, FieldLabel, Button } from "@/Components/v2/inputs";
-import { Typography, Box } from "@mui/material";
+import { TextField, Button, FieldLabel } from "@/Components/v2/inputs";
+import { Box } from "@mui/material";
 
 import {
 	setTimezone,
@@ -268,6 +268,38 @@ export const SettingsPage = () => {
 						}
 					/>
 				)}
+
+				{/* URL Settings */}
+				<ConfigBox
+					title={t("pages.settings.form.url.title")}
+					subtitle={t("pages.settings.form.url.description")}
+					rightContent={
+						<Controller
+							name="showURL"
+							control={form.control}
+							defaultValue={defaults.showURL}
+							render={({ field, fieldState }) => (
+								<Select
+									{...field}
+									value={field.value === undefined ? "false" : field.value.toString()}
+									onChange={(e) => {
+										const value = e.target.value === "true";
+										field.onChange(value);
+									}}
+									fieldLabel={t("pages.settings.form.url.option.showURL.label")}
+									error={!!fieldState.error}
+								>
+									<MenuItem value="true">
+										{t("pages.settings.form.url.option.showURL.enabled")}
+									</MenuItem>
+									<MenuItem value="false">
+										{t("pages.settings.form.url.option.showURL.disabled")}
+									</MenuItem>
+								</Select>
+							)}
+						/>
+					}
+				/>
 			</Stack>
 
 			{/* Sticky Save Button */}
