@@ -1,9 +1,15 @@
 import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
 import { Autocomplete, Select } from "@/Components/v2/inputs";
 import { Stack, useTheme, MenuItem, type SelectChangeEvent } from "@mui/material";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import DummyChart from "@/Pages/Settings/DummyChart";
+import { useGet } from "@/Hooks/UseApi";
+import { useSettingsForm } from "@/Hooks/useSettingsForm";
+import type { SettingsFormData } from "@/Validation/settings";
 
 import {
 	setTimezone,
@@ -25,6 +31,23 @@ export const SettingsPage = () => {
 	const theme = useTheme();
 	const { t, i18n } = useTranslation();
 	const dispatch = useDispatch();
+
+	// Fetch settings data from API
+	const { data: fetchedSettings } = useGet<any>("/settings");
+
+	// Initialize form with schema and defaults
+	const { schema, defaults } = useSettingsForm({ data: fetchedSettings?.settings });
+
+	const form = useForm<SettingsFormData>({
+		resolver: zodResolver(schema),
+		defaultValues: defaults,
+	});
+
+	// Reset form when defaults change
+	useEffect(() => {
+		form.reset(defaults);
+	}, [defaults, form]);
+
 	const {
 		timezone: selectedTimezoneId,
 		mode,
@@ -61,7 +84,7 @@ export const SettingsPage = () => {
 	const languages = Object.keys(i18n.options.resources || {});
 
 	return (
-		<BasePage>
+		<BasePage component="form">
 			<Stack gap={theme.spacing(8)}>
 				<ConfigBox
 					title={t("pages.settings.form.timezone.title")}

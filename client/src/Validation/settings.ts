@@ -1,69 +1,51 @@
 import { z } from "zod";
 
-// Helper to normalize empty strings to undefined
-const optionalString = () =>
-	z.preprocess(
-		(val) =>
-			val === "" || val === null || val === undefined ? undefined : String(val).trim(),
-		z.string().optional()
-	);
-
-// Helper for threshold fields
-const thresholdField = (min: number, max: number, unit: string) =>
-	z.preprocess(
-		(val) => (val === "" || val === null || val === undefined ? undefined : val),
-		z.coerce
-			.number()
-			.int()
-			.min(min, `Min ${min}${unit}`)
-			.max(max, `Max ${max}${unit}`)
-			.optional()
-	);
-
 export const settingsSchema = z.object({
 	systemEmailIgnoreTLS: z.boolean(),
 	systemEmailRequireTLS: z.boolean(),
 	systemEmailRejectUnauthorized: z.boolean(),
-	systemEmailConnectionHost: optionalString(),
+	systemEmailConnectionHost: z
+		.string()
+		.transform((val) => (val.trim() === "" ? undefined : val.trim()))
+		.optional(),
 	systemEmailSecure: z.boolean().optional(),
 	systemEmailPool: z.boolean().optional(),
 	showURL: z.boolean().optional(),
-	checkTTL: z.coerce
-		.number()
-		.int()
-		.min(1, "Please enter a value")
-		.max(365, "Maximum 365 days"),
-	pagespeedApiKey: optionalString(),
-	systemEmailHost: z.preprocess(
-		(val) =>
-			val === "" || val === null || val === undefined ? undefined : String(val).trim(),
-		z
-			.string()
-			.regex(/^[a-zA-Z0-9.-]+$/, "Invalid hostname or IP address")
-			.optional()
-	),
-	systemEmailPort: z.preprocess(
-		(val) => (val === "" || val === null || val === undefined ? undefined : val),
-		z.coerce
-			.number()
-			.int()
-			.min(1, "Port must be at least 1")
-			.max(65535, "Port must be at most 65535")
-			.optional()
-	),
-	systemEmailAddress: z.preprocess((val) => {
-		if (val === "" || val === null || val === undefined) return undefined;
-		return String(val).toLowerCase().trim();
-	}, z.string().email("Please enter a valid email address").optional()),
-	systemEmailUser: optionalString(),
-	systemEmailPassword: optionalString(),
-	systemEmailTLSServername: optionalString(),
+	checkTTL: z.number().int().min(1, "Please enter a value").max(365, "Maximum 365 days"),
+	pagespeedApiKey: z
+		.string()
+		.transform((val) => (val.trim() === "" ? undefined : val.trim()))
+		.optional(),
+	systemEmailHost: z
+		.string()
+		.regex(/^[a-zA-Z0-9.-]*$/, "Invalid hostname or IP address")
+		.transform((val) => (val.trim() === "" ? undefined : val.trim()))
+		.optional(),
+	systemEmailPort: z.number().int().min(1).max(65535).optional(),
+	systemEmailAddress: z
+		.string()
+		.email("Please enter a valid email address")
+		.or(z.literal(""))
+		.transform((val) => (val === "" ? undefined : val.toLowerCase().trim()))
+		.optional(),
+	systemEmailUser: z
+		.string()
+		.transform((val) => (val.trim() === "" ? undefined : val.trim()))
+		.optional(),
+	systemEmailPassword: z
+		.string()
+		.transform((val) => (val.trim() === "" ? undefined : val.trim()))
+		.optional(),
+	systemEmailTLSServername: z
+		.string()
+		.transform((val) => (val.trim() === "" ? undefined : val.trim()))
+		.optional(),
 	globalThresholds: z
 		.object({
-			cpu: thresholdField(0, 100, "%"),
-			memory: thresholdField(0, 100, "%"),
-			disk: thresholdField(0, 100, "%"),
-			temperature: thresholdField(0, 150, "°C"),
+			cpu: z.number().int().min(0).max(100).optional(),
+			memory: z.number().int().min(0).max(100).optional(),
+			disk: z.number().int().min(0).max(100).optional(),
+			temperature: z.number().int().min(0).max(150).optional(),
 		})
 		.optional(),
 });
