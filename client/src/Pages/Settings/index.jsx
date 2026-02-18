@@ -103,12 +103,25 @@ const Settings = () => {
 			})
 		);
 
-		if (!form.formState.dirtyFields.systemEmailPassword) {
+		// Handle password field:
+		// - If emailPasswordHasBeenReset is true, ALWAYS include (even if empty to unset)
+		// - Otherwise, only include if dirty (user typed something)
+		if (emailPasswordHasBeenReset) {
+			// Keep password field (even if empty) to allow unsetting
+			// toSubmit.systemEmailPassword is already in toSubmit
+		} else if (!form.formState.dirtyFields.systemEmailPassword) {
+			// Not in reset mode and not dirty -> exclude (no changes)
 			delete toSubmit.systemEmailPassword;
 		}
-		if (!form.formState.dirtyFields.pagespeedApiKey) {
+
+		// Handle API key field (same logic)
+		if (apiKeyHasBeenReset) {
+			// Keep API key field (even if empty) to allow unsetting
+		} else if (!form.formState.dirtyFields.pagespeedApiKey) {
+			// Not in reset mode and not dirty -> exclude (no changes)
 			delete toSubmit.pagespeedApiKey;
 		}
+
 		saveSettings(toSubmit);
 	};
 

@@ -420,8 +420,8 @@ const updateAppSettingsBodyValidation = joi.object({
 	systemEmailAddress: joi.string().allow(""),
 	systemEmailPassword: joi.string().allow(""),
 	systemEmailUser: joi.string().allow(""),
-	systemEmailConnectionHost: joi.string().allow("").optional(),
-	systemEmailTLSServername: joi.string().allow("").optional(),
+	systemEmailConnectionHost: joi.string().allow(""),
+	systemEmailTLSServername: joi.string().allow(""),
 	systemEmailSecure: joi.boolean(),
 	systemEmailPool: joi.boolean(),
 	systemEmailIgnoreTLS: joi.boolean(),
@@ -430,10 +430,10 @@ const updateAppSettingsBodyValidation = joi.object({
 
 	globalThresholds: joi
 		.object({
-			cpu: joi.number().min(1).max(100).allow("").optional(),
-			memory: joi.number().min(1).max(100).allow("").optional(),
-			disk: joi.number().min(1).max(100).allow("").optional(),
-			temperature: joi.number().min(1).max(150).allow("").optional(),
+			cpu: joi.number().min(1).max(100).allow(""),
+			memory: joi.number().min(1).max(100).allow(""),
+			disk: joi.number().min(1).max(100).allow(""),
+			temperature: joi.number().min(1).max(150).allow(""),
 		})
 		.optional(),
 });
