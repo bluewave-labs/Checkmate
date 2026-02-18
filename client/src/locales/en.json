@@ -908,6 +908,38 @@
 			}
 		},
 		"settings": {
+			"form": {
+				"timezone": {
+					"title": "Display timezone",
+					"description": "Select the timezone used to display dates and times throughout the application.",
+					"option": {
+						"timezone": {
+							"label": "Display timezone"
+						}
+					}
+				},
+				"ui": {
+					"title": "Appearance",
+					"description": "Switch between light and dark mode, change language, or customize chart display type.",
+					"option": {
+						"theme": {
+							"label": "Theme mode",
+							"light": "Light",
+							"dark": "Dark"
+						},
+						"language": {
+							"label": "Language"
+						},
+						"chartType": {
+							"label": "Chart type",
+							"histogram": "Histogram",
+							"heatmap": "Heatmap"
+						}
+					}
+				}
+			}
+		},
+		"oldSettings": {
 			"aboutSettings": {
 				"labelDevelopedBy": "Developed by Bluewave Labs",
 				"labelVersion": "Version",
@@ -993,7 +1025,6 @@
 				"title": "Monitor IP/URL on Status Page"
 			}
 		},
-
 		"statusPages": {
 			"deleteSuccess": "Status page deleted successfully",
 			"fallback": {

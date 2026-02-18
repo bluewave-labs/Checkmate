@@ -44,6 +44,7 @@ import CreateNotifications from "@/Pages/Notifications/create";
 import Account from "@/Pages/Account";
 import EditUser from "@/Pages/Account/EditUser";
 import Settings from "@/Pages/Settings";
+import OldSettings from "@/Pages/Settings/old.jsx";
 
 import Maintenance from "@/Pages/Maintenance";
 import CreateNewMaintenanceWindow from "@/Pages/Maintenance/create";
@@ -319,7 +320,17 @@ const Routes = () => {
 				/>
 				<Route
 					path="settings"
-					element={<Settings />}
+					element={
+						<>
+							<ThemeProvider theme={v2theme}>
+								<Settings />
+							</ThemeProvider>
+						</>
+					}
+				/>
+				<Route
+					path="old-settings"
+					element={<OldSettings />}
 				/>
 				<Route
 					path="account/profile"
