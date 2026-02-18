@@ -114,8 +114,14 @@ export const SettingsPage = () => {
 	};
 
 	const onSubmit = async (data: SettingsFormData) => {
+		// Don't send pagespeedApiKey if it's already set and user hasn't clicked reset
+		const dataToSend = { ...data };
+		if (isApiKeySet && !apiKeyHasBeenReset) {
+			delete (dataToSend as any).pagespeedApiKey;
+		}
+
 		// Convert undefined to empty string for backend unsetting
-		const processedData = Object.entries(data).reduce((acc, [key, value]) => {
+		const processedData = Object.entries(dataToSend).reduce((acc, [key, value]) => {
 			const typedKey = key as keyof SettingsFormData;
 			if (value === undefined) {
 				(acc as any)[typedKey] = "";
