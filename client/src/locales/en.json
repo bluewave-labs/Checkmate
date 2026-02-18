@@ -944,6 +944,7 @@
 					"option": {
 						"apiKey": {
 							"label": "PageSpeed API key",
+							"labelSet": "API key is set. Click Reset to change it.",
 							"placeholder": "Enter your Google PageSpeed API key"
 						}
 					}

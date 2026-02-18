@@ -7,13 +7,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import DummyChart from "@/Pages/Settings/DummyChart";
-import { useGet } from "@/Hooks/UseApi";
+import { useGet, usePatch } from "@/Hooks/UseApi";
 import { useSettingsForm } from "@/Hooks/useSettingsForm";
 import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
 import type { SettingsFormData } from "@/Validation/settings";
 import { useState } from "react";
 import { Controller } from "react-hook-form";
-import { TextField, Button } from "@/Components/v2/inputs";
+import { TextField, FieldLabel, Button } from "@/Components/v2/inputs";
 import { Typography, Box } from "@mui/material";
 
 import {
@@ -46,6 +46,8 @@ export const SettingsPage = () => {
 
 	// Fetch settings data from API
 	const { data: fetchedSettings } = useGet<SettingsResponse>("/settings");
+	// Form submission
+	const { patch, loading: isSaving } = usePatch<SettingsFormData, SettingsResponse>();
 
 	// Local state for API key reset
 	const [isApiKeySet, setIsApiKeySet] = useState(
@@ -111,10 +113,49 @@ export const SettingsPage = () => {
 		setApiKeyHasBeenReset(true);
 	};
 
+	const onSubmit = async (data: SettingsFormData) => {
+		// Convert undefined to empty string for backend unsetting
+		const processedData = Object.entries(data).reduce((acc, [key, value]) => {
+			const typedKey = key as keyof SettingsFormData;
+			if (value === undefined) {
+				(acc as any)[typedKey] = "";
+			} else if (typeof value === "object" && value !== null) {
+				// Handle nested objects like globalThresholds
+				(acc as any)[typedKey] = Object.entries(value).reduce(
+					(nested, [nestedKey, nestedValue]) => ({
+						...nested,
+						[nestedKey]: nestedValue === undefined ? "" : nestedValue,
+					}),
+					{}
+				);
+			} else {
+				(acc as any)[typedKey] = value;
+			}
+			return acc;
+		}, {} as Partial<SettingsFormData>);
+
+		const result = await patch("/settings", processedData as SettingsFormData);
+
+		if (result?.success) {
+			// Update API key state from response
+			if (result.data) {
+				setIsApiKeySet(result.data.pagespeedKeySet);
+				setApiKeyHasBeenReset(false);
+			}
+		}
+	};
+
+	const onError = (errors: unknown) => {
+		console.log("Form validation errors:", errors);
+	};
+
 	const languages = Object.keys(i18n.options.resources || {});
 
 	return (
-		<BasePage component="form">
+		<BasePage
+			component="form"
+			onSubmit={form.handleSubmit(onSubmit, onError)}
+		>
 			<Stack gap={theme.spacing(8)}>
 				<ConfigBox
 					title={t("pages.settings.form.timezone.title")}
@@ -211,9 +252,9 @@ export const SettingsPage = () => {
 
 								{isApiKeySet === true && apiKeyHasBeenReset === false && (
 									<Box>
-										<Typography sx={{ mb: theme.spacing(4) }}>
-											{t("pages.settings.pageSpeedSettings.labelApiKeySet")}
-										</Typography>
+										<FieldLabel>
+											{t("pages.settings.form.pagespeed.option.apiKey.labelSet")}
+										</FieldLabel>
 										<Button
 											onClick={handleResetApiKey}
 											variant="contained"
@@ -227,19 +268,33 @@ export const SettingsPage = () => {
 						}
 					/>
 				)}
-				<Stack
-					direction="row"
-					justifyContent="flex-end"
+			</Stack>
+
+			{/* Sticky Save Button */}
+			<Stack
+				direction="row"
+				justifyContent="flex-end"
+				sx={{
+					position: "sticky",
+					bottom: 0,
+					backgroundColor: theme.palette.background.paper,
+					borderTop: `1px solid ${theme.palette.divider}`,
+					padding: theme.spacing(8),
+					marginLeft: theme.spacing(-8),
+					marginRight: theme.spacing(-8),
+					marginBottom: theme.spacing(-8),
+					zIndex: 1000,
+				}}
+			>
+				<Button
+					loading={isSaving}
+					type="submit"
+					variant="contained"
+					color="primary"
+					disabled={!form.formState.isValid}
 				>
-					<Button
-						loading={false}
-						type="submit"
-						variant="contained"
-						color="primary"
-					>
-						{t("common.buttons.save")}
-					</Button>
-				</Stack>
+					{t("common.buttons.save")}
+				</Button>
 			</Stack>
 		</BasePage>
 	);
