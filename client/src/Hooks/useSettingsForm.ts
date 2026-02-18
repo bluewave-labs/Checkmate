@@ -9,12 +9,12 @@ interface UseSettingsFormOptions {
 export const useSettingsForm = ({ data = null }: UseSettingsFormOptions = {}) => {
 	return useMemo(() => {
 		const defaults: SettingsFormData = {
-			systemEmailIgnoreTLS: data?.systemEmailIgnoreTLS || false,
-			systemEmailRequireTLS: data?.systemEmailRequireTLS || false,
-			systemEmailRejectUnauthorized: data?.systemEmailRejectUnauthorized || true,
-			systemEmailSecure: data?.systemEmailSecure || false,
-			systemEmailPool: data?.systemEmailPool || false,
-			showURL: data?.showURL || false,
+			systemEmailIgnoreTLS: data?.systemEmailIgnoreTLS ?? false,
+			systemEmailRequireTLS: data?.systemEmailRequireTLS ?? false,
+			systemEmailRejectUnauthorized: data?.systemEmailRejectUnauthorized ?? true,
+			systemEmailSecure: data?.systemEmailSecure ?? false,
+			systemEmailPool: data?.systemEmailPool ?? false,
+			showURL: data?.showURL ?? false,
 			systemEmailHost: data?.systemEmailHost || "",
 			systemEmailUser: data?.systemEmailUser || "",
 			systemEmailAddress: data?.systemEmailAddress || "",
