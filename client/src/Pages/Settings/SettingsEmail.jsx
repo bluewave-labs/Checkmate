@@ -78,7 +78,7 @@ const SettingsEmail = ({
 			systemEmailHost,
 			systemEmailPort,
 			systemEmailAddress,
-			systemEmailPassword: password || systemEmailPassword,
+			systemEmailPassword,
 			systemEmailSecure,
 			systemEmailPool,
 			systemEmailIgnoreTLS,

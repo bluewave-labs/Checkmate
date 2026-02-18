@@ -4,22 +4,27 @@ export const settingsSchema = z.object({
 	systemEmailIgnoreTLS: z.boolean(),
 	systemEmailRequireTLS: z.boolean(),
 	systemEmailRejectUnauthorized: z.boolean(),
-	systemEmailConnectionHost: z.string().optional().or(z.literal("")),
+	systemEmailConnectionHost: z.string().optional(),
 	systemEmailSecure: z.boolean().optional(),
 	systemEmailPool: z.boolean().optional(),
 	showURL: z.boolean().optional(),
 	checkTTL: z.coerce.number().int().min(1, "Please enter a value"),
-	pagespeedApiKey: z.string().optional().or(z.literal("")),
-	systemEmailHost: z.string().optional().or(z.literal("")),
-	systemEmailPort: z.coerce.number().nullable().optional().or(z.literal("")),
+	pagespeedApiKey: z.string().optional(),
+	systemEmailHost: z.string().optional(),
+	systemEmailPort: z.coerce
+		.number()
+		.int()
+		.min(1, "Port must be at least 1")
+		.optional()
+		.or(z.literal("")),
 	systemEmailAddress: z
 		.email("Please enter a valid email address")
 		.transform((val) => val.toLowerCase().trim())
 		.optional()
 		.or(z.literal("")),
-	systemEmailUser: z.string().optional().or(z.literal("")),
-	systemEmailPassword: z.string().optional().or(z.literal("")),
-	systemEmailTLSServername: z.string().optional().or(z.literal("")),
+	systemEmailUser: z.string().optional(),
+	systemEmailPassword: z.string().optional(),
+	systemEmailTLSServername: z.string().optional(),
 	globalThresholds: z
 		.object({
 			cpu: z.coerce
