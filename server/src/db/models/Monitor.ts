@@ -160,6 +160,10 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		gameId: {
 			type: String,
 		},
+		grpcServiceName: {
+			type: String,
+			default: "",
+		},
 		group: {
 			type: String,
 			trim: true,
