@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import DummyChart from "@/Pages/Settings/DummyChart";
-import { useGet, usePatch } from "@/Hooks/UseApi";
+import { useGet, usePatch, usePost } from "@/Hooks/UseApi";
 import { useSettingsForm } from "@/Hooks/useSettingsForm";
 import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
 import type { SettingsFormData } from "@/Validation/settings";
@@ -44,6 +44,10 @@ export const SettingsPage = () => {
 	const { t, i18n } = useTranslation();
 	const dispatch = useDispatch();
 	const isAdmin = useIsAdmin();
+	// Local state for demo monitors dialog
+	const [isDemoMonitorsDialogOpen, setIsDemoMonitorsDialogOpen] = useState(false);
+	const { post: postDemoMonitors, loading: isPostingDemoMonitors } = usePost();
+	const { deleteFn: deleteAllMonitors, loading: isDeletingAllMonitors } = useDelete();
 
 	// Fetch settings data from API
 	const { data: fetchedSettings } = useGet<SettingsResponse>("/settings");
@@ -451,6 +455,47 @@ export const SettingsPage = () => {
 				)}
 			</Stack>
 
+			{/* Demo Monitors - Admin Only */}
+			{isAdmin && (
+				<ConfigBox
+					title={t("pages.settings.form.demoMonitors.title")}
+					subtitle={t("pages.settings.form.demoMonitors.description")}
+					rightContent={
+						<Box>
+							<Button
+								variant="contained"
+								loading={isPostingDemoMonitors}
+								onClick={async () => {
+									await postDemoMonitors("/monitors/demo", {});
+								}}
+							>
+								{t("common.buttons.addDemo")}
+							</Button>
+						</Box>
+					}
+				/>
+			)}
+
+			{/* Remove All Monitors - Admin Only */}
+			{isAdmin && (
+				<ConfigBox
+					title={t("pages.settings.form.removeMonitors.title")}
+					subtitle={t("pages.settings.form.removeMonitors.description")}
+					rightContent={
+						<Box>
+							<Button
+								variant="contained"
+								color="error"
+								loading={isDeletingAllMonitors}
+								onClick={() => setIsDemoMonitorsDialogOpen(true)}
+							>
+								{t("common.buttons.removeMonitors")}
+							</Button>
+						</Box>
+					}
+				/>
+			)}
+
 			{/* Clear Stats Confirmation Dialog */}
 			<Dialog
 				open={isStatsDialogOpen}
@@ -459,6 +504,19 @@ export const SettingsPage = () => {
 				onCancel={() => setIsStatsDialogOpen(false)}
 				onConfirm={handleClearStats}
 				loading={isDeletingStats}
+			/>
+
+			{/* Delete All Monitors Confirmation Dialog */}
+			<Dialog
+				open={isDemoMonitorsDialogOpen}
+				title={t("pages.settings.form.removeMonitors.dialog.title")}
+				content={t("pages.settings.form.removeMonitors.dialog.description")}
+				onCancel={() => setIsDemoMonitorsDialogOpen(false)}
+				onConfirm={async () => {
+					await deleteAllMonitors("/monitors/");
+					setIsDemoMonitorsDialogOpen(false);
+				}}
+				loading={isDeletingAllMonitors}
 			/>
 
 			{/* Sticky Save Button */}

@@ -40,7 +40,9 @@
 			"notFound": "Go to the main dashboard",
 			"resetPassword": "Reset password",
 			"reset": "Reset",
-			"clear": "Clear"
+			"clear": "Clear",
+			"addDemo": "Add demo monitors",
+			"removeMonitors": "Remove monitors"
 		},
 		"charts": {
 			"labels": {
@@ -1015,6 +1017,18 @@
 							"label": "Temperature Threshold (°C)",
 							"placeholder": "1 - 150"
 						}
+					}
+				},
+				"demoMonitors": {
+					"title": "Demo monitors",
+					"description": "Add sample monitors for demonstration purposes."
+				},
+				"removeMonitors": {
+					"title": "System reset",
+					"description": "Remove all monitors from your system.",
+					"dialog": {
+						"title": "Remove all monitors?",
+						"description": "This cannot be undone."
 					}
 				}
 			}
