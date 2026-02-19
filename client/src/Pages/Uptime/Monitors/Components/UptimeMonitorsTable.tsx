@@ -175,8 +175,8 @@ export const MonitorTable = ({
 							gap={theme.spacing(2)}
 						>
 							{row?.name}
-							{row.locations && row.locations.length > 0 && (
-								<Tooltip title={`${row.locations.length} ${t("pages.uptime.table.headers.locations").toLowerCase()}: ${row.locations.join(", ")}`}>
+							{row.globalpingEnabled && (
+								<Tooltip title={t("pages.uptime.table.headers.globalpingEnabled")}>
 									<Globe size={14} />
 								</Tooltip>
 							)}
