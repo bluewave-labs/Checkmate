@@ -103,9 +103,9 @@ const SettingsGlobalping = ({
 							>
 								<FormControlLabel
 									value="3"
-									control={<Radio />}
+									control={<Radio sx={{ mt: theme.spacing(2) }} />}
 									label={
-										<Box>
+										<Box sx={{ py: theme.spacing(2) }}>
 											<Typography fontWeight={500}>
 												{t("pages.settings.globalpingSettings.tier3Label")}
 											</Typography>
@@ -114,13 +114,13 @@ const SettingsGlobalping = ({
 											</Typography>
 										</Box>
 									}
-									sx={{ mb: theme.spacing(4), alignItems: "flex-start" }}
+									sx={{ mb: theme.spacing(2), alignItems: "flex-start" }}
 								/>
 								<FormControlLabel
 									value="6"
-									control={<Radio />}
+									control={<Radio sx={{ mt: theme.spacing(2) }} />}
 									label={
-										<Box>
+										<Box sx={{ py: theme.spacing(2) }}>
 											<Typography fontWeight={500}>
 												{t("pages.settings.globalpingSettings.tier6Label")}
 											</Typography>
@@ -129,13 +129,13 @@ const SettingsGlobalping = ({
 											</Typography>
 										</Box>
 									}
-									sx={{ mb: theme.spacing(4), alignItems: "flex-start" }}
+									sx={{ mb: theme.spacing(2), alignItems: "flex-start" }}
 								/>
 								<FormControlLabel
 									value="15"
-									control={<Radio />}
+									control={<Radio sx={{ mt: theme.spacing(2) }} />}
 									label={
-										<Box>
+										<Box sx={{ py: theme.spacing(2) }}>
 											<Typography fontWeight={500}>
 												{t("pages.settings.globalpingSettings.tier15Label")}
 											</Typography>
@@ -156,7 +156,6 @@ const SettingsGlobalping = ({
 						p: theme.spacing(8),
 						borderRadius: theme.spacing(2),
 						border: `1px solid ${theme.palette.primary.lowContrast}`,
-						backgroundColor: theme.palette.tertiary?.main || theme.palette.background.default,
 					}}
 				>
 					<Typography
@@ -165,21 +164,21 @@ const SettingsGlobalping = ({
 					>
 						{t("pages.settings.globalpingSettings.rateLimitsTitle")}
 					</Typography>
-					<Typography variant="body2" color="text.secondary" sx={{ mb: theme.spacing(4) }}>
+					<Typography variant="body2" sx={{ mb: theme.spacing(4) }}>
 						{t("pages.settings.globalpingSettings.rateLimitsDescription")}
 					</Typography>
 					<Box component="ul" sx={{ m: 0, pl: theme.spacing(8) }}>
-						<Typography component="li" variant="body2" color="text.secondary" sx={{ mb: theme.spacing(2) }}>
+						<Typography component="li" variant="body2" sx={{ mb: theme.spacing(2) }}>
 							{t("pages.settings.globalpingSettings.rateLimitNoAuth")}
 						</Typography>
-						<Typography component="li" variant="body2" color="text.secondary" sx={{ mb: theme.spacing(2) }}>
+						<Typography component="li" variant="body2" sx={{ mb: theme.spacing(2) }}>
 							{t("pages.settings.globalpingSettings.rateLimitAuth")}
 						</Typography>
-						<Typography component="li" variant="body2" color="text.secondary">
+						<Typography component="li" variant="body2">
 							{t("pages.settings.globalpingSettings.rateLimitSponsor")}
 						</Typography>
 					</Box>
-					<Typography variant="body2" color="text.secondary" sx={{ mt: theme.spacing(4) }}>
+					<Typography variant="body2" color="text.secondary" sx={{ mt: theme.spacing(4), fontStyle: "italic" }}>
 						{t("pages.settings.globalpingSettings.rateLimitsNote")}
 					</Typography>
 				</Box>
