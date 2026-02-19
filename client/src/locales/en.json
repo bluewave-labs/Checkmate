@@ -39,7 +39,8 @@
 			"flushQueue": "Flush queue",
 			"notFound": "Go to the main dashboard",
 			"resetPassword": "Reset password",
-			"reset": "Reset"
+			"reset": "Reset",
+			"clear": "Clear"
 		},
 		"charts": {
 			"labels": {
@@ -555,6 +556,16 @@
 							"disabled": "Disabled"
 						}
 					}
+				},
+				"stats": {
+					"title": "Monitor history",
+					"description": "Clear all monitoring history and statistics for your team. This action is irreversible.",
+					"buttonText": "Clear all stats",
+					"dialog": {
+						"title": "Clear all monitoring history?",
+						"description": "This will permanently delete all monitoring history, statistics, and check data for your team. This action cannot be undone.",
+						"confirm": "Yes, clear all stats"
+					}
 				}
 			}
 		},
@@ -969,6 +980,19 @@
 							"enabled": "Enabled",
 							"disabled": "Disabled"
 						}
+					}
+				},
+				"stats": {
+					"title": "Monitor history",
+					"description": "Define how long you want to retain historical data. You can also clear all existing data.",
+					"option": {
+						"clear": {
+							"label": "Clear all stats. This is irreversible."
+						}
+					},
+					"dialog": {
+						"title": "Clear all monitoring history?",
+						"description": "This cannot be undone"
 					}
 				}
 			}

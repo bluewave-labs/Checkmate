@@ -1,5 +1,5 @@
 import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
-import { Autocomplete, Select } from "@/Components/v2/inputs";
+import { Autocomplete, Select, Dialog } from "@/Components/v2/inputs";
 import { Stack, useTheme, MenuItem, type SelectChangeEvent } from "@mui/material";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -15,6 +15,7 @@ import { useState } from "react";
 import { Controller } from "react-hook-form";
 import { TextField, Button, FieldLabel } from "@/Components/v2/inputs";
 import { Box } from "@mui/material";
+import { useDelete } from "@/Hooks/UseApi";
 
 import {
 	setTimezone,
@@ -54,6 +55,9 @@ export const SettingsPage = () => {
 		fetchedSettings?.pagespeedKeySet ?? false
 	);
 	const [apiKeyHasBeenReset, setApiKeyHasBeenReset] = useState(false);
+	// Local state for clear stats dialog
+	const [isStatsDialogOpen, setIsStatsDialogOpen] = useState(false);
+	const { deleteFn: deleteStats, loading: isDeletingStats } = useDelete();
 
 	// Initialize form with schema and defaults
 	const { schema, defaults } = useSettingsForm({ data: fetchedSettings?.settings });
@@ -111,6 +115,11 @@ export const SettingsPage = () => {
 	const handleResetApiKey = () => {
 		form.setValue("pagespeedApiKey", "");
 		setApiKeyHasBeenReset(true);
+	};
+
+	const handleClearStats = async () => {
+		await deleteStats("/checks/team");
+		setIsStatsDialogOpen(false);
 	};
 
 	const onSubmit = async (data: SettingsFormData) => {
@@ -306,7 +315,34 @@ export const SettingsPage = () => {
 						/>
 					}
 				/>
+
+				{/* Clear All Stats */}
+				{isAdmin && (
+					<ConfigBox
+						title={t("pages.settings.form.stats.title")}
+						subtitle={t("pages.settings.form.stats.description")}
+						rightContent={
+							<Button
+								variant="contained"
+								color="error"
+								onClick={() => setIsStatsDialogOpen(true)}
+							>
+								{t("common.buttons.clear")}
+							</Button>
+						}
+					/>
+				)}
 			</Stack>
+
+			{/* Clear Stats Confirmation Dialog */}
+			<Dialog
+				open={isStatsDialogOpen}
+				title={t("pages.settings.form.stats.dialog.title")}
+				content={t("pages.settings.form.stats.dialog.description")}
+				onCancel={() => setIsStatsDialogOpen(false)}
+				onConfirm={handleClearStats}
+				loading={isDeletingStats}
+			/>
 
 			{/* Sticky Save Button */}
 			<Stack
