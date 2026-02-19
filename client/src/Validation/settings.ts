@@ -42,10 +42,10 @@ export const settingsSchema = z.object({
 		.optional(),
 	globalThresholds: z
 		.object({
-			cpu: z.number().int().min(0).max(100).optional(),
-			memory: z.number().int().min(0).max(100).optional(),
-			disk: z.number().int().min(0).max(100).optional(),
-			temperature: z.number().int().min(0).max(150).optional(),
+			cpu: z.number().int().min(0).max(100),
+			memory: z.number().int().min(0).max(100),
+			disk: z.number().int().min(0).max(100),
+			temperature: z.number().int().min(0).max(150),
 		})
 		.optional(),
 });

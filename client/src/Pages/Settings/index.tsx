@@ -65,6 +65,7 @@ export const SettingsPage = () => {
 	const form = useForm<SettingsFormData>({
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
+		mode: "onChange",
 	});
 
 	// Reset form when defaults change
@@ -136,10 +137,12 @@ export const SettingsPage = () => {
 				(acc as any)[typedKey] = "";
 			} else if (typeof value === "object" && value !== null) {
 				// Handle nested objects like globalThresholds
+				// Convert 0 to "" for unsetting thresholds
 				(acc as any)[typedKey] = Object.entries(value).reduce(
 					(nested, [nestedKey, nestedValue]) => ({
 						...nested,
-						[nestedKey]: nestedValue === undefined ? "" : nestedValue,
+						[nestedKey]:
+							nestedValue === undefined || nestedValue === 0 ? "" : nestedValue,
 					}),
 					{}
 				);
@@ -327,7 +330,7 @@ export const SettingsPage = () => {
 								color="error"
 								onClick={() => setIsStatsDialogOpen(true)}
 							>
-								{t("pages.settings.form.stats.buttonText")}
+								{t("common.buttons.clear")}
 							</Button>
 						}
 					/>
@@ -347,6 +350,13 @@ export const SettingsPage = () => {
 									render={({ field, fieldState }) => (
 										<TextField
 											{...field}
+											value={
+												field.value === undefined || field.value === 0 ? "" : field.value
+											}
+											onChange={(e) => {
+												const val = e.target.value;
+												field.onChange(val === "" ? 0 : Number(val));
+											}}
 											fieldLabel={t("pages.settings.form.thresholds.option.cpu.label")}
 											type="number"
 											placeholder={t(
@@ -364,6 +374,13 @@ export const SettingsPage = () => {
 									render={({ field, fieldState }) => (
 										<TextField
 											{...field}
+											value={
+												field.value === undefined || field.value === 0 ? "" : field.value
+											}
+											onChange={(e) => {
+												const val = e.target.value;
+												field.onChange(val === "" ? 0 : Number(val));
+											}}
 											fieldLabel={t("pages.settings.form.thresholds.option.memory.label")}
 											type="number"
 											placeholder={t(
@@ -381,6 +398,13 @@ export const SettingsPage = () => {
 									render={({ field, fieldState }) => (
 										<TextField
 											{...field}
+											value={
+												field.value === undefined || field.value === 0 ? "" : field.value
+											}
+											onChange={(e) => {
+												const val = e.target.value;
+												field.onChange(val === "" ? 0 : Number(val));
+											}}
 											fieldLabel={t("pages.settings.form.thresholds.option.disk.label")}
 											type="number"
 											placeholder={t(
@@ -398,6 +422,13 @@ export const SettingsPage = () => {
 									render={({ field, fieldState }) => (
 										<TextField
 											{...field}
+											value={
+												field.value === undefined || field.value === 0 ? "" : field.value
+											}
+											onChange={(e) => {
+												const val = e.target.value;
+												field.onChange(val === "" ? 0 : Number(val));
+											}}
 											fieldLabel={t(
 												"pages.settings.form.thresholds.option.temperature.label"
 											)}
@@ -452,7 +483,6 @@ export const SettingsPage = () => {
 					{t("common.buttons.save")}
 				</Button>
 			</Stack>
-			<pre>{JSON.stringify(form.formState.isValid, null, 2)}</pre>
 		</BasePage>
 	);
 };
