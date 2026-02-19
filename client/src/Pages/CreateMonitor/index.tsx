@@ -27,11 +27,17 @@ import {
 	SliderWithLabel,
 	Dialog,
 } from "@/Components/v2/inputs";
+import Chip from "@mui/material/Chip";
 import { useGet, usePost, usePatch, useDelete } from "@/Hooks/UseApi";
 import { useMonitorForm } from "@/Hooks/useMonitorForm";
 import type { Monitor, MonitorType, GamesMap } from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
 import type { MonitorFormData } from "@/Validation/monitor";
+
+interface GlobalpingLocation {
+	id: string;
+	label: string;
+}
 
 interface GeneralSettingsConfig {
 	urlLabel: string;
@@ -146,6 +152,9 @@ const CreateMonitorPage = () => {
 
 	const { data: notifications } = useGet<Notification[]>("/notifications/team");
 	const { data: games } = useGet<GamesMap>("/monitors/games");
+	const { data: globalpingLocations } = useGet<GlobalpingLocation[]>(
+		"/monitors/globalping/locations"
+	);
 
 	const { schema, defaults } = useMonitorForm({
 		data: existingMonitor ?? null,
@@ -488,6 +497,56 @@ const CreateMonitorPage = () => {
 					/>
 				}
 			/>
+
+			{/* Global locations - only for http and ping types */}
+			{(watchedType === "http" || watchedType === "ping") && globalpingLocations && globalpingLocations.length > 0 && (
+				<ConfigBox
+					title={t("pages.createMonitor.form.locations.title")}
+					subtitle={t("pages.createMonitor.form.locations.description")}
+					rightContent={
+						<Controller
+							name="locations"
+							control={control}
+							render={({ field }) => {
+								const locationOptions = (globalpingLocations ?? []).map((loc) => ({
+									...loc,
+									name: loc.label,
+								}));
+								const selectedLocations = locationOptions.filter((loc) =>
+									(field.value ?? []).includes(loc.id)
+								);
+								return (
+									<Stack spacing={theme.spacing(4)}>
+										<Autocomplete
+											multiple
+											options={locationOptions}
+											value={selectedLocations}
+											getOptionLabel={(option) => option.name}
+											onChange={(_: unknown, newValue: typeof locationOptions) => {
+												const ids = newValue.map((loc) => loc.id);
+												if (ids.length <= 5) {
+													field.onChange(ids);
+												}
+											}}
+											isOptionEqualToValue={(option, value) => option.id === value.id}
+											renderTags={(value, getTagProps) =>
+												value.map((option, index) => (
+													<Chip
+														{...getTagProps({ index })}
+														key={option.id}
+														label={option.name}
+														size="small"
+													/>
+												))
+											}
+										/>
+									</Stack>
+								);
+							}}
+						/>
+					}
+				/>
+			)}
 
 			{/* Alert Thresholds - only for hardware type */}
 			{generalSettingsConfig.showSecret && (

@@ -21,6 +21,9 @@ class MonitorRoutes {
 		this.router.get("/team/with-checks", this.monitorController.getMonitorsWithChecksByTeamId);
 		this.router.get("/team/groups", this.monitorController.getGroupsByTeamId);
 
+		// Globalping locations
+		this.router.get("/globalping/locations", this.monitorController.getGlobalpingLocations);
+
 		// Uptime routes
 		this.router.get("/uptime/details/:monitorId", this.monitorController.getUptimeDetailsById);
 

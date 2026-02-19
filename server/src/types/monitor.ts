@@ -43,6 +43,7 @@ export interface Monitor {
 	selectedDisks: string[];
 	gameId?: string;
 	group: string | null;
+	locations: string[];
 	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;
@@ -64,6 +65,12 @@ export interface MonitorsWithChecksByTeamIdResult {
 	monitors: Monitor[];
 }
 
+export interface LocationCheckData {
+	groupedChecks: import("./check.js").GroupedCheck[];
+	uptimePercentage: number;
+	avgResponseTime: number;
+}
+
 export interface UptimeDetailsResult {
 	monitorData: {
 		monitor: Monitor;
@@ -72,6 +79,7 @@ export interface UptimeDetailsResult {
 		groupedDownChecks: import("./check.js").GroupedCheck[];
 		groupedAvgResponseTime: number;
 		groupedUptimePercentage: number;
+		locationChecks?: Record<string, LocationCheckData>;
 	};
 	monitorStats: import("./monitorStats.js").MonitorStats | null;
 }

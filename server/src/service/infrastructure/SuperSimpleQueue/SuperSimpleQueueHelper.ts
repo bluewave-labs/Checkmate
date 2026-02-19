@@ -4,6 +4,7 @@ import { AppError } from "@/utils/AppError.js";
 import { INetworkService, INotificationsService, IStatusService } from "@/service/index.js";
 import type { StatusChangeResult, MonitorStatusResponse, HardwareStatusPayload, MonitorStatus } from "@/types/index.js";
 import IncidentService from "@/service/business/incidentService.js";
+import type GlobalpingService from "@/service/infrastructure/globalpingService.js";
 import {
 	IMaintenanceWindowsRepository,
 	IMonitorsRepository,
@@ -37,6 +38,7 @@ class SuperSimpleQueueHelper {
 	private checkService: any;
 	private buffer: any;
 	private incidentService: IncidentService;
+	private globalpingService: GlobalpingService;
 	private maintenanceWindowsRepository: IMaintenanceWindowsRepository;
 	private monitorsRepository: IMonitorsRepository;
 	private teamsRepository: ITeamsRepository;
@@ -52,6 +54,7 @@ class SuperSimpleQueueHelper {
 		checkService,
 		buffer,
 		incidentService,
+		globalpingService,
 		maintenanceWindowsRepository,
 		monitorsRepository,
 		teamsRepository,
@@ -66,6 +69,7 @@ class SuperSimpleQueueHelper {
 		checkService: any;
 		buffer: any;
 		incidentService: IncidentService;
+		globalpingService: GlobalpingService;
 		maintenanceWindowsRepository: IMaintenanceWindowsRepository;
 		monitorsRepository: IMonitorsRepository;
 		teamsRepository: ITeamsRepository;
@@ -80,6 +84,7 @@ class SuperSimpleQueueHelper {
 		this.buffer = buffer;
 		this.notificationsService = notificationsService;
 		this.incidentService = incidentService;
+		this.globalpingService = globalpingService;
 		this.maintenanceWindowsRepository = maintenanceWindowsRepository;
 		this.monitorsRepository = monitorsRepository;
 		this.teamsRepository = teamsRepository;
@@ -120,6 +125,27 @@ class SuperSimpleQueueHelper {
 				const status = await this.networkService.requestStatus(monitor);
 				if (!status) {
 					throw new Error("No network response");
+				}
+
+				// Step 2b. Run Globalping checks (fire-and-forget, doesn't affect local check pipeline)
+				if (monitor.locations && monitor.locations.length > 0 && (monitor.type === "http" || monitor.type === "ping")) {
+					this.globalpingService
+						.runChecks(monitor)
+						.then((locationStatuses) => {
+							for (const locStatus of locationStatuses) {
+								const locCheck = this.checkService.buildCheck(locStatus);
+								if (locCheck) {
+									this.buffer.addToBuffer(locCheck);
+								}
+							}
+						})
+						.catch((err: any) => {
+							this.logger.warn({
+								message: `Globalping checks failed for monitor ${monitorId}: ${err.message}`,
+								service: SERVICE_NAME,
+								method: "getMonitorJob",
+							});
+						});
 				}
 
 				// Step 3.  Build check

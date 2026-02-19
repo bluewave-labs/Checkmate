@@ -169,6 +169,7 @@ class MongoChecksRepository implements IChecksRepository {
 			monitorId: toStringId(metadata.monitorId),
 			teamId: toStringId(metadata.teamId),
 			type: metadata.type,
+			...(metadata.location ? { location: metadata.location } : {}),
 		});
 
 		return {
@@ -219,6 +220,7 @@ class MongoChecksRepository implements IChecksRepository {
 				monitorId: new mongoose.Types.ObjectId(metadata.monitorId),
 				teamId: new mongoose.Types.ObjectId(metadata.teamId),
 				type: metadata.type,
+				...(metadata.location ? { location: metadata.location } : {}),
 			},
 			...rest,
 		} as unknown as CheckDocument;
@@ -420,6 +422,68 @@ class MongoChecksRepository implements IChecksRepository {
 		return result.deletedCount ?? 0;
 	};
 
+	findLocationChecksByMonitorId = async (
+		monitorId: string,
+		startDate: Date,
+		endDate: Date,
+		dateString: string
+	): Promise<Record<string, any>> => {
+		const monitorObjectId = new mongoose.Types.ObjectId(monitorId);
+		const matchStage = {
+			"metadata.monitorId": monitorObjectId,
+			"metadata.location": { $exists: true, $ne: null },
+			createdAt: { $gte: startDate, $lte: endDate },
+		};
+
+		const results = await CheckModel.aggregate([
+			{ $match: matchStage },
+			{ $sort: { createdAt: 1 } },
+			{
+				$group: {
+					_id: {
+						location: "$metadata.location",
+						bucket: { $dateToString: { format: dateString, date: "$createdAt" } },
+					},
+					avgResponseTime: { $avg: "$responseTime" },
+					totalChecks: { $sum: 1 },
+					upChecks: { $sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] } },
+				},
+			},
+			{ $sort: { "_id.bucket": 1 } },
+			{
+				$group: {
+					_id: "$_id.location",
+					groupedChecks: {
+						$push: {
+							bucketDate: "$_id.bucket",
+							avgResponseTime: "$avgResponseTime",
+							totalChecks: "$totalChecks",
+						},
+					},
+					totalUpChecks: { $sum: "$upChecks" },
+					totalAllChecks: { $sum: "$totalChecks" },
+					overallAvgResponseTime: { $avg: "$avgResponseTime" },
+				},
+			},
+		]);
+
+		const locationChecks: Record<string, any> = {};
+		for (const loc of results) {
+			const uptimePercentage =
+				loc.totalAllChecks > 0 ? loc.totalUpChecks / loc.totalAllChecks : 0;
+			locationChecks[loc._id] = {
+				monitorType: "http" as const,
+				groupedChecks: loc.groupedChecks,
+				groupedUpChecks: [],
+				groupedDownChecks: [],
+				uptimePercentage,
+				avgResponseTime: loc.overallAvgResponseTime ?? 0,
+			};
+		}
+
+		return locationChecks;
+	};
+
 	private findUptimeDateRangeChecks = async (
 		monitorType: Exclude<MonitorType, "hardware" | "pagespeed">,
 		monitorObjectId: mongoose.Types.ObjectId,
@@ -427,9 +491,10 @@ class MongoChecksRepository implements IChecksRepository {
 		endDate: Date,
 		dateString: string
 	) => {
-		const matchStage = {
+		const matchStage: Record<string, any> = {
 			"metadata.monitorId": monitorObjectId,
 			createdAt: { $gte: startDate, $lte: endDate },
+			"metadata.location": { $exists: false },
 		};
 		const [result] = await CheckModel.aggregate([
 			{ $match: matchStage },

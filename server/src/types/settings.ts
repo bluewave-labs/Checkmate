@@ -24,6 +24,7 @@ export interface Settings {
 	systemEmailRequireTLS: boolean;
 	systemEmailRejectUnauthorized: boolean;
 	showURL: boolean;
+	globalpingApiKey?: string;
 	singleton: boolean;
 	version: number;
 	globalThresholds?: SettingsThresholds;

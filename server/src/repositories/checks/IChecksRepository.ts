@@ -35,6 +35,12 @@ export interface IChecksRepository {
 		options?: { type?: MonitorType }
 	): Promise<UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult>;
 	findSummaryByTeamId(teamId: string, dateRange: string): Promise<ChecksSummary>;
+	findLocationChecksByMonitorId(
+		monitorId: string,
+		startDate: Date,
+		endDate: Date,
+		dateString: string
+	): Promise<Record<string, UptimeChecksResult>>;
 	// update
 	//delete
 	deleteByMonitorId(monitorId: string): Promise<number>;

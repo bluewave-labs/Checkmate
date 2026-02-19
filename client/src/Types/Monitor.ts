@@ -58,6 +58,7 @@ export interface Monitor {
 	selectedDisks: string[];
 	gameId?: string;
 	group: string | null;
+	locations: string[];
 	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;
@@ -97,6 +98,12 @@ export interface MonitorStats {
 	updatedAt: string;
 }
 
+export interface LocationCheckData {
+	groupedChecks: GroupedCheck[];
+	uptimePercentage: number;
+	avgResponseTime: number;
+}
+
 export interface MonitorData {
 	monitor: Monitor;
 	groupedChecks: GroupedCheck[];
@@ -104,6 +111,7 @@ export interface MonitorData {
 	groupedDownChecks: GroupedCheck[];
 	groupedAvgResponseTime: number;
 	groupedUptimePercentage: number;
+	locationChecks?: Record<string, LocationCheckData>;
 }
 
 export interface MonitorDetailsResponse {

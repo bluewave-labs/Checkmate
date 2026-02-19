@@ -9,7 +9,8 @@ import {
 } from "@/Components/v2/design-elements";
 import { HeatmapResponseTime, HistogramResponseTime } from "@/Components/v2/common";
 import { ActionsMenu } from "@/Components/v2/actions-menu";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { ArrowDown, ArrowUp, Globe } from "lucide-react";
+import Tooltip from "@mui/material/Tooltip";
 
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
@@ -167,7 +168,20 @@ export const MonitorTable = ({
 				),
 
 				render: (row) => {
-					return row?.name;
+					return (
+						<Stack
+							direction="row"
+							alignItems="center"
+							gap={theme.spacing(2)}
+						>
+							{row?.name}
+							{row.locations && row.locations.length > 0 && (
+								<Tooltip title={`${row.locations.length} ${t("pages.uptime.table.headers.locations").toLowerCase()}: ${row.locations.join(", ")}`}>
+									<Globe size={14} />
+								</Tooltip>
+							)}
+						</Stack>
+					);
 				},
 			},
 			{

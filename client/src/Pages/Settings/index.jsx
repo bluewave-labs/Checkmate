@@ -5,6 +5,7 @@ import SettingsTimeZone from "./SettingsTimeZone.jsx";
 import SettingsUI from "./SettingsUI.jsx";
 import SettingsURL from "./SettingsURL.jsx";
 import SettingsPagespeed from "./SettingsPagespeed.jsx";
+import SettingsGlobalping from "./SettingsGlobalping.jsx";
 import SettingsDemoMonitors from "./SettingsDemoMonitors.jsx";
 import SettingsAbout from "./SettingsAbout.jsx";
 import SettingsEmail from "./SettingsEmail.jsx";
@@ -34,6 +35,10 @@ const Settings = () => {
 		fetchedSettings?.pagespeedKeySet ?? false
 	);
 	const [apiKeyHasBeenReset, setApiKeyHasBeenReset] = useState(false);
+	const [isGlobalpingKeySet, setIsGlobalpingKeySet] = useState(
+		fetchedSettings?.globalpingKeySet ?? false
+	);
+	const [globalpingKeyHasBeenReset, setGlobalpingKeyHasBeenReset] = useState(false);
 	const [isEmailPasswordSet, setIsEmailPasswordSet] = useState(
 		fetchedSettings?.emailPasswordSet ?? false
 	);
@@ -63,6 +68,7 @@ const Settings = () => {
 	useEffect(() => {
 		if (fetchedSettings) {
 			setIsApiKeySet(fetchedSettings?.pagespeedKeySet);
+			setIsGlobalpingKeySet(fetchedSettings?.globalpingKeySet);
 			setIsEmailPasswordSet(fetchedSettings?.emailPasswordSet);
 		}
 	}, [fetchedSettings]);
@@ -74,9 +80,13 @@ const Settings = () => {
 		if (response?.data) {
 			const data = response.data;
 			setIsApiKeySet(data.pagespeedKeySet);
+			setIsGlobalpingKeySet(data.globalpingKeySet);
 			setIsEmailPasswordSet(data.emailPasswordSet);
 			if (data.pagespeedKeySet === true) {
 				setApiKeyHasBeenReset(false);
+			}
+			if (data.globalpingKeySet === true) {
+				setGlobalpingKeyHasBeenReset(false);
 			}
 			if (data.emailPasswordSet === true) {
 				setEmailPasswordHasBeenReset(false);
@@ -130,6 +140,16 @@ const Settings = () => {
 				isApiKeySet={isApiKeySet}
 				apiKeyHasBeenReset={apiKeyHasBeenReset}
 				setApiKeyHasBeenReset={setApiKeyHasBeenReset}
+				control={control}
+				defaults={defaults}
+				setValue={setValue}
+			/>
+			<SettingsGlobalping
+				isAdmin={isAdmin}
+				HEADING_SX={HEADING_SX}
+				isGlobalpingKeySet={isGlobalpingKeySet}
+				globalpingKeyHasBeenReset={globalpingKeyHasBeenReset}
+				setGlobalpingKeyHasBeenReset={setGlobalpingKeyHasBeenReset}
 				control={control}
 				defaults={defaults}
 				setValue={setValue}

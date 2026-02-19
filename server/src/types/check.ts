@@ -6,6 +6,7 @@ export interface CheckMetadata {
 	monitorId: string;
 	teamId: string;
 	type: MonitorType;
+	location?: string;
 }
 
 export interface CheckCpuInfo {

@@ -14,6 +14,7 @@ import {
 	INotificationsService,
 } from "@/service/index.js";
 import SuperSimpleQueueHelper from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+import GlobalpingService from "../service/infrastructure/globalpingService.js";
 import SuperSimpleQueue from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
 import UserService from "../service/business/userService.js";
 import CheckService from "../service/business/checkService.js";
@@ -192,6 +193,8 @@ export const initializeServices = async ({
 		notificationMessageBuilder
 	);
 
+	const globalpingService = new GlobalpingService({ settingsService, logger });
+
 	const superSimpleQueueHelper = new SuperSimpleQueueHelper({
 		logger,
 		networkService,
@@ -200,6 +203,7 @@ export const initializeServices = async ({
 		checkService,
 		buffer: bufferService,
 		incidentService,
+		globalpingService,
 		maintenanceWindowsRepository,
 		monitorsRepository,
 		teamsRepository,

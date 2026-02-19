@@ -26,6 +26,7 @@ import {
 } from "./controllerUtils.js";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorService } from "@/service/index.js";
+import { GLOBALPING_LOCATIONS } from "@/service/infrastructure/globalpingService.js";
 
 const SERVICE_NAME = "monitorController";
 class MonitorController {
@@ -381,6 +382,18 @@ class MonitorController {
 				success: true,
 				msg: "Supported games retrieved successfully",
 				data: games,
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	getGlobalpingLocations = async (_req: Request, res: Response, next: NextFunction) => {
+		try {
+			return res.status(200).json({
+				success: true,
+				msg: "Globalping locations retrieved successfully",
+				data: GLOBALPING_LOCATIONS,
 			});
 		} catch (error) {
 			next(error);

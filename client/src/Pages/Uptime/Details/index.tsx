@@ -1,6 +1,10 @@
 import { BasePage } from "@/Components/v2/design-elements";
 import { HeaderTimeRange } from "@/Components/v2/common";
 import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 import {
 	HistogramStatus,
 	RadialAvgResponse,
@@ -17,7 +21,7 @@ import { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useGet } from "@/Hooks/UseApi";
-import type { MonitorDetailsResponse } from "@/Types/Monitor";
+import type { MonitorDetailsResponse, LocationCheckData } from "@/Types/Monitor";
 import type { ChecksResponse } from "@/Types/Check";
 import type { RootState } from "@/Types/state";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
@@ -38,6 +42,7 @@ const UptimeDetailsPage = () => {
 	const [page, setPage] = useState<number>(0);
 	const [rowsPerPage, setRowsPerPage] = useState<number>(5);
 	const [dateRange, setDateRange] = useState<string>("recent");
+	const [selectedLocationTab, setSelectedLocationTab] = useState<number>(0);
 
 	const monitorDetailsUrl = useMemo(() => {
 		if (!monitorId) {
@@ -108,6 +113,15 @@ const UptimeDetailsPage = () => {
 	const checks = checksData?.checks ?? [];
 	const checksCount = checksData?.checksCount ?? 0;
 
+	const locationChecks = monitorData?.locationChecks;
+	const locationKeys = useMemo(
+		() => (locationChecks ? Object.keys(locationChecks).sort() : []),
+		[locationChecks]
+	);
+	const selectedLocation = locationKeys[selectedLocationTab] ?? null;
+	const selectedLocationData: LocationCheckData | null =
+		selectedLocation && locationChecks ? locationChecks[selectedLocation] : null;
+
 	return (
 		<BasePage>
 			<HeaderMonitorControls
@@ -152,6 +166,63 @@ const UptimeDetailsPage = () => {
 				checks={monitorData?.groupedChecks || []}
 				range={dateRange}
 			/>
+			{locationKeys.length > 0 && (
+				<Box>
+					<Typography
+						variant="h2"
+						sx={{ mb: theme.spacing(4) }}
+					>
+						{t("pages.uptime.details.locations.title")}
+					</Typography>
+					<Tabs
+						value={selectedLocationTab}
+						onChange={(_e, newVal) => setSelectedLocationTab(newVal)}
+						sx={{ mb: theme.spacing(4) }}
+					>
+						{locationKeys.map((loc) => (
+							<Tab
+								key={loc}
+								label={loc}
+							/>
+						))}
+					</Tabs>
+					{selectedLocationData && (
+						<Stack gap={theme.spacing(4)}>
+							<Stack
+								direction="row"
+								gap={theme.spacing(8)}
+							>
+								<Box>
+									<Typography
+										variant="body2"
+										color="text.secondary"
+									>
+										{t("pages.uptime.details.locations.avgResponseTime")}
+									</Typography>
+									<Typography variant="h3">
+										{Math.round(selectedLocationData.avgResponseTime)} ms
+									</Typography>
+								</Box>
+								<Box>
+									<Typography
+										variant="body2"
+										color="text.secondary"
+									>
+										{t("pages.uptime.details.locations.uptime")}
+									</Typography>
+									<Typography variant="h3">
+										{(selectedLocationData.uptimePercentage * 100).toFixed(1)}%
+									</Typography>
+								</Box>
+							</Stack>
+							<HistogramDetails
+								checks={selectedLocationData.groupedChecks || []}
+								range={dateRange}
+							/>
+						</Stack>
+					)}
+				</Box>
+			)}
 			<ChecksTable
 				checks={checks}
 				count={checksCount}

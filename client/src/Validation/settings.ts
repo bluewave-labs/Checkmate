@@ -34,6 +34,7 @@ export const settingsSchema = z.object({
 		.min(1, "Please enter a value")
 		.max(365, "Maximum 365 days"),
 	pagespeedApiKey: optionalString(),
+	globalpingApiKey: optionalString(),
 	systemEmailHost: z.preprocess(
 		(val) =>
 			val === "" || val === null || val === undefined ? undefined : String(val).trim(),

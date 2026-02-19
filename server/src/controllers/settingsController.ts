@@ -21,8 +21,9 @@ class SettingsController {
 		const sanitizedSettings = { ...dbSettings };
 		delete sanitizedSettings.version;
 		delete sanitizedSettings.jwtSecret;
-		const returnSettings = {
+		const returnSettings: any = {
 			pagespeedKeySet: false,
+			globalpingKeySet: false,
 			emailPasswordSet: false,
 			settings: null,
 		};
@@ -30,6 +31,10 @@ class SettingsController {
 		if (typeof sanitizedSettings.pagespeedApiKey !== "undefined") {
 			returnSettings.pagespeedKeySet = true;
 			delete sanitizedSettings.pagespeedApiKey;
+		}
+		if (typeof sanitizedSettings.globalpingApiKey !== "undefined") {
+			returnSettings.globalpingKeySet = true;
+			delete sanitizedSettings.globalpingApiKey;
 		}
 		if (typeof sanitizedSettings.systemEmailPassword !== "undefined") {
 			returnSettings.emailPasswordSet = true;

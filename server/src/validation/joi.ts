@@ -172,6 +172,7 @@ const createMonitorBodyValidation = joi.object({
 	gameId: joi.string().allow(""),
 	selectedDisks: joi.array().items(joi.string()).optional(),
 	group: joi.string().max(50).trim().allow(null, "").optional(),
+	locations: joi.array().items(joi.string()).max(5).optional(),
 });
 
 const createMonitorsBodyValidation = joi.array().items(
@@ -203,6 +204,7 @@ const editMonitorBodyValidation = joi
 		gameId: joi.string().allow(""),
 		selectedDisks: joi.array().items(joi.string()).optional(),
 		group: joi.string().max(50).trim().allow(null, "").optional(),
+		locations: joi.array().items(joi.string()).max(5).optional(),
 	})
 	.options({ stripUnknown: true });
 
@@ -428,6 +430,7 @@ const updateAppSettingsBodyValidation = joi.object({
 	systemEmailRequireTLS: joi.boolean(),
 	systemEmailRejectUnauthorized: joi.boolean(),
 
+	globalpingApiKey: joi.string().allow(""),
 	globalThresholds: joi
 		.object({
 			cpu: joi.number().min(1).max(100).allow(""),

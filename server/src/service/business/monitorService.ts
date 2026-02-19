@@ -222,6 +222,20 @@ export class MonitorService implements IMonitorService {
 			throw new AppError({ message: `${monitor.type} monitors are not supported for uptime details`, status: 400 });
 		}
 
+		// Fetch location checks if monitor has locations configured
+		let locationChecks: Record<string, any> | undefined;
+		if (monitor.locations && monitor.locations.length > 0) {
+			const locData = await this.checksRepository.findLocationChecksByMonitorId(
+				monitor.id,
+				start,
+				end,
+				this.getDateFormat(rangeKey)
+			);
+			if (Object.keys(locData).length > 0) {
+				locationChecks = locData;
+			}
+		}
+
 		return {
 			monitorData: {
 				monitor,
@@ -230,6 +244,7 @@ export class MonitorService implements IMonitorService {
 				groupedDownChecks: NormalizeDataUptimeDetails(checksData.groupedDownChecks, 10, 100),
 				groupedAvgResponseTime: checksData.avgResponseTime,
 				groupedUptimePercentage: checksData.uptimePercentage,
+				...(locationChecks ? { locationChecks } : {}),
 			},
 			monitorStats,
 		};
