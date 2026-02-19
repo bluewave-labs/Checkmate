@@ -41,6 +41,8 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { games, GameDig } from "gamedig";
 import jmespath from "jmespath";
+import * as grpc from "@grpc/grpc-js";
+import * as protoLoader from "@grpc/proto-loader";
 
 // repositories
 import {
@@ -148,6 +150,8 @@ export const initializeServices = async ({
 		Docker,
 		net,
 		settingsService,
+		grpc,
+		protoLoader,
 	});
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 

@@ -120,8 +120,8 @@ const getMonitorsByTeamIdQueryValidation = joi.object({
 	type: joi
 		.alternatives()
 		.try(
-			joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game"),
-			joi.array().items(joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game"))
+			joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc"),
+			joi.array().items(joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc"))
 		),
 	filter: joi.string().allow("", null),
 });
@@ -136,8 +136,8 @@ const getMonitorsWithChecksQueryValidation = joi.object({
 	type: joi
 		.alternatives()
 		.try(
-			joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game"),
-			joi.array().items(joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game"))
+			joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc"),
+			joi.array().items(joi.string().valid("http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc"))
 		)
 		.optional(),
 	explain: joi.boolean().optional(),
@@ -170,6 +170,7 @@ const createMonitorBodyValidation = joi.object({
 	expectedValue: joi.string().allow(""),
 	matchMethod: joi.string().allow(null, ""),
 	gameId: joi.string().allow(""),
+	grpcServiceName: joi.string().allow("").default(""),
 	selectedDisks: joi.array().items(joi.string()).optional(),
 	group: joi.string().max(50).trim().allow(null, "").optional(),
 });
@@ -201,6 +202,7 @@ const editMonitorBodyValidation = joi
 		diskAlertThreshold: joi.number(),
 		tempAlertThreshold: joi.number(),
 		gameId: joi.string().allow(""),
+		grpcServiceName: joi.string().allow(""),
 		selectedDisks: joi.array().items(joi.string()).optional(),
 		group: joi.string().max(50).trim().allow(null, "").optional(),
 	})
@@ -301,7 +303,7 @@ const getChecksParamValidation = joi.object({
 });
 
 const getChecksQueryValidation = joi.object({
-	type: joi.string().valid("http", "ping", "pagespeed", "hardware", "docker", "port", "game"),
+	type: joi.string().valid("http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc"),
 	sortOrder: joi.string().valid("asc", "desc"),
 	limit: joi.number(),
 	dateRange: joi.string().valid("recent", "hour", "day", "week", "month", "all"),
