@@ -70,6 +70,16 @@ export const useMonitorForm = ({
 					gameId: data?.gameId || "",
 				};
 				break;
+			case "grpc":
+				defaults = {
+					...base,
+					type: "grpc",
+					url: data?.url || "",
+					port: data?.port || 50051,
+					grpcServiceName: data?.grpcServiceName || "",
+					ignoreTlsErrors: data?.ignoreTlsErrors || false,
+				};
+				break;
 			case "pagespeed":
 				defaults = {
 					...base,
