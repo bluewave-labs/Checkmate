@@ -29,7 +29,7 @@ export interface InitializedControllers {
 export const initializeControllers = (services: InitializedServices): InitializedControllers => {
 	return {
 		authController: new AuthController(services.userService),
-		monitorController: new MonitorController(services.monitorService),
+		monitorController: new MonitorController(services.monitorService, services.settingsService),
 		settingsController: new SettingsController(services.settingsService, services.emailService),
 		checkController: new CheckController(services.checkService),
 		inviteController: new InviteController(services.inviteService),

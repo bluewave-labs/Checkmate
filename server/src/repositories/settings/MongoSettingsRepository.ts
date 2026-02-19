@@ -39,6 +39,7 @@ class MongoSettingsRepository implements ISettingsRepository {
 			systemEmailRejectUnauthorized: doc.systemEmailRejectUnauthorized ?? true,
 			showURL: doc.showURL ?? false,
 			globalpingApiKey: doc.globalpingApiKey ?? undefined,
+			globalpingLocationsTier: doc.globalpingLocationsTier ?? 6,
 			singleton: doc.singleton,
 			version: doc.version ?? 1,
 			globalThresholds: doc.globalThresholds ?? undefined,

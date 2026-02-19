@@ -957,10 +957,25 @@
 				"title": "Google PageSpeed API key"
 			},
 			"globalpingSettings": {
-				"description": "Enter your Globalping API key to enable multi-location uptime monitoring. This allows checking your monitors from different geographic regions.",
+				"description": "Configure Globalping to run uptime checks from multiple geographic regions worldwide.",
 				"labelApiKeySet": "API key is set. Click Reset to change it.",
 				"labelApiKey": "Globalping API key",
-				"title": "Globalping API key"
+				"optionalLabel": "(Optional)",
+				"title": "Globalping",
+				"locationsTierTitle": "Global locations",
+				"locationsTierDescription": "Choose how many probe locations are available when creating monitors.",
+				"tier3Label": "3 locations — core regions",
+				"tier3Description": "North America, Europe, Asia",
+				"tier6Label": "6 locations — all continents",
+				"tier6Description": "North America, Europe, Asia, South America, Oceania, Africa",
+				"tier15Label": "15 locations — city level",
+				"tier15Description": "US East, US West, Canada, UK, Germany, Netherlands, Poland, Japan, Singapore, India, Australia, Brazil, Chile, South Africa, UAE",
+				"rateLimitsTitle": "Rate limits",
+				"rateLimitsDescription": "Globalping limits how many tests you can run per hour. Each location check on each monitor uses 1 credit per interval.",
+				"rateLimitNoAuth": "Without a token: 250 tests per hour (no authentication needed)",
+				"rateLimitAuth": "With a free token: 500 tests per hour (sign in at dash.globalping.io)",
+				"rateLimitSponsor": "GitHub sponsors: higher limits based on sponsorship tier + hosting probes",
+				"rateLimitsNote": "For example, 3 monitors with 5 locations each, checked every minute, uses 15 credits per minute (900/hour). Choose your tier accordingly."
 			},
 			"saveButtonLabel": "Save",
 			"statsSettings": {

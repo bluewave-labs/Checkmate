@@ -431,6 +431,7 @@ const updateAppSettingsBodyValidation = joi.object({
 	systemEmailRejectUnauthorized: joi.boolean(),
 
 	globalpingApiKey: joi.string().allow(""),
+	globalpingLocationsTier: joi.number().valid(3, 6, 15).optional(),
 	globalThresholds: joi
 		.object({
 			cpu: joi.number().min(1).max(100).allow(""),

@@ -30,6 +30,7 @@ export const useSettingsForm = ({ data = null }: UseSettingsFormOptions = {}) =>
 			checkTTL: data?.checkTTL ?? 30,
 			pagespeedApiKey: "",
 			globalpingApiKey: "",
+			globalpingLocationsTier: data?.globalpingLocationsTier ?? 6,
 			systemEmailPassword: "",
 		};
 

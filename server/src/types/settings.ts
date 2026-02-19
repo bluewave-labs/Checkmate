@@ -25,6 +25,7 @@ export interface Settings {
 	systemEmailRejectUnauthorized: boolean;
 	showURL: boolean;
 	globalpingApiKey?: string;
+	globalpingLocationsTier?: number;
 	singleton: boolean;
 	version: number;
 	globalThresholds?: SettingsThresholds;

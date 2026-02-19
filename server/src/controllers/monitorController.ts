@@ -26,16 +26,19 @@ import {
 } from "./controllerUtils.js";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorService } from "@/service/index.js";
-import { GLOBALPING_LOCATIONS } from "@/service/infrastructure/globalpingService.js";
+import { getGlobalpingLocationsByTier } from "@/service/infrastructure/globalpingService.js";
+import type { ISettingsService } from "@/service/system/settingsService.js";
 
 const SERVICE_NAME = "monitorController";
 class MonitorController {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private monitorService: IMonitorService;
+	private settingsService: ISettingsService;
 
-	constructor(monitorService: IMonitorService) {
+	constructor(monitorService: IMonitorService, settingsService: ISettingsService) {
 		this.monitorService = monitorService;
+		this.settingsService = settingsService;
 	}
 
 	get serviceName() {
@@ -390,10 +393,13 @@ class MonitorController {
 
 	getGlobalpingLocations = async (_req: Request, res: Response, next: NextFunction) => {
 		try {
+			const settings = await this.settingsService.getDBSettings();
+			const tier = settings.globalpingLocationsTier ?? 6;
+			const locations = getGlobalpingLocationsByTier(tier);
 			return res.status(200).json({
 				success: true,
 				msg: "Globalping locations retrieved successfully",
-				data: GLOBALPING_LOCATIONS,
+				data: locations,
 			});
 		} catch (error) {
 			next(error);

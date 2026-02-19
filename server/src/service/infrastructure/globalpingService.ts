@@ -5,16 +5,47 @@ import type { MonitorStatusResponse } from "@/types/network.js";
 
 const SERVICE_NAME = "GlobalpingService";
 
-const LOCATION_MAP: Record<string, { continent: string }> = {
+// Maps location IDs to Globalping API location objects
+const LOCATION_MAP: Record<string, Record<string, string>> = {
+	// Continent-level (used for 3 and 6 tier)
 	"north-america": { continent: "NA" },
 	europe: { continent: "EU" },
 	asia: { continent: "AS" },
 	"south-america": { continent: "SA" },
 	oceania: { continent: "OC" },
 	africa: { continent: "AF" },
+	// City-level (used for 15 tier)
+	"us-east": { country: "US", state: "VA" },
+	"us-west": { country: "US", state: "CA" },
+	canada: { country: "CA", city: "Toronto" },
+	"uk": { country: "GB", city: "London" },
+	germany: { country: "DE", city: "Frankfurt" },
+	netherlands: { country: "NL", city: "Amsterdam" },
+	poland: { country: "PL", city: "Warsaw" },
+	japan: { country: "JP", city: "Tokyo" },
+	singapore: { country: "SG", city: "Singapore" },
+	india: { country: "IN", city: "Mumbai" },
+	australia: { country: "AU", city: "Sydney" },
+	brazil: { country: "BR" },
+	chile: { country: "CL", city: "Santiago" },
+	"south-africa": { country: "ZA", city: "Johannesburg" },
+	uae: { country: "AE", city: "Dubai" },
 };
 
-export const GLOBALPING_LOCATIONS = [
+interface GlobalpingLocationOption {
+	id: string;
+	label: string;
+}
+
+// 3 locations: core regions
+const LOCATIONS_TIER_3: GlobalpingLocationOption[] = [
+	{ id: "north-america", label: "North America" },
+	{ id: "europe", label: "Europe" },
+	{ id: "asia", label: "Asia" },
+];
+
+// 6 locations: all continents
+const LOCATIONS_TIER_6: GlobalpingLocationOption[] = [
 	{ id: "north-america", label: "North America" },
 	{ id: "europe", label: "Europe" },
 	{ id: "asia", label: "Asia" },
@@ -22,6 +53,35 @@ export const GLOBALPING_LOCATIONS = [
 	{ id: "oceania", label: "Oceania" },
 	{ id: "africa", label: "Africa" },
 ];
+
+// 15 locations: city/country level
+const LOCATIONS_TIER_15: GlobalpingLocationOption[] = [
+	{ id: "us-east", label: "US East (Virginia)" },
+	{ id: "us-west", label: "US West (California)" },
+	{ id: "canada", label: "Canada (Toronto)" },
+	{ id: "uk", label: "UK (London)" },
+	{ id: "germany", label: "Germany (Frankfurt)" },
+	{ id: "netherlands", label: "Netherlands (Amsterdam)" },
+	{ id: "poland", label: "Poland (Warsaw)" },
+	{ id: "japan", label: "Japan (Tokyo)" },
+	{ id: "singapore", label: "Singapore" },
+	{ id: "india", label: "India (Mumbai)" },
+	{ id: "australia", label: "Australia (Sydney)" },
+	{ id: "brazil", label: "Brazil" },
+	{ id: "chile", label: "Chile (Santiago)" },
+	{ id: "south-africa", label: "South Africa (Johannesburg)" },
+	{ id: "uae", label: "UAE (Dubai)" },
+];
+
+const LOCATIONS_BY_TIER: Record<number, GlobalpingLocationOption[]> = {
+	3: LOCATIONS_TIER_3,
+	6: LOCATIONS_TIER_6,
+	15: LOCATIONS_TIER_15,
+};
+
+export const getGlobalpingLocationsByTier = (tier: number): GlobalpingLocationOption[] => {
+	return LOCATIONS_BY_TIER[tier] ?? LOCATIONS_TIER_6;
+};
 
 class GlobalpingService {
 	static SERVICE_NAME = SERVICE_NAME;

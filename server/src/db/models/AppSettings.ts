@@ -24,6 +24,7 @@ const AppSettingsSchema = new Schema<AppSettingsDocument>(
 		jwtSecret: { type: String },
 		pagespeedApiKey: { type: String },
 		globalpingApiKey: { type: String },
+		globalpingLocationsTier: { type: Number, default: 6 },
 		systemEmailHost: { type: String },
 		systemEmailPort: { type: Number },
 		systemEmailAddress: { type: String },
