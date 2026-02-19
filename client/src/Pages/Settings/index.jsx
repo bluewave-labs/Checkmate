@@ -112,6 +112,18 @@ const Settings = () => {
 			})
 		);
 
+		// Don't send empty sensitive fields when the key is already set and
+		// hasn't been explicitly reset — otherwise the backend $unsets them
+		if (isApiKeySet && !apiKeyHasBeenReset && !toSubmit.pagespeedApiKey) {
+			delete toSubmit.pagespeedApiKey;
+		}
+		if (isGlobalpingKeySet && !globalpingKeyHasBeenReset && !toSubmit.globalpingApiKey) {
+			delete toSubmit.globalpingApiKey;
+		}
+		if (isEmailPasswordSet && !emailPasswordHasBeenReset && !toSubmit.systemEmailPassword) {
+			delete toSubmit.systemEmailPassword;
+		}
+
 		saveSettings(toSubmit);
 	};
 
