@@ -5,20 +5,23 @@ import type { MonitorStatusResponse } from "@/types/network.js";
 
 const SERVICE_NAME = "GlobalpingService";
 
+interface GlobalpingLocationOption {
+	id: string;
+	label: string;
+}
+
 // Maps location IDs to Globalping API location objects
 const LOCATION_MAP: Record<string, Record<string, string>> = {
-	// Continent-level (used for 3 and 6 tier)
 	"north-america": { continent: "NA" },
 	europe: { continent: "EU" },
 	asia: { continent: "AS" },
 	"south-america": { continent: "SA" },
 	oceania: { continent: "OC" },
 	africa: { continent: "AF" },
-	// City-level (used for 15 tier)
 	"us-east": { country: "US", state: "VA" },
 	"us-west": { country: "US", state: "CA" },
 	canada: { country: "CA", city: "Toronto" },
-	"uk": { country: "GB", city: "London" },
+	uk: { country: "GB", city: "London" },
 	germany: { country: "DE", city: "Frankfurt" },
 	netherlands: { country: "NL", city: "Amsterdam" },
 	poland: { country: "PL", city: "Warsaw" },
@@ -32,29 +35,19 @@ const LOCATION_MAP: Record<string, Record<string, string>> = {
 	uae: { country: "AE", city: "Dubai" },
 };
 
-interface GlobalpingLocationOption {
-	id: string;
-	label: string;
-}
-
-// 3 locations: core regions
 const LOCATIONS_TIER_3: GlobalpingLocationOption[] = [
 	{ id: "north-america", label: "North America" },
 	{ id: "europe", label: "Europe" },
 	{ id: "asia", label: "Asia" },
 ];
 
-// 6 locations: all continents
 const LOCATIONS_TIER_6: GlobalpingLocationOption[] = [
-	{ id: "north-america", label: "North America" },
-	{ id: "europe", label: "Europe" },
-	{ id: "asia", label: "Asia" },
+	...LOCATIONS_TIER_3,
 	{ id: "south-america", label: "South America" },
 	{ id: "oceania", label: "Oceania" },
 	{ id: "africa", label: "Africa" },
 ];
 
-// 15 locations: city/country level
 const LOCATIONS_TIER_15: GlobalpingLocationOption[] = [
 	{ id: "us-east", label: "US East (Virginia)" },
 	{ id: "us-west", label: "US West (California)" },
@@ -78,6 +71,14 @@ const LOCATIONS_BY_TIER: Record<number, GlobalpingLocationOption[]> = {
 	6: LOCATIONS_TIER_6,
 	15: LOCATIONS_TIER_15,
 };
+
+// Build a lookup from location ID to human-readable label
+const LOCATION_LABELS: Record<string, string> = {};
+for (const tier of Object.values(LOCATIONS_BY_TIER)) {
+	for (const loc of tier) {
+		LOCATION_LABELS[loc.id] = loc.label;
+	}
+}
 
 export const getGlobalpingLocationsByTier = (tier: number): GlobalpingLocationOption[] => {
 	return LOCATIONS_BY_TIER[tier] ?? LOCATIONS_TIER_6;
@@ -117,25 +118,34 @@ class GlobalpingService {
 		return this.client;
 	}
 
+	/**
+	 * Gets the current tier's location IDs from settings.
+	 * This is the source of truth for which locations to check.
+	 */
+	private async getTierLocationIds(): Promise<string[]> {
+		const dbSettings = await this.settingsService.getDBSettings();
+		const tier = dbSettings.globalpingLocationsTier ?? 6;
+		return getGlobalpingLocationsByTier(tier).map((loc) => loc.id);
+	}
+
 	async runChecks(monitor: Monitor): Promise<MonitorStatusResponse[]> {
-		if (!monitor.locations || monitor.locations.length === 0) {
+		if (monitor.type !== "http" && monitor.type !== "ping") {
 			return [];
 		}
 
 		const client = await this.getClient();
 		if (!client) {
-			this.logger.warn({
-				message: "Globalping API key not configured, skipping location checks",
-				service: SERVICE_NAME,
-				method: "runChecks",
-			});
+			return [];
+		}
+
+		const locationIds = await this.getTierLocationIds();
+		if (locationIds.length === 0) {
 			return [];
 		}
 
 		const measurementType = monitor.type === "ping" ? "ping" : "http";
 		const monitorUrl = monitor.url ?? "";
 
-		// Parse target from monitor URL
 		let target: string;
 		try {
 			if (measurementType === "http") {
@@ -148,7 +158,7 @@ class GlobalpingService {
 			target = monitorUrl;
 		}
 
-		const locations = monitor.locations
+		const locations = locationIds
 			.map((loc) => LOCATION_MAP[loc])
 			.filter(Boolean);
 
@@ -199,7 +209,7 @@ class GlobalpingService {
 			for (const item of measurement.results || []) {
 				const probe = item.probe;
 				const result = item.result;
-				const locationLabel = this.getLocationLabel(probe?.continent, probe?.country);
+				const locationId = this.resolveLocationId(probe?.continent, probe?.country, locationIds);
 
 				if (measurementType === "http") {
 					results.push({
@@ -210,10 +220,9 @@ class GlobalpingService {
 						code: result.statusCode || 0,
 						message: result.statusCodeName || result.rawOutput || "",
 						responseTime: result.timings?.total ?? 0,
-						location: locationLabel,
+						location: locationId,
 					});
 				} else {
-					// Ping
 					const stats = result.stats;
 					results.push({
 						monitorId: monitor.id,
@@ -223,7 +232,7 @@ class GlobalpingService {
 						code: stats?.loss === 0 ? 200 : 5000,
 						message: stats?.loss === 0 ? "Ping successful" : `Packet loss: ${stats?.loss}%`,
 						responseTime: stats?.avg ?? 0,
-						location: locationLabel,
+						location: locationId,
 					});
 				}
 			}
@@ -240,11 +249,37 @@ class GlobalpingService {
 		}
 	}
 
-	private getLocationLabel(continent?: string, country?: string): string {
-		if (continent && country) {
-			return `${continent}-${country}`;
+	/**
+	 * Maps a probe's continent/country back to a configured location ID.
+	 * For city-level tiers, matches by country code.
+	 * For continent-level tiers, matches by continent code.
+	 */
+	private resolveLocationId(continent?: string, country?: string, configuredIds?: string[]): string {
+		if (!configuredIds || configuredIds.length === 0) {
+			return continent && country ? `${continent}-${country}` : continent || country || "unknown";
 		}
-		return continent || country || "unknown";
+
+		// Try country-level match first (for tier 15)
+		if (country) {
+			for (const id of configuredIds) {
+				const loc = LOCATION_MAP[id];
+				if (loc?.country === country) {
+					return id;
+				}
+			}
+		}
+
+		// Fall back to continent-level match (for tier 3/6)
+		if (continent) {
+			for (const id of configuredIds) {
+				const loc = LOCATION_MAP[id];
+				if (loc?.continent === continent) {
+					return id;
+				}
+			}
+		}
+
+		return continent && country ? `${continent}-${country}` : continent || country || "unknown";
 	}
 
 	async getLimits(): Promise<any | null> {
@@ -265,4 +300,5 @@ class GlobalpingService {
 	}
 }
 
+export { LOCATION_LABELS };
 export default GlobalpingService;

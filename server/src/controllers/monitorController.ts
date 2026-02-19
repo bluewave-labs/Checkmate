@@ -26,7 +26,7 @@ import {
 } from "./controllerUtils.js";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorService } from "@/service/index.js";
-import { getGlobalpingLocationsByTier } from "@/service/infrastructure/globalpingService.js";
+import { getGlobalpingLocationsByTier, LOCATION_LABELS } from "@/service/infrastructure/globalpingService.js";
 import type { ISettingsService } from "@/service/system/settingsService.js";
 
 const SERVICE_NAME = "monitorController";
@@ -399,7 +399,7 @@ class MonitorController {
 			return res.status(200).json({
 				success: true,
 				msg: "Globalping locations retrieved successfully",
-				data: locations,
+				data: { locations, labels: LOCATION_LABELS },
 			});
 		} catch (error) {
 			next(error);

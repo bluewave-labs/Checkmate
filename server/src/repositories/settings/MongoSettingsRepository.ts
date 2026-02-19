@@ -83,10 +83,6 @@ class MongoSettingsRepository implements ISettingsRepository {
 			delete update.$unset;
 		}
 
-		await AppSettingsModel.findOneAndUpdate({}, update, {
-			upsert: true,
-		});
-
 		const updatedSettings = await AppSettingsModel.findOneAndUpdate({}, update, {
 			upsert: true,
 			new: true,

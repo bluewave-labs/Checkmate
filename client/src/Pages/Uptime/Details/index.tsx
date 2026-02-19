@@ -113,6 +113,12 @@ const UptimeDetailsPage = () => {
 	const checks = checksData?.checks ?? [];
 	const checksCount = checksData?.checksCount ?? 0;
 
+	const { data: globalpingData } = useGet<{
+		locations: { id: string; label: string }[];
+		labels: Record<string, string>;
+	}>("/monitors/globalping/locations");
+	const locationLabels = globalpingData?.labels ?? {};
+
 	const locationChecks = monitorData?.locationChecks;
 	const locationKeys = useMemo(
 		() => (locationChecks ? Object.keys(locationChecks).sort() : []),
@@ -182,7 +188,7 @@ const UptimeDetailsPage = () => {
 						{locationKeys.map((loc) => (
 							<Tab
 								key={loc}
-								label={loc}
+								label={locationLabels[loc] ?? loc}
 							/>
 						))}
 					</Tabs>

@@ -37,7 +37,6 @@ export const useMonitorForm = ({
 					matchMethod: data?.matchMethod || "",
 					expectedValue: data?.expectedValue || "",
 					jsonPath: data?.jsonPath || "",
-					locations: data?.locations || [],
 				};
 				break;
 			case "ping":
@@ -45,7 +44,6 @@ export const useMonitorForm = ({
 					...base,
 					type: "ping",
 					url: data?.url || "",
-					locations: data?.locations || [],
 				};
 				break;
 			case "port":
