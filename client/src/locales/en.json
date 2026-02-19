@@ -445,6 +445,15 @@
 					},
 					"title": "Check frequency"
 				},
+				"globalping": {
+					"title": "Global monitoring",
+					"description": "Run checks from multiple locations around the world using the Globalping network. Configure the API key and location count in settings.",
+					"option": {
+						"enabled": {
+							"label": "Enable Globalping"
+						}
+					}
+				},
 				"general": {
 					"option": {
 						"container": {

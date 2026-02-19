@@ -488,6 +488,27 @@ const CreateMonitorPage = () => {
 				}
 			/>
 
+			{/* Global monitoring - only for http and ping types */}
+			{(watchedType === "http" || watchedType === "ping") && (
+				<ConfigBox
+					title={t("pages.createMonitor.form.globalping.title")}
+					subtitle={t("pages.createMonitor.form.globalping.description")}
+					rightContent={
+						<Controller
+							name="globalpingEnabled"
+							control={control}
+							render={({ field }) => (
+								<Switch
+									id="globalpingEnabled"
+									isChecked={field.value ?? false}
+									onChange={(e) => field.onChange(e.target.checked)}
+								/>
+							)}
+						/>
+					}
+				/>
+			)}
+
 			{/* Alert Thresholds - only for hardware type */}
 			{generalSettingsConfig.showSecret && (
 				<ConfigBox

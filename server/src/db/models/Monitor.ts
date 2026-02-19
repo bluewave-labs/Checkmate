@@ -164,6 +164,10 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			type: [String],
 			default: [],
 		},
+		globalpingEnabled: {
+			type: Boolean,
+			default: false,
+		},
 		group: {
 			type: String,
 			trim: true,

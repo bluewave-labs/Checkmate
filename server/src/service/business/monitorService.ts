@@ -223,9 +223,9 @@ export class MonitorService implements IMonitorService {
 			throw new AppError({ message: `${monitor.type} monitors are not supported for uptime details`, status: 400 });
 		}
 
-		// Fetch location checks if this is an HTTP or ping monitor
+		// Fetch location checks if Globalping is enabled for this monitor
 		let locationChecks: Record<string, LocationCheckData> | undefined;
-		if (monitor.type === "http" || monitor.type === "ping") {
+		if (monitor.globalpingEnabled && (monitor.type === "http" || monitor.type === "ping")) {
 			const locData = await this.checksRepository.findLocationChecksByMonitorId(
 				monitor.id,
 				start,

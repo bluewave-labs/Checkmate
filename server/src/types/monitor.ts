@@ -44,6 +44,7 @@ export interface Monitor {
 	gameId?: string;
 	group: string | null;
 	locations: string[];
+	globalpingEnabled: boolean;
 	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;

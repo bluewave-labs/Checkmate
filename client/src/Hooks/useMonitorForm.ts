@@ -37,6 +37,7 @@ export const useMonitorForm = ({
 					matchMethod: data?.matchMethod || "",
 					expectedValue: data?.expectedValue || "",
 					jsonPath: data?.jsonPath || "",
+					globalpingEnabled: data?.globalpingEnabled || false,
 				};
 				break;
 			case "ping":
@@ -44,6 +45,7 @@ export const useMonitorForm = ({
 					...base,
 					type: "ping",
 					url: data?.url || "",
+					globalpingEnabled: data?.globalpingEnabled || false,
 				};
 				break;
 			case "port":

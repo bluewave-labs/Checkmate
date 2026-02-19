@@ -31,12 +31,14 @@ const httpSchema = baseSchema.extend({
 	matchMethod: z.enum(["equal", "include", "regex", ""]).optional(),
 	expectedValue: z.string().optional(),
 	jsonPath: z.string().optional(),
+	globalpingEnabled: z.boolean(),
 });
 
 // Ping monitor schema
 const pingSchema = baseSchema.extend({
 	type: z.literal("ping"),
 	url: z.string().min(1, "Host is required"),
+	globalpingEnabled: z.boolean(),
 });
 
 // Port monitor schema

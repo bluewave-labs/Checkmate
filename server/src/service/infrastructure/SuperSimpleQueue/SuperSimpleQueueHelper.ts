@@ -128,7 +128,7 @@ class SuperSimpleQueueHelper {
 				}
 
 				// Step 2b. Run Globalping checks (fire-and-forget, doesn't affect local check pipeline)
-				if (monitor.type === "http" || monitor.type === "ping") {
+				if (monitor.globalpingEnabled && (monitor.type === "http" || monitor.type === "ping")) {
 					this.globalpingService
 						.runChecks(monitor)
 						.then((locationStatuses) => {
