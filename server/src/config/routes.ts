@@ -1,4 +1,5 @@
 import { createVerifyJWT } from "../middleware/verifyJWT.js";
+import { createVerifyStatusPageAccess } from "../middleware/verifyStatusPageAccess.js";
 import { authApiLimiter } from "../middleware/rateLimiter.js";
 
 import AuthRoutes from "../routes/authRoute.js";
@@ -25,7 +26,8 @@ export const setupRoutes = (app: any, controllers: Record<string, any>, services
 	const maintenanceWindowRoutes = new MaintenanceWindowRoutes(controllers.maintenanceWindowController);
 	const queueRoutes = new QueueRoutes(controllers.queueController);
 	const logRoutes = new LogRoutes(controllers.logController);
-	const statusPageRoutes = new StatusPageRoutes(controllers.statusPageController, verifyJWT);
+	const verifyStatusPageAccess = createVerifyStatusPageAccess(services.statusPagesRepository);
+	const statusPageRoutes = new StatusPageRoutes(controllers.statusPageController, verifyJWT, verifyStatusPageAccess);
 	const notificationRoutes = new NotificationRoutes(controllers.notificationController);
 	const diagnosticRoutes = new DiagnosticRoutes(controllers.diagnosticController, verifyJWT);
 	const incidentRoutes = new IncidentRoutes(controllers.incidentController);
