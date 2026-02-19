@@ -359,6 +359,7 @@ export const SettingsPage = () => {
 											}}
 											fieldLabel={t("pages.settings.form.thresholds.option.cpu.label")}
 											type="number"
+											inputProps={{ min: 0 }}
 											placeholder={t(
 												"pages.settings.form.thresholds.option.cpu.placeholder"
 											)}
@@ -383,6 +384,7 @@ export const SettingsPage = () => {
 											}}
 											fieldLabel={t("pages.settings.form.thresholds.option.memory.label")}
 											type="number"
+											inputProps={{ min: 0 }}
 											placeholder={t(
 												"pages.settings.form.thresholds.option.memory.placeholder"
 											)}
@@ -407,6 +409,7 @@ export const SettingsPage = () => {
 											}}
 											fieldLabel={t("pages.settings.form.thresholds.option.disk.label")}
 											type="number"
+											inputProps={{ min: 0 }}
 											placeholder={t(
 												"pages.settings.form.thresholds.option.disk.placeholder"
 											)}
@@ -433,6 +436,7 @@ export const SettingsPage = () => {
 												"pages.settings.form.thresholds.option.temperature.label"
 											)}
 											type="number"
+											inputProps={{ min: 0 }}
 											placeholder={t(
 												"pages.settings.form.thresholds.option.temperature.placeholder"
 											)}

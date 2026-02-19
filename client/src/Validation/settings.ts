@@ -45,25 +45,25 @@ export const settingsSchema = z.object({
 			cpu: z
 				.number()
 				.int()
-				.min(1, "Please enter a value")
+				.min(1, "Please enter a valid value")
 				.max(100, "Maximum value is 100")
 				.optional(),
 			memory: z
 				.number()
 				.int()
-				.min(1, "Please enter a value")
+				.min(1, "Please enter a valid value")
 				.max(100, "Maximum value is 100")
 				.optional(),
 			disk: z
 				.number()
 				.int()
-				.min(1, "Please enter a value")
+				.min(1, "Please enter a valid value")
 				.max(100, "Maximum value is 100")
 				.optional(),
 			temperature: z
 				.number()
 				.int()
-				.min(1, "Please enter a value")
+				.min(1, "Please enter a valid value")
 				.max(150, "Maximum value is 150")
 				.optional(),
 		})

@@ -1001,19 +1001,19 @@
 					"option": {
 						"cpu": {
 							"label": "CPU Threshold (%)",
-							"placeholder": "0 - 100"
+							"placeholder": "1 - 100"
 						},
 						"memory": {
 							"label": "Memory Threshold (%)",
-							"placeholder": "0 - 100"
+							"placeholder": "1 - 100"
 						},
 						"disk": {
 							"label": "Disk Threshold (%)",
-							"placeholder": "0 - 100"
+							"placeholder": "1 - 100"
 						},
 						"temperature": {
 							"label": "Temperature Threshold (°C)",
-							"placeholder": "0 - 150"
+							"placeholder": "1 - 150"
 						}
 					}
 				}
