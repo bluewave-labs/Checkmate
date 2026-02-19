@@ -327,8 +327,90 @@ export const SettingsPage = () => {
 								color="error"
 								onClick={() => setIsStatsDialogOpen(true)}
 							>
-								{t("common.buttons.clear")}
+								{t("pages.settings.form.stats.buttonText")}
 							</Button>
+						}
+					/>
+				)}
+
+				{/* Global Thresholds */}
+				{isAdmin && (
+					<ConfigBox
+						title={t("pages.settings.form.thresholds.title")}
+						subtitle={t("pages.settings.form.thresholds.description")}
+						rightContent={
+							<Stack spacing={2}>
+								<Controller
+									name="globalThresholds.cpu"
+									control={form.control}
+									defaultValue={defaults.globalThresholds?.cpu}
+									render={({ field, fieldState }) => (
+										<TextField
+											{...field}
+											fieldLabel={t("pages.settings.form.thresholds.option.cpu.label")}
+											type="number"
+											placeholder={t(
+												"pages.settings.form.thresholds.option.cpu.placeholder"
+											)}
+											error={!!fieldState.error}
+											helperText={fieldState.error?.message}
+										/>
+									)}
+								/>
+								<Controller
+									name="globalThresholds.memory"
+									control={form.control}
+									defaultValue={defaults.globalThresholds?.memory}
+									render={({ field, fieldState }) => (
+										<TextField
+											{...field}
+											fieldLabel={t("pages.settings.form.thresholds.option.memory.label")}
+											type="number"
+											placeholder={t(
+												"pages.settings.form.thresholds.option.memory.placeholder"
+											)}
+											error={!!fieldState.error}
+											helperText={fieldState.error?.message}
+										/>
+									)}
+								/>
+								<Controller
+									name="globalThresholds.disk"
+									control={form.control}
+									defaultValue={defaults.globalThresholds?.disk}
+									render={({ field, fieldState }) => (
+										<TextField
+											{...field}
+											fieldLabel={t("pages.settings.form.thresholds.option.disk.label")}
+											type="number"
+											placeholder={t(
+												"pages.settings.form.thresholds.option.disk.placeholder"
+											)}
+											error={!!fieldState.error}
+											helperText={fieldState.error?.message}
+										/>
+									)}
+								/>
+								<Controller
+									name="globalThresholds.temperature"
+									control={form.control}
+									defaultValue={defaults.globalThresholds?.temperature}
+									render={({ field, fieldState }) => (
+										<TextField
+											{...field}
+											fieldLabel={t(
+												"pages.settings.form.thresholds.option.temperature.label"
+											)}
+											type="number"
+											placeholder={t(
+												"pages.settings.form.thresholds.option.temperature.placeholder"
+											)}
+											error={!!fieldState.error}
+											helperText={fieldState.error?.message}
+										/>
+									)}
+								/>
+							</Stack>
 						}
 					/>
 				)}
@@ -370,6 +452,7 @@ export const SettingsPage = () => {
 					{t("common.buttons.save")}
 				</Button>
 			</Stack>
+			<pre>{JSON.stringify(form.formState.isValid, null, 2)}</pre>
 		</BasePage>
 	);
 };

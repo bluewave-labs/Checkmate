@@ -994,6 +994,28 @@
 						"title": "Clear all monitoring history?",
 						"description": "This cannot be undone"
 					}
+				},
+				"thresholds": {
+					"title": "Global Thresholds",
+					"description": "Set global CPU, Memory, Disk, and Temperature thresholds for infrastructure monitoring. These apply to all hardware monitors unless overridden.",
+					"option": {
+						"cpu": {
+							"label": "CPU Threshold (%)",
+							"placeholder": "0 - 100"
+						},
+						"memory": {
+							"label": "Memory Threshold (%)",
+							"placeholder": "0 - 100"
+						},
+						"disk": {
+							"label": "Disk Threshold (%)",
+							"placeholder": "0 - 100"
+						},
+						"temperature": {
+							"label": "Temperature Threshold (°C)",
+							"placeholder": "0 - 150"
+						}
+					}
 				}
 			}
 		},
