@@ -42,7 +42,8 @@
 			"reset": "Reset",
 			"clear": "Clear",
 			"addDemo": "Add demo monitors",
-			"removeMonitors": "Remove monitors"
+			"removeMonitors": "Remove monitors",
+			"sendTestEmail": "Send test email"
 		},
 		"charts": {
 			"labels": {
@@ -1016,6 +1017,56 @@
 						"temperature": {
 							"label": "Temperature Threshold (°C)",
 							"placeholder": "1 - 150"
+						}
+					}
+				},
+				"email": {
+					"title": "Email settings",
+					"description": "Configure the email settings for your system. This is used to send notifications and alerts.",
+					"option": {
+						"host": {
+							"label": "Email host - Hostname or IP address to connect to",
+							"placeholder": "smtp.gmail.com"
+						},
+						"port": {
+							"label": "Email port - Port to connect to",
+							"placeholder": "587"
+						},
+						"address": {
+							"label": "Email address - Used for authentication",
+							"placeholder": "you@example.com"
+						},
+						"user": {
+							"label": "Email user - Username for authentication, overrides email address if specified",
+							"placeholder": "Leave empty if not required"
+						},
+						"password": {
+							"label": "Email password - Password for authentication",
+							"labelSet": "Password is set. Click Reset to change it.",
+							"placeholder": "Enter your password"
+						},
+						"tlsServername": {
+							"label": "TLS Servername - Optional Hostname for TLS Validation when host is an IP",
+							"placeholder": "example.com"
+						},
+						"connectionHost": {
+							"label": "Email connection host - Hostname to use in the HELO/EHLO greeting",
+							"placeholder": "localhost"
+						},
+						"secure": {
+							"label": "Use SSL (recommended): Encrypt the connection using SSL/TLS"
+						},
+						"pool": {
+							"label": "Enable connection pooling: Reuse existing connections to improve performance"
+						},
+						"ignoreTLS": {
+							"label": "Disable STARTTLS: Don't use TLS even if the server supports it"
+						},
+						"requireTLS": {
+							"label": "Force STARTTLS: Require TLS upgrade, fail if not supported"
+						},
+						"rejectUnauthorized": {
+							"label": "Reject invalid certificates: Reject connections with self-signed or untrusted certificates"
 						}
 					}
 				},

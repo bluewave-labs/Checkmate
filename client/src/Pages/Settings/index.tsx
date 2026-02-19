@@ -1,5 +1,5 @@
 import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
-import { Autocomplete, Select, Dialog } from "@/Components/v2/inputs";
+import { Autocomplete, Select, Dialog, SwitchComponent } from "@/Components/v2/inputs";
 import { Stack, useTheme, MenuItem, type SelectChangeEvent } from "@mui/material";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -14,7 +14,7 @@ import type { SettingsFormData } from "@/Validation/settings";
 import { useState } from "react";
 import { Controller } from "react-hook-form";
 import { TextField, Button, FieldLabel } from "@/Components/v2/inputs";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useDelete } from "@/Hooks/UseApi";
 
 import {
@@ -59,6 +59,13 @@ export const SettingsPage = () => {
 		fetchedSettings?.pagespeedKeySet ?? false
 	);
 	const [apiKeyHasBeenReset, setApiKeyHasBeenReset] = useState(false);
+	// Local state for email password reset
+	const [isEmailPasswordSet, setIsEmailPasswordSet] = useState(
+		fetchedSettings?.emailPasswordSet ?? false
+	);
+	const [emailPasswordHasBeenReset, setEmailPasswordHasBeenReset] = useState(false);
+	// Test email functionality
+	const { post: sendTestEmail, loading: isSendingTestEmail } = usePost();
 	// Local state for clear stats dialog
 	const [isStatsDialogOpen, setIsStatsDialogOpen] = useState(false);
 	const { deleteFn: deleteStats, loading: isDeletingStats } = useDelete();
@@ -81,6 +88,7 @@ export const SettingsPage = () => {
 	useEffect(() => {
 		if (fetchedSettings) {
 			setIsApiKeySet(fetchedSettings.pagespeedKeySet);
+			setIsEmailPasswordSet(fetchedSettings.emailPasswordSet);
 		}
 	}, [fetchedSettings]);
 
@@ -90,6 +98,8 @@ export const SettingsPage = () => {
 		language = "en",
 		chartType = "histogram",
 	} = useSelector((state: RootState) => state.ui);
+
+	const user = useSelector((state: RootState) => state.auth.user);
 
 	// Convert timezones to match AutoComplete format (id instead of _id)
 	const timezoneOptions: Timezone[] = timezones.map((tz) => ({
@@ -122,6 +132,48 @@ export const SettingsPage = () => {
 		setApiKeyHasBeenReset(true);
 	};
 
+	const handleResetEmailPassword = () => {
+		form.setValue("systemEmailPassword", "");
+		setEmailPasswordHasBeenReset(true);
+	};
+
+	const handleSendTestEmail = async () => {
+		const formValues = form.getValues();
+		if (!user) {
+			alert("User not authenticated");
+			return;
+		}
+		if (
+			!formValues.systemEmailHost ||
+			!formValues.systemEmailPort ||
+			!formValues.systemEmailAddress ||
+			!formValues.systemEmailPassword
+		) {
+			alert("Please fill in all required email fields before testing.");
+			return;
+		}
+
+		await sendTestEmail("/settings/test-email", {
+			to: user.email,
+			systemEmailHost: formValues.systemEmailHost,
+			systemEmailPort: formValues.systemEmailPort,
+			systemEmailAddress: formValues.systemEmailAddress,
+			systemEmailPassword: formValues.systemEmailPassword,
+			systemEmailSecure: formValues.systemEmailSecure,
+			systemEmailPool: formValues.systemEmailPool,
+			systemEmailIgnoreTLS: formValues.systemEmailIgnoreTLS,
+			systemEmailRequireTLS: formValues.systemEmailRequireTLS,
+			systemEmailRejectUnauthorized: formValues.systemEmailRejectUnauthorized,
+			...(formValues.systemEmailUser && { systemEmailUser: formValues.systemEmailUser }),
+			...(formValues.systemEmailTLSServername && {
+				systemEmailTLSServername: formValues.systemEmailTLSServername,
+			}),
+			...(formValues.systemEmailConnectionHost && {
+				systemEmailConnectionHost: formValues.systemEmailConnectionHost,
+			}),
+		});
+	};
+
 	const handleClearStats = async () => {
 		await deleteStats("/checks/team");
 		setIsStatsDialogOpen(false);
@@ -132,6 +184,9 @@ export const SettingsPage = () => {
 		const dataToSend = { ...data };
 		if (isApiKeySet && !apiKeyHasBeenReset) {
 			delete (dataToSend as any).pagespeedApiKey;
+		}
+		if (isEmailPasswordSet && !emailPasswordHasBeenReset) {
+			delete (dataToSend as any).systemEmailPassword;
 		}
 
 		// Convert undefined to empty string for backend unsetting
@@ -163,6 +218,8 @@ export const SettingsPage = () => {
 			if (result.data) {
 				setIsApiKeySet(result.data.pagespeedKeySet);
 				setApiKeyHasBeenReset(false);
+				setIsEmailPasswordSet(result.data.emailPasswordSet);
+				setEmailPasswordHasBeenReset(false);
 			}
 		}
 	};
@@ -454,6 +511,285 @@ export const SettingsPage = () => {
 					/>
 				)}
 			</Stack>
+
+			{/* Email Settings - Admin Only */}
+			{isAdmin && (
+				<ConfigBox
+					title={t("pages.settings.form.email.title")}
+					subtitle={t("pages.settings.form.email.description")}
+					leftContent={
+						<Box
+							component="pre"
+							sx={{
+								fontFamily: "monospace",
+								p: 2,
+								borderRadius: 1,
+								overflow: "auto",
+								backgroundColor: theme.palette.mode === "dark" ? "#1e1e1e" : "#f5f5f5",
+							}}
+						>
+							<code>
+								{JSON.stringify(
+									{
+										host: form.watch("systemEmailHost") || "",
+										port: form.watch("systemEmailPort") || "",
+										secure: form.watch("systemEmailSecure") ?? false,
+										auth: {
+											user:
+												form.watch("systemEmailUser") ||
+												form.watch("systemEmailAddress") ||
+												"",
+											pass: "<your_password>",
+										},
+										name: form.watch("systemEmailConnectionHost") || "localhost",
+										pool: form.watch("systemEmailPool") ?? false,
+										tls: {
+											rejectUnauthorized:
+												form.watch("systemEmailRejectUnauthorized") ?? true,
+											ignoreTLS: form.watch("systemEmailIgnoreTLS") ?? false,
+											requireTLS: form.watch("systemEmailRequireTLS") ?? false,
+											servername: form.watch("systemEmailTLSServername") || "",
+										},
+									},
+									null,
+									2
+								)}
+							</code>
+						</Box>
+					}
+					rightContent={
+						<Stack gap={theme.spacing(10)}>
+							{/* Email Host */}
+							<Controller
+								name="systemEmailHost"
+								control={form.control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value ?? ""}
+										fieldLabel={t("pages.settings.form.email.option.host.label")}
+										placeholder={t("pages.settings.form.email.option.host.placeholder")}
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message}
+									/>
+								)}
+							/>
+
+							{/* Email Port */}
+							<Controller
+								name="systemEmailPort"
+								control={form.control}
+								render={({ field, fieldState }) => (
+									<TextField
+										name={field.name}
+										ref={field.ref}
+										onBlur={field.onBlur}
+										value={
+											field.value === undefined || field.value === 0 ? "" : field.value
+										}
+										onChange={(e) => {
+											const val = e.target.value;
+											field.onChange(val === "" ? 0 : Number(val));
+										}}
+										fieldLabel={t("pages.settings.form.email.option.port.label")}
+										type="number"
+										inputProps={{ min: 0 }}
+										placeholder={t("pages.settings.form.email.option.port.placeholder")}
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message}
+									/>
+								)}
+							/>
+
+							{/* Email Address */}
+							<Controller
+								name="systemEmailAddress"
+								control={form.control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value ?? ""}
+										fieldLabel={t("pages.settings.form.email.option.address.label")}
+										placeholder={t(
+											"pages.settings.form.email.option.address.placeholder"
+										)}
+										type="email"
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message}
+									/>
+								)}
+							/>
+
+							{/* Email User (Optional) */}
+							<Controller
+								name="systemEmailUser"
+								control={form.control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value ?? ""}
+										fieldLabel={t("pages.settings.form.email.option.user.label")}
+										placeholder={t("pages.settings.form.email.option.user.placeholder")}
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message}
+									/>
+								)}
+							/>
+
+							{/* Email Password with Reset Pattern */}
+							{isEmailPasswordSet && !emailPasswordHasBeenReset ? (
+								<Box>
+									<FieldLabel>
+										{t("pages.settings.form.email.option.password.labelSet")}
+									</FieldLabel>
+									<Stack
+										direction="row"
+										alignItems="center"
+										gap={theme.spacing(4)}
+									>
+										<Button
+											variant="contained"
+											color="error"
+											size="small"
+											onClick={handleResetEmailPassword}
+										>
+											{t("common.buttons.reset")}
+										</Button>
+									</Stack>
+								</Box>
+							) : (
+								<Controller
+									name="systemEmailPassword"
+									control={form.control}
+									render={({ field, fieldState }) => (
+										<TextField
+											{...field}
+											value={field.value ?? ""}
+											fieldLabel={t("pages.settings.form.email.option.password.label")}
+											type="password"
+											placeholder={t(
+												"pages.settings.form.email.option.password.placeholder"
+											)}
+											error={!!fieldState.error}
+											helperText={fieldState.error?.message}
+										/>
+									)}
+								/>
+							)}
+
+							{/* TLS Servername (Optional) */}
+							<Controller
+								name="systemEmailTLSServername"
+								control={form.control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value ?? ""}
+										fieldLabel={t("pages.settings.form.email.option.tlsServername.label")}
+										placeholder={t(
+											"pages.settings.form.email.option.tlsServername.placeholder"
+										)}
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message}
+									/>
+								)}
+							/>
+
+							{/* Connection Host (Optional) */}
+							<Controller
+								name="systemEmailConnectionHost"
+								control={form.control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value ?? ""}
+										fieldLabel={t(
+											"pages.settings.form.email.option.connectionHost.label"
+										)}
+										placeholder={t(
+											"pages.settings.form.email.option.connectionHost.placeholder"
+										)}
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message}
+									/>
+								)}
+							/>
+
+							{/* Boolean Switches */}
+							<Box
+								sx={{
+									display: "flex",
+									flexDirection: "column",
+									gap: theme.spacing(4),
+								}}
+							>
+								{[
+									{
+										name: "systemEmailSecure",
+										label: t("pages.settings.form.email.option.secure.label"),
+									},
+									{
+										name: "systemEmailPool",
+										label: t("pages.settings.form.email.option.pool.label"),
+									},
+									{
+										name: "systemEmailIgnoreTLS",
+										label: t("pages.settings.form.email.option.ignoreTLS.label"),
+									},
+									{
+										name: "systemEmailRequireTLS",
+										label: t("pages.settings.form.email.option.requireTLS.label"),
+									},
+									{
+										name: "systemEmailRejectUnauthorized",
+										label: t("pages.settings.form.email.option.rejectUnauthorized.label"),
+									},
+								].map(({ name, label }) => (
+									<Controller
+										key={name}
+										name={name as any}
+										control={form.control}
+										render={({ field }) => (
+											<Box
+												sx={{
+													display: "flex",
+													alignItems: "center",
+													justifyContent: "space-between",
+												}}
+											>
+												<Typography>{label}</Typography>
+												<SwitchComponent
+													checked={field.value ?? false}
+													onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+														field.onChange(e.target.checked)
+													}
+												/>
+											</Box>
+										)}
+									/>
+								))}
+							</Box>
+
+							{/* Test Email Button */}
+							<Box>
+								<Button
+									variant="contained"
+									loading={isSendingTestEmail}
+									onClick={handleSendTestEmail}
+									disabled={
+										!form.watch("systemEmailHost") ||
+										!form.watch("systemEmailPort") ||
+										!form.watch("systemEmailAddress") ||
+										!form.watch("systemEmailPassword")
+									}
+								>
+									{t("common.buttons.sendTestEmail")}
+								</Button>
+							</Box>
+						</Stack>
+					}
+				/>
+			)}
 
 			{/* Demo Monitors - Admin Only */}
 			{isAdmin && (
