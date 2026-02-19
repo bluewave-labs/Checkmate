@@ -1,7 +1,7 @@
 import type { CheckSnapshot } from "@/types/check.js";
 export type { CheckSnapshot } from "@/types/check.js";
 
-export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "unknown"] as const;
+export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "unknown"] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
 export const MonitorStatuses = ["up", "down", "paused", "initializing", "maintenance", "breached"] as const;
@@ -42,6 +42,7 @@ export interface Monitor {
 	tempAlertCounter: number;
 	selectedDisks: string[];
 	gameId?: string;
+	grpcServiceName?: string;
 	group: string | null;
 	recentChecks: CheckSnapshot[];
 	createdAt: string;

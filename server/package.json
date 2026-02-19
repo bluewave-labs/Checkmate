@@ -24,6 +24,8 @@
 		"node": ">=20"
 	},
 	"dependencies": {
+		"@grpc/grpc-js": "^1.14.3",
+		"@grpc/proto-loader": "^0.8.0",
 		"@pulsecron/pulse": "1.6.8",
 		"axios": "^1.7.2",
 		"bcryptjs": "3.0.2",
