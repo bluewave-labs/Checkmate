@@ -66,6 +66,18 @@ const gameSchema = baseSchema.extend({
 	gameId: z.string().min(1, "Game type is required"),
 });
 
+// gRPC monitor schema
+const grpcSchema = baseSchema.extend({
+	type: z.literal("grpc"),
+	url: z.string().min(1, "Host is required"),
+	port: z
+		.number()
+		.min(1, "Port must be at least 1")
+		.max(65535, "Port must be at most 65535"),
+	grpcServiceName: z.string().optional(),
+	ignoreTlsErrors: z.boolean(),
+});
+
 // PageSpeed monitor schema
 const pagespeedSchema = baseSchema.extend({
 	type: z.literal("pagespeed"),
@@ -103,6 +115,7 @@ export const monitorSchema = z.discriminatedUnion("type", [
 	portSchema,
 	dockerSchema,
 	gameSchema,
+	grpcSchema,
 	pagespeedSchema,
 	hardwareSchema,
 ]);
@@ -116,6 +129,7 @@ export {
 	portSchema,
 	dockerSchema,
 	gameSchema,
+	grpcSchema,
 	pagespeedSchema,
 	hardwareSchema,
 };
