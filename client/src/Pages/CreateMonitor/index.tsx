@@ -222,8 +222,8 @@ const CreateMonitorPage = () => {
 		}
 	};
 
-	const onError = (errors: unknown) => {
-		console.log(errors);
+	const onError = (_errors: unknown) => {
+		// Validation errors are shown inline via react-hook-form field errors
 	};
 
 	return (
@@ -500,7 +500,7 @@ const CreateMonitorPage = () => {
 							render={({ field }) => (
 								<Switch
 									id="globalpingEnabled"
-									isChecked={field.value ?? false}
+									checked={field.value ?? false}
 									onChange={(e) => field.onChange(e.target.checked)}
 								/>
 							)}

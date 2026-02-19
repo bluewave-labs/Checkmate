@@ -160,10 +160,6 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		gameId: {
 			type: String,
 		},
-		locations: {
-			type: [String],
-			default: [],
-		},
 		globalpingEnabled: {
 			type: Boolean,
 			default: false,

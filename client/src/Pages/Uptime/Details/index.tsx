@@ -17,7 +17,7 @@ import { MonitorStatBoxes } from "@/Components/v2/monitors";
 
 import { useTheme } from "@mui/material/styles";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useGet } from "@/Hooks/UseApi";
@@ -113,10 +113,11 @@ const UptimeDetailsPage = () => {
 	const checks = checksData?.checks ?? [];
 	const checksCount = checksData?.checksCount ?? 0;
 
+	const globalpingLocationsUrl = monitor?.globalpingEnabled ? "/monitors/globalping/locations" : null;
 	const { data: globalpingData } = useGet<{
 		locations: { id: string; label: string }[];
 		labels: Record<string, string>;
-	}>("/monitors/globalping/locations");
+	}>(globalpingLocationsUrl);
 	const locationLabels = globalpingData?.labels ?? {};
 
 	const locationChecks = monitorData?.locationChecks;
@@ -124,6 +125,12 @@ const UptimeDetailsPage = () => {
 		() => (locationChecks ? Object.keys(locationChecks).sort() : []),
 		[locationChecks]
 	);
+
+	// Reset tab index when location keys change to prevent out-of-bounds
+	useEffect(() => {
+		setSelectedLocationTab(0);
+	}, [locationKeys.length]);
+
 	const selectedLocation = locationKeys[selectedLocationTab] ?? null;
 	const selectedLocationData: LocationCheckData | null =
 		selectedLocation && locationChecks ? locationChecks[selectedLocation] : null;

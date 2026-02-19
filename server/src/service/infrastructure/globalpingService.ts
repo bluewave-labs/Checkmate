@@ -5,7 +5,7 @@ import type { MonitorStatusResponse } from "@/types/network.js";
 
 const SERVICE_NAME = "GlobalpingService";
 
-interface GlobalpingLocationOption {
+export interface GlobalpingLocationOption {
 	id: string;
 	label: string;
 }
@@ -80,6 +80,8 @@ for (const tier of Object.values(LOCATIONS_BY_TIER)) {
 	}
 }
 
+const HOSTNAME_REGEX = /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*$/;
+
 export const getGlobalpingLocationsByTier = (tier: number): GlobalpingLocationOption[] => {
 	return LOCATIONS_BY_TIER[tier] ?? LOCATIONS_TIER_6;
 };
@@ -91,6 +93,7 @@ class GlobalpingService {
 	private settingsService: ISettingsService;
 	private client: Globalping<false> | null = null;
 	private lastApiKey: string | undefined;
+	private inFlightChecks = new Set<string>();
 
 	constructor({ settingsService, logger }: { settingsService: ISettingsService; logger: any }) {
 		this.settingsService = settingsService;
@@ -101,31 +104,30 @@ class GlobalpingService {
 		return GlobalpingService.SERVICE_NAME;
 	}
 
-	private async getClient(): Promise<Globalping<false> | null> {
+	/**
+	 * Reads settings once, returns both the SDK client and configured location IDs.
+	 * Returns null client if the API key is not configured.
+	 */
+	private async getClientAndLocations(): Promise<{
+		client: Globalping<false> | null;
+		locationIds: string[];
+	}> {
 		const dbSettings = await this.settingsService.getDBSettings();
 		const apiKey = dbSettings.globalpingApiKey;
 
 		if (!apiKey) {
-			return null;
+			return { client: null, locationIds: [] };
 		}
 
-		if (this.client && this.lastApiKey === apiKey) {
-			return this.client;
+		if (!this.client || this.lastApiKey !== apiKey) {
+			this.client = new Globalping({ auth: apiKey, throwApiErrors: false, timeout: 30000 });
+			this.lastApiKey = apiKey;
 		}
 
-		this.client = new Globalping({ auth: apiKey, throwApiErrors: false, timeout: 30000 });
-		this.lastApiKey = apiKey;
-		return this.client;
-	}
-
-	/**
-	 * Gets the current tier's location IDs from settings.
-	 * This is the source of truth for which locations to check.
-	 */
-	private async getTierLocationIds(): Promise<string[]> {
-		const dbSettings = await this.settingsService.getDBSettings();
 		const tier = dbSettings.globalpingLocationsTier ?? 6;
-		return getGlobalpingLocationsByTier(tier).map((loc) => loc.id);
+		const locationIds = getGlobalpingLocationsByTier(tier).map((loc) => loc.id);
+
+		return { client: this.client, locationIds };
 	}
 
 	async runChecks(monitor: Monitor): Promise<MonitorStatusResponse[]> {
@@ -133,13 +135,22 @@ class GlobalpingService {
 			return [];
 		}
 
-		const client = await this.getClient();
-		if (!client) {
+		// Prevent overlapping checks for the same monitor
+		if (this.inFlightChecks.has(monitor.id)) {
 			return [];
 		}
 
-		const locationIds = await this.getTierLocationIds();
-		if (locationIds.length === 0) {
+		this.inFlightChecks.add(monitor.id);
+		try {
+			return await this.executeChecks(monitor);
+		} finally {
+			this.inFlightChecks.delete(monitor.id);
+		}
+	}
+
+	private async executeChecks(monitor: Monitor): Promise<MonitorStatusResponse[]> {
+		const { client, locationIds } = await this.getClientAndLocations();
+		if (!client || locationIds.length === 0) {
 			return [];
 		}
 
@@ -156,6 +167,16 @@ class GlobalpingService {
 			}
 		} catch {
 			target = monitorUrl;
+		}
+
+		if (!target || !HOSTNAME_REGEX.test(target)) {
+			this.logger.warn({
+				message: `Invalid target hostname for Globalping: "${target}"`,
+				service: SERVICE_NAME,
+				method: "executeChecks",
+				monitorId: monitor.id,
+			});
+			return [];
 		}
 
 		const locations = locationIds
@@ -184,7 +205,7 @@ class GlobalpingService {
 				this.logger.warn({
 					message: "Failed to create Globalping measurement",
 					service: SERVICE_NAME,
-					method: "runChecks",
+					method: "executeChecks",
 					details: JSON.stringify(createResult.data),
 				});
 				return [];
@@ -197,7 +218,7 @@ class GlobalpingService {
 				this.logger.warn({
 					message: "Failed to await Globalping measurement",
 					service: SERVICE_NAME,
-					method: "runChecks",
+					method: "executeChecks",
 					details: JSON.stringify(awaitResult.data),
 				});
 				return [];
@@ -223,6 +244,7 @@ class GlobalpingService {
 						location: locationId,
 					});
 				} else {
+					// Ping: loss < 100% is considered up (consistent with local ping checks)
 					const stats = result.stats;
 					results.push({
 						monitorId: monitor.id,
@@ -242,7 +264,7 @@ class GlobalpingService {
 			this.logger.warn({
 				message: `Globalping check failed: ${error.message}`,
 				service: SERVICE_NAME,
-				method: "runChecks",
+				method: "executeChecks",
 				stack: error.stack,
 			});
 			return [];
@@ -280,23 +302,6 @@ class GlobalpingService {
 		}
 
 		return continent && country ? `${continent}-${country}` : continent || country || "unknown";
-	}
-
-	async getLimits(): Promise<any | null> {
-		const client = await this.getClient();
-		if (!client) {
-			return null;
-		}
-
-		try {
-			const result = await client.getLimits();
-			if (result.ok) {
-				return result.data;
-			}
-			return null;
-		} catch {
-			return null;
-		}
 	}
 }
 

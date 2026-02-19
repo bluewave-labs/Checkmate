@@ -102,6 +102,7 @@ export const useMonitorForm = ({
 					matchMethod: "",
 					expectedValue: "",
 					jsonPath: "",
+					globalpingEnabled: false,
 				};
 		}
 

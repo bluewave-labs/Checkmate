@@ -136,6 +136,12 @@ class SuperSimpleQueueHelper {
 								const locCheck = this.checkService.buildCheck(locStatus);
 								if (locCheck) {
 									this.buffer.addToBuffer(locCheck);
+								} else {
+									this.logger.warn({
+										message: `Failed to build Globalping check for monitor ${monitorId}, location: ${locStatus.location}`,
+										service: SERVICE_NAME,
+										method: "getMonitorJob",
+									});
 								}
 							}
 						})
@@ -148,7 +154,7 @@ class SuperSimpleQueueHelper {
 						});
 				}
 
-				// Step 3.  Build check
+				// Step 3. Build check
 				const check = await this.checkService.buildCheck(status);
 				if (!check) {
 					this.logger.warn({
@@ -159,15 +165,15 @@ class SuperSimpleQueueHelper {
 					});
 					return;
 				}
-				// Step 4 Add check to buffer
+				// Step 4. Add check to buffer
 				this.buffer.addToBuffer(check);
-				// Step 4.  Update monitor status
+				// Step 5. Update monitor status
 				const statusChangeResult = await this.statusService.updateMonitorStatus(status, check);
 
-				// Step 5.  Get decisions
+				// Step 6. Get decisions
 				const decision = this.evaluateMonitorAction(statusChangeResult);
 
-				// Step 6. Handle notifications (best effort, continue even in event of failure, don't wait)
+				// Step 7. Handle notifications (best effort, continue even in event of failure, don't wait)
 				if (decision.shouldSendNotification) {
 					this.notificationsService.handleNotifications(statusChangeResult.monitor, status, decision).catch((error: any) => {
 						this.logger.error({
@@ -180,7 +186,7 @@ class SuperSimpleQueueHelper {
 					});
 				}
 
-				// Step 7. Handle incidents (best effort, don't wait)
+				// Step 8. Handle incidents (best effort, don't wait)
 				this.incidentService.handleIncident(statusChangeResult.monitor, statusChangeResult.code, decision, status).catch((error: any) => {
 					this.logger.warn({
 						message: error.message,

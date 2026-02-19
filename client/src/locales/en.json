@@ -496,12 +496,6 @@
 						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure."
 					}
 				},
-				"locations": {
-					"title": "Global locations",
-					"description": "Run uptime checks from multiple geographic regions using Globalping. Select up to 5 locations.",
-					"label": "Check locations",
-					"placeholder": "Select locations"
-				},
 				"ignoreTls": {
 					"description": "Configure TLS/SSL certificate validation for HTTPS connections.",
 					"option": {
@@ -1158,7 +1152,6 @@
 			"table": {
 				"headers": {
 					"responseTime": "Response time",
-					"locations": "Locations",
 					"globalpingEnabled": "Global monitoring enabled"
 				}
 			},

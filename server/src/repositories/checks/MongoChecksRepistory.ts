@@ -472,10 +472,7 @@ class MongoChecksRepository implements IChecksRepository {
 			const uptimePercentage =
 				loc.totalAllChecks > 0 ? loc.totalUpChecks / loc.totalAllChecks : 0;
 			locationChecks[loc._id] = {
-				monitorType: "http" as const,
 				groupedChecks: loc.groupedChecks,
-				groupedUpChecks: [],
-				groupedDownChecks: [],
 				uptimePercentage,
 				avgResponseTime: loc.overallAvgResponseTime ?? 0,
 			};

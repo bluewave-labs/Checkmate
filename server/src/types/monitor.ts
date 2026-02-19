@@ -43,7 +43,6 @@ export interface Monitor {
 	selectedDisks: string[];
 	gameId?: string;
 	group: string | null;
-	locations: string[];
 	globalpingEnabled: boolean;
 	recentChecks: CheckSnapshot[];
 	createdAt: string;

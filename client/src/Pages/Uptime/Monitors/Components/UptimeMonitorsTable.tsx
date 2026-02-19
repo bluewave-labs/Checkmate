@@ -177,7 +177,7 @@ export const MonitorTable = ({
 							{row?.name}
 							{row.globalpingEnabled && (
 								<Tooltip title={t("pages.uptime.table.headers.globalpingEnabled")}>
-									<Globe size={14} />
+									<Globe size={14} aria-label={t("pages.uptime.table.headers.globalpingEnabled")} />
 								</Tooltip>
 							)}
 						</Stack>

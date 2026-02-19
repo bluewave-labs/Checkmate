@@ -172,7 +172,6 @@ const createMonitorBodyValidation = joi.object({
 	gameId: joi.string().allow(""),
 	selectedDisks: joi.array().items(joi.string()).optional(),
 	group: joi.string().max(50).trim().allow(null, "").optional(),
-	locations: joi.array().items(joi.string()).max(5).optional(),
 	globalpingEnabled: joi.boolean().optional(),
 });
 
@@ -205,7 +204,6 @@ const editMonitorBodyValidation = joi
 		gameId: joi.string().allow(""),
 		selectedDisks: joi.array().items(joi.string()).optional(),
 		group: joi.string().max(50).trim().allow(null, "").optional(),
-		locations: joi.array().items(joi.string()).max(5).optional(),
 		globalpingEnabled: joi.boolean().optional(),
 	})
 	.options({ stripUnknown: true });
