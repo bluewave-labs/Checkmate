@@ -100,52 +100,30 @@ const SettingsGlobalping = ({
 							<RadioGroup
 								value={String(field.value ?? 6)}
 								onChange={(e) => field.onChange(Number(e.target.value))}
+								sx={{ gap: theme.spacing(4) }}
 							>
-								<FormControlLabel
-									value="3"
-									control={<Radio sx={{ mt: theme.spacing(2) }} />}
-									label={
-										<Box sx={{ py: theme.spacing(2) }}>
-											<Typography fontWeight={500}>
-												{t("pages.settings.globalpingSettings.tier3Label")}
-											</Typography>
-											<Typography variant="body2" color="text.secondary">
-												{t("pages.settings.globalpingSettings.tier3Description")}
-											</Typography>
-										</Box>
-									}
-									sx={{ mb: theme.spacing(2), alignItems: "flex-start" }}
-								/>
-								<FormControlLabel
-									value="6"
-									control={<Radio sx={{ mt: theme.spacing(2) }} />}
-									label={
-										<Box sx={{ py: theme.spacing(2) }}>
-											<Typography fontWeight={500}>
-												{t("pages.settings.globalpingSettings.tier6Label")}
-											</Typography>
-											<Typography variant="body2" color="text.secondary">
-												{t("pages.settings.globalpingSettings.tier6Description")}
-											</Typography>
-										</Box>
-									}
-									sx={{ mb: theme.spacing(2), alignItems: "flex-start" }}
-								/>
-								<FormControlLabel
-									value="15"
-									control={<Radio sx={{ mt: theme.spacing(2) }} />}
-									label={
-										<Box sx={{ py: theme.spacing(2) }}>
-											<Typography fontWeight={500}>
-												{t("pages.settings.globalpingSettings.tier15Label")}
-											</Typography>
-											<Typography variant="body2" color="text.secondary">
-												{t("pages.settings.globalpingSettings.tier15Description")}
-											</Typography>
-										</Box>
-									}
-									sx={{ alignItems: "flex-start" }}
-								/>
+								{[
+									{ value: "3", labelKey: "tier3Label", descKey: "tier3Description" },
+									{ value: "6", labelKey: "tier6Label", descKey: "tier6Description" },
+									{ value: "15", labelKey: "tier15Label", descKey: "tier15Description" },
+								].map((tier) => (
+									<FormControlLabel
+										key={tier.value}
+										value={tier.value}
+										control={<Radio sx={{ p: 0, mr: theme.spacing(4) }} />}
+										label={
+											<Box>
+												<Typography fontWeight={500} lineHeight={1.5}>
+													{t(`pages.settings.globalpingSettings.${tier.labelKey}`)}
+												</Typography>
+												<Typography variant="body2" color="text.secondary">
+													{t(`pages.settings.globalpingSettings.${tier.descKey}`)}
+												</Typography>
+											</Box>
+										}
+										sx={{ alignItems: "flex-start", m: 0 }}
+									/>
+								))}
 							</RadioGroup>
 						)}
 					/>
@@ -164,21 +142,21 @@ const SettingsGlobalping = ({
 					>
 						{t("pages.settings.globalpingSettings.rateLimitsTitle")}
 					</Typography>
-					<Typography variant="body2" sx={{ mb: theme.spacing(4) }}>
+					<Typography sx={{ mb: theme.spacing(4) }}>
 						{t("pages.settings.globalpingSettings.rateLimitsDescription")}
 					</Typography>
 					<Box component="ul" sx={{ m: 0, pl: theme.spacing(8) }}>
-						<Typography component="li" variant="body2" sx={{ mb: theme.spacing(2) }}>
+						<Typography component="li" sx={{ mb: theme.spacing(2) }}>
 							{t("pages.settings.globalpingSettings.rateLimitNoAuth")}
 						</Typography>
-						<Typography component="li" variant="body2" sx={{ mb: theme.spacing(2) }}>
+						<Typography component="li" sx={{ mb: theme.spacing(2) }}>
 							{t("pages.settings.globalpingSettings.rateLimitAuth")}
 						</Typography>
-						<Typography component="li" variant="body2">
+						<Typography component="li">
 							{t("pages.settings.globalpingSettings.rateLimitSponsor")}
 						</Typography>
 					</Box>
-					<Typography variant="body2" color="text.secondary" sx={{ mt: theme.spacing(4), fontStyle: "italic" }}>
+					<Typography color="text.secondary" sx={{ mt: theme.spacing(4), fontStyle: "italic" }}>
 						{t("pages.settings.globalpingSettings.rateLimitsNote")}
 					</Typography>
 				</Box>
