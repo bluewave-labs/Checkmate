@@ -1,6 +1,8 @@
 import { HTTPError, RequestError } from "got";
 import type { Got, Response } from "got";
-import type { Monitor, MonitorStatusResponse } from "@/types/index.js";
+import type { Monitor, MonitorStatusResponse, GrpcStatusPayload } from "@/types/index.js";
+import path from "path";
+import { fileURLToPath } from "url";
 
 import CacheableLookup from "cacheable-lookup";
 const SERVICE_NAME = "NetworkService";
@@ -42,6 +44,7 @@ class NetworkService implements INetworkService {
 	private TYPE_DOCKER: string;
 	private TYPE_PORT: string;
 	private TYPE_GAME: string;
+	private TYPE_GRPC: string;
 	private SERVICE_NAME: string;
 	private NETWORK_ERROR: number;
 	private PING_ERROR: number;
@@ -56,6 +59,8 @@ class NetworkService implements INetworkService {
 	private Docker: any;
 	private net: any;
 	private settingsService: any;
+	private grpc: any;
+	private protoLoader: any;
 
 	private buildStatusResponse = <T>({
 		monitor,
@@ -123,6 +128,8 @@ class NetworkService implements INetworkService {
 		Docker,
 		net,
 		settingsService,
+		grpc,
+		protoLoader,
 	}: {
 		axios: any;
 		got: Got;
@@ -135,6 +142,8 @@ class NetworkService implements INetworkService {
 		Docker: any;
 		net: any;
 		settingsService: any;
+		grpc: any;
+		protoLoader: any;
 	}) {
 		this.TYPE_PING = "ping";
 		this.TYPE_HTTP = "http";
@@ -143,6 +152,7 @@ class NetworkService implements INetworkService {
 		this.TYPE_DOCKER = "docker";
 		this.TYPE_PORT = "port";
 		this.TYPE_GAME = "game";
+		this.TYPE_GRPC = "grpc";
 		this.SERVICE_NAME = SERVICE_NAME;
 		this.NETWORK_ERROR = 5000;
 		this.PING_ERROR = 5001;
@@ -155,6 +165,8 @@ class NetworkService implements INetworkService {
 		this.Docker = Docker;
 		this.net = net;
 		this.settingsService = settingsService;
+		this.grpc = grpc;
+		this.protoLoader = protoLoader;
 
 		const cacheable = new CacheableLookup();
 
@@ -202,6 +214,8 @@ class NetworkService implements INetworkService {
 				return await this.requestPort(monitor);
 			case this.TYPE_GAME:
 				return await this.requestGame(monitor);
+			case this.TYPE_GRPC:
+				return await this.requestGrpc(monitor);
 			default:
 				return this.handleUnsupportedType(type);
 		}
@@ -624,6 +638,139 @@ class NetworkService implements INetworkService {
 			throw error;
 		}
 	}
+	private async requestGrpc(monitor: Monitor): Promise<MonitorStatusResponse> {
+		try {
+			const { url, port, ignoreTlsErrors } = monitor;
+			const grpcServiceName = monitor.grpcServiceName || "";
+
+			if (!url) {
+				throw new Error("Monitor host is required");
+			}
+			if (!port) {
+				throw new Error("Monitor port is required");
+			}
+
+			const target = `${url}:${port}`;
+
+			const currentFilePath = fileURLToPath(import.meta.url);
+			const protoPath = path.join(path.dirname(currentFilePath), "protos", "health.proto");
+
+			const packageDefinition = this.protoLoader.loadSync(protoPath, {
+				keepCase: true,
+				longs: String,
+				enums: String,
+				defaults: true,
+				oneofs: true,
+			});
+			const grpcObject = this.grpc.loadPackageDefinition(packageDefinition);
+			const healthService = grpcObject.grpc.health.v1.Health;
+
+			let credentials;
+			if (ignoreTlsErrors) {
+				credentials = this.grpc.credentials.createSsl(null, null, null, {
+					checkServerIdentity: () => undefined,
+				});
+			} else {
+				credentials = this.grpc.credentials.createInsecure();
+			}
+
+			const client = new healthService(target, credentials);
+
+			const TIMEOUT_MS = 10000;
+			const deadline = new Date(Date.now() + TIMEOUT_MS);
+
+			const grpcResponse = this.buildStatusResponse({
+				monitor,
+				overrides: {
+					status: false,
+					code: this.NETWORK_ERROR,
+					message: "gRPC health check not executed",
+				},
+			});
+
+			const { response, responseTime, error } = await this.timeRequest<GrpcStatusPayload>(() => {
+				return new Promise<GrpcStatusPayload>((resolve, reject) => {
+					client.Check({ service: grpcServiceName }, { deadline }, (err: any, response: any) => {
+						client.close();
+
+						if (err) {
+							const payload: GrpcStatusPayload = {
+								grpcStatusCode: err.code ?? -1,
+								grpcStatusName: this.getGrpcStatusName(err.code),
+								serviceName: grpcServiceName,
+								servingStatus: "UNKNOWN",
+							};
+							const grpcError = new Error(err.details || err.message);
+							(grpcError as any).grpcPayload = payload;
+							(grpcError as any).grpcCode = err.code;
+							reject(grpcError);
+							return;
+						}
+
+						const servingStatus = response?.status || "UNKNOWN";
+						resolve({
+							grpcStatusCode: 0,
+							grpcStatusName: "OK",
+							serviceName: grpcServiceName,
+							servingStatus,
+						});
+					});
+				});
+			});
+
+			if (error) {
+				const grpcError = error as any;
+				const payload = grpcError.grpcPayload as GrpcStatusPayload | undefined;
+				grpcResponse.status = false;
+				grpcResponse.code = grpcError.grpcCode ?? this.NETWORK_ERROR;
+				grpcResponse.message = grpcError.message || "gRPC health check failed";
+				grpcResponse.responseTime = responseTime;
+				grpcResponse.payload = payload || null;
+				return grpcResponse;
+			}
+
+			const grpcPayload = response as GrpcStatusPayload;
+			const isServing = grpcPayload.servingStatus === "SERVING";
+
+			grpcResponse.status = isServing;
+			grpcResponse.code = isServing ? 200 : this.NETWORK_ERROR;
+			grpcResponse.message = isServing
+				? `gRPC service healthy (${grpcPayload.servingStatus})`
+				: `gRPC service unhealthy (${grpcPayload.servingStatus})`;
+			grpcResponse.responseTime = responseTime;
+			grpcResponse.payload = grpcPayload;
+
+			return grpcResponse;
+		} catch (err: any) {
+			err.service = this.SERVICE_NAME;
+			err.method = "requestGrpc";
+			throw err;
+		}
+	}
+
+	private getGrpcStatusName(code: number): string {
+		const statusNames: Record<number, string> = {
+			0: "OK",
+			1: "CANCELLED",
+			2: "UNKNOWN",
+			3: "INVALID_ARGUMENT",
+			4: "DEADLINE_EXCEEDED",
+			5: "NOT_FOUND",
+			6: "ALREADY_EXISTS",
+			7: "PERMISSION_DENIED",
+			8: "RESOURCE_EXHAUSTED",
+			9: "FAILED_PRECONDITION",
+			10: "ABORTED",
+			11: "OUT_OF_RANGE",
+			12: "UNIMPLEMENTED",
+			13: "INTERNAL",
+			14: "UNAVAILABLE",
+			15: "DATA_LOSS",
+			16: "UNAUTHENTICATED",
+		};
+		return statusNames[code] || "UNKNOWN";
+	}
+
 	private async handleUnsupportedType(type: string): Promise<MonitorStatusResponse> {
 		return {
 			monitorId: "unknown",
