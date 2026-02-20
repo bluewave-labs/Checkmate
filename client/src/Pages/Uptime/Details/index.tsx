@@ -113,7 +113,9 @@ const UptimeDetailsPage = () => {
 	const checks = checksData?.checks ?? [];
 	const checksCount = checksData?.checksCount ?? 0;
 
-	const globalpingLocationsUrl = monitor?.globalpingEnabled ? "/monitors/globalping/locations" : null;
+	const globalpingLocationsUrl = monitor?.globalpingEnabled
+		? "/monitors/globalping/locations"
+		: null;
 	const { data: globalpingData } = useGet<{
 		locations: { id: string; label: string }[];
 		labels: Record<string, string>;

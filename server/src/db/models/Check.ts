@@ -13,6 +13,7 @@ import type {
 	CheckNetworkInterfaceInfo,
 	GotTimings,
 	ILighthouseAudit,
+	LocationResult,
 } from "@/types/check.js";
 
 type CheckMetadataDocument = Omit<CheckMetadata, "monitorId" | "teamId"> & {
@@ -176,6 +177,17 @@ const auditsSchema = new Schema<CheckAudits>(
 	{ _id: false }
 );
 
+const locationResultSchema = new Schema<LocationResult>(
+	{
+		location: { type: String, required: true },
+		status: { type: Boolean, required: true },
+		responseTime: { type: Number, required: true },
+		statusCode: { type: Number, required: true },
+		message: { type: String, default: "" },
+	},
+	{ _id: false }
+);
+
 const metadataSchema = new Schema<CheckMetadataDocument>(
 	{
 		monitorId: {
@@ -283,6 +295,10 @@ const CheckSchema = new Schema<CheckDocument>(
 		},
 		audits: {
 			type: auditsSchema,
+			default: undefined,
+		},
+		locationResults: {
+			type: [locationResultSchema],
 			default: undefined,
 		},
 	},

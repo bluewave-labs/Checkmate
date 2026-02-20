@@ -179,27 +179,26 @@ class GlobalpingService {
 			return [];
 		}
 
-		const locations = locationIds
-			.map((loc) => LOCATION_MAP[loc])
-			.filter(Boolean);
+		const locations = locationIds.map((loc) => LOCATION_MAP[loc]).filter(Boolean);
 
 		if (locations.length === 0) {
 			return [];
 		}
 
 		try {
-			const createResult = measurementType === "http"
-				? await client.createMeasurement({
-						type: "http" as const,
-						target,
-						locations: locations as any,
-						measurementOptions: { request: { method: "HEAD" }, protocol: "HTTPS" },
-					})
-				: await client.createMeasurement({
-						type: "ping" as const,
-						target,
-						locations: locations as any,
-					});
+			const createResult =
+				measurementType === "http"
+					? await client.createMeasurement({
+							type: "http" as const,
+							target,
+							locations: locations as any,
+							measurementOptions: { request: { method: "HEAD" }, protocol: "HTTPS" },
+						})
+					: await client.createMeasurement({
+							type: "ping" as const,
+							target,
+							locations: locations as any,
+						});
 
 			if (!createResult.ok) {
 				this.logger.warn({

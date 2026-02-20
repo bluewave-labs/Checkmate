@@ -9,6 +9,14 @@ export interface CheckMetadata {
 	location?: string;
 }
 
+export interface LocationResult {
+	location: string;
+	status: boolean;
+	responseTime: number;
+	statusCode: number;
+	message: string;
+}
+
 export interface CheckCpuInfo {
 	physical_core?: number;
 	logical_core?: number;
@@ -114,6 +122,7 @@ export interface Check {
 	seo?: number;
 	performance?: number;
 	audits?: CheckAudits;
+	locationResults?: LocationResult[];
 	__v: number;
 	createdAt: string;
 	updatedAt: string;

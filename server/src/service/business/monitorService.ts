@@ -226,12 +226,7 @@ export class MonitorService implements IMonitorService {
 		// Fetch location checks if Globalping is enabled for this monitor
 		let locationChecks: Record<string, LocationCheckData> | undefined;
 		if (monitor.globalpingEnabled && (monitor.type === "http" || monitor.type === "ping")) {
-			const locData = await this.checksRepository.findLocationChecksByMonitorId(
-				monitor.id,
-				start,
-				end,
-				this.getDateFormat(rangeKey)
-			);
+			const locData = await this.checksRepository.findLocationChecksByMonitorId(monitor.id, start, end, this.getDateFormat(rangeKey));
 			if (Object.keys(locData).length > 0) {
 				locationChecks = locData;
 			}

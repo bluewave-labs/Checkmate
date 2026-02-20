@@ -113,10 +113,16 @@ const SettingsGlobalping = ({
 										control={<Radio sx={{ p: 0, mr: theme.spacing(4) }} />}
 										label={
 											<Box>
-												<Typography fontWeight={500} lineHeight={1.5}>
+												<Typography
+													fontWeight={500}
+													lineHeight={1.5}
+												>
 													{t(`pages.settings.globalpingSettings.${tier.labelKey}`)}
 												</Typography>
-												<Typography variant="body2" color="text.secondary">
+												<Typography
+													variant="body2"
+													color="text.secondary"
+												>
 													{t(`pages.settings.globalpingSettings.${tier.descKey}`)}
 												</Typography>
 											</Box>
@@ -145,18 +151,30 @@ const SettingsGlobalping = ({
 					<Typography sx={{ mb: theme.spacing(4) }}>
 						{t("pages.settings.globalpingSettings.rateLimitsDescription")}
 					</Typography>
-					<Box component="ul" sx={{ m: 0, pl: theme.spacing(8) }}>
-						<Typography component="li" sx={{ mb: theme.spacing(2) }}>
+					<Box
+						component="ul"
+						sx={{ m: 0, pl: theme.spacing(8) }}
+					>
+						<Typography
+							component="li"
+							sx={{ mb: theme.spacing(2) }}
+						>
 							{t("pages.settings.globalpingSettings.rateLimitNoAuth")}
 						</Typography>
-						<Typography component="li" sx={{ mb: theme.spacing(2) }}>
+						<Typography
+							component="li"
+							sx={{ mb: theme.spacing(2) }}
+						>
 							{t("pages.settings.globalpingSettings.rateLimitAuth")}
 						</Typography>
 						<Typography component="li">
 							{t("pages.settings.globalpingSettings.rateLimitSponsor")}
 						</Typography>
 					</Box>
-					<Typography color="text.secondary" sx={{ mt: theme.spacing(4), fontStyle: "italic" }}>
+					<Typography
+						color="text.secondary"
+						sx={{ mt: theme.spacing(4), fontStyle: "italic" }}
+					>
 						{t("pages.settings.globalpingSettings.rateLimitsNote")}
 					</Typography>
 				</Box>

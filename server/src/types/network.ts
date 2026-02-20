@@ -37,6 +37,14 @@ export interface MonitorStatusResponse<T = any> {
 	location?: string;
 }
 
+export interface GlobalpingCheckResult {
+	location: string;
+	status: boolean;
+	responseTime: number;
+	statusCode: number;
+	message: string;
+}
+
 export interface PingStatusPayload {
 	host: string;
 	numeric_host?: string;

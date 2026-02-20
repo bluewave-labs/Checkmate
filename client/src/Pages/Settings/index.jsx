@@ -120,7 +120,11 @@ const Settings = () => {
 		if (isGlobalpingKeySet && !globalpingKeyHasBeenReset && !toSubmit.globalpingApiKey) {
 			delete toSubmit.globalpingApiKey;
 		}
-		if (isEmailPasswordSet && !emailPasswordHasBeenReset && !toSubmit.systemEmailPassword) {
+		if (
+			isEmailPasswordSet &&
+			!emailPasswordHasBeenReset &&
+			!toSubmit.systemEmailPassword
+		) {
 			delete toSubmit.systemEmailPassword;
 		}
 

@@ -422,12 +422,7 @@ class MongoChecksRepository implements IChecksRepository {
 		return result.deletedCount ?? 0;
 	};
 
-	findLocationChecksByMonitorId = async (
-		monitorId: string,
-		startDate: Date,
-		endDate: Date,
-		dateString: string
-	): Promise<Record<string, any>> => {
+	findLocationChecksByMonitorId = async (monitorId: string, startDate: Date, endDate: Date, dateString: string): Promise<Record<string, any>> => {
 		const monitorObjectId = new mongoose.Types.ObjectId(monitorId);
 		const matchStage = {
 			"metadata.monitorId": monitorObjectId,
@@ -469,8 +464,7 @@ class MongoChecksRepository implements IChecksRepository {
 
 		const locationChecks: Record<string, any> = {};
 		for (const loc of results) {
-			const uptimePercentage =
-				loc.totalAllChecks > 0 ? loc.totalUpChecks / loc.totalAllChecks : 0;
+			const uptimePercentage = loc.totalAllChecks > 0 ? loc.totalUpChecks / loc.totalAllChecks : 0;
 			locationChecks[loc._id] = {
 				groupedChecks: loc.groupedChecks,
 				uptimePercentage,
