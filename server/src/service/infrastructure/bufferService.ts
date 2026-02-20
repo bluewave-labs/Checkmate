@@ -5,6 +5,7 @@ const SERVICE_NAME = "BufferService";
 export interface IBufferService {
 	addToBuffer(check: Check): void;
 	removeCheckFromBuffer(check: Check): boolean;
+	findInBuffer(checkId: string): Check | undefined;
 	scheduleNextFlush(): void;
 	flushBuffer(): Promise<void>;
 }
@@ -47,6 +48,10 @@ class BufferService implements IBufferService {
 				stack: error.stack,
 			});
 		}
+	}
+
+	findInBuffer(checkId: string): Check | undefined {
+		return this.buffer.find((c: Check) => c.id?.toString() === checkId);
 	}
 
 	removeCheckFromBuffer(checkToRemove: Check) {

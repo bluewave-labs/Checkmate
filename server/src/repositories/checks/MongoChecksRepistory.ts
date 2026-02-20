@@ -11,6 +11,7 @@ import type {
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
 	GotTimings,
+	LocationResult,
 	MonitorType,
 } from "@/types/index.js";
 import { CheckModel, MonitorModel, type CheckDocument } from "@/db/models/index.js";
@@ -404,6 +405,10 @@ class MongoChecksRepository implements IChecksRepository {
 			totalChecks: totalResult,
 			downChecks: downResult,
 		};
+	};
+
+	updateLocationResults = async (checkId: string, locationResults: LocationResult[]): Promise<void> => {
+		await CheckModel.updateOne({ _id: new mongoose.Types.ObjectId(checkId) }, { $set: { locationResults } });
 	};
 
 	deleteByMonitorId = async (monitorId: string): Promise<number> => {

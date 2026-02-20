@@ -1,7 +1,7 @@
 import { Globalping } from "globalping";
 import type { ISettingsService } from "@/service/system/settingsService.js";
 import type { Monitor } from "@/types/monitor.js";
-import type { MonitorStatusResponse } from "@/types/network.js";
+import type { GlobalpingCheckResult } from "@/types/network.js";
 
 const SERVICE_NAME = "GlobalpingService";
 
@@ -130,7 +130,7 @@ class GlobalpingService {
 		return { client: this.client, locationIds };
 	}
 
-	async runChecks(monitor: Monitor): Promise<MonitorStatusResponse[]> {
+	async runChecks(monitor: Monitor): Promise<GlobalpingCheckResult[]> {
 		if (monitor.type !== "http" && monitor.type !== "ping") {
 			return [];
 		}
@@ -148,7 +148,7 @@ class GlobalpingService {
 		}
 	}
 
-	private async executeChecks(monitor: Monitor): Promise<MonitorStatusResponse[]> {
+	private async executeChecks(monitor: Monitor): Promise<GlobalpingCheckResult[]> {
 		const { client, locationIds } = await this.getClientAndLocations();
 		if (!client || locationIds.length === 0) {
 			return [];
@@ -224,7 +224,7 @@ class GlobalpingService {
 			}
 
 			const measurement = awaitResult.data as any;
-			const results: MonitorStatusResponse[] = [];
+			const results: GlobalpingCheckResult[] = [];
 
 			for (const item of measurement.results || []) {
 				const probe = item.probe;
@@ -233,27 +233,21 @@ class GlobalpingService {
 
 				if (measurementType === "http") {
 					results.push({
-						monitorId: monitor.id,
-						teamId: monitor.teamId,
-						type: monitor.type,
+						location: locationId,
 						status: result.statusCode >= 200 && result.statusCode < 400,
-						code: result.statusCode || 0,
+						statusCode: result.statusCode || 0,
 						message: result.statusCodeName || result.rawOutput || "",
 						responseTime: result.timings?.total ?? 0,
-						location: locationId,
 					});
 				} else {
 					// Ping: loss < 100% is considered up (consistent with local ping checks)
 					const stats = result.stats;
 					results.push({
-						monitorId: monitor.id,
-						teamId: monitor.teamId,
-						type: monitor.type,
+						location: locationId,
 						status: stats?.loss !== undefined ? stats.loss < 100 : false,
-						code: stats?.loss === 0 ? 200 : 5000,
+						statusCode: stats?.loss === 0 ? 200 : 5000,
 						message: stats?.loss === 0 ? "Ping successful" : `Packet loss: ${stats?.loss}%`,
 						responseTime: stats?.avg ?? 0,
-						location: locationId,
 					});
 				}
 			}

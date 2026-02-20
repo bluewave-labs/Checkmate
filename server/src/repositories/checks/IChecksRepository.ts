@@ -2,6 +2,7 @@ import type {
 	Check,
 	ChecksQueryResult,
 	ChecksSummary,
+	LocationResult,
 	MonitorType,
 	PageSpeedChecksResult,
 	HardwareChecksResult,
@@ -37,6 +38,7 @@ export interface IChecksRepository {
 	findSummaryByTeamId(teamId: string, dateRange: string): Promise<ChecksSummary>;
 	findLocationChecksByMonitorId(monitorId: string, startDate: Date, endDate: Date, dateString: string): Promise<Record<string, UptimeChecksResult>>;
 	// update
+	updateLocationResults(checkId: string, locationResults: LocationResult[]): Promise<void>;
 	//delete
 	deleteByMonitorId(monitorId: string): Promise<number>;
 	deleteByTeamId(teamId: string): Promise<number>;
