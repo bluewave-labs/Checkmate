@@ -523,7 +523,7 @@ export const SettingsPage = () => {
 								text={t("pages.settings.form.email.descriptionTransport")}
 								linkText={t("pages.settings.form.email.descriptionTransportLink")}
 								href="https://nodemailer.com/smtp/"
-								target="_top"
+								target="_blank"
 							/>
 							<Box
 								component="pre"
