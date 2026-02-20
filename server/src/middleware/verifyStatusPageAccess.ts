@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, RequestHandler, Response } from "express";
 import { IStatusPagesRepository } from "@/repositories/index.js";
 import { AppError } from "@/utils/AppError.js";
 
-export const createVerifyStatusPageAccess = (statusPagesRepository: IStatusPagesRepository) => {
+export const createVerifyStatusPageAccess = (statusPagesRepository: IStatusPagesRepository, verifyJWT: RequestHandler) => {
 	return async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const url = req.params.url;
@@ -11,9 +11,9 @@ export const createVerifyStatusPageAccess = (statusPagesRepository: IStatusPages
 			}
 			const statusPage = await statusPagesRepository.findByUrl(url);
 			if (statusPage.isPublished) {
-				next(); // Published — proceed to controller (no JWT)
+				next(); // Published — no auth needed
 			} else {
-				next("route"); // Unpublished — skip to next route (which has verifyJWT)
+				verifyJWT(req, res, next); // Unpublished — require JWT
 			}
 		} catch (error) {
 			next(error);
