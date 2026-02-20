@@ -61,10 +61,7 @@ export const initApiClient = (store: StoreType): void => {
 		}
 
 		if (error.response?.status === 401) {
-			if (
-				window.location.pathname !== "/login" &&
-				!window.location.pathname.startsWith("/status/public")
-			) {
+			if (window.location.pathname !== "/login") {
 				window.location.href = "/login";
 			}
 		}
