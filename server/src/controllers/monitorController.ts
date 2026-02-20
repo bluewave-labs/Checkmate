@@ -172,9 +172,10 @@ class MonitorController {
 		}
 	};
 
+	// TODO rename to Import, change to accept JSON
 	createBulkMonitors = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const userId = req.user?.id;
+			const userId = req.user?.id; // TODO use the correct helper function
 			if (!userId) {
 				throw new AppError({ message: "User ID is required", status: 400 });
 			}
@@ -182,6 +183,9 @@ class MonitorController {
 			const teamId = requireTeamId(req?.user?.teamId);
 
 			const data = req.body;
+
+			// TODO extract JSON, validate?
+
 			const monitors = await this.monitorService.createBulkMonitors(data, userId, teamId);
 
 			return res.status(200).json({

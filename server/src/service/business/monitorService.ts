@@ -29,6 +29,7 @@ export interface IMonitorService {
 
 	// create
 	createMonitor(teamId: string, userId: string, body: Monitor): Promise<void>;
+	// TODO rename createMonitors
 	createBulkMonitors(monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null>;
 	addDemoMonitors(args: { userId: string; teamId: string }): Promise<Monitor[]>;
 
@@ -158,6 +159,7 @@ export class MonitorService implements IMonitorService {
 	};
 
 	createBulkMonitors = async (monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null> => {
+		// TDO rename createMonitors, change to accept JSON
 		const createdMonitors = await this.monitorsRepository.createBulkMonitors(monitors);
 		if (!monitors || monitors.length === 0) {
 			throw new AppError({ message: "Failed to create monitors", status: 500, service: SERVICE_NAME, method: "createBulkMonitors" });
