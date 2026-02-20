@@ -117,6 +117,14 @@ export interface CheckTimings {
 	};
 }
 
+export interface LocationResult {
+	location: string;
+	status: boolean;
+	responseTime: number;
+	statusCode: number;
+	message: string;
+}
+
 export interface Check {
 	id: string;
 	metadata: CheckMetadata;
@@ -140,6 +148,7 @@ export interface Check {
 	seo?: number;
 	performance?: number;
 	audits?: CheckAudits;
+	locationResults?: LocationResult[];
 	__v: number;
 	createdAt: string;
 	updatedAt: string;

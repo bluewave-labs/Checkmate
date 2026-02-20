@@ -368,6 +368,11 @@
 					"dateTime": "Date & time",
 					"statusCode": "Status code"
 				}
+			},
+			"expandedRow": {
+				"location": "Location",
+				"responseTime": "Response time",
+				"statusCode": "Status code"
 			}
 		},
 		"common": {

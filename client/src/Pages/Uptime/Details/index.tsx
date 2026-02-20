@@ -245,6 +245,8 @@ const UptimeDetailsPage = () => {
 				setPage={setPage}
 				rowsPerPage={rowsPerPage}
 				setRowsPerPage={setRowsPerPage}
+				globalpingEnabled={monitor?.globalpingEnabled ?? false}
+				locationLabels={locationLabels}
 			/>
 		</BasePage>
 	);
