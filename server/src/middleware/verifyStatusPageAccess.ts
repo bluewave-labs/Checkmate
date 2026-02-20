@@ -5,7 +5,7 @@ import { AppError } from "@/utils/AppError.js";
 export const createVerifyStatusPageAccess = (statusPagesRepository: IStatusPagesRepository, verifyJWT: RequestHandler) => {
 	return async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const url = req.params.url;
+			const url = Array.isArray(req.params.url) ? req.params.url[0] : req.params.url;
 			if (!url) {
 				throw new AppError({ message: "Status page URL is required", status: 400 });
 			}
