@@ -1,6 +1,6 @@
 import { MuiColorInput } from "mui-color-input";
 import type { MuiColorInputProps } from "mui-color-input";
-import { typographyLevels } from "@/Utils/Theme/v2Palette";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 import { useTheme } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import { FieldLabel } from "@/Components/v2/inputs/FieldLabel";

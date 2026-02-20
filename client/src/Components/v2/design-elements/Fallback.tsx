@@ -85,12 +85,7 @@ export const EmptyFallback = ({
 				zIndex={1}
 				alignItems="center"
 			>
-				<Typography
-					component="h1"
-					color={theme.palette.primary.contrastText}
-				>
-					{title}
-				</Typography>
+				<Typography component="h1">{title}</Typography>
 				<Stack
 					sx={{
 						flexWrap: "wrap",

@@ -5,7 +5,7 @@ import { PulseDot, Dot } from "@/Components/v2/design-elements";
 import { getStatusColor, formatUrl } from "@/Utils/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
 import prettyMilliseconds from "pretty-ms";
-import { typographyLevels } from "@/Utils/Theme/v2Palette";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 import useMediaQuery from "@mui/material/useMediaQuery";
 export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 	const theme = useTheme();
@@ -19,7 +19,6 @@ export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 			<Typography
 				fontSize={typographyLevels.xl}
 				fontWeight={500}
-				color={theme.palette.primary.contrastText}
 				overflow={"hidden"}
 				textOverflow={"ellipsis"}
 				whiteSpace={"nowrap"}

@@ -51,7 +51,6 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 				backgroundSize: "100% 100%",
 				backgroundPosition: "center",
 				backgroundRepeat: "no-repeat",
-				color: theme.palette.primary.contrastText,
 			}}
 		>
 			<OfflineBanner visible={serverUnreachable} />

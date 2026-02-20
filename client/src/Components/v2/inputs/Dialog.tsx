@@ -5,7 +5,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Button } from "@/Components/v2/inputs";
-import { typographyLevels } from "@/Utils/Theme/v2Palette";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
 

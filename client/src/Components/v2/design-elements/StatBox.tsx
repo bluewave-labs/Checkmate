@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import { lighten } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import type { PaletteKey } from "@/Utils/Theme/v2Theme";
+import type { PaletteKey } from "@/Utils/Theme/Theme";
 import { BaseBox, TooltipWithInfo } from "@/Components/v2/design-elements";
 import type { SxProps } from "@mui/material";
 

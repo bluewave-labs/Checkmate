@@ -1,5 +1,5 @@
 import type { MonitorStatus, MonitorType } from "@/Types/Monitor";
-import type { PaletteKey } from "@/Utils/Theme/v2Theme";
+import type { PaletteKey } from "@/Utils/Theme/Theme";
 import type { ValueType } from "@/Components/v2/design-elements/StatusLabel";
 
 export const getMonitorPath = (type: MonitorType): string => {

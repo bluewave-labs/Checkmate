@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import TextField from "@mui/material/TextField";
 import type { TextFieldProps } from "@mui/material";
-import { typographyLevels } from "@/Utils/Theme/v2Palette";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 import { useTheme } from "@mui/material/styles";
 import Stack from "@mui/material/Stack";
 import { FieldLabel } from "./FieldLabel";

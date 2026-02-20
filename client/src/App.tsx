@@ -7,19 +7,19 @@ import { CssBaseline, GlobalStyles } from "@mui/material";
 import { Routes } from "./Routes";
 import AppLayout from "@/Components/v2/layout/AppLayout";
 import type { RootState } from "@/Types/state";
-import { lightTheme, darkTheme } from "@/Utils/Theme/v2Theme";
+import { lightTheme, darkTheme } from "@/Utils/Theme/Theme";
 
 function App() {
 	const mode = useSelector((state: RootState) => state.ui.mode);
-	const v2theme = mode === "light" ? lightTheme : darkTheme;
+	const theme = mode === "light" ? lightTheme : darkTheme;
 
 	return (
-		<ThemeProvider theme={v2theme}>
+		<ThemeProvider theme={theme}>
 			<CssBaseline />
 			<GlobalStyles
 				styles={{
 					body: {
-						backgroundColor: v2theme.palette.background.default,
+						backgroundColor: theme.palette.background.default,
 					},
 				}}
 			/>
