@@ -1,5 +1,5 @@
 import Stack from "@mui/material/Stack";
-import { Select, Button } from "@/Components/v2/inputs";
+import { Select, Button } from "@/Components/inputs";
 import MenuItem from "@mui/material/MenuItem";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { Typography, useTheme } from "@mui/material";

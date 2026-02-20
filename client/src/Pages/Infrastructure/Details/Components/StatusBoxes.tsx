@@ -1,5 +1,5 @@
 import Stack from "@mui/material/Stack";
-import { StatBox } from "@/Components/v2/design-elements";
+import { StatBox } from "@/Components/design-elements";
 
 import prettyBytes from "pretty-bytes";
 import { useTheme } from "@mui/material";

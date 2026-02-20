@@ -1,12 +1,12 @@
 import { Trash2 } from "lucide-react";
-import { TextField, Button, Autocomplete } from "@/Components/v2/inputs";
+import { TextField, Button, Autocomplete } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import Divider from "@mui/material/Divider";
 import FormHelperText from "@mui/material/FormHelperText";
 import { useForm, Controller } from "react-hook-form";
-import { ConfigBox, BasePage } from "@/Components/v2/design-elements";
+import { ConfigBox, BasePage } from "@/Components/design-elements";
 
 import { UserRoles } from "@/Types/User";
 import { useTranslation } from "react-i18next";

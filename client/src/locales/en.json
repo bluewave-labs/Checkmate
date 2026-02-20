@@ -38,7 +38,13 @@
 			"toggleTheme": "Toggles light & dark",
 			"flushQueue": "Flush queue",
 			"notFound": "Go to the main dashboard",
-			"resetPassword": "Reset password"
+			"resetPassword": "Reset password",
+			"reset": "Reset",
+			"clear": "Clear",
+			"addDemo": "Add demo monitors",
+			"removeMonitors": "Remove monitors",
+			"sendTestEmail": "Send test email",
+			"exportToJSON": "Export to JSON"
 		},
 		"charts": {
 			"labels": {
@@ -543,6 +549,27 @@
 							"label": "Temperature alert threshold (°C)"
 						}
 					}
+				},
+				"url": {
+					"title": "Monitor IP/URL on Status Page",
+					"description": "Display the IP address or URL of monitor on the public Status page. If it's disabled, only the monitor name will be shown to protect sensitive information.",
+					"option": {
+						"showURL": {
+							"label": "Display IP/URL on status page",
+							"enabled": "Enabled",
+							"disabled": "Disabled"
+						}
+					}
+				},
+				"stats": {
+					"title": "Monitor history",
+					"description": "Clear all monitoring history and statistics for your team. This action is irreversible.",
+					"buttonText": "Clear all stats",
+					"dialog": {
+						"title": "Clear all monitoring history?",
+						"description": "This will permanently delete all monitoring history, statistics, and check data for your team. This action cannot be undone.",
+						"confirm": "Yes, clear all stats"
+					}
 				}
 			}
 		},
@@ -908,92 +935,166 @@
 			}
 		},
 		"settings": {
-			"aboutSettings": {
-				"labelDevelopedBy": "Developed by Bluewave Labs",
-				"labelVersion": "Version",
-				"title": "About"
-			},
-			"demoMonitorsSettings": {
-				"buttonAddMonitors": "Add demo monitors",
-				"description": "Add sample monitors for demonstration purposes.",
-				"title": "Demo monitors"
-			},
-			"emailSettings": {
-				"buttonSendTestEmail": "Send test e-mail",
-				"description": "Configure the email settings for your system. This is used to send notifications and alerts.",
-				"descriptionTransport": "This builds an SMTP transport for NodeMailer",
-				"labelAddress": "Email address - Used for authentication",
-				"labelConnectionHost": "Email connection host - Hostname to use in the HELO/EHLO greeting",
-				"labelHost": "Email host - Hostname or IP address to connect to",
-				"labelIgnoreTLS": "Disable STARTTLS: Don't use TLS even if the server supports it",
-				"labelPassword": "Email password - Password for authentication",
-				"labelPasswordSet": "Password is set. Click Reset to change it.",
-				"labelPool": "Enable connection pooling: Reuse existing connections to improve performance",
-				"labelPort": "Email port - Port to connect to",
-				"labelRejectUnauthorized": "Reject invalid certificates: Reject connections with self-signed or untrusted certificates",
-				"labelRequireTLS": "Force STARTTLS: Require TLS upgrade, fail if not supported",
-				"labelSecure": "Use SSL (recommended): Encrypt the connection using SSL/TLS",
-				"labelTLSServername": "TLS Servername - Optional Hostname for TLS Validation when host is an IP",
-				"labelUser": "Email user - Username for authentication, overrides email address if specified",
-				"linkTransport": "See specifications here",
-				"placeholderUser": "Leave empty if not required",
-				"title": "Email",
-				"toastEmailRequiredFieldsError": "Email address, host, port and password are required"
-			},
-			"globalThresholds": {
-				"title": "Global Thresholds",
-				"description": "Configure global CPU, Memory, Disk, and Temperature thresholds. If a value is provided, it will automatically be enabled for monitoring."
-			},
-			"pageSpeedSettings": {
-				"description": "Enter your Google PageSpeed API key to enable Google PageSpeed monitoring. Click Reset to update the key.",
-				"labelApiKeySet": "API key is set. Click Reset to change it.",
-				"labelApiKey": "PageSpeed API key",
-				"title": "Google PageSpeed API key"
-			},
-			"saveButtonLabel": "Save",
-			"statsSettings": {
-				"clearAllStatsButton": "Clear all stats",
-				"clearAllStatsDescription": "Clear all stats. This is irreversible.",
-				"clearAllStatsDialogConfirm": "Yes, clear all stats",
-				"clearAllStatsDialogDescription": "Once removed, the monitoring history and stats cannot be retrieved.",
-				"clearAllStatsDialogTitle": "Do you want to clear all stats?",
-				"description": "Define how long you want to retain historical data. You can also clear all existing data.",
-				"labelTTL": "The days you want to keep monitoring history.",
-				"labelTTLOptional": "0 for infinite",
-				"title": "Monitor history"
-			},
-			"systemResetSettings": {
-				"buttonRemoveAllMonitors": "Remove all monitors",
-				"description": "Remove all monitors from your system.",
-				"dialogConfirm": "Yes, remove all monitors",
-				"dialogDescription": "Once removed, the monitors cannot be retrieved.",
-				"dialogTitle": "Do you want to remove all monitors?",
-				"title": "System reset"
-			},
-			"timezoneSettings": {
-				"description": "Select the timezone used to display dates and times throughout the application.",
-				"label": "Display timezone",
-				"title": "Display timezone"
-			},
-			"title": "Settings",
-			"uiSettings": {
-				"description": "Switch between light and dark mode, or change user interface language.",
-				"labelLanguage": "Language",
-				"labelTheme": "Theme mode",
-				"labelChartType": "Chart type",
-				"chartTypeHistogram": "Histogram",
-				"chartTypeHeatmap": "Heatmap",
-				"title": "Appearance"
-			},
-			"urlSettings": {
-				"description": "Display the IP address or URL of monitor on the public Status page. If it's disabled, only the monitor name will be shown to protect sensitive information.",
-				"label": "Display IP/URL on status page",
-				"selectDisabled": "Disabled",
-				"selectEnabled": "Enabled",
-				"title": "Monitor IP/URL on Status Page"
+			"form": {
+				"timezone": {
+					"title": "Display timezone",
+					"description": "Select the timezone used to display dates and times throughout the application.",
+					"option": {
+						"timezone": {
+							"label": "Display timezone"
+						}
+					}
+				},
+				"ui": {
+					"title": "Appearance",
+					"description": "Switch between light and dark mode, change language, or customize chart display type.",
+					"option": {
+						"theme": {
+							"label": "Theme mode",
+							"light": "Light",
+							"dark": "Dark"
+						},
+						"language": {
+							"label": "Language"
+						},
+						"chartType": {
+							"label": "Chart type",
+							"histogram": "Histogram",
+							"heatmap": "Heatmap"
+						}
+					}
+				},
+				"pagespeed": {
+					"title": "Google PageSpeed API key",
+					"description": "Enter your Google PageSpeed API key to enable Google PageSpeed monitoring. Click Reset to update the key.",
+					"option": {
+						"apiKey": {
+							"label": "PageSpeed API key",
+							"labelSet": "API key is set. Click Reset to change it.",
+							"placeholder": "Enter your Google PageSpeed API key"
+						}
+					}
+				},
+				"url": {
+					"title": "Monitor IP/URL on Status Page",
+					"description": "Display the IP address or URL of monitor on the public Status page. If it's disabled, only the monitor name will be shown to protect sensitive information.",
+					"option": {
+						"showURL": {
+							"label": "Display IP/URL on status page",
+							"enabled": "Enabled",
+							"disabled": "Disabled"
+						}
+					}
+				},
+				"stats": {
+					"title": "Monitor history",
+					"description": "Define how long you want to retain historical data. You can also clear all existing data.",
+					"option": {
+						"clear": {
+							"label": "Clear all stats. This is irreversible."
+						}
+					},
+					"dialog": {
+						"title": "Clear all monitoring history?",
+						"description": "This cannot be undone"
+					}
+				},
+				"thresholds": {
+					"title": "Global Thresholds",
+					"description": "Set global CPU, Memory, Disk, and Temperature thresholds for infrastructure monitoring. These apply to all hardware monitors unless overridden.",
+					"option": {
+						"cpu": {
+							"label": "CPU Threshold (%)",
+							"placeholder": "1 - 100"
+						},
+						"memory": {
+							"label": "Memory Threshold (%)",
+							"placeholder": "1 - 100"
+						},
+						"disk": {
+							"label": "Disk Threshold (%)",
+							"placeholder": "1 - 100"
+						},
+						"temperature": {
+							"label": "Temperature Threshold (°C)",
+							"placeholder": "1 - 150"
+						}
+					}
+				},
+				"email": {
+					"title": "Email settings",
+					"description": "Configure the email settings for your system. This is used to send notifications and alerts.",
+					"descriptionTransport": "This builds an SMTP transport for NodeMailer",
+					"descriptionTransportLink": "See specifications here",
+					"option": {
+						"host": {
+							"label": "Email host - Hostname or IP address to connect to",
+							"placeholder": "smtp.gmail.com"
+						},
+						"port": {
+							"label": "Email port - Port to connect to",
+							"placeholder": "587"
+						},
+						"address": {
+							"label": "Email address - Used for authentication",
+							"placeholder": "you@example.com"
+						},
+						"user": {
+							"label": "Email user - Username for authentication, overrides email address if specified",
+							"placeholder": "Leave empty if not required"
+						},
+						"password": {
+							"label": "Email password - Password for authentication",
+							"labelSet": "Password is set. Click Reset to change it.",
+							"placeholder": "Enter your password"
+						},
+						"tlsServername": {
+							"label": "TLS Servername - Optional Hostname for TLS Validation when host is an IP",
+							"placeholder": "example.com"
+						},
+						"connectionHost": {
+							"label": "Email connection host - Hostname to use in the HELO/EHLO greeting",
+							"placeholder": "localhost"
+						},
+						"secure": {
+							"label": "Use SSL (recommended): Encrypt the connection using SSL/TLS"
+						},
+						"pool": {
+							"label": "Enable connection pooling: Reuse existing connections to improve performance"
+						},
+						"ignoreTLS": {
+							"label": "Disable STARTTLS: Don't use TLS even if the server supports it"
+						},
+						"requireTLS": {
+							"label": "Force STARTTLS: Require TLS upgrade, fail if not supported"
+						},
+						"rejectUnauthorized": {
+							"label": "Reject invalid certificates: Reject connections with self-signed or untrusted certificates"
+						}
+					}
+				},
+				"demoMonitors": {
+					"title": "Demo monitors",
+					"description": "Add sample monitors for demonstration purposes."
+				},
+				"removeMonitors": {
+					"title": "System reset",
+					"description": "Remove all monitors from your system.",
+					"dialog": {
+						"title": "Remove all monitors?",
+						"description": "This cannot be undone."
+					}
+				},
+				"exportMonitors": {
+					"title": "Export monitors",
+					"description": "Export your monitors data as a JSON file for backup or transfer."
+				},
+				"about": {
+					"title": "About",
+					"developedBy": "Developed by Bluewave Labs"
+				}
 			}
 		},
-
 		"statusPages": {
 			"deleteSuccess": "Status page deleted successfully",
 			"fallback": {

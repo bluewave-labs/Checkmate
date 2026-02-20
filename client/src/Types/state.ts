@@ -1,3 +1,4 @@
+import type { ChartType } from "@/Features/UI/uiSlice";
 import type { User } from "./User";
 
 export interface AuthState {
@@ -37,7 +38,7 @@ export interface UIState {
 	distributedUptimeEnabled: boolean;
 	language: string;
 	starPromptOpen: boolean;
-	chartType: string;
+	chartType: ChartType;
 }
 
 export interface RootState {

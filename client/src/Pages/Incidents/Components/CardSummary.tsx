@@ -2,7 +2,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
-import { BaseBox, ValueLabel } from "@/Components/v2/design-elements";
+import { BaseBox, ValueLabel } from "@/Components/design-elements";
 import { CircleCheck, TriangleAlert, Bell, Wrench, Globe } from "lucide-react";
 import Box from "@mui/material/Box";
 

@@ -1,8 +1,8 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { Table, Pagination, StatusLabel, Gauge } from "@/Components/v2/design-elements";
-import type { Header } from "@/Components/v2/design-elements/Table";
-import { ActionsMenu, type ActionMenuItem } from "@/Components/v2/actions-menu";
+import { Table, Pagination, StatusLabel, Gauge } from "@/Components/design-elements";
+import type { Header } from "@/Components/design-elements/Table";
+import { ActionsMenu, type ActionMenuItem } from "@/Components/actions-menu";
 import { ArrowUp, ArrowDown } from "lucide-react";
 
 import { useTranslation } from "react-i18next";

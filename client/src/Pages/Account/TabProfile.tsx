@@ -1,7 +1,7 @@
 import { Stack } from "@mui/material";
-import { ConfigBox } from "@/Components/v2/design-elements";
-import { TextField, Button } from "@/Components/v2/inputs";
-import { ImageUpload } from "@/Components/v2/inputs";
+import { ConfigBox } from "@/Components/design-elements";
+import { TextField, Button } from "@/Components/inputs";
+import { ImageUpload } from "@/Components/inputs";
 
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";

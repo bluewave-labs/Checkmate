@@ -1,5 +1,5 @@
 import Stack from "@mui/material/Stack";
-import { DetailGauge } from "@/Components/v2/design-elements";
+import { DetailGauge } from "@/Components/design-elements";
 
 import { getPercentage, formatPercentageFromWhole } from "@/Utils/FormatUtils";
 import prettyBytes from "pretty-bytes";

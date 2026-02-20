@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useGet, usePost } from "@/Hooks/UseApi";
 import type { QueueData } from "@/Types/Queue";
 import { Metrics } from "@/Pages/Logs/components/Metrics";
-import { Button } from "@/Components/v2/inputs";
+import { Button } from "@/Components/inputs";
 
 export const TabQueue = () => {
 	const theme = useTheme();

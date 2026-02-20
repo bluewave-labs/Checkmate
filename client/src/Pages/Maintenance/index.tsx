@@ -1,5 +1,5 @@
-import { BasePageWithStates } from "@/Components/v2/design-elements";
-import { HeaderCreate } from "@/Components/v2/common";
+import { BasePageWithStates } from "@/Components/design-elements";
+import { HeaderCreate } from "@/Components/common";
 import { useTranslation } from "react-i18next";
 import { useGet } from "@/Hooks/UseApi";
 import { MaintenanceWindowTable } from "./MaintenanceWindowTable";

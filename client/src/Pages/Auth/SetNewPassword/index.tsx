@@ -1,9 +1,5 @@
-import {
-	BaseAuthPage,
-	BulletPointCheck,
-	TextLink,
-} from "@/Components/v2/design-elements";
-import { Button, TextField } from "@/Components/v2/inputs";
+import { BaseAuthPage, BulletPointCheck, TextLink } from "@/Components/design-elements";
+import { Button, TextField } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";

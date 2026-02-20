@@ -1,6 +1,6 @@
 import type { MonitorStatus, MonitorType } from "@/Types/Monitor";
-import type { PaletteKey } from "@/Utils/Theme/v2Theme";
-import type { ValueType } from "@/Components/v2/design-elements/StatusLabel";
+import type { PaletteKey } from "@/Utils/Theme/Theme";
+import type { ValueType } from "@/Components/design-elements/StatusLabel";
 
 export const getMonitorPath = (type: MonitorType): string => {
 	const pathMap: Record<MonitorType, string> = {

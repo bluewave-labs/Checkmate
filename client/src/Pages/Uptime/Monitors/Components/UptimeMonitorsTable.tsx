@@ -6,9 +6,9 @@ import {
 	type Header,
 	Pagination,
 	StatusLabel,
-} from "@/Components/v2/design-elements";
-import { HeatmapResponseTime, HistogramResponseTime } from "@/Components/v2/common";
-import { ActionsMenu } from "@/Components/v2/actions-menu";
+} from "@/Components/design-elements";
+import { HeatmapResponseTime, HistogramResponseTime } from "@/Components/common";
+import { ActionsMenu } from "@/Components/actions-menu";
 import { ArrowDown, ArrowUp } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
@@ -18,7 +18,7 @@ import { usePost } from "@/Hooks/UseApi";
 import { useSelector } from "react-redux";
 
 import type { Monitor } from "@/Types/Monitor";
-import type { ActionMenuItem } from "@/Components/v2/actions-menu";
+import type { ActionMenuItem } from "@/Components/actions-menu";
 import type { RootState } from "@/Types/state";
 
 export const MonitorTable = ({

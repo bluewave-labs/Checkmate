@@ -2,7 +2,7 @@ import Stack from "@mui/material/Stack";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
-import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
+import { BasePage, ConfigBox } from "@/Components/design-elements";
 import {
 	TextField,
 	Select,
@@ -10,7 +10,7 @@ import {
 	TimePicker,
 	Button,
 	Autocomplete,
-} from "@/Components/v2/inputs";
+} from "@/Components/inputs";
 
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";

@@ -2,9 +2,9 @@ import Stack from "@mui/material/Stack";
 import { useTranslation } from "react-i18next";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { HistogramResponseTime, HeatmapResponseTime } from "@/Components/v2/common";
-import { StatusLabel, BaseBox } from "@/Components/v2/design-elements";
-import { SwitchComponent } from "@/Components/v2/inputs";
+import { HistogramResponseTime, HeatmapResponseTime } from "@/Components/common";
+import { StatusLabel, BaseBox } from "@/Components/design-elements";
+import { SwitchComponent } from "@/Components/inputs";
 
 import { useTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";

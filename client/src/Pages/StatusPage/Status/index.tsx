@@ -1,4 +1,4 @@
-import { BasePage, BaseFallback } from "@/Components/v2/design-elements";
+import { BasePage, BaseFallback } from "@/Components/design-elements";
 import { StatusBar } from "@/Pages/StatusPage/Status/Components/StatusBar";
 import { MonitorsList } from "@/Pages/StatusPage/Status/Components/MonitorsList";
 import Typography from "@mui/material/Typography";

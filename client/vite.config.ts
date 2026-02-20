@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default defineConfig(({}) => {
-	let version = "3.3";
+	let version = "3.4.0";
 
 	return {
 		base: "/",

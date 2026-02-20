@@ -1,9 +1,9 @@
 import Stack from "@mui/material/Stack";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { MonitorBasePageWithStates } from "@/Components/v2/design-elements";
-import { HeaderCreate } from "@/Components/v2/common";
-import { ControlsFilter, HeaderMonitorsSummary } from "@/Components/v2/monitors";
-import { TextField, Dialog } from "@/Components/v2/inputs";
+import { MonitorBasePageWithStates } from "@/Components/design-elements";
+import { HeaderCreate } from "@/Components/common";
+import { ControlsFilter, HeaderMonitorsSummary } from "@/Components/monitors";
+import { TextField, Dialog } from "@/Components/inputs";
 
 import { useGet, useDelete } from "@/Hooks/UseApi";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";

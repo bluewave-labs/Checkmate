@@ -1,11 +1,11 @@
-import { Table } from "@/Components/v2/design-elements";
+import { Table } from "@/Components/design-elements";
 import { Typography, useTheme } from "@mui/material";
 import prettyMilliseconds from "pretty-ms";
 import { formatTimestamp } from "@/Utils/TimeUtils";
 
 import { useTranslation } from "react-i18next";
 import type { QueueJobFailure, QueueJobSummary, QueueMetrics } from "@/Types/Queue";
-import type { Header } from "@/Components/v2/design-elements";
+import type { Header } from "@/Components/design-elements";
 
 type QueueJobWithId = QueueJobSummary & { id: string | number };
 

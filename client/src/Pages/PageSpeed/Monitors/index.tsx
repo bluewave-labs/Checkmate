@@ -1,9 +1,9 @@
 import {
 	MonitorBasePageWithStates,
 	PageSpeedKeyPriorityFallback,
-} from "@/Components/v2/design-elements";
-import { Dialog } from "@/Components/v2/inputs";
-import { HeaderCreate } from "@/Components/v2/common";
+} from "@/Components/design-elements";
+import { Dialog } from "@/Components/inputs";
+import { HeaderCreate } from "@/Components/common";
 import { PageSpeedMonitorsTable } from "@/Pages/PageSpeed/Monitors/Components/PageSpeedMonitorsTable";
 import type { Monitor } from "@/Types/Monitor";
 
@@ -13,7 +13,7 @@ import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import { useGet, useDelete } from "@/Hooks/UseApi";
 import type { MonitorsWithChecksResponse } from "@/Types/Monitor";
 import type { AppSettingsResponse } from "@/Types/Settings";
-import { HeaderMonitorsSummary } from "@/Components/v2/monitors";
+import { HeaderMonitorsSummary } from "@/Components/monitors";
 
 const PageSpeedMonitorsPage = () => {
 	const { t } = useTranslation();

@@ -1,11 +1,5 @@
-// Temp v2 theme
-import { ThemeProvider } from "@mui/material";
-import { lightTheme, darkTheme } from "@/Utils/Theme/v2Theme";
-
-import { useSelector } from "react-redux";
-import type { RootState } from "@/store";
 import { Navigate, Route, Routes as LibRoutes } from "react-router";
-import RootLayout from "@/Components/v2/layout/RootLayout";
+import RootLayout from "@/Components/layout/RootLayout";
 import NotFound from "@/Pages/NotFound";
 
 // Auth
@@ -52,16 +46,11 @@ import CreateNewMaintenanceWindow from "@/Pages/Maintenance/create";
 import Logs from "@/Pages/Logs";
 
 // Routing
-import {
-	ProtectedRoute,
-	RoleProtectedRoute,
-} from "@/Components/v2/routing/RouteProtected";
+import { ProtectedRoute, RoleProtectedRoute } from "@/Components/routing/RouteProtected";
 
 import CreateMonitor from "@/Pages/CreateMonitor";
 
 const Routes = () => {
-	const mode = useSelector((state: RootState) => state.ui.mode);
-	const v2theme = mode === "light" ? lightTheme : darkTheme;
 	return (
 		<LibRoutes>
 			<Route
@@ -78,280 +67,129 @@ const Routes = () => {
 				/>
 				<Route
 					path="/uptime"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<Uptime />
-							</ThemeProvider>
-						</>
-					}
+					element={<Uptime />}
 				/>
 
 				<Route path="/uptime/bulk-import" />
 
 				<Route
 					path="/uptime/create"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<CreateMonitor />
-							</ThemeProvider>
-						</>
-					}
+					element={<CreateMonitor />}
 				/>
 				<Route
 					path="/uptime/:monitorId/"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<UptimeDetails />
-							</ThemeProvider>
-						</>
-					}
+					element={<UptimeDetails />}
 				/>
 				<Route
 					path="/uptime/configure/:monitorId/"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<CreateMonitor />
-							</ThemeProvider>
-						</>
-					}
+					element={<CreateMonitor />}
 				/>
 
 				<Route
 					path="pagespeed"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<PageSpeed />
-							</ThemeProvider>
-						</>
-					}
+					element={<PageSpeed />}
 				/>
 				<Route
 					path="pagespeed/create"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<CreateMonitor />
-							</ThemeProvider>
-						</>
-					}
+					element={<CreateMonitor />}
 				/>
 				<Route
 					path="pagespeed/:monitorId"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<PageSpeedDetails />
-							</ThemeProvider>
-						</>
-					}
+					element={<PageSpeedDetails />}
 				/>
 				<Route
 					path="pagespeed/configure/:monitorId"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<CreateMonitor />
-							</ThemeProvider>
-						</>
-					}
+					element={<CreateMonitor />}
 				/>
 				<Route
 					path="infrastructure"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<Infrastructure />
-							</ThemeProvider>
-						</>
-					}
+					element={<Infrastructure />}
 				/>
 				<Route
 					path="infrastructure/create"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<CreateMonitor />
-							</ThemeProvider>
-						</>
-					}
+					element={<CreateMonitor />}
 				/>
 				<Route
 					path="/infrastructure/configure/:monitorId"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<CreateMonitor />
-							</ThemeProvider>
-						</>
-					}
+					element={<CreateMonitor />}
 				/>
 				<Route
 					path="infrastructure/:monitorId"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<InfrastructureDetails />
-							</ThemeProvider>
-						</>
-					}
+					element={<InfrastructureDetails />}
 				/>
 				<Route
 					path="checks/:monitorId?"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<Checks />
-							</ThemeProvider>
-						</>
-					}
+					element={<Checks />}
 				/>
 				<Route
 					path="incidents/:monitorId?"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<Incidents />
-							</ThemeProvider>
-						</>
-					}
+					element={<Incidents />}
 				/>
 
 				<Route
 					path="status"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<StatusPages />
-							</ThemeProvider>
-						</>
-					}
+					element={<StatusPages />}
 				/>
 
 				<Route
 					path="status/:url"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<Status />
-							</ThemeProvider>
-						</>
-					}
+					element={<Status />}
 				/>
 
 				<Route
 					path="status/create"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<CreateStatus />
-							</ThemeProvider>
-						</>
-					}
+					element={<CreateStatus />}
 				/>
 
 				<Route
 					path="status/configure/:url"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<CreateStatus />
-							</ThemeProvider>
-						</>
-					}
+					element={<CreateStatus />}
 				/>
 
 				<Route
 					path="notifications"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<Notifications />
-							</ThemeProvider>
-						</>
-					}
+					element={<Notifications />}
 				/>
 				<Route
 					path="notifications/create"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<CreateNotifications />
-							</ThemeProvider>
-						</>
-					}
+					element={<CreateNotifications />}
 				/>
 
 				<Route
 					path="notifications/configure/:notificationId"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<CreateNotifications />
-							</ThemeProvider>
-						</>
-					}
+					element={<CreateNotifications />}
 				/>
 
 				<Route
 					path="maintenance"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<Maintenance />
-							</ThemeProvider>
-						</>
-					}
+					element={<Maintenance />}
 				/>
 				<Route
 					path="/maintenance/create/:maintenanceWindowId?"
-					element={
-						<>
-							<ThemeProvider theme={v2theme}>
-								<CreateNewMaintenanceWindow />
-							</ThemeProvider>
-						</>
-					}
+					element={<CreateNewMaintenanceWindow />}
 				/>
 				<Route
 					path="settings"
 					element={<Settings />}
 				/>
+
 				<Route
 					path="account/profile"
-					element={
-						<ThemeProvider theme={v2theme}>
-							<Account open={"profile"} />
-						</ThemeProvider>
-					}
+					element={<Account open={"profile"} />}
 				/>
 				<Route
 					path="account/password"
-					element={
-						<ThemeProvider theme={v2theme}>
-							<Account open={"password"} />
-						</ThemeProvider>
-					}
+					element={<Account open={"password"} />}
 				/>
 				<Route
 					path="account/team"
-					element={
-						<ThemeProvider theme={v2theme}>
-							<Account open={"team"} />
-						</ThemeProvider>
-					}
+					element={<Account open={"team"} />}
 				/>
 				<Route
 					path="account/team/:userId"
 					element={
 						<RoleProtectedRoute roles={["superadmin"]}>
-							<ThemeProvider theme={v2theme}>
-								<EditUser />
-							</ThemeProvider>
+							<EditUser />
 						</RoleProtectedRoute>
 					}
 				/>
@@ -360,9 +198,7 @@ const Routes = () => {
 					path="logs"
 					element={
 						<RoleProtectedRoute roles={["admin", "superadmin"]}>
-							<ThemeProvider theme={v2theme}>
-								<Logs />
-							</ThemeProvider>
+							<Logs />
 						</RoleProtectedRoute>
 					}
 				/>
@@ -372,75 +208,37 @@ const Routes = () => {
 				path="/login"
 				element={
 					<>
-						<ThemeProvider theme={v2theme}>
-							<AuthLogin />
-						</ThemeProvider>
+						<AuthLogin />
 					</>
 				}
 			/>
 
 			<Route
 				path="/register"
-				element={
-					<>
-						<ThemeProvider theme={v2theme}>
-							<AuthRegister />
-						</ThemeProvider>
-					</>
-				}
+				element={<AuthRegister />}
 			/>
 
 			<Route
 				path="/register/:token"
-				element={
-					<>
-						<ThemeProvider theme={v2theme}>
-							<AuthRegister />
-						</ThemeProvider>
-					</>
-				}
+				element={<AuthRegister />}
 			/>
 
 			<Route
 				path="/forgot-password"
-				element={
-					<>
-						<ThemeProvider theme={v2theme}>
-							<AuthForgotPassword />
-						</ThemeProvider>
-					</>
-				}
+				element={<AuthForgotPassword />}
 			/>
 			<Route
 				path="/set-new-password/:token"
-				element={
-					<>
-						<ThemeProvider theme={v2theme}>
-							<AuthSetNewPassword />
-						</ThemeProvider>
-					</>
-				}
+				element={<AuthSetNewPassword />}
 			/>
 			<Route
 				path="/status/public/:url"
-				element={
-					<>
-						<ThemeProvider theme={v2theme}>
-							<Status />
-						</ThemeProvider>
-					</>
-				}
+				element={<Status />}
 			/>
 
 			<Route
 				path="*"
-				element={
-					<>
-						<ThemeProvider theme={v2theme}>
-							<NotFound />
-						</ThemeProvider>
-					</>
-				}
+				element={<NotFound />}
 			/>
 		</LibRoutes>
 	);
