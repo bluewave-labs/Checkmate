@@ -16,7 +16,7 @@ class MaintenanceWindowRoutes {
 		this.router.get("/monitor/:monitorId", this.mwController.getMaintenanceWindowsByMonitorId);
 
 		this.router.get("/:id", this.mwController.getMaintenanceWindowById);
-		this.router.put("/:id", this.mwController.editMaintenanceWindow);
+		this.router.patch("/:id", this.mwController.editMaintenanceWindow);
 		this.router.delete("/:id", this.mwController.deleteMaintenanceWindow);
 	}
 

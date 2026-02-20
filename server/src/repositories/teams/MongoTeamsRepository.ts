@@ -31,6 +31,11 @@ class MongoTeamsRepository implements ITeamsRepository {
 		const team = await TeamModel.create({ email });
 		return this.toEntity(team);
 	};
+
+	findAllTeamIds = async (): Promise<string[]> => {
+		const teams = await TeamModel.find({}, { _id: 1 }).lean();
+		return teams.map((team) => this.toStringId(team._id));
+	};
 }
 
 export default MongoTeamsRepository;

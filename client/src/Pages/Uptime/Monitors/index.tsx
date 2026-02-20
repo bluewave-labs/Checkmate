@@ -1,14 +1,9 @@
-import { ControlsFilter } from "@/Components/v2/monitors";
-import {
-	MonitorBasePageWithStates,
-	UpStatusBox,
-	DownStatusBox,
-	PausedStatusBox,
-} from "@/Components/v2/design-elements";
-import { TextField, Dialog } from "@/Components/v2/inputs";
+import { ControlsFilter, HeaderMonitorsSummary } from "@/Components/monitors";
+import { MonitorBasePageWithStates } from "@/Components/design-elements";
+import { TextField, Dialog } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
 import { MonitorTable } from "@/Pages/Uptime/Monitors/Components/UptimeMonitorsTable";
-import { HeaderCreate } from "@/Components/v2/common";
+import { HeaderCreate } from "@/Components/common";
 
 import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -20,6 +15,7 @@ import { setRowsPerPage } from "@/Features/UI/uiSlice.js";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import type { RootState } from "@/Types/state";
 import { useTheme } from "@mui/material";
+import useDebounce from "@/Hooks/useDebounce";
 
 const UptimeMonitorsPage = () => {
 	const { t } = useTranslation();
@@ -43,6 +39,8 @@ const UptimeMonitorsPage = () => {
 	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
 	const isDialogOpen = Boolean(selectedMonitor);
 
+	const debouncedSearch = useDebounce<string>(search, 300);
+
 	// Convert filter selections to API filter values
 	// Status: "up" -> true, "down" -> false
 	// State: "active" -> true, "paused" -> false
@@ -65,12 +63,12 @@ const UptimeMonitorsPage = () => {
 		[toFilterActive, "isActive"],
 	]);
 	const activeFilter = [...filterLookup].find(([key]) => key !== undefined);
-	const field = activeFilter?.[1] || (search ? "name" : sortField || undefined);
-	const filter = activeFilter?.[0] || search;
+	const field = activeFilter?.[1] || (debouncedSearch ? "name" : sortField || undefined);
+	const filter = activeFilter?.[0] || debouncedSearch;
 
 	// Default to all types when none selected
 	const effectiveTypes =
-		selectedTypes.length > 0 ? selectedTypes : ["http", "ping", "docker", "port"];
+		selectedTypes.length > 0 ? selectedTypes : ["http", "ping", "docker", "port", "game"];
 
 	// Build URL for monitors with checks
 	const monitorsWithChecksUrl = useMemo(() => {
@@ -85,18 +83,6 @@ const UptimeMonitorsPage = () => {
 		return `/monitors/team/with-checks?${params.toString()}`;
 	}, [effectiveTypes, page, rowsPerPage, filter, field, sortOrder]);
 
-	// Data fetching
-	const {
-		data: monitors,
-		isLoading: monitorsLoading,
-		error,
-		refetch: refetchMonitorsAndSummary,
-	} = useGet<Monitor[]>(
-		"/monitors/team?type=http&type=ping&type=port&type=docker",
-		{},
-		{ keepPreviousData: true }
-	);
-
 	const {
 		data: monitorsWithChecksData,
 		isLoading: monitorsWithChecksLoading,
@@ -108,7 +94,11 @@ const UptimeMonitorsPage = () => {
 		{ refreshInterval: 5000, keepPreviousData: true }
 	);
 
-	const { monitors: monitorsWithChecks, summary, count } = monitorsWithChecksData ?? {};
+	const {
+		monitors: monitorsWithChecks,
+		summary,
+		count,
+	} = monitorsWithChecksData ?? { monitors: null, summary: null, count: 0 };
 
 	// Delete hook
 	const { deleteFn, loading: isDeleting } = useDelete();
@@ -126,20 +116,31 @@ const UptimeMonitorsPage = () => {
 		await deleteFn(`/monitors/${selectedMonitor.id}`);
 		setSelectedMonitor(null);
 		refetch();
-		refetchMonitorsAndSummary();
 	};
 
 	const handleCancel = () => {
 		setSelectedMonitor(null);
 	};
 
-	const isLoading = monitorsLoading || monitorsWithChecksLoading;
+	const isLoading = monitorsWithChecksLoading;
+
+	// Check if any filters are active
+	const hasActiveFilters = Boolean(
+		selectedTypes.length > 0 || selectedStatus || selectedState || search
+	);
+
+	// Show empty state only when there are truly no monitors (not just filtered out)
+	// If filters are active and count is 0, pass 1 to prevent empty state fallback
+	const effectiveTotalCount =
+		hasActiveFilters && (summary?.totalMonitors ?? 0) === 0
+			? 1
+			: (summary?.totalMonitors ?? 0);
 
 	return (
 		<MonitorBasePageWithStates
 			loading={isLoading}
-			error={error || monitorsWithChecksError}
-			items={monitors || []}
+			error={monitorsWithChecksError}
+			totalCount={effectiveTotalCount}
 			page="uptime"
 			actionLink="/uptime/create"
 		>
@@ -148,14 +149,8 @@ const UptimeMonitorsPage = () => {
 				isLoading={isLoading}
 				isAdmin={isAdmin}
 			/>
-			<Stack
-				direction={isSmall ? "column" : "row"}
-				gap={theme.spacing(8)}
-			>
-				<UpStatusBox n={summary?.upMonitors || 0} />
-				<DownStatusBox n={summary?.downMonitors || 0} />
-				<PausedStatusBox n={summary?.pausedMonitors || 0} />
-			</Stack>
+
+			<HeaderMonitorsSummary summary={summary} />
 
 			<Stack
 				direction={isSmall ? "column" : "row"}

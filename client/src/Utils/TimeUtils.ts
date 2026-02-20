@@ -50,3 +50,9 @@ export const tooltipDateFormatLookup = (range: string) => {
 	}
 	return format;
 };
+
+export const formatTimestamp = (timestamp: string | number | null): string => {
+	if (!timestamp) return "-";
+	const date = new Date(timestamp);
+	return date.toLocaleString();
+};

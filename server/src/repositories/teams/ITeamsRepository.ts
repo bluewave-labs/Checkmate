@@ -6,4 +6,5 @@ export interface ITeamsRepository {
 	// update
 	// delete
 	// other
+	findAllTeamIds(): Promise<string[]>;
 }

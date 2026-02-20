@@ -2,8 +2,30 @@ const SERVICE_NAME = "JobQueueHelper";
 import type { Monitor } from "@/types/monitor.js";
 import { AppError } from "@/utils/AppError.js";
 import { INetworkService, INotificationsService, IStatusService } from "@/service/index.js";
+import type { StatusChangeResult, MonitorStatusResponse, HardwareStatusPayload, MonitorStatus } from "@/types/index.js";
 import IncidentService from "@/service/business/incidentService.js";
-import { IMaintenanceWindowsRepository } from "@/repositories/index.js";
+import {
+	IMaintenanceWindowsRepository,
+	IMonitorsRepository,
+	ITeamsRepository,
+	IMonitorStatsRepository,
+	IChecksRepository,
+	IIncidentsRepository,
+} from "@/repositories/index.js";
+
+export interface MonitorActionDecision {
+	shouldCreateIncident: boolean;
+	shouldResolveIncident: boolean;
+	shouldSendNotification: boolean;
+	incidentReason: "status_down" | "threshold_breach" | null;
+	notificationReason: "status_change" | "threshold_breach" | null;
+	thresholdBreaches?: {
+		cpu?: boolean;
+		memory?: boolean;
+		disk?: boolean;
+		temp?: boolean;
+	};
+}
 
 class SuperSimpleQueueHelper {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -16,6 +38,11 @@ class SuperSimpleQueueHelper {
 	private buffer: any;
 	private incidentService: IncidentService;
 	private maintenanceWindowsRepository: IMaintenanceWindowsRepository;
+	private monitorsRepository: IMonitorsRepository;
+	private teamsRepository: ITeamsRepository;
+	private monitorStatsRepository: IMonitorStatsRepository;
+	private checksRepository: IChecksRepository;
+	private incidentsRepository: IIncidentsRepository;
 
 	constructor({
 		logger,
@@ -26,6 +53,11 @@ class SuperSimpleQueueHelper {
 		buffer,
 		incidentService,
 		maintenanceWindowsRepository,
+		monitorsRepository,
+		teamsRepository,
+		monitorStatsRepository,
+		checksRepository,
+		incidentsRepository,
 	}: {
 		logger: any;
 		networkService: INetworkService;
@@ -35,6 +67,11 @@ class SuperSimpleQueueHelper {
 		buffer: any;
 		incidentService: IncidentService;
 		maintenanceWindowsRepository: IMaintenanceWindowsRepository;
+		monitorsRepository: IMonitorsRepository;
+		teamsRepository: ITeamsRepository;
+		monitorStatsRepository: IMonitorStatsRepository;
+		checksRepository: IChecksRepository;
+		incidentsRepository: IIncidentsRepository;
 	}) {
 		this.logger = logger;
 		this.networkService = networkService;
@@ -44,6 +81,11 @@ class SuperSimpleQueueHelper {
 		this.notificationsService = notificationsService;
 		this.incidentService = incidentService;
 		this.maintenanceWindowsRepository = maintenanceWindowsRepository;
+		this.monitorsRepository = monitorsRepository;
+		this.teamsRepository = teamsRepository;
+		this.monitorStatsRepository = monitorStatsRepository;
+		this.checksRepository = checksRepository;
+		this.incidentsRepository = incidentsRepository;
 	}
 
 	get serviceName() {
@@ -59,7 +101,8 @@ class SuperSimpleQueueHelper {
 					throw new AppError({ message: "No monitor id", service: SERVICE_NAME, method: "getMonitorJob" });
 				}
 
-				// Step 1.  Check for maintenacne window, if found, skip the check
+				// Step 1.  Check for maintenance window, if found, skip the check
+
 				const maintenanceWindowActive = await this.isInMaintenanceWindow(monitorId, teamId);
 				if (maintenanceWindowActive) {
 					this.logger.debug({
@@ -67,6 +110,9 @@ class SuperSimpleQueueHelper {
 						service: SERVICE_NAME,
 						method: "getMonitorJob",
 					});
+					if (monitor.status !== "maintenance") {
+						await this.monitorsRepository.updateById(monitorId, teamId, { status: "maintenance" });
+					}
 					return;
 				}
 
@@ -78,17 +124,26 @@ class SuperSimpleQueueHelper {
 
 				// Step 3.  Build check
 				const check = await this.checkService.buildCheck(status);
-
+				if (!check) {
+					this.logger.warn({
+						message: `No check could be built for monitor ${monitorId}`,
+						service: SERVICE_NAME,
+						method: "getMonitorJob",
+						details: { code: status.code, message: status.message },
+					});
+					return;
+				}
 				// Step 4 Add check to buffer
-				this.buffer.addToBuffer({ check });
-
+				this.buffer.addToBuffer(check);
 				// Step 4.  Update monitor status
 				const statusChangeResult = await this.statusService.updateMonitorStatus(status, check);
 
-				// Step 5 handle notifications (best effort, continue even in event of failure, don't wait)
-				this.notificationsService
-					.handleNotifications(statusChangeResult.monitor, status, statusChangeResult.prevStatus, statusChangeResult.statusChanged)
-					.catch((error: any) => {
+				// Step 5.  Get decisions
+				const decision = this.evaluateMonitorAction(statusChangeResult);
+
+				// Step 6. Handle notifications (best effort, continue even in event of failure, don't wait)
+				if (decision.shouldSendNotification) {
+					this.notificationsService.handleNotifications(statusChangeResult.monitor, status, decision).catch((error: any) => {
 						this.logger.error({
 							message: error.message,
 							service: SERVICE_NAME,
@@ -97,24 +152,104 @@ class SuperSimpleQueueHelper {
 							stack: error.stack,
 						});
 					});
-
-				// Step 6.  Handle incidents (best effort, don't wait)
-				if (statusChangeResult.statusChanged) {
-					this.incidentService.handleIncident(statusChangeResult.monitor, statusChangeResult.code).catch((error: any) => {
-						this.logger.warn({
-							message: error.message,
-							service: SERVICE_NAME,
-							method: "getMonitorJob",
-							details: `Error handling incident for job ${monitor.id}: ${error.message}`,
-							stack: error.stack,
-						});
-					});
 				}
+
+				// Step 7. Handle incidents (best effort, don't wait)
+				this.incidentService.handleIncident(statusChangeResult.monitor, statusChangeResult.code, decision, status).catch((error: any) => {
+					this.logger.warn({
+						message: error.message,
+						service: SERVICE_NAME,
+						method: "getMonitorJob",
+						details: `Error handling incident for job ${monitor.id}: ${error.message}`,
+						stack: error.stack,
+					});
+				});
 			} catch (error: any) {
 				this.logger.warn({
 					message: error.message,
 					service: error.service || SERVICE_NAME,
 					method: error.method || "getMonitorJob",
+					stack: error.stack,
+				});
+				throw error;
+			}
+		};
+	};
+
+	getCleanupOrphanedJob = () => {
+		return async () => {
+			try {
+				this.logger.info({
+					message: "Starting cleanup of orphaned data",
+					service: SERVICE_NAME,
+					method: "getCleanupOrphanedJob",
+				});
+
+				// Get all valid team IDs
+				const validTeamIds = await this.teamsRepository.findAllTeamIds();
+				this.logger.debug({
+					message: `Found ${validTeamIds.length} valid teams`,
+					service: SERVICE_NAME,
+					method: "getCleanupOrphanedJob",
+				});
+
+				// Remove orphaned monitors (monitors without a valid team)
+				const deletedMonitorCount = await this.monitorsRepository.deleteByTeamIdsNotIn(validTeamIds);
+				if (deletedMonitorCount > 0) {
+					this.logger.info({
+						message: `Deleted ${deletedMonitorCount} orphaned monitors`,
+						service: SERVICE_NAME,
+						method: "getCleanupOrphanedJob",
+					});
+				}
+
+				// Remove orphaned monitorStats (stats without a valid monitor)
+				const allMonitorIds = await this.monitorsRepository.findAllMonitorIds();
+				this.logger.debug({
+					message: `Found ${allMonitorIds.length} valid monitors`,
+					service: SERVICE_NAME,
+					method: "getCleanupOrphanedJob",
+				});
+
+				const deletedStatsCount = await this.monitorStatsRepository.deleteByMonitorIdsNotIn(allMonitorIds);
+				if (deletedStatsCount > 0) {
+					this.logger.info({
+						message: `Deleted ${deletedStatsCount} orphaned monitor stats`,
+						service: SERVICE_NAME,
+						method: "getCleanupOrphanedJob",
+					});
+				}
+
+				// Remove orphaned checks
+				const deletedChecksCount = await this.checksRepository.deleteByMonitorIdsNotIn(allMonitorIds);
+				if (deletedChecksCount > 0) {
+					this.logger.info({
+						message: `Deleted ${deletedChecksCount} orphaned checks`,
+						service: SERVICE_NAME,
+						method: "getCleanupOrphanedJob",
+					});
+				}
+
+				// Remove orphaned incidents
+				const deletedIncidentsCount = await this.incidentsRepository.deleteByMonitorIdsNotIn(allMonitorIds);
+				if (deletedIncidentsCount > 0) {
+					this.logger.info({
+						message: `Deleted ${deletedIncidentsCount} orphaned incidents`,
+						service: SERVICE_NAME,
+						method: "getCleanupOrphanedJob",
+					});
+				}
+
+				this.logger.info({
+					message: "Cleanup of orphaned data completed",
+					service: SERVICE_NAME,
+					method: "getCleanupOrphanedJob",
+				});
+			} catch (error: any) {
+				this.logger.warn({
+					message: error.message,
+					service: SERVICE_NAME,
+					method: "getCleanupOrphanedJob",
 					stack: error.stack,
 				});
 				throw error;
@@ -150,6 +285,44 @@ class SuperSimpleQueueHelper {
 			return acc;
 		}, false);
 		return maintenanceWindowIsActive;
+	}
+
+	private evaluateMonitorAction(statusChangeResult: StatusChangeResult): MonitorActionDecision {
+		const { monitor, statusChanged, prevStatus } = statusChangeResult;
+
+		// Initialize result
+		const decision: MonitorActionDecision = {
+			shouldCreateIncident: false,
+			shouldResolveIncident: false,
+			shouldSendNotification: false,
+			incidentReason: null,
+			notificationReason: null,
+		};
+
+		if (!statusChanged) {
+			return decision;
+		}
+
+		if (monitor.status === "down") {
+			// Monitor went down (unreachable)
+			decision.shouldCreateIncident = true;
+			decision.shouldSendNotification = true;
+			decision.incidentReason = "status_down";
+			decision.notificationReason = "status_change";
+		} else if (monitor.status === "breached") {
+			// Hardware monitor exceeded thresholds
+			decision.shouldCreateIncident = true;
+			decision.shouldSendNotification = true;
+			decision.incidentReason = "threshold_breach";
+			decision.notificationReason = "threshold_breach";
+		} else if (monitor.status === "up" && (prevStatus === "down" || prevStatus === "breached")) {
+			// Monitor recovered from down or breached state
+			decision.shouldResolveIncident = true;
+			decision.shouldSendNotification = true;
+			decision.notificationReason = "status_change";
+		}
+
+		return decision;
 	}
 }
 

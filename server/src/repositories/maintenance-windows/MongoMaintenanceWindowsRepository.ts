@@ -33,6 +33,8 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 			teamId: this.toStringId(doc.teamId),
 			active: doc.active,
 			name: doc.name,
+			duration: doc.duration,
+			durationUnit: doc.durationUnit,
 			repeat: doc.repeat,
 			start: this.toDateString(doc.start),
 			end: this.toDateString(doc.end),

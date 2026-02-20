@@ -1,4 +1,5 @@
-import type { Invite } from "@/types/index.js";
+import type { Invite, UserRole } from "@/types/index.js";
+import { canManageRole } from "@/types/user.js";
 import type { IInvitesRepository } from "@/repositories/index.js";
 import { AppError } from "@/utils/AppError.js";
 
@@ -29,13 +30,42 @@ class InviteService {
 		return InviteService.SERVICE_NAME;
 	}
 
-	getInviteToken = async ({ invite, teamId }: { invite: Partial<Invite>; teamId: string }) => {
+	getInviteToken = async ({ invite, teamId, userRoles }: { invite: Partial<Invite>; teamId: string; userRoles: UserRole[] }) => {
 		invite.teamId = teamId;
+
+		const inviteRoles = invite.role ?? [];
+
+		for (const targetRole of inviteRoles) {
+			const canManage = userRoles.some((actorRole) => canManageRole(actorRole, targetRole));
+			if (!canManage) {
+				throw new AppError({
+					message: "You do not have permission to create this invite",
+					service: SERVICE_NAME,
+					method: "getInviteToken",
+					status: 403,
+				});
+			}
+		}
+
 		const inviteToken = await this.invitesRepository.create(invite);
 		return inviteToken;
 	};
 
-	sendInviteEmail = async ({ invite, firstName }: { invite: Partial<Invite>; firstName: any }) => {
+	sendInviteEmail = async ({ invite, firstName, userRoles }: { invite: Partial<Invite>; firstName: any; userRoles: UserRole[] }) => {
+		const inviteRoles = invite.role ?? [];
+
+		for (const targetRole of inviteRoles) {
+			const canManage = userRoles.some((actorRole) => canManageRole(actorRole, targetRole));
+			if (!canManage) {
+				throw new AppError({
+					message: "You do not have permission to create this invite",
+					service: SERVICE_NAME,
+					method: "getInviteToken",
+					status: 403,
+				});
+			}
+		}
+
 		const inviteToken = await this.invitesRepository.create(invite);
 		const { clientHost } = this.settingsService.getSettings();
 

@@ -19,7 +19,7 @@ class NotificationRoutes {
 
 		this.router.get("/:id", this.notificationController.getNotificationById);
 		this.router.delete("/:id", this.notificationController.deleteNotification);
-		this.router.put("/:id", this.notificationController.editNotification);
+		this.router.patch("/:id", this.notificationController.editNotification);
 	}
 
 	getRouter() {

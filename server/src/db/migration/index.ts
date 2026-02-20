@@ -1,5 +1,6 @@
 import { migrateStatusWindowThreshold } from "./0001_migrateStatusWindowThreshold.js";
 import { convertChecksToTimeSeries } from "./0002_convertChecksToTimeSeries.js";
+import { cleanupDuplicateMonitorStats } from "./0003_cleanupDuplicateMonitorStats.js";
 import MigrationModel from "../models/Migration.js";
 
 type MigrationEntry = {
@@ -10,6 +11,7 @@ type MigrationEntry = {
 const migrations: MigrationEntry[] = [
 	{ name: "0001_migrateStatusWindowThreshold", execute: migrateStatusWindowThreshold },
 	{ name: "0002_convertChecksToTimeSeries", execute: convertChecksToTimeSeries },
+	{ name: "0003_cleanupDuplicateMonitorStats", execute: cleanupDuplicateMonitorStats },
 ];
 
 const runMigrations = async (logger?: { info: Function; error: Function }) => {

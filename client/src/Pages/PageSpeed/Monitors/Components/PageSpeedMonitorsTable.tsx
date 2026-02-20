@@ -1,11 +1,11 @@
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { Table, Pagination, StatusLabel } from "@/Components/v2/design-elements";
-import { HistogramPageSpeed } from "@/Components/v2/monitors";
+import { Table, Pagination, StatusLabel } from "@/Components/design-elements";
+import { HistogramPageSpeed } from "@/Components/monitors";
 import { ArrowDown, ArrowUp } from "lucide-react";
-import type { Header } from "@/Components/v2/design-elements/Table";
-import { ActionsMenu } from "@/Components/v2/actions-menu";
+import type { Header } from "@/Components/design-elements/Table";
+import { ActionsMenu } from "@/Components/actions-menu";
 
 import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { usePatch } from "@/Hooks/UseApi";
 
 import type { Monitor, MonitorWithChecks } from "@/Types/Monitor";
-import type { ActionMenuItem } from "@/Components/v2/actions-menu";
+import type { ActionMenuItem } from "@/Components/actions-menu";
 
 export const PageSpeedMonitorsTable = ({
 	monitors,
@@ -248,6 +248,7 @@ export const PageSpeedMonitorsTable = ({
 				rowsPerPage={rowsPerPage}
 				onPageChange={handlePageChange}
 				onRowsPerPageChange={handleRowsPerPageChange}
+				itemsOnPage={monitors.length}
 			/>
 		</Box>
 	);

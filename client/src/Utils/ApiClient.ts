@@ -15,6 +15,15 @@ type StoreType = {
 let storeInstance: StoreType | null = null;
 let interceptorsInitialized = false;
 
+type ServerUnreachableCallback = (unreachable: boolean) => void;
+let serverUnreachableCallback: ServerUnreachableCallback | null = null;
+
+export const setServerUnreachableCallback = (
+	callback: ServerUnreachableCallback
+): void => {
+	serverUnreachableCallback = callback;
+};
+
 export const initApiClient = (store: StoreType): void => {
 	storeInstance = store;
 
@@ -39,10 +48,22 @@ export const initApiClient = (store: StoreType): void => {
 		}
 	);
 
-	const onSuccess = (response: AxiosResponse) => response;
+	const onSuccess = (response: AxiosResponse) => {
+		// Server is reachable, hide offline banner if shown
+		serverUnreachableCallback?.(false);
+		return response;
+	};
 	const onError = (error: AxiosError) => {
+		// Handle network errors (server unreachable)
+		if (error.code === "ERR_NETWORK") {
+			serverUnreachableCallback?.(true);
+			return Promise.reject(error);
+		}
+
 		if (error.response?.status === 401) {
-			window.location.href = "/login";
+			if (window.location.pathname !== "/login") {
+				window.location.href = "/login";
+			}
 		}
 		return Promise.reject(error);
 	};
@@ -66,6 +87,12 @@ export const patch = <T>(
 	data: unknown,
 	config: AxiosRequestConfig = {}
 ): Promise<AxiosResponse<T>> => api.patch<T>(url, data, config);
+
+export const put = <T>(
+	url: string,
+	data: unknown,
+	config: AxiosRequestConfig = {}
+): Promise<AxiosResponse<T>> => api.put<T>(url, data, config);
 
 export const deleteOp = <T>(
 	url: string,

@@ -2,7 +2,14 @@ import type { Check } from "@/types/index.js";
 
 const SERVICE_NAME = "BufferService";
 
-class BufferService {
+export interface IBufferService {
+	addToBuffer(check: Check): void;
+	removeCheckFromBuffer(check: Check): boolean;
+	scheduleNextFlush(): void;
+	flushBuffer(): Promise<void>;
+}
+
+class BufferService implements IBufferService {
 	static SERVICE_NAME = SERVICE_NAME;
 	private BUFFER_TIMEOUT: number;
 	private logger: any;
@@ -13,7 +20,6 @@ class BufferService {
 
 	constructor({ logger, checkService, settingsService }: { logger: any; checkService: any; settingsService: any }) {
 		this.BUFFER_TIMEOUT = settingsService.getSettings().nodeEnv === "development" ? 10 : 1000 * 60 * 1; // 1 minute
-		console.log(this.BUFFER_TIMEOUT);
 		this.logger = logger;
 		this.checksService = checkService;
 		this.SERVICE_NAME = SERVICE_NAME;
@@ -30,7 +36,7 @@ class BufferService {
 		return BufferService.SERVICE_NAME;
 	}
 
-	addToBuffer({ check }: { check: Check }) {
+	addToBuffer(check: Check) {
 		try {
 			this.buffer.push(check);
 		} catch (error: any) {
@@ -54,9 +60,9 @@ class BufferService {
 					return check.id.toString() === checkToRemove.id.toString();
 				}
 				return (
-					check.monitorId?.toString() === checkToRemove.metadata.monitorId &&
-					check.teamId?.toString() === checkToRemove.metadata.teamId &&
-					check.type === checkToRemove.metadata.type &&
+					check.metadata.monitorId?.toString() === checkToRemove.metadata.monitorId &&
+					check.metadata.teamId?.toString() === checkToRemove.metadata.teamId &&
+					check.metadata.type === checkToRemove.metadata.type &&
 					check.status === checkToRemove.status &&
 					check.statusCode === checkToRemove.statusCode &&
 					check.responseTime === checkToRemove.responseTime &&

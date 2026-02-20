@@ -58,6 +58,7 @@ class MongoIncidentRepository implements IIncidentsRepository {
 			statusCode: doc.statusCode ?? null,
 			resolutionType: doc.resolutionType ?? null,
 			resolvedBy: doc.resolvedBy ? this.toStringId(doc.resolvedBy) : null,
+			resolvedByEmail: doc.resolvedByEmail ?? null,
 			comment: doc.comment ?? null,
 			createdAt: this.toDateString(doc.createdAt),
 			updatedAt: this.toDateString(doc.updatedAt),
@@ -271,6 +272,20 @@ class MongoIncidentRepository implements IIncidentsRepository {
 				createdAt: this.toDateString(incident.createdAt),
 			})),
 		};
+	};
+
+	deleteByMonitorId = async (monitorId: string, teamId: string) => {
+		const result = await IncidentModel.deleteMany({
+			monitorId: new mongoose.Types.ObjectId(monitorId),
+			teamId: new mongoose.Types.ObjectId(teamId),
+		});
+		return result.deletedCount || 0;
+	};
+
+	deleteByMonitorIdsNotIn = async (monitorIds: string[]): Promise<number> => {
+		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		const result = await IncidentModel.deleteMany({ monitorId: { $nin: objectIds } });
+		return result.deletedCount ?? 0;
 	};
 }
 export default MongoIncidentRepository;

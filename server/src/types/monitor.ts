@@ -1,16 +1,11 @@
-import type { Check } from "@/types/check.js";
 import type { CheckSnapshot } from "@/types/check.js";
 export type { CheckSnapshot } from "@/types/check.js";
 
 export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "unknown"] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
-export interface MonitorThresholds {
-	usage_cpu?: number;
-	usage_memory?: number;
-	usage_disk?: number;
-	usage_temperature?: number;
-}
+export const MonitorStatuses = ["up", "down", "paused", "initializing", "maintenance", "breached"] as const;
+export type MonitorStatus = (typeof MonitorStatuses)[number];
 
 export type MonitorMatchMethod = "equal" | "include" | "regex" | "";
 
@@ -20,12 +15,13 @@ export interface Monitor {
 	teamId: string;
 	name: string;
 	description?: string;
-	status?: boolean;
+	status: MonitorStatus;
 	statusWindow: boolean[];
 	statusWindowSize: number;
 	statusWindowThreshold: number;
 	type: MonitorType;
 	ignoreTlsErrors: boolean;
+	useAdvancedMatching: boolean;
 	jsonPath?: string;
 	expectedValue?: string;
 	matchMethod?: MonitorMatchMethod;
@@ -36,12 +32,14 @@ export interface Monitor {
 	uptimePercentage?: number;
 	notifications: string[];
 	secret?: string;
-	thresholds?: MonitorThresholds;
-	alertThreshold: number;
 	cpuAlertThreshold: number;
+	cpuAlertCounter: number;
 	memoryAlertThreshold: number;
+	memoryAlertCounter: number;
 	diskAlertThreshold: number;
+	diskAlertCounter: number;
 	tempAlertThreshold: number;
+	tempAlertCounter: number;
 	selectedDisks: string[];
 	gameId?: string;
 	group: string | null;
@@ -55,6 +53,9 @@ export interface MonitorsSummary {
 	upMonitors: number;
 	downMonitors: number;
 	pausedMonitors: number;
+	initializingMonitors: number;
+	maintenanceMonitors: number;
+	breachedMonitors: number;
 }
 
 export interface MonitorsWithChecksByTeamIdResult {
@@ -75,42 +76,52 @@ export interface UptimeDetailsResult {
 	monitorStats: import("./monitorStats.js").MonitorStats | null;
 }
 
-export interface HardwareDetailsResult extends Monitor {
-	stats: {
-		aggregateData: {
-			totalChecks: number;
-		};
-		upChecks: {
-			totalChecks: number;
-		};
-		checks: Array<{
-			_id: string;
-			avgCpuUsage: number;
-			avgMemoryUsage: number;
-			avgTemperature: number[];
-			disks: Array<{
-				name: string;
-				readSpeed: number;
-				writeSpeed: number;
-				totalBytes: number;
-				freeBytes: number;
-				usagePercent: number;
-			}>;
-			net: Array<{
-				name: string;
-				bytesSentPerSecond: number;
-				deltaBytesRecv: number;
-				deltaPacketsSent: number;
-				deltaPacketsRecv: number;
-				deltaErrIn: number;
-				deltaErrOut: number;
-				deltaDropIn: number;
-				deltaDropOut: number;
-				deltaFifoIn: number;
-				deltaFifoOut: number;
-			}>;
-		}>;
+export interface HardwareDiskStats {
+	name: string;
+	readSpeed: number;
+	writeSpeed: number;
+	totalBytes: number;
+	freeBytes: number;
+	usagePercent: number;
+}
+
+export interface HardwareNetStats {
+	name: string;
+	bytesSentPerSecond: number;
+	deltaBytesRecv: number;
+	deltaPacketsSent: number;
+	deltaPacketsRecv: number;
+	deltaErrIn: number;
+	deltaErrOut: number;
+	deltaDropIn: number;
+	deltaDropOut: number;
+	deltaFifoIn: number;
+	deltaFifoOut: number;
+}
+
+export interface HardwareCheckStats {
+	bucketDate: string;
+	avgCpuUsage: number;
+	avgMemoryUsage: number;
+	avgTemperature: number[];
+	disks: HardwareDiskStats[];
+	net: HardwareNetStats[];
+}
+
+export interface HardwareStats {
+	aggregateData: {
+		totalChecks: number;
 	};
+	upChecks: {
+		totalChecks: number;
+	};
+	checks: HardwareCheckStats[];
+}
+
+export interface HardwareDetailsResult {
+	monitor: Monitor;
+	stats: HardwareStats;
+	monitorStats: import("./monitorStats.js").MonitorStats | null;
 }
 
 export interface PageSpeedDetailsResult {
@@ -119,3 +130,18 @@ export interface PageSpeedDetailsResult {
 	};
 	monitorStats: import("./monitorStats.js").MonitorStats | null;
 }
+
+export interface Game {
+	name: string;
+	release_year?: number;
+	options?: {
+		port?: number;
+		port_query?: number;
+		protocol?: string;
+	};
+	extra?: {
+		old_id?: string;
+	};
+}
+
+export type GamesMap = Record<string, Game>;

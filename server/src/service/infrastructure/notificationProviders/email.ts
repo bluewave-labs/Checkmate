@@ -1,7 +1,9 @@
 const SERVICE_NAME = "EmailProvider";
 import type { Monitor, Notification, MonitorStatusResponse } from "@/types/index.js";
 import { INotificationProvider } from "@/service/index.js";
-import { buildHardwareAlerts, buildHardwareEmail, buildEmail, buildTestEmail } from "@/service/infrastructure/notificationProviders/utils.js";
+import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+import { buildTestEmail } from "@/service/infrastructure/notificationProviders/utils.js";
+import type { NotificationMessage } from "@/types/notificationMessage.js";
 
 export class EmailProvider implements INotificationProvider {
 	private emailService: any;
@@ -10,37 +12,6 @@ export class EmailProvider implements INotificationProvider {
 	constructor(emailService: any, logger: any) {
 		this.emailService = emailService;
 		this.logger = logger;
-	}
-
-	private buildHardwareEmail = (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
-		const { alertsToSend } = buildHardwareAlerts("HOST_PLACEHOLDER", monitor, monitorStatusResponse);
-		const html = buildHardwareEmail(this.emailService, monitor, alertsToSend);
-		return html;
-	};
-
-	async sendAlert(notification: Notification, monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): Promise<boolean> {
-		const subject = `Monitor ${monitor.name} infrastructure alerts`;
-		let html;
-		if (monitor.type === "hardware") {
-			html = this.buildHardwareEmail(monitor, monitorStatusResponse);
-		} else {
-			html = await buildEmail(this.emailService, monitor);
-		}
-
-		if (!notification.address) {
-			return false;
-		}
-
-		const messageId = await this.emailService.sendEmail(notification.address, subject, html);
-		if (!messageId) {
-			this.logger.warn({
-				message: "Email alert failed",
-				service: SERVICE_NAME,
-				method: "sendAlert",
-			});
-			return false;
-		}
-		return true;
 	}
 
 	async sendTestAlert(notification: Notification): Promise<boolean> {
@@ -57,5 +28,86 @@ export class EmailProvider implements INotificationProvider {
 			return false;
 		}
 		return true;
+	}
+
+	async sendMessage(notification: Notification, message: NotificationMessage): Promise<boolean> {
+		if (!notification.address) {
+			return false;
+		}
+
+		const subject = this.buildSubject(message);
+		const html = await this.buildEmailFromMessage(message);
+
+		const messageId = await this.emailService.sendEmail(notification.address, subject, html);
+		if (!messageId) {
+			this.logger.warn({
+				message: "Email notification failed",
+				service: SERVICE_NAME,
+				method: "sendMessage",
+			});
+			return false;
+		}
+		return true;
+	}
+
+	private buildSubject(message: NotificationMessage): string {
+		switch (message.type) {
+			case "monitor_down":
+				return `Monitor ${message.monitor.name} is down`;
+			case "monitor_up":
+				return `Monitor ${message.monitor.name} is back up`;
+			case "threshold_breach":
+				return `Monitor ${message.monitor.name} threshold breached`;
+			case "threshold_resolved":
+				return `Monitor ${message.monitor.name} thresholds resolved`;
+			default:
+				return `Alert: ${message.monitor.name}`;
+		}
+	}
+
+	private async buildEmailFromMessage(message: NotificationMessage): Promise<string> {
+		const context = {
+			title: message.content.title,
+			summary: message.content.summary,
+			monitorName: message.monitor.name,
+			monitorUrl: message.monitor.url,
+			monitorType: message.monitor.type,
+			monitorStatus: message.monitor.status,
+			headerColor: this.getColorForSeverity(message.severity),
+			thresholds: message.content.thresholds,
+			details: message.content.details,
+			incidentUrl: message.content.incident?.url,
+		};
+
+		this.logger.info({
+			message: "[DEBUG] Building email from message",
+			service: SERVICE_NAME,
+			method: "buildEmailFromMessage",
+			details: { context },
+		});
+
+		const html = await this.emailService.buildEmail("unifiedNotificationTemplate", context);
+
+		this.logger.info({
+			message: "[DEBUG] Email HTML generated",
+			service: SERVICE_NAME,
+			method: "buildEmailFromMessage",
+			details: {
+				htmlLength: html?.length || 0,
+				htmlPreview: html?.substring(0, 200),
+			},
+		});
+
+		return html;
+	}
+
+	private getColorForSeverity(severity: string): string {
+		const colorMap: Record<string, string> = {
+			critical: "red",
+			warning: "#f59e0b",
+			info: "#3b82f6",
+			success: "green",
+		};
+		return colorMap[severity] ?? "#3b82f6";
 	}
 }

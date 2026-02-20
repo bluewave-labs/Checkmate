@@ -1,9 +1,0 @@
-.alert {
-	margin: 0;
-	width: fit-content;
-}
-.alert,
-.alert button,
-.alert .MuiTypography-root {
-	font-size: var(--env-var-font-size-medium);
-}

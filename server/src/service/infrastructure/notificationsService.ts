@@ -1,19 +1,19 @@
-import type { HardwareStatusPayload, Monitor, MonitorStatusResponse, Notification } from "@/types/index.js";
-import { shouldSendHardwareAlert } from "@/service/infrastructure/notificationProviders/utils.js";
+import type { HardwareStatusPayload, Monitor, MonitorStatusResponse, Notification, MonitorStatus } from "@/types/index.js";
+import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { IMonitorsRepository, INotificationsRepository } from "@/repositories/index.js";
 import { INotificationProvider } from "./notificationProviders/INotificationProvider.js";
+import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+import type { ISettingsService } from "@/service/system/settingsService.js";
+import { ILogger } from "@/utils/logger.js";
+import type { INotificationMessageBuilder } from "@/service/infrastructure/notificationMessageBuilder.js";
+
 export interface INotificationsService {
 	createNotification: (notificationData: Partial<Notification>) => Promise<Notification>;
 	findById: (id: string, teamId: string) => Promise<Notification>;
 	findNotificationsByTeamId: (teamId: string) => Promise<Notification[]>;
 	updateById(id: string, teamId: string, updateData: Partial<Notification>): Promise<Notification>;
 	deleteById: (id: string, teamId: string) => Promise<Notification>;
-	handleNotifications: (
-		monitor: Monitor,
-		monitorStatusResponse: MonitorStatusResponse,
-		prevStatus: boolean | undefined,
-		statusChanged: boolean
-	) => Promise<boolean>;
+	handleNotifications: (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => Promise<boolean>;
 
 	sendTestNotification: (notification: Notification) => Promise<boolean>;
 	testAllNotifications: (notificationIds: string[]) => Promise<boolean>;
@@ -32,7 +32,9 @@ export class NotificationsService implements INotificationsService {
 	private discordProvider: INotificationProvider;
 	private pagerDutyProvider: INotificationProvider;
 	private matrixProvider: INotificationProvider;
-	private logger: any;
+	private logger: ILogger;
+	private settingsService: ISettingsService;
+	private notificationMessageBuilder: INotificationMessageBuilder;
 
 	constructor(
 		notificationsRepository: INotificationsRepository,
@@ -43,7 +45,9 @@ export class NotificationsService implements INotificationsService {
 		discordProvider: INotificationProvider,
 		pagerDutyProvider: INotificationProvider,
 		matrixProvider: INotificationProvider,
-		logger: any
+		settingsService: ISettingsService,
+		logger: ILogger,
+		notificationMessageBuilder: INotificationMessageBuilder
 	) {
 		this.notificationsRepository = notificationsRepository;
 		this.monitorsRepository = monitorsRepository;
@@ -53,32 +57,62 @@ export class NotificationsService implements INotificationsService {
 		this.discordProvider = discordProvider;
 		this.pagerDutyProvider = pagerDutyProvider;
 		this.matrixProvider = matrixProvider;
+		this.settingsService = settingsService;
 		this.logger = logger;
+		this.notificationMessageBuilder = notificationMessageBuilder;
 	}
 
-	private send = async (notification: Notification, monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): Promise<boolean> => {
+	private send = async (
+		notification: Notification,
+		monitor: Monitor,
+		monitorStatusResponse: MonitorStatusResponse,
+		decision: MonitorActionDecision,
+		notificationMessage: NotificationMessage | undefined
+	): Promise<boolean> => {
+		if (!notificationMessage) {
+			this.logger.warn({
+				message: "Notification message not provided",
+				service: SERVICE_NAME,
+				method: "send",
+			});
+			return false;
+		}
+
+		// Route to provider based on notification type
 		switch (notification.type) {
-			case "email":
-				return await this.emailProvider.sendAlert(notification, monitor, monitorStatusResponse);
-			case "slack":
-				return await this.slackProvider.sendAlert(notification, monitor, monitorStatusResponse);
-			case "discord":
-				return await this.discordProvider.sendAlert(notification, monitor, monitorStatusResponse);
-			case "pager_duty":
-				return await this.pagerDutyProvider.sendAlert(notification, monitor, monitorStatusResponse);
-			case "matrix":
-				return await this.matrixProvider.sendAlert(notification, monitor, monitorStatusResponse);
 			case "webhook":
-				return await this.webhookProvider.sendAlert(notification, monitor, monitorStatusResponse);
+				return await this.webhookProvider.sendMessage!(notification, notificationMessage);
+			case "slack":
+				return await this.slackProvider.sendMessage!(notification, notificationMessage);
+			case "matrix":
+				return await this.matrixProvider.sendMessage!(notification, notificationMessage);
+			case "pager_duty":
+				return await this.pagerDutyProvider.sendMessage!(notification, notificationMessage);
+			case "discord":
+				return await this.discordProvider.sendMessage!(notification, notificationMessage);
+			case "email":
+				return await this.emailProvider.sendMessage!(notification, notificationMessage);
 			default:
+				this.logger.warn({
+					message: `Unknown notification type: ${notification.type}`,
+					service: SERVICE_NAME,
+					method: "send",
+				});
 				return false;
 		}
 	};
 
-	private sendNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse) => {
+	private sendNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {
 		const notificationIds = monitor.notifications ?? [];
 		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
-		const tasks = notifications.map((notification) => this.send(notification, monitor, monitorStatusResponse));
+
+		// Build notification message once for all notifications
+		const settings = this.settingsService.getSettings();
+		const clientHost = settings.clientHost || "Host not defined";
+		const notificationMessage = this.notificationMessageBuilder.buildMessage(monitor, monitorStatusResponse, decision, clientHost);
+
+		const tasks = notifications.map((notification) => this.send(notification, monitor, monitorStatusResponse, decision, notificationMessage));
+
 		const outcomes = await Promise.all(tasks);
 		const succeeded = outcomes.filter(Boolean).length;
 		const failed = outcomes.length - succeeded;
@@ -86,44 +120,20 @@ export class NotificationsService implements INotificationsService {
 			this.logger.warn({
 				message: `Notification send completed with ${succeeded} success, ${failed} failure(s)`,
 				service: SERVICE_NAME,
-				method: "getMonitorJob",
+				method: "sendNotifications",
 			});
 		}
-		// Return true if all notificaitons succeeded
+		// Return true if all notifications succeeded
 		return succeeded === notifications.length;
 	};
 
-	handleNotifications = async (
-		monitor: Monitor,
-		monitorStatusResponse: MonitorStatusResponse,
-		prevStatus: boolean | undefined,
-		statusChanged: boolean
-	) => {
-		const { type } = monitor;
-		const payload = monitorStatusResponse.payload as HardwareStatusPayload;
-		// If this is a non-hardeware type monitor and status did not change, we're done
-		if (type !== "hardware" && statusChanged === false) return false;
-		// if prevStatus is undefined, monitor is resuming, we're done
-		if (type !== "hardware" && prevStatus === undefined) return false;
-
-		// Deal with hardware thresholds
-		if (type === "hardware") {
-			const thresholds = monitor.thresholds;
-
-			if (thresholds === undefined) return false; // No thresholds set, we're done
-			const metrics = payload?.data ?? null;
-			if (metrics === null) return false; // No metrics, we're done
-
-			// We should send a notificaiton
-
-			const shouldSend = shouldSendHardwareAlert(monitor, monitorStatusResponse);
-			if (shouldSend === false) return false;
-
-			return await this.sendNotifications(monitor, monitorStatusResponse);
+	handleNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {
+		if (!decision.shouldSendNotification) {
+			return false;
 		}
 
-		// We should send a notification for non-hardware monitor status change
-		return await this.sendNotifications(monitor, monitorStatusResponse);
+		// Send notifications based on decision
+		return await this.sendNotifications(monitor, monitorStatusResponse, decision);
 	};
 
 	sendTestNotification = async (notification: Notification) => {

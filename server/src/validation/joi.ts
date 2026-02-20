@@ -51,9 +51,7 @@ const registrationBodyValidation = joi.object({
 		}),
 	password: joi.string().min(8).required().pattern(passwordPattern),
 	profileImage: joi.any(),
-	role: joi.array().items(joi.string().valid("superadmin", "admin", "user", "demo")),
-	teamId: joi.string().allow("").required(),
-	inviteToken: joi.string().allow("").required(),
+	inviteToken: joi.string().allow("").optional(),
 });
 
 const editUserBodyValidation = joi.object({
@@ -62,7 +60,7 @@ const editUserBodyValidation = joi.object({
 	profileImage: joi.any(),
 	newPassword: joi.string().min(8).pattern(passwordPattern),
 	password: joi.string().min(8).pattern(passwordPattern),
-	deleteProfileImage: joi.boolean(),
+	deleteProfileImage: joi.alternatives().try(joi.boolean(), joi.string().valid("true", "false")),
 });
 
 const recoveryValidation = joi.object({
@@ -152,26 +150,25 @@ const getCertificateParamValidation = joi.object({
 const createMonitorBodyValidation = joi.object({
 	_id: joi.string(),
 	name: joi.string().required(),
-	description: joi.string().required(),
+	description: joi.string().allow(null, ""),
 	type: joi.string().required(),
 	statusWindowSize: joi.number().min(1).max(20).default(5),
 	statusWindowThreshold: joi.number().min(1).max(100).default(60),
 	url: joi.string().required(),
 	ignoreTlsErrors: joi.boolean().default(false),
+	useAdvancedMatching: joi.boolean().default(false),
 	port: joi.number(),
 	isActive: joi.boolean(),
 	interval: joi.number(),
-	thresholds: joi.object().keys({
-		usage_cpu: joi.number(),
-		usage_memory: joi.number(),
-		usage_disk: joi.number(),
-		usage_temperature: joi.number(),
-	}),
+	cpuAlertThreshold: joi.number(),
+	memoryAlertThreshold: joi.number(),
+	diskAlertThreshold: joi.number(),
+	tempAlertThreshold: joi.number(),
 	notifications: joi.array().items(joi.string()),
 	secret: joi.string(),
 	jsonPath: joi.string().allow(""),
 	expectedValue: joi.string().allow(""),
-	matchMethod: joi.string(),
+	matchMethod: joi.string().allow(null, ""),
 	gameId: joi.string().allow(""),
 	selectedDisks: joi.array().items(joi.string()).optional(),
 	group: joi.string().max(50).trim().allow(null, "").optional(),
@@ -184,29 +181,30 @@ const createMonitorsBodyValidation = joi.array().items(
 	})
 );
 
-const editMonitorBodyValidation = joi.object({
-	name: joi.string(),
-	statusWindowSize: joi.number().min(1).max(20).default(5),
-	statusWindowThreshold: joi.number().min(1).max(100).default(60),
-	description: joi.string(),
-	interval: joi.number(),
-	notifications: joi.array().items(joi.string()),
-	secret: joi.string(),
-	ignoreTlsErrors: joi.boolean(),
-	jsonPath: joi.string().allow(""),
-	expectedValue: joi.string().allow(""),
-	matchMethod: joi.string().allow(null, ""),
-	port: joi.number().min(1).max(65535),
-	thresholds: joi.object().keys({
-		usage_cpu: joi.number(),
-		usage_memory: joi.number(),
-		usage_disk: joi.number(),
-		usage_temperature: joi.number(),
-	}),
-	gameId: joi.string(),
-	selectedDisks: joi.array().items(joi.string()).optional(),
-	group: joi.string().max(50).trim().allow(null, "").optional(),
-});
+const editMonitorBodyValidation = joi
+	.object({
+		name: joi.string(),
+		statusWindowSize: joi.number().min(1).max(20).default(5),
+		statusWindowThreshold: joi.number().min(1).max(100).default(60),
+		description: joi.string().allow(null, ""),
+		interval: joi.number(),
+		notifications: joi.array().items(joi.string()),
+		secret: joi.string(),
+		ignoreTlsErrors: joi.boolean(),
+		useAdvancedMatching: joi.boolean(),
+		jsonPath: joi.string().allow(""),
+		expectedValue: joi.string().allow(""),
+		matchMethod: joi.string().allow(null, ""),
+		port: joi.number().min(1).max(65535),
+		cpuAlertThreshold: joi.number(),
+		memoryAlertThreshold: joi.number(),
+		diskAlertThreshold: joi.number(),
+		tempAlertThreshold: joi.number(),
+		gameId: joi.string().allow(""),
+		selectedDisks: joi.array().items(joi.string()).optional(),
+		group: joi.string().max(50).trim().allow(null, "").optional(),
+	})
+	.options({ stripUnknown: true });
 
 const pauseMonitorParamValidation = joi.object({
 	monitorId: joi.string().required(),
@@ -364,6 +362,8 @@ const createMaintenanceWindowBodyValidation = joi.object({
 	monitors: joi.array().items(joi.string()).required(),
 	name: joi.string().required(),
 	active: joi.boolean(),
+	duration: joi.number().required(),
+	durationUnit: joi.string().valid("seconds", "minutes", "hours", "days").required(),
 	start: joi.date().required(),
 	end: joi.date().required(),
 	repeat: joi.number().required(),
@@ -402,6 +402,8 @@ const editMaintenanceByIdWindowBodyValidation = joi.object({
 	end: joi.date(),
 	expiry: joi.date(),
 	monitors: joi.array(),
+	duration: joi.number(),
+	durationUnit: joi.string().valid("seconds", "minutes", "hours", "days"),
 });
 
 //****************************************
@@ -418,8 +420,8 @@ const updateAppSettingsBodyValidation = joi.object({
 	systemEmailAddress: joi.string().allow(""),
 	systemEmailPassword: joi.string().allow(""),
 	systemEmailUser: joi.string().allow(""),
-	systemEmailConnectionHost: joi.string().allow("").optional(),
-	systemEmailTLSServername: joi.string().allow("").optional(),
+	systemEmailConnectionHost: joi.string().allow(""),
+	systemEmailTLSServername: joi.string().allow(""),
 	systemEmailSecure: joi.boolean(),
 	systemEmailPool: joi.boolean(),
 	systemEmailIgnoreTLS: joi.boolean(),
@@ -428,10 +430,10 @@ const updateAppSettingsBodyValidation = joi.object({
 
 	globalThresholds: joi
 		.object({
-			cpu: joi.number().min(1).max(100).allow("").optional(),
-			memory: joi.number().min(1).max(100).allow("").optional(),
-			disk: joi.number().min(1).max(100).allow("").optional(),
-			temperature: joi.number().min(1).max(150).allow("").optional(),
+			cpu: joi.number().min(1).max(100).allow(""),
+			memory: joi.number().min(1).max(100).allow(""),
+			disk: joi.number().min(1).max(100).allow(""),
+			temperature: joi.number().min(1).max(150).allow(""),
 		})
 		.optional(),
 });
@@ -480,6 +482,7 @@ const createStatusPageBodyValidation = joi.object({
 	showCharts: joi.boolean().optional(),
 	showUptimePercentage: joi.boolean(),
 	showAdminLoginLink: joi.boolean().optional(),
+	removeLogo: joi.string().valid("true", "false").optional(),
 });
 
 const imageValidation = joi
@@ -686,7 +689,6 @@ const editUserByIdParamValidation = joi.object({
 const editUserByIdBodyValidation = joi.object({
 	firstName: nameValidation.required(),
 	lastName: nameValidation.required(),
-	email: joi.string().email().required(),
 	role: joi
 		.array()
 		.items(joi.string().valid(...UserRoles))
@@ -697,7 +699,6 @@ const editUserByIdBodyValidation = joi.object({
 const editSuperadminUserByIdBodyValidation = joi.object({
 	firstName: nameValidation.required(),
 	lastName: nameValidation.required(),
-	email: joi.string().email().required(),
 	role: joi
 		.array()
 		.items(joi.string().valid(...UserRoles))
@@ -707,6 +708,28 @@ const editSuperadminUserByIdBodyValidation = joi.object({
 
 const editUserPasswordByIdBodyValidation = joi.object({
 	password: joi.string().min(8).required().pattern(passwordPattern),
+});
+
+const createUserBodyValidation = joi.object({
+	firstName: nameValidation.required(),
+	lastName: nameValidation.required(),
+	email: joi
+		.string()
+		.email()
+		.required()
+		.custom((value, helpers) => {
+			const lowercasedValue = value.toLowerCase();
+			if (value !== lowercasedValue) {
+				return helpers.message({ custom: "Email must be in lowercase" });
+			}
+			return lowercasedValue;
+		}),
+	password: joi.string().min(8).required().pattern(passwordPattern),
+	role: joi
+		.array()
+		.items(joi.string().valid(...UserRoles))
+		.min(1)
+		.required(),
 });
 
 export {
@@ -778,4 +801,5 @@ export {
 	editUserByIdBodyValidation,
 	editSuperadminUserByIdBodyValidation,
 	editUserPasswordByIdBodyValidation,
+	createUserBodyValidation,
 };

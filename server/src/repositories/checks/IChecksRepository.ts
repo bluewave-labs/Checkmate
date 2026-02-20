@@ -11,6 +11,7 @@ import type { LatestChecksMap } from "@/repositories/checks/MongoChecksRepistory
 
 export interface IChecksRepository {
 	// create
+	create(check: Check): Promise<Check>;
 	createChecks(checks: Check[]): Promise<Check[]>;
 
 	// single fetch
@@ -38,4 +39,5 @@ export interface IChecksRepository {
 	//delete
 	deleteByMonitorId(monitorId: string): Promise<number>;
 	deleteByTeamId(teamId: string): Promise<number>;
+	deleteByMonitorIdsNotIn(monitorIds: string[]): Promise<number>;
 }

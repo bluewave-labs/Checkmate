@@ -1,13 +1,13 @@
-import { BasePage } from "@/Components/v2/design-elements";
+import { BasePage } from "@/Components/design-elements";
 import type { PageSpeedDetailsResponse } from "@/Types/Monitor";
-import { HeaderMonitorControls } from "@/Components/v2/common";
 import Stack from "@mui/material/Stack";
 import {
 	HistogramPageSpeedDetails,
 	PiePageSpeed,
 	PiePageSpeedLegend,
 	MonitorStatBoxes,
-} from "@/Components/v2/monitors";
+	HeaderMonitorControls,
+} from "@/Components/monitors";
 
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import { useGet } from "@/Hooks/UseApi";
