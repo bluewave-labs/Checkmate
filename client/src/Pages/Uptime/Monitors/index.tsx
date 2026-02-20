@@ -1,9 +1,9 @@
-import { ControlsFilter, HeaderMonitorsSummary } from "@/Components/v2/monitors";
-import { MonitorBasePageWithStates } from "@/Components/v2/design-elements";
-import { TextField, Dialog } from "@/Components/v2/inputs";
+import { ControlsFilter, HeaderMonitorsSummary } from "@/Components/monitors";
+import { MonitorBasePageWithStates } from "@/Components/design-elements";
+import { TextField, Dialog } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
 import { MonitorTable } from "@/Pages/Uptime/Monitors/Components/UptimeMonitorsTable";
-import { HeaderCreate } from "@/Components/v2/common";
+import { HeaderCreate } from "@/Components/common";
 
 import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";

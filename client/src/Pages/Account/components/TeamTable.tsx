@@ -1,8 +1,8 @@
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Table } from "@/Components/v2/design-elements";
-import type { Header } from "@/Components/v2/design-elements/Table";
+import { Table } from "@/Components/design-elements";
+import type { Header } from "@/Components/design-elements/Table";
 import { useIsSuperAdmin } from "@/Hooks/useIsAdmin";
 import type { User } from "@/Types/User";
 

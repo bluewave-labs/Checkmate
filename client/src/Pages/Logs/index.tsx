@@ -1,4 +1,4 @@
-import { BasePage, Tabs, Tab } from "@/Components/v2/design-elements";
+import { BasePage, Tabs, Tab } from "@/Components/design-elements";
 import { TabLogs } from "@/Pages/Logs/TabLogs";
 import { TabQueue } from "@/Pages/Logs/TabQueue";
 import { TabDiagnostics } from "@/Pages/Logs/TabDiagnostics";

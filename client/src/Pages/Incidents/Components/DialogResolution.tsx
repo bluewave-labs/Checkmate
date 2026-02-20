@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
-import { Dialog, TextField } from "@/Components/v2/inputs";
+import { Dialog, TextField } from "@/Components/inputs";
 import { usePut } from "@/Hooks/UseApi";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material";

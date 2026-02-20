@@ -1,7 +1,7 @@
-import { ActionsMenu, type ActionMenuItem } from "@/Components/v2/actions-menu";
+import { ActionsMenu, type ActionMenuItem } from "@/Components/actions-menu";
 import Typography from "@mui/material/Typography";
-import type { Header } from "@/Components/v2/design-elements/Table";
-import { Table } from "@/Components/v2/design-elements";
+import type { Header } from "@/Components/design-elements/Table";
+import { Table } from "@/Components/design-elements";
 
 import type { Notification } from "@/Types/Notification";
 import { useNavigate } from "react-router";

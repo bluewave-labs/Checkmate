@@ -1,5 +1,5 @@
-import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
-import { TextField, Select, Button } from "@/Components/v2/inputs";
+import { BasePage, ConfigBox } from "@/Components/design-elements";
+import { TextField, Select, Button } from "@/Components/inputs";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";

@@ -1,7 +1,7 @@
-import { BasePageWithStates } from "@/Components/v2/design-elements";
+import { BasePageWithStates } from "@/Components/design-elements";
 import { NotificationsTable } from "@/Pages/Notifications/components/NotificationsTable";
-import { Dialog } from "@/Components/v2/inputs";
-import { HeaderCreate } from "@/Components/v2/common";
+import { Dialog } from "@/Components/inputs";
+import { HeaderCreate } from "@/Components/common";
 
 import { useState } from "react";
 import { useGet, useDelete } from "@/Hooks/UseApi";

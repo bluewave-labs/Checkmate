@@ -5,7 +5,7 @@ import { ToastContainer } from "react-toastify";
 import { ThemeProvider } from "@emotion/react";
 import { CssBaseline, GlobalStyles } from "@mui/material";
 import { Routes } from "./Routes";
-import AppLayout from "@/Components/v2/layout/AppLayout";
+import AppLayout from "@/Components/layout/AppLayout";
 import type { RootState } from "@/Types/state";
 import { lightTheme, darkTheme } from "@/Utils/Theme/Theme";
 

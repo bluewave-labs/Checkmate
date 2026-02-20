@@ -14,9 +14,9 @@ import Link from "@mui/material/Link";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import { Trash2 } from "lucide-react";
-import { HeaderDeleteControls } from "@/Components/v2/monitors";
+import { HeaderDeleteControls } from "@/Components/monitors";
 
-import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
+import { BasePage, ConfigBox } from "@/Components/design-elements";
 import {
 	RadioWithDescription,
 	Button,
@@ -26,7 +26,7 @@ import {
 	SwitchComponent as Switch,
 	SliderWithLabel,
 	Dialog,
-} from "@/Components/v2/inputs";
+} from "@/Components/inputs";
 import { useGet, usePost, usePatch, useDelete } from "@/Hooks/UseApi";
 import { useMonitorForm } from "@/Hooks/useMonitorForm";
 import type { Monitor, MonitorType, GamesMap } from "@/Types/Monitor";
@@ -620,7 +620,7 @@ const CreateMonitorPage = () => {
 						name="notifications"
 						control={control}
 						render={({ field }) => {
-							// Map notifications to have 'name' property for v2 Autocomplete
+							// Map notifications to have 'name' property for Autocomplete
 							const notificationOptions = (notifications ?? []).map((n) => ({
 								...n,
 								name: n.notificationName,

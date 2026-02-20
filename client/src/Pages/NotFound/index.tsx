@@ -1,5 +1,5 @@
 import NotFoundSvg from "@/assets/Images/sushi_404.svg";
-import { Button } from "@/Components/v2/inputs";
+import { Button } from "@/Components/inputs";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";

@@ -4,7 +4,7 @@ import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
-import { Dialog, TextField, Select } from "@/Components/v2/inputs";
+import { Dialog, TextField, Select } from "@/Components/inputs";
 import { useAddTeamMemberForm } from "@/Hooks/useAddTeamMemberForm";
 import type { AddTeamMemberFormData } from "@/Validation/addTeamMember";
 import type { UserRole, User } from "@/Types/User";

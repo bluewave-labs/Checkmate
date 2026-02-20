@@ -1,15 +1,15 @@
-import { BasePage } from "@/Components/v2/design-elements";
-import { HeaderTimeRange } from "@/Components/v2/common";
+import { BasePage } from "@/Components/design-elements";
+import { HeaderTimeRange } from "@/Components/common";
 import Stack from "@mui/material/Stack";
 import {
 	HistogramStatus,
 	RadialAvgResponse,
 	HistogramDetails,
 	HeaderMonitorControls,
-} from "@/Components/v2/monitors";
+} from "@/Components/monitors";
 import { TrendingUp, AlertTriangle } from "lucide-react";
 import { ChecksTable } from "@/Pages/Uptime/Details/Components/ChecksTable";
-import { MonitorStatBoxes } from "@/Components/v2/monitors";
+import { MonitorStatBoxes } from "@/Components/monitors";
 
 import { useTheme } from "@mui/material/styles";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";

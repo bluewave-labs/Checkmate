@@ -1,5 +1,5 @@
-import { BasePage, ConfigBox, TextLink } from "@/Components/v2/design-elements";
-import { Autocomplete, Select, Dialog, SwitchComponent } from "@/Components/v2/inputs";
+import { BasePage, ConfigBox, TextLink } from "@/Components/design-elements";
+import { Autocomplete, Select, Dialog, SwitchComponent } from "@/Components/inputs";
 import { Stack, useTheme, MenuItem, Link, type SelectChangeEvent } from "@mui/material";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -13,7 +13,7 @@ import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
 import type { SettingsFormData } from "@/Validation/settings";
 import { useState } from "react";
 import { Controller } from "react-hook-form";
-import { TextField, Button, FieldLabel } from "@/Components/v2/inputs";
+import { TextField, Button, FieldLabel } from "@/Components/inputs";
 import { Box, Typography } from "@mui/material";
 import { useDelete } from "@/Hooks/UseApi";
 

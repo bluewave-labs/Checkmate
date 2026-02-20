@@ -4,9 +4,9 @@ import {
 	TotalChecksBox,
 	UpChecksBox,
 	DownChecksBox,
-} from "@/Components/v2/design-elements";
-import { HeaderTimeRange } from "@/Components/v2/common";
-import { Select } from "@/Components/v2/inputs";
+} from "@/Components/design-elements";
+import { HeaderTimeRange } from "@/Components/common";
+import { Select } from "@/Components/inputs";
 import { ChecksTable } from "./Components/ChecksTable";
 
 import { MenuItem } from "@mui/material";

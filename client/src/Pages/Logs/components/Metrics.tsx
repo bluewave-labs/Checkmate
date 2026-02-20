@@ -1,5 +1,5 @@
 import Stack from "@mui/material/Stack";
-import { StatBox } from "@/Components/v2/design-elements";
+import { StatBox } from "@/Components/design-elements";
 
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";

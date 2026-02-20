@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes as LibRoutes } from "react-router";
-import RootLayout from "@/Components/v2/layout/RootLayout";
+import RootLayout from "@/Components/layout/RootLayout";
 import NotFound from "@/Pages/NotFound";
 
 // Auth
@@ -46,10 +46,7 @@ import CreateNewMaintenanceWindow from "@/Pages/Maintenance/create";
 import Logs from "@/Pages/Logs";
 
 // Routing
-import {
-	ProtectedRoute,
-	RoleProtectedRoute,
-} from "@/Components/v2/routing/RouteProtected";
+import { ProtectedRoute, RoleProtectedRoute } from "@/Components/routing/RouteProtected";
 
 import CreateMonitor from "@/Pages/CreateMonitor";
 

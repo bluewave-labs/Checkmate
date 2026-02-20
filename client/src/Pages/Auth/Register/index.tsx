@@ -1,5 +1,5 @@
-import { BaseAuthPage } from "@/Components/v2/design-elements";
-import { Button, TextField } from "@/Components/v2/inputs";
+import { BaseAuthPage } from "@/Components/design-elements";
+import { Button, TextField } from "@/Components/inputs";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { useRegisterForm } from "@/Hooks/useRegisterForm";

@@ -1,9 +1,9 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { Table } from "@/Components/v2/design-elements";
-import { Pagination } from "@/Components/v2/design-elements/Table";
+import { Table } from "@/Components/design-elements";
+import { Pagination } from "@/Components/design-elements/Table";
 import { useTheme } from "@mui/material";
-import type { Header } from "@/Components/v2/design-elements/Table";
+import type { Header } from "@/Components/design-elements/Table";
 import type { Log, LogLevel } from "@/Types/Log";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";

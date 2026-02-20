@@ -1,6 +1,6 @@
-import { Table, Pagination, StatusLabel } from "@/Components/v2/design-elements";
+import { Table, Pagination, StatusLabel } from "@/Components/design-elements";
 import Box from "@mui/material/Box";
-import type { Header } from "@/Components/v2/design-elements/";
+import type { Header } from "@/Components/design-elements";
 import type { Check } from "@/Types/Check";
 
 import { useNavigate } from "react-router";

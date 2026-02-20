@@ -4,7 +4,7 @@ import { useTheme, FormHelperText, Typography } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm, Controller } from "react-hook-form";
-import { Dialog, TextField, Select, Button } from "@/Components/v2/inputs";
+import { Dialog, TextField, Select, Button } from "@/Components/inputs";
 import type { UserRole } from "@/Types/User";
 import { useInviteForm } from "@/Hooks/useInviteForm";
 import type { InviteFormData } from "@/Validation/invite";

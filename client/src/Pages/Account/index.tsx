@@ -1,4 +1,4 @@
-import { BasePage, Tabs, Tab } from "@/Components/v2/design-elements";
+import { BasePage, Tabs, Tab } from "@/Components/design-elements";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { TabProfile } from "./TabProfile";

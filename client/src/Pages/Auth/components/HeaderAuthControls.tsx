@@ -1,7 +1,7 @@
 import Stack, { type StackProps } from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Logo from "@/assets/icons/checkmate-icon.svg?react";
-import { LanguageSelector, SwitchTheme } from "@/Components/v2/inputs";
+import { LanguageSelector, SwitchTheme } from "@/Components/inputs";
 
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";

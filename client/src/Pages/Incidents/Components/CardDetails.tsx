@@ -2,7 +2,7 @@ import Stack from "@mui/material/Stack";
 import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
-import { BaseBox, ValueLabel } from "@/Components/v2/design-elements";
+import { BaseBox, ValueLabel } from "@/Components/design-elements";
 
 import { useTranslation } from "react-i18next";
 import type { Incident } from "@/Types/Incident";

@@ -1,11 +1,6 @@
-import {
-	Table,
-	Pagination,
-	ValueLabel,
-	StatusLabel,
-} from "@/Components/v2/design-elements";
+import { Table, Pagination, ValueLabel, StatusLabel } from "@/Components/design-elements";
 import Box from "@mui/material/Box";
-import type { Header } from "@/Components/v2/design-elements/Table";
+import type { Header } from "@/Components/design-elements/Table";
 import type { Monitor } from "@/Types/Monitor";
 
 import { useTranslation } from "react-i18next";
