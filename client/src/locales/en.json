@@ -43,7 +43,8 @@
 			"clear": "Clear",
 			"addDemo": "Add demo monitors",
 			"removeMonitors": "Remove monitors",
-			"sendTestEmail": "Send test email"
+			"sendTestEmail": "Send test email",
+			"exportToJSON": "Export to JSON"
 		},
 		"charts": {
 			"labels": {
@@ -1083,6 +1084,14 @@
 						"title": "Remove all monitors?",
 						"description": "This cannot be undone."
 					}
+				},
+				"exportMonitors": {
+					"title": "Export monitors",
+					"description": "Export your monitors data as a JSON file for backup or transfer."
+				},
+				"about": {
+					"title": "About",
+					"developedBy": "Developed by Bluewave Labs"
 				}
 			}
 		},

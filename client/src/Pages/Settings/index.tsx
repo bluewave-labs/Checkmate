@@ -1,13 +1,13 @@
 import { BasePage, ConfigBox, TextLink } from "@/Components/v2/design-elements";
 import { Autocomplete, Select, Dialog, SwitchComponent } from "@/Components/v2/inputs";
-import { Stack, useTheme, MenuItem, type SelectChangeEvent } from "@mui/material";
+import { Stack, useTheme, MenuItem, Link, type SelectChangeEvent } from "@mui/material";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import DummyChart from "@/Pages/Settings/DummyChart";
-import { useGet, usePatch, usePost } from "@/Hooks/UseApi";
+import { useGet, usePatch, usePost, useLazyGet } from "@/Hooks/UseApi";
 import { useSettingsForm } from "@/Hooks/useSettingsForm";
 import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
 import type { SettingsFormData } from "@/Validation/settings";
@@ -69,6 +69,8 @@ export const SettingsPage = () => {
 	// Local state for clear stats dialog
 	const [isStatsDialogOpen, setIsStatsDialogOpen] = useState(false);
 	const { deleteFn: deleteStats, loading: isDeletingStats } = useDelete();
+	// Export monitors functionality
+	const { get: fetchMonitorsJson } = useLazyGet();
 
 	// Initialize form with schema and defaults
 	const { schema, defaults } = useSettingsForm({ data: fetchedSettings?.settings });
@@ -177,6 +179,27 @@ export const SettingsPage = () => {
 	const handleClearStats = async () => {
 		await deleteStats("/checks/team");
 		setIsStatsDialogOpen(false);
+	};
+
+	const handleExportMonitors = async () => {
+		const res = await fetchMonitorsJson("/monitors/export/json");
+		const json = res?.data ?? [];
+		if (!json || json.length === 0) {
+			return;
+		}
+
+		const blob = new Blob([JSON.stringify(json, null, 2)], {
+			type: "application/json",
+		});
+		const url = URL.createObjectURL(blob);
+
+		const link = document.createElement("a");
+		link.href = url;
+		link.download = "monitors.json";
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		URL.revokeObjectURL(url);
 	};
 
 	const onSubmit = async (data: SettingsFormData) => {
@@ -839,6 +862,50 @@ export const SettingsPage = () => {
 					}
 				/>
 			)}
+
+			{/* Export Monitors - Admin Only */}
+			{isAdmin && (
+				<ConfigBox
+					title={t("pages.settings.form.exportMonitors.title")}
+					subtitle={t("pages.settings.form.exportMonitors.description")}
+					rightContent={
+						<Box>
+							<Button
+								variant="contained"
+								onClick={handleExportMonitors}
+							>
+								{t("common.buttons.exportToJSON")}
+							</Button>
+						</Box>
+					}
+				/>
+			)}
+
+			{/* About */}
+			<ConfigBox
+				title={t("pages.settings.form.about.title")}
+				subtitle=""
+				rightContent={
+					<Stack spacing={2}>
+						<Typography variant="body1">
+							{t("common.appName")} {__APP_VERSION__}
+						</Typography>
+						<Typography
+							variant="body2"
+							sx={{ opacity: 0.6 }}
+						>
+							{t("pages.settings.form.about.developedBy")}
+						</Typography>
+						<Link
+							href="https://github.com/bluewave-labs/checkmate"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							https://github.com/bluewave-labs/checkmate
+						</Link>
+					</Stack>
+				}
+			/>
 
 			{/* Clear Stats Confirmation Dialog */}
 			<Dialog
