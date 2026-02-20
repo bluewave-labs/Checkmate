@@ -28,18 +28,20 @@ export const createApp = ({
 }) => {
 	const allowedOrigin = envSettings.clientHost;
 	const app = express();
+
 	app.use(generalApiLimiter);
-	// Static files
-	app.use(express.static(frontendPath));
 
 	app.use(
 		cors({
 			origin: allowedOrigin,
 			methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-			allowedHeaders: ["Content-Type", "Authorization"],
+			allowedHeaders: ["Content-Type", "Authorization", "Accept-Language"],
 			credentials: true,
 		})
 	);
+
+	app.use(express.static(frontendPath));
+
 	app.use(express.json());
 	app.use(cookieParser());
 

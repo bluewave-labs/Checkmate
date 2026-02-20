@@ -2,6 +2,11 @@ export const StatusPageTypes = ["uptime"] as const;
 export type StatusPageType = (typeof StatusPageTypes)[number];
 
 export interface StatusPageLogo {
+	data: string;
+	contentType: string;
+}
+
+export interface StatusPageLogoDocument {
 	data: Buffer;
 	contentType: string;
 }

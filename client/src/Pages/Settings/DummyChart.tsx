@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
-import { HeatmapResponseTime, HistogramResponseTime } from "@/Components/v2/common";
+import { HeatmapResponseTime, HistogramResponseTime } from "@/Components/common";
 import type { CheckSnapshot } from "@/Types/Check";
 
 interface DummyChartProps {
@@ -12,11 +12,13 @@ const generateDummyChecks = (): CheckSnapshot[] => {
 	const checks: CheckSnapshot[] = [];
 	for (let i = 0; i < 25; i++) {
 		const isUp = Math.random() > 0.1;
+		const responseTime = Math.floor(Math.random() * 80) + 20;
 		checks.push({
 			id: `dummy-${i}`,
 			status: isUp,
 			statusCode: isUp ? 200 : 500,
-			responseTime: Math.floor(Math.random() * 80) + 20,
+			responseTime: responseTime,
+			originalResponseTime: responseTime,
 			message: "",
 			createdAt: new Date(Date.now() - i * 60000).toISOString(),
 		});

@@ -12,6 +12,7 @@ export interface CheckCpuInfo {
 	physical_core?: number;
 	logical_core?: number;
 	frequency?: number;
+	current_frequency?: number;
 	temperature?: number[];
 	free_percent?: number;
 	usage_percent?: number;
@@ -28,6 +29,7 @@ export interface CheckHostInfo {
 	os?: string;
 	platform?: string;
 	kernel_version?: string;
+	pretty_name?: string;
 }
 
 export interface CheckCaptureInfo {
@@ -38,11 +40,18 @@ export interface CheckCaptureInfo {
 export interface CheckDiskInfo {
 	device?: string;
 	mountpoint?: string;
-	read_speed_bytes?: number;
-	write_speed_bytes?: number;
 	total_bytes?: number;
 	free_bytes?: number;
+	used_bytes?: number;
 	usage_percent?: number;
+	total_inodes?: number;
+	free_inodes?: number;
+	used_inodes?: number;
+	inodes_usage_percent?: number;
+	read_bytes?: number;
+	write_bytes?: number;
+	read_time?: number;
+	write_time?: number;
 }
 
 export interface CheckErrorInfo {
@@ -127,7 +136,7 @@ export interface HardwareChecksResult {
 		totalChecks: number;
 	};
 	checks: Array<{
-		_id: string;
+		bucketDate: string;
 		avgCpuUsage: number;
 		avgMemoryUsage: number;
 		avgTemperature: number[];
@@ -172,9 +181,7 @@ export interface UptimeChecksResult {
 
 export interface ChecksSummary {
 	totalChecks: number;
-	resolvedChecks: number;
 	downChecks: number;
-	cannotResolveChecks: number;
 }
 
 export interface HasResponseTime {

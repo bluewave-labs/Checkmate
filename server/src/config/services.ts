@@ -23,6 +23,7 @@ import MaintenanceWindowService from "../service/business/maintenanceWindowServi
 import { MonitorService } from "@/service/index.js";
 import { StatusPageService, IStatusPageService } from "../service/business/statusPageService.js";
 import IncidentService from "../service/business/incidentService.js";
+import { NotificationMessageBuilder, INotificationMessageBuilder } from "../service/infrastructure/notificationMessageBuilder.js";
 import axios from "axios";
 import got from "got";
 import ping from "ping";
@@ -40,18 +41,6 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { games, GameDig } from "gamedig";
 import jmespath from "jmespath";
-
-// DB Modules
-import { GenerateAvatarImage } from "../utils/imageProcessing.js";
-import { ParseBoolean } from "../utils/utils.js";
-
-// Models
-import InviteToken from "../db/models/Invite.js";
-import Team from "../db/models/Team.js";
-import MaintenanceWindow from "../db/models/MaintenanceWindow.js";
-import MonitorStats from "../db/models/MonitorStats.js";
-import NotificationModel from "../db/models/Notification.js";
-import RecoveryToken from "../db/models/RecoveryToken.js";
 
 // repositories
 import {
@@ -100,6 +89,7 @@ export type InitializedServices = {
 	logger: any;
 	notificationsService: INotificationsService;
 	statusPageService: IStatusPageService;
+	notificationMessageBuilder: INotificationMessageBuilder;
 
 	// Repositories
 	monitorsRepository: IMonitorsRepository;
@@ -161,11 +151,14 @@ export const initializeServices = async ({
 	});
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 
+	const notificationMessageBuilder = new NotificationMessageBuilder();
+
 	const incidentService = new IncidentService({
 		logger,
 		incidentsRepository,
 		monitorsRepository,
 		usersRepository,
+		notificationMessageBuilder,
 	});
 
 	const checkService = new CheckService({
@@ -176,7 +169,7 @@ export const initializeServices = async ({
 
 	const bufferService = new BufferService({ logger, checkService, settingsService });
 
-	const statusService = new StatusService({ logger, buffer: bufferService, monitorsRepository });
+	const statusService = new StatusService(logger, bufferService, monitorsRepository, monitorStatsRepository, checksRepository);
 
 	const webhookProvider = new WebhookProvider(logger);
 	const slackProvider = new SlackProvider(logger);
@@ -194,7 +187,9 @@ export const initializeServices = async ({
 		discordProvider,
 		pagerDutyProvider,
 		matrixProvider,
-		logger
+		settingsService,
+		logger,
+		notificationMessageBuilder
 	);
 
 	const superSimpleQueueHelper = new SuperSimpleQueueHelper({
@@ -206,6 +201,11 @@ export const initializeServices = async ({
 		buffer: bufferService,
 		incidentService,
 		maintenanceWindowsRepository,
+		monitorsRepository,
+		teamsRepository,
+		monitorStatsRepository,
+		checksRepository,
+		incidentsRepository,
 	});
 
 	const superSimpleQueue = await SuperSimpleQueue.create({
@@ -249,6 +249,7 @@ export const initializeServices = async ({
 		checksRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
+		incidentsRepository,
 	});
 
 	const statusPageService = new StatusPageService(statusPagesRepository);
@@ -272,6 +273,7 @@ export const initializeServices = async ({
 		logger,
 		notificationsService,
 		statusPageService,
+		notificationMessageBuilder,
 
 		// Repositories
 		monitorsRepository,

@@ -14,6 +14,7 @@ export interface Incident {
 	statusCode?: number | null;
 	resolutionType: IncidentResolutionType;
 	resolvedBy?: string | null;
+	resolvedByEmail?: string | null;
 	comment?: string | null;
 	createdAt: string;
 	updatedAt: string;

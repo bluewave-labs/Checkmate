@@ -1,13 +1,15 @@
-import { BasePage } from "@/Components/v2/design-elements";
-import { HeaderMonitorControls, HeaderTimeRange } from "@/Components/v2/common";
+import { BasePage } from "@/Components/design-elements";
+import { HeaderTimeRange } from "@/Components/common";
 import Stack from "@mui/material/Stack";
 import {
 	HistogramStatus,
 	RadialAvgResponse,
 	HistogramDetails,
-} from "@/Components/v2/monitors";
+	HeaderMonitorControls,
+} from "@/Components/monitors";
 import { TrendingUp, AlertTriangle } from "lucide-react";
 import { ChecksTable } from "@/Pages/Uptime/Details/Components/ChecksTable";
+import { MonitorStatBoxes } from "@/Components/monitors";
 
 import { useTheme } from "@mui/material/styles";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
@@ -18,8 +20,7 @@ import { useGet } from "@/Hooks/UseApi";
 import type { MonitorDetailsResponse } from "@/Types/Monitor";
 import type { ChecksResponse } from "@/Types/Check";
 import type { RootState } from "@/Types/state";
-import { MonitorStatBoxes } from "@/Components/v2/monitors";
-import { formatDateWithTz } from "@/Utils/timeUtilsLegacy";
+import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { t } from "i18next";
 
 const certificateDateFormat = "MMM D, YYYY h A";

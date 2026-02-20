@@ -7,6 +7,7 @@ import {
 	ITeamsRepository,
 } from "@/repositories/index.js";
 import type { User } from "@/types/index.js";
+import { canManageRole, type UserRole } from "@/types/user.js";
 import bcrypt from "bcryptjs";
 import { AppError } from "@/utils/AppError.js";
 import { ISuperSimpleQueue } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
@@ -15,6 +16,11 @@ const SERVICE_NAME = "userService";
 
 class UserService {
 	static SERVICE_NAME = SERVICE_NAME;
+
+	private hashPassword = (password: string): string => {
+		const salt = bcrypt.genSaltSync(10);
+		return bcrypt.hashSync(password, salt);
+	};
 
 	private emailService: any;
 	private settingsService: any;
@@ -87,8 +93,9 @@ class UserService {
 		const superAdminExists = await this.usersRepository.findSuperAdmin();
 		if (superAdminExists) {
 			const invite = await this.invitesRepository.findByTokenAndDelete(inviteToken);
-			user.role = invite.role;
+			user.role = invite.role ?? ["user"];
 			user.teamId = invite.teamId;
+			user.email = invite.email;
 		} else {
 			// This is the first account, create JWT secret to use if one is not supplied by env
 			const jwtSecret = this.crypto.randomBytes(64).toString("hex");
@@ -99,9 +106,15 @@ class UserService {
 			}
 			const team = await this.teamsRepository.create(user.email);
 			user.teamId = team.id;
+			user.role = ["superadmin"];
 		}
 
-		const newUser = await this.usersRepository.create({ ...user }, file);
+		// Hash password before storing
+		if (user.password) {
+			user.password = this.hashPassword(user.password);
+		}
+
+		const newUser = await this.usersRepository.create(user, file);
 
 		this.logger.debug({
 			message: "New user created",
@@ -139,6 +152,43 @@ class UserService {
 		}
 
 		return { user: newUser, token };
+	};
+
+	createUser = async (userData: Partial<User>, teamId: string, actorRoles: UserRole[], file: any) => {
+		// Validate that the creator can assign the requested roles
+		const targetRoles = userData.role ?? [];
+		for (const targetRole of targetRoles) {
+			const canManage = actorRoles.some((actorRole) => canManageRole(actorRole, targetRole));
+			if (!canManage) {
+				throw new AppError({
+					message: "You do not have permission to assign this role",
+					service: SERVICE_NAME,
+					method: "createUser",
+					status: 403,
+				});
+			}
+		}
+
+		userData.teamId = teamId;
+
+		if (userData.password) {
+			userData.password = this.hashPassword(userData.password);
+		}
+
+		const newUser = await this.usersRepository.create(userData, file);
+
+		this.logger.debug({
+			message: "New user created by superadmin",
+			service: SERVICE_NAME,
+			method: "createUser",
+			details: newUser.id,
+		});
+
+		newUser.profileImage = undefined;
+		newUser.avatarImage = undefined;
+		newUser.password = "";
+
+		return newUser;
 	};
 
 	loginUser = async (email: string, password: string) => {
@@ -180,7 +230,8 @@ class UserService {
 				throw new AppError({ message: "Incorrect current password", service: SERVICE_NAME, status: 403 });
 			}
 			// If a match, update the password
-			updates.password = updates.newPassword;
+			updates.password = this.hashPassword(updates.newPassword);
+			delete updates.newPassword;
 		}
 
 		return await this.usersRepository.updateById(currentUser.id, updates, file);
@@ -223,8 +274,8 @@ class UserService {
 			throw new AppError({ message: "New password cannot be same as old password", service: SERVICE_NAME, status: 400 });
 		}
 
-		existingUser.password = password;
-		await this.usersRepository.updateById(existingUser.id, existingUser, null);
+		const hashedPassword = this.hashPassword(password);
+		await this.usersRepository.updateById(existingUser.id, { password: hashedPassword }, null);
 		await this.recoveryTokensRepository.deleteManyByEmail(existingUser.email);
 
 		existingUser.password = "";
@@ -292,7 +343,8 @@ class UserService {
 	};
 
 	setPasswordByUserId = async (userId: any, password: string) => {
-		const updatedUser = await this.usersRepository.updateById(userId, { password }, null);
+		const hashedPassword = this.hashPassword(password);
+		const updatedUser = await this.usersRepository.updateById(userId, { password: hashedPassword }, null);
 		return updatedUser;
 	};
 }

@@ -11,6 +11,7 @@ import type {
 	Monitor,
 	MonitorMatchMethod,
 	MonitorType,
+	MonitorStatus,
 } from "@/types/index.js";
 
 export interface MonitorStatusResponse<T = any> {
@@ -106,7 +107,13 @@ export interface MonitorPayloadMap {
 export type StatusChangeResult = {
 	monitor: Monitor;
 	statusChanged: boolean;
-	prevStatus: boolean | undefined;
+	prevStatus: MonitorStatus;
 	code: number;
 	timestamp: number;
+	thresholdBreaches?: {
+		cpu: boolean;
+		memory: boolean;
+		disk: boolean;
+		temp: boolean;
+	};
 };

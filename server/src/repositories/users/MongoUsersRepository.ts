@@ -98,10 +98,11 @@ class MongoUsersRepository implements IUsersRepository {
 
 	updateById = async (id: string, patch: Partial<User & { deleteProfileImage?: boolean }>, file?: Express.Multer.File | null): Promise<User> => {
 		const candidateUser = { ...patch };
+		let unsetFields: Record<string, 1> | undefined;
 
 		if (ParseBoolean(candidateUser.deleteProfileImage) === true) {
-			candidateUser.profileImage = undefined;
-			candidateUser.avatarImage = undefined;
+			unsetFields = { profileImage: 1, avatarImage: 1 };
+			delete candidateUser.deleteProfileImage;
 		} else if (file) {
 			// 1.  Save the full size image
 			candidateUser.profileImage = {
@@ -114,13 +115,14 @@ class MongoUsersRepository implements IUsersRepository {
 			candidateUser.avatarImage = avatar;
 		}
 
-		const updatedUser = await UserModel.findOneAndUpdate(
-			{ _id: id },
-			candidateUser,
-			{ new: true } // Returns updated user instead of pre-update user
-		)
-			.select("-password")
-			.select("-profileImage");
+		delete candidateUser.deleteProfileImage;
+
+		const updateQuery: Record<string, any> = { $set: candidateUser };
+		if (unsetFields) {
+			updateQuery.$unset = unsetFields;
+		}
+
+		const updatedUser = await UserModel.findOneAndUpdate({ _id: id }, updateQuery, { new: true }).select("-password").select("-profileImage");
 		if (!updatedUser) {
 			throw new AppError({ message: "User not found", service: SERVICE_NAME, status: 404 });
 		}

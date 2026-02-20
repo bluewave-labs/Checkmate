@@ -1,10 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "@/utils/AppError.js";
+import { requireTeamId, requireUserRoles } from "./controllerUtils.js";
+import type { UserRole } from "@/types/user.js";
 
 import {
 	registrationBodyValidation,
 	loginValidation,
 	editUserBodyValidation,
+	createUserBodyValidation,
 	recoveryValidation,
 	recoveryTokenBodyValidation,
 	newPasswordValidation,
@@ -50,6 +53,27 @@ class AuthController {
 		}
 	};
 
+	createUser = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const userData = req.body;
+			if (userData?.email) {
+				userData.email = userData.email.toLowerCase();
+			}
+			await createUserBodyValidation.validateAsync(userData);
+
+			const teamId = requireTeamId(req.user?.teamId);
+			const actorRoles = requireUserRoles(req.user?.role) as UserRole[];
+			const newUser = await this.userService.createUser(userData, teamId, actorRoles, req.file);
+			res.status(201).json({
+				success: true,
+				msg: "User created successfully",
+				data: newUser,
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
 	loginUser = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			if (req.body?.email) {
@@ -74,7 +98,6 @@ class AuthController {
 	editUser = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			await editUserBodyValidation.validateAsync(req.body);
-
 			const updatedUser = await this.userService.editUser(req.body, req.file, req.user);
 
 			res.status(200).json({

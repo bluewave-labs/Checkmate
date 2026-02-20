@@ -1,6 +1,6 @@
 import { AppError } from "@/utils/AppError.js";
 import { Request, Response, NextFunction } from "express";
-import { requireTeamId } from "./controllerUtils.js";
+import { requireTeamId, requireUserId, requireUserEmail } from "./controllerUtils.js";
 
 const SERVICE_NAME = "incidentController";
 
@@ -44,16 +44,11 @@ class IncidentController {
 
 	getIncidentSummary = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const teamId = req.user?.teamId;
-
-			if (!teamId) {
-				throw new AppError({ message: "Team ID is required", service: SERVICE_NAME, status: 400 });
-			}
+			const teamId = requireTeamId(req.user?.teamId);
 
 			const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
 
-			const summary = await this.incidentService.getIncidentSummary(req?.user?.teamId, limit);
-
+			const summary = await this.incidentService.getIncidentSummary(teamId, limit);
 			return res.status(200).json({
 				success: true,
 				msg: "Incident summary retrieved successfully",
@@ -86,12 +81,15 @@ class IncidentController {
 
 	resolveIncidentManually = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const resolvedIncident = await this.incidentService.resolveIncident(
-				req?.params?.incidentId,
-				req?.user?.id,
-				req?.user?.teamId,
-				req?.body?.comment
-			);
+			const teamId = requireTeamId(req.user?.teamId);
+			const userId = requireUserId(req.user?.id);
+			const userEmail = requireUserEmail(req.user?.email);
+			const incidentId = req.params?.incidentId;
+			if (!incidentId) {
+				throw new AppError({ message: "Incident ID is required", service: SERVICE_NAME, status: 400 });
+			}
+
+			const resolvedIncident = await this.incidentService.resolveIncident(incidentId, userId, teamId, req?.body?.comment, userEmail);
 
 			return res.status(200).json({
 				success: true,

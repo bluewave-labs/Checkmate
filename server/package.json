@@ -14,6 +14,9 @@
 		"format": "prettier --write .",
 		"format-check": "prettier --check ."
 	},
+	"lint-staged": {
+		"**/*": "npm run format"
+	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
@@ -79,6 +82,7 @@
 		"esm": "3.2.25",
 		"globals": "^15.14.0",
 		"jest": "^30.2.0",
+		"lint-staged": "^16.2.7",
 		"nodemon": "^3.1.11",
 		"prettier": "^3.3.3",
 		"ts-jest": "^29.4.6",

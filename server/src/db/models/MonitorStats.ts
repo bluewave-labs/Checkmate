@@ -16,11 +16,14 @@ const MonitorStatsSchema = new Schema<MonitorStatsDocument>(
 		monitorId: {
 			type: Schema.Types.ObjectId,
 			ref: "Monitor",
-			immutable: true,
 			index: true,
 			required: true,
 		},
 		avgResponseTime: {
+			type: Number,
+			default: 0,
+		},
+		maxResponseTime: {
 			type: Number,
 			default: 0,
 		},

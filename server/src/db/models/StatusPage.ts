@@ -1,15 +1,15 @@
 import { Schema, model, type Types } from "mongoose";
-import type { StatusPage, StatusPageLogo } from "@/types/statusPage.js";
+import type { StatusPage, StatusPageLogoDocument } from "@/types/statusPage.js";
 import { StatusPageTypes } from "@/types/statusPage.js";
 
 type StatusPageDocumentBase = Omit<
 	StatusPage,
-	"id" | "userId" | "teamId" | "monitors" | "subMonitors" | "originalMonitors" | "createdAt" | "updatedAt"
+	"id" | "userId" | "teamId" | "monitors" | "subMonitors" | "originalMonitors" | "logo" | "createdAt" | "updatedAt"
 > & {
 	monitors: Types.ObjectId[];
 	subMonitors: Types.ObjectId[];
 	originalMonitors?: Types.ObjectId[];
-	logo?: StatusPageLogo | null;
+	logo?: StatusPageLogoDocument | null;
 };
 
 interface StatusPageDocument extends StatusPageDocumentBase {
@@ -20,7 +20,7 @@ interface StatusPageDocument extends StatusPageDocumentBase {
 	updatedAt: Date;
 }
 
-const logoSchema = new Schema<StatusPageLogo & { data: Buffer }>(
+const logoSchema = new Schema<StatusPageLogoDocument>(
 	{
 		data: { type: Buffer },
 		contentType: { type: String },

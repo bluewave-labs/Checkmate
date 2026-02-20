@@ -6,8 +6,15 @@ import type {
 	UptimeDetailsResult,
 	HardwareDetailsResult,
 	PageSpeedDetailsResult,
+	GamesMap,
 } from "@/types/monitor.js";
-import type { IChecksRepository, IMonitorsRepository, IMonitorStatsRepository, IStatusPagesRepository } from "@/repositories/index.js";
+import type {
+	IChecksRepository,
+	IIncidentsRepository,
+	IMonitorsRepository,
+	IMonitorStatsRepository,
+	IStatusPagesRepository,
+} from "@/repositories/index.js";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import path from "path";
@@ -51,7 +58,7 @@ export interface IMonitorService {
 		order?: "asc" | "desc";
 		explain?: boolean;
 	}): Promise<MonitorsWithChecksByTeamIdResult>;
-	getAllGames(): any;
+	getAllGames(): GamesMap;
 	getGroupsByTeamId(args: { teamId: string }): Promise<string[]>;
 
 	// update
@@ -78,6 +85,7 @@ export class MonitorService implements IMonitorService {
 	private checksRepository: IChecksRepository;
 	private monitorStatsRepository: IMonitorStatsRepository;
 	private statusPagesRepository: IStatusPagesRepository;
+	private incidentsRepository: IIncidentsRepository;
 
 	constructor({
 		jobQueue,
@@ -88,6 +96,7 @@ export class MonitorService implements IMonitorService {
 		checksRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
+		incidentsRepository,
 	}: {
 		jobQueue: ISuperSimpleQueue;
 		emailService: any;
@@ -97,6 +106,7 @@ export class MonitorService implements IMonitorService {
 		checksRepository: IChecksRepository;
 		monitorStatsRepository: IMonitorStatsRepository;
 		statusPagesRepository: IStatusPagesRepository;
+		incidentsRepository: IIncidentsRepository;
 	}) {
 		this.jobQueue = jobQueue;
 		this.emailService = emailService;
@@ -106,6 +116,7 @@ export class MonitorService implements IMonitorService {
 		this.checksRepository = checksRepository;
 		this.monitorStatsRepository = monitorStatsRepository;
 		this.statusPagesRepository = statusPagesRepository;
+		this.incidentsRepository = incidentsRepository;
 	}
 
 	get serviceName(): string {
@@ -257,9 +268,12 @@ export class MonitorService implements IMonitorService {
 			checks: checksData.checks,
 		};
 
+		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
+
 		return {
-			...monitor,
+			monitor,
 			stats,
+			monitorStats,
 		};
 	};
 
@@ -370,7 +384,7 @@ export class MonitorService implements IMonitorService {
 		return { summary: summary ?? null, count, monitors: monitorsWithChecks };
 	};
 
-	getAllGames = (): any => {
+	getAllGames = (): GamesMap => {
 		return this.games;
 	};
 
@@ -414,6 +428,15 @@ export class MonitorService implements IMonitorService {
 				stack: err.stack,
 			});
 		});
+
+		await this.incidentsRepository.deleteByMonitorId(monitor.id, teamId).catch((err: any) => {
+			this.logger.warn({
+				message: `Error deleting incidents for monitor ${monitor.id} with name ${monitor.name}`,
+				service: SERVICE_NAME,
+				stack: err.stack,
+			});
+		});
+
 		await this.jobQueue.deleteJob(monitor);
 		return monitor;
 	};
