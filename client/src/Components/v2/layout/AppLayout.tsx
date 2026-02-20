@@ -1,10 +1,9 @@
 import Box from "@mui/material/Box";
 import { useState, useEffect, useRef } from "react";
-import { ThemeProvider, useTheme } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
 import BackgroundSVG from "@/assets/Images/background.svg";
 import type { RootState } from "@/Types/state";
-import { lightTheme, darkTheme } from "@/Utils/Theme/v2Theme";
 import { OfflineBanner } from "@/Components/v2/design-elements";
 import { setServerUnreachableCallback, get } from "@/Utils/ApiClient";
 
@@ -15,8 +14,6 @@ interface AppLayoutProps {
 const AppLayout = ({ children }: AppLayoutProps) => {
 	const theme = useTheme();
 	const mode = useSelector((state: RootState) => state.ui.mode);
-	const v2theme = mode === "dark" ? darkTheme : lightTheme;
-
 	const [serverUnreachable, setServerUnreachable] = useState(false);
 	const retryIntervalRef = useRef<number | null>(null);
 
@@ -49,8 +46,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 		<Box
 			sx={{
 				minHeight: "100vh",
-				// @ts-expect-error custom palette property
-				backgroundColor: theme.palette.primaryBackground.main,
+				backgroundColor: theme.palette.background.default,
 				backgroundImage: mode === "dark" ? `url("${BackgroundSVG}")` : "none",
 				backgroundSize: "100% 100%",
 				backgroundPosition: "center",
@@ -58,9 +54,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 				color: theme.palette.primary.contrastText,
 			}}
 		>
-			<ThemeProvider theme={v2theme}>
-				<OfflineBanner visible={serverUnreachable} />
-			</ThemeProvider>
+			<OfflineBanner visible={serverUnreachable} />
 			{children}
 		</Box>
 	);

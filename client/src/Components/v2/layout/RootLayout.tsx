@@ -4,23 +4,16 @@ import Stack from "@mui/material/Stack";
 import { useMediaQuery } from "@mui/material";
 import { useSidebar } from "@/Hooks/useSidebar";
 
-import { useSelector } from "react-redux";
-import type { RootState } from "@/Types/state";
-import { lightTheme, darkTheme } from "@/Utils/Theme/v2Theme";
-import { ThemeProvider, useTheme } from "@mui/material";
+import { useTheme } from "@mui/material";
 
 const RootLayout = () => {
-	const mode = useSelector((state: RootState) => state.ui.mode);
-	const v2theme = mode === "dark" ? darkTheme : lightTheme;
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const { collapsedWidth } = useSidebar();
 
 	return (
 		<Stack flexDirection="row">
-			<ThemeProvider theme={v2theme}>
-				<Sidebar />
-			</ThemeProvider>
+			<Sidebar />
 			<Stack
 				flex={1}
 				padding={6}
