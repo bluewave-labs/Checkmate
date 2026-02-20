@@ -1,4 +1,4 @@
-import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
+import { BasePage, ConfigBox, TextLink } from "@/Components/v2/design-elements";
 import { Autocomplete, Select, Dialog, SwitchComponent } from "@/Components/v2/inputs";
 import { Stack, useTheme, MenuItem, type SelectChangeEvent } from "@mui/material";
 import { useEffect } from "react";
@@ -518,44 +518,52 @@ export const SettingsPage = () => {
 					title={t("pages.settings.form.email.title")}
 					subtitle={t("pages.settings.form.email.description")}
 					leftContent={
-						<Box
-							component="pre"
-							sx={{
-								fontFamily: "monospace",
-								p: 2,
-								borderRadius: 1,
-								overflow: "auto",
-								backgroundColor: theme.palette.mode === "dark" ? "#1e1e1e" : "#f5f5f5",
-							}}
-						>
-							<code>
-								{JSON.stringify(
-									{
-										host: form.watch("systemEmailHost") || "",
-										port: form.watch("systemEmailPort") || "",
-										secure: form.watch("systemEmailSecure") ?? false,
-										auth: {
-											user:
-												form.watch("systemEmailUser") ||
-												form.watch("systemEmailAddress") ||
-												"",
-											pass: "<your_password>",
+						<Stack gap={theme.spacing(8)}>
+							<TextLink
+								text={t("pages.settings.form.email.descriptionTransport")}
+								linkText={t("pages.settings.form.email.descriptionTransportLink")}
+								href="https://nodemailer.com/smtp/"
+								target="_top"
+							/>
+							<Box
+								component="pre"
+								sx={{
+									fontFamily: "monospace",
+									p: 2,
+									borderRadius: 1,
+									overflow: "auto",
+									backgroundColor: theme.palette.mode === "dark" ? "#1e1e1e" : "#f5f5f5",
+								}}
+							>
+								<code>
+									{JSON.stringify(
+										{
+											host: form.watch("systemEmailHost") || "",
+											port: form.watch("systemEmailPort") || "",
+											secure: form.watch("systemEmailSecure") ?? false,
+											auth: {
+												user:
+													form.watch("systemEmailUser") ||
+													form.watch("systemEmailAddress") ||
+													"",
+												pass: "<your_password>",
+											},
+											name: form.watch("systemEmailConnectionHost") || "localhost",
+											pool: form.watch("systemEmailPool") ?? false,
+											tls: {
+												rejectUnauthorized:
+													form.watch("systemEmailRejectUnauthorized") ?? true,
+												ignoreTLS: form.watch("systemEmailIgnoreTLS") ?? false,
+												requireTLS: form.watch("systemEmailRequireTLS") ?? false,
+												servername: form.watch("systemEmailTLSServername") || "",
+											},
 										},
-										name: form.watch("systemEmailConnectionHost") || "localhost",
-										pool: form.watch("systemEmailPool") ?? false,
-										tls: {
-											rejectUnauthorized:
-												form.watch("systemEmailRejectUnauthorized") ?? true,
-											ignoreTLS: form.watch("systemEmailIgnoreTLS") ?? false,
-											requireTLS: form.watch("systemEmailRequireTLS") ?? false,
-											servername: form.watch("systemEmailTLSServername") || "",
-										},
-									},
-									null,
-									2
-								)}
-							</code>
-						</Box>
+										null,
+										2
+									)}
+								</code>
+							</Box>
+						</Stack>
 					}
 					rightContent={
 						<Stack gap={theme.spacing(10)}>

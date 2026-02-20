@@ -10,7 +10,7 @@ interface TextLinkProps extends StackProps {
 	text: string;
 	linkText: string;
 	href: string;
-	target?: string;
+	target?: "_self" | "_blank" | "_parent" | "_top";
 }
 
 export const TextLink = ({
@@ -34,6 +34,7 @@ export const TextLink = ({
 				to={href}
 				component={RouterLink}
 				target={target}
+				{...(target === "_blank" && { rel: "noopener noreferrer" })}
 			>
 				{linkText}
 			</Link>
