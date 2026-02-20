@@ -78,6 +78,14 @@ class StatusPageController {
 			}
 
 			const statusPage = await this.statusPageService.getStatusPageByUrl(req.params.url as string);
+
+			if (!statusPage.isPublished) {
+				const teamId = requireTeamId(req?.user?.teamId);
+				if (statusPage.teamId !== teamId) {
+					throw new AppError({ message: "Forbidden", status: 403 });
+				}
+			}
+
 			const settings = await this.settingsService.getDBSettings();
 			const showURL = settings.showURL;
 
