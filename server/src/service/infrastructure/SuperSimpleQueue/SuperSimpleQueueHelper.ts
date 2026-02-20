@@ -127,33 +127,6 @@ class SuperSimpleQueueHelper {
 					throw new Error("No network response");
 				}
 
-				// Step 2b. Run Globalping checks (fire-and-forget, doesn't affect local check pipeline)
-				if (monitor.globalpingEnabled && (monitor.type === "http" || monitor.type === "ping")) {
-					this.globalpingService
-						.runChecks(monitor)
-						.then((locationStatuses) => {
-							for (const locStatus of locationStatuses) {
-								const locCheck = this.checkService.buildCheck(locStatus);
-								if (locCheck) {
-									this.buffer.addToBuffer(locCheck);
-								} else {
-									this.logger.warn({
-										message: `Failed to build Globalping check for monitor ${monitorId}, location: ${locStatus.location}`,
-										service: SERVICE_NAME,
-										method: "getMonitorJob",
-									});
-								}
-							}
-						})
-						.catch((err: any) => {
-							this.logger.warn({
-								message: `Globalping checks failed for monitor ${monitorId}: ${err.message}`,
-								service: SERVICE_NAME,
-								method: "getMonitorJob",
-							});
-						});
-				}
-
 				// Step 3. Build check
 				const check = await this.checkService.buildCheck(status);
 				if (!check) {
@@ -167,6 +140,38 @@ class SuperSimpleQueueHelper {
 				}
 				// Step 4. Add check to buffer
 				this.buffer.addToBuffer(check);
+
+				// Step 4b. Run Globalping checks and backfill into the same check document.
+				// Fire-and-forget: Globalping results are supplementary and must not block the
+				// local check pipeline. The dual-write strategy below is safe against mid-flush
+				// races because flushBuffer() replaces the buffer array reference atomically
+				// (this.buffer = []) — if findInBuffer returns a hit, the check is still in the
+				// current buffer and our mutation will be included in the upcoming flush; if it
+				// returns undefined the check has already been flushed, so we fall back to a
+				// direct DB update.
+				if (monitor.globalpingEnabled && (monitor.type === "http" || monitor.type === "ping") && check.id) {
+					const checkId = check.id;
+					this.globalpingService
+						.runChecks(monitor)
+						.then(async (locationResults) => {
+							if (locationResults.length > 0) {
+								const buffered = this.buffer.findInBuffer(checkId);
+								if (buffered) {
+									buffered.locationResults = locationResults;
+								} else {
+									await this.checksRepository.updateLocationResults(checkId, locationResults);
+								}
+							}
+						})
+						.catch((err: any) => {
+							this.logger.warn({
+								message: `Globalping checks failed for monitor ${monitorId}: ${err.message}`,
+								service: SERVICE_NAME,
+								method: "getMonitorJob",
+							});
+						});
+				}
+
 				// Step 5. Update monitor status
 				const statusChangeResult = await this.statusService.updateMonitorStatus(status, check);
 

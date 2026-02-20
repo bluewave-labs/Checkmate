@@ -170,7 +170,6 @@ class MongoChecksRepository implements IChecksRepository {
 			monitorId: toStringId(metadata.monitorId),
 			teamId: toStringId(metadata.teamId),
 			type: metadata.type,
-			...(metadata.location ? { location: metadata.location } : {}),
 		});
 
 		return {
@@ -196,6 +195,7 @@ class MongoChecksRepository implements IChecksRepository {
 			seo: doc.seo,
 			performance: doc.performance,
 			audits: mapAudits(doc.audits),
+			locationResults: (doc as any).locationResults,
 			__v: doc.__v ?? 0,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
@@ -221,7 +221,6 @@ class MongoChecksRepository implements IChecksRepository {
 				monitorId: new mongoose.Types.ObjectId(metadata.monitorId),
 				teamId: new mongoose.Types.ObjectId(metadata.teamId),
 				type: metadata.type,
-				...(metadata.location ? { location: metadata.location } : {}),
 			},
 			...rest,
 		} as unknown as CheckDocument;
@@ -429,24 +428,25 @@ class MongoChecksRepository implements IChecksRepository {
 
 	findLocationChecksByMonitorId = async (monitorId: string, startDate: Date, endDate: Date, dateString: string): Promise<Record<string, any>> => {
 		const monitorObjectId = new mongoose.Types.ObjectId(monitorId);
-		const matchStage = {
-			"metadata.monitorId": monitorObjectId,
-			"metadata.location": { $exists: true, $ne: null },
-			createdAt: { $gte: startDate, $lte: endDate },
-		};
 
 		const results = await CheckModel.aggregate([
-			{ $match: matchStage },
-			{ $sort: { createdAt: 1 } },
+			{
+				$match: {
+					"metadata.monitorId": monitorObjectId,
+					createdAt: { $gte: startDate, $lte: endDate },
+					locationResults: { $type: "array", $ne: [] },
+				},
+			},
+			{ $unwind: "$locationResults" },
 			{
 				$group: {
 					_id: {
-						location: "$metadata.location",
+						location: "$locationResults.location",
 						bucket: { $dateToString: { format: dateString, date: "$createdAt" } },
 					},
-					avgResponseTime: { $avg: "$responseTime" },
+					avgResponseTime: { $avg: "$locationResults.responseTime" },
 					totalChecks: { $sum: 1 },
-					upChecks: { $sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] } },
+					upChecks: { $sum: { $cond: [{ $eq: ["$locationResults.status", true] }, 1, 0] } },
 				},
 			},
 			{ $sort: { "_id.bucket": 1 } },
@@ -490,7 +490,6 @@ class MongoChecksRepository implements IChecksRepository {
 		const matchStage: Record<string, any> = {
 			"metadata.monitorId": monitorObjectId,
 			createdAt: { $gte: startDate, $lte: endDate },
-			"metadata.location": { $exists: false },
 		};
 		const [result] = await CheckModel.aggregate([
 			{ $match: matchStage },

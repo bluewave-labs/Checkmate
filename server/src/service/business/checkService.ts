@@ -37,7 +37,7 @@ class CheckService {
 	};
 
 	buildCheck = (statusResponse: MonitorStatusResponse<PageSpeedStatusPayload | HardwareStatusPayload | undefined>) => {
-		const { monitorId, teamId, type, status, responseTime, code, message, payload, timings, location } = statusResponse;
+		const { monitorId, teamId, type, status, responseTime, code, message, payload, timings } = statusResponse;
 
 		const check: Partial<Check> = {
 			id: new Types.ObjectId().toString(),
@@ -46,7 +46,6 @@ class CheckService {
 				monitorId,
 				teamId,
 				type,
-				...(location ? { location } : {}),
 			},
 			status,
 			statusCode: code,

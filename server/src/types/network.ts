@@ -34,7 +34,6 @@ export interface MonitorStatusResponse<T = any> {
 	matchMethod?: MonitorMatchMethod;
 	expectedValue?: string;
 	extracted?: unknown;
-	location?: string;
 }
 
 export interface GlobalpingCheckResult {

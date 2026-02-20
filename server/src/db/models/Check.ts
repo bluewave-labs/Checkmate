@@ -20,7 +20,6 @@ type CheckMetadataDocument = Omit<CheckMetadata, "monitorId" | "teamId"> & {
 	monitorId: Types.ObjectId;
 	teamId: Types.ObjectId;
 	type: MonitorType;
-	location?: string;
 };
 
 type CheckDocumentBase = Omit<Check, "id" | "metadata" | "expiry" | "ackAt" | "createdAt" | "updatedAt"> & {
@@ -210,9 +209,6 @@ const metadataSchema = new Schema<CheckMetadataDocument>(
 			required: true,
 			index: true,
 		},
-		location: {
-			type: String,
-		},
 	},
 	{ _id: false }
 );
@@ -319,7 +315,6 @@ CheckSchema.index({ createdAt: 1 });
 CheckSchema.index({ "metadata.teamId": 1, createdAt: -1 });
 CheckSchema.index({ "metadata.monitorId": 1, "metadata.type": 1, createdAt: -1 });
 CheckSchema.index({ "metadata.teamId": 1, status: 1, createdAt: -1 });
-CheckSchema.index({ "metadata.monitorId": 1, "metadata.location": 1, createdAt: -1 });
 
 const CheckModel = model<CheckDocument>("Check", CheckSchema);
 
