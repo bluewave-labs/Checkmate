@@ -124,7 +124,7 @@ export interface ChecksQueryResult {
 
 export interface PageSpeedChecksResult {
 	monitorType: "pagespeed";
-	checks: Check[];
+	groupedChecks: PageSpeedGroupedCheck[];
 }
 
 export interface HardwareChecksResult {
@@ -167,6 +167,15 @@ export interface HardwareChecksResult {
 export interface GroupedCheck {
 	bucketDate: string;
 	avgResponseTime: number;
+	totalChecks: number;
+}
+
+export interface PageSpeedGroupedCheck {
+	bucketDate: string;
+	performance: number;
+	accessibility: number;
+	bestPractices: number;
+	seo: number;
 	totalChecks: number;
 }
 

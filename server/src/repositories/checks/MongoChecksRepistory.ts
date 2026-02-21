@@ -378,7 +378,7 @@ class MongoChecksRepository implements IChecksRepository {
 			return this.findHardwareDateRangeChecks(monitorObjectId, startDate, endDate, dateString);
 		}
 		if (options?.type === "pagespeed") {
-			return this.findPageSpeedDateRangeChecks(monitorObjectId, startDate, endDate);
+			return this.findPageSpeedDateRangeChecks(monitorObjectId, startDate, endDate, dateString);
 		}
 		return this.findUptimeDateRangeChecks(options?.type ?? "http", monitorObjectId, startDate, endDate, dateString);
 	};
@@ -572,16 +572,50 @@ class MongoChecksRepository implements IChecksRepository {
 		};
 	};
 
-	private findPageSpeedDateRangeChecks = async (monitorObjectId: mongoose.Types.ObjectId, startDate: Date, endDate: Date) => {
+	private findPageSpeedDateRangeChecks = async (monitorObjectId: mongoose.Types.ObjectId, startDate: Date, endDate: Date, dateString: string) => {
 		const matchStage = {
 			"metadata.monitorId": monitorObjectId,
 			createdAt: { $gte: startDate, $lte: endDate },
 		};
 
-		const checks = await CheckModel.find(matchStage).sort({ createdAt: -1 }).limit(25).lean();
+		const [result] = await CheckModel.aggregate([
+			{ $match: matchStage },
+			{ $sort: { createdAt: 1 } },
+			{
+				$facet: {
+					groupedChecks: [
+						{
+							$group: {
+								_id: {
+									$dateToString: { format: dateString, date: "$createdAt" },
+								},
+								avgPerformance: { $avg: "$performance" },
+								avgAccessibility: { $avg: "$accessibility" },
+								avgBestPractices: { $avg: "$bestPractices" },
+								avgSeo: { $avg: "$seo" },
+								totalChecks: { $sum: 1 },
+							},
+						},
+						{ $sort: { _id: 1 } },
+						{
+							$project: {
+								bucketDate: "$_id",
+								performance: "$avgPerformance",
+								accessibility: "$avgAccessibility",
+								bestPractices: "$avgBestPractices",
+								seo: "$avgSeo",
+								totalChecks: 1,
+								_id: 0,
+							},
+						},
+					],
+				},
+			},
+		]);
+
 		return {
 			monitorType: "pagespeed" as const,
-			checks: this.mapDocuments(checks),
+			groupedChecks: result?.groupedChecks ?? [],
 		};
 	};
 

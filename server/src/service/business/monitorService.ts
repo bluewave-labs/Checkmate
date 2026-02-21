@@ -308,9 +308,9 @@ export class MonitorService implements IMonitorService {
 		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
 
 		return {
-			monitor: {
-				...monitor,
-				checks: checksData.checks,
+			monitorData: {
+				monitor,
+				groupedChecks: checksData.groupedChecks,
 			},
 			monitorStats,
 		};
