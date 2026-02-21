@@ -29,6 +29,7 @@ export interface IMonitorService {
 
 	// create
 	createMonitor(teamId: string, userId: string, body: Monitor): Promise<void>;
+	createMonitors(monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null>;
 	addDemoMonitors(args: { userId: string; teamId: string }): Promise<Monitor[]>;
 
 	// read
@@ -157,11 +158,10 @@ export class MonitorService implements IMonitorService {
 		this.jobQueue.addJob(monitor.id, monitor);
 	};
 
-	createBulkMonitors = async (monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null> => {
-		// TDO rename createMonitors, change to accept JSON
-		const createdMonitors = await this.monitorsRepository.createBulkMonitors(monitors);
+	createMonitors = async (monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null> => {
+		const createdMonitors = await this.monitorsRepository.createMonitors(monitors);
 		if (!monitors || monitors.length === 0) {
-			throw new AppError({ message: "Failed to create monitors", status: 500, service: SERVICE_NAME, method: "createBulkMonitors" });
+			throw new AppError({ message: "Failed to create monitors", status: 500, service: SERVICE_NAME, method: "createMonitors" });
 		}
 
 		await Promise.all(createdMonitors.map((monitor) => this.jobQueue.addJob(monitor.id, monitor)));
@@ -185,7 +185,7 @@ export class MonitorService implements IMonitorService {
 				interval: 60000,
 			};
 		});
-		const demoMonitors = await this.monitorsRepository.createBulkMonitors(monitors);
+		const demoMonitors = await this.monitorsRepository.createMonitors(monitors);
 
 		await Promise.all(demoMonitors.map((monitor) => this.jobQueue.addJob(monitor.id, monitor)));
 		return demoMonitors;
@@ -511,7 +511,7 @@ export class MonitorService implements IMonitorService {
 			return cleanData;
 		});
 
-		const createdMonitors = await this.createBulkMonitors(cleanedMonitors, userId, teamId);
+		const createdMonitors = await this.createMonitors(cleanedMonitors, userId, teamId);
 
 		if (!createdMonitors || createdMonitors.length === 0) {
 			throw new AppError({
