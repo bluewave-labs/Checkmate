@@ -499,7 +499,6 @@ export class MonitorService implements IMonitorService {
 	}): Promise<{ imported: number; errors: string[] }> => {
 		const errors: string[] = [];
 
-		// Clean the data: remove id, _id, createdAt, updatedAt, recentChecks fields
 		const cleanedMonitors = monitors.map((monitor) => {
 			const cleanData = { ...monitor };
 			delete cleanData.id;
@@ -507,12 +506,11 @@ export class MonitorService implements IMonitorService {
 			delete cleanData.createdAt;
 			delete cleanData.updatedAt;
 			delete cleanData.recentChecks;
-			// Force the monitor to belong to the current team
+			// Monitors must belong to current team
 			cleanData.teamId = teamId;
 			return cleanData;
 		});
 
-		// Use createBulkMonitors for efficient bulk insert
 		const createdMonitors = await this.createBulkMonitors(cleanedMonitors, userId, teamId);
 
 		if (!createdMonitors || createdMonitors.length === 0) {

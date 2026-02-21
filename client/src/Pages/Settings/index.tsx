@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import DummyChart from "@/Pages/Settings/DummyChart";
 import { useGet, usePatch, usePost, useLazyGet } from "@/Hooks/UseApi";
+import { useToast } from "@/Hooks/UseToast";
 import { useSettingsForm } from "@/Hooks/useSettingsForm";
 import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
 import type { SettingsFormData } from "@/Validation/settings";
@@ -44,10 +45,13 @@ export const SettingsPage = () => {
 	const { t, i18n } = useTranslation();
 	const dispatch = useDispatch();
 	const isAdmin = useIsAdmin();
+	const { toastError } = useToast();
 	// Local state for demo monitors dialog
 	const [isDemoMonitorsDialogOpen, setIsDemoMonitorsDialogOpen] = useState(false);
 	const { post: postDemoMonitors, loading: isPostingDemoMonitors } = usePost();
 	const { deleteFn: deleteAllMonitors, loading: isDeletingAllMonitors } = useDelete();
+	// Import monitors functionality
+	const { post: importMonitors, loading: isImportingMonitors } = usePost();
 
 	// Fetch settings data from API
 	const { data: fetchedSettings } = useGet<SettingsResponse>("/settings");
@@ -209,26 +213,25 @@ export const SettingsPage = () => {
 		}
 
 		if (file.type !== "application/json") {
-			alert("Please select a valid JSON file");
-			event.target.value = ""; // Reset input
-			return;
+			toastError("Please select a valid JSON file");
+			event.target.value = "";
 		}
 
-		// Log the file contents
 		try {
 			const text = await file.text();
 			const monitors = JSON.parse(text);
 
 			if (!Array.isArray(monitors)) {
-				alert("Invalid file format: expected an array of monitors");
+				toastError("Invalid file format: expected an array of monitors");
 				event.target.value = "";
 				return;
 			}
-			console.log(monitors);
-			event.target.value = ""; // Reset input
+
+			await importMonitors("/monitors/import/json", { monitors });
+
+			event.target.value = "";
 		} catch (error) {
-			console.error("Import error:", error);
-			alert("Error importing monitors. Please check the file format.");
+			toastError("Error parsing JSON file. Please check the file format.");
 			event.target.value = "";
 		}
 	};
@@ -914,6 +917,7 @@ export const SettingsPage = () => {
 							<Button
 								variant="contained"
 								onClick={() => document.getElementById("monitor-import-input")?.click()}
+								disabled={isImportingMonitors}
 							>
 								{t("common.buttons.importFromJSON")}
 							</Button>
