@@ -1,4 +1,5 @@
 import type { GroupedCheck, CheckSnapshot } from "@/Types/Check";
+import type { PageSpeedGroupedCheck } from "@/Types/Check";
 
 export const MonitorTypes = [
 	"http",
@@ -112,7 +113,10 @@ export interface MonitorDetailsResponse {
 }
 
 export interface PageSpeedDetailsResponse {
-	monitor: MonitorWithChecks;
+	monitorData: {
+		monitor: Monitor;
+		groupedChecks: PageSpeedGroupedCheck[];
+	};
 	monitorStats: MonitorStats | null;
 }
 

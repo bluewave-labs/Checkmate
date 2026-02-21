@@ -42,7 +42,8 @@ const PageSpeedDetails = () => {
 		{ keepPreviousData: true, refreshInterval: 30000 }
 	);
 
-	const monitor = monitorData?.monitor;
+	const monitor = monitorData?.monitorData?.monitor;
+	const groupedChecks = monitorData?.monitorData?.groupedChecks || [];
 	const monitorStats = monitorData?.monitorStats || null;
 
 	return (
@@ -67,7 +68,7 @@ const PageSpeedDetails = () => {
 				setDateRange={setDateRange}
 			/>
 			<HistogramPageSpeedDetails
-				checks={monitor?.recentChecks || []}
+				checks={groupedChecks}
 				range={dateRange}
 			/>
 			<Stack
