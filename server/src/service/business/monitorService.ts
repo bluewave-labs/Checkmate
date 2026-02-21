@@ -29,7 +29,7 @@ export interface IMonitorService {
 
 	// create
 	createMonitor(teamId: string, userId: string, body: Monitor): Promise<void>;
-	createBulkMonitors(monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null>;
+	createMonitors(monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null>;
 	addDemoMonitors(args: { userId: string; teamId: string }): Promise<Monitor[]>;
 
 	// read
@@ -72,6 +72,7 @@ export interface IMonitorService {
 	// other
 	sendTestEmail(args: { to: string }): Promise<string>;
 	exportMonitorsToJSON(args: { teamId: string }): Promise<Monitor[]>;
+	importMonitorsFromJSON(args: { teamId: string; userId: string; monitors: any[] }): Promise<{ imported: number; errors: string[] }>;
 }
 
 export class MonitorService implements IMonitorService {
@@ -157,10 +158,10 @@ export class MonitorService implements IMonitorService {
 		this.jobQueue.addJob(monitor.id, monitor);
 	};
 
-	createBulkMonitors = async (monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null> => {
-		const createdMonitors = await this.monitorsRepository.createBulkMonitors(monitors);
+	createMonitors = async (monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null> => {
+		const createdMonitors = await this.monitorsRepository.createMonitors(monitors);
 		if (!monitors || monitors.length === 0) {
-			throw new AppError({ message: "Failed to create monitors", status: 500, service: SERVICE_NAME, method: "createBulkMonitors" });
+			throw new AppError({ message: "Failed to create monitors", status: 500, service: SERVICE_NAME, method: "createMonitors" });
 		}
 
 		await Promise.all(createdMonitors.map((monitor) => this.jobQueue.addJob(monitor.id, monitor)));
@@ -184,7 +185,7 @@ export class MonitorService implements IMonitorService {
 				interval: 60000,
 			};
 		});
-		const demoMonitors = await this.monitorsRepository.createBulkMonitors(monitors);
+		const demoMonitors = await this.monitorsRepository.createMonitors(monitors);
 
 		await Promise.all(demoMonitors.map((monitor) => this.jobQueue.addJob(monitor.id, monitor)));
 		return demoMonitors;
@@ -485,5 +486,42 @@ export class MonitorService implements IMonitorService {
 		}
 
 		return monitors;
+	};
+
+	importMonitorsFromJSON = async ({
+		teamId,
+		userId,
+		monitors,
+	}: {
+		teamId: string;
+		userId: string;
+		monitors: any[];
+	}): Promise<{ imported: number; errors: string[] }> => {
+		const errors: string[] = [];
+
+		const cleanedMonitors = monitors.map((monitor) => {
+			const cleanData = { ...monitor };
+			delete cleanData.id;
+			delete cleanData._id;
+			delete cleanData.createdAt;
+			delete cleanData.updatedAt;
+			delete cleanData.recentChecks;
+			// Monitors must belong to current team
+			cleanData.teamId = teamId;
+			return cleanData;
+		});
+
+		const createdMonitors = await this.createMonitors(cleanedMonitors, userId, teamId);
+
+		if (!createdMonitors || createdMonitors.length === 0) {
+			throw new AppError({
+				message: "Failed to import any monitors. Please check the file format and try again.",
+				service: SERVICE_NAME,
+				method: "importMonitorsFromJSON",
+				status: 400,
+			});
+		}
+
+		return { imported: createdMonitors.length, errors };
 	};
 }

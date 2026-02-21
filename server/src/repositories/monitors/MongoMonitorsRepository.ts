@@ -12,13 +12,23 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return this.toEntity(saved);
 	};
 
-	createBulkMonitors = async (monitors: Monitor[]): Promise<Monitor[]> => {
+	createMonitors = async (monitors: Monitor[]): Promise<Monitor[]> => {
 		if (!monitors.length) {
 			return [];
 		}
 		const payload = monitors.map((monitor) => ({ ...monitor, notifications: undefined }));
-		const inserted = await MonitorModel.insertMany(payload, { ordered: false });
-		return this.mapDocuments(inserted);
+		try {
+			const inserted = await MonitorModel.insertMany(payload, { ordered: false });
+			return this.mapDocuments(inserted);
+		} catch (error: any) {
+			if (error.name === "MongoBulkWriteError" || error.name === "BulkWriteError") {
+				const insertedDocs = error.insertedDocs || [];
+				if (insertedDocs.length > 0) {
+					return this.mapDocuments(insertedDocs);
+				}
+			}
+			throw error;
+		}
 	};
 
 	findById = async (monitorId: string, teamId: string): Promise<Monitor> => {

@@ -44,7 +44,8 @@
 			"addDemo": "Add demo monitors",
 			"removeMonitors": "Remove monitors",
 			"sendTestEmail": "Send test email",
-			"exportToJSON": "Export to JSON"
+			"exportToJSON": "Export to JSON",
+			"importFromJSON": "Import from JSON"
 		},
 		"charts": {
 			"labels": {
@@ -1086,8 +1087,11 @@
 					}
 				},
 				"exportMonitors": {
-					"title": "Export monitors",
-					"description": "Export your monitors data as a JSON file for backup or transfer."
+					"title": "Export monitors"
+				},
+				"importExportMonitors": {
+					"title": "Import / Export monitors",
+					"description": "Import or export your monitors data as a JSON file for backup or transfer."
 				},
 				"about": {
 					"title": "About",

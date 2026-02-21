@@ -26,6 +26,7 @@ class MonitorRoutes {
 
 		// Hardware routes
 		this.router.get("/hardware/details/:monitorId", this.monitorController.getHardwareDetailsById);
+
 		// PageSpeed routes
 		this.router.get("/pagespeed/details/:monitorId", this.monitorController.getPageSpeedDetailsById);
 
@@ -44,7 +45,8 @@ class MonitorRoutes {
 		// Other static routes
 		this.router.post("/demo", isAllowed(["admin", "superadmin"]), this.monitorController.addDemoMonitors);
 		this.router.get("/export/json", isAllowed(["admin", "superadmin"]), this.monitorController.exportMonitorsToJSON);
-		this.router.post("/bulk", isAllowed(["admin", "superadmin"]), upload.single("csvFile"), this.monitorController.createBulkMonitors);
+		this.router.post("/import/json", isAllowed(["admin", "superadmin"]), this.monitorController.importMonitorsFromJSON);
+
 		this.router.post("/test-email", isAllowed(["admin", "superadmin"]), this.monitorController.sendTestEmail);
 		this.router.get("/games", this.monitorController.getAllGames);
 
