@@ -125,8 +125,9 @@ export interface HardwareDetailsResult {
 }
 
 export interface PageSpeedDetailsResult {
-	monitor: Monitor & {
-		checks: import("./check.js").Check[];
+	monitorData: {
+		monitor: Monitor;
+		groupedChecks: import("./check.js").PageSpeedGroupedCheck[];
 	};
 	monitorStats: import("./monitorStats.js").MonitorStats | null;
 }
