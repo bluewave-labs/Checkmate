@@ -29,8 +29,6 @@ export interface IMonitorService {
 
 	// create
 	createMonitor(teamId: string, userId: string, body: Monitor): Promise<void>;
-	// TODO rename createMonitors
-	createBulkMonitors(monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null>;
 	addDemoMonitors(args: { userId: string; teamId: string }): Promise<Monitor[]>;
 
 	// read
@@ -73,6 +71,7 @@ export interface IMonitorService {
 	// other
 	sendTestEmail(args: { to: string }): Promise<string>;
 	exportMonitorsToJSON(args: { teamId: string }): Promise<Monitor[]>;
+	importMonitorsFromJSON(args: { teamId: string; userId: string; monitors: any[] }): Promise<{ imported: number; errors: string[] }>;
 }
 
 export class MonitorService implements IMonitorService {
@@ -487,5 +486,44 @@ export class MonitorService implements IMonitorService {
 		}
 
 		return monitors;
+	};
+
+	importMonitorsFromJSON = async ({
+		teamId,
+		userId,
+		monitors,
+	}: {
+		teamId: string;
+		userId: string;
+		monitors: any[];
+	}): Promise<{ imported: number; errors: string[] }> => {
+		const errors: string[] = [];
+
+		// Clean the data: remove id, _id, createdAt, updatedAt, recentChecks fields
+		const cleanedMonitors = monitors.map((monitor) => {
+			const cleanData = { ...monitor };
+			delete cleanData.id;
+			delete cleanData._id;
+			delete cleanData.createdAt;
+			delete cleanData.updatedAt;
+			delete cleanData.recentChecks;
+			// Force the monitor to belong to the current team
+			cleanData.teamId = teamId;
+			return cleanData;
+		});
+
+		// Use createBulkMonitors for efficient bulk insert
+		const createdMonitors = await this.createBulkMonitors(cleanedMonitors, userId, teamId);
+
+		if (!createdMonitors || createdMonitors.length === 0) {
+			throw new AppError({
+				message: "Failed to import any monitors. Please check the file format and try again.",
+				service: SERVICE_NAME,
+				method: "importMonitorsFromJSON",
+				status: 400,
+			});
+		}
+
+		return { imported: createdMonitors.length, errors };
 	};
 }

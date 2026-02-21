@@ -17,7 +17,6 @@ export interface SummaryConfig {
 export interface IMonitorsRepository {
 	// create
 	create(monitor: Monitor, teamId: string, userId: string): Promise<Monitor | null>;
-	// TODO rename createMonitors
 	createBulkMonitors(monitors: Monitor[]): Promise<Monitor[]>;
 	// single fetch
 	findById(monitorId: string, teamId: string): Promise<Monitor>;

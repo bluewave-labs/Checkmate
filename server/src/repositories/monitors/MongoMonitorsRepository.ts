@@ -12,7 +12,6 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return this.toEntity(saved);
 	};
 
-	// TODO rename to createMonitors, must accept JSON
 	createBulkMonitors = async (monitors: Monitor[]): Promise<Monitor[]> => {
 		if (!monitors.length) {
 			return [];

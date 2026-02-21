@@ -23,6 +23,7 @@ import {
 	parseMonitorTypeFilter,
 	parseSortOrder,
 	requireTeamId,
+	requireUserId,
 } from "./controllerUtils.js";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorService } from "@/service/index.js";
@@ -172,26 +173,23 @@ class MonitorController {
 		}
 	};
 
-	// TODO rename to Import, change to accept JSON
-	createBulkMonitors = async (req: Request, res: Response, next: NextFunction) => {
+	importMonitorsFromJSON = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const userId = req.user?.id; // TODO use the correct helper function
-			if (!userId) {
-				throw new AppError({ message: "User ID is required", status: 400 });
+			const teamId = requireTeamId(req?.user?.teamId);
+			const userId = requireUserId(req?.user?.id);
+
+			const { monitors } = req.body;
+
+			if (!monitors || !Array.isArray(monitors)) {
+				throw new AppError({ message: "Invalid request: monitors array is required", status: 400 });
 			}
 
-			const teamId = requireTeamId(req?.user?.teamId);
-
-			const data = req.body;
-
-			// TODO extract JSON, validate?
-
-			const monitors = await this.monitorService.createBulkMonitors(data, userId, teamId);
+			const result = await this.monitorService.importMonitorsFromJSON({ teamId, userId, monitors });
 
 			return res.status(200).json({
 				success: true,
-				msg: "Bulk monitors created successfully",
-				data: monitors,
+				msg: `Successfully imported ${result.imported} monitor(s)`,
+				data: result,
 			});
 		} catch (error) {
 			next(error);
