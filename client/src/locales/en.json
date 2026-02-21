@@ -45,8 +45,7 @@
 			"removeMonitors": "Remove monitors",
 			"sendTestEmail": "Send test email",
 			"exportToJSON": "Export to JSON",
-			"importFromJSON": "Import from JSON",
-			"selectFile": "Select file"
+			"importFromJSON": "Import from JSON"
 		},
 		"charts": {
 			"labels": {
