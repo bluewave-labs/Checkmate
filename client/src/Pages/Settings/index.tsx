@@ -202,6 +202,37 @@ export const SettingsPage = () => {
 		URL.revokeObjectURL(url);
 	};
 
+	const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0];
+		if (!file) {
+			return;
+		}
+
+		if (file.type !== "application/json") {
+			alert("Please select a valid JSON file");
+			event.target.value = ""; // Reset input
+			return;
+		}
+
+		// Log the file contents
+		try {
+			const text = await file.text();
+			const monitors = JSON.parse(text);
+
+			if (!Array.isArray(monitors)) {
+				alert("Invalid file format: expected an array of monitors");
+				event.target.value = "";
+				return;
+			}
+			console.log(monitors);
+			event.target.value = ""; // Reset input
+		} catch (error) {
+			console.error("Import error:", error);
+			alert("Error importing monitors. Please check the file format.");
+			event.target.value = "";
+		}
+	};
+
 	const onSubmit = async (data: SettingsFormData) => {
 		// Don't send pagespeedApiKey if it's already set and user hasn't clicked reset
 		const dataToSend = { ...data };
@@ -866,17 +897,33 @@ export const SettingsPage = () => {
 			{/* Export Monitors - Admin Only */}
 			{isAdmin && (
 				<ConfigBox
-					title={t("pages.settings.form.exportMonitors.title")}
-					subtitle={t("pages.settings.form.exportMonitors.description")}
+					title={t("pages.settings.form.importExportMonitors.title")}
+					subtitle={t("pages.settings.form.importExportMonitors.description")}
 					rightContent={
-						<Box>
+						<Stack
+							gap={theme.spacing(4)}
+							direction={"row"}
+						>
+							<input
+								id="monitor-import-input"
+								type="file"
+								accept=".json"
+								style={{ display: "none" }}
+								onChange={handleFileSelect}
+							/>
+							<Button
+								variant="contained"
+								onClick={() => document.getElementById("monitor-import-input")?.click()}
+							>
+								{t("common.buttons.importFromJSON")}
+							</Button>
 							<Button
 								variant="contained"
 								onClick={handleExportMonitors}
 							>
 								{t("common.buttons.exportToJSON")}
 							</Button>
-						</Box>
+						</Stack>
 					}
 				/>
 			)}
