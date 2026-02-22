@@ -1,4 +1,4 @@
-import { Schema, model, Types, type UpdateQuery } from "mongoose";
+import { Schema, model, Types } from "mongoose";
 import type { Monitor, MonitorMatchMethod, CheckSnapshot } from "@/types/monitor.js";
 import { MonitorTypes, MonitorStatuses, GeoCheckLocations } from "@/types/monitor.js";
 
