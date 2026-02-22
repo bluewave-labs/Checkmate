@@ -532,12 +532,41 @@ class MongoChecksRepository implements IChecksRepository {
 						{ $sort: { _id: 1 } },
 						{ $project: { bucketDate: "$_id", avgResponseTime: 1, totalChecks: 1, _id: 0 } },
 					],
+					groupedGeoChecks: [
+						{ $match: { geoResults: { $exists: true, $ne: null, $not: { $size: 0 } } } },
+						{ $unwind: "$geoResults" },
+						{
+							$group: {
+								_id: {
+									date: { $dateToString: { format: dateString, date: "$createdAt" } },
+									continent: "$geoResults.continent",
+								},
+								avgResponseTime: { $avg: "$geoResults.timings.total" },
+								totalChecks: { $sum: 1 },
+								upChecks: { $sum: { $cond: [{ $eq: ["$geoResults.status", true] }, 1, 0] } },
+							},
+						},
+						{
+							$project: {
+								_id: 0,
+								bucketDate: "$_id.date",
+								continent: "$_id.continent",
+								avgResponseTime: 1,
+								totalChecks: 1,
+								uptimePercentage: {
+									$cond: [{ $eq: ["$totalChecks", 0] }, 0, { $divide: ["$upChecks", "$totalChecks"] }],
+								},
+							},
+						},
+						{ $sort: { bucketDate: 1, continent: 1 } },
+					],
 				},
 			},
 		]);
 
 		const uptimePercentage = result?.uptimePercentage?.[0]?.percentage ?? 0;
 		const avgResponseTime = result?.groupedAvgResponseTime?.[0]?.avgResponseTime ?? 0;
+		const groupedGeoChecks = result?.groupedGeoChecks ?? [];
 
 		return {
 			monitorType,
@@ -546,6 +575,7 @@ class MongoChecksRepository implements IChecksRepository {
 			groupedDownChecks: result?.groupedDownChecks ?? [],
 			uptimePercentage,
 			avgResponseTime,
+			groupedGeoChecks,
 		};
 	};
 

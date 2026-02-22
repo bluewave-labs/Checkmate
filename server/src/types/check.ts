@@ -202,6 +202,14 @@ export interface PageSpeedGroupedCheck {
 	totalChecks: number;
 }
 
+export interface GroupedGeoCheck {
+	bucketDate: string;
+	continent: string;
+	avgResponseTime: number;
+	totalChecks: number;
+	uptimePercentage: number;
+}
+
 export interface UptimeChecksResult {
 	monitorType: Exclude<MonitorType, "hardware" | "pagespeed">;
 	groupedChecks: GroupedCheck[];
@@ -209,6 +217,7 @@ export interface UptimeChecksResult {
 	groupedDownChecks: GroupedCheck[];
 	uptimePercentage: number;
 	avgResponseTime: number;
+	groupedGeoChecks?: GroupedGeoCheck[];
 }
 
 export interface ChecksSummary {

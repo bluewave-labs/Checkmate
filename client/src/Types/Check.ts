@@ -160,6 +160,14 @@ export interface PageSpeedGroupedCheck {
 	totalChecks: number;
 }
 
+export interface GroupedGeoCheck {
+	bucketDate: string;
+	continent: string;
+	avgResponseTime: number;
+	totalChecks: number;
+	uptimePercentage: number;
+}
+
 export interface LatestCheck {
 	status: boolean;
 	responseTime: number;
@@ -236,6 +244,7 @@ export interface UptimeChecksResult {
 	groupedDownChecks: GroupedCheck[];
 	uptimePercentage: number;
 	avgResponseTime: number;
+	groupedGeoChecks?: GroupedGeoCheck[];
 }
 
 export interface ChecksSummary {

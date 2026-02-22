@@ -180,7 +180,7 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		},
 		geoCheckInterval: {
 			type: Number,
-			default: 5,
+			default: 300000,
 		},
 		recentChecks: {
 			type: [checkSnapshotSchema],
