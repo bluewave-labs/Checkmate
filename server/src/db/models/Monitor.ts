@@ -1,6 +1,6 @@
 import { Schema, model, Types, type UpdateQuery } from "mongoose";
 import type { Monitor, MonitorMatchMethod, CheckSnapshot } from "@/types/monitor.js";
-import { MonitorTypes, MonitorStatuses } from "@/types/monitor.js";
+import { MonitorTypes, MonitorStatuses, GeoCheckLocations } from "@/types/monitor.js";
 
 type CheckSnapshotDocument = Omit<CheckSnapshot, "createdAt"> & { createdAt: Date };
 
@@ -168,6 +168,19 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			set(value: string | null) {
 				return value && value.trim() ? value.trim() : null;
 			},
+		},
+		geoCheckEnabled: {
+			type: Boolean,
+			default: false,
+		},
+		geoCheckLocations: {
+			type: [String],
+			enum: GeoCheckLocations,
+			default: [],
+		},
+		geoCheckInterval: {
+			type: Number,
+			default: 5,
 		},
 		recentChecks: {
 			type: [checkSnapshotSchema],

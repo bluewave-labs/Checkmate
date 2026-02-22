@@ -90,6 +90,28 @@ export interface ILighthouseAudit {
 	numericUnit?: string;
 }
 
+export interface GeoCheckTimings {
+	total: number;
+	dns?: number;
+	tcp?: number;
+	tls?: number;
+	firstByte?: number;
+	download?: number;
+}
+
+export interface GeoCheckResult {
+	continent: string;
+	region?: string;
+	country: string;
+	state?: string;
+	city: string;
+	longitude: number;
+	latitude: number;
+	status: boolean;
+	statusCode: number;
+	timings: GeoCheckTimings;
+}
+
 export interface Check {
 	id: string;
 	metadata: CheckMetadata;
@@ -113,6 +135,7 @@ export interface Check {
 	seo?: number;
 	performance?: number;
 	audits?: CheckAudits;
+	geoResults?: GeoCheckResult[];
 	__v: number;
 	createdAt: string;
 	updatedAt: string;

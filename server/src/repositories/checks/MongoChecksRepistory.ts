@@ -10,6 +10,8 @@ import type {
 	CheckMemoryInfo,
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
+	GeoCheckResult,
+	GeoCheckTimings,
 	GotTimings,
 	MonitorType,
 } from "@/types/index.js";
@@ -165,6 +167,33 @@ class MongoChecksRepository implements IChecksRepository {
 			};
 		};
 
+		const mapGeoTimings = (timings?: GeoCheckTimings): GeoCheckTimings => ({
+			total: timings?.total ?? 0,
+			dns: timings?.dns,
+			tcp: timings?.tcp,
+			tls: timings?.tls,
+			firstByte: timings?.firstByte,
+			download: timings?.download,
+		});
+
+		const mapGeoResults = (geoResults?: GeoCheckResult[]): GeoCheckResult[] | undefined => {
+			if (!geoResults?.length) {
+				return undefined;
+			}
+			return geoResults.map((result) => ({
+				continent: result.continent ?? "",
+				region: result.region,
+				country: result.country ?? "",
+				state: result.state,
+				city: result.city ?? "",
+				longitude: result.longitude ?? 0,
+				latitude: result.latitude ?? 0,
+				status: result.status ?? false,
+				statusCode: result.statusCode ?? 0,
+				timings: mapGeoTimings(result.timings),
+			}));
+		};
+
 		const mapMetadata = (metadata: CheckDocument["metadata"]): CheckMetadata => ({
 			monitorId: toStringId(metadata.monitorId),
 			teamId: toStringId(metadata.teamId),
@@ -194,6 +223,7 @@ class MongoChecksRepository implements IChecksRepository {
 			seo: doc.seo,
 			performance: doc.performance,
 			audits: mapAudits(doc.audits),
+			geoResults: mapGeoResults(doc.geoResults),
 			__v: doc.__v ?? 0,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),

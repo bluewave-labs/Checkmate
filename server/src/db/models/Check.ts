@@ -11,6 +11,8 @@ import type {
 	CheckMemoryInfo,
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
+	GeoCheckResult,
+	GeoCheckTimings,
 	GotTimings,
 	ILighthouseAudit,
 } from "@/types/check.js";
@@ -175,6 +177,34 @@ const auditsSchema = new Schema<CheckAudits>(
 	{ _id: false }
 );
 
+const geoCheckTimingsSchema = new Schema<GeoCheckTimings>(
+	{
+		total: { type: Number, required: true },
+		dns: { type: Number },
+		tcp: { type: Number },
+		tls: { type: Number },
+		firstByte: { type: Number },
+		download: { type: Number },
+	},
+	{ _id: false }
+);
+
+const geoCheckResultSchema = new Schema<GeoCheckResult>(
+	{
+		continent: { type: String, required: true },
+		region: { type: String },
+		country: { type: String, required: true },
+		state: { type: String },
+		city: { type: String, required: true },
+		longitude: { type: Number, required: true },
+		latitude: { type: Number, required: true },
+		status: { type: Boolean, required: true },
+		statusCode: { type: Number, required: true },
+		timings: { type: geoCheckTimingsSchema, required: true },
+	},
+	{ _id: false }
+);
+
 const metadataSchema = new Schema<CheckMetadataDocument>(
 	{
 		monitorId: {
@@ -279,6 +309,10 @@ const CheckSchema = new Schema<CheckDocument>(
 		},
 		audits: {
 			type: auditsSchema,
+			default: undefined,
+		},
+		geoResults: {
+			type: [geoCheckResultSchema],
 			default: undefined,
 		},
 	},
