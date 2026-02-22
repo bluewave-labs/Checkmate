@@ -25,6 +25,9 @@ export type MonitorStatus = (typeof MonitorStatuses)[number];
 
 export type MonitorMatchMethod = "equal" | "include" | "regex" | "";
 
+export const GeoCheckLocations = ["EU", "NA", "AS", "SA", "AF", "OC"] as const;
+export type GeoCheckLocation = (typeof GeoCheckLocations)[number];
+
 export interface Monitor {
 	id: string;
 	userId: string;
@@ -59,6 +62,9 @@ export interface Monitor {
 	selectedDisks: string[];
 	gameId?: string;
 	group: string | null;
+	geoCheckEnabled?: boolean;
+	geoCheckLocations?: GeoCheckLocation[];
+	geoCheckInterval?: number;
 	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;

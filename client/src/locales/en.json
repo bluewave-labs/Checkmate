@@ -431,6 +431,31 @@
 					},
 					"title": "Advanced settings"
 				},
+				"geoChecks": {
+					"title": "Geo-distributed checks",
+					"description": "Run checks from multiple geographic locations to monitor global availability and performance.",
+					"option": {
+						"enabled": {
+							"label": "Enable geo-distributed checks"
+						},
+						"locations": {
+							"label": "Locations",
+							"placeholder": "Select locations",
+							"options": {
+								"EU": "Europe",
+								"NA": "North America",
+								"AS": "Asia",
+								"SA": "South America",
+								"AF": "Africa",
+								"OC": "Oceania"
+							}
+						},
+						"interval": {
+							"label": "Check interval (minutes)",
+							"helper": "Minimum 5 minutes between geo checks"
+						}
+					}
+				},
 				"frequency": {
 					"description": "How often do you want to check the status of this monitor?",
 					"option": {

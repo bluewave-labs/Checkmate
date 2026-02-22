@@ -29,7 +29,8 @@ import {
 } from "@/Components/inputs";
 import { useGet, usePost, usePatch, useDelete } from "@/Hooks/UseApi";
 import { useMonitorForm } from "@/Hooks/useMonitorForm";
-import type { Monitor, MonitorType, GamesMap } from "@/Types/Monitor";
+import type { Monitor, MonitorType, GamesMap, GeoCheckLocation } from "@/Types/Monitor";
+import { GeoCheckLocations } from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
 import type { MonitorFormData } from "@/Validation/monitor";
 
@@ -165,6 +166,7 @@ const CreateMonitorPage = () => {
 	const watchedType = watch("type") as MonitorType;
 
 	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
+	const watchGeoCheckEnabled = watch("geoCheckEnabled") as boolean;
 
 	useEffect(() => {
 		clearErrors();
@@ -816,6 +818,89 @@ const CreateMonitorPage = () => {
 											}}
 										/>
 									</Typography>
+								</Stack>
+							)}
+						</Stack>
+					}
+				/>
+			)}
+
+			{/* Geo-distributed Checks Configuration */}
+			{watchedType === "http" && (
+				<ConfigBox
+					title={t("pages.createMonitor.form.geoChecks.title")}
+					subtitle={t("pages.createMonitor.form.geoChecks.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(8)}>
+							<Controller
+								name="geoCheckEnabled"
+								control={control}
+								render={({ field }) => (
+									<Stack
+										direction="row"
+										alignItems="center"
+										spacing={theme.spacing(2)}
+									>
+										<Switch
+											checked={field.value ?? false}
+											onChange={(e) => field.onChange(e.target.checked)}
+										/>
+										<Typography>
+											{t("pages.createMonitor.form.geoChecks.option.enabled.label")}
+										</Typography>
+									</Stack>
+								)}
+							/>
+							{watchGeoCheckEnabled && (
+								<Stack spacing={theme.spacing(8)}>
+									<Controller
+										name="geoCheckLocations"
+										control={control}
+										render={({ field }) => {
+											const locationOptions = GeoCheckLocations.map((loc) => ({
+												id: loc,
+												name: t(
+													`pages.createMonitor.form.geoChecks.option.locations.options.${loc}`
+												),
+											}));
+											const selectedLocations = locationOptions.filter((loc) =>
+												(field.value ?? []).includes(loc.id)
+											);
+											return (
+												<Autocomplete
+													multiple={true}
+													options={locationOptions}
+													value={selectedLocations}
+													getOptionLabel={(option) => option.name}
+													onChange={(_, newValue: typeof locationOptions) => {
+														field.onChange(newValue.map((loc) => loc.id));
+													}}
+													isOptionEqualToValue={(option, value) => option.id === value.id}
+													fieldLabel={t(
+														"pages.createMonitor.form.geoChecks.option.locations.label"
+													)}
+												/>
+											);
+										}}
+									/>
+									<Controller
+										name="geoCheckInterval"
+										control={control}
+										render={({ field }) => (
+											<Select
+												value={field.value ?? 300000}
+												onChange={(e) => field.onChange(Number(e.target.value))}
+												fieldLabel={t(
+													"pages.createMonitor.form.geoChecks.option.interval.label"
+												)}
+											>
+												<MenuItem value={300000}>5 min</MenuItem>
+												<MenuItem value={600000}>10 min</MenuItem>
+												<MenuItem value={900000}>15 min</MenuItem>
+												<MenuItem value={1800000}>30 min</MenuItem>
+											</Select>
+										)}
+									/>
 								</Stack>
 							)}
 						</Stack>
