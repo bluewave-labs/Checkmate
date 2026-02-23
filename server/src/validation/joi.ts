@@ -1,5 +1,6 @@
 import joi, { type CustomHelpers } from "joi";
 import { type UserRole, UserRoles } from "@/types/user.js";
+import { GeoContinents } from "@/types/geoCheck.js";
 
 //****************************************
 // Custom Validators
@@ -172,6 +173,12 @@ const createMonitorBodyValidation = joi.object({
 	gameId: joi.string().allow(""),
 	selectedDisks: joi.array().items(joi.string()).optional(),
 	group: joi.string().max(50).trim().allow(null, "").optional(),
+	geoCheckEnabled: joi.boolean().optional(),
+	geoCheckLocations: joi
+		.array()
+		.items(joi.string().valid(...GeoContinents))
+		.optional(),
+	geoCheckInterval: joi.number().min(300000).optional(),
 });
 
 const createMonitorsBodyValidation = joi.array().items(
@@ -203,6 +210,12 @@ const editMonitorBodyValidation = joi
 		gameId: joi.string().allow(""),
 		selectedDisks: joi.array().items(joi.string()).optional(),
 		group: joi.string().max(50).trim().allow(null, "").optional(),
+		geoCheckEnabled: joi.boolean().optional(),
+		geoCheckLocations: joi
+			.array()
+			.items(joi.string().valid(...GeoContinents))
+			.optional(),
+		geoCheckInterval: joi.number().min(300000).optional(),
 	})
 	.options({ stripUnknown: true });
 

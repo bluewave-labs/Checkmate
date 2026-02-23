@@ -46,6 +46,7 @@ import jmespath from "jmespath";
 import {
 	MongoMonitorsRepository,
 	MongoChecksRepository,
+	MongoGeoChecksRepository,
 	MongoMonitorStatsRepository,
 	MongoStatusPagesRepository,
 	MongoUsersRepository,
@@ -57,6 +58,7 @@ import {
 	MongoMaintenanceWindowsRepository,
 	IMonitorsRepository,
 	IChecksRepository,
+	IGeoChecksRepository,
 	IMonitorStatsRepository,
 	IStatusPagesRepository,
 	IUsersRepository,
@@ -94,6 +96,7 @@ export type InitializedServices = {
 	// Repositories
 	monitorsRepository: IMonitorsRepository;
 	checksRepository: IChecksRepository;
+	geoChecksRepository: IGeoChecksRepository;
 	monitorStatsRepository: IMonitorStatsRepository;
 	statusPagesRepository: IStatusPagesRepository;
 	usersRepository: IUsersRepository;
@@ -126,6 +129,7 @@ export const initializeServices = async ({
 	// Repositories
 	const monitorsRepository = new MongoMonitorsRepository();
 	const checksRepository = new MongoChecksRepository(logger);
+	const geoChecksRepository = new MongoGeoChecksRepository(logger);
 	const monitorStatsRepository = new MongoMonitorStatsRepository();
 	const statusPagesRepository = new MongoStatusPagesRepository();
 	const usersRepository = new MongoUsersRepository();
@@ -278,6 +282,7 @@ export const initializeServices = async ({
 		// Repositories
 		monitorsRepository,
 		checksRepository,
+		geoChecksRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
 		usersRepository,

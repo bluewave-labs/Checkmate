@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { GeoContinents } from "@/Types/GeoCheck";
 
 // URL schema with custom error message
 const urlSchema = z.url({ message: "Please enter a valid URL" });
@@ -20,6 +21,12 @@ const baseSchema = z.object({
 		.number({ message: "Threshold percentage is required" })
 		.min(1, "Incident percentage must be at least 1")
 		.max(100, "Incident percentage must be at most 100"),
+	geoCheckEnabled: z.boolean().optional(),
+	geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
+	geoCheckInterval: z
+		.number()
+		.min(300000, "Interval must be at least 5 minutes")
+		.optional(),
 });
 
 // HTTP monitor schema

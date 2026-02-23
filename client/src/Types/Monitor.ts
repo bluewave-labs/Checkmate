@@ -1,5 +1,7 @@
 import type { GroupedCheck, CheckSnapshot } from "@/Types/Check";
 import type { PageSpeedGroupedCheck } from "@/Types/Check";
+import type { GeoContinent } from "@/Types/GeoCheck";
+export type { GeoContinent } from "@/Types/GeoCheck";
 
 export const MonitorTypes = [
 	"http",
@@ -59,6 +61,9 @@ export interface Monitor {
 	selectedDisks: string[];
 	gameId?: string;
 	group: string | null;
+	geoCheckEnabled?: boolean;
+	geoCheckLocations?: GeoContinent[];
+	geoCheckInterval?: number;
 	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;
