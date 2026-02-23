@@ -29,7 +29,7 @@ import {
 } from "@/Components/inputs";
 import { useGet, usePost, usePatch, useDelete } from "@/Hooks/UseApi";
 import { useMonitorForm } from "@/Hooks/useMonitorForm";
-import type { Monitor, MonitorType, GamesMap, GeoCheckLocation } from "@/Types/Monitor";
+import type { Monitor, MonitorType, GamesMap } from "@/Types/Monitor";
 import { GeoCheckLocations } from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
 import type { MonitorFormData } from "@/Validation/monitor";

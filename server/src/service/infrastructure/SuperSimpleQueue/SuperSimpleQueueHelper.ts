@@ -176,6 +176,98 @@ class SuperSimpleQueueHelper {
 		};
 	};
 
+	getGeoCheckJob = () => {
+		return async (monitor: Monitor) => {
+			try {
+				const monitorId = monitor.id;
+				const teamId = monitor.teamId;
+
+				if (!monitorId) {
+					throw new AppError({ message: "No monitor id", service: SERVICE_NAME, method: "getGeoCheckJob" });
+				}
+
+				// Safety checks
+				if (!monitor.geoCheckEnabled || monitor.type !== "http") {
+					this.logger.debug({
+						message: `Geo check skipped for monitor ${monitorId} - not enabled or not HTTP type`,
+						service: SERVICE_NAME,
+						method: "getGeoCheckJob",
+					});
+					return;
+				}
+
+				if (!monitor.geoCheckLocations || monitor.geoCheckLocations.length === 0) {
+					this.logger.warn({
+						message: `Geo check skipped for monitor ${monitorId} - no locations configured`,
+						service: SERVICE_NAME,
+						method: "getGeoCheckJob",
+					});
+					return;
+				}
+
+				// Check for maintenance window
+				const maintenanceWindowActive = await this.isInMaintenanceWindow(monitorId, teamId);
+				if (maintenanceWindowActive) {
+					this.logger.debug({
+						message: `Geo check skipped for monitor ${monitorId} - in maintenance window`,
+						service: SERVICE_NAME,
+						method: "getGeoCheckJob",
+					});
+					return;
+				}
+
+				this.logger.debug({
+					message: `Starting geo check for monitor ${monitorId}`,
+					service: SERVICE_NAME,
+					method: "getGeoCheckJob",
+				});
+
+				// TODO: Implement GlobalPing API integration
+				// Step 1: Create measurement via GlobalPing API
+				// const measurementId = await this.globalPingService.createMeasurement(
+				//   monitor.url,
+				//   monitor.geoCheckLocations
+				// );
+
+				// Step 2: Poll for results (blocks 2-30s, but doesn't affect primary monitor checks)
+				// const geoResults = await this.globalPingService.pollForResults(measurementId);
+
+				// Step 3: Create check document with only geo results
+				// const check = {
+				//   metadata: {
+				//     monitorId: monitor.id,
+				//     teamId: monitor.teamId,
+				//     type: monitor.type,
+				//   },
+				//   status: true,
+				//   responseTime: 0,
+				//   statusCode: 200,
+				//   message: "Geo check",
+				//   geoResults,
+				//   ack: false,
+				// };
+
+				// Step 4: Save check
+				// await this.checksRepository.create([check]);
+
+				this.logger.info({
+					message: `Geo check completed for monitor ${monitorId}`,
+					service: SERVICE_NAME,
+					method: "getGeoCheckJob",
+				});
+			} catch (error: any) {
+				this.logger.error({
+					message: error.message,
+					service: SERVICE_NAME,
+					method: "getGeoCheckJob",
+					details: error,
+					stack: error.stack,
+				});
+				throw error;
+			}
+		};
+	};
+
 	getCleanupOrphanedJob = () => {
 		return async () => {
 			try {

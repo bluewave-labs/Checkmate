@@ -457,116 +457,133 @@ class MongoChecksRepository implements IChecksRepository {
 		endDate: Date,
 		dateString: string
 	) => {
-		const matchStage = {
+		// Match stage for primary checks (exclude geo checks)
+		const primaryCheckMatchStage = {
 			"metadata.monitorId": monitorObjectId,
 			createdAt: { $gte: startDate, $lte: endDate },
+			geoResults: { $exists: false },
 		};
-		const [result] = await CheckModel.aggregate([
-			{ $match: matchStage },
-			{ $sort: { createdAt: 1 } },
-			{
-				$facet: {
-					uptimePercentage: [
-						{
-							$group: {
-								_id: null,
-								upChecks: { $sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] } },
-								totalChecks: { $sum: 1 },
-							},
-						},
-						{
-							$project: {
-								_id: 0,
-								percentage: {
-									$cond: [{ $eq: ["$totalChecks", 0] }, 0, { $divide: ["$upChecks", "$totalChecks"] }],
+
+		// Match stage for geo checks only
+		const geoCheckMatchStage = {
+			"metadata.monitorId": monitorObjectId,
+			createdAt: { $gte: startDate, $lte: endDate },
+			geoResults: { $exists: true, $ne: null },
+		};
+
+		// Run two separate aggregations - one for primary checks, one for geo checks
+		// TODO, only do this if the monitor has geochecks enabled, otherwise we only need one aggregation
+		const [primaryResult, geoResults] = await Promise.all([
+			CheckModel.aggregate([
+				{ $match: primaryCheckMatchStage },
+				{ $sort: { createdAt: 1 } },
+				{
+					$facet: {
+						uptimePercentage: [
+							{
+								$group: {
+									_id: null,
+									upChecks: { $sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] } },
+									totalChecks: { $sum: 1 },
 								},
 							},
-						},
-					],
-					groupedAvgResponseTime: [
-						{
-							$group: {
-								_id: null,
-								avgResponseTime: { $avg: "$responseTime" },
-							},
-						},
-					],
-					groupedChecks: [
-						{
-							$group: {
-								_id: {
-									$dateToString: { format: dateString, date: "$createdAt" },
-								},
-								avgResponseTime: { $avg: "$responseTime" },
-								totalChecks: { $sum: 1 },
-							},
-						},
-						{ $sort: { _id: 1 } },
-						{ $project: { bucketDate: "$_id", avgResponseTime: 1, totalChecks: 1, _id: 0 } },
-					],
-					groupedUpChecks: [
-						{ $match: { status: true } },
-						{
-							$group: {
-								_id: {
-									$dateToString: { format: dateString, date: "$createdAt" },
-								},
-								totalChecks: { $sum: 1 },
-								avgResponseTime: { $avg: "$responseTime" },
-							},
-						},
-						{ $sort: { _id: 1 } },
-						{ $project: { bucketDate: "$_id", avgResponseTime: 1, totalChecks: 1, _id: 0 } },
-					],
-					groupedDownChecks: [
-						{ $match: { status: false } },
-						{
-							$group: {
-								_id: {
-									$dateToString: { format: dateString, date: "$createdAt" },
-								},
-								totalChecks: { $sum: 1 },
-								avgResponseTime: { $avg: "$responseTime" },
-							},
-						},
-						{ $sort: { _id: 1 } },
-						{ $project: { bucketDate: "$_id", avgResponseTime: 1, totalChecks: 1, _id: 0 } },
-					],
-					groupedGeoChecks: [
-						{ $match: { geoResults: { $exists: true, $ne: null, $not: { $size: 0 } } } },
-						{ $unwind: "$geoResults" },
-						{
-							$group: {
-								_id: {
-									date: { $dateToString: { format: dateString, date: "$createdAt" } },
-									continent: "$geoResults.continent",
-								},
-								avgResponseTime: { $avg: "$geoResults.timings.total" },
-								totalChecks: { $sum: 1 },
-								upChecks: { $sum: { $cond: [{ $eq: ["$geoResults.status", true] }, 1, 0] } },
-							},
-						},
-						{
-							$project: {
-								_id: 0,
-								bucketDate: "$_id.date",
-								continent: "$_id.continent",
-								avgResponseTime: 1,
-								totalChecks: 1,
-								uptimePercentage: {
-									$cond: [{ $eq: ["$totalChecks", 0] }, 0, { $divide: ["$upChecks", "$totalChecks"] }],
+							{
+								$project: {
+									_id: 0,
+									percentage: {
+										$cond: [{ $eq: ["$totalChecks", 0] }, 0, { $divide: ["$upChecks", "$totalChecks"] }],
+									},
 								},
 							},
-						},
-						{ $sort: { bucketDate: 1, continent: 1 } },
-					],
+						],
+						groupedAvgResponseTime: [
+							{
+								$group: {
+									_id: null,
+									avgResponseTime: { $avg: "$responseTime" },
+								},
+							},
+						],
+						groupedChecks: [
+							{
+								$group: {
+									_id: {
+										$dateToString: { format: dateString, date: "$createdAt" },
+									},
+									avgResponseTime: { $avg: "$responseTime" },
+									totalChecks: { $sum: 1 },
+								},
+							},
+							{ $sort: { _id: 1 } },
+							{ $project: { bucketDate: "$_id", avgResponseTime: 1, totalChecks: 1, _id: 0 } },
+						],
+						groupedUpChecks: [
+							{ $match: { status: true } },
+							{
+								$group: {
+									_id: {
+										$dateToString: { format: dateString, date: "$createdAt" },
+									},
+									totalChecks: { $sum: 1 },
+									avgResponseTime: { $avg: "$responseTime" },
+								},
+							},
+							{ $sort: { _id: 1 } },
+							{ $project: { bucketDate: "$_id", avgResponseTime: 1, totalChecks: 1, _id: 0 } },
+						],
+						groupedDownChecks: [
+							{ $match: { status: false } },
+							{
+								$group: {
+									_id: {
+										$dateToString: { format: dateString, date: "$createdAt" },
+									},
+									totalChecks: { $sum: 1 },
+									avgResponseTime: { $avg: "$responseTime" },
+								},
+							},
+							{ $sort: { _id: 1 } },
+							{ $project: { bucketDate: "$_id", avgResponseTime: 1, totalChecks: 1, _id: 0 } },
+						],
+					},
 				},
-			},
+			]),
+			CheckModel.aggregate([
+				{ $match: geoCheckMatchStage },
+				{ $sort: { createdAt: 1 } },
+				{ $unwind: "$geoResults" },
+				{
+					$group: {
+						_id: {
+							date: { $dateToString: { format: dateString, date: "$createdAt" } },
+							continent: "$geoResults.continent",
+						},
+						avgResponseTime: { $avg: "$geoResults.timings.total" },
+						totalChecks: { $sum: 1 },
+						upChecks: { $sum: { $cond: [{ $eq: ["$geoResults.status", true] }, 1, 0] } },
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						bucketDate: "$_id.date",
+						continent: "$_id.continent",
+						avgResponseTime: 1,
+						totalChecks: 1,
+						uptimePercentage: {
+							$cond: [{ $eq: ["$totalChecks", 0] }, 0, { $divide: ["$upChecks", "$totalChecks"] }],
+						},
+					},
+				},
+				{ $sort: { bucketDate: 1, continent: 1 } },
+			]),
 		]);
+
+		const [result] = primaryResult;
+		const groupedGeoChecks = geoResults ?? [];
 
 		const uptimePercentage = result?.uptimePercentage?.[0]?.percentage ?? 0;
 		const avgResponseTime = result?.groupedAvgResponseTime?.[0]?.avgResponseTime ?? 0;
-		const groupedGeoChecks = result?.groupedGeoChecks ?? [];
 
 		return {
 			monitorType,

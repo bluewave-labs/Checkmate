@@ -97,6 +97,7 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 			this.scheduler.start();
 
 			this.scheduler.addTemplate("monitor-job", this.helper.getMonitorJob());
+			this.scheduler.addTemplate("geo-check-job", this.helper.getGeoCheckJob());
 			this.scheduler.addTemplate("cleanup-orphaned", this.helper.getCleanupOrphanedJob());
 			const monitors = await this.monitorsRepository.findAll();
 			if (!monitors) {
@@ -131,14 +132,28 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 			active: monitor.isActive,
 			data: monitor,
 		});
+
+		// Add geo check job if enabled
+		if (monitor.geoCheckEnabled && monitor.type === "http") {
+			this.scheduler.addJob({
+				id: `${monitorId}-geo`,
+				template: "geo-check-job",
+				repeat: monitor.geoCheckInterval,
+				active: monitor.isActive,
+				data: monitor,
+			});
+		}
 	};
 
 	deleteJob = async (monitor: any) => {
 		this.scheduler.removeJob(monitor.id);
+		this.scheduler.removeJob(`${monitor.id}-geo`);
 	};
 
 	pauseJob = async (monitor: any) => {
 		const result = await this.scheduler.pauseJob(monitor.id);
+		// Also pause geo check job if it exists
+		await this.scheduler.pauseJob(`${monitor.id}-geo`);
 		if (result === false) {
 			throw new Error("Failed to resume monitor");
 		}
@@ -151,6 +166,8 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 
 	resumeJob = async (monitor: any) => {
 		const result = await this.scheduler.resumeJob(monitor.id);
+		// Also resume geo check job if it exists
+		await this.scheduler.resumeJob(`${monitor.id}-geo`);
 		if (result === false) {
 			throw new Error("Failed to resume monitor");
 		}
@@ -163,6 +180,29 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 
 	updateJob = async (monitor: any) => {
 		this.scheduler.updateJob(monitor.id, { repeat: monitor.interval, data: monitor });
+
+		// Handle geo check job
+		const geoJobId = `${monitor.id}-geo`;
+		const geoJobExists = await this.scheduler.getJob(geoJobId);
+
+		if (monitor.geoCheckEnabled && monitor.type === "http") {
+			if (geoJobExists) {
+				// Update existing geo job
+				this.scheduler.updateJob(geoJobId, { repeat: monitor.geoCheckInterval, data: monitor, active: monitor.isActive });
+			} else {
+				// Add new geo job
+				this.scheduler.addJob({
+					id: geoJobId,
+					template: "geo-check-job",
+					repeat: monitor.geoCheckInterval,
+					active: monitor.isActive,
+					data: monitor,
+				});
+			}
+		} else if (geoJobExists) {
+			// Remove geo job if it exists but is no longer enabled
+			this.scheduler.removeJob(geoJobId);
+		}
 	};
 
 	shutdown = async () => {
