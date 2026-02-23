@@ -20,7 +20,6 @@ export const statusPageSchema = z.object({
 	showCharts: z.boolean(),
 	showUptimePercentage: z.boolean(),
 	showAdminLoginLink: z.boolean(),
-	customCSS: z.string().optional(),
 	logo: z
 		.object({
 			data: z.string(),
@@ -28,6 +27,11 @@ export const statusPageSchema = z.object({
 		})
 		.nullable()
 		.optional(),
+	customCSS: z
+		.string()
+		.max(10000, "Custom CSS too long")
+		.optional()
+		.or(z.literal("")), // Allow empty string as well
 });
 
 export type StatusPageFormData = z.infer<typeof statusPageSchema>;

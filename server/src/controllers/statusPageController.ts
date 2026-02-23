@@ -55,9 +55,6 @@ class StatusPageController {
 				throw new AppError({ message: "Status page ID is required", status: 400 });
 			}
 			const statusPage = await this.statusPageService.updateStatusPage(statusPageId, teamId, req.file, req.body);
-			if (statusPage === null) {
-				throw new AppError({ message: "Status page not found", status: 404 });
-			}
 			return res.status(200).json({
 				success: true,
 				msg: "Status page updated successfully",

@@ -730,6 +730,10 @@ const createUserBodyValidation = joi.object({
 		.items(joi.string().valid(...UserRoles))
 		.min(1)
 		.required(),
+	customCSS: joi.string()
+		.allow("")
+		.max(10000)
+		.optional(),
 });
 
 export {

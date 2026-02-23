@@ -33,7 +33,7 @@ export const useStatusPageForm = ({
 			showCharts: data?.showCharts ?? true,
 			showUptimePercentage: data?.showUptimePercentage ?? true,
 			showAdminLoginLink: data?.showAdminLoginLink ?? false,
-			customCSS: data?.customCSS || "",
+			customCSS: data?.customCSS ?? "",
 			logo: transformLogo(data?.logo),
 		};
 

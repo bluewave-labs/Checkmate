@@ -111,6 +111,8 @@ const CreateStatusPage = () => {
 		fd.append("showUptimePercentage", String(data.showUptimePercentage));
 		fd.append("showAdminLoginLink", String(data.showAdminLoginLink));
 
+		if(data.customCSS) fd.append("customCSS", data.customCSS);
+
 		data.monitors.forEach((monitorId) => {
 			fd.append("monitors[]", monitorId);
 		});
