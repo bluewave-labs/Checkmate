@@ -551,6 +551,36 @@
 						}
 					}
 				},
+				"geoChecks": {
+					"title": "Geo-Distributed Checks",
+					"description": "Run checks from multiple geographic locations to monitor global availability and performance.",
+					"option": {
+						"enabled": {
+							"label": "Enable geo-distributed checks"
+						},
+						"locations": {
+							"label": "Locations",
+							"placeholder": "Select locations",
+							"options": {
+								"EU": "Europe",
+								"NA": "North America",
+								"AS": "Asia",
+								"SA": "South America",
+								"AF": "Africa",
+								"OC": "Oceania"
+							}
+						},
+						"interval": {
+							"label": "Check interval",
+							"value": {
+								"fiveMinutes": "5 minutes",
+								"tenMinutes": "10 minutes",
+								"fifteenMinutes": "15 minutes",
+								"thirtyMinutes": "30 minutes"
+							}
+						}
+					}
+				},
 				"url": {
 					"title": "Monitor IP/URL on Status Page",
 					"description": "Display the IP address or URL of monitor on the public Status page. If it's disabled, only the monitor name will be shown to protect sensitive information.",
