@@ -1,6 +1,7 @@
 import { HTTPError, RequestError } from "got";
 import type { Got, Response } from "got";
 import type { Monitor, MonitorStatusResponse, GrpcStatusPayload } from "@/types/index.js";
+import { AppError } from "@/utils/AppError.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -644,10 +645,10 @@ class NetworkService implements INetworkService {
 			const grpcServiceName = monitor.grpcServiceName || "";
 
 			if (!url) {
-				throw new Error("Monitor host is required");
+				throw new AppError({ message: "Monitor host is required", service: this.SERVICE_NAME, method: "requestGrpc" });
 			}
 			if (!port) {
-				throw new Error("Monitor port is required");
+				throw new AppError({ message: "Monitor port is required", service: this.SERVICE_NAME, method: "requestGrpc" });
 			}
 
 			const target = `${url}:${port}`;
@@ -700,7 +701,7 @@ class NetworkService implements INetworkService {
 								serviceName: grpcServiceName,
 								servingStatus: "UNKNOWN",
 							};
-							const grpcError = new Error(err.details || err.message);
+							const grpcError = new AppError({ message: err.details || err.message, service: this.SERVICE_NAME, method: "requestGrpc" });
 							(grpcError as any).grpcPayload = payload;
 							(grpcError as any).grpcCode = err.code;
 							reject(grpcError);
