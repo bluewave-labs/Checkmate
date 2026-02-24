@@ -257,6 +257,85 @@ class SuperSimpleQueueHelper {
 		};
 	};
 
+	getGeoCheckJob = () => {
+		return async (monitor: Monitor) => {
+			try {
+				const monitorId = monitor.id;
+				const teamId = monitor.teamId;
+
+				// Step 1: Validate monitor eligibility
+				if (!monitorId) {
+					throw new AppError({ message: "No monitor id", service: SERVICE_NAME, method: "getGeoCheckJob" });
+				}
+
+				if (monitor.type !== "http") {
+					this.logger.debug({
+						message: `Monitor ${monitorId} is not HTTP type, skipping geo check`,
+						service: SERVICE_NAME,
+						method: "getGeoCheckJob",
+					});
+					return;
+				}
+
+				if (!monitor.geoCheckEnabled) {
+					return;
+				}
+
+				if (!monitor.geoCheckLocations || monitor.geoCheckLocations.length === 0) {
+					this.logger.warn({
+						message: `No geo check locations configured for monitor ${monitorId}`,
+						service: SERVICE_NAME,
+						method: "getGeoCheckJob",
+					});
+					return;
+				}
+
+				// Step 2: Check for maintenance window
+				const maintenanceWindowActive = await this.isInMaintenanceWindow(monitorId, teamId);
+				if (maintenanceWindowActive) {
+					this.logger.debug({
+						message: `Monitor ${monitorId} is in maintenance window, skipping geo check`,
+						service: SERVICE_NAME,
+						method: "getGeoCheckJob",
+					});
+					return;
+				}
+
+				// Step 3: Call GlobalPing API
+				// TODO: Implement GlobalPing API service
+				// const measurementId = await this.globalPingService.createMeasurement(monitor.url, monitor.geoCheckLocations);
+				// const geoResults = await this.globalPingService.pollForResults(measurementId);
+
+				// Step 4: Create GeoCheck document
+				// TODO: Build and save GeoCheck
+				// const geoCheck = {
+				//   metadata: {
+				//     monitorId,
+				//     teamId,
+				//     type: monitor.type,
+				//   },
+				//   results: geoResults,
+				//   expiry: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+				// };
+				// await this.geoChecksRepository.create(geoCheck);
+
+				this.logger.debug({
+					message: `Geo check job executed for monitor ${monitorId}`,
+					service: SERVICE_NAME,
+					method: "getGeoCheckJob",
+				});
+			} catch (error: any) {
+				this.logger.error({
+					message: error.message,
+					service: SERVICE_NAME,
+					method: "getGeoCheckJob",
+					stack: error.stack,
+				});
+				// Don't throw - geo check failures shouldn't crash the job scheduler
+			}
+		};
+	};
+
 	async isInMaintenanceWindow(monitorId: string, teamId: string) {
 		const maintenanceWindows = await this.maintenanceWindowsRepository.findByMonitorId(monitorId, teamId);
 		// Check for active maintenance window:
