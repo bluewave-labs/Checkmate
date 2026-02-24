@@ -97,6 +97,7 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 			this.scheduler.start();
 
 			this.scheduler.addTemplate("monitor-job", this.helper.getMonitorJob());
+			this.scheduler.addTemplate("geo-check-job", this.helper.getGeoCheckJob());
 			this.scheduler.addTemplate("cleanup-orphaned", this.helper.getCleanupOrphanedJob());
 			const monitors = await this.monitorsRepository.findAll();
 			if (!monitors) {
@@ -131,10 +132,22 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 			active: monitor.isActive,
 			data: monitor,
 		});
+
+		// Add geo check job if enabled for HTTP monitors
+		if (monitor.geoCheckEnabled && monitor.type === "http") {
+			this.scheduler.addJob({
+				id: `${monitorId}-geo`,
+				template: "geo-check-job",
+				repeat: monitor.geoCheckInterval,
+				active: monitor.isActive,
+				data: monitor,
+			});
+		}
 	};
 
 	deleteJob = async (monitor: any) => {
 		this.scheduler.removeJob(monitor.id);
+		this.scheduler.removeJob(`${monitor.id}-geo`);
 	};
 
 	pauseJob = async (monitor: any) => {
@@ -142,6 +155,7 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 		if (result === false) {
 			throw new Error("Failed to resume monitor");
 		}
+		await this.scheduler.pauseJob(`${monitor.id}-geo`);
 		this.logger.debug({
 			message: `Paused monitor ${monitor.id}`,
 			service: SERVICE_NAME,
@@ -154,6 +168,10 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 		if (result === false) {
 			throw new Error("Failed to resume monitor");
 		}
+		const geoResult = await this.scheduler.resumeJob(`${monitor.id}-geo`);
+		if (geoResult === false) {
+			throw new Error("Failed to resume geo check for monitor");
+		}
 		this.logger.debug({
 			message: `Resumed monitor ${monitor.id}`,
 			service: SERVICE_NAME,
@@ -163,6 +181,29 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 
 	updateJob = async (monitor: any) => {
 		this.scheduler.updateJob(monitor.id, { repeat: monitor.interval, data: monitor });
+
+		// Handle geo check job lifecycle
+		const geoJobId = `${monitor.id}-geo`;
+		if (monitor.geoCheckEnabled && monitor.type === "http") {
+			// Check if geo job exists
+			const existingGeoJob = await this.scheduler.getJob(geoJobId);
+			if (existingGeoJob) {
+				// Update existing geo job
+				this.scheduler.updateJob(geoJobId, { repeat: monitor.geoCheckInterval, active: monitor.isActive, data: monitor });
+			} else {
+				// Create new geo job
+				this.scheduler.addJob({
+					id: geoJobId,
+					template: "geo-check-job",
+					repeat: monitor.geoCheckInterval,
+					active: monitor.isActive,
+					data: monitor,
+				});
+			}
+		} else {
+			// Remove geo job if disabled or monitor type changed
+			this.scheduler.removeJob(geoJobId);
+		}
 	};
 
 	shutdown = async () => {
