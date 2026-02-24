@@ -1,4 +1,5 @@
 import type { GeoContinent, GeoCheckResult, GeoCheckTimings, GeoCheckLocation } from "@/types/geoCheck.js";
+import type Logger from "@/utils/logger.js";
 import got from "got";
 
 const SERVICE_NAME = "GlobalPingService";
@@ -56,9 +57,9 @@ export interface IGlobalPingService {
 class GlobalPingService implements IGlobalPingService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private logger: any;
+	private logger: Logger;
 
-	constructor({ logger }: { logger: any }) {
+	constructor({ logger }: { logger: Logger }) {
 		this.logger = logger;
 	}
 
@@ -68,9 +69,12 @@ class GlobalPingService implements IGlobalPingService {
 
 	async createMeasurement(url: string, locations: GeoContinent[]): Promise<string | null> {
 		try {
+			// GlobalPing API expects target without protocol (http:// or https://)
+			const cleanTarget = url.replace(/^https?:\/\//, "");
+
 			const requestBody: GlobalPingMeasurementRequest = {
 				type: "http",
-				target: url,
+				target: cleanTarget,
 				locations: locations.map((continent) => ({ continent })),
 				limit: locations.length,
 			};
@@ -96,7 +100,7 @@ class GlobalPingService implements IGlobalPingService {
 				message: "GlobalPing API unavailable, skipping geo check",
 				service: SERVICE_NAME,
 				method: "createMeasurement",
-				details: error.message,
+				details: error,
 			});
 			return null;
 		}

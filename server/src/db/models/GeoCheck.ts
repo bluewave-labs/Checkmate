@@ -106,9 +106,7 @@ const GeoCheckSchema = new Schema<GeoCheckDocument>(
 
 GeoCheckSchema.index({ "metadata.monitorId": 1, createdAt: -1 });
 GeoCheckSchema.index({ "metadata.monitorId": 1, createdAt: 1 });
-GeoCheckSchema.index({ "metadata.monitorId": 1, "results.location.continent": 1, createdAt: -1 });
 GeoCheckSchema.index({ "metadata.teamId": 1, createdAt: -1 });
-GeoCheckSchema.index({ "metadata.teamId": 1, "results.status": 1, createdAt: -1 });
 GeoCheckSchema.index({ createdAt: 1 });
 
 const GeoCheckModel = model<GeoCheckDocument>("GeoCheck", GeoCheckSchema);
