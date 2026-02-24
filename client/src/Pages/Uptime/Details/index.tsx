@@ -60,7 +60,7 @@ const UptimeDetailsPage = () => {
 	} = useGet<MonitorDetailsResponse>(
 		monitorDetailsUrl,
 		{},
-		{ refreshInterval: 10000, keepPreviousData: true }
+		{ refreshInterval: 10000, keepPreviousData: true, revalidateOnFocus: false }
 	);
 
 	const monitorData = monitorDetailsData?.monitorData;
@@ -75,7 +75,11 @@ const UptimeDetailsPage = () => {
 		return `/monitors/certificate/${monitorId}`;
 	}, [monitorId, monitor?.type]);
 
-	const { data: certificateData } = useGet<CertificateResponse>(certificateUrl);
+	const { data: certificateData } = useGet<CertificateResponse>(
+		certificateUrl,
+		{},
+		{ revalidateOnFocus: false }
+	);
 
 	const certificateExpiry = useMemo(() => {
 		if (!certificateData?.certificateDate) {
@@ -106,7 +110,7 @@ const UptimeDetailsPage = () => {
 	const { data: checksData, isLoading: checksIsLoading } = useGet<ChecksResponse>(
 		checksUrl,
 		{},
-		{ keepPreviousData: true }
+		{ keepPreviousData: true, revalidateOnFocus: false }
 	);
 
 	// Geo checks fetch - only for HTTP monitors with geo checks enabled
@@ -121,7 +125,13 @@ const UptimeDetailsPage = () => {
 	}, [monitorId, monitor?.type, monitor?.geoCheckEnabled, dateRange, selectedLocation]);
 
 	const { data: _geoChecksData, isLoading: _geoChecksIsLoading } =
-		useGet<GeoChecksResult>(geoChecksUrl, {}, { keepPreviousData: true });
+		useGet<GeoChecksResult>(
+			geoChecksUrl,
+			{},
+			{ keepPreviousData: true, revalidateOnFocus: false }
+		);
+
+	const geoChecks = _geoChecksData?.groupedGeoChecks ?? [];
 
 	// Extract unique locations from geo checks data
 	const geoLocations = monitor?.geoCheckLocations;
@@ -184,15 +194,19 @@ const UptimeDetailsPage = () => {
 			/>
 
 			{monitor?.geoCheckEnabled && (
-				<Stack gap={theme.spacing(8)}>
-					<Typography variant="h2">Location breakdown</Typography>
+				<>
+					<Typography variant="h1">Location breakdown</Typography>
 					<HeaderGeoTabs
 						geoCheckEnabled={monitor?.geoCheckEnabled ?? false}
 						locations={geoLocations}
 						selectedLocation={selectedLocation}
 						onLocationChange={setSelectedLocation}
 					/>
-				</Stack>
+					<HistogramDetails
+						checks={geoChecks}
+						range={dateRange}
+					/>
+				</>
 			)}
 		</BasePage>
 	);
