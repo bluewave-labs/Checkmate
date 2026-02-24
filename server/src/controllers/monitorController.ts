@@ -136,8 +136,8 @@ class MonitorController {
 
 	getGeoChecksByMonitorId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getHardwareDetailsByIdParamValidation.validateAsync(req.params);
-			await getHardwareDetailsByIdQueryValidation.validateAsync(req.query);
+			await getMonitorByIdParamValidation.validateAsync(req.params);
+			await getMonitorByIdQueryValidation.validateAsync(req.query);
 
 			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
 			const dateRange = requireString(req?.query?.dateRange, "dateRange");
