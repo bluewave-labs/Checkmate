@@ -115,7 +115,8 @@
 				"type": "Type",
 				"url": "Url",
 				"interval": "Interval",
-				"active": "Active"
+				"active": "Active",
+				"responseTime": "Response time"
 			}
 		}
 	},
@@ -372,8 +373,8 @@
 			"table": {
 				"empty": "No down checks in this time range",
 				"headers": {
-					"dateTime": "Date & time",
-					"statusCode": "Status code"
+					"statusCode": "Status code",
+					"location": "Location"
 				}
 			}
 		},

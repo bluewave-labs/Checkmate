@@ -479,6 +479,14 @@ export class MonitorService implements IMonitorService {
 			});
 		});
 
+		await this.geoChecksRepository.deleteByMonitorId(monitor.id).catch((err: any) => {
+			this.logger.warn({
+				message: `Error deleting geo checks for monitor ${monitor.id} with name ${monitor.name}`,
+				service: SERVICE_NAME,
+				stack: err.stack,
+			});
+		});
+
 		await this.jobQueue.deleteJob(monitor);
 		return monitor;
 	};
@@ -490,6 +498,7 @@ export class MonitorService implements IMonitorService {
 				try {
 					await this.jobQueue.deleteJob(monitor);
 					await this.checksRepository.deleteByMonitorId(monitor.id);
+					await this.geoChecksRepository.deleteByMonitorId(monitor.id);
 					await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id);
 					await this.monitorStatsRepository.deleteByMonitorId(monitor.id);
 				} catch (error: any) {

@@ -154,7 +154,12 @@ export const initializeServices = async ({
 
 	const globalPingService = new GlobalPingService(logger);
 
-	const geoChecksService = new GeoChecksService(logger, geoChecksRepository, globalPingService);
+	const geoChecksService = new GeoChecksService({
+		logger,
+		geoChecksRepository,
+		globalPingService,
+		monitorsRepository,
+	});
 
 	const bufferService = new BufferService(logger, checkService, geoChecksService, settingsService);
 
@@ -252,12 +257,12 @@ export const initializeServices = async ({
 		jobQueue: superSimpleQueue,
 		userService,
 		checkService,
+		geoChecksService,
 		diagnosticService,
 		inviteService,
 		maintenanceWindowService,
 		monitorService,
 		incidentService,
-		geoChecksService,
 		logger,
 		notificationsService,
 		statusPageService,

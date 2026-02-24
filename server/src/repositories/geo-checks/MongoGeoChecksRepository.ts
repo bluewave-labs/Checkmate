@@ -1,9 +1,17 @@
 import { IGeoChecksRepository } from "./IGeoChecksRepository.js";
-import type { GeoCheck, GeoCheckMetadata, GeoCheckResult, GroupedGeoCheck } from "@/types/geoCheck.js";
+import type { GeoCheck, GeoCheckMetadata, GeoCheckResult, GroupedGeoCheck, GeoContinent } from "@/types/geoCheck.js";
+import type { GeoChecksQueryResult } from "./IGeoChecksRepository.js";
 import { GeoCheckModel, type GeoCheckDocument } from "@/db/models/index.js";
 import mongoose from "mongoose";
 
 const SERVICE_NAME = "GeoChecksRepository";
+
+const dateRangeLookup: Record<string, Date> = {
+	recent: new Date(Date.now() - 60 * 60 * 1000),
+	day: new Date(Date.now() - 24 * 60 * 60 * 1000),
+	week: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+	month: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+};
 
 class MongoGeoChecksRepository implements IGeoChecksRepository {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -91,6 +99,93 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 				message: `Failed to createGeoChecks: ${error.message}`,
 				service: SERVICE_NAME,
 				method: "createGeoChecks",
+				stack: error.stack,
+			});
+			throw error;
+		}
+	};
+
+	findByMonitorId = async (
+		monitorId: string,
+		sortOrder: string,
+		dateRange: string,
+		page: number,
+		rowsPerPage: number,
+		continent?: GeoContinent
+	): Promise<GeoChecksQueryResult> => {
+		try {
+			const matchStage: Record<string, any> = {
+				"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+				...(dateRangeLookup[dateRange] && {
+					createdAt: {
+						$gte: dateRangeLookup[dateRange],
+					},
+				}),
+			};
+
+			const convertedSortOrder = sortOrder === "asc" ? 1 : -1;
+
+			let skip = 0;
+			if (page && rowsPerPage) {
+				skip = page * rowsPerPage;
+			}
+
+			if (continent) {
+				const pipeline: any[] = [
+					{ $match: matchStage },
+					{ $unwind: "$results" },
+					{
+						$match: {
+							"results.location.continent": continent,
+						},
+					},
+					{
+						$group: {
+							_id: "$_id",
+							doc: { $first: "$$ROOT" },
+							results: { $push: "$results" },
+						},
+					},
+					{
+						$replaceRoot: {
+							newRoot: {
+								$mergeObjects: ["$doc", { results: "$results" }],
+							},
+						},
+					},
+					{ $sort: { createdAt: convertedSortOrder } },
+					{ $skip: skip },
+					{ $limit: rowsPerPage },
+				];
+
+				const [countPipeline, dataResults] = await Promise.all([
+					GeoCheckModel.aggregate([
+						{ $match: matchStage },
+						{ $unwind: "$results" },
+						{ $match: { "results.location.continent": continent } },
+						{ $group: { _id: "$_id" } },
+						{ $count: "count" },
+					]),
+					GeoCheckModel.aggregate(pipeline),
+				]);
+
+				const geoChecksCount = countPipeline[0]?.count || 0;
+				const geoChecks = dataResults.map(this.toEntity);
+
+				return { geoChecksCount, geoChecks };
+			} else {
+				const [geoChecksCount, docs] = await Promise.all([
+					GeoCheckModel.countDocuments(matchStage),
+					GeoCheckModel.find(matchStage).sort({ createdAt: convertedSortOrder }).skip(skip).limit(rowsPerPage).lean() as Promise<GeoCheckDocument[]>,
+				]);
+
+				return { geoChecksCount, geoChecks: docs.map(this.toEntity) };
+			}
+		} catch (error: any) {
+			this.logger.error({
+				message: `Error finding geo checks by monitor ID: ${error.message}`,
+				service: SERVICE_NAME,
+				method: "findByMonitorId",
 				stack: error.stack,
 			});
 			throw error;

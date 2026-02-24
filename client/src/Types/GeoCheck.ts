@@ -55,3 +55,8 @@ export interface GeoChecksResult {
 	monitorType: string;
 	groupedGeoChecks: GroupedGeoCheck[];
 }
+
+export interface GeoChecksResponse {
+	geoChecks: GeoCheck[];
+	geoChecksCount: number;
+}

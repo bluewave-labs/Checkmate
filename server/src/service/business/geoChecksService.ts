@@ -2,9 +2,10 @@ import type { Monitor, GeoCheck } from "@/types/index.js";
 import type { GeoCheckResult } from "@/types/geoCheck.js";
 import { Types } from "mongoose";
 import type { IGeoChecksRepository } from "@/repositories/index.js";
+import type { IMonitorsRepository } from "@/repositories/index.js";
 import type { IGlobalPingService } from "@/service/infrastructure/globalPingService.js";
 import type { ILogger } from "@/utils/logger.js";
-import type { ISettingsService } from "@/service/system/settingsService.js";
+import { AppError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "GeoChecksService";
 
@@ -12,6 +13,7 @@ export interface IGeoChecksService {
 	readonly serviceName: string;
 	buildGeoCheck(monitor: Monitor): Promise<GeoCheck | null>;
 	createGeoChecks(geoChecks: GeoCheck[]): Promise<GeoCheck[]>;
+	getGeoChecksByMonitor(args: { monitorId: string; query: any; teamId: string }): Promise<any>;
 }
 
 class GeoChecksService implements IGeoChecksService {
@@ -20,11 +22,23 @@ class GeoChecksService implements IGeoChecksService {
 	private logger: ILogger;
 	private geoChecksRepository: IGeoChecksRepository;
 	private globalPingService: IGlobalPingService;
+	private monitorsRepository: IMonitorsRepository;
 
-	constructor(logger: ILogger, geoChecksRepository: IGeoChecksRepository, globalPingService: IGlobalPingService) {
+	constructor({
+		logger,
+		geoChecksRepository,
+		globalPingService,
+		monitorsRepository,
+	}: {
+		logger: ILogger;
+		geoChecksRepository: IGeoChecksRepository;
+		globalPingService: IGlobalPingService;
+		monitorsRepository: IMonitorsRepository;
+	}) {
 		this.logger = logger;
 		this.geoChecksRepository = geoChecksRepository;
 		this.globalPingService = globalPingService;
+		this.monitorsRepository = monitorsRepository;
 	}
 
 	get serviceName() {
@@ -132,6 +146,43 @@ class GeoChecksService implements IGeoChecksService {
 
 	createGeoChecks = async (geoChecks: GeoCheck[]) => {
 		return this.geoChecksRepository.createGeoChecks(geoChecks);
+	};
+
+	getGeoChecksByMonitor = async ({ monitorId, query, teamId }: { monitorId: string; query: any; teamId: string }) => {
+		if (!monitorId) {
+			throw new AppError({
+				message: "No monitor ID in request",
+				service: SERVICE_NAME,
+				method: "getGeoChecksByMonitor",
+				status: 400,
+			});
+		}
+		if (!teamId) {
+			throw new AppError({
+				message: "No team ID in request",
+				service: SERVICE_NAME,
+				method: "getGeoChecksByMonitor",
+				status: 400,
+			});
+		}
+
+		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
+		if (!monitor) {
+			throw new AppError({
+				message: `Monitor with ID ${monitorId} not found.`,
+				service: SERVICE_NAME,
+				method: "getGeoChecksByMonitor",
+				status: 404,
+			});
+		}
+
+		let { sortOrder, dateRange, page, rowsPerPage, continent } = query;
+		const parsedPage = page ? parseInt(page) : page;
+		const parsedRowsPerPage = rowsPerPage ? parseInt(rowsPerPage) : rowsPerPage;
+
+		const result = await this.geoChecksRepository.findByMonitorId(monitorId, sortOrder, dateRange, parsedPage, parsedRowsPerPage, continent);
+
+		return result;
 	};
 }
 

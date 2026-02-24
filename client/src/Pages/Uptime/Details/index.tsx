@@ -10,6 +10,7 @@ import {
 } from "@/Components/monitors";
 import { TrendingUp, AlertTriangle } from "lucide-react";
 import { ChecksTable } from "@/Pages/Uptime/Details/Components/ChecksTable";
+import { GeoChecksTable } from "@/Pages/Uptime/Details/Components/GeoChecksTable";
 import { MonitorStatBoxes } from "@/Components/monitors";
 
 import { useTheme } from "@mui/material/styles";
@@ -20,7 +21,7 @@ import { useSelector } from "react-redux";
 import { useGet } from "@/Hooks/UseApi";
 import type { MonitorDetailsResponse } from "@/Types/Monitor";
 import type { ChecksResponse } from "@/Types/Check";
-import type { GeoChecksResult, GeoContinent } from "@/Types/GeoCheck";
+import type { GeoChecksResult, GeoChecksResponse, GeoContinent } from "@/Types/GeoCheck";
 import type { RootState } from "@/Types/state";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { t } from "i18next";
@@ -40,6 +41,8 @@ const UptimeDetailsPage = () => {
 
 	const [page, setPage] = useState<number>(0);
 	const [rowsPerPage, setRowsPerPage] = useState<number>(5);
+	const [geoPage, setGeoPage] = useState<number>(0);
+	const [geoRowsPerPage, setGeoRowsPerPage] = useState<number>(5);
 	const [dateRange, setDateRange] = useState<string>("recent");
 	const [selectedLocation, setSelectedLocation] = useState<GeoContinent>("NA");
 
@@ -113,7 +116,6 @@ const UptimeDetailsPage = () => {
 		{ keepPreviousData: true, revalidateOnFocus: false }
 	);
 
-	// Geo checks fetch - only for HTTP monitors with geo checks enabled
 	const geoChecksUrl = useMemo(() => {
 		if (!monitorId || monitor?.type !== "http" || !monitor?.geoCheckEnabled) {
 			return null;
@@ -124,14 +126,46 @@ const UptimeDetailsPage = () => {
 		return `/monitors/${monitorId}/geo-checks?${params.toString()}`;
 	}, [monitorId, monitor?.type, monitor?.geoCheckEnabled, dateRange, selectedLocation]);
 
-	const { data: _geoChecksData, isLoading: _geoChecksIsLoading } =
-		useGet<GeoChecksResult>(
-			geoChecksUrl,
-			{},
-			{ keepPreviousData: true, revalidateOnFocus: false }
-		);
+	const { data: geoGroupedData } = useGet<GeoChecksResult>(
+		geoChecksUrl,
+		{},
+		{ keepPreviousData: true, revalidateOnFocus: false }
+	);
 
-	const geoChecks = _geoChecksData?.groupedGeoChecks ?? [];
+	const geoGroupedChecks = geoGroupedData?.groupedGeoChecks ?? [];
+
+	// Fetch paginated geo checks for the table
+	const geoChecksTableUrl = useMemo(() => {
+		if (!monitorId || monitor?.type !== "http" || !monitor?.geoCheckEnabled) {
+			return null;
+		}
+		const params = new URLSearchParams();
+		params.append("sortOrder", "desc");
+		params.append("dateRange", dateRange);
+		params.append("page", String(geoPage));
+		params.append("rowsPerPage", String(geoRowsPerPage));
+		if (selectedLocation) {
+			params.append("continent", selectedLocation);
+		}
+		return `/geo-checks/${monitorId}?${params.toString()}`;
+	}, [
+		monitorId,
+		monitor?.type,
+		monitor?.geoCheckEnabled,
+		dateRange,
+		geoPage,
+		geoRowsPerPage,
+		selectedLocation,
+	]);
+
+	const { data: geoChecksTableData } = useGet<GeoChecksResponse>(
+		geoChecksTableUrl,
+		{},
+		{ keepPreviousData: true, revalidateOnFocus: false }
+	);
+
+	const geoChecksForTable = geoChecksTableData?.geoChecks ?? [];
+	const geoChecksCount = geoChecksTableData?.geoChecksCount ?? 0;
 
 	// Extract unique locations from geo checks data
 	const geoLocations = monitor?.geoCheckLocations;
@@ -203,8 +237,16 @@ const UptimeDetailsPage = () => {
 						onLocationChange={setSelectedLocation}
 					/>
 					<HistogramDetails
-						checks={geoChecks}
+						checks={geoGroupedChecks}
 						range={dateRange}
+					/>
+					<GeoChecksTable
+						geoChecks={geoChecksForTable}
+						count={geoChecksCount}
+						page={geoPage}
+						setPage={setGeoPage}
+						rowsPerPage={geoRowsPerPage}
+						setRowsPerPage={setGeoRowsPerPage}
 					/>
 				</>
 			)}

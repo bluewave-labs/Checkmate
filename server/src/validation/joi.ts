@@ -324,6 +324,7 @@ const getChecksQueryValidation = joi.object({
 	page: joi.number(),
 	rowsPerPage: joi.number(),
 	status: joi.boolean(),
+	continent: joi.string().valid(...GeoContinents),
 });
 
 const getTeamChecksQueryValidation = joi.object({

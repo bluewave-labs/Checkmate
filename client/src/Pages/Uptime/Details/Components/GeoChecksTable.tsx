@@ -1,21 +1,22 @@
 import { Table, Pagination, StatusLabel } from "@/Components/design-elements";
 import Box from "@mui/material/Box";
 import type { Header } from "@/Components/design-elements";
-import type { Check } from "@/Types/Check";
-
-import { useNavigate } from "react-router";
+import type { GeoCheck } from "@/Types/GeoCheck";
 import { useTranslation } from "react-i18next";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import type { RootState } from "@/Types/state";
 import { useSelector } from "react-redux";
+import prettyMilliseconds from "pretty-ms";
 
 const getHeaders = (t: Function, uiTimezone: string) => {
-	const headers: Header<Check>[] = [
+	const headers: Header<GeoCheck>[] = [
 		{
 			id: "status",
 			content: t("common.table.headers.status"),
 			render: (row) => {
-				return <StatusLabel status={row.status === true ? "up" : "down"} />;
+				const firstResult = row.results[0];
+				const status = firstResult?.status ? "up" : "down";
+				return <StatusLabel status={status} />;
 			},
 		},
 		{
@@ -26,39 +27,51 @@ const getHeaders = (t: Function, uiTimezone: string) => {
 			},
 		},
 		{
-			id: "message",
-			content: t("common.table.headers.message"),
-			render: (row) => {
-				return row.message || "N/A";
-			},
-		},
-		{
 			id: "statusCode",
 			content: t("pages.checks.table.headers.statusCode"),
 			render: (row) => {
-				return row.statusCode || "N/A";
+				const firstResult = row.results[0];
+				return firstResult?.statusCode || "N/A";
+			},
+		},
+		{
+			id: "location",
+			content: t("pages.checks.table.headers.location"),
+			render: (row) => {
+				const firstResult = row.results[0];
+				if (!firstResult) return "N/A";
+				const { continent, country, city } = firstResult.location;
+				return `${continent} - ${country}, ${city}`;
+			},
+		},
+		{
+			id: "responseTime",
+			content: t("common.table.headers.responseTime"),
+			render: (row) => {
+				const firstResult = row.results[0];
+				if (!firstResult?.timings?.total) return "N/A";
+				return prettyMilliseconds(firstResult.timings.total, { compact: true });
 			},
 		},
 	];
 	return headers;
 };
 
-export const ChecksTable = ({
-	checks,
+export const GeoChecksTable = ({
+	geoChecks,
 	count,
 	page,
 	setPage,
 	rowsPerPage,
 	setRowsPerPage,
 }: {
-	checks: Check[];
+	geoChecks: GeoCheck[];
 	count: number;
 	page: number;
 	setPage: (page: number) => void;
 	rowsPerPage: number;
 	setRowsPerPage: (rowsPerPage: number) => void;
 }) => {
-	const navigate = useNavigate();
 	const { t } = useTranslation();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 	const headers = getHeaders(t, uiTimezone);
@@ -82,10 +95,7 @@ export const ChecksTable = ({
 		<Box>
 			<Table
 				headers={headers}
-				data={checks}
-				onRowClick={(row) => {
-					navigate(`/checks/${row.id}`);
-				}}
+				data={geoChecks}
 			/>
 			<Pagination
 				component="div"
