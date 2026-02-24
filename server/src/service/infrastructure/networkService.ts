@@ -3,6 +3,8 @@ import type { Got, Response } from "got";
 import type { Monitor, MonitorStatusResponse } from "@/types/index.js";
 
 import CacheableLookup from "cacheable-lookup";
+import { ISettingsService } from "../system/settingsService.js";
+import { ILogger } from "@/utils/logger.js";
 const SERVICE_NAME = "NetworkService";
 
 type MonitorStatusResponseOverrides<T> = Partial<Omit<MonitorStatusResponse<T>, "monitorId" | "teamId" | "type">>;
@@ -111,31 +113,18 @@ class NetworkService implements INetworkService {
 		};
 	};
 
-	constructor({
-		axios,
-		got,
-		https,
-		jmespath,
-		GameDig,
-		ping,
-		logger,
-		http,
-		Docker,
-		net,
-		settingsService,
-	}: {
-		axios: any;
-		got: Got;
-		https: any;
-		jmespath: any;
-		GameDig: any;
-		ping: any;
-		logger: any;
-		http: any;
-		Docker: any;
-		net: any;
-		settingsService: any;
-	}) {
+	constructor(
+		axios: any,
+		got: Got,
+		https: any,
+		jmespath: any,
+		GameDig: any,
+		ping: any,
+		logger: ILogger,
+		Docker: any,
+		net: any,
+		settingsService: ISettingsService
+	) {
 		this.TYPE_PING = "ping";
 		this.TYPE_HTTP = "http";
 		this.TYPE_PAGESPEED = "pagespeed";

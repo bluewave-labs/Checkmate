@@ -306,8 +306,19 @@ class SuperSimpleQueueHelper {
 					return;
 				}
 
-				// Step 3: Execute geo check (handles API calls, polling, and saving)
-				await this.geoChecksService.executeGeoCheck(monitor);
+				// Step 3: Build geo check (handles API calls and polling)
+				const geoCheck = await this.geoChecksService.buildGeoCheck(monitor);
+				if (!geoCheck) {
+					this.logger.warn({
+						message: `No geo check could be built for monitor ${monitorId}`,
+						service: SERVICE_NAME,
+						method: "getGeoCheckJob",
+					});
+					return;
+				}
+
+				// Step 4: Add geo check to buffer
+				this.buffer.addGeoCheckToBuffer(geoCheck);
 
 				this.logger.debug({
 					message: `Geo check job executed for monitor ${monitorId}`,

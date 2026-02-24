@@ -1,5 +1,5 @@
 import type { GeoContinent, GeoCheckResult, GeoCheckTimings, GeoCheckLocation } from "@/types/geoCheck.js";
-import type Logger from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger.js";
 import got from "got";
 
 const SERVICE_NAME = "GlobalPingService";
@@ -57,9 +57,9 @@ export interface IGlobalPingService {
 class GlobalPingService implements IGlobalPingService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private logger: Logger;
+	private logger: ILogger;
 
-	constructor({ logger }: { logger: Logger }) {
+	constructor(logger: ILogger) {
 		this.logger = logger;
 	}
 

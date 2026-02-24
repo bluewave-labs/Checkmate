@@ -7,6 +7,7 @@ import type { IIncidentsRepository, IMonitorsRepository, IUsersRepository } from
 import type { Incident } from "@/types/index.js";
 import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import type { INotificationMessageBuilder } from "@/service/infrastructure/notificationMessageBuilder.js";
+import type { ILogger } from "@/utils/logger.js";
 
 const dateRangeLookup: Record<string, Date | undefined> = {
 	recent: new Date(new Date().setHours(new Date().getHours() - 2)),
@@ -20,25 +21,19 @@ const dateRangeLookup: Record<string, Date | undefined> = {
 class IncidentService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private logger: any;
+	private logger: ILogger;
 	private incidentsRepository: IIncidentsRepository;
 	private monitorsRepository: IMonitorsRepository;
 	private usersRepository: IUsersRepository;
 	private notificationMessageBuilder: INotificationMessageBuilder;
 
-	constructor({
-		logger,
-		incidentsRepository,
-		monitorsRepository,
-		usersRepository,
-		notificationMessageBuilder,
-	}: {
-		logger: any;
-		incidentsRepository: IIncidentsRepository;
-		monitorsRepository: IMonitorsRepository;
-		usersRepository: IUsersRepository;
-		notificationMessageBuilder: INotificationMessageBuilder;
-	}) {
+	constructor(
+		logger: ILogger,
+		incidentsRepository: IIncidentsRepository,
+		monitorsRepository: IMonitorsRepository,
+		usersRepository: IUsersRepository,
+		notificationMessageBuilder: INotificationMessageBuilder
+	) {
 		this.logger = logger;
 		this.incidentsRepository = incidentsRepository;
 		this.monitorsRepository = monitorsRepository;
@@ -151,7 +146,7 @@ class IncidentService {
 				service: SERVICE_NAME,
 				method: "resolveIncidentManually",
 				message: `Incident manually resolved by user`,
-				details: resolvedIncident.id,
+				details: { incidentId: resolvedIncident.id },
 			});
 
 			return resolvedIncident;
@@ -160,7 +155,7 @@ class IncidentService {
 				service: SERVICE_NAME,
 				method: "resolveIncident",
 				message: error.message,
-				details: incidentId,
+				details: { id: incidentId },
 				stack: error.stack,
 			});
 			throw error;
@@ -207,7 +202,7 @@ class IncidentService {
 				service: SERVICE_NAME,
 				method: "getIncidentsByTeam",
 				message: error.message,
-				details: teamId,
+				details: { teamId },
 				stack: error.stack,
 			});
 			throw error;
@@ -229,7 +224,7 @@ class IncidentService {
 				service: SERVICE_NAME,
 				method: "getIncidentSummary",
 				message: error.message,
-				details: teamId,
+				details: { teamId },
 				stack: error.stack,
 			});
 			throw error;
@@ -250,7 +245,7 @@ class IncidentService {
 				service: SERVICE_NAME,
 				method: "getIncidentById",
 				message: error.message,
-				details: incidentId,
+				details: { incidentId },
 				stack: error.stack,
 			});
 			throw error;

@@ -91,7 +91,7 @@ export type InitializedServices = {
 	maintenanceWindowService: any;
 	monitorService: any;
 	incidentService: any;
-	logger: any;
+	logger: ILogger;
 	notificationsService: INotificationsService;
 	statusPageService: IStatusPageService;
 	notificationMessageBuilder: INotificationMessageBuilder;
@@ -143,52 +143,20 @@ export const initializeServices = async ({
 	const teamsRepository = new MongoTeamsRepository();
 	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
 
-	const networkService = new NetworkService({
-		axios,
-		got,
-		https,
-		jmespath,
-		GameDig,
-		ping,
-		logger,
-		http,
-		Docker,
-		net,
-		settingsService,
-	});
+	const networkService = new NetworkService(axios, got, https, jmespath, GameDig, ping, logger, Docker, net, settingsService);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 
 	const notificationMessageBuilder = new NotificationMessageBuilder();
 
-	const incidentService = new IncidentService({
-		logger,
-		incidentsRepository,
-		monitorsRepository,
-		usersRepository,
-		notificationMessageBuilder,
-	});
+	const incidentService = new IncidentService(logger, incidentsRepository, monitorsRepository, usersRepository, notificationMessageBuilder);
 
-	const checkService = new CheckService({
-		monitorsRepository,
-		logger,
-		checksRepository,
-	});
+	const checkService = new CheckService(monitorsRepository, logger, checksRepository);
 
-	const globalPingService = new GlobalPingService({ logger });
+	const globalPingService = new GlobalPingService(logger);
 
-	// Create geoChecksService with circular dependency workaround
-	const geoChecksService = new GeoChecksService({
-		logger,
-		geoChecksRepository,
-		globalPingService,
-		bufferService: null as any,
-		settingsService,
-	});
+	const geoChecksService = new GeoChecksService(logger, geoChecksRepository, globalPingService);
 
-	const bufferService = new BufferService({ logger, checkService, geoChecksService, settingsService });
-
-	// Set bufferService reference
-	(geoChecksService as any).bufferService = bufferService;
+	const bufferService = new BufferService(logger, checkService, geoChecksService, settingsService);
 
 	const statusService = new StatusService(logger, bufferService, monitorsRepository, monitorStatsRepository, checksRepository);
 
@@ -269,6 +237,7 @@ export const initializeServices = async ({
 		games,
 		monitorsRepository,
 		checksRepository,
+		geoChecksRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
 		incidentsRepository,

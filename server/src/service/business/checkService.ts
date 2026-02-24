@@ -1,10 +1,10 @@
-import { requireTeamId } from "@/controllers/controllerUtils.js";
 import { Types } from "mongoose";
 import { IChecksRepository, IMonitorsRepository } from "@/repositories/index.js";
-import type { MonitorType, MonitorStatusResponse, CheckErrorInfo, Check } from "@/types/index.js";
+import type { MonitorStatusResponse, CheckErrorInfo, Check } from "@/types/index.js";
 import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import { ParseBoolean } from "@/utils/utils.js";
+import { ILogger } from "@/utils/logger.js";
 
 const SERVICE_NAME = "checkService";
 
@@ -14,15 +14,7 @@ class CheckService {
 	private monitorsRepository: IMonitorsRepository;
 	private checksRepository: IChecksRepository;
 	private logger: any;
-	constructor({
-		monitorsRepository,
-		logger,
-		checksRepository,
-	}: {
-		monitorsRepository: IMonitorsRepository;
-		logger: any;
-		checksRepository: IChecksRepository;
-	}) {
+	constructor(monitorsRepository: IMonitorsRepository, logger: ILogger, checksRepository: IChecksRepository) {
 		this.monitorsRepository = monitorsRepository;
 		this.logger = logger;
 		this.checksRepository = checksRepository;

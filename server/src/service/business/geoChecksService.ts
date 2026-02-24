@@ -3,42 +3,28 @@ import type { GeoCheckResult } from "@/types/geoCheck.js";
 import { Types } from "mongoose";
 import type { IGeoChecksRepository } from "@/repositories/index.js";
 import type { IGlobalPingService } from "@/service/infrastructure/globalPingService.js";
-import type { IBufferService } from "@/service/infrastructure/bufferService.js";
+import type { ILogger } from "@/utils/logger.js";
+import type { ISettingsService } from "@/service/system/settingsService.js";
 
 const SERVICE_NAME = "GeoChecksService";
 
 export interface IGeoChecksService {
 	readonly serviceName: string;
-	executeGeoCheck(monitor: Monitor): Promise<void>;
+	buildGeoCheck(monitor: Monitor): Promise<GeoCheck | null>;
+	createGeoChecks(geoChecks: GeoCheck[]): Promise<GeoCheck[]>;
 }
 
 class GeoChecksService implements IGeoChecksService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private logger: any;
+	private logger: ILogger;
 	private geoChecksRepository: IGeoChecksRepository;
 	private globalPingService: IGlobalPingService;
-	private bufferService: IBufferService;
-	private TTL_DAYS: number;
 
-	constructor({
-		logger,
-		geoChecksRepository,
-		globalPingService,
-		bufferService,
-		settingsService,
-	}: {
-		logger: any;
-		geoChecksRepository: IGeoChecksRepository;
-		globalPingService: IGlobalPingService;
-		bufferService: IBufferService;
-		settingsService: any;
-	}) {
+	constructor(logger: ILogger, geoChecksRepository: IGeoChecksRepository, globalPingService: IGlobalPingService) {
 		this.logger = logger;
 		this.geoChecksRepository = geoChecksRepository;
 		this.globalPingService = globalPingService;
-		this.bufferService = bufferService;
-		this.TTL_DAYS = settingsService.getSettings().checksTTL || 90;
 	}
 
 	get serviceName() {
@@ -46,31 +32,31 @@ class GeoChecksService implements IGeoChecksService {
 	}
 
 	/**
-	 * Execute a geo-distributed check for a monitor
+	 * Build a geo-distributed check for a monitor
 	 * 1. Create measurement request with GlobalPing API
 	 * 2. Poll for results (with 30s timeout)
-	 * 3. Transform and save results to buffer
+	 * 3. Transform and return GeoCheck document
 	 */
-	async executeGeoCheck(monitor: Monitor): Promise<void> {
+	async buildGeoCheck(monitor: Monitor): Promise<GeoCheck | null> {
 		try {
 			if (!monitor.url) {
 				this.logger.warn({
 					message: "Monitor missing URL for geo check",
 					service: SERVICE_NAME,
-					method: "executeGeoCheck",
+					method: "buildGeoCheck",
 					details: { monitorId: monitor.id },
 				});
-				return;
+				return null;
 			}
 
 			if (!monitor.geoCheckLocations || monitor.geoCheckLocations.length === 0) {
 				this.logger.warn({
 					message: "Monitor missing geo check locations",
 					service: SERVICE_NAME,
-					method: "executeGeoCheck",
+					method: "buildGeoCheck",
 					details: { monitorId: monitor.id },
 				});
-				return;
+				return null;
 			}
 
 			// Step 1: Create measurement request
@@ -81,10 +67,10 @@ class GeoChecksService implements IGeoChecksService {
 				this.logger.debug({
 					message: "Skipping geo check due to API unavailability",
 					service: SERVICE_NAME,
-					method: "executeGeoCheck",
+					method: "buildGeoCheck",
 					details: { monitorId: monitor.id },
 				});
-				return;
+				return null;
 			}
 
 			// Step 2: Poll for results
@@ -95,38 +81,39 @@ class GeoChecksService implements IGeoChecksService {
 				this.logger.debug({
 					message: "No successful geo check results",
 					service: SERVICE_NAME,
-					method: "executeGeoCheck",
+					method: "buildGeoCheck",
 					details: { monitorId: monitor.id, measurementId },
 				});
-				return;
+				return null;
 			}
 
 			// Step 3: Build GeoCheck document
-			const geoCheck = this.buildGeoCheck(monitor, results);
-
-			// Step 4: Add to buffer for batched insertion
-			this.bufferService.addGeoCheckToBuffer(geoCheck);
+			const geoCheck = this.createGeoCheckDocument(monitor, results);
 
 			this.logger.debug({
 				message: `Geo check completed for monitor ${monitor.id}`,
 				service: SERVICE_NAME,
-				method: "executeGeoCheck",
+				method: "buildGeoCheck",
 				details: { monitorId: monitor.id, resultsCount: results.length },
 			});
+
+			return geoCheck;
 		} catch (error: any) {
 			this.logger.error({
 				message: "Error executing geo check",
 				service: SERVICE_NAME,
-				method: "executeGeoCheck",
+				method: "buildGeoCheck",
 				details: { monitorId: monitor.id, error: error.message },
 				stack: error.stack,
 			});
+			return null;
 		}
 	}
 
-	private buildGeoCheck(monitor: Monitor, results: GeoCheckResult[]): GeoCheck {
+	private createGeoCheckDocument(monitor: Monitor, results: GeoCheckResult[]): GeoCheck {
 		const now = new Date();
-		const expiryDate = new Date(now.getTime() + this.TTL_DAYS * 24 * 60 * 60 * 1000);
+		const ttl = 90 * 24 * 60 * 60 * 1000; // 90 days in ms
+		const expiryDate = new Date(now.getTime() + ttl);
 
 		return {
 			id: new Types.ObjectId().toString(),

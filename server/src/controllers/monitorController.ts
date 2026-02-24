@@ -134,6 +134,31 @@ class MonitorController {
 		}
 	};
 
+	getGeoChecksByMonitorId = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			await getHardwareDetailsByIdParamValidation.validateAsync(req.params);
+			await getHardwareDetailsByIdQueryValidation.validateAsync(req.query);
+
+			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
+			const dateRange = requireString(req?.query?.dateRange, "dateRange");
+			const teamId = requireTeamId(req?.user?.teamId);
+
+			const data = await this.monitorService.getGeoChecksByMonitorId({
+				teamId,
+				monitorId,
+				dateRange,
+			});
+
+			return res.status(200).json({
+				success: true,
+				msg: "Geo checks retrieved successfully",
+				data,
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
 	getMonitorById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			await getMonitorByIdParamValidation.validateAsync(req.params);

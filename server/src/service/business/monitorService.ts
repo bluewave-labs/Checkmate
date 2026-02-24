@@ -10,6 +10,7 @@ import type {
 } from "@/types/monitor.js";
 import type {
 	IChecksRepository,
+	IGeoChecksRepository,
 	IIncidentsRepository,
 	IMonitorsRepository,
 	IMonitorStatsRepository,
@@ -36,6 +37,7 @@ export interface IMonitorService {
 	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: string; normalize?: boolean }): Promise<UptimeDetailsResult>;
 	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<HardwareDetailsResult>;
 	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<PageSpeedDetailsResult>;
+	getGeoChecksByMonitorId(args: { teamId: string; monitorId: string; dateRange: string }): Promise<any>;
 	getMonitorById(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 	getMonitorsByTeamId(args: {
 		teamId: string;
@@ -84,6 +86,7 @@ export class MonitorService implements IMonitorService {
 	private games: any;
 	private monitorsRepository: IMonitorsRepository;
 	private checksRepository: IChecksRepository;
+	private geoChecksRepository: IGeoChecksRepository;
 	private monitorStatsRepository: IMonitorStatsRepository;
 	private statusPagesRepository: IStatusPagesRepository;
 	private incidentsRepository: IIncidentsRepository;
@@ -95,6 +98,7 @@ export class MonitorService implements IMonitorService {
 		games,
 		monitorsRepository,
 		checksRepository,
+		geoChecksRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
 		incidentsRepository,
@@ -105,6 +109,7 @@ export class MonitorService implements IMonitorService {
 		games: any;
 		monitorsRepository: IMonitorsRepository;
 		checksRepository: IChecksRepository;
+		geoChecksRepository: IGeoChecksRepository;
 		monitorStatsRepository: IMonitorStatsRepository;
 		statusPagesRepository: IStatusPagesRepository;
 		incidentsRepository: IIncidentsRepository;
@@ -115,6 +120,7 @@ export class MonitorService implements IMonitorService {
 		this.games = games;
 		this.monitorsRepository = monitorsRepository;
 		this.checksRepository = checksRepository;
+		this.geoChecksRepository = geoChecksRepository;
 		this.monitorStatsRepository = monitorStatsRepository;
 		this.statusPagesRepository = statusPagesRepository;
 		this.incidentsRepository = incidentsRepository;
@@ -315,6 +321,24 @@ export class MonitorService implements IMonitorService {
 			monitorStats,
 		};
 	};
+
+	getGeoChecksByMonitorId = async ({ teamId, monitorId, dateRange }: { teamId: string; monitorId: string; dateRange: string }): Promise<any> => {
+		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
+		if (!monitor) {
+			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
+		}
+
+		if (monitor.type !== "http" || !monitor.geoCheckEnabled) {
+			return { groupedGeoChecks: [] };
+		}
+
+		const rangeKey = (dateRange as DateRangeKey) ?? "recent";
+		const { start, end } = this.getDateRange(rangeKey);
+		const groupedGeoChecks = await this.geoChecksRepository.findGroupedByMonitorIdAndDateRange(monitor.id, start, end, this.getDateFormat(rangeKey));
+
+		return { groupedGeoChecks };
+	};
+
 	getMonitorById = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		return monitor;

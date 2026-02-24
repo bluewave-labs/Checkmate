@@ -1,7 +1,8 @@
 import type { Check } from "@/types/index.js";
 import type { GeoCheck } from "@/types/index.js";
-import type Logger from "@/utils/logger.js";
-
+import type { IGeoChecksService } from "../business/geoChecksService.js";
+import type { ILogger } from "@/utils/logger.js";
+import type { ISettingsService } from "@/service/system/settingsService.js";
 const SERVICE_NAME = "BufferService";
 
 export interface IBufferService {
@@ -16,25 +17,15 @@ export interface IBufferService {
 class BufferService implements IBufferService {
 	static SERVICE_NAME = SERVICE_NAME;
 	private BUFFER_TIMEOUT: number;
-	private logger: Logger;
+	private logger: ILogger;
 	private SERVICE_NAME: string;
 	private buffer: any[];
 	private geoBuffer: any[];
 	private bufferTimer: NodeJS.Timeout | null = null;
 	private checksService: any;
-	private geoChecksService: any;
+	private geoChecksService: IGeoChecksService;
 
-	constructor({
-		logger,
-		checkService,
-		geoChecksService,
-		settingsService,
-	}: {
-		logger: Logger;
-		checkService: any;
-		geoChecksService?: any;
-		settingsService: any;
-	}) {
+	constructor(logger: ILogger, checkService: any, geoChecksService: IGeoChecksService, settingsService: ISettingsService) {
 		this.BUFFER_TIMEOUT = settingsService.getSettings().nodeEnv === "development" ? 10 : 1000 * 60 * 1; // 1 minute
 		this.logger = logger;
 		this.checksService = checkService;
