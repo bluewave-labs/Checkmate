@@ -12,6 +12,7 @@ import {
 	IMonitorStatsRepository,
 	IChecksRepository,
 	IIncidentsRepository,
+	IGeoChecksRepository,
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
 import { IBufferService } from "../bufferService.js";
@@ -55,6 +56,7 @@ class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 	private checksRepository: IChecksRepository;
 	private incidentsRepository: IIncidentsRepository;
 	private geoChecksService: IGeoChecksService;
+	private geoChecksRepository: IGeoChecksRepository;
 
 	constructor(
 		logger: ILogger,
@@ -70,7 +72,8 @@ class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 		monitorStatsRepository: IMonitorStatsRepository,
 		checksRepository: IChecksRepository,
 		incidentsRepository: IIncidentsRepository,
-		geoChecksService: IGeoChecksService
+		geoChecksService: IGeoChecksService,
+		geoChecksRepository: IGeoChecksRepository
 	) {
 		this.logger = logger;
 		this.networkService = networkService;
@@ -86,6 +89,7 @@ class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 		this.checksRepository = checksRepository;
 		this.incidentsRepository = incidentsRepository;
 		this.geoChecksService = geoChecksService;
+		this.geoChecksRepository = geoChecksRepository;
 	}
 
 	get serviceName() {
@@ -235,6 +239,16 @@ class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 				if (deletedIncidentsCount > 0) {
 					this.logger.info({
 						message: `Deleted ${deletedIncidentsCount} orphaned incidents`,
+						service: SERVICE_NAME,
+						method: "getCleanupOrphanedJob",
+					});
+				}
+
+				// Remove orphaned geo checks
+				const deletedGeoChecksCount = await this.geoChecksRepository.deleteByMonitorIdsNotIn(allMonitorIds);
+				if (deletedGeoChecksCount > 0) {
+					this.logger.info({
+						message: `Deleted ${deletedGeoChecksCount} orphaned geo checks`,
 						service: SERVICE_NAME,
 						method: "getCleanupOrphanedJob",
 					});

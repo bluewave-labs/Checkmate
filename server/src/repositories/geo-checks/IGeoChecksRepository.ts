@@ -26,4 +26,5 @@ export interface IGeoChecksRepository {
 	): Promise<GroupedGeoCheck[]>;
 	deleteByMonitorId(monitorId: string): Promise<number>;
 	deleteByTeamId(teamId: string): Promise<number>;
+	deleteByMonitorIdsNotIn(monitorIds: string[]): Promise<number>;
 }

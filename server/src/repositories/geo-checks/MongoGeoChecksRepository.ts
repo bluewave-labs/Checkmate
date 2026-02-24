@@ -341,6 +341,21 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 			throw error;
 		}
 	};
+
+	deleteByMonitorIdsNotIn = async (monitorIds: string[]): Promise<number> => {
+		try {
+			const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+			const result = await GeoCheckModel.deleteMany({ "metadata.monitorId": { $nin: objectIds } });
+			return result.deletedCount || 0;
+		} catch (error: any) {
+			this.logger.error({
+				message: `Error deleting orphaned geo checks: ${error.message}`,
+				service: SERVICE_NAME,
+				method: "deleteByMonitorIdsNotIn",
+			});
+			throw error;
+		}
+	};
 }
 
 export { MongoGeoChecksRepository };
