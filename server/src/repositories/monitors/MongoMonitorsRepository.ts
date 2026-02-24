@@ -354,6 +354,9 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			gameId: doc.gameId ?? undefined,
 			group: doc.group ?? null,
 			recentChecks: (doc.recentChecks ?? []).map((check: any) => this.toCheckSnapshot(check)),
+			geoCheckEnabled: doc.geoCheckEnabled ?? false,
+			geoCheckLocations: doc.geoCheckLocations ?? [],
+			geoCheckInterval: doc.geoCheckInterval ?? 300000,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
@@ -409,6 +412,9 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			gameId: doc.gameId ?? undefined,
 			group: doc.group ?? null,
 			recentChecks: (doc.recentChecks ?? []).map((check: any) => this.toCheckSnapshot(check)),
+			geoCheckEnabled: doc.geoCheckEnabled ?? false,
+			geoCheckLocations: doc.geoCheckLocations ?? [],
+			geoCheckInterval: doc.geoCheckInterval ?? 300000,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
