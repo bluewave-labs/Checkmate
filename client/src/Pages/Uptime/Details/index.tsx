@@ -6,6 +6,7 @@ import {
 	RadialAvgResponse,
 	HistogramDetails,
 	HeaderMonitorControls,
+	HeaderGeoTabs,
 } from "@/Components/monitors";
 import { TrendingUp, AlertTriangle } from "lucide-react";
 import { ChecksTable } from "@/Pages/Uptime/Details/Components/ChecksTable";
@@ -19,9 +20,11 @@ import { useSelector } from "react-redux";
 import { useGet } from "@/Hooks/UseApi";
 import type { MonitorDetailsResponse } from "@/Types/Monitor";
 import type { ChecksResponse } from "@/Types/Check";
+import type { GeoChecksResult, GeoContinent } from "@/Types/GeoCheck";
 import type { RootState } from "@/Types/state";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { t } from "i18next";
+import { Typography } from "@mui/material";
 
 const certificateDateFormat = "MMM D, YYYY h A";
 
@@ -38,6 +41,7 @@ const UptimeDetailsPage = () => {
 	const [page, setPage] = useState<number>(0);
 	const [rowsPerPage, setRowsPerPage] = useState<number>(5);
 	const [dateRange, setDateRange] = useState<string>("recent");
+	const [selectedLocation, setSelectedLocation] = useState<GeoContinent>("NA");
 
 	const monitorDetailsUrl = useMemo(() => {
 		if (!monitorId) {
@@ -105,6 +109,22 @@ const UptimeDetailsPage = () => {
 		{ keepPreviousData: true }
 	);
 
+	// Geo checks fetch - only for HTTP monitors with geo checks enabled
+	const geoChecksUrl = useMemo(() => {
+		if (!monitorId || monitor?.type !== "http" || !monitor?.geoCheckEnabled) {
+			return null;
+		}
+		const params = new URLSearchParams();
+		params.append("dateRange", dateRange);
+		return `/monitors/${monitorId}/geo-checks?${params.toString()}`;
+	}, [monitorId, monitor?.type, monitor?.geoCheckEnabled, dateRange]);
+
+	const { data: _geoChecksData, isLoading: _geoChecksIsLoading } =
+		useGet<GeoChecksResult>(geoChecksUrl, {}, { keepPreviousData: true });
+
+	// Extract unique locations from geo checks data
+	const geoLocations = monitor?.geoCheckLocations;
+
 	const checks = checksData?.checks ?? [];
 	const checksCount = checksData?.checksCount ?? 0;
 
@@ -127,6 +147,7 @@ const UptimeDetailsPage = () => {
 				dateRange={dateRange}
 				setDateRange={setDateRange}
 			/>
+
 			<Stack
 				direction={{ xs: "column", md: "row" }}
 				gap={theme.spacing(8)}
@@ -160,6 +181,18 @@ const UptimeDetailsPage = () => {
 				rowsPerPage={rowsPerPage}
 				setRowsPerPage={setRowsPerPage}
 			/>
+
+			{monitor?.geoCheckEnabled && (
+				<Stack gap={theme.spacing(8)}>
+					<Typography variant="h2">Location breakdown</Typography>
+					<HeaderGeoTabs
+						geoCheckEnabled={monitor?.geoCheckEnabled ?? false}
+						locations={geoLocations}
+						selectedLocation={selectedLocation}
+						onLocationChange={setSelectedLocation}
+					/>
+				</Stack>
+			)}
 		</BasePage>
 	);
 };
