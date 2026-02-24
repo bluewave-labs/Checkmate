@@ -72,23 +72,26 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 		};
 	};
 
-	create = async (geoCheck: Omit<GeoCheck, "id" | "__v" | "createdAt" | "updatedAt">): Promise<GeoCheck> => {
+	create = async (geoChecks: Omit<GeoCheck, "id" | "__v" | "createdAt" | "updatedAt">[]): Promise<GeoCheck[]> => {
 		try {
-			const doc = await GeoCheckModel.create({
-				metadata: {
-					monitorId: new mongoose.Types.ObjectId(geoCheck.metadata.monitorId),
-					teamId: new mongoose.Types.ObjectId(geoCheck.metadata.teamId),
-					type: geoCheck.metadata.type,
-				},
-				results: geoCheck.results,
-				expiry: new Date(geoCheck.expiry),
-			});
-			return this.toEntity(doc);
+			const docs = await GeoCheckModel.insertMany(
+				geoChecks.map((geoCheck) => ({
+					metadata: {
+						monitorId: new mongoose.Types.ObjectId(geoCheck.metadata.monitorId),
+						teamId: new mongoose.Types.ObjectId(geoCheck.metadata.teamId),
+						type: geoCheck.metadata.type,
+					},
+					results: geoCheck.results,
+					expiry: new Date(geoCheck.expiry),
+				}))
+			);
+			return docs.map((doc) => this.toEntity(doc));
 		} catch (error: any) {
 			this.logger.error({
-				message: `Error creating geo check: ${error.message}`,
+				message: `Failed to create geo checks: ${error.message}`,
 				service: SERVICE_NAME,
 				method: "create",
+				stack: error.stack,
 			});
 			throw error;
 		}

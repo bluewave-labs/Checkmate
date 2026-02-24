@@ -1,9 +1,11 @@
 import type { Check } from "@/types/index.js";
+import type { GeoCheck } from "@/types/index.js";
 
 const SERVICE_NAME = "BufferService";
 
 export interface IBufferService {
 	addToBuffer(check: Check): void;
+	addGeoCheckToBuffer(geoCheck: GeoCheck): void;
 	removeCheckFromBuffer(check: Check): boolean;
 	scheduleNextFlush(): void;
 	flushBuffer(): Promise<void>;
@@ -15,15 +17,29 @@ class BufferService implements IBufferService {
 	private logger: any;
 	private SERVICE_NAME: string;
 	private buffer: any[];
+	private geoBuffer: any[];
 	private bufferTimer: NodeJS.Timeout | null = null;
 	private checksService: any;
+	private geoChecksService: any;
 
-	constructor({ logger, checkService, settingsService }: { logger: any; checkService: any; settingsService: any }) {
+	constructor({
+		logger,
+		checkService,
+		geoChecksService,
+		settingsService,
+	}: {
+		logger: any;
+		checkService: any;
+		geoChecksService?: any;
+		settingsService: any;
+	}) {
 		this.BUFFER_TIMEOUT = settingsService.getSettings().nodeEnv === "development" ? 10 : 1000 * 60 * 1; // 1 minute
 		this.logger = logger;
 		this.checksService = checkService;
+		this.geoChecksService = geoChecksService;
 		this.SERVICE_NAME = SERVICE_NAME;
 		this.buffer = [];
+		this.geoBuffer = [];
 		this.scheduleNextFlush();
 		this.logger.info({
 			message: `Buffer service initialized, flushing every ${this.BUFFER_TIMEOUT / 1000}s`,
@@ -44,6 +60,19 @@ class BufferService implements IBufferService {
 				message: error.message,
 				service: this.SERVICE_NAME,
 				method: "addToBuffer",
+				stack: error.stack,
+			});
+		}
+	}
+
+	addGeoCheckToBuffer(geoCheck: GeoCheck) {
+		try {
+			this.geoBuffer.push(geoCheck);
+		} catch (error: any) {
+			this.logger.error({
+				message: error.message,
+				service: this.SERVICE_NAME,
+				method: "addGeoCheckToBuffer",
 				stack: error.stack,
 			});
 		}
@@ -112,6 +141,10 @@ class BufferService implements IBufferService {
 			if (this.buffer.length > 0) {
 				await this.checksService.createChecks(this.buffer);
 			}
+
+			if (this.geoBuffer.length > 0 && this.geoChecksService) {
+				await this.geoChecksService.createGeoChecks(this.geoBuffer);
+			}
 		} catch (error: any) {
 			this.logger.error({
 				message: error.message,
@@ -122,6 +155,7 @@ class BufferService implements IBufferService {
 		}
 
 		this.buffer = [];
+		this.geoBuffer = [];
 	}
 }
 

@@ -17,6 +17,8 @@ import SuperSimpleQueueHelper from "../service/infrastructure/SuperSimpleQueue/S
 import SuperSimpleQueue from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
 import UserService from "../service/business/userService.js";
 import CheckService from "../service/business/checkService.js";
+import GeoChecksService from "../service/business/geoChecksService.js";
+import GlobalPingService from "../service/infrastructure/globalPingService.js";
 import DiagnosticService from "../service/business/diagnosticService.js";
 import InviteService from "../service/business/inviteService.js";
 import MaintenanceWindowService from "../service/business/maintenanceWindowService.js";
@@ -83,6 +85,7 @@ export type InitializedServices = {
 	jobQueue: any;
 	userService: any;
 	checkService: any;
+	geoChecksService: any;
 	diagnosticService: any;
 	inviteService: any;
 	maintenanceWindowService: any;
@@ -171,7 +174,21 @@ export const initializeServices = async ({
 		checksRepository,
 	});
 
-	const bufferService = new BufferService({ logger, checkService, settingsService });
+	const globalPingService = new GlobalPingService({ logger });
+
+	// Create geoChecksService with circular dependency workaround
+	const geoChecksService = new GeoChecksService({
+		logger,
+		geoChecksRepository,
+		globalPingService,
+		bufferService: null as any,
+		settingsService,
+	});
+
+	const bufferService = new BufferService({ logger, checkService, geoChecksService, settingsService });
+
+	// Set bufferService reference
+	(geoChecksService as any).bufferService = bufferService;
 
 	const statusService = new StatusService(logger, bufferService, monitorsRepository, monitorStatsRepository, checksRepository);
 
@@ -210,6 +227,7 @@ export const initializeServices = async ({
 		monitorStatsRepository,
 		checksRepository,
 		incidentsRepository,
+		geoChecksService,
 	});
 
 	const superSimpleQueue = await SuperSimpleQueue.create({
@@ -274,6 +292,7 @@ export const initializeServices = async ({
 		maintenanceWindowService,
 		monitorService,
 		incidentService,
+		geoChecksService,
 		logger,
 		notificationsService,
 		statusPageService,

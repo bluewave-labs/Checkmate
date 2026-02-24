@@ -4,6 +4,7 @@ import { AppError } from "@/utils/AppError.js";
 import { INetworkService, INotificationsService, IStatusService } from "@/service/index.js";
 import type { StatusChangeResult, MonitorStatusResponse, HardwareStatusPayload, MonitorStatus } from "@/types/index.js";
 import IncidentService from "@/service/business/incidentService.js";
+import type { IGeoChecksService } from "@/service/business/geoChecksService.js";
 import {
 	IMaintenanceWindowsRepository,
 	IMonitorsRepository,
@@ -43,6 +44,7 @@ class SuperSimpleQueueHelper {
 	private monitorStatsRepository: IMonitorStatsRepository;
 	private checksRepository: IChecksRepository;
 	private incidentsRepository: IIncidentsRepository;
+	private geoChecksService: IGeoChecksService;
 
 	constructor({
 		logger,
@@ -58,6 +60,7 @@ class SuperSimpleQueueHelper {
 		monitorStatsRepository,
 		checksRepository,
 		incidentsRepository,
+		geoChecksService,
 	}: {
 		logger: any;
 		networkService: INetworkService;
@@ -72,6 +75,7 @@ class SuperSimpleQueueHelper {
 		monitorStatsRepository: IMonitorStatsRepository;
 		checksRepository: IChecksRepository;
 		incidentsRepository: IIncidentsRepository;
+		geoChecksService: IGeoChecksService;
 	}) {
 		this.logger = logger;
 		this.networkService = networkService;
@@ -86,6 +90,7 @@ class SuperSimpleQueueHelper {
 		this.monitorStatsRepository = monitorStatsRepository;
 		this.checksRepository = checksRepository;
 		this.incidentsRepository = incidentsRepository;
+		this.geoChecksService = geoChecksService;
 	}
 
 	get serviceName() {
@@ -301,23 +306,8 @@ class SuperSimpleQueueHelper {
 					return;
 				}
 
-				// Step 3: Call GlobalPing API
-				// TODO: Implement GlobalPing API service
-				// const measurementId = await this.globalPingService.createMeasurement(monitor.url, monitor.geoCheckLocations);
-				// const geoResults = await this.globalPingService.pollForResults(measurementId);
-
-				// Step 4: Create GeoCheck document
-				// TODO: Build and save GeoCheck
-				// const geoCheck = {
-				//   metadata: {
-				//     monitorId,
-				//     teamId,
-				//     type: monitor.type,
-				//   },
-				//   results: geoResults,
-				//   expiry: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
-				// };
-				// await this.geoChecksRepository.create(geoCheck);
+				// Step 3: Execute geo check (handles API calls, polling, and saving)
+				await this.geoChecksService.executeGeoCheck(monitor);
 
 				this.logger.debug({
 					message: `Geo check job executed for monitor ${monitorId}`,
