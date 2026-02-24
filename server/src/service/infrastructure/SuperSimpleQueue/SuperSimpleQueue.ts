@@ -1,5 +1,7 @@
 import { IMonitorsRepository } from "@/repositories/index.js";
+import { ILogger } from "@/utils/logger.js";
 import Scheduler from "super-simple-scheduler";
+import { ISuperSimpleQueueHelper } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 const SERVICE_NAME = "JobQueue";
 
 type QueueJobFailure = {
@@ -54,22 +56,12 @@ export interface ISuperSimpleQueue {
 class SuperSimpleQueue implements ISuperSimpleQueue {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private logger: any;
-	private helper: any;
+	private logger: ILogger;
+	private helper: ISuperSimpleQueueHelper;
 	private monitorsRepository: IMonitorsRepository;
 	private readonly scheduler: Scheduler;
 
-	constructor({
-		logger,
-		helper,
-		monitorsRepository,
-		scheduler,
-	}: {
-		logger: any;
-		helper: any;
-		monitorsRepository: IMonitorsRepository;
-		scheduler: Scheduler;
-	}) {
+	constructor(logger: ILogger, helper: ISuperSimpleQueueHelper, monitorsRepository: IMonitorsRepository, scheduler: Scheduler) {
 		this.logger = logger;
 		this.helper = helper;
 		this.monitorsRepository = monitorsRepository;
@@ -80,14 +72,14 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 		return SuperSimpleQueue.SERVICE_NAME;
 	}
 
-	static async create({ logger, helper, monitorsRepository }: { logger: any; helper: any; monitorsRepository: IMonitorsRepository }) {
+	static async create(logger: ILogger, helper: ISuperSimpleQueueHelper, monitorsRepository: IMonitorsRepository) {
 		const scheduler = new Scheduler({
 			// storeType: "mongo",
 			// storeType: "redis",
 			logLevel: "debug",
 			// dbUri: envSettings.dbConnectionString,
 		});
-		const instance = new SuperSimpleQueue({ logger, helper, monitorsRepository, scheduler });
+		const instance = new SuperSimpleQueue(logger, helper, monitorsRepository, scheduler);
 		await instance.init();
 		return instance;
 	}
@@ -113,7 +105,7 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 			this.scheduler.addJob({ id: "cleanup-orphaned", template: "cleanup-orphaned", active: true });
 
 			return true;
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.error({
 				message: "Failed to initialize SuperSimpleQueue",
 				service: SERVICE_NAME,

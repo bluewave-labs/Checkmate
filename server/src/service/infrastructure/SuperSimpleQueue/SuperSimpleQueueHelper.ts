@@ -13,6 +13,16 @@ import {
 	IChecksRepository,
 	IIncidentsRepository,
 } from "@/repositories/index.js";
+import { ILogger } from "@/utils/logger.js";
+import { IBufferService } from "../bufferService.js";
+
+export interface ISuperSimpleQueueHelper {
+	readonly serviceName: string;
+	getMonitorJob(): (monitor: Monitor) => Promise<void>;
+	getCleanupOrphanedJob(): () => Promise<void>;
+	getGeoCheckJob(): (monitor: Monitor) => Promise<void>;
+	isInMaintenanceWindow(monitorId: string, teamId: string): Promise<boolean>;
+}
 
 export interface MonitorActionDecision {
 	shouldCreateIncident: boolean;
@@ -28,7 +38,7 @@ export interface MonitorActionDecision {
 	};
 }
 
-class SuperSimpleQueueHelper {
+class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: any;
@@ -36,7 +46,7 @@ class SuperSimpleQueueHelper {
 	private statusService: IStatusService;
 	private notificationsService: INotificationsService;
 	private checkService: any;
-	private buffer: any;
+	private buffer: IBufferService;
 	private incidentService: IncidentService;
 	private maintenanceWindowsRepository: IMaintenanceWindowsRepository;
 	private monitorsRepository: IMonitorsRepository;
@@ -46,37 +56,22 @@ class SuperSimpleQueueHelper {
 	private incidentsRepository: IIncidentsRepository;
 	private geoChecksService: IGeoChecksService;
 
-	constructor({
-		logger,
-		networkService,
-		statusService,
-		notificationsService,
-		checkService,
-		buffer,
-		incidentService,
-		maintenanceWindowsRepository,
-		monitorsRepository,
-		teamsRepository,
-		monitorStatsRepository,
-		checksRepository,
-		incidentsRepository,
-		geoChecksService,
-	}: {
-		logger: any;
-		networkService: INetworkService;
-		statusService: IStatusService;
-		notificationsService: INotificationsService;
-		checkService: any;
-		buffer: any;
-		incidentService: IncidentService;
-		maintenanceWindowsRepository: IMaintenanceWindowsRepository;
-		monitorsRepository: IMonitorsRepository;
-		teamsRepository: ITeamsRepository;
-		monitorStatsRepository: IMonitorStatsRepository;
-		checksRepository: IChecksRepository;
-		incidentsRepository: IIncidentsRepository;
-		geoChecksService: IGeoChecksService;
-	}) {
+	constructor(
+		logger: ILogger,
+		networkService: INetworkService,
+		statusService: IStatusService,
+		notificationsService: INotificationsService,
+		checkService: any,
+		buffer: IBufferService,
+		incidentService: IncidentService,
+		maintenanceWindowsRepository: IMaintenanceWindowsRepository,
+		monitorsRepository: IMonitorsRepository,
+		teamsRepository: ITeamsRepository,
+		monitorStatsRepository: IMonitorStatsRepository,
+		checksRepository: IChecksRepository,
+		incidentsRepository: IIncidentsRepository,
+		geoChecksService: IGeoChecksService
+	) {
 		this.logger = logger;
 		this.networkService = networkService;
 		this.statusService = statusService;
