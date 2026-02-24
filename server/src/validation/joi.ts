@@ -113,6 +113,7 @@ const getMonitorByIdQueryValidation = joi.object({
 	dateRange: joi.string().valid("recent", "hour", "day", "week", "month", "all"),
 	numToDisplay: joi.number(),
 	normalize: joi.boolean(),
+	continent: joi.string().valid(...GeoContinents),
 });
 
 const getMonitorsByTeamIdParamValidation = joi.object({});

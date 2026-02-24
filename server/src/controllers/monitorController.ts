@@ -27,6 +27,7 @@ import {
 } from "./controllerUtils.js";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorService } from "@/service/index.js";
+import { GeoContinent } from "@/types/geoCheck.js";
 
 const SERVICE_NAME = "monitorController";
 class MonitorController {
@@ -141,12 +142,14 @@ class MonitorController {
 
 			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
 			const dateRange = requireString(req?.query?.dateRange, "dateRange");
+			const continent = optionalString(req?.query?.continent, "continent") as GeoContinent | undefined;
 			const teamId = requireTeamId(req?.user?.teamId);
 
 			const data = await this.monitorService.getGeoChecksByMonitorId({
 				teamId,
 				monitorId,
 				dateRange,
+				continent,
 			});
 
 			return res.status(200).json({

@@ -8,6 +8,7 @@ import type {
 	PageSpeedDetailsResult,
 	GamesMap,
 } from "@/types/monitor.js";
+import type { GeoContinent } from "@/types/geoCheck.js";
 import type {
 	IChecksRepository,
 	IGeoChecksRepository,
@@ -37,7 +38,7 @@ export interface IMonitorService {
 	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: string; normalize?: boolean }): Promise<UptimeDetailsResult>;
 	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<HardwareDetailsResult>;
 	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<PageSpeedDetailsResult>;
-	getGeoChecksByMonitorId(args: { teamId: string; monitorId: string; dateRange: string }): Promise<any>;
+	getGeoChecksByMonitorId(args: { teamId: string; monitorId: string; dateRange: string; continent?: GeoContinent }): Promise<any>;
 	getMonitorById(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 	getMonitorsByTeamId(args: {
 		teamId: string;
@@ -322,7 +323,17 @@ export class MonitorService implements IMonitorService {
 		};
 	};
 
-	getGeoChecksByMonitorId = async ({ teamId, monitorId, dateRange }: { teamId: string; monitorId: string; dateRange: string }): Promise<any> => {
+	getGeoChecksByMonitorId = async ({
+		teamId,
+		monitorId,
+		dateRange,
+		continent,
+	}: {
+		teamId: string;
+		monitorId: string;
+		dateRange: string;
+		continent?: GeoContinent;
+	}): Promise<any> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
 			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
@@ -334,7 +345,13 @@ export class MonitorService implements IMonitorService {
 
 		const rangeKey = (dateRange as DateRangeKey) ?? "recent";
 		const { start, end } = this.getDateRange(rangeKey);
-		const groupedGeoChecks = await this.geoChecksRepository.findGroupedByMonitorIdAndDateRange(monitor.id, start, end, this.getDateFormat(rangeKey));
+		const groupedGeoChecks = await this.geoChecksRepository.findGroupedByMonitorIdAndDateRange(
+			monitor.id,
+			start,
+			end,
+			this.getDateFormat(rangeKey),
+			continent
+		);
 
 		return { groupedGeoChecks };
 	};

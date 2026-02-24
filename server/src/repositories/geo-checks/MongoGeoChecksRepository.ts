@@ -117,7 +117,13 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 		}
 	};
 
-	findGroupedByMonitorIdAndDateRange = async (monitorId: string, startDate: Date, endDate: Date, dateFormat: string): Promise<GroupedGeoCheck[]> => {
+	findGroupedByMonitorIdAndDateRange = async (
+		monitorId: string,
+		startDate: Date,
+		endDate: Date,
+		dateFormat: string,
+		continent?: string
+	): Promise<GroupedGeoCheck[]> => {
 		try {
 			const pipeline: any[] = [
 				// Match geo checks for this monitor in date range
@@ -134,6 +140,16 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 				{
 					$unwind: "$results",
 				},
+				// Filter by continent if specified
+				...(continent
+					? [
+							{
+								$match: {
+									"results.location.continent": continent,
+								},
+							},
+						]
+					: []),
 				// Group by date bucket and continent
 				{
 					$group: {

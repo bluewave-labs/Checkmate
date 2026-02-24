@@ -116,8 +116,9 @@ const UptimeDetailsPage = () => {
 		}
 		const params = new URLSearchParams();
 		params.append("dateRange", dateRange);
+		params.append("continent", selectedLocation);
 		return `/monitors/${monitorId}/geo-checks?${params.toString()}`;
-	}, [monitorId, monitor?.type, monitor?.geoCheckEnabled, dateRange]);
+	}, [monitorId, monitor?.type, monitor?.geoCheckEnabled, dateRange, selectedLocation]);
 
 	const { data: _geoChecksData, isLoading: _geoChecksIsLoading } =
 		useGet<GeoChecksResult>(geoChecksUrl, {}, { keepPreviousData: true });
