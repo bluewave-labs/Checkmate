@@ -45,7 +45,8 @@
 			"removeMonitors": "Remove monitors",
 			"sendTestEmail": "Send test email",
 			"exportToJSON": "Export to JSON",
-			"importFromJSON": "Import from JSON"
+			"importFromJSON": "Import from JSON",
+			"clearFilters": "Clear filters"
 		},
 		"charts": {
 			"labels": {
@@ -620,7 +621,6 @@
 			},
 			"filters": {
 				"allMonitors": "All monitors",
-				"clearFilters": "Clear filters",
 				"monitor": "Monitor",
 				"resolutionType": "Resolution type",
 				"resolutionTypes": {
