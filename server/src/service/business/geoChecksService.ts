@@ -1,4 +1,5 @@
 import type { Monitor, GeoCheck } from "@/types/index.js";
+import type { GeoCheckResult } from "@/types/geoCheck.js";
 import { Types } from "mongoose";
 import type { IGeoChecksRepository } from "@/repositories/index.js";
 import type { IGlobalPingService } from "@/service/infrastructure/globalPingService.js";
@@ -123,7 +124,7 @@ class GeoChecksService implements IGeoChecksService {
 		}
 	}
 
-	private buildGeoCheck(monitor: Monitor, results: any[]): GeoCheck {
+	private buildGeoCheck(monitor: Monitor, results: GeoCheckResult[]): GeoCheck {
 		const now = new Date();
 		const expiryDate = new Date(now.getTime() + this.TTL_DAYS * 24 * 60 * 60 * 1000);
 
@@ -142,11 +143,8 @@ class GeoChecksService implements IGeoChecksService {
 		};
 	}
 
-	/**
-	 * Create geo checks (called by buffer service)
-	 */
 	createGeoChecks = async (geoChecks: GeoCheck[]) => {
-		return this.geoChecksRepository.create(geoChecks);
+		return this.geoChecksRepository.createGeoChecks(geoChecks);
 	};
 }
 

@@ -72,7 +72,7 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 		};
 	};
 
-	create = async (geoChecks: Omit<GeoCheck, "id" | "__v" | "createdAt" | "updatedAt">[]): Promise<GeoCheck[]> => {
+	createGeoChecks = async (geoChecks: Omit<GeoCheck, "id" | "__v" | "createdAt" | "updatedAt">[]): Promise<GeoCheck[]> => {
 		try {
 			const docs = await GeoCheckModel.insertMany(
 				geoChecks.map((geoCheck) => ({
@@ -88,9 +88,9 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 			return docs.map((doc) => this.toEntity(doc));
 		} catch (error: any) {
 			this.logger.error({
-				message: `Failed to create geo checks: ${error.message}`,
+				message: `Failed to createGeoChecks: ${error.message}`,
 				service: SERVICE_NAME,
-				method: "create",
+				method: "createGeoChecks",
 				stack: error.stack,
 			});
 			throw error;
