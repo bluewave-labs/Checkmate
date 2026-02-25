@@ -142,14 +142,19 @@ class MonitorController {
 
 			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
 			const dateRange = requireString(req?.query?.dateRange, "dateRange");
-			const continent = optionalString(req?.query?.continent, "continent") as GeoContinent | undefined;
+			const continentParam = req?.query?.continent;
+			const continents = continentParam
+				? Array.isArray(continentParam)
+					? (continentParam as GeoContinent[])
+					: [continentParam as GeoContinent]
+				: undefined;
 			const teamId = requireTeamId(req?.user?.teamId);
 
 			const data = await this.monitorService.getGeoChecksByMonitorId({
 				teamId,
 				monitorId,
 				dateRange,
-				continent,
+				continents,
 			});
 
 			return res.status(200).json({

@@ -111,9 +111,16 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 		dateRange: string,
 		page: number,
 		rowsPerPage: number,
-		continent?: GeoContinent
+		continents?: GeoContinent[]
 	): Promise<GeoChecksQueryResult> => {
 		try {
+			this.logger.debug({
+				message: "findByMonitorId called",
+				service: SERVICE_NAME,
+				method: "findByMonitorId",
+				details: { monitorId, continents, continentsLength: continents?.length },
+			});
+
 			const matchStage: Record<string, any> = {
 				"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 				...(dateRangeLookup[dateRange] && {
@@ -130,13 +137,19 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 				skip = page * rowsPerPage;
 			}
 
-			if (continent) {
+			if (continents && continents.length > 0) {
+				this.logger.debug({
+					message: "Filtering by continents",
+					service: SERVICE_NAME,
+					method: "findByMonitorId",
+					details: { continents },
+				});
 				const pipeline: any[] = [
 					{ $match: matchStage },
 					{ $unwind: "$results" },
 					{
 						$match: {
-							"results.location.continent": continent,
+							"results.location.continent": { $in: continents },
 						},
 					},
 					{
@@ -162,7 +175,7 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 					GeoCheckModel.aggregate([
 						{ $match: matchStage },
 						{ $unwind: "$results" },
-						{ $match: { "results.location.continent": continent } },
+						{ $match: { "results.location.continent": { $in: continents } } },
 						{ $group: { _id: "$_id" } },
 						{ $count: "count" },
 					]),
@@ -174,12 +187,44 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 
 				return { geoChecksCount, geoChecks };
 			} else {
-				const [geoChecksCount, docs] = await Promise.all([
-					GeoCheckModel.countDocuments(matchStage),
-					GeoCheckModel.find(matchStage).sort({ createdAt: convertedSortOrder }).skip(skip).limit(rowsPerPage).lean() as Promise<GeoCheckDocument[]>,
+				this.logger.debug({
+					message: "No continent filtering - returning all checks",
+					service: SERVICE_NAME,
+					method: "findByMonitorId",
+				});
+
+				// Still need to unwind to show each location as a separate row
+				const pipeline: any[] = [
+					{ $match: matchStage },
+					{ $unwind: "$results" },
+					{
+						$group: {
+							_id: "$_id",
+							doc: { $first: "$$ROOT" },
+							results: { $push: "$results" },
+						},
+					},
+					{
+						$replaceRoot: {
+							newRoot: {
+								$mergeObjects: ["$doc", { results: "$results" }],
+							},
+						},
+					},
+					{ $sort: { createdAt: convertedSortOrder } },
+					{ $skip: skip },
+					{ $limit: rowsPerPage },
+				];
+
+				const [countPipeline, dataResults] = await Promise.all([
+					GeoCheckModel.aggregate([{ $match: matchStage }, { $unwind: "$results" }, { $group: { _id: "$_id" } }, { $count: "count" }]),
+					GeoCheckModel.aggregate(pipeline),
 				]);
 
-				return { geoChecksCount, geoChecks: docs.map(this.toEntity) };
+				const geoChecksCount = countPipeline[0]?.count || 0;
+				const geoChecks = dataResults.map(this.toEntity);
+
+				return { geoChecksCount, geoChecks };
 			}
 		} catch (error: any) {
 			this.logger.error({
@@ -217,7 +262,7 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 		startDate: Date,
 		endDate: Date,
 		dateFormat: string,
-		continent?: string
+		continents?: GeoContinent[]
 	): Promise<GroupedGeoCheck[]> => {
 		try {
 			const pipeline: any[] = [
@@ -236,11 +281,11 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 					$unwind: "$results",
 				},
 				// Filter by continent if specified
-				...(continent
+				...(continents && continents.length > 0
 					? [
 							{
 								$match: {
-									"results.location.continent": continent,
+									"results.location.continent": { $in: continents },
 								},
 							},
 						]

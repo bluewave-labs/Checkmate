@@ -144,9 +144,6 @@ const UptimeDetailsPage = () => {
 		params.append("dateRange", dateRange);
 		params.append("page", String(geoPage));
 		params.append("rowsPerPage", String(geoRowsPerPage));
-		if (selectedLocation) {
-			params.append("continent", selectedLocation);
-		}
 		return `/geo-checks/${monitorId}?${params.toString()}`;
 	}, [
 		monitorId,
@@ -155,7 +152,6 @@ const UptimeDetailsPage = () => {
 		dateRange,
 		geoPage,
 		geoRowsPerPage,
-		selectedLocation,
 	]);
 
 	const { data: geoChecksTableData } = useGet<GeoChecksResponse>(

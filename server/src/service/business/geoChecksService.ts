@@ -177,10 +177,19 @@ class GeoChecksService implements IGeoChecksService {
 		}
 
 		let { sortOrder, dateRange, page, rowsPerPage, continent } = query;
+		const continents = continent ? (Array.isArray(continent) ? continent : [continent]) : undefined;
+
+		this.logger.debug({
+			message: "getGeoChecksByMonitor query params",
+			service: SERVICE_NAME,
+			method: "getGeoChecksByMonitor",
+			details: { continent, continents, query },
+		});
+
 		const parsedPage = page ? parseInt(page) : page;
 		const parsedRowsPerPage = rowsPerPage ? parseInt(rowsPerPage) : rowsPerPage;
 
-		const result = await this.geoChecksRepository.findByMonitorId(monitorId, sortOrder, dateRange, parsedPage, parsedRowsPerPage, continent);
+		const result = await this.geoChecksRepository.findByMonitorId(monitorId, sortOrder, dateRange, parsedPage, parsedRowsPerPage, continents);
 
 		return result;
 	};

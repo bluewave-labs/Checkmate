@@ -38,7 +38,7 @@ export interface IMonitorService {
 	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: string; normalize?: boolean }): Promise<UptimeDetailsResult>;
 	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<HardwareDetailsResult>;
 	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<PageSpeedDetailsResult>;
-	getGeoChecksByMonitorId(args: { teamId: string; monitorId: string; dateRange: string; continent?: GeoContinent }): Promise<any>;
+	getGeoChecksByMonitorId(args: { teamId: string; monitorId: string; dateRange: string; continents?: GeoContinent[] }): Promise<any>;
 	getMonitorById(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 	getMonitorsByTeamId(args: {
 		teamId: string;
@@ -327,12 +327,12 @@ export class MonitorService implements IMonitorService {
 		teamId,
 		monitorId,
 		dateRange,
-		continent,
+		continents,
 	}: {
 		teamId: string;
 		monitorId: string;
 		dateRange: string;
-		continent?: GeoContinent;
+		continents?: GeoContinent[];
 	}): Promise<any> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
@@ -350,7 +350,7 @@ export class MonitorService implements IMonitorService {
 			start,
 			end,
 			this.getDateFormat(rangeKey),
-			continent
+			continents
 		);
 
 		return { groupedGeoChecks };

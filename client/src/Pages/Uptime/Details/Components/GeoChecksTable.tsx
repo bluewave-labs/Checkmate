@@ -8,14 +8,48 @@ import type { RootState } from "@/Types/state";
 import { useSelector } from "react-redux";
 import prettyMilliseconds from "pretty-ms";
 
+// Flatten geo check results - each location becomes a separate row
+interface FlattenedGeoCheckResult {
+	id: string;
+	monitorId: string;
+	createdAt: string;
+	location: {
+		continent: string;
+		country: string;
+		city: string;
+	};
+	status: boolean;
+	statusCode: number;
+	timings: {
+		total: number;
+	};
+}
+
+const flattenGeoChecks = (geoChecks: GeoCheck[]): FlattenedGeoCheckResult[] => {
+	const flattened: FlattenedGeoCheckResult[] = [];
+	for (const check of geoChecks) {
+		for (const result of check.results) {
+			flattened.push({
+				id: `${check.id}-${result.location.continent}-${result.location.city}`,
+				monitorId: check.metadata.monitorId,
+				createdAt: check.createdAt,
+				location: result.location,
+				status: result.status,
+				statusCode: result.statusCode,
+				timings: result.timings,
+			});
+		}
+	}
+	return flattened;
+};
+
 const getHeaders = (t: Function, uiTimezone: string) => {
-	const headers: Header<GeoCheck>[] = [
+	const headers: Header<FlattenedGeoCheckResult>[] = [
 		{
 			id: "status",
 			content: t("common.table.headers.status"),
 			render: (row) => {
-				const firstResult = row.results[0];
-				const status = firstResult?.status ? "up" : "down";
+				const status = row.status ? "up" : "down";
 				return <StatusLabel status={status} />;
 			},
 		},
@@ -30,17 +64,14 @@ const getHeaders = (t: Function, uiTimezone: string) => {
 			id: "statusCode",
 			content: t("pages.checks.table.headers.statusCode"),
 			render: (row) => {
-				const firstResult = row.results[0];
-				return firstResult?.statusCode || "N/A";
+				return row.statusCode || "N/A";
 			},
 		},
 		{
 			id: "location",
 			content: t("pages.checks.table.headers.location"),
 			render: (row) => {
-				const firstResult = row.results[0];
-				if (!firstResult) return "N/A";
-				const { continent, country, city } = firstResult.location;
+				const { continent, country, city } = row.location;
 				return `${continent} - ${country}, ${city}`;
 			},
 		},
@@ -48,9 +79,8 @@ const getHeaders = (t: Function, uiTimezone: string) => {
 			id: "responseTime",
 			content: t("common.table.headers.responseTime"),
 			render: (row) => {
-				const firstResult = row.results[0];
-				if (!firstResult?.timings?.total) return "N/A";
-				return prettyMilliseconds(firstResult.timings.total, { compact: true });
+				if (!row.timings?.total) return "N/A";
+				return prettyMilliseconds(row.timings.total, { compact: true });
 			},
 		},
 	];
@@ -75,6 +105,7 @@ export const GeoChecksTable = ({
 	const { t } = useTranslation();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 	const headers = getHeaders(t, uiTimezone);
+	const flattenedData = flattenGeoChecks(geoChecks);
 
 	const handlePageChange = (
 		_e: React.MouseEvent<HTMLButtonElement> | null,
@@ -95,7 +126,7 @@ export const GeoChecksTable = ({
 		<Box>
 			<Table
 				headers={headers}
-				data={geoChecks}
+				data={flattenedData}
 			/>
 			<Pagination
 				component="div"

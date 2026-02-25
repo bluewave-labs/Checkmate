@@ -14,7 +14,7 @@ export interface IGeoChecksRepository {
 		dateRange: string,
 		page: number,
 		rowsPerPage: number,
-		continent?: GeoContinent
+		continents?: GeoContinent[]
 	): Promise<GeoChecksQueryResult>;
 	findByMonitorIdAndDateRange(monitorId: string, startDate: Date, endDate: Date): Promise<GeoCheck[]>;
 	findGroupedByMonitorIdAndDateRange(
@@ -22,7 +22,7 @@ export interface IGeoChecksRepository {
 		startDate: Date,
 		endDate: Date,
 		dateFormat: string,
-		continent?: GeoContinent
+		continents?: GeoContinent[]
 	): Promise<GroupedGeoCheck[]>;
 	deleteByMonitorId(monitorId: string): Promise<number>;
 	deleteByTeamId(teamId: string): Promise<number>;

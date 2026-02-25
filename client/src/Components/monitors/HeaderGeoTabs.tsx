@@ -28,8 +28,6 @@ export const HeaderGeoTabs = ({
 		onLocationChange(newValue);
 	};
 
-	console.log(locations);
-
 	return (
 		<Stack
 			spacing={{ xs: theme.spacing(8), md: 0 }}
