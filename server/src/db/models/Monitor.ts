@@ -169,6 +169,18 @@ const MonitorSchema = new Schema<MonitorDocument>(
 				return value && value.trim() ? value.trim() : null;
 			},
 		},
+		geoCheckEnabled: {
+			type: Boolean,
+			default: false,
+		},
+		geoCheckLocations: {
+			type: [String],
+			default: [],
+		},
+		geoCheckInterval: {
+			type: Number,
+			default: 300000,
+		},
 		recentChecks: {
 			type: [checkSnapshotSchema],
 			default: [],

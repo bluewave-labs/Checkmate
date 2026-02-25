@@ -116,7 +116,8 @@
 				"type": "Type",
 				"url": "Url",
 				"interval": "Interval",
-				"active": "Active"
+				"active": "Active",
+				"responseTime": "Response time"
 			}
 		}
 	},
@@ -373,8 +374,8 @@
 			"table": {
 				"empty": "No down checks in this time range",
 				"headers": {
-					"dateTime": "Date & time",
-					"statusCode": "Status code"
+					"statusCode": "Status code",
+					"location": "Location"
 				}
 			}
 		},
@@ -549,6 +550,36 @@
 						},
 						"tempThreshold": {
 							"label": "Temperature alert threshold (°C)"
+						}
+					}
+				},
+				"geoChecks": {
+					"title": "Geo-Distributed Checks",
+					"description": "Run checks from multiple geographic locations to monitor global availability and performance.",
+					"option": {
+						"enabled": {
+							"label": "Enable geo-distributed checks"
+						},
+						"locations": {
+							"label": "Locations",
+							"placeholder": "Select locations",
+							"options": {
+								"EU": "Europe",
+								"NA": "North America",
+								"AS": "Asia",
+								"SA": "South America",
+								"AF": "Africa",
+								"OC": "Oceania"
+							}
+						},
+						"interval": {
+							"label": "Check interval",
+							"value": {
+								"fiveMinutes": "5 minutes",
+								"tenMinutes": "10 minutes",
+								"fifteenMinutes": "15 minutes",
+								"thirtyMinutes": "30 minutes"
+							}
 						}
 					}
 				},
