@@ -45,6 +45,19 @@ export interface GeoCheck {
 	updatedAt: string;
 }
 
+export interface FlatGeoCheck {
+	id: string;
+	monitorId: string;
+	teamId: string;
+	type: string;
+	location: GeoCheckLocation;
+	status: boolean;
+	statusCode: number;
+	timings: GeoCheckTimings;
+	createdAt: string;
+	updatedAt: string;
+}
+
 export interface GroupedGeoCheck {
 	bucketDate: string;
 	continent: GeoContinent;

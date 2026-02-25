@@ -21,7 +21,11 @@ import { useSelector } from "react-redux";
 import { useGet } from "@/Hooks/UseApi";
 import type { MonitorDetailsResponse } from "@/Types/Monitor";
 import type { ChecksResponse } from "@/Types/Check";
-import type { GeoChecksResult, GeoChecksResponse, GeoContinent } from "@/Types/GeoCheck";
+import type {
+	GeoChecksResult,
+	FlatGeoChecksResponse,
+	GeoContinent,
+} from "@/Types/GeoCheck";
 import type { RootState } from "@/Types/state";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { t } from "i18next";
@@ -154,7 +158,7 @@ const UptimeDetailsPage = () => {
 		geoRowsPerPage,
 	]);
 
-	const { data: geoChecksTableData } = useGet<GeoChecksResponse>(
+	const { data: geoChecksTableData } = useGet<FlatGeoChecksResponse>(
 		geoChecksTableUrl,
 		{},
 		{ keepPreviousData: true, revalidateOnFocus: false }
@@ -163,7 +167,6 @@ const UptimeDetailsPage = () => {
 	const geoChecksForTable = geoChecksTableData?.geoChecks ?? [];
 	const geoChecksCount = geoChecksTableData?.geoChecksCount ?? 0;
 
-	// Extract unique locations from geo checks data
 	const geoLocations = monitor?.geoCheckLocations;
 
 	const checks = checksData?.checks ?? [];

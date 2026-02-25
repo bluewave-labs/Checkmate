@@ -1,50 +1,15 @@
 import { Table, Pagination, StatusLabel } from "@/Components/design-elements";
 import Box from "@mui/material/Box";
 import type { Header } from "@/Components/design-elements";
-import type { GeoCheck } from "@/Types/GeoCheck";
+import type { FlatGeoCheck } from "@/Types/GeoCheck";
 import { useTranslation } from "react-i18next";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import type { RootState } from "@/Types/state";
 import { useSelector } from "react-redux";
 import prettyMilliseconds from "pretty-ms";
 
-// Flatten geo check results - each location becomes a separate row
-interface FlattenedGeoCheckResult {
-	id: string;
-	monitorId: string;
-	createdAt: string;
-	location: {
-		continent: string;
-		country: string;
-		city: string;
-	};
-	status: boolean;
-	statusCode: number;
-	timings: {
-		total: number;
-	};
-}
-
-const flattenGeoChecks = (geoChecks: GeoCheck[]): FlattenedGeoCheckResult[] => {
-	const flattened: FlattenedGeoCheckResult[] = [];
-	for (const check of geoChecks) {
-		for (const result of check.results) {
-			flattened.push({
-				id: `${check.id}-${result.location.continent}-${result.location.city}`,
-				monitorId: check.metadata.monitorId,
-				createdAt: check.createdAt,
-				location: result.location,
-				status: result.status,
-				statusCode: result.statusCode,
-				timings: result.timings,
-			});
-		}
-	}
-	return flattened;
-};
-
 const getHeaders = (t: Function, uiTimezone: string) => {
-	const headers: Header<FlattenedGeoCheckResult>[] = [
+	const headers: Header<FlatGeoCheck>[] = [
 		{
 			id: "status",
 			content: t("common.table.headers.status"),
@@ -71,7 +36,9 @@ const getHeaders = (t: Function, uiTimezone: string) => {
 			id: "location",
 			content: t("pages.checks.table.headers.location"),
 			render: (row) => {
-				const { continent, country, city } = row.location;
+				const location = row.location;
+				if (!location) return "N/A";
+				const { continent, country, city } = location;
 				return `${continent} - ${country}, ${city}`;
 			},
 		},
@@ -95,7 +62,7 @@ export const GeoChecksTable = ({
 	rowsPerPage,
 	setRowsPerPage,
 }: {
-	geoChecks: GeoCheck[];
+	geoChecks: FlatGeoCheck[];
 	count: number;
 	page: number;
 	setPage: (page: number) => void;
@@ -105,7 +72,6 @@ export const GeoChecksTable = ({
 	const { t } = useTranslation();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 	const headers = getHeaders(t, uiTimezone);
-	const flattenedData = flattenGeoChecks(geoChecks);
 
 	const handlePageChange = (
 		_e: React.MouseEvent<HTMLButtonElement> | null,
@@ -126,7 +92,7 @@ export const GeoChecksTable = ({
 		<Box>
 			<Table
 				headers={headers}
-				data={flattenedData}
+				data={geoChecks}
 			/>
 			<Pagination
 				component="div"

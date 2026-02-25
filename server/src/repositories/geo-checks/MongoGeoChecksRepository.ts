@@ -1,6 +1,6 @@
 import { IGeoChecksRepository } from "./IGeoChecksRepository.js";
-import type { GeoCheck, GeoCheckMetadata, GeoCheckResult, GroupedGeoCheck, GeoContinent } from "@/types/geoCheck.js";
-import type { GeoChecksQueryResult } from "./IGeoChecksRepository.js";
+import type { GeoCheck, GeoCheckMetadata, GeoCheckResult, GroupedGeoCheck, GeoContinent, FlatGeoCheck } from "@/types/geoCheck.js";
+import type { GeoChecksQueryResult, FlatGeoChecksQueryResult } from "./IGeoChecksRepository.js";
 import { GeoCheckModel, type GeoCheckDocument } from "@/db/models/index.js";
 import mongoose from "mongoose";
 
@@ -112,15 +112,8 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 		page: number,
 		rowsPerPage: number,
 		continents?: GeoContinent[]
-	): Promise<GeoChecksQueryResult> => {
+	): Promise<FlatGeoChecksQueryResult> => {
 		try {
-			this.logger.debug({
-				message: "findByMonitorId called",
-				service: SERVICE_NAME,
-				method: "findByMonitorId",
-				details: { monitorId, continents, continentsLength: continents?.length },
-			});
-
 			const matchStage: Record<string, any> = {
 				"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 				...(dateRangeLookup[dateRange] && {
@@ -138,12 +131,6 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 			}
 
 			if (continents && continents.length > 0) {
-				this.logger.debug({
-					message: "Filtering by continents",
-					service: SERVICE_NAME,
-					method: "findByMonitorId",
-					details: { continents },
-				});
 				const pipeline: any[] = [
 					{ $match: matchStage },
 					{ $unwind: "$results" },
@@ -152,80 +139,78 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 							"results.location.continent": { $in: continents },
 						},
 					},
-					{
-						$group: {
-							_id: "$_id",
-							doc: { $first: "$$ROOT" },
-							results: { $push: "$results" },
-						},
-					},
-					{
-						$replaceRoot: {
-							newRoot: {
-								$mergeObjects: ["$doc", { results: "$results" }],
-							},
-						},
-					},
-					{ $sort: { createdAt: convertedSortOrder } },
-					{ $skip: skip },
-					{ $limit: rowsPerPage },
 				];
-
-				const [countPipeline, dataResults] = await Promise.all([
-					GeoCheckModel.aggregate([
-						{ $match: matchStage },
-						{ $unwind: "$results" },
-						{ $match: { "results.location.continent": { $in: continents } } },
-						{ $group: { _id: "$_id" } },
-						{ $count: "count" },
-					]),
-					GeoCheckModel.aggregate(pipeline),
-				]);
-
-				const geoChecksCount = countPipeline[0]?.count || 0;
-				const geoChecks = dataResults.map(this.toEntity);
-
-				return { geoChecksCount, geoChecks };
 			} else {
-				this.logger.debug({
-					message: "No continent filtering - returning all checks",
-					service: SERVICE_NAME,
-					method: "findByMonitorId",
-				});
-
-				// Still need to unwind to show each location as a separate row
-				const pipeline: any[] = [
-					{ $match: matchStage },
-					{ $unwind: "$results" },
-					{
-						$group: {
-							_id: "$_id",
-							doc: { $first: "$$ROOT" },
-							results: { $push: "$results" },
-						},
-					},
-					{
-						$replaceRoot: {
-							newRoot: {
-								$mergeObjects: ["$doc", { results: "$results" }],
-							},
-						},
-					},
-					{ $sort: { createdAt: convertedSortOrder } },
-					{ $skip: skip },
-					{ $limit: rowsPerPage },
-				];
-
-				const [countPipeline, dataResults] = await Promise.all([
-					GeoCheckModel.aggregate([{ $match: matchStage }, { $unwind: "$results" }, { $group: { _id: "$_id" } }, { $count: "count" }]),
-					GeoCheckModel.aggregate(pipeline),
-				]);
-
-				const geoChecksCount = countPipeline[0]?.count || 0;
-				const geoChecks = dataResults.map(this.toEntity);
-
-				return { geoChecksCount, geoChecks };
+				const pipeline: any[] = [{ $match: matchStage }, { $unwind: "$results" }];
 			}
+
+			// Common pipeline stages for both paths
+			const pipeline: any[] = [
+				{ $match: matchStage },
+				{ $unwind: "$results" },
+				// Filter by continent if specified
+				...(continents && continents.length > 0
+					? [
+							{
+								$match: {
+									"results.location.continent": { $in: continents },
+								},
+							},
+						]
+					: []),
+				// Project to flat structure
+				{
+					$project: {
+						_id: 0,
+						monitorId: "$metadata.monitorId",
+						teamId: "$metadata.teamId",
+						type: "$metadata.type",
+						location: "$results.location",
+						status: "$results.status",
+						statusCode: "$results.statusCode",
+						timings: "$results.timings",
+						createdAt: 1,
+						updatedAt: 1,
+					},
+				},
+				{ $sort: { createdAt: convertedSortOrder } },
+				{ $skip: skip },
+				{ $limit: rowsPerPage },
+			];
+
+			// Count pipeline
+			const countPipeline: any[] = [
+				{ $match: matchStage },
+				{ $unwind: "$results" },
+				...(continents && continents.length > 0
+					? [
+							{
+								$match: {
+									"results.location.continent": { $in: continents },
+								},
+							},
+						]
+					: []),
+				{ $count: "count" },
+			];
+
+			const [countResult, dataResults] = await Promise.all([GeoCheckModel.aggregate(countPipeline), GeoCheckModel.aggregate(pipeline)]);
+
+			const geoChecksCount = countResult[0]?.count || 0;
+			const geoChecks: FlatGeoCheck[] = dataResults.map((doc) => ({
+				id: `${doc.monitorId.toString()}-${new Date(doc.createdAt).getTime()}-${doc.location.continent}-${doc.location.city}-${Math.random().toString(36).substring(2, 15)}`,
+				monitorId: doc.monitorId.toString(),
+				teamId: doc.teamId.toString(),
+				type: doc.type,
+				location: doc.location,
+				status: doc.status,
+				statusCode: doc.statusCode,
+				timings: doc.timings,
+				createdAt: new Date(doc.createdAt).toISOString(),
+				updatedAt: new Date(doc.updatedAt).toISOString(),
+			}));
+
+			return { geoChecksCount, geoChecks };
 		} catch (error: any) {
 			this.logger.error({
 				message: `Error finding geo checks by monitor ID: ${error.message}`,
