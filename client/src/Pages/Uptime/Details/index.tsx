@@ -7,6 +7,7 @@ import {
 	HistogramDetails,
 	HeaderMonitorControls,
 	HeaderGeoTabs,
+	GeoChecksMap,
 } from "@/Components/monitors";
 import { TrendingUp, AlertTriangle } from "lucide-react";
 import { ChecksTable } from "@/Pages/Uptime/Details/Components/ChecksTable";
@@ -247,6 +248,7 @@ const UptimeDetailsPage = () => {
 						rowsPerPage={geoRowsPerPage}
 						setRowsPerPage={setGeoRowsPerPage}
 					/>
+					<GeoChecksMap geoChecks={geoChecksForTable} />
 				</>
 			)}
 		</BasePage>
