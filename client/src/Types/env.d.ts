@@ -17,3 +17,8 @@ declare module "*.svg?react" {
 	>;
 	export default ReactComponent;
 }
+
+declare module "*.css" {
+	const content: string;
+	export default content;
+}

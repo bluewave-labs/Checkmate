@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { Box, Typography, Stack, useTheme } from "@mui/material";
+import { Box, Typography, Stack, useTheme, GlobalStyles } from "@mui/material";
 import Map, { Marker, Popup } from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import type { FlatGeoCheck } from "@/Types/GeoCheck";
@@ -14,6 +14,21 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 	const [selectedCheck, setSelectedCheck] = useState<FlatGeoCheck | null>(null);
 	const theme = useTheme();
 	const isDarkMode = theme.palette.mode === "dark";
+
+	const mapPopupStyles = (
+		<GlobalStyles
+			styles={{
+				".maplibregl-popup-content": {
+					background: "transparent !important",
+					padding: "0 !important",
+					boxShadow: "none !important",
+				},
+				".maplibregl-popup-tip": {
+					display: "none !important",
+				},
+			}}
+		/>
+	);
 
 	useEffect(() => {
 		if (geoChecks.length === 0 || !mapRef.current) return;
@@ -55,103 +70,119 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 	};
 
 	return (
-		<div
-			style={{ height: "500px", width: "100%", borderRadius: "8px", overflow: "hidden" }}
-		>
-			<Map
-				ref={mapRef}
-				initialViewState={{
-					longitude: 0,
-					latitude: 20,
-					zoom: 1.5,
-				}}
-				style={{ height: "100%", width: "100%" }}
-				mapStyle={
-					isDarkMode
-						? "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
-						: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
-				}
+		<>
+			{mapPopupStyles}
+			<Box
+				height={500}
+				width={"100%"}
+				borderRadius={theme.shape.borderRadius}
+				overflow={"hidden"}
 			>
-				{geoChecks.map((check, index) => (
-					<Marker
-						key={`${check.id}-${index}`}
-						longitude={check.location.longitude}
-						latitude={check.location.latitude}
-						anchor="bottom"
-						onClick={(e: any) => {
-							e.originalEvent.stopPropagation();
-							setSelectedCheck(check);
-						}}
-					>
-						<div
-							style={{
-								width: "10px",
-								height: "10px",
-								borderRadius: "50%",
-								backgroundColor: getMarkerColor(check.status),
-								boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
-								cursor: "pointer",
+				<Map
+					ref={mapRef}
+					initialViewState={{
+						longitude: 0,
+						latitude: 20,
+						zoom: 1.5,
+					}}
+					style={{ height: "100%", width: "100%" }}
+					mapStyle={
+						isDarkMode
+							? "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+							: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+					}
+				>
+					{geoChecks.map((check, index) => (
+						<Marker
+							key={`${check.id}-${index}`}
+							longitude={check.location.longitude}
+							latitude={check.location.latitude}
+							anchor="bottom"
+							onClick={(e: any) => {
+								e.originalEvent.stopPropagation();
+								setSelectedCheck(check);
 							}}
-						/>
-					</Marker>
-				))}
+						>
+							<div
+								style={{
+									width: "10px",
+									height: "10px",
+									borderRadius: "50%",
+									backgroundColor: getMarkerColor(check.status),
+									boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+									cursor: "pointer",
+								}}
+							/>
+						</Marker>
+					))}
 
-				{selectedCheck && (
-					<Popup
-						longitude={selectedCheck.location.longitude}
-						latitude={selectedCheck.location.latitude}
-						anchor="top"
-						onClose={() => setSelectedCheck(null)}
-						closeOnClick={false}
-					>
-						<Box sx={{ minWidth: 200, p: 1 }}>
-							<Typography
-								variant="subtitle1"
-								fontWeight="bold"
-								gutterBottom
+					{selectedCheck && (
+						<Popup
+							longitude={selectedCheck.location.longitude}
+							latitude={selectedCheck.location.latitude}
+							anchor="top"
+							onClose={() => setSelectedCheck(null)}
+							closeOnClick={false}
+						>
+							<Box
+								sx={{
+									minWidth: 200,
+									p: theme.spacing(4),
+									bgcolor: theme.palette.background.paper,
+									borderWidth: 1,
+									borderStyle: "solid",
+									borderColor: theme.palette.divider,
+									borderRadius: 1,
+								}}
 							>
-								{selectedCheck.location.city}, {selectedCheck.location.country}
-							</Typography>
-							<Stack spacing={0.5}>
-								<Typography variant="body2">
-									<Typography
-										component="span"
-										fontWeight="medium"
-									>
-										Status:
-									</Typography>{" "}
-									{selectedCheck.status ? "Up" : "Down"}
-								</Typography>
-								<Typography variant="body2">
-									<Typography
-										component="span"
-										fontWeight="medium"
-									>
-										Status Code:
-									</Typography>{" "}
-									{selectedCheck.statusCode}
-								</Typography>
-								<Typography variant="body2">
-									<Typography
-										component="span"
-										fontWeight="medium"
-									>
-										Response Time:
-									</Typography>{" "}
-									{formatResponseTime(selectedCheck.timings.total)}
-								</Typography>
 								<Typography
-									variant="caption"
-									color="text.secondary"
-									sx={{ mt: 0.5 }}
+									variant="subtitle1"
+									fontWeight="bold"
+									gutterBottom
 								>
-									{new Date(selectedCheck.createdAt).toLocaleString()}
+									{selectedCheck.location.city}, {selectedCheck.location.country}
 								</Typography>
-							</Stack>
-						</Box>
-					</Popup>
-				)}
-			</Map>
-		</div>
+								<Stack spacing={0.5}>
+									<Typography variant="body2">
+										<Typography
+											component="span"
+											fontWeight="medium"
+										>
+											Status:
+										</Typography>{" "}
+										{selectedCheck.status ? "Up" : "Down"}
+									</Typography>
+									<Typography variant="body2">
+										<Typography
+											component="span"
+											fontWeight="medium"
+										>
+											Status Code:
+										</Typography>{" "}
+										{selectedCheck.statusCode}
+									</Typography>
+									<Typography variant="body2">
+										<Typography
+											component="span"
+											fontWeight="medium"
+										>
+											Response Time:
+										</Typography>{" "}
+										{formatResponseTime(selectedCheck.timings.total)}
+									</Typography>
+									<Typography
+										variant="caption"
+										color="text.secondary"
+										sx={{ mt: 0.5 }}
+									>
+										{new Date(selectedCheck.createdAt).toLocaleString()}
+									</Typography>
+								</Stack>
+							</Box>
+						</Popup>
+					)}
+				</Map>
+			</Box>
+		</>
 	);
 };
