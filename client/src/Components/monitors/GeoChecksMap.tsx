@@ -24,7 +24,22 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 					boxShadow: "none !important",
 				},
 				".maplibregl-popup-tip": {
-					display: "none !important",
+					display: "none",
+				},
+				".maplibregl-ctrl-attrib": {
+					display: "none",
+				},
+				".maplibregl-ctrl-logo": {
+					display: "none",
+				},
+				".maplibregl-popup-close-button": {
+					color: theme.palette.text.primary,
+					background: "transparent",
+					fontSize: "20px",
+					padding: "4px",
+					"&:hover": {
+						backgroundColor: theme.palette.action.hover,
+					},
 				},
 			}}
 		/>
