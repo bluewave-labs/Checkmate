@@ -32,6 +32,15 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 				".maplibregl-ctrl-logo": {
 					display: "none",
 				},
+				".maplibregl-popup-close-button": {
+					color: theme.palette.text.primary,
+					background: "transparent",
+					fontSize: "20px",
+					padding: "4px",
+					"&:hover": {
+						backgroundColor: theme.palette.action.hover,
+					},
+				},
 			}}
 		/>
 	);
