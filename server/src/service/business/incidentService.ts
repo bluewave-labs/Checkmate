@@ -3,20 +3,12 @@ import type { Monitor } from "@/types/monitor.js";
 import type { MonitorStatusResponse } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import { ParseBoolean } from "@/utils/utils.js";
+import { getDateForRange } from "@/utils/dataUtils.js";
 import type { IIncidentsRepository, IMonitorsRepository, IUsersRepository } from "@/repositories/index.js";
 import type { Incident } from "@/types/index.js";
 import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import type { INotificationMessageBuilder } from "@/service/infrastructure/notificationMessageBuilder.js";
 import type { ILogger } from "@/utils/logger.js";
-
-const dateRangeLookup: Record<string, Date | undefined> = {
-	recent: new Date(new Date().setHours(new Date().getHours() - 2)),
-	hour: new Date(new Date().setHours(new Date().getHours() - 1)),
-	day: new Date(new Date().setDate(new Date().getDate() - 1)),
-	week: new Date(new Date().setDate(new Date().getDate() - 7)),
-	month: new Date(new Date().setMonth(new Date().getMonth() - 1)),
-	all: undefined,
-};
 
 class IncidentService {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -177,7 +169,7 @@ class IncidentService {
 				throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "getIncidentsByTeam", status: 400 });
 			}
 
-			const startDate = dateRangeLookup[dateRange];
+			const startDate = getDateForRange(dateRange);
 
 			const parsedPage = Number.isFinite(parseInt(page)) ? parseInt(page) : 0;
 			const parsedRowsPerPage = Number.isFinite(parseInt(rowsPerPage)) ? parseInt(rowsPerPage) : 20;

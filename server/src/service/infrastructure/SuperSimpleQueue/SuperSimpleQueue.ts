@@ -145,7 +145,7 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 	pauseJob = async (monitor: any) => {
 		const result = await this.scheduler.pauseJob(monitor.id);
 		if (result === false) {
-			throw new Error("Failed to resume monitor");
+			throw new Error("Failed to pause monitor");
 		}
 		await this.scheduler.pauseJob(`${monitor.id}-geo`);
 		this.logger.debug({
@@ -160,10 +160,9 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 		if (result === false) {
 			throw new Error("Failed to resume monitor");
 		}
-		const geoResult = await this.scheduler.resumeJob(`${monitor.id}-geo`);
-		if (geoResult === false) {
-			throw new Error("Failed to resume geo check for monitor");
-		}
+
+		await this.scheduler.resumeJob(`${monitor.id}-geo`);
+
 		this.logger.debug({
 			message: `Resumed monitor ${monitor.id}`,
 			service: SERVICE_NAME,

@@ -3,15 +3,9 @@ import type { GeoCheck, GeoCheckMetadata, GeoCheckResult, GroupedGeoCheck, GeoCo
 import type { GeoChecksQueryResult, FlatGeoChecksQueryResult } from "./IGeoChecksRepository.js";
 import { GeoCheckModel, type GeoCheckDocument } from "@/db/models/index.js";
 import mongoose from "mongoose";
+import { getDateForRange } from "@/utils/dataUtils.js";
 
 const SERVICE_NAME = "GeoChecksRepository";
-
-const dateRangeLookup: Record<string, Date> = {
-	recent: new Date(Date.now() - 60 * 60 * 1000),
-	day: new Date(Date.now() - 24 * 60 * 60 * 1000),
-	week: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-	month: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-};
 
 class MongoGeoChecksRepository implements IGeoChecksRepository {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -116,9 +110,9 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 		try {
 			const matchStage: Record<string, any> = {
 				"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
-				...(dateRangeLookup[dateRange] && {
+				...(getDateForRange(dateRange) && {
 					createdAt: {
-						$gte: dateRangeLookup[dateRange],
+						$gte: getDateForRange(dateRange),
 					},
 				}),
 			};
