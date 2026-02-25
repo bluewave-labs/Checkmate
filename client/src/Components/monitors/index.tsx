@@ -2,6 +2,7 @@ export * from "./ControlsFilter";
 export * from "./MonitorStatBoxes";
 export * from "./HeaderMonitorControls";
 export * from "./HeaderGeoTabs";
+export * from "./GeoChecksMap";
 export * from "./charts/HistogramStatus";
 export * from "./charts/RadialAvgResponse";
 export * from "./charts/HistogramDetails";
