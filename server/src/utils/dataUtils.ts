@@ -1,10 +1,5 @@
 import type { GroupedCheck, NormalizedCheck, NormalizedUptimeCheck, HasResponseTime } from "@/types/index.js";
 
-/**
- * Get a Date object for a given date range string.
- * Returns a date in the past based on the range, or undefined for 'all'.
- * This is calculated fresh on each call to ensure accuracy.
- */
 export const getDateForRange = (dateRange: string): Date | undefined => {
 	const now = Date.now();
 	switch (dateRange) {
