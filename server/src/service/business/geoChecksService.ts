@@ -45,12 +45,6 @@ class GeoChecksService implements IGeoChecksService {
 		return GeoChecksService.SERVICE_NAME;
 	}
 
-	/**
-	 * Build a geo-distributed check for a monitor
-	 * 1. Create measurement request with GlobalPing API
-	 * 2. Poll for results (with 30s timeout)
-	 * 3. Transform and return GeoCheck document
-	 */
 	async buildGeoCheck(monitor: Monitor): Promise<GeoCheck | null> {
 		try {
 			if (!monitor.url) {
