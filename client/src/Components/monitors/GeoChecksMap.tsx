@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { Box, Typography, Stack } from "@mui/material";
+import { Box, Typography, Stack, useTheme } from "@mui/material";
 import Map, { Marker, Popup } from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import type { FlatGeoCheck } from "@/Types/GeoCheck";
@@ -12,6 +12,8 @@ interface GeoChecksMapProps {
 export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 	const mapRef = useRef<MapRef>(null);
 	const [selectedCheck, setSelectedCheck] = useState<FlatGeoCheck | null>(null);
+	const theme = useTheme();
+	const isDarkMode = theme.palette.mode === "dark";
 
 	useEffect(() => {
 		if (geoChecks.length === 0 || !mapRef.current) return;
@@ -45,7 +47,7 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 	}, [geoChecks]);
 
 	const getMarkerColor = (status: boolean): string => {
-		return status ? "#4caf50" : "#f44336";
+		return status ? theme.palette.success.main : theme.palette.error.main;
 	};
 
 	const formatResponseTime = (timing: number): string => {
@@ -64,7 +66,11 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 					zoom: 1.5,
 				}}
 				style={{ height: "100%", width: "100%" }}
-				mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+				mapStyle={
+					isDarkMode
+						? "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+						: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+				}
 			>
 				{geoChecks.map((check, index) => (
 					<Marker
