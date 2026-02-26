@@ -29,7 +29,6 @@ export const ChecksTable = ({
 }) => {
 	const { t } = useTranslation();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
-	const navigate = useNavigate();
 
 	const getHeaders = (t: Function, uiTimezone: string) => {
 		const headers: Header<Check>[] = [
