@@ -109,9 +109,6 @@ export const ChecksTable = ({
 			<Table
 				headers={headers}
 				data={checks}
-				onRowClick={(row) => {
-					navigate(`/checks/${row.id}`);
-				}}
 				emptyViewText={t("pages.checks.table.empty")}
 			/>
 			<Pagination
