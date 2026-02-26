@@ -44,7 +44,7 @@ export const settingsSchema = z.object({
 		cpu: z.number().int().min(1).max(100),
 		memory: z.number().int().min(1).max(100),
 		disk: z.number().int().min(1).max(100),
-		temperature: z.number().int().min(1).max(100),
+		temperature: z.number().int().min(1).max(150),
 	}),
 });
 
