@@ -1,5 +1,7 @@
 import type { CheckSnapshot } from "@/types/check.js";
 export type { CheckSnapshot } from "@/types/check.js";
+import type { GeoContinent } from "@/types/geoCheck.js";
+export type { GeoContinent } from "@/types/geoCheck.js";
 
 export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "unknown"] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
@@ -44,6 +46,9 @@ export interface Monitor {
 	gameId?: string;
 	grpcServiceName?: string;
 	group: string | null;
+	geoCheckEnabled?: boolean;
+	geoCheckLocations?: GeoContinent[];
+	geoCheckInterval?: number;
 	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;

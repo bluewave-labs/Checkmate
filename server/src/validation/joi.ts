@@ -1,5 +1,6 @@
 import joi, { type CustomHelpers } from "joi";
 import { type UserRole, UserRoles } from "@/types/user.js";
+import { GeoContinents } from "@/types/geoCheck.js";
 
 //****************************************
 // Custom Validators
@@ -112,6 +113,7 @@ const getMonitorByIdQueryValidation = joi.object({
 	dateRange: joi.string().valid("recent", "hour", "day", "week", "month", "all"),
 	numToDisplay: joi.number(),
 	normalize: joi.boolean(),
+	continent: joi.string().valid(...GeoContinents),
 });
 
 const getMonitorsByTeamIdParamValidation = joi.object({});
@@ -173,6 +175,12 @@ const createMonitorBodyValidation = joi.object({
 	grpcServiceName: joi.string().allow("").default(""),
 	selectedDisks: joi.array().items(joi.string()).optional(),
 	group: joi.string().max(50).trim().allow(null, "").optional(),
+	geoCheckEnabled: joi.boolean().optional(),
+	geoCheckLocations: joi
+		.array()
+		.items(joi.string().valid(...GeoContinents))
+		.optional(),
+	geoCheckInterval: joi.number().min(300000).optional(),
 });
 
 const createMonitorsBodyValidation = joi.array().items(
@@ -205,6 +213,12 @@ const editMonitorBodyValidation = joi
 		grpcServiceName: joi.string().allow(""),
 		selectedDisks: joi.array().items(joi.string()).optional(),
 		group: joi.string().max(50).trim().allow(null, "").optional(),
+		geoCheckEnabled: joi.boolean().optional(),
+		geoCheckLocations: joi
+			.array()
+			.items(joi.string().valid(...GeoContinents))
+			.optional(),
+		geoCheckInterval: joi.number().min(300000).optional(),
 	})
 	.options({ stripUnknown: true });
 
@@ -312,6 +326,7 @@ const getChecksQueryValidation = joi.object({
 	page: joi.number(),
 	rowsPerPage: joi.number(),
 	status: joi.boolean(),
+	continent: joi.alternatives().try(joi.string().valid(...GeoContinents), joi.array().items(joi.string().valid(...GeoContinents))),
 });
 
 const getTeamChecksQueryValidation = joi.object({

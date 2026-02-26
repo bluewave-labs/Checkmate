@@ -4,6 +4,7 @@ import { AppError } from "@/utils/AppError.js";
 import { INetworkService, INotificationsService, IStatusService } from "@/service/index.js";
 import type { StatusChangeResult, MonitorStatusResponse, HardwareStatusPayload, MonitorStatus } from "@/types/index.js";
 import IncidentService from "@/service/business/incidentService.js";
+import type { IGeoChecksService } from "@/service/business/geoChecksService.js";
 import {
 	IMaintenanceWindowsRepository,
 	IMonitorsRepository,
@@ -11,7 +12,18 @@ import {
 	IMonitorStatsRepository,
 	IChecksRepository,
 	IIncidentsRepository,
+	IGeoChecksRepository,
 } from "@/repositories/index.js";
+import { ILogger } from "@/utils/logger.js";
+import { IBufferService } from "../bufferService.js";
+
+export interface ISuperSimpleQueueHelper {
+	readonly serviceName: string;
+	getMonitorJob(): (monitor: Monitor) => Promise<void>;
+	getCleanupOrphanedJob(): () => Promise<void>;
+	getGeoCheckJob(): (monitor: Monitor) => Promise<void>;
+	isInMaintenanceWindow(monitorId: string, teamId: string): Promise<boolean>;
+}
 
 export interface MonitorActionDecision {
 	shouldCreateIncident: boolean;
@@ -27,7 +39,7 @@ export interface MonitorActionDecision {
 	};
 }
 
-class SuperSimpleQueueHelper {
+class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: any;
@@ -35,7 +47,7 @@ class SuperSimpleQueueHelper {
 	private statusService: IStatusService;
 	private notificationsService: INotificationsService;
 	private checkService: any;
-	private buffer: any;
+	private buffer: IBufferService;
 	private incidentService: IncidentService;
 	private maintenanceWindowsRepository: IMaintenanceWindowsRepository;
 	private monitorsRepository: IMonitorsRepository;
@@ -43,36 +55,26 @@ class SuperSimpleQueueHelper {
 	private monitorStatsRepository: IMonitorStatsRepository;
 	private checksRepository: IChecksRepository;
 	private incidentsRepository: IIncidentsRepository;
+	private geoChecksService: IGeoChecksService;
+	private geoChecksRepository: IGeoChecksRepository;
 
-	constructor({
-		logger,
-		networkService,
-		statusService,
-		notificationsService,
-		checkService,
-		buffer,
-		incidentService,
-		maintenanceWindowsRepository,
-		monitorsRepository,
-		teamsRepository,
-		monitorStatsRepository,
-		checksRepository,
-		incidentsRepository,
-	}: {
-		logger: any;
-		networkService: INetworkService;
-		statusService: IStatusService;
-		notificationsService: INotificationsService;
-		checkService: any;
-		buffer: any;
-		incidentService: IncidentService;
-		maintenanceWindowsRepository: IMaintenanceWindowsRepository;
-		monitorsRepository: IMonitorsRepository;
-		teamsRepository: ITeamsRepository;
-		monitorStatsRepository: IMonitorStatsRepository;
-		checksRepository: IChecksRepository;
-		incidentsRepository: IIncidentsRepository;
-	}) {
+	constructor(
+		logger: ILogger,
+		networkService: INetworkService,
+		statusService: IStatusService,
+		notificationsService: INotificationsService,
+		checkService: any,
+		buffer: IBufferService,
+		incidentService: IncidentService,
+		maintenanceWindowsRepository: IMaintenanceWindowsRepository,
+		monitorsRepository: IMonitorsRepository,
+		teamsRepository: ITeamsRepository,
+		monitorStatsRepository: IMonitorStatsRepository,
+		checksRepository: IChecksRepository,
+		incidentsRepository: IIncidentsRepository,
+		geoChecksService: IGeoChecksService,
+		geoChecksRepository: IGeoChecksRepository
+	) {
 		this.logger = logger;
 		this.networkService = networkService;
 		this.statusService = statusService;
@@ -86,6 +88,8 @@ class SuperSimpleQueueHelper {
 		this.monitorStatsRepository = monitorStatsRepository;
 		this.checksRepository = checksRepository;
 		this.incidentsRepository = incidentsRepository;
+		this.geoChecksService = geoChecksService;
+		this.geoChecksRepository = geoChecksRepository;
 	}
 
 	get serviceName() {
@@ -240,6 +244,16 @@ class SuperSimpleQueueHelper {
 					});
 				}
 
+				// Remove orphaned geo checks
+				const deletedGeoChecksCount = await this.geoChecksRepository.deleteByMonitorIdsNotIn(allMonitorIds);
+				if (deletedGeoChecksCount > 0) {
+					this.logger.info({
+						message: `Deleted ${deletedGeoChecksCount} orphaned geo checks`,
+						service: SERVICE_NAME,
+						method: "getCleanupOrphanedJob",
+					});
+				}
+
 				this.logger.info({
 					message: "Cleanup of orphaned data completed",
 					service: SERVICE_NAME,
@@ -253,6 +267,81 @@ class SuperSimpleQueueHelper {
 					stack: error.stack,
 				});
 				throw error;
+			}
+		};
+	};
+
+	getGeoCheckJob = () => {
+		return async (monitor: Monitor) => {
+			try {
+				const monitorId = monitor.id;
+				const teamId = monitor.teamId;
+
+				// Step 1: Validate monitor eligibility
+				if (!monitorId) {
+					throw new AppError({ message: "No monitor id", service: SERVICE_NAME, method: "getGeoCheckJob" });
+				}
+
+				if (monitor.type !== "http") {
+					this.logger.debug({
+						message: `Monitor ${monitorId} is not HTTP type, skipping geo check`,
+						service: SERVICE_NAME,
+						method: "getGeoCheckJob",
+					});
+					return;
+				}
+
+				if (!monitor.geoCheckEnabled) {
+					return;
+				}
+
+				if (!monitor.geoCheckLocations || monitor.geoCheckLocations.length === 0) {
+					this.logger.warn({
+						message: `No geo check locations configured for monitor ${monitorId}`,
+						service: SERVICE_NAME,
+						method: "getGeoCheckJob",
+					});
+					return;
+				}
+
+				// Step 2: Check for maintenance window
+				const maintenanceWindowActive = await this.isInMaintenanceWindow(monitorId, teamId);
+				if (maintenanceWindowActive) {
+					this.logger.debug({
+						message: `Monitor ${monitorId} is in maintenance window, skipping geo check`,
+						service: SERVICE_NAME,
+						method: "getGeoCheckJob",
+					});
+					return;
+				}
+
+				// Step 3: Build geo check (handles API calls and polling)
+				const geoCheck = await this.geoChecksService.buildGeoCheck(monitor);
+				if (!geoCheck) {
+					this.logger.warn({
+						message: `No geo check could be built for monitor ${monitorId}`,
+						service: SERVICE_NAME,
+						method: "getGeoCheckJob",
+					});
+					return;
+				}
+
+				// Step 4: Add geo check to buffer
+				this.buffer.addGeoCheckToBuffer(geoCheck);
+
+				this.logger.debug({
+					message: `Geo check job executed for monitor ${monitorId}`,
+					service: SERVICE_NAME,
+					method: "getGeoCheckJob",
+				});
+			} catch (error: any) {
+				this.logger.error({
+					message: error.message,
+					service: SERVICE_NAME,
+					method: "getGeoCheckJob",
+					stack: error.stack,
+				});
+				// Don't throw - geo check failures shouldn't crash the job scheduler
 			}
 		};
 	};

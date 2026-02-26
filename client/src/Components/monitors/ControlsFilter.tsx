@@ -5,6 +5,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 
 import type { MonitorType } from "@/Types/Monitor";
 import { Typography, useTheme } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const types = ["http", "ping", "port", "docker", "game", "grpc"];
 const typeDisplayNames: Record<string, string> = {
@@ -38,6 +39,7 @@ export const ControlsFilter = ({
 	onClearFilters: () => void;
 }) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const isFilterActive =
 		(selectedTypes?.length ?? 0) > 0 || selectedStatus !== "" || selectedState !== "";
@@ -96,7 +98,7 @@ export const ControlsFilter = ({
 					variant="contained"
 					onClick={onClearFilters}
 				>
-					Clear Filters
+					{t("common.buttons.clearFilters")}
 				</Button>
 			)}
 		</Stack>

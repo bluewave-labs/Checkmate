@@ -1,11 +1,14 @@
 import { HTTPError, RequestError } from "got";
 import type { Got, Response } from "got";
 import type { Monitor, MonitorStatusResponse, GrpcStatusPayload } from "@/types/index.js";
+import type { AxiosStatic } from "axios";
 import { AppError } from "@/utils/AppError.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
 import CacheableLookup from "cacheable-lookup";
+import { ISettingsService } from "../system/settingsService.js";
+import { ILogger } from "@/utils/logger.js";
 const SERVICE_NAME = "NetworkService";
 
 type MonitorStatusResponseOverrides<T> = Partial<Omit<MonitorStatusResponse<T>, "monitorId" | "teamId" | "type">>;
@@ -50,16 +53,16 @@ class NetworkService implements INetworkService {
 	private NETWORK_ERROR: number;
 	private PING_ERROR: number;
 
-	private axios: any;
+	private axios: AxiosStatic;
 	private got: Got;
 	private https: any;
 	private jmespath: any;
 	private GameDig: any;
 	private ping: any;
-	private logger: any;
+	private logger: ILogger;
 	private Docker: any;
 	private net: any;
-	private settingsService: any;
+	private settingsService: ISettingsService;
 	private grpc: any;
 	private protoLoader: any;
 
@@ -117,35 +120,20 @@ class NetworkService implements INetworkService {
 		};
 	};
 
-	constructor({
-		axios,
-		got,
-		https,
-		jmespath,
-		GameDig,
-		ping,
-		logger,
-		http,
-		Docker,
-		net,
-		settingsService,
-		grpc,
-		protoLoader,
-	}: {
-		axios: any;
-		got: Got;
-		https: any;
-		jmespath: any;
-		GameDig: any;
-		ping: any;
-		logger: any;
-		http: any;
-		Docker: any;
-		net: any;
-		settingsService: any;
-		grpc: any;
-		protoLoader: any;
-	}) {
+	constructor(
+		axios: AxiosStatic,
+		got: Got,
+		https: any,
+		jmespath: any,
+		GameDig: any,
+		ping: any,
+		logger: ILogger,
+		Docker: any,
+		net: any,
+		settingsService: ISettingsService,
+		grpc: any,
+		protoLoader: any
+	) {
 		this.TYPE_PING = "ping";
 		this.TYPE_HTTP = "http";
 		this.TYPE_PAGESPEED = "pagespeed";
@@ -449,7 +437,6 @@ class NetworkService implements INetworkService {
 
 			const docker = new this.Docker({
 				socketPath: "/var/run/docker.sock",
-				handleError: true, // Enable error handling
 			});
 
 			const dockerResponse = this.buildStatusResponse({
@@ -545,6 +532,10 @@ class NetworkService implements INetworkService {
 	private async requestPort(monitor: Monitor): Promise<MonitorStatusResponse> {
 		try {
 			const { url, port } = monitor;
+			if (!port) {
+				throw new Error("Port is required for port monitor");
+			}
+
 			const { response, responseTime, error } = await this.timeRequest(async () => {
 				return new Promise((resolve, reject) => {
 					const socket = this.net.createConnection(
@@ -611,9 +602,9 @@ class NetworkService implements INetworkService {
 			});
 
 			const state = await this.GameDig.query({
-				type: gameId,
+				type: gameId ?? "unknown",
 				host: url,
-				port: port,
+				port: port ?? 0,
 			}).catch((error: any) => {
 				this.logger.warn({
 					message: error.message,

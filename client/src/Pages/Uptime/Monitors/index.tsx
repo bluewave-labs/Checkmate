@@ -42,11 +42,11 @@ const UptimeMonitorsPage = () => {
 	const debouncedSearch = useDebounce<string>(search, 300);
 
 	// Convert filter selections to API filter values
-	// Status: "up" -> true, "down" -> false
+	// Status: pass "up"/"down" directly to the API
 	// State: "active" -> true, "paused" -> false
 	const toFilterStatus = useMemo(() => {
-		if (selectedStatus === "up") return "true";
-		if (selectedStatus === "down") return "false";
+		if (selectedStatus === "up") return "up";
+		if (selectedStatus === "down") return "down";
 		return undefined;
 	}, [selectedStatus]);
 

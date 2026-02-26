@@ -30,6 +30,9 @@ class MonitorRoutes {
 		// PageSpeed routes
 		this.router.get("/pagespeed/details/:monitorId", this.monitorController.getPageSpeedDetailsById);
 
+		// Geo checks routes
+		this.router.get("/:monitorId/geo-checks", this.monitorController.getGeoChecksByMonitorId);
+
 		// General monitor routes
 		this.router.post("/pause/:monitorId", isAllowed(["admin", "superadmin"]), this.monitorController.pauseMonitor);
 

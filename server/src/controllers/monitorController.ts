@@ -27,6 +27,7 @@ import {
 } from "./controllerUtils.js";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorService } from "@/service/index.js";
+import { GeoContinent } from "@/types/geoCheck.js";
 
 const SERVICE_NAME = "monitorController";
 class MonitorController {
@@ -127,6 +128,38 @@ class MonitorController {
 			return res.status(200).json({
 				success: true,
 				msg: "Page speed details retrieved successfully",
+				data,
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	getGeoChecksByMonitorId = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			await getMonitorByIdParamValidation.validateAsync(req.params);
+			await getMonitorByIdQueryValidation.validateAsync(req.query);
+
+			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
+			const dateRange = requireString(req?.query?.dateRange, "dateRange");
+			const continentParam = req?.query?.continent;
+			const continents = continentParam
+				? Array.isArray(continentParam)
+					? (continentParam as GeoContinent[])
+					: [continentParam as GeoContinent]
+				: undefined;
+			const teamId = requireTeamId(req?.user?.teamId);
+
+			const data = await this.monitorService.getGeoChecksByMonitorId({
+				teamId,
+				monitorId,
+				dateRange,
+				continents,
+			});
+
+			return res.status(200).json({
+				success: true,
+				msg: "Geo checks retrieved successfully",
 				data,
 			});
 		} catch (error) {

@@ -6,6 +6,7 @@ import AuthRoutes from "../routes/authRoute.js";
 import InviteRoutes from "../routes/inviteRoute.js";
 import MonitorRoutes from "../routes/monitorRoute.js";
 import CheckRoutes from "../routes/checkRoute.js";
+import GeoCheckRoutes from "../routes/geoCheckRoutes.js";
 import SettingsRoutes from "../routes/settingsRoute.js";
 import MaintenanceWindowRoutes from "../routes/maintenanceWindowRoute.js";
 import StatusPageRoutes from "../routes/statusPageRoute.js";
@@ -22,6 +23,7 @@ export const setupRoutes = (app: any, controllers: Record<string, any>, services
 	const monitorRoutes = new MonitorRoutes(controllers.monitorController);
 	const settingsRoutes = new SettingsRoutes(controllers.settingsController);
 	const checkRoutes = new CheckRoutes(controllers.checkController);
+	const geoCheckRoutes = new GeoCheckRoutes(controllers.geoCheckController);
 	const inviteRoutes = new InviteRoutes(controllers.inviteController, verifyJWT);
 	const maintenanceWindowRoutes = new MaintenanceWindowRoutes(controllers.maintenanceWindowController);
 	const queueRoutes = new QueueRoutes(controllers.queueController);
@@ -36,6 +38,7 @@ export const setupRoutes = (app: any, controllers: Record<string, any>, services
 	app.use("/api/v1/monitors", verifyJWT, monitorRoutes.getRouter());
 	app.use("/api/v1/settings", verifyJWT, settingsRoutes.getRouter());
 	app.use("/api/v1/checks", verifyJWT, checkRoutes.getRouter());
+	app.use("/api/v1/geo-checks", verifyJWT, geoCheckRoutes.getRouter());
 	app.use("/api/v1/invite", inviteRoutes.getRouter());
 	app.use("/api/v1/maintenance-window", verifyJWT, maintenanceWindowRoutes.getRouter());
 	app.use("/api/v1/queue", verifyJWT, queueRoutes.getRouter());

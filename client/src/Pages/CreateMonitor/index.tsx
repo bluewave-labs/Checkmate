@@ -15,6 +15,7 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import { Trash2 } from "lucide-react";
 import { HeaderDeleteControls } from "@/Components/monitors";
+import { GeoContinents } from "@/Types/GeoCheck";
 
 import { BasePage, ConfigBox } from "@/Components/design-elements";
 import {
@@ -192,6 +193,7 @@ const CreateMonitorPage = () => {
 	const watchedType = watch("type") as MonitorType;
 
 	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
+	const watchGeoCheckEnabled = watch("geoCheckEnabled") as boolean;
 
 	useEffect(() => {
 		clearErrors();
@@ -874,6 +876,140 @@ const CreateMonitorPage = () => {
 											}}
 										/>
 									</Typography>
+								</Stack>
+							)}
+						</Stack>
+					}
+				/>
+			)}
+
+			{watchedType === "http" && (
+				<ConfigBox
+					title={t("pages.createMonitor.form.geoChecks.title")}
+					subtitle={t("pages.createMonitor.form.geoChecks.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(8)}>
+							<Controller
+								name="geoCheckEnabled"
+								control={control}
+								render={({ field }) => (
+									<Stack
+										direction="row"
+										alignItems="center"
+										spacing={theme.spacing(2)}
+									>
+										<Switch
+											checked={field.value ?? false}
+											onChange={(e) => field.onChange(e.target.checked)}
+										/>
+										<Typography>
+											{t("pages.createMonitor.form.geoChecks.option.enabled.label")}
+										</Typography>
+									</Stack>
+								)}
+							/>
+							{watchGeoCheckEnabled && (
+								<Stack spacing={theme.spacing(8)}>
+									<Controller
+										name="geoCheckLocations"
+										control={control}
+										render={({ field }) => {
+											// Map continents to have 'name' property for Autocomplete
+											const locationOptions = GeoContinents.map((continent) => ({
+												id: continent,
+												name: t(
+													`pages.createMonitor.form.geoChecks.option.locations.options.${continent}`
+												),
+											}));
+											const selectedLocations = locationOptions.filter((loc) =>
+												(field.value ?? []).includes(loc.id)
+											);
+											return (
+												<Stack spacing={theme.spacing(4)}>
+													<Autocomplete
+														multiple
+														options={locationOptions}
+														value={selectedLocations}
+														getOptionLabel={(option) => option.name}
+														onChange={(_: unknown, newValue: typeof locationOptions) => {
+															field.onChange(newValue.map((loc) => loc.id));
+														}}
+														isOptionEqualToValue={(option, value) =>
+															option.id === value.id
+														}
+														fieldLabel={t(
+															"pages.createMonitor.form.geoChecks.option.locations.label"
+														)}
+													/>
+													{selectedLocations.length > 0 && (
+														<Stack
+															flex={1}
+															width="100%"
+														>
+															{selectedLocations.map((location, index) => (
+																<Stack
+																	direction="row"
+																	alignItems="center"
+																	key={location.id}
+																	width="100%"
+																>
+																	<Typography flexGrow={1}>{location.name}</Typography>
+																	<IconButton
+																		size="small"
+																		onClick={() => {
+																			field.onChange(
+																				(field.value ?? []).filter(
+																					(id: string) => id !== location.id
+																				)
+																			);
+																		}}
+																		aria-label="Remove location"
+																	>
+																		<Trash2 size={16} />
+																	</IconButton>
+																	{index < selectedLocations.length - 1 && <Divider />}
+																</Stack>
+															))}
+														</Stack>
+													)}
+												</Stack>
+											);
+										}}
+									/>
+									<Controller
+										name="geoCheckInterval"
+										control={control}
+										render={({ field }) => (
+											<Select
+												{...field}
+												value={field.value ?? 300000}
+												fieldLabel={t(
+													"pages.createMonitor.form.geoChecks.option.interval.label"
+												)}
+											>
+												<MenuItem value={300000}>
+													{t(
+														"pages.createMonitor.form.geoChecks.option.interval.value.fiveMinutes"
+													)}
+												</MenuItem>
+												<MenuItem value={600000}>
+													{t(
+														"pages.createMonitor.form.geoChecks.option.interval.value.tenMinutes"
+													)}
+												</MenuItem>
+												<MenuItem value={900000}>
+													{t(
+														"pages.createMonitor.form.geoChecks.option.interval.value.fifteenMinutes"
+													)}
+												</MenuItem>
+												<MenuItem value={1800000}>
+													{t(
+														"pages.createMonitor.form.geoChecks.option.interval.value.thirtyMinutes"
+													)}
+												</MenuItem>
+											</Select>
+										)}
+									/>
 								</Stack>
 							)}
 						</Stack>

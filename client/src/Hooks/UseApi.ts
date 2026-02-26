@@ -17,7 +17,7 @@ const fetcher = async <T>(url: string, config?: AxiosRequestConfig) => {
 };
 
 export const useGet = <T>(
-	url: string | null,
+	url: string | null | undefined,
 	axiosConfig?: AxiosRequestConfig,
 	swrConfig?: SWRConfiguration
 ) => {
