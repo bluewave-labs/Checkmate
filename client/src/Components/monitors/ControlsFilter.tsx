@@ -7,7 +7,15 @@ import type { MonitorType } from "@/Types/Monitor";
 import { Typography, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-const types = ["http", "ping", "port", "docker", "game"];
+const types = ["http", "ping", "port", "docker", "game", "grpc"];
+const typeDisplayNames: Record<string, string> = {
+	http: "HTTP",
+	ping: "Ping",
+	port: "Port",
+	docker: "Docker",
+	game: "Game",
+	grpc: "gRPC",
+};
 const statuses = ["up", "down"];
 const states = ["active", "paused"];
 
@@ -52,7 +60,7 @@ export const ControlsFilter = ({
 							key={type}
 							value={type}
 						>
-							<Typography textTransform={"capitalize"}>{type}</Typography>
+							<Typography>{typeDisplayNames[type] ?? type}</Typography>
 						</MenuItem>
 					))}
 				</Select>

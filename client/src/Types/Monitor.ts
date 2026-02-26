@@ -11,6 +11,7 @@ export const MonitorTypes = [
 	"docker",
 	"port",
 	"game",
+	"grpc",
 	"unknown",
 ] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
@@ -60,6 +61,7 @@ export interface Monitor {
 	tempAlertCounter: number;
 	selectedDisks: string[];
 	gameId?: string;
+	grpcServiceName?: string;
 	group: string | null;
 	geoCheckEnabled?: boolean;
 	geoCheckLocations?: GeoContinent[];

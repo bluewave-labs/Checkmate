@@ -483,6 +483,10 @@
 						"port": {
 							"label": "Port to monitor",
 							"placeholder": 80
+						},
+						"grpcServiceName": {
+							"label": "Service name",
+							"placeholder": "e.g. my.service.v1 (leave empty for overall health)"
 						}
 					},
 					"title": "General settings",
@@ -493,6 +497,7 @@
 						"docker": "Enter the Docker container name or ID. You can use either the container name (e.g., my-app) or the container ID (full 64-char ID or short ID).",
 						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type.",
 						"pagespeed": "Track page load performance, Core Web Vitals, and optimization scores for your website.",
+						"grpc": "Enter the hostname and port of the gRPC server, optionally specify a service name for the health check, and add a display name.",
 						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure."
 					}
 				},
@@ -527,6 +532,8 @@
 					"optionDockerDescription": "Use Docker to monitor if a container is running.",
 					"optionGame": "Game",
 					"optionGameDescription": "Monitor if a specific game server is online.",
+					"optionGrpc": "gRPC",
+					"optionGrpcDescription": "Monitor gRPC services using the standard Health Checking Protocol.",
 					"optionHttp": "HTTP(S)",
 					"optionHttpDescription": "Use HTTP(S) to monitor your website or API endpoint.",
 					"optionPing": "Ping",
