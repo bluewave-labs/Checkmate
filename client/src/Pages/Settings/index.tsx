@@ -1,6 +1,13 @@
 import { BasePage, ConfigBox, TextLink } from "@/Components/design-elements";
 import { Autocomplete, Select, Dialog, SwitchComponent } from "@/Components/inputs";
-import { Stack, useTheme, MenuItem, Link, type SelectChangeEvent } from "@mui/material";
+import {
+	Stack,
+	useTheme,
+	MenuItem,
+	Link,
+	Alert,
+	type SelectChangeEvent,
+} from "@mui/material";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,7 +21,7 @@ import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
 import type { SettingsFormData } from "@/Validation/settings";
 import { useState } from "react";
 import { Controller } from "react-hook-form";
-import { TextField, Button, FieldLabel } from "@/Components/inputs";
+import { TextField, Button, FieldLabel, SliderWithLabel } from "@/Components/inputs";
 import { Box, Typography } from "@mui/material";
 import { useDelete } from "@/Hooks/UseApi";
 
@@ -257,8 +264,7 @@ export const SettingsPage = () => {
 				(acc as any)[typedKey] = Object.entries(value).reduce(
 					(nested, [nestedKey, nestedValue]) => ({
 						...nested,
-						[nestedKey]:
-							nestedValue === undefined || nestedValue === 0 ? "" : nestedValue,
+						[nestedKey]: nestedValue === undefined ? "" : nestedValue,
 					}),
 					{}
 				);
@@ -465,24 +471,16 @@ export const SettingsPage = () => {
 									name="globalThresholds.cpu"
 									control={form.control}
 									defaultValue={defaults.globalThresholds?.cpu}
-									render={({ field, fieldState }) => (
-										<TextField
+									render={({ field }) => (
+										<SliderWithLabel
 											{...field}
-											value={
-												field.value === undefined || field.value === 0 ? "" : field.value
-											}
-											onChange={(e) => {
-												const val = e.target.value;
-												field.onChange(val === "" ? 0 : Number(val));
-											}}
 											fieldLabel={t("pages.settings.form.thresholds.option.cpu.label")}
-											type="number"
-											inputProps={{ min: 0 }}
-											placeholder={t(
-												"pages.settings.form.thresholds.option.cpu.placeholder"
-											)}
-											error={!!fieldState.error}
-											helperText={fieldState.error?.message}
+											min={1}
+											max={100}
+											sliderMaxWidth={{ xs: "100%", md: "50%" }}
+											value={field.value || 1}
+											onChange={(_, value) => field.onChange(value)}
+											valueLabelDisplay="auto"
 										/>
 									)}
 								/>
@@ -490,24 +488,16 @@ export const SettingsPage = () => {
 									name="globalThresholds.memory"
 									control={form.control}
 									defaultValue={defaults.globalThresholds?.memory}
-									render={({ field, fieldState }) => (
-										<TextField
+									render={({ field }) => (
+										<SliderWithLabel
 											{...field}
-											value={
-												field.value === undefined || field.value === 0 ? "" : field.value
-											}
-											onChange={(e) => {
-												const val = e.target.value;
-												field.onChange(val === "" ? 0 : Number(val));
-											}}
 											fieldLabel={t("pages.settings.form.thresholds.option.memory.label")}
-											type="number"
-											inputProps={{ min: 0 }}
-											placeholder={t(
-												"pages.settings.form.thresholds.option.memory.placeholder"
-											)}
-											error={!!fieldState.error}
-											helperText={fieldState.error?.message}
+											min={1}
+											max={100}
+											sliderMaxWidth={{ xs: "100%", md: "50%" }}
+											value={field.value || 1}
+											onChange={(_, value) => field.onChange(value)}
+											valueLabelDisplay="auto"
 										/>
 									)}
 								/>
@@ -515,24 +505,16 @@ export const SettingsPage = () => {
 									name="globalThresholds.disk"
 									control={form.control}
 									defaultValue={defaults.globalThresholds?.disk}
-									render={({ field, fieldState }) => (
-										<TextField
+									render={({ field }) => (
+										<SliderWithLabel
 											{...field}
-											value={
-												field.value === undefined || field.value === 0 ? "" : field.value
-											}
-											onChange={(e) => {
-												const val = e.target.value;
-												field.onChange(val === "" ? 0 : Number(val));
-											}}
 											fieldLabel={t("pages.settings.form.thresholds.option.disk.label")}
-											type="number"
-											inputProps={{ min: 0 }}
-											placeholder={t(
-												"pages.settings.form.thresholds.option.disk.placeholder"
-											)}
-											error={!!fieldState.error}
-											helperText={fieldState.error?.message}
+											min={1}
+											max={100}
+											sliderMaxWidth={{ xs: "100%", md: "50%" }}
+											value={field.value || 1}
+											onChange={(_, value) => field.onChange(value)}
+											valueLabelDisplay="auto"
 										/>
 									)}
 								/>
@@ -540,26 +522,18 @@ export const SettingsPage = () => {
 									name="globalThresholds.temperature"
 									control={form.control}
 									defaultValue={defaults.globalThresholds?.temperature}
-									render={({ field, fieldState }) => (
-										<TextField
+									render={({ field }) => (
+										<SliderWithLabel
 											{...field}
-											value={
-												field.value === undefined || field.value === 0 ? "" : field.value
-											}
-											onChange={(e) => {
-												const val = e.target.value;
-												field.onChange(val === "" ? 0 : Number(val));
-											}}
 											fieldLabel={t(
 												"pages.settings.form.thresholds.option.temperature.label"
 											)}
-											type="number"
-											inputProps={{ min: 0 }}
-											placeholder={t(
-												"pages.settings.form.thresholds.option.temperature.placeholder"
-											)}
-											error={!!fieldState.error}
-											helperText={fieldState.error?.message}
+											min={1}
+											max={150}
+											sliderMaxWidth={{ xs: "100%", md: "50%" }}
+											value={field.value || 1}
+											onChange={(_, value) => field.onChange(value)}
+											valueLabelDisplay="auto"
 										/>
 									)}
 								/>
@@ -997,6 +971,39 @@ export const SettingsPage = () => {
 					zIndex: 1000,
 				}}
 			>
+				{/* Validation Error Display */}
+				{Object.keys(form.formState.errors).length > 0 && (
+					<Alert
+						severity="error"
+						sx={{ mb: 2, flexGrow: 1, mr: 2 }}
+					>
+						<Typography
+							variant="body2"
+							sx={{ fontWeight: 600, mb: 1 }}
+						>
+							{t("pages.settings.form.validation.errorMessage")}
+						</Typography>
+						<Box
+							component="ul"
+							sx={{ m: 0, pl: 2 }}
+						>
+							{Object.entries(form.formState.errors).map(([field, error]) => {
+								const message =
+									typeof error === "object" && error?.message
+										? error.message
+										: "Invalid value";
+								return (
+									<li key={field}>
+										<Typography variant="body2">
+											<strong>{field}:</strong> {message}
+										</Typography>
+									</li>
+								);
+							})}
+						</Box>
+					</Alert>
+				)}
+
 				<Button
 					loading={isSaving}
 					type="submit"
