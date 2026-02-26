@@ -5,7 +5,6 @@ import type { Monitor } from "@/Types/Monitor";
 
 import { useTranslation } from "react-i18next";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
-import { useNavigate } from "react-router";
 import type { Check } from "@/Types/Check";
 import type { RootState } from "@/Types/state";
 import { useSelector } from "react-redux";
