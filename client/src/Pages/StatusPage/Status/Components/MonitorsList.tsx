@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import { HistogramResponseTime, HeatmapResponseTime } from "@/Components/common";
 import { StatusLabel, BaseBox } from "@/Components/design-elements";
 import { SwitchComponent } from "@/Components/inputs";
+import { InfrastructureMetrics } from "@/Pages/StatusPage/Status/Components/InfrastructureMetrics";
 
 import { useTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
@@ -32,10 +33,11 @@ export const MonitorsList = ({ statusPage, monitors }: MonitorsListProps) => {
 
 	return (
 		<Stack gap={theme.spacing(8)}>
-			{statusPage.showCharts !== false && (
+			{statusPage.showCharts && (
 				<Stack
 					direction={"row"}
 					alignItems={"center"}
+					gap={theme.spacing(2)}
 				>
 					<Typography>{t("pages.statusPages.monitorsList.chartTypeHeatmap")}</Typography>
 					<SwitchComponent
@@ -53,30 +55,56 @@ export const MonitorsList = ({ statusPage, monitors }: MonitorsListProps) => {
 			)}
 
 			{monitors?.map((monitor) => {
+				const isInfrastructureMonitor = monitor?.type === "hardware";
 				return (
 					<BaseBox
 						key={monitor.id}
-						padding={theme.spacing(4)}
+						padding={theme.spacing(8)}
 					>
 						<Stack
 							direction="row"
 							alignItems="center"
 							justifyContent="space-between"
 							gap={theme.spacing(4)}
-							mb={statusPage.showCharts !== false ? theme.spacing(4) : 0}
+							mb={theme.spacing(4)}
 						>
 							<Box sx={{ overflow: "hidden", minWidth: 0, flex: 1 }}>
-								<Typography
-									variant="h6"
-									sx={{
-										overflow: "hidden",
-										textOverflow: "ellipsis",
-										whiteSpace: "nowrap",
-									}}
+								<Stack
+									direction="row"
+									alignItems="center"
+									gap={theme.spacing(2)}
+									mb={theme.spacing(1)}
 								>
-									{monitor.name}
-								</Typography>
-								{showURL && (
+									<Typography
+										variant="h6"
+										sx={{
+											overflow: "hidden",
+											textOverflow: "ellipsis",
+											whiteSpace: "nowrap",
+										}}
+									>
+										{monitor.name}
+									</Typography>
+									<Typography
+										variant="caption"
+										sx={{
+											backgroundColor:
+												monitor?.type === "hardware"
+													? theme.palette.info.light
+													: theme.palette.success.light,
+											color:
+												monitor?.type === "hardware"
+													? theme.palette.info.dark
+													: theme.palette.success.dark,
+											padding: `${theme.spacing(0.5)} ${theme.spacing(1.5)}`,
+											borderRadius: theme.shape.borderRadius,
+											fontWeight: 600,
+										}}
+									>
+										{t(`pages.statusPages.monitorsList.badge.${monitor?.type}`)}
+									</Typography>
+								</Stack>
+								{showURL && monitor?.url && (
 									<Typography
 										variant="body2"
 										color="text.secondary"
@@ -85,22 +113,49 @@ export const MonitorsList = ({ statusPage, monitors }: MonitorsListProps) => {
 									</Typography>
 								)}
 							</Box>
-							<StatusLabel status={monitor.status} />
+							<StatusLabel status={monitor?.status} />
 						</Stack>
-						{statusPage.showCharts !== false && (
-							<Box sx={{ overflow: "hidden", minWidth: 0, flex: 1 }}>
-								{chartType === "histogram" ? (
-									<HistogramResponseTime
-										height={{ xs: 50, md: 100 }}
-										gap={{ xs: theme.spacing(0.5), md: theme.spacing(5) }}
-										checks={monitor?.checks?.slice().reverse() ?? []}
-									/>
-								) : (
-									<HeatmapResponseTime
-										checks={monitor?.checks?.slice().reverse() ?? []}
-									/>
+
+						{!isInfrastructureMonitor && (
+							<>
+								{statusPage.showCharts !== false && (
+									<Box
+										sx={{
+											overflow: "hidden",
+											minWidth: 0,
+											flex: 1,
+											mb: theme.spacing(2),
+										}}
+									>
+										{chartType === "histogram" ? (
+											<HistogramResponseTime
+												height={{ xs: 50, md: 100 }}
+												gap={{ xs: theme.spacing(0.5), md: theme.spacing(5) }}
+												checks={monitor?.checks?.slice().reverse() ?? []}
+											/>
+										) : (
+											<HeatmapResponseTime
+												checks={monitor?.checks?.slice().reverse() ?? []}
+											/>
+										)}
+									</Box>
 								)}
-							</Box>
+							</>
+						)}
+
+						{isInfrastructureMonitor && statusPage.showInfrastructure !== false && (
+							<BaseBox
+								key={monitor.id}
+								padding={theme.spacing(4)}
+							>
+								<Stack
+									direction="row"
+									alignItems="center"
+									justifyContent="space-between"
+									gap={theme.spacing(8)}
+								></Stack>
+								<InfrastructureMetrics monitor={monitor} />
+							</BaseBox>
 						)}
 					</BaseBox>
 				);

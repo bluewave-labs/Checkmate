@@ -1,10 +1,11 @@
 import type { Monitor } from "@/Types/Monitor";
+export type MonitorDisplayType = "uptime" | "infrastructure";
 
 export interface StatusPage {
 	id: string;
 	userId: string;
 	teamId: string;
-	type: string;
+	type: MonitorDisplayType[];
 	companyName: string;
 	url: string;
 	timezone?: string;
@@ -20,6 +21,7 @@ export interface StatusPage {
 	showCharts: boolean;
 	showUptimePercentage: boolean;
 	showAdminLoginLink: boolean;
+	showInfrastructure: boolean;
 	customCSS: string;
 	createdAt: string;
 	updatedAt: string;
@@ -28,4 +30,5 @@ export interface StatusPage {
 export interface StatusPageResponse {
 	statusPage: StatusPage;
 	monitors: Monitor[];
+	infrastructureMonitors?: Monitor[];
 }

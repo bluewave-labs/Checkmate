@@ -14,12 +14,16 @@ export const statusPageSchema = z.object({
 			"URL can only contain lowercase letters, numbers, and hyphens"
 		),
 	timezone: z.string().optional(),
+	type: z
+		.array(z.enum(["uptime", "infrastructure"]))
+		.min(1, "At least one type is required"),
 	color: z.string().min(1, "Color is required"),
 	monitors: z.array(z.string()).min(1, "At least one monitor is required"),
 	isPublished: z.boolean(),
 	showCharts: z.boolean(),
 	showUptimePercentage: z.boolean(),
 	showAdminLoginLink: z.boolean(),
+	showInfrastructure: z.boolean(),
 	customCSS: z.string().optional(),
 	logo: z
 		.object({
