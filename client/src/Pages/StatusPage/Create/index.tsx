@@ -1,5 +1,6 @@
 import { BasePage, ConfigBox } from "@/Components/design-elements";
 import Stack from "@mui/material/Stack";
+import { logger } from "@/Utils/logger";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -80,7 +81,7 @@ const CreateStatusPage = () => {
 	}, [defaults, reset]);
 
 	const onError = (errors: any) => {
-		console.log(errors);
+		logger.debug("Status page validation errors", errors);
 	};
 
 	const handleDeleteClick = () => {
@@ -128,7 +129,7 @@ const CreateStatusPage = () => {
 					fd.append("logo", imageResult.data);
 					URL.revokeObjectURL(data.logo.data);
 				} catch (e) {
-					console.error("Error fetching logo blob:", e);
+					logger.error("Failed to fetch logo blob", e instanceof Error ? e : undefined);
 				}
 			}
 		}
