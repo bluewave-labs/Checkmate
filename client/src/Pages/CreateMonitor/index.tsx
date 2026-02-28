@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useEffect } from "react";
+import { logger } from "@/Utils/logger";
 import { useParams, useLocation, useNavigate } from "react-router";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -253,7 +254,7 @@ const CreateMonitorPage = () => {
 	};
 
 	const onError = (errors: unknown) => {
-		console.log(errors);
+		logger.debug("Monitor creation validation errors", errors);
 	};
 
 	return (

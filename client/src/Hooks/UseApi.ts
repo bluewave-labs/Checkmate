@@ -4,6 +4,7 @@ import type { AxiosRequestConfig } from "axios";
 import { get, patch, post, put, deleteOp } from "@/Utils/ApiClient";
 import { useState } from "react";
 import { useToast } from "@/Hooks/UseToast";
+import { logger } from "@/Utils/logger";
 
 interface ApiResponse<T> {
 	success: boolean;
@@ -61,7 +62,7 @@ export const usePost = <B = any, R = any>() => {
 			return res.data;
 		} catch (err: any) {
 			const errMsg = err?.response?.data?.msg || err.message || "An error occurred";
-			console.error(err);
+			logger.error("POST request failed", err, { endpoint, body });
 			toastError(errMsg);
 			setError(errMsg);
 			return null;
@@ -96,7 +97,7 @@ export const usePatch = <B = any, R = any>() => {
 			toastSuccess(res.data?.msg || "Operation successful");
 			return res.data;
 		} catch (err: any) {
-			console.error(err);
+			logger.error("PATCH request failed", err, { endpoint, body });
 			const errMsg = err?.response?.data?.msg || err.message || "An error occurred";
 			toastError(errMsg);
 			setError(errMsg);
@@ -132,7 +133,7 @@ export const usePut = <B = any, R = any>() => {
 			toastSuccess(res.data?.msg || "Operation successful");
 			return res.data;
 		} catch (err: any) {
-			console.error(err);
+			logger.error("PUT request failed", err, { endpoint, body });
 			const errMsg = err?.response?.data?.msg || err.message || "An error occurred";
 			toastError(errMsg);
 			setError(errMsg);
@@ -167,7 +168,7 @@ export const useDelete = <R = any>() => {
 			toastSuccess(res.data?.msg || "Operation successful");
 			return res.data;
 		} catch (err: any) {
-			console.error(err);
+			logger.error("DELETE request failed", err, { endpoint });
 			const errMsg = err?.response?.data?.message || err.message || "An error occurred";
 			toastError(errMsg);
 			setError(errMsg);
@@ -201,7 +202,7 @@ export const useLazyGet = <R = any>() => {
 			});
 			return res.data;
 		} catch (err: any) {
-			console.error(err);
+			logger.error("GET request failed", err, { endpoint });
 			const errMsg = err?.response?.data?.msg || err.message || "An error occurred";
 			toastError(errMsg);
 			setError(errMsg);

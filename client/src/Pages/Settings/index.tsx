@@ -1,5 +1,6 @@
 import { BasePage, ConfigBox, TextLink } from "@/Components/design-elements";
 import { Autocomplete, Select, Dialog, SwitchComponent } from "@/Components/inputs";
+import { logger } from "@/Utils/logger";
 import {
 	Stack,
 	useTheme,
@@ -288,7 +289,7 @@ export const SettingsPage = () => {
 	};
 
 	const onError = (errors: unknown) => {
-		console.log("Form validation errors:", errors);
+		logger.debug("Form validation errors", errors);
 	};
 
 	const languages = Object.keys(i18n.options.resources || {});

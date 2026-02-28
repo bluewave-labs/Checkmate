@@ -1,4 +1,4 @@
-import { LOG_LEVELS, type LogLevel } from "@/Types/Log";
+import type { LogLevel } from "@/Types/Log";
 
 interface LogContext {
 	[key: string]: any;
@@ -25,10 +25,7 @@ interface ErrorLogData {
 	userAgent: string;
 }
 
-const envLevel = import.meta.env.VITE_APP_LOG_LEVEL?.toLowerCase() || "error";
-const configuredLevel: LogLevel = LOG_LEVELS.includes(envLevel as LogLevel)
-	? (envLevel as LogLevel)
-	: "error";
+const configuredLevel: LogLevel = import.meta.env.VITE_APP_LOG_LEVEL || "error";
 const configuredPriority = LOG_LEVEL_PRIORITY[configuredLevel];
 
 const shouldLog = (level: LogLevel): boolean => {

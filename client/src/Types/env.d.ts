@@ -4,6 +4,7 @@ declare const __APP_VERSION__: string;
 
 interface ImportMetaEnv {
 	readonly VITE_APP_API_V2_BASE_URL?: string;
+	readonly VITE_APP_LOG_LEVEL?: "debug" | "info" | "warn" | "error";
 }
 
 interface ImportMeta {

@@ -1,5 +1,6 @@
 import Stack from "@mui/material/Stack";
 import MenuItem from "@mui/material/MenuItem";
+import { logger } from "@/Utils/logger";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import { BasePage, ConfigBox } from "@/Components/design-elements";
@@ -108,7 +109,7 @@ const CreateMaintenanceWindowPage = () => {
 	const isLoading = isPosting || isPatching;
 
 	const onError = (errors: any) => {
-		console.error("Form submission errors:", errors);
+		logger.error("Maintenance form submission failed", undefined, { errors });
 	};
 
 	return (
