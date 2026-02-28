@@ -3,6 +3,7 @@ import Backdrop from "@mui/material/Backdrop";
 import Stack from "@mui/material/Stack";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
+import { LAYOUT } from "@/Utils/Theme/constants";
 import { useSidebar } from "@/Hooks/useSidebar.js";
 import { Logo } from "@/Components/sidebar/Logo";
 import { getMenu, getBottomMenu, getAccountMenu } from "@/Components/sidebar/Menu";
@@ -65,9 +66,9 @@ export const Sidebar = () => {
 				left={0}
 				minHeight={"100vh"}
 				maxHeight={"100vh"}
-				paddingTop={theme.spacing(6)}
-				paddingBottom={theme.spacing(6)}
-				gap={theme.spacing(6)}
+				paddingTop={theme.spacing(LAYOUT.SM)}
+				paddingBottom={theme.spacing(LAYOUT.SM)}
+				gap={theme.spacing(LAYOUT.SM)}
 				borderRight={`1px solid ${theme.palette.divider}`}
 				width={width}
 				sx={{
@@ -81,13 +82,13 @@ export const Sidebar = () => {
 					component="nav"
 					disablePadding
 					sx={{
-						px: theme.spacing(6),
+						px: theme.spacing(LAYOUT.SM),
 						flex: 1,
 					}}
 				>
 					<Logo
-						pt={theme.spacing(8)}
-						pb={theme.spacing(10)}
+						pt={theme.spacing(LAYOUT.MD)}
+						pb={theme.spacing(LAYOUT.MD)}
 					/>
 					{menu.map((item) => {
 						const selected = location.pathname.startsWith(`/${item.path}`);
@@ -105,7 +106,7 @@ export const Sidebar = () => {
 				<List
 					component="nav"
 					disablePadding
-					sx={{ px: theme.spacing(6) }}
+					sx={{ px: theme.spacing(LAYOUT.SM) }}
 				>
 					{bottomMenu.map((item) => {
 						const selected = location.pathname.startsWith(`/${item.path}`);
