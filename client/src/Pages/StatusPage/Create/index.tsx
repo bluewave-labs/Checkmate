@@ -1,6 +1,7 @@
 import { BasePage, ConfigBox } from "@/Components/design-elements";
 import Stack from "@mui/material/Stack";
 import { logger } from "@/Utils/logger";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -166,7 +167,7 @@ const CreateStatusPage = () => {
 					<Stack
 						direction="row"
 						alignItems="center"
-						spacing={theme.spacing(2)}
+						spacing={theme.spacing(SPACING.MD)}
 					>
 						<Controller
 							name="isPublished"
@@ -188,7 +189,7 @@ const CreateStatusPage = () => {
 				title={t("pages.statusPages.form.basicInfo.title")}
 				subtitle={t("pages.statusPages.form.basicInfo.description")}
 				rightContent={
-					<Stack spacing={theme.spacing(6)}>
+					<Stack spacing={theme.spacing(LAYOUT.MD)}>
 						<Controller
 							name="companyName"
 							control={control}
@@ -243,7 +244,7 @@ const CreateStatusPage = () => {
 							};
 
 							return (
-								<Stack spacing={theme.spacing(4)}>
+								<Stack spacing={theme.spacing(LAYOUT.MD)}>
 									<Autocomplete
 										multiple
 										options={monitors}
@@ -291,9 +292,9 @@ const CreateStatusPage = () => {
 																		{...provided.dragHandleProps}
 																		direction="row"
 																		alignItems="center"
-																		spacing={theme.spacing(4)}
-																		padding={theme.spacing(4)}
-																		marginTop={theme.spacing(2)}
+																		spacing={theme.spacing(LAYOUT.XS)}
+																		padding={theme.spacing(LAYOUT.XS)}
+																		marginTop={theme.spacing(SPACING.LG)}
 																		borderRadius={1}
 																		sx={{
 																			border: `1px solid ${theme.palette.divider}`,
@@ -367,7 +368,7 @@ const CreateStatusPage = () => {
 				title={t("pages.statusPages.form.appearance.title")}
 				subtitle={t("pages.statusPages.form.appearance.description")}
 				rightContent={
-					<Stack spacing={theme.spacing(8)}>
+					<Stack spacing={theme.spacing(LAYOUT.MD)}>
 						<Stack alignItems={"center"}>
 							<Controller
 								name="logo"
@@ -408,7 +409,7 @@ const CreateStatusPage = () => {
 				title={t("pages.statusPages.form.features.title")}
 				subtitle={t("pages.statusPages.form.features.description")}
 				rightContent={
-					<Stack spacing={theme.spacing(2)}>
+					<Stack spacing={theme.spacing(LAYOUT.MD)}>
 						<Controller
 							name="showCharts"
 							control={control}
