@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { LAYOUT } from "@/Utils/Theme/constants";
 export const SplitBox = ({
 	left,
 	right,
@@ -18,10 +19,10 @@ export const SplitBox = ({
 			bgcolor={theme.palette.background.paper}
 			border={1}
 			borderColor={theme.palette.divider}
-			borderRadius={theme.spacing(2)}
+			borderRadius={theme.shape.borderRadius}
 		>
 			<Box
-				padding={theme.spacing(15)}
+				padding={theme.spacing(LAYOUT.XXL)}
 				borderRight={isSmall ? 0 : 1}
 				borderBottom={isSmall ? 1 : 0}
 				borderColor={theme.palette.divider}
@@ -37,7 +38,7 @@ export const SplitBox = ({
 			</Box>
 			<Box
 				flex={1}
-				padding={theme.spacing(15)}
+				padding={theme.spacing(LAYOUT.XXL)}
 			>
 				{right}
 			</Box>
@@ -60,7 +61,7 @@ export const ConfigBox = ({
 	return (
 		<SplitBox
 			left={
-				<Stack spacing={theme.spacing(4)}>
+				<Stack spacing={theme.spacing(LAYOUT.XS)}>
 					<Typography
 						textTransform={"capitalize"}
 						component="h2"
