@@ -1,6 +1,7 @@
 import { BasePage, ConfigBox, TextLink } from "@/Components/design-elements";
 import { Autocomplete, Select, Dialog, SwitchComponent } from "@/Components/inputs";
 import { logger } from "@/Utils/logger";
+import { LAYOUT } from "@/Utils/Theme/constants";
 import {
 	Stack,
 	useTheme,
@@ -299,7 +300,7 @@ export const SettingsPage = () => {
 			component="form"
 			onSubmit={form.handleSubmit(onSubmit, onError)}
 		>
-			<Stack gap={theme.spacing(8)}>
+			<Stack gap={theme.spacing(LAYOUT.MD)}>
 				<ConfigBox
 					title={t("pages.settings.form.timezone.title")}
 					subtitle={t("pages.settings.form.timezone.description")}
@@ -322,7 +323,7 @@ export const SettingsPage = () => {
 					title={t("pages.settings.form.ui.title")}
 					subtitle={t("pages.settings.form.ui.description")}
 					rightContent={
-						<Stack gap={theme.spacing(8)}>
+						<Stack gap={theme.spacing(LAYOUT.MD)}>
 							<Select
 								value={mode}
 								onChange={handleModeChange}
@@ -550,7 +551,7 @@ export const SettingsPage = () => {
 					title={t("pages.settings.form.email.title")}
 					subtitle={t("pages.settings.form.email.description")}
 					leftContent={
-						<Stack gap={theme.spacing(8)}>
+						<Stack gap={theme.spacing(LAYOUT.MD)}>
 							<TextLink
 								text={t("pages.settings.form.email.descriptionTransport")}
 								linkText={t("pages.settings.form.email.descriptionTransportLink")}
@@ -598,7 +599,7 @@ export const SettingsPage = () => {
 						</Stack>
 					}
 					rightContent={
-						<Stack gap={theme.spacing(10)}>
+						<Stack gap={theme.spacing(LAYOUT.MD)}>
 							{/* Email Host */}
 							<Controller
 								name="systemEmailHost"
@@ -685,7 +686,7 @@ export const SettingsPage = () => {
 									<Stack
 										direction="row"
 										alignItems="center"
-										gap={theme.spacing(4)}
+										gap={theme.spacing(LAYOUT.XS)}
 									>
 										<Button
 											variant="contained"
@@ -760,7 +761,7 @@ export const SettingsPage = () => {
 								sx={{
 									display: "flex",
 									flexDirection: "column",
-									gap: theme.spacing(4),
+									gap: theme.spacing(LAYOUT.XS),
 								}}
 							>
 								{[
@@ -879,7 +880,7 @@ export const SettingsPage = () => {
 					subtitle={t("pages.settings.form.importExportMonitors.description")}
 					rightContent={
 						<Stack
-							gap={theme.spacing(4)}
+							gap={theme.spacing(LAYOUT.MD)}
 							direction={"row"}
 						>
 							<input
@@ -965,10 +966,10 @@ export const SettingsPage = () => {
 					bottom: 0,
 					backgroundColor: theme.palette.background.paper,
 					borderTop: `1px solid ${theme.palette.divider}`,
-					padding: theme.spacing(8),
-					marginLeft: theme.spacing(-8),
-					marginRight: theme.spacing(-8),
-					marginBottom: theme.spacing(-8),
+					padding: theme.spacing(LAYOUT.MD),
+					marginLeft: theme.spacing(-LAYOUT.MD),
+					marginRight: theme.spacing(-LAYOUT.MD),
+					marginBottom: theme.spacing(-LAYOUT.MD),
 					zIndex: 1000,
 				}}
 			>
