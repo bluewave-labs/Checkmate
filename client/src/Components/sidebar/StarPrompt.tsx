@@ -1,6 +1,7 @@
 import { Typography, IconButton, Stack, Box } from "@mui/material";
 import { Icon } from "@/Components/design-elements";
 import { X } from "lucide-react";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 
 import { useTheme } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
@@ -34,25 +35,22 @@ export const StarPrompt = ({
 	return (
 		<Stack
 			direction="column"
-			sx={{
-				width: "100%",
-				padding: `${theme.spacing(6)} ${theme.spacing(6)}`,
-				borderTop: `1px solid ${theme.palette.divider}`,
-				borderBottom: `1px solid ${theme.palette.divider}`,
-				borderRadius: 0,
-				gap: theme.spacing(1.5),
-			}}
+			gap={theme.spacing(LAYOUT.MD)}
+			padding={theme.spacing(LAYOUT.SM)}
+			width={"100%"}
+			borderTop={`1px solid ${theme.palette.divider}`}
+			borderBottom={`1px solid ${theme.palette.divider}`}
 		>
 			<Stack
 				direction="row"
 				justifyContent="space-between"
 				alignItems="center"
 				width="100%"
-				pl={theme.spacing(4)}
+				pl={theme.spacing(LAYOUT.XS)}
 			>
 				<Typography
 					variant="subtitle2"
-					mt={theme.spacing(3)}
+					mt={theme.spacing(SPACING.XXL)}
 				>
 					{t("components.sidebar.starPrompt.title")}
 				</Typography>
@@ -78,7 +76,7 @@ export const StarPrompt = ({
 			<Typography
 				sx={{
 					mb: 1,
-					px: theme.spacing(4),
+					px: theme.spacing(LAYOUT.XS),
 				}}
 			>
 				{t("components.sidebar.starPrompt.description")}
@@ -96,7 +94,7 @@ export const StarPrompt = ({
 					"&:hover": {
 						opacity: 0.8,
 					},
-					pl: theme.spacing(4),
+					pl: theme.spacing(LAYOUT.XS),
 					filter: mode === "dark" ? "invert(1)" : "none",
 				}}
 			/>

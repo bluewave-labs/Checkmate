@@ -29,6 +29,7 @@ import {
 	SliderWithLabel,
 	Dialog,
 } from "@/Components/inputs";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import { useGet, usePost, usePatch, useDelete } from "@/Hooks/UseApi";
 import { useMonitorForm } from "@/Hooks/useMonitorForm";
 import type { Monitor, MonitorType, GamesMap } from "@/Types/Monitor";
@@ -281,7 +282,7 @@ const CreateMonitorPage = () => {
 								<FormControl error={!!fieldState.error}>
 									<RadioGroup
 										{...field}
-										sx={{ gap: theme.spacing(6) }}
+										sx={{ gap: theme.spacing(LAYOUT.MD) }}
 									>
 										<RadioWithDescription
 											value="http"
@@ -337,7 +338,7 @@ const CreateMonitorPage = () => {
 				title={t("pages.createMonitor.form.general.title")}
 				subtitle={t(`pages.createMonitor.form.general.description.${watchedType}`)}
 				rightContent={
-					<Stack spacing={theme.spacing(8)}>
+					<Stack spacing={theme.spacing(LAYOUT.MD)}>
 						{/* URL/Host/Container field - not shown for hardware */}
 						{generalSettingsConfig.showUrl && (
 							<Controller
@@ -556,7 +557,7 @@ const CreateMonitorPage = () => {
 					title={t("pages.createMonitor.form.thresholds.title")}
 					subtitle={t("pages.createMonitor.form.thresholds.description")}
 					rightContent={
-						<Stack spacing={theme.spacing(8)}>
+						<Stack spacing={theme.spacing(LAYOUT.MD)}>
 							<Controller
 								name="cpuAlertThreshold"
 								control={control}
@@ -638,7 +639,7 @@ const CreateMonitorPage = () => {
 				title={t("pages.createMonitor.form.incidents.title")}
 				subtitle={t("pages.createMonitor.form.incidents.description")}
 				rightContent={
-					<Stack spacing={theme.spacing(12)}>
+					<Stack spacing={theme.spacing(LAYOUT.MD)}>
 						<Controller
 							name="statusWindowSize"
 							control={control}
@@ -690,7 +691,7 @@ const CreateMonitorPage = () => {
 								(field.value ?? []).includes(n.id)
 							);
 							return (
-								<Stack spacing={theme.spacing(4)}>
+								<Stack spacing={theme.spacing(LAYOUT.MD)}>
 									<Autocomplete
 										multiple
 										options={notificationOptions}
@@ -753,7 +754,7 @@ const CreateMonitorPage = () => {
 								<Stack
 									direction="row"
 									alignItems="center"
-									spacing={theme.spacing(2)}
+									spacing={theme.spacing(SPACING.LG)}
 								>
 									<Switch
 										checked={field.value ?? false}
@@ -774,7 +775,7 @@ const CreateMonitorPage = () => {
 					title={t("pages.createMonitor.form.advanced.title")}
 					subtitle={t("pages.createMonitor.form.advanced.description")}
 					rightContent={
-						<Stack spacing={theme.spacing(8)}>
+						<Stack spacing={theme.spacing(LAYOUT.MD)}>
 							<Controller
 								name="useAdvancedMatching"
 								control={control}
@@ -782,7 +783,7 @@ const CreateMonitorPage = () => {
 									<Stack
 										direction="row"
 										alignItems="center"
-										spacing={theme.spacing(2)}
+										spacing={theme.spacing(SPACING.LG)}
 									>
 										<Switch
 											checked={field.value ?? false}
@@ -797,7 +798,7 @@ const CreateMonitorPage = () => {
 								)}
 							/>
 							{watchedUseAdvancedMatching && (
-								<Stack spacing={theme.spacing(8)}>
+								<Stack spacing={theme.spacing(LAYOUT.MD)}>
 									<Controller
 										name="matchMethod"
 										control={control}
@@ -889,7 +890,7 @@ const CreateMonitorPage = () => {
 					title={t("pages.createMonitor.form.geoChecks.title")}
 					subtitle={t("pages.createMonitor.form.geoChecks.description")}
 					rightContent={
-						<Stack spacing={theme.spacing(8)}>
+						<Stack spacing={theme.spacing(LAYOUT.MD)}>
 							<Controller
 								name="geoCheckEnabled"
 								control={control}
@@ -897,7 +898,7 @@ const CreateMonitorPage = () => {
 									<Stack
 										direction="row"
 										alignItems="center"
-										spacing={theme.spacing(2)}
+										spacing={theme.spacing(SPACING.LG)}
 									>
 										<Switch
 											checked={field.value ?? false}
@@ -910,7 +911,7 @@ const CreateMonitorPage = () => {
 								)}
 							/>
 							{watchGeoCheckEnabled && (
-								<Stack spacing={theme.spacing(8)}>
+								<Stack spacing={theme.spacing(LAYOUT.MD)}>
 									<Controller
 										name="geoCheckLocations"
 										control={control}
@@ -926,7 +927,7 @@ const CreateMonitorPage = () => {
 												(field.value ?? []).includes(loc.id)
 											);
 											return (
-												<Stack spacing={theme.spacing(4)}>
+												<Stack spacing={theme.spacing(LAYOUT.MD)}>
 													<Autocomplete
 														multiple
 														options={locationOptions}
