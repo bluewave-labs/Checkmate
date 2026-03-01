@@ -7,7 +7,7 @@ import {
 	getMaintenanceWindowsByMonitorIdParamValidation,
 	getMaintenanceWindowsByTeamIdQueryValidation,
 	deleteMaintenanceWindowByIdParamValidation,
-} from "@/validation/joi.js";
+} from "@/validation/maintenanceWindowValidation.js";
 import { requireTeamId } from "@/controllers/controllerUtils.js";
 
 const SERVICE_NAME = "maintenanceWindowController";

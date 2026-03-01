@@ -6,17 +6,20 @@ import type { UserRole } from "@/types/user.js";
 import {
 	registrationBodyValidation,
 	loginValidation,
-	editUserBodyValidation,
-	createUserBodyValidation,
 	recoveryValidation,
 	recoveryTokenBodyValidation,
 	newPasswordValidation,
+} from "@/validation/authValidation.js";
+
+import {
+	editUserBodyValidation,
+	createUserBodyValidation,
 	getUserByIdParamValidation,
 	editUserByIdParamValidation,
 	editUserByIdBodyValidation,
 	editSuperadminUserByIdBodyValidation,
 	editUserPasswordByIdBodyValidation,
-} from "@/validation/joi.js";
+} from "@/validation/userValidation.js";
 
 const SERVICE_NAME = "authController";
 
@@ -40,7 +43,7 @@ class AuthController {
 			if (newUser?.email) {
 				newUser.email = newUser.email.toLowerCase();
 			}
-			await registrationBodyValidation.validateAsync(newUser);
+			registrationBodyValidation.parse(newUser);
 
 			const { user, token } = await this.userService.registerUser(newUser, newUserToken, req.file);
 			res.status(200).json({
@@ -59,7 +62,7 @@ class AuthController {
 			if (userData?.email) {
 				userData.email = userData.email.toLowerCase();
 			}
-			await createUserBodyValidation.validateAsync(userData);
+			createUserBodyValidation.parse(userData);
 
 			const teamId = requireTeamId(req.user?.teamId);
 			const actorRoles = requireUserRoles(req.user?.role) as UserRole[];
@@ -79,7 +82,7 @@ class AuthController {
 			if (req.body?.email) {
 				req.body.email = req.body.email?.toLowerCase();
 			}
-			await loginValidation.validateAsync(req.body);
+			loginValidation.parse(req.body);
 			const { user, token } = await this.userService.loginUser(req.body.email, req.body.password);
 
 			return res.status(200).json({
@@ -97,7 +100,7 @@ class AuthController {
 
 	editUser = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await editUserBodyValidation.validateAsync(req.body);
+			editUserBodyValidation.parse(req.body);
 			const updatedUser = await this.userService.editUser(req.body, req.file, req.user);
 
 			res.status(200).json({
@@ -125,7 +128,7 @@ class AuthController {
 
 	requestRecovery = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await recoveryValidation.validateAsync(req.body);
+			recoveryValidation.parse(req.body);
 			const email = req?.body?.email;
 			const msgId = await this.userService.requestRecovery(email);
 			return res.status(200).json({
@@ -140,7 +143,7 @@ class AuthController {
 
 	validateRecovery = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await recoveryTokenBodyValidation.validateAsync(req.body);
+			recoveryTokenBodyValidation.parse(req.body);
 			await this.userService.validateRecovery(req.body.recoveryToken);
 			return res.status(200).json({
 				success: true,
@@ -153,7 +156,7 @@ class AuthController {
 
 	resetPassword = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await newPasswordValidation.validateAsync(req.body);
+			newPasswordValidation.parse(req.body);
 			const { user, token } = await this.userService.resetPassword(req.body.password, req.body.recoveryToken);
 			return res.status(200).json({
 				success: true,
@@ -192,7 +195,7 @@ class AuthController {
 
 	getUserById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getUserByIdParamValidation.validateAsync(req.params);
+			getUserByIdParamValidation.parse(req.params);
 			const userId = req?.params?.userId;
 			const roles = req?.user?.role;
 
@@ -223,12 +226,12 @@ class AuthController {
 			const userId = req.params.userId as string;
 			const user = { ...req.body };
 
-			await editUserByIdParamValidation.validateAsync(req.params);
+			editUserByIdParamValidation.parse(req.params);
 			// If this is superadmin self edit, allow "superadmin" role
 			if (userId === req.user?.id) {
-				await editSuperadminUserByIdBodyValidation.validateAsync(req.body);
+				editSuperadminUserByIdBodyValidation.parse(req.body);
 			} else {
-				await editUserByIdBodyValidation.validateAsync(req.body);
+				editUserByIdBodyValidation.parse(req.body);
 			}
 
 			await this.userService.editUserById(userId, user);
@@ -246,8 +249,8 @@ class AuthController {
 			}
 
 			const userId = req.params.userId as string;
-			await editUserByIdParamValidation.validateAsync(req.params);
-			await editUserPasswordByIdBodyValidation.validateAsync(req.body);
+			editUserByIdParamValidation.parse(req.params);
+			editUserPasswordByIdBodyValidation.parse(req.body);
 			const updatedPassword = req.body.password;
 			await this.userService.setPasswordByUserId(userId, updatedPassword);
 			return res.status(200).json({ success: true, msg: "Password reset successfully" });

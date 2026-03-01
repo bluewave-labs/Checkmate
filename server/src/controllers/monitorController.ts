@@ -12,7 +12,7 @@ import {
 	getCertificateParamValidation,
 	getHardwareDetailsByIdParamValidation,
 	getHardwareDetailsByIdQueryValidation,
-} from "@/validation/joi.js";
+} from "@/validation/monitorValidation.js";
 import sslChecker from "ssl-checker";
 import {
 	fetchMonitorCertificate,

@@ -58,7 +58,8 @@
 		"ssl-checker": "2.0.10",
 		"super-simple-scheduler": "1.4.5",
 		"swagger-ui-express": "5.0.1",
-		"winston": "^3.13.0"
+		"winston": "^3.13.0",
+		"zod": "^4.3.6"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.17.0",

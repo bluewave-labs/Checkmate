@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 import { Notification } from "@/types/index.js";
-import { createNotificationBodyValidation } from "@/validation/joi.js";
+import { createNotificationBodyValidation } from "@/validation/notificationValidation.js";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorsRepository } from "@/repositories/index.js";
 import { INotificationsService } from "@/service/index.js";

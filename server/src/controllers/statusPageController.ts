@@ -1,6 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 
-import { createStatusPageBodyValidation, getStatusPageParamValidation, getStatusPageQueryValidation, imageValidation } from "@/validation/joi.js";
+import {
+	createStatusPageBodyValidation,
+	getStatusPageParamValidation,
+	getStatusPageQueryValidation,
+	imageValidation,
+} from "@/validation/statusPageValidation.js";
 import { AppError } from "@/utils/AppError.js";
 import { requireTeamId, requireUserId } from "@/controllers/controllerUtils.js";
 import { IStatusPageService } from "@/service/business/statusPageService.js";

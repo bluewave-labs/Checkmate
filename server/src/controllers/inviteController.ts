@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { inviteBodyValidation, inviteVerificationBodyValidation } from "@/validation/joi.js";
+import { inviteBodyValidation, inviteVerificationBodyValidation } from "@/validation/authValidation.js";
 import { requireTeamId, requireUserRoles } from "@/controllers/controllerUtils.js";
 const SERVICE_NAME = "inviteController";
 
@@ -20,7 +20,7 @@ class InviteController {
 			const userRoles = requireUserRoles(req.user?.role);
 			const invite = req.body;
 			invite.teamId = teamId;
-			await inviteBodyValidation.validateAsync(invite);
+			inviteBodyValidation.parse(invite);
 			const inviteToken = await this.inviteService.getInviteToken({ invite, teamId, userRoles });
 			return res.status(200).json({
 				success: true,
@@ -39,7 +39,7 @@ class InviteController {
 
 			const inviteRequest = req.body;
 			inviteRequest.teamId = teamId;
-			await inviteBodyValidation.validateAsync(inviteRequest);
+			inviteBodyValidation.parse(inviteRequest);
 
 			const inviteToken = await this.inviteService.sendInviteEmail({
 				invite: inviteRequest,
@@ -58,7 +58,7 @@ class InviteController {
 
 	verifyInviteToken = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await inviteVerificationBodyValidation.validateAsync(req.body);
+			inviteVerificationBodyValidation.parse(req.body);
 			const invite = await this.inviteService.verifyInviteToken({ inviteToken: req?.body?.token });
 			return res.status(200).json({
 				success: true,

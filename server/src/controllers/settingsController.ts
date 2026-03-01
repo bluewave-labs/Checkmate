@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { sendTestEmailBodyValidation, updateAppSettingsBodyValidation } from "@/validation/joi.js";
+import { updateAppSettingsBodyValidation } from "@/validation/settingsValidation.js";
+import { sendTestEmailBodyValidation } from "@/validation/announcementValidation.js";
 import { AppError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "SettingsController";
@@ -68,7 +69,7 @@ class SettingsController {
 
 	sendTestEmail = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await sendTestEmailBodyValidation.validateAsync(req.body);
+			sendTestEmailBodyValidation.parse(req.body);
 
 			const {
 				to,

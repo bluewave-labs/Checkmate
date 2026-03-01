@@ -10,7 +10,7 @@ import {
 	ackCheckBodyValidation,
 	ackAllChecksParamValidation,
 	ackAllChecksBodyValidation,
-} from "@/validation/joi.js";
+} from "@/validation/checkValidation.js";
 
 const SERVICE_NAME = "checkController";
 
