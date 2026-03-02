@@ -1,8 +1,5 @@
 import { z } from "zod";
 
-/**
- * Environment variable schema with validation
- */
 const envSchema = z.object({
 	// Server Configuration
 	NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
