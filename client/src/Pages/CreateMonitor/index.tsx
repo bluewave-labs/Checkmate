@@ -119,6 +119,17 @@ const getGeneralSettingsConfig = (
 			showGrpcServiceName: true,
 			showIgnoreTls: true,
 		},
+		websocket: {
+			urlLabel: t("pages.createMonitor.form.general.option.wsUrl.label"),
+			urlPlaceholder: t("pages.createMonitor.form.general.option.wsUrl.placeholder"),
+			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
+			showUrl: true,
+			showPort: false,
+			showGameSelect: false,
+			showSecret: false,
+			showGrpcServiceName: false,
+			showIgnoreTls: true,
+		},
 		pagespeed: {
 			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
 			urlPlaceholder: t("pages.createMonitor.form.general.option.url.placeholder"),
@@ -324,6 +335,13 @@ const CreateMonitorPage = () => {
 											label={t("pages.createMonitor.form.type.optionGrpc")}
 											description={t(
 												"pages.createMonitor.form.type.optionGrpcDescription"
+											)}
+										/>
+										<RadioWithDescription
+											value="websocket"
+											label={t("pages.createMonitor.form.type.optionWebSocket")}
+											description={t(
+												"pages.createMonitor.form.type.optionWebSocketDescription"
 											)}
 										/>
 									</RadioGroup>
