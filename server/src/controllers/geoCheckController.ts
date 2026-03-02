@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { getChecksParamValidation, getChecksQueryValidation } from "@/validation/joi.js";
+import { getChecksParamValidation, getChecksQueryValidation } from "@/validation/checkValidation.js";
 import type { IGeoChecksService } from "@/service/business/geoChecksService.js";
 
 const SERVICE_NAME = "geoCheckController";
@@ -18,8 +18,8 @@ class GeoCheckController {
 
 	getGeoChecksByMonitor = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getChecksParamValidation.validateAsync(req.params);
-			await getChecksQueryValidation.validateAsync(req.query);
+			getChecksParamValidation.parse(req.params);
+			getChecksQueryValidation.parse(req.query);
 
 			const result = await this.geoChecksService.getGeoChecksByMonitor({
 				monitorId: req?.params?.monitorId as string,

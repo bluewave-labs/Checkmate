@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 import { Notification } from "@/types/index.js";
-import { createNotificationBodyValidation } from "@/validation/joi.js";
+import { createNotificationBodyValidation } from "@/validation/notificationValidation.js";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorsRepository } from "@/repositories/index.js";
 import { INotificationsService } from "@/service/index.js";
@@ -42,9 +42,7 @@ class NotificationController {
 
 	createNotification = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await createNotificationBodyValidation.validateAsync(req.body, {
-				abortEarly: false,
-			});
+			createNotificationBodyValidation.parse(req.body);
 
 			const body = req.body;
 
@@ -134,9 +132,7 @@ class NotificationController {
 
 	editNotification = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await createNotificationBodyValidation.validateAsync(req.body, {
-				abortEarly: false,
-			});
+			createNotificationBodyValidation.parse(req.body);
 
 			const teamId = requireTeamId(req.user?.teamId);
 			const notificationId = req.params.id as string;
