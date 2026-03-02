@@ -6,11 +6,9 @@ import { z } from "zod";
 
 export const updateAppSettingsBodyValidation = z
 	.object({
-		// Number or empty string fields
 		checkTTL: z.union([z.number(), z.literal("")]).optional(),
 		systemEmailPort: z.union([z.number(), z.literal("")]).optional(),
 
-		// String or empty string fields
 		pagespeedApiKey: z.union([z.string(), z.literal("")]).optional(),
 		language: z.union([z.string(), z.literal("")]).optional(),
 		timezone: z.union([z.string(), z.literal("")]).optional(),
@@ -21,7 +19,6 @@ export const updateAppSettingsBodyValidation = z
 		systemEmailConnectionHost: z.union([z.string(), z.literal("")]).optional(),
 		systemEmailTLSServername: z.union([z.string(), z.literal("")]).optional(),
 
-		// Boolean fields (optional by default in Joi)
 		showURL: z.boolean().optional(),
 		systemEmailSecure: z.boolean().optional(),
 		systemEmailPool: z.boolean().optional(),
@@ -29,7 +26,6 @@ export const updateAppSettingsBodyValidation = z
 		systemEmailRequireTLS: z.boolean().optional(),
 		systemEmailRejectUnauthorized: z.boolean().optional(),
 
-		// Nested object
 		globalThresholds: z
 			.object({
 				cpu: z.union([z.number().min(1).max(100), z.literal("")]).optional(),
@@ -39,4 +35,4 @@ export const updateAppSettingsBodyValidation = z
 			})
 			.optional(),
 	})
-	.strip(); // Joi by default strips unknown keys, match that behavior with .strip()
+	.strip();
