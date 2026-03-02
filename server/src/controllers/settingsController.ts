@@ -56,7 +56,7 @@ class SettingsController {
 	};
 
 	updateAppSettings = async (req: Request, res: Response, next: NextFunction) => {
-		await updateAppSettingsBodyValidation.validateAsync(req.body);
+		updateAppSettingsBodyValidation.parse(req.body);
 
 		const updatedSettings = await this.settingsService.updateDbSettings(req.body);
 		const returnSettings = this.buildAppSettings(updatedSettings);
