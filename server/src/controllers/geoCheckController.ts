@@ -18,8 +18,8 @@ class GeoCheckController {
 
 	getGeoChecksByMonitor = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getChecksParamValidation.validateAsync(req.params);
-			await getChecksQueryValidation.validateAsync(req.query);
+			getChecksParamValidation.parse(req.params);
+			getChecksQueryValidation.parse(req.query);
 
 			const result = await this.geoChecksService.getGeoChecksByMonitor({
 				monitorId: req?.params?.monitorId as string,

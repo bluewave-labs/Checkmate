@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { updateAppSettingsBodyValidation } from "@/validation/settingsValidation.js";
-import { sendTestEmailBodyValidation } from "@/validation/announcementValidation.js";
+import { sendTestEmailBodyValidation } from "@/validation/notificationValidation.js";
 import { AppError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "SettingsController";

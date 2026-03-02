@@ -1,56 +1,43 @@
-import joi from "joi";
+import { z } from "zod";
 import { GeoContinents } from "@/types/geoCheck.js";
 
 //****************************************
 // Check Validations
 //****************************************
 
-export const ackCheckBodyValidation = joi.object({
-	ack: joi.boolean(),
+export const getChecksParamValidation = z.object({
+	monitorId: z.string().min(1, "Monitor ID is required"),
 });
 
-export const ackAllChecksParamValidation = joi.object({
-	monitorId: joi.string().optional(),
-	path: joi.string().valid("monitor", "team").required(),
+export const getChecksQueryValidation = z.object({
+	type: z.enum(["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc"]).optional(),
+	sortOrder: z.enum(["asc", "desc"]).optional(),
+	limit: z.number().optional(),
+	dateRange: z.enum(["recent", "hour", "day", "week", "month", "all"]).optional(),
+	filter: z.enum(["all", "up", "down", "resolve"]).optional(),
+	ack: z.boolean().optional(),
+	page: z.number().optional(),
+	rowsPerPage: z.number().optional(),
+	status: z.boolean().optional(),
+	continent: z.union([z.enum(GeoContinents), z.array(z.enum(GeoContinents))]).optional(),
 });
 
-export const ackAllChecksBodyValidation = joi.object({
-	ack: joi.boolean(),
+export const getTeamChecksQueryValidation = z.object({
+	sortOrder: z.enum(["asc", "desc"]).optional(),
+	limit: z.number().optional(),
+	dateRange: z.enum(["recent", "hour", "day", "week", "month", "all"]).optional(),
+	filter: z.enum(["all", "up", "down", "resolve"]).optional(),
+	ack: z.boolean().optional(),
+	page: z.number().optional(),
+	rowsPerPage: z.number().optional(),
 });
 
-export const getChecksParamValidation = joi.object({
-	monitorId: joi.string().required(),
+export const deleteChecksParamValidation = z.object({
+	monitorId: z.string().min(1, "Monitor ID is required"),
 });
 
-export const getChecksQueryValidation = joi.object({
-	type: joi.string().valid("http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc"),
-	sortOrder: joi.string().valid("asc", "desc"),
-	limit: joi.number(),
-	dateRange: joi.string().valid("recent", "hour", "day", "week", "month", "all"),
-	filter: joi.string().valid("all", "up", "down", "resolve"),
-	ack: joi.boolean(),
-	page: joi.number(),
-	rowsPerPage: joi.number(),
-	status: joi.boolean(),
-	continent: joi.alternatives().try(joi.string().valid(...GeoContinents), joi.array().items(joi.string().valid(...GeoContinents))),
-});
+export const deleteChecksByTeamIdParamValidation = z.object({});
 
-export const getTeamChecksQueryValidation = joi.object({
-	sortOrder: joi.string().valid("asc", "desc"),
-	limit: joi.number(),
-	dateRange: joi.string().valid("recent", "hour", "day", "week", "month", "all"),
-	filter: joi.string().valid("all", "up", "down", "resolve"),
-	ack: joi.boolean(),
-	page: joi.number(),
-	rowsPerPage: joi.number(),
-});
-
-export const deleteChecksParamValidation = joi.object({
-	monitorId: joi.string().required(),
-});
-
-export const deleteChecksByTeamIdParamValidation = joi.object({});
-
-export const updateChecksTTLBodyValidation = joi.object({
-	ttl: joi.number().required(),
+export const updateChecksTTLBodyValidation = z.object({
+	ttl: z.number().min(1, "TTL is required"),
 });
