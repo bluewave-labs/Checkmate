@@ -41,14 +41,7 @@ export interface INetworkService {
 class NetworkService implements INetworkService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private TYPE_PING: string;
-	private TYPE_HTTP: string;
-	private TYPE_PAGESPEED: string;
-	private TYPE_HARDWARE: string;
-	private TYPE_DOCKER: string;
-	private TYPE_PORT: string;
-	private TYPE_GAME: string;
-	private TYPE_GRPC: string;
+	private typeHandlers!: Record<string, (monitor: Monitor) => Promise<MonitorStatusResponse>>;
 	private SERVICE_NAME: string;
 	private NETWORK_ERROR: number;
 	private PING_ERROR: number;
@@ -65,6 +58,7 @@ class NetworkService implements INetworkService {
 	private settingsService: ISettingsService;
 	private grpc: any;
 	private protoLoader: any;
+	private WebSocket: any;
 
 	private buildStatusResponse = <T>({
 		monitor,
@@ -132,16 +126,20 @@ class NetworkService implements INetworkService {
 		net: any,
 		settingsService: ISettingsService,
 		grpc: any,
-		protoLoader: any
+		protoLoader: any,
+		WebSocket: any
 	) {
-		this.TYPE_PING = "ping";
-		this.TYPE_HTTP = "http";
-		this.TYPE_PAGESPEED = "pagespeed";
-		this.TYPE_HARDWARE = "hardware";
-		this.TYPE_DOCKER = "docker";
-		this.TYPE_PORT = "port";
-		this.TYPE_GAME = "game";
-		this.TYPE_GRPC = "grpc";
+		this.typeHandlers = {
+			ping: (m) => this.requestPing(m),
+			http: (m) => this.requestHttp(m),
+			pagespeed: (m) => this.requestPageSpeed(m),
+			hardware: (m) => this.requestHardware(m),
+			docker: (m) => this.requestDocker(m),
+			port: (m) => this.requestPort(m),
+			game: (m) => this.requestGame(m),
+			grpc: (m) => this.requestGrpc(m),
+			websocket: (m) => this.requestWebSocket(m),
+		};
 		this.SERVICE_NAME = SERVICE_NAME;
 		this.NETWORK_ERROR = 5000;
 		this.PING_ERROR = 5001;
@@ -156,6 +154,7 @@ class NetworkService implements INetworkService {
 		this.settingsService = settingsService;
 		this.grpc = grpc;
 		this.protoLoader = protoLoader;
+		this.WebSocket = WebSocket;
 
 		const cacheable = new CacheableLookup();
 
@@ -188,26 +187,8 @@ class NetworkService implements INetworkService {
 	// Main entry point
 	async requestStatus(monitor: Monitor): Promise<MonitorStatusResponse> {
 		const type = monitor?.type || "unknown";
-		switch (type) {
-			case this.TYPE_PING:
-				return await this.requestPing(monitor);
-			case this.TYPE_HTTP:
-				return await this.requestHttp(monitor);
-			case this.TYPE_PAGESPEED:
-				return await this.requestPageSpeed(monitor);
-			case this.TYPE_HARDWARE:
-				return await this.requestHardware(monitor);
-			case this.TYPE_DOCKER:
-				return await this.requestDocker(monitor);
-			case this.TYPE_PORT:
-				return await this.requestPort(monitor);
-			case this.TYPE_GAME:
-				return await this.requestGame(monitor);
-			case this.TYPE_GRPC:
-				return await this.requestGrpc(monitor);
-			default:
-				return this.handleUnsupportedType(type);
-		}
+		const handler = this.typeHandlers[type];
+		return handler ? handler(monitor) : this.handleUnsupportedType(type);
 	}
 
 	private async requestPing(monitor: Monitor): Promise<MonitorStatusResponse> {
@@ -761,6 +742,75 @@ class NetworkService implements INetworkService {
 			16: "UNAUTHENTICATED",
 		};
 		return statusNames[code] || "UNKNOWN";
+	}
+
+	private async requestWebSocket(monitor: Monitor): Promise<MonitorStatusResponse> {
+		try {
+			const { url, ignoreTlsErrors } = monitor;
+
+			if (!url) {
+				throw new Error("Monitor URL is required");
+			}
+
+			const TIMEOUT_MS = 10000;
+
+			const wsResponse = this.buildStatusResponse({
+				monitor,
+				overrides: {
+					status: false,
+					code: this.NETWORK_ERROR,
+					message: "WebSocket connection not established",
+				},
+			});
+
+			const { response, responseTime, error } = await this.timeRequest<{ connected: boolean }>(() => {
+				return new Promise<{ connected: boolean }>((resolve, reject) => {
+					const wsOptions: Record<string, any> = {};
+					if (ignoreTlsErrors) {
+						wsOptions.rejectUnauthorized = false;
+					}
+
+					const ws = new this.WebSocket(url, wsOptions);
+
+					const timeout = setTimeout(() => {
+						ws.close();
+						reject(new Error("WebSocket connection timeout"));
+					}, TIMEOUT_MS);
+
+					ws.on("open", () => {
+						clearTimeout(timeout);
+						ws.close();
+						resolve({ connected: true });
+					});
+
+					ws.on("error", (err: Error) => {
+						clearTimeout(timeout);
+						ws.close();
+						reject(err);
+					});
+				});
+			});
+
+			if (error) {
+				wsResponse.status = false;
+				wsResponse.code = this.NETWORK_ERROR;
+				wsResponse.message = (error as Error).message || "WebSocket connection failed";
+				wsResponse.responseTime = responseTime;
+				return wsResponse;
+			}
+
+			wsResponse.status = true;
+			wsResponse.code = 200;
+			wsResponse.message = "WebSocket connection successful";
+			wsResponse.responseTime = responseTime;
+			wsResponse.payload = response;
+
+			return wsResponse;
+		} catch (err: any) {
+			err.service = this.SERVICE_NAME;
+			err.method = "requestWebSocket";
+			throw err;
+		}
 	}
 
 	private async handleUnsupportedType(type: string): Promise<MonitorStatusResponse> {

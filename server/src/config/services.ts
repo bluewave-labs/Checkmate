@@ -45,6 +45,7 @@ import { games, GameDig } from "gamedig";
 import jmespath from "jmespath";
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
+import WebSocket from "ws";
 
 // repositories
 import {
@@ -145,7 +146,21 @@ export const initializeServices = async ({
 	const teamsRepository = new MongoTeamsRepository();
 	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
 
-	const networkService = new NetworkService(axios, got, https, jmespath, GameDig, ping, logger, Docker, net, settingsService, grpc, protoLoader);
+	const networkService = new NetworkService(
+		axios,
+		got,
+		https,
+		jmespath,
+		GameDig,
+		ping,
+		logger,
+		Docker,
+		net,
+		settingsService,
+		grpc,
+		protoLoader,
+		WebSocket
+	);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 
 	const notificationMessageBuilder = new NotificationMessageBuilder();
