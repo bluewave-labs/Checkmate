@@ -25,7 +25,7 @@ class MaintenanceWindowController {
 
 	createMaintenanceWindows = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await createMaintenanceWindowBodyValidation.validateAsync(req.body);
+			createMaintenanceWindowBodyValidation.parse(req.body);
 			const teamId = requireTeamId(req?.user?.teamId);
 
 			await this.maintenanceWindowService.createMaintenanceWindow({ teamId, body: req.body });
@@ -40,7 +40,7 @@ class MaintenanceWindowController {
 	};
 	getMaintenanceWindowById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getMaintenanceWindowByIdParamValidation.validateAsync(req.params);
+			getMaintenanceWindowByIdParamValidation.parse(req.params);
 
 			const teamId = requireTeamId(req.user?.teamId);
 
@@ -58,7 +58,7 @@ class MaintenanceWindowController {
 
 	getMaintenanceWindowsByTeamId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getMaintenanceWindowsByTeamIdQueryValidation.validateAsync(req.query);
+			getMaintenanceWindowsByTeamIdQueryValidation.parse(req.query);
 
 			const teamId = requireTeamId(req?.user?.teamId);
 
@@ -76,7 +76,7 @@ class MaintenanceWindowController {
 
 	getMaintenanceWindowsByMonitorId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getMaintenanceWindowsByMonitorIdParamValidation.validateAsync(req.params);
+			getMaintenanceWindowsByMonitorIdParamValidation.parse(req.params);
 
 			const teamId = requireTeamId(req?.user?.teamId);
 
@@ -96,7 +96,7 @@ class MaintenanceWindowController {
 	};
 	deleteMaintenanceWindow = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await deleteMaintenanceWindowByIdParamValidation.validateAsync(req.params);
+			deleteMaintenanceWindowByIdParamValidation.parse(req.params);
 
 			const teamId = requireTeamId(req?.user?.teamId);
 
@@ -113,8 +113,8 @@ class MaintenanceWindowController {
 
 	editMaintenanceWindow = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await editMaintenanceWindowByIdParamValidation.validateAsync(req.params);
-			await editMaintenanceByIdWindowBodyValidation.validateAsync(req.body);
+			editMaintenanceWindowByIdParamValidation.parse(req.params);
+			editMaintenanceByIdWindowBodyValidation.parse(req.body);
 
 			const teamId = requireTeamId(req.user?.teamId);
 

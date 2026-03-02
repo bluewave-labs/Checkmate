@@ -45,7 +45,7 @@ class MonitorController {
 
 	getMonitorCertificate = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getCertificateParamValidation.validateAsync(req.params);
+			getCertificateParamValidation.parse(req.params);
 			const teamId = requireTeamId(req?.user?.teamId);
 			const monitorId = requireString(req.params?.monitorId, "Monitor ID");
 			const monitor = await this.monitorService.getMonitorById({ teamId, monitorId });
@@ -88,8 +88,8 @@ class MonitorController {
 
 	getHardwareDetailsById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getHardwareDetailsByIdParamValidation.validateAsync(req.params);
-			await getHardwareDetailsByIdQueryValidation.validateAsync(req.query);
+			getHardwareDetailsByIdParamValidation.parse(req.params);
+			getHardwareDetailsByIdQueryValidation.parse(req.query);
 
 			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
 			const dateRange = optionalString(req?.query?.dateRange, "dateRange") || "recent";
@@ -112,8 +112,8 @@ class MonitorController {
 	};
 	getPageSpeedDetailsById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getHardwareDetailsByIdParamValidation.validateAsync(req.params);
-			await getHardwareDetailsByIdQueryValidation.validateAsync(req.query);
+			getHardwareDetailsByIdParamValidation.parse(req.params);
+			getHardwareDetailsByIdQueryValidation.parse(req.query);
 
 			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
 			const dateRange = requireString(req?.query?.dateRange, "dateRange");
@@ -137,8 +137,8 @@ class MonitorController {
 
 	getGeoChecksByMonitorId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getMonitorByIdParamValidation.validateAsync(req.params);
-			await getMonitorByIdQueryValidation.validateAsync(req.query);
+			getMonitorByIdParamValidation.parse(req.params);
+			getMonitorByIdQueryValidation.parse(req.query);
 
 			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
 			const dateRange = requireString(req?.query?.dateRange, "dateRange");
@@ -169,8 +169,8 @@ class MonitorController {
 
 	getMonitorById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getMonitorByIdParamValidation.validateAsync(req.params);
-			await getMonitorByIdQueryValidation.validateAsync(req.query);
+			getMonitorByIdParamValidation.parse(req.params);
+			getMonitorByIdQueryValidation.parse(req.query);
 
 			const teamId = requireTeamId(req?.user?.teamId);
 			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
@@ -189,7 +189,7 @@ class MonitorController {
 
 	createMonitor = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await createMonitorBodyValidation.validateAsync(req.body);
+			createMonitorBodyValidation.parse(req.body);
 
 			const userId = requireString(req?.user?.id, "User ID");
 			const teamId = requireTeamId(req?.user?.teamId);
@@ -231,7 +231,7 @@ class MonitorController {
 
 	deleteMonitor = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getMonitorByIdParamValidation.validateAsync(req.params);
+			getMonitorByIdParamValidation.parse(req.params);
 			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
 			const teamId = requireTeamId(req?.user?.teamId);
 
@@ -264,8 +264,8 @@ class MonitorController {
 
 	editMonitor = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getMonitorByIdParamValidation.validateAsync(req.params);
-			await editMonitorBodyValidation.validateAsync(req.body);
+			getMonitorByIdParamValidation.parse(req.params);
+			editMonitorBodyValidation.parse(req.body);
 			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
 			const teamId = requireTeamId(req?.user?.teamId);
 
@@ -283,7 +283,7 @@ class MonitorController {
 
 	pauseMonitor = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await pauseMonitorParamValidation.validateAsync(req.params);
+			pauseMonitorParamValidation.parse(req.params);
 
 			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
 			const teamId = requireTeamId(req?.user?.teamId);
@@ -336,8 +336,8 @@ class MonitorController {
 
 	getMonitorsByTeamId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getMonitorsByTeamIdParamValidation.validateAsync(req.params);
-			await getMonitorsByTeamIdQueryValidation.validateAsync(req.query);
+			getMonitorsByTeamIdParamValidation.parse(req.params);
+			getMonitorsByTeamIdQueryValidation.parse(req.query);
 
 			const teamId = requireTeamId(req?.user?.teamId);
 			const type = parseMonitorTypeFilter(req.query?.type);
@@ -357,8 +357,8 @@ class MonitorController {
 
 	getMonitorsWithChecksByTeamId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getMonitorsByTeamIdParamValidation.validateAsync(req.params);
-			await getMonitorsWithChecksQueryValidation.validateAsync(req.query);
+			getMonitorsByTeamIdParamValidation.parse(req.params);
+			getMonitorsWithChecksQueryValidation.parse(req.query);
 			const explain = optionalBoolean(req?.query?.explain, "explain");
 			const limit = optionalNumber(req?.query?.limit, "limit");
 			const page = optionalNumber(req?.query?.page, "page");
