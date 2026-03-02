@@ -282,7 +282,11 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 	};
 
 	obliterate = async () => {
-		console.log("obliterate not implemented");
+		this.logger.warn({
+			message: "obliterate method not implemented",
+			service: SERVICE_NAME,
+			method: "obliterate",
+		});
 	};
 }
 
