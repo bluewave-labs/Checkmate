@@ -8,6 +8,9 @@
 // Shared utilities
 export * from "./shared.js";
 
+// Environment validation
+export * from "./envValidation.js";
+
 // Domain-specific validations
 export * from "./authValidation.js";
 export * from "./monitorValidation.js";
