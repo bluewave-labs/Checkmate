@@ -85,6 +85,13 @@ const grpcSchema = baseSchema.extend({
 	ignoreTlsErrors: z.boolean(),
 });
 
+// WebSocket monitor schema
+const websocketSchema = baseSchema.extend({
+	type: z.literal("websocket"),
+	url: z.string().min(1, "WebSocket URL is required"),
+	ignoreTlsErrors: z.boolean(),
+});
+
 // PageSpeed monitor schema
 const pagespeedSchema = baseSchema.extend({
 	type: z.literal("pagespeed"),
@@ -123,6 +130,7 @@ export const monitorSchema = z.discriminatedUnion("type", [
 	dockerSchema,
 	gameSchema,
 	grpcSchema,
+	websocketSchema,
 	pagespeedSchema,
 	hardwareSchema,
 ]);
@@ -137,6 +145,7 @@ export {
 	dockerSchema,
 	gameSchema,
 	grpcSchema,
+	websocketSchema,
 	pagespeedSchema,
 	hardwareSchema,
 };

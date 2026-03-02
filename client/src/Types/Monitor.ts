@@ -12,6 +12,7 @@ export const MonitorTypes = [
 	"port",
 	"game",
 	"grpc",
+	"websocket",
 	"unknown",
 ] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
