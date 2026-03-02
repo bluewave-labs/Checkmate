@@ -13,12 +13,7 @@ export const nameValidation = z
 		"Names must contain at least 1 letter and may only include letters, currency symbols, spaces, apostrophes, hyphens (-), periods (.), and parentheses ()."
 	);
 
-export const lowercaseEmailValidation = z
-	.email()
-	.transform((val) => val.toLowerCase())
-	.refine((val) => val === val.toLowerCase(), {
-		message: "Email must be in lowercase",
-	});
+export const lowercaseEmailValidation = z.email().transform((val) => val.toLowerCase());
 
 export const booleanCoercion = z.preprocess((val) => {
 	if (val === "true" || val === true) return true;
