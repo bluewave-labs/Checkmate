@@ -760,7 +760,9 @@ const CreateMonitorPage = () => {
 				}
 			/>
 
-			{(watchedType === "http" || watchedType === "grpc") && (
+			{(watchedType === "http" ||
+				watchedType === "grpc" ||
+				watchedType === "websocket") && (
 				<ConfigBox
 					title={t("pages.createMonitor.form.ignoreTls.title")}
 					subtitle={t("pages.createMonitor.form.ignoreTls.description")}
