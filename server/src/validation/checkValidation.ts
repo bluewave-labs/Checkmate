@@ -1,22 +1,10 @@
 import { z } from "zod";
+import { booleanCoercion } from "./shared.js";
 import { GeoContinents } from "@/types/geoCheck.js";
 
 //****************************************
 // Check Validations
 //****************************************
-
-export const ackCheckBodyValidation = z.object({
-	ack: z.coerce.boolean().optional(),
-});
-
-export const ackAllChecksParamValidation = z.object({
-	monitorId: z.string().optional(),
-	path: z.enum(["monitor", "team"]),
-});
-
-export const ackAllChecksBodyValidation = z.object({
-	ack: z.coerce.boolean().optional(),
-});
 
 export const getChecksParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
@@ -28,10 +16,10 @@ export const getChecksQueryValidation = z.object({
 	limit: z.coerce.number().optional(),
 	dateRange: z.enum(["recent", "hour", "day", "week", "month", "all"]).optional(),
 	filter: z.enum(["all", "up", "down", "resolve"]).optional(),
-	ack: z.coerce.boolean().optional(),
+	ack: booleanCoercion.optional(),
 	page: z.coerce.number().optional(),
 	rowsPerPage: z.coerce.number().optional(),
-	status: z.coerce.boolean().optional(),
+	status: booleanCoercion.optional(),
 	continent: z.union([z.enum(GeoContinents), z.array(z.enum(GeoContinents))]).optional(),
 });
 
@@ -40,7 +28,7 @@ export const getTeamChecksQueryValidation = z.object({
 	limit: z.coerce.number().optional(),
 	dateRange: z.enum(["recent", "hour", "day", "week", "month", "all"]).optional(),
 	filter: z.enum(["all", "up", "down", "resolve"]).optional(),
-	ack: z.coerce.boolean().optional(),
+	ack: booleanCoercion.optional(),
 	page: z.coerce.number().optional(),
 	rowsPerPage: z.coerce.number().optional(),
 });

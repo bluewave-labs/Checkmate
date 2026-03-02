@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { booleanCoercion } from "./shared.js";
 import { GeoContinents } from "@/types/geoCheck.js";
 
 export const getMonitorByIdParamValidation = z.object({
@@ -6,12 +7,12 @@ export const getMonitorByIdParamValidation = z.object({
 });
 
 export const getMonitorByIdQueryValidation = z.object({
-	status: z.coerce.boolean().optional(),
+	status: booleanCoercion.optional(),
 	sortOrder: z.enum(["asc", "desc"]).optional(),
 	limit: z.coerce.number().optional(),
 	dateRange: z.enum(["recent", "hour", "day", "week", "month", "all"]).optional(),
 	numToDisplay: z.coerce.number().optional(),
-	normalize: z.coerce.boolean().optional(),
+	normalize: booleanCoercion.optional(),
 	continent: z.enum(GeoContinents).optional(),
 });
 
@@ -40,7 +41,7 @@ export const getMonitorsWithChecksQueryValidation = z.object({
 			z.array(z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc"])),
 		])
 		.optional(),
-	explain: z.coerce.boolean().optional(),
+	explain: booleanCoercion.optional(),
 });
 
 export const getCertificateParamValidation = z.object({

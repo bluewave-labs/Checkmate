@@ -30,6 +30,16 @@ export const lowercaseEmailValidation = z
 	});
 
 /**
+ * Helper to properly coerce boolean from strings (handles "true"/"false" strings)
+ * Needed for query parameters and form data where Express sends strings
+ */
+export const booleanCoercion = z.preprocess((val) => {
+	if (val === "true" || val === true) return true;
+	if (val === "false" || val === false) return false;
+	return val; // Let Zod validation handle invalid values
+}, z.boolean());
+
+/**
  * Custom validator for role-based authorization
  */
 export const roleValidator = (allowedRoles: UserRole[]) => {

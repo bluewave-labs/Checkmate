@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { booleanCoercion } from "./shared.js";
 
 //****************************************
 // Maintenance Window Validations
@@ -21,7 +22,7 @@ export const getMaintenanceWindowByIdParamValidation = z.object({
 });
 
 export const getMaintenanceWindowsByTeamIdQueryValidation = z.object({
-	active: z.coerce.boolean().optional(),
+	active: booleanCoercion.optional(),
 	page: z.coerce.number().optional(),
 	rowsPerPage: z.coerce.number().optional(),
 	field: z.string().optional(),
