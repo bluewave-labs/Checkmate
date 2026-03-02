@@ -81,6 +81,8 @@ export const createMonitorBodyValidation = z.object({
 export const editMonitorBodyValidation = z
 	.object({
 		name: z.string().optional(),
+		type: z.string().optional(),
+		url: z.string().optional(),
 		statusWindowSize: z.number().min(1).max(20).default(5),
 		statusWindowThreshold: z.number().min(1).max(100).default(60),
 		description: z.union([z.string(), z.null(), z.literal("")]).optional(),
@@ -105,7 +107,7 @@ export const editMonitorBodyValidation = z
 		geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 		geoCheckInterval: z.number().min(300000).optional(),
 	})
-	.strict();
+	.passthrough();
 
 export const pauseMonitorParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
