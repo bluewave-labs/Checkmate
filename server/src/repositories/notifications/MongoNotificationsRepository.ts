@@ -3,7 +3,6 @@ import { NotificationModel, type NotificationDocument } from "@/db/models/index.
 import { INotificationsRepository } from "@/repositories/index.js";
 import type { Notification } from "@/types/index.js";
 import { AppError } from "@/utils/AppError.js";
-import { not } from "joi";
 
 class MongoNotificationsRepository implements INotificationsRepository {
 	private mapDocuments = (documents: NotificationDocument[]): Notification[] => {
