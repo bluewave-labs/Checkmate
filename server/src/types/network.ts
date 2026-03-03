@@ -14,7 +14,16 @@ import type {
 	MonitorStatus,
 } from "@/types/index.js";
 
-export interface MonitorStatusResponse<T = any> {
+export interface MonitorStatusResponse<
+	T =
+		| HttpStatusPayload
+		| PingStatusPayload
+		| PageSpeedStatusPayload
+		| HardwareStatusPayload
+		| DockerStatusPayload
+		| GameStatusPayload
+		| GrpcStatusPayload,
+> {
 	monitorId: string;
 	teamId: string;
 	type: MonitorType;

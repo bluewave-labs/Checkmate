@@ -7,6 +7,12 @@ import type {
 	Check,
 	HardwareStatusPayload,
 	PageSpeedStatusPayload,
+	PingStatusPayload,
+	HttpStatusPayload,
+	DockerStatusPayload,
+	PortStatusPayload,
+	GameStatusPayload,
+	GrpcStatusPayload,
 	CheckSnapshot,
 	MonitorStats,
 } from "@/types/index.js";
@@ -17,7 +23,17 @@ export interface IStatusService {
 	updateRunningStats({ monitor, networkResponse }: { monitor: Monitor; networkResponse: any }): Promise<boolean>;
 	handleIncidentForCheck(check: any, monitor: Monitor, action: any, errorContext?: string): Promise<void>;
 	updateMonitorStatus(
-		statusResponse: MonitorStatusResponse<PageSpeedStatusPayload | HardwareStatusPayload | undefined>,
+		statusResponse: MonitorStatusResponse<
+			| PingStatusPayload
+			| HttpStatusPayload
+			| PageSpeedStatusPayload
+			| HardwareStatusPayload
+			| DockerStatusPayload
+			| PortStatusPayload
+			| GameStatusPayload
+			| GrpcStatusPayload
+			| undefined
+		>,
 		check: Check
 	): Promise<StatusChangeResult>;
 }
@@ -205,7 +221,17 @@ export class StatusService implements IStatusService {
 	};
 
 	updateMonitorStatus = async (
-		statusResponse: MonitorStatusResponse<PageSpeedStatusPayload | HardwareStatusPayload | undefined>,
+		statusResponse: MonitorStatusResponse<
+			| PingStatusPayload
+			| HttpStatusPayload
+			| PageSpeedStatusPayload
+			| HardwareStatusPayload
+			| DockerStatusPayload
+			| PortStatusPayload
+			| GameStatusPayload
+			| GrpcStatusPayload
+			| undefined
+		>,
 		check: Check
 	): Promise<StatusChangeResult> => {
 		try {

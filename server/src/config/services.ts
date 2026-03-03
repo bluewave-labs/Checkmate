@@ -29,7 +29,6 @@ import { NotificationMessageBuilder, INotificationMessageBuilder } from "../serv
 import axios from "axios";
 import got from "got";
 import ping from "ping";
-import http from "http";
 import https from "https";
 import Docker from "dockerode";
 import net from "net";
@@ -151,7 +150,9 @@ export const initializeServices = async ({
 		got,
 		https,
 		jmespath,
-		GameDig,
+		GameDig as unknown as {
+			query: (options: { type: string; host: string; port?: number }) => Promise<{ ping?: number } & { [key: string]: unknown }>;
+		},
 		ping,
 		logger,
 		Docker,

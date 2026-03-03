@@ -3,14 +3,14 @@ export interface AppErrorConfig {
 	status?: number;
 	service?: string | null;
 	method?: string | null;
-	details?: any;
+	details?: unknown;
 }
 
 export class AppError extends Error {
 	private status: number;
 	private service: string | null;
 	private method: string | null;
-	private details: any;
+	private details: unknown;
 
 	constructor({ message, status = 500, service = null, method = null, details = null }: AppErrorConfig) {
 		super(message);
