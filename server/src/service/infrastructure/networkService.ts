@@ -1,6 +1,13 @@
 import { HTTPError, RequestError } from "got";
 import type { Got, Response } from "got";
-import type { Monitor, MonitorStatusResponse, GrpcStatusPayload } from "@/types/index.js";
+import type {
+	Monitor,
+	MonitorStatusResponse,
+	GrpcStatusPayload,
+	PageSpeedStatusPayload,
+	HttpStatusPayload,
+	HardwareStatusPayload,
+} from "@/types/index.js";
 import type { AxiosStatic } from "axios";
 import { AppError } from "@/utils/AppError.js";
 import path from "path";
@@ -192,7 +199,7 @@ class NetworkService implements INetworkService {
 			case this.TYPE_PING:
 				return await this.requestPing(monitor);
 			case this.TYPE_HTTP:
-				return await this.requestHttp(monitor);
+				return await this.requestHttp<HttpStatusPayload>(monitor);
 			case this.TYPE_PAGESPEED:
 				return await this.requestPageSpeed(monitor);
 			case this.TYPE_HARDWARE:
@@ -257,9 +264,9 @@ class NetworkService implements INetworkService {
 		}
 	}
 
-	private async requestHttp(monitor: Monitor): Promise<MonitorStatusResponse> {
-		const { url, secret, id, teamId, type, ignoreTlsErrors, useAdvancedMatching, jsonPath, matchMethod, expectedValue } = monitor;
-		const httpResponse = this.buildStatusResponse({
+	private async requestHttp<T = unknown>(monitor: Monitor): Promise<MonitorStatusResponse<T>> {
+		const { url, secret, ignoreTlsErrors, useAdvancedMatching, jsonPath, matchMethod, expectedValue } = monitor;
+		const httpResponse = this.buildStatusResponse<T>({
 			monitor,
 			overrides: {
 				status: false,
@@ -390,7 +397,7 @@ class NetworkService implements INetworkService {
 		}
 	}
 
-	private async requestPageSpeed(monitor: Monitor): Promise<MonitorStatusResponse> {
+	private async requestPageSpeed(monitor: Monitor): Promise<MonitorStatusResponse<PageSpeedStatusPayload>> {
 		try {
 			const url = monitor.url;
 			if (!url) {
@@ -408,7 +415,7 @@ class NetworkService implements INetworkService {
 					details: { url },
 				});
 			}
-			return await this.requestHttp({
+			return await this.requestHttp<PageSpeedStatusPayload>({
 				...monitor,
 				url: pageSpeedUrl,
 			});
@@ -419,9 +426,9 @@ class NetworkService implements INetworkService {
 		}
 	}
 
-	private async requestHardware(monitor: Monitor): Promise<MonitorStatusResponse> {
+	private async requestHardware(monitor: Monitor): Promise<MonitorStatusResponse<HardwareStatusPayload>> {
 		try {
-			return await this.requestHttp(monitor);
+			return await this.requestHttp<HardwareStatusPayload>(monitor);
 		} catch (err: any) {
 			err.service = this.SERVICE_NAME;
 			err.method = "requestHardware";
