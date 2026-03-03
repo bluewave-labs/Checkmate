@@ -12,7 +12,7 @@ ESlint v9 configuration is different than v8.
 /** @type {import('eslint').Linter.Config[]} */
 export default [
 	{
-		ignores: ["dist/**", "node_modules/**", "coverage/**"],
+		ignores: ["dist/**", "node_modules/**", "coverage/**", "test/**"],
 	},
 	{
 		languageOptions: {

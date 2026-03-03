@@ -455,10 +455,10 @@ class NetworkService implements INetworkService {
 
 			// Priority-based matching to avoid ambiguity:
 			// 1. Exact full ID match (64-char)
-			let exactIdMatch = containers.find((c: any) => c.Id.toLowerCase() === normalizedInput);
+			const exactIdMatch = containers.find((c: any) => c.Id.toLowerCase() === normalizedInput);
 
 			// 2. Exact container name match (case-insensitive)
-			let exactNameMatch = containers.find((c: any) =>
+			const exactNameMatch = containers.find((c: any) =>
 				c.Names.some((name: string) => {
 					const cleanName = name.replace(/^\/+/, "").toLowerCase();
 					return cleanName === normalizedInput;
@@ -466,10 +466,10 @@ class NetworkService implements INetworkService {
 			);
 
 			// 3. Partial ID match (fallback for backwards compatibility)
-			let partialIdMatch = containers.find((c: any) => c.Id.toLowerCase().startsWith(normalizedInput));
+			const partialIdMatch = containers.find((c: any) => c.Id.toLowerCase().startsWith(normalizedInput));
 
 			// Select container based on priority
-			let targetContainer = exactIdMatch || exactNameMatch || partialIdMatch;
+			const targetContainer = exactIdMatch || exactNameMatch || partialIdMatch;
 
 			// Return negative response if no container
 			if (!targetContainer) {
