@@ -77,6 +77,7 @@ class NetworkService implements INetworkService {
 	private TYPE_PORT: string;
 	private TYPE_GAME: string;
 	private TYPE_GRPC: string;
+	private TYPE_WEBSOCKET: string;
 	private SERVICE_NAME: string;
 	private NETWORK_ERROR: number;
 	private PING_ERROR: number;
@@ -170,6 +171,7 @@ class NetworkService implements INetworkService {
 		this.TYPE_HARDWARE = "hardware";
 		this.TYPE_DOCKER = "docker";
 		this.TYPE_PORT = "port";
+		this.TYPE_WEBSOCKET = "websocket";
 		this.TYPE_GAME = "game";
 		this.TYPE_GRPC = "grpc";
 		this.SERVICE_NAME = SERVICE_NAME;
@@ -250,6 +252,8 @@ class NetworkService implements INetworkService {
 				return await this.requestGame(monitor);
 			case this.TYPE_GRPC:
 				return await this.requestGrpc(monitor);
+			case this.TYPE_WEBSOCKET:
+				return await this.requestWebSocket(monitor);
 			default:
 				return this.handleUnsupportedType(type);
 		}
