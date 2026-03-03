@@ -145,7 +145,22 @@ export const initializeServices = async ({
 	const teamsRepository = new MongoTeamsRepository();
 	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
 
-	const networkService = new NetworkService(axios, got, https, jmespath, GameDig, ping, logger, Docker, net, settingsService, grpc, protoLoader);
+	const networkService = new NetworkService(
+		axios,
+		got,
+		https,
+		jmespath,
+		GameDig as unknown as {
+			query: (options: { type: string; host: string; port?: number }) => Promise<{ ping?: number } & { [key: string]: unknown }>;
+		},
+		ping,
+		logger,
+		Docker,
+		net,
+		settingsService,
+		grpc,
+		protoLoader
+	);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 
 	const notificationMessageBuilder = new NotificationMessageBuilder();

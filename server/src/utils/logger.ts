@@ -44,7 +44,7 @@ class Logger implements ILogger {
 		this.maxCacheSize = 1000;
 		const consoleFormat = format.printf((info: Logform.TransformableInfo) => {
 			const { level, service, method, details, timestamp, stack } = info;
-			let message = info.message as string;
+			const message = info.message as string;
 			let formattedMessage: string = message;
 			let formattedDetails: string | undefined;
 
@@ -57,10 +57,10 @@ class Logger implements ILogger {
 			}
 
 			let msg = `${timestamp} ${level}:`;
-			service && (msg += ` [${service}]`);
-			method && (msg += `(${method})`);
-			formattedMessage && (msg += ` ${formattedMessage}`);
-			formattedDetails && (msg += ` (details: ${formattedDetails})`);
+			if (service) msg += ` [${service}]`;
+			if (method) msg += `(${method})`;
+			if (formattedMessage) msg += ` ${formattedMessage}`;
+			if (formattedDetails) msg += ` (details: ${formattedDetails})`;
 
 			if (typeof stack === "string") {
 				const stackTrace = stack
