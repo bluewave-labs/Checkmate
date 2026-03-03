@@ -154,6 +154,41 @@ class NotificationController {
 		}
 	};
 
+	bulkEditMonitorNotifications = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const teamId = requireTeamId(req.user?.teamId);
+
+			const { monitorIds, notificationIds, action } = req.body;
+
+			if (!monitorIds || !Array.isArray(monitorIds) || monitorIds.length === 0) {
+				throw new AppError({ message: "Monitor IDs are required", status: 400 });
+			}
+
+			if (!notificationIds || !Array.isArray(notificationIds) || notificationIds.length === 0) {
+				throw new AppError({ message: "Notification IDs are required", status: 400 });
+			}
+
+			if (!action || !["add", "remove", "set"].includes(action)) {
+				throw new AppError({ message: "Action must be 'add', 'remove', or 'set'", status: 400 });
+			}
+
+			const modifiedCount = await this.monitorsRepository.bulkUpdateNotifications(
+				monitorIds,
+				notificationIds,
+				action,
+				teamId
+			);
+
+			return res.status(200).json({
+				success: true,
+				msg: `Notifications updated successfully on ${modifiedCount} monitor(s)`,
+				data: { modifiedCount },
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
 	testAllNotifications = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const monitorId = req.body.monitorId;
