@@ -746,7 +746,7 @@ class NetworkService implements INetworkService {
 
 	private async requestWebSocket(monitor: Monitor): Promise<MonitorStatusResponse> {
 		try {
-			const { url, ignoreTlsErrors } = monitor;
+			const { url } = monitor;
 
 			if (!url) {
 				throw new Error("Monitor URL is required");
@@ -766,9 +766,6 @@ class NetworkService implements INetworkService {
 			const { response, responseTime, error } = await this.timeRequest<{ connected: boolean }>(() => {
 				return new Promise<{ connected: boolean }>((resolve, reject) => {
 					const wsOptions: Record<string, any> = {};
-					if (ignoreTlsErrors) {
-						wsOptions.rejectUnauthorized = false;
-					}
 
 					const ws = new this.WebSocket(url, wsOptions);
 
