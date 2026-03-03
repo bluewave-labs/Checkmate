@@ -498,7 +498,7 @@ class NetworkService implements INetworkService {
 				},
 			});
 
-			const containers = await docker.listContainers();
+			const containers = await docker.listContainers({ all: true });
 
 			// Normalize input: strip leading slashes and convert to lowercase for comparison
 			const normalizedInput = monitor.url.replace(/^\/+/, "").toLowerCase();
