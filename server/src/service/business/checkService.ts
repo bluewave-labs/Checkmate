@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { IChecksRepository, IMonitorsRepository } from "@/repositories/index.js";
-import type { MonitorStatusResponse, CheckErrorInfo, Check, ILighthouseAudit } from "@/types/index.js";
+import type { MonitorStatusResponse, CheckErrorInfo, Check, ILighthouseAudit, ChecksQueryResult, ChecksSummary } from "@/types/index.js";
 import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import { ParseBoolean } from "@/utils/utils.js";
@@ -8,7 +8,18 @@ import { ILogger } from "@/utils/logger.js";
 
 const SERVICE_NAME = "checkService";
 
-class CheckService {
+export interface ICheckService {
+	createChecks(checks: Check[]): Promise<Check[]>;
+	buildCheck(statusResponse: MonitorStatusResponse<PageSpeedStatusPayload | HardwareStatusPayload | undefined>): Partial<Check> | undefined;
+	getChecksByMonitor(params: { monitorId: string; query: Record<string, string>; teamId: string }): Promise<ChecksQueryResult>;
+	getChecksByTeam(params: { teamId: string; query: Record<string, string> }): Promise<ChecksQueryResult>;
+	getChecksSummaryByTeamId(params: { teamId: string; dateRange: string }): Promise<ChecksSummary>;
+	deleteChecks(params: { monitorId: string; teamId: string }): Promise<number>;
+	deleteChecksByTeamId(params: { teamId: string }): Promise<number>;
+	updateChecksTTL(params: { teamId: string; ttl: string }): Promise<void>;
+}
+
+class CheckService implements ICheckService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private monitorsRepository: IMonitorsRepository;
