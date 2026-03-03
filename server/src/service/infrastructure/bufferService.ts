@@ -19,8 +19,8 @@ class BufferService implements IBufferService {
 	private BUFFER_TIMEOUT: number;
 	private logger: ILogger;
 	private SERVICE_NAME: string;
-	private buffer: any[];
-	private geoBuffer: any[];
+	private buffer: Check[];
+	private geoBuffer: GeoCheck[];
 	private bufferTimer: NodeJS.Timeout | null = null;
 	private checksService: any;
 	private geoChecksService: IGeoChecksService;
