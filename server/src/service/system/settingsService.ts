@@ -22,7 +22,7 @@ export interface ISettingsService {
 }
 
 class SettingsService implements ISettingsService {
-	static SERVICE_NAME = "SettingsService";
+	static SERVICE_NAME = SERVICE_NAME;
 	private settings: EnvConfig;
 	private settingsRepository: ISettingsRepository;
 
