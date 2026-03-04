@@ -31,4 +31,8 @@ export const darkPalette = {
 	secondary: {
 		main: colors.gray700,
 	},
+	background: {
+		default: "#151518",
+		paper: "#1c1c21",
+	},
 };

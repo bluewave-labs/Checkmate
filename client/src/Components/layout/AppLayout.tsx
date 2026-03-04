@@ -47,10 +47,6 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 			sx={{
 				minHeight: "100vh",
 				backgroundColor: theme.palette.background.default,
-				backgroundImage: mode === "dark" ? `url("${BackgroundSVG}")` : "none",
-				backgroundSize: "100% 100%",
-				backgroundPosition: "center",
-				backgroundRepeat: "no-repeat",
 			}}
 		>
 			<OfflineBanner visible={serverUnreachable} />
