@@ -1,15 +1,16 @@
 const SERVICE_NAME = "PagerDutyProvider";
 import got from "got";
-import type { Monitor, Notification, MonitorStatusResponse } from "@/types/index.js";
-import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+import type { Notification } from "@/types/index.js";
 import { INotificationProvider } from "@/service/index.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
+import { ILogger } from "@/utils/logger.js";
+import { AlertPagerDutyPayload } from "@/types/index.js";
 
 export class PagerDutyProvider implements INotificationProvider {
-	private logger: any;
+	private logger: ILogger;
 
-	constructor(logger: any) {
+	constructor(logger: ILogger) {
 		this.logger = logger;
 	}
 
@@ -77,7 +78,7 @@ export class PagerDutyProvider implements INotificationProvider {
 		}
 	}
 
-	private buildPagerDutyPayload(notification: Notification, message: NotificationMessage): any {
+	private buildPagerDutyPayload(notification: Notification, message: NotificationMessage): AlertPagerDutyPayload {
 		// Map our notification type to PagerDuty event_action
 		const eventAction = message.type === "monitor_up" || message.type === "threshold_resolved" ? "resolve" : "trigger";
 
@@ -106,7 +107,7 @@ export class PagerDutyProvider implements INotificationProvider {
 		}
 
 		// Build custom details
-		const customDetails: any = {
+		const customDetails: Record<string, unknown> = {
 			monitor_name: message.monitor.name,
 			monitor_url: message.monitor.url,
 			monitor_type: message.monitor.type,

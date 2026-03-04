@@ -7,7 +7,13 @@ const __dirname = path.dirname(__filename);
 
 const SERVICE_NAME = "EmailService";
 
-class EmailService {
+export interface IEmailService {
+	init(): void;
+	buildEmail(template: string, context: Record<string, unknown>): Promise<string | undefined>;
+	sendEmail(to: string, subject: string, html: string, transportConfig?: EmailTransportConfig): Promise<string | false | undefined>;
+}
+
+class EmailService implements IEmailService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private settingsService: any;

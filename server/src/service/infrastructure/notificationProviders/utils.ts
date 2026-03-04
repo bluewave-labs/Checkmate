@@ -1,6 +1,5 @@
-import { Monitor, HardwareStatusPayload, MonitorStatusResponse } from "@/types/index.js";
-// Test notification helpers - used by all providers for test alerts
-export const buildTestEmail = async (emailService: any) => {
+import { IEmailService } from "@/service/infrastructure/emailService.js";
+export const buildTestEmail = async (emailService: IEmailService) => {
 	const context = { testName: "Monitoring System" };
 	const html = await emailService.buildEmail("testEmailTemplate", context);
 	return html;

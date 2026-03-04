@@ -1,14 +1,15 @@
 const SERVICE_NAME = "DiscordProvider";
-import type { Notification } from "@/types/index.js";
+import type { AlertDiscordPayload, DiscordEmbedField, Notification } from "@/types/index.js";
 import { INotificationProvider } from "@/service/index.js";
 import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
-import type { NotificationMessage } from "@/types/notificationMessage.js";
+import type { NotificationMessage, NotificationSeverity } from "@/types/notificationMessage.js";
 import got from "got";
+import { ILogger } from "@/utils/logger.js";
 
 export class DiscordProvider implements INotificationProvider {
-	private logger: any;
+	private logger: ILogger;
 
-	constructor(logger: any) {
+	constructor(logger: ILogger) {
 		this.logger = logger;
 	}
 
@@ -36,9 +37,6 @@ export class DiscordProvider implements INotificationProvider {
 		}
 	};
 
-	/**
-	 * New unified message format implementation
-	 */
 	async sendMessage(notification: Notification, message: NotificationMessage): Promise<boolean> {
 		if (!notification.address) {
 			this.logger.warn({
@@ -71,18 +69,17 @@ export class DiscordProvider implements INotificationProvider {
 		}
 	}
 
-	private buildDiscordEmbed(message: NotificationMessage): any {
-		// Map severity to Discord embed colors
-		const colorMap: Record<string, number> = {
+	private buildDiscordEmbed(message: NotificationMessage): AlertDiscordPayload {
+		const colorMap: Record<NotificationSeverity, number> = {
 			critical: 0xdc2626, // red-600
 			warning: 0xf59e0b, // amber-500
 			info: 0x3b82f6, // blue-500
 			success: 0x10b981, // green-500
 		};
 
-		const color = colorMap[message.severity] || colorMap.info;
+		const color = colorMap[message.severity] ?? colorMap.info;
 
-		const fields: Array<{ name: string; value: string; inline?: boolean }> = [];
+		const fields: Array<DiscordEmbedField> = [];
 
 		// Add monitor details
 		fields.push({
