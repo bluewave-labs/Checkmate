@@ -1,4 +1,4 @@
-import type { Monitor, MonitorStatusResponse } from "@/types/index.js";
+import type { HardwareStatusPayload, Monitor, MonitorStatusResponse } from "@/types/index.js";
 import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import type {
 	NotificationMessage,
@@ -30,8 +30,8 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		clientHost: string
 	): NotificationMessage {
 		const type = this.determineNotificationType(decision, monitor);
-		const severity = this.determineSeverity(type, monitor.status);
-		const content = this.buildContent(type, monitor, monitorStatusResponse, decision, clientHost);
+		const severity = this.determineSeverity(type);
+		const content = this.buildContent(type, monitor, monitorStatusResponse);
 
 		return {
 			type,
@@ -77,7 +77,7 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		return "monitor_up";
 	}
 
-	private determineSeverity(type: NotificationType, monitorStatus: string): NotificationSeverity {
+	private determineSeverity(type: NotificationType): NotificationSeverity {
 		switch (type) {
 			case "monitor_down":
 				return "critical";
@@ -93,28 +93,22 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		}
 	}
 
-	private buildContent(
-		type: NotificationType,
-		monitor: Monitor,
-		monitorStatusResponse: MonitorStatusResponse,
-		decision: MonitorActionDecision,
-		clientHost: string
-	): NotificationContent {
+	private buildContent(type: NotificationType, monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): NotificationContent {
 		switch (type) {
 			case "monitor_down":
-				return this.buildMonitorDownContent(monitor, monitorStatusResponse, clientHost);
+				return this.buildMonitorDownContent(monitor, monitorStatusResponse);
 			case "monitor_up":
-				return this.buildMonitorUpContent(monitor, clientHost);
+				return this.buildMonitorUpContent(monitor);
 			case "threshold_breach":
-				return this.buildThresholdBreachContent(monitor, monitorStatusResponse, decision, clientHost);
+				return this.buildThresholdBreachContent(monitor, monitorStatusResponse as MonitorStatusResponse<HardwareStatusPayload>);
 			case "threshold_resolved":
-				return this.buildThresholdResolvedContent(monitor, clientHost);
+				return this.buildThresholdResolvedContent(monitor);
 			default:
-				return this.buildDefaultContent(monitor, clientHost);
+				return this.buildDefaultContent(monitor);
 		}
 	}
 
-	private buildMonitorDownContent(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, clientHost: string): NotificationContent {
+	private buildMonitorDownContent(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): NotificationContent {
 		const title = `Monitor Down: ${monitor.name}`;
 		const summary = `Monitor "${monitor.name}" is currently down and unreachable.`;
 		const details = [`URL: ${monitor.url}`, `Status: Down`, `Type: ${monitor.type}`];
@@ -137,7 +131,7 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		};
 	}
 
-	private buildMonitorUpContent(monitor: Monitor, clientHost: string): NotificationContent {
+	private buildMonitorUpContent(monitor: Monitor): NotificationContent {
 		const title = `Monitor Recovered: ${monitor.name}`;
 		const summary = `Monitor "${monitor.name}" is back up and operational.`;
 		const details = [`URL: ${monitor.url}`, `Status: Up`, `Type: ${monitor.type}`];
@@ -150,12 +144,7 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		};
 	}
 
-	private buildThresholdBreachContent(
-		monitor: Monitor,
-		monitorStatusResponse: MonitorStatusResponse,
-		decision: MonitorActionDecision,
-		clientHost: string
-	): NotificationContent {
+	private buildThresholdBreachContent(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse<HardwareStatusPayload>): NotificationContent {
 		const title = `Threshold Breach: ${monitor.name}`;
 		const summary = `Monitor "${monitor.name}" has breached one or more thresholds.`;
 		const details = [`URL: ${monitor.url}`, `Status: Breached`, `Type: ${monitor.type}`];
@@ -171,7 +160,7 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		};
 	}
 
-	private buildThresholdResolvedContent(monitor: Monitor, clientHost: string): NotificationContent {
+	private buildThresholdResolvedContent(monitor: Monitor): NotificationContent {
 		const title = `Thresholds Resolved: ${monitor.name}`;
 		const summary = `Monitor "${monitor.name}" thresholds have returned to normal.`;
 		const details = [`URL: ${monitor.url}`, `Status: Up`, `Type: ${monitor.type}`];
@@ -184,7 +173,7 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		};
 	}
 
-	private buildDefaultContent(monitor: Monitor, clientHost: string): NotificationContent {
+	private buildDefaultContent(monitor: Monitor): NotificationContent {
 		return {
 			title: `Monitor: ${monitor.name}`,
 			summary: `Status update for monitor "${monitor.name}".`,
@@ -193,7 +182,7 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		};
 	}
 
-	public extractThresholdBreaches(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): ThresholdBreach[] {
+	public extractThresholdBreaches(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse<HardwareStatusPayload>): ThresholdBreach[] {
 		const breaches: ThresholdBreach[] = [];
 
 		// Check if this is a hardware monitor with threshold data
@@ -202,7 +191,7 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		}
 
 		// Cast to HardwareStatusPayload type
-		const payload = monitorStatusResponse.payload as { data?: any };
+		const payload = monitorStatusResponse.payload;
 		const hardware = payload.data;
 
 		if (!hardware) {
