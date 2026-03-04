@@ -2,7 +2,7 @@ const SERVICE_NAME = "JobQueueHelper";
 import type { Monitor } from "@/types/monitor.js";
 import { AppError } from "@/utils/AppError.js";
 import { INetworkService, INotificationsService, IStatusService } from "@/service/index.js";
-import type { StatusChangeResult, MonitorStatusResponse, HardwareStatusPayload, MonitorStatus } from "@/types/index.js";
+import type { StatusChangeResult } from "@/types/index.js";
 import IncidentService from "@/service/business/incidentService.js";
 import type { IGeoChecksService } from "@/service/business/geoChecksService.js";
 import {

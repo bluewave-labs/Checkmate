@@ -95,12 +95,12 @@ class GlobalPingService implements IGlobalPingService {
 			});
 
 			return measurementId;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({
 				message: "GlobalPing API unavailable, skipping geo check",
 				service: SERVICE_NAME,
 				method: "createMeasurement",
-				details: error,
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 			return null;
 		}
@@ -140,12 +140,12 @@ class GlobalPingService implements IGlobalPingService {
 
 				// Still in-progress, wait and poll again
 				await this.sleep(POLL_INTERVAL_MS);
-			} catch (error: any) {
+			} catch (error: unknown) {
 				this.logger.error({
 					message: "Error polling GlobalPing API",
 					service: SERVICE_NAME,
 					method: "pollForResults",
-					details: error.message,
+					stack: error instanceof Error ? error.stack : undefined,
 				});
 				return [];
 			}
