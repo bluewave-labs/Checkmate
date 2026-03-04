@@ -75,7 +75,7 @@ export const createApp = ({
 		})
 	);
 	// Swagger UI — dynamically set server URL from request
-	app.use("/api-docs", swaggerUi.serve, (req, res, next) => {
+	app.use("/api-docs", swaggerUi.serve, (req: express.Request, res: express.Response, next: express.NextFunction) => {
 		const protocol = req.protocol;
 		const host = req.get("host");
 		const dynamicSpec = {
