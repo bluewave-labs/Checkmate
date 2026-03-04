@@ -330,7 +330,9 @@ const CreateStatusPage = () => {
 																		}}
 																	>
 																		<GripVertical size={20} />
-																		<Typography flexGrow={1}>{monitor.name}</Typography>
+																		<Typography
+																			flexGrow={1}
+																		>{`${monitor.name} (${t(`pages.common.monitors.monitorTypes.option${monitor?.type.charAt(0).toUpperCase() + monitor?.type.slice(1)}`)})`}</Typography>
 																		<IconButton
 																			size="small"
 																			onClick={() => {

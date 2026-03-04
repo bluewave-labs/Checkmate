@@ -5,6 +5,9 @@ import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import prettyBytes from "pretty-bytes";
 import type { Monitor } from "@/Types/Monitor";
+import Grid from "@mui/material/Grid";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Box from "@mui/material/Box";
 
 interface StatusPageMonitor extends Monitor {
 	checks?: Monitor["recentChecks"];
@@ -13,34 +16,62 @@ interface StatusPageMonitor extends Monitor {
 	infrastructureDisk?: number;
 }
 
-interface MetricItemProps {
+interface MetricDetailRowProps {
 	label: string;
-	progress: number;
-	upperLabel?: string;
-	upperValue?: string;
-	lowerLabel?: string;
-	lowerValue?: string;
+	value: string;
 }
 
-const MetricItem = ({
-	label,
-	progress,
-	upperLabel,
-	upperValue,
-	lowerLabel,
-	lowerValue,
-}: MetricItemProps) => {
+const MetricDetailRow = ({ label, value }: MetricDetailRowProps) => {
 	const theme = useTheme();
 	return (
 		<Stack
 			direction="row"
-			alignItems="center"
-			gap={`${theme.spacing(4)} ${theme.spacing(10)}`}
-			flex={1}
+			justifyContent="space-between"
 		>
-			<Stack
+			<Typography
+				variant="body2"
+				color={theme.palette.text.secondary}
+			>
+				{label}
+			</Typography>
+			<Typography variant="body2">{value}</Typography>
+		</Stack>
+	);
+};
+
+interface MetricItemProps {
+	label: string;
+	progress: number;
+	details?: MetricDetailRowProps[];
+}
+
+const MetricItem = ({ label, progress, details }: MetricItemProps) => {
+	const theme = useTheme();
+	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
+	return (
+		<Grid
+			size={isSmall ? 12 : 4}
+			sx={{
+				display: "flex",
+				flexDirection: "column",
+				alignItems: "center",
+				textAlign: "center",
+				gap: theme.spacing(2),
+				padding: theme.spacing(2),
+				paddingBottom: theme.spacing(4),
+				borderRight: isSmall ? "none" : `1px solid ${theme.palette.divider}`,
+				borderBottom: isSmall ? `1px solid ${theme.palette.divider}` : "none",
+				"&:last-child": {
+					borderRight: "none",
+					borderBottom: "none",
+					paddingBottom: theme.spacing(2),
+				},
+			}}
+		>
+			<Box
+				display="flex"
+				flexDirection="column"
 				alignItems="center"
-				spacing={theme.spacing(2)}
 			>
 				<Gauge
 					progress={progress}
@@ -48,44 +79,22 @@ const MetricItem = ({
 					strokeWidth={12}
 				/>
 				<Typography variant="body2">{label}</Typography>
-			</Stack>
-			{(upperLabel || lowerLabel) && (
-				<Stack
-					spacing={theme.spacing(1)}
-					flex={1}
-					paddingBottom={theme.spacing(10)}
+			</Box>
+			{details && details.length > 0 && (
+				<Box
+					width="100%"
+					paddingX={theme.spacing(10)}
 				>
-					{upperLabel && (
-						<Stack
-							direction="row"
-							justifyContent="space-between"
-						>
-							<Typography
-								variant="body2"
-								color="text.secondary"
-							>
-								{upperLabel}
-							</Typography>
-							<Typography variant="body2">{upperValue}</Typography>
-						</Stack>
-					)}
-					{lowerLabel && (
-						<Stack
-							direction="row"
-							justifyContent="space-between"
-						>
-							<Typography
-								variant="body2"
-								color="text.secondary"
-							>
-								{lowerLabel}
-							</Typography>
-							<Typography variant="body2">{lowerValue}</Typography>
-						</Stack>
-					)}
-				</Stack>
+					{details.map((detail) => (
+						<MetricDetailRow
+							key={detail.label}
+							label={detail.label}
+							value={detail.value}
+						/>
+					))}
+				</Box>
 			)}
-		</Stack>
+		</Grid>
 	);
 };
 
@@ -99,54 +108,93 @@ export const InfrastructureMetrics = ({ monitor }: { monitor: StatusPageMonitor 
 		return (
 			<Typography
 				variant="body2"
-				color="text.secondary"
+				color={theme.palette.text.secondary}
 			>
 				{t("pages.statusPages.monitorsList.noData")}
 			</Typography>
 		);
 	}
 
-	const cpuUsage = (latestCheck?.cpu?.usage_percent || 0) * 100;
-	const memoryUsage = (latestCheck?.memory?.usage_percent || 0) * 100;
-	const memoryUsed = latestCheck?.memory?.used_bytes || 0;
-	const memoryTotal = latestCheck?.memory?.total_bytes || 0;
-
-	const disks = latestCheck?.disk ?? [];
-	const totalDiskUsage = disks.reduce((acc, disk) => acc + (disk?.usage_percent || 0), 0);
-	const diskCount = disks.length || 1;
-	const diskUsage = (totalDiskUsage / diskCount) * 100;
-	const diskUsed = disks.reduce((acc, disk) => acc + (disk?.used_bytes || 0), 0);
-	const diskTotal = disks.reduce((acc, disk) => acc + (disk?.total_bytes || 0), 0);
+	const metrics = [
+		{
+			key: t("pages.statusPages.monitorsList.infrastructure.cpu"),
+			labelKey: t("pages.statusPages.monitorsList.infrastructure.cpu"),
+			hasData: latestCheck.cpu && typeof latestCheck.cpu.usage_percent === "number",
+			progress: latestCheck.cpu?.usage_percent ? latestCheck.cpu.usage_percent * 100 : 0,
+			details: [
+				{
+					label: t("pages.statusPages.monitorsList.infrastructure.usage"),
+					value: `${((latestCheck.cpu?.usage_percent || 0) * 100).toFixed(2)}%`,
+				},
+			],
+		},
+		{
+			key: t("pages.statusPages.monitorsList.infrastructure.memoryText"),
+			labelKey: t("pages.statusPages.monitorsList.infrastructure.memory"),
+			hasData:
+				latestCheck.memory &&
+				typeof latestCheck.memory.usage_percent === "number" &&
+				typeof latestCheck.memory.used_bytes === "number" &&
+				typeof latestCheck.memory.total_bytes === "number",
+			progress: latestCheck.memory?.usage_percent
+				? latestCheck.memory.usage_percent * 100
+				: 0,
+			details: [
+				{
+					label: t("pages.statusPages.monitorsList.infrastructure.used"),
+					value: prettyBytes(latestCheck.memory?.used_bytes || 0),
+				},
+				{
+					label: t("pages.statusPages.monitorsList.infrastructure.total"),
+					value: prettyBytes(latestCheck.memory?.total_bytes || 0),
+				},
+			],
+		},
+		{
+			key: t("pages.statusPages.monitorsList.infrastructure.disk"),
+			labelKey: t("pages.statusPages.monitorsList.infrastructure.disk"),
+			hasData: latestCheck.disk && latestCheck.disk.length > 0,
+			progress: latestCheck.disk
+				? (latestCheck.disk.reduce((acc, disk) => acc + (disk?.usage_percent || 0), 0) /
+						latestCheck.disk.length) *
+					100
+				: 0,
+			details: [
+				{
+					label: t("pages.statusPages.monitorsList.infrastructure.used"),
+					value: prettyBytes(
+						latestCheck?.disk?.reduce((acc, disk) => acc + (disk?.used_bytes || 0), 0) ??
+							0
+					),
+				},
+				{
+					label: t("pages.statusPages.monitorsList.infrastructure.total"),
+					value: prettyBytes(
+						latestCheck?.disk?.reduce((acc, disk) => acc + (disk?.total_bytes || 0), 0) ??
+							0
+					),
+				},
+			],
+		},
+	];
 
 	return (
-		<Stack
-			direction={{ xs: "column", sm: "row" }}
-			gap={theme.spacing(10)}
-			columnGap={theme.spacing(15)}
-			padding={theme.spacing(8)}
+		<Grid
+			container
+			alignItems="center"
+			padding={theme.spacing(4)}
 		>
-			<MetricItem
-				label={t("pages.statusPages.monitorsList.infrastructure.cpu")}
-				progress={cpuUsage}
-				upperLabel={t("pages.statusPages.monitorsList.infrastructure.usage")}
-				upperValue={`${cpuUsage.toFixed(1)}%`}
-			/>
-			<MetricItem
-				label={t("pages.statusPages.monitorsList.infrastructure.memory")}
-				progress={memoryUsage}
-				upperLabel={t("pages.statusPages.monitorsList.infrastructure.used")}
-				upperValue={prettyBytes(memoryUsed)}
-				lowerLabel={t("pages.statusPages.monitorsList.infrastructure.total")}
-				lowerValue={prettyBytes(memoryTotal)}
-			/>
-			<MetricItem
-				label={t("pages.statusPages.monitorsList.infrastructure.disk")}
-				progress={diskUsage}
-				upperLabel={t("pages.statusPages.monitorsList.infrastructure.used")}
-				upperValue={prettyBytes(diskUsed)}
-				lowerLabel={t("pages.statusPages.monitorsList.infrastructure.total")}
-				lowerValue={prettyBytes(diskTotal)}
-			/>
-		</Stack>
+			{metrics.map(
+				({ key, labelKey, hasData, progress, details }) =>
+					hasData && (
+						<MetricItem
+							key={key}
+							label={t(labelKey)}
+							progress={progress}
+							details={details}
+						/>
+					)
+			)}
+		</Grid>
 	);
 };

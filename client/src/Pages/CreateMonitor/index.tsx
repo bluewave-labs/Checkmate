@@ -302,35 +302,35 @@ const CreateMonitorPage = () => {
 									>
 										<RadioWithDescription
 											value="http"
-											label={t("pages.createMonitor.form.type.optionHttp")}
+											label={t("pages.common.monitors.monitorTypes.optionHttp")}
 											description={t(
 												"pages.createMonitor.form.type.optionHttpDescription"
 											)}
 										/>
 										<RadioWithDescription
 											value="ping"
-											label={t("pages.createMonitor.form.type.optionPing")}
+											label={t("pages.common.monitors.monitorTypes.optionPing")}
 											description={t(
 												"pages.createMonitor.form.type.optionPingDescription"
 											)}
 										/>
 										<RadioWithDescription
 											value="docker"
-											label={t("pages.createMonitor.form.type.optionDocker")}
+											label={t("pages.common.monitors.monitorTypes.optionDocker")}
 											description={t(
 												"pages.createMonitor.form.type.optionDockerDescription"
 											)}
 										/>
 										<RadioWithDescription
 											value="port"
-											label={t("pages.createMonitor.form.type.optionPort")}
+											label={t("pages.common.monitors.monitorTypes.optionPort")}
 											description={t(
 												"pages.createMonitor.form.type.optionPortDescription"
 											)}
 										/>
 										<RadioWithDescription
 											value="game"
-											label={t("pages.createMonitor.form.type.optionGame")}
+											label={t("pages.common.monitors.monitorTypes.optionGame")}
 											description={t(
 												"pages.createMonitor.form.type.optionGameDescription"
 											)}
