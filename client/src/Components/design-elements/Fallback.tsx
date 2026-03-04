@@ -2,6 +2,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { BulletPointCheck, SkeletonCard } from "@/Components/design-elements";
 import { Button } from "@/Components/inputs";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 
 import { useNavigate } from "react-router";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -27,7 +28,7 @@ export const BaseFallback = ({ children, ...props }: BaseFallbackProps) => {
 				lg: "50%",
 				xl: "40%",
 			}}
-			padding={{ xs: theme.spacing(8), md: theme.spacing(16) }}
+			padding={{ xs: theme.spacing(LAYOUT.MD), md: theme.spacing(LAYOUT.XXL) }}
 			bgcolor={theme.palette.background.paper}
 			border={1}
 			borderColor={theme.palette.divider}
@@ -55,7 +56,7 @@ export const ErrorFallback = ({
 		<BaseFallback>
 			<Typography
 				variant="h1"
-				marginY={theme.spacing(4)}
+				marginY={theme.spacing(LAYOUT.XS)}
 				color={theme.palette.text.secondary}
 			>
 				{title}
@@ -81,7 +82,7 @@ export const EmptyFallback = ({
 	return (
 		<BaseFallback>
 			<Stack
-				gap={theme.spacing(10)}
+				gap={theme.spacing(LAYOUT.MD)}
 				zIndex={1}
 				alignItems="center"
 			>
@@ -89,7 +90,7 @@ export const EmptyFallback = ({
 				<Stack
 					sx={{
 						flexWrap: "wrap",
-						gap: theme.spacing(2),
+						gap: theme.spacing(SPACING.MD),
 						maxWidth: "1100px",
 						width: "100%",
 					}}
@@ -134,7 +135,7 @@ export const EmptyMonitorFallback = ({
 	return (
 		<BaseFallback>
 			<Stack
-				gap={theme.spacing(10)}
+				gap={theme.spacing(LAYOUT.MD)}
 				zIndex={1}
 				alignItems="center"
 			>
@@ -147,7 +148,7 @@ export const EmptyMonitorFallback = ({
 				<Stack
 					sx={{
 						flexWrap: "wrap",
-						gap: theme.spacing(2),
+						gap: theme.spacing(SPACING.MD),
 						maxWidth: "1100px",
 						width: "100%",
 					}}

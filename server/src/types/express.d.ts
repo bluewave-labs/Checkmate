@@ -5,7 +5,7 @@ declare global {
 		interface Request {
 			file?: Multer.File;
 			user?: User | undefined;
-			resource?: any;
+			resource?: unknown;
 		}
 	}
 }

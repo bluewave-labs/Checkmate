@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useEffect } from "react";
+import { logger } from "@/Utils/logger";
 import { useParams, useLocation, useNavigate } from "react-router";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,6 +16,7 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import { Trash2 } from "lucide-react";
 import { HeaderDeleteControls } from "@/Components/monitors";
+import { GeoContinents } from "@/Types/GeoCheck";
 
 import { BasePage, ConfigBox } from "@/Components/design-elements";
 import {
@@ -27,6 +29,7 @@ import {
 	SliderWithLabel,
 	Dialog,
 } from "@/Components/inputs";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import { useGet, usePost, usePatch, useDelete } from "@/Hooks/UseApi";
 import { useMonitorForm } from "@/Hooks/useMonitorForm";
 import type { Monitor, MonitorType, GamesMap } from "@/Types/Monitor";
@@ -41,6 +44,8 @@ interface GeneralSettingsConfig {
 	showPort: boolean;
 	showGameSelect: boolean;
 	showSecret: boolean;
+	showGrpcServiceName: boolean;
+	showIgnoreTls: boolean;
 }
 
 const getGeneralSettingsConfig = (
@@ -56,6 +61,8 @@ const getGeneralSettingsConfig = (
 			showPort: false,
 			showGameSelect: false,
 			showSecret: false,
+			showGrpcServiceName: false,
+			showIgnoreTls: false,
 		},
 		ping: {
 			urlLabel: t("pages.createMonitor.form.general.option.host.label"),
@@ -65,6 +72,8 @@ const getGeneralSettingsConfig = (
 			showPort: false,
 			showGameSelect: false,
 			showSecret: false,
+			showGrpcServiceName: false,
+			showIgnoreTls: false,
 		},
 		docker: {
 			urlLabel: t("pages.createMonitor.form.general.option.container.label"),
@@ -74,6 +83,8 @@ const getGeneralSettingsConfig = (
 			showPort: false,
 			showGameSelect: false,
 			showSecret: false,
+			showGrpcServiceName: false,
+			showIgnoreTls: false,
 		},
 		port: {
 			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
@@ -83,6 +94,8 @@ const getGeneralSettingsConfig = (
 			showPort: true,
 			showGameSelect: false,
 			showSecret: false,
+			showGrpcServiceName: false,
+			showIgnoreTls: false,
 		},
 		game: {
 			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
@@ -92,6 +105,19 @@ const getGeneralSettingsConfig = (
 			showPort: true,
 			showGameSelect: true,
 			showSecret: false,
+			showGrpcServiceName: false,
+			showIgnoreTls: false,
+		},
+		grpc: {
+			urlLabel: t("pages.createMonitor.form.general.option.host.label"),
+			urlPlaceholder: t("pages.createMonitor.form.general.option.host.placeholder"),
+			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
+			showUrl: true,
+			showPort: true,
+			showGameSelect: false,
+			showSecret: false,
+			showGrpcServiceName: true,
+			showIgnoreTls: true,
 		},
 		pagespeed: {
 			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
@@ -101,6 +127,8 @@ const getGeneralSettingsConfig = (
 			showPort: false,
 			showGameSelect: false,
 			showSecret: false,
+			showGrpcServiceName: false,
+			showIgnoreTls: false,
 		},
 		hardware: {
 			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
@@ -110,6 +138,8 @@ const getGeneralSettingsConfig = (
 			showPort: false,
 			showGameSelect: false,
 			showSecret: true,
+			showGrpcServiceName: false,
+			showIgnoreTls: false,
 		},
 	};
 	return configs[type] || configs.http;
@@ -165,6 +195,7 @@ const CreateMonitorPage = () => {
 	const watchedType = watch("type") as MonitorType;
 
 	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
+	const watchGeoCheckEnabled = watch("geoCheckEnabled") as boolean;
 
 	useEffect(() => {
 		clearErrors();
@@ -224,7 +255,7 @@ const CreateMonitorPage = () => {
 	};
 
 	const onError = (errors: unknown) => {
-		console.log(errors);
+		logger.debug("Monitor creation validation errors", errors);
 	};
 
 	return (
@@ -251,7 +282,7 @@ const CreateMonitorPage = () => {
 								<FormControl error={!!fieldState.error}>
 									<RadioGroup
 										{...field}
-										sx={{ gap: theme.spacing(6) }}
+										sx={{ gap: theme.spacing(LAYOUT.MD) }}
 									>
 										<RadioWithDescription
 											value="http"
@@ -288,6 +319,13 @@ const CreateMonitorPage = () => {
 												"pages.createMonitor.form.type.optionGameDescription"
 											)}
 										/>
+										<RadioWithDescription
+											value="grpc"
+											label={t("pages.createMonitor.form.type.optionGrpc")}
+											description={t(
+												"pages.createMonitor.form.type.optionGrpcDescription"
+											)}
+										/>
 									</RadioGroup>
 								</FormControl>
 							)}
@@ -300,7 +338,7 @@ const CreateMonitorPage = () => {
 				title={t("pages.createMonitor.form.general.title")}
 				subtitle={t(`pages.createMonitor.form.general.description.${watchedType}`)}
 				rightContent={
-					<Stack spacing={theme.spacing(8)}>
+					<Stack spacing={theme.spacing(LAYOUT.MD)}>
 						{/* URL/Host/Container field - not shown for hardware */}
 						{generalSettingsConfig.showUrl && (
 							<Controller
@@ -372,6 +410,30 @@ const CreateMonitorPage = () => {
 												</MenuItem>
 											))}
 									</Select>
+								)}
+							/>
+						)}
+
+						{/* gRPC Service Name field - only for grpc type */}
+						{generalSettingsConfig.showGrpcServiceName && (
+							<Controller
+								name="grpcServiceName"
+								control={control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value ?? ""}
+										type="text"
+										fieldLabel={t(
+											"pages.createMonitor.form.general.option.grpcServiceName.label"
+										)}
+										placeholder={t(
+											"pages.createMonitor.form.general.option.grpcServiceName.placeholder"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
 								)}
 							/>
 						)}
@@ -495,7 +557,7 @@ const CreateMonitorPage = () => {
 					title={t("pages.createMonitor.form.thresholds.title")}
 					subtitle={t("pages.createMonitor.form.thresholds.description")}
 					rightContent={
-						<Stack spacing={theme.spacing(8)}>
+						<Stack spacing={theme.spacing(LAYOUT.MD)}>
 							<Controller
 								name="cpuAlertThreshold"
 								control={control}
@@ -577,7 +639,7 @@ const CreateMonitorPage = () => {
 				title={t("pages.createMonitor.form.incidents.title")}
 				subtitle={t("pages.createMonitor.form.incidents.description")}
 				rightContent={
-					<Stack spacing={theme.spacing(12)}>
+					<Stack spacing={theme.spacing(LAYOUT.MD)}>
 						<Controller
 							name="statusWindowSize"
 							control={control}
@@ -629,7 +691,7 @@ const CreateMonitorPage = () => {
 								(field.value ?? []).includes(n.id)
 							);
 							return (
-								<Stack spacing={theme.spacing(4)}>
+								<Stack spacing={theme.spacing(LAYOUT.MD)}>
 									<Autocomplete
 										multiple
 										options={notificationOptions}
@@ -680,7 +742,7 @@ const CreateMonitorPage = () => {
 				}
 			/>
 
-			{watchedType === "http" && (
+			{(watchedType === "http" || watchedType === "grpc") && (
 				<ConfigBox
 					title={t("pages.createMonitor.form.ignoreTls.title")}
 					subtitle={t("pages.createMonitor.form.ignoreTls.description")}
@@ -692,7 +754,7 @@ const CreateMonitorPage = () => {
 								<Stack
 									direction="row"
 									alignItems="center"
-									spacing={theme.spacing(2)}
+									spacing={theme.spacing(SPACING.LG)}
 								>
 									<Switch
 										checked={field.value ?? false}
@@ -713,7 +775,7 @@ const CreateMonitorPage = () => {
 					title={t("pages.createMonitor.form.advanced.title")}
 					subtitle={t("pages.createMonitor.form.advanced.description")}
 					rightContent={
-						<Stack spacing={theme.spacing(8)}>
+						<Stack spacing={theme.spacing(LAYOUT.MD)}>
 							<Controller
 								name="useAdvancedMatching"
 								control={control}
@@ -721,7 +783,7 @@ const CreateMonitorPage = () => {
 									<Stack
 										direction="row"
 										alignItems="center"
-										spacing={theme.spacing(2)}
+										spacing={theme.spacing(SPACING.LG)}
 									>
 										<Switch
 											checked={field.value ?? false}
@@ -736,7 +798,7 @@ const CreateMonitorPage = () => {
 								)}
 							/>
 							{watchedUseAdvancedMatching && (
-								<Stack spacing={theme.spacing(8)}>
+								<Stack spacing={theme.spacing(LAYOUT.MD)}>
 									<Controller
 										name="matchMethod"
 										control={control}
@@ -816,6 +878,140 @@ const CreateMonitorPage = () => {
 											}}
 										/>
 									</Typography>
+								</Stack>
+							)}
+						</Stack>
+					}
+				/>
+			)}
+
+			{watchedType === "http" && (
+				<ConfigBox
+					title={t("pages.createMonitor.form.geoChecks.title")}
+					subtitle={t("pages.createMonitor.form.geoChecks.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(LAYOUT.MD)}>
+							<Controller
+								name="geoCheckEnabled"
+								control={control}
+								render={({ field }) => (
+									<Stack
+										direction="row"
+										alignItems="center"
+										spacing={theme.spacing(SPACING.LG)}
+									>
+										<Switch
+											checked={field.value ?? false}
+											onChange={(e) => field.onChange(e.target.checked)}
+										/>
+										<Typography>
+											{t("pages.createMonitor.form.geoChecks.option.enabled.label")}
+										</Typography>
+									</Stack>
+								)}
+							/>
+							{watchGeoCheckEnabled && (
+								<Stack spacing={theme.spacing(LAYOUT.MD)}>
+									<Controller
+										name="geoCheckLocations"
+										control={control}
+										render={({ field }) => {
+											// Map continents to have 'name' property for Autocomplete
+											const locationOptions = GeoContinents.map((continent) => ({
+												id: continent,
+												name: t(
+													`pages.createMonitor.form.geoChecks.option.locations.options.${continent}`
+												),
+											}));
+											const selectedLocations = locationOptions.filter((loc) =>
+												(field.value ?? []).includes(loc.id)
+											);
+											return (
+												<Stack spacing={theme.spacing(LAYOUT.MD)}>
+													<Autocomplete
+														multiple
+														options={locationOptions}
+														value={selectedLocations}
+														getOptionLabel={(option) => option.name}
+														onChange={(_: unknown, newValue: typeof locationOptions) => {
+															field.onChange(newValue.map((loc) => loc.id));
+														}}
+														isOptionEqualToValue={(option, value) =>
+															option.id === value.id
+														}
+														fieldLabel={t(
+															"pages.createMonitor.form.geoChecks.option.locations.label"
+														)}
+													/>
+													{selectedLocations.length > 0 && (
+														<Stack
+															flex={1}
+															width="100%"
+														>
+															{selectedLocations.map((location, index) => (
+																<Stack
+																	direction="row"
+																	alignItems="center"
+																	key={location.id}
+																	width="100%"
+																>
+																	<Typography flexGrow={1}>{location.name}</Typography>
+																	<IconButton
+																		size="small"
+																		onClick={() => {
+																			field.onChange(
+																				(field.value ?? []).filter(
+																					(id: string) => id !== location.id
+																				)
+																			);
+																		}}
+																		aria-label="Remove location"
+																	>
+																		<Trash2 size={16} />
+																	</IconButton>
+																	{index < selectedLocations.length - 1 && <Divider />}
+																</Stack>
+															))}
+														</Stack>
+													)}
+												</Stack>
+											);
+										}}
+									/>
+									<Controller
+										name="geoCheckInterval"
+										control={control}
+										render={({ field }) => (
+											<Select
+												{...field}
+												value={field.value ?? 300000}
+												fieldLabel={t(
+													"pages.createMonitor.form.geoChecks.option.interval.label"
+												)}
+											>
+												<MenuItem value={300000}>
+													{t(
+														"pages.createMonitor.form.geoChecks.option.interval.value.fiveMinutes"
+													)}
+												</MenuItem>
+												<MenuItem value={600000}>
+													{t(
+														"pages.createMonitor.form.geoChecks.option.interval.value.tenMinutes"
+													)}
+												</MenuItem>
+												<MenuItem value={900000}>
+													{t(
+														"pages.createMonitor.form.geoChecks.option.interval.value.fifteenMinutes"
+													)}
+												</MenuItem>
+												<MenuItem value={1800000}>
+													{t(
+														"pages.createMonitor.form.geoChecks.option.interval.value.thirtyMinutes"
+													)}
+												</MenuItem>
+											</Select>
+										)}
+									/>
 								</Stack>
 							)}
 						</Stack>

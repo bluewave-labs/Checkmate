@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { sendTestEmailBodyValidation, updateAppSettingsBodyValidation } from "@/validation/joi.js";
+import { updateAppSettingsBodyValidation } from "@/validation/settingsValidation.js";
+import { sendTestEmailBodyValidation } from "@/validation/notificationValidation.js";
 import { AppError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "SettingsController";
@@ -55,20 +56,24 @@ class SettingsController {
 	};
 
 	updateAppSettings = async (req: Request, res: Response, next: NextFunction) => {
-		await updateAppSettingsBodyValidation.validateAsync(req.body);
+		try {
+			updateAppSettingsBodyValidation.parse(req.body);
 
-		const updatedSettings = await this.settingsService.updateDbSettings(req.body);
-		const returnSettings = this.buildAppSettings(updatedSettings);
-		return res.status(200).json({
-			success: true,
-			msg: "App settings updated successfully",
-			data: returnSettings,
-		});
+			const updatedSettings = await this.settingsService.updateDbSettings(req.body);
+			const returnSettings = this.buildAppSettings(updatedSettings);
+			return res.status(200).json({
+				success: true,
+				msg: "App settings updated successfully",
+				data: returnSettings,
+			});
+		} catch (error) {
+			next(error);
+		}
 	};
 
 	sendTestEmail = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await sendTestEmailBodyValidation.validateAsync(req.body);
+			sendTestEmailBodyValidation.parse(req.body);
 
 			const {
 				to,

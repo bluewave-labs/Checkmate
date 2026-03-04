@@ -1,15 +1,15 @@
 const SERVICE_NAME = "EmailProvider";
-import type { Monitor, Notification, MonitorStatusResponse } from "@/types/index.js";
+import type { Notification } from "@/types/index.js";
 import { INotificationProvider } from "@/service/index.js";
-import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import { buildTestEmail } from "@/service/infrastructure/notificationProviders/utils.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
-
+import type { ILogger } from "@/utils/logger.js";
+import { IEmailService } from "@/service/infrastructure/emailService.js";
 export class EmailProvider implements INotificationProvider {
-	private emailService: any;
-	private logger: any;
+	private emailService: IEmailService;
+	private logger: ILogger;
 
-	constructor(emailService: any, logger: any) {
+	constructor(emailService: IEmailService, logger: ILogger) {
 		this.emailService = emailService;
 		this.logger = logger;
 	}
@@ -17,6 +17,24 @@ export class EmailProvider implements INotificationProvider {
 	async sendTestAlert(notification: Notification): Promise<boolean> {
 		const subject = "Test notification";
 		const html = await buildTestEmail(this.emailService);
+
+		if (!notification.address) {
+			this.logger.warn({
+				message: "Missing address",
+				service: SERVICE_NAME,
+				method: "sendTestAlert",
+			});
+			return false;
+		}
+
+		if (!html) {
+			this.logger.warn({
+				message: "Failed to build test email content",
+				service: SERVICE_NAME,
+				method: "sendTestAlert",
+			});
+			return false;
+		}
 
 		const messageId = await this.emailService.sendEmail(notification.address, subject, html);
 		if (!messageId) {
@@ -37,6 +55,15 @@ export class EmailProvider implements INotificationProvider {
 
 		const subject = this.buildSubject(message);
 		const html = await this.buildEmailFromMessage(message);
+
+		if (!html) {
+			this.logger.warn({
+				message: "Failed to build email content",
+				service: SERVICE_NAME,
+				method: "sendMessage",
+			});
+			return false;
+		}
 
 		const messageId = await this.emailService.sendEmail(notification.address, subject, html);
 		if (!messageId) {
@@ -65,7 +92,7 @@ export class EmailProvider implements INotificationProvider {
 		}
 	}
 
-	private async buildEmailFromMessage(message: NotificationMessage): Promise<string> {
+	private async buildEmailFromMessage(message: NotificationMessage): Promise<string | undefined> {
 		const context = {
 			title: message.content.title,
 			summary: message.content.summary,
@@ -87,16 +114,6 @@ export class EmailProvider implements INotificationProvider {
 		});
 
 		const html = await this.emailService.buildEmail("unifiedNotificationTemplate", context);
-
-		this.logger.info({
-			message: "[DEBUG] Email HTML generated",
-			service: SERVICE_NAME,
-			method: "buildEmailFromMessage",
-			details: {
-				htmlLength: html?.length || 0,
-				htmlPreview: html?.substring(0, 200),
-			},
-		});
 
 		return html;
 	}

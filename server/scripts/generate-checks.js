@@ -3,8 +3,6 @@ import { MonitorModel } from "../dist/db/models/Monitor.js";
 import { CheckModel } from "../dist/db/models/Check.js";
 
 const DEFAULT_MONITOR_ID = "000000000000000000000001";
-const DEFAULT_TEAM_ID = "0000000000000000000000aa";
-const DEFAULT_USER_ID = "0000000000000000000000bb";
 const DEFAULT_MONITOR_TYPE = "http";
 const DEFAULT_TOTAL = 1_000_000;
 const DEFAULT_BATCH_SIZE = 5_000;
@@ -12,7 +10,7 @@ const DEFAULT_BATCH_SIZE = 5_000;
 const parseObjectId = (value, fallback) => {
 	try {
 		return new mongoose.Types.ObjectId(value || fallback);
-	} catch (error) {
+	} catch {
 		console.warn(`Invalid ObjectId '${value}', falling back to '${fallback}'.`);
 		return new mongoose.Types.ObjectId(fallback);
 	}

@@ -44,7 +44,9 @@
 			"addDemo": "Add demo monitors",
 			"removeMonitors": "Remove monitors",
 			"sendTestEmail": "Send test email",
-			"exportToJSON": "Export to JSON"
+			"exportToJSON": "Export to JSON",
+			"importFromJSON": "Import from JSON",
+			"clearFilters": "Clear filters"
 		},
 		"charts": {
 			"labels": {
@@ -114,7 +116,8 @@
 				"type": "Type",
 				"url": "Url",
 				"interval": "Interval",
-				"active": "Active"
+				"active": "Active",
+				"responseTime": "Response time"
 			}
 		}
 	},
@@ -371,8 +374,8 @@
 			"table": {
 				"empty": "No down checks in this time range",
 				"headers": {
-					"dateTime": "Date & time",
-					"statusCode": "Status code"
+					"statusCode": "Status code",
+					"location": "Location"
 				}
 			}
 		},
@@ -480,6 +483,10 @@
 						"port": {
 							"label": "Port to monitor",
 							"placeholder": 80
+						},
+						"grpcServiceName": {
+							"label": "Service name",
+							"placeholder": "e.g. my.service.v1 (leave empty for overall health)"
 						}
 					},
 					"title": "General settings",
@@ -490,6 +497,7 @@
 						"docker": "Enter the Docker container name or ID. You can use either the container name (e.g., my-app) or the container ID (full 64-char ID or short ID).",
 						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type.",
 						"pagespeed": "Track page load performance, Core Web Vitals, and optimization scores for your website.",
+						"grpc": "Enter the hostname and port of the gRPC server, optionally specify a service name for the health check, and add a display name.",
 						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure."
 					}
 				},
@@ -524,6 +532,8 @@
 					"optionDockerDescription": "Use Docker to monitor if a container is running.",
 					"optionGame": "Game",
 					"optionGameDescription": "Monitor if a specific game server is online.",
+					"optionGrpc": "gRPC",
+					"optionGrpcDescription": "Monitor gRPC services using the standard Health Checking Protocol.",
 					"optionHttp": "HTTP(S)",
 					"optionHttpDescription": "Use HTTP(S) to monitor your website or API endpoint.",
 					"optionPing": "Ping",
@@ -547,6 +557,36 @@
 						},
 						"tempThreshold": {
 							"label": "Temperature alert threshold (°C)"
+						}
+					}
+				},
+				"geoChecks": {
+					"title": "Geo-Distributed Checks",
+					"description": "Run checks from multiple geographic locations to monitor global availability and performance.",
+					"option": {
+						"enabled": {
+							"label": "Enable geo-distributed checks"
+						},
+						"locations": {
+							"label": "Locations",
+							"placeholder": "Select locations",
+							"options": {
+								"EU": "Europe",
+								"NA": "North America",
+								"AS": "Asia",
+								"SA": "South America",
+								"AF": "Africa",
+								"OC": "Oceania"
+							}
+						},
+						"interval": {
+							"label": "Check interval",
+							"value": {
+								"fiveMinutes": "5 minutes",
+								"tenMinutes": "10 minutes",
+								"fifteenMinutes": "15 minutes",
+								"thirtyMinutes": "30 minutes"
+							}
 						}
 					}
 				},
@@ -619,7 +659,6 @@
 			},
 			"filters": {
 				"allMonitors": "All monitors",
-				"clearFilters": "Clear filters",
 				"monitor": "Monitor",
 				"resolutionType": "Resolution type",
 				"resolutionTypes": {
@@ -1086,12 +1125,18 @@
 					}
 				},
 				"exportMonitors": {
-					"title": "Export monitors",
-					"description": "Export your monitors data as a JSON file for backup or transfer."
+					"title": "Export monitors"
+				},
+				"importExportMonitors": {
+					"title": "Import / Export monitors",
+					"description": "Import or export your monitors data as a JSON file for backup or transfer."
 				},
 				"about": {
 					"title": "About",
 					"developedBy": "Developed by Bluewave Labs"
+				},
+				"validation": {
+					"errorMessage": "Please fix the following validation errors:"
 				}
 			}
 		},

@@ -160,6 +160,10 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		gameId: {
 			type: String,
 		},
+		grpcServiceName: {
+			type: String,
+			default: "",
+		},
 		group: {
 			type: String,
 			trim: true,
@@ -168,6 +172,18 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			set(value: string | null) {
 				return value && value.trim() ? value.trim() : null;
 			},
+		},
+		geoCheckEnabled: {
+			type: Boolean,
+			default: false,
+		},
+		geoCheckLocations: {
+			type: [String],
+			default: [],
+		},
+		geoCheckInterval: {
+			type: Number,
+			default: 300000,
 		},
 		recentChecks: {
 			type: [checkSnapshotSchema],

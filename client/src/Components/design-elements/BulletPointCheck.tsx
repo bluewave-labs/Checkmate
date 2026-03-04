@@ -2,6 +2,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { Check } from "lucide-react";
 import { useTheme } from "@mui/material/styles";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 export const BulletPointCheck = ({
 	text,
@@ -21,7 +22,7 @@ export const BulletPointCheck = ({
 	return (
 		<Stack
 			direction="row"
-			gap={theme.spacing(6)}
+			gap={theme.spacing(LAYOUT.SM)}
 			alignItems="center"
 		>
 			<Check

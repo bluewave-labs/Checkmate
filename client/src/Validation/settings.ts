@@ -40,34 +40,12 @@ export const settingsSchema = z.object({
 		.string()
 		.transform((val) => (val.trim() === "" ? undefined : val.trim()))
 		.optional(),
-	globalThresholds: z
-		.object({
-			cpu: z
-				.number()
-				.int()
-				.min(1, "Please enter a valid value")
-				.max(100, "Maximum value is 100")
-				.optional(),
-			memory: z
-				.number()
-				.int()
-				.min(1, "Please enter a valid value")
-				.max(100, "Maximum value is 100")
-				.optional(),
-			disk: z
-				.number()
-				.int()
-				.min(1, "Please enter a valid value")
-				.max(100, "Maximum value is 100")
-				.optional(),
-			temperature: z
-				.number()
-				.int()
-				.min(1, "Please enter a valid value")
-				.max(150, "Maximum value is 150")
-				.optional(),
-		})
-		.optional(),
+	globalThresholds: z.object({
+		cpu: z.number().int().min(1).max(100),
+		memory: z.number().int().min(1).max(100),
+		disk: z.number().int().min(1).max(100),
+		temperature: z.number().int().min(1).max(150),
+	}),
 });
 
 export type SettingsFormData = z.infer<typeof settingsSchema>;

@@ -3,42 +3,29 @@ import type { Monitor } from "@/types/monitor.js";
 import type { MonitorStatusResponse } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import { ParseBoolean } from "@/utils/utils.js";
+import { getDateForRange } from "@/utils/dataUtils.js";
 import type { IIncidentsRepository, IMonitorsRepository, IUsersRepository } from "@/repositories/index.js";
 import type { Incident } from "@/types/index.js";
 import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import type { INotificationMessageBuilder } from "@/service/infrastructure/notificationMessageBuilder.js";
-
-const dateRangeLookup: Record<string, Date | undefined> = {
-	recent: new Date(new Date().setHours(new Date().getHours() - 2)),
-	hour: new Date(new Date().setHours(new Date().getHours() - 1)),
-	day: new Date(new Date().setDate(new Date().getDate() - 1)),
-	week: new Date(new Date().setDate(new Date().getDate() - 7)),
-	month: new Date(new Date().setMonth(new Date().getMonth() - 1)),
-	all: undefined,
-};
+import type { ILogger } from "@/utils/logger.js";
 
 class IncidentService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private logger: any;
+	private logger: ILogger;
 	private incidentsRepository: IIncidentsRepository;
 	private monitorsRepository: IMonitorsRepository;
 	private usersRepository: IUsersRepository;
 	private notificationMessageBuilder: INotificationMessageBuilder;
 
-	constructor({
-		logger,
-		incidentsRepository,
-		monitorsRepository,
-		usersRepository,
-		notificationMessageBuilder,
-	}: {
-		logger: any;
-		incidentsRepository: IIncidentsRepository;
-		monitorsRepository: IMonitorsRepository;
-		usersRepository: IUsersRepository;
-		notificationMessageBuilder: INotificationMessageBuilder;
-	}) {
+	constructor(
+		logger: ILogger,
+		incidentsRepository: IIncidentsRepository,
+		monitorsRepository: IMonitorsRepository,
+		usersRepository: IUsersRepository,
+		notificationMessageBuilder: INotificationMessageBuilder
+	) {
 		this.logger = logger;
 		this.incidentsRepository = incidentsRepository;
 		this.monitorsRepository = monitorsRepository;
@@ -151,7 +138,7 @@ class IncidentService {
 				service: SERVICE_NAME,
 				method: "resolveIncidentManually",
 				message: `Incident manually resolved by user`,
-				details: resolvedIncident.id,
+				details: { incidentId: resolvedIncident.id },
 			});
 
 			return resolvedIncident;
@@ -160,7 +147,7 @@ class IncidentService {
 				service: SERVICE_NAME,
 				method: "resolveIncident",
 				message: error.message,
-				details: incidentId,
+				details: { id: incidentId },
 				stack: error.stack,
 			});
 			throw error;
@@ -182,7 +169,7 @@ class IncidentService {
 				throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "getIncidentsByTeam", status: 400 });
 			}
 
-			const startDate = dateRangeLookup[dateRange];
+			const startDate = getDateForRange(dateRange);
 
 			const parsedPage = Number.isFinite(parseInt(page)) ? parseInt(page) : 0;
 			const parsedRowsPerPage = Number.isFinite(parseInt(rowsPerPage)) ? parseInt(rowsPerPage) : 20;
@@ -207,7 +194,7 @@ class IncidentService {
 				service: SERVICE_NAME,
 				method: "getIncidentsByTeam",
 				message: error.message,
-				details: teamId,
+				details: { teamId },
 				stack: error.stack,
 			});
 			throw error;
@@ -229,7 +216,7 @@ class IncidentService {
 				service: SERVICE_NAME,
 				method: "getIncidentSummary",
 				message: error.message,
-				details: teamId,
+				details: { teamId },
 				stack: error.stack,
 			});
 			throw error;
@@ -250,7 +237,7 @@ class IncidentService {
 				service: SERVICE_NAME,
 				method: "getIncidentById",
 				message: error.message,
-				details: incidentId,
+				details: { incidentId },
 				stack: error.stack,
 			});
 			throw error;

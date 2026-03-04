@@ -107,6 +107,7 @@ jobs:
           context: .
           file: ./docker/dist-arm/server.Dockerfile
           push: true
+          no-cache: true
           tags: |
             ghcr.io/bluewave-labs/checkmate-backend-mono-multiarch:${{ steps.extract_tag.outputs.version }}
           platforms: linux/amd64,linux/arm64

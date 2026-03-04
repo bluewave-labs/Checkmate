@@ -8,6 +8,7 @@ export const getMonitorPath = (type: MonitorType): string => {
 		port: "uptime",
 		ping: "uptime",
 		game: "uptime",
+		grpc: "uptime",
 		unknown: "uptime",
 		docker: "uptime",
 		hardware: "infrastructure",

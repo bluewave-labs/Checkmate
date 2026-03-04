@@ -1,15 +1,15 @@
 const SERVICE_NAME = "SlackProvider";
-import type { Monitor, Notification, MonitorStatusResponse } from "@/types/index.js";
+import type { Notification } from "@/types/index.js";
 import { INotificationProvider } from "@/service/index.js";
-import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
 import got, { HTTPError } from "got";
+import { ILogger } from "@/utils/logger.js";
 
 export class SlackProvider implements INotificationProvider {
-	private logger: any;
+	private logger: ILogger;
 
-	constructor(logger: any) {
+	constructor(logger: ILogger) {
 		this.logger = logger;
 	}
 
@@ -78,7 +78,7 @@ export class SlackProvider implements INotificationProvider {
 	 * Uses Slack's rich formatting with sections, fields, and context blocks
 	 */
 	private buildSlackPayload(message: NotificationMessage): object {
-		const blocks: any[] = [];
+		const blocks: unknown[] = [];
 
 		// Determine color based on severity
 		const colorMap = {

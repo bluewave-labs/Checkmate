@@ -1,4 +1,5 @@
 export * from "@/types/check.js";
+export * from "@/types/geoCheck.js";
 export * from "@/types/monitor.js";
 export * from "@/types/monitorStats.js";
 export * from "@/types/statusPage.js";
