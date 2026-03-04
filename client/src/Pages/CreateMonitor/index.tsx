@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useEffect } from "react";
 import { logger } from "@/Utils/logger";
 import { useParams, useLocation, useNavigate } from "react-router";
@@ -188,9 +188,13 @@ const CreateMonitorPage = () => {
 	});
 	const { control, watch, handleSubmit, clearErrors } = form;
 
+	const hasInitialized = useRef(false);
 	useEffect(() => {
-		form.reset(defaults);
-	}, [defaults, form]);
+		if (!hasInitialized.current && existingMonitor) {
+			form.reset(defaults);
+			hasInitialized.current = true;
+		}
+	}, [defaults, form, existingMonitor]);
 
 	const watchedType = watch("type") as MonitorType;
 
