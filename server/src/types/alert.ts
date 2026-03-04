@@ -4,8 +4,10 @@ export interface AlertWebhookPayload {
 }
 
 export interface AlertPagerDutyPayload {
-	routingKey: string;
-	monitorUrl?: string;
+	routing_key?: string;
+	dedup_key?: string;
+	event_action?: "trigger" | "resolve";
+	payload: Record<string, unknown>;
 }
 
 export interface AlertMatrixPayload {
