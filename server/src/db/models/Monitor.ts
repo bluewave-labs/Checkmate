@@ -93,6 +93,12 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			type: String,
 			enum: ["equal", "include", "regex", ""],
 		},
+		basicAuthUser: {
+			type: String,
+		},
+		basicAuthPassword: {
+			type: String,
+		},
 		url: {
 			type: String,
 			required: true,

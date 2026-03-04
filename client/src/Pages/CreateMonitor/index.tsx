@@ -772,6 +772,50 @@ const CreateMonitorPage = () => {
 
 			{watchedType === "http" && (
 				<ConfigBox
+					title={t("pages.createMonitor.form.basicAuth.title")}
+					subtitle={t("pages.createMonitor.form.basicAuth.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(LAYOUT.MD)}>
+							<Controller
+								name="basicAuthUser"
+								control={control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value ?? ""}
+										fieldLabel={t(
+											"pages.createMonitor.form.basicAuth.option.username.label"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+							<Controller
+								name="basicAuthPassword"
+								control={control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value ?? ""}
+										type="password"
+										fieldLabel={t(
+											"pages.createMonitor.form.basicAuth.option.password.label"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+						</Stack>
+					}
+				/>
+			)}
+
+			{watchedType === "http" && (
+				<ConfigBox
 					title={t("pages.createMonitor.form.advanced.title")}
 					subtitle={t("pages.createMonitor.form.advanced.description")}
 					rightContent={

@@ -40,6 +40,8 @@ export const useMonitorForm = ({
 					matchMethod: data?.matchMethod || "",
 					expectedValue: data?.expectedValue || "",
 					jsonPath: data?.jsonPath || "",
+					basicAuthUser: data?.basicAuthUser || "",
+					basicAuthPassword: data?.basicAuthPassword || "",
 				};
 				break;
 			case "ping":
@@ -113,6 +115,8 @@ export const useMonitorForm = ({
 					matchMethod: "",
 					expectedValue: "",
 					jsonPath: "",
+					basicAuthUser: "",
+					basicAuthPassword: "",
 				};
 		}
 

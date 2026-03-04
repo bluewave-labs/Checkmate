@@ -501,6 +501,18 @@
 						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure."
 					}
 				},
+				"basicAuth": {
+					"description": "Configure HTTP basic authentication credentials for this monitor.",
+					"option": {
+						"username": {
+							"label": "Username"
+						},
+						"password": {
+							"label": "Password"
+						}
+					},
+					"title": "Basic authentication"
+				},
 				"ignoreTls": {
 					"description": "Configure TLS/SSL certificate validation for HTTPS connections.",
 					"option": {

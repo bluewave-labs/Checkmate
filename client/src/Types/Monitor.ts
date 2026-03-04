@@ -44,6 +44,8 @@ export interface Monitor {
 	jsonPath?: string;
 	expectedValue?: string;
 	matchMethod?: MonitorMatchMethod;
+	basicAuthUser?: string;
+	basicAuthPassword?: string;
 	url: string;
 	port?: number;
 	isActive: boolean;

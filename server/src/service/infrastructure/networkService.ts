@@ -296,7 +296,7 @@ class NetworkService implements INetworkService {
 	}
 
 	private async requestHttp<T = unknown>(monitor: Monitor): Promise<MonitorStatusResponse<T>> {
-		const { url, secret, ignoreTlsErrors, useAdvancedMatching, jsonPath, matchMethod, expectedValue } = monitor;
+		const { url, secret, ignoreTlsErrors, useAdvancedMatching, jsonPath, matchMethod, expectedValue, basicAuthUser, basicAuthPassword } = monitor;
 		const httpResponse = this.buildStatusResponse<T>({
 			monitor,
 			overrides: {
@@ -310,8 +310,15 @@ class NetworkService implements INetworkService {
 			if (!url) {
 				throw new Error("Monitor URL is required");
 			}
+			const headers: Record<string, string> = {};
+			if (secret) {
+				headers["Authorization"] = `Bearer ${secret}`;
+			} else if (basicAuthUser) {
+				const credentials = Buffer.from(`${basicAuthUser}:${basicAuthPassword || ""}`).toString("base64");
+				headers["Authorization"] = `Basic ${credentials}`;
+			}
 			const config: Record<string, unknown> = {
-				headers: secret ? { Authorization: `Bearer ${secret}` } : undefined,
+				headers: Object.keys(headers).length > 0 ? headers : undefined,
 			};
 
 			if (ignoreTlsErrors) {
