@@ -47,7 +47,12 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 	}
 
 	async handle<T>(monitor: Monitor): Promise<MonitorStatusResponse<T>> {
-		const { url, secret, ignoreTlsErrors } = monitor;
+		const { url, secret, jsonPath, ignoreTlsErrors } = monitor;
+
+		if (!url) {
+			throw new Error("URL is required for HTTP monitor");
+		}
+
 		const options: Record<string, unknown> = {
 			headers: monitor.secret ? { Authorization: `Bearer ${secret}` } : undefined,
 		};
@@ -58,9 +63,24 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 
 		try {
 			const response = await this.got<string>(url, options);
-			let payload: T;
-			const isJson = response.headers["content-type"]?.includes("application/json");
+			const contentType = response.headers["content-type"] || "";
+			const isJson = contentType.includes("application/json");
 
+			if (jsonPath && !isJson) {
+				return {
+					monitorId: monitor.id,
+					teamId: monitor.teamId,
+					type: monitor.type,
+					status: false,
+					code: response.statusCode,
+					message: "Response is not JSON",
+					responseTime: response.timings.phases.total ?? 0,
+					timings: response.timings,
+					payload: response.body as unknown as T,
+				};
+			}
+
+			let payload: T;
 			if (isJson) {
 				try {
 					payload = JSON.parse(response.body) as T;
@@ -83,9 +103,6 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 				timings: response.timings,
 				payload,
 				extracted: matchResult.extracted,
-				jsonPath: monitor.jsonPath,
-				matchMethod: monitor.matchMethod,
-				expectedValue: monitor.expectedValue,
 			};
 		} catch (error: unknown) {
 			return this.handleHttpError(error, monitor);
