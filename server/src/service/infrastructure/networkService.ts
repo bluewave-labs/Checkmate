@@ -16,13 +16,13 @@ import type { AxiosStatic } from "axios";
 import { AppError } from "@/utils/AppError.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import { MonitorStatusResponseOverrides } from "@/types/index.js";
 
 import CacheableLookup from "cacheable-lookup";
 import { ISettingsService } from "../system/settingsService.js";
 import { ILogger } from "@/utils/logger.js";
+import { IStatusProvider } from "./network/IStatusProvider.js";
 const SERVICE_NAME = "NetworkService";
-
-type MonitorStatusResponseOverrides<T> = Partial<Omit<MonitorStatusResponse<T>, "monitorId" | "teamId" | "type">>;
 
 interface BuildStatusResponseArgs<T> {
 	monitor: Monitor;
@@ -94,6 +94,10 @@ class NetworkService implements INetworkService {
 	private grpc: typeof import("@grpc/grpc-js");
 	private protoLoader: typeof import("@grpc/proto-loader");
 
+	// New providers
+	private pingProvider;
+	private httpProvider;
+
 	private buildStatusResponse = <T>({
 		monitor,
 		response,
@@ -160,7 +164,11 @@ class NetworkService implements INetworkService {
 		net: typeof import("net"),
 		settingsService: ISettingsService,
 		grpc: typeof import("@grpc/grpc-js"),
-		protoLoader: typeof import("@grpc/proto-loader")
+		protoLoader: typeof import("@grpc/proto-loader"),
+
+		// New providers
+		pingProvider: IStatusProvider<PingStatusPayload>,
+		httpProvider: IStatusProvider<HttpStatusPayload>
 	) {
 		this.TYPE_PING = "ping";
 		this.TYPE_HTTP = "http";
@@ -184,6 +192,10 @@ class NetworkService implements INetworkService {
 		this.settingsService = settingsService;
 		this.grpc = grpc;
 		this.protoLoader = protoLoader;
+
+		// New providers
+		this.pingProvider = pingProvider;
+		this.httpProvider = httpProvider;
 
 		const cacheable = new CacheableLookup();
 
@@ -231,9 +243,9 @@ class NetworkService implements INetworkService {
 		const type = monitor?.type || "unknown";
 		switch (type) {
 			case this.TYPE_PING:
-				return await this.requestPing(monitor);
+				return await this.pingProvider.handle(monitor);
 			case this.TYPE_HTTP:
-				return await this.requestHttp<HttpStatusPayload>(monitor);
+				return await this.httpProvider.handle(monitor);
 			case this.TYPE_PAGESPEED:
 				return await this.requestPageSpeed(monitor);
 			case this.TYPE_HARDWARE:
@@ -248,50 +260,6 @@ class NetworkService implements INetworkService {
 				return await this.requestGrpc(monitor);
 			default:
 				return this.handleUnsupportedType(type);
-		}
-	}
-
-	private async requestPing(monitor: Monitor): Promise<MonitorStatusResponse<PingStatusPayload>> {
-		try {
-			if (!monitor?.url) {
-				throw new Error("Monitor URL is required");
-			}
-
-			const rawUrl = monitor.url;
-			const sanitizedHost = rawUrl
-				.replace(/^https?:\/\//, "")
-				.replace(/\/.*$/, "")
-				.replace(/:.*/, "");
-			const { response, error } = await this.timeRequest(() => this.ping.promise.probe(sanitizedHost));
-
-			if (!response) {
-				if (error) {
-					throw error;
-				}
-				throw new Error("Ping failed - no result returned");
-			}
-
-			const pingResponse = this.buildStatusResponse<PingStatusPayload>({
-				monitor,
-				payload: response as PingStatusPayload,
-				overrides: {
-					status: (response as { alive?: boolean })?.alive ?? false,
-					code: 200,
-					message: "Success",
-					responseTime: (response as { time?: number })?.time ?? 0,
-					payload: response as PingStatusPayload,
-				} as MonitorStatusResponseOverrides<PingStatusPayload>,
-			});
-
-			return pingResponse;
-		} catch (err: unknown) {
-			const originalMessage = err instanceof Error ? err.message : String(err);
-			throw new AppError({
-				message: originalMessage || "Error performing ping",
-				service: this.SERVICE_NAME,
-				method: "requestPing",
-				details: { url: monitor.url },
-			});
 		}
 	}
 

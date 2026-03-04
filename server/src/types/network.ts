@@ -49,7 +49,7 @@ export interface PingStatusPayload {
 	host: string;
 	numeric_host?: string;
 	alive: boolean;
-	time: number;
+	time: number | unknown;
 	times?: number[];
 	output?: string;
 	min?: string;
@@ -134,3 +134,5 @@ export type StatusChangeResult = {
 		temp: boolean;
 	};
 };
+
+export type MonitorStatusResponseOverrides<T> = Partial<Omit<MonitorStatusResponse<T>, "monitorId" | "teamId" | "type">>;

@@ -75,6 +75,9 @@ import {
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
 import { EnvConfig } from "@/service/system/settingsService.js";
+import { PingProvider } from "@/service/infrastructure/network/PingProvider.js";
+import { HttpProvider } from "@/service/infrastructure/network/HttpProvider.js";
+import { AdvancedMatcher } from "@/service/infrastructure/network/AdvancedMatcher.js";
 
 export type InitializedServices = {
 	settingsService: any;
@@ -144,6 +147,11 @@ export const initializeServices = async ({
 	const teamsRepository = new MongoTeamsRepository();
 	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
 
+	// Providers
+
+	const pingProvider = new PingProvider(ping);
+	const httpProvider = new HttpProvider(got, new AdvancedMatcher(jmespath));
+
 	const networkService = new NetworkService(
 		axios,
 		got,
@@ -158,7 +166,9 @@ export const initializeServices = async ({
 		net,
 		settingsService,
 		grpc,
-		protoLoader
+		protoLoader,
+		pingProvider,
+		httpProvider
 	);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 
