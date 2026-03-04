@@ -11,11 +11,8 @@ export interface AlertPagerDutyPayload {
 }
 
 export interface AlertMatrixPayload {
-	friendlyName?: string;
-	homeserverUrl: string;
-	accessToken: string;
-	roomId: string;
-	monitorName: string;
+	plainText: string;
+	htmlText: string;
 }
 
 export interface Alert {

@@ -1,14 +1,15 @@
 const SERVICE_NAME = "MatrixProvider";
 import got from "got";
 import type { INotificationProvider } from "@/service/index.js";
-import type { Notification } from "@/types/index.js";
+import type { AlertMatrixPayload, Notification } from "@/types/index.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
+import { ILogger } from "@/utils/logger.js";
 
 export class MatrixProvider implements INotificationProvider {
-	private logger: any;
+	private logger: ILogger;
 
-	constructor(logger: any) {
+	constructor(logger: ILogger) {
 		this.logger = logger;
 	}
 
@@ -42,9 +43,6 @@ export class MatrixProvider implements INotificationProvider {
 		}
 	};
 
-	/**
-	 * New unified message format - builds Matrix HTML message from NotificationMessage
-	 */
 	sendMessage = async (notification: Notification, message: NotificationMessage): Promise<boolean> => {
 		const { homeserverUrl, accessToken, roomId } = notification;
 
@@ -87,7 +85,7 @@ export class MatrixProvider implements INotificationProvider {
 	 * Returns both plain text and HTML formatted versions
 	 * Matrix supports HTML subset for rich formatting
 	 */
-	private buildMatrixMessage(message: NotificationMessage): { plainText: string; htmlText: string } {
+	private buildMatrixMessage(message: NotificationMessage): AlertMatrixPayload {
 		const plainLines: string[] = [];
 		const htmlLines: string[] = [];
 

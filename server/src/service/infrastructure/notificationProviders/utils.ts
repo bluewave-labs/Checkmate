@@ -1,6 +1,5 @@
-import EmailService from "@/service/infrastructure/emailService.js";
-// Test notification helpers - used by all providers for test alerts
-export const buildTestEmail = async (emailService: EmailService) => {
+import { IEmailService } from "@/service/infrastructure/emailService.js";
+export const buildTestEmail = async (emailService: IEmailService) => {
 	const context = { testName: "Monitoring System" };
 	const html = await emailService.buildEmail("testEmailTemplate", context);
 	return html;
