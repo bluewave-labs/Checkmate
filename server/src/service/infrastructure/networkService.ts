@@ -261,7 +261,8 @@ class NetworkService implements INetworkService {
 			const sanitizedHost = rawUrl
 				.replace(/^https?:\/\//, "")
 				.replace(/\/.*$/, "")
-				.replace(/:.*/, "");
+				.replace(/^\[(.+)\](?::.*)?$/, "$1") // Extract IPv6 from brackets, strip port
+				.replace(/^([^[\]:]+):(\d+)$/, "$1"); // Strip port from IPv4/hostname only
 			const { response, error } = await this.timeRequest(() => this.ping.promise.probe(sanitizedHost));
 
 			if (!response) {
