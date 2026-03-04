@@ -22,10 +22,22 @@ export const useSettingsForm = ({ data = null }: UseSettingsFormOptions = {}) =>
 			systemEmailTLSServername: data?.systemEmailTLSServername || "",
 			systemEmailPort: data?.systemEmailPort,
 			globalThresholds: {
-				cpu: data?.globalThresholds?.cpu ?? 0,
-				memory: data?.globalThresholds?.memory ?? 0,
-				disk: data?.globalThresholds?.disk ?? 0,
-				temperature: data?.globalThresholds?.temperature ?? 0,
+				cpu:
+					data?.globalThresholds?.cpu && data.globalThresholds.cpu >= 1
+						? data.globalThresholds.cpu
+						: 80,
+				memory:
+					data?.globalThresholds?.memory && data.globalThresholds.memory >= 1
+						? data.globalThresholds.memory
+						: 80,
+				disk:
+					data?.globalThresholds?.disk && data.globalThresholds.disk >= 1
+						? data.globalThresholds.disk
+						: 80,
+				temperature:
+					data?.globalThresholds?.temperature && data.globalThresholds.temperature >= 1
+						? data.globalThresholds.temperature
+						: 80,
 			},
 			checkTTL: data?.checkTTL ?? 30,
 			pagespeedApiKey: "",

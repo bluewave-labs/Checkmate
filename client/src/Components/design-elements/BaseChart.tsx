@@ -2,6 +2,7 @@ import { BaseBox } from ".";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import { LAYOUT } from "@/Utils/Theme/constants";
 import type { ResponsiveStyleValue } from "@mui/system";
 
 import { useTheme } from "@mui/material/styles";
@@ -26,7 +27,7 @@ export const BaseChart = ({
 	return (
 		<BaseBox
 			sx={{
-				padding: padding ?? theme.spacing(8),
+				padding: padding ?? theme.spacing(LAYOUT.MD),
 				display: "flex",
 				flex: 1,
 				width: width,
@@ -34,13 +35,13 @@ export const BaseChart = ({
 			}}
 		>
 			<Stack
-				gap={theme.spacing(8)}
+				gap={theme.spacing(LAYOUT.MD)}
 				flex={1}
 			>
 				<Stack
 					direction="row"
 					alignItems={"center"}
-					gap={theme.spacing(4)}
+					gap={theme.spacing(LAYOUT.XS)}
 				>
 					{icon && (
 						<BaseBox

@@ -1,29 +1,17 @@
 import { ISettingsRepository } from "@/repositories/index.js";
 import { Settings } from "@/types/index.js";
 import { AppError } from "@/utils/AppError.js";
+import { ValidatedEnv } from "@/validation/envValidation.js";
 
 const SERVICE_NAME = "SettingsService";
 
 export type EnvConfig = {
-	jwtSecret: string | undefined;
-	jwtTTL: string | undefined;
-	systemEmailHost: string | undefined;
-	nodeEnv: string | undefined;
-	logLevel: string | undefined;
-	clientHost: string | undefined;
-	dbConnectionString: string | undefined;
-	port: string | undefined;
-};
-
-const envConfig: EnvConfig = {
-	jwtSecret: process.env.JWT_SECRET,
-	jwtTTL: process.env.TOKEN_TTL,
-	systemEmailHost: process.env.SYSTEM_EMAIL_HOST,
-	nodeEnv: process.env.NODE_ENV,
-	logLevel: process.env.LOG_LEVEL,
-	clientHost: process.env.CLIENT_HOST,
-	dbConnectionString: process.env.DB_CONNECTION_STRING,
-	port: process.env.PORT,
+	jwtSecret: string;
+	jwtTTL: string;
+	nodeEnv: string;
+	logLevel: string;
+	clientHost: string;
+	dbConnectionString: string;
 };
 
 export interface ISettingsService {
@@ -34,13 +22,20 @@ export interface ISettingsService {
 }
 
 class SettingsService implements ISettingsService {
-	static SERVICE_NAME = "SettingsService";
+	static SERVICE_NAME = SERVICE_NAME;
 	private settings: EnvConfig;
 	private settingsRepository: ISettingsRepository;
 
-	constructor(settingsRepository: ISettingsRepository) {
+	constructor(settingsRepository: ISettingsRepository, env: ValidatedEnv) {
 		this.settingsRepository = settingsRepository;
-		this.settings = { ...envConfig };
+		this.settings = {
+			jwtSecret: env.JWT_SECRET,
+			jwtTTL: env.TOKEN_TTL,
+			nodeEnv: env.NODE_ENV,
+			logLevel: env.LOG_LEVEL,
+			clientHost: env.CLIENT_HOST,
+			dbConnectionString: env.DB_CONNECTION_STRING,
+		};
 	}
 
 	get serviceName() {

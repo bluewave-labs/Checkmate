@@ -8,8 +8,10 @@ import type {
 	PageSpeedDetailsResult,
 	GamesMap,
 } from "@/types/monitor.js";
+import type { GeoContinent } from "@/types/geoCheck.js";
 import type {
 	IChecksRepository,
+	IGeoChecksRepository,
 	IIncidentsRepository,
 	IMonitorsRepository,
 	IMonitorStatsRepository,
@@ -29,13 +31,14 @@ export interface IMonitorService {
 
 	// create
 	createMonitor(teamId: string, userId: string, body: Monitor): Promise<void>;
-	createBulkMonitors(monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null>;
+	createMonitors(monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null>;
 	addDemoMonitors(args: { userId: string; teamId: string }): Promise<Monitor[]>;
 
 	// read
 	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: string; normalize?: boolean }): Promise<UptimeDetailsResult>;
 	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<HardwareDetailsResult>;
 	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<PageSpeedDetailsResult>;
+	getGeoChecksByMonitorId(args: { teamId: string; monitorId: string; dateRange: string; continents?: GeoContinent[] }): Promise<any>;
 	getMonitorById(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 	getMonitorsByTeamId(args: {
 		teamId: string;
@@ -72,6 +75,7 @@ export interface IMonitorService {
 	// other
 	sendTestEmail(args: { to: string }): Promise<string>;
 	exportMonitorsToJSON(args: { teamId: string }): Promise<Monitor[]>;
+	importMonitorsFromJSON(args: { teamId: string; userId: string; monitors: any[] }): Promise<{ imported: number; errors: string[] }>;
 }
 
 export class MonitorService implements IMonitorService {
@@ -83,6 +87,7 @@ export class MonitorService implements IMonitorService {
 	private games: any;
 	private monitorsRepository: IMonitorsRepository;
 	private checksRepository: IChecksRepository;
+	private geoChecksRepository: IGeoChecksRepository;
 	private monitorStatsRepository: IMonitorStatsRepository;
 	private statusPagesRepository: IStatusPagesRepository;
 	private incidentsRepository: IIncidentsRepository;
@@ -94,6 +99,7 @@ export class MonitorService implements IMonitorService {
 		games,
 		monitorsRepository,
 		checksRepository,
+		geoChecksRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
 		incidentsRepository,
@@ -104,6 +110,7 @@ export class MonitorService implements IMonitorService {
 		games: any;
 		monitorsRepository: IMonitorsRepository;
 		checksRepository: IChecksRepository;
+		geoChecksRepository: IGeoChecksRepository;
 		monitorStatsRepository: IMonitorStatsRepository;
 		statusPagesRepository: IStatusPagesRepository;
 		incidentsRepository: IIncidentsRepository;
@@ -114,6 +121,7 @@ export class MonitorService implements IMonitorService {
 		this.games = games;
 		this.monitorsRepository = monitorsRepository;
 		this.checksRepository = checksRepository;
+		this.geoChecksRepository = geoChecksRepository;
 		this.monitorStatsRepository = monitorStatsRepository;
 		this.statusPagesRepository = statusPagesRepository;
 		this.incidentsRepository = incidentsRepository;
@@ -157,10 +165,10 @@ export class MonitorService implements IMonitorService {
 		this.jobQueue.addJob(monitor.id, monitor);
 	};
 
-	createBulkMonitors = async (monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null> => {
-		const createdMonitors = await this.monitorsRepository.createBulkMonitors(monitors);
+	createMonitors = async (monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null> => {
+		const createdMonitors = await this.monitorsRepository.createMonitors(monitors);
 		if (!monitors || monitors.length === 0) {
-			throw new AppError({ message: "Failed to create monitors", status: 500, service: SERVICE_NAME, method: "createBulkMonitors" });
+			throw new AppError({ message: "Failed to create monitors", status: 500, service: SERVICE_NAME, method: "createMonitors" });
 		}
 
 		await Promise.all(createdMonitors.map((monitor) => this.jobQueue.addJob(monitor.id, monitor)));
@@ -184,7 +192,7 @@ export class MonitorService implements IMonitorService {
 				interval: 60000,
 			};
 		});
-		const demoMonitors = await this.monitorsRepository.createBulkMonitors(monitors);
+		const demoMonitors = await this.monitorsRepository.createMonitors(monitors);
 
 		await Promise.all(demoMonitors.map((monitor) => this.jobQueue.addJob(monitor.id, monitor)));
 		return demoMonitors;
@@ -217,7 +225,8 @@ export class MonitorService implements IMonitorService {
 			checksData.monitorType !== "ping" &&
 			checksData.monitorType !== "docker" &&
 			checksData.monitorType !== "port" &&
-			checksData.monitorType !== "game"
+			checksData.monitorType !== "game" &&
+			checksData.monitorType !== "grpc"
 		) {
 			throw new AppError({ message: `${monitor.type} monitors are not supported for uptime details`, status: 400 });
 		}
@@ -307,13 +316,47 @@ export class MonitorService implements IMonitorService {
 		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
 
 		return {
-			monitor: {
-				...monitor,
-				checks: checksData.checks,
+			monitorData: {
+				monitor,
+				groupedChecks: checksData.groupedChecks,
 			},
 			monitorStats,
 		};
 	};
+
+	getGeoChecksByMonitorId = async ({
+		teamId,
+		monitorId,
+		dateRange,
+		continents,
+	}: {
+		teamId: string;
+		monitorId: string;
+		dateRange: string;
+		continents?: GeoContinent[];
+	}): Promise<any> => {
+		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
+		if (!monitor) {
+			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
+		}
+
+		if (monitor.type !== "http" || !monitor.geoCheckEnabled) {
+			return { groupedGeoChecks: [] };
+		}
+
+		const rangeKey = (dateRange as DateRangeKey) ?? "recent";
+		const { start, end } = this.getDateRange(rangeKey);
+		const groupedGeoChecks = await this.geoChecksRepository.findGroupedByMonitorIdAndDateRange(
+			monitor.id,
+			start,
+			end,
+			this.getDateFormat(rangeKey),
+			continents
+		);
+
+		return { groupedGeoChecks };
+	};
+
 	getMonitorById = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		return monitor;
@@ -437,6 +480,14 @@ export class MonitorService implements IMonitorService {
 			});
 		});
 
+		await this.geoChecksRepository.deleteByMonitorId(monitor.id).catch((err: any) => {
+			this.logger.warn({
+				message: `Error deleting geo checks for monitor ${monitor.id} with name ${monitor.name}`,
+				service: SERVICE_NAME,
+				stack: err.stack,
+			});
+		});
+
 		await this.jobQueue.deleteJob(monitor);
 		return monitor;
 	};
@@ -448,6 +499,7 @@ export class MonitorService implements IMonitorService {
 				try {
 					await this.jobQueue.deleteJob(monitor);
 					await this.checksRepository.deleteByMonitorId(monitor.id);
+					await this.geoChecksRepository.deleteByMonitorId(monitor.id);
 					await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id);
 					await this.monitorStatsRepository.deleteByMonitorId(monitor.id);
 				} catch (error: any) {
@@ -485,5 +537,42 @@ export class MonitorService implements IMonitorService {
 		}
 
 		return monitors;
+	};
+
+	importMonitorsFromJSON = async ({
+		teamId,
+		userId,
+		monitors,
+	}: {
+		teamId: string;
+		userId: string;
+		monitors: any[];
+	}): Promise<{ imported: number; errors: string[] }> => {
+		const errors: string[] = [];
+
+		const cleanedMonitors = monitors.map((monitor) => {
+			const cleanData = { ...monitor };
+			delete cleanData.id;
+			delete cleanData._id;
+			delete cleanData.createdAt;
+			delete cleanData.updatedAt;
+			delete cleanData.recentChecks;
+			// Monitors must belong to current team
+			cleanData.teamId = teamId;
+			return cleanData;
+		});
+
+		const createdMonitors = await this.createMonitors(cleanedMonitors, userId, teamId);
+
+		if (!createdMonitors || createdMonitors.length === 0) {
+			throw new AppError({
+				message: "Failed to import any monitors. Please check the file format and try again.",
+				service: SERVICE_NAME,
+				method: "importMonitorsFromJSON",
+				status: 400,
+			});
+		}
+
+		return { imported: createdMonitors.length, errors };
 	};
 }

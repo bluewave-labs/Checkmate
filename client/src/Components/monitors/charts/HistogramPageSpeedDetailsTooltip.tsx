@@ -2,6 +2,7 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import type { ConfigItem } from "@/Components/monitors";
 import type { TooltipProps } from "recharts";
@@ -30,8 +31,8 @@ export const HistogramPageSpeedScoresTooltip = ({
 					border: 1,
 					borderColor: theme.palette.divider,
 					borderRadius: theme.shape.borderRadius,
-					py: theme.spacing(2),
-					px: theme.spacing(4),
+					py: theme.spacing(SPACING.LG),
+					px: theme.spacing(LAYOUT.XS),
 				}}
 			>
 				<Typography
@@ -54,12 +55,12 @@ export const HistogramPageSpeedScoresTooltip = ({
 								key={`${key}-tooltip`}
 								direction="row"
 								alignItems="center"
-								gap={theme.spacing(3)}
-								mt={theme.spacing(1)}
+								gap={theme.spacing(SPACING.XXL)}
+								mt={theme.spacing(SPACING.SM)}
 							>
 								<Box
-									width={theme.spacing(4)}
-									height={theme.spacing(4)}
+									width={theme.spacing(LAYOUT.XS)}
+									height={theme.spacing(LAYOUT.XS)}
 									sx={{ borderRadius: "50%", backgroundColor: dotColor }}
 								/>
 								<Typography

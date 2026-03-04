@@ -1,12 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 
-import { createStatusPageBodyValidation, getStatusPageParamValidation, getStatusPageQueryValidation, imageValidation } from "@/validation/joi.js";
+import {
+	createStatusPageBodyValidation,
+	getStatusPageParamValidation,
+	getStatusPageQueryValidation,
+	imageValidation,
+} from "@/validation/statusPageValidation.js";
 import { AppError } from "@/utils/AppError.js";
 import { requireTeamId, requireUserId } from "@/controllers/controllerUtils.js";
 import { IStatusPageService } from "@/service/business/statusPageService.js";
 import { IMonitorsRepository } from "@/repositories/index.js";
 import { ISettingsService } from "@/service/system/settingsService.js";
-import { ParseBoolean } from "@/utils/utils.js";
 import { NormalizeData } from "@/utils/dataUtils.js";
 
 const SERVICE_NAME = "statusPageController";
@@ -28,8 +32,10 @@ class StatusPageController {
 
 	createStatusPage = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await createStatusPageBodyValidation.validateAsync(req.body);
-			await imageValidation.validateAsync(req.file);
+			createStatusPageBodyValidation.parse(req.body);
+			if (req.file) {
+				imageValidation.parse(req.file);
+			}
 
 			const teamId = requireTeamId(req?.user?.teamId);
 			const userId = requireUserId(req?.user?.id);
@@ -47,8 +53,10 @@ class StatusPageController {
 
 	updateStatusPage = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await createStatusPageBodyValidation.validateAsync(req.body);
-			await imageValidation.validateAsync(req.file);
+			createStatusPageBodyValidation.parse(req.body);
+			if (req.file) {
+				imageValidation.parse(req.file);
+			}
 			const teamId = requireTeamId(req?.user?.teamId);
 			const statusPageId = req.params.id as string;
 			if (!statusPageId) {
@@ -70,8 +78,8 @@ class StatusPageController {
 
 	getStatusPageByUrl = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getStatusPageParamValidation.validateAsync(req.params);
-			await getStatusPageQueryValidation.validateAsync(req.query);
+			getStatusPageParamValidation.parse(req.params);
+			getStatusPageQueryValidation.parse(req.query);
 
 			if (!req.params.url) {
 				throw new AppError({ message: "Status page URL is required", status: 400 });
@@ -101,6 +109,7 @@ class StatusPageController {
 			const normalizedMonitors = sortedMonitors.map((monitor) => {
 				const normalizedChecks = NormalizeData(monitor.recentChecks, 10, 100);
 				if (!showURL) {
+					// eslint-disable-next-line @typescript-eslint/no-unused-vars
 					const { url, port, secret, notifications, ...rest } = monitor;
 					return { ...rest, checks: normalizedChecks };
 				}

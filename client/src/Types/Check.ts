@@ -151,6 +151,15 @@ export interface GroupedCheck {
 	totalChecks: number;
 }
 
+export interface PageSpeedGroupedCheck {
+	bucketDate: string;
+	performance: number;
+	accessibility: number;
+	bestPractices: number;
+	seo: number;
+	totalChecks: number;
+}
+
 export interface LatestCheck {
 	status: boolean;
 	responseTime: number;

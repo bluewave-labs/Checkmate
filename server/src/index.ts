@@ -2,6 +2,7 @@ import { initializeServices } from "./config/services.js";
 import { initializeControllers } from "./config/controllers.js";
 import { createApp } from "./app.js";
 import { initShutdownListener } from "./shutdown.js";
+import { validateEnv } from "./validation/envValidation.js";
 import { fileURLToPath } from "url";
 import path from "path";
 import fs from "fs";
@@ -15,6 +16,9 @@ const SERVICE_NAME = "Server";
 let logger: ILogger;
 
 const startApp = async () => {
+	// Validate environment variables first
+	const env = validateEnv();
+
 	// FE path
 	const __filename = fileURLToPath(import.meta.url);
 	const __dirname = path.dirname(__filename);
@@ -23,7 +27,7 @@ const startApp = async () => {
 
 	// Create services
 	const settingsRepository = new MongoSettingsRepository();
-	const settingsService = new SettingsService(settingsRepository);
+	const settingsService = new SettingsService(settingsRepository, env);
 
 	const envSettings = settingsService.loadSettings();
 
@@ -46,7 +50,7 @@ const startApp = async () => {
 		openApiSpec,
 	});
 
-	const port = envSettings.port || 52345;
+	const port = 52345;
 	const server = app.listen(port, () => {
 		logger.info({ message: `Server started on port:${port}` });
 	});

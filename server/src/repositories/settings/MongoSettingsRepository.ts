@@ -52,7 +52,7 @@ class MongoSettingsRepository implements ISettingsRepository {
 	};
 
 	findSingleton = async () => {
-		let settings = await AppSettingsModel.findOne({ singleton: true }).select("-__v -_id -createdAt -updatedAt -singleton").lean();
+		const settings = await AppSettingsModel.findOne({ singleton: true }).select("-__v -_id -createdAt -updatedAt -singleton").lean();
 		if (!settings) {
 			return null;
 		}

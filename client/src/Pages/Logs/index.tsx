@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 
 const LogsPage = () => {
 	const { t } = useTranslation();
-	const [activeTab, setActiveTab] = useState<number>(2);
+	const [activeTab, setActiveTab] = useState<number>(1);
 	return (
 		<BasePage>
 			<Tabs

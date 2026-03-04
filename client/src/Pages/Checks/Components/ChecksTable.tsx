@@ -5,7 +5,6 @@ import type { Monitor } from "@/Types/Monitor";
 
 import { useTranslation } from "react-i18next";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
-import { useNavigate } from "react-router";
 import type { Check } from "@/Types/Check";
 import type { RootState } from "@/Types/state";
 import { useSelector } from "react-redux";
@@ -29,7 +28,6 @@ export const ChecksTable = ({
 }) => {
 	const { t } = useTranslation();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
-	const navigate = useNavigate();
 
 	const getHeaders = (t: Function, uiTimezone: string) => {
 		const headers: Header<Check>[] = [
@@ -109,9 +107,6 @@ export const ChecksTable = ({
 			<Table
 				headers={headers}
 				data={checks}
-				onRowClick={(row) => {
-					navigate(`/checks/${row.id}`);
-				}}
 				emptyViewText={t("pages.checks.table.empty")}
 			/>
 			<Pagination

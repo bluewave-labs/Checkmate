@@ -14,7 +14,16 @@ import type {
 	MonitorStatus,
 } from "@/types/index.js";
 
-export interface MonitorStatusResponse<T = any> {
+export interface MonitorStatusResponse<
+	T =
+		| HttpStatusPayload
+		| PingStatusPayload
+		| PageSpeedStatusPayload
+		| HardwareStatusPayload
+		| DockerStatusPayload
+		| GameStatusPayload
+		| GrpcStatusPayload,
+> {
 	monitorId: string;
 	teamId: string;
 	type: MonitorType;
@@ -93,6 +102,13 @@ export interface PortStatusPayload {
 
 export type GameStatusPayload = Record<string, unknown>;
 
+export interface GrpcStatusPayload {
+	grpcStatusCode: number;
+	grpcStatusName: string;
+	serviceName: string;
+	servingStatus: string;
+}
+
 export interface MonitorPayloadMap {
 	ping: PingStatusPayload;
 	http: HttpStatusPayload;
@@ -101,6 +117,7 @@ export interface MonitorPayloadMap {
 	docker: DockerStatusPayload;
 	port: PortStatusPayload;
 	game: GameStatusPayload;
+	grpc: GrpcStatusPayload;
 	default: unknown;
 }
 

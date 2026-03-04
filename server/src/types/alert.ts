@@ -4,16 +4,29 @@ export interface AlertWebhookPayload {
 }
 
 export interface AlertPagerDutyPayload {
-	routingKey: string;
-	monitorUrl?: string;
+	routing_key?: string;
+	dedup_key?: string;
+	event_action?: "trigger" | "resolve";
+	payload: Record<string, unknown>;
 }
 
 export interface AlertMatrixPayload {
-	friendlyName?: string;
-	homeserverUrl: string;
-	accessToken: string;
-	roomId: string;
-	monitorName: string;
+	plainText: string;
+	htmlText: string;
+}
+
+export interface DiscordEmbedField {
+	name: string;
+	value: string;
+	inline?: boolean;
+}
+
+export interface AlertDiscordPayload {
+	title: string;
+	description: string;
+	color: number;
+	fields: DiscordEmbedField[];
+	timestamp: string;
 }
 
 export interface Alert {

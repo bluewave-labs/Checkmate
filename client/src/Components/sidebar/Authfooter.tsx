@@ -5,6 +5,7 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useTheme } from "@mui/material";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import { useSelector, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
@@ -64,9 +65,9 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 	});
 
 	const menuItemSx = {
-		gap: theme.spacing(2),
+		gap: theme.spacing(LAYOUT.MD),
 		borderRadius: theme.shape.borderRadius,
-		pl: theme.spacing(4),
+		pl: theme.spacing(LAYOUT.XS),
 		"& svg": { stroke: theme.palette.text.secondary },
 	};
 
@@ -74,9 +75,9 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 		<Stack
 			direction="row"
 			alignItems="center"
-			py={theme.spacing(4)}
-			px={theme.spacing(8)}
-			gap={theme.spacing(4)}
+			py={theme.spacing(LAYOUT.XS)}
+			px={theme.spacing(LAYOUT.MD)}
+			gap={theme.spacing(LAYOUT.MD)}
 		>
 			<Avatar
 				small
@@ -88,7 +89,7 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 				<Stack
 					direction="row"
 					alignItems="center"
-					gap={theme.spacing(2)}
+					gap={theme.spacing(SPACING.MD)}
 					minWidth={0}
 					flex={1}
 				>
@@ -132,10 +133,15 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 				disableScrollLock
 				anchorOrigin={{ vertical: "top", horizontal: "right" }}
 				slotProps={{
-					paper: { sx: { mt: theme.spacing(-4), ml: collapsed ? theme.spacing(2) : 0 } },
+					paper: {
+						sx: {
+							mt: theme.spacing(-LAYOUT.XS),
+							ml: collapsed ? theme.spacing(SPACING.LG) : 0,
+						},
+					},
 				}}
 				MenuListProps={{ sx: { p: 2, "& li": { m: 0 } } }}
-				sx={{ ml: theme.spacing(4) }}
+				sx={{ ml: theme.spacing(LAYOUT.XS) }}
 			>
 				{collapsed && (
 					<Box

@@ -12,7 +12,7 @@ import {
 import { HistogramPageSpeedScoresTooltip } from "@/Components/monitors";
 
 import { useTheme } from "@mui/material/styles";
-import type { CheckSnapshot } from "@/Types/Check";
+import type { PageSpeedGroupedCheck } from "@/Types/Check";
 import type { Palette } from "@mui/material/styles";
 type PaletteColorKey = Extract<
 	keyof Palette,
@@ -52,7 +52,7 @@ export const HistogramPageSpeedDetails = ({
 	checks,
 	range,
 }: {
-	checks: CheckSnapshot[];
+	checks: PageSpeedGroupedCheck[];
 	range: string;
 }) => {
 	const theme = useTheme();
@@ -73,7 +73,7 @@ export const HistogramPageSpeedDetails = ({
 			>
 				<AreaChart data={checks}>
 					<XAxis
-						dataKey={"createdAt"}
+						dataKey={"bucketDate"}
 						tick={(props) => (
 							<XTick
 								{...props}
