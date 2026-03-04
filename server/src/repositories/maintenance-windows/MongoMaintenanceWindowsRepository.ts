@@ -92,7 +92,7 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 		}
 
 		// Sorting
-		let sort: Record<string, any> = {};
+		const sort: Record<string, any> = {};
 		if (field !== undefined && order !== undefined) {
 			sort[field] = order === "asc" ? 1 : -1;
 		}

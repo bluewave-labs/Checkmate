@@ -170,7 +170,7 @@ class GeoChecksService implements IGeoChecksService {
 			});
 		}
 
-		let { sortOrder, dateRange, page, rowsPerPage, continent } = query;
+		const { sortOrder, dateRange, page, rowsPerPage, continent } = query;
 		const continents = continent ? (Array.isArray(continent) ? continent : [continent]) : undefined;
 
 		this.logger.debug({

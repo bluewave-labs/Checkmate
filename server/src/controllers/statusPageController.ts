@@ -11,7 +11,6 @@ import { requireTeamId, requireUserId } from "@/controllers/controllerUtils.js";
 import { IStatusPageService } from "@/service/business/statusPageService.js";
 import { IMonitorsRepository } from "@/repositories/index.js";
 import { ISettingsService } from "@/service/system/settingsService.js";
-import { ParseBoolean } from "@/utils/utils.js";
 import { NormalizeData } from "@/utils/dataUtils.js";
 
 const SERVICE_NAME = "statusPageController";
@@ -110,6 +109,7 @@ class StatusPageController {
 			const normalizedMonitors = sortedMonitors.map((monitor) => {
 				const normalizedChecks = NormalizeData(monitor.recentChecks, 10, 100);
 				if (!showURL) {
+					// eslint-disable-next-line @typescript-eslint/no-unused-vars
 					const { url, port, secret, notifications, ...rest } = monitor;
 					return { ...rest, checks: normalizedChecks };
 				}
