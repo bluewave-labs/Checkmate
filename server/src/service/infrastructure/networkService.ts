@@ -101,6 +101,7 @@ class NetworkService implements INetworkService {
 	private hardwareProvider;
 	private dockerProvider;
 	private portProvider;
+	private gameProvider;
 
 	private buildStatusResponse = <T>({
 		monitor,
@@ -176,7 +177,8 @@ class NetworkService implements INetworkService {
 		pagespeedProvider: IStatusProvider<PageSpeedStatusPayload>,
 		hardwareProvider: IStatusProvider<HardwareStatusPayload>,
 		dockerProvider: IStatusProvider<DockerStatusPayload>,
-		portProvider: IStatusProvider<PortStatusPayload>
+		portProvider: IStatusProvider<PortStatusPayload>,
+		gameProvider: IStatusProvider<GameStatusPayload>
 	) {
 		this.TYPE_PING = "ping";
 		this.TYPE_HTTP = "http";
@@ -208,6 +210,7 @@ class NetworkService implements INetworkService {
 		this.hardwareProvider = hardwareProvider;
 		this.dockerProvider = dockerProvider;
 		this.portProvider = portProvider;
+		this.gameProvider = gameProvider;
 		const cacheable = new CacheableLookup();
 
 		this.got = got.extend({
@@ -266,7 +269,7 @@ class NetworkService implements INetworkService {
 			case this.TYPE_PORT:
 				return await this.portProvider.handle(monitor);
 			case this.TYPE_GAME:
-				return await this.requestGame(monitor);
+				return await this.gameProvider.handle(monitor);
 			case this.TYPE_GRPC:
 				return await this.requestGrpc(monitor);
 			default:
@@ -628,53 +631,6 @@ class NetworkService implements INetworkService {
 		}
 	}
 
-	private async requestGame(monitor: Monitor): Promise<MonitorStatusResponse<GameStatusPayload>> {
-		try {
-			const { url, port, gameId } = monitor;
-
-			const gameResponse = this.buildStatusResponse<GameStatusPayload>({
-				monitor,
-				overrides: {
-					code: 200,
-					status: true,
-					message: "Success",
-				},
-			});
-
-			const state = await this.GameDig.query({
-				type: gameId ?? "unknown",
-				host: url,
-				port: port ?? 0,
-			}).catch((error: unknown): undefined => {
-				this.logger.warn({
-					message: error instanceof Error ? error.message : String(error),
-					service: this.SERVICE_NAME,
-					method: "requestGame",
-					details: { url, port, gameId },
-				});
-				return undefined;
-			});
-
-			if (!state) {
-				gameResponse.code = this.NETWORK_ERROR;
-				gameResponse.status = false;
-				gameResponse.message = "No response";
-				return gameResponse;
-			}
-
-			gameResponse.responseTime = state.ping ?? 0;
-			gameResponse.payload = state as GameStatusPayload;
-			return gameResponse;
-		} catch (err: unknown) {
-			const originalMessage = err instanceof Error ? err.message : String(err);
-			throw new AppError({
-				message: originalMessage || "Error performing game server check",
-				service: this.SERVICE_NAME,
-				method: "requestGame",
-				details: { url: monitor.url, port: monitor.port, gameId: monitor.gameId },
-			});
-		}
-	}
 	private async requestGrpc(monitor: Monitor): Promise<MonitorStatusResponse<GrpcStatusPayload>> {
 		try {
 			const { url, port, ignoreTlsErrors } = monitor;

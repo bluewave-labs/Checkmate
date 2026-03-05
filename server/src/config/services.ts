@@ -82,6 +82,7 @@ import { PageSpeedProvider } from "@/service/infrastructure/network/PageSpeedPro
 import { HardwareProvider } from "@/service/infrastructure/network/HardwareProvider.js";
 import { DockerProvider } from "@/service/infrastructure/network/DockerProvider.js";
 import { PortProvider } from "@/service/infrastructure/network/PortProvider.js";
+import { GameProvider } from "@/service/infrastructure/network/GameProvider.js";
 
 export type InitializedServices = {
 	settingsService: any;
@@ -159,6 +160,7 @@ export const initializeServices = async ({
 	const hardwareProvider = new HardwareProvider(httpProvider);
 	const dockerProvider = new DockerProvider(logger, Docker);
 	const portProvider = new PortProvider(net);
+	const gameProvider = new GameProvider(logger, GameDig);
 
 	const networkService = new NetworkService(
 		axios,
@@ -180,7 +182,8 @@ export const initializeServices = async ({
 		pageSpeedProvider,
 		hardwareProvider,
 		dockerProvider,
-		portProvider
+		portProvider,
+		gameProvider
 	);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 
