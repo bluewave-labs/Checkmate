@@ -298,7 +298,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		await MonitorModel.updateMany({ notifications: notificationId }, { $pull: { notifications: notificationId } });
 	};
 
-	bulkUpdateNotifications = async (
+	updateNotifications = async (
 		monitorIds: string[],
 		notificationIds: string[],
 		action: "add" | "remove" | "set",
@@ -323,6 +323,8 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			case "set":
 				update = { $set: { notifications: notificationIds } };
 				break;
+			default:
+				throw new AppError({ message: `Invalid action: ${action}`, status: 400 });
 		}
 
 		const result = await MonitorModel.updateMany(filter, update);

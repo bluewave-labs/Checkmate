@@ -573,6 +573,20 @@ const triggerNotificationBodyValidation = joi.object({
 	}),
 });
 
+const bulkEditNotificationBodyValidation = joi.object({
+	monitorIds: joi.array().items(joi.string()).min(1).required().messages({
+		"array.min": "At least one monitor ID is required",
+		"any.required": "Monitor IDs are required",
+	}),
+	notificationIds: joi.array().items(joi.string()).required().messages({
+		"any.required": "Notification IDs are required",
+	}),
+	action: joi.string().valid("add", "remove", "set").required().messages({
+		"any.only": "Action must be 'add', 'remove', or 'set'",
+		"any.required": "Action is required",
+	}),
+});
+
 const createNotificationBodyValidation = joi.object({
 	notificationName: joi.string().required().messages({
 		"string.empty": "Notification name is required",
@@ -793,6 +807,7 @@ export {
 	imageValidation,
 	triggerNotificationBodyValidation,
 	createNotificationBodyValidation,
+	bulkEditNotificationBodyValidation,
 	webhookConfigValidation,
 	createAnnouncementValidation,
 	sendTestEmailBodyValidation,

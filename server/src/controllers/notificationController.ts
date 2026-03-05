@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 import { Notification } from "@/types/index.js";
-import { createNotificationBodyValidation } from "@/validation/joi.js";
+import { createNotificationBodyValidation, bulkEditNotificationBodyValidation } from "@/validation/joi.js";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorsRepository } from "@/repositories/index.js";
 import { INotificationsService } from "@/service/index.js";
@@ -154,31 +154,18 @@ class NotificationController {
 		}
 	};
 
+	// Handler for bulk editing monitor notification associations
 	bulkEditMonitorNotifications = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const teamId = requireTeamId(req.user?.teamId);
+			// Joi validates monitorIds, notificationIds, and action automatically
+			await bulkEditNotificationBodyValidation.validateAsync(req.body, {
+				abortEarly: false,
+			});
 
+			const teamId = requireTeamId(req.user?.teamId);
 			const { monitorIds, notificationIds, action } = req.body;
 
-			if (!monitorIds || !Array.isArray(monitorIds) || monitorIds.length === 0) {
-				throw new AppError({ message: "Monitor IDs are required", status: 400 });
-			}
-
-			if (!notificationIds || !Array.isArray(notificationIds)) {
-				throw new AppError({ message: "Notification IDs must be an array", status: 400 });
-			}
-
-			if (!action || !["add", "remove", "set"].includes(action)) {
-				throw new AppError({ message: "Action must be 'add', 'remove', or 'set'", status: 400 });
-			}
-
-			// "add" and "remove" need at least one notification ID
-			// "set" can be empty (to clear all notifications from monitors)
-			if (notificationIds.length === 0 && action !== "set") {
-				throw new AppError({ message: "Notification IDs are required for add/remove actions", status: 400 });
-			}
-
-			const modifiedCount = await this.monitorsRepository.bulkUpdateNotifications(monitorIds, notificationIds, action, teamId);
+			const modifiedCount = await this.monitorsRepository.updateNotifications(monitorIds, notificationIds, action, teamId);
 
 			return res.status(200).json({
 				success: true,
