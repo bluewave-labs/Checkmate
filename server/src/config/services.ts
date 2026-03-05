@@ -81,6 +81,7 @@ import { AdvancedMatcher } from "@/service/infrastructure/network/AdvancedMatche
 import { PageSpeedProvider } from "@/service/infrastructure/network/PageSpeedProvider.js";
 import { HardwareProvider } from "@/service/infrastructure/network/HardwareProvider.js";
 import { DockerProvider } from "@/service/infrastructure/network/DockerProvider.js";
+import { PortProvider } from "@/service/infrastructure/network/PortProvider.js";
 
 export type InitializedServices = {
 	settingsService: any;
@@ -157,6 +158,7 @@ export const initializeServices = async ({
 	const pageSpeedProvider = new PageSpeedProvider(httpProvider, settingsService, logger);
 	const hardwareProvider = new HardwareProvider(httpProvider);
 	const dockerProvider = new DockerProvider(logger, Docker);
+	const portProvider = new PortProvider(net);
 
 	const networkService = new NetworkService(
 		axios,
@@ -177,7 +179,8 @@ export const initializeServices = async ({
 		httpProvider,
 		pageSpeedProvider,
 		hardwareProvider,
-		dockerProvider
+		dockerProvider,
+		portProvider
 	);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 

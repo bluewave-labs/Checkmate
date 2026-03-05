@@ -62,10 +62,6 @@ export class PortProvider implements IStatusProvider<PortStatusPayload> {
 					responseTime: responseTime,
 					timings: undefined,
 					payload: { success: false },
-					jsonPath: monitor.jsonPath,
-					matchMethod: monitor.matchMethod,
-					expectedValue: monitor.expectedValue,
-					extracted: undefined,
 				};
 			}
 
@@ -79,10 +75,6 @@ export class PortProvider implements IStatusProvider<PortStatusPayload> {
 				responseTime: responseTime,
 				timings: undefined,
 				payload: { success: true },
-				jsonPath: monitor.jsonPath,
-				matchMethod: monitor.matchMethod,
-				expectedValue: monitor.expectedValue,
-				extracted: undefined,
 			};
 		} catch (err: unknown) {
 			const originalMessage = err instanceof Error ? err.message : String(err);
@@ -90,7 +82,7 @@ export class PortProvider implements IStatusProvider<PortStatusPayload> {
 				message: originalMessage || "Error performing port check",
 				status: 500,
 				service: SERVICE_NAME,
-				method: "requestPort",
+				method: "handle",
 				details: { url: monitor.url, port: monitor.port },
 			});
 		}
