@@ -14,6 +14,8 @@ import type {
 	MonitorStatus,
 } from "@/types/index.js";
 
+import type { QueryResult } from "gamedig";
+
 export interface MonitorStatusResponse<
 	T =
 		| HttpStatusPayload
@@ -100,7 +102,7 @@ export interface PortStatusPayload {
 	success: boolean;
 }
 
-export type GameStatusPayload = Record<string, unknown>;
+export type GameStatusPayload = QueryResult;
 
 export interface GrpcStatusPayload {
 	grpcStatusCode: number;

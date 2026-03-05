@@ -51,6 +51,7 @@ export class PortProvider implements IStatusProvider<PortStatusPayload> {
 				});
 			});
 			if (error) {
+				console.log(error);
 				const errorMessage = error instanceof Error ? error.message : "Port check failed";
 				return {
 					monitorId: monitor.id,
