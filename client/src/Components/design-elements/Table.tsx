@@ -29,6 +29,7 @@ import type { TablePaginationOwnProps } from "@mui/material/TablePagination";
 import { useTranslation } from "react-i18next";
 import { useState, Fragment, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import type { SxProps, Theme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
@@ -90,20 +91,20 @@ export function DataTable<
 	// Return stack of cards for small screens
 	if (isSmall && cardsOnSmallScreens) {
 		return (
-			<Stack spacing={theme.spacing(4)}>
+			<Stack spacing={theme.spacing(LAYOUT.XS)}>
 				{data.map((row) => {
 					const key = row.id || row._id || Math.random();
 					keys.push(key);
 					return (
 						<Stack
 							onClick={() => (onRowClick ? onRowClick(row) : null)}
-							spacing={theme.spacing(4)}
+							spacing={theme.spacing(LAYOUT.XS)}
 							sx={{
 								borderStyle: "solid",
 								borderWidth: 1,
 								borderColor: theme.palette.divider,
 								borderRadius: theme.shape.borderRadius,
-								padding: theme.spacing(4),
+								padding: theme.spacing(LAYOUT.XS),
 								cursor: onRowClick ? "pointer" : "default",
 							}}
 							key={key}
@@ -155,7 +156,7 @@ export function DataTable<
 			<Table
 				sx={{
 					"&.MuiTable-root  :is(.MuiTableHead-root, .MuiTableBody-root) :is(th, td)": {
-						paddingLeft: theme.spacing(8),
+						paddingLeft: theme.spacing(LAYOUT.MD),
 					},
 					"& .MuiTableCell-root": {
 						borderBottom: `1px solid ${theme.palette.divider}`,
@@ -168,13 +169,13 @@ export function DataTable<
 						color: theme.palette.text.secondary,
 						fontWeight: 500,
 						textTransform: "uppercase",
-						padding: `${theme.spacing(2)} ${theme.spacing(8)}`,
+						padding: `${theme.spacing(SPACING.LG)} ${theme.spacing(LAYOUT.MD)}`,
 						fontSize: theme.typography.fontSize,
 					},
 					"& :is(td)": {
 						backgroundColor: theme.palette.background.paper,
 						color: theme.palette.text.secondary,
-						padding: `${theme.spacing(7)} ${theme.spacing(8)}`,
+						padding: `${theme.spacing(LAYOUT.MD)} ${theme.spacing(LAYOUT.MD)}`,
 						fontSize: theme.typography.fontSize,
 						overflowX: "hidden",
 					},
@@ -514,7 +515,7 @@ export const Pagination = ({ ...props }: PaginationProps) => {
 							display: "grid",
 							gridTemplateColumns: "1fr 1fr",
 							gridAutoRows: "auto",
-							rowGap: theme.spacing(1),
+							rowGap: theme.spacing(SPACING.SM),
 							alignItems: "center",
 							justifyItems: "center",
 							paddingLeft: 0,
@@ -556,8 +557,8 @@ const EmptyView = ({ text, positive }: { text?: string; positive?: boolean }) =>
 			alignItems={"center"}
 			justifyContent={"center"}
 			sx={{
-				py: theme.spacing(12),
-				px: theme.spacing(4),
+				py: theme.spacing(LAYOUT.XL),
+				px: theme.spacing(LAYOUT.XS),
 				borderWidth: 1,
 				borderStyle: "solid",
 				borderColor: theme.palette.divider,
@@ -574,7 +575,7 @@ const EmptyView = ({ text, positive }: { text?: string; positive?: boolean }) =>
 					display: "flex",
 					alignItems: "center",
 					justifyContent: "center",
-					mb: theme.spacing(2),
+					mb: theme.spacing(SPACING.LG),
 				}}
 			>
 				<Icon

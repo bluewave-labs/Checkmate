@@ -17,6 +17,8 @@ import SuperSimpleQueueHelper from "../service/infrastructure/SuperSimpleQueue/S
 import SuperSimpleQueue from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
 import UserService from "../service/business/userService.js";
 import CheckService from "../service/business/checkService.js";
+import GeoChecksService from "../service/business/geoChecksService.js";
+import GlobalPingService from "../service/infrastructure/globalPingService.js";
 import DiagnosticService from "../service/business/diagnosticService.js";
 import InviteService from "../service/business/inviteService.js";
 import MaintenanceWindowService from "../service/business/maintenanceWindowService.js";
@@ -27,7 +29,6 @@ import { NotificationMessageBuilder, INotificationMessageBuilder } from "../serv
 import axios from "axios";
 import got from "got";
 import ping from "ping";
-import http from "http";
 import https from "https";
 import Docker from "dockerode";
 import net from "net";
@@ -41,11 +42,14 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { games, GameDig } from "gamedig";
 import jmespath from "jmespath";
+import * as grpc from "@grpc/grpc-js";
+import * as protoLoader from "@grpc/proto-loader";
 
 // repositories
 import {
 	MongoMonitorsRepository,
 	MongoChecksRepository,
+	MongoGeoChecksRepository,
 	MongoMonitorStatsRepository,
 	MongoStatusPagesRepository,
 	MongoUsersRepository,
@@ -57,6 +61,7 @@ import {
 	MongoMaintenanceWindowsRepository,
 	IMonitorsRepository,
 	IChecksRepository,
+	IGeoChecksRepository,
 	IMonitorStatsRepository,
 	IStatusPagesRepository,
 	IUsersRepository,
@@ -81,12 +86,13 @@ export type InitializedServices = {
 	jobQueue: any;
 	userService: any;
 	checkService: any;
+	geoChecksService: any;
 	diagnosticService: any;
 	inviteService: any;
 	maintenanceWindowService: any;
 	monitorService: any;
 	incidentService: any;
-	logger: any;
+	logger: ILogger;
 	notificationsService: INotificationsService;
 	statusPageService: IStatusPageService;
 	notificationMessageBuilder: INotificationMessageBuilder;
@@ -94,6 +100,7 @@ export type InitializedServices = {
 	// Repositories
 	monitorsRepository: IMonitorsRepository;
 	checksRepository: IChecksRepository;
+	geoChecksRepository: IGeoChecksRepository;
 	monitorStatsRepository: IMonitorStatsRepository;
 	statusPagesRepository: IStatusPagesRepository;
 	usersRepository: IUsersRepository;
@@ -126,6 +133,7 @@ export const initializeServices = async ({
 	// Repositories
 	const monitorsRepository = new MongoMonitorsRepository();
 	const checksRepository = new MongoChecksRepository(logger);
+	const geoChecksRepository = new MongoGeoChecksRepository(logger);
 	const monitorStatsRepository = new MongoMonitorStatsRepository();
 	const statusPagesRepository = new MongoStatusPagesRepository();
 	const usersRepository = new MongoUsersRepository();
@@ -136,38 +144,40 @@ export const initializeServices = async ({
 	const teamsRepository = new MongoTeamsRepository();
 	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
 
-	const networkService = new NetworkService({
+	const networkService = new NetworkService(
 		axios,
 		got,
 		https,
 		jmespath,
-		GameDig,
+		GameDig as unknown as {
+			query: (options: { type: string; host: string; port?: number }) => Promise<{ ping?: number } & { [key: string]: unknown }>;
+		},
 		ping,
 		logger,
-		http,
 		Docker,
 		net,
 		settingsService,
-	});
+		grpc,
+		protoLoader
+	);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 
 	const notificationMessageBuilder = new NotificationMessageBuilder();
 
-	const incidentService = new IncidentService({
+	const incidentService = new IncidentService(logger, incidentsRepository, monitorsRepository, usersRepository, notificationMessageBuilder);
+
+	const checkService = new CheckService(monitorsRepository, logger, checksRepository);
+
+	const globalPingService = new GlobalPingService(logger);
+
+	const geoChecksService = new GeoChecksService({
 		logger,
-		incidentsRepository,
+		geoChecksRepository,
+		globalPingService,
 		monitorsRepository,
-		usersRepository,
-		notificationMessageBuilder,
 	});
 
-	const checkService = new CheckService({
-		monitorsRepository,
-		logger,
-		checksRepository,
-	});
-
-	const bufferService = new BufferService({ logger, checkService, settingsService });
+	const bufferService = new BufferService(logger, checkService, geoChecksService, settingsService);
 
 	const statusService = new StatusService(logger, bufferService, monitorsRepository, monitorStatsRepository, checksRepository);
 
@@ -192,13 +202,13 @@ export const initializeServices = async ({
 		notificationMessageBuilder
 	);
 
-	const superSimpleQueueHelper = new SuperSimpleQueueHelper({
+	const superSimpleQueueHelper = new SuperSimpleQueueHelper(
 		logger,
 		networkService,
 		statusService,
 		notificationsService,
 		checkService,
-		buffer: bufferService,
+		bufferService,
 		incidentService,
 		maintenanceWindowsRepository,
 		monitorsRepository,
@@ -206,13 +216,11 @@ export const initializeServices = async ({
 		monitorStatsRepository,
 		checksRepository,
 		incidentsRepository,
-	});
+		geoChecksService,
+		geoChecksRepository
+	);
 
-	const superSimpleQueue = await SuperSimpleQueue.create({
-		logger,
-		helper: superSimpleQueueHelper,
-		monitorsRepository,
-	});
+	const superSimpleQueue = await SuperSimpleQueue.create(logger, superSimpleQueueHelper, monitorsRepository);
 
 	// Business services
 	const userService = new UserService({
@@ -247,6 +255,7 @@ export const initializeServices = async ({
 		games,
 		monitorsRepository,
 		checksRepository,
+		geoChecksRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
 		incidentsRepository,
@@ -265,6 +274,7 @@ export const initializeServices = async ({
 		jobQueue: superSimpleQueue,
 		userService,
 		checkService,
+		geoChecksService,
 		diagnosticService,
 		inviteService,
 		maintenanceWindowService,
@@ -278,6 +288,7 @@ export const initializeServices = async ({
 		// Repositories
 		monitorsRepository,
 		checksRepository,
+		geoChecksRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
 		usersRepository,

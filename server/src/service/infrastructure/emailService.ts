@@ -1,27 +1,51 @@
 import { fileURLToPath } from "url";
-import path from "path";
 import { EmailTransportConfig } from "@/types/index.js";
+import { ISettingsService } from "@/service/system/settingsService.js";
+import { ILogger } from "@/utils/logger.js";
+import fs from "node:fs";
+import path from "node:path";
+import nodemailer from "nodemailer";
+import mjml2html from "mjml";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const SERVICE_NAME = "EmailService";
+type MjmlFn = typeof mjml2html;
+type FileSystem = typeof fs;
+type PathModule = typeof path;
+type Mailer = typeof nodemailer;
+type TemplateCompiler = (template: string) => (context: Record<string, unknown>) => string;
 
-class EmailService {
+export interface IEmailService {
+	init(): void;
+	buildEmail(template: string, context: Record<string, unknown>): Promise<string | undefined>;
+	sendEmail(to: string, subject: string, html: string, transportConfig?: EmailTransportConfig): Promise<string | false | undefined>;
+}
+
+class EmailService implements IEmailService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private settingsService: any;
-	private fs: any;
-	private path: any;
-	private compile: any;
-	private mjml2html: any;
-	private nodemailer: any;
-	private logger: any;
-	private transporter: any;
-	private templateLookup: Record<string, Function>;
-	private loadTemplate: (templateName: string) => Function;
+	private settingsService: ISettingsService;
+	private fs: FileSystem;
+	private path: PathModule;
+	private compile: TemplateCompiler;
+	private mjml2html: MjmlFn;
+	private nodemailer: Mailer;
+	private logger: ILogger;
+	private transporter: ReturnType<typeof import("nodemailer").createTransport> | null = null;
+	private templateLookup: Record<string, ((context: Record<string, unknown>) => string) | undefined>;
+	private loadTemplate: (templateName: string) => ((context: Record<string, unknown>) => string) | undefined;
 
-	constructor(settingsService: any, fs: any, path: any, compile: any, mjml2html: any, nodemailer: any, logger: any) {
+	constructor(
+		settingsService: ISettingsService,
+		fs: FileSystem,
+		path: PathModule,
+		compile: TemplateCompiler,
+		mjml2html: MjmlFn,
+		nodemailer: Mailer,
+		logger: ILogger
+	) {
 		this.settingsService = settingsService;
 		this.fs = fs;
 		this.path = path;
@@ -30,9 +54,7 @@ class EmailService {
 		this.nodemailer = nodemailer;
 		this.logger = logger;
 		this.templateLookup = {};
-		this.loadTemplate = () => {
-			return () => {};
-		};
+		this.loadTemplate = () => undefined;
 		this.init();
 	}
 
@@ -46,12 +68,12 @@ class EmailService {
 				const templatePath = this.path.join(__dirname, `../../templates/${templateName}.mjml`);
 				const templateContent = this.fs.readFileSync(templatePath, "utf8");
 				return this.compile(templateContent);
-			} catch (error: any) {
+			} catch (error: unknown) {
 				this.logger.error({
-					message: error.message,
+					message: error instanceof Error ? error.message : "Unknown error",
 					service: SERVICE_NAME,
 					method: "loadTemplate",
-					stack: error.stack,
+					stack: error instanceof Error ? error.stack : undefined,
 				});
 			}
 		};
@@ -66,17 +88,20 @@ class EmailService {
 		};
 	};
 
-	buildEmail = async (template: string, context: Record<string, any>) => {
+	buildEmail = async (template: string, context: Record<string, unknown>) => {
 		try {
 			const mjml = this.templateLookup[template]?.(context);
-			const html = await this.mjml2html(mjml);
+			if (!mjml) {
+				throw new Error(`Template ${template} not found`);
+			}
+			const html = this.mjml2html(mjml);
 			return html.html;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({
-				message: error.message,
+				message: error instanceof Error ? error.message : "Unknown error",
 				service: SERVICE_NAME,
 				method: "buildEmail",
-				stack: error.stack,
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 		}
 	};
@@ -125,11 +150,12 @@ class EmailService {
 
 		try {
 			await this.transporter.verify();
-		} catch (error) {
+		} catch (error: unknown) {
 			this.logger.warn({
 				message: "Email transporter verification failed",
 				service: SERVICE_NAME,
 				method: "verifyTransporter",
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 			return false;
 		}
@@ -142,12 +168,12 @@ class EmailService {
 				html: html,
 			});
 			return info?.messageId;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({
-				message: error.message,
+				message: error instanceof Error ? error.message : "Unknown error",
 				service: SERVICE_NAME,
 				method: "sendEmail",
-				stack: error.stack,
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 		}
 	};

@@ -1,28 +1,31 @@
-import { requireTeamId } from "@/controllers/controllerUtils.js";
 import { Types } from "mongoose";
 import { IChecksRepository, IMonitorsRepository } from "@/repositories/index.js";
-import type { MonitorType, MonitorStatusResponse, CheckErrorInfo, Check } from "@/types/index.js";
+import type { MonitorStatusResponse, CheckErrorInfo, Check, ILighthouseAudit, ChecksQueryResult, ChecksSummary } from "@/types/index.js";
 import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import { ParseBoolean } from "@/utils/utils.js";
+import { ILogger } from "@/utils/logger.js";
 
 const SERVICE_NAME = "checkService";
 
-class CheckService {
+export interface ICheckService {
+	createChecks(checks: Check[]): Promise<Check[]>;
+	buildCheck(statusResponse: MonitorStatusResponse<PageSpeedStatusPayload | HardwareStatusPayload | undefined>): Partial<Check> | undefined;
+	getChecksByMonitor(params: { monitorId: string; query: Record<string, string>; teamId: string }): Promise<ChecksQueryResult>;
+	getChecksByTeam(params: { teamId: string; query: Record<string, string> }): Promise<ChecksQueryResult>;
+	getChecksSummaryByTeamId(params: { teamId: string; dateRange: string }): Promise<ChecksSummary>;
+	deleteChecks(params: { monitorId: string; teamId: string }): Promise<number>;
+	deleteChecksByTeamId(params: { teamId: string }): Promise<number>;
+	updateChecksTTL(params: { teamId: string; ttl: string }): Promise<void>;
+}
+
+class CheckService implements ICheckService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private monitorsRepository: IMonitorsRepository;
 	private checksRepository: IChecksRepository;
-	private logger: any;
-	constructor({
-		monitorsRepository,
-		logger,
-		checksRepository,
-	}: {
-		monitorsRepository: IMonitorsRepository;
-		logger: any;
-		checksRepository: IChecksRepository;
-	}) {
+	private logger: ILogger;
+	constructor(monitorsRepository: IMonitorsRepository, logger: ILogger, checksRepository: IChecksRepository) {
 		this.monitorsRepository = monitorsRepository;
 		this.logger = logger;
 		this.checksRepository = checksRepository;
@@ -61,13 +64,12 @@ class CheckService {
 					message: "Failed to build check",
 					service: SERVICE_NAME,
 					method: "buildCheck",
-					details: "empty payload",
 				});
 				return undefined;
 			}
 			const categories = pageSpeedPayload.lighthouseResult?.categories ?? {};
 			const audits = pageSpeedPayload.lighthouseResult?.audits ?? {};
-			const mapAudit = (audit: any) => {
+			const mapAudit = (audit: ILighthouseAudit | undefined) => {
 				if (!audit || typeof audit !== "object") {
 					return undefined;
 				}
@@ -110,7 +112,7 @@ class CheckService {
 		return check;
 	};
 
-	getChecksByMonitor = async ({ monitorId, query, teamId }: { monitorId: string; query: any; teamId: string }) => {
+	getChecksByMonitor = async ({ monitorId, query, teamId }: { monitorId: string; query: Record<string, string>; teamId: string }) => {
 		if (!monitorId) {
 			throw new AppError({ message: "No monitor ID in request", service: SERVICE_NAME, method: "getChecksByMonitor", status: 400 });
 		}
@@ -118,28 +120,34 @@ class CheckService {
 			throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "getChecksByMonitor", status: 400 });
 		}
 
-		// For verificaiton, throws an error if monitor doesn't belong to team
+		// For verification, throws an error if monitor doesn't belong to team
 		await this.monitorsRepository.findById(monitorId, teamId);
 
-		let { sortOrder, dateRange, filter, page, rowsPerPage, status } = query;
+		const { sortOrder, dateRange, filter, page, rowsPerPage, status } = query;
+		if (!sortOrder || !dateRange || !filter || !page || !rowsPerPage) {
+			throw new AppError({ message: "Missing required query parameters", service: SERVICE_NAME, method: "getChecksByMonitor", status: 400 });
+		}
 		const parsedStatus = typeof status === "undefined" ? status : ParseBoolean(status);
-		const parsedPage = page ? parseInt(page) : page;
-		const parsedRowsPerPage = rowsPerPage ? parseInt(rowsPerPage) : rowsPerPage;
+		const parsedPage = page ? parseInt(page) : 0;
+		const parsedRowsPerPage = rowsPerPage ? parseInt(rowsPerPage) : 5;
 
 		const result = await this.checksRepository.findByMonitorId(monitorId, sortOrder, dateRange, filter, parsedPage, parsedRowsPerPage, parsedStatus);
 
 		return result;
 	};
 
-	getChecksByTeam = async ({ teamId, query }: { teamId: string; query: any }) => {
-		let { sortOrder, dateRange, filter, page, rowsPerPage } = query;
+	getChecksByTeam = async ({ teamId, query }: { teamId: string; query: Record<string, string> }) => {
+		const { sortOrder, dateRange, filter, page, rowsPerPage } = query;
+		if (!sortOrder || !dateRange || !filter || !page || !rowsPerPage) {
+			throw new AppError({ message: "Missing required query parameters", service: SERVICE_NAME, method: "getChecksByTeam", status: 400 });
+		}
 
 		if (!teamId) {
 			throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "getChecksByTeam", status: 400 });
 		}
 
-		const parsedPage = page ? parseInt(page) : page;
-		const parsedRowsPerPage = rowsPerPage ? parseInt(rowsPerPage) : rowsPerPage;
+		const parsedPage = page ? parseInt(page) : 0;
+		const parsedRowsPerPage = rowsPerPage ? parseInt(rowsPerPage) : 5;
 
 		const checkData = await this.checksRepository.findByTeamId(sortOrder, dateRange, filter, parsedPage, parsedRowsPerPage, teamId);
 		return checkData;
@@ -162,7 +170,7 @@ class CheckService {
 			throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "deleteChecks", status: 400 });
 		}
 
-		// For verificaiton, throws an error if monitor doesn't belong to team
+		// For verification, throws an error if monitor doesn't belong to team
 		await this.monitorsRepository.findById(monitorId, teamId);
 
 		const deletedCount = await this.checksRepository.deleteByMonitorId(monitorId);
@@ -178,7 +186,7 @@ class CheckService {
 	};
 
 	updateChecksTTL = async ({ teamId, ttl }: { teamId: string; ttl: string }) => {
-		throw new AppError({ message: "Not implemented", service: SERVICE_NAME, method: "updateChecksTTL", status: 500 });
+		throw new AppError({ message: "Not implemented", service: SERVICE_NAME, method: "updateChecksTTL", status: 500, details: { teamId, ttl } });
 	};
 }
 

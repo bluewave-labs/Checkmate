@@ -33,3 +33,6 @@ export { default as MongoTeamsRepository } from "@/repositories/teams/MongoTeams
 
 export * from "@/repositories/maintenance-windows/IMaintenanceWindowsRepository.js";
 export { default as MongoMaintenanceWindowsRepository } from "@/repositories/maintenance-windows/MongoMaintenanceWindowsRepository.js";
+
+export * from "@/repositories/geo-checks/IGeoChecksRepository.js";
+export { default as MongoGeoChecksRepository } from "@/repositories/geo-checks/MongoGeoChecksRepository.js";

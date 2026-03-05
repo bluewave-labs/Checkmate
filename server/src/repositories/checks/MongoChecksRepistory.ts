@@ -15,17 +15,9 @@ import type {
 } from "@/types/index.js";
 import { CheckModel, MonitorModel, type CheckDocument } from "@/db/models/index.js";
 import mongoose from "mongoose";
+import { getDateForRange } from "@/utils/dataUtils.js";
 
 const SERVICE_NAME = "StatusService";
-
-const dateRangeLookup: Record<string, Date | undefined> = {
-	recent: new Date(new Date().setHours(new Date().getHours() - 2)),
-	hour: new Date(new Date().setHours(new Date().getHours() - 1)),
-	day: new Date(new Date().setDate(new Date().getDate() - 1)),
-	week: new Date(new Date().setDate(new Date().getDate() - 7)),
-	month: new Date(new Date().setMonth(new Date().getMonth() - 1)),
-	all: undefined,
-};
 
 export type LatestChecksMap = Record<string, Check[]>;
 type DateRange = { start: Date; end: Date };
@@ -248,9 +240,9 @@ class MongoChecksRepository implements IChecksRepository {
 		const matchStage: Record<string, any> = {
 			"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 			...(typeof status !== "undefined" && { status }),
-			...(dateRangeLookup[dateRange] && {
+			...(getDateForRange(dateRange) && {
 				createdAt: {
-					$gte: dateRangeLookup[dateRange],
+					$gte: getDateForRange(dateRange),
 				},
 			}),
 		};
@@ -299,9 +291,9 @@ class MongoChecksRepository implements IChecksRepository {
 	findByTeamId = async (sortOrder: string, dateRange: string, filter: string, page: number, rowsPerPage: number, teamId: string) => {
 		const matchStage: Record<string, any> = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
-			...(dateRangeLookup[dateRange] && {
+			...(getDateForRange(dateRange) && {
 				createdAt: {
-					$gte: dateRangeLookup[dateRange],
+					$gte: getDateForRange(dateRange),
 				},
 			}),
 		};
@@ -386,9 +378,9 @@ class MongoChecksRepository implements IChecksRepository {
 	findSummaryByTeamId = async (teamId: string, dateRange: string) => {
 		const baseMatch = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
-			...(dateRangeLookup[dateRange] && {
+			...(getDateForRange(dateRange) && {
 				createdAt: {
-					$gte: dateRangeLookup[dateRange],
+					$gte: getDateForRange(dateRange),
 				},
 			}),
 		};

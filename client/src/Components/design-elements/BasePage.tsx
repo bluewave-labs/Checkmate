@@ -3,6 +3,7 @@ import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Alert from "@mui/material/Alert";
 import Link from "@mui/material/Link";
+import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 import {
 	ErrorFallback,
 	EmptyFallback,
@@ -91,7 +92,7 @@ export const BasePage = ({
 
 	return (
 		<Stack
-			spacing={theme.spacing(10)}
+			spacing={theme.spacing(LAYOUT.LG)}
 			{...props}
 		>
 			<Breadcrumb breadcrumbOverride={breadcrumbOverride} />
@@ -220,7 +221,7 @@ export const BaseAuthPage = ({
 	return (
 		<BasePage
 			breadcrumbOverride={[]}
-			gap={theme.spacing(8)}
+			gap={theme.spacing(LAYOUT.MD)}
 			alignItems={"center"}
 			justifyContent={"center"}
 			minHeight="100vh"
@@ -229,7 +230,7 @@ export const BaseAuthPage = ({
 		>
 			<HeaderAuthControls
 				hideLogo
-				py={theme.spacing(4)}
+				py={theme.spacing(LAYOUT.XS)}
 				position={"absolute"}
 				top={0}
 				left={0}
@@ -243,14 +244,14 @@ export const BaseAuthPage = ({
 			<Stack alignItems={"center"}>
 				<Typography
 					variant="h1"
-					mb={theme.spacing(2)}
+					mb={theme.spacing(SPACING.LG)}
 				>
 					{title}
 				</Typography>
 				<Typography variant="h2">{subtitle}</Typography>
 			</Stack>
 			<Stack
-				gap={theme.spacing(8)}
+				gap={theme.spacing(LAYOUT.MD)}
 				width={{
 					xs: "80%",
 					md: "25%",

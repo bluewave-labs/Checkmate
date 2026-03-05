@@ -1,6 +1,15 @@
 import { BasePage, ConfigBox, TextLink } from "@/Components/design-elements";
 import { Autocomplete, Select, Dialog, SwitchComponent } from "@/Components/inputs";
-import { Stack, useTheme, MenuItem, Link, type SelectChangeEvent } from "@mui/material";
+import { logger } from "@/Utils/logger";
+import { LAYOUT } from "@/Utils/Theme/constants";
+import {
+	Stack,
+	useTheme,
+	MenuItem,
+	Link,
+	Alert,
+	type SelectChangeEvent,
+} from "@mui/material";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,7 +23,7 @@ import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
 import type { SettingsFormData } from "@/Validation/settings";
 import { useState } from "react";
 import { Controller } from "react-hook-form";
-import { TextField, Button, FieldLabel } from "@/Components/inputs";
+import { TextField, Button, FieldLabel, SliderWithLabel } from "@/Components/inputs";
 import { Box, Typography } from "@mui/material";
 import { useDelete } from "@/Hooks/UseApi";
 
@@ -257,8 +266,7 @@ export const SettingsPage = () => {
 				(acc as any)[typedKey] = Object.entries(value).reduce(
 					(nested, [nestedKey, nestedValue]) => ({
 						...nested,
-						[nestedKey]:
-							nestedValue === undefined || nestedValue === 0 ? "" : nestedValue,
+						[nestedKey]: nestedValue === undefined ? "" : nestedValue,
 					}),
 					{}
 				);
@@ -282,7 +290,7 @@ export const SettingsPage = () => {
 	};
 
 	const onError = (errors: unknown) => {
-		console.log("Form validation errors:", errors);
+		logger.debug("Form validation errors", errors);
 	};
 
 	const languages = Object.keys(i18n.options.resources || {});
@@ -292,7 +300,7 @@ export const SettingsPage = () => {
 			component="form"
 			onSubmit={form.handleSubmit(onSubmit, onError)}
 		>
-			<Stack gap={theme.spacing(8)}>
+			<Stack gap={theme.spacing(LAYOUT.MD)}>
 				<ConfigBox
 					title={t("pages.settings.form.timezone.title")}
 					subtitle={t("pages.settings.form.timezone.description")}
@@ -315,7 +323,7 @@ export const SettingsPage = () => {
 					title={t("pages.settings.form.ui.title")}
 					subtitle={t("pages.settings.form.ui.description")}
 					rightContent={
-						<Stack gap={theme.spacing(8)}>
+						<Stack gap={theme.spacing(LAYOUT.MD)}>
 							<Select
 								value={mode}
 								onChange={handleModeChange}
@@ -465,24 +473,16 @@ export const SettingsPage = () => {
 									name="globalThresholds.cpu"
 									control={form.control}
 									defaultValue={defaults.globalThresholds?.cpu}
-									render={({ field, fieldState }) => (
-										<TextField
+									render={({ field }) => (
+										<SliderWithLabel
 											{...field}
-											value={
-												field.value === undefined || field.value === 0 ? "" : field.value
-											}
-											onChange={(e) => {
-												const val = e.target.value;
-												field.onChange(val === "" ? 0 : Number(val));
-											}}
 											fieldLabel={t("pages.settings.form.thresholds.option.cpu.label")}
-											type="number"
-											inputProps={{ min: 0 }}
-											placeholder={t(
-												"pages.settings.form.thresholds.option.cpu.placeholder"
-											)}
-											error={!!fieldState.error}
-											helperText={fieldState.error?.message}
+											min={1}
+											max={100}
+											sliderMaxWidth={{ xs: "100%", md: "50%" }}
+											value={field.value || 1}
+											onChange={(_, value) => field.onChange(value)}
+											valueLabelDisplay="auto"
 										/>
 									)}
 								/>
@@ -490,24 +490,16 @@ export const SettingsPage = () => {
 									name="globalThresholds.memory"
 									control={form.control}
 									defaultValue={defaults.globalThresholds?.memory}
-									render={({ field, fieldState }) => (
-										<TextField
+									render={({ field }) => (
+										<SliderWithLabel
 											{...field}
-											value={
-												field.value === undefined || field.value === 0 ? "" : field.value
-											}
-											onChange={(e) => {
-												const val = e.target.value;
-												field.onChange(val === "" ? 0 : Number(val));
-											}}
 											fieldLabel={t("pages.settings.form.thresholds.option.memory.label")}
-											type="number"
-											inputProps={{ min: 0 }}
-											placeholder={t(
-												"pages.settings.form.thresholds.option.memory.placeholder"
-											)}
-											error={!!fieldState.error}
-											helperText={fieldState.error?.message}
+											min={1}
+											max={100}
+											sliderMaxWidth={{ xs: "100%", md: "50%" }}
+											value={field.value || 1}
+											onChange={(_, value) => field.onChange(value)}
+											valueLabelDisplay="auto"
 										/>
 									)}
 								/>
@@ -515,24 +507,16 @@ export const SettingsPage = () => {
 									name="globalThresholds.disk"
 									control={form.control}
 									defaultValue={defaults.globalThresholds?.disk}
-									render={({ field, fieldState }) => (
-										<TextField
+									render={({ field }) => (
+										<SliderWithLabel
 											{...field}
-											value={
-												field.value === undefined || field.value === 0 ? "" : field.value
-											}
-											onChange={(e) => {
-												const val = e.target.value;
-												field.onChange(val === "" ? 0 : Number(val));
-											}}
 											fieldLabel={t("pages.settings.form.thresholds.option.disk.label")}
-											type="number"
-											inputProps={{ min: 0 }}
-											placeholder={t(
-												"pages.settings.form.thresholds.option.disk.placeholder"
-											)}
-											error={!!fieldState.error}
-											helperText={fieldState.error?.message}
+											min={1}
+											max={100}
+											sliderMaxWidth={{ xs: "100%", md: "50%" }}
+											value={field.value || 1}
+											onChange={(_, value) => field.onChange(value)}
+											valueLabelDisplay="auto"
 										/>
 									)}
 								/>
@@ -540,26 +524,18 @@ export const SettingsPage = () => {
 									name="globalThresholds.temperature"
 									control={form.control}
 									defaultValue={defaults.globalThresholds?.temperature}
-									render={({ field, fieldState }) => (
-										<TextField
+									render={({ field }) => (
+										<SliderWithLabel
 											{...field}
-											value={
-												field.value === undefined || field.value === 0 ? "" : field.value
-											}
-											onChange={(e) => {
-												const val = e.target.value;
-												field.onChange(val === "" ? 0 : Number(val));
-											}}
 											fieldLabel={t(
 												"pages.settings.form.thresholds.option.temperature.label"
 											)}
-											type="number"
-											inputProps={{ min: 0 }}
-											placeholder={t(
-												"pages.settings.form.thresholds.option.temperature.placeholder"
-											)}
-											error={!!fieldState.error}
-											helperText={fieldState.error?.message}
+											min={1}
+											max={150}
+											sliderMaxWidth={{ xs: "100%", md: "50%" }}
+											value={field.value || 1}
+											onChange={(_, value) => field.onChange(value)}
+											valueLabelDisplay="auto"
 										/>
 									)}
 								/>
@@ -575,7 +551,7 @@ export const SettingsPage = () => {
 					title={t("pages.settings.form.email.title")}
 					subtitle={t("pages.settings.form.email.description")}
 					leftContent={
-						<Stack gap={theme.spacing(8)}>
+						<Stack gap={theme.spacing(LAYOUT.MD)}>
 							<TextLink
 								text={t("pages.settings.form.email.descriptionTransport")}
 								linkText={t("pages.settings.form.email.descriptionTransportLink")}
@@ -623,7 +599,7 @@ export const SettingsPage = () => {
 						</Stack>
 					}
 					rightContent={
-						<Stack gap={theme.spacing(10)}>
+						<Stack gap={theme.spacing(LAYOUT.MD)}>
 							{/* Email Host */}
 							<Controller
 								name="systemEmailHost"
@@ -710,7 +686,7 @@ export const SettingsPage = () => {
 									<Stack
 										direction="row"
 										alignItems="center"
-										gap={theme.spacing(4)}
+										gap={theme.spacing(LAYOUT.XS)}
 									>
 										<Button
 											variant="contained"
@@ -785,7 +761,7 @@ export const SettingsPage = () => {
 								sx={{
 									display: "flex",
 									flexDirection: "column",
-									gap: theme.spacing(4),
+									gap: theme.spacing(LAYOUT.XS),
 								}}
 							>
 								{[
@@ -904,7 +880,7 @@ export const SettingsPage = () => {
 					subtitle={t("pages.settings.form.importExportMonitors.description")}
 					rightContent={
 						<Stack
-							gap={theme.spacing(4)}
+							gap={theme.spacing(LAYOUT.MD)}
 							direction={"row"}
 						>
 							<input
@@ -990,13 +966,46 @@ export const SettingsPage = () => {
 					bottom: 0,
 					backgroundColor: theme.palette.background.paper,
 					borderTop: `1px solid ${theme.palette.divider}`,
-					padding: theme.spacing(8),
-					marginLeft: theme.spacing(-8),
-					marginRight: theme.spacing(-8),
-					marginBottom: theme.spacing(-8),
+					padding: theme.spacing(LAYOUT.MD),
+					marginLeft: theme.spacing(-LAYOUT.MD),
+					marginRight: theme.spacing(-LAYOUT.MD),
+					marginBottom: theme.spacing(-LAYOUT.MD),
 					zIndex: 1000,
 				}}
 			>
+				{/* Validation Error Display */}
+				{Object.keys(form.formState.errors).length > 0 && (
+					<Alert
+						severity="error"
+						sx={{ mb: 2, flexGrow: 1, mr: 2 }}
+					>
+						<Typography
+							variant="body2"
+							sx={{ fontWeight: 600, mb: 1 }}
+						>
+							{t("pages.settings.form.validation.errorMessage")}
+						</Typography>
+						<Box
+							component="ul"
+							sx={{ m: 0, pl: 2 }}
+						>
+							{Object.entries(form.formState.errors).map(([field, error]) => {
+								const message =
+									typeof error === "object" && error?.message
+										? error.message
+										: "Invalid value";
+								return (
+									<li key={field}>
+										<Typography variant="body2">
+											<strong>{field}:</strong> {message}
+										</Typography>
+									</li>
+								);
+							})}
+						</Box>
+					</Alert>
+				)}
+
 				<Button
 					loading={isSaving}
 					type="submit"

@@ -7,10 +7,7 @@ import {
 	deleteChecksParamValidation,
 	deleteChecksByTeamIdParamValidation,
 	updateChecksTTLBodyValidation,
-	ackCheckBodyValidation,
-	ackAllChecksParamValidation,
-	ackAllChecksBodyValidation,
-} from "@/validation/joi.js";
+} from "@/validation/checkValidation.js";
 
 const SERVICE_NAME = "checkController";
 
@@ -28,8 +25,8 @@ class CheckController {
 
 	getChecksByMonitor = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getChecksParamValidation.validateAsync(req.params);
-			await getChecksQueryValidation.validateAsync(req.query);
+			getChecksParamValidation.parse(req.params);
+			getChecksQueryValidation.parse(req.query);
 
 			const result = await this.checkService.getChecksByMonitor({
 				monitorId: req?.params?.monitorId,
@@ -49,7 +46,7 @@ class CheckController {
 
 	getChecksByTeam = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getTeamChecksQueryValidation.validateAsync(req.query);
+			getTeamChecksQueryValidation.parse(req.query);
 			const checkData = await this.checkService.getChecksByTeam({
 				teamId: req?.user?.teamId,
 				query: req?.query,
@@ -80,7 +77,7 @@ class CheckController {
 
 	deleteChecks = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await deleteChecksParamValidation.validateAsync(req.params);
+			deleteChecksParamValidation.parse(req.params);
 
 			const deletedCount = await this.checkService.deleteChecks({
 				monitorId: req.params.monitorId as string,
@@ -99,7 +96,7 @@ class CheckController {
 
 	deleteChecksByTeamId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await deleteChecksByTeamIdParamValidation.validateAsync(req.params);
+			deleteChecksByTeamIdParamValidation.parse(req.params);
 
 			const deletedCount = await this.checkService.deleteChecksByTeamId({ teamId: req?.user?.teamId });
 
@@ -115,7 +112,7 @@ class CheckController {
 
 	updateChecksTTL = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await updateChecksTTLBodyValidation.validateAsync(req.body);
+			updateChecksTTLBodyValidation.parse(req.body);
 
 			await this.checkService.updateChecksTTL({
 				teamId: req?.user?.teamId,

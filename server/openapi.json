@@ -432,46 +432,6 @@
 			}
 		},
 		"/monitors": {
-			"get": {
-				"tags": ["monitors"],
-				"summary": "Get all monitors",
-				"description": "Retrieve all monitors for the authenticated user",
-				"responses": {
-					"200": {
-						"description": "Monitors retrieved successfully",
-						"content": {
-							"application/json": {
-								"schema": {
-									"allOf": [
-										{
-											"$ref": "#/components/schemas/SuccessResponse"
-										},
-										{
-											"type": "object",
-											"properties": {
-												"data": {
-													"type": "array",
-													"items": {
-														"$ref": "#/components/schemas/Monitor"
-													}
-												}
-											}
-										}
-									]
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				},
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				]
-			},
 			"post": {
 				"tags": ["monitors"],
 				"summary": "Create monitor",

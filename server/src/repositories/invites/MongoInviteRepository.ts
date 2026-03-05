@@ -36,7 +36,7 @@ class MongoInvitesRepository implements IInvitesRepository {
 	create = async (invite: Partial<Invite>) => {
 		await InviteModel.deleteMany({ email: invite.email });
 		invite.token = crypto.randomBytes(32).toString("hex");
-		let inviteToken = await InviteModel.create(invite);
+		const inviteToken = await InviteModel.create(invite);
 		return this.toEntity(inviteToken);
 	};
 

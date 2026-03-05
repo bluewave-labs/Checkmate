@@ -20,7 +20,7 @@ const getHeaders = (t: Function, uiTimezone: string) => {
 		},
 		{
 			id: "date",
-			content: t("pages.checks.table.headers.dateTime"),
+			content: t("common.table.headers.dateTime"),
 			render: (row) => {
 				return formatDateWithTz(row.createdAt, "ddd, MMMM D, YYYY, HH:mm A", uiTimezone);
 			},

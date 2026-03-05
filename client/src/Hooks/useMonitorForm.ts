@@ -14,6 +14,9 @@ const getBaseDefaults = (data?: Monitor | null) => ({
 	notifications: data?.notifications || [],
 	statusWindowSize: data?.statusWindowSize || 5,
 	statusWindowThreshold: data?.statusWindowThreshold || 60,
+	geoCheckEnabled: data?.geoCheckEnabled ?? false,
+	geoCheckLocations: data?.geoCheckLocations || [],
+	geoCheckInterval: data?.geoCheckInterval || 300000,
 });
 
 export const useMonitorForm = ({
@@ -68,6 +71,16 @@ export const useMonitorForm = ({
 					url: data?.url || "",
 					port: data?.port || 27015,
 					gameId: data?.gameId || "",
+				};
+				break;
+			case "grpc":
+				defaults = {
+					...base,
+					type: "grpc",
+					url: data?.url || "",
+					port: data?.port || 50051,
+					grpcServiceName: data?.grpcServiceName || "",
+					ignoreTlsErrors: data?.ignoreTlsErrors || false,
 				};
 				break;
 			case "pagespeed":

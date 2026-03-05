@@ -42,7 +42,7 @@ Checkmate has been stress-tested with 1000+ active monitors without any particul
 
 ## Demo
 
-You can see the latest build of [Checkmate](https://checkmate-demo.bluewavelabs.ca/) in action. The username is uptimedemo@demo.com and the password is Demouser1! (just a note that we update the demo server from time to time, so if it doesn't work for you, please ping us on the Discussions channel).
+You can see the latest build of [Checkmate](https://checkmate-demo.bluewavelabs.ca/) in action. The username is demouser@demo.com and the password is Demouser1! (just a note that we update the demo server from time to time, so if it doesn't work for you, please ping us on the Discussions channel).
 
 ## User's guide
 

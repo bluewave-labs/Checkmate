@@ -1,15 +1,15 @@
 const SERVICE_NAME = "WebhookProvider";
-import type { Monitor, Alert, Notification, MonitorStatusResponse } from "@/types/index.js";
+import type { Notification } from "@/types/index.js";
 import { INotificationProvider } from "@/service/index.js";
-import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
 import got from "got";
+import { ILogger } from "@/utils/logger.js";
 
 export class WebhookProvider implements INotificationProvider {
-	private logger: any;
+	private logger: ILogger;
 
-	constructor(logger: any) {
+	constructor(logger: ILogger) {
 		this.logger = logger;
 	}
 
@@ -46,10 +46,6 @@ export class WebhookProvider implements INotificationProvider {
 		}
 	};
 
-	/**
-	 * Build webhook payload from NotificationMessage
-	 * Format: { text: string, severity: string, monitor: object, details: object }
-	 */
 	private buildWebhookPayload(message: NotificationMessage): object {
 		const lines: string[] = [];
 
