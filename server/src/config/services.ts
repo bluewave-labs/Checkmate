@@ -29,7 +29,6 @@ import { NotificationMessageBuilder, INotificationMessageBuilder } from "../serv
 import axios from "axios";
 import got from "got";
 import ping from "ping";
-import https from "https";
 import Docker from "dockerode";
 import net from "net";
 import fs from "fs";
@@ -75,6 +74,15 @@ import {
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
 import { EnvConfig } from "@/service/system/settingsService.js";
+import { PingProvider } from "@/service/infrastructure/network/PingProvider.js";
+import { HttpProvider } from "@/service/infrastructure/network/HttpProvider.js";
+import { AdvancedMatcher } from "@/service/infrastructure/network/AdvancedMatcher.js";
+import { PageSpeedProvider } from "@/service/infrastructure/network/PageSpeedProvider.js";
+import { HardwareProvider } from "@/service/infrastructure/network/HardwareProvider.js";
+import { DockerProvider } from "@/service/infrastructure/network/DockerProvider.js";
+import { PortProvider } from "@/service/infrastructure/network/PortProvider.js";
+import { GameProvider } from "@/service/infrastructure/network/GameProvider.js";
+import { GrpcProvider } from "@/service/infrastructure/network/GrpcProvider.js";
 
 export type InitializedServices = {
 	settingsService: any;
@@ -144,21 +152,28 @@ export const initializeServices = async ({
 	const teamsRepository = new MongoTeamsRepository();
 	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
 
+	// Providers
+
+	const pingProvider = new PingProvider(ping);
+	const httpProvider = new HttpProvider(got, new AdvancedMatcher(jmespath));
+	const pageSpeedProvider = new PageSpeedProvider(httpProvider, settingsService, logger);
+	const hardwareProvider = new HardwareProvider(httpProvider);
+	const dockerProvider = new DockerProvider(logger, Docker);
+	const portProvider = new PortProvider(net);
+	const gameProvider = new GameProvider(logger, GameDig);
+	const grpcProvider = new GrpcProvider(grpc, protoLoader);
+
 	const networkService = new NetworkService(
 		axios,
-		got,
-		https,
-		jmespath,
-		GameDig as unknown as {
-			query: (options: { type: string; host: string; port?: number }) => Promise<{ ping?: number } & { [key: string]: unknown }>;
-		},
-		ping,
 		logger,
-		Docker,
-		net,
-		settingsService,
-		grpc,
-		protoLoader
+		pingProvider,
+		httpProvider,
+		pageSpeedProvider,
+		hardwareProvider,
+		dockerProvider,
+		portProvider,
+		gameProvider,
+		grpcProvider
 	);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 

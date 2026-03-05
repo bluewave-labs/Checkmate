@@ -32,7 +32,7 @@ export const HeatmapResponseTime = ({
 
 	if (!checks || checks.length === 0) return null;
 
-	const latestChecks = checks.slice(-25).reverse();
+	const latestChecks = checks.slice(-25);
 
 	let data: Array<CheckSnapshot | PlaceholderCheck>;
 	if (latestChecks.length !== 25) {

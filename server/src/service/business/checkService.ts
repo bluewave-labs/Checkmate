@@ -124,8 +124,13 @@ class CheckService implements ICheckService {
 		await this.monitorsRepository.findById(monitorId, teamId);
 
 		const { sortOrder, dateRange, filter, page, rowsPerPage, status } = query;
-		if (!sortOrder || !dateRange || !filter || !page || !rowsPerPage) {
-			throw new AppError({ message: "Missing required query parameters", service: SERVICE_NAME, method: "getChecksByMonitor", status: 400 });
+		if (!sortOrder || !dateRange || !page || !rowsPerPage) {
+			throw new AppError({
+				message: `Missing required query parameters sortOrder: ${sortOrder}, dateRange: ${dateRange}, filter: ${filter}, page: ${page}, rowsPerPage: ${rowsPerPage}`,
+				service: SERVICE_NAME,
+				method: "getChecksByMonitor",
+				status: 400,
+			});
 		}
 		const parsedStatus = typeof status === "undefined" ? status : ParseBoolean(status);
 		const parsedPage = page ? parseInt(page) : 0;
@@ -138,7 +143,7 @@ class CheckService implements ICheckService {
 
 	getChecksByTeam = async ({ teamId, query }: { teamId: string; query: Record<string, string> }) => {
 		const { sortOrder, dateRange, filter, page, rowsPerPage } = query;
-		if (!sortOrder || !dateRange || !filter || !page || !rowsPerPage) {
+		if (!sortOrder || !dateRange || !page || !rowsPerPage) {
 			throw new AppError({ message: "Missing required query parameters", service: SERVICE_NAME, method: "getChecksByTeam", status: 400 });
 		}
 

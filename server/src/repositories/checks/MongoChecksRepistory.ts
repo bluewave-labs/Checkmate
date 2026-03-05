@@ -231,7 +231,7 @@ class MongoChecksRepository implements IChecksRepository {
 		monitorId: string,
 		sortOrder: string,
 		dateRange: string,
-		filter: string,
+		filter: string | undefined,
 		page: number,
 		rowsPerPage: number,
 		status: boolean | undefined
