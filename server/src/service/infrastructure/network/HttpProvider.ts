@@ -4,7 +4,7 @@ import { IStatusProvider } from "@/service/infrastructure/network/IStatusProvide
 import { HttpStatusPayload } from "@/types/network.js";
 import { MonitorStatusResponse } from "@/types/network.js";
 import { Agent as HttpsAgent } from "https";
-import { Monitor } from "@/types/monitor.js";
+import { Monitor, MonitorType } from "@/types/monitor.js";
 import { NETWORK_ERROR } from "@/service/infrastructure/network/utils.js";
 
 export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
@@ -15,7 +15,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 		private advancedMatcher: AdvancedMatcher
 	) {}
 
-	supports(type: string) {
+	supports(type: MonitorType) {
 		return type === "http";
 	}
 

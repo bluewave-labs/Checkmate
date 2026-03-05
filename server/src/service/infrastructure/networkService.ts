@@ -97,6 +97,8 @@ class NetworkService implements INetworkService {
 	// New providers
 	private pingProvider;
 	private httpProvider;
+	private pageSpeedProvider;
+	private hardwareProvider;
 
 	private buildStatusResponse = <T>({
 		monitor,
@@ -168,7 +170,9 @@ class NetworkService implements INetworkService {
 
 		// New providers
 		pingProvider: IStatusProvider<PingStatusPayload>,
-		httpProvider: IStatusProvider<HttpStatusPayload>
+		httpProvider: IStatusProvider<HttpStatusPayload>,
+		pagespeedProvider: IStatusProvider<PageSpeedStatusPayload>,
+		hardwareProvider: IStatusProvider<HardwareStatusPayload>
 	) {
 		this.TYPE_PING = "ping";
 		this.TYPE_HTTP = "http";
@@ -196,7 +200,8 @@ class NetworkService implements INetworkService {
 		// New providers
 		this.pingProvider = pingProvider;
 		this.httpProvider = httpProvider;
-
+		this.pageSpeedProvider = pagespeedProvider;
+		this.hardwareProvider = hardwareProvider;
 		const cacheable = new CacheableLookup();
 
 		this.got = got.extend({
@@ -247,7 +252,7 @@ class NetworkService implements INetworkService {
 			case this.TYPE_HTTP:
 				return await this.httpProvider.handle(monitor);
 			case this.TYPE_PAGESPEED:
-				return await this.requestPageSpeed(monitor);
+				return await this.pageSpeedProvider.handle(monitor);
 			case this.TYPE_HARDWARE:
 				return await this.requestHardware(monitor);
 			case this.TYPE_DOCKER:

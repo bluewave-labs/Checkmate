@@ -78,6 +78,8 @@ import { EnvConfig } from "@/service/system/settingsService.js";
 import { PingProvider } from "@/service/infrastructure/network/PingProvider.js";
 import { HttpProvider } from "@/service/infrastructure/network/HttpProvider.js";
 import { AdvancedMatcher } from "@/service/infrastructure/network/AdvancedMatcher.js";
+import { PageSpeedProvider } from "@/service/infrastructure/network/PageSpeedProvider.js";
+import { HardwareProvider } from "@/service/infrastructure/network/HardwareProvider.js";
 
 export type InitializedServices = {
 	settingsService: any;
@@ -151,7 +153,8 @@ export const initializeServices = async ({
 
 	const pingProvider = new PingProvider(ping);
 	const httpProvider = new HttpProvider(got, new AdvancedMatcher(jmespath));
-
+	const pageSpeedProvider = new PageSpeedProvider(httpProvider, settingsService, logger);
+	const hardwareProvider = new HardwareProvider(httpProvider);
 	const networkService = new NetworkService(
 		axios,
 		got,
@@ -168,7 +171,9 @@ export const initializeServices = async ({
 		grpc,
 		protoLoader,
 		pingProvider,
-		httpProvider
+		httpProvider,
+		pageSpeedProvider,
+		hardwareProvider
 	);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 
