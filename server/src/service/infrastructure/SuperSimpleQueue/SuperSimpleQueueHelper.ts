@@ -1,10 +1,8 @@
 const SERVICE_NAME = "JobQueueHelper";
 import type { Monitor } from "@/types/monitor.js";
 import { AppError } from "@/utils/AppError.js";
-import { INetworkService, INotificationsService, IStatusService } from "@/service/index.js";
+import { INetworkService, INotificationsService, IStatusService, IncidentService, type IGeoChecksService } from "@/service/index.js";
 import type { StatusChangeResult } from "@/types/index.js";
-import IncidentService from "@/service/business/incidentService.js";
-import type { IGeoChecksService } from "@/service/business/geoChecksService.js";
 import {
 	IMaintenanceWindowsRepository,
 	IMonitorsRepository,
@@ -15,7 +13,7 @@ import {
 	IGeoChecksRepository,
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
-import { IBufferService } from "../bufferService.js";
+import { IBufferService } from "@/service/index.js";
 
 export interface ISuperSimpleQueueHelper {
 	readonly serviceName: string;
@@ -39,7 +37,7 @@ export interface MonitorActionDecision {
 	};
 }
 
-class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
+export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: any;
@@ -415,4 +413,3 @@ class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 	}
 }
 
-export default SuperSimpleQueueHelper;

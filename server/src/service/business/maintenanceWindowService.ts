@@ -1,10 +1,23 @@
 import { IMaintenanceWindowsRepository, IMonitorsRepository } from "@/repositories/index.js";
+import type { MaintenanceWindow } from "@/types/index.js";
 import { ParseBoolean } from "@/utils/utils.js";
 import { AppError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "maintenanceWindowService";
 
-class MaintenanceWindowService {
+export interface IMaintenanceWindowService {
+	createMaintenanceWindow(params: { teamId: string; body: Partial<MaintenanceWindow> & { monitors: string[] } }): Promise<void>;
+	getMaintenanceWindowById(params: { id: string; teamId: string }): Promise<MaintenanceWindow>;
+	getMaintenanceWindowsByTeamId(params: {
+		teamId: string;
+		query: Record<string, string>;
+	}): Promise<{ maintenanceWindows: MaintenanceWindow[]; maintenanceWindowCount: number }>;
+	getMaintenanceWindowsByMonitorId(params: { monitorId: string; teamId: string }): Promise<MaintenanceWindow[]>;
+	deleteMaintenanceWindow(params: { id: string; teamId: string }): Promise<MaintenanceWindow>;
+	editMaintenanceWindow(params: { id: string; teamId: string; body: Partial<MaintenanceWindow> }): Promise<MaintenanceWindow>;
+}
+
+export class MaintenanceWindowService implements IMaintenanceWindowService {
 	static SERVICE_NAME = SERVICE_NAME;
 	private monitorsRepository: IMonitorsRepository;
 	private maintenanceWindowsRepository: IMaintenanceWindowsRepository;
@@ -84,4 +97,3 @@ class MaintenanceWindowService {
 	};
 }
 
-export default MaintenanceWindowService;

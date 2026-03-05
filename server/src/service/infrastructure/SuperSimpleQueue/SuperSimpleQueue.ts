@@ -53,7 +53,7 @@ export interface ISuperSimpleQueue {
 	obliterate(): Promise<void>;
 }
 
-class SuperSimpleQueue implements ISuperSimpleQueue {
+export class SuperSimpleQueue implements ISuperSimpleQueue {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: ILogger;
@@ -290,4 +290,3 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 	};
 }
 
-export default SuperSimpleQueue;

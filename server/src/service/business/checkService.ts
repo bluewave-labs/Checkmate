@@ -19,7 +19,7 @@ export interface ICheckService {
 	updateChecksTTL(params: { teamId: string; ttl: string }): Promise<void>;
 }
 
-class CheckService implements ICheckService {
+export class CheckService implements ICheckService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private monitorsRepository: IMonitorsRepository;
@@ -195,4 +195,3 @@ class CheckService implements ICheckService {
 	};
 }
 
-export default CheckService;

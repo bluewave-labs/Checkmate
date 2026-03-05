@@ -9,7 +9,7 @@ import fs from "fs";
 import { runMigrations } from "./db/migration/index.js";
 
 import Logger, { ILogger } from "@/utils/logger.js";
-import SettingsService from "@/service/system/settingsService.js";
+import { SettingsService } from "@/service/index.js";
 import { MongoSettingsRepository } from "./repositories/index.js";
 
 const SERVICE_NAME = "Server";
