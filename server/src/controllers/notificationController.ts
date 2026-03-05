@@ -164,12 +164,18 @@ class NotificationController {
 				throw new AppError({ message: "Monitor IDs are required", status: 400 });
 			}
 
-			if (!notificationIds || !Array.isArray(notificationIds) || notificationIds.length === 0) {
-				throw new AppError({ message: "Notification IDs are required", status: 400 });
+			if (!notificationIds || !Array.isArray(notificationIds)) {
+				throw new AppError({ message: "Notification IDs must be an array", status: 400 });
 			}
 
 			if (!action || !["add", "remove", "set"].includes(action)) {
 				throw new AppError({ message: "Action must be 'add', 'remove', or 'set'", status: 400 });
+			}
+
+			// "add" and "remove" need at least one notification ID
+			// "set" can be empty (to clear all notifications from monitors)
+			if (notificationIds.length === 0 && action !== "set") {
+				throw new AppError({ message: "Notification IDs are required for add/remove actions", status: 400 });
 			}
 
 			const modifiedCount = await this.monitorsRepository.bulkUpdateNotifications(monitorIds, notificationIds, action, teamId);

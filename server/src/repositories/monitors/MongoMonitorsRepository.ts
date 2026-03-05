@@ -304,7 +304,12 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		action: "add" | "remove" | "set",
 		teamId: string
 	): Promise<number> => {
-		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		let objectIds;
+		try {
+			objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		} catch {
+			throw new AppError({ message: "One or more monitor IDs are invalid", status: 400 });
+		}
 		const filter = { _id: { $in: objectIds }, teamId: new mongoose.Types.ObjectId(teamId) };
 
 		let update;
