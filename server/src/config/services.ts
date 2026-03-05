@@ -29,7 +29,6 @@ import { NotificationMessageBuilder, INotificationMessageBuilder } from "../serv
 import axios from "axios";
 import got from "got";
 import ping from "ping";
-import https from "https";
 import Docker from "dockerode";
 import net from "net";
 import fs from "fs";
@@ -83,6 +82,7 @@ import { HardwareProvider } from "@/service/infrastructure/network/HardwareProvi
 import { DockerProvider } from "@/service/infrastructure/network/DockerProvider.js";
 import { PortProvider } from "@/service/infrastructure/network/PortProvider.js";
 import { GameProvider } from "@/service/infrastructure/network/GameProvider.js";
+import { GrpcProvider } from "@/service/infrastructure/network/GrpcProvider.js";
 
 export type InitializedServices = {
 	settingsService: any;
@@ -161,29 +161,19 @@ export const initializeServices = async ({
 	const dockerProvider = new DockerProvider(logger, Docker);
 	const portProvider = new PortProvider(net);
 	const gameProvider = new GameProvider(logger, GameDig);
+	const grpcProvider = new GrpcProvider(grpc, protoLoader);
 
 	const networkService = new NetworkService(
 		axios,
-		got,
-		https,
-		jmespath,
-		GameDig as unknown as {
-			query: (options: { type: string; host: string; port?: number }) => Promise<{ ping?: number } & { [key: string]: unknown }>;
-		},
-		ping,
 		logger,
-		Docker,
-		net,
-		settingsService,
-		grpc,
-		protoLoader,
 		pingProvider,
 		httpProvider,
 		pageSpeedProvider,
 		hardwareProvider,
 		dockerProvider,
 		portProvider,
-		gameProvider
+		gameProvider,
+		grpcProvider
 	);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 
