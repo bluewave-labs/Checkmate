@@ -23,7 +23,7 @@ export interface IEmailService {
 	sendEmail(to: string, subject: string, html: string, transportConfig?: EmailTransportConfig): Promise<string | false | undefined>;
 }
 
-class EmailService implements IEmailService {
+export class EmailService implements IEmailService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private settingsService: ISettingsService;
@@ -179,4 +179,3 @@ class EmailService implements IEmailService {
 	};
 }
 
-export default EmailService;

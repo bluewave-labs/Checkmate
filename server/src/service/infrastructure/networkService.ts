@@ -23,7 +23,7 @@ export interface INetworkService {
 	}>;
 }
 
-class NetworkService implements INetworkService {
+export class NetworkService implements INetworkService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private axios: AxiosStatic;
@@ -198,4 +198,3 @@ class NetworkService implements INetworkService {
 	}
 }
 
-export default NetworkService;
