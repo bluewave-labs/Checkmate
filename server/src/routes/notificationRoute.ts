@@ -17,7 +17,7 @@ class NotificationRoutes {
 
 		this.router.get("/team", this.notificationController.getNotificationsByTeamId);
 
-		this.router.patch("/bulk/monitors", this.notificationController.bulkEditMonitorNotifications);
+		this.router.patch("/", this.notificationController.bulkEditMonitorNotifications);
 
 		this.router.get("/:id", this.notificationController.getNotificationById);
 		this.router.delete("/:id", this.notificationController.deleteNotification);
