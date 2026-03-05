@@ -94,7 +94,7 @@ class EmailService implements IEmailService {
 			if (!mjml) {
 				throw new Error(`Template ${template} not found`);
 			}
-			const html = this.mjml2html(mjml);
+			const html = await this.mjml2html(mjml);
 			return html.html;
 		} catch (error: unknown) {
 			this.logger.error({
