@@ -99,6 +99,7 @@ class NetworkService implements INetworkService {
 	private httpProvider;
 	private pageSpeedProvider;
 	private hardwareProvider;
+	private dockerProvider;
 
 	private buildStatusResponse = <T>({
 		monitor,
@@ -172,7 +173,8 @@ class NetworkService implements INetworkService {
 		pingProvider: IStatusProvider<PingStatusPayload>,
 		httpProvider: IStatusProvider<HttpStatusPayload>,
 		pagespeedProvider: IStatusProvider<PageSpeedStatusPayload>,
-		hardwareProvider: IStatusProvider<HardwareStatusPayload>
+		hardwareProvider: IStatusProvider<HardwareStatusPayload>,
+		dockerProvider: IStatusProvider<DockerStatusPayload>
 	) {
 		this.TYPE_PING = "ping";
 		this.TYPE_HTTP = "http";
@@ -202,6 +204,7 @@ class NetworkService implements INetworkService {
 		this.httpProvider = httpProvider;
 		this.pageSpeedProvider = pagespeedProvider;
 		this.hardwareProvider = hardwareProvider;
+		this.dockerProvider = dockerProvider;
 		const cacheable = new CacheableLookup();
 
 		this.got = got.extend({
@@ -254,9 +257,9 @@ class NetworkService implements INetworkService {
 			case this.TYPE_PAGESPEED:
 				return await this.pageSpeedProvider.handle(monitor);
 			case this.TYPE_HARDWARE:
-				return await this.requestHardware(monitor);
+				return await this.hardwareProvider.handle(monitor);
 			case this.TYPE_DOCKER:
-				return await this.requestDocker(monitor);
+				return await this.dockerProvider.handle(monitor);
 			case this.TYPE_PORT:
 				return await this.requestPort(monitor);
 			case this.TYPE_GAME:
