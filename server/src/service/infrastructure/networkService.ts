@@ -1,38 +1,14 @@
-import type {
-	Monitor,
-	MonitorStatusResponse,
-	GrpcStatusPayload,
-	PageSpeedStatusPayload,
-	HttpStatusPayload,
-	HardwareStatusPayload,
-	PingStatusPayload,
-	DockerStatusPayload,
-	PortStatusPayload,
-	GameStatusPayload,
-} from "@/types/index.js";
+import type { Monitor, MonitorStatusResponse } from "@/types/index.js";
 import type { AxiosStatic } from "axios";
 import { AppError } from "@/utils/AppError.js";
-
+import { NETWORK_ERROR } from "@/service/infrastructure/network/utils.js";
 import { ILogger } from "@/utils/logger.js";
 import { IStatusProvider } from "./network/IStatusProvider.js";
 const SERVICE_NAME = "NetworkService";
 
 export interface INetworkService {
 	readonly serviceName: string;
-	requestStatus(
-		monitor: Monitor
-	): Promise<
-		MonitorStatusResponse<
-			| PingStatusPayload
-			| HttpStatusPayload
-			| PageSpeedStatusPayload
-			| HardwareStatusPayload
-			| DockerStatusPayload
-			| PortStatusPayload
-			| GameStatusPayload
-			| GrpcStatusPayload
-		>
-	>;
+	requestStatus(monitor: Monitor): Promise<MonitorStatusResponse<unknown>>;
 	requestWebhook(
 		type: string,
 		url: string,
@@ -50,63 +26,16 @@ export interface INetworkService {
 class NetworkService implements INetworkService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private TYPE_PING: string;
-	private TYPE_HTTP: string;
-	private TYPE_PAGESPEED: string;
-	private TYPE_HARDWARE: string;
-	private TYPE_DOCKER: string;
-	private TYPE_PORT: string;
-	private TYPE_GAME: string;
-	private TYPE_GRPC: string;
-	private SERVICE_NAME: string;
-	private NETWORK_ERROR: number;
-	private PING_ERROR: number;
-
 	private axios: AxiosStatic;
 	private logger: ILogger;
-	private pingProvider;
-	private httpProvider;
-	private pageSpeedProvider;
-	private hardwareProvider;
-	private dockerProvider;
-	private portProvider;
-	private gameProvider;
-	private grpcProvider;
 
 	constructor(
 		axios: AxiosStatic,
 		logger: ILogger,
-		pingProvider: IStatusProvider<PingStatusPayload>,
-		httpProvider: IStatusProvider<HttpStatusPayload>,
-		pagespeedProvider: IStatusProvider<PageSpeedStatusPayload>,
-		hardwareProvider: IStatusProvider<HardwareStatusPayload>,
-		dockerProvider: IStatusProvider<DockerStatusPayload>,
-		portProvider: IStatusProvider<PortStatusPayload>,
-		gameProvider: IStatusProvider<GameStatusPayload>,
-		grpcProvider: IStatusProvider<GrpcStatusPayload>
+		private providers: IStatusProvider<unknown>[]
 	) {
-		this.TYPE_PING = "ping";
-		this.TYPE_HTTP = "http";
-		this.TYPE_PAGESPEED = "pagespeed";
-		this.TYPE_HARDWARE = "hardware";
-		this.TYPE_DOCKER = "docker";
-		this.TYPE_PORT = "port";
-		this.TYPE_GAME = "game";
-		this.TYPE_GRPC = "grpc";
-		this.SERVICE_NAME = SERVICE_NAME;
-		this.NETWORK_ERROR = 5000;
-		this.PING_ERROR = 5001;
 		this.axios = axios;
 		this.logger = logger;
-
-		this.pingProvider = pingProvider;
-		this.httpProvider = httpProvider;
-		this.pageSpeedProvider = pagespeedProvider;
-		this.hardwareProvider = hardwareProvider;
-		this.dockerProvider = dockerProvider;
-		this.portProvider = portProvider;
-		this.gameProvider = gameProvider;
-		this.grpcProvider = grpcProvider;
 	}
 
 	get serviceName(): string {
@@ -114,41 +43,12 @@ class NetworkService implements INetworkService {
 	}
 
 	// Main entry point
-	async requestStatus(
-		monitor: Monitor
-	): Promise<
-		MonitorStatusResponse<
-			| PingStatusPayload
-			| HttpStatusPayload
-			| PageSpeedStatusPayload
-			| HardwareStatusPayload
-			| DockerStatusPayload
-			| PortStatusPayload
-			| GameStatusPayload
-			| GrpcStatusPayload
-		>
-	> {
-		const type = monitor?.type || "unknown";
-		switch (type) {
-			case this.TYPE_PING:
-				return await this.pingProvider.handle(monitor);
-			case this.TYPE_HTTP:
-				return await this.httpProvider.handle(monitor);
-			case this.TYPE_PAGESPEED:
-				return await this.pageSpeedProvider.handle(monitor);
-			case this.TYPE_HARDWARE:
-				return await this.hardwareProvider.handle(monitor);
-			case this.TYPE_DOCKER:
-				return await this.dockerProvider.handle(monitor);
-			case this.TYPE_PORT:
-				return await this.portProvider.handle(monitor);
-			case this.TYPE_GAME:
-				return await this.gameProvider.handle(monitor);
-			case this.TYPE_GRPC:
-				return await this.grpcProvider.handle(monitor);
-			default:
-				return this.handleUnsupportedType(type);
+	async requestStatus(monitor: Monitor) {
+		const provider = this.providers.find((p) => p.supports(monitor.type));
+		if (!provider) {
+			return this.handleUnsupportedType(monitor.type);
 		}
+		return provider.handle(monitor);
 	}
 
 	private async handleUnsupportedType(type: string): Promise<MonitorStatusResponse> {
@@ -157,7 +57,7 @@ class NetworkService implements INetworkService {
 			teamId: "unknown",
 			type: "unknown",
 			status: false,
-			code: this.NETWORK_ERROR,
+			code: NETWORK_ERROR,
 			message: `Unsupported type: ${type}`,
 		};
 	}
@@ -181,7 +81,7 @@ class NetworkService implements INetworkService {
 		} catch (err: unknown) {
 			this.logger.warn({
 				message: err instanceof Error ? err.message : String(err),
-				service: this.SERVICE_NAME,
+				service: SERVICE_NAME,
 				method: "requestWebhook",
 			});
 
@@ -190,7 +90,7 @@ class NetworkService implements INetworkService {
 				return {
 					type: "webhook",
 					status: false,
-					code: axiosError.response?.status ?? this.NETWORK_ERROR,
+					code: axiosError.response?.status ?? NETWORK_ERROR,
 					message: `Failed to send ${type} notification`,
 					payload: axiosError.response?.data,
 				};
@@ -199,7 +99,7 @@ class NetworkService implements INetworkService {
 			return {
 				type: "webhook",
 				status: false,
-				code: this.NETWORK_ERROR,
+				code: NETWORK_ERROR,
 				message: `Failed to send ${type} notification`,
 			};
 		}
@@ -225,7 +125,7 @@ class NetworkService implements INetworkService {
 
 			throw new AppError({
 				message: originalMessage || "Error sending PagerDuty notification",
-				service: this.SERVICE_NAME,
+				service: SERVICE_NAME,
 				method: "requestPagerDuty",
 				details: {
 					responseData: err && typeof err === "object" && "response" in err ? (err as { response?: { data?: unknown } }).response?.data : undefined,
@@ -268,7 +168,7 @@ class NetworkService implements INetworkService {
 			if (err instanceof Error) {
 				this.logger.warn({
 					message: err.message,
-					service: this.SERVICE_NAME,
+					service: SERVICE_NAME,
 					method: "requestMatrix",
 				});
 
@@ -276,7 +176,7 @@ class NetworkService implements INetworkService {
 					const axiosError = err as { response?: { status?: number; data?: unknown } };
 					return {
 						status: false,
-						code: axiosError.response?.status || this.NETWORK_ERROR,
+						code: axiosError.response?.status || NETWORK_ERROR,
 						message: "Failed to send Matrix notification",
 						payload: axiosError.response?.data,
 					};
@@ -285,13 +185,13 @@ class NetworkService implements INetworkService {
 
 			this.logger.warn({
 				message: String(err),
-				service: this.SERVICE_NAME,
+				service: SERVICE_NAME,
 				method: "requestMatrix",
 			});
 
 			return {
 				status: false,
-				code: this.NETWORK_ERROR,
+				code: NETWORK_ERROR,
 				message: "Failed to send Matrix notification",
 			};
 		}

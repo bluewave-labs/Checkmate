@@ -163,9 +163,7 @@ export const initializeServices = async ({
 	const gameProvider = new GameProvider(logger, GameDig);
 	const grpcProvider = new GrpcProvider(grpc, protoLoader);
 
-	const networkService = new NetworkService(
-		axios,
-		logger,
+	const networkService = new NetworkService(axios, logger, [
 		pingProvider,
 		httpProvider,
 		pageSpeedProvider,
@@ -173,8 +171,8 @@ export const initializeServices = async ({
 		dockerProvider,
 		portProvider,
 		gameProvider,
-		grpcProvider
-	);
+		grpcProvider,
+	]);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 
 	const notificationMessageBuilder = new NotificationMessageBuilder();
