@@ -5,6 +5,7 @@ export const NotificationChannels = [
 	"webhook",
 	"pager_duty",
 	"matrix",
+	"teams",
 ] as const;
 export type NotificationChannel = (typeof NotificationChannels)[number];
 

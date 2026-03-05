@@ -59,6 +59,15 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		roomId: z.string().min(1, "Room ID is required"),
 		accessToken: z.string().min(1, "Access Token is required"),
 	}),
+	// Teams notification
+	z.object({
+		notificationName: z.string().min(1, "Notification name is required"),
+		type: z.literal("teams"),
+		address: z.string().url("Please enter a valid Webhook URL"),
+		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
+		roomId: z.union([z.string(), z.literal("")]).optional(),
+		accessToken: z.union([z.string(), z.literal("")]).optional(),
+	}),
 ]);
 
 export const sendTestEmailBodyValidation = z.object({

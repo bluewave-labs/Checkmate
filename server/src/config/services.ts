@@ -11,6 +11,7 @@ import {
 	DiscordProvider,
 	PagerDutyProvider,
 	MatrixProvider,
+	TeamsProvider,
 	INotificationsService,
 } from "@/service/index.js";
 import SuperSimpleQueueHelper from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
@@ -187,6 +188,7 @@ export const initializeServices = async ({
 	const discordProvider = new DiscordProvider(logger);
 	const pagerDutyProvider = new PagerDutyProvider(logger);
 	const matrixProvider = new MatrixProvider(logger);
+	const teamsProvider = new TeamsProvider(logger);
 
 	const notificationsService = new NotificationsService(
 		notificationsRepository,
@@ -197,6 +199,7 @@ export const initializeServices = async ({
 		discordProvider,
 		pagerDutyProvider,
 		matrixProvider,
+		teamsProvider,
 		settingsService,
 		logger,
 		notificationMessageBuilder
