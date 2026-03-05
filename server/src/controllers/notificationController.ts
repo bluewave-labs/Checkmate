@@ -172,12 +172,7 @@ class NotificationController {
 				throw new AppError({ message: "Action must be 'add', 'remove', or 'set'", status: 400 });
 			}
 
-			const modifiedCount = await this.monitorsRepository.bulkUpdateNotifications(
-				monitorIds,
-				notificationIds,
-				action,
-				teamId
-			);
+			const modifiedCount = await this.monitorsRepository.bulkUpdateNotifications(monitorIds, notificationIds, action, teamId);
 
 			return res.status(200).json({
 				success: true,
