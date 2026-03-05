@@ -1,4 +1,3 @@
-import type { Got } from "got";
 import type {
 	Monitor,
 	MonitorStatusResponse,
@@ -14,7 +13,6 @@ import type {
 import type { AxiosStatic } from "axios";
 import { AppError } from "@/utils/AppError.js";
 
-import { ISettingsService } from "../system/settingsService.js";
 import { ILogger } from "@/utils/logger.js";
 import { IStatusProvider } from "./network/IStatusProvider.js";
 const SERVICE_NAME = "NetworkService";
