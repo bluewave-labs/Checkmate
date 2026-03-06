@@ -20,12 +20,19 @@ export interface IChecksRepository {
 		monitorId: string,
 		sortOrder: string,
 		dateRange: string,
-		filter: string,
+		filter: string | undefined,
 		page: number,
 		rowsPerPage: number,
 		status: boolean | undefined
 	): Promise<ChecksQueryResult>;
-	findByTeamId(sortOrder: string, dateRange: string, filter: string, page: number, rowsPerPage: number, teamId: string): Promise<ChecksQueryResult>;
+	findByTeamId(
+		sortOrder: string,
+		dateRange: string,
+		filter: string | undefined,
+		page: number,
+		rowsPerPage: number,
+		teamId: string
+	): Promise<ChecksQueryResult>;
 	findLatestByMonitorIds(monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap>;
 	findByDateRangeAndMonitorId(
 		monitorId: string,

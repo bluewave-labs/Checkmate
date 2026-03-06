@@ -15,7 +15,7 @@
 		"format-check": "prettier --check ."
 	},
 	"lint-staged": {
-		"**/*": "npm run format"
+		"**/*": "prettier --write"
 	},
 	"keywords": [],
 	"author": "",
@@ -38,7 +38,7 @@
 		"dotenv": "^16.4.5",
 		"express": "^4.19.2",
 		"express-rate-limit": "8.0.1",
-		"gamedig": "^5.3.1",
+		"gamedig": "5.2.0",
 		"got": "14.4.7",
 		"handlebars": "^4.7.8",
 		"helmet": "^8.0.0",
@@ -51,13 +51,14 @@
 		"mjml": "^5.0.0-alpha.4",
 		"mongoose": "^8.3.3",
 		"multer": "^1.4.5-lts.1",
-		"nodemailer": "^6.9.14",
+		"nodemailer": "8.0.1",
 		"ping": "0.4.4",
 		"sharp": "0.33.5",
 		"ssl-checker": "2.0.10",
 		"super-simple-scheduler": "1.4.5",
 		"swagger-ui-express": "5.0.1",
 		"winston": "^3.13.0",
+		"ws": "^8.19.0",
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
@@ -78,6 +79,7 @@
 		"@types/papaparse": "^5.5.2",
 		"@types/ping": "0.4.4",
 		"@types/swagger-ui-express": "4.1.8",
+		"@types/ws": "^8.18.1",
 		"@typescript-eslint/eslint-plugin": "^8.56.1",
 		"@typescript-eslint/parser": "^8.56.1",
 		"c8": "10.1.3",

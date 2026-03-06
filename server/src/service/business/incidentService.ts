@@ -5,12 +5,34 @@ import { AppError } from "@/utils/AppError.js";
 import { ParseBoolean } from "@/utils/utils.js";
 import { getDateForRange } from "@/utils/dataUtils.js";
 import type { IIncidentsRepository, IMonitorsRepository, IUsersRepository } from "@/repositories/index.js";
-import type { Incident } from "@/types/index.js";
+import type { Incident, IncidentSummary, User } from "@/types/index.js";
 import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import type { INotificationMessageBuilder } from "@/service/infrastructure/notificationMessageBuilder.js";
 import type { ILogger } from "@/utils/logger.js";
 
-class IncidentService {
+export interface IIncidentService {
+	handleIncident(
+		monitor: Monitor,
+		code: number,
+		decision: MonitorActionDecision,
+		monitorStatusResponse?: MonitorStatusResponse
+	): Promise<Incident | null>;
+	resolveIncident(incidentId: string, userId: string, teamId: string, comment?: string, userEmail?: string): Promise<Incident>;
+	getIncidentsByTeam(
+		teamId: string,
+		sortOrder: string,
+		dateRange: string,
+		page: string,
+		rowsPerPage: string,
+		status: string,
+		monitorId: string,
+		resolutionType: string
+	): Promise<{ incidents: Incident[]; count: number }>;
+	getIncidentSummary(teamId: string, limit?: string): Promise<IncidentSummary>;
+	getIncidentById(incidentId: string, teamId: string): Promise<{ incident: Incident; monitor: Monitor; user: User | null }>;
+}
+
+export class IncidentService implements IIncidentService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: ILogger;
@@ -244,5 +266,3 @@ class IncidentService {
 		}
 	};
 }
-
-export default IncidentService;

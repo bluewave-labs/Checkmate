@@ -15,7 +15,7 @@ export interface IBufferService {
 	flushGeoBuffer(): Promise<void>;
 }
 
-class BufferService implements IBufferService {
+export class BufferService implements IBufferService {
 	static SERVICE_NAME = SERVICE_NAME;
 	private BUFFER_TIMEOUT: number;
 	private logger: ILogger;
@@ -177,5 +177,3 @@ class BufferService implements IBufferService {
 		}
 	}
 }
-
-export default BufferService;

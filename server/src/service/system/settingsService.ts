@@ -21,7 +21,7 @@ export interface ISettingsService {
 	getDBSettings(): Promise<Settings>;
 }
 
-class SettingsService implements ISettingsService {
+export class SettingsService implements ISettingsService {
 	static SERVICE_NAME = SERVICE_NAME;
 	private settings: EnvConfig;
 	private settingsRepository: ISettingsRepository;
@@ -74,5 +74,3 @@ class SettingsService implements ISettingsService {
 		return settings;
 	};
 }
-
-export default SettingsService;

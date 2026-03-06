@@ -23,7 +23,7 @@ export interface IEmailService {
 	sendEmail(to: string, subject: string, html: string, transportConfig?: EmailTransportConfig): Promise<string | false | undefined>;
 }
 
-class EmailService implements IEmailService {
+export class EmailService implements IEmailService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private settingsService: ISettingsService;
@@ -94,7 +94,7 @@ class EmailService implements IEmailService {
 			if (!mjml) {
 				throw new Error(`Template ${template} not found`);
 			}
-			const html = this.mjml2html(mjml);
+			const html = await this.mjml2html(mjml);
 			return html.html;
 		} catch (error: unknown) {
 			this.logger.error({
@@ -178,5 +178,3 @@ class EmailService implements IEmailService {
 		}
 	};
 }
-
-export default EmailService;

@@ -9,7 +9,7 @@ import fs from "fs";
 import { runMigrations } from "./db/migration/index.js";
 
 import Logger, { ILogger } from "@/utils/logger.js";
-import SettingsService from "@/service/system/settingsService.js";
+import { SettingsService } from "@/service/index.js";
 import { MongoSettingsRepository } from "./repositories/index.js";
 
 const SERVICE_NAME = "Server";
@@ -50,9 +50,8 @@ const startApp = async () => {
 		openApiSpec,
 	});
 
-	const port = 52345;
-	const server = app.listen(port, () => {
-		logger.info({ message: `Server started on port:${port}` });
+	const server = app.listen(env.PORT, () => {
+		logger.info({ message: `Server started on port:${env.PORT}` });
 	});
 
 	initShutdownListener(server, services);
