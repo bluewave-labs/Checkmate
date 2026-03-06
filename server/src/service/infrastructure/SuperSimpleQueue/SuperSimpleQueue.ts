@@ -289,4 +289,3 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 		});
 	};
 }
-

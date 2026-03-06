@@ -188,4 +188,3 @@ export class GeoChecksService implements IGeoChecksService {
 		return result;
 	};
 }
-
