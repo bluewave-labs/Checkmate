@@ -16,6 +16,15 @@ export const MonitorTypes = [
 ] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
+export const GeoCheckSupportedTypes: readonly MonitorType[] = ["http", "ping"] as const;
+
+export const supportsGeoCheck = (type: MonitorType | undefined): boolean => {
+	if (!type) {
+		return false;
+	}
+	return GeoCheckSupportedTypes.includes(type);
+};
+
 export const MonitorStatuses = [
 	"up",
 	"down",

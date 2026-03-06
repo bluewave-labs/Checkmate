@@ -6,6 +6,9 @@ export type { GeoContinent } from "@/types/geoCheck.js";
 export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "unknown"] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
+export const GeoCheckSupportedTypes: readonly MonitorType[] = ["http", "ping"] as const;
+export const supportsGeoCheck = (type: MonitorType): boolean => GeoCheckSupportedTypes.includes(type);
+
 export const MonitorStatuses = ["up", "down", "paused", "initializing", "maintenance", "breached"] as const;
 export type MonitorStatus = (typeof MonitorStatuses)[number];
 

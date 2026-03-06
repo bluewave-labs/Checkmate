@@ -1,4 +1,5 @@
 import type { GeoContinent, GeoCheckResult, GeoCheckTimings, GeoCheckLocation } from "@/types/geoCheck.js";
+import { supportsGeoCheck } from "@/types/monitor.js";
 import { MonitorType } from "@/types/index.js";
 import type { ILogger } from "@/utils/logger.js";
 import got from "got";
@@ -9,7 +10,7 @@ const POLL_INTERVAL_MS = 2000;
 const MAX_POLL_TIMEOUT_MS = 30000;
 
 interface GlobalPingMeasurementRequest {
-	type: "http" | "ping";
+	type: MonitorType;
 	target: string;
 	locations: Array<{ continent: GeoContinent }>;
 	limit: number;
@@ -79,7 +80,7 @@ export class GlobalPingService implements IGlobalPingService {
 
 	async createMeasurement(monitorType: MonitorType, url: string, locations: GeoContinent[]): Promise<string | null> {
 		try {
-			if (monitorType !== "http" && monitorType !== "ping") {
+			if (!supportsGeoCheck(monitorType)) {
 				throw new Error(`Unsupported monitor type for GlobalPing: ${monitorType}`);
 			}
 			// GlobalPing API expects target without protocol (http:// or https://)
