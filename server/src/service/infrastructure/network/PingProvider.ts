@@ -42,8 +42,7 @@ export class PingProvider implements IStatusProvider<PingStatusPayload> {
 				throw new Error(`No response from ping for host: ${sanitizedHost}`);
 			}
 
-			const responseTime =
-				typeof response.time === "number" ? response.time : parseFloat(String(response.time)) || 0;
+			const responseTime = typeof response.time === "number" ? response.time : parseFloat(String(response.time)) || 0;
 
 			return {
 				monitorId: monitor.id,
