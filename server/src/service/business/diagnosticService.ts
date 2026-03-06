@@ -107,4 +107,3 @@ export class DiagnosticService implements IDiagnosticService {
 		return diagnostics;
 	};
 }
-

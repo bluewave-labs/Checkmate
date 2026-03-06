@@ -194,4 +194,3 @@ export class CheckService implements ICheckService {
 		throw new AppError({ message: "Not implemented", service: SERVICE_NAME, method: "updateChecksTTL", status: 500, details: { teamId, ttl } });
 	};
 }
-

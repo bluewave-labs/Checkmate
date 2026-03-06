@@ -177,4 +177,3 @@ export class BufferService implements IBufferService {
 		}
 	}
 }
-

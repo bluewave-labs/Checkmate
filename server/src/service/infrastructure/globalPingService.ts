@@ -206,4 +206,3 @@ export class GlobalPingService implements IGlobalPingService {
 		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 }
-
