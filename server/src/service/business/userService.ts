@@ -141,7 +141,7 @@ export class UserService implements IUserService {
 			message: "New user created",
 			service: SERVICE_NAME,
 			method: "registerUser",
-			details: newUser.id,
+			details: { userId: newUser.id },
 		});
 
 		delete newUser.profileImage;
@@ -205,7 +205,7 @@ export class UserService implements IUserService {
 			message: "New user created by superadmin",
 			service: SERVICE_NAME,
 			method: "createUser",
-			details: newUser.id,
+			details: { userId: newUser.id },
 		});
 
 		newUser.profileImage = undefined;
@@ -272,14 +272,17 @@ export class UserService implements IUserService {
 		await this.recoveryTokensRepository.deleteManyByEmail(email);
 		const recoveryToken = await this.recoveryTokensRepository.create(email);
 		const name = user.firstName;
-		const { clientHost } = this.settingsService.getSettings();
-		const url = `${clientHost}/set-new-password/${recoveryToken.token}`;
+		const settings = this.settingsService.getSettings();
+		const url = `${settings.clientHost!}/set-new-password/${recoveryToken.token}`;
 
 		const html = await this.emailService.buildEmail("passwordResetTemplate", {
 			name,
 			email,
 			url,
 		});
+		if (!html) {
+			throw new Error("Failed to build password reset email HTML");
+		}
 		const msgId = await this.emailService.sendEmail(email, "Checkmate Password Reset", html);
 		return msgId;
 	};
