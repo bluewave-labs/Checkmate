@@ -1271,6 +1271,15 @@
 					"Track historical uptime and reliability trends"
 				],
 				"title": "An uptime monitor is used to:"
+			},
+			"details": {
+				"uptimeStats": {
+					"day": "24h",
+					"week": "7d",
+					"month": "30d",
+					"year": "1y",
+					"all": "All"
+				}
 			}
 		}
 	}

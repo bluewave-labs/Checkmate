@@ -12,7 +12,7 @@ import {
 import { TrendingUp, AlertTriangle } from "lucide-react";
 import { ChecksTable } from "@/Pages/Uptime/Details/Components/ChecksTable";
 import { GeoChecksTable } from "@/Pages/Uptime/Details/Components/GeoChecksTable";
-import { MonitorStatBoxes } from "@/Components/monitors";
+import { MonitorStatBoxes, UptimeStatsByPeriod } from "@/Components/monitors";
 
 import { useTheme } from "@mui/material/styles";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
@@ -186,6 +186,7 @@ const UptimeDetailsPage = () => {
 				monitorStats={monitorStats}
 				certificateExpiry={certificateExpiry}
 			/>
+			<UptimeStatsByPeriod monitorId={monitorId} />
 			<HeaderTimeRange
 				isLoading={monitorIsLoading || checksIsLoading}
 				hasDateRange={true}

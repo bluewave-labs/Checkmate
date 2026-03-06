@@ -22,6 +22,7 @@ class MonitorRoutes {
 		this.router.get("/team/groups", this.monitorController.getGroupsByTeamId);
 
 		// Uptime routes
+		this.router.get("/uptime/stats/:monitorId", this.monitorController.getUptimeStatsByPeriod);
 		this.router.get("/uptime/details/:monitorId", this.monitorController.getUptimeDetailsById);
 
 		// Hardware routes

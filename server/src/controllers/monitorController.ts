@@ -63,6 +63,22 @@ class MonitorController {
 		}
 	};
 
+	getUptimeStatsByPeriod = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
+			const teamId = requireTeamId(req?.user?.teamId);
+
+			const data = await this.monitorService.getUptimeStatsByPeriod({ teamId, monitorId });
+			return res.status(200).json({
+				success: true,
+				msg: "Uptime stats by period retrieved successfully",
+				data,
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
 	getUptimeDetailsById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");

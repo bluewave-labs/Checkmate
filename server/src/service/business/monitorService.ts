@@ -36,6 +36,7 @@ export interface IMonitorService {
 	addDemoMonitors(args: { userId: string; teamId: string }): Promise<Monitor[]>;
 
 	// read
+	getUptimeStatsByPeriod(args: { teamId: string; monitorId: string }): Promise<Record<string, number>>;
 	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: string; normalize?: boolean }): Promise<UptimeDetailsResult>;
 	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<HardwareDetailsResult>;
 	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<PageSpeedDetailsResult>;
@@ -197,6 +198,14 @@ export class MonitorService implements IMonitorService {
 
 		await Promise.all(demoMonitors.map((monitor) => this.jobQueue.addJob(monitor.id, monitor)));
 		return demoMonitors;
+	};
+
+	getUptimeStatsByPeriod = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Record<string, number>> => {
+		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
+		if (!monitor) {
+			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
+		}
+		return this.checksRepository.findUptimeByPeriod(monitorId);
 	};
 
 	getUptimeDetailsById = async ({

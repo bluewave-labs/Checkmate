@@ -771,6 +771,50 @@ class MongoChecksRepository implements IChecksRepository {
 			{ $sort: { _id: 1 } },
 		]);
 	};
+
+	findUptimeByPeriod = async (monitorId: string): Promise<Record<string, number>> => {
+		const monitorObjectId = new mongoose.Types.ObjectId(monitorId);
+		const now = new Date();
+
+		const periods: Record<string, Date> = {
+			day: new Date(new Date(now).setDate(now.getDate() - 1)),
+			week: new Date(new Date(now).setDate(now.getDate() - 7)),
+			month: new Date(new Date(now).setMonth(now.getMonth() - 1)),
+			year: new Date(new Date(now).setFullYear(now.getFullYear() - 1)),
+			all: new Date(0),
+		};
+
+		const facetStages: Record<string, any[]> = {};
+		for (const [key, startDate] of Object.entries(periods)) {
+			facetStages[key] = [
+				{ $match: { createdAt: { $gte: startDate, $lte: now } } },
+				{
+					$group: {
+						_id: null,
+						upChecks: { $sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] } },
+						totalChecks: { $sum: 1 },
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						percentage: {
+							$cond: [{ $eq: ["$totalChecks", 0] }, 0, { $divide: ["$upChecks", "$totalChecks"] }],
+						},
+					},
+				},
+			];
+		}
+
+		const [result] = await CheckModel.aggregate([{ $match: { "metadata.monitorId": monitorObjectId } }, { $facet: facetStages }]);
+
+		const uptimeByPeriod: Record<string, number> = {};
+		for (const key of Object.keys(periods)) {
+			uptimeByPeriod[key] = result?.[key]?.[0]?.percentage ?? 0;
+		}
+
+		return uptimeByPeriod;
+	};
 }
 
 export default MongoChecksRepository;
