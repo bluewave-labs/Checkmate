@@ -6,7 +6,7 @@ import { passwordPattern, nameValidation, lowercaseEmailValidation } from "./sha
 //****************************************
 
 export const loginValidation = z.object({
-	email: z.email("Must be a valid email address").transform((val) => val.toLowerCase()),
+	email: z.string().email("Must be a valid email address").transform((val) => val.toLowerCase()),
 	password: z.string().min(1, "Password is required"),
 });
 
@@ -23,7 +23,7 @@ export const registrationBodyValidation = z.object({
 });
 
 export const recoveryValidation = z.object({
-	email: z.email("Must be a valid email address"),
+	email: z.string().email("Must be a valid email address"),
 });
 
 export const recoveryTokenBodyValidation = z.object({
@@ -40,7 +40,7 @@ export const newPasswordValidation = z.object({
 });
 
 export const inviteBodyValidation = z.object({
-	email: z.email("Must be a valid email address"),
+	email: z.string().email("Must be a valid email address"),
 	role: z.array(z.string()).min(1, "At least one role is required"),
 	teamId: z.string().min(1, "Team ID is required"),
 });

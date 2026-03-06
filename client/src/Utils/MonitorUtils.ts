@@ -77,6 +77,12 @@ export const getPageSpeedPalette = (score: number): PaletteKey => {
 	else return "error";
 };
 
+export const getUptimeColor = (value: number, theme: any) => {
+	if (value >= 0.99) return theme.palette.success.main;
+	if (value >= 0.95) return theme.palette.warning.main;
+	return theme.palette.error.main;
+};
+
 export const formatUrl = (url: string, maxLength: number = 55) => {
 	if (!url) return "";
 

@@ -784,33 +784,25 @@ class MongoChecksRepository implements IChecksRepository {
 			all: new Date(0),
 		};
 
-		const facetStages: Record<string, any[]> = {};
+		const groupStage: Record<string, any> = { _id: null };
 		for (const [key, startDate] of Object.entries(periods)) {
-			facetStages[key] = [
-				{ $match: { createdAt: { $gte: startDate, $lte: now } } },
-				{
-					$group: {
-						_id: null,
-						upChecks: { $sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] } },
-						totalChecks: { $sum: 1 },
-					},
-				},
-				{
-					$project: {
-						_id: 0,
-						percentage: {
-							$cond: [{ $eq: ["$totalChecks", 0] }, 0, { $divide: ["$upChecks", "$totalChecks"] }],
-						},
-					},
-				},
-			];
+			groupStage[`${key}Up`] = {
+				$sum: { $cond: [{ $and: [{ $gte: ["$createdAt", startDate] }, { $eq: ["$status", true] }] }, 1, 0] },
+			};
+			groupStage[`${key}Total`] = {
+				$sum: { $cond: [{ $gte: ["$createdAt", startDate] }, 1, 0] },
+			};
 		}
 
-		const [result] = await CheckModel.aggregate([{ $match: { "metadata.monitorId": monitorObjectId } }, { $facet: facetStages }]);
+		const [result] = await CheckModel.aggregate([
+			{ $match: { "metadata.monitorId": monitorObjectId } },
+			{ $group: groupStage },
+		]);
 
 		const uptimeByPeriod: Record<string, number> = {};
 		for (const key of Object.keys(periods)) {
-			uptimeByPeriod[key] = result?.[key]?.[0]?.percentage ?? 0;
+			const total = result?.[`${key}Total`] ?? 0;
+			uptimeByPeriod[key] = total === 0 ? 0 : (result[`${key}Up`] ?? 0) / total;
 		}
 
 		return uptimeByPeriod;

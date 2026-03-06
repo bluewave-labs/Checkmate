@@ -9,7 +9,7 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 	z.object({
 		notificationName: z.string().min(1, "Notification name is required"),
 		type: z.literal("email"),
-		address: z.email("Please enter a valid e-mail address"),
+		address: z.string().email("Please enter a valid e-mail address"),
 		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
 		roomId: z.union([z.string(), z.literal("")]).optional(),
 		accessToken: z.union([z.string(), z.literal("")]).optional(),

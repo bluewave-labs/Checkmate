@@ -4,18 +4,13 @@ import { useTheme } from "@mui/material/styles";
 import { BaseBox } from "@/Components/design-elements";
 import { useGet } from "@/Hooks/UseApi";
 import { useTranslation } from "react-i18next";
+import { getUptimeColor } from "@/Utils/MonitorUtils";
 
 interface UptimeStatsByPeriodProps {
 	monitorId?: string;
 }
 
 const periods = ["day", "week", "month", "year", "all"] as const;
-
-const getColor = (value: number, theme: any) => {
-	if (value >= 0.99) return theme.palette.success.main;
-	if (value >= 0.95) return theme.palette.warning.main;
-	return theme.palette.error.main;
-};
 
 export const UptimeStatsByPeriod = ({ monitorId }: UptimeStatsByPeriodProps) => {
 	const theme = useTheme();
@@ -24,7 +19,7 @@ export const UptimeStatsByPeriod = ({ monitorId }: UptimeStatsByPeriodProps) => 
 	const { data } = useGet<Record<string, number>>(
 		monitorId ? `/monitors/uptime/stats/${monitorId}` : null,
 		{},
-		{ revalidateOnFocus: false }
+		{ revalidateOnFocus: false, refreshInterval: 60000 }
 	);
 
 	if (!data) return null;
@@ -59,7 +54,7 @@ export const UptimeStatsByPeriod = ({ monitorId }: UptimeStatsByPeriodProps) => 
 							<Typography
 								variant="h2"
 								fontWeight={600}
-								sx={{ color: getColor(value, theme) }}
+								sx={{ color: getUptimeColor(value, theme) }}
 							>
 								{percentage}%
 							</Typography>
