@@ -12,6 +12,8 @@ export const typographyLevels = {
 export const colors = {
 	gray200: "#EFEFEF",
 	gray700: "#313131",
+	gray900: "#151518",
+	gray850: "#1c1c21",
 	blueBlueWave: "#1570EF",
 };
 
@@ -30,5 +32,9 @@ export const darkPalette = {
 	},
 	secondary: {
 		main: colors.gray700,
+	},
+	background: {
+		default: colors.gray900,
+		paper: colors.gray850,
 	},
 };

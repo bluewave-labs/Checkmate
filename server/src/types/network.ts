@@ -14,6 +14,8 @@ import type {
 	MonitorStatus,
 } from "@/types/index.js";
 
+import type { QueryResult } from "gamedig";
+
 export interface MonitorStatusResponse<
 	T =
 		| HttpStatusPayload
@@ -22,7 +24,8 @@ export interface MonitorStatusResponse<
 		| HardwareStatusPayload
 		| DockerStatusPayload
 		| GameStatusPayload
-		| GrpcStatusPayload,
+		| GrpcStatusPayload
+		| WebSocketStatusPayload,
 > {
 	monitorId: string;
 	teamId: string;
@@ -49,7 +52,7 @@ export interface PingStatusPayload {
 	host: string;
 	numeric_host?: string;
 	alive: boolean;
-	time: number;
+	time: number | unknown;
 	times?: number[];
 	output?: string;
 	min?: string;
@@ -100,13 +103,17 @@ export interface PortStatusPayload {
 	success: boolean;
 }
 
-export type GameStatusPayload = Record<string, unknown>;
+export type GameStatusPayload = QueryResult;
 
 export interface GrpcStatusPayload {
 	grpcStatusCode: number;
 	grpcStatusName: string;
 	serviceName: string;
 	servingStatus: string;
+}
+
+export interface WebSocketStatusPayload {
+	connected: boolean;
 }
 
 export interface MonitorPayloadMap {
@@ -118,6 +125,7 @@ export interface MonitorPayloadMap {
 	port: PortStatusPayload;
 	game: GameStatusPayload;
 	grpc: GrpcStatusPayload;
+	websocket: WebSocketStatusPayload;
 	default: unknown;
 }
 
@@ -134,3 +142,5 @@ export type StatusChangeResult = {
 		temp: boolean;
 	};
 };
+
+export type MonitorStatusResponseOverrides<T> = Partial<Omit<MonitorStatusResponse<T>, "monitorId" | "teamId" | "type">>;

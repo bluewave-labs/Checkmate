@@ -11,10 +11,32 @@ import { canManageRole, type UserRole } from "@/types/user.js";
 import bcrypt from "bcryptjs";
 import { AppError } from "@/utils/AppError.js";
 import { ISuperSimpleQueue } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
-
+import { IEmailService } from "@/service/infrastructure/emailService.js";
+import { ISettingsService } from "@/service/system/settingsService.js";
+import { ILogger } from "@/utils/logger.js";
+import jwt from "jsonwebtoken";
+type JwtType = typeof jwt;
 const SERVICE_NAME = "userService";
 
-class UserService {
+export interface IUserService {
+	issueToken(payload: Partial<User>, appSettings: { jwtTTL?: string; jwtSecret?: string }): string;
+	registerUser(user: Partial<User>, inviteToken: string, file: unknown): Promise<{ user: User; token: string }>;
+	createUser(userData: Partial<User>, teamId: string, actorRoles: UserRole[], file: unknown): Promise<User>;
+	loginUser(email: string, password: string): Promise<{ user: User; token: string }>;
+	editUser(updates: Partial<User & { newPassword?: string }>, file: unknown, currentUser: User): Promise<User>;
+	checkSuperadminExists(): Promise<boolean>;
+	requestRecovery(email: string): Promise<string | false | undefined>;
+	validateRecovery(recoveryToken: string): Promise<void>;
+	resetPassword(password: string, recoveryToken: string): Promise<{ user: User; token: string }>;
+	deleteUser(user: User): Promise<void>;
+	deleteUserById(actor: User, targetUserId: string): Promise<void>;
+	getAllUsers(): Promise<User[]>;
+	getUserById(roles: UserRole[], userId: string): Promise<User>;
+	editUserById(userId: string, patch: Partial<User>): Promise<void>;
+	setPasswordByUserId(userId: string, password: string): Promise<User>;
+}
+
+export class UserService implements IUserService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private hashPassword = (password: string): string => {
@@ -22,10 +44,10 @@ class UserService {
 		return bcrypt.hashSync(password, salt);
 	};
 
-	private emailService: any;
-	private settingsService: any;
-	private logger: any;
-	private jwt: any;
+	private emailService: IEmailService;
+	private settingsService: ISettingsService;
+	private logger: ILogger;
+	private jwt: JwtType;
 	private jobQueue: ISuperSimpleQueue;
 	private crypto: any;
 	private monitorsRepository: IMonitorsRepository;
@@ -50,10 +72,10 @@ class UserService {
 		teamsRepository,
 	}: {
 		crypto: any;
-		emailService: any;
-		settingsService: any;
-		logger: any;
-		jwt: any;
+		emailService: IEmailService;
+		settingsService: ISettingsService;
+		logger: ILogger;
+		jwt: JwtType;
 		jobQueue: ISuperSimpleQueue;
 		monitorsRepository: IMonitorsRepository;
 		usersRepository: IUsersRepository;
@@ -120,7 +142,7 @@ class UserService {
 			message: "New user created",
 			service: SERVICE_NAME,
 			method: "registerUser",
-			details: newUser.id,
+			details: { userId: newUser.id },
 		});
 
 		delete newUser.profileImage;
@@ -134,20 +156,23 @@ class UserService {
 			const html = await this.emailService.buildEmail("welcomeEmailTemplate", {
 				name: newUser.firstName,
 			});
-			this.emailService.sendEmail(newUser.email, "Welcome to Uptime Monitor", html).catch((error: any) => {
+			if (!html) {
+				throw new Error("Failed to build welcome email HTML");
+			}
+			this.emailService.sendEmail(newUser.email, "Welcome to Uptime Monitor", html).catch((error: unknown) => {
 				this.logger.warn({
-					message: error.message,
+					message: error instanceof Error ? error.message : "Unknown error",
 					service: SERVICE_NAME,
 					method: "registerUser",
-					stack: error.stack,
+					stack: error instanceof Error ? error.stack : undefined,
 				});
 			});
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.warn({
-				message: error.message,
+				message: error instanceof Error ? error.message : "Unknown error",
 				service: SERVICE_NAME,
 				method: "registerUser",
-				stack: error.stack,
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 		}
 
@@ -181,7 +206,7 @@ class UserService {
 			message: "New user created by superadmin",
 			service: SERVICE_NAME,
 			method: "createUser",
-			details: newUser.id,
+			details: { userId: newUser.id },
 		});
 
 		newUser.profileImage = undefined;
@@ -256,6 +281,14 @@ class UserService {
 			email,
 			url,
 		});
+		if (!html) {
+			throw new AppError({
+				message: "Failed to build password reset email HTML",
+				service: SERVICE_NAME,
+				method: "requestRecovery",
+				status: 500,
+			});
+		}
 		const msgId = await this.emailService.sendEmail(email, "Checkmate Password Reset", html);
 		return msgId;
 	};
@@ -313,16 +346,56 @@ class UserService {
 
 		if (roles.includes("superadmin")) {
 			// 2.  Remove all jobs, delete checks and alerts
-			res &&
-				res?.length > 0 &&
-				(await Promise.all(
+			if (res && res.length > 0) {
+				await Promise.all(
 					res.map(async (monitor) => {
 						await this.jobQueue.deleteJob(monitor.id);
 					})
-				));
+				);
+			}
 		}
 		// 6. Delete the user by id
 		await this.usersRepository.deleteById(userId);
+	};
+
+	deleteUserById = async (actor: User, targetUserId: string) => {
+		if (actor.id === targetUserId) {
+			throw new AppError({ message: "Cannot delete your own account from here", service: SERVICE_NAME, method: "deleteUserById", status: 400 });
+		}
+
+		const targetUser = await this.usersRepository.findById(targetUserId);
+
+		if (targetUser.teamId !== actor.teamId) {
+			throw new AppError({ message: "User is not on your team", service: SERVICE_NAME, method: "deleteUserById", status: 403 });
+		}
+
+		if (targetUser.role.includes("demo")) {
+			throw new AppError({ message: "Demo user cannot be deleted", service: SERVICE_NAME, method: "deleteUserById", status: 400 });
+		}
+
+		const actorRoles = actor.role;
+		const targetRoles = targetUser.role;
+
+		// Check actor can manage all of target's roles
+		for (const targetRole of targetRoles) {
+			const canManage = actorRoles.some((actorRole) => canManageRole(actorRole, targetRole));
+			if (!canManage) {
+				throw new AppError({
+					message: "You do not have permission to remove this user",
+					service: SERVICE_NAME,
+					method: "deleteUserById",
+					status: 403,
+				});
+			}
+		}
+
+		await this.usersRepository.deleteById(targetUserId);
+
+		this.logger.info({
+			message: `User ${targetUserId} deleted by ${actor.id}`,
+			service: SERVICE_NAME,
+			method: "deleteUserById",
+		});
 	};
 
 	getAllUsers = async () => {
@@ -330,8 +403,8 @@ class UserService {
 	};
 
 	getUserById = async (roles: any, userId: any) => {
-		if (!roles.includes("superadmin")) {
-			throw new AppError({ message: "User is not a superadmin", service: SERVICE_NAME, status: 403 });
+		if (!roles.includes("superadmin") && !roles.includes("admin")) {
+			throw new AppError({ message: "Insufficient permissions", service: SERVICE_NAME, status: 403 });
 		}
 		const user = await this.usersRepository.findById(userId);
 
@@ -348,4 +421,3 @@ class UserService {
 		return updatedUser;
 	};
 }
-export default UserService;

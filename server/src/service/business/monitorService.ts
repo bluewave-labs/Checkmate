@@ -8,6 +8,7 @@ import type {
 	PageSpeedDetailsResult,
 	GamesMap,
 } from "@/types/monitor.js";
+import { supportsGeoCheck } from "@/types/monitor.js";
 import type { GeoContinent } from "@/types/geoCheck.js";
 import type {
 	IChecksRepository,
@@ -226,7 +227,8 @@ export class MonitorService implements IMonitorService {
 			checksData.monitorType !== "docker" &&
 			checksData.monitorType !== "port" &&
 			checksData.monitorType !== "game" &&
-			checksData.monitorType !== "grpc"
+			checksData.monitorType !== "grpc" &&
+			checksData.monitorType !== "websocket"
 		) {
 			throw new AppError({ message: `${monitor.type} monitors are not supported for uptime details`, status: 400 });
 		}
@@ -340,7 +342,7 @@ export class MonitorService implements IMonitorService {
 			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
 		}
 
-		if (monitor.type !== "http" || !monitor.geoCheckEnabled) {
+		if (!supportsGeoCheck(monitor.type) || !monitor.geoCheckEnabled) {
 			return { groupedGeoChecks: [] };
 		}
 

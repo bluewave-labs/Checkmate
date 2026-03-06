@@ -2,6 +2,7 @@ import { IMonitorsRepository } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
 import Scheduler from "super-simple-scheduler";
 import { ISuperSimpleQueueHelper } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+import { supportsGeoCheck } from "@/types/monitor.js";
 const SERVICE_NAME = "JobQueue";
 
 type QueueJobFailure = {
@@ -53,7 +54,7 @@ export interface ISuperSimpleQueue {
 	obliterate(): Promise<void>;
 }
 
-class SuperSimpleQueue implements ISuperSimpleQueue {
+export class SuperSimpleQueue implements ISuperSimpleQueue {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: ILogger;
@@ -125,8 +126,13 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 			data: monitor,
 		});
 
+		// Return early if we don't need geo checks
+		if (!supportsGeoCheck(monitor.type)) {
+			return;
+		}
+
 		// Add geo check job if enabled for HTTP monitors
-		if (monitor.geoCheckEnabled && monitor.type === "http") {
+		if (monitor.geoCheckEnabled) {
 			this.scheduler.addJob({
 				id: `${monitorId}-geo`,
 				template: "geo-check-job",
@@ -175,7 +181,7 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 
 		// Handle geo check job lifecycle
 		const geoJobId = `${monitor.id}-geo`;
-		if (monitor.geoCheckEnabled && monitor.type === "http") {
+		if (monitor.geoCheckEnabled && supportsGeoCheck(monitor.type)) {
 			// Check if geo job exists
 			const existingGeoJob = await this.scheduler.getJob(geoJobId);
 			if (existingGeoJob) {
@@ -289,5 +295,3 @@ class SuperSimpleQueue implements ISuperSimpleQueue {
 		});
 	};
 }
-
-export default SuperSimpleQueue;

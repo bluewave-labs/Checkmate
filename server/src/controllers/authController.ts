@@ -180,6 +180,20 @@ class AuthController {
 		}
 	};
 
+	deleteUserById = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			getUserByIdParamValidation.parse(req.params);
+			const targetUserId = req.params.userId;
+			await this.userService.deleteUserById(req.user, targetUserId);
+			return res.status(200).json({
+				success: true,
+				msg: "User removed successfully",
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
 	getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const allUsers = await this.userService.getAllUsers();

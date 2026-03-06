@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Table } from "@/Components/design-elements";
 import type { Header } from "@/Components/design-elements/Table";
-import { useIsSuperAdmin } from "@/Hooks/useIsAdmin";
+import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import type { User } from "@/Types/User";
 
 interface TeamTableProps {
@@ -13,7 +13,7 @@ interface TeamTableProps {
 export const TeamTable = ({ users }: TeamTableProps) => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
-	const isSuperAdmin = useIsSuperAdmin();
+	const isAdmin = useIsAdmin();
 
 	const headers: Header<User>[] = [
 		{
@@ -45,7 +45,7 @@ export const TeamTable = ({ users }: TeamTableProps) => {
 	];
 
 	const handleRowClick = (row: User) => {
-		if (isSuperAdmin) {
+		if (isAdmin) {
 			navigate(`/account/team/${row.id}`);
 		}
 	};
@@ -54,7 +54,7 @@ export const TeamTable = ({ users }: TeamTableProps) => {
 		<Table
 			headers={headers}
 			data={users}
-			onRowClick={isSuperAdmin ? handleRowClick : undefined}
+			onRowClick={isAdmin ? handleRowClick : undefined}
 		/>
 	);
 };

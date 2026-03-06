@@ -20,7 +20,7 @@ import { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useGet } from "@/Hooks/UseApi";
-import type { MonitorDetailsResponse } from "@/Types/Monitor";
+import { type MonitorDetailsResponse, supportsGeoCheck } from "@/Types/Monitor";
 import type { ChecksResponse } from "@/Types/Check";
 import type {
 	GeoChecksResult,
@@ -122,7 +122,7 @@ const UptimeDetailsPage = () => {
 	);
 
 	const geoChecksUrl = useMemo(() => {
-		if (!monitorId || monitor?.type !== "http" || !monitor?.geoCheckEnabled) {
+		if (!monitorId || !supportsGeoCheck(monitor?.type) || !monitor?.geoCheckEnabled) {
 			return null;
 		}
 		const params = new URLSearchParams();
@@ -141,7 +141,7 @@ const UptimeDetailsPage = () => {
 
 	// Fetch paginated geo checks for the table
 	const geoChecksTableUrl = useMemo(() => {
-		if (!monitorId || monitor?.type !== "http" || !monitor?.geoCheckEnabled) {
+		if (!monitorId || !supportsGeoCheck(monitor?.type) || !monitor?.geoCheckEnabled) {
 			return null;
 		}
 		const params = new URLSearchParams();
