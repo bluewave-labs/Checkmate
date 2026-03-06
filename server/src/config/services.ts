@@ -1,10 +1,26 @@
 import MongoDB from "../db/MongoDB.js";
-import NetworkService from "../service/infrastructure/networkService.js";
-import EmailService from "../service/infrastructure/emailService.js";
-import BufferService from "../service/infrastructure/bufferService.js";
+import { IDb } from "@/db/IDb.js";
 import {
+	// Service classes
+	NetworkService,
+	EmailService,
+	BufferService,
+	GlobalPingService,
+	SuperSimpleQueue,
+	SuperSimpleQueueHelper,
 	NotificationsService,
 	StatusService,
+	NotificationMessageBuilder,
+	MonitorService,
+	StatusPageService,
+	UserService,
+	CheckService,
+	GeoChecksService,
+	DiagnosticService,
+	InviteService,
+	MaintenanceWindowService,
+	IncidentService,
+	// Notification providers
 	WebhookProvider,
 	SlackProvider,
 	EmailProvider,
@@ -12,25 +28,42 @@ import {
 	PagerDutyProvider,
 	MatrixProvider,
 	TeamsProvider,
+	// Interfaces
+	INetworkService,
+	IEmailService,
+	IBufferService,
+	ISuperSimpleQueue,
 	INotificationsService,
+	IStatusService,
+	IMonitorService,
+	IUserService,
+	ICheckService,
+	IGeoChecksService,
+	IDiagnosticService,
+	IInviteService,
+	IMaintenanceWindowService,
+	IStatusPageService,
+	IIncidentService,
+	INotificationMessageBuilder,
+	ISettingsService,
+	EnvConfig,
 } from "@/service/index.js";
-import SuperSimpleQueueHelper from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
-import SuperSimpleQueue from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
-import UserService from "../service/business/userService.js";
-import CheckService from "../service/business/checkService.js";
-import GeoChecksService from "../service/business/geoChecksService.js";
-import GlobalPingService from "../service/infrastructure/globalPingService.js";
-import DiagnosticService from "../service/business/diagnosticService.js";
-import InviteService from "../service/business/inviteService.js";
-import MaintenanceWindowService from "../service/business/maintenanceWindowService.js";
-import { MonitorService } from "@/service/index.js";
-import { StatusPageService, IStatusPageService } from "../service/business/statusPageService.js";
-import IncidentService from "../service/business/incidentService.js";
-import { NotificationMessageBuilder, INotificationMessageBuilder } from "../service/infrastructure/notificationMessageBuilder.js";
+
+// Network providers
+import { PingProvider } from "@/service/infrastructure/network/PingProvider.js";
+import { HttpProvider } from "@/service/infrastructure/network/HttpProvider.js";
+import { AdvancedMatcher } from "@/service/infrastructure/network/AdvancedMatcher.js";
+import { PageSpeedProvider } from "@/service/infrastructure/network/PageSpeedProvider.js";
+import { HardwareProvider } from "@/service/infrastructure/network/HardwareProvider.js";
+import { DockerProvider } from "@/service/infrastructure/network/DockerProvider.js";
+import { PortProvider } from "@/service/infrastructure/network/PortProvider.js";
+import { GameProvider } from "@/service/infrastructure/network/GameProvider.js";
+import { GrpcProvider } from "@/service/infrastructure/network/GrpcProvider.js";
+
+// Third-party
 import axios from "axios";
 import got from "got";
 import ping from "ping";
-import https from "https";
 import Docker from "dockerode";
 import net from "net";
 import fs from "fs";
@@ -46,7 +79,7 @@ import jmespath from "jmespath";
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 
-// repositories
+// Repositories
 import {
 	MongoMonitorsRepository,
 	MongoChecksRepository,
@@ -75,24 +108,23 @@ import {
 	IMaintenanceWindowsRepository,
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
-import { EnvConfig } from "@/service/system/settingsService.js";
 
 export type InitializedServices = {
-	settingsService: any;
-	db: any;
-	networkService: any;
-	emailService: any;
-	bufferService: any;
-	statusService: any;
-	jobQueue: any;
-	userService: any;
-	checkService: any;
-	geoChecksService: any;
-	diagnosticService: any;
-	inviteService: any;
-	maintenanceWindowService: any;
-	monitorService: any;
-	incidentService: any;
+	settingsService: ISettingsService;
+	db: IDb;
+	networkService: INetworkService;
+	emailService: IEmailService;
+	bufferService: IBufferService;
+	statusService: IStatusService;
+	jobQueue: ISuperSimpleQueue;
+	userService: IUserService;
+	checkService: ICheckService;
+	geoChecksService: IGeoChecksService;
+	diagnosticService: IDiagnosticService;
+	inviteService: IInviteService;
+	maintenanceWindowService: IMaintenanceWindowService;
+	monitorService: IMonitorService;
+	incidentService: IIncidentService;
 	logger: ILogger;
 	notificationsService: INotificationsService;
 	statusPageService: IStatusPageService;
@@ -122,7 +154,7 @@ export const initializeServices = async ({
 }: {
 	logger: ILogger;
 	envSettings: EnvConfig;
-	settingsService: any;
+	settingsService: ISettingsService;
 	settingsRepository: ISettingsRepository;
 }): Promise<InitializedServices> => {
 	// Create DB
@@ -145,22 +177,26 @@ export const initializeServices = async ({
 	const teamsRepository = new MongoTeamsRepository();
 	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
 
-	const networkService = new NetworkService(
-		axios,
-		got,
-		https,
-		jmespath,
-		GameDig as unknown as {
-			query: (options: { type: string; host: string; port?: number }) => Promise<{ ping?: number } & { [key: string]: unknown }>;
-		},
-		ping,
-		logger,
-		Docker,
-		net,
-		settingsService,
-		grpc,
-		protoLoader
-	);
+	// Network providers
+	const pingProvider = new PingProvider(ping);
+	const httpProvider = new HttpProvider(got, new AdvancedMatcher(jmespath));
+	const pageSpeedProvider = new PageSpeedProvider(httpProvider, settingsService, logger);
+	const hardwareProvider = new HardwareProvider(httpProvider);
+	const dockerProvider = new DockerProvider(logger, Docker);
+	const portProvider = new PortProvider(net);
+	const gameProvider = new GameProvider(logger, GameDig);
+	const grpcProvider = new GrpcProvider(grpc, protoLoader);
+
+	const networkService = new NetworkService(axios, logger, [
+		pingProvider,
+		httpProvider,
+		pageSpeedProvider,
+		hardwareProvider,
+		dockerProvider,
+		portProvider,
+		gameProvider,
+		grpcProvider,
+	]);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 
 	const notificationMessageBuilder = new NotificationMessageBuilder();
@@ -182,6 +218,7 @@ export const initializeServices = async ({
 
 	const statusService = new StatusService(logger, bufferService, monitorsRepository, monitorStatsRepository, checksRepository);
 
+	// Notification providers
 	const webhookProvider = new WebhookProvider(logger);
 	const slackProvider = new SlackProvider(logger);
 	const emailProvider = new EmailProvider(emailService, logger);
@@ -267,7 +304,6 @@ export const initializeServices = async ({
 	const statusPageService = new StatusPageService(statusPagesRepository);
 
 	const services = {
-		//v1
 		settingsService,
 		db,
 		networkService,
