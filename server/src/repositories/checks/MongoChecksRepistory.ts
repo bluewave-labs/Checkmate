@@ -771,42 +771,6 @@ class MongoChecksRepository implements IChecksRepository {
 			{ $sort: { _id: 1 } },
 		]);
 	};
-
-	findUptimeByPeriod = async (monitorId: string): Promise<Record<string, number>> => {
-		const monitorObjectId = new mongoose.Types.ObjectId(monitorId);
-		const now = new Date();
-
-		const periods: Record<string, Date> = {
-			day: new Date(new Date(now).setDate(now.getDate() - 1)),
-			week: new Date(new Date(now).setDate(now.getDate() - 7)),
-			month: new Date(new Date(now).setMonth(now.getMonth() - 1)),
-			year: new Date(new Date(now).setFullYear(now.getFullYear() - 1)),
-			all: new Date(0),
-		};
-
-		const groupStage: Record<string, any> = { _id: null };
-		for (const [key, startDate] of Object.entries(periods)) {
-			groupStage[`${key}Up`] = {
-				$sum: { $cond: [{ $and: [{ $gte: ["$createdAt", startDate] }, { $eq: ["$status", true] }] }, 1, 0] },
-			};
-			groupStage[`${key}Total`] = {
-				$sum: { $cond: [{ $gte: ["$createdAt", startDate] }, 1, 0] },
-			};
-		}
-
-		const [result] = await CheckModel.aggregate([
-			{ $match: { "metadata.monitorId": monitorObjectId } },
-			{ $group: groupStage },
-		]);
-
-		const uptimeByPeriod: Record<string, number> = {};
-		for (const key of Object.keys(periods)) {
-			const total = result?.[`${key}Total`] ?? 0;
-			uptimeByPeriod[key] = total === 0 ? 0 : (result[`${key}Up`] ?? 0) / total;
-		}
-
-		return uptimeByPeriod;
-	};
 }
 
 export default MongoChecksRepository;

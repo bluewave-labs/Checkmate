@@ -1274,11 +1274,10 @@
 			},
 			"details": {
 				"uptimeStats": {
+					"recent": "2h",
 					"day": "24h",
 					"week": "7d",
-					"month": "30d",
-					"year": "1y",
-					"all": "All"
+					"month": "30d"
 				}
 			}
 		}
