@@ -82,6 +82,6 @@ export const bulkEditNotificationBodyValidation = z.object({
 	monitorIds: z.array(z.string()).min(1, "At least one monitor ID is required"),
 	notificationIds: z.array(z.string()),
 	action: z.enum(["add", "remove", "set"], {
-		errorMap: () => ({message: "Action must be 'add', 'remove', or 'set'"})
+		message: "Action must be 'add', 'remove', or 'set'",
 	}),
 });
