@@ -619,6 +619,15 @@
 					"title": "Roles",
 					"description": "Assign roles to the user. Multiple roles can be selected."
 				}
+			},
+			"buttons": {
+				"removeUser": "Remove user"
+			},
+			"dialog": {
+				"removeUser": {
+					"title": "Remove user",
+					"content": "Are you sure you want to remove {{name}} from your team? This action cannot be undone."
+				}
 			}
 		},
 		"incidents": {

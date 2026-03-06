@@ -14,9 +14,14 @@ import type { UserRole, User } from "@/Types/User";
 import { useParams } from "react-router-dom";
 import { useTheme } from "@mui/material";
 import { useEditUserForm } from "@/Hooks/useEditUserForm";
-import { useGet, usePatch } from "@/Hooks/UseApi";
+import { useGet, usePatch, useDelete } from "@/Hooks/UseApi";
 import type { EditUserFormData } from "@/Validation/editUser";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { DialogInput } from "@/Components/inputs/Dialog";
+import { useIsAdmin, useIsSuperAdmin } from "@/Hooks/useIsAdmin";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/Types/state";
 
 interface RoleOption {
 	id: UserRole;
@@ -29,6 +34,12 @@ const EditUserPage = () => {
 	const { userId } = useParams<{ userId: string }>();
 	const { resolver, defaults } = useEditUserForm();
 	const { patch, loading: isSaving } = usePatch();
+	const { deleteFn, loading: isDeleting } = useDelete();
+	const navigate = useNavigate();
+	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+	const isAdmin = useIsAdmin();
+	const isSuperAdmin = useIsSuperAdmin();
+	const currentUser = useSelector((state: RootState) => state.auth.user);
 
 	const { data: user, isLoading } = useGet<User>(`/auth/users/${userId}`);
 
@@ -58,6 +69,21 @@ const EditUserPage = () => {
 	const handleRemoveRole = (roleToRemove: UserRole) => {
 		const newRoles = watchedRoles.filter((role) => role !== roleToRemove);
 		setValue("role", newRoles, { shouldValidate: true });
+	};
+
+	const canDeleteUser =
+		isAdmin &&
+		userId !== currentUser?.id &&
+		!user?.role?.includes("superadmin") &&
+		!user?.role?.includes("demo") &&
+		(isSuperAdmin || user?.role?.every((r) => r !== "admin" && r !== "superadmin"));
+
+	const handleDeleteUser = async () => {
+		const result = await deleteFn(`/auth/users/${userId}`);
+		if (result) {
+			setShowDeleteDialog(false);
+			navigate("/account", { state: { tab: "team" } });
+		}
 	};
 
 	const onSubmit = async (data: EditUserFormData) => {
@@ -165,17 +191,45 @@ const EditUserPage = () => {
 							</Stack>
 						}
 					/>
-					<Button
-						type="submit"
-						variant="contained"
-						color="primary"
-						loading={isSaving}
-						sx={{ alignSelf: "flex-end", minWidth: 100 }}
+					<Stack
+						direction="row"
+						justifyContent={canDeleteUser ? "space-between" : "flex-end"}
+						width="100%"
 					>
-						{t("common.buttons.save")}
-					</Button>
+						{canDeleteUser && (
+							<Button
+								variant="contained"
+								color="error"
+								onClick={() => setShowDeleteDialog(true)}
+								sx={{ minWidth: 100 }}
+							>
+								{t("pages.editUser.buttons.removeUser")}
+							</Button>
+						)}
+						<Button
+							type="submit"
+							variant="contained"
+							color="primary"
+							loading={isSaving}
+							sx={{ minWidth: 100 }}
+						>
+							{t("common.buttons.save")}
+						</Button>
+					</Stack>
 				</Stack>
 			</form>
+			<DialogInput
+				open={showDeleteDialog}
+				title={t("pages.editUser.dialog.removeUser.title")}
+				content={t("pages.editUser.dialog.removeUser.content", {
+					name: `${user?.firstName} ${user?.lastName}`,
+				})}
+				onCancel={() => setShowDeleteDialog(false)}
+				onConfirm={handleDeleteUser}
+				confirmColor="error"
+				confirmText={t("pages.editUser.buttons.removeUser")}
+				loading={isDeleting}
+			/>
 		</BasePage>
 	);
 };
