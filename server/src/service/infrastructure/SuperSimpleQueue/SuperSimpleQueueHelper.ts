@@ -412,4 +412,3 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 		return decision;
 	}
 }
-

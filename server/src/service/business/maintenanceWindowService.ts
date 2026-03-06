@@ -96,4 +96,3 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		return await this.maintenanceWindowsRepository.updateById(id, teamId, body);
 	};
 }
-

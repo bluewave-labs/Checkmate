@@ -74,4 +74,3 @@ export class SettingsService implements ISettingsService {
 		return settings;
 	};
 }
-

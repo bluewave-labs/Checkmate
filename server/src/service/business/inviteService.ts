@@ -94,4 +94,3 @@ export class InviteService implements IInviteService {
 		return await this.invitesRepository.findByToken(inviteToken);
 	};
 }
-
