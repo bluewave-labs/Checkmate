@@ -23,7 +23,6 @@
   },
   "homepage": "https://github.com/bluewave-labs/Checkmate#readme",
   "devDependencies": {
-    "@types/ws": "^8.18.1",
     "husky": "^9.1.7"
   }
 }
