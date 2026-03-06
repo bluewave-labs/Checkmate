@@ -1,10 +1,12 @@
 import mongoose from "mongoose";
-import AppSettings from "./models/AppSettings.js";
-import { runMigrations } from "./migration/index.js";
+import AppSettings from "@/db/models/AppSettings.js";
+import { runMigrations } from "@/db/migration/index.js";
 import { ILogger } from "@/utils/logger.js";
 import { EnvConfig } from "@/service/system/settingsService.js";
 const SERVICE_NAME = "MongoDB";
-class MongoDB {
+import { IDb } from "@/db/IDb.js";
+
+class MongoDB implements IDb {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: ILogger;
@@ -46,12 +48,12 @@ class MongoDB {
 			});
 
 			await runMigrations();
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({
-				message: error.message,
+				message: error instanceof Error ? error.message : "Unknown error",
 				service: SERVICE_NAME,
 				method: "connect",
-				stack: error.stack,
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 			throw error;
 		}
@@ -63,12 +65,12 @@ class MongoDB {
 			await mongoose.disconnect();
 			this.logger.info({ message: "Disconnected from MongoDB", service: SERVICE_NAME, method: "disconnect" });
 			return;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({
-				message: error.message,
+				message: error instanceof Error ? error.message : "Unknown error",
 				service: SERVICE_NAME,
 				method: "disconnect",
-				stack: error.stack,
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 		}
 	};

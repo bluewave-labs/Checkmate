@@ -54,7 +54,7 @@ export interface IGlobalPingService {
 	pollForResults(measurementId: string, timeoutMs?: number): Promise<GeoCheckResult[]>;
 }
 
-class GlobalPingService implements IGlobalPingService {
+export class GlobalPingService implements IGlobalPingService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: ILogger;
@@ -207,4 +207,3 @@ class GlobalPingService implements IGlobalPingService {
 	}
 }
 
-export default GlobalPingService;
