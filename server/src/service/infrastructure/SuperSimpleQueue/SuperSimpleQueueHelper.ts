@@ -280,16 +280,15 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 					throw new AppError({ message: "No monitor id", service: SERVICE_NAME, method: "getGeoCheckJob" });
 				}
 
-				if (monitor.type !== "http") {
+				if (!monitor.geoCheckEnabled) {
+					return;
+				}
+				if (monitor.type !== "http" && monitor.type !== "ping") {
 					this.logger.debug({
-						message: `Monitor ${monitorId} is not HTTP type, skipping geo check`,
+						message: `Monitor ${monitorId} is not HTTP or Ping type, skipping geo check`,
 						service: SERVICE_NAME,
 						method: "getGeoCheckJob",
 					});
-					return;
-				}
-
-				if (!monitor.geoCheckEnabled) {
 					return;
 				}
 

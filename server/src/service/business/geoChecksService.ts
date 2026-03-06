@@ -68,7 +68,7 @@ export class GeoChecksService implements IGeoChecksService {
 			}
 
 			// Step 1: Create measurement request
-			const measurementId = await this.globalPingService.createMeasurement(monitor.url, monitor.geoCheckLocations);
+			const measurementId = await this.globalPingService.createMeasurement(monitor.type, monitor.url, monitor.geoCheckLocations);
 
 			if (!measurementId) {
 				// GlobalPing API is down, skip this check

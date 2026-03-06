@@ -885,7 +885,7 @@ const CreateMonitorPage = () => {
 				/>
 			)}
 
-			{watchedType === "http" && (
+			{(watchedType === "http" || watchedType === "ping") && (
 				<ConfigBox
 					title={t("pages.createMonitor.form.geoChecks.title")}
 					subtitle={t("pages.createMonitor.form.geoChecks.description")}

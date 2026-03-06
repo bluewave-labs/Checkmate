@@ -340,7 +340,7 @@ export class MonitorService implements IMonitorService {
 			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
 		}
 
-		if (monitor.type !== "http" || !monitor.geoCheckEnabled) {
+		if ((monitor.type !== "http" && monitor.type !== "ping") || !monitor.geoCheckEnabled) {
 			return { groupedGeoChecks: [] };
 		}
 

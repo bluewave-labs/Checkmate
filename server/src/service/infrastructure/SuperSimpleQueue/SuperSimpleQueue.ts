@@ -125,8 +125,13 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 			data: monitor,
 		});
 
+		// Return early if we don't need geo checks
+		if (monitor.type !== "http" && monitor.type !== "ping") {
+			return;
+		}
+
 		// Add geo check job if enabled for HTTP monitors
-		if (monitor.geoCheckEnabled && monitor.type === "http") {
+		if (monitor.geoCheckEnabled) {
 			this.scheduler.addJob({
 				id: `${monitorId}-geo`,
 				template: "geo-check-job",
@@ -175,7 +180,7 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 
 		// Handle geo check job lifecycle
 		const geoJobId = `${monitor.id}-geo`;
-		if (monitor.geoCheckEnabled && monitor.type === "http") {
+		if (monitor.geoCheckEnabled && (monitor.type === "http" || monitor.type === "ping")) {
 			// Check if geo job exists
 			const existingGeoJob = await this.scheduler.getJob(geoJobId);
 			if (existingGeoJob) {

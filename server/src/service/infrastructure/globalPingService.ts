@@ -1,4 +1,5 @@
 import type { GeoContinent, GeoCheckResult, GeoCheckTimings, GeoCheckLocation } from "@/types/geoCheck.js";
+import { MonitorType } from "@/types/index.js";
 import type { ILogger } from "@/utils/logger.js";
 import got from "got";
 
@@ -8,7 +9,7 @@ const POLL_INTERVAL_MS = 2000;
 const MAX_POLL_TIMEOUT_MS = 30000;
 
 interface GlobalPingMeasurementRequest {
-	type: "http";
+	type: "http" | "ping";
 	target: string;
 	locations: Array<{ continent: GeoContinent }>;
 	limit: number;
@@ -44,13 +45,22 @@ interface GlobalPingProbeResult {
 			firstByte: number;
 			download: number;
 		};
+		stats?: {
+			min: number;
+			max: number;
+			avg: number;
+			total: number;
+			loss: number;
+			rcv: number;
+			drop: number;
+		};
 		rawOutput?: string;
 	};
 }
 
 export interface IGlobalPingService {
 	readonly serviceName: string;
-	createMeasurement(url: string, locations: GeoContinent[]): Promise<string | null>;
+	createMeasurement(monitorType: MonitorType, url: string, locations: GeoContinent[]): Promise<string | null>;
 	pollForResults(measurementId: string, timeoutMs?: number): Promise<GeoCheckResult[]>;
 }
 
@@ -67,13 +77,16 @@ export class GlobalPingService implements IGlobalPingService {
 		return GlobalPingService.SERVICE_NAME;
 	}
 
-	async createMeasurement(url: string, locations: GeoContinent[]): Promise<string | null> {
+	async createMeasurement(monitorType: MonitorType, url: string, locations: GeoContinent[]): Promise<string | null> {
 		try {
+			if (monitorType !== "http" && monitorType !== "ping") {
+				throw new Error(`Unsupported monitor type for GlobalPing: ${monitorType}`);
+			}
 			// GlobalPing API expects target without protocol (http:// or https://)
 			const cleanTarget = url.replace(/^https?:\/\//, "");
 
 			const requestBody: GlobalPingMeasurementRequest = {
-				type: "http",
+				type: monitorType,
 				target: cleanTarget,
 				locations: locations.map((continent) => ({ continent })),
 				limit: locations.length,
@@ -88,10 +101,9 @@ export class GlobalPingService implements IGlobalPingService {
 			const measurementId = response.body.id;
 
 			this.logger.debug({
-				message: `Created GlobalPing measurement: ${measurementId}`,
+				message: `Created GlobalPing measurement: ${measurementId} for target: ${cleanTarget}`,
 				service: SERVICE_NAME,
 				method: "createMeasurement",
-				details: { measurementId, url, locations },
 			});
 
 			return measurementId;
@@ -165,8 +177,7 @@ export class GlobalPingService implements IGlobalPingService {
 		const successfulResults: GeoCheckResult[] = [];
 
 		for (const probeResult of probeResults) {
-			// Skip failed or timeout results
-			if (probeResult.result.status !== "finished" || !probeResult.result.statusCode || !probeResult.result.timings) {
+			if (probeResult.result.status !== "finished") {
 				continue;
 			}
 
@@ -180,23 +191,38 @@ export class GlobalPingService implements IGlobalPingService {
 				latitude: probeResult.probe.latitude,
 			};
 
-			const timings: GeoCheckTimings = {
-				total: probeResult.result.timings.total,
-				dns: probeResult.result.timings.dns,
-				tcp: probeResult.result.timings.tcp,
-				tls: probeResult.result.timings.tls,
-				firstByte: probeResult.result.timings.firstByte,
-				download: probeResult.result.timings.download,
-			};
+			// HTTP results have statusCode and timings, ping results have stats
+			if (probeResult.result.statusCode && probeResult.result.timings) {
+				const timings: GeoCheckTimings = {
+					total: probeResult.result.timings.total,
+					dns: probeResult.result.timings.dns,
+					tcp: probeResult.result.timings.tcp,
+					tls: probeResult.result.timings.tls,
+					firstByte: probeResult.result.timings.firstByte,
+					download: probeResult.result.timings.download,
+				};
 
-			const result: GeoCheckResult = {
-				location,
-				status: probeResult.result.statusCode >= 200 && probeResult.result.statusCode < 300,
-				statusCode: probeResult.result.statusCode,
-				timings,
-			};
-
-			successfulResults.push(result);
+				successfulResults.push({
+					location,
+					status: probeResult.result.statusCode >= 200 && probeResult.result.statusCode < 300,
+					statusCode: probeResult.result.statusCode,
+					timings,
+				});
+			} else if (probeResult.result.stats) {
+				successfulResults.push({
+					location,
+					status: probeResult.result.stats.loss === 0,
+					statusCode: probeResult.result.stats.loss === 0 ? 200 : 5000,
+					timings: {
+						total: probeResult.result.stats.avg,
+						dns: 0,
+						tcp: 0,
+						tls: 0,
+						firstByte: 0,
+						download: 0,
+					},
+				});
+			}
 		}
 
 		return successfulResults;

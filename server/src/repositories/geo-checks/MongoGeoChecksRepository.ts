@@ -1,17 +1,18 @@
 import { IGeoChecksRepository } from "./IGeoChecksRepository.js";
 import type { GeoCheck, GeoCheckMetadata, GeoCheckResult, GroupedGeoCheck, GeoContinent, FlatGeoCheck } from "@/types/geoCheck.js";
-import type { GeoChecksQueryResult, FlatGeoChecksQueryResult } from "./IGeoChecksRepository.js";
+import type { FlatGeoChecksQueryResult } from "./IGeoChecksRepository.js";
 import { GeoCheckModel, type GeoCheckDocument } from "@/db/models/index.js";
 import mongoose from "mongoose";
 import { getDateForRange } from "@/utils/dataUtils.js";
+import { ILogger } from "@/utils/logger.js";
 
 const SERVICE_NAME = "GeoChecksRepository";
 
 class MongoGeoChecksRepository implements IGeoChecksRepository {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private logger: any;
-	constructor(logger: any) {
+	private logger: ILogger;
+	constructor(logger: ILogger) {
 		this.logger = logger;
 	}
 

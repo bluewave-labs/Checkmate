@@ -122,7 +122,11 @@ const UptimeDetailsPage = () => {
 	);
 
 	const geoChecksUrl = useMemo(() => {
-		if (!monitorId || monitor?.type !== "http" || !monitor?.geoCheckEnabled) {
+		if (
+			!monitorId ||
+			(monitor?.type !== "http" && monitor?.type !== "ping") ||
+			!monitor?.geoCheckEnabled
+		) {
 			return null;
 		}
 		const params = new URLSearchParams();
@@ -141,7 +145,11 @@ const UptimeDetailsPage = () => {
 
 	// Fetch paginated geo checks for the table
 	const geoChecksTableUrl = useMemo(() => {
-		if (!monitorId || monitor?.type !== "http" || !monitor?.geoCheckEnabled) {
+		if (
+			!monitorId ||
+			(monitor?.type !== "http" && monitor?.type !== "ping") ||
+			!monitor?.geoCheckEnabled
+		) {
 			return null;
 		}
 		const params = new URLSearchParams();
