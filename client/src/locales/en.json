@@ -487,6 +487,10 @@
 						"grpcServiceName": {
 							"label": "Service name",
 							"placeholder": "e.g. my.service.v1 (leave empty for overall health)"
+						},
+						"wsUrl": {
+							"label": "WebSocket URL",
+							"placeholder": "wss://example.com/socket"
 						}
 					},
 					"title": "General settings",
@@ -498,6 +502,7 @@
 						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type.",
 						"pagespeed": "Track page load performance, Core Web Vitals, and optimization scores for your website.",
 						"grpc": "Enter the hostname and port of the gRPC server, optionally specify a service name for the health check, and add a display name.",
+						"websocket": "Enter the WebSocket URL to monitor (e.g., wss://example.com/socket) and add a display name.",
 						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure."
 					}
 				},
@@ -534,6 +539,8 @@
 					"optionGameDescription": "Monitor if a specific game server is online.",
 					"optionGrpc": "gRPC",
 					"optionGrpcDescription": "Monitor gRPC services using the standard Health Checking Protocol.",
+					"optionWebSocket": "WebSocket",
+					"optionWebSocketDescription": "Monitor WebSocket endpoints for connection health and response time.",
 					"optionHttp": "HTTP(S)",
 					"optionHttpDescription": "Use HTTP(S) to monitor your website or API endpoint.",
 					"optionPing": "Ping",

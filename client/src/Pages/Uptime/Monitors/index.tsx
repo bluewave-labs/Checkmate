@@ -70,7 +70,7 @@ const UptimeMonitorsPage = () => {
 	const effectiveTypes =
 		selectedTypes.length > 0
 			? selectedTypes
-			: ["http", "ping", "docker", "port", "game", "grpc"];
+			: ["http", "ping", "docker", "port", "game", "grpc", "websocket"];
 
 	// Build URL for monitors with checks
 	const monitorsWithChecksUrl = useMemo(() => {
