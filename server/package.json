@@ -15,7 +15,7 @@
 		"format-check": "prettier --check ."
 	},
 	"lint-staged": {
-		"**/*": "npm run format"
+		"**/*": "prettier --write"
 	},
 	"keywords": [],
 	"author": "",
