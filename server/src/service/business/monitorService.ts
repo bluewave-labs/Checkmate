@@ -8,6 +8,7 @@ import type {
 	PageSpeedDetailsResult,
 	GamesMap,
 } from "@/types/monitor.js";
+import { supportsGeoCheck } from "@/types/monitor.js";
 import type { GeoContinent } from "@/types/geoCheck.js";
 import type {
 	IChecksRepository,
@@ -340,7 +341,7 @@ export class MonitorService implements IMonitorService {
 			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
 		}
 
-		if (monitor.type !== "http" || !monitor.geoCheckEnabled) {
+		if (!supportsGeoCheck(monitor.type) || !monitor.geoCheckEnabled) {
 			return { groupedGeoChecks: [] };
 		}
 
