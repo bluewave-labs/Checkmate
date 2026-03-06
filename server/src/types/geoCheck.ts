@@ -33,7 +33,6 @@ export interface GeoCheckResult {
 	status: boolean;
 	statusCode: number;
 	timings: GeoCheckTimings;
-
 }
 
 export interface GeoCheck {
