@@ -146,6 +146,17 @@ const getGeneralSettingsConfig = (
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
 		},
+		websocket: {
+			urlLabel: t("pages.createMonitor.form.general.option.wsUrl.label"),
+			urlPlaceholder: t("pages.createMonitor.form.general.option.wsUrl.placeholder"),
+			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
+			showUrl: true,
+			showPort: false,
+			showGameSelect: false,
+			showSecret: false,
+			showGrpcServiceName: false,
+			showIgnoreTls: true,
+		},
 	};
 	return configs[type] || configs.http;
 };
@@ -329,6 +340,13 @@ const CreateMonitorPage = () => {
 											label={t("pages.createMonitor.form.type.optionGrpc")}
 											description={t(
 												"pages.createMonitor.form.type.optionGrpcDescription"
+											)}
+										/>
+										<RadioWithDescription
+											value="websocket"
+											label={t("pages.createMonitor.form.type.optionWebSocket")}
+											description={t(
+												"pages.createMonitor.form.type.optionWebSocketDescription"
 											)}
 										/>
 									</RadioGroup>
@@ -747,7 +765,7 @@ const CreateMonitorPage = () => {
 				}
 			/>
 
-			{(watchedType === "http" || watchedType === "grpc") && (
+			{(watchedType === "http" || watchedType === "grpc" || watchedType === "websocket") && (
 				<ConfigBox
 					title={t("pages.createMonitor.form.ignoreTls.title")}
 					subtitle={t("pages.createMonitor.form.ignoreTls.description")}
