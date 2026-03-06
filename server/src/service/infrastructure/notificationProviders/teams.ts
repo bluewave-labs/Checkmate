@@ -3,12 +3,13 @@ import type { Notification } from "@/types/index.js";
 import { INotificationProvider } from "@/service/index.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
+import type { ILogger } from "@/utils/logger.js";
 import got, { HTTPError } from "got";
 
 export class TeamsProvider implements INotificationProvider {
-	private logger: any;
+	private logger: ILogger;
 
-	constructor(logger: any) {
+	constructor(logger: ILogger) {
 		this.logger = logger;
 	}
 
@@ -72,7 +73,7 @@ export class TeamsProvider implements INotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as Error;
+			const err = error as HTTPError;
 			this.logger.warn({
 				message: "Teams alert failed via sendMessage",
 				service: SERVICE_NAME,
