@@ -11,10 +11,31 @@ import { canManageRole, type UserRole } from "@/types/user.js";
 import bcrypt from "bcryptjs";
 import { AppError } from "@/utils/AppError.js";
 import { ISuperSimpleQueue } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
-
+import { IEmailService } from "@/service/infrastructure/emailService.js";
+import { ISettingsService } from "@/service/system/settingsService.js";
+import { ILogger } from "@/utils/logger.js";
+import jwt from "jsonwebtoken";
+type JwtType = typeof jwt;
 const SERVICE_NAME = "userService";
 
-class UserService {
+export interface IUserService {
+	issueToken(payload: Partial<User>, appSettings: { jwtTTL?: string; jwtSecret?: string }): string;
+	registerUser(user: Partial<User>, inviteToken: string, file: unknown): Promise<{ user: User; token: string }>;
+	createUser(userData: Partial<User>, teamId: string, actorRoles: UserRole[], file: unknown): Promise<User>;
+	loginUser(email: string, password: string): Promise<{ user: User; token: string }>;
+	editUser(updates: Partial<User & { newPassword?: string }>, file: unknown, currentUser: User): Promise<User>;
+	checkSuperadminExists(): Promise<boolean>;
+	requestRecovery(email: string): Promise<string | false | undefined>;
+	validateRecovery(recoveryToken: string): Promise<void>;
+	resetPassword(password: string, recoveryToken: string): Promise<{ user: User; token: string }>;
+	deleteUser(user: User): Promise<void>;
+	getAllUsers(): Promise<User[]>;
+	getUserById(roles: UserRole[], userId: string): Promise<User>;
+	editUserById(userId: string, patch: Partial<User>): Promise<void>;
+	setPasswordByUserId(userId: string, password: string): Promise<User>;
+}
+
+export class UserService implements IUserService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private hashPassword = (password: string): string => {
@@ -22,10 +43,10 @@ class UserService {
 		return bcrypt.hashSync(password, salt);
 	};
 
-	private emailService: any;
-	private settingsService: any;
-	private logger: any;
-	private jwt: any;
+	private emailService: IEmailService;
+	private settingsService: ISettingsService;
+	private logger: ILogger;
+	private jwt: JwtType;
 	private jobQueue: ISuperSimpleQueue;
 	private crypto: any;
 	private monitorsRepository: IMonitorsRepository;
@@ -50,10 +71,10 @@ class UserService {
 		teamsRepository,
 	}: {
 		crypto: any;
-		emailService: any;
-		settingsService: any;
-		logger: any;
-		jwt: any;
+		emailService: IEmailService;
+		settingsService: ISettingsService;
+		logger: ILogger;
+		jwt: JwtType;
 		jobQueue: ISuperSimpleQueue;
 		monitorsRepository: IMonitorsRepository;
 		usersRepository: IUsersRepository;
@@ -134,20 +155,23 @@ class UserService {
 			const html = await this.emailService.buildEmail("welcomeEmailTemplate", {
 				name: newUser.firstName,
 			});
-			this.emailService.sendEmail(newUser.email, "Welcome to Uptime Monitor", html).catch((error: any) => {
+			if (!html) {
+				throw new Error("Failed to build welcome email HTML");
+			}
+			this.emailService.sendEmail(newUser.email, "Welcome to Uptime Monitor", html).catch((error: unknown) => {
 				this.logger.warn({
-					message: error.message,
+					message: error instanceof Error ? error.message : "Unknown error",
 					service: SERVICE_NAME,
 					method: "registerUser",
-					stack: error.stack,
+					stack: error instanceof Error ? error.stack : undefined,
 				});
 			});
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.warn({
-				message: error.message,
+				message: error instanceof Error ? error.message : "Unknown error",
 				service: SERVICE_NAME,
 				method: "registerUser",
-				stack: error.stack,
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 		}
 
@@ -313,13 +337,13 @@ class UserService {
 
 		if (roles.includes("superadmin")) {
 			// 2.  Remove all jobs, delete checks and alerts
-			res &&
-				res?.length > 0 &&
-				(await Promise.all(
+			if (res && res.length > 0) {
+				await Promise.all(
 					res.map(async (monitor) => {
 						await this.jobQueue.deleteJob(monitor.id);
 					})
-				));
+				);
+			}
 		}
 		// 6. Delete the user by id
 		await this.usersRepository.deleteById(userId);
@@ -348,4 +372,3 @@ class UserService {
 		return updatedUser;
 	};
 }
-export default UserService;

@@ -5,7 +5,13 @@ import { AppError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "inviteService";
 
-class InviteService {
+export interface IInviteService {
+	getInviteToken(params: { invite: Partial<Invite>; teamId: string; userRoles: UserRole[] }): Promise<Invite>;
+	sendInviteEmail(params: { invite: Partial<Invite>; firstName: string; userRoles: UserRole[] }): Promise<void>;
+	verifyInviteToken(params: { inviteToken: string }): Promise<Invite>;
+}
+
+export class InviteService implements IInviteService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private settingsService: any;
@@ -89,4 +95,3 @@ class InviteService {
 	};
 }
 
-export default InviteService;

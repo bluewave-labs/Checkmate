@@ -16,7 +16,7 @@ export interface IGeoChecksService {
 	getGeoChecksByMonitor(args: { monitorId: string; query: any; teamId: string }): Promise<any>;
 }
 
-class GeoChecksService implements IGeoChecksService {
+export class GeoChecksService implements IGeoChecksService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: ILogger;
@@ -189,4 +189,3 @@ class GeoChecksService implements IGeoChecksService {
 	};
 }
 
-export default GeoChecksService;
