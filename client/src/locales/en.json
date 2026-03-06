@@ -46,7 +46,8 @@
 			"sendTestEmail": "Send test email",
 			"exportToJSON": "Export to JSON",
 			"importFromJSON": "Import from JSON",
-			"clearFilters": "Clear filters"
+			"clearFilters": "Clear filters",
+			"removeUser": "Remove user"
 		},
 		"charts": {
 			"labels": {
@@ -619,9 +620,6 @@
 					"title": "Roles",
 					"description": "Assign roles to the user. Multiple roles can be selected."
 				}
-			},
-			"buttons": {
-				"removeUser": "Remove user"
 			},
 			"dialog": {
 				"removeUser": {

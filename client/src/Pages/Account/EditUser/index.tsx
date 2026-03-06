@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import { DialogInput } from "@/Components/inputs/Dialog";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/Types/state";
+import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 
 interface RoleOption {
 	id: UserRole;
@@ -189,8 +190,9 @@ const EditUserPage = () => {
 						}
 					/>
 					<Stack
+						gap={LAYOUT.XS}
 						direction="row"
-						justifyContent={canDeleteUser ? "space-between" : "flex-end"}
+						justifyContent={"flex-end"}
 						width="100%"
 					>
 						{canDeleteUser && (
@@ -200,7 +202,7 @@ const EditUserPage = () => {
 								onClick={() => setShowDeleteDialog(true)}
 								sx={{ minWidth: 100 }}
 							>
-								{t("pages.editUser.buttons.removeUser")}
+								{t("common.buttons.removeUser")}
 							</Button>
 						)}
 						<Button
@@ -223,8 +225,7 @@ const EditUserPage = () => {
 				})}
 				onCancel={() => setShowDeleteDialog(false)}
 				onConfirm={handleDeleteUser}
-				confirmColor="error"
-				confirmText={t("pages.editUser.buttons.removeUser")}
+				confirmText={t("common.buttons.removeUser")}
 				loading={isDeleting}
 			/>
 		</BasePage>
