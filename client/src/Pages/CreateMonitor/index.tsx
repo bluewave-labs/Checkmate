@@ -32,7 +32,7 @@ import {
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import { useGet, usePost, usePatch, useDelete } from "@/Hooks/UseApi";
 import { useMonitorForm } from "@/Hooks/useMonitorForm";
-import type { Monitor, MonitorType, GamesMap } from "@/Types/Monitor";
+import { type Monitor, type MonitorType, type GamesMap, supportsGeoCheck } from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
 import type { MonitorFormData } from "@/Validation/monitor";
 
@@ -885,7 +885,7 @@ const CreateMonitorPage = () => {
 				/>
 			)}
 
-			{(watchedType === "http" || watchedType === "ping") && (
+			{supportsGeoCheck(watchedType) && (
 				<ConfigBox
 					title={t("pages.createMonitor.form.geoChecks.title")}
 					subtitle={t("pages.createMonitor.form.geoChecks.description")}
