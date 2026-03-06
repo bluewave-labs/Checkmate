@@ -13,7 +13,7 @@
 		"format-check": "prettier --check ."
 	},
 	"lint-staged": {
-		"**/*": "npm run format"
+		"**/*": "prettier --write"
 	},
 	"dependencies": {
 		"@emotion/react": "^11.13.3",
