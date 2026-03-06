@@ -11,15 +11,13 @@ import { ConfigBox, BasePage } from "@/Components/design-elements";
 import { UserRoles } from "@/Types/User";
 import { useTranslation } from "react-i18next";
 import type { UserRole, User } from "@/Types/User";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material";
 import { useEditUserForm } from "@/Hooks/useEditUserForm";
 import { useGet, usePatch, useDelete } from "@/Hooks/UseApi";
 import type { EditUserFormData } from "@/Validation/editUser";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { DialogInput } from "@/Components/inputs/Dialog";
-import { useIsAdmin, useIsSuperAdmin } from "@/Hooks/useIsAdmin";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/Types/state";
 
@@ -37,9 +35,9 @@ const EditUserPage = () => {
 	const { deleteFn, loading: isDeleting } = useDelete();
 	const navigate = useNavigate();
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-	const isAdmin = useIsAdmin();
-	const isSuperAdmin = useIsSuperAdmin();
 	const currentUser = useSelector((state: RootState) => state.auth.user);
+	const isSuperAdmin = currentUser?.role?.includes("superadmin") ?? false;
+	const isAdmin = isSuperAdmin || (currentUser?.role?.includes("admin") ?? false);
 
 	const { data: user, isLoading } = useGet<User>(`/auth/users/${userId}`);
 
@@ -74,7 +72,6 @@ const EditUserPage = () => {
 	const canDeleteUser =
 		isAdmin &&
 		userId !== currentUser?.id &&
-		!user?.role?.includes("superadmin") &&
 		!user?.role?.includes("demo") &&
 		(isSuperAdmin || user?.role?.every((r) => r !== "admin" && r !== "superadmin"));
 
