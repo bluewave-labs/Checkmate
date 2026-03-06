@@ -26,9 +26,10 @@ class AuthRoutes {
 
 		this.router.get("/users", verifyJWT, isAllowed(["admin", "superadmin"]), this.authController.getAllUsers);
 		this.router.post("/users", verifyJWT, isAllowed(["superadmin"]), upload.single("profileImage"), this.authController.createUser);
-		this.router.get("/users/:userId", verifyJWT, isAllowed(["superadmin"]), this.authController.getUserById);
+		this.router.get("/users/:userId", verifyJWT, isAllowed(["admin", "superadmin"]), this.authController.getUserById);
 		this.router.patch("/users/:userId", verifyJWT, isAllowed(["superadmin"]), this.authController.editUserById);
 		this.router.patch("/users/:userId/password", verifyJWT, isAllowed(["superadmin"]), this.authController.editUserPasswordById);
+		this.router.delete("/users/:userId", verifyJWT, isAllowed(["admin", "superadmin"]), this.authController.deleteUserById);
 
 		this.router.patch("/user", verifyJWT, upload.single("profileImage"), this.authController.editUser);
 		this.router.delete("/user", verifyJWT, this.authController.deleteUser);

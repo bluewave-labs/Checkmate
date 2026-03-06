@@ -46,7 +46,8 @@
 			"sendTestEmail": "Send test email",
 			"exportToJSON": "Export to JSON",
 			"importFromJSON": "Import from JSON",
-			"clearFilters": "Clear filters"
+			"clearFilters": "Clear filters",
+			"removeUser": "Remove user"
 		},
 		"charts": {
 			"labels": {
@@ -625,6 +626,12 @@
 				"roles": {
 					"title": "Roles",
 					"description": "Assign roles to the user. Multiple roles can be selected."
+				}
+			},
+			"dialog": {
+				"removeUser": {
+					"title": "Remove user",
+					"content": "Are you sure you want to remove {{name}} from your team? This action cannot be undone."
 				}
 			}
 		},
