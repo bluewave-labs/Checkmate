@@ -1,4 +1,3 @@
-import { error } from "node:console";
 import { z } from "zod";
 
 //****************************************
@@ -81,5 +80,5 @@ export const sendTestEmailBodyValidation = z.object({
 export const bulkEditNotificationBodyValidation = z.object({
 	monitorIds: z.array(z.string()).min(1, "At least one monitor ID is required"),
 	notificationIds: z.array(z.string()),
-	action: z.enum(["add", "remove", "set"]),
+	action: z.enum(["add", "remove", "set"] as const),
 });
