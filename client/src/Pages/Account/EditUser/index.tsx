@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import { DialogInput } from "@/Components/inputs/Dialog";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/Types/state";
+import { useIsAdmin, useIsSuperAdmin } from "@/Hooks/useIsAdmin";
 
 interface RoleOption {
 	id: UserRole;
@@ -36,8 +37,8 @@ const EditUserPage = () => {
 	const navigate = useNavigate();
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const currentUser = useSelector((state: RootState) => state.auth.user);
-	const isSuperAdmin = currentUser?.role?.includes("superadmin") ?? false;
-	const isAdmin = isSuperAdmin || (currentUser?.role?.includes("admin") ?? false);
+	const isSuperAdmin = useIsSuperAdmin();
+	const isAdmin = useIsAdmin();
 
 	const { data: user, isLoading } = useGet<User>(`/auth/users/${userId}`);
 
@@ -77,8 +78,8 @@ const EditUserPage = () => {
 
 	const handleDeleteUser = async () => {
 		const result = await deleteFn(`/auth/users/${userId}`);
+		setShowDeleteDialog(false);
 		if (result) {
-			setShowDeleteDialog(false);
 			navigate("/account", { state: { tab: "team" } });
 		}
 	};
