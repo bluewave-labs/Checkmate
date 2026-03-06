@@ -16,6 +16,7 @@ import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { usePost } from "@/Hooks/UseApi";
 import { useSelector } from "react-redux";
+import { Checkbox } from "@/Components/inputs";
 
 import type { Monitor } from "@/Types/Monitor";
 import type { ActionMenuItem } from "@/Components/actions-menu";
@@ -34,6 +35,8 @@ export const MonitorTable = ({
 	setPage,
 	rowsPerPage,
 	setRowsPerPage,
+	selectedMonitors,
+	setSelectedMonitors,
 }: {
 	monitors: Monitor[];
 	refetch: Function;
@@ -47,6 +50,8 @@ export const MonitorTable = ({
 	setPage: (page: number) => void;
 	rowsPerPage: number;
 	setRowsPerPage: (rowsPerPage: number) => void;
+	selectedMonitors: string[];
+	setSelectedMonitors: React.Dispatch<React.SetStateAction<string[]>>;
 }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
@@ -151,6 +156,37 @@ export const MonitorTable = ({
 			</Box>
 		);
 		const headers: Header<Monitor>[] = [
+			{
+				id: "select",
+				content: (
+					<Checkbox
+						checked={monitors.length > 0 && selectedMonitors.length === monitors.length}
+						indeterminate={selectedMonitors.length > 0 && selectedMonitors.length < monitors.length}
+						onChange={(e) => {
+							e.stopPropagation();
+							if (e.target.checked) {
+								setSelectedMonitors(monitors.map((m) => m.id));
+							} else {
+								setSelectedMonitors([]);
+							}
+						}}
+					/>
+				),
+				onClick: (e) => e.stopPropagation(),
+				render: (row) => (
+					<Checkbox
+						checked={selectedMonitors.includes(row.id)}
+						onChange={(e) => {
+							e.stopPropagation();
+							if (e.target.checked) {
+								setSelectedMonitors((prev) => [...prev, row.id]);
+							} else {
+								setSelectedMonitors((prev) => prev.filter((id) => id !== row.id));
+							}
+						}}
+					/>
+				),
+			},
 			{
 				id: "name",
 				content: (

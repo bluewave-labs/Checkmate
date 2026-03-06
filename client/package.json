@@ -26,6 +26,7 @@
 		"@mui/x-date-pickers": "7.29.4",
 		"@reduxjs/toolkit": "2.7.0",
 		"@types/maplibre-gl": "^1.13.2",
+		"@types/react-map-gl": "^6.1.8",
 		"axios": "^1.7.4",
 		"dayjs": "1.11.13",
 		"flag-icons": "7.3.2",
