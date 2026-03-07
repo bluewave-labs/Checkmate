@@ -2,11 +2,8 @@ import { ControlsFilter, HeaderMonitorsSummary } from "@/Components/monitors";
 import { MonitorBasePageWithStates } from "@/Components/design-elements";
 import { TextField, Dialog } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 import { MonitorTable } from "@/Pages/Uptime/Monitors/Components/UptimeMonitorsTable";
 import { HeaderCreate } from "@/Components/common";
-import { Button } from "@/Components/inputs";
-import { BulkEditNotificationsModal } from "./Components/BulkEditNotificationsModal";
 
 import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -41,9 +38,6 @@ const UptimeMonitorsPage = () => {
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
 	const isDialogOpen = Boolean(selectedMonitor);
-
-	const [selectedMonitors, setSelectedMonitors] = useState<string[]>([]);
-	const [isBulkEditOpen, setIsBulkEditOpen] = useState(false);
 
 	const debouncedSearch = useDebounce<string>(search, 300);
 
@@ -165,46 +159,22 @@ const UptimeMonitorsPage = () => {
 				justifyContent={isSmall ? "flex-start" : "space-between"}
 				gap={theme.spacing(4)}
 			>
-				{selectedMonitors.length > 0 ? (
-					<Stack direction="row" alignItems="center" spacing={2} width="100%">
-						<Typography variant="body1" fontWeight="medium">
-							{selectedMonitors.length} monitor(s) selected
-						</Typography>
-						<Button
-							variant="contained"
-							color="primary"
-							onClick={() => setIsBulkEditOpen(true)}
-						>
-							Bulk Edit Notifications
-						</Button>
-						<Button
-							variant="text"
-							color="inherit"
-							onClick={() => setSelectedMonitors([])}
-						>
-							Cancel Selection
-						</Button>
-					</Stack>
-				) : (
-					<>
-						<ControlsFilter
-							selectedTypes={selectedTypes}
-							setSelectedTypes={setSelectedTypes}
-							selectedStatus={selectedStatus}
-							setSelectedStatus={setSelectedStatus}
-							selectedState={selectedState}
-							setSelectedState={setSelectedState}
-							onClearFilters={handleClearFilters}
-						/>
-						<TextField
-							placeholder={t("pages.uptime.filters.search.placeholder")}
-							value={search}
-							onChange={(event) => {
-								setSearch(event.target.value);
-							}}
-						/>
-					</>
-				)}
+				<ControlsFilter
+					selectedTypes={selectedTypes}
+					setSelectedTypes={setSelectedTypes}
+					selectedStatus={selectedStatus}
+					setSelectedStatus={setSelectedStatus}
+					selectedState={selectedState}
+					setSelectedState={setSelectedState}
+					onClearFilters={handleClearFilters}
+				/>
+				<TextField
+					placeholder={t("pages.uptime.filters.search.placeholder")}
+					value={search}
+					onChange={(event) => {
+						setSearch(event.target.value);
+					}}
+				/>
 			</Stack>
 			<MonitorTable
 				monitors={monitorsWithChecks || []}
@@ -218,8 +188,6 @@ const UptimeMonitorsPage = () => {
 				setSortField={setSortField}
 				sortOrder={sortOrder}
 				setSortOrder={setSortOrder}
-				selectedMonitors={selectedMonitors}
-				setSelectedMonitors={setSelectedMonitors}
 				setRowsPerPage={(rowsPerPage: number) => {
 					dispatch(
 						setRowsPerPage({
@@ -237,15 +205,6 @@ const UptimeMonitorsPage = () => {
 				onConfirm={handleConfirm}
 				onCancel={handleCancel}
 				loading={isDeleting}
-			/>
-			<BulkEditNotificationsModal
-				open={isBulkEditOpen}
-				monitorIds={selectedMonitors}
-				onClose={() => setIsBulkEditOpen(false)}
-				onSuccess={() => {
-					setSelectedMonitors([]);
-					refetch();
-				}}
 			/>
 		</MonitorBasePageWithStates>
 	);
