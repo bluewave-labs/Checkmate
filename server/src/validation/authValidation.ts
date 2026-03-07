@@ -6,7 +6,10 @@ import { passwordPattern, nameValidation, lowercaseEmailValidation } from "./sha
 //****************************************
 
 export const loginValidation = z.object({
-	email: z.string().email("Must be a valid email address").transform((val) => val.toLowerCase()),
+	email: z
+		.string()
+		.email("Must be a valid email address")
+		.transform((val) => val.toLowerCase()),
 	password: z.string().min(1, "Password is required"),
 });
 
