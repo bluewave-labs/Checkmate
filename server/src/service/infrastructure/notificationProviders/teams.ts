@@ -6,6 +6,58 @@ import { getTestMessage } from "@/service/infrastructure/notificationProviders/u
 import type { ILogger } from "@/utils/logger.js";
 import got, { HTTPError } from "got";
 
+// Types for Adaptive Card elements
+type TextBlock = {
+	type: "TextBlock";
+	text: string;
+	weight?: "Bolder" | "Normal" | "Lighter";
+	size?: "Small" | "Medium" | "Large" | "ExtraLarge";
+	color?: "Default" | "Dark" | "Light" | "Accent" | "Good" | "Warning" | "Attention";
+	wrap?: boolean;
+	spacing?: "None" | "Small" | "Medium" | "Large" | "ExtraLarge" | "Auto";
+	isSubtle?: boolean;
+};
+
+type ColumnSet = {
+	type: "ColumnSet";
+	separator?: boolean;
+	spacing?: "None" | "Small" | "Medium" | "Large" | "ExtraLarge" | "Auto";
+	columns: unknown[];
+};
+
+type Fact = {
+	title: string;
+	value: string;
+};
+
+type FactSet = {
+	type: "FactSet";
+	facts: Fact[];
+};
+
+type Action = {
+	type: string;
+	title: string;
+	url?: string;
+};
+
+type AdaptiveCard = {
+	type: "AdaptiveCard";
+	$schema: "http://adaptivecards.io/schemas/adaptive-card.json";
+	version: "1.4";
+	body: (TextBlock | ColumnSet | FactSet)[];
+	actions?: Action[];
+};
+
+type TeamsMessage = {
+	type: "message";
+	attachments: Array<{
+		contentType: "application/vnd.microsoft.card.adaptive";
+		contentUrl: null;
+		content: AdaptiveCard;
+	}>;
+};
+
 export class TeamsProvider implements INotificationProvider {
 	private logger: ILogger;
 
@@ -87,7 +139,7 @@ export class TeamsProvider implements INotificationProvider {
 	/**
 	 * Wrap an Adaptive Card in the Teams webhook envelope format
 	 */
-	private wrapAdaptiveCard(card: object): object {
+	private wrapAdaptiveCard(card: AdaptiveCard): TeamsMessage {
 		return {
 			type: "message",
 			attachments: [
@@ -103,16 +155,16 @@ export class TeamsProvider implements INotificationProvider {
 	/**
 	 * Build an Adaptive Card from NotificationMessage
 	 */
-	private buildAdaptiveCard(message: NotificationMessage): object {
+	private buildAdaptiveCard(message: NotificationMessage): AdaptiveCard {
 		const colorMap: Record<string, string> = {
 			critical: "attention",
 			warning: "warning",
 			success: "good",
 			info: "accent",
 		};
-		const color = colorMap[message.severity] || "default";
+		const color = (colorMap[message.severity] || "default") as "Default" | "Dark" | "Light" | "Accent" | "Good" | "Warning" | "Attention" | undefined;
 
-		const body: any[] = [];
+		const body: (TextBlock | ColumnSet | FactSet)[] = [];
 
 		// Header with colored status indicator
 		body.push({
@@ -202,12 +254,12 @@ export class TeamsProvider implements INotificationProvider {
 		});
 
 		// Actions (incident link)
-		const actions: any[] = [];
+		const actions: Action[] = [];
 		if (message.content.incident) {
 			actions.push({
 				type: "Action.OpenUrl",
 				title: "View Incident",
-				url: `${message.clientHost}/infrastructure/${message.monitor.id}`,
+				url: `${message.clientHost}/incidents/${message.content.incident.id}`,
 			});
 		}
 
