@@ -1,5 +1,6 @@
 const SERVICE_NAME = "JobQueueHelper";
 import type { Monitor } from "@/types/monitor.js";
+import { supportsGeoCheck } from "@/types/monitor.js";
 import { AppError } from "@/utils/AppError.js";
 import { INetworkService, INotificationsService, IStatusService, IncidentService, type IGeoChecksService } from "@/service/index.js";
 import type { StatusChangeResult } from "@/types/index.js";
@@ -280,16 +281,15 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 					throw new AppError({ message: "No monitor id", service: SERVICE_NAME, method: "getGeoCheckJob" });
 				}
 
-				if (monitor.type !== "http") {
+				if (!monitor.geoCheckEnabled) {
+					return;
+				}
+				if (!supportsGeoCheck(monitor.type)) {
 					this.logger.debug({
-						message: `Monitor ${monitorId} is not HTTP type, skipping geo check`,
+						message: `Monitor ${monitorId} type does not support geo checks, skipping`,
 						service: SERVICE_NAME,
 						method: "getGeoCheckJob",
 					});
-					return;
-				}
-
-				if (!monitor.geoCheckEnabled) {
 					return;
 				}
 

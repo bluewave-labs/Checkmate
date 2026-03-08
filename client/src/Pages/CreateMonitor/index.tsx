@@ -32,7 +32,12 @@ import {
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import { useGet, usePost, usePatch, useDelete } from "@/Hooks/UseApi";
 import { useMonitorForm } from "@/Hooks/useMonitorForm";
-import type { Monitor, MonitorType, GamesMap } from "@/Types/Monitor";
+import {
+	type Monitor,
+	type MonitorType,
+	type GamesMap,
+	supportsGeoCheck,
+} from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
 import type { MonitorFormData } from "@/Validation/monitor";
 
@@ -140,6 +145,17 @@ const getGeneralSettingsConfig = (
 			showSecret: true,
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
+		},
+		websocket: {
+			urlLabel: t("pages.createMonitor.form.general.option.wsUrl.label"),
+			urlPlaceholder: t("pages.createMonitor.form.general.option.wsUrl.placeholder"),
+			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
+			showUrl: true,
+			showPort: false,
+			showGameSelect: false,
+			showSecret: false,
+			showGrpcServiceName: false,
+			showIgnoreTls: true,
 		},
 	};
 	return configs[type] || configs.http;
@@ -324,6 +340,13 @@ const CreateMonitorPage = () => {
 											label={t("pages.createMonitor.form.type.optionGrpc")}
 											description={t(
 												"pages.createMonitor.form.type.optionGrpcDescription"
+											)}
+										/>
+										<RadioWithDescription
+											value="websocket"
+											label={t("pages.createMonitor.form.type.optionWebSocket")}
+											description={t(
+												"pages.createMonitor.form.type.optionWebSocketDescription"
 											)}
 										/>
 									</RadioGroup>
@@ -742,7 +765,9 @@ const CreateMonitorPage = () => {
 				}
 			/>
 
-			{(watchedType === "http" || watchedType === "grpc") && (
+			{(watchedType === "http" ||
+				watchedType === "grpc" ||
+				watchedType === "websocket") && (
 				<ConfigBox
 					title={t("pages.createMonitor.form.ignoreTls.title")}
 					subtitle={t("pages.createMonitor.form.ignoreTls.description")}
@@ -885,7 +910,7 @@ const CreateMonitorPage = () => {
 				/>
 			)}
 
-			{watchedType === "http" && (
+			{supportsGeoCheck(watchedType) && (
 				<ConfigBox
 					title={t("pages.createMonitor.form.geoChecks.title")}
 					subtitle={t("pages.createMonitor.form.geoChecks.description")}
