@@ -103,6 +103,14 @@ export const useMonitorForm = ({
 					selectedDisks: data?.selectedDisks || [],
 				};
 				break;
+			case "websocket":
+				defaults = {
+					...base,
+					type: "websocket",
+					url: data?.url || "",
+					ignoreTlsErrors: data?.ignoreTlsErrors || false,
+				};
+				break;
 			default:
 				defaults = {
 					...base,

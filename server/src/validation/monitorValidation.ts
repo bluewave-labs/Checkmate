@@ -21,8 +21,8 @@ export const getMonitorsByTeamIdParamValidation = z.object({});
 export const getMonitorsByTeamIdQueryValidation = z.object({
 	type: z
 		.union([
-			z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc"]),
-			z.array(z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc"])),
+			z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"]),
+			z.array(z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"])),
 		])
 		.optional(),
 	filter: z.union([z.string(), z.literal(""), z.null()]).optional(),
@@ -37,8 +37,8 @@ export const getMonitorsWithChecksQueryValidation = z.object({
 	order: z.enum(["asc", "desc"]).optional(),
 	type: z
 		.union([
-			z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc"]),
-			z.array(z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc"])),
+			z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"]),
+			z.array(z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"])),
 		])
 		.optional(),
 	explain: booleanCoercion.optional(),
