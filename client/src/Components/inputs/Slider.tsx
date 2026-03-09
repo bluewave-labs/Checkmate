@@ -11,12 +11,18 @@ import type { ResponsiveStyleValue } from "@mui/system";
 interface SliderInputProps extends SliderProps {
 	sx?: SliderProps["sx"];
 	showValue?: boolean;
+	formatDisplayValue?: (value: number) => string;
 }
 
 export const SliderInput = forwardRef<HTMLSpanElement, SliderInputProps>(
-	({ sx, showValue = false, ...props }, ref) => {
+	({ sx, showValue = false, formatDisplayValue, ...props }, ref) => {
 		const theme = useTheme();
 		const additionalSx = Array.isArray(sx) ? sx : sx ? [sx] : [];
+
+		const displayValue =
+			showValue && formatDisplayValue && typeof props.value === "number"
+				? formatDisplayValue(props.value)
+				: props.value;
 
 		return (
 			<Stack
@@ -24,7 +30,7 @@ export const SliderInput = forwardRef<HTMLSpanElement, SliderInputProps>(
 				direction={"row"}
 				alignItems={"center"}
 			>
-				{showValue && <Typography>{props.value}</Typography>}
+				{showValue && <Typography>{displayValue}</Typography>}
 				<Slider
 					{...props}
 					ref={ref}
@@ -63,12 +69,21 @@ interface SliderWithLabelProps extends SliderProps {
 	fieldLabel?: string;
 	required?: boolean;
 	showValue?: boolean;
+	formatDisplayValue?: (value: number) => string;
 	sliderMaxWidth?: ResponsiveStyleValue<number | string>;
 }
 
 export const SliderWithLabel = forwardRef<HTMLSpanElement, SliderWithLabelProps>(
 	(
-		{ fieldLabel, required, showValue = true, value, sliderMaxWidth = "100%", ...props },
+		{
+			fieldLabel,
+			required,
+			showValue = true,
+			formatDisplayValue,
+			value,
+			sliderMaxWidth = "100%",
+			...props
+		},
 		ref
 	) => {
 		const theme = useTheme();
@@ -82,6 +97,7 @@ export const SliderWithLabel = forwardRef<HTMLSpanElement, SliderWithLabelProps>
 					<SliderInput
 						{...props}
 						showValue={showValue}
+						formatDisplayValue={formatDisplayValue}
 						value={value}
 						ref={ref}
 					/>

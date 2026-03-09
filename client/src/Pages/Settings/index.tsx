@@ -462,6 +462,43 @@ export const SettingsPage = () => {
 					/>
 				)}
 
+				{/* Check Retention */}
+				{isAdmin && (
+					<ConfigBox
+						title={t("pages.settings.form.retention.title")}
+						subtitle={t("pages.settings.form.retention.description")}
+						rightContent={
+							<Controller
+								name="checkTTL"
+								control={form.control}
+								defaultValue={defaults.checkTTL}
+								render={({ field }) => (
+									<SliderWithLabel
+										{...field}
+										fieldLabel={t("pages.settings.form.retention.option.days.label")}
+										min={1}
+										max={366}
+										sliderMaxWidth={{ xs: "100%", md: "50%" }}
+										value={field.value || 30}
+										onChange={(_, value) => field.onChange(value)}
+										valueLabelDisplay="auto"
+										valueLabelFormat={(value: number) =>
+											value >= 366
+												? t("pages.settings.form.retention.option.days.unlimited")
+												: `${value}`
+										}
+										formatDisplayValue={(value: number) =>
+											value >= 366
+												? t("pages.settings.form.retention.option.days.unlimited")
+												: `${value}`
+										}
+									/>
+								)}
+							/>
+						}
+					/>
+				)}
+
 				{/* Global Thresholds */}
 				{isAdmin && (
 					<ConfigBox

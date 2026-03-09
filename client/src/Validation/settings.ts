@@ -11,7 +11,7 @@ export const settingsSchema = z.object({
 	systemEmailSecure: z.boolean().optional(),
 	systemEmailPool: z.boolean().optional(),
 	showURL: z.boolean().optional(),
-	checkTTL: z.number().int().min(1, "Please enter a value").max(365, "Maximum 365 days"),
+	checkTTL: z.number().int().min(1, "Please enter a value").max(366, "Maximum 366"),
 	pagespeedApiKey: z
 		.string()
 		.transform((val) => (val.trim() === "" ? undefined : val.trim()))

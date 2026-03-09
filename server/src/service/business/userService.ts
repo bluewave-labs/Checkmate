@@ -349,7 +349,7 @@ export class UserService implements IUserService {
 			if (res && res.length > 0) {
 				await Promise.all(
 					res.map(async (monitor) => {
-						await this.jobQueue.deleteJob(monitor.id);
+						await this.jobQueue.deleteJob(monitor);
 					})
 				);
 			}
