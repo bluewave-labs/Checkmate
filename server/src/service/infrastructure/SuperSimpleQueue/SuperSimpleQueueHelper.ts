@@ -390,6 +390,15 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 				const settings = await this.settingsService.getDBSettings();
 
 				const checkTTL = settings.checkTTL; // Check TTL is in DAYS, not MS
+
+				if (checkTTL === 366) {
+					this.logger.info({
+						message: `Check TTL is set to unlimited, skipping cleanup`,
+						service: SERVICE_NAME,
+						method: "getCleanupRetentionJob",
+					});
+					return;
+				}
 				const checkTTLInMs = checkTTL * 24 * 60 * 60 * 1000;
 				const cutoffDate = new Date(Date.now() - checkTTLInMs);
 				const deleteCount = await this.checkService.deleteOlderThan(cutoffDate);

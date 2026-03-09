@@ -6,7 +6,7 @@ import { z } from "zod";
 
 export const updateAppSettingsBodyValidation = z
 	.object({
-		checkTTL: z.union([z.number(), z.literal("")]).optional(),
+		checkTTL: z.union([z.number().int().min(1).max(366), z.literal("")]).optional(),
 		systemEmailPort: z.union([z.number(), z.literal("")]).optional(),
 
 		pagespeedApiKey: z.union([z.string(), z.literal("")]).optional(),
