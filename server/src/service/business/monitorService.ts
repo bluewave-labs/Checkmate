@@ -18,9 +18,7 @@ import type {
 	IMonitorStatsRepository,
 	IStatusPagesRepository,
 } from "@/repositories/index.js";
-import fs from "fs";
-import { fileURLToPath } from "url";
-import path from "path";
+import demoMonitorsData from "@/utils/demoMonitors.json" with { type: "json" };
 import { AppError } from "@/utils/AppError.js";
 import { ISuperSimpleQueue } from "../infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
 
@@ -177,23 +175,17 @@ export class MonitorService implements IMonitorService {
 	};
 
 	addDemoMonitors = async ({ userId, teamId }: { userId: string; teamId: string }): Promise<any[]> => {
-		const __filename = fileURLToPath(import.meta.url);
-		const __dirname = path.dirname(__filename);
-		const demoMonitorsPath = path.resolve(__dirname, "../../utils/demoMonitors.json");
-
-		const demoData = JSON.parse(fs.readFileSync(demoMonitorsPath, "utf8"));
-		const monitors: Monitor[] = demoData.map((monitor: Monitor) => {
-			return {
-				userId,
-				teamId,
-				name: monitor.name,
-				description: monitor.name,
-				type: "http",
-				url: monitor.url,
-				interval: 60000,
-			};
-		});
-		const demoMonitors = await this.monitorsRepository.createMonitors(monitors);
+		const demoData = demoMonitorsData;
+		const monitors = demoData.map((monitor) => ({
+			userId,
+			teamId,
+			name: monitor.name,
+			description: monitor.name,
+			type: "http" as const,
+			url: monitor.url,
+			interval: 60000,
+		}));
+		const demoMonitors = await this.monitorsRepository.createMonitors(monitors as unknown as Monitor[]);
 
 		await Promise.all(demoMonitors.map((monitor) => this.jobQueue.addJob(monitor.id, monitor)));
 		return demoMonitors;
