@@ -100,8 +100,8 @@ class AuthController {
 
 	editUser = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			editUserBodyValidation.parse(req.body);
-			const updatedUser = await this.userService.editUser(req.body, req.file, req.user);
+			const validatedBody = editUserBodyValidation.parse(req.body);
+			const updatedUser = await this.userService.editUser(validatedBody, req.file, req.user);
 
 			res.status(200).json({
 				success: true,
