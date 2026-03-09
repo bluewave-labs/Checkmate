@@ -18,7 +18,7 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 	z.object({
 		notificationName: z.string().min(1, "Notification name is required"),
 		type: z.literal("webhook"),
-		address: z.string().url("Please enter a valid Webhook URL"),
+		address: z.url({ message: "Please enter a valid Webhook URL" }),
 		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
 		roomId: z.union([z.string(), z.literal("")]).optional(),
 		accessToken: z.union([z.string(), z.literal("")]).optional(),
@@ -27,7 +27,7 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 	z.object({
 		notificationName: z.string().min(1, "Notification name is required"),
 		type: z.literal("slack"),
-		address: z.string().url("Please enter a valid Webhook URL"),
+		address: z.url({ message: "Please enter a valid Webhook URL" }),
 		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
 		roomId: z.union([z.string(), z.literal("")]).optional(),
 		accessToken: z.union([z.string(), z.literal("")]).optional(),
@@ -36,7 +36,7 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 	z.object({
 		notificationName: z.string().min(1, "Notification name is required"),
 		type: z.literal("discord"),
-		address: z.string().url("Please enter a valid Webhook URL"),
+		address: z.url({ message: "Please enter a valid Webhook URL" }),
 		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
 		roomId: z.union([z.string(), z.literal("")]).optional(),
 		accessToken: z.union([z.string(), z.literal("")]).optional(),
@@ -55,9 +55,15 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		notificationName: z.string().min(1, "Notification name is required"),
 		type: z.literal("matrix"),
 		address: z.union([z.string(), z.literal("")]).optional(),
-		homeserverUrl: z.string().url("Please enter a valid Homeserver URL"),
+		homeserverUrl: z.url({ message: "Please enter a valid Homeserver URL" }),
 		roomId: z.string().min(1, "Room ID is required"),
 		accessToken: z.string().min(1, "Access Token is required"),
+	}),
+	// Teams notification
+	z.object({
+		notificationName: z.string().min(1, "Notification name is required"),
+		type: z.literal("teams"),
+		address: z.url({ message: "Please enter a valid Webhook URL" }),
 	}),
 ]);
 

@@ -32,6 +32,7 @@ export class NotificationsService implements INotificationsService {
 	private discordProvider: INotificationProvider;
 	private pagerDutyProvider: INotificationProvider;
 	private matrixProvider: INotificationProvider;
+	private teamsProvider: INotificationProvider;
 	private logger: ILogger;
 	private settingsService: ISettingsService;
 	private notificationMessageBuilder: INotificationMessageBuilder;
@@ -45,6 +46,7 @@ export class NotificationsService implements INotificationsService {
 		discordProvider: INotificationProvider,
 		pagerDutyProvider: INotificationProvider,
 		matrixProvider: INotificationProvider,
+		teamsProvider: INotificationProvider,
 		settingsService: ISettingsService,
 		logger: ILogger,
 		notificationMessageBuilder: INotificationMessageBuilder
@@ -57,6 +59,7 @@ export class NotificationsService implements INotificationsService {
 		this.discordProvider = discordProvider;
 		this.pagerDutyProvider = pagerDutyProvider;
 		this.matrixProvider = matrixProvider;
+		this.teamsProvider = teamsProvider;
 		this.settingsService = settingsService;
 		this.logger = logger;
 		this.notificationMessageBuilder = notificationMessageBuilder;
@@ -92,6 +95,8 @@ export class NotificationsService implements INotificationsService {
 				return await this.discordProvider.sendMessage!(notification, notificationMessage);
 			case "email":
 				return await this.emailProvider.sendMessage!(notification, notificationMessage);
+			case "teams":
+				return await this.teamsProvider.sendMessage!(notification, notificationMessage);
 			default:
 				this.logger.warn({
 					message: `Unknown notification type: ${notification.type}`,
@@ -150,6 +155,8 @@ export class NotificationsService implements INotificationsService {
 				return await this.matrixProvider.sendTestAlert(notification);
 			case "webhook":
 				return await this.webhookProvider.sendTestAlert(notification);
+			case "teams":
+				return await this.teamsProvider.sendTestAlert(notification);
 			default:
 				return false;
 		}
