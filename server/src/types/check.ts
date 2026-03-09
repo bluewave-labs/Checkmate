@@ -98,8 +98,6 @@ export interface Check {
 	timings?: GotTimings;
 	statusCode: number;
 	message: string;
-	ack: boolean;
-	ackAt?: string | null;
 	expiry: string;
 	cpu?: CheckCpuInfo;
 	memory?: CheckMemoryInfo;
@@ -113,7 +111,6 @@ export interface Check {
 	seo?: number;
 	performance?: number;
 	audits?: CheckAudits;
-	__v: number;
 	createdAt: string;
 	updatedAt: string;
 }
@@ -205,4 +202,4 @@ export type NormalizedUptimeCheck<T extends GroupedCheck = GroupedCheck> = T & {
 	originalAvgResponseTime: number;
 };
 
-export type CheckSnapshot = Omit<Check, "metadata" | "ack" | "ackAt" | "expiry" | "__v" | "updatedAt">;
+export type CheckSnapshot = Omit<Check, "metadata" | "expiry" | "updatedAt">;

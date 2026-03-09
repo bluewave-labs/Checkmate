@@ -46,13 +46,6 @@ class MongoChecksRepository implements IChecksRepository {
 			return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
 		};
 
-		const toOptionalDateString = (value?: Date | string | null): string | undefined => {
-			if (!value) {
-				return undefined;
-			}
-			return toDateString(value);
-		};
-
 		const mapTimings = (timings?: GotTimings): GotTimings => {
 			const phases = timings?.phases ?? {
 				wait: 0,
@@ -171,8 +164,6 @@ class MongoChecksRepository implements IChecksRepository {
 			timings: mapTimings(doc.timings),
 			statusCode: doc.statusCode ?? 0,
 			message: doc.message ?? "",
-			ack: doc.ack ?? false,
-			ackAt: toOptionalDateString(doc.ackAt),
 			expiry: toDateString(doc.expiry),
 			cpu: mapCpu(doc.cpu),
 			memory: mapMemory(doc.memory),
@@ -186,7 +177,6 @@ class MongoChecksRepository implements IChecksRepository {
 			seo: doc.seo,
 			performance: doc.performance,
 			audits: mapAudits(doc.audits),
-			__v: doc.__v ?? 0,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
@@ -409,6 +399,11 @@ class MongoChecksRepository implements IChecksRepository {
 	deleteByMonitorIdsNotIn = async (monitorIds: string[]): Promise<number> => {
 		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
 		const result = await CheckModel.deleteMany({ "metadata.monitorId": { $nin: objectIds } });
+		return result.deletedCount ?? 0;
+	};
+
+	deleteOlderThan = async (date: Date): Promise<number> => {
+		const result = await CheckModel.deleteMany({ createdAt: { $lt: date } });
 		return result.deletedCount ?? 0;
 	};
 

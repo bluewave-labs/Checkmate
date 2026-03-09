@@ -89,9 +89,10 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 		try {
 			this.scheduler.start();
 
-			this.scheduler.addTemplate("monitor-job", this.helper.getMonitorJob());
-			this.scheduler.addTemplate("geo-check-job", this.helper.getGeoCheckJob());
+			this.scheduler.addTemplate("monitor-job", this.helper.getHeartbeatJob());
+			this.scheduler.addTemplate("geo-check-job", this.helper.getHeartbeatGeoJob());
 			this.scheduler.addTemplate("cleanup-orphaned", this.helper.getCleanupOrphanedJob());
+			this.scheduler.addTemplate("cleanup-retention-job", this.helper.getCleanupRetentionJob());
 			const monitors = await this.monitorsRepository.findAll();
 			if (!monitors) {
 				return true;
@@ -104,6 +105,7 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 			}
 
 			this.scheduler.addJob({ id: "cleanup-orphaned", template: "cleanup-orphaned", active: true });
+			this.scheduler.addJob({ id: "cleanup-retention", template: "cleanup-retention-job", active: true, repeat: 24 * 60 * 60 * 1000 });
 
 			return true;
 		} catch (error: any) {

@@ -1,6 +1,14 @@
 import { Types } from "mongoose";
 import { IChecksRepository, IMonitorsRepository } from "@/repositories/index.js";
-import type { MonitorStatusResponse, CheckErrorInfo, Check, ILighthouseAudit, ChecksQueryResult, ChecksSummary } from "@/types/index.js";
+import type {
+	MonitorStatusResponse,
+	CheckErrorInfo,
+	Check,
+	ILighthouseAudit,
+	ChecksQueryResult,
+	ChecksSummary,
+	MonitorPayloadMap,
+} from "@/types/index.js";
 import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import { ParseBoolean } from "@/utils/utils.js";
@@ -10,12 +18,13 @@ const SERVICE_NAME = "checkService";
 
 export interface ICheckService {
 	createChecks(checks: Check[]): Promise<Check[]>;
-	buildCheck(statusResponse: MonitorStatusResponse<PageSpeedStatusPayload | HardwareStatusPayload | undefined>): Partial<Check> | undefined;
+	buildCheck(statusResponse: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>): Check | undefined;
 	getChecksByMonitor(params: { monitorId: string; query: Record<string, string>; teamId: string }): Promise<ChecksQueryResult>;
 	getChecksByTeam(params: { teamId: string; query: Record<string, string> }): Promise<ChecksQueryResult>;
 	getChecksSummaryByTeamId(params: { teamId: string; dateRange: string }): Promise<ChecksSummary>;
 	deleteChecks(params: { monitorId: string; teamId: string }): Promise<number>;
 	deleteChecksByTeamId(params: { teamId: string }): Promise<number>;
+	deleteOlderThan(date: Date): Promise<number>;
 	updateChecksTTL(params: { teamId: string; ttl: string }): Promise<void>;
 }
 
@@ -39,12 +48,14 @@ export class CheckService implements ICheckService {
 		return this.checksRepository.createChecks(checks);
 	};
 
-	buildCheck = (statusResponse: MonitorStatusResponse<PageSpeedStatusPayload | HardwareStatusPayload | undefined>) => {
+	buildCheck = (statusResponse: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>): Check | undefined => {
 		const { monitorId, teamId, type, status, responseTime, code, message, payload, timings } = statusResponse;
 
-		const check: Partial<Check> = {
+		const now = new Date().toISOString();
+		const check: Check = {
 			id: new Types.ObjectId().toString(),
-			createdAt: new Date().toISOString(),
+			createdAt: now,
+			updatedAt: now,
 			metadata: {
 				monitorId,
 				teamId,
@@ -55,6 +66,7 @@ export class CheckService implements ICheckService {
 			responseTime: responseTime || 0,
 			timings: timings,
 			message,
+			expiry: now,
 		};
 
 		if (type === "pagespeed") {
@@ -187,6 +199,15 @@ export class CheckService implements ICheckService {
 		}
 
 		const deletedCount = await this.checksRepository.deleteByTeamId(teamId);
+		return deletedCount;
+	};
+
+	deleteOlderThan = async (date: Date) => {
+		if (!date) {
+			throw new AppError({ message: "No date provided", service: SERVICE_NAME, method: "deleteChecksOlderThan", status: 400 });
+		}
+
+		const deletedCount = await this.checksRepository.deleteOlderThan(date);
 		return deletedCount;
 	};
 

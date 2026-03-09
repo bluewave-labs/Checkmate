@@ -252,6 +252,7 @@ export const initializeServices = async ({
 		statusService,
 		notificationsService,
 		checkService,
+		settingsService,
 		bufferService,
 		incidentService,
 		maintenanceWindowsRepository,
