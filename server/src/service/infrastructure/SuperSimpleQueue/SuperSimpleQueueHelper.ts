@@ -2,8 +2,16 @@ const SERVICE_NAME = "JobQueueHelper";
 import type { Monitor } from "@/types/monitor.js";
 import { supportsGeoCheck } from "@/types/monitor.js";
 import { AppError } from "@/utils/AppError.js";
-import { INetworkService, INotificationsService, IStatusService, IncidentService, type IGeoChecksService } from "@/service/index.js";
-import type { StatusChangeResult } from "@/types/index.js";
+import {
+	ICheckService,
+	INetworkService,
+	INotificationsService,
+	ISettingsService,
+	IStatusService,
+	IncidentService,
+	type IGeoChecksService,
+} from "@/service/index.js";
+import { CHECK_TTL_SENTINEL, type MaintenanceWindow, type StatusChangeResult } from "@/types/index.js";
 import {
 	IMaintenanceWindowsRepository,
 	IMonitorsRepository,
@@ -18,9 +26,10 @@ import { IBufferService } from "@/service/index.js";
 
 export interface ISuperSimpleQueueHelper {
 	readonly serviceName: string;
-	getMonitorJob(): (monitor: Monitor) => Promise<void>;
+	getHeartbeatJob(): (monitor: Monitor) => Promise<void>;
+	getHeartbeatGeoJob(): (monitor: Monitor) => Promise<void>;
 	getCleanupOrphanedJob(): () => Promise<void>;
-	getGeoCheckJob(): (monitor: Monitor) => Promise<void>;
+	getCleanupRetentionJob(): () => Promise<void>;
 	isInMaintenanceWindow(monitorId: string, teamId: string): Promise<boolean>;
 }
 
@@ -41,11 +50,12 @@ export interface MonitorActionDecision {
 export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private logger: any;
+	private logger: ILogger;
 	private networkService: INetworkService;
 	private statusService: IStatusService;
 	private notificationsService: INotificationsService;
-	private checkService: any;
+	private checkService: ICheckService;
+	private settingsService: ISettingsService;
 	private buffer: IBufferService;
 	private incidentService: IncidentService;
 	private maintenanceWindowsRepository: IMaintenanceWindowsRepository;
@@ -62,7 +72,8 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 		networkService: INetworkService,
 		statusService: IStatusService,
 		notificationsService: INotificationsService,
-		checkService: any,
+		checkService: ICheckService,
+		settingsService: ISettingsService,
 		buffer: IBufferService,
 		incidentService: IncidentService,
 		maintenanceWindowsRepository: IMaintenanceWindowsRepository,
@@ -78,6 +89,7 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 		this.networkService = networkService;
 		this.statusService = statusService;
 		this.checkService = checkService;
+		this.settingsService = settingsService;
 		this.buffer = buffer;
 		this.notificationsService = notificationsService;
 		this.incidentService = incidentService;
@@ -95,7 +107,7 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 		return SuperSimpleQueueHelper.SERVICE_NAME;
 	}
 
-	getMonitorJob = () => {
+	getHeartbeatJob = () => {
 		return async (monitor: Monitor) => {
 			try {
 				const monitorId = monitor.id;
@@ -126,7 +138,7 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 				}
 
 				// Step 3.  Build check
-				const check = await this.checkService.buildCheck(status);
+				const check = this.checkService.buildCheck(status);
 				if (!check) {
 					this.logger.warn({
 						message: `No check could be built for monitor ${monitorId}`,
@@ -146,33 +158,31 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 
 				// Step 6. Handle notifications (best effort, continue even in event of failure, don't wait)
 				if (decision.shouldSendNotification) {
-					this.notificationsService.handleNotifications(statusChangeResult.monitor, status, decision).catch((error: any) => {
+					this.notificationsService.handleNotifications(statusChangeResult.monitor, status, decision).catch((error: unknown) => {
 						this.logger.error({
-							message: error.message,
+							message: `Error sending notifications for job ${statusChangeResult.monitor.id}: ${error instanceof Error ? error.message : "Unknown error"}`,
 							service: SERVICE_NAME,
 							method: "getMonitorJob",
-							details: `Error sending notifications for job ${statusChangeResult.monitor.id}: ${error.message}`,
-							stack: error.stack,
+							stack: error instanceof Error ? error.stack : undefined,
 						});
 					});
 				}
 
 				// Step 7. Handle incidents (best effort, don't wait)
-				this.incidentService.handleIncident(statusChangeResult.monitor, statusChangeResult.code, decision, status).catch((error: any) => {
+				this.incidentService.handleIncident(statusChangeResult.monitor, statusChangeResult.code, decision, status).catch((error: unknown) => {
 					this.logger.warn({
-						message: error.message,
+						message: `Error handling incident for job ${monitor.id}: ${error instanceof Error ? error.message : "Unknown error"}`,
 						service: SERVICE_NAME,
 						method: "getMonitorJob",
-						details: `Error handling incident for job ${monitor.id}: ${error.message}`,
-						stack: error.stack,
+						stack: error instanceof Error ? error.stack : undefined,
 					});
 				});
-			} catch (error: any) {
+			} catch (error: unknown) {
 				this.logger.warn({
-					message: error.message,
-					service: error.service || SERVICE_NAME,
-					method: error.method || "getMonitorJob",
-					stack: error.stack,
+					message: error instanceof Error ? error.message : "Unknown error",
+					service: SERVICE_NAME,
+					method: "getMonitorJob",
+					stack: error instanceof Error ? error.stack : undefined,
 				});
 				throw error;
 			}
@@ -258,19 +268,19 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 					service: SERVICE_NAME,
 					method: "getCleanupOrphanedJob",
 				});
-			} catch (error: any) {
+			} catch (error: unknown) {
 				this.logger.warn({
-					message: error.message,
+					message: error instanceof Error ? error.message : "Unknown error",
 					service: SERVICE_NAME,
 					method: "getCleanupOrphanedJob",
-					stack: error.stack,
+					stack: error instanceof Error ? error.stack : undefined,
 				});
 				throw error;
 			}
 		};
 	};
 
-	getGeoCheckJob = () => {
+	getHeartbeatGeoJob = () => {
 		return async (monitor: Monitor) => {
 			try {
 				const monitorId = monitor.id;
@@ -278,7 +288,7 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 
 				// Step 1: Validate monitor eligibility
 				if (!monitorId) {
-					throw new AppError({ message: "No monitor id", service: SERVICE_NAME, method: "getGeoCheckJob" });
+					throw new AppError({ message: "No monitor id", service: SERVICE_NAME, method: "getHeartbeatGeoJob" });
 				}
 
 				if (!monitor.geoCheckEnabled) {
@@ -288,7 +298,7 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 					this.logger.debug({
 						message: `Monitor ${monitorId} type does not support geo checks, skipping`,
 						service: SERVICE_NAME,
-						method: "getGeoCheckJob",
+						method: "getHeartbeatGeoJob",
 					});
 					return;
 				}
@@ -297,7 +307,7 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 					this.logger.warn({
 						message: `No geo check locations configured for monitor ${monitorId}`,
 						service: SERVICE_NAME,
-						method: "getGeoCheckJob",
+						method: "getHeartbeatGeoJob",
 					});
 					return;
 				}
@@ -308,7 +318,7 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 					this.logger.debug({
 						message: `Monitor ${monitorId} is in maintenance window, skipping geo check`,
 						service: SERVICE_NAME,
-						method: "getGeoCheckJob",
+						method: "getHeartbeatGeoJob",
 					});
 					return;
 				}
@@ -319,7 +329,7 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 					this.logger.warn({
 						message: `No geo check could be built for monitor ${monitorId}`,
 						service: SERVICE_NAME,
-						method: "getGeoCheckJob",
+						method: "getHeartbeatGeoJob",
 					});
 					return;
 				}
@@ -330,14 +340,14 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 				this.logger.debug({
 					message: `Geo check job executed for monitor ${monitorId}`,
 					service: SERVICE_NAME,
-					method: "getGeoCheckJob",
+					method: "getHeartbeatGeoJob",
 				});
-			} catch (error: any) {
+			} catch (error: unknown) {
 				this.logger.error({
-					message: error.message,
+					message: error instanceof Error ? error.message : "Unknown error",
 					service: SERVICE_NAME,
-					method: "getGeoCheckJob",
-					stack: error.stack,
+					method: "getHeartbeatGeoJob",
+					stack: error instanceof Error ? error.stack : undefined,
 				});
 				// Don't throw - geo check failures shouldn't crash the job scheduler
 			}
@@ -347,7 +357,7 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 	async isInMaintenanceWindow(monitorId: string, teamId: string) {
 		const maintenanceWindows = await this.maintenanceWindowsRepository.findByMonitorId(monitorId, teamId);
 		// Check for active maintenance window:
-		const maintenanceWindowIsActive = maintenanceWindows.reduce((acc: any, window: any) => {
+		const maintenanceWindowIsActive = maintenanceWindows.reduce((acc: boolean, window: MaintenanceWindow) => {
 			if (window.active) {
 				const start = new Date(window.start);
 				const end = new Date(window.end);
@@ -373,6 +383,40 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 		}, false);
 		return maintenanceWindowIsActive;
 	}
+
+	getCleanupRetentionJob = () => {
+		return async () => {
+			try {
+				const settings = await this.settingsService.getDBSettings();
+
+				const checkTTL = settings.checkTTL; // Check TTL is in DAYS, not MS
+
+				if (checkTTL === CHECK_TTL_SENTINEL) {
+					this.logger.info({
+						message: `Check TTL is set to unlimited, skipping cleanup`,
+						service: SERVICE_NAME,
+						method: "getCleanupRetentionJob",
+					});
+					return;
+				}
+				const checkTTLInMs = checkTTL * 24 * 60 * 60 * 1000;
+				const cutoffDate = new Date(Date.now() - checkTTLInMs);
+				const deleteCount = await this.checkService.deleteOlderThan(cutoffDate);
+				this.logger.info({
+					message: `Deleted ${deleteCount} checks older than ${cutoffDate.toISOString()}`,
+					service: SERVICE_NAME,
+					method: "getCleanupRetentionJob",
+				});
+			} catch (error: unknown) {
+				this.logger.error({
+					message: error instanceof Error ? error.message : "Unknown error",
+					service: SERVICE_NAME,
+					method: "getCleanupRetentionJob",
+					stack: error instanceof Error ? error.stack : undefined,
+				});
+			}
+		};
+	};
 
 	private evaluateMonitorAction(statusChangeResult: StatusChangeResult): MonitorActionDecision {
 		const { monitor, statusChanged, prevStatus } = statusChangeResult;

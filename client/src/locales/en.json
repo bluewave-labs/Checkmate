@@ -1041,7 +1041,7 @@
 				},
 				"stats": {
 					"title": "Monitor history",
-					"description": "Define how long you want to retain historical data. You can also clear all existing data.",
+					"description": "Clear all monitoring history and statistics for your team. This action is irreversible.",
 					"option": {
 						"clear": {
 							"label": "Clear all stats. This is irreversible."
@@ -1050,6 +1050,16 @@
 					"dialog": {
 						"title": "Clear all monitoring history?",
 						"description": "This cannot be undone"
+					}
+				},
+				"retention": {
+					"title": "Check retention",
+					"description": "Set how long check data is retained before being automatically cleaned up.",
+					"option": {
+						"days": {
+							"label": "Retention period (days)",
+							"unlimited": "Unlimited"
+						}
 					}
 				},
 				"thresholds": {

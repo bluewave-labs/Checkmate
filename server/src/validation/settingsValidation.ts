@@ -1,3 +1,4 @@
+import { CHECK_TTL_SENTINEL } from "@/types/check.js";
 import { z } from "zod";
 
 //****************************************
@@ -6,9 +7,8 @@ import { z } from "zod";
 
 export const updateAppSettingsBodyValidation = z
 	.object({
-		checkTTL: z.union([z.number(), z.literal("")]).optional(),
+		checkTTL: z.union([z.number().int().min(1).max(CHECK_TTL_SENTINEL), z.literal("")]).optional(),
 		systemEmailPort: z.union([z.number(), z.literal("")]).optional(),
-
 		pagespeedApiKey: z.union([z.string(), z.literal("")]).optional(),
 		language: z.union([z.string(), z.literal("")]).optional(),
 		timezone: z.union([z.string(), z.literal("")]).optional(),
