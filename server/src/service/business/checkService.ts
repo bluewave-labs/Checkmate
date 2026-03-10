@@ -213,10 +213,6 @@ export class CheckService implements ICheckService {
 	};
 
 	deleteOlderThan = async (date: Date) => {
-		if (!date) {
-			throw new AppError({ message: "No date provided", service: SERVICE_NAME, method: "deleteChecksOlderThan", status: 400 });
-		}
-
 		const deletedCount = await this.checksRepository.deleteOlderThan(date);
 		return deletedCount;
 	};
