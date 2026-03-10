@@ -15,7 +15,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 		private got: Got,
 		private advancedMatcher: AdvancedMatcher
 	) {
-		const cacheable = new CacheableLookup();
+		const cacheable = new CacheableLookup({ maxTtl: 300, errorTtl: 30 });
 		this.got = got.extend({
 			dnsCache: cacheable,
 			timeout: {
