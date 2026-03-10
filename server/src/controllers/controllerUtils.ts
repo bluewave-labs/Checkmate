@@ -1,11 +1,12 @@
 import { AppError } from "@/utils/AppError.js";
-import { type MonitorType, MonitorTypes, UserRole } from "@/types/index.js";
+import { Monitor, type MonitorType, MonitorTypes, UserRole } from "@/types/index.js";
+type SslCertificate = { valid: boolean; validFrom: string; validTo: string; daysRemaining: number; validFor?: string[] };
+type SslChecker = (host: string, options?: Record<string, unknown>) => Promise<SslCertificate>;
 
-const fetchMonitorCertificate = async (sslChecker: any, monitor: any): Promise<any> => {
+const fetchMonitorCertificate = async (checker: SslChecker, monitor: Monitor): Promise<SslCertificate> => {
 	const monitorUrl = new URL(monitor.url);
 	const hostname = monitorUrl.hostname;
-	const cert = await sslChecker(hostname);
-	// Throw an error if no cert or if cert.validTo is not present
+	const cert = await checker(hostname);
 	if (cert?.validTo === null || cert?.validTo === undefined) {
 		throw new Error("Certificate not found");
 	}
