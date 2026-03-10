@@ -11,7 +11,6 @@ import type {
 } from "@/types/index.js";
 import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
-import { ParseBoolean } from "@/utils/utils.js";
 import { ILogger } from "@/utils/logger.js";
 
 const SERVICE_NAME = "checkService";
@@ -168,11 +167,10 @@ export class CheckService implements ICheckService {
 		// For verification, throws an error if monitor doesn't belong to team
 		await this.monitorsRepository.findById(monitorId, teamId);
 
-		const parsedStatus = typeof status === "undefined" ? status : ParseBoolean(status);
-		const parsedPage = page ? page : 0;
-		const parsedRowsPerPage = rowsPerPage ? rowsPerPage : 5;
+		const parsedPage = page ?? 0;
+		const parsedRowsPerPage = rowsPerPage ?? 5;
 
-		const result = await this.checksRepository.findByMonitorId(monitorId, sortOrder, dateRange, filter, parsedPage, parsedRowsPerPage, parsedStatus);
+		const result = await this.checksRepository.findByMonitorId(monitorId, sortOrder, dateRange, filter, parsedPage, parsedRowsPerPage, status);
 
 		return result;
 	};
@@ -192,8 +190,8 @@ export class CheckService implements ICheckService {
 		rowsPerPage: number;
 		filter?: string;
 	}) => {
-		const parsedPage = page ? page : 0;
-		const parsedRowsPerPage = rowsPerPage ? rowsPerPage : 5;
+		const parsedPage = page ?? 0;
+		const parsedRowsPerPage = rowsPerPage ?? 5;
 
 		const checkData = await this.checksRepository.findByTeamId(sortOrder, dateRange, filter, parsedPage, parsedRowsPerPage, teamId);
 		return checkData;

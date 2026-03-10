@@ -40,7 +40,3 @@ export const deleteChecksParamValidation = z.object({
 export const getChecksSummaryByTeamIdQueryValidation = z.object({
 	dateRange: z.enum(["recent", "hour", "day", "week", "month", "all"]).optional(),
 });
-
-export const updateChecksTTLBodyValidation = z.object({
-	ttl: z.number().min(1, "TTL is required"),
-});

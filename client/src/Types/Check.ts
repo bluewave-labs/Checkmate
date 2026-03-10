@@ -127,7 +127,6 @@ export interface Check {
 	timings?: CheckTimings;
 	statusCode: number;
 	message: string;
-	expiry: string;
 	cpu?: CheckCpuInfo;
 	memory?: CheckMemoryInfo;
 	disk?: CheckDiskInfo[];
@@ -243,7 +242,7 @@ export interface ChecksSummary {
 	downChecks: number;
 }
 
-export type CheckSnapshot = Omit<Check, "metadata" | "expiry" | "__v" | "updatedAt"> & {
+export type CheckSnapshot = Omit<Check, "metadata" | "__v" | "updatedAt"> & {
 	originalResponseTime: number;
 };
 

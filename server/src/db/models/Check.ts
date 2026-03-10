@@ -21,9 +21,8 @@ type CheckMetadataDocument = Omit<CheckMetadata, "monitorId" | "teamId"> & {
 	type: MonitorType;
 };
 
-type CheckDocumentBase = Omit<Check, "id" | "metadata" | "expiry" | "createdAt" | "updatedAt"> & {
+type CheckDocumentBase = Omit<Check, "id" | "metadata" | "createdAt" | "updatedAt"> & {
 	metadata: CheckMetadataDocument;
-	expiry: Date;
 	createdAt: Date;
 	updatedAt: Date;
 };
@@ -223,10 +222,7 @@ const CheckSchema = new Schema<CheckDocument>(
 		message: {
 			type: String,
 		},
-		expiry: {
-			type: Date,
-			default: Date.now,
-		},
+
 		cpu: {
 			type: cpuSchema,
 			default: () => ({}),
