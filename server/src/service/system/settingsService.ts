@@ -2,12 +2,12 @@ import { ISettingsRepository } from "@/repositories/index.js";
 import { Settings } from "@/types/index.js";
 import { AppError } from "@/utils/AppError.js";
 import { ValidatedEnv } from "@/validation/envValidation.js";
-
+import type { StringValue } from "ms";
 const SERVICE_NAME = "SettingsService";
 
 export type EnvConfig = {
 	jwtSecret: string;
-	jwtTTL: string;
+	jwtTTL: StringValue;
 	nodeEnv: string;
 	logLevel: string;
 	clientHost: string;
@@ -30,7 +30,7 @@ export class SettingsService implements ISettingsService {
 		this.settingsRepository = settingsRepository;
 		this.settings = {
 			jwtSecret: env.JWT_SECRET,
-			jwtTTL: env.TOKEN_TTL,
+			jwtTTL: env.TOKEN_TTL as StringValue,
 			nodeEnv: env.NODE_ENV,
 			logLevel: env.LOG_LEVEL,
 			clientHost: env.CLIENT_HOST,
