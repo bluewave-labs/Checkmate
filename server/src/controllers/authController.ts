@@ -44,9 +44,9 @@ class AuthController {
 				const newUserEmail = requireUserEmail(newUser.email);
 				newUser.email = newUserEmail.toLowerCase();
 			}
-			registrationBodyValidation.parse(newUser);
+			const validatedBody = registrationBodyValidation.parse(newUser);
 
-			const { user, token } = await this.userService.registerUser(newUser, newUserToken, req?.file ?? null);
+			const { user, token } = await this.userService.registerUser(validatedBody, newUserToken, req?.file ?? null);
 			res.status(200).json({
 				success: true,
 				msg: "User registered successfully",
@@ -224,17 +224,8 @@ class AuthController {
 	getUserById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			getUserByIdParamValidation.parse(req.params);
-			const userId = req?.params?.userId;
-			const roles = req?.user?.role;
-
-			if (!userId) {
-				throw new Error("No user ID in request");
-			}
-
-			if (!roles || roles.length === 0) {
-				throw new Error("No roles in request");
-			}
-
+			const userId = requireUserId(req.user?.id);
+			const roles = requireUserRoles(req.user?.role);
 			const user = await this.userService.getUserById(roles, userId);
 
 			return res.status(200).json({ success: true, msg: "ok", data: user });
@@ -248,7 +239,7 @@ class AuthController {
 			const roles = requireUserRoles(req.user?.role);
 			const actorId = requireUserId(req.user?.id);
 
-			if (!roles || !roles.includes("superadmin")) {
+			if (!roles.includes("superadmin")) {
 				throw new AppError({ message: "Unauthorized", status: 403 });
 			}
 
@@ -267,7 +258,7 @@ class AuthController {
 	editUserPasswordById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const roles = requireUserRoles(req.user?.role);
-			if (!roles || !roles.includes("superadmin")) {
+			if (!roles.includes("superadmin")) {
 				throw new AppError({ message: "Unauthorized", status: 403 });
 			}
 
