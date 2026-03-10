@@ -135,13 +135,13 @@ export class UserService implements IUserService {
 			user.password = this.hashPassword(user.password);
 		}
 
-		const newUser = await this.usersRepository.create(user, file);
+		const newUser = await this.usersRepository.create(user as User, file);
 
 		this.logger.debug({
 			message: "New user created",
 			service: SERVICE_NAME,
 			method: "registerUser",
-			details: newUser.id,
+			details: { id: newUser.id },
 		});
 
 		delete newUser.profileImage;
@@ -158,7 +158,7 @@ export class UserService implements IUserService {
 			if (!html) {
 				throw new Error("Failed to build welcome email HTML");
 			}
-			this.emailService.sendEmail(newUser.email, "Welcome to Uptime Monitor", html).catch((error: unknown) => {
+			this.emailService.sendEmail(newUser.email, "Welcome to Uptime Monitor", html as string).catch((error: unknown) => {
 				this.logger.warn({
 					message: error instanceof Error ? error.message : "Unknown error",
 					service: SERVICE_NAME,
@@ -199,13 +199,13 @@ export class UserService implements IUserService {
 			userData.password = this.hashPassword(userData.password);
 		}
 
-		const newUser = await this.usersRepository.create(userData, file);
+		const newUser = await this.usersRepository.create(userData as User, file);
 
 		this.logger.debug({
 			message: "New user created by superadmin",
 			service: SERVICE_NAME,
 			method: "createUser",
-			details: newUser.id,
+			details: { id: newUser.id },
 		});
 
 		newUser.profileImage = undefined;
@@ -280,6 +280,9 @@ export class UserService implements IUserService {
 			email,
 			url,
 		});
+		if (!html) {
+			throw new AppError({ message: "Failed to generate password reset email", status: 500 });
+		}
 		const msgId = await this.emailService.sendEmail(email, "Checkmate Password Reset", html);
 		return msgId;
 	};

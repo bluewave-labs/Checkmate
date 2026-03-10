@@ -305,23 +305,25 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		teamId: string
 	): Promise<number> => {
 		let objectIds;
+		let notificationObjectIds;
 		try {
 			objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+			notificationObjectIds = notificationIds.map((id) => new mongoose.Types.ObjectId(id));
 		} catch {
-			throw new AppError({ message: "One or more monitor IDs are invalid", status: 400 });
+			throw new AppError({ message: "One or more monitor or notification IDs are invalid", status: 400 });
 		}
 		const filter = { _id: { $in: objectIds }, teamId: new mongoose.Types.ObjectId(teamId) };
 
 		let update;
 		switch (action) {
 			case "add":
-				update = { $addToSet: { notifications: { $each: notificationIds } } };
+				update = { $addToSet: { notifications: { $each: notificationObjectIds } } };
 				break;
 			case "remove":
-				update = { $pull: { notifications: { $in: notificationIds } } };
+				update = { $pull: { notifications: { $in: notificationObjectIds } } };
 				break;
 			case "set":
-				update = { $set: { notifications: notificationIds } };
+				update = { $set: { notifications: notificationObjectIds } };
 				break;
 			default:
 				throw new AppError({ message: `Invalid action: ${action}`, status: 400 });

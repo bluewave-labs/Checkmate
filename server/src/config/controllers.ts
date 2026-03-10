@@ -31,7 +31,7 @@ export interface InitializedControllers {
 export const initializeControllers = (services: InitializedServices): InitializedControllers => {
 	return {
 		authController: new AuthController(services.userService),
-		monitorController: new MonitorController(services.monitorService),
+		monitorController: new MonitorController(services.monitorService, services.notificationsService),
 		settingsController: new SettingsController(services.settingsService, services.emailService),
 		checkController: new CheckController(services.checkService),
 		geoCheckController: new GeoCheckController(services.geoChecksService),
@@ -40,7 +40,7 @@ export const initializeControllers = (services: InitializedServices): Initialize
 		queueController: new QueueController(services.jobQueue),
 		logController: new LogController(services.logger),
 		statusPageController: new StatusPageController(services.statusPageService, services.monitorsRepository, services.settingsService),
-		notificationController: new NotificationController(services.notificationsService, services.monitorsRepository),
+		notificationController: new NotificationController(services.notificationsService),
 		diagnosticController: new DiagnosticController(services.diagnosticService),
 		incidentController: new IncidentController(services.incidentService),
 	};
