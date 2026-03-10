@@ -165,7 +165,6 @@ class MongoChecksRepository implements IChecksRepository {
 			timings: mapTimings(doc.timings),
 			statusCode: doc.statusCode ?? 0,
 			message: doc.message ?? "",
-			expiry: toDateString(doc.expiry),
 			cpu: mapCpu(doc.cpu),
 			memory: mapMemory(doc.memory),
 			disk: mapDisks(doc.disk),

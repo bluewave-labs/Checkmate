@@ -80,7 +80,6 @@ export class CheckService implements ICheckService {
 			responseTime: responseTime || 0,
 			timings: timings,
 			message,
-			expiry: now,
 		};
 
 		if (type === "pagespeed") {
