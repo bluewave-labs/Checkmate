@@ -1,5 +1,5 @@
 import { AppError } from "@/utils/AppError.js";
-import { type MonitorType, MonitorTypes } from "@/types/index.js";
+import { type MonitorType, MonitorTypes, UserRole } from "@/types/index.js";
 
 const fetchMonitorCertificate = async (sslChecker: any, monitor: any): Promise<any> => {
 	const monitorUrl = new URL(monitor.url);
@@ -112,7 +112,7 @@ const requireUserEmail = (userEmail?: string): string => {
 	return userEmail;
 };
 
-export const requireUserRoles = (userRoles?: string[]): string[] => {
+export const requireUserRoles = (userRoles?: UserRole[]): UserRole[] => {
 	if (!userRoles || userRoles.length === 0) {
 		throw new AppError({ message: "User roles are required", status: 400 });
 	}
