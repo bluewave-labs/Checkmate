@@ -19,13 +19,28 @@ const SERVICE_NAME = "checkService";
 export interface ICheckService {
 	createChecks(checks: Check[]): Promise<Check[]>;
 	buildCheck(statusResponse: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>): Check | undefined;
-	getChecksByMonitor(params: { monitorId: string; query: Record<string, string>; teamId: string }): Promise<ChecksQueryResult>;
-	getChecksByTeam(params: { teamId: string; query: Record<string, string> }): Promise<ChecksQueryResult>;
+	getChecksByMonitor(params: {
+		monitorId: string;
+		teamId: string;
+		sortOrder: string;
+		dateRange: string;
+		page: number;
+		rowsPerPage: number;
+		filter?: string;
+		status?: boolean;
+	}): Promise<ChecksQueryResult>;
+	getChecksByTeam(params: {
+		teamId: string;
+		sortOrder: string;
+		dateRange: string;
+		page: number;
+		rowsPerPage: number;
+		filter?: string;
+	}): Promise<ChecksQueryResult>;
 	getChecksSummaryByTeamId(params: { teamId: string; dateRange: string }): Promise<ChecksSummary>;
 	deleteChecks(params: { monitorId: string; teamId: string }): Promise<number>;
 	deleteChecksByTeamId(params: { teamId: string }): Promise<number>;
 	deleteOlderThan(date: Date): Promise<number>;
-	updateChecksTTL(params: { teamId: string; ttl: string }): Promise<void>;
 }
 
 export class CheckService implements ICheckService {
@@ -124,7 +139,25 @@ export class CheckService implements ICheckService {
 		return check;
 	};
 
-	getChecksByMonitor = async ({ monitorId, query, teamId }: { monitorId: string; query: Record<string, string>; teamId: string }) => {
+	getChecksByMonitor = async ({
+		monitorId,
+		teamId,
+		sortOrder,
+		dateRange,
+		filter,
+		page,
+		rowsPerPage,
+		status,
+	}: {
+		monitorId: string;
+		teamId: string;
+		sortOrder: string;
+		dateRange: string;
+		page: number;
+		rowsPerPage: number;
+		status?: boolean;
+		filter?: string;
+	}) => {
 		if (!monitorId) {
 			throw new AppError({ message: "No monitor ID in request", service: SERVICE_NAME, method: "getChecksByMonitor", status: 400 });
 		}
@@ -135,69 +168,49 @@ export class CheckService implements ICheckService {
 		// For verification, throws an error if monitor doesn't belong to team
 		await this.monitorsRepository.findById(monitorId, teamId);
 
-		const { sortOrder, dateRange, filter, page, rowsPerPage, status } = query;
-		if (!sortOrder || !dateRange || !page || !rowsPerPage) {
-			throw new AppError({
-				message: `Missing required query parameters sortOrder: ${sortOrder}, dateRange: ${dateRange}, filter: ${filter}, page: ${page}, rowsPerPage: ${rowsPerPage}`,
-				service: SERVICE_NAME,
-				method: "getChecksByMonitor",
-				status: 400,
-			});
-		}
 		const parsedStatus = typeof status === "undefined" ? status : ParseBoolean(status);
-		const parsedPage = page ? parseInt(page) : 0;
-		const parsedRowsPerPage = rowsPerPage ? parseInt(rowsPerPage) : 5;
+		const parsedPage = page ? page : 0;
+		const parsedRowsPerPage = rowsPerPage ? rowsPerPage : 5;
 
 		const result = await this.checksRepository.findByMonitorId(monitorId, sortOrder, dateRange, filter, parsedPage, parsedRowsPerPage, parsedStatus);
 
 		return result;
 	};
 
-	getChecksByTeam = async ({ teamId, query }: { teamId: string; query: Record<string, string> }) => {
-		const { sortOrder, dateRange, filter, page, rowsPerPage } = query;
-		if (!sortOrder || !dateRange || !page || !rowsPerPage) {
-			throw new AppError({ message: "Missing required query parameters", service: SERVICE_NAME, method: "getChecksByTeam", status: 400 });
-		}
-
-		if (!teamId) {
-			throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "getChecksByTeam", status: 400 });
-		}
-
-		const parsedPage = page ? parseInt(page) : 0;
-		const parsedRowsPerPage = rowsPerPage ? parseInt(rowsPerPage) : 5;
+	getChecksByTeam = async ({
+		teamId,
+		sortOrder,
+		dateRange,
+		filter,
+		page,
+		rowsPerPage,
+	}: {
+		teamId: string;
+		sortOrder: string;
+		dateRange: string;
+		page: number;
+		rowsPerPage: number;
+		filter?: string;
+	}) => {
+		const parsedPage = page ? page : 0;
+		const parsedRowsPerPage = rowsPerPage ? rowsPerPage : 5;
 
 		const checkData = await this.checksRepository.findByTeamId(sortOrder, dateRange, filter, parsedPage, parsedRowsPerPage, teamId);
 		return checkData;
 	};
 
 	getChecksSummaryByTeamId = async ({ teamId, dateRange }: { teamId: string; dateRange: string }) => {
-		if (!teamId) {
-			throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "getChecksSummaryByTeamId", status: 400 });
-		}
 		const summary = await this.checksRepository.findSummaryByTeamId(teamId, dateRange);
 		return summary;
 	};
 
 	deleteChecks = async ({ monitorId, teamId }: { monitorId: string; teamId: string }) => {
-		if (!monitorId) {
-			throw new AppError({ message: "No monitor ID in request", service: SERVICE_NAME, method: "deleteChecks", status: 400 });
-		}
-
-		if (!teamId) {
-			throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "deleteChecks", status: 400 });
-		}
-
-		// For verification, throws an error if monitor doesn't belong to team
 		await this.monitorsRepository.findById(monitorId, teamId);
 
 		const deletedCount = await this.checksRepository.deleteByMonitorId(monitorId);
 		return deletedCount;
 	};
 	deleteChecksByTeamId = async ({ teamId }: { teamId: string }) => {
-		if (!teamId) {
-			throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "deleteChecksByTeamId", status: 400 });
-		}
-
 		const deletedCount = await this.checksRepository.deleteByTeamId(teamId);
 		return deletedCount;
 	};
@@ -209,9 +222,5 @@ export class CheckService implements ICheckService {
 
 		const deletedCount = await this.checksRepository.deleteOlderThan(date);
 		return deletedCount;
-	};
-
-	updateChecksTTL = async ({ teamId, ttl }: { teamId: string; ttl: string }) => {
-		throw new AppError({ message: "Not implemented", service: SERVICE_NAME, method: "updateChecksTTL", status: 500, details: { teamId, ttl } });
 	};
 }

@@ -1,3 +1,5 @@
+export const CHECK_TTL_SENTINEL = 366;
+
 export interface CheckMetadata {
 	monitorId: string;
 	teamId: string;
@@ -125,8 +127,6 @@ export interface Check {
 	timings?: CheckTimings;
 	statusCode: number;
 	message: string;
-	ack: boolean;
-	ackAt?: string | null;
 	expiry: string;
 	cpu?: CheckCpuInfo;
 	memory?: CheckMemoryInfo;
@@ -243,10 +243,7 @@ export interface ChecksSummary {
 	downChecks: number;
 }
 
-export type CheckSnapshot = Omit<
-	Check,
-	"metadata" | "ack" | "ackAt" | "expiry" | "__v" | "updatedAt"
-> & {
+export type CheckSnapshot = Omit<Check, "metadata" | "expiry" | "__v" | "updatedAt"> & {
 	originalResponseTime: number;
 };
 

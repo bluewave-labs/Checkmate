@@ -37,6 +37,7 @@ import {
 } from "@/Features/UI/uiSlice.js";
 import timezones from "@/Utils/timezones.json";
 import type { RootState } from "@/Types/state";
+import { CHECK_TTL_SENTINEL } from "@/Types/Check";
 
 interface Timezone {
 	id: string;
@@ -477,18 +478,18 @@ export const SettingsPage = () => {
 										{...field}
 										fieldLabel={t("pages.settings.form.retention.option.days.label")}
 										min={1}
-										max={366}
+										max={CHECK_TTL_SENTINEL}
 										sliderMaxWidth={{ xs: "100%", md: "50%" }}
 										value={field.value || 30}
 										onChange={(_, value) => field.onChange(value)}
 										valueLabelDisplay="auto"
 										valueLabelFormat={(value: number) =>
-											value >= 366
+											value >= CHECK_TTL_SENTINEL
 												? t("pages.settings.form.retention.option.days.unlimited")
 												: `${value}`
 										}
 										formatDisplayValue={(value: number) =>
-											value >= 366
+											value >= CHECK_TTL_SENTINEL
 												? t("pages.settings.form.retention.option.days.unlimited")
 												: `${value}`
 										}

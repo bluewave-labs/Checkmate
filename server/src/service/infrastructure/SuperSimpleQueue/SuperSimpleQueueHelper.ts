@@ -11,7 +11,7 @@ import {
 	IncidentService,
 	type IGeoChecksService,
 } from "@/service/index.js";
-import type { MaintenanceWindow, StatusChangeResult } from "@/types/index.js";
+import { CHECK_TTL_SENTINEL, type MaintenanceWindow, type StatusChangeResult } from "@/types/index.js";
 import {
 	IMaintenanceWindowsRepository,
 	IMonitorsRepository,
@@ -391,7 +391,7 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 
 				const checkTTL = settings.checkTTL; // Check TTL is in DAYS, not MS
 
-				if (checkTTL === 366) {
+				if (checkTTL === CHECK_TTL_SENTINEL) {
 					this.logger.info({
 						message: `Check TTL is set to unlimited, skipping cleanup`,
 						service: SERVICE_NAME,

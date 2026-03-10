@@ -1,5 +1,8 @@
 import type { MonitorType } from "@/types/index.js";
 import type { Response } from "got";
+
+export const CHECK_TTL_SENTINEL = 366;
+
 export type GotTimings = Response["timings"];
 
 export interface CheckMetadata {
