@@ -27,6 +27,7 @@ import {
 	DiscordProvider,
 	PagerDutyProvider,
 	MatrixProvider,
+	TeamsProvider,
 	// Interfaces
 	INetworkService,
 	IEmailService,
@@ -58,6 +59,7 @@ import { DockerProvider } from "@/service/infrastructure/network/DockerProvider.
 import { PortProvider } from "@/service/infrastructure/network/PortProvider.js";
 import { GameProvider } from "@/service/infrastructure/network/GameProvider.js";
 import { GrpcProvider } from "@/service/infrastructure/network/GrpcProvider.js";
+import { WebSocketProvider } from "@/service/infrastructure/network/WebSocketProvider.js";
 
 // Third-party
 import axios from "axios";
@@ -77,6 +79,7 @@ import { games, GameDig } from "gamedig";
 import jmespath from "jmespath";
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
+import WebSocket from "ws";
 
 // Repositories
 import {
@@ -185,6 +188,7 @@ export const initializeServices = async ({
 	const portProvider = new PortProvider(net);
 	const gameProvider = new GameProvider(logger, GameDig);
 	const grpcProvider = new GrpcProvider(grpc, protoLoader);
+	const webSocketProvider = new WebSocketProvider(WebSocket);
 
 	const networkService = new NetworkService(axios, logger, [
 		pingProvider,
@@ -195,6 +199,7 @@ export const initializeServices = async ({
 		portProvider,
 		gameProvider,
 		grpcProvider,
+		webSocketProvider,
 	]);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 
@@ -224,6 +229,7 @@ export const initializeServices = async ({
 	const discordProvider = new DiscordProvider(logger);
 	const pagerDutyProvider = new PagerDutyProvider(logger);
 	const matrixProvider = new MatrixProvider(logger);
+	const teamsProvider = new TeamsProvider(logger);
 
 	const notificationsService = new NotificationsService(
 		notificationsRepository,
@@ -234,6 +240,7 @@ export const initializeServices = async ({
 		discordProvider,
 		pagerDutyProvider,
 		matrixProvider,
+		teamsProvider,
 		settingsService,
 		logger,
 		notificationMessageBuilder
@@ -245,6 +252,7 @@ export const initializeServices = async ({
 		statusService,
 		notificationsService,
 		checkService,
+		settingsService,
 		bufferService,
 		incidentService,
 		maintenanceWindowsRepository,

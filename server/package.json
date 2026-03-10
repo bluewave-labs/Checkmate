@@ -15,7 +15,7 @@
 		"format-check": "prettier --check ."
 	},
 	"lint-staged": {
-		"**/*": "npm run format"
+		"**/*": "prettier --write"
 	},
 	"keywords": [],
 	"author": "",
@@ -58,6 +58,7 @@
 		"super-simple-scheduler": "1.4.5",
 		"swagger-ui-express": "5.0.1",
 		"winston": "^3.13.0",
+		"ws": "^8.19.0",
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
@@ -78,6 +79,7 @@
 		"@types/papaparse": "^5.5.2",
 		"@types/ping": "0.4.4",
 		"@types/swagger-ui-express": "4.1.8",
+		"@types/ws": "^8.18.1",
 		"@typescript-eslint/eslint-plugin": "^8.56.1",
 		"@typescript-eslint/parser": "^8.56.1",
 		"c8": "10.1.3",

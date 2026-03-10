@@ -115,6 +115,13 @@ const hardwareSchema = baseSchema.extend({
 	selectedDisks: z.array(z.string()),
 });
 
+// WebSocket monitor schema
+const websocketSchema = baseSchema.extend({
+	type: z.literal("websocket"),
+	url: z.string().min(1, "WebSocket URL is required"),
+	ignoreTlsErrors: z.boolean(),
+});
+
 // Discriminated union of all monitor types
 export const monitorSchema = z.discriminatedUnion("type", [
 	httpSchema,
@@ -125,6 +132,7 @@ export const monitorSchema = z.discriminatedUnion("type", [
 	grpcSchema,
 	pagespeedSchema,
 	hardwareSchema,
+	websocketSchema,
 ]);
 
 export type MonitorFormData = z.infer<typeof monitorSchema>;
@@ -139,4 +147,5 @@ export {
 	grpcSchema,
 	pagespeedSchema,
 	hardwareSchema,
+	websocketSchema,
 };

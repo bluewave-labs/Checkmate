@@ -1,9 +1,6 @@
 import Box from "@mui/material/Box";
 import { useState, useEffect, useRef } from "react";
 import { useTheme } from "@mui/material/styles";
-import { useSelector } from "react-redux";
-import BackgroundSVG from "@/assets/Images/background.svg";
-import type { RootState } from "@/Types/state";
 import { OfflineBanner } from "@/Components/design-elements";
 import { setServerUnreachableCallback, get } from "@/Utils/ApiClient";
 
@@ -13,7 +10,6 @@ interface AppLayoutProps {
 
 const AppLayout = ({ children }: AppLayoutProps) => {
 	const theme = useTheme();
-	const mode = useSelector((state: RootState) => state.ui.mode);
 	const [serverUnreachable, setServerUnreachable] = useState(false);
 	const retryIntervalRef = useRef<number | null>(null);
 
@@ -47,10 +43,6 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 			sx={{
 				minHeight: "100vh",
 				backgroundColor: theme.palette.background.default,
-				backgroundImage: mode === "dark" ? `url("${BackgroundSVG}")` : "none",
-				backgroundSize: "100% 100%",
-				backgroundPosition: "center",
-				backgroundRepeat: "no-repeat",
 			}}
 		>
 			<OfflineBanner visible={serverUnreachable} />

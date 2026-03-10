@@ -13,9 +13,10 @@ import type {
 	GotTimings,
 	MonitorType,
 } from "@/types/index.js";
-import { CheckModel, MonitorModel, type CheckDocument } from "@/db/models/index.js";
+import { CheckModel, type CheckDocument } from "@/db/models/index.js";
 import mongoose from "mongoose";
 import { getDateForRange } from "@/utils/dataUtils.js";
+import { ILogger } from "@/utils/logger.js";
 
 const SERVICE_NAME = "StatusService";
 
@@ -26,8 +27,8 @@ type HardwareUpChecks = { totalChecks: number };
 class MongoChecksRepository implements IChecksRepository {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private logger: any;
-	constructor(logger: any) {
+	private logger: ILogger;
+	constructor(logger: ILogger) {
 		this.logger = logger;
 	}
 
@@ -44,13 +45,6 @@ class MongoChecksRepository implements IChecksRepository {
 				return new Date(0).toISOString();
 			}
 			return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
-		};
-
-		const toOptionalDateString = (value?: Date | string | null): string | undefined => {
-			if (!value) {
-				return undefined;
-			}
-			return toDateString(value);
 		};
 
 		const mapTimings = (timings?: GotTimings): GotTimings => {
@@ -171,9 +165,6 @@ class MongoChecksRepository implements IChecksRepository {
 			timings: mapTimings(doc.timings),
 			statusCode: doc.statusCode ?? 0,
 			message: doc.message ?? "",
-			ack: doc.ack ?? false,
-			ackAt: toOptionalDateString(doc.ackAt),
-			expiry: toDateString(doc.expiry),
 			cpu: mapCpu(doc.cpu),
 			memory: mapMemory(doc.memory),
 			disk: mapDisks(doc.disk),
@@ -186,7 +177,6 @@ class MongoChecksRepository implements IChecksRepository {
 			seo: doc.seo,
 			performance: doc.performance,
 			audits: mapAudits(doc.audits),
-			__v: doc.__v ?? 0,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
@@ -237,7 +227,7 @@ class MongoChecksRepository implements IChecksRepository {
 		status: boolean | undefined
 	) => {
 		// Match
-		const matchStage: Record<string, any> = {
+		const matchStage: Record<string, unknown> = {
 			"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 			...(typeof status !== "undefined" && { status }),
 			...(getDateForRange(dateRange) && {
@@ -289,7 +279,7 @@ class MongoChecksRepository implements IChecksRepository {
 	};
 
 	findByTeamId = async (sortOrder: string, dateRange: string, filter: string, page: number, rowsPerPage: number, teamId: string) => {
-		const matchStage: Record<string, any> = {
+		const matchStage: Record<string, unknown> = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
 			...(getDateForRange(dateRange) && {
 				createdAt: {
@@ -358,7 +348,7 @@ class MongoChecksRepository implements IChecksRepository {
 		);
 
 		const mapped = results.reduce<LatestChecksMap>((acc, { monitorId, docs }) => {
-			acc[monitorId] = docs.map((doc: any) => this.toEntity(doc as CheckDocument));
+			acc[monitorId] = docs.map((doc: CheckDocument) => this.toEntity(doc));
 			return acc;
 		}, {});
 		return mapped;
@@ -412,6 +402,31 @@ class MongoChecksRepository implements IChecksRepository {
 		return result.deletedCount ?? 0;
 	};
 
+	deleteOlderThan = async (cutoffDate: Date, batchDays: number = 30): Promise<number> => {
+		// Find the oldest check that is older than the cutoff
+		const oldest = await CheckModel.findOne({ createdAt: { $lt: cutoffDate } })
+			.sort({ createdAt: 1 })
+			.select({ createdAt: 1 });
+		if (!oldest?.createdAt) return 0;
+
+		let totalDeleted = 0;
+		let batchStart = new Date(oldest.createdAt);
+		const batchMs = batchDays * 24 * 60 * 60 * 1000;
+
+		// Delete in 30 day chunks until we reach the cutoff
+		while (batchStart < cutoffDate) {
+			// Advance startTime by batchMs to get to the end of last batch
+			const nextStart = batchStart.getTime() + batchMs;
+			const batchEnd = new Date(Math.min(nextStart, cutoffDate.getTime()));
+			const result = await CheckModel.deleteMany({
+				createdAt: { $gte: batchStart, $lt: batchEnd },
+			});
+			totalDeleted += result.deletedCount ?? 0;
+			batchStart = batchEnd;
+		}
+
+		return totalDeleted;
+	};
 	private findUptimeDateRangeChecks = async (
 		monitorType: Exclude<MonitorType, "hardware" | "pagespeed">,
 		monitorObjectId: mongoose.Types.ObjectId,

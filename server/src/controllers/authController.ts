@@ -100,8 +100,8 @@ class AuthController {
 
 	editUser = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			editUserBodyValidation.parse(req.body);
-			const updatedUser = await this.userService.editUser(req.body, req.file, req.user);
+			const validatedBody = editUserBodyValidation.parse(req.body);
+			const updatedUser = await this.userService.editUser(validatedBody, req.file, req.user);
 
 			res.status(200).json({
 				success: true,
@@ -174,6 +174,20 @@ class AuthController {
 			return res.status(200).json({
 				success: true,
 				msg: "User deleted successfully",
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	deleteUserById = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			getUserByIdParamValidation.parse(req.params);
+			const targetUserId = req.params.userId;
+			await this.userService.deleteUserById(req.user, targetUserId);
+			return res.status(200).json({
+				success: true,
+				msg: "User removed successfully",
 			});
 		} catch (error) {
 			next(error);

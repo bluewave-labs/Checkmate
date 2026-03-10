@@ -1,3 +1,4 @@
+import { CHECK_TTL_SENTINEL } from "@/Types/Check";
 import { z } from "zod";
 
 export const settingsSchema = z.object({
@@ -11,7 +12,11 @@ export const settingsSchema = z.object({
 	systemEmailSecure: z.boolean().optional(),
 	systemEmailPool: z.boolean().optional(),
 	showURL: z.boolean().optional(),
-	checkTTL: z.number().int().min(1, "Please enter a value").max(365, "Maximum 365 days"),
+	checkTTL: z
+		.number()
+		.int()
+		.min(1, "Please enter a value")
+		.max(CHECK_TTL_SENTINEL, `Maximum ${CHECK_TTL_SENTINEL}`),
 	pagespeedApiKey: z
 		.string()
 		.transform((val) => (val.trim() === "" ? undefined : val.trim()))

@@ -1,4 +1,4 @@
-import type { Monitor, MonitorStatusResponse } from "@/types/index.js";
+import type { Monitor, MonitorStatusResponse, MonitorPayloadMap, MonitorType } from "@/types/index.js";
 import type { AxiosStatic } from "axios";
 import { AppError } from "@/utils/AppError.js";
 import { NETWORK_ERROR } from "@/service/infrastructure/network/utils.js";
@@ -8,7 +8,7 @@ const SERVICE_NAME = "NetworkService";
 
 export interface INetworkService {
 	readonly serviceName: string;
-	requestStatus(monitor: Monitor): Promise<MonitorStatusResponse<unknown>>;
+	requestStatus<T extends MonitorType>(monitor: Monitor & { type: T }): Promise<MonitorStatusResponse<MonitorPayloadMap[T]>>;
 	requestWebhook(
 		type: string,
 		url: string,
@@ -43,12 +43,12 @@ export class NetworkService implements INetworkService {
 	}
 
 	// Main entry point
-	async requestStatus(monitor: Monitor) {
+	async requestStatus<T extends MonitorType>(monitor: Monitor & { type: T }): Promise<MonitorStatusResponse<MonitorPayloadMap[T]>> {
 		const provider = this.providers.find((p) => p.supports(monitor.type));
 		if (!provider) {
-			return this.handleUnsupportedType(monitor.type);
+			return this.handleUnsupportedType(monitor.type) as Promise<MonitorStatusResponse<MonitorPayloadMap[T]>>;
 		}
-		return provider.handle(monitor);
+		return provider.handle(monitor) as Promise<MonitorStatusResponse<MonitorPayloadMap[T]>>;
 	}
 
 	private async handleUnsupportedType(type: string): Promise<MonitorStatusResponse> {
@@ -197,4 +197,3 @@ export class NetworkService implements INetworkService {
 		}
 	}
 }
-

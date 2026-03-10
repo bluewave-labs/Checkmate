@@ -24,7 +24,8 @@ export interface MonitorStatusResponse<
 		| HardwareStatusPayload
 		| DockerStatusPayload
 		| GameStatusPayload
-		| GrpcStatusPayload,
+		| GrpcStatusPayload
+		| WebSocketStatusPayload,
 > {
 	monitorId: string;
 	teamId: string;
@@ -111,6 +112,10 @@ export interface GrpcStatusPayload {
 	servingStatus: string;
 }
 
+export interface WebSocketStatusPayload {
+	connected: boolean;
+}
+
 export interface MonitorPayloadMap {
 	ping: PingStatusPayload;
 	http: HttpStatusPayload;
@@ -120,7 +125,8 @@ export interface MonitorPayloadMap {
 	port: PortStatusPayload;
 	game: GameStatusPayload;
 	grpc: GrpcStatusPayload;
-	default: unknown;
+	websocket: WebSocketStatusPayload;
+	unknown: unknown;
 }
 
 export type StatusChangeResult = {

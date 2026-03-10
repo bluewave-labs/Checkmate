@@ -37,6 +37,7 @@ import {
 } from "@/Features/UI/uiSlice.js";
 import timezones from "@/Utils/timezones.json";
 import type { RootState } from "@/Types/state";
+import { CHECK_TTL_SENTINEL } from "@/Types/Check";
 
 interface Timezone {
 	id: string;
@@ -458,6 +459,43 @@ export const SettingsPage = () => {
 							>
 								{t("common.buttons.clear")}
 							</Button>
+						}
+					/>
+				)}
+
+				{/* Check Retention */}
+				{isAdmin && (
+					<ConfigBox
+						title={t("pages.settings.form.retention.title")}
+						subtitle={t("pages.settings.form.retention.description")}
+						rightContent={
+							<Controller
+								name="checkTTL"
+								control={form.control}
+								defaultValue={defaults.checkTTL}
+								render={({ field }) => (
+									<SliderWithLabel
+										{...field}
+										fieldLabel={t("pages.settings.form.retention.option.days.label")}
+										min={1}
+										max={CHECK_TTL_SENTINEL}
+										sliderMaxWidth={{ xs: "100%", md: "50%" }}
+										value={field.value || 30}
+										onChange={(_, value) => field.onChange(value)}
+										valueLabelDisplay="auto"
+										valueLabelFormat={(value: number) =>
+											value >= CHECK_TTL_SENTINEL
+												? t("pages.settings.form.retention.option.days.unlimited")
+												: `${value}`
+										}
+										formatDisplayValue={(value: number) =>
+											value >= CHECK_TTL_SENTINEL
+												? t("pages.settings.form.retention.option.days.unlimited")
+												: `${value}`
+										}
+									/>
+								)}
+							/>
 						}
 					/>
 				)}

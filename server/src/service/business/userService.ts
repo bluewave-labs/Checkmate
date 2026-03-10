@@ -29,6 +29,7 @@ export interface IUserService {
 	validateRecovery(recoveryToken: string): Promise<void>;
 	resetPassword(password: string, recoveryToken: string): Promise<{ user: User; token: string }>;
 	deleteUser(user: User): Promise<void>;
+	deleteUserById(actor: User, targetUserId: string): Promise<void>;
 	getAllUsers(): Promise<User[]>;
 	getUserById(roles: UserRole[], userId: string): Promise<User>;
 	editUserById(userId: string, patch: Partial<User>): Promise<void>;
@@ -141,7 +142,7 @@ export class UserService implements IUserService {
 			message: "New user created",
 			service: SERVICE_NAME,
 			method: "registerUser",
-			details: { id: newUser.id },
+			details: { userId: newUser.id },
 		});
 
 		delete newUser.profileImage;
@@ -205,7 +206,7 @@ export class UserService implements IUserService {
 			message: "New user created by superadmin",
 			service: SERVICE_NAME,
 			method: "createUser",
-			details: { id: newUser.id },
+			details: { userId: newUser.id },
 		});
 
 		newUser.profileImage = undefined;
@@ -272,8 +273,8 @@ export class UserService implements IUserService {
 		await this.recoveryTokensRepository.deleteManyByEmail(email);
 		const recoveryToken = await this.recoveryTokensRepository.create(email);
 		const name = user.firstName;
-		const { clientHost } = this.settingsService.getSettings();
-		const url = `${clientHost}/set-new-password/${recoveryToken.token}`;
+		const settings = this.settingsService.getSettings();
+		const url = `${settings.clientHost!}/set-new-password/${recoveryToken.token}`;
 
 		const html = await this.emailService.buildEmail("passwordResetTemplate", {
 			name,
@@ -281,7 +282,12 @@ export class UserService implements IUserService {
 			url,
 		});
 		if (!html) {
-			throw new AppError({ message: "Failed to generate password reset email", status: 500 });
+			throw new AppError({
+				message: "Failed to build password reset email HTML",
+				service: SERVICE_NAME,
+				method: "requestRecovery",
+				status: 500,
+			});
 		}
 		const msgId = await this.emailService.sendEmail(email, "Checkmate Password Reset", html);
 		return msgId;
@@ -343,7 +349,7 @@ export class UserService implements IUserService {
 			if (res && res.length > 0) {
 				await Promise.all(
 					res.map(async (monitor) => {
-						await this.jobQueue.deleteJob(monitor.id);
+						await this.jobQueue.deleteJob(monitor);
 					})
 				);
 			}
@@ -352,13 +358,53 @@ export class UserService implements IUserService {
 		await this.usersRepository.deleteById(userId);
 	};
 
+	deleteUserById = async (actor: User, targetUserId: string) => {
+		if (actor.id === targetUserId) {
+			throw new AppError({ message: "Cannot delete your own account from here", service: SERVICE_NAME, method: "deleteUserById", status: 400 });
+		}
+
+		const targetUser = await this.usersRepository.findById(targetUserId);
+
+		if (targetUser.teamId !== actor.teamId) {
+			throw new AppError({ message: "User is not on your team", service: SERVICE_NAME, method: "deleteUserById", status: 403 });
+		}
+
+		if (targetUser.role.includes("demo")) {
+			throw new AppError({ message: "Demo user cannot be deleted", service: SERVICE_NAME, method: "deleteUserById", status: 400 });
+		}
+
+		const actorRoles = actor.role;
+		const targetRoles = targetUser.role;
+
+		// Check actor can manage all of target's roles
+		for (const targetRole of targetRoles) {
+			const canManage = actorRoles.some((actorRole) => canManageRole(actorRole, targetRole));
+			if (!canManage) {
+				throw new AppError({
+					message: "You do not have permission to remove this user",
+					service: SERVICE_NAME,
+					method: "deleteUserById",
+					status: 403,
+				});
+			}
+		}
+
+		await this.usersRepository.deleteById(targetUserId);
+
+		this.logger.info({
+			message: `User ${targetUserId} deleted by ${actor.id}`,
+			service: SERVICE_NAME,
+			method: "deleteUserById",
+		});
+	};
+
 	getAllUsers = async () => {
 		return await this.usersRepository.findAll();
 	};
 
 	getUserById = async (roles: any, userId: any) => {
-		if (!roles.includes("superadmin")) {
-			throw new AppError({ message: "User is not a superadmin", service: SERVICE_NAME, status: 403 });
+		if (!roles.includes("superadmin") && !roles.includes("admin")) {
+			throw new AppError({ message: "Insufficient permissions", service: SERVICE_NAME, status: 403 });
 		}
 		const user = await this.usersRepository.findById(userId);
 

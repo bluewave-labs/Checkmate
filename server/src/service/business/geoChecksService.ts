@@ -68,7 +68,7 @@ export class GeoChecksService implements IGeoChecksService {
 			}
 
 			// Step 1: Create measurement request
-			const measurementId = await this.globalPingService.createMeasurement(monitor.url, monitor.geoCheckLocations);
+			const measurementId = await this.globalPingService.createMeasurement(monitor.type, monitor.url, monitor.geoCheckLocations);
 
 			if (!measurementId) {
 				// GlobalPing API is down, skip this check
@@ -76,7 +76,6 @@ export class GeoChecksService implements IGeoChecksService {
 					message: "Skipping geo check due to API unavailability",
 					service: SERVICE_NAME,
 					method: "buildGeoCheck",
-					details: { monitorId: monitor.id },
 				});
 				return null;
 			}
@@ -90,7 +89,6 @@ export class GeoChecksService implements IGeoChecksService {
 					message: "No successful geo check results",
 					service: SERVICE_NAME,
 					method: "buildGeoCheck",
-					details: { monitorId: monitor.id, measurementId },
 				});
 				return null;
 			}
@@ -102,17 +100,16 @@ export class GeoChecksService implements IGeoChecksService {
 				message: `Geo check completed for monitor ${monitor.id}`,
 				service: SERVICE_NAME,
 				method: "buildGeoCheck",
-				details: { monitorId: monitor.id, resultsCount: results.length },
 			});
 
 			return geoCheck;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({
 				message: "Error executing geo check",
 				service: SERVICE_NAME,
 				method: "buildGeoCheck",
-				details: { monitorId: monitor.id, error: error.message },
-				stack: error.stack,
+				details: { monitorId: monitor.id, error: error instanceof Error ? error.message : "Unknown error" },
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 			return null;
 		}
@@ -172,20 +169,9 @@ export class GeoChecksService implements IGeoChecksService {
 
 		const { sortOrder, dateRange, page, rowsPerPage, continent } = query;
 		const continents = continent ? (Array.isArray(continent) ? continent : [continent]) : undefined;
-
-		this.logger.debug({
-			message: "getGeoChecksByMonitor query params",
-			service: SERVICE_NAME,
-			method: "getGeoChecksByMonitor",
-			details: { continent, continents, query },
-		});
-
 		const parsedPage = page ? parseInt(page) : page;
 		const parsedRowsPerPage = rowsPerPage ? parseInt(rowsPerPage) : rowsPerPage;
-
 		const result = await this.geoChecksRepository.findByMonitorId(monitorId, sortOrder, dateRange, parsedPage, parsedRowsPerPage, continents);
-
 		return result;
 	};
 }
-

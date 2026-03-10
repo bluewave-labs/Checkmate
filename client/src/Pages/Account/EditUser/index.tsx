@@ -11,12 +11,17 @@ import { ConfigBox, BasePage } from "@/Components/design-elements";
 import { UserRoles } from "@/Types/User";
 import { useTranslation } from "react-i18next";
 import type { UserRole, User } from "@/Types/User";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material";
 import { useEditUserForm } from "@/Hooks/useEditUserForm";
-import { useGet, usePatch } from "@/Hooks/UseApi";
+import { useGet, usePatch, useDelete } from "@/Hooks/UseApi";
 import type { EditUserFormData } from "@/Validation/editUser";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { DialogInput } from "@/Components/inputs/Dialog";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/Types/state";
+import { LAYOUT } from "@/Utils/Theme/constants";
+import { useIsAdmin, useIsSuperAdmin } from "@/Hooks/useIsAdmin";
 
 interface RoleOption {
 	id: UserRole;
@@ -29,6 +34,12 @@ const EditUserPage = () => {
 	const { userId } = useParams<{ userId: string }>();
 	const { resolver, defaults } = useEditUserForm();
 	const { patch, loading: isSaving } = usePatch();
+	const { deleteFn, loading: isDeleting } = useDelete();
+	const navigate = useNavigate();
+	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+	const currentUser = useSelector((state: RootState) => state.auth.user);
+	const isSuperAdmin = useIsSuperAdmin();
+	const isAdmin = useIsAdmin();
 
 	const { data: user, isLoading } = useGet<User>(`/auth/users/${userId}`);
 
@@ -58,6 +69,20 @@ const EditUserPage = () => {
 	const handleRemoveRole = (roleToRemove: UserRole) => {
 		const newRoles = watchedRoles.filter((role) => role !== roleToRemove);
 		setValue("role", newRoles, { shouldValidate: true });
+	};
+
+	const canDeleteUser =
+		isAdmin &&
+		userId !== currentUser?.id &&
+		!user?.role?.includes("demo") &&
+		(isSuperAdmin || user?.role?.every((r) => r !== "admin" && r !== "superadmin"));
+
+	const handleDeleteUser = async () => {
+		const result = await deleteFn(`/auth/users/${userId}`);
+		setShowDeleteDialog(false);
+		if (result) {
+			navigate("/account", { state: { tab: "team" } });
+		}
 	};
 
 	const onSubmit = async (data: EditUserFormData) => {
@@ -165,17 +190,45 @@ const EditUserPage = () => {
 							</Stack>
 						}
 					/>
-					<Button
-						type="submit"
-						variant="contained"
-						color="primary"
-						loading={isSaving}
-						sx={{ alignSelf: "flex-end", minWidth: 100 }}
+					<Stack
+						gap={LAYOUT.XS}
+						direction="row"
+						justifyContent={"flex-end"}
+						width="100%"
 					>
-						{t("common.buttons.save")}
-					</Button>
+						{canDeleteUser && (
+							<Button
+								variant="contained"
+								color="error"
+								onClick={() => setShowDeleteDialog(true)}
+								sx={{ minWidth: 100 }}
+							>
+								{t("common.buttons.removeUser")}
+							</Button>
+						)}
+						<Button
+							type="submit"
+							variant="contained"
+							color="primary"
+							loading={isSaving}
+							sx={{ minWidth: 100 }}
+						>
+							{t("common.buttons.save")}
+						</Button>
+					</Stack>
 				</Stack>
 			</form>
+			<DialogInput
+				open={showDeleteDialog}
+				title={t("pages.editUser.dialog.removeUser.title")}
+				content={t("pages.editUser.dialog.removeUser.content", {
+					name: `${user?.firstName} ${user?.lastName}`,
+				})}
+				onCancel={() => setShowDeleteDialog(false)}
+				onConfirm={handleDeleteUser}
+				confirmText={t("common.buttons.removeUser")}
+				loading={isDeleting}
+			/>
 		</BasePage>
 	);
 };
