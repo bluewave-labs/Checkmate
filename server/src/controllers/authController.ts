@@ -223,10 +223,9 @@ class AuthController {
 
 	getUserById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			getUserByIdParamValidation.parse(req.params);
-			const userId = requireUserId(req.user?.id);
-			const roles = requireUserRoles(req.user?.role);
-			const user = await this.userService.getUserById(roles, userId);
+			const validatedParams = getUserByIdParamValidation.parse(req.params);
+			const actorRoles = requireUserRoles(req.user?.role);
+			const user = await this.userService.getUserById(actorRoles, validatedParams.userId);
 
 			return res.status(200).json({ success: true, msg: "ok", data: user });
 		} catch (error) {
@@ -236,10 +235,10 @@ class AuthController {
 
 	editUserById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const roles = requireUserRoles(req.user?.role);
+			const actorRoles = requireUserRoles(req.user?.role);
 			const actorId = requireUserId(req.user?.id);
 
-			if (!roles.includes("superadmin")) {
+			if (!actorRoles.includes("superadmin")) {
 				throw new AppError({ message: "Unauthorized", status: 403 });
 			}
 
@@ -257,8 +256,8 @@ class AuthController {
 
 	editUserPasswordById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const roles = requireUserRoles(req.user?.role);
-			if (!roles.includes("superadmin")) {
+			const actorRoles = requireUserRoles(req.user?.role);
+			if (!actorRoles.includes("superadmin")) {
 				throw new AppError({ message: "Unauthorized", status: 403 });
 			}
 
