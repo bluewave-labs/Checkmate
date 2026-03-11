@@ -14,7 +14,7 @@ export class EmailProvider implements INotificationProvider {
 		this.logger = logger;
 	}
 
-	async sendTestAlert(notification: Notification): Promise<boolean> {
+	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
 		const subject = "Test notification";
 		const html = await buildTestEmail(this.emailService);
 

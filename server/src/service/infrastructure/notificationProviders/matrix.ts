@@ -13,7 +13,7 @@ export class MatrixProvider implements INotificationProvider {
 		this.logger = logger;
 	}
 
-	sendTestAlert = async (notification: Notification) => {
+	sendTestAlert = async (notification: Partial<Notification>) => {
 		const { homeserverUrl, accessToken, roomId } = notification;
 		if (!homeserverUrl || !accessToken || !roomId) {
 			return false;

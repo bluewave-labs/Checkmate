@@ -141,7 +141,7 @@ export class NotificationsService implements INotificationsService {
 		return await this.sendNotifications(monitor, monitorStatusResponse, decision);
 	};
 
-	sendTestNotification = async (notification: Notification) => {
+	sendTestNotification = async (notification: Partial<Notification>) => {
 		switch (notification.type) {
 			case "email":
 				return await this.emailProvider.sendTestAlert(notification);

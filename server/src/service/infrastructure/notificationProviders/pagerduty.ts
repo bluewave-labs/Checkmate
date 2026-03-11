@@ -14,7 +14,7 @@ export class PagerDutyProvider implements INotificationProvider {
 		this.logger = logger;
 	}
 
-	async sendTestAlert(notification: Notification): Promise<boolean> {
+	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
 		try {
 			await got.post("https://events.pagerduty.com/v2/enqueue", {
 				json: {
