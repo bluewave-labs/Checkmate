@@ -24,6 +24,8 @@ RUN npm install
 
 RUN npm run build
 
+RUN cp -r ./src/templates ./dist/templates
+
 COPY --from=frontend-build /app/client/dist ./public
 
 RUN chmod +x ./scripts/inject-vars.sh
