@@ -75,11 +75,11 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 
 	findByTeamId = async (
 		teamId: string,
-		active: boolean,
 		page: number,
 		rowsPerPage: number,
-		field: string,
-		order: string
+		field?: string,
+		order?: string,
+		active?: boolean
 	): Promise<MaintenanceWindow[]> => {
 		const maintenanceQuery: Record<string, any> = { teamId };
 
@@ -126,7 +126,7 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 		}
 		return this.toEntity(deleted);
 	};
-	countByTeamId = async (teamId: string, active: boolean) => {
+	countByTeamId = async (teamId: string, active?: boolean) => {
 		const maintenanceQuery: Record<string, any> = { teamId };
 
 		if (active !== undefined) maintenanceQuery.active = active;
