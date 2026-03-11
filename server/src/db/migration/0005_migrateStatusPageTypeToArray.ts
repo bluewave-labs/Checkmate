@@ -20,17 +20,20 @@ export async function migrateStatusPageTypeToArray(): Promise<void> {
 		}
 
 		// Find all status pages where `type` is a string (not yet migrated)
-		const result = await StatusPageModel.updateMany({
-			$expr: {
-				$eq: [{ $type: "$type" }, "string"], // only scalar string, not existing array
-			}
-		}, [
+		const result = await StatusPageModel.updateMany(
 			{
-				$set: {
-					type: ["$type"],
+				$expr: {
+					$eq: [{ $type: "$type" }, "string"], // only scalar string, not existing array
 				},
 			},
-		]);
+			[
+				{
+					$set: {
+						type: ["$type"],
+					},
+				},
+			]
+		);
 
 		if (result.modifiedCount === 0) {
 			logger.info({ service: SERVICE_NAME, message: "No StatusPage documents needed migration" });
