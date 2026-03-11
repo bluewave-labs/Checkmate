@@ -109,10 +109,6 @@ export const editMonitorBodyValidation = z.object({
 	geoCheckInterval: z.number().min(300000).optional(),
 });
 
-export const sendTestEmailBodyValidation = z.object({
-	to: z.string().email("Invalid 'to' email address"),
-});
-
 export const pauseMonitorParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
 });

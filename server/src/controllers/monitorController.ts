@@ -14,13 +14,11 @@ import {
 	getUptimeDetailsByIdParamValidation,
 	getUptimeDetailsByIdQueryValidation,
 	importMonitorsBodyValidation,
-	sendTestEmailBodyValidation,
 } from "@/validation/monitorValidation.js";
 import sslChecker from "ssl-checker";
-import { fetchMonitorCertificate, requireString, requireTeamId, requireUserId } from "./controllerUtils.js";
+import { fetchMonitorCertificate, requireTeamId, requireUserId } from "./controllerUtils.js";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorService } from "@/service/index.js";
-import { GeoContinent } from "@/types/geoCheck.js";
 
 const SERVICE_NAME = "monitorController";
 class MonitorController {
@@ -300,20 +298,6 @@ class MonitorController {
 				success: true,
 				msg: "Demo monitors added successfully",
 				data: demoMonitors?.length ?? 0,
-			});
-		} catch (error) {
-			next(error);
-		}
-	};
-
-	sendTestEmail = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const validatedBody = sendTestEmailBodyValidation.parse(req.body);
-			const messageId = await this.monitorService.sendTestEmail({ to: validatedBody.to });
-			return res.status(200).json({
-				success: true,
-				msg: "Test email sent successfully",
-				data: { messageId },
 			});
 		} catch (error) {
 			next(error);

@@ -72,7 +72,6 @@ export interface IMonitorService {
 	deleteAllMonitors(args: { teamId: string }): Promise<number>;
 
 	// other
-	sendTestEmail(args: { to: string }): Promise<string>;
 	exportMonitorsToJSON(args: { teamId: string }): Promise<Monitor[]>;
 	importMonitorsFromJSON(args: { teamId: string; userId: string; monitors: any[] }): Promise<{ imported: number; errors: string[] }>;
 }
@@ -507,20 +506,6 @@ export class MonitorService implements IMonitorService {
 			})
 		);
 		return deletedCount;
-	};
-
-	sendTestEmail = async ({ to }: { to: string }): Promise<string> => {
-		const subject = "Test email from Checkmate";
-		const context = { testName: "Monitoring System" };
-
-		const html = await this.emailService.buildEmail("testEmailTemplate", context);
-		const messageId = await this.emailService.sendEmail(to, subject, html);
-
-		if (!messageId) {
-			throw new AppError({ message: "Failed to send test email.", service: SERVICE_NAME, method: "sendTestEmail", status: 500 });
-		}
-
-		return messageId;
 	};
 
 	exportMonitorsToJSON = async ({ teamId }: { teamId: string }): Promise<any[]> => {
