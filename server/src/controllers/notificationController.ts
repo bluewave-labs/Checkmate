@@ -35,6 +35,7 @@ class NotificationController {
 			return res.status(200).json({
 				success: true,
 				msg: "Notification sent successfully",
+				details: { service: SERVICE_NAME },
 			});
 		} catch (error) {
 			next(error);
