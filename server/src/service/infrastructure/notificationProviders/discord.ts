@@ -13,7 +13,7 @@ export class DiscordProvider implements INotificationProvider {
 		this.logger = logger;
 	}
 
-	sendTestAlert = async (notification: Notification) => {
+	sendTestAlert = async (notification: Partial<Notification>) => {
 		if (!notification.address) {
 			return false;
 		}
