@@ -11,7 +11,6 @@ class QueueRoutes {
 	}
 	initRoutes() {
 		this.router.get("/jobs", isAllowed(["admin", "superadmin"]), this.queueController.getJobs);
-		this.router.post("/jobs", isAllowed(["admin", "superadmin"]), this.queueController.addJob);
 
 		this.router.get("/metrics", isAllowed(["admin", "superadmin"]), this.queueController.getMetrics);
 		this.router.get("/all-metrics", isAllowed(["admin", "superadmin"]), this.queueController.getAllMetrics);

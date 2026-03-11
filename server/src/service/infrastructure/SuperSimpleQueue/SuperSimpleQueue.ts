@@ -42,7 +42,7 @@ type QueueJobSummary = {
 export interface ISuperSimpleQueue {
 	readonly serviceName: string;
 	init(): Promise<boolean>;
-	addJob(monitorId: string, monitor?: Monitor): Promise<void>;
+	addJob(monitorId: string, monitor: Monitor): Promise<void>;
 	deleteJob(monitor: Monitor): Promise<void>;
 	pauseJob(monitor: Monitor): Promise<void>;
 	resumeJob(monitor: Monitor): Promise<void>;

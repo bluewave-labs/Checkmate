@@ -54,18 +54,6 @@ class JobQueueController {
 		}
 	};
 
-	addJob = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			await this.jobQueue.addJob(Math.random().toString(36).substring(7));
-			return res.status(200).json({
-				success: true,
-				msg: "Job added to queue successfully",
-			});
-		} catch (error) {
-			next(error);
-		}
-	};
-
 	flushQueue = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const result = await this.jobQueue.flushQueues();
