@@ -3,7 +3,7 @@ import { Monitor, type MonitorType, MonitorTypes, UserRole } from "@/types/index
 import sslChecker, { SSLDetails } from "ssl-checker";
 type SSLCheckerType = typeof sslChecker;
 
-const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: Monitor): Promise<SSLDetails> => {
+export const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: Monitor): Promise<SSLDetails> => {
 	const monitorUrl = new URL(monitor.url);
 	const hostname = monitorUrl.hostname;
 	const cert = await checker(hostname);
@@ -12,14 +12,14 @@ const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: Monitor
 	}
 	return cert;
 };
-const requireString = (value: unknown, fieldName: string): string => {
+export const requireString = (value: unknown, fieldName: string): string => {
 	if (typeof value === "string" && value.trim().length > 0) {
 		return value;
 	}
 	throw new AppError({ message: `${fieldName} is required`, status: 400 });
 };
 
-const optionalString = (value: unknown, fieldName: string): string | undefined => {
+export const optionalString = (value: unknown, fieldName: string): string | undefined => {
 	if (value === undefined) {
 		return undefined;
 	}
@@ -29,7 +29,7 @@ const optionalString = (value: unknown, fieldName: string): string | undefined =
 	throw new AppError({ message: `${fieldName} must be a string`, status: 400 });
 };
 
-const optionalNumber = (value: unknown, fieldName: string): number | undefined => {
+export const optionalNumber = (value: unknown, fieldName: string): number | undefined => {
 	if (value === undefined) {
 		return undefined;
 	}
@@ -45,7 +45,7 @@ const optionalNumber = (value: unknown, fieldName: string): number | undefined =
 	throw new AppError({ message: `${fieldName} must be a number`, status: 400 });
 };
 
-const optionalBoolean = (value: unknown, fieldName: string): boolean | undefined => {
+export const optionalBoolean = (value: unknown, fieldName: string): boolean | undefined => {
 	if (value === undefined) {
 		return undefined;
 	}
@@ -63,7 +63,7 @@ const optionalBoolean = (value: unknown, fieldName: string): boolean | undefined
 	throw new AppError({ message: `${fieldName} must be a boolean`, status: 400 });
 };
 
-const parseMonitorTypeFilter = (value: unknown): MonitorType | MonitorType[] | undefined => {
+export const parseMonitorTypeFilter = (value: unknown): MonitorType | MonitorType[] | undefined => {
 	const parseSingle = (input: unknown): MonitorType => {
 		if (typeof input !== "string") {
 			throw new AppError({ message: "Monitor type must be a string", status: 400 });
@@ -83,7 +83,7 @@ const parseMonitorTypeFilter = (value: unknown): MonitorType | MonitorType[] | u
 	return parseSingle(value);
 };
 
-const parseSortOrder = (value: unknown): "asc" | "desc" | undefined => {
+export const parseSortOrder = (value: unknown): "asc" | "desc" | undefined => {
 	if (value === undefined) {
 		return undefined;
 	}
@@ -93,24 +93,31 @@ const parseSortOrder = (value: unknown): "asc" | "desc" | undefined => {
 	throw new AppError({ message: "order must be either 'asc' or 'desc'", status: 400 });
 };
 
-const requireTeamId = (teamId?: string): string => {
+export const requireTeamId = (teamId?: string): string => {
 	if (!teamId) {
 		throw new AppError({ message: "Team ID is required", status: 400 });
 	}
 	return teamId;
 };
 
-const requireUserId = (userId?: string): string => {
+export const requireUserId = (userId?: string): string => {
 	if (!userId) {
 		throw new AppError({ message: "User ID is required", status: 400 });
 	}
 	return userId;
 };
-const requireUserEmail = (userEmail?: string): string => {
+export const requireUserEmail = (userEmail?: string): string => {
 	if (!userEmail) {
 		throw new AppError({ message: "User email is required", status: 400 });
 	}
 	return userEmail;
+};
+
+export const requireFirstName = (firstName?: string): string => {
+	if (!firstName) {
+		throw new AppError({ message: "First name is required", status: 400 });
+	}
+	return firstName;
 };
 
 export const requireUserRoles = (userRoles?: UserRole[]): UserRole[] => {
@@ -118,17 +125,4 @@ export const requireUserRoles = (userRoles?: UserRole[]): UserRole[] => {
 		throw new AppError({ message: "User roles are required", status: 400 });
 	}
 	return userRoles;
-};
-
-export {
-	fetchMonitorCertificate,
-	requireString,
-	optionalString,
-	optionalNumber,
-	optionalBoolean,
-	parseMonitorTypeFilter,
-	parseSortOrder,
-	requireTeamId,
-	requireUserId,
-	requireUserEmail,
 };
