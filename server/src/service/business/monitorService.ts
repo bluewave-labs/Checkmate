@@ -29,7 +29,7 @@ export interface IMonitorService {
 	readonly serviceName: string;
 
 	// create
-	createMonitor(teamId: string, userId: string, body: Monitor): Promise<void>;
+	createMonitor(teamId: string, userId: string, body: Partial<Monitor>): Promise<void>;
 	createMonitors(monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null>;
 	addDemoMonitors(args: { userId: string; teamId: string }): Promise<Monitor[]>;
 
@@ -64,7 +64,7 @@ export interface IMonitorService {
 	getGroupsByTeamId(args: { teamId: string }): Promise<string[]>;
 
 	// update
-	editMonitor(args: { teamId: string; monitorId: string; body: Monitor }): Promise<Monitor>;
+	editMonitor(args: { teamId: string; monitorId: string; body: Partial<Monitor> }): Promise<Monitor>;
 	pauseMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 
 	// delete
@@ -430,7 +430,7 @@ export class MonitorService implements IMonitorService {
 		return groups;
 	};
 
-	editMonitor = async ({ teamId, monitorId, body }: { teamId: string; monitorId: string; body: Monitor }) => {
+	editMonitor = async ({ teamId, monitorId, body }: { teamId: string; monitorId: string; body: Partial<Monitor> }) => {
 		const editedMonitor = await this.monitorsRepository.updateById(monitorId, teamId, body);
 		await this.jobQueue.updateJob(editedMonitor);
 		return editedMonitor;

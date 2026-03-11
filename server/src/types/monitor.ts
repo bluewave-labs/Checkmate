@@ -12,7 +12,8 @@ export const supportsGeoCheck = (type: MonitorType): boolean => GeoCheckSupporte
 export const MonitorStatuses = ["up", "down", "paused", "initializing", "maintenance", "breached"] as const;
 export type MonitorStatus = (typeof MonitorStatuses)[number];
 
-export type MonitorMatchMethod = "equal" | "include" | "regex" | "";
+export const MonitorMatchMethods = ["equal", "include", "regex"] as const;
+export type MonitorMatchMethod = (typeof MonitorMatchMethods)[number] | "";
 
 export interface Monitor {
 	id: string;
