@@ -1,12 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { inviteBodyValidation, inviteVerificationBodyValidation } from "@/validation/authValidation.js";
-import { requireTeamId, requireUserRoles } from "@/controllers/controllerUtils.js";
+import { requireFirstName, requireTeamId, requireUserRoles } from "@/controllers/controllerUtils.js";
+import { IInviteService } from "@/service/index.js";
 const SERVICE_NAME = "inviteController";
 
 class InviteController {
 	static SERVICE_NAME = SERVICE_NAME;
-	private inviteService: any;
-	constructor(inviteService: any) {
+	private inviteService: IInviteService;
+	constructor(inviteService: IInviteService) {
 		this.inviteService = inviteService;
 	}
 
@@ -34,8 +35,9 @@ class InviteController {
 
 	sendInviteEmail = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const teamId = requireTeamId(req?.user?.teamId);
-			const userRoles = requireUserRoles(req?.user?.role);
+			const teamId = requireTeamId(req.user?.teamId);
+			const userRoles = requireUserRoles(req.user?.role);
+			const firstName = requireFirstName(req.user?.firstName);
 
 			const inviteRequest = req.body;
 			inviteRequest.teamId = teamId;
@@ -43,7 +45,7 @@ class InviteController {
 
 			const inviteToken = await this.inviteService.sendInviteEmail({
 				invite: inviteRequest,
-				firstName: req?.user?.firstName,
+				firstName,
 				userRoles,
 			});
 			return res.status(200).json({
