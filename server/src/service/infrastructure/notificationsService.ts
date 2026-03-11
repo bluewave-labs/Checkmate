@@ -8,14 +8,14 @@ import { ILogger } from "@/utils/logger.js";
 import type { INotificationMessageBuilder } from "@/service/infrastructure/notificationMessageBuilder.js";
 
 export interface INotificationsService {
-	createNotification: (notificationData: Partial<Notification>) => Promise<Notification>;
+	createNotification: (notificationData: Partial<Notification>, userId: string, teamId: string) => Promise<Notification>;
 	findById: (id: string, teamId: string) => Promise<Notification>;
 	findNotificationsByTeamId: (teamId: string) => Promise<Notification[]>;
 	updateById(id: string, teamId: string, updateData: Partial<Notification>): Promise<Notification>;
 	deleteById: (id: string, teamId: string) => Promise<Notification>;
 	handleNotifications: (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => Promise<boolean>;
 
-	sendTestNotification: (notification: Notification) => Promise<boolean>;
+	sendTestNotification: (notification: Partial<Notification>) => Promise<boolean>;
 	testAllNotifications: (notificationIds: string[]) => Promise<boolean>;
 }
 
@@ -174,7 +174,9 @@ export class NotificationsService implements INotificationsService {
 		return true;
 	};
 
-	createNotification = async (notificationData: Partial<Notification>): Promise<Notification> => {
+	createNotification = async (notificationData: Partial<Notification>, userId: string, teamId: string): Promise<Notification> => {
+		notificationData.userId = userId;
+		notificationData.teamId = teamId;
 		return await this.notificationsRepository.create(notificationData);
 	};
 

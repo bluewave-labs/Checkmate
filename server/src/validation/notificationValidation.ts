@@ -67,6 +67,22 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 	}),
 ]);
 
+export const testNotificationBodyValidation = createNotificationBodyValidation;
+
+export const deleteNotificationParamValidation = z.object({
+	id: z.string().min(1, "Notification ID is required"),
+});
+export const getNotificationByIdParamValidation = z.object({
+	id: z.string().min(1, "Notification ID is required"),
+});
+export const editNotificationParamValidation = z.object({
+	id: z.string().min(1, "Notification ID is required"),
+});
+
+export const testAllNotificationsBodyValidation = z.object({
+	monitorId: z.string().min(1, "Monitor ID is required"),
+});
+
 export const sendTestEmailBodyValidation = z.object({
 	to: z.string().min(1, "To field is required"),
 	systemEmailHost: z.string().optional(),
