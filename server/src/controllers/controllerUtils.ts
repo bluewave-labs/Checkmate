@@ -1,9 +1,9 @@
 import { AppError } from "@/utils/AppError.js";
 import { Monitor, type MonitorType, MonitorTypes, UserRole } from "@/types/index.js";
-type SslCertificate = { valid: boolean; validFrom: string; validTo: string; daysRemaining: number; validFor?: string[] };
-type SslChecker = (host: string, options?: Record<string, unknown>) => Promise<SslCertificate>;
+import sslChecker, { SSLDetails } from "ssl-checker";
+type SSLCheckerType = typeof sslChecker;
 
-const fetchMonitorCertificate = async (checker: SslChecker, monitor: Monitor): Promise<SslCertificate> => {
+const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: Monitor): Promise<SSLDetails> => {
 	const monitorUrl = new URL(monitor.url);
 	const hostname = monitorUrl.hostname;
 	const cert = await checker(hostname);
