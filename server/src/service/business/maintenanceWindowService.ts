@@ -1,6 +1,5 @@
 import { IMaintenanceWindowsRepository, IMonitorsRepository } from "@/repositories/index.js";
 import type { MaintenanceWindow } from "@/types/index.js";
-import { ParseBoolean } from "@/utils/utils.js";
 import { AppError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "maintenanceWindowService";
@@ -91,7 +90,6 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		field?: string;
 		order?: string;
 	}) => {
-		active = typeof active === "undefined" ? undefined : ParseBoolean(active);
 		page = page ?? 0;
 		rowsPerPage = rowsPerPage ?? 10;
 

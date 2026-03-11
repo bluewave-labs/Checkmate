@@ -19,9 +19,9 @@ class MaintenanceWindowController {
 
 	createMaintenanceWindows = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			createMaintenanceWindowBodyValidation.parse(req.body);
+			const validatedBody = createMaintenanceWindowBodyValidation.parse(req.body);
 			const teamId = requireTeamId(req?.user?.teamId);
-			await this.maintenanceWindowService.createMaintenanceWindow({ teamId, body: req.body });
+			await this.maintenanceWindowService.createMaintenanceWindow({ teamId, body: validatedBody });
 
 			return res.status(200).json({
 				success: true,
