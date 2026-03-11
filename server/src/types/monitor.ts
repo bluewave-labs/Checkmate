@@ -9,7 +9,7 @@ export type MonitorType = (typeof MonitorTypes)[number];
 export const GeoCheckSupportedTypes: readonly MonitorType[] = ["http", "ping"] as const;
 export const supportsGeoCheck = (type: MonitorType): boolean => GeoCheckSupportedTypes.includes(type);
 
-export const MonitorStatuses = ["up", "down", "paused", "initializing", "maintenance", "exceeded"] as const;
+export const MonitorStatuses = ["up", "down", "paused", "initializing", "maintenance", "breached"] as const;
 export type MonitorStatus = (typeof MonitorStatuses)[number];
 
 export type MonitorMatchMethod = "equal" | "include" | "regex" | "";
@@ -64,7 +64,7 @@ export interface MonitorsSummary {
 	pausedMonitors: number;
 	initializingMonitors: number;
 	maintenanceMonitors: number;
-	exceededMonitors: number;
+	breachedMonitors: number;
 }
 
 export interface MonitorsWithChecksByTeamIdResult {

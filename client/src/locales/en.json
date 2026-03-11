@@ -401,7 +401,7 @@
 				},
 				"status": {
 					"down": "down",
-					"exceeded": "threshold exceeded",
+					"breached": "threshold exceeded",
 					"initializing": "initializing",
 					"maintenance": "maintenance",
 					"paused": "paused",

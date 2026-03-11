@@ -135,7 +135,7 @@ const InfrastructureMonitors = () => {
 			/>
 			<HeaderMonitorsSummary
 				summary={summary}
-				showExceeded={true}
+				showBreached={true}
 			/>
 			<Stack
 				direction={isSmall ? "column" : "row"}

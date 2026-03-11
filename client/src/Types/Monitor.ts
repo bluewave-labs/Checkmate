@@ -32,7 +32,7 @@ export const MonitorStatuses = [
 	"paused",
 	"initializing",
 	"maintenance",
-	"exceeded",
+	"breached",
 ] as const;
 export type MonitorStatus = (typeof MonitorStatuses)[number];
 
@@ -90,7 +90,7 @@ export interface MonitorsSummary {
 	pausedMonitors: number;
 	initializingMonitors: number;
 	maintenanceMonitors: number;
-	exceededMonitors: number;
+	breachedMonitors: number;
 }
 
 export interface MonitorsWithChecksResponse {
