@@ -175,9 +175,3 @@ Here's how you can contribute:
 Thanks to [Gitbook](https://gitbook.io/) for giving us a free tier for their documentation platform, and [Poeditor](https://poeditor.com/) providing us a free account to use their i18n services. If you would like to sponsor Checkmate, please send an email to hello@bluewavelabs.ca
 
 If you would like to sponsor a feature, [see this page](https://checkmate.so/sponsored-features).
-
-Also check other developer and contributor-friendly projects of BlueWave:
-
-- [VerifyWise](https://github.com/bluewave-labs/verifywise), the first open source AI governance platform.
-- [DataRoom](https://github.com/bluewave-labs/bluewave-dataroom), an secure file sharing application, aka dataroom.
-- [Guidefox](https://github.com/bluewave-labs/guidefox), an application that helps new users learn how to use your product via hints, tours, popups and banners.
