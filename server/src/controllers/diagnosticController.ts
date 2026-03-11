@@ -1,12 +1,13 @@
+import { IDiagnosticService } from "@/service/index.js";
 import { Request, Response, NextFunction } from "express";
 
 const SERVICE_NAME = "diagnosticController";
 class DiagnosticController {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private diagnosticService: any;
+	private diagnosticService: IDiagnosticService;
 
-	constructor(diagnosticService: any) {
+	constructor(diagnosticService: IDiagnosticService) {
 		this.diagnosticService = diagnosticService;
 	}
 
