@@ -206,7 +206,7 @@ export class IncidentService implements IIncidentService {
 				resolutionType
 			);
 
-			const count = await this.incidentsRepository.countByTeamId(teamId, startDate, parsedStatus, monitorId, resolutionType);
+			const count = await this.incidentsRepository.countByTeamId(teamId, startDate, status, monitorId, resolutionType);
 
 			return { incidents, count };
 		} catch (error: unknown) {
