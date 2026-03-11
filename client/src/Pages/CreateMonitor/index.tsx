@@ -337,14 +337,14 @@ const CreateMonitorPage = () => {
 										/>
 										<RadioWithDescription
 											value="grpc"
-											label={t("pages.createMonitor.form.type.optionGrpc")}
+											label={t("pages.common.monitors.monitorTypes.optionGrpc")}
 											description={t(
 												"pages.createMonitor.form.type.optionGrpcDescription"
 											)}
 										/>
 										<RadioWithDescription
 											value="websocket"
-											label={t("pages.createMonitor.form.type.optionWebSocket")}
+											label={t("pages.common.monitors.monitorTypes.optionWebSocket")}
 											description={t(
 												"pages.createMonitor.form.type.optionWebSocketDescription"
 											)}

@@ -10,13 +10,13 @@ export const getStatusPageParamValidation = z.object({
 });
 
 export const getStatusPageQueryValidation = z.object({
-	type: z.literal("uptime"),
+	type: z.array(z.enum(["uptime", "infrastructure"])),
 	timeFrame: z.coerce.number().optional(),
 });
 
 export const createStatusPageBodyValidation = z
 	.object({
-		type: z.literal("uptime"),
+		type: z.array(z.enum(["uptime", "infrastructure"])),
 		companyName: z.string().min(1, "Company name is required"),
 		url: z.string().regex(/^[a-zA-Z0-9_-]+$/, {
 			message: "URL can only contain letters, numbers, underscores, and hyphens",
