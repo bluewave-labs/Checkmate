@@ -14,7 +14,6 @@ class QueueRoutes {
 		this.router.post("/jobs", isAllowed(["admin", "superadmin"]), this.queueController.addJob);
 
 		this.router.get("/metrics", isAllowed(["admin", "superadmin"]), this.queueController.getMetrics);
-		this.router.get("/health", isAllowed(["admin", "superadmin"]), this.queueController.checkQueueHealth);
 		this.router.get("/all-metrics", isAllowed(["admin", "superadmin"]), this.queueController.getAllMetrics);
 		this.router.post("/flush", isAllowed(["admin", "superadmin"]), this.queueController.flushQueue);
 	}

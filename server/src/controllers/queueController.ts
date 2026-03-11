@@ -1,11 +1,12 @@
+import { ISuperSimpleQueue } from "@/service/index.js";
 import { Request, Response, NextFunction } from "express";
 
 const SERVICE_NAME = "JobQueueController";
 
 class JobQueueController {
 	static SERVICE_NAME = SERVICE_NAME;
-	private jobQueue: any;
-	constructor(jobQueue: any) {
+	private jobQueue: ISuperSimpleQueue;
+	constructor(jobQueue: ISuperSimpleQueue) {
 		this.jobQueue = jobQueue;
 	}
 
@@ -72,19 +73,6 @@ class JobQueueController {
 				success: true,
 				msg: "Queue flushed successfully",
 				data: result,
-			});
-		} catch (error) {
-			next(error);
-		}
-	};
-
-	checkQueueHealth = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const stuckQueues = await this.jobQueue.checkQueueHealth();
-			return res.status(200).json({
-				success: true,
-				msg: "Queue health checked successfully",
-				data: stuckQueues,
 			});
 		} catch (error) {
 			next(error);
