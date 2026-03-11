@@ -50,7 +50,7 @@ export const editMaintenanceByIdWindowBodyValidation = z.object({
 	start: dateToString.optional(),
 	end: dateToString.optional(),
 	expiry: dateToString.optional(),
-	monitors: z.array(z.unknown()).optional(),
+	monitors: z.array(z.string()).optional(),
 	duration: z.number().optional(),
 	durationUnit: z.enum(["seconds", "minutes", "hours", "days"]).optional(),
 });

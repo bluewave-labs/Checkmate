@@ -33,11 +33,11 @@ class MaintenanceWindowController {
 	};
 	getMaintenanceWindowById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			getMaintenanceWindowByIdParamValidation.parse(req.params);
+			const validatedParams = getMaintenanceWindowByIdParamValidation.parse(req.params);
 
 			const teamId = requireTeamId(req.user?.teamId);
 
-			const maintenanceWindow = await this.maintenanceWindowService.getMaintenanceWindowById({ id: req.params.id as string, teamId });
+			const maintenanceWindow = await this.maintenanceWindowService.getMaintenanceWindowById({ id: validatedParams.id, teamId });
 
 			return res.status(200).json({
 				success: true,
