@@ -114,9 +114,7 @@ class NotificationController {
 
 			const teamId = requireTeamId(req.user?.teamId);
 			const notificationId = validatedParams.id;
-			if (!notificationId) {
-				throw new AppError({ message: "Notification ID is required", status: 400 });
-			}
+
 			const editedNotification = await this.notificationsService.updateById(notificationId, teamId, validatedBody);
 			return res.status(200).json({
 				success: true,
