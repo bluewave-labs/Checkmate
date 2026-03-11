@@ -25,7 +25,7 @@ export const getStatusPalette = (status: MonitorStatus): PaletteKey => {
 	if (status === "down") {
 		return "error";
 	}
-	if (status === "breached") {
+	if (status === "exceeded") {
 		return "error";
 	}
 	return "warning";

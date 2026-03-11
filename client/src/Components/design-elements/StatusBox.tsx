@@ -139,12 +139,12 @@ export const InitializingStatusBox = ({ n }: { n: number }) => {
 		/>
 	);
 };
-export const BreachedStatusBox = ({ n }: { n: number }) => {
+export const ExceededStatusBox = ({ n }: { n: number }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	return (
 		<StatusBox
-			label={t("pages.common.monitors.status.breached")}
+			label={t("pages.common.monitors.status.exceeded")}
 			n={n}
 			color={theme.palette.warning.main}
 		/>

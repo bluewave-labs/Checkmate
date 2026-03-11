@@ -262,9 +262,9 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 							$cond: [{ $eq: ["$status", "maintenance"] }, 1, 0],
 						},
 					},
-					breachedMonitors: {
+					exceededMonitors: {
 						$sum: {
-							$cond: [{ $eq: ["$status", "breached"] }, 1, 0],
+							$cond: [{ $eq: ["$status", "exceeded"] }, 1, 0],
 						},
 					},
 				},
@@ -281,7 +281,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 				pausedMonitors: 0,
 				initializingMonitors: 0,
 				maintenanceMonitors: 0,
-				breachedMonitors: 0,
+				exceededMonitors: 0,
 			}
 		);
 	};

@@ -21,8 +21,8 @@ export const StatusLabel = ({ status, sx }: { status: MonitorStatus; sx?: SxProp
 			return t("pages.common.monitors.status.up");
 		} else if (status === "down") {
 			return t("pages.common.monitors.status.down");
-		} else if (status === "breached") {
-			return t("pages.common.monitors.status.breached");
+		} else if (status === "exceeded") {
+			return t("pages.common.monitors.status.exceeded");
 		} else if (status === "maintenance") {
 			return t("pages.common.monitors.status.maintenance");
 		} else if (status === "paused") {

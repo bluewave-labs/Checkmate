@@ -2,6 +2,7 @@ import { migrateStatusWindowThreshold } from "./0001_migrateStatusWindowThreshol
 import { convertChecksToTimeSeries } from "./0002_convertChecksToTimeSeries.js";
 import { cleanupDuplicateMonitorStats } from "./0003_cleanupDuplicateMonitorStats.js";
 import { fixInfrastructureThresholds } from "./0004_fixInfrastructureThresholds.js";
+import { renameBreachedToExceeded } from "./0005_renameBreachedToExceeded.js";
 import MigrationModel from "../models/Migration.js";
 
 type MigrationEntry = {
@@ -14,6 +15,7 @@ const migrations: MigrationEntry[] = [
 	{ name: "0002_convertChecksToTimeSeries", execute: convertChecksToTimeSeries },
 	{ name: "0003_cleanupDuplicateMonitorStats", execute: cleanupDuplicateMonitorStats },
 	{ name: "0004_fixInfrastructureThresholds", execute: fixInfrastructureThresholds },
+	{ name: "0005_renameBreachedToExceeded", execute: renameBreachedToExceeded },
 ];
 
 const runMigrations = async (logger?: { info: Function; error: Function }) => {

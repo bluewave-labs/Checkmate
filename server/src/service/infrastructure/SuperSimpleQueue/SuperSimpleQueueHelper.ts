@@ -440,14 +440,14 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 			decision.shouldSendNotification = true;
 			decision.incidentReason = "status_down";
 			decision.notificationReason = "status_change";
-		} else if (monitor.status === "breached") {
+		} else if (monitor.status === "exceeded") {
 			// Hardware monitor exceeded thresholds
 			decision.shouldCreateIncident = true;
 			decision.shouldSendNotification = true;
 			decision.incidentReason = "threshold_breach";
 			decision.notificationReason = "threshold_breach";
-		} else if (monitor.status === "up" && (prevStatus === "down" || prevStatus === "breached")) {
-			// Monitor recovered from down or breached state
+		} else if (monitor.status === "up" && (prevStatus === "down" || prevStatus === "exceeded")) {
+			// Monitor recovered from down or exceeded state
 			decision.shouldResolveIncident = true;
 			decision.shouldSendNotification = true;
 			decision.notificationReason = "status_change";

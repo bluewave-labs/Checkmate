@@ -292,7 +292,7 @@ export class StatusService implements IStatusService {
 						temp: tempBreach,
 					};
 
-					// Update counters: decrement if breached, reset to 5 if not breached
+					// Update counters: decrement if exceeded, reset to 5 if not exceeded
 					if (cpuBreach) {
 						monitor.cpuAlertCounter = Math.max(0, monitor.cpuAlertCounter - 1);
 					} else {
@@ -321,23 +321,23 @@ export class StatusService implements IStatusService {
 					const anyCounterZero =
 						monitor.cpuAlertCounter === 0 || monitor.memoryAlertCounter === 0 || monitor.diskAlertCounter === 0 || monitor.tempAlertCounter === 0;
 
-					const anyThresholdBreached = cpuBreach || memoryBreach || diskBreach || tempBreach;
+					const anyThresholdExceeded = cpuBreach || memoryBreach || diskBreach || tempBreach;
 					const allThresholdsNormal = !cpuBreach && !memoryBreach && !diskBreach && !tempBreach;
 
-					// Update monitor status based on threshold breach state
+					// Update monitor status based on threshold exceeded state
 					if (newStatus !== "down") {
 						// Don't override "down" status - service unreachable takes precedence
 						// Check current monitor status, not newStatus for comparison
-						if (anyCounterZero && anyThresholdBreached && monitor.status !== "breached") {
-							// Initial breach: counter hit zero, change status to breached
-							newStatus = "breached";
+						if (anyCounterZero && anyThresholdExceeded && monitor.status !== "exceeded") {
+							// Threshold exceeded: counter hit zero, change status to exceeded
+							newStatus = "exceeded";
 							statusChanged = true;
-						} else if (anyCounterZero && anyThresholdBreached && monitor.status === "breached") {
-							// Already breached, keep status but don't mark as changed
-							newStatus = "breached";
+						} else if (anyCounterZero && anyThresholdExceeded && monitor.status === "exceeded") {
+							// Already exceeded, keep status but don't mark as changed
+							newStatus = "exceeded";
 							// statusChanged remains false
-						} else if (allThresholdsNormal && monitor.status === "breached") {
-							// All thresholds returned to normal, recover from breached state
+						} else if (allThresholdsNormal && monitor.status === "exceeded") {
+							// All thresholds returned to normal, recover from exceeded state
 							newStatus = "up";
 							statusChanged = true;
 						}
