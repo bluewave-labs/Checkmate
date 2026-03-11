@@ -20,3 +20,4 @@ export * from "./settingsValidation.js";
 export * from "./statusPageValidation.js";
 export * from "./notificationValidation.js";
 export * from "./userValidation.js";
+export * from "./incidentValidation.js";
