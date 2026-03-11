@@ -145,9 +145,9 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 	}
 
 	private buildThresholdBreachContent(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse<HardwareStatusPayload>): NotificationContent {
-		const title = `Threshold Breach: ${monitor.name}`;
-		const summary = `Monitor "${monitor.name}" has breached one or more thresholds.`;
-		const details = [`URL: ${monitor.url}`, `Status: Breached`, `Type: ${monitor.type}`];
+		const title = `Threshold Exceeded: ${monitor.name}`;
+		const summary = `Monitor "${monitor.name}" has exceeded one or more thresholds.`;
+		const details = [`URL: ${monitor.url}`, `Status: Threshold exceeded`, `Type: ${monitor.type}`];
 
 		const thresholds = this.extractThresholdBreaches(monitor, monitorStatusResponse);
 
