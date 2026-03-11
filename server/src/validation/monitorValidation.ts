@@ -14,7 +14,7 @@ export const getMonitorByIdQueryValidation = z.object({
 	dateRange: z.enum(["recent", "hour", "day", "week", "month", "all"]).optional(),
 	numToDisplay: z.coerce.number().optional(),
 	normalize: booleanCoercion.optional(),
-	continent: z.enum(GeoContinents).optional(),
+	continent: z.union([z.enum(GeoContinents), z.array(z.enum(GeoContinents))]).optional(),
 });
 
 export const getMonitorsByTeamIdParamValidation = z.object({});
