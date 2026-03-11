@@ -202,10 +202,6 @@ class MonitorController {
 			const validatedBody = importMonitorsBodyValidation.parse(req.body);
 			const monitors = validatedBody.monitors;
 
-			if (!monitors || !Array.isArray(monitors)) {
-				throw new AppError({ message: "Invalid request: monitors array is required", status: 400 });
-			}
-
 			const result = await this.monitorService.importMonitorsFromJSON({ teamId, userId, monitors });
 
 			return res.status(200).json({
