@@ -1,11 +1,12 @@
+import { ILogger } from "@/utils/logger.js";
 import { Request, Response, NextFunction } from "express";
 
 const SERVICE_NAME = "LogController";
 
 class LogController {
 	static SERVICE_NAME = SERVICE_NAME;
-	private logger: any;
-	constructor(logger: any) {
+	private logger: ILogger;
+	constructor(logger: ILogger) {
 		this.logger = logger;
 	}
 	get serviceName() {
@@ -14,7 +15,7 @@ class LogController {
 
 	getLogs = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const logs = await this.logger.getLogs();
+			const logs = this.logger.getLogs();
 			res.status(200).json({
 				success: true,
 				msg: "Logs fetched successfully",
