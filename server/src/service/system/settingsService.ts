@@ -19,6 +19,7 @@ export interface ISettingsService {
 	loadSettings(): EnvConfig;
 	getSettings(): EnvConfig;
 	getDBSettings(): Promise<Settings>;
+	updateDbSettings(newSettings: Partial<Settings>): Promise<Settings>;
 }
 
 export class SettingsService implements ISettingsService {
