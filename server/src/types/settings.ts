@@ -5,6 +5,10 @@ export interface SettingsThresholds {
 	temperature?: number;
 }
 
+export type SettingsUpdate = {
+	[K in keyof Settings]?: Settings[K] | null;
+};
+
 export interface Settings {
 	id: string;
 	checkTTL: number;

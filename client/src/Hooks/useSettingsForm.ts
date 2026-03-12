@@ -1,14 +1,14 @@
 import { useMemo } from "react";
 import { settingsSchema } from "@/Validation/settings";
 import type { Settings } from "@/Types/Settings";
-import type { SettingsFormData } from "@/Validation/settings";
+import type { SettingsFormInput } from "@/Validation/settings";
 
 interface UseSettingsFormOptions {
 	data?: Settings | null;
 }
 export const useSettingsForm = ({ data = null }: UseSettingsFormOptions = {}) => {
 	return useMemo(() => {
-		const defaults: SettingsFormData = {
+		const defaults: SettingsFormInput = {
 			systemEmailIgnoreTLS: data?.systemEmailIgnoreTLS ?? false,
 			systemEmailRequireTLS: data?.systemEmailRequireTLS ?? false,
 			systemEmailRejectUnauthorized: data?.systemEmailRejectUnauthorized ?? true,
