@@ -360,8 +360,7 @@ export class StatusService implements IStatusService {
 			};
 		} catch (error: unknown) {
 			throw new AppError({
-				message: `Failed to update monitor status: ${error instanceof Error ? error.message : "Unknown error"}`,
-				details: `Error updating status for monitor with id ${check.metadata.monitorId}`,
+				message: `Failed to update monitor with id ${check.metadata.monitorId} with status: ${error instanceof Error ? error.message : "Unknown error"}`,
 				service: SERVICE_NAME,
 				method: "updateMonitorStatus",
 			});
