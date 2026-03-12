@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { ISettingsRepository } from "@/repositories/settings/ISettingsRepository.js";
-import type { Settings } from "@/types/index.js";
+import type { Settings, SettingsUpdate } from "@/types/index.js";
 import { AppSettingsModel, type AppSettingsDocument } from "@/db/models/index.js";
 
 class MongoSettingsRepository implements ISettingsRepository {
@@ -59,12 +59,12 @@ class MongoSettingsRepository implements ISettingsRepository {
 		return this.toEntity(settings);
 	};
 
-	update = async (settings: Partial<Settings>) => {
+	update = async (settings: SettingsUpdate) => {
 		const update: Record<string, any> = { $set: {}, $unset: {} };
 
 		// Iterate through settings and separate into $set and $unset
 		Object.entries(settings).forEach(([key, value]) => {
-			if (value === undefined || value === "") {
+			if (value === undefined || value === null) {
 				// Unset undefined or empty string values
 				update.$unset[key] = "";
 			} else {
