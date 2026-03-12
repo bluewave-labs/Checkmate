@@ -28,10 +28,10 @@ export const updateAppSettingsBodyValidation = z
 
 		globalThresholds: z
 			.object({
-				cpu: z.union([z.number().min(1).max(100)]).optional(),
-				memory: z.union([z.number().min(1).max(100)]).optional(),
-				disk: z.union([z.number().min(1).max(100)]).optional(),
-				temperature: z.union([z.number().min(1).max(150)]).optional(),
+				cpu: z.number().min(1).max(100).optional(),
+				memory: z.number().min(1).max(100).optional(),
+				disk: z.number().min(1).max(100).optional(),
+				temperature: z.number().min(1).max(150).optional(),
 			})
 			.optional(),
 	})
