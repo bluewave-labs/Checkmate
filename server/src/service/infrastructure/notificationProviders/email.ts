@@ -14,7 +14,7 @@ export class EmailProvider implements INotificationProvider {
 		this.logger = logger;
 	}
 
-	async sendTestAlert(notification: Notification): Promise<boolean> {
+	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
 		const subject = "Test notification";
 		const html = await buildTestEmail(this.emailService);
 
@@ -84,7 +84,7 @@ export class EmailProvider implements INotificationProvider {
 			case "monitor_up":
 				return `Monitor ${message.monitor.name} is back up`;
 			case "threshold_breach":
-				return `Monitor ${message.monitor.name} threshold breached`;
+				return `Monitor ${message.monitor.name} threshold exceeded`;
 			case "threshold_resolved":
 				return `Monitor ${message.monitor.name} thresholds resolved`;
 			default:

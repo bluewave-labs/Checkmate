@@ -1,6 +1,5 @@
 import { IMaintenanceWindowsRepository, IMonitorsRepository } from "@/repositories/index.js";
 import type { MaintenanceWindow } from "@/types/index.js";
-import { ParseBoolean } from "@/utils/utils.js";
 import { AppError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "maintenanceWindowService";
@@ -10,7 +9,11 @@ export interface IMaintenanceWindowService {
 	getMaintenanceWindowById(params: { id: string; teamId: string }): Promise<MaintenanceWindow>;
 	getMaintenanceWindowsByTeamId(params: {
 		teamId: string;
-		query: Record<string, string>;
+		active?: boolean;
+		page?: number;
+		rowsPerPage?: number;
+		field?: string;
+		order?: string;
 	}): Promise<{ maintenanceWindows: MaintenanceWindow[]; maintenanceWindowCount: number }>;
 	getMaintenanceWindowsByMonitorId(params: { monitorId: string; teamId: string }): Promise<MaintenanceWindow[]>;
 	deleteMaintenanceWindow(params: { id: string; teamId: string }): Promise<MaintenanceWindow>;
@@ -72,14 +75,25 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		return await this.maintenanceWindowsRepository.findById(id, teamId);
 	};
 
-	getMaintenanceWindowsByTeamId = async ({ teamId, query }: { teamId: string; query: any }) => {
-		let { active, page, rowsPerPage, field, order } = query || {};
+	getMaintenanceWindowsByTeamId = async ({
+		teamId,
+		active,
+		page,
+		rowsPerPage,
+		field,
+		order,
+	}: {
+		teamId: string;
+		active?: boolean;
+		page?: number;
+		rowsPerPage?: number;
+		field?: string;
+		order?: string;
+	}) => {
+		page = page ?? 0;
+		rowsPerPage = rowsPerPage ?? 10;
 
-		active = typeof active === "undefined" ? undefined : ParseBoolean(active);
-		page = parseInt(page) || 0;
-		rowsPerPage = parseInt(rowsPerPage) || 10;
-
-		const maintenanceWindows = await this.maintenanceWindowsRepository.findByTeamId(teamId, active, page, rowsPerPage, field, order);
+		const maintenanceWindows = await this.maintenanceWindowsRepository.findByTeamId(teamId, page, rowsPerPage, field, order, active);
 		const maintenanceWindowCount = await this.maintenanceWindowsRepository.countByTeamId(teamId, active);
 		return { maintenanceWindows, maintenanceWindowCount };
 	};

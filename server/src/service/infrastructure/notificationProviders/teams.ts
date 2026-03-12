@@ -65,7 +65,7 @@ export class TeamsProvider implements INotificationProvider {
 		this.logger = logger;
 	}
 
-	async sendTestAlert(notification: Notification): Promise<boolean> {
+	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
 		if (!notification.address) {
 			return false;
 		}

@@ -98,7 +98,7 @@ export class WebhookProvider implements INotificationProvider {
 		};
 	}
 
-	sendTestAlert = async (notification: Notification) => {
+	sendTestAlert = async (notification: Partial<Notification>) => {
 		if (!notification.address) {
 			return false;
 		}

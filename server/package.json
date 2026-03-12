@@ -8,7 +8,7 @@
 		"test": "NODE_OPTIONS=--experimental-vm-modules c8 jest --runInBand",
 		"dev": "nodemon --exec tsx src/index.js",
 		"start": "node --watch ./dist/index.js",
-		"build": "tsc && tsc-alias",
+		"build": "tsc && tsc-alias && cp -r src/templates dist/templates",
 		"lint": "eslint .",
 		"lint-fix": "eslint --fix .",
 		"format": "prettier --write .",

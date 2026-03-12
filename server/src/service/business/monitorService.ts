@@ -29,7 +29,7 @@ export interface IMonitorService {
 	readonly serviceName: string;
 
 	// create
-	createMonitor(teamId: string, userId: string, body: Monitor): Promise<void>;
+	createMonitor(teamId: string, userId: string, body: Partial<Monitor>): Promise<void>;
 	createMonitors(monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null>;
 	addDemoMonitors(args: { userId: string; teamId: string }): Promise<Monitor[]>;
 
@@ -64,7 +64,7 @@ export interface IMonitorService {
 	getGroupsByTeamId(args: { teamId: string }): Promise<string[]>;
 
 	// update
-	editMonitor(args: { teamId: string; monitorId: string; body: Monitor }): Promise<Monitor>;
+	editMonitor(args: { teamId: string; monitorId: string; body: Partial<Monitor> }): Promise<Monitor>;
 	pauseMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 
 	// delete
@@ -75,7 +75,6 @@ export interface IMonitorService {
 	updateNotifications(args: { teamId: string; monitorIds: string[]; notificationIds: string[]; action: "add" | "remove" | "set" }): Promise<number>;
 
 	// other
-	sendTestEmail(args: { to: string }): Promise<string>;
 	exportMonitorsToJSON(args: { teamId: string }): Promise<Monitor[]>;
 	importMonitorsFromJSON(args: { teamId: string; userId: string; monitors: any[] }): Promise<{ imported: number; errors: string[] }>;
 }
@@ -433,7 +432,7 @@ export class MonitorService implements IMonitorService {
 		return groups;
 	};
 
-	editMonitor = async ({ teamId, monitorId, body }: { teamId: string; monitorId: string; body: Monitor }) => {
+	editMonitor = async ({ teamId, monitorId, body }: { teamId: string; monitorId: string; body: Partial<Monitor> }) => {
 		const editedMonitor = await this.monitorsRepository.updateById(monitorId, teamId, body);
 		await this.jobQueue.updateJob(editedMonitor);
 		return editedMonitor;
@@ -522,20 +521,6 @@ export class MonitorService implements IMonitorService {
 			})
 		);
 		return deletedCount;
-	};
-
-	sendTestEmail = async ({ to }: { to: string }): Promise<string> => {
-		const subject = "Test email from Checkmate";
-		const context = { testName: "Monitoring System" };
-
-		const html = await this.emailService.buildEmail("testEmailTemplate", context);
-		const messageId = await this.emailService.sendEmail(to, subject, html);
-
-		if (!messageId) {
-			throw new AppError({ message: "Failed to send test email.", service: SERVICE_NAME, method: "sendTestEmail", status: 500 });
-		}
-
-		return messageId;
 	};
 
 	exportMonitorsToJSON = async ({ teamId }: { teamId: string }): Promise<any[]> => {

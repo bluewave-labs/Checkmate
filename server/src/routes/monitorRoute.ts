@@ -51,7 +51,6 @@ class MonitorRoutes {
 		this.router.get("/export/json", isAllowed(["admin", "superadmin"]), this.monitorController.exportMonitorsToJSON);
 		this.router.post("/import/json", isAllowed(["admin", "superadmin"]), this.monitorController.importMonitorsFromJSON);
 
-		this.router.post("/test-email", isAllowed(["admin", "superadmin"]), this.monitorController.sendTestEmail);
 		this.router.get("/games", this.monitorController.getAllGames);
 
 		// Individual monitor CRUD routes

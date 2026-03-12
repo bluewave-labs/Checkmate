@@ -2,7 +2,6 @@ const SERVICE_NAME = "incidentService";
 import type { Monitor } from "@/types/monitor.js";
 import type { MonitorStatusResponse } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
-import { ParseBoolean } from "@/utils/utils.js";
 import { getDateForRange } from "@/utils/dataUtils.js";
 import type { IIncidentsRepository, IMonitorsRepository, IUsersRepository } from "@/repositories/index.js";
 import type { Incident, IncidentSummary, User } from "@/types/index.js";
@@ -22,13 +21,13 @@ export interface IIncidentService {
 		teamId: string,
 		sortOrder: string,
 		dateRange: string,
-		page: string,
-		rowsPerPage: string,
-		status: string,
-		monitorId: string,
-		resolutionType: string
+		page: number,
+		rowsPerPage: number,
+		status: boolean | undefined,
+		monitorId: string | undefined,
+		resolutionType: string | undefined
 	): Promise<{ incidents: Incident[]; count: number }>;
-	getIncidentSummary(teamId: string, limit?: string): Promise<IncidentSummary>;
+	getIncidentSummary(teamId: string, limit?: number): Promise<IncidentSummary>;
 	getIncidentById(incidentId: string, teamId: string): Promise<{ incident: Incident; monitor: Monitor; user: User | null }>;
 }
 
@@ -164,13 +163,13 @@ export class IncidentService implements IIncidentService {
 			});
 
 			return resolvedIncident;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({
 				service: SERVICE_NAME,
 				method: "resolveIncident",
-				message: error.message,
+				message: error instanceof Error ? error.message : "Unknown error",
 				details: { id: incidentId },
-				stack: error.stack,
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 			throw error;
 		}
@@ -180,11 +179,11 @@ export class IncidentService implements IIncidentService {
 		teamId: string,
 		sortOrder: string,
 		dateRange: string,
-		page: string,
-		rowsPerPage: string,
-		status: string,
-		monitorId: string,
-		resolutionType: string
+		page: number,
+		rowsPerPage: number,
+		status: boolean | undefined,
+		monitorId: string | undefined,
+		resolutionType: string | undefined
 	) => {
 		try {
 			if (!teamId) {
@@ -193,9 +192,8 @@ export class IncidentService implements IIncidentService {
 
 			const startDate = getDateForRange(dateRange);
 
-			const parsedPage = Number.isFinite(parseInt(page)) ? parseInt(page) : 0;
-			const parsedRowsPerPage = Number.isFinite(parseInt(rowsPerPage)) ? parseInt(rowsPerPage) : 20;
-			const parsedStatus = typeof status === "undefined" ? undefined : ParseBoolean(status);
+			const parsedPage = page ?? 0;
+			const parsedRowsPerPage = rowsPerPage ?? 20;
 
 			const incidents = await this.incidentsRepository.findByTeamId(
 				teamId,
@@ -203,43 +201,43 @@ export class IncidentService implements IIncidentService {
 				parsedPage,
 				parsedRowsPerPage,
 				sortOrder,
-				parsedStatus,
+				status,
 				monitorId,
 				resolutionType
 			);
 
-			const count = await this.incidentsRepository.countByTeamId(teamId, startDate, parsedStatus, monitorId, resolutionType);
+			const count = await this.incidentsRepository.countByTeamId(teamId, startDate, status, monitorId, resolutionType);
 
 			return { incidents, count };
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({
 				service: SERVICE_NAME,
 				method: "getIncidentsByTeam",
-				message: error.message,
+				message: error instanceof Error ? error.message : "Unknown error",
 				details: { teamId },
-				stack: error.stack,
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 			throw error;
 		}
 	};
 
-	getIncidentSummary = async (teamId: string, limit?: string) => {
+	getIncidentSummary = async (teamId: string, limit?: number) => {
 		try {
 			if (!teamId) {
 				throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "getIncidentSummary", status: 400 });
 			}
 
-			const parsedLimit = limit && Number.isFinite(parseInt(limit, 10)) ? parseInt(limit, 10) : 10;
+			const parsedLimit = limit ?? 10;
 			const summary = await this.incidentsRepository.findSummaryByTeamId(teamId, parsedLimit);
 
 			return summary;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({
 				service: SERVICE_NAME,
 				method: "getIncidentSummary",
-				message: error.message,
+				message: error instanceof Error ? error.message : "Unknown error",
 				details: { teamId },
-				stack: error.stack,
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 			throw error;
 		}
@@ -254,13 +252,13 @@ export class IncidentService implements IIncidentService {
 				user = await this.usersRepository.findById(incident.resolvedBy);
 			}
 			return { incident, monitor, user };
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({
 				service: SERVICE_NAME,
 				method: "getIncidentById",
-				message: error.message,
+				message: error instanceof Error ? error.message : "Unknown error",
 				details: { incidentId },
-				stack: error.stack,
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 			throw error;
 		}

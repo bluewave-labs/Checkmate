@@ -1,27 +1,31 @@
 import { Request, Response, NextFunction } from "express";
 
-import { Notification } from "@/types/index.js";
-import { createNotificationBodyValidation } from "@/validation/notificationValidation.js";
+import {
+	createNotificationBodyValidation,
+	deleteNotificationParamValidation,
+	getNotificationByIdParamValidation,
+	testNotificationBodyValidation,
+	editNotificationParamValidation,
+	testAllNotificationsBodyValidation,
+} from "@/validation/notificationValidation.js";
 import { AppError } from "@/utils/AppError.js";
 import { INotificationsService } from "@/service/index.js";
-import { requireTeamId } from "./controllerUtils.js";
+import { requireTeamId, requireUserId } from "./controllerUtils.js";
+import { IMonitorsRepository } from "@/repositories/index.js";
 
 const SERVICE_NAME = "NotificationController";
 
 class NotificationController {
-	static SERVICE_NAME = SERVICE_NAME;
 	private notificationsService: INotificationsService;
-	constructor(notificationsService: INotificationsService) {
+	private monitorsRepository: IMonitorsRepository;
+	constructor(notificationsService: INotificationsService, monitorsRepository: IMonitorsRepository) {
 		this.notificationsService = notificationsService;
-	}
-
-	get serviceName() {
-		return NotificationController.SERVICE_NAME;
+		this.monitorsRepository = monitorsRepository;
 	}
 
 	testNotification = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const notification: Notification = req.body;
+			const notification = testNotificationBodyValidation.parse(req.body);
 			const success = await this.notificationsService.sendTestNotification(notification);
 
 			if (!success) {
@@ -31,6 +35,7 @@ class NotificationController {
 			return res.status(200).json({
 				success: true,
 				msg: "Notification sent successfully",
+				details: { service: SERVICE_NAME },
 			});
 		} catch (error) {
 			next(error);
@@ -39,23 +44,12 @@ class NotificationController {
 
 	createNotification = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			createNotificationBodyValidation.parse(req.body);
+			const validatedBody = createNotificationBodyValidation.parse(req.body);
 
-			const body = req.body;
+			const teamId = requireTeamId(req.user?.teamId);
+			const userId = requireUserId(req.user?.id);
 
-			const teamId = req?.user?.teamId;
-			if (!teamId) {
-				throw new AppError({ message: "Team ID is required", status: 400 });
-			}
-
-			const userId = req?.user?.id;
-			if (!userId) {
-				throw new AppError({ message: "User ID is required", status: 400 });
-			}
-			body.userId = userId;
-			body.teamId = teamId;
-
-			const notification = await this.notificationsService.createNotification(body);
+			const notification = await this.notificationsService.createNotification(validatedBody, userId, teamId);
 			return res.status(200).json({
 				success: true,
 				msg: "Notification created successfully",
@@ -68,11 +62,7 @@ class NotificationController {
 
 	getNotificationsByTeamId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const teamId = req?.user?.teamId;
-			if (!teamId) {
-				throw new AppError({ message: "Team ID is required", status: 400 });
-			}
-
+			const teamId = requireTeamId(req.user?.teamId);
 			const notifications = await this.notificationsService.findNotificationsByTeamId(teamId);
 
 			return res.status(200).json({
@@ -87,17 +77,10 @@ class NotificationController {
 
 	deleteNotification = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const teamId = req?.user?.teamId;
-			if (!teamId) {
-				throw new AppError({ message: "Team ID is required", status: 400 });
-			}
+			const teamId = requireTeamId(req.user?.teamId);
+			const validatedParams = deleteNotificationParamValidation.parse(req.params);
 
-			const notificationId = req.params.id as string;
-			if (!notificationId) {
-				throw new AppError({ message: "Notification ID is required", status: 400 });
-			}
-
-			await this.notificationsService.deleteById(notificationId, teamId);
+			await this.notificationsService.deleteById(validatedParams.id, teamId);
 			return res.status(200).json({
 				success: true,
 				msg: "Notification deleted successfully",
@@ -110,12 +93,9 @@ class NotificationController {
 	getNotificationById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const teamId = requireTeamId(req.user?.teamId);
-			const notificationId = req.params.id as string;
-			if (!notificationId) {
-				throw new AppError({ message: "Notification ID is required", status: 400 });
-			}
+			const validatedParams = getNotificationByIdParamValidation.parse(req.params);
 
-			const notification = await this.notificationsService.findById(notificationId, teamId);
+			const notification = await this.notificationsService.findById(validatedParams.id, teamId);
 
 			return res.status(200).json({
 				success: true,
@@ -129,14 +109,13 @@ class NotificationController {
 
 	editNotification = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			createNotificationBodyValidation.parse(req.body);
+			const validatedBody = createNotificationBodyValidation.parse(req.body);
+			const validatedParams = editNotificationParamValidation.parse(req.params);
 
 			const teamId = requireTeamId(req.user?.teamId);
-			const notificationId = req.params.id as string;
-			if (!notificationId) {
-				throw new AppError({ message: "Notification ID is required", status: 400 });
-			}
-			const editedNotification = await this.notificationsService.updateById(notificationId, teamId, req.body);
+			const notificationId = validatedParams.id;
+
+			const editedNotification = await this.notificationsService.updateById(notificationId, teamId, validatedBody);
 			return res.status(200).json({
 				success: true,
 				msg: "Notification updated successfully",
@@ -150,14 +129,12 @@ class NotificationController {
 
 	testAllNotifications = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const monitorId = req.body.monitorId;
-			const teamId = req?.user?.teamId;
-			if (!teamId) {
-				throw new AppError({ message: "Team ID is required", status: 400 });
-			}
+			const validatedBody = testAllNotificationsBodyValidation.parse(req.body);
 
-			// Removed logic since that function shouldn't be here, testing notifications is separate from this controller.
-			const notifications: string[] = []; // Fix TS definition error temporarily.
+			const teamId = requireTeamId(req.user?.teamId);
+
+			const monitor = await this.monitorsRepository.findById(validatedBody.monitorId, teamId);
+			const notifications = monitor.notifications || [];
 
 			if (notifications.length === 0) {
 				throw new AppError({ message: "No notifications", status: 400 });

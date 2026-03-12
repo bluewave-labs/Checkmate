@@ -3,7 +3,6 @@ import { updateNotificationsValidation } from "@/validation/notificationValidati
 import {
 	getMonitorByIdParamValidation,
 	getMonitorByIdQueryValidation,
-	getMonitorsByTeamIdParamValidation,
 	getMonitorsByTeamIdQueryValidation,
 	getMonitorsWithChecksQueryValidation,
 	createMonitorBodyValidation,
@@ -12,19 +11,12 @@ import {
 	getCertificateParamValidation,
 	getHardwareDetailsByIdParamValidation,
 	getHardwareDetailsByIdQueryValidation,
+	getUptimeDetailsByIdParamValidation,
+	getUptimeDetailsByIdQueryValidation,
+	importMonitorsBodyValidation,
 } from "@/validation/monitorValidation.js";
 import sslChecker from "ssl-checker";
-import {
-	fetchMonitorCertificate,
-	requireString,
-	optionalString,
-	optionalNumber,
-	optionalBoolean,
-	parseMonitorTypeFilter,
-	parseSortOrder,
-	requireTeamId,
-	requireUserId,
-} from "./controllerUtils.js";
+import { fetchMonitorCertificate, requireTeamId, requireUserId } from "./controllerUtils.js";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorService, INotificationsService } from "@/service/index.js";
 import { GeoContinent } from "@/types/geoCheck.js";
@@ -47,10 +39,9 @@ class MonitorController {
 
 	getMonitorCertificate = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			getCertificateParamValidation.parse(req.params);
-			const teamId = requireTeamId(req?.user?.teamId);
-			const monitorId = requireString(req.params?.monitorId, "Monitor ID");
-			const monitor = await this.monitorService.getMonitorById({ teamId, monitorId });
+			const validatedParams = getCertificateParamValidation.parse(req.params);
+			const teamId = requireTeamId(req.user?.teamId);
+			const monitor = await this.monitorService.getMonitorById({ teamId, monitorId: validatedParams.monitorId });
 			const certificate = await fetchMonitorCertificate(sslChecker, monitor);
 
 			return res.status(200).json({
@@ -67,10 +58,14 @@ class MonitorController {
 
 	getUptimeDetailsById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
-			const dateRange = requireString(req?.query?.dateRange, "dateRange");
-			const normalize = optionalBoolean(req?.query?.normalize, "normalize");
-			const teamId = requireTeamId(req?.user?.teamId);
+			const validatedParams = getUptimeDetailsByIdParamValidation.parse(req.params);
+			const validatedQuery = getUptimeDetailsByIdQueryValidation.parse(req.query);
+
+			const monitorId = validatedParams.monitorId;
+			const dateRange = validatedQuery.dateRange;
+			const normalize = validatedQuery.normalize;
+
+			const teamId = requireTeamId(req.user?.teamId);
 
 			const data = await this.monitorService.getUptimeDetailsById({
 				teamId,
@@ -90,12 +85,12 @@ class MonitorController {
 
 	getHardwareDetailsById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			getHardwareDetailsByIdParamValidation.parse(req.params);
-			getHardwareDetailsByIdQueryValidation.parse(req.query);
+			const validatedParams = getHardwareDetailsByIdParamValidation.parse(req.params);
+			const validatedQuery = getHardwareDetailsByIdQueryValidation.parse(req.query);
 
-			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
-			const dateRange = optionalString(req?.query?.dateRange, "dateRange") || "recent";
-			const teamId = requireTeamId(req?.user?.teamId);
+			const monitorId = validatedParams.monitorId;
+			const dateRange = validatedQuery.dateRange || "recent";
+			const teamId = requireTeamId(req.user?.teamId);
 
 			const data = await this.monitorService.getHardwareDetailsById({
 				teamId,
@@ -114,12 +109,12 @@ class MonitorController {
 	};
 	getPageSpeedDetailsById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			getHardwareDetailsByIdParamValidation.parse(req.params);
-			getHardwareDetailsByIdQueryValidation.parse(req.query);
+			const validatedParams = getHardwareDetailsByIdParamValidation.parse(req.params);
+			const validatedQuery = getHardwareDetailsByIdQueryValidation.parse(req.query);
 
-			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
-			const dateRange = requireString(req?.query?.dateRange, "dateRange");
-			const teamId = requireTeamId(req?.user?.teamId);
+			const monitorId = validatedParams.monitorId;
+			const dateRange = validatedQuery.dateRange || "recent";
+			const teamId = requireTeamId(req.user?.teamId);
 
 			const data = await this.monitorService.getPageSpeedDetailsById({
 				teamId,
@@ -139,18 +134,14 @@ class MonitorController {
 
 	getGeoChecksByMonitorId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			getMonitorByIdParamValidation.parse(req.params);
-			getMonitorByIdQueryValidation.parse(req.query);
+			const validatedParams = getMonitorByIdParamValidation.parse(req.params);
+			const validatedQuery = getMonitorByIdQueryValidation.parse(req.query);
 
-			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
-			const dateRange = requireString(req?.query?.dateRange, "dateRange");
-			const continentParam = req?.query?.continent;
-			const continents = continentParam
-				? Array.isArray(continentParam)
-					? (continentParam as GeoContinent[])
-					: [continentParam as GeoContinent]
-				: undefined;
-			const teamId = requireTeamId(req?.user?.teamId);
+			const monitorId = validatedParams.monitorId;
+			const dateRange = validatedQuery.dateRange || "recent";
+			const continentParam = validatedQuery.continent;
+			const continents = continentParam ? (Array.isArray(continentParam) ? continentParam : [continentParam]) : undefined;
+			const teamId = requireTeamId(req.user?.teamId);
 
 			const data = await this.monitorService.getGeoChecksByMonitorId({
 				teamId,
@@ -171,11 +162,10 @@ class MonitorController {
 
 	getMonitorById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			getMonitorByIdParamValidation.parse(req.params);
-			getMonitorByIdQueryValidation.parse(req.query);
+			const validatedParams = getMonitorByIdParamValidation.parse(req.params);
 
-			const teamId = requireTeamId(req?.user?.teamId);
-			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
+			const teamId = requireTeamId(req.user?.teamId);
+			const monitorId = validatedParams.monitorId;
 
 			const monitor = await this.monitorService.getMonitorById({ teamId, monitorId });
 
@@ -191,12 +181,12 @@ class MonitorController {
 
 	createMonitor = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			createMonitorBodyValidation.parse(req.body);
+			const validatedBody = createMonitorBodyValidation.parse(req.body);
 
-			const userId = requireString(req?.user?.id, "User ID");
-			const teamId = requireTeamId(req?.user?.teamId);
+			const userId = requireUserId(req.user?.id);
+			const teamId = requireTeamId(req.user?.teamId);
 
-			const monitor = await this.monitorService.createMonitor(teamId, userId, req.body);
+			const monitor = await this.monitorService.createMonitor(teamId, userId, validatedBody);
 
 			return res.status(200).json({
 				success: true,
@@ -210,14 +200,10 @@ class MonitorController {
 
 	importMonitorsFromJSON = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const teamId = requireTeamId(req?.user?.teamId);
-			const userId = requireUserId(req?.user?.id);
-
-			const { monitors } = req.body;
-
-			if (!monitors || !Array.isArray(monitors)) {
-				throw new AppError({ message: "Invalid request: monitors array is required", status: 400 });
-			}
+			const teamId = requireTeamId(req.user?.teamId);
+			const userId = requireUserId(req.user?.id);
+			const validatedBody = importMonitorsBodyValidation.parse(req.body);
+			const monitors = validatedBody.monitors;
 
 			const result = await this.monitorService.importMonitorsFromJSON({ teamId, userId, monitors });
 
@@ -233,9 +219,9 @@ class MonitorController {
 
 	deleteMonitor = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			getMonitorByIdParamValidation.parse(req.params);
-			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
-			const teamId = requireTeamId(req?.user?.teamId);
+			const validatedParams = getMonitorByIdParamValidation.parse(req.params);
+			const teamId = requireTeamId(req.user?.teamId);
+			const monitorId = validatedParams.monitorId;
 
 			const deletedMonitor = await this.monitorService.deleteMonitor({ teamId, monitorId });
 
@@ -251,8 +237,7 @@ class MonitorController {
 
 	deleteAllMonitors = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const teamId = requireTeamId(req?.user?.teamId);
-
+			const teamId = requireTeamId(req.user?.teamId);
 			const deletedCount = await this.monitorService.deleteAllMonitors({ teamId });
 
 			return res.status(200).json({
@@ -266,12 +251,12 @@ class MonitorController {
 
 	editMonitor = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			getMonitorByIdParamValidation.parse(req.params);
-			editMonitorBodyValidation.parse(req.body);
-			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
-			const teamId = requireTeamId(req?.user?.teamId);
+			const validatedParams = getMonitorByIdParamValidation.parse(req.params);
+			const validatedBody = editMonitorBodyValidation.parse(req.body);
+			const monitorId = validatedParams.monitorId;
+			const teamId = requireTeamId(req.user?.teamId);
 
-			const editedMonitor = await this.monitorService.editMonitor({ teamId, monitorId, body: req.body });
+			const editedMonitor = await this.monitorService.editMonitor({ teamId, monitorId, body: validatedBody });
 
 			return res.status(200).json({
 				success: true,
@@ -285,10 +270,10 @@ class MonitorController {
 
 	pauseMonitor = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			pauseMonitorParamValidation.parse(req.params);
+			const validatedParams = pauseMonitorParamValidation.parse(req.params);
 
-			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
-			const teamId = requireTeamId(req?.user?.teamId);
+			const monitorId = validatedParams.monitorId;
+			const teamId = requireTeamId(req.user?.teamId);
 
 			const monitor = await this.monitorService.pauseMonitor({ teamId, monitorId });
 
@@ -304,8 +289,8 @@ class MonitorController {
 
 	addDemoMonitors = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const id = requireString(req?.user?.id, "User ID");
-			const teamId = requireTeamId(req?.user?.teamId);
+			const id = requireUserId(req.user?.id);
+			const teamId = requireTeamId(req.user?.teamId);
 			const demoMonitors = await this.monitorService.addDemoMonitors({ userId: id, teamId });
 
 			return res.status(200).json({
@@ -318,32 +303,13 @@ class MonitorController {
 		}
 	};
 
-	sendTestEmail = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { to } = req.body;
-			if (!to || typeof to !== "string") {
-				throw new AppError({ message: "Invalid 'to' email address", status: 400 });
-			}
-
-			const messageId = await this.monitorService.sendTestEmail({ to });
-			return res.status(200).json({
-				success: true,
-				msg: "Test email sent successfully",
-				data: { messageId },
-			});
-		} catch (error) {
-			next(error);
-		}
-	};
-
 	getMonitorsByTeamId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			getMonitorsByTeamIdParamValidation.parse(req.params);
-			getMonitorsByTeamIdQueryValidation.parse(req.query);
+			const validatedQuery = getMonitorsByTeamIdQueryValidation.parse(req.query);
 
-			const teamId = requireTeamId(req?.user?.teamId);
-			const type = parseMonitorTypeFilter(req.query?.type);
-			const filter = optionalString(req.query?.filter, "filter");
+			const teamId = requireTeamId(req.user?.teamId);
+			const type = validatedQuery.type;
+			const filter = validatedQuery.filter;
 
 			const monitors = await this.monitorService.getMonitorsByTeamId({ teamId, type, filter });
 
@@ -359,17 +325,17 @@ class MonitorController {
 
 	getMonitorsWithChecksByTeamId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			getMonitorsByTeamIdParamValidation.parse(req.params);
-			getMonitorsWithChecksQueryValidation.parse(req.query);
-			const explain = optionalBoolean(req?.query?.explain, "explain");
-			const limit = optionalNumber(req?.query?.limit, "limit");
-			const page = optionalNumber(req?.query?.page, "page");
-			const rowsPerPage = optionalNumber(req?.query?.rowsPerPage, "rowsPerPage");
-			const filter = optionalString(req?.query?.filter, "filter");
-			const field = optionalString(req?.query?.field, "field");
-			const order = parseSortOrder(req?.query?.order);
-			const type = parseMonitorTypeFilter(req?.query?.type);
-			const teamId = requireTeamId(req?.user?.teamId);
+			const validatedQuery = getMonitorsWithChecksQueryValidation.parse(req.query);
+
+			const explain = validatedQuery.explain;
+			const limit = validatedQuery.limit;
+			const page = validatedQuery.page;
+			const rowsPerPage = validatedQuery.rowsPerPage;
+			const filter = validatedQuery.filter;
+			const field = validatedQuery.field;
+			const order = validatedQuery.order;
+			const type = validatedQuery.type;
+			const teamId = requireTeamId(req.user?.teamId);
 
 			const monitors = await this.monitorService.getMonitorsWithChecksByTeamId({
 				teamId,
@@ -394,11 +360,7 @@ class MonitorController {
 
 	exportMonitorsToJSON = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const teamId = req?.user?.teamId;
-			if (!teamId) {
-				throw new AppError({ message: "Team ID is required", status: 400 });
-			}
-
+			const teamId = requireTeamId(req.user?.teamId);
 			const json = await this.monitorService.exportMonitorsToJSON({ teamId });
 
 			return res.status(200).json({
@@ -426,11 +388,7 @@ class MonitorController {
 
 	getGroupsByTeamId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const teamId = req?.user?.teamId;
-			if (!teamId) {
-				throw new AppError({ message: "Team ID is required", status: 400 });
-			}
-
+			const teamId = requireTeamId(req.user?.teamId);
 			const groups = await this.monitorService.getGroupsByTeamId({ teamId });
 
 			return res.status(200).json({
