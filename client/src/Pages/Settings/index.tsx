@@ -20,7 +20,7 @@ import { useGet, usePatch, usePost, useLazyGet } from "@/Hooks/UseApi";
 import { useToast } from "@/Hooks/UseToast";
 import { useSettingsForm } from "@/Hooks/useSettingsForm";
 import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
-import type { SettingsFormData } from "@/Validation/settings";
+import type { SettingsFormData, SettingsFormInput } from "@/Validation/settings";
 import { useState } from "react";
 import { Controller } from "react-hook-form";
 import { TextField, Button, FieldLabel, SliderWithLabel } from "@/Components/inputs";
@@ -89,7 +89,7 @@ export const SettingsPage = () => {
 	// Initialize form with schema and defaults
 	const { schema, defaults } = useSettingsForm({ data: fetchedSettings?.settings });
 
-	const form = useForm<SettingsFormData>({
+	const form = useForm<SettingsFormInput, unknown, SettingsFormData>({
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 		mode: "onChange",
@@ -256,20 +256,7 @@ export const SettingsPage = () => {
 			delete (dataToSend as any).systemEmailPassword;
 		}
 
-		// Convert undefined to empty string for backend unsetting
-		const processedData = Object.entries(dataToSend).reduce((acc, [key, value]) => {
-			const typedKey = key as keyof SettingsFormData;
-			if (value === undefined) {
-				(acc as any)[typedKey] = "";
-			} else if (typeof value === "object" && value !== null) {
-				(acc as any)[typedKey] = value;
-			} else {
-				(acc as any)[typedKey] = value;
-			}
-			return acc;
-		}, {} as Partial<SettingsFormData>);
-
-		const result = await patch("/settings", processedData as SettingsFormData);
+		const result = await patch("/settings", dataToSend as SettingsFormData);
 
 		if (result?.success) {
 			// Update API key state from response
