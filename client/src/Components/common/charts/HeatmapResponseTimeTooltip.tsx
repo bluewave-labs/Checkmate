@@ -58,7 +58,7 @@ export const HeatmapResponseTimeTooltip = ({
 					</Typography>
 					<Typography>
 						{t("common.labels.responseTime")}:{" "}
-						{check?.originalResponseTime?.toFixed() ?? "-"} ms
+						{check?.originalResponseTime?.toFixed() ?? "N/A"} ms
 					</Typography>
 					<Typography textTransform={"capitalize"}>
 						Status:{" "}
