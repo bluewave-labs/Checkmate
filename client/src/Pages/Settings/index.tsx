@@ -262,15 +262,7 @@ export const SettingsPage = () => {
 			if (value === undefined) {
 				(acc as any)[typedKey] = "";
 			} else if (typeof value === "object" && value !== null) {
-				// Handle nested objects like globalThresholds
-				// Convert 0 to "" for unsetting thresholds
-				(acc as any)[typedKey] = Object.entries(value).reduce(
-					(nested, [nestedKey, nestedValue]) => ({
-						...nested,
-						[nestedKey]: nestedValue === undefined ? "" : nestedValue,
-					}),
-					{}
-				);
+				(acc as any)[typedKey] = value;
 			} else {
 				(acc as any)[typedKey] = value;
 			}
