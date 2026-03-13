@@ -79,10 +79,7 @@ interface GlobalpingLimitsResponse {
 	rateLimit?: {
 		measurements?: {
 			create?: {
-				type?: "ip" | "user";
-				limit?: number | null;
 				remaining?: number | null;
-				reset?: number | null;
 			};
 		};
 	};
@@ -91,18 +88,13 @@ interface GlobalpingLimitsResponse {
 	};
 	remainingCredits?: number | null;
 	remainingLimit?: number | null;
-	totalLimit?: number | null;
-	resetAt?: string | null;
 }
 
 export interface GlobalpingStatus {
-	keyConfigured: boolean;
 	credentialState: GlobalpingCredentialState;
 	creditState: GlobalpingCreditState;
 	remainingCredits?: number | null;
 	remainingLimit?: number | null;
-	totalLimit?: number | null;
-	resetAt?: string | null;
 }
 
 export interface GlobalpingFailureDetails {
@@ -110,7 +102,6 @@ export interface GlobalpingFailureDetails {
 	credentialState: GlobalpingCredentialState;
 	message: string;
 	runtimeBehavior: GlobalpingRuntimeBehavior;
-	retryable: boolean;
 }
 
 export interface IGlobalPingService {
@@ -144,7 +135,6 @@ export class GlobalPingService implements IGlobalPingService {
 				credentialState: "invalid",
 				message: "The configured Globalping API key was rejected.",
 				runtimeBehavior: "fail",
-				retryable: false,
 			};
 		}
 
@@ -154,7 +144,6 @@ export class GlobalPingService implements IGlobalPingService {
 				credentialState: "forbidden",
 				message: "The configured Globalping API key is not allowed to access this resource.",
 				runtimeBehavior: "fail",
-				retryable: false,
 			};
 		}
 
@@ -164,7 +153,6 @@ export class GlobalPingService implements IGlobalPingService {
 				credentialState: "upstream_unavailable",
 				message: "Globalping rate limit hit.",
 				runtimeBehavior: "retryable",
-				retryable: true,
 			};
 		}
 
@@ -173,7 +161,6 @@ export class GlobalPingService implements IGlobalPingService {
 			credentialState: "upstream_unavailable",
 			message: "Globalping status is currently unavailable.",
 			runtimeBehavior: "retryable",
-			retryable: true,
 		};
 	}
 
@@ -182,7 +169,6 @@ export class GlobalPingService implements IGlobalPingService {
 
 		if (!apiKey) {
 			return {
-				keyConfigured: false,
 				credentialState: "missing",
 				creditState: "unknown",
 			};
@@ -196,7 +182,6 @@ export class GlobalPingService implements IGlobalPingService {
 			const creditState = this.deriveCreditState(parsed.remainingCredits);
 
 			return {
-				keyConfigured: true,
 				credentialState: "valid",
 				creditState,
 				...parsed,
@@ -206,7 +191,6 @@ export class GlobalPingService implements IGlobalPingService {
 			this.logFailure("getUsageStatus", error, failure);
 
 			return {
-				keyConfigured: true,
 				credentialState: failure.credentialState,
 				creditState: "unknown",
 			};
@@ -236,7 +220,7 @@ export class GlobalPingService implements IGlobalPingService {
 			}
 
 			const apiKey = await this.getApiKey();
-			const cleanTarget = url.replace(/^https?:\/\//, "");
+			const cleanTarget = url.replace(/^https?:\/\//, ""); // GlobalPing API expects target without protocol (http:// or https://)
 			const requestBody: GlobalPingMeasurementRequest = {
 				type: monitorType,
 				target: cleanTarget,
@@ -416,23 +400,6 @@ export class GlobalPingService implements IGlobalPingService {
 		};
 	}
 
-	private normalizeDate(value?: string | null) {
-		if (!value) {
-			return null;
-		}
-
-		const parsed = new Date(value);
-		return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
-	}
-
-	private normalizeResetSeconds(value?: number | null) {
-		if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
-			return null;
-		}
-
-		return new Date(Date.now() + value * 1000).toISOString();
-	}
-
 	private toNullableNumber(value: unknown) {
 		return typeof value === "number" && Number.isFinite(value) ? value : null;
 	}
@@ -441,10 +408,8 @@ export class GlobalPingService implements IGlobalPingService {
 		const createRateLimit = payload.rateLimit?.measurements?.create;
 		const remainingCredits = this.toNullableNumber(payload.remainingCredits ?? payload.credits?.remaining);
 		const remainingLimit = this.toNullableNumber(payload.remainingLimit ?? createRateLimit?.remaining);
-		const totalLimit = this.toNullableNumber(payload.totalLimit ?? createRateLimit?.limit);
-		const resetAt = this.normalizeDate(payload.resetAt) ?? this.normalizeResetSeconds(createRateLimit?.reset);
 
-		if (remainingCredits === null && remainingLimit === null && totalLimit === null && resetAt === null) {
+		if (remainingCredits === null && remainingLimit === null) {
 			throw new AppError({
 				message: "Malformed Globalping limits response",
 				service: SERVICE_NAME,
@@ -456,8 +421,6 @@ export class GlobalPingService implements IGlobalPingService {
 		return {
 			remainingCredits,
 			remainingLimit,
-			totalLimit,
-			resetAt,
 		};
 	}
 
@@ -504,7 +467,8 @@ export class GlobalPingService implements IGlobalPingService {
 				longitude: probeResult.probe.longitude,
 				latitude: probeResult.probe.latitude,
 			};
-
+			
+			// HTTP results have statusCode and timings, ping results have stats
 			if (probeResult.result.statusCode && probeResult.result.timings) {
 				const timings: GeoCheckTimings = {
 					total: probeResult.result.timings.total,
