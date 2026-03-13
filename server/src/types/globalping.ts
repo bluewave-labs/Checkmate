@@ -1,13 +1,7 @@
 import type { GeoCheckResult, GeoContinent } from "@/types/geoCheck.js";
 import type { MonitorType } from "@/types/monitor.js";
 
-export const GlobalpingCredentialStates = [
-	"missing",
-	"valid",
-	"invalid",
-	"forbidden",
-	"upstream_unavailable",
-] as const;
+export const GlobalpingCredentialStates = ["missing", "valid", "invalid", "forbidden", "upstream_unavailable"] as const;
 
 export type GlobalpingCredentialState = (typeof GlobalpingCredentialStates)[number];
 

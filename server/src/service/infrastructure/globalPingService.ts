@@ -440,7 +440,7 @@ export class GlobalPingService implements IGlobalPingService {
 				longitude: probeResult.probe.longitude,
 				latitude: probeResult.probe.latitude,
 			};
-			
+
 			// HTTP results have statusCode and timings, ping results have stats
 			if (probeResult.result.statusCode && probeResult.result.timings) {
 				const timings: GeoCheckTimings = {
