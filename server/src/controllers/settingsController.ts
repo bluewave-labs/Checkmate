@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { updateAppSettingsBodyValidation } from "@/validation/settingsValidation.js";
 import { sendTestEmailBodyValidation } from "@/validation/notificationValidation.js";
 import { AppError } from "@/utils/AppError.js";
+import type { IGlobalPingService } from "@/service/infrastructure/globalPingService.js";
+import type { ISettingsService } from "@/service/system/settingsService.js";
 
 const SERVICE_NAME = "SettingsController";
 
@@ -9,9 +11,11 @@ class SettingsController {
 	static SERVICE_NAME = SERVICE_NAME;
 	private settingsService: any;
 	private emailService: any;
-	constructor(settingsService: any, emailService: any) {
+	private globalPingService: IGlobalPingService;
+	constructor(settingsService: any, emailService: any, globalPingService: IGlobalPingService) {
 		this.settingsService = settingsService;
 		this.emailService = emailService;
+		this.globalPingService = globalPingService;
 	}
 
 	get serviceName() {
@@ -54,6 +58,19 @@ class SettingsController {
 				success: true,
 				msg: "App settings fetched successfully",
 				data: returnSettings,
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	getGlobalpingStatus = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const status = await this.globalPingService.getUsageStatus();
+			return res.status(200).json({
+				success: true,
+				msg: "Globalping status fetched successfully",
+				data: status,
 			});
 		} catch (error) {
 			next(error);

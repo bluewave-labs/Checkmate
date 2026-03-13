@@ -1170,6 +1170,25 @@
 							"label": "Globalping API key",
 							"labelSet": "API key is set. Click Reset to change it.",
 							"placeholder": "Enter your Globalping API key"
+						},
+						"status": {
+							"refresh": "Refresh",
+							"messages": {
+								"missing": "Globalping credit and limit status is only available for authenticated usage.",
+								"invalid": "The configured Globalping API key was rejected.",
+								"forbidden": "The configured Globalping API key is not allowed to access this resource.",
+								"unavailable": "Globalping status is currently unavailable.",
+								"exhausted": "Globalping credits are exhausted.",
+								"valid": "Globalping status fetched successfully."
+							},
+							"summary": "Credential state: {{credentialState}} | Remaining credits: {{remainingCredits}} | Remaining limit: {{remainingLimit}}",
+							"credentialStates": {
+								"missing": "No key configured",
+								"valid": "Valid key",
+								"invalid": "Invalid key",
+								"forbidden": "Forbidden",
+								"upstream_unavailable": "Upstream error"
+							}
 						}
 					}
 				}
