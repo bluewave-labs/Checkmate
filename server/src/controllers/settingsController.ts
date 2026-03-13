@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
+import type { IGlobalPingService } from "@/types/globalping.js";
 import { updateAppSettingsBodyValidation } from "@/validation/settingsValidation.js";
 import { sendTestEmailBodyValidation } from "@/validation/notificationValidation.js";
 import { AppError } from "@/utils/AppError.js";
-import type { IGlobalPingService } from "@/service/infrastructure/globalPingService.js";
 
 const SERVICE_NAME = "SettingsController";
 

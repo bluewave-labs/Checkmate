@@ -2,6 +2,14 @@ import got, { type Got } from "got";
 import type { ISettingsService } from "@/service/system/settingsService.js";
 import { MonitorType } from "@/types/index.js";
 import type { GeoCheckLocation, GeoCheckResult, GeoCheckTimings, GeoContinent } from "@/types/geoCheck.js";
+import type {
+	GlobalpingCreditState,
+	GlobalpingFailureClassification,
+	GlobalpingFailureDetails,
+	GlobalpingStatus,
+	IGlobalPingService,
+} from "@/types/globalping.js";
+export type { IGlobalPingService } from "@/types/globalping.js";
 import { supportsGeoCheck } from "@/types/monitor.js";
 import type { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";
@@ -11,19 +19,6 @@ const GLOBAL_PING_API_BASE = "https://api.globalping.io/v1";
 const POLL_INTERVAL_MS = 2000;
 const MAX_POLL_TIMEOUT_MS = 30000;
 const SETTINGS_STATUS_TIMEOUT_MS = 10000;
-
-// Types
-type GlobalpingCredentialState = "missing" | "valid" | "invalid" | "forbidden" | "upstream_unavailable";
-type GlobalpingCreditState = "unknown" | "healthy" | "exhausted";
-export type GlobalpingFailureClassification =
-	| "missing_key"
-	| "invalid_key"
-	| "forbidden"
-	| "rate_limited"
-	| "unsupported_monitor"
-	| "invalid_location"
-	| "unknown";
-export type GlobalpingRuntimeBehavior = "fail" | "retryable";
 
 interface GlobalPingMeasurementRequest {
 	type: MonitorType;
@@ -88,28 +83,6 @@ interface GlobalpingLimitsResponse {
 	};
 	remainingCredits?: number | null;
 	remainingLimit?: number | null;
-}
-
-export interface GlobalpingStatus {
-	credentialState: GlobalpingCredentialState;
-	creditState: GlobalpingCreditState;
-	remainingCredits?: number | null;
-	remainingLimit?: number | null;
-}
-
-export interface GlobalpingFailureDetails {
-	classification: GlobalpingFailureClassification;
-	credentialState: GlobalpingCredentialState;
-	message: string;
-	runtimeBehavior: GlobalpingRuntimeBehavior;
-}
-
-export interface IGlobalPingService {
-	readonly serviceName: string;
-	createMeasurement(monitorType: MonitorType, url: string, locations: GeoContinent[]): Promise<string | null>;
-	pollForResults(measurementId: string, timeoutMs?: number): Promise<GeoCheckResult[]>;
-	getUsageStatus(): Promise<GlobalpingStatus>;
-	classifyError(error: unknown): GlobalpingFailureDetails;
 }
 
 export class GlobalPingService implements IGlobalPingService {

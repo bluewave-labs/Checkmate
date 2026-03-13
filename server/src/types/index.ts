@@ -12,5 +12,6 @@ export * from "@/types/notification.js";
 export * from "@/types/alert.js";
 export * from "@/types/incident.js";
 export * from "@/types/email.js";
+export * from "@/types/globalping.js";
 export * from "@/types/team.js";
 export * from "@/types/maintenanceWindow.js";
