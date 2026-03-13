@@ -1,4 +1,5 @@
 import got, { type Got } from "got";
+import { z } from "zod";
 import type { ISettingsService } from "@/service/system/settingsService.js";
 import { MonitorType } from "@/types/index.js";
 import type { GeoCheckLocation, GeoCheckResult, GeoCheckTimings, GeoContinent } from "@/types/geoCheck.js";
@@ -19,6 +20,29 @@ const GLOBAL_PING_API_BASE = "https://api.globalping.io/v1";
 const POLL_INTERVAL_MS = 2000;
 const MAX_POLL_TIMEOUT_MS = 30000;
 const SETTINGS_STATUS_TIMEOUT_MS = 10000;
+
+const globalpingLimitsResponseSchema = z.object({
+	rateLimit: z
+		.object({
+			measurements: z
+				.object({
+					create: z
+						.object({
+							remaining: z.number().nullable().optional(),
+						})
+						.optional(),
+				})
+				.optional(),
+		})
+		.optional(),
+	credits: z
+		.object({
+			remaining: z.number().nullable().optional(),
+		})
+		.optional(),
+});
+
+type GlobalpingLimitsResponse = z.infer<typeof globalpingLimitsResponseSchema>;
 
 interface GlobalPingMeasurementRequest {
 	type: MonitorType;
@@ -68,21 +92,6 @@ interface GlobalPingProbeResult {
 		};
 		rawOutput?: string;
 	};
-}
-
-interface GlobalpingLimitsResponse {
-	rateLimit?: {
-		measurements?: {
-			create?: {
-				remaining?: number | null;
-			};
-		};
-	};
-	credits?: {
-		remaining?: number | null;
-	};
-	remainingCredits?: number | null;
-	remainingLimit?: number | null;
 }
 
 export class GlobalPingService implements IGlobalPingService {
@@ -378,9 +387,10 @@ export class GlobalPingService implements IGlobalPingService {
 	}
 
 	private parseLimitsPayload(payload: GlobalpingLimitsResponse) {
-		const createRateLimit = payload.rateLimit?.measurements?.create;
-		const remainingCredits = this.toNullableNumber(payload.remainingCredits ?? payload.credits?.remaining);
-		const remainingLimit = this.toNullableNumber(payload.remainingLimit ?? createRateLimit?.remaining);
+		const parsedPayload = globalpingLimitsResponseSchema.parse(payload);
+		const createRateLimit = parsedPayload.rateLimit?.measurements?.create;
+		const remainingCredits = this.toNullableNumber(parsedPayload.credits?.remaining);
+		const remainingLimit = this.toNullableNumber(createRateLimit?.remaining);
 
 		if (remainingCredits === null && remainingLimit === null) {
 			throw new AppError({

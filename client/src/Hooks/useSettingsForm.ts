@@ -41,7 +41,6 @@ export const useSettingsForm = ({ data = null }: UseSettingsFormOptions = {}) =>
 			},
 			checkTTL: data?.checkTTL ?? 30,
 			pagespeedApiKey: "",
-			globalpingApiKey: "",
 			systemEmailPassword: "",
 		};
 
