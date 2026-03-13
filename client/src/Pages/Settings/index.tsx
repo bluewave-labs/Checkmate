@@ -26,7 +26,7 @@ import { Controller } from "react-hook-form";
 import { TextField, Button, FieldLabel, SliderWithLabel } from "@/Components/inputs";
 import { Box, Typography } from "@mui/material";
 import { useDelete } from "@/Hooks/UseApi";
-import type { AppSettingsResponse, GlobalpingStatus } from "@/Types/Settings";
+import type { GlobalpingStatus } from "@/Types/Settings";
 
 import {
 	setTimezone,
@@ -45,6 +45,13 @@ interface Timezone {
 	name: string;
 }
 
+interface SettingsResponse {
+	settings: any;
+	pagespeedKeySet: boolean;
+	globalpingKeySet: boolean;
+	emailPasswordSet: boolean;
+}
+
 export const SettingsPage = () => {
 	const theme = useTheme();
 	const { t, i18n } = useTranslation();
@@ -59,14 +66,14 @@ export const SettingsPage = () => {
 	const { post: importMonitors, loading: isImportingMonitors } = usePost();
 
 	// Fetch settings data from API
-	const { data: fetchedSettings } = useGet<AppSettingsResponse>("/settings");
+	const { data: fetchedSettings } = useGet<SettingsResponse>("/settings");
 	const {
 		data: globalpingStatus,
 		isLoading: isGlobalpingStatusLoading,
 		refetch: refetchGlobalpingStatus,
 	} = useGet<GlobalpingStatus>(isAdmin ? "/settings/globalping-status" : null);
 	// Form submission
-	const { patch, loading: isSaving } = usePatch<SettingsFormData, AppSettingsResponse>();
+	const { patch, loading: isSaving } = usePatch<SettingsFormData, SettingsResponse>();
 
 	// Local state for API key reset
 	const [isApiKeySet, setIsApiKeySet] = useState(
