@@ -21,13 +21,6 @@ export const settingsSchema = z.object({
 		.string()
 		.transform((val) => (val.trim() === "" ? null : val.trim()))
 		.optional(),
-	globalpingApiKey: z
-		.string()
-		.refine((val) => val.trim() === "" || !/\s/.test(val.trim()), {
-			message: "Globalping API key cannot contain spaces",
-		})
-		.transform((val) => (val.trim() === "" ? undefined : val.trim()))
-		.optional(),
 	systemEmailHost: z
 		.string()
 		.regex(/^[a-zA-Z0-9.-]*$/, "Invalid hostname or IP address")
