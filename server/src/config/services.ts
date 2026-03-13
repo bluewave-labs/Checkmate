@@ -209,7 +209,7 @@ export const initializeServices = async ({
 
 	const checkService = new CheckService(monitorsRepository, logger, checksRepository);
 
-	const globalPingService = new GlobalPingService(logger);
+	const globalPingService = new GlobalPingService(logger, settingsService);
 
 	const geoChecksService = new GeoChecksService({
 		logger,

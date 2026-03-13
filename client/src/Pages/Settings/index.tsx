@@ -47,6 +47,7 @@ interface Timezone {
 interface SettingsResponse {
 	settings: any;
 	pagespeedKeySet: boolean;
+	globalpingKeySet: boolean;
 	emailPasswordSet: boolean;
 }
 
@@ -73,6 +74,10 @@ export const SettingsPage = () => {
 		fetchedSettings?.pagespeedKeySet ?? false
 	);
 	const [apiKeyHasBeenReset, setApiKeyHasBeenReset] = useState(false);
+	const [isGlobalpingKeySet, setIsGlobalpingKeySet] = useState(
+		fetchedSettings?.globalpingKeySet ?? false
+	);
+	const [globalpingKeyHasBeenReset, setGlobalpingKeyHasBeenReset] = useState(false);
 	// Local state for email password reset
 	const [isEmailPasswordSet, setIsEmailPasswordSet] = useState(
 		fetchedSettings?.emailPasswordSet ?? false
@@ -104,6 +109,7 @@ export const SettingsPage = () => {
 	useEffect(() => {
 		if (fetchedSettings) {
 			setIsApiKeySet(fetchedSettings.pagespeedKeySet);
+			setIsGlobalpingKeySet(fetchedSettings.globalpingKeySet);
 			setIsEmailPasswordSet(fetchedSettings.emailPasswordSet);
 		}
 	}, [fetchedSettings]);
@@ -146,6 +152,11 @@ export const SettingsPage = () => {
 	const handleResetApiKey = () => {
 		form.setValue("pagespeedApiKey", "");
 		setApiKeyHasBeenReset(true);
+	};
+
+	const handleResetGlobalpingKey = () => {
+		form.setValue("globalpingApiKey", "");
+		setGlobalpingKeyHasBeenReset(true);
 	};
 
 	const handleResetEmailPassword = () => {
@@ -252,6 +263,9 @@ export const SettingsPage = () => {
 		if (isApiKeySet && !apiKeyHasBeenReset) {
 			delete (dataToSend as any).pagespeedApiKey;
 		}
+		if (isGlobalpingKeySet && !globalpingKeyHasBeenReset) {
+			delete (dataToSend as any).globalpingApiKey;
+		}
 		if (isEmailPasswordSet && !emailPasswordHasBeenReset) {
 			delete (dataToSend as any).systemEmailPassword;
 		}
@@ -284,6 +298,8 @@ export const SettingsPage = () => {
 			if (result.data) {
 				setIsApiKeySet(result.data.pagespeedKeySet);
 				setApiKeyHasBeenReset(false);
+				setIsGlobalpingKeySet(result.data.globalpingKeySet);
+				setGlobalpingKeyHasBeenReset(false);
 				setIsEmailPasswordSet(result.data.emailPasswordSet);
 				setEmailPasswordHasBeenReset(false);
 			}
@@ -409,6 +425,56 @@ export const SettingsPage = () => {
 										</Button>
 									</Box>
 								)}
+							</>
+						}
+					/>
+				)}
+				{isAdmin && (
+					<ConfigBox
+						title={t("pages.settings.form.globalping.title")}
+						subtitle={t("pages.settings.form.globalping.description")}
+						rightContent={
+							<>
+								{(isGlobalpingKeySet === false ||
+									globalpingKeyHasBeenReset === true) && (
+									<Controller
+										name="globalpingApiKey"
+										control={form.control}
+										defaultValue={defaults.globalpingApiKey}
+										render={({ field, fieldState }) => (
+											<TextField
+												{...field}
+												fieldLabel={t(
+													"pages.settings.form.globalping.option.apiKey.label"
+												)}
+												type="password"
+												placeholder={t(
+													"pages.settings.form.globalping.option.apiKey.placeholder"
+												)}
+												error={!!fieldState.error}
+												helperText={fieldState.error?.message}
+											/>
+										)}
+									/>
+								)}
+
+								{isGlobalpingKeySet === true &&
+									globalpingKeyHasBeenReset === false && (
+										<Box>
+											<FieldLabel>
+												{t(
+													"pages.settings.form.globalping.option.apiKey.labelSet"
+												)}
+											</FieldLabel>
+											<Button
+												onClick={handleResetGlobalpingKey}
+												variant="contained"
+												color="error"
+											>
+												{t("common.buttons.reset")}
+											</Button>
+										</Box>
+									)}
 							</>
 						}
 					/>

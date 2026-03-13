@@ -1,6 +1,7 @@
 import type { GeoContinent, GeoCheckResult, GeoCheckTimings, GeoCheckLocation } from "@/types/geoCheck.js";
 import { supportsGeoCheck } from "@/types/monitor.js";
 import { MonitorType } from "@/types/index.js";
+import type { ISettingsService } from "@/service/system/settingsService.js";
 import type { ILogger } from "@/utils/logger.js";
 import got from "got";
 
@@ -69,13 +70,40 @@ export class GlobalPingService implements IGlobalPingService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: ILogger;
+	private settingsService: ISettingsService;
 
-	constructor(logger: ILogger) {
+	constructor(logger: ILogger, settingsService: ISettingsService) {
 		this.logger = logger;
+		this.settingsService = settingsService;
 	}
 
 	get serviceName() {
 		return GlobalPingService.SERVICE_NAME;
+	}
+
+	private async getApiKey() {
+		const dbSettings = await this.settingsService.getDBSettings();
+		return dbSettings.globalpingApiKey?.trim() || null;
+	}
+
+	private buildHeaders(apiKey: string | null) {
+		if (!apiKey) {
+			return undefined;
+		}
+
+		return {
+			Authorization: `Bearer ${apiKey}`,
+		};
+	}
+
+	private isRejectedCredential(error: unknown) {
+		const statusCode =
+			typeof error === "object" && error !== null
+				? (error as { response?: { statusCode?: number }; statusCode?: number }).response
+						?.statusCode ?? (error as { statusCode?: number }).statusCode
+				: undefined;
+
+		return statusCode === 401 || statusCode === 403;
 	}
 
 	async createMeasurement(monitorType: MonitorType, url: string, locations: GeoContinent[]): Promise<string | null> {
@@ -83,6 +111,7 @@ export class GlobalPingService implements IGlobalPingService {
 			if (!supportsGeoCheck(monitorType)) {
 				throw new Error(`Unsupported monitor type for GlobalPing: ${monitorType}`);
 			}
+			const apiKey = await this.getApiKey();
 			// GlobalPing API expects target without protocol (http:// or https://)
 			const cleanTarget = url.replace(/^https?:\/\//, "");
 
@@ -97,6 +126,7 @@ export class GlobalPingService implements IGlobalPingService {
 				json: requestBody,
 				responseType: "json",
 				timeout: { request: 10000 },
+				headers: this.buildHeaders(apiKey),
 			});
 
 			const measurementId = response.body.id;
@@ -121,12 +151,14 @@ export class GlobalPingService implements IGlobalPingService {
 
 	async pollForResults(measurementId: string, timeoutMs: number = MAX_POLL_TIMEOUT_MS): Promise<GeoCheckResult[]> {
 		const startTime = Date.now();
+		const apiKey = await this.getApiKey();
 
 		while (Date.now() - startTime < timeoutMs) {
 			try {
 				const response = await got.get<GlobalPingMeasurementResponse>(`${GLOBAL_PING_API_BASE}/measurements/${measurementId}`, {
 					responseType: "json",
 					timeout: { request: 5000 },
+					headers: this.buildHeaders(apiKey),
 				});
 
 				const measurement = response.body;

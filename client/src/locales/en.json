@@ -1161,6 +1161,17 @@
 				},
 				"validation": {
 					"errorMessage": "Please fix the following validation errors:"
+				},
+				"globalping": {
+					"title": "Globalping API key",
+					"description": "Enter your Globalping API key to use your own Globalping credits and rate limits. Click Reset to update the key.",
+					"option": {
+						"apiKey": {
+							"label": "Globalping API key",
+							"labelSet": "API key is set. Click Reset to change it.",
+							"placeholder": "Enter your Globalping API key"
+						}
+					}
 				}
 			}
 		},
