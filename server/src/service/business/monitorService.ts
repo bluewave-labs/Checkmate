@@ -438,15 +438,25 @@ export class MonitorService implements IMonitorService {
 		return editedMonitor;
 	};
 
-	updateNotifications = async ({ teamId, monitorIds, notificationIds, action }: { teamId: string; monitorIds: string[]; notificationIds: string[]; action: "add" | "remove" | "set" }): Promise<number> => {
+	updateNotifications = async ({
+		teamId,
+		monitorIds,
+		notificationIds,
+		action,
+	}: {
+		teamId: string;
+		monitorIds: string[];
+		notificationIds: string[];
+		action: "add" | "remove" | "set";
+	}): Promise<number> => {
 		const modifiedCount = await this.monitorsRepository.updateNotifications(monitorIds, notificationIds, action, teamId);
-		
+
 		// If notifications were updated, we should update the jobs in the queue
 		if (modifiedCount > 0) {
 			const monitors = await this.monitorsRepository.findByIds(monitorIds);
-			await Promise.all(monitors.map(monitor => this.jobQueue.updateJob(monitor)));
+			await Promise.all(monitors.map((monitor) => this.jobQueue.updateJob(monitor)));
 		}
-		
+
 		return modifiedCount;
 	};
 

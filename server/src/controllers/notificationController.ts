@@ -126,7 +126,6 @@ class NotificationController {
 		}
 	};
 
-
 	testAllNotifications = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const validatedBody = testAllNotificationsBodyValidation.parse(req.body);

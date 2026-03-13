@@ -17,7 +17,6 @@ class NotificationRoutes {
 
 		this.router.get("/team", this.notificationController.getNotificationsByTeamId);
 
-
 		this.router.get("/:id", this.notificationController.getNotificationById);
 		this.router.delete("/:id", this.notificationController.deleteNotification);
 		this.router.patch("/:id", this.notificationController.editNotification);

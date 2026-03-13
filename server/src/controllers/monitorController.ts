@@ -410,12 +410,12 @@ class MonitorController {
 			// Verify all requested notification IDs actually belong to this team
 			const teamNotifications = await this.notificationsService.findNotificationsByTeamId(teamId);
 			const validNotificationIds = teamNotifications.map((n) => n.id);
-			
+
 			const invalidIds = notificationIds.filter((id: string) => !validNotificationIds.includes(id));
 			if (invalidIds.length > 0) {
-				throw new AppError({ 
-					message: `The following notification IDs are invalid or do not belong to your team: ${invalidIds.join(", ")}`, 
-					status: 403 
+				throw new AppError({
+					message: `The following notification IDs are invalid or do not belong to your team: ${invalidIds.join(", ")}`,
+					status: 403,
 				});
 			}
 
@@ -423,7 +423,7 @@ class MonitorController {
 				teamId,
 				monitorIds,
 				notificationIds,
-				action
+				action,
 			});
 
 			return res.status(200).json({
