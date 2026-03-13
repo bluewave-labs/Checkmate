@@ -29,6 +29,7 @@ export interface Settings {
 
 export interface AppSettingsResponse {
 	pagespeedKeySet: boolean;
+	globalpingKeySet: boolean;
 	emailPasswordSet: boolean;
 	settings: Settings;
 }

@@ -23,6 +23,7 @@ const AppSettingsSchema = new Schema<AppSettingsDocument>(
 		language: { type: String, default: "gb" },
 		jwtSecret: { type: String },
 		pagespeedApiKey: { type: String },
+		globalpingApiKey: { type: String },
 		systemEmailHost: { type: String },
 		systemEmailPort: { type: Number },
 		systemEmailAddress: { type: String },

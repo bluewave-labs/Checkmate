@@ -24,6 +24,7 @@ class SettingsController {
 		delete sanitizedSettings.jwtSecret;
 		const returnSettings = {
 			pagespeedKeySet: false,
+			globalpingKeySet: false,
 			emailPasswordSet: false,
 			settings: null,
 		};
@@ -31,6 +32,10 @@ class SettingsController {
 		if (typeof sanitizedSettings.pagespeedApiKey !== "undefined") {
 			returnSettings.pagespeedKeySet = true;
 			delete sanitizedSettings.pagespeedApiKey;
+		}
+		if (typeof sanitizedSettings.globalpingApiKey !== "undefined") {
+			returnSettings.globalpingKeySet = true;
+			delete sanitizedSettings.globalpingApiKey;
 		}
 		if (typeof sanitizedSettings.systemEmailPassword !== "undefined") {
 			returnSettings.emailPasswordSet = true;
@@ -57,9 +62,9 @@ class SettingsController {
 
 	updateAppSettings = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			updateAppSettingsBodyValidation.parse(req.body);
+			const parsedSettings = updateAppSettingsBodyValidation.parse(req.body);
 
-			const updatedSettings = await this.settingsService.updateDbSettings(req.body);
+			const updatedSettings = await this.settingsService.updateDbSettings(parsedSettings);
 			const returnSettings = this.buildAppSettings(updatedSettings);
 			return res.status(200).json({
 				success: true,
