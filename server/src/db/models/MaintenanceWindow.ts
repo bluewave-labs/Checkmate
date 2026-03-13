@@ -1,5 +1,5 @@
 import { Schema, model, type Types } from "mongoose";
-import type { MaintenanceWindow, DurationUnit } from "@/types/maintenanceWindow.js";
+import type { MaintenanceWindow } from "@/types/maintenanceWindow.js";
 
 type MaintenanceWindowDocumentBase = Omit<MaintenanceWindow, "id" | "monitorId" | "teamId" | "start" | "end" | "createdAt" | "updatedAt"> & {
 	monitorId: Types.ObjectId;

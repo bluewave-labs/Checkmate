@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose, { type UpdateQuery } from "mongoose";
 import { ISettingsRepository } from "@/repositories/settings/ISettingsRepository.js";
-import type { Settings } from "@/types/index.js";
+import type { Settings, SettingsUpdate } from "@/types/index.js";
 import { AppSettingsModel, type AppSettingsDocument } from "@/db/models/index.js";
 
 class MongoSettingsRepository implements ISettingsRepository {
@@ -60,27 +60,23 @@ class MongoSettingsRepository implements ISettingsRepository {
 		return this.toEntity(settings);
 	};
 
-	update = async (settings: Partial<Settings>) => {
-		const update: Record<string, any> = { $set: {}, $unset: {} };
+	update = async (settings: SettingsUpdate) => {
+		const $set: Record<string, unknown> = {};
+		const $unset: Record<string, string> = {};
 
 		// Iterate through settings and separate into $set and $unset
 		Object.entries(settings).forEach(([key, value]) => {
-			if (value === undefined || value === "") {
-				// Unset undefined or empty string values
-				update.$unset[key] = "";
+			if (value === undefined || value === null) {
+				$unset[key] = "";
 			} else {
-				// Set defined values
-				update.$set[key] = value;
+				$set[key] = value;
 			}
 		});
 
-		// Clean up empty operators
-		if (Object.keys(update.$set).length === 0) {
-			delete update.$set;
-		}
-		if (Object.keys(update.$unset).length === 0) {
-			delete update.$unset;
-		}
+		const update: UpdateQuery<AppSettingsDocument> = {
+			...(Object.keys($set).length > 0 && { $set }),
+			...(Object.keys($unset).length > 0 && { $unset }),
+		};
 
 		await AppSettingsModel.findOneAndUpdate({}, update, {
 			upsert: true,
