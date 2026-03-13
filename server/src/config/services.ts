@@ -38,6 +38,7 @@ import {
 	IMonitorService,
 	IUserService,
 	ICheckService,
+	IGlobalPingService,
 	IGeoChecksService,
 	IDiagnosticService,
 	IInviteService,
@@ -121,6 +122,7 @@ export type InitializedServices = {
 	jobQueue: ISuperSimpleQueue;
 	userService: IUserService;
 	checkService: ICheckService;
+	globalPingService: IGlobalPingService;
 	geoChecksService: IGeoChecksService;
 	diagnosticService: IDiagnosticService;
 	inviteService: IInviteService;
@@ -318,6 +320,7 @@ export const initializeServices = async ({
 		jobQueue: superSimpleQueue,
 		userService,
 		checkService,
+		globalPingService,
 		geoChecksService,
 		diagnosticService,
 		inviteService,
