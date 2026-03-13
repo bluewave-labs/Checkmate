@@ -262,11 +262,11 @@ export class GlobalPingService implements IGlobalPingService {
 			this.logFailure("createMeasurement", error, failure);
 
 			if (failure.runtimeBehavior === "fail") {
-					throw new AppError({
-						message: failure.message,
-						service: SERVICE_NAME,
-						method: "createMeasurement",
-						status: 502,
+				throw new AppError({
+					message: failure.message,
+					service: SERVICE_NAME,
+					method: "createMeasurement",
+					status: 502,
 				});
 			}
 
@@ -280,12 +280,9 @@ export class GlobalPingService implements IGlobalPingService {
 
 		while (Date.now() - startTime < timeoutMs) {
 			try {
-				const response = await this.requestGlobalping<GlobalPingMeasurementResponse>(
-					"get",
-					`/measurements/${measurementId}`,
-					apiKey,
-					{ timeoutMs: 5000 }
-				);
+				const response = await this.requestGlobalping<GlobalPingMeasurementResponse>("get", `/measurements/${measurementId}`, apiKey, {
+					timeoutMs: 5000,
+				});
 				const measurement = response.body;
 
 				if (measurement.status === "finished") {
@@ -447,12 +444,7 @@ export class GlobalPingService implements IGlobalPingService {
 		const totalLimit = this.toNullableNumber(payload.totalLimit ?? createRateLimit?.limit);
 		const resetAt = this.normalizeDate(payload.resetAt) ?? this.normalizeResetSeconds(createRateLimit?.reset);
 
-		if (
-			remainingCredits === null &&
-			remainingLimit === null &&
-			totalLimit === null &&
-			resetAt === null
-		) {
+		if (remainingCredits === null && remainingLimit === null && totalLimit === null && resetAt === null) {
 			throw new AppError({
 				message: "Malformed Globalping limits response",
 				service: SERVICE_NAME,

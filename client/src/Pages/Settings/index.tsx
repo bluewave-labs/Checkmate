@@ -311,7 +311,9 @@ export const SettingsPage = () => {
 	};
 
 	const credentialStateLabel = globalpingStatus
-		? t(`pages.settings.form.globalping.option.status.credentialStates.${globalpingStatus.credentialState}`)
+		? t(
+				`pages.settings.form.globalping.option.status.credentialStates.${globalpingStatus.credentialState}`
+			)
 		: t("common.labels.na");
 	const globalpingStatusMessage = !globalpingStatus
 		? t("pages.settings.form.globalping.option.status.messages.unavailable")
@@ -452,8 +454,7 @@ export const SettingsPage = () => {
 						subtitle={t("pages.settings.form.globalping.description")}
 						rightContent={
 							<Stack gap={theme.spacing(LAYOUT.MD)}>
-								{(isGlobalpingKeySet === false ||
-									globalpingKeyHasBeenReset === true) && (
+								{(isGlobalpingKeySet === false || globalpingKeyHasBeenReset === true) && (
 									<Controller
 										name="globalpingApiKey"
 										control={form.control}
@@ -475,23 +476,20 @@ export const SettingsPage = () => {
 									/>
 								)}
 
-								{isGlobalpingKeySet === true &&
-									globalpingKeyHasBeenReset === false && (
-										<Box>
-											<FieldLabel>
-												{t(
-													"pages.settings.form.globalping.option.apiKey.labelSet"
-												)}
-											</FieldLabel>
-											<Button
-												onClick={handleResetGlobalpingKey}
-												variant="contained"
-												color="error"
-											>
-												{t("common.buttons.reset")}
-											</Button>
-										</Box>
-									)}
+								{isGlobalpingKeySet === true && globalpingKeyHasBeenReset === false && (
+									<Box>
+										<FieldLabel>
+											{t("pages.settings.form.globalping.option.apiKey.labelSet")}
+										</FieldLabel>
+										<Button
+											onClick={handleResetGlobalpingKey}
+											variant="contained"
+											color="error"
+										>
+											{t("common.buttons.reset")}
+										</Button>
+									</Box>
+								)}
 								<Alert
 									severity={
 										globalpingStatus?.credentialState === "valid"
@@ -515,15 +513,14 @@ export const SettingsPage = () => {
 									}
 								>
 									<Stack gap={theme.spacing(1)}>
-										<Typography variant="body2">
-											{globalpingStatusMessage}
-										</Typography>
+										<Typography variant="body2">{globalpingStatusMessage}</Typography>
 										<Typography variant="caption">
 											{t("pages.settings.form.globalping.option.status.summary", {
 												credentialState: credentialStateLabel,
 												remainingCredits:
 													globalpingStatus?.remainingCredits ?? t("common.labels.na"),
-												remainingLimit: globalpingStatus?.remainingLimit ?? t("common.labels.na"),
+												remainingLimit:
+													globalpingStatus?.remainingLimit ?? t("common.labels.na"),
 											})}
 										</Typography>
 									</Stack>
