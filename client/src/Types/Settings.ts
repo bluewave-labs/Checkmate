@@ -29,14 +29,6 @@ export interface Settings {
 
 export interface AppSettingsResponse {
 	pagespeedKeySet: boolean;
-	globalpingKeySet: boolean;
 	emailPasswordSet: boolean;
 	settings: Settings;
-}
-
-export interface GlobalpingStatus {
-	credentialState: "missing" | "valid" | "invalid" | "forbidden" | "upstream_unavailable";
-	creditState: "unknown" | "healthy" | "exhausted";
-	remainingCredits?: number | null;
-	remainingLimit?: number | null;
 }
