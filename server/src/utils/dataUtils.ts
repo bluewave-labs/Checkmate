@@ -45,7 +45,7 @@ export const NormalizeData = <T extends HasResponseTime>(checks: T[], rangeMin: 
 		const min = calculatePercentile(checks, 0);
 		const max = calculatePercentile(checks, 95);
 		const normalizedChecks = checks.map((check) => {
-			const originalResponseTime = check.responseTime;
+			const originalResponseTime = typeof check.responseTime === "number" ? check.responseTime : 0;
 			let normalizedResponseTime = rangeMin + ((check.responseTime - min) * (rangeMax - rangeMin)) / (max - min);
 
 			normalizedResponseTime = Math.max(rangeMin, Math.min(rangeMax, normalizedResponseTime));
@@ -59,7 +59,8 @@ export const NormalizeData = <T extends HasResponseTime>(checks: T[], rangeMin: 
 		return normalizedChecks;
 	} else {
 		return checks.map((check) => {
-			return { ...check, originalResponseTime: check.responseTime };
+			const originalResponseTime = typeof check.responseTime === "number" ? check.responseTime : 0;
+			return { ...check, originalResponseTime: originalResponseTime };
 		});
 	}
 };
