@@ -23,7 +23,7 @@ export type GlobalpingFailureClassification =
 	| "unsupported_monitor"
 	| "invalid_location"
 	| "unknown";
-export type GlobalpingRuntimeBehavior = "fail" | "retryable" | "fallback-allowed-only-without-key";
+export type GlobalpingRuntimeBehavior = "fail" | "retryable";
 
 interface GlobalPingMeasurementRequest {
 	type: MonitorType;

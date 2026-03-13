@@ -3,7 +3,6 @@ import { updateAppSettingsBodyValidation } from "@/validation/settingsValidation
 import { sendTestEmailBodyValidation } from "@/validation/notificationValidation.js";
 import { AppError } from "@/utils/AppError.js";
 import type { IGlobalPingService } from "@/service/infrastructure/globalPingService.js";
-import type { ISettingsService } from "@/service/system/settingsService.js";
 
 const SERVICE_NAME = "SettingsController";
 

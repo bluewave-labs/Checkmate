@@ -35,7 +35,6 @@ export interface AppSettingsResponse {
 }
 
 export interface GlobalpingStatus {
-	keyConfigured: boolean;
 	credentialState: "missing" | "valid" | "invalid" | "forbidden" | "upstream_unavailable";
 	creditState: "unknown" | "healthy" | "exhausted";
 	remainingCredits?: number | null;
