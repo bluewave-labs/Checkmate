@@ -13,6 +13,7 @@ import { useState } from "react";
 import type { Monitor } from "@/Types/Monitor";
 import type { StatusPage } from "@/Types/StatusPage";
 import type { RootState } from "@/Types/state";
+import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 
 interface StatusPageMonitor extends Monitor {
 	checks?: Monitor["recentChecks"];
@@ -60,7 +61,7 @@ const getMonitorBadgeStyles = (monitorType: string, theme: Theme) => {
 	return {
 		backgroundColor: config.bg,
 		color: config.color,
-		padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
+		padding: `${theme.spacing(SPACING.SM)} ${theme.spacing(SPACING.LG)}`,
 		borderRadius: theme.shape.borderRadius,
 	};
 };
@@ -90,11 +91,11 @@ const MonitorContent = ({
 	}
 
 	return (
-		<Box sx={{ overflow: "hidden", minWidth: 0, flex: 1, mb: theme.spacing(2) }}>
+		<Box sx={{ overflow: "hidden", minWidth: 0, flex: 1, mb: theme.spacing(SPACING.LG) }}>
 			{chartType === "histogram" ? (
 				<HistogramResponseTime
 					height={{ xs: 50, md: 100 }}
-					gap={{ xs: theme.spacing(1), md: theme.spacing(5) }}
+					gap={{ xs: theme.spacing(SPACING.SM), md: theme.spacing(LAYOUT.SM) }}
 					checks={monitor?.checks?.slice().reverse() ?? []}
 				/>
 			) : (
@@ -113,12 +114,12 @@ export const MonitorsList = ({ statusPage, monitors }: MonitorsListProps) => {
 	const [chartType, setChartType] = useState<"histogram" | "heatmap">("histogram");
 
 	return (
-		<Stack gap={theme.spacing(8)}>
+		<Stack gap={theme.spacing(LAYOUT.MD)}>
 			{statusPage.showCharts && (
 				<Stack
 					direction={"row"}
 					alignItems={"center"}
-					gap={theme.spacing(2)}
+					gap={theme.spacing(LAYOUT.SM)}
 				>
 					<Typography>{t("pages.statusPages.monitorsList.chartTypeHeatmap")}</Typography>
 					<SwitchComponent
@@ -139,21 +140,21 @@ export const MonitorsList = ({ statusPage, monitors }: MonitorsListProps) => {
 				return (
 					<BaseBox
 						key={monitor.id}
-						padding={theme.spacing(8)}
+						padding={theme.spacing(LAYOUT.MD)}
 					>
 						<Stack
 							direction="row"
 							alignItems="center"
 							justifyContent="space-between"
-							gap={theme.spacing(4)}
-							mb={theme.spacing(4)}
+							gap={theme.spacing(LAYOUT.XS)}
+							mb={theme.spacing(LAYOUT.XS)}
 						>
 							<Box sx={{ overflow: "hidden", minWidth: 0, flex: 1 }}>
 								<Stack
 									direction="row"
 									alignItems="center"
-									gap={theme.spacing(2)}
-									mb={theme.spacing(1)}
+									gap={theme.spacing(SPACING.LG)}
+									mb={theme.spacing(SPACING.SM)}
 								>
 									<Typography
 										variant="h6"

@@ -8,6 +8,7 @@ import type { Monitor } from "@/Types/Monitor";
 import Grid from "@mui/material/Grid";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Box from "@mui/material/Box";
+import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 
 interface StatusPageMonitor extends Monitor {
 	checks?: Monitor["recentChecks"];
@@ -56,15 +57,14 @@ const MetricItem = ({ label, progress, details }: MetricItemProps) => {
 				flexDirection: "column",
 				alignItems: "center",
 				textAlign: "center",
-				gap: theme.spacing(2),
-				padding: theme.spacing(2),
-				paddingBottom: theme.spacing(4),
+				gap: theme.spacing(SPACING.LG),
+				padding: theme.spacing(LAYOUT.XS),
 				borderRight: isSmall ? "none" : `1px solid ${theme.palette.divider}`,
 				borderBottom: isSmall ? `1px solid ${theme.palette.divider}` : "none",
 				"&:last-child": {
 					borderRight: "none",
 					borderBottom: "none",
-					paddingBottom: theme.spacing(2),
+					paddingBottom: theme.spacing(SPACING.LG),
 				},
 			}}
 		>
@@ -83,7 +83,7 @@ const MetricItem = ({ label, progress, details }: MetricItemProps) => {
 			{details && details.length > 0 && (
 				<Box
 					width="100%"
-					paddingX={theme.spacing(10)}
+					paddingX={theme.spacing(LAYOUT.LG)}
 				>
 					{details.map((detail) => (
 						<MetricDetailRow
@@ -182,7 +182,7 @@ export const InfrastructureMetrics = ({ monitor }: { monitor: StatusPageMonitor 
 		<Grid
 			container
 			alignItems="center"
-			padding={theme.spacing(4)}
+			padding={theme.spacing(LAYOUT.XS)}
 		>
 			{metrics.map(
 				({ key, labelKey, hasData, progress, details }) =>
