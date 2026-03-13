@@ -3,14 +3,7 @@ import { z } from "zod";
 import type { ISettingsService } from "@/service/system/settingsService.js";
 import { MonitorType } from "@/types/index.js";
 import type { GeoCheckLocation, GeoCheckResult, GeoCheckTimings, GeoContinent } from "@/types/geoCheck.js";
-import type {
-	GlobalpingCreditState,
-	GlobalpingFailureClassification,
-	GlobalpingFailureDetails,
-	GlobalpingStatus,
-	IGlobalPingService,
-} from "@/types/globalping.js";
-export type { IGlobalPingService } from "@/types/globalping.js";
+import type { GlobalpingCreditState, GlobalpingFailureClassification, GlobalpingFailureDetails, GlobalpingStatus } from "@/types/globalping.js";
 import { supportsGeoCheck } from "@/types/monitor.js";
 import type { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";
@@ -43,6 +36,14 @@ const globalpingLimitsResponseSchema = z.object({
 });
 
 type GlobalpingLimitsResponse = z.infer<typeof globalpingLimitsResponseSchema>;
+
+export interface IGlobalPingService {
+	readonly serviceName: string;
+	createMeasurement(monitorType: MonitorType, url: string, locations: GeoContinent[]): Promise<string | null>;
+	pollForResults(measurementId: string, timeoutMs?: number): Promise<GeoCheckResult[]>;
+	getUsageStatus(): Promise<GlobalpingStatus>;
+	classifyError(error: unknown): GlobalpingFailureDetails;
+}
 
 interface GlobalPingMeasurementRequest {
 	type: MonitorType;

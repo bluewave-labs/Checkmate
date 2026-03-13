@@ -1,6 +1,3 @@
-import type { GeoCheckResult, GeoContinent } from "@/types/geoCheck.js";
-import type { MonitorType } from "@/types/monitor.js";
-
 export const GlobalpingCredentialStates = ["missing", "valid", "invalid", "forbidden", "upstream_unavailable"] as const;
 
 export type GlobalpingCredentialState = (typeof GlobalpingCredentialStates)[number];
@@ -37,12 +34,4 @@ export interface GlobalpingFailureDetails {
 	credentialState: GlobalpingCredentialState;
 	message: string;
 	runtimeBehavior: GlobalpingRuntimeBehavior;
-}
-
-export interface IGlobalPingService {
-	readonly serviceName: string;
-	createMeasurement(monitorType: MonitorType, url: string, locations: GeoContinent[]): Promise<string | null>;
-	pollForResults(measurementId: string, timeoutMs?: number): Promise<GeoCheckResult[]>;
-	getUsageStatus(): Promise<GlobalpingStatus>;
-	classifyError(error: unknown): GlobalpingFailureDetails;
 }

@@ -1,6 +1,6 @@
 import type { Monitor, GeoCheck } from "@/types/index.js";
 import type { GeoCheckResult } from "@/types/geoCheck.js";
-import type { IGlobalPingService } from "@/types/globalping.js";
+import { IGlobalPingService } from "@/service/index.js";
 import { Types } from "mongoose";
 import type { IGeoChecksRepository } from "@/repositories/index.js";
 import type { IMonitorsRepository } from "@/repositories/index.js";
