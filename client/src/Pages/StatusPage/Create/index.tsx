@@ -28,7 +28,7 @@ import { useStatusPageForm } from "@/Hooks/useStatusPageForm";
 import type { StatusPageFormData } from "@/Validation/statusPage";
 import { useGet, usePost, usePut, useDelete } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
-import type { StatusPageResponse } from "@/Types/StatusPage";
+import type { MonitorDisplayType, StatusPageResponse } from "@/Types/StatusPage";
 import timezones from "@/Utils/timezones.json";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -49,10 +49,12 @@ const CreateStatusPage = () => {
 
 	// Fetch existing status page data when configuring
 	const { data: statusPageData, isLoading: isLoadingStatusPage } =
-		useGet<StatusPageResponse>(isCreate ? null : `/status-page/${url}?type=uptime`);
+		useGet<StatusPageResponse>(
+			isCreate ? null : `/status-page/${url}?type=uptime&type=infrastructure`
+		);
 
 	const { data: monitorsResponse } = useGet<Monitor[]>(
-		"/monitors/team?type=http&type=ping&type=port&type=docker"
+		"/monitors/team?type=http&type=ping&type=port&type=docker&type=hardware"
 	);
 	const monitors = monitorsResponse ?? [];
 
@@ -81,6 +83,27 @@ const CreateStatusPage = () => {
 		reset(defaults);
 	}, [defaults, reset]);
 
+	const watchedMonitorIds: string[] = form.watch("monitors") ?? [];
+	useEffect(() => {
+		const selectedMonitors = (watchedMonitorIds ?? [])
+			.map((id) => monitors.find((m) => m.id === id))
+			.filter((m): m is Monitor => m !== undefined);
+
+		const typesSet: Set<MonitorDisplayType> = new Set();
+		selectedMonitors.forEach((m) => {
+			if (m.type === "hardware") {
+				typesSet.add("infrastructure");
+			} else {
+				typesSet.add("uptime");
+			}
+		});
+
+		const computedTypes: MonitorDisplayType[] = typesSet.size
+			? Array.from(typesSet)
+			: ["uptime"];
+		form.setValue("type", computedTypes);
+	}, [watchedMonitorIds, monitors, form]);
+
 	const onError = (errors: any) => {
 		logger.debug("Status page validation errors", errors);
 	};
@@ -103,7 +126,6 @@ const CreateStatusPage = () => {
 
 	const onSubmit = async (data: StatusPageFormData) => {
 		const fd = new FormData();
-		fd.append("type", "uptime");
 		fd.append("isPublished", String(data.isPublished));
 		if (data.companyName) fd.append("companyName", data.companyName);
 		if (data.url) fd.append("url", data.url);
@@ -112,9 +134,14 @@ const CreateStatusPage = () => {
 		fd.append("showCharts", String(data.showCharts));
 		fd.append("showUptimePercentage", String(data.showUptimePercentage));
 		fd.append("showAdminLoginLink", String(data.showAdminLoginLink));
+		fd.append("showInfrastructure", String(data.showInfrastructure));
 
 		data.monitors.forEach((monitorId) => {
 			fd.append("monitors[]", monitorId);
+		});
+
+		data.type.forEach((type) => {
+			fd.append("type[]", type);
 		});
 
 		// Handle logo upload
@@ -303,7 +330,9 @@ const CreateStatusPage = () => {
 																		}}
 																	>
 																		<GripVertical size={20} />
-																		<Typography flexGrow={1}>{monitor.name}</Typography>
+																		<Typography
+																			flexGrow={1}
+																		>{`${monitor.name} (${t(`pages.common.monitors.monitorTypes.option${monitor?.type.charAt(0).toUpperCase() + monitor?.type.slice(1)}`)})`}</Typography>
 																		<IconButton
 																			size="small"
 																			onClick={() => {
@@ -422,6 +451,23 @@ const CreateStatusPage = () => {
 										/>
 									}
 									label={t("pages.statusPages.form.features.option.showCharts.label")}
+								/>
+							)}
+						/>
+						<Controller
+							name="showInfrastructure"
+							control={control}
+							render={({ field }) => (
+								<FormControlLabel
+									control={
+										<Checkbox
+											checked={field.value}
+											onChange={field.onChange}
+										/>
+									}
+									label={t(
+										"pages.statusPages.form.features.option.showInfrastructure.label"
+									)}
 								/>
 							)}
 						/>
