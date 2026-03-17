@@ -10,19 +10,28 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import Box from "@mui/material/Box";
 import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 
+const GAUGE_RADIUS = 60;
+const GAUGE_STROKE_WIDTH = 12;
+const PERCENTAGE_MULTIPLIER = 100;
+
 interface StatusPageMonitor extends Monitor {
 	checks?: Monitor["recentChecks"];
-	infrastructureCPU?: number;
-	infrastructureMemory?: number;
-	infrastructureDisk?: number;
 }
 
-interface MetricDetailRowProps {
+interface MetricDetail {
 	label: string;
 	value: string;
 }
 
-const MetricDetailRow = ({ label, value }: MetricDetailRowProps) => {
+interface MetricConfig {
+	key: string;
+	label: string;
+	hasData: boolean;
+	progress: number;
+	details: MetricDetail[];
+}
+
+const MetricDetailRow = ({ label, value }: MetricDetail) => {
 	const theme = useTheme();
 	return (
 		<Stack
@@ -43,7 +52,7 @@ const MetricDetailRow = ({ label, value }: MetricDetailRowProps) => {
 interface MetricItemProps {
 	label: string;
 	progress: number;
-	details?: MetricDetailRowProps[];
+	details?: MetricDetail[];
 }
 
 const MetricItem = ({ label, progress, details }: MetricItemProps) => {
@@ -75,8 +84,8 @@ const MetricItem = ({ label, progress, details }: MetricItemProps) => {
 			>
 				<Gauge
 					progress={progress}
-					radius={60}
-					strokeWidth={12}
+					radius={GAUGE_RADIUS}
+					strokeWidth={GAUGE_STROKE_WIDTH}
 				/>
 				<Typography variant="body2">{label}</Typography>
 			</Box>
@@ -98,6 +107,92 @@ const MetricItem = ({ label, progress, details }: MetricItemProps) => {
 	);
 };
 
+type LatestCheck = NonNullable<Monitor["recentChecks"]>[number];
+
+const buildCpuMetric = (
+	check: LatestCheck,
+	t: (key: string) => string
+): MetricConfig | null => {
+	if (!check.cpu || typeof check.cpu.usage_percent !== "number") {
+		return null;
+	}
+	const usagePercent = (check.cpu.usage_percent ?? 0) * PERCENTAGE_MULTIPLIER;
+	return {
+		key: "cpu",
+		label: t("pages.statusPages.monitorsList.infrastructure.cpu"),
+		hasData: true,
+		progress: usagePercent,
+		details: [
+			{
+				label: t("pages.statusPages.monitorsList.infrastructure.usage"),
+				value: `${usagePercent.toFixed(2)}%`,
+			},
+		],
+	};
+};
+
+const buildMemoryMetric = (
+	check: LatestCheck,
+	t: (key: string) => string
+): MetricConfig | null => {
+	if (
+		!check.memory ||
+		typeof check.memory.usage_percent !== "number" ||
+		typeof check.memory.used_bytes !== "number" ||
+		typeof check.memory.total_bytes !== "number"
+	) {
+		return null;
+	}
+	return {
+		key: "memory",
+		label: t("pages.statusPages.monitorsList.infrastructure.memory"),
+		hasData: true,
+		progress: (check.memory.usage_percent ?? 0) * PERCENTAGE_MULTIPLIER,
+		details: [
+			{
+				label: t("pages.statusPages.monitorsList.infrastructure.used"),
+				value: prettyBytes(check.memory.used_bytes ?? 0),
+			},
+			{
+				label: t("pages.statusPages.monitorsList.infrastructure.total"),
+				value: prettyBytes(check.memory.total_bytes ?? 0),
+			},
+		],
+	};
+};
+
+const buildDiskMetric = (
+	check: LatestCheck,
+	t: (key: string) => string
+): MetricConfig | null => {
+	if (!check.disk || check.disk.length === 0) {
+		return null;
+	}
+	const disks = check.disk;
+	const avgUsagePercent =
+		(disks.reduce((acc, disk) => acc + (disk?.usage_percent ?? 0), 0) / disks.length) *
+		PERCENTAGE_MULTIPLIER;
+	const totalUsedBytes = disks.reduce((acc, disk) => acc + (disk?.used_bytes ?? 0), 0);
+	const totalTotalBytes = disks.reduce((acc, disk) => acc + (disk?.total_bytes ?? 0), 0);
+
+	return {
+		key: "disk",
+		label: t("pages.statusPages.monitorsList.infrastructure.disk"),
+		hasData: true,
+		progress: avgUsagePercent,
+		details: [
+			{
+				label: t("pages.statusPages.monitorsList.infrastructure.used"),
+				value: prettyBytes(totalUsedBytes),
+			},
+			{
+				label: t("pages.statusPages.monitorsList.infrastructure.total"),
+				value: prettyBytes(totalTotalBytes),
+			},
+		],
+	};
+};
+
 export const InfrastructureMetrics = ({ monitor }: { monitor: StatusPageMonitor }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -115,68 +210,22 @@ export const InfrastructureMetrics = ({ monitor }: { monitor: StatusPageMonitor 
 		);
 	}
 
-	const metrics = [
-		{
-			key: t("pages.statusPages.monitorsList.infrastructure.cpu"),
-			labelKey: t("pages.statusPages.monitorsList.infrastructure.cpu"),
-			hasData: latestCheck.cpu && typeof latestCheck.cpu.usage_percent === "number",
-			progress: latestCheck.cpu?.usage_percent ? latestCheck.cpu.usage_percent * 100 : 0,
-			details: [
-				{
-					label: t("pages.statusPages.monitorsList.infrastructure.usage"),
-					value: `${((latestCheck.cpu?.usage_percent || 0) * 100).toFixed(2)}%`,
-				},
-			],
-		},
-		{
-			key: t("pages.statusPages.monitorsList.infrastructure.memoryText"),
-			labelKey: t("pages.statusPages.monitorsList.infrastructure.memory"),
-			hasData:
-				latestCheck.memory &&
-				typeof latestCheck.memory.usage_percent === "number" &&
-				typeof latestCheck.memory.used_bytes === "number" &&
-				typeof latestCheck.memory.total_bytes === "number",
-			progress: latestCheck.memory?.usage_percent
-				? latestCheck.memory.usage_percent * 100
-				: 0,
-			details: [
-				{
-					label: t("pages.statusPages.monitorsList.infrastructure.used"),
-					value: prettyBytes(latestCheck.memory?.used_bytes || 0),
-				},
-				{
-					label: t("pages.statusPages.monitorsList.infrastructure.total"),
-					value: prettyBytes(latestCheck.memory?.total_bytes || 0),
-				},
-			],
-		},
-		{
-			key: t("pages.statusPages.monitorsList.infrastructure.disk"),
-			labelKey: t("pages.statusPages.monitorsList.infrastructure.disk"),
-			hasData: latestCheck.disk && latestCheck.disk.length > 0,
-			progress: latestCheck.disk
-				? (latestCheck.disk.reduce((acc, disk) => acc + (disk?.usage_percent || 0), 0) /
-						latestCheck.disk.length) *
-					100
-				: 0,
-			details: [
-				{
-					label: t("pages.statusPages.monitorsList.infrastructure.used"),
-					value: prettyBytes(
-						latestCheck?.disk?.reduce((acc, disk) => acc + (disk?.used_bytes || 0), 0) ??
-							0
-					),
-				},
-				{
-					label: t("pages.statusPages.monitorsList.infrastructure.total"),
-					value: prettyBytes(
-						latestCheck?.disk?.reduce((acc, disk) => acc + (disk?.total_bytes || 0), 0) ??
-							0
-					),
-				},
-			],
-		},
-	];
+	const metrics: MetricConfig[] = [
+		buildCpuMetric(latestCheck, t),
+		buildMemoryMetric(latestCheck, t),
+		buildDiskMetric(latestCheck, t),
+	].filter((m): m is MetricConfig => m !== null);
+
+	if (metrics.length === 0) {
+		return (
+			<Typography
+				variant="body2"
+				color={theme.palette.text.secondary}
+			>
+				{t("pages.statusPages.monitorsList.noData")}
+			</Typography>
+		);
+	}
 
 	return (
 		<Grid
@@ -184,17 +233,14 @@ export const InfrastructureMetrics = ({ monitor }: { monitor: StatusPageMonitor 
 			alignItems="center"
 			padding={theme.spacing(LAYOUT.XS)}
 		>
-			{metrics.map(
-				({ key, labelKey, hasData, progress, details }) =>
-					hasData && (
-						<MetricItem
-							key={key}
-							label={t(labelKey)}
-							progress={progress}
-							details={details}
-						/>
-					)
-			)}
+			{metrics.map(({ key, label, progress, details }) => (
+				<MetricItem
+					key={key}
+					label={label}
+					progress={progress}
+					details={details}
+				/>
+			))}
 		</Grid>
 	);
 };
