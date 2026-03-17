@@ -21,7 +21,7 @@ import {
 
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useStatusPageForm } from "@/Hooks/useStatusPageForm";
@@ -38,6 +38,22 @@ interface TimezoneOption {
 	_id: string;
 	name: string;
 }
+
+const MONITOR_TYPE_KEYS: Record<string, string> = {
+	http: "pages.common.monitors.monitorTypes.optionHttp",
+	ping: "pages.common.monitors.monitorTypes.optionPing",
+	docker: "pages.common.monitors.monitorTypes.optionDocker",
+	port: "pages.common.monitors.monitorTypes.optionPort",
+	game: "pages.common.monitors.monitorTypes.optionGame",
+	grpc: "pages.common.monitors.monitorTypes.optionGrpc",
+	websocket: "pages.common.monitors.monitorTypes.optionWebSocket",
+	hardware: "pages.common.monitors.monitorTypes.optionHardware",
+};
+
+const getMonitorTypeLabel = (type: string, t: (key: string) => string): string => {
+	const i18nMonitorKey = MONITOR_TYPE_KEYS[type];
+	return i18nMonitorKey ? t(i18nMonitorKey) : type;
+};
 
 const CreateStatusPage = () => {
 	const theme = useTheme();
@@ -84,25 +100,22 @@ const CreateStatusPage = () => {
 	}, [defaults, reset]);
 
 	const watchedMonitorIds: string[] = form.watch("monitors") ?? [];
-	useEffect(() => {
+	const computedTypes: MonitorDisplayType[] = useMemo(() => {
 		const selectedMonitors = (watchedMonitorIds ?? [])
 			.map((id) => monitors.find((m) => m.id === id))
 			.filter((m): m is Monitor => m !== undefined);
 
-		const typesSet: Set<MonitorDisplayType> = new Set();
+		const typesSet = new Set<MonitorDisplayType>();
 		selectedMonitors.forEach((m) => {
-			if (m.type === "hardware") {
-				typesSet.add("infrastructure");
-			} else {
-				typesSet.add("uptime");
-			}
+			typesSet.add(m.type === "hardware" ? "infrastructure" : "uptime");
 		});
 
-		const computedTypes: MonitorDisplayType[] = typesSet.size
-			? Array.from(typesSet)
-			: ["uptime"];
+		return typesSet.size ? Array.from(typesSet) : ["uptime"];
+	}, [JSON.stringify(watchedMonitorIds), monitors]);
+
+	useEffect(() => {
 		form.setValue("type", computedTypes);
-	}, [watchedMonitorIds, monitors, form]);
+	}, [computedTypes]);
 
 	const onError = (errors: any) => {
 		logger.debug("Status page validation errors", errors);
@@ -332,7 +345,7 @@ const CreateStatusPage = () => {
 																		<GripVertical size={20} />
 																		<Typography
 																			flexGrow={1}
-																		>{`${monitor.name} (${t(`pages.common.monitors.monitorTypes.option${monitor?.type.charAt(0).toUpperCase() + monitor?.type.slice(1)}`)})`}</Typography>
+																		>{`${monitor.name} (${getMonitorTypeLabel(monitor.type, t)})`}</Typography>
 																		<IconButton
 																			size="small"
 																			onClick={() => {
