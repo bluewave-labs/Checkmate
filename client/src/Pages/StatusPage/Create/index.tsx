@@ -54,9 +54,15 @@ const CreateStatusPage = () => {
 			isCreate ? null : `/status-page/${url}?type=uptime&type=infrastructure`
 		);
 
-	const { data: monitorsResponse } = useGet<Monitor[]>(
-		"/monitors/team?type=http&type=ping&type=port&type=docker&type=hardware"
-	);
+	const monitorsUrl = useMemo(() => {
+		const params = new URLSearchParams();
+		["http", "ping", "port", "docker", "game", "grpc", "websocket", "hardware"].forEach(
+			(type) => params.append("type", type)
+		);
+		return `/monitors/team?${params.toString()}`;
+	}, []);
+
+	const { data: monitorsResponse } = useGet<Monitor[]>(monitorsUrl);
 	const monitors = monitorsResponse ?? [];
 
 	const { post, loading: isSubmittingPost } = usePost();
