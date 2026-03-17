@@ -45,7 +45,7 @@ const StatusPageSchema = new Schema<StatusPageDocument>(
 		type: {
 			type: [String],
 			required: true,
-			default: [],
+			default: ["uptime"],
 			enum: StatusPageTypes,
 		},
 		companyName: {

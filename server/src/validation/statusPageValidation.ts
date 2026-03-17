@@ -10,13 +10,17 @@ export const getStatusPageParamValidation = z.object({
 });
 
 export const getStatusPageQueryValidation = z.object({
-	type: z.array(z.enum(["uptime", "infrastructure"])),
+	type: z
+		.union([z.enum(["uptime", "infrastructure"]), z.array(z.enum(["uptime", "infrastructure"]))])
+		.transform((val) => (Array.isArray(val) ? val : [val])),
 	timeFrame: z.coerce.number().optional(),
 });
 
 export const createStatusPageBodyValidation = z
 	.object({
-		type: z.array(z.enum(["uptime", "infrastructure"])),
+		type: z
+			.union([z.enum(["uptime", "infrastructure"]), z.array(z.enum(["uptime", "infrastructure"]))])
+			.transform((val) => (Array.isArray(val) ? val : [val])),
 		companyName: z.string().min(1, "Company name is required"),
 		url: z.string().regex(/^[a-zA-Z0-9_-]+$/, {
 			message: "URL can only contain letters, numbers, underscores, and hyphens",
@@ -30,6 +34,7 @@ export const createStatusPageBodyValidation = z
 		showCharts: booleanCoercion.optional(),
 		showUptimePercentage: booleanCoercion,
 		showAdminLoginLink: booleanCoercion.optional(),
+		showInfrastructure: booleanCoercion.optional(),
 		removeLogo: z.union([z.literal("true"), z.literal("false")]).optional(),
 	})
 	.strip();
