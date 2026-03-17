@@ -29,6 +29,7 @@ import type { StatusPageFormData } from "@/Validation/statusPage";
 import { useGet, usePost, usePut, useDelete } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
 import type { MonitorDisplayType, StatusPageResponse } from "@/Types/StatusPage";
+import { getMonitorTypeLabel } from "@/Types/StatusPage";
 import timezones from "@/Utils/timezones.json";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -38,22 +39,6 @@ interface TimezoneOption {
 	_id: string;
 	name: string;
 }
-
-const MONITOR_TYPE_KEYS: Record<string, string> = {
-	http: "pages.common.monitors.monitorTypes.optionHttp",
-	ping: "pages.common.monitors.monitorTypes.optionPing",
-	docker: "pages.common.monitors.monitorTypes.optionDocker",
-	port: "pages.common.monitors.monitorTypes.optionPort",
-	game: "pages.common.monitors.monitorTypes.optionGame",
-	grpc: "pages.common.monitors.monitorTypes.optionGrpc",
-	websocket: "pages.common.monitors.monitorTypes.optionWebSocket",
-	hardware: "pages.common.monitors.monitorTypes.optionHardware",
-};
-
-const getMonitorTypeLabel = (type: string, t: (key: string) => string): string => {
-	const i18nMonitorKey = MONITOR_TYPE_KEYS[type];
-	return i18nMonitorKey ? t(i18nMonitorKey) : type;
-};
 
 const CreateStatusPage = () => {
 	const theme = useTheme();
@@ -111,7 +96,7 @@ const CreateStatusPage = () => {
 		});
 
 		return typesSet.size ? Array.from(typesSet) : ["uptime"];
-	}, [JSON.stringify(watchedMonitorIds), monitors]);
+	}, [watchedMonitorIds, monitors]);
 
 	useEffect(() => {
 		form.setValue("type", computedTypes);

@@ -551,7 +551,8 @@
 					"optionWebSocketDescription": "Monitor WebSocket endpoints for connection health and response time.",
 					"optionHttpDescription": "Use HTTP(S) to monitor your website or API endpoint.",
 					"optionPingDescription": "Use ICMP Ping to monitor if a server is online.",
-					"optionPortDescription": "Monitor if a specific port on a server is open."
+					"optionPortDescription": "Monitor if a specific port on a server is open.",
+					"title": "Type"
 				},
 				"thresholds": {
 					"title": "Alert thresholds",
