@@ -756,7 +756,7 @@
 					}
 				]
 			},
-			"put": {
+			"patch": {
 				"tags": ["monitors"],
 				"summary": "Update monitor",
 				"description": "Update an existing monitor",
