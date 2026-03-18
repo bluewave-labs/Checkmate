@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { booleanCoercion } from "./shared.js";
+import { StatusPageTypes } from "@/types/statusPage.js";
 
 //****************************************
 // Status Page Validations
@@ -10,17 +11,13 @@ export const getStatusPageParamValidation = z.object({
 });
 
 export const getStatusPageQueryValidation = z.object({
-	type: z
-		.union([z.enum(["uptime", "infrastructure"]), z.array(z.enum(["uptime", "infrastructure"]))])
-		.transform((val) => (Array.isArray(val) ? val : [val])),
+	type: z.union([z.enum(StatusPageTypes), z.array(z.enum(StatusPageTypes))]).transform((val) => (Array.isArray(val) ? val : [val])),
 	timeFrame: z.coerce.number().optional(),
 });
 
 export const createStatusPageBodyValidation = z
 	.object({
-		type: z
-			.union([z.enum(["uptime", "infrastructure"]), z.array(z.enum(["uptime", "infrastructure"]))])
-			.transform((val) => (Array.isArray(val) ? val : [val])),
+		type: z.union([z.enum(StatusPageTypes), z.array(z.enum(StatusPageTypes))]).transform((val) => (Array.isArray(val) ? val : [val])),
 		companyName: z.string().min(1, "Company name is required"),
 		url: z.string().regex(/^[a-zA-Z0-9_-]+$/, {
 			message: "URL can only contain letters, numbers, underscores, and hyphens",
