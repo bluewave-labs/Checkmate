@@ -511,41 +511,23 @@
 				"description": "Get monitors filtered by team with optional parameters",
 				"parameters": [
 					{
-						"name": "status",
-						"in": "query",
-						"description": "Filter by monitor status (up/down)",
-						"schema": {
-							"type": "boolean"
-						}
-					},
-					{
 						"name": "type",
 						"in": "query",
 						"description": "Filter by monitor type",
 						"schema": {
-							"type": "string",
-							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port"]
-						}
-					},
-					{
-						"name": "page",
-						"in": "query",
-						"description": "Page number for pagination",
-						"schema": {
-							"type": "integer",
-							"minimum": 1,
-							"default": 1
-						}
-					},
-					{
-						"name": "rowsPerPage",
-						"in": "query",
-						"description": "Number of monitors per page",
-						"schema": {
-							"type": "integer",
-							"minimum": 1,
-							"maximum": 100,
-							"default": 10
+							"oneOf": [
+								{
+									"type": "string",
+									"enum": ["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"]
+								},
+								{
+									"type": "array",
+									"items": {
+										"type": "string",
+										"enum": ["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"]
+									}
+								}
+							]
 						}
 					},
 					{
@@ -554,15 +536,6 @@
 						"description": "Search filter value",
 						"schema": {
 							"type": "string"
-						}
-					},
-					{
-						"name": "field",
-						"in": "query",
-						"description": "Field to filter on",
-						"schema": {
-							"type": "string",
-							"enum": ["name", "url", "description"]
 						}
 					}
 				],
@@ -3568,22 +3541,19 @@
 			},
 			"CreateMonitorRequest": {
 				"type": "object",
-				"required": ["name", "description", "type", "url", "interval"],
+				"required": ["name", "type", "url"],
 				"properties": {
 					"name": {
 						"type": "string",
-						"minLength": 1,
-						"maxLength": 100,
 						"example": "My Website Monitor"
 					},
 					"description": {
 						"type": "string",
-						"maxLength": 500,
 						"example": "Monitors the main website homepage"
 					},
 					"type": {
 						"type": "string",
-						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port"],
+						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket"],
 						"example": "http"
 					},
 					"url": {
@@ -3593,14 +3563,34 @@
 					},
 					"interval": {
 						"type": "integer",
-						"minimum": 30,
-						"maximum": 3600,
 						"example": 300,
 						"description": "Check interval in seconds"
 					},
+					"statusWindowSize": {
+						"type": "integer",
+						"minimum": 1,
+						"maximum": 20,
+						"default": 5
+					},
+					"statusWindowThreshold": {
+						"type": "integer",
+						"minimum": 1,
+						"maximum": 100,
+						"default": 60
+					},
 					"isActive": {
+						"type": "boolean"
+					},
+					"ignoreTlsErrors": {
 						"type": "boolean",
-						"default": true
+						"default": false
+					},
+					"useAdvancedMatching": {
+						"type": "boolean",
+						"default": false
+					},
+					"port": {
+						"type": "integer"
 					},
 					"notifications": {
 						"type": "array",
@@ -3609,51 +3599,62 @@
 						},
 						"description": "Array of notification IDs to associate with this monitor"
 					},
-					"httpOptions": {
-						"type": "object",
-						"properties": {
-							"method": {
-								"type": "string",
-								"enum": ["GET", "POST", "PUT", "DELETE", "HEAD"],
-								"default": "GET"
-							},
-							"headers": {
-								"type": "object",
-								"additionalProperties": {
-									"type": "string"
-								}
-							},
-							"body": {
-								"type": "string",
-								"description": "Request body for POST/PUT requests"
-							},
-							"timeout": {
-								"type": "integer",
-								"minimum": 1000,
-								"maximum": 30000,
-								"default": 5000,
-								"description": "Request timeout in milliseconds"
-							}
-						}
+					"secret": {
+						"type": "string"
 					},
-					"assertions": {
+					"jsonPath": {
+						"type": "string"
+					},
+					"expectedValue": {
+						"type": "string"
+					},
+					"matchMethod": {
+						"type": "string",
+						"enum": ["equal", "include", "regex", ""]
+					},
+					"cpuAlertThreshold": {
+						"type": "number"
+					},
+					"memoryAlertThreshold": {
+						"type": "number"
+					},
+					"diskAlertThreshold": {
+						"type": "number"
+					},
+					"tempAlertThreshold": {
+						"type": "number"
+					},
+					"gameId": {
+						"type": "string"
+					},
+					"grpcServiceName": {
+						"type": "string",
+						"default": ""
+					},
+					"selectedDisks": {
 						"type": "array",
 						"items": {
-							"type": "object",
-							"properties": {
-								"type": {
-									"type": "string",
-									"enum": ["status-code", "response-time", "body-contains", "header-contains"]
-								},
-								"comparison": {
-									"type": "string",
-									"enum": ["equals", "not-equals", "greater-than", "less-than", "contains", "not-contains"]
-								},
-								"value": {
-									"type": "string"
-								}
-							}
+							"type": "string"
 						}
+					},
+					"group": {
+						"type": "string",
+						"nullable": true,
+						"maxLength": 50
+					},
+					"geoCheckEnabled": {
+						"type": "boolean"
+					},
+					"geoCheckLocations": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"enum": ["northAmerica", "southAmerica", "europe", "asia", "africa", "oceania"]
+						}
+					},
+					"geoCheckInterval": {
+						"type": "integer",
+						"minimum": 300000
 					}
 				}
 			},
