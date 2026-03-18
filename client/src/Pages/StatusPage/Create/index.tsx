@@ -35,6 +35,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { HeaderConfigStatusControls } from "./Components/HeaderConfigStatusControls";
 
+const monitorsUrl = (() => {
+	const params = new URLSearchParams();
+	["http", "ping", "port", "docker", "game", "grpc", "websocket", "hardware"].forEach(
+		(type) => params.append("type", type)
+	);
+	return `/monitors/team?${params.toString()}`;
+})();
+
 interface TimezoneOption {
 	_id: string;
 	name: string;
@@ -53,14 +61,6 @@ const CreateStatusPage = () => {
 		useGet<StatusPageResponse>(
 			isCreate ? null : `/status-page/${url}?type=uptime&type=infrastructure`
 		);
-
-	const monitorsUrl = useMemo(() => {
-		const params = new URLSearchParams();
-		["http", "ping", "port", "docker", "game", "grpc", "websocket", "hardware"].forEach(
-			(type) => params.append("type", type)
-		);
-		return `/monitors/team?${params.toString()}`;
-	}, []);
 
 	const { data: monitorsResponse } = useGet<Monitor[]>(monitorsUrl);
 	const monitors = monitorsResponse ?? [];

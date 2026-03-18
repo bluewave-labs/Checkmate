@@ -29,11 +29,10 @@ const StatusPageView = () => {
 
 	const statusPage = data?.statusPage;
 	const monitors = data?.monitors ?? [];
-	const infrastructureMonitors = data?.infrastructureMonitors ?? [];
 
 	if (!statusPage) return null;
 
-	if (monitors?.length === 0 && infrastructureMonitors?.length === 0) {
+	if (monitors.length === 0) {
 		return (
 			<BasePage
 				loading={isLoading}

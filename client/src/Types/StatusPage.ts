@@ -50,5 +50,4 @@ export interface StatusPage {
 export interface StatusPageResponse {
 	statusPage: StatusPage;
 	monitors: Monitor[];
-	infrastructureMonitors: Monitor[];
 }
