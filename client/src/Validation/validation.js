@@ -288,7 +288,13 @@ const logoImageValidation = joi
 	.optional(); // Make entire object optional
 
 const statusPageValidation = joi.object({
-	type: joi.string().valid("uptime").required(),
+	type: joi
+		.alternatives()
+		.try(
+			joi.string().valid("uptime", "infrastructure"),
+			joi.array().items(joi.string().valid("uptime", "infrastructure"))
+		)
+		.required(),
 	isPublished: joi.bool(),
 	companyName: joi
 		.string()
@@ -317,6 +323,7 @@ const statusPageValidation = joi.object({
 	showUptimePercentage: joi.boolean(),
 	showCharts: joi.boolean(),
 	showAdminLoginLink: joi.boolean(),
+	showInfrastructure: joi.boolean(),
 });
 
 const settingsValidation = joi.object({

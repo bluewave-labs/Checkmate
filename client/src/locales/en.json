@@ -407,6 +407,17 @@
 					"paused": "paused",
 					"total": "total",
 					"up": "up"
+				},
+				"monitorTypes": {
+					"optionDocker": "Docker",
+					"optionGame": "Game",
+					"optionHttp": "HTTP(S)",
+					"optionPing": "Ping",
+					"optionPort": "Port",
+					"optionPagespeed": "PageSpeed",
+					"optionHardware": "Infrastructure",
+					"optionGrpc": "gRPC",
+					"optionWebSocket": "WebSocket"
 				}
 			}
 		},
@@ -534,19 +545,12 @@
 				},
 				"type": {
 					"description": "Select the type of check to perform",
-					"optionDocker": "Docker",
 					"optionDockerDescription": "Use Docker to monitor if a container is running.",
-					"optionGame": "Game",
 					"optionGameDescription": "Monitor if a specific game server is online.",
-					"optionGrpc": "gRPC",
 					"optionGrpcDescription": "Monitor gRPC services using the standard Health Checking Protocol.",
-					"optionWebSocket": "WebSocket",
 					"optionWebSocketDescription": "Monitor WebSocket endpoints for connection health and response time.",
-					"optionHttp": "HTTP(S)",
 					"optionHttpDescription": "Use HTTP(S) to monitor your website or API endpoint.",
-					"optionPing": "Ping",
 					"optionPingDescription": "Use ICMP Ping to monitor if a server is online.",
-					"optionPort": "Port",
 					"optionPortDescription": "Monitor if a specific port on a server is open.",
 					"title": "Type"
 				},
@@ -1178,7 +1182,22 @@
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Heatmap",
-				"chartTypeHistogram": "Histogram"
+				"chartTypeHistogram": "Histogram",
+				"noData": "No data available",
+				"infrastructure": {
+					"title": "Infrastructure",
+					"cpu": "CPU",
+					"memory": "RAM",
+					"memoryText": "Memory",
+					"disk": "Disk",
+					"usage": "Usage",
+					"used": "Used",
+					"total": "Total"
+				},
+				"uptime": {
+					"title": "Uptime",
+					"responseTime": "Response time"
+				}
 			},
 			"statusBar": {
 				"allDown": "All systems are down",
@@ -1270,6 +1289,9 @@
 						},
 						"showAdminLoginLink": {
 							"label": "Show admin login link"
+						},
+						"showInfrastructure": {
+							"label": "Show infrastructure metrics"
 						}
 					}
 				}
