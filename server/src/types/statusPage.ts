@@ -1,4 +1,4 @@
-export const StatusPageTypes = ["uptime"] as const;
+export const StatusPageTypes = ["uptime", "infrastructure"] as const;
 export type StatusPageType = (typeof StatusPageTypes)[number];
 
 export interface StatusPageLogo {
@@ -15,7 +15,7 @@ export interface StatusPage {
 	id: string;
 	userId: string;
 	teamId: string;
-	type: StatusPageType;
+	type: StatusPageType[];
 	companyName: string;
 	url: string;
 	timezone?: string;
@@ -28,6 +28,7 @@ export interface StatusPage {
 	showCharts: boolean;
 	showUptimePercentage: boolean;
 	showAdminLoginLink: boolean;
+	showInfrastructure: boolean;
 	customCSS: string;
 	createdAt: string;
 	updatedAt: string;
