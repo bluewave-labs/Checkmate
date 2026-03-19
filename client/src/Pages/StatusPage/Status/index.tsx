@@ -25,7 +25,13 @@ const StatusPageView = () => {
 
 	const apiUrl = url ? `/status-page/${url}?type=uptime&type=infrastructure` : null;
 
-	const { data, isLoading, error } = useGet<StatusPageResponse>(apiUrl);
+	const { data, isLoading, error } = useGet<StatusPageResponse>(
+		apiUrl,
+		{},
+		{
+			refreshInterval: 10000,
+		}
+	);
 
 	const statusPage = data?.statusPage;
 	const monitors = data?.monitors ?? [];
