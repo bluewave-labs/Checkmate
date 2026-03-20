@@ -16,11 +16,10 @@ import {
 	importMonitorsBodyValidation,
 } from "@/validation/monitorValidation.js";
 import sslChecker from "ssl-checker";
-import { fetchMonitorCertificate, requireTeamId, requireUserId } from "./controllerUtils.js";
+import { fetchMonitorCertificate, requireTeamId, requireUserId } from "@/controllers/controllerUtils.js";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorService, INotificationsService } from "@/service/index.js";
 import { GeoContinent } from "@/types/geoCheck.js";
-import { fetchMonitorCertificate, requireTeamId, requireUserId } from "@/controllers/controllerUtils.js";
 
 const SERVICE_NAME = "monitorController";
 
@@ -43,6 +42,7 @@ export interface IMonitorController {
 	exportMonitorsToJSON: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	getAllGames: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	getGroupsByTeamId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	updateNotifications: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 }
 class MonitorController implements IMonitorController {
 	static SERVICE_NAME = SERVICE_NAME;
