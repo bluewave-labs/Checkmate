@@ -2,7 +2,11 @@ import { Monitor } from "@/types/monitor.js";
 import jmespath from "jmespath";
 type JmesPath = typeof jmespath;
 
-export class AdvancedMatcher {
+export interface IAdvancedMatcher {
+	validate<T>(payload: T, monitor: Monitor): { ok: boolean; message: string; extracted?: T | undefined };
+}
+
+export class AdvancedMatcher implements IAdvancedMatcher {
 	constructor(private jmespath: JmesPath) {}
 
 	private compare(actual: unknown, expected: string, method?: string): boolean {
@@ -12,7 +16,7 @@ export class AdvancedMatcher {
 		return String(actual) === expected; // Default
 	}
 
-	validate<T>(payload: T, monitor: Monitor): { ok: boolean; message: string; extracted?: any } {
+	validate<T>(payload: T, monitor: Monitor): { ok: boolean; message: string; extracted?: T | undefined } {
 		const { useAdvancedMatching, jsonPath, matchMethod, expectedValue } = monitor;
 		if (!useAdvancedMatching) return { ok: true, message: "Success" };
 
@@ -35,10 +39,10 @@ export class AdvancedMatcher {
 			};
 		}
 
-		const isFalsey = dataToValidate === false || dataToValidate === "false" || dataToValidate === undefined || dataToValidate === null;
+		const isFalsy = dataToValidate === false || dataToValidate === "false" || dataToValidate === undefined || dataToValidate === null;
 		return {
-			ok: !isFalsey,
-			message: !isFalsey ? "Success" : "Extracted value is falsey",
+			ok: !isFalsy,
+			message: !isFalsy ? "Success" : "Extracted value is falsy",
 			extracted: dataToValidate,
 		};
 	}
