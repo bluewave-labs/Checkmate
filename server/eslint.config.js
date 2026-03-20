@@ -32,7 +32,9 @@ export default [
 		languageOptions: {
 			parser: tseslint.parser,
 			parserOptions: {
-				projectService: true,
+				projectService: {
+					allowDefaultProject: ["jest.config.ts"],
+				},
 				tsconfigRootDir: import.meta.dirname,
 			},
 		},
