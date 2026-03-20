@@ -22,6 +22,8 @@ import type {
 import demoMonitorsData from "@/utils/demoMonitors.json" with { type: "json" };
 import { AppError } from "@/utils/AppError.js";
 import { ISuperSimpleQueue } from "../infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
+import { IEmailService } from "../infrastructure/emailService.js";
+import { ILogger } from "@/utils/logger.js";
 
 const SERVICE_NAME = "MonitorService";
 type DateRangeKey = "recent" | "day" | "week" | "month" | "all";
@@ -31,7 +33,7 @@ export interface IMonitorService {
 
 	// create
 	createMonitor(teamId: string, userId: string, body: Partial<Monitor>): Promise<void>;
-	createMonitors(monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null>;
+	createMonitors(monitors: Array<Monitor>): Promise<Monitor[] | null>;
 	addDemoMonitors(args: { userId: string; teamId: string }): Promise<Monitor[]>;
 
 	// read
@@ -79,16 +81,16 @@ export interface IMonitorService {
 
 	// other
 	exportMonitorsToJSON(args: { teamId: string }): Promise<Monitor[]>;
-	importMonitorsFromJSON(args: { teamId: string; userId: string; monitors: any[] }): Promise<{ imported: number; errors: string[] }>;
+	importMonitorsFromJSON(args: { teamId: string; userId: string; monitors: Monitor[] }): Promise<{ imported: number; errors: string[] }>;
 }
 
 export class MonitorService implements IMonitorService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private jobQueue: ISuperSimpleQueue;
-	private emailService: any;
-	private logger: any;
-	private games: any;
+	private emailService: IEmailService;
+	private logger: ILogger;
+	private games: GamesMap;
 	private monitorsRepository: IMonitorsRepository;
 	private checksRepository: IChecksRepository;
 	private geoChecksRepository: IGeoChecksRepository;
@@ -109,9 +111,9 @@ export class MonitorService implements IMonitorService {
 		incidentsRepository,
 	}: {
 		jobQueue: ISuperSimpleQueue;
-		emailService: any;
-		logger: any;
-		games: any;
+		emailService: IEmailService;
+		logger: ILogger;
+		games: GamesMap;
 		monitorsRepository: IMonitorsRepository;
 		checksRepository: IChecksRepository;
 		geoChecksRepository: IGeoChecksRepository;
@@ -169,7 +171,7 @@ export class MonitorService implements IMonitorService {
 		this.jobQueue.addJob(monitor.id, monitor);
 	};
 
-	createMonitors = async (monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null> => {
+	createMonitors = async (monitors: Array<Monitor>): Promise<Monitor[] | null> => {
 		const createdMonitors = await this.monitorsRepository.createMonitors(monitors);
 		if (!monitors || monitors.length === 0) {
 			throw new AppError({ message: "Failed to create monitors", status: 500, service: SERVICE_NAME, method: "createMonitors" });
@@ -179,7 +181,7 @@ export class MonitorService implements IMonitorService {
 		return createdMonitors;
 	};
 
-	addDemoMonitors = async ({ userId, teamId }: { userId: string; teamId: string }): Promise<any[]> => {
+	addDemoMonitors = async ({ userId, teamId }: { userId: string; teamId: string }): Promise<Monitor[]> => {
 		const demoData = demoMonitorsData;
 		const monitors = demoData.map((monitor) => ({
 			userId,
@@ -200,12 +202,10 @@ export class MonitorService implements IMonitorService {
 		teamId,
 		monitorId,
 		dateRange,
-		normalize,
 	}: {
 		teamId: string;
 		monitorId: string;
 		dateRange: string;
-		normalize?: boolean;
 	}): Promise<UptimeDetailsResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
@@ -386,7 +386,6 @@ export class MonitorService implements IMonitorService {
 		filter,
 		field,
 		order,
-		explain,
 	}: {
 		teamId: string;
 		limit?: number;
@@ -396,7 +395,6 @@ export class MonitorService implements IMonitorService {
 		filter?: string;
 		field?: string;
 		order?: "asc" | "desc";
-		explain?: boolean;
 	}): Promise<MonitorsWithChecksByTeamIdResult> => {
 		const summary = await this.monitorsRepository.findMonitorsSummaryByTeamId(teamId, { type });
 		const count = await this.monitorsRepository.findMonitorCountByTeamIdAndType(teamId, { type, filter });
@@ -443,47 +441,51 @@ export class MonitorService implements IMonitorService {
 
 	pauseMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
 		const monitor = await this.monitorsRepository.togglePauseById(monitorId, teamId);
-		monitor.isActive === true ? await this.jobQueue.resumeJob(monitor) : await this.jobQueue.pauseJob(monitor);
+		if (monitor.isActive) {
+			await this.jobQueue.resumeJob(monitor);
+		} else {
+			await this.jobQueue.pauseJob(monitor);
+		}
 		return monitor;
 	};
 
 	deleteMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
 		const monitor = await this.monitorsRepository.deleteById(monitorId, teamId);
-		await this.monitorStatsRepository.deleteByMonitorId(monitor.id).catch((err: any) => {
+		await this.monitorStatsRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
 			this.logger.warn({
 				message: `Error deleting monitor stats for monitor ${monitor.id} with name ${monitor.name}`,
 				service: SERVICE_NAME,
-				stack: err.stack,
+				stack: err instanceof Error ? err.stack : undefined,
 			});
 		});
-		await this.checksRepository.deleteByMonitorId(monitor.id).catch((err: any) => {
+		await this.checksRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
 			this.logger.warn({
 				message: `Error deleting checks for monitor ${monitor.id} with name ${monitor.name}`,
 				service: SERVICE_NAME,
-				stack: err.stack,
+				stack: err instanceof Error ? err.stack : undefined,
 			});
 		});
-		await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id).catch((err: any) => {
+		await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id).catch((err: unknown) => {
 			this.logger.warn({
 				message: `Error removing monitor ${monitor.id} with name ${monitor.name} from status pages`,
 				service: SERVICE_NAME,
-				stack: err.stack,
+				stack: err instanceof Error ? err.stack : undefined,
 			});
 		});
 
-		await this.incidentsRepository.deleteByMonitorId(monitor.id, teamId).catch((err: any) => {
+		await this.incidentsRepository.deleteByMonitorId(monitor.id, teamId).catch((err: unknown) => {
 			this.logger.warn({
 				message: `Error deleting incidents for monitor ${monitor.id} with name ${monitor.name}`,
 				service: SERVICE_NAME,
-				stack: err.stack,
+				stack: err instanceof Error ? err.stack : undefined,
 			});
 		});
 
-		await this.geoChecksRepository.deleteByMonitorId(monitor.id).catch((err: any) => {
+		await this.geoChecksRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
 			this.logger.warn({
 				message: `Error deleting geo checks for monitor ${monitor.id} with name ${monitor.name}`,
 				service: SERVICE_NAME,
-				stack: err.stack,
+				stack: err instanceof Error ? err.stack : undefined,
 			});
 		});
 
@@ -501,12 +503,12 @@ export class MonitorService implements IMonitorService {
 					await this.geoChecksRepository.deleteByMonitorId(monitor.id);
 					await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id);
 					await this.monitorStatsRepository.deleteByMonitorId(monitor.id);
-				} catch (error: any) {
+				} catch (error: unknown) {
 					this.logger.warn({
 						message: `Error deleting associated records for monitor ${monitor.id} with name ${monitor.name}`,
 						service: SERVICE_NAME,
 						method: "deleteAllMonitors",
-						stack: error.stack,
+						stack: error instanceof Error ? error.stack : undefined,
 					});
 				}
 			})
@@ -514,7 +516,7 @@ export class MonitorService implements IMonitorService {
 		return deletedCount;
 	};
 
-	exportMonitorsToJSON = async ({ teamId }: { teamId: string }): Promise<any[]> => {
+	exportMonitorsToJSON = async ({ teamId }: { teamId: string }): Promise<Monitor[]> => {
 		const monitors = await this.monitorsRepository.findByTeamId(teamId, {});
 
 		if (!monitors || monitors.length === 0) {
@@ -524,30 +526,22 @@ export class MonitorService implements IMonitorService {
 		return monitors;
 	};
 
-	importMonitorsFromJSON = async ({
-		teamId,
-		userId,
-		monitors,
-	}: {
-		teamId: string;
-		userId: string;
-		monitors: any[];
-	}): Promise<{ imported: number; errors: string[] }> => {
+	importMonitorsFromJSON = async ({ teamId, monitors }: { teamId: string; monitors: Monitor[] }): Promise<{ imported: number; errors: string[] }> => {
 		const errors: string[] = [];
 
 		const cleanedMonitors = monitors.map((monitor) => {
-			const cleanData = { ...monitor };
-			delete cleanData.id;
-			delete cleanData._id;
-			delete cleanData.createdAt;
-			delete cleanData.updatedAt;
-			delete cleanData.recentChecks;
-			// Monitors must belong to current team
+			const cleanData = {
+				...monitor,
+				_id: monitor.id,
+				_createdAt: monitor.createdAt,
+				_updatedAt: monitor.updatedAt,
+				recentChecks: monitor.recentChecks,
+			};
 			cleanData.teamId = teamId;
 			return cleanData;
 		});
 
-		const createdMonitors = await this.createMonitors(cleanedMonitors, userId, teamId);
+		const createdMonitors = await this.createMonitors(cleanedMonitors);
 
 		if (!createdMonitors || createdMonitors.length === 0) {
 			throw new AppError({
