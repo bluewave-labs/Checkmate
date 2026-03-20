@@ -21,6 +21,7 @@ import type {
 } from "@/repositories/index.js";
 import demoMonitorsData from "@/utils/demoMonitors.json" with { type: "json" };
 import { AppError } from "@/utils/AppError.js";
+import type { ImportedMonitor } from "@/validation/monitorValidation.js";
 import { ISuperSimpleQueue } from "../infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
 import { IEmailService } from "../infrastructure/emailService.js";
 import { ILogger } from "@/utils/logger.js";
@@ -37,7 +38,7 @@ export interface IMonitorService {
 	addDemoMonitors(args: { userId: string; teamId: string }): Promise<Monitor[]>;
 
 	// read
-	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: string; normalize?: boolean }): Promise<UptimeDetailsResult>;
+	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<UptimeDetailsResult>;
 	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<HardwareDetailsResult>;
 	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<PageSpeedDetailsResult>;
 	getGeoChecksByMonitorId(args: {
@@ -66,7 +67,6 @@ export interface IMonitorService {
 		filter?: string;
 		field?: string;
 		order?: "asc" | "desc";
-		explain?: boolean;
 	}): Promise<MonitorsWithChecksByTeamIdResult>;
 	getAllGames(): GamesMap;
 	getGroupsByTeamId(args: { teamId: string }): Promise<string[]>;
@@ -81,7 +81,7 @@ export interface IMonitorService {
 
 	// other
 	exportMonitorsToJSON(args: { teamId: string }): Promise<Monitor[]>;
-	importMonitorsFromJSON(args: { teamId: string; userId: string; monitors: Partial<Monitor>[] }): Promise<{ imported: number; errors: string[] }>;
+	importMonitorsFromJSON(args: { teamId: string; userId: string; monitors: ImportedMonitor[] }): Promise<{ imported: number; errors: string[] }>;
 }
 
 export class MonitorService implements IMonitorService {
@@ -528,24 +528,26 @@ export class MonitorService implements IMonitorService {
 
 	importMonitorsFromJSON = async ({
 		teamId,
+		userId,
 		monitors,
 	}: {
 		teamId: string;
-		monitors: Partial<Monitor>[];
+		userId: string;
+		monitors: ImportedMonitor[];
 	}): Promise<{ imported: number; errors: string[] }> => {
 		const errors: string[] = [];
 
-		const cleanedMonitors = monitors.map((monitor) => {
-			const cleanData = { ...monitor };
-			delete cleanData.id;
-			delete cleanData.createdAt;
-			delete cleanData.updatedAt;
-			delete cleanData.recentChecks;
-			cleanData.teamId = teamId;
-			return cleanData;
-		});
+		const cleanedMonitors: Monitor[] = monitors.map((monitor) => ({
+			...monitor,
+			id: "",
+			teamId,
+			userId,
+			recentChecks: [],
+			createdAt: "",
+			updatedAt: "",
+		}));
 
-		const createdMonitors = await this.createMonitors(cleanedMonitors as Monitor[]);
+		const createdMonitors = await this.createMonitors(cleanedMonitors);
 
 		if (!createdMonitors || createdMonitors.length === 0) {
 			throw new AppError({

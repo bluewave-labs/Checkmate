@@ -168,6 +168,8 @@ export const importMonitorsBodyValidation = z.object({
 	monitors: z.array(importedMonitorSchema).min(1, "At least one monitor is required"),
 });
 
+export type ImportedMonitor = z.output<typeof importedMonitorSchema>;
+
 export const getHardwareDetailsByIdParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
 });
