@@ -4,6 +4,7 @@ import { cleanupDuplicateMonitorStats } from "./0003_cleanupDuplicateMonitorStat
 import { fixInfrastructureThresholds } from "./0004_fixInfrastructureThresholds.js";
 import MigrationModel from "../models/Migration.js";
 import { migrateStatusPageTypeToArray } from "./0005_migrateStatusPageTypeToArray.js";
+import type { ILogger } from "@/utils/logger.js";
 
 type MigrationEntry = {
 	name: string;
@@ -18,7 +19,7 @@ const migrations: MigrationEntry[] = [
 	{ name: "0005_migrateStatusPageTypeToArray", execute: migrateStatusPageTypeToArray },
 ];
 
-const runMigrations = async (logger?: { info: Function; error: Function }) => {
+const runMigrations = async (logger?: ILogger) => {
 	try {
 		logger?.info({ message: "Running migrations", service: "Migrations" });
 		for (const migration of migrations) {
@@ -45,7 +46,7 @@ const runMigrations = async (logger?: { info: Function; error: Function }) => {
 		logger?.info({ message: "Migrations completed", service: "Migrations" });
 	} catch (error) {
 		const err = error as Error;
-		logger?.error({ message: "Migration failed", service: "Migrations", details: err?.message, stack: err?.stack });
+		logger?.error({ message: "Migration failed", service: "Migrations", details: { error: err?.message }, stack: err?.stack });
 		throw error;
 	}
 };

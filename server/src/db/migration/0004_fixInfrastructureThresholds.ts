@@ -37,7 +37,8 @@ export async function fixInfrastructureThresholds(): Promise<void> {
 			const update: Record<string, number> = {};
 
 			for (const field of thresholdFields) {
-				if ((monitor as any)[field] === 0 || (monitor as any)[field] === 5) {
+				const value = monitor.get(field);
+				if (value === 0 || value === 5) {
 					update[field] = 100;
 				}
 			}

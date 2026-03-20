@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import type { Document, AnyBulkWriteOperation } from "mongodb";
 
 const CHECKS_COLLECTION = "checks";
 const BACKUP_COLLECTION = "checks_backup";
@@ -85,7 +86,7 @@ const createTimeSeriesCollection = async (backedUp: boolean) => {
 	}
 };
 
-const validateDocument = (doc: any): boolean => {
+const validateDocument = (doc: Document): boolean => {
 	if (!doc.createdAt) {
 		return false;
 	}
@@ -95,7 +96,7 @@ const validateDocument = (doc: any): boolean => {
 	return true;
 };
 
-const storeFailedDocument = async (doc: any, reason: string) => {
+const storeFailedDocument = async (doc: Document, reason: string) => {
 	const db = getDb();
 	await db.collection(FAILED_DOCS_COLLECTION).insertOne({
 		originalDoc: doc,
@@ -124,8 +125,8 @@ const migrateBackupData = async (backedUp: boolean): Promise<MigrationStats> => 
 		stats.totalSource = await source.countDocuments();
 
 		const cursor = source.find().addCursorFlag("noCursorTimeout", true);
-		const operations: any[] = [];
-		const invalidDocs: any[] = [];
+		const operations: AnyBulkWriteOperation<Document>[] = [];
+		const invalidDocs: Document[] = [];
 
 		while (await cursor.hasNext()) {
 			const doc = await cursor.next();
@@ -139,6 +140,7 @@ const migrateBackupData = async (backedUp: boolean): Promise<MigrationStats> => 
 			}
 
 			const { _id, monitorId, teamId, type, ...rest } = doc;
+			void _id;
 			const metadata = { monitorId, teamId, type };
 			operations.push({ insertOne: { document: { ...rest, metadata } } });
 
