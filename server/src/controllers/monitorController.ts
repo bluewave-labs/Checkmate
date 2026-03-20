@@ -17,7 +17,6 @@ import {
 } from "@/validation/monitorValidation.js";
 import sslChecker from "ssl-checker";
 import { fetchMonitorCertificate, requireTeamId, requireUserId } from "./controllerUtils.js";
-import { AppError } from "@/utils/AppError.js";
 import { IMonitorService } from "@/service/index.js";
 
 const SERVICE_NAME = "monitorController";
@@ -60,7 +59,6 @@ class MonitorController {
 
 			const monitorId = validatedParams.monitorId;
 			const dateRange = validatedQuery.dateRange;
-			const normalize = validatedQuery.normalize;
 
 			const teamId = requireTeamId(req.user?.teamId);
 
@@ -68,7 +66,6 @@ class MonitorController {
 				teamId,
 				monitorId,
 				dateRange,
-				normalize,
 			});
 			return res.status(200).json({
 				success: true,
@@ -324,7 +321,6 @@ class MonitorController {
 		try {
 			const validatedQuery = getMonitorsWithChecksQueryValidation.parse(req.query);
 
-			const explain = validatedQuery.explain;
 			const limit = validatedQuery.limit;
 			const page = validatedQuery.page;
 			const rowsPerPage = validatedQuery.rowsPerPage;
@@ -343,7 +339,6 @@ class MonitorController {
 				filter,
 				field,
 				order,
-				explain,
 			});
 
 			return res.status(200).json({
