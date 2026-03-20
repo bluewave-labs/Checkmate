@@ -24,7 +24,7 @@ class MaintenanceWindowController {
 
 			const monitorIDs = validatedBody.monitors;
 			const name = validatedBody.name;
-			const active = validatedBody.active ? validatedBody.active : true;
+			const active = validatedBody.active ?? true;
 			const duration = validatedBody.duration;
 			const durationUnit = validatedBody.durationUnit;
 			const repeat = validatedBody.repeat;
