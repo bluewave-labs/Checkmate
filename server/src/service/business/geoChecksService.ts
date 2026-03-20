@@ -1,5 +1,5 @@
 import type { Monitor, GeoCheck } from "@/types/index.js";
-import type { GeoCheckResult } from "@/types/geoCheck.js";
+import type { GeoCheckResult, GeoContinent } from "@/types/geoCheck.js";
 import { Types } from "mongoose";
 import type { IGeoChecksRepository } from "@/repositories/index.js";
 import type { IMonitorsRepository } from "@/repositories/index.js";
@@ -13,7 +13,15 @@ export interface IGeoChecksService {
 	readonly serviceName: string;
 	buildGeoCheck(monitor: Monitor): Promise<GeoCheck | null>;
 	createGeoChecks(geoChecks: GeoCheck[]): Promise<GeoCheck[]>;
-	getGeoChecksByMonitor(args: { monitorId: string; query: any; teamId: string }): Promise<any>;
+	getGeoChecksByMonitor(args: {
+		monitorId: string;
+		teamId: string;
+		sortOrder: string;
+		dateRange: string;
+		page?: number;
+		rowsPerPage?: number;
+		continent: GeoContinent | GeoContinent[];
+	}): Promise<any>;
 }
 
 export class GeoChecksService implements IGeoChecksService {
@@ -139,7 +147,23 @@ export class GeoChecksService implements IGeoChecksService {
 		return this.geoChecksRepository.createGeoChecks(geoChecks);
 	};
 
-	getGeoChecksByMonitor = async ({ monitorId, query, teamId }: { monitorId: string; query: any; teamId: string }) => {
+	getGeoChecksByMonitor = async ({
+		monitorId,
+		teamId,
+		sortOrder,
+		dateRange,
+		page,
+		rowsPerPage,
+		continent,
+	}: {
+		monitorId: string;
+		teamId: string;
+		sortOrder: string;
+		dateRange: string;
+		page?: number;
+		rowsPerPage?: number;
+		continent: GeoContinent | GeoContinent[];
+	}) => {
 		if (!monitorId) {
 			throw new AppError({
 				message: "No monitor ID in request",
@@ -167,10 +191,9 @@ export class GeoChecksService implements IGeoChecksService {
 			});
 		}
 
-		const { sortOrder, dateRange, page, rowsPerPage, continent } = query;
 		const continents = continent ? (Array.isArray(continent) ? continent : [continent]) : undefined;
-		const parsedPage = page ? parseInt(page) : page;
-		const parsedRowsPerPage = rowsPerPage ? parseInt(rowsPerPage) : rowsPerPage;
+		const parsedPage = page || 0;
+		const parsedRowsPerPage = rowsPerPage || 5;
 		const result = await this.geoChecksRepository.findByMonitorId(monitorId, sortOrder, dateRange, parsedPage, parsedRowsPerPage, continents);
 		return result;
 	};
