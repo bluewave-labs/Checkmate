@@ -11,7 +11,15 @@ import {
 import { requireTeamId } from "@/controllers/controllerUtils.js";
 import { IMaintenanceWindowService } from "@/service/index.js";
 
-class MaintenanceWindowController {
+export interface IMaintenanceWindowController {
+	createMaintenanceWindows: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getMaintenanceWindowById: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getMaintenanceWindowsByTeamId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getMaintenanceWindowsByMonitorId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	deleteMaintenanceWindow: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	editMaintenanceWindow: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+}
+class MaintenanceWindowController implements IMaintenanceWindowController {
 	private maintenanceWindowService: IMaintenanceWindowService;
 	constructor(maintenanceWindowService: IMaintenanceWindowService) {
 		this.maintenanceWindowService = maintenanceWindowService;

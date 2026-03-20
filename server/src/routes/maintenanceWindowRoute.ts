@@ -1,10 +1,11 @@
+import { IMaintenanceWindowController } from "@/controllers/maintenanceWindowController.js";
 import { Router } from "express";
 
 class MaintenanceWindowRoutes {
 	private router: Router;
-	private mwController: any;
+	private mwController: IMaintenanceWindowController;
 
-	constructor(maintenanceWindowController: any) {
+	constructor(maintenanceWindowController: IMaintenanceWindowController) {
 		this.router = Router();
 		this.mwController = maintenanceWindowController;
 		this.initRoutes();
