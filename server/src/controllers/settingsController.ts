@@ -6,7 +6,14 @@ import { IEmailService, ISettingsService } from "@/service/index.js";
 
 const SERVICE_NAME = "SettingsController";
 
-class SettingsController {
+export interface ISettingsController {
+	serviceName: string;
+	getAppSettings(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	updateAppSettings(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	sendTestEmail(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+}
+
+class SettingsController implements ISettingsController {
 	static SERVICE_NAME = SERVICE_NAME;
 	private settingsService: ISettingsService;
 	private emailService: IEmailService;
