@@ -12,7 +12,16 @@ import { requireTeamId } from "@/controllers/controllerUtils.js";
 
 const SERVICE_NAME = "checkController";
 
-class CheckController {
+export interface ICheckController {
+	serviceName: string;
+	getChecksByMonitor: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getChecksByTeam: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getChecksSummaryByTeamId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	deleteChecks: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	deleteChecksByTeamId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+}
+
+class CheckController implements ICheckController {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private checkService: ICheckService;
