@@ -449,7 +449,7 @@ export class MonitorService implements IMonitorService {
 		notificationIds: string[];
 		action: "add" | "remove" | "set";
 	}): Promise<number> => {
-		const modifiedCount = await this.monitorsRepository.updateNotifications(monitorIds, notificationIds, action, teamId);
+		const modifiedCount = await this.monitorsRepository.updateNotifications(teamId, monitorIds, notificationIds, action);
 
 		// If notifications were updated, we should update the jobs in the queue
 		if (modifiedCount > 0) {

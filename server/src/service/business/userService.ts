@@ -166,7 +166,7 @@ export class UserService implements IUserService {
 			if (!html) {
 				throw new Error("Failed to build welcome email HTML");
 			}
-			this.emailService.sendEmail(newUser.email, "Welcome to Uptime Monitor", html as string).catch((error: unknown) => {
+			this.emailService.sendEmail(newUser.email, "Welcome to Uptime Monitor", html).catch((error: unknown) => {
 				this.logger.warn({
 					message: error instanceof Error ? error.message : "Unknown error",
 					service: SERVICE_NAME,

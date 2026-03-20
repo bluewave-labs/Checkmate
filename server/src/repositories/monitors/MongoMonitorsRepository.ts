@@ -299,10 +299,10 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	updateNotifications = async (
+		teamId: string,
 		monitorIds: string[],
 		notificationIds: string[],
-		action: "add" | "remove" | "set",
-		teamId: string
+		action: "add" | "remove" | "set"
 	): Promise<number> => {
 		let objectIds;
 		let notificationObjectIds;

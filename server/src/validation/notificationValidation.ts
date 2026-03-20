@@ -103,4 +103,10 @@ export const updateNotificationsValidation = z.object({
 	monitorIds: z.array(z.string()).min(1, "At least one monitor ID is required"),
 	notificationIds: z.array(z.string()),
 	action: z.enum(["add", "remove", "set"] as const),
+}).refine((data) => {
+	if (data.action !== "set" && data.notificationIds.length === 0) return false;
+	return true;
+}, {
+	message: "Notification IDs cannot be empty unless action is 'set'",
+	path: ["notificationIds"],
 });
