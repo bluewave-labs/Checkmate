@@ -4,7 +4,13 @@ import { requireFirstName, requireTeamId, requireUserRoles } from "@/controllers
 import { IInviteService } from "@/service/index.js";
 const SERVICE_NAME = "inviteController";
 
-class InviteController {
+export interface IInviteController {
+	getInviteToken: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	sendInviteEmail: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	verifyInviteToken: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+}
+
+class InviteController implements IInviteController {
 	static SERVICE_NAME = SERVICE_NAME;
 	private inviteService: IInviteService;
 	constructor(inviteService: IInviteService) {

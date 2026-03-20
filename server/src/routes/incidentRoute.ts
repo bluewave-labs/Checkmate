@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { isAllowed } from "../middleware/isAllowed.js";
+import { IIncidentController } from "@/controllers/incidentController.js";
 
 class IncidentRoutes {
 	private router: Router;
-	private incidentController: any;
+	private incidentController: IIncidentController;
 
-	constructor(incidentController: any) {
+	constructor(incidentController: IIncidentController) {
 		this.router = Router();
 		this.incidentController = incidentController;
 		this.initRoutes();
