@@ -3,6 +3,10 @@ import { Request, Response, NextFunction } from "express";
 
 const SERVICE_NAME = "LogController";
 
+export interface ILogController {
+	getLogs: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+}
+
 class LogController {
 	static SERVICE_NAME = SERVICE_NAME;
 	private logger: ILogger;

@@ -5,7 +5,14 @@ import { IIncidentService } from "@/service/index.js";
 import { getIncidentsByTeamQueryValidation, getIncidentSummaryQueryValidation } from "@/validation/incidentValidation.js";
 
 const SERVICE_NAME = "IncidentController";
-class IncidentController {
+
+export interface IIncidentController {
+	getIncidentsByTeam: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getIncidentSummary: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getIncidentById: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	resolveIncidentManually: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+}
+class IncidentController implements IIncidentController {
 	private incidentService: IIncidentService;
 	constructor(incidentService: IIncidentService) {
 		this.incidentService = incidentService;

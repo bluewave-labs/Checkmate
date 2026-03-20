@@ -20,9 +20,31 @@ import { fetchMonitorCertificate, requireTeamId, requireUserId } from "./control
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorService, INotificationsService } from "@/service/index.js";
 import { GeoContinent } from "@/types/geoCheck.js";
+import { fetchMonitorCertificate, requireTeamId, requireUserId } from "@/controllers/controllerUtils.js";
 
 const SERVICE_NAME = "monitorController";
-class MonitorController {
+
+export interface IMonitorController {
+	getMonitorCertificate: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getUptimeDetailsById: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getHardwareDetailsById: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getPageSpeedDetailsById: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getGeoChecksByMonitorId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getMonitorById: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	createMonitor: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	importMonitorsFromJSON: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	deleteMonitor: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	deleteAllMonitors: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	editMonitor: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	pauseMonitor: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	addDemoMonitors: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getMonitorsByTeamId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getMonitorsWithChecksByTeamId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	exportMonitorsToJSON: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getAllGames: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getGroupsByTeamId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+}
+class MonitorController implements IMonitorController {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private monitorService: IMonitorService;

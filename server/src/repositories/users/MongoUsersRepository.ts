@@ -117,7 +117,7 @@ class MongoUsersRepository implements IUsersRepository {
 
 		delete candidateUser.deleteProfileImage;
 
-		const updateQuery: Record<string, any> = { $set: candidateUser };
+		const updateQuery: Record<string, unknown> = { $set: candidateUser };
 		if (unsetFields) {
 			updateQuery.$unset = unsetFields;
 		}

@@ -1,11 +1,12 @@
 import { RequestHandler, Router } from "express";
 import { isAllowed } from "../middleware/isAllowed.js";
+import { IDiagnosticController } from "@/controllers/diagnosticController.js";
 
 class DiagnosticRoutes {
 	private router: Router;
-	private diagnosticController: any;
+	private diagnosticController: IDiagnosticController;
 
-	constructor(diagnosticController: any, verifyJWT: RequestHandler) {
+	constructor(diagnosticController: IDiagnosticController, verifyJWT: RequestHandler) {
 		this.router = Router();
 		this.diagnosticController = diagnosticController;
 		this.initRoutes(verifyJWT);

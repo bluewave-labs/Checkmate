@@ -1,14 +1,15 @@
 import { Router, RequestHandler } from "express";
 import { isAllowed } from "../middleware/isAllowed.js";
 import multer from "multer";
+import { IAuthController } from "@/controllers/authController.js";
 
 const upload = multer();
 
 class AuthRoutes {
 	private router: Router;
-	private authController: any;
+	private authController: IAuthController;
 
-	constructor(authController: any, verifyJWT: RequestHandler) {
+	constructor(authController: IAuthController, verifyJWT: RequestHandler) {
 		this.router = Router();
 		this.authController = authController;
 		this.initRoutes(verifyJWT);

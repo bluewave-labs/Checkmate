@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { isAllowed } from "../middleware/isAllowed.js";
+import { ISettingsController } from "@/controllers/settingsController.js";
 
 class SettingsRoutes {
 	private router: Router;
-	private settingsController: any;
+	private settingsController: ISettingsController;
 
-	constructor(settingsController: any) {
+	constructor(settingsController: ISettingsController) {
 		this.router = Router();
 		this.settingsController = settingsController;
 		this.initRoutes();

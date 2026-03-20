@@ -32,8 +32,8 @@ class MongoIncidentRepository implements IIncidentsRepository {
 		status?: boolean;
 		monitorId?: string;
 		resolutionType?: string;
-	}): Record<string, any> {
-		const matchStage: Record<string, any> = {
+	}): Record<string, unknown> {
+		const matchStage: Record<string, unknown> = {
 			teamId: new mongoose.Types.ObjectId(teamId),
 			...(status !== undefined && { status }),
 			...(monitorId && { monitorId: new mongoose.Types.ObjectId(monitorId) }),

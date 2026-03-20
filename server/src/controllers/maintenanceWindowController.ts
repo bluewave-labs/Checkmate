@@ -11,7 +11,15 @@ import {
 import { requireTeamId } from "@/controllers/controllerUtils.js";
 import { IMaintenanceWindowService } from "@/service/index.js";
 
-class MaintenanceWindowController {
+export interface IMaintenanceWindowController {
+	createMaintenanceWindows: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getMaintenanceWindowById: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getMaintenanceWindowsByTeamId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getMaintenanceWindowsByMonitorId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	deleteMaintenanceWindow: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	editMaintenanceWindow: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+}
+class MaintenanceWindowController implements IMaintenanceWindowController {
 	private maintenanceWindowService: IMaintenanceWindowService;
 	constructor(maintenanceWindowService: IMaintenanceWindowService) {
 		this.maintenanceWindowService = maintenanceWindowService;
@@ -21,7 +29,17 @@ class MaintenanceWindowController {
 		try {
 			const validatedBody = createMaintenanceWindowBodyValidation.parse(req.body);
 			const teamId = requireTeamId(req?.user?.teamId);
-			await this.maintenanceWindowService.createMaintenanceWindow({ teamId, body: validatedBody });
+
+			const monitorIDs = validatedBody.monitors;
+			const name = validatedBody.name;
+			const active = validatedBody.active ?? true;
+			const duration = validatedBody.duration;
+			const durationUnit = validatedBody.durationUnit;
+			const repeat = validatedBody.repeat;
+			const start = validatedBody.start;
+			const end = validatedBody.end;
+
+			await this.maintenanceWindowService.createMaintenanceWindow({ teamId, monitorIDs, name, active, duration, durationUnit, repeat, start, end });
 
 			return res.status(200).json({
 				success: true,

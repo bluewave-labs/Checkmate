@@ -23,7 +23,24 @@ import { IUserService } from "@/service/index.js";
 
 const SERVICE_NAME = "authController";
 
-class AuthController {
+export interface IAuthController {
+	registerUser(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	createUser(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	loginUser(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	editUser(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	checkSuperadminExists(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	requestRecovery(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	validateRecovery(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	resetPassword(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	deleteUser(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	deleteUserById(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	getAllUsers(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	getUserById(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	editUserById(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	editUserPasswordById(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+}
+
+class AuthController implements IAuthController {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private userService: IUserService;

@@ -1,5 +1,5 @@
 import { type Got, HTTPError, RequestError } from "got";
-import { AdvancedMatcher } from "@/service/infrastructure/network/AdvancedMatcher.js";
+import { IAdvancedMatcher } from "@/service/infrastructure/network/AdvancedMatcher.js";
 import { IStatusProvider } from "@/service/infrastructure/network/IStatusProvider.js";
 import { HttpStatusPayload } from "@/types/network.js";
 import { MonitorStatusResponse } from "@/types/network.js";
@@ -13,7 +13,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 
 	constructor(
 		private got: Got,
-		private advancedMatcher: AdvancedMatcher
+		private advancedMatcher: IAdvancedMatcher
 	) {
 		const cacheable = new CacheableLookup({ maxTtl: 300, errorTtl: 30 });
 		this.got = got.extend({
