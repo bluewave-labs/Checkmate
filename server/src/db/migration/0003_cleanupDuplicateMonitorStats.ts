@@ -42,10 +42,10 @@ export async function cleanupDuplicateMonitorStats(): Promise<void> {
 			const monitorId = duplicate._id;
 			const { ids, updatedAts } = duplicate;
 
-			type DocPair = { id: any; updatedAt: Date };
+			type DocPair = { id: string; updatedAt: Date };
 
 			// Create array of {id, updatedAt} pairs and sort by updatedAt descending
-			const docs: DocPair[] = ids.map((id: any, index: number) => ({
+			const docs: DocPair[] = ids.map((id: string, index: number) => ({
 				id,
 				updatedAt: updatedAts[index],
 			}));
