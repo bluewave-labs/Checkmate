@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { isAllowed } from "../middleware/isAllowed.js";
+import { isAllowed } from "@/middleware/isAllowed.js";
+import { IJobQueueController } from "@/controllers/queueController.js";
 class QueueRoutes {
 	private router: Router;
-	private queueController: any;
+	private queueController: IJobQueueController;
 
-	constructor(queueController: any) {
+	constructor(queueController: IJobQueueController) {
 		this.router = Router();
 		this.queueController = queueController;
 		this.initRoutes();

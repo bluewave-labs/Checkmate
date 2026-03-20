@@ -3,7 +3,14 @@ import { Request, Response, NextFunction } from "express";
 
 const SERVICE_NAME = "JobQueueController";
 
-class JobQueueController {
+export interface IJobQueueController {
+	getMetrics(req: Request, res: Response, next: NextFunction): Promise<void>;
+	getJobs(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	getAllMetrics(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	flushQueue(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+}
+
+class JobQueueController implements IJobQueueController {
 	static SERVICE_NAME = SERVICE_NAME;
 	private jobQueue: ISuperSimpleQueue;
 	constructor(jobQueue: ISuperSimpleQueue) {
