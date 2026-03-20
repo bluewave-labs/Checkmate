@@ -1,7 +1,7 @@
 import type { Monitor, GeoCheck } from "@/types/index.js";
 import type { GeoCheckResult, GeoContinent } from "@/types/geoCheck.js";
 import { Types } from "mongoose";
-import type { IGeoChecksRepository } from "@/repositories/index.js";
+import type { FlatGeoChecksQueryResult, IGeoChecksRepository } from "@/repositories/index.js";
 import type { IMonitorsRepository } from "@/repositories/index.js";
 import type { IGlobalPingService } from "@/service/infrastructure/globalPingService.js";
 import type { ILogger } from "@/utils/logger.js";
@@ -21,7 +21,7 @@ export interface IGeoChecksService {
 		page?: number;
 		rowsPerPage?: number;
 		continent: GeoContinent | GeoContinent[];
-	}): Promise<any>;
+	}): Promise<FlatGeoChecksQueryResult>;
 }
 
 export class GeoChecksService implements IGeoChecksService {
