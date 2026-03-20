@@ -21,7 +21,17 @@ class MaintenanceWindowController {
 		try {
 			const validatedBody = createMaintenanceWindowBodyValidation.parse(req.body);
 			const teamId = requireTeamId(req?.user?.teamId);
-			await this.maintenanceWindowService.createMaintenanceWindow({ teamId, body: validatedBody });
+
+			const monitorIDs = validatedBody.monitors;
+			const name = validatedBody.name;
+			const active = validatedBody.active ? validatedBody.active : true;
+			const duration = validatedBody.duration;
+			const durationUnit = validatedBody.durationUnit;
+			const repeat = validatedBody.repeat;
+			const start = validatedBody.start;
+			const end = validatedBody.end;
+
+			await this.maintenanceWindowService.createMaintenanceWindow({ teamId, monitorIDs, name, active, duration, durationUnit, repeat, start, end });
 
 			return res.status(200).json({
 				success: true,
