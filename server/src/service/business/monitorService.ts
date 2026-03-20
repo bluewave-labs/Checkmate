@@ -81,7 +81,7 @@ export interface IMonitorService {
 
 	// other
 	exportMonitorsToJSON(args: { teamId: string }): Promise<Monitor[]>;
-	importMonitorsFromJSON(args: { teamId: string; userId: string; monitors: Monitor[] }): Promise<{ imported: number; errors: string[] }>;
+	importMonitorsFromJSON(args: { teamId: string; userId: string; monitors: Partial<Monitor>[] }): Promise<{ imported: number; errors: string[] }>;
 }
 
 export class MonitorService implements IMonitorService {
@@ -526,22 +526,26 @@ export class MonitorService implements IMonitorService {
 		return monitors;
 	};
 
-	importMonitorsFromJSON = async ({ teamId, monitors }: { teamId: string; monitors: Monitor[] }): Promise<{ imported: number; errors: string[] }> => {
+	importMonitorsFromJSON = async ({
+		teamId,
+		monitors,
+	}: {
+		teamId: string;
+		monitors: Partial<Monitor>[];
+	}): Promise<{ imported: number; errors: string[] }> => {
 		const errors: string[] = [];
 
 		const cleanedMonitors = monitors.map((monitor) => {
-			const cleanData = {
-				...monitor,
-				_id: monitor.id,
-				_createdAt: monitor.createdAt,
-				_updatedAt: monitor.updatedAt,
-				recentChecks: monitor.recentChecks,
-			};
+			const cleanData = { ...monitor };
+			delete cleanData.id;
+			delete cleanData.createdAt;
+			delete cleanData.updatedAt;
+			delete cleanData.recentChecks;
 			cleanData.teamId = teamId;
 			return cleanData;
 		});
 
-		const createdMonitors = await this.createMonitors(cleanedMonitors);
+		const createdMonitors = await this.createMonitors(cleanedMonitors as Monitor[]);
 
 		if (!createdMonitors || createdMonitors.length === 0) {
 			throw new AppError({
