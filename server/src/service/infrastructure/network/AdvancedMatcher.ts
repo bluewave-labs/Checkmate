@@ -2,11 +2,11 @@ import { Monitor } from "@/types/monitor.js";
 import jmespath from "jmespath";
 type JmesPath = typeof jmespath;
 
-export interface IADvancedMatcher {
+export interface IAdvancedMatcher {
 	validate<T>(payload: T, monitor: Monitor): { ok: boolean; message: string; extracted?: T | undefined };
 }
 
-export class AdvancedMatcher {
+export class AdvancedMatcher implements IAdvancedMatcher {
 	constructor(private jmespath: JmesPath) {}
 
 	private compare(actual: unknown, expected: string, method?: string): boolean {
