@@ -17,7 +17,6 @@ import {
 } from "@/validation/monitorValidation.js";
 import sslChecker from "ssl-checker";
 import { fetchMonitorCertificate, requireTeamId, requireUserId } from "./controllerUtils.js";
-import { AppError } from "@/utils/AppError.js";
 import { IMonitorService } from "@/service/index.js";
 
 const SERVICE_NAME = "monitorController";
