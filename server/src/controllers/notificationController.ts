@@ -15,7 +15,16 @@ import { requireTeamId, requireUserId } from "./controllerUtils.js";
 
 const SERVICE_NAME = "NotificationController";
 
-class NotificationController {
+export interface INotificationController {
+	testNotification: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	createNotification: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getNotificationsByTeamId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	deleteNotification: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getNotificationById: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	editNotification: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	testAllNotifications: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+}
+class NotificationController implements INotificationController {
 	private notificationsService: INotificationsService;
 	private monitorsRepository: IMonitorsRepository;
 	constructor(notificationsService: INotificationsService, monitorsRepository: IMonitorsRepository) {
