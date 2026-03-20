@@ -1,8 +1,9 @@
 import { MonitorModel } from "@/db/models/index.js";
 import type { MonitorDocument, CheckSnapshotDocument } from "@/db/models/index.js";
-import type { Monitor, MonitorsSummary, CheckSnapshot, Check } from "@/types/index.js";
+import type { Monitor, MonitorsSummary, CheckSnapshot } from "@/types/index.js";
 import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "./IMonitorsRepository.js";
+import { MongoBulkWriteError } from "mongodb";
 import { AppError } from "@/utils/AppError.js";
 
 class MongoMonitorsRepository implements IMonitorsRepository {
@@ -20,12 +21,9 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		try {
 			const inserted = await MonitorModel.insertMany(payload, { ordered: false });
 			return this.mapDocuments(inserted);
-		} catch (error: any) {
-			if (error.name === "MongoBulkWriteError" || error.name === "BulkWriteError") {
-				const insertedDocs = error.insertedDocs || [];
-				if (insertedDocs.length > 0) {
-					return this.mapDocuments(insertedDocs);
-				}
+		} catch (error: unknown) {
+			if (error instanceof MongoBulkWriteError && "insertedDocs" in error && Array.isArray(error.insertedDocs) && error.insertedDocs.length > 0) {
+				return this.mapDocuments(error.insertedDocs);
 			}
 			throw error;
 		}
@@ -46,7 +44,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	findByTeamId = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null> => {
-		const { page = 0, rowsPerPage = 0, filter, field = "createdAt", order = "desc", type, limit } = config ?? {};
+		const { page = 0, rowsPerPage = 0, filter, field = "createdAt", order = "desc", type } = config ?? {};
 
 		const query: Record<string, unknown> = {
 			teamId: new mongoose.Types.ObjectId(teamId),
@@ -354,7 +352,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			gameId: doc.gameId ?? undefined,
 			grpcServiceName: doc.grpcServiceName ?? undefined,
 			group: doc.group ?? null,
-			recentChecks: (doc.recentChecks ?? []).map((check: any) => this.toCheckSnapshot(check)),
+			recentChecks: (doc.recentChecks ?? []).map((check: CheckSnapshotDocument) => this.toCheckSnapshot(check)),
 			geoCheckEnabled: doc.geoCheckEnabled ?? false,
 			geoCheckLocations: doc.geoCheckLocations ?? [],
 			geoCheckInterval: doc.geoCheckInterval ?? 300000,
@@ -363,7 +361,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		};
 	};
 
-	private toEntityWithChecks = (doc: any): Monitor => {
+	private toEntityWithChecks = (doc: MonitorDocument): Monitor => {
 		const toStringId = (value: unknown): string => {
 			if (value instanceof mongoose.Types.ObjectId) {
 				return value.toString();
@@ -413,7 +411,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			gameId: doc.gameId ?? undefined,
 			grpcServiceName: doc.grpcServiceName ?? undefined,
 			group: doc.group ?? null,
-			recentChecks: (doc.recentChecks ?? []).map((check: any) => this.toCheckSnapshot(check)),
+			recentChecks: (doc.recentChecks ?? []).map((check: CheckSnapshotDocument) => this.toCheckSnapshot(check)),
 			geoCheckEnabled: doc.geoCheckEnabled ?? false,
 			geoCheckLocations: doc.geoCheckLocations ?? [],
 			geoCheckInterval: doc.geoCheckInterval ?? 300000,
