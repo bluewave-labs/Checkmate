@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 import jwt from "jsonwebtoken";
 import { AppError } from "@/utils/AppError.js";
-import { Settings } from "@/types/settings.js";
+import type { ISettingsService } from "@/service/system/settingsService.js";
 import type { User } from "@/types/user.js";
 
 const SERVICE_NAME = "verifyJWT";
@@ -12,7 +12,7 @@ const isUser = (payload: unknown): payload is User => {
 	return typeof payload === "object" && payload !== null && "id" in payload && "teamId" in payload && "role" in payload;
 };
 
-export const createVerifyJWT = (settingsService: { getSettings: () => Settings }) => {
+export const createVerifyJWT = (settingsService: ISettingsService) => {
 	return (req: Request, res: Response, next: NextFunction) => {
 		const token = req.headers["authorization"];
 		// Make sure a token is provided

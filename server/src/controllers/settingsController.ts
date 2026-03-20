@@ -3,6 +3,7 @@ import { updateAppSettingsBodyValidation } from "@/validation/settingsValidation
 import { sendTestEmailBodyValidation } from "@/validation/notificationValidation.js";
 import { AppError } from "@/utils/AppError.js";
 import { IEmailService, ISettingsService } from "@/service/index.js";
+import { Settings } from "@/types/settings.js";
 
 const SERVICE_NAME = "SettingsController";
 
@@ -26,11 +27,11 @@ class SettingsController implements ISettingsController {
 		return SettingsController.SERVICE_NAME;
 	}
 
-	buildAppSettings = (dbSettings: any) => {
-		const sanitizedSettings = { ...dbSettings };
+	buildAppSettings = (dbSettings: Settings) => {
+		const sanitizedSettings: Record<string, unknown> = { ...dbSettings };
 		delete sanitizedSettings.version;
 		delete sanitizedSettings.jwtSecret;
-		const returnSettings = {
+		const returnSettings: Record<string, unknown | null> = {
 			pagespeedKeySet: false,
 			emailPasswordSet: false,
 			settings: null,

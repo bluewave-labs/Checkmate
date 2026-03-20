@@ -4,7 +4,7 @@ import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
 import cookieParser from "cookie-parser";
-import swaggerUi from "swagger-ui-express";
+import swaggerUi, { type JsonObject } from "swagger-ui-express";
 import { handleErrors } from "@/middleware/handleErrors.js";
 import { generalApiLimiter } from "@/middleware/rateLimiter.js";
 import { sanitizeBody, sanitizeQuery } from "@/middleware/sanitization.js";
@@ -24,7 +24,7 @@ export const createApp = ({
 	controllers: InitializedControllers;
 	envSettings: EnvConfig;
 	frontendPath: string;
-	openApiSpec: any;
+	openApiSpec: JsonObject;
 }) => {
 	const allowedOrigin = envSettings.clientHost;
 	const app = express();
