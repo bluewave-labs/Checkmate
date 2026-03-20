@@ -7,6 +7,7 @@ import type {
 	HardwareDetailsResult,
 	PageSpeedDetailsResult,
 	GamesMap,
+	GroupedGeoCheckResult,
 } from "@/types/monitor.js";
 import { supportsGeoCheck } from "@/types/monitor.js";
 import type { GeoContinent } from "@/types/geoCheck.js";
@@ -37,7 +38,12 @@ export interface IMonitorService {
 	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: string; normalize?: boolean }): Promise<UptimeDetailsResult>;
 	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<HardwareDetailsResult>;
 	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<PageSpeedDetailsResult>;
-	getGeoChecksByMonitorId(args: { teamId: string; monitorId: string; dateRange: string; continents?: GeoContinent[] }): Promise<any>;
+	getGeoChecksByMonitorId(args: {
+		teamId: string;
+		monitorId: string;
+		dateRange: string;
+		continents?: GeoContinent[];
+	}): Promise<GroupedGeoCheckResult>;
 	getMonitorById(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 	getMonitorsByTeamId(args: {
 		teamId: string;
@@ -327,7 +333,7 @@ export class MonitorService implements IMonitorService {
 		monitorId: string;
 		dateRange: string;
 		continents?: GeoContinent[];
-	}): Promise<any> => {
+	}): Promise<GroupedGeoCheckResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
 			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });

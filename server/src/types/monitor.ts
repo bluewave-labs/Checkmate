@@ -1,6 +1,6 @@
 import type { CheckSnapshot } from "@/types/check.js";
 export type { CheckSnapshot } from "@/types/check.js";
-import type { GeoContinent } from "@/types/geoCheck.js";
+import type { GeoContinent, GroupedGeoCheck } from "@/types/geoCheck.js";
 export type { GeoContinent } from "@/types/geoCheck.js";
 
 export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "unknown"] as const;
@@ -72,6 +72,10 @@ export interface MonitorsWithChecksByTeamIdResult {
 	summary: MonitorsSummary | null;
 	count: number;
 	monitors: Monitor[];
+}
+
+export interface GroupedGeoCheckResult {
+	groupedGeoChecks: GroupedGeoCheck[];
 }
 
 export interface UptimeDetailsResult {
