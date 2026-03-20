@@ -1,11 +1,12 @@
 import { RequestHandler, Router } from "express";
 import { isAllowed } from "../middleware/isAllowed.js";
+import { IInviteController } from "@/controllers/inviteController.js";
 
 class InviteRoutes {
 	private router: Router;
-	private inviteController: any;
+	private inviteController: IInviteController;
 
-	constructor(inviteController: any, verifyJWT: RequestHandler) {
+	constructor(inviteController: IInviteController, verifyJWT: RequestHandler) {
 		this.router = Router();
 		this.inviteController = inviteController;
 		this.initRoutes(verifyJWT);

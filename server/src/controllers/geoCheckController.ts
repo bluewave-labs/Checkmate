@@ -6,7 +6,10 @@ import { AppError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "geoCheckController";
 
-class GeoCheckController {
+export interface IGeoCheckController {
+	getGeoChecksByMonitor: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+}
+class GeoCheckController implements IGeoCheckController {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private geoChecksService: IGeoChecksService;
