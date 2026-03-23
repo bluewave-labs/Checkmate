@@ -296,6 +296,41 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		await MonitorModel.updateMany({ notifications: notificationId }, { $pull: { notifications: notificationId } });
 	};
 
+	updateNotifications = async (
+		teamId: string,
+		monitorIds: string[],
+		notificationIds: string[],
+		action: "add" | "remove" | "set"
+	): Promise<number> => {
+		let objectIds;
+		let notificationObjectIds;
+		try {
+			objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+			notificationObjectIds = notificationIds.map((id) => new mongoose.Types.ObjectId(id));
+		} catch {
+			throw new AppError({ message: "One or more monitor or notification IDs are invalid", status: 400 });
+		}
+		const filter = { _id: { $in: objectIds }, teamId: new mongoose.Types.ObjectId(teamId) };
+
+		let update;
+		switch (action) {
+			case "add":
+				update = { $addToSet: { notifications: { $each: notificationObjectIds } } };
+				break;
+			case "remove":
+				update = { $pull: { notifications: { $in: notificationObjectIds } } };
+				break;
+			case "set":
+				update = { $set: { notifications: notificationObjectIds } };
+				break;
+			default:
+				throw new AppError({ message: `Invalid action: ${action}`, status: 400 });
+		}
+
+		const result = await MonitorModel.updateMany(filter, update);
+		return result.modifiedCount;
+	};
+
 	private mapDocuments = (documents: MonitorDocument[]): Monitor[] => {
 		if (!documents?.length) {
 			return [];

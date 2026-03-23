@@ -143,7 +143,7 @@ export class UserService implements IUserService {
 			user.password = this.hashPassword(user.password);
 		}
 
-		const newUser = await this.usersRepository.create(user, file);
+		const newUser = await this.usersRepository.create(user as User, file);
 
 		this.logger.debug({
 			message: "New user created",
@@ -207,7 +207,7 @@ export class UserService implements IUserService {
 			userData.password = this.hashPassword(userData.password);
 		}
 
-		const newUser = await this.usersRepository.create(userData, file);
+		const newUser = await this.usersRepository.create(userData as User, file);
 
 		this.logger.debug({
 			message: "New user created by superadmin",

@@ -9,9 +9,9 @@ import {
 	testAllNotificationsBodyValidation,
 } from "@/validation/notificationValidation.js";
 import { AppError } from "@/utils/AppError.js";
-import { IMonitorsRepository } from "@/repositories/index.js";
 import { INotificationsService } from "@/service/index.js";
 import { requireTeamId, requireUserId } from "./controllerUtils.js";
+import { IMonitorsRepository } from "@/repositories/index.js";
 
 const SERVICE_NAME = "NotificationController";
 
@@ -142,8 +142,8 @@ class NotificationController implements INotificationController {
 			const teamId = requireTeamId(req.user?.teamId);
 
 			const monitor = await this.monitorsRepository.findById(validatedBody.monitorId, teamId);
+			const notifications = monitor.notifications || [];
 
-			const notifications = monitor.notifications;
 			if (notifications.length === 0) {
 				throw new AppError({ message: "No notifications", status: 400 });
 			}

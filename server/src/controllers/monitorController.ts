@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-
+import { updateNotificationsValidation } from "@/validation/notificationValidation.js";
 import {
 	getMonitorByIdParamValidation,
 	getMonitorByIdQueryValidation,
@@ -17,7 +17,9 @@ import {
 } from "@/validation/monitorValidation.js";
 import sslChecker from "ssl-checker";
 import { fetchMonitorCertificate, requireTeamId, requireUserId } from "@/controllers/controllerUtils.js";
-import { IMonitorService } from "@/service/index.js";
+import { AppError } from "@/utils/AppError.js";
+import { IMonitorService, INotificationsService } from "@/service/index.js";
+import { GeoContinent } from "@/types/geoCheck.js";
 
 const SERVICE_NAME = "monitorController";
 
@@ -40,14 +42,17 @@ export interface IMonitorController {
 	exportMonitorsToJSON: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	getAllGames: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	getGroupsByTeamId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	updateNotifications: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 }
 class MonitorController implements IMonitorController {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private monitorService: IMonitorService;
+	private notificationsService: INotificationsService;
 
-	constructor(monitorService: IMonitorService) {
+	constructor(monitorService: IMonitorService, notificationsService: INotificationsService) {
 		this.monitorService = monitorService;
+		this.notificationsService = notificationsService;
 	}
 
 	get serviceName() {
@@ -407,6 +412,42 @@ class MonitorController implements IMonitorController {
 			return res.status(200).json({
 				msg: "Groups retrieved successfully",
 				data: groups,
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	updateNotifications = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			updateNotificationsValidation.parse(req.body);
+
+			const teamId = requireTeamId(req.user?.teamId);
+			const { monitorIds, notificationIds, action } = req.body;
+
+			// Verify all requested notification IDs actually belong to this team
+			const teamNotifications = await this.notificationsService.findNotificationsByTeamId(teamId);
+			const validNotificationIds = teamNotifications.map((n) => n.id);
+
+			const invalidIds = notificationIds.filter((id: string) => !validNotificationIds.includes(id));
+			if (invalidIds.length > 0) {
+				throw new AppError({
+					message: `The following notification IDs are invalid or do not belong to your team: ${invalidIds.join(", ")}`,
+					status: 403,
+				});
+			}
+
+			const modifiedCount = await this.monitorService.updateNotifications({
+				teamId,
+				monitorIds,
+				notificationIds,
+				action,
+			});
+
+			return res.status(200).json({
+				success: true,
+				msg: `Notifications updated successfully on ${modifiedCount} monitor(s)`,
+				data: { modifiedCount },
 			});
 		} catch (error) {
 			next(error);
