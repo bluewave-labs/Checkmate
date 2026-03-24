@@ -28,6 +28,7 @@ import {
 	PagerDutyProvider,
 	MatrixProvider,
 	TeamsProvider,
+	TelegramProvider,
 	// Interfaces
 	INetworkService,
 	IEmailService,
@@ -230,6 +231,7 @@ export const initializeServices = async ({
 	const pagerDutyProvider = new PagerDutyProvider(logger);
 	const matrixProvider = new MatrixProvider(logger);
 	const teamsProvider = new TeamsProvider(logger);
+	const telegramProvider = new TelegramProvider(logger);
 
 	const notificationsService = new NotificationsService(
 		notificationsRepository,
@@ -241,6 +243,7 @@ export const initializeServices = async ({
 		pagerDutyProvider,
 		matrixProvider,
 		teamsProvider,
+		telegramProvider,
 		settingsService,
 		logger,
 		notificationMessageBuilder

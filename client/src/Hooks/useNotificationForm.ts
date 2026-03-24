@@ -17,11 +17,18 @@ export const useNotificationForm = ({ data = null }: UseNotificationFormOptions 
 						roomId: data.roomId || "",
 						accessToken: data.accessToken || "",
 					}
-				: {
-						type: (data?.type || "email") as Exclude<Notification["type"], "matrix">,
-						notificationName: data?.notificationName || "",
-						address: data?.address || "",
-					};
+				: data?.type === "telegram"
+					? {
+							type: "telegram" as const,
+							notificationName: data.notificationName || "",
+							address: data.address || "",
+							accessToken: data.accessToken || "",
+						}
+					: {
+							type: (data?.type || "email") as Exclude<Notification["type"], "matrix" | "telegram">,
+							notificationName: data?.notificationName || "",
+							address: data?.address || "",
+						};
 
 		return { schema: notificationSchema, defaults };
 	}, [data]);

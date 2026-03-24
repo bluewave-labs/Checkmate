@@ -65,6 +65,13 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		type: z.literal("teams"),
 		address: z.url({ message: "Please enter a valid Webhook URL" }),
 	}),
+	// Telegram notification
+	z.object({
+		notificationName: z.string().min(1, "Notification name is required"),
+		type: z.literal("telegram"),
+		address: z.string().min(1, "Chat ID is required"),
+		accessToken: z.string().min(1, "Bot token is required"),
+	}),
 ]);
 
 export const testNotificationBodyValidation = createNotificationBodyValidation;

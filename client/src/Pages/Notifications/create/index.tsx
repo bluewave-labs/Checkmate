@@ -147,7 +147,7 @@ const NotificationsCreatePage = () => {
 					/>
 				}
 			/>
-			{watchedType !== "matrix" && (
+			{watchedType !== "matrix" && watchedType !== "telegram" && (
 				<ConfigBox
 					title={addressConfig.title}
 					subtitle={addressConfig.description}
@@ -168,6 +168,48 @@ const NotificationsCreatePage = () => {
 								/>
 							)}
 						/>
+					}
+				/>
+			)}
+			{watchedType === "telegram" && (
+				<ConfigBox
+					title={t("pages.notifications.form.telegram.title")}
+					subtitle={t("pages.notifications.form.telegram.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(8)}>
+							<Controller
+								name="accessToken"
+								control={control}
+								defaultValue={defaults.accessToken}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t("pages.notifications.form.telegram.optionBotToken")}
+										placeholder={t("pages.notifications.form.telegram.placeholderBotToken")}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+							<Controller
+								name="address"
+								control={control}
+								defaultValue={defaults.address}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t("pages.notifications.form.telegram.optionChatId")}
+										placeholder={t("pages.notifications.form.telegram.placeholderChatId")}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+						</Stack>
 					}
 				/>
 			)}
