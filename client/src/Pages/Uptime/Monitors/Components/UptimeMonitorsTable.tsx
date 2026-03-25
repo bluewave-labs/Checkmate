@@ -1,5 +1,6 @@
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
+import Checkbox from "@mui/material/Checkbox";
 import Typography from "@mui/material/Typography";
 import {
 	Table,
@@ -38,6 +39,9 @@ export const MonitorTable = ({
 	monitors: Monitor[];
 	refetch: Function;
 	setSelectedMonitor: (monitor: Monitor | null) => void;
+	selectedMonitors: string[];
+	onSelectMonitor: (id: string) => void;
+	onSelectAll: (ids: string[]) => void;
 	sortField: string;
 	setSortField: (field: string) => void;
 	sortOrder: "asc" | "desc";
@@ -151,6 +155,34 @@ export const MonitorTable = ({
 			</Box>
 		);
 		const headers: Header<Monitor>[] = [
+			{
+				id: "select",
+				content: (
+					<Checkbox
+						checked={monitors.length > 0 && selectedMonitors.length === monitors.length}
+						indeterminate={
+							selectedMonitors.length > 0 && selectedMonitors.length < monitors.length
+						}
+						onChange={(e) => {
+							if (e.target.checked) {
+								onSelectAll(monitors.map((m) => m.id));
+							} else {
+								onSelectAll([]);
+							}
+						}}
+						onClick={(e) => e.stopPropagation()}
+					/>
+				),
+				render: (row) => {
+					return (
+						<Checkbox
+							checked={selectedMonitors.includes(row.id)}
+							onChange={() => onSelectMonitor(row.id)}
+							onClick={(e) => e.stopPropagation()}
+						/>
+					);
+				},
+			},
 			{
 				id: "name",
 				content: (

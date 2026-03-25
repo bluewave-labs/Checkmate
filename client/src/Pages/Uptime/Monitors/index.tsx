@@ -3,7 +3,7 @@ import { MonitorBasePageWithStates } from "@/Components/design-elements";
 import { TextField, Dialog } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
 import { MonitorTable } from "@/Pages/Uptime/Monitors/Components/UptimeMonitorsTable";
-import { HeaderCreate } from "@/Components/common";
+import { HeaderCreate, FloatingActionBar } from "@/Components/common";
 
 import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -36,10 +36,25 @@ const UptimeMonitorsPage = () => {
 	const [search, setSearch] = useState<string>("");
 	const [sortField, setSortField] = useState<string>("");
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
+	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null); // For deletion
+	const [selectedMonitors, setSelectedMonitors] = useState<string[]>([]); // For bulk edit
 	const isDialogOpen = Boolean(selectedMonitor);
 
 	const debouncedSearch = useDebounce<string>(search, 300);
+
+	const handleSelectAll = (ids: string[]) => {
+		setSelectedMonitors(ids);
+	};
+
+	const handleSelectMonitor = (id: string) => {
+		setSelectedMonitors((prev) =>
+			prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id]
+		);
+	};
+
+	const handleClearSelection = () => {
+		setSelectedMonitors([]);
+	};
 
 	// Convert filter selections to API filter values
 	// Status: pass "up"/"down" directly to the API
@@ -180,6 +195,9 @@ const UptimeMonitorsPage = () => {
 				monitors={monitorsWithChecks || []}
 				refetch={refetch}
 				setSelectedMonitor={setSelectedMonitor}
+				selectedMonitors={selectedMonitors}
+				onSelectMonitor={handleSelectMonitor}
+				onSelectAll={handleSelectAll}
 				count={count || 0}
 				page={page}
 				setPage={setPage}
@@ -206,6 +224,12 @@ const UptimeMonitorsPage = () => {
 				onCancel={handleCancel}
 				loading={isDeleting}
 			/>
+			<FloatingActionBar
+				selectedCount={selectedMonitors.length}
+				onClearSelection={handleClearSelection}
+			>
+				{/* The Assign Notifications button will go here */}
+			</FloatingActionBar>
 		</MonitorBasePageWithStates>
 	);
 };
