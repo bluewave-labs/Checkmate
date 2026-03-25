@@ -3,7 +3,7 @@ import type { Notification } from "@/types/index.js";
 import { INotificationProvider } from "@/service/index.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
-import got, { HTTPError } from "got";
+import got from "got";
 import { ILogger } from "@/utils/logger.js";
 
 export class TelegramProvider implements INotificationProvider {
@@ -28,12 +28,14 @@ export class TelegramProvider implements INotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as HTTPError;
+			const errMsg = error instanceof Error ? error.message : "unknown error";
+			const errStack = error instanceof Error ? error.stack : undefined;
 			this.logger.warn({
 				message: "Telegram test alert failed",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
-				stack: err?.stack,
+				stack: errStack,
+				error: errMsg,
 			});
 			return false;
 		}
@@ -61,12 +63,14 @@ export class TelegramProvider implements INotificationProvider {
 			});
 			return true;
 		} catch (error) {
-			const err = error as HTTPError;
+			const errMsg = error instanceof Error ? error.message : "unknown error";
+			const errStack = error instanceof Error ? error.stack : undefined;
 			this.logger.warn({
 				message: "Telegram alert failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",
-				stack: err?.stack,
+				stack: errStack,
+				error: errMsg,
 			});
 			return false;
 		}
