@@ -1,13 +1,15 @@
 import { useMemo } from "react";
 import { notificationSchema } from "@/Validation/notifications";
+import type { NotificationFormData } from "@/Validation/notifications";
 import type { Notification } from "@/Types/Notification";
 
 interface UseNotificationFormOptions {
 	data?: Notification | null;
 }
 
+// Flat defaults type compatible with all form variants for defaultValue props
 type NotificationDefaults = {
-	type: Notification["type"];
+	type: NotificationFormData["type"];
 	notificationName: string;
 	address?: string;
 	homeserverUrl?: string;
@@ -18,7 +20,7 @@ type NotificationDefaults = {
 export const useNotificationForm = ({ data = null }: UseNotificationFormOptions = {}) => {
 	return useMemo(() => {
 		let defaults: NotificationDefaults = {
-			type: (data?.type || "email") as Notification["type"],
+			type: (data?.type || "email") as NotificationFormData["type"],
 			notificationName: data?.notificationName || "",
 			address: data?.address || "",
 		};
@@ -40,6 +42,6 @@ export const useNotificationForm = ({ data = null }: UseNotificationFormOptions 
 			};
 		}
 
-		return { schema: notificationSchema, defaults };
+		return { schema: notificationSchema, defaults: defaults as NotificationFormData };
 	}, [data]);
 };

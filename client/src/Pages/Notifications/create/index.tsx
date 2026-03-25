@@ -155,7 +155,7 @@ const NotificationsCreatePage = () => {
 						<Controller
 							name="address"
 							control={control}
-							defaultValue={defaults.address}
+							defaultValue={"address" in defaults ? defaults.address : ""}
 							render={({ field, fieldState }) => (
 								<TextField
 									{...field}
@@ -180,7 +180,7 @@ const NotificationsCreatePage = () => {
 							<Controller
 								name="accessToken"
 								control={control}
-								defaultValue={defaults.accessToken}
+								defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
 								render={({ field, fieldState }) => (
 									<TextField
 										{...field}
@@ -198,7 +198,7 @@ const NotificationsCreatePage = () => {
 							<Controller
 								name="address"
 								control={control}
-								defaultValue={defaults.address}
+								defaultValue={"address" in defaults ? defaults.address : ""}
 								render={({ field, fieldState }) => (
 									<TextField
 										{...field}
@@ -224,7 +224,7 @@ const NotificationsCreatePage = () => {
 							<Controller
 								name="homeserverUrl"
 								control={control}
-								defaultValue={defaults.homeserverUrl}
+								defaultValue={"homeserverUrl" in defaults ? defaults.homeserverUrl : ""}
 								render={({ field, fieldState }) => (
 									<TextField
 										{...field}
@@ -240,7 +240,7 @@ const NotificationsCreatePage = () => {
 							<Controller
 								name="roomId"
 								control={control}
-								defaultValue={defaults.roomId}
+								defaultValue={"roomId" in defaults ? defaults.roomId : ""}
 								render={({ field, fieldState }) => (
 									<TextField
 										{...field}
@@ -256,7 +256,7 @@ const NotificationsCreatePage = () => {
 							<Controller
 								name="accessToken"
 								control={control}
-								defaultValue={defaults.accessToken}
+								defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
 								render={({ field, fieldState }) => (
 									<TextField
 										{...field}
