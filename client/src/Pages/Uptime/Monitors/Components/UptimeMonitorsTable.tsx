@@ -1,5 +1,6 @@
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
+import Checkbox from "@mui/material/Checkbox";
 import Typography from "@mui/material/Typography";
 import {
 	Table,
