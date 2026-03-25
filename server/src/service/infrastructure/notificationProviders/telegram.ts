@@ -35,7 +35,7 @@ export class TelegramProvider implements INotificationProvider {
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
 				stack: errStack,
-				error: errMsg,
+				details: { error: errMsg },
 			});
 			return false;
 		}
@@ -70,7 +70,7 @@ export class TelegramProvider implements INotificationProvider {
 				service: SERVICE_NAME,
 				method: "sendMessage",
 				stack: errStack,
-				error: errMsg,
+				details: { error: errMsg },
 			});
 			return false;
 		}

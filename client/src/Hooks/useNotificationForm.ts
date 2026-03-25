@@ -27,7 +27,10 @@ export const useNotificationForm = ({ data = null }: UseNotificationFormOptions 
 			};
 		} else {
 			defaults = {
-				type: (data?.type || "email") as Exclude<Notification["type"], "matrix" | "telegram">,
+				type: (data?.type || "email") as Exclude<
+					Notification["type"],
+					"matrix" | "telegram"
+				>,
 				notificationName: data?.notificationName || "",
 				address: data?.address || "",
 			};

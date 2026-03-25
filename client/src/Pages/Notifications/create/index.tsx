@@ -186,7 +186,9 @@ const NotificationsCreatePage = () => {
 										{...field}
 										type="text"
 										fieldLabel={t("pages.notifications.form.telegram.optionBotToken")}
-										placeholder={t("pages.notifications.form.telegram.placeholderBotToken")}
+										placeholder={t(
+											"pages.notifications.form.telegram.placeholderBotToken"
+										)}
 										fullWidth
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message ?? ""}
