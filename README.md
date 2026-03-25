@@ -1,3 +1,15 @@
+> [!NOTE]
+> ## 🎓 CEN3031 — Spring 2026 Mini Project
+>
+> This is the **central repository** for the CEN3031 Spring 2026 mini project.
+>
+> - 🍴 **Fork this repo** to begin your work
+> - 🔀 **All pull requests** should be submitted here
+> - 📖 **Read the rest of this README** for details about the project itself
+
+---
+
+
 <p align=center> <a href="https://trendshift.io/repositories/12443" target="_blank"><img src="https://trendshift.io/api/badge/repositories/12443" alt="bluewave-labs%2Fcheckmate | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a></p>
   
 ![](https://img.shields.io/github/license/bluewave-labs/checkmate)
