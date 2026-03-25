@@ -6,13 +6,26 @@ interface UseNotificationFormOptions {
 	data?: Notification | null;
 }
 
+type NotificationDefaults = {
+	type: Notification["type"];
+	notificationName: string;
+	address?: string;
+	homeserverUrl?: string;
+	roomId?: string;
+	accessToken?: string;
+};
+
 export const useNotificationForm = ({ data = null }: UseNotificationFormOptions = {}) => {
 	return useMemo(() => {
-		let defaults;
+		let defaults: NotificationDefaults = {
+			type: (data?.type || "email") as Notification["type"],
+			notificationName: data?.notificationName || "",
+			address: data?.address || "",
+		};
 
 		if (data?.type === "matrix") {
 			defaults = {
-				type: "matrix" as const,
+				type: "matrix",
 				notificationName: data.notificationName || "",
 				homeserverUrl: data.homeserverUrl || "",
 				roomId: data.roomId || "",
@@ -20,19 +33,10 @@ export const useNotificationForm = ({ data = null }: UseNotificationFormOptions 
 			};
 		} else if (data?.type === "telegram") {
 			defaults = {
-				type: "telegram" as const,
+				type: "telegram",
 				notificationName: data.notificationName || "",
 				address: data.address || "",
 				accessToken: data.accessToken || "",
-			};
-		} else {
-			defaults = {
-				type: (data?.type || "email") as Exclude<
-					Notification["type"],
-					"matrix" | "telegram"
-				>,
-				notificationName: data?.notificationName || "",
-				address: data?.address || "",
 			};
 		}
 
