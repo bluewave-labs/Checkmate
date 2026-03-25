@@ -5,7 +5,7 @@ import type { IIncidentsRepository } from "@/repositories/index.js";
 import mongoose from "mongoose";
 import { AppError } from "@/utils/AppError.js";
 
-class MongoIncidentRepository implements IIncidentsRepository {
+class MongoIncidentsRepository implements IIncidentsRepository {
 	private toStringId = (value?: mongoose.Types.ObjectId | string | null): string => {
 		if (!value) {
 			return "";
@@ -288,4 +288,4 @@ class MongoIncidentRepository implements IIncidentsRepository {
 		return result.deletedCount ?? 0;
 	};
 }
-export default MongoIncidentRepository;
+export default MongoIncidentsRepository;
