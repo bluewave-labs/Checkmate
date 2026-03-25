@@ -46,6 +46,7 @@ import {
 	IIncidentService,
 	INotificationMessageBuilder,
 	ISettingsService,
+	SettingsService,
 	EnvConfig,
 } from "@/service/index.js";
 
@@ -92,9 +93,23 @@ import {
 	MongoInvitesRepository,
 	MongoRecoveryTokensRepository,
 	MongoNotificationsRepository,
-	MongoIncidentRepository,
+	MongoIncidentsRepository,
 	MongoTeamsRepository,
 	MongoMaintenanceWindowsRepository,
+	MongoSettingsRepository,
+	TimescaleMonitorsRepository,
+	TimescaleChecksRepository,
+	TimescaleGeoChecksRepository,
+	TimescaleMonitorStatsRepository,
+	TimescaleStatusPagesRepository,
+	TimescaleUsersRepository,
+	TimescaleInvitesRepository,
+	TimescaleRecoveryTokensRepository,
+	TimescaleNotificationsRepository,
+	TimescaleIncidentsRepository,
+	TimescaleTeamsRepository,
+	TimescaleMaintenanceWindowsRepository,
+	TimescaleSettingsRepository,
 	IMonitorsRepository,
 	IChecksRepository,
 	IGeoChecksRepository,
@@ -110,6 +125,7 @@ import {
 	IMaintenanceWindowsRepository,
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
+import TimescaleDB from "@/db/TimescaleDB.js";
 
 export type InitializedServices = {
 	settingsService: ISettingsService;
@@ -152,32 +168,88 @@ export const initializeServices = async ({
 	logger,
 	envSettings,
 	settingsService,
-	settingsRepository,
 }: {
 	logger: ILogger;
 	envSettings: EnvConfig;
 	settingsService: ISettingsService;
-	settingsRepository: ISettingsRepository;
 }): Promise<InitializedServices> => {
 	// Create DB
 
-	const db = new MongoDB(logger, envSettings);
+	let dbType = "mongodb";
+	const connectionString = envSettings.dbConnectionString;
+
+	if (connectionString.startsWith("mongodb")) {
+		dbType = "mongodb";
+	} else if (connectionString.startsWith("postgresql")) {
+		dbType = "postgresql";
+	}
+
+	let db: IDb | null = null;
+
+	if (dbType === "mongodb") {
+		db = new MongoDB(logger, envSettings);
+	} else if (dbType === "postgresql") {
+		db = new TimescaleDB(logger, envSettings);
+	}
+
+	if (!db) {
+		throw new Error("Unsupported database type");
+	}
 
 	await db.connect();
 
+	let monitorsRepository: IMonitorsRepository;
+	let checksRepository: IChecksRepository;
+	let geoChecksRepository: IGeoChecksRepository;
+	let monitorStatsRepository: IMonitorStatsRepository;
+	let statusPagesRepository: IStatusPagesRepository;
+	let usersRepository: IUsersRepository;
+	let invitesRepository: IInvitesRepository;
+	let recoveryTokensRepository: IRecoveryTokensRepository;
+	let settingsRepository: ISettingsRepository;
+	let notificationsRepository: INotificationsRepository;
+	let incidentsRepository: IIncidentsRepository;
+	let teamsRepository: ITeamsRepository;
+	let maintenanceWindowsRepository: IMaintenanceWindowsRepository;
+
 	// Repositories
-	const monitorsRepository = new MongoMonitorsRepository();
-	const checksRepository = new MongoChecksRepository(logger);
-	const geoChecksRepository = new MongoGeoChecksRepository(logger);
-	const monitorStatsRepository = new MongoMonitorStatsRepository();
-	const statusPagesRepository = new MongoStatusPagesRepository();
-	const usersRepository = new MongoUsersRepository();
-	const invitesRepository = new MongoInvitesRepository();
-	const recoveryTokensRepository = new MongoRecoveryTokensRepository();
-	const notificationsRepository = new MongoNotificationsRepository();
-	const incidentsRepository = new MongoIncidentRepository();
-	const teamsRepository = new MongoTeamsRepository();
-	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
+
+	if (dbType === "mongodb") {
+		monitorsRepository = new MongoMonitorsRepository();
+		checksRepository = new MongoChecksRepository(logger);
+		geoChecksRepository = new MongoGeoChecksRepository(logger);
+		monitorStatsRepository = new MongoMonitorStatsRepository();
+		statusPagesRepository = new MongoStatusPagesRepository();
+		usersRepository = new MongoUsersRepository();
+		invitesRepository = new MongoInvitesRepository();
+		recoveryTokensRepository = new MongoRecoveryTokensRepository();
+		settingsRepository = new MongoSettingsRepository();
+		notificationsRepository = new MongoNotificationsRepository();
+		incidentsRepository = new MongoIncidentsRepository();
+		teamsRepository = new MongoTeamsRepository();
+		maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
+	} else {
+		const pool = db.getPool();
+		if (!pool) {
+			throw new Error("Failed to get database pool");
+		}
+		monitorsRepository = new TimescaleMonitorsRepository(pool);
+		checksRepository = new TimescaleChecksRepository(pool);
+		geoChecksRepository = new TimescaleGeoChecksRepository(pool);
+		monitorStatsRepository = new TimescaleMonitorStatsRepository(pool);
+		statusPagesRepository = new TimescaleStatusPagesRepository(pool);
+		usersRepository = new TimescaleUsersRepository(pool);
+		invitesRepository = new TimescaleInvitesRepository(pool);
+		recoveryTokensRepository = new TimescaleRecoveryTokensRepository(pool);
+		settingsRepository = new TimescaleSettingsRepository(pool);
+		notificationsRepository = new TimescaleNotificationsRepository(pool);
+		incidentsRepository = new TimescaleIncidentsRepository(pool);
+		teamsRepository = new TimescaleTeamsRepository(pool);
+		maintenanceWindowsRepository = new TimescaleMaintenanceWindowsRepository(pool);
+	}
+
+	// Inject settings repository into settings service (now that DB is connected)
+	(settingsService as SettingsService).setRepository(settingsRepository);
 
 	// Network providers
 	const pingProvider = new PingProvider(ping);
