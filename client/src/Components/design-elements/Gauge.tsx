@@ -17,6 +17,7 @@ export const Gauge = ({
 	strokeWidth = 15,
 	precision = 1,
 	unit = "%",
+	colorFn,
 }: {
 	isLoading?: boolean;
 	progress?: number;
@@ -24,6 +25,7 @@ export const Gauge = ({
 	strokeWidth?: number;
 	precision?: number;
 	unit?: string;
+	colorFn?: (val: number, theme: any) => string;
 }) => {
 	const theme = useTheme();
 	const progressWithinRange = Math.max(MINIMUM_VALUE, Math.min(progress, MAXIMUM_VALUE));
@@ -48,7 +50,8 @@ export const Gauge = ({
 		return () => clearTimeout(timer);
 	}, [progress, circumference, strokeLength]);
 
-	const fillColor = getInfraGaugeColor(progressWithinRange, theme);
+	const resolvedColorFn = colorFn ?? getInfraGaugeColor;
+	const fillColor = resolvedColorFn(progressWithinRange, theme);
 
 	if (isLoading) {
 		return;

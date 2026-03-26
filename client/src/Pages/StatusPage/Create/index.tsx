@@ -37,9 +37,17 @@ import { HeaderConfigStatusControls } from "./Components/HeaderConfigStatusContr
 
 const monitorsUrl = (() => {
 	const params = new URLSearchParams();
-	["http", "ping", "port", "docker", "game", "grpc", "websocket", "hardware"].forEach(
-		(type) => params.append("type", type)
-	);
+	[
+		"http",
+		"ping",
+		"port",
+		"docker",
+		"game",
+		"grpc",
+		"websocket",
+		"hardware",
+		"pagespeed",
+	].forEach((type) => params.append("type", type));
 	return `/monitors/team?${params.toString()}`;
 })();
 
@@ -59,7 +67,9 @@ const CreateStatusPage = () => {
 	// Fetch existing status page data when configuring
 	const { data: statusPageData, isLoading: isLoadingStatusPage } =
 		useGet<StatusPageResponse>(
-			isCreate ? null : `/status-page/${url}?type=uptime&type=infrastructure`
+			isCreate
+				? null
+				: `/status-page/${url}?type=uptime&type=infrastructure&type=pagespeed`
 		);
 
 	const { data: monitorsResponse } = useGet<Monitor[]>(monitorsUrl);
@@ -98,7 +108,9 @@ const CreateStatusPage = () => {
 
 		const typesSet = new Set<MonitorDisplayType>();
 		selectedMonitors.forEach((m) => {
-			typesSet.add(m.type === "hardware" ? "infrastructure" : "uptime");
+			if (m.type === "hardware") typesSet.add("infrastructure");
+			else if (m.type === "pagespeed") typesSet.add("pagespeed");
+			else typesSet.add("uptime");
 		});
 
 		return typesSet.size ? Array.from(typesSet) : ["uptime"];
@@ -139,6 +151,7 @@ const CreateStatusPage = () => {
 		fd.append("showUptimePercentage", String(data.showUptimePercentage));
 		fd.append("showAdminLoginLink", String(data.showAdminLoginLink));
 		fd.append("showInfrastructure", String(data.showInfrastructure));
+		fd.append("showPageSpeed", String(data.showPageSpeed));
 
 		data.monitors.forEach((monitorId) => {
 			fd.append("monitors[]", monitorId);
@@ -472,6 +485,21 @@ const CreateStatusPage = () => {
 									label={t(
 										"pages.statusPages.form.features.option.showInfrastructure.label"
 									)}
+								/>
+							)}
+						/>
+						<Controller
+							name="showPageSpeed"
+							control={control}
+							render={({ field }) => (
+								<FormControlLabel
+									control={
+										<Checkbox
+											checked={field.value}
+											onChange={field.onChange}
+										/>
+									}
+									label={t("pages.statusPages.form.features.option.showPageSpeed.label")}
 								/>
 							)}
 						/>

@@ -1202,6 +1202,13 @@
 					"used": "Used",
 					"total": "Total"
 				},
+				"pagespeed": {
+					"title": "PageSpeed",
+					"performance": "Performance",
+					"accessibility": "Accessibility",
+					"bestPractices": "Best Practices",
+					"seo": "SEO"
+				},
 				"uptime": {
 					"title": "Uptime",
 					"responseTime": "Response time"
@@ -1300,6 +1307,9 @@
 						},
 						"showInfrastructure": {
 							"label": "Show infrastructure metrics"
+						},
+						"showPageSpeed": {
+							"label": "Show PageSpeed scores"
 						}
 					}
 				}

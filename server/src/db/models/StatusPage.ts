@@ -104,6 +104,10 @@ const StatusPageSchema = new Schema<StatusPageDocument>(
 			type: Boolean,
 			default: false,
 		},
+		showPageSpeed: {
+			type: Boolean,
+			default: false,
+		},
 		customCSS: {
 			type: String,
 			default: "",

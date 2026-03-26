@@ -324,6 +324,7 @@ const statusPageValidation = joi.object({
 	showCharts: joi.boolean(),
 	showAdminLoginLink: joi.boolean(),
 	showInfrastructure: joi.boolean(),
+	showPageSpeed: joi.boolean(),
 });
 
 const settingsValidation = joi.object({

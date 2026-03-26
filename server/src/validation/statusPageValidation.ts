@@ -32,6 +32,7 @@ export const createStatusPageBodyValidation = z
 		showUptimePercentage: booleanCoercion,
 		showAdminLoginLink: booleanCoercion.optional(),
 		showInfrastructure: booleanCoercion.optional(),
+		showPageSpeed: booleanCoercion.optional(),
 		removeLogo: z.union([z.literal("true"), z.literal("false")]).optional(),
 	})
 	.strip();
