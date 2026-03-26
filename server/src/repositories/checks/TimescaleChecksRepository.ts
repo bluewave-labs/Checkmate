@@ -31,6 +31,16 @@ const dateStringToBucket = (dateString: string): string => {
 export class TimescaleChecksRepository implements IChecksRepository {
 	constructor(private pool: Pool) {}
 
+	// Returns the continuous aggregate table name for the given bucket interval and query type,
+	// or null if no CA is available (fall back to raw checks table).
+	private getCaTable(bucket: string, type: "uptime" | "hardware" | "pagespeed"): string | null {
+		if (type === "uptime" && bucket === "1 hour") return "checks_hourly";
+		if (type === "uptime" && bucket === "1 day") return "checks_daily";
+		if (type === "hardware" && bucket === "1 hour") return "hardware_hourly";
+		if (type === "pagespeed" && bucket === "1 day") return "pagespeed_daily";
+		return null;
+	}
+
 	create = async (check: Check): Promise<Check> => {
 		const row = await this.insertCheck(check);
 		if (!row) {
@@ -513,7 +523,81 @@ export class TimescaleChecksRepository implements IChecksRepository {
 		dateString: string
 	): Promise<UptimeChecksResult> => {
 		const bucket = dateStringToBucket(dateString);
+		const caTable = this.getCaTable(bucket, "uptime");
 
+		if (caTable) {
+			return this.findUptimeFromCa(monitorType, monitorId, startDate, endDate, caTable);
+		}
+		return this.findUptimeFromRaw(monitorType, monitorId, startDate, endDate, bucket);
+	};
+
+	private findUptimeFromCa = async (
+		monitorType: Exclude<MonitorType, "hardware" | "pagespeed">,
+		monitorId: string,
+		startDate: Date,
+		endDate: Date,
+		caTable: string
+	): Promise<UptimeChecksResult> => {
+		const result = await this.pool.query(
+			`SELECT bucket AS bucket_date, total_checks::int, up_checks::int, down_checks::int,
+				avg_response_time, avg_up_response_time, avg_down_response_time
+			 FROM ${caTable}
+			 WHERE monitor_id = $1 AND bucket >= $2 AND bucket <= $3
+			 ORDER BY bucket`,
+			[monitorId, startDate, endDate]
+		);
+
+		let totalChecks = 0;
+		let totalUp = 0;
+		let weightedResponseTime = 0;
+
+		const groupedChecks = result.rows.map((row) => {
+			const count = Number(row.total_checks);
+			const up = Number(row.up_checks);
+			const avg = Number(row.avg_response_time ?? 0);
+			totalChecks += count;
+			totalUp += up;
+			weightedResponseTime += avg * count;
+			return {
+				bucketDate: (row.bucket_date as Date).toISOString(),
+				avgResponseTime: avg,
+				totalChecks: count,
+			};
+		});
+
+		const groupedUpChecks = result.rows
+			.filter((row) => Number(row.up_checks) > 0)
+			.map((row) => ({
+				bucketDate: (row.bucket_date as Date).toISOString(),
+				avgResponseTime: Number(row.avg_up_response_time ?? 0),
+				totalChecks: Number(row.up_checks),
+			}));
+
+		const groupedDownChecks = result.rows
+			.filter((row) => Number(row.down_checks) > 0)
+			.map((row) => ({
+				bucketDate: (row.bucket_date as Date).toISOString(),
+				avgResponseTime: Number(row.avg_down_response_time ?? 0),
+				totalChecks: Number(row.down_checks),
+			}));
+
+		return {
+			monitorType,
+			groupedChecks,
+			groupedUpChecks,
+			groupedDownChecks,
+			uptimePercentage: totalChecks > 0 ? totalUp / totalChecks : 0,
+			avgResponseTime: totalChecks > 0 ? weightedResponseTime / totalChecks : 0,
+		};
+	};
+
+	private findUptimeFromRaw = async (
+		monitorType: Exclude<MonitorType, "hardware" | "pagespeed">,
+		monitorId: string,
+		startDate: Date,
+		endDate: Date,
+		bucket: string
+	): Promise<UptimeChecksResult> => {
 		const [uptimeResult, groupedResult, upResult, downResult] = await Promise.all([
 			this.pool.query(
 				`SELECT
@@ -580,8 +664,137 @@ export class TimescaleChecksRepository implements IChecksRepository {
 		dateString: string
 	): Promise<HardwareChecksResult> => {
 		const bucket = dateStringToBucket(dateString);
+		const caTable = this.getCaTable(bucket, "hardware");
 
-		const [totalResult, upResult, metricsResult] = await Promise.all([
+		// Build the metrics query: use hardware_hourly CA for cpu/mem when available,
+		// but temperature always requires the raw table
+		const metricsQuery = caTable
+			? this.pool.query(
+					`SELECT bucket AS bucket_date, avg_cpu, avg_memory
+					 FROM ${caTable}
+					 WHERE monitor_id = $1 AND bucket >= $2 AND bucket <= $3
+					 ORDER BY bucket`,
+					[monitorId, startDate, endDate]
+				)
+			: this.pool.query(
+					`SELECT
+						time_bucket($1::interval, created_at) AS bucket_date,
+						AVG(cpu_usage_percent) AS avg_cpu,
+						AVG(mem_usage_percent) AS avg_memory
+					 FROM checks
+					 WHERE monitor_id = $2 AND monitor_type = 'hardware' AND created_at >= $3 AND created_at <= $4
+					 GROUP BY bucket_date ORDER BY bucket_date`,
+					[bucket, monitorId, startDate, endDate]
+				);
+
+		// Temperature query always hits raw table (not in any CA)
+		const tempQuery = this.pool.query(
+			`WITH temp_avg AS (
+				SELECT time_bucket($1::interval, c.created_at) AS bucket_date, idx, AVG(val) AS avg_val
+				FROM checks c, unnest(c.cpu_temperature) WITH ORDINALITY AS t(val, idx)
+				WHERE c.monitor_id = $2 AND c.monitor_type = 'hardware' AND c.created_at >= $3 AND c.created_at <= $4
+				GROUP BY bucket_date, idx
+			)
+			SELECT bucket_date, array_agg(avg_val ORDER BY idx) AS avg_temperature
+			FROM temp_avg
+			GROUP BY bucket_date
+			ORDER BY bucket_date`,
+			[bucket, monitorId, startDate, endDate]
+		);
+
+		// Batched disk query across all buckets (eliminates N+1)
+		const diskQuery = this.pool.query(
+			`SELECT
+				time_bucket($1::interval, d.check_created_at) AS bucket_date,
+				d.device AS name,
+				AVG(d.read_bytes) AS "readSpeed",
+				AVG(d.write_bytes) AS "writeSpeed",
+				AVG(d.total_bytes) AS "totalBytes",
+				AVG(d.free_bytes) AS "freeBytes",
+				AVG(d.usage_percent) AS "usagePercent"
+			 FROM check_disks d
+			 WHERE d.check_id IN (
+				SELECT id FROM checks
+				WHERE monitor_id = $2 AND monitor_type = 'hardware' AND created_at >= $3 AND created_at <= $4
+			 )
+			 GROUP BY bucket_date, d.device
+			 ORDER BY bucket_date, d.device`,
+			[bucket, monitorId, startDate, endDate]
+		);
+
+		// Batched network query across all buckets (eliminates N+1)
+		const netQuery = this.pool.query(
+			`WITH bounded AS (
+				SELECT
+					time_bucket($1::interval, c.created_at) AS bucket_date,
+					n.name,
+					FIRST_VALUE(n.bytes_sent) OVER w AS first_bytes_sent,
+					LAST_VALUE(n.bytes_sent) OVER w AS last_bytes_sent,
+					FIRST_VALUE(n.bytes_recv) OVER w AS first_bytes_recv,
+					LAST_VALUE(n.bytes_recv) OVER w AS last_bytes_recv,
+					FIRST_VALUE(n.packets_sent) OVER w AS first_packets_sent,
+					LAST_VALUE(n.packets_sent) OVER w AS last_packets_sent,
+					FIRST_VALUE(n.packets_recv) OVER w AS first_packets_recv,
+					LAST_VALUE(n.packets_recv) OVER w AS last_packets_recv,
+					FIRST_VALUE(n.err_in) OVER w AS first_err_in,
+					LAST_VALUE(n.err_in) OVER w AS last_err_in,
+					FIRST_VALUE(n.err_out) OVER w AS first_err_out,
+					LAST_VALUE(n.err_out) OVER w AS last_err_out,
+					FIRST_VALUE(n.drop_in) OVER w AS first_drop_in,
+					LAST_VALUE(n.drop_in) OVER w AS last_drop_in,
+					FIRST_VALUE(n.drop_out) OVER w AS first_drop_out,
+					LAST_VALUE(n.drop_out) OVER w AS last_drop_out,
+					FIRST_VALUE(n.fifo_in) OVER w AS first_fifo_in,
+					LAST_VALUE(n.fifo_in) OVER w AS last_fifo_in,
+					FIRST_VALUE(n.fifo_out) OVER w AS first_fifo_out,
+					LAST_VALUE(n.fifo_out) OVER w AS last_fifo_out,
+					FIRST_VALUE(c.created_at) OVER w AS first_time,
+					LAST_VALUE(c.created_at) OVER w AS last_time
+				FROM check_network_interfaces n
+				JOIN checks c ON c.id = n.check_id
+				WHERE c.monitor_id = $2 AND c.monitor_type = 'hardware'
+					AND c.created_at >= $3 AND c.created_at <= $4
+				WINDOW w AS (PARTITION BY time_bucket($1::interval, c.created_at), n.name
+					ORDER BY c.created_at ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
+			)
+			SELECT DISTINCT ON (bucket_date, name) bucket_date, name,
+				CASE WHEN EXTRACT(EPOCH FROM (last_time - first_time)) > 0
+					THEN (last_bytes_sent - first_bytes_sent) / EXTRACT(EPOCH FROM (last_time - first_time))
+					ELSE 0 END AS "bytesSentPerSecond",
+				CASE WHEN EXTRACT(EPOCH FROM (last_time - first_time)) > 0
+					THEN (last_bytes_recv - first_bytes_recv) / EXTRACT(EPOCH FROM (last_time - first_time))
+					ELSE 0 END AS "deltaBytesRecv",
+				CASE WHEN EXTRACT(EPOCH FROM (last_time - first_time)) > 0
+					THEN (last_packets_sent - first_packets_sent) / EXTRACT(EPOCH FROM (last_time - first_time))
+					ELSE 0 END AS "deltaPacketsSent",
+				CASE WHEN EXTRACT(EPOCH FROM (last_time - first_time)) > 0
+					THEN (last_packets_recv - first_packets_recv) / EXTRACT(EPOCH FROM (last_time - first_time))
+					ELSE 0 END AS "deltaPacketsRecv",
+				CASE WHEN EXTRACT(EPOCH FROM (last_time - first_time)) > 0
+					THEN (last_err_in - first_err_in) / EXTRACT(EPOCH FROM (last_time - first_time))
+					ELSE 0 END AS "deltaErrIn",
+				CASE WHEN EXTRACT(EPOCH FROM (last_time - first_time)) > 0
+					THEN (last_err_out - first_err_out) / EXTRACT(EPOCH FROM (last_time - first_time))
+					ELSE 0 END AS "deltaErrOut",
+				CASE WHEN EXTRACT(EPOCH FROM (last_time - first_time)) > 0
+					THEN (last_drop_in - first_drop_in) / EXTRACT(EPOCH FROM (last_time - first_time))
+					ELSE 0 END AS "deltaDropIn",
+				CASE WHEN EXTRACT(EPOCH FROM (last_time - first_time)) > 0
+					THEN (last_drop_out - first_drop_out) / EXTRACT(EPOCH FROM (last_time - first_time))
+					ELSE 0 END AS "deltaDropOut",
+				CASE WHEN EXTRACT(EPOCH FROM (last_time - first_time)) > 0
+					THEN (last_fifo_in - first_fifo_in) / EXTRACT(EPOCH FROM (last_time - first_time))
+					ELSE 0 END AS "deltaFifoIn",
+				CASE WHEN EXTRACT(EPOCH FROM (last_time - first_time)) > 0
+					THEN (last_fifo_out - first_fifo_out) / EXTRACT(EPOCH FROM (last_time - first_time))
+					ELSE 0 END AS "deltaFifoOut"
+			FROM bounded
+			ORDER BY bucket_date, name`,
+			[bucket, monitorId, startDate, endDate]
+		);
+
+		// Run all 5 queries in parallel
+		const [totalResult, upResult, metricsResult, tempResult, diskResult, netResult] = await Promise.all([
 			this.pool.query(
 				`SELECT COUNT(*)::int AS count FROM checks
 				 WHERE monitor_id = $1 AND monitor_type = 'hardware' AND created_at >= $2 AND created_at <= $3`,
@@ -592,152 +805,67 @@ export class TimescaleChecksRepository implements IChecksRepository {
 				 WHERE monitor_id = $1 AND monitor_type = 'hardware' AND created_at >= $2 AND created_at <= $3 AND status = TRUE`,
 				[monitorId, startDate, endDate]
 			),
-			this.pool.query(
-				`WITH bucketed AS (
-					SELECT
-						time_bucket($1::interval, c.created_at) AS bucket_date,
-						c.cpu_usage_percent,
-						c.mem_usage_percent,
-						c.cpu_temperature
-					FROM checks c
-					WHERE c.monitor_id = $2 AND c.monitor_type = 'hardware' AND c.created_at >= $3 AND c.created_at <= $4
-				),
-				temp_avg AS (
-					SELECT bucket_date, idx, AVG(val) AS avg_val
-					FROM bucketed, unnest(cpu_temperature) WITH ORDINALITY AS t(val, idx)
-					GROUP BY bucket_date, idx
-				)
-				SELECT
-					b.bucket_date,
-					AVG(b.cpu_usage_percent) AS avg_cpu,
-					AVG(b.mem_usage_percent) AS avg_memory,
-					COALESCE(
-						(SELECT array_agg(ta.avg_val ORDER BY ta.idx) FROM temp_avg ta WHERE ta.bucket_date = b.bucket_date),
-						ARRAY[]::double precision[]
-					) AS avg_temperature
-				FROM bucketed b
-				GROUP BY b.bucket_date
-				ORDER BY b.bucket_date`,
-				[bucket, monitorId, startDate, endDate]
-			),
+			metricsQuery,
+			tempQuery,
+			diskQuery,
+			netQuery,
 		]);
 
-		// Fetch disk and net stats per bucket
-		const checks = await Promise.all(
-			metricsResult.rows.map(async (row) => {
-				const bucketStart = row.bucket_date as Date;
-				const bucketInterval = bucket;
+		// Group disk and net results by bucket date
+		const disksByBucket = new Map<string, typeof diskResult.rows>();
+		for (const row of diskResult.rows) {
+			const key = (row.bucket_date as Date).toISOString();
+			if (!disksByBucket.has(key)) disksByBucket.set(key, []);
+			disksByBucket.get(key)!.push(row);
+		}
 
-				const [diskResult, netResult] = await Promise.all([
-					this.pool.query(
-						`SELECT d.device AS name,
-							AVG(d.read_bytes) AS "readSpeed",
-							AVG(d.write_bytes) AS "writeSpeed",
-							AVG(d.total_bytes) AS "totalBytes",
-							AVG(d.free_bytes) AS "freeBytes",
-							AVG(d.usage_percent) AS "usagePercent"
-						 FROM check_disks d
-						 WHERE d.check_created_at >= $1 AND d.check_created_at < $1::timestamptz + $2::interval
-						   AND d.check_id IN (SELECT id FROM checks WHERE monitor_id = $3 AND monitor_type = 'hardware' AND created_at >= $1 AND created_at < $1::timestamptz + $2::interval)
-						 GROUP BY d.device`,
-						[bucketStart, bucketInterval, monitorId]
-					),
-					this.pool.query(
-						`WITH bounded AS (
-							SELECT n.*, c.created_at AS check_time,
-								FIRST_VALUE(n.bytes_sent) OVER w AS first_bytes_sent,
-								LAST_VALUE(n.bytes_sent) OVER w AS last_bytes_sent,
-								FIRST_VALUE(n.bytes_recv) OVER w AS first_bytes_recv,
-								LAST_VALUE(n.bytes_recv) OVER w AS last_bytes_recv,
-								FIRST_VALUE(n.packets_sent) OVER w AS first_packets_sent,
-								LAST_VALUE(n.packets_sent) OVER w AS last_packets_sent,
-								FIRST_VALUE(n.packets_recv) OVER w AS first_packets_recv,
-								LAST_VALUE(n.packets_recv) OVER w AS last_packets_recv,
-								FIRST_VALUE(n.err_in) OVER w AS first_err_in,
-								LAST_VALUE(n.err_in) OVER w AS last_err_in,
-								FIRST_VALUE(n.err_out) OVER w AS first_err_out,
-								LAST_VALUE(n.err_out) OVER w AS last_err_out,
-								FIRST_VALUE(n.drop_in) OVER w AS first_drop_in,
-								LAST_VALUE(n.drop_in) OVER w AS last_drop_in,
-								FIRST_VALUE(n.drop_out) OVER w AS first_drop_out,
-								LAST_VALUE(n.drop_out) OVER w AS last_drop_out,
-								FIRST_VALUE(n.fifo_in) OVER w AS first_fifo_in,
-								LAST_VALUE(n.fifo_in) OVER w AS last_fifo_in,
-								FIRST_VALUE(n.fifo_out) OVER w AS first_fifo_out,
-								LAST_VALUE(n.fifo_out) OVER w AS last_fifo_out,
-								FIRST_VALUE(c.created_at) OVER w AS first_time,
-								LAST_VALUE(c.created_at) OVER w AS last_time
-							FROM check_network_interfaces n
-							JOIN checks c ON c.id = n.check_id
-							WHERE n.check_created_at >= $1 AND n.check_created_at < $1::timestamptz + $2::interval
-								AND c.monitor_id = $3 AND c.monitor_type = 'hardware'
-							WINDOW w AS (PARTITION BY n.name ORDER BY c.created_at ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
-						)
-						SELECT DISTINCT ON (name) name,
-							CASE WHEN EXTRACT(EPOCH FROM (last_time - first_time)) > 0
-								THEN (last_bytes_sent - first_bytes_sent) / EXTRACT(EPOCH FROM (last_time - first_time))
-								ELSE 0 END AS "bytesSentPerSecond",
-							CASE WHEN EXTRACT(EPOCH FROM (last_time - first_time)) > 0
-								THEN (last_bytes_recv - first_bytes_recv) / EXTRACT(EPOCH FROM (last_time - first_time))
-								ELSE 0 END AS "deltaBytesRecv",
-							CASE WHEN EXTRACT(EPOCH FROM (last_time - first_time)) > 0
-								THEN (last_packets_sent - first_packets_sent) / EXTRACT(EPOCH FROM (last_time - first_time))
-								ELSE 0 END AS "deltaPacketsSent",
-							CASE WHEN EXTRACT(EPOCH FROM (last_time - first_time)) > 0
-								THEN (last_packets_recv - first_packets_recv) / EXTRACT(EPOCH FROM (last_time - first_time))
-								ELSE 0 END AS "deltaPacketsRecv",
-							CASE WHEN EXTRACT(EPOCH FROM (last_time - first_time)) > 0
-								THEN (last_err_in - first_err_in) / EXTRACT(EPOCH FROM (last_time - first_time))
-								ELSE 0 END AS "deltaErrIn",
-							CASE WHEN EXTRACT(EPOCH FROM (last_time - first_time)) > 0
-								THEN (last_err_out - first_err_out) / EXTRACT(EPOCH FROM (last_time - first_time))
-								ELSE 0 END AS "deltaErrOut",
-							CASE WHEN EXTRACT(EPOCH FROM (last_time - first_time)) > 0
-								THEN (last_drop_in - first_drop_in) / EXTRACT(EPOCH FROM (last_time - first_time))
-								ELSE 0 END AS "deltaDropIn",
-							CASE WHEN EXTRACT(EPOCH FROM (last_time - first_time)) > 0
-								THEN (last_drop_out - first_drop_out) / EXTRACT(EPOCH FROM (last_time - first_time))
-								ELSE 0 END AS "deltaDropOut",
-							CASE WHEN EXTRACT(EPOCH FROM (last_time - first_time)) > 0
-								THEN (last_fifo_in - first_fifo_in) / EXTRACT(EPOCH FROM (last_time - first_time))
-								ELSE 0 END AS "deltaFifoIn",
-							CASE WHEN EXTRACT(EPOCH FROM (last_time - first_time)) > 0
-								THEN (last_fifo_out - first_fifo_out) / EXTRACT(EPOCH FROM (last_time - first_time))
-								ELSE 0 END AS "deltaFifoOut"
-						FROM bounded`,
-						[bucketStart, bucketInterval, monitorId]
-					),
-				]);
+		const netsByBucket = new Map<string, typeof netResult.rows>();
+		for (const row of netResult.rows) {
+			const key = (row.bucket_date as Date).toISOString();
+			if (!netsByBucket.has(key)) netsByBucket.set(key, []);
+			netsByBucket.get(key)!.push(row);
+		}
 
-				return {
-					bucketDate: bucketStart.toISOString(),
-					avgCpuUsage: Number(row.avg_cpu ?? 0),
-					avgMemoryUsage: Number(row.avg_memory ?? 0),
-					avgTemperature: Array.isArray(row.avg_temperature) ? row.avg_temperature.map(Number) : [],
-					disks: diskResult.rows.map((d) => ({
-						name: d.name ?? "",
-						readSpeed: Number(d.readSpeed ?? 0),
-						writeSpeed: Number(d.writeSpeed ?? 0),
-						totalBytes: Number(d.totalBytes ?? 0),
-						freeBytes: Number(d.freeBytes ?? 0),
-						usagePercent: Number(d.usagePercent ?? 0),
-					})),
-					net: netResult.rows.map((n) => ({
-						name: n.name ?? "",
-						bytesSentPerSecond: Number(n.bytesSentPerSecond ?? 0),
-						deltaBytesRecv: Number(n.deltaBytesRecv ?? 0),
-						deltaPacketsSent: Number(n.deltaPacketsSent ?? 0),
-						deltaPacketsRecv: Number(n.deltaPacketsRecv ?? 0),
-						deltaErrIn: Number(n.deltaErrIn ?? 0),
-						deltaErrOut: Number(n.deltaErrOut ?? 0),
-						deltaDropIn: Number(n.deltaDropIn ?? 0),
-						deltaDropOut: Number(n.deltaDropOut ?? 0),
-						deltaFifoIn: Number(n.deltaFifoIn ?? 0),
-						deltaFifoOut: Number(n.deltaFifoOut ?? 0),
-					})),
-				};
-			})
-		);
+		const tempByBucket = new Map<string, number[]>();
+		for (const row of tempResult.rows) {
+			const key = (row.bucket_date as Date).toISOString();
+			tempByBucket.set(key, Array.isArray(row.avg_temperature) ? row.avg_temperature.map(Number) : []);
+		}
+
+		// Assemble checks array from metrics + disk/net maps
+		const checks = metricsResult.rows.map((row) => {
+			const bucketDate = (row.bucket_date as Date).toISOString();
+			const disks = disksByBucket.get(bucketDate) ?? [];
+			const nets = netsByBucket.get(bucketDate) ?? [];
+
+			return {
+				bucketDate,
+				avgCpuUsage: Number(row.avg_cpu ?? 0),
+				avgMemoryUsage: Number(row.avg_memory ?? 0),
+				avgTemperature: tempByBucket.get(bucketDate) ?? [],
+				disks: disks.map((d) => ({
+					name: d.name ?? "",
+					readSpeed: Number(d.readSpeed ?? 0),
+					writeSpeed: Number(d.writeSpeed ?? 0),
+					totalBytes: Number(d.totalBytes ?? 0),
+					freeBytes: Number(d.freeBytes ?? 0),
+					usagePercent: Number(d.usagePercent ?? 0),
+				})),
+				net: nets.map((n) => ({
+					name: n.name ?? "",
+					bytesSentPerSecond: Number(n.bytesSentPerSecond ?? 0),
+					deltaBytesRecv: Number(n.deltaBytesRecv ?? 0),
+					deltaPacketsSent: Number(n.deltaPacketsSent ?? 0),
+					deltaPacketsRecv: Number(n.deltaPacketsRecv ?? 0),
+					deltaErrIn: Number(n.deltaErrIn ?? 0),
+					deltaErrOut: Number(n.deltaErrOut ?? 0),
+					deltaDropIn: Number(n.deltaDropIn ?? 0),
+					deltaDropOut: Number(n.deltaDropOut ?? 0),
+					deltaFifoIn: Number(n.deltaFifoIn ?? 0),
+					deltaFifoOut: Number(n.deltaFifoOut ?? 0),
+				})),
+			};
+		});
 
 		return {
 			monitorType: "hardware" as const,
@@ -754,20 +882,34 @@ export class TimescaleChecksRepository implements IChecksRepository {
 		dateString: string
 	): Promise<PageSpeedChecksResult> => {
 		const bucket = dateStringToBucket(dateString);
+		const caTable = this.getCaTable(bucket, "pagespeed");
 
-		const result = await this.pool.query(
-			`SELECT
-				time_bucket($1::interval, created_at) AS bucket_date,
-				AVG(lighthouse_performance) AS performance,
-				AVG(lighthouse_accessibility) AS accessibility,
-				AVG(lighthouse_best_practices) AS "bestPractices",
-				AVG(lighthouse_seo) AS seo,
-				COUNT(*)::int AS "totalChecks"
-			 FROM checks
-			 WHERE monitor_id = $2 AND monitor_type = 'pagespeed' AND created_at >= $3 AND created_at <= $4
-			 GROUP BY bucket_date ORDER BY bucket_date`,
-			[bucket, monitorId, startDate, endDate]
-		);
+		const result = caTable
+			? await this.pool.query(
+					`SELECT bucket AS bucket_date,
+						avg_performance AS performance,
+						avg_accessibility AS accessibility,
+						avg_best_practices AS "bestPractices",
+						avg_seo AS seo,
+						sample_count::int AS "totalChecks"
+					 FROM ${caTable}
+					 WHERE monitor_id = $1 AND bucket >= $2 AND bucket <= $3
+					 ORDER BY bucket`,
+					[monitorId, startDate, endDate]
+				)
+			: await this.pool.query(
+					`SELECT
+						time_bucket($1::interval, created_at) AS bucket_date,
+						AVG(lighthouse_performance) AS performance,
+						AVG(lighthouse_accessibility) AS accessibility,
+						AVG(lighthouse_best_practices) AS "bestPractices",
+						AVG(lighthouse_seo) AS seo,
+						COUNT(*)::int AS "totalChecks"
+					 FROM checks
+					 WHERE monitor_id = $2 AND monitor_type = 'pagespeed' AND created_at >= $3 AND created_at <= $4
+					 GROUP BY bucket_date ORDER BY bucket_date`,
+					[bucket, monitorId, startDate, endDate]
+				);
 
 		return {
 			monitorType: "pagespeed" as const,
