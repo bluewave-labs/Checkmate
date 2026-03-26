@@ -15,7 +15,7 @@ export const statusPageSchema = z.object({
 		),
 	timezone: z.string().optional(),
 	type: z
-		.array(z.enum(["uptime", "infrastructure"]))
+		.array(z.enum(["uptime", "infrastructure", "pagespeed"]))
 		.min(1, "At least one type is required"),
 	color: z.string().min(1, "Color is required"),
 	monitors: z.array(z.string()).min(1, "At least one monitor is required"),
@@ -24,6 +24,7 @@ export const statusPageSchema = z.object({
 	showUptimePercentage: z.boolean(),
 	showAdminLoginLink: z.boolean(),
 	showInfrastructure: z.boolean(),
+	showPageSpeed: z.boolean(),
 	customCSS: z.string().optional(),
 	logo: z
 		.object({
