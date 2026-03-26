@@ -252,7 +252,7 @@ export class TimescaleStatusPagesRepository implements IStatusPagesRepository {
 			showUptimePercentage: row.show_uptime_percentage,
 			showAdminLoginLink: row.show_admin_login_link,
 			showInfrastructure: row.show_infrastructure,
-			customCSS: row.custom_css ?? undefined,
+			customCSS: row.custom_css ?? "",
 			createdAt: row.created_at.toISOString(),
 			updatedAt: row.updated_at.toISOString(),
 		};

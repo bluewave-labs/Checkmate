@@ -140,7 +140,10 @@ export class TimescaleChecksRepository implements IChecksRepository {
 			if (!mapped[mid]) {
 				mapped[mid] = [];
 			}
-			mapped[mid].push(checks[i]);
+			const check = checks[i];
+			if (check !== undefined) {
+				mapped[mid].push(check);
+			}
 		}
 		// Ensure all requested IDs have an entry
 		for (const id of monitorIds) {
