@@ -31,8 +31,8 @@ const dateStringToBucket = (dateString: string): string => {
 export class TimescaleChecksRepository implements IChecksRepository {
 	constructor(private pool: Pool) {}
 
-	// Returns the continuous aggregate table name for the given bucket interval and query type,
-	// or null if no CA is available (fall back to raw checks table).
+	// Returns correct CA table name for the given bucket interval and query type
+	// Or returns null if no CA is available (fall back to raw checks table).
 	private getCaTable(bucket: string, type: "uptime" | "hardware" | "pagespeed"): string | null {
 		if (type === "uptime" && bucket === "1 hour") return "checks_hourly";
 		if (type === "uptime" && bucket === "1 day") return "checks_daily";
@@ -47,7 +47,6 @@ export class TimescaleChecksRepository implements IChecksRepository {
 			throw new Error("Failed to create check");
 		}
 
-		// Insert child records
 		if (check.disk?.length) {
 			await this.insertDisks(row.id, row.created_at, check.disk);
 		}
@@ -221,12 +220,9 @@ export class TimescaleChecksRepository implements IChecksRepository {
 	};
 
 	deleteOlderThan = async (date: Date): Promise<number> => {
-		// TimescaleDB drop_chunks is O(1) per chunk, much faster than row-by-row DELETE
 		const result = await this.pool.query(`DELETE FROM checks WHERE created_at < $1`, [date]);
 		return result.rowCount ?? 0;
 	};
-
-	// --- Private helpers ---
 
 	private populateChildData = async (checkRows: Record<string, unknown>[]): Promise<Check[]> => {
 		if (!checkRows.length) return [];
@@ -702,7 +698,6 @@ export class TimescaleChecksRepository implements IChecksRepository {
 			[bucket, monitorId, startDate, endDate]
 		);
 
-		// Batched disk query across all buckets (eliminates N+1)
 		const diskQuery = this.pool.query(
 			`SELECT
 				time_bucket($1::interval, d.check_created_at) AS bucket_date,
@@ -793,7 +788,6 @@ export class TimescaleChecksRepository implements IChecksRepository {
 			[bucket, monitorId, startDate, endDate]
 		);
 
-		// Run all 5 queries in parallel
 		const [totalResult, upResult, metricsResult, tempResult, diskResult, netResult] = await Promise.all([
 			this.pool.query(
 				`SELECT COUNT(*)::int AS count FROM checks
