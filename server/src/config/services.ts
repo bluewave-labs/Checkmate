@@ -126,6 +126,7 @@ import {
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
 import TimescaleDB from "@/db/TimescaleDB.js";
+import { AppError } from "@/utils/AppError.js";
 
 export type InitializedServices = {
 	settingsService: ISettingsService;
@@ -175,25 +176,18 @@ export const initializeServices = async ({
 }): Promise<InitializedServices> => {
 	// Create DB
 
-	let dbType = "mongodb";
-	const connectionString = envSettings.dbConnectionString;
-
-	if (connectionString.startsWith("mongodb")) {
-		dbType = "mongodb";
-	} else if (connectionString.startsWith("postgresql")) {
-		dbType = "postgresql";
-	}
+	const dbType = envSettings.dbType;
 
 	let db: IDb | null = null;
 
 	if (dbType === "mongodb") {
 		db = new MongoDB(logger, envSettings);
-	} else if (dbType === "postgresql") {
+	} else if (dbType === "timescaledb") {
 		db = new TimescaleDB(logger, envSettings);
 	}
 
 	if (!db) {
-		throw new Error("Unsupported database type");
+		throw new AppError({ message: "Unsupported database type", status: 500 });
 	}
 
 	await db.connect();

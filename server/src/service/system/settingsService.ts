@@ -1,5 +1,5 @@
 import { ISettingsRepository } from "@/repositories/index.js";
-import { Settings, SettingsUpdate } from "@/types/index.js";
+import { type DbType, Settings, SettingsUpdate } from "@/types/index.js";
 import { AppError } from "@/utils/AppError.js";
 import { ValidatedEnv } from "@/validation/envValidation.js";
 import type { StringValue } from "ms";
@@ -12,6 +12,7 @@ export type EnvConfig = {
 	logLevel: string;
 	clientHost: string;
 	dbConnectionString: string;
+	dbType: DbType;
 };
 
 export interface ISettingsService {
@@ -35,6 +36,7 @@ export class SettingsService implements ISettingsService {
 			logLevel: env.LOG_LEVEL,
 			clientHost: env.CLIENT_HOST,
 			dbConnectionString: env.DB_CONNECTION_STRING,
+			dbType: env.DB_TYPE,
 		};
 	}
 

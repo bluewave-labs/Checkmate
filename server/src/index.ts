@@ -1,8 +1,8 @@
 import { initializeServices } from "./config/services.js";
 import { initializeControllers } from "./config/controllers.js";
 import { createApp } from "./app.js";
-import { initShutdownListener } from "./shutdown.js";
-import { validateEnv } from "./validation/envValidation.js";
+import { initShutdownListener } from "@/shutdown.js";
+import { validateEnv } from "@/validation/envValidation.js";
 import { fileURLToPath } from "url";
 import path from "path";
 import fs from "fs";
