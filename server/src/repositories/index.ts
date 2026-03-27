@@ -36,3 +36,6 @@ export { default as MongoMaintenanceWindowsRepository } from "@/repositories/mai
 
 export * from "@/repositories/geo-checks/IGeoChecksRepository.js";
 export { default as MongoGeoChecksRepository } from "@/repositories/geo-checks/MongoGeoChecksRepository.js";
+
+export * from "@/repositories/dlq/IDLQRepository.js";
+export { default as MongoDLQRepository } from "@/repositories/dlq/MongoDLQRepository.js";
