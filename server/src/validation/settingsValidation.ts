@@ -20,6 +20,7 @@ export const updateAppSettingsBodyValidation = z
 		systemEmailTLSServername: z.string().nullable().optional(),
 
 		showURL: z.boolean().optional(),
+		defaultUserAgent: z.string().max(500).nullable().optional(),
 		systemEmailSecure: z.boolean().optional(),
 		systemEmailPool: z.boolean().optional(),
 		systemEmailIgnoreTLS: z.boolean().optional(),

@@ -12,6 +12,11 @@ export const settingsSchema = z.object({
 	systemEmailSecure: z.boolean().optional(),
 	systemEmailPool: z.boolean().optional(),
 	showURL: z.boolean().optional(),
+	defaultUserAgent: z
+		.string()
+		.max(500)
+		.transform((val) => (val.trim() === "" ? null : val.trim()))
+		.optional(),
 	checkTTL: z
 		.number()
 		.int()

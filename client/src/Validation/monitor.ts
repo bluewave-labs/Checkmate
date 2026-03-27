@@ -38,6 +38,7 @@ const httpSchema = baseSchema.extend({
 	matchMethod: z.enum(["equal", "include", "regex", ""]).optional(),
 	expectedValue: z.string().optional(),
 	jsonPath: z.string().optional(),
+	customUserAgent: z.string().max(500).optional(),
 });
 
 // Ping monitor schema

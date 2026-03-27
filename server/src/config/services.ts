@@ -248,7 +248,7 @@ export const initializeServices = async ({
 
 	// Network providers
 	const pingProvider = new PingProvider(ping);
-	const httpProvider = new HttpProvider(got, new AdvancedMatcher(jmespath));
+	const httpProvider = new HttpProvider(got, new AdvancedMatcher(jmespath), settingsService);
 	const pageSpeedProvider = new PageSpeedProvider(httpProvider, settingsService, logger);
 	const hardwareProvider = new HardwareProvider(httpProvider);
 	const dockerProvider = new DockerProvider(logger, Docker);

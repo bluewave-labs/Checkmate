@@ -797,6 +797,31 @@ const CreateMonitorPage = () => {
 
 			{watchedType === "http" && (
 				<ConfigBox
+					title={t("pages.createMonitor.form.userAgent.title")}
+					subtitle={t("pages.createMonitor.form.userAgent.description")}
+					rightContent={
+						<Controller
+							name="customUserAgent"
+							control={control}
+							render={({ field, fieldState }) => (
+								<TextField
+									{...field}
+									value={field.value ?? ""}
+									type="text"
+									fieldLabel={t("pages.createMonitor.form.userAgent.option.label")}
+									placeholder={t("pages.createMonitor.form.userAgent.option.placeholder")}
+									fullWidth
+									error={!!fieldState.error}
+									helperText={fieldState.error?.message ?? ""}
+								/>
+							)}
+						/>
+					}
+				/>
+			)}
+
+			{watchedType === "http" && (
+				<ConfigBox
 					title={t("pages.createMonitor.form.advanced.title")}
 					subtitle={t("pages.createMonitor.form.advanced.description")}
 					rightContent={

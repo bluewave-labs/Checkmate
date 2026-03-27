@@ -36,6 +36,7 @@ const AppSettingsSchema = new Schema<AppSettingsDocument>(
 		systemEmailRequireTLS: { type: Boolean, default: false },
 		systemEmailRejectUnauthorized: { type: Boolean, default: true },
 		showURL: { type: Boolean, default: false },
+		defaultUserAgent: { type: String },
 		singleton: { type: Boolean, required: true, unique: true, default: true },
 		version: { type: Number, default: 1 },
 		globalThresholds: { type: thresholdsSchema },

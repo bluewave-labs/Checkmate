@@ -31,6 +31,7 @@ export interface Settings {
 	systemEmailRequireTLS: boolean;
 	systemEmailRejectUnauthorized: boolean;
 	showURL: boolean;
+	defaultUserAgent?: string;
 	singleton: boolean;
 	version: number;
 	globalThresholds?: SettingsThresholds;
