@@ -951,6 +951,14 @@
 					"description": "Select the type of notification channel to create.",
 					"optionType": "Type",
 					"title": "Channel type"
+				},
+				"telegram": {
+					"title": "Telegram configuration",
+					"description": "Configure your Telegram bot to send notifications.",
+					"optionBotToken": "Bot token",
+					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
+					"optionChatId": "Chat ID",
+					"placeholderChatId": "-1001234567890"
 				}
 			},
 			"table": {

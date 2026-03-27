@@ -50,6 +50,12 @@ const teamsSchema = baseSchema.extend({
 	address: z.string().min(1, "Webhook URL is required").url("Please enter a valid URL"),
 });
 
+const telegramSchema = baseSchema.extend({
+	type: z.literal("telegram"),
+	address: z.string().min(1, "Chat ID is required"),
+	accessToken: z.string().min(1, "Bot token is required"),
+});
+
 export const notificationSchema = z.discriminatedUnion("type", [
 	emailSchema,
 	slackSchema,
@@ -58,6 +64,7 @@ export const notificationSchema = z.discriminatedUnion("type", [
 	pagerDutySchema,
 	matrixSchema,
 	teamsSchema,
+	telegramSchema,
 ]);
 
 export type NotificationFormData = z.infer<typeof notificationSchema>;
