@@ -26,16 +26,6 @@ class GeoCheckController implements IGeoCheckController {
 			const validatedParams = getChecksParamValidation.parse(req.params);
 			const validatedQuery = getChecksQueryValidation.parse(req.query);
 
-			if (!validatedQuery.continent || validatedQuery.continent.length === 0) {
-				throw new AppError({
-					message: "At least one continent must be specified",
-					service: SERVICE_NAME,
-					method: "getGeoChecksByMonitor",
-					details: { monitorId: validatedParams.monitorId },
-					status: 400,
-				});
-			}
-
 			const teamId = requireTeamId(req.user?.teamId);
 
 			const result = await this.geoChecksService.getGeoChecksByMonitor({

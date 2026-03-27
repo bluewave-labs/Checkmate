@@ -7,7 +7,7 @@ import { booleanCoercion } from "./shared.js";
 
 export const getIncidentsByTeamQueryValidation = z.object({
 	sortOrder: z.enum(["asc", "desc"]),
-	dateRange: z.enum(["recent", "hour", "day", "week", "month", "all"]),
+	dateRange: z.enum(["recent", "hour", "day", "week", "month", "all"]).default("all"),
 	page: z.coerce.number().int().min(0),
 	rowsPerPage: z.coerce.number().int().min(1),
 	status: booleanCoercion.optional(),

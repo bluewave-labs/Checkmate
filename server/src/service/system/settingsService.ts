@@ -1,5 +1,5 @@
 import { ISettingsRepository } from "@/repositories/index.js";
-import { Settings, SettingsUpdate } from "@/types/index.js";
+import { type DbType, Settings, SettingsUpdate } from "@/types/index.js";
 import { AppError } from "@/utils/AppError.js";
 import { ValidatedEnv } from "@/validation/envValidation.js";
 import type { StringValue } from "ms";
@@ -12,6 +12,7 @@ export type EnvConfig = {
 	logLevel: string;
 	clientHost: string;
 	dbConnectionString: string;
+	dbType: DbType;
 };
 
 export interface ISettingsService {
@@ -25,10 +26,9 @@ export interface ISettingsService {
 export class SettingsService implements ISettingsService {
 	static SERVICE_NAME = SERVICE_NAME;
 	private settings: EnvConfig;
-	private settingsRepository: ISettingsRepository;
+	private settingsRepository: ISettingsRepository | null = null;
 
-	constructor(settingsRepository: ISettingsRepository, env: ValidatedEnv) {
-		this.settingsRepository = settingsRepository;
+	constructor(env: ValidatedEnv) {
 		this.settings = {
 			jwtSecret: env.JWT_SECRET,
 			jwtTTL: env.TOKEN_TTL as StringValue,
@@ -36,7 +36,12 @@ export class SettingsService implements ISettingsService {
 			logLevel: env.LOG_LEVEL,
 			clientHost: env.CLIENT_HOST,
 			dbConnectionString: env.DB_CONNECTION_STRING,
+			dbType: env.DB_TYPE,
 		};
+	}
+
+	setRepository(settingsRepository: ISettingsRepository) {
+		this.settingsRepository = settingsRepository;
 	}
 
 	get serviceName() {
@@ -54,18 +59,30 @@ export class SettingsService implements ISettingsService {
 		return this.settings;
 	}
 
+	private getRepository(): ISettingsRepository {
+		if (!this.settingsRepository) {
+			throw new AppError({
+				message: "Settings repository not initialized. Call setRepository() after DB connect.",
+				status: 500,
+				service: SERVICE_NAME,
+			});
+		}
+		return this.settingsRepository;
+	}
+
 	updateDbSettings = async (newSettings: SettingsUpdate) => {
-		return await this.settingsRepository.update(newSettings);
+		return await this.getRepository().update(newSettings);
 	};
 
 	getDBSettings = async () => {
+		const repo = this.getRepository();
 		// Remove any old settings
-		await this.settingsRepository.deleteLegacy();
+		await repo.deleteLegacy();
 
-		let settings = await this.settingsRepository.findSingleton();
+		let settings = await repo.findSingleton();
 		if (settings === null) {
-			await this.settingsRepository.create({});
-			settings = await this.settingsRepository.findSingleton();
+			await repo.create({});
+			settings = await repo.findSingleton();
 		}
 
 		if (!settings) {
