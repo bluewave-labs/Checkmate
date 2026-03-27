@@ -198,7 +198,6 @@ const NotificationsCreatePage = () => {
 							<Controller
 								name="address"
 								control={control}
-								defaultValue={"address" in defaults ? defaults.address : ""}
 								render={({ field, fieldState }) => (
 									<TextField
 										{...field}

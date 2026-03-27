@@ -105,7 +105,7 @@ export class TelegramProvider implements INotificationProvider {
 
 		if (message.content.incident) {
 			lines.push("");
-			lines.push(`<a href="${message.clientHost}/infrastructure/${message.monitor.id}">View Incident</a>`);
+			lines.push(`<a href="${message.clientHost}/incidents/${message.monitor.id}">View Incident</a>`);
 		}
 
 		return lines.join("\n");
