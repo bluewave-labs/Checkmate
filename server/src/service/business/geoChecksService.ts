@@ -20,7 +20,7 @@ export interface IGeoChecksService {
 		dateRange: string;
 		page?: number;
 		rowsPerPage?: number;
-		continent: GeoContinent | GeoContinent[];
+		continent?: GeoContinent | GeoContinent[];
 	}): Promise<FlatGeoChecksQueryResult>;
 }
 

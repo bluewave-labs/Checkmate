@@ -5,6 +5,7 @@ import { ILogger } from "@/utils/logger.js";
 import { EnvConfig } from "@/service/system/settingsService.js";
 const SERVICE_NAME = "MongoDB";
 import { IDb } from "@/db/IDb.js";
+import { Pool } from "pg";
 
 class MongoDB implements IDb {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -73,6 +74,10 @@ class MongoDB implements IDb {
 				stack: error instanceof Error ? error.stack : undefined,
 			});
 		}
+	};
+
+	getPool = () => {
+		return null;
 	};
 }
 

@@ -1,3 +1,6 @@
+export const DbTypes = ["timescaledb", "mongodb"] as const;
+export type DbType = (typeof DbTypes)[number];
+
 export interface SettingsThresholds {
 	cpu?: number;
 	memory?: number;
