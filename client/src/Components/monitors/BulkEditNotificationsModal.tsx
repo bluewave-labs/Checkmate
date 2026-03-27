@@ -135,7 +135,7 @@ export const BulkEditNotificationsModal: React.FC<BulkEditNotificationsModalProp
 							key={n.id}
 							value={n.id}
 						>
-							{n.name} ({n.type.toUpperCase()})
+							{n.notificationName} ({n.type.toUpperCase()})
 						</MenuItem>
 					))}
 				</Select>
