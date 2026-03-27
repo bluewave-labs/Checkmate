@@ -1,9 +1,10 @@
 import { ControlsFilter, HeaderMonitorsSummary } from "@/Components/monitors";
 import { MonitorBasePageWithStates } from "@/Components/design-elements";
-import { TextField, Dialog } from "@/Components/inputs";
+import { TextField, Dialog, Button } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
 import { MonitorTable } from "@/Pages/Uptime/Monitors/Components/UptimeMonitorsTable";
 import { HeaderCreate, FloatingActionBar } from "@/Components/common";
+import { BulkEditNotificationsModal } from "@/Components/monitors";
 
 import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -38,6 +39,7 @@ const UptimeMonitorsPage = () => {
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null); // For deletion
 	const [selectedMonitors, setSelectedMonitors] = useState<string[]>([]); // For bulk edit
+	const [isBulkEditModalOpen, setIsBulkEditModalOpen] = useState(false);
 	const isDialogOpen = Boolean(selectedMonitor);
 
 	const debouncedSearch = useDebounce<string>(search, 300);
@@ -135,6 +137,12 @@ const UptimeMonitorsPage = () => {
 		refetch();
 	};
 
+	const handleBulkEditSuccess = () => {
+		setIsBulkEditModalOpen(false);
+		setSelectedMonitors([]);
+		refetch();
+	};
+
 	const handleCancel = () => {
 		setSelectedMonitor(null);
 	};
@@ -228,8 +236,23 @@ const UptimeMonitorsPage = () => {
 				selectedCount={selectedMonitors.length}
 				onClearSelection={handleClearSelection}
 			>
-				{/* The Assign Notifications button will go here */}
+				<Button
+					variant="contained"
+					color="primary"
+					onClick={() => setIsBulkEditModalOpen(true)}
+				>
+					{t("pages.common.monitors.bulkEdit.editButton", {
+						defaultValue: "Edit Notifications",
+					})}
+				</Button>
 			</FloatingActionBar>
+
+			<BulkEditNotificationsModal
+				open={isBulkEditModalOpen}
+				onClose={() => setIsBulkEditModalOpen(false)}
+				selectedMonitors={selectedMonitors}
+				onSuccess={handleBulkEditSuccess}
+			/>
 		</MonitorBasePageWithStates>
 	);
 };
