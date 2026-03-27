@@ -1,16 +1,13 @@
 import { Schema, model, type Types } from "mongoose";
 import { DLQItemTypes, DLQItemStatuses, type DLQItem } from "@/types/dlqItem.js";
 
-type DLQItemDocumentBase = Omit<DLQItem, "id" | "monitorId" | "teamId" | "nextRetryAt" | "createdAt" | "updatedAt"> & {
+export interface DLQItemDocument extends Omit<DLQItem, "id" | "monitorId" | "teamId" | "nextRetryAt" | "createdAt" | "updatedAt"> {
+	_id: Types.ObjectId;
 	monitorId: Types.ObjectId;
 	teamId: Types.ObjectId;
 	nextRetryAt: Date;
 	createdAt: Date;
 	updatedAt: Date;
-};
-
-export interface DLQItemDocument extends DLQItemDocumentBase {
-	_id: Types.ObjectId;
 }
 
 const DLQItemSchema = new Schema<DLQItemDocument>(
