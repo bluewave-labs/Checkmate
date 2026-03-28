@@ -200,6 +200,7 @@ const UptimeMonitorsPage = () => {
 				/>
 			</Stack>
 			<MonitorTable
+				page={page}
 				monitors={monitorsWithChecks || []}
 				refetch={refetch}
 				setSelectedMonitor={setSelectedMonitor}
