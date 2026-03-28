@@ -14,6 +14,7 @@ import { ArrowDown, ArrowUp } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { useNavigate } from "react-router-dom";
 import { usePost } from "@/Hooks/UseApi";
 import { useSelector } from "react-redux";
@@ -44,9 +45,6 @@ export const MonitorTable = ({
 	monitors,
 	refetch,
 	setSelectedMonitor,
-	selectedMonitors,
-	onSelectMonitor,
-	onSelectAll,
 	sortField,
 	setSortField,
 	sortOrder,
@@ -61,6 +59,7 @@ export const MonitorTable = ({
 }: MonitorTableProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
+	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const navigate = useNavigate();
 	const chartType = useSelector((state: RootState) => state.ui?.chartType ?? "histogram");
 	const { post } = usePost<Record<string, never>, Monitor>();

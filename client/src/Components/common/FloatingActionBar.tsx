@@ -7,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import Slide from "@mui/material/Slide";
 import { X } from "lucide-react";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface FloatingActionBarProps {
 	selectedCount: number;
@@ -34,31 +35,32 @@ export const FloatingActionBar: React.FC<FloatingActionBarProps> = ({
 				elevation={6}
 				sx={{
 					position: "fixed",
-					bottom: theme.spacing(4),
+					bottom: theme.spacing(LAYOUT.XS),
 					left: "50%",
 					transform: "translateX(-50%)",
 					zIndex: theme.zIndex.snackbar,
-					padding: theme.spacing(1.5, 3),
+					px: LAYOUT.MD,
+					py: LAYOUT.XS,
 					borderRadius: theme.shape.borderRadius,
 					backgroundColor: theme.palette.background.paper,
 					border: `1px solid ${theme.palette.divider}`,
 					display: "flex",
 					alignItems: "center",
-					gap: theme.spacing(4),
+					gap: LAYOUT.XS,
 					boxShadow: theme.shadows[8],
 				}}
 			>
 				<Stack
 					direction="row"
 					alignItems="center"
-					gap={theme.spacing(1)}
+					gap={LAYOUT.XS}
 				>
 					<Typography
 						variant="body1"
 						fontWeight={600}
 						color={theme.palette.text.primary}
 					>
-						{selectedCount} {t("common.selected", { defaultValue: "selected" })}
+						{selectedCount} {t("common.selected")}
 					</Typography>
 					<IconButton
 						size="small"
@@ -73,7 +75,7 @@ export const FloatingActionBar: React.FC<FloatingActionBarProps> = ({
 					<Stack
 						direction="row"
 						alignItems="center"
-						gap={theme.spacing(2)}
+						gap={LAYOUT.XS}
 					>
 						{children}
 					</Stack>

@@ -236,8 +236,10 @@ const UptimeMonitorsPage = () => {
 				refetch={refetch}
 				setSelectedMonitor={setSelectedMonitor}
 				count={count || 0}
-				page={page}
-				setPage={setPage}
+				setPage={(newPage) => {
+					setPage(newPage);
+					setSelectedRows([]);
+				}}
 				rowsPerPage={rowsPerPage}
 				sortField={sortField}
 				setSortField={setSortField}
@@ -251,6 +253,7 @@ const UptimeMonitorsPage = () => {
 						})
 					);
 					setPage(0);
+					setSelectedRows([]);
 				}}
 				selectedRows={selectedRows}
 				onSelectionChange={setSelectedRows}
@@ -263,6 +266,7 @@ const UptimeMonitorsPage = () => {
 				onCancel={handleCancel}
 				loading={isDeleting}
 			/>
+
 			<BulkEditNotificationsModal
 				open={isBulkEditModalOpen}
 				onClose={() => setIsBulkEditModalOpen(false)}
