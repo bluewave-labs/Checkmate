@@ -6,6 +6,7 @@ import Stack from "@mui/material/Stack";
 import RadioGroup from "@mui/material/RadioGroup";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
+import Alert from "@mui/material/Alert";
 import { useGet, usePatch } from "@/Hooks/UseApi";
 import type { Notification } from "@/Types/Notification";
 
@@ -37,7 +38,7 @@ export const BulkEditNotificationsModal: React.FC<BulkEditNotificationsModalProp
 		}
 	);
 
-	const { patch, loading: isPatching } = usePatch();
+	const { patch, loading: isPatching, error } = usePatch();
 
 	// Reset state when modal opens
 	useEffect(() => {
@@ -65,9 +66,7 @@ export const BulkEditNotificationsModal: React.FC<BulkEditNotificationsModalProp
 	return (
 		<Dialog
 			open={open}
-			title={t("pages.common.monitors.bulkEdit.title", {
-				defaultValue: "Edit Notifications",
-			})}
+			title={t("pages.common.monitors.bulkEdit.title")}
 			onCancel={onClose}
 			onConfirm={isMissingSelection ? undefined : handleConfirm}
 			loading={isPatching}
@@ -78,10 +77,10 @@ export const BulkEditNotificationsModal: React.FC<BulkEditNotificationsModalProp
 				spacing={theme.spacing(4)}
 				mt={theme.spacing(2)}
 			>
+				{error && <Alert severity="error">{error}</Alert>}
 				<Typography variant="body1">
 					{t("pages.common.monitors.bulkEdit.selectedText", {
 						count: selectedMonitors.length,
-						defaultValue: `You are applying changes to {{count}} monitor(s).`,
 					})}
 				</Typography>
 
@@ -91,31 +90,18 @@ export const BulkEditNotificationsModal: React.FC<BulkEditNotificationsModalProp
 				>
 					<RadioWithDescription
 						value="add"
-						label={t("pages.common.monitors.bulkEdit.actionAdd", { defaultValue: "Add" })}
-						description={t("pages.common.monitors.bulkEdit.actionAddDesc", {
-							defaultValue:
-								"Adds the selected notifications to these monitors without removing existing ones.",
-						})}
+						label={t("pages.common.monitors.bulkEdit.actionAdd")}
+						description={t("pages.common.monitors.bulkEdit.actionAddDesc")}
 					/>
 					<RadioWithDescription
 						value="remove"
-						label={t("pages.common.monitors.bulkEdit.actionRemove", {
-							defaultValue: "Remove",
-						})}
-						description={t("pages.common.monitors.bulkEdit.actionRemoveDesc", {
-							defaultValue:
-								"Removes exclusively the selected notifications from these monitors.",
-						})}
+						label={t("pages.common.monitors.bulkEdit.actionRemove")}
+						description={t("pages.common.monitors.bulkEdit.actionRemoveDesc")}
 					/>
 					<RadioWithDescription
 						value="set"
-						label={t("pages.common.monitors.bulkEdit.actionSet", {
-							defaultValue: "Replace all",
-						})}
-						description={t("pages.common.monitors.bulkEdit.actionSetDesc", {
-							defaultValue:
-								"Replaces all existing notifications. Leave empty to clear all notifications.",
-						})}
+						label={t("pages.common.monitors.bulkEdit.actionSet")}
+						description={t("pages.common.monitors.bulkEdit.actionSetDesc")}
 					/>
 				</RadioGroup>
 
@@ -123,12 +109,8 @@ export const BulkEditNotificationsModal: React.FC<BulkEditNotificationsModalProp
 					multiple
 					value={notificationIds}
 					onChange={(e) => setNotificationIds(e.target.value as string[])}
-					fieldLabel={t("pages.common.monitors.bulkEdit.selectLabel", {
-						defaultValue: "Notification Channels",
-					})}
-					placeholder={t("pages.common.monitors.bulkEdit.selectPlaceholder", {
-						defaultValue: "Select channels...",
-					})}
+					fieldLabel={t("pages.common.monitors.bulkEdit.selectLabel")}
+					placeholder={t("pages.common.monitors.bulkEdit.selectPlaceholder")}
 				>
 					{notifications?.map((n) => (
 						<MenuItem

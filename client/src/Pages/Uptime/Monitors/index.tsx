@@ -207,8 +207,10 @@ const UptimeMonitorsPage = () => {
 				onSelectMonitor={handleSelectMonitor}
 				onSelectAll={handleSelectAll}
 				count={count || 0}
-				page={page}
-				setPage={setPage}
+				setPage={(newPage) => {
+					setPage(newPage);
+					handleClearSelection();
+				}}
 				rowsPerPage={rowsPerPage}
 				sortField={sortField}
 				setSortField={setSortField}
@@ -222,6 +224,7 @@ const UptimeMonitorsPage = () => {
 						})
 					);
 					setPage(0);
+					handleClearSelection();
 				}}
 			/>
 			<Dialog
@@ -241,9 +244,7 @@ const UptimeMonitorsPage = () => {
 					color="primary"
 					onClick={() => setIsBulkEditModalOpen(true)}
 				>
-					{t("pages.common.monitors.bulkEdit.editButton", {
-						defaultValue: "Edit Notifications",
-					})}
+					{t("pages.common.monitors.bulkEdit.editButton")}
 				</Button>
 			</FloatingActionBar>
 

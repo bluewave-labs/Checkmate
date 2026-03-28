@@ -14,6 +14,7 @@ import { ArrowDown, ArrowUp } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { useNavigate } from "react-router-dom";
 import { usePost } from "@/Hooks/UseApi";
 import { useSelector } from "react-redux";
@@ -57,6 +58,7 @@ export const MonitorTable = ({
 }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
+	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const navigate = useNavigate();
 	const chartType = useSelector((state: RootState) => state.ui?.chartType ?? "histogram");
 	const {
@@ -160,7 +162,9 @@ export const MonitorTable = ({
 		const headers: Header<Monitor>[] = [
 			{
 				id: "select",
-				content: (
+				content: isSmall ? (
+					t("common.selected")
+				) : (
 					<Checkbox
 						checked={monitors.length > 0 && selectedMonitors.length === monitors.length}
 						indeterminate={
