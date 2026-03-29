@@ -1104,5 +1104,41 @@
 	"packetsReceivedRate": "",
 	"packetsSent": "",
 	"rate": "",
-	"selectInterface": ""
+	"selectInterface": "",
+	"pages": {
+		"auth": {
+			"common": {
+				"form": {
+					"option": {
+						"email": { "label": "Correo electrónico", "placeholder": "me@example.com" },
+						"password": { "label": "Contraseña", "placeholder": "********" },
+						"confirmPassword": { "label": "Confirmar contraseña" }
+					}
+				}
+			},
+			"login": {
+				"title": "¡Bienvenido de nuevo a Checkmate!",
+				"subtitle": "Inicia sesión para continuar",
+				"submit": "Iniciar sesión",
+				"links": {
+					"forgotPassword": {
+						"text": "¿Olvidaste tu contraseña?",
+						"linkText": "Restablecer contraseña"
+					},
+					"register": { "text": "¿No tienes cuenta?", "linkText": "Regístrate aquí" }
+				}
+			},
+			"forgotPassword": {
+				"title": "¿Olvidaste tu contraseña?",
+				"subtitle": "No te preocupes, te enviaremos instrucciones para restablecerla.",
+				"submit": "Solicitar recuperación",
+				"links": { "login": { "text": "Volver a", "linkText": "iniciar sesión" } }
+			},
+			"register": {
+				"title": "¡Bienvenido a Checkmate!",
+				"subtitle": "Regístrate para comenzar",
+				"submit": "Registrarse"
+			}
+		}
+	}
 }

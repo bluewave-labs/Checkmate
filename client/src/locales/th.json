@@ -1136,5 +1136,38 @@
 			"disk_selection_info": "ไม่พบดิสก์ในขณะนี้",
 			"disk_selection_description": "เลือกดิสก์ที่คุณต้องการตรวจสอบ"
 		}
+	},
+	"pages": {
+		"auth": {
+			"common": {
+				"form": {
+					"option": {
+						"email": { "label": "อีเมล", "placeholder": "me@example.com" },
+						"password": { "label": "รหัสผ่าน", "placeholder": "********" },
+						"confirmPassword": { "label": "ยืนยันรหัสผ่าน" }
+					}
+				}
+			},
+			"login": {
+				"title": "ยินดีต้อนรับกลับสู่ Checkmate!",
+				"subtitle": "เข้าสู่ระบบเพื่อดำเนินการต่อ",
+				"submit": "เข้าสู่ระบบ",
+				"links": {
+					"forgotPassword": { "text": "ลืมรหัสผ่าน?", "linkText": "รีเซ็ตรหัสผ่าน" },
+					"register": { "text": "ยังไม่มีบัญชี?", "linkText": "สมัครสมาชิกที่นี่" }
+				}
+			},
+			"forgotPassword": {
+				"title": "ลืมรหัสผ่าน?",
+				"subtitle": "ไม่ต้องกังวล เราจะส่งคำแนะนำในการรีเซ็ตให้คุณ",
+				"submit": "ขอการกู้คืน",
+				"links": { "login": { "text": "กลับไป", "linkText": "เข้าสู่ระบบ" } }
+			},
+			"register": {
+				"title": "ยินดีต้อนรับสู่ Checkmate!",
+				"subtitle": "สมัครสมาชิกเพื่อเริ่มต้น",
+				"submit": "สมัครสมาชิก"
+			}
+		}
 	}
 }

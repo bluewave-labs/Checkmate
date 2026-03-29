@@ -834,5 +834,38 @@
 			"selectEnabled": "",
 			"title": ""
 		}
+	},
+	"pages": {
+		"auth": {
+			"common": {
+				"form": {
+					"option": {
+						"email": { "label": "Email", "placeholder": "me@example.com" },
+						"password": { "label": "Mật khẩu", "placeholder": "********" },
+						"confirmPassword": { "label": "Xác nhận mật khẩu" }
+					}
+				}
+			},
+			"login": {
+				"title": "Chào mừng trở lại Checkmate!",
+				"subtitle": "Đăng nhập để tiếp tục",
+				"submit": "Đăng nhập",
+				"links": {
+					"forgotPassword": { "text": "Quên mật khẩu?", "linkText": "Đặt lại mật khẩu" },
+					"register": { "text": "Chưa có tài khoản?", "linkText": "Đăng ký tại đây" }
+				}
+			},
+			"forgotPassword": {
+				"title": "Quên mật khẩu?",
+				"subtitle": "Đừng lo, chúng tôi sẽ gửi hướng dẫn đặt lại cho bạn.",
+				"submit": "Yêu cầu khôi phục",
+				"links": { "login": { "text": "Quay lại", "linkText": "đăng nhập" } }
+			},
+			"register": {
+				"title": "Chào mừng đến với Checkmate!",
+				"subtitle": "Đăng ký để bắt đầu",
+				"submit": "Đăng ký"
+			}
+		}
 	}
 }

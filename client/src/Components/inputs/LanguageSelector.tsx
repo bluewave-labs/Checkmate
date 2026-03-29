@@ -26,6 +26,7 @@ export const LanguageSelector = () => {
 	const handleChange = (event: any) => {
 		const newLang = event.target.value;
 		dispatch(setLanguage(newLang));
+		i18n.changeLanguage(newLang); // ← added this line to change the language in i18n as well
 	};
 
 	const languages = Object.keys(i18n.options.resources || {});

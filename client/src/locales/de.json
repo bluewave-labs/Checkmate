@@ -1136,5 +1136,41 @@
 			"disk_selection_info": "Momentan wurde keine Festplatte erkannt.",
 			"disk_selection_description": "Wählen Sie die spezifischen Festplatten aus, die Sie überwachen möchten."
 		}
+	},
+	"pages": {
+		"auth": {
+			"common": {
+				"form": {
+					"option": {
+						"email": { "label": "Email", "placeholder": "me@example.com" },
+						"password": { "label": "Passwort", "placeholder": "********" },
+						"confirmPassword": { "label": "Passwort bestätigen" }
+					}
+				}
+			},
+			"login": {
+				"title": "Willkommen zurück bei Checkmate!",
+				"subtitle": "Einloggen um fortzufahren",
+				"submit": "Anmelden",
+				"links": {
+					"forgotPassword": {
+						"text": "Passwort vergessen?",
+						"linkText": "Passwort zurücksetzen"
+					},
+					"register": { "text": "Noch keinen Account?", "linkText": "Hier registrieren" }
+				}
+			},
+			"forgotPassword": {
+				"title": "Passwort vergessen?",
+				"subtitle": "Kein Problem, wir senden Ihnen Anweisungen zum Zurücksetzen.",
+				"submit": "Wiederherstellung anfordern",
+				"links": { "login": { "text": "Zurück zur", "linkText": "Anmeldung" } }
+			},
+			"register": {
+				"title": "Willkommen bei Checkmate!",
+				"subtitle": "Registrieren Sie sich um zu beginnen",
+				"submit": "Registrieren"
+			}
+		}
 	}
 }

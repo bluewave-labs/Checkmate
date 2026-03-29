@@ -1136,5 +1136,44 @@
 			"disk_selection_info": "Aucun disque détecté pour le moment.",
 			"disk_selection_description": "Sélectionnez les disques spécifiques que vous souhaitez surveiller."
 		}
+	},
+	"pages": {
+		"auth": {
+			"common": {
+				"form": {
+					"option": {
+						"email": { "label": "Email", "placeholder": "me@example.com" },
+						"password": { "label": "Mot de passe", "placeholder": "********" },
+						"confirmPassword": { "label": "Confirmer le mot de passe" }
+					}
+				}
+			},
+			"login": {
+				"title": "Bon retour sur Checkmate !",
+				"subtitle": "Connectez-vous pour continuer",
+				"submit": "Connexion",
+				"links": {
+					"forgotPassword": {
+						"text": "Mot de passe oublié ?",
+						"linkText": "Réinitialiser le mot de passe"
+					},
+					"register": {
+						"text": "Pas encore de compte ?",
+						"linkText": "Inscrivez-vous ici"
+					}
+				}
+			},
+			"forgotPassword": {
+				"title": "Mot de passe oublié ?",
+				"subtitle": "Pas d'inquiétude, nous allons vous envoyer des instructions pour réinitialiser votre mot de passe.",
+				"submit": "Demander une récupération",
+				"links": { "login": { "text": "Retourner à la", "linkText": "connexion" } }
+			},
+			"register": {
+				"title": "Bienvenue sur Checkmate !",
+				"subtitle": "Inscrivez-vous pour commencer",
+				"submit": "S'inscrire"
+			}
+		}
 	}
 }

@@ -1108,5 +1108,38 @@
 	"packetsReceivedRate": "",
 	"packetsSent": "",
 	"rate": "",
-	"selectInterface": ""
+	"selectInterface": "",
+	"pages": {
+		"auth": {
+			"common": {
+				"form": {
+					"option": {
+						"email": { "label": "電子郵件", "placeholder": "me@example.com" },
+						"password": { "label": "密碼", "placeholder": "********" },
+						"confirmPassword": { "label": "確認密碼" }
+					}
+				}
+			},
+			"login": {
+				"title": "歡迎回到 Checkmate！",
+				"subtitle": "登入以繼續",
+				"submit": "登入",
+				"links": {
+					"forgotPassword": { "text": "忘記密碼？", "linkText": "重設密碼" },
+					"register": { "text": "還沒有帳號？", "linkText": "在此註冊" }
+				}
+			},
+			"forgotPassword": {
+				"title": "忘記密碼？",
+				"subtitle": "別擔心，我們會發送重設說明給您。",
+				"submit": "請求恢復",
+				"links": { "login": { "text": "返回", "linkText": "登入" } }
+			},
+			"register": {
+				"title": "歡迎來到 Checkmate！",
+				"subtitle": "註冊以開始使用",
+				"submit": "註冊"
+			}
+		}
+	}
 }

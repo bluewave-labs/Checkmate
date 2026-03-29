@@ -1136,5 +1136,38 @@
 			"disk_selection_info": "На данный момент диск не обнаружен.",
 			"disk_selection_description": "Выберите конкретные диски, которые вы хотите отслеживать."
 		}
+	},
+	"pages": {
+		"auth": {
+			"common": {
+				"form": {
+					"option": {
+						"email": { "label": "Электронная почта", "placeholder": "me@example.com" },
+						"password": { "label": "Пароль", "placeholder": "********" },
+						"confirmPassword": { "label": "Подтвердите пароль" }
+					}
+				}
+			},
+			"login": {
+				"title": "Добро пожаловать обратно в Checkmate!",
+				"subtitle": "Войдите, чтобы продолжить",
+				"submit": "Войти",
+				"links": {
+					"forgotPassword": { "text": "Забыли пароль?", "linkText": "Сбросить пароль" },
+					"register": { "text": "Нет аккаунта?", "linkText": "Зарегистрируйтесь здесь" }
+				}
+			},
+			"forgotPassword": {
+				"title": "Забыли пароль?",
+				"subtitle": "Не волнуйтесь, мы вышлем вам инструкции для сброса.",
+				"submit": "Запросить восстановление",
+				"links": { "login": { "text": "Вернуться к", "linkText": "входу" } }
+			},
+			"register": {
+				"title": "Добро пожаловать в Checkmate!",
+				"subtitle": "Зарегистрируйтесь, чтобы начать",
+				"submit": "Зарегистрироваться"
+			}
+		}
 	}
 }

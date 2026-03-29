@@ -1115,5 +1115,44 @@
 			"disk_selection_info": "現在ディスクが検出されていません。",
 			"disk_selection_description": "監視したい特定のディスクを選択してください。"
 		}
+	},
+	"pages": {
+		"auth": {
+			"common": {
+				"form": {
+					"option": {
+						"email": { "label": "メール", "placeholder": "me@example.com" },
+						"password": { "label": "パスワード", "placeholder": "********" },
+						"confirmPassword": { "label": "パスワードの確認" }
+					}
+				}
+			},
+			"login": {
+				"title": "Checkmateへようこそ！",
+				"subtitle": "続けるにはログインしてください",
+				"submit": "ログイン",
+				"links": {
+					"forgotPassword": {
+						"text": "パスワードをお忘れですか？",
+						"linkText": "パスワードをリセット"
+					},
+					"register": {
+						"text": "アカウントをお持ちでないですか？",
+						"linkText": "こちらで登録"
+					}
+				}
+			},
+			"forgotPassword": {
+				"title": "パスワードをお忘れですか？",
+				"subtitle": "ご心配なく、リセット手順をお送りします。",
+				"submit": "回復をリクエスト",
+				"links": { "login": { "text": "戻る", "linkText": "ログイン" } }
+			},
+			"register": {
+				"title": "Checkmateへようこそ！",
+				"subtitle": "登録して始めましょう",
+				"submit": "登録"
+			}
+		}
 	}
 }

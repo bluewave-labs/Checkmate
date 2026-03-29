@@ -1104,5 +1104,41 @@
 	"packetsReceivedRate": "",
 	"packetsSent": "",
 	"rate": "",
-	"selectInterface": ""
+	"selectInterface": "",
+	"pages": {
+		"auth": {
+			"common": {
+				"form": {
+					"option": {
+						"email": { "label": "البريد الإلكتروني", "placeholder": "me@example.com" },
+						"password": { "label": "كلمة المرور", "placeholder": "********" },
+						"confirmPassword": { "label": "تأكيد كلمة المرور" }
+					}
+				}
+			},
+			"login": {
+				"title": "مرحباً بعودتك إلى Checkmate!",
+				"subtitle": "سجّل الدخول للمتابعة",
+				"submit": "تسجيل الدخول",
+				"links": {
+					"forgotPassword": {
+						"text": "نسيت كلمة المرور؟",
+						"linkText": "إعادة تعيين كلمة المرور"
+					},
+					"register": { "text": "ليس لديك حساب؟", "linkText": "سجّل هنا" }
+				}
+			},
+			"forgotPassword": {
+				"title": "نسيت كلمة المرور؟",
+				"subtitle": "لا تقلق، سنرسل لك تعليمات إعادة التعيين.",
+				"submit": "طلب استرداد",
+				"links": { "login": { "text": "العودة إلى", "linkText": "تسجيل الدخول" } }
+			},
+			"register": {
+				"title": "مرحباً بك في Checkmate!",
+				"subtitle": "سجّل للبدء",
+				"submit": "تسجيل"
+			}
+		}
+	}
 }

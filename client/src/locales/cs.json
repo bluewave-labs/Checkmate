@@ -1104,5 +1104,41 @@
 	"packetsReceivedRate": "",
 	"packetsSent": "",
 	"rate": "",
-	"selectInterface": ""
+	"selectInterface": "",
+	"pages": {
+		"auth": {
+			"common": {
+				"form": {
+					"option": {
+						"email": { "label": "E-mail", "placeholder": "me@example.com" },
+						"password": { "label": "Heslo", "placeholder": "********" },
+						"confirmPassword": { "label": "Potvrzení hesla" }
+					}
+				}
+			},
+			"login": {
+				"title": "Vítejte zpět v Checkmate!",
+				"subtitle": "Přihlaste se pro pokračování",
+				"submit": "Přihlásit se",
+				"links": {
+					"forgotPassword": {
+						"text": "Zapomněli jste heslo?",
+						"linkText": "Obnovit heslo"
+					},
+					"register": { "text": "Ještě nemáte účet?", "linkText": "Zaregistrujte se zde" }
+				}
+			},
+			"forgotPassword": {
+				"title": "Zapomenuté heslo?",
+				"subtitle": "Nebojte se, zašleme vám pokyny pro obnovení hesla.",
+				"submit": "Požádat o obnovení",
+				"links": { "login": { "text": "Vrátit se na", "linkText": "přihlášení" } }
+			},
+			"register": {
+				"title": "Vítejte v Checkmate!",
+				"subtitle": "Zaregistrujte se a začněte",
+				"submit": "Registrovat"
+			}
+		}
+	}
 }

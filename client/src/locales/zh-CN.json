@@ -1128,5 +1128,38 @@
 			"disk_selection_info": "目前没有检测到磁盘。",
 			"disk_selection_description": "选择您要监控的特定磁盘。"
 		}
+	},
+	"pages": {
+		"auth": {
+			"common": {
+				"form": {
+					"option": {
+						"email": { "label": "电子邮件", "placeholder": "me@example.com" },
+						"password": { "label": "密码", "placeholder": "********" },
+						"confirmPassword": { "label": "确认密码" }
+					}
+				}
+			},
+			"login": {
+				"title": "欢迎回到 Checkmate！",
+				"subtitle": "登录以继续",
+				"submit": "登录",
+				"links": {
+					"forgotPassword": { "text": "忘记密码？", "linkText": "重置密码" },
+					"register": { "text": "没有账号？", "linkText": "在此注册" }
+				}
+			},
+			"forgotPassword": {
+				"title": "忘记密码？",
+				"subtitle": "别担心，我们会发送重置说明给您。",
+				"submit": "请求恢复",
+				"links": { "login": { "text": "返回", "linkText": "登录" } }
+			},
+			"register": {
+				"title": "欢迎来到 Checkmate！",
+				"subtitle": "注册以开始使用",
+				"submit": "注册"
+			}
+		}
 	}
 }

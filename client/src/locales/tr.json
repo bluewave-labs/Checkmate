@@ -1104,5 +1104,41 @@
 	"packetsReceivedRate": "",
 	"packetsSent": "",
 	"rate": "",
-	"selectInterface": ""
+	"selectInterface": "",
+	"pages": {
+		"auth": {
+			"common": {
+				"form": {
+					"option": {
+						"email": { "label": "Eposta", "placeholder": "me@example.com" },
+						"password": { "label": "Parola", "placeholder": "********" },
+						"confirmPassword": { "label": "Parolayı onayla" }
+					}
+				}
+			},
+			"login": {
+				"title": "Checkmate'e tekrar hoşgeldiniz!",
+				"subtitle": "Devam etmek için giriş yapın",
+				"submit": "Giriş yap",
+				"links": {
+					"forgotPassword": {
+						"text": "Parolanızı mı unuttunuz?",
+						"linkText": "Parolayı sıfırla"
+					},
+					"register": { "text": "Hesabınız yok mu?", "linkText": "Buradan kayıt olun" }
+				}
+			},
+			"forgotPassword": {
+				"title": "Parolanızı mı unuttunuz?",
+				"subtitle": "Endişelenmeyin, sıfırlama talimatları göndereceğiz.",
+				"submit": "Kurtarma talep et",
+				"links": { "login": { "text": "Geri dön", "linkText": "giriş" } }
+			},
+			"register": {
+				"title": "Checkmate'e hoşgeldiniz!",
+				"subtitle": "Başlamak için kayıt olun",
+				"submit": "Kayıt ol"
+			}
+		}
+	}
 }

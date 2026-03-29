@@ -834,5 +834,41 @@
 			"selectEnabled": "",
 			"title": ""
 		}
+	},
+	"pages": {
+		"auth": {
+			"common": {
+				"form": {
+					"option": {
+						"email": { "label": "Електронна пошта", "placeholder": "me@example.com" },
+						"password": { "label": "Пароль", "placeholder": "********" },
+						"confirmPassword": { "label": "Підтвердіть пароль" }
+					}
+				}
+			},
+			"login": {
+				"title": "Ласкаво просимо назад до Checkmate!",
+				"subtitle": "Увійдіть, щоб продовжити",
+				"submit": "Увійти",
+				"links": {
+					"forgotPassword": { "text": "Забули пароль?", "linkText": "Скинути пароль" },
+					"register": {
+						"text": "Немає облікового запису?",
+						"linkText": "Зареєструйтесь тут"
+					}
+				}
+			},
+			"forgotPassword": {
+				"title": "Забули пароль?",
+				"subtitle": "Не хвилюйтесь, ми надішлемо інструкції для скидання.",
+				"submit": "Запросити відновлення",
+				"links": { "login": { "text": "Повернутись до", "linkText": "входу" } }
+			},
+			"register": {
+				"title": "Ласкаво просимо до Checkmate!",
+				"subtitle": "Зареєструйтесь, щоб почати",
+				"submit": "Зареєструватись"
+			}
+		}
 	}
 }

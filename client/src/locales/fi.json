@@ -1104,5 +1104,41 @@
 	"packetsReceivedRate": "",
 	"packetsSent": "",
 	"rate": "",
-	"selectInterface": ""
+	"selectInterface": "",
+	"pages": {
+		"auth": {
+			"common": {
+				"form": {
+					"option": {
+						"email": { "label": "Sähköposti", "placeholder": "me@example.com" },
+						"password": { "label": "Salasana", "placeholder": "********" },
+						"confirmPassword": { "label": "Vahvista salasana" }
+					}
+				}
+			},
+			"login": {
+				"title": "Tervetuloa takaisin Checkmaten!",
+				"subtitle": "Kirjaudu sisään jatkaaksesi",
+				"submit": "Kirjaudu sisään",
+				"links": {
+					"forgotPassword": {
+						"text": "Unohditko salasanasi?",
+						"linkText": "Palauta salasana"
+					},
+					"register": { "text": "Ei tiliä?", "linkText": "Rekisteröidy tästä" }
+				}
+			},
+			"forgotPassword": {
+				"title": "Unohditko salasanasi?",
+				"subtitle": "Ei hätää, lähetämme sinulle ohjeet palautusta varten.",
+				"submit": "Pyydä palautusta",
+				"links": { "login": { "text": "Takaisin", "linkText": "kirjautumiseen" } }
+			},
+			"register": {
+				"title": "Tervetuloa Checkmateen!",
+				"subtitle": "Rekisteröidy aloittaaksesi",
+				"submit": "Rekisteröidy"
+			}
+		}
+	}
 }
