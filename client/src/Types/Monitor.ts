@@ -13,6 +13,7 @@ export const MonitorTypes = [
 	"game",
 	"grpc",
 	"websocket",
+	"dns",
 	"unknown",
 ] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
@@ -72,6 +73,8 @@ export interface Monitor {
 	selectedDisks: string[];
 	gameId?: string;
 	grpcServiceName?: string;
+	dnsServer?: string;
+	dnsRecordType?: string;
 	group: string | null;
 	geoCheckEnabled?: boolean;
 	geoCheckLocations?: GeoContinent[];

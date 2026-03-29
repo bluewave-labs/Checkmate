@@ -122,6 +122,14 @@ const websocketSchema = baseSchema.extend({
 	ignoreTlsErrors: z.boolean(),
 });
 
+// DNS monitor schema
+const dnsSchema = baseSchema.extend({
+	type: z.literal("dns"),
+	url: z.string().min(1, "Hostname is required"),
+	dnsServer: z.string().optional(),
+	dnsRecordType: z.enum(["A", "AAAA", "CNAME", "MX", "TXT", "NS"]),
+});
+
 // Discriminated union of all monitor types
 export const monitorSchema = z.discriminatedUnion("type", [
 	httpSchema,
@@ -133,6 +141,7 @@ export const monitorSchema = z.discriminatedUnion("type", [
 	pagespeedSchema,
 	hardwareSchema,
 	websocketSchema,
+	dnsSchema,
 ]);
 
 export type MonitorFormData = z.infer<typeof monitorSchema>;
@@ -148,4 +157,5 @@ export {
 	pagespeedSchema,
 	hardwareSchema,
 	websocketSchema,
+	dnsSchema,
 };

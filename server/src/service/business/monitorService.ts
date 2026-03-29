@@ -228,6 +228,7 @@ export class MonitorService implements IMonitorService {
 			checksData.monitorType !== "port" &&
 			checksData.monitorType !== "game" &&
 			checksData.monitorType !== "grpc" &&
+			checksData.monitorType !== "dns" &&
 			checksData.monitorType !== "websocket"
 		) {
 			throw new AppError({ message: `${monitor.type} monitors are not supported for uptime details`, status: 400 });

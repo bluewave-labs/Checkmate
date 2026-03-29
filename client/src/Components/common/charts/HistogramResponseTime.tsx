@@ -34,7 +34,7 @@ const calculateResponseTimeStats = (checks: CheckSnapshot[]): ResponseTimeStats 
 	}
 
 	const responseTimes = validChecks.map((check) => check.originalResponseTime);
-	const max = Math.max(...responseTimes);
+	const max = Math.round(Math.max(...responseTimes));
 	const avg = Math.round(
 		responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length
 	);

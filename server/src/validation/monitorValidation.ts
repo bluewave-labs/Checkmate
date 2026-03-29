@@ -21,10 +21,7 @@ export const getMonitorsByTeamIdParamValidation = z.object({});
 
 export const getMonitorsByTeamIdQueryValidation = z.object({
 	type: z
-		.union([
-			z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"]),
-			z.array(z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"])),
-		])
+		.union([z.enum(MonitorTypes), z.array(z.enum(MonitorTypes))])
 		.optional(),
 	filter: z.union([z.string(), z.literal("")]).optional(),
 });
@@ -37,10 +34,7 @@ export const getMonitorsWithChecksQueryValidation = z.object({
 	field: z.string().optional(),
 	order: z.enum(["asc", "desc"]).optional(),
 	type: z
-		.union([
-			z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"]),
-			z.array(z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"])),
-		])
+		.union([z.enum(MonitorTypes), z.array(z.enum(MonitorTypes))])
 		.optional(),
 	explain: booleanCoercion.optional(),
 });
@@ -73,6 +67,8 @@ export const createMonitorBodyValidation = z.object({
 	matchMethod: z.union([z.enum(MonitorMatchMethods), z.literal("")]).optional(),
 	gameId: z.union([z.string(), z.literal("")]).optional(),
 	grpcServiceName: z.union([z.string(), z.literal("")]).default(""),
+	dnsServer: z.union([z.string(), z.literal("")]).optional(),
+	dnsRecordType: z.enum(["A", "AAAA", "CNAME", "MX", "TXT", "NS"]).default("A"),
 	selectedDisks: z.array(z.string()).optional(),
 	group: z.union([z.string().max(50).trim(), z.null(), z.literal("")]).optional(),
 	geoCheckEnabled: z.boolean().optional(),
@@ -102,6 +98,8 @@ export const editMonitorBodyValidation = z.object({
 	tempAlertThreshold: z.number().optional(),
 	gameId: z.union([z.string(), z.literal("")]).optional(),
 	grpcServiceName: z.union([z.string(), z.literal("")]).optional(),
+	dnsServer: z.union([z.string(), z.literal("")]).optional(),
+	dnsRecordType: z.enum(["A", "AAAA", "CNAME", "MX", "TXT", "NS"]).optional(),
 	selectedDisks: z.array(z.string()).optional(),
 	group: z.union([z.string().max(50).trim(), z.null(), z.literal("")]).optional(),
 	geoCheckEnabled: z.boolean().optional(),
@@ -156,6 +154,8 @@ const importedMonitorSchema = z.object({
 	selectedDisks: z.array(z.string()).default([]),
 	gameId: z.union([z.string(), z.literal("")]).optional(),
 	grpcServiceName: z.union([z.string(), z.literal("")]).default(""),
+	dnsServer: z.union([z.string(), z.literal("")]).optional(),
+	dnsRecordType: z.enum(["A", "AAAA", "CNAME", "MX", "TXT", "NS"]).default("A"),
 	group: z.union([z.string().max(50).trim(), z.null()]).default(null),
 	geoCheckEnabled: z.boolean().default(false),
 	geoCheckLocations: z.array(z.enum(GeoContinents)).default([]),

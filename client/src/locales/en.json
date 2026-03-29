@@ -417,7 +417,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "Infrastructure",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				}
 			}
 		},
@@ -503,6 +504,13 @@
 						"wsUrl": {
 							"label": "WebSocket URL",
 							"placeholder": "wss://example.com/socket"
+						},
+						"dnsServer": {
+							"label": "DNS server",
+							"placeholder": "8.8.8.8"
+						},
+						"dnsRecordType": {
+							"label": "Record type"
 						}
 					},
 					"title": "General settings",
@@ -515,7 +523,8 @@
 						"pagespeed": "Track page load performance, Core Web Vitals, and optimization scores for your website.",
 						"grpc": "Enter the hostname and port of the gRPC server, optionally specify a service name for the health check, and add a display name.",
 						"websocket": "Enter the WebSocket URL to monitor (e.g., wss://example.com/socket) and add a display name.",
-						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure."
+						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure.",
+						"dns": "Enter the hostname and optionally a DNS server to monitor DNS record resolution and response time."
 					}
 				},
 				"ignoreTls": {
@@ -549,6 +558,7 @@
 					"optionGameDescription": "Monitor if a specific game server is online.",
 					"optionGrpcDescription": "Monitor gRPC services using the standard Health Checking Protocol.",
 					"optionWebSocketDescription": "Monitor WebSocket endpoints for connection health and response time.",
+					"optionDnsDescription": "Monitor DNS record resolution and response time.",
 					"optionHttpDescription": "Use HTTP(S) to monitor your website or API endpoint.",
 					"optionPingDescription": "Use ICMP Ping to monitor if a server is online.",
 					"optionPortDescription": "Monitor if a specific port on a server is open.",
