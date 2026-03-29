@@ -163,7 +163,7 @@ export const MonitorTable = ({
 			{
 				id: "select",
 				content: isSmall ? (
-					t("common.selected")
+					""
 				) : (
 					<Checkbox
 						checked={monitors.length > 0 && selectedMonitors.length === monitors.length}
