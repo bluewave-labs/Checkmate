@@ -14,6 +14,7 @@ export const getMonitorPath = (type: MonitorType): string => {
 		docker: "uptime",
 		hardware: "infrastructure",
 		pagespeed: "pagespeed",
+		dns: "uptime",
 	};
 	return pathMap[type];
 };

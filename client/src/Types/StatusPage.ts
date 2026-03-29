@@ -11,6 +11,7 @@ export const MONITOR_TYPE_KEYS: Partial<Record<MonitorType, string>> = {
 	websocket: "pages.common.monitors.monitorTypes.optionWebSocket",
 	hardware: "pages.common.monitors.monitorTypes.optionHardware",
 	pagespeed: "pages.common.monitors.monitorTypes.optionPagespeed",
+	dns: "pages.common.monitors.monitorTypes.optionDns",
 };
 
 export const getMonitorTypeLabel = (
