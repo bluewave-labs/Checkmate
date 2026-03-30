@@ -93,6 +93,8 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 			this.scheduler.addTemplate("geo-check-job", this.helper.getHeartbeatGeoJob());
 			this.scheduler.addTemplate("cleanup-orphaned", this.helper.getCleanupOrphanedJob());
 			this.scheduler.addTemplate("cleanup-retention-job", this.helper.getCleanupRetentionJob());
+			this.scheduler.addTemplate("dlq-retry-job", this.helper.getDLQRetryJob());
+			this.scheduler.addTemplate("dlq-cleanup-job", this.helper.getDLQCleanupJob());
 			const monitors = await this.monitorsRepository.findAll();
 			if (!monitors) {
 				return true;
@@ -106,6 +108,8 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 
 			this.scheduler.addJob({ id: "cleanup-orphaned", template: "cleanup-orphaned", active: true });
 			this.scheduler.addJob({ id: "cleanup-retention", template: "cleanup-retention-job", active: true, repeat: 24 * 60 * 60 * 1000 });
+			this.scheduler.addJob({ id: "dlq-retry", template: "dlq-retry-job", active: true, repeat: 30 * 1000 });
+			this.scheduler.addJob({ id: "dlq-cleanup", template: "dlq-cleanup-job", active: true, repeat: 24 * 60 * 60 * 1000 });
 
 			return true;
 		} catch (error: unknown) {
