@@ -26,6 +26,7 @@ interface StatusPageRow {
 	show_uptime_percentage: boolean;
 	show_admin_login_link: boolean;
 	show_infrastructure: boolean;
+	show_page_speed: boolean;
 	custom_css: string | null;
 	created_at: Date;
 	updated_at: Date;
@@ -33,7 +34,7 @@ interface StatusPageRow {
 
 const COLUMNS = `id, user_id, team_id, types, company_name, url, timezone, color,
 	logo_data, logo_content_type, is_published, show_charts, show_uptime_percentage,
-	show_admin_login_link, show_infrastructure, custom_css, created_at, updated_at`;
+	show_admin_login_link, show_infrastructure, show_page_speed, custom_css, created_at, updated_at`;
 
 export class TimescaleStatusPagesRepository implements IStatusPagesRepository {
 	constructor(private pool: Pool) {}
@@ -42,8 +43,8 @@ export class TimescaleStatusPagesRepository implements IStatusPagesRepository {
 		const result = await this.pool.query<StatusPageRow>(
 			`INSERT INTO status_pages (user_id, team_id, types, company_name, url, timezone, color,
 				logo_data, logo_content_type, is_published, show_charts, show_uptime_percentage,
-				show_admin_login_link, show_infrastructure, custom_css)
-			 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+				show_admin_login_link, show_infrastructure, show_page_speed, custom_css)
+			 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
 			 RETURNING ${COLUMNS}`,
 			[
 				userId,
@@ -60,6 +61,7 @@ export class TimescaleStatusPagesRepository implements IStatusPagesRepository {
 				data.showUptimePercentage ?? false,
 				data.showAdminLoginLink ?? false,
 				data.showInfrastructure ?? false,
+				data.showPageSpeed ?? false,
 				data.customCSS ?? null,
 			]
 		);
@@ -128,6 +130,7 @@ export class TimescaleStatusPagesRepository implements IStatusPagesRepository {
 			["showUptimePercentage", "show_uptime_percentage"],
 			["showAdminLoginLink", "show_admin_login_link"],
 			["showInfrastructure", "show_infrastructure"],
+			["showPageSpeed", "show_page_speed"],
 			["customCSS", "custom_css"],
 		];
 
@@ -252,6 +255,7 @@ export class TimescaleStatusPagesRepository implements IStatusPagesRepository {
 			showUptimePercentage: row.show_uptime_percentage,
 			showAdminLoginLink: row.show_admin_login_link,
 			showInfrastructure: row.show_infrastructure,
+			showPageSpeed: row.show_page_speed,
 			customCSS: row.custom_css ?? "",
 			createdAt: row.created_at.toISOString(),
 			updatedAt: row.updated_at.toISOString(),
