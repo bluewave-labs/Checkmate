@@ -14,14 +14,14 @@ interface BulkEditNotificationsModalProps {
 	open: boolean;
 	onClose: () => void;
 	selectedMonitors: string[];
-	onSuccess: () => void;
+	onComplete: (success: boolean) => void;
 }
 
 export const BulkEditNotificationsModal: React.FC<BulkEditNotificationsModalProps> = ({
 	open,
 	onClose,
 	selectedMonitors,
-	onSuccess,
+	onComplete,
 }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
@@ -55,9 +55,7 @@ export const BulkEditNotificationsModal: React.FC<BulkEditNotificationsModalProp
 			action,
 		});
 
-		if (res) {
-			onSuccess();
-		}
+		onComplete(!!res);
 	};
 
 	// Prevent submitting empty arrays unless the action is 'set' (as per PR feedback!)

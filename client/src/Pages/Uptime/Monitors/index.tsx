@@ -137,10 +137,12 @@ const UptimeMonitorsPage = () => {
 		refetch();
 	};
 
-	const handleBulkEditSuccess = () => {
+	const handleBulkEditComplete = (success: boolean) => {
 		setIsBulkEditModalOpen(false);
-		setSelectedRows([]);
-		refetch();
+		if (success) {
+			setSelectedRows([]);
+			refetch();
+		}
 	};
 
 	const handleCancel = () => {
@@ -267,12 +269,11 @@ const UptimeMonitorsPage = () => {
 				onCancel={handleCancel}
 				loading={isDeleting}
 			/>
-
 			<BulkEditNotificationsModal
 				open={isBulkEditModalOpen}
 				onClose={() => setIsBulkEditModalOpen(false)}
 				selectedMonitors={selectedRows}
-				onSuccess={handleBulkEditSuccess}
+				onComplete={handleBulkEditComplete}
 			/>
 		</MonitorBasePageWithStates>
 	);
