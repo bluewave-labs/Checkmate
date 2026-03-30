@@ -19,6 +19,7 @@ export * from "@/service/infrastructure/globalPingService.js";
 export * from "@/service/infrastructure/networkService.js";
 export * from "@/service/infrastructure/notificationsService.js";
 export * from "@/service/infrastructure/statusService.js";
+export * from "@/service/infrastructure/dlqService.js";
 
 // Notification providers
 export * from "@/service/infrastructure/notificationProviders/discord.js";
