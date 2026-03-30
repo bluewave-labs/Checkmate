@@ -276,7 +276,10 @@ export const MonitorTable = ({
 	return (
 		<Box>
 			{isSmall && (
-				<Box px={1} pb={2}>
+				<Box
+					px={1}
+					pb={2}
+				>
 					<Stack
 						direction="row"
 						alignItems="center"
