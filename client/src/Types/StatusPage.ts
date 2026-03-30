@@ -1,5 +1,6 @@
 import type { Monitor, MonitorType } from "@/Types/Monitor";
-export type MonitorDisplayType = "uptime" | "infrastructure" | "pagespeed";
+export const MONITOR_DISPLAY_TYPES = ["uptime", "infrastructure", "pagespeed"] as const;
+export type MonitorDisplayType = (typeof MONITOR_DISPLAY_TYPES)[number];
 
 export const MONITOR_TYPE_KEYS: Partial<Record<MonitorType, string>> = {
 	http: "pages.common.monitors.monitorTypes.optionHttp",
