@@ -10,6 +10,7 @@ import {
 	IStatusService,
 	IncidentService,
 	type IGeoChecksService,
+	type IDLQService,
 } from "@/service/index.js";
 import { CHECK_TTL_SENTINEL, type MaintenanceWindow, type StatusChangeResult } from "@/types/index.js";
 import {
@@ -30,6 +31,8 @@ export interface ISuperSimpleQueueHelper {
 	getHeartbeatGeoJob(): (monitor: Monitor) => Promise<void>;
 	getCleanupOrphanedJob(): () => Promise<void>;
 	getCleanupRetentionJob(): () => Promise<void>;
+	getDLQRetryJob(): () => Promise<void>;
+	getDLQCleanupJob(): () => Promise<void>;
 	isInMaintenanceWindow(monitorId: string, teamId: string): Promise<boolean>;
 }
 
@@ -66,6 +69,7 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 	private incidentsRepository: IIncidentsRepository;
 	private geoChecksService: IGeoChecksService;
 	private geoChecksRepository: IGeoChecksRepository;
+	private dlqService: IDLQService;
 
 	constructor(
 		logger: ILogger,
@@ -83,7 +87,8 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 		checksRepository: IChecksRepository,
 		incidentsRepository: IIncidentsRepository,
 		geoChecksService: IGeoChecksService,
-		geoChecksRepository: IGeoChecksRepository
+		geoChecksRepository: IGeoChecksRepository,
+		dlqService: IDLQService
 	) {
 		this.logger = logger;
 		this.networkService = networkService;
@@ -101,6 +106,7 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 		this.incidentsRepository = incidentsRepository;
 		this.geoChecksService = geoChecksService;
 		this.geoChecksRepository = geoChecksRepository;
+		this.dlqService = dlqService;
 	}
 
 	get serviceName() {
@@ -165,6 +171,21 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 							method: "getMonitorJob",
 							stack: error instanceof Error ? error.stack : undefined,
 						});
+						this.dlqService
+							.enqueue(
+								"notification",
+								{ monitor: statusChangeResult.monitor, monitorStatusResponse: status, decision },
+								monitorId,
+								teamId,
+								error instanceof Error ? error.message : "Unknown error"
+							)
+							.catch((dlqError: unknown) => {
+								this.logger.error({
+									message: `Failed to enqueue notification to DLQ: ${dlqError instanceof Error ? dlqError.message : "Unknown error"}`,
+									service: SERVICE_NAME,
+									method: "getMonitorJob",
+								});
+							});
 					});
 				}
 
@@ -176,6 +197,22 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 						method: "getMonitorJob",
 						stack: error instanceof Error ? error.stack : undefined,
 					});
+					const dlqType = decision.shouldResolveIncident ? "incident_resolve" : "incident_create";
+					this.dlqService
+						.enqueue(
+							dlqType,
+							{ monitor: statusChangeResult.monitor, code: statusChangeResult.code, decision, monitorStatusResponse: status },
+							monitorId,
+							teamId,
+							error instanceof Error ? error.message : "Unknown error"
+						)
+						.catch((dlqError: unknown) => {
+							this.logger.error({
+								message: `Failed to enqueue incident to DLQ: ${dlqError instanceof Error ? dlqError.message : "Unknown error"}`,
+								service: SERVICE_NAME,
+								method: "getMonitorJob",
+							});
+						});
 				});
 			} catch (error: unknown) {
 				this.logger.warn({
@@ -412,6 +449,43 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 					message: error instanceof Error ? error.message : "Unknown error",
 					service: SERVICE_NAME,
 					method: "getCleanupRetentionJob",
+					stack: error instanceof Error ? error.stack : undefined,
+				});
+			}
+		};
+	};
+
+	getDLQRetryJob = () => {
+		return async () => {
+			try {
+				await this.dlqService.processRetries();
+			} catch (error: unknown) {
+				this.logger.error({
+					message: error instanceof Error ? error.message : "Unknown error",
+					service: SERVICE_NAME,
+					method: "getDLQRetryJob",
+					stack: error instanceof Error ? error.stack : undefined,
+				});
+			}
+		};
+	};
+
+	getDLQCleanupJob = () => {
+		return async () => {
+			try {
+				const deleted = await this.dlqService.cleanup(7);
+				if (deleted > 0) {
+					this.logger.info({
+						message: `DLQ cleanup: removed ${deleted} expired items`,
+						service: SERVICE_NAME,
+						method: "getDLQCleanupJob",
+					});
+				}
+			} catch (error: unknown) {
+				this.logger.error({
+					message: error instanceof Error ? error.message : "Unknown error",
+					service: SERVICE_NAME,
+					method: "getDLQCleanupJob",
 					stack: error instanceof Error ? error.stack : undefined,
 				});
 			}
