@@ -49,6 +49,8 @@ import {
 	ISettingsService,
 	SettingsService,
 	EnvConfig,
+	DLQService,
+	IDLQService,
 } from "@/service/index.js";
 
 // Network providers
@@ -124,6 +126,8 @@ import {
 	IIncidentsRepository,
 	ITeamsRepository,
 	IMaintenanceWindowsRepository,
+	MongoDLQRepository,
+	IDLQRepository,
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
 import TimescaleDB from "@/db/TimescaleDB.js";
@@ -149,6 +153,7 @@ export type InitializedServices = {
 	notificationsService: INotificationsService;
 	statusPageService: IStatusPageService;
 	notificationMessageBuilder: INotificationMessageBuilder;
+	dlqService: IDLQService;
 
 	// Repositories
 	monitorsRepository: IMonitorsRepository;
@@ -206,6 +211,7 @@ export const initializeServices = async ({
 	let incidentsRepository: IIncidentsRepository;
 	let teamsRepository: ITeamsRepository;
 	let maintenanceWindowsRepository: IMaintenanceWindowsRepository;
+	let dlqRepository: IDLQRepository;
 
 	// Repositories
 
@@ -223,6 +229,7 @@ export const initializeServices = async ({
 		incidentsRepository = new MongoIncidentsRepository();
 		teamsRepository = new MongoTeamsRepository();
 		maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
+		dlqRepository = new MongoDLQRepository();
 	} else {
 		const pool = db.getPool();
 		if (!pool) {
@@ -241,6 +248,7 @@ export const initializeServices = async ({
 		incidentsRepository = new TimescaleIncidentsRepository(pool);
 		teamsRepository = new TimescaleTeamsRepository(pool);
 		maintenanceWindowsRepository = new TimescaleMaintenanceWindowsRepository(pool);
+		dlqRepository = new MongoDLQRepository(); // TODO: Replace with TimescaleDLQRepository(pool) once implemented
 	}
 
 	// Inject settings repository into settings service (now that DB is connected)
@@ -315,6 +323,8 @@ export const initializeServices = async ({
 		notificationMessageBuilder
 	);
 
+	const dlqService = new DLQService(dlqRepository, notificationsService, incidentService, monitorsRepository, logger);
+
 	const superSimpleQueueHelper = new SuperSimpleQueueHelper(
 		logger,
 		networkService,
@@ -331,7 +341,8 @@ export const initializeServices = async ({
 		checksRepository,
 		incidentsRepository,
 		geoChecksService,
-		geoChecksRepository
+		geoChecksRepository,
+		dlqService
 	);
 
 	const superSimpleQueue = await SuperSimpleQueue.create(logger, superSimpleQueueHelper, monitorsRepository);
@@ -397,6 +408,7 @@ export const initializeServices = async ({
 		notificationsService,
 		statusPageService,
 		notificationMessageBuilder,
+		dlqService,
 
 		// Repositories
 		monitorsRepository,
