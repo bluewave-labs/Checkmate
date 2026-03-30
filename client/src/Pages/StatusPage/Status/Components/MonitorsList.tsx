@@ -27,14 +27,12 @@ interface MonitorsListProps {
 }
 
 const getMonitorBadgeStyles = (monitorType: string, theme: Theme) => {
-	const monitorColors = {
+	const monitorColors: Record<string, string> = {
 		hardware: theme.palette.info.light,
 		pagespeed: theme.palette.warning.light,
 	};
 
-	const bg =
-		monitorColors[monitorType as keyof typeof monitorColors] ||
-		theme.palette.success.light;
+	const bg = monitorColors[monitorType] || theme.palette.success.light;
 	return {
 		backgroundColor: bg,
 		color: theme.palette.background.paper,
@@ -113,8 +111,9 @@ const MonitorContent = ({
 	}
 
 	if (monitor.type === "pagespeed") {
-		if (statusPage.showPageSpeed === false) return null;
-		return <PageSpeedMetrics monitor={monitor} />;
+		return statusPage.showPageSpeed === false ? null : (
+			<PageSpeedMetrics monitor={monitor} />
+		);
 	}
 
 	if (statusPage.showCharts === false) return null;
