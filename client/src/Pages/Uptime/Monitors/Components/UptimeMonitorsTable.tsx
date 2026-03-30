@@ -275,6 +275,35 @@ export const MonitorTable = ({
 
 	return (
 		<Box>
+			{isSmall && (
+				<Box px={1} pb={2}>
+					<Stack
+						direction="row"
+						alignItems="center"
+						spacing={1}
+					>
+						<Checkbox
+							checked={monitors.length > 0 && selectedMonitors.length === monitors.length}
+							indeterminate={
+								selectedMonitors.length > 0 && selectedMonitors.length < monitors.length
+							}
+							onChange={(e) => {
+								if (e.target.checked) {
+									onSelectAll(monitors.map((m) => m.id));
+								} else {
+									onSelectAll([]);
+								}
+							}}
+						/>
+						<Typography
+							variant="body2"
+							color="text.secondary"
+						>
+							{t("common.selectAll", "Select All")}
+						</Typography>
+					</Stack>
+				</Box>
+			)}
 			<Table
 				headers={headers}
 				data={monitors}

@@ -115,20 +115,22 @@ export function DataTable<
 										container
 										key={header.id}
 									>
-										<Grid2
-											size={5}
-											display={"flex"}
-											alignItems={"center"}
-										>
-											<Typography
-												component="div"
-												color={theme.palette.text.primary}
+										{header.content !== "" && (
+											<Grid2
+												size={5}
+												display={"flex"}
+												alignItems={"center"}
 											>
-												{header.content}
-											</Typography>
-										</Grid2>
+												<Typography
+													component="div"
+													color={theme.palette.text.primary}
+												>
+													{header.content}
+												</Typography>
+											</Grid2>
+										)}
 										<Grid2
-											size={7}
+											size={header.content !== "" ? 7 : 12}
 											display="flex"
 											alignItems={"center"}
 										>

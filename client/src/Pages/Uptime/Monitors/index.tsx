@@ -137,10 +137,12 @@ const UptimeMonitorsPage = () => {
 		refetch();
 	};
 
-	const handleBulkEditSuccess = () => {
+	const handleBulkEditComplete = (success: boolean) => {
 		setIsBulkEditModalOpen(false);
-		setSelectedMonitors([]);
-		refetch();
+		if (success) {
+			handleClearSelection();
+			refetch();
+		}
 	};
 
 	const handleCancel = () => {
@@ -236,24 +238,26 @@ const UptimeMonitorsPage = () => {
 				onCancel={handleCancel}
 				loading={isDeleting}
 			/>
-			<FloatingActionBar
-				selectedCount={selectedMonitors.length}
-				onClearSelection={handleClearSelection}
-			>
-				<Button
-					variant="contained"
-					color="primary"
-					onClick={() => setIsBulkEditModalOpen(true)}
+			{!isBulkEditModalOpen && (
+				<FloatingActionBar
+					selectedCount={selectedMonitors.length}
+					onClearSelection={handleClearSelection}
 				>
-					{t("pages.common.monitors.bulkEdit.editButton")}
-				</Button>
-			</FloatingActionBar>
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={() => setIsBulkEditModalOpen(true)}
+					>
+						{t("pages.common.monitors.bulkEdit.editButton")}
+					</Button>
+				</FloatingActionBar>
+			)}
 
 			<BulkEditNotificationsModal
 				open={isBulkEditModalOpen}
 				onClose={() => setIsBulkEditModalOpen(false)}
 				selectedMonitors={selectedMonitors}
-				onSuccess={handleBulkEditSuccess}
+				onComplete={handleBulkEditComplete}
 			/>
 		</MonitorBasePageWithStates>
 	);
