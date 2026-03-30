@@ -38,13 +38,7 @@ export class DLQService implements IDLQService {
 		return DLQService.SERVICE_NAME;
 	}
 
-	enqueue = async (
-		type: DLQItemType,
-		payload: Record<string, unknown>,
-		monitorId: string,
-		teamId: string,
-		error: string
-	): Promise<DLQItem> => {
+	enqueue = async (type: DLQItemType, payload: Record<string, unknown>, monitorId: string, teamId: string, error: string): Promise<DLQItem> => {
 		const nextRetryAt = new Date(Date.now() + BASE_DELAY_MS).toISOString();
 		const item = await this.dlqRepository.create({
 			type,
@@ -151,10 +145,7 @@ export class DLQService implements IDLQService {
 	};
 
 	getItems = async (teamId: string, filters: DLQQueryFilters): Promise<{ items: DLQItem[]; count: number }> => {
-		const [items, count] = await Promise.all([
-			this.dlqRepository.findByTeamId(teamId, filters),
-			this.dlqRepository.countByTeamId(teamId),
-		]);
+		const [items, count] = await Promise.all([this.dlqRepository.findByTeamId(teamId, filters), this.dlqRepository.countByTeamId(teamId)]);
 		return { items, count };
 	};
 
