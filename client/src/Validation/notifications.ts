@@ -29,9 +29,9 @@ const webhookSchema = baseSchema.extend({
 	type: z.literal("webhook"),
 	address: z.string().min(1, "Webhook URL is required").url("Please enter a valid URL"),
 	authType: z.enum(["none", "basic", "bearer"]).default("none"),
-	authUsername: z.string().default(""),
-	authPassword: z.string().default(""),
-	authToken: z.string().default(""),
+	authUsername: z.string().max(256).default(""),
+	authPassword: z.string().max(1024).default(""),
+	authToken: z.string().max(4096).default(""),
 });
 
 const pagerDutySchema = baseSchema.extend({
