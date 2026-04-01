@@ -146,7 +146,8 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 
 	deleteJob = async (monitor: Monitor) => {
 		this.scheduler.removeJob(monitor.id);
-		this.scheduler.removeJob(`${monitor.id}-geo`);
+		const geoJob = await this.scheduler.getJob(`${monitor.id}-geo`);
+		if (geoJob) await this.scheduler.removeJob(`${monitor.id}-geo`);
 	};
 
 	pauseJob = async (monitor: Monitor) => {
@@ -154,7 +155,9 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 		if (result === false) {
 			throw new Error("Failed to pause monitor");
 		}
-		await this.scheduler.pauseJob(`${monitor.id}-geo`);
+		const geoJob = await this.scheduler.getJob(`${monitor.id}-geo`);
+		if (geoJob) await this.scheduler.removeJob(`${monitor.id}-geo`);
+
 		this.logger.debug({
 			message: `Paused monitor ${monitor.id}`,
 			service: SERVICE_NAME,
@@ -177,31 +180,35 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 		});
 	};
 
+	private syncGeoJob = async (monitor: Monitor) => {
+		const geoJobId = `${monitor.id}-geo`;
+		const existingGeoJob = await this.scheduler.getJob(geoJobId);
+
+		// If geoChecks have been disabled, or the monitor type doesn't support them, remove
+		if (!monitor.geoCheckEnabled || !supportsGeoCheck(monitor.type)) {
+			if (existingGeoJob) this.scheduler.removeJob(geoJobId);
+			return;
+		}
+
+		// If the job exists, update it
+		if (existingGeoJob) {
+			this.scheduler.updateJob(geoJobId, { repeat: monitor.geoCheckInterval, active: monitor.isActive, data: monitor });
+			return;
+		}
+
+		// Otherwise, create it
+		this.scheduler.addJob({
+			id: geoJobId,
+			template: "geo-check-job",
+			repeat: monitor.geoCheckInterval,
+			active: monitor.isActive,
+			data: monitor,
+		});
+	};
+
 	updateJob = async (monitor: Monitor) => {
 		this.scheduler.updateJob(monitor.id, { repeat: monitor.interval, data: monitor });
-
-		// Handle geo check job lifecycle
-		const geoJobId = `${monitor.id}-geo`;
-		if (monitor.geoCheckEnabled && supportsGeoCheck(monitor.type)) {
-			// Check if geo job exists
-			const existingGeoJob = await this.scheduler.getJob(geoJobId);
-			if (existingGeoJob) {
-				// Update existing geo job
-				this.scheduler.updateJob(geoJobId, { repeat: monitor.geoCheckInterval, active: monitor.isActive, data: monitor });
-			} else {
-				// Create new geo job
-				this.scheduler.addJob({
-					id: geoJobId,
-					template: "geo-check-job",
-					repeat: monitor.geoCheckInterval,
-					active: monitor.isActive,
-					data: monitor,
-				});
-			}
-		} else {
-			// Remove geo job if disabled or monitor type changed
-			this.scheduler.removeJob(geoJobId);
-		}
+		await this.syncGeoJob(monitor);
 	};
 
 	shutdown = async () => {
