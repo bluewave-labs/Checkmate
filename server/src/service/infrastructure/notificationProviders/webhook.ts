@@ -6,6 +6,19 @@ import { getTestMessage } from "@/service/infrastructure/notificationProviders/u
 import got from "got";
 
 export class WebhookProvider extends NotificationProvider {
+	private buildAuthHeaders(notification: Partial<Notification>): Record<string, string> {
+		const headers: Record<string, string> = { "Content-Type": "application/json" };
+
+		if (notification.authType === "basic" && notification.authUsername && notification.authPassword) {
+			const encoded = Buffer.from(`${notification.authUsername}:${notification.authPassword}`).toString("base64");
+			headers["Authorization"] = `Basic ${encoded}`;
+		} else if (notification.authType === "bearer" && notification.authToken) {
+			headers["Authorization"] = `Bearer ${notification.authToken}`;
+		}
+
+		return headers;
+	}
+
 	sendMessage = async (notification: Notification, message: NotificationMessage): Promise<boolean> => {
 		if (!notification.address) {
 			return false;
@@ -17,9 +30,7 @@ export class WebhookProvider extends NotificationProvider {
 		try {
 			await got.post(notification.address, {
 				json: payload,
-				headers: {
-					"Content-Type": "application/json",
-				},
+				headers: this.buildAuthHeaders(notification),
 				...this.gotRequestOptions(),
 			});
 			this.logger.info({
@@ -99,9 +110,7 @@ export class WebhookProvider extends NotificationProvider {
 		try {
 			await got.post(notification.address, {
 				json: { text: getTestMessage() },
-				headers: {
-					"Content-Type": "application/json",
-				},
+				headers: this.buildAuthHeaders(notification),
 				...this.gotRequestOptions(),
 			});
 			return true;
