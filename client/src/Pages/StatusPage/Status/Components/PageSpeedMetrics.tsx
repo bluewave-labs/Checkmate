@@ -15,6 +15,13 @@ interface StatusPageMonitor extends Monitor {
 	checks?: Monitor["recentChecks"];
 }
 
+interface PageSpeedCheck {
+	performance: number;
+	accessibility: number;
+	bestPractices: number;
+	seo: number;
+}
+
 interface MetricConfig {
 	key: string;
 	label: string;
@@ -26,13 +33,13 @@ const MetricItem = ({ label, progress }: MetricConfig) => {
 	return (
 		<Grid
 			size={{ xs: 12, md: 3 }}
+			display="flex"
+			flexDirection="column"
+			alignItems="center"
+			textAlign="center"
+			gap={theme.spacing(SPACING.LG)}
+			padding={theme.spacing(LAYOUT.XS)}
 			sx={{
-				display: "flex",
-				flexDirection: "column",
-				alignItems: "center",
-				textAlign: "center",
-				gap: theme.spacing(SPACING.LG),
-				padding: theme.spacing(LAYOUT.XS),
 				borderRight: { xs: "none", md: `1px solid ${theme.palette.divider}` },
 				borderBottom: { xs: `1px solid ${theme.palette.divider}`, md: "none" },
 				"&:last-child": {
@@ -60,28 +67,28 @@ const MetricItem = ({ label, progress }: MetricConfig) => {
 };
 
 const buildMetrics = (
-	check: NonNullable<Monitor["recentChecks"]>[number],
+	check: PageSpeedCheck,
 	t: (key: string) => string
 ): MetricConfig[] => [
 	{
 		key: "performance",
 		label: t("pages.statusPages.monitorsList.pagespeed.performance"),
-		progress: check.performance ?? 0,
+		progress: check.performance,
 	},
 	{
 		key: "accessibility",
 		label: t("pages.statusPages.monitorsList.pagespeed.accessibility"),
-		progress: check.accessibility ?? 0,
+		progress: check.accessibility,
 	},
 	{
 		key: "bestPractices",
 		label: t("pages.statusPages.monitorsList.pagespeed.bestPractices"),
-		progress: check.bestPractices ?? 0,
+		progress: check.bestPractices,
 	},
 	{
 		key: "seo",
 		label: t("pages.statusPages.monitorsList.pagespeed.seo"),
-		progress: check.seo ?? 0,
+		progress: check.seo,
 	},
 ];
 
@@ -102,7 +109,7 @@ export const PageSpeedMetrics = ({ monitor }: { monitor: StatusPageMonitor }) =>
 		);
 	}
 
-	const metrics = buildMetrics(latestCheck, t);
+	const metrics = buildMetrics(latestCheck as PageSpeedCheck, t);
 
 	return (
 		<Grid

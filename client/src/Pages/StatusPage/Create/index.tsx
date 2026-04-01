@@ -28,7 +28,7 @@ import { useStatusPageForm } from "@/Hooks/useStatusPageForm";
 import type { StatusPageFormData } from "@/Validation/statusPage";
 import { useGet, usePost, usePut, useDelete } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
-import type { MonitorDisplayType, StatusPageResponse } from "@/Types/StatusPage";
+import type { StatusPageType, StatusPageResponse } from "@/Types/StatusPage";
 import { getMonitorTypeLabel } from "@/Types/StatusPage";
 import timezones from "@/Utils/timezones.json";
 import { useNavigate, useParams } from "react-router-dom";
@@ -101,12 +101,12 @@ const CreateStatusPage = () => {
 	}, [defaults, reset]);
 
 	const watchedMonitorIds: string[] = form.watch("monitors") ?? [];
-	const computedTypes: MonitorDisplayType[] = useMemo(() => {
+	const computedTypes: StatusPageType[] = useMemo(() => {
 		const selectedMonitors = (watchedMonitorIds ?? [])
 			.map((id) => monitors.find((m) => m.id === id))
 			.filter((m): m is Monitor => m !== undefined);
 
-		const typesSet = new Set<MonitorDisplayType>();
+		const typesSet = new Set<StatusPageType>();
 		selectedMonitors.forEach((m) => {
 			if (m.type === "hardware") typesSet.add("infrastructure");
 			else if (m.type === "pagespeed") typesSet.add("pagespeed");
