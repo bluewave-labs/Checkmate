@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { notificationSchema } from "@/Validation/notifications";
+import { notificationSchema, baseNotificationSchema } from "@/Validation/notifications";
 import type { NotificationFormData } from "@/Validation/notifications";
 import type { Notification } from "@/Types/Notification";
 
@@ -44,6 +44,10 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 			type: "webhook",
 			notificationName: data.notificationName || "",
 			address: data.address || "",
+			authType: data.authType || "none",
+			authUsername: data.authUsername || "",
+			authPassword: data.authPassword || "",
+			authToken: data.authToken || "",
 		};
 	}
 	if (data?.type === "pager_duty") {
@@ -89,6 +93,9 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 export const useNotificationForm = ({ data = null }: UseNotificationFormOptions = {}) => {
 	return useMemo(() => {
 		const defaults = buildDefaults(data);
-		return { schema: notificationSchema, defaults };
+		return {
+			schema: notificationSchema as unknown as typeof baseNotificationSchema,
+			defaults,
+		};
 	}, [data]);
 };
