@@ -61,7 +61,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 
 		return value
 			.replace(/[<>]/g, "")
-			.replace(/javascript:/gi, "")
+			.replace(/(?:javascript|data|vbscript):/gi, "")
 			.replace(/[^\t\x20-\x7E\x80-\xFF]/g, "") // allow only RFC 7230 header-safe characters
 			.trim()
 			.slice(0, 500);

@@ -817,7 +817,7 @@ const CreateMonitorPage = () => {
 										field.onChange(
 											e.target.value
 												.replace(/[<>]/g, "")
-												.replace(/javascript:/gi, "")
+												.replace(/(?:javascript|data|vbscript):/gi, "")
 												.replace(/[^\t\x20-\x7E\x80-\xFF]/g, "") // RFC 7230 header-safe chars only
 												.slice(0, 500)
 										);
