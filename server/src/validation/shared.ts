@@ -21,6 +21,12 @@ export const booleanCoercion = z.preprocess((val) => {
 	return val; // Let Zod validation handle invalid values
 }, z.boolean());
 
+// RFC 7230: validate HTTP header field-value characters
+export const httpHeaderValueSchema = z
+	.string()
+	.max(500)
+	.regex(/^[\t\x20-\x7E\x80-\xFF]*$/, "Must contain only valid HTTP header characters (RFC 7230)");
+
 export const roleValidator = (allowedRoles: UserRole[]) => {
 	return z.array(z.custom<UserRole>()).refine((userRoles) => allowedRoles.some((role) => userRoles.includes(role)), {
 		message: `You do not have the required authorization. Required roles: ${allowedRoles.join(", ")}`,

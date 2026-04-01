@@ -132,7 +132,15 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 				}
 
 				// Step 2.  Request monitor status
-				const status = await this.networkService.requestStatus(monitor);
+				// Resolve default user agent for HTTP monitors (cached, invalidated on settings update)
+				let effectiveMonitor: Monitor = monitor;
+				if (monitor.type === "http" && !monitor.customUserAgent) {
+					const defaultUserAgent = await this.settingsService.getDefaultUserAgent();
+					if (defaultUserAgent) {
+						effectiveMonitor = { ...monitor, customUserAgent: defaultUserAgent };
+					}
+				}
+				const status = await this.networkService.requestStatus(effectiveMonitor);
 				if (!status) {
 					throw new Error("No network response");
 				}

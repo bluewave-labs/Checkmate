@@ -1064,7 +1064,7 @@
 					"description": "Set a default User-Agent header sent with all HTTP uptime monitor requests. Individual monitors can override this. Useful for identifying Checkmate in WAF logs and whitelists.",
 					"option": {
 						"label": "Default User-Agent",
-						"placeholder": "Checkmate/X.X (uptime monitor; your-instance)"
+						"placeholder": "Checkmate/X.X (uptime monitor)"
 					}
 				},
 				"stats": {

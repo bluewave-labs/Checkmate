@@ -20,6 +20,7 @@ export interface ISettingsService {
 	loadSettings(): EnvConfig;
 	getSettings(): EnvConfig;
 	getDBSettings(): Promise<Settings>;
+	getDefaultUserAgent(): Promise<string | undefined>;
 	updateDbSettings(newSettings: SettingsUpdate): Promise<Settings>;
 }
 
@@ -27,6 +28,7 @@ export class SettingsService implements ISettingsService {
 	static SERVICE_NAME = SERVICE_NAME;
 	private settings: EnvConfig;
 	private settingsRepository: ISettingsRepository | null = null;
+	private cachedDefaultUserAgent: string | null | undefined = undefined;
 
 	constructor(env: ValidatedEnv) {
 		this.settings = {
@@ -70,7 +72,17 @@ export class SettingsService implements ISettingsService {
 		return this.settingsRepository;
 	}
 
+	getDefaultUserAgent = async (): Promise<string | undefined> => {
+		if (this.cachedDefaultUserAgent !== undefined) {
+			return this.cachedDefaultUserAgent ?? undefined;
+		}
+		const settings = await this.getDBSettings();
+		this.cachedDefaultUserAgent = settings.defaultUserAgent ?? null;
+		return this.cachedDefaultUserAgent ?? undefined;
+	};
+
 	updateDbSettings = async (newSettings: SettingsUpdate) => {
+		this.cachedDefaultUserAgent = newSettings.defaultUserAgent ?? null;
 		return await this.getRepository().update(newSettings);
 	};
 

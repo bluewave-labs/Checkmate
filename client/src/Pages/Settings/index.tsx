@@ -442,6 +442,15 @@ export const SettingsPage = () => {
 										placeholder={t("pages.settings.form.userAgent.option.placeholder")}
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message}
+										onChange={(e) => {
+											field.onChange(
+												e.target.value
+													.replace(/[<>]/g, "")
+													.replace(/javascript:/gi, "")
+													.replace(/[^\t\x20-\x7E\x80-\xFF]/g, "") // RFC 7230 header-safe chars only
+													.slice(0, 500)
+											);
+										}}
 									/>
 								)}
 							/>

@@ -7,15 +7,13 @@ import { Agent as HttpsAgent } from "https";
 import { Monitor, MonitorType } from "@/types/monitor.js";
 import { NETWORK_ERROR } from "@/service/infrastructure/network/utils.js";
 import CacheableLookup from "cacheable-lookup";
-import { ISettingsService } from "@/service/system/settingsService.js";
 
 export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 	readonly type = "http";
 
 	constructor(
 		private got: Got,
-		private advancedMatcher: IAdvancedMatcher,
-		private settingsService: ISettingsService
+		private advancedMatcher: IAdvancedMatcher
 	) {
 		const cacheable = new CacheableLookup({ maxTtl: 300, errorTtl: 30 });
 		this.got = got.extend({
@@ -58,6 +56,17 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 		};
 	}
 
+	private sanitizeHeaderValue(value: string): string {
+		if (!value) return "";
+
+		return value
+			.replace(/[<>]/g, "")
+			.replace(/javascript:/gi, "")
+			.replace(/[^\t\x20-\x7E\x80-\xFF]/g, "") // allow only RFC 7230 header-safe characters
+			.trim()
+			.slice(0, 500);
+	}
+
 	async handle<T>(monitor: Monitor): Promise<MonitorStatusResponse<T>> {
 		const { url, secret, jsonPath, ignoreTlsErrors, customUserAgent } = monitor;
 
@@ -65,15 +74,9 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 			throw new Error("URL is required for HTTP monitor");
 		}
 
-		let userAgent: string | undefined = customUserAgent;
-		if (!userAgent && monitor.type === "http") {
-			const dbSettings = await this.settingsService.getDBSettings();
-			userAgent = dbSettings?.defaultUserAgent ?? undefined;
-		}
-
 		const headers: Record<string, string> = {};
 		if (secret) headers["Authorization"] = `Bearer ${secret}`;
-		if (userAgent) headers["User-Agent"] = userAgent;
+		if (customUserAgent) headers["User-Agent"] = this.sanitizeHeaderValue(customUserAgent);
 
 		const options: Record<string, unknown> = {
 			headers: Object.keys(headers).length > 0 ? headers : undefined,

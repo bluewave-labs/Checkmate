@@ -38,7 +38,14 @@ const httpSchema = baseSchema.extend({
 	matchMethod: z.enum(["equal", "include", "regex", ""]).optional(),
 	expectedValue: z.string().optional(),
 	jsonPath: z.string().optional(),
-	customUserAgent: z.string().max(500).optional(),
+	customUserAgent: z
+		.string()
+		.max(500)
+		.regex(
+			/^[\t\x20-\x7E\x80-\xFF]*$/,
+			"Only printable characters, spaces, and tabs are allowed (RFC 7230 §3.2.6)"
+		)
+		.optional(),
 });
 
 // Ping monitor schema

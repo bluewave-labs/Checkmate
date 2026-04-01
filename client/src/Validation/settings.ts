@@ -15,6 +15,10 @@ export const settingsSchema = z.object({
 	defaultUserAgent: z
 		.string()
 		.max(500)
+		.regex(
+			/^[\t\x20-\x7E\x80-\xFF]*$/,
+			"Only printable characters, spaces, and tabs are allowed (RFC 7230)"
+		)
 		.transform((val) => (val.trim() === "" ? null : val.trim()))
 		.optional(),
 	checkTTL: z
