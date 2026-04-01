@@ -981,6 +981,20 @@
 					"placeholderFromNumber": "+15551234567",
 					"optionToNumber": "To number (recipient)",
 					"placeholderToNumber": "+15559876543"
+				},
+				"webhookAuth": {
+					"title": "Authentication",
+					"description": "Optionally secure your webhook requests with authentication.",
+					"optionAuthType": "Authentication type",
+					"authNone": "None",
+					"authBasic": "Basic Auth",
+					"authBearer": "Bearer Token",
+					"optionUsername": "Username",
+					"placeholderUsername": "Enter username",
+					"optionPassword": "Password",
+					"placeholderPassword": "Enter password",
+					"optionToken": "Token",
+					"placeholderToken": "Enter bearer token"
 				}
 			},
 			"table": {
