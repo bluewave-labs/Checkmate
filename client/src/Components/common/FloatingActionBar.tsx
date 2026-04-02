@@ -36,8 +36,10 @@ export const FloatingActionBar: React.FC<FloatingActionBarProps> = ({
 				sx={{
 					position: "fixed",
 					bottom: theme.spacing(LAYOUT.XS),
-					left: "50%",
-					transform: "translateX(-50%)",
+					left: 0,
+					right: 0,
+					margin: "0 auto",
+					width: "max-content",
 					zIndex: theme.zIndex.snackbar,
 					px: LAYOUT.MD,
 					py: LAYOUT.XS,
