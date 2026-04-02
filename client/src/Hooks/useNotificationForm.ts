@@ -94,7 +94,7 @@ export const useNotificationForm = ({ data = null }: UseNotificationFormOptions 
 	return useMemo(() => {
 		const defaults = buildDefaults(data);
 		return {
-			schema: notificationSchema as unknown as typeof baseNotificationSchema,
+			schema: notificationSchema,
 			defaults,
 		};
 	}, [data]);
