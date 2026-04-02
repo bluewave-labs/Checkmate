@@ -30,7 +30,11 @@ export * from "@/service/infrastructure/notificationProviders/slack.js";
 export * from "@/service/infrastructure/notificationProviders/teams.js";
 export * from "@/service/infrastructure/notificationProviders/webhook.js";
 export * from "@/service/infrastructure/notificationProviders/telegram.js";
+<<<<<<< HEAD
 export * from "@/service/infrastructure/notificationProviders/pushover.js";
+=======
+export * from "@/service/infrastructure/notificationProviders/ntfy.js";
+>>>>>>> 45c14ac5c (feat: wire ntfy to backend notificationsService)
 
 // System services
 export * from "@/service/system/settingsService.js";

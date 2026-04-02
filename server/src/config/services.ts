@@ -29,7 +29,11 @@ import {
 	MatrixProvider,
 	TeamsProvider,
 	TelegramProvider,
+<<<<<<< HEAD
 	PushoverProvider,
+=======
+	NtfyProvider,
+>>>>>>> 45c14ac5c (feat: wire ntfy to backend notificationsService)
 	// Interfaces
 	INetworkService,
 	IEmailService,
@@ -299,7 +303,11 @@ export const initializeServices = async ({
 	const matrixProvider = new MatrixProvider(logger);
 	const teamsProvider = new TeamsProvider(logger);
 	const telegramProvider = new TelegramProvider(logger);
+<<<<<<< HEAD
 	const pushoverProvider = new PushoverProvider(logger);
+=======
+	const ntfyProvider = new NtfyProvider(logger);
+>>>>>>> 45c14ac5c (feat: wire ntfy to backend notificationsService)
 
 	const notificationsService = new NotificationsService(
 		notificationsRepository,
@@ -312,7 +320,11 @@ export const initializeServices = async ({
 		matrixProvider,
 		teamsProvider,
 		telegramProvider,
+<<<<<<< HEAD
 		pushoverProvider,
+=======
+		ntfyProvider,
+>>>>>>> 45c14ac5c (feat: wire ntfy to backend notificationsService)
 		settingsService,
 		logger,
 		notificationMessageBuilder
