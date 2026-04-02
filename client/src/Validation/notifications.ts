@@ -62,6 +62,11 @@ const pushoverSchema = baseSchema.extend({
 	accessToken: z.string().min(1, "App token is required"),
 });
 
+const ntfySchema = baseSchema.extend({
+	type: z.literal("ntfy"),
+	address: z.string().min(1, "URL is required").url("Please enter a valid URL"),
+});
+
 export const notificationSchema = z.discriminatedUnion("type", [
 	emailSchema,
 	slackSchema,
@@ -72,6 +77,7 @@ export const notificationSchema = z.discriminatedUnion("type", [
 	teamsSchema,
 	telegramSchema,
 	pushoverSchema,
+	ntfySchema,
 ]);
 
 export type NotificationFormData = z.infer<typeof notificationSchema>;
