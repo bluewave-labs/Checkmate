@@ -41,7 +41,7 @@ const NotificationSchema = new Schema<NotificationDocument>(
 		twilioPhoneNumber: { type: String },
 		authType: {
 			type: String,
-			enum: ["none", "basic", "bearer"] as WebhookAuthType[],
+			enum: ["none", "basic", "bearer"],
 			default: "none",
 		},
 		authUsername: { type: String },
