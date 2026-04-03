@@ -53,10 +53,7 @@ class NotificationController implements INotificationController {
 
 	private sanitizeNotification = (notification: any) => {
 		if (!notification) return notification;
-		const sanitized = { ...notification };
-		delete sanitized.authPassword;
-		delete sanitized.authToken;
-		delete sanitized.accessToken;
+		const { authPassword, authToken, accessToken, ...sanitized } = notification;
 		return sanitized;
 	};
 
