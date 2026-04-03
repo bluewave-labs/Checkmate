@@ -2,6 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
+import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
@@ -31,58 +32,65 @@ export const FloatingActionBar: React.FC<FloatingActionBarProps> = ({
 			mountOnEnter
 			unmountOnExit
 		>
-			<Paper
-				elevation={6}
+			<Box
 				sx={{
 					position: "fixed",
 					bottom: theme.spacing(LAYOUT.XS),
 					left: 0,
 					right: 0,
-					margin: "0 auto",
-					width: "max-content",
-					zIndex: theme.zIndex.snackbar,
-					px: LAYOUT.MD,
-					py: LAYOUT.XS,
-					borderRadius: theme.shape.borderRadius,
-					backgroundColor: theme.palette.background.paper,
-					border: `1px solid ${theme.palette.divider}`,
 					display: "flex",
-					alignItems: "center",
-					gap: LAYOUT.XS,
-					boxShadow: theme.shadows[8],
+					justifyContent: "center",
+					pointerEvents: "none",
+					zIndex: theme.zIndex.snackbar,
 				}}
 			>
-				<Stack
-					direction="row"
-					alignItems="center"
-					gap={LAYOUT.XS}
+				<Paper
+					elevation={6}
+					sx={{
+						pointerEvents: "auto",
+						px: LAYOUT.MD,
+						py: LAYOUT.XS,
+						borderRadius: theme.shape.borderRadius,
+						backgroundColor: theme.palette.background.paper,
+						border: `1px solid ${theme.palette.divider}`,
+						display: "flex",
+						alignItems: "center",
+						gap: LAYOUT.XS,
+						boxShadow: theme.shadows[8],
+					}}
 				>
-					<Typography
-						variant="body1"
-						fontWeight={600}
-						color={theme.palette.text.primary}
-					>
-						{selectedCount} {t("common.selected")}
-					</Typography>
-					<IconButton
-						size="small"
-						onClick={onClearSelection}
-						aria-label="clear selection"
-					>
-						<X size={18} />
-					</IconButton>
-				</Stack>
-
-				{children && (
 					<Stack
 						direction="row"
 						alignItems="center"
 						gap={LAYOUT.XS}
 					>
-						{children}
+						<Typography
+							variant="body1"
+							fontWeight={600}
+							color={theme.palette.text.primary}
+						>
+							{selectedCount} {t("common.selected")}
+						</Typography>
+						<IconButton
+							size="small"
+							onClick={onClearSelection}
+							aria-label="clear selection"
+						>
+							<X size={18} />
+						</IconButton>
 					</Stack>
-				)}
-			</Paper>
+
+					{children && (
+						<Stack
+							direction="row"
+							alignItems="center"
+							gap={LAYOUT.XS}
+						>
+							{children}
+						</Stack>
+					)}
+				</Paper>
+			</Box>
 		</Slide>
 	);
 };
