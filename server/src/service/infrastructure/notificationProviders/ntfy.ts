@@ -55,6 +55,7 @@ export class NtfyProvider implements INotificationProvider {
                 body: text,
                 headers: {
                     "Content-Type": "text/plain",
+                    "Title": message.content.title,
                 },
             });
             return true;
@@ -71,8 +72,39 @@ export class NtfyProvider implements INotificationProvider {
     }
 
     private buildNtfyText(message: NotificationMessage): string {
-        console.log(message)
-        return 'TODO: Custom NTFY Message';
-    }
+        const lines: string[] = [];
 
+        lines.push(message.content.summary);
+        lines.push("");
+
+        lines.push("Monitor Details:");
+        lines.push(`• Name: ${message.monitor.name}`);
+        lines.push(`• URL: ${message.monitor.url}`);
+        lines.push(`• Type: ${message.monitor.type}`);
+        lines.push(`• Status: ${message.monitor.status}`);
+        lines.push(`• Alert: ${message.type} (${message.severity})`);
+
+        if (message.content.details && message.content.details.length > 0) {
+            lines.push("");
+            lines.push("Additional Information:");
+            message.content.details.forEach((detail) => lines.push(`• ${detail}`));
+        }
+
+        if (message.content.thresholds && message.content.thresholds.length > 0) {
+            lines.push("");
+            lines.push("Threshold Breaches:");
+            message.content.thresholds.forEach((breach) => {
+                lines.push(`• ${breach.metric.toUpperCase()}: ${breach.formattedValue} (threshold: ${breach.threshold}${breach.unit})`);
+            });
+        }
+
+        if (message.content.incident) {
+            lines.push("");
+            const incidentUrl =
+                message.content.incident.url || `${message.clientHost}/incidents/${message.content.incident.id}`;
+            lines.push(`Incident: ${incidentUrl}`);
+        }
+
+        return lines.join("\n");
+    }
 }
