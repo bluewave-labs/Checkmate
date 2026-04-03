@@ -73,22 +73,91 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 		return SuperSimpleQueue.SERVICE_NAME;
 	}
 
+	private registerListeners = () => {
+		this.scheduler.on("scheduler:start", () => {
+			this.logger.info({
+				message: "Scheduler started",
+				service: SERVICE_NAME,
+			});
+		});
+
+		this.scheduler.on("scheduler:stop", () => {
+			this.logger.info({
+				message: "Scheduler stopped",
+				service: SERVICE_NAME,
+			});
+		});
+
+		this.scheduler.on("scheduler:error", (error) => {
+			this.logger.error({
+				message: `Scheduler error: ${error instanceof Error ? error.message : String(error)}`,
+				service: SERVICE_NAME,
+				stack: error instanceof Error ? error.stack : undefined,
+			});
+		});
+
+		this.scheduler.on("job:abort", (job, reason) => {
+			this.logger.warn({
+				message: `${job.id} aborted: ${reason}`,
+				service: SERVICE_NAME,
+			});
+		});
+
+		this.scheduler.on("job:attempt", (job, attempt) => {
+			this.logger.debug({
+				message: `${job.id} attempt ${attempt}`,
+				service: SERVICE_NAME,
+			});
+		});
+
+		this.scheduler.on("job:complete", (job) => {
+			this.logger.debug({
+				message: `${job.id} completed successfully`,
+				service: SERVICE_NAME,
+			});
+		});
+
+		this.scheduler.on("job:exhausted", (job, error) => {
+			this.logger.error({
+				message: `${job.id} exhausted all retries: ${error instanceof Error ? error.message : String(error)}`,
+				service: SERVICE_NAME,
+				stack: error instanceof Error ? error.stack : undefined,
+			});
+		});
+
+		this.scheduler.on("job:fail", (job, error, attempt) => {
+			this.logger.warn({
+				message: `${job.id} failed on attempt ${attempt}: ${error instanceof Error ? error.message : String(error)}`,
+				service: SERVICE_NAME,
+				stack: error instanceof Error ? error.stack : undefined,
+			});
+		});
+
+		this.scheduler.on("job:start", (job) => {
+			this.logger.debug({
+				message: `${job.id} started`,
+				service: SERVICE_NAME,
+			});
+		});
+	};
+
 	static async create(logger: ILogger, helper: ISuperSimpleQueueHelper, monitorsRepository: IMonitorsRepository) {
 		const scheduler = new Scheduler({
 			// storeType: "mongo",
 			// storeType: "redis",
-			logLevel: "debug",
 			// dbUri: envSettings.dbConnectionString,
 		});
 		const instance = new SuperSimpleQueue(logger, helper, monitorsRepository, scheduler);
 		await instance.init();
+
 		return instance;
 	}
 
 	init = async () => {
 		try {
-			this.scheduler.start();
+			this.registerListeners();
 
+			this.scheduler.start();
 			this.scheduler.addTemplate("monitor-job", this.helper.getHeartbeatJob());
 			this.scheduler.addTemplate("geo-check-job", this.helper.getHeartbeatGeoJob());
 			this.scheduler.addTemplate("cleanup-orphaned", this.helper.getCleanupOrphanedJob());
