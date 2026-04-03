@@ -77,11 +77,79 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 		const scheduler = new Scheduler({
 			// storeType: "mongo",
 			// storeType: "redis",
-			logLevel: "debug",
 			// dbUri: envSettings.dbConnectionString,
 		});
 		const instance = new SuperSimpleQueue(logger, helper, monitorsRepository, scheduler);
 		await instance.init();
+
+		// Set up emitters
+
+		scheduler.on("scheduler:start", () => {
+			logger.info({
+				message: "Scheduler started",
+				service: SERVICE_NAME,
+			});
+		});
+
+		scheduler.on("scheduler:stop", () => {
+			logger.info({
+				message: "Scheduler stopped",
+				service: SERVICE_NAME,
+			});
+		});
+
+		scheduler.on("scheduler:error", (error) => {
+			logger.error({
+				message: `Scheduler error: ${error instanceof Error ? error.message : String(error)}`,
+				service: SERVICE_NAME,
+				stack: error instanceof Error ? error.stack : undefined,
+			});
+		});
+
+		scheduler.on("job:abort", (job, reason) => {
+			logger.warn({
+				message: `${job.id} aborted: ${reason}`,
+				service: SERVICE_NAME,
+			});
+		});
+
+		scheduler.on("job:attempt", (job, attempt) => {
+			logger.debug({
+				message: `${job.id} attempt ${attempt}`,
+				service: SERVICE_NAME,
+			});
+		});
+
+		scheduler.on("job:complete", (job) => {
+			logger.debug({
+				message: `${job.id} completed successfully`,
+				service: SERVICE_NAME,
+			});
+		});
+
+		scheduler.on("job:exhausted", (job, error) => {
+			logger.error({
+				message: `${job.id} exhausted all retries: ${error instanceof Error ? error.message : String(error)}`,
+				service: SERVICE_NAME,
+				stack: error instanceof Error ? error.stack : undefined,
+			});
+		});
+
+		scheduler.on("job:fail", (job, error, attempt) => {
+			logger.error({
+				message: `${job.id} failed on attempt ${attempt}: ${error instanceof Error ? error.message : String(error)}`,
+				service: SERVICE_NAME,
+				stack: error instanceof Error ? error.stack : undefined,
+			});
+		});
+
+		scheduler.on("job:start", (job) => {
+			logger.debug({
+				message: `${job.id} started`,
+				service: SERVICE_NAME,
+			});
+		});
+
 		return instance;
 	}
 
