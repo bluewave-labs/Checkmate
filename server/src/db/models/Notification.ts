@@ -36,6 +36,8 @@ const NotificationSchema = new Schema<NotificationDocument>(
 		phone: { type: String },
 		homeserverUrl: { type: String },
 		roomId: { type: String },
+		username: { type: String },
+		password: { type: String },
 		accessToken: { type: String },
 	},
 	{

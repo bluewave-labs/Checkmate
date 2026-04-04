@@ -65,6 +65,9 @@ const pushoverSchema = baseSchema.extend({
 const ntfySchema = baseSchema.extend({
 	type: z.literal("ntfy"),
 	address: z.string().min(1, "URL is required").url("Please enter a valid URL"),
+	username: z.union([z.string(), z.literal("")]).optional(),
+	password: z.union([z.string(), z.literal("")]).optional(),
+	accessToken: z.union([z.string(), z.literal("")]).optional(),
 });
 
 export const notificationSchema = z.discriminatedUnion("type", [

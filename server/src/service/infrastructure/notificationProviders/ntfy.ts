@@ -18,11 +18,14 @@ export class NtfyProvider implements INotificationProvider {
             return false;
         }
 
+        const auth = this.determineAuthMethod(notification);
+
         try {
             await got.post(notification.address, {
                 body: getTestMessage(),
                 headers: {
                     "Content-Type": "text/plain",
+                    ...(auth ? { "Authorization": auth } : {}),
                 },
             });
             return true;
@@ -48,6 +51,7 @@ export class NtfyProvider implements INotificationProvider {
             return false;
         }
 
+        const auth = this.determineAuthMethod(notification);
         const text = this.buildNtfyText(message);
 
         try {
@@ -56,6 +60,7 @@ export class NtfyProvider implements INotificationProvider {
                 headers: {
                     "Content-Type": "text/plain",
                     "Title": message.content.title,
+                    ...(auth ? { "Authorization": auth } : {}),
                 },
             });
             return true;
@@ -69,6 +74,15 @@ export class NtfyProvider implements INotificationProvider {
             });
             return false;
         }
+    }
+
+    private determineAuthMethod(notification: Partial<Notification>): string {
+        if (notification.username && notification.password) {
+            return `Basic ${Buffer.from(`${notification.username}:${notification.password}`).toString('base64')}`;
+        } else if (notification.accessToken) {
+            return `Bearer ${notification.accessToken}`;
+        }
+        return "";
     }
 
     private buildNtfyText(message: NotificationMessage): string {

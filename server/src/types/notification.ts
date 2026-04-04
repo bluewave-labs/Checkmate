@@ -22,6 +22,8 @@ export interface Notification {
 	phone?: string;
 	homeserverUrl?: string;
 	roomId?: string;
+	username?: string;
+	password?: string;
 	accessToken?: string;
 	createdAt: string;
 	updatedAt: string;

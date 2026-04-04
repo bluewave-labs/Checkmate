@@ -73,6 +73,9 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 			type: "ntfy",
 			notificationName: data.notificationName || "",
 			address: data.address || "",
+			username: data.username || "",
+			password: data.password || "",
+			accessToken: data.accessToken || "",
 		};
 	}
 	// Default: email (covers both data === null and data.type === "email")

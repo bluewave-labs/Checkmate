@@ -968,6 +968,16 @@
 					"placeholderAppToken": "azGDORePK8gMaC0QOYAMyEEuzJnyUi",
 					"optionUserKey": "User key",
 					"placeholderUserKey": "uQiRzpo4DXghDmr9QzzfQu27cmVRsG"
+				},
+				"ntfy": {
+					"title": "Ntfy configuration",
+					"description": "Configure your Ntfy URL for notifications and use your username and password or an access token when the topic requires authentication.",
+					"optionNtfyAddress": "Ntfy URL",
+					"placeholderNtfyAddress": "https://ntfy.sh/your-topic",
+					"optionUsername": "Username",
+					"placeholderUsername": "your-username",
+					"optionPassword": "Password",
+					"placeholderPassword": "your-password"
 				}
 			},
 			"table": {

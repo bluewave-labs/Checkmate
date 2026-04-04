@@ -31,6 +31,8 @@ class MongoNotificationsRepository implements INotificationsRepository {
 			phone: doc.phone ?? undefined,
 			homeserverUrl: doc.homeserverUrl ?? undefined,
 			roomId: doc.roomId ?? undefined,
+			username: doc.username ?? undefined,
+			password: doc.password ?? undefined,
 			accessToken: doc.accessToken ?? undefined,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
