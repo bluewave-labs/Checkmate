@@ -22,7 +22,7 @@ const COLUMNS = `id, user_id, team_id, type, notification_name, address, phone,
 	homeserver_url, room_id, access_token, created_at, updated_at`;
 
 export class TimescaleNotificationsRepository implements INotificationsRepository {
-	constructor(private pool: Pool) { }
+	constructor(private pool: Pool) {}
 
 	create = async (data: Partial<Notification>): Promise<Notification> => {
 		const result = await this.pool.query<NotificationRow>(

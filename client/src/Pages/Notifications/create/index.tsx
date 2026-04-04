@@ -147,10 +147,10 @@ const NotificationsCreatePage = () => {
 					/>
 				}
 			/>
-<<<<<<< HEAD
 			{watchedType !== "matrix" &&
 				watchedType !== "telegram" &&
-				watchedType !== "pushover" && (
+				watchedType !== "pushover" &&
+				watchedType !== "ntfy" && (
 					<ConfigBox
 						title={addressConfig.title}
 						subtitle={addressConfig.description}
@@ -174,32 +174,6 @@ const NotificationsCreatePage = () => {
 						}
 					/>
 				)}
-=======
-			{watchedType !== "matrix" && watchedType !== "telegram" && watchedType !== "ntfy" && (
-				<ConfigBox
-					title={addressConfig.title}
-					subtitle={addressConfig.description}
-					rightContent={
-						<Controller
-							name="address"
-							control={control}
-							defaultValue={"address" in defaults ? defaults.address : ""}
-							render={({ field, fieldState }) => (
-								<TextField
-									{...field}
-									type="text"
-									fieldLabel={addressConfig.fieldLabel}
-									placeholder={addressConfig.placeholder}
-									fullWidth
-									error={!!fieldState.error}
-									helperText={fieldState.error?.message ?? ""}
-								/>
-							)}
-						/>
-					}
-				/>
-			)}
->>>>>>> 1faa6d6e6 (feat(notifications): support ntfy auth methods (basic/bearer))
 			{watchedType === "telegram" && (
 				<ConfigBox
 					title={t("pages.notifications.form.telegram.title")}
@@ -364,7 +338,9 @@ const NotificationsCreatePage = () => {
 										{...field}
 										type="text"
 										fieldLabel={t("pages.notifications.form.ntfy.optionNtfyAddress")}
-										placeholder={t("pages.notifications.form.ntfy.placeholderNtfyAddress")}
+										placeholder={t(
+											"pages.notifications.form.ntfy.placeholderNtfyAddress"
+										)}
 										fullWidth
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message ?? ""}

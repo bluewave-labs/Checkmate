@@ -7,118 +7,117 @@ import got from "got";
 import { ILogger } from "@/utils/logger.js";
 
 export class NtfyProvider implements INotificationProvider {
-    private logger: ILogger;
+	private logger: ILogger;
 
-    constructor(logger: ILogger) {
-        this.logger = logger;
-    }
+	constructor(logger: ILogger) {
+		this.logger = logger;
+	}
 
-    sendTestAlert = async (notification: Partial<Notification>) => {
-        if (!notification.address) {
-            return false;
-        }
+	sendTestAlert = async (notification: Partial<Notification>) => {
+		if (!notification.address) {
+			return false;
+		}
 
-        const auth = this.determineAuthMethod(notification);
+		const auth = this.determineAuthMethod(notification);
 
-        try {
-            await got.post(notification.address, {
-                body: getTestMessage(),
-                headers: {
-                    "Content-Type": "text/plain",
-                    ...(auth ? { "Authorization": auth } : {}),
-                },
-            });
-            return true;
-        } catch (error) {
-            const err = error as Error;
-            this.logger.warn({
-                message: "Ntfy test alert failed",
-                service: SERVICE_NAME,
-                method: "sendTestAlert",
-                stack: err?.stack,
-            });
-            return false;
-        }
-    };
+		try {
+			await got.post(notification.address, {
+				body: getTestMessage(),
+				headers: {
+					"Content-Type": "text/plain",
+					...(auth ? { Authorization: auth } : {}),
+				},
+			});
+			return true;
+		} catch (error) {
+			const err = error as Error;
+			this.logger.warn({
+				message: "Ntfy test alert failed",
+				service: SERVICE_NAME,
+				method: "sendTestAlert",
+				stack: err?.stack,
+			});
+			return false;
+		}
+	};
 
-    async sendMessage(notification: Notification, message: NotificationMessage): Promise<boolean> {
-        if (!notification.address) {
-            this.logger.warn({
-                message: "Ntfy notification missing URL",
-                service: SERVICE_NAME,
-                method: "sendMessage",
-            });
-            return false;
-        }
+	async sendMessage(notification: Notification, message: NotificationMessage): Promise<boolean> {
+		if (!notification.address) {
+			this.logger.warn({
+				message: "Ntfy notification missing URL",
+				service: SERVICE_NAME,
+				method: "sendMessage",
+			});
+			return false;
+		}
 
-        const auth = this.determineAuthMethod(notification);
-        const text = this.buildNtfyText(message);
+		const auth = this.determineAuthMethod(notification);
+		const text = this.buildNtfyText(message);
 
-        try {
-            await got.post(notification.address, {
-                body: text,
-                headers: {
-                    "Content-Type": "text/plain",
-                    "Title": message.content.title,
-                    ...(auth ? { "Authorization": auth } : {}),
-                },
-            });
-            return true;
-        } catch (error) {
-            const err = error as Error;
-            this.logger.warn({
-                message: "Ntfy notification failed",
-                service: SERVICE_NAME,
-                method: "sendMessage",
-                stack: err?.stack,
-            });
-            return false;
-        }
-    }
+		try {
+			await got.post(notification.address, {
+				body: text,
+				headers: {
+					"Content-Type": "text/plain",
+					Title: message.content.title,
+					...(auth ? { Authorization: auth } : {}),
+				},
+			});
+			return true;
+		} catch (error) {
+			const err = error as Error;
+			this.logger.warn({
+				message: "Ntfy notification failed",
+				service: SERVICE_NAME,
+				method: "sendMessage",
+				stack: err?.stack,
+			});
+			return false;
+		}
+	}
 
-    private determineAuthMethod(notification: Partial<Notification>): string {
-        if (notification.username && notification.password) {
-            return `Basic ${Buffer.from(`${notification.username}:${notification.password}`).toString('base64')}`;
-        } else if (notification.accessToken) {
-            return `Bearer ${notification.accessToken}`;
-        }
-        return "";
-    }
+	private determineAuthMethod(notification: Partial<Notification>): string {
+		if (notification.username && notification.password) {
+			return `Basic ${Buffer.from(`${notification.username}:${notification.password}`).toString("base64")}`;
+		} else if (notification.accessToken) {
+			return `Bearer ${notification.accessToken}`;
+		}
+		return "";
+	}
 
-    private buildNtfyText(message: NotificationMessage): string {
-        const lines: string[] = [];
+	private buildNtfyText(message: NotificationMessage): string {
+		const lines: string[] = [];
 
-        lines.push(message.content.summary);
-        lines.push("");
+		lines.push(message.content.summary);
+		lines.push("");
 
-        lines.push("Monitor Details:");
-        lines.push(`• Name: ${message.monitor.name}`);
-        lines.push(`• URL: ${message.monitor.url}`);
-        lines.push(`• Type: ${message.monitor.type}`);
-        lines.push(`• Status: ${message.monitor.status}`);
-        lines.push(`• Alert: ${message.type} (${message.severity})`);
+		lines.push("Monitor Details:");
+		lines.push(`• Name: ${message.monitor.name}`);
+		lines.push(`• URL: ${message.monitor.url}`);
+		lines.push(`• Type: ${message.monitor.type}`);
+		lines.push(`• Status: ${message.monitor.status}`);
+		lines.push(`• Alert: ${message.type} (${message.severity})`);
 
-        if (message.content.details && message.content.details.length > 0) {
-            lines.push("");
-            lines.push("Additional Information:");
-            message.content.details.forEach((detail) => lines.push(`• ${detail}`));
-        }
+		if (message.content.details && message.content.details.length > 0) {
+			lines.push("");
+			lines.push("Additional Information:");
+			message.content.details.forEach((detail) => lines.push(`• ${detail}`));
+		}
 
-        if (message.content.thresholds && message.content.thresholds.length > 0) {
-            lines.push("");
-            lines.push("Threshold Breaches:");
-            message.content.thresholds.forEach((breach) => {
-                lines.push(`• ${breach.metric.toUpperCase()}: ${breach.formattedValue} (threshold: ${breach.threshold}${breach.unit})`);
-            });
-        }
+		if (message.content.thresholds && message.content.thresholds.length > 0) {
+			lines.push("");
+			lines.push("Threshold Breaches:");
+			message.content.thresholds.forEach((breach) => {
+				lines.push(`• ${breach.metric.toUpperCase()}: ${breach.formattedValue} (threshold: ${breach.threshold}${breach.unit})`);
+			});
+		}
 
-        if (message.content.incident) {
-            lines.push("");
-            const incidentUrl =
-                message.content.incident.url || `${message.clientHost}/incidents/${message.content.incident.id}`;
-            lines.push(`Incident: ${incidentUrl}`);
-        }
+		if (message.content.incident) {
+			lines.push("");
+			const incidentUrl = message.content.incident.url || `${message.clientHost}/incidents/${message.content.incident.id}`;
+			lines.push(`Incident: ${incidentUrl}`);
+		}
 
-        return lines.join("\n");
-    }
+		return lines.join("\n");
+	}
 }
