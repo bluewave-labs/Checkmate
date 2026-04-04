@@ -34,7 +34,11 @@ function flattenKeys(obj: Record<string, unknown>, prefix = ""): Record<string, 
 }
 
 /** Set a value at a dot-separated path in a nested object */
-function setNestedValue(obj: Record<string, unknown>, keyPath: string, value: string): void {
+function setNestedValue(
+	obj: Record<string, unknown>,
+	keyPath: string,
+	value: string
+): void {
 	const parts = keyPath.split(".");
 	let current = obj;
 	for (let i = 0; i < parts.length - 1; i++) {
@@ -127,7 +131,12 @@ function buildMigratedLocale(
 		if (suffix) {
 			const enCandidates = suffixIndex[suffix];
 			const langCandidates = langBySuffix[suffix];
-			if (enCandidates && enCandidates.length === 1 && langCandidates && langCandidates.length === 1) {
+			if (
+				enCandidates &&
+				enCandidates.length === 1 &&
+				langCandidates &&
+				langCandidates.length === 1
+			) {
 				const value = langCandidates[0].value;
 				setNestedValue(result, enKey, value);
 				matches.push({ enKey, value, strategy: "suffix-2" });
@@ -138,7 +147,12 @@ function buildMigratedLocale(
 		// Strategy 3: Unique last-segment match
 		const enCandidates = lastSegIndex[lastSeg];
 		const langCandidates = langByLastSeg[lastSeg];
-		if (enCandidates && enCandidates.length === 1 && langCandidates && langCandidates.length === 1) {
+		if (
+			enCandidates &&
+			enCandidates.length === 1 &&
+			langCandidates &&
+			langCandidates.length === 1
+		) {
 			const value = langCandidates[0].value;
 			setNestedValue(result, enKey, value);
 			matches.push({ enKey, value, strategy: "unique-name" });
@@ -168,7 +182,10 @@ function main() {
 	// Find all non-English locale files
 	const localeFiles = fs
 		.readdirSync(LOCALES_DIR)
-		.filter((f: string) => f.endsWith(".json") && f !== "en.json" && f !== "migration-report.json");
+		.filter(
+			(f: string) =>
+				f.endsWith(".json") && f !== "en.json" && f !== "migration-report.json"
+		);
 
 	if (localeFiles.length === 0) {
 		console.log("No locale files to migrate.");
@@ -182,7 +199,13 @@ function main() {
 
 	const report: Record<
 		string,
-		{ total: number; exact: number; suffix: number; uniqueName: number; placeholder: number }
+		{
+			total: number;
+			exact: number;
+			suffix: number;
+			uniqueName: number;
+			placeholder: number;
+		}
 	> = {};
 
 	for (const file of localeFiles) {
@@ -226,7 +249,9 @@ function main() {
 	fs.writeFileSync(REPORT_PATH, JSON.stringify(report, null, "\t") + "\n", "utf8");
 
 	const totalLangs = localeFiles.length;
-	console.log(`\nMigrated ${totalLangs} locale files. Originals backed up to locales/backup/`);
+	console.log(
+		`\nMigrated ${totalLangs} locale files. Originals backed up to locales/backup/`
+	);
 	console.log(`Report written to ${REPORT_PATH}`);
 }
 
