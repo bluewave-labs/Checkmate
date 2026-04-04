@@ -14,7 +14,7 @@ export interface INotificationsService {
 	updateById(id: string, teamId: string, updateData: Partial<Notification>): Promise<Notification>;
 	deleteById: (id: string, teamId: string) => Promise<Notification>;
 	handleNotifications: (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => Promise<boolean>;
-
+	sendEscalationNotification: (notification: Notification, notificationMessage: NotificationMessage) => Promise<boolean>;
 	sendTestNotification: (notification: Partial<Notification>) => Promise<boolean>;
 	testAllNotifications: (notificationIds: string[]) => Promise<boolean>;
 }
@@ -142,23 +142,40 @@ export class NotificationsService implements INotificationsService {
 	};
 
 	sendTestNotification = async (notification: Partial<Notification>) => {
-		switch (notification.type) {
-			case "email":
-				return await this.emailProvider.sendTestAlert(notification);
-			case "slack":
-				return await this.slackProvider.sendTestAlert(notification);
-			case "discord":
-				return await this.discordProvider.sendTestAlert(notification);
-			case "pager_duty":
-				return await this.pagerDutyProvider.sendTestAlert(notification);
-			case "matrix":
-				return await this.matrixProvider.sendTestAlert(notification);
-			case "webhook":
-				return await this.webhookProvider.sendTestAlert(notification);
-			case "teams":
-				return await this.teamsProvider.sendTestAlert(notification);
-			default:
-				return false;
+		try {
+			switch (notification.type) {
+				case "email":
+					return await this.emailProvider.sendTestAlert(notification);
+				case "slack":
+					return await this.slackProvider.sendTestAlert(notification);
+				case "discord":
+					return await this.discordProvider.sendTestAlert(notification);
+				case "pager_duty":
+					return await this.pagerDutyProvider.sendTestAlert(notification);
+				case "matrix":
+					return await this.matrixProvider.sendTestAlert(notification);
+				case "webhook":
+					return await this.webhookProvider.sendTestAlert(notification);
+				case "teams":
+					return await this.teamsProvider.sendTestAlert(notification);
+				default:
+					this.logger.warn({
+						message: `Unknown notification type for test`,
+						service: SERVICE_NAME,
+						method: "sendTestNotification",
+						details: { type: notification.type },
+					});
+					return false;
+			}
+		} catch (error) {
+			this.logger.error({
+				message: error instanceof Error ? error.message : "Error sending test notification",
+				service: SERVICE_NAME,
+				method: "sendTestNotification",
+				details: { type: notification.type },
+				stack: error instanceof Error ? error.stack : undefined,
+			});
+			return false;
 		}
 	};
 
@@ -190,6 +207,33 @@ export class NotificationsService implements INotificationsService {
 
 	updateById = async (id: string, teamId: string, updateData: Partial<Notification>): Promise<Notification> => {
 		return await this.notificationsRepository.updateById(id, teamId, updateData);
+	};
+
+	sendEscalationNotification = async (notification: Notification, notificationMessage: NotificationMessage): Promise<boolean> => {
+		// Route to provider based on notification type
+		switch (notification.type) {
+			case "webhook":
+				return await this.webhookProvider.sendMessage!(notification, notificationMessage);
+			case "slack":
+				return await this.slackProvider.sendMessage!(notification, notificationMessage);
+			case "matrix":
+				return await this.matrixProvider.sendMessage!(notification, notificationMessage);
+			case "pager_duty":
+				return await this.pagerDutyProvider.sendMessage!(notification, notificationMessage);
+			case "discord":
+				return await this.discordProvider.sendMessage!(notification, notificationMessage);
+			case "email":
+				return await this.emailProvider.sendMessage!(notification, notificationMessage);
+			case "teams":
+				return await this.teamsProvider.sendMessage!(notification, notificationMessage);
+			default:
+				this.logger.warn({
+					message: `Unknown notification type: ${notification.type}`,
+					service: SERVICE_NAME,
+					method: "sendEscalationNotification",
+				});
+				return false;
+		}
 	};
 
 	deleteById = async (id: string, teamId: string): Promise<Notification> => {

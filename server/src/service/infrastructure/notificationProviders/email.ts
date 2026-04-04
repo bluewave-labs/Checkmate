@@ -19,10 +19,11 @@ export class EmailProvider implements INotificationProvider {
 		const html = await buildTestEmail(this.emailService);
 
 		if (!notification.address) {
-			this.logger.warn({
-				message: "Missing address",
+			this.logger.error({
+				message: "Missing email address in notification",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
+				details: { notificationKeys: Object.keys(notification) },
 			});
 			return false;
 		}
@@ -36,49 +37,108 @@ export class EmailProvider implements INotificationProvider {
 			return false;
 		}
 
-		const messageId = await this.emailService.sendEmail(notification.address, subject, html);
-		if (!messageId) {
-			this.logger.warn({
-				message: "Email test alert failed",
+		try {
+			const messageId = await this.emailService.sendEmail(notification.address, subject, html);
+			if (!messageId) {
+				this.logger.error({
+					message: "Email test alert failed - no message ID returned",
+					service: SERVICE_NAME,
+					method: "sendTestAlert",
+					details: { address: notification.address },
+				});
+				return false;
+			}
+			this.logger.info({
+				message: "Email test alert sent successfully",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
+				details: { messageId, address: notification.address },
+			});
+			return true;
+		} catch (error) {
+			this.logger.error({
+				message: error instanceof Error ? error.message : "Unknown error sending test email",
+				service: SERVICE_NAME,
+				method: "sendTestAlert",
+				details: { address: notification.address },
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 			return false;
 		}
-		return true;
 	}
 
 	async sendMessage(notification: Notification, message: NotificationMessage): Promise<boolean> {
 		if (!notification.address) {
+			this.logger.error({
+				message: "Missing email address in notification",
+				service: SERVICE_NAME,
+				method: "sendMessage",
+				details: { messageType: message.type, monitorId: message.monitor.id },
+			});
 			return false;
 		}
 
 		const subject = this.buildSubject(message);
-		const html = await this.buildEmailFromMessage(message);
+		
+		try {
+			const html = await this.buildEmailFromMessage(message);
 
-		if (!html) {
-			this.logger.warn({
-				message: "Failed to build email content",
+			if (!html) {
+				this.logger.warn({
+					message: "Failed to build email content",
+					service: SERVICE_NAME,
+					method: "sendMessage",
+					details: { messageType: message.type, monitorId: message.monitor.id },
+				});
+				return false;
+			}
+
+			const messageId = await this.emailService.sendEmail(notification.address, subject, html);
+			if (!messageId) {
+				this.logger.error({
+					message: "Email notification failed - no message ID returned",
+					service: SERVICE_NAME,
+					method: "sendMessage",
+					details: { 
+						messageType: message.type, 
+						monitorId: message.monitor.id,
+						address: notification.address,
+					},
+				});
+				return false;
+			}
+
+			this.logger.info({
+				message: `Email notification sent successfully`,
 				service: SERVICE_NAME,
 				method: "sendMessage",
+				details: { 
+					messageType: message.type, 
+					monitorId: message.monitor.id,
+					messageId,
+				},
+			});
+			return true;
+		} catch (error) {
+			this.logger.error({
+				message: error instanceof Error ? error.message : "Unknown error sending email notification",
+				service: SERVICE_NAME,
+				method: "sendMessage",
+				details: { 
+					messageType: message.type, 
+					monitorId: message.monitor.id,
+					address: notification.address,
+				},
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 			return false;
 		}
-
-		const messageId = await this.emailService.sendEmail(notification.address, subject, html);
-		if (!messageId) {
-			this.logger.warn({
-				message: "Email notification failed",
-				service: SERVICE_NAME,
-				method: "sendMessage",
-			});
-			return false;
-		}
-		return true;
 	}
 
 	private buildSubject(message: NotificationMessage): string {
 		switch (message.type) {
+			case "escalation":
+				return `ESCALATED: ${message.monitor.name} - Incident Still Ongoing`;
 			case "monitor_down":
 				return `Monitor ${message.monitor.name} is down`;
 			case "monitor_up":

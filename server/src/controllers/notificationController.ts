@@ -38,7 +38,12 @@ class NotificationController implements INotificationController {
 			const success = await this.notificationsService.sendTestNotification(notification);
 
 			if (!success) {
-				throw new AppError({ message: "Sending notification failed", status: 500 });
+				throw new AppError({
+					message: "Sending notification failed - please check your email configuration and credentials",
+					status: 500,
+					service: SERVICE_NAME,
+					method: "testNotification",
+				});
 			}
 
 			return res.status(200).json({

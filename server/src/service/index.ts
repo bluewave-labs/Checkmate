@@ -1,6 +1,7 @@
 // Business services
 export * from "@/service/business/checkService.js";
 export * from "@/service/business/diagnosticService.js";
+export * from "@/service/business/escalationService.js";
 export * from "@/service/business/geoChecksService.js";
 export * from "@/service/business/incidentService.js";
 export * from "@/service/business/inviteService.js";

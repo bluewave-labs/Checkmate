@@ -151,10 +151,16 @@ export class EmailService implements IEmailService {
 		try {
 			await this.transporter.verify();
 		} catch (error: unknown) {
-			this.logger.warn({
-				message: "Email transporter verification failed",
+			this.logger.error({
+				message: "Email transporter verification failed - check email server configuration in system settings",
 				service: SERVICE_NAME,
 				method: "verifyTransporter",
+				details: {
+					host: systemEmailHost,
+					port: systemEmailPort,
+					secure: systemEmailSecure,
+					errorMessage: error instanceof Error ? error.message : String(error),
+				},
 				stack: error instanceof Error ? error.stack : undefined,
 			});
 			return false;
@@ -170,11 +176,18 @@ export class EmailService implements IEmailService {
 			return info?.messageId;
 		} catch (error: unknown) {
 			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
+				message: "Email send failed",
 				service: SERVICE_NAME,
 				method: "sendEmail",
+				details: {
+					to: to,
+					from: systemEmailAddress,
+					host: systemEmailHost,
+					errorMessage: error instanceof Error ? error.message : String(error),
+				},
 				stack: error instanceof Error ? error.stack : undefined,
 			});
+			return false;
 		}
 	};
 }

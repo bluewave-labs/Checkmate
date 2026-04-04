@@ -3,7 +3,7 @@
  * Part of notification system unification effort
  */
 
-export type NotificationType = "monitor_down" | "monitor_up" | "threshold_breach" | "threshold_resolved" | "test";
+export type NotificationType = "monitor_down" | "monitor_up" | "threshold_breach" | "threshold_resolved" | "test" | "escalation";
 
 export type NotificationSeverity = "critical" | "warning" | "info" | "success";
 
