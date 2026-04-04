@@ -1,36 +1,89 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import SuperSimpleQueueHelper from "../src/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.ts";
+import { SuperSimpleQueueHelper } from "../src/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.ts";
 import type { Monitor } from "../src/types/monitor.ts";
+import { createMockLogger } from "./helpers/createMockLogger.ts";
 
-const createLogger = () => ({ info: jest.fn(), error: jest.fn(), warn: jest.fn(), debug: jest.fn() });
-
-const createHelper = (overrides?: Partial<ConstructorParameters<typeof SuperSimpleQueueHelper>[0]>) => {
+const createHelper = (overrides?: Record<string, unknown>) => {
 	const maintenanceWindowsRepository = {
 		findByMonitorId: jest.fn().mockResolvedValue([]),
 	};
-	const statusServiceMock = {
-		updateMonitorStatus: jest.fn().mockResolvedValue({ monitor: { id: "m1" }, statusChanged: true, prevStatus: false }),
+	const monitorsRepository = {
+		updateById: jest.fn().mockResolvedValue({}),
+		findAllMonitorIds: jest.fn().mockResolvedValue(["m1"]),
+		deleteByTeamIdsNotIn: jest.fn().mockResolvedValue(0),
 	};
-	const helper = new SuperSimpleQueueHelper({
-		logger: createLogger(),
+	const teamsRepository = {
+		findAllTeamIds: jest.fn().mockResolvedValue(["team"]),
+	};
+	const monitorStatsRepository = {
+		deleteByMonitorIdsNotIn: jest.fn().mockResolvedValue(0),
+	};
+	const checksRepository = {
+		deleteByMonitorIdsNotIn: jest.fn().mockResolvedValue(0),
+	};
+	const incidentsRepository = {
+		deleteByMonitorIdsNotIn: jest.fn().mockResolvedValue(0),
+	};
+	const geoChecksRepository = {
+		deleteByMonitorIdsNotIn: jest.fn().mockResolvedValue(0),
+	};
+	const statusServiceMock = {
+		updateMonitorStatus: jest.fn().mockResolvedValue({ monitor: { id: "m1", status: "up" }, statusChanged: false, prevStatus: "up", code: 200 }),
+	};
+	const settingsServiceMock = {
+		getDBSettings: jest.fn().mockResolvedValue({ checkTTL: 30 }),
+	};
+	const geoChecksServiceMock = {
+		buildGeoCheck: jest.fn().mockResolvedValue(null),
+	};
+
+	const defaults = {
+		logger: createMockLogger(),
 		networkService: { requestStatus: jest.fn() },
 		statusService: statusServiceMock,
 		notificationsService: { handleNotifications: jest.fn().mockResolvedValue(undefined) },
-		checkService: { buildCheck: jest.fn().mockResolvedValue({}) },
-		buffer: { addToBuffer: jest.fn() },
+		checkService: { buildCheck: jest.fn().mockReturnValue({}), deleteOlderThan: jest.fn().mockResolvedValue(0) },
+		settingsService: settingsServiceMock,
+		buffer: { addToBuffer: jest.fn(), addGeoCheckToBuffer: jest.fn() },
 		incidentService: { handleIncident: jest.fn().mockResolvedValue(undefined) },
 		maintenanceWindowsRepository,
+		monitorsRepository,
+		teamsRepository,
+		monitorStatsRepository,
+		checksRepository,
+		incidentsRepository,
+		geoChecksService: geoChecksServiceMock,
+		geoChecksRepository,
 		...overrides,
-	});
-	return { helper, maintenanceWindowsRepository };
+	};
+
+	const helper = new SuperSimpleQueueHelper(
+		defaults.logger as any,
+		defaults.networkService as any,
+		defaults.statusService as any,
+		defaults.notificationsService as any,
+		defaults.checkService as any,
+		defaults.settingsService as any,
+		defaults.buffer as any,
+		defaults.incidentService as any,
+		defaults.maintenanceWindowsRepository as any,
+		defaults.monitorsRepository as any,
+		defaults.teamsRepository as any,
+		defaults.monitorStatsRepository as any,
+		defaults.checksRepository as any,
+		defaults.incidentsRepository as any,
+		defaults.geoChecksService as any,
+		defaults.geoChecksRepository as any
+	);
+	return { helper, maintenanceWindowsRepository, defaults };
 };
 
 describe("SuperSimpleQueueHelper", () => {
-	describe("getMonitorJob", () => {
+	describe("getHeartbeatJob", () => {
 		it("skips execution when monitor is in maintenance window", async () => {
 			const { helper } = createHelper();
 			const spy = jest.spyOn(helper, "isInMaintenanceWindow").mockResolvedValue(true);
-			const job = helper.getMonitorJob();
+			const job = helper.getHeartbeatJob();
 			await job({ id: "m1", teamId: "team", interval: 60000 } as Monitor);
 			expect(helper["networkService"].requestStatus).not.toHaveBeenCalled();
 			expect(helper["logger"].debug).toHaveBeenCalledWith(
@@ -40,17 +93,16 @@ describe("SuperSimpleQueueHelper", () => {
 		});
 
 		it("processes monitor status and notifications when active", async () => {
-			const networkResponse = { monitor: { id: "m1" }, status: true };
-			const updatedMonitor = { id: "m1", status: true };
+			const networkResponse = { monitor: { id: "m1" }, status: true, code: 200, message: "OK" };
+			const statusServiceMock = {
+				updateMonitorStatus: jest.fn().mockResolvedValue({ monitor: { id: "m1", status: "up" }, statusChanged: false, prevStatus: "up", code: 200 }),
+			};
 			const { helper } = createHelper({
 				networkService: { requestStatus: jest.fn().mockResolvedValue(networkResponse) },
-				statusService: {
-					updateMonitorStatus: jest.fn().mockResolvedValue({ monitor: updatedMonitor, statusChanged: true, prevStatus: false, code: 200 }),
-				},
-				notificationsService: { handleNotifications: jest.fn().mockResolvedValue(undefined) },
+				statusService: statusServiceMock,
 			});
 			jest.spyOn(helper, "isInMaintenanceWindow").mockResolvedValue(false);
-			const job = helper.getMonitorJob();
+			const job = helper.getHeartbeatJob();
 			const monitor = { id: "m1", teamId: "team" } as Monitor;
 			await job(monitor);
 			expect(helper["networkService"].requestStatus).toHaveBeenCalledWith(monitor);
@@ -58,7 +110,7 @@ describe("SuperSimpleQueueHelper", () => {
 
 		it("throws when monitor id is missing", async () => {
 			const { helper } = createHelper();
-			const job = helper.getMonitorJob();
+			const job = helper.getHeartbeatJob();
 			await expect(job({} as Monitor)).rejects.toThrow("No monitor id");
 			expect(helper["logger"].warn).toHaveBeenCalled();
 		});

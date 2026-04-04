@@ -1,6 +1,13 @@
 import { jest } from "@jest/globals";
 import { MonitorService } from "../src/service/business/monitorService.ts";
-import type { IChecksRepository, IMonitorStatsRepository, IMonitorsRepository, IStatusPagesRepository } from "../src/repositories/index.ts";
+import type {
+	IChecksRepository,
+	IGeoChecksRepository,
+	IIncidentsRepository,
+	IMonitorStatsRepository,
+	IMonitorsRepository,
+	IStatusPagesRepository,
+} from "../src/repositories/index.ts";
 
 const createMonitorsRepositoryMock = () =>
 	({
@@ -8,16 +15,11 @@ const createMonitorsRepositoryMock = () =>
 		findByTeamId: jest.fn(),
 		findById: jest.fn(),
 		findMonitorsSummaryByTeamId: jest.fn(),
-		findGroupsByTeamId: jest.fn(),
-		create: jest.fn(),
-		createBulkMonitors: jest.fn(),
-		deleteByTeamId: jest.fn(),
 	}) as unknown as IMonitorsRepository;
 
 const createChecksRepositoryMock = () =>
 	({
-		findLatestChecksByMonitorIds: jest.fn(),
-		findDateRangeChecksByMonitor: jest.fn(),
+		findByDateRangeAndMonitorId: jest.fn(),
 	}) as unknown as IChecksRepository;
 
 const createMonitorStatsRepositoryMock = () =>
@@ -31,82 +33,82 @@ const createStatusPagesRepositoryMock = () =>
 		removeMonitorFromStatusPages: jest.fn(),
 	}) as unknown as IStatusPagesRepository;
 
+const createGeoChecksRepositoryMock = () => ({}) as unknown as IGeoChecksRepository;
+
+const createIncidentsRepositoryMock = () => ({}) as unknown as IIncidentsRepository;
+
 const createService = ({
 	monitorsRepository = createMonitorsRepositoryMock(),
 	checksRepository = createChecksRepositoryMock(),
 	monitorStatsRepository = createMonitorStatsRepositoryMock(),
 	statusPagesRepository = createStatusPagesRepositoryMock(),
+	geoChecksRepository = createGeoChecksRepositoryMock(),
+	incidentsRepository = createIncidentsRepositoryMock(),
 }: {
 	monitorsRepository?: IMonitorsRepository;
 	checksRepository?: IChecksRepository;
 	monitorStatsRepository?: IMonitorStatsRepository;
 	statusPagesRepository?: IStatusPagesRepository;
+	geoChecksRepository?: IGeoChecksRepository;
+	incidentsRepository?: IIncidentsRepository;
 } = {}) => {
 	return new MonitorService({
-		db: {
-			checkModule: { deleteChecks: jest.fn() },
-			statusPageModule: { deleteStatusPagesByMonitorId: jest.fn() },
-			pageSpeedCheckModule: { deletePageSpeedChecksByMonitorId: jest.fn() },
-			notificationModule: { deleteNotificationsByMonitorId: jest.fn() },
-		},
 		jobQueue: {
 			addJob: jest.fn(),
 			updateJob: jest.fn(),
 			resumeJob: jest.fn(),
 			pauseJob: jest.fn(),
 			deleteJob: jest.fn(),
-		},
-		stringService: {},
-		emailService: { buildEmail: jest.fn(), sendEmail: jest.fn() },
-		papaparse: { parse: jest.fn(), unparse: jest.fn() },
-		logger: { info: jest.fn(), error: jest.fn(), warn: jest.fn() },
-		errorService: {
-			createAuthorizationError: jest.fn(() => new Error("unauthorized")),
-			createServerError: jest.fn(() => new Error("server")),
-			createBadRequestError: jest.fn(() => new Error("bad request")),
-			createNotFoundError: jest.fn(() => new Error("not found")),
-		},
+		} as any,
+		emailService: { buildEmail: jest.fn(), sendEmail: jest.fn() } as any,
+		logger: { info: jest.fn(), error: jest.fn(), warn: jest.fn() } as any,
 		games: [],
 		monitorsRepository,
 		checksRepository,
+		geoChecksRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
+		incidentsRepository,
 	});
 };
 
 describe("MonitorService", () => {
 	describe("getMonitorsWithChecksByTeamId", () => {
-		it("returns monitors enriched with normalized checks", async () => {
+		it("returns monitors enriched with normalized recentChecks", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			(monitorsRepository.findMonitorCountByTeamIdAndType as jest.Mock).mockResolvedValue(2);
+			(monitorsRepository.findMonitorsSummaryByTeamId as jest.Mock).mockResolvedValue({
+				totalMonitors: 2,
+				upMonitors: 2,
+				downMonitors: 0,
+				pausedMonitors: 0,
+			});
 			(monitorsRepository.findByTeamId as jest.Mock).mockResolvedValue([
-				{ id: "m1", name: "Monitor 1", interval: 60000 },
-				{ id: "m2", name: "Monitor 2", interval: 60000 },
+				{
+					id: "m1",
+					name: "Monitor 1",
+					type: "http",
+					interval: 60000,
+					recentChecks: [
+						{ responseTime: 10, status: true, message: "OK" },
+						{ responseTime: 20, status: true, message: "OK" },
+					],
+				},
+				{
+					id: "m2",
+					name: "Monitor 2",
+					type: "http",
+					interval: 60000,
+					recentChecks: [{ responseTime: 50, status: true, message: "OK" }],
+				},
 			]);
 
-			const checksRepository = createChecksRepositoryMock();
-			(checksRepository.findLatestChecksByMonitorIds as jest.Mock).mockResolvedValue({
-				m1: [
-					{ responseTime: 10, status: true, message: "OK" },
-					{ responseTime: 20, status: true, message: "OK" },
-				],
-				m2: [{ responseTime: 50, status: true, message: "OK" }],
-			});
-
-			const service = createService({ monitorsRepository, checksRepository });
+			const service = createService({ monitorsRepository });
 			const result = await service.getMonitorsWithChecksByTeamId({ teamId: "team" });
 
 			expect(result).toMatchObject({ count: 2 });
 			expect(result.monitors).toHaveLength(2);
-			expect(result.monitors[0]).toHaveProperty("checks");
-			expect(result.monitors[0].checks.length).toBeGreaterThan(0);
-			expect(result.monitors[0].checks[0]).toEqual(
-				expect.objectContaining({
-					responseTime: expect.any(Number),
-					status: expect.any(Boolean),
-					message: expect.any(String),
-				})
-			);
+			expect(result.monitors[0]).toHaveProperty("recentChecks");
 		});
 	});
 
@@ -120,15 +122,15 @@ describe("MonitorService", () => {
 			const service = createService({ monitorsRepository });
 			const result = await service.getMonitorsByTeamId({ teamId: "team" } as any);
 			expect(result).toHaveLength(2);
-			expect(result[0]).toHaveProperty("id", "m1");
+			expect(result![0]).toHaveProperty("id", "m1");
 		});
 	});
 
 	describe("getMonitorsWithChecksByTeamId summary", () => {
-		it("includes summary and monitors with checks", async () => {
+		it("includes summary and monitors with recentChecks", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			(monitorsRepository.findMonitorCountByTeamIdAndType as jest.Mock).mockResolvedValue(1);
-			(monitorsRepository.findByTeamId as jest.Mock).mockResolvedValue([{ id: "m1", type: "http" }]);
+			(monitorsRepository.findByTeamId as jest.Mock).mockResolvedValue([{ id: "m1", type: "http", recentChecks: [] }]);
 			(monitorsRepository.findMonitorsSummaryByTeamId as jest.Mock).mockResolvedValue({
 				totalMonitors: 1,
 				upMonitors: 1,
@@ -136,15 +138,12 @@ describe("MonitorService", () => {
 				pausedMonitors: 0,
 			});
 
-			const checksRepository = createChecksRepositoryMock();
-			(checksRepository.findLatestChecksByMonitorIds as jest.Mock).mockResolvedValue({ m1: [] });
-
-			const service = createService({ monitorsRepository, checksRepository });
+			const service = createService({ monitorsRepository });
 			const result = await service.getMonitorsWithChecksByTeamId({ teamId: "team" });
 			expect(result).toEqual({
 				summary: { totalMonitors: 1, upMonitors: 1, downMonitors: 0, pausedMonitors: 0 },
 				count: 1,
-				monitors: [{ id: "m1", type: "http", checks: [] }],
+				monitors: [{ id: "m1", type: "http", recentChecks: [] }],
 			});
 		});
 	});
@@ -155,23 +154,11 @@ describe("MonitorService", () => {
 			const monitor = {
 				id: "monitor-1",
 				teamId: TEAM_ID,
-				name: "Hardware monitor",
+				name: "HTTP monitor",
 				interval: 60000,
-				statusWindow: [],
-				statusWindowSize: 5,
-				statusWindowThreshold: 60,
 				type: "http",
-				ignoreTlsErrors: false,
 				url: "https://example.com",
 				isActive: true,
-				alertThreshold: 5,
-				cpuAlertThreshold: 5,
-				memoryAlertThreshold: 5,
-				diskAlertThreshold: 5,
-				tempAlertThreshold: 5,
-				selectedDisks: [],
-				notifications: [],
-				group: null,
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
 			};
@@ -179,7 +166,7 @@ describe("MonitorService", () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
 			const checksRepository = createChecksRepositoryMock();
-			(checksRepository.findDateRangeChecksByMonitor as jest.Mock).mockResolvedValue({
+			(checksRepository.findByDateRangeAndMonitorId as jest.Mock).mockResolvedValue({
 				monitorType: "http",
 				groupedChecks: [{ _id: "2024-01-01", avgResponseTime: 100, totalChecks: 2 }],
 				groupedUpChecks: [{ _id: "2024-01-01", totalChecks: 2, avgResponseTime: 90 }],
