@@ -1,5 +1,5 @@
 import type { Pool } from "pg";
-import type { Monitor, MonitorsSummary, MonitorStatus, MonitorType, MonitorMatchMethod, GeoContinent } from "@/types/monitor.js";
+import type { Monitor, MonitorsSummary, MonitorStatus, MonitorType, MonitorMatchMethod, GeoContinent, MonitorEscalation } from "@/types/monitor.js";
 import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "./IMonitorsRepository.js";
 import { AppError } from "@/utils/AppError.js";
 
@@ -40,6 +40,7 @@ interface MonitorRow {
 	geo_check_enabled: boolean;
 	geo_check_locations: GeoContinent[] | null;
 	geo_check_interval_ms: number;
+	escalations: MonitorEscalation[] | null;
 	created_at: Date;
 	updated_at: Date;
 }
@@ -50,7 +51,7 @@ const MONITOR_COLUMNS = `id, user_id, team_id, name, description, type, status, 
 	cpu_alert_threshold, cpu_alert_counter, memory_alert_threshold, memory_alert_counter,
 	disk_alert_threshold, disk_alert_counter, temp_alert_threshold, temp_alert_counter, selected_disks,
 	game_id, grpc_service_name, monitor_group, geo_check_enabled, geo_check_locations, geo_check_interval_ms,
-	created_at, updated_at`;
+	escalations, created_at, updated_at`;
 
 export class TimescaleMonitorsRepository implements IMonitorsRepository {
 	constructor(private pool: Pool) {}
@@ -598,6 +599,7 @@ export class TimescaleMonitorsRepository implements IMonitorsRepository {
 			["geoCheckEnabled", "geo_check_enabled"],
 			["geoCheckLocations", "geo_check_locations"],
 			["geoCheckInterval", "geo_check_interval_ms"],
+			["escalations", "escalations"],
 		];
 
 		for (const [key, column] of fieldMap) {
@@ -1037,6 +1039,7 @@ export class TimescaleMonitorsRepository implements IMonitorsRepository {
 		geoCheckEnabled: row.geo_check_enabled,
 		geoCheckLocations: row.geo_check_locations ?? [],
 		geoCheckInterval: row.geo_check_interval_ms,
+		escalations: row.escalations ?? [],
 		recentChecks: [],
 		createdAt: row.created_at.toISOString(),
 		updatedAt: row.updated_at.toISOString(),

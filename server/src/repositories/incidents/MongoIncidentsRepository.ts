@@ -117,7 +117,7 @@ class MongoIncidentsRepository implements IIncidentsRepository {
 	};
 
 	findAllActive = async (): Promise<Incident[]> => {
-		const incidents = await IncidentModel.find({ status: true });
+		const incidents = await IncidentModel.find({ status: true }, "monitorId teamId startTime triggeredEscalations").limit(1000);
 		return this.mapDocuments(incidents);
 	};
 

@@ -72,8 +72,8 @@ export class TimescaleIncidentsRepository implements IIncidentsRepository {
 	};
 
 	findAllActive = async (): Promise<Incident[]> => {
-		console.warn("TimescaleIncidentsRepository.findAllActive is not implemented");
-		return [];
+		const result = await this.pool.query<IncidentRow>(`SELECT ${COLUMNS} FROM incidents WHERE status = TRUE LIMIT 1000`);
+		return result.rows.map((row) => this.toEntity(row));
 	};
 
 	findActiveByMonitorId = async (monitorId: string, teamId: string): Promise<Incident | null> => {
@@ -213,6 +213,7 @@ export class TimescaleIncidentsRepository implements IIncidentsRepository {
 			["resolvedBy", "resolved_by"],
 			["resolvedByEmail", "resolved_by_email"],
 			["comment", "comment"],
+			["triggeredEscalations", "triggered_escalations"],
 		];
 
 		for (const [key, column] of fieldMap) {

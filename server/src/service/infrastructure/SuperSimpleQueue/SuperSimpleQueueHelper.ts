@@ -393,25 +393,29 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 						continue;
 					}
 
+					const inMaintenance = await this.isInMaintenanceWindow(incident.monitorId, incident.teamId);
+					if (inMaintenance) {
+						continue;
+					}
+
 					const alreadyTriggered = incident.triggeredEscalations ?? [];
 					const newlyTriggered: string[] = [];
 
 					for (const rule of monitor.escalations) {
 						if (durationMinutes >= rule.delayMinutes && !alreadyTriggered.includes(rule.channelId)) {
-							try {
-								await this.notificationsService.sendEscalation(rule.channelId, monitor);
+							const sent = await this.notificationsService.sendEscalation(rule.channelId, monitor);
+							if (sent) {
 								newlyTriggered.push(rule.channelId);
 								this.logger.info({
 									message: `Sent escalation to channel ${rule.channelId} for incident ${incident.id} (monitor ${monitor.id}, duration ${Math.round(durationMinutes)}m)`,
 									service: SERVICE_NAME,
 									method: "getEscalationJob",
 								});
-							} catch (error: unknown) {
+							} else {
 								this.logger.warn({
-									message: `Failed to send escalation to channel ${rule.channelId} for incident ${incident.id}: ${error instanceof Error ? error.message : "Unknown error"}`,
+									message: `Failed to send escalation to channel ${rule.channelId} for incident ${incident.id} — will retry next cycle`,
 									service: SERVICE_NAME,
 									method: "getEscalationJob",
-									stack: error instanceof Error ? error.stack : undefined,
 								});
 							}
 						}
