@@ -112,43 +112,51 @@ const ResponseTimeToolTip = ({
 	}
 
 	const dataKeys: Record<string, string> = {
-		cpu: 'avgCpuUsage',
-		memory: 'avgMemoryUsage',
-		temp: 'avg_temp'
+		cpu: "avgCpuUsage",
+		memory: "avgMemoryUsage",
+		temp: "avg_temp",
 	};
 
 	const targetKey = dataKeys[type] || payload[0].dataKey;
 	const rawValue = payload[0].payload[targetKey];
 
-	const value = typeof rawValue === 'number' ? rawValue : 0;
+	const value = typeof rawValue === "number" ? rawValue : 0;
 
-	const displayLabel = type === 'temp' ? 'Temperature' : type.charAt(0).toUpperCase() + type.slice(1);
-	const unit = type === 'temp' ? '°C' : '%';
+	const displayLabel =
+		type === "temp" ? "Temperature" : type.charAt(0).toUpperCase() + type.slice(1);
+	const unit = type === "temp" ? "°C" : "%";
 
-	const formattedDate = new Date(label).toLocaleString('en-US', {
-		weekday: 'short',
-		month: 'long',
-		day: 'numeric',
-		year: 'numeric',
-		hour: '2-digit',
-		minute: '2-digit',
-		hour12: true
-	}).replace(' at ', ', ');
+	const formattedDate = new Date(label)
+		.toLocaleString("en-US", {
+			weekday: "short",
+			month: "long",
+			day: "numeric",
+			year: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+			hour12: true,
+		})
+		.replace(" at ", ", ");
 
 	return (
-		<BaseBox sx={{
-			py: theme.spacing(1.5),
-			px: theme.spacing(2.5),
-			backgroundColor: 'rgba(28, 28, 30, 0.95)',
-			borderRadius: '8px',
-			border: '1px solid rgba(255, 255, 255, 0.1)',
-			boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
-		}}>
-			<Typography sx={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.75rem', mb: 0.5 }}>
+		<BaseBox
+			sx={{
+				py: theme.spacing(1.5),
+				px: theme.spacing(2.5),
+				backgroundColor: "rgba(28, 28, 30, 0.95)",
+				borderRadius: "8px",
+				border: "1px solid rgba(255, 255, 255, 0.1)",
+				boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
+			}}
+		>
+			<Typography
+				sx={{ color: "rgba(255, 255, 255, 0.6)", fontSize: "0.75rem", mb: 0.5 }}
+			>
 				{formattedDate}
 			</Typography>
-			<Typography sx={{ color: '#fff', fontWeight: 600, fontSize: '0.9rem' }}>
-				{displayLabel}: {value.toFixed(1)}{unit}
+			<Typography sx={{ color: "#fff", fontWeight: 600, fontSize: "0.9rem" }}>
+				{displayLabel}: {value.toFixed(1)}
+				{unit}
 			</Typography>
 		</BaseBox>
 	);
