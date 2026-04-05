@@ -1,1305 +1,1322 @@
 {
-	"common": {
-		"auth": {
-			"roles": {
-				"admin": "管理者",
-				"demo": "デモ",
-				"superadmin": "スーパー管理者",
-				"user": "ユーザー"
-			}
-		},
-		"alerts": {
-			"pageSpeedApiKey": {
-				"content": "警告: Google PageSpeed APIキーがまだ追加されていません。<settingsLink>設定</settingsLink>からキーを追加してください。キーがないとPageSpeedモニターは機能しません。"
-			}
-		},
-		"appName": "Checkmate",
-		"breadcrumbs": {
-			"details": "詳細",
-			"home": "ホーム"
-		},
-		"buttons": {
-			"addMember": "メンバーを追加",
-			"cancel": "キャンセル",
-			"close": "閉じる",
-			"configure": "設定",
-			"confirm": "確認",
-			"create": "作成",
-			"delete": "削除",
-			"generateToken": "トークンを生成",
-			"incidents": "インシデント",
-			"inviteMember": "メンバーを招待",
-			"pause": "一時停止",
-			"resume": "再開",
-			"save": "保存",
-			"sendInvite": "招待を送信",
-			"test": "テスト",
-			"testNotifications": "通知テスト",
-			"toggleTheme": "ライト＆ダークを切り替え",
-			"flushQueue": "キューをフラッシュ",
-			"notFound": "メインダッシュボードへ移動",
-			"resetPassword": "パスワードをリセット",
-			"reset": "リセット",
-			"clear": "クリア",
-			"addDemo": "デモモニターを追加",
-			"removeMonitors": "モニターを削除",
-			"sendTestEmail": "テストメールを送信",
-			"exportToJSON": "JSONにエクスポート",
-			"importFromJSON": "JSONからインポート",
-			"clearFilters": "フィルターをクリア",
-			"removeUser": "ユーザーを削除"
-		},
-		"charts": {
-			"labels": {
-				"averageResponseTime": "平均応答時間",
-				"downtime": "ダウンタイム",
-				"high": "高",
-				"low": "低",
-				"uptime": "稼働時間"
-			},
-			"histogram": {
-				"avg": "平均: {{value}} ms",
-				"max": "最大: {{value}} ms"
-			}
-		},
-		"dialogs": {
-			"delete": {
-				"description": "この操作は元に戻せません。",
-				"title": "本当に削除しますか？"
-			}
-		},
-		"labels": {
-			"active": "アクティブ",
-			"paused": "一時停止中",
-			"na": "N/A",
-			"resolved": "解決済み",
-			"responseTime": "応答時間"
-		},
-		"form": {
-			"role": {
-				"option": {
-					"role": {
-						"label": "ロール"
-					}
-				}
-			},
-			"name": {
-				"option": {
-					"firstName": {
-						"label": "名前",
-						"placeholder": "太郎"
-					},
-					"lastName": {
-						"label": "姓",
-						"placeholder": "田中"
-					}
-				}
-			},
-			"email": {
-				"option": {
-					"email": {
-						"label": "メールアドレス",
-						"placeholder": "you@example.com"
-					}
-				}
-			}
-		},
-		"table": {
-			"empty": "データがありません",
-			"headers": {
-				"actions": "アクション",
-				"dateTime": "日時",
-				"message": "メッセージ",
-				"monitor": "モニター",
-				"monitorId": "モニターID",
-				"name": "名前",
-				"status": "ステータス",
-				"type": "タイプ",
-				"url": "URL",
-				"interval": "間隔",
-				"active": "アクティブ",
-				"responseTime": "応答時間"
-			}
-		}
-	},
-	"components": {
-		"imageUpload": {
-			"clickToUpload": "クリックしてアップロード",
-			"dragAndDrop": "ドラッグアンドドロップ",
-			"supportedFormats": "対応フォーマット",
-			"maxSize": "最大サイズ",
-			"orDragAndDrop": "またはドラッグアンドドロップ",
-			"errors": {
-				"invalidFileSize": "ファイルサイズが大きすぎます！",
-				"invalidFileFormat": "サポートされていないファイル形式！"
-			}
-		},
-		"headerStatusPageControls": {
-			"publicLink": "公開リンク"
-		},
-		"headerTimeRange": {
-			"labels": {
-				"day": "日",
-				"month": "月",
-				"recent": "最近",
-				"week": "週"
-			},
-			"description": {
-				"recent": "過去2時間の統計を表示しています。",
-				"day": "過去24時間の統計を表示しています。",
-				"week": "過去7日間の統計を表示しています。",
-				"month": "過去30日間の統計を表示しています。"
-			}
-		},
-		"offlineBanner": {
-			"serverUnreachable": "サーバーに接続できません",
-			"retry": "再試行",
-			"retrying": "再試行中...",
-			"reconnected": "サーバーに正常に再接続しました。"
-		},
-		"sidebar": {
-			"menu": {
-				"uptime": "稼働時間",
-				"pagespeed": "ページ速度",
-				"infrastructure": "インフラストラクチャ",
-				"notifications": "通知",
-				"checks": "チェック",
-				"incidents": "インシデント",
-				"statusPages": "ステータスページ",
-				"maintenance": "メンテナンス",
-				"logs": "ログ",
-				"settings": "設定"
-			},
-			"bottomMenu": {
-				"support": "サポート",
-				"discussions": "ディスカッション",
-				"docs": "ドキュメント",
-				"changelog": "変更履歴"
-			},
-			"accountMenu": {
-				"profile": "プロフィール",
-				"password": "パスワード",
-				"team": "チーム"
-			},
-			"starPrompt": {
-				"title": "Checkmateにスターを付ける",
-				"description": "GitHubで最新リリースを確認し、コミュニティの成長に貢献しましょう"
-			},
-			"authFooter": {
-				"navControls": "コントロール",
-				"logOut": "ログアウト",
-				"roles": {
-					"superAdmin": "スーパー管理者",
-					"admin": "管理者",
-					"user": "ユーザー",
-					"demoUser": "デモユーザー"
-				}
-			}
-		},
-		"starPrompt": {
-			"title": "Checkmateにスターを付ける",
-			"description": "GitHubで最新リリースを確認し、コミュニティの成長に貢献しましょう"
-		}
-	},
-	"pages": {
-		"notFound": {
-			"title": "おっと！お寿司を落としてしまいました！",
-			"subtitle": "URLが存在しないか、アクセス権限がありません。"
-		},
-		"account": {
-			"tabs": {
-				"profile": "プロフィール",
-				"password": "パスワード",
-				"team": "チーム"
-			},
-			"form": {
-				"name": {
-					"title": "名前",
-					"description": "個人情報を更新"
-				},
-				"photo": {
-					"title": "プロフィール写真",
-					"description": "プロフィール画像をアップロード"
-				},
-				"currentPassword": {
-					"title": "現在のパスワード",
-					"description": "本人確認のために現在のパスワードを入力してください",
-					"option": {
-						"label": "現在のパスワード",
-						"placeholder": "現在のパスワードを入力"
-					}
-				},
-				"newPassword": {
-					"title": "新しいパスワード",
-					"description": "8文字以上の強力なパスワードを選択してください",
-					"option": {
-						"newPassword": {
-							"label": "新しいパスワード",
-							"placeholder": "新しいパスワードを入力"
-						},
-						"confirm": {
-							"label": "パスワードを確認",
-							"placeholder": "新しいパスワードを確認"
-						}
-					}
-				},
-				"deleteAccount": {
-					"title": "アカウントを削除",
-					"description": "この操作は永久的で元に戻せません"
-				}
-			},
-			"team": {
-				"filter": {
-					"placeholder": "ロールでフィルター",
-					"all": "すべて",
-					"admin": "管理者",
-					"member": "メンバー"
-				},
-				"table": {
-					"headers": {
-						"email": "メールアドレス",
-						"role": "ロール",
-						"created": "作成日"
-					}
-				},
-				"addMember": {
-					"title": "新しいチームメンバーを登録",
-					"description": "新しいユーザーアカウントを作成します。作成後、認証情報を安全に共有してください。"
-				},
-				"invite": {
-					"title": "チームメンバーを招待",
-					"description": "チームへの招待を送信",
-					"email": {
-						"label": "メールアドレス",
-						"placeholder": "メールアドレスを入力"
-					},
-					"role": {
-						"label": "ロール",
-						"placeholder": "ロールを選択"
-					},
-					"linkLabel": "招待リンク"
-				}
-			}
-		},
-		"auth": {
-			"common": {
-				"passwordRules": {
-					"length": {
-						"beginning": "少なくとも",
-						"highlighted": "8文字である必要があります"
-					},
-					"lowercase": {
-						"beginning": "少なくとも",
-						"highlighted": "1つの小文字を含む必要があります"
-					},
-					"match": {
-						"beginning": "パスワードの確認とパスワードは",
-						"highlighted": "一致する必要があります"
-					},
-					"number": {
-						"beginning": "少なくとも",
-						"highlighted": "1つの数字を含む必要があります"
-					},
-					"special": {
-						"beginning": "少なくとも",
-						"highlighted": "1つの特殊文字を含む必要があります"
-					},
-					"uppercase": {
-						"beginning": "少なくとも",
-						"highlighted": "1つの大文字を含む必要があります"
-					}
-				},
-				"form": {
-					"option": {
-						"email": {
-							"label": "メールアドレス",
-							"placeholder": "me@example.com"
-						},
-						"password": {
-							"label": "パスワード",
-							"placeholder": "********"
-						},
-						"confirmPassword": {
-							"label": "パスワードを確認"
-						}
-					}
-				}
-			},
-			"login": {
-				"title": "Checkmateへようこそ！",
-				"subtitle": "ログインして続行",
-				"submit": "ログイン",
-				"links": {
-					"forgotPassword": {
-						"text": "パスワードをお忘れですか？",
-						"linkText": "パスワードをリセット"
-					},
-					"register": {
-						"text": "アカウントをお持ちでないですか？",
-						"linkText": "こちらから登録"
-					}
-				}
-			},
-			"register": {
-				"title": "Checkmateへようこそ！",
-				"subtitle": "サインアップして始めましょう",
-				"submit": "登録"
-			},
-			"forgotPassword": {
-				"title": "パスワードをお忘れですか？",
-				"subtitle": "ご安心ください。リセット手順をお送りします。",
-				"submit": "リカバリーをリクエスト",
-				"links": {
-					"login": {
-						"text": "戻る：",
-						"linkText": "ログイン"
-					}
-				}
-			},
-			"setNewPassword": {
-				"title": "パスワードをリセット",
-				"subtitle": "新しいパスワードは以前使用したパスワードと異なる必要があります。"
-			}
-		},
-		"checks": {
-			"selects": {
-				"monitor": {
-					"all": "すべてのモニター"
-				},
-				"status": {
-					"all": "すべて",
-					"down": "ダウン",
-					"up": "アップ"
-				}
-			},
-			"table": {
-				"empty": "この期間にダウンチェックはありません",
-				"headers": {
-					"statusCode": "ステータスコード",
-					"location": "ロケーション"
-				}
-			}
-		},
-		"common": {
-			"monitors": {
-				"actions": {
-					"configure": "設定",
-					"delete": "削除",
-					"generateToken": "トークンを生成",
-					"details": "詳細",
-					"incidents": "インシデント",
-					"inviteMember": "メンバーを招待",
-					"openSite": "サイトを開く",
-					"pause": "一時停止",
-					"resume": "再開"
-				},
-				"statBoxes": {
-					"activeFor": "稼働期間",
-					"certificateExpiry": "証明書の有効期限",
-					"lastCheck": "最終チェック",
-					"lastResponseTime": "最終応答時間"
-				},
-				"status": {
-					"down": "ダウン",
-					"breached": "しきい値超過",
-					"initializing": "初期化中",
-					"maintenance": "メンテナンス中",
-					"paused": "一時停止中",
-					"total": "合計",
-					"up": "稼働中"
-				},
-				"monitorTypes": {
-					"optionDocker": "Docker",
-					"optionGame": "ゲーム",
-					"optionHttp": "HTTP(S)",
-					"optionPing": "Ping",
-					"optionPort": "ポート",
-					"optionPagespeed": "PageSpeed",
-					"optionHardware": "インフラストラクチャ",
-					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
-				}
-			}
-		},
-		"createMonitor": {
-			"form": {
-				"advanced": {
-					"description": "高度なユースケース向けのオプション設定",
-					"option": {
-						"advancedMatching": {
-							"label": "高度なマッチングを使用"
-						},
-						"expectedValue": {
-							"label": "期待値"
-						},
-						"jsonPath": {
-							"description": "この式はレスポンスのJSONデータに対して評価され、結果は期待値とのマッチングに使用されます。クエリ言語のドキュメントは<jmesLink>jmespath.org</jmesLink>をご参照ください。",
-							"label": "JSONPath式"
-						},
-						"matchMethod": {
-							"label": "マッチ方法",
-							"equal": "",
-							"include": "",
-							"regex": ""
-						}
-					},
-					"title": "詳細設定"
-				},
-				"frequency": {
-					"description": "このモニターのステータスをどのくらいの頻度で確認しますか？",
-					"option": {
-						"frequency": {
-							"label": "チェック頻度",
-							"value": {
-								"fifteenMinutes": "15分",
-								"fifteenSeconds": "",
-								"fiveMinutes": "5分",
-								"fourMinutes": "",
-								"oneMinute": "",
-								"tenMinutes": "10分",
-								"thirtyMinutes": "30分",
-								"thirtySeconds": "",
-								"threeMinutes": "3分",
-								"twoMinutes": ""
-							}
-						}
-					},
-					"title": "チェック頻度"
-				},
-				"general": {
-					"option": {
-						"container": {
-							"label": "コンテナ名/ID",
-							"placeholder": "my-app または abcd1234"
-						},
-						"host": {
-							"label": "ホスト",
-							"placeholder": "192.168.1.100 または example.com"
-						},
-						"name": {
-							"label": "表示名",
-							"placeholder": "例: My Website"
-						},
-						"secret": {
-							"label": "認証シークレット",
-							"placeholder": "シークレットキーを入力"
-						},
-						"url": {
-							"label": "URL",
-							"placeholder": "https://www.google.com"
-						},
-						"game": {
-							"label": "",
-							"placeholder": ""
-						},
-						"port": {
-							"label": "監視するポート",
-							"placeholder": "80"
-						},
-						"grpcServiceName": {
-							"label": "サービス名",
-							"placeholder": "例: my.service.v1（全体のヘルスチェックの場合は空欄）"
-						},
-						"wsUrl": {
-							"label": "WebSocket URL",
-							"placeholder": "wss://example.com/socket"
-						}
-					},
-					"title": "一般設定",
-					"description": {
-						"http": "監視するURLまたはIPを入力し（例: https://example.com/ または 192.168.1.100）、ダッシュボードに表示される表示名を追加してください。",
-						"ping": "pingするIPアドレスまたはホスト名を入力（例: 192.168.1.100 または example.com）し、ダッシュボードに表示される明確な表示名を追加。",
-						"port": "サーバーのURLまたはIP、ポート番号、ダッシュボードに表示される明確な表示名を入力。",
-						"docker": "コンテナのDocker IDを入力。Docker IDは64文字のフルDocker IDである必要があります。docker inspect <short_id>を実行してフルコンテナIDを取得できます。",
-						"game": "",
-						"pagespeed": "Webサイトのページ読み込みパフォーマンス、Core Web Vitals、最適化スコアを追跡します。",
-						"grpc": "gRPCサーバーのホスト名とポートを入力し、必要に応じてヘルスチェック用のサービス名を指定し、表示名を追加してください。",
-						"websocket": "監視するWebSocket URLを入力し（例: wss://example.com/socket）、表示名を追加してください。",
-						"hardware": "インフラストラクチャのCPU、メモリ、ディスク使用量、温度を監視します。"
-					}
-				},
-				"ignoreTls": {
-					"description": "HTTPS接続のTLS/SSL証明書検証を設定します。",
-					"option": {
-						"tls": {
-							"label": "TLS/SSLエラーを無視"
-						}
-					},
-					"title": "TLS/SSL設定"
-				},
-				"incidents": {
-					"description": "スライディングウィンドウを使用してモニターのダウンを判定します。スライディングウィンドウ内のチェックの割合が指定値を満たした場合にのみ、モニターのステータスが変更されます。",
-					"option": {
-						"checks": {
-							"label": "スライディングウィンドウ内のチェック数"
-						},
-						"percentage": {
-							"label": "モニターのステータスが変更される前に、スライディングウィンドウ内のチェックの何パーセントが失敗/成功する必要がありますか？"
-						}
-					},
-					"title": "インシデント"
-				},
-				"notifications": {
-					"description": "使用する通知チャンネルを選択してください",
-					"title": "通知"
-				},
-				"type": {
-					"description": "実行するチェックの種類を選択",
-					"optionDockerDescription": "Dockerを使用してコンテナが稼働しているか監視します。",
-					"optionGameDescription": "特定のゲームサーバーがオンラインかどうかを監視します。",
-					"optionGrpcDescription": "標準のHealth Checking Protocolを使用してgRPCサービスを監視します。",
-					"optionWebSocketDescription": "WebSocketエンドポイントの接続状態と応答時間を監視します。",
-					"optionHttpDescription": "HTTP(S)を使用してWebサイトまたはAPIエンドポイントを監視します。",
-					"optionPingDescription": "ICMP Pingを使用してサーバーがオンラインかどうかを監視します。",
-					"optionPortDescription": "サーバーの特定のポートが開いているかどうかを監視します。",
-					"title": "タイプ"
-				},
-				"thresholds": {
-					"title": "アラートしきい値",
-					"description": "このハードウェアモニターでアラートがトリガーされるしきい値を定義します。",
-					"option": {
-						"cpuThreshold": {
-							"label": "CPUアラートしきい値（%）"
-						},
-						"memoryThreshold": {
-							"label": "メモリアラートしきい値（%）"
-						},
-						"diskThreshold": {
-							"label": "ディスクアラートしきい値（%）"
-						},
-						"tempThreshold": {
-							"label": "温度アラートしきい値（°C）"
-						}
-					}
-				},
-				"geoChecks": {
-					"title": "地理分散チェック",
-					"description": "複数の地理的ロケーションからチェックを実行し、グローバルな可用性とパフォーマンスを監視します。",
-					"option": {
-						"enabled": {
-							"label": "地理分散チェックを有効化"
-						},
-						"locations": {
-							"label": "ロケーション",
-							"placeholder": "ロケーションを選択",
-							"options": {
-								"EU": "ヨーロッパ",
-								"NA": "北米",
-								"AS": "アジア",
-								"SA": "南米",
-								"AF": "アフリカ",
-								"OC": "オセアニア"
-							}
-						},
-						"interval": {
-							"label": "チェック間隔",
-							"value": {
-								"fiveMinutes": "5分",
-								"tenMinutes": "10分",
-								"fifteenMinutes": "15分",
-								"thirtyMinutes": "30分"
-							}
-						}
-					}
-				},
-				"url": {
-					"title": "ステータスページにモニターのIP/URLを表示",
-					"description": "公開ステータスページにモニターのIPアドレスまたはURLを表示します。無効の場合、機密情報を保護するためにモニター名のみが表示されます。",
-					"option": {
-						"showURL": {
-							"label": "ステータスページにIP/URLを表示",
-							"enabled": "有効",
-							"disabled": "無効"
-						}
-					}
-				},
-				"stats": {
-					"title": "モニター履歴",
-					"description": "チームのすべての監視履歴と統計をクリアします。この操作は元に戻せません。",
-					"buttonText": "すべての統計をクリア",
-					"dialog": {
-						"title": "すべての監視履歴をクリアしますか？",
-						"description": "チームのすべての監視履歴、統計、チェックデータが完全に削除されます。この操作は元に戻せません。",
-						"confirm": "はい、すべての統計をクリア"
-					}
-				}
-			}
-		},
-		"editUser": {
-			"form": {
-				"roles": {
-					"title": "ロール",
-					"description": "ユーザーにロールを割り当てます。複数のロールを選択できます。"
-				}
-			},
-			"dialog": {
-				"removeUser": {
-					"title": "ユーザーを削除",
-					"content": "{{name}}をチームから削除してもよろしいですか？この操作は元に戻せません。"
-				}
-			}
-		},
-		"incidents": {
-			"dialog": {
-				"resolveIncident": {
-					"title": "インシデントを解決",
-					"option": {
-						"comment": {
-							"label": "コメント（任意）",
-							"placeholder": "解決に関するコメントを追加..."
-						}
-					}
-				},
-				"details": {
-					"analysis": "インシデント分析",
-					"comment": "コメント:",
-					"detailsLabel": "詳細",
-					"downtime": "ダウンタイム:",
-					"message": "メッセージ:",
-					"monitor": "モニター:",
-					"overview": "概要",
-					"resolutionDetails": "解決の詳細",
-					"resolutionType": "タイプ:",
-					"resolutionTypes": {
-						"automatic": "自動",
-						"manual": "手動"
-					},
-					"resolve": "インシデントを解決",
-					"resolvedAt": "解決日時:",
-					"resolvedBy": "解決者:",
-					"startedAt": "開始日時:",
-					"status": "ステータス:",
-					"statusCode": "ステータスコード:",
-					"timeline": "タイムライン",
-					"title": "インシデント詳細",
-					"url": "URL:"
-				}
-			},
-			"filters": {
-				"allMonitors": "すべてのモニター",
-				"monitor": "モニター",
-				"resolutionType": "解決タイプ",
-				"resolutionTypes": {
-					"manual": "手動",
-					"automatic": "自動",
-					"all": "すべて"
-				}
-			},
-			"summaryCard": {
-				"activeIncidents": {
-					"title": "アクティブなインシデント",
-					"active_zero": "アクティブなインシデントはありません",
-					"active_one": "{{count}}件のアクティブなインシデント",
-					"active_other": "{{count}}件のアクティブなインシデント"
-				},
-				"incidentStats": {
-					"avgResolutionTime": "平均解決時間",
-					"mostAffectedMonitor": "最も影響を受けたモニター",
-					"title": "インシデント統計",
-					"totalIncidents": "インシデント合計"
-				},
-				"latestIncidents": {
-					"title": "最新のインシデント"
-				}
-			},
-			"table": {
-				"actions": {
-					"details": "詳細",
-					"goToMonitor": "モニターへ移動",
-					"resolveManually": "手動で解決"
-				},
-				"activeIncidents": "アクティブなインシデント",
-				"headers": {
-					"endTime": "終了時刻",
-					"resolutionType": "解決タイプ",
-					"startTime": "開始時刻",
-					"statusCode": "ステータスコード"
-				},
-				"resolvedIncidents": "解決済みインシデント",
-				"status": {
-					"active": "アクティブ",
-					"resolved": "解決済み"
-				}
-			}
-		},
-		"infrastructure": {
-			"charts": {
-				"labels": {
-					"cpu": "CPU使用率",
-					"disk": "ディスク使用率",
-					"memory": "メモリ使用率",
-					"netBytesRecv": "{{name}} - 受信バイト数",
-					"netBytesSent": "{{name}} - 送信バイト数",
-					"temp": "温度"
-				}
-			},
-			"gauges": {
-				"cpu": {
-					"lowerLabel": "最大周波数",
-					"title": "CPU使用率",
-					"upperLabel": "現在の周波数"
-				},
-				"disk": {
-					"lowerLabel": "空き",
-					"title": "ディスク{{idx}}使用率",
-					"upperLabel": "使用済み"
-				},
-				"memory": {
-					"lowerLabel": "空き",
-					"title": "メモリ使用率",
-					"upperLabel": "使用済み"
-				}
-			},
-			"statBoxes": {
-				"avgCpuTemperature": "平均CPU温度",
-				"cpuFrequency": "CPU周波数",
-				"cpuLogical": "CPU（論理）",
-				"cpuPhysical": "CPU（物理）",
-				"disk": "ディスク",
-				"memory": "メモリ",
-				"os": "OS"
-			},
-			"table": {
-				"headers": {
-					"cpu": "CPU",
-					"disk": "ディスク",
-					"memory": "メモリ"
-				}
-			},
-			"tabs": {
-				"labels": {
-					"network": "",
-					"overview": "概要"
-				}
-			},
-			"fallback": {
-				"actionButton": "モニターを作成！",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "インフラストラクチャモニターの用途："
-			}
-		},
-		"logs": {
-			"tabs": {
-				"diagnostics": "診断",
-				"logs": "サーバーログ",
-				"queue": "ジョブキュー"
-			},
-			"logLevelSelect": {
-				"label": "ログレベル"
-			},
-			"jobQueue": "ジョブキュー",
-			"failedJobs": "失敗したジョブ",
-			"noLogs": "ログが見つかりません",
-			"metrics": {
-				"jobs": "ジョブ",
-				"activeJobs": "アクティブなジョブ",
-				"failingJobs": "失敗中のジョブ",
-				"totalRuns": "合計実行数",
-				"totalFailures": "合計失敗数"
-			},
-			"diagnostics": {
-				"stats": {
-					"eventLoopDelay": "イベントループ遅延",
-					"uptime": "稼働時間",
-					"usedHeapSize": "使用済みヒープサイズ",
-					"totalHeapSize": "合計ヒープサイズ",
-					"osMemoryLimit": "OSメモリ制限"
-				},
-				"gauges": {
-					"heapAllocation": "ヒープ割り当て",
-					"heapUsage": "ヒープ使用率",
-					"heapUtilization": "ヒープ使用効率",
-					"instantCpuUsage": "瞬時CPU使用率",
-					"availableMemoryPercentage": "利用可能メモリの%",
-					"allocatedPercentage": "割り当て済み%",
-					"usedSPercentage": "CPUによる1秒あたりの使用%",
-					"total": "合計",
-					"used": "使用済み"
-				}
-			},
-			"table": {
-				"headers": {
-					"timestamp": "タイムスタンプ",
-					"level": "レベル",
-					"service": "サービス",
-					"method": "メソッド",
-					"monitorId": "モニターID",
-					"runCount": "実行回数",
-					"failCount": "失敗回数",
-					"lastRunAt": "最終実行日時",
-					"lockedAt": "ロック日時",
-					"lastFinishedAt": "最終完了日時",
-					"lastRunTook": "最終実行時間",
-					"lastFailedAt": "最終失敗日時",
-					"failReason": "失敗理由"
-				}
-			}
-		},
-		"maintenanceWindow": {
-			"fallback": {
-				"actionButton": "メンテナンスウィンドウを作成！",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "メンテナンスウィンドウの用途："
-			},
-			"table": {
-				"headers": {
-					"nextWindow": "次のウィンドウ",
-					"repeat": "繰り返し"
-				}
-			},
-			"form": {
-				"general": {
-					"title": "一般設定",
-					"description": "メンテナンスウィンドウの名前と繰り返しオプションを設定します。",
-					"option": {
-						"name": {
-							"label": "名前",
-							"placeholder": "例: 週次メンテナンス"
-						},
-						"repeat": {
-							"label": "繰り返し"
-						}
-					}
-				},
-				"startDate": {
-					"title": "開始日",
-					"description": "メンテナンスウィンドウの開始日を選択してください。",
-					"option": {
-						"startDate": {
-							"label": "開始日"
-						}
-					}
-				},
-				"startTime": {
-					"title": "開始時刻",
-					"description": "メンテナンスウィンドウの開始時刻と期間を設定します。すべての値はUTCです",
-					"option": {
-						"duration": {
-							"label": "期間"
-						},
-						"startTime": {
-							"label": "開始時刻"
-						}
-					},
-					"monitors": {
-						"title": "モニター",
-						"description": "メンテナンスウィンドウを適用するモニター",
-						"option": {
-							"addMonitors": {
-								"label": "モニターを追加"
-							}
-						}
-					}
-				}
-			}
-		},
-		"notifications": {
-			"fallback": {
-				"actionButton": "チャンネルを作成",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "通知チャンネルの用途："
-			},
-			"form": {
-				"accessToken": {
-					"optionAccessToken": "アクセストークン",
-					"placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
-				},
-				"address": {
-					"description": "通知の送信先アドレスです。",
-					"optionAddress": "アドレス",
-					"placeholderEmail": "example@example.com",
-					"placeholderWebhook": "https://your-server.com/webhook",
-					"title": "アドレス"
-				},
-				"homeServer": {
-					"optionHomeServer": "ホームサーバー",
-					"placeholder": "example.com"
-				},
-				"matrix": {
-					"description": "通知用のMatrixホームサーバー接続を設定します。",
-					"title": "Matrix設定"
-				},
-				"notificationName": {
-					"description": "通知チャンネルの説明的な名前",
-					"optionName": "チャンネル名",
-					"placeholder": "例: 本番アラート",
-					"title": "チャンネル名"
-				},
-				"pagerDuty": {
-					"description": "アラート受信用のPagerDutyインテグレーションキーです。",
-					"optionIntegrationKey": "インテグレーションキー",
-					"placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
-					"title": "インテグレーションキー"
-				},
-				"roomId": {
-					"optionRoomId": "ルームID",
-					"placeholder": "!abcdefg:matrix.org"
-				},
-				"type": {
-					"description": "作成する通知チャンネルの種類を選択してください。",
-					"optionType": "タイプ",
-					"title": "チャンネルタイプ"
-				},
-				"telegram": {
-					"title": "Telegram設定",
-					"description": "Telegram通知を有効にするには、Telegramボットを作成・管理するための公式ボットであるBotFatherを使用してTelegramボットを作成します。次に、APIトークンとチャットIDを取得してここに記入します。",
-					"optionBotToken": "ボットトークン",
-					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
-					"optionChatId": "チャットID",
-					"placeholderChatId": "-1001234567890"
-				}
-			},
-			"table": {
-				"headers": {
-					"destination": "送信先"
-				}
-			}
-		},
-		"pageSpeed": {
-			"charts": {
-				"common": {
-					"cls": "Cumulative Layout Shift (CLS)",
-					"fcp": "First Contentful Paint (FCP)",
-					"lcp": "Largest Contentful Paint (LCP)",
-					"si": "Speed Index (SI)",
-					"tbt": "Total Blocking Time (TBT)"
-				},
-				"legend": {
-					"title": "PageSpeedレポート",
-					"weight": "重み"
-				},
-				"pie": {
-					"title": "パフォーマンスレポート"
-				}
-			},
-			"table": {
-				"headers": {
-					"pageSpeedScore": "PageSpeedスコア"
-				}
-			},
-			"fallback": {
-				"actionButton": "モニターを作成！",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "PageSpeedモニターの用途："
-			}
-		},
-		"settings": {
-			"form": {
-				"timezone": {
-					"title": "表示タイムゾーン",
-					"description": "アプリケーション全体で日時の表示に使用するタイムゾーンを選択してください。",
-					"option": {
-						"timezone": {
-							"label": "表示タイムゾーン"
-						}
-					}
-				},
-				"ui": {
-					"title": "外観",
-					"description": "ライトモードとダークモードの切り替え、言語の変更、またはチャート表示タイプのカスタマイズができます。",
-					"option": {
-						"theme": {
-							"label": "テーマモード",
-							"light": "ライト",
-							"dark": "ダーク"
-						},
-						"language": {
-							"label": "言語"
-						},
-						"chartType": {
-							"label": "チャートタイプ",
-							"histogram": "ヒストグラム",
-							"heatmap": "ヒートマップ"
-						}
-					}
-				},
-				"pagespeed": {
-					"title": "Google PageSpeed APIキー",
-					"description": "Google PageSpeed監視を有効にするにはGoogle PageSpeed APIキーを入力してください。キーを更新するにはリセットをクリックしてください。",
-					"option": {
-						"apiKey": {
-							"label": "PageSpeed APIキー",
-							"labelSet": "APIキーが設定されています。変更するにはリセットをクリックしてください。",
-							"placeholder": "Google PageSpeed APIキーを入力"
-						}
-					}
-				},
-				"url": {
-					"title": "ステータスページにモニターのIP/URLを表示",
-					"description": "公開ステータスページにモニターのIPアドレスまたはURLを表示します。無効の場合、機密情報を保護するためにモニター名のみが表示されます。",
-					"option": {
-						"showURL": {
-							"label": "ステータスページにIP/URLを表示",
-							"enabled": "有効",
-							"disabled": "無効"
-						}
-					}
-				},
-				"stats": {
-					"title": "モニター履歴",
-					"description": "チームのすべての監視履歴と統計をクリアします。この操作は元に戻せません。",
-					"option": {
-						"clear": {
-							"label": "すべての統計をクリアします。この操作は元に戻せません。"
-						}
-					},
-					"dialog": {
-						"title": "すべての監視履歴をクリアしますか？",
-						"description": "この操作は元に戻せません"
-					}
-				},
-				"retention": {
-					"title": "チェックデータの保持",
-					"description": "チェックデータが自動クリーンアップされるまでの保持期間を設定します。",
-					"option": {
-						"days": {
-							"label": "保持期間（日数）",
-							"unlimited": "無制限"
-						}
-					}
-				},
-				"thresholds": {
-					"title": "グローバルしきい値",
-					"description": "インフラストラクチャ監視のグローバルなCPU、メモリ、ディスク、温度しきい値を設定します。オーバーライドしない限り、すべてのハードウェアモニターに適用されます。",
-					"option": {
-						"cpu": {
-							"label": "CPUしきい値（%）",
-							"placeholder": "1 - 100"
-						},
-						"memory": {
-							"label": "メモリしきい値（%）",
-							"placeholder": "1 - 100"
-						},
-						"disk": {
-							"label": "ディスクしきい値（%）",
-							"placeholder": "1 - 100"
-						},
-						"temperature": {
-							"label": "温度しきい値（°C）",
-							"placeholder": "1 - 150"
-						}
-					}
-				},
-				"email": {
-					"title": "メール設定",
-					"description": "システムのメール設定を構成します。通知とアラートの送信に使用されます。",
-					"descriptionTransport": "これはNodeMailer用のSMTPトランスポートを構築します",
-					"descriptionTransportLink": "仕様はこちらを参照",
-					"option": {
-						"host": {
-							"label": "メールホスト - 接続先のホスト名またはIPアドレス",
-							"placeholder": "smtp.gmail.com"
-						},
-						"port": {
-							"label": "メールポート - 接続先のポート",
-							"placeholder": "587"
-						},
-						"address": {
-							"label": "メールアドレス - 認証に使用",
-							"placeholder": "you@example.com"
-						},
-						"user": {
-							"label": "メールユーザー - 認証用のユーザー名、指定時はメールアドレスを上書き",
-							"placeholder": "不要な場合は空欄のまま"
-						},
-						"password": {
-							"label": "メールパスワード - 認証用のパスワード",
-							"labelSet": "パスワードが設定されています。変更するにはリセットをクリックしてください。",
-							"placeholder": "パスワードを入力"
-						},
-						"tlsServername": {
-							"label": "TLSサーバー名 - ホストがIPの場合のTLS検証用オプションホスト名",
-							"placeholder": "example.com"
-						},
-						"connectionHost": {
-							"label": "メール接続ホスト - HELO/EHLOグリーティングで使用するホスト名",
-							"placeholder": "localhost"
-						},
-						"secure": {
-							"label": "SSLを使用（推奨）: SSL/TLSで接続を暗号化"
-						},
-						"pool": {
-							"label": "接続プーリングを有効化: 既存の接続を再利用してパフォーマンスを向上"
-						},
-						"ignoreTLS": {
-							"label": "STARTTLSを無効化: サーバーがサポートしていてもTLSを使用しない"
-						},
-						"requireTLS": {
-							"label": "STARTTLSを強制: TLSアップグレードを要求、未サポート時は失敗"
-						},
-						"rejectUnauthorized": {
-							"label": "無効な証明書を拒否: 自己署名または信頼されていない証明書の接続を拒否"
-						}
-					}
-				},
-				"demoMonitors": {
-					"title": "デモモニター",
-					"description": "デモ目的でサンプルモニターを追加します。"
-				},
-				"removeMonitors": {
-					"title": "システムリセット",
-					"description": "システムからすべてのモニターを削除します。",
-					"dialog": {
-						"title": "すべてのモニターを削除しますか？",
-						"description": "この操作は元に戻せません。"
-					}
-				},
-				"exportMonitors": {
-					"title": "モニターをエクスポート"
-				},
-				"importExportMonitors": {
-					"title": "モニターのインポート/エクスポート",
-					"description": "バックアップまたは転送のために、モニターデータをJSONファイルとしてインポートまたはエクスポートします。"
-				},
-				"about": {
-					"title": "概要",
-					"developedBy": "Bluewave Labsが開発"
-				},
-				"validation": {
-					"errorMessage": "以下のバリデーションエラーを修正してください："
-				}
-			}
-		},
-		"statusPages": {
-			"deleteSuccess": "ステータスページが正常に削除されました",
-			"fallback": {
-				"title": "ステータスページの用途：",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "ステータスページを作成！"
-			},
-			"monitorsList": {
-				"chartTypeHeatmap": "ヒートマップ",
-				"chartTypeHistogram": "ヒストグラム",
-				"noData": "データがありません",
-				"infrastructure": {
-					"title": "インフラストラクチャ",
-					"cpu": "CPU",
-					"memory": "RAM",
-					"memoryText": "メモリ",
-					"disk": "ディスク",
-					"usage": "使用量",
-					"used": "使用済み",
-					"total": "合計"
-				},
-				"uptime": {
-					"title": "稼働時間",
-					"responseTime": "応答時間"
-				}
-			},
-			"statusBar": {
-				"allDown": "すべてのシステムがダウンしています",
-				"allUp": "すべてのシステムが正常に稼働しています",
-				"degraded": "一部のシステムに問題が発生しています",
-				"unknown": "システムステータスを判定できません"
-			},
-			"table": {
-				"headers": {
-					"name": "ステータスページ名",
-					"url": "公開URL"
-				},
-				"published": "公開済み",
-				"unpublished": "未公開"
-			},
-			"title": "ステータスページ",
-			"details": {
-				"empty": {
-					"title": "まだ何もありません",
-					"addMonitor": "開始するにはモニターを追加してください"
-				}
-			},
-			"form": {
-				"access": {
-					"title": "アクセス",
-					"description": "ステータスページの準備ができたら、公開済みとしてマークできます。",
-					"option": {
-						"published": {
-							"name": "公開済みで一般に表示"
-						}
-					}
-				},
-				"basicInfo": {
-					"title": "基本情報",
-					"description": "会社名とステータスページが指すサブドメインを定義します。",
-					"option": {
-						"name": {
-							"label": "会社名",
-							"placeholder": "Acme Inc."
-						},
-						"url": {
-							"label": "ステータスページのアドレス",
-							"placeholder": "my-status-page"
-						}
-					}
-				},
-				"monitors": {
-					"title": "モニター",
-					"description": "ステータスページに表示するモニターを選択してください。",
-					"noMonitors": "モニターが選択されていません",
-					"option": {
-						"monitors": {
-							"label": "モニターを選択",
-							"placeholder": "モニターを検索して選択..."
-						}
-					}
-				},
-				"timezone": {
-					"title": "タイムゾーン",
-					"description": "ステータスページの表示に使用するタイムゾーンを選択してください。",
-					"option": {
-						"timezone": {
-							"label": "タイムゾーン",
-							"placeholder": "タイムゾーンを選択..."
-						}
-					}
-				},
-				"appearance": {
-					"title": "外観",
-					"description": "公開ステータスページのデフォルトの外観を定義します。",
-					"option": {
-						"logo": {
-							"label": "ロゴ"
-						},
-						"color": {
-							"label": "ブランドカラー"
-						}
-					}
-				},
-				"features": {
-					"title": "機能",
-					"description": "ステータスページに表示する情報を設定します。",
-					"option": {
-						"showCharts": {
-							"label": "応答時間チャートを表示"
-						},
-						"showUptimePercentage": {
-							"label": "稼働率を表示"
-						},
-						"showAdminLoginLink": {
-							"label": "管理者ログインリンクを表示"
-						},
-						"showInfrastructure": {
-							"label": "インフラストラクチャメトリクスを表示"
-						}
-					}
-				}
-			}
-		},
-		"uptime": {
-			"filters": {
-				"search": {
-					"placeholder": "モニターを検索..."
-				}
-			},
-			"table": {
-				"headers": {
-					"responseTime": "応答時間"
-				}
-			},
-			"fallback": {
-				"actionButton": "モニターを作成！",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "稼働時間モニターの用途："
-			}
-		}
-	}
+  "common": {
+    "auth": {
+      "roles": {
+        "admin": "管理者",
+        "demo": "デモ",
+        "superadmin": "スーパー管理者",
+        "user": "ユーザー"
+      }
+    },
+    "alerts": {
+      "pageSpeedApiKey": {
+        "content": "警告: Google PageSpeed APIキーがまだ追加されていません。<settingsLink>設定</settingsLink>からキーを追加してください。キーがないとPageSpeedモニターは機能しません。"
+      }
+    },
+    "appName": "Checkmate",
+    "breadcrumbs": {
+      "details": "詳細",
+      "home": "ホーム"
+    },
+    "buttons": {
+      "addMember": "メンバーを追加",
+      "cancel": "キャンセル",
+      "close": "閉じる",
+      "configure": "設定",
+      "confirm": "確認",
+      "create": "作成",
+      "delete": "削除",
+      "generateToken": "トークンを生成",
+      "incidents": "インシデント",
+      "inviteMember": "メンバーを招待",
+      "pause": "一時停止",
+      "resume": "再開",
+      "save": "保存",
+      "sendInvite": "招待を送信",
+      "test": "テスト",
+      "testNotifications": "通知テスト",
+      "toggleTheme": "ライト＆ダークを切り替え",
+      "flushQueue": "キューをフラッシュ",
+      "notFound": "メインダッシュボードへ移動",
+      "resetPassword": "パスワードをリセット",
+      "reset": "リセット",
+      "clear": "クリア",
+      "addDemo": "デモモニターを追加",
+      "removeMonitors": "モニターを削除",
+      "sendTestEmail": "テストメールを送信",
+      "exportToJSON": "JSONにエクスポート",
+      "importFromJSON": "JSONからインポート",
+      "clearFilters": "フィルターをクリア",
+      "removeUser": "ユーザーを削除"
+    },
+    "charts": {
+      "labels": {
+        "averageResponseTime": "平均応答時間",
+        "downtime": "ダウンタイム",
+        "high": "高",
+        "low": "低",
+        "uptime": "稼働時間"
+      },
+      "histogram": {
+        "avg": "平均: {{value}} ms",
+        "max": "最大: {{value}} ms"
+      }
+    },
+    "dialogs": {
+      "delete": {
+        "description": "この操作は元に戻せません。",
+        "title": "本当に削除しますか？"
+      }
+    },
+    "labels": {
+      "active": "アクティブ",
+      "paused": "一時停止中",
+      "na": "N/A",
+      "resolved": "解決済み",
+      "responseTime": "応答時間"
+    },
+    "form": {
+      "role": {
+        "option": {
+          "role": {
+            "label": "ロール"
+          }
+        }
+      },
+      "name": {
+        "option": {
+          "firstName": {
+            "label": "名前",
+            "placeholder": "太郎"
+          },
+          "lastName": {
+            "label": "姓",
+            "placeholder": "田中"
+          }
+        }
+      },
+      "email": {
+        "option": {
+          "email": {
+            "label": "メールアドレス",
+            "placeholder": "you@example.com"
+          }
+        }
+      }
+    },
+    "table": {
+      "empty": "データがありません",
+      "headers": {
+        "actions": "アクション",
+        "dateTime": "日時",
+        "message": "メッセージ",
+        "monitor": "モニター",
+        "monitorId": "モニターID",
+        "name": "名前",
+        "status": "ステータス",
+        "type": "タイプ",
+        "url": "URL",
+        "interval": "間隔",
+        "active": "アクティブ",
+        "responseTime": "応答時間"
+      }
+    }
+  },
+  "components": {
+    "imageUpload": {
+      "clickToUpload": "クリックしてアップロード",
+      "dragAndDrop": "ドラッグアンドドロップ",
+      "supportedFormats": "対応フォーマット",
+      "maxSize": "最大サイズ",
+      "orDragAndDrop": "またはドラッグアンドドロップ",
+      "errors": {
+        "invalidFileSize": "ファイルサイズが大きすぎます！",
+        "invalidFileFormat": "サポートされていないファイル形式！"
+      }
+    },
+    "headerStatusPageControls": {
+      "publicLink": "公開リンク"
+    },
+    "headerTimeRange": {
+      "labels": {
+        "day": "日",
+        "month": "月",
+        "recent": "最近",
+        "week": "週"
+      },
+      "description": {
+        "recent": "過去2時間の統計を表示しています。",
+        "day": "過去24時間の統計を表示しています。",
+        "week": "過去7日間の統計を表示しています。",
+        "month": "過去30日間の統計を表示しています。"
+      }
+    },
+    "offlineBanner": {
+      "serverUnreachable": "サーバーに接続できません",
+      "retry": "再試行",
+      "retrying": "再試行中...",
+      "reconnected": "サーバーに正常に再接続しました。"
+    },
+    "sidebar": {
+      "menu": {
+        "uptime": "稼働時間",
+        "pagespeed": "ページ速度",
+        "infrastructure": "インフラストラクチャ",
+        "notifications": "通知",
+        "checks": "チェック",
+        "incidents": "インシデント",
+        "statusPages": "ステータスページ",
+        "maintenance": "メンテナンス",
+        "logs": "ログ",
+        "settings": "設定"
+      },
+      "bottomMenu": {
+        "support": "サポート",
+        "discussions": "ディスカッション",
+        "docs": "ドキュメント",
+        "changelog": "変更履歴"
+      },
+      "accountMenu": {
+        "profile": "プロフィール",
+        "password": "パスワード",
+        "team": "チーム"
+      },
+      "starPrompt": {
+        "title": "Checkmateにスターを付ける",
+        "description": "GitHubで最新リリースを確認し、コミュニティの成長に貢献しましょう"
+      },
+      "authFooter": {
+        "navControls": "コントロール",
+        "logOut": "ログアウト",
+        "roles": {
+          "superAdmin": "スーパー管理者",
+          "admin": "管理者",
+          "user": "ユーザー",
+          "demoUser": "デモユーザー"
+        }
+      }
+    },
+    "starPrompt": {
+      "title": "Checkmateにスターを付ける",
+      "description": "GitHubで最新リリースを確認し、コミュニティの成長に貢献しましょう"
+    }
+  },
+  "pages": {
+    "notFound": {
+      "title": "おっと！お寿司を落としてしまいました！",
+      "subtitle": "URLが存在しないか、アクセス権限がありません。"
+    },
+    "account": {
+      "tabs": {
+        "profile": "プロフィール",
+        "password": "パスワード",
+        "team": "チーム"
+      },
+      "form": {
+        "name": {
+          "title": "名前",
+          "description": "個人情報を更新"
+        },
+        "photo": {
+          "title": "プロフィール写真",
+          "description": "プロフィール画像をアップロード"
+        },
+        "currentPassword": {
+          "title": "現在のパスワード",
+          "description": "本人確認のために現在のパスワードを入力してください",
+          "option": {
+            "label": "現在のパスワード",
+            "placeholder": "現在のパスワードを入力"
+          }
+        },
+        "newPassword": {
+          "title": "新しいパスワード",
+          "description": "8文字以上の強力なパスワードを選択してください",
+          "option": {
+            "newPassword": {
+              "label": "新しいパスワード",
+              "placeholder": "新しいパスワードを入力"
+            },
+            "confirm": {
+              "label": "パスワードを確認",
+              "placeholder": "新しいパスワードを確認"
+            }
+          }
+        },
+        "deleteAccount": {
+          "title": "アカウントを削除",
+          "description": "この操作は永久的で元に戻せません"
+        }
+      },
+      "team": {
+        "filter": {
+          "placeholder": "ロールでフィルター",
+          "all": "すべて",
+          "admin": "管理者",
+          "member": "メンバー"
+        },
+        "table": {
+          "headers": {
+            "email": "メールアドレス",
+            "role": "ロール",
+            "created": "作成日"
+          }
+        },
+        "addMember": {
+          "title": "新しいチームメンバーを登録",
+          "description": "新しいユーザーアカウントを作成します。作成後、認証情報を安全に共有してください。"
+        },
+        "invite": {
+          "title": "チームメンバーを招待",
+          "description": "チームへの招待を送信",
+          "email": {
+            "label": "メールアドレス",
+            "placeholder": "メールアドレスを入力"
+          },
+          "role": {
+            "label": "ロール",
+            "placeholder": "ロールを選択"
+          },
+          "linkLabel": "招待リンク"
+        }
+      }
+    },
+    "auth": {
+      "common": {
+        "passwordRules": {
+          "length": {
+            "beginning": "少なくとも",
+            "highlighted": "8文字である必要があります"
+          },
+          "lowercase": {
+            "beginning": "少なくとも",
+            "highlighted": "1つの小文字を含む必要があります"
+          },
+          "match": {
+            "beginning": "パスワードの確認とパスワードは",
+            "highlighted": "一致する必要があります"
+          },
+          "number": {
+            "beginning": "少なくとも",
+            "highlighted": "1つの数字を含む必要があります"
+          },
+          "special": {
+            "beginning": "少なくとも",
+            "highlighted": "1つの特殊文字を含む必要があります"
+          },
+          "uppercase": {
+            "beginning": "少なくとも",
+            "highlighted": "1つの大文字を含む必要があります"
+          }
+        },
+        "form": {
+          "option": {
+            "email": {
+              "label": "メールアドレス",
+              "placeholder": "me@example.com"
+            },
+            "password": {
+              "label": "パスワード",
+              "placeholder": "********"
+            },
+            "confirmPassword": {
+              "label": "パスワードを確認"
+            }
+          }
+        }
+      },
+      "login": {
+        "title": "Checkmateへようこそ！",
+        "subtitle": "ログインして続行",
+        "submit": "ログイン",
+        "links": {
+          "forgotPassword": {
+            "text": "パスワードをお忘れですか？",
+            "linkText": "パスワードをリセット"
+          },
+          "register": {
+            "text": "アカウントをお持ちでないですか？",
+            "linkText": "こちらから登録"
+          }
+        }
+      },
+      "register": {
+        "title": "Checkmateへようこそ！",
+        "subtitle": "サインアップして始めましょう",
+        "submit": "登録"
+      },
+      "forgotPassword": {
+        "title": "パスワードをお忘れですか？",
+        "subtitle": "ご安心ください。リセット手順をお送りします。",
+        "submit": "リカバリーをリクエスト",
+        "links": {
+          "login": {
+            "text": "戻る：",
+            "linkText": "ログイン"
+          }
+        }
+      },
+      "setNewPassword": {
+        "title": "パスワードをリセット",
+        "subtitle": "新しいパスワードは以前使用したパスワードと異なる必要があります。"
+      }
+    },
+    "checks": {
+      "selects": {
+        "monitor": {
+          "all": "すべてのモニター"
+        },
+        "status": {
+          "all": "すべて",
+          "down": "ダウン",
+          "up": "アップ"
+        }
+      },
+      "table": {
+        "empty": "この期間にダウンチェックはありません",
+        "headers": {
+          "statusCode": "ステータスコード",
+          "location": "ロケーション"
+        }
+      }
+    },
+    "common": {
+      "monitors": {
+        "actions": {
+          "configure": "設定",
+          "delete": "削除",
+          "generateToken": "トークンを生成",
+          "details": "詳細",
+          "incidents": "インシデント",
+          "inviteMember": "メンバーを招待",
+          "openSite": "サイトを開く",
+          "pause": "一時停止",
+          "resume": "再開"
+        },
+        "statBoxes": {
+          "activeFor": "稼働期間",
+          "certificateExpiry": "証明書の有効期限",
+          "lastCheck": "最終チェック",
+          "lastResponseTime": "最終応答時間"
+        },
+        "status": {
+          "down": "ダウン",
+          "breached": "しきい値超過",
+          "initializing": "初期化中",
+          "maintenance": "メンテナンス中",
+          "paused": "一時停止中",
+          "total": "合計",
+          "up": "稼働中"
+        },
+        "monitorTypes": {
+          "optionDocker": "Docker",
+          "optionGame": "ゲーム",
+          "optionHttp": "HTTP(S)",
+          "optionPing": "Ping",
+          "optionPort": "ポート",
+          "optionPagespeed": "PageSpeed",
+          "optionHardware": "インフラストラクチャ",
+          "optionGrpc": "gRPC",
+          "optionWebSocket": "WebSocket"
+        }
+      }
+    },
+    "createMonitor": {
+      "form": {
+        "advanced": {
+          "description": "高度なユースケース向けのオプション設定",
+          "option": {
+            "advancedMatching": {
+              "label": "高度なマッチングを使用"
+            },
+            "expectedValue": {
+              "label": "期待値"
+            },
+            "jsonPath": {
+              "description": "この式はレスポンスのJSONデータに対して評価され、結果は期待値とのマッチングに使用されます。クエリ言語のドキュメントは<jmesLink>jmespath.org</jmesLink>をご参照ください。",
+              "label": "JSONPath式"
+            },
+            "matchMethod": {
+              "label": "マッチ方法",
+              "equal": "",
+              "include": "",
+              "regex": ""
+            }
+          },
+          "title": "詳細設定"
+        },
+        "frequency": {
+          "description": "このモニターのステータスをどのくらいの頻度で確認しますか？",
+          "option": {
+            "frequency": {
+              "label": "チェック頻度",
+              "value": {
+                "fifteenMinutes": "15分",
+                "fifteenSeconds": "",
+                "fiveMinutes": "5分",
+                "fourMinutes": "",
+                "oneMinute": "",
+                "tenMinutes": "10分",
+                "thirtyMinutes": "30分",
+                "thirtySeconds": "",
+                "threeMinutes": "3分",
+                "twoMinutes": ""
+              }
+            }
+          },
+          "title": "チェック頻度"
+        },
+        "general": {
+          "option": {
+            "container": {
+              "label": "コンテナ名/ID",
+              "placeholder": "my-app または abcd1234"
+            },
+            "host": {
+              "label": "ホスト",
+              "placeholder": "192.168.1.100 または example.com"
+            },
+            "name": {
+              "label": "表示名",
+              "placeholder": "例: My Website"
+            },
+            "secret": {
+              "label": "認証シークレット",
+              "placeholder": "シークレットキーを入力"
+            },
+            "url": {
+              "label": "URL",
+              "placeholder": "https://www.google.com"
+            },
+            "game": {
+              "label": "",
+              "placeholder": ""
+            },
+            "port": {
+              "label": "監視するポート",
+              "placeholder": "80"
+            },
+            "grpcServiceName": {
+              "label": "サービス名",
+              "placeholder": "例: my.service.v1（全体のヘルスチェックの場合は空欄）"
+            },
+            "wsUrl": {
+              "label": "WebSocket URL",
+              "placeholder": "wss://example.com/socket"
+            }
+          },
+          "title": "一般設定",
+          "description": {
+            "http": "監視するURLまたはIPを入力し（例: https://example.com/ または 192.168.1.100）、ダッシュボードに表示される表示名を追加してください。",
+            "ping": "pingするIPアドレスまたはホスト名を入力（例: 192.168.1.100 または example.com）し、ダッシュボードに表示される明確な表示名を追加。",
+            "port": "サーバーのURLまたはIP、ポート番号、ダッシュボードに表示される明確な表示名を入力。",
+            "docker": "コンテナのDocker IDを入力。Docker IDは64文字のフルDocker IDである必要があります。docker inspect <short_id>を実行してフルコンテナIDを取得できます。",
+            "game": "",
+            "pagespeed": "Webサイトのページ読み込みパフォーマンス、Core Web Vitals、最適化スコアを追跡します。",
+            "grpc": "gRPCサーバーのホスト名とポートを入力し、必要に応じてヘルスチェック用のサービス名を指定し、表示名を追加してください。",
+            "websocket": "監視するWebSocket URLを入力し（例: wss://example.com/socket）、表示名を追加してください。",
+            "hardware": "インフラストラクチャのCPU、メモリ、ディスク使用量、温度を監視します。"
+          }
+        },
+        "ignoreTls": {
+          "description": "HTTPS接続のTLS/SSL証明書検証を設定します。",
+          "option": {
+            "tls": {
+              "label": "TLS/SSLエラーを無視"
+            }
+          },
+          "title": "TLS/SSL設定"
+        },
+        "incidents": {
+          "description": "スライディングウィンドウを使用してモニターのダウンを判定します。スライディングウィンドウ内のチェックの割合が指定値を満たした場合にのみ、モニターのステータスが変更されます。",
+          "option": {
+            "checks": {
+              "label": "スライディングウィンドウ内のチェック数"
+            },
+            "percentage": {
+              "label": "モニターのステータスが変更される前に、スライディングウィンドウ内のチェックの何パーセントが失敗/成功する必要がありますか？"
+            }
+          },
+          "title": "インシデント"
+        },
+        "notifications": {
+          "description": "使用する通知チャンネルを選択してください",
+          "title": "通知"
+        },
+        "type": {
+          "description": "実行するチェックの種類を選択",
+          "optionDockerDescription": "Dockerを使用してコンテナが稼働しているか監視します。",
+          "optionGameDescription": "特定のゲームサーバーがオンラインかどうかを監視します。",
+          "optionGrpcDescription": "標準のHealth Checking Protocolを使用してgRPCサービスを監視します。",
+          "optionWebSocketDescription": "WebSocketエンドポイントの接続状態と応答時間を監視します。",
+          "optionHttpDescription": "HTTP(S)を使用してWebサイトまたはAPIエンドポイントを監視します。",
+          "optionPingDescription": "ICMP Pingを使用してサーバーがオンラインかどうかを監視します。",
+          "optionPortDescription": "サーバーの特定のポートが開いているかどうかを監視します。",
+          "title": "タイプ"
+        },
+        "thresholds": {
+          "title": "アラートしきい値",
+          "description": "このハードウェアモニターでアラートがトリガーされるしきい値を定義します。",
+          "option": {
+            "cpuThreshold": {
+              "label": "CPUアラートしきい値（%）"
+            },
+            "memoryThreshold": {
+              "label": "メモリアラートしきい値（%）"
+            },
+            "diskThreshold": {
+              "label": "ディスクアラートしきい値（%）"
+            },
+            "tempThreshold": {
+              "label": "温度アラートしきい値（°C）"
+            }
+          }
+        },
+        "geoChecks": {
+          "title": "地理分散チェック",
+          "description": "複数の地理的ロケーションからチェックを実行し、グローバルな可用性とパフォーマンスを監視します。",
+          "option": {
+            "enabled": {
+              "label": "地理分散チェックを有効化"
+            },
+            "locations": {
+              "label": "ロケーション",
+              "placeholder": "ロケーションを選択",
+              "options": {
+                "EU": "ヨーロッパ",
+                "NA": "北米",
+                "AS": "アジア",
+                "SA": "南米",
+                "AF": "アフリカ",
+                "OC": "オセアニア"
+              }
+            },
+            "interval": {
+              "label": "チェック間隔",
+              "value": {
+                "fiveMinutes": "5分",
+                "tenMinutes": "10分",
+                "fifteenMinutes": "15分",
+                "thirtyMinutes": "30分"
+              }
+            }
+          }
+        },
+        "url": {
+          "title": "ステータスページにモニターのIP/URLを表示",
+          "description": "公開ステータスページにモニターのIPアドレスまたはURLを表示します。無効の場合、機密情報を保護するためにモニター名のみが表示されます。",
+          "option": {
+            "showURL": {
+              "label": "ステータスページにIP/URLを表示",
+              "enabled": "有効",
+              "disabled": "無効"
+            }
+          }
+        },
+        "stats": {
+          "title": "モニター履歴",
+          "description": "チームのすべての監視履歴と統計をクリアします。この操作は元に戻せません。",
+          "buttonText": "すべての統計をクリア",
+          "dialog": {
+            "title": "すべての監視履歴をクリアしますか？",
+            "description": "チームのすべての監視履歴、統計、チェックデータが完全に削除されます。この操作は元に戻せません。",
+            "confirm": "はい、すべての統計をクリア"
+          }
+        },
+        "escalations": {
+          "title": "Escalation Rules",
+          "description": "Automatically notify a channel if an incident remains unresolved after a delay",
+          "addRule": "Add Rule",
+          "option": {
+            "delayMinutes": {
+              "label": "Escalate after (minutes)"
+            },
+            "channel": {
+              "label": "Notification channel",
+              "placeholder": "Select a channel"
+            },
+            "removeRule": {
+              "ariaLabel": "Remove escalation rule"
+            }
+          }
+        }
+      }
+    },
+    "editUser": {
+      "form": {
+        "roles": {
+          "title": "ロール",
+          "description": "ユーザーにロールを割り当てます。複数のロールを選択できます。"
+        }
+      },
+      "dialog": {
+        "removeUser": {
+          "title": "ユーザーを削除",
+          "content": "{{name}}をチームから削除してもよろしいですか？この操作は元に戻せません。"
+        }
+      }
+    },
+    "incidents": {
+      "dialog": {
+        "resolveIncident": {
+          "title": "インシデントを解決",
+          "option": {
+            "comment": {
+              "label": "コメント（任意）",
+              "placeholder": "解決に関するコメントを追加..."
+            }
+          }
+        },
+        "details": {
+          "analysis": "インシデント分析",
+          "comment": "コメント:",
+          "detailsLabel": "詳細",
+          "downtime": "ダウンタイム:",
+          "message": "メッセージ:",
+          "monitor": "モニター:",
+          "overview": "概要",
+          "resolutionDetails": "解決の詳細",
+          "resolutionType": "タイプ:",
+          "resolutionTypes": {
+            "automatic": "自動",
+            "manual": "手動"
+          },
+          "resolve": "インシデントを解決",
+          "resolvedAt": "解決日時:",
+          "resolvedBy": "解決者:",
+          "startedAt": "開始日時:",
+          "status": "ステータス:",
+          "statusCode": "ステータスコード:",
+          "timeline": "タイムライン",
+          "title": "インシデント詳細",
+          "url": "URL:"
+        }
+      },
+      "filters": {
+        "allMonitors": "すべてのモニター",
+        "monitor": "モニター",
+        "resolutionType": "解決タイプ",
+        "resolutionTypes": {
+          "manual": "手動",
+          "automatic": "自動",
+          "all": "すべて"
+        }
+      },
+      "summaryCard": {
+        "activeIncidents": {
+          "title": "アクティブなインシデント",
+          "active_zero": "アクティブなインシデントはありません",
+          "active_one": "{{count}}件のアクティブなインシデント",
+          "active_other": "{{count}}件のアクティブなインシデント"
+        },
+        "incidentStats": {
+          "avgResolutionTime": "平均解決時間",
+          "mostAffectedMonitor": "最も影響を受けたモニター",
+          "title": "インシデント統計",
+          "totalIncidents": "インシデント合計"
+        },
+        "latestIncidents": {
+          "title": "最新のインシデント"
+        }
+      },
+      "table": {
+        "actions": {
+          "details": "詳細",
+          "goToMonitor": "モニターへ移動",
+          "resolveManually": "手動で解決"
+        },
+        "activeIncidents": "アクティブなインシデント",
+        "headers": {
+          "endTime": "終了時刻",
+          "resolutionType": "解決タイプ",
+          "startTime": "開始時刻",
+          "statusCode": "ステータスコード"
+        },
+        "resolvedIncidents": "解決済みインシデント",
+        "status": {
+          "active": "アクティブ",
+          "resolved": "解決済み"
+        }
+      }
+    },
+    "infrastructure": {
+      "charts": {
+        "labels": {
+          "cpu": "CPU使用率",
+          "disk": "ディスク使用率",
+          "memory": "メモリ使用率",
+          "netBytesRecv": "{{name}} - 受信バイト数",
+          "netBytesSent": "{{name}} - 送信バイト数",
+          "temp": "温度"
+        }
+      },
+      "gauges": {
+        "cpu": {
+          "lowerLabel": "最大周波数",
+          "title": "CPU使用率",
+          "upperLabel": "現在の周波数"
+        },
+        "disk": {
+          "lowerLabel": "空き",
+          "title": "ディスク{{idx}}使用率",
+          "upperLabel": "使用済み"
+        },
+        "memory": {
+          "lowerLabel": "空き",
+          "title": "メモリ使用率",
+          "upperLabel": "使用済み"
+        }
+      },
+      "statBoxes": {
+        "avgCpuTemperature": "平均CPU温度",
+        "cpuFrequency": "CPU周波数",
+        "cpuLogical": "CPU（論理）",
+        "cpuPhysical": "CPU（物理）",
+        "disk": "ディスク",
+        "memory": "メモリ",
+        "os": "OS"
+      },
+      "table": {
+        "headers": {
+          "cpu": "CPU",
+          "disk": "ディスク",
+          "memory": "メモリ"
+        }
+      },
+      "tabs": {
+        "labels": {
+          "network": "",
+          "overview": "概要"
+        }
+      },
+      "fallback": {
+        "actionButton": "モニターを作成！",
+        "checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
+        "title": "インフラストラクチャモニターの用途："
+      }
+    },
+    "logs": {
+      "tabs": {
+        "diagnostics": "診断",
+        "logs": "サーバーログ",
+        "queue": "ジョブキュー"
+      },
+      "logLevelSelect": {
+        "label": "ログレベル"
+      },
+      "jobQueue": "ジョブキュー",
+      "failedJobs": "失敗したジョブ",
+      "noLogs": "ログが見つかりません",
+      "metrics": {
+        "jobs": "ジョブ",
+        "activeJobs": "アクティブなジョブ",
+        "failingJobs": "失敗中のジョブ",
+        "totalRuns": "合計実行数",
+        "totalFailures": "合計失敗数"
+      },
+      "diagnostics": {
+        "stats": {
+          "eventLoopDelay": "イベントループ遅延",
+          "uptime": "稼働時間",
+          "usedHeapSize": "使用済みヒープサイズ",
+          "totalHeapSize": "合計ヒープサイズ",
+          "osMemoryLimit": "OSメモリ制限"
+        },
+        "gauges": {
+          "heapAllocation": "ヒープ割り当て",
+          "heapUsage": "ヒープ使用率",
+          "heapUtilization": "ヒープ使用効率",
+          "instantCpuUsage": "瞬時CPU使用率",
+          "availableMemoryPercentage": "利用可能メモリの%",
+          "allocatedPercentage": "割り当て済み%",
+          "usedSPercentage": "CPUによる1秒あたりの使用%",
+          "total": "合計",
+          "used": "使用済み"
+        }
+      },
+      "table": {
+        "headers": {
+          "timestamp": "タイムスタンプ",
+          "level": "レベル",
+          "service": "サービス",
+          "method": "メソッド",
+          "monitorId": "モニターID",
+          "runCount": "実行回数",
+          "failCount": "失敗回数",
+          "lastRunAt": "最終実行日時",
+          "lockedAt": "ロック日時",
+          "lastFinishedAt": "最終完了日時",
+          "lastRunTook": "最終実行時間",
+          "lastFailedAt": "最終失敗日時",
+          "failReason": "失敗理由"
+        }
+      }
+    },
+    "maintenanceWindow": {
+      "fallback": {
+        "actionButton": "メンテナンスウィンドウを作成！",
+        "checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
+        "title": "メンテナンスウィンドウの用途："
+      },
+      "table": {
+        "headers": {
+          "nextWindow": "次のウィンドウ",
+          "repeat": "繰り返し"
+        }
+      },
+      "form": {
+        "general": {
+          "title": "一般設定",
+          "description": "メンテナンスウィンドウの名前と繰り返しオプションを設定します。",
+          "option": {
+            "name": {
+              "label": "名前",
+              "placeholder": "例: 週次メンテナンス"
+            },
+            "repeat": {
+              "label": "繰り返し"
+            }
+          }
+        },
+        "startDate": {
+          "title": "開始日",
+          "description": "メンテナンスウィンドウの開始日を選択してください。",
+          "option": {
+            "startDate": {
+              "label": "開始日"
+            }
+          }
+        },
+        "startTime": {
+          "title": "開始時刻",
+          "description": "メンテナンスウィンドウの開始時刻と期間を設定します。すべての値はUTCです",
+          "option": {
+            "duration": {
+              "label": "期間"
+            },
+            "startTime": {
+              "label": "開始時刻"
+            }
+          },
+          "monitors": {
+            "title": "モニター",
+            "description": "メンテナンスウィンドウを適用するモニター",
+            "option": {
+              "addMonitors": {
+                "label": "モニターを追加"
+              }
+            }
+          }
+        }
+      }
+    },
+    "notifications": {
+      "fallback": {
+        "actionButton": "チャンネルを作成",
+        "checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
+        "title": "通知チャンネルの用途："
+      },
+      "form": {
+        "accessToken": {
+          "optionAccessToken": "アクセストークン",
+          "placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
+        },
+        "address": {
+          "description": "通知の送信先アドレスです。",
+          "optionAddress": "アドレス",
+          "placeholderEmail": "example@example.com",
+          "placeholderWebhook": "https://your-server.com/webhook",
+          "title": "アドレス"
+        },
+        "homeServer": {
+          "optionHomeServer": "ホームサーバー",
+          "placeholder": "example.com"
+        },
+        "matrix": {
+          "description": "通知用のMatrixホームサーバー接続を設定します。",
+          "title": "Matrix設定"
+        },
+        "notificationName": {
+          "description": "通知チャンネルの説明的な名前",
+          "optionName": "チャンネル名",
+          "placeholder": "例: 本番アラート",
+          "title": "チャンネル名"
+        },
+        "pagerDuty": {
+          "description": "アラート受信用のPagerDutyインテグレーションキーです。",
+          "optionIntegrationKey": "インテグレーションキー",
+          "placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+          "title": "インテグレーションキー"
+        },
+        "roomId": {
+          "optionRoomId": "ルームID",
+          "placeholder": "!abcdefg:matrix.org"
+        },
+        "type": {
+          "description": "作成する通知チャンネルの種類を選択してください。",
+          "optionType": "タイプ",
+          "title": "チャンネルタイプ"
+        },
+        "telegram": {
+          "title": "Telegram設定",
+          "description": "Telegram通知を有効にするには、Telegramボットを作成・管理するための公式ボットであるBotFatherを使用してTelegramボットを作成します。次に、APIトークンとチャットIDを取得してここに記入します。",
+          "optionBotToken": "ボットトークン",
+          "placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
+          "optionChatId": "チャットID",
+          "placeholderChatId": "-1001234567890"
+        }
+      },
+      "table": {
+        "headers": {
+          "destination": "送信先"
+        }
+      }
+    },
+    "pageSpeed": {
+      "charts": {
+        "common": {
+          "cls": "Cumulative Layout Shift (CLS)",
+          "fcp": "First Contentful Paint (FCP)",
+          "lcp": "Largest Contentful Paint (LCP)",
+          "si": "Speed Index (SI)",
+          "tbt": "Total Blocking Time (TBT)"
+        },
+        "legend": {
+          "title": "PageSpeedレポート",
+          "weight": "重み"
+        },
+        "pie": {
+          "title": "パフォーマンスレポート"
+        }
+      },
+      "table": {
+        "headers": {
+          "pageSpeedScore": "PageSpeedスコア"
+        }
+      },
+      "fallback": {
+        "actionButton": "モニターを作成！",
+        "checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
+        "title": "PageSpeedモニターの用途："
+      }
+    },
+    "settings": {
+      "form": {
+        "timezone": {
+          "title": "表示タイムゾーン",
+          "description": "アプリケーション全体で日時の表示に使用するタイムゾーンを選択してください。",
+          "option": {
+            "timezone": {
+              "label": "表示タイムゾーン"
+            }
+          }
+        },
+        "ui": {
+          "title": "外観",
+          "description": "ライトモードとダークモードの切り替え、言語の変更、またはチャート表示タイプのカスタマイズができます。",
+          "option": {
+            "theme": {
+              "label": "テーマモード",
+              "light": "ライト",
+              "dark": "ダーク"
+            },
+            "language": {
+              "label": "言語"
+            },
+            "chartType": {
+              "label": "チャートタイプ",
+              "histogram": "ヒストグラム",
+              "heatmap": "ヒートマップ"
+            }
+          }
+        },
+        "pagespeed": {
+          "title": "Google PageSpeed APIキー",
+          "description": "Google PageSpeed監視を有効にするにはGoogle PageSpeed APIキーを入力してください。キーを更新するにはリセットをクリックしてください。",
+          "option": {
+            "apiKey": {
+              "label": "PageSpeed APIキー",
+              "labelSet": "APIキーが設定されています。変更するにはリセットをクリックしてください。",
+              "placeholder": "Google PageSpeed APIキーを入力"
+            }
+          }
+        },
+        "url": {
+          "title": "ステータスページにモニターのIP/URLを表示",
+          "description": "公開ステータスページにモニターのIPアドレスまたはURLを表示します。無効の場合、機密情報を保護するためにモニター名のみが表示されます。",
+          "option": {
+            "showURL": {
+              "label": "ステータスページにIP/URLを表示",
+              "enabled": "有効",
+              "disabled": "無効"
+            }
+          }
+        },
+        "stats": {
+          "title": "モニター履歴",
+          "description": "チームのすべての監視履歴と統計をクリアします。この操作は元に戻せません。",
+          "option": {
+            "clear": {
+              "label": "すべての統計をクリアします。この操作は元に戻せません。"
+            }
+          },
+          "dialog": {
+            "title": "すべての監視履歴をクリアしますか？",
+            "description": "この操作は元に戻せません"
+          }
+        },
+        "retention": {
+          "title": "チェックデータの保持",
+          "description": "チェックデータが自動クリーンアップされるまでの保持期間を設定します。",
+          "option": {
+            "days": {
+              "label": "保持期間（日数）",
+              "unlimited": "無制限"
+            }
+          }
+        },
+        "thresholds": {
+          "title": "グローバルしきい値",
+          "description": "インフラストラクチャ監視のグローバルなCPU、メモリ、ディスク、温度しきい値を設定します。オーバーライドしない限り、すべてのハードウェアモニターに適用されます。",
+          "option": {
+            "cpu": {
+              "label": "CPUしきい値（%）",
+              "placeholder": "1 - 100"
+            },
+            "memory": {
+              "label": "メモリしきい値（%）",
+              "placeholder": "1 - 100"
+            },
+            "disk": {
+              "label": "ディスクしきい値（%）",
+              "placeholder": "1 - 100"
+            },
+            "temperature": {
+              "label": "温度しきい値（°C）",
+              "placeholder": "1 - 150"
+            }
+          }
+        },
+        "email": {
+          "title": "メール設定",
+          "description": "システムのメール設定を構成します。通知とアラートの送信に使用されます。",
+          "descriptionTransport": "これはNodeMailer用のSMTPトランスポートを構築します",
+          "descriptionTransportLink": "仕様はこちらを参照",
+          "option": {
+            "host": {
+              "label": "メールホスト - 接続先のホスト名またはIPアドレス",
+              "placeholder": "smtp.gmail.com"
+            },
+            "port": {
+              "label": "メールポート - 接続先のポート",
+              "placeholder": "587"
+            },
+            "address": {
+              "label": "メールアドレス - 認証に使用",
+              "placeholder": "you@example.com"
+            },
+            "user": {
+              "label": "メールユーザー - 認証用のユーザー名、指定時はメールアドレスを上書き",
+              "placeholder": "不要な場合は空欄のまま"
+            },
+            "password": {
+              "label": "メールパスワード - 認証用のパスワード",
+              "labelSet": "パスワードが設定されています。変更するにはリセットをクリックしてください。",
+              "placeholder": "パスワードを入力"
+            },
+            "tlsServername": {
+              "label": "TLSサーバー名 - ホストがIPの場合のTLS検証用オプションホスト名",
+              "placeholder": "example.com"
+            },
+            "connectionHost": {
+              "label": "メール接続ホスト - HELO/EHLOグリーティングで使用するホスト名",
+              "placeholder": "localhost"
+            },
+            "secure": {
+              "label": "SSLを使用（推奨）: SSL/TLSで接続を暗号化"
+            },
+            "pool": {
+              "label": "接続プーリングを有効化: 既存の接続を再利用してパフォーマンスを向上"
+            },
+            "ignoreTLS": {
+              "label": "STARTTLSを無効化: サーバーがサポートしていてもTLSを使用しない"
+            },
+            "requireTLS": {
+              "label": "STARTTLSを強制: TLSアップグレードを要求、未サポート時は失敗"
+            },
+            "rejectUnauthorized": {
+              "label": "無効な証明書を拒否: 自己署名または信頼されていない証明書の接続を拒否"
+            }
+          }
+        },
+        "demoMonitors": {
+          "title": "デモモニター",
+          "description": "デモ目的でサンプルモニターを追加します。"
+        },
+        "removeMonitors": {
+          "title": "システムリセット",
+          "description": "システムからすべてのモニターを削除します。",
+          "dialog": {
+            "title": "すべてのモニターを削除しますか？",
+            "description": "この操作は元に戻せません。"
+          }
+        },
+        "exportMonitors": {
+          "title": "モニターをエクスポート"
+        },
+        "importExportMonitors": {
+          "title": "モニターのインポート/エクスポート",
+          "description": "バックアップまたは転送のために、モニターデータをJSONファイルとしてインポートまたはエクスポートします。"
+        },
+        "about": {
+          "title": "概要",
+          "developedBy": "Bluewave Labsが開発"
+        },
+        "validation": {
+          "errorMessage": "以下のバリデーションエラーを修正してください："
+        }
+      }
+    },
+    "statusPages": {
+      "deleteSuccess": "ステータスページが正常に削除されました",
+      "fallback": {
+        "title": "ステータスページの用途：",
+        "checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
+        "actionButton": "ステータスページを作成！"
+      },
+      "monitorsList": {
+        "chartTypeHeatmap": "ヒートマップ",
+        "chartTypeHistogram": "ヒストグラム",
+        "noData": "データがありません",
+        "infrastructure": {
+          "title": "インフラストラクチャ",
+          "cpu": "CPU",
+          "memory": "RAM",
+          "memoryText": "メモリ",
+          "disk": "ディスク",
+          "usage": "使用量",
+          "used": "使用済み",
+          "total": "合計"
+        },
+        "uptime": {
+          "title": "稼働時間",
+          "responseTime": "応答時間"
+        }
+      },
+      "statusBar": {
+        "allDown": "すべてのシステムがダウンしています",
+        "allUp": "すべてのシステムが正常に稼働しています",
+        "degraded": "一部のシステムに問題が発生しています",
+        "unknown": "システムステータスを判定できません"
+      },
+      "table": {
+        "headers": {
+          "name": "ステータスページ名",
+          "url": "公開URL"
+        },
+        "published": "公開済み",
+        "unpublished": "未公開"
+      },
+      "title": "ステータスページ",
+      "details": {
+        "empty": {
+          "title": "まだ何もありません",
+          "addMonitor": "開始するにはモニターを追加してください"
+        }
+      },
+      "form": {
+        "access": {
+          "title": "アクセス",
+          "description": "ステータスページの準備ができたら、公開済みとしてマークできます。",
+          "option": {
+            "published": {
+              "name": "公開済みで一般に表示"
+            }
+          }
+        },
+        "basicInfo": {
+          "title": "基本情報",
+          "description": "会社名とステータスページが指すサブドメインを定義します。",
+          "option": {
+            "name": {
+              "label": "会社名",
+              "placeholder": "Acme Inc."
+            },
+            "url": {
+              "label": "ステータスページのアドレス",
+              "placeholder": "my-status-page"
+            }
+          }
+        },
+        "monitors": {
+          "title": "モニター",
+          "description": "ステータスページに表示するモニターを選択してください。",
+          "noMonitors": "モニターが選択されていません",
+          "option": {
+            "monitors": {
+              "label": "モニターを選択",
+              "placeholder": "モニターを検索して選択..."
+            }
+          }
+        },
+        "timezone": {
+          "title": "タイムゾーン",
+          "description": "ステータスページの表示に使用するタイムゾーンを選択してください。",
+          "option": {
+            "timezone": {
+              "label": "タイムゾーン",
+              "placeholder": "タイムゾーンを選択..."
+            }
+          }
+        },
+        "appearance": {
+          "title": "外観",
+          "description": "公開ステータスページのデフォルトの外観を定義します。",
+          "option": {
+            "logo": {
+              "label": "ロゴ"
+            },
+            "color": {
+              "label": "ブランドカラー"
+            }
+          }
+        },
+        "features": {
+          "title": "機能",
+          "description": "ステータスページに表示する情報を設定します。",
+          "option": {
+            "showCharts": {
+              "label": "応答時間チャートを表示"
+            },
+            "showUptimePercentage": {
+              "label": "稼働率を表示"
+            },
+            "showAdminLoginLink": {
+              "label": "管理者ログインリンクを表示"
+            },
+            "showInfrastructure": {
+              "label": "インフラストラクチャメトリクスを表示"
+            }
+          }
+        }
+      }
+    },
+    "uptime": {
+      "filters": {
+        "search": {
+          "placeholder": "モニターを検索..."
+        }
+      },
+      "table": {
+        "headers": {
+          "responseTime": "応答時間"
+        }
+      },
+      "fallback": {
+        "actionButton": "モニターを作成！",
+        "checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
+        "title": "稼働時間モニターの用途："
+      }
+    }
+  }
 }

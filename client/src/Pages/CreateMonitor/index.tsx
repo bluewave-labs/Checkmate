@@ -217,6 +217,22 @@ const CreateMonitorPage = () => {
 		clearErrors();
 	}, [watchedType, clearErrors]);
 
+	// Escalation rules state
+	const [escalations, setEscalations] = useState<
+		Array<{ delayMinutes: number; channelId: string }>
+	>([]);
+
+	useEffect(() => {
+		if (existingMonitor?.escalations) {
+			setEscalations(
+				existingMonitor.escalations.map((e: { delayMinutes: number; channelId: string }) => ({
+					delayMinutes: e.delayMinutes,
+					channelId: e.channelId,
+				}))
+			);
+		}
+	}, [existingMonitor]);
+
 	const generalSettingsConfig = useMemo(
 		() => getGeneralSettingsConfig(watchedType, t),
 		[watchedType, t]
@@ -225,6 +241,25 @@ const CreateMonitorPage = () => {
 	const { post, loading: isCreating } = usePost<MonitorFormData, Monitor>();
 	const { patch, loading: isUpdating } = usePatch<MonitorFormData, Monitor>();
 	const isSubmitting = isCreating || isUpdating;
+
+	const addEscalationRule = () => {
+		setEscalations((prev) => [...prev, { delayMinutes: 1, channelId: "" }]);
+	};
+
+	const removeEscalationRule = (originalIndex: number) => {
+		setEscalations((prev) => prev.filter((_, i) => i !== originalIndex));
+	};
+
+	const updateEscalationRule = (
+		originalIndex: number,
+		field: "delayMinutes" | "channelId",
+		value: string | number
+	) => {
+		setEscalations((prev) =>
+			prev.map((rule, i) => (i === originalIndex ? { ...rule, [field]: value } : rule))
+		);
+	};
+
 	// Delete functionality
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const { deleteFn, loading: isDeleting } = useDelete();
@@ -252,11 +287,15 @@ const CreateMonitorPage = () => {
 	};
 
 	const onSubmit = async (data: MonitorFormData) => {
+		const validEscalations = escalations.filter(
+			(e) => e.channelId !== "" && e.delayMinutes >= 1
+		);
+		const payload = { ...data, escalations: validEscalations };
 		let result;
 		if (isEditMode && monitorId) {
-			result = await patch(`/monitors/${monitorId}`, data);
+			result = await patch(`/monitors/${monitorId}`, payload);
 		} else {
-			result = await post("/monitors", data);
+			result = await post("/monitors", payload);
 		}
 
 		if (result?.success) {
@@ -762,6 +801,93 @@ const CreateMonitorPage = () => {
 							);
 						}}
 					/>
+				}
+			/>
+
+			<ConfigBox
+				title={t("pages.createMonitor.form.escalations.title")}
+				subtitle={t("pages.createMonitor.form.escalations.description")}
+				rightContent={
+					<Stack spacing={theme.spacing(LAYOUT.MD)}>
+						{[...escalations]
+							.map((rule, originalIndex) => ({ rule, originalIndex }))
+							.sort((a, b) => a.rule.delayMinutes - b.rule.delayMinutes)
+							.map(({ rule, originalIndex }) => (
+								<Stack
+									key={originalIndex}
+									direction="row"
+									alignItems="center"
+									spacing={theme.spacing(LAYOUT.MD)}
+								>
+									<TextField
+										type="number"
+										fieldLabel={t(
+											"pages.createMonitor.form.escalations.option.delayMinutes.label"
+										)}
+										value={rule.delayMinutes}
+										onChange={(e) => {
+											const val = Number(e.target.value);
+											updateEscalationRule(
+												originalIndex,
+												"delayMinutes",
+												val > 0 ? val : 1
+											);
+										}}
+										inputProps={{ min: 1 }}
+										sx={{ width: 180 }}
+									/>
+									<Select
+										value={rule.channelId}
+										fieldLabel={t(
+											"pages.createMonitor.form.escalations.option.channel.label"
+										)}
+										onChange={(e) => {
+											updateEscalationRule(
+												originalIndex,
+												"channelId",
+												e.target.value as string
+											);
+										}}
+										sx={{ minWidth: 200, flexGrow: 1 }}
+									>
+										<MenuItem value="">
+											{t(
+												"pages.createMonitor.form.escalations.option.channel.placeholder"
+											)}
+										</MenuItem>
+										{(notifications ?? []).map((n) => (
+											<MenuItem
+												key={n.id}
+												value={n.id}
+											>
+												{n.notificationName}
+											</MenuItem>
+										))}
+									</Select>
+									<IconButton
+										size="small"
+										onClick={() => removeEscalationRule(originalIndex)}
+										aria-label={t(
+											"pages.createMonitor.form.escalations.option.removeRule.ariaLabel"
+										)}
+									>
+										<Trash2 size={16} />
+									</IconButton>
+								</Stack>
+							))}
+						<Stack
+							direction="row"
+							justifyContent="flex-start"
+						>
+							<Button
+								variant="outlined"
+								color="secondary"
+								onClick={addEscalationRule}
+							>
+								{t("pages.createMonitor.form.escalations.addRule")}
+							</Button>
+						</Stack>
+					</Stack>
 				}
 			/>
 

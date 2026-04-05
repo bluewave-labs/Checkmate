@@ -1,1305 +1,1322 @@
 {
-	"common": {
-		"auth": {
-			"roles": {
-				"admin": "管理員",
-				"demo": "示範",
-				"superadmin": "超級管理員",
-				"user": "使用者"
-			}
-		},
-		"alerts": {
-			"pageSpeedApiKey": {
-				"content": "警告：您尚未新增 Google PageSpeed API 金鑰。請前往<settingsLink>設定</settingsLink>新增。若未設定，PageSpeed 監控將無法運作。"
-			}
-		},
-		"appName": "Checkmate",
-		"breadcrumbs": {
-			"details": "詳細資料",
-			"home": "首頁"
-		},
-		"buttons": {
-			"addMember": "新增成員",
-			"cancel": "取消",
-			"close": "關閉",
-			"configure": "設定",
-			"confirm": "確認",
-			"create": "建立",
-			"delete": "刪除",
-			"generateToken": "產生令牌",
-			"incidents": "事件",
-			"inviteMember": "邀請成員",
-			"pause": "暫停",
-			"resume": "恢復",
-			"save": "儲存",
-			"sendInvite": "發送邀請",
-			"test": "測試",
-			"testNotifications": "測試通知",
-			"toggleTheme": "",
-			"flushQueue": "清除佇列",
-			"notFound": "前往主儀表板",
-			"resetPassword": "",
-			"reset": "",
-			"clear": "清除",
-			"addDemo": "新增示範監控",
-			"removeMonitors": "移除監控",
-			"sendTestEmail": "發送測試郵件",
-			"exportToJSON": "匯出為 JSON",
-			"importFromJSON": "從 JSON 匯入",
-			"clearFilters": "清除篩選條件",
-			"removeUser": "移除使用者"
-		},
-		"charts": {
-			"labels": {
-				"averageResponseTime": "平均回應時間",
-				"downtime": "停機時間",
-				"high": "高",
-				"low": "低",
-				"uptime": "正常運行時間"
-			},
-			"histogram": {
-				"avg": "平均：{{value}} ms",
-				"max": "最大：{{value}} ms"
-			}
-		},
-		"dialogs": {
-			"delete": {
-				"description": "此操作無法復原。",
-				"title": "您確定要刪除嗎？"
-			}
-		},
-		"labels": {
-			"active": "啟用中",
-			"paused": "已暫停",
-			"na": "N/A",
-			"resolved": "已解決",
-			"responseTime": "回應時間"
-		},
-		"form": {
-			"role": {
-				"option": {
-					"role": {
-						"label": "角色"
-					}
-				}
-			},
-			"name": {
-				"option": {
-					"firstName": {
-						"label": "",
-						"placeholder": ""
-					},
-					"lastName": {
-						"label": "",
-						"placeholder": ""
-					}
-				}
-			},
-			"email": {
-				"option": {
-					"email": {
-						"label": "電子郵件",
-						"placeholder": "you@example.com"
-					}
-				}
-			}
-		},
-		"table": {
-			"empty": "這裡沒有資料",
-			"headers": {
-				"actions": "行動",
-				"dateTime": "日期和時間",
-				"message": "訊息",
-				"monitor": "監控",
-				"monitorId": "監控 ID",
-				"name": "名稱",
-				"status": "狀態",
-				"type": "類型",
-				"url": "URL",
-				"interval": "間隔",
-				"active": "啟用中",
-				"responseTime": "回應時間"
-			}
-		}
-	},
-	"components": {
-		"imageUpload": {
-			"clickToUpload": "點擊上傳",
-			"dragAndDrop": "",
-			"supportedFormats": "",
-			"maxSize": "",
-			"orDragAndDrop": "或拖放檔案",
-			"errors": {
-				"invalidFileSize": "",
-				"invalidFileFormat": ""
-			}
-		},
-		"headerStatusPageControls": {
-			"publicLink": ""
-		},
-		"headerTimeRange": {
-			"labels": {
-				"day": "日",
-				"month": "月",
-				"recent": "最近",
-				"week": "週"
-			},
-			"description": {
-				"recent": "顯示過去 2 小時的統計資料。",
-				"day": "顯示過去 24 小時的統計資料。",
-				"week": "顯示過去 7 天的統計資料。",
-				"month": "顯示過去 30 天的統計資料。"
-			}
-		},
-		"offlineBanner": {
-			"serverUnreachable": "無法連線至伺服器",
-			"retry": "重試",
-			"retrying": "重試中...",
-			"reconnected": ""
-		},
-		"sidebar": {
-			"menu": {
-				"uptime": "",
-				"pagespeed": "",
-				"infrastructure": "",
-				"notifications": "",
-				"checks": "檢查",
-				"incidents": "",
-				"statusPages": "",
-				"maintenance": "",
-				"logs": "",
-				"settings": ""
-			},
-			"bottomMenu": {
-				"support": "",
-				"discussions": "",
-				"docs": "",
-				"changelog": "版本變更記錄"
-			},
-			"accountMenu": {
-				"profile": "個人檔案",
-				"password": "密碼",
-				"team": "團隊"
-			},
-			"starPrompt": {
-				"title": "為 Checkmate 加星",
-				"description": "查看最新版本並在 GitHub 上幫助社群成長"
-			},
-			"authFooter": {
-				"navControls": "",
-				"logOut": "",
-				"roles": {
-					"superAdmin": "超級管理員",
-					"admin": "管理員",
-					"user": "使用者",
-					"demoUser": "示範用戶"
-				}
-			}
-		},
-		"starPrompt": {
-			"title": "為 Checkmate 加星",
-			"description": "查看最新版本並在 GitHub 上幫助社群成長"
-		}
-	},
-	"pages": {
-		"notFound": {
-			"title": "哎呀！您的壽司掉了！",
-			"subtitle": "該 URL 不存在，或您沒有存取權限。"
-		},
-		"account": {
-			"tabs": {
-				"profile": "個人檔案",
-				"password": "密碼",
-				"team": "團隊"
-			},
-			"form": {
-				"name": {
-					"title": "名稱",
-					"description": "更新您的個人資訊"
-				},
-				"photo": {
-					"title": "個人頭像",
-					"description": "上傳個人頭像"
-				},
-				"currentPassword": {
-					"title": "目前密碼",
-					"description": "輸入您目前的密碼以驗證身份",
-					"option": {
-						"label": "目前密碼",
-						"placeholder": "輸入目前密碼"
-					}
-				},
-				"newPassword": {
-					"title": "新密碼",
-					"description": "請選擇至少 8 個字元的強密碼",
-					"option": {
-						"newPassword": {
-							"label": "新密碼",
-							"placeholder": "輸入新密碼"
-						},
-						"confirm": {
-							"label": "確認密碼",
-							"placeholder": "確認新密碼"
-						}
-					}
-				},
-				"deleteAccount": {
-					"title": "刪除帳號",
-					"description": "此操作為永久性，無法復原"
-				}
-			},
-			"team": {
-				"filter": {
-					"placeholder": "依角色篩選",
-					"all": "全部",
-					"admin": "管理員",
-					"member": ""
-				},
-				"table": {
-					"headers": {
-						"email": "電子郵件",
-						"role": "角色",
-						"created": ""
-					}
-				},
-				"addMember": {
-					"title": "註冊新團隊成員",
-					"description": "建立新的使用者帳號。建立後請安全地分享登入憑證。"
-				},
-				"invite": {
-					"title": "邀請團隊成員",
-					"description": "發送加入團隊的邀請",
-					"email": {
-						"label": "電子郵件地址",
-						"placeholder": "輸入電子郵件地址"
-					},
-					"role": {
-						"label": "角色",
-						"placeholder": "選擇角色"
-					},
-					"linkLabel": "邀請連結"
-				}
-			}
-		},
-		"auth": {
-			"common": {
-				"passwordRules": {
-					"length": {
-						"beginning": "必須至少",
-						"highlighted": ""
-					},
-					"lowercase": {
-						"beginning": "必須至少包含",
-						"highlighted": ""
-					},
-					"match": {
-						"beginning": "",
-						"highlighted": ""
-					},
-					"number": {
-						"beginning": "必須至少包含",
-						"highlighted": ""
-					},
-					"special": {
-						"beginning": "必須至少包含",
-						"highlighted": ""
-					},
-					"uppercase": {
-						"beginning": "必須至少包含",
-						"highlighted": ""
-					}
-				},
-				"form": {
-					"option": {
-						"email": {
-							"label": "電子郵件",
-							"placeholder": "me@example.com"
-						},
-						"password": {
-							"label": "密碼",
-							"placeholder": "********"
-						},
-						"confirmPassword": {
-							"label": "確認密碼"
-						}
-					}
-				}
-			},
-			"login": {
-				"title": "歡迎回到 Checkmate！",
-				"subtitle": "請登入以繼續",
-				"submit": "登入",
-				"links": {
-					"forgotPassword": {
-						"text": "忘記密碼？",
-						"linkText": "重設密碼"
-					},
-					"register": {
-						"text": "還沒有帳號？",
-						"linkText": "在此註冊"
-					}
-				}
-			},
-			"register": {
-				"title": "歡迎回到 Checkmate！",
-				"subtitle": "註冊以開始使用",
-				"submit": "註冊"
-			},
-			"forgotPassword": {
-				"title": "忘記密碼了嗎？",
-				"subtitle": "別擔心，我們會發送重設密碼的說明給您。",
-				"submit": "請求復原",
-				"links": {
-					"login": {
-						"text": "返回",
-						"linkText": "登入"
-					}
-				}
-			},
-			"setNewPassword": {
-				"title": "重設您的密碼",
-				"subtitle": "您的新密碼必須與先前使用過的密碼不同。"
-			}
-		},
-		"checks": {
-			"selects": {
-				"monitor": {
-					"all": "所有監控"
-				},
-				"status": {
-					"all": "全部",
-					"down": "離線",
-					"up": "上線"
-				}
-			},
-			"table": {
-				"empty": "此時間範圍內沒有離線檢查",
-				"headers": {
-					"statusCode": "狀態碼",
-					"location": "位置"
-				}
-			}
-		},
-		"common": {
-			"monitors": {
-				"actions": {
-					"configure": "設定",
-					"delete": "刪除",
-					"generateToken": "產生令牌",
-					"details": "詳細資料",
-					"incidents": "事件",
-					"inviteMember": "邀請成員",
-					"openSite": "開啟網站",
-					"pause": "暫停",
-					"resume": "恢復"
-				},
-				"statBoxes": {
-					"activeFor": "已啟用",
-					"certificateExpiry": "憑證到期",
-					"lastCheck": "最後檢查",
-					"lastResponseTime": "最後回應時間"
-				},
-				"status": {
-					"down": "離線",
-					"breached": "超過閾值",
-					"initializing": "初始化中",
-					"maintenance": "維護中",
-					"paused": "已暫停",
-					"total": "總計",
-					"up": "上線"
-				},
-				"monitorTypes": {
-					"optionDocker": "Docker",
-					"optionGame": "遊戲",
-					"optionHttp": "HTTP(S)",
-					"optionPing": "Ping",
-					"optionPort": "連接埠",
-					"optionPagespeed": "PageSpeed",
-					"optionHardware": "基礎架構",
-					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
-				}
-			}
-		},
-		"createMonitor": {
-			"form": {
-				"advanced": {
-					"description": "進階使用案例的選用設定",
-					"option": {
-						"advancedMatching": {
-							"label": "使用進階配對"
-						},
-						"expectedValue": {
-							"label": "預期值"
-						},
-						"jsonPath": {
-							"description": "此表達式將對回應的 JSON 資料進行評估，結果將用於與預期值進行配對。查詢語法文件請參閱 <jmesLink>jmespath.org</jmesLink>。",
-							"label": "JSONPath 表達式"
-						},
-						"matchMethod": {
-							"label": "配對方式",
-							"equal": "",
-							"include": "",
-							"regex": ""
-						}
-					},
-					"title": "進階設定"
-				},
-				"frequency": {
-					"description": "您希望多久檢查一次此監控的狀態？",
-					"option": {
-						"frequency": {
-							"label": "檢查頻率",
-							"value": {
-								"fifteenMinutes": "15 分鐘",
-								"fifteenSeconds": "",
-								"fiveMinutes": "5 分鐘",
-								"fourMinutes": "",
-								"oneMinute": "",
-								"tenMinutes": "10 分鐘",
-								"thirtyMinutes": "30 分鐘",
-								"thirtySeconds": "",
-								"threeMinutes": "3分鐘",
-								"twoMinutes": ""
-							}
-						}
-					},
-					"title": "檢查頻率"
-				},
-				"general": {
-					"option": {
-						"container": {
-							"label": "容器名稱/ID",
-							"placeholder": "my-app 或 abcd1234"
-						},
-						"host": {
-							"label": "主機",
-							"placeholder": "192.168.1.100 或 example.com"
-						},
-						"name": {
-							"label": "顯示名稱",
-							"placeholder": "例如：我的網站"
-						},
-						"secret": {
-							"label": "授權密鑰",
-							"placeholder": "輸入您的密鑰"
-						},
-						"url": {
-							"label": "URL",
-							"placeholder": "https://www.google.com"
-						},
-						"game": {
-							"label": "",
-							"placeholder": ""
-						},
-						"port": {
-							"label": "監控的連接埠",
-							"placeholder": "80"
-						},
-						"grpcServiceName": {
-							"label": "服務名稱",
-							"placeholder": "例如：my.service.v1（留空表示整體健康狀態）"
-						},
-						"wsUrl": {
-							"label": "WebSocket URL",
-							"placeholder": "wss://example.com/socket"
-						}
-					},
-					"title": "一般設定",
-					"description": {
-						"http": "輸入要監控的 URL 或 IP（例如 https://example.com/ 或 192.168.1.100），並新增一個顯示在儀表板上的清晰顯示名稱。",
-						"ping": "",
-						"port": "",
-						"docker": "",
-						"game": "",
-						"pagespeed": "追蹤您網站的頁面載入效能、Core Web Vitals 和最佳化分數。",
-						"grpc": "輸入 gRPC 伺服器的主機名稱和連接埠，可選擇指定健康檢查的服務名稱，並新增一個顯示名稱。",
-						"websocket": "輸入要監控的 WebSocket URL（例如 wss://example.com/socket），並新增一個顯示名稱。",
-						"hardware": "監控您基礎架構的 CPU、記憶體、磁碟使用量和溫度。"
-					}
-				},
-				"ignoreTls": {
-					"description": "設定 HTTPS 連線的 TLS/SSL 憑證驗證。",
-					"option": {
-						"tls": {
-							"label": "忽略 TLS/SSL 錯誤"
-						}
-					},
-					"title": "TLS/SSL 設定"
-				},
-				"incidents": {
-					"description": "使用滑動視窗來判斷監控何時離線。監控的狀態只有在滑動視窗內的檢查百分比達到指定值時才會變更。",
-					"option": {
-						"checks": {
-							"label": "滑動視窗中的檢查次數"
-						},
-						"percentage": {
-							"label": "滑動視窗中有多少百分比的檢查失敗/成功後，監控狀態才會變更？"
-						}
-					},
-					"title": "事件"
-				},
-				"notifications": {
-					"description": "選擇您要使用的通知頻道",
-					"title": "通知"
-				},
-				"type": {
-					"description": "選擇要執行的檢查類型",
-					"optionDockerDescription": "使用 Docker 監控容器是否正在執行。",
-					"optionGameDescription": "監控特定遊戲伺服器是否上線。",
-					"optionGrpcDescription": "使用標準健康檢查協定監控 gRPC 服務。",
-					"optionWebSocketDescription": "監控 WebSocket 端點的連線健康狀態和回應時間。",
-					"optionHttpDescription": "使用 HTTP(S) 監控您的網站或 API 端點。",
-					"optionPingDescription": "使用 ICMP Ping 監控伺服器是否上線。",
-					"optionPortDescription": "監控伺服器上的特定連接埠是否開啟。",
-					"title": "類型"
-				},
-				"thresholds": {
-					"title": "警報閾值",
-					"description": "定義此硬體監控應觸發警報的閾值。",
-					"option": {
-						"cpuThreshold": {
-							"label": "CPU 警報閾值 (%)"
-						},
-						"memoryThreshold": {
-							"label": "記憶體警報閾值 (%)"
-						},
-						"diskThreshold": {
-							"label": "磁碟警報閾值 (%)"
-						},
-						"tempThreshold": {
-							"label": "溫度警報閾值 (°C)"
-						}
-					}
-				},
-				"geoChecks": {
-					"title": "地理分散式檢查",
-					"description": "從多個地理位置執行檢查，以監控全球可用性和效能。",
-					"option": {
-						"enabled": {
-							"label": "啟用地理分散式檢查"
-						},
-						"locations": {
-							"label": "位置",
-							"placeholder": "選擇位置",
-							"options": {
-								"EU": "歐洲",
-								"NA": "北美洲",
-								"AS": "亞洲",
-								"SA": "南美洲",
-								"AF": "非洲",
-								"OC": "大洋洲"
-							}
-						},
-						"interval": {
-							"label": "檢查間隔",
-							"value": {
-								"fiveMinutes": "5 分鐘",
-								"tenMinutes": "10 分鐘",
-								"fifteenMinutes": "15 分鐘",
-								"thirtyMinutes": "30 分鐘"
-							}
-						}
-					}
-				},
-				"url": {
-					"title": "在狀態頁面上顯示監控 IP/URL",
-					"description": "在公開狀態頁面上顯示監控的 IP 位址或 URL。若停用此選項，將僅顯示監控名稱以保護敏感資訊。",
-					"option": {
-						"showURL": {
-							"label": "在狀態頁面上顯示 IP/URL",
-							"enabled": "啟用",
-							"disabled": "停用"
-						}
-					}
-				},
-				"stats": {
-					"title": "監控歷史",
-					"description": "清除團隊的所有監控歷史和統計資料。此操作無法復原。",
-					"buttonText": "清除所有統計資料",
-					"dialog": {
-						"title": "清除所有監控歷史？",
-						"description": "這將永久刪除團隊的所有監控歷史、統計資料和檢查資料。此操作無法復原。",
-						"confirm": "是的，清除所有統計資料"
-					}
-				}
-			}
-		},
-		"editUser": {
-			"form": {
-				"roles": {
-					"title": "角色",
-					"description": "為使用者指派角色。可以選擇多個角色。"
-				}
-			},
-			"dialog": {
-				"removeUser": {
-					"title": "移除使用者",
-					"content": "您確定要將 {{name}} 從團隊中移除嗎？此操作無法復原。"
-				}
-			}
-		},
-		"incidents": {
-			"dialog": {
-				"resolveIncident": {
-					"title": "解決事件",
-					"option": {
-						"comment": {
-							"label": "備註（選填）",
-							"placeholder": "新增關於解決方案的備註..."
-						}
-					}
-				},
-				"details": {
-					"analysis": "事件分析",
-					"comment": "備註：",
-					"detailsLabel": "詳細資料",
-					"downtime": "停機時間：",
-					"message": "訊息：",
-					"monitor": "監控：",
-					"overview": "概覽",
-					"resolutionDetails": "解決詳情",
-					"resolutionType": "類型：",
-					"resolutionTypes": {
-						"automatic": "自動",
-						"manual": "手動"
-					},
-					"resolve": "解決事件",
-					"resolvedAt": "解決於：",
-					"resolvedBy": "解決者：",
-					"startedAt": "開始於：",
-					"status": "狀態：",
-					"statusCode": "狀態碼：",
-					"timeline": "時間軸",
-					"title": "事件詳情",
-					"url": "URL："
-				}
-			},
-			"filters": {
-				"allMonitors": "所有監控",
-				"monitor": "監控",
-				"resolutionType": "解決類型",
-				"resolutionTypes": {
-					"manual": "手動",
-					"automatic": "自動",
-					"all": "全部"
-				}
-			},
-			"summaryCard": {
-				"activeIncidents": {
-					"title": "進行中的事件",
-					"active_zero": "沒有進行中的事件",
-					"active_one": "{{count}} 個進行中的事件",
-					"active_other": "{{count}} 個進行中的事件"
-				},
-				"incidentStats": {
-					"avgResolutionTime": "平均解決時間",
-					"mostAffectedMonitor": "受影響最多的監控",
-					"title": "事件統計",
-					"totalIncidents": "事件總數"
-				},
-				"latestIncidents": {
-					"title": "最新事件"
-				}
-			},
-			"table": {
-				"actions": {
-					"details": "詳細資料",
-					"goToMonitor": "前往監控",
-					"resolveManually": "手動解決"
-				},
-				"activeIncidents": "進行中的事件",
-				"headers": {
-					"endTime": "結束時間",
-					"resolutionType": "解決類型",
-					"startTime": "",
-					"statusCode": "狀態碼"
-				},
-				"resolvedIncidents": "已解決的事件",
-				"status": {
-					"active": "啟用中",
-					"resolved": "已解決"
-				}
-			}
-		},
-		"infrastructure": {
-			"charts": {
-				"labels": {
-					"cpu": "CPU 使用率",
-					"disk": "磁碟使用率",
-					"memory": "記憶體使用率",
-					"netBytesRecv": "{{name}} - 接收位元組",
-					"netBytesSent": "{{name}} - 發送位元組",
-					"temp": "溫度"
-				}
-			},
-			"gauges": {
-				"cpu": {
-					"lowerLabel": "最大頻率",
-					"title": "CPU 使用率",
-					"upperLabel": "目前頻率"
-				},
-				"disk": {
-					"lowerLabel": "可用",
-					"title": "磁碟 {{idx}} 使用率",
-					"upperLabel": "已使用"
-				},
-				"memory": {
-					"lowerLabel": "可用",
-					"title": "記憶體使用率",
-					"upperLabel": "已使用"
-				}
-			},
-			"statBoxes": {
-				"avgCpuTemperature": "平均 CPU 溫度",
-				"cpuFrequency": "CPU 頻率",
-				"cpuLogical": "CPU (邏輯核心)",
-				"cpuPhysical": "CPU (實體核心)",
-				"disk": "磁碟",
-				"memory": "記憶體",
-				"os": "作業系統"
-			},
-			"table": {
-				"headers": {
-					"cpu": "CPU",
-					"disk": "磁碟",
-					"memory": "記憶體"
-				}
-			},
-			"tabs": {
-				"labels": {
-					"network": "",
-					"overview": "概覽"
-				}
-			},
-			"fallback": {
-				"actionButton": "建立監控！",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "基礎架構監控用於："
-			}
-		},
-		"logs": {
-			"tabs": {
-				"diagnostics": "",
-				"logs": "",
-				"queue": ""
-			},
-			"logLevelSelect": {
-				"label": "日誌等級"
-			},
-			"jobQueue": "工作佇列",
-			"failedJobs": "失敗的工作",
-			"noLogs": "找不到日誌",
-			"metrics": {
-				"jobs": "工作",
-				"activeJobs": "進行中的工作",
-				"failingJobs": "失敗中的工作",
-				"totalRuns": "總執行次數",
-				"totalFailures": "總失敗次數"
-			},
-			"diagnostics": {
-				"stats": {
-					"eventLoopDelay": "事件迴圈延遲",
-					"uptime": "正常運行時間",
-					"usedHeapSize": "已使用堆積大小",
-					"totalHeapSize": "堆積總大小",
-					"osMemoryLimit": "作業系統記憶體限制"
-				},
-				"gauges": {
-					"heapAllocation": "堆積配置",
-					"heapUsage": "堆積使用率",
-					"heapUtilization": "堆積利用率",
-					"instantCpuUsage": "即時 CPU 使用率",
-					"availableMemoryPercentage": "可用記憶體百分比",
-					"allocatedPercentage": "已配置百分比",
-					"usedSPercentage": "CPU 使用 1 秒百分比",
-					"total": "總計",
-					"used": "已使用"
-				}
-			},
-			"table": {
-				"headers": {
-					"timestamp": "時間戳",
-					"level": "等級",
-					"service": "服務",
-					"method": "方法",
-					"monitorId": "監控 ID",
-					"runCount": "執行次數",
-					"failCount": "失敗次數",
-					"lastRunAt": "最後執行於",
-					"lockedAt": "鎖定於",
-					"lastFinishedAt": "最後完成於",
-					"lastRunTook": "最後執行耗時",
-					"lastFailedAt": "最後失敗於",
-					"failReason": "失敗原因"
-				}
-			}
-		},
-		"maintenanceWindow": {
-			"fallback": {
-				"actionButton": "建立維護時段！",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "維護時段用於："
-			},
-			"table": {
-				"headers": {
-					"nextWindow": "",
-					"repeat": ""
-				}
-			},
-			"form": {
-				"general": {
-					"title": "一般設定",
-					"description": "為維護時段設定名稱和重複選項。",
-					"option": {
-						"name": {
-							"label": "名稱",
-							"placeholder": "例如：每週維護"
-						},
-						"repeat": {
-							"label": "重複"
-						}
-					}
-				},
-				"startDate": {
-					"title": "開始日期",
-					"description": "選擇維護時段的開始日期。",
-					"option": {
-						"startDate": {
-							"label": "開始日期"
-						}
-					}
-				},
-				"startTime": {
-					"title": "開始時間",
-					"description": "設定維護時段的開始時間和持續時間。所有數值為 UTC 時間",
-					"option": {
-						"duration": {
-							"label": "持續時間"
-						},
-						"startTime": {
-							"label": "開始時間"
-						}
-					},
-					"monitors": {
-						"title": "監控",
-						"description": "維護時段應套用到的監控",
-						"option": {
-							"addMonitors": {
-								"label": "新增監控"
-							}
-						}
-					}
-				}
-			}
-		},
-		"notifications": {
-			"fallback": {
-				"actionButton": "建立頻道",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "通知頻道用於："
-			},
-			"form": {
-				"accessToken": {
-					"optionAccessToken": "存取令牌",
-					"placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
-				},
-				"address": {
-					"description": "通知將發送到的地址。",
-					"optionAddress": "地址",
-					"placeholderEmail": "example@example.com",
-					"placeholderWebhook": "https://your-server.com/webhook",
-					"title": "地址"
-				},
-				"homeServer": {
-					"optionHomeServer": "主伺服器",
-					"placeholder": "example.com"
-				},
-				"matrix": {
-					"description": "設定您的 Matrix 主伺服器連線以接收通知。",
-					"title": "Matrix 設定"
-				},
-				"notificationName": {
-					"description": "通知頻道的描述性名稱",
-					"optionName": "頻道名稱",
-					"placeholder": "例如：正式環境警報",
-					"title": "頻道名稱"
-				},
-				"pagerDuty": {
-					"description": "用於接收警報的 PagerDuty 整合金鑰。",
-					"optionIntegrationKey": "整合金鑰",
-					"placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
-					"title": "整合金鑰"
-				},
-				"roomId": {
-					"optionRoomId": "房間 ID",
-					"placeholder": "!abcdefg:matrix.org"
-				},
-				"type": {
-					"description": "選擇要建立的通知頻道類型。",
-					"optionType": "類型",
-					"title": "頻道類型"
-				},
-				"telegram": {
-					"title": "Telegram 設定",
-					"description": "要啟用 Telegram 通知，請使用 BotFather 用於創建和管理 Telegram 的官方機器來建立一個 Telegram 機器人。接著，取得 API 金鑰和聊天室 ID，並在此處填寫。",
-					"optionBotToken": "機器人令牌",
-					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
-					"optionChatId": "聊天室 ID",
-					"placeholderChatId": "-1001234567890"
-				}
-			},
-			"table": {
-				"headers": {
-					"destination": "目的地"
-				}
-			}
-		},
-		"pageSpeed": {
-			"charts": {
-				"common": {
-					"cls": "累計版面配置位移 (CLS)",
-					"fcp": "首次內容繪製 (FCP)",
-					"lcp": "最大內容繪製 (LCP)",
-					"si": "速度指數 (SI)",
-					"tbt": "總阻塞時間 (TBT)"
-				},
-				"legend": {
-					"title": "PageSpeed 報告",
-					"weight": "權重"
-				},
-				"pie": {
-					"title": "效能報告"
-				}
-			},
-			"table": {
-				"headers": {
-					"pageSpeedScore": "PageSpeed 分數"
-				}
-			},
-			"fallback": {
-				"actionButton": "建立監控！",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "PageSpeed 監控用於："
-			}
-		},
-		"settings": {
-			"form": {
-				"timezone": {
-					"title": "顯示時區",
-					"description": "選擇用於在整個應用程式中顯示日期和時間的時區。",
-					"option": {
-						"timezone": {
-							"label": "顯示時區"
-						}
-					}
-				},
-				"ui": {
-					"title": "外觀",
-					"description": "切換淺色和深色模式、變更語言或自訂圖表顯示類型。",
-					"option": {
-						"theme": {
-							"label": "佈景主題模式",
-							"light": "淺色",
-							"dark": "深色"
-						},
-						"language": {
-							"label": "語言"
-						},
-						"chartType": {
-							"label": "圖表類型",
-							"histogram": "直方圖",
-							"heatmap": "熱力圖"
-						}
-					}
-				},
-				"pagespeed": {
-					"title": "Google PageSpeed API 金鑰",
-					"description": "輸入您的 Google PageSpeed API 金鑰以啟用 Google PageSpeed 監控。點擊重設以更新金鑰。",
-					"option": {
-						"apiKey": {
-							"label": "PageSpeed API 金鑰",
-							"labelSet": "API 金鑰已設定。點擊重設以變更。",
-							"placeholder": "輸入您的 Google PageSpeed API 金鑰"
-						}
-					}
-				},
-				"url": {
-					"title": "在狀態頁面上顯示監控 IP/URL",
-					"description": "在公開狀態頁面上顯示監控的 IP 位址或 URL。若停用此選項，將僅顯示監控名稱以保護敏感資訊。",
-					"option": {
-						"showURL": {
-							"label": "在狀態頁面上顯示 IP/URL",
-							"enabled": "啟用",
-							"disabled": "停用"
-						}
-					}
-				},
-				"stats": {
-					"title": "監控歷史",
-					"description": "清除團隊的所有監控歷史和統計資料。此操作無法復原。",
-					"option": {
-						"clear": {
-							"label": "清除所有統計資料。此操作無法復原。"
-						}
-					},
-					"dialog": {
-						"title": "清除所有監控歷史？",
-						"description": "此操作無法復原"
-					}
-				},
-				"retention": {
-					"title": "檢查資料保留",
-					"description": "設定檢查資料在自動清除之前的保留時間。",
-					"option": {
-						"days": {
-							"label": "保留期間（天）",
-							"unlimited": "無限制"
-						}
-					}
-				},
-				"thresholds": {
-					"title": "全域閾值",
-					"description": "設定基礎架構監控的全域 CPU、記憶體、磁碟和溫度閾值。這些設定將套用到所有硬體監控，除非被個別覆寫。",
-					"option": {
-						"cpu": {
-							"label": "CPU 閾值 (%)",
-							"placeholder": "1 - 100"
-						},
-						"memory": {
-							"label": "記憶體閾值 (%)",
-							"placeholder": "1 - 100"
-						},
-						"disk": {
-							"label": "磁碟閾值 (%)",
-							"placeholder": "1 - 100"
-						},
-						"temperature": {
-							"label": "溫度閾值 (°C)",
-							"placeholder": "1 - 150"
-						}
-					}
-				},
-				"email": {
-					"title": "電子郵件設定",
-					"description": "設定系統的電子郵件設定。此設定用於發送通知和警報。",
-					"descriptionTransport": "",
-					"descriptionTransportLink": "在此查看規格",
-					"option": {
-						"host": {
-							"label": "電子郵件主機 - 要連線的主機名稱或 IP 位址",
-							"placeholder": "smtp.gmail.com"
-						},
-						"port": {
-							"label": "電子郵件連接埠 - 要連線的連接埠",
-							"placeholder": "587"
-						},
-						"address": {
-							"label": "電子郵件地址 - 用於驗證",
-							"placeholder": "you@example.com"
-						},
-						"user": {
-							"label": "電子郵件使用者 - 用於驗證的使用者名稱，若指定則覆寫電子郵件地址",
-							"placeholder": "若非必要請留空"
-						},
-						"password": {
-							"label": "電子郵件密碼 - 用於驗證的密碼",
-							"labelSet": "密碼已設定。點擊重設以變更。",
-							"placeholder": "輸入您的密碼"
-						},
-						"tlsServername": {
-							"label": "TLS 伺服器名稱 - 當主機為 IP 時用於 TLS 驗證的選用主機名稱",
-							"placeholder": "example.com"
-						},
-						"connectionHost": {
-							"label": "電子郵件連線主機 - 用於 HELO/EHLO 問候的主機名稱",
-							"placeholder": "localhost"
-						},
-						"secure": {
-							"label": "使用 SSL（建議）：使用 SSL/TLS 加密連線"
-						},
-						"pool": {
-							"label": "啟用連線池：重複使用現有連線以提升效能"
-						},
-						"ignoreTLS": {
-							"label": "停用 STARTTLS：即使伺服器支援也不使用 TLS"
-						},
-						"requireTLS": {
-							"label": "強制 STARTTLS：要求 TLS 升級，若不支援則失敗"
-						},
-						"rejectUnauthorized": {
-							"label": "拒絕無效憑證：拒絕使用自簽或不受信任憑證的連線"
-						}
-					}
-				},
-				"demoMonitors": {
-					"title": "示範監控",
-					"description": "新增範例監控以供示範用途。"
-				},
-				"removeMonitors": {
-					"title": "系統重設",
-					"description": "從系統中移除所有監控。",
-					"dialog": {
-						"title": "移除所有監控？",
-						"description": "此操作無法復原。"
-					}
-				},
-				"exportMonitors": {
-					"title": "匯出監控"
-				},
-				"importExportMonitors": {
-					"title": "匯入/匯出監控",
-					"description": "將監控資料匯入或匯出為 JSON 檔案以進行備份或轉移。"
-				},
-				"about": {
-					"title": "關於",
-					"developedBy": "由 Bluewave Labs 開發"
-				},
-				"validation": {
-					"errorMessage": "請修正以下驗證錯誤："
-				}
-			}
-		},
-		"statusPages": {
-			"deleteSuccess": "狀態頁面已成功刪除",
-			"fallback": {
-				"title": "狀態頁面用於：",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "建立狀態頁面！"
-			},
-			"monitorsList": {
-				"chartTypeHeatmap": "熱力圖",
-				"chartTypeHistogram": "直方圖",
-				"noData": "沒有可用資料",
-				"infrastructure": {
-					"title": "基礎架構",
-					"cpu": "CPU",
-					"memory": "RAM",
-					"memoryText": "記憶體",
-					"disk": "磁碟",
-					"usage": "使用量",
-					"used": "已使用",
-					"total": "總計"
-				},
-				"uptime": {
-					"title": "正常運行時間",
-					"responseTime": "回應時間"
-				}
-			},
-			"statusBar": {
-				"allDown": "所有系統已停機",
-				"allUp": "所有系統運作正常",
-				"degraded": "部分系統正在發生問題",
-				"unknown": "無法判斷系統狀態"
-			},
-			"table": {
-				"headers": {
-					"name": "狀態頁面名稱",
-					"url": "公開 URL"
-				},
-				"published": "已發佈",
-				"unpublished": "未發佈"
-			},
-			"title": "狀態頁面",
-			"details": {
-				"empty": {
-					"title": "這裡還沒有任何內容",
-					"addMonitor": "新增一個監控以開始使用"
-				}
-			},
-			"form": {
-				"access": {
-					"title": "存取",
-					"description": "如果您的狀態頁面已準備就緒，可以將其標記為已發佈。",
-					"option": {
-						"published": {
-							"name": "已發佈且公開可見"
-						}
-					}
-				},
-				"basicInfo": {
-					"title": "基本資訊",
-					"description": "定義公司名稱和狀態頁面指向的子網域。",
-					"option": {
-						"name": {
-							"label": "公司名稱",
-							"placeholder": "Acme Inc."
-						},
-						"url": {
-							"label": "您的狀態頁面地址",
-							"placeholder": "my-status-page"
-						}
-					}
-				},
-				"monitors": {
-					"title": "監控",
-					"description": "選擇要在狀態頁面上顯示的監控。",
-					"noMonitors": "未選擇監控",
-					"option": {
-						"monitors": {
-							"label": "選擇監控",
-							"placeholder": "搜尋並選擇監控..."
-						}
-					}
-				},
-				"timezone": {
-					"title": "時區",
-					"description": "選擇狀態頁面顯示的時區。",
-					"option": {
-						"timezone": {
-							"label": "時區",
-							"placeholder": "選擇時區..."
-						}
-					}
-				},
-				"appearance": {
-					"title": "外觀",
-					"description": "定義公開狀態頁面的預設外觀。",
-					"option": {
-						"logo": {
-							"label": "Logo"
-						},
-						"color": {
-							"label": "品牌顏色"
-						}
-					}
-				},
-				"features": {
-					"title": "功能",
-					"description": "設定狀態頁面上顯示的資訊。",
-					"option": {
-						"showCharts": {
-							"label": "顯示回應時間圖表"
-						},
-						"showUptimePercentage": {
-							"label": "顯示正常運行時間百分比"
-						},
-						"showAdminLoginLink": {
-							"label": "顯示管理員登入連結"
-						},
-						"showInfrastructure": {
-							"label": "顯示基礎架構指標"
-						}
-					}
-				}
-			}
-		},
-		"uptime": {
-			"filters": {
-				"search": {
-					"placeholder": "搜尋監控..."
-				}
-			},
-			"table": {
-				"headers": {
-					"responseTime": "回應時間"
-				}
-			},
-			"fallback": {
-				"actionButton": "建立監控！",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "正常運行時間監控用於："
-			}
-		}
-	}
+  "common": {
+    "auth": {
+      "roles": {
+        "admin": "管理員",
+        "demo": "示範",
+        "superadmin": "超級管理員",
+        "user": "使用者"
+      }
+    },
+    "alerts": {
+      "pageSpeedApiKey": {
+        "content": "警告：您尚未新增 Google PageSpeed API 金鑰。請前往<settingsLink>設定</settingsLink>新增。若未設定，PageSpeed 監控將無法運作。"
+      }
+    },
+    "appName": "Checkmate",
+    "breadcrumbs": {
+      "details": "詳細資料",
+      "home": "首頁"
+    },
+    "buttons": {
+      "addMember": "新增成員",
+      "cancel": "取消",
+      "close": "關閉",
+      "configure": "設定",
+      "confirm": "確認",
+      "create": "建立",
+      "delete": "刪除",
+      "generateToken": "產生令牌",
+      "incidents": "事件",
+      "inviteMember": "邀請成員",
+      "pause": "暫停",
+      "resume": "恢復",
+      "save": "儲存",
+      "sendInvite": "發送邀請",
+      "test": "測試",
+      "testNotifications": "測試通知",
+      "toggleTheme": "",
+      "flushQueue": "清除佇列",
+      "notFound": "前往主儀表板",
+      "resetPassword": "",
+      "reset": "",
+      "clear": "清除",
+      "addDemo": "新增示範監控",
+      "removeMonitors": "移除監控",
+      "sendTestEmail": "發送測試郵件",
+      "exportToJSON": "匯出為 JSON",
+      "importFromJSON": "從 JSON 匯入",
+      "clearFilters": "清除篩選條件",
+      "removeUser": "移除使用者"
+    },
+    "charts": {
+      "labels": {
+        "averageResponseTime": "平均回應時間",
+        "downtime": "停機時間",
+        "high": "高",
+        "low": "低",
+        "uptime": "正常運行時間"
+      },
+      "histogram": {
+        "avg": "平均：{{value}} ms",
+        "max": "最大：{{value}} ms"
+      }
+    },
+    "dialogs": {
+      "delete": {
+        "description": "此操作無法復原。",
+        "title": "您確定要刪除嗎？"
+      }
+    },
+    "labels": {
+      "active": "啟用中",
+      "paused": "已暫停",
+      "na": "N/A",
+      "resolved": "已解決",
+      "responseTime": "回應時間"
+    },
+    "form": {
+      "role": {
+        "option": {
+          "role": {
+            "label": "角色"
+          }
+        }
+      },
+      "name": {
+        "option": {
+          "firstName": {
+            "label": "",
+            "placeholder": ""
+          },
+          "lastName": {
+            "label": "",
+            "placeholder": ""
+          }
+        }
+      },
+      "email": {
+        "option": {
+          "email": {
+            "label": "電子郵件",
+            "placeholder": "you@example.com"
+          }
+        }
+      }
+    },
+    "table": {
+      "empty": "這裡沒有資料",
+      "headers": {
+        "actions": "行動",
+        "dateTime": "日期和時間",
+        "message": "訊息",
+        "monitor": "監控",
+        "monitorId": "監控 ID",
+        "name": "名稱",
+        "status": "狀態",
+        "type": "類型",
+        "url": "URL",
+        "interval": "間隔",
+        "active": "啟用中",
+        "responseTime": "回應時間"
+      }
+    }
+  },
+  "components": {
+    "imageUpload": {
+      "clickToUpload": "點擊上傳",
+      "dragAndDrop": "",
+      "supportedFormats": "",
+      "maxSize": "",
+      "orDragAndDrop": "或拖放檔案",
+      "errors": {
+        "invalidFileSize": "",
+        "invalidFileFormat": ""
+      }
+    },
+    "headerStatusPageControls": {
+      "publicLink": ""
+    },
+    "headerTimeRange": {
+      "labels": {
+        "day": "日",
+        "month": "月",
+        "recent": "最近",
+        "week": "週"
+      },
+      "description": {
+        "recent": "顯示過去 2 小時的統計資料。",
+        "day": "顯示過去 24 小時的統計資料。",
+        "week": "顯示過去 7 天的統計資料。",
+        "month": "顯示過去 30 天的統計資料。"
+      }
+    },
+    "offlineBanner": {
+      "serverUnreachable": "無法連線至伺服器",
+      "retry": "重試",
+      "retrying": "重試中...",
+      "reconnected": ""
+    },
+    "sidebar": {
+      "menu": {
+        "uptime": "",
+        "pagespeed": "",
+        "infrastructure": "",
+        "notifications": "",
+        "checks": "檢查",
+        "incidents": "",
+        "statusPages": "",
+        "maintenance": "",
+        "logs": "",
+        "settings": ""
+      },
+      "bottomMenu": {
+        "support": "",
+        "discussions": "",
+        "docs": "",
+        "changelog": "版本變更記錄"
+      },
+      "accountMenu": {
+        "profile": "個人檔案",
+        "password": "密碼",
+        "team": "團隊"
+      },
+      "starPrompt": {
+        "title": "為 Checkmate 加星",
+        "description": "查看最新版本並在 GitHub 上幫助社群成長"
+      },
+      "authFooter": {
+        "navControls": "",
+        "logOut": "",
+        "roles": {
+          "superAdmin": "超級管理員",
+          "admin": "管理員",
+          "user": "使用者",
+          "demoUser": "示範用戶"
+        }
+      }
+    },
+    "starPrompt": {
+      "title": "為 Checkmate 加星",
+      "description": "查看最新版本並在 GitHub 上幫助社群成長"
+    }
+  },
+  "pages": {
+    "notFound": {
+      "title": "哎呀！您的壽司掉了！",
+      "subtitle": "該 URL 不存在，或您沒有存取權限。"
+    },
+    "account": {
+      "tabs": {
+        "profile": "個人檔案",
+        "password": "密碼",
+        "team": "團隊"
+      },
+      "form": {
+        "name": {
+          "title": "名稱",
+          "description": "更新您的個人資訊"
+        },
+        "photo": {
+          "title": "個人頭像",
+          "description": "上傳個人頭像"
+        },
+        "currentPassword": {
+          "title": "目前密碼",
+          "description": "輸入您目前的密碼以驗證身份",
+          "option": {
+            "label": "目前密碼",
+            "placeholder": "輸入目前密碼"
+          }
+        },
+        "newPassword": {
+          "title": "新密碼",
+          "description": "請選擇至少 8 個字元的強密碼",
+          "option": {
+            "newPassword": {
+              "label": "新密碼",
+              "placeholder": "輸入新密碼"
+            },
+            "confirm": {
+              "label": "確認密碼",
+              "placeholder": "確認新密碼"
+            }
+          }
+        },
+        "deleteAccount": {
+          "title": "刪除帳號",
+          "description": "此操作為永久性，無法復原"
+        }
+      },
+      "team": {
+        "filter": {
+          "placeholder": "依角色篩選",
+          "all": "全部",
+          "admin": "管理員",
+          "member": ""
+        },
+        "table": {
+          "headers": {
+            "email": "電子郵件",
+            "role": "角色",
+            "created": ""
+          }
+        },
+        "addMember": {
+          "title": "註冊新團隊成員",
+          "description": "建立新的使用者帳號。建立後請安全地分享登入憑證。"
+        },
+        "invite": {
+          "title": "邀請團隊成員",
+          "description": "發送加入團隊的邀請",
+          "email": {
+            "label": "電子郵件地址",
+            "placeholder": "輸入電子郵件地址"
+          },
+          "role": {
+            "label": "角色",
+            "placeholder": "選擇角色"
+          },
+          "linkLabel": "邀請連結"
+        }
+      }
+    },
+    "auth": {
+      "common": {
+        "passwordRules": {
+          "length": {
+            "beginning": "必須至少",
+            "highlighted": ""
+          },
+          "lowercase": {
+            "beginning": "必須至少包含",
+            "highlighted": ""
+          },
+          "match": {
+            "beginning": "",
+            "highlighted": ""
+          },
+          "number": {
+            "beginning": "必須至少包含",
+            "highlighted": ""
+          },
+          "special": {
+            "beginning": "必須至少包含",
+            "highlighted": ""
+          },
+          "uppercase": {
+            "beginning": "必須至少包含",
+            "highlighted": ""
+          }
+        },
+        "form": {
+          "option": {
+            "email": {
+              "label": "電子郵件",
+              "placeholder": "me@example.com"
+            },
+            "password": {
+              "label": "密碼",
+              "placeholder": "********"
+            },
+            "confirmPassword": {
+              "label": "確認密碼"
+            }
+          }
+        }
+      },
+      "login": {
+        "title": "歡迎回到 Checkmate！",
+        "subtitle": "請登入以繼續",
+        "submit": "登入",
+        "links": {
+          "forgotPassword": {
+            "text": "忘記密碼？",
+            "linkText": "重設密碼"
+          },
+          "register": {
+            "text": "還沒有帳號？",
+            "linkText": "在此註冊"
+          }
+        }
+      },
+      "register": {
+        "title": "歡迎回到 Checkmate！",
+        "subtitle": "註冊以開始使用",
+        "submit": "註冊"
+      },
+      "forgotPassword": {
+        "title": "忘記密碼了嗎？",
+        "subtitle": "別擔心，我們會發送重設密碼的說明給您。",
+        "submit": "請求復原",
+        "links": {
+          "login": {
+            "text": "返回",
+            "linkText": "登入"
+          }
+        }
+      },
+      "setNewPassword": {
+        "title": "重設您的密碼",
+        "subtitle": "您的新密碼必須與先前使用過的密碼不同。"
+      }
+    },
+    "checks": {
+      "selects": {
+        "monitor": {
+          "all": "所有監控"
+        },
+        "status": {
+          "all": "全部",
+          "down": "離線",
+          "up": "上線"
+        }
+      },
+      "table": {
+        "empty": "此時間範圍內沒有離線檢查",
+        "headers": {
+          "statusCode": "狀態碼",
+          "location": "位置"
+        }
+      }
+    },
+    "common": {
+      "monitors": {
+        "actions": {
+          "configure": "設定",
+          "delete": "刪除",
+          "generateToken": "產生令牌",
+          "details": "詳細資料",
+          "incidents": "事件",
+          "inviteMember": "邀請成員",
+          "openSite": "開啟網站",
+          "pause": "暫停",
+          "resume": "恢復"
+        },
+        "statBoxes": {
+          "activeFor": "已啟用",
+          "certificateExpiry": "憑證到期",
+          "lastCheck": "最後檢查",
+          "lastResponseTime": "最後回應時間"
+        },
+        "status": {
+          "down": "離線",
+          "breached": "超過閾值",
+          "initializing": "初始化中",
+          "maintenance": "維護中",
+          "paused": "已暫停",
+          "total": "總計",
+          "up": "上線"
+        },
+        "monitorTypes": {
+          "optionDocker": "Docker",
+          "optionGame": "遊戲",
+          "optionHttp": "HTTP(S)",
+          "optionPing": "Ping",
+          "optionPort": "連接埠",
+          "optionPagespeed": "PageSpeed",
+          "optionHardware": "基礎架構",
+          "optionGrpc": "gRPC",
+          "optionWebSocket": "WebSocket"
+        }
+      }
+    },
+    "createMonitor": {
+      "form": {
+        "advanced": {
+          "description": "進階使用案例的選用設定",
+          "option": {
+            "advancedMatching": {
+              "label": "使用進階配對"
+            },
+            "expectedValue": {
+              "label": "預期值"
+            },
+            "jsonPath": {
+              "description": "此表達式將對回應的 JSON 資料進行評估，結果將用於與預期值進行配對。查詢語法文件請參閱 <jmesLink>jmespath.org</jmesLink>。",
+              "label": "JSONPath 表達式"
+            },
+            "matchMethod": {
+              "label": "配對方式",
+              "equal": "",
+              "include": "",
+              "regex": ""
+            }
+          },
+          "title": "進階設定"
+        },
+        "frequency": {
+          "description": "您希望多久檢查一次此監控的狀態？",
+          "option": {
+            "frequency": {
+              "label": "檢查頻率",
+              "value": {
+                "fifteenMinutes": "15 分鐘",
+                "fifteenSeconds": "",
+                "fiveMinutes": "5 分鐘",
+                "fourMinutes": "",
+                "oneMinute": "",
+                "tenMinutes": "10 分鐘",
+                "thirtyMinutes": "30 分鐘",
+                "thirtySeconds": "",
+                "threeMinutes": "3分鐘",
+                "twoMinutes": ""
+              }
+            }
+          },
+          "title": "檢查頻率"
+        },
+        "general": {
+          "option": {
+            "container": {
+              "label": "容器名稱/ID",
+              "placeholder": "my-app 或 abcd1234"
+            },
+            "host": {
+              "label": "主機",
+              "placeholder": "192.168.1.100 或 example.com"
+            },
+            "name": {
+              "label": "顯示名稱",
+              "placeholder": "例如：我的網站"
+            },
+            "secret": {
+              "label": "授權密鑰",
+              "placeholder": "輸入您的密鑰"
+            },
+            "url": {
+              "label": "URL",
+              "placeholder": "https://www.google.com"
+            },
+            "game": {
+              "label": "",
+              "placeholder": ""
+            },
+            "port": {
+              "label": "監控的連接埠",
+              "placeholder": "80"
+            },
+            "grpcServiceName": {
+              "label": "服務名稱",
+              "placeholder": "例如：my.service.v1（留空表示整體健康狀態）"
+            },
+            "wsUrl": {
+              "label": "WebSocket URL",
+              "placeholder": "wss://example.com/socket"
+            }
+          },
+          "title": "一般設定",
+          "description": {
+            "http": "輸入要監控的 URL 或 IP（例如 https://example.com/ 或 192.168.1.100），並新增一個顯示在儀表板上的清晰顯示名稱。",
+            "ping": "",
+            "port": "",
+            "docker": "",
+            "game": "",
+            "pagespeed": "追蹤您網站的頁面載入效能、Core Web Vitals 和最佳化分數。",
+            "grpc": "輸入 gRPC 伺服器的主機名稱和連接埠，可選擇指定健康檢查的服務名稱，並新增一個顯示名稱。",
+            "websocket": "輸入要監控的 WebSocket URL（例如 wss://example.com/socket），並新增一個顯示名稱。",
+            "hardware": "監控您基礎架構的 CPU、記憶體、磁碟使用量和溫度。"
+          }
+        },
+        "ignoreTls": {
+          "description": "設定 HTTPS 連線的 TLS/SSL 憑證驗證。",
+          "option": {
+            "tls": {
+              "label": "忽略 TLS/SSL 錯誤"
+            }
+          },
+          "title": "TLS/SSL 設定"
+        },
+        "incidents": {
+          "description": "使用滑動視窗來判斷監控何時離線。監控的狀態只有在滑動視窗內的檢查百分比達到指定值時才會變更。",
+          "option": {
+            "checks": {
+              "label": "滑動視窗中的檢查次數"
+            },
+            "percentage": {
+              "label": "滑動視窗中有多少百分比的檢查失敗/成功後，監控狀態才會變更？"
+            }
+          },
+          "title": "事件"
+        },
+        "notifications": {
+          "description": "選擇您要使用的通知頻道",
+          "title": "通知"
+        },
+        "type": {
+          "description": "選擇要執行的檢查類型",
+          "optionDockerDescription": "使用 Docker 監控容器是否正在執行。",
+          "optionGameDescription": "監控特定遊戲伺服器是否上線。",
+          "optionGrpcDescription": "使用標準健康檢查協定監控 gRPC 服務。",
+          "optionWebSocketDescription": "監控 WebSocket 端點的連線健康狀態和回應時間。",
+          "optionHttpDescription": "使用 HTTP(S) 監控您的網站或 API 端點。",
+          "optionPingDescription": "使用 ICMP Ping 監控伺服器是否上線。",
+          "optionPortDescription": "監控伺服器上的特定連接埠是否開啟。",
+          "title": "類型"
+        },
+        "thresholds": {
+          "title": "警報閾值",
+          "description": "定義此硬體監控應觸發警報的閾值。",
+          "option": {
+            "cpuThreshold": {
+              "label": "CPU 警報閾值 (%)"
+            },
+            "memoryThreshold": {
+              "label": "記憶體警報閾值 (%)"
+            },
+            "diskThreshold": {
+              "label": "磁碟警報閾值 (%)"
+            },
+            "tempThreshold": {
+              "label": "溫度警報閾值 (°C)"
+            }
+          }
+        },
+        "geoChecks": {
+          "title": "地理分散式檢查",
+          "description": "從多個地理位置執行檢查，以監控全球可用性和效能。",
+          "option": {
+            "enabled": {
+              "label": "啟用地理分散式檢查"
+            },
+            "locations": {
+              "label": "位置",
+              "placeholder": "選擇位置",
+              "options": {
+                "EU": "歐洲",
+                "NA": "北美洲",
+                "AS": "亞洲",
+                "SA": "南美洲",
+                "AF": "非洲",
+                "OC": "大洋洲"
+              }
+            },
+            "interval": {
+              "label": "檢查間隔",
+              "value": {
+                "fiveMinutes": "5 分鐘",
+                "tenMinutes": "10 分鐘",
+                "fifteenMinutes": "15 分鐘",
+                "thirtyMinutes": "30 分鐘"
+              }
+            }
+          }
+        },
+        "url": {
+          "title": "在狀態頁面上顯示監控 IP/URL",
+          "description": "在公開狀態頁面上顯示監控的 IP 位址或 URL。若停用此選項，將僅顯示監控名稱以保護敏感資訊。",
+          "option": {
+            "showURL": {
+              "label": "在狀態頁面上顯示 IP/URL",
+              "enabled": "啟用",
+              "disabled": "停用"
+            }
+          }
+        },
+        "stats": {
+          "title": "監控歷史",
+          "description": "清除團隊的所有監控歷史和統計資料。此操作無法復原。",
+          "buttonText": "清除所有統計資料",
+          "dialog": {
+            "title": "清除所有監控歷史？",
+            "description": "這將永久刪除團隊的所有監控歷史、統計資料和檢查資料。此操作無法復原。",
+            "confirm": "是的，清除所有統計資料"
+          }
+        },
+        "escalations": {
+          "title": "Escalation Rules",
+          "description": "Automatically notify a channel if an incident remains unresolved after a delay",
+          "addRule": "Add Rule",
+          "option": {
+            "delayMinutes": {
+              "label": "Escalate after (minutes)"
+            },
+            "channel": {
+              "label": "Notification channel",
+              "placeholder": "Select a channel"
+            },
+            "removeRule": {
+              "ariaLabel": "Remove escalation rule"
+            }
+          }
+        }
+      }
+    },
+    "editUser": {
+      "form": {
+        "roles": {
+          "title": "角色",
+          "description": "為使用者指派角色。可以選擇多個角色。"
+        }
+      },
+      "dialog": {
+        "removeUser": {
+          "title": "移除使用者",
+          "content": "您確定要將 {{name}} 從團隊中移除嗎？此操作無法復原。"
+        }
+      }
+    },
+    "incidents": {
+      "dialog": {
+        "resolveIncident": {
+          "title": "解決事件",
+          "option": {
+            "comment": {
+              "label": "備註（選填）",
+              "placeholder": "新增關於解決方案的備註..."
+            }
+          }
+        },
+        "details": {
+          "analysis": "事件分析",
+          "comment": "備註：",
+          "detailsLabel": "詳細資料",
+          "downtime": "停機時間：",
+          "message": "訊息：",
+          "monitor": "監控：",
+          "overview": "概覽",
+          "resolutionDetails": "解決詳情",
+          "resolutionType": "類型：",
+          "resolutionTypes": {
+            "automatic": "自動",
+            "manual": "手動"
+          },
+          "resolve": "解決事件",
+          "resolvedAt": "解決於：",
+          "resolvedBy": "解決者：",
+          "startedAt": "開始於：",
+          "status": "狀態：",
+          "statusCode": "狀態碼：",
+          "timeline": "時間軸",
+          "title": "事件詳情",
+          "url": "URL："
+        }
+      },
+      "filters": {
+        "allMonitors": "所有監控",
+        "monitor": "監控",
+        "resolutionType": "解決類型",
+        "resolutionTypes": {
+          "manual": "手動",
+          "automatic": "自動",
+          "all": "全部"
+        }
+      },
+      "summaryCard": {
+        "activeIncidents": {
+          "title": "進行中的事件",
+          "active_zero": "沒有進行中的事件",
+          "active_one": "{{count}} 個進行中的事件",
+          "active_other": "{{count}} 個進行中的事件"
+        },
+        "incidentStats": {
+          "avgResolutionTime": "平均解決時間",
+          "mostAffectedMonitor": "受影響最多的監控",
+          "title": "事件統計",
+          "totalIncidents": "事件總數"
+        },
+        "latestIncidents": {
+          "title": "最新事件"
+        }
+      },
+      "table": {
+        "actions": {
+          "details": "詳細資料",
+          "goToMonitor": "前往監控",
+          "resolveManually": "手動解決"
+        },
+        "activeIncidents": "進行中的事件",
+        "headers": {
+          "endTime": "結束時間",
+          "resolutionType": "解決類型",
+          "startTime": "",
+          "statusCode": "狀態碼"
+        },
+        "resolvedIncidents": "已解決的事件",
+        "status": {
+          "active": "啟用中",
+          "resolved": "已解決"
+        }
+      }
+    },
+    "infrastructure": {
+      "charts": {
+        "labels": {
+          "cpu": "CPU 使用率",
+          "disk": "磁碟使用率",
+          "memory": "記憶體使用率",
+          "netBytesRecv": "{{name}} - 接收位元組",
+          "netBytesSent": "{{name}} - 發送位元組",
+          "temp": "溫度"
+        }
+      },
+      "gauges": {
+        "cpu": {
+          "lowerLabel": "最大頻率",
+          "title": "CPU 使用率",
+          "upperLabel": "目前頻率"
+        },
+        "disk": {
+          "lowerLabel": "可用",
+          "title": "磁碟 {{idx}} 使用率",
+          "upperLabel": "已使用"
+        },
+        "memory": {
+          "lowerLabel": "可用",
+          "title": "記憶體使用率",
+          "upperLabel": "已使用"
+        }
+      },
+      "statBoxes": {
+        "avgCpuTemperature": "平均 CPU 溫度",
+        "cpuFrequency": "CPU 頻率",
+        "cpuLogical": "CPU (邏輯核心)",
+        "cpuPhysical": "CPU (實體核心)",
+        "disk": "磁碟",
+        "memory": "記憶體",
+        "os": "作業系統"
+      },
+      "table": {
+        "headers": {
+          "cpu": "CPU",
+          "disk": "磁碟",
+          "memory": "記憶體"
+        }
+      },
+      "tabs": {
+        "labels": {
+          "network": "",
+          "overview": "概覽"
+        }
+      },
+      "fallback": {
+        "actionButton": "建立監控！",
+        "checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
+        "title": "基礎架構監控用於："
+      }
+    },
+    "logs": {
+      "tabs": {
+        "diagnostics": "",
+        "logs": "",
+        "queue": ""
+      },
+      "logLevelSelect": {
+        "label": "日誌等級"
+      },
+      "jobQueue": "工作佇列",
+      "failedJobs": "失敗的工作",
+      "noLogs": "找不到日誌",
+      "metrics": {
+        "jobs": "工作",
+        "activeJobs": "進行中的工作",
+        "failingJobs": "失敗中的工作",
+        "totalRuns": "總執行次數",
+        "totalFailures": "總失敗次數"
+      },
+      "diagnostics": {
+        "stats": {
+          "eventLoopDelay": "事件迴圈延遲",
+          "uptime": "正常運行時間",
+          "usedHeapSize": "已使用堆積大小",
+          "totalHeapSize": "堆積總大小",
+          "osMemoryLimit": "作業系統記憶體限制"
+        },
+        "gauges": {
+          "heapAllocation": "堆積配置",
+          "heapUsage": "堆積使用率",
+          "heapUtilization": "堆積利用率",
+          "instantCpuUsage": "即時 CPU 使用率",
+          "availableMemoryPercentage": "可用記憶體百分比",
+          "allocatedPercentage": "已配置百分比",
+          "usedSPercentage": "CPU 使用 1 秒百分比",
+          "total": "總計",
+          "used": "已使用"
+        }
+      },
+      "table": {
+        "headers": {
+          "timestamp": "時間戳",
+          "level": "等級",
+          "service": "服務",
+          "method": "方法",
+          "monitorId": "監控 ID",
+          "runCount": "執行次數",
+          "failCount": "失敗次數",
+          "lastRunAt": "最後執行於",
+          "lockedAt": "鎖定於",
+          "lastFinishedAt": "最後完成於",
+          "lastRunTook": "最後執行耗時",
+          "lastFailedAt": "最後失敗於",
+          "failReason": "失敗原因"
+        }
+      }
+    },
+    "maintenanceWindow": {
+      "fallback": {
+        "actionButton": "建立維護時段！",
+        "checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
+        "title": "維護時段用於："
+      },
+      "table": {
+        "headers": {
+          "nextWindow": "",
+          "repeat": ""
+        }
+      },
+      "form": {
+        "general": {
+          "title": "一般設定",
+          "description": "為維護時段設定名稱和重複選項。",
+          "option": {
+            "name": {
+              "label": "名稱",
+              "placeholder": "例如：每週維護"
+            },
+            "repeat": {
+              "label": "重複"
+            }
+          }
+        },
+        "startDate": {
+          "title": "開始日期",
+          "description": "選擇維護時段的開始日期。",
+          "option": {
+            "startDate": {
+              "label": "開始日期"
+            }
+          }
+        },
+        "startTime": {
+          "title": "開始時間",
+          "description": "設定維護時段的開始時間和持續時間。所有數值為 UTC 時間",
+          "option": {
+            "duration": {
+              "label": "持續時間"
+            },
+            "startTime": {
+              "label": "開始時間"
+            }
+          },
+          "monitors": {
+            "title": "監控",
+            "description": "維護時段應套用到的監控",
+            "option": {
+              "addMonitors": {
+                "label": "新增監控"
+              }
+            }
+          }
+        }
+      }
+    },
+    "notifications": {
+      "fallback": {
+        "actionButton": "建立頻道",
+        "checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
+        "title": "通知頻道用於："
+      },
+      "form": {
+        "accessToken": {
+          "optionAccessToken": "存取令牌",
+          "placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
+        },
+        "address": {
+          "description": "通知將發送到的地址。",
+          "optionAddress": "地址",
+          "placeholderEmail": "example@example.com",
+          "placeholderWebhook": "https://your-server.com/webhook",
+          "title": "地址"
+        },
+        "homeServer": {
+          "optionHomeServer": "主伺服器",
+          "placeholder": "example.com"
+        },
+        "matrix": {
+          "description": "設定您的 Matrix 主伺服器連線以接收通知。",
+          "title": "Matrix 設定"
+        },
+        "notificationName": {
+          "description": "通知頻道的描述性名稱",
+          "optionName": "頻道名稱",
+          "placeholder": "例如：正式環境警報",
+          "title": "頻道名稱"
+        },
+        "pagerDuty": {
+          "description": "用於接收警報的 PagerDuty 整合金鑰。",
+          "optionIntegrationKey": "整合金鑰",
+          "placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+          "title": "整合金鑰"
+        },
+        "roomId": {
+          "optionRoomId": "房間 ID",
+          "placeholder": "!abcdefg:matrix.org"
+        },
+        "type": {
+          "description": "選擇要建立的通知頻道類型。",
+          "optionType": "類型",
+          "title": "頻道類型"
+        },
+        "telegram": {
+          "title": "Telegram 設定",
+          "description": "要啟用 Telegram 通知，請使用 BotFather 用於創建和管理 Telegram 的官方機器來建立一個 Telegram 機器人。接著，取得 API 金鑰和聊天室 ID，並在此處填寫。",
+          "optionBotToken": "機器人令牌",
+          "placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
+          "optionChatId": "聊天室 ID",
+          "placeholderChatId": "-1001234567890"
+        }
+      },
+      "table": {
+        "headers": {
+          "destination": "目的地"
+        }
+      }
+    },
+    "pageSpeed": {
+      "charts": {
+        "common": {
+          "cls": "累計版面配置位移 (CLS)",
+          "fcp": "首次內容繪製 (FCP)",
+          "lcp": "最大內容繪製 (LCP)",
+          "si": "速度指數 (SI)",
+          "tbt": "總阻塞時間 (TBT)"
+        },
+        "legend": {
+          "title": "PageSpeed 報告",
+          "weight": "權重"
+        },
+        "pie": {
+          "title": "效能報告"
+        }
+      },
+      "table": {
+        "headers": {
+          "pageSpeedScore": "PageSpeed 分數"
+        }
+      },
+      "fallback": {
+        "actionButton": "建立監控！",
+        "checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
+        "title": "PageSpeed 監控用於："
+      }
+    },
+    "settings": {
+      "form": {
+        "timezone": {
+          "title": "顯示時區",
+          "description": "選擇用於在整個應用程式中顯示日期和時間的時區。",
+          "option": {
+            "timezone": {
+              "label": "顯示時區"
+            }
+          }
+        },
+        "ui": {
+          "title": "外觀",
+          "description": "切換淺色和深色模式、變更語言或自訂圖表顯示類型。",
+          "option": {
+            "theme": {
+              "label": "佈景主題模式",
+              "light": "淺色",
+              "dark": "深色"
+            },
+            "language": {
+              "label": "語言"
+            },
+            "chartType": {
+              "label": "圖表類型",
+              "histogram": "直方圖",
+              "heatmap": "熱力圖"
+            }
+          }
+        },
+        "pagespeed": {
+          "title": "Google PageSpeed API 金鑰",
+          "description": "輸入您的 Google PageSpeed API 金鑰以啟用 Google PageSpeed 監控。點擊重設以更新金鑰。",
+          "option": {
+            "apiKey": {
+              "label": "PageSpeed API 金鑰",
+              "labelSet": "API 金鑰已設定。點擊重設以變更。",
+              "placeholder": "輸入您的 Google PageSpeed API 金鑰"
+            }
+          }
+        },
+        "url": {
+          "title": "在狀態頁面上顯示監控 IP/URL",
+          "description": "在公開狀態頁面上顯示監控的 IP 位址或 URL。若停用此選項，將僅顯示監控名稱以保護敏感資訊。",
+          "option": {
+            "showURL": {
+              "label": "在狀態頁面上顯示 IP/URL",
+              "enabled": "啟用",
+              "disabled": "停用"
+            }
+          }
+        },
+        "stats": {
+          "title": "監控歷史",
+          "description": "清除團隊的所有監控歷史和統計資料。此操作無法復原。",
+          "option": {
+            "clear": {
+              "label": "清除所有統計資料。此操作無法復原。"
+            }
+          },
+          "dialog": {
+            "title": "清除所有監控歷史？",
+            "description": "此操作無法復原"
+          }
+        },
+        "retention": {
+          "title": "檢查資料保留",
+          "description": "設定檢查資料在自動清除之前的保留時間。",
+          "option": {
+            "days": {
+              "label": "保留期間（天）",
+              "unlimited": "無限制"
+            }
+          }
+        },
+        "thresholds": {
+          "title": "全域閾值",
+          "description": "設定基礎架構監控的全域 CPU、記憶體、磁碟和溫度閾值。這些設定將套用到所有硬體監控，除非被個別覆寫。",
+          "option": {
+            "cpu": {
+              "label": "CPU 閾值 (%)",
+              "placeholder": "1 - 100"
+            },
+            "memory": {
+              "label": "記憶體閾值 (%)",
+              "placeholder": "1 - 100"
+            },
+            "disk": {
+              "label": "磁碟閾值 (%)",
+              "placeholder": "1 - 100"
+            },
+            "temperature": {
+              "label": "溫度閾值 (°C)",
+              "placeholder": "1 - 150"
+            }
+          }
+        },
+        "email": {
+          "title": "電子郵件設定",
+          "description": "設定系統的電子郵件設定。此設定用於發送通知和警報。",
+          "descriptionTransport": "",
+          "descriptionTransportLink": "在此查看規格",
+          "option": {
+            "host": {
+              "label": "電子郵件主機 - 要連線的主機名稱或 IP 位址",
+              "placeholder": "smtp.gmail.com"
+            },
+            "port": {
+              "label": "電子郵件連接埠 - 要連線的連接埠",
+              "placeholder": "587"
+            },
+            "address": {
+              "label": "電子郵件地址 - 用於驗證",
+              "placeholder": "you@example.com"
+            },
+            "user": {
+              "label": "電子郵件使用者 - 用於驗證的使用者名稱，若指定則覆寫電子郵件地址",
+              "placeholder": "若非必要請留空"
+            },
+            "password": {
+              "label": "電子郵件密碼 - 用於驗證的密碼",
+              "labelSet": "密碼已設定。點擊重設以變更。",
+              "placeholder": "輸入您的密碼"
+            },
+            "tlsServername": {
+              "label": "TLS 伺服器名稱 - 當主機為 IP 時用於 TLS 驗證的選用主機名稱",
+              "placeholder": "example.com"
+            },
+            "connectionHost": {
+              "label": "電子郵件連線主機 - 用於 HELO/EHLO 問候的主機名稱",
+              "placeholder": "localhost"
+            },
+            "secure": {
+              "label": "使用 SSL（建議）：使用 SSL/TLS 加密連線"
+            },
+            "pool": {
+              "label": "啟用連線池：重複使用現有連線以提升效能"
+            },
+            "ignoreTLS": {
+              "label": "停用 STARTTLS：即使伺服器支援也不使用 TLS"
+            },
+            "requireTLS": {
+              "label": "強制 STARTTLS：要求 TLS 升級，若不支援則失敗"
+            },
+            "rejectUnauthorized": {
+              "label": "拒絕無效憑證：拒絕使用自簽或不受信任憑證的連線"
+            }
+          }
+        },
+        "demoMonitors": {
+          "title": "示範監控",
+          "description": "新增範例監控以供示範用途。"
+        },
+        "removeMonitors": {
+          "title": "系統重設",
+          "description": "從系統中移除所有監控。",
+          "dialog": {
+            "title": "移除所有監控？",
+            "description": "此操作無法復原。"
+          }
+        },
+        "exportMonitors": {
+          "title": "匯出監控"
+        },
+        "importExportMonitors": {
+          "title": "匯入/匯出監控",
+          "description": "將監控資料匯入或匯出為 JSON 檔案以進行備份或轉移。"
+        },
+        "about": {
+          "title": "關於",
+          "developedBy": "由 Bluewave Labs 開發"
+        },
+        "validation": {
+          "errorMessage": "請修正以下驗證錯誤："
+        }
+      }
+    },
+    "statusPages": {
+      "deleteSuccess": "狀態頁面已成功刪除",
+      "fallback": {
+        "title": "狀態頁面用於：",
+        "checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
+        "actionButton": "建立狀態頁面！"
+      },
+      "monitorsList": {
+        "chartTypeHeatmap": "熱力圖",
+        "chartTypeHistogram": "直方圖",
+        "noData": "沒有可用資料",
+        "infrastructure": {
+          "title": "基礎架構",
+          "cpu": "CPU",
+          "memory": "RAM",
+          "memoryText": "記憶體",
+          "disk": "磁碟",
+          "usage": "使用量",
+          "used": "已使用",
+          "total": "總計"
+        },
+        "uptime": {
+          "title": "正常運行時間",
+          "responseTime": "回應時間"
+        }
+      },
+      "statusBar": {
+        "allDown": "所有系統已停機",
+        "allUp": "所有系統運作正常",
+        "degraded": "部分系統正在發生問題",
+        "unknown": "無法判斷系統狀態"
+      },
+      "table": {
+        "headers": {
+          "name": "狀態頁面名稱",
+          "url": "公開 URL"
+        },
+        "published": "已發佈",
+        "unpublished": "未發佈"
+      },
+      "title": "狀態頁面",
+      "details": {
+        "empty": {
+          "title": "這裡還沒有任何內容",
+          "addMonitor": "新增一個監控以開始使用"
+        }
+      },
+      "form": {
+        "access": {
+          "title": "存取",
+          "description": "如果您的狀態頁面已準備就緒，可以將其標記為已發佈。",
+          "option": {
+            "published": {
+              "name": "已發佈且公開可見"
+            }
+          }
+        },
+        "basicInfo": {
+          "title": "基本資訊",
+          "description": "定義公司名稱和狀態頁面指向的子網域。",
+          "option": {
+            "name": {
+              "label": "公司名稱",
+              "placeholder": "Acme Inc."
+            },
+            "url": {
+              "label": "您的狀態頁面地址",
+              "placeholder": "my-status-page"
+            }
+          }
+        },
+        "monitors": {
+          "title": "監控",
+          "description": "選擇要在狀態頁面上顯示的監控。",
+          "noMonitors": "未選擇監控",
+          "option": {
+            "monitors": {
+              "label": "選擇監控",
+              "placeholder": "搜尋並選擇監控..."
+            }
+          }
+        },
+        "timezone": {
+          "title": "時區",
+          "description": "選擇狀態頁面顯示的時區。",
+          "option": {
+            "timezone": {
+              "label": "時區",
+              "placeholder": "選擇時區..."
+            }
+          }
+        },
+        "appearance": {
+          "title": "外觀",
+          "description": "定義公開狀態頁面的預設外觀。",
+          "option": {
+            "logo": {
+              "label": "Logo"
+            },
+            "color": {
+              "label": "品牌顏色"
+            }
+          }
+        },
+        "features": {
+          "title": "功能",
+          "description": "設定狀態頁面上顯示的資訊。",
+          "option": {
+            "showCharts": {
+              "label": "顯示回應時間圖表"
+            },
+            "showUptimePercentage": {
+              "label": "顯示正常運行時間百分比"
+            },
+            "showAdminLoginLink": {
+              "label": "顯示管理員登入連結"
+            },
+            "showInfrastructure": {
+              "label": "顯示基礎架構指標"
+            }
+          }
+        }
+      }
+    },
+    "uptime": {
+      "filters": {
+        "search": {
+          "placeholder": "搜尋監控..."
+        }
+      },
+      "table": {
+        "headers": {
+          "responseTime": "回應時間"
+        }
+      },
+      "fallback": {
+        "actionButton": "建立監控！",
+        "checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
+        "title": "正常運行時間監控用於："
+      }
+    }
+  }
 }

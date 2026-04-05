@@ -1,1305 +1,1322 @@
 {
-	"common": {
-		"auth": {
-			"roles": {
-				"admin": "管理员",
-				"demo": "演示",
-				"superadmin": "超级管理员",
-				"user": "用户"
-			}
-		},
-		"alerts": {
-			"pageSpeedApiKey": {
-				"content": "警告：您尚未添加 Google PageSpeed API 密钥。请访问<settingsLink>设置</settingsLink>添加。没有密钥，PageSpeed 监控将无法运行。"
-			}
-		},
-		"appName": "Checkmate",
-		"breadcrumbs": {
-			"details": "详情",
-			"home": "首页"
-		},
-		"buttons": {
-			"addMember": "添加成员",
-			"cancel": "取消",
-			"close": "关闭",
-			"configure": "配置",
-			"confirm": "确认",
-			"create": "创建",
-			"delete": "删除",
-			"generateToken": "生成令牌",
-			"incidents": "事件",
-			"inviteMember": "邀请成员",
-			"pause": "暂停",
-			"resume": "恢复",
-			"save": "保存",
-			"sendInvite": "发送邀请",
-			"test": "测试",
-			"testNotifications": "测试通知",
-			"toggleTheme": "切换主题明&暗",
-			"flushQueue": "清空队列",
-			"notFound": "前往主控制台",
-			"resetPassword": "重置密码",
-			"reset": "重置",
-			"clear": "清除",
-			"addDemo": "添加演示监控",
-			"removeMonitors": "移除监控",
-			"sendTestEmail": "发送测试邮件",
-			"exportToJSON": "导出为 JSON",
-			"importFromJSON": "从 JSON 导入",
-			"clearFilters": "清除筛选",
-			"removeUser": "移除用户"
-		},
-		"charts": {
-			"labels": {
-				"averageResponseTime": "平均响应时间",
-				"downtime": "停机时间",
-				"high": "高的",
-				"low": "低的",
-				"uptime": "正常运行时间"
-			},
-			"histogram": {
-				"avg": "平均: {{value}} ms",
-				"max": "最大: {{value}} ms"
-			}
-		},
-		"dialogs": {
-			"delete": {
-				"description": "此操作无法撤销。",
-				"title": "确定要删除吗？"
-			}
-		},
-		"labels": {
-			"active": "活跃",
-			"paused": "已暂停",
-			"na": "不适用",
-			"resolved": "已解决",
-			"responseTime": "响应时间"
-		},
-		"form": {
-			"role": {
-				"option": {
-					"role": {
-						"label": "角色"
-					}
-				}
-			},
-			"name": {
-				"option": {
-					"firstName": {
-						"label": "名字",
-						"placeholder": "Jordan"
-					},
-					"lastName": {
-						"label": "姓",
-						"placeholder": "Ellis"
-					}
-				}
-			},
-			"email": {
-				"option": {
-					"email": {
-						"label": "邮箱",
-						"placeholder": "you@example.com"
-					}
-				}
-			}
-		},
-		"table": {
-			"empty": "暂无数据",
-			"headers": {
-				"actions": "动作",
-				"dateTime": "日期和时间",
-				"message": "消息",
-				"monitor": "监控",
-				"monitorId": "监控 ID",
-				"name": "名称",
-				"status": "状态",
-				"type": "类型",
-				"url": "URL",
-				"interval": "间隔",
-				"active": "活跃",
-				"responseTime": "响应时间"
-			}
-		}
-	},
-	"components": {
-		"imageUpload": {
-			"clickToUpload": "点击上传",
-			"dragAndDrop": "拖放",
-			"supportedFormats": "支持的格式",
-			"maxSize": "最大尺寸",
-			"orDragAndDrop": "或拖放文件",
-			"errors": {
-				"invalidFileSize": "文件太大了！",
-				"invalidFileFormat": "不支持的文件格式！"
-			}
-		},
-		"headerStatusPageControls": {
-			"publicLink": "公共链接"
-		},
-		"headerTimeRange": {
-			"labels": {
-				"day": "日",
-				"month": "月",
-				"recent": "最近",
-				"week": "周"
-			},
-			"description": {
-				"recent": "显示过去 2 小时的统计数据。",
-				"day": "显示过去 24 小时的统计数据。",
-				"week": "显示过去 7 天的统计数据。",
-				"month": "显示过去 30 天的统计数据。"
-			}
-		},
-		"offlineBanner": {
-			"serverUnreachable": "无法连接到服务器",
-			"retry": "重试",
-			"retrying": "重试中...",
-			"reconnected": "已成功重新连接到服务器。"
-		},
-		"sidebar": {
-			"menu": {
-				"uptime": "上线时间",
-				"pagespeed": "页面速度",
-				"infrastructure": "基础设施",
-				"notifications": "通知",
-				"checks": "检查",
-				"incidents": "事件",
-				"statusPages": "状态页",
-				"maintenance": "维护",
-				"logs": "日志",
-				"settings": "设置"
-			},
-			"bottomMenu": {
-				"support": "支持",
-				"discussions": "讨论",
-				"docs": "文档",
-				"changelog": "变更日志"
-			},
-			"accountMenu": {
-				"profile": "个人资料",
-				"password": "密码",
-				"team": "团队"
-			},
-			"starPrompt": {
-				"title": "Star Checkmate",
-				"description": "查看最新版本并在 GitHub 上帮助发展社区"
-			},
-			"authFooter": {
-				"navControls": "控制",
-				"logOut": "登出",
-				"roles": {
-					"superAdmin": "超级管理员",
-					"admin": "管理员",
-					"user": "用户",
-					"demoUser": "演示用户"
-				}
-			}
-		},
-		"starPrompt": {
-			"title": "Star Checkmate",
-			"description": "查看最新版本并在 GitHub 上帮助发展社区"
-		}
-	},
-	"pages": {
-		"notFound": {
-			"title": "哦不！你的寿司掉了！",
-			"subtitle": "该 URL 不存在，或者您没有访问权限。"
-		},
-		"account": {
-			"tabs": {
-				"profile": "个人资料",
-				"password": "密码",
-				"team": "团队"
-			},
-			"form": {
-				"name": {
-					"title": "名称",
-					"description": "更新您的个人信息"
-				},
-				"photo": {
-					"title": "个人头像",
-					"description": "上传个人头像"
-				},
-				"currentPassword": {
-					"title": "当前密码",
-					"description": "输入当前密码以验证您的身份",
-					"option": {
-						"label": "当前密码",
-						"placeholder": "输入当前密码"
-					}
-				},
-				"newPassword": {
-					"title": "新密码",
-					"description": "请选择至少 8 个字符的强密码",
-					"option": {
-						"newPassword": {
-							"label": "新密码",
-							"placeholder": "输入新密码"
-						},
-						"confirm": {
-							"label": "确认密码",
-							"placeholder": "确认新密码"
-						}
-					}
-				},
-				"deleteAccount": {
-					"title": "删除账户",
-					"description": "此操作是永久的，无法撤销"
-				}
-			},
-			"team": {
-				"filter": {
-					"placeholder": "按角色筛选",
-					"all": "全部",
-					"admin": "管理员",
-					"member": "成员"
-				},
-				"table": {
-					"headers": {
-						"email": "邮箱",
-						"role": "角色",
-						"created": "创建"
-					}
-				},
-				"addMember": {
-					"title": "注册新团队成员",
-					"description": "创建新用户账户。创建后请安全地分享凭据。"
-				},
-				"invite": {
-					"title": "邀请团队成员",
-					"description": "发送邀请以加入您的团队",
-					"email": {
-						"label": "邮箱地址",
-						"placeholder": "输入邮箱地址"
-					},
-					"role": {
-						"label": "角色",
-						"placeholder": "选择角色"
-					},
-					"linkLabel": "邀请链接"
-				}
-			}
-		},
-		"auth": {
-			"common": {
-				"passwordRules": {
-					"length": {
-						"beginning": "必须至少",
-						"highlighted": "8 个字符长"
-					},
-					"lowercase": {
-						"beginning": "必须至少包含",
-						"highlighted": "一个小写字母"
-					},
-					"match": {
-						"beginning": "密码",
-						"highlighted": "必须匹配"
-					},
-					"number": {
-						"beginning": "必须至少包含",
-						"highlighted": "一个数字"
-					},
-					"special": {
-						"beginning": "必须至少包含",
-						"highlighted": "一个特殊字符"
-					},
-					"uppercase": {
-						"beginning": "必须至少包含",
-						"highlighted": "一个大写字母"
-					}
-				},
-				"form": {
-					"option": {
-						"email": {
-							"label": "邮箱",
-							"placeholder": "me@example.com"
-						},
-						"password": {
-							"label": "密码",
-							"placeholder": "********"
-						},
-						"confirmPassword": {
-							"label": "确认密码"
-						}
-					}
-				}
-			},
-			"login": {
-				"title": "欢迎回到 Checkmate！",
-				"subtitle": "登录以继续",
-				"submit": "登录",
-				"links": {
-					"forgotPassword": {
-						"text": "忘记密码？",
-						"linkText": "重置密码"
-					},
-					"register": {
-						"text": "还没有账户？",
-						"linkText": "在此注册"
-					}
-				}
-			},
-			"register": {
-				"title": "欢迎回到 Checkmate！",
-				"subtitle": "注册以开始使用",
-				"submit": "注册"
-			},
-			"forgotPassword": {
-				"title": "忘记密码了？",
-				"subtitle": "别担心，我们会给您发送重置说明。",
-				"submit": "请求恢复",
-				"links": {
-					"login": {
-						"text": "返回到",
-						"linkText": "登录"
-					}
-				}
-			},
-			"setNewPassword": {
-				"title": "重置您的密码",
-				"subtitle": "您的新密码必须与之前使用过的密码不同。"
-			}
-		},
-		"checks": {
-			"selects": {
-				"monitor": {
-					"all": "所有监控"
-				},
-				"status": {
-					"all": "全部",
-					"down": "宕机",
-					"up": "正常"
-				}
-			},
-			"table": {
-				"empty": "此时间范围内没有宕机检查",
-				"headers": {
-					"statusCode": "状态码",
-					"location": "位置"
-				}
-			}
-		},
-		"common": {
-			"monitors": {
-				"actions": {
-					"configure": "配置",
-					"delete": "删除",
-					"generateToken": "生成令牌",
-					"details": "详情",
-					"incidents": "事件",
-					"inviteMember": "邀请成员",
-					"openSite": "打开站点",
-					"pause": "暂停",
-					"resume": "恢复"
-				},
-				"statBoxes": {
-					"activeFor": "已活跃",
-					"certificateExpiry": "证书到期",
-					"lastCheck": "上次检查",
-					"lastResponseTime": "上次响应时间"
-				},
-				"status": {
-					"down": "宕机",
-					"breached": "超出阈值",
-					"initializing": "初始化中",
-					"maintenance": "维护中",
-					"paused": "已暂停",
-					"total": "总计",
-					"up": "正常"
-				},
-				"monitorTypes": {
-					"optionDocker": "Docker",
-					"optionGame": "游戏",
-					"optionHttp": "HTTP(S)",
-					"optionPing": "Ping",
-					"optionPort": "端口",
-					"optionPagespeed": "PageSpeed",
-					"optionHardware": "基础设施",
-					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
-				}
-			}
-		},
-		"createMonitor": {
-			"form": {
-				"advanced": {
-					"description": "高级用例的可选设置",
-					"option": {
-						"advancedMatching": {
-							"label": "使用高级匹配"
-						},
-						"expectedValue": {
-							"label": "期望值"
-						},
-						"jsonPath": {
-							"description": "此表达式将针对响应 JSON 数据进行计算，结果将用于与期望值进行匹配。查询语言文档请参见 <jmesLink>jmespath.org</jmesLink>。",
-							"label": "JSONPath 表达式"
-						},
-						"matchMethod": {
-							"label": "匹配方法",
-							"equal": "相等",
-							"include": "包含",
-							"regex": "正则表达式"
-						}
-					},
-					"title": "高级设置"
-				},
-				"frequency": {
-					"description": "您希望多久检查一次此监控的状态？",
-					"option": {
-						"frequency": {
-							"label": "检查频率",
-							"value": {
-								"fifteenMinutes": "15 分钟",
-								"fifteenSeconds": "15 秒",
-								"fiveMinutes": "5 分钟",
-								"fourMinutes": "4 分钟",
-								"oneMinute": "1 分钟",
-								"tenMinutes": "10 分钟",
-								"thirtyMinutes": "30 分钟",
-								"thirtySeconds": "30 秒",
-								"threeMinutes": "3 分钟",
-								"twoMinutes": "2 分钟"
-							}
-						}
-					},
-					"title": "检查频率"
-				},
-				"general": {
-					"option": {
-						"container": {
-							"label": "容器名称/ID",
-							"placeholder": "my-app 或 abcd1234"
-						},
-						"host": {
-							"label": "主机",
-							"placeholder": "192.168.1.100 或 example.com"
-						},
-						"name": {
-							"label": "显示名称",
-							"placeholder": "例如 My Website"
-						},
-						"secret": {
-							"label": "授权密钥",
-							"placeholder": "输入您的密钥"
-						},
-						"url": {
-							"label": "URL",
-							"placeholder": "https://www.google.com"
-						},
-						"game": {
-							"label": "丢包监控网址",
-							"placeholder": "localhost"
-						},
-						"port": {
-							"label": "要监控的端口",
-							"placeholder": "80"
-						},
-						"grpcServiceName": {
-							"label": "服务名称",
-							"placeholder": "例如 my.service.v1（留空则检查整体健康状态）"
-						},
-						"wsUrl": {
-							"label": "WebSocket URL",
-							"placeholder": "wss://example.com/socket"
-						}
-					},
-					"title": "常规设置",
-					"description": {
-						"http": "输入要监控的 URL 或 IP（例如 https://example.com/ 或 192.168.1.100），并添加显示在仪表板上的清晰显示名称。",
-						"ping": "输入要 ping 的 IP 地址或主机名（例如.. 192.168.1.100 或 example.com），并添加显示在仪表板上的清晰显示名称。",
-						"port": "输入服务器的 URL 或 IP、端口号和仪表板上显示的清晰显示名称。",
-						"docker": "码输入 Docker 容器名称或 ID。您可以使用容器名称（例如.. my-app）或容器 ID（完整的 64 字符 ID 或短 ID）。",
-						"game": "输入要 ping 的 IP 地址或主机名和端口号（例如.. 192.168.1.100 或 example.com）并选择游戏类型。",
-						"pagespeed": "跟踪网站的页面加载性能、Core Web Vitals 和优化评分。",
-						"grpc": "输入 gRPC 服务器的主机名和端口，可选指定健康检查的服务名称，并添加显示名称。",
-						"websocket": "输入要监控的 WebSocket URL（例如 wss://example.com/socket），并添加显示名称。",
-						"hardware": "监控基础设施的 CPU、内存、磁盘使用率和温度。"
-					}
-				},
-				"ignoreTls": {
-					"description": "配置 HTTPS 连接的 TLS/SSL 证书验证。",
-					"option": {
-						"tls": {
-							"label": "忽略 TLS/SSL 错误"
-						}
-					},
-					"title": "TLS/SSL 设置"
-				},
-				"incidents": {
-					"description": "滑动窗口用于判断监控何时宕机。监控的状态只有在滑动窗口中的检查百分比达到指定值时才会改变。",
-					"option": {
-						"checks": {
-							"label": "滑动窗口中的检查次数"
-						},
-						"percentage": {
-							"label": "滑动窗口中多少百分比的检查失败/成功后监控状态才会改变？"
-						}
-					},
-					"title": "事件"
-				},
-				"notifications": {
-					"description": "选择您要使用的通知渠道",
-					"title": "通知"
-				},
-				"type": {
-					"description": "选择要执行的检查类型",
-					"optionDockerDescription": "使用 Docker 监控容器是否正在运行。",
-					"optionGameDescription": "监控特定游戏服务器是否在线。",
-					"optionGrpcDescription": "使用标准健康检查协议监控 gRPC 服务。",
-					"optionWebSocketDescription": "监控 WebSocket 端点的连接健康状况和响应时间。",
-					"optionHttpDescription": "使用 HTTP(S) 监控您的网站或 API 端点。",
-					"optionPingDescription": "使用 ICMP Ping 监控服务器是否在线。",
-					"optionPortDescription": "监控服务器上的特定端口是否开放。",
-					"title": "类型"
-				},
-				"thresholds": {
-					"title": "告警阈值",
-					"description": "定义此硬件监控触发告警的阈值。",
-					"option": {
-						"cpuThreshold": {
-							"label": "CPU 告警阈值 (%)"
-						},
-						"memoryThreshold": {
-							"label": "内存告警阈值 (%)"
-						},
-						"diskThreshold": {
-							"label": "磁盘告警阈值 (%)"
-						},
-						"tempThreshold": {
-							"label": "温度告警阈值 (°C)"
-						}
-					}
-				},
-				"geoChecks": {
-					"title": "地理分布式检查",
-					"description": "从多个地理位置运行检查，以监控全球可用性和性能。",
-					"option": {
-						"enabled": {
-							"label": "启用地理分布式检查"
-						},
-						"locations": {
-							"label": "位置",
-							"placeholder": "选择位置",
-							"options": {
-								"EU": "欧洲",
-								"NA": "北美洲",
-								"AS": "亚洲",
-								"SA": "南美洲",
-								"AF": "非洲",
-								"OC": "大洋洲"
-							}
-						},
-						"interval": {
-							"label": "检查间隔",
-							"value": {
-								"fiveMinutes": "5 分钟",
-								"tenMinutes": "10 分钟",
-								"fifteenMinutes": "15 分钟",
-								"thirtyMinutes": "30 分钟"
-							}
-						}
-					}
-				},
-				"url": {
-					"title": "在状态页上监控 IP/URL",
-					"description": "在公共状态页上显示监控的 IP 地址或 URL。如果禁用，将仅显示监控名称以保护敏感信息。",
-					"option": {
-						"showURL": {
-							"label": "在状态页上显示 IP/URL",
-							"enabled": "已启用",
-							"disabled": "已禁用"
-						}
-					}
-				},
-				"stats": {
-					"title": "监控历史",
-					"description": "清除您团队的所有监控历史和统计数据。此操作不可逆。",
-					"buttonText": "清除所有统计",
-					"dialog": {
-						"title": "清除所有监控历史？",
-						"description": "这将永久删除您团队的所有监控历史、统计数据和检查数据。此操作无法撤销。",
-						"confirm": "是的，清除所有统计"
-					}
-				}
-			}
-		},
-		"editUser": {
-			"form": {
-				"roles": {
-					"title": "角色",
-					"description": "为用户分配角色。可以选择多个角色。"
-				}
-			},
-			"dialog": {
-				"removeUser": {
-					"title": "移除用户",
-					"content": "确定要将 {{name}} 从您的团队中移除吗？此操作无法撤销。"
-				}
-			}
-		},
-		"incidents": {
-			"dialog": {
-				"resolveIncident": {
-					"title": "解决事件",
-					"option": {
-						"comment": {
-							"label": "备注（可选）",
-							"placeholder": "添加关于解决方案的备注..."
-						}
-					}
-				},
-				"details": {
-					"analysis": "事件分析",
-					"comment": "备注：",
-					"detailsLabel": "详情",
-					"downtime": "停机时间：",
-					"message": "消息：",
-					"monitor": "监控：",
-					"overview": "概览",
-					"resolutionDetails": "解决详情",
-					"resolutionType": "类型：",
-					"resolutionTypes": {
-						"automatic": "自动",
-						"manual": "手动"
-					},
-					"resolve": "解决事件",
-					"resolvedAt": "解决于：",
-					"resolvedBy": "解决人：",
-					"startedAt": "开始于：",
-					"status": "状态：",
-					"statusCode": "状态码：",
-					"timeline": "时间线",
-					"title": "事件详情",
-					"url": "URL："
-				}
-			},
-			"filters": {
-				"allMonitors": "所有监控",
-				"monitor": "监控",
-				"resolutionType": "解决类型",
-				"resolutionTypes": {
-					"manual": "手动",
-					"automatic": "自动",
-					"all": "全部"
-				}
-			},
-			"summaryCard": {
-				"activeIncidents": {
-					"title": "活跃事件",
-					"active_zero": "没有活跃事件",
-					"active_one": "{{count}} 个活跃事件",
-					"active_other": "{{count}} 个活跃事件"
-				},
-				"incidentStats": {
-					"avgResolutionTime": "平均解决时间",
-					"mostAffectedMonitor": "受影响最大的监控",
-					"title": "事件统计",
-					"totalIncidents": "总事件数"
-				},
-				"latestIncidents": {
-					"title": "最新事件"
-				}
-			},
-			"table": {
-				"actions": {
-					"details": "详情",
-					"goToMonitor": "前往监控",
-					"resolveManually": "手动解决"
-				},
-				"activeIncidents": "活跃事件",
-				"headers": {
-					"endTime": "结束时间",
-					"resolutionType": "解决类型",
-					"startTime": "开始时间",
-					"statusCode": "状态码"
-				},
-				"resolvedIncidents": "已解决事件",
-				"status": {
-					"active": "活跃",
-					"resolved": "已解决"
-				}
-			}
-		},
-		"infrastructure": {
-			"charts": {
-				"labels": {
-					"cpu": "CPU 使用率",
-					"disk": "磁盘使用率",
-					"memory": "内存使用率",
-					"netBytesRecv": "{{name}} - 接收字节",
-					"netBytesSent": "{{name}} - 发送字节",
-					"temp": "温度"
-				}
-			},
-			"gauges": {
-				"cpu": {
-					"lowerLabel": "最大频率",
-					"title": "CPU 使用率",
-					"upperLabel": "当前频率"
-				},
-				"disk": {
-					"lowerLabel": "可用",
-					"title": "磁盘 {{idx}} 使用率",
-					"upperLabel": "已使用"
-				},
-				"memory": {
-					"lowerLabel": "可用",
-					"title": "内存使用率",
-					"upperLabel": "已使用"
-				}
-			},
-			"statBoxes": {
-				"avgCpuTemperature": "CPU 平均温度",
-				"cpuFrequency": "CPU 频率",
-				"cpuLogical": "CPU（逻辑核心）",
-				"cpuPhysical": "CPU（物理核心）",
-				"disk": "磁盘",
-				"memory": "内存",
-				"os": "系统"
-			},
-			"table": {
-				"headers": {
-					"cpu": "CPU",
-					"disk": "磁盘",
-					"memory": "内存"
-				}
-			},
-			"tabs": {
-				"labels": {
-					"network": "网络",
-					"overview": "概览"
-				}
-			},
-			"fallback": {
-				"actionButton": "创建监控！",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "基础设施监控用于："
-			}
-		},
-		"logs": {
-			"tabs": {
-				"diagnostics": "诊断",
-				"logs": "服务器日志",
-				"queue": "作业队列"
-			},
-			"logLevelSelect": {
-				"label": "日志级别"
-			},
-			"jobQueue": "作业队列",
-			"failedJobs": "失败作业",
-			"noLogs": "未找到日志",
-			"metrics": {
-				"jobs": "作业",
-				"activeJobs": "活跃作业",
-				"failingJobs": "失败中的作业",
-				"totalRuns": "总运行次数",
-				"totalFailures": "总失败次数"
-			},
-			"diagnostics": {
-				"stats": {
-					"eventLoopDelay": "事件循环延迟",
-					"uptime": "正常运行时间",
-					"usedHeapSize": "已使用堆大小",
-					"totalHeapSize": "总堆大小",
-					"osMemoryLimit": "操作系统内存限制"
-				},
-				"gauges": {
-					"heapAllocation": "堆分配",
-					"heapUsage": "堆使用率",
-					"heapUtilization": "堆利用率",
-					"instantCpuUsage": "即时 CPU 使用率",
-					"availableMemoryPercentage": "可用内存百分比",
-					"allocatedPercentage": "已分配百分比",
-					"usedSPercentage": "CPU 1 秒使用百分比",
-					"total": "总计",
-					"used": "已使用"
-				}
-			},
-			"table": {
-				"headers": {
-					"timestamp": "时间戳",
-					"level": "级别",
-					"service": "服务",
-					"method": "方法",
-					"monitorId": "监控 ID",
-					"runCount": "运行次数",
-					"failCount": "失败次数",
-					"lastRunAt": "上次运行于",
-					"lockedAt": "锁定于",
-					"lastFinishedAt": "上次完成于",
-					"lastRunTook": "上次运行耗时",
-					"lastFailedAt": "上次失败于",
-					"failReason": "失败原因"
-				}
-			}
-		},
-		"maintenanceWindow": {
-			"fallback": {
-				"actionButton": "创建维护窗口！",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "维护窗口用于："
-			},
-			"table": {
-				"headers": {
-					"nextWindow": "下一个窗口",
-					"repeat": "重复"
-				}
-			},
-			"form": {
-				"general": {
-					"title": "常规设置",
-					"description": "为维护窗口设置名称和重复选项。",
-					"option": {
-						"name": {
-							"label": "名称",
-							"placeholder": "例如 每周维护"
-						},
-						"repeat": {
-							"label": "重复"
-						}
-					}
-				},
-				"startDate": {
-					"title": "开始日期",
-					"description": "选择维护窗口的开始日期。",
-					"option": {
-						"startDate": {
-							"label": "开始日期"
-						}
-					}
-				},
-				"startTime": {
-					"title": "开始时间",
-					"description": "设置维护窗口的开始时间和持续时间。所有时间均为 UTC",
-					"option": {
-						"duration": {
-							"label": "持续时间"
-						},
-						"startTime": {
-							"label": "开始时间"
-						}
-					},
-					"monitors": {
-						"title": "监控",
-						"description": "维护窗口应用的监控对象",
-						"option": {
-							"addMonitors": {
-								"label": "添加监控"
-							}
-						}
-					}
-				}
-			}
-		},
-		"notifications": {
-			"fallback": {
-				"actionButton": "创建渠道",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "通知渠道用于："
-			},
-			"form": {
-				"accessToken": {
-					"optionAccessToken": "访问令牌",
-					"placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
-				},
-				"address": {
-					"description": "通知将发送到的地址。",
-					"optionAddress": "地址",
-					"placeholderEmail": "example@example.com",
-					"placeholderWebhook": "https://your-server.com/webhook",
-					"title": "地址"
-				},
-				"homeServer": {
-					"optionHomeServer": "主服务器",
-					"placeholder": "example.com"
-				},
-				"matrix": {
-					"description": "配置 Matrix 主服务器连接以接收通知。",
-					"title": "Matrix 配置"
-				},
-				"notificationName": {
-					"description": "通知渠道的描述性名称",
-					"optionName": "渠道名称",
-					"placeholder": "例如 生产告警",
-					"title": "渠道名称"
-				},
-				"pagerDuty": {
-					"description": "您的 PagerDuty 集成密钥，用于接收告警。",
-					"optionIntegrationKey": "集成密钥",
-					"placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
-					"title": "集成密钥"
-				},
-				"roomId": {
-					"optionRoomId": "房间 ID",
-					"placeholder": "!abcdefg:matrix.org"
-				},
-				"type": {
-					"description": "选择要创建的通知渠道类型。",
-					"optionType": "类型",
-					"title": "渠道类型"
-				},
-				"telegram": {
-					"title": "Telegram 配置",
-					"description": "要启用 Telegram 通知，请使用 BotFather创建一个 Telegram 机器人。然后，获取 API 令牌和聊天 ID 并在此处填写。",
-					"optionBotToken": "机器人令牌",
-					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
-					"optionChatId": "聊天 ID",
-					"placeholderChatId": "-1001234567890"
-				}
-			},
-			"table": {
-				"headers": {
-					"destination": "目标"
-				}
-			}
-		},
-		"pageSpeed": {
-			"charts": {
-				"common": {
-					"cls": "累积布局偏移 (CLS)",
-					"fcp": "首次内容绘制 (FCP)",
-					"lcp": "最大内容绘制 (LCP)",
-					"si": "速度指数 (SI)",
-					"tbt": "总阻塞时间 (TBT)"
-				},
-				"legend": {
-					"title": "PageSpeed 报告",
-					"weight": "权重"
-				},
-				"pie": {
-					"title": "性能报告"
-				}
-			},
-			"table": {
-				"headers": {
-					"pageSpeedScore": "PageSpeed 评分"
-				}
-			},
-			"fallback": {
-				"actionButton": "创建监控！",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "PageSpeed 监控用于："
-			}
-		},
-		"settings": {
-			"form": {
-				"timezone": {
-					"title": "显示时区",
-					"description": "选择应用程序中用于显示日期和时间的时区。",
-					"option": {
-						"timezone": {
-							"label": "显示时区"
-						}
-					}
-				},
-				"ui": {
-					"title": "外观",
-					"description": "在浅色和深色模式之间切换、更改语言或自定义图表显示类型。",
-					"option": {
-						"theme": {
-							"label": "主题模式",
-							"light": "浅色",
-							"dark": "深色"
-						},
-						"language": {
-							"label": "语言"
-						},
-						"chartType": {
-							"label": "图表类型",
-							"histogram": "柱状图",
-							"heatmap": "热力图"
-						}
-					}
-				},
-				"pagespeed": {
-					"title": "Google PageSpeed API 密钥",
-					"description": "输入您的 Google PageSpeed API 密钥以启用 Google PageSpeed 监控。点击重置以更新密钥。",
-					"option": {
-						"apiKey": {
-							"label": "PageSpeed API 密钥",
-							"labelSet": "API 密钥已设置。点击重置以更改。",
-							"placeholder": "输入您的 Google PageSpeed API 密钥"
-						}
-					}
-				},
-				"url": {
-					"title": "在状态页上监控 IP/URL",
-					"description": "在公共状态页上显示监控的 IP 地址或 URL。如果禁用，将仅显示监控名称以保护敏感信息。",
-					"option": {
-						"showURL": {
-							"label": "在状态页上显示 IP/URL",
-							"enabled": "已启用",
-							"disabled": "已禁用"
-						}
-					}
-				},
-				"stats": {
-					"title": "监控历史",
-					"description": "清除您团队的所有监控历史和统计数据。此操作不可逆。",
-					"option": {
-						"clear": {
-							"label": "清除所有统计数据。此操作不可逆。"
-						}
-					},
-					"dialog": {
-						"title": "清除所有监控历史？",
-						"description": "此操作无法撤销"
-					}
-				},
-				"retention": {
-					"title": "检查数据保留",
-					"description": "设置检查数据在自动清理前保留多长时间。",
-					"option": {
-						"days": {
-							"label": "保留期限（天）",
-							"unlimited": "无限制"
-						}
-					}
-				},
-				"thresholds": {
-					"title": "全局阈值",
-					"description": "设置基础设施监控的全局 CPU、内存、磁盘和温度阈值。除非被覆盖，否则适用于所有硬件监控。",
-					"option": {
-						"cpu": {
-							"label": "CPU 阈值 (%)",
-							"placeholder": "1 - 100"
-						},
-						"memory": {
-							"label": "内存阈值 (%)",
-							"placeholder": "1 - 100"
-						},
-						"disk": {
-							"label": "磁盘阈值 (%)",
-							"placeholder": "1 - 100"
-						},
-						"temperature": {
-							"label": "温度阈值 (°C)",
-							"placeholder": "1 - 150"
-						}
-					}
-				},
-				"email": {
-					"title": "邮件设置",
-					"description": "配置系统的邮件设置。用于发送通知和告警。",
-					"descriptionTransport": "这将为 NodeMailer 构建 SMTP 传输",
-					"descriptionTransportLink": "在此查看规范",
-					"option": {
-						"host": {
-							"label": "邮件主机 - 要连接的主机名或 IP 地址",
-							"placeholder": "smtp.gmail.com"
-						},
-						"port": {
-							"label": "邮件端口 - 要连接的端口",
-							"placeholder": "587"
-						},
-						"address": {
-							"label": "邮箱地址 - 用于身份验证",
-							"placeholder": "you@example.com"
-						},
-						"user": {
-							"label": "邮件用户 - 用于身份验证的用户名，如果指定则覆盖邮箱地址",
-							"placeholder": "如不需要请留空"
-						},
-						"password": {
-							"label": "邮件密码 - 用于身份验证的密码",
-							"labelSet": "密码已设置。点击重置以更改。",
-							"placeholder": "输入您的密码"
-						},
-						"tlsServername": {
-							"label": "TLS 服务器名 - 当主机为 IP 时用于 TLS 验证的可选主机名",
-							"placeholder": "example.com"
-						},
-						"connectionHost": {
-							"label": "邮件连接主机 - 在 HELO/EHLO 问候中使用的主机名",
-							"placeholder": "localhost"
-						},
-						"secure": {
-							"label": "使用 SSL（推荐）：使用 SSL/TLS 加密连接"
-						},
-						"pool": {
-							"label": "启用连接池：重用现有连接以提高性能"
-						},
-						"ignoreTLS": {
-							"label": "禁用 STARTTLS：即使服务器支持也不使用 TLS"
-						},
-						"requireTLS": {
-							"label": "强制 STARTTLS：要求 TLS 升级，不支持则失败"
-						},
-						"rejectUnauthorized": {
-							"label": "拒绝无效证书：拒绝自签名或不受信任证书的连接"
-						}
-					}
-				},
-				"demoMonitors": {
-					"title": "演示监控",
-					"description": "添加用于演示目的的示例监控。"
-				},
-				"removeMonitors": {
-					"title": "系统重置",
-					"description": "从系统中移除所有监控。",
-					"dialog": {
-						"title": "移除所有监控？",
-						"description": "此操作无法撤销。"
-					}
-				},
-				"exportMonitors": {
-					"title": "导出监控"
-				},
-				"importExportMonitors": {
-					"title": "导入/导出监控",
-					"description": "将监控数据导入或导出为 JSON 文件，用于备份或迁移。"
-				},
-				"about": {
-					"title": "关于",
-					"developedBy": "由 Bluewave Labs 开发"
-				},
-				"validation": {
-					"errorMessage": "请修复以下验证错误："
-				}
-			}
-		},
-		"statusPages": {
-			"deleteSuccess": "状态页已成功删除",
-			"fallback": {
-				"title": "状态页用于：",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "创建状态页！"
-			},
-			"monitorsList": {
-				"chartTypeHeatmap": "热力图",
-				"chartTypeHistogram": "柱状图",
-				"noData": "无可用数据",
-				"infrastructure": {
-					"title": "基础设施",
-					"cpu": "CPU",
-					"memory": "RAM",
-					"memoryText": "内存",
-					"disk": "磁盘",
-					"usage": "使用率",
-					"used": "已使用",
-					"total": "总计"
-				},
-				"uptime": {
-					"title": "正常运行时间",
-					"responseTime": "响应时间"
-				}
-			},
-			"statusBar": {
-				"allDown": "所有系统已宕机",
-				"allUp": "所有系统运行正常",
-				"degraded": "部分系统正在出现问题",
-				"unknown": "无法确定系统状态"
-			},
-			"table": {
-				"headers": {
-					"name": "状态页名称",
-					"url": "公共 URL"
-				},
-				"published": "已发布",
-				"unpublished": "未发布"
-			},
-			"title": "状态页",
-			"details": {
-				"empty": {
-					"title": "这里还没有内容",
-					"addMonitor": "添加监控以开始"
-				}
-			},
-			"form": {
-				"access": {
-					"title": "访问",
-					"description": "如果您的状态页已准备就绪，可以将其标记为已发布。",
-					"option": {
-						"published": {
-							"name": "已发布且公众可见"
-						}
-					}
-				},
-				"basicInfo": {
-					"title": "基本信息",
-					"description": "定义公司名称和状态页指向的子域名。",
-					"option": {
-						"name": {
-							"label": "公司名称",
-							"placeholder": "Acme Inc."
-						},
-						"url": {
-							"label": "您的状态页地址",
-							"placeholder": "my-status-page"
-						}
-					}
-				},
-				"monitors": {
-					"title": "监控",
-					"description": "选择要在状态页上显示的监控。",
-					"noMonitors": "未选择监控",
-					"option": {
-						"monitors": {
-							"label": "选择监控",
-							"placeholder": "搜索并选择监控..."
-						}
-					}
-				},
-				"timezone": {
-					"title": "时区",
-					"description": "选择状态页显示的时区。",
-					"option": {
-						"timezone": {
-							"label": "时区",
-							"placeholder": "选择时区..."
-						}
-					}
-				},
-				"appearance": {
-					"title": "外观",
-					"description": "定义公共状态页的默认外观。",
-					"option": {
-						"logo": {
-							"label": "Logo"
-						},
-						"color": {
-							"label": "品牌颜色"
-						}
-					}
-				},
-				"features": {
-					"title": "功能",
-					"description": "配置状态页上显示的信息。",
-					"option": {
-						"showCharts": {
-							"label": "显示响应时间图表"
-						},
-						"showUptimePercentage": {
-							"label": "显示正常运行时间百分比"
-						},
-						"showAdminLoginLink": {
-							"label": "显示管理员登录链接"
-						},
-						"showInfrastructure": {
-							"label": "显示基础设施指标"
-						}
-					}
-				}
-			}
-		},
-		"uptime": {
-			"filters": {
-				"search": {
-					"placeholder": "搜索监控..."
-				}
-			},
-			"table": {
-				"headers": {
-					"responseTime": "响应时间"
-				}
-			},
-			"fallback": {
-				"actionButton": "创建监控！",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "正常运行时间监控用于："
-			}
-		}
-	}
+  "common": {
+    "auth": {
+      "roles": {
+        "admin": "管理员",
+        "demo": "演示",
+        "superadmin": "超级管理员",
+        "user": "用户"
+      }
+    },
+    "alerts": {
+      "pageSpeedApiKey": {
+        "content": "警告：您尚未添加 Google PageSpeed API 密钥。请访问<settingsLink>设置</settingsLink>添加。没有密钥，PageSpeed 监控将无法运行。"
+      }
+    },
+    "appName": "Checkmate",
+    "breadcrumbs": {
+      "details": "详情",
+      "home": "首页"
+    },
+    "buttons": {
+      "addMember": "添加成员",
+      "cancel": "取消",
+      "close": "关闭",
+      "configure": "配置",
+      "confirm": "确认",
+      "create": "创建",
+      "delete": "删除",
+      "generateToken": "生成令牌",
+      "incidents": "事件",
+      "inviteMember": "邀请成员",
+      "pause": "暂停",
+      "resume": "恢复",
+      "save": "保存",
+      "sendInvite": "发送邀请",
+      "test": "测试",
+      "testNotifications": "测试通知",
+      "toggleTheme": "切换主题明&暗",
+      "flushQueue": "清空队列",
+      "notFound": "前往主控制台",
+      "resetPassword": "重置密码",
+      "reset": "重置",
+      "clear": "清除",
+      "addDemo": "添加演示监控",
+      "removeMonitors": "移除监控",
+      "sendTestEmail": "发送测试邮件",
+      "exportToJSON": "导出为 JSON",
+      "importFromJSON": "从 JSON 导入",
+      "clearFilters": "清除筛选",
+      "removeUser": "移除用户"
+    },
+    "charts": {
+      "labels": {
+        "averageResponseTime": "平均响应时间",
+        "downtime": "停机时间",
+        "high": "高的",
+        "low": "低的",
+        "uptime": "正常运行时间"
+      },
+      "histogram": {
+        "avg": "平均: {{value}} ms",
+        "max": "最大: {{value}} ms"
+      }
+    },
+    "dialogs": {
+      "delete": {
+        "description": "此操作无法撤销。",
+        "title": "确定要删除吗？"
+      }
+    },
+    "labels": {
+      "active": "活跃",
+      "paused": "已暂停",
+      "na": "不适用",
+      "resolved": "已解决",
+      "responseTime": "响应时间"
+    },
+    "form": {
+      "role": {
+        "option": {
+          "role": {
+            "label": "角色"
+          }
+        }
+      },
+      "name": {
+        "option": {
+          "firstName": {
+            "label": "名字",
+            "placeholder": "Jordan"
+          },
+          "lastName": {
+            "label": "姓",
+            "placeholder": "Ellis"
+          }
+        }
+      },
+      "email": {
+        "option": {
+          "email": {
+            "label": "邮箱",
+            "placeholder": "you@example.com"
+          }
+        }
+      }
+    },
+    "table": {
+      "empty": "暂无数据",
+      "headers": {
+        "actions": "动作",
+        "dateTime": "日期和时间",
+        "message": "消息",
+        "monitor": "监控",
+        "monitorId": "监控 ID",
+        "name": "名称",
+        "status": "状态",
+        "type": "类型",
+        "url": "URL",
+        "interval": "间隔",
+        "active": "活跃",
+        "responseTime": "响应时间"
+      }
+    }
+  },
+  "components": {
+    "imageUpload": {
+      "clickToUpload": "点击上传",
+      "dragAndDrop": "拖放",
+      "supportedFormats": "支持的格式",
+      "maxSize": "最大尺寸",
+      "orDragAndDrop": "或拖放文件",
+      "errors": {
+        "invalidFileSize": "文件太大了！",
+        "invalidFileFormat": "不支持的文件格式！"
+      }
+    },
+    "headerStatusPageControls": {
+      "publicLink": "公共链接"
+    },
+    "headerTimeRange": {
+      "labels": {
+        "day": "日",
+        "month": "月",
+        "recent": "最近",
+        "week": "周"
+      },
+      "description": {
+        "recent": "显示过去 2 小时的统计数据。",
+        "day": "显示过去 24 小时的统计数据。",
+        "week": "显示过去 7 天的统计数据。",
+        "month": "显示过去 30 天的统计数据。"
+      }
+    },
+    "offlineBanner": {
+      "serverUnreachable": "无法连接到服务器",
+      "retry": "重试",
+      "retrying": "重试中...",
+      "reconnected": "已成功重新连接到服务器。"
+    },
+    "sidebar": {
+      "menu": {
+        "uptime": "上线时间",
+        "pagespeed": "页面速度",
+        "infrastructure": "基础设施",
+        "notifications": "通知",
+        "checks": "检查",
+        "incidents": "事件",
+        "statusPages": "状态页",
+        "maintenance": "维护",
+        "logs": "日志",
+        "settings": "设置"
+      },
+      "bottomMenu": {
+        "support": "支持",
+        "discussions": "讨论",
+        "docs": "文档",
+        "changelog": "变更日志"
+      },
+      "accountMenu": {
+        "profile": "个人资料",
+        "password": "密码",
+        "team": "团队"
+      },
+      "starPrompt": {
+        "title": "Star Checkmate",
+        "description": "查看最新版本并在 GitHub 上帮助发展社区"
+      },
+      "authFooter": {
+        "navControls": "控制",
+        "logOut": "登出",
+        "roles": {
+          "superAdmin": "超级管理员",
+          "admin": "管理员",
+          "user": "用户",
+          "demoUser": "演示用户"
+        }
+      }
+    },
+    "starPrompt": {
+      "title": "Star Checkmate",
+      "description": "查看最新版本并在 GitHub 上帮助发展社区"
+    }
+  },
+  "pages": {
+    "notFound": {
+      "title": "哦不！你的寿司掉了！",
+      "subtitle": "该 URL 不存在，或者您没有访问权限。"
+    },
+    "account": {
+      "tabs": {
+        "profile": "个人资料",
+        "password": "密码",
+        "team": "团队"
+      },
+      "form": {
+        "name": {
+          "title": "名称",
+          "description": "更新您的个人信息"
+        },
+        "photo": {
+          "title": "个人头像",
+          "description": "上传个人头像"
+        },
+        "currentPassword": {
+          "title": "当前密码",
+          "description": "输入当前密码以验证您的身份",
+          "option": {
+            "label": "当前密码",
+            "placeholder": "输入当前密码"
+          }
+        },
+        "newPassword": {
+          "title": "新密码",
+          "description": "请选择至少 8 个字符的强密码",
+          "option": {
+            "newPassword": {
+              "label": "新密码",
+              "placeholder": "输入新密码"
+            },
+            "confirm": {
+              "label": "确认密码",
+              "placeholder": "确认新密码"
+            }
+          }
+        },
+        "deleteAccount": {
+          "title": "删除账户",
+          "description": "此操作是永久的，无法撤销"
+        }
+      },
+      "team": {
+        "filter": {
+          "placeholder": "按角色筛选",
+          "all": "全部",
+          "admin": "管理员",
+          "member": "成员"
+        },
+        "table": {
+          "headers": {
+            "email": "邮箱",
+            "role": "角色",
+            "created": "创建"
+          }
+        },
+        "addMember": {
+          "title": "注册新团队成员",
+          "description": "创建新用户账户。创建后请安全地分享凭据。"
+        },
+        "invite": {
+          "title": "邀请团队成员",
+          "description": "发送邀请以加入您的团队",
+          "email": {
+            "label": "邮箱地址",
+            "placeholder": "输入邮箱地址"
+          },
+          "role": {
+            "label": "角色",
+            "placeholder": "选择角色"
+          },
+          "linkLabel": "邀请链接"
+        }
+      }
+    },
+    "auth": {
+      "common": {
+        "passwordRules": {
+          "length": {
+            "beginning": "必须至少",
+            "highlighted": "8 个字符长"
+          },
+          "lowercase": {
+            "beginning": "必须至少包含",
+            "highlighted": "一个小写字母"
+          },
+          "match": {
+            "beginning": "密码",
+            "highlighted": "必须匹配"
+          },
+          "number": {
+            "beginning": "必须至少包含",
+            "highlighted": "一个数字"
+          },
+          "special": {
+            "beginning": "必须至少包含",
+            "highlighted": "一个特殊字符"
+          },
+          "uppercase": {
+            "beginning": "必须至少包含",
+            "highlighted": "一个大写字母"
+          }
+        },
+        "form": {
+          "option": {
+            "email": {
+              "label": "邮箱",
+              "placeholder": "me@example.com"
+            },
+            "password": {
+              "label": "密码",
+              "placeholder": "********"
+            },
+            "confirmPassword": {
+              "label": "确认密码"
+            }
+          }
+        }
+      },
+      "login": {
+        "title": "欢迎回到 Checkmate！",
+        "subtitle": "登录以继续",
+        "submit": "登录",
+        "links": {
+          "forgotPassword": {
+            "text": "忘记密码？",
+            "linkText": "重置密码"
+          },
+          "register": {
+            "text": "还没有账户？",
+            "linkText": "在此注册"
+          }
+        }
+      },
+      "register": {
+        "title": "欢迎回到 Checkmate！",
+        "subtitle": "注册以开始使用",
+        "submit": "注册"
+      },
+      "forgotPassword": {
+        "title": "忘记密码了？",
+        "subtitle": "别担心，我们会给您发送重置说明。",
+        "submit": "请求恢复",
+        "links": {
+          "login": {
+            "text": "返回到",
+            "linkText": "登录"
+          }
+        }
+      },
+      "setNewPassword": {
+        "title": "重置您的密码",
+        "subtitle": "您的新密码必须与之前使用过的密码不同。"
+      }
+    },
+    "checks": {
+      "selects": {
+        "monitor": {
+          "all": "所有监控"
+        },
+        "status": {
+          "all": "全部",
+          "down": "宕机",
+          "up": "正常"
+        }
+      },
+      "table": {
+        "empty": "此时间范围内没有宕机检查",
+        "headers": {
+          "statusCode": "状态码",
+          "location": "位置"
+        }
+      }
+    },
+    "common": {
+      "monitors": {
+        "actions": {
+          "configure": "配置",
+          "delete": "删除",
+          "generateToken": "生成令牌",
+          "details": "详情",
+          "incidents": "事件",
+          "inviteMember": "邀请成员",
+          "openSite": "打开站点",
+          "pause": "暂停",
+          "resume": "恢复"
+        },
+        "statBoxes": {
+          "activeFor": "已活跃",
+          "certificateExpiry": "证书到期",
+          "lastCheck": "上次检查",
+          "lastResponseTime": "上次响应时间"
+        },
+        "status": {
+          "down": "宕机",
+          "breached": "超出阈值",
+          "initializing": "初始化中",
+          "maintenance": "维护中",
+          "paused": "已暂停",
+          "total": "总计",
+          "up": "正常"
+        },
+        "monitorTypes": {
+          "optionDocker": "Docker",
+          "optionGame": "游戏",
+          "optionHttp": "HTTP(S)",
+          "optionPing": "Ping",
+          "optionPort": "端口",
+          "optionPagespeed": "PageSpeed",
+          "optionHardware": "基础设施",
+          "optionGrpc": "gRPC",
+          "optionWebSocket": "WebSocket"
+        }
+      }
+    },
+    "createMonitor": {
+      "form": {
+        "advanced": {
+          "description": "高级用例的可选设置",
+          "option": {
+            "advancedMatching": {
+              "label": "使用高级匹配"
+            },
+            "expectedValue": {
+              "label": "期望值"
+            },
+            "jsonPath": {
+              "description": "此表达式将针对响应 JSON 数据进行计算，结果将用于与期望值进行匹配。查询语言文档请参见 <jmesLink>jmespath.org</jmesLink>。",
+              "label": "JSONPath 表达式"
+            },
+            "matchMethod": {
+              "label": "匹配方法",
+              "equal": "相等",
+              "include": "包含",
+              "regex": "正则表达式"
+            }
+          },
+          "title": "高级设置"
+        },
+        "frequency": {
+          "description": "您希望多久检查一次此监控的状态？",
+          "option": {
+            "frequency": {
+              "label": "检查频率",
+              "value": {
+                "fifteenMinutes": "15 分钟",
+                "fifteenSeconds": "15 秒",
+                "fiveMinutes": "5 分钟",
+                "fourMinutes": "4 分钟",
+                "oneMinute": "1 分钟",
+                "tenMinutes": "10 分钟",
+                "thirtyMinutes": "30 分钟",
+                "thirtySeconds": "30 秒",
+                "threeMinutes": "3 分钟",
+                "twoMinutes": "2 分钟"
+              }
+            }
+          },
+          "title": "检查频率"
+        },
+        "general": {
+          "option": {
+            "container": {
+              "label": "容器名称/ID",
+              "placeholder": "my-app 或 abcd1234"
+            },
+            "host": {
+              "label": "主机",
+              "placeholder": "192.168.1.100 或 example.com"
+            },
+            "name": {
+              "label": "显示名称",
+              "placeholder": "例如 My Website"
+            },
+            "secret": {
+              "label": "授权密钥",
+              "placeholder": "输入您的密钥"
+            },
+            "url": {
+              "label": "URL",
+              "placeholder": "https://www.google.com"
+            },
+            "game": {
+              "label": "丢包监控网址",
+              "placeholder": "localhost"
+            },
+            "port": {
+              "label": "要监控的端口",
+              "placeholder": "80"
+            },
+            "grpcServiceName": {
+              "label": "服务名称",
+              "placeholder": "例如 my.service.v1（留空则检查整体健康状态）"
+            },
+            "wsUrl": {
+              "label": "WebSocket URL",
+              "placeholder": "wss://example.com/socket"
+            }
+          },
+          "title": "常规设置",
+          "description": {
+            "http": "输入要监控的 URL 或 IP（例如 https://example.com/ 或 192.168.1.100），并添加显示在仪表板上的清晰显示名称。",
+            "ping": "输入要 ping 的 IP 地址或主机名（例如.. 192.168.1.100 或 example.com），并添加显示在仪表板上的清晰显示名称。",
+            "port": "输入服务器的 URL 或 IP、端口号和仪表板上显示的清晰显示名称。",
+            "docker": "码输入 Docker 容器名称或 ID。您可以使用容器名称（例如.. my-app）或容器 ID（完整的 64 字符 ID 或短 ID）。",
+            "game": "输入要 ping 的 IP 地址或主机名和端口号（例如.. 192.168.1.100 或 example.com）并选择游戏类型。",
+            "pagespeed": "跟踪网站的页面加载性能、Core Web Vitals 和优化评分。",
+            "grpc": "输入 gRPC 服务器的主机名和端口，可选指定健康检查的服务名称，并添加显示名称。",
+            "websocket": "输入要监控的 WebSocket URL（例如 wss://example.com/socket），并添加显示名称。",
+            "hardware": "监控基础设施的 CPU、内存、磁盘使用率和温度。"
+          }
+        },
+        "ignoreTls": {
+          "description": "配置 HTTPS 连接的 TLS/SSL 证书验证。",
+          "option": {
+            "tls": {
+              "label": "忽略 TLS/SSL 错误"
+            }
+          },
+          "title": "TLS/SSL 设置"
+        },
+        "incidents": {
+          "description": "滑动窗口用于判断监控何时宕机。监控的状态只有在滑动窗口中的检查百分比达到指定值时才会改变。",
+          "option": {
+            "checks": {
+              "label": "滑动窗口中的检查次数"
+            },
+            "percentage": {
+              "label": "滑动窗口中多少百分比的检查失败/成功后监控状态才会改变？"
+            }
+          },
+          "title": "事件"
+        },
+        "notifications": {
+          "description": "选择您要使用的通知渠道",
+          "title": "通知"
+        },
+        "type": {
+          "description": "选择要执行的检查类型",
+          "optionDockerDescription": "使用 Docker 监控容器是否正在运行。",
+          "optionGameDescription": "监控特定游戏服务器是否在线。",
+          "optionGrpcDescription": "使用标准健康检查协议监控 gRPC 服务。",
+          "optionWebSocketDescription": "监控 WebSocket 端点的连接健康状况和响应时间。",
+          "optionHttpDescription": "使用 HTTP(S) 监控您的网站或 API 端点。",
+          "optionPingDescription": "使用 ICMP Ping 监控服务器是否在线。",
+          "optionPortDescription": "监控服务器上的特定端口是否开放。",
+          "title": "类型"
+        },
+        "thresholds": {
+          "title": "告警阈值",
+          "description": "定义此硬件监控触发告警的阈值。",
+          "option": {
+            "cpuThreshold": {
+              "label": "CPU 告警阈值 (%)"
+            },
+            "memoryThreshold": {
+              "label": "内存告警阈值 (%)"
+            },
+            "diskThreshold": {
+              "label": "磁盘告警阈值 (%)"
+            },
+            "tempThreshold": {
+              "label": "温度告警阈值 (°C)"
+            }
+          }
+        },
+        "geoChecks": {
+          "title": "地理分布式检查",
+          "description": "从多个地理位置运行检查，以监控全球可用性和性能。",
+          "option": {
+            "enabled": {
+              "label": "启用地理分布式检查"
+            },
+            "locations": {
+              "label": "位置",
+              "placeholder": "选择位置",
+              "options": {
+                "EU": "欧洲",
+                "NA": "北美洲",
+                "AS": "亚洲",
+                "SA": "南美洲",
+                "AF": "非洲",
+                "OC": "大洋洲"
+              }
+            },
+            "interval": {
+              "label": "检查间隔",
+              "value": {
+                "fiveMinutes": "5 分钟",
+                "tenMinutes": "10 分钟",
+                "fifteenMinutes": "15 分钟",
+                "thirtyMinutes": "30 分钟"
+              }
+            }
+          }
+        },
+        "url": {
+          "title": "在状态页上监控 IP/URL",
+          "description": "在公共状态页上显示监控的 IP 地址或 URL。如果禁用，将仅显示监控名称以保护敏感信息。",
+          "option": {
+            "showURL": {
+              "label": "在状态页上显示 IP/URL",
+              "enabled": "已启用",
+              "disabled": "已禁用"
+            }
+          }
+        },
+        "stats": {
+          "title": "监控历史",
+          "description": "清除您团队的所有监控历史和统计数据。此操作不可逆。",
+          "buttonText": "清除所有统计",
+          "dialog": {
+            "title": "清除所有监控历史？",
+            "description": "这将永久删除您团队的所有监控历史、统计数据和检查数据。此操作无法撤销。",
+            "confirm": "是的，清除所有统计"
+          }
+        },
+        "escalations": {
+          "title": "Escalation Rules",
+          "description": "Automatically notify a channel if an incident remains unresolved after a delay",
+          "addRule": "Add Rule",
+          "option": {
+            "delayMinutes": {
+              "label": "Escalate after (minutes)"
+            },
+            "channel": {
+              "label": "Notification channel",
+              "placeholder": "Select a channel"
+            },
+            "removeRule": {
+              "ariaLabel": "Remove escalation rule"
+            }
+          }
+        }
+      }
+    },
+    "editUser": {
+      "form": {
+        "roles": {
+          "title": "角色",
+          "description": "为用户分配角色。可以选择多个角色。"
+        }
+      },
+      "dialog": {
+        "removeUser": {
+          "title": "移除用户",
+          "content": "确定要将 {{name}} 从您的团队中移除吗？此操作无法撤销。"
+        }
+      }
+    },
+    "incidents": {
+      "dialog": {
+        "resolveIncident": {
+          "title": "解决事件",
+          "option": {
+            "comment": {
+              "label": "备注（可选）",
+              "placeholder": "添加关于解决方案的备注..."
+            }
+          }
+        },
+        "details": {
+          "analysis": "事件分析",
+          "comment": "备注：",
+          "detailsLabel": "详情",
+          "downtime": "停机时间：",
+          "message": "消息：",
+          "monitor": "监控：",
+          "overview": "概览",
+          "resolutionDetails": "解决详情",
+          "resolutionType": "类型：",
+          "resolutionTypes": {
+            "automatic": "自动",
+            "manual": "手动"
+          },
+          "resolve": "解决事件",
+          "resolvedAt": "解决于：",
+          "resolvedBy": "解决人：",
+          "startedAt": "开始于：",
+          "status": "状态：",
+          "statusCode": "状态码：",
+          "timeline": "时间线",
+          "title": "事件详情",
+          "url": "URL："
+        }
+      },
+      "filters": {
+        "allMonitors": "所有监控",
+        "monitor": "监控",
+        "resolutionType": "解决类型",
+        "resolutionTypes": {
+          "manual": "手动",
+          "automatic": "自动",
+          "all": "全部"
+        }
+      },
+      "summaryCard": {
+        "activeIncidents": {
+          "title": "活跃事件",
+          "active_zero": "没有活跃事件",
+          "active_one": "{{count}} 个活跃事件",
+          "active_other": "{{count}} 个活跃事件"
+        },
+        "incidentStats": {
+          "avgResolutionTime": "平均解决时间",
+          "mostAffectedMonitor": "受影响最大的监控",
+          "title": "事件统计",
+          "totalIncidents": "总事件数"
+        },
+        "latestIncidents": {
+          "title": "最新事件"
+        }
+      },
+      "table": {
+        "actions": {
+          "details": "详情",
+          "goToMonitor": "前往监控",
+          "resolveManually": "手动解决"
+        },
+        "activeIncidents": "活跃事件",
+        "headers": {
+          "endTime": "结束时间",
+          "resolutionType": "解决类型",
+          "startTime": "开始时间",
+          "statusCode": "状态码"
+        },
+        "resolvedIncidents": "已解决事件",
+        "status": {
+          "active": "活跃",
+          "resolved": "已解决"
+        }
+      }
+    },
+    "infrastructure": {
+      "charts": {
+        "labels": {
+          "cpu": "CPU 使用率",
+          "disk": "磁盘使用率",
+          "memory": "内存使用率",
+          "netBytesRecv": "{{name}} - 接收字节",
+          "netBytesSent": "{{name}} - 发送字节",
+          "temp": "温度"
+        }
+      },
+      "gauges": {
+        "cpu": {
+          "lowerLabel": "最大频率",
+          "title": "CPU 使用率",
+          "upperLabel": "当前频率"
+        },
+        "disk": {
+          "lowerLabel": "可用",
+          "title": "磁盘 {{idx}} 使用率",
+          "upperLabel": "已使用"
+        },
+        "memory": {
+          "lowerLabel": "可用",
+          "title": "内存使用率",
+          "upperLabel": "已使用"
+        }
+      },
+      "statBoxes": {
+        "avgCpuTemperature": "CPU 平均温度",
+        "cpuFrequency": "CPU 频率",
+        "cpuLogical": "CPU（逻辑核心）",
+        "cpuPhysical": "CPU（物理核心）",
+        "disk": "磁盘",
+        "memory": "内存",
+        "os": "系统"
+      },
+      "table": {
+        "headers": {
+          "cpu": "CPU",
+          "disk": "磁盘",
+          "memory": "内存"
+        }
+      },
+      "tabs": {
+        "labels": {
+          "network": "网络",
+          "overview": "概览"
+        }
+      },
+      "fallback": {
+        "actionButton": "创建监控！",
+        "checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
+        "title": "基础设施监控用于："
+      }
+    },
+    "logs": {
+      "tabs": {
+        "diagnostics": "诊断",
+        "logs": "服务器日志",
+        "queue": "作业队列"
+      },
+      "logLevelSelect": {
+        "label": "日志级别"
+      },
+      "jobQueue": "作业队列",
+      "failedJobs": "失败作业",
+      "noLogs": "未找到日志",
+      "metrics": {
+        "jobs": "作业",
+        "activeJobs": "活跃作业",
+        "failingJobs": "失败中的作业",
+        "totalRuns": "总运行次数",
+        "totalFailures": "总失败次数"
+      },
+      "diagnostics": {
+        "stats": {
+          "eventLoopDelay": "事件循环延迟",
+          "uptime": "正常运行时间",
+          "usedHeapSize": "已使用堆大小",
+          "totalHeapSize": "总堆大小",
+          "osMemoryLimit": "操作系统内存限制"
+        },
+        "gauges": {
+          "heapAllocation": "堆分配",
+          "heapUsage": "堆使用率",
+          "heapUtilization": "堆利用率",
+          "instantCpuUsage": "即时 CPU 使用率",
+          "availableMemoryPercentage": "可用内存百分比",
+          "allocatedPercentage": "已分配百分比",
+          "usedSPercentage": "CPU 1 秒使用百分比",
+          "total": "总计",
+          "used": "已使用"
+        }
+      },
+      "table": {
+        "headers": {
+          "timestamp": "时间戳",
+          "level": "级别",
+          "service": "服务",
+          "method": "方法",
+          "monitorId": "监控 ID",
+          "runCount": "运行次数",
+          "failCount": "失败次数",
+          "lastRunAt": "上次运行于",
+          "lockedAt": "锁定于",
+          "lastFinishedAt": "上次完成于",
+          "lastRunTook": "上次运行耗时",
+          "lastFailedAt": "上次失败于",
+          "failReason": "失败原因"
+        }
+      }
+    },
+    "maintenanceWindow": {
+      "fallback": {
+        "actionButton": "创建维护窗口！",
+        "checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
+        "title": "维护窗口用于："
+      },
+      "table": {
+        "headers": {
+          "nextWindow": "下一个窗口",
+          "repeat": "重复"
+        }
+      },
+      "form": {
+        "general": {
+          "title": "常规设置",
+          "description": "为维护窗口设置名称和重复选项。",
+          "option": {
+            "name": {
+              "label": "名称",
+              "placeholder": "例如 每周维护"
+            },
+            "repeat": {
+              "label": "重复"
+            }
+          }
+        },
+        "startDate": {
+          "title": "开始日期",
+          "description": "选择维护窗口的开始日期。",
+          "option": {
+            "startDate": {
+              "label": "开始日期"
+            }
+          }
+        },
+        "startTime": {
+          "title": "开始时间",
+          "description": "设置维护窗口的开始时间和持续时间。所有时间均为 UTC",
+          "option": {
+            "duration": {
+              "label": "持续时间"
+            },
+            "startTime": {
+              "label": "开始时间"
+            }
+          },
+          "monitors": {
+            "title": "监控",
+            "description": "维护窗口应用的监控对象",
+            "option": {
+              "addMonitors": {
+                "label": "添加监控"
+              }
+            }
+          }
+        }
+      }
+    },
+    "notifications": {
+      "fallback": {
+        "actionButton": "创建渠道",
+        "checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
+        "title": "通知渠道用于："
+      },
+      "form": {
+        "accessToken": {
+          "optionAccessToken": "访问令牌",
+          "placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
+        },
+        "address": {
+          "description": "通知将发送到的地址。",
+          "optionAddress": "地址",
+          "placeholderEmail": "example@example.com",
+          "placeholderWebhook": "https://your-server.com/webhook",
+          "title": "地址"
+        },
+        "homeServer": {
+          "optionHomeServer": "主服务器",
+          "placeholder": "example.com"
+        },
+        "matrix": {
+          "description": "配置 Matrix 主服务器连接以接收通知。",
+          "title": "Matrix 配置"
+        },
+        "notificationName": {
+          "description": "通知渠道的描述性名称",
+          "optionName": "渠道名称",
+          "placeholder": "例如 生产告警",
+          "title": "渠道名称"
+        },
+        "pagerDuty": {
+          "description": "您的 PagerDuty 集成密钥，用于接收告警。",
+          "optionIntegrationKey": "集成密钥",
+          "placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+          "title": "集成密钥"
+        },
+        "roomId": {
+          "optionRoomId": "房间 ID",
+          "placeholder": "!abcdefg:matrix.org"
+        },
+        "type": {
+          "description": "选择要创建的通知渠道类型。",
+          "optionType": "类型",
+          "title": "渠道类型"
+        },
+        "telegram": {
+          "title": "Telegram 配置",
+          "description": "要启用 Telegram 通知，请使用 BotFather创建一个 Telegram 机器人。然后，获取 API 令牌和聊天 ID 并在此处填写。",
+          "optionBotToken": "机器人令牌",
+          "placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
+          "optionChatId": "聊天 ID",
+          "placeholderChatId": "-1001234567890"
+        }
+      },
+      "table": {
+        "headers": {
+          "destination": "目标"
+        }
+      }
+    },
+    "pageSpeed": {
+      "charts": {
+        "common": {
+          "cls": "累积布局偏移 (CLS)",
+          "fcp": "首次内容绘制 (FCP)",
+          "lcp": "最大内容绘制 (LCP)",
+          "si": "速度指数 (SI)",
+          "tbt": "总阻塞时间 (TBT)"
+        },
+        "legend": {
+          "title": "PageSpeed 报告",
+          "weight": "权重"
+        },
+        "pie": {
+          "title": "性能报告"
+        }
+      },
+      "table": {
+        "headers": {
+          "pageSpeedScore": "PageSpeed 评分"
+        }
+      },
+      "fallback": {
+        "actionButton": "创建监控！",
+        "checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
+        "title": "PageSpeed 监控用于："
+      }
+    },
+    "settings": {
+      "form": {
+        "timezone": {
+          "title": "显示时区",
+          "description": "选择应用程序中用于显示日期和时间的时区。",
+          "option": {
+            "timezone": {
+              "label": "显示时区"
+            }
+          }
+        },
+        "ui": {
+          "title": "外观",
+          "description": "在浅色和深色模式之间切换、更改语言或自定义图表显示类型。",
+          "option": {
+            "theme": {
+              "label": "主题模式",
+              "light": "浅色",
+              "dark": "深色"
+            },
+            "language": {
+              "label": "语言"
+            },
+            "chartType": {
+              "label": "图表类型",
+              "histogram": "柱状图",
+              "heatmap": "热力图"
+            }
+          }
+        },
+        "pagespeed": {
+          "title": "Google PageSpeed API 密钥",
+          "description": "输入您的 Google PageSpeed API 密钥以启用 Google PageSpeed 监控。点击重置以更新密钥。",
+          "option": {
+            "apiKey": {
+              "label": "PageSpeed API 密钥",
+              "labelSet": "API 密钥已设置。点击重置以更改。",
+              "placeholder": "输入您的 Google PageSpeed API 密钥"
+            }
+          }
+        },
+        "url": {
+          "title": "在状态页上监控 IP/URL",
+          "description": "在公共状态页上显示监控的 IP 地址或 URL。如果禁用，将仅显示监控名称以保护敏感信息。",
+          "option": {
+            "showURL": {
+              "label": "在状态页上显示 IP/URL",
+              "enabled": "已启用",
+              "disabled": "已禁用"
+            }
+          }
+        },
+        "stats": {
+          "title": "监控历史",
+          "description": "清除您团队的所有监控历史和统计数据。此操作不可逆。",
+          "option": {
+            "clear": {
+              "label": "清除所有统计数据。此操作不可逆。"
+            }
+          },
+          "dialog": {
+            "title": "清除所有监控历史？",
+            "description": "此操作无法撤销"
+          }
+        },
+        "retention": {
+          "title": "检查数据保留",
+          "description": "设置检查数据在自动清理前保留多长时间。",
+          "option": {
+            "days": {
+              "label": "保留期限（天）",
+              "unlimited": "无限制"
+            }
+          }
+        },
+        "thresholds": {
+          "title": "全局阈值",
+          "description": "设置基础设施监控的全局 CPU、内存、磁盘和温度阈值。除非被覆盖，否则适用于所有硬件监控。",
+          "option": {
+            "cpu": {
+              "label": "CPU 阈值 (%)",
+              "placeholder": "1 - 100"
+            },
+            "memory": {
+              "label": "内存阈值 (%)",
+              "placeholder": "1 - 100"
+            },
+            "disk": {
+              "label": "磁盘阈值 (%)",
+              "placeholder": "1 - 100"
+            },
+            "temperature": {
+              "label": "温度阈值 (°C)",
+              "placeholder": "1 - 150"
+            }
+          }
+        },
+        "email": {
+          "title": "邮件设置",
+          "description": "配置系统的邮件设置。用于发送通知和告警。",
+          "descriptionTransport": "这将为 NodeMailer 构建 SMTP 传输",
+          "descriptionTransportLink": "在此查看规范",
+          "option": {
+            "host": {
+              "label": "邮件主机 - 要连接的主机名或 IP 地址",
+              "placeholder": "smtp.gmail.com"
+            },
+            "port": {
+              "label": "邮件端口 - 要连接的端口",
+              "placeholder": "587"
+            },
+            "address": {
+              "label": "邮箱地址 - 用于身份验证",
+              "placeholder": "you@example.com"
+            },
+            "user": {
+              "label": "邮件用户 - 用于身份验证的用户名，如果指定则覆盖邮箱地址",
+              "placeholder": "如不需要请留空"
+            },
+            "password": {
+              "label": "邮件密码 - 用于身份验证的密码",
+              "labelSet": "密码已设置。点击重置以更改。",
+              "placeholder": "输入您的密码"
+            },
+            "tlsServername": {
+              "label": "TLS 服务器名 - 当主机为 IP 时用于 TLS 验证的可选主机名",
+              "placeholder": "example.com"
+            },
+            "connectionHost": {
+              "label": "邮件连接主机 - 在 HELO/EHLO 问候中使用的主机名",
+              "placeholder": "localhost"
+            },
+            "secure": {
+              "label": "使用 SSL（推荐）：使用 SSL/TLS 加密连接"
+            },
+            "pool": {
+              "label": "启用连接池：重用现有连接以提高性能"
+            },
+            "ignoreTLS": {
+              "label": "禁用 STARTTLS：即使服务器支持也不使用 TLS"
+            },
+            "requireTLS": {
+              "label": "强制 STARTTLS：要求 TLS 升级，不支持则失败"
+            },
+            "rejectUnauthorized": {
+              "label": "拒绝无效证书：拒绝自签名或不受信任证书的连接"
+            }
+          }
+        },
+        "demoMonitors": {
+          "title": "演示监控",
+          "description": "添加用于演示目的的示例监控。"
+        },
+        "removeMonitors": {
+          "title": "系统重置",
+          "description": "从系统中移除所有监控。",
+          "dialog": {
+            "title": "移除所有监控？",
+            "description": "此操作无法撤销。"
+          }
+        },
+        "exportMonitors": {
+          "title": "导出监控"
+        },
+        "importExportMonitors": {
+          "title": "导入/导出监控",
+          "description": "将监控数据导入或导出为 JSON 文件，用于备份或迁移。"
+        },
+        "about": {
+          "title": "关于",
+          "developedBy": "由 Bluewave Labs 开发"
+        },
+        "validation": {
+          "errorMessage": "请修复以下验证错误："
+        }
+      }
+    },
+    "statusPages": {
+      "deleteSuccess": "状态页已成功删除",
+      "fallback": {
+        "title": "状态页用于：",
+        "checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
+        "actionButton": "创建状态页！"
+      },
+      "monitorsList": {
+        "chartTypeHeatmap": "热力图",
+        "chartTypeHistogram": "柱状图",
+        "noData": "无可用数据",
+        "infrastructure": {
+          "title": "基础设施",
+          "cpu": "CPU",
+          "memory": "RAM",
+          "memoryText": "内存",
+          "disk": "磁盘",
+          "usage": "使用率",
+          "used": "已使用",
+          "total": "总计"
+        },
+        "uptime": {
+          "title": "正常运行时间",
+          "responseTime": "响应时间"
+        }
+      },
+      "statusBar": {
+        "allDown": "所有系统已宕机",
+        "allUp": "所有系统运行正常",
+        "degraded": "部分系统正在出现问题",
+        "unknown": "无法确定系统状态"
+      },
+      "table": {
+        "headers": {
+          "name": "状态页名称",
+          "url": "公共 URL"
+        },
+        "published": "已发布",
+        "unpublished": "未发布"
+      },
+      "title": "状态页",
+      "details": {
+        "empty": {
+          "title": "这里还没有内容",
+          "addMonitor": "添加监控以开始"
+        }
+      },
+      "form": {
+        "access": {
+          "title": "访问",
+          "description": "如果您的状态页已准备就绪，可以将其标记为已发布。",
+          "option": {
+            "published": {
+              "name": "已发布且公众可见"
+            }
+          }
+        },
+        "basicInfo": {
+          "title": "基本信息",
+          "description": "定义公司名称和状态页指向的子域名。",
+          "option": {
+            "name": {
+              "label": "公司名称",
+              "placeholder": "Acme Inc."
+            },
+            "url": {
+              "label": "您的状态页地址",
+              "placeholder": "my-status-page"
+            }
+          }
+        },
+        "monitors": {
+          "title": "监控",
+          "description": "选择要在状态页上显示的监控。",
+          "noMonitors": "未选择监控",
+          "option": {
+            "monitors": {
+              "label": "选择监控",
+              "placeholder": "搜索并选择监控..."
+            }
+          }
+        },
+        "timezone": {
+          "title": "时区",
+          "description": "选择状态页显示的时区。",
+          "option": {
+            "timezone": {
+              "label": "时区",
+              "placeholder": "选择时区..."
+            }
+          }
+        },
+        "appearance": {
+          "title": "外观",
+          "description": "定义公共状态页的默认外观。",
+          "option": {
+            "logo": {
+              "label": "Logo"
+            },
+            "color": {
+              "label": "品牌颜色"
+            }
+          }
+        },
+        "features": {
+          "title": "功能",
+          "description": "配置状态页上显示的信息。",
+          "option": {
+            "showCharts": {
+              "label": "显示响应时间图表"
+            },
+            "showUptimePercentage": {
+              "label": "显示正常运行时间百分比"
+            },
+            "showAdminLoginLink": {
+              "label": "显示管理员登录链接"
+            },
+            "showInfrastructure": {
+              "label": "显示基础设施指标"
+            }
+          }
+        }
+      }
+    },
+    "uptime": {
+      "filters": {
+        "search": {
+          "placeholder": "搜索监控..."
+        }
+      },
+      "table": {
+        "headers": {
+          "responseTime": "响应时间"
+        }
+      },
+      "fallback": {
+        "actionButton": "创建监控！",
+        "checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
+        "title": "正常运行时间监控用于："
+      }
+    }
+  }
 }

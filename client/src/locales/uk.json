@@ -1,1305 +1,1322 @@
 {
-	"common": {
-		"auth": {
-			"roles": {
-				"admin": "Адміністратор",
-				"demo": "Демо",
-				"superadmin": "Суперадміністратор",
-				"user": "Користувач"
-			}
-		},
-		"alerts": {
-			"pageSpeedApiKey": {
-				"content": "Увага: Ви ще не додали ключ API Google PageSpeed. Перейдіть у <settingsLink>Налаштування</settingsLink>, щоб додати його. Без нього моніторинг PageSpeed не працюватиме."
-			}
-		},
-		"appName": "",
-		"breadcrumbs": {
-			"details": "Деталі",
-			"home": "Головна"
-		},
-		"buttons": {
-			"addMember": "Додати учасника",
-			"cancel": "Скасувати",
-			"close": "Закрити",
-			"configure": "Налаштувати",
-			"confirm": "Підтвердити",
-			"create": "Створити",
-			"delete": "Видалити",
-			"generateToken": "Згенерувати токен",
-			"incidents": "Інциденти",
-			"inviteMember": "Запросити учасника",
-			"pause": "Призупинити",
-			"resume": "Відновити",
-			"save": "",
-			"sendInvite": "Надіслати запрошення",
-			"test": "Тест",
-			"testNotifications": "Тестові сповіщення",
-			"toggleTheme": "",
-			"flushQueue": "Очистити чергу",
-			"notFound": "Перейти на головну панель",
-			"resetPassword": "",
-			"reset": "",
-			"clear": "Очистити",
-			"addDemo": "Додати демо-монітори",
-			"removeMonitors": "Видалити монітори",
-			"sendTestEmail": "Надіслати тестовий лист",
-			"exportToJSON": "Експортувати в JSON",
-			"importFromJSON": "Імпортувати з JSON",
-			"clearFilters": "Очистити фільтри",
-			"removeUser": "Видалити користувача"
-		},
-		"charts": {
-			"labels": {
-				"averageResponseTime": "Середній час відповіді",
-				"downtime": "Час простою",
-				"high": "",
-				"low": "",
-				"uptime": "Час роботи"
-			},
-			"histogram": {
-				"avg": "Сер: {{value}} мс",
-				"max": "Макс: {{value}} мс"
-			}
-		},
-		"dialogs": {
-			"delete": {
-				"description": "Цю дію не можна скасувати.",
-				"title": "Ви впевнені, що хочете це видалити?"
-			}
-		},
-		"labels": {
-			"active": "Активний",
-			"paused": "призупинено",
-			"na": "Н/Д",
-			"resolved": "Вирішено",
-			"responseTime": "Час відповіді"
-		},
-		"form": {
-			"role": {
-				"option": {
-					"role": {
-						"label": "Ролі"
-					}
-				}
-			},
-			"name": {
-				"option": {
-					"firstName": {
-						"label": "",
-						"placeholder": ""
-					},
-					"lastName": {
-						"label": "",
-						"placeholder": ""
-					}
-				}
-			},
-			"email": {
-				"option": {
-					"email": {
-						"label": "Електронна пошта",
-						"placeholder": "you@example.com"
-					}
-				}
-			}
-		},
-		"table": {
-			"empty": "Тут нічого немає",
-			"headers": {
-				"actions": "",
-				"dateTime": "Дата і час",
-				"message": "Повідомлення",
-				"monitor": "Монітор",
-				"monitorId": "ID монітора",
-				"name": "Ім'я",
-				"status": "Статус",
-				"type": "",
-				"url": "URL",
-				"interval": "Інтервал",
-				"active": "Активний",
-				"responseTime": "Час відповіді"
-			}
-		}
-	},
-	"components": {
-		"imageUpload": {
-			"clickToUpload": "Натисніть, щоб завантажити",
-			"dragAndDrop": "",
-			"supportedFormats": "",
-			"maxSize": "",
-			"orDragAndDrop": "або перетягніть файл",
-			"errors": {
-				"invalidFileSize": "",
-				"invalidFileFormat": ""
-			}
-		},
-		"headerStatusPageControls": {
-			"publicLink": ""
-		},
-		"headerTimeRange": {
-			"labels": {
-				"day": "День",
-				"month": "Місяць",
-				"recent": "Нещодавно",
-				"week": "Тиждень"
-			},
-			"description": {
-				"recent": "Показано статистику за останні 2 години.",
-				"day": "Показано статистику за останні 24 години.",
-				"week": "Показано статистику за останні 7 днів.",
-				"month": "Показано статистику за останні 30 днів."
-			}
-		},
-		"offlineBanner": {
-			"serverUnreachable": "Не вдається з'єднатися з сервером",
-			"retry": "Повторити",
-			"retrying": "Повторна спроба...",
-			"reconnected": ""
-		},
-		"sidebar": {
-			"menu": {
-				"uptime": "",
-				"pagespeed": "",
-				"infrastructure": "",
-				"notifications": "",
-				"checks": "Перевірки",
-				"incidents": "",
-				"statusPages": "",
-				"maintenance": "",
-				"logs": "",
-				"settings": ""
-			},
-			"bottomMenu": {
-				"support": "",
-				"discussions": "",
-				"docs": "",
-				"changelog": ""
-			},
-			"accountMenu": {
-				"profile": "Профіль",
-				"password": "Пароль",
-				"team": "Команда"
-			},
-			"starPrompt": {
-				"title": "Оцінити Checkmate",
-				"description": "Переглядайте останні оновлення та допомагайте розвивати спільноту на GitHub"
-			},
-			"authFooter": {
-				"navControls": "",
-				"logOut": "",
-				"roles": {
-					"superAdmin": "Суперадміністратор",
-					"admin": "Адміністратор",
-					"user": "Користувач",
-					"demoUser": ""
-				}
-			}
-		},
-		"starPrompt": {
-			"title": "Оцінити Checkmate",
-			"description": "Переглядайте останні оновлення та допомагайте розвивати спільноту на GitHub"
-		}
-	},
-	"pages": {
-		"notFound": {
-			"title": "Ой ні! Ви впустили суші!",
-			"subtitle": "Або URL не існує, або у Вас немає доступу до нього."
-		},
-		"account": {
-			"tabs": {
-				"profile": "Профіль",
-				"password": "Пароль",
-				"team": "Команда"
-			},
-			"form": {
-				"name": {
-					"title": "Ім'я",
-					"description": "Оновіть Вашу особисту інформацію"
-				},
-				"photo": {
-					"title": "Фото профілю",
-					"description": "Завантажте фото профілю"
-				},
-				"currentPassword": {
-					"title": "Поточний пароль",
-					"description": "Введіть поточний пароль для підтвердження Вашої особи",
-					"option": {
-						"label": "Поточний пароль",
-						"placeholder": "Введіть поточний пароль"
-					}
-				},
-				"newPassword": {
-					"title": "Новий пароль",
-					"description": "Оберіть надійний пароль довжиною не менше 8 символів",
-					"option": {
-						"newPassword": {
-							"label": "Новий пароль",
-							"placeholder": "Введіть новий пароль"
-						},
-						"confirm": {
-							"label": "Підтвердити пароль",
-							"placeholder": "Підтвердити новий пароль"
-						}
-					}
-				},
-				"deleteAccount": {
-					"title": "Видалити обліковий запис",
-					"description": "Ця дія є остаточною і не може бути скасована"
-				}
-			},
-			"team": {
-				"filter": {
-					"placeholder": "Фільтрувати за роллю",
-					"all": "",
-					"admin": "Адміністратор",
-					"member": ""
-				},
-				"table": {
-					"headers": {
-						"email": "Електронна пошта",
-						"role": "",
-						"created": ""
-					}
-				},
-				"addMember": {
-					"title": "Зареєструвати нового учасника команди",
-					"description": "Створіть новий обліковий запис. Безпечно передайте облікові дані після створення."
-				},
-				"invite": {
-					"title": "Запросити учасника команди",
-					"description": "Надіслати запрошення приєднатися до Вашої команди",
-					"email": {
-						"label": "Адреса електронної пошти",
-						"placeholder": "Введіть адресу електронної пошти"
-					},
-					"role": {
-						"label": "Роль",
-						"placeholder": "Оберіть роль"
-					},
-					"linkLabel": "Посилання для запрошення"
-				}
-			}
-		},
-		"auth": {
-			"common": {
-				"passwordRules": {
-					"length": {
-						"beginning": "",
-						"highlighted": ""
-					},
-					"lowercase": {
-						"beginning": "",
-						"highlighted": ""
-					},
-					"match": {
-						"beginning": "",
-						"highlighted": ""
-					},
-					"number": {
-						"beginning": "",
-						"highlighted": ""
-					},
-					"special": {
-						"beginning": "",
-						"highlighted": ""
-					},
-					"uppercase": {
-						"beginning": "",
-						"highlighted": ""
-					}
-				},
-				"form": {
-					"option": {
-						"email": {
-							"label": "Електронна пошта",
-							"placeholder": "me@example.com"
-						},
-						"password": {
-							"label": "Пароль",
-							"placeholder": "********"
-						},
-						"confirmPassword": {
-							"label": "Підтвердити пароль"
-						}
-					}
-				}
-			},
-			"login": {
-				"title": "Ласкаво просимо до Checkmate!",
-				"subtitle": "Увійдіть, щоб продовжити",
-				"submit": "Увійти",
-				"links": {
-					"forgotPassword": {
-						"text": "Забули пароль?",
-						"linkText": "Скинути пароль"
-					},
-					"register": {
-						"text": "Не маєте облікового запису?",
-						"linkText": "Зареєструватися тут"
-					}
-				}
-			},
-			"register": {
-				"title": "Ласкаво просимо до Checkmate!",
-				"subtitle": "Зареєструйтесь, щоб розпочати",
-				"submit": "Зареєструватися"
-			},
-			"forgotPassword": {
-				"title": "Забули пароль?",
-				"subtitle": "Не хвилюйтесь, ми надішлемо Вам інструкції для скидання.",
-				"submit": "Запит на відновлення",
-				"links": {
-					"login": {
-						"text": "Повернутися до",
-						"linkText": "входу"
-					}
-				}
-			},
-			"setNewPassword": {
-				"title": "Скинути пароль",
-				"subtitle": "Ваш новий пароль повинен відрізнятися від раніше використаних паролів."
-			}
-		},
-		"checks": {
-			"selects": {
-				"monitor": {
-					"all": "Усі монітори"
-				},
-				"status": {
-					"all": "Усі",
-					"down": "Недоступний",
-					"up": "Доступний"
-				}
-			},
-			"table": {
-				"empty": "Немає невдалих перевірок за цей період",
-				"headers": {
-					"statusCode": "Код статусу",
-					"location": "Розташування"
-				}
-			}
-		},
-		"common": {
-			"monitors": {
-				"actions": {
-					"configure": "Налаштувати",
-					"delete": "Видалити",
-					"generateToken": "Згенерувати токен",
-					"details": "Деталі",
-					"incidents": "Інциденти",
-					"inviteMember": "Запросити учасника",
-					"openSite": "Відкрити сайт",
-					"pause": "Призупинити",
-					"resume": "Відновити"
-				},
-				"statBoxes": {
-					"activeFor": "Активний протягом",
-					"certificateExpiry": "Закінчення сертифіката",
-					"lastCheck": "Остання перевірка",
-					"lastResponseTime": "Останній час відповіді"
-				},
-				"status": {
-					"down": "недоступний",
-					"breached": "поріг перевищено",
-					"initializing": "ініціалізація",
-					"maintenance": "обслуговування",
-					"paused": "призупинено",
-					"total": "усього",
-					"up": "доступний"
-				},
-				"monitorTypes": {
-					"optionDocker": "Docker",
-					"optionGame": "Гра",
-					"optionHttp": "HTTP(S)",
-					"optionPing": "Ping",
-					"optionPort": "Порт",
-					"optionPagespeed": "PageSpeed",
-					"optionHardware": "Інфраструктура",
-					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
-				}
-			}
-		},
-		"createMonitor": {
-			"form": {
-				"advanced": {
-					"description": "Додаткові налаштування для складних випадків",
-					"option": {
-						"advancedMatching": {
-							"label": "Використовувати розширене зіставлення"
-						},
-						"expectedValue": {
-							"label": "Очікуване значення"
-						},
-						"jsonPath": {
-							"description": "Цей вираз буде обчислено для JSON-даних відповіді, а результат буде зіставлено з очікуваним значенням. Дивіться документацію мови запитів на <jmesLink>jmespath.org</jmesLink>.",
-							"label": "Вираз JSONPath"
-						},
-						"matchMethod": {
-							"label": "Метод зіставлення",
-							"equal": "Дорівнює",
-							"include": "Містить",
-							"regex": "Regex"
-						}
-					},
-					"title": "Розширені налаштування"
-				},
-				"frequency": {
-					"description": "Як часто Ви хочете перевіряти стан цього монітора?",
-					"option": {
-						"frequency": {
-							"label": "Частота перевірки",
-							"value": {
-								"fifteenMinutes": "15 хвилин",
-								"fifteenSeconds": "15 секунд",
-								"fiveMinutes": "5 хвилин",
-								"fourMinutes": "4 хвилини",
-								"oneMinute": "1 хвилина",
-								"tenMinutes": "10 хвилин",
-								"thirtyMinutes": "30 хвилин",
-								"thirtySeconds": "30 секунд",
-								"threeMinutes": "3 хвилини",
-								"twoMinutes": "2 хвилини"
-							}
-						}
-					},
-					"title": "Частота перевірки"
-				},
-				"general": {
-					"option": {
-						"container": {
-							"label": "Ім'я/ID контейнера",
-							"placeholder": "my-app або abcd1234"
-						},
-						"host": {
-							"label": "Хост",
-							"placeholder": "192.168.1.100 або example.com"
-						},
-						"name": {
-							"label": "Відображуване ім'я",
-							"placeholder": "напр. Мій сайт"
-						},
-						"secret": {
-							"label": "Секрет авторизації",
-							"placeholder": "Введіть Ваш секретний ключ"
-						},
-						"url": {
-							"label": "URL",
-							"placeholder": "https://www.google.com"
-						},
-						"game": {
-							"label": "Обрати гру",
-							"placeholder": "Оберіть гру"
-						},
-						"port": {
-							"label": "Порт для моніторингу",
-							"placeholder": "80"
-						},
-						"grpcServiceName": {
-							"label": "Назва сервісу",
-							"placeholder": "напр. my.service.v1 (залиште порожнім для загальної перевірки)"
-						},
-						"wsUrl": {
-							"label": "WebSocket URL",
-							"placeholder": "wss://example.com/socket"
-						}
-					},
-					"title": "Загальні налаштування",
-					"description": {
-						"http": "Введіть URL або IP для моніторингу (напр., https://example.com/ або 192.168.1.100) та додайте зрозуміле ім'я для відображення на панелі.",
-						"ping": "",
-						"port": "",
-						"docker": "",
-						"game": "",
-						"pagespeed": "Відстежуйте швидкість завантаження сторінки, показники Core Web Vitals та оцінки оптимізації Вашого сайту.",
-						"grpc": "Введіть ім'я хоста та порт gRPC-сервера, за бажанням вкажіть назву сервісу для перевірки стану та додайте відображуване ім'я.",
-						"websocket": "Введіть WebSocket URL для моніторингу (напр., wss://example.com/socket) та додайте відображуване ім'я.",
-						"hardware": "Моніторинг CPU, пам'яті, використання диска та температури Вашої інфраструктури."
-					}
-				},
-				"ignoreTls": {
-					"description": "Налаштуйте перевірку сертифікатів TLS/SSL для HTTPS-з'єднань.",
-					"option": {
-						"tls": {
-							"label": "Ігнорувати помилки TLS/SSL"
-						}
-					},
-					"title": "Налаштування TLS/SSL"
-				},
-				"incidents": {
-					"description": "Ковзне вікно використовується для визначення моменту, коли монітор стає недоступним. Статус монітора зміниться лише тоді, коли відсоток перевірок у ковзному вікні досягне вказаного значення.",
-					"option": {
-						"checks": {
-							"label": "Кількість перевірок у ковзному вікні"
-						},
-						"percentage": {
-							"label": "Який відсоток перевірок у ковзному вікні має зазнати невдачі/успіху перед зміною статусу монітора?"
-						}
-					},
-					"title": "Інциденти"
-				},
-				"notifications": {
-					"description": "Оберіть канали сповіщень, які Ви хочете використовувати",
-					"title": "Сповіщення"
-				},
-				"type": {
-					"description": "Оберіть тип перевірки",
-					"optionDockerDescription": "Використовуйте Docker для моніторингу роботи контейнера.",
-					"optionGameDescription": "Моніторинг доступності конкретного ігрового сервера.",
-					"optionGrpcDescription": "Моніторинг gRPC-сервісів за допомогою стандартного протоколу перевірки стану.",
-					"optionWebSocketDescription": "Моніторинг WebSocket-ендпоінтів на предмет стану з'єднання та часу відповіді.",
-					"optionHttpDescription": "Використовуйте HTTP(S) для моніторингу Вашого сайту або API-ендпоінту.",
-					"optionPingDescription": "Використовуйте ICMP Ping для моніторингу доступності сервера.",
-					"optionPortDescription": "Моніторинг відкритості конкретного порту на сервері.",
-					"title": "Тип"
-				},
-				"thresholds": {
-					"title": "Порогові значення сповіщень",
-					"description": "Визначте порогові значення, при яких мають спрацьовувати сповіщення для цього монітора обладнання.",
-					"option": {
-						"cpuThreshold": {
-							"label": "Поріг сповіщення CPU (%)"
-						},
-						"memoryThreshold": {
-							"label": "Поріг сповіщення пам'яті (%)"
-						},
-						"diskThreshold": {
-							"label": "Поріг сповіщення диска (%)"
-						},
-						"tempThreshold": {
-							"label": "Поріг сповіщення температури (°C)"
-						}
-					}
-				},
-				"geoChecks": {
-					"title": "Геоперевірки",
-					"description": "Запускайте перевірки з різних географічних локацій для моніторингу глобальної доступності та продуктивності.",
-					"option": {
-						"enabled": {
-							"label": "Увімкнути геоперевірки"
-						},
-						"locations": {
-							"label": "Розташування",
-							"placeholder": "Оберіть розташування",
-							"options": {
-								"EU": "Європа",
-								"NA": "Північна Америка",
-								"AS": "Азія",
-								"SA": "Південна Америка",
-								"AF": "Африка",
-								"OC": "Океанія"
-							}
-						},
-						"interval": {
-							"label": "Інтервал перевірки",
-							"value": {
-								"fiveMinutes": "5 хвилин",
-								"tenMinutes": "10 хвилин",
-								"fifteenMinutes": "15 хвилин",
-								"thirtyMinutes": "30 хвилин"
-							}
-						}
-					}
-				},
-				"url": {
-					"title": "IP/URL монітора на сторінці статусу",
-					"description": "Відображати IP-адресу або URL монітора на публічній сторінці статусу. Якщо вимкнено, буде показано лише назву монітора для захисту конфіденційної інформації.",
-					"option": {
-						"showURL": {
-							"label": "Відображати IP/URL на сторінці статусу",
-							"enabled": "Увімкнено",
-							"disabled": "Вимкнено"
-						}
-					}
-				},
-				"stats": {
-					"title": "Історія моніторингу",
-					"description": "Очистити всю історію моніторингу та статистику Вашої команди. Ця дія незворотна.",
-					"buttonText": "Очистити всю статистику",
-					"dialog": {
-						"title": "Очистити всю історію моніторингу?",
-						"description": "Це назавжди видалить всю історію моніторингу, статистику та дані перевірок Вашої команди. Цю дію не можна скасувати.",
-						"confirm": "Так, очистити всю статистику"
-					}
-				}
-			}
-		},
-		"editUser": {
-			"form": {
-				"roles": {
-					"title": "Ролі",
-					"description": "Призначте ролі користувачу. Можна обрати кілька ролей."
-				}
-			},
-			"dialog": {
-				"removeUser": {
-					"title": "Видалити користувача",
-					"content": "Ви впевнені, що хочете видалити {{name}} з Вашої команди? Цю дію не можна скасувати."
-				}
-			}
-		},
-		"incidents": {
-			"dialog": {
-				"resolveIncident": {
-					"title": "Вирішити інцидент",
-					"option": {
-						"comment": {
-							"label": "Коментар (необов'язково)",
-							"placeholder": "Додайте коментар щодо вирішення..."
-						}
-					}
-				},
-				"details": {
-					"analysis": "Аналіз інциденту",
-					"comment": "Коментар:",
-					"detailsLabel": "Деталі",
-					"downtime": "Час простою:",
-					"message": "Повідомлення:",
-					"monitor": "Монітор:",
-					"overview": "Огляд",
-					"resolutionDetails": "Деталі вирішення",
-					"resolutionType": "Тип:",
-					"resolutionTypes": {
-						"automatic": "Автоматично",
-						"manual": "Вручну"
-					},
-					"resolve": "Вирішити інцидент",
-					"resolvedAt": "Вирішено о:",
-					"resolvedBy": "Вирішив:",
-					"startedAt": "Початок:",
-					"status": "Статус:",
-					"statusCode": "Код статусу:",
-					"timeline": "Хронологія",
-					"title": "Деталі інциденту",
-					"url": "URL:"
-				}
-			},
-			"filters": {
-				"allMonitors": "Усі монітори",
-				"monitor": "Монітор",
-				"resolutionType": "Тип вирішення",
-				"resolutionTypes": {
-					"manual": "Вручну",
-					"automatic": "Автоматично",
-					"all": "Усі"
-				}
-			},
-			"summaryCard": {
-				"activeIncidents": {
-					"title": "Активні інциденти",
-					"active_zero": "Немає активних інцидентів",
-					"active_one": "{{count}} активний інцидент",
-					"active_other": "{{count}} активних інцидентів"
-				},
-				"incidentStats": {
-					"avgResolutionTime": "Середній час вирішення",
-					"mostAffectedMonitor": "Найвразливіший монітор",
-					"title": "Статистика інцидентів",
-					"totalIncidents": "Усього інцидентів"
-				},
-				"latestIncidents": {
-					"title": "Останні інциденти"
-				}
-			},
-			"table": {
-				"actions": {
-					"details": "Деталі",
-					"goToMonitor": "Перейти до монітора",
-					"resolveManually": "Вирішити вручну"
-				},
-				"activeIncidents": "Активні інциденти",
-				"headers": {
-					"endTime": "Час завершення",
-					"resolutionType": "Тип вирішення",
-					"startTime": "",
-					"statusCode": "Код статусу"
-				},
-				"resolvedIncidents": "Вирішені інциденти",
-				"status": {
-					"active": "Активний",
-					"resolved": "Вирішено"
-				}
-			}
-		},
-		"infrastructure": {
-			"charts": {
-				"labels": {
-					"cpu": "Використання CPU",
-					"disk": "Використання диска",
-					"memory": "Використання пам'яті",
-					"netBytesRecv": "{{name}} - Отримано байтів",
-					"netBytesSent": "{{name}} - Надіслано байтів",
-					"temp": "Темп."
-				}
-			},
-			"gauges": {
-				"cpu": {
-					"lowerLabel": "Макс. частота",
-					"title": "Використання CPU",
-					"upperLabel": "Поточна частота"
-				},
-				"disk": {
-					"lowerLabel": "Вільно",
-					"title": "Використання диска {{idx}}",
-					"upperLabel": "Використано"
-				},
-				"memory": {
-					"lowerLabel": "Вільно",
-					"title": "Використання пам'яті",
-					"upperLabel": "Використано"
-				}
-			},
-			"statBoxes": {
-				"avgCpuTemperature": "",
-				"cpuFrequency": "",
-				"cpuLogical": "",
-				"cpuPhysical": "",
-				"disk": "Диск",
-				"memory": "Пам'ять",
-				"os": ""
-			},
-			"table": {
-				"headers": {
-					"cpu": "CPU",
-					"disk": "Диск",
-					"memory": "Пам'ять"
-				}
-			},
-			"tabs": {
-				"labels": {
-					"network": "Мережа",
-					"overview": "Огляд"
-				}
-			},
-			"fallback": {
-				"actionButton": "Створити монітор!",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "Монітор інфраструктури використовується для:"
-			}
-		},
-		"logs": {
-			"tabs": {
-				"diagnostics": "Діагностика",
-				"logs": "",
-				"queue": ""
-			},
-			"logLevelSelect": {
-				"label": "Рівень логів"
-			},
-			"jobQueue": "Черга завдань",
-			"failedJobs": "Невдалі завдання",
-			"noLogs": "Логи не знайдено",
-			"metrics": {
-				"jobs": "Завдання",
-				"activeJobs": "Активні завдання",
-				"failingJobs": "Невдалі завдання",
-				"totalRuns": "Усього запусків",
-				"totalFailures": "Усього помилок"
-			},
-			"diagnostics": {
-				"stats": {
-					"eventLoopDelay": "Затримка циклу подій",
-					"uptime": "Час роботи",
-					"usedHeapSize": "Використаний розмір купи",
-					"totalHeapSize": "Загальний розмір купи",
-					"osMemoryLimit": "Обмеження пам'яті ОС"
-				},
-				"gauges": {
-					"heapAllocation": "Виділення купи",
-					"heapUsage": "Використання купи",
-					"heapUtilization": "Утилізація купи",
-					"instantCpuUsage": "Миттєве використання CPU",
-					"availableMemoryPercentage": "% доступної пам'яті",
-					"allocatedPercentage": "% виділено",
-					"usedSPercentage": "% від 1с використано CPU",
-					"total": "Усього",
-					"used": "Використано"
-				}
-			},
-			"table": {
-				"headers": {
-					"timestamp": "Мітка часу",
-					"level": "Рівень",
-					"service": "Сервіс",
-					"method": "Метод",
-					"monitorId": "ID монітора",
-					"runCount": "Кількість запусків",
-					"failCount": "Кількість помилок",
-					"lastRunAt": "Останній запуск",
-					"lockedAt": "Заблоковано о",
-					"lastFinishedAt": "Останнє завершення",
-					"lastRunTook": "Останній запуск тривав",
-					"lastFailedAt": "Остання помилка",
-					"failReason": "Причина помилки"
-				}
-			}
-		},
-		"maintenanceWindow": {
-			"fallback": {
-				"actionButton": "Створити вікно обслуговування!",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "Вікно обслуговування використовується для:"
-			},
-			"table": {
-				"headers": {
-					"nextWindow": "",
-					"repeat": ""
-				}
-			},
-			"form": {
-				"general": {
-					"title": "Загальні налаштування",
-					"description": "Встановіть назву та параметр повтору для вікна обслуговування.",
-					"option": {
-						"name": {
-							"label": "Ім'я",
-							"placeholder": "напр. Щотижневе обслуговування"
-						},
-						"repeat": {
-							"label": "Повтор"
-						}
-					}
-				},
-				"startDate": {
-					"title": "Дата початку",
-					"description": "Оберіть дату початку вікна обслуговування.",
-					"option": {
-						"startDate": {
-							"label": "Дата початку"
-						}
-					}
-				},
-				"startTime": {
-					"title": "Час початку",
-					"description": "Встановіть час початку та тривалість вікна обслуговування. Усі значення вказані в UTC",
-					"option": {
-						"duration": {
-							"label": "Тривалість"
-						},
-						"startTime": {
-							"label": "Час початку"
-						}
-					},
-					"monitors": {
-						"title": "Монітори",
-						"description": "Монітори, до яких застосовується вікно обслуговування",
-						"option": {
-							"addMonitors": {
-								"label": "Додати монітори"
-							}
-						}
-					}
-				}
-			}
-		},
-		"notifications": {
-			"fallback": {
-				"actionButton": "Створити канал",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "Канали сповіщень використовуються для:"
-			},
-			"form": {
-				"accessToken": {
-					"optionAccessToken": "Токен доступу",
-					"placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
-				},
-				"address": {
-					"description": "Адреса, на яку надсилатимуться сповіщення.",
-					"optionAddress": "Адреса",
-					"placeholderEmail": "example@example.com",
-					"placeholderWebhook": "https://your-server.com/webhook",
-					"title": "Адреса"
-				},
-				"homeServer": {
-					"optionHomeServer": "Домашній сервер",
-					"placeholder": "example.com"
-				},
-				"matrix": {
-					"description": "Налаштуйте підключення до Matrix homeserver для сповіщень.",
-					"title": "Налаштування Matrix"
-				},
-				"notificationName": {
-					"description": "Описова назва каналу сповіщень",
-					"optionName": "Назва каналу",
-					"placeholder": "напр. Сповіщення продакшену",
-					"title": "Назва каналу"
-				},
-				"pagerDuty": {
-					"description": "Ваш ключ інтеграції PagerDuty для отримання сповіщень.",
-					"optionIntegrationKey": "Ключ інтеграції",
-					"placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
-					"title": "Ключ інтеграції"
-				},
-				"roomId": {
-					"optionRoomId": "ID кімнати",
-					"placeholder": "!abcdefg:matrix.org"
-				},
-				"type": {
-					"description": "Оберіть тип каналу сповіщень для створення.",
-					"optionType": "Тип",
-					"title": "Тип каналу"
-				},
-				"telegram": {
-					"title": "Налаштування Telegram",
-					"description": "",
-					"optionBotToken": "Токен бота",
-					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
-					"optionChatId": "ID чату",
-					"placeholderChatId": "-1001234567890"
-				}
-			},
-			"table": {
-				"headers": {
-					"destination": "Призначення"
-				}
-			}
-		},
-		"pageSpeed": {
-			"charts": {
-				"common": {
-					"cls": "Сукупний зсув макету (CLS)",
-					"fcp": "Перше відображення вмісту (FCP)",
-					"lcp": "Найбільше відображення вмісту (LCP)",
-					"si": "Індекс швидкості (SI)",
-					"tbt": "Загальний час блокування (TBT)"
-				},
-				"legend": {
-					"title": "Звіт PageSpeed",
-					"weight": "Вага"
-				},
-				"pie": {
-					"title": "Звіт продуктивності"
-				}
-			},
-			"table": {
-				"headers": {
-					"pageSpeedScore": "Оцінка PageSpeed"
-				}
-			},
-			"fallback": {
-				"actionButton": "Створити монітор!",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "Монітор PageSpeed використовується для:"
-			}
-		},
-		"settings": {
-			"form": {
-				"timezone": {
-					"title": "Часовий пояс відображення",
-					"description": "Оберіть часовий пояс для відображення дат і часу у додатку.",
-					"option": {
-						"timezone": {
-							"label": "Часовий пояс відображення"
-						}
-					}
-				},
-				"ui": {
-					"title": "Зовнішній вигляд",
-					"description": "Перемикайтесь між світлою та темною темами, змінюйте мову або налаштовуйте тип відображення графіків.",
-					"option": {
-						"theme": {
-							"label": "Режим теми",
-							"light": "Світла",
-							"dark": "Темна"
-						},
-						"language": {
-							"label": "Мова"
-						},
-						"chartType": {
-							"label": "Тип графіка",
-							"histogram": "Гістограма",
-							"heatmap": "Теплова карта"
-						}
-					}
-				},
-				"pagespeed": {
-					"title": "Ключ API Google PageSpeed",
-					"description": "Введіть Ваш ключ API Google PageSpeed для увімкнення моніторингу PageSpeed. Натисніть Скинути, щоб оновити ключ.",
-					"option": {
-						"apiKey": {
-							"label": "Ключ API PageSpeed",
-							"labelSet": "Ключ API встановлено. Натисніть Скинути, щоб змінити.",
-							"placeholder": "Введіть Ваш ключ API Google PageSpeed"
-						}
-					}
-				},
-				"url": {
-					"title": "IP/URL монітора на сторінці статусу",
-					"description": "Відображати IP-адресу або URL монітора на публічній сторінці статусу. Якщо вимкнено, буде показано лише назву монітора для захисту конфіденційної інформації.",
-					"option": {
-						"showURL": {
-							"label": "Відображати IP/URL на сторінці статусу",
-							"enabled": "Увімкнено",
-							"disabled": "Вимкнено"
-						}
-					}
-				},
-				"stats": {
-					"title": "Історія моніторингу",
-					"description": "Очистити всю історію моніторингу та статистику Вашої команди. Ця дія незворотна.",
-					"option": {
-						"clear": {
-							"label": "Очистити всю статистику. Це незворотно."
-						}
-					},
-					"dialog": {
-						"title": "Очистити всю історію моніторингу?",
-						"description": "Це не можна скасувати"
-					}
-				},
-				"retention": {
-					"title": "Збереження перевірок",
-					"description": "Встановіть, як довго зберігаються дані перевірок перед автоматичним очищенням.",
-					"option": {
-						"days": {
-							"label": "Період збереження (дні)",
-							"unlimited": "Необмежено"
-						}
-					}
-				},
-				"thresholds": {
-					"title": "Глобальні порогові значення",
-					"description": "Встановіть глобальні порогові значення CPU, пам'яті, диска та температури для моніторингу інфраструктури. Вони застосовуються до всіх моніторів обладнання, якщо не перевизначені.",
-					"option": {
-						"cpu": {
-							"label": "Поріг CPU (%)",
-							"placeholder": "1 - 100"
-						},
-						"memory": {
-							"label": "Поріг пам'яті (%)",
-							"placeholder": "1 - 100"
-						},
-						"disk": {
-							"label": "Поріг диска (%)",
-							"placeholder": "1 - 100"
-						},
-						"temperature": {
-							"label": "Поріг температури (°C)",
-							"placeholder": "1 - 150"
-						}
-					}
-				},
-				"email": {
-					"title": "Налаштування пошти",
-					"description": "Налаштуйте параметри електронної пошти для Вашої системи. Використовується для надсилання сповіщень та попереджень.",
-					"descriptionTransport": "",
-					"descriptionTransportLink": "Дивіться специфікації тут",
-					"option": {
-						"host": {
-							"label": "Хост пошти — ім'я хоста або IP-адреса для підключення",
-							"placeholder": "smtp.gmail.com"
-						},
-						"port": {
-							"label": "Порт пошти — порт для підключення",
-							"placeholder": "587"
-						},
-						"address": {
-							"label": "Адреса пошти — використовується для автентифікації",
-							"placeholder": "you@example.com"
-						},
-						"user": {
-							"label": "Користувач пошти — ім'я для автентифікації, замінює адресу пошти, якщо вказано",
-							"placeholder": "Залиште порожнім, якщо не потрібно"
-						},
-						"password": {
-							"label": "Пароль пошти — пароль для автентифікації",
-							"labelSet": "Пароль встановлено. Натисніть Скинути, щоб змінити.",
-							"placeholder": "Введіть Ваш пароль"
-						},
-						"tlsServername": {
-							"label": "TLS Servername — необов'язкове ім'я хоста для валідації TLS, коли хост є IP",
-							"placeholder": "example.com"
-						},
-						"connectionHost": {
-							"label": "Хост з'єднання пошти — ім'я хоста для HELO/EHLO привітання",
-							"placeholder": "localhost"
-						},
-						"secure": {
-							"label": "Використовувати SSL (рекомендовано): шифрувати з'єднання за допомогою SSL/TLS"
-						},
-						"pool": {
-							"label": "Увімкнути пул з'єднань: повторне використання з'єднань для покращення продуктивності"
-						},
-						"ignoreTLS": {
-							"label": "Вимкнути STARTTLS: не використовувати TLS, навіть якщо сервер його підтримує"
-						},
-						"requireTLS": {
-							"label": "Примусовий STARTTLS: вимагати оновлення до TLS, помилка якщо не підтримується"
-						},
-						"rejectUnauthorized": {
-							"label": "Відхиляти недійсні сертифікати: відхиляти з'єднання із самопідписаними або ненадійними сертифікатами"
-						}
-					}
-				},
-				"demoMonitors": {
-					"title": "Демо-монітори",
-					"description": "Додайте зразки моніторів для демонстрації."
-				},
-				"removeMonitors": {
-					"title": "Скидання системи",
-					"description": "Видалити всі монітори з Вашої системи.",
-					"dialog": {
-						"title": "Видалити всі монітори?",
-						"description": "Це не можна скасувати."
-					}
-				},
-				"exportMonitors": {
-					"title": "Експортувати монітори"
-				},
-				"importExportMonitors": {
-					"title": "Імпорт / Експорт моніторів",
-					"description": "Імпортуйте або експортуйте дані моніторів у файлі JSON для резервного копіювання або перенесення."
-				},
-				"about": {
-					"title": "Про додаток",
-					"developedBy": "Розроблено Bluewave Labs"
-				},
-				"validation": {
-					"errorMessage": "Будь ласка, виправте такі помилки валідації:"
-				}
-			}
-		},
-		"statusPages": {
-			"deleteSuccess": "Сторінку статусу успішно видалено",
-			"fallback": {
-				"title": "Сторінка статусу використовується для:",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "Створити сторінку статусу!"
-			},
-			"monitorsList": {
-				"chartTypeHeatmap": "Теплова карта",
-				"chartTypeHistogram": "Гістограма",
-				"noData": "Немає доступних даних",
-				"infrastructure": {
-					"title": "Інфраструктура",
-					"cpu": "CPU",
-					"memory": "RAM",
-					"memoryText": "Пам'ять",
-					"disk": "Диск",
-					"usage": "Використання",
-					"used": "Використано",
-					"total": "Усього"
-				},
-				"uptime": {
-					"title": "Час роботи",
-					"responseTime": "Час відповіді"
-				}
-			},
-			"statusBar": {
-				"allDown": "Усі системи недоступні",
-				"allUp": "Усі системи працюють",
-				"degraded": "Деякі системи мають проблеми",
-				"unknown": "Неможливо визначити стан системи"
-			},
-			"table": {
-				"headers": {
-					"name": "Назва сторінки статусу",
-					"url": "Публічний URL"
-				},
-				"published": "Опубліковано",
-				"unpublished": "Неопубліковано"
-			},
-			"title": "Сторінки статусу",
-			"details": {
-				"empty": {
-					"title": "Тут ще нічого немає",
-					"addMonitor": "Додайте монітор, щоб розпочати"
-				}
-			},
-			"form": {
-				"access": {
-					"title": "Доступ",
-					"description": "Якщо Ваша сторінка статусу готова, Ви можете позначити її як опубліковану.",
-					"option": {
-						"published": {
-							"name": "Опубліковано та видно для всіх"
-						}
-					}
-				},
-				"basicInfo": {
-					"title": "Основна інформація",
-					"description": "Визначте назву компанії та піддомен, на який вказує Ваша сторінка статусу.",
-					"option": {
-						"name": {
-							"label": "Назва компанії",
-							"placeholder": "Acme Inc."
-						},
-						"url": {
-							"label": "Адреса Вашої сторінки статусу",
-							"placeholder": "my-status-page"
-						}
-					}
-				},
-				"monitors": {
-					"title": "Монітори",
-					"description": "Оберіть монітори для відображення на Вашій сторінці статусу.",
-					"noMonitors": "Монітори не обрані",
-					"option": {
-						"monitors": {
-							"label": "Оберіть монітори",
-							"placeholder": "Шукати та обрати монітори..."
-						}
-					}
-				},
-				"timezone": {
-					"title": "Часовий пояс",
-					"description": "Оберіть часовий пояс для відображення Вашої сторінки статусу.",
-					"option": {
-						"timezone": {
-							"label": "Часовий пояс",
-							"placeholder": "Оберіть часовий пояс..."
-						}
-					}
-				},
-				"appearance": {
-					"title": "Зовнішній вигляд",
-					"description": "Визначте стандартний вигляд Вашої публічної сторінки статусу.",
-					"option": {
-						"logo": {
-							"label": "Логотип"
-						},
-						"color": {
-							"label": "Колір бренду"
-						}
-					}
-				},
-				"features": {
-					"title": "Функції",
-					"description": "Налаштуйте, яка інформація відображається на Вашій сторінці статусу.",
-					"option": {
-						"showCharts": {
-							"label": "Показувати графіки часу відповіді"
-						},
-						"showUptimePercentage": {
-							"label": "Показувати відсоток часу роботи"
-						},
-						"showAdminLoginLink": {
-							"label": "Показувати посилання для входу адміністратора"
-						},
-						"showInfrastructure": {
-							"label": "Показувати метрики інфраструктури"
-						}
-					}
-				}
-			}
-		},
-		"uptime": {
-			"filters": {
-				"search": {
-					"placeholder": "Шукати монітори..."
-				}
-			},
-			"table": {
-				"headers": {
-					"responseTime": "Час відповіді"
-				}
-			},
-			"fallback": {
-				"actionButton": "Створити монітор!",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "Монітор доступності використовується для:"
-			}
-		}
-	}
+  "common": {
+    "auth": {
+      "roles": {
+        "admin": "Адміністратор",
+        "demo": "Демо",
+        "superadmin": "Суперадміністратор",
+        "user": "Користувач"
+      }
+    },
+    "alerts": {
+      "pageSpeedApiKey": {
+        "content": "Увага: Ви ще не додали ключ API Google PageSpeed. Перейдіть у <settingsLink>Налаштування</settingsLink>, щоб додати його. Без нього моніторинг PageSpeed не працюватиме."
+      }
+    },
+    "appName": "",
+    "breadcrumbs": {
+      "details": "Деталі",
+      "home": "Головна"
+    },
+    "buttons": {
+      "addMember": "Додати учасника",
+      "cancel": "Скасувати",
+      "close": "Закрити",
+      "configure": "Налаштувати",
+      "confirm": "Підтвердити",
+      "create": "Створити",
+      "delete": "Видалити",
+      "generateToken": "Згенерувати токен",
+      "incidents": "Інциденти",
+      "inviteMember": "Запросити учасника",
+      "pause": "Призупинити",
+      "resume": "Відновити",
+      "save": "",
+      "sendInvite": "Надіслати запрошення",
+      "test": "Тест",
+      "testNotifications": "Тестові сповіщення",
+      "toggleTheme": "",
+      "flushQueue": "Очистити чергу",
+      "notFound": "Перейти на головну панель",
+      "resetPassword": "",
+      "reset": "",
+      "clear": "Очистити",
+      "addDemo": "Додати демо-монітори",
+      "removeMonitors": "Видалити монітори",
+      "sendTestEmail": "Надіслати тестовий лист",
+      "exportToJSON": "Експортувати в JSON",
+      "importFromJSON": "Імпортувати з JSON",
+      "clearFilters": "Очистити фільтри",
+      "removeUser": "Видалити користувача"
+    },
+    "charts": {
+      "labels": {
+        "averageResponseTime": "Середній час відповіді",
+        "downtime": "Час простою",
+        "high": "",
+        "low": "",
+        "uptime": "Час роботи"
+      },
+      "histogram": {
+        "avg": "Сер: {{value}} мс",
+        "max": "Макс: {{value}} мс"
+      }
+    },
+    "dialogs": {
+      "delete": {
+        "description": "Цю дію не можна скасувати.",
+        "title": "Ви впевнені, що хочете це видалити?"
+      }
+    },
+    "labels": {
+      "active": "Активний",
+      "paused": "призупинено",
+      "na": "Н/Д",
+      "resolved": "Вирішено",
+      "responseTime": "Час відповіді"
+    },
+    "form": {
+      "role": {
+        "option": {
+          "role": {
+            "label": "Ролі"
+          }
+        }
+      },
+      "name": {
+        "option": {
+          "firstName": {
+            "label": "",
+            "placeholder": ""
+          },
+          "lastName": {
+            "label": "",
+            "placeholder": ""
+          }
+        }
+      },
+      "email": {
+        "option": {
+          "email": {
+            "label": "Електронна пошта",
+            "placeholder": "you@example.com"
+          }
+        }
+      }
+    },
+    "table": {
+      "empty": "Тут нічого немає",
+      "headers": {
+        "actions": "",
+        "dateTime": "Дата і час",
+        "message": "Повідомлення",
+        "monitor": "Монітор",
+        "monitorId": "ID монітора",
+        "name": "Ім'я",
+        "status": "Статус",
+        "type": "",
+        "url": "URL",
+        "interval": "Інтервал",
+        "active": "Активний",
+        "responseTime": "Час відповіді"
+      }
+    }
+  },
+  "components": {
+    "imageUpload": {
+      "clickToUpload": "Натисніть, щоб завантажити",
+      "dragAndDrop": "",
+      "supportedFormats": "",
+      "maxSize": "",
+      "orDragAndDrop": "або перетягніть файл",
+      "errors": {
+        "invalidFileSize": "",
+        "invalidFileFormat": ""
+      }
+    },
+    "headerStatusPageControls": {
+      "publicLink": ""
+    },
+    "headerTimeRange": {
+      "labels": {
+        "day": "День",
+        "month": "Місяць",
+        "recent": "Нещодавно",
+        "week": "Тиждень"
+      },
+      "description": {
+        "recent": "Показано статистику за останні 2 години.",
+        "day": "Показано статистику за останні 24 години.",
+        "week": "Показано статистику за останні 7 днів.",
+        "month": "Показано статистику за останні 30 днів."
+      }
+    },
+    "offlineBanner": {
+      "serverUnreachable": "Не вдається з'єднатися з сервером",
+      "retry": "Повторити",
+      "retrying": "Повторна спроба...",
+      "reconnected": ""
+    },
+    "sidebar": {
+      "menu": {
+        "uptime": "",
+        "pagespeed": "",
+        "infrastructure": "",
+        "notifications": "",
+        "checks": "Перевірки",
+        "incidents": "",
+        "statusPages": "",
+        "maintenance": "",
+        "logs": "",
+        "settings": ""
+      },
+      "bottomMenu": {
+        "support": "",
+        "discussions": "",
+        "docs": "",
+        "changelog": ""
+      },
+      "accountMenu": {
+        "profile": "Профіль",
+        "password": "Пароль",
+        "team": "Команда"
+      },
+      "starPrompt": {
+        "title": "Оцінити Checkmate",
+        "description": "Переглядайте останні оновлення та допомагайте розвивати спільноту на GitHub"
+      },
+      "authFooter": {
+        "navControls": "",
+        "logOut": "",
+        "roles": {
+          "superAdmin": "Суперадміністратор",
+          "admin": "Адміністратор",
+          "user": "Користувач",
+          "demoUser": ""
+        }
+      }
+    },
+    "starPrompt": {
+      "title": "Оцінити Checkmate",
+      "description": "Переглядайте останні оновлення та допомагайте розвивати спільноту на GitHub"
+    }
+  },
+  "pages": {
+    "notFound": {
+      "title": "Ой ні! Ви впустили суші!",
+      "subtitle": "Або URL не існує, або у Вас немає доступу до нього."
+    },
+    "account": {
+      "tabs": {
+        "profile": "Профіль",
+        "password": "Пароль",
+        "team": "Команда"
+      },
+      "form": {
+        "name": {
+          "title": "Ім'я",
+          "description": "Оновіть Вашу особисту інформацію"
+        },
+        "photo": {
+          "title": "Фото профілю",
+          "description": "Завантажте фото профілю"
+        },
+        "currentPassword": {
+          "title": "Поточний пароль",
+          "description": "Введіть поточний пароль для підтвердження Вашої особи",
+          "option": {
+            "label": "Поточний пароль",
+            "placeholder": "Введіть поточний пароль"
+          }
+        },
+        "newPassword": {
+          "title": "Новий пароль",
+          "description": "Оберіть надійний пароль довжиною не менше 8 символів",
+          "option": {
+            "newPassword": {
+              "label": "Новий пароль",
+              "placeholder": "Введіть новий пароль"
+            },
+            "confirm": {
+              "label": "Підтвердити пароль",
+              "placeholder": "Підтвердити новий пароль"
+            }
+          }
+        },
+        "deleteAccount": {
+          "title": "Видалити обліковий запис",
+          "description": "Ця дія є остаточною і не може бути скасована"
+        }
+      },
+      "team": {
+        "filter": {
+          "placeholder": "Фільтрувати за роллю",
+          "all": "",
+          "admin": "Адміністратор",
+          "member": ""
+        },
+        "table": {
+          "headers": {
+            "email": "Електронна пошта",
+            "role": "",
+            "created": ""
+          }
+        },
+        "addMember": {
+          "title": "Зареєструвати нового учасника команди",
+          "description": "Створіть новий обліковий запис. Безпечно передайте облікові дані після створення."
+        },
+        "invite": {
+          "title": "Запросити учасника команди",
+          "description": "Надіслати запрошення приєднатися до Вашої команди",
+          "email": {
+            "label": "Адреса електронної пошти",
+            "placeholder": "Введіть адресу електронної пошти"
+          },
+          "role": {
+            "label": "Роль",
+            "placeholder": "Оберіть роль"
+          },
+          "linkLabel": "Посилання для запрошення"
+        }
+      }
+    },
+    "auth": {
+      "common": {
+        "passwordRules": {
+          "length": {
+            "beginning": "",
+            "highlighted": ""
+          },
+          "lowercase": {
+            "beginning": "",
+            "highlighted": ""
+          },
+          "match": {
+            "beginning": "",
+            "highlighted": ""
+          },
+          "number": {
+            "beginning": "",
+            "highlighted": ""
+          },
+          "special": {
+            "beginning": "",
+            "highlighted": ""
+          },
+          "uppercase": {
+            "beginning": "",
+            "highlighted": ""
+          }
+        },
+        "form": {
+          "option": {
+            "email": {
+              "label": "Електронна пошта",
+              "placeholder": "me@example.com"
+            },
+            "password": {
+              "label": "Пароль",
+              "placeholder": "********"
+            },
+            "confirmPassword": {
+              "label": "Підтвердити пароль"
+            }
+          }
+        }
+      },
+      "login": {
+        "title": "Ласкаво просимо до Checkmate!",
+        "subtitle": "Увійдіть, щоб продовжити",
+        "submit": "Увійти",
+        "links": {
+          "forgotPassword": {
+            "text": "Забули пароль?",
+            "linkText": "Скинути пароль"
+          },
+          "register": {
+            "text": "Не маєте облікового запису?",
+            "linkText": "Зареєструватися тут"
+          }
+        }
+      },
+      "register": {
+        "title": "Ласкаво просимо до Checkmate!",
+        "subtitle": "Зареєструйтесь, щоб розпочати",
+        "submit": "Зареєструватися"
+      },
+      "forgotPassword": {
+        "title": "Забули пароль?",
+        "subtitle": "Не хвилюйтесь, ми надішлемо Вам інструкції для скидання.",
+        "submit": "Запит на відновлення",
+        "links": {
+          "login": {
+            "text": "Повернутися до",
+            "linkText": "входу"
+          }
+        }
+      },
+      "setNewPassword": {
+        "title": "Скинути пароль",
+        "subtitle": "Ваш новий пароль повинен відрізнятися від раніше використаних паролів."
+      }
+    },
+    "checks": {
+      "selects": {
+        "monitor": {
+          "all": "Усі монітори"
+        },
+        "status": {
+          "all": "Усі",
+          "down": "Недоступний",
+          "up": "Доступний"
+        }
+      },
+      "table": {
+        "empty": "Немає невдалих перевірок за цей період",
+        "headers": {
+          "statusCode": "Код статусу",
+          "location": "Розташування"
+        }
+      }
+    },
+    "common": {
+      "monitors": {
+        "actions": {
+          "configure": "Налаштувати",
+          "delete": "Видалити",
+          "generateToken": "Згенерувати токен",
+          "details": "Деталі",
+          "incidents": "Інциденти",
+          "inviteMember": "Запросити учасника",
+          "openSite": "Відкрити сайт",
+          "pause": "Призупинити",
+          "resume": "Відновити"
+        },
+        "statBoxes": {
+          "activeFor": "Активний протягом",
+          "certificateExpiry": "Закінчення сертифіката",
+          "lastCheck": "Остання перевірка",
+          "lastResponseTime": "Останній час відповіді"
+        },
+        "status": {
+          "down": "недоступний",
+          "breached": "поріг перевищено",
+          "initializing": "ініціалізація",
+          "maintenance": "обслуговування",
+          "paused": "призупинено",
+          "total": "усього",
+          "up": "доступний"
+        },
+        "monitorTypes": {
+          "optionDocker": "Docker",
+          "optionGame": "Гра",
+          "optionHttp": "HTTP(S)",
+          "optionPing": "Ping",
+          "optionPort": "Порт",
+          "optionPagespeed": "PageSpeed",
+          "optionHardware": "Інфраструктура",
+          "optionGrpc": "gRPC",
+          "optionWebSocket": "WebSocket"
+        }
+      }
+    },
+    "createMonitor": {
+      "form": {
+        "advanced": {
+          "description": "Додаткові налаштування для складних випадків",
+          "option": {
+            "advancedMatching": {
+              "label": "Використовувати розширене зіставлення"
+            },
+            "expectedValue": {
+              "label": "Очікуване значення"
+            },
+            "jsonPath": {
+              "description": "Цей вираз буде обчислено для JSON-даних відповіді, а результат буде зіставлено з очікуваним значенням. Дивіться документацію мови запитів на <jmesLink>jmespath.org</jmesLink>.",
+              "label": "Вираз JSONPath"
+            },
+            "matchMethod": {
+              "label": "Метод зіставлення",
+              "equal": "Дорівнює",
+              "include": "Містить",
+              "regex": "Regex"
+            }
+          },
+          "title": "Розширені налаштування"
+        },
+        "frequency": {
+          "description": "Як часто Ви хочете перевіряти стан цього монітора?",
+          "option": {
+            "frequency": {
+              "label": "Частота перевірки",
+              "value": {
+                "fifteenMinutes": "15 хвилин",
+                "fifteenSeconds": "15 секунд",
+                "fiveMinutes": "5 хвилин",
+                "fourMinutes": "4 хвилини",
+                "oneMinute": "1 хвилина",
+                "tenMinutes": "10 хвилин",
+                "thirtyMinutes": "30 хвилин",
+                "thirtySeconds": "30 секунд",
+                "threeMinutes": "3 хвилини",
+                "twoMinutes": "2 хвилини"
+              }
+            }
+          },
+          "title": "Частота перевірки"
+        },
+        "general": {
+          "option": {
+            "container": {
+              "label": "Ім'я/ID контейнера",
+              "placeholder": "my-app або abcd1234"
+            },
+            "host": {
+              "label": "Хост",
+              "placeholder": "192.168.1.100 або example.com"
+            },
+            "name": {
+              "label": "Відображуване ім'я",
+              "placeholder": "напр. Мій сайт"
+            },
+            "secret": {
+              "label": "Секрет авторизації",
+              "placeholder": "Введіть Ваш секретний ключ"
+            },
+            "url": {
+              "label": "URL",
+              "placeholder": "https://www.google.com"
+            },
+            "game": {
+              "label": "Обрати гру",
+              "placeholder": "Оберіть гру"
+            },
+            "port": {
+              "label": "Порт для моніторингу",
+              "placeholder": "80"
+            },
+            "grpcServiceName": {
+              "label": "Назва сервісу",
+              "placeholder": "напр. my.service.v1 (залиште порожнім для загальної перевірки)"
+            },
+            "wsUrl": {
+              "label": "WebSocket URL",
+              "placeholder": "wss://example.com/socket"
+            }
+          },
+          "title": "Загальні налаштування",
+          "description": {
+            "http": "Введіть URL або IP для моніторингу (напр., https://example.com/ або 192.168.1.100) та додайте зрозуміле ім'я для відображення на панелі.",
+            "ping": "",
+            "port": "",
+            "docker": "",
+            "game": "",
+            "pagespeed": "Відстежуйте швидкість завантаження сторінки, показники Core Web Vitals та оцінки оптимізації Вашого сайту.",
+            "grpc": "Введіть ім'я хоста та порт gRPC-сервера, за бажанням вкажіть назву сервісу для перевірки стану та додайте відображуване ім'я.",
+            "websocket": "Введіть WebSocket URL для моніторингу (напр., wss://example.com/socket) та додайте відображуване ім'я.",
+            "hardware": "Моніторинг CPU, пам'яті, використання диска та температури Вашої інфраструктури."
+          }
+        },
+        "ignoreTls": {
+          "description": "Налаштуйте перевірку сертифікатів TLS/SSL для HTTPS-з'єднань.",
+          "option": {
+            "tls": {
+              "label": "Ігнорувати помилки TLS/SSL"
+            }
+          },
+          "title": "Налаштування TLS/SSL"
+        },
+        "incidents": {
+          "description": "Ковзне вікно використовується для визначення моменту, коли монітор стає недоступним. Статус монітора зміниться лише тоді, коли відсоток перевірок у ковзному вікні досягне вказаного значення.",
+          "option": {
+            "checks": {
+              "label": "Кількість перевірок у ковзному вікні"
+            },
+            "percentage": {
+              "label": "Який відсоток перевірок у ковзному вікні має зазнати невдачі/успіху перед зміною статусу монітора?"
+            }
+          },
+          "title": "Інциденти"
+        },
+        "notifications": {
+          "description": "Оберіть канали сповіщень, які Ви хочете використовувати",
+          "title": "Сповіщення"
+        },
+        "type": {
+          "description": "Оберіть тип перевірки",
+          "optionDockerDescription": "Використовуйте Docker для моніторингу роботи контейнера.",
+          "optionGameDescription": "Моніторинг доступності конкретного ігрового сервера.",
+          "optionGrpcDescription": "Моніторинг gRPC-сервісів за допомогою стандартного протоколу перевірки стану.",
+          "optionWebSocketDescription": "Моніторинг WebSocket-ендпоінтів на предмет стану з'єднання та часу відповіді.",
+          "optionHttpDescription": "Використовуйте HTTP(S) для моніторингу Вашого сайту або API-ендпоінту.",
+          "optionPingDescription": "Використовуйте ICMP Ping для моніторингу доступності сервера.",
+          "optionPortDescription": "Моніторинг відкритості конкретного порту на сервері.",
+          "title": "Тип"
+        },
+        "thresholds": {
+          "title": "Порогові значення сповіщень",
+          "description": "Визначте порогові значення, при яких мають спрацьовувати сповіщення для цього монітора обладнання.",
+          "option": {
+            "cpuThreshold": {
+              "label": "Поріг сповіщення CPU (%)"
+            },
+            "memoryThreshold": {
+              "label": "Поріг сповіщення пам'яті (%)"
+            },
+            "diskThreshold": {
+              "label": "Поріг сповіщення диска (%)"
+            },
+            "tempThreshold": {
+              "label": "Поріг сповіщення температури (°C)"
+            }
+          }
+        },
+        "geoChecks": {
+          "title": "Геоперевірки",
+          "description": "Запускайте перевірки з різних географічних локацій для моніторингу глобальної доступності та продуктивності.",
+          "option": {
+            "enabled": {
+              "label": "Увімкнути геоперевірки"
+            },
+            "locations": {
+              "label": "Розташування",
+              "placeholder": "Оберіть розташування",
+              "options": {
+                "EU": "Європа",
+                "NA": "Північна Америка",
+                "AS": "Азія",
+                "SA": "Південна Америка",
+                "AF": "Африка",
+                "OC": "Океанія"
+              }
+            },
+            "interval": {
+              "label": "Інтервал перевірки",
+              "value": {
+                "fiveMinutes": "5 хвилин",
+                "tenMinutes": "10 хвилин",
+                "fifteenMinutes": "15 хвилин",
+                "thirtyMinutes": "30 хвилин"
+              }
+            }
+          }
+        },
+        "url": {
+          "title": "IP/URL монітора на сторінці статусу",
+          "description": "Відображати IP-адресу або URL монітора на публічній сторінці статусу. Якщо вимкнено, буде показано лише назву монітора для захисту конфіденційної інформації.",
+          "option": {
+            "showURL": {
+              "label": "Відображати IP/URL на сторінці статусу",
+              "enabled": "Увімкнено",
+              "disabled": "Вимкнено"
+            }
+          }
+        },
+        "stats": {
+          "title": "Історія моніторингу",
+          "description": "Очистити всю історію моніторингу та статистику Вашої команди. Ця дія незворотна.",
+          "buttonText": "Очистити всю статистику",
+          "dialog": {
+            "title": "Очистити всю історію моніторингу?",
+            "description": "Це назавжди видалить всю історію моніторингу, статистику та дані перевірок Вашої команди. Цю дію не можна скасувати.",
+            "confirm": "Так, очистити всю статистику"
+          }
+        },
+        "escalations": {
+          "title": "Escalation Rules",
+          "description": "Automatically notify a channel if an incident remains unresolved after a delay",
+          "addRule": "Add Rule",
+          "option": {
+            "delayMinutes": {
+              "label": "Escalate after (minutes)"
+            },
+            "channel": {
+              "label": "Notification channel",
+              "placeholder": "Select a channel"
+            },
+            "removeRule": {
+              "ariaLabel": "Remove escalation rule"
+            }
+          }
+        }
+      }
+    },
+    "editUser": {
+      "form": {
+        "roles": {
+          "title": "Ролі",
+          "description": "Призначте ролі користувачу. Можна обрати кілька ролей."
+        }
+      },
+      "dialog": {
+        "removeUser": {
+          "title": "Видалити користувача",
+          "content": "Ви впевнені, що хочете видалити {{name}} з Вашої команди? Цю дію не можна скасувати."
+        }
+      }
+    },
+    "incidents": {
+      "dialog": {
+        "resolveIncident": {
+          "title": "Вирішити інцидент",
+          "option": {
+            "comment": {
+              "label": "Коментар (необов'язково)",
+              "placeholder": "Додайте коментар щодо вирішення..."
+            }
+          }
+        },
+        "details": {
+          "analysis": "Аналіз інциденту",
+          "comment": "Коментар:",
+          "detailsLabel": "Деталі",
+          "downtime": "Час простою:",
+          "message": "Повідомлення:",
+          "monitor": "Монітор:",
+          "overview": "Огляд",
+          "resolutionDetails": "Деталі вирішення",
+          "resolutionType": "Тип:",
+          "resolutionTypes": {
+            "automatic": "Автоматично",
+            "manual": "Вручну"
+          },
+          "resolve": "Вирішити інцидент",
+          "resolvedAt": "Вирішено о:",
+          "resolvedBy": "Вирішив:",
+          "startedAt": "Початок:",
+          "status": "Статус:",
+          "statusCode": "Код статусу:",
+          "timeline": "Хронологія",
+          "title": "Деталі інциденту",
+          "url": "URL:"
+        }
+      },
+      "filters": {
+        "allMonitors": "Усі монітори",
+        "monitor": "Монітор",
+        "resolutionType": "Тип вирішення",
+        "resolutionTypes": {
+          "manual": "Вручну",
+          "automatic": "Автоматично",
+          "all": "Усі"
+        }
+      },
+      "summaryCard": {
+        "activeIncidents": {
+          "title": "Активні інциденти",
+          "active_zero": "Немає активних інцидентів",
+          "active_one": "{{count}} активний інцидент",
+          "active_other": "{{count}} активних інцидентів"
+        },
+        "incidentStats": {
+          "avgResolutionTime": "Середній час вирішення",
+          "mostAffectedMonitor": "Найвразливіший монітор",
+          "title": "Статистика інцидентів",
+          "totalIncidents": "Усього інцидентів"
+        },
+        "latestIncidents": {
+          "title": "Останні інциденти"
+        }
+      },
+      "table": {
+        "actions": {
+          "details": "Деталі",
+          "goToMonitor": "Перейти до монітора",
+          "resolveManually": "Вирішити вручну"
+        },
+        "activeIncidents": "Активні інциденти",
+        "headers": {
+          "endTime": "Час завершення",
+          "resolutionType": "Тип вирішення",
+          "startTime": "",
+          "statusCode": "Код статусу"
+        },
+        "resolvedIncidents": "Вирішені інциденти",
+        "status": {
+          "active": "Активний",
+          "resolved": "Вирішено"
+        }
+      }
+    },
+    "infrastructure": {
+      "charts": {
+        "labels": {
+          "cpu": "Використання CPU",
+          "disk": "Використання диска",
+          "memory": "Використання пам'яті",
+          "netBytesRecv": "{{name}} - Отримано байтів",
+          "netBytesSent": "{{name}} - Надіслано байтів",
+          "temp": "Темп."
+        }
+      },
+      "gauges": {
+        "cpu": {
+          "lowerLabel": "Макс. частота",
+          "title": "Використання CPU",
+          "upperLabel": "Поточна частота"
+        },
+        "disk": {
+          "lowerLabel": "Вільно",
+          "title": "Використання диска {{idx}}",
+          "upperLabel": "Використано"
+        },
+        "memory": {
+          "lowerLabel": "Вільно",
+          "title": "Використання пам'яті",
+          "upperLabel": "Використано"
+        }
+      },
+      "statBoxes": {
+        "avgCpuTemperature": "",
+        "cpuFrequency": "",
+        "cpuLogical": "",
+        "cpuPhysical": "",
+        "disk": "Диск",
+        "memory": "Пам'ять",
+        "os": ""
+      },
+      "table": {
+        "headers": {
+          "cpu": "CPU",
+          "disk": "Диск",
+          "memory": "Пам'ять"
+        }
+      },
+      "tabs": {
+        "labels": {
+          "network": "Мережа",
+          "overview": "Огляд"
+        }
+      },
+      "fallback": {
+        "actionButton": "Створити монітор!",
+        "checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
+        "title": "Монітор інфраструктури використовується для:"
+      }
+    },
+    "logs": {
+      "tabs": {
+        "diagnostics": "Діагностика",
+        "logs": "",
+        "queue": ""
+      },
+      "logLevelSelect": {
+        "label": "Рівень логів"
+      },
+      "jobQueue": "Черга завдань",
+      "failedJobs": "Невдалі завдання",
+      "noLogs": "Логи не знайдено",
+      "metrics": {
+        "jobs": "Завдання",
+        "activeJobs": "Активні завдання",
+        "failingJobs": "Невдалі завдання",
+        "totalRuns": "Усього запусків",
+        "totalFailures": "Усього помилок"
+      },
+      "diagnostics": {
+        "stats": {
+          "eventLoopDelay": "Затримка циклу подій",
+          "uptime": "Час роботи",
+          "usedHeapSize": "Використаний розмір купи",
+          "totalHeapSize": "Загальний розмір купи",
+          "osMemoryLimit": "Обмеження пам'яті ОС"
+        },
+        "gauges": {
+          "heapAllocation": "Виділення купи",
+          "heapUsage": "Використання купи",
+          "heapUtilization": "Утилізація купи",
+          "instantCpuUsage": "Миттєве використання CPU",
+          "availableMemoryPercentage": "% доступної пам'яті",
+          "allocatedPercentage": "% виділено",
+          "usedSPercentage": "% від 1с використано CPU",
+          "total": "Усього",
+          "used": "Використано"
+        }
+      },
+      "table": {
+        "headers": {
+          "timestamp": "Мітка часу",
+          "level": "Рівень",
+          "service": "Сервіс",
+          "method": "Метод",
+          "monitorId": "ID монітора",
+          "runCount": "Кількість запусків",
+          "failCount": "Кількість помилок",
+          "lastRunAt": "Останній запуск",
+          "lockedAt": "Заблоковано о",
+          "lastFinishedAt": "Останнє завершення",
+          "lastRunTook": "Останній запуск тривав",
+          "lastFailedAt": "Остання помилка",
+          "failReason": "Причина помилки"
+        }
+      }
+    },
+    "maintenanceWindow": {
+      "fallback": {
+        "actionButton": "Створити вікно обслуговування!",
+        "checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
+        "title": "Вікно обслуговування використовується для:"
+      },
+      "table": {
+        "headers": {
+          "nextWindow": "",
+          "repeat": ""
+        }
+      },
+      "form": {
+        "general": {
+          "title": "Загальні налаштування",
+          "description": "Встановіть назву та параметр повтору для вікна обслуговування.",
+          "option": {
+            "name": {
+              "label": "Ім'я",
+              "placeholder": "напр. Щотижневе обслуговування"
+            },
+            "repeat": {
+              "label": "Повтор"
+            }
+          }
+        },
+        "startDate": {
+          "title": "Дата початку",
+          "description": "Оберіть дату початку вікна обслуговування.",
+          "option": {
+            "startDate": {
+              "label": "Дата початку"
+            }
+          }
+        },
+        "startTime": {
+          "title": "Час початку",
+          "description": "Встановіть час початку та тривалість вікна обслуговування. Усі значення вказані в UTC",
+          "option": {
+            "duration": {
+              "label": "Тривалість"
+            },
+            "startTime": {
+              "label": "Час початку"
+            }
+          },
+          "monitors": {
+            "title": "Монітори",
+            "description": "Монітори, до яких застосовується вікно обслуговування",
+            "option": {
+              "addMonitors": {
+                "label": "Додати монітори"
+              }
+            }
+          }
+        }
+      }
+    },
+    "notifications": {
+      "fallback": {
+        "actionButton": "Створити канал",
+        "checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
+        "title": "Канали сповіщень використовуються для:"
+      },
+      "form": {
+        "accessToken": {
+          "optionAccessToken": "Токен доступу",
+          "placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
+        },
+        "address": {
+          "description": "Адреса, на яку надсилатимуться сповіщення.",
+          "optionAddress": "Адреса",
+          "placeholderEmail": "example@example.com",
+          "placeholderWebhook": "https://your-server.com/webhook",
+          "title": "Адреса"
+        },
+        "homeServer": {
+          "optionHomeServer": "Домашній сервер",
+          "placeholder": "example.com"
+        },
+        "matrix": {
+          "description": "Налаштуйте підключення до Matrix homeserver для сповіщень.",
+          "title": "Налаштування Matrix"
+        },
+        "notificationName": {
+          "description": "Описова назва каналу сповіщень",
+          "optionName": "Назва каналу",
+          "placeholder": "напр. Сповіщення продакшену",
+          "title": "Назва каналу"
+        },
+        "pagerDuty": {
+          "description": "Ваш ключ інтеграції PagerDuty для отримання сповіщень.",
+          "optionIntegrationKey": "Ключ інтеграції",
+          "placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+          "title": "Ключ інтеграції"
+        },
+        "roomId": {
+          "optionRoomId": "ID кімнати",
+          "placeholder": "!abcdefg:matrix.org"
+        },
+        "type": {
+          "description": "Оберіть тип каналу сповіщень для створення.",
+          "optionType": "Тип",
+          "title": "Тип каналу"
+        },
+        "telegram": {
+          "title": "Налаштування Telegram",
+          "description": "",
+          "optionBotToken": "Токен бота",
+          "placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
+          "optionChatId": "ID чату",
+          "placeholderChatId": "-1001234567890"
+        }
+      },
+      "table": {
+        "headers": {
+          "destination": "Призначення"
+        }
+      }
+    },
+    "pageSpeed": {
+      "charts": {
+        "common": {
+          "cls": "Сукупний зсув макету (CLS)",
+          "fcp": "Перше відображення вмісту (FCP)",
+          "lcp": "Найбільше відображення вмісту (LCP)",
+          "si": "Індекс швидкості (SI)",
+          "tbt": "Загальний час блокування (TBT)"
+        },
+        "legend": {
+          "title": "Звіт PageSpeed",
+          "weight": "Вага"
+        },
+        "pie": {
+          "title": "Звіт продуктивності"
+        }
+      },
+      "table": {
+        "headers": {
+          "pageSpeedScore": "Оцінка PageSpeed"
+        }
+      },
+      "fallback": {
+        "actionButton": "Створити монітор!",
+        "checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
+        "title": "Монітор PageSpeed використовується для:"
+      }
+    },
+    "settings": {
+      "form": {
+        "timezone": {
+          "title": "Часовий пояс відображення",
+          "description": "Оберіть часовий пояс для відображення дат і часу у додатку.",
+          "option": {
+            "timezone": {
+              "label": "Часовий пояс відображення"
+            }
+          }
+        },
+        "ui": {
+          "title": "Зовнішній вигляд",
+          "description": "Перемикайтесь між світлою та темною темами, змінюйте мову або налаштовуйте тип відображення графіків.",
+          "option": {
+            "theme": {
+              "label": "Режим теми",
+              "light": "Світла",
+              "dark": "Темна"
+            },
+            "language": {
+              "label": "Мова"
+            },
+            "chartType": {
+              "label": "Тип графіка",
+              "histogram": "Гістограма",
+              "heatmap": "Теплова карта"
+            }
+          }
+        },
+        "pagespeed": {
+          "title": "Ключ API Google PageSpeed",
+          "description": "Введіть Ваш ключ API Google PageSpeed для увімкнення моніторингу PageSpeed. Натисніть Скинути, щоб оновити ключ.",
+          "option": {
+            "apiKey": {
+              "label": "Ключ API PageSpeed",
+              "labelSet": "Ключ API встановлено. Натисніть Скинути, щоб змінити.",
+              "placeholder": "Введіть Ваш ключ API Google PageSpeed"
+            }
+          }
+        },
+        "url": {
+          "title": "IP/URL монітора на сторінці статусу",
+          "description": "Відображати IP-адресу або URL монітора на публічній сторінці статусу. Якщо вимкнено, буде показано лише назву монітора для захисту конфіденційної інформації.",
+          "option": {
+            "showURL": {
+              "label": "Відображати IP/URL на сторінці статусу",
+              "enabled": "Увімкнено",
+              "disabled": "Вимкнено"
+            }
+          }
+        },
+        "stats": {
+          "title": "Історія моніторингу",
+          "description": "Очистити всю історію моніторингу та статистику Вашої команди. Ця дія незворотна.",
+          "option": {
+            "clear": {
+              "label": "Очистити всю статистику. Це незворотно."
+            }
+          },
+          "dialog": {
+            "title": "Очистити всю історію моніторингу?",
+            "description": "Це не можна скасувати"
+          }
+        },
+        "retention": {
+          "title": "Збереження перевірок",
+          "description": "Встановіть, як довго зберігаються дані перевірок перед автоматичним очищенням.",
+          "option": {
+            "days": {
+              "label": "Період збереження (дні)",
+              "unlimited": "Необмежено"
+            }
+          }
+        },
+        "thresholds": {
+          "title": "Глобальні порогові значення",
+          "description": "Встановіть глобальні порогові значення CPU, пам'яті, диска та температури для моніторингу інфраструктури. Вони застосовуються до всіх моніторів обладнання, якщо не перевизначені.",
+          "option": {
+            "cpu": {
+              "label": "Поріг CPU (%)",
+              "placeholder": "1 - 100"
+            },
+            "memory": {
+              "label": "Поріг пам'яті (%)",
+              "placeholder": "1 - 100"
+            },
+            "disk": {
+              "label": "Поріг диска (%)",
+              "placeholder": "1 - 100"
+            },
+            "temperature": {
+              "label": "Поріг температури (°C)",
+              "placeholder": "1 - 150"
+            }
+          }
+        },
+        "email": {
+          "title": "Налаштування пошти",
+          "description": "Налаштуйте параметри електронної пошти для Вашої системи. Використовується для надсилання сповіщень та попереджень.",
+          "descriptionTransport": "",
+          "descriptionTransportLink": "Дивіться специфікації тут",
+          "option": {
+            "host": {
+              "label": "Хост пошти — ім'я хоста або IP-адреса для підключення",
+              "placeholder": "smtp.gmail.com"
+            },
+            "port": {
+              "label": "Порт пошти — порт для підключення",
+              "placeholder": "587"
+            },
+            "address": {
+              "label": "Адреса пошти — використовується для автентифікації",
+              "placeholder": "you@example.com"
+            },
+            "user": {
+              "label": "Користувач пошти — ім'я для автентифікації, замінює адресу пошти, якщо вказано",
+              "placeholder": "Залиште порожнім, якщо не потрібно"
+            },
+            "password": {
+              "label": "Пароль пошти — пароль для автентифікації",
+              "labelSet": "Пароль встановлено. Натисніть Скинути, щоб змінити.",
+              "placeholder": "Введіть Ваш пароль"
+            },
+            "tlsServername": {
+              "label": "TLS Servername — необов'язкове ім'я хоста для валідації TLS, коли хост є IP",
+              "placeholder": "example.com"
+            },
+            "connectionHost": {
+              "label": "Хост з'єднання пошти — ім'я хоста для HELO/EHLO привітання",
+              "placeholder": "localhost"
+            },
+            "secure": {
+              "label": "Використовувати SSL (рекомендовано): шифрувати з'єднання за допомогою SSL/TLS"
+            },
+            "pool": {
+              "label": "Увімкнути пул з'єднань: повторне використання з'єднань для покращення продуктивності"
+            },
+            "ignoreTLS": {
+              "label": "Вимкнути STARTTLS: не використовувати TLS, навіть якщо сервер його підтримує"
+            },
+            "requireTLS": {
+              "label": "Примусовий STARTTLS: вимагати оновлення до TLS, помилка якщо не підтримується"
+            },
+            "rejectUnauthorized": {
+              "label": "Відхиляти недійсні сертифікати: відхиляти з'єднання із самопідписаними або ненадійними сертифікатами"
+            }
+          }
+        },
+        "demoMonitors": {
+          "title": "Демо-монітори",
+          "description": "Додайте зразки моніторів для демонстрації."
+        },
+        "removeMonitors": {
+          "title": "Скидання системи",
+          "description": "Видалити всі монітори з Вашої системи.",
+          "dialog": {
+            "title": "Видалити всі монітори?",
+            "description": "Це не можна скасувати."
+          }
+        },
+        "exportMonitors": {
+          "title": "Експортувати монітори"
+        },
+        "importExportMonitors": {
+          "title": "Імпорт / Експорт моніторів",
+          "description": "Імпортуйте або експортуйте дані моніторів у файлі JSON для резервного копіювання або перенесення."
+        },
+        "about": {
+          "title": "Про додаток",
+          "developedBy": "Розроблено Bluewave Labs"
+        },
+        "validation": {
+          "errorMessage": "Будь ласка, виправте такі помилки валідації:"
+        }
+      }
+    },
+    "statusPages": {
+      "deleteSuccess": "Сторінку статусу успішно видалено",
+      "fallback": {
+        "title": "Сторінка статусу використовується для:",
+        "checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
+        "actionButton": "Створити сторінку статусу!"
+      },
+      "monitorsList": {
+        "chartTypeHeatmap": "Теплова карта",
+        "chartTypeHistogram": "Гістограма",
+        "noData": "Немає доступних даних",
+        "infrastructure": {
+          "title": "Інфраструктура",
+          "cpu": "CPU",
+          "memory": "RAM",
+          "memoryText": "Пам'ять",
+          "disk": "Диск",
+          "usage": "Використання",
+          "used": "Використано",
+          "total": "Усього"
+        },
+        "uptime": {
+          "title": "Час роботи",
+          "responseTime": "Час відповіді"
+        }
+      },
+      "statusBar": {
+        "allDown": "Усі системи недоступні",
+        "allUp": "Усі системи працюють",
+        "degraded": "Деякі системи мають проблеми",
+        "unknown": "Неможливо визначити стан системи"
+      },
+      "table": {
+        "headers": {
+          "name": "Назва сторінки статусу",
+          "url": "Публічний URL"
+        },
+        "published": "Опубліковано",
+        "unpublished": "Неопубліковано"
+      },
+      "title": "Сторінки статусу",
+      "details": {
+        "empty": {
+          "title": "Тут ще нічого немає",
+          "addMonitor": "Додайте монітор, щоб розпочати"
+        }
+      },
+      "form": {
+        "access": {
+          "title": "Доступ",
+          "description": "Якщо Ваша сторінка статусу готова, Ви можете позначити її як опубліковану.",
+          "option": {
+            "published": {
+              "name": "Опубліковано та видно для всіх"
+            }
+          }
+        },
+        "basicInfo": {
+          "title": "Основна інформація",
+          "description": "Визначте назву компанії та піддомен, на який вказує Ваша сторінка статусу.",
+          "option": {
+            "name": {
+              "label": "Назва компанії",
+              "placeholder": "Acme Inc."
+            },
+            "url": {
+              "label": "Адреса Вашої сторінки статусу",
+              "placeholder": "my-status-page"
+            }
+          }
+        },
+        "monitors": {
+          "title": "Монітори",
+          "description": "Оберіть монітори для відображення на Вашій сторінці статусу.",
+          "noMonitors": "Монітори не обрані",
+          "option": {
+            "monitors": {
+              "label": "Оберіть монітори",
+              "placeholder": "Шукати та обрати монітори..."
+            }
+          }
+        },
+        "timezone": {
+          "title": "Часовий пояс",
+          "description": "Оберіть часовий пояс для відображення Вашої сторінки статусу.",
+          "option": {
+            "timezone": {
+              "label": "Часовий пояс",
+              "placeholder": "Оберіть часовий пояс..."
+            }
+          }
+        },
+        "appearance": {
+          "title": "Зовнішній вигляд",
+          "description": "Визначте стандартний вигляд Вашої публічної сторінки статусу.",
+          "option": {
+            "logo": {
+              "label": "Логотип"
+            },
+            "color": {
+              "label": "Колір бренду"
+            }
+          }
+        },
+        "features": {
+          "title": "Функції",
+          "description": "Налаштуйте, яка інформація відображається на Вашій сторінці статусу.",
+          "option": {
+            "showCharts": {
+              "label": "Показувати графіки часу відповіді"
+            },
+            "showUptimePercentage": {
+              "label": "Показувати відсоток часу роботи"
+            },
+            "showAdminLoginLink": {
+              "label": "Показувати посилання для входу адміністратора"
+            },
+            "showInfrastructure": {
+              "label": "Показувати метрики інфраструктури"
+            }
+          }
+        }
+      }
+    },
+    "uptime": {
+      "filters": {
+        "search": {
+          "placeholder": "Шукати монітори..."
+        }
+      },
+      "table": {
+        "headers": {
+          "responseTime": "Час відповіді"
+        }
+      },
+      "fallback": {
+        "actionButton": "Створити монітор!",
+        "checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
+        "title": "Монітор доступності використовується для:"
+      }
+    }
+  }
 }

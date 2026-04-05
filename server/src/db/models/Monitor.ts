@@ -25,6 +25,7 @@ type MonitorDocumentBase = Omit<
 	notifications: Types.ObjectId[];
 	selectedDisks: string[];
 	matchMethod?: MonitorMatchMethod;
+	escalations: { delayMinutes: number; channelId: Types.ObjectId }[];
 };
 
 interface MonitorDocument extends MonitorDocumentBase {
@@ -169,6 +170,14 @@ const snapshotAuditsSchema = new Schema<CheckAudits>(
 		fcp: { type: snapshotLighthouseAuditSchema },
 		lcp: { type: snapshotLighthouseAuditSchema },
 		tbt: { type: snapshotLighthouseAuditSchema },
+	},
+	{ _id: false }
+);
+
+const escalationSchema = new Schema<{ delayMinutes: number; channelId: Types.ObjectId }>(
+	{
+		delayMinutes: { type: Number, required: true },
+		channelId: { type: Schema.Types.ObjectId, ref: "Notification", required: true },
 	},
 	{ _id: false }
 );
@@ -353,6 +362,10 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		},
 		recentChecks: {
 			type: [checkSnapshotSchema],
+			default: [],
+		},
+		escalations: {
+			type: [escalationSchema],
 			default: [],
 		},
 	},

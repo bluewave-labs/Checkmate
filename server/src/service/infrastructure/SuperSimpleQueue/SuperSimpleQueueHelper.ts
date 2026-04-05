@@ -30,6 +30,7 @@ export interface ISuperSimpleQueueHelper {
 	getHeartbeatGeoJob(): (monitor: Monitor) => Promise<void>;
 	getCleanupOrphanedJob(): () => Promise<void>;
 	getCleanupRetentionJob(): () => Promise<void>;
+	getEscalationJob(): () => Promise<void>;
 	isInMaintenanceWindow(monitorId: string, teamId: string): Promise<boolean>;
 }
 
@@ -350,6 +351,92 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 					stack: error instanceof Error ? error.stack : undefined,
 				});
 				// Don't throw - geo check failures shouldn't crash the job scheduler
+			}
+		};
+	};
+
+	getEscalationJob = () => {
+		return async () => {
+			try {
+				this.logger.info({
+					message: "Starting escalation job",
+					service: SERVICE_NAME,
+					method: "getEscalationJob",
+				});
+
+				const activeIncidents = await this.incidentsRepository.findAllActive();
+
+				this.logger.debug({
+					message: `Found ${activeIncidents.length} active incidents`,
+					service: SERVICE_NAME,
+					method: "getEscalationJob",
+				});
+
+				for (const incident of activeIncidents) {
+					const now = new Date();
+					const startTime = new Date(incident.startTime);
+					const durationMinutes = (now.getTime() - startTime.getTime()) / (1000 * 60);
+
+					let monitor: Monitor;
+					try {
+						monitor = await this.monitorsRepository.findById(incident.monitorId, incident.teamId);
+					} catch (error: unknown) {
+						this.logger.warn({
+							message: `Could not find monitor ${incident.monitorId} for incident ${incident.id}: ${error instanceof Error ? error.message : "Unknown error"}`,
+							service: SERVICE_NAME,
+							method: "getEscalationJob",
+						});
+						continue;
+					}
+
+					if (!monitor.escalations || monitor.escalations.length === 0) {
+						continue;
+					}
+
+					const alreadyTriggered = incident.triggeredEscalations ?? [];
+					const newlyTriggered: string[] = [];
+
+					for (const rule of monitor.escalations) {
+						if (durationMinutes >= rule.delayMinutes && !alreadyTriggered.includes(rule.channelId)) {
+							try {
+								await this.notificationsService.sendEscalation(rule.channelId, monitor);
+								newlyTriggered.push(rule.channelId);
+								this.logger.info({
+									message: `Sent escalation to channel ${rule.channelId} for incident ${incident.id} (monitor ${monitor.id}, duration ${Math.round(durationMinutes)}m)`,
+									service: SERVICE_NAME,
+									method: "getEscalationJob",
+								});
+							} catch (error: unknown) {
+								this.logger.warn({
+									message: `Failed to send escalation to channel ${rule.channelId} for incident ${incident.id}: ${error instanceof Error ? error.message : "Unknown error"}`,
+									service: SERVICE_NAME,
+									method: "getEscalationJob",
+									stack: error instanceof Error ? error.stack : undefined,
+								});
+							}
+						}
+					}
+
+					if (newlyTriggered.length > 0) {
+						await this.incidentsRepository.updateById(incident.id, incident.teamId, {
+							triggeredEscalations: [...alreadyTriggered, ...newlyTriggered],
+						});
+					}
+				}
+
+				this.logger.info({
+					message: "Escalation job completed",
+					service: SERVICE_NAME,
+					method: "getEscalationJob",
+				});
+			} catch (error: unknown) {
+				this.logger.error({
+					message: error instanceof Error ? error.message : "Unknown error",
+					service: SERVICE_NAME,
+					method: "getEscalationJob",
+					stack: error instanceof Error ? error.stack : undefined,
+				});
+				throw error;
 			}
 		};
 	};

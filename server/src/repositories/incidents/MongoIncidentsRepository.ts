@@ -62,6 +62,7 @@ class MongoIncidentsRepository implements IIncidentsRepository {
 			comment: doc.comment ?? null,
 			createdAt: this.toDateString(doc.createdAt),
 			updatedAt: this.toDateString(doc.updatedAt),
+			triggeredEscalations: doc.triggeredEscalations ?? [],
 		};
 	};
 
@@ -113,6 +114,11 @@ class MongoIncidentsRepository implements IIncidentsRepository {
 			return null;
 		}
 		return this.toEntity(incident);
+	};
+
+	findAllActive = async (): Promise<Incident[]> => {
+		const incidents = await IncidentModel.find({ status: true });
+		return this.mapDocuments(incidents);
 	};
 
 	findByTeamId = async (

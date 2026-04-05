@@ -1,1305 +1,1322 @@
 {
-	"common": {
-		"auth": {
-			"roles": {
-				"admin": "ผู้ดูแลระบบ",
-				"demo": "สาธิต",
-				"superadmin": "ผู้ดูแลระบบสูงสุด",
-				"user": "ผู้ใช้"
-			}
-		},
-		"alerts": {
-			"pageSpeedApiKey": {
-				"content": "คำเตือน: คุณยังไม่ได้เพิ่ม API key ของ Google PageSpeed ไปที่<settingsLink>การตั้งค่า</settingsLink>เพื่อเพิ่ม หากไม่มี ระบบตรวจสอบ PageSpeed จะไม่ทำงาน"
-			}
-		},
-		"appName": "Checkmate",
-		"breadcrumbs": {
-			"details": "รายละเอียด",
-			"home": "หน้าหลัก"
-		},
-		"buttons": {
-			"addMember": "เพิ่มสมาชิก",
-			"cancel": "ยกเลิก",
-			"close": "ปิด",
-			"configure": "ตั้งค่า",
-			"confirm": "ยืนยัน",
-			"create": "สร้าง",
-			"delete": "ลบ",
-			"generateToken": "สร้างโทเค็น",
-			"incidents": "เหตุการณ์",
-			"inviteMember": "เชิญสมาชิก",
-			"pause": "หยุดชั่วคราว",
-			"resume": "ดำเนินการต่อ",
-			"save": "บันทึก",
-			"sendInvite": "ส่งคำเชิญ",
-			"test": "ทดสอบ",
-			"testNotifications": "ทดสอบการแจ้งเตือน",
-			"toggleTheme": "สลับโหมดสว่าง & มืด",
-			"flushQueue": "ล้างคิว",
-			"notFound": "ไปยังแดชบอร์ดหลัก",
-			"resetPassword": "รีเซ็ตรหัสผ่าน",
-			"reset": "รีเช็ต",
-			"clear": "ล้าง",
-			"addDemo": "เพิ่มมอนิเตอร์สาธิต",
-			"removeMonitors": "ลบมอนิเตอร์",
-			"sendTestEmail": "ส่งอีเมลทดสอบ",
-			"exportToJSON": "ส่งออกเป็น JSON",
-			"importFromJSON": "นำเข้าจาก JSON",
-			"clearFilters": "ล้างตัวกรอง",
-			"removeUser": "ลบผู้ใช้"
-		},
-		"charts": {
-			"labels": {
-				"averageResponseTime": "เวลาตอบสนองเฉลี่ย",
-				"downtime": "ดาวน์ไทม์",
-				"high": "สูง",
-				"low": "ต่ำ",
-				"uptime": "อัปไทม์"
-			},
-			"histogram": {
-				"avg": "เฉลี่ย: {{value}} ms",
-				"max": "สูงสุด: {{value}} ms"
-			}
-		},
-		"dialogs": {
-			"delete": {
-				"description": "การกระทำนี้ไม่สามารถย้อนกลับได้",
-				"title": "คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้?"
-			}
-		},
-		"labels": {
-			"active": "ใช้งานอยู่",
-			"paused": "หยุดชั่วคราว",
-			"na": "ไม่มีข้อมูล",
-			"resolved": "แก้ไขแล้ว",
-			"responseTime": "เวลาตอบสนอง"
-		},
-		"form": {
-			"role": {
-				"option": {
-					"role": {
-						"label": "บทบาท"
-					}
-				}
-			},
-			"name": {
-				"option": {
-					"firstName": {
-						"label": "ชื่อ",
-						"placeholder": "Brownyroll"
-					},
-					"lastName": {
-						"label": "นามสกุล",
-						"placeholder": "."
-					}
-				}
-			},
-			"email": {
-				"option": {
-					"email": {
-						"label": "อีเมล",
-						"placeholder": "you@example.com"
-					}
-				}
-			}
-		},
-		"table": {
-			"empty": "ไม่มีข้อมูล",
-			"headers": {
-				"actions": "จัดการ",
-				"dateTime": "วันที่และเวลา",
-				"message": "ข้อความ",
-				"monitor": "มอนิเตอร์",
-				"monitorId": "รหัสมอนิเตอร์",
-				"name": "ชื่อ",
-				"status": "สถานะ",
-				"type": "ประเภท",
-				"url": "URL",
-				"interval": "ช่วงเวลา",
-				"active": "ใช้งานอยู่",
-				"responseTime": "เวลาตอบสนอง"
-			}
-		}
-	},
-	"components": {
-		"imageUpload": {
-			"clickToUpload": "คลิกเพื่ออัปโหลด",
-			"dragAndDrop": "ลากและวางเลย",
-			"supportedFormats": "รูปแบบที่รองรับ",
-			"maxSize": "ขนาดสูงสุด",
-			"orDragAndDrop": "หรือลากและวาง",
-			"errors": {
-				"invalidFileSize": "ขนาดไฟล์ใหญ่เกินไป!",
-				"invalidFileFormat": "รูปแบบไฟล์ไม่รองรับ!"
-			}
-		},
-		"headerStatusPageControls": {
-			"publicLink": "ลิงก์สาธารณะ"
-		},
-		"headerTimeRange": {
-			"labels": {
-				"day": "วัน",
-				"month": "เดือน",
-				"recent": "ล่าสุด",
-				"week": "สัปดาห์"
-			},
-			"description": {
-				"recent": "แสดงสถิติย้อนหลัง 2 ชั่วโมง",
-				"day": "แสดงสถิติย้อนหลัง 24 ชั่วโมง",
-				"week": "แสดงสถิติย้อนหลัง 7 วัน",
-				"month": "แสดงสถิติย้อนหลัง 30 วัน"
-			}
-		},
-		"offlineBanner": {
-			"serverUnreachable": "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้",
-			"retry": "ลองอีกครั้ง",
-			"retrying": "กำลังลองอีกครั้ง...",
-			"reconnected": "เชื่อมต่อกับเซิร์ฟเวอร์สำเร็จแล้ว"
-		},
-		"sidebar": {
-			"menu": {
-				"uptime": "ความพร้อมใช้งาน",
-				"pagespeed": "ความเร็วหน้าเว็บ",
-				"infrastructure": "โครงสร้างพื้นฐาน",
-				"notifications": "การแจ้งเตือน",
-				"checks": "การตรวจสอบ",
-				"incidents": "เหตุการณ์",
-				"statusPages": "หน้าสถานะ",
-				"maintenance": "การบำรุงรักษา",
-				"logs": "บันทึก",
-				"settings": "การตั้งค่า"
-			},
-			"bottomMenu": {
-				"support": "การสนับสนุน",
-				"discussions": "การสนทนา",
-				"docs": "เอกสาร",
-				"changelog": "บันทึกการเปลี่ยนแปลง"
-			},
-			"accountMenu": {
-				"profile": "โปรไฟล์",
-				"password": "รหัสผ่าน",
-				"team": "ทีม"
-			},
-			"starPrompt": {
-				"title": "ให้ดาว Checkmate",
-				"description": "ดูรุ่นล่าสุดและช่วยเติบโตชุมชนบน GitHub"
-			},
-			"authFooter": {
-				"navControls": "การควบคุม",
-				"logOut": "ออกจากระบบ",
-				"roles": {
-					"superAdmin": "ผู้ดูแลระบบสูงสุด",
-					"admin": "ผู้ดูแลระบบ",
-					"user": "ผู้ใช้",
-					"demoUser": "ผู้ใช้ Demo"
-				}
-			}
-		},
-		"starPrompt": {
-			"title": "ให้ดาว Checkmate",
-			"description": "ดูรุ่นล่าสุดและช่วยเติบโตชุมชนบน GitHub"
-		}
-	},
-	"pages": {
-		"notFound": {
-			"title": "โอ้ไม่! ซูชิของคุณหล่นแล้ว!",
-			"subtitle": "URL ไม่มีอยู่ หรือคุณไม่มีสิทธิ์เข้าถึง"
-		},
-		"account": {
-			"tabs": {
-				"profile": "โปรไฟล์",
-				"password": "รหัสผ่าน",
-				"team": "ทีม"
-			},
-			"form": {
-				"name": {
-					"title": "ชื่อ",
-					"description": "อัปเดตข้อมูลส่วนตัวของคุณ"
-				},
-				"photo": {
-					"title": "รูปโปรไฟล์",
-					"description": "อัปโหลดรูปโปรไฟล์"
-				},
-				"currentPassword": {
-					"title": "รหัสผ่านปัจจุบัน",
-					"description": "กรอกรหัสผ่านปัจจุบันเพื่อยืนยันตัวตน",
-					"option": {
-						"label": "รหัสผ่านปัจจุบัน",
-						"placeholder": "กรอกรหัสผ่านปัจจุบัน"
-					}
-				},
-				"newPassword": {
-					"title": "รหัสผ่านใหม่",
-					"description": "เลือกรหัสผ่านที่รัดกุมอย่างน้อย 8 ตัวอักษร",
-					"option": {
-						"newPassword": {
-							"label": "รหัสผ่านใหม่",
-							"placeholder": "กรอกรหัสผ่านใหม่"
-						},
-						"confirm": {
-							"label": "ยืนยันรหัสผ่าน",
-							"placeholder": "ยืนยันรหัสผ่านใหม่"
-						}
-					}
-				},
-				"deleteAccount": {
-					"title": "ลบบัญชี",
-					"description": "การกระทำนี้เป็นการถาวรและไม่สามารถย้อนกลับได้"
-				}
-			},
-			"team": {
-				"filter": {
-					"placeholder": "กรองตามบทบาท",
-					"all": "ทั้งหมด",
-					"admin": "ผู้ดูแลระบบ",
-					"member": "สมาชิก"
-				},
-				"table": {
-					"headers": {
-						"email": "อีเมล",
-						"role": "บทบาท",
-						"created": "สร้างเมื่อ"
-					}
-				},
-				"addMember": {
-					"title": "ลงทะเบียนสมาชิกทีมใหม่",
-					"description": "สร้างบัญชีผู้ใช้ใหม่ แชร์ข้อมูลรับรองอย่างปลอดภัยหลังสร้าง"
-				},
-				"invite": {
-					"title": "เชิญสมาชิกทีม",
-					"description": "ส่งคำเชิญเข้าร่วมทีม",
-					"email": {
-						"label": "ที่อยู่อีเมล",
-						"placeholder": "กรอกที่อยู่อีเมล"
-					},
-					"role": {
-						"label": "บทบาท",
-						"placeholder": "เลือกบทบาท"
-					},
-					"linkLabel": "ลิงก์เชิญ"
-				}
-			}
-		},
-		"auth": {
-			"common": {
-				"passwordRules": {
-					"length": {
-						"beginning": "ต้องมีความยาวอย่างน้อย",
-						"highlighted": "8 ตัวอักษร"
-					},
-					"lowercase": {
-						"beginning": "ต้องมีอย่างน้อย",
-						"highlighted": "ตัวอักษรเล็ก 1 ตัว"
-					},
-					"match": {
-						"beginning": "รหัสผ่าน",
-						"highlighted": "ต้องตรงกัน"
-					},
-					"number": {
-						"beginning": "ต้องมีอย่างน้อย",
-						"highlighted": "ตัวเลข 1 ตัว"
-					},
-					"special": {
-						"beginning": "ต้องมีอย่างน้อย",
-						"highlighted": "อักขระพิเศษ 1 ตัว"
-					},
-					"uppercase": {
-						"beginning": "ต้องมีอย่างน้อย",
-						"highlighted": "ตัวอักษรใหญ่ 1 ตัว"
-					}
-				},
-				"form": {
-					"option": {
-						"email": {
-							"label": "อีเมล",
-							"placeholder": "me@example.com"
-						},
-						"password": {
-							"label": "รหัสผ่าน",
-							"placeholder": "********"
-						},
-						"confirmPassword": {
-							"label": "ยืนยันรหัสผ่าน"
-						}
-					}
-				}
-			},
-			"login": {
-				"title": "ยินดีต้อนรับกลับสู่ Checkmate!",
-				"subtitle": "เข้าสู่ระบบเพื่อดำเนินการต่อ",
-				"submit": "เข้าสู่ระบบ",
-				"links": {
-					"forgotPassword": {
-						"text": "ลืมรหัสผ่าน?",
-						"linkText": "รีเซ็ตรหัสผ่าน"
-					},
-					"register": {
-						"text": "ยังไม่มีบัญชี?",
-						"linkText": "ลงทะเบียนที่นี่"
-					}
-				}
-			},
-			"register": {
-				"title": "ยินดีต้อนรับกลับสู่ Checkmate!",
-				"subtitle": "สมัครสมาชิกเพื่อเริ่มต้น",
-				"submit": "ลงทะเบียน"
-			},
-			"forgotPassword": {
-				"title": "ลืมรหัสผ่านใช่ไหม?",
-				"subtitle": "ไม่ต้องกังวล เราจะส่งคำแนะนำการรีเซ็ตให้คุณ",
-				"submit": "ขอกู้คืนรหัสผ่าน",
-				"links": {
-					"login": {
-						"text": "กลับไปยัง",
-						"linkText": "เข้าสู่ระบบ"
-					}
-				}
-			},
-			"setNewPassword": {
-				"title": "รีเซ็ตรหัสผ่านของคุณ",
-				"subtitle": "รหัสผ่านใหม่ต้องแตกต่างจากรหัสผ่านที่เคยใช้ก่อนหน้า"
-			}
-		},
-		"checks": {
-			"selects": {
-				"monitor": {
-					"all": "มอนิเตอร์ทั้งหมด"
-				},
-				"status": {
-					"all": "ทั้งหมด",
-					"down": "ล่ม",
-					"up": "ปกติ"
-				}
-			},
-			"table": {
-				"empty": "ไม่พบการตรวจสอบที่ล้มเหลวในช่วงเวลานี้",
-				"headers": {
-					"statusCode": "รหัสสถานะ",
-					"location": "ตำแหน่ง"
-				}
-			}
-		},
-		"common": {
-			"monitors": {
-				"actions": {
-					"configure": "ตั้งค่า",
-					"delete": "ลบ",
-					"generateToken": "สร้างโทเค็น",
-					"details": "รายละเอียด",
-					"incidents": "เหตุการณ์",
-					"inviteMember": "เชิญสมาชิก",
-					"openSite": "เปิดเว็บไซต์",
-					"pause": "หยุดชั่วคราว",
-					"resume": "ดำเนินการต่อ"
-				},
-				"statBoxes": {
-					"activeFor": "ทำงานมาแล้ว",
-					"certificateExpiry": "วันหมดอายุใบรับรอง",
-					"lastCheck": "ตรวจสอบล่าสุด",
-					"lastResponseTime": "เวลาตอบสนองล่าสุด"
-				},
-				"status": {
-					"down": "ล่ม",
-					"breached": "เกินเกณฑ์",
-					"initializing": "กำลังเริ่มต้น",
-					"maintenance": "บำรุงรักษา",
-					"paused": "หยุดชั่วคราว",
-					"total": "ทั้งหมด",
-					"up": "ปกติ"
-				},
-				"monitorTypes": {
-					"optionDocker": "Docker",
-					"optionGame": "เกม",
-					"optionHttp": "HTTP(S)",
-					"optionPing": "Ping",
-					"optionPort": "พอร์ต",
-					"optionPagespeed": "PageSpeed",
-					"optionHardware": "โครงสร้างพื้นฐาน",
-					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
-				}
-			}
-		},
-		"createMonitor": {
-			"form": {
-				"advanced": {
-					"description": "ตั้งค่าเพิ่มเติมสำหรับกรณีใช้งานขั้นสูง",
-					"option": {
-						"advancedMatching": {
-							"label": "ใช้การจับคู่ขั้นสูง"
-						},
-						"expectedValue": {
-							"label": "ค่าที่คาดหวัง"
-						},
-						"jsonPath": {
-							"description": "นิพจน์นี้จะถูกประเมินกับข้อมูล JSON ที่ตอบกลับ และผลลัพธ์จะถูกใช้จับคู่กับค่าที่คาดหวัง ดูเอกสาร query language ที่ <jmesLink>jmespath.org</jmesLink>",
-							"label": "นิพจน์ JSONPath"
-						},
-						"matchMethod": {
-							"label": "วิธีการจับคู่",
-							"equal": "เท่ากับ",
-							"include": "รวม",
-							"regex": "Regex"
-						}
-					},
-					"title": "ตั้งค่าขั้นสูง"
-				},
-				"frequency": {
-					"description": "คุณต้องการตรวจสอบสถานะของมอนิเตอร์นี้บ่อยแค่ไหน?",
-					"option": {
-						"frequency": {
-							"label": "ความถี่การตรวจสอบ",
-							"value": {
-								"fifteenMinutes": "15 นาที",
-								"fifteenSeconds": "15 วินาที",
-								"fiveMinutes": "5 นาที",
-								"fourMinutes": "4 นาที",
-								"oneMinute": "1 นาที",
-								"tenMinutes": "10 นาที",
-								"thirtyMinutes": "30 นาที",
-								"thirtySeconds": "30 วินาที",
-								"threeMinutes": "3 นาที",
-								"twoMinutes": "2 นาที"
-							}
-						}
-					},
-					"title": "ความถี่การตรวจสอบ"
-				},
-				"general": {
-					"option": {
-						"container": {
-							"label": "ชื่อ/ID คอนเทนเนอร์",
-							"placeholder": "my-app หรือ abcd1234"
-						},
-						"host": {
-							"label": "โฮสต์",
-							"placeholder": "192.168.1.100 หรือ example.com"
-						},
-						"name": {
-							"label": "ชื่อที่แสดง",
-							"placeholder": "เช่น เว็บไซต์ของฉัน"
-						},
-						"secret": {
-							"label": "รหัสลับสำหรับยืนยันตัวตน",
-							"placeholder": "กรอกรหัสลับของคุณ"
-						},
-						"url": {
-							"label": "URL",
-							"placeholder": "https://www.google.com"
-						},
-						"game": {
-							"label": "URL ที่ต้องการมอนิเตอร์",
-							"placeholder": "localhost"
-						},
-						"port": {
-							"label": "พอร์ตที่ต้องการตรวจสอบ",
-							"placeholder": "80"
-						},
-						"grpcServiceName": {
-							"label": "ชื่อบริการ",
-							"placeholder": "เช่น my.service.v1 (เว้นว่างสำหรับสถานะสุขภาพโดยรวม)"
-						},
-						"wsUrl": {
-							"label": "URL ของ WebSocket",
-							"placeholder": "wss://example.com/socket"
-						}
-					},
-					"title": "ตั้งค่าทั่วไป",
-					"description": {
-						"http": "กรอก URL หรือ IP ที่ต้องการตรวจสอบ (เช่น https://example.com/ หรือ 192.168.1.100) และตั้งชื่อที่แสดงบนแดชบอร์ด",
-						"ping": "กรอกที่อยู่ IP หรือชื่อโฮสต์ที่ต้องการ ping (เช่น 192.168.1.100 หรือ example.com) และตั้งชื่อที่ชัดเจนให้แสดงบนแดชบอร์ด",
-						"port": "กรอก URL หรือ IP ของเซิร์ฟเวอร์ หมายเลขพอร์ต และตั้งชื่อที่ชัดเจนให้แสดงบนแดชบอร์ด",
-						"docker": "กรอกชื่อหรือ ID ของคอนเทนเนอร์ Docker คุณสามารถใช้ชื่อคอนเทนเนอร์ (เช่น my-app) หรือ ID ของคอนเทนเนอร์ (ID เต็ม 64 ตัวอักษร หรือ ID สั้น)",
-						"game": "กรอกที่อยู่ IP หรือชื่อโฮสต์และหมายเลขพอร์ตเพื่อทำการ ping (เช่น 192.168.1.100 หรือ example.com) และเลือกประเภทเกม",
-						"pagespeed": "ติดตามประสิทธิภาพการโหลดหน้า Core Web Vitals และคะแนนการเพิ่มประสิทธิภาพของเว็บไซต์",
-						"grpc": "กรอกชื่อโฮสต์และพอร์ตของเซิร์ฟเวอร์ gRPC ระบุชื่อบริการสำหรับ health check (ไม่บังคับ) และตั้งชื่อที่แสดง",
-						"websocket": "กรอก URL ของ WebSocket ที่ต้องการตรวจสอบ (เช่น wss://example.com/socket) และตั้งชื่อที่แสดง",
-						"hardware": "ตรวจสอบการใช้งาน CPU หน่วยความจำ ดิสก์ และอุณหภูมิของโครงสร้างพื้นฐาน"
-					}
-				},
-				"ignoreTls": {
-					"description": "กำหนดค่าการตรวจสอบใบรับรอง TLS/SSL สำหรับการเชื่อมต่อ HTTPS",
-					"option": {
-						"tls": {
-							"label": "ข้ามข้อผิดพลาด TLS/SSL"
-						}
-					},
-					"title": "ตั้งค่า TLS/SSL"
-				},
-				"incidents": {
-					"description": "ใช้หน้าต่างเลื่อนเพื่อกำหนดว่ามอนิเตอร์ล่มเมื่อใด สถานะของมอนิเตอร์จะเปลี่ยนเมื่อเปอร์เซ็นต์การตรวจสอบในหน้าต่างเลื่อนตรงตามค่าที่กำหนด",
-					"option": {
-						"checks": {
-							"label": "จำนวนการตรวจสอบในหน้าต่างเลื่อน"
-						},
-						"percentage": {
-							"label": "เปอร์เซ็นต์การตรวจสอบในหน้าต่างเลื่อนที่ล้มเหลว/สำเร็จก่อนเปลี่ยนสถานะมอนิเตอร์?"
-						}
-					},
-					"title": "เหตุการณ์"
-				},
-				"notifications": {
-					"description": "เลือกช่องทางการแจ้งเตือนที่คุณต้องการใช้",
-					"title": "การแจ้งเตือน"
-				},
-				"type": {
-					"description": "เลือกประเภทการตรวจสอบที่ต้องการ",
-					"optionDockerDescription": "ใช้ Docker เพื่อตรวจสอบว่าคอนเทนเนอร์กำลังทำงานอยู่",
-					"optionGameDescription": "ตรวจสอบว่าเซิร์ฟเวอร์เกมเฉพาะออนไลน์อยู่หรือไม่",
-					"optionGrpcDescription": "ตรวจสอบบริการ gRPC โดยใช้ Health Checking Protocol มาตรฐาน",
-					"optionWebSocketDescription": "ตรวจสอบ WebSocket endpoint สำหรับสุขภาพการเชื่อมต่อและเวลาตอบสนอง",
-					"optionHttpDescription": "ใช้ HTTP(S) เพื่อตรวจสอบเว็บไซต์หรือ API endpoint",
-					"optionPingDescription": "ใช้ ICMP Ping เพื่อตรวจสอบว่าเซิร์ฟเวอร์ออนไลน์อยู่หรือไม่",
-					"optionPortDescription": "ตรวจสอบว่าพอร์ตเฉพาะบนเซิร์ฟเวอร์เปิดอยู่หรือไม่",
-					"title": "ประเภท"
-				},
-				"thresholds": {
-					"title": "เกณฑ์การแจ้งเตือน",
-					"description": "กำหนดเกณฑ์ที่ควรทริกเกอร์การแจ้งเตือนสำหรับมอนิเตอร์ฮาร์ดแวร์นี้",
-					"option": {
-						"cpuThreshold": {
-							"label": "เกณฑ์แจ้งเตือน CPU (%)"
-						},
-						"memoryThreshold": {
-							"label": "เกณฑ์แจ้งเตือนหน่วยความจำ (%)"
-						},
-						"diskThreshold": {
-							"label": "เกณฑ์แจ้งเตือนดิสก์ (%)"
-						},
-						"tempThreshold": {
-							"label": "เกณฑ์แจ้งเตือนอุณหภูมิ (°C)"
-						}
-					}
-				},
-				"geoChecks": {
-					"title": "การตรวจสอบแบบกระจายทางภูมิศาสตร์",
-					"description": "เรียกใช้การตรวจสอบจากหลายตำแหน่งทางภูมิศาสตร์เพื่อตรวจสอบความพร้อมใช้งานและประสิทธิภาพทั่วโลก",
-					"option": {
-						"enabled": {
-							"label": "เปิดใช้งานการตรวจสอบแบบกระจายทางภูมิศาสตร์"
-						},
-						"locations": {
-							"label": "ตำแหน่ง",
-							"placeholder": "เลือกตำแหน่ง",
-							"options": {
-								"EU": "ยุโรป",
-								"NA": "อเมริกาเหนือ",
-								"AS": "เอเชีย",
-								"SA": "อเมริกาใต้",
-								"AF": "แอฟริกา",
-								"OC": "โอเชียเนีย"
-							}
-						},
-						"interval": {
-							"label": "ช่วงเวลาตรวจสอบ",
-							"value": {
-								"fiveMinutes": "5 นาที",
-								"tenMinutes": "10 นาที",
-								"fifteenMinutes": "15 นาที",
-								"thirtyMinutes": "30 นาที"
-							}
-						}
-					}
-				},
-				"url": {
-					"title": "แสดง IP/URL ของมอนิเตอร์บนหน้าสถานะ",
-					"description": "แสดง IP หรือ URL ของมอนิเตอร์บนหน้าสถานะสาธารณะ หากปิดใช้งาน จะแสดงเฉพาะชื่อมอนิเตอร์เพื่อปกป้องข้อมูลที่ละเอียดอ่อน",
-					"option": {
-						"showURL": {
-							"label": "แสดง IP/URL บนหน้าสถานะ",
-							"enabled": "เปิดใช้งาน",
-							"disabled": "ปิดใช้งาน"
-						}
-					}
-				},
-				"stats": {
-					"title": "ประวัติการตรวจสอบ",
-					"description": "ล้างประวัติการตรวจสอบและสถิติทั้งหมดของทีม การกระทำนี้ไม่สามารถย้อนกลับได้",
-					"buttonText": "ล้างสถิติทั้งหมด",
-					"dialog": {
-						"title": "ล้างประวัติการตรวจสอบทั้งหมด?",
-						"description": "การดำเนินการนี้จะลบประวัติการตรวจสอบ สถิติ และข้อมูลการตรวจสอบทั้งหมดของทีมอย่างถาวร ไม่สามารถย้อนกลับได้",
-						"confirm": "ใช่ ล้างสถิติทั้งหมด"
-					}
-				}
-			}
-		},
-		"editUser": {
-			"form": {
-				"roles": {
-					"title": "บทบาท",
-					"description": "กำหนดบทบาทให้กับผู้ใช้ สามารถเลือกได้หลายบทบาท"
-				}
-			},
-			"dialog": {
-				"removeUser": {
-					"title": "ลบผู้ใช้",
-					"content": "คุณแน่ใจหรือไม่ว่าต้องการลบ {{name}} ออกจากทีม? การกระทำนี้ไม่สามารถย้อนกลับได้"
-				}
-			}
-		},
-		"incidents": {
-			"dialog": {
-				"resolveIncident": {
-					"title": "แก้ไขเหตุการณ์",
-					"option": {
-						"comment": {
-							"label": "ความคิดเห็น (ไม่บังคับ)",
-							"placeholder": "เพิ่มความคิดเห็นเกี่ยวกับการแก้ไข..."
-						}
-					}
-				},
-				"details": {
-					"analysis": "การวิเคราะห์เหตุการณ์",
-					"comment": "ความคิดเห็น:",
-					"detailsLabel": "รายละเอียด",
-					"downtime": "ดาวน์ไทม์:",
-					"message": "ข้อความ:",
-					"monitor": "มอนิเตอร์:",
-					"overview": "ภาพรวม",
-					"resolutionDetails": "รายละเอียดการแก้ไข",
-					"resolutionType": "ประเภท:",
-					"resolutionTypes": {
-						"automatic": "อัตโนมัติ",
-						"manual": "ด้วยตนเอง"
-					},
-					"resolve": "แก้ไขเหตุการณ์",
-					"resolvedAt": "แก้ไขเมื่อ:",
-					"resolvedBy": "แก้ไขโดย:",
-					"startedAt": "เริ่มเมื่อ:",
-					"status": "สถานะ:",
-					"statusCode": "รหัสสถานะ:",
-					"timeline": "ไทม์ไลน์",
-					"title": "รายละเอียดเหตุการณ์",
-					"url": "URL:"
-				}
-			},
-			"filters": {
-				"allMonitors": "มอนิเตอร์ทั้งหมด",
-				"monitor": "มอนิเตอร์",
-				"resolutionType": "ประเภทการแก้ไข",
-				"resolutionTypes": {
-					"manual": "ด้วยตนเอง",
-					"automatic": "อัตโนมัติ",
-					"all": "ทั้งหมด"
-				}
-			},
-			"summaryCard": {
-				"activeIncidents": {
-					"title": "เหตุการณ์ที่ยังดำเนินอยู่",
-					"active_zero": "ไม่มีเหตุการณ์ที่ยังดำเนินอยู่",
-					"active_one": "{{count}} เหตุการณ์ที่ยังดำเนินอยู่",
-					"active_other": "{{count}} เหตุการณ์ที่ยังดำเนินอยู่"
-				},
-				"incidentStats": {
-					"avgResolutionTime": "เวลาแก้ไขเฉลี่ย",
-					"mostAffectedMonitor": "มอนิเตอร์ที่ได้รับผลกระทบมากที่สุด",
-					"title": "สถิติเหตุการณ์",
-					"totalIncidents": "เหตุการณ์ทั้งหมด"
-				},
-				"latestIncidents": {
-					"title": "เหตุการณ์ล่าสุด"
-				}
-			},
-			"table": {
-				"actions": {
-					"details": "รายละเอียด",
-					"goToMonitor": "ไปยังมอนิเตอร์",
-					"resolveManually": "แก้ไขด้วยตนเอง"
-				},
-				"activeIncidents": "เหตุการณ์ที่ยังดำเนินอยู่",
-				"headers": {
-					"endTime": "เวลาสิ้นสุด",
-					"resolutionType": "ประเภทการแก้ไข",
-					"startTime": "เวลาเริ่มต้น",
-					"statusCode": "รหัสสถานะ"
-				},
-				"resolvedIncidents": "เหตุการณ์ที่แก้ไขแล้ว",
-				"status": {
-					"active": "ใช้งานอยู่",
-					"resolved": "แก้ไขแล้ว"
-				}
-			}
-		},
-		"infrastructure": {
-			"charts": {
-				"labels": {
-					"cpu": "การใช้งาน CPU",
-					"disk": "การใช้งานดิสก์",
-					"memory": "การใช้งานหน่วยความจำ",
-					"netBytesRecv": "{{name}} - ไบต์ที่รับ",
-					"netBytesSent": "{{name}} - ไบต์ที่ส่ง",
-					"temp": "อุณหภูมิ"
-				}
-			},
-			"gauges": {
-				"cpu": {
-					"lowerLabel": "ความถี่สูงสุด",
-					"title": "การใช้งาน CPU",
-					"upperLabel": "ความถี่ปัจจ��บัน"
-				},
-				"disk": {
-					"lowerLabel": "ว่าง",
-					"title": "การใช้งานดิสก์ {{idx}}",
-					"upperLabel": "ใช้แล้ว"
-				},
-				"memory": {
-					"lowerLabel": "ว่าง",
-					"title": "การใช้งานหน่วยความจำ",
-					"upperLabel": "ใช้แล้ว"
-				}
-			},
-			"statBoxes": {
-				"avgCpuTemperature": "อุณหภูมิเฉลี่ยของซีพียู",
-				"cpuFrequency": "ความถี่ของ CPU",
-				"cpuLogical": "ซีพียู (คอร์เสมือน)",
-				"cpuPhysical": "ซีพียู (คอร์หลัก)",
-				"disk": "ดิสก์",
-				"memory": "หน่วยความจำ",
-				"os": "ระบบปฏิบัติการ"
-			},
-			"table": {
-				"headers": {
-					"cpu": "CPU",
-					"disk": "ดิสก์",
-					"memory": "หน่วยความจำ"
-				}
-			},
-			"tabs": {
-				"labels": {
-					"network": "เน็ตเวอร์",
-					"overview": "ภาพรวม"
-				}
-			},
-			"fallback": {
-				"actionButton": "สร้างมอนิเตอร์!",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "มอนิเตอร์โครงสร้างพื้นฐานใช้เพื่อ:"
-			}
-		},
-		"logs": {
-			"tabs": {
-				"diagnostics": "วินิจฉัย",
-				"logs": "Logs เซิร์ฟเวอร์",
-				"queue": "คิวงาน"
-			},
-			"logLevelSelect": {
-				"label": "ระดับบันทึก"
-			},
-			"jobQueue": "คิวงาน",
-			"failedJobs": "งานที่ล้มเหลว",
-			"noLogs": "ไม่พบบันทึก",
-			"metrics": {
-				"jobs": "งาน",
-				"activeJobs": "งานที่กำลังดำเนินการ",
-				"failingJobs": "งานที่ล้มเหลว",
-				"totalRuns": "จำนวนรันทั้งหมด",
-				"totalFailures": "จำนวนล้มเหลวทั้งหมด"
-			},
-			"diagnostics": {
-				"stats": {
-					"eventLoopDelay": "ดีเลย์ของ Event loop",
-					"uptime": "อัปไทม์",
-					"usedHeapSize": "ขนาด heap ที่ใช้",
-					"totalHeapSize": "ขนาด heap ทั้งหมด",
-					"osMemoryLimit": "ขีดจำกัดหน่วยความจำ OS"
-				},
-				"gauges": {
-					"heapAllocation": "การจัดสรร Heap",
-					"heapUsage": "การใช้งาน Heap",
-					"heapUtilization": "การใช้ประโยชน์ Heap",
-					"instantCpuUsage": "การใช้งาน CPU ขณะนี้",
-					"availableMemoryPercentage": "% ของหน่วยความจำที่มี",
-					"allocatedPercentage": "% ที่จัดสรร",
-					"usedSPercentage": "% ของ 1 วินาทีที่ CPU ใช้",
-					"total": "ทั้งหมด",
-					"used": "ใช้แล้ว"
-				}
-			},
-			"table": {
-				"headers": {
-					"timestamp": "เวลา",
-					"level": "ระดับ",
-					"service": "บริการ",
-					"method": "เมธอด",
-					"monitorId": "รหัสมอนิเตอร์",
-					"runCount": "จำนวนรัน",
-					"failCount": "จำนวนล้มเหลว",
-					"lastRunAt": "รันล่าสุดเมื่อ",
-					"lockedAt": "ล็อกเมื่อ",
-					"lastFinishedAt": "เสร็จสิ้นล่าสุดเมื่อ",
-					"lastRunTook": "รันล่าสุดใช้เวลา",
-					"lastFailedAt": "ล้มเหลวล่าสุดเมื่อ",
-					"failReason": "สาเหตุที่ล้มเหลว"
-				}
-			}
-		},
-		"maintenanceWindow": {
-			"fallback": {
-				"actionButton": "สร้างช่วงเวลาบำรุงรักษา!",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "ช่วงเวลาบำรุงรักษาใช้เพื่อ:"
-			},
-			"table": {
-				"headers": {
-					"nextWindow": "ช่วงเวลาถัดไป",
-					"repeat": "ทำซ้ำ"
-				}
-			},
-			"form": {
-				"general": {
-					"title": "ตั้งค่าทั่วไป",
-					"description": "ตั้งชื่อและตัวเลือกการทำซ้ำสำหรับช่วงเวลาบำรุงรักษา",
-					"option": {
-						"name": {
-							"label": "ชื่อ",
-							"placeholder": "เช่น บำรุงรักษาประจำสัปดาห์"
-						},
-						"repeat": {
-							"label": "ทำซ้ำ"
-						}
-					}
-				},
-				"startDate": {
-					"title": "วันที่เริ่มต้น",
-					"description": "เลือกวันที่เริ่มต้นสำหรับช่วงเวลาบำรุงรักษา",
-					"option": {
-						"startDate": {
-							"label": "วันที่เริ่มต้น"
-						}
-					}
-				},
-				"startTime": {
-					"title": "เวลาเริ่มต้น",
-					"description": "ตั้งเวลาเริ่มต้นและระยะเวลาสำหรับช่วงเวลาบำรุงรักษา ค่าทั้งหมดเป็น UTC",
-					"option": {
-						"duration": {
-							"label": "ระยะเวลา"
-						},
-						"startTime": {
-							"label": "เวลาเริ่มต้น"
-						}
-					},
-					"monitors": {
-						"title": "มอนิเตอร์",
-						"description": "มอนิเตอร์ที่ช่วงเวลาบำรุงรักษาควรใช้งาน",
-						"option": {
-							"addMonitors": {
-								"label": "เพิ่มมอนิเตอร์"
-							}
-						}
-					}
-				}
-			}
-		},
-		"notifications": {
-			"fallback": {
-				"actionButton": "สร้างช่องทาง",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "ช่องทางการแจ้งเตือนใช้เพื่อ:"
-			},
-			"form": {
-				"accessToken": {
-					"optionAccessToken": "โทเค็นการเข้าถึง",
-					"placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
-				},
-				"address": {
-					"description": "ที่อยู่ที่จะส่งการแจ้งเตือน",
-					"optionAddress": "ที่อยู่",
-					"placeholderEmail": "example@example.com",
-					"placeholderWebhook": "https://your-server.com/webhook",
-					"title": "ที่อยู่"
-				},
-				"homeServer": {
-					"optionHomeServer": "โฮมเซิร์ฟเวอร์",
-					"placeholder": "example.com"
-				},
-				"matrix": {
-					"description": "กำหนดค่าการเชื่อมต่อ Matrix homeserver สำหรับการแจ้งเตือน",
-					"title": "ตั้งค่า Matrix"
-				},
-				"notificationName": {
-					"description": "ชื่อที่สื่อความหมายสำหรับช่องทางการแจ้งเตือน",
-					"optionName": "ชื่อช่องทาง",
-					"placeholder": "เช่น การแจ้งเตือน Production",
-					"title": "ชื่อช่องทาง"
-				},
-				"pagerDuty": {
-					"description": "คีย์การรวม PagerDuty สำหรับรับการแจ้งเตือน",
-					"optionIntegrationKey": "คีย์การรวม",
-					"placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
-					"title": "คีย์การรวม"
-				},
-				"roomId": {
-					"optionRoomId": "รหัสห้อง",
-					"placeholder": "!abcdefg:matrix.org"
-				},
-				"type": {
-					"description": "เลือกประเภทช่องทางการแจ้งเตือนที่ต้องการสร้าง",
-					"optionType": "ประเภท",
-					"title": "ประเภทช่องทาง"
-				},
-				"telegram": {
-					"title": "ตั้งค่า Telegram",
-					"description": "เพื่อเปิดใช้งานการแจ้งเตือนผ่าน Telegram ให้สร้างบอท Telegram โดยใช้ BotFather ซึ่งเป็นบอททางการสำหรับสร้างและจัดการบอท Telegram จากนั้นนำ API token และ Chat ID มาใส่ที่นี่",
-					"optionBotToken": "โทเค็นบอท",
-					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
-					"optionChatId": "Chat ID",
-					"placeholderChatId": "-1001234567890"
-				}
-			},
-			"table": {
-				"headers": {
-					"destination": "ปลายทาง"
-				}
-			}
-		},
-		"pageSpeed": {
-			"charts": {
-				"common": {
-					"cls": "Cumulative Layout Shift (CLS)",
-					"fcp": "First Contentful Paint (FCP)",
-					"lcp": "Largest Contentful Paint (LCP)",
-					"si": "Speed Index (SI)",
-					"tbt": "Total Blocking Time (TBT)"
-				},
-				"legend": {
-					"title": "รายงาน PageSpeed",
-					"weight": "น้ำหนัก"
-				},
-				"pie": {
-					"title": "รายงานประสิทธิภาพ"
-				}
-			},
-			"table": {
-				"headers": {
-					"pageSpeedScore": "คะแนน PageSpeed"
-				}
-			},
-			"fallback": {
-				"actionButton": "สร้างมอนิเตอร์!",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "มอนิเตอร์ PageSpeed ใช้เพื่อ:"
-			}
-		},
-		"settings": {
-			"form": {
-				"timezone": {
-					"title": "เขตเวลาที่แสดง",
-					"description": "เลือกเขตเวลาที่ใช้แสดงวันที่และเวลาทั่วทั้งแอปพลิเคชัน",
-					"option": {
-						"timezone": {
-							"label": "เขตเวลาที่แสดง"
-						}
-					}
-				},
-				"ui": {
-					"title": "รูปลักษณ์",
-					"description": "สลับระหว่างโหมดสว่างและมืด เปลี่ยนภาษา หรือปรับแต่งประเภทกราฟ",
-					"option": {
-						"theme": {
-							"label": "โหมดธีม",
-							"light": "สว่าง",
-							"dark": "มืด"
-						},
-						"language": {
-							"label": "ภาษา"
-						},
-						"chartType": {
-							"label": "ประเภทกราฟ",
-							"histogram": "ฮิสโตแกรม",
-							"heatmap": "แผนที่ความร้อน"
-						}
-					}
-				},
-				"pagespeed": {
-					"title": "คีย์ API ของ Google PageSpeed",
-					"description": "กรอกคีย์ API ของ Google PageSpeed เพื่อเปิดใช้งานการตรวจสอบ Google PageSpeed คลิกรีเซ็ตเพื่ออัปเดตคีย์",
-					"option": {
-						"apiKey": {
-							"label": "คีย์ API ของ PageSpeed",
-							"labelSet": "ตั้งค่าคีย์ API แล้ว คลิกรีเซ็ตเพื่อเปลี่ยน",
-							"placeholder": "กรอกคีย์ API ของ Google PageSpeed"
-						}
-					}
-				},
-				"url": {
-					"title": "แสดง IP/URL ของมอนิเตอร์บนหน้าสถานะ",
-					"description": "แสดง IP หรือ URL ของมอนิเตอร์บนหน้าสถานะสาธารณะ หากปิดใช้งาน จะแสดงเฉพาะชื่อมอนิเตอร์เพื่อปกป้องข้อมูลที่ละเอียดอ่อน",
-					"option": {
-						"showURL": {
-							"label": "แสดง IP/URL บนหน้าสถานะ",
-							"enabled": "เปิดใช้งาน",
-							"disabled": "ปิดใช้งาน"
-						}
-					}
-				},
-				"stats": {
-					"title": "ประวัติการตรวจสอบ",
-					"description": "ล้างประวัติการตรวจสอบและสถิติทั้งหมดของทีม การกระทำนี้ไม่สามารถย้อนกลับได้",
-					"option": {
-						"clear": {
-							"label": "ล้างสถิติทั้งหมด การกระทำนี้ไม่สามารถย้อนกลับได้"
-						}
-					},
-					"dialog": {
-						"title": "ล้างประวัติการตรวจสอบทั้งหมด?",
-						"description": "ไม่สามารถย้อนกลับได้"
-					}
-				},
-				"retention": {
-					"title": "การเก็บรักษาข้อมูลตรวจสอบ",
-					"description": "กำหนดระยะเวลาเก็บรักษาข้อมูลตรวจสอบก่อนถูกลบอัตโนมัติ",
-					"option": {
-						"days": {
-							"label": "ระยะเวลาเก็บรักษา (วัน)",
-							"unlimited": "ไม่จำกัด"
-						}
-					}
-				},
-				"thresholds": {
-					"title": "เกณฑ์ทั่วไป",
-					"description": "กำหนดเกณฑ์ CPU หน่วยความจำ ดิสก์ และอุณหภูมิทั่วไปสำหรับการตรวจสอบโครงสร้างพื้นฐาน ใช้กับมอนิเตอร์ฮาร์ดแวร์ทั้งหมด เว้นแต่ถูกแทนที่",
-					"option": {
-						"cpu": {
-							"label": "เกณฑ์ CPU (%)",
-							"placeholder": "1 - 100"
-						},
-						"memory": {
-							"label": "เกณฑ์หน่วยความจำ (%)",
-							"placeholder": "1 - 100"
-						},
-						"disk": {
-							"label": "เกณฑ์ดิสก์ (%)",
-							"placeholder": "1 - 100"
-						},
-						"temperature": {
-							"label": "เกณฑ์อุณหภูมิ (°C)",
-							"placeholder": "1 - 150"
-						}
-					}
-				},
-				"email": {
-					"title": "ตั้งค่าอีเมล",
-					"description": "กำหนดค่าอีเมลสำหรับระบบ ใช้สำหรับส่งการแจ้งเตือน",
-					"descriptionTransport": "สร้าง SMTP transport สำหรับ NodeMailer",
-					"descriptionTransportLink": "ดูข้อกำหนดที่นี่",
-					"option": {
-						"host": {
-							"label": "โฮสต์อีเมล - ชื่อโฮสต์หรือ IP ที่จะเชื่อมต่อ",
-							"placeholder": "smtp.gmail.com"
-						},
-						"port": {
-							"label": "พอร์ตอีเมล - พอร์ตที่จะเชื่อมต่อ",
-							"placeholder": "587"
-						},
-						"address": {
-							"label": "ที่อยู่อีเมล - ใช้สำหรับยืนยันตัวตน",
-							"placeholder": "you@example.com"
-						},
-						"user": {
-							"label": "ผู้ใช้อีเมล - ชื่อผู้ใช้สำหรับยืนยันตัวตน แทนที่อีเมลหากระบุ",
-							"placeholder": "เว้นว่างหากไม่จำเป็น"
-						},
-						"password": {
-							"label": "รหัสผ่านอีเมล - รหัสผ่านสำหรับยืนยันตัวตน",
-							"labelSet": "ตั้งค่ารหัสผ่านแล้ว คลิกรีเซ็ตเพื่อเปลี่ยน",
-							"placeholder": "กรอกรหัสผ่านของคุณ"
-						},
-						"tlsServername": {
-							"label": "ชื่อเซิร์ฟเวอร์ TLS - ชื่อโฮสต์สำหรับตรวจสอบ TLS เมื่อโฮสต์เป็น IP (ไม่บังคับ)",
-							"placeholder": "example.com"
-						},
-						"connectionHost": {
-							"label": "โฮสต์เชื่อมต่ออีเมล - ชื่อโฮสต์ที่ใช้ในการ HELO/EHLO",
-							"placeholder": "localhost"
-						},
-						"secure": {
-							"label": "ใช้ SSL (แนะนำ): เข้ารหัสการเชื่อมต่อด้วย SSL/TLS"
-						},
-						"pool": {
-							"label": "เปิดใช้งาน connection pooling: ใช้การเชื่อมต่อที่มีอยู่ซ้ำเพื่อเพิ่มประสิทธิภาพ"
-						},
-						"ignoreTLS": {
-							"label": "ปิดใช้งาน STARTTLS: ไม่ใช้ TLS แม้เซิร์ฟเวอร์จะรองรับ"
-						},
-						"requireTLS": {
-							"label": "บังคับใช้ STARTTLS: ต้องอัปเกรดเป็น TLS ล้มเหลวหากไม่รองรับ"
-						},
-						"rejectUnauthorized": {
-							"label": "ปฏิเสธใบรับรองที่ไม่ถูกต้อง: ปฏิเสธการเชื่อมต่อด้วยใบรับรอง self-signed หรือไม่น่าเชื่อถือ"
-						}
-					}
-				},
-				"demoMonitors": {
-					"title": "มอนิเตอร์สาธิต",
-					"description": "เพิ่มมอนิเตอร์ตัวอย่างเพื่อวัตถุประสงค์ในการ���าธิต"
-				},
-				"removeMonitors": {
-					"title": "รีเซ็ตระบบ",
-					"description": "ลบมอนิเตอร์ทั้งหมดออกจากระบบ",
-					"dialog": {
-						"title": "ลบมอนิเตอร์ทั้งหมด?",
-						"description": "ไม่สามารถย้อนกลับได้"
-					}
-				},
-				"exportMonitors": {
-					"title": "ส่งออกมอนิเตอร์"
-				},
-				"importExportMonitors": {
-					"title": "นำเข้า / ส่งออกมอนิเตอร์",
-					"description": "นำเข้าหรือส่งออกข้อมูลมอนิเตอร์เป็นไฟล์ JSON สำหรับสำรองหรือโอนย้าย"
-				},
-				"about": {
-					"title": "เกี่ยวกับ",
-					"developedBy": "พัฒนาโดย Bluewave Labs"
-				},
-				"validation": {
-					"errorMessage": "กรุณาแก้ไขข้อผิดพลาดการตรวจสอบต่อไปนี้:"
-				}
-			}
-		},
-		"statusPages": {
-			"deleteSuccess": "ลบหน้าสถานะสำเร็จ",
-			"fallback": {
-				"title": "หน้าสถานะใช้เพื่อ:",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "สร้างหน้าสถานะ!"
-			},
-			"monitorsList": {
-				"chartTypeHeatmap": "แผนที่ความร้อน",
-				"chartTypeHistogram": "ฮิสโตแกรม",
-				"noData": "ไม่มีข้อมูล",
-				"infrastructure": {
-					"title": "โครงสร้างพื้นฐาน",
-					"cpu": "CPU",
-					"memory": "RAM",
-					"memoryText": "หน่วยความจำ",
-					"disk": "ดิสก์",
-					"usage": "การใช้งาน",
-					"used": "ใช้แล้ว",
-					"total": "ทั้งหมด"
-				},
-				"uptime": {
-					"title": "อัปไทม์",
-					"responseTime": "เวลาตอบสนอง"
-				}
-			},
-			"statusBar": {
-				"allDown": "ระบบทั้งหมดล่ม",
-				"allUp": "ระบบทั้งหมดทำงานปกติ",
-				"degraded": "บางระบบกำลังประสบปัญหา",
-				"unknown": "ไม่สามารถระบุสถานะระบบได้"
-			},
-			"table": {
-				"headers": {
-					"name": "ชื่อหน้าสถานะ",
-					"url": "URL สาธารณะ"
-				},
-				"published": "เผยแพร่แล้ว",
-				"unpublished": "ยังไม่เผยแพร่"
-			},
-			"title": "หน้าสถานะ",
-			"details": {
-				"empty": {
-					"title": "ยังไม่มีข้อมูลที่นี่",
-					"addMonitor": "เพิ่มมอนิเตอร์เพื่อเริ่มต้น"
-				}
-			},
-			"form": {
-				"access": {
-					"title": "การเข้าถึง",
-					"description": "หากหน้าสถานะพร้อมแล้ว คุณสามารถทำเครื่องหมายว่าเผยแพร่แล้ว",
-					"option": {
-						"published": {
-							"name": "เผยแพร่แล้วและสาธารณะสามารถเห็นได้"
-						}
-					}
-				},
-				"basicInfo": {
-					"title": "ข้อมูลพื้นฐาน",
-					"description": "กำหนดชื่อบริษัทและซับโดเมนที่หน้าสถานะชี้ไป",
-					"option": {
-						"name": {
-							"label": "ชื่อบริษัท",
-							"placeholder": "Acme Inc."
-						},
-						"url": {
-							"label": "ที่อยู่หน้าสถานะของคุณ",
-							"placeholder": "my-status-page"
-						}
-					}
-				},
-				"monitors": {
-					"title": "มอนิเตอร์",
-					"description": "เลือกมอนิเตอร์ที่จะแสดงบนหน้าสถานะ",
-					"noMonitors": "ไม่ได้เลือกมอนิเตอร์",
-					"option": {
-						"monitors": {
-							"label": "เลือกมอนิเตอร์",
-							"placeholder": "ค้นหาและเลือกมอนิเตอร์..."
-						}
-					}
-				},
-				"timezone": {
-					"title": "เขตเวลา",
-					"description": "เลือกเขตเวลาที่หน้าสถานะจะแสดง",
-					"option": {
-						"timezone": {
-							"label": "เขตเวลา",
-							"placeholder": "เลือกเขตเวลา..."
-						}
-					}
-				},
-				"appearance": {
-					"title": "รูปลักษณ์",
-					"description": "กำหนดรูปลักษณ์เริ่มต้นของหน้าสถานะสาธารณะ",
-					"option": {
-						"logo": {
-							"label": "โลโก้"
-						},
-						"color": {
-							"label": "สีแบรนด์"
-						}
-					}
-				},
-				"features": {
-					"title": "ฟีเจอร์",
-					"description": "กำหนดค่าข้อมูลที่แสดงบนหน้าสถานะ",
-					"option": {
-						"showCharts": {
-							"label": "แสดงกราฟเวลาตอบสนอง"
-						},
-						"showUptimePercentage": {
-							"label": "แสดงเปอร์เซ็นต์อัปไทม์"
-						},
-						"showAdminLoginLink": {
-							"label": "แสดงลิงก์เข้าสู่ระบบผู้ดูแล"
-						},
-						"showInfrastructure": {
-							"label": "แสดงเมตริกโครงสร้างพื้นฐาน"
-						}
-					}
-				}
-			}
-		},
-		"uptime": {
-			"filters": {
-				"search": {
-					"placeholder": "ค้นหามอนิเตอร์..."
-				}
-			},
-			"table": {
-				"headers": {
-					"responseTime": "เวลาตอบสนอง"
-				}
-			},
-			"fallback": {
-				"actionButton": "สร้างมอนิเตอร์!",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "มอนิเตอร์อัปไทม์ใช้เพื่อ:"
-			}
-		}
-	}
+  "common": {
+    "auth": {
+      "roles": {
+        "admin": "ผู้ดูแลระบบ",
+        "demo": "สาธิต",
+        "superadmin": "ผู้ดูแลระบบสูงสุด",
+        "user": "ผู้ใช้"
+      }
+    },
+    "alerts": {
+      "pageSpeedApiKey": {
+        "content": "คำเตือน: คุณยังไม่ได้เพิ่ม API key ของ Google PageSpeed ไปที่<settingsLink>การตั้งค่า</settingsLink>เพื่อเพิ่ม หากไม่มี ระบบตรวจสอบ PageSpeed จะไม่ทำงาน"
+      }
+    },
+    "appName": "Checkmate",
+    "breadcrumbs": {
+      "details": "รายละเอียด",
+      "home": "หน้าหลัก"
+    },
+    "buttons": {
+      "addMember": "เพิ่มสมาชิก",
+      "cancel": "ยกเลิก",
+      "close": "ปิด",
+      "configure": "ตั้งค่า",
+      "confirm": "ยืนยัน",
+      "create": "สร้าง",
+      "delete": "ลบ",
+      "generateToken": "สร้างโทเค็น",
+      "incidents": "เหตุการณ์",
+      "inviteMember": "เชิญสมาชิก",
+      "pause": "หยุดชั่วคราว",
+      "resume": "ดำเนินการต่อ",
+      "save": "บันทึก",
+      "sendInvite": "ส่งคำเชิญ",
+      "test": "ทดสอบ",
+      "testNotifications": "ทดสอบการแจ้งเตือน",
+      "toggleTheme": "สลับโหมดสว่าง & มืด",
+      "flushQueue": "ล้างคิว",
+      "notFound": "ไปยังแดชบอร์ดหลัก",
+      "resetPassword": "รีเซ็ตรหัสผ่าน",
+      "reset": "รีเช็ต",
+      "clear": "ล้าง",
+      "addDemo": "เพิ่มมอนิเตอร์สาธิต",
+      "removeMonitors": "ลบมอนิเตอร์",
+      "sendTestEmail": "ส่งอีเมลทดสอบ",
+      "exportToJSON": "ส่งออกเป็น JSON",
+      "importFromJSON": "นำเข้าจาก JSON",
+      "clearFilters": "ล้างตัวกรอง",
+      "removeUser": "ลบผู้ใช้"
+    },
+    "charts": {
+      "labels": {
+        "averageResponseTime": "เวลาตอบสนองเฉลี่ย",
+        "downtime": "ดาวน์ไทม์",
+        "high": "สูง",
+        "low": "ต่ำ",
+        "uptime": "อัปไทม์"
+      },
+      "histogram": {
+        "avg": "เฉลี่ย: {{value}} ms",
+        "max": "สูงสุด: {{value}} ms"
+      }
+    },
+    "dialogs": {
+      "delete": {
+        "description": "การกระทำนี้ไม่สามารถย้อนกลับได้",
+        "title": "คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้?"
+      }
+    },
+    "labels": {
+      "active": "ใช้งานอยู่",
+      "paused": "หยุดชั่วคราว",
+      "na": "ไม่มีข้อมูล",
+      "resolved": "แก้ไขแล้ว",
+      "responseTime": "เวลาตอบสนอง"
+    },
+    "form": {
+      "role": {
+        "option": {
+          "role": {
+            "label": "บทบาท"
+          }
+        }
+      },
+      "name": {
+        "option": {
+          "firstName": {
+            "label": "ชื่อ",
+            "placeholder": "Brownyroll"
+          },
+          "lastName": {
+            "label": "นามสกุล",
+            "placeholder": "."
+          }
+        }
+      },
+      "email": {
+        "option": {
+          "email": {
+            "label": "อีเมล",
+            "placeholder": "you@example.com"
+          }
+        }
+      }
+    },
+    "table": {
+      "empty": "ไม่มีข้อมูล",
+      "headers": {
+        "actions": "จัดการ",
+        "dateTime": "วันที่และเวลา",
+        "message": "ข้อความ",
+        "monitor": "มอนิเตอร์",
+        "monitorId": "รหัสมอนิเตอร์",
+        "name": "ชื่อ",
+        "status": "สถานะ",
+        "type": "ประเภท",
+        "url": "URL",
+        "interval": "ช่วงเวลา",
+        "active": "ใช้งานอยู่",
+        "responseTime": "เวลาตอบสนอง"
+      }
+    }
+  },
+  "components": {
+    "imageUpload": {
+      "clickToUpload": "คลิกเพื่ออัปโหลด",
+      "dragAndDrop": "ลากและวางเลย",
+      "supportedFormats": "รูปแบบที่รองรับ",
+      "maxSize": "ขนาดสูงสุด",
+      "orDragAndDrop": "หรือลากและวาง",
+      "errors": {
+        "invalidFileSize": "ขนาดไฟล์ใหญ่เกินไป!",
+        "invalidFileFormat": "รูปแบบไฟล์ไม่รองรับ!"
+      }
+    },
+    "headerStatusPageControls": {
+      "publicLink": "ลิงก์สาธารณะ"
+    },
+    "headerTimeRange": {
+      "labels": {
+        "day": "วัน",
+        "month": "เดือน",
+        "recent": "ล่าสุด",
+        "week": "สัปดาห์"
+      },
+      "description": {
+        "recent": "แสดงสถิติย้อนหลัง 2 ชั่วโมง",
+        "day": "แสดงสถิติย้อนหลัง 24 ชั่วโมง",
+        "week": "แสดงสถิติย้อนหลัง 7 วัน",
+        "month": "แสดงสถิติย้อนหลัง 30 วัน"
+      }
+    },
+    "offlineBanner": {
+      "serverUnreachable": "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้",
+      "retry": "ลองอีกครั้ง",
+      "retrying": "กำลังลองอีกครั้ง...",
+      "reconnected": "เชื่อมต่อกับเซิร์ฟเวอร์สำเร็จแล้ว"
+    },
+    "sidebar": {
+      "menu": {
+        "uptime": "ความพร้อมใช้งาน",
+        "pagespeed": "ความเร็วหน้าเว็บ",
+        "infrastructure": "โครงสร้างพื้นฐาน",
+        "notifications": "การแจ้งเตือน",
+        "checks": "การตรวจสอบ",
+        "incidents": "เหตุการณ์",
+        "statusPages": "หน้าสถานะ",
+        "maintenance": "การบำรุงรักษา",
+        "logs": "บันทึก",
+        "settings": "การตั้งค่า"
+      },
+      "bottomMenu": {
+        "support": "การสนับสนุน",
+        "discussions": "การสนทนา",
+        "docs": "เอกสาร",
+        "changelog": "บันทึกการเปลี่ยนแปลง"
+      },
+      "accountMenu": {
+        "profile": "โปรไฟล์",
+        "password": "รหัสผ่าน",
+        "team": "ทีม"
+      },
+      "starPrompt": {
+        "title": "ให้ดาว Checkmate",
+        "description": "ดูรุ่นล่าสุดและช่วยเติบโตชุมชนบน GitHub"
+      },
+      "authFooter": {
+        "navControls": "การควบคุม",
+        "logOut": "ออกจากระบบ",
+        "roles": {
+          "superAdmin": "ผู้ดูแลระบบสูงสุด",
+          "admin": "ผู้ดูแลระบบ",
+          "user": "ผู้ใช้",
+          "demoUser": "ผู้ใช้ Demo"
+        }
+      }
+    },
+    "starPrompt": {
+      "title": "ให้ดาว Checkmate",
+      "description": "ดูรุ่นล่าสุดและช่วยเติบโตชุมชนบน GitHub"
+    }
+  },
+  "pages": {
+    "notFound": {
+      "title": "โอ้ไม่! ซูชิของคุณหล่นแล้ว!",
+      "subtitle": "URL ไม่มีอยู่ หรือคุณไม่มีสิทธิ์เข้าถึง"
+    },
+    "account": {
+      "tabs": {
+        "profile": "โปรไฟล์",
+        "password": "รหัสผ่าน",
+        "team": "ทีม"
+      },
+      "form": {
+        "name": {
+          "title": "ชื่อ",
+          "description": "อัปเดตข้อมูลส่วนตัวของคุณ"
+        },
+        "photo": {
+          "title": "รูปโปรไฟล์",
+          "description": "อัปโหลดรูปโปรไฟล์"
+        },
+        "currentPassword": {
+          "title": "รหัสผ่านปัจจุบัน",
+          "description": "กรอกรหัสผ่านปัจจุบันเพื่อยืนยันตัวตน",
+          "option": {
+            "label": "รหัสผ่านปัจจุบัน",
+            "placeholder": "กรอกรหัสผ่านปัจจุบัน"
+          }
+        },
+        "newPassword": {
+          "title": "รหัสผ่านใหม่",
+          "description": "เลือกรหัสผ่านที่รัดกุมอย่างน้อย 8 ตัวอักษร",
+          "option": {
+            "newPassword": {
+              "label": "รหัสผ่านใหม่",
+              "placeholder": "กรอกรหัสผ่านใหม่"
+            },
+            "confirm": {
+              "label": "ยืนยันรหัสผ่าน",
+              "placeholder": "ยืนยันรหัสผ่านใหม่"
+            }
+          }
+        },
+        "deleteAccount": {
+          "title": "ลบบัญชี",
+          "description": "การกระทำนี้เป็นการถาวรและไม่สามารถย้อนกลับได้"
+        }
+      },
+      "team": {
+        "filter": {
+          "placeholder": "กรองตามบทบาท",
+          "all": "ทั้งหมด",
+          "admin": "ผู้ดูแลระบบ",
+          "member": "สมาชิก"
+        },
+        "table": {
+          "headers": {
+            "email": "อีเมล",
+            "role": "บทบาท",
+            "created": "สร้างเมื่อ"
+          }
+        },
+        "addMember": {
+          "title": "ลงทะเบียนสมาชิกทีมใหม่",
+          "description": "สร้างบัญชีผู้ใช้ใหม่ แชร์ข้อมูลรับรองอย่างปลอดภัยหลังสร้าง"
+        },
+        "invite": {
+          "title": "เชิญสมาชิกทีม",
+          "description": "ส่งคำเชิญเข้าร่วมทีม",
+          "email": {
+            "label": "ที่อยู่อีเมล",
+            "placeholder": "กรอกที่อยู่อีเมล"
+          },
+          "role": {
+            "label": "บทบาท",
+            "placeholder": "เลือกบทบาท"
+          },
+          "linkLabel": "ลิงก์เชิญ"
+        }
+      }
+    },
+    "auth": {
+      "common": {
+        "passwordRules": {
+          "length": {
+            "beginning": "ต้องมีความยาวอย่างน้อย",
+            "highlighted": "8 ตัวอักษร"
+          },
+          "lowercase": {
+            "beginning": "ต้องมีอย่างน้อย",
+            "highlighted": "ตัวอักษรเล็ก 1 ตัว"
+          },
+          "match": {
+            "beginning": "รหัสผ่าน",
+            "highlighted": "ต้องตรงกัน"
+          },
+          "number": {
+            "beginning": "ต้องมีอย่างน้อย",
+            "highlighted": "ตัวเลข 1 ตัว"
+          },
+          "special": {
+            "beginning": "ต้องมีอย่างน้อย",
+            "highlighted": "อักขระพิเศษ 1 ตัว"
+          },
+          "uppercase": {
+            "beginning": "ต้องมีอย่างน้อย",
+            "highlighted": "ตัวอักษรใหญ่ 1 ตัว"
+          }
+        },
+        "form": {
+          "option": {
+            "email": {
+              "label": "อีเมล",
+              "placeholder": "me@example.com"
+            },
+            "password": {
+              "label": "รหัสผ่าน",
+              "placeholder": "********"
+            },
+            "confirmPassword": {
+              "label": "ยืนยันรหัสผ่าน"
+            }
+          }
+        }
+      },
+      "login": {
+        "title": "ยินดีต้อนรับกลับสู่ Checkmate!",
+        "subtitle": "เข้าสู่ระบบเพื่อดำเนินการต่อ",
+        "submit": "เข้าสู่ระบบ",
+        "links": {
+          "forgotPassword": {
+            "text": "ลืมรหัสผ่าน?",
+            "linkText": "รีเซ็ตรหัสผ่าน"
+          },
+          "register": {
+            "text": "ยังไม่มีบัญชี?",
+            "linkText": "ลงทะเบียนที่นี่"
+          }
+        }
+      },
+      "register": {
+        "title": "ยินดีต้อนรับกลับสู่ Checkmate!",
+        "subtitle": "สมัครสมาชิกเพื่อเริ่มต้น",
+        "submit": "ลงทะเบียน"
+      },
+      "forgotPassword": {
+        "title": "ลืมรหัสผ่านใช่ไหม?",
+        "subtitle": "ไม่ต้องกังวล เราจะส่งคำแนะนำการรีเซ็ตให้คุณ",
+        "submit": "ขอกู้คืนรหัสผ่าน",
+        "links": {
+          "login": {
+            "text": "กลับไปยัง",
+            "linkText": "เข้าสู่ระบบ"
+          }
+        }
+      },
+      "setNewPassword": {
+        "title": "รีเซ็ตรหัสผ่านของคุณ",
+        "subtitle": "รหัสผ่านใหม่ต้องแตกต่างจากรหัสผ่านที่เคยใช้ก่อนหน้า"
+      }
+    },
+    "checks": {
+      "selects": {
+        "monitor": {
+          "all": "มอนิเตอร์ทั้งหมด"
+        },
+        "status": {
+          "all": "ทั้งหมด",
+          "down": "ล่ม",
+          "up": "ปกติ"
+        }
+      },
+      "table": {
+        "empty": "ไม่พบการตรวจสอบที่ล้มเหลวในช่วงเวลานี้",
+        "headers": {
+          "statusCode": "รหัสสถานะ",
+          "location": "ตำแหน่ง"
+        }
+      }
+    },
+    "common": {
+      "monitors": {
+        "actions": {
+          "configure": "ตั้งค่า",
+          "delete": "ลบ",
+          "generateToken": "สร้างโทเค็น",
+          "details": "รายละเอียด",
+          "incidents": "เหตุการณ์",
+          "inviteMember": "เชิญสมาชิก",
+          "openSite": "เปิดเว็บไซต์",
+          "pause": "หยุดชั่วคราว",
+          "resume": "ดำเนินการต่อ"
+        },
+        "statBoxes": {
+          "activeFor": "ทำงานมาแล้ว",
+          "certificateExpiry": "วันหมดอายุใบรับรอง",
+          "lastCheck": "ตรวจสอบล่าสุด",
+          "lastResponseTime": "เวลาตอบสนองล่าสุด"
+        },
+        "status": {
+          "down": "ล่ม",
+          "breached": "เกินเกณฑ์",
+          "initializing": "กำลังเริ่มต้น",
+          "maintenance": "บำรุงรักษา",
+          "paused": "หยุดชั่วคราว",
+          "total": "ทั้งหมด",
+          "up": "ปกติ"
+        },
+        "monitorTypes": {
+          "optionDocker": "Docker",
+          "optionGame": "เกม",
+          "optionHttp": "HTTP(S)",
+          "optionPing": "Ping",
+          "optionPort": "พอร์ต",
+          "optionPagespeed": "PageSpeed",
+          "optionHardware": "โครงสร้างพื้นฐาน",
+          "optionGrpc": "gRPC",
+          "optionWebSocket": "WebSocket"
+        }
+      }
+    },
+    "createMonitor": {
+      "form": {
+        "advanced": {
+          "description": "ตั้งค่าเพิ่มเติมสำหรับกรณีใช้งานขั้นสูง",
+          "option": {
+            "advancedMatching": {
+              "label": "ใช้การจับคู่ขั้นสูง"
+            },
+            "expectedValue": {
+              "label": "ค่าที่คาดหวัง"
+            },
+            "jsonPath": {
+              "description": "นิพจน์นี้จะถูกประเมินกับข้อมูล JSON ที่ตอบกลับ และผลลัพธ์จะถูกใช้จับคู่กับค่าที่คาดหวัง ดูเอกสาร query language ที่ <jmesLink>jmespath.org</jmesLink>",
+              "label": "นิพจน์ JSONPath"
+            },
+            "matchMethod": {
+              "label": "วิธีการจับคู่",
+              "equal": "เท่ากับ",
+              "include": "รวม",
+              "regex": "Regex"
+            }
+          },
+          "title": "ตั้งค่าขั้นสูง"
+        },
+        "frequency": {
+          "description": "คุณต้องการตรวจสอบสถานะของมอนิเตอร์นี้บ่อยแค่ไหน?",
+          "option": {
+            "frequency": {
+              "label": "ความถี่การตรวจสอบ",
+              "value": {
+                "fifteenMinutes": "15 นาที",
+                "fifteenSeconds": "15 วินาที",
+                "fiveMinutes": "5 นาที",
+                "fourMinutes": "4 นาที",
+                "oneMinute": "1 นาที",
+                "tenMinutes": "10 นาที",
+                "thirtyMinutes": "30 นาที",
+                "thirtySeconds": "30 วินาที",
+                "threeMinutes": "3 นาที",
+                "twoMinutes": "2 นาที"
+              }
+            }
+          },
+          "title": "ความถี่การตรวจสอบ"
+        },
+        "general": {
+          "option": {
+            "container": {
+              "label": "ชื่อ/ID คอนเทนเนอร์",
+              "placeholder": "my-app หรือ abcd1234"
+            },
+            "host": {
+              "label": "โฮสต์",
+              "placeholder": "192.168.1.100 หรือ example.com"
+            },
+            "name": {
+              "label": "ชื่อที่แสดง",
+              "placeholder": "เช่น เว็บไซต์ของฉัน"
+            },
+            "secret": {
+              "label": "รหัสลับสำหรับยืนยันตัวตน",
+              "placeholder": "กรอกรหัสลับของคุณ"
+            },
+            "url": {
+              "label": "URL",
+              "placeholder": "https://www.google.com"
+            },
+            "game": {
+              "label": "URL ที่ต้องการมอนิเตอร์",
+              "placeholder": "localhost"
+            },
+            "port": {
+              "label": "พอร์ตที่ต้องการตรวจสอบ",
+              "placeholder": "80"
+            },
+            "grpcServiceName": {
+              "label": "ชื่อบริการ",
+              "placeholder": "เช่น my.service.v1 (เว้นว่างสำหรับสถานะสุขภาพโดยรวม)"
+            },
+            "wsUrl": {
+              "label": "URL ของ WebSocket",
+              "placeholder": "wss://example.com/socket"
+            }
+          },
+          "title": "ตั้งค่าทั่วไป",
+          "description": {
+            "http": "กรอก URL หรือ IP ที่ต้องการตรวจสอบ (เช่น https://example.com/ หรือ 192.168.1.100) และตั้งชื่อที่แสดงบนแดชบอร์ด",
+            "ping": "กรอกที่อยู่ IP หรือชื่อโฮสต์ที่ต้องการ ping (เช่น 192.168.1.100 หรือ example.com) และตั้งชื่อที่ชัดเจนให้แสดงบนแดชบอร์ด",
+            "port": "กรอก URL หรือ IP ของเซิร์ฟเวอร์ หมายเลขพอร์ต และตั้งชื่อที่ชัดเจนให้แสดงบนแดชบอร์ด",
+            "docker": "กรอกชื่อหรือ ID ของคอนเทนเนอร์ Docker คุณสามารถใช้ชื่อคอนเทนเนอร์ (เช่น my-app) หรือ ID ของคอนเทนเนอร์ (ID เต็ม 64 ตัวอักษร หรือ ID สั้น)",
+            "game": "กรอกที่อยู่ IP หรือชื่อโฮสต์และหมายเลขพอร์ตเพื่อทำการ ping (เช่น 192.168.1.100 หรือ example.com) และเลือกประเภทเกม",
+            "pagespeed": "ติดตามประสิทธิภาพการโหลดหน้า Core Web Vitals และคะแนนการเพิ่มประสิทธิภาพของเว็บไซต์",
+            "grpc": "กรอกชื่อโฮสต์และพอร์ตของเซิร์ฟเวอร์ gRPC ระบุชื่อบริการสำหรับ health check (ไม่บังคับ) และตั้งชื่อที่แสดง",
+            "websocket": "กรอก URL ของ WebSocket ที่ต้องการตรวจสอบ (เช่น wss://example.com/socket) และตั้งชื่อที่แสดง",
+            "hardware": "ตรวจสอบการใช้งาน CPU หน่วยความจำ ดิสก์ และอุณหภูมิของโครงสร้างพื้นฐาน"
+          }
+        },
+        "ignoreTls": {
+          "description": "กำหนดค่าการตรวจสอบใบรับรอง TLS/SSL สำหรับการเชื่อมต่อ HTTPS",
+          "option": {
+            "tls": {
+              "label": "ข้ามข้อผิดพลาด TLS/SSL"
+            }
+          },
+          "title": "ตั้งค่า TLS/SSL"
+        },
+        "incidents": {
+          "description": "ใช้หน้าต่างเลื่อนเพื่อกำหนดว่ามอนิเตอร์ล่มเมื่อใด สถานะของมอนิเตอร์จะเปลี่ยนเมื่อเปอร์เซ็นต์การตรวจสอบในหน้าต่างเลื่อนตรงตามค่าที่กำหนด",
+          "option": {
+            "checks": {
+              "label": "จำนวนการตรวจสอบในหน้าต่างเลื่อน"
+            },
+            "percentage": {
+              "label": "เปอร์เซ็นต์การตรวจสอบในหน้าต่างเลื่อนที่ล้มเหลว/สำเร็จก่อนเปลี่ยนสถานะมอนิเตอร์?"
+            }
+          },
+          "title": "เหตุการณ์"
+        },
+        "notifications": {
+          "description": "เลือกช่องทางการแจ้งเตือนที่คุณต้องการใช้",
+          "title": "การแจ้งเตือน"
+        },
+        "type": {
+          "description": "เลือกประเภทการตรวจสอบที่ต้องการ",
+          "optionDockerDescription": "ใช้ Docker เพื่อตรวจสอบว่าคอนเทนเนอร์กำลังทำงานอยู่",
+          "optionGameDescription": "ตรวจสอบว่าเซิร์ฟเวอร์เกมเฉพาะออนไลน์อยู่หรือไม่",
+          "optionGrpcDescription": "ตรวจสอบบริการ gRPC โดยใช้ Health Checking Protocol มาตรฐาน",
+          "optionWebSocketDescription": "ตรวจสอบ WebSocket endpoint สำหรับสุขภาพการเชื่อมต่อและเวลาตอบสนอง",
+          "optionHttpDescription": "ใช้ HTTP(S) เพื่อตรวจสอบเว็บไซต์หรือ API endpoint",
+          "optionPingDescription": "ใช้ ICMP Ping เพื่อตรวจสอบว่าเซิร์ฟเวอร์ออนไลน์อยู่หรือไม่",
+          "optionPortDescription": "ตรวจสอบว่าพอร์ตเฉพาะบนเซิร์ฟเวอร์เปิดอยู่หรือไม่",
+          "title": "ประเภท"
+        },
+        "thresholds": {
+          "title": "เกณฑ์การแจ้งเตือน",
+          "description": "กำหนดเกณฑ์ที่ควรทริกเกอร์การแจ้งเตือนสำหรับมอนิเตอร์ฮาร์ดแวร์นี้",
+          "option": {
+            "cpuThreshold": {
+              "label": "เกณฑ์แจ้งเตือน CPU (%)"
+            },
+            "memoryThreshold": {
+              "label": "เกณฑ์แจ้งเตือนหน่วยความจำ (%)"
+            },
+            "diskThreshold": {
+              "label": "เกณฑ์แจ้งเตือนดิสก์ (%)"
+            },
+            "tempThreshold": {
+              "label": "เกณฑ์แจ้งเตือนอุณหภูมิ (°C)"
+            }
+          }
+        },
+        "geoChecks": {
+          "title": "การตรวจสอบแบบกระจายทางภูมิศาสตร์",
+          "description": "เรียกใช้การตรวจสอบจากหลายตำแหน่งทางภูมิศาสตร์เพื่อตรวจสอบความพร้อมใช้งานและประสิทธิภาพทั่วโลก",
+          "option": {
+            "enabled": {
+              "label": "เปิดใช้งานการตรวจสอบแบบกระจายทางภูมิศาสตร์"
+            },
+            "locations": {
+              "label": "ตำแหน่ง",
+              "placeholder": "เลือกตำแหน่ง",
+              "options": {
+                "EU": "ยุโรป",
+                "NA": "อเมริกาเหนือ",
+                "AS": "เอเชีย",
+                "SA": "อเมริกาใต้",
+                "AF": "แอฟริกา",
+                "OC": "โอเชียเนีย"
+              }
+            },
+            "interval": {
+              "label": "ช่วงเวลาตรวจสอบ",
+              "value": {
+                "fiveMinutes": "5 นาที",
+                "tenMinutes": "10 นาที",
+                "fifteenMinutes": "15 นาที",
+                "thirtyMinutes": "30 นาที"
+              }
+            }
+          }
+        },
+        "url": {
+          "title": "แสดง IP/URL ของมอนิเตอร์บนหน้าสถานะ",
+          "description": "แสดง IP หรือ URL ของมอนิเตอร์บนหน้าสถานะสาธารณะ หากปิดใช้งาน จะแสดงเฉพาะชื่อมอนิเตอร์เพื่อปกป้องข้อมูลที่ละเอียดอ่อน",
+          "option": {
+            "showURL": {
+              "label": "แสดง IP/URL บนหน้าสถานะ",
+              "enabled": "เปิดใช้งาน",
+              "disabled": "ปิดใช้งาน"
+            }
+          }
+        },
+        "stats": {
+          "title": "ประวัติการตรวจสอบ",
+          "description": "ล้างประวัติการตรวจสอบและสถิติทั้งหมดของทีม การกระทำนี้ไม่สามารถย้อนกลับได้",
+          "buttonText": "ล้างสถิติทั้งหมด",
+          "dialog": {
+            "title": "ล้างประวัติการตรวจสอบทั้งหมด?",
+            "description": "การดำเนินการนี้จะลบประวัติการตรวจสอบ สถิติ และข้อมูลการตรวจสอบทั้งหมดของทีมอย่างถาวร ไม่สามารถย้อนกลับได้",
+            "confirm": "ใช่ ล้างสถิติทั้งหมด"
+          }
+        },
+        "escalations": {
+          "title": "Escalation Rules",
+          "description": "Automatically notify a channel if an incident remains unresolved after a delay",
+          "addRule": "Add Rule",
+          "option": {
+            "delayMinutes": {
+              "label": "Escalate after (minutes)"
+            },
+            "channel": {
+              "label": "Notification channel",
+              "placeholder": "Select a channel"
+            },
+            "removeRule": {
+              "ariaLabel": "Remove escalation rule"
+            }
+          }
+        }
+      }
+    },
+    "editUser": {
+      "form": {
+        "roles": {
+          "title": "บทบาท",
+          "description": "กำหนดบทบาทให้กับผู้ใช้ สามารถเลือกได้หลายบทบาท"
+        }
+      },
+      "dialog": {
+        "removeUser": {
+          "title": "ลบผู้ใช้",
+          "content": "คุณแน่ใจหรือไม่ว่าต้องการลบ {{name}} ออกจากทีม? การกระทำนี้ไม่สามารถย้อนกลับได้"
+        }
+      }
+    },
+    "incidents": {
+      "dialog": {
+        "resolveIncident": {
+          "title": "แก้ไขเหตุการณ์",
+          "option": {
+            "comment": {
+              "label": "ความคิดเห็น (ไม่บังคับ)",
+              "placeholder": "เพิ่มความคิดเห็นเกี่ยวกับการแก้ไข..."
+            }
+          }
+        },
+        "details": {
+          "analysis": "การวิเคราะห์เหตุการณ์",
+          "comment": "ความคิดเห็น:",
+          "detailsLabel": "รายละเอียด",
+          "downtime": "ดาวน์ไทม์:",
+          "message": "ข้อความ:",
+          "monitor": "มอนิเตอร์:",
+          "overview": "ภาพรวม",
+          "resolutionDetails": "รายละเอียดการแก้ไข",
+          "resolutionType": "ประเภท:",
+          "resolutionTypes": {
+            "automatic": "อัตโนมัติ",
+            "manual": "ด้วยตนเอง"
+          },
+          "resolve": "แก้ไขเหตุการณ์",
+          "resolvedAt": "แก้ไขเมื่อ:",
+          "resolvedBy": "แก้ไขโดย:",
+          "startedAt": "เริ่มเมื่อ:",
+          "status": "สถานะ:",
+          "statusCode": "รหัสสถานะ:",
+          "timeline": "ไทม์ไลน์",
+          "title": "รายละเอียดเหตุการณ์",
+          "url": "URL:"
+        }
+      },
+      "filters": {
+        "allMonitors": "มอนิเตอร์ทั้งหมด",
+        "monitor": "มอนิเตอร์",
+        "resolutionType": "ประเภทการแก้ไข",
+        "resolutionTypes": {
+          "manual": "ด้วยตนเอง",
+          "automatic": "อัตโนมัติ",
+          "all": "ทั้งหมด"
+        }
+      },
+      "summaryCard": {
+        "activeIncidents": {
+          "title": "เหตุการณ์ที่ยังดำเนินอยู่",
+          "active_zero": "ไม่มีเหตุการณ์ที่ยังดำเนินอยู่",
+          "active_one": "{{count}} เหตุการณ์ที่ยังดำเนินอยู่",
+          "active_other": "{{count}} เหตุการณ์ที่ยังดำเนินอยู่"
+        },
+        "incidentStats": {
+          "avgResolutionTime": "เวลาแก้ไขเฉลี่ย",
+          "mostAffectedMonitor": "มอนิเตอร์ที่ได้รับผลกระทบมากที่สุด",
+          "title": "สถิติเหตุการณ์",
+          "totalIncidents": "เหตุการณ์ทั้งหมด"
+        },
+        "latestIncidents": {
+          "title": "เหตุการณ์ล่าสุด"
+        }
+      },
+      "table": {
+        "actions": {
+          "details": "รายละเอียด",
+          "goToMonitor": "ไปยังมอนิเตอร์",
+          "resolveManually": "แก้ไขด้วยตนเอง"
+        },
+        "activeIncidents": "เหตุการณ์ที่ยังดำเนินอยู่",
+        "headers": {
+          "endTime": "เวลาสิ้นสุด",
+          "resolutionType": "ประเภทการแก้ไข",
+          "startTime": "เวลาเริ่มต้น",
+          "statusCode": "รหัสสถานะ"
+        },
+        "resolvedIncidents": "เหตุการณ์ที่แก้ไขแล้ว",
+        "status": {
+          "active": "ใช้งานอยู่",
+          "resolved": "แก้ไขแล้ว"
+        }
+      }
+    },
+    "infrastructure": {
+      "charts": {
+        "labels": {
+          "cpu": "การใช้งาน CPU",
+          "disk": "การใช้งานดิสก์",
+          "memory": "การใช้งานหน่วยความจำ",
+          "netBytesRecv": "{{name}} - ไบต์ที่รับ",
+          "netBytesSent": "{{name}} - ไบต์ที่ส่ง",
+          "temp": "อุณหภูมิ"
+        }
+      },
+      "gauges": {
+        "cpu": {
+          "lowerLabel": "ความถี่สูงสุด",
+          "title": "การใช้งาน CPU",
+          "upperLabel": "ความถี่ปัจจ��บัน"
+        },
+        "disk": {
+          "lowerLabel": "ว่าง",
+          "title": "การใช้งานดิสก์ {{idx}}",
+          "upperLabel": "ใช้แล้ว"
+        },
+        "memory": {
+          "lowerLabel": "ว่าง",
+          "title": "การใช้งานหน่วยความจำ",
+          "upperLabel": "ใช้แล้ว"
+        }
+      },
+      "statBoxes": {
+        "avgCpuTemperature": "อุณหภูมิเฉลี่ยของซีพียู",
+        "cpuFrequency": "ความถี่ของ CPU",
+        "cpuLogical": "ซีพียู (คอร์เสมือน)",
+        "cpuPhysical": "ซีพียู (คอร์หลัก)",
+        "disk": "ดิสก์",
+        "memory": "หน่วยความจำ",
+        "os": "ระบบปฏิบัติการ"
+      },
+      "table": {
+        "headers": {
+          "cpu": "CPU",
+          "disk": "ดิสก์",
+          "memory": "หน่วยความจำ"
+        }
+      },
+      "tabs": {
+        "labels": {
+          "network": "เน็ตเวอร์",
+          "overview": "ภาพรวม"
+        }
+      },
+      "fallback": {
+        "actionButton": "สร้างมอนิเตอร์!",
+        "checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
+        "title": "มอนิเตอร์โครงสร้างพื้นฐานใช้เพื่อ:"
+      }
+    },
+    "logs": {
+      "tabs": {
+        "diagnostics": "วินิจฉัย",
+        "logs": "Logs เซิร์ฟเวอร์",
+        "queue": "คิวงาน"
+      },
+      "logLevelSelect": {
+        "label": "ระดับบันทึก"
+      },
+      "jobQueue": "คิวงาน",
+      "failedJobs": "งานที่ล้มเหลว",
+      "noLogs": "ไม่พบบันทึก",
+      "metrics": {
+        "jobs": "งาน",
+        "activeJobs": "งานที่กำลังดำเนินการ",
+        "failingJobs": "งานที่ล้มเหลว",
+        "totalRuns": "จำนวนรันทั้งหมด",
+        "totalFailures": "จำนวนล้มเหลวทั้งหมด"
+      },
+      "diagnostics": {
+        "stats": {
+          "eventLoopDelay": "ดีเลย์ของ Event loop",
+          "uptime": "อัปไทม์",
+          "usedHeapSize": "ขนาด heap ที่ใช้",
+          "totalHeapSize": "ขนาด heap ทั้งหมด",
+          "osMemoryLimit": "ขีดจำกัดหน่วยความจำ OS"
+        },
+        "gauges": {
+          "heapAllocation": "การจัดสรร Heap",
+          "heapUsage": "การใช้งาน Heap",
+          "heapUtilization": "การใช้ประโยชน์ Heap",
+          "instantCpuUsage": "การใช้งาน CPU ขณะนี้",
+          "availableMemoryPercentage": "% ของหน่วยความจำที่มี",
+          "allocatedPercentage": "% ที่จัดสรร",
+          "usedSPercentage": "% ของ 1 วินาทีที่ CPU ใช้",
+          "total": "ทั้งหมด",
+          "used": "ใช้แล้ว"
+        }
+      },
+      "table": {
+        "headers": {
+          "timestamp": "เวลา",
+          "level": "ระดับ",
+          "service": "บริการ",
+          "method": "เมธอด",
+          "monitorId": "รหัสมอนิเตอร์",
+          "runCount": "จำนวนรัน",
+          "failCount": "จำนวนล้มเหลว",
+          "lastRunAt": "รันล่าสุดเมื่อ",
+          "lockedAt": "ล็อกเมื่อ",
+          "lastFinishedAt": "เสร็จสิ้นล่าสุดเมื่อ",
+          "lastRunTook": "รันล่าสุดใช้เวลา",
+          "lastFailedAt": "ล้มเหลวล่าสุดเมื่อ",
+          "failReason": "สาเหตุที่ล้มเหลว"
+        }
+      }
+    },
+    "maintenanceWindow": {
+      "fallback": {
+        "actionButton": "สร้างช่วงเวลาบำรุงรักษา!",
+        "checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
+        "title": "ช่วงเวลาบำรุงรักษาใช้เพื่อ:"
+      },
+      "table": {
+        "headers": {
+          "nextWindow": "ช่วงเวลาถัดไป",
+          "repeat": "ทำซ้ำ"
+        }
+      },
+      "form": {
+        "general": {
+          "title": "ตั้งค่าทั่วไป",
+          "description": "ตั้งชื่อและตัวเลือกการทำซ้ำสำหรับช่วงเวลาบำรุงรักษา",
+          "option": {
+            "name": {
+              "label": "ชื่อ",
+              "placeholder": "เช่น บำรุงรักษาประจำสัปดาห์"
+            },
+            "repeat": {
+              "label": "ทำซ้ำ"
+            }
+          }
+        },
+        "startDate": {
+          "title": "วันที่เริ่มต้น",
+          "description": "เลือกวันที่เริ่มต้นสำหรับช่วงเวลาบำรุงรักษา",
+          "option": {
+            "startDate": {
+              "label": "วันที่เริ่มต้น"
+            }
+          }
+        },
+        "startTime": {
+          "title": "เวลาเริ่มต้น",
+          "description": "ตั้งเวลาเริ่มต้นและระยะเวลาสำหรับช่วงเวลาบำรุงรักษา ค่าทั้งหมดเป็น UTC",
+          "option": {
+            "duration": {
+              "label": "ระยะเวลา"
+            },
+            "startTime": {
+              "label": "เวลาเริ่มต้น"
+            }
+          },
+          "monitors": {
+            "title": "มอนิเตอร์",
+            "description": "มอนิเตอร์ที่ช่วงเวลาบำรุงรักษาควรใช้งาน",
+            "option": {
+              "addMonitors": {
+                "label": "เพิ่มมอนิเตอร์"
+              }
+            }
+          }
+        }
+      }
+    },
+    "notifications": {
+      "fallback": {
+        "actionButton": "สร้างช่องทาง",
+        "checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
+        "title": "ช่องทางการแจ้งเตือนใช้เพื่อ:"
+      },
+      "form": {
+        "accessToken": {
+          "optionAccessToken": "โทเค็นการเข้าถึง",
+          "placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
+        },
+        "address": {
+          "description": "ที่อยู่ที่จะส่งการแจ้งเตือน",
+          "optionAddress": "ที่อยู่",
+          "placeholderEmail": "example@example.com",
+          "placeholderWebhook": "https://your-server.com/webhook",
+          "title": "ที่อยู่"
+        },
+        "homeServer": {
+          "optionHomeServer": "โฮมเซิร์ฟเวอร์",
+          "placeholder": "example.com"
+        },
+        "matrix": {
+          "description": "กำหนดค่าการเชื่อมต่อ Matrix homeserver สำหรับการแจ้งเตือน",
+          "title": "ตั้งค่า Matrix"
+        },
+        "notificationName": {
+          "description": "ชื่อที่สื่อความหมายสำหรับช่องทางการแจ้งเตือน",
+          "optionName": "ชื่อช่องทาง",
+          "placeholder": "เช่น การแจ้งเตือน Production",
+          "title": "ชื่อช่องทาง"
+        },
+        "pagerDuty": {
+          "description": "คีย์การรวม PagerDuty สำหรับรับการแจ้งเตือน",
+          "optionIntegrationKey": "คีย์การรวม",
+          "placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+          "title": "คีย์การรวม"
+        },
+        "roomId": {
+          "optionRoomId": "รหัสห้อง",
+          "placeholder": "!abcdefg:matrix.org"
+        },
+        "type": {
+          "description": "เลือกประเภทช่องทางการแจ้งเตือนที่ต้องการสร้าง",
+          "optionType": "ประเภท",
+          "title": "ประเภทช่องทาง"
+        },
+        "telegram": {
+          "title": "ตั้งค่า Telegram",
+          "description": "เพื่อเปิดใช้งานการแจ้งเตือนผ่าน Telegram ให้สร้างบอท Telegram โดยใช้ BotFather ซึ่งเป็นบอททางการสำหรับสร้างและจัดการบอท Telegram จากนั้นนำ API token และ Chat ID มาใส่ที่นี่",
+          "optionBotToken": "โทเค็นบอท",
+          "placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
+          "optionChatId": "Chat ID",
+          "placeholderChatId": "-1001234567890"
+        }
+      },
+      "table": {
+        "headers": {
+          "destination": "ปลายทาง"
+        }
+      }
+    },
+    "pageSpeed": {
+      "charts": {
+        "common": {
+          "cls": "Cumulative Layout Shift (CLS)",
+          "fcp": "First Contentful Paint (FCP)",
+          "lcp": "Largest Contentful Paint (LCP)",
+          "si": "Speed Index (SI)",
+          "tbt": "Total Blocking Time (TBT)"
+        },
+        "legend": {
+          "title": "รายงาน PageSpeed",
+          "weight": "น้ำหนัก"
+        },
+        "pie": {
+          "title": "รายงานประสิทธิภาพ"
+        }
+      },
+      "table": {
+        "headers": {
+          "pageSpeedScore": "คะแนน PageSpeed"
+        }
+      },
+      "fallback": {
+        "actionButton": "สร้างมอนิเตอร์!",
+        "checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
+        "title": "มอนิเตอร์ PageSpeed ใช้เพื่อ:"
+      }
+    },
+    "settings": {
+      "form": {
+        "timezone": {
+          "title": "เขตเวลาที่แสดง",
+          "description": "เลือกเขตเวลาที่ใช้แสดงวันที่และเวลาทั่วทั้งแอปพลิเคชัน",
+          "option": {
+            "timezone": {
+              "label": "เขตเวลาที่แสดง"
+            }
+          }
+        },
+        "ui": {
+          "title": "รูปลักษณ์",
+          "description": "สลับระหว่างโหมดสว่างและมืด เปลี่ยนภาษา หรือปรับแต่งประเภทกราฟ",
+          "option": {
+            "theme": {
+              "label": "โหมดธีม",
+              "light": "สว่าง",
+              "dark": "มืด"
+            },
+            "language": {
+              "label": "ภาษา"
+            },
+            "chartType": {
+              "label": "ประเภทกราฟ",
+              "histogram": "ฮิสโตแกรม",
+              "heatmap": "แผนที่ความร้อน"
+            }
+          }
+        },
+        "pagespeed": {
+          "title": "คีย์ API ของ Google PageSpeed",
+          "description": "กรอกคีย์ API ของ Google PageSpeed เพื่อเปิดใช้งานการตรวจสอบ Google PageSpeed คลิกรีเซ็ตเพื่ออัปเดตคีย์",
+          "option": {
+            "apiKey": {
+              "label": "คีย์ API ของ PageSpeed",
+              "labelSet": "ตั้งค่าคีย์ API แล้ว คลิกรีเซ็ตเพื่อเปลี่ยน",
+              "placeholder": "กรอกคีย์ API ของ Google PageSpeed"
+            }
+          }
+        },
+        "url": {
+          "title": "แสดง IP/URL ของมอนิเตอร์บนหน้าสถานะ",
+          "description": "แสดง IP หรือ URL ของมอนิเตอร์บนหน้าสถานะสาธารณะ หากปิดใช้งาน จะแสดงเฉพาะชื่อมอนิเตอร์เพื่อปกป้องข้อมูลที่ละเอียดอ่อน",
+          "option": {
+            "showURL": {
+              "label": "แสดง IP/URL บนหน้าสถานะ",
+              "enabled": "เปิดใช้งาน",
+              "disabled": "ปิดใช้งาน"
+            }
+          }
+        },
+        "stats": {
+          "title": "ประวัติการตรวจสอบ",
+          "description": "ล้างประวัติการตรวจสอบและสถิติทั้งหมดของทีม การกระทำนี้ไม่สามารถย้อนกลับได้",
+          "option": {
+            "clear": {
+              "label": "ล้างสถิติทั้งหมด การกระทำนี้ไม่สามารถย้อนกลับได้"
+            }
+          },
+          "dialog": {
+            "title": "ล้างประวัติการตรวจสอบทั้งหมด?",
+            "description": "ไม่สามารถย้อนกลับได้"
+          }
+        },
+        "retention": {
+          "title": "การเก็บรักษาข้อมูลตรวจสอบ",
+          "description": "กำหนดระยะเวลาเก็บรักษาข้อมูลตรวจสอบก่อนถูกลบอัตโนมัติ",
+          "option": {
+            "days": {
+              "label": "ระยะเวลาเก็บรักษา (วัน)",
+              "unlimited": "ไม่จำกัด"
+            }
+          }
+        },
+        "thresholds": {
+          "title": "เกณฑ์ทั่วไป",
+          "description": "กำหนดเกณฑ์ CPU หน่วยความจำ ดิสก์ และอุณหภูมิทั่วไปสำหรับการตรวจสอบโครงสร้างพื้นฐาน ใช้กับมอนิเตอร์ฮาร์ดแวร์ทั้งหมด เว้นแต่ถูกแทนที่",
+          "option": {
+            "cpu": {
+              "label": "เกณฑ์ CPU (%)",
+              "placeholder": "1 - 100"
+            },
+            "memory": {
+              "label": "เกณฑ์หน่วยความจำ (%)",
+              "placeholder": "1 - 100"
+            },
+            "disk": {
+              "label": "เกณฑ์ดิสก์ (%)",
+              "placeholder": "1 - 100"
+            },
+            "temperature": {
+              "label": "เกณฑ์อุณหภูมิ (°C)",
+              "placeholder": "1 - 150"
+            }
+          }
+        },
+        "email": {
+          "title": "ตั้งค่าอีเมล",
+          "description": "กำหนดค่าอีเมลสำหรับระบบ ใช้สำหรับส่งการแจ้งเตือน",
+          "descriptionTransport": "สร้าง SMTP transport สำหรับ NodeMailer",
+          "descriptionTransportLink": "ดูข้อกำหนดที่นี่",
+          "option": {
+            "host": {
+              "label": "โฮสต์อีเมล - ชื่อโฮสต์หรือ IP ที่จะเชื่อมต่อ",
+              "placeholder": "smtp.gmail.com"
+            },
+            "port": {
+              "label": "พอร์ตอีเมล - พอร์ตที่จะเชื่อมต่อ",
+              "placeholder": "587"
+            },
+            "address": {
+              "label": "ที่อยู่อีเมล - ใช้สำหรับยืนยันตัวตน",
+              "placeholder": "you@example.com"
+            },
+            "user": {
+              "label": "ผู้ใช้อีเมล - ชื่อผู้ใช้สำหรับยืนยันตัวตน แทนที่อีเมลหากระบุ",
+              "placeholder": "เว้นว่างหากไม่จำเป็น"
+            },
+            "password": {
+              "label": "รหัสผ่านอีเมล - รหัสผ่านสำหรับยืนยันตัวตน",
+              "labelSet": "ตั้งค่ารหัสผ่านแล้ว คลิกรีเซ็ตเพื่อเปลี่ยน",
+              "placeholder": "กรอกรหัสผ่านของคุณ"
+            },
+            "tlsServername": {
+              "label": "ชื่อเซิร์ฟเวอร์ TLS - ชื่อโฮสต์สำหรับตรวจสอบ TLS เมื่อโฮสต์เป็น IP (ไม่บังคับ)",
+              "placeholder": "example.com"
+            },
+            "connectionHost": {
+              "label": "โฮสต์เชื่อมต่ออีเมล - ชื่อโฮสต์ที่ใช้ในการ HELO/EHLO",
+              "placeholder": "localhost"
+            },
+            "secure": {
+              "label": "ใช้ SSL (แนะนำ): เข้ารหัสการเชื่อมต่อด้วย SSL/TLS"
+            },
+            "pool": {
+              "label": "เปิดใช้งาน connection pooling: ใช้การเชื่อมต่อที่มีอยู่ซ้ำเพื่อเพิ่มประสิทธิภาพ"
+            },
+            "ignoreTLS": {
+              "label": "ปิดใช้งาน STARTTLS: ไม่ใช้ TLS แม้เซิร์ฟเวอร์จะรองรับ"
+            },
+            "requireTLS": {
+              "label": "บังคับใช้ STARTTLS: ต้องอัปเกรดเป็น TLS ล้มเหลวหากไม่รองรับ"
+            },
+            "rejectUnauthorized": {
+              "label": "ปฏิเสธใบรับรองที่ไม่ถูกต้อง: ปฏิเสธการเชื่อมต่อด้วยใบรับรอง self-signed หรือไม่น่าเชื่อถือ"
+            }
+          }
+        },
+        "demoMonitors": {
+          "title": "มอนิเตอร์สาธิต",
+          "description": "เพิ่มมอนิเตอร์ตัวอย่างเพื่อวัตถุประสงค์ในการ���าธิต"
+        },
+        "removeMonitors": {
+          "title": "รีเซ็ตระบบ",
+          "description": "ลบมอนิเตอร์ทั้งหมดออกจากระบบ",
+          "dialog": {
+            "title": "ลบมอนิเตอร์ทั้งหมด?",
+            "description": "ไม่สามารถย้อนกลับได้"
+          }
+        },
+        "exportMonitors": {
+          "title": "ส่งออกมอนิเตอร์"
+        },
+        "importExportMonitors": {
+          "title": "นำเข้า / ส่งออกมอนิเตอร์",
+          "description": "นำเข้าหรือส่งออกข้อมูลมอนิเตอร์เป็นไฟล์ JSON สำหรับสำรองหรือโอนย้าย"
+        },
+        "about": {
+          "title": "เกี่ยวกับ",
+          "developedBy": "พัฒนาโดย Bluewave Labs"
+        },
+        "validation": {
+          "errorMessage": "กรุณาแก้ไขข้อผิดพลาดการตรวจสอบต่อไปนี้:"
+        }
+      }
+    },
+    "statusPages": {
+      "deleteSuccess": "ลบหน้าสถานะสำเร็จ",
+      "fallback": {
+        "title": "หน้าสถานะใช้เพื่อ:",
+        "checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
+        "actionButton": "สร้างหน้าสถานะ!"
+      },
+      "monitorsList": {
+        "chartTypeHeatmap": "แผนที่ความร้อน",
+        "chartTypeHistogram": "ฮิสโตแกรม",
+        "noData": "ไม่มีข้อมูล",
+        "infrastructure": {
+          "title": "โครงสร้างพื้นฐาน",
+          "cpu": "CPU",
+          "memory": "RAM",
+          "memoryText": "หน่วยความจำ",
+          "disk": "ดิสก์",
+          "usage": "การใช้งาน",
+          "used": "ใช้แล้ว",
+          "total": "ทั้งหมด"
+        },
+        "uptime": {
+          "title": "อัปไทม์",
+          "responseTime": "เวลาตอบสนอง"
+        }
+      },
+      "statusBar": {
+        "allDown": "ระบบทั้งหมดล่ม",
+        "allUp": "ระบบทั้งหมดทำงานปกติ",
+        "degraded": "บางระบบกำลังประสบปัญหา",
+        "unknown": "ไม่สามารถระบุสถานะระบบได้"
+      },
+      "table": {
+        "headers": {
+          "name": "ชื่อหน้าสถานะ",
+          "url": "URL สาธารณะ"
+        },
+        "published": "เผยแพร่แล้ว",
+        "unpublished": "ยังไม่เผยแพร่"
+      },
+      "title": "หน้าสถานะ",
+      "details": {
+        "empty": {
+          "title": "ยังไม่มีข้อมูลที่นี่",
+          "addMonitor": "เพิ่มมอนิเตอร์เพื่อเริ่มต้น"
+        }
+      },
+      "form": {
+        "access": {
+          "title": "การเข้าถึง",
+          "description": "หากหน้าสถานะพร้อมแล้ว คุณสามารถทำเครื่องหมายว่าเผยแพร่แล้ว",
+          "option": {
+            "published": {
+              "name": "เผยแพร่แล้วและสาธารณะสามารถเห็นได้"
+            }
+          }
+        },
+        "basicInfo": {
+          "title": "ข้อมูลพื้นฐาน",
+          "description": "กำหนดชื่อบริษัทและซับโดเมนที่หน้าสถานะชี้ไป",
+          "option": {
+            "name": {
+              "label": "ชื่อบริษัท",
+              "placeholder": "Acme Inc."
+            },
+            "url": {
+              "label": "ที่อยู่หน้าสถานะของคุณ",
+              "placeholder": "my-status-page"
+            }
+          }
+        },
+        "monitors": {
+          "title": "มอนิเตอร์",
+          "description": "เลือกมอนิเตอร์ที่จะแสดงบนหน้าสถานะ",
+          "noMonitors": "ไม่ได้เลือกมอนิเตอร์",
+          "option": {
+            "monitors": {
+              "label": "เลือกมอนิเตอร์",
+              "placeholder": "ค้นหาและเลือกมอนิเตอร์..."
+            }
+          }
+        },
+        "timezone": {
+          "title": "เขตเวลา",
+          "description": "เลือกเขตเวลาที่หน้าสถานะจะแสดง",
+          "option": {
+            "timezone": {
+              "label": "เขตเวลา",
+              "placeholder": "เลือกเขตเวลา..."
+            }
+          }
+        },
+        "appearance": {
+          "title": "รูปลักษณ์",
+          "description": "กำหนดรูปลักษณ์เริ่มต้นของหน้าสถานะสาธารณะ",
+          "option": {
+            "logo": {
+              "label": "โลโก้"
+            },
+            "color": {
+              "label": "สีแบรนด์"
+            }
+          }
+        },
+        "features": {
+          "title": "ฟีเจอร์",
+          "description": "กำหนดค่าข้อมูลที่แสดงบนหน้าสถานะ",
+          "option": {
+            "showCharts": {
+              "label": "แสดงกราฟเวลาตอบสนอง"
+            },
+            "showUptimePercentage": {
+              "label": "แสดงเปอร์เซ็นต์อัปไทม์"
+            },
+            "showAdminLoginLink": {
+              "label": "แสดงลิงก์เข้าสู่ระบบผู้ดูแล"
+            },
+            "showInfrastructure": {
+              "label": "แสดงเมตริกโครงสร้างพื้นฐาน"
+            }
+          }
+        }
+      }
+    },
+    "uptime": {
+      "filters": {
+        "search": {
+          "placeholder": "ค้นหามอนิเตอร์..."
+        }
+      },
+      "table": {
+        "headers": {
+          "responseTime": "เวลาตอบสนอง"
+        }
+      },
+      "fallback": {
+        "actionButton": "สร้างมอนิเตอร์!",
+        "checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
+        "title": "มอนิเตอร์อัปไทม์ใช้เพื่อ:"
+      }
+    }
+  }
 }

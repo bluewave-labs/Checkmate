@@ -18,10 +18,11 @@ interface IncidentRow {
 	comment: string | null;
 	created_at: Date;
 	updated_at: Date;
+	triggered_escalations: string[] | null;
 }
 
 const COLUMNS = `id, monitor_id, team_id, start_time, end_time, status, message, status_code,
-	resolution_type, resolved_by, resolved_by_email, comment, created_at, updated_at`;
+	resolution_type, resolved_by, resolved_by_email, comment, created_at, updated_at, triggered_escalations`;
 
 export class TimescaleIncidentsRepository implements IIncidentsRepository {
 	constructor(private pool: Pool) {}
@@ -68,6 +69,11 @@ export class TimescaleIncidentsRepository implements IIncidentsRepository {
 		]);
 		const row = result.rows[0];
 		return row ? this.toEntity(row) : null;
+	};
+
+	findAllActive = async (): Promise<Incident[]> => {
+		console.warn("TimescaleIncidentsRepository.findAllActive is not implemented");
+		return [];
 	};
 
 	findActiveByMonitorId = async (monitorId: string, teamId: string): Promise<Incident | null> => {
@@ -290,5 +296,6 @@ export class TimescaleIncidentsRepository implements IIncidentsRepository {
 		comment: row.comment ?? null,
 		createdAt: row.created_at.toISOString(),
 		updatedAt: row.updated_at.toISOString(),
+		triggeredEscalations: row.triggered_escalations ?? [],
 	});
 }

@@ -1,5 +1,5 @@
 import type { Monitor, MonitorStatusResponse, Notification } from "@/types/index.js";
-import type { NotificationMessage } from "@/types/notificationMessage.js";
+import type { NotificationMessage, NotificationContent } from "@/types/notificationMessage.js";
 import { IMonitorsRepository, INotificationsRepository } from "@/repositories/index.js";
 import { INotificationProvider } from "./notificationProviders/INotificationProvider.js";
 import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
@@ -14,6 +14,7 @@ export interface INotificationsService {
 	updateById(id: string, teamId: string, updateData: Partial<Notification>): Promise<Notification>;
 	deleteById: (id: string, teamId: string) => Promise<Notification>;
 	handleNotifications: (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => Promise<boolean>;
+	sendEscalation: (channelId: string, monitor: Monitor) => Promise<boolean>;
 
 	sendTestNotification: (notification: Partial<Notification>) => Promise<boolean>;
 	testAllNotifications: (notificationIds: string[]) => Promise<boolean>;
@@ -71,9 +72,9 @@ export class NotificationsService implements INotificationsService {
 	private send = async (
 		notification: Notification,
 		monitor: Monitor,
-		monitorStatusResponse: MonitorStatusResponse,
-		decision: MonitorActionDecision,
-		notificationMessage: NotificationMessage | undefined
+		monitorStatusResponse?: MonitorStatusResponse,
+		decision?: MonitorActionDecision,
+		notificationMessage?: NotificationMessage
 	): Promise<boolean> => {
 		if (!notificationMessage) {
 			this.logger.warn({
@@ -144,6 +145,59 @@ export class NotificationsService implements INotificationsService {
 
 		// Send notifications based on decision
 		return await this.sendNotifications(monitor, monitorStatusResponse, decision);
+	};
+
+	sendEscalation = async (channelId: string, monitor: Monitor): Promise<boolean> => {
+		const notifications = await this.notificationsRepository.findNotificationsByIds([channelId]);
+		const notification = notifications[0];
+
+		if (!notification) {
+			this.logger.warn({
+				message: `Notification channel not found for escalation: ${channelId}`,
+				service: SERVICE_NAME,
+				method: "sendEscalation",
+			});
+			return false;
+		}
+
+		try {
+			const settings = this.settingsService.getSettings();
+			const clientHost = settings.clientHost || "Host not defined";
+
+			const content: NotificationContent = {
+				title: `Escalation: ${monitor.name}`,
+				summary: `Monitor "${monitor.name}" has an unresolved incident that requires immediate attention.`,
+				details: [`URL: ${monitor.url}`, `Status: Down`, `Type: ${monitor.type}`],
+				timestamp: new Date(),
+			};
+
+			const notificationMessage: NotificationMessage = {
+				type: "monitor_down",
+				severity: "critical",
+				monitor: {
+					id: monitor.id,
+					name: monitor.name,
+					url: monitor.url,
+					type: monitor.type,
+					status: monitor.status,
+				},
+				content,
+				clientHost,
+				metadata: {
+					teamId: monitor.teamId,
+					notificationReason: "escalation",
+				},
+			};
+
+			return await this.send(notification, monitor, undefined, undefined, notificationMessage);
+		} catch (error) {
+			this.logger.warn({
+				message: `Failed to send escalation for monitor ${monitor.id}: ${error}`,
+				service: SERVICE_NAME,
+				method: "sendEscalation",
+			});
+			return false;
+		}
 	};
 
 	sendTestNotification = async (notification: Partial<Notification>) => {

@@ -1,1305 +1,1322 @@
 {
-	"common": {
-		"auth": {
-			"roles": {
-				"admin": "Ylläpitäjä",
-				"demo": "Demo",
-				"superadmin": "Pääylläpitäjä",
-				"user": "Käyttäjä"
-			}
-		},
-		"alerts": {
-			"pageSpeedApiKey": {
-				"content": "Varoitus: Et ole vielä lisännyt Google PageSpeed API -avainta. Siirry <settingsLink>Asetuksiin</settingsLink> lisätäksesi sellainen. Ilman sitä PageSpeed-monitorointi ei toimi."
-			}
-		},
-		"appName": "",
-		"breadcrumbs": {
-			"details": "Tiedot",
-			"home": "Etusivu"
-		},
-		"buttons": {
-			"addMember": "Lisää jäsen",
-			"cancel": "Peruuta",
-			"close": "Sulje",
-			"configure": "Määritä",
-			"confirm": "Vahvista",
-			"create": "Luo",
-			"delete": "Poista",
-			"generateToken": "Luo tunniste",
-			"incidents": "Häiriöt",
-			"inviteMember": "Kutsu jäsen",
-			"pause": "Keskeytä",
-			"resume": "Jatka",
-			"save": "Tallenna",
-			"sendInvite": "Lähetä kutsu",
-			"test": "Testaa",
-			"testNotifications": "Testaa ilmoitukset",
-			"toggleTheme": "",
-			"flushQueue": "Tyhjennä jono",
-			"notFound": "Siirry pääsivulle",
-			"resetPassword": "",
-			"reset": "Palauta",
-			"clear": "Tyhjennä",
-			"addDemo": "Lisää demomonitorit",
-			"removeMonitors": "Poista monitorit",
-			"sendTestEmail": "Lähetä testisähköposti",
-			"exportToJSON": "Vie JSON-muotoon",
-			"importFromJSON": "Tuo JSON-muodosta",
-			"clearFilters": "Tyhjennä suodattimet",
-			"removeUser": "Poista käyttäjä"
-		},
-		"charts": {
-			"labels": {
-				"averageResponseTime": "Keskimääräinen vasteaika",
-				"downtime": "Käyttökatko",
-				"high": "",
-				"low": "",
-				"uptime": "Käytettävyys"
-			},
-			"histogram": {
-				"avg": "Keskim.: {{value}} ms",
-				"max": "Maks.: {{value}} ms"
-			}
-		},
-		"dialogs": {
-			"delete": {
-				"description": "Tätä toimintoa ei voi kumota.",
-				"title": "Haluatko varmasti poistaa tämän?"
-			}
-		},
-		"labels": {
-			"active": "Aktiivinen",
-			"paused": "keskeytetty",
-			"na": "Ei saatavilla",
-			"resolved": "Ratkaistu",
-			"responseTime": "Vasteaika"
-		},
-		"form": {
-			"role": {
-				"option": {
-					"role": {
-						"label": "Roolit"
-					}
-				}
-			},
-			"name": {
-				"option": {
-					"firstName": {
-						"label": "",
-						"placeholder": ""
-					},
-					"lastName": {
-						"label": "",
-						"placeholder": ""
-					}
-				}
-			},
-			"email": {
-				"option": {
-					"email": {
-						"label": "Sähköposti",
-						"placeholder": "you@example.com"
-					}
-				}
-			}
-		},
-		"table": {
-			"empty": "Täällä ei ole mitään",
-			"headers": {
-				"actions": "",
-				"dateTime": "Päivämäärä ja aika",
-				"message": "Viesti",
-				"monitor": "Monitori",
-				"monitorId": "Monitorin tunnus",
-				"name": "Nimi",
-				"status": "Tila",
-				"type": "",
-				"url": "Osoite",
-				"interval": "Aikaväli",
-				"active": "Aktiivinen",
-				"responseTime": "Vasteaika"
-			}
-		}
-	},
-	"components": {
-		"imageUpload": {
-			"clickToUpload": "Napsauta ladataksesi",
-			"dragAndDrop": "raahaa ja pudota",
-			"supportedFormats": "Tuetut muodot",
-			"maxSize": "Enimmäiskoko",
-			"orDragAndDrop": "tai vedä ja pudota",
-			"errors": {
-				"invalidFileSize": "Tiedoston koko on liian suuri!",
-				"invalidFileFormat": ""
-			}
-		},
-		"headerStatusPageControls": {
-			"publicLink": "Julkinen linkki"
-		},
-		"headerTimeRange": {
-			"labels": {
-				"day": "Päivä",
-				"month": "Kuukausi",
-				"recent": "Viimeisimmät",
-				"week": "Viikko"
-			},
-			"description": {
-				"recent": "Näytetään tilastot viimeisiltä 2 tunnilta.",
-				"day": "Näytetään tilastot viimeisiltä 24 tunnilta.",
-				"week": "Näytetään tilastot viimeisiltä 7 päivältä.",
-				"month": "Näytetään tilastot viimeisiltä 30 päivältä."
-			}
-		},
-		"offlineBanner": {
-			"serverUnreachable": "Palvelimeen ei saada yhteyttä",
-			"retry": "Yritä uudelleen",
-			"retrying": "Yritetään uudelleen...",
-			"reconnected": ""
-		},
-		"sidebar": {
-			"menu": {
-				"uptime": "",
-				"pagespeed": "",
-				"infrastructure": "Infrastruktuuri",
-				"notifications": "",
-				"checks": "Tarkistukset",
-				"incidents": "",
-				"statusPages": "Tilasivut",
-				"maintenance": "Huolto",
-				"logs": "",
-				"settings": "Asetukset"
-			},
-			"bottomMenu": {
-				"support": "Tuki",
-				"discussions": "Keskustelut",
-				"docs": "Dokumentit",
-				"changelog": "Muutosloki"
-			},
-			"accountMenu": {
-				"profile": "Profiili",
-				"password": "Salasana",
-				"team": "Tiimi"
-			},
-			"starPrompt": {
-				"title": "Lisää Checkmate suosikkeihin",
-				"description": "Katso uusimmat julkaisut ja auta kasvattamaan yhteisöä GitHubissa"
-			},
-			"authFooter": {
-				"navControls": "Ohjaimet",
-				"logOut": "Kirjaudu ulos",
-				"roles": {
-					"superAdmin": "Pääylläpitäjä",
-					"admin": "Ylläpitäjä",
-					"user": "Käyttäjä",
-					"demoUser": "Demokäyttäjä"
-				}
-			}
-		},
-		"starPrompt": {
-			"title": "Lisää Checkmate suosikkeihin",
-			"description": "Katso uusimmat julkaisut ja auta kasvattamaan yhteisöä GitHubissa"
-		}
-	},
-	"pages": {
-		"notFound": {
-			"title": "Voi ei! Sushisi putosi!",
-			"subtitle": "Joko URL-osoitetta ei ole olemassa tai sinulla ei ole pääsyä siihen."
-		},
-		"account": {
-			"tabs": {
-				"profile": "Profiili",
-				"password": "Salasana",
-				"team": "Tiimi"
-			},
-			"form": {
-				"name": {
-					"title": "Nimi",
-					"description": "Päivitä henkilökohtaiset tietosi"
-				},
-				"photo": {
-					"title": "Profiilikuva",
-					"description": "Lataa profiilikuva"
-				},
-				"currentPassword": {
-					"title": "Nykyinen salasana",
-					"description": "Syötä nykyinen salasanasi henkilöllisyytesi vahvistamiseksi",
-					"option": {
-						"label": "Nykyinen salasana",
-						"placeholder": "Syötä nykyinen salasana"
-					}
-				},
-				"newPassword": {
-					"title": "Uusi salasana",
-					"description": "Valitse vahva salasana, jossa on vähintään 8 merkkiä",
-					"option": {
-						"newPassword": {
-							"label": "Uusi salasana",
-							"placeholder": "Syötä uusi salasana"
-						},
-						"confirm": {
-							"label": "Vahvista salasana",
-							"placeholder": "Vahvista uusi salasana"
-						}
-					}
-				},
-				"deleteAccount": {
-					"title": "Poista tili",
-					"description": "Tämä toiminto on pysyvä eikä sitä voi kumota"
-				}
-			},
-			"team": {
-				"filter": {
-					"placeholder": "Suodata roolin mukaan",
-					"all": "Kaikki",
-					"admin": "Ylläpitäjä",
-					"member": "Jäsen"
-				},
-				"table": {
-					"headers": {
-						"email": "Sähköposti",
-						"role": "Rooli",
-						"created": "Luotu"
-					}
-				},
-				"addMember": {
-					"title": "Rekisteröi uusi tiimin jäsen",
-					"description": "Luo uusi käyttäjätili. Jaa tunnukset turvallisesti luomisen jälkeen."
-				},
-				"invite": {
-					"title": "Kutsu tiimin jäsen",
-					"description": "Lähetä kutsu liittyä tiimiisi",
-					"email": {
-						"label": "Sähköpostiosoite",
-						"placeholder": "Syötä sähköpostiosoite"
-					},
-					"role": {
-						"label": "Rooli",
-						"placeholder": "Valitse rooli"
-					},
-					"linkLabel": "Kutsulinkki"
-				}
-			}
-		},
-		"auth": {
-			"common": {
-				"passwordRules": {
-					"length": {
-						"beginning": "",
-						"highlighted": ""
-					},
-					"lowercase": {
-						"beginning": "",
-						"highlighted": ""
-					},
-					"match": {
-						"beginning": "",
-						"highlighted": ""
-					},
-					"number": {
-						"beginning": "",
-						"highlighted": ""
-					},
-					"special": {
-						"beginning": "",
-						"highlighted": ""
-					},
-					"uppercase": {
-						"beginning": "",
-						"highlighted": ""
-					}
-				},
-				"form": {
-					"option": {
-						"email": {
-							"label": "Sähköposti",
-							"placeholder": "me@example.com"
-						},
-						"password": {
-							"label": "Salasana",
-							"placeholder": "********"
-						},
-						"confirmPassword": {
-							"label": "Vahvista salasana"
-						}
-					}
-				}
-			},
-			"login": {
-				"title": "Tervetuloa takaisin Checkmateen!",
-				"subtitle": "Kirjaudu sisään jatkaaksesi",
-				"submit": "Kirjaudu sisään",
-				"links": {
-					"forgotPassword": {
-						"text": "Unohditko salasanan?",
-						"linkText": "Nollaa salasana"
-					},
-					"register": {
-						"text": "Eikö sinulla ole tiliä?",
-						"linkText": "Rekisteröidy täällä"
-					}
-				}
-			},
-			"register": {
-				"title": "Tervetuloa takaisin Checkmateen!",
-				"subtitle": "Rekisteröidy aloittaaksesi",
-				"submit": "Rekisteröidy"
-			},
-			"forgotPassword": {
-				"title": "Unohditko salasanasi?",
-				"subtitle": "Ei hätää, lähetämme sinulle nollausohjeet.",
-				"submit": "Pyydä palautusta",
-				"links": {
-					"login": {
-						"text": "Palaa",
-						"linkText": "kirjautumiseen"
-					}
-				}
-			},
-			"setNewPassword": {
-				"title": "Nollaa salasanasi",
-				"subtitle": "Uuden salasanasi on oltava eri kuin aiemmin käytetyt salasanat."
-			}
-		},
-		"checks": {
-			"selects": {
-				"monitor": {
-					"all": "Kaikki monitorit"
-				},
-				"status": {
-					"all": "Kaikki",
-					"down": "Alhaalla",
-					"up": "Ylhäällä"
-				}
-			},
-			"table": {
-				"empty": "Ei alhaalla-tarkistuksia tällä aikavälillä",
-				"headers": {
-					"statusCode": "Tilakoodi",
-					"location": "Sijainti"
-				}
-			}
-		},
-		"common": {
-			"monitors": {
-				"actions": {
-					"configure": "Määritä",
-					"delete": "Poista",
-					"generateToken": "Luo tunniste",
-					"details": "Tiedot",
-					"incidents": "Häiriöt",
-					"inviteMember": "Kutsu jäsen",
-					"openSite": "Avaa sivusto",
-					"pause": "Keskeytä",
-					"resume": "Jatka"
-				},
-				"statBoxes": {
-					"activeFor": "Aktiivinen",
-					"certificateExpiry": "Varmenteen vanheneminen",
-					"lastCheck": "Viimeisin tarkistus",
-					"lastResponseTime": "Viimeisin vasteaika"
-				},
-				"status": {
-					"down": "alhaalla",
-					"breached": "kynnysarvo ylitetty",
-					"initializing": "alustamassa",
-					"maintenance": "huollossa",
-					"paused": "keskeytetty",
-					"total": "yhteensä",
-					"up": "ylhäällä"
-				},
-				"monitorTypes": {
-					"optionDocker": "Docker",
-					"optionGame": "Peli",
-					"optionHttp": "HTTP(S)",
-					"optionPing": "Ping",
-					"optionPort": "Portti",
-					"optionPagespeed": "PageSpeed",
-					"optionHardware": "Infrastruktuuri",
-					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
-				}
-			}
-		},
-		"createMonitor": {
-			"form": {
-				"advanced": {
-					"description": "Valinnaisia asetuksia edistyneille käyttötapauksille",
-					"option": {
-						"advancedMatching": {
-							"label": "Käytä edistynyttä vastaavuutta"
-						},
-						"expectedValue": {
-							"label": "Odotettu arvo"
-						},
-						"jsonPath": {
-							"description": "Tämä lauseke arvioidaan vastauksen JSON-dataa vasten ja tulosta käytetään odotetun arvon vertailuun. Katso <jmesLink>jmespath.org</jmesLink> kyselykielen dokumentaatio.",
-							"label": "JSONPath-lauseke"
-						},
-						"matchMethod": {
-							"label": "Vertailutapa",
-							"equal": "",
-							"include": "",
-							"regex": ""
-						}
-					},
-					"title": "Lisäasetukset"
-				},
-				"frequency": {
-					"description": "Kuinka usein haluat tarkistaa tämän monitorin tilan?",
-					"option": {
-						"frequency": {
-							"label": "Tarkistusväli",
-							"value": {
-								"fifteenMinutes": "15 minuuttia",
-								"fifteenSeconds": "",
-								"fiveMinutes": "5 minuuttia",
-								"fourMinutes": "",
-								"oneMinute": "",
-								"tenMinutes": "10 minuuttia",
-								"thirtyMinutes": "30 minuuttia",
-								"thirtySeconds": "",
-								"threeMinutes": "",
-								"twoMinutes": ""
-							}
-						}
-					},
-					"title": "Tarkistusväli"
-				},
-				"general": {
-					"option": {
-						"container": {
-							"label": "Kontin nimi/tunnus",
-							"placeholder": "my-app tai abcd1234"
-						},
-						"host": {
-							"label": "Isäntä",
-							"placeholder": "192.168.1.100 tai example.com"
-						},
-						"name": {
-							"label": "Näyttönimi",
-							"placeholder": "esim. Oma verkkosivusto"
-						},
-						"secret": {
-							"label": "Valtuutusavain",
-							"placeholder": "Syötä salausavaimesi"
-						},
-						"url": {
-							"label": "URL",
-							"placeholder": "https://www.google.com"
-						},
-						"game": {
-							"label": "",
-							"placeholder": ""
-						},
-						"port": {
-							"label": "Monitoroitava portti",
-							"placeholder": "80"
-						},
-						"grpcServiceName": {
-							"label": "Palvelun nimi",
-							"placeholder": "esim. my.service.v1 (jätä tyhjäksi yleistä tilaa varten)"
-						},
-						"wsUrl": {
-							"label": "WebSocket URL",
-							"placeholder": "wss://example.com/socket"
-						}
-					},
-					"title": "Yleiset asetukset",
-					"description": {
-						"http": "Syötä monitoroitava URL tai IP (esim. https://example.com/ tai 192.168.1.100) ja lisää selkeä näyttönimi, joka näkyy hallintapaneelissa.",
-						"ping": "",
-						"port": "",
-						"docker": "",
-						"game": "",
-						"pagespeed": "Seuraa sivun latausnopeutta, Core Web Vitals -arvoja ja optimointipisteitä verkkosivustollasi.",
-						"grpc": "Syötä gRPC-palvelimen isäntänimi ja portti, määritä halutessasi palvelun nimi terveystarkistusta varten ja lisää näyttönimi.",
-						"websocket": "Syötä monitoroitava WebSocket URL (esim. wss://example.com/socket) ja lisää näyttönimi.",
-						"hardware": "Monitoroi infrastruktuurisi CPU:n, muistin ja levyn käyttöä sekä lämpötilaa."
-					}
-				},
-				"ignoreTls": {
-					"description": "Määritä TLS/SSL-varmenteen vahvistus HTTPS-yhteyksiä varten.",
-					"option": {
-						"tls": {
-							"label": "Ohita TLS/SSL-virheet"
-						}
-					},
-					"title": "TLS/SSL-asetukset"
-				},
-				"incidents": {
-					"description": "Liukuva ikkuna määrittää, milloin monitori katsotaan alhaalla olevaksi. Monitorin tila muuttuu vasta, kun tarkistusten prosenttiosuus liukuvassa ikkunassa saavuttaa määritellyn arvon.",
-					"option": {
-						"checks": {
-							"label": "Tarkistusten määrä liukuvassa ikkunassa"
-						},
-						"percentage": {
-							"label": "Kuinka suuren osuuden tarkistuksista liukuvassa ikkunassa on epäonnistuttava/onnistuttava ennen kuin monitorin tila muuttuu?"
-						}
-					},
-					"title": "Häiriöt"
-				},
-				"notifications": {
-					"description": "Valitse ilmoituskanavat, joita haluat käyttää",
-					"title": "Ilmoitukset"
-				},
-				"type": {
-					"description": "Valitse suoritettavan tarkistuksen tyyppi",
-					"optionDockerDescription": "Käytä Dockeria monitoroimaan, onko kontti käynnissä.",
-					"optionGameDescription": "Monitoroi, onko tietty pelipalvelin verkossa.",
-					"optionGrpcDescription": "Monitoroi gRPC-palveluita standardin Health Checking Protocol -protokollan avulla.",
-					"optionWebSocketDescription": "Monitoroi WebSocket-päätepisteitä yhteyden kunnon ja vasteajan osalta.",
-					"optionHttpDescription": "Käytä HTTP(S)-protokollaa verkkosivustosi tai API-päätepisteen monitorointiin.",
-					"optionPingDescription": "Käytä ICMP Ping -komentoa monitoroimaan, onko palvelin verkossa.",
-					"optionPortDescription": "Monitoroi, onko tietty palvelimen portti auki.",
-					"title": "Tyyppi"
-				},
-				"thresholds": {
-					"title": "Hälytysrajat",
-					"description": "Määritä kynnysarvot, joiden ylittyessä hälytykset laukaistaan tälle laitemonitorille.",
-					"option": {
-						"cpuThreshold": {
-							"label": "CPU-hälytysraja (%)"
-						},
-						"memoryThreshold": {
-							"label": "Muistin hälytysraja (%)"
-						},
-						"diskThreshold": {
-							"label": "Levyn hälytysraja (%)"
-						},
-						"tempThreshold": {
-							"label": "Lämpötilan hälytysraja (°C)"
-						}
-					}
-				},
-				"geoChecks": {
-					"title": "Maantieteellisesti hajautetut tarkistukset",
-					"description": "Suorita tarkistuksia useista maantieteellisistä sijainneista globaalin saatavuuden ja suorituskyvyn monitoroimiseksi.",
-					"option": {
-						"enabled": {
-							"label": "Ota käyttöön maantieteellisesti hajautetut tarkistukset"
-						},
-						"locations": {
-							"label": "Sijainnit",
-							"placeholder": "Valitse sijainnit",
-							"options": {
-								"EU": "Eurooppa",
-								"NA": "Pohjois-Amerikka",
-								"AS": "Aasia",
-								"SA": "Etelä-Amerikka",
-								"AF": "Afrikka",
-								"OC": "Oseania"
-							}
-						},
-						"interval": {
-							"label": "Tarkistusväli",
-							"value": {
-								"fiveMinutes": "5 minuuttia",
-								"tenMinutes": "10 minuuttia",
-								"fifteenMinutes": "15 minuuttia",
-								"thirtyMinutes": "30 minuuttia"
-							}
-						}
-					}
-				},
-				"url": {
-					"title": "Monitorin IP/URL tilasivulla",
-					"description": "Näytä monitorin IP-osoite tai URL julkisella tilasivulla. Jos se on poistettu käytöstä, vain monitorin nimi näytetään arkaluonteisten tietojen suojaamiseksi.",
-					"option": {
-						"showURL": {
-							"label": "Näytä IP/URL tilasivulla",
-							"enabled": "Käytössä",
-							"disabled": "Pois käytöstä"
-						}
-					}
-				},
-				"stats": {
-					"title": "Monitorointihistoria",
-					"description": "Tyhjennä kaikki tiimisi monitorointihistoria ja tilastot. Tätä toimintoa ei voi kumota.",
-					"buttonText": "Tyhjennä kaikki tilastot",
-					"dialog": {
-						"title": "Tyhjennetäänkö kaikki monitorointihistoria?",
-						"description": "Tämä poistaa pysyvästi kaikki tiimisi monitorointihistorian, tilastot ja tarkistustiedot. Tätä toimintoa ei voi kumota.",
-						"confirm": "Kyllä, tyhjennä kaikki tilastot"
-					}
-				}
-			}
-		},
-		"editUser": {
-			"form": {
-				"roles": {
-					"title": "Roolit",
-					"description": "Määritä käyttäjälle roolit. Useita rooleja voi valita."
-				}
-			},
-			"dialog": {
-				"removeUser": {
-					"title": "Poista käyttäjä",
-					"content": "Haluatko varmasti poistaa käyttäjän {{name}} tiimistäsi? Tätä toimintoa ei voi kumota."
-				}
-			}
-		},
-		"incidents": {
-			"dialog": {
-				"resolveIncident": {
-					"title": "Ratkaise häiriö",
-					"option": {
-						"comment": {
-							"label": "Kommentti (valinnainen)",
-							"placeholder": "Lisää kommentti ratkaisusta..."
-						}
-					}
-				},
-				"details": {
-					"analysis": "Häiriöanalyysi",
-					"comment": "Kommentti:",
-					"detailsLabel": "Tiedot",
-					"downtime": "Käyttökatko:",
-					"message": "Viesti:",
-					"monitor": "Monitori:",
-					"overview": "Yleiskatsaus",
-					"resolutionDetails": "Ratkaisun tiedot",
-					"resolutionType": "Tyyppi:",
-					"resolutionTypes": {
-						"automatic": "Automaattinen",
-						"manual": "Manuaalinen"
-					},
-					"resolve": "Ratkaise häiriö",
-					"resolvedAt": "Ratkaistu:",
-					"resolvedBy": "Ratkaisija:",
-					"startedAt": "Alkanut:",
-					"status": "Tila:",
-					"statusCode": "Tilakoodi:",
-					"timeline": "Aikajana",
-					"title": "Häiriön tiedot",
-					"url": "URL:"
-				}
-			},
-			"filters": {
-				"allMonitors": "Kaikki monitorit",
-				"monitor": "Monitori",
-				"resolutionType": "Ratkaisun tyyppi",
-				"resolutionTypes": {
-					"manual": "Manuaalinen",
-					"automatic": "Automaattinen",
-					"all": "Kaikki"
-				}
-			},
-			"summaryCard": {
-				"activeIncidents": {
-					"title": "Aktiiviset häiriöt",
-					"active_zero": "Ei aktiivisia häiriöitä",
-					"active_one": "{{count}} aktiivinen häiriö",
-					"active_other": "{{count}} aktiivista häiriötä"
-				},
-				"incidentStats": {
-					"avgResolutionTime": "Keskim. ratkaisuaika",
-					"mostAffectedMonitor": "Eniten häiriöitä kokenut monitori",
-					"title": "Häiriötilastot",
-					"totalIncidents": "Häiriöitä yhteensä"
-				},
-				"latestIncidents": {
-					"title": "Viimeisimmät häiriöt"
-				}
-			},
-			"table": {
-				"actions": {
-					"details": "Tiedot",
-					"goToMonitor": "Siirry monitoriin",
-					"resolveManually": "Ratkaise manuaalisesti"
-				},
-				"activeIncidents": "Aktiiviset häiriöt",
-				"headers": {
-					"endTime": "Päättymisaika",
-					"resolutionType": "Ratkaisun tyyppi",
-					"startTime": "",
-					"statusCode": "Tilakoodi"
-				},
-				"resolvedIncidents": "Ratkaistut häiriöt",
-				"status": {
-					"active": "Aktiivinen",
-					"resolved": "Ratkaistu"
-				}
-			}
-		},
-		"infrastructure": {
-			"charts": {
-				"labels": {
-					"cpu": "CPU:n käyttö",
-					"disk": "Levyn käyttö",
-					"memory": "Muistin käyttö",
-					"netBytesRecv": "{{name}} - tavua vastaanotettu",
-					"netBytesSent": "{{name}} - tavua lähetetty",
-					"temp": "Lämpö"
-				}
-			},
-			"gauges": {
-				"cpu": {
-					"lowerLabel": "Enimmäistaajuus",
-					"title": "CPU:n käyttö",
-					"upperLabel": "Nykyinen taajuus"
-				},
-				"disk": {
-					"lowerLabel": "Vapaa",
-					"title": "Levy {{idx}} käyttö",
-					"upperLabel": "Käytetty"
-				},
-				"memory": {
-					"lowerLabel": "Vapaa",
-					"title": "Muistin käyttö",
-					"upperLabel": "Käytetty"
-				}
-			},
-			"statBoxes": {
-				"avgCpuTemperature": "",
-				"cpuFrequency": "",
-				"cpuLogical": "",
-				"cpuPhysical": "",
-				"disk": "Levy",
-				"memory": "Muisti",
-				"os": ""
-			},
-			"table": {
-				"headers": {
-					"cpu": "CPU",
-					"disk": "Levy",
-					"memory": "Muisti"
-				}
-			},
-			"tabs": {
-				"labels": {
-					"network": "",
-					"overview": "Yleiskatsaus"
-				}
-			},
-			"fallback": {
-				"actionButton": "Luo monitori!",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "Infrastruktuurimonitorilla voit:"
-			}
-		},
-		"logs": {
-			"tabs": {
-				"diagnostics": "",
-				"logs": "",
-				"queue": ""
-			},
-			"logLevelSelect": {
-				"label": "Lokitaso"
-			},
-			"jobQueue": "Työnojono",
-			"failedJobs": "Epäonnistuneet työt",
-			"noLogs": "Lokeja ei löytynyt",
-			"metrics": {
-				"jobs": "Työt",
-				"activeJobs": "Aktiiviset työt",
-				"failingJobs": "Epäonnistuvat työt",
-				"totalRuns": "Suoritukset yhteensä",
-				"totalFailures": "Epäonnistumiset yhteensä"
-			},
-			"diagnostics": {
-				"stats": {
-					"eventLoopDelay": "Tapahtumasilmukan viive",
-					"uptime": "Käytettävyys",
-					"usedHeapSize": "Käytetty keon koko",
-					"totalHeapSize": "Keon kokonaiskoko",
-					"osMemoryLimit": "Käyttöjärjestelmän muistiraja"
-				},
-				"gauges": {
-					"heapAllocation": "Keon varaus",
-					"heapUsage": "Keon käyttö",
-					"heapUtilization": "Keon hyödyntäminen",
-					"instantCpuUsage": "Hetkellinen CPU:n käyttö",
-					"availableMemoryPercentage": "% vapaasta muistista",
-					"allocatedPercentage": "% varattu",
-					"usedSPercentage": "% sekunnista CPU:n käytössä",
-					"total": "Yhteensä",
-					"used": "Käytetty"
-				}
-			},
-			"table": {
-				"headers": {
-					"timestamp": "Aikaleima",
-					"level": "Taso",
-					"service": "Palvelu",
-					"method": "Metodi",
-					"monitorId": "Monitorin tunnus",
-					"runCount": "Suorituskerrat",
-					"failCount": "Epäonnistumiskerrat",
-					"lastRunAt": "Viimeisin suoritus",
-					"lockedAt": "Lukittu",
-					"lastFinishedAt": "Viimeisin valmistuminen",
-					"lastRunTook": "Viimeisin suoritus kesti",
-					"lastFailedAt": "Viimeisin epäonnistuminen",
-					"failReason": "Epäonnistumisen syy"
-				}
-			}
-		},
-		"maintenanceWindow": {
-			"fallback": {
-				"actionButton": "Luo huoltoikkuna!",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "Huoltoikkunalla voit:"
-			},
-			"table": {
-				"headers": {
-					"nextWindow": "",
-					"repeat": ""
-				}
-			},
-			"form": {
-				"general": {
-					"title": "Yleiset asetukset",
-					"description": "Aseta nimi ja toistovalinta huoltoikkunallesi.",
-					"option": {
-						"name": {
-							"label": "Nimi",
-							"placeholder": "esim. Viikoittainen huolto"
-						},
-						"repeat": {
-							"label": "Toista"
-						}
-					}
-				},
-				"startDate": {
-					"title": "Alkamispäivä",
-					"description": "Valitse huoltoikkunan alkamispäivä.",
-					"option": {
-						"startDate": {
-							"label": "Alkamispäivä"
-						}
-					}
-				},
-				"startTime": {
-					"title": "Alkamisaika",
-					"description": "Aseta huoltoikkunan alkamisaika ja kesto. Kaikki arvot ovat UTC-aikaa.",
-					"option": {
-						"duration": {
-							"label": "Kesto"
-						},
-						"startTime": {
-							"label": "Alkamisaika"
-						}
-					},
-					"monitors": {
-						"title": "Monitorit",
-						"description": "Monitorit, joihin huoltoikkuna kohdistuu",
-						"option": {
-							"addMonitors": {
-								"label": "Lisää monitorit"
-							}
-						}
-					}
-				}
-			}
-		},
-		"notifications": {
-			"fallback": {
-				"actionButton": "Luo kanava",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "Ilmoituskanavia käytetään:"
-			},
-			"form": {
-				"accessToken": {
-					"optionAccessToken": "Pääsytunniste",
-					"placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
-				},
-				"address": {
-					"description": "Osoite, johon ilmoitukset lähetetään.",
-					"optionAddress": "Osoite",
-					"placeholderEmail": "example@example.com",
-					"placeholderWebhook": "https://your-server.com/webhook",
-					"title": "Osoite"
-				},
-				"homeServer": {
-					"optionHomeServer": "Kotipalvelin",
-					"placeholder": "example.com"
-				},
-				"matrix": {
-					"description": "Määritä Matrix-kotipalvelimen yhteys ilmoituksia varten.",
-					"title": "Matrix-määritykset"
-				},
-				"notificationName": {
-					"description": "Kuvaava nimi ilmoituskanavalle",
-					"optionName": "Kanavan nimi",
-					"placeholder": "esim. Tuotantohälytykset",
-					"title": "Kanavan nimi"
-				},
-				"pagerDuty": {
-					"description": "PagerDuty-integrointiavaimesi hälytysten vastaanottamiseen.",
-					"optionIntegrationKey": "Integrointiavain",
-					"placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
-					"title": "Integrointiavain"
-				},
-				"roomId": {
-					"optionRoomId": "Huoneen tunnus",
-					"placeholder": "!abcdefg:matrix.org"
-				},
-				"type": {
-					"description": "Valitse luotavan ilmoituskanavan tyyppi.",
-					"optionType": "Tyyppi",
-					"title": "Kanavan tyyppi"
-				},
-				"telegram": {
-					"title": "Telegram-määritykset",
-					"description": "",
-					"optionBotToken": "Bottitunniste",
-					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
-					"optionChatId": "Chat-tunnus",
-					"placeholderChatId": "-1001234567890"
-				}
-			},
-			"table": {
-				"headers": {
-					"destination": "Kohde"
-				}
-			}
-		},
-		"pageSpeed": {
-			"charts": {
-				"common": {
-					"cls": "Kumulatiivinen asettelun muutos (CLS)",
-					"fcp": "Ensimmäinen sisältöpiirto (FCP)",
-					"lcp": "Suurin sisältöpiirto (LCP)",
-					"si": "Nopeusindeksi (SI)",
-					"tbt": "Kokonaisestymisaika (TBT)"
-				},
-				"legend": {
-					"title": "PageSpeed-raportti",
-					"weight": "Painoarvo"
-				},
-				"pie": {
-					"title": "Suorituskykyraportti"
-				}
-			},
-			"table": {
-				"headers": {
-					"pageSpeedScore": "PageSpeed-pisteet"
-				}
-			},
-			"fallback": {
-				"actionButton": "Luo monitori!",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "PageSpeed-monitorilla voit:"
-			}
-		},
-		"settings": {
-			"form": {
-				"timezone": {
-					"title": "Näytettävä aikavyöhyke",
-					"description": "Valitse aikavyöhyke, jota käytetään päivämäärien ja aikojen näyttämiseen sovelluksessa.",
-					"option": {
-						"timezone": {
-							"label": "Näytettävä aikavyöhyke"
-						}
-					}
-				},
-				"ui": {
-					"title": "Ulkoasu",
-					"description": "Vaihda vaalean ja tumman tilan välillä, muuta kieltä tai muokkaa kaavion näyttötyyppiä.",
-					"option": {
-						"theme": {
-							"label": "Teematila",
-							"light": "Vaalea",
-							"dark": "Tumma"
-						},
-						"language": {
-							"label": "Kieli"
-						},
-						"chartType": {
-							"label": "Kaaviotyyppi",
-							"histogram": "Histogrammi",
-							"heatmap": "Lämpökartta"
-						}
-					}
-				},
-				"pagespeed": {
-					"title": "Google PageSpeed API -avain",
-					"description": "Syötä Google PageSpeed API -avaimesi ottaaksesi käyttöön Google PageSpeed -monitoroinnin. Napsauta Palauta päivittääksesi avaimen.",
-					"option": {
-						"apiKey": {
-							"label": "PageSpeed API -avain",
-							"labelSet": "API-avain on asetettu. Napsauta Palauta muuttaaksesi sitä.",
-							"placeholder": "Syötä Google PageSpeed API -avaimesi"
-						}
-					}
-				},
-				"url": {
-					"title": "Monitorin IP/URL tilasivulla",
-					"description": "Näytä monitorin IP-osoite tai URL julkisella tilasivulla. Jos se on poistettu käytöstä, vain monitorin nimi näytetään arkaluonteisten tietojen suojaamiseksi.",
-					"option": {
-						"showURL": {
-							"label": "Näytä IP/URL tilasivulla",
-							"enabled": "Käytössä",
-							"disabled": "Pois käytöstä"
-						}
-					}
-				},
-				"stats": {
-					"title": "Monitorointihistoria",
-					"description": "Tyhjennä kaikki tiimisi monitorointihistoria ja tilastot. Tätä toimintoa ei voi kumota.",
-					"option": {
-						"clear": {
-							"label": "Tyhjennä kaikki tilastot. Tätä ei voi kumota."
-						}
-					},
-					"dialog": {
-						"title": "Tyhjennetäänkö kaikki monitorointihistoria?",
-						"description": "Tätä ei voi kumota"
-					}
-				},
-				"retention": {
-					"title": "Tarkistusten säilytys",
-					"description": "Aseta kuinka kauan tarkistustietoja säilytetään ennen automaattista poistoa.",
-					"option": {
-						"days": {
-							"label": "Säilytysaika (päiviä)",
-							"unlimited": "Rajoittamaton"
-						}
-					}
-				},
-				"thresholds": {
-					"title": "Yleiset kynnysarvot",
-					"description": "Aseta yleiset CPU:n, muistin, levyn ja lämpötilan kynnysarvot infrastruktuurin monitorointiin. Nämä koskevat kaikkia laitemonitoreja, ellei niitä ohiteta.",
-					"option": {
-						"cpu": {
-							"label": "CPU-kynnysarvo (%)",
-							"placeholder": "1 - 100"
-						},
-						"memory": {
-							"label": "Muistin kynnysarvo (%)",
-							"placeholder": "1 - 100"
-						},
-						"disk": {
-							"label": "Levyn kynnysarvo (%)",
-							"placeholder": "1 - 100"
-						},
-						"temperature": {
-							"label": "Lämpötilan kynnysarvo (°C)",
-							"placeholder": "1 - 150"
-						}
-					}
-				},
-				"email": {
-					"title": "Sähköpostiasetukset",
-					"description": "Määritä järjestelmäsi sähköpostiasetukset. Niitä käytetään ilmoitusten ja hälytysten lähettämiseen.",
-					"descriptionTransport": "",
-					"descriptionTransportLink": "Katso tekniset tiedot täältä",
-					"option": {
-						"host": {
-							"label": "Sähköpostin isäntä - yhdistettävä isäntänimi tai IP-osoite",
-							"placeholder": "smtp.gmail.com"
-						},
-						"port": {
-							"label": "Sähköpostin portti - yhdistettävä portti",
-							"placeholder": "587"
-						},
-						"address": {
-							"label": "Sähköpostiosoite - käytetään tunnistautumiseen",
-							"placeholder": "you@example.com"
-						},
-						"user": {
-							"label": "Sähköpostin käyttäjä - tunnistautumisen käyttäjänimi, ohittaa sähköpostiosoitteen jos määritelty",
-							"placeholder": "Jätä tyhjäksi, jos ei tarvita"
-						},
-						"password": {
-							"label": "Sähköpostin salasana - tunnistautumisen salasana",
-							"labelSet": "Salasana on asetettu. Napsauta Palauta muuttaaksesi sitä.",
-							"placeholder": "Syötä salasanasi"
-						},
-						"tlsServername": {
-							"label": "TLS-palvelinnimi - valinnainen isäntänimi TLS-vahvistukseen, kun isäntä on IP-osoite",
-							"placeholder": "example.com"
-						},
-						"connectionHost": {
-							"label": "Sähköpostiyhteyden isäntä - HELO/EHLO-tervehdyksessä käytettävä isäntänimi",
-							"placeholder": "localhost"
-						},
-						"secure": {
-							"label": "Käytä SSL:ää (suositus): Salaa yhteys SSL/TLS:n avulla"
-						},
-						"pool": {
-							"label": "Ota yhteyspoolaus käyttöön: Käytä olemassa olevia yhteyksiä suorituskyvyn parantamiseksi"
-						},
-						"ignoreTLS": {
-							"label": "Poista STARTTLS käytöstä: Älä käytä TLS:ää, vaikka palvelin tukisi sitä"
-						},
-						"requireTLS": {
-							"label": "Pakota STARTTLS: Vaadi TLS-päivitys, epäonnistu jos ei tueta"
-						},
-						"rejectUnauthorized": {
-							"label": "Hylkää virheelliset varmenteet: Hylkää yhteydet itseallekirjoitetuilla tai ei-luotetuilla varmenteilla"
-						}
-					}
-				},
-				"demoMonitors": {
-					"title": "Demomonitorit",
-					"description": "Lisää esimerkkimonitoreja esittelytarkoituksiin."
-				},
-				"removeMonitors": {
-					"title": "Järjestelmän nollaus",
-					"description": "Poista kaikki monitorit järjestelmästäsi.",
-					"dialog": {
-						"title": "Poistetaanko kaikki monitorit?",
-						"description": "Tätä ei voi kumota."
-					}
-				},
-				"exportMonitors": {
-					"title": "Vie monitorit"
-				},
-				"importExportMonitors": {
-					"title": "Monitorien tuonti / vienti",
-					"description": "Tuo tai vie monitorien tiedot JSON-tiedostona varmuuskopiointia tai siirtoa varten."
-				},
-				"about": {
-					"title": "Tietoja",
-					"developedBy": "Kehittäjä: Bluewave Labs"
-				},
-				"validation": {
-					"errorMessage": "Korjaa seuraavat vahvistusvirheet:"
-				}
-			}
-		},
-		"statusPages": {
-			"deleteSuccess": "Tilasivu poistettu onnistuneesti",
-			"fallback": {
-				"title": "Tilasivulla voit:",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "Luo tilasivu!"
-			},
-			"monitorsList": {
-				"chartTypeHeatmap": "Lämpökartta",
-				"chartTypeHistogram": "Histogrammi",
-				"noData": "Tietoja ei saatavilla",
-				"infrastructure": {
-					"title": "Infrastruktuuri",
-					"cpu": "CPU",
-					"memory": "RAM",
-					"memoryText": "Muisti",
-					"disk": "Levy",
-					"usage": "Käyttö",
-					"used": "Käytetty",
-					"total": "Yhteensä"
-				},
-				"uptime": {
-					"title": "Käytettävyys",
-					"responseTime": "Vasteaika"
-				}
-			},
-			"statusBar": {
-				"allDown": "Kaikki järjestelmät ovat alhaalla",
-				"allUp": "Kaikki järjestelmät toiminnassa",
-				"degraded": "Joissakin järjestelmissä on ongelmia",
-				"unknown": "Järjestelmän tilaa ei voida määrittää"
-			},
-			"table": {
-				"headers": {
-					"name": "Tilasivun nimi",
-					"url": "Julkinen URL"
-				},
-				"published": "Julkaistu",
-				"unpublished": "Julkaisematon"
-			},
-			"title": "Tilasivut",
-			"details": {
-				"empty": {
-					"title": "Täällä ei ole vielä mitään",
-					"addMonitor": "Lisää monitori aloittaaksesi"
-				}
-			},
-			"form": {
-				"access": {
-					"title": "Käyttöoikeus",
-					"description": "Jos tilasivusi on valmis, voit merkitä sen julkaistuksi.",
-					"option": {
-						"published": {
-							"name": "Julkaistu ja julkisesti näkyvissä"
-						}
-					}
-				},
-				"basicInfo": {
-					"title": "Perustiedot",
-					"description": "Määritä yrityksen nimi ja aliverkkotunnus, johon tilasivusi osoittaa.",
-					"option": {
-						"name": {
-							"label": "Yrityksen nimi",
-							"placeholder": "Acme Inc."
-						},
-						"url": {
-							"label": "Tilasivusi osoite",
-							"placeholder": "my-status-page"
-						}
-					}
-				},
-				"monitors": {
-					"title": "Monitorit",
-					"description": "Valitse tilasivullasi näytettävät monitorit.",
-					"noMonitors": "Monitoreja ei valittu",
-					"option": {
-						"monitors": {
-							"label": "Valitse monitorit",
-							"placeholder": "Hae ja valitse monitorit..."
-						}
-					}
-				},
-				"timezone": {
-					"title": "Aikavyöhyke",
-					"description": "Valitse aikavyöhyke, jossa tilasivusi näytetään.",
-					"option": {
-						"timezone": {
-							"label": "Aikavyöhyke",
-							"placeholder": "Valitse aikavyöhyke..."
-						}
-					}
-				},
-				"appearance": {
-					"title": "Ulkoasu",
-					"description": "Määritä julkisen tilasivusi oletusilme.",
-					"option": {
-						"logo": {
-							"label": "Logo"
-						},
-						"color": {
-							"label": "Brändiväri"
-						}
-					}
-				},
-				"features": {
-					"title": "Ominaisuudet",
-					"description": "Määritä mitä tietoja tilasivullasi näytetään.",
-					"option": {
-						"showCharts": {
-							"label": "Näytä vasteaikakaaviot"
-						},
-						"showUptimePercentage": {
-							"label": "Näytä käytettävyysprosentti"
-						},
-						"showAdminLoginLink": {
-							"label": "Näytä ylläpitäjän kirjautumislinkki"
-						},
-						"showInfrastructure": {
-							"label": "Näytä infrastruktuurin mittarit"
-						}
-					}
-				}
-			}
-		},
-		"uptime": {
-			"filters": {
-				"search": {
-					"placeholder": "Hae monitoreja..."
-				}
-			},
-			"table": {
-				"headers": {
-					"responseTime": "Vasteaika"
-				}
-			},
-			"fallback": {
-				"actionButton": "Luo monitori!",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "Käytettävyysmonitorilla voit:"
-			}
-		}
-	}
+  "common": {
+    "auth": {
+      "roles": {
+        "admin": "Ylläpitäjä",
+        "demo": "Demo",
+        "superadmin": "Pääylläpitäjä",
+        "user": "Käyttäjä"
+      }
+    },
+    "alerts": {
+      "pageSpeedApiKey": {
+        "content": "Varoitus: Et ole vielä lisännyt Google PageSpeed API -avainta. Siirry <settingsLink>Asetuksiin</settingsLink> lisätäksesi sellainen. Ilman sitä PageSpeed-monitorointi ei toimi."
+      }
+    },
+    "appName": "",
+    "breadcrumbs": {
+      "details": "Tiedot",
+      "home": "Etusivu"
+    },
+    "buttons": {
+      "addMember": "Lisää jäsen",
+      "cancel": "Peruuta",
+      "close": "Sulje",
+      "configure": "Määritä",
+      "confirm": "Vahvista",
+      "create": "Luo",
+      "delete": "Poista",
+      "generateToken": "Luo tunniste",
+      "incidents": "Häiriöt",
+      "inviteMember": "Kutsu jäsen",
+      "pause": "Keskeytä",
+      "resume": "Jatka",
+      "save": "Tallenna",
+      "sendInvite": "Lähetä kutsu",
+      "test": "Testaa",
+      "testNotifications": "Testaa ilmoitukset",
+      "toggleTheme": "",
+      "flushQueue": "Tyhjennä jono",
+      "notFound": "Siirry pääsivulle",
+      "resetPassword": "",
+      "reset": "Palauta",
+      "clear": "Tyhjennä",
+      "addDemo": "Lisää demomonitorit",
+      "removeMonitors": "Poista monitorit",
+      "sendTestEmail": "Lähetä testisähköposti",
+      "exportToJSON": "Vie JSON-muotoon",
+      "importFromJSON": "Tuo JSON-muodosta",
+      "clearFilters": "Tyhjennä suodattimet",
+      "removeUser": "Poista käyttäjä"
+    },
+    "charts": {
+      "labels": {
+        "averageResponseTime": "Keskimääräinen vasteaika",
+        "downtime": "Käyttökatko",
+        "high": "",
+        "low": "",
+        "uptime": "Käytettävyys"
+      },
+      "histogram": {
+        "avg": "Keskim.: {{value}} ms",
+        "max": "Maks.: {{value}} ms"
+      }
+    },
+    "dialogs": {
+      "delete": {
+        "description": "Tätä toimintoa ei voi kumota.",
+        "title": "Haluatko varmasti poistaa tämän?"
+      }
+    },
+    "labels": {
+      "active": "Aktiivinen",
+      "paused": "keskeytetty",
+      "na": "Ei saatavilla",
+      "resolved": "Ratkaistu",
+      "responseTime": "Vasteaika"
+    },
+    "form": {
+      "role": {
+        "option": {
+          "role": {
+            "label": "Roolit"
+          }
+        }
+      },
+      "name": {
+        "option": {
+          "firstName": {
+            "label": "",
+            "placeholder": ""
+          },
+          "lastName": {
+            "label": "",
+            "placeholder": ""
+          }
+        }
+      },
+      "email": {
+        "option": {
+          "email": {
+            "label": "Sähköposti",
+            "placeholder": "you@example.com"
+          }
+        }
+      }
+    },
+    "table": {
+      "empty": "Täällä ei ole mitään",
+      "headers": {
+        "actions": "",
+        "dateTime": "Päivämäärä ja aika",
+        "message": "Viesti",
+        "monitor": "Monitori",
+        "monitorId": "Monitorin tunnus",
+        "name": "Nimi",
+        "status": "Tila",
+        "type": "",
+        "url": "Osoite",
+        "interval": "Aikaväli",
+        "active": "Aktiivinen",
+        "responseTime": "Vasteaika"
+      }
+    }
+  },
+  "components": {
+    "imageUpload": {
+      "clickToUpload": "Napsauta ladataksesi",
+      "dragAndDrop": "raahaa ja pudota",
+      "supportedFormats": "Tuetut muodot",
+      "maxSize": "Enimmäiskoko",
+      "orDragAndDrop": "tai vedä ja pudota",
+      "errors": {
+        "invalidFileSize": "Tiedoston koko on liian suuri!",
+        "invalidFileFormat": ""
+      }
+    },
+    "headerStatusPageControls": {
+      "publicLink": "Julkinen linkki"
+    },
+    "headerTimeRange": {
+      "labels": {
+        "day": "Päivä",
+        "month": "Kuukausi",
+        "recent": "Viimeisimmät",
+        "week": "Viikko"
+      },
+      "description": {
+        "recent": "Näytetään tilastot viimeisiltä 2 tunnilta.",
+        "day": "Näytetään tilastot viimeisiltä 24 tunnilta.",
+        "week": "Näytetään tilastot viimeisiltä 7 päivältä.",
+        "month": "Näytetään tilastot viimeisiltä 30 päivältä."
+      }
+    },
+    "offlineBanner": {
+      "serverUnreachable": "Palvelimeen ei saada yhteyttä",
+      "retry": "Yritä uudelleen",
+      "retrying": "Yritetään uudelleen...",
+      "reconnected": ""
+    },
+    "sidebar": {
+      "menu": {
+        "uptime": "",
+        "pagespeed": "",
+        "infrastructure": "Infrastruktuuri",
+        "notifications": "",
+        "checks": "Tarkistukset",
+        "incidents": "",
+        "statusPages": "Tilasivut",
+        "maintenance": "Huolto",
+        "logs": "",
+        "settings": "Asetukset"
+      },
+      "bottomMenu": {
+        "support": "Tuki",
+        "discussions": "Keskustelut",
+        "docs": "Dokumentit",
+        "changelog": "Muutosloki"
+      },
+      "accountMenu": {
+        "profile": "Profiili",
+        "password": "Salasana",
+        "team": "Tiimi"
+      },
+      "starPrompt": {
+        "title": "Lisää Checkmate suosikkeihin",
+        "description": "Katso uusimmat julkaisut ja auta kasvattamaan yhteisöä GitHubissa"
+      },
+      "authFooter": {
+        "navControls": "Ohjaimet",
+        "logOut": "Kirjaudu ulos",
+        "roles": {
+          "superAdmin": "Pääylläpitäjä",
+          "admin": "Ylläpitäjä",
+          "user": "Käyttäjä",
+          "demoUser": "Demokäyttäjä"
+        }
+      }
+    },
+    "starPrompt": {
+      "title": "Lisää Checkmate suosikkeihin",
+      "description": "Katso uusimmat julkaisut ja auta kasvattamaan yhteisöä GitHubissa"
+    }
+  },
+  "pages": {
+    "notFound": {
+      "title": "Voi ei! Sushisi putosi!",
+      "subtitle": "Joko URL-osoitetta ei ole olemassa tai sinulla ei ole pääsyä siihen."
+    },
+    "account": {
+      "tabs": {
+        "profile": "Profiili",
+        "password": "Salasana",
+        "team": "Tiimi"
+      },
+      "form": {
+        "name": {
+          "title": "Nimi",
+          "description": "Päivitä henkilökohtaiset tietosi"
+        },
+        "photo": {
+          "title": "Profiilikuva",
+          "description": "Lataa profiilikuva"
+        },
+        "currentPassword": {
+          "title": "Nykyinen salasana",
+          "description": "Syötä nykyinen salasanasi henkilöllisyytesi vahvistamiseksi",
+          "option": {
+            "label": "Nykyinen salasana",
+            "placeholder": "Syötä nykyinen salasana"
+          }
+        },
+        "newPassword": {
+          "title": "Uusi salasana",
+          "description": "Valitse vahva salasana, jossa on vähintään 8 merkkiä",
+          "option": {
+            "newPassword": {
+              "label": "Uusi salasana",
+              "placeholder": "Syötä uusi salasana"
+            },
+            "confirm": {
+              "label": "Vahvista salasana",
+              "placeholder": "Vahvista uusi salasana"
+            }
+          }
+        },
+        "deleteAccount": {
+          "title": "Poista tili",
+          "description": "Tämä toiminto on pysyvä eikä sitä voi kumota"
+        }
+      },
+      "team": {
+        "filter": {
+          "placeholder": "Suodata roolin mukaan",
+          "all": "Kaikki",
+          "admin": "Ylläpitäjä",
+          "member": "Jäsen"
+        },
+        "table": {
+          "headers": {
+            "email": "Sähköposti",
+            "role": "Rooli",
+            "created": "Luotu"
+          }
+        },
+        "addMember": {
+          "title": "Rekisteröi uusi tiimin jäsen",
+          "description": "Luo uusi käyttäjätili. Jaa tunnukset turvallisesti luomisen jälkeen."
+        },
+        "invite": {
+          "title": "Kutsu tiimin jäsen",
+          "description": "Lähetä kutsu liittyä tiimiisi",
+          "email": {
+            "label": "Sähköpostiosoite",
+            "placeholder": "Syötä sähköpostiosoite"
+          },
+          "role": {
+            "label": "Rooli",
+            "placeholder": "Valitse rooli"
+          },
+          "linkLabel": "Kutsulinkki"
+        }
+      }
+    },
+    "auth": {
+      "common": {
+        "passwordRules": {
+          "length": {
+            "beginning": "",
+            "highlighted": ""
+          },
+          "lowercase": {
+            "beginning": "",
+            "highlighted": ""
+          },
+          "match": {
+            "beginning": "",
+            "highlighted": ""
+          },
+          "number": {
+            "beginning": "",
+            "highlighted": ""
+          },
+          "special": {
+            "beginning": "",
+            "highlighted": ""
+          },
+          "uppercase": {
+            "beginning": "",
+            "highlighted": ""
+          }
+        },
+        "form": {
+          "option": {
+            "email": {
+              "label": "Sähköposti",
+              "placeholder": "me@example.com"
+            },
+            "password": {
+              "label": "Salasana",
+              "placeholder": "********"
+            },
+            "confirmPassword": {
+              "label": "Vahvista salasana"
+            }
+          }
+        }
+      },
+      "login": {
+        "title": "Tervetuloa takaisin Checkmateen!",
+        "subtitle": "Kirjaudu sisään jatkaaksesi",
+        "submit": "Kirjaudu sisään",
+        "links": {
+          "forgotPassword": {
+            "text": "Unohditko salasanan?",
+            "linkText": "Nollaa salasana"
+          },
+          "register": {
+            "text": "Eikö sinulla ole tiliä?",
+            "linkText": "Rekisteröidy täällä"
+          }
+        }
+      },
+      "register": {
+        "title": "Tervetuloa takaisin Checkmateen!",
+        "subtitle": "Rekisteröidy aloittaaksesi",
+        "submit": "Rekisteröidy"
+      },
+      "forgotPassword": {
+        "title": "Unohditko salasanasi?",
+        "subtitle": "Ei hätää, lähetämme sinulle nollausohjeet.",
+        "submit": "Pyydä palautusta",
+        "links": {
+          "login": {
+            "text": "Palaa",
+            "linkText": "kirjautumiseen"
+          }
+        }
+      },
+      "setNewPassword": {
+        "title": "Nollaa salasanasi",
+        "subtitle": "Uuden salasanasi on oltava eri kuin aiemmin käytetyt salasanat."
+      }
+    },
+    "checks": {
+      "selects": {
+        "monitor": {
+          "all": "Kaikki monitorit"
+        },
+        "status": {
+          "all": "Kaikki",
+          "down": "Alhaalla",
+          "up": "Ylhäällä"
+        }
+      },
+      "table": {
+        "empty": "Ei alhaalla-tarkistuksia tällä aikavälillä",
+        "headers": {
+          "statusCode": "Tilakoodi",
+          "location": "Sijainti"
+        }
+      }
+    },
+    "common": {
+      "monitors": {
+        "actions": {
+          "configure": "Määritä",
+          "delete": "Poista",
+          "generateToken": "Luo tunniste",
+          "details": "Tiedot",
+          "incidents": "Häiriöt",
+          "inviteMember": "Kutsu jäsen",
+          "openSite": "Avaa sivusto",
+          "pause": "Keskeytä",
+          "resume": "Jatka"
+        },
+        "statBoxes": {
+          "activeFor": "Aktiivinen",
+          "certificateExpiry": "Varmenteen vanheneminen",
+          "lastCheck": "Viimeisin tarkistus",
+          "lastResponseTime": "Viimeisin vasteaika"
+        },
+        "status": {
+          "down": "alhaalla",
+          "breached": "kynnysarvo ylitetty",
+          "initializing": "alustamassa",
+          "maintenance": "huollossa",
+          "paused": "keskeytetty",
+          "total": "yhteensä",
+          "up": "ylhäällä"
+        },
+        "monitorTypes": {
+          "optionDocker": "Docker",
+          "optionGame": "Peli",
+          "optionHttp": "HTTP(S)",
+          "optionPing": "Ping",
+          "optionPort": "Portti",
+          "optionPagespeed": "PageSpeed",
+          "optionHardware": "Infrastruktuuri",
+          "optionGrpc": "gRPC",
+          "optionWebSocket": "WebSocket"
+        }
+      }
+    },
+    "createMonitor": {
+      "form": {
+        "advanced": {
+          "description": "Valinnaisia asetuksia edistyneille käyttötapauksille",
+          "option": {
+            "advancedMatching": {
+              "label": "Käytä edistynyttä vastaavuutta"
+            },
+            "expectedValue": {
+              "label": "Odotettu arvo"
+            },
+            "jsonPath": {
+              "description": "Tämä lauseke arvioidaan vastauksen JSON-dataa vasten ja tulosta käytetään odotetun arvon vertailuun. Katso <jmesLink>jmespath.org</jmesLink> kyselykielen dokumentaatio.",
+              "label": "JSONPath-lauseke"
+            },
+            "matchMethod": {
+              "label": "Vertailutapa",
+              "equal": "",
+              "include": "",
+              "regex": ""
+            }
+          },
+          "title": "Lisäasetukset"
+        },
+        "frequency": {
+          "description": "Kuinka usein haluat tarkistaa tämän monitorin tilan?",
+          "option": {
+            "frequency": {
+              "label": "Tarkistusväli",
+              "value": {
+                "fifteenMinutes": "15 minuuttia",
+                "fifteenSeconds": "",
+                "fiveMinutes": "5 minuuttia",
+                "fourMinutes": "",
+                "oneMinute": "",
+                "tenMinutes": "10 minuuttia",
+                "thirtyMinutes": "30 minuuttia",
+                "thirtySeconds": "",
+                "threeMinutes": "",
+                "twoMinutes": ""
+              }
+            }
+          },
+          "title": "Tarkistusväli"
+        },
+        "general": {
+          "option": {
+            "container": {
+              "label": "Kontin nimi/tunnus",
+              "placeholder": "my-app tai abcd1234"
+            },
+            "host": {
+              "label": "Isäntä",
+              "placeholder": "192.168.1.100 tai example.com"
+            },
+            "name": {
+              "label": "Näyttönimi",
+              "placeholder": "esim. Oma verkkosivusto"
+            },
+            "secret": {
+              "label": "Valtuutusavain",
+              "placeholder": "Syötä salausavaimesi"
+            },
+            "url": {
+              "label": "URL",
+              "placeholder": "https://www.google.com"
+            },
+            "game": {
+              "label": "",
+              "placeholder": ""
+            },
+            "port": {
+              "label": "Monitoroitava portti",
+              "placeholder": "80"
+            },
+            "grpcServiceName": {
+              "label": "Palvelun nimi",
+              "placeholder": "esim. my.service.v1 (jätä tyhjäksi yleistä tilaa varten)"
+            },
+            "wsUrl": {
+              "label": "WebSocket URL",
+              "placeholder": "wss://example.com/socket"
+            }
+          },
+          "title": "Yleiset asetukset",
+          "description": {
+            "http": "Syötä monitoroitava URL tai IP (esim. https://example.com/ tai 192.168.1.100) ja lisää selkeä näyttönimi, joka näkyy hallintapaneelissa.",
+            "ping": "",
+            "port": "",
+            "docker": "",
+            "game": "",
+            "pagespeed": "Seuraa sivun latausnopeutta, Core Web Vitals -arvoja ja optimointipisteitä verkkosivustollasi.",
+            "grpc": "Syötä gRPC-palvelimen isäntänimi ja portti, määritä halutessasi palvelun nimi terveystarkistusta varten ja lisää näyttönimi.",
+            "websocket": "Syötä monitoroitava WebSocket URL (esim. wss://example.com/socket) ja lisää näyttönimi.",
+            "hardware": "Monitoroi infrastruktuurisi CPU:n, muistin ja levyn käyttöä sekä lämpötilaa."
+          }
+        },
+        "ignoreTls": {
+          "description": "Määritä TLS/SSL-varmenteen vahvistus HTTPS-yhteyksiä varten.",
+          "option": {
+            "tls": {
+              "label": "Ohita TLS/SSL-virheet"
+            }
+          },
+          "title": "TLS/SSL-asetukset"
+        },
+        "incidents": {
+          "description": "Liukuva ikkuna määrittää, milloin monitori katsotaan alhaalla olevaksi. Monitorin tila muuttuu vasta, kun tarkistusten prosenttiosuus liukuvassa ikkunassa saavuttaa määritellyn arvon.",
+          "option": {
+            "checks": {
+              "label": "Tarkistusten määrä liukuvassa ikkunassa"
+            },
+            "percentage": {
+              "label": "Kuinka suuren osuuden tarkistuksista liukuvassa ikkunassa on epäonnistuttava/onnistuttava ennen kuin monitorin tila muuttuu?"
+            }
+          },
+          "title": "Häiriöt"
+        },
+        "notifications": {
+          "description": "Valitse ilmoituskanavat, joita haluat käyttää",
+          "title": "Ilmoitukset"
+        },
+        "type": {
+          "description": "Valitse suoritettavan tarkistuksen tyyppi",
+          "optionDockerDescription": "Käytä Dockeria monitoroimaan, onko kontti käynnissä.",
+          "optionGameDescription": "Monitoroi, onko tietty pelipalvelin verkossa.",
+          "optionGrpcDescription": "Monitoroi gRPC-palveluita standardin Health Checking Protocol -protokollan avulla.",
+          "optionWebSocketDescription": "Monitoroi WebSocket-päätepisteitä yhteyden kunnon ja vasteajan osalta.",
+          "optionHttpDescription": "Käytä HTTP(S)-protokollaa verkkosivustosi tai API-päätepisteen monitorointiin.",
+          "optionPingDescription": "Käytä ICMP Ping -komentoa monitoroimaan, onko palvelin verkossa.",
+          "optionPortDescription": "Monitoroi, onko tietty palvelimen portti auki.",
+          "title": "Tyyppi"
+        },
+        "thresholds": {
+          "title": "Hälytysrajat",
+          "description": "Määritä kynnysarvot, joiden ylittyessä hälytykset laukaistaan tälle laitemonitorille.",
+          "option": {
+            "cpuThreshold": {
+              "label": "CPU-hälytysraja (%)"
+            },
+            "memoryThreshold": {
+              "label": "Muistin hälytysraja (%)"
+            },
+            "diskThreshold": {
+              "label": "Levyn hälytysraja (%)"
+            },
+            "tempThreshold": {
+              "label": "Lämpötilan hälytysraja (°C)"
+            }
+          }
+        },
+        "geoChecks": {
+          "title": "Maantieteellisesti hajautetut tarkistukset",
+          "description": "Suorita tarkistuksia useista maantieteellisistä sijainneista globaalin saatavuuden ja suorituskyvyn monitoroimiseksi.",
+          "option": {
+            "enabled": {
+              "label": "Ota käyttöön maantieteellisesti hajautetut tarkistukset"
+            },
+            "locations": {
+              "label": "Sijainnit",
+              "placeholder": "Valitse sijainnit",
+              "options": {
+                "EU": "Eurooppa",
+                "NA": "Pohjois-Amerikka",
+                "AS": "Aasia",
+                "SA": "Etelä-Amerikka",
+                "AF": "Afrikka",
+                "OC": "Oseania"
+              }
+            },
+            "interval": {
+              "label": "Tarkistusväli",
+              "value": {
+                "fiveMinutes": "5 minuuttia",
+                "tenMinutes": "10 minuuttia",
+                "fifteenMinutes": "15 minuuttia",
+                "thirtyMinutes": "30 minuuttia"
+              }
+            }
+          }
+        },
+        "url": {
+          "title": "Monitorin IP/URL tilasivulla",
+          "description": "Näytä monitorin IP-osoite tai URL julkisella tilasivulla. Jos se on poistettu käytöstä, vain monitorin nimi näytetään arkaluonteisten tietojen suojaamiseksi.",
+          "option": {
+            "showURL": {
+              "label": "Näytä IP/URL tilasivulla",
+              "enabled": "Käytössä",
+              "disabled": "Pois käytöstä"
+            }
+          }
+        },
+        "stats": {
+          "title": "Monitorointihistoria",
+          "description": "Tyhjennä kaikki tiimisi monitorointihistoria ja tilastot. Tätä toimintoa ei voi kumota.",
+          "buttonText": "Tyhjennä kaikki tilastot",
+          "dialog": {
+            "title": "Tyhjennetäänkö kaikki monitorointihistoria?",
+            "description": "Tämä poistaa pysyvästi kaikki tiimisi monitorointihistorian, tilastot ja tarkistustiedot. Tätä toimintoa ei voi kumota.",
+            "confirm": "Kyllä, tyhjennä kaikki tilastot"
+          }
+        },
+        "escalations": {
+          "title": "Escalation Rules",
+          "description": "Automatically notify a channel if an incident remains unresolved after a delay",
+          "addRule": "Add Rule",
+          "option": {
+            "delayMinutes": {
+              "label": "Escalate after (minutes)"
+            },
+            "channel": {
+              "label": "Notification channel",
+              "placeholder": "Select a channel"
+            },
+            "removeRule": {
+              "ariaLabel": "Remove escalation rule"
+            }
+          }
+        }
+      }
+    },
+    "editUser": {
+      "form": {
+        "roles": {
+          "title": "Roolit",
+          "description": "Määritä käyttäjälle roolit. Useita rooleja voi valita."
+        }
+      },
+      "dialog": {
+        "removeUser": {
+          "title": "Poista käyttäjä",
+          "content": "Haluatko varmasti poistaa käyttäjän {{name}} tiimistäsi? Tätä toimintoa ei voi kumota."
+        }
+      }
+    },
+    "incidents": {
+      "dialog": {
+        "resolveIncident": {
+          "title": "Ratkaise häiriö",
+          "option": {
+            "comment": {
+              "label": "Kommentti (valinnainen)",
+              "placeholder": "Lisää kommentti ratkaisusta..."
+            }
+          }
+        },
+        "details": {
+          "analysis": "Häiriöanalyysi",
+          "comment": "Kommentti:",
+          "detailsLabel": "Tiedot",
+          "downtime": "Käyttökatko:",
+          "message": "Viesti:",
+          "monitor": "Monitori:",
+          "overview": "Yleiskatsaus",
+          "resolutionDetails": "Ratkaisun tiedot",
+          "resolutionType": "Tyyppi:",
+          "resolutionTypes": {
+            "automatic": "Automaattinen",
+            "manual": "Manuaalinen"
+          },
+          "resolve": "Ratkaise häiriö",
+          "resolvedAt": "Ratkaistu:",
+          "resolvedBy": "Ratkaisija:",
+          "startedAt": "Alkanut:",
+          "status": "Tila:",
+          "statusCode": "Tilakoodi:",
+          "timeline": "Aikajana",
+          "title": "Häiriön tiedot",
+          "url": "URL:"
+        }
+      },
+      "filters": {
+        "allMonitors": "Kaikki monitorit",
+        "monitor": "Monitori",
+        "resolutionType": "Ratkaisun tyyppi",
+        "resolutionTypes": {
+          "manual": "Manuaalinen",
+          "automatic": "Automaattinen",
+          "all": "Kaikki"
+        }
+      },
+      "summaryCard": {
+        "activeIncidents": {
+          "title": "Aktiiviset häiriöt",
+          "active_zero": "Ei aktiivisia häiriöitä",
+          "active_one": "{{count}} aktiivinen häiriö",
+          "active_other": "{{count}} aktiivista häiriötä"
+        },
+        "incidentStats": {
+          "avgResolutionTime": "Keskim. ratkaisuaika",
+          "mostAffectedMonitor": "Eniten häiriöitä kokenut monitori",
+          "title": "Häiriötilastot",
+          "totalIncidents": "Häiriöitä yhteensä"
+        },
+        "latestIncidents": {
+          "title": "Viimeisimmät häiriöt"
+        }
+      },
+      "table": {
+        "actions": {
+          "details": "Tiedot",
+          "goToMonitor": "Siirry monitoriin",
+          "resolveManually": "Ratkaise manuaalisesti"
+        },
+        "activeIncidents": "Aktiiviset häiriöt",
+        "headers": {
+          "endTime": "Päättymisaika",
+          "resolutionType": "Ratkaisun tyyppi",
+          "startTime": "",
+          "statusCode": "Tilakoodi"
+        },
+        "resolvedIncidents": "Ratkaistut häiriöt",
+        "status": {
+          "active": "Aktiivinen",
+          "resolved": "Ratkaistu"
+        }
+      }
+    },
+    "infrastructure": {
+      "charts": {
+        "labels": {
+          "cpu": "CPU:n käyttö",
+          "disk": "Levyn käyttö",
+          "memory": "Muistin käyttö",
+          "netBytesRecv": "{{name}} - tavua vastaanotettu",
+          "netBytesSent": "{{name}} - tavua lähetetty",
+          "temp": "Lämpö"
+        }
+      },
+      "gauges": {
+        "cpu": {
+          "lowerLabel": "Enimmäistaajuus",
+          "title": "CPU:n käyttö",
+          "upperLabel": "Nykyinen taajuus"
+        },
+        "disk": {
+          "lowerLabel": "Vapaa",
+          "title": "Levy {{idx}} käyttö",
+          "upperLabel": "Käytetty"
+        },
+        "memory": {
+          "lowerLabel": "Vapaa",
+          "title": "Muistin käyttö",
+          "upperLabel": "Käytetty"
+        }
+      },
+      "statBoxes": {
+        "avgCpuTemperature": "",
+        "cpuFrequency": "",
+        "cpuLogical": "",
+        "cpuPhysical": "",
+        "disk": "Levy",
+        "memory": "Muisti",
+        "os": ""
+      },
+      "table": {
+        "headers": {
+          "cpu": "CPU",
+          "disk": "Levy",
+          "memory": "Muisti"
+        }
+      },
+      "tabs": {
+        "labels": {
+          "network": "",
+          "overview": "Yleiskatsaus"
+        }
+      },
+      "fallback": {
+        "actionButton": "Luo monitori!",
+        "checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
+        "title": "Infrastruktuurimonitorilla voit:"
+      }
+    },
+    "logs": {
+      "tabs": {
+        "diagnostics": "",
+        "logs": "",
+        "queue": ""
+      },
+      "logLevelSelect": {
+        "label": "Lokitaso"
+      },
+      "jobQueue": "Työnojono",
+      "failedJobs": "Epäonnistuneet työt",
+      "noLogs": "Lokeja ei löytynyt",
+      "metrics": {
+        "jobs": "Työt",
+        "activeJobs": "Aktiiviset työt",
+        "failingJobs": "Epäonnistuvat työt",
+        "totalRuns": "Suoritukset yhteensä",
+        "totalFailures": "Epäonnistumiset yhteensä"
+      },
+      "diagnostics": {
+        "stats": {
+          "eventLoopDelay": "Tapahtumasilmukan viive",
+          "uptime": "Käytettävyys",
+          "usedHeapSize": "Käytetty keon koko",
+          "totalHeapSize": "Keon kokonaiskoko",
+          "osMemoryLimit": "Käyttöjärjestelmän muistiraja"
+        },
+        "gauges": {
+          "heapAllocation": "Keon varaus",
+          "heapUsage": "Keon käyttö",
+          "heapUtilization": "Keon hyödyntäminen",
+          "instantCpuUsage": "Hetkellinen CPU:n käyttö",
+          "availableMemoryPercentage": "% vapaasta muistista",
+          "allocatedPercentage": "% varattu",
+          "usedSPercentage": "% sekunnista CPU:n käytössä",
+          "total": "Yhteensä",
+          "used": "Käytetty"
+        }
+      },
+      "table": {
+        "headers": {
+          "timestamp": "Aikaleima",
+          "level": "Taso",
+          "service": "Palvelu",
+          "method": "Metodi",
+          "monitorId": "Monitorin tunnus",
+          "runCount": "Suorituskerrat",
+          "failCount": "Epäonnistumiskerrat",
+          "lastRunAt": "Viimeisin suoritus",
+          "lockedAt": "Lukittu",
+          "lastFinishedAt": "Viimeisin valmistuminen",
+          "lastRunTook": "Viimeisin suoritus kesti",
+          "lastFailedAt": "Viimeisin epäonnistuminen",
+          "failReason": "Epäonnistumisen syy"
+        }
+      }
+    },
+    "maintenanceWindow": {
+      "fallback": {
+        "actionButton": "Luo huoltoikkuna!",
+        "checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
+        "title": "Huoltoikkunalla voit:"
+      },
+      "table": {
+        "headers": {
+          "nextWindow": "",
+          "repeat": ""
+        }
+      },
+      "form": {
+        "general": {
+          "title": "Yleiset asetukset",
+          "description": "Aseta nimi ja toistovalinta huoltoikkunallesi.",
+          "option": {
+            "name": {
+              "label": "Nimi",
+              "placeholder": "esim. Viikoittainen huolto"
+            },
+            "repeat": {
+              "label": "Toista"
+            }
+          }
+        },
+        "startDate": {
+          "title": "Alkamispäivä",
+          "description": "Valitse huoltoikkunan alkamispäivä.",
+          "option": {
+            "startDate": {
+              "label": "Alkamispäivä"
+            }
+          }
+        },
+        "startTime": {
+          "title": "Alkamisaika",
+          "description": "Aseta huoltoikkunan alkamisaika ja kesto. Kaikki arvot ovat UTC-aikaa.",
+          "option": {
+            "duration": {
+              "label": "Kesto"
+            },
+            "startTime": {
+              "label": "Alkamisaika"
+            }
+          },
+          "monitors": {
+            "title": "Monitorit",
+            "description": "Monitorit, joihin huoltoikkuna kohdistuu",
+            "option": {
+              "addMonitors": {
+                "label": "Lisää monitorit"
+              }
+            }
+          }
+        }
+      }
+    },
+    "notifications": {
+      "fallback": {
+        "actionButton": "Luo kanava",
+        "checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
+        "title": "Ilmoituskanavia käytetään:"
+      },
+      "form": {
+        "accessToken": {
+          "optionAccessToken": "Pääsytunniste",
+          "placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
+        },
+        "address": {
+          "description": "Osoite, johon ilmoitukset lähetetään.",
+          "optionAddress": "Osoite",
+          "placeholderEmail": "example@example.com",
+          "placeholderWebhook": "https://your-server.com/webhook",
+          "title": "Osoite"
+        },
+        "homeServer": {
+          "optionHomeServer": "Kotipalvelin",
+          "placeholder": "example.com"
+        },
+        "matrix": {
+          "description": "Määritä Matrix-kotipalvelimen yhteys ilmoituksia varten.",
+          "title": "Matrix-määritykset"
+        },
+        "notificationName": {
+          "description": "Kuvaava nimi ilmoituskanavalle",
+          "optionName": "Kanavan nimi",
+          "placeholder": "esim. Tuotantohälytykset",
+          "title": "Kanavan nimi"
+        },
+        "pagerDuty": {
+          "description": "PagerDuty-integrointiavaimesi hälytysten vastaanottamiseen.",
+          "optionIntegrationKey": "Integrointiavain",
+          "placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+          "title": "Integrointiavain"
+        },
+        "roomId": {
+          "optionRoomId": "Huoneen tunnus",
+          "placeholder": "!abcdefg:matrix.org"
+        },
+        "type": {
+          "description": "Valitse luotavan ilmoituskanavan tyyppi.",
+          "optionType": "Tyyppi",
+          "title": "Kanavan tyyppi"
+        },
+        "telegram": {
+          "title": "Telegram-määritykset",
+          "description": "",
+          "optionBotToken": "Bottitunniste",
+          "placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
+          "optionChatId": "Chat-tunnus",
+          "placeholderChatId": "-1001234567890"
+        }
+      },
+      "table": {
+        "headers": {
+          "destination": "Kohde"
+        }
+      }
+    },
+    "pageSpeed": {
+      "charts": {
+        "common": {
+          "cls": "Kumulatiivinen asettelun muutos (CLS)",
+          "fcp": "Ensimmäinen sisältöpiirto (FCP)",
+          "lcp": "Suurin sisältöpiirto (LCP)",
+          "si": "Nopeusindeksi (SI)",
+          "tbt": "Kokonaisestymisaika (TBT)"
+        },
+        "legend": {
+          "title": "PageSpeed-raportti",
+          "weight": "Painoarvo"
+        },
+        "pie": {
+          "title": "Suorituskykyraportti"
+        }
+      },
+      "table": {
+        "headers": {
+          "pageSpeedScore": "PageSpeed-pisteet"
+        }
+      },
+      "fallback": {
+        "actionButton": "Luo monitori!",
+        "checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
+        "title": "PageSpeed-monitorilla voit:"
+      }
+    },
+    "settings": {
+      "form": {
+        "timezone": {
+          "title": "Näytettävä aikavyöhyke",
+          "description": "Valitse aikavyöhyke, jota käytetään päivämäärien ja aikojen näyttämiseen sovelluksessa.",
+          "option": {
+            "timezone": {
+              "label": "Näytettävä aikavyöhyke"
+            }
+          }
+        },
+        "ui": {
+          "title": "Ulkoasu",
+          "description": "Vaihda vaalean ja tumman tilan välillä, muuta kieltä tai muokkaa kaavion näyttötyyppiä.",
+          "option": {
+            "theme": {
+              "label": "Teematila",
+              "light": "Vaalea",
+              "dark": "Tumma"
+            },
+            "language": {
+              "label": "Kieli"
+            },
+            "chartType": {
+              "label": "Kaaviotyyppi",
+              "histogram": "Histogrammi",
+              "heatmap": "Lämpökartta"
+            }
+          }
+        },
+        "pagespeed": {
+          "title": "Google PageSpeed API -avain",
+          "description": "Syötä Google PageSpeed API -avaimesi ottaaksesi käyttöön Google PageSpeed -monitoroinnin. Napsauta Palauta päivittääksesi avaimen.",
+          "option": {
+            "apiKey": {
+              "label": "PageSpeed API -avain",
+              "labelSet": "API-avain on asetettu. Napsauta Palauta muuttaaksesi sitä.",
+              "placeholder": "Syötä Google PageSpeed API -avaimesi"
+            }
+          }
+        },
+        "url": {
+          "title": "Monitorin IP/URL tilasivulla",
+          "description": "Näytä monitorin IP-osoite tai URL julkisella tilasivulla. Jos se on poistettu käytöstä, vain monitorin nimi näytetään arkaluonteisten tietojen suojaamiseksi.",
+          "option": {
+            "showURL": {
+              "label": "Näytä IP/URL tilasivulla",
+              "enabled": "Käytössä",
+              "disabled": "Pois käytöstä"
+            }
+          }
+        },
+        "stats": {
+          "title": "Monitorointihistoria",
+          "description": "Tyhjennä kaikki tiimisi monitorointihistoria ja tilastot. Tätä toimintoa ei voi kumota.",
+          "option": {
+            "clear": {
+              "label": "Tyhjennä kaikki tilastot. Tätä ei voi kumota."
+            }
+          },
+          "dialog": {
+            "title": "Tyhjennetäänkö kaikki monitorointihistoria?",
+            "description": "Tätä ei voi kumota"
+          }
+        },
+        "retention": {
+          "title": "Tarkistusten säilytys",
+          "description": "Aseta kuinka kauan tarkistustietoja säilytetään ennen automaattista poistoa.",
+          "option": {
+            "days": {
+              "label": "Säilytysaika (päiviä)",
+              "unlimited": "Rajoittamaton"
+            }
+          }
+        },
+        "thresholds": {
+          "title": "Yleiset kynnysarvot",
+          "description": "Aseta yleiset CPU:n, muistin, levyn ja lämpötilan kynnysarvot infrastruktuurin monitorointiin. Nämä koskevat kaikkia laitemonitoreja, ellei niitä ohiteta.",
+          "option": {
+            "cpu": {
+              "label": "CPU-kynnysarvo (%)",
+              "placeholder": "1 - 100"
+            },
+            "memory": {
+              "label": "Muistin kynnysarvo (%)",
+              "placeholder": "1 - 100"
+            },
+            "disk": {
+              "label": "Levyn kynnysarvo (%)",
+              "placeholder": "1 - 100"
+            },
+            "temperature": {
+              "label": "Lämpötilan kynnysarvo (°C)",
+              "placeholder": "1 - 150"
+            }
+          }
+        },
+        "email": {
+          "title": "Sähköpostiasetukset",
+          "description": "Määritä järjestelmäsi sähköpostiasetukset. Niitä käytetään ilmoitusten ja hälytysten lähettämiseen.",
+          "descriptionTransport": "",
+          "descriptionTransportLink": "Katso tekniset tiedot täältä",
+          "option": {
+            "host": {
+              "label": "Sähköpostin isäntä - yhdistettävä isäntänimi tai IP-osoite",
+              "placeholder": "smtp.gmail.com"
+            },
+            "port": {
+              "label": "Sähköpostin portti - yhdistettävä portti",
+              "placeholder": "587"
+            },
+            "address": {
+              "label": "Sähköpostiosoite - käytetään tunnistautumiseen",
+              "placeholder": "you@example.com"
+            },
+            "user": {
+              "label": "Sähköpostin käyttäjä - tunnistautumisen käyttäjänimi, ohittaa sähköpostiosoitteen jos määritelty",
+              "placeholder": "Jätä tyhjäksi, jos ei tarvita"
+            },
+            "password": {
+              "label": "Sähköpostin salasana - tunnistautumisen salasana",
+              "labelSet": "Salasana on asetettu. Napsauta Palauta muuttaaksesi sitä.",
+              "placeholder": "Syötä salasanasi"
+            },
+            "tlsServername": {
+              "label": "TLS-palvelinnimi - valinnainen isäntänimi TLS-vahvistukseen, kun isäntä on IP-osoite",
+              "placeholder": "example.com"
+            },
+            "connectionHost": {
+              "label": "Sähköpostiyhteyden isäntä - HELO/EHLO-tervehdyksessä käytettävä isäntänimi",
+              "placeholder": "localhost"
+            },
+            "secure": {
+              "label": "Käytä SSL:ää (suositus): Salaa yhteys SSL/TLS:n avulla"
+            },
+            "pool": {
+              "label": "Ota yhteyspoolaus käyttöön: Käytä olemassa olevia yhteyksiä suorituskyvyn parantamiseksi"
+            },
+            "ignoreTLS": {
+              "label": "Poista STARTTLS käytöstä: Älä käytä TLS:ää, vaikka palvelin tukisi sitä"
+            },
+            "requireTLS": {
+              "label": "Pakota STARTTLS: Vaadi TLS-päivitys, epäonnistu jos ei tueta"
+            },
+            "rejectUnauthorized": {
+              "label": "Hylkää virheelliset varmenteet: Hylkää yhteydet itseallekirjoitetuilla tai ei-luotetuilla varmenteilla"
+            }
+          }
+        },
+        "demoMonitors": {
+          "title": "Demomonitorit",
+          "description": "Lisää esimerkkimonitoreja esittelytarkoituksiin."
+        },
+        "removeMonitors": {
+          "title": "Järjestelmän nollaus",
+          "description": "Poista kaikki monitorit järjestelmästäsi.",
+          "dialog": {
+            "title": "Poistetaanko kaikki monitorit?",
+            "description": "Tätä ei voi kumota."
+          }
+        },
+        "exportMonitors": {
+          "title": "Vie monitorit"
+        },
+        "importExportMonitors": {
+          "title": "Monitorien tuonti / vienti",
+          "description": "Tuo tai vie monitorien tiedot JSON-tiedostona varmuuskopiointia tai siirtoa varten."
+        },
+        "about": {
+          "title": "Tietoja",
+          "developedBy": "Kehittäjä: Bluewave Labs"
+        },
+        "validation": {
+          "errorMessage": "Korjaa seuraavat vahvistusvirheet:"
+        }
+      }
+    },
+    "statusPages": {
+      "deleteSuccess": "Tilasivu poistettu onnistuneesti",
+      "fallback": {
+        "title": "Tilasivulla voit:",
+        "checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
+        "actionButton": "Luo tilasivu!"
+      },
+      "monitorsList": {
+        "chartTypeHeatmap": "Lämpökartta",
+        "chartTypeHistogram": "Histogrammi",
+        "noData": "Tietoja ei saatavilla",
+        "infrastructure": {
+          "title": "Infrastruktuuri",
+          "cpu": "CPU",
+          "memory": "RAM",
+          "memoryText": "Muisti",
+          "disk": "Levy",
+          "usage": "Käyttö",
+          "used": "Käytetty",
+          "total": "Yhteensä"
+        },
+        "uptime": {
+          "title": "Käytettävyys",
+          "responseTime": "Vasteaika"
+        }
+      },
+      "statusBar": {
+        "allDown": "Kaikki järjestelmät ovat alhaalla",
+        "allUp": "Kaikki järjestelmät toiminnassa",
+        "degraded": "Joissakin järjestelmissä on ongelmia",
+        "unknown": "Järjestelmän tilaa ei voida määrittää"
+      },
+      "table": {
+        "headers": {
+          "name": "Tilasivun nimi",
+          "url": "Julkinen URL"
+        },
+        "published": "Julkaistu",
+        "unpublished": "Julkaisematon"
+      },
+      "title": "Tilasivut",
+      "details": {
+        "empty": {
+          "title": "Täällä ei ole vielä mitään",
+          "addMonitor": "Lisää monitori aloittaaksesi"
+        }
+      },
+      "form": {
+        "access": {
+          "title": "Käyttöoikeus",
+          "description": "Jos tilasivusi on valmis, voit merkitä sen julkaistuksi.",
+          "option": {
+            "published": {
+              "name": "Julkaistu ja julkisesti näkyvissä"
+            }
+          }
+        },
+        "basicInfo": {
+          "title": "Perustiedot",
+          "description": "Määritä yrityksen nimi ja aliverkkotunnus, johon tilasivusi osoittaa.",
+          "option": {
+            "name": {
+              "label": "Yrityksen nimi",
+              "placeholder": "Acme Inc."
+            },
+            "url": {
+              "label": "Tilasivusi osoite",
+              "placeholder": "my-status-page"
+            }
+          }
+        },
+        "monitors": {
+          "title": "Monitorit",
+          "description": "Valitse tilasivullasi näytettävät monitorit.",
+          "noMonitors": "Monitoreja ei valittu",
+          "option": {
+            "monitors": {
+              "label": "Valitse monitorit",
+              "placeholder": "Hae ja valitse monitorit..."
+            }
+          }
+        },
+        "timezone": {
+          "title": "Aikavyöhyke",
+          "description": "Valitse aikavyöhyke, jossa tilasivusi näytetään.",
+          "option": {
+            "timezone": {
+              "label": "Aikavyöhyke",
+              "placeholder": "Valitse aikavyöhyke..."
+            }
+          }
+        },
+        "appearance": {
+          "title": "Ulkoasu",
+          "description": "Määritä julkisen tilasivusi oletusilme.",
+          "option": {
+            "logo": {
+              "label": "Logo"
+            },
+            "color": {
+              "label": "Brändiväri"
+            }
+          }
+        },
+        "features": {
+          "title": "Ominaisuudet",
+          "description": "Määritä mitä tietoja tilasivullasi näytetään.",
+          "option": {
+            "showCharts": {
+              "label": "Näytä vasteaikakaaviot"
+            },
+            "showUptimePercentage": {
+              "label": "Näytä käytettävyysprosentti"
+            },
+            "showAdminLoginLink": {
+              "label": "Näytä ylläpitäjän kirjautumislinkki"
+            },
+            "showInfrastructure": {
+              "label": "Näytä infrastruktuurin mittarit"
+            }
+          }
+        }
+      }
+    },
+    "uptime": {
+      "filters": {
+        "search": {
+          "placeholder": "Hae monitoreja..."
+        }
+      },
+      "table": {
+        "headers": {
+          "responseTime": "Vasteaika"
+        }
+      },
+      "fallback": {
+        "actionButton": "Luo monitori!",
+        "checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
+        "title": "Käytettävyysmonitorilla voit:"
+      }
+    }
+  }
 }

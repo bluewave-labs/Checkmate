@@ -1,1305 +1,1322 @@
 {
-	"common": {
-		"auth": {
-			"roles": {
-				"admin": "Administrátor",
-				"demo": "Demo",
-				"superadmin": "Superadministrátor",
-				"user": "Uživatel"
-			}
-		},
-		"alerts": {
-			"pageSpeedApiKey": {
-				"content": "Upozornění: Zatím jste nepřidali klíč Google PageSpeed API. Přejděte do <settingsLink>Nastavení</settingsLink> a přidejte ho. Bez něj nebude monitor PageSpeed fungovat."
-			}
-		},
-		"appName": "Checkmate",
-		"breadcrumbs": {
-			"details": "Podrobnosti",
-			"home": "Domů"
-		},
-		"buttons": {
-			"addMember": "Přidat člena",
-			"cancel": "Zrušit",
-			"close": "Zavřít",
-			"configure": "Konfigurovat",
-			"confirm": "Potvrdit",
-			"create": "Vytvořit",
-			"delete": "Smazat",
-			"generateToken": "Vygenerovat token",
-			"incidents": "Incidenty",
-			"inviteMember": "Pozvat člena",
-			"pause": "Pozastavit",
-			"resume": "Obnovit",
-			"save": "Uložit",
-			"sendInvite": "Odeslat pozvánku",
-			"test": "Test",
-			"testNotifications": "Testovat oznámení",
-			"toggleTheme": "Přepnout mezi světlým a tmavým motivem",
-			"flushQueue": "Vyprázdnit frontu",
-			"notFound": "Přejít na hlavní přehled",
-			"resetPassword": "Obnovit heslo",
-			"reset": "",
-			"clear": "Vymazat",
-			"addDemo": "Přidat ukázkové monitory",
-			"removeMonitors": "Odebrat monitory",
-			"sendTestEmail": "Odeslat testovací email",
-			"exportToJSON": "Exportovat do JSON",
-			"importFromJSON": "Importovat z JSON",
-			"clearFilters": "Vymazat filtry",
-			"removeUser": "Odebrat uživatele"
-		},
-		"charts": {
-			"labels": {
-				"averageResponseTime": "Průměrná doba odezvy",
-				"downtime": "Výpadek",
-				"high": "",
-				"low": "",
-				"uptime": "Dostupnost"
-			},
-			"histogram": {
-				"avg": "Prům.: {{value}} ms",
-				"max": "Max: {{value}} ms"
-			}
-		},
-		"dialogs": {
-			"delete": {
-				"description": "Tuto akci nelze vrátit zpět.",
-				"title": "Opravdu chcete toto smazat?"
-			}
-		},
-		"labels": {
-			"active": "Aktivní",
-			"paused": "pozastaveno",
-			"na": "N/A",
-			"resolved": "Vyřešeno",
-			"responseTime": "Doba odezvy"
-		},
-		"form": {
-			"role": {
-				"option": {
-					"role": {
-						"label": "Role"
-					}
-				}
-			},
-			"name": {
-				"option": {
-					"firstName": {
-						"label": "Jméno",
-						"placeholder": "Jan"
-					},
-					"lastName": {
-						"label": "Příjmení",
-						"placeholder": "Novák"
-					}
-				}
-			},
-			"email": {
-				"option": {
-					"email": {
-						"label": "Email",
-						"placeholder": "you@example.com"
-					}
-				}
-			}
-		},
-		"table": {
-			"empty": "Zde nic není",
-			"headers": {
-				"actions": "",
-				"dateTime": "Datum a čas",
-				"message": "Zpráva",
-				"monitor": "Monitor",
-				"monitorId": "ID monitoru",
-				"name": "Název",
-				"status": "Stav",
-				"type": "",
-				"url": "URL",
-				"interval": "Interval",
-				"active": "Aktivní",
-				"responseTime": "Doba odezvy"
-			}
-		}
-	},
-	"components": {
-		"imageUpload": {
-			"clickToUpload": "Klikněte pro nahrání",
-			"dragAndDrop": "",
-			"supportedFormats": "",
-			"maxSize": "",
-			"orDragAndDrop": "nebo přetáhněte soubor",
-			"errors": {
-				"invalidFileSize": "",
-				"invalidFileFormat": ""
-			}
-		},
-		"headerStatusPageControls": {
-			"publicLink": ""
-		},
-		"headerTimeRange": {
-			"labels": {
-				"day": "Den",
-				"month": "Měsíc",
-				"recent": "Nedávné",
-				"week": "Týden"
-			},
-			"description": {
-				"recent": "Zobrazení statistik za poslední 2 hodiny.",
-				"day": "Zobrazení statistik za posledních 24 hodin.",
-				"week": "Zobrazení statistik za posledních 7 dní.",
-				"month": "Zobrazení statistik za posledních 30 dní."
-			}
-		},
-		"offlineBanner": {
-			"serverUnreachable": "Nelze se spojit se serverem",
-			"retry": "Zkusit znovu",
-			"retrying": "Opakuji pokus...",
-			"reconnected": "Podařilo se úspěšně obnovit spojení se serverem"
-		},
-		"sidebar": {
-			"menu": {
-				"uptime": "",
-				"pagespeed": "",
-				"infrastructure": "",
-				"notifications": "",
-				"checks": "Kontroly",
-				"incidents": "",
-				"statusPages": "",
-				"maintenance": "",
-				"logs": "",
-				"settings": ""
-			},
-			"bottomMenu": {
-				"support": "",
-				"discussions": "",
-				"docs": "",
-				"changelog": ""
-			},
-			"accountMenu": {
-				"profile": "Profil",
-				"password": "Heslo",
-				"team": "Tým"
-			},
-			"starPrompt": {
-				"title": "Ohodnoťte Checkmate",
-				"description": "Sledujte nejnovější vydání a pomozte rozšířit komunitu na GitHubu"
-			},
-			"authFooter": {
-				"navControls": "",
-				"logOut": "",
-				"roles": {
-					"superAdmin": "Superadministrátor",
-					"admin": "Administrátor",
-					"user": "Uživatel",
-					"demoUser": ""
-				}
-			}
-		},
-		"starPrompt": {
-			"title": "Ohodnoťte Checkmate",
-			"description": "Sledujte nejnovější vydání a pomozte rozšířit komunitu na GitHubu"
-		}
-	},
-	"pages": {
-		"notFound": {
-			"title": "Ale ne! Upustili jste své sushi!",
-			"subtitle": "Buď tato URL neexistuje, nebo k ní nemáte přístup."
-		},
-		"account": {
-			"tabs": {
-				"profile": "Profil",
-				"password": "Heslo",
-				"team": "Tým"
-			},
-			"form": {
-				"name": {
-					"title": "Jméno",
-					"description": "Aktualizujte své osobní údaje"
-				},
-				"photo": {
-					"title": "Profilová fotografie",
-					"description": "Nahrajte profilový obrázek"
-				},
-				"currentPassword": {
-					"title": "Aktuální heslo",
-					"description": "Zadejte aktuální heslo pro ověření totožnosti",
-					"option": {
-						"label": "Aktuální heslo",
-						"placeholder": "Zadejte aktuální heslo"
-					}
-				},
-				"newPassword": {
-					"title": "Nové heslo",
-					"description": "Zvolte silné heslo s alespoň 8 znaky",
-					"option": {
-						"newPassword": {
-							"label": "Nové heslo",
-							"placeholder": "Zadejte nové heslo"
-						},
-						"confirm": {
-							"label": "Potvrzení hesla",
-							"placeholder": "Potvrďte nové heslo"
-						}
-					}
-				},
-				"deleteAccount": {
-					"title": "Smazat účet",
-					"description": "Tato akce je trvalá a nelze ji vrátit zpět"
-				}
-			},
-			"team": {
-				"filter": {
-					"placeholder": "Filtrovat podle role",
-					"all": "",
-					"admin": "Administrátor",
-					"member": ""
-				},
-				"table": {
-					"headers": {
-						"email": "Email",
-						"role": "Role",
-						"created": ""
-					}
-				},
-				"addMember": {
-					"title": "Registrace nového člena týmu",
-					"description": "Vytvořte nový uživatelský účet. Po vytvoření bezpečně sdílejte přihlašovací údaje."
-				},
-				"invite": {
-					"title": "Pozvat člena týmu",
-					"description": "Odešlete pozvánku k připojení do vašeho týmu",
-					"email": {
-						"label": "Emailová adresa",
-						"placeholder": "Zadejte emailovou adresu"
-					},
-					"role": {
-						"label": "Role",
-						"placeholder": "Vyberte roli"
-					},
-					"linkLabel": "Odkaz pro pozvánku"
-				}
-			}
-		},
-		"auth": {
-			"common": {
-				"passwordRules": {
-					"length": {
-						"beginning": "Heslo musí být dlouhé alespoň",
-						"highlighted": "8 znaků"
-					},
-					"lowercase": {
-						"beginning": "Heslo musí obsahovat alespoň",
-						"highlighted": "1 malé písmeno"
-					},
-					"match": {
-						"beginning": "Obě hesla se",
-						"highlighted": "musí shodovat"
-					},
-					"number": {
-						"beginning": "Heslo musí obsahovat alespoň",
-						"highlighted": "1 číslo"
-					},
-					"special": {
-						"beginning": "Heslo musí obsahovat alespoň",
-						"highlighted": "1 speciální znak"
-					},
-					"uppercase": {
-						"beginning": "Heslo musí obsahovat alespoň",
-						"highlighted": "1 velké písmeno"
-					}
-				},
-				"form": {
-					"option": {
-						"email": {
-							"label": "Email",
-							"placeholder": "me@example.com"
-						},
-						"password": {
-							"label": "Heslo",
-							"placeholder": "********"
-						},
-						"confirmPassword": {
-							"label": "Potvrzení hesla"
-						}
-					}
-				}
-			},
-			"login": {
-				"title": "Vítejte zpět v Checkmate!",
-				"subtitle": "Přihlaste se pro pokračování",
-				"submit": "Přihlásit se",
-				"links": {
-					"forgotPassword": {
-						"text": "Zapomněli jste heslo?",
-						"linkText": "Obnovit heslo"
-					},
-					"register": {
-						"text": "Nemáte účet?",
-						"linkText": "Zaregistrujte se zde"
-					}
-				}
-			},
-			"register": {
-				"title": "Vítejte v Checkmate!",
-				"subtitle": "Zaregistrujte se a začněte",
-				"submit": "Registrovat"
-			},
-			"forgotPassword": {
-				"title": "Zapomněli jste heslo?",
-				"subtitle": "Žádný problém, zašleme vám pokyny k obnovení.",
-				"submit": "Požádat o obnovení",
-				"links": {
-					"login": {
-						"text": "Zpět na",
-						"linkText": "přihlášení"
-					}
-				}
-			},
-			"setNewPassword": {
-				"title": "Obnovte své heslo",
-				"subtitle": "Vaše nové heslo musí být odlišné od dříve použitých hesel."
-			}
-		},
-		"checks": {
-			"selects": {
-				"monitor": {
-					"all": "Všechny monitory"
-				},
-				"status": {
-					"all": "Vše",
-					"down": "Nedostupné",
-					"up": "Dostupné"
-				}
-			},
-			"table": {
-				"empty": "Žádné neúspěšné kontroly v tomto období",
-				"headers": {
-					"statusCode": "Stavový kód",
-					"location": "Umístění"
-				}
-			}
-		},
-		"common": {
-			"monitors": {
-				"actions": {
-					"configure": "Konfigurovat",
-					"delete": "Smazat",
-					"generateToken": "Vygenerovat token",
-					"details": "Podrobnosti",
-					"incidents": "Incidenty",
-					"inviteMember": "Pozvat člena",
-					"openSite": "Otevřít stránku",
-					"pause": "Pozastavit",
-					"resume": "Obnovit"
-				},
-				"statBoxes": {
-					"activeFor": "Aktivní po dobu",
-					"certificateExpiry": "Expirace certifikátu",
-					"lastCheck": "Poslední kontrola",
-					"lastResponseTime": "Poslední doba odezvy"
-				},
-				"status": {
-					"down": "nedostupný",
-					"breached": "překročen práh",
-					"initializing": "inicializace",
-					"maintenance": "údržba",
-					"paused": "pozastaveno",
-					"total": "celkem",
-					"up": "dostupný"
-				},
-				"monitorTypes": {
-					"optionDocker": "Docker",
-					"optionGame": "Hra",
-					"optionHttp": "HTTP(S)",
-					"optionPing": "Ping",
-					"optionPort": "Port",
-					"optionPagespeed": "PageSpeed",
-					"optionHardware": "Infrastruktura",
-					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
-				}
-			}
-		},
-		"createMonitor": {
-			"form": {
-				"advanced": {
-					"description": "Volitelná nastavení pro pokročilé použití",
-					"option": {
-						"advancedMatching": {
-							"label": "Použít pokročilé porovnávání"
-						},
-						"expectedValue": {
-							"label": "Očekávaná hodnota"
-						},
-						"jsonPath": {
-							"description": "Tento výraz bude vyhodnocen proti odpovědi ve formátu JSON a výsledek bude použit k porovnání s očekávanou hodnotou. Dokumentaci dotazovacího jazyka naleznete na <jmesLink>jmespath.org</jmesLink>.",
-							"label": "Výraz JSONPath"
-						},
-						"matchMethod": {
-							"label": "Metoda porovnání",
-							"equal": "",
-							"include": "",
-							"regex": ""
-						}
-					},
-					"title": "Pokročilá nastavení"
-				},
-				"frequency": {
-					"description": "Jak často chcete kontrolovat stav tohoto monitoru?",
-					"option": {
-						"frequency": {
-							"label": "Frekvence kontroly",
-							"value": {
-								"fifteenMinutes": "15 minut",
-								"fifteenSeconds": "",
-								"fiveMinutes": "5 minut",
-								"fourMinutes": "",
-								"oneMinute": "",
-								"tenMinutes": "10 minut",
-								"thirtyMinutes": "30 minut",
-								"thirtySeconds": "",
-								"threeMinutes": "",
-								"twoMinutes": ""
-							}
-						}
-					},
-					"title": "Frekvence kontroly"
-				},
-				"general": {
-					"option": {
-						"container": {
-							"label": "Název/ID kontejneru",
-							"placeholder": "my-app nebo abcd1234"
-						},
-						"host": {
-							"label": "Hostitel",
-							"placeholder": "192.168.1.100 nebo example.com"
-						},
-						"name": {
-							"label": "Zobrazovaný název",
-							"placeholder": "např. Moje stránka"
-						},
-						"secret": {
-							"label": "Autorizační tajný klíč",
-							"placeholder": "Zadejte svůj tajný klíč"
-						},
-						"url": {
-							"label": "URL",
-							"placeholder": "https://www.google.com"
-						},
-						"game": {
-							"label": "",
-							"placeholder": ""
-						},
-						"port": {
-							"label": "Port ke sledování",
-							"placeholder": "80"
-						},
-						"grpcServiceName": {
-							"label": "Název služby",
-							"placeholder": "např. my.service.v1 (nechte prázdné pro celkový stav)"
-						},
-						"wsUrl": {
-							"label": "WebSocket URL",
-							"placeholder": "wss://example.com/socket"
-						}
-					},
-					"title": "Obecná nastavení",
-					"description": {
-						"http": "Zadejte URL nebo IP adresu ke sledování (např. https://example.com/ nebo 192.168.1.100) a přidejte jasný zobrazovaný název, který se zobrazí na přehledu.",
-						"ping": "",
-						"port": "",
-						"docker": "",
-						"game": "",
-						"pagespeed": "Sledujte výkon načítání stránky, metriky Core Web Vitals a hodnocení optimalizace vašeho webu.",
-						"grpc": "Zadejte název hostitele a port gRPC serveru, volitelně zadejte název služby pro kontrolu stavu a přidejte zobrazovaný název.",
-						"websocket": "Zadejte WebSocket URL ke sledování (např. wss://example.com/socket) a přidejte zobrazovaný název.",
-						"hardware": "Sledujte využití CPU, paměti, disku a teplotu vaší infrastruktury."
-					}
-				},
-				"ignoreTls": {
-					"description": "Nastavte ověřování TLS/SSL certifikátů pro HTTPS připojení.",
-					"option": {
-						"tls": {
-							"label": "Ignorovat chyby TLS/SSL"
-						}
-					},
-					"title": "Nastavení TLS/SSL"
-				},
-				"incidents": {
-					"description": "Klouzavé okno se používá k určení, kdy je monitor nedostupný. Stav monitoru se změní pouze tehdy, když procento kontrol v klouzavém okně dosáhne zadané hodnoty.",
-					"option": {
-						"checks": {
-							"label": "Počet kontrol v klouzavém okně"
-						},
-						"percentage": {
-							"label": "Jaké procento kontrol v klouzavém okně musí selhat/uspět, než se změní stav monitoru?"
-						}
-					},
-					"title": "Incidenty"
-				},
-				"notifications": {
-					"description": "Vyberte kanály pro oznámení, které chcete použít",
-					"title": "Oznámení"
-				},
-				"type": {
-					"description": "Vyberte typ kontroly, která se má provádět",
-					"optionDockerDescription": "Použijte Docker ke sledování, zda je kontejner spuštěn.",
-					"optionGameDescription": "Sledujte, zda je konkrétní herní server online.",
-					"optionGrpcDescription": "Sledujte gRPC služby pomocí standardního protokolu pro kontrolu stavu.",
-					"optionWebSocketDescription": "Sledujte WebSocket koncové body pro stav připojení a dobu odezvy.",
-					"optionHttpDescription": "Použijte HTTP(S) ke sledování vašeho webu nebo API koncového bodu.",
-					"optionPingDescription": "Použijte ICMP Ping ke sledování, zda je server online.",
-					"optionPortDescription": "Sledujte, zda je konkrétní port na serveru otevřen.",
-					"title": "Typ"
-				},
-				"thresholds": {
-					"title": "Prahové hodnoty upozornění",
-					"description": "Definujte prahové hodnoty, při kterých se mají spouštět upozornění pro tento monitor infrastruktury.",
-					"option": {
-						"cpuThreshold": {
-							"label": "Prahová hodnota upozornění CPU (%)"
-						},
-						"memoryThreshold": {
-							"label": "Prahová hodnota upozornění paměti (%)"
-						},
-						"diskThreshold": {
-							"label": "Prahová hodnota upozornění disku (%)"
-						},
-						"tempThreshold": {
-							"label": "Prahová hodnota upozornění teploty (°C)"
-						}
-					}
-				},
-				"geoChecks": {
-					"title": "Geograficky distribuované kontroly",
-					"description": "Spouštějte kontroly z více geografických lokací pro sledování globální dostupnosti a výkonu.",
-					"option": {
-						"enabled": {
-							"label": "Povolit geograficky distribuované kontroly"
-						},
-						"locations": {
-							"label": "Lokace",
-							"placeholder": "Vyberte lokace",
-							"options": {
-								"EU": "Evropa",
-								"NA": "Severní Amerika",
-								"AS": "Asie",
-								"SA": "Jižní Amerika",
-								"AF": "Afrika",
-								"OC": "Oceánie"
-							}
-						},
-						"interval": {
-							"label": "Interval kontroly",
-							"value": {
-								"fiveMinutes": "5 minut",
-								"tenMinutes": "10 minut",
-								"fifteenMinutes": "15 minut",
-								"thirtyMinutes": "30 minut"
-							}
-						}
-					}
-				},
-				"url": {
-					"title": "IP/URL monitoru na stavové stránce",
-					"description": "Zobrazí IP adresu nebo URL monitoru na veřejné stavové stránce. Pokud je tato možnost zakázána, zobrazí se pouze název monitoru pro ochranu citlivých informací.",
-					"option": {
-						"showURL": {
-							"label": "Zobrazit IP/URL na stavové stránce",
-							"enabled": "Povoleno",
-							"disabled": "Zakázáno"
-						}
-					}
-				},
-				"stats": {
-					"title": "Historie monitoru",
-					"description": "Vymazat veškerou historii sledování a statistiky vašeho týmu. Tato akce je nevratná.",
-					"buttonText": "Vymazat všechny statistiky",
-					"dialog": {
-						"title": "Vymazat veškerou historii sledování?",
-						"description": "Toto trvale smaže veškerou historii sledování, statistiky a data kontrol vašeho týmu. Tuto akci nelze vrátit zpět.",
-						"confirm": "Ano, vymazat všechny statistiky"
-					}
-				}
-			}
-		},
-		"editUser": {
-			"form": {
-				"roles": {
-					"title": "Role",
-					"description": "Přiřaďte role uživateli. Lze vybrat více rolí."
-				}
-			},
-			"dialog": {
-				"removeUser": {
-					"title": "Odebrat uživatele",
-					"content": "Opravdu chcete odebrat uživatele {{name}} z vašeho týmu? Tuto akci nelze vrátit zpět."
-				}
-			}
-		},
-		"incidents": {
-			"dialog": {
-				"resolveIncident": {
-					"title": "Vyřešit incident",
-					"option": {
-						"comment": {
-							"label": "Komentář (volitelné)",
-							"placeholder": "Přidejte komentář k vyřešení..."
-						}
-					}
-				},
-				"details": {
-					"analysis": "Analýza incidentu",
-					"comment": "Komentář:",
-					"detailsLabel": "Podrobnosti",
-					"downtime": "Výpadek:",
-					"message": "Zpráva:",
-					"monitor": "Monitor:",
-					"overview": "Přehled",
-					"resolutionDetails": "Podrobnosti řešení",
-					"resolutionType": "Typ:",
-					"resolutionTypes": {
-						"automatic": "Automatický",
-						"manual": "Manuální"
-					},
-					"resolve": "Vyřešit incident",
-					"resolvedAt": "Vyřešeno v:",
-					"resolvedBy": "Vyřešil:",
-					"startedAt": "Začátek:",
-					"status": "Stav:",
-					"statusCode": "Stavový kód:",
-					"timeline": "Časová osa",
-					"title": "Podrobnosti incidentu",
-					"url": "URL:"
-				}
-			},
-			"filters": {
-				"allMonitors": "Všechny monitory",
-				"monitor": "Monitor",
-				"resolutionType": "Typ řešení",
-				"resolutionTypes": {
-					"manual": "Manuální",
-					"automatic": "Automatický",
-					"all": "Vše"
-				}
-			},
-			"summaryCard": {
-				"activeIncidents": {
-					"title": "Aktivní incidenty",
-					"active_zero": "Žádné aktivní incidenty",
-					"active_one": "{{count}} aktivní incident",
-					"active_other": "{{count}} aktivních incidentů"
-				},
-				"incidentStats": {
-					"avgResolutionTime": "Průměrná doba řešení",
-					"mostAffectedMonitor": "Nejvíce postižený monitor",
-					"title": "Statistiky incidentů",
-					"totalIncidents": "Celkem incidentů"
-				},
-				"latestIncidents": {
-					"title": "Nejnovější incidenty"
-				}
-			},
-			"table": {
-				"actions": {
-					"details": "Podrobnosti",
-					"goToMonitor": "Přejít na monitor",
-					"resolveManually": "Vyřešit ručně"
-				},
-				"activeIncidents": "Aktivní incidenty",
-				"headers": {
-					"endTime": "Čas ukončení",
-					"resolutionType": "Typ řešení",
-					"startTime": "",
-					"statusCode": "Stavový kód"
-				},
-				"resolvedIncidents": "Vyřešené incidenty",
-				"status": {
-					"active": "Aktivní",
-					"resolved": "Vyřešeno"
-				}
-			}
-		},
-		"infrastructure": {
-			"charts": {
-				"labels": {
-					"cpu": "Využití CPU",
-					"disk": "Využití disku",
-					"memory": "Využití paměti",
-					"netBytesRecv": "{{name}} - přijaté bajty",
-					"netBytesSent": "{{name}} - odeslané bajty",
-					"temp": "Teplota"
-				}
-			},
-			"gauges": {
-				"cpu": {
-					"lowerLabel": "Maximální frekvence",
-					"title": "Využití CPU",
-					"upperLabel": "Aktuální frekvence"
-				},
-				"disk": {
-					"lowerLabel": "Volné",
-					"title": "Využití disku {{idx}}",
-					"upperLabel": "Použité"
-				},
-				"memory": {
-					"lowerLabel": "Volné",
-					"title": "Využití paměti",
-					"upperLabel": "Použité"
-				}
-			},
-			"statBoxes": {
-				"avgCpuTemperature": "",
-				"cpuFrequency": "",
-				"cpuLogical": "",
-				"cpuPhysical": "",
-				"disk": "Disk",
-				"memory": "Paměť",
-				"os": ""
-			},
-			"table": {
-				"headers": {
-					"cpu": "CPU",
-					"disk": "Disk",
-					"memory": "Paměť"
-				}
-			},
-			"tabs": {
-				"labels": {
-					"network": "",
-					"overview": "Přehled"
-				}
-			},
-			"fallback": {
-				"actionButton": "Vytvořte monitor!",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "Monitor infrastruktury slouží k:"
-			}
-		},
-		"logs": {
-			"tabs": {
-				"diagnostics": "",
-				"logs": "",
-				"queue": ""
-			},
-			"logLevelSelect": {
-				"label": "Úroveň logování"
-			},
-			"jobQueue": "Fronta úloh",
-			"failedJobs": "Neúspěšné úlohy",
-			"noLogs": "Žádné logy nebyly nalezeny",
-			"metrics": {
-				"jobs": "Úlohy",
-				"activeJobs": "Aktivní úlohy",
-				"failingJobs": "Selhávající úlohy",
-				"totalRuns": "Celkem spuštění",
-				"totalFailures": "Celkem selhání"
-			},
-			"diagnostics": {
-				"stats": {
-					"eventLoopDelay": "Zpoždění smyčky událostí",
-					"uptime": "Doba provozu",
-					"usedHeapSize": "Použitá velikost haldy",
-					"totalHeapSize": "Celková velikost haldy",
-					"osMemoryLimit": "Limit paměti OS"
-				},
-				"gauges": {
-					"heapAllocation": "Alokace haldy",
-					"heapUsage": "Využití haldy",
-					"heapUtilization": "Utilizace haldy",
-					"instantCpuUsage": "Okamžité využití CPU",
-					"availableMemoryPercentage": "% dostupné paměti",
-					"allocatedPercentage": "% alokováno",
-					"usedSPercentage": "% z 1s využito CPU",
-					"total": "Celkem",
-					"used": "Použité"
-				}
-			},
-			"table": {
-				"headers": {
-					"timestamp": "Časové razítko",
-					"level": "Úroveň",
-					"service": "Služba",
-					"method": "Metoda",
-					"monitorId": "ID monitoru",
-					"runCount": "Počet spuštění",
-					"failCount": "Počet selhání",
-					"lastRunAt": "Poslední spuštění",
-					"lockedAt": "Uzamčeno v",
-					"lastFinishedAt": "Naposledy dokončeno",
-					"lastRunTook": "Poslední běh trval",
-					"lastFailedAt": "Poslední selhání",
-					"failReason": "Důvod selhání"
-				}
-			}
-		},
-		"maintenanceWindow": {
-			"fallback": {
-				"actionButton": "Vytvořte okno údržby!",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "Okno údržby slouží k:"
-			},
-			"table": {
-				"headers": {
-					"nextWindow": "",
-					"repeat": ""
-				}
-			},
-			"form": {
-				"general": {
-					"title": "Obecná nastavení",
-					"description": "Nastavte název a možnost opakování pro okno údržby.",
-					"option": {
-						"name": {
-							"label": "Název",
-							"placeholder": "např. Týdenní údržba"
-						},
-						"repeat": {
-							"label": "Opakování"
-						}
-					}
-				},
-				"startDate": {
-					"title": "Datum zahájení",
-					"description": "Vyberte datum zahájení okna údržby.",
-					"option": {
-						"startDate": {
-							"label": "Datum zahájení"
-						}
-					}
-				},
-				"startTime": {
-					"title": "Čas zahájení",
-					"description": "Nastavte čas zahájení a dobu trvání okna údržby. Všechny hodnoty jsou v UTC",
-					"option": {
-						"duration": {
-							"label": "Doba trvání"
-						},
-						"startTime": {
-							"label": "Čas zahájení"
-						}
-					},
-					"monitors": {
-						"title": "Monitory",
-						"description": "Monitory, na které se má okno údržby vztahovat",
-						"option": {
-							"addMonitors": {
-								"label": "Přidat monitory"
-							}
-						}
-					}
-				}
-			}
-		},
-		"notifications": {
-			"fallback": {
-				"actionButton": "Vytvořit kanál",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "Kanály oznámení slouží k:"
-			},
-			"form": {
-				"accessToken": {
-					"optionAccessToken": "Přístupový token",
-					"placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
-				},
-				"address": {
-					"description": "Adresa, na kterou budou zasílána oznámení.",
-					"optionAddress": "Adresa",
-					"placeholderEmail": "example@example.com",
-					"placeholderWebhook": "https://your-server.com/webhook",
-					"title": "Adresa"
-				},
-				"homeServer": {
-					"optionHomeServer": "Domovský server",
-					"placeholder": "example.com"
-				},
-				"matrix": {
-					"description": "Nastavte připojení k domovskému serveru Matrix pro oznámení.",
-					"title": "Konfigurace Matrix"
-				},
-				"notificationName": {
-					"description": "Popisný název kanálu oznámení",
-					"optionName": "Název kanálu",
-					"placeholder": "např. Produkční upozornění",
-					"title": "Název kanálu"
-				},
-				"pagerDuty": {
-					"description": "Váš integrační klíč PagerDuty pro příjem upozornění.",
-					"optionIntegrationKey": "Integrační klíč",
-					"placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
-					"title": "Integrační klíč"
-				},
-				"roomId": {
-					"optionRoomId": "ID místnosti",
-					"placeholder": "!abcdefg:matrix.org"
-				},
-				"type": {
-					"description": "Vyberte typ kanálu oznámení, který chcete vytvořit.",
-					"optionType": "Typ",
-					"title": "Typ kanálu"
-				},
-				"telegram": {
-					"title": "Konfigurace Telegramu",
-					"description": "",
-					"optionBotToken": "Token bota",
-					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
-					"optionChatId": "ID chatu",
-					"placeholderChatId": "-1001234567890"
-				}
-			},
-			"table": {
-				"headers": {
-					"destination": "Cíl"
-				}
-			}
-		},
-		"pageSpeed": {
-			"charts": {
-				"common": {
-					"cls": "Kumulativní posun rozvržení (CLS)",
-					"fcp": "První vykreslení obsahu (FCP)",
-					"lcp": "Největší vykreslení obsahu (LCP)",
-					"si": "Index rychlosti (SI)",
-					"tbt": "Celková doba blokování (TBT)"
-				},
-				"legend": {
-					"title": "Zpráva PageSpeed",
-					"weight": "Váha"
-				},
-				"pie": {
-					"title": "Zpráva o výkonu"
-				}
-			},
-			"table": {
-				"headers": {
-					"pageSpeedScore": "Hodnocení PageSpeed"
-				}
-			},
-			"fallback": {
-				"actionButton": "Vytvořte monitor!",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "Monitor PageSpeed slouží k:"
-			}
-		},
-		"settings": {
-			"form": {
-				"timezone": {
-					"title": "Zobrazované časové pásmo",
-					"description": "Vyberte časové pásmo používané pro zobrazení dat a časů v celé aplikaci.",
-					"option": {
-						"timezone": {
-							"label": "Zobrazované časové pásmo"
-						}
-					}
-				},
-				"ui": {
-					"title": "Vzhled",
-					"description": "Přepínejte mezi světlým a tmavým režimem, měňte jazyk nebo upravte typ zobrazení grafů.",
-					"option": {
-						"theme": {
-							"label": "Režim motivu",
-							"light": "Světlý",
-							"dark": "Tmavý"
-						},
-						"language": {
-							"label": "Jazyk"
-						},
-						"chartType": {
-							"label": "Typ grafu",
-							"histogram": "Histogram",
-							"heatmap": "Heatmapa"
-						}
-					}
-				},
-				"pagespeed": {
-					"title": "Klíč Google PageSpeed API",
-					"description": "Zadejte klíč Google PageSpeed API pro aktivaci sledování Google PageSpeed. Klikněte na Obnovit pro aktualizaci klíče.",
-					"option": {
-						"apiKey": {
-							"label": "Klíč PageSpeed API",
-							"labelSet": "Klíč API je nastaven. Klikněte na Obnovit pro jeho změnu.",
-							"placeholder": "Zadejte klíč Google PageSpeed API"
-						}
-					}
-				},
-				"url": {
-					"title": "IP/URL monitoru na stavové stránce",
-					"description": "Zobrazí IP adresu nebo URL monitoru na veřejné stavové stránce. Pokud je tato možnost zakázána, zobrazí se pouze název monitoru pro ochranu citlivých informací.",
-					"option": {
-						"showURL": {
-							"label": "Zobrazit IP/URL na stavové stránce",
-							"enabled": "Povoleno",
-							"disabled": "Zakázáno"
-						}
-					}
-				},
-				"stats": {
-					"title": "Historie monitoru",
-					"description": "Vymazat veškerou historii sledování a statistiky vašeho týmu. Tato akce je nevratná.",
-					"option": {
-						"clear": {
-							"label": "Vymazat všechny statistiky. Tato akce je nevratná."
-						}
-					},
-					"dialog": {
-						"title": "Vymazat veškerou historii sledování?",
-						"description": "Tuto akci nelze vrátit zpět"
-					}
-				},
-				"retention": {
-					"title": "Uchovávání kontrol",
-					"description": "Nastavte, jak dlouho se mají uchovávat data kontrol před automatickým vymazáním.",
-					"option": {
-						"days": {
-							"label": "Doba uchovávání (dny)",
-							"unlimited": "Neomezeně"
-						}
-					}
-				},
-				"thresholds": {
-					"title": "Globální prahové hodnoty",
-					"description": "Nastavte globální prahové hodnoty CPU, paměti, disku a teploty pro sledování infrastruktury. Platí pro všechny monitory infrastruktury, pokud nejsou přepsány.",
-					"option": {
-						"cpu": {
-							"label": "Prahová hodnota CPU (%)",
-							"placeholder": "1 - 100"
-						},
-						"memory": {
-							"label": "Prahová hodnota paměti (%)",
-							"placeholder": "1 - 100"
-						},
-						"disk": {
-							"label": "Prahová hodnota disku (%)",
-							"placeholder": "1 - 100"
-						},
-						"temperature": {
-							"label": "Prahová hodnota teploty (°C)",
-							"placeholder": "1 - 150"
-						}
-					}
-				},
-				"email": {
-					"title": "Nastavení emailu",
-					"description": "Nastavte emailovou konfiguraci pro váš systém. Používá se k odesílání oznámení a upozornění.",
-					"descriptionTransport": "",
-					"descriptionTransportLink": "Zobrazit specifikace zde",
-					"option": {
-						"host": {
-							"label": "Emailový hostitel - název hostitele nebo IP adresa pro připojení",
-							"placeholder": "smtp.gmail.com"
-						},
-						"port": {
-							"label": "Emailový port - port pro připojení",
-							"placeholder": "587"
-						},
-						"address": {
-							"label": "Emailová adresa - použitá pro ověření",
-							"placeholder": "you@example.com"
-						},
-						"user": {
-							"label": "Emailový uživatel - uživatelské jméno pro ověření, přepíše emailovou adresu, pokud je zadáno",
-							"placeholder": "Nechte prázdné, pokud není vyžadováno"
-						},
-						"password": {
-							"label": "Emailové heslo - heslo pro ověření",
-							"labelSet": "Heslo je nastaveno. Klikněte na Obnovit pro jeho změnu.",
-							"placeholder": "Zadejte heslo"
-						},
-						"tlsServername": {
-							"label": "Název TLS serveru - volitelný název hostitele pro TLS validaci, když je hostitel IP",
-							"placeholder": "example.com"
-						},
-						"connectionHost": {
-							"label": "Hostitel emailového připojení - název hostitele pro HELO/EHLO pozdrav",
-							"placeholder": "localhost"
-						},
-						"secure": {
-							"label": "Použít SSL (doporučeno): Šifrovat připojení pomocí SSL/TLS"
-						},
-						"pool": {
-							"label": "Povolit sdílení připojení: Opakované použití stávajících připojení pro vyšší výkon"
-						},
-						"ignoreTLS": {
-							"label": "Zakázat STARTTLS: Nepoužívat TLS, i když to server podporuje"
-						},
-						"requireTLS": {
-							"label": "Vynutit STARTTLS: Vyžadovat upgrade TLS, selhat pokud není podporován"
-						},
-						"rejectUnauthorized": {
-							"label": "Odmítnout neplatné certifikáty: Odmítnout připojení se sebou podepsanými nebo nedůvěryhodnými certifikáty"
-						}
-					}
-				},
-				"demoMonitors": {
-					"title": "Ukázkové monitory",
-					"description": "Přidejte ukázkové monitory pro demonstrační účely."
-				},
-				"removeMonitors": {
-					"title": "Obnovení systému",
-					"description": "Odeberte všechny monitory z vašeho systému.",
-					"dialog": {
-						"title": "Odebrat všechny monitory?",
-						"description": "Tuto akci nelze vrátit zpět."
-					}
-				},
-				"exportMonitors": {
-					"title": "Exportovat monitory"
-				},
-				"importExportMonitors": {
-					"title": "Import / Export monitorů",
-					"description": "Importujte nebo exportujte data monitorů jako JSON soubor pro zálohu nebo přenos."
-				},
-				"about": {
-					"title": "O aplikaci",
-					"developedBy": "Vyvinulo Bluewave Labs"
-				},
-				"validation": {
-					"errorMessage": "Opravte prosím následující chyby validace:"
-				}
-			}
-		},
-		"statusPages": {
-			"deleteSuccess": "Stavová stránka byla úspěšně smazána",
-			"fallback": {
-				"title": "Stavová stránka slouží k:",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "Vytvořte stavovou stránku!"
-			},
-			"monitorsList": {
-				"chartTypeHeatmap": "Heatmapa",
-				"chartTypeHistogram": "Histogram",
-				"noData": "Žádná data nejsou k dispozici",
-				"infrastructure": {
-					"title": "Infrastruktura",
-					"cpu": "CPU",
-					"memory": "RAM",
-					"memoryText": "Paměť",
-					"disk": "Disk",
-					"usage": "Využití",
-					"used": "Použité",
-					"total": "Celkem"
-				},
-				"uptime": {
-					"title": "Dostupnost",
-					"responseTime": "Doba odezvy"
-				}
-			},
-			"statusBar": {
-				"allDown": "Všechny systémy jsou nedostupné",
-				"allUp": "Všechny systémy fungují",
-				"degraded": "Některé systémy mají problémy",
-				"unknown": "Nelze určit stav systému"
-			},
-			"table": {
-				"headers": {
-					"name": "Název stavové stránky",
-					"url": "Veřejná URL"
-				},
-				"published": "Publikováno",
-				"unpublished": "Nepublikováno"
-			},
-			"title": "Stavové stránky",
-			"details": {
-				"empty": {
-					"title": "Zatím zde nic není",
-					"addMonitor": "Přidejte monitor pro začátek"
-				}
-			},
-			"form": {
-				"access": {
-					"title": "Přístup",
-					"description": "Pokud je vaše stavová stránka připravena, můžete ji označit jako publikovanou.",
-					"option": {
-						"published": {
-							"name": "Publikováno a viditelné pro veřejnost"
-						}
-					}
-				},
-				"basicInfo": {
-					"title": "Základní informace",
-					"description": "Zadejte název společnosti a subdoménu, na kterou stavová stránka odkazuje.",
-					"option": {
-						"name": {
-							"label": "Název společnosti",
-							"placeholder": "Acme s.r.o."
-						},
-						"url": {
-							"label": "Adresa vaší stavové stránky",
-							"placeholder": "moje-stavova-stranka"
-						}
-					}
-				},
-				"monitors": {
-					"title": "Monitory",
-					"description": "Vyberte monitory, které se mají zobrazit na vaší stavové stránce.",
-					"noMonitors": "Žádné monitory nebyly vybrány",
-					"option": {
-						"monitors": {
-							"label": "Vybrat monitory",
-							"placeholder": "Hledejte a vyberte monitory..."
-						}
-					}
-				},
-				"timezone": {
-					"title": "Časové pásmo",
-					"description": "Vyberte časové pásmo, ve kterém se bude zobrazovat stavová stránka.",
-					"option": {
-						"timezone": {
-							"label": "Časové pásmo",
-							"placeholder": "Vyberte časové pásmo..."
-						}
-					}
-				},
-				"appearance": {
-					"title": "Vzhled",
-					"description": "Definujte výchozí vzhled vaší veřejné stavové stránky.",
-					"option": {
-						"logo": {
-							"label": "Logo"
-						},
-						"color": {
-							"label": "Barva značky"
-						}
-					}
-				},
-				"features": {
-					"title": "Funkce",
-					"description": "Nastavte, jaké informace se zobrazí na stavové stránce.",
-					"option": {
-						"showCharts": {
-							"label": "Zobrazit grafy doby odezvy"
-						},
-						"showUptimePercentage": {
-							"label": "Zobrazit procento dostupnosti"
-						},
-						"showAdminLoginLink": {
-							"label": "Zobrazit odkaz pro přihlášení administrátora"
-						},
-						"showInfrastructure": {
-							"label": "Zobrazit metriky infrastruktury"
-						}
-					}
-				}
-			}
-		},
-		"uptime": {
-			"filters": {
-				"search": {
-					"placeholder": "Hledat monitory..."
-				}
-			},
-			"table": {
-				"headers": {
-					"responseTime": "Doba odezvy"
-				}
-			},
-			"fallback": {
-				"actionButton": "Vytvořte monitor!",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "Monitor dostupnosti slouží k:"
-			}
-		}
-	}
+  "common": {
+    "auth": {
+      "roles": {
+        "admin": "Administrátor",
+        "demo": "Demo",
+        "superadmin": "Superadministrátor",
+        "user": "Uživatel"
+      }
+    },
+    "alerts": {
+      "pageSpeedApiKey": {
+        "content": "Upozornění: Zatím jste nepřidali klíč Google PageSpeed API. Přejděte do <settingsLink>Nastavení</settingsLink> a přidejte ho. Bez něj nebude monitor PageSpeed fungovat."
+      }
+    },
+    "appName": "Checkmate",
+    "breadcrumbs": {
+      "details": "Podrobnosti",
+      "home": "Domů"
+    },
+    "buttons": {
+      "addMember": "Přidat člena",
+      "cancel": "Zrušit",
+      "close": "Zavřít",
+      "configure": "Konfigurovat",
+      "confirm": "Potvrdit",
+      "create": "Vytvořit",
+      "delete": "Smazat",
+      "generateToken": "Vygenerovat token",
+      "incidents": "Incidenty",
+      "inviteMember": "Pozvat člena",
+      "pause": "Pozastavit",
+      "resume": "Obnovit",
+      "save": "Uložit",
+      "sendInvite": "Odeslat pozvánku",
+      "test": "Test",
+      "testNotifications": "Testovat oznámení",
+      "toggleTheme": "Přepnout mezi světlým a tmavým motivem",
+      "flushQueue": "Vyprázdnit frontu",
+      "notFound": "Přejít na hlavní přehled",
+      "resetPassword": "Obnovit heslo",
+      "reset": "",
+      "clear": "Vymazat",
+      "addDemo": "Přidat ukázkové monitory",
+      "removeMonitors": "Odebrat monitory",
+      "sendTestEmail": "Odeslat testovací email",
+      "exportToJSON": "Exportovat do JSON",
+      "importFromJSON": "Importovat z JSON",
+      "clearFilters": "Vymazat filtry",
+      "removeUser": "Odebrat uživatele"
+    },
+    "charts": {
+      "labels": {
+        "averageResponseTime": "Průměrná doba odezvy",
+        "downtime": "Výpadek",
+        "high": "",
+        "low": "",
+        "uptime": "Dostupnost"
+      },
+      "histogram": {
+        "avg": "Prům.: {{value}} ms",
+        "max": "Max: {{value}} ms"
+      }
+    },
+    "dialogs": {
+      "delete": {
+        "description": "Tuto akci nelze vrátit zpět.",
+        "title": "Opravdu chcete toto smazat?"
+      }
+    },
+    "labels": {
+      "active": "Aktivní",
+      "paused": "pozastaveno",
+      "na": "N/A",
+      "resolved": "Vyřešeno",
+      "responseTime": "Doba odezvy"
+    },
+    "form": {
+      "role": {
+        "option": {
+          "role": {
+            "label": "Role"
+          }
+        }
+      },
+      "name": {
+        "option": {
+          "firstName": {
+            "label": "Jméno",
+            "placeholder": "Jan"
+          },
+          "lastName": {
+            "label": "Příjmení",
+            "placeholder": "Novák"
+          }
+        }
+      },
+      "email": {
+        "option": {
+          "email": {
+            "label": "Email",
+            "placeholder": "you@example.com"
+          }
+        }
+      }
+    },
+    "table": {
+      "empty": "Zde nic není",
+      "headers": {
+        "actions": "",
+        "dateTime": "Datum a čas",
+        "message": "Zpráva",
+        "monitor": "Monitor",
+        "monitorId": "ID monitoru",
+        "name": "Název",
+        "status": "Stav",
+        "type": "",
+        "url": "URL",
+        "interval": "Interval",
+        "active": "Aktivní",
+        "responseTime": "Doba odezvy"
+      }
+    }
+  },
+  "components": {
+    "imageUpload": {
+      "clickToUpload": "Klikněte pro nahrání",
+      "dragAndDrop": "",
+      "supportedFormats": "",
+      "maxSize": "",
+      "orDragAndDrop": "nebo přetáhněte soubor",
+      "errors": {
+        "invalidFileSize": "",
+        "invalidFileFormat": ""
+      }
+    },
+    "headerStatusPageControls": {
+      "publicLink": ""
+    },
+    "headerTimeRange": {
+      "labels": {
+        "day": "Den",
+        "month": "Měsíc",
+        "recent": "Nedávné",
+        "week": "Týden"
+      },
+      "description": {
+        "recent": "Zobrazení statistik za poslední 2 hodiny.",
+        "day": "Zobrazení statistik za posledních 24 hodin.",
+        "week": "Zobrazení statistik za posledních 7 dní.",
+        "month": "Zobrazení statistik za posledních 30 dní."
+      }
+    },
+    "offlineBanner": {
+      "serverUnreachable": "Nelze se spojit se serverem",
+      "retry": "Zkusit znovu",
+      "retrying": "Opakuji pokus...",
+      "reconnected": "Podařilo se úspěšně obnovit spojení se serverem"
+    },
+    "sidebar": {
+      "menu": {
+        "uptime": "",
+        "pagespeed": "",
+        "infrastructure": "",
+        "notifications": "",
+        "checks": "Kontroly",
+        "incidents": "",
+        "statusPages": "",
+        "maintenance": "",
+        "logs": "",
+        "settings": ""
+      },
+      "bottomMenu": {
+        "support": "",
+        "discussions": "",
+        "docs": "",
+        "changelog": ""
+      },
+      "accountMenu": {
+        "profile": "Profil",
+        "password": "Heslo",
+        "team": "Tým"
+      },
+      "starPrompt": {
+        "title": "Ohodnoťte Checkmate",
+        "description": "Sledujte nejnovější vydání a pomozte rozšířit komunitu na GitHubu"
+      },
+      "authFooter": {
+        "navControls": "",
+        "logOut": "",
+        "roles": {
+          "superAdmin": "Superadministrátor",
+          "admin": "Administrátor",
+          "user": "Uživatel",
+          "demoUser": ""
+        }
+      }
+    },
+    "starPrompt": {
+      "title": "Ohodnoťte Checkmate",
+      "description": "Sledujte nejnovější vydání a pomozte rozšířit komunitu na GitHubu"
+    }
+  },
+  "pages": {
+    "notFound": {
+      "title": "Ale ne! Upustili jste své sushi!",
+      "subtitle": "Buď tato URL neexistuje, nebo k ní nemáte přístup."
+    },
+    "account": {
+      "tabs": {
+        "profile": "Profil",
+        "password": "Heslo",
+        "team": "Tým"
+      },
+      "form": {
+        "name": {
+          "title": "Jméno",
+          "description": "Aktualizujte své osobní údaje"
+        },
+        "photo": {
+          "title": "Profilová fotografie",
+          "description": "Nahrajte profilový obrázek"
+        },
+        "currentPassword": {
+          "title": "Aktuální heslo",
+          "description": "Zadejte aktuální heslo pro ověření totožnosti",
+          "option": {
+            "label": "Aktuální heslo",
+            "placeholder": "Zadejte aktuální heslo"
+          }
+        },
+        "newPassword": {
+          "title": "Nové heslo",
+          "description": "Zvolte silné heslo s alespoň 8 znaky",
+          "option": {
+            "newPassword": {
+              "label": "Nové heslo",
+              "placeholder": "Zadejte nové heslo"
+            },
+            "confirm": {
+              "label": "Potvrzení hesla",
+              "placeholder": "Potvrďte nové heslo"
+            }
+          }
+        },
+        "deleteAccount": {
+          "title": "Smazat účet",
+          "description": "Tato akce je trvalá a nelze ji vrátit zpět"
+        }
+      },
+      "team": {
+        "filter": {
+          "placeholder": "Filtrovat podle role",
+          "all": "",
+          "admin": "Administrátor",
+          "member": ""
+        },
+        "table": {
+          "headers": {
+            "email": "Email",
+            "role": "Role",
+            "created": ""
+          }
+        },
+        "addMember": {
+          "title": "Registrace nového člena týmu",
+          "description": "Vytvořte nový uživatelský účet. Po vytvoření bezpečně sdílejte přihlašovací údaje."
+        },
+        "invite": {
+          "title": "Pozvat člena týmu",
+          "description": "Odešlete pozvánku k připojení do vašeho týmu",
+          "email": {
+            "label": "Emailová adresa",
+            "placeholder": "Zadejte emailovou adresu"
+          },
+          "role": {
+            "label": "Role",
+            "placeholder": "Vyberte roli"
+          },
+          "linkLabel": "Odkaz pro pozvánku"
+        }
+      }
+    },
+    "auth": {
+      "common": {
+        "passwordRules": {
+          "length": {
+            "beginning": "Heslo musí být dlouhé alespoň",
+            "highlighted": "8 znaků"
+          },
+          "lowercase": {
+            "beginning": "Heslo musí obsahovat alespoň",
+            "highlighted": "1 malé písmeno"
+          },
+          "match": {
+            "beginning": "Obě hesla se",
+            "highlighted": "musí shodovat"
+          },
+          "number": {
+            "beginning": "Heslo musí obsahovat alespoň",
+            "highlighted": "1 číslo"
+          },
+          "special": {
+            "beginning": "Heslo musí obsahovat alespoň",
+            "highlighted": "1 speciální znak"
+          },
+          "uppercase": {
+            "beginning": "Heslo musí obsahovat alespoň",
+            "highlighted": "1 velké písmeno"
+          }
+        },
+        "form": {
+          "option": {
+            "email": {
+              "label": "Email",
+              "placeholder": "me@example.com"
+            },
+            "password": {
+              "label": "Heslo",
+              "placeholder": "********"
+            },
+            "confirmPassword": {
+              "label": "Potvrzení hesla"
+            }
+          }
+        }
+      },
+      "login": {
+        "title": "Vítejte zpět v Checkmate!",
+        "subtitle": "Přihlaste se pro pokračování",
+        "submit": "Přihlásit se",
+        "links": {
+          "forgotPassword": {
+            "text": "Zapomněli jste heslo?",
+            "linkText": "Obnovit heslo"
+          },
+          "register": {
+            "text": "Nemáte účet?",
+            "linkText": "Zaregistrujte se zde"
+          }
+        }
+      },
+      "register": {
+        "title": "Vítejte v Checkmate!",
+        "subtitle": "Zaregistrujte se a začněte",
+        "submit": "Registrovat"
+      },
+      "forgotPassword": {
+        "title": "Zapomněli jste heslo?",
+        "subtitle": "Žádný problém, zašleme vám pokyny k obnovení.",
+        "submit": "Požádat o obnovení",
+        "links": {
+          "login": {
+            "text": "Zpět na",
+            "linkText": "přihlášení"
+          }
+        }
+      },
+      "setNewPassword": {
+        "title": "Obnovte své heslo",
+        "subtitle": "Vaše nové heslo musí být odlišné od dříve použitých hesel."
+      }
+    },
+    "checks": {
+      "selects": {
+        "monitor": {
+          "all": "Všechny monitory"
+        },
+        "status": {
+          "all": "Vše",
+          "down": "Nedostupné",
+          "up": "Dostupné"
+        }
+      },
+      "table": {
+        "empty": "Žádné neúspěšné kontroly v tomto období",
+        "headers": {
+          "statusCode": "Stavový kód",
+          "location": "Umístění"
+        }
+      }
+    },
+    "common": {
+      "monitors": {
+        "actions": {
+          "configure": "Konfigurovat",
+          "delete": "Smazat",
+          "generateToken": "Vygenerovat token",
+          "details": "Podrobnosti",
+          "incidents": "Incidenty",
+          "inviteMember": "Pozvat člena",
+          "openSite": "Otevřít stránku",
+          "pause": "Pozastavit",
+          "resume": "Obnovit"
+        },
+        "statBoxes": {
+          "activeFor": "Aktivní po dobu",
+          "certificateExpiry": "Expirace certifikátu",
+          "lastCheck": "Poslední kontrola",
+          "lastResponseTime": "Poslední doba odezvy"
+        },
+        "status": {
+          "down": "nedostupný",
+          "breached": "překročen práh",
+          "initializing": "inicializace",
+          "maintenance": "údržba",
+          "paused": "pozastaveno",
+          "total": "celkem",
+          "up": "dostupný"
+        },
+        "monitorTypes": {
+          "optionDocker": "Docker",
+          "optionGame": "Hra",
+          "optionHttp": "HTTP(S)",
+          "optionPing": "Ping",
+          "optionPort": "Port",
+          "optionPagespeed": "PageSpeed",
+          "optionHardware": "Infrastruktura",
+          "optionGrpc": "gRPC",
+          "optionWebSocket": "WebSocket"
+        }
+      }
+    },
+    "createMonitor": {
+      "form": {
+        "advanced": {
+          "description": "Volitelná nastavení pro pokročilé použití",
+          "option": {
+            "advancedMatching": {
+              "label": "Použít pokročilé porovnávání"
+            },
+            "expectedValue": {
+              "label": "Očekávaná hodnota"
+            },
+            "jsonPath": {
+              "description": "Tento výraz bude vyhodnocen proti odpovědi ve formátu JSON a výsledek bude použit k porovnání s očekávanou hodnotou. Dokumentaci dotazovacího jazyka naleznete na <jmesLink>jmespath.org</jmesLink>.",
+              "label": "Výraz JSONPath"
+            },
+            "matchMethod": {
+              "label": "Metoda porovnání",
+              "equal": "",
+              "include": "",
+              "regex": ""
+            }
+          },
+          "title": "Pokročilá nastavení"
+        },
+        "frequency": {
+          "description": "Jak často chcete kontrolovat stav tohoto monitoru?",
+          "option": {
+            "frequency": {
+              "label": "Frekvence kontroly",
+              "value": {
+                "fifteenMinutes": "15 minut",
+                "fifteenSeconds": "",
+                "fiveMinutes": "5 minut",
+                "fourMinutes": "",
+                "oneMinute": "",
+                "tenMinutes": "10 minut",
+                "thirtyMinutes": "30 minut",
+                "thirtySeconds": "",
+                "threeMinutes": "",
+                "twoMinutes": ""
+              }
+            }
+          },
+          "title": "Frekvence kontroly"
+        },
+        "general": {
+          "option": {
+            "container": {
+              "label": "Název/ID kontejneru",
+              "placeholder": "my-app nebo abcd1234"
+            },
+            "host": {
+              "label": "Hostitel",
+              "placeholder": "192.168.1.100 nebo example.com"
+            },
+            "name": {
+              "label": "Zobrazovaný název",
+              "placeholder": "např. Moje stránka"
+            },
+            "secret": {
+              "label": "Autorizační tajný klíč",
+              "placeholder": "Zadejte svůj tajný klíč"
+            },
+            "url": {
+              "label": "URL",
+              "placeholder": "https://www.google.com"
+            },
+            "game": {
+              "label": "",
+              "placeholder": ""
+            },
+            "port": {
+              "label": "Port ke sledování",
+              "placeholder": "80"
+            },
+            "grpcServiceName": {
+              "label": "Název služby",
+              "placeholder": "např. my.service.v1 (nechte prázdné pro celkový stav)"
+            },
+            "wsUrl": {
+              "label": "WebSocket URL",
+              "placeholder": "wss://example.com/socket"
+            }
+          },
+          "title": "Obecná nastavení",
+          "description": {
+            "http": "Zadejte URL nebo IP adresu ke sledování (např. https://example.com/ nebo 192.168.1.100) a přidejte jasný zobrazovaný název, který se zobrazí na přehledu.",
+            "ping": "",
+            "port": "",
+            "docker": "",
+            "game": "",
+            "pagespeed": "Sledujte výkon načítání stránky, metriky Core Web Vitals a hodnocení optimalizace vašeho webu.",
+            "grpc": "Zadejte název hostitele a port gRPC serveru, volitelně zadejte název služby pro kontrolu stavu a přidejte zobrazovaný název.",
+            "websocket": "Zadejte WebSocket URL ke sledování (např. wss://example.com/socket) a přidejte zobrazovaný název.",
+            "hardware": "Sledujte využití CPU, paměti, disku a teplotu vaší infrastruktury."
+          }
+        },
+        "ignoreTls": {
+          "description": "Nastavte ověřování TLS/SSL certifikátů pro HTTPS připojení.",
+          "option": {
+            "tls": {
+              "label": "Ignorovat chyby TLS/SSL"
+            }
+          },
+          "title": "Nastavení TLS/SSL"
+        },
+        "incidents": {
+          "description": "Klouzavé okno se používá k určení, kdy je monitor nedostupný. Stav monitoru se změní pouze tehdy, když procento kontrol v klouzavém okně dosáhne zadané hodnoty.",
+          "option": {
+            "checks": {
+              "label": "Počet kontrol v klouzavém okně"
+            },
+            "percentage": {
+              "label": "Jaké procento kontrol v klouzavém okně musí selhat/uspět, než se změní stav monitoru?"
+            }
+          },
+          "title": "Incidenty"
+        },
+        "notifications": {
+          "description": "Vyberte kanály pro oznámení, které chcete použít",
+          "title": "Oznámení"
+        },
+        "type": {
+          "description": "Vyberte typ kontroly, která se má provádět",
+          "optionDockerDescription": "Použijte Docker ke sledování, zda je kontejner spuštěn.",
+          "optionGameDescription": "Sledujte, zda je konkrétní herní server online.",
+          "optionGrpcDescription": "Sledujte gRPC služby pomocí standardního protokolu pro kontrolu stavu.",
+          "optionWebSocketDescription": "Sledujte WebSocket koncové body pro stav připojení a dobu odezvy.",
+          "optionHttpDescription": "Použijte HTTP(S) ke sledování vašeho webu nebo API koncového bodu.",
+          "optionPingDescription": "Použijte ICMP Ping ke sledování, zda je server online.",
+          "optionPortDescription": "Sledujte, zda je konkrétní port na serveru otevřen.",
+          "title": "Typ"
+        },
+        "thresholds": {
+          "title": "Prahové hodnoty upozornění",
+          "description": "Definujte prahové hodnoty, při kterých se mají spouštět upozornění pro tento monitor infrastruktury.",
+          "option": {
+            "cpuThreshold": {
+              "label": "Prahová hodnota upozornění CPU (%)"
+            },
+            "memoryThreshold": {
+              "label": "Prahová hodnota upozornění paměti (%)"
+            },
+            "diskThreshold": {
+              "label": "Prahová hodnota upozornění disku (%)"
+            },
+            "tempThreshold": {
+              "label": "Prahová hodnota upozornění teploty (°C)"
+            }
+          }
+        },
+        "geoChecks": {
+          "title": "Geograficky distribuované kontroly",
+          "description": "Spouštějte kontroly z více geografických lokací pro sledování globální dostupnosti a výkonu.",
+          "option": {
+            "enabled": {
+              "label": "Povolit geograficky distribuované kontroly"
+            },
+            "locations": {
+              "label": "Lokace",
+              "placeholder": "Vyberte lokace",
+              "options": {
+                "EU": "Evropa",
+                "NA": "Severní Amerika",
+                "AS": "Asie",
+                "SA": "Jižní Amerika",
+                "AF": "Afrika",
+                "OC": "Oceánie"
+              }
+            },
+            "interval": {
+              "label": "Interval kontroly",
+              "value": {
+                "fiveMinutes": "5 minut",
+                "tenMinutes": "10 minut",
+                "fifteenMinutes": "15 minut",
+                "thirtyMinutes": "30 minut"
+              }
+            }
+          }
+        },
+        "url": {
+          "title": "IP/URL monitoru na stavové stránce",
+          "description": "Zobrazí IP adresu nebo URL monitoru na veřejné stavové stránce. Pokud je tato možnost zakázána, zobrazí se pouze název monitoru pro ochranu citlivých informací.",
+          "option": {
+            "showURL": {
+              "label": "Zobrazit IP/URL na stavové stránce",
+              "enabled": "Povoleno",
+              "disabled": "Zakázáno"
+            }
+          }
+        },
+        "stats": {
+          "title": "Historie monitoru",
+          "description": "Vymazat veškerou historii sledování a statistiky vašeho týmu. Tato akce je nevratná.",
+          "buttonText": "Vymazat všechny statistiky",
+          "dialog": {
+            "title": "Vymazat veškerou historii sledování?",
+            "description": "Toto trvale smaže veškerou historii sledování, statistiky a data kontrol vašeho týmu. Tuto akci nelze vrátit zpět.",
+            "confirm": "Ano, vymazat všechny statistiky"
+          }
+        },
+        "escalations": {
+          "title": "Escalation Rules",
+          "description": "Automatically notify a channel if an incident remains unresolved after a delay",
+          "addRule": "Add Rule",
+          "option": {
+            "delayMinutes": {
+              "label": "Escalate after (minutes)"
+            },
+            "channel": {
+              "label": "Notification channel",
+              "placeholder": "Select a channel"
+            },
+            "removeRule": {
+              "ariaLabel": "Remove escalation rule"
+            }
+          }
+        }
+      }
+    },
+    "editUser": {
+      "form": {
+        "roles": {
+          "title": "Role",
+          "description": "Přiřaďte role uživateli. Lze vybrat více rolí."
+        }
+      },
+      "dialog": {
+        "removeUser": {
+          "title": "Odebrat uživatele",
+          "content": "Opravdu chcete odebrat uživatele {{name}} z vašeho týmu? Tuto akci nelze vrátit zpět."
+        }
+      }
+    },
+    "incidents": {
+      "dialog": {
+        "resolveIncident": {
+          "title": "Vyřešit incident",
+          "option": {
+            "comment": {
+              "label": "Komentář (volitelné)",
+              "placeholder": "Přidejte komentář k vyřešení..."
+            }
+          }
+        },
+        "details": {
+          "analysis": "Analýza incidentu",
+          "comment": "Komentář:",
+          "detailsLabel": "Podrobnosti",
+          "downtime": "Výpadek:",
+          "message": "Zpráva:",
+          "monitor": "Monitor:",
+          "overview": "Přehled",
+          "resolutionDetails": "Podrobnosti řešení",
+          "resolutionType": "Typ:",
+          "resolutionTypes": {
+            "automatic": "Automatický",
+            "manual": "Manuální"
+          },
+          "resolve": "Vyřešit incident",
+          "resolvedAt": "Vyřešeno v:",
+          "resolvedBy": "Vyřešil:",
+          "startedAt": "Začátek:",
+          "status": "Stav:",
+          "statusCode": "Stavový kód:",
+          "timeline": "Časová osa",
+          "title": "Podrobnosti incidentu",
+          "url": "URL:"
+        }
+      },
+      "filters": {
+        "allMonitors": "Všechny monitory",
+        "monitor": "Monitor",
+        "resolutionType": "Typ řešení",
+        "resolutionTypes": {
+          "manual": "Manuální",
+          "automatic": "Automatický",
+          "all": "Vše"
+        }
+      },
+      "summaryCard": {
+        "activeIncidents": {
+          "title": "Aktivní incidenty",
+          "active_zero": "Žádné aktivní incidenty",
+          "active_one": "{{count}} aktivní incident",
+          "active_other": "{{count}} aktivních incidentů"
+        },
+        "incidentStats": {
+          "avgResolutionTime": "Průměrná doba řešení",
+          "mostAffectedMonitor": "Nejvíce postižený monitor",
+          "title": "Statistiky incidentů",
+          "totalIncidents": "Celkem incidentů"
+        },
+        "latestIncidents": {
+          "title": "Nejnovější incidenty"
+        }
+      },
+      "table": {
+        "actions": {
+          "details": "Podrobnosti",
+          "goToMonitor": "Přejít na monitor",
+          "resolveManually": "Vyřešit ručně"
+        },
+        "activeIncidents": "Aktivní incidenty",
+        "headers": {
+          "endTime": "Čas ukončení",
+          "resolutionType": "Typ řešení",
+          "startTime": "",
+          "statusCode": "Stavový kód"
+        },
+        "resolvedIncidents": "Vyřešené incidenty",
+        "status": {
+          "active": "Aktivní",
+          "resolved": "Vyřešeno"
+        }
+      }
+    },
+    "infrastructure": {
+      "charts": {
+        "labels": {
+          "cpu": "Využití CPU",
+          "disk": "Využití disku",
+          "memory": "Využití paměti",
+          "netBytesRecv": "{{name}} - přijaté bajty",
+          "netBytesSent": "{{name}} - odeslané bajty",
+          "temp": "Teplota"
+        }
+      },
+      "gauges": {
+        "cpu": {
+          "lowerLabel": "Maximální frekvence",
+          "title": "Využití CPU",
+          "upperLabel": "Aktuální frekvence"
+        },
+        "disk": {
+          "lowerLabel": "Volné",
+          "title": "Využití disku {{idx}}",
+          "upperLabel": "Použité"
+        },
+        "memory": {
+          "lowerLabel": "Volné",
+          "title": "Využití paměti",
+          "upperLabel": "Použité"
+        }
+      },
+      "statBoxes": {
+        "avgCpuTemperature": "",
+        "cpuFrequency": "",
+        "cpuLogical": "",
+        "cpuPhysical": "",
+        "disk": "Disk",
+        "memory": "Paměť",
+        "os": ""
+      },
+      "table": {
+        "headers": {
+          "cpu": "CPU",
+          "disk": "Disk",
+          "memory": "Paměť"
+        }
+      },
+      "tabs": {
+        "labels": {
+          "network": "",
+          "overview": "Přehled"
+        }
+      },
+      "fallback": {
+        "actionButton": "Vytvořte monitor!",
+        "checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
+        "title": "Monitor infrastruktury slouží k:"
+      }
+    },
+    "logs": {
+      "tabs": {
+        "diagnostics": "",
+        "logs": "",
+        "queue": ""
+      },
+      "logLevelSelect": {
+        "label": "Úroveň logování"
+      },
+      "jobQueue": "Fronta úloh",
+      "failedJobs": "Neúspěšné úlohy",
+      "noLogs": "Žádné logy nebyly nalezeny",
+      "metrics": {
+        "jobs": "Úlohy",
+        "activeJobs": "Aktivní úlohy",
+        "failingJobs": "Selhávající úlohy",
+        "totalRuns": "Celkem spuštění",
+        "totalFailures": "Celkem selhání"
+      },
+      "diagnostics": {
+        "stats": {
+          "eventLoopDelay": "Zpoždění smyčky událostí",
+          "uptime": "Doba provozu",
+          "usedHeapSize": "Použitá velikost haldy",
+          "totalHeapSize": "Celková velikost haldy",
+          "osMemoryLimit": "Limit paměti OS"
+        },
+        "gauges": {
+          "heapAllocation": "Alokace haldy",
+          "heapUsage": "Využití haldy",
+          "heapUtilization": "Utilizace haldy",
+          "instantCpuUsage": "Okamžité využití CPU",
+          "availableMemoryPercentage": "% dostupné paměti",
+          "allocatedPercentage": "% alokováno",
+          "usedSPercentage": "% z 1s využito CPU",
+          "total": "Celkem",
+          "used": "Použité"
+        }
+      },
+      "table": {
+        "headers": {
+          "timestamp": "Časové razítko",
+          "level": "Úroveň",
+          "service": "Služba",
+          "method": "Metoda",
+          "monitorId": "ID monitoru",
+          "runCount": "Počet spuštění",
+          "failCount": "Počet selhání",
+          "lastRunAt": "Poslední spuštění",
+          "lockedAt": "Uzamčeno v",
+          "lastFinishedAt": "Naposledy dokončeno",
+          "lastRunTook": "Poslední běh trval",
+          "lastFailedAt": "Poslední selhání",
+          "failReason": "Důvod selhání"
+        }
+      }
+    },
+    "maintenanceWindow": {
+      "fallback": {
+        "actionButton": "Vytvořte okno údržby!",
+        "checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
+        "title": "Okno údržby slouží k:"
+      },
+      "table": {
+        "headers": {
+          "nextWindow": "",
+          "repeat": ""
+        }
+      },
+      "form": {
+        "general": {
+          "title": "Obecná nastavení",
+          "description": "Nastavte název a možnost opakování pro okno údržby.",
+          "option": {
+            "name": {
+              "label": "Název",
+              "placeholder": "např. Týdenní údržba"
+            },
+            "repeat": {
+              "label": "Opakování"
+            }
+          }
+        },
+        "startDate": {
+          "title": "Datum zahájení",
+          "description": "Vyberte datum zahájení okna údržby.",
+          "option": {
+            "startDate": {
+              "label": "Datum zahájení"
+            }
+          }
+        },
+        "startTime": {
+          "title": "Čas zahájení",
+          "description": "Nastavte čas zahájení a dobu trvání okna údržby. Všechny hodnoty jsou v UTC",
+          "option": {
+            "duration": {
+              "label": "Doba trvání"
+            },
+            "startTime": {
+              "label": "Čas zahájení"
+            }
+          },
+          "monitors": {
+            "title": "Monitory",
+            "description": "Monitory, na které se má okno údržby vztahovat",
+            "option": {
+              "addMonitors": {
+                "label": "Přidat monitory"
+              }
+            }
+          }
+        }
+      }
+    },
+    "notifications": {
+      "fallback": {
+        "actionButton": "Vytvořit kanál",
+        "checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
+        "title": "Kanály oznámení slouží k:"
+      },
+      "form": {
+        "accessToken": {
+          "optionAccessToken": "Přístupový token",
+          "placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
+        },
+        "address": {
+          "description": "Adresa, na kterou budou zasílána oznámení.",
+          "optionAddress": "Adresa",
+          "placeholderEmail": "example@example.com",
+          "placeholderWebhook": "https://your-server.com/webhook",
+          "title": "Adresa"
+        },
+        "homeServer": {
+          "optionHomeServer": "Domovský server",
+          "placeholder": "example.com"
+        },
+        "matrix": {
+          "description": "Nastavte připojení k domovskému serveru Matrix pro oznámení.",
+          "title": "Konfigurace Matrix"
+        },
+        "notificationName": {
+          "description": "Popisný název kanálu oznámení",
+          "optionName": "Název kanálu",
+          "placeholder": "např. Produkční upozornění",
+          "title": "Název kanálu"
+        },
+        "pagerDuty": {
+          "description": "Váš integrační klíč PagerDuty pro příjem upozornění.",
+          "optionIntegrationKey": "Integrační klíč",
+          "placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+          "title": "Integrační klíč"
+        },
+        "roomId": {
+          "optionRoomId": "ID místnosti",
+          "placeholder": "!abcdefg:matrix.org"
+        },
+        "type": {
+          "description": "Vyberte typ kanálu oznámení, který chcete vytvořit.",
+          "optionType": "Typ",
+          "title": "Typ kanálu"
+        },
+        "telegram": {
+          "title": "Konfigurace Telegramu",
+          "description": "",
+          "optionBotToken": "Token bota",
+          "placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
+          "optionChatId": "ID chatu",
+          "placeholderChatId": "-1001234567890"
+        }
+      },
+      "table": {
+        "headers": {
+          "destination": "Cíl"
+        }
+      }
+    },
+    "pageSpeed": {
+      "charts": {
+        "common": {
+          "cls": "Kumulativní posun rozvržení (CLS)",
+          "fcp": "První vykreslení obsahu (FCP)",
+          "lcp": "Největší vykreslení obsahu (LCP)",
+          "si": "Index rychlosti (SI)",
+          "tbt": "Celková doba blokování (TBT)"
+        },
+        "legend": {
+          "title": "Zpráva PageSpeed",
+          "weight": "Váha"
+        },
+        "pie": {
+          "title": "Zpráva o výkonu"
+        }
+      },
+      "table": {
+        "headers": {
+          "pageSpeedScore": "Hodnocení PageSpeed"
+        }
+      },
+      "fallback": {
+        "actionButton": "Vytvořte monitor!",
+        "checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
+        "title": "Monitor PageSpeed slouží k:"
+      }
+    },
+    "settings": {
+      "form": {
+        "timezone": {
+          "title": "Zobrazované časové pásmo",
+          "description": "Vyberte časové pásmo používané pro zobrazení dat a časů v celé aplikaci.",
+          "option": {
+            "timezone": {
+              "label": "Zobrazované časové pásmo"
+            }
+          }
+        },
+        "ui": {
+          "title": "Vzhled",
+          "description": "Přepínejte mezi světlým a tmavým režimem, měňte jazyk nebo upravte typ zobrazení grafů.",
+          "option": {
+            "theme": {
+              "label": "Režim motivu",
+              "light": "Světlý",
+              "dark": "Tmavý"
+            },
+            "language": {
+              "label": "Jazyk"
+            },
+            "chartType": {
+              "label": "Typ grafu",
+              "histogram": "Histogram",
+              "heatmap": "Heatmapa"
+            }
+          }
+        },
+        "pagespeed": {
+          "title": "Klíč Google PageSpeed API",
+          "description": "Zadejte klíč Google PageSpeed API pro aktivaci sledování Google PageSpeed. Klikněte na Obnovit pro aktualizaci klíče.",
+          "option": {
+            "apiKey": {
+              "label": "Klíč PageSpeed API",
+              "labelSet": "Klíč API je nastaven. Klikněte na Obnovit pro jeho změnu.",
+              "placeholder": "Zadejte klíč Google PageSpeed API"
+            }
+          }
+        },
+        "url": {
+          "title": "IP/URL monitoru na stavové stránce",
+          "description": "Zobrazí IP adresu nebo URL monitoru na veřejné stavové stránce. Pokud je tato možnost zakázána, zobrazí se pouze název monitoru pro ochranu citlivých informací.",
+          "option": {
+            "showURL": {
+              "label": "Zobrazit IP/URL na stavové stránce",
+              "enabled": "Povoleno",
+              "disabled": "Zakázáno"
+            }
+          }
+        },
+        "stats": {
+          "title": "Historie monitoru",
+          "description": "Vymazat veškerou historii sledování a statistiky vašeho týmu. Tato akce je nevratná.",
+          "option": {
+            "clear": {
+              "label": "Vymazat všechny statistiky. Tato akce je nevratná."
+            }
+          },
+          "dialog": {
+            "title": "Vymazat veškerou historii sledování?",
+            "description": "Tuto akci nelze vrátit zpět"
+          }
+        },
+        "retention": {
+          "title": "Uchovávání kontrol",
+          "description": "Nastavte, jak dlouho se mají uchovávat data kontrol před automatickým vymazáním.",
+          "option": {
+            "days": {
+              "label": "Doba uchovávání (dny)",
+              "unlimited": "Neomezeně"
+            }
+          }
+        },
+        "thresholds": {
+          "title": "Globální prahové hodnoty",
+          "description": "Nastavte globální prahové hodnoty CPU, paměti, disku a teploty pro sledování infrastruktury. Platí pro všechny monitory infrastruktury, pokud nejsou přepsány.",
+          "option": {
+            "cpu": {
+              "label": "Prahová hodnota CPU (%)",
+              "placeholder": "1 - 100"
+            },
+            "memory": {
+              "label": "Prahová hodnota paměti (%)",
+              "placeholder": "1 - 100"
+            },
+            "disk": {
+              "label": "Prahová hodnota disku (%)",
+              "placeholder": "1 - 100"
+            },
+            "temperature": {
+              "label": "Prahová hodnota teploty (°C)",
+              "placeholder": "1 - 150"
+            }
+          }
+        },
+        "email": {
+          "title": "Nastavení emailu",
+          "description": "Nastavte emailovou konfiguraci pro váš systém. Používá se k odesílání oznámení a upozornění.",
+          "descriptionTransport": "",
+          "descriptionTransportLink": "Zobrazit specifikace zde",
+          "option": {
+            "host": {
+              "label": "Emailový hostitel - název hostitele nebo IP adresa pro připojení",
+              "placeholder": "smtp.gmail.com"
+            },
+            "port": {
+              "label": "Emailový port - port pro připojení",
+              "placeholder": "587"
+            },
+            "address": {
+              "label": "Emailová adresa - použitá pro ověření",
+              "placeholder": "you@example.com"
+            },
+            "user": {
+              "label": "Emailový uživatel - uživatelské jméno pro ověření, přepíše emailovou adresu, pokud je zadáno",
+              "placeholder": "Nechte prázdné, pokud není vyžadováno"
+            },
+            "password": {
+              "label": "Emailové heslo - heslo pro ověření",
+              "labelSet": "Heslo je nastaveno. Klikněte na Obnovit pro jeho změnu.",
+              "placeholder": "Zadejte heslo"
+            },
+            "tlsServername": {
+              "label": "Název TLS serveru - volitelný název hostitele pro TLS validaci, když je hostitel IP",
+              "placeholder": "example.com"
+            },
+            "connectionHost": {
+              "label": "Hostitel emailového připojení - název hostitele pro HELO/EHLO pozdrav",
+              "placeholder": "localhost"
+            },
+            "secure": {
+              "label": "Použít SSL (doporučeno): Šifrovat připojení pomocí SSL/TLS"
+            },
+            "pool": {
+              "label": "Povolit sdílení připojení: Opakované použití stávajících připojení pro vyšší výkon"
+            },
+            "ignoreTLS": {
+              "label": "Zakázat STARTTLS: Nepoužívat TLS, i když to server podporuje"
+            },
+            "requireTLS": {
+              "label": "Vynutit STARTTLS: Vyžadovat upgrade TLS, selhat pokud není podporován"
+            },
+            "rejectUnauthorized": {
+              "label": "Odmítnout neplatné certifikáty: Odmítnout připojení se sebou podepsanými nebo nedůvěryhodnými certifikáty"
+            }
+          }
+        },
+        "demoMonitors": {
+          "title": "Ukázkové monitory",
+          "description": "Přidejte ukázkové monitory pro demonstrační účely."
+        },
+        "removeMonitors": {
+          "title": "Obnovení systému",
+          "description": "Odeberte všechny monitory z vašeho systému.",
+          "dialog": {
+            "title": "Odebrat všechny monitory?",
+            "description": "Tuto akci nelze vrátit zpět."
+          }
+        },
+        "exportMonitors": {
+          "title": "Exportovat monitory"
+        },
+        "importExportMonitors": {
+          "title": "Import / Export monitorů",
+          "description": "Importujte nebo exportujte data monitorů jako JSON soubor pro zálohu nebo přenos."
+        },
+        "about": {
+          "title": "O aplikaci",
+          "developedBy": "Vyvinulo Bluewave Labs"
+        },
+        "validation": {
+          "errorMessage": "Opravte prosím následující chyby validace:"
+        }
+      }
+    },
+    "statusPages": {
+      "deleteSuccess": "Stavová stránka byla úspěšně smazána",
+      "fallback": {
+        "title": "Stavová stránka slouží k:",
+        "checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
+        "actionButton": "Vytvořte stavovou stránku!"
+      },
+      "monitorsList": {
+        "chartTypeHeatmap": "Heatmapa",
+        "chartTypeHistogram": "Histogram",
+        "noData": "Žádná data nejsou k dispozici",
+        "infrastructure": {
+          "title": "Infrastruktura",
+          "cpu": "CPU",
+          "memory": "RAM",
+          "memoryText": "Paměť",
+          "disk": "Disk",
+          "usage": "Využití",
+          "used": "Použité",
+          "total": "Celkem"
+        },
+        "uptime": {
+          "title": "Dostupnost",
+          "responseTime": "Doba odezvy"
+        }
+      },
+      "statusBar": {
+        "allDown": "Všechny systémy jsou nedostupné",
+        "allUp": "Všechny systémy fungují",
+        "degraded": "Některé systémy mají problémy",
+        "unknown": "Nelze určit stav systému"
+      },
+      "table": {
+        "headers": {
+          "name": "Název stavové stránky",
+          "url": "Veřejná URL"
+        },
+        "published": "Publikováno",
+        "unpublished": "Nepublikováno"
+      },
+      "title": "Stavové stránky",
+      "details": {
+        "empty": {
+          "title": "Zatím zde nic není",
+          "addMonitor": "Přidejte monitor pro začátek"
+        }
+      },
+      "form": {
+        "access": {
+          "title": "Přístup",
+          "description": "Pokud je vaše stavová stránka připravena, můžete ji označit jako publikovanou.",
+          "option": {
+            "published": {
+              "name": "Publikováno a viditelné pro veřejnost"
+            }
+          }
+        },
+        "basicInfo": {
+          "title": "Základní informace",
+          "description": "Zadejte název společnosti a subdoménu, na kterou stavová stránka odkazuje.",
+          "option": {
+            "name": {
+              "label": "Název společnosti",
+              "placeholder": "Acme s.r.o."
+            },
+            "url": {
+              "label": "Adresa vaší stavové stránky",
+              "placeholder": "moje-stavova-stranka"
+            }
+          }
+        },
+        "monitors": {
+          "title": "Monitory",
+          "description": "Vyberte monitory, které se mají zobrazit na vaší stavové stránce.",
+          "noMonitors": "Žádné monitory nebyly vybrány",
+          "option": {
+            "monitors": {
+              "label": "Vybrat monitory",
+              "placeholder": "Hledejte a vyberte monitory..."
+            }
+          }
+        },
+        "timezone": {
+          "title": "Časové pásmo",
+          "description": "Vyberte časové pásmo, ve kterém se bude zobrazovat stavová stránka.",
+          "option": {
+            "timezone": {
+              "label": "Časové pásmo",
+              "placeholder": "Vyberte časové pásmo..."
+            }
+          }
+        },
+        "appearance": {
+          "title": "Vzhled",
+          "description": "Definujte výchozí vzhled vaší veřejné stavové stránky.",
+          "option": {
+            "logo": {
+              "label": "Logo"
+            },
+            "color": {
+              "label": "Barva značky"
+            }
+          }
+        },
+        "features": {
+          "title": "Funkce",
+          "description": "Nastavte, jaké informace se zobrazí na stavové stránce.",
+          "option": {
+            "showCharts": {
+              "label": "Zobrazit grafy doby odezvy"
+            },
+            "showUptimePercentage": {
+              "label": "Zobrazit procento dostupnosti"
+            },
+            "showAdminLoginLink": {
+              "label": "Zobrazit odkaz pro přihlášení administrátora"
+            },
+            "showInfrastructure": {
+              "label": "Zobrazit metriky infrastruktury"
+            }
+          }
+        }
+      }
+    },
+    "uptime": {
+      "filters": {
+        "search": {
+          "placeholder": "Hledat monitory..."
+        }
+      },
+      "table": {
+        "headers": {
+          "responseTime": "Doba odezvy"
+        }
+      },
+      "fallback": {
+        "actionButton": "Vytvořte monitor!",
+        "checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
+        "title": "Monitor dostupnosti slouží k:"
+      }
+    }
+  }
 }

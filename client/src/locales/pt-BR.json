@@ -1,1305 +1,1322 @@
 {
-	"common": {
-		"auth": {
-			"roles": {
-				"admin": "Admin",
-				"demo": "Demo",
-				"superadmin": "Super admin",
-				"user": "Usuário"
-			}
-		},
-		"alerts": {
-			"pageSpeedApiKey": {
-				"content": "Aviso: Você ainda não adicionou uma chave de API do Google PageSpeed. Acesse <settingsLink>Configurações</settingsLink> para adicionar uma. Sem ela, o monitor PageSpeed não funcionará."
-			}
-		},
-		"appName": "Checkmate",
-		"breadcrumbs": {
-			"details": "Detalhes",
-			"home": "Início"
-		},
-		"buttons": {
-			"addMember": "Adicionar membro",
-			"cancel": "Cancelar",
-			"close": "Fechar",
-			"configure": "Configurar",
-			"confirm": "Confirmar",
-			"create": "Criar",
-			"delete": "Excluir",
-			"generateToken": "Gerar token",
-			"incidents": "Incidentes",
-			"inviteMember": "Convidar membro",
-			"pause": "Pausar",
-			"resume": "Retomar",
-			"save": "Salvar",
-			"sendInvite": "Enviar convite",
-			"test": "Testar",
-			"testNotifications": "Testar notificações",
-			"toggleTheme": "Trocar claro e escuro",
-			"flushQueue": "Limpar fila",
-			"notFound": "Ir para o painel principal",
-			"resetPassword": "Redefinir senha",
-			"reset": "Resetar",
-			"clear": "Limpar",
-			"addDemo": "Adicionar monitores demo",
-			"removeMonitors": "Remover monitores",
-			"sendTestEmail": "Enviar email de teste",
-			"exportToJSON": "Exportar para JSON",
-			"importFromJSON": "Importar de JSON",
-			"clearFilters": "Limpar filtros",
-			"removeUser": "Remover usuário"
-		},
-		"charts": {
-			"labels": {
-				"averageResponseTime": "Tempo médio de resposta",
-				"downtime": "Tempo inativo",
-				"high": "alto",
-				"low": "baixo",
-				"uptime": "Uptime"
-			},
-			"histogram": {
-				"avg": "Média: {{value}} ms",
-				"max": "Máx: {{value}} ms"
-			}
-		},
-		"dialogs": {
-			"delete": {
-				"description": "Esta ação não pode ser desfeita.",
-				"title": "Tem certeza de que deseja excluir isto?"
-			}
-		},
-		"labels": {
-			"active": "Ativo",
-			"paused": "pausado",
-			"na": "N/D",
-			"resolved": "Resolvido",
-			"responseTime": "Tempo de resposta"
-		},
-		"form": {
-			"role": {
-				"option": {
-					"role": {
-						"label": "Funções"
-					}
-				}
-			},
-			"name": {
-				"option": {
-					"firstName": {
-						"label": "Nome",
-						"placeholder": "João"
-					},
-					"lastName": {
-						"label": "Sobrenome",
-						"placeholder": "Silva"
-					}
-				}
-			},
-			"email": {
-				"option": {
-					"email": {
-						"label": "Email",
-						"placeholder": "voce@exemplo.com"
-					}
-				}
-			}
-		},
-		"table": {
-			"empty": "Nada aqui",
-			"headers": {
-				"actions": "Ações",
-				"dateTime": "Data e hora",
-				"message": "Mensagem",
-				"monitor": "Monitor",
-				"monitorId": "ID do monitor",
-				"name": "Nome",
-				"status": "Status",
-				"type": "Tipo",
-				"url": "URL",
-				"interval": "Intervalo",
-				"active": "Ativo",
-				"responseTime": "Tempo de resposta"
-			}
-		}
-	},
-	"components": {
-		"imageUpload": {
-			"clickToUpload": "Clique para enviar",
-			"dragAndDrop": "arraste e solte",
-			"supportedFormats": "Formatos suportados",
-			"maxSize": "Tamanho Máximo",
-			"orDragAndDrop": "ou arraste e solte",
-			"errors": {
-				"invalidFileSize": "O tamanho do arquivo é muito grande!",
-				"invalidFileFormat": "Formato de arquivo não suportado!"
-			}
-		},
-		"headerStatusPageControls": {
-			"publicLink": "Link publico"
-		},
-		"headerTimeRange": {
-			"labels": {
-				"day": "Dia",
-				"month": "Mês",
-				"recent": "Recente",
-				"week": "Semana"
-			},
-			"description": {
-				"recent": "Exibindo estatísticas das últimas 2 horas.",
-				"day": "Exibindo estatísticas das últimas 24 horas.",
-				"week": "Exibindo estatísticas dos últimos 7 dias.",
-				"month": "Exibindo estatísticas dos últimos 30 dias."
-			}
-		},
-		"offlineBanner": {
-			"serverUnreachable": "Não foi possível conectar ao servidor",
-			"retry": "Tentar novamente",
-			"retrying": "Tentando novamente...",
-			"reconnected": "Reconectado ao servidor com sucesso."
-		},
-		"sidebar": {
-			"menu": {
-				"uptime": "Uptime",
-				"pagespeed": "Pagespeed",
-				"infrastructure": "Infraestrutura",
-				"notifications": "Notificações",
-				"checks": "Verificações",
-				"incidents": "Incidentes",
-				"statusPages": "Pagina de status",
-				"maintenance": "Manutenção",
-				"logs": "Registros",
-				"settings": "Configurações"
-			},
-			"bottomMenu": {
-				"support": "Suporte",
-				"discussions": "Discussões",
-				"docs": "Docs",
-				"changelog": "Changelog"
-			},
-			"accountMenu": {
-				"profile": "Perfil",
-				"password": "Senha",
-				"team": "Equipe"
-			},
-			"starPrompt": {
-				"title": "Avalie o Checkmate",
-				"description": "Veja os últimos lançamentos e ajude a comunidade a crescer no GitHub"
-			},
-			"authFooter": {
-				"navControls": "Controles",
-				"logOut": "Sair",
-				"roles": {
-					"superAdmin": "Super admin",
-					"admin": "Admin",
-					"user": "Usuário",
-					"demoUser": "Usuário demo"
-				}
-			}
-		},
-		"starPrompt": {
-			"title": "Avalie o Checkmate",
-			"description": "Veja os últimos lançamentos e ajude a comunidade a crescer no GitHub"
-		}
-	},
-	"pages": {
-		"notFound": {
-			"title": "Oh não! Você derrubou seu sushi!",
-			"subtitle": "A URL não existe ou você não tem acesso a ela."
-		},
-		"account": {
-			"tabs": {
-				"profile": "Perfil",
-				"password": "Senha",
-				"team": "Equipe"
-			},
-			"form": {
-				"name": {
-					"title": "Nome",
-					"description": "Atualize suas informações pessoais"
-				},
-				"photo": {
-					"title": "Foto de perfil",
-					"description": "Envie uma foto de perfil"
-				},
-				"currentPassword": {
-					"title": "Senha atual",
-					"description": "Digite sua senha atual para verificar sua identidade",
-					"option": {
-						"label": "Senha atual",
-						"placeholder": "Digite a senha atual"
-					}
-				},
-				"newPassword": {
-					"title": "Nova senha",
-					"description": "Escolha uma senha forte com pelo menos 8 caracteres",
-					"option": {
-						"newPassword": {
-							"label": "Nova senha",
-							"placeholder": "Digite a nova senha"
-						},
-						"confirm": {
-							"label": "Confirmar senha",
-							"placeholder": "Confirme a nova senha"
-						}
-					}
-				},
-				"deleteAccount": {
-					"title": "Excluir conta",
-					"description": "Esta ação é permanente e não pode ser desfeita"
-				}
-			},
-			"team": {
-				"filter": {
-					"placeholder": "Filtrar por função",
-					"all": "Todos",
-					"admin": "Admin",
-					"member": "Membro"
-				},
-				"table": {
-					"headers": {
-						"email": "Email",
-						"role": "Função",
-						"created": "Criado"
-					}
-				},
-				"addMember": {
-					"title": "Registrar novo membro da equipe",
-					"description": "Crie uma nova conta de usuário. Compartilhe as credenciais de forma segura após a criação."
-				},
-				"invite": {
-					"title": "Convidar membro da equipe",
-					"description": "Envie um convite para se juntar à sua equipe",
-					"email": {
-						"label": "Endereço de email",
-						"placeholder": "Digite o endereço de email"
-					},
-					"role": {
-						"label": "Função",
-						"placeholder": "Selecione uma função"
-					},
-					"linkLabel": "Link de convite"
-				}
-			}
-		},
-		"auth": {
-			"common": {
-				"passwordRules": {
-					"length": {
-						"beginning": "Deve ter no mínimo",
-						"highlighted": "8 caracteres de comprimento"
-					},
-					"lowercase": {
-						"beginning": "Deve ter pelo menos",
-						"highlighted": "uma letra minúscula"
-					},
-					"match": {
-						"beginning": "Senha e confirmação de senha",
-						"highlighted": "devem combinar"
-					},
-					"number": {
-						"beginning": "Deve ter pelo menos",
-						"highlighted": "um número"
-					},
-					"special": {
-						"beginning": "Deve conter pelo menos",
-						"highlighted": "um caractere especial"
-					},
-					"uppercase": {
-						"beginning": "Deve ter pelo menos",
-						"highlighted": "uma letra maiúscula"
-					}
-				},
-				"form": {
-					"option": {
-						"email": {
-							"label": "Email",
-							"placeholder": "eu@exemplo.com"
-						},
-						"password": {
-							"label": "Senha",
-							"placeholder": "********"
-						},
-						"confirmPassword": {
-							"label": "Confirmar senha"
-						}
-					}
-				}
-			},
-			"login": {
-				"title": "Bem-vindo de volta ao Checkmate!",
-				"subtitle": "Faça login para continuar",
-				"submit": "Entrar",
-				"links": {
-					"forgotPassword": {
-						"text": "Esqueceu a senha?",
-						"linkText": "Redefinir senha"
-					},
-					"register": {
-						"text": "Não tem uma conta?",
-						"linkText": "Cadastre-se aqui"
-					}
-				}
-			},
-			"register": {
-				"title": "Bem-vindo ao Checkmate!",
-				"subtitle": "Cadastre-se para começar",
-				"submit": "Cadastrar"
-			},
-			"forgotPassword": {
-				"title": "Esqueceu sua senha?",
-				"subtitle": "Não se preocupe, enviaremos instruções de recuperação.",
-				"submit": "Solicitar recuperação",
-				"links": {
-					"login": {
-						"text": "Voltar para",
-						"linkText": "login"
-					}
-				}
-			},
-			"setNewPassword": {
-				"title": "Redefinir sua senha",
-				"subtitle": "Sua nova senha deve ser diferente das senhas usadas anteriormente."
-			}
-		},
-		"checks": {
-			"selects": {
-				"monitor": {
-					"all": "Todos os monitores"
-				},
-				"status": {
-					"all": "Todos",
-					"down": "Fora do ar",
-					"up": "Online"
-				}
-			},
-			"table": {
-				"empty": "Nenhuma verificação com falha neste período",
-				"headers": {
-					"statusCode": "Código de status",
-					"location": "Localização"
-				}
-			}
-		},
-		"common": {
-			"monitors": {
-				"actions": {
-					"configure": "Configurar",
-					"delete": "Excluir",
-					"generateToken": "Gerar token",
-					"details": "Detalhes",
-					"incidents": "Incidentes",
-					"inviteMember": "Convidar membro",
-					"openSite": "Abrir site",
-					"pause": "Pausar",
-					"resume": "Retomar"
-				},
-				"statBoxes": {
-					"activeFor": "Ativo há",
-					"certificateExpiry": "Validade do certificado",
-					"lastCheck": "Última verificação",
-					"lastResponseTime": "Último tempo de resposta"
-				},
-				"status": {
-					"down": "fora do ar",
-					"breached": "limite excedido",
-					"initializing": "inicializando",
-					"maintenance": "manutenção",
-					"paused": "pausado",
-					"total": "total",
-					"up": "online"
-				},
-				"monitorTypes": {
-					"optionDocker": "Docker",
-					"optionGame": "Jogo",
-					"optionHttp": "HTTP(S)",
-					"optionPing": "Ping",
-					"optionPort": "Porta",
-					"optionPagespeed": "PageSpeed",
-					"optionHardware": "Infraestrutura",
-					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
-				}
-			}
-		},
-		"createMonitor": {
-			"form": {
-				"advanced": {
-					"description": "Configurações opcionais para casos de uso avançados",
-					"option": {
-						"advancedMatching": {
-							"label": "Usar correspondência avançada"
-						},
-						"expectedValue": {
-							"label": "Valor esperado"
-						},
-						"jsonPath": {
-							"description": "Esta expressão será avaliada contra os dados JSON da resposta e o resultado será usado para comparar com o valor esperado. Consulte <jmesLink>jmespath.org</jmesLink> para a documentação da linguagem de consulta.",
-							"label": "Expressão JSONPath"
-						},
-						"matchMethod": {
-							"label": "Método de correspondência",
-							"equal": "",
-							"include": "",
-							"regex": "Regex"
-						}
-					},
-					"title": "Configurações avançadas"
-				},
-				"frequency": {
-					"description": "Com que frequência você deseja verificar o status deste monitor?",
-					"option": {
-						"frequency": {
-							"label": "Frequência de verificação",
-							"value": {
-								"fifteenMinutes": "15 minutos",
-								"fifteenSeconds": "",
-								"fiveMinutes": "5 minutos",
-								"fourMinutes": "4 minutos",
-								"oneMinute": "1 minuto",
-								"tenMinutes": "10 minutos",
-								"thirtyMinutes": "30 minutos",
-								"thirtySeconds": "",
-								"threeMinutes": "3 minutos",
-								"twoMinutes": "2 minutos"
-							}
-						}
-					},
-					"title": "Frequência de verificação"
-				},
-				"general": {
-					"option": {
-						"container": {
-							"label": "Nome/ID do container",
-							"placeholder": "meu-app ou abcd1234"
-						},
-						"host": {
-							"label": "Host",
-							"placeholder": "192.168.1.100 ou exemplo.com"
-						},
-						"name": {
-							"label": "Nome de exibição",
-							"placeholder": "ex. Meu Site"
-						},
-						"secret": {
-							"label": "Chave de autorização",
-							"placeholder": "Digite sua chave secreta"
-						},
-						"url": {
-							"label": "URL",
-							"placeholder": "https://www.google.com"
-						},
-						"game": {
-							"label": "",
-							"placeholder": ""
-						},
-						"port": {
-							"label": "Porta para monitorar",
-							"placeholder": "80"
-						},
-						"grpcServiceName": {
-							"label": "Nome do serviço",
-							"placeholder": "ex. meu.servico.v1 (deixe vazio para verificação geral)"
-						},
-						"wsUrl": {
-							"label": "URL do WebSocket",
-							"placeholder": "wss://exemplo.com/socket"
-						}
-					},
-					"title": "Configurações gerais",
-					"description": {
-						"http": "Digite a URL ou IP para monitorar (ex.: https://exemplo.com/ ou 192.168.1.100) e adicione um nome de exibição claro que aparecerá no painel.",
-						"ping": "Insira o endereço IP ou nome de domínio para ping (ex. 192.168.1.100 ou exemplo.com.br) e adicione uma descrição que aparecerá na dashboard.",
-						"port": "Insira a URL ou o IP do servidor, aporta e uma descrição que aparecerá na dashboard.",
-						"docker": "Insira o Docker Id do seu container. Docker Ids devem ser todos os 64 caracteres. Você pode executar docker inspect <short_id> para descobrir o Id completo.",
-						"game": "",
-						"pagespeed": "Acompanhe o desempenho de carregamento da página, Core Web Vitals e pontuações de otimização do seu site.",
-						"grpc": "Digite o hostname e a porta do servidor gRPC, opcionalmente especifique um nome de serviço para a verificação de saúde e adicione um nome de exibição.",
-						"websocket": "Digite a URL do WebSocket para monitorar (ex.: wss://exemplo.com/socket) e adicione um nome de exibição.",
-						"hardware": "Monitore o uso de CPU, memória, disco e temperatura da sua infraestrutura."
-					}
-				},
-				"ignoreTls": {
-					"description": "Configure a validação de certificados TLS/SSL para conexões HTTPS.",
-					"option": {
-						"tls": {
-							"label": "Ignorar erros de TLS/SSL"
-						}
-					},
-					"title": "Configurações de TLS/SSL"
-				},
-				"incidents": {
-					"description": "Uma janela deslizante é usada para determinar quando um monitor fica fora do ar. O status de um monitor só mudará quando a porcentagem de verificações na janela deslizante atingir o valor especificado.",
-					"option": {
-						"checks": {
-							"label": "Número de verificações na janela deslizante"
-						},
-						"percentage": {
-							"label": "Qual porcentagem de verificações na janela deslizante deve falhar/ter sucesso antes de mudar o status do monitor?"
-						}
-					},
-					"title": "Incidentes"
-				},
-				"notifications": {
-					"description": "Selecione os canais de notificação que deseja usar",
-					"title": "Notificações"
-				},
-				"type": {
-					"description": "Selecione o tipo de verificação a ser realizada",
-					"optionDockerDescription": "Use Docker para monitorar se um container está em execução.",
-					"optionGameDescription": "Monitore se um servidor de jogo específico está online.",
-					"optionGrpcDescription": "Monitore serviços gRPC usando o protocolo padrão de verificação de saúde.",
-					"optionWebSocketDescription": "Monitore endpoints WebSocket para verificar a saúde da conexão e o tempo de resposta.",
-					"optionHttpDescription": "Use HTTP(S) para monitorar seu site ou endpoint de API.",
-					"optionPingDescription": "Use ICMP Ping para monitorar se um servidor está online.",
-					"optionPortDescription": "Monitore se uma porta específica em um servidor está aberta.",
-					"title": "Tipo"
-				},
-				"thresholds": {
-					"title": "Limites de alerta",
-					"description": "Defina os limites em que os alertas devem ser disparados para este monitor de hardware.",
-					"option": {
-						"cpuThreshold": {
-							"label": "Limite de alerta de CPU (%)"
-						},
-						"memoryThreshold": {
-							"label": "Limite de alerta de memória (%)"
-						},
-						"diskThreshold": {
-							"label": "Limite de alerta de disco (%)"
-						},
-						"tempThreshold": {
-							"label": "Limite de alerta de temperatura (°C)"
-						}
-					}
-				},
-				"geoChecks": {
-					"title": "Verificações geodistribuídas",
-					"description": "Execute verificações de múltiplas localizações geográficas para monitorar a disponibilidade e o desempenho global.",
-					"option": {
-						"enabled": {
-							"label": "Ativar verificações geodistribuídas"
-						},
-						"locations": {
-							"label": "Localizações",
-							"placeholder": "Selecionar localizações",
-							"options": {
-								"EU": "Europa",
-								"NA": "América do Norte",
-								"AS": "Ásia",
-								"SA": "América do Sul",
-								"AF": "África",
-								"OC": "Oceania"
-							}
-						},
-						"interval": {
-							"label": "Intervalo de verificação",
-							"value": {
-								"fiveMinutes": "5 minutos",
-								"tenMinutes": "10 minutos",
-								"fifteenMinutes": "15 minutos",
-								"thirtyMinutes": "30 minutos"
-							}
-						}
-					}
-				},
-				"url": {
-					"title": "IP/URL do monitor na página de status",
-					"description": "Exiba o endereço IP ou a URL do monitor na página de status pública. Se desativado, apenas o nome do monitor será exibido para proteger informações sensíveis.",
-					"option": {
-						"showURL": {
-							"label": "Exibir IP/URL na página de status",
-							"enabled": "Ativado",
-							"disabled": "Desativado"
-						}
-					}
-				},
-				"stats": {
-					"title": "Histórico do monitor",
-					"description": "Limpe todo o histórico de monitoramento e estatísticas da sua equipe. Esta ação é irreversível.",
-					"buttonText": "Limpar todas as estatísticas",
-					"dialog": {
-						"title": "Limpar todo o histórico de monitoramento?",
-						"description": "Isso excluirá permanentemente todo o histórico de monitoramento, estatísticas e dados de verificação da sua equipe. Esta ação não pode ser desfeita.",
-						"confirm": "Sim, limpar todas as estatísticas"
-					}
-				}
-			}
-		},
-		"editUser": {
-			"form": {
-				"roles": {
-					"title": "Funções",
-					"description": "Atribua funções ao usuário. Múltiplas funções podem ser selecionadas."
-				}
-			},
-			"dialog": {
-				"removeUser": {
-					"title": "Remover usuário",
-					"content": "Tem certeza de que deseja remover {{name}} da sua equipe? Esta ação não pode ser desfeita."
-				}
-			}
-		},
-		"incidents": {
-			"dialog": {
-				"resolveIncident": {
-					"title": "Resolver incidente",
-					"option": {
-						"comment": {
-							"label": "Comentário (opcional)",
-							"placeholder": "Adicione um comentário sobre a resolução..."
-						}
-					}
-				},
-				"details": {
-					"analysis": "Análise do incidente",
-					"comment": "Comentário:",
-					"detailsLabel": "Detalhes",
-					"downtime": "Tempo inativo:",
-					"message": "Mensagem:",
-					"monitor": "Monitor:",
-					"overview": "Visão geral",
-					"resolutionDetails": "Detalhes da resolução",
-					"resolutionType": "Tipo:",
-					"resolutionTypes": {
-						"automatic": "Automática",
-						"manual": "Manual"
-					},
-					"resolve": "Resolver incidente",
-					"resolvedAt": "Resolvido em:",
-					"resolvedBy": "Resolvido por:",
-					"startedAt": "Iniciado em:",
-					"status": "Status:",
-					"statusCode": "Código de status:",
-					"timeline": "Linha do tempo",
-					"title": "Detalhes do incidente",
-					"url": "URL:"
-				}
-			},
-			"filters": {
-				"allMonitors": "Todos os monitores",
-				"monitor": "Monitor",
-				"resolutionType": "Tipo de resolução",
-				"resolutionTypes": {
-					"manual": "Manual",
-					"automatic": "Automática",
-					"all": "Todos"
-				}
-			},
-			"summaryCard": {
-				"activeIncidents": {
-					"title": "Incidentes ativos",
-					"active_zero": "Nenhum incidente ativo",
-					"active_one": "{{count}} incidente ativo",
-					"active_other": "{{count}} incidentes ativos"
-				},
-				"incidentStats": {
-					"avgResolutionTime": "Tempo médio de resolução",
-					"mostAffectedMonitor": "Monitor mais afetado",
-					"title": "Estatísticas de incidentes",
-					"totalIncidents": "Total de incidentes"
-				},
-				"latestIncidents": {
-					"title": "Últimos incidentes"
-				}
-			},
-			"table": {
-				"actions": {
-					"details": "Detalhes",
-					"goToMonitor": "Ir para o monitor",
-					"resolveManually": "Resolver manualmente"
-				},
-				"activeIncidents": "Incidentes ativos",
-				"headers": {
-					"endTime": "Hora de término",
-					"resolutionType": "Tipo de resolução",
-					"startTime": "Hora de início",
-					"statusCode": "Código de status"
-				},
-				"resolvedIncidents": "Incidentes resolvidos",
-				"status": {
-					"active": "Ativo",
-					"resolved": "Resolvido"
-				}
-			}
-		},
-		"infrastructure": {
-			"charts": {
-				"labels": {
-					"cpu": "Uso de CPU",
-					"disk": "Uso de disco",
-					"memory": "Uso de memória",
-					"netBytesRecv": "{{name}} - Bytes recebidos",
-					"netBytesSent": "{{name}} - Bytes enviados",
-					"temp": "Temp"
-				}
-			},
-			"gauges": {
-				"cpu": {
-					"lowerLabel": "Frequência máxima",
-					"title": "Uso de CPU",
-					"upperLabel": "Frequência atual"
-				},
-				"disk": {
-					"lowerLabel": "Livre",
-					"title": "Uso do disco {{idx}}",
-					"upperLabel": "Usado"
-				},
-				"memory": {
-					"lowerLabel": "Livre",
-					"title": "Uso de memória",
-					"upperLabel": "Usado"
-				}
-			},
-			"statBoxes": {
-				"avgCpuTemperature": "Temperatura média da CPU",
-				"cpuFrequency": "Frequência da CPU",
-				"cpuLogical": "CPU (Lógica)",
-				"cpuPhysical": "CPU (Física)",
-				"disk": "Disco",
-				"memory": "Memória",
-				"os": "SO"
-			},
-			"table": {
-				"headers": {
-					"cpu": "CPU",
-					"disk": "Disco",
-					"memory": "Memória"
-				}
-			},
-			"tabs": {
-				"labels": {
-					"network": "",
-					"overview": "Visão geral"
-				}
-			},
-			"fallback": {
-				"actionButton": "Criar um monitor!",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "Um monitor de infraestrutura é usado para:"
-			}
-		},
-		"logs": {
-			"tabs": {
-				"diagnostics": "Diagnóstico",
-				"logs": "Logs do servidor",
-				"queue": "Fila de tarefas"
-			},
-			"logLevelSelect": {
-				"label": "Nível de log"
-			},
-			"jobQueue": "Fila de tarefas",
-			"failedJobs": "Tarefas com falha",
-			"noLogs": "Nenhum log encontrado",
-			"metrics": {
-				"jobs": "Tarefas",
-				"activeJobs": "Tarefas ativas",
-				"failingJobs": "Tarefas com falha",
-				"totalRuns": "Total de execuções",
-				"totalFailures": "Total de falhas"
-			},
-			"diagnostics": {
-				"stats": {
-					"eventLoopDelay": "Atraso do event loop",
-					"uptime": "Uptime",
-					"usedHeapSize": "Tamanho do heap usado",
-					"totalHeapSize": "Tamanho total do heap",
-					"osMemoryLimit": "Limite de memória do SO"
-				},
-				"gauges": {
-					"heapAllocation": "Alocação de heap",
-					"heapUsage": "Uso do heap",
-					"heapUtilization": "Utilização do heap",
-					"instantCpuUsage": "Uso instantâneo de CPU",
-					"availableMemoryPercentage": "% de memória disponível",
-					"allocatedPercentage": "% alocado",
-					"usedSPercentage": "% de 1s usado pela CPU",
-					"total": "Total",
-					"used": "Usado"
-				}
-			},
-			"table": {
-				"headers": {
-					"timestamp": "Data/hora",
-					"level": "Nível",
-					"service": "Serviço",
-					"method": "Método",
-					"monitorId": "ID do monitor",
-					"runCount": "Contagem de execuções",
-					"failCount": "Contagem de falhas",
-					"lastRunAt": "Última execução em",
-					"lockedAt": "Bloqueado em",
-					"lastFinishedAt": "Última conclusão em",
-					"lastRunTook": "Última execução durou",
-					"lastFailedAt": "Última falha em",
-					"failReason": "Motivo da falha"
-				}
-			}
-		},
-		"maintenanceWindow": {
-			"fallback": {
-				"actionButton": "Criar uma janela de manutenção!",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "Uma janela de manutenção é usada para:"
-			},
-			"table": {
-				"headers": {
-					"nextWindow": "Próxima janela",
-					"repeat": "Repetir"
-				}
-			},
-			"form": {
-				"general": {
-					"title": "Configurações gerais",
-					"description": "Defina um nome e a opção de repetição para sua janela de manutenção.",
-					"option": {
-						"name": {
-							"label": "Nome",
-							"placeholder": "ex. Manutenção semanal"
-						},
-						"repeat": {
-							"label": "Repetir"
-						}
-					}
-				},
-				"startDate": {
-					"title": "Data de início",
-					"description": "Selecione a data de início da sua janela de manutenção.",
-					"option": {
-						"startDate": {
-							"label": "Data de início"
-						}
-					}
-				},
-				"startTime": {
-					"title": "Hora de início",
-					"description": "Defina a hora de início e a duração da sua janela de manutenção. Todos os valores estão em UTC",
-					"option": {
-						"duration": {
-							"label": "Duração"
-						},
-						"startTime": {
-							"label": "Hora de início"
-						}
-					},
-					"monitors": {
-						"title": "Monitores",
-						"description": "Monitores aos quais a janela de manutenção deve ser aplicada",
-						"option": {
-							"addMonitors": {
-								"label": "Adicionar monitores"
-							}
-						}
-					}
-				}
-			}
-		},
-		"notifications": {
-			"fallback": {
-				"actionButton": "Criar um canal",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "Canais de notificação são usados para:"
-			},
-			"form": {
-				"accessToken": {
-					"optionAccessToken": "Token de acesso",
-					"placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
-				},
-				"address": {
-					"description": "O endereço para onde as notificações serão enviadas.",
-					"optionAddress": "Endereço",
-					"placeholderEmail": "exemplo@exemplo.com",
-					"placeholderWebhook": "https://seu-servidor.com/webhook",
-					"title": "Endereço"
-				},
-				"homeServer": {
-					"optionHomeServer": "Servidor principal",
-					"placeholder": "exemplo.com"
-				},
-				"matrix": {
-					"description": "Configure a conexão do seu servidor Matrix para notificações.",
-					"title": "Configuração do Matrix"
-				},
-				"notificationName": {
-					"description": "Um nome descritivo para o canal de notificação",
-					"optionName": "Nome do canal",
-					"placeholder": "ex. Alertas de produção",
-					"title": "Nome do canal"
-				},
-				"pagerDuty": {
-					"description": "Sua chave de integração do PagerDuty para receber alertas.",
-					"optionIntegrationKey": "Chave de integração",
-					"placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
-					"title": "Chave de integração"
-				},
-				"roomId": {
-					"optionRoomId": "ID da sala",
-					"placeholder": "!abcdefg:matrix.org"
-				},
-				"type": {
-					"description": "Selecione o tipo de canal de notificação a ser criado.",
-					"optionType": "Tipo",
-					"title": "Tipo de canal"
-				},
-				"telegram": {
-					"title": "Configuração do Telegram",
-					"description": "Para habilitar as notificações do Telegram, crie um bot do Telegram usando o BotFather, um bot oficial para criar e gerenciar bots do Telegram. Em seguida, obtenha o token da API e o ID do chat e os coloque  aqui.",
-					"optionBotToken": "Token do bot",
-					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
-					"optionChatId": "ID do chat",
-					"placeholderChatId": "-1001234567890"
-				}
-			},
-			"table": {
-				"headers": {
-					"destination": "Destino"
-				}
-			}
-		},
-		"pageSpeed": {
-			"charts": {
-				"common": {
-					"cls": "Mudança cumulativa de layout (CLS)",
-					"fcp": "Primeira exibição de conteúdo (FCP)",
-					"lcp": "Maior exibição de conteúdo (LCP)",
-					"si": "Índice de velocidade (SI)",
-					"tbt": "Tempo total de bloqueio (TBT)"
-				},
-				"legend": {
-					"title": "Relatório PageSpeed",
-					"weight": "Peso"
-				},
-				"pie": {
-					"title": "Relatório de desempenho"
-				}
-			},
-			"table": {
-				"headers": {
-					"pageSpeedScore": "Pontuação PageSpeed"
-				}
-			},
-			"fallback": {
-				"actionButton": "Criar um monitor!",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "Um monitor PageSpeed é usado para:"
-			}
-		},
-		"settings": {
-			"form": {
-				"timezone": {
-					"title": "Fuso horário de exibição",
-					"description": "Selecione o fuso horário usado para exibir datas e horários em toda a aplicação.",
-					"option": {
-						"timezone": {
-							"label": "Fuso horário de exibição"
-						}
-					}
-				},
-				"ui": {
-					"title": "Aparência",
-					"description": "Alterne entre modo claro e escuro, mude o idioma ou personalize o tipo de gráfico.",
-					"option": {
-						"theme": {
-							"label": "Modo do tema",
-							"light": "Claro",
-							"dark": "Escuro"
-						},
-						"language": {
-							"label": "Idioma"
-						},
-						"chartType": {
-							"label": "Tipo de gráfico",
-							"histogram": "Histograma",
-							"heatmap": "Mapa de calor"
-						}
-					}
-				},
-				"pagespeed": {
-					"title": "Chave de API do Google PageSpeed",
-					"description": "Digite sua chave de API do Google PageSpeed para ativar o monitoramento PageSpeed. Clique em Resetar para atualizar a chave.",
-					"option": {
-						"apiKey": {
-							"label": "Chave de API PageSpeed",
-							"labelSet": "Chave de API definida. Clique em Resetar para alterá-la.",
-							"placeholder": "Digite sua chave de API do Google PageSpeed"
-						}
-					}
-				},
-				"url": {
-					"title": "IP/URL do monitor na página de status",
-					"description": "Exiba o endereço IP ou a URL do monitor na página de status pública. Se desativado, apenas o nome do monitor será exibido para proteger informações sensíveis.",
-					"option": {
-						"showURL": {
-							"label": "Exibir IP/URL na página de status",
-							"enabled": "Ativado",
-							"disabled": "Desativado"
-						}
-					}
-				},
-				"stats": {
-					"title": "Histórico do monitor",
-					"description": "Limpe todo o histórico de monitoramento e estatísticas da sua equipe. Esta ação é irreversível.",
-					"option": {
-						"clear": {
-							"label": "Limpar todas as estatísticas. Isso é irreversível."
-						}
-					},
-					"dialog": {
-						"title": "Limpar todo o histórico de monitoramento?",
-						"description": "Isso não pode ser desfeito"
-					}
-				},
-				"retention": {
-					"title": "Retenção de verificações",
-					"description": "Defina por quanto tempo os dados de verificação são retidos antes de serem limpos automaticamente.",
-					"option": {
-						"days": {
-							"label": "Período de retenção (dias)",
-							"unlimited": "Ilimitado"
-						}
-					}
-				},
-				"thresholds": {
-					"title": "Limites globais",
-					"description": "Defina limites globais de CPU, memória, disco e temperatura para monitoramento de infraestrutura. Eles se aplicam a todos os monitores de hardware, a menos que sejam substituídos.",
-					"option": {
-						"cpu": {
-							"label": "Limite de CPU (%)",
-							"placeholder": "1 - 100"
-						},
-						"memory": {
-							"label": "Limite de memória (%)",
-							"placeholder": "1 - 100"
-						},
-						"disk": {
-							"label": "Limite de disco (%)",
-							"placeholder": "1 - 100"
-						},
-						"temperature": {
-							"label": "Limite de temperatura (°C)",
-							"placeholder": "1 - 150"
-						}
-					}
-				},
-				"email": {
-					"title": "Configurações de email",
-					"description": "Configure as configurações de email do seu sistema. Isso é usado para enviar notificações e alertas.",
-					"descriptionTransport": "Isso cria um transporte SMTP para o NodeMailer",
-					"descriptionTransportLink": "Veja as especificações aqui",
-					"option": {
-						"host": {
-							"label": "Host de email - Nome do host ou endereço IP para conectar",
-							"placeholder": "smtp.gmail.com"
-						},
-						"port": {
-							"label": "Porta de email - Porta para conectar",
-							"placeholder": "587"
-						},
-						"address": {
-							"label": "Endereço de email - Usado para autenticação",
-							"placeholder": "voce@exemplo.com"
-						},
-						"user": {
-							"label": "Usuário de email - Nome de usuário para autenticação, substitui o endereço de email se especificado",
-							"placeholder": "Deixe vazio se não for necessário"
-						},
-						"password": {
-							"label": "Senha de email - Senha para autenticação",
-							"labelSet": "Senha definida. Clique em Resetar para alterá-la.",
-							"placeholder": "Digite sua senha"
-						},
-						"tlsServername": {
-							"label": "Nome do servidor TLS - Nome de host opcional para validação TLS quando o host é um IP",
-							"placeholder": "exemplo.com"
-						},
-						"connectionHost": {
-							"label": "Host de conexão de email - Nome de host para usar na saudação HELO/EHLO",
-							"placeholder": "localhost"
-						},
-						"secure": {
-							"label": "Usar SSL (recomendado): Criptografar a conexão usando SSL/TLS"
-						},
-						"pool": {
-							"label": "Ativar pool de conexões: Reutilizar conexões existentes para melhorar o desempenho"
-						},
-						"ignoreTLS": {
-							"label": "Desativar STARTTLS: Não usar TLS mesmo que o servidor suporte"
-						},
-						"requireTLS": {
-							"label": "Forçar STARTTLS: Exigir atualização TLS, falhar se não suportado"
-						},
-						"rejectUnauthorized": {
-							"label": "Rejeitar certificados inválidos: Rejeitar conexões com certificados autoassinados ou não confiáveis"
-						}
-					}
-				},
-				"demoMonitors": {
-					"title": "Monitores demo",
-					"description": "Adicione monitores de exemplo para fins de demonstração."
-				},
-				"removeMonitors": {
-					"title": "Redefinição do sistema",
-					"description": "Remova todos os monitores do seu sistema.",
-					"dialog": {
-						"title": "Remover todos os monitores?",
-						"description": "Isso não pode ser desfeito."
-					}
-				},
-				"exportMonitors": {
-					"title": "Exportar monitores"
-				},
-				"importExportMonitors": {
-					"title": "Importar / Exportar monitores",
-					"description": "Importe ou exporte os dados dos seus monitores como um arquivo JSON para backup ou transferência."
-				},
-				"about": {
-					"title": "Sobre",
-					"developedBy": "Desenvolvido por Bluewave Labs"
-				},
-				"validation": {
-					"errorMessage": "Por favor, corrija os seguintes erros de validação:"
-				}
-			}
-		},
-		"statusPages": {
-			"deleteSuccess": "Página de status excluída com sucesso",
-			"fallback": {
-				"title": "Uma página de status é usada para:",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "Criar uma página de status!"
-			},
-			"monitorsList": {
-				"chartTypeHeatmap": "Mapa de calor",
-				"chartTypeHistogram": "Histograma",
-				"noData": "Nenhum dado disponível",
-				"infrastructure": {
-					"title": "Infraestrutura",
-					"cpu": "CPU",
-					"memory": "RAM",
-					"memoryText": "Memória",
-					"disk": "Disco",
-					"usage": "Uso",
-					"used": "Usado",
-					"total": "Total"
-				},
-				"uptime": {
-					"title": "Uptime",
-					"responseTime": "Tempo de resposta"
-				}
-			},
-			"statusBar": {
-				"allDown": "Todos os sistemas estão fora do ar",
-				"allUp": "Todos os sistemas operacionais",
-				"degraded": "Alguns sistemas estão com problemas",
-				"unknown": "Não foi possível determinar o status do sistema"
-			},
-			"table": {
-				"headers": {
-					"name": "Nome da página de status",
-					"url": "URL pública"
-				},
-				"published": "Publicada",
-				"unpublished": "Não publicada"
-			},
-			"title": "Páginas de status",
-			"details": {
-				"empty": {
-					"title": "Ainda não há nada aqui",
-					"addMonitor": "Adicione um monitor para começar"
-				}
-			},
-			"form": {
-				"access": {
-					"title": "Acesso",
-					"description": "Se sua página de status estiver pronta, você pode marcá-la como publicada.",
-					"option": {
-						"published": {
-							"name": "Publicada e visível ao público"
-						}
-					}
-				},
-				"basicInfo": {
-					"title": "Informações básicas",
-					"description": "Defina o nome da empresa e o subdomínio para onde sua página de status aponta.",
-					"option": {
-						"name": {
-							"label": "Nome da empresa",
-							"placeholder": "Acme Inc."
-						},
-						"url": {
-							"label": "Endereço da sua página de status",
-							"placeholder": "minha-pagina-de-status"
-						}
-					}
-				},
-				"monitors": {
-					"title": "Monitores",
-					"description": "Selecione os monitores para exibir na sua página de status.",
-					"noMonitors": "Nenhum monitor selecionado",
-					"option": {
-						"monitors": {
-							"label": "Selecionar monitores",
-							"placeholder": "Buscar e selecionar monitores..."
-						}
-					}
-				},
-				"timezone": {
-					"title": "Fuso horário",
-					"description": "Selecione o fuso horário em que sua página de status será exibida.",
-					"option": {
-						"timezone": {
-							"label": "Fuso horário",
-							"placeholder": "Selecione o fuso horário..."
-						}
-					}
-				},
-				"appearance": {
-					"title": "Aparência",
-					"description": "Defina a aparência padrão da sua página de status pública.",
-					"option": {
-						"logo": {
-							"label": "Logo"
-						},
-						"color": {
-							"label": "Cor da marca"
-						}
-					}
-				},
-				"features": {
-					"title": "Recursos",
-					"description": "Configure quais informações são exibidas na sua página de status.",
-					"option": {
-						"showCharts": {
-							"label": "Mostrar gráficos de tempo de resposta"
-						},
-						"showUptimePercentage": {
-							"label": "Mostrar porcentagem de uptime"
-						},
-						"showAdminLoginLink": {
-							"label": "Mostrar link de login do admin"
-						},
-						"showInfrastructure": {
-							"label": "Mostrar métricas de infraestrutura"
-						}
-					}
-				}
-			}
-		},
-		"uptime": {
-			"filters": {
-				"search": {
-					"placeholder": "Buscar monitores..."
-				}
-			},
-			"table": {
-				"headers": {
-					"responseTime": "Tempo de resposta"
-				}
-			},
-			"fallback": {
-				"actionButton": "Criar um monitor!",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "Um monitor de uptime é usado para:"
-			}
-		}
-	}
+  "common": {
+    "auth": {
+      "roles": {
+        "admin": "Admin",
+        "demo": "Demo",
+        "superadmin": "Super admin",
+        "user": "Usuário"
+      }
+    },
+    "alerts": {
+      "pageSpeedApiKey": {
+        "content": "Aviso: Você ainda não adicionou uma chave de API do Google PageSpeed. Acesse <settingsLink>Configurações</settingsLink> para adicionar uma. Sem ela, o monitor PageSpeed não funcionará."
+      }
+    },
+    "appName": "Checkmate",
+    "breadcrumbs": {
+      "details": "Detalhes",
+      "home": "Início"
+    },
+    "buttons": {
+      "addMember": "Adicionar membro",
+      "cancel": "Cancelar",
+      "close": "Fechar",
+      "configure": "Configurar",
+      "confirm": "Confirmar",
+      "create": "Criar",
+      "delete": "Excluir",
+      "generateToken": "Gerar token",
+      "incidents": "Incidentes",
+      "inviteMember": "Convidar membro",
+      "pause": "Pausar",
+      "resume": "Retomar",
+      "save": "Salvar",
+      "sendInvite": "Enviar convite",
+      "test": "Testar",
+      "testNotifications": "Testar notificações",
+      "toggleTheme": "Trocar claro e escuro",
+      "flushQueue": "Limpar fila",
+      "notFound": "Ir para o painel principal",
+      "resetPassword": "Redefinir senha",
+      "reset": "Resetar",
+      "clear": "Limpar",
+      "addDemo": "Adicionar monitores demo",
+      "removeMonitors": "Remover monitores",
+      "sendTestEmail": "Enviar email de teste",
+      "exportToJSON": "Exportar para JSON",
+      "importFromJSON": "Importar de JSON",
+      "clearFilters": "Limpar filtros",
+      "removeUser": "Remover usuário"
+    },
+    "charts": {
+      "labels": {
+        "averageResponseTime": "Tempo médio de resposta",
+        "downtime": "Tempo inativo",
+        "high": "alto",
+        "low": "baixo",
+        "uptime": "Uptime"
+      },
+      "histogram": {
+        "avg": "Média: {{value}} ms",
+        "max": "Máx: {{value}} ms"
+      }
+    },
+    "dialogs": {
+      "delete": {
+        "description": "Esta ação não pode ser desfeita.",
+        "title": "Tem certeza de que deseja excluir isto?"
+      }
+    },
+    "labels": {
+      "active": "Ativo",
+      "paused": "pausado",
+      "na": "N/D",
+      "resolved": "Resolvido",
+      "responseTime": "Tempo de resposta"
+    },
+    "form": {
+      "role": {
+        "option": {
+          "role": {
+            "label": "Funções"
+          }
+        }
+      },
+      "name": {
+        "option": {
+          "firstName": {
+            "label": "Nome",
+            "placeholder": "João"
+          },
+          "lastName": {
+            "label": "Sobrenome",
+            "placeholder": "Silva"
+          }
+        }
+      },
+      "email": {
+        "option": {
+          "email": {
+            "label": "Email",
+            "placeholder": "voce@exemplo.com"
+          }
+        }
+      }
+    },
+    "table": {
+      "empty": "Nada aqui",
+      "headers": {
+        "actions": "Ações",
+        "dateTime": "Data e hora",
+        "message": "Mensagem",
+        "monitor": "Monitor",
+        "monitorId": "ID do monitor",
+        "name": "Nome",
+        "status": "Status",
+        "type": "Tipo",
+        "url": "URL",
+        "interval": "Intervalo",
+        "active": "Ativo",
+        "responseTime": "Tempo de resposta"
+      }
+    }
+  },
+  "components": {
+    "imageUpload": {
+      "clickToUpload": "Clique para enviar",
+      "dragAndDrop": "arraste e solte",
+      "supportedFormats": "Formatos suportados",
+      "maxSize": "Tamanho Máximo",
+      "orDragAndDrop": "ou arraste e solte",
+      "errors": {
+        "invalidFileSize": "O tamanho do arquivo é muito grande!",
+        "invalidFileFormat": "Formato de arquivo não suportado!"
+      }
+    },
+    "headerStatusPageControls": {
+      "publicLink": "Link publico"
+    },
+    "headerTimeRange": {
+      "labels": {
+        "day": "Dia",
+        "month": "Mês",
+        "recent": "Recente",
+        "week": "Semana"
+      },
+      "description": {
+        "recent": "Exibindo estatísticas das últimas 2 horas.",
+        "day": "Exibindo estatísticas das últimas 24 horas.",
+        "week": "Exibindo estatísticas dos últimos 7 dias.",
+        "month": "Exibindo estatísticas dos últimos 30 dias."
+      }
+    },
+    "offlineBanner": {
+      "serverUnreachable": "Não foi possível conectar ao servidor",
+      "retry": "Tentar novamente",
+      "retrying": "Tentando novamente...",
+      "reconnected": "Reconectado ao servidor com sucesso."
+    },
+    "sidebar": {
+      "menu": {
+        "uptime": "Uptime",
+        "pagespeed": "Pagespeed",
+        "infrastructure": "Infraestrutura",
+        "notifications": "Notificações",
+        "checks": "Verificações",
+        "incidents": "Incidentes",
+        "statusPages": "Pagina de status",
+        "maintenance": "Manutenção",
+        "logs": "Registros",
+        "settings": "Configurações"
+      },
+      "bottomMenu": {
+        "support": "Suporte",
+        "discussions": "Discussões",
+        "docs": "Docs",
+        "changelog": "Changelog"
+      },
+      "accountMenu": {
+        "profile": "Perfil",
+        "password": "Senha",
+        "team": "Equipe"
+      },
+      "starPrompt": {
+        "title": "Avalie o Checkmate",
+        "description": "Veja os últimos lançamentos e ajude a comunidade a crescer no GitHub"
+      },
+      "authFooter": {
+        "navControls": "Controles",
+        "logOut": "Sair",
+        "roles": {
+          "superAdmin": "Super admin",
+          "admin": "Admin",
+          "user": "Usuário",
+          "demoUser": "Usuário demo"
+        }
+      }
+    },
+    "starPrompt": {
+      "title": "Avalie o Checkmate",
+      "description": "Veja os últimos lançamentos e ajude a comunidade a crescer no GitHub"
+    }
+  },
+  "pages": {
+    "notFound": {
+      "title": "Oh não! Você derrubou seu sushi!",
+      "subtitle": "A URL não existe ou você não tem acesso a ela."
+    },
+    "account": {
+      "tabs": {
+        "profile": "Perfil",
+        "password": "Senha",
+        "team": "Equipe"
+      },
+      "form": {
+        "name": {
+          "title": "Nome",
+          "description": "Atualize suas informações pessoais"
+        },
+        "photo": {
+          "title": "Foto de perfil",
+          "description": "Envie uma foto de perfil"
+        },
+        "currentPassword": {
+          "title": "Senha atual",
+          "description": "Digite sua senha atual para verificar sua identidade",
+          "option": {
+            "label": "Senha atual",
+            "placeholder": "Digite a senha atual"
+          }
+        },
+        "newPassword": {
+          "title": "Nova senha",
+          "description": "Escolha uma senha forte com pelo menos 8 caracteres",
+          "option": {
+            "newPassword": {
+              "label": "Nova senha",
+              "placeholder": "Digite a nova senha"
+            },
+            "confirm": {
+              "label": "Confirmar senha",
+              "placeholder": "Confirme a nova senha"
+            }
+          }
+        },
+        "deleteAccount": {
+          "title": "Excluir conta",
+          "description": "Esta ação é permanente e não pode ser desfeita"
+        }
+      },
+      "team": {
+        "filter": {
+          "placeholder": "Filtrar por função",
+          "all": "Todos",
+          "admin": "Admin",
+          "member": "Membro"
+        },
+        "table": {
+          "headers": {
+            "email": "Email",
+            "role": "Função",
+            "created": "Criado"
+          }
+        },
+        "addMember": {
+          "title": "Registrar novo membro da equipe",
+          "description": "Crie uma nova conta de usuário. Compartilhe as credenciais de forma segura após a criação."
+        },
+        "invite": {
+          "title": "Convidar membro da equipe",
+          "description": "Envie um convite para se juntar à sua equipe",
+          "email": {
+            "label": "Endereço de email",
+            "placeholder": "Digite o endereço de email"
+          },
+          "role": {
+            "label": "Função",
+            "placeholder": "Selecione uma função"
+          },
+          "linkLabel": "Link de convite"
+        }
+      }
+    },
+    "auth": {
+      "common": {
+        "passwordRules": {
+          "length": {
+            "beginning": "Deve ter no mínimo",
+            "highlighted": "8 caracteres de comprimento"
+          },
+          "lowercase": {
+            "beginning": "Deve ter pelo menos",
+            "highlighted": "uma letra minúscula"
+          },
+          "match": {
+            "beginning": "Senha e confirmação de senha",
+            "highlighted": "devem combinar"
+          },
+          "number": {
+            "beginning": "Deve ter pelo menos",
+            "highlighted": "um número"
+          },
+          "special": {
+            "beginning": "Deve conter pelo menos",
+            "highlighted": "um caractere especial"
+          },
+          "uppercase": {
+            "beginning": "Deve ter pelo menos",
+            "highlighted": "uma letra maiúscula"
+          }
+        },
+        "form": {
+          "option": {
+            "email": {
+              "label": "Email",
+              "placeholder": "eu@exemplo.com"
+            },
+            "password": {
+              "label": "Senha",
+              "placeholder": "********"
+            },
+            "confirmPassword": {
+              "label": "Confirmar senha"
+            }
+          }
+        }
+      },
+      "login": {
+        "title": "Bem-vindo de volta ao Checkmate!",
+        "subtitle": "Faça login para continuar",
+        "submit": "Entrar",
+        "links": {
+          "forgotPassword": {
+            "text": "Esqueceu a senha?",
+            "linkText": "Redefinir senha"
+          },
+          "register": {
+            "text": "Não tem uma conta?",
+            "linkText": "Cadastre-se aqui"
+          }
+        }
+      },
+      "register": {
+        "title": "Bem-vindo ao Checkmate!",
+        "subtitle": "Cadastre-se para começar",
+        "submit": "Cadastrar"
+      },
+      "forgotPassword": {
+        "title": "Esqueceu sua senha?",
+        "subtitle": "Não se preocupe, enviaremos instruções de recuperação.",
+        "submit": "Solicitar recuperação",
+        "links": {
+          "login": {
+            "text": "Voltar para",
+            "linkText": "login"
+          }
+        }
+      },
+      "setNewPassword": {
+        "title": "Redefinir sua senha",
+        "subtitle": "Sua nova senha deve ser diferente das senhas usadas anteriormente."
+      }
+    },
+    "checks": {
+      "selects": {
+        "monitor": {
+          "all": "Todos os monitores"
+        },
+        "status": {
+          "all": "Todos",
+          "down": "Fora do ar",
+          "up": "Online"
+        }
+      },
+      "table": {
+        "empty": "Nenhuma verificação com falha neste período",
+        "headers": {
+          "statusCode": "Código de status",
+          "location": "Localização"
+        }
+      }
+    },
+    "common": {
+      "monitors": {
+        "actions": {
+          "configure": "Configurar",
+          "delete": "Excluir",
+          "generateToken": "Gerar token",
+          "details": "Detalhes",
+          "incidents": "Incidentes",
+          "inviteMember": "Convidar membro",
+          "openSite": "Abrir site",
+          "pause": "Pausar",
+          "resume": "Retomar"
+        },
+        "statBoxes": {
+          "activeFor": "Ativo há",
+          "certificateExpiry": "Validade do certificado",
+          "lastCheck": "Última verificação",
+          "lastResponseTime": "Último tempo de resposta"
+        },
+        "status": {
+          "down": "fora do ar",
+          "breached": "limite excedido",
+          "initializing": "inicializando",
+          "maintenance": "manutenção",
+          "paused": "pausado",
+          "total": "total",
+          "up": "online"
+        },
+        "monitorTypes": {
+          "optionDocker": "Docker",
+          "optionGame": "Jogo",
+          "optionHttp": "HTTP(S)",
+          "optionPing": "Ping",
+          "optionPort": "Porta",
+          "optionPagespeed": "PageSpeed",
+          "optionHardware": "Infraestrutura",
+          "optionGrpc": "gRPC",
+          "optionWebSocket": "WebSocket"
+        }
+      }
+    },
+    "createMonitor": {
+      "form": {
+        "advanced": {
+          "description": "Configurações opcionais para casos de uso avançados",
+          "option": {
+            "advancedMatching": {
+              "label": "Usar correspondência avançada"
+            },
+            "expectedValue": {
+              "label": "Valor esperado"
+            },
+            "jsonPath": {
+              "description": "Esta expressão será avaliada contra os dados JSON da resposta e o resultado será usado para comparar com o valor esperado. Consulte <jmesLink>jmespath.org</jmesLink> para a documentação da linguagem de consulta.",
+              "label": "Expressão JSONPath"
+            },
+            "matchMethod": {
+              "label": "Método de correspondência",
+              "equal": "",
+              "include": "",
+              "regex": "Regex"
+            }
+          },
+          "title": "Configurações avançadas"
+        },
+        "frequency": {
+          "description": "Com que frequência você deseja verificar o status deste monitor?",
+          "option": {
+            "frequency": {
+              "label": "Frequência de verificação",
+              "value": {
+                "fifteenMinutes": "15 minutos",
+                "fifteenSeconds": "",
+                "fiveMinutes": "5 minutos",
+                "fourMinutes": "4 minutos",
+                "oneMinute": "1 minuto",
+                "tenMinutes": "10 minutos",
+                "thirtyMinutes": "30 minutos",
+                "thirtySeconds": "",
+                "threeMinutes": "3 minutos",
+                "twoMinutes": "2 minutos"
+              }
+            }
+          },
+          "title": "Frequência de verificação"
+        },
+        "general": {
+          "option": {
+            "container": {
+              "label": "Nome/ID do container",
+              "placeholder": "meu-app ou abcd1234"
+            },
+            "host": {
+              "label": "Host",
+              "placeholder": "192.168.1.100 ou exemplo.com"
+            },
+            "name": {
+              "label": "Nome de exibição",
+              "placeholder": "ex. Meu Site"
+            },
+            "secret": {
+              "label": "Chave de autorização",
+              "placeholder": "Digite sua chave secreta"
+            },
+            "url": {
+              "label": "URL",
+              "placeholder": "https://www.google.com"
+            },
+            "game": {
+              "label": "",
+              "placeholder": ""
+            },
+            "port": {
+              "label": "Porta para monitorar",
+              "placeholder": "80"
+            },
+            "grpcServiceName": {
+              "label": "Nome do serviço",
+              "placeholder": "ex. meu.servico.v1 (deixe vazio para verificação geral)"
+            },
+            "wsUrl": {
+              "label": "URL do WebSocket",
+              "placeholder": "wss://exemplo.com/socket"
+            }
+          },
+          "title": "Configurações gerais",
+          "description": {
+            "http": "Digite a URL ou IP para monitorar (ex.: https://exemplo.com/ ou 192.168.1.100) e adicione um nome de exibição claro que aparecerá no painel.",
+            "ping": "Insira o endereço IP ou nome de domínio para ping (ex. 192.168.1.100 ou exemplo.com.br) e adicione uma descrição que aparecerá na dashboard.",
+            "port": "Insira a URL ou o IP do servidor, aporta e uma descrição que aparecerá na dashboard.",
+            "docker": "Insira o Docker Id do seu container. Docker Ids devem ser todos os 64 caracteres. Você pode executar docker inspect <short_id> para descobrir o Id completo.",
+            "game": "",
+            "pagespeed": "Acompanhe o desempenho de carregamento da página, Core Web Vitals e pontuações de otimização do seu site.",
+            "grpc": "Digite o hostname e a porta do servidor gRPC, opcionalmente especifique um nome de serviço para a verificação de saúde e adicione um nome de exibição.",
+            "websocket": "Digite a URL do WebSocket para monitorar (ex.: wss://exemplo.com/socket) e adicione um nome de exibição.",
+            "hardware": "Monitore o uso de CPU, memória, disco e temperatura da sua infraestrutura."
+          }
+        },
+        "ignoreTls": {
+          "description": "Configure a validação de certificados TLS/SSL para conexões HTTPS.",
+          "option": {
+            "tls": {
+              "label": "Ignorar erros de TLS/SSL"
+            }
+          },
+          "title": "Configurações de TLS/SSL"
+        },
+        "incidents": {
+          "description": "Uma janela deslizante é usada para determinar quando um monitor fica fora do ar. O status de um monitor só mudará quando a porcentagem de verificações na janela deslizante atingir o valor especificado.",
+          "option": {
+            "checks": {
+              "label": "Número de verificações na janela deslizante"
+            },
+            "percentage": {
+              "label": "Qual porcentagem de verificações na janela deslizante deve falhar/ter sucesso antes de mudar o status do monitor?"
+            }
+          },
+          "title": "Incidentes"
+        },
+        "notifications": {
+          "description": "Selecione os canais de notificação que deseja usar",
+          "title": "Notificações"
+        },
+        "type": {
+          "description": "Selecione o tipo de verificação a ser realizada",
+          "optionDockerDescription": "Use Docker para monitorar se um container está em execução.",
+          "optionGameDescription": "Monitore se um servidor de jogo específico está online.",
+          "optionGrpcDescription": "Monitore serviços gRPC usando o protocolo padrão de verificação de saúde.",
+          "optionWebSocketDescription": "Monitore endpoints WebSocket para verificar a saúde da conexão e o tempo de resposta.",
+          "optionHttpDescription": "Use HTTP(S) para monitorar seu site ou endpoint de API.",
+          "optionPingDescription": "Use ICMP Ping para monitorar se um servidor está online.",
+          "optionPortDescription": "Monitore se uma porta específica em um servidor está aberta.",
+          "title": "Tipo"
+        },
+        "thresholds": {
+          "title": "Limites de alerta",
+          "description": "Defina os limites em que os alertas devem ser disparados para este monitor de hardware.",
+          "option": {
+            "cpuThreshold": {
+              "label": "Limite de alerta de CPU (%)"
+            },
+            "memoryThreshold": {
+              "label": "Limite de alerta de memória (%)"
+            },
+            "diskThreshold": {
+              "label": "Limite de alerta de disco (%)"
+            },
+            "tempThreshold": {
+              "label": "Limite de alerta de temperatura (°C)"
+            }
+          }
+        },
+        "geoChecks": {
+          "title": "Verificações geodistribuídas",
+          "description": "Execute verificações de múltiplas localizações geográficas para monitorar a disponibilidade e o desempenho global.",
+          "option": {
+            "enabled": {
+              "label": "Ativar verificações geodistribuídas"
+            },
+            "locations": {
+              "label": "Localizações",
+              "placeholder": "Selecionar localizações",
+              "options": {
+                "EU": "Europa",
+                "NA": "América do Norte",
+                "AS": "Ásia",
+                "SA": "América do Sul",
+                "AF": "África",
+                "OC": "Oceania"
+              }
+            },
+            "interval": {
+              "label": "Intervalo de verificação",
+              "value": {
+                "fiveMinutes": "5 minutos",
+                "tenMinutes": "10 minutos",
+                "fifteenMinutes": "15 minutos",
+                "thirtyMinutes": "30 minutos"
+              }
+            }
+          }
+        },
+        "url": {
+          "title": "IP/URL do monitor na página de status",
+          "description": "Exiba o endereço IP ou a URL do monitor na página de status pública. Se desativado, apenas o nome do monitor será exibido para proteger informações sensíveis.",
+          "option": {
+            "showURL": {
+              "label": "Exibir IP/URL na página de status",
+              "enabled": "Ativado",
+              "disabled": "Desativado"
+            }
+          }
+        },
+        "stats": {
+          "title": "Histórico do monitor",
+          "description": "Limpe todo o histórico de monitoramento e estatísticas da sua equipe. Esta ação é irreversível.",
+          "buttonText": "Limpar todas as estatísticas",
+          "dialog": {
+            "title": "Limpar todo o histórico de monitoramento?",
+            "description": "Isso excluirá permanentemente todo o histórico de monitoramento, estatísticas e dados de verificação da sua equipe. Esta ação não pode ser desfeita.",
+            "confirm": "Sim, limpar todas as estatísticas"
+          }
+        },
+        "escalations": {
+          "title": "Escalation Rules",
+          "description": "Automatically notify a channel if an incident remains unresolved after a delay",
+          "addRule": "Add Rule",
+          "option": {
+            "delayMinutes": {
+              "label": "Escalate after (minutes)"
+            },
+            "channel": {
+              "label": "Notification channel",
+              "placeholder": "Select a channel"
+            },
+            "removeRule": {
+              "ariaLabel": "Remove escalation rule"
+            }
+          }
+        }
+      }
+    },
+    "editUser": {
+      "form": {
+        "roles": {
+          "title": "Funções",
+          "description": "Atribua funções ao usuário. Múltiplas funções podem ser selecionadas."
+        }
+      },
+      "dialog": {
+        "removeUser": {
+          "title": "Remover usuário",
+          "content": "Tem certeza de que deseja remover {{name}} da sua equipe? Esta ação não pode ser desfeita."
+        }
+      }
+    },
+    "incidents": {
+      "dialog": {
+        "resolveIncident": {
+          "title": "Resolver incidente",
+          "option": {
+            "comment": {
+              "label": "Comentário (opcional)",
+              "placeholder": "Adicione um comentário sobre a resolução..."
+            }
+          }
+        },
+        "details": {
+          "analysis": "Análise do incidente",
+          "comment": "Comentário:",
+          "detailsLabel": "Detalhes",
+          "downtime": "Tempo inativo:",
+          "message": "Mensagem:",
+          "monitor": "Monitor:",
+          "overview": "Visão geral",
+          "resolutionDetails": "Detalhes da resolução",
+          "resolutionType": "Tipo:",
+          "resolutionTypes": {
+            "automatic": "Automática",
+            "manual": "Manual"
+          },
+          "resolve": "Resolver incidente",
+          "resolvedAt": "Resolvido em:",
+          "resolvedBy": "Resolvido por:",
+          "startedAt": "Iniciado em:",
+          "status": "Status:",
+          "statusCode": "Código de status:",
+          "timeline": "Linha do tempo",
+          "title": "Detalhes do incidente",
+          "url": "URL:"
+        }
+      },
+      "filters": {
+        "allMonitors": "Todos os monitores",
+        "monitor": "Monitor",
+        "resolutionType": "Tipo de resolução",
+        "resolutionTypes": {
+          "manual": "Manual",
+          "automatic": "Automática",
+          "all": "Todos"
+        }
+      },
+      "summaryCard": {
+        "activeIncidents": {
+          "title": "Incidentes ativos",
+          "active_zero": "Nenhum incidente ativo",
+          "active_one": "{{count}} incidente ativo",
+          "active_other": "{{count}} incidentes ativos"
+        },
+        "incidentStats": {
+          "avgResolutionTime": "Tempo médio de resolução",
+          "mostAffectedMonitor": "Monitor mais afetado",
+          "title": "Estatísticas de incidentes",
+          "totalIncidents": "Total de incidentes"
+        },
+        "latestIncidents": {
+          "title": "Últimos incidentes"
+        }
+      },
+      "table": {
+        "actions": {
+          "details": "Detalhes",
+          "goToMonitor": "Ir para o monitor",
+          "resolveManually": "Resolver manualmente"
+        },
+        "activeIncidents": "Incidentes ativos",
+        "headers": {
+          "endTime": "Hora de término",
+          "resolutionType": "Tipo de resolução",
+          "startTime": "Hora de início",
+          "statusCode": "Código de status"
+        },
+        "resolvedIncidents": "Incidentes resolvidos",
+        "status": {
+          "active": "Ativo",
+          "resolved": "Resolvido"
+        }
+      }
+    },
+    "infrastructure": {
+      "charts": {
+        "labels": {
+          "cpu": "Uso de CPU",
+          "disk": "Uso de disco",
+          "memory": "Uso de memória",
+          "netBytesRecv": "{{name}} - Bytes recebidos",
+          "netBytesSent": "{{name}} - Bytes enviados",
+          "temp": "Temp"
+        }
+      },
+      "gauges": {
+        "cpu": {
+          "lowerLabel": "Frequência máxima",
+          "title": "Uso de CPU",
+          "upperLabel": "Frequência atual"
+        },
+        "disk": {
+          "lowerLabel": "Livre",
+          "title": "Uso do disco {{idx}}",
+          "upperLabel": "Usado"
+        },
+        "memory": {
+          "lowerLabel": "Livre",
+          "title": "Uso de memória",
+          "upperLabel": "Usado"
+        }
+      },
+      "statBoxes": {
+        "avgCpuTemperature": "Temperatura média da CPU",
+        "cpuFrequency": "Frequência da CPU",
+        "cpuLogical": "CPU (Lógica)",
+        "cpuPhysical": "CPU (Física)",
+        "disk": "Disco",
+        "memory": "Memória",
+        "os": "SO"
+      },
+      "table": {
+        "headers": {
+          "cpu": "CPU",
+          "disk": "Disco",
+          "memory": "Memória"
+        }
+      },
+      "tabs": {
+        "labels": {
+          "network": "",
+          "overview": "Visão geral"
+        }
+      },
+      "fallback": {
+        "actionButton": "Criar um monitor!",
+        "checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
+        "title": "Um monitor de infraestrutura é usado para:"
+      }
+    },
+    "logs": {
+      "tabs": {
+        "diagnostics": "Diagnóstico",
+        "logs": "Logs do servidor",
+        "queue": "Fila de tarefas"
+      },
+      "logLevelSelect": {
+        "label": "Nível de log"
+      },
+      "jobQueue": "Fila de tarefas",
+      "failedJobs": "Tarefas com falha",
+      "noLogs": "Nenhum log encontrado",
+      "metrics": {
+        "jobs": "Tarefas",
+        "activeJobs": "Tarefas ativas",
+        "failingJobs": "Tarefas com falha",
+        "totalRuns": "Total de execuções",
+        "totalFailures": "Total de falhas"
+      },
+      "diagnostics": {
+        "stats": {
+          "eventLoopDelay": "Atraso do event loop",
+          "uptime": "Uptime",
+          "usedHeapSize": "Tamanho do heap usado",
+          "totalHeapSize": "Tamanho total do heap",
+          "osMemoryLimit": "Limite de memória do SO"
+        },
+        "gauges": {
+          "heapAllocation": "Alocação de heap",
+          "heapUsage": "Uso do heap",
+          "heapUtilization": "Utilização do heap",
+          "instantCpuUsage": "Uso instantâneo de CPU",
+          "availableMemoryPercentage": "% de memória disponível",
+          "allocatedPercentage": "% alocado",
+          "usedSPercentage": "% de 1s usado pela CPU",
+          "total": "Total",
+          "used": "Usado"
+        }
+      },
+      "table": {
+        "headers": {
+          "timestamp": "Data/hora",
+          "level": "Nível",
+          "service": "Serviço",
+          "method": "Método",
+          "monitorId": "ID do monitor",
+          "runCount": "Contagem de execuções",
+          "failCount": "Contagem de falhas",
+          "lastRunAt": "Última execução em",
+          "lockedAt": "Bloqueado em",
+          "lastFinishedAt": "Última conclusão em",
+          "lastRunTook": "Última execução durou",
+          "lastFailedAt": "Última falha em",
+          "failReason": "Motivo da falha"
+        }
+      }
+    },
+    "maintenanceWindow": {
+      "fallback": {
+        "actionButton": "Criar uma janela de manutenção!",
+        "checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
+        "title": "Uma janela de manutenção é usada para:"
+      },
+      "table": {
+        "headers": {
+          "nextWindow": "Próxima janela",
+          "repeat": "Repetir"
+        }
+      },
+      "form": {
+        "general": {
+          "title": "Configurações gerais",
+          "description": "Defina um nome e a opção de repetição para sua janela de manutenção.",
+          "option": {
+            "name": {
+              "label": "Nome",
+              "placeholder": "ex. Manutenção semanal"
+            },
+            "repeat": {
+              "label": "Repetir"
+            }
+          }
+        },
+        "startDate": {
+          "title": "Data de início",
+          "description": "Selecione a data de início da sua janela de manutenção.",
+          "option": {
+            "startDate": {
+              "label": "Data de início"
+            }
+          }
+        },
+        "startTime": {
+          "title": "Hora de início",
+          "description": "Defina a hora de início e a duração da sua janela de manutenção. Todos os valores estão em UTC",
+          "option": {
+            "duration": {
+              "label": "Duração"
+            },
+            "startTime": {
+              "label": "Hora de início"
+            }
+          },
+          "monitors": {
+            "title": "Monitores",
+            "description": "Monitores aos quais a janela de manutenção deve ser aplicada",
+            "option": {
+              "addMonitors": {
+                "label": "Adicionar monitores"
+              }
+            }
+          }
+        }
+      }
+    },
+    "notifications": {
+      "fallback": {
+        "actionButton": "Criar um canal",
+        "checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
+        "title": "Canais de notificação são usados para:"
+      },
+      "form": {
+        "accessToken": {
+          "optionAccessToken": "Token de acesso",
+          "placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
+        },
+        "address": {
+          "description": "O endereço para onde as notificações serão enviadas.",
+          "optionAddress": "Endereço",
+          "placeholderEmail": "exemplo@exemplo.com",
+          "placeholderWebhook": "https://seu-servidor.com/webhook",
+          "title": "Endereço"
+        },
+        "homeServer": {
+          "optionHomeServer": "Servidor principal",
+          "placeholder": "exemplo.com"
+        },
+        "matrix": {
+          "description": "Configure a conexão do seu servidor Matrix para notificações.",
+          "title": "Configuração do Matrix"
+        },
+        "notificationName": {
+          "description": "Um nome descritivo para o canal de notificação",
+          "optionName": "Nome do canal",
+          "placeholder": "ex. Alertas de produção",
+          "title": "Nome do canal"
+        },
+        "pagerDuty": {
+          "description": "Sua chave de integração do PagerDuty para receber alertas.",
+          "optionIntegrationKey": "Chave de integração",
+          "placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+          "title": "Chave de integração"
+        },
+        "roomId": {
+          "optionRoomId": "ID da sala",
+          "placeholder": "!abcdefg:matrix.org"
+        },
+        "type": {
+          "description": "Selecione o tipo de canal de notificação a ser criado.",
+          "optionType": "Tipo",
+          "title": "Tipo de canal"
+        },
+        "telegram": {
+          "title": "Configuração do Telegram",
+          "description": "Para habilitar as notificações do Telegram, crie um bot do Telegram usando o BotFather, um bot oficial para criar e gerenciar bots do Telegram. Em seguida, obtenha o token da API e o ID do chat e os coloque  aqui.",
+          "optionBotToken": "Token do bot",
+          "placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
+          "optionChatId": "ID do chat",
+          "placeholderChatId": "-1001234567890"
+        }
+      },
+      "table": {
+        "headers": {
+          "destination": "Destino"
+        }
+      }
+    },
+    "pageSpeed": {
+      "charts": {
+        "common": {
+          "cls": "Mudança cumulativa de layout (CLS)",
+          "fcp": "Primeira exibição de conteúdo (FCP)",
+          "lcp": "Maior exibição de conteúdo (LCP)",
+          "si": "Índice de velocidade (SI)",
+          "tbt": "Tempo total de bloqueio (TBT)"
+        },
+        "legend": {
+          "title": "Relatório PageSpeed",
+          "weight": "Peso"
+        },
+        "pie": {
+          "title": "Relatório de desempenho"
+        }
+      },
+      "table": {
+        "headers": {
+          "pageSpeedScore": "Pontuação PageSpeed"
+        }
+      },
+      "fallback": {
+        "actionButton": "Criar um monitor!",
+        "checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
+        "title": "Um monitor PageSpeed é usado para:"
+      }
+    },
+    "settings": {
+      "form": {
+        "timezone": {
+          "title": "Fuso horário de exibição",
+          "description": "Selecione o fuso horário usado para exibir datas e horários em toda a aplicação.",
+          "option": {
+            "timezone": {
+              "label": "Fuso horário de exibição"
+            }
+          }
+        },
+        "ui": {
+          "title": "Aparência",
+          "description": "Alterne entre modo claro e escuro, mude o idioma ou personalize o tipo de gráfico.",
+          "option": {
+            "theme": {
+              "label": "Modo do tema",
+              "light": "Claro",
+              "dark": "Escuro"
+            },
+            "language": {
+              "label": "Idioma"
+            },
+            "chartType": {
+              "label": "Tipo de gráfico",
+              "histogram": "Histograma",
+              "heatmap": "Mapa de calor"
+            }
+          }
+        },
+        "pagespeed": {
+          "title": "Chave de API do Google PageSpeed",
+          "description": "Digite sua chave de API do Google PageSpeed para ativar o monitoramento PageSpeed. Clique em Resetar para atualizar a chave.",
+          "option": {
+            "apiKey": {
+              "label": "Chave de API PageSpeed",
+              "labelSet": "Chave de API definida. Clique em Resetar para alterá-la.",
+              "placeholder": "Digite sua chave de API do Google PageSpeed"
+            }
+          }
+        },
+        "url": {
+          "title": "IP/URL do monitor na página de status",
+          "description": "Exiba o endereço IP ou a URL do monitor na página de status pública. Se desativado, apenas o nome do monitor será exibido para proteger informações sensíveis.",
+          "option": {
+            "showURL": {
+              "label": "Exibir IP/URL na página de status",
+              "enabled": "Ativado",
+              "disabled": "Desativado"
+            }
+          }
+        },
+        "stats": {
+          "title": "Histórico do monitor",
+          "description": "Limpe todo o histórico de monitoramento e estatísticas da sua equipe. Esta ação é irreversível.",
+          "option": {
+            "clear": {
+              "label": "Limpar todas as estatísticas. Isso é irreversível."
+            }
+          },
+          "dialog": {
+            "title": "Limpar todo o histórico de monitoramento?",
+            "description": "Isso não pode ser desfeito"
+          }
+        },
+        "retention": {
+          "title": "Retenção de verificações",
+          "description": "Defina por quanto tempo os dados de verificação são retidos antes de serem limpos automaticamente.",
+          "option": {
+            "days": {
+              "label": "Período de retenção (dias)",
+              "unlimited": "Ilimitado"
+            }
+          }
+        },
+        "thresholds": {
+          "title": "Limites globais",
+          "description": "Defina limites globais de CPU, memória, disco e temperatura para monitoramento de infraestrutura. Eles se aplicam a todos os monitores de hardware, a menos que sejam substituídos.",
+          "option": {
+            "cpu": {
+              "label": "Limite de CPU (%)",
+              "placeholder": "1 - 100"
+            },
+            "memory": {
+              "label": "Limite de memória (%)",
+              "placeholder": "1 - 100"
+            },
+            "disk": {
+              "label": "Limite de disco (%)",
+              "placeholder": "1 - 100"
+            },
+            "temperature": {
+              "label": "Limite de temperatura (°C)",
+              "placeholder": "1 - 150"
+            }
+          }
+        },
+        "email": {
+          "title": "Configurações de email",
+          "description": "Configure as configurações de email do seu sistema. Isso é usado para enviar notificações e alertas.",
+          "descriptionTransport": "Isso cria um transporte SMTP para o NodeMailer",
+          "descriptionTransportLink": "Veja as especificações aqui",
+          "option": {
+            "host": {
+              "label": "Host de email - Nome do host ou endereço IP para conectar",
+              "placeholder": "smtp.gmail.com"
+            },
+            "port": {
+              "label": "Porta de email - Porta para conectar",
+              "placeholder": "587"
+            },
+            "address": {
+              "label": "Endereço de email - Usado para autenticação",
+              "placeholder": "voce@exemplo.com"
+            },
+            "user": {
+              "label": "Usuário de email - Nome de usuário para autenticação, substitui o endereço de email se especificado",
+              "placeholder": "Deixe vazio se não for necessário"
+            },
+            "password": {
+              "label": "Senha de email - Senha para autenticação",
+              "labelSet": "Senha definida. Clique em Resetar para alterá-la.",
+              "placeholder": "Digite sua senha"
+            },
+            "tlsServername": {
+              "label": "Nome do servidor TLS - Nome de host opcional para validação TLS quando o host é um IP",
+              "placeholder": "exemplo.com"
+            },
+            "connectionHost": {
+              "label": "Host de conexão de email - Nome de host para usar na saudação HELO/EHLO",
+              "placeholder": "localhost"
+            },
+            "secure": {
+              "label": "Usar SSL (recomendado): Criptografar a conexão usando SSL/TLS"
+            },
+            "pool": {
+              "label": "Ativar pool de conexões: Reutilizar conexões existentes para melhorar o desempenho"
+            },
+            "ignoreTLS": {
+              "label": "Desativar STARTTLS: Não usar TLS mesmo que o servidor suporte"
+            },
+            "requireTLS": {
+              "label": "Forçar STARTTLS: Exigir atualização TLS, falhar se não suportado"
+            },
+            "rejectUnauthorized": {
+              "label": "Rejeitar certificados inválidos: Rejeitar conexões com certificados autoassinados ou não confiáveis"
+            }
+          }
+        },
+        "demoMonitors": {
+          "title": "Monitores demo",
+          "description": "Adicione monitores de exemplo para fins de demonstração."
+        },
+        "removeMonitors": {
+          "title": "Redefinição do sistema",
+          "description": "Remova todos os monitores do seu sistema.",
+          "dialog": {
+            "title": "Remover todos os monitores?",
+            "description": "Isso não pode ser desfeito."
+          }
+        },
+        "exportMonitors": {
+          "title": "Exportar monitores"
+        },
+        "importExportMonitors": {
+          "title": "Importar / Exportar monitores",
+          "description": "Importe ou exporte os dados dos seus monitores como um arquivo JSON para backup ou transferência."
+        },
+        "about": {
+          "title": "Sobre",
+          "developedBy": "Desenvolvido por Bluewave Labs"
+        },
+        "validation": {
+          "errorMessage": "Por favor, corrija os seguintes erros de validação:"
+        }
+      }
+    },
+    "statusPages": {
+      "deleteSuccess": "Página de status excluída com sucesso",
+      "fallback": {
+        "title": "Uma página de status é usada para:",
+        "checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
+        "actionButton": "Criar uma página de status!"
+      },
+      "monitorsList": {
+        "chartTypeHeatmap": "Mapa de calor",
+        "chartTypeHistogram": "Histograma",
+        "noData": "Nenhum dado disponível",
+        "infrastructure": {
+          "title": "Infraestrutura",
+          "cpu": "CPU",
+          "memory": "RAM",
+          "memoryText": "Memória",
+          "disk": "Disco",
+          "usage": "Uso",
+          "used": "Usado",
+          "total": "Total"
+        },
+        "uptime": {
+          "title": "Uptime",
+          "responseTime": "Tempo de resposta"
+        }
+      },
+      "statusBar": {
+        "allDown": "Todos os sistemas estão fora do ar",
+        "allUp": "Todos os sistemas operacionais",
+        "degraded": "Alguns sistemas estão com problemas",
+        "unknown": "Não foi possível determinar o status do sistema"
+      },
+      "table": {
+        "headers": {
+          "name": "Nome da página de status",
+          "url": "URL pública"
+        },
+        "published": "Publicada",
+        "unpublished": "Não publicada"
+      },
+      "title": "Páginas de status",
+      "details": {
+        "empty": {
+          "title": "Ainda não há nada aqui",
+          "addMonitor": "Adicione um monitor para começar"
+        }
+      },
+      "form": {
+        "access": {
+          "title": "Acesso",
+          "description": "Se sua página de status estiver pronta, você pode marcá-la como publicada.",
+          "option": {
+            "published": {
+              "name": "Publicada e visível ao público"
+            }
+          }
+        },
+        "basicInfo": {
+          "title": "Informações básicas",
+          "description": "Defina o nome da empresa e o subdomínio para onde sua página de status aponta.",
+          "option": {
+            "name": {
+              "label": "Nome da empresa",
+              "placeholder": "Acme Inc."
+            },
+            "url": {
+              "label": "Endereço da sua página de status",
+              "placeholder": "minha-pagina-de-status"
+            }
+          }
+        },
+        "monitors": {
+          "title": "Monitores",
+          "description": "Selecione os monitores para exibir na sua página de status.",
+          "noMonitors": "Nenhum monitor selecionado",
+          "option": {
+            "monitors": {
+              "label": "Selecionar monitores",
+              "placeholder": "Buscar e selecionar monitores..."
+            }
+          }
+        },
+        "timezone": {
+          "title": "Fuso horário",
+          "description": "Selecione o fuso horário em que sua página de status será exibida.",
+          "option": {
+            "timezone": {
+              "label": "Fuso horário",
+              "placeholder": "Selecione o fuso horário..."
+            }
+          }
+        },
+        "appearance": {
+          "title": "Aparência",
+          "description": "Defina a aparência padrão da sua página de status pública.",
+          "option": {
+            "logo": {
+              "label": "Logo"
+            },
+            "color": {
+              "label": "Cor da marca"
+            }
+          }
+        },
+        "features": {
+          "title": "Recursos",
+          "description": "Configure quais informações são exibidas na sua página de status.",
+          "option": {
+            "showCharts": {
+              "label": "Mostrar gráficos de tempo de resposta"
+            },
+            "showUptimePercentage": {
+              "label": "Mostrar porcentagem de uptime"
+            },
+            "showAdminLoginLink": {
+              "label": "Mostrar link de login do admin"
+            },
+            "showInfrastructure": {
+              "label": "Mostrar métricas de infraestrutura"
+            }
+          }
+        }
+      }
+    },
+    "uptime": {
+      "filters": {
+        "search": {
+          "placeholder": "Buscar monitores..."
+        }
+      },
+      "table": {
+        "headers": {
+          "responseTime": "Tempo de resposta"
+        }
+      },
+      "fallback": {
+        "actionButton": "Criar um monitor!",
+        "checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
+        "title": "Um monitor de uptime é usado para:"
+      }
+    }
+  }
 }
