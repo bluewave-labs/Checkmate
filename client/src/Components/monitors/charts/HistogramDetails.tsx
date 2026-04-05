@@ -68,7 +68,7 @@ const ResponseTimeToolTip = ({
 	if (!active) return null;
 
 	const format = tooltipDateFormatLookup(range);
-	const responseTime = Math.floor(payload?.[0]?.payload?.avgResponseTime || 0);
+	const responseTime = Math.floor(payload?.[0]?.payload?.originalAvgResponseTime || 0);
 	return (
 		<BaseBox sx={{ py: theme.spacing(2), px: theme.spacing(4) }}>
 			<Typography>{formatDateWithTz(String(label), format, uiTimezone)}</Typography>
@@ -152,7 +152,7 @@ export const HistogramDetails = ({
 					/>
 					<Area
 						type="monotone"
-						dataKey="avgResponseTime"
+						dataKey="originalAvgResponseTime"
 						stroke={theme.palette.primary.main}
 						fill="url(#colorUv)"
 					/>
