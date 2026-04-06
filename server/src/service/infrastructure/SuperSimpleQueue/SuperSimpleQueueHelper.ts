@@ -45,6 +45,10 @@ export interface MonitorActionDecision {
 		disk?: boolean;
 		temp?: boolean;
 	};
+	escalationsToSend?: Array<{
+		afterMinutes: number;
+		channelId: string;
+	}>;
 }
 
 export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
@@ -177,6 +181,18 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 						stack: error instanceof Error ? error.stack : undefined,
 					});
 				});
+
+				// Step 8. Check and handle escalations (best effort, don't wait)
+				if (statusChangeResult.monitor.status === "down" || statusChangeResult.monitor.status === "breached") {
+					const activeIncident = await this.incidentsRepository
+						.findActiveByMonitorId(statusChangeResult.monitor.id, statusChangeResult.monitor.teamId)
+						.catch(() => null);
+					if (activeIncident?.id) {
+						this.checkAndHandleEscalations(statusChangeResult.monitor, activeIncident.id).catch(() => {
+							// Logging already handled in method
+						});
+					}
+				}
 			} catch (error: unknown) {
 				this.logger.warn({
 					message: error instanceof Error ? error.message : "Unknown error",
@@ -454,5 +470,62 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 		}
 
 		return decision;
+	}
+
+	private async checkAndHandleEscalations(monitor: Monitor, incidentId: string | undefined): Promise<void> {
+		if (!monitor.escalatedNotifications || monitor.escalatedNotifications.length === 0 || !incidentId) {
+			return;
+		}
+
+		try {
+			// Get the active incident
+			const incident = await this.incidentsRepository.findByIdAndTeamId(incidentId, monitor.teamId);
+			if (!incident || !incident.status) {
+				return; // Incident resolved
+			}
+
+			const elapsedMs = new Date().getTime() - new Date(incident.startTime).getTime();
+			const elapsedMinutes = Math.floor(elapsedMs / 60000);
+			const escalationsSent = incident.escalationsSent || [];
+
+			// Check each escalation rule
+			for (const escalation of monitor.escalatedNotifications) {
+				// Only send if we haven't already sent this escalation level
+				if (escalationsSent.includes(escalation.afterMinutes)) {
+					continue;
+				}
+
+				// Check if enough time has elapsed
+				if (elapsedMinutes >= escalation.afterMinutes) {
+					// Trigger escalation notification
+					await this.notificationsService
+						.handleEscalationNotification(monitor, monitor.teamId, escalation.channelId, escalation.afterMinutes)
+						.catch((error: unknown) => {
+							this.logger.warn({
+								message: `Error sending escalation notification: ${error instanceof Error ? error.message : "Unknown"}`,
+								service: SERVICE_NAME,
+								method: "checkAndHandleEscalations",
+								details: { monitorId: monitor.id, escalationLevel: escalation.afterMinutes },
+							});
+						});
+
+					// Mark this escalation level as sent
+					await this.incidentsRepository.addEscalationSent(incidentId, escalation.afterMinutes).catch((error: unknown) => {
+						this.logger.warn({
+							message: `Error updating incident escalations sent: ${error instanceof Error ? error.message : "Unknown"}`,
+							service: SERVICE_NAME,
+							method: "checkAndHandleEscalations",
+						});
+					});
+				}
+			}
+		} catch (error: unknown) {
+			this.logger.warn({
+				message: `Error checking escalations: ${error instanceof Error ? error.message : "Unknown"}`,
+				service: SERVICE_NAME,
+				method: "checkAndHandleEscalations",
+				stack: error instanceof Error ? error.stack : undefined,
+			});
+		}
 	}
 }

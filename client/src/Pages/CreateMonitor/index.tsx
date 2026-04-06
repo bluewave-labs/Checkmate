@@ -765,6 +765,141 @@ const CreateMonitorPage = () => {
 				}
 			/>
 
+			<ConfigBox
+				title={t("pages.createMonitor.form.escalatedNotifications.title")}
+				subtitle={t("pages.createMonitor.form.escalatedNotifications.description")}
+				rightContent={
+					<Controller
+						name="escalatedNotifications"
+						control={control}
+						render={({ field }) => {
+							const notificationOptions = (notifications ?? []).map((n) => ({
+								...n,
+								name: n.notificationName,
+							}));
+							const escalationRules = field.value ?? [];
+
+							return (
+								<Stack spacing={theme.spacing(LAYOUT.MD)}>
+									<Stack spacing={theme.spacing(LAYOUT.SM)}>
+										{escalationRules.length > 0 && (
+											<Typography variant="subtitle2">
+												{t("pages.createMonitor.form.escalatedNotifications.rules")}
+											</Typography>
+										)}
+										{escalationRules.map((rule, index) => {
+											const selectedChannel = notificationOptions.find(
+												(n) => n.id === rule.channelId
+											);
+											return (
+												<Stack
+													key={index}
+													spacing={theme.spacing(SPACING.SM)}
+													sx={{
+														border: `1px solid ${theme.palette.divider}`,
+														borderRadius: 1,
+														p: theme.spacing(SPACING.MD),
+													}}
+												>
+													<Stack
+														direction="row"
+														spacing={theme.spacing(SPACING.MD)}
+														alignItems="flex-end"
+													>
+														<TextField
+															label={t(
+																"pages.createMonitor.form.escalatedNotifications.minutes"
+															)}
+															type="number"
+															value={rule.afterMinutes}
+															onChange={(e) => {
+																const newRules = [...escalationRules];
+																newRules[index].afterMinutes = Number(e.target.value);
+																field.onChange(newRules);
+															}}
+															inputProps={{ min: 1, max: 10080 }}
+															sx={{ minWidth: 150 }}
+														/>
+														<Typography sx={{ whiteSpace: "nowrap" }}>
+															{t(
+																"pages.createMonitor.form.escalatedNotifications.minutesLabel"
+															)}
+														</Typography>
+														<Select
+															label={t(
+																"pages.createMonitor.form.escalatedNotifications.channel"
+															)}
+															value={rule.channelId}
+															onChange={(e) => {
+																const newRules = [...escalationRules];
+																newRules[index].channelId = e.target.value;
+																field.onChange(newRules);
+															}}
+															sx={{ flex: 1 }}
+														>
+															{notificationOptions.map((n) => (
+																<MenuItem
+																	key={n.id}
+																	value={n.id}
+																>
+																	{n.name}
+																</MenuItem>
+															))}
+														</Select>
+														<IconButton
+															size="small"
+															onClick={() => {
+																const newRules = escalationRules.filter(
+																	(_, i) => i !== index
+																);
+																field.onChange(newRules);
+															}}
+															aria-label={t(
+																"pages.createMonitor.form.escalatedNotifications.remove"
+															)}
+														>
+															<Trash2 size={16} />
+														</IconButton>
+													</Stack>
+													{selectedChannel && (
+														<Typography
+															variant="caption"
+															color="text.secondary"
+														>
+															{t("pages.createMonitor.form.escalatedNotifications.info")}:{" "}
+															{selectedChannel.name}
+														</Typography>
+													)}
+												</Stack>
+											);
+										})}
+									</Stack>
+
+									<Button
+										variant="outlined"
+										onClick={() => {
+											field.onChange([
+												...escalationRules,
+												{
+													afterMinutes: 30,
+													channelId: "",
+												},
+											]);
+										}}
+										disabled={
+											notificationOptions.length === 0 ||
+											escalationRules.some((r) => !r.channelId)
+										}
+									>
+										{t("pages.createMonitor.form.escalatedNotifications.addRule")}
+									</Button>
+								</Stack>
+							);
+						}}
+					/>
+				}
+			/>
+
 			{(watchedType === "http" ||
 				watchedType === "grpc" ||
 				watchedType === "websocket") && (

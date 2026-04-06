@@ -287,5 +287,16 @@ class MongoIncidentRepository implements IIncidentsRepository {
 		const result = await IncidentModel.deleteMany({ monitorId: { $nin: objectIds } });
 		return result.deletedCount ?? 0;
 	};
+
+	addEscalationSent = async (incidentId: string, escalationLevel: number): Promise<void> => {
+		await IncidentModel.updateOne(
+			{ _id: new mongoose.Types.ObjectId(incidentId) },
+			{
+				$addToSet: {
+					escalationsSent: escalationLevel,
+				},
+			}
+		);
+	};
 }
 export default MongoIncidentRepository;
