@@ -11,9 +11,12 @@ import {
 import { Fragment, useId } from "react";
 import { XTick } from "@/Components/monitors";
 import { Typography } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { useTheme, type Theme } from "@mui/material/styles";
 import type { HardwareCheckStats } from "@/Types/Monitor";
 import { SPACING } from "@/Utils/Theme/constants";
+import { useTranslation } from "react-i18next";
+import type { TooltipProps } from "recharts";
+import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 
 const AREA_COLORS = [
 	// Blues
@@ -94,22 +97,21 @@ const createGradient = ({
 	</defs>
 );
 
-type ResponseTimeToolTipProps = {
-	active?: boolean | undefined;
-	payload?: any[];
+type HistogramInfrastructureToolTipProps = TooltipProps<ValueType, NameType> & {
 	label?: string | number;
-	theme: any;
+	theme: Theme;
 	labelFormatter?: (value: number) => string;
 };
 
-const ResponseTimeToolTip = ({
+const HistogramInfrastructureToolTip = ({
 	active,
 	payload,
 	label,
 	theme,
 	type,
-	labelFormatter
-}: ResponseTimeToolTipProps & { type: string }) => {
+	labelFormatter,
+}: HistogramInfrastructureToolTipProps & { type: string }) => {
+	const { t } = useTranslation();
 	if (!active || !payload || !payload.length || label === undefined || label === null) {
 		return null;
 	}
@@ -117,18 +119,16 @@ const ResponseTimeToolTip = ({
 	const dataKeys: Record<string, string> = {
 		cpu: "avgCpuUsage",
 		memory: "avgMemoryUsage",
-		temp: "avg_temp",
+		temp: "avgTemperature",
 	};
-
-	const targetKey = dataKeys[type] || payload[0].dataKey;
-	const rawValue = payload[0].payload[targetKey];
+	const targetKey = dataKeys[type] ?? payload[0].dataKey;
+	if (!targetKey) return null;
+	const rawValue = payload[0].payload[targetKey as keyof HardwareCheckStats];
 
 	const value = typeof rawValue === "number" ? rawValue : 0;
 	const formattedValue = labelFormatter ? labelFormatter(value) : value;
 
-	const displayLabel =
-		type === "temp" ? "Temperature" : type.charAt(0).toUpperCase() + type.slice(1);
-
+	const displayLabel = t(`pages.infrastructure.charts.labels.${type}`);
 	const formattedDate = new Date(label)
 		.toLocaleString("en-US", {
 			weekday: "short",
@@ -144,7 +144,9 @@ const ResponseTimeToolTip = ({
 	return (
 		<BaseBox sx={{ py: theme.spacing(SPACING.LG), px: theme.spacing(SPACING.XS) }}>
 			<Typography>{formattedDate}</Typography>
-			<Typography>{displayLabel}: {formattedValue}</Typography>
+			<Typography>
+				{displayLabel}: {formattedValue}
+			</Typography>
 		</BaseBox>
 	);
 };
@@ -186,19 +188,19 @@ export const HistogramInfrastructure = ({
 	const uniqueId = useId();
 	const data = checks;
 
-	let avgTemps: { bucketDate: string; avg_temp: number | null }[] = [];
+	let avgTemps: { bucketDate: string; avgTemp: number | null }[] = [];
 	let tempYDomain: number[] = [];
 	if (type === "temp") {
 		avgTemps = data.map((check) => {
 			const temps = check.avgTemperature || [];
-			if (temps.length === 0) return { bucketDate: check.bucketDate, avg_temp: null };
+			if (temps.length === 0) return { bucketDate: check.bucketDate, avgTemp: null };
 			const totalTemp = temps.reduce((sum, temp) => sum + (temp || 0), 0);
 			const avgTemp = totalTemp / temps.length;
-			return { bucketDate: check.bucketDate, avg_temp: avgTemp };
+			return { bucketDate: check.bucketDate, avgTemp: avgTemp };
 		});
 
 		const maxTemp: number = avgTemps.reduce((max, item) => {
-			return item.avg_temp && item.avg_temp > max ? item.avg_temp : max;
+			return item.avgTemp && item.avgTemp > max ? item.avgTemp : max;
 		}, 0);
 
 		tempYDomain = [0, Math.ceil((maxTemp * 1.3) / 10) * 10];
@@ -258,7 +260,7 @@ export const HistogramInfrastructure = ({
 					})}
 					<Tooltip
 						content={(props) => (
-							<ResponseTimeToolTip
+							<HistogramInfrastructureToolTip
 								{...props}
 								type={type}
 								theme={theme}

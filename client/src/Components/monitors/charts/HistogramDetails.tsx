@@ -20,6 +20,8 @@ import {
 import { useTheme } from "@mui/material/styles";
 import type { GroupedCheck } from "@/Types/Check";
 import type { RootState } from "@/Types/state";
+import type { TooltipProps } from "recharts";
+import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 
 type XTickProps = {
 	x: number;
@@ -46,9 +48,7 @@ export const XTick = ({ x, y, payload, range }: XTickProps) => {
 	);
 };
 
-type ResponseTimeToolTipProps = {
-	active?: boolean | undefined;
-	payload?: any[];
+type ResponseTimeToolTipProps = TooltipProps<ValueType, NameType> & {
 	label?: string | number;
 	range: string;
 	theme: any;
