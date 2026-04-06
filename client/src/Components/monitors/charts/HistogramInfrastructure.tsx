@@ -98,6 +98,7 @@ type ResponseTimeToolTipProps = {
 	payload?: any[];
 	label?: string | number;
 	theme: any;
+	labelFormatter?: (value: number) => string;
 };
 
 const ResponseTimeToolTip = ({
@@ -106,6 +107,7 @@ const ResponseTimeToolTip = ({
 	label,
 	theme,
 	type,
+	labelFormatter
 }: ResponseTimeToolTipProps & { type: string }) => {
 	if (!active || !payload || !payload.length || label === undefined || label === null) {
 		return null;
@@ -121,10 +123,10 @@ const ResponseTimeToolTip = ({
 	const rawValue = payload[0].payload[targetKey];
 
 	const value = typeof rawValue === "number" ? rawValue : 0;
+	const formattedValue = labelFormatter ? labelFormatter(value) : value;
 
 	const displayLabel =
 		type === "temp" ? "Temperature" : type.charAt(0).toUpperCase() + type.slice(1);
-	const unit = type === "temp" ? "°C" : "%";
 
 	const formattedDate = new Date(label)
 		.toLocaleString("en-US", {
@@ -139,25 +141,9 @@ const ResponseTimeToolTip = ({
 		.replace(" at ", ", ");
 
 	return (
-		<BaseBox
-			sx={{
-				py: theme.spacing(1.5),
-				px: theme.spacing(2.5),
-				backgroundColor: "rgba(28, 28, 30, 0.95)",
-				borderRadius: "8px",
-				border: "1px solid rgba(255, 255, 255, 0.1)",
-				boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
-			}}
-		>
-			<Typography
-				sx={{ color: "rgba(255, 255, 255, 0.6)", fontSize: "0.75rem", mb: 0.5 }}
-			>
-				{formattedDate}
-			</Typography>
-			<Typography sx={{ color: "#fff", fontWeight: 600, fontSize: "0.9rem" }}>
-				{displayLabel}: {value.toFixed(1)}
-				{unit}
-			</Typography>
+		<BaseBox sx={{ py: theme.spacing(2), px: theme.spacing(4) }}>
+			<Typography>{formattedDate}</Typography>
+			<Typography>{displayLabel}: {formattedValue}</Typography>
 		</BaseBox>
 	);
 };
@@ -272,9 +258,10 @@ export const HistogramInfrastructure = ({
 					<Tooltip
 						content={(props) => (
 							<ResponseTimeToolTip
-								{...props} // This is the missing piece
+								{...props}
 								type={type}
 								theme={theme}
+								labelFormatter={yAxisFormatter}
 							/>
 						)}
 					/>
