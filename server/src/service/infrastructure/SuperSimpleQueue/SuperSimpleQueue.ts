@@ -43,6 +43,7 @@ export interface ISuperSimpleQueue {
 	readonly serviceName: string;
 	init(): Promise<boolean>;
 	addJob(monitorId: string, monitor: Monitor): Promise<void>;
+	addCustomJob(job: { id: string; template: string; repeat?: number; active?: boolean; data?: any; runAt?: number }): Promise<void>;
 	deleteJob(monitor: Monitor): Promise<void>;
 	pauseJob(monitor: Monitor): Promise<void>;
 	resumeJob(monitor: Monitor): Promise<void>;
@@ -91,6 +92,7 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 
 			this.scheduler.addTemplate("monitor-job", this.helper.getHeartbeatJob());
 			this.scheduler.addTemplate("geo-check-job", this.helper.getHeartbeatGeoJob());
+			this.scheduler.addTemplate("escalation-job", this.helper.getEscalationJob());
 			this.scheduler.addTemplate("cleanup-orphaned", this.helper.getCleanupOrphanedJob());
 			this.scheduler.addTemplate("cleanup-retention-job", this.helper.getCleanupRetentionJob());
 			const monitors = await this.monitorsRepository.findAll();
@@ -202,6 +204,10 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 			// Remove geo job if disabled or monitor type changed
 			this.scheduler.removeJob(geoJobId);
 		}
+	};
+
+	addCustomJob = async (job: { id: string; template: string; repeat?: number; active?: boolean; data?: any; runAt?: number }) => {
+		this.scheduler.addJob(job);
 	};
 
 	shutdown = async () => {

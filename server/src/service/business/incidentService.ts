@@ -8,6 +8,7 @@ import type { Incident, IncidentSummary, User } from "@/types/index.js";
 import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import type { INotificationMessageBuilder } from "@/service/infrastructure/notificationMessageBuilder.js";
 import type { ILogger } from "@/utils/logger.js";
+import type { ISuperSimpleQueue } from "@/service/index.js";
 
 export interface IIncidentService {
 	handleIncident(
@@ -17,6 +18,8 @@ export interface IIncidentService {
 		monitorStatusResponse?: MonitorStatusResponse
 	): Promise<Incident | null>;
 	resolveIncident(incidentId: string, userId: string, teamId: string, comment?: string, userEmail?: string): Promise<Incident>;
+	acknowledgeIncident(incidentId: string, userId: string, teamId: string): Promise<Incident>;
+	setJobQueue(jobQueue: ISuperSimpleQueue): void;
 	getIncidentsByTeam(
 		teamId: string,
 		sortOrder: string,
@@ -39,19 +42,26 @@ export class IncidentService implements IIncidentService {
 	private monitorsRepository: IMonitorsRepository;
 	private usersRepository: IUsersRepository;
 	private notificationMessageBuilder: INotificationMessageBuilder;
+	private jobQueue?: ISuperSimpleQueue;
 
 	constructor(
 		logger: ILogger,
 		incidentsRepository: IIncidentsRepository,
 		monitorsRepository: IMonitorsRepository,
 		usersRepository: IUsersRepository,
-		notificationMessageBuilder: INotificationMessageBuilder
+		notificationMessageBuilder: INotificationMessageBuilder,
+		jobQueue?: ISuperSimpleQueue
 	) {
 		this.logger = logger;
 		this.incidentsRepository = incidentsRepository;
 		this.monitorsRepository = monitorsRepository;
 		this.usersRepository = usersRepository;
 		this.notificationMessageBuilder = notificationMessageBuilder;
+		this.jobQueue = jobQueue;
+	}
+
+	setJobQueue(jobQueue: ISuperSimpleQueue): void {
+		this.jobQueue = jobQueue;
 	}
 
 	get serviceName() {
@@ -83,7 +93,7 @@ export class IncidentService implements IIncidentService {
 					message = this.buildThresholdBreachMessage(monitor, monitorStatusResponse);
 				}
 
-				const incident = {
+				const incidentData = {
 					monitorId: monitor.id,
 					teamId: monitor.teamId,
 					startTime: Date.now().toString(),
@@ -91,7 +101,35 @@ export class IncidentService implements IIncidentService {
 					statusCode,
 					message,
 				};
-				return await this.incidentsRepository.create(incident);
+				const incident = await this.incidentsRepository.create(incidentData);
+
+				// Schedule escalation job if configured
+				if (monitor.escalation && this.jobQueue) {
+					try {
+						await this.jobQueue.addCustomJob({
+							id: `${monitor.id}-escalation-${incident.id}`,
+							template: "escalation-job",
+							repeat: 0, // One-time job
+							active: true,
+							data: { incidentId: incident.id, monitor },
+							runAt: Date.now() + (monitor.escalation.delayMinutes * 60 * 1000), // Delay in milliseconds
+						});
+						this.logger.debug({
+							message: `Scheduled escalation job for incident ${incident.id} on monitor ${monitor.id}`,
+							service: SERVICE_NAME,
+							method: "handleIncident",
+						});
+					} catch (error: unknown) {
+						this.logger.error({
+							message: `Failed to schedule escalation job for incident ${incident.id}: ${error instanceof Error ? error.message : "Unknown error"}`,
+							service: SERVICE_NAME,
+							method: "handleIncident",
+							stack: error instanceof Error ? error.stack : undefined,
+						});
+					}
+				}
+
+				return incident;
 			}
 		}
 
@@ -167,6 +205,60 @@ export class IncidentService implements IIncidentService {
 			this.logger.error({
 				service: SERVICE_NAME,
 				method: "resolveIncident",
+				message: error instanceof Error ? error.message : "Unknown error",
+				details: { id: incidentId },
+				stack: error instanceof Error ? error.stack : undefined,
+			});
+			throw error;
+		}
+	};
+
+	acknowledgeIncident = async (incidentId: string, userId: string, teamId: string) => {
+		try {
+			if (!incidentId) {
+				throw new AppError({ message: "No incident ID in request", service: SERVICE_NAME, method: "acknowledgeIncident" });
+			}
+
+			if (!userId) {
+				throw new AppError({ message: "No user ID in request", service: SERVICE_NAME, method: "acknowledgeIncident" });
+			}
+
+			if (!teamId) {
+				throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "acknowledgeIncident" });
+			}
+
+			const incident = await this.incidentsRepository.findActiveByIncidentId(incidentId, teamId);
+
+			if (!incident) {
+				throw new AppError({ message: "Incident not found", service: SERVICE_NAME, method: "acknowledgeIncident" });
+			}
+
+			if (incident.status === false) {
+				throw new AppError({ message: "Incident is already resolved", service: SERVICE_NAME, method: "acknowledgeIncident" });
+			}
+
+			if (incident.acknowledged) {
+				throw new AppError({ message: "Incident is already acknowledged", service: SERVICE_NAME, method: "acknowledgeIncident" });
+			}
+
+			incident.acknowledged = true;
+			incident.acknowledgedAt = new Date().toISOString();
+			incident.acknowledgedBy = userId;
+
+			const acknowledgedIncident = await this.incidentsRepository.updateById(incident.id, teamId, incident);
+
+			this.logger.debug({
+				service: SERVICE_NAME,
+				method: "acknowledgeIncident",
+				message: `Incident acknowledged by user`,
+				details: { incidentId: acknowledgedIncident.id, userId },
+			});
+
+			return acknowledgedIncident;
+		} catch (error: unknown) {
+			this.logger.error({
+				service: SERVICE_NAME,
+				method: "acknowledgeIncident",
 				message: error instanceof Error ? error.message : "Unknown error",
 				details: { id: incidentId },
 				stack: error instanceof Error ? error.stack : undefined,

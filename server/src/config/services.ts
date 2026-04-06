@@ -202,7 +202,6 @@ export const initializeServices = async ({
 		webSocketProvider,
 	]);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
-
 	const notificationMessageBuilder = new NotificationMessageBuilder();
 
 	const incidentService = new IncidentService(logger, incidentsRepository, monitorsRepository, usersRepository, notificationMessageBuilder);
@@ -261,11 +260,15 @@ export const initializeServices = async ({
 		monitorStatsRepository,
 		checksRepository,
 		incidentsRepository,
+		notificationsRepository,
+		notificationMessageBuilder,
 		geoChecksService,
 		geoChecksRepository
 	);
 
 	const superSimpleQueue = await SuperSimpleQueue.create(logger, superSimpleQueueHelper, monitorsRepository);
+
+	incidentService.setJobQueue(superSimpleQueue);
 
 	// Business services
 	const userService = new UserService({

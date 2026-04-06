@@ -765,6 +765,77 @@ const CreateMonitorPage = () => {
 				}
 			/>
 
+			<ConfigBox
+				title="Escalation Rules"
+				subtitle="If the monitor stays down for the specified time, notify additional channels."
+				rightContent={
+					<Controller
+						name="escalation"
+						control={control}
+						render={({ field }) => {
+							const fieldValue = field.value ?? { delayMinutes: 3, channelId: "" };
+							const selectedEscalationNotification = (notifications ?? []).find(
+								(n) => n.id === fieldValue.channelId
+							) ?? null;
+							return (
+								<Stack spacing={theme.spacing(LAYOUT.MD)}>
+									<TextField
+										fieldLabel="Escalate after (minutes)"
+										type="number"
+										value={fieldValue.delayMinutes}
+										onChange={(e) => {
+											field.onChange({
+												...fieldValue,
+												delayMinutes: parseInt(e.target.value, 10) || 1,
+											});
+										}}
+										inputProps={{ min: 1 }}
+									/>
+									<Autocomplete
+										options={notifications ?? []}
+										getOptionLabel={(option) => option.notificationName}
+										value={selectedEscalationNotification}
+										onChange={(_, newValue) => {
+											field.onChange({
+												...fieldValue,
+												channelId: newValue?.id || "",
+											});
+										}}
+										renderInput={(params) => (
+											<TextField
+												{...params}
+												fieldLabel="Escalation notification channels"
+											/>
+										)}
+										isOptionEqualToValue={(option, value) => option.id === value.id}
+									/>
+									{selectedEscalationNotification && (
+										<Stack direction="row" alignItems="center" spacing={theme.spacing(LAYOUT.SM)}>
+											<Typography>Escalation email:</Typography>
+											<Typography flex={1} fontWeight={600}>
+												{selectedEscalationNotification.notificationName}
+											</Typography>
+											<IconButton
+												size="small"
+												onClick={() => {
+												field.onChange({
+													...fieldValue,
+													channelId: "",
+												});
+											}}
+												aria-label="Remove escalation email"
+											>
+												<Trash2 size={16} />
+											</IconButton>
+										</Stack>
+									)}
+								</Stack>
+							);
+						}}
+					/>
+				}
+			/>
+
 			{(watchedType === "http" ||
 				watchedType === "grpc" ||
 				watchedType === "websocket") && (

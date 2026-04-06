@@ -10,8 +10,9 @@ import {
 	IStatusService,
 	IncidentService,
 	type IGeoChecksService,
+	type INotificationMessageBuilder,
 } from "@/service/index.js";
-import { CHECK_TTL_SENTINEL, type MaintenanceWindow, type StatusChangeResult } from "@/types/index.js";
+import { CHECK_TTL_SENTINEL, type MaintenanceWindow, type MonitorStatusResponse, type StatusChangeResult } from "@/types/index.js";
 import {
 	IMaintenanceWindowsRepository,
 	IMonitorsRepository,
@@ -19,6 +20,7 @@ import {
 	IMonitorStatsRepository,
 	IChecksRepository,
 	IIncidentsRepository,
+	INotificationsRepository,
 	IGeoChecksRepository,
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
@@ -30,6 +32,7 @@ export interface ISuperSimpleQueueHelper {
 	getHeartbeatGeoJob(): (monitor: Monitor) => Promise<void>;
 	getCleanupOrphanedJob(): () => Promise<void>;
 	getCleanupRetentionJob(): () => Promise<void>;
+	getEscalationJob(): (data?: { incidentId: string; monitor: Monitor }) => Promise<void>;
 	isInMaintenanceWindow(monitorId: string, teamId: string): Promise<boolean>;
 }
 
@@ -64,6 +67,8 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 	private monitorStatsRepository: IMonitorStatsRepository;
 	private checksRepository: IChecksRepository;
 	private incidentsRepository: IIncidentsRepository;
+	private notificationsRepository: INotificationsRepository;
+	private notificationMessageBuilder: INotificationMessageBuilder;
 	private geoChecksService: IGeoChecksService;
 	private geoChecksRepository: IGeoChecksRepository;
 
@@ -82,6 +87,8 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 		monitorStatsRepository: IMonitorStatsRepository,
 		checksRepository: IChecksRepository,
 		incidentsRepository: IIncidentsRepository,
+		notificationsRepository: INotificationsRepository,
+		notificationMessageBuilder: INotificationMessageBuilder,
 		geoChecksService: IGeoChecksService,
 		geoChecksRepository: IGeoChecksRepository
 	) {
@@ -96,6 +103,13 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 		this.maintenanceWindowsRepository = maintenanceWindowsRepository;
 		this.monitorsRepository = monitorsRepository;
 		this.teamsRepository = teamsRepository;
+		this.monitorStatsRepository = monitorStatsRepository;
+		this.checksRepository = checksRepository;
+		this.incidentsRepository = incidentsRepository;
+		this.notificationsRepository = notificationsRepository;
+		this.notificationMessageBuilder = notificationMessageBuilder;
+		this.geoChecksService = geoChecksService;
+		this.geoChecksRepository = geoChecksRepository;
 		this.monitorStatsRepository = monitorStatsRepository;
 		this.checksRepository = checksRepository;
 		this.incidentsRepository = incidentsRepository;
@@ -455,4 +469,93 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 
 		return decision;
 	}
+
+	getEscalationJob = () => {
+		return async (data?: { incidentId: string; monitor: Monitor }) => {
+			const incidentId = data?.incidentId;
+			const monitor = data?.monitor;
+			if (!incidentId || !monitor) {
+				this.logger.warn({
+					message: "Escalation job data is missing incidentId or monitor",
+					service: SERVICE_NAME,
+					method: "getEscalationJob",
+				});
+				return;
+			}
+			try {
+				this.logger.debug({
+					message: `Processing escalation for incident ${incidentId} on monitor ${monitor.id}`,
+					service: SERVICE_NAME,
+					method: "getEscalationJob",
+				});
+
+				// Check if incident is still active and not acknowledged
+				const activeIncident = await this.incidentsRepository.findActiveByIncidentId(incidentId, monitor.teamId);
+				if (!activeIncident || activeIncident.acknowledged) {
+					this.logger.debug({
+						message: `Incident ${incidentId} is no longer active or already acknowledged, skipping escalation`,
+						service: SERVICE_NAME,
+						method: "getEscalationJob",
+					});
+					return;
+				}
+
+				// Check if escalation is configured
+				if (!monitor.escalation) {
+					this.logger.debug({
+						message: `No escalation configured for monitor ${monitor.id}`,
+						service: SERVICE_NAME,
+						method: "getEscalationJob",
+					});
+					return;
+				}
+
+				// Send escalation notification
+				const escalationNotification = await this.notificationsRepository.findById(monitor.escalation.channelId, monitor.teamId);
+				if (!escalationNotification) {
+					this.logger.warn({
+						message: `Escalation notification ${monitor.escalation.channelId} not found for monitor ${monitor.id}`,
+						service: SERVICE_NAME,
+						method: "getEscalationJob",
+					});
+					return;
+				}
+
+				// Build escalation message
+				const settings = this.settingsService.getSettings();
+				const clientHost = settings.clientHost || "Host not defined";
+				const escalationMessage = this.notificationMessageBuilder.buildEscalationMessage(monitor, activeIncident, clientHost);
+
+				// Send the escalation notification
+				const success = await this.notificationsService.send(escalationNotification, monitor, {} as MonitorStatusResponse, {
+					shouldCreateIncident: false,
+					shouldResolveIncident: false,
+					shouldSendNotification: true,
+					incidentReason: null,
+					notificationReason: "status_change",
+				}, escalationMessage);
+
+				if (success) {
+					this.logger.info({
+						message: `Escalation notification sent for incident ${incidentId} on monitor ${monitor.id}`,
+						service: SERVICE_NAME,
+						method: "getEscalationJob",
+					});
+				} else {
+					this.logger.warn({
+						message: `Failed to send escalation notification for incident ${incidentId} on monitor ${monitor.id}`,
+						service: SERVICE_NAME,
+						method: "getEscalationJob",
+					});
+				}
+			} catch (error: unknown) {
+				this.logger.error({
+					message: error instanceof Error ? error.message : "Unknown error",
+					service: SERVICE_NAME,
+					method: "getEscalationJob",
+					stack: error instanceof Error ? error.stack : undefined,
+				});
+			}
+		};
+	};
 }
