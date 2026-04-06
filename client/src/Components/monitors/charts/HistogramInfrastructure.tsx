@@ -13,6 +13,7 @@ import { XTick } from "@/Components/monitors";
 import { Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import type { HardwareCheckStats } from "@/Types/Monitor";
+import { SPACING } from "@/Utils/Theme/constants";
 
 const AREA_COLORS = [
 	// Blues
@@ -141,7 +142,7 @@ const ResponseTimeToolTip = ({
 		.replace(" at ", ", ");
 
 	return (
-		<BaseBox sx={{ py: theme.spacing(2), px: theme.spacing(4) }}>
+		<BaseBox sx={{ py: theme.spacing(SPACING.LG), px: theme.spacing(SPACING.XS) }}>
 			<Typography>{formattedDate}</Typography>
 			<Typography>{displayLabel}: {formattedValue}</Typography>
 		</BaseBox>
