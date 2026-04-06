@@ -265,7 +265,10 @@ export const initializeServices = async ({
 		geoChecksRepository
 	);
 
-	const superSimpleQueue = await SuperSimpleQueue.create(logger, superSimpleQueueHelper, monitorsRepository);
+	const superSimpleQueue = await SuperSimpleQueue.create(logger, superSimpleQueueHelper, monitorsRepository, {
+		redisUrl: envSettings.redisUrl,
+		dbConnectionString: envSettings.dbConnectionString,
+	});
 
 	// Business services
 	const userService = new UserService({

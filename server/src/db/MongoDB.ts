@@ -24,7 +24,20 @@ class MongoDB implements IDb {
 	connect = async () => {
 		try {
 			const connectionString = this.envSettings.dbConnectionString || "mongodb://localhost:27017/uptime_db";
-			await mongoose.connect(connectionString);
+
+			// Enhanced connection options with retry logic, pooling, and timeouts
+			const connectionOptions = {
+				maxPoolSize: 10, // Maximum number of connections in the connection pool
+				minPoolSize: 5, // Minimum number of connections in the connection pool
+				maxIdleTimeMS: 30000, // Close connections after 30 seconds of inactivity
+				serverSelectionTimeoutMS: 10000, // Keep trying to send operations for 10 seconds
+				socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+				bufferCommands: false, // Disable mongoose buffering
+				retryWrites: true, // Enable retryable writes
+				retryReads: true, // Enable retryable reads
+			};
+
+			await mongoose.connect(connectionString, connectionOptions);
 			// If there are no AppSettings, create one // TODO why is this here?
 			await AppSettings.findOneAndUpdate(
 				{}, // empty filter to match any document

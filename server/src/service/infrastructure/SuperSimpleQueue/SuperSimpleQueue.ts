@@ -73,13 +73,47 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 		return SuperSimpleQueue.SERVICE_NAME;
 	}
 
-	static async create(logger: ILogger, helper: ISuperSimpleQueueHelper, monitorsRepository: IMonitorsRepository) {
-		const scheduler = new Scheduler({
-			// storeType: "mongo",
-			// storeType: "redis",
+	static async create(
+		logger: ILogger,
+		helper: ISuperSimpleQueueHelper,
+		monitorsRepository: IMonitorsRepository,
+		envSettings?: { redisUrl?: string; dbConnectionString?: string }
+	) {
+		// Enable Redis persistence if Redis URL is provided, otherwise fall back to MongoDB
+		const storeConfig: {
+			logLevel: "error" | "warn" | "info" | "debug" | "none";
+			storeType?: "redis" | "mongo";
+			redisUrl?: string;
+			dbUri?: string;
+		} = {
 			logLevel: "debug",
-			// dbUri: envSettings.dbConnectionString,
-		});
+		};
+
+		if (envSettings?.redisUrl) {
+			storeConfig.storeType = "redis";
+			storeConfig.redisUrl = envSettings.redisUrl;
+			logger.info({
+				message: "Using Redis for queue persistence",
+				service: SERVICE_NAME,
+				method: "create",
+			});
+		} else if (envSettings?.dbConnectionString) {
+			storeConfig.storeType = "mongo";
+			storeConfig.dbUri = envSettings.dbConnectionString;
+			logger.info({
+				message: "Using MongoDB for queue persistence",
+				service: SERVICE_NAME,
+				method: "create",
+			});
+		} else {
+			logger.warn({
+				message: "No persistence store configured, using in-memory queue (jobs will be lost on restart)",
+				service: SERVICE_NAME,
+				method: "create",
+			});
+		}
+
+		const scheduler = new Scheduler(storeConfig);
 		const instance = new SuperSimpleQueue(logger, helper, monitorsRepository, scheduler);
 		await instance.init();
 		return instance;

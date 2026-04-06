@@ -9,6 +9,9 @@ const envSchema = z.object({
 	// Database
 	DB_CONNECTION_STRING: z.string().min(1, "Database connection string is required"),
 
+	// Redis (optional for queue persistence)
+	REDIS_URL: z.string().url().optional(),
+
 	// JWT Authentication
 	JWT_SECRET: z.string().min(1, "JWT_SECRET is required"),
 	TOKEN_TTL: z.string().default("99d"),

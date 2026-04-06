@@ -5,6 +5,8 @@ import helmet from "helmet";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import swaggerUi, { type JsonObject } from "swagger-ui-express";
+import mongoose from "mongoose";
+import nodemailer from "nodemailer";
 import { handleErrors } from "@/middleware/handleErrors.js";
 import { generalApiLimiter } from "@/middleware/rateLimiter.js";
 import { sanitizeBody, sanitizeQuery } from "@/middleware/sanitization.js";
@@ -91,10 +93,84 @@ export const createApp = ({
 		swaggerUi.setup(dynamicSpec)(req, res, next);
 	});
 
-	app.use("/api/v1/health", (req, res) => {
-		res.json({
+	app.use("/api/v1/health", async (req, res) => {
+		const healthStatus = {
 			status: "OK",
-		});
+			timestamp: new Date().toISOString(),
+			services: {
+				database: { status: "unknown", message: "" },
+				queue: { status: "unknown", message: "" },
+				email: { status: "unknown", message: "" },
+			},
+		};
+
+		try {
+			// Database health check
+			try {
+				// Check if mongoose is connected and ready
+				if (mongoose.connection.readyState === 1) {
+					// 1 = connected
+					healthStatus.services.database = { status: "healthy", message: "Connected" };
+				} else {
+					throw new Error(`Database not connected (state: ${mongoose.connection.readyState})`);
+				}
+			} catch (error) {
+				healthStatus.services.database = {
+					status: "unhealthy",
+					message: error instanceof Error ? error.message : "Database connection failed",
+				};
+				healthStatus.status = "DEGRADED";
+			}
+
+			// Queue health check
+			try {
+				const queueMetrics = await services.jobQueue.getMetrics();
+				healthStatus.services.queue = {
+					status: "healthy",
+					message: `Active jobs: ${queueMetrics.activeJobs}, Total jobs: ${queueMetrics.jobs}`,
+				};
+			} catch (error) {
+				healthStatus.services.queue = {
+					status: "unhealthy",
+					message: error instanceof Error ? error.message : "Queue service unavailable",
+				};
+				healthStatus.status = "DEGRADED";
+			}
+
+			// Email service health check (basic connectivity test)
+			try {
+				const emailConfig = await services.settingsService.getDBSettings();
+				if (emailConfig.systemEmailHost && emailConfig.systemEmailPort) {
+					// Check if email configuration is present and valid
+					const testTransporter = nodemailer.createTransport({
+						host: emailConfig.systemEmailHost,
+						port: Number(emailConfig.systemEmailPort),
+						secure: emailConfig.systemEmailSecure,
+						connectionTimeout: 5000,
+					});
+
+					await testTransporter.verify();
+					testTransporter.close();
+
+					healthStatus.services.email = { status: "healthy", message: "SMTP connection verified" };
+				} else {
+					healthStatus.services.email = { status: "not_configured", message: "Email settings not configured" };
+				}
+			} catch {
+				healthStatus.services.email = {
+					status: "unhealthy",
+					message: "Email service unavailable",
+				};
+				// Don't mark overall status as degraded for email issues
+			}
+		} catch {
+			healthStatus.status = "ERROR";
+			healthStatus.services.database.message = "Health check failed";
+		}
+
+		const statusCode = healthStatus.status === "OK" ? 200 : healthStatus.status === "DEGRADED" ? 200 : 503;
+
+		res.status(statusCode).json(healthStatus);
 	});
 
 	// Main app routes

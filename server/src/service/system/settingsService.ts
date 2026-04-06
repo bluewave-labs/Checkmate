@@ -12,6 +12,7 @@ export type EnvConfig = {
 	logLevel: string;
 	clientHost: string;
 	dbConnectionString: string;
+	redisUrl?: string;
 };
 
 export interface ISettingsService {
@@ -36,6 +37,7 @@ export class SettingsService implements ISettingsService {
 			logLevel: env.LOG_LEVEL,
 			clientHost: env.CLIENT_HOST,
 			dbConnectionString: env.DB_CONNECTION_STRING,
+			redisUrl: env.REDIS_URL,
 		};
 	}
 

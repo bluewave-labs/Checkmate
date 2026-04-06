@@ -34,6 +34,7 @@ export class EmailService implements IEmailService {
 	private nodemailer: Mailer;
 	private logger: ILogger;
 	private transporter: ReturnType<typeof import("nodemailer").createTransport> | null = null;
+	private currentConfig: EmailTransportConfig | null = null;
 	private templateLookup: Record<string, ((context: Record<string, unknown>) => string) | undefined>;
 	private loadTemplate: (templateName: string) => ((context: Record<string, unknown>) => string) | undefined;
 
@@ -61,6 +62,71 @@ export class EmailService implements IEmailService {
 	get serviceName() {
 		return EmailService.SERVICE_NAME;
 	}
+
+	private getTransporter = async (config: EmailTransportConfig) => {
+		// Check if we need to recreate the transporter (config changed)
+		const configChanged = !this.currentConfig || JSON.stringify(this.currentConfig) !== JSON.stringify(config);
+
+		if (!this.transporter || configChanged) {
+			// Close existing transporter if it exists
+			if (this.transporter) {
+				try {
+					this.transporter.close();
+				} catch {
+					this.logger.warn({
+						message: "Error closing existing transporter",
+						service: SERVICE_NAME,
+						method: "getTransporter",
+					});
+				}
+			}
+
+			const {
+				systemEmailHost,
+				systemEmailPort,
+				systemEmailSecure,
+				systemEmailPool,
+				systemEmailUser,
+				systemEmailAddress,
+				systemEmailPassword,
+				systemEmailConnectionHost,
+				systemEmailTLSServername,
+				systemEmailIgnoreTLS,
+				systemEmailRequireTLS,
+				systemEmailRejectUnauthorized,
+			} = config;
+
+			const emailConfig = {
+				host: systemEmailHost,
+				port: Number(systemEmailPort),
+				secure: systemEmailSecure,
+				auth: {
+					user: systemEmailUser || systemEmailAddress,
+					pass: systemEmailPassword,
+				},
+				name: systemEmailConnectionHost || "localhost",
+				connectionTimeout: 10000, // Increased from 5000ms
+				pool: systemEmailPool !== false, // Enable pooling by default
+				tls: {
+					rejectUnauthorized: systemEmailRejectUnauthorized,
+					ignoreTLS: systemEmailIgnoreTLS,
+					requireTLS: systemEmailRequireTLS,
+					servername: systemEmailTLSServername,
+				},
+			};
+
+			this.transporter = this.nodemailer.createTransport(emailConfig);
+			this.currentConfig = config;
+
+			this.logger.info({
+				message: "Created new email transporter",
+				service: SERVICE_NAME,
+				method: "getTransporter",
+			});
+		}
+
+		return this.transporter;
+	};
 
 	init = () => {
 		this.loadTemplate = (templateName) => {
@@ -113,57 +179,26 @@ export class EmailService implements IEmailService {
 		} else {
 			config = await this.settingsService.getDBSettings();
 		}
-		const {
-			systemEmailHost,
-			systemEmailPort,
-			systemEmailSecure,
-			systemEmailPool,
-			systemEmailUser,
-			systemEmailAddress,
-			systemEmailPassword,
-			systemEmailConnectionHost,
-			systemEmailTLSServername,
-			systemEmailIgnoreTLS,
-			systemEmailRequireTLS,
-			systemEmailRejectUnauthorized,
-		} = config;
-
-		const emailConfig = {
-			host: systemEmailHost,
-			port: Number(systemEmailPort),
-			secure: systemEmailSecure,
-			auth: {
-				user: systemEmailUser || systemEmailAddress,
-				pass: systemEmailPassword,
-			},
-			name: systemEmailConnectionHost || "localhost",
-			connectionTimeout: 5000,
-			pool: systemEmailPool,
-			tls: {
-				rejectUnauthorized: systemEmailRejectUnauthorized,
-				ignoreTLS: systemEmailIgnoreTLS,
-				requireTLS: systemEmailRequireTLS,
-				servername: systemEmailTLSServername,
-			},
-		};
-		this.transporter = this.nodemailer.createTransport(emailConfig);
 
 		try {
-			await this.transporter.verify();
-		} catch (error: unknown) {
-			this.logger.warn({
-				message: "Email transporter verification failed",
-				service: SERVICE_NAME,
-				method: "verifyTransporter",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-			return false;
-		}
+			const transporter = await this.getTransporter(config);
 
-		try {
-			const info = await this.transporter.sendMail({
+			// Verify transporter connection (only log warnings, don't fail)
+			try {
+				await transporter.verify();
+			} catch (error: unknown) {
+				this.logger.warn({
+					message: "Email transporter verification failed",
+					service: SERVICE_NAME,
+					method: "sendEmail",
+					stack: error instanceof Error ? error.stack : undefined,
+				});
+				// Continue anyway - some SMTP servers don't support verification
+			}
+
+			const info = await transporter.sendMail({
 				to: to,
-				from: systemEmailAddress,
+				from: config.systemEmailAddress,
 				subject: subject,
 				html: html,
 			});
@@ -175,6 +210,7 @@ export class EmailService implements IEmailService {
 				method: "sendEmail",
 				stack: error instanceof Error ? error.stack : undefined,
 			});
+			return false;
 		}
 	};
 }
