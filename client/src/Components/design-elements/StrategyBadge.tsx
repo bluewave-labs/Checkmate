@@ -9,10 +9,7 @@ interface StrategyBadgeProps {
 	variant?: "caption" | "body2";
 }
 
-export const StrategyBadge = ({
-	strategy,
-	variant = "body2",
-}: StrategyBadgeProps) => {
+export const StrategyBadge = ({ strategy, variant = "body2" }: StrategyBadgeProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 

@@ -409,14 +409,10 @@ const CreateMonitorPage = () => {
 										error={!!fieldState.error}
 									>
 										<MenuItem value="desktop">
-											{t(
-												"pages.createMonitor.form.general.option.strategy.desktop"
-											)}
+											{t("pages.createMonitor.form.general.option.strategy.desktop")}
 										</MenuItem>
 										<MenuItem value="mobile">
-											{t(
-												"pages.createMonitor.form.general.option.strategy.mobile"
-											)}
+											{t("pages.createMonitor.form.general.option.strategy.mobile")}
 										</MenuItem>
 									</Select>
 								)}
