@@ -807,7 +807,7 @@ const CreateMonitorPage = () => {
 														alignItems="flex-end"
 													>
 														<TextField
-															label={t(
+															fieldLabel={t(
 																"pages.createMonitor.form.escalatedNotifications.minutes"
 															)}
 															type="number"
@@ -826,7 +826,7 @@ const CreateMonitorPage = () => {
 															)}
 														</Typography>
 														<Select
-															label={t(
+															fieldLabel={t(
 																"pages.createMonitor.form.escalatedNotifications.channel"
 															)}
 															value={rule.channelId}
