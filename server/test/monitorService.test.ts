@@ -109,6 +109,14 @@ describe("MonitorService", () => {
 			expect(result).toMatchObject({ count: 2 });
 			expect(result.monitors).toHaveLength(2);
 			expect(result.monitors[0]).toHaveProperty("recentChecks");
+			expect(result.monitors[0].recentChecks.length).toBeGreaterThan(0);
+			expect(result.monitors[0].recentChecks[0]).toEqual(
+				expect.objectContaining({
+					responseTime: expect.any(Number),
+					status: expect.any(Boolean),
+					message: expect.any(String),
+				})
+			);
 		});
 	});
 
