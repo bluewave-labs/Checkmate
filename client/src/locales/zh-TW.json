@@ -35,11 +35,11 @@
 			"sendInvite": "發送邀請",
 			"test": "測試",
 			"testNotifications": "測試通知",
-			"toggleTheme": "",
+			"toggleTheme": "切換淺色和深色模式",
 			"flushQueue": "清除佇列",
 			"notFound": "前往主儀表板",
-			"resetPassword": "",
-			"reset": "",
+			"resetPassword": "重設密碼",
+			"reset": "重設",
 			"clear": "清除",
 			"addDemo": "新增示範監控",
 			"removeMonitors": "移除監控",
@@ -86,12 +86,12 @@
 			"name": {
 				"option": {
 					"firstName": {
-						"label": "",
-						"placeholder": ""
+						"label": "名字",
+						"placeholder": "輸入您的名字"
 					},
 					"lastName": {
-						"label": "",
-						"placeholder": ""
+						"label": "姓氏",
+						"placeholder": "輸入您的姓氏"
 					}
 				}
 			},
@@ -125,17 +125,17 @@
 	"components": {
 		"imageUpload": {
 			"clickToUpload": "點擊上傳",
-			"dragAndDrop": "",
-			"supportedFormats": "",
-			"maxSize": "",
+			"dragAndDrop": "或拖放檔案",
+			"supportedFormats": "支援的格式",
+			"maxSize": "最大大小",
 			"orDragAndDrop": "或拖放檔案",
 			"errors": {
-				"invalidFileSize": "",
-				"invalidFileFormat": ""
+				"invalidFileSize": "檔案大小過大！",
+				"invalidFileFormat": "不支援的檔案格式！"
 			}
 		},
 		"headerStatusPageControls": {
-			"publicLink": ""
+			"publicLink": "公開連結"
 		},
 		"headerTimeRange": {
 			"labels": {
@@ -155,25 +155,25 @@
 			"serverUnreachable": "無法連線至伺服器",
 			"retry": "重試",
 			"retrying": "重試中...",
-			"reconnected": ""
+			"reconnected": "連線已恢復"
 		},
 		"sidebar": {
 			"menu": {
-				"uptime": "",
-				"pagespeed": "",
-				"infrastructure": "",
-				"notifications": "",
+				"uptime": "正常運行時間",
+				"pagespeed": "PageSpeed",
+				"infrastructure": "基礎架構",
+				"notifications": "通知",
 				"checks": "檢查",
-				"incidents": "",
-				"statusPages": "",
-				"maintenance": "",
-				"logs": "",
-				"settings": ""
+				"incidents": "事件",
+				"statusPages": "狀態頁面",
+				"maintenance": "維護",
+				"logs": "日誌",
+				"settings": "設定"
 			},
 			"bottomMenu": {
-				"support": "",
-				"discussions": "",
-				"docs": "",
+				"support": "支援",
+				"discussions": "討論",
+				"docs": "文件",
 				"changelog": "版本變更記錄"
 			},
 			"accountMenu": {
@@ -186,8 +186,8 @@
 				"description": "查看最新版本並在 GitHub 上幫助社群成長"
 			},
 			"authFooter": {
-				"navControls": "",
-				"logOut": "",
+				"navControls": "控制項",
+				"logOut": "登出",
 				"roles": {
 					"superAdmin": "超級管理員",
 					"admin": "管理員",
@@ -253,13 +253,13 @@
 					"placeholder": "依角色篩選",
 					"all": "全部",
 					"admin": "管理員",
-					"member": ""
+					"member": "成員"
 				},
 				"table": {
 					"headers": {
 						"email": "電子郵件",
 						"role": "角色",
-						"created": ""
+						"created": "建立時間"
 					}
 				},
 				"addMember": {
@@ -286,27 +286,27 @@
 				"passwordRules": {
 					"length": {
 						"beginning": "必須至少",
-						"highlighted": ""
+						"highlighted": "8 個字元"
 					},
 					"lowercase": {
 						"beginning": "必須至少包含",
-						"highlighted": ""
+						"highlighted": "一個小寫字母"
 					},
 					"match": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "密碼",
+						"highlighted": "必須相符"
 					},
 					"number": {
 						"beginning": "必須至少包含",
-						"highlighted": ""
+						"highlighted": "一個數字"
 					},
 					"special": {
 						"beginning": "必須至少包含",
-						"highlighted": ""
+						"highlighted": "一個特殊字元 (!?@#$%^&*()-_=+[]{}|;:'\",./\\~`)"
 					},
 					"uppercase": {
 						"beginning": "必須至少包含",
-						"highlighted": ""
+						"highlighted": "一個大寫字母"
 					}
 				},
 				"form": {
@@ -438,9 +438,9 @@
 						},
 						"matchMethod": {
 							"label": "配對方式",
-							"equal": "",
-							"include": "",
-							"regex": ""
+							"equal": "等於",
+							"include": "包含",
+							"regex": "正規表達式"
 						}
 					},
 					"title": "進階設定"
@@ -452,15 +452,15 @@
 							"label": "檢查頻率",
 							"value": {
 								"fifteenMinutes": "15 分鐘",
-								"fifteenSeconds": "",
+								"fifteenSeconds": "15 秒",
 								"fiveMinutes": "5 分鐘",
-								"fourMinutes": "",
-								"oneMinute": "",
+								"fourMinutes": "4 分鐘",
+								"oneMinute": "1 分鐘",
 								"tenMinutes": "10 分鐘",
 								"thirtyMinutes": "30 分鐘",
-								"thirtySeconds": "",
+								"thirtySeconds": "30 秒",
 								"threeMinutes": "3分鐘",
-								"twoMinutes": ""
+								"twoMinutes": "2 分鐘"
 							}
 						}
 					},
@@ -489,8 +489,8 @@
 							"placeholder": "https://www.google.com"
 						},
 						"game": {
-							"label": "",
-							"placeholder": ""
+							"label": "選擇遊戲",
+							"placeholder": "選擇遊戲"
 						},
 						"port": {
 							"label": "監控的連接埠",
@@ -508,10 +508,10 @@
 					"title": "一般設定",
 					"description": {
 						"http": "輸入要監控的 URL 或 IP（例如 https://example.com/ 或 192.168.1.100），並新增一個顯示在儀表板上的清晰顯示名稱。",
-						"ping": "",
-						"port": "",
-						"docker": "",
-						"game": "",
+						"ping": "輸入要 Ping 的 IP 位址或主機名稱（例如 192.168.1.100 或 example.com），並新增一個顯示在儀表板上的清晰顯示名稱。",
+						"port": "輸入伺服器的 URL 或 IP、連接埠號碼，以及顯示在儀表板上的清晰顯示名稱。",
+						"docker": "輸入 Docker 容器名稱或 ID。您可以使用容器名稱（例如 my-app）或容器 ID（完整的 64 字元 ID 或短 ID）。",
+						"game": "輸入要 Ping 的 IP 位址或主機名稱及連接埠號碼（例如 192.168.1.100 或 example.com），並選擇遊戲類型。",
 						"pagespeed": "追蹤您網站的頁面載入效能、Core Web Vitals 和最佳化分數。",
 						"grpc": "輸入 gRPC 伺服器的主機名稱和連接埠，可選擇指定健康檢查的服務名稱，並新增一個顯示名稱。",
 						"websocket": "輸入要監控的 WebSocket URL（例如 wss://example.com/socket），並新增一個顯示名稱。",
@@ -712,7 +712,7 @@
 				"headers": {
 					"endTime": "結束時間",
 					"resolutionType": "解決類型",
-					"startTime": "",
+					"startTime": "開始時間",
 					"statusCode": "狀態碼"
 				},
 				"resolvedIncidents": "已解決的事件",
@@ -768,21 +768,25 @@
 			},
 			"tabs": {
 				"labels": {
-					"network": "",
+					"network": "網路",
 					"overview": "概覽"
 				}
 			},
 			"fallback": {
 				"actionButton": "建立監控！",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
+				"checks": [
+					"追蹤您伺服器的效能",
+					"找出瓶頸並最佳化使用",
+					"透過即時監控確保可靠性"
+				],
 				"title": "基礎架構監控用於："
 			}
 		},
 		"logs": {
 			"tabs": {
-				"diagnostics": "",
-				"logs": "",
-				"queue": ""
+				"diagnostics": "診斷",
+				"logs": "日誌",
+				"queue": "工作佇列"
 			},
 			"logLevelSelect": {
 				"label": "日誌等級"
@@ -838,13 +842,13 @@
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "建立維護時段！",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
+				"checks": ["標記您的維護期間", "消除任何誤解", "在維護時段停止發送警報"],
 				"title": "維護時段用於："
 			},
 			"table": {
 				"headers": {
-					"nextWindow": "",
-					"repeat": ""
+					"nextWindow": "下一個時段",
+					"repeat": "重複"
 				}
 			},
 			"form": {
@@ -896,7 +900,11 @@
 		"notifications": {
 			"fallback": {
 				"actionButton": "建立頻道",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
+				"checks": [
+					"針對停機或效能問題通知團隊",
+					"在事件發生時通知工程師",
+					"讓管理員隨時了解系統變更"
+				],
 				"title": "通知頻道用於："
 			},
 			"form": {
@@ -979,7 +987,7 @@
 			},
 			"fallback": {
 				"actionButton": "建立監控！",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
+				"checks": ["報告頁面的使用者體驗", "協助分析網頁速度", "提供頁面改善建議"],
 				"title": "PageSpeed 監控用於："
 			}
 		},
@@ -1083,7 +1091,7 @@
 				"email": {
 					"title": "電子郵件設定",
 					"description": "設定系統的電子郵件設定。此設定用於發送通知和警報。",
-					"descriptionTransport": "",
+					"descriptionTransport": "這會為 NodeMailer 建立 SMTP 傳輸",
 					"descriptionTransportLink": "在此查看規格",
 					"option": {
 						"host": {
@@ -1164,7 +1172,12 @@
 			"deleteSuccess": "狀態頁面已成功刪除",
 			"fallback": {
 				"title": "狀態頁面用於：",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
+				"checks": [
+					"向使用者和利害關係人傳達系統狀態",
+					"公開顯示即時正常運行時間資訊",
+					"透過透明的服務監控建立信任",
+					"在事件期間減少支援請求"
+				],
 				"actionButton": "建立狀態頁面！"
 			},
 			"monitorsList": {
@@ -1297,7 +1310,12 @@
 			},
 			"fallback": {
 				"actionButton": "建立監控！",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
+				"checks": [
+					"檢查網站或伺服器是否上線並回應",
+					"針對停機或效能問題通知團隊",
+					"監控 HTTP 端點、Ping、容器和連接埠",
+					"追蹤歷史正常運行時間和可靠性趨勢"
+				],
 				"title": "正常運行時間監控用於："
 			}
 		}
