@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { booleanCoercion } from "./shared.js";
 import { GeoContinents } from "@/types/geoCheck.js";
-import { MonitorMatchMethods, MonitorTypes } from "@/types/monitor.js";
+import { MonitorMatchMethods, MonitorTypes, PageSpeedStrategies, DefaultPageSpeedStrategy } from "@/types/monitor.js";
 
 export const getMonitorByIdParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
@@ -73,6 +73,7 @@ export const createMonitorBodyValidation = z.object({
 	matchMethod: z.union([z.enum(MonitorMatchMethods), z.literal("")]).optional(),
 	gameId: z.union([z.string(), z.literal("")]).optional(),
 	grpcServiceName: z.union([z.string(), z.literal("")]).default(""),
+	strategy: z.enum(PageSpeedStrategies).default(DefaultPageSpeedStrategy),
 	selectedDisks: z.array(z.string()).optional(),
 	group: z.union([z.string().max(50).trim(), z.null(), z.literal("")]).optional(),
 	geoCheckEnabled: z.boolean().optional(),
@@ -102,6 +103,7 @@ export const editMonitorBodyValidation = z.object({
 	tempAlertThreshold: z.number().optional(),
 	gameId: z.union([z.string(), z.literal("")]).optional(),
 	grpcServiceName: z.union([z.string(), z.literal("")]).optional(),
+	strategy: z.enum(PageSpeedStrategies).optional(),
 	selectedDisks: z.array(z.string()).optional(),
 	group: z.union([z.string().max(50).trim(), z.null(), z.literal("")]).optional(),
 	geoCheckEnabled: z.boolean().optional(),
@@ -156,6 +158,7 @@ const importedMonitorSchema = z.object({
 	selectedDisks: z.array(z.string()).default([]),
 	gameId: z.union([z.string(), z.literal("")]).optional(),
 	grpcServiceName: z.union([z.string(), z.literal("")]).default(""),
+	strategy: z.enum(PageSpeedStrategies).default(DefaultPageSpeedStrategy),
 	group: z.union([z.string().max(50).trim(), z.null()]).default(null),
 	geoCheckEnabled: z.boolean().default(false),
 	geoCheckLocations: z.array(z.enum(GeoContinents)).default([]),

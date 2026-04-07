@@ -6,6 +6,10 @@ export type { GeoContinent } from "@/types/geoCheck.js";
 export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "unknown"] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
+export const PageSpeedStrategies = ["desktop", "mobile"] as const;
+export type PageSpeedStrategy = (typeof PageSpeedStrategies)[number];
+export const DefaultPageSpeedStrategy: PageSpeedStrategy = "desktop";
+
 export const GeoCheckSupportedTypes: readonly MonitorType[] = ["http", "ping"] as const;
 export const supportsGeoCheck = (type: MonitorType): boolean => GeoCheckSupportedTypes.includes(type);
 
@@ -49,6 +53,7 @@ export interface Monitor {
 	selectedDisks: string[];
 	gameId?: string;
 	grpcServiceName?: string;
+	strategy?: PageSpeedStrategy;
 	group: string | null;
 	geoCheckEnabled?: boolean;
 	geoCheckLocations?: GeoContinent[];

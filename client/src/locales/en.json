@@ -503,6 +503,11 @@
 						"wsUrl": {
 							"label": "WebSocket URL",
 							"placeholder": "wss://example.com/socket"
+						},
+						"strategy": {
+							"label": "Strategy",
+							"desktop": "Desktop",
+							"mobile": "Mobile"
 						}
 					},
 					"title": "General settings",
@@ -968,6 +973,10 @@
 			}
 		},
 		"pageSpeed": {
+			"strategy": {
+				"desktop": "Desktop",
+				"mobile": "Mobile"
+			},
 			"charts": {
 				"common": {
 					"cls": "Cumulative Layout Shift (CLS)",
