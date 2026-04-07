@@ -56,7 +56,7 @@ Usage instructions can be found [here](https://checkmate.so/docs).
 
 See installation instructions in [Checkmate documentation portal](https://checkmate.so/docs). 
 
-Alternatively, you can also use [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (South Africa) or [Pikapods](https://www.pikapods.com/) to quickly spin off a Checkmate instance. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
+Alternatively, you can also use [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (South Africa), [Cloudzy](https://cloudzy.com/marketplace/checkmate) or [Pikapods](https://www.pikapods.com/) to quickly spin off a Checkmate instance. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
 
 ### Using a Custom CA
 
