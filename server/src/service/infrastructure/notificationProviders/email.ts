@@ -87,6 +87,10 @@ export class EmailProvider implements INotificationProvider {
 				return `Monitor ${message.monitor.name} threshold exceeded`;
 			case "threshold_resolved":
 				return `Monitor ${message.monitor.name} thresholds resolved`;
+			case "escalation":
+				return `ESCALATION: Monitor ${message.monitor.name} - Unacknowledged Incident`;
+			case "test":
+				return `Test notification from Checkmate`;
 			default:
 				return `Alert: ${message.monitor.name}`;
 		}

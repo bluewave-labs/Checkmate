@@ -774,9 +774,13 @@ const CreateMonitorPage = () => {
 						control={control}
 						render={({ field }) => {
 							const fieldValue = field.value ?? { delayMinutes: 3, channelId: "" };
-							const selectedEscalationNotification = (notifications ?? []).find(
-								(n) => n.id === fieldValue.channelId
-							) ?? null;
+                            const escalationOptions = (notifications ?? []).map((n) => ({
+                                ...n,
+                                name: n.notificationName,
+                            }));
+                            const selectedEscalationNotification = escalationOptions.find(
+                                (n) => n.id === fieldValue.channelId
+                            ) ?? null;
 							return (
 								<Stack spacing={theme.spacing(LAYOUT.MD)}>
 									<TextField
@@ -792,8 +796,8 @@ const CreateMonitorPage = () => {
 										inputProps={{ min: 1 }}
 									/>
 									<Autocomplete
-										options={notifications ?? []}
-										getOptionLabel={(option) => option.notificationName}
+										options={escalationOptions}
+										getOptionLabel={(option) => option.name}
 										value={selectedEscalationNotification}
 										onChange={(_, newValue) => {
 											field.onChange({
