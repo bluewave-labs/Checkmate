@@ -27,6 +27,36 @@ const baseSchema = z.object({
 		.number()
 		.min(300000, "Interval must be at least 5 minutes")
 		.optional(),
+	escalation: z
+		.object({
+			enabled: z.boolean().default(true),
+			levels: z
+				.array(
+					z.object({
+						afterMinutes: z
+							.number({ message: "Escalation delay is required" })
+							.int("Escalation delay must be a whole number")
+							.min(0, "Escalation delay must be 0 or more minutes"),
+						notificationIds: z
+							.array(z.string())
+							.min(1, "Select at least one notification channel"),
+						label: z.string().max(100).optional(),
+					})
+				)
+				.min(1, "Add an escalation rule")
+				.max(1, "Only one escalation rule is allowed")
+				.default([{ afterMinutes: 0, notificationIds: [] }]),
+		})
+		.superRefine((value, ctx) => {
+			if (value.enabled && value.levels.length === 0) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					path: ["levels"],
+					message: "Add at least one escalation rule",
+				});
+			}
+		})
+		.default({ enabled: true, levels: [{ afterMinutes: 0, notificationIds: [] }] }),
 });
 
 // HTTP monitor schema
@@ -135,7 +165,7 @@ export const monitorSchema = z.discriminatedUnion("type", [
 	websocketSchema,
 ]);
 
-export type MonitorFormData = z.infer<typeof monitorSchema>;
+export type MonitorFormData = z.input<typeof monitorSchema>;
 
 // Type-specific schemas exported for individual use
 export {

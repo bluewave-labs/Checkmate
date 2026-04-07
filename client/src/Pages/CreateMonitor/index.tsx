@@ -202,7 +202,7 @@ const CreateMonitorPage = () => {
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
-	const { control, watch, handleSubmit, clearErrors } = form;
+	const { control, watch, handleSubmit, clearErrors, setValue } = form;
 
 	useEffect(() => {
 		form.reset(defaults);
@@ -212,14 +212,39 @@ const CreateMonitorPage = () => {
 
 	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
 	const watchGeoCheckEnabled = watch("geoCheckEnabled") as boolean;
+	const watchedEscalationLevels = watch("escalation.levels");
 
 	useEffect(() => {
 		clearErrors();
 	}, [watchedType, clearErrors]);
 
+	useEffect(() => {
+		if (!watchedEscalationLevels || watchedEscalationLevels.length !== 1) {
+			setValue(
+				"escalation.levels",
+				[
+					watchedEscalationLevels?.[0] || {
+						afterMinutes: 0,
+						notificationIds: [],
+					},
+				],
+				{ shouldDirty: true, shouldValidate: true }
+			);
+		}
+	}, [watchedEscalationLevels, setValue]);
+
 	const generalSettingsConfig = useMemo(
 		() => getGeneralSettingsConfig(watchedType, t),
 		[watchedType, t]
+	);
+
+	const notificationOptions = useMemo(
+		() =>
+			(notifications ?? []).map((n) => ({
+				...n,
+				name: n.notificationName,
+			})),
+		[notifications]
 	);
 
 	const { post, loading: isCreating } = usePost<MonitorFormData, Monitor>();
@@ -705,11 +730,6 @@ const CreateMonitorPage = () => {
 						name="notifications"
 						control={control}
 						render={({ field }) => {
-							// Map notifications to have 'name' property for Autocomplete
-							const notificationOptions = (notifications ?? []).map((n) => ({
-								...n,
-								name: n.notificationName,
-							}));
 							const selectedNotifications = notificationOptions.filter((n) =>
 								(field.value ?? []).includes(n.id)
 							);
@@ -762,6 +782,119 @@ const CreateMonitorPage = () => {
 							);
 						}}
 					/>
+				}
+			/>
+
+			<ConfigBox
+				title={t("pages.createMonitor.form.escalation.title")}
+				subtitle={t("pages.createMonitor.form.escalation.description")}
+				rightContent={
+					<Stack spacing={theme.spacing(LAYOUT.MD)}>
+						<Controller
+							name="escalation.enabled"
+							control={control}
+							render={({ field }) => {
+								if (field.value !== true) {
+									field.onChange(true);
+								}
+								return <></>;
+							}}
+						/>
+
+						<Controller
+							name="escalation.levels"
+							control={control}
+							render={({ field, fieldState }) => {
+								const levels = field.value ?? [];
+								const level = levels[0] ?? { afterMinutes: 0, notificationIds: [] };
+								const selectedLevelNotifications = notificationOptions.filter((n) =>
+									(level.notificationIds ?? []).includes(n.id)
+								);
+								return (
+									<Stack spacing={theme.spacing(LAYOUT.MD)}>
+										<TextField
+											type="number"
+											value={String(level.afterMinutes ?? 0)}
+											onChange={(e) => {
+												field.onChange([
+													{
+														...level,
+														afterMinutes: Number(e.target.value || 0),
+													},
+												]);
+											}}
+											fieldLabel={t(
+												"pages.createMonitor.form.escalation.option.afterMinutes.label"
+											)}
+										/>
+
+										<Typography>
+											{t("pages.createMonitor.form.escalation.option.channelsLabel")}
+										</Typography>
+
+										<Autocomplete
+											multiple
+											options={notificationOptions}
+											value={selectedLevelNotifications}
+											getOptionLabel={(option) => option.name}
+											onChange={(_: unknown, newValue: typeof notificationOptions) => {
+												field.onChange([
+													{
+														...level,
+														notificationIds: newValue.map((n) => n.id),
+													},
+												]);
+											}}
+											isOptionEqualToValue={(option, value) => option.id === value.id}
+										/>
+
+										{selectedLevelNotifications.length > 0 && (
+											<Stack
+												flex={1}
+												width="100%"
+											>
+												{selectedLevelNotifications.map((notification, index) => (
+													<Stack
+														direction="row"
+														alignItems="center"
+														key={notification.id}
+														width="100%"
+													>
+														<Typography flexGrow={1}>
+															{notification.notificationName}
+														</Typography>
+														<IconButton
+															size="small"
+															onClick={() => {
+																field.onChange([
+																	{
+																		...level,
+																		notificationIds: (level.notificationIds ?? []).filter(
+																			(id: string) => id !== notification.id
+																		),
+																	},
+																]);
+															}}
+															aria-label="Remove escalation notification"
+														>
+															<Trash2 size={16} />
+														</IconButton>
+														{index < selectedLevelNotifications.length - 1 && <Divider />}
+													</Stack>
+												))}
+											</Stack>
+										)}
+
+										{fieldState.error?.message && (
+											<Typography color="error.main">
+												{fieldState.error.message}
+											</Typography>
+										)}
+									</Stack>
+								);
+							}}
+						/>
+					</Stack>
 				}
 			/>
 

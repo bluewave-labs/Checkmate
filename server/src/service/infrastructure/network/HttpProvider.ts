@@ -17,7 +17,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 	) {
 		const cacheable = new CacheableLookup({ maxTtl: 300, errorTtl: 30 });
 		this.got = got.extend({
-			dnsCache: cacheable,
+			//dnsCache: cacheable,
 			timeout: {
 				request: 30000,
 			},

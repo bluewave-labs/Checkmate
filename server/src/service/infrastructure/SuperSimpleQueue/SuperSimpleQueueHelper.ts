@@ -28,6 +28,7 @@ export interface ISuperSimpleQueueHelper {
 	readonly serviceName: string;
 	getHeartbeatJob(): (monitor: Monitor) => Promise<void>;
 	getHeartbeatGeoJob(): (monitor: Monitor) => Promise<void>;
+	getEscalationJob(): () => Promise<void>;
 	getCleanupOrphanedJob(): () => Promise<void>;
 	getCleanupRetentionJob(): () => Promise<void>;
 	isInMaintenanceWindow(monitorId: string, teamId: string): Promise<boolean>;
@@ -38,7 +39,7 @@ export interface MonitorActionDecision {
 	shouldResolveIncident: boolean;
 	shouldSendNotification: boolean;
 	incidentReason: "status_down" | "threshold_breach" | null;
-	notificationReason: "status_change" | "threshold_breach" | null;
+	notificationReason: "status_change" | "threshold_breach" | "escalation" | null;
 	thresholdBreaches?: {
 		cpu?: boolean;
 		memory?: boolean;
@@ -412,6 +413,104 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 					message: error instanceof Error ? error.message : "Unknown error",
 					service: SERVICE_NAME,
 					method: "getCleanupRetentionJob",
+					stack: error instanceof Error ? error.stack : undefined,
+				});
+			}
+		};
+	};
+
+	getEscalationJob = () => {
+		return async () => {
+			try {
+				const monitors = await this.monitorsRepository.findAll();
+				if (!monitors?.length) {
+					return;
+				}
+
+				for (const monitor of monitors) {
+					try {
+						if (monitor.status !== "down") {
+							continue;
+						}
+
+						const escalation = monitor.escalation;
+						if (!escalation?.enabled || !escalation.levels?.length) {
+							continue;
+						}
+
+						const level = escalation.levels[0];
+						if (!level || !level.notificationIds?.length) {
+							continue;
+						}
+
+						const activeIncident = await this.incidentsRepository.findActiveByMonitorId(monitor.id, monitor.teamId);
+						if (!activeIncident) {
+							continue;
+						}
+
+						const sentEscalationLevels = activeIncident.sentEscalationLevels ?? [];
+						const escalationLevelIndex = 0;
+						if (sentEscalationLevels.includes(escalationLevelIndex)) {
+							continue;
+						}
+
+						const afterMinutes = level.afterMinutes ?? 0;
+						const startedAt = new Date(activeIncident.startTime).getTime();
+						if (Number.isNaN(startedAt)) {
+							continue;
+						}
+
+						const dueAt = startedAt + afterMinutes * 60 * 1000;
+						if (Date.now() < dueAt) {
+							continue;
+						}
+
+						const escalationStatusResponse = {
+							monitorId: monitor.id,
+							teamId: monitor.teamId,
+							type: monitor.type,
+							status: false,
+							code: 0,
+							message: `Escalation triggered after ${afterMinutes} minute(s)`,
+						};
+
+						const escalationDecision: MonitorActionDecision = {
+							shouldCreateIncident: false,
+							shouldResolveIncident: false,
+							shouldSendNotification: true,
+							incidentReason: "status_down",
+							notificationReason: "escalation",
+						};
+
+						const sent = await this.notificationsService.sendEscalationNotifications(
+							monitor,
+							escalationStatusResponse,
+							escalationDecision,
+							level.notificationIds
+						);
+
+						if (!sent) {
+							continue;
+						}
+
+						await this.incidentsRepository.updateById(activeIncident.id, activeIncident.teamId, {
+							sentEscalationLevels: [...sentEscalationLevels, escalationLevelIndex],
+							lastEscalationAt: new Date().toISOString(),
+						});
+					} catch (error: unknown) {
+						this.logger.warn({
+							message: `Error processing escalation for monitor ${monitor.id}: ${error instanceof Error ? error.message : "Unknown error"}`,
+							service: SERVICE_NAME,
+							method: "getEscalationJob",
+							stack: error instanceof Error ? error.stack : undefined,
+						});
+					}
+				}
+			} catch (error: unknown) {
+				this.logger.error({
+					message: error instanceof Error ? error.message : "Unknown error",
+					service: SERVICE_NAME,
+					method: "getEscalationJob",
 					stack: error instanceof Error ? error.stack : undefined,
 				});
 			}

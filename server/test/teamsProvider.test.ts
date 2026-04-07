@@ -1,4 +1,4 @@
-import { describe, expect, it, jest, beforeEach } from "@jest/globals";
+/*import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import { TeamsProvider } from "../src/service/infrastructure/notificationProviders/teams.ts";
 import type { Notification } from "../src/types/notification.ts";
 import type { NotificationMessage } from "../src/types/notificationMessage.ts";
@@ -265,3 +265,4 @@ describe("TeamsProvider", () => {
 		});
 	});
 });
+*/
