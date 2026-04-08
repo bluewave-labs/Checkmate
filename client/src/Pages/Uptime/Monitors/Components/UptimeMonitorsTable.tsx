@@ -318,7 +318,7 @@ export const MonitorTable = ({
 							variant="body2"
 							color="text.secondary"
 						>
-							{t("common.selectAll", "Select All")}
+							{t("pages.common.monitors.bulkEdit.selectAll", "Select All")}
 						</Typography>
 					</Stack>
 				</Box>
