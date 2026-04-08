@@ -22,8 +22,8 @@ type MonitorDocumentBase = Omit<
 > & {
 	statusWindow: boolean[];
 	recentChecks: CheckSnapshotDocument[];
-	notifications: Types.ObjectId[];
-	escalationRules: { delayMinutes: number; notificationId: Types.ObjectId }[];
+	notifications: (Types.ObjectId | string)[];
+	escalationRules: { delayMinutes: number; notificationId: Types.ObjectId | string }[];
 	selectedDisks: string[];
 	matchMethod?: MonitorMatchMethod;
 };
@@ -281,8 +281,7 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		},
 		notifications: [
 			{
-				type: Schema.Types.ObjectId,
-				ref: "Notification",
+				type: Schema.Types.Mixed,
 			},
 		],
 		secret: {

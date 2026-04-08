@@ -303,13 +303,24 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		action: "add" | "remove" | "set"
 	): Promise<number> => {
 		let objectIds;
-		let notificationObjectIds;
 		try {
 			objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
-			notificationObjectIds = notificationIds.map((id) => new mongoose.Types.ObjectId(id));
 		} catch {
-			throw new AppError({ message: "One or more monitor or notification IDs are invalid", status: 400 });
+			throw new AppError({ message: "One or more monitor IDs are invalid", status: 400 });
 		}
+
+		// Convert notification IDs to ObjectIds, but keep "current_user_email" as is
+		const notificationObjectIds = notificationIds.map((id) => {
+			if (id === "current_user_email") {
+				return id;
+			}
+			try {
+				return new mongoose.Types.ObjectId(id);
+			} catch {
+				throw new AppError({ message: `Invalid notification ID: ${id}`, status: 400 });
+			}
+		});
+
 		const filter = { _id: { $in: objectIds }, teamId: new mongoose.Types.ObjectId(teamId) };
 
 		let update;
