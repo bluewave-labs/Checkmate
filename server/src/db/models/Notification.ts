@@ -1,5 +1,5 @@
 import { Schema, model, type Types } from "mongoose";
-import type { Notification, NotificationChannel } from "@/types/notification.js";
+import { Notification, NotificationChannel, AuthTypes } from "@/types/notification.js";
 
 interface NotificationDocument extends Omit<Notification, "id" | "userId" | "teamId" | "createdAt" | "updatedAt"> {
 	_id: Types.ObjectId;
@@ -36,6 +36,7 @@ const NotificationSchema = new Schema<NotificationDocument>(
 		phone: { type: String },
 		homeserverUrl: { type: String },
 		roomId: { type: String },
+		authType: { type: String, enum: AuthTypes },
 		username: { type: String },
 		password: { type: String },
 		accessToken: { type: String },
