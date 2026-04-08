@@ -69,7 +69,7 @@ export const FloatingActionBar: React.FC<FloatingActionBarProps> = ({
 							fontWeight={600}
 							color={theme.palette.text.primary}
 						>
-							{selectedCount} {t("common.selected")}
+							{selectedCount} {t("common.buttons.selected")}
 						</Typography>
 						<IconButton
 							size="small"

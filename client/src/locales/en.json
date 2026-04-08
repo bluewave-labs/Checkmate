@@ -1,6 +1,5 @@
 {
 	"common": {
-		"selected": "selected",
 		"auth": {
 			"roles": {
 				"admin": "Admin",
@@ -20,6 +19,7 @@
 			"home": "Home"
 		},
 		"buttons": {
+			"selected": "selected",
 			"addMember": "Add member",
 			"cancel": "Cancel",
 			"close": "Close",
@@ -384,6 +384,7 @@
 		"common": {
 			"monitors": {
 				"bulkEdit": {
+					"selectAll": "Select All",
 					"editButton": "Edit Notifications",
 					"title": "Edit Notifications",
 					"selectedText": "You are applying changes to {{count}} monitor(s).",
