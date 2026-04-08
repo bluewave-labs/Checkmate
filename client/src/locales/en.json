@@ -541,7 +541,22 @@
 				},
 				"notifications": {
 					"description": "Select the notification channels you want to use",
-					"title": "Notifications"
+					"title": "Notifications",
+					"currentUserEmail": "Email current user"
+				},
+				"escalationRules": {
+					"title": "Escalation rules",
+					"description": "Set up escalation rules to send notifications through different channels after the monitor has been down for a specified time",
+					"option": {
+						"delayMinutes": {
+							"label": "Escalate after (minutes)"
+						},
+						"notificationChannel": {
+							"label": "Escalation notification channels"
+						}
+					},
+					"addRule": "Add escalation rule",
+					"removeRule": "Remove rule"
 				},
 				"type": {
 					"description": "Select the type of check to perform",

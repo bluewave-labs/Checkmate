@@ -706,10 +706,17 @@ const CreateMonitorPage = () => {
 						control={control}
 						render={({ field }) => {
 							// Map notifications to have 'name' property for Autocomplete
-							const notificationOptions = (notifications ?? []).map((n) => ({
-								...n,
-								name: n.notificationName,
-							}));
+							const notificationOptions = [
+								{
+									id: "current_user_email",
+									notificationName: t("pages.createMonitor.form.notifications.currentUserEmail"),
+									name: t("pages.createMonitor.form.notifications.currentUserEmail"),
+								},
+								...(notifications ?? []).map((n) => ({
+									...n,
+									name: n.notificationName,
+								})),
+							];
 							const selectedNotifications = notificationOptions.filter((n) =>
 								(field.value ?? []).includes(n.id)
 							);
@@ -758,6 +765,94 @@ const CreateMonitorPage = () => {
 											))}
 										</Stack>
 									)}
+								</Stack>
+							);
+						}}
+					/>
+				}
+			/>
+
+			<ConfigBox
+				title={t("pages.createMonitor.form.escalationRules.title")}
+				subtitle={t("pages.createMonitor.form.escalationRules.description")}
+				rightContent={
+					<Controller
+						name="escalationRules"
+						control={control}
+						render={({ field }) => {
+							const rules = field.value || [];
+							return (
+								<Stack spacing={theme.spacing(LAYOUT.MD)}>
+									{rules.map((rule, index) => (
+										<Stack
+											key={index}
+											spacing={theme.spacing(SPACING.MD)}
+											alignItems="flex-start"
+										>
+											<TextField
+												type="number"
+												fieldLabel={t("pages.createMonitor.form.escalationRules.option.delayMinutes.label")}
+												value={rule.delayMinutes}
+												onChange={(e) => {
+													const raw = parseInt(e.target.value, 10);
+													const value = Number.isNaN(raw) ? 1 : Math.max(1, raw);
+													const newRules = [...rules];
+													newRules[index].delayMinutes = value;
+													field.onChange(newRules);
+												}}
+												inputProps={{ min: 1 }}
+												size="small"
+												sx={{ width: 200 }}
+											/>
+											<Autocomplete
+												options={[
+													{ id: "current_user_email", name: "Email current user" },
+													...(notifications ?? []).map((n) => ({ ...n, name: n.notificationName })),
+												]}
+												value={
+													rule.notificationId === "current_user_email"
+														? { id: "current_user_email", name: "Email current user" }
+														: (notifications ?? []).find((n) => n.id === rule.notificationId)
+															? { ...(notifications ?? []).find((n) => n.id === rule.notificationId)!, name: (notifications ?? []).find((n) => n.id === rule.notificationId)!.notificationName }
+															: null
+												}
+												getOptionLabel={(option) => option.name}
+												onChange={(_, newValue) => {
+													const newRules = [...rules];
+													newRules[index].notificationId = newValue?.id || "";
+													field.onChange(newRules);
+												}}
+												isOptionEqualToValue={(option, value) => option.id === value.id}
+												renderInput={(params) => (
+													<TextField
+														{...params}
+														fieldLabel={t("pages.createMonitor.form.escalationRules.option.notificationChannel.label")}
+														size="small"
+														sx={{ width: 200 }}
+													/>
+												)}
+											/>
+											<IconButton
+												size="small"
+												onClick={() => {
+													const newRules = rules.filter((_, i) => i !== index);
+													field.onChange(newRules);
+												}}
+												aria-label={t("pages.createMonitor.form.escalationRules.removeRule")}
+											>
+												<Trash2 size={16} />
+											</IconButton>
+										</Stack>
+									))}
+									<Button
+										variant="outlined"
+										onClick={() => {
+											const newRules = [...rules, { delayMinutes: 5, notificationId: "" }];
+											field.onChange(newRules);
+										}}
+									>
+										{t("pages.createMonitor.form.escalationRules.addRule")}
+									</Button>
 								</Stack>
 							);
 						}}

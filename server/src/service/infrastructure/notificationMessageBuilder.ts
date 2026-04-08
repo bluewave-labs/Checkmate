@@ -15,6 +15,7 @@ export interface INotificationMessageBuilder {
 		decision: MonitorActionDecision,
 		clientHost: string
 	): NotificationMessage;
+	buildEscalationMessage(monitor: Monitor, incident: import("@/types/index.js").Incident, clientHost: string): NotificationMessage;
 	extractThresholdBreaches(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): ThresholdBreach[];
 }
 
@@ -178,6 +179,53 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 			title: `Monitor: ${monitor.name}`,
 			summary: `Status update for monitor "${monitor.name}".`,
 			details: [`URL: ${monitor.url}`, `Status: ${monitor.status}`, `Type: ${monitor.type}`],
+			timestamp: new Date(),
+		};
+	}
+
+	buildEscalationMessage(monitor: Monitor, incident: import("@/types/index.js").Incident, clientHost: string): NotificationMessage {
+		const type: NotificationType = "monitor_down"; // Escalation is for ongoing down incidents
+		const severity: NotificationSeverity = "critical";
+		const content = this.buildEscalationContent(monitor, incident);
+
+		return {
+			type,
+			severity,
+			monitor: {
+				id: monitor.id,
+				name: monitor.name,
+				url: monitor.url,
+				type: monitor.type,
+				status: monitor.status,
+			},
+			content,
+			clientHost,
+			metadata: {
+				teamId: monitor.teamId,
+				notificationReason: "escalation",
+			},
+		};
+	}
+
+	private buildEscalationContent(monitor: Monitor, incident: import("@/types/index.js").Incident): NotificationContent {
+		const title = `ESCALATION: Monitor "${monitor.name}" Still Down`;
+		const summary = `Monitor "${monitor.name}" has been down for an extended period and requires immediate attention.`;
+		const details = [
+			`URL: ${monitor.url}`,
+			`Status: Down`,
+			`Type: ${monitor.type}`,
+			`Incident started: ${new Date(incident.startTime).toISOString()}`,
+			`Status code: ${incident.statusCode}`,
+		];
+
+		if (incident.message) {
+			details.push(`Message: ${incident.message}`);
+		}
+
+		return {
+			title,
+			summary,
+			details,
 			timestamp: new Date(),
 		};
 	}

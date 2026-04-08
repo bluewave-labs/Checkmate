@@ -272,8 +272,6 @@ export const initializeServices = async ({
 
 	const notificationMessageBuilder = new NotificationMessageBuilder();
 
-	const incidentService = new IncidentService(logger, incidentsRepository, monitorsRepository, usersRepository, notificationMessageBuilder);
-
 	const checkService = new CheckService(monitorsRepository, logger, checksRepository);
 
 	const globalPingService = new GlobalPingService(logger);
@@ -302,6 +300,7 @@ export const initializeServices = async ({
 	const notificationsService = new NotificationsService(
 		notificationsRepository,
 		monitorsRepository,
+		usersRepository,
 		webhookProvider,
 		emailProvider,
 		slackProvider,
@@ -314,6 +313,8 @@ export const initializeServices = async ({
 		logger,
 		notificationMessageBuilder
 	);
+
+	const incidentService = new IncidentService(logger, incidentsRepository, monitorsRepository, usersRepository, notificationMessageBuilder, notificationsService);
 
 	const superSimpleQueueHelper = new SuperSimpleQueueHelper(
 		logger,

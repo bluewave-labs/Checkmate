@@ -6,6 +6,7 @@ import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimple
 import type { ISettingsService } from "@/service/system/settingsService.js";
 import { ILogger } from "@/utils/logger.js";
 import type { INotificationMessageBuilder } from "@/service/infrastructure/notificationMessageBuilder.js";
+import type { IUsersRepository } from "@/repositories/index.js";
 
 export interface INotificationsService {
 	createNotification: (notificationData: Partial<Notification>, userId: string, teamId: string) => Promise<Notification>;
@@ -14,7 +15,7 @@ export interface INotificationsService {
 	updateById(id: string, teamId: string, updateData: Partial<Notification>): Promise<Notification>;
 	deleteById: (id: string, teamId: string) => Promise<Notification>;
 	handleNotifications: (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => Promise<boolean>;
-
+	sendEscalationNotification: (monitor: Monitor, incident: import("@/types/index.js").Incident, notificationId: string) => Promise<boolean>;
 	sendTestNotification: (notification: Partial<Notification>) => Promise<boolean>;
 	testAllNotifications: (notificationIds: string[]) => Promise<boolean>;
 }
@@ -26,6 +27,7 @@ export class NotificationsService implements INotificationsService {
 
 	private notificationsRepository: INotificationsRepository;
 	private monitorsRepository: IMonitorsRepository;
+	private usersRepository: IUsersRepository;
 	private webhookProvider: INotificationProvider;
 	private emailProvider: INotificationProvider;
 	private slackProvider: INotificationProvider;
@@ -41,6 +43,7 @@ export class NotificationsService implements INotificationsService {
 	constructor(
 		notificationsRepository: INotificationsRepository,
 		monitorsRepository: IMonitorsRepository,
+		usersRepository: IUsersRepository,
 		webhookProvider: INotificationProvider,
 		emailProvider: INotificationProvider,
 		slackProvider: INotificationProvider,
@@ -55,6 +58,7 @@ export class NotificationsService implements INotificationsService {
 	) {
 		this.notificationsRepository = notificationsRepository;
 		this.monitorsRepository = monitorsRepository;
+		this.usersRepository = usersRepository;
 		this.webhookProvider = webhookProvider;
 		this.emailProvider = emailProvider;
 		this.slackProvider = slackProvider;
@@ -112,9 +116,43 @@ export class NotificationsService implements INotificationsService {
 		}
 	};
 
+	private sendCurrentUserNotification = async (monitor: Monitor, notificationMessage: NotificationMessage) => {
+		try {
+			const user = await this.usersRepository.findById(monitor.userId);
+			if (!user || !user.email) {
+				this.logger.warn({
+					message: `User ${monitor.userId} not found or has no email for current-user notification`,
+					service: SERVICE_NAME,
+					method: "sendCurrentUserNotification",
+				});
+				return false;
+			}
+
+			const tempNotification: Partial<Notification> = {
+				type: "email",
+				address: user.email,
+				notificationName: "Current user email notification",
+			};
+
+			return await this.emailProvider.sendMessage!(tempNotification as Notification, notificationMessage);
+		} catch (error: unknown) {
+			this.logger.error({
+				message: `Error sending current-user email notification: ${error instanceof Error ? error.message : "Unknown error"}`,
+				service: SERVICE_NAME,
+				method: "sendCurrentUserNotification",
+				stack: error instanceof Error ? error.stack : undefined,
+			});
+			return false;
+		}
+	};
+
 	private sendNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {
 		const notificationIds = monitor.notifications ?? [];
-		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
+		const currentUserNotificationIds = notificationIds.filter((id) => id === "current_user_email");
+		const normalNotificationIds = notificationIds.filter((id) => id !== "current_user_email");
+		const notifications = normalNotificationIds.length
+			? await this.notificationsRepository.findNotificationsByIds(normalNotificationIds)
+			: [];
 
 		// Build notification message once for all notifications
 		const settings = this.settingsService.getSettings();
@@ -122,6 +160,9 @@ export class NotificationsService implements INotificationsService {
 		const notificationMessage = this.notificationMessageBuilder.buildMessage(monitor, monitorStatusResponse, decision, clientHost);
 
 		const tasks = notifications.map((notification) => this.send(notification, monitor, monitorStatusResponse, decision, notificationMessage));
+		for (const _ of currentUserNotificationIds) {
+			tasks.push(this.sendCurrentUserNotification(monitor, notificationMessage));
+		}
 
 		const outcomes = await Promise.all(tasks);
 		const succeeded = outcomes.filter(Boolean).length;
@@ -134,7 +175,7 @@ export class NotificationsService implements INotificationsService {
 			});
 		}
 		// Return true if all notifications succeeded
-		return succeeded === notifications.length;
+		return succeeded === tasks.length;
 	};
 
 	handleNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {
@@ -144,6 +185,75 @@ export class NotificationsService implements INotificationsService {
 
 		// Send notifications based on decision
 		return await this.sendNotifications(monitor, monitorStatusResponse, decision);
+	};
+
+	sendEscalationNotification = async (monitor: Monitor, incident: import("@/types/index.js").Incident, notificationId: string) => {
+		if (notificationId === "current_user_email") {
+			// Send email directly to current user
+			return await this.sendEscalationEmailToUser(monitor, incident);
+		}
+
+		const notification = await this.notificationsRepository.findById(notificationId, monitor.teamId);
+		if (!notification) {
+			this.logger.warn({
+				message: `Notification ${notificationId} not found for escalation`,
+				service: SERVICE_NAME,
+				method: "sendEscalationNotification",
+			});
+			return false;
+		}
+
+		// Build escalation message
+		const settings = this.settingsService.getSettings();
+		const clientHost = settings.clientHost || "Host not defined";
+		const notificationMessage = this.notificationMessageBuilder.buildEscalationMessage(monitor, incident, clientHost);
+
+		return await this.send(notification, monitor, {} as MonitorStatusResponse, {} as MonitorActionDecision, notificationMessage);
+	};
+
+	sendEscalationEmailToUser = async (monitor: Monitor, incident: import("@/types/index.js").Incident) => {
+		try {
+			// Get the user who created the monitor
+			const user = await this.usersRepository.findById(monitor.userId);
+			if (!user || !user.email) {
+				this.logger.warn({
+					message: `User ${monitor.userId} not found or has no email for escalation`,
+					service: SERVICE_NAME,
+					method: "sendEscalationEmailToUser",
+				});
+				return false;
+			}
+
+			// Build escalation message
+			const settings = this.settingsService.getSettings();
+			const clientHost = settings.clientHost || "Host not defined";
+			const notificationMessage = this.notificationMessageBuilder.buildEscalationMessage(monitor, incident, clientHost);
+
+			// Create a temporary notification object for email
+			const tempNotification: Partial<Notification> = {
+				type: "email",
+				address: user.email,
+				notificationName: "Escalation Email",
+			};
+
+			const result = await this.emailProvider.sendMessage!(tempNotification as Notification, notificationMessage);
+			if (!result) {
+				this.logger.warn({
+					message: `Escalation email failed to send to ${user.email}`,
+					service: SERVICE_NAME,
+					method: "sendEscalationEmailToUser",
+				});
+			}
+			return result;
+		} catch (error: unknown) {
+			this.logger.error({
+				message: `Error sending escalation email to user: ${error instanceof Error ? error.message : "Unknown error"}`,
+				service: SERVICE_NAME,
+				method: "sendEscalationEmailToUser",
+				stack: error instanceof Error ? error.stack : undefined,
+			});
+			return false;
+		}
 	};
 
 	sendTestNotification = async (notification: Partial<Notification>) => {
