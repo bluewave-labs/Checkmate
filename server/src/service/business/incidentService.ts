@@ -95,17 +95,14 @@ export class IncidentService implements IIncidentService {
 			}
 		}
 
-		if (decision.shouldResolveIncident) {
-			if (!activeIncident) {
-				return null;
-			}
-			activeIncident.status = false;
-			activeIncident.endTime = Date.now().toString();
-			activeIncident.resolutionType = "automatic";
-			return await this.incidentsRepository.updateById(activeIncident.id, activeIncident.teamId, activeIncident);
+		if (!decision.shouldResolveIncident || !activeIncident) {
+			return null;
 		}
 
-		return null;
+		activeIncident.status = false;
+		activeIncident.endTime = Date.now().toString();
+		activeIncident.resolutionType = "automatic";
+		return await this.incidentsRepository.updateById(activeIncident.id, activeIncident.teamId, activeIncident);
 	};
 
 	private buildThresholdBreachMessage(monitor: Monitor, monitorStatusResponse?: MonitorStatusResponse): string {
