@@ -73,6 +73,7 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 			type: "ntfy",
 			notificationName: data.notificationName || "",
 			address: data.address || "",
+			authType: data.authType || "none",
 			username: data.username || "",
 			password: data.password || "",
 			accessToken: data.accessToken || "",

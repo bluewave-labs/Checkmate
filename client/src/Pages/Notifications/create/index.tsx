@@ -15,7 +15,7 @@ import { useNotificationForm } from "@/Hooks/useNotificationForm";
 import type { NotificationFormData } from "@/Validation/notifications";
 import type { Notification } from "@/Types/Notification";
 import { useTranslation } from "react-i18next";
-import { NotificationChannels } from "@/Types/Notification";
+import { NotificationChannels, AuthTypes } from "@/Types/Notification";
 
 const NotificationsCreatePage = () => {
 	const { t } = useTranslation();
@@ -46,6 +46,7 @@ const NotificationsCreatePage = () => {
 	}, [defaults, reset]);
 
 	const watchedType = watch("type");
+	const watchedAuthType = watch("authType");
 
 	useEffect(() => {
 		clearErrors();
@@ -310,9 +311,9 @@ const NotificationsCreatePage = () => {
 										{...field}
 										type="text"
 										fieldLabel={t(
-											"pages.notifications.form.accessToken.optionAccessToken"
+											"pages.notifications.form.auth.optionAccessToken"
 										)}
-										placeholder={t("pages.notifications.form.accessToken.placeholder")}
+										placeholder={t("pages.notifications.form.auth.placeholderAccessToken")}
 										fullWidth
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message ?? ""}
@@ -347,56 +348,92 @@ const NotificationsCreatePage = () => {
 									/>
 								)}
 							/>
+						</Stack>
+					}
+				/>
+			)}
+			{watchedType === "ntfy" && (
+				<ConfigBox
+					title={t("pages.notifications.form.auth.title")}
+					subtitle={t("pages.notifications.form.auth.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(8)}>
 							<Controller
-								name="username"
+								name="authType"
 								control={control}
-								defaultValue={"username" in defaults ? defaults.username : ""}
+								defaultValue={"authType" in defaults ? defaults.authType : "none"}
 								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t("pages.notifications.form.ntfy.optionUsername")}
-										placeholder={t("pages.notifications.form.ntfy.placeholderUsername")}
-										fullWidth
+									<Select
+										value={field.value}
+										fieldLabel={t("pages.notifications.form.auth.optionAuthType")}
 										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
+										onChange={field.onChange}
+									>
+										{AuthTypes.map((type: string) => (
+											<MenuItem
+												key={type}
+												value={type}
+											>
+												<Typography textTransform="capitalize">{type}</Typography>
+											</MenuItem>
+										))}
+									</Select>
 								)}
 							/>
-							<Controller
-								name="password"
-								control={control}
-								defaultValue={"password" in defaults ? defaults.password : ""}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="password"
-										fieldLabel={t("pages.notifications.form.ntfy.optionPassword")}
-										placeholder={t("pages.notifications.form.ntfy.placeholderPassword")}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
-								)}
-							/>
-							<Controller
-								name="accessToken"
-								control={control}
-								defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t(
-											"pages.notifications.form.accessToken.optionAccessToken"
+							{watchedAuthType === "basic" && (
+								<>
+									<Controller
+										name="username"
+										control={control}
+										defaultValue={"username" in defaults ? defaults.username : ""}
+										render={({ field, fieldState }) => (
+											<TextField
+												{...field}
+												type="text"
+												fieldLabel={t("pages.notifications.form.auth.optionUsername")}
+												placeholder={t("pages.notifications.form.auth.placeholderUsername")}
+												fullWidth
+												error={!!fieldState.error}
+												helperText={fieldState.error?.message ?? ""}
+											/>
 										)}
-										placeholder={t("pages.notifications.form.accessToken.placeholder")}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
 									/>
-								)}
-							/>
+									<Controller
+										name="password"
+										control={control}
+										defaultValue={"password" in defaults ? defaults.password : ""}
+										render={({ field, fieldState }) => (
+											<TextField
+												{...field}
+												type="password"
+												fieldLabel={t("pages.notifications.form.auth.optionPassword")}
+												placeholder={t("pages.notifications.form.auth.placeholderPassword")}
+												fullWidth
+												error={!!fieldState.error}
+												helperText={fieldState.error?.message ?? ""}
+											/>
+										)}
+									/>
+								</>
+							)}
+							{watchedAuthType === "bearer" && (
+								<Controller
+									name="accessToken"
+									control={control}
+									defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
+									render={({ field, fieldState }) => (
+										<TextField
+											{...field}
+											type="text"
+											fieldLabel={t("pages.notifications.form.auth.optionAccessToken")}
+											placeholder={t("pages.notifications.form.auth.placeholderAccessToken")}
+											fullWidth
+											error={!!fieldState.error}
+											helperText={fieldState.error?.message ?? ""}
+										/>
+									)}
+								/>
+							)}
 						</Stack>
 					}
 				/>

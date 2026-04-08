@@ -1,3 +1,4 @@
+import { AuthTypes } from "@/Types/Notification";
 import { z } from "zod";
 
 const baseSchema = z.object({
@@ -65,12 +66,13 @@ const pushoverSchema = baseSchema.extend({
 const ntfySchema = baseSchema.extend({
 	type: z.literal("ntfy"),
 	address: z.string().min(1, "URL is required").url("Please enter a valid URL"),
-	username: z.union([z.string(), z.literal("")]).optional(),
-	password: z.union([z.string(), z.literal("")]).optional(),
-	accessToken: z.union([z.string(), z.literal("")]).optional(),
+	authType: z.enum(AuthTypes).optional(),
+	username: z.string().optional(),
+	password: z.string().optional(),
+	accessToken: z.string().optional(),
 });
 
-export const notificationSchema = z.discriminatedUnion("type", [
+export const baseNotificationSchema = z.discriminatedUnion("type", [
 	emailSchema,
 	slackSchema,
 	discordSchema,
@@ -82,5 +84,35 @@ export const notificationSchema = z.discriminatedUnion("type", [
 	pushoverSchema,
 	ntfySchema,
 ]);
+
+export const notificationSchema = baseNotificationSchema.superRefine((data, ctx) => {
+	if (data.type === "ntfy") {
+		if (data.authType === "basic") {
+			if (!data.username) {
+				ctx.addIssue({
+					code: "custom",
+					message: "Username is required",
+					path: ["username"],
+				});
+			}
+			if (!data.password) {
+				ctx.addIssue({
+					code: "custom",
+					message: "Password is required",
+					path: ["password"],
+				});
+			}
+		}
+		if (data.authType === "bearer") {
+			if (!data.accessToken) {
+				ctx.addIssue({
+					code: "custom",
+					message: "Token is required",
+					path: ["accessToken"],
+				});
+			}
+		}
+	}
+});
 
 export type NotificationFormData = z.infer<typeof notificationSchema>;

@@ -12,6 +12,13 @@ export const NotificationChannels = [
 ] as const;
 export type NotificationChannel = (typeof NotificationChannels)[number];
 
+export const AuthTypes = [
+	"none",
+	"basic",
+	"bearer",
+] as const;
+export type AuthType = (typeof AuthTypes)[number];
+
 export interface Notification {
 	id: string;
 	userId: string;
@@ -22,6 +29,7 @@ export interface Notification {
 	phone?: string;
 	homeserverUrl?: string;
 	roomId?: string;
+	authType?: AuthType;
 	username?: string;
 	password?: string;
 	accessToken?: string;
