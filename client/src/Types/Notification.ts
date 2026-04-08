@@ -12,11 +12,7 @@ export const NotificationChannels = [
 ] as const;
 export type NotificationChannel = (typeof NotificationChannels)[number];
 
-export const AuthTypes = [
-	"none",
-	"basic",
-	"bearer",
-] as const;
+export const AuthTypes = ["none", "basic", "bearer"] as const;
 export type AuthType = (typeof AuthTypes)[number];
 
 export interface Notification {

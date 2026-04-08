@@ -310,10 +310,10 @@ const NotificationsCreatePage = () => {
 									<TextField
 										{...field}
 										type="text"
-										fieldLabel={t(
-											"pages.notifications.form.auth.optionAccessToken"
+										fieldLabel={t("pages.notifications.form.auth.optionAccessToken")}
+										placeholder={t(
+											"pages.notifications.form.auth.placeholderAccessToken"
 										)}
-										placeholder={t("pages.notifications.form.auth.placeholderAccessToken")}
 										fullWidth
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message ?? ""}
@@ -391,7 +391,9 @@ const NotificationsCreatePage = () => {
 												{...field}
 												type="text"
 												fieldLabel={t("pages.notifications.form.auth.optionUsername")}
-												placeholder={t("pages.notifications.form.auth.placeholderUsername")}
+												placeholder={t(
+													"pages.notifications.form.auth.placeholderUsername"
+												)}
 												fullWidth
 												error={!!fieldState.error}
 												helperText={fieldState.error?.message ?? ""}
@@ -407,7 +409,9 @@ const NotificationsCreatePage = () => {
 												{...field}
 												type="password"
 												fieldLabel={t("pages.notifications.form.auth.optionPassword")}
-												placeholder={t("pages.notifications.form.auth.placeholderPassword")}
+												placeholder={t(
+													"pages.notifications.form.auth.placeholderPassword"
+												)}
 												fullWidth
 												error={!!fieldState.error}
 												helperText={fieldState.error?.message ?? ""}
@@ -426,7 +430,9 @@ const NotificationsCreatePage = () => {
 											{...field}
 											type="text"
 											fieldLabel={t("pages.notifications.form.auth.optionAccessToken")}
-											placeholder={t("pages.notifications.form.auth.placeholderAccessToken")}
+											placeholder={t(
+												"pages.notifications.form.auth.placeholderAccessToken"
+											)}
 											fullWidth
 											error={!!fieldState.error}
 											helperText={fieldState.error?.message ?? ""}

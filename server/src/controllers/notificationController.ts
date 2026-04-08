@@ -38,7 +38,7 @@ class NotificationController implements INotificationController {
 			return notification;
 		}
 		const { username, password, accessToken, ...sanitized } = notification;
-		return sanitized
+		return sanitized;
 	};
 
 	testNotification = async (req: Request, res: Response, next: NextFunction) => {
