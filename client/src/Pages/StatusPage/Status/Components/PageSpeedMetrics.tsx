@@ -3,6 +3,7 @@ import { Gauge } from "@/Components/design-elements";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import type { Monitor } from "@/Types/Monitor";
+import type { CheckSnapshot } from "@/Types/Check";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
@@ -13,13 +14,6 @@ const GAUGE_STROKE_WIDTH = 12;
 
 interface StatusPageMonitor extends Monitor {
 	checks?: Monitor["recentChecks"];
-}
-
-interface PageSpeedCheck {
-	performance: number;
-	accessibility: number;
-	bestPractices: number;
-	seo: number;
 }
 
 interface MetricConfig {
@@ -66,31 +60,29 @@ const MetricItem = ({ label, progress }: MetricConfig) => {
 	);
 };
 
-const buildMetrics = (
-	check: PageSpeedCheck,
-	t: (key: string) => string
-): MetricConfig[] => [
-	{
-		key: "performance",
-		label: t("pages.statusPages.monitorsList.pagespeed.performance"),
-		progress: check.performance,
-	},
-	{
-		key: "accessibility",
-		label: t("pages.statusPages.monitorsList.pagespeed.accessibility"),
-		progress: check.accessibility,
-	},
-	{
-		key: "bestPractices",
-		label: t("pages.statusPages.monitorsList.pagespeed.bestPractices"),
-		progress: check.bestPractices,
-	},
-	{
-		key: "seo",
-		label: t("pages.statusPages.monitorsList.pagespeed.seo"),
-		progress: check.seo,
-	},
-];
+const buildMetrics = (check: CheckSnapshot, t: (key: string) => string): MetricConfig[] =>
+	[
+		{
+			key: "performance",
+			label: t("pages.statusPages.monitorsList.pagespeed.performance"),
+			progress: check.performance,
+		},
+		{
+			key: "accessibility",
+			label: t("pages.statusPages.monitorsList.pagespeed.accessibility"),
+			progress: check.accessibility,
+		},
+		{
+			key: "bestPractices",
+			label: t("pages.statusPages.monitorsList.pagespeed.bestPractices"),
+			progress: check.bestPractices,
+		},
+		{
+			key: "seo",
+			label: t("pages.statusPages.monitorsList.pagespeed.seo"),
+			progress: check.seo,
+		},
+	].filter((m): m is MetricConfig => m.progress !== undefined);
 
 export const PageSpeedMetrics = ({ monitor }: { monitor: StatusPageMonitor }) => {
 	const theme = useTheme();
@@ -109,7 +101,7 @@ export const PageSpeedMetrics = ({ monitor }: { monitor: StatusPageMonitor }) =>
 		);
 	}
 
-	const metrics = buildMetrics(latestCheck as PageSpeedCheck, t);
+	const metrics = buildMetrics(latestCheck, t);
 
 	return (
 		<Grid
