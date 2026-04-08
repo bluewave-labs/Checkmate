@@ -22,6 +22,7 @@ export interface Monitor {
 	name: string;
 	description?: string;
 	status: MonitorStatus;
+	statusChangedAt?: string;
 	statusWindow: boolean[];
 	statusWindowSize: number;
 	statusWindowThreshold: number;
@@ -53,6 +54,8 @@ export interface Monitor {
 	geoCheckEnabled?: boolean;
 	geoCheckLocations?: GeoContinent[];
 	geoCheckInterval?: number;
+	escalateAfterMinutes?: number;
+	escalationNotifications?: string[];
 	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;

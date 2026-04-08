@@ -18,11 +18,13 @@ type CheckSnapshotDocument = Omit<CheckSnapshot, "createdAt"> & { createdAt: Dat
 
 type MonitorDocumentBase = Omit<
 	Monitor,
-	"id" | "userId" | "teamId" | "notifications" | "selectedDisks" | "statusWindow" | "recentChecks" | "createdAt" | "updatedAt"
+	"id" | "userId" | "teamId" | "notifications" | "escalationNotifications" | "selectedDisks" | "statusWindow" | "recentChecks" | "statusChangedAt" | "createdAt" | "updatedAt"
 > & {
 	statusWindow: boolean[];
+	statusChangedAt?: Date;
 	recentChecks: CheckSnapshotDocument[];
 	notifications: Types.ObjectId[];
+	escalationNotifications?: Types.ObjectId[];
 	selectedDisks: string[];
 	matchMethod?: MonitorMatchMethod;
 };
@@ -224,6 +226,9 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			enum: MonitorStatuses,
 			default: "initializing",
 		},
+		statusChangedAt: {
+			type: Date,
+		},
 		statusWindow: {
 			type: [Boolean],
 			default: [],
@@ -351,6 +356,15 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			type: Number,
 			default: 300000,
 		},
+		escalateAfterMinutes: {
+			type: Number,
+		},
+		escalationNotifications: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: "Notification",
+			},
+		],
 		recentChecks: {
 			type: [checkSnapshotSchema],
 			default: [],
