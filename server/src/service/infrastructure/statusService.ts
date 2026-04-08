@@ -348,6 +348,11 @@ export class StatusService implements IStatusService {
 			// Apply the final status
 			monitor.status = newStatus;
 
+			// Update statusChangedAt if status changed
+			if (statusChanged) {
+				monitor.statusChangedAt = new Date().toISOString();
+			}
+
 			const updated = await this.monitorsRepository.updateById(monitor.id, monitor.teamId, monitor);
 
 			return {

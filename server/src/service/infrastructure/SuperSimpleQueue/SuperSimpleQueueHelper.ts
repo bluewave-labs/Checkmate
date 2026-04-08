@@ -167,7 +167,25 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 						});
 					});
 				}
-
+			// Step 6.5 Check for escalation notifications independently (even if status didn't change)
+			// Create a minimal decision for escalation check
+			if (statusChangeResult.monitor.status === "down" && statusChangeResult.monitor.escalateAfterMinutes && statusChangeResult.monitor.escalationNotifications && statusChangeResult.monitor.escalationNotifications.length > 0) {
+				const escalationDecision: MonitorActionDecision = {
+					shouldCreateIncident: false,
+					shouldResolveIncident: false,
+					shouldSendNotification: true, // Force notification check for escalation
+					incidentReason: null,
+					notificationReason: "status_change",
+				};
+				this.notificationsService.handleNotifications(statusChangeResult.monitor, status, escalationDecision).catch((error: unknown) => {
+					this.logger.error({
+						message: `Error handling escalation for job ${statusChangeResult.monitor.id}: ${error instanceof Error ? error.message : "Unknown error"}`,
+						service: SERVICE_NAME,
+						method: "getMonitorJob",
+						stack: error instanceof Error ? error.stack : undefined,
+					});
+				});
+			}
 				// Step 7. Handle incidents (best effort, don't wait)
 				this.incidentService.handleIncident(statusChangeResult.monitor, statusChangeResult.code, decision, status).catch((error: unknown) => {
 					this.logger.warn({

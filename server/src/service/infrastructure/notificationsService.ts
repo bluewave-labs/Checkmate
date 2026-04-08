@@ -142,8 +142,70 @@ export class NotificationsService implements INotificationsService {
 			return false;
 		}
 
-		// Send notifications based on decision
-		return await this.sendNotifications(monitor, monitorStatusResponse, decision);
+		// Determine if this is an escalation alert
+		const isEscalation = this.shouldSendEscalation(monitor);
+
+		// Send notifications based on decision and escalation status
+		if (isEscalation && monitor.escalationNotifications && monitor.escalationNotifications.length > 0) {
+			// Send to escalation channels
+			return await this.sendEscalationNotifications(monitor, monitorStatusResponse, decision);
+		} else {
+			// Send to base channels
+			return await this.sendNotifications(monitor, monitorStatusResponse, decision);
+		}
+	};
+
+	private shouldSendEscalation = (monitor: Monitor): boolean => {
+		// Only escalate if monitor is down, has escalation configured, and enough time has passed
+		if (monitor.status !== "down") {
+			return false;
+		}
+
+		if (!monitor.escalateAfterMinutes || !monitor.escalationNotifications || monitor.escalationNotifications.length === 0) {
+			return false;
+		}
+
+		const statusChangedAt = monitor.statusChangedAt ? new Date(monitor.statusChangedAt).getTime() : 0;
+		const now = Date.now();
+		const timeSinceStatusChange = now - statusChangedAt;
+		const escalationThresholdMs = monitor.escalateAfterMinutes * 60 * 1000;
+
+		return timeSinceStatusChange >= escalationThresholdMs;
+	};
+
+	private sendEscalationNotifications = async (
+		monitor: Monitor,
+		monitorStatusResponse: MonitorStatusResponse,
+		decision: MonitorActionDecision
+	) => {
+		const escalationNotificationIds = monitor.escalationNotifications ?? [];
+		const notifications = await this.notificationsRepository.findNotificationsByIds(escalationNotificationIds);
+
+		// Build escalation notification message
+		const settings = this.settingsService.getSettings();
+		const clientHost = settings.clientHost || "Host not defined";
+		const notificationMessage = this.notificationMessageBuilder.buildMessage(
+			monitor,
+			monitorStatusResponse,
+			decision,
+			clientHost,
+			true // isEscalation flag
+		);
+
+		const tasks = notifications.map((notification) => this.send(notification, monitor, monitorStatusResponse, decision, notificationMessage));
+
+		const outcomes = await Promise.all(tasks);
+		const succeeded = outcomes.filter(Boolean).length;
+		const failed = outcomes.length - succeeded;
+		if (failed > 0) {
+			this.logger.warn({
+				message: `Escalation notification send completed with ${succeeded} success, ${failed} failure(s)`,
+				service: SERVICE_NAME,
+				method: "sendEscalationNotifications",
+			});
+		}
+		// Return true if all notifications succeeded
+		return succeeded === notifications.length;
 	};
 
 	sendTestNotification = async (notification: Partial<Notification>) => {
