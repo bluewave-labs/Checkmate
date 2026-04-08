@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { SuperSimpleQueueHelper } from "../../src/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.ts";
-import type { Monitor } from "../../src/types/monitor.ts";
-import { createMockLogger } from "../helpers/createMockLogger.ts";
+import { SuperSimpleQueueHelper } from "../../../src/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.ts";
+import type { Monitor } from "../../../src/types/monitor.ts";
+import { createMockLogger } from "../../helpers/createMockLogger.ts";
 
 const createHelper = (overrides?: Record<string, unknown>) => {
 	const maintenanceWindowsRepository = {

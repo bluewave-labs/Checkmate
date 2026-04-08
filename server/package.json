@@ -6,6 +6,7 @@
 	"type": "module",
 	"scripts": {
 		"test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+		"test:services": "NODE_OPTIONS=--experimental-vm-modules jest --coverage --collectCoverageFrom='src/service/business/*.ts' --collectCoverageFrom='src/service/infrastructure/statusService.ts' --collectCoverageFrom='src/service/infrastructure/notificationsService.ts' --collectCoverageFrom='src/service/infrastructure/SuperSimpleQueue/*.ts' test/unit/services",
 		"dev": "nodemon --exec tsx src/index.js",
 		"start": "node --watch ./dist/index.js",
 		"build": "tsc && tsc-alias && cp -r src/templates dist/templates",

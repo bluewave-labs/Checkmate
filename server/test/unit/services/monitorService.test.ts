@@ -1,5 +1,5 @@
 import { jest } from "@jest/globals";
-import { MonitorService } from "../../src/service/business/monitorService.ts";
+import { MonitorService } from "../../../src/service/business/monitorService.ts";
 import type {
 	IChecksRepository,
 	IGeoChecksRepository,
@@ -7,7 +7,7 @@ import type {
 	IMonitorStatsRepository,
 	IMonitorsRepository,
 	IStatusPagesRepository,
-} from "../../src/repositories/index.ts";
+} from "../../../src/repositories/index.ts";
 
 const createMonitorsRepositoryMock = () =>
 	({

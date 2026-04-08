@@ -1,9 +1,9 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
-import { StatusService } from "../../src/service/infrastructure/statusService.ts";
-import { createMockLogger } from "../helpers/createMockLogger.ts";
-import type { Monitor, MonitorStatusResponse, Check, HardwareStatusPayload } from "../../src/types/index.ts";
-import type { IMonitorsRepository, IMonitorStatsRepository, IChecksRepository } from "../../src/repositories/index.ts";
-import type { IBufferService } from "../../src/service/infrastructure/bufferService.ts";
+import { StatusService } from "../../../src/service/infrastructure/statusService.ts";
+import { createMockLogger } from "../../helpers/createMockLogger.ts";
+import type { Monitor, MonitorStatusResponse, Check, HardwareStatusPayload } from "../../../src/types/index.ts";
+import type { IMonitorsRepository, IMonitorStatsRepository, IChecksRepository } from "../../../src/repositories/index.ts";
+import type { IBufferService } from "../../../src/service/infrastructure/bufferService.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

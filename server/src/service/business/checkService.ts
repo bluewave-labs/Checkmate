@@ -107,16 +107,16 @@ export class CheckService implements ICheckService {
 					numericUnit: audit.numericUnit,
 				};
 			};
-			check.accessibility = (categories?.accessibility?.score || 0) * 100;
-			check.bestPractices = (categories?.["best-practices"]?.score || 0) * 100;
-			check.seo = (categories?.seo?.score || 0) * 100;
-			check.performance = (categories?.performance?.score || 0) * 100;
+			check.accessibility = (categories.accessibility?.score || 0) * 100;
+			check.bestPractices = (categories["best-practices"]?.score || 0) * 100;
+			check.seo = (categories.seo?.score || 0) * 100;
+			check.performance = (categories.performance?.score || 0) * 100;
 			check.audits = {
-				cls: mapAudit(audits?.["cumulative-layout-shift"]),
-				si: mapAudit(audits?.["speed-index"]),
-				fcp: mapAudit(audits?.["first-contentful-paint"]),
-				lcp: mapAudit(audits?.["largest-contentful-paint"]),
-				tbt: mapAudit(audits?.["total-blocking-time"]),
+				cls: mapAudit(audits["cumulative-layout-shift"]),
+				si: mapAudit(audits["speed-index"]),
+				fcp: mapAudit(audits["first-contentful-paint"]),
+				lcp: mapAudit(audits["largest-contentful-paint"]),
+				tbt: mapAudit(audits["total-blocking-time"]),
 			};
 		}
 
@@ -124,7 +124,7 @@ export class CheckService implements ICheckService {
 			const hardwarePayload = payload as HardwareStatusPayload | undefined;
 			const { cpu, memory, disk, host, net } = hardwarePayload?.data ?? {};
 			const errorsSource = Array.isArray(hardwarePayload?.errors)
-				? hardwarePayload?.errors
+				? hardwarePayload.errors
 				: (hardwarePayload?.errors as { errors?: CheckErrorInfo[] } | undefined)?.errors;
 			check.cpu = cpu;
 			check.memory = memory;
