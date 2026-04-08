@@ -306,8 +306,8 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 				if (failCount > 0) {
 					acc.jobsWithFailures.push({
 						monitorId: job.id,
-						monitorUrl: job?.data?.url || null,
-						monitorType: job?.data?.type || null,
+						monitorUrl: job.data?.url || null,
+						monitorType: job.data?.type || null,
 						failedAt: job.lastFailedAt ?? null,
 						failCount,
 						failReason: job.lastFailReason ?? null,
@@ -339,9 +339,9 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 		return jobs.map((job) => {
 			return {
 				monitorId: job.id,
-				monitorUrl: job?.data?.url || null,
-				monitorType: job?.data?.type || null,
-				monitorInterval: job?.data?.interval || null,
+				monitorUrl: job.data?.url || null,
+				monitorType: job.data?.type || null,
+				monitorInterval: job.data?.interval || null,
 				active: job.active,
 				lockedAt: job.lockedAt ?? null,
 				runCount: job.runCount ?? 0,
