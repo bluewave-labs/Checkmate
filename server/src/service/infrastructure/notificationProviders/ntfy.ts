@@ -77,9 +77,9 @@ export class NtfyProvider implements INotificationProvider {
 	}
 
 	private determineAuthMethod(notification: Partial<Notification>): string {
-		if (notification.username && notification.password) {
+		if (notification.authType === 'basic' && notification.username && notification.password) {
 			return `Basic ${Buffer.from(`${notification.username}:${notification.password}`).toString("base64")}`;
-		} else if (notification.accessToken) {
+		} else if (notification.authType === 'bearer' && notification.accessToken) {
 			return `Bearer ${notification.accessToken}`;
 		}
 		return "";
