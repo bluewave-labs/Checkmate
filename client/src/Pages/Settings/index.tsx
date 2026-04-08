@@ -155,6 +155,9 @@ export const SettingsPage = () => {
 
 	const handleSendTestEmail = async () => {
 		const formValues = form.getValues();
+		const hasUsablePassword =
+			Boolean(formValues.systemEmailPassword) ||
+			(isEmailPasswordSet && !emailPasswordHasBeenReset);
 		if (!user) {
 			alert("User not authenticated");
 			return;
@@ -163,7 +166,7 @@ export const SettingsPage = () => {
 			!formValues.systemEmailHost ||
 			!formValues.systemEmailPort ||
 			!formValues.systemEmailAddress ||
-			!formValues.systemEmailPassword
+			!hasUsablePassword
 		) {
 			alert("Please fill in all required email fields before testing.");
 			return;
@@ -174,7 +177,9 @@ export const SettingsPage = () => {
 			systemEmailHost: formValues.systemEmailHost,
 			systemEmailPort: formValues.systemEmailPort,
 			systemEmailAddress: formValues.systemEmailAddress,
-			systemEmailPassword: formValues.systemEmailPassword,
+			...(formValues.systemEmailPassword && {
+				systemEmailPassword: formValues.systemEmailPassword,
+			}),
 			systemEmailSecure: formValues.systemEmailSecure,
 			systemEmailPool: formValues.systemEmailPool,
 			systemEmailIgnoreTLS: formValues.systemEmailIgnoreTLS,
@@ -838,7 +843,8 @@ export const SettingsPage = () => {
 										!form.watch("systemEmailHost") ||
 										!form.watch("systemEmailPort") ||
 										!form.watch("systemEmailAddress") ||
-										!form.watch("systemEmailPassword")
+										(!form.watch("systemEmailPassword") &&
+											!(isEmailPasswordSet && !emailPasswordHasBeenReset))
 									}
 								>
 									{t("common.buttons.sendTestEmail")}

@@ -202,7 +202,7 @@ const CreateMonitorPage = () => {
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
-	const { control, watch, handleSubmit, clearErrors } = form;
+	const { control, watch, clearErrors } = form;
 
 	useEffect(() => {
 		form.reset(defaults);
@@ -270,15 +270,18 @@ const CreateMonitorPage = () => {
 		}
 	};
 
-	const onError = (errors: unknown) => {
-		logger.debug("Monitor creation validation errors", errors);
+	const handleSaveClick = async () => {
+		const isValid = await form.trigger();
+		if (isValid) {
+			const data = form.getValues();
+			await onSubmit(data);
+		} else {
+			logger.debug("Form validation failed");
+		}
 	};
 
 	return (
-		<BasePage
-			component="form"
-			onSubmit={handleSubmit(onSubmit, onError)}
-		>
+		<BasePage>
 			<HeaderDeleteControls
 				monitor={existingMonitor}
 				isAdmin={true}
@@ -697,6 +700,107 @@ const CreateMonitorPage = () => {
 				}
 			/>
 
+			{pageType === "uptime" && (
+				<ConfigBox
+					title={t("pages.createMonitor.form.escalation.title")}
+					subtitle={t("pages.createMonitor.form.escalation.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(LAYOUT.MD)}>
+							<Controller
+								name="escalateAfterMinutes"
+								control={control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="number"
+										fieldLabel={t(
+											"pages.createMonitor.form.escalation.option.escalateAfterMinutes.label"
+										)}
+										placeholder={t(
+											"pages.createMonitor.form.escalation.option.escalateAfterMinutes.placeholder"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+										onChange={(e) =>
+											field.onChange(e.target.value === "" ? undefined : Number(e.target.value))
+										}
+									/>
+								)}
+							/>
+							<Controller
+								name="escalationNotificationChannels"
+								control={control}
+								render={({ field, fieldState }) => {
+									// Show all notifications for escalation selection
+									const escalationOptions = notifications ?? [];
+									const selectedEscalationNotification = escalationOptions.find((n) =>
+										n.id === field.value
+									);
+									return (
+										<Stack spacing={theme.spacing(LAYOUT.MD)}>
+											<Select
+												fieldLabel={t(
+													"pages.createMonitor.form.escalation.option.notificationChannels.label"
+												)}
+												value={field.value || ""}
+												onChange={(e) => {
+													const value = e.target.value;
+													field.onChange(value || undefined);
+												}}
+												displayEmpty
+											>
+												<MenuItem value="">
+													<Typography color="text.secondary">
+														{t(
+															"pages.createMonitor.form.escalation.option.notificationChannels.placeholder"
+														)}
+													</Typography>
+												</MenuItem>
+												{escalationOptions.map((notification) => (
+													<MenuItem key={notification.id} value={notification.id}>
+														{notification.notificationName}
+													</MenuItem>
+												))}
+											</Select>
+											{fieldState.error && (
+												<Typography variant="caption" color="error">
+													{fieldState.error.message}
+												</Typography>
+											)}
+											{selectedEscalationNotification && (
+												<Stack
+													flex={1}
+													width="100%"
+												>
+													<Typography variant="body2">
+														<strong>{selectedEscalationNotification.notificationName}:</strong>{" "}
+														{selectedEscalationNotification.escalationMessage ||
+															t("pages.createMonitor.form.escalation.defaultMessage")}
+													</Typography>
+												</Stack>
+											)}
+										</Stack>
+									);
+								}}
+							/>
+						</Stack>
+					}
+				/>
+			)}
+
+			{/* Hidden Controllers for escalation fields to ensure they are registered with the form for all monitor types */}
+			<Controller
+				name="escalateAfterMinutes"
+				control={control}
+				render={() => <></>}
+			/>
+			<Controller
+				name="escalationNotificationChannels"
+				control={control}
+				render={() => <></>}
+			/>
+
 			<ConfigBox
 				title={t("pages.createMonitor.form.notifications.title")}
 				subtitle={t("pages.createMonitor.form.notifications.description")}
@@ -1050,7 +1154,7 @@ const CreateMonitorPage = () => {
 			>
 				<Button
 					loading={isSubmitting}
-					type="submit"
+					onClick={handleSaveClick}
 					variant="contained"
 					color="primary"
 				>

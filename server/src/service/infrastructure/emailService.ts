@@ -128,16 +128,35 @@ export class EmailService implements IEmailService {
 			systemEmailRejectUnauthorized,
 		} = config;
 
+		const normalizedHost = (systemEmailHost ?? "").trim();
+		const normalizedFromAddress = (systemEmailAddress ?? "").trim();
+		const normalizedUser = (systemEmailUser || normalizedFromAddress || "").trim();
+		let normalizedPassword = systemEmailPassword ?? "";
+
+		// Gmail app passwords are often copied with spaces every 4 characters.
+		if (/gmail\.com$|googlemail\.com$/i.test(normalizedHost)) {
+			normalizedPassword = normalizedPassword.replace(/\s+/g, "");
+		}
+
+		if (!normalizedHost || !systemEmailPort || !normalizedFromAddress || !normalizedUser || !normalizedPassword) {
+			this.logger.warn({
+				message: "Missing required SMTP settings (host/port/from/user/password)",
+				service: SERVICE_NAME,
+				method: "sendEmail",
+			});
+			return false;
+		}
+
 		const emailConfig = {
-			host: systemEmailHost,
+			host: normalizedHost,
 			port: Number(systemEmailPort),
 			secure: systemEmailSecure,
 			auth: {
-				user: systemEmailUser || systemEmailAddress,
-				pass: systemEmailPassword,
+				user: normalizedUser,
+				pass: normalizedPassword,
 			},
 			name: systemEmailConnectionHost || "localhost",
-			connectionTimeout: 5000,
+			connectionTimeout: 15000,
 			pool: systemEmailPool,
 			tls: {
 				rejectUnauthorized: systemEmailRejectUnauthorized,
@@ -146,29 +165,71 @@ export class EmailService implements IEmailService {
 				servername: systemEmailTLSServername,
 			},
 		};
-		this.transporter = this.nodemailer.createTransport(emailConfig);
 
-		try {
-			await this.transporter.verify();
-		} catch (error: unknown) {
-			this.logger.warn({
-				message: "Email transporter verification failed",
-				service: SERVICE_NAME,
-				method: "verifyTransporter",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-			return false;
-		}
+		const attemptSend = async (configToUse: typeof emailConfig): Promise<string | undefined> => {
+			this.transporter = this.nodemailer.createTransport(configToUse);
 
-		try {
+			try {
+				await this.transporter.verify();
+			} catch (error: unknown) {
+				this.logger.warn({
+					message: `Email transporter verification failed, attempting send anyway: ${error instanceof Error ? error.message : "Unknown error"}`,
+					service: SERVICE_NAME,
+					method: "verifyTransporter",
+					stack: error instanceof Error ? error.stack : undefined,
+				});
+			}
+
 			const info = await this.transporter.sendMail({
 				to: to,
-				from: systemEmailAddress,
+				from: normalizedFromAddress,
 				subject: subject,
 				html: html,
 			});
+
 			return info?.messageId;
+		};
+
+		try {
+			return await attemptSend(emailConfig);
 		} catch (error: unknown) {
+			const isGmail = /gmail\.com$|googlemail\.com$/i.test(normalizedHost);
+			if (!isGmail) {
+				this.logger.error({
+					message: error instanceof Error ? error.message : "Unknown error",
+					service: SERVICE_NAME,
+					method: "sendEmail",
+					stack: error instanceof Error ? error.stack : undefined,
+				});
+				return;
+			}
+
+			const fallbackConfigs = [
+				{ ...emailConfig, port: 465, secure: true },
+				{ ...emailConfig, port: 587, secure: false, tls: { ...emailConfig.tls, requireTLS: true } },
+			];
+
+			for (const fallbackConfig of fallbackConfigs) {
+				if (fallbackConfig.port === emailConfig.port && fallbackConfig.secure === emailConfig.secure) {
+					continue;
+				}
+				try {
+					this.logger.warn({
+						message: `Retrying Gmail SMTP with fallback transport port=${fallbackConfig.port} secure=${fallbackConfig.secure}`,
+						service: SERVICE_NAME,
+						method: "sendEmail",
+					});
+					return await attemptSend(fallbackConfig);
+				} catch (fallbackError: unknown) {
+					this.logger.warn({
+						message: `Fallback Gmail SMTP attempt failed: ${fallbackError instanceof Error ? fallbackError.message : "Unknown error"}`,
+						service: SERVICE_NAME,
+						method: "sendEmail",
+						stack: fallbackError instanceof Error ? fallbackError.stack : undefined,
+					});
+				}
+			}
+
 			this.logger.error({
 				message: error instanceof Error ? error.message : "Unknown error",
 				service: SERVICE_NAME,

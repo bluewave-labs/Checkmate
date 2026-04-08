@@ -83,6 +83,7 @@ class SettingsController implements ISettingsController {
 	sendTestEmail = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			sendTestEmailBodyValidation.parse(req.body);
+			const dbSettings = await this.settingsService.getDBSettings();
 
 			const {
 				to,
@@ -103,27 +104,46 @@ class SettingsController implements ISettingsController {
 			const subject = "This is a test email from Checkmate";
 			const context = { testName: "Monitoring System" };
 
+			const resolvedHost = systemEmailHost ?? dbSettings.systemEmailHost;
+			const resolvedPort = systemEmailPort ?? dbSettings.systemEmailPort;
+			const resolvedAddress = systemEmailAddress ?? dbSettings.systemEmailAddress;
+			const resolvedPassword = systemEmailPassword ?? dbSettings.systemEmailPassword;
+			const resolvedUser = systemEmailUser ?? dbSettings.systemEmailUser;
+			const resolvedConnectionHost = systemEmailConnectionHost ?? dbSettings.systemEmailConnectionHost;
+			const resolvedSecure = systemEmailSecure ?? dbSettings.systemEmailSecure;
+			const resolvedPool = systemEmailPool ?? dbSettings.systemEmailPool;
+			const resolvedIgnoreTLS = systemEmailIgnoreTLS ?? dbSettings.systemEmailIgnoreTLS;
+			const resolvedRequireTLS = systemEmailRequireTLS ?? dbSettings.systemEmailRequireTLS;
+			const resolvedRejectUnauthorized = systemEmailRejectUnauthorized ?? dbSettings.systemEmailRejectUnauthorized;
+			const resolvedTLSServername = systemEmailTLSServername ?? dbSettings.systemEmailTLSServername;
+
 			const html = await this.emailService.buildEmail("testEmailTemplate", context);
 			if (!html) {
 				throw new AppError({ message: "Failed to build email template.", status: 500 });
 			}
 			const messageId = await this.emailService.sendEmail(to, subject, html, {
-				systemEmailHost,
-				systemEmailPort,
-				systemEmailUser,
-				systemEmailAddress,
-				systemEmailPassword,
-				systemEmailConnectionHost,
-				systemEmailSecure,
-				systemEmailPool,
-				systemEmailIgnoreTLS,
-				systemEmailRequireTLS,
-				systemEmailRejectUnauthorized,
-				systemEmailTLSServername,
+				systemEmailHost: resolvedHost,
+				systemEmailPort: resolvedPort,
+				systemEmailUser: resolvedUser,
+				systemEmailAddress: resolvedAddress,
+				systemEmailPassword: resolvedPassword,
+				systemEmailConnectionHost: resolvedConnectionHost,
+				systemEmailSecure: resolvedSecure,
+				systemEmailPool: resolvedPool,
+				systemEmailIgnoreTLS: resolvedIgnoreTLS,
+				systemEmailRequireTLS: resolvedRequireTLS,
+				systemEmailRejectUnauthorized: resolvedRejectUnauthorized,
+				systemEmailTLSServername: resolvedTLSServername,
 			});
 
 			if (!messageId) {
-				throw new AppError({ message: "Failed to send test email.", status: 500 });
+				const isGmail = typeof resolvedHost === "string" && /gmail\.com$|googlemail\.com$/i.test(resolvedHost);
+				throw new AppError({
+					message: isGmail
+						? "Failed to send test email. For Gmail, enable 2-Step Verification and use a 16-character App Password."
+						: "Failed to send test email. Please verify SMTP host, port, username, password, and TLS settings.",
+					status: 500,
+				});
 			}
 
 			return res.status(200).json({

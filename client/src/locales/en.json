@@ -539,6 +539,21 @@
 					},
 					"title": "Incidents"
 				},
+				"escalation": {
+					"title": "Escalation rule",
+					"description": "Send an escalation email to the base address if the monitor remains down for the configured time.",
+					"defaultMessage": "Monitor has been down for the configured escalation time.",
+					"option": {
+						"escalateAfterMinutes": {
+							"label": "Escalate after (minute)",
+							"placeholder": "Enter minutes"
+						},
+						"notificationChannels": {
+							"label": "Escalation notification channels",
+							"placeholder": "Select notification channels with escalation messages"
+						}
+					}
+				},
 				"notifications": {
 					"description": "Select the notification channels you want to use",
 					"title": "Notifications"
@@ -951,6 +966,12 @@
 					"description": "Select the type of notification channel to create.",
 					"optionType": "Type",
 					"title": "Channel type"
+				},
+				"escalationMessage": {
+					"title": "Escalation message",
+					"description": "Optional message to send during escalation alerts.",
+					"optionMessage": "Escalation message",
+					"placeholder": "Enter escalation message"
 				}
 			},
 			"table": {

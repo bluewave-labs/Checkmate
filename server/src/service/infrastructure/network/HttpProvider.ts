@@ -6,7 +6,7 @@ import { MonitorStatusResponse } from "@/types/network.js";
 import { Agent as HttpsAgent } from "https";
 import { Monitor, MonitorType } from "@/types/monitor.js";
 import { NETWORK_ERROR } from "@/service/infrastructure/network/utils.js";
-import CacheableLookup from "cacheable-lookup";
+// import CacheableLookup from "cacheable-lookup";
 
 export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 	readonly type = "http";
@@ -15,9 +15,9 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 		private got: Got,
 		private advancedMatcher: IAdvancedMatcher
 	) {
-		const cacheable = new CacheableLookup({ maxTtl: 300, errorTtl: 30 });
+		// const cacheable = new CacheableLookup({ maxTtl: 300, errorTtl: 30 });
 		this.got = got.extend({
-			dnsCache: cacheable,
+			// dnsCache: cacheable,
 			timeout: {
 				request: 30000,
 			},

@@ -156,7 +156,17 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 				// Step 5.  Get decisions
 				const decision = this.evaluateMonitorAction(statusChangeResult);
 
-				// Step 6. Handle notifications (best effort, continue even in event of failure, don't wait)
+				// Step 6. Handle escalation (best effort, continue even in event of failure, don't wait)
+				this.handleEscalation(statusChangeResult.monitor, statusChangeResult.prevStatus).catch((error: unknown) => {
+					this.logger.error({
+						message: `Error handling escalation for job ${statusChangeResult.monitor.id}: ${error instanceof Error ? error.message : "Unknown error"}`,
+						service: SERVICE_NAME,
+						method: "getMonitorJob",
+						stack: error instanceof Error ? error.stack : undefined,
+					});
+				});
+
+				// Step 7. Handle notifications (best effort, continue even in event of failure, don't wait)
 				if (decision.shouldSendNotification) {
 					this.notificationsService.handleNotifications(statusChangeResult.monitor, status, decision).catch((error: unknown) => {
 						this.logger.error({
@@ -168,7 +178,7 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 					});
 				}
 
-				// Step 7. Handle incidents (best effort, don't wait)
+				// Step 8. Handle incidents (best effort, don't wait)
 				this.incidentService.handleIncident(statusChangeResult.monitor, statusChangeResult.code, decision, status).catch((error: unknown) => {
 					this.logger.warn({
 						message: `Error handling incident for job ${monitor.id}: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -455,4 +465,55 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 
 		return decision;
 	}
+
+	private handleEscalation = async (monitor: Monitor, prevStatus: Monitor["status"]) => {
+		const escalationChannelIds = Array.isArray(monitor.escalationNotificationChannels)
+			? monitor.escalationNotificationChannels
+			: typeof monitor.escalationNotificationChannels === "string"
+				? [monitor.escalationNotificationChannels]
+				: [];
+
+		const normalizedEscalationChannelIds = escalationChannelIds.map((id) => id.trim()).filter((id) => id.length > 0);
+
+		if (normalizedEscalationChannelIds.length === 0) {
+			return;
+		}
+
+		const escalationNotifications = await this.notificationsService.getNotificationsByIds(normalizedEscalationChannelIds);
+
+		if (monitor.status === "up" && prevStatus === "down") {
+			this.logger.info({
+				message: `Sending escalation recovery notifications for monitor ${monitor.id}`,
+				service: SERVICE_NAME,
+				method: "handleEscalation",
+			});
+
+			for (const notification of escalationNotifications) {
+				await this.notificationsService.sendEscalationRecoveryNotification(monitor, notification);
+			}
+			return;
+		}
+
+		// Check if monitor is down and has escalation configured
+		if (monitor.status !== "down" || !monitor.escalateAfterMinutes || normalizedEscalationChannelIds.length === 0 || !monitor.downSince) {
+			return;
+		}
+
+		const downDurationMs = Date.now() - new Date(monitor.downSince).getTime();
+		const escalateAfterMs = monitor.escalateAfterMinutes * 60 * 1000;
+
+		if (downDurationMs >= escalateAfterMs) {
+			// Time to escalate
+			this.logger.info({
+				message: `Escalating monitor ${monitor.id} after ${monitor.escalateAfterMinutes} minutes down`,
+				service: SERVICE_NAME,
+				method: "handleEscalation",
+			});
+
+			// Send escalation notifications
+			for (const notification of escalationNotifications) {
+				await this.notificationsService.sendEscalationNotification(monitor, notification);
+			}
+		}
+	};
 }

@@ -231,6 +231,30 @@ const NotificationsCreatePage = () => {
 					}
 				/>
 			)}
+			<ConfigBox
+				title={t("pages.notifications.form.escalationMessage.title")}
+				subtitle={t("pages.notifications.form.escalationMessage.description")}
+				rightContent={
+					<Controller
+						name="escalationMessage"
+						control={control}
+						defaultValue={defaults.escalationMessage}
+						render={({ field, fieldState }) => (
+							<TextField
+								{...field}
+								type="text"
+								fieldLabel={t("pages.notifications.form.escalationMessage.optionMessage")}
+								placeholder={t("pages.notifications.form.escalationMessage.placeholder")}
+								fullWidth
+								multiline
+								rows={4}
+								error={!!fieldState.error}
+								helperText={fieldState.error?.message ?? ""}
+							/>
+						)}
+					/>
+				}
+			/>
 			<Stack
 				direction="row"
 				justifyContent="flex-end"

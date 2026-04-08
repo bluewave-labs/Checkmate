@@ -17,6 +17,9 @@ export interface INotificationsService {
 
 	sendTestNotification: (notification: Partial<Notification>) => Promise<boolean>;
 	testAllNotifications: (notificationIds: string[]) => Promise<boolean>;
+	getNotificationsByIds: (ids: string[]) => Promise<Notification[]>;
+	sendEscalationNotification: (monitor: Monitor, notification: Notification) => Promise<void>;
+	sendEscalationRecoveryNotification: (monitor: Monitor, notification: Notification) => Promise<void>;
 }
 
 const SERVICE_NAME = "NotificationsService";
@@ -196,5 +199,88 @@ export class NotificationsService implements INotificationsService {
 		const deleted = await this.notificationsRepository.deleteById(id, teamId);
 		await this.monitorsRepository.removeNotificationFromMonitors(id);
 		return deleted;
+	};
+
+	getNotificationsByIds = async (ids: string[]): Promise<Notification[]> => {
+		return await this.notificationsRepository.findNotificationsByIds(ids);
+	};
+
+	sendEscalationNotification = async (monitor: Monitor, notification: Notification) => {
+		// For escalation, we send the escalation message to the notification's configured address
+		// Only email notifications are supported for escalation
+		if (notification.type !== "email" || !notification.address) {
+			this.logger.warn({
+				message: `Escalation notification skipped: notification ${notification.id} is not an email notification or has no address`,
+				service: SERVICE_NAME,
+				method: "sendEscalationNotification",
+			});
+			return;
+		}
+
+		const settings = this.settingsService.getSettings();
+
+		const notificationMessage = {
+			type: "monitor_down" as const,
+			severity: "critical" as const,
+			monitor: {
+				id: monitor.id,
+				name: monitor.name,
+				url: monitor.url,
+				type: monitor.type,
+				status: monitor.status,
+			},
+			content: {
+				title: `Escalation Alert: ${monitor.name}`,
+				summary: notification.escalationMessage?.trim() || "Monitor has been down for the configured escalation time.",
+				details: [`Monitor URL: ${monitor.url}`, `Down since: ${monitor.downSince || "Unknown"}`],
+				timestamp: new Date(),
+			},
+			clientHost: settings.clientHost || "Host not defined",
+			metadata: {
+				teamId: monitor.teamId,
+				notificationReason: "escalation",
+			},
+		};
+
+		await this.emailProvider.sendMessage!(notification, notificationMessage);
+	};
+
+	sendEscalationRecoveryNotification = async (monitor: Monitor, notification: Notification) => {
+		// Escalation recovery notifications are only sent via email channels.
+		if (notification.type !== "email" || !notification.address) {
+			this.logger.warn({
+				message: `Escalation recovery notification skipped: notification ${notification.id} is not an email notification or has no address`,
+				service: SERVICE_NAME,
+				method: "sendEscalationRecoveryNotification",
+			});
+			return;
+		}
+
+		const settings = this.settingsService.getSettings();
+
+		const notificationMessage = {
+			type: "monitor_up" as const,
+			severity: "success" as const,
+			monitor: {
+				id: monitor.id,
+				name: monitor.name,
+				url: monitor.url,
+				type: monitor.type,
+				status: monitor.status,
+			},
+			content: {
+				title: `Escalation Resolved: ${monitor.name}`,
+				summary: "Monitor is back up and operational.",
+				details: [`Monitor URL: ${monitor.url}`, `Recovered at: ${new Date().toISOString()}`],
+				timestamp: new Date(),
+			},
+			clientHost: settings.clientHost || "Host not defined",
+			metadata: {
+				teamId: monitor.teamId,
+				notificationReason: "escalation_resolved",
+			},
+		};
+
+		await this.emailProvider.sendMessage!(notification, notificationMessage);
 	};
 }

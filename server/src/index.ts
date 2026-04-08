@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+
 import { initializeServices } from "./config/services.js";
 import { initializeControllers } from "./config/controllers.js";
 import { createApp } from "./app.js";
@@ -16,12 +18,19 @@ const SERVICE_NAME = "Server";
 let logger: ILogger;
 
 const startApp = async () => {
+	// Load environment variables
+	const __filename = fileURLToPath(import.meta.url);
+	const __dirname = path.dirname(__filename);
+	dotenv.config({ path: path.join(__dirname, '..', '.env') });
+	console.log('Loaded .env from:', path.join(__dirname, '..', '.env'));
+	console.log('DB_CONNECTION_STRING:', process.env.DB_CONNECTION_STRING);
+	console.log('JWT_SECRET:', process.env.JWT_SECRET ? '***' : undefined);
+	console.log('CLIENT_HOST:', process.env.CLIENT_HOST);
+
 	// Validate environment variables first
 	const env = validateEnv();
 
 	// FE path
-	const __filename = fileURLToPath(import.meta.url);
-	const __dirname = path.dirname(__filename);
 	const openApiSpec = JSON.parse(fs.readFileSync(path.join(__dirname, "../openapi.json"), "utf8"));
 	const frontendPath = path.join(__dirname, "..", "public");
 
@@ -50,8 +59,9 @@ const startApp = async () => {
 		openApiSpec,
 	});
 
-	const server = app.listen(env.PORT, () => {
-		logger.info({ message: `Server started on port:${env.PORT}` });
+	const port = parseInt(env.PORT, 10);
+	const server = app.listen(port, "127.0.0.1", () => {
+		logger.info({ message: `Server started on port:${port}` });
 	});
 
 	initShutdownListener(server, services);
