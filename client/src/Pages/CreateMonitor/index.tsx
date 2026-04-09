@@ -40,6 +40,16 @@ import {
 } from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
 import type { MonitorFormData } from "@/Validation/monitor";
+import MonitorEscalation from "./MonitorEscalation";
+
+type EscalationStep = {
+	notificationIds?: string[];
+	delayMinutes?: number;
+};
+
+type MonitorPayload = MonitorFormData & {
+	escalation?: EscalationStep;
+};
 
 interface GeneralSettingsConfig {
 	urlLabel: string;
@@ -222,8 +232,8 @@ const CreateMonitorPage = () => {
 		[watchedType, t]
 	);
 
-	const { post, loading: isCreating } = usePost<MonitorFormData, Monitor>();
-	const { patch, loading: isUpdating } = usePatch<MonitorFormData, Monitor>();
+	const { post, loading: isCreating } = usePost<MonitorPayload, Monitor>();
+	const { patch, loading: isUpdating } = usePatch<MonitorPayload, Monitor>();
 	const isSubmitting = isCreating || isUpdating;
 	// Delete functionality
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -252,11 +262,22 @@ const CreateMonitorPage = () => {
 	};
 
 	const onSubmit = async (data: MonitorFormData) => {
+		const normalizedEscalation: EscalationStep = {
+			notificationIds: escalation.notificationIds ?? [],
+			delayMinutes: escalation.delayMinutes ?? 1,
+		};
+		const payload: MonitorPayload = {
+			...data,
+			escalation: (normalizedEscalation.notificationIds ?? []).length
+				? normalizedEscalation
+				: undefined,
+		};
+
 		let result;
 		if (isEditMode && monitorId) {
-			result = await patch(`/monitors/${monitorId}`, data);
+			result = await patch(`/monitors/${monitorId}`, payload);
 		} else {
-			result = await post("/monitors", data);
+			result = await post("/monitors", payload);
 		}
 
 		if (result?.success) {
@@ -273,6 +294,20 @@ const CreateMonitorPage = () => {
 	const onError = (errors: unknown) => {
 		logger.debug("Monitor creation validation errors", errors);
 	};
+
+	const [escalation, setEscalation] = useState<EscalationStep>({
+		notificationIds: [],
+		delayMinutes: 1,
+	});
+
+	useEffect(() => {
+		const monitorEscalation = (existingMonitor as MonitorPayload | undefined)
+			?.escalation;
+		setEscalation({
+			notificationIds: monitorEscalation?.notificationIds ?? [],
+			delayMinutes: monitorEscalation?.delayMinutes ?? 1,
+		});
+	}, [existingMonitor]);
 
 	return (
 		<BasePage
@@ -764,6 +799,17 @@ const CreateMonitorPage = () => {
 					/>
 				}
 			/>
+			<ConfigBox
+				title={t("pages.createMonitor.form.notifications.escalation.title")}
+				subtitle={t("pages.createMonitor.form.notifications.escalation.description")}
+				rightContent={
+					<MonitorEscalation
+						notifications={notifications ?? []}
+						value={escalation}
+						onChange={setEscalation}
+					/>
+				}
+			/>
 
 			{(watchedType === "http" ||
 				watchedType === "grpc" ||
@@ -871,7 +917,7 @@ const CreateMonitorPage = () => {
 									/>
 									<Controller
 										name="jsonPath"
-										control={control}
+									 control={control}
 										render={({ field, fieldState }) => (
 											<TextField
 												{...field}

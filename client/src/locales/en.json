@@ -541,7 +541,14 @@
 				},
 				"notifications": {
 					"description": "Select the notification channels you want to use",
-					"title": "Notifications"
+					"title": "Notifications",
+					"escalation": {
+						"title": "Escalation rules",
+						"description": "If the monitor stays down for the specified time, notify additional channels.",
+						"delayLabel": "Escalate after (minutes)",
+						"channelsLabel": "Escalation notification channels",
+						"removeLabel": "Remove escalated notification"
+					}
 				},
 				"type": {
 					"description": "Select the type of check to perform",
