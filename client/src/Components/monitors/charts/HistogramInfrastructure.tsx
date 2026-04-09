@@ -17,6 +17,9 @@ import { SPACING } from "@/Utils/Theme/constants";
 import { useTranslation } from "react-i18next";
 import type { TooltipProps } from "recharts";
 import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
+import { formatDateWithTz, tooltipDateFormatLookup } from "@/Utils/TimeUtils";
+import type { RootState } from "@/Types/state";
+import { useSelector } from "react-redux";
 
 const AREA_COLORS = [
 	// Blues
@@ -97,22 +100,25 @@ const createGradient = ({
 	</defs>
 );
 
-type HistogramInfrastructureToolTipProps = TooltipProps<ValueType, NameType> & {
-	label?: string | number;
+type HistogramInfrastructureTooltipProps = TooltipProps<ValueType, NameType> & {
+	range: string;
 	theme: Theme;
+	uiTimezone: string;
 	labelFormatter?: (value: number) => string;
 };
 
-const HistogramInfrastructureToolTip = ({
+const HistogramInfrastructureTooltip = ({
 	active,
 	payload,
-	label,
+	range,
 	theme,
+	label,
 	type,
+	uiTimezone,
 	labelFormatter,
-}: HistogramInfrastructureToolTipProps & { type: string }) => {
+}: HistogramInfrastructureTooltipProps & { type: string }) => {
 	const { t } = useTranslation();
-	if (!active || !payload || !payload.length || label === undefined || label === null) {
+	if (!active || !payload || !payload.length || range === undefined || range === null) {
 		return null;
 	}
 
@@ -123,27 +129,17 @@ const HistogramInfrastructureToolTip = ({
 	};
 	const targetKey = dataKeys[type] ?? payload[0].dataKey;
 	if (!targetKey) return null;
-	const rawValue = payload[0].payload[targetKey as keyof HardwareCheckStats];
+	const rawValue = payload[0].payload[targetKey];
 
 	const value = typeof rawValue === "number" ? rawValue : 0;
 	const formattedValue = labelFormatter ? labelFormatter(value) : value;
 
 	const displayLabel = t(`pages.infrastructure.charts.labels.${type}`);
-	const formattedDate = new Date(label)
-		.toLocaleString("en-US", {
-			weekday: "short",
-			month: "long",
-			day: "numeric",
-			year: "numeric",
-			hour: "2-digit",
-			minute: "2-digit",
-			hour12: true,
-		})
-		.replace(" at ", ", ");
+	const formattedDate = tooltipDateFormatLookup(range);
 
 	return (
 		<BaseBox sx={{ py: theme.spacing(SPACING.LG), px: theme.spacing(SPACING.XS) }}>
-			<Typography>{formattedDate}</Typography>
+			<Typography>{formatDateWithTz(String(label), formattedDate, uiTimezone)}</Typography>
 			<Typography>
 				{displayLabel}: {formattedValue}
 			</Typography>
@@ -187,20 +183,21 @@ export const HistogramInfrastructure = ({
 	const theme = useTheme();
 	const uniqueId = useId();
 	const data = checks;
+	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 
-	let avgTemps: { bucketDate: string; avgTemp: number | null }[] = [];
+	let avgTemps: { bucketDate: string; avg_temp: number | null }[] = [];
 	let tempYDomain: number[] = [];
 	if (type === "temp") {
 		avgTemps = data.map((check) => {
 			const temps = check.avgTemperature || [];
-			if (temps.length === 0) return { bucketDate: check.bucketDate, avgTemp: null };
+			if (temps.length === 0) return { bucketDate: check.bucketDate, avg_temp: null };
 			const totalTemp = temps.reduce((sum, temp) => sum + (temp || 0), 0);
 			const avgTemp = totalTemp / temps.length;
-			return { bucketDate: check.bucketDate, avgTemp: avgTemp };
+			return { bucketDate: check.bucketDate, avg_temp: avgTemp };
 		});
 
 		const maxTemp: number = avgTemps.reduce((max, item) => {
-			return item.avgTemp && item.avgTemp > max ? item.avgTemp : max;
+			return item.avg_temp && item.avg_temp > max ? item.avg_temp : max;
 		}, 0);
 
 		tempYDomain = [0, Math.ceil((maxTemp * 1.3) / 10) * 10];
@@ -260,11 +257,13 @@ export const HistogramInfrastructure = ({
 					})}
 					<Tooltip
 						content={(props) => (
-							<HistogramInfrastructureToolTip
+							<HistogramInfrastructureTooltip
 								{...props}
 								type={type}
 								theme={theme}
 								labelFormatter={yAxisFormatter}
+								range={dateRange}
+								uiTimezone={uiTimezone}
 							/>
 						)}
 					/>
