@@ -1,10 +1,10 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { PageSpeedProvider } from "../../../src/service/infrastructure/network/PageSpeedProvider.ts";
-import { testStatusProviderContract } from "../../helpers/statusProviderContract.ts";
-import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import type { HttpProvider } from "../../../src/service/infrastructure/network/HttpProvider.ts";
-import type { ISettingsService } from "../../../src/service/system/settingsService.ts";
-import type { Monitor } from "../../../src/types/index.ts";
+import { PageSpeedProvider } from "../../../../src/service/infrastructure/network/PageSpeedProvider.ts";
+import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
+import { createMockLogger } from "../../../helpers/createMockLogger.ts";
+import type { HttpProvider } from "../../../../src/service/infrastructure/network/HttpProvider.ts";
+import type { ISettingsService } from "../../../../src/service/system/settingsService.ts";
+import type { Monitor } from "../../../../src/types/index.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

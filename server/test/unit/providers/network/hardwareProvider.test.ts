@@ -1,8 +1,8 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { HardwareProvider } from "../../../src/service/infrastructure/network/HardwareProvider.ts";
-import { testStatusProviderContract } from "../../helpers/statusProviderContract.ts";
-import type { HttpProvider } from "../../../src/service/infrastructure/network/HttpProvider.ts";
-import type { Monitor } from "../../../src/types/index.ts";
+import { HardwareProvider } from "../../../../src/service/infrastructure/network/HardwareProvider.ts";
+import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
+import type { HttpProvider } from "../../../../src/service/infrastructure/network/HttpProvider.ts";
+import type { Monitor } from "../../../../src/types/index.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

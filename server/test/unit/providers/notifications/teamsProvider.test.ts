@@ -1,7 +1,7 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
-import type { Notification } from "../../../src/types/notification.ts";
-import type { NotificationMessage } from "../../../src/types/notificationMessage.ts";
-import { createMockLogger } from "../../helpers/createMockLogger.ts";
+import type { Notification } from "../../../../src/types/notification.ts";
+import type { NotificationMessage } from "../../../../src/types/notificationMessage.ts";
+import { createMockLogger } from "../../../helpers/createMockLogger.ts";
 
 const mockPost = jest.fn();
 jest.unstable_mockModule("got", () => ({
@@ -9,7 +9,7 @@ jest.unstable_mockModule("got", () => ({
 	HTTPError: class HTTPError extends Error {},
 }));
 
-const { TeamsProvider } = await import("../../../src/service/infrastructure/notificationProviders/teams.ts");
+const { TeamsProvider } = await import("../../../../src/service/infrastructure/notificationProviders/teams.ts");
 
 const createNotification = (overrides?: Partial<Notification>): Notification => ({
 	id: "notif-1",
@@ -247,6 +247,49 @@ describe("TeamsProvider", () => {
 					service: "TeamsProvider",
 				})
 			);
+		});
+
+		it("handles non-Error thrown values in sendMessage", async () => {
+			mockPost.mockRejectedValue(null);
+			const result = await provider.sendMessage(createNotification(), createMessage());
+			expect(result).toBe(false);
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined }));
+		});
+
+		it("includes details section in Adaptive Card when details are present", async () => {
+			const notification = createNotification();
+			const message = createMessage({
+				content: {
+					title: "Test",
+					summary: "Summary",
+					details: ["URL: https://example.com", "Status: Down"],
+					timestamp: new Date(),
+				},
+			});
+			await provider.sendMessage(notification, message);
+			const [, options] = mockPost.mock.calls[0] as [string, { json: any }];
+			const card = options.json.attachments[0].content;
+			const text = JSON.stringify(card.body);
+			expect(text).toContain("Additional Information");
+			expect(text).toContain("URL: https://example.com");
+		});
+
+		it("uses default color for unknown severity", async () => {
+			const notification = createNotification();
+			const message = createMessage({ severity: "unknown" as any });
+			await provider.sendMessage(notification, message);
+			const [, options] = mockPost.mock.calls[0] as [string, { json: any }];
+			const card = options.json.attachments[0].content;
+			expect(card.body[0].color).toBe("default");
+		});
+	});
+
+	describe("sendTestAlert error handling", () => {
+		it("handles non-Error thrown values", async () => {
+			mockPost.mockRejectedValue(null);
+			const result = await provider.sendTestAlert(createNotification());
+			expect(result).toBe(false);
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined }));
 		});
 	});
 });

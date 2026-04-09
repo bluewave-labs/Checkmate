@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { PingProvider } from "../../../src/service/infrastructure/network/PingProvider.ts";
-import { testStatusProviderContract } from "../../helpers/statusProviderContract.ts";
-import type { Monitor } from "../../../src/types/index.ts";
+import { PingProvider } from "../../../../src/service/infrastructure/network/PingProvider.ts";
+import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
+import type { Monitor } from "../../../../src/types/index.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

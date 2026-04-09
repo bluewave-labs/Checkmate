@@ -1,8 +1,8 @@
 import { describe, expect, it, jest, beforeEach, afterEach } from "@jest/globals";
-import { WebSocketProvider } from "../../../src/service/infrastructure/network/WebSocketProvider.ts";
-import { testStatusProviderContract } from "../../helpers/statusProviderContract.ts";
-import { NETWORK_ERROR } from "../../../src/service/infrastructure/network/utils.ts";
-import type { Monitor } from "../../../src/types/index.ts";
+import { WebSocketProvider } from "../../../../src/service/infrastructure/network/WebSocketProvider.ts";
+import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
+import { NETWORK_ERROR } from "../../../../src/service/infrastructure/network/utils.ts";
+import type { Monitor } from "../../../../src/types/index.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

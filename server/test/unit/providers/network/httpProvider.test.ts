@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { testStatusProviderContract } from "../../helpers/statusProviderContract.ts";
-import { NETWORK_ERROR } from "../../../src/service/infrastructure/network/utils.ts";
-import type { Monitor } from "../../../src/types/index.ts";
+import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
+import { NETWORK_ERROR } from "../../../../src/service/infrastructure/network/utils.ts";
+import type { Monitor } from "../../../../src/types/index.ts";
 
 // ── Mocks ────────────────────────────────────────────────────────────────────
 
@@ -38,7 +38,7 @@ jest.unstable_mockModule("got", () => ({
 	},
 }));
 
-const { HttpProvider } = await import("../../../src/service/infrastructure/network/HttpProvider.ts");
+const { HttpProvider } = await import("../../../../src/service/infrastructure/network/HttpProvider.ts");
 const gotModule = await import("got");
 const { HTTPError, RequestError } = gotModule;
 

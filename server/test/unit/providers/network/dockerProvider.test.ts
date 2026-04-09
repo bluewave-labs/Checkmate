@@ -1,9 +1,9 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { DockerProvider } from "../../../src/service/infrastructure/network/DockerProvider.ts";
-import { testStatusProviderContract } from "../../helpers/statusProviderContract.ts";
-import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import { NETWORK_ERROR } from "../../../src/service/infrastructure/network/utils.ts";
-import type { Monitor } from "../../../src/types/index.ts";
+import { DockerProvider } from "../../../../src/service/infrastructure/network/DockerProvider.ts";
+import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
+import { createMockLogger } from "../../../helpers/createMockLogger.ts";
+import { NETWORK_ERROR } from "../../../../src/service/infrastructure/network/utils.ts";
+import type { Monitor } from "../../../../src/types/index.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

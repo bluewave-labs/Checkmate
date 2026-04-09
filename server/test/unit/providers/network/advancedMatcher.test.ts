@@ -1,6 +1,6 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { AdvancedMatcher } from "../../../src/service/infrastructure/network/AdvancedMatcher.ts";
-import type { Monitor } from "../../../src/types/index.ts";
+import { AdvancedMatcher } from "../../../../src/service/infrastructure/network/AdvancedMatcher.ts";
+import type { Monitor } from "../../../../src/types/index.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

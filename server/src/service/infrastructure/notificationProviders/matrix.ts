@@ -63,7 +63,7 @@ export class MatrixProvider implements INotificationProvider {
 				message: `Matrix notification failed : ${err.message}`,
 				service: SERVICE_NAME,
 				method: "sendMessage",
-				stack: err?.stack,
+				stack: err.stack,
 			});
 			return false;
 		}
