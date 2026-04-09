@@ -1,5 +1,5 @@
 import { Schema, model, Types } from "mongoose";
-import type { Monitor, MonitorMatchMethod, CheckSnapshot } from "@/types/monitor.js";
+import type { Monitor, MonitorMatchMethod, CheckSnapshot, EscalationNotification } from "@/types/monitor.js";
 import { MonitorTypes, MonitorStatuses } from "@/types/monitor.js";
 import type {
 	CheckAudits,
@@ -22,7 +22,7 @@ type MonitorDocumentBase = Omit<
 > & {
 	statusWindow: boolean[];
 	recentChecks: CheckSnapshotDocument[];
-	notifications: Types.ObjectId[];
+	notifications: EscalationNotification[];
 	selectedDisks: string[];
 	matchMethod?: MonitorMatchMethod;
 };
@@ -280,8 +280,16 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		},
 		notifications: [
 			{
-				type: Schema.Types.ObjectId,
-				ref: "Notification",
+				delayMinutes: {
+					type: Number,
+					required: true,
+					min: 0,
+				},
+				channelId: {
+					type: Schema.Types.ObjectId,
+					ref: "Notification",
+					required: true,
+				},
 			},
 		],
 		secret: {

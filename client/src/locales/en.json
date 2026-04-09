@@ -540,7 +540,13 @@
 					"title": "Incidents"
 				},
 				"notifications": {
-					"description": "Select the notification channels you want to use",
+					"description": "Select the notification channels you want to use and configure escalation delays for each.",
+					"option": {
+						"delayMinutes": {
+							"label": "Escalation delay (minutes)",
+							"description": "How many minutes to wait before sending this notification after an incident starts."
+						}
+					},
 					"title": "Notifications"
 				},
 				"type": {

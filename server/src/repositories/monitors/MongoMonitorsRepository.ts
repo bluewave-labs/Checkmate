@@ -17,7 +17,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		if (!monitors.length) {
 			return [];
 		}
-		const payload = monitors.map((monitor) => ({ ...monitor, notifications: undefined }));
+		const payload = monitors.map((monitor) => ({ ...monitor }));
 		try {
 			const inserted = await MonitorModel.insertMany(payload, { ordered: false });
 			return this.mapDocuments(inserted);
@@ -293,7 +293,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	removeNotificationFromMonitors = async (notificationId: string): Promise<void> => {
-		await MonitorModel.updateMany({ notifications: notificationId }, { $pull: { notifications: notificationId } });
+		await MonitorModel.updateMany({ "notifications.channelId": notificationId }, { $pull: { notifications: { channelId: notificationId } } });
 	};
 
 	updateNotifications = async (
@@ -315,13 +315,19 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		let update;
 		switch (action) {
 			case "add":
-				update = { $addToSet: { notifications: { $each: notificationObjectIds } } };
+				update = {
+					$addToSet: {
+						notifications: {
+							$each: notificationObjectIds.map((id) => ({ channelId: id, delayMinutes: 0 })),
+						},
+					},
+				};
 				break;
 			case "remove":
-				update = { $pull: { notifications: { $in: notificationObjectIds } } };
+				update = { $pull: { notifications: { channelId: { $in: notificationObjectIds } } } };
 				break;
 			case "set":
-				update = { $set: { notifications: notificationObjectIds } };
+				update = { $set: { notifications: notificationObjectIds.map((id) => ({ channelId: id, delayMinutes: 0 })) } };
 				break;
 			default:
 				throw new AppError({ message: `Invalid action: ${action}`, status: 400 });
@@ -350,7 +356,19 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			return value instanceof Date ? value.toISOString() : value;
 		};
 
-		const notificationIds = (doc.notifications ?? []).map((notification) => toStringId(notification));
+		const notificationObjects = (doc.notifications ?? []).map((notification: unknown) => {
+			if (notification && typeof notification === "object" && "channelId" in notification) {
+				const item = notification as { channelId?: unknown; delayMinutes?: unknown };
+				return {
+					channelId: toStringId(item.channelId),
+					delayMinutes: typeof item.delayMinutes === "number" ? item.delayMinutes : 0,
+				};
+			}
+			return {
+				channelId: toStringId(notification),
+				delayMinutes: 0,
+			};
+		});
 
 		return {
 			id: toStringId(doc._id),
@@ -373,7 +391,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			isActive: doc.isActive,
 			interval: doc.interval,
 			uptimePercentage: doc.uptimePercentage ?? undefined,
-			notifications: notificationIds,
+			notifications: notificationObjects,
 			secret: doc.secret ?? undefined,
 			cpuAlertThreshold: doc.cpuAlertThreshold,
 			cpuAlertCounter: doc.cpuAlertCounter,
@@ -409,7 +427,19 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			return value instanceof Date ? value.toISOString() : value;
 		};
 
-		const notificationIds = (doc.notifications ?? []).map((notification: unknown) => toStringId(notification));
+		const notificationObjects = (doc.notifications ?? []).map((notification: unknown) => {
+			if (notification && typeof notification === "object" && "channelId" in notification) {
+				const item = notification as { channelId?: unknown; delayMinutes?: unknown };
+				return {
+					channelId: toStringId(item.channelId),
+					delayMinutes: typeof item.delayMinutes === "number" ? item.delayMinutes : 0,
+				};
+			}
+			return {
+				channelId: toStringId(notification),
+				delayMinutes: 0,
+			};
+		});
 
 		return {
 			id: toStringId(doc._id),
@@ -432,7 +462,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			isActive: doc.isActive,
 			interval: doc.interval,
 			uptimePercentage: doc.uptimePercentage ?? undefined,
-			notifications: notificationIds,
+			notifications: notificationObjects,
 			secret: doc.secret ?? undefined,
 			cpuAlertThreshold: doc.cpuAlertThreshold,
 			cpuAlertCounter: doc.cpuAlertCounter,

@@ -1,4 +1,5 @@
 // export type IncidentResolutionType = "automatic" | "manual" | null;
+import type { Types } from "mongoose";
 
 export const IncidentResolutionTypes = ["automatic", "manual", null] as const;
 export type IncidentResolutionType = (typeof IncidentResolutionTypes)[number];
@@ -18,6 +19,11 @@ export interface Incident {
 	comment?: string | null;
 	createdAt: string;
 	updatedAt: string;
+	acknowledged: boolean;
+	acknowledgedBy?: string | null;
+	acknowledgedAt: string | null;
+	acknowledgedByEmail?: string | null;
+	escalatedNotificationIds: string[];
 }
 
 export interface IncidentSummaryTopMonitor {

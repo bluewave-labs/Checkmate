@@ -5,6 +5,11 @@ import { GeoContinents } from "@/Types/GeoCheck";
 const urlSchema = z.url({ message: "Please enter a valid URL" });
 
 // Common base schema for all monitor types
+const notificationRuleSchema = z.object({
+	channelId: z.string().min(1, "Notification channel is required"),
+	delayMinutes: z.number().min(0, "Delay must be 0 or more"),
+});
+
 const baseSchema = z.object({
 	name: z
 		.string()
@@ -12,7 +17,7 @@ const baseSchema = z.object({
 		.max(50, "Monitor name must be at most 50 characters"),
 	description: z.string().optional(),
 	interval: z.number().min(15000, "Interval must be at least 15 seconds"),
-	notifications: z.array(z.string()),
+	notifications: z.array(notificationRuleSchema),
 	statusWindowSize: z
 		.number({ message: "Status window size is required" })
 		.min(1, "Status window size must be at least 1")

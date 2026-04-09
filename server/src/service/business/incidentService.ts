@@ -105,7 +105,7 @@ export class IncidentService implements IIncidentService {
 			return await this.incidentsRepository.updateById(activeIncident.id, activeIncident.teamId, activeIncident);
 		}
 
-		return null;
+		return activeIncident;
 	};
 
 	private buildThresholdBreachMessage(monitor: Monitor, monitorStatusResponse?: MonitorStatusResponse): string {

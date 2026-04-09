@@ -7,11 +7,30 @@ interface UseMonitorFormOptions {
 	defaultType?: MonitorType;
 }
 
+const normalizeNotifications = (notifications?: unknown[]) => {
+	if (!Array.isArray(notifications)) {
+		return [];
+	}
+	return notifications.map((notification) => {
+		if (typeof notification === "string") {
+			return { channelId: notification, delayMinutes: 0 };
+		}
+		const item = notification as {
+			channelId?: unknown;
+			delayMinutes?: unknown;
+		};
+		return {
+			channelId: typeof item.channelId === "string" ? item.channelId : "",
+			delayMinutes: typeof item.delayMinutes === "number" ? item.delayMinutes : 0,
+		};
+	});
+};
+
 const getBaseDefaults = (data?: Monitor | null) => ({
 	name: data?.name || "",
 	description: data?.description || "",
 	interval: data?.interval || 60000,
-	notifications: data?.notifications || [],
+	notifications: normalizeNotifications(data?.notifications),
 	statusWindowSize: data?.statusWindowSize || 5,
 	statusWindowThreshold: data?.statusWindowThreshold || 60,
 	geoCheckEnabled: data?.geoCheckEnabled ?? false,

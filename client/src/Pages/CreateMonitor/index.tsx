@@ -705,71 +705,108 @@ const CreateMonitorPage = () => {
 						name="notifications"
 						control={control}
 						render={({ field }) => {
-							// Map notifications to have 'name' property for Autocomplete
-							const notificationOptions = (notifications ?? []).map((n) => ({
-								...n,
-								name: n.notificationName,
-							}));
-							const selectedNotifications = notificationOptions.filter((n) =>
-								(field.value ?? []).includes(n.id)
-							);
-							return (
-								<Stack spacing={theme.spacing(LAYOUT.MD)}>
-									<Autocomplete
-										multiple
-										options={notificationOptions}
-										value={selectedNotifications}
-										getOptionLabel={(option) => option.name}
-										onChange={(_: unknown, newValue: typeof notificationOptions) => {
-											field.onChange(newValue.map((n) => n.id));
-										}}
-										isOptionEqualToValue={(option, value) => option.id === value.id}
-									/>
-									{selectedNotifications.length > 0 && (
-										<Stack
-											flex={1}
-											width="100%"
-										>
-											{selectedNotifications.map((notification, index) => (
-												<Stack
-													direction="row"
-													alignItems="center"
-													key={notification.id}
-													width="100%"
-												>
-													<Typography flexGrow={1}>
-														{notification.notificationName}
-													</Typography>
-													<IconButton
-														size="small"
-														onClick={() => {
-															field.onChange(
-																(field.value ?? []).filter(
-																	(id: string) => id !== notification.id
-																)
-															);
-														}}
-														aria-label="Remove notification"
-													>
-														<Trash2 size={16} />
-													</IconButton>
-													{index < selectedNotifications.length - 1 && <Divider />}
-												</Stack>
-											))}
-										</Stack>
-									)}
-								</Stack>
-							);
-						}}
-					/>
-				}
-			/>
-
-			{(watchedType === "http" ||
-				watchedType === "grpc" ||
-				watchedType === "websocket") && (
-				<ConfigBox
-					title={t("pages.createMonitor.form.ignoreTls.title")}
+                            // Map notifications to have 'name' property for Autocomplete
+                            const notificationOptions = (notifications ?? []).map((n) => ({
+                                ...n,
+                                name: n.notificationName,
+                            }));
+                            const selectedNotifications = notificationOptions.filter((notification) =>
+                                (field.value ?? []).some(
+                                    (item: { channelId: string; delayMinutes: number }) =>
+                                        item.channelId === notification.id
+                                )
+                            );
+                            return (
+                                <Stack spacing={theme.spacing(LAYOUT.MD)}>
+                                    <Autocomplete
+                                        multiple
+                                        options={notificationOptions}
+                                        value={selectedNotifications}
+                                        getOptionLabel={(option) => option.name}
+                                        onChange={(_: unknown, newValue: typeof notificationOptions) => {
+                                            const nextValues = newValue.map((notification) => {
+                                                const existing = (field.value ?? []).find(
+                                                    (item: { channelId: string; delayMinutes: number }) =>
+                                                        item.channelId === notification.id
+                                                );
+                                                return {
+                                                    channelId: notification.id,
+                                                    delayMinutes: existing?.delayMinutes ?? 0,
+                                                };
+                                            });
+                                            field.onChange(nextValues);
+                                        }}
+                                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                                    />
+                                    {selectedNotifications.length > 0 && (
+                                        <Stack flex={1} width="100%">
+                                            {selectedNotifications.map((notification, index) => {
+                                                const selectedRule = (field.value ?? []).find(
+                                                    (item: { channelId: string; delayMinutes: number }) =>
+                                                        item.channelId === notification.id
+                                                );
+                                                const delayMinutes = selectedRule?.delayMinutes ?? 0;
+                                                return (
+                                                    <Stack
+                                                        direction="row"
+                                                        alignItems="center"
+                                                        key={notification.id}
+                                                        width="100%"
+                                                        spacing={theme.spacing(LAYOUT.MD)}
+                                                    >
+                                                        <Typography flexGrow={1}>
+                                                            {notification.notificationName}
+                                                        </Typography>
+                                                        <TextField
+                                                            type="number"
+                                                            fieldLabel={t(
+                                                                "pages.createMonitor.form.notifications.option.delayMinutes.label"
+                                                            )}
+                                                            value={delayMinutes}
+                                                            InputProps={{ inputProps: { min: 0 } }}
+                                                            onChange={(event) => {
+                                                                const value = Number(event.target.value) || 0;
+                                                                field.onChange(
+                                                                    (field.value ?? []).map(
+                                                                        (item: { channelId: string; delayMinutes: number }) =>
+                                                                            item.channelId === notification.id
+                                                                                ? { ...item, delayMinutes: value }
+                                                                                : item
+                                                                    )
+                                                                );
+                                                            }}
+                                                        />
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={() => {
+                                                                field.onChange(
+                                                                    (field.value ?? []).filter(
+                                                                        (item: { channelId: string }) =>
+                                                                            item.channelId !== notification.id
+                                                                    )
+                                                                );
+                                                            }}
+                                                            aria-label="Remove notification"
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </IconButton>
+                                                        {index < selectedNotifications.length - 1 && <Divider />}
+                                                    </Stack>
+                                                );
+                                            })}
+                                        </Stack>
+                                    )}
+                                </Stack>
+                            );
+                        }}
+                    />
+                }
+            />
+            {(watchedType === "http" ||
+                watchedType === "grpc" ||
+                watchedType === "websocket") && (
+                <ConfigBox
+                title={t("pages.createMonitor.form.ignoreTls.title")}
 					subtitle={t("pages.createMonitor.form.ignoreTls.description")}
 					rightContent={
 						<Controller

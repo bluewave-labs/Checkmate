@@ -9,6 +9,11 @@ type IncidentDocumentBase = Omit<Incident, "id" | "monitorId" | "teamId" | "reso
 	endTime: Date | null;
 	createdAt: Date;
 	updatedAt: Date;
+	acknowledged: boolean;
+	acknowledgedBy?: Types.ObjectId | null;
+	acknowledgedAt: Date | null;
+	acknowledgedByEmail?: string | null;
+	escalatedNotificationIds: string[];
 };
 
 export interface IncidentDocument extends IncidentDocumentBase {
@@ -72,6 +77,28 @@ const IncidentSchema = new Schema<IncidentDocument>(
 			type: String,
 			default: null,
 		},
+		escalatedNotificationIds: {
+			type: [String],
+			default: [],
+		},
+		acknowledged: {
+			type: Boolean,
+			default: false,
+			index: true,
+		},
+		acknowledgedBy: {
+			type: Schema.Types.ObjectId,
+			ref: "User",
+			default: null,
+		},
+		acknowledgedAt: {
+			type: Date,
+			default: null,
+		},
+		acknowledgedByEmail: {
+			type: String,
+			default: null,
+		},
 	},
 	{ timestamps: true }
 );
@@ -83,6 +110,8 @@ IncidentSchema.index({ status: 1, startTime: -1 });
 IncidentSchema.index({ resolutionType: 1, status: 1 });
 IncidentSchema.index({ resolvedBy: 1, status: 1 });
 IncidentSchema.index({ createdAt: -1 });
+IncidentSchema.index({ acknowledged: 1, status: 1 });
+IncidentSchema.index({ acknowledgedBy: 1, status: 1 });
 
 const IncidentModel = model<IncidentDocument>("Incident", IncidentSchema);
 
