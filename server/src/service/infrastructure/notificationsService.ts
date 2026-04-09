@@ -112,14 +112,40 @@ export class NotificationsService implements INotificationsService {
 		}
 	};
 
-	private sendNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {
+	private sendNotifications = async (
+		monitor: Monitor,
+		monitorStatusResponse: MonitorStatusResponse,
+		decision: MonitorActionDecision,
+		isEscalation: boolean = false
+	) => {
 		const notificationIds = monitor.notifications ?? [];
+		return this.sendNotificationsByIds(
+			monitor,
+			monitorStatusResponse,
+			decision,
+			notificationIds,
+			isEscalation
+		);
+	};
+
+	private sendNotificationsByIds = async (
+		monitor: Monitor,
+		monitorStatusResponse: MonitorStatusResponse,
+		decision: MonitorActionDecision,
+		notificationIds: string[],
+		isEscalation: boolean = false
+	) => {
+		if (!notificationIds.length) {
+			return true;
+		}
+
 		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
 
 		// Build notification message once for all notifications
 		const settings = this.settingsService.getSettings();
 		const clientHost = settings.clientHost || "Host not defined";
 		const notificationMessage = this.notificationMessageBuilder.buildMessage(monitor, monitorStatusResponse, decision, clientHost);
+		notificationMessage.metadata.isEscalation = isEscalation;
 
 		const tasks = notifications.map((notification) => this.send(notification, monitor, monitorStatusResponse, decision, notificationMessage));
 
@@ -138,12 +164,78 @@ export class NotificationsService implements INotificationsService {
 	};
 
 	handleNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {
-		if (!decision.shouldSendNotification) {
-			return false;
+		let sentAnyNotification = false;
+
+		if (decision.shouldSendNotification) {
+			const immediateSent = await this.sendNotifications(monitor, monitorStatusResponse, decision);
+			sentAnyNotification = sentAnyNotification || immediateSent;
 		}
 
-		// Send notifications based on decision
-		return await this.sendNotifications(monitor, monitorStatusResponse, decision);
+		const escalation = monitor.escalation;
+		const shouldEvaluateEscalation =
+			monitor.status === "down" &&
+			Boolean(escalation) &&
+			(escalation?.notificationIds?.length ?? 0) > 0 &&
+			(escalation?.delayMinutes ?? 0) > 0;
+
+		if (!shouldEvaluateEscalation) {
+			return sentAnyNotification;
+		}
+
+		// Backfill baseline for older monitors that are already down and don't have this field yet.
+		// Start the escalation timer from first observed down state.
+		if (!monitor.lastStatusChangeAt) {
+			await this.monitorsRepository.updateById(monitor.id, monitor.teamId, {
+				lastStatusChangeAt: new Date().toISOString(),
+			});
+			return sentAnyNotification;
+		}
+
+		const downSince = monitor.lastStatusChangeAt
+			? new Date(monitor.lastStatusChangeAt).getTime()
+			: Number.NaN;
+		const now = Date.now();
+		const delayMs = (escalation?.delayMinutes ?? 0) * 60 * 1000;
+
+		if (!Number.isFinite(downSince) || now - downSince < delayMs) {
+			return sentAnyNotification;
+		}
+
+		const lastEscalationAt = escalation?.lastNotifiedAt
+			? new Date(escalation.lastNotifiedAt).getTime()
+			: Number.NaN;
+		const alreadyNotifiedForCurrentOutage =
+			Number.isFinite(lastEscalationAt) && lastEscalationAt >= downSince;
+
+		if (alreadyNotifiedForCurrentOutage) {
+			return sentAnyNotification;
+		}
+
+		const escalationDecision: MonitorActionDecision = {
+			...decision,
+			shouldSendNotification: true,
+			notificationReason: "status_change",
+		};
+
+		const escalationSent = await this.sendNotificationsByIds(
+			monitor,
+			monitorStatusResponse,
+			escalationDecision,
+			escalation?.notificationIds ?? [],
+			true
+		);
+
+		if (escalationSent) {
+			await this.monitorsRepository.updateById(monitor.id, monitor.teamId, {
+				escalation: {
+					notificationIds: escalation?.notificationIds ?? [],
+					delayMinutes: escalation?.delayMinutes ?? 1,
+					lastNotifiedAt: new Date(now).toISOString(),
+				},
+			});
+		}
+
+		return sentAnyNotification || escalationSent;
 	};
 
 	sendTestNotification = async (notification: Partial<Notification>) => {

@@ -21,6 +21,7 @@ import { createStatusPages, dropStatusPages } from "./0018_create_status_pages.j
 import { createAppSettings, dropAppSettings } from "./0019_create_app_settings.js";
 import { createContinuousAggregates, dropContinuousAggregates } from "./0020_create_continuous_aggregates.js";
 import { createRetentionCompression, dropRetentionCompression } from "./0021_create_retention_compression.js";
+import { addMonitorEscalation, dropMonitorEscalation } from "./0022_add_monitor_escalation.js";
 
 const SERVICE_NAME = "TimescaleDB Migrations";
 
@@ -52,6 +53,7 @@ const migrations: MigrationEntry[] = [
 	{ name: "0019_create_app_settings", up: createAppSettings, down: dropAppSettings },
 	{ name: "0020_create_continuous_aggregates", up: createContinuousAggregates, down: dropContinuousAggregates },
 	{ name: "0021_create_retention_compression", up: createRetentionCompression, down: dropRetentionCompression },
+	{ name: "0022_add_monitor_escalation", up: addMonitorEscalation, down: dropMonitorEscalation },
 ];
 
 const ensureMigrationsTable = async (pool: Pool) => {

@@ -347,6 +347,14 @@ export class StatusService implements IStatusService {
 
 			// Apply the final status
 			monitor.status = newStatus;
+			if (statusChanged) {
+				const nowIso = new Date().toISOString();
+				monitor.lastStatusChangeAt = nowIso;
+				if (monitor.escalation) {
+					// Reset escalation state whenever status transitions.
+					monitor.escalation.lastNotifiedAt = undefined;
+				}
+			}
 
 			const updated = await this.monitorsRepository.updateById(monitor.id, monitor.teamId, monitor);
 

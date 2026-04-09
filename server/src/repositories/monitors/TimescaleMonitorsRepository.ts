@@ -40,6 +40,8 @@ interface MonitorRow {
 	geo_check_enabled: boolean;
 	geo_check_locations: GeoContinent[] | null;
 	geo_check_interval_ms: number;
+	escalation: { notificationIds?: string[]; delayMinutes?: number; lastNotifiedAt?: string } | null;
+	last_status_change_at: Date | null;
 	created_at: Date;
 	updated_at: Date;
 }
@@ -50,6 +52,7 @@ const MONITOR_COLUMNS = `id, user_id, team_id, name, description, type, status, 
 	cpu_alert_threshold, cpu_alert_counter, memory_alert_threshold, memory_alert_counter,
 	disk_alert_threshold, disk_alert_counter, temp_alert_threshold, temp_alert_counter, selected_disks,
 	game_id, grpc_service_name, monitor_group, geo_check_enabled, geo_check_locations, geo_check_interval_ms,
+	escalation, last_status_change_at,
 	created_at, updated_at`;
 
 export class TimescaleMonitorsRepository implements IMonitorsRepository {
@@ -62,8 +65,8 @@ export class TimescaleMonitorsRepository implements IMonitorsRepository {
 				interval_ms, is_active, status_window, status_window_size, status_window_threshold,
 				cpu_alert_threshold, cpu_alert_counter, memory_alert_threshold, memory_alert_counter,
 				disk_alert_threshold, disk_alert_counter, temp_alert_threshold, temp_alert_counter, selected_disks,
-				game_id, grpc_service_name, monitor_group, geo_check_enabled, geo_check_locations, geo_check_interval_ms)
-			 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32,$33,$34)
+				game_id, grpc_service_name, monitor_group, geo_check_enabled, geo_check_locations, geo_check_interval_ms, escalation, last_status_change_at)
+			 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32,$33,$34,$35,$36)
 			 RETURNING ${MONITOR_COLUMNS}`,
 			[
 				userId,
@@ -100,6 +103,8 @@ export class TimescaleMonitorsRepository implements IMonitorsRepository {
 				monitor.geoCheckEnabled ?? false,
 				monitor.geoCheckLocations ?? [],
 				monitor.geoCheckInterval ?? 300000,
+				monitor.escalation ?? null,
+				monitor.lastStatusChangeAt ? new Date(monitor.lastStatusChangeAt) : null,
 			]
 		);
 		const row = result.rows[0];
@@ -598,6 +603,8 @@ export class TimescaleMonitorsRepository implements IMonitorsRepository {
 			["geoCheckEnabled", "geo_check_enabled"],
 			["geoCheckLocations", "geo_check_locations"],
 			["geoCheckInterval", "geo_check_interval_ms"],
+			["escalation", "escalation"],
+			["lastStatusChangeAt", "last_status_change_at"],
 		];
 
 		for (const [key, column] of fieldMap) {
@@ -1037,6 +1044,14 @@ export class TimescaleMonitorsRepository implements IMonitorsRepository {
 		geoCheckEnabled: row.geo_check_enabled,
 		geoCheckLocations: row.geo_check_locations ?? [],
 		geoCheckInterval: row.geo_check_interval_ms,
+		escalation: row.escalation
+			? {
+					notificationIds: row.escalation.notificationIds ?? [],
+					delayMinutes: row.escalation.delayMinutes ?? 1,
+					lastNotifiedAt: row.escalation.lastNotifiedAt ?? undefined,
+				}
+			: undefined,
+		lastStatusChangeAt: row.last_status_change_at?.toISOString(),
 		recentChecks: [],
 		createdAt: row.created_at.toISOString(),
 		updatedAt: row.updated_at.toISOString(),
