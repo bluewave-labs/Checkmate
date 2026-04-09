@@ -40,6 +40,8 @@ import {
 } from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
 import type { MonitorFormData } from "@/Validation/monitor";
+import { parse } from "zod";
+import { es } from "zod/v4/locales";
 
 interface GeneralSettingsConfig {
 	urlLabel: string;
@@ -252,11 +254,16 @@ const CreateMonitorPage = () => {
 	};
 
 	const onSubmit = async (data: MonitorFormData) => {
+		const escalation = data.escalation && data.escalation.escalationDelay > 0 && data.escalation.channelID ? data.escalation : undefined;
+		const payload = {
+			...data,
+			escalation,
+		}
 		let result;
 		if (isEditMode && monitorId) {
-			result = await patch(`/monitors/${monitorId}`, data);
+			result = await patch(`/monitors/${monitorId}`, payload);
 		} else {
-			result = await post("/monitors", data);
+			result = await post("/monitors", payload);
 		}
 
 		if (result?.success) {
@@ -758,6 +765,69 @@ const CreateMonitorPage = () => {
 											))}
 										</Stack>
 									)}
+								</Stack>
+							);
+						}}
+					/>
+				}
+			/>
+
+			<ConfigBox
+				title={t("pages.createMonitor.form.escalation.title")}
+				subtitle={t("pages.createMonitor.form.escalation.description")}
+				rightContent={
+					<Controller
+						name="escalation"
+						control={control}
+						render={({ field }) => {
+							const notify = (notifications ?? []).map((n) => ({
+								...n,
+								name: n.notificationName,
+							}));
+							const currEscalation = field.value;
+							const selectedChannel = notify.find(
+								(n) => n.id === currEscalation?.channelID
+							);
+							return (
+								<Stack spacing={theme.spacing(LAYOUT.MD)}>
+									<TextField
+										type="number"
+										fieldLabel={t("pages.createMonitor.form.escalation.escalationDelay.label")}
+										inputProps={{ min: 1 }}
+										placeholder={t("pages.createMonitor.form.escalation.escalationDelay.placeholder")}
+										value={currEscalation?.escalationDelay ?? ""}
+										onChange={(e) => {
+											const escalationDelay = parseInt(e.target.value, 10) || 0;
+											field.onChange({
+												escalationDelay,
+												channelID: currEscalation?.channelID || "",
+											});
+										}}
+										fullWidth
+									/>
+									<Select
+										value={currEscalation?.channelID ?? ""}
+										fieldLabel={t("pages.createMonitor.form.escalation.channelID.label")}
+										onChange={(e) => {
+											const channelID = e.target.value;
+											field.onChange({
+												escalationDelay: currEscalation?.escalationDelay || 0,
+												channelID: e.target.value,
+											});
+										}}
+									>
+										<MenuItem value="">
+											{t("pages.createMonitor.form.escalation.channelID.placeholder")}
+										</MenuItem>
+										{notify.map((notification) => (
+											<MenuItem
+												key={notification.id}
+												value={notification.id}
+											>
+												{notification.notificationName}
+											</MenuItem>
+										))}
+									</Select>
 								</Stack>
 							);
 						}}

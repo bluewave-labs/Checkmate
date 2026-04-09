@@ -76,6 +76,10 @@ export interface Monitor {
 	geoCheckEnabled?: boolean;
 	geoCheckLocations?: GeoContinent[];
 	geoCheckInterval?: number;
+	escalation?: {
+		escalationDelay: number;
+		channelID: string;
+	};
 	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;

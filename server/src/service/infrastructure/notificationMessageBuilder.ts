@@ -33,6 +33,10 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		const severity = this.determineSeverity(type);
 		const content = this.buildContent(type, monitor, monitorStatusResponse);
 
+		if (decision.shouldEscalateIncident) {
+			content.title = `[ESCALATION] ${content.title}`;
+			content.summary = `[ESCALATION] ${content.summary}`;
+		}
 		return {
 			type,
 			severity,

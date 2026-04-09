@@ -45,6 +45,8 @@ export interface MonitorActionDecision {
 		disk?: boolean;
 		temp?: boolean;
 	};
+	shouldEscalateIncident?: boolean;
+	escalationChannelID?: string | null;
 }
 
 export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
@@ -156,8 +158,28 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 				// Step 5.  Get decisions
 				const decision = this.evaluateMonitorAction(statusChangeResult);
 
+				if(statusChangeResult.monitor.escalation && statusChangeResult.monitor.status === "down"){
+					const activeIncident = await this.incidentsRepository.findActiveByMonitorId(monitorId, teamId);
+					if(activeIncident){
+						const incidentStart = new Date(activeIncident.createdAt).getTime();
+						const nowNow = new Date().getTime();
+						const incidentDuration = nowNow - incidentStart;
+						const escalationDelay = statusChangeResult.monitor.escalation.escalationDelay * 60 * 1000; // Convert minutes to milliseconds
+
+						if (incidentDuration >= escalationDelay && !activeIncident.escalationTime) {
+							decision.shouldEscalateIncident = true;
+							decision.escalationChannelID = statusChangeResult.monitor.escalation.channelID;
+							this.logger.debug({
+								message: `Incident for monitor ${monitorId} is eligible for escalation`,
+								service: SERVICE_NAME,
+								method: "getHeartbeatJob",
+							});
+						}
+					}
+				}
+
 				// Step 6. Handle notifications (best effort, continue even in event of failure, don't wait)
-				if (decision.shouldSendNotification) {
+				if (decision.shouldSendNotification || decision.shouldEscalateIncident) {
 					this.notificationsService.handleNotifications(statusChangeResult.monitor, status, decision).catch((error: unknown) => {
 						this.logger.error({
 							message: `Error sending notifications for job ${statusChangeResult.monitor.id}: ${error instanceof Error ? error.message : "Unknown error"}`,
