@@ -156,16 +156,18 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 				// Step 5.  Get decisions
 				const decision = this.evaluateMonitorAction(statusChangeResult);
 
-				// Step 6. Handle notifications (best effort, continue even in event of failure, don't wait)
+				// Step 6. Handle notifications (MUST be awaited to ensure proper ordering - prevents "up" notifications before "down" notifications)
 				if (decision.shouldSendNotification) {
-					this.notificationsService.handleNotifications(statusChangeResult.monitor, status, decision).catch((error: unknown) => {
+					try {
+						await this.notificationsService.handleNotifications(statusChangeResult.monitor, status, decision);
+					} catch (error: unknown) {
 						this.logger.error({
 							message: `Error sending notifications for job ${statusChangeResult.monitor.id}: ${error instanceof Error ? error.message : "Unknown error"}`,
 							service: SERVICE_NAME,
 							method: "getMonitorJob",
 							stack: error instanceof Error ? error.stack : undefined,
 						});
-					});
+					}
 				}
 
 				// Step 7. Handle incidents (best effort, don't wait)

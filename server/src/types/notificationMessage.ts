@@ -49,5 +49,6 @@ export interface NotificationMessage {
 	metadata: {
 		teamId: string;
 		notificationReason: string;
+		isEscalation?: boolean;
 	};
 }
