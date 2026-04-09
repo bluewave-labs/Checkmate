@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { monitorSchema, type MonitorFormData } from "@/Validation/monitor";
 import type { Monitor, MonitorType } from "@/Types/Monitor";
+import { normalizeEscalationStages } from "@/Types/Monitor";
 
 interface UseMonitorFormOptions {
 	data?: Monitor | null;
@@ -12,6 +13,14 @@ const getBaseDefaults = (data?: Monitor | null) => ({
 	description: data?.description || "",
 	interval: data?.interval || 60000,
 	notifications: data?.notifications || [],
+	escalationEnabled: data?.escalationEnabled ?? false,
+	escalationDelayMinutes: data?.escalationDelayMinutes ?? 15,
+	escalationNotifications: data?.escalationNotifications || [],
+	escalationStages: normalizeEscalationStages(data ?? undefined).map((stage) => ({
+		id: stage.id,
+		delayMinutes: stage.delayMinutes,
+		notificationIds: [...stage.notificationIds],
+	})),
 	statusWindowSize: data?.statusWindowSize || 5,
 	statusWindowThreshold: data?.statusWindowThreshold || 60,
 	geoCheckEnabled: data?.geoCheckEnabled ?? false,

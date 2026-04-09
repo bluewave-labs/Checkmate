@@ -345,6 +345,12 @@ export class StatusService implements IStatusService {
 				}
 			}
 
+			// Reset escalation state when the monitor is not currently down
+			if (newStatus !== "down") {
+				monitor.escalationSentAt = null;
+				monitor.escalationSentStageIds = [];
+			}
+
 			// Apply the final status
 			monitor.status = newStatus;
 

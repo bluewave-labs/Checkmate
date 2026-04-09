@@ -1,5 +1,7 @@
 {
-	"ignore": ["node_modules/*"],
-	"watch": ["src/**/*.ts", "src/**/*.js", "*.json"],
-	"ext": "ts,js,json"
+	"ignore": ["node_modules/*", "package-lock.json"],
+	"watch": ["src/**/*.ts", "src/**/*.js"],
+	"ext": "ts,js",
+	"delay": 1000,
+	"legacyWatch": true
 }

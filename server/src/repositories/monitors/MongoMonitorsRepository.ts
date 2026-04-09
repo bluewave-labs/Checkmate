@@ -1,12 +1,43 @@
 import { MonitorModel } from "@/db/models/index.js";
 import type { MonitorDocument, CheckSnapshotDocument } from "@/db/models/index.js";
-import type { Monitor, MonitorsSummary, CheckSnapshot } from "@/types/index.js";
+import type { EscalationStage, Monitor, MonitorsSummary, CheckSnapshot } from "@/types/index.js";
 import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "./IMonitorsRepository.js";
 import { MongoBulkWriteError } from "mongodb";
 import { AppError } from "@/utils/AppError.js";
 
 class MongoMonitorsRepository implements IMonitorsRepository {
+	private toStringId = (value?: mongoose.Types.ObjectId | string | null): string => {
+		if (!value) {
+			return "";
+		}
+		return value instanceof mongoose.Types.ObjectId ? value.toString() : String(value);
+	};
+
+	private normalizeEscalationStage = (stage: { id: string; delayMinutes: number; notificationIds: mongoose.Types.ObjectId[] | string[] }): EscalationStage => ({
+		id: stage.id,
+		delayMinutes: stage.delayMinutes,
+		notificationIds: (stage.notificationIds ?? []).map((notificationId) => this.toStringId(notificationId)),
+	});
+
+	private normalizeEscalationStages = (monitor: Partial<Monitor> & { escalationStages?: Monitor["escalationStages"] }): EscalationStage[] => {
+		if (monitor.escalationStages && monitor.escalationStages.length > 0) {
+			return monitor.escalationStages.map((stage) => this.normalizeEscalationStage(stage));
+		}
+
+		if (monitor.escalationEnabled && monitor.escalationDelayMinutes > 0 && (monitor.escalationNotifications?.length ?? 0) > 0) {
+			return [
+				{
+					id: "legacy-escalation",
+					delayMinutes: monitor.escalationDelayMinutes,
+					notificationIds: monitor.escalationNotifications,
+				},
+			];
+		}
+
+		return [];
+	};
+
 	create = async (monitor: Monitor, teamId: string, userId: string) => {
 		const monitorModel = new MonitorModel({ ...monitor, teamId, userId });
 		const saved = await monitorModel.save();
@@ -339,23 +370,16 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	private toEntity = (doc: MonitorDocument): Monitor => {
-		const toStringId = (value: unknown): string => {
-			if (value instanceof mongoose.Types.ObjectId) {
-				return value.toString();
-			}
-			return value?.toString() ?? "";
-		};
-
 		const toDateString = (value: Date | string): string => {
 			return value instanceof Date ? value.toISOString() : value;
 		};
 
-		const notificationIds = (doc.notifications ?? []).map((notification) => toStringId(notification));
+		const notificationIds = (doc.notifications ?? []).map((notification) => this.toStringId(notification));
 
 		return {
-			id: toStringId(doc._id),
-			userId: toStringId(doc.userId),
-			teamId: toStringId(doc.teamId),
+			id: this.toStringId(doc._id),
+			userId: this.toStringId(doc.userId),
+			teamId: this.toStringId(doc.teamId),
 			name: doc.name,
 			description: doc.description ?? undefined,
 			status: doc.status ?? "initializing",
@@ -374,6 +398,12 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			interval: doc.interval,
 			uptimePercentage: doc.uptimePercentage ?? undefined,
 			notifications: notificationIds,
+			escalationEnabled: doc.escalationEnabled,
+			escalationDelayMinutes: doc.escalationDelayMinutes,
+			escalationNotifications: (doc.escalationNotifications ?? []).map((notificationId) => this.toStringId(notificationId)),
+			escalationStages: this.normalizeEscalationStages(doc),
+			escalationSentStageIds: doc.escalationSentStageIds ?? [],
+			escalationSentAt: doc.escalationSentAt ? doc.escalationSentAt.toISOString() : null,
 			secret: doc.secret ?? undefined,
 			cpuAlertThreshold: doc.cpuAlertThreshold,
 			cpuAlertCounter: doc.cpuAlertCounter,
@@ -397,24 +427,17 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	private toEntityWithChecks = (doc: MonitorDocument): Monitor => {
-		const toStringId = (value: unknown): string => {
-			if (value instanceof mongoose.Types.ObjectId) {
-				return value.toString();
-			}
-			return value?.toString() ?? "";
-		};
-
 		const toDateString = (value: Date | string): string => {
 			if (!value) return "";
 			return value instanceof Date ? value.toISOString() : value;
 		};
 
-		const notificationIds = (doc.notifications ?? []).map((notification: unknown) => toStringId(notification));
+		const notificationIds = (doc.notifications ?? []).map((notification: unknown) => this.toStringId(notification));
 
 		return {
-			id: toStringId(doc._id),
-			userId: toStringId(doc.userId),
-			teamId: toStringId(doc.teamId),
+			id: this.toStringId(doc._id),
+			userId: this.toStringId(doc.userId),
+			teamId: this.toStringId(doc.teamId),
 			name: doc.name,
 			description: doc.description ?? undefined,
 			status: doc.status ?? "initializing",
@@ -433,6 +456,12 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			interval: doc.interval,
 			uptimePercentage: doc.uptimePercentage ?? undefined,
 			notifications: notificationIds,
+			escalationEnabled: doc.escalationEnabled,
+			escalationDelayMinutes: doc.escalationDelayMinutes,
+			escalationNotifications: (doc.escalationNotifications ?? []).map((notificationId) => this.toStringId(notificationId)),
+			escalationStages: this.normalizeEscalationStages(doc),
+			escalationSentStageIds: doc.escalationSentStageIds ?? [],
+			escalationSentAt: doc.escalationSentAt ? doc.escalationSentAt.toISOString() : null,
 			secret: doc.secret ?? undefined,
 			cpuAlertThreshold: doc.cpuAlertThreshold,
 			cpuAlertCounter: doc.cpuAlertCounter,

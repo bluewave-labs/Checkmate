@@ -1,4 +1,5 @@
 import type { Monitor, MonitorStatusResponse, Notification } from "@/types/index.js";
+import { normalizeEscalationStages } from "@/types/monitor.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { IMonitorsRepository, INotificationsRepository } from "@/repositories/index.js";
 import { INotificationProvider } from "./notificationProviders/INotificationProvider.js";
@@ -14,6 +15,7 @@ export interface INotificationsService {
 	updateById(id: string, teamId: string, updateData: Partial<Notification>): Promise<Notification>;
 	deleteById: (id: string, teamId: string) => Promise<Notification>;
 	handleNotifications: (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => Promise<boolean>;
+	handleEscalationNotifications: (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => Promise<boolean>;
 
 	sendTestNotification: (notification: Partial<Notification>) => Promise<boolean>;
 	testAllNotifications: (notificationIds: string[]) => Promise<boolean>;
@@ -112,8 +114,35 @@ export class NotificationsService implements INotificationsService {
 		}
 	};
 
+	private getEscalationNotificationIds = (monitor: Monitor, escalationStageId?: string): string[] => {
+		const escalationStages = normalizeEscalationStages(monitor);
+		if (escalationStages.length === 0) {
+			return [];
+		}
+
+		if (escalationStageId) {
+			const stage = escalationStages.find((candidate) => candidate.id === escalationStageId);
+			if (stage) {
+				return stage.notificationIds;
+			}
+		}
+
+		return escalationStages[0]?.notificationIds ?? [];
+	};
+
 	private sendNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {
-		const notificationIds = monitor.notifications ?? [];
+		let notificationIds: string[] = [];
+
+		if (decision.notificationReason === "escalation") {
+			notificationIds = this.getEscalationNotificationIds(monitor, decision.escalationStageId);
+		} else {
+			notificationIds = monitor.notifications ?? [];
+		}
+
+		if (notificationIds.length === 0) {
+			return false;
+		}
+
 		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
 
 		// Build notification message once for all notifications
@@ -143,6 +172,14 @@ export class NotificationsService implements INotificationsService {
 		}
 
 		// Send notifications based on decision
+		return await this.sendNotifications(monitor, monitorStatusResponse, decision);
+	};
+
+	handleEscalationNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {
+		if (!decision.shouldSendNotification) {
+			return false;
+		}
+
 		return await this.sendNotifications(monitor, monitorStatusResponse, decision);
 	};
 

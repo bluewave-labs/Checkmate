@@ -38,6 +38,38 @@ export type MonitorStatus = (typeof MonitorStatuses)[number];
 
 export type MonitorMatchMethod = "equal" | "include" | "regex" | "";
 
+export const LegacyEscalationStageId = "legacy-escalation" as const;
+
+export interface EscalationStage {
+	id: string;
+	delayMinutes: number;
+	notificationIds: string[];
+}
+
+export const normalizeEscalationStages = (
+	monitor?: Pick<Monitor, "escalationStages" | "escalationEnabled" | "escalationDelayMinutes" | "escalationNotifications"> | null
+): EscalationStage[] => {
+	if (!monitor) {
+		return [];
+	}
+
+	if (monitor.escalationStages && monitor.escalationStages.length > 0) {
+		return monitor.escalationStages;
+	}
+
+	if (monitor.escalationEnabled && monitor.escalationDelayMinutes > 0 && (monitor.escalationNotifications?.length ?? 0) > 0) {
+		return [
+			{
+				id: LegacyEscalationStageId,
+				delayMinutes: monitor.escalationDelayMinutes,
+				notificationIds: monitor.escalationNotifications,
+			},
+		];
+	}
+
+	return [];
+};
+
 export interface Monitor {
 	id: string;
 	userId: string;
@@ -60,6 +92,11 @@ export interface Monitor {
 	interval: number;
 	uptimePercentage?: number;
 	notifications: string[];
+	escalationEnabled: boolean;
+	escalationDelayMinutes: number;
+	escalationNotifications: string[];
+	escalationStages?: EscalationStage[];
+	escalationSentStageIds?: string[];
 	secret?: string;
 	cpuAlertThreshold: number;
 	cpuAlertCounter: number;

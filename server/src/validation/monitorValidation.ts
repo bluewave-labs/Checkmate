@@ -3,6 +3,12 @@ import { booleanCoercion } from "./shared.js";
 import { GeoContinents } from "@/types/geoCheck.js";
 import { MonitorMatchMethods, MonitorTypes } from "@/types/monitor.js";
 
+const escalationStageValidation = z.object({
+	id: z.string().min(1, "Escalation stage ID is required"),
+	delayMinutes: z.number().min(1, "Escalation delay must be at least 1 minute"),
+	notificationIds: z.array(z.string()).min(1, "At least one notification is required"),
+});
+
 export const getMonitorByIdParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
 });
@@ -67,6 +73,10 @@ export const createMonitorBodyValidation = z.object({
 	diskAlertThreshold: z.number().optional(),
 	tempAlertThreshold: z.number().optional(),
 	notifications: z.array(z.string()).optional(),
+	escalationEnabled: z.boolean().default(false),
+	escalationDelayMinutes: z.number().min(1).default(15),
+	escalationNotifications: z.array(z.string()).default([]),
+	escalationStages: z.array(escalationStageValidation).default([]),
 	secret: z.string().optional(),
 	jsonPath: z.union([z.string(), z.literal("")]).optional(),
 	expectedValue: z.union([z.string(), z.literal("")]).optional(),
@@ -78,7 +88,13 @@ export const createMonitorBodyValidation = z.object({
 	geoCheckEnabled: z.boolean().optional(),
 	geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 	geoCheckInterval: z.number().min(300000).optional(),
-});
+}).refine(
+	(data) => !data.escalationEnabled || data.escalationStages.length > 0 || data.escalationNotifications.length > 0,
+	{
+		message: "Add at least one escalation stage",
+		path: ["escalationStages"],
+	}
+);
 
 export const editMonitorBodyValidation = z.object({
 	name: z.string().optional(),
@@ -89,6 +105,10 @@ export const editMonitorBodyValidation = z.object({
 	description: z.union([z.string(), z.literal("")]).optional(),
 	interval: z.number().optional(),
 	notifications: z.array(z.string()).optional(),
+	escalationEnabled: z.boolean().optional(),
+	escalationDelayMinutes: z.number().min(1).optional(),
+	escalationNotifications: z.array(z.string()).optional(),
+	escalationStages: z.array(escalationStageValidation).optional(),
 	secret: z.string().optional(),
 	ignoreTlsErrors: z.boolean().optional(),
 	useAdvancedMatching: z.boolean().optional(),
@@ -107,7 +127,13 @@ export const editMonitorBodyValidation = z.object({
 	geoCheckEnabled: z.boolean().optional(),
 	geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 	geoCheckInterval: z.number().min(300000).optional(),
-});
+}).refine(
+	(data) => !data.escalationEnabled || (data.escalationStages?.length ?? 0) > 0 || (data.escalationNotifications?.length ?? 0) > 0,
+	{
+		message: "Add at least one escalation stage",
+		path: ["escalationStages"],
+	}
+);
 
 export const pauseMonitorParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
@@ -144,6 +170,10 @@ const importedMonitorSchema = z.object({
 	interval: z.number().default(60000),
 	uptimePercentage: z.number().optional(),
 	notifications: z.array(z.string()).default([]),
+	escalationEnabled: z.boolean().default(false),
+	escalationDelayMinutes: z.number().min(1).default(15),
+	escalationNotifications: z.array(z.string()).default([]),
+	escalationStages: z.array(escalationStageValidation).default([]),
 	secret: z.string().optional(),
 	cpuAlertThreshold: z.number().default(100),
 	cpuAlertCounter: z.number().default(5),
@@ -162,7 +192,13 @@ const importedMonitorSchema = z.object({
 	geoCheckInterval: z.number().min(300000).default(300000),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
-});
+}).refine(
+	(data) => !data.escalationEnabled || data.escalationStages.length > 0 || data.escalationNotifications.length > 0,
+	{
+		message: "Add at least one escalation stage",
+		path: ["escalationStages"],
+	}
+);
 
 export const importMonitorsBodyValidation = z.object({
 	monitors: z.array(importedMonitorSchema).min(1, "At least one monitor is required"),

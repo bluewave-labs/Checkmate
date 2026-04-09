@@ -78,6 +78,7 @@ import mjml2html from "mjml";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { games, GameDig } from "gamedig";
+import Scheduler from "super-simple-scheduler";
 import jmespath from "jmespath";
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
@@ -315,6 +316,12 @@ export const initializeServices = async ({
 		notificationMessageBuilder
 	);
 
+	const scheduler = new Scheduler({
+		// storeType: "mongo",
+		// storeType: "redis",
+		// dbUri: envSettings.dbConnectionString,
+	});
+
 	const superSimpleQueueHelper = new SuperSimpleQueueHelper(
 		logger,
 		networkService,
@@ -331,10 +338,11 @@ export const initializeServices = async ({
 		checksRepository,
 		incidentsRepository,
 		geoChecksService,
-		geoChecksRepository
+		geoChecksRepository,
+		scheduler
 	);
 
-	const superSimpleQueue = await SuperSimpleQueue.create(logger, superSimpleQueueHelper, monitorsRepository);
+	const superSimpleQueue = await SuperSimpleQueue.create(logger, superSimpleQueueHelper, monitorsRepository, scheduler);
 
 	// Business services
 	const userService = new UserService({

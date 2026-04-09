@@ -141,12 +141,7 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 		});
 	};
 
-	static async create(logger: ILogger, helper: ISuperSimpleQueueHelper, monitorsRepository: IMonitorsRepository) {
-		const scheduler = new Scheduler({
-			// storeType: "mongo",
-			// storeType: "redis",
-			// dbUri: envSettings.dbConnectionString,
-		});
+	static async create(logger: ILogger, helper: ISuperSimpleQueueHelper, monitorsRepository: IMonitorsRepository, scheduler: Scheduler) {
 		const instance = new SuperSimpleQueue(logger, helper, monitorsRepository, scheduler);
 		await instance.init();
 
@@ -160,6 +155,7 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 			this.scheduler.start();
 			this.scheduler.addTemplate("monitor-job", this.helper.getHeartbeatJob());
 			this.scheduler.addTemplate("geo-check-job", this.helper.getHeartbeatGeoJob());
+			this.scheduler.addTemplate("escalation-job", this.helper.getEscalationJob());
 			this.scheduler.addTemplate("cleanup-orphaned", this.helper.getCleanupOrphanedJob());
 			this.scheduler.addTemplate("cleanup-retention-job", this.helper.getCleanupRetentionJob());
 			const monitors = await this.monitorsRepository.findAll();

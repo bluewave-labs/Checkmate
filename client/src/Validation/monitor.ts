@@ -4,6 +4,12 @@ import { GeoContinents } from "@/Types/GeoCheck";
 // URL schema with custom error message
 const urlSchema = z.url({ message: "Please enter a valid URL" });
 
+const escalationStageSchema = z.object({
+	id: z.string().min(1, "Escalation stage ID is required"),
+	delayMinutes: z.number().min(1, "Escalation delay must be at least 1 minute"),
+	notificationIds: z.array(z.string()).min(1, "Select at least one notification"),
+});
+
 // Common base schema for all monitor types
 const baseSchema = z.object({
 	name: z
@@ -13,6 +19,10 @@ const baseSchema = z.object({
 	description: z.string().optional(),
 	interval: z.number().min(15000, "Interval must be at least 15 seconds"),
 	notifications: z.array(z.string()),
+	escalationEnabled: z.boolean().default(false),
+	escalationDelayMinutes: z.number().min(1, "Escalation delay must be at least 1 minute").default(15),
+	escalationNotifications: z.array(z.string()).default([]),
+	escalationStages: z.array(escalationStageSchema).default([]),
 	statusWindowSize: z
 		.number({ message: "Status window size is required" })
 		.min(1, "Status window size must be at least 1")
@@ -123,7 +133,7 @@ const websocketSchema = baseSchema.extend({
 });
 
 // Discriminated union of all monitor types
-export const monitorSchema = z.discriminatedUnion("type", [
+const monitorSchemaBase = z.discriminatedUnion("type", [
 	httpSchema,
 	pingSchema,
 	portSchema,
@@ -134,6 +144,14 @@ export const monitorSchema = z.discriminatedUnion("type", [
 	hardwareSchema,
 	websocketSchema,
 ]);
+
+export const monitorSchema = monitorSchemaBase.refine(
+	(data) => !data.escalationEnabled || data.escalationStages.length > 0 || data.escalationNotifications.length > 0,
+	{
+		message: "Add at least one escalation stage",
+		path: ["escalationStages"],
+	}
+);
 
 export type MonitorFormData = z.infer<typeof monitorSchema>;
 

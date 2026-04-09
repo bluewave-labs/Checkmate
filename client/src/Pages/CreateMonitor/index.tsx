@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useEffect } from "react";
 import { logger } from "@/Utils/logger";
 import { useParams, useLocation, useNavigate } from "react-router";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTheme } from "@mui/material";
 import Stack from "@mui/material/Stack";
@@ -52,6 +52,12 @@ interface GeneralSettingsConfig {
 	showGrpcServiceName: boolean;
 	showIgnoreTls: boolean;
 }
+
+const createEscalationStage = () => ({
+	id: crypto.randomUUID(),
+	delayMinutes: 15,
+	notificationIds: [] as string[],
+});
 
 const getGeneralSettingsConfig = (
 	type: MonitorType,
@@ -203,6 +209,15 @@ const CreateMonitorPage = () => {
 		defaultValues: defaults,
 	});
 	const { control, watch, handleSubmit, clearErrors } = form;
+	const {
+		fields: escalationStageFields,
+		append: appendEscalationStage,
+		remove: removeEscalationStage,
+	} = useFieldArray({
+		control,
+		name: "escalationStages",
+		keyName: "fieldKey",
+	});
 
 	useEffect(() => {
 		form.reset(defaults);
@@ -212,6 +227,13 @@ const CreateMonitorPage = () => {
 
 	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
 	const watchGeoCheckEnabled = watch("geoCheckEnabled") as boolean;
+	const watchEscalationEnabled = watch("escalationEnabled") as boolean;
+
+	useEffect(() => {
+		if (watchEscalationEnabled && escalationStageFields.length === 0) {
+			appendEscalationStage(createEscalationStage());
+		}
+	}, [appendEscalationStage, escalationStageFields.length, watchEscalationEnabled]);
 
 	useEffect(() => {
 		clearErrors();
@@ -762,6 +784,134 @@ const CreateMonitorPage = () => {
 							);
 						}}
 					/>
+				}
+			/>
+
+			<ConfigBox
+				title={t("pages.createMonitor.form.escalations.title")}
+				subtitle={t("pages.createMonitor.form.escalations.description")}
+				rightContent={
+					<Stack spacing={theme.spacing(LAYOUT.MD)}>
+						<Controller
+							name="escalationEnabled"
+							control={control}
+							render={({ field }) => (
+								<Stack
+									direction="row"
+									alignItems="center"
+									spacing={theme.spacing(SPACING.LG)}
+								>
+									<Switch
+										checked={field.value ?? false}
+										onChange={(e) => field.onChange(e.target.checked)}
+									/>
+									<Typography>
+										{t("pages.createMonitor.form.escalations.option.enabled.label")}
+									</Typography>
+								</Stack>
+							)}
+						/>
+
+						{watchEscalationEnabled && (
+							<Stack spacing={theme.spacing(LAYOUT.MD)}>
+								{escalationStageFields.map((stage, index) => {
+									const notificationOptions = (notifications ?? []).map((n) => ({
+										...n,
+										name: n.notificationName,
+									}));
+
+									return (
+										<Stack
+											key={stage.fieldKey}
+											spacing={theme.spacing(LAYOUT.SM)}
+											sx={{
+												border: 1,
+												borderColor: "divider",
+												borderRadius: 2,
+												p: theme.spacing(LAYOUT.MD),
+											}}
+										>
+											<Stack
+												direction="row"
+												alignItems="center"
+												justifyContent="space-between"
+												gap={theme.spacing(LAYOUT.MD)}
+											>
+												<Typography fontWeight={600}>
+													{t("pages.createMonitor.form.escalations.stage.title", {
+														index: index + 1,
+													})}
+												</Typography>
+												<IconButton
+													size="small"
+													type="button"
+													onClick={() => removeEscalationStage(index)}
+													aria-label={t("pages.createMonitor.form.escalations.stage.removeAriaLabel", {
+														index: index + 1,
+													})}
+												>
+													<Trash2 size={16} />
+												</IconButton>
+											</Stack>
+
+											<Controller
+												name={`escalationStages.${index}.delayMinutes` as const}
+												control={control}
+												render={({ field, fieldState }) => (
+													<TextField
+														{...field}
+														value={field.value ?? 15}
+														type="number"
+														fieldLabel={t("pages.createMonitor.form.escalations.stage.delay.label")}
+														placeholder={t("pages.createMonitor.form.escalations.stage.delay.placeholder")}
+														fullWidth
+														error={!!fieldState.error}
+														helperText={fieldState.error?.message ?? ""}
+														onChange={(e) => {
+															const nextValue = e.target.value;
+															field.onChange(nextValue === "" ? 0 : Number(nextValue));
+														}}
+													/>
+												)}
+											/>
+
+											<Controller
+												name={`escalationStages.${index}.notificationIds` as const}
+												control={control}
+												render={({ field }) => {
+													const selectedNotifications = notificationOptions.filter((notification) =>
+														(field.value ?? []).includes(notification.id)
+													);
+
+													return (
+														<Autocomplete
+															multiple
+															options={notificationOptions}
+															value={selectedNotifications}
+															getOptionLabel={(option) => option.name}
+															onChange={(_: unknown, newValue: typeof notificationOptions) => {
+																field.onChange(newValue.map((notification) => notification.id));
+															}}
+															isOptionEqualToValue={(option, value) => option.id === value.id}
+															fieldLabel={t("pages.createMonitor.form.escalations.stage.notifications.label")}
+														/>
+													);
+												}}
+											/>
+										</Stack>
+									);
+								})}
+
+								<Button
+									variant="outlined"
+									type="button"
+									onClick={() => appendEscalationStage(createEscalationStage())}
+								>
+									{t("pages.createMonitor.form.escalations.addStage")}
+								</Button>
+							</Stack>
+						)}
+					</Stack>
 				}
 			/>
 

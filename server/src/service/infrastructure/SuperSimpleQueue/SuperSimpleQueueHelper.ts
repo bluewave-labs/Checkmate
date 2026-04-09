@@ -1,6 +1,6 @@
 const SERVICE_NAME = "JobQueueHelper";
-import type { Monitor } from "@/types/monitor.js";
-import { supportsGeoCheck } from "@/types/monitor.js";
+import type { EscalationStage, Monitor } from "@/types/monitor.js";
+import { normalizeEscalationStages, supportsGeoCheck } from "@/types/monitor.js";
 import { AppError } from "@/utils/AppError.js";
 import {
 	ICheckService,
@@ -23,14 +23,22 @@ import {
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
 import { IBufferService } from "@/service/index.js";
+import Scheduler from "super-simple-scheduler";
 
 export interface ISuperSimpleQueueHelper {
 	readonly serviceName: string;
 	getHeartbeatJob(): (monitor: Monitor) => Promise<void>;
 	getHeartbeatGeoJob(): (monitor: Monitor) => Promise<void>;
+	getEscalationJob(): (payload: EscalationJobPayload) => Promise<void>;
 	getCleanupOrphanedJob(): () => Promise<void>;
 	getCleanupRetentionJob(): () => Promise<void>;
 	isInMaintenanceWindow(monitorId: string, teamId: string): Promise<boolean>;
+}
+
+export interface EscalationJobPayload {
+	monitorId: string;
+	teamId: string;
+	escalationStageId: string;
 }
 
 export interface MonitorActionDecision {
@@ -38,7 +46,8 @@ export interface MonitorActionDecision {
 	shouldResolveIncident: boolean;
 	shouldSendNotification: boolean;
 	incidentReason: "status_down" | "threshold_breach" | null;
-	notificationReason: "status_change" | "threshold_breach" | null;
+	notificationReason: "status_change" | "threshold_breach" | "escalation" | null;
+	escalationStageId?: string;
 	thresholdBreaches?: {
 		cpu?: boolean;
 		memory?: boolean;
@@ -66,6 +75,7 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 	private incidentsRepository: IIncidentsRepository;
 	private geoChecksService: IGeoChecksService;
 	private geoChecksRepository: IGeoChecksRepository;
+	private scheduler: Scheduler;
 
 	constructor(
 		logger: ILogger,
@@ -83,7 +93,8 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 		checksRepository: IChecksRepository,
 		incidentsRepository: IIncidentsRepository,
 		geoChecksService: IGeoChecksService,
-		geoChecksRepository: IGeoChecksRepository
+		geoChecksRepository: IGeoChecksRepository,
+		scheduler: Scheduler
 	) {
 		this.logger = logger;
 		this.networkService = networkService;
@@ -100,6 +111,7 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 		this.checksRepository = checksRepository;
 		this.incidentsRepository = incidentsRepository;
 		this.geoChecksService = geoChecksService;
+		this.scheduler = scheduler;
 		this.geoChecksRepository = geoChecksRepository;
 	}
 
@@ -177,6 +189,11 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 						stack: error instanceof Error ? error.stack : undefined,
 					});
 				});
+
+				// Step 8. Schedule escalation if incident created and escalation enabled
+				if (decision.shouldCreateIncident && monitor.escalationEnabled && monitor.escalationDelayMinutes > 0) {
+					this.scheduleEscalation(monitor);
+				}
 			} catch (error: unknown) {
 				this.logger.warn({
 					message: error instanceof Error ? error.message : "Unknown error",
@@ -383,6 +400,136 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 		}, false);
 		return maintenanceWindowIsActive;
 	}
+
+	private getEscalationStage = (monitor: Monitor, escalationStageId: string): EscalationStage | null => {
+		const escalationStages = normalizeEscalationStages(monitor);
+		return escalationStages.find((stage) => stage.id === escalationStageId) ?? null;
+	};
+
+	scheduleEscalation = (monitor: Monitor) => {
+		const escalationStages = normalizeEscalationStages(monitor);
+		if (escalationStages.length === 0) {
+			return;
+		}
+
+		const sentStageIds = new Set(monitor.escalationSentStageIds ?? []);
+		for (const stage of escalationStages) {
+			if (sentStageIds.has(stage.id)) {
+				continue;
+			}
+
+			this.scheduler.addJob({
+				id: `${monitor.id}-escalation-${stage.id}`,
+				template: "escalation-job",
+				active: true,
+				data: {
+					monitorId: monitor.id,
+					teamId: monitor.teamId,
+					escalationStageId: stage.id,
+				},
+				startAt: Date.now() + stage.delayMinutes * 60 * 1000,
+			});
+		}
+	};
+
+	getEscalationJob = () => {
+		return async (payload: EscalationJobPayload) => {
+			try {
+				const { monitorId, teamId, escalationStageId } = payload;
+
+				const currentMonitor = await this.monitorsRepository.findById(monitorId, teamId);
+				if (!currentMonitor || currentMonitor.status !== "down") {
+					this.logger.debug({
+						message: `Escalation skipped for monitor ${monitorId}: monitor is no longer down`,
+						service: SERVICE_NAME,
+						method: "getEscalationJob",
+					});
+					return;
+				}
+
+				const activeIncident = await this.incidentsRepository.findActiveByMonitorId(monitorId, teamId);
+				if (!activeIncident) {
+					this.logger.debug({
+						message: `Escalation skipped for monitor ${monitorId}: no active incident`,
+						service: SERVICE_NAME,
+						method: "getEscalationJob",
+					});
+					return;
+				}
+
+				const escalationStage = this.getEscalationStage(currentMonitor, escalationStageId);
+				if (!escalationStage) {
+					this.logger.debug({
+						message: `Escalation skipped for monitor ${monitorId}: stage ${escalationStageId} is not configured`,
+						service: SERVICE_NAME,
+						method: "getEscalationJob",
+					});
+					return;
+				}
+
+				const sentStageIds = currentMonitor.escalationSentStageIds ?? [];
+				if (sentStageIds.includes(escalationStage.id)) {
+					this.logger.debug({
+						message: `Escalation skipped for monitor ${monitorId}: stage ${escalationStage.id} already sent`,
+						service: SERVICE_NAME,
+						method: "getEscalationJob",
+					});
+					return;
+				}
+
+				const incidentStart = new Date(activeIncident.startTime).getTime();
+				const elapsed = Date.now() - incidentStart;
+				const delayMs = escalationStage.delayMinutes * 60 * 1000;
+				if (elapsed < delayMs) {
+					this.logger.debug({
+						message: `Escalation skipped for monitor ${monitorId}: stage ${escalationStage.id} is not due yet`,
+						service: SERVICE_NAME,
+						method: "getEscalationJob",
+					});
+					return;
+				}
+
+				const decision: MonitorActionDecision = {
+					shouldCreateIncident: false,
+					shouldResolveIncident: false,
+					shouldSendNotification: true,
+					incidentReason: null,
+					notificationReason: "escalation",
+					escalationStageId: escalationStage.id,
+				};
+
+				const escalationStatus = {
+					monitorId: currentMonitor.id,
+					teamId: currentMonitor.teamId,
+					type: currentMonitor.type,
+					status: currentMonitor.status,
+					code: 0,
+					message: `Monitor ${currentMonitor.name} has been down for ${escalationStage.delayMinutes} minutes`,
+					responseTime: 0,
+				};
+
+				const success = await this.notificationsService.handleEscalationNotifications(currentMonitor, escalationStatus, decision);
+				if (success) {
+					await this.monitorsRepository.updateById(currentMonitor.id, currentMonitor.teamId, {
+						escalationSentStageIds: [...new Set([...(currentMonitor.escalationSentStageIds ?? []), escalationStage.id])],
+						escalationSentAt: new Date().toISOString(),
+					});
+					this.logger.info({
+						message: `Escalation notifications sent for monitor ${monitorId} at stage ${escalationStage.id}`,
+						service: SERVICE_NAME,
+						method: "getEscalationJob",
+					});
+				}
+			} catch (error: unknown) {
+				this.logger.error({
+					message: error instanceof Error ? error.message : "Unknown error",
+					service: SERVICE_NAME,
+					method: "getEscalationJob",
+					stack: error instanceof Error ? error.stack : undefined,
+				});
+			}
+		};
+	};
 
 	getCleanupRetentionJob = () => {
 		return async () => {

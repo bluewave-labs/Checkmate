@@ -41,7 +41,7 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		logger: createMockLogger(),
 		networkService: { requestStatus: jest.fn() },
 		statusService: statusServiceMock,
-		notificationsService: { handleNotifications: jest.fn().mockResolvedValue(undefined) },
+		notificationsService: { handleNotifications: jest.fn().mockResolvedValue(undefined), handleEscalationNotifications: jest.fn().mockResolvedValue(true) },
 		checkService: { buildCheck: jest.fn().mockReturnValue({}), deleteOlderThan: jest.fn().mockResolvedValue(0) },
 		settingsService: settingsServiceMock,
 		buffer: { addToBuffer: jest.fn(), addGeoCheckToBuffer: jest.fn() },
@@ -54,6 +54,7 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		incidentsRepository,
 		geoChecksService: geoChecksServiceMock,
 		geoChecksRepository,
+		scheduler: { addJob: jest.fn(), addTemplate: jest.fn(), removeJob: jest.fn(), getJob: jest.fn(), start: jest.fn() },
 		...overrides,
 	};
 
@@ -73,7 +74,8 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		defaults.checksRepository as any,
 		defaults.incidentsRepository as any,
 		defaults.geoChecksService as any,
-		defaults.geoChecksRepository as any
+		defaults.geoChecksRepository as any,
+		defaults.scheduler as any
 	);
 	return { helper, maintenanceWindowsRepository, defaults };
 };
@@ -148,6 +150,50 @@ describe("SuperSimpleQueueHelper", () => {
 		it("returns false when no active windows exist", async () => {
 			const { helper } = createHelper();
 			await expect(helper.isInMaintenanceWindow("m1", "team")).resolves.toBe(false);
+		});
+	});
+
+	describe("getEscalationJob", () => {
+		it("sends notifications for a configured escalation stage", async () => {
+			const notificationsService = {
+				handleNotifications: jest.fn().mockResolvedValue(undefined),
+				handleEscalationNotifications: jest.fn().mockResolvedValue(true),
+			};
+			const monitorsRepository = {
+				updateById: jest.fn().mockResolvedValue({}),
+				findById: jest.fn().mockResolvedValue({
+					id: "m1",
+					teamId: "team",
+					name: "Monitor 1",
+					type: "http",
+					status: "down",
+					escalationStages: [
+						{ id: "stage-1", delayMinutes: 15, notificationIds: ["n1"] },
+					],
+					escalationSentStageIds: [],
+				}),
+			};
+			const incidentsRepository = {
+				findActiveByMonitorId: jest.fn().mockResolvedValue({
+					startTime: new Date(Date.now() - 20 * 60 * 1000).toISOString(),
+				}),
+			};
+
+			const { helper } = createHelper({ notificationsService, monitorsRepository, incidentsRepository });
+			const job = helper.getEscalationJob();
+
+			await job({ monitorId: "m1", teamId: "team", escalationStageId: "stage-1" });
+
+			expect(notificationsService.handleEscalationNotifications).toHaveBeenCalledWith(
+				expect.objectContaining({ id: "m1" }),
+				expect.objectContaining({ message: expect.stringContaining("15 minutes") }),
+				expect.objectContaining({ notificationReason: "escalation", escalationStageId: "stage-1" })
+			);
+			expect(monitorsRepository.updateById).toHaveBeenCalledWith(
+				"m1",
+				"team",
+				expect.objectContaining({ escalationSentStageIds: ["stage-1"] })
+			);
 		});
 	});
 });

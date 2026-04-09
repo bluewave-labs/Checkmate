@@ -539,6 +539,27 @@
 					},
 					"title": "Incidents"
 				},
+				"escalations": {
+					"description": "Create one or more alert stages that fire as an incident continues to run.",
+					"option": {
+						"enabled": {
+							"label": "Enable escalated notifications"
+						}
+					},
+					"stage": {
+						"title": "Escalation stage {{index}}",
+						"removeAriaLabel": "Remove escalation stage {{index}}",
+						"delay": {
+							"label": "Alert after (minutes)",
+							"placeholder": 15
+						},
+						"notifications": {
+							"label": "Notifications to send"
+						}
+					},
+					"addStage": "Add escalation stage",
+					"title": "Escalated notifications"
+				},
 				"notifications": {
 					"description": "Select the notification channels you want to use",
 					"title": "Notifications"
