@@ -17,6 +17,8 @@ const getBaseDefaults = (data?: Monitor | null) => ({
 	geoCheckEnabled: data?.geoCheckEnabled ?? false,
 	geoCheckLocations: data?.geoCheckLocations || [],
 	geoCheckInterval: data?.geoCheckInterval || 300000,
+	escalationNotificationId: data?.escalationNotificationId || null,
+	escalationDelayMinutes: data?.escalationDelayMinutes || null,
 });
 
 export const useMonitorForm = ({

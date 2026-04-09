@@ -17,6 +17,8 @@ export interface INotificationsService {
 
 	sendTestNotification: (notification: Partial<Notification>) => Promise<boolean>;
 	testAllNotifications: (notificationIds: string[]) => Promise<boolean>;
+	buildEscalationMessage: (monitor: Monitor, notification: Notification, clientHost: string, incident: any) => NotificationMessage;
+	sendEscalation: (notification: Notification, message: NotificationMessage) => Promise<boolean>;
 }
 
 const SERVICE_NAME = "NotificationsService";
@@ -196,5 +198,66 @@ export class NotificationsService implements INotificationsService {
 		const deleted = await this.notificationsRepository.deleteById(id, teamId);
 		await this.monitorsRepository.removeNotificationFromMonitors(id);
 		return deleted;
+	};
+
+	buildEscalationMessage = (
+		monitor: Monitor,
+		notification: Notification,
+		clientHost: string,
+		incident: any
+	): NotificationMessage => {
+		// Reuse the existing message builder but with escalation context
+		const startTime = new Date(incident.startTime);
+		const elapsedMinutes = Math.round((Date.now() - startTime.getTime()) / (1000 * 60));
+
+		return {
+			type: "monitor_down",
+			severity: "critical",
+			monitor: {
+				id: monitor.id,
+				name: monitor.name,
+				url: monitor.url,
+				type: monitor.type,
+				status: monitor.status,
+			},
+			content: {
+				title: `⚠️ Escalation: ${monitor.name} has been down for ${elapsedMinutes} minutes`,
+				summary: `Monitor down since: ${startTime.toISOString()}`,
+				details: [`The monitor "${monitor.name}" has remained down for ${elapsedMinutes} minutes. This is an escalation notification.`],
+				timestamp: new Date(),
+			},
+			clientHost,
+			metadata: {
+				teamId: monitor.teamId,
+				notificationReason: "escalation",
+			},
+		};
+	};
+
+	sendEscalation = async (notification: Notification, message: NotificationMessage): Promise<boolean> => {
+		// Route to provider based on notification type
+		switch (notification.type) {
+			case "email":
+				return await this.emailProvider.sendMessage!(notification, message);
+			case "slack":
+				return await this.slackProvider.sendMessage!(notification, message);
+			case "discord":
+				return await this.discordProvider.sendMessage!(notification, message);
+			case "webhook":
+				return await this.webhookProvider.sendMessage!(notification, message);
+			case "pager_duty":
+				return await this.pagerDutyProvider.sendMessage!(notification, message);
+			case "matrix":
+				return await this.matrixProvider.sendMessage!(notification, message);
+			case "teams":
+				return await this.teamsProvider.sendMessage!(notification, message);
+			default:
+				this.logger.warn({
+					message: `Unknown notification type for escalation: ${notification.type}`,
+					service: SERVICE_NAME,
+					method: "sendEscalation",
+				});
+				return false;
+		}
 	};
 }

@@ -543,6 +543,25 @@
 					"description": "Select the notification channels you want to use",
 					"title": "Notifications"
 				},
+				"escalation": {
+					"description": "Configure an escalation notification to send after the monitor has been down for a specified duration",
+					"title": "Escalation Notification",
+					"notificationLabel": "Escalation notification channel",
+					"delayLabel": "Escalation delay (minutes)",
+					"delayPlaceholder": "Enter delay in minutes",
+					"delayHint": "Number of minutes before sending escalation (1-10080)",
+					"noNotifications": "No notifications available",
+					"savedDelayLabel": "Escalation delay saved",
+					"minutes": "minutes"
+				},
+				"escalationSummary": {
+					"description": "Summary of your escalation configuration",
+					"title": "Escalation Configuration Summary",
+					"notificationLabel": "Escalation Notification",
+					"delayLabel": "Escalation Delay",
+					"checkIntervalLabel": "Check Interval",
+					"minutes": "minutes"
+				},
 				"type": {
 					"description": "Select the type of check to perform",
 					"optionDockerDescription": "Use Docker to monitor if a container is running.",

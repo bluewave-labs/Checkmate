@@ -11,7 +11,7 @@ import {
 	IncidentService,
 	type IGeoChecksService,
 } from "@/service/index.js";
-import { CHECK_TTL_SENTINEL, type MaintenanceWindow, type StatusChangeResult } from "@/types/index.js";
+import { CHECK_TTL_SENTINEL, type MaintenanceWindow, type StatusChangeResult, type Incident } from "@/types/index.js";
 import {
 	IMaintenanceWindowsRepository,
 	IMonitorsRepository,
@@ -172,6 +172,16 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 				this.incidentService.handleIncident(statusChangeResult.monitor, statusChangeResult.code, decision, status).catch((error: unknown) => {
 					this.logger.warn({
 						message: `Error handling incident for job ${monitor.id}: ${error instanceof Error ? error.message : "Unknown error"}`,
+						service: SERVICE_NAME,
+						method: "getMonitorJob",
+						stack: error instanceof Error ? error.stack : undefined,
+					});
+				});
+
+				// Step 8. Handle escalation (best effort, don't wait)
+				this.handleEscalation(statusChangeResult.monitor).catch((error: unknown) => {
+					this.logger.warn({
+						message: `Error handling escalation for job ${monitor.id}: ${error instanceof Error ? error.message : "Unknown error"}`,
 						service: SERVICE_NAME,
 						method: "getMonitorJob",
 						stack: error instanceof Error ? error.stack : undefined,
@@ -455,4 +465,147 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 
 		return decision;
 	}
+
+	private handleEscalation = async (monitor: Monitor): Promise<void> => {
+		// Check if escalation is configured
+		this.logger.debug({
+			message: `Escalation check: escalationNotificationId=${monitor.escalationNotificationId}, escalationDelayMinutes=${monitor.escalationDelayMinutes}`,
+			service: SERVICE_NAME,
+			method: "handleEscalation",
+		});
+
+		if (!monitor.escalationNotificationId || !monitor.escalationDelayMinutes) {
+			return;
+		}
+
+		// Only escalate if monitor is still down
+		if (monitor.status !== "down" && monitor.status !== "breached") {
+			this.logger.debug({
+				message: `Monitor ${monitor.id} not down/breached (status: ${monitor.status})`,
+				service: SERVICE_NAME,
+				method: "handleEscalation",
+			});
+			return;
+		}
+
+		// Get active incident
+		const activeIncident = await this.incidentsRepository.findActiveByMonitorId(monitor.id, monitor.teamId);
+		if (!activeIncident) {
+			this.logger.debug({
+				message: `No active incident for monitor ${monitor.id}`,
+				service: SERVICE_NAME,
+				method: "handleEscalation",
+			});
+			return;
+		}
+
+		if (activeIncident.escalationSent) {
+			this.logger.debug({
+				message: `Escalation already sent for incident ${activeIncident.id}`,
+				service: SERVICE_NAME,
+				method: "handleEscalation",
+			});
+			return;
+		}
+
+		// Calculate elapsed time since incident started
+		const startTime = new Date(activeIncident.startTime).getTime();
+		const currentTime = Date.now();
+		const elapsedMinutes = (currentTime - startTime) / (1000 * 60);
+
+		this.logger.debug({
+			message: `Escalation timing: elapsed=${elapsedMinutes.toFixed(2)}min, required=${monitor.escalationDelayMinutes}min`,
+			service: SERVICE_NAME,
+			method: "handleEscalation",
+		});
+
+		// Check if escalation delay has elapsed
+		if (elapsedMinutes < monitor.escalationDelayMinutes) {
+			return;
+		}
+
+		// Send escalation notification
+		this.logger.info({
+			message: `Sending escalation for monitor ${monitor.id} (incident elapsed: ${elapsedMinutes.toFixed(2)} minutes)`,
+			service: SERVICE_NAME,
+			method: "handleEscalation",
+		});
+
+		// Get the escalation notification - convert to string in case it's an ObjectId
+		const notificationId = typeof monitor.escalationNotificationId === 'string' 
+			? monitor.escalationNotificationId 
+			: String(monitor.escalationNotificationId);
+
+		const escalationNotification = await this.notificationsService.findById(
+			notificationId,
+			monitor.teamId
+		);
+
+		if (!escalationNotification) {
+			this.logger.warn({
+				message: `Escalation notification ${notificationId} not found for monitor ${monitor.id}`,
+				service: SERVICE_NAME,
+				method: "handleEscalation",
+			});
+			return;
+		}
+
+		this.logger.debug({
+			message: `Found escalation notification: ${escalationNotification.notificationName} (type: ${escalationNotification.type})`,
+			service: SERVICE_NAME,
+			method: "handleEscalation",
+		});
+
+		// Build escalation message with context that it's an escalation
+		const settings = this.settingsService.getSettings();
+		const clientHost = settings.clientHost || "Host not defined";
+
+		// Create a decision object for escalation notification
+		const escalationDecision = {
+			shouldCreateIncident: false,
+			shouldResolveIncident: false,
+			shouldSendNotification: true,
+			incidentReason: null,
+			notificationReason: "status_change" as const,
+		};
+
+		// Get current monitor status to build the message
+		const currentMonitor = await this.monitorsRepository.findById(monitor.id, monitor.teamId);
+		if (!currentMonitor) {
+			return;
+		}
+
+		// Build notification message
+		const notificationMessage = this.notificationsService.buildEscalationMessage(
+			currentMonitor,
+			escalationNotification,
+			clientHost,
+			activeIncident
+		);
+
+		this.logger.debug({
+			message: `Built escalation message: type=${notificationMessage.type}, severity=${notificationMessage.severity}`,
+			service: SERVICE_NAME,
+			method: "handleEscalation",
+		});
+
+		// Send the escalation
+		const sent = await this.notificationsService.sendEscalation(escalationNotification, notificationMessage);
+
+		this.logger.info({
+			message: `Escalation send result: ${sent ? "SUCCESS" : "FAILED"} for monitor ${monitor.id}`,
+			service: SERVICE_NAME,
+			method: "handleEscalation",
+		});
+
+		if (sent) {
+			// Mark escalation as sent
+			await this.incidentsRepository.updateById(activeIncident.id, monitor.teamId, { escalationSent: true });
+			this.logger.info({
+				message: `Marked escalation as sent for incident ${activeIncident.id}`,
+				service: SERVICE_NAME,
+				method: "handleEscalation",
+			});
+		}
+	};
 }

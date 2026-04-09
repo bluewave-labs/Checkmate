@@ -25,7 +25,10 @@ type MonitorDocumentBase = Omit<
 	notifications: Types.ObjectId[];
 	selectedDisks: string[];
 	matchMethod?: MonitorMatchMethod;
+	escalationNotificationId?: Types.ObjectId | null;
+	escalationDelayMinutes?: number | null;
 };
+
 
 interface MonitorDocument extends MonitorDocumentBase {
 	_id: Types.ObjectId;
@@ -350,6 +353,15 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		geoCheckInterval: {
 			type: Number,
 			default: 300000,
+		},
+		escalationNotificationId: {
+			type: Schema.Types.ObjectId,
+			ref: "Notification",
+			default: null,
+		},
+		escalationDelayMinutes: {
+			type: Number,
+			default: null,
 		},
 		recentChecks: {
 			type: [checkSnapshotSchema],

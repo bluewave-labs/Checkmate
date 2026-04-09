@@ -202,7 +202,8 @@ const CreateMonitorPage = () => {
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
-	const { control, watch, handleSubmit, clearErrors } = form;
+	const { control, watch, handleSubmit, clearErrors, formState } = form;
+	const { errors } = formState;
 
 	useEffect(() => {
 		form.reset(defaults);
@@ -212,6 +213,8 @@ const CreateMonitorPage = () => {
 
 	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
 	const watchGeoCheckEnabled = watch("geoCheckEnabled") as boolean;
+	const watchedEscalationNotificationId = watch("escalationNotificationId") as string | null;
+	const watchedInterval = watch("interval") as number;
 
 	useEffect(() => {
 		clearErrors();
@@ -764,6 +767,208 @@ const CreateMonitorPage = () => {
 					/>
 				}
 			/>
+
+			<ConfigBox
+				title={t("pages.createMonitor.form.escalation.title")}
+				subtitle={t("pages.createMonitor.form.escalation.description")}
+				rightContent={
+					<Stack spacing={theme.spacing(LAYOUT.MD)}>
+						<Controller
+							name="escalationNotificationId"
+							control={control}
+							render={({ field }) => {
+								const notificationOptions = (notifications ?? []).map((n) => ({
+									...n,
+									name: n.notificationName,
+								}));
+								const selectedNotification = notificationOptions.find(
+									(n) => n.id === field.value
+								);
+								return (
+									<Stack spacing={theme.spacing(SPACING.MD)}>
+										<Typography variant="subtitle2">
+											{t("pages.createMonitor.form.escalation.notificationLabel")}
+										</Typography>
+										<Autocomplete
+											options={notificationOptions}
+											value={selectedNotification || null}
+											getOptionLabel={(option) => option.name}
+											onChange={(_: unknown, newValue: typeof notificationOptions[0] | null) => {
+												field.onChange(newValue?.id || null);
+											}}
+											isOptionEqualToValue={(option, value) => option.id === value.id}
+											noOptionsText={t("pages.createMonitor.form.escalation.noNotifications")}
+										/>
+										{selectedNotification && (
+											<Stack
+												sx={{
+													p: theme.spacing(SPACING.MD),
+													bgcolor: "background.default",
+													borderRadius: 1,
+													border: `1px solid ${theme.palette.divider}`,
+												}}
+												spacing={theme.spacing(SPACING.SM)}
+											>
+												<Stack
+													direction="row"
+													alignItems="center"
+													justifyContent="space-between"
+												>
+													<Stack flex={1} spacing={0.5}>
+														<Typography variant="body2" sx={{ fontWeight: 600 }}>
+															{selectedNotification.notificationName}
+														</Typography>
+														<Typography variant="caption" sx={{ color: "text.secondary" }}>
+															{selectedNotification.address || selectedNotification.phone || "—"}
+														</Typography>
+													</Stack>
+													<IconButton
+														size="small"
+														onClick={() => field.onChange(null)}
+														aria-label="Remove escalation notification"
+													>
+														<Trash2 size={16} />
+													</IconButton>
+												</Stack>
+											</Stack>
+										)}
+									</Stack>
+								);
+							}}
+						/>
+						<Controller
+							name="escalationDelayMinutes"
+							control={control}
+							render={({ field }) => (
+								<Stack spacing={theme.spacing(SPACING.MD)}>
+									<Typography variant="subtitle2">
+										{t("pages.createMonitor.form.escalation.delayLabel")}
+									</Typography>
+									<TextField
+										type="number"
+										inputProps={{
+											min: 1,
+											max: 10080,
+											step: 1,
+										}}
+										placeholder={t("pages.createMonitor.form.escalation.delayPlaceholder")}
+										value={field.value === null ? "" : field.value}
+										onChange={(e) => {
+											const value = e.target.value ? parseInt(e.target.value, 10) : null;
+											field.onChange(value);
+										}}
+										error={Boolean(errors.escalationDelayMinutes)}
+										helperText={
+											errors.escalationDelayMinutes?.message ||
+											t("pages.createMonitor.form.escalation.delayHint")
+										}
+									/>
+									{field.value !== null && field.value !== undefined && field.value > 0 && (
+										<Stack
+											sx={{
+												p: theme.spacing(SPACING.MD),
+												bgcolor: "background.default",
+												borderRadius: 1,
+												border: `1px solid ${theme.palette.divider}`,
+											}}
+											direction="row"
+											alignItems="center"
+											justifyContent="space-between"
+										>
+											<Stack flex={1}>
+												<Typography variant="body2" sx={{ fontWeight: 600 }}>
+													{t("pages.createMonitor.form.escalation.savedDelayLabel")}
+												</Typography>
+												<Typography variant="caption" sx={{ color: "text.secondary" }}>
+													{field.value} {t("pages.createMonitor.form.escalation.minutes")}
+												</Typography>
+											</Stack>
+											<IconButton
+												size="small"
+												onClick={() => field.onChange(null)}
+												aria-label="Clear escalation delay"
+											>
+												<Trash2 size={16} />
+											</IconButton>
+										</Stack>
+									)}
+								</Stack>
+							)}
+						/>
+					</Stack>
+				}
+			/>
+
+			{watchedEscalationNotificationId && watchedInterval && (
+				<ConfigBox
+					title={t("pages.createMonitor.form.escalationSummary.title")}
+					subtitle={t("pages.createMonitor.form.escalationSummary.description")}
+					rightContent={
+						<Stack
+							direction="row"
+							alignItems="center"
+							spacing={theme.spacing(SPACING.MD)}
+							width="100%"
+						>
+							<Stack
+								spacing={theme.spacing(SPACING.SM)}
+								flex={1}
+							>
+								<Typography
+									variant="subtitle2"
+									sx={{ color: "text.secondary" }}
+								>
+									{t("pages.createMonitor.form.escalationSummary.notificationLabel")}
+								</Typography>
+								<Typography variant="body2">
+									{notifications
+										?.find((n) => n.id === watchedEscalationNotificationId)
+										?.notificationName || "—"}
+								</Typography>
+							</Stack>
+							<Stack
+								spacing={theme.spacing(SPACING.SM)}
+								flex={1}
+							>
+								<Typography
+									variant="subtitle2"
+									sx={{ color: "text.secondary" }}
+								>
+									{t("pages.createMonitor.form.escalationSummary.delayLabel")}
+								</Typography>
+								<Typography variant="body2">
+									{(watch("escalationDelayMinutes") ?? null) || "—"} {t("pages.createMonitor.form.escalationSummary.minutes")}
+								</Typography>
+							</Stack>
+							<Stack
+								spacing={theme.spacing(SPACING.SM)}
+								flex={1}
+							>
+								<Typography
+									variant="subtitle2"
+									sx={{ color: "text.secondary" }}
+								>
+									{t("pages.createMonitor.form.escalationSummary.checkIntervalLabel")}
+								</Typography>
+								<Typography variant="body2">
+									{Math.round(watchedInterval / 1000 / 60)} {t("pages.createMonitor.form.escalationSummary.minutes")}
+								</Typography>
+							</Stack>
+							<IconButton
+								size="small"
+								onClick={() => {
+									form.setValue("escalationNotificationId", null);
+									form.setValue("escalationDelayMinutes", null);
+								}}
+								aria-label="Clear escalation settings"
+								sx={{ alignSelf: "flex-start", mt: theme.spacing(SPACING.MD) }}
+							>
+								<Trash2 size={16} />
+							</IconButton>
+						</Stack>
+					}
+				/>
+			)}
 
 			{(watchedType === "http" ||
 				watchedType === "grpc" ||
