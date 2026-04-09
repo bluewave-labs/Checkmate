@@ -765,6 +765,114 @@ const CreateMonitorPage = () => {
 				}
 			/>
 
+			<ConfigBox
+				title="Escalated notifications"
+				subtitle="Send additional alerts after a monitor has been down for a specified amount of time. Escalations reset when the monitor recovers."
+				rightContent={
+					<Controller
+						name="escalations"
+						control={control}
+						render={({ field, fieldState }) => {
+							const value = (field.value ?? []) as {
+								delayMinutes: number;
+								notificationId: string;
+							}[];
+							const notificationOptions = notifications ?? [];
+							const updateAt = (
+								idx: number,
+								patch: Partial<{ delayMinutes: number; notificationId: string }>
+							) => {
+								const next = value.map((row, i) =>
+									i === idx ? { ...row, ...patch } : row
+								);
+								field.onChange(next);
+							};
+							const removeAt = (idx: number) => {
+								field.onChange(value.filter((_, i) => i !== idx));
+							};
+							const addRow = () => {
+								field.onChange([
+									...value,
+									{ delayMinutes: 5, notificationId: "" },
+								]);
+							};
+							return (
+								<Stack spacing={theme.spacing(LAYOUT.MD)}>
+									{value.length === 0 && (
+										<Typography color="text.secondary">
+											No escalations configured. Add one to be alerted again if an
+											incident persists.
+										</Typography>
+									)}
+									{value.map((row, idx) => (
+										<Stack
+											key={idx}
+											direction="row"
+											spacing={theme.spacing(SPACING.LG)}
+											alignItems="center"
+										>
+											<TextField
+												type="number"
+												fieldLabel="Delay (minutes)"
+												value={row.delayMinutes}
+												onChange={(e) =>
+													updateAt(idx, {
+														delayMinutes: Number(e.target.value) || 0,
+													})
+												}
+												sx={{ width: 160 }}
+											/>
+											<Select
+												value={row.notificationId || ""}
+												fieldLabel="Notification channel"
+												onChange={(e) =>
+													updateAt(idx, {
+														notificationId: String(e.target.value ?? ""),
+													})
+												}
+												sx={{ flexGrow: 1 }}
+											>
+												<MenuItem value="">
+													<em>Select a notification</em>
+												</MenuItem>
+												{notificationOptions.map((n) => (
+													<MenuItem
+														key={n.id}
+														value={n.id}
+													>
+														{n.notificationName} ({n.type})
+													</MenuItem>
+												))}
+											</Select>
+											<IconButton
+												size="small"
+												onClick={() => removeAt(idx)}
+												aria-label="Remove escalation"
+											>
+												<Trash2 size={16} />
+											</IconButton>
+										</Stack>
+									))}
+									{fieldState.error && (
+										<Typography color="error">
+											Please fill in delay and notification channel for each
+											escalation.
+										</Typography>
+									)}
+									<Button
+										variant="outlined"
+										onClick={addRow}
+										sx={{ alignSelf: "flex-start" }}
+									>
+										Add escalation
+									</Button>
+								</Stack>
+							);
+						}}
+					/>
+				}
+			/>
+
 			{(watchedType === "http" ||
 				watchedType === "grpc" ||
 				watchedType === "websocket") && (

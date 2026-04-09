@@ -1,5 +1,6 @@
 const SERVICE_NAME = "JobQueueHelper";
 import type { Monitor } from "@/types/monitor.js";
+import type { MonitorStatusResponse } from "@/types/index.js";
 import { supportsGeoCheck } from "@/types/monitor.js";
 import { AppError } from "@/utils/AppError.js";
 import {
@@ -165,6 +166,16 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 							method: "getMonitorJob",
 							stack: error instanceof Error ? error.stack : undefined,
 						});
+					});
+				}
+
+				try {
+					await this.handleEscalations(statusChangeResult.monitor, status);
+				} catch (error: unknown) {
+					this.logger.warn({
+						message: `Error handling escalations for monitor ${statusChangeResult.monitor.id}: ${error instanceof Error ? error.message : "Unknown error"}`,
+						service: SERVICE_NAME,
+						method: "getMonitorJob",
 					});
 				}
 
@@ -417,6 +428,72 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 			}
 		};
 	};
+
+	private async handleEscalations(monitor: Monitor, status: MonitorStatusResponse): Promise<void> {
+		const monitorId = monitor.id;
+		const teamId = monitor.teamId;
+		const escalations = monitor.escalations ?? [];
+
+		if (monitor.status !== "down") {
+			if (monitor.downSince || (monitor.escalationsSent && monitor.escalationsSent.length > 0)) {
+				await this.monitorsRepository.updateById(monitorId, teamId, {
+					downSince: null,
+					escalationsSent: [],
+				});
+			}
+			return;
+		}
+
+		let downSinceMs: number;
+		const alreadySent = monitor.escalationsSent ?? [];
+		if (!monitor.downSince) {
+			downSinceMs = Date.now();
+			await this.monitorsRepository.updateById(monitorId, teamId, {
+				downSince: new Date(downSinceMs).toISOString(),
+				escalationsSent: [],
+			});
+		} else {
+			downSinceMs = new Date(monitor.downSince).getTime();
+		}
+
+		if (escalations.length === 0) {
+			return;
+		}
+
+		const elapsedMinutes = (Date.now() - downSinceMs) / 60000;
+		const dueEscalations = escalations.filter((e) => e.delayMinutes <= elapsedMinutes && !alreadySent.includes(e.delayMinutes));
+
+		if (dueEscalations.length === 0) {
+			return;
+		}
+
+		const byDelay = new Map<number, string[]>();
+		for (const esc of dueEscalations) {
+			const list = byDelay.get(esc.delayMinutes) ?? [];
+			list.push(esc.notificationId);
+			byDelay.set(esc.delayMinutes, list);
+		}
+
+		const newlySent: number[] = [];
+		for (const [delay, notificationIds] of byDelay) {
+			try {
+				await this.notificationsService.sendEscalationNotifications(monitor, status, notificationIds, delay);
+				newlySent.push(delay);
+			} catch (error: unknown) {
+				this.logger.warn({
+					message: `Failed to send escalation (delay=${delay}) for monitor ${monitorId}: ${error instanceof Error ? error.message : "Unknown error"}`,
+					service: SERVICE_NAME,
+					method: "handleEscalations",
+				});
+			}
+		}
+
+		if (newlySent.length > 0) {
+			await this.monitorsRepository.updateById(monitorId, teamId, {
+				escalationsSent: [...alreadySent, ...newlySent],
+			});
+		}
+	}
 
 	private evaluateMonitorAction(statusChangeResult: StatusChangeResult): MonitorActionDecision {
 		const { monitor, statusChanged, prevStatus } = statusChangeResult;
