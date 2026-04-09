@@ -5,6 +5,7 @@ import type { AlertMatrixPayload, Notification } from "@/types/index.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
 import { ILogger } from "@/utils/logger.js";
+import { randomUUID } from "crypto";
 
 export class MatrixProvider implements INotificationProvider {
 	private logger: ILogger;
@@ -18,60 +19,48 @@ export class MatrixProvider implements INotificationProvider {
 		if (!homeserverUrl || !accessToken || !roomId) {
 			return false;
 		}
-		const url = `${homeserverUrl}/_matrix/client/v3/rooms/${roomId}/send/m.room.message?access_token=${accessToken}`;
+
 		const body = {
 			msgtype: "m.text",
 			body: getTestMessage(),
 		};
-		try {
-			await got.post(url, {
-				json: body,
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
-			return true;
-		} catch (error) {
-			const err = error as Error;
-			this.logger.warn({
-				message: "Matrix test alert failed",
-				service: SERVICE_NAME,
-				method: "sendTestAlert",
-				stack: err?.stack,
-			});
-			return false;
-		}
+		return await this.sendMessageWithBody(notification, body);
 	};
 
 	sendMessage = async (notification: Notification, message: NotificationMessage): Promise<boolean> => {
 		const { homeserverUrl, accessToken, roomId } = notification;
-
 		if (!homeserverUrl || !accessToken || !roomId) {
 			return false;
 		}
 
 		const { plainText, htmlText } = this.buildMatrixMessage(message);
-
-		const url = `${homeserverUrl}/_matrix/client/v3/rooms/${roomId}/send/m.room.message?access_token=${accessToken}`;
 		const body = {
 			msgtype: "m.text",
 			body: plainText,
 			format: "org.matrix.custom.html",
 			formatted_body: htmlText,
 		};
+		return this.sendMessageWithBody(notification, body);
+	};
+
+	private sendMessageWithBody = async (notification: Partial<Notification>, body: unknown): Promise<boolean> => {
+		const { homeserverUrl, accessToken, roomId } = notification;
+		const txnId = randomUUID();
+		const url = `${homeserverUrl}/_matrix/client/v3/rooms/${roomId}/send/m.room.message/${txnId}`;
 
 		try {
-			await got.post(url, {
+			await got.put(url, {
 				json: body,
 				headers: {
 					"Content-Type": "application/json",
+					Authorization: `Bearer ${accessToken}`,
 				},
 			});
 			return true;
 		} catch (error) {
 			const err = error as Error;
 			this.logger.warn({
-				message: "Matrix notification failed",
+				message: `Matrix notification failed : ${err.message}`,
 				service: SERVICE_NAME,
 				method: "sendMessage",
 				stack: err?.stack,
