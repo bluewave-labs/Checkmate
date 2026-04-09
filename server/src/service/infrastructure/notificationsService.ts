@@ -173,10 +173,12 @@ export class NotificationsService implements INotificationsService {
 
 		const escalationMessage: NotificationMessage = {
 			...baseMessage,
+			type: "escalation",
+			severity: "warning",
 			content: {
 				...baseMessage.content,
-				title: `[Escalation +${delayMinutes}m] ${baseMessage.content.title}`,
-				summary: `Monitor "${monitor.name}" has been down for at least ${delayMinutes} minute(s). ${baseMessage.content.summary}`,
+				title: `Escalation: Monitor ${monitor.name} is still down`,
+				summary: `Monitor "${monitor.name}" has been down for at least ${delayMinutes} minute(s). This is an escalated notification.`,
 			},
 		};
 
