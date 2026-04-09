@@ -284,6 +284,12 @@ const MonitorSchema = new Schema<MonitorDocument>(
 				ref: "Notification",
 			},
 		],
+		escalationTime: {
+			type: Number,
+		},
+		escalationChannels: {
+			type: [String],
+		},
 		secret: {
 			type: String,
 		},

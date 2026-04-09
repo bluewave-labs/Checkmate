@@ -1,5 +1,5 @@
 const SERVICE_NAME = "EmailProvider";
-import type { Notification } from "@/types/index.js";
+import type { Notification, Monitor } from "@/types/index.js";
 import { INotificationProvider } from "@/service/index.js";
 import { buildTestEmail } from "@/service/infrastructure/notificationProviders/utils.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
@@ -77,6 +77,35 @@ export class EmailProvider implements INotificationProvider {
 		return true;
 	}
 
+	async sendEscalationMessage(notification: Notification, monitor: Monitor, message: NotificationMessage): Promise<boolean> {
+		if (!notification.address) {
+			return false;
+		}
+
+		const subject = `Escalation: Monitor ${monitor.name} still down`;
+		const html = await this.buildEscalationEmailFromMessage(message);
+
+		if (!html) {
+			this.logger.warn({
+				message: "Failed to build escalation email content",
+				service: SERVICE_NAME,
+				method: "sendEscalationMessage",
+			});
+			return false;
+		}
+
+		const messageId = await this.emailService.sendEmail(notification.address, subject, html);
+		if (!messageId) {
+			this.logger.warn({
+				message: "Escalation email notification failed",
+				service: SERVICE_NAME,
+				method: "sendEscalationMessage",
+			});
+			return false;
+		}
+		return true;
+	}
+
 	private buildSubject(message: NotificationMessage): string {
 		switch (message.type) {
 			case "monitor_down":
@@ -114,6 +143,31 @@ export class EmailProvider implements INotificationProvider {
 		});
 
 		const html = await this.emailService.buildEmail("unifiedNotificationTemplate", context);
+
+		return html;
+	}
+
+	private async buildEscalationEmailFromMessage(message: NotificationMessage): Promise<string | undefined> {
+		const context = {
+			title: `${message.monitor.name} Still Down`,
+			summary: `Your service ${message.monitor.name} remains down. This is an escalation notification sent because the downtime has exceeded the configured escalation threshold.`,
+			monitorName: message.monitor.name,
+			monitorUrl: message.monitor.url,
+			monitorType: message.monitor.type,
+			monitorStatus: message.monitor.status,
+			headerColor: this.getColorForSeverity("critical"),
+			details: message.content.details,
+			isEscalation: true,
+		};
+
+		this.logger.info({
+			message: "[DEBUG] Building escalation email from message",
+			service: SERVICE_NAME,
+			method: "buildEscalationEmailFromMessage",
+			details: { context },
+		});
+
+		const html = await this.emailService.buildEmail("escalationNotificationTemplate", context);
 
 		return html;
 	}

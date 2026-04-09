@@ -765,6 +765,105 @@ const CreateMonitorPage = () => {
 				}
 			/>
 
+			{/* Escalation Rules */}
+			<ConfigBox
+				title={t("pages.createMonitor.form.escalation.title")}
+				subtitle={t("pages.createMonitor.form.escalation.description")}
+				rightContent={
+					<Stack gap={theme.spacing(LAYOUT.MD)}>
+						<Controller
+							name="escalationTime"
+							control={control}
+							render={({ field, fieldState }) => (
+								<Select
+									value={field.value || 30}
+									onChange={(e) => field.onChange(Number(e.target.value))}
+									fieldLabel={t("pages.createMonitor.form.escalation.option.time.label")}
+									error={!!fieldState.error}
+								>
+									<MenuItem value={1}>1 minute</MenuItem>
+									<MenuItem value={2}>2 minutes</MenuItem>
+									<MenuItem value={3}>3 minutes</MenuItem>
+									<MenuItem value={4}>4 minutes</MenuItem>
+									<MenuItem value={5}>5 minutes</MenuItem>
+									<MenuItem value={10}>10 minutes</MenuItem>
+									<MenuItem value={15}>15 minutes</MenuItem>
+									<MenuItem value={30}>30 minutes</MenuItem>
+									<MenuItem value={60}>1 hour</MenuItem>
+									<MenuItem value={120}>2 hours</MenuItem>
+									<MenuItem value={240}>4 hours</MenuItem>
+									<MenuItem value={480}>8 hours</MenuItem>
+									<MenuItem value={720}>12 hours</MenuItem>
+									<MenuItem value={1440}>24 hours</MenuItem>
+								</Select>
+							)}
+						/>
+						<Controller
+							name="escalationChannels"
+							control={control}
+							render={({ field }) => {
+								// Map notifications to have 'name' property for Autocomplete
+								const notificationOptions = (notifications ?? []).map((n) => ({
+									...n,
+									name: n.notificationName,
+								}));
+								const selectedEscalationChannels = notificationOptions.filter((n) =>
+									(field.value ?? []).includes(n.id)
+								);
+								return (
+									<Stack spacing={theme.spacing(LAYOUT.MD)}>
+										<Autocomplete
+											multiple
+											options={notificationOptions}
+											value={selectedEscalationChannels}
+											getOptionLabel={(option) => option.name}
+											onChange={(_: unknown, newValue: typeof notificationOptions) => {
+												field.onChange(newValue.map((n) => n.id));
+											}}
+											isOptionEqualToValue={(option, value) => option.id === value.id}
+											fieldLabel={t("pages.createMonitor.form.escalation.option.channels.label")}
+										/>
+										{selectedEscalationChannels.length > 0 && (
+											<Stack
+												flex={1}
+												width="100%"
+											>
+												{selectedEscalationChannels.map((notification, index) => (
+													<Stack
+														direction="row"
+														alignItems="center"
+														key={notification.id}
+														width="100%"
+													>
+														<Typography flexGrow={1}>
+															{notification.notificationName}
+														</Typography>
+														<IconButton
+															size="small"
+															onClick={() => {
+																field.onChange(
+																	(field.value ?? []).filter(
+																		(id: string) => id !== notification.id
+																	)
+																);
+															}}
+															aria-label="Remove escalation channel"
+														>
+															<Trash2 size={16} />
+														</IconButton>
+														{index < selectedEscalationChannels.length - 1 && <Divider />}
+													</Stack>
+												))}
+											</Stack>
+										)}
+									</Stack>
+								);
+							}}
+						/>
+					</Stack>
+				}
+			/>
+
 			{(watchedType === "http" ||
 				watchedType === "grpc" ||
 				watchedType === "websocket") && (

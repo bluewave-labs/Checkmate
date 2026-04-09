@@ -1,6 +1,6 @@
 import type { Monitor, MonitorStatusResponse, Notification } from "@/types/index.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
-import { IMonitorsRepository, INotificationsRepository } from "@/repositories/index.js";
+import { IMonitorsRepository, INotificationsRepository, IIncidentsRepository } from "@/repositories/index.js";
 import { INotificationProvider } from "./notificationProviders/INotificationProvider.js";
 import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import type { ISettingsService } from "@/service/system/settingsService.js";
@@ -26,6 +26,7 @@ export class NotificationsService implements INotificationsService {
 
 	private notificationsRepository: INotificationsRepository;
 	private monitorsRepository: IMonitorsRepository;
+	private incidentsRepository: IIncidentsRepository;
 	private webhookProvider: INotificationProvider;
 	private emailProvider: INotificationProvider;
 	private slackProvider: INotificationProvider;
@@ -41,6 +42,7 @@ export class NotificationsService implements INotificationsService {
 	constructor(
 		notificationsRepository: INotificationsRepository,
 		monitorsRepository: IMonitorsRepository,
+		incidentsRepository: IIncidentsRepository,
 		webhookProvider: INotificationProvider,
 		emailProvider: INotificationProvider,
 		slackProvider: INotificationProvider,
@@ -55,6 +57,7 @@ export class NotificationsService implements INotificationsService {
 	) {
 		this.notificationsRepository = notificationsRepository;
 		this.monitorsRepository = monitorsRepository;
+		this.incidentsRepository = incidentsRepository;
 		this.webhookProvider = webhookProvider;
 		this.emailProvider = emailProvider;
 		this.slackProvider = slackProvider;
@@ -143,7 +146,73 @@ export class NotificationsService implements INotificationsService {
 		}
 
 		// Send notifications based on decision
-		return await this.sendNotifications(monitor, monitorStatusResponse, decision);
+		const regularNotificationsSent = await this.sendNotifications(monitor, monitorStatusResponse, decision);
+		
+		// Check and send escalation notifications if applicable
+		const escalationSent = await this.sendEscalationNotifications(monitor, monitorStatusResponse, decision);
+		
+		return regularNotificationsSent || escalationSent;
+	};
+
+	private sendEscalationNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision): Promise<boolean> => {
+		// Check if monitor has escalation rules configured
+		if (!monitor.escalationTime || !monitor.escalationChannels || monitor.escalationChannels.length === 0) {
+			return false;
+		}
+
+		// Only send escalation on monitor down status
+		if (monitorStatusResponse.status !== false) {
+			return false;
+		}
+
+		// Get active incident if exists
+		const activeIncident = await this.incidentsRepository.findActiveByMonitorId(monitor.id, monitor.teamId);
+		if (!activeIncident) {
+			return false;
+		}
+
+		// Calculate downtime in minutes
+		const startTime = parseInt(activeIncident.startTime, 10);
+		const now = Date.now();
+		const downtimeMinutes = Math.floor((now - startTime) / 1000 / 60);
+
+		// Check if downtime exceeds escalation time
+		if (downtimeMinutes < monitor.escalationTime) {
+			return false;
+		}
+
+		// Get escalation notification channels
+		const escalationChannelIds = monitor.escalationChannels;
+		const escalationNotifications = await this.notificationsRepository.findNotificationsByIds(escalationChannelIds);
+
+		if (escalationNotifications.length === 0) {
+			return false;
+		}
+
+		// Build escalation message
+		const settings = this.settingsService.getSettings();
+		const clientHost = settings.clientHost || "Host not defined";
+		const notificationMessage = this.notificationMessageBuilder.buildMessage(monitor, monitorStatusResponse, decision, clientHost);
+
+		// Send to escalation channels via email provider with escalation formatting
+		const tasks = escalationNotifications.map((notification) => 
+			notification.type === "email" ? 
+				this.emailProvider.sendEscalationMessage!(notification, monitor, notificationMessage) :
+				this.send(notification, monitor, monitorStatusResponse, decision, notificationMessage)
+		);
+		const outcomes = await Promise.all(tasks);
+		const succeeded = outcomes.filter(Boolean).length;
+		const failed = outcomes.length - succeeded;
+
+		if (failed > 0) {
+			this.logger.warn({
+				message: `Escalation notification send completed with ${succeeded} success, ${failed} failure(s)`,
+				service: SERVICE_NAME,
+				method: "sendEscalationNotifications",
+			});
+		}
+
+		return succeeded > 0;
 	};
 
 	sendTestNotification = async (notification: Partial<Notification>) => {
