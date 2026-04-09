@@ -60,7 +60,7 @@ export class GrpcProvider implements IStatusProvider<GrpcStatusPayload> {
 				throw new AppError({ message: "Monitor port is required", service: SERVICE_NAME, method: "handle" });
 			}
 
-			const host = url?.replace(/^https?:\/\//, "").split(/[/?#:]/)[0];
+			const host = url.replace(/^https?:\/\//, "").split(/[/?#:]/)[0];
 			const target = `${host}:${port}`;
 
 			const currentFilePath = fileURLToPath(import.meta.url);

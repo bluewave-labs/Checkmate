@@ -90,7 +90,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 			if (partialIdMatch && !exactIdMatch) matchTypes.push("partial ID");
 
 			if (matchTypes.length > 1) {
-				const message = `Ambiguous container match for "${containerInput}". Matched by: ${matchTypes.join(", ")}. Using ${exactIdMatch ? "exact ID" : exactNameMatch ? "exact name" : "partial ID"} match.`;
+				const message = `Ambiguous container match for "${containerInput}". Matched by: ${matchTypes.join(", ")}. Using ${exactIdMatch ? "exact ID" : "exact name"} match.`;
 
 				this.logger.warn({
 					message,
@@ -142,7 +142,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 				monitorId: monitor.id,
 				teamId: monitor.teamId,
 				type: monitor.type,
-				status: response?.State?.Status === "running",
+				status: response.State?.Status === "running",
 				code: 200,
 				message: "Docker container status fetched successfully",
 				responseTime,
