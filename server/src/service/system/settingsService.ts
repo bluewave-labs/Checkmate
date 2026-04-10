@@ -53,9 +53,6 @@ export class SettingsService implements ISettingsService {
 	}
 
 	getSettings() {
-		if (!this.settings) {
-			throw new Error("Settings have not been loaded");
-		}
 		return this.settings;
 	}
 

@@ -51,7 +51,6 @@ export interface ISuperSimpleQueue {
 	getMetrics(): Promise<QueueMetrics>;
 	getJobs(): Promise<QueueJobSummary[]>;
 	flushQueues(): Promise<{ success: boolean }>;
-	obliterate(): Promise<void>;
 }
 
 export class SuperSimpleQueue implements ISuperSimpleQueue {
@@ -362,13 +361,5 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 		return {
 			success: Boolean(stopRes && flushRes && initRes),
 		};
-	};
-
-	obliterate = async () => {
-		this.logger.warn({
-			message: "obliterate method not implemented",
-			service: SERVICE_NAME,
-			method: "obliterate",
-		});
 	};
 }

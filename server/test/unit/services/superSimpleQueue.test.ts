@@ -535,16 +535,6 @@ describe("SuperSimpleQueue", () => {
 		});
 	});
 
-	// ── obliterate ───────────────────────────────────────────────────────────
-
-	describe("obliterate", () => {
-		it("logs not-implemented warning", async () => {
-			const { queue, logger } = createQueue();
-			await queue.obliterate();
-			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "obliterate method not implemented" }));
-		});
-	});
-
 	// ── static create ────────────────────────────────────────────────────────
 
 	describe("static create", () => {

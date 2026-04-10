@@ -362,27 +362,4 @@ export class StatusService implements IStatusService {
 			});
 		}
 	};
-
-	insertCheck = async (check: Check) => {
-		try {
-			if (typeof check === "undefined") {
-				this.logger.warn({
-					message: "Failed to build check",
-					service: SERVICE_NAME,
-					method: "insertCheck",
-				});
-				return false;
-			}
-			this.buffer.addToBuffer(check);
-			return true;
-		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
-				service: SERVICE_NAME,
-				method: "insertCheck",
-				details: { msg: `Error inserting check for monitor: ${check?.metadata.monitorId}` },
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-		}
-	};
 }
