@@ -171,7 +171,7 @@ export class MonitorService implements IMonitorService {
 
 	createMonitors = async (monitors: Array<Monitor>): Promise<Monitor[] | null> => {
 		const createdMonitors = await this.monitorsRepository.createMonitors(monitors);
-		if (!monitors || monitors.length === 0) {
+		if (!createdMonitors || createdMonitors.length === 0) {
 			throw new AppError({ message: "Failed to create monitors", status: 500, service: SERVICE_NAME, method: "createMonitors" });
 		}
 
@@ -554,15 +554,6 @@ export class MonitorService implements IMonitorService {
 
 		const createdMonitors = await this.createMonitors(cleanedMonitors);
 
-		if (!createdMonitors || createdMonitors.length === 0) {
-			throw new AppError({
-				message: "Failed to import any monitors. Please check the file format and try again.",
-				service: SERVICE_NAME,
-				method: "importMonitorsFromJSON",
-				status: 400,
-			});
-		}
-
-		return { imported: createdMonitors.length, errors };
+		return { imported: createdMonitors!.length, errors };
 	};
 }

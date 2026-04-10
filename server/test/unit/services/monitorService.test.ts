@@ -154,20 +154,20 @@ describe("MonitorService", () => {
 			expect(jobQueue.addJob).toHaveBeenCalledTimes(2);
 		});
 
-		it("throws when input monitors array is empty", async () => {
+		it("throws when repository returns empty array", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			(monitorsRepository.createMonitors as jest.Mock).mockResolvedValue([]);
 			const { service } = createService({ monitorsRepository });
 
-			await expect(service.createMonitors([] as any)).rejects.toThrow("Failed to create monitors");
+			await expect(service.createMonitors([makeMonitor()] as any)).rejects.toThrow("Failed to create monitors");
 		});
 
-		it("throws when input monitors is null/undefined", async () => {
+		it("throws when repository returns null", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
-			(monitorsRepository.createMonitors as jest.Mock).mockResolvedValue([]);
+			(monitorsRepository.createMonitors as jest.Mock).mockResolvedValue(null);
 			const { service } = createService({ monitorsRepository });
 
-			await expect(service.createMonitors(null as any)).rejects.toThrow("Failed to create monitors");
+			await expect(service.createMonitors([makeMonitor()] as any)).rejects.toThrow("Failed to create monitors");
 		});
 	});
 
@@ -1380,48 +1380,6 @@ describe("MonitorService", () => {
 
 			expect(result.imported).toBe(2);
 			expect(result.errors).toEqual([]);
-		});
-
-		it("throws when createMonitors returns null", async () => {
-			const monitorsRepository = createMonitorsRepositoryMock();
-			// createMonitors returns monitors (non-empty), but the check uses input `monitors` param
-			// which is non-empty, so it won't throw from createMonitors check.
-			// To trigger the importMonitorsFromJSON throw, we need createMonitors to return null/empty.
-			// But createMonitors has its own check on input. We need to make createMonitors itself return null.
-			// Since createMonitors is called internally, we mock the repo to return empty and input is non-empty.
-			(monitorsRepository.createMonitors as jest.Mock).mockResolvedValue([]);
-			const { service } = createService({ monitorsRepository });
-
-			// The input monitors is non-empty so createMonitors won't throw (it checks input, not output).
-			// Then createdMonitors is [], which triggers importMonitorsFromJSON's check.
-			// But wait - createMonitors maps over createdMonitors which is [], so Promise.all([]) resolves fine.
-			// Then it returns []. Then importMonitorsFromJSON checks createdMonitors.length === 0 and throws.
-			const result = service.importMonitorsFromJSON({
-				teamId: TEAM_ID,
-				userId: USER_ID,
-				monitors: [{ name: "Test", type: "http", url: "https://example.com", interval: 60000 }] as any,
-			});
-
-			await expect(result).rejects.toThrow("Failed to import any monitors");
-		});
-
-		it("throws when createMonitors returns null value", async () => {
-			const monitorsRepository = createMonitorsRepositoryMock();
-			// Mock so createMonitors doesn't throw internally but returns something falsy
-			// We need to bypass the internal createMonitors method. Since it calls this.createMonitors,
-			// we can't easily bypass. Let's mock repo.createMonitors to simulate:
-			// The bug: createMonitors checks `!monitors` (the input param), not createdMonitors.
-			// If input monitors is non-empty, the check passes. Then it maps createdMonitors.
-			// If repo returns something that makes the Promise.all work but createMonitors returns null...
-			// Actually, this.createMonitors returns the result of repo.createMonitors after addJob.
-			// If we want createMonitors to return null, we'd need repo to return something that isn't null/empty
-			// (to pass the bug check) but... the method returns createdMonitors directly.
-			// Let's just test with a non-empty repo return that then gets checked.
-			// Actually for null: we need createMonitors to return null. That happens if we... hmm.
-			// createMonitors always returns what repo.createMonitors returns. It can't be null because
-			// the method does createdMonitors.map which would throw. So null path is unreachable in
-			// importMonitorsFromJSON unless createMonitors is overridden. Let's skip this edge case.
-			// The empty array case is already tested above.
 		});
 
 		it("cleans monitor fields before creating", async () => {
