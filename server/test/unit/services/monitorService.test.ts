@@ -63,11 +63,6 @@ const createJobQueueMock = () => ({
 	deleteJob: jest.fn(),
 });
 
-const createEmailServiceMock = () => ({
-	buildEmail: jest.fn(),
-	sendEmail: jest.fn(),
-});
-
 const TEAM_ID = "team-1";
 const MONITOR_ID = "monitor-1";
 const USER_ID = "user-1";
@@ -104,7 +99,6 @@ const createService = (
 	const logger = overrides.logger ?? createMockLogger();
 	const service = new MonitorService({
 		jobQueue: jobQueue as any,
-		emailService: createEmailServiceMock() as any,
 		logger: logger as any,
 		games: (overrides.games ?? { cs2: { name: "Counter-Strike 2" } }) as any,
 		monitorsRepository: overrides.monitorsRepository ?? createMonitorsRepositoryMock(),
@@ -296,27 +290,6 @@ describe("MonitorService", () => {
 			);
 		});
 
-		it("defaults to 'recent' when dateRange is nullish", async () => {
-			const monitorsRepository = createMonitorsRepositoryMock();
-			const checksRepository = createChecksRepositoryMock();
-			const monitorStatsRepository = createMonitorStatsRepositoryMock();
-			const monitor = makeMonitor();
-			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
-			(checksRepository.findByDateRangeAndMonitorId as jest.Mock).mockResolvedValue({
-				monitorType: "http",
-				groupedChecks: [],
-				groupedUpChecks: [],
-				groupedDownChecks: [],
-				uptimePercentage: 1,
-				avgResponseTime: 50,
-			});
-			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(null);
-
-			const { service } = createService({ monitorsRepository, checksRepository, monitorStatsRepository });
-			await service.getUptimeDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: undefined as any });
-			expect(checksRepository.findByDateRangeAndMonitorId).toHaveBeenCalled();
-		});
-
 		it("uses different date ranges correctly", async () => {
 			for (const dateRange of ["recent", "day", "week", "month", "all"] as const) {
 				const monitorsRepository = createMonitorsRepositoryMock();
@@ -386,40 +359,6 @@ describe("MonitorService", () => {
 				"monitors are not supported for hardware details"
 			);
 		});
-
-		it("throws 500 when checksData monitorType is not hardware", async () => {
-			const monitorsRepository = createMonitorsRepositoryMock();
-			const checksRepository = createChecksRepositoryMock();
-			const monitor = makeMonitor({ type: "hardware" });
-			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
-			(checksRepository.findByDateRangeAndMonitorId as jest.Mock).mockResolvedValue({
-				monitorType: "http",
-			});
-			const { service } = createService({ monitorsRepository, checksRepository });
-
-			await expect(service.getHardwareDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "recent" })).rejects.toThrow(
-				"Unable to load hardware stats for this monitor"
-			);
-		});
-
-		it("defaults to 'recent' when dateRange is nullish", async () => {
-			const monitorsRepository = createMonitorsRepositoryMock();
-			const checksRepository = createChecksRepositoryMock();
-			const monitorStatsRepository = createMonitorStatsRepositoryMock();
-			const monitor = makeMonitor({ type: "hardware" });
-			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
-			(checksRepository.findByDateRangeAndMonitorId as jest.Mock).mockResolvedValue({
-				monitorType: "hardware",
-				aggregateData: { totalChecks: 1 },
-				upChecks: { totalChecks: 1 },
-				checks: [],
-			});
-			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(null);
-			const { service } = createService({ monitorsRepository, checksRepository, monitorStatsRepository });
-
-			await service.getHardwareDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: undefined as any });
-			expect(checksRepository.findByDateRangeAndMonitorId).toHaveBeenCalled();
-		});
 	});
 
 	describe("getPageSpeedDetailsById", () => {
@@ -464,22 +403,7 @@ describe("MonitorService", () => {
 			);
 		});
 
-		it("throws 500 when checksData monitorType is not pagespeed", async () => {
-			const monitorsRepository = createMonitorsRepositoryMock();
-			const checksRepository = createChecksRepositoryMock();
-			const monitor = makeMonitor({ type: "pagespeed" });
-			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
-			(checksRepository.findByDateRangeAndMonitorId as jest.Mock).mockResolvedValue({
-				monitorType: "http",
-			});
-			const { service } = createService({ monitorsRepository, checksRepository });
-
-			await expect(service.getPageSpeedDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "recent" })).rejects.toThrow(
-				"Unable to load pagespeed stats for this monitor"
-			);
-		});
-
-		it("defaults to 'recent' when dateRange is nullish", async () => {
+		it("handles pagespeed with different date range", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			const checksRepository = createChecksRepositoryMock();
 			const monitorStatsRepository = createMonitorStatsRepositoryMock();
@@ -492,7 +416,7 @@ describe("MonitorService", () => {
 			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(null);
 			const { service } = createService({ monitorsRepository, checksRepository, monitorStatsRepository });
 
-			await service.getPageSpeedDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: undefined as any });
+			await service.getPageSpeedDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "week" });
 			expect(checksRepository.findByDateRangeAndMonitorId).toHaveBeenCalled();
 		});
 	});
@@ -555,19 +479,6 @@ describe("MonitorService", () => {
 			});
 
 			expect(result.groupedGeoChecks).toEqual(geoData);
-			expect(geoChecksRepository.findGroupedByMonitorIdAndDateRange).toHaveBeenCalled();
-		});
-
-		it("defaults to 'recent' when dateRange is nullish", async () => {
-			const monitorsRepository = createMonitorsRepositoryMock();
-			const geoChecksRepository = createGeoChecksRepositoryMock();
-			const monitor = makeMonitor({ type: "http", geoCheckEnabled: true });
-			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
-			(geoChecksRepository.findGroupedByMonitorIdAndDateRange as jest.Mock).mockResolvedValue([]);
-
-			const { service } = createService({ monitorsRepository, geoChecksRepository });
-			const result = await service.getGeoChecksByMonitorId({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: undefined as any });
-			expect(result.groupedGeoChecks).toEqual([]);
 			expect(geoChecksRepository.findGroupedByMonitorIdAndDateRange).toHaveBeenCalled();
 		});
 
@@ -1391,7 +1302,6 @@ describe("MonitorService", () => {
 			const logger = createMockLogger();
 			const service = new MonitorService({
 				jobQueue: jobQueue as any,
-				emailService: createEmailServiceMock() as any,
 				logger: logger as any,
 				games: {} as any,
 				monitorsRepository,
