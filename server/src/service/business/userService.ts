@@ -110,10 +110,7 @@ export class UserService implements IUserService {
 	}
 
 	issueToken = (payload: Partial<User>, appSettings: EnvConfig) => {
-		const tokenTTL = appSettings?.jwtTTL ?? "2h";
-		const tokenSecret = appSettings?.jwtSecret;
-		const payloadData = payload;
-		return this.jwt.sign(payloadData, tokenSecret, { expiresIn: tokenTTL });
+		return this.jwt.sign(payload, appSettings.jwtSecret, { expiresIn: appSettings.jwtTTL });
 	};
 
 	registerUser = async (user: Partial<User>, inviteToken: string, file: Express.Multer.File | null) => {
@@ -253,14 +250,10 @@ export class UserService implements IUserService {
 		currentUserEmail: string
 	) => {
 		// Change Password check
-		if (updates?.password && updates?.newPassword) {
-			// Get user's email
-			// Add user email to body for DB operation
+		if (updates.password && updates.newPassword) {
 			updates.email = currentUserEmail;
-			// Get user
 			const user = await this.usersRepository.findByEmail(currentUserEmail);
-			// Compare passwords
-			const match = await bcrypt.compare(updates?.password, user.password);
+			const match = await bcrypt.compare(updates.password, user.password);
 			// If not a match, throw a 403
 			// 403 instead of 401 to avoid triggering axios interceptor
 			if (!match) {
@@ -286,7 +279,7 @@ export class UserService implements IUserService {
 		const recoveryToken = await this.recoveryTokensRepository.create(email);
 		const name = user.firstName;
 		const settings = this.settingsService.getSettings();
-		const url = `${settings.clientHost!}/set-new-password/${recoveryToken.token}`;
+		const url = `${settings.clientHost}/set-new-password/${recoveryToken.token}`;
 
 		const html = await this.emailService.buildEmail("passwordResetTemplate", {
 			name,
@@ -336,17 +329,10 @@ export class UserService implements IUserService {
 			throw new AppError({ message: "Demo user cannot be deleted", service: SERVICE_NAME, method: "deleteUser", status: 400 });
 		}
 
-		// 1. Find all the monitors associated with the team ID if superadmin
-		const res = await this.monitorsRepository.findByTeamId(teamId, {});
-
 		if (roles.includes("superadmin")) {
-			// 2.  Remove all jobs, delete checks and alerts
-			if (res && res.length > 0) {
-				await Promise.all(
-					res.map(async (monitor) => {
-						await this.jobQueue.deleteJob(monitor);
-					})
-				);
+			const monitors = await this.monitorsRepository.findByTeamId(teamId, {});
+			if (monitors) {
+				await Promise.all(monitors.map((monitor) => this.jobQueue.deleteJob(monitor)));
 			}
 		}
 		// 6. Delete the user by id
@@ -410,9 +396,7 @@ export class UserService implements IUserService {
 		if (!roles.includes("superadmin") && !roles.includes("admin")) {
 			throw new AppError({ message: "Insufficient permissions", service: SERVICE_NAME, status: 403 });
 		}
-		const user = await this.usersRepository.findById(userId);
-
-		return user;
+		return await this.usersRepository.findById(userId);
 	};
 
 	editUserById = async (userId: string, patch: Partial<User>) => {
