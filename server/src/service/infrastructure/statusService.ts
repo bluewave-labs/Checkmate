@@ -147,13 +147,7 @@ export class StatusService implements IStatusService {
 			}
 
 			// Calculate uptime percentage
-			let uptimePercentage;
-			if (stats.totalChecks > 0) {
-				uptimePercentage = stats.totalUpChecks / stats.totalChecks;
-			} else {
-				uptimePercentage = status === true ? 100 : 0;
-			}
-			stats.uptimePercentage = uptimePercentage;
+			stats.uptimePercentage = stats.totalUpChecks / stats.totalChecks;
 
 			// latest check
 			stats.lastCheckTimestamp = new Date().getTime();
@@ -268,7 +262,7 @@ export class StatusService implements IStatusService {
 			let thresholdBreaches: { cpu: boolean; memory: boolean; disk: boolean; temp: boolean } | undefined;
 			if (monitor.type === "hardware" && statusResponse.payload) {
 				const payload = statusResponse.payload as HardwareStatusPayload;
-				const metrics = payload?.data;
+				const metrics = payload.data;
 
 				if (metrics) {
 					// Evaluate threshold breaches
@@ -278,9 +272,11 @@ export class StatusService implements IStatusService {
 					const memoryUsage = metrics.memory?.usage_percent ?? -1;
 					const memoryBreach = memoryUsage !== -1 && memoryUsage > monitor.memoryAlertThreshold / 100;
 
-					const diskBreach =
-						metrics.disk?.some((d: CheckDiskInfo) => typeof d?.usage_percent === "number" && d.usage_percent > monitor.diskAlertThreshold / 100) ??
-						false;
+					const diskBreach = metrics.disk
+						? metrics.disk.some(
+								(d: CheckDiskInfo) => d != null && typeof d.usage_percent === "number" && d.usage_percent > monitor.diskAlertThreshold / 100
+							)
+						: false;
 
 					const temps = metrics.cpu?.temperature ?? [];
 					const tempBreach = temps.some((temp: number) => temp > monitor.tempAlertThreshold);
@@ -363,29 +359,6 @@ export class StatusService implements IStatusService {
 				message: `Failed to update monitor with id ${check.metadata.monitorId} with status: ${error instanceof Error ? error.message : "Unknown error"}`,
 				service: SERVICE_NAME,
 				method: "updateMonitorStatus",
-			});
-		}
-	};
-
-	insertCheck = async (check: Check) => {
-		try {
-			if (typeof check === "undefined") {
-				this.logger.warn({
-					message: "Failed to build check",
-					service: SERVICE_NAME,
-					method: "insertCheck",
-				});
-				return false;
-			}
-			this.buffer.addToBuffer(check);
-			return true;
-		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
-				service: SERVICE_NAME,
-				method: "insertCheck",
-				details: { msg: `Error inserting check for monitor: ${check?.metadata.monitorId}` },
-				stack: error instanceof Error ? error.stack : undefined,
 			});
 		}
 	};

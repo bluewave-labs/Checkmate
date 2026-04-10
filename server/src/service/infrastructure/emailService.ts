@@ -35,7 +35,6 @@ export class EmailService implements IEmailService {
 	private logger: ILogger;
 	private transporter: ReturnType<typeof import("nodemailer").createTransport> | null = null;
 	private templateLookup: Record<string, ((context: Record<string, unknown>) => string) | undefined>;
-	private loadTemplate: (templateName: string) => ((context: Record<string, unknown>) => string) | undefined;
 
 	constructor(
 		settingsService: ISettingsService,
@@ -54,7 +53,6 @@ export class EmailService implements IEmailService {
 		this.nodemailer = nodemailer;
 		this.logger = logger;
 		this.templateLookup = {};
-		this.loadTemplate = () => undefined;
 		this.init();
 	}
 
@@ -63,7 +61,7 @@ export class EmailService implements IEmailService {
 	}
 
 	init = () => {
-		this.loadTemplate = (templateName) => {
+		const loadTemplate = (templateName: string) => {
 			try {
 				const templatePath = this.path.join(__dirname, `../../templates/${templateName}.mjml`);
 				const templateContent = this.fs.readFileSync(templatePath, "utf8");
@@ -79,12 +77,12 @@ export class EmailService implements IEmailService {
 		};
 
 		this.templateLookup = {
-			welcomeEmailTemplate: this.loadTemplate("welcomeEmail"),
-			employeeActivationTemplate: this.loadTemplate("employeeActivation"),
-			noIncidentsThisWeekTemplate: this.loadTemplate("noIncidentsThisWeek"),
-			passwordResetTemplate: this.loadTemplate("passwordReset"),
-			testEmailTemplate: this.loadTemplate("testEmailTemplate"),
-			unifiedNotificationTemplate: this.loadTemplate("unifiedNotification"),
+			welcomeEmailTemplate: loadTemplate("welcomeEmail"),
+			employeeActivationTemplate: loadTemplate("employeeActivation"),
+			noIncidentsThisWeekTemplate: loadTemplate("noIncidentsThisWeek"),
+			passwordResetTemplate: loadTemplate("passwordReset"),
+			testEmailTemplate: loadTemplate("testEmailTemplate"),
+			unifiedNotificationTemplate: loadTemplate("unifiedNotification"),
 		};
 	};
 
@@ -167,7 +165,7 @@ export class EmailService implements IEmailService {
 				subject: subject,
 				html: html,
 			});
-			return info?.messageId;
+			return info.messageId;
 		} catch (error: unknown) {
 			this.logger.error({
 				message: error instanceof Error ? error.message : "Unknown error",

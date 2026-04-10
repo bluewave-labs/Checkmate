@@ -9,7 +9,6 @@ const SERVICE_NAME = "BufferService";
 export interface IBufferService {
 	addToBuffer(check: Check): void;
 	addGeoCheckToBuffer(geoCheck: GeoCheck): void;
-	removeCheckFromBuffer(check: Check): boolean;
 	scheduleNextFlush(): void;
 	flushBuffer(): Promise<void>;
 	flushGeoBuffer(): Promise<void>;
@@ -69,44 +68,6 @@ export class BufferService implements IBufferService {
 				method: "addGeoCheckToBuffer",
 				stack: error instanceof Error ? error.stack : undefined,
 			});
-		}
-	}
-
-	removeCheckFromBuffer(checkToRemove: Check) {
-		try {
-			if (!checkToRemove) {
-				return false;
-			}
-
-			const index = this.buffer.findIndex((check) => {
-				if (checkToRemove.id && check.id) {
-					return check.id.toString() === checkToRemove.id.toString();
-				}
-				return (
-					check.metadata.monitorId?.toString() === checkToRemove.metadata.monitorId &&
-					check.metadata.teamId?.toString() === checkToRemove.metadata.teamId &&
-					check.metadata.type === checkToRemove.metadata.type &&
-					check.status === checkToRemove.status &&
-					check.statusCode === checkToRemove.statusCode &&
-					check.responseTime === checkToRemove.responseTime &&
-					check.message === checkToRemove.message
-				);
-			});
-
-			if (index !== -1) {
-				this.buffer.splice(index, 1);
-				return true;
-			}
-
-			return false;
-		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? error.message : "Unknown error",
-				service: this.SERVICE_NAME,
-				method: "removeCheckFromBuffer",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-			return false;
 		}
 	}
 

@@ -364,7 +364,6 @@ export const initializeServices = async ({
 	});
 	const monitorService = new MonitorService({
 		jobQueue: superSimpleQueue,
-		emailService,
 		logger,
 		games,
 		monitorsRepository,

@@ -5,7 +5,8 @@
 	"main": "index.js",
 	"type": "module",
 	"scripts": {
-		"test": "NODE_OPTIONS=--experimental-vm-modules c8 jest --runInBand",
+		"test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+		"test:services": "NODE_OPTIONS=--experimental-vm-modules jest --coverage --collectCoverageFrom='src/service/**/*.ts' test/unit/services test/unit/providers/network test/unit/providers/notifications",
 		"dev": "nodemon --exec tsx src/index.js",
 		"start": "node --watch ./dist/index.js",
 		"build": "tsc && tsc-alias && cp -r src/templates dist/templates",
@@ -84,7 +85,6 @@
 		"@types/ws": "^8.18.1",
 		"@typescript-eslint/eslint-plugin": "^8.56.1",
 		"@typescript-eslint/parser": "^8.56.1",
-		"c8": "10.1.3",
 		"eslint": "^9.17.0",
 		"eslint-plugin-mocha": "^10.5.0",
 		"esm": "3.2.25",
