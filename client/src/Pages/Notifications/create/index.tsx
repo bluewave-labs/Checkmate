@@ -13,9 +13,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useGet, usePost, usePatch } from "@/Hooks/UseApi";
 import { useNotificationForm } from "@/Hooks/useNotificationForm";
 import type { NotificationFormData } from "@/Validation/notifications";
-import type { Notification } from "@/Types/Notification";
+import { type Notification, NotificationChannels, AuthTypes } from "@/Types/Notification";
 import { useTranslation } from "react-i18next";
-import { NotificationChannels, AuthTypes } from "@/Types/Notification";
+import { normalizeNtfy } from "@/Utils/NotificationUtils";
 
 const NotificationsCreatePage = () => {
 	const { t } = useTranslation();
@@ -78,9 +78,10 @@ const NotificationsCreatePage = () => {
 	}, [watchedType, t]);
 
 	const onSubmit = async (data: NotificationFormData) => {
+		const payload = normalizeNtfy(data);
 		const result = isEditMode
-			? await patch(`/notifications/${notificationId}`, data)
-			: await post("/notifications", data);
+			? await patch(`/notifications/${notificationId}`, payload)
+			: await post("/notifications", payload);
 		if (result) {
 			navigate("/notifications");
 		}
@@ -399,6 +400,7 @@ const NotificationsCreatePage = () => {
 												helperText={fieldState.error?.message ?? ""}
 											/>
 										)}
+										shouldUnregister={true}
 									/>
 									<Controller
 										name="password"
@@ -417,6 +419,7 @@ const NotificationsCreatePage = () => {
 												helperText={fieldState.error?.message ?? ""}
 											/>
 										)}
+										shouldUnregister={true}
 									/>
 								</>
 							)}
@@ -438,6 +441,7 @@ const NotificationsCreatePage = () => {
 											helperText={fieldState.error?.message ?? ""}
 										/>
 									)}
+									shouldUnregister={true}
 								/>
 							)}
 						</Stack>
