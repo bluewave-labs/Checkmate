@@ -90,7 +90,8 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 			if (partialIdMatch && !exactIdMatch) matchTypes.push("partial ID");
 
 			if (matchTypes.length > 1) {
-				const message = `Ambiguous container match for "${containerInput}". Matched by: ${matchTypes.join(", ")}. Using ${exactIdMatch ? "exact ID" : "exact name"} match.`;
+				const matchUsed = exactIdMatch ? "exact ID" : "exact name";
+				const message = `Ambiguous container match for "${containerInput}". Matched by: ${matchTypes.join(", ")}. Using ${matchUsed} match.`;
 
 				this.logger.warn({
 					message,
