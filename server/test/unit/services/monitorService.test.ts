@@ -359,6 +359,19 @@ describe("MonitorService", () => {
 				"monitors are not supported for hardware details"
 			);
 		});
+
+		it("throws 500 when checksData monitorType is not hardware", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			const monitor = makeMonitor({ type: "hardware" });
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(checksRepository.findByDateRangeAndMonitorId as jest.Mock).mockResolvedValue({ monitorType: "http" });
+			const { service } = createService({ monitorsRepository, checksRepository });
+
+			await expect(service.getHardwareDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "recent" })).rejects.toThrow(
+				"Unable to load hardware stats for this monitor"
+			);
+		});
 	});
 
 	describe("getPageSpeedDetailsById", () => {
@@ -400,6 +413,19 @@ describe("MonitorService", () => {
 
 			await expect(service.getPageSpeedDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "recent" })).rejects.toThrow(
 				"monitors are not supported for pagespeed details"
+			);
+		});
+
+		it("throws 500 when checksData monitorType is not pagespeed", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			const monitor = makeMonitor({ type: "pagespeed" });
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(checksRepository.findByDateRangeAndMonitorId as jest.Mock).mockResolvedValue({ monitorType: "http" });
+			const { service } = createService({ monitorsRepository, checksRepository });
+
+			await expect(service.getPageSpeedDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "recent" })).rejects.toThrow(
+				"Unable to load pagespeed stats for this monitor"
 			);
 		});
 

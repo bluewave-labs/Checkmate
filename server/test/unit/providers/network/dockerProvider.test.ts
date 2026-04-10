@@ -186,6 +186,21 @@ describe("DockerProvider", () => {
 			expect(result.status).toBe(false);
 		});
 
+		it("returns NETWORK_ERROR when inspect response is null", async () => {
+			const logger = createMockLogger();
+			const inspect = jest.fn().mockResolvedValue(null);
+			const getContainer = jest.fn().mockReturnValue({ inspect });
+			const instance = { listContainers: jest.fn().mockResolvedValue([makeContainer()]), getContainer };
+			const DockerLib = jest.fn().mockReturnValue(instance) as any;
+			const provider = new DockerProvider(logger as any, DockerLib);
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.status).toBe(false);
+			expect(result.code).toBe(NETWORK_ERROR);
+			expect(result.message).toBe("No response from Docker container inspect");
+		});
+
 		it("returns false status when inspect response has no State", async () => {
 			const { provider } = createProvider({ inspectResult: {} });
 

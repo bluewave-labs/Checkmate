@@ -263,6 +263,10 @@ export class MonitorService implements IMonitorService {
 			type: monitor.type,
 		});
 
+		if (checksData.monitorType !== "hardware") {
+			throw new AppError({ message: "Unable to load hardware stats for this monitor", status: 500 });
+		}
+
 		const stats = {
 			aggregateData: checksData.aggregateData,
 			upChecks: checksData.upChecks,
@@ -300,6 +304,10 @@ export class MonitorService implements IMonitorService {
 		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, start, end, this.getDateFormat(rangeKey), {
 			type: monitor.type,
 		});
+
+		if (checksData.monitorType !== "pagespeed") {
+			throw new AppError({ message: "Unable to load pagespeed stats for this monitor", status: 500 });
+		}
 
 		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
 

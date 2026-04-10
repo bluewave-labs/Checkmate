@@ -138,6 +138,19 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 				};
 			}
 
+			if (!response) {
+				return {
+					monitorId: monitor.id,
+					teamId: monitor.teamId,
+					type: monitor.type,
+					status: false,
+					code: NETWORK_ERROR,
+					message: "No response from Docker container inspect",
+					responseTime,
+					payload: null,
+				};
+			}
+
 			return {
 				monitorId: monitor.id,
 				teamId: monitor.teamId,
