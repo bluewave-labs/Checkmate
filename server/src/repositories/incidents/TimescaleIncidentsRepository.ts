@@ -16,20 +16,21 @@ interface IncidentRow {
 	resolved_by: string | null;
 	resolved_by_email: string | null;
 	comment: string | null;
+	severity: "none" | "high" | "critical";
 	created_at: Date;
 	updated_at: Date;
 }
 
 const COLUMNS = `id, monitor_id, team_id, start_time, end_time, status, message, status_code,
-	resolution_type, resolved_by, resolved_by_email, comment, created_at, updated_at`;
+	resolution_type, resolved_by, resolved_by_email, comment, severity, created_at, updated_at`;
 
 export class TimescaleIncidentsRepository implements IIncidentsRepository {
 	constructor(private pool: Pool) {}
 
 	create = async (incident: Partial<Incident>): Promise<Incident> => {
 		const result = await this.pool.query<IncidentRow>(
-			`INSERT INTO incidents (monitor_id, team_id, start_time, end_time, status, message, status_code, resolution_type, resolved_by, resolved_by_email, comment)
-			 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+			`INSERT INTO incidents (monitor_id, team_id, start_time, end_time, status, message, status_code, resolution_type, resolved_by, resolved_by_email, comment, severity)
+			 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 			 RETURNING ${COLUMNS}`,
 			[
 				incident.monitorId,
@@ -43,6 +44,7 @@ export class TimescaleIncidentsRepository implements IIncidentsRepository {
 				incident.resolvedBy ?? null,
 				incident.resolvedByEmail ?? null,
 				incident.comment ?? null,
+				incident.severity ?? "none",
 			]
 		);
 		const row = result.rows[0];
@@ -207,6 +209,7 @@ export class TimescaleIncidentsRepository implements IIncidentsRepository {
 			["resolvedBy", "resolved_by"],
 			["resolvedByEmail", "resolved_by_email"],
 			["comment", "comment"],
+			["severity", "severity"],
 		];
 
 		for (const [key, column] of fieldMap) {
@@ -288,6 +291,7 @@ export class TimescaleIncidentsRepository implements IIncidentsRepository {
 		resolvedBy: row.resolved_by ?? null,
 		resolvedByEmail: row.resolved_by_email ?? null,
 		comment: row.comment ?? null,
+		severity: row.severity ?? "none",
 		createdAt: row.created_at.toISOString(),
 		updatedAt: row.updated_at.toISOString(),
 	});
