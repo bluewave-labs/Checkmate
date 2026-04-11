@@ -1,5 +1,5 @@
 import type { HardwareStatusPayload, Monitor, MonitorStatusResponse } from "@/types/index.js";
-import type { MonitorActionDecision, GroupCorrelation } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+import type { MonitorActionDecision, GroupCorrelation, IncidentContext } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import type {
 	NotificationMessage,
 	NotificationType,
@@ -13,7 +13,8 @@ export interface INotificationMessageBuilder {
 		monitor: Monitor,
 		monitorStatusResponse: MonitorStatusResponse,
 		decision: MonitorActionDecision,
-		clientHost: string
+		clientHost: string,
+		context?: IncidentContext
 	): NotificationMessage;
 	extractThresholdBreaches(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): ThresholdBreach[];
 }
@@ -27,16 +28,17 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		monitor: Monitor,
 		monitorStatusResponse: MonitorStatusResponse,
 		decision: MonitorActionDecision,
-		clientHost: string
+		clientHost: string,
+		context?: IncidentContext
 	): NotificationMessage {
 		const type = this.determineNotificationType(decision, monitor);
 		let severity = this.determineSeverity(type);
 
-		if (decision.groupCorrelation && monitor.status === "down") {
-			severity = decision.groupCorrelation.severity === "critical" ? "critical" : "warning";
+		if (context?.groupCorrelation && monitor.status === "down") {
+			severity = context.groupCorrelation.severity === "critical" ? "critical" : "warning";
 		}
 
-		const content = this.buildContent(type, monitor, monitorStatusResponse, decision.groupCorrelation);
+		const content = this.buildContent(type, monitor, monitorStatusResponse, context?.groupCorrelation);
 
 		return {
 			type,
@@ -53,12 +55,12 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 			metadata: {
 				teamId: monitor.teamId,
 				notificationReason: decision.notificationReason || "status_change",
-				groupCorrelation: decision.groupCorrelation
+				groupCorrelation: context?.groupCorrelation
 					? {
-							groupName: decision.groupCorrelation.groupName,
-							downCount: decision.groupCorrelation.downCount,
-							totalCount: decision.groupCorrelation.totalCount,
-							severity: decision.groupCorrelation.severity,
+							groupName: context.groupCorrelation.groupName,
+							downCount: context.groupCorrelation.downCount,
+							totalCount: context.groupCorrelation.totalCount,
+							severity: context.groupCorrelation.severity,
 						}
 					: undefined,
 			},
