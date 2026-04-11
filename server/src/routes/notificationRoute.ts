@@ -1,4 +1,5 @@
 import { INotificationController } from "@/controllers/notificationController.js";
+import { verifyJWT } from "@/middleware/verifyJWT.js";
 import { Router } from "express";
 class NotificationRoutes {
 	private router: Router;
@@ -11,6 +12,8 @@ class NotificationRoutes {
 	}
 
 	initializeRoutes() {
+		this.router.use(verifyJWT);
+
 		this.router.post("/", this.notificationController.createNotification);
 
 		this.router.post("/test/all", this.notificationController.testAllNotifications);
