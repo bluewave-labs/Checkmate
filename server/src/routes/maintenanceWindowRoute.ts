@@ -1,4 +1,5 @@
 import { IMaintenanceWindowController } from "@/controllers/maintenanceWindowController.js";
+import verifyJWT from "@/middleware/verifyJWT.js";
 import { Router } from "express";
 
 class MaintenanceWindowRoutes {
@@ -11,6 +12,7 @@ class MaintenanceWindowRoutes {
 		this.initRoutes();
 	}
 	initRoutes() {
+		this.router.use(verifyJWT);
 		this.router.post("/", this.mwController.createMaintenanceWindows);
 		this.router.get("/team/", this.mwController.getMaintenanceWindowsByTeamId);
 
