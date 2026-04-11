@@ -40,6 +40,7 @@ export interface IMonitorsRepository {
 	// other
 	findMonitorsSummaryByTeamId(teamId: string, config?: SummaryConfig): Promise<MonitorsSummary>;
 	findGroupsByTeamId(teamId: string): Promise<string[]>;
+	findByGroupAndTeamId(group: string, teamId: string): Promise<Monitor[]>;
 	removeNotificationFromMonitors(notificationId: string): Promise<void>;
 	updateNotifications(teamId: string, monitorIds: string[], notificationIds: string[], action: "add" | "remove" | "set"): Promise<number>;
 	deleteByTeamIdsNotIn(teamIds: string[]): Promise<number>;

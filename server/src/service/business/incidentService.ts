@@ -90,6 +90,7 @@ export class IncidentService implements IIncidentService {
 					status: true,
 					statusCode,
 					message,
+					severity: decision.groupCorrelation?.severity ?? "none",
 				};
 				return await this.incidentsRepository.create(incident);
 			}

@@ -33,6 +33,13 @@ export interface ISuperSimpleQueueHelper {
 	isInMaintenanceWindow(monitorId: string, teamId: string): Promise<boolean>;
 }
 
+export interface GroupCorrelation {
+	groupName: string;
+	downCount: number;
+	totalCount: number;
+	severity: "high" | "critical";
+}
+
 export interface MonitorActionDecision {
 	shouldCreateIncident: boolean;
 	shouldResolveIncident: boolean;
@@ -45,6 +52,7 @@ export interface MonitorActionDecision {
 		disk?: boolean;
 		temp?: boolean;
 	};
+	groupCorrelation?: GroupCorrelation;
 }
 
 export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
@@ -155,6 +163,29 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 
 				// Step 5.  Get decisions
 				const decision = this.evaluateMonitorAction(statusChangeResult);
+
+				// Step 5b. Evaluate group correlation if monitor belongs to a group
+				if (monitor.group && (decision.shouldCreateIncident || decision.shouldResolveIncident)) {
+					try {
+						const groupMonitors = await this.monitorsRepository.findByGroupAndTeamId(monitor.group, teamId);
+						const totalCount = groupMonitors.length;
+						const downCount = groupMonitors.filter((m) => m.status === "down").length;
+						if (downCount > 0 && totalCount > 1) {
+							decision.groupCorrelation = {
+								groupName: monitor.group,
+								downCount,
+								totalCount,
+								severity: downCount === totalCount ? "critical" : "high",
+							};
+						}
+					} catch (error: unknown) {
+						this.logger.warn({
+							message: `Could not evaluate group correlation for monitor ${monitorId}: ${error instanceof Error ? error.message : "Unknown error"}`,
+							service: SERVICE_NAME,
+							method: "getMonitorJob",
+						});
+					}
+				}
 
 				// Step 6. Handle notifications (best effort, continue even in event of failure, don't wait)
 				if (decision.shouldSendNotification) {

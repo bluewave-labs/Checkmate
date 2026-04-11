@@ -292,6 +292,15 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return groups.sort();
 	};
 
+	findByGroupAndTeamId = async (group: string, teamId: string): Promise<Monitor[]> => {
+		const docs = await MonitorModel.find({
+			teamId: new mongoose.Types.ObjectId(teamId),
+			group: group,
+			isActive: true,
+		});
+		return this.mapDocuments(docs);
+	};
+
 	removeNotificationFromMonitors = async (notificationId: string): Promise<void> => {
 		await MonitorModel.updateMany({ notifications: notificationId }, { $pull: { notifications: notificationId } });
 	};

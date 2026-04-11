@@ -503,6 +503,11 @@
 						"wsUrl": {
 							"label": "WebSocket URL",
 							"placeholder": "wss://example.com/socket"
+						},
+						"group": {
+							"label": "Link Group",
+							"placeholder": "e.g. branch-sp-01",
+							"helper": "Assign to a group to enable multi-link correlation alerts"
 						}
 					},
 					"title": "General settings",
