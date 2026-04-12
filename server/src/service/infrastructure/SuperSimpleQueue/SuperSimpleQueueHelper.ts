@@ -109,6 +109,7 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 
 	getHeartbeatJob = () => {
 		return async (monitor: Monitor) => {
+
 			try {
 				const monitorId = monitor.id;
 				const teamId = monitor.teamId;

@@ -217,6 +217,35 @@ const CreateMonitorPage = () => {
 		clearErrors();
 	}, [watchedType, clearErrors]);
 
+	useEffect(() => {
+		if (!existingMonitor) return;
+
+		useEffect(() => {
+			if (!existingMonitor) return;
+
+			const steps = (existingMonitor as any).escalations;
+
+			if (Array.isArray(steps) && steps.length > 0) {
+				setEscalationSteps(
+				steps.map((s: any, i: number) => ({
+					id: `init_${i}`,
+					delayMinutes: s.delay ?? 0,
+					email: s.email ?? "",
+				}))
+				);
+			} else {
+				setEscalationSteps([
+				{ id: `step_${Date.now()}`, delayMinutes: 5, email: "" }
+				]);
+			}
+		}, [existingMonitor]);
+
+		if (escalation) {
+			setEscalationDelay(escalation.delay ?? 0);
+			setEscalationNotifications(escalation.notificationIds ?? []);
+		}
+	}, [existingMonitor]);
+
 	const generalSettingsConfig = useMemo(
 		() => getGeneralSettingsConfig(watchedType, t),
 		[watchedType, t]
@@ -228,6 +257,10 @@ const CreateMonitorPage = () => {
 	// Delete functionality
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const { deleteFn, loading: isDeleting } = useDelete();
+
+	const [escalationDelay, setEscalationDelay] = useState<number>(0);
+
+	const [escalationNotifications, setEscalationNotifications] = useState<string[]>([]);
 
 	const handleDeleteClick = () => {
 		setIsDeleteDialogOpen(true);
@@ -252,11 +285,19 @@ const CreateMonitorPage = () => {
 	};
 
 	const onSubmit = async (data: MonitorFormData) => {
+		const payload = {
+			...data,
+			escalation: {
+				delay: escalationDelay,
+				notificationIds: escalationNotifications
+			}
+		};
+
 		let result;
 		if (isEditMode && monitorId) {
-			result = await patch(`/monitors/${monitorId}`, data);
+		result = await patch(`/monitors/${monitorId}`, payload);
 		} else {
-			result = await post("/monitors", data);
+		result = await post("/monitors", payload);
 		}
 
 		if (result?.success) {
@@ -731,6 +772,7 @@ const CreateMonitorPage = () => {
 											width="100%"
 										>
 											{selectedNotifications.map((notification, index) => (
+												
 												<Stack
 													direction="row"
 													alignItems="center"
@@ -764,6 +806,58 @@ const CreateMonitorPage = () => {
 					/>
 				}
 			/>
+			{/* Escalation Settings */}
+			<ConfigBox
+				title={"Escalation Rules"}
+				subtitle={"If the monitor stays down for the specified time, notify additional channels."}
+				rightContent={
+					<Stack spacing={theme.spacing(LAYOUT.MD)}>
+
+						<Stack direction={{ xs: "column", md: "row" }} spacing={theme.spacing(LAYOUT.MD)}>
+							
+							<TextField
+							type="number"
+							fieldLabel={"Escalate after (minutes)"}
+							value={escalationDelay}
+							onChange={(e) => {
+								const val = Number(e.target.value);
+								setEscalationDelay(isNaN(val) ? 0 : val);
+							}}
+							sx={{ flex: 1 }}
+							/>
+
+							<Autocomplete
+							multiple
+							options={(notifications ?? []).map((n) => ({
+								...n,
+								name: n.notificationName,
+							}))}
+							value={(notifications ?? [])
+								.filter((n) => escalationNotifications.includes(n.id))
+								.map((n) => ({
+								...n,
+								name: n.notificationName,
+								}))}
+							getOptionLabel={(option) => option.name}
+							onChange={(_, newValue) => {
+								setEscalationNotifications(newValue.map((n) => n.id));
+							}}
+							isOptionEqualToValue={(option, value) => option.id === value.id}
+							sx={{ flex: 2 }}
+							renderInput={(params) => (
+								<TextField
+								{...params}
+								fieldLabel={"Escalation notification channels"}
+								placeholder="Type to search"
+								/>
+							)}
+							/>
+
+						</Stack>
+
+						</Stack>
+				}
+				/>
 
 			{(watchedType === "http" ||
 				watchedType === "grpc" ||
@@ -776,6 +870,7 @@ const CreateMonitorPage = () => {
 							name="ignoreTlsErrors"
 							control={control}
 							render={({ field }) => (
+								
 								<Stack
 									direction="row"
 									alignItems="center"
@@ -1043,7 +1138,7 @@ const CreateMonitorPage = () => {
 					}
 				/>
 			)}
-
+			
 			<Stack
 				direction="row"
 				justifyContent="flex-end"

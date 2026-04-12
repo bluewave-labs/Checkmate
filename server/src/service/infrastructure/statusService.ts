@@ -20,7 +20,10 @@ import type {
 import { AppError } from "@/utils/AppError.js";
 import { ILogger } from "@/utils/logger.js";
 import { IBufferService } from "./bufferService.js";
+import { scheduleEscalationNotifications } from "@/utils/escalationScheduler";
+import { IEmailService } from "@/service/emailService";
 const SERVICE_NAME = "StatusService";
+const activeEscalations = new Map<string, ReturnType<typeof scheduleEscalationNotifications>>();
 
 export interface IStatusService {
 	updateRunningStats(monitor: Monitor, networkResponse: MonitorStatusResponse): Promise<boolean>;
@@ -47,19 +50,22 @@ export class StatusService implements IStatusService {
 	private monitorsRepository: IMonitorsRepository;
 	private monitorStatsRepository: IMonitorStatsRepository;
 	private checksRepository: IChecksRepository;
+	private emailService: IEmailService;
 
 	constructor(
 		logger: ILogger,
 		buffer: IBufferService,
 		monitorsRepository: IMonitorsRepository,
 		monitorStatsRepository: IMonitorStatsRepository,
-		checksRepository: IChecksRepository
+		checksRepository: IChecksRepository,
+		emailService: IEmailService
 	) {
 		this.logger = logger;
 		this.buffer = buffer;
 		this.monitorsRepository = monitorsRepository;
 		this.monitorStatsRepository = monitorStatsRepository;
 		this.checksRepository = checksRepository;
+		this.emailService = emailService;
 	}
 
 	get serviceName() {
@@ -236,13 +242,14 @@ export class StatusService implements IStatusService {
 			let newStatus: MonitorStatus = status === true ? "up" : "down";
 			let statusChanged = false;
 
-			// Return early if not enough data points
 			if (monitor.statusWindow.length < monitor.statusWindowSize) {
 				monitor.status = newStatus;
+
 				const updated = await this.monitorsRepository.updateById(monitor.id, monitor.teamId, monitor);
+
 				return {
 					monitor: updated,
-					statusChanged: false,
+					statusChanged: prevStatus !== newStatus,
 					prevStatus,
 					code,
 					timestamp: Date.now(),
@@ -345,8 +352,38 @@ export class StatusService implements IStatusService {
 				}
 			}
 
-			// Apply the final status
-			monitor.status = newStatus;
+			if (prevStatus !== "down" && newStatus === "down") {
+				activeEscalations.get(monitor.id)?.cancel();
+
+				const handle = scheduleEscalationNotifications(
+					monitor.id,
+					monitor.escalations || [],
+					async (id) => {
+					const latest = await this.monitorsRepository.findById(id, monitor.teamId);
+					return latest?.status === "down";
+					},
+					async (email, message) => {
+						await this.emailService.sendEmail(
+							email,
+							`${monitor.name} still down`,
+							`
+							<h2>${monitor.name} is STILL DOWN</h2>
+							<p>The issue has not been resolved.</p>
+							<p>This is an escalation notification.</p>
+							<hr/>
+							${message}
+							`
+						);
+					}
+				);
+
+				activeEscalations.set(monitor.id, handle);
+			}
+			if(prevStatus === "down" && newStatus !== "down") {
+				activeEscalations.get(monitor.id)?.cancel();
+				activeEscalations.delete(monitor.id);
+			}
+
 
 			const updated = await this.monitorsRepository.updateById(monitor.id, monitor.teamId, monitor);
 

@@ -24,5 +24,8 @@
   "homepage": "https://github.com/bluewave-labs/Checkmate#readme",
   "devDependencies": {
     "husky": "^9.1.7"
+  },
+  "dependencies": {
+    "nodemailer": "^8.0.5"
   }
 }

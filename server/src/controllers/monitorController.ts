@@ -201,6 +201,12 @@ class MonitorController implements IMonitorController {
 
 	createMonitor = async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			if (req.body.escalations) {
+				req.body.escalations = req.body.escalations.map((e: any) => ({
+					delay: Number(e.delay),
+					email: String(e.email),
+				}));
+			}
 			const validatedBody = createMonitorBodyValidation.parse(req.body);
 
 			const userId = requireUserId(req.user?.id);
