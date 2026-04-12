@@ -4,7 +4,7 @@ import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
 import cookieParser from "cookie-parser";
-import swaggerUi from "swagger-ui-express";
+import swaggerUi, { type JsonObject } from "swagger-ui-express";
 import { handleErrors } from "@/middleware/handleErrors.js";
 import { generalApiLimiter } from "@/middleware/rateLimiter.js";
 import { sanitizeBody, sanitizeQuery } from "@/middleware/sanitization.js";
@@ -24,7 +24,7 @@ export const createApp = ({
 	controllers: InitializedControllers;
 	envSettings: EnvConfig;
 	frontendPath: string;
-	openApiSpec: any;
+	openApiSpec: JsonObject;
 }) => {
 	const allowedOrigin = envSettings.clientHost;
 	const app = express();
@@ -74,8 +74,22 @@ export const createApp = ({
 			},
 		})
 	);
-	// Swagger UI
-	app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiSpec));
+	// Swagger UI — dynamically set server URL from request
+	app.use("/api-docs", swaggerUi.serve, (req: express.Request, res: express.Response, next: express.NextFunction) => {
+		const protocol = req.protocol;
+		const host = req.get("host");
+		const dynamicSpec = {
+			...openApiSpec,
+			servers: [
+				{
+					url: `${protocol}://${host}/api/v1`,
+					description: "Current Server",
+				},
+				...openApiSpec.servers,
+			],
+		};
+		swaggerUi.setup(dynamicSpec)(req, res, next);
+	});
 
 	app.use("/api/v1/health", (req, res) => {
 		res.json({

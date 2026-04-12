@@ -1,8 +1,8 @@
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { Table, type Header, ValueLabel } from "@/Components/v2/design-elements";
-import { ActionsMenu, type ActionMenuItem } from "@/Components/v2/actions-menu";
+import { Table, type Header, ValueLabel } from "@/Components/design-elements";
+import { ActionsMenu, type ActionMenuItem } from "@/Components/actions-menu";
 import { ExternalLink } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
@@ -97,7 +97,7 @@ export const StatusPagesTable = ({
 			{
 				id: "type",
 				content: t("common.table.headers.type"),
-				render: (row) => row.type,
+				render: (row) => row.type.join(", "),
 			},
 			{
 				id: "status",

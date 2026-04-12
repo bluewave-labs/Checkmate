@@ -2,7 +2,8 @@ import Stack from "@mui/material/Stack";
 import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
-import { BaseBox, ValueLabel } from "@/Components/v2/design-elements";
+import { BaseBox, ValueLabel } from "@/Components/design-elements";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 import { useTranslation } from "react-i18next";
 import type { Incident } from "@/Types/Incident";
@@ -29,14 +30,14 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 	}
 	return (
 		<Stack
-			gap={theme.spacing(4)}
+			gap={theme.spacing(LAYOUT.MD)}
 			sx={sx}
 		>
 			<Typography textTransform={"uppercase"}>
 				{t("pages.incidents.dialog.details.title")}
 			</Typography>
-			<BaseBox padding={8}>
-				<Stack gap={theme.spacing(4)}>
+			<BaseBox padding={LAYOUT.MD}>
+				<Stack gap={theme.spacing(LAYOUT.MD)}>
 					<Typography textTransform={"uppercase"}>
 						{t("pages.incidents.dialog.details.overview")}
 					</Typography>
@@ -44,7 +45,7 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 
 					<Grid
 						container
-						spacing={theme.spacing(4)}
+						spacing={theme.spacing(LAYOUT.MD)}
 						alignItems="center"
 					>
 						<Grid size={2}>{t("pages.incidents.dialog.details.status")}</Grid>
@@ -75,15 +76,15 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 					</Grid>
 				</Stack>
 			</BaseBox>
-			<BaseBox padding={8}>
-				<Stack gap={theme.spacing(4)}>
+			<BaseBox padding={LAYOUT.MD}>
+				<Stack gap={theme.spacing(LAYOUT.MD)}>
 					<Typography textTransform={"uppercase"}>
 						{t("pages.incidents.dialog.details.analysis")}
 					</Typography>
 					<Divider />
 					<Grid
 						container
-						spacing={theme.spacing(2)}
+						spacing={theme.spacing(LAYOUT.MD)}
 					>
 						<Grid size={6}>
 							<Typography>{t("pages.incidents.dialog.details.timeline")}</Typography>
@@ -127,15 +128,15 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 				</Stack>
 			</BaseBox>
 			{!incident.status && (
-				<BaseBox padding={8}>
-					<Stack gap={theme.spacing(4)}>
+				<BaseBox padding={LAYOUT.MD}>
+					<Stack gap={theme.spacing(LAYOUT.XS)}>
 						<Typography textTransform={"uppercase"}>
 							{t("pages.incidents.dialog.details.resolutionDetails")}
 						</Typography>
 						<Divider />
 						<Grid
 							container
-							spacing={theme.spacing(2)}
+							spacing={theme.spacing(LAYOUT.MD)}
 							alignItems="center"
 						>
 							<Grid size={2}>

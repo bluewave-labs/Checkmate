@@ -29,7 +29,6 @@ Checkmate has been stress-tested with 1000+ active monitors without any particul
 - [📦 Demo](#demo)  
 - [🔗 User's guide](#users-guide)  
 - [🛠️ Installation](#installation)
-- [🏁 Translations](#translations)  
 - [🚀 Performance](#performance)  
 - [💚 Questions & Ideas](#questions--ideas)  
 - [🧩 Features](#features)  
@@ -42,28 +41,27 @@ Checkmate has been stress-tested with 1000+ active monitors without any particul
 
 ## Demo
 
-You can see the latest build of [Checkmate](https://checkmate-demo.bluewavelabs.ca/) in action. The username is uptimedemo@demo.com and the password is Demouser1! (just a note that we update the demo server from time to time, so if it doesn't work for you, please ping us on the Discussions channel).
+You can see the latest build of [Checkmate](https://checkmate-demo.bluewavelabs.ca/) in action. The username is demouser@demo.com and the password is Demouser1! (just a note that we update the demo server from time to time, so if it doesn't work for you, please ping us on the Discussions channel).
 
 ## User's guide
 
-Usage instructions can be found [here](https://docs.checkmate.so/checkmate-2.1). It's still WIP and some of the information there might be outdated as we continuously add features weekly. Rest assured, we are doing our best! :)
+Usage instructions can be found [here](https://checkmate.so/docs). 
+
+## Prerequisites
+- [Docker](https://www.docker.com/) installed
+- [Git](https://git-scm.com/) installed
 
 ## Installation
 
-See installation instructions in [Checkmate documentation portal](https://docs.checkmate.so/checkmate-2.1/users-guide/quickstart). 
+See installation instructions in [Checkmate documentation portal](https://checkmate.so/docs). 
 
-Alternatively, you can also use [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (South Africa) or [Pikapods](https://www.pikapods.com/) to quickly spin off a Checkmate instance. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
+Alternatively, you can also use [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (South Africa), [Cloudzy](https://cloudzy.com/marketplace/checkmate) or [Pikapods](https://www.pikapods.com/) to quickly spin off a Checkmate instance. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
 
 ### Using a Custom CA
 
 If you need to monitor internal HTTPS endpoints with certificates from private Certificate Authorities (like Smallstep), see our [Custom CA Trust Guide](./docs/custom-ca-trust.md) for Docker configuration options.
 
 For more documentation, see the [docs directory](./docs/).
-
-
-## Translations
-
-If you would like to use Checkmate in your language, please [go to this page](https://poeditor.com/join/project/lRUoGZFCsJ) and register for the language you would like to translate Checkmate to. 
 
 ## Performance
 
@@ -80,7 +78,7 @@ You can see the memory footprint of MongoDB and Redis on the same server (398Mb 
 If you have any questions, suggestions or comments, you have several options: 
 
 - [Discord channel](https://discord.gg/NAb6H3UTjK) (preferred)
-- [GitHub Discussions](https://github.com/bluewave-labs/bluewave-uptime/discussions) (we check here from time to time)
+- [GitHub Discussions](https://github.com/bluewave-labs/Checkmate/discussions) (we check here from time to time)
 
 Feel free to ask questions or share your ideas - we'd love to hear from you!
 
@@ -147,7 +145,7 @@ If you would like to sponsor an additional feature, [see this page](https://chec
 
 ## Contributing
 
-We are [Alex](http://github.com/ajhollid) (team lead), [Gorkem](http://github.com/gorkem-bwl/), [Owaise](http://github.com/Owaiseimdad), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) and [Karen](https://github.com/karenvicent) helping individuals and businesses monitor their infra and servers.
+We are [Alex](http://github.com/ajhollid) (team lead), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) and [Karen](https://github.com/karenvicent) helping individuals and businesses monitor their infra and servers.
 
 We pride ourselves on building strong connections with contributors at every level. Despite being a young project, Checkmate has already earned 7000+ stars and attracted 90+ contributors from around the globe.
 
@@ -157,27 +155,20 @@ Here's how you can contribute:
 
 0. Star this repo :)
 1. Check [Contributor's guideline](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). First timers are encouraged to check `good-first-issue` tag.
-2. Check [project structure](https://docs.checkmate.so/checkmate-2.1/developers-guide/general-project-structure) and [high level overview](https://bluewavelabs.gitbook.io/checkmate/developers-guide/high-level-overview).
-3. Read a detailed structure of [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate) if you would like to deep dive into the architecture.
-4. Open an issue if you believe you've encountered a bug.
-5. Check for good-first-issue's if you are a newcomer.
-6. Make a pull request to add new features/make quality-of-life improvements/fix bugs.
-7. Check out this interactive walkthrough of the `Checkmate` codebase on CodeCanvas [here](https://www.code-canvas.com/?session=unauthenticatedGithub&repo=Checkmate&owner=bluewave-labs&branch=develop&OnboardingTutorial=true). To refine existing dataflow simulation or create new ones, follow the quick tutorial [here](https://docs.code-canvas.com/updating-diagram).
+2. Read a detailed structure of [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate) if you would like to deep dive into the architecture.
+3. Open an issue if you believe you've encountered a bug.
+4. Check for good-first-issue's if you are a newcomer.
+5. Make a pull request to add new features/make quality-of-life improvements/fix bugs.
+6. Check out this interactive walkthrough of the `Checkmate` codebase on CodeCanvas [here](https://www.code-canvas.com/?session=unauthenticatedGithub&repo=Checkmate&owner=bluewave-labs&branch=develop&OnboardingTutorial=true). To refine existing dataflow simulation or create new ones, follow the quick tutorial [here](https://docs.code-canvas.com/updating-diagram).
 
 <a href="https://github.com/bluewave-labs/checkmate/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=bluewave-labs/checkmate" />
 </a>
 
-[![Star History Chart](https://api.star-history.com/svg?repos=bluewave-labs/checkmate&type=Date)](https://star-history.com/#bluewave-labs/bluewave-uptime&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=bluewave-labs/checkmate&type=Date)](https://star-history.com/#bluewave-labs/Checkmate&Date)
 
 ## Our sponsors
 
 Thanks to [Gitbook](https://gitbook.io/) for giving us a free tier for their documentation platform, and [Poeditor](https://poeditor.com/) providing us a free account to use their i18n services. If you would like to sponsor Checkmate, please send an email to hello@bluewavelabs.ca
 
 If you would like to sponsor a feature, [see this page](https://checkmate.so/sponsored-features).
-
-Also check other developer and contributor-friendly projects of BlueWave:
-
-- [VerifyWise](https://github.com/bluewave-labs/verifywise), the first open source AI governance platform.
-- [DataRoom](https://github.com/bluewave-labs/bluewave-dataroom), an secure file sharing application, aka dataroom.
-- [Guidefox](https://github.com/bluewave-labs/guidefox), an application that helps new users learn how to use your product via hints, tours, popups and banners.

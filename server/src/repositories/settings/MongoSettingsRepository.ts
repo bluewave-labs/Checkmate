@@ -1,8 +1,7 @@
-import mongoose from "mongoose";
+import mongoose, { type UpdateQuery } from "mongoose";
 import { ISettingsRepository } from "@/repositories/settings/ISettingsRepository.js";
-import type { Settings } from "@/types/index.js";
+import type { Settings, SettingsUpdate } from "@/types/index.js";
 import { AppSettingsModel, type AppSettingsDocument } from "@/db/models/index.js";
-import { SERVFAIL } from "dns";
 
 class MongoSettingsRepository implements ISettingsRepository {
 	private toStringId = (value?: mongoose.Types.ObjectId | string | null): string => {
@@ -53,25 +52,30 @@ class MongoSettingsRepository implements ISettingsRepository {
 	};
 
 	findSingleton = async () => {
-		let settings = await AppSettingsModel.findOne({ singleton: true }).select("-__v -_id -createdAt -updatedAt -singleton").lean();
+		const settings = await AppSettingsModel.findOne({ singleton: true }).select("-__v -_id -createdAt -updatedAt -singleton").lean();
 		if (!settings) {
 			return null;
 		}
 		return this.toEntity(settings);
 	};
 
-	update = async (settings: Partial<Settings>) => {
-		const update: Record<string, any> = { $set: { ...settings } };
+	update = async (settings: SettingsUpdate) => {
+		const $set: Record<string, unknown> = {};
+		const $unset: Record<string, string> = {};
 
-		if (settings.pagespeedApiKey === "") {
-			update.$unset = { pagespeedApiKey: "" };
-			delete update.$set.pagespeedApiKey;
-		}
+		// Iterate through settings and separate into $set and $unset
+		Object.entries(settings).forEach(([key, value]) => {
+			if (value === undefined || value === null) {
+				$unset[key] = "";
+			} else {
+				$set[key] = value;
+			}
+		});
 
-		if (settings.systemEmailPassword === "") {
-			update.$unset = { systemEmailPassword: "" };
-			delete update.$set.systemEmailPassword;
-		}
+		const update: UpdateQuery<AppSettingsDocument> = {
+			...(Object.keys($set).length > 0 && { $set }),
+			...(Object.keys($unset).length > 0 && { $unset }),
+		};
 
 		await AppSettingsModel.findOneAndUpdate({}, update, {
 			upsert: true,

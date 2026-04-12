@@ -2,17 +2,19 @@ import Stack from "@mui/material/Stack";
 import { useTranslation } from "react-i18next";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { HistogramResponseTime, HeatmapResponseTime } from "@/Components/v2/common";
-import { StatusLabel, BaseBox } from "@/Components/v2/design-elements";
-import { SwitchComponent } from "@/Components/v2/inputs";
+import { HistogramResponseTime, HeatmapResponseTime } from "@/Components/common";
+import { StatusLabel, BaseBox } from "@/Components/design-elements";
+import { SwitchComponent } from "@/Components/inputs";
+import { InfrastructureMetrics } from "@/Pages/StatusPage/Status/Components/InfrastructureMetrics";
 
-import { useTheme } from "@mui/material/styles";
-import { determineState } from "@/Utils/MonitorUtils";
+import { useTheme, type Theme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import type { Monitor } from "@/Types/Monitor";
 import type { StatusPage } from "@/Types/StatusPage";
+import { getMonitorTypeLabel } from "@/Types/StatusPage";
 import type { RootState } from "@/Types/state";
+import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 
 interface StatusPageMonitor extends Monitor {
 	checks?: Monitor["recentChecks"];
@@ -23,29 +25,124 @@ interface MonitorsListProps {
 	monitors: StatusPageMonitor[];
 }
 
-export const MonitorsList = ({ statusPage, monitors }: MonitorsListProps) => {
+const getMonitorBadgeStyles = (monitorType: string, theme: Theme) => {
+	const bg =
+		monitorType === "hardware" ? theme.palette.info.light : theme.palette.success.light;
+	return {
+		backgroundColor: bg,
+		color: theme.palette.background.paper,
+		padding: `${theme.spacing(SPACING.SM)} ${theme.spacing(SPACING.LG)}`,
+		borderRadius: theme.shape.borderRadius,
+	};
+};
+
+const MonitorHeader = ({
+	monitor,
+	showURL,
+}: {
+	monitor: StatusPageMonitor;
+	showURL: boolean;
+}) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 
-	const showURL = useSelector((state: RootState) => state.ui?.showURL);
+	return (
+		<Stack
+			direction="row"
+			alignItems="center"
+			justifyContent="space-between"
+			gap={theme.spacing(LAYOUT.XS)}
+			mb={theme.spacing(LAYOUT.XS)}
+		>
+			<Box sx={{ overflow: "hidden", minWidth: 0, flex: 1 }}>
+				<Stack
+					direction="row"
+					alignItems="center"
+					gap={theme.spacing(SPACING.LG)}
+					mb={theme.spacing(SPACING.SM)}
+				>
+					<Typography
+						variant="h6"
+						sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+					>
+						{monitor.name}
+					</Typography>
+					<Typography
+						variant="caption"
+						sx={getMonitorBadgeStyles(monitor.type ?? "", theme)}
+					>
+						{getMonitorTypeLabel(monitor.type, t)}
+					</Typography>
+				</Stack>
+				{showURL && monitor.url && (
+					<Typography
+						variant="body2"
+						color={theme.palette.text.secondary}
+						sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+					>
+						{monitor.url}
+					</Typography>
+				)}
+			</Box>
+			<StatusLabel status={monitor.status} />
+		</Stack>
+	);
+};
 
+const MonitorContent = ({
+	monitor,
+	statusPage,
+	chartType,
+}: {
+	monitor: StatusPageMonitor;
+	statusPage: StatusPage;
+	chartType: string;
+}) => {
+	const theme = useTheme();
+
+	if (monitor.type === "hardware") {
+		if (statusPage.showInfrastructure === false) return null;
+		return <InfrastructureMetrics monitor={monitor} />;
+	}
+
+	if (statusPage.showCharts === false) return null;
+
+	const checks = monitor.checks?.slice().reverse() ?? [];
+	return (
+		<Box sx={{ overflow: "hidden", minWidth: 0, flex: 1, mb: theme.spacing(SPACING.LG) }}>
+			{chartType === "histogram" ? (
+				<HistogramResponseTime
+					height={{ xs: 50, md: 100 }}
+					gap={{ xs: theme.spacing(SPACING.SM), md: theme.spacing(LAYOUT.SM) }}
+					checks={checks}
+				/>
+			) : (
+				<HeatmapResponseTime checks={checks} />
+			)}
+		</Box>
+	);
+};
+
+export const MonitorsList = ({ statusPage, monitors }: MonitorsListProps) => {
+	const theme = useTheme();
+	const { t } = useTranslation();
+	const showURL = useSelector((state: RootState) => state.ui?.showURL);
 	const [chartType, setChartType] = useState<"histogram" | "heatmap">("histogram");
 
 	return (
-		<Stack gap={theme.spacing(8)}>
-			{statusPage.showCharts !== false && (
+		<Stack gap={theme.spacing(LAYOUT.MD)}>
+			{statusPage.showCharts && (
 				<Stack
-					direction={"row"}
-					alignItems={"center"}
+					direction="row"
+					alignItems="center"
+					gap={theme.spacing(LAYOUT.SM)}
 				>
 					<Typography>{t("pages.statusPages.monitorsList.chartTypeHeatmap")}</Typography>
 					<SwitchComponent
 						dualOption
 						value={chartType}
 						checked={chartType === "histogram"}
-						onChange={(e) => {
-							setChartType(e.target.checked ? "histogram" : "heatmap");
-						}}
+						onChange={(e) => setChartType(e.target.checked ? "histogram" : "heatmap")}
 					/>
 					<Typography>
 						{t("pages.statusPages.monitorsList.chartTypeHistogram")}
@@ -53,63 +150,22 @@ export const MonitorsList = ({ statusPage, monitors }: MonitorsListProps) => {
 				</Stack>
 			)}
 
-			{monitors?.map((monitor) => {
-				const status = determineState(monitor);
-				return (
-					<BaseBox
-						key={monitor.id}
-						padding={theme.spacing(4)}
-					>
-						<Stack
-							direction="row"
-							alignItems="center"
-							justifyContent="space-between"
-							gap={theme.spacing(4)}
-							mb={statusPage.showCharts !== false ? theme.spacing(4) : 0}
-						>
-							<Box sx={{ overflow: "hidden", minWidth: 0, flex: 1 }}>
-								<Typography
-									variant="h6"
-									sx={{
-										overflow: "hidden",
-										textOverflow: "ellipsis",
-										whiteSpace: "nowrap",
-									}}
-								>
-									{monitor.name}
-								</Typography>
-								{showURL && (
-									<Typography
-										variant="body2"
-										color="text.secondary"
-									>
-										{monitor.url}
-									</Typography>
-								)}
-							</Box>
-							<StatusLabel
-								status={status === "up"}
-								isActive={monitor.isActive}
-							/>
-						</Stack>
-						{statusPage.showCharts !== false && (
-							<Box sx={{ overflow: "hidden", minWidth: 0, flex: 1 }}>
-								{chartType === "histogram" ? (
-									<HistogramResponseTime
-										height={{ xs: 50, md: 100 }}
-										gap={{ xs: theme.spacing(0.5), md: theme.spacing(5) }}
-										checks={monitor?.checks?.slice().reverse() ?? []}
-									/>
-								) : (
-									<HeatmapResponseTime
-										checks={monitor?.checks?.slice().reverse() ?? []}
-									/>
-								)}
-							</Box>
-						)}
-					</BaseBox>
-				);
-			})}
+			{monitors.map((monitor) => (
+				<BaseBox
+					key={monitor.id}
+					padding={theme.spacing(LAYOUT.MD)}
+				>
+					<MonitorHeader
+						monitor={monitor}
+						showURL={showURL}
+					/>
+					<MonitorContent
+						monitor={monitor}
+						statusPage={statusPage}
+						chartType={chartType}
+					/>
+				</BaseBox>
+			))}
 		</Stack>
 	);
 };

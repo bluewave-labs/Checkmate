@@ -1,5 +1,5 @@
-import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
-import { TextField, Select, Button } from "@/Components/v2/inputs";
+import { BasePage, ConfigBox } from "@/Components/design-elements";
+import { TextField, Select, Button } from "@/Components/inputs";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
@@ -147,7 +147,7 @@ const NotificationsCreatePage = () => {
 					/>
 				}
 			/>
-			{watchedType !== "matrix" && (
+			{watchedType !== "matrix" && watchedType !== "telegram" && (
 				<ConfigBox
 					title={addressConfig.title}
 					subtitle={addressConfig.description}
@@ -155,7 +155,7 @@ const NotificationsCreatePage = () => {
 						<Controller
 							name="address"
 							control={control}
-							defaultValue={defaults.address}
+							defaultValue={"address" in defaults ? defaults.address : ""}
 							render={({ field, fieldState }) => (
 								<TextField
 									{...field}
@@ -171,6 +171,49 @@ const NotificationsCreatePage = () => {
 					}
 				/>
 			)}
+			{watchedType === "telegram" && (
+				<ConfigBox
+					title={t("pages.notifications.form.telegram.title")}
+					subtitle={t("pages.notifications.form.telegram.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(8)}>
+							<Controller
+								name="accessToken"
+								control={control}
+								defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t("pages.notifications.form.telegram.optionBotToken")}
+										placeholder={t(
+											"pages.notifications.form.telegram.placeholderBotToken"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+							<Controller
+								name="address"
+								control={control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t("pages.notifications.form.telegram.optionChatId")}
+										placeholder={t("pages.notifications.form.telegram.placeholderChatId")}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+						</Stack>
+					}
+				/>
+			)}
 			{watchedType === "matrix" && (
 				<ConfigBox
 					title={t("pages.notifications.form.matrix.title")}
@@ -180,7 +223,7 @@ const NotificationsCreatePage = () => {
 							<Controller
 								name="homeserverUrl"
 								control={control}
-								defaultValue={defaults.homeserverUrl}
+								defaultValue={"homeserverUrl" in defaults ? defaults.homeserverUrl : ""}
 								render={({ field, fieldState }) => (
 									<TextField
 										{...field}
@@ -196,7 +239,7 @@ const NotificationsCreatePage = () => {
 							<Controller
 								name="roomId"
 								control={control}
-								defaultValue={defaults.roomId}
+								defaultValue={"roomId" in defaults ? defaults.roomId : ""}
 								render={({ field, fieldState }) => (
 									<TextField
 										{...field}
@@ -212,7 +255,7 @@ const NotificationsCreatePage = () => {
 							<Controller
 								name="accessToken"
 								control={control}
-								defaultValue={defaults.accessToken}
+								defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
 								render={({ field, fieldState }) => (
 									<TextField
 										{...field}

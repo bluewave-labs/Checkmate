@@ -1,4 +1,4 @@
-import { Dialog } from "@/Components/v2/inputs";
+import { Dialog } from "@/Components/inputs";
 import { CardDetails } from "@/Pages/Incidents/Components/CardDetails";
 
 import { useTranslation } from "react-i18next";

@@ -1,6 +1,6 @@
 import Stack from "@mui/material/Stack";
-import { Icon } from "@/Components/v2/design-elements";
-import { Button } from "@/Components/v2/inputs";
+import { Icon } from "@/Components/design-elements";
+import { Button } from "@/Components/inputs";
 import { Trash } from "lucide-react";
 
 import { useTranslation } from "react-i18next";

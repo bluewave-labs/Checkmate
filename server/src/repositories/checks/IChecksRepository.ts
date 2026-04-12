@@ -11,6 +11,7 @@ import type { LatestChecksMap } from "@/repositories/checks/MongoChecksRepistory
 
 export interface IChecksRepository {
 	// create
+	create(check: Check): Promise<Check>;
 	createChecks(checks: Check[]): Promise<Check[]>;
 
 	// single fetch
@@ -19,12 +20,19 @@ export interface IChecksRepository {
 		monitorId: string,
 		sortOrder: string,
 		dateRange: string,
-		filter: string,
+		filter: string | undefined,
 		page: number,
 		rowsPerPage: number,
 		status: boolean | undefined
 	): Promise<ChecksQueryResult>;
-	findByTeamId(sortOrder: string, dateRange: string, filter: string, page: number, rowsPerPage: number, teamId: string): Promise<ChecksQueryResult>;
+	findByTeamId(
+		sortOrder: string,
+		dateRange: string,
+		filter: string | undefined,
+		page: number,
+		rowsPerPage: number,
+		teamId: string
+	): Promise<ChecksQueryResult>;
 	findLatestByMonitorIds(monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap>;
 	findByDateRangeAndMonitorId(
 		monitorId: string,
@@ -38,4 +46,6 @@ export interface IChecksRepository {
 	//delete
 	deleteByMonitorId(monitorId: string): Promise<number>;
 	deleteByTeamId(teamId: string): Promise<number>;
+	deleteByMonitorIdsNotIn(monitorIds: string[]): Promise<number>;
+	deleteOlderThan(date: Date): Promise<number>;
 }

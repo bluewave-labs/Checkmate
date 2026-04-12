@@ -1,8 +1,8 @@
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { Icon } from "@/Components/v2/design-elements";
-import { Button } from "@/Components/v2/inputs";
+import { Icon } from "@/Components/design-elements";
+import { Button } from "@/Components/inputs";
 import { Settings, ExternalLink } from "lucide-react";
 
 import { useTheme } from "@mui/material";
@@ -64,7 +64,7 @@ export const HeaderStatusPageControls = ({
 								},
 							}}
 						>
-							{t("publicLink")}
+							{t("components.headerStatusPageControls.publicLink")}
 						</Typography>
 						<Box>
 							<ExternalLink size={14} />

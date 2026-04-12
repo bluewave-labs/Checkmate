@@ -4,6 +4,7 @@ import type { AxiosRequestConfig } from "axios";
 import { get, patch, post, put, deleteOp } from "@/Utils/ApiClient";
 import { useState } from "react";
 import { useToast } from "@/Hooks/UseToast";
+import { logger } from "@/Utils/logger";
 
 interface ApiResponse<T> {
 	success: boolean;
@@ -17,7 +18,7 @@ const fetcher = async <T>(url: string, config?: AxiosRequestConfig) => {
 };
 
 export const useGet = <T>(
-	url: string | null,
+	url: string | null | undefined,
 	axiosConfig?: AxiosRequestConfig,
 	swrConfig?: SWRConfiguration
 ) => {
@@ -61,7 +62,7 @@ export const usePost = <B = any, R = any>() => {
 			return res.data;
 		} catch (err: any) {
 			const errMsg = err?.response?.data?.msg || err.message || "An error occurred";
-			console.error(err);
+			logger.error("POST request failed", err, { endpoint, body });
 			toastError(errMsg);
 			setError(errMsg);
 			return null;
@@ -96,7 +97,7 @@ export const usePatch = <B = any, R = any>() => {
 			toastSuccess(res.data?.msg || "Operation successful");
 			return res.data;
 		} catch (err: any) {
-			console.error(err);
+			logger.error("PATCH request failed", err, { endpoint, body });
 			const errMsg = err?.response?.data?.msg || err.message || "An error occurred";
 			toastError(errMsg);
 			setError(errMsg);
@@ -132,7 +133,7 @@ export const usePut = <B = any, R = any>() => {
 			toastSuccess(res.data?.msg || "Operation successful");
 			return res.data;
 		} catch (err: any) {
-			console.error(err);
+			logger.error("PUT request failed", err, { endpoint, body });
 			const errMsg = err?.response?.data?.msg || err.message || "An error occurred";
 			toastError(errMsg);
 			setError(errMsg);
@@ -167,7 +168,7 @@ export const useDelete = <R = any>() => {
 			toastSuccess(res.data?.msg || "Operation successful");
 			return res.data;
 		} catch (err: any) {
-			console.error(err);
+			logger.error("DELETE request failed", err, { endpoint });
 			const errMsg = err?.response?.data?.message || err.message || "An error occurred";
 			toastError(errMsg);
 			setError(errMsg);
@@ -178,4 +179,38 @@ export const useDelete = <R = any>() => {
 	};
 
 	return { deleteFn, loading, error };
+};
+
+export const useLazyGet = <R = any>() => {
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const { toastError } = useToast();
+
+	const getFn = async (
+		endpoint: string,
+		config?: AxiosRequestConfig
+	): Promise<ApiResponse<R> | null> => {
+		setLoading(true);
+		setError(null);
+
+		try {
+			const res = await get<ApiResponse<R>>(endpoint, {
+				...config,
+				headers: {
+					...config?.headers,
+				},
+			});
+			return res.data;
+		} catch (err: any) {
+			logger.error("GET request failed", err, { endpoint });
+			const errMsg = err?.response?.data?.msg || err.message || "An error occurred";
+			toastError(errMsg);
+			setError(errMsg);
+			return null;
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	return { get: getFn, loading, error };
 };

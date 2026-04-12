@@ -17,7 +17,7 @@ export interface SummaryConfig {
 export interface IMonitorsRepository {
 	// create
 	create(monitor: Monitor, teamId: string, userId: string): Promise<Monitor | null>;
-	createBulkMonitors(monitors: Monitor[]): Promise<Monitor[]>;
+	createMonitors(monitors: Monitor[]): Promise<Monitor[]>;
 	// single fetch
 	findById(monitorId: string, teamId: string): Promise<Monitor>;
 
@@ -41,4 +41,7 @@ export interface IMonitorsRepository {
 	findMonitorsSummaryByTeamId(teamId: string, config?: SummaryConfig): Promise<MonitorsSummary>;
 	findGroupsByTeamId(teamId: string): Promise<string[]>;
 	removeNotificationFromMonitors(notificationId: string): Promise<void>;
+	updateNotifications(teamId: string, monitorIds: string[], notificationIds: string[], action: "add" | "remove" | "set"): Promise<number>;
+	deleteByTeamIdsNotIn(teamIds: string[]): Promise<number>;
+	findAllMonitorIds(): Promise<string[]>;
 }

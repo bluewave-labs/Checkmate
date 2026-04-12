@@ -21,13 +21,10 @@ type CheckMetadataDocument = Omit<CheckMetadata, "monitorId" | "teamId"> & {
 	type: MonitorType;
 };
 
-type CheckDocumentBase = Omit<Check, "id" | "metadata" | "expiry" | "ackAt" | "createdAt" | "updatedAt"> & {
+type CheckDocumentBase = Omit<Check, "id" | "metadata" | "createdAt" | "updatedAt"> & {
 	metadata: CheckMetadataDocument;
-	expiry: Date;
-	ackAt?: Date | null;
 	createdAt: Date;
 	updatedAt: Date;
-	__v: number;
 };
 
 interface CheckDocument extends CheckDocumentBase {
@@ -225,18 +222,7 @@ const CheckSchema = new Schema<CheckDocument>(
 		message: {
 			type: String,
 		},
-		expiry: {
-			type: Date,
-			default: Date.now,
-		},
-		ack: {
-			type: Boolean,
-			default: false,
-		},
-		ackAt: {
-			type: Date,
-			default: undefined,
-		},
+
 		cpu: {
 			type: cpuSchema,
 			default: () => ({}),

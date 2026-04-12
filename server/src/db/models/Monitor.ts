@@ -1,9 +1,18 @@
-import { Schema, model, Types, type UpdateQuery } from "mongoose";
-import type { Monitor, MonitorMatchMethod, MonitorThresholds, CheckSnapshot } from "@/types/monitor.js";
-import { MonitorTypes } from "@/types/monitor.js";
-import Check from "./Check.js";
-import MonitorStats from "./MonitorStats.js";
-import StatusPage from "./StatusPage.js";
+import { Schema, model, Types } from "mongoose";
+import type { Monitor, MonitorMatchMethod, CheckSnapshot } from "@/types/monitor.js";
+import { MonitorTypes, MonitorStatuses } from "@/types/monitor.js";
+import type {
+	CheckAudits,
+	CheckCaptureInfo,
+	CheckCpuInfo,
+	CheckDiskInfo,
+	CheckErrorInfo,
+	CheckHostInfo,
+	CheckMemoryInfo,
+	CheckNetworkInterfaceInfo,
+	GotTimings,
+	ILighthouseAudit,
+} from "@/types/check.js";
 
 type CheckSnapshotDocument = Omit<CheckSnapshot, "createdAt"> & { createdAt: Date };
 
@@ -16,7 +25,6 @@ type MonitorDocumentBase = Omit<
 	notifications: Types.ObjectId[];
 	selectedDisks: string[];
 	matchMethod?: MonitorMatchMethod;
-	thresholds?: MonitorThresholds;
 };
 
 interface MonitorDocument extends MonitorDocumentBase {
@@ -27,12 +35,140 @@ interface MonitorDocument extends MonitorDocumentBase {
 	updatedAt: Date;
 }
 
-const thresholdsSchema = new Schema<MonitorThresholds>(
+const snapshotTimingPhasesSchema = new Schema<GotTimings["phases"]>(
 	{
-		usage_cpu: { type: Number },
-		usage_memory: { type: Number },
-		usage_disk: { type: Number },
-		usage_temperature: { type: Number },
+		wait: { type: Number },
+		dns: { type: Number },
+		tcp: { type: Number },
+		tls: { type: Number },
+		request: { type: Number },
+		firstByte: { type: Number },
+		download: { type: Number },
+		total: { type: Number },
+	},
+	{ _id: false }
+);
+
+const snapshotTimingsSchema = new Schema<GotTimings>(
+	{
+		start: { type: Number },
+		socket: { type: Number },
+		lookup: { type: Number },
+		connect: { type: Number },
+		secureConnect: { type: Number },
+		upload: { type: Number },
+		response: { type: Number },
+		end: { type: Number },
+		phases: { type: snapshotTimingPhasesSchema },
+	},
+	{ _id: false }
+);
+
+const snapshotCpuSchema = new Schema<CheckCpuInfo>(
+	{
+		physical_core: { type: Number },
+		logical_core: { type: Number },
+		frequency: { type: Number },
+		current_frequency: { type: Number },
+		temperature: { type: [Number] },
+		free_percent: { type: Number },
+		usage_percent: { type: Number },
+	},
+	{ _id: false }
+);
+
+const snapshotMemorySchema = new Schema<CheckMemoryInfo>(
+	{
+		total_bytes: { type: Number },
+		available_bytes: { type: Number },
+		used_bytes: { type: Number },
+		usage_percent: { type: Number },
+	},
+	{ _id: false }
+);
+
+const snapshotDiskSchema = new Schema<CheckDiskInfo>(
+	{
+		device: { type: String },
+		mountpoint: { type: String },
+		total_bytes: { type: Number },
+		free_bytes: { type: Number },
+		used_bytes: { type: Number },
+		usage_percent: { type: Number },
+		total_inodes: { type: Number },
+		free_inodes: { type: Number },
+		used_inodes: { type: Number },
+		inodes_usage_percent: { type: Number },
+		read_bytes: { type: Number },
+		write_bytes: { type: Number },
+		read_time: { type: Number },
+		write_time: { type: Number },
+	},
+	{ _id: false }
+);
+
+const snapshotHostSchema = new Schema<CheckHostInfo>(
+	{
+		os: { type: String },
+		platform: { type: String },
+		kernel_version: { type: String },
+		pretty_name: { type: String },
+	},
+	{ _id: false }
+);
+
+const snapshotErrorSchema = new Schema<CheckErrorInfo>(
+	{
+		metric: { type: [String] },
+		err: { type: String },
+	},
+	{ _id: false }
+);
+
+const snapshotCaptureSchema = new Schema<CheckCaptureInfo>(
+	{
+		version: { type: String },
+		mode: { type: String },
+	},
+	{ _id: false }
+);
+
+const snapshotNetworkInterfaceSchema = new Schema<CheckNetworkInterfaceInfo>(
+	{
+		name: { type: String },
+		bytes_sent: { type: Number },
+		bytes_recv: { type: Number },
+		packets_sent: { type: Number },
+		packets_recv: { type: Number },
+		err_in: { type: Number },
+		err_out: { type: Number },
+		drop_in: { type: Number },
+		drop_out: { type: Number },
+		fifo_in: { type: Number },
+		fifo_out: { type: Number },
+	},
+	{ _id: false }
+);
+
+const snapshotLighthouseAuditSchema = new Schema<ILighthouseAudit>(
+	{
+		id: { type: String },
+		title: { type: String },
+		score: { type: Number },
+		displayValue: { type: String },
+		numericValue: { type: Number },
+		numericUnit: { type: String },
+	},
+	{ _id: false }
+);
+
+const snapshotAuditsSchema = new Schema<CheckAudits>(
+	{
+		cls: { type: snapshotLighthouseAuditSchema },
+		si: { type: snapshotLighthouseAuditSchema },
+		fcp: { type: snapshotLighthouseAuditSchema },
+		lcp: { type: snapshotLighthouseAuditSchema },
+		tbt: { type: snapshotLighthouseAuditSchema },
 	},
 	{ _id: false }
 );
@@ -41,9 +177,25 @@ const checkSnapshotSchema = new Schema<CheckSnapshotDocument>(
 	{
 		id: { type: String, required: true },
 		status: { type: Boolean, required: true },
+		responseTime: { type: Number },
+		timings: { type: snapshotTimingsSchema },
+		statusCode: { type: Number },
+		message: { type: String },
+		cpu: { type: snapshotCpuSchema },
+		memory: { type: snapshotMemorySchema },
+		disk: { type: [snapshotDiskSchema] },
+		host: { type: snapshotHostSchema },
+		errors: { type: [snapshotErrorSchema] },
+		capture: { type: snapshotCaptureSchema },
+		net: { type: [snapshotNetworkInterfaceSchema] },
+		accessibility: { type: Number },
+		bestPractices: { type: Number },
+		seo: { type: Number },
+		performance: { type: Number },
+		audits: { type: snapshotAuditsSchema },
 		createdAt: { type: Date, required: true },
 	},
-	{ _id: false, strict: false }
+	{ _id: false }
 );
 
 const MonitorSchema = new Schema<MonitorDocument>(
@@ -68,8 +220,9 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			type: String,
 		},
 		status: {
-			type: Boolean,
-			default: undefined,
+			type: String,
+			enum: MonitorStatuses,
+			default: "initializing",
 		},
 		statusWindow: {
 			type: [Boolean],
@@ -134,36 +287,37 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		secret: {
 			type: String,
 		},
-		thresholds: {
-			type: thresholdsSchema,
+		cpuAlertThreshold: {
+			type: Number,
+			default: 100,
 		},
-		alertThreshold: {
+		cpuAlertCounter: {
 			type: Number,
 			default: 5,
 		},
-		cpuAlertThreshold: {
-			type: Number,
-			default: function () {
-				return this.alertThreshold;
-			},
-		},
 		memoryAlertThreshold: {
 			type: Number,
-			default: function () {
-				return this.alertThreshold;
-			},
+			default: 100,
+		},
+		memoryAlertCounter: {
+			type: Number,
+			default: 5,
 		},
 		diskAlertThreshold: {
 			type: Number,
-			default: function () {
-				return this.alertThreshold;
-			},
+			default: 100,
+		},
+		diskAlertCounter: {
+			type: Number,
+			default: 5,
 		},
 		tempAlertThreshold: {
 			type: Number,
-			default: function () {
-				return this.alertThreshold;
-			},
+			default: 100,
+		},
+		tempAlertCounter: {
+			type: Number,
+			default: 5,
 		},
 		selectedDisks: {
 			type: [String],
@@ -171,6 +325,10 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		},
 		gameId: {
 			type: String,
+		},
+		grpcServiceName: {
+			type: String,
+			default: "",
 		},
 		group: {
 			type: String,
@@ -181,6 +339,18 @@ const MonitorSchema = new Schema<MonitorDocument>(
 				return value && value.trim() ? value.trim() : null;
 			},
 		},
+		geoCheckEnabled: {
+			type: Boolean,
+			default: false,
+		},
+		geoCheckLocations: {
+			type: [String],
+			default: [],
+		},
+		geoCheckInterval: {
+			type: Number,
+			default: 300000,
+		},
 		recentChecks: {
 			type: [checkSnapshotSchema],
 			default: [],
@@ -190,33 +360,6 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		timestamps: true,
 	}
 );
-
-MonitorSchema.pre("save", function (next) {
-	if (!this.cpuAlertThreshold || this.isModified("alertThreshold")) {
-		this.cpuAlertThreshold = this.alertThreshold;
-	}
-	if (!this.memoryAlertThreshold || this.isModified("alertThreshold")) {
-		this.memoryAlertThreshold = this.alertThreshold;
-	}
-	if (!this.diskAlertThreshold || this.isModified("alertThreshold")) {
-		this.diskAlertThreshold = this.alertThreshold;
-	}
-	if (!this.tempAlertThreshold || this.isModified("alertThreshold")) {
-		this.tempAlertThreshold = this.alertThreshold;
-	}
-	next();
-});
-
-MonitorSchema.pre("findOneAndUpdate", function (next) {
-	const update = this.getUpdate() as UpdateQuery<MonitorDocument> | null;
-	if (update && !Array.isArray(update) && update.alertThreshold !== undefined) {
-		update.cpuAlertThreshold = update.alertThreshold;
-		update.memoryAlertThreshold = update.alertThreshold;
-		update.diskAlertThreshold = update.alertThreshold;
-		update.tempAlertThreshold = update.alertThreshold;
-	}
-	next();
-});
 
 MonitorSchema.index({ teamId: 1, type: 1 });
 

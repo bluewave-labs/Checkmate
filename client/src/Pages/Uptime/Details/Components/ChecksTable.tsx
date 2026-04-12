@@ -1,6 +1,6 @@
-import { Table, Pagination, StatusLabel } from "@/Components/v2/design-elements";
+import { Table, Pagination, StatusLabel } from "@/Components/design-elements";
 import Box from "@mui/material/Box";
-import type { Header } from "@/Components/v2/design-elements/";
+import type { Header } from "@/Components/design-elements";
 import type { Check } from "@/Types/Check";
 
 import { useNavigate } from "react-router";
@@ -15,12 +15,12 @@ const getHeaders = (t: Function, uiTimezone: string) => {
 			id: "status",
 			content: t("common.table.headers.status"),
 			render: (row) => {
-				return <StatusLabel status={row.status} />;
+				return <StatusLabel status={row.status === true ? "up" : "down"} />;
 			},
 		},
 		{
 			id: "date",
-			content: t("pages.checks.table.headers.dateTime"),
+			content: t("common.table.headers.dateTime"),
 			render: (row) => {
 				return formatDateWithTz(row.createdAt, "ddd, MMMM D, YYYY, HH:mm A", uiTimezone);
 			},

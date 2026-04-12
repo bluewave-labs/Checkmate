@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { BasePageWithStates } from "@/Components/v2/design-elements";
-import { Dialog } from "@/Components/v2/inputs";
+import { BasePageWithStates } from "@/Components/design-elements";
+import { Dialog } from "@/Components/inputs";
 import { StatusPagesTable } from "./Components/StatusPagesTable";
 import { useGet, useDelete } from "@/Hooks/UseApi";
 import type { StatusPage } from "@/Types/StatusPage";
 import { useTranslation } from "react-i18next";
-import { HeaderCreate } from "@/Components/v2/common";
+import { HeaderCreate } from "@/Components/common";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 
 const StatusPages = () => {

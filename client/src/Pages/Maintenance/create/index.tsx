@@ -1,8 +1,10 @@
 import Stack from "@mui/material/Stack";
 import MenuItem from "@mui/material/MenuItem";
+import { logger } from "@/Utils/logger";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
-import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
+import { BasePage, ConfigBox } from "@/Components/design-elements";
 import {
 	TextField,
 	Select,
@@ -10,7 +12,7 @@ import {
 	TimePicker,
 	Button,
 	Autocomplete,
-} from "@/Components/v2/inputs";
+} from "@/Components/inputs";
 
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -108,7 +110,7 @@ const CreateMaintenanceWindowPage = () => {
 	const isLoading = isPosting || isPatching;
 
 	const onError = (errors: any) => {
-		console.error("Form submission errors:", errors);
+		logger.error("Maintenance form submission failed", undefined, { errors });
 	};
 
 	return (
@@ -120,7 +122,7 @@ const CreateMaintenanceWindowPage = () => {
 				title={t("pages.maintenanceWindow.form.general.title")}
 				subtitle={t("pages.maintenanceWindow.form.general.description")}
 				rightContent={
-					<Stack spacing={theme.spacing(8)}>
+					<Stack spacing={theme.spacing(LAYOUT.MD)}>
 						<Controller
 							name="name"
 							control={control}
@@ -170,7 +172,7 @@ const CreateMaintenanceWindowPage = () => {
 				title={t("pages.maintenanceWindow.form.startDate.title")}
 				subtitle={t("pages.maintenanceWindow.form.startDate.description")}
 				rightContent={
-					<Stack spacing={theme.spacing(8)}>
+					<Stack spacing={theme.spacing(LAYOUT.MD)}>
 						<Controller
 							name="startDate"
 							control={control}
@@ -197,7 +199,7 @@ const CreateMaintenanceWindowPage = () => {
 				title={t("pages.maintenanceWindow.form.startTime.title")}
 				subtitle={t("pages.maintenanceWindow.form.startTime.description")}
 				rightContent={
-					<Stack spacing={theme.spacing(8)}>
+					<Stack spacing={theme.spacing(LAYOUT.MD)}>
 						<Controller
 							name="startTime"
 							control={control}
@@ -218,7 +220,7 @@ const CreateMaintenanceWindowPage = () => {
 						<Stack
 							direction="row"
 							alignItems="flex-start"
-							spacing={theme.spacing(4)}
+							spacing={theme.spacing(LAYOUT.MD)}
 						>
 							<Controller
 								name="duration"
@@ -283,7 +285,7 @@ const CreateMaintenanceWindowPage = () => {
 								.filter((m): m is Monitor => m !== undefined);
 
 							return (
-								<Stack spacing={theme.spacing(4)}>
+								<Stack spacing={theme.spacing(LAYOUT.MD)}>
 									<Autocomplete
 										multiple
 										options={monitorsList}
@@ -317,9 +319,8 @@ const CreateMaintenanceWindowPage = () => {
 													key={monitor.id}
 													direction="row"
 													alignItems="center"
-													spacing={theme.spacing(4)}
-													padding={theme.spacing(4)}
-													marginTop={theme.spacing(2)}
+													padding={theme.spacing(LAYOUT.XS)}
+													marginTop={theme.spacing(SPACING.LG)}
 													borderRadius={1}
 													sx={{
 														border: `1px solid ${theme.palette.divider}`,
@@ -350,7 +351,7 @@ const CreateMaintenanceWindowPage = () => {
 			<Stack
 				direction="row"
 				justifyContent="flex-end"
-				spacing={theme.spacing(2)}
+				spacing={theme.spacing(SPACING.LG)}
 			>
 				<Button
 					loading={isLoading}

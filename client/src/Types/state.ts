@@ -1,7 +1,10 @@
+import type { ChartType } from "@/Features/UI/uiSlice";
+import type { User } from "./User";
+
 export interface AuthState {
 	isLoading: boolean;
 	authToken: string;
-	user: string;
+	user: User | null;
 	success: boolean | null;
 	msg: string | null;
 }
@@ -35,7 +38,7 @@ export interface UIState {
 	distributedUptimeEnabled: boolean;
 	language: string;
 	starPromptOpen: boolean;
-	chartType: string;
+	chartType: ChartType;
 }
 
 export interface RootState {

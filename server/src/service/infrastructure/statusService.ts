@@ -1,66 +1,127 @@
-import { IMonitorsRepository } from "@/repositories/index.js";
-import MonitorStats from "../../db/models/MonitorStats.js";
-import { CheckModel } from "@/db/models/index.js";
+import { IChecksRepository, IMonitorsRepository, IMonitorStatsRepository } from "@/repositories/index.js";
 import type {
-	CheckErrorInfo,
 	Monitor,
+	MonitorStatus,
 	MonitorStatusResponse,
 	StatusChangeResult,
 	Check,
 	HardwareStatusPayload,
 	PageSpeedStatusPayload,
+	PingStatusPayload,
+	HttpStatusPayload,
+	DockerStatusPayload,
+	PortStatusPayload,
+	GameStatusPayload,
+	GrpcStatusPayload,
 	CheckSnapshot,
+	MonitorStats,
+	CheckDiskInfo,
 } from "@/types/index.js";
+import { AppError } from "@/utils/AppError.js";
+import { ILogger } from "@/utils/logger.js";
+import { IBufferService } from "./bufferService.js";
 const SERVICE_NAME = "StatusService";
 
 export interface IStatusService {
-	updateRunningStats({ monitor, networkResponse }: { monitor: Monitor; networkResponse: any }): Promise<boolean>;
-	getStatusString(status: boolean | undefined): string;
-	handleIncidentForCheck(check: any, monitor: Monitor, action: any, errorContext?: string): Promise<void>;
+	updateRunningStats(monitor: Monitor, networkResponse: MonitorStatusResponse): Promise<boolean>;
 	updateMonitorStatus(
-		statusResponse: MonitorStatusResponse<PageSpeedStatusPayload | HardwareStatusPayload | undefined>,
+		statusResponse: MonitorStatusResponse<
+			| PingStatusPayload
+			| HttpStatusPayload
+			| PageSpeedStatusPayload
+			| HardwareStatusPayload
+			| DockerStatusPayload
+			| PortStatusPayload
+			| GameStatusPayload
+			| GrpcStatusPayload
+			| undefined
+		>,
 		check: Check
 	): Promise<StatusChangeResult>;
 }
 
 export class StatusService implements IStatusService {
 	static SERVICE_NAME = SERVICE_NAME;
-	private logger: any;
-	private buffer: any;
+	private logger: ILogger;
+	private buffer: IBufferService;
 	private monitorsRepository: IMonitorsRepository;
+	private monitorStatsRepository: IMonitorStatsRepository;
+	private checksRepository: IChecksRepository;
 
-	constructor({ logger, buffer, monitorsRepository }: { logger: any; buffer: any; monitorsRepository: IMonitorsRepository }) {
+	constructor(
+		logger: ILogger,
+		buffer: IBufferService,
+		monitorsRepository: IMonitorsRepository,
+		monitorStatsRepository: IMonitorStatsRepository,
+		checksRepository: IChecksRepository
+	) {
 		this.logger = logger;
 		this.buffer = buffer;
 		this.monitorsRepository = monitorsRepository;
+		this.monitorStatsRepository = monitorStatsRepository;
+		this.checksRepository = checksRepository;
 	}
 
 	get serviceName() {
 		return StatusService.SERVICE_NAME;
 	}
 
-	async updateRunningStats({ monitor, networkResponse }: { monitor: Monitor; networkResponse: any }) {
+	async updateRunningStats(monitor: Monitor, networkResponse: MonitorStatusResponse) {
 		try {
 			const monitorId = monitor.id;
 			const { responseTime, status } = networkResponse;
-			// Get stats
-			let stats = await MonitorStats.findOne({ monitorId });
-			if (!stats) {
-				stats = new MonitorStats({
-					monitorId,
+			let existingStats: MonitorStats | null = null;
+			existingStats = await this.monitorStatsRepository
+				.findByMonitorId(monitorId)
+				.then((result) => result)
+				.catch(() => {
+					this.logger.debug({
+						service: SERVICE_NAME,
+						method: "updateRunningStats",
+						message: `No existing stats found for monitor ${monitorId}, initializing new stats.`,
+					});
+					return null;
+				});
+
+			let stats: Omit<MonitorStats, "id" | "monitorId" | "createdAt" | "updatedAt">;
+
+			if (!existingStats) {
+				// Initialize new stats
+				stats = {
 					avgResponseTime: 0,
+					maxResponseTime: 0,
 					totalChecks: 0,
 					totalUpChecks: 0,
 					totalDownChecks: 0,
 					uptimePercentage: 0,
-					lastCheck: null,
-				});
+					lastResponseTime: 0,
+					lastCheckTimestamp: 0,
+				};
+			} else {
+				// Use existing stats (omit id, monitorId, createdAt, updatedAt)
+				stats = {
+					avgResponseTime: existingStats.avgResponseTime,
+					maxResponseTime: existingStats.maxResponseTime,
+					totalChecks: existingStats.totalChecks,
+					totalUpChecks: existingStats.totalUpChecks,
+					totalDownChecks: existingStats.totalDownChecks,
+					uptimePercentage: existingStats.uptimePercentage,
+					lastResponseTime: existingStats.lastResponseTime,
+					lastCheckTimestamp: existingStats.lastCheckTimestamp,
+					timeOfLastFailure: existingStats.timeOfLastFailure,
+				};
 			}
 
 			// Update stats
+			stats.totalChecks++;
 
 			// Last response time
-			stats.lastResponseTime = responseTime;
+			stats.lastResponseTime = responseTime ?? 0;
+
+			// Max response time
+			if (responseTime && responseTime > stats.maxResponseTime) {
+				stats.maxResponseTime = responseTime;
+			}
 
 			// Avg response time:
 			let avgResponseTime = stats.avgResponseTime;
@@ -74,7 +135,6 @@ export class StatusService implements IStatusService {
 			stats.avgResponseTime = avgResponseTime;
 
 			// Total checks
-			stats.totalChecks++;
 			if (status === true) {
 				stats.totalUpChecks++;
 				// Update the timeSinceLastFailure if needed
@@ -87,84 +147,42 @@ export class StatusService implements IStatusService {
 			}
 
 			// Calculate uptime percentage
-			let uptimePercentage;
-			if (stats.totalChecks > 0) {
-				uptimePercentage = stats.totalUpChecks / stats.totalChecks;
-			} else {
-				uptimePercentage = status === true ? 100 : 0;
-			}
-			stats.uptimePercentage = uptimePercentage;
+			stats.uptimePercentage = stats.totalUpChecks / stats.totalChecks;
 
 			// latest check
 			stats.lastCheckTimestamp = new Date().getTime();
 
-			await stats.save();
+			// Create or update
+			if (!existingStats) {
+				await this.monitorStatsRepository.create({ monitorId, ...stats });
+			} else {
+				await this.monitorStatsRepository.updateByMonitorId(monitorId, stats);
+			}
+
 			return true;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({
 				service: SERVICE_NAME,
-				message: error.message,
+				message: error instanceof Error ? error.message : "Unknown error",
 				method: "updateRunningStats",
-				stack: error.stack,
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 			return false;
 		}
 	}
 
-	getStatusString = (status: boolean | undefined) => {
-		if (status === true) return "up";
-		if (status === false) return "down";
-		return "unknown";
-	};
-
-	handleIncidentForCheck = async (check: Check, monitor: Monitor, action: any, errorContext = "incident handling") => {
-		try {
-			let savedCheck;
-			if (!check.id) {
-				try {
-					const checkModel = new CheckModel(check);
-					savedCheck = await checkModel.save();
-
-					this.buffer.removeCheckFromBuffer(check);
-				} catch (checkError: any) {
-					this.logger.error({
-						service: SERVICE_NAME,
-						method: "handleIncidentForCheck",
-						message: `Failed to save check immediately for ${errorContext}: ${checkError.message}`,
-						monitorId: monitor.id,
-						stack: checkError.stack,
-					});
-					savedCheck = null;
-				}
-			}
-
-			if (savedCheck && savedCheck.id) {
-				try {
-					this.buffer.addIncidentToBuffer({ monitor, check: savedCheck, action });
-				} catch (incidentError: any) {
-					this.logger.error({
-						service: SERVICE_NAME,
-						method: "handleIncidentForCheck",
-						message: `Failed to add incident to buffer for ${errorContext}: ${incidentError.message}`,
-						monitorId: monitor.id,
-						action,
-						stack: incidentError.stack,
-					});
-				}
-			}
-		} catch (error: any) {
-			this.logger.error({
-				service: SERVICE_NAME,
-				method: "handleIncidentForCheck",
-				message: `Error in ${errorContext}: ${error.message}`,
-				monitorId: monitor?.id,
-				stack: error.stack,
-			});
-		}
-	};
-
 	updateMonitorStatus = async (
-		statusResponse: MonitorStatusResponse<PageSpeedStatusPayload | HardwareStatusPayload | undefined>,
+		statusResponse: MonitorStatusResponse<
+			| PingStatusPayload
+			| HttpStatusPayload
+			| PageSpeedStatusPayload
+			| HardwareStatusPayload
+			| DockerStatusPayload
+			| PortStatusPayload
+			| GameStatusPayload
+			| GrpcStatusPayload
+			| undefined
+		>,
 		check: Check
 	): Promise<StatusChangeResult> => {
 		try {
@@ -172,7 +190,7 @@ export class StatusService implements IStatusService {
 			const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 
 			// Update running stats
-			this.updateRunningStats({ monitor, networkResponse: statusResponse });
+			this.updateRunningStats(monitor, statusResponse);
 
 			monitor.statusWindow = monitor.statusWindow || [];
 			monitor.statusWindow.push(status);
@@ -208,16 +226,13 @@ export class StatusService implements IStatusService {
 				monitor.recentChecks.shift();
 			}
 
-			if (monitor.status === undefined || monitor.status === null) {
-				monitor.status = status;
-			}
-
 			const prevStatus = monitor.status;
-			let newStatus = monitor.status;
+			let newStatus: MonitorStatus = status === true ? "up" : "down";
 			let statusChanged = false;
 
 			// Return early if not enough data points
 			if (monitor.statusWindow.length < monitor.statusWindowSize) {
+				monitor.status = newStatus;
 				const updated = await this.monitorsRepository.updateById(monitor.id, monitor.teamId, monitor);
 				return {
 					monitor: updated,
@@ -233,17 +248,102 @@ export class StatusService implements IStatusService {
 			const failureRate = (failures / monitor.statusWindow.length) * 100;
 
 			// If threshold has been met and the monitor is not already down, mark down:
-			if (failureRate >= monitor.statusWindowThreshold && monitor.status !== false) {
-				newStatus = false;
+			if (failureRate >= monitor.statusWindowThreshold && monitor.status !== "down") {
+				newStatus = "down";
 				statusChanged = true;
 			}
 			// If the failure rate is below the threshold and the monitor is down, recover:
-			else if (failureRate < monitor.statusWindowThreshold && monitor.status === false) {
-				newStatus = true;
+			else if (failureRate < monitor.statusWindowThreshold && monitor.status === "down") {
+				newStatus = "up";
 				statusChanged = true;
 			}
 
+			// Evaluate hardware threshold breaches (only for hardware monitors)
+			let thresholdBreaches: { cpu: boolean; memory: boolean; disk: boolean; temp: boolean } | undefined;
+			if (monitor.type === "hardware" && statusResponse.payload) {
+				const payload = statusResponse.payload as HardwareStatusPayload;
+				const metrics = payload.data;
+
+				if (metrics) {
+					// Evaluate threshold breaches
+					const cpuUsage = metrics.cpu?.usage_percent ?? -1;
+					const cpuBreach = cpuUsage !== -1 && cpuUsage > monitor.cpuAlertThreshold / 100;
+
+					const memoryUsage = metrics.memory?.usage_percent ?? -1;
+					const memoryBreach = memoryUsage !== -1 && memoryUsage > monitor.memoryAlertThreshold / 100;
+
+					const diskBreach = metrics.disk
+						? metrics.disk.some(
+								(d: CheckDiskInfo) => d != null && typeof d.usage_percent === "number" && d.usage_percent > monitor.diskAlertThreshold / 100
+							)
+						: false;
+
+					const temps = metrics.cpu?.temperature ?? [];
+					const tempBreach = temps.some((temp: number) => temp > monitor.tempAlertThreshold);
+
+					thresholdBreaches = {
+						cpu: cpuBreach,
+						memory: memoryBreach,
+						disk: diskBreach,
+						temp: tempBreach,
+					};
+
+					// Update counters: decrement if breached, reset to 5 if not breached
+					if (cpuBreach) {
+						monitor.cpuAlertCounter = Math.max(0, monitor.cpuAlertCounter - 1);
+					} else {
+						monitor.cpuAlertCounter = 5;
+					}
+
+					if (memoryBreach) {
+						monitor.memoryAlertCounter = Math.max(0, monitor.memoryAlertCounter - 1);
+					} else {
+						monitor.memoryAlertCounter = 5;
+					}
+
+					if (diskBreach) {
+						monitor.diskAlertCounter = Math.max(0, monitor.diskAlertCounter - 1);
+					} else {
+						monitor.diskAlertCounter = 5;
+					}
+
+					if (tempBreach) {
+						monitor.tempAlertCounter = Math.max(0, monitor.tempAlertCounter - 1);
+					} else {
+						monitor.tempAlertCounter = 5;
+					}
+
+					// Check if any counter has reached zero (initial breach)
+					const anyCounterZero =
+						monitor.cpuAlertCounter === 0 || monitor.memoryAlertCounter === 0 || monitor.diskAlertCounter === 0 || monitor.tempAlertCounter === 0;
+
+					const anyThresholdBreached = cpuBreach || memoryBreach || diskBreach || tempBreach;
+					const allThresholdsNormal = !cpuBreach && !memoryBreach && !diskBreach && !tempBreach;
+
+					// Update monitor status based on threshold breach state
+					if (newStatus !== "down") {
+						// Don't override "down" status - service unreachable takes precedence
+						// Check current monitor status, not newStatus for comparison
+						if (anyCounterZero && anyThresholdBreached && monitor.status !== "breached") {
+							// Initial breach: counter hit zero, change status to breached
+							newStatus = "breached";
+							statusChanged = true;
+						} else if (anyCounterZero && anyThresholdBreached && monitor.status === "breached") {
+							// Already breached, keep status but don't mark as changed
+							newStatus = "breached";
+							// statusChanged remains false
+						} else if (allThresholdsNormal && monitor.status === "breached") {
+							// All thresholds returned to normal, recover from breached state
+							newStatus = "up";
+							statusChanged = true;
+						}
+					}
+				}
+			}
+
+			// Apply the final status
 			monitor.status = newStatus;
+
 			const updated = await this.monitorsRepository.updateById(monitor.id, monitor.teamId, monitor);
 
 			return {
@@ -252,33 +352,13 @@ export class StatusService implements IStatusService {
 				prevStatus,
 				code,
 				timestamp: new Date().getTime(),
+				thresholdBreaches,
 			};
-		} catch (error: any) {
-			error.service = SERVICE_NAME;
-			error.method = "updateStatus";
-			throw error;
-		}
-	};
-
-	insertCheck = async (check: Check) => {
-		try {
-			if (typeof check === "undefined") {
-				this.logger.warn({
-					message: "Failed to build check",
-					service: SERVICE_NAME,
-					method: "insertCheck",
-				});
-				return false;
-			}
-			this.buffer.addToBuffer({ check });
-			return true;
-		} catch (error: any) {
-			this.logger.error({
-				message: error.message,
-				service: error.service || SERVICE_NAME,
-				method: error.method || "insertCheck",
-				details: error.details || `Error inserting check for monitor: ${check?.metadata.monitorId}`,
-				stack: error.stack,
+		} catch (error: unknown) {
+			throw new AppError({
+				message: `Failed to update monitor with id ${check.metadata.monitorId} with status: ${error instanceof Error ? error.message : "Unknown error"}`,
+				service: SERVICE_NAME,
+				method: "updateMonitorStatus",
 			});
 		}
 	};

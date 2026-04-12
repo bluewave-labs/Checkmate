@@ -1,11 +1,11 @@
-import { BaseAuthPage } from "@/Components/v2/design-elements";
-import { Button, TextField } from "@/Components/v2/inputs";
+import { BaseAuthPage } from "@/Components/design-elements";
+import { Button, TextField } from "@/Components/inputs";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { useRegisterForm } from "@/Hooks/useRegisterForm";
 import type { RegisterFormData } from "@/Validation/register";
 import { useTranslation } from "react-i18next";
-import { usePost } from "@/Hooks/UseApi";
+import { usePost, useGet } from "@/Hooks/UseApi";
 import { setAuthState } from "@/Features/Auth/authSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -32,10 +32,20 @@ const RegisterPage = () => {
 	const { post: verifyToken } = usePost<{ token: string }, InviteVerifyResponse>();
 	const hasVerified = useRef(false);
 
+	const { data: superAdminExists, isLoading: isCheckingAdmin } = useGet<boolean>(
+		token ? null : "/auth/users/superadmin"
+	);
+
 	const { control, handleSubmit, setError, reset } = useForm<RegisterFormData>({
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
+
+	useEffect(() => {
+		if (superAdminExists === true) {
+			navigate("/login", { replace: true });
+		}
+	}, [superAdminExists, navigate]);
 
 	useEffect(() => {
 		if (!token || hasVerified.current) return;
@@ -52,6 +62,8 @@ const RegisterPage = () => {
 			}
 		});
 	}, [token]);
+
+	if (isCheckingAdmin) return null;
 
 	const onSubmit = async (data: RegisterFormData) => {
 		if (loading) return;
@@ -86,8 +98,8 @@ const RegisterPage = () => {
 				render={({ field, fieldState }) => (
 					<TextField
 						{...field}
-						fieldLabel={t("pages.auth.register.form.option.name.label")}
-						placeholder={t("pages.auth.register.form.option.name.placeholder")}
+						fieldLabel={t("common.form.name.option.firstName.label")}
+						placeholder={t("common.form.name.option.firstName.placeholder")}
 						error={!!fieldState.error}
 						helperText={fieldState.error?.message ?? ""}
 					/>
@@ -99,8 +111,8 @@ const RegisterPage = () => {
 				render={({ field, fieldState }) => (
 					<TextField
 						{...field}
-						fieldLabel={t("pages.auth.register.form.option.surname.label")}
-						placeholder={t("pages.auth.register.form.option.surname.placeholder")}
+						fieldLabel={t("common.form.name.option.lastName.label")}
+						placeholder={t("common.form.name.option.lastName.placeholder")}
 						error={!!fieldState.error}
 						helperText={fieldState.error?.message ?? ""}
 					/>
@@ -113,8 +125,8 @@ const RegisterPage = () => {
 					<TextField
 						{...field}
 						disabled={!!token}
-						fieldLabel={t("pages.auth.common.form.option.email.label")}
-						placeholder={t("pages.auth.common.form.option.email.placeholder")}
+						fieldLabel={t("common.form.email.option.email.label")}
+						placeholder={t("common.form.email.option.email.placeholder")}
 						error={!!fieldState.error}
 						helperText={fieldState.error?.message ?? ""}
 					/>

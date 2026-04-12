@@ -1,5 +1,8 @@
 import type { MonitorType } from "@/types/index.js";
 import type { Response } from "got";
+
+export const CHECK_TTL_SENTINEL = 366;
+
 export type GotTimings = Response["timings"];
 
 export interface CheckMetadata {
@@ -98,9 +101,6 @@ export interface Check {
 	timings?: GotTimings;
 	statusCode: number;
 	message: string;
-	ack: boolean;
-	ackAt?: string | null;
-	expiry: string;
 	cpu?: CheckCpuInfo;
 	memory?: CheckMemoryInfo;
 	disk?: CheckDiskInfo[];
@@ -113,7 +113,6 @@ export interface Check {
 	seo?: number;
 	performance?: number;
 	audits?: CheckAudits;
-	__v: number;
 	createdAt: string;
 	updatedAt: string;
 }
@@ -124,7 +123,7 @@ export interface ChecksQueryResult {
 
 export interface PageSpeedChecksResult {
 	monitorType: "pagespeed";
-	checks: Check[];
+	groupedChecks: PageSpeedGroupedCheck[];
 }
 
 export interface HardwareChecksResult {
@@ -170,6 +169,15 @@ export interface GroupedCheck {
 	totalChecks: number;
 }
 
+export interface PageSpeedGroupedCheck {
+	bucketDate: string;
+	performance: number;
+	accessibility: number;
+	bestPractices: number;
+	seo: number;
+	totalChecks: number;
+}
+
 export interface UptimeChecksResult {
 	monitorType: Exclude<MonitorType, "hardware" | "pagespeed">;
 	groupedChecks: GroupedCheck[];
@@ -196,4 +204,4 @@ export type NormalizedUptimeCheck<T extends GroupedCheck = GroupedCheck> = T & {
 	originalAvgResponseTime: number;
 };
 
-export type CheckSnapshot = Omit<Check, "metadata" | "ack" | "ackAt" | "expiry" | "__v" | "updatedAt">;
+export type CheckSnapshot = Omit<Check, "metadata" | "updatedAt">;

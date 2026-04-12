@@ -1,16 +1,10 @@
-import {
-	Table,
-	Pagination,
-	ValueLabel,
-	StatusLabel,
-} from "@/Components/v2/design-elements";
+import { Table, Pagination, ValueLabel, StatusLabel } from "@/Components/design-elements";
 import Box from "@mui/material/Box";
-import type { Header } from "@/Components/v2/design-elements/Table";
-import type { Monitor, MonitorStatus } from "@/Types/Monitor";
+import type { Header } from "@/Components/design-elements/Table";
+import type { Monitor } from "@/Types/Monitor";
 
 import { useTranslation } from "react-i18next";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
-import { useNavigate } from "react-router";
 import type { Check } from "@/Types/Check";
 import type { RootState } from "@/Types/state";
 import { useSelector } from "react-redux";
@@ -34,7 +28,6 @@ export const ChecksTable = ({
 }) => {
 	const { t } = useTranslation();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
-	const navigate = useNavigate();
 
 	const getHeaders = (t: Function, uiTimezone: string) => {
 		const headers: Header<Check>[] = [
@@ -52,7 +45,7 @@ export const ChecksTable = ({
 				id: "status",
 				content: "Status",
 				render: (row) => {
-					return <StatusLabel status={row.status as MonitorStatus} />;
+					return <StatusLabel status={row.status === true ? "up" : "down"} />;
 				},
 			},
 			{
@@ -114,9 +107,6 @@ export const ChecksTable = ({
 			<Table
 				headers={headers}
 				data={checks}
-				onRowClick={(row) => {
-					navigate(`/checks/${row.id}`);
-				}}
 				emptyViewText={t("pages.checks.table.empty")}
 			/>
 			<Pagination

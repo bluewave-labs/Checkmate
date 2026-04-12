@@ -3,15 +3,19 @@ import os from "os";
 
 const SERVICE_NAME = "diagnosticService";
 
-interface MemoryUsageMetrics {
-	rss: number;
-	heapTotal: number;
-	heapUsed: number;
-	external: number;
-	arrayBuffers: number;
+export interface IDiagnosticService {
+	getCPUUsage(): Promise<{ userUsageMs: number; systemUsageMs: number; usagePercentage: number }>;
+	getSystemStats(): Promise<{
+		osStats: { freeMemoryBytes: number; totalMemoryBytes: number };
+		memoryUsage: Record<keyof NodeJS.MemoryUsage, number>;
+		cpuUsage: { userUsageMs: number; systemUsageMs: number; usagePercentage: number };
+		v8HeapStats: { totalHeapSizeBytes: number; usedHeapSizeBytes: number; heapSizeLimitBytes: number };
+		eventLoopDelayMs: number;
+		uptimeMs: number;
+	}>;
 }
 
-class DiagnosticService {
+export class DiagnosticService implements IDiagnosticService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	constructor() {
@@ -20,8 +24,7 @@ class DiagnosticService {
 		 * Clears performance marks after each measurement to prevent memory leaks.
 		 */
 		const obs = new PerformanceObserver((items) => {
-			// Get the first entry but we don't need to store it
-			items.getEntries()[0];
+			items.getEntries();
 			performance.clearMarks();
 		});
 		obs.observe({ entryTypes: ["measure"] });
@@ -103,5 +106,3 @@ class DiagnosticService {
 		return diagnostics;
 	};
 }
-
-export default DiagnosticService;

@@ -1,9 +1,10 @@
+import { INotificationController } from "@/controllers/notificationController.js";
 import { Router } from "express";
 class NotificationRoutes {
 	private router: Router;
-	private notificationController: any;
+	private notificationController: INotificationController;
 
-	constructor(notificationController: any) {
+	constructor(notificationController: INotificationController) {
 		this.router = Router();
 		this.notificationController = notificationController;
 		this.initializeRoutes();

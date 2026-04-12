@@ -1,33 +1,72 @@
 import MongoDB from "../db/MongoDB.js";
-import NetworkService from "../service/infrastructure/networkService.js";
-import EmailService from "../service/infrastructure/emailService.js";
-import BufferService from "../service/infrastructure/bufferService.js";
+import { IDb } from "@/db/IDb.js";
 import {
+	// Service classes
+	NetworkService,
+	EmailService,
+	BufferService,
+	GlobalPingService,
+	SuperSimpleQueue,
+	SuperSimpleQueueHelper,
 	NotificationsService,
 	StatusService,
+	NotificationMessageBuilder,
+	MonitorService,
+	StatusPageService,
+	UserService,
+	CheckService,
+	GeoChecksService,
+	DiagnosticService,
+	InviteService,
+	MaintenanceWindowService,
+	IncidentService,
+	// Notification providers
 	WebhookProvider,
 	SlackProvider,
 	EmailProvider,
 	DiscordProvider,
 	PagerDutyProvider,
 	MatrixProvider,
+	TeamsProvider,
+	TelegramProvider,
+	// Interfaces
+	INetworkService,
+	IEmailService,
+	IBufferService,
+	ISuperSimpleQueue,
 	INotificationsService,
+	IStatusService,
+	IMonitorService,
+	IUserService,
+	ICheckService,
+	IGeoChecksService,
+	IDiagnosticService,
+	IInviteService,
+	IMaintenanceWindowService,
+	IStatusPageService,
+	IIncidentService,
+	INotificationMessageBuilder,
+	ISettingsService,
+	SettingsService,
+	EnvConfig,
 } from "@/service/index.js";
-import SuperSimpleQueueHelper from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
-import SuperSimpleQueue from "../service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
-import UserService from "../service/business/userService.js";
-import CheckService from "../service/business/checkService.js";
-import DiagnosticService from "../service/business/diagnosticService.js";
-import InviteService from "../service/business/inviteService.js";
-import MaintenanceWindowService from "../service/business/maintenanceWindowService.js";
-import { MonitorService } from "@/service/index.js";
-import { StatusPageService, IStatusPageService } from "../service/business/statusPageService.js";
-import IncidentService from "../service/business/incidentService.js";
+
+// Network providers
+import { PingProvider } from "@/service/infrastructure/network/PingProvider.js";
+import { HttpProvider } from "@/service/infrastructure/network/HttpProvider.js";
+import { AdvancedMatcher } from "@/service/infrastructure/network/AdvancedMatcher.js";
+import { PageSpeedProvider } from "@/service/infrastructure/network/PageSpeedProvider.js";
+import { HardwareProvider } from "@/service/infrastructure/network/HardwareProvider.js";
+import { DockerProvider } from "@/service/infrastructure/network/DockerProvider.js";
+import { PortProvider } from "@/service/infrastructure/network/PortProvider.js";
+import { GameProvider } from "@/service/infrastructure/network/GameProvider.js";
+import { GrpcProvider } from "@/service/infrastructure/network/GrpcProvider.js";
+import { WebSocketProvider } from "@/service/infrastructure/network/WebSocketProvider.js";
+
+// Third-party
 import axios from "axios";
 import got from "got";
 import ping from "ping";
-import http from "http";
-import https from "https";
 import Docker from "dockerode";
 import net from "net";
 import fs from "fs";
@@ -40,34 +79,41 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { games, GameDig } from "gamedig";
 import jmespath from "jmespath";
+import * as grpc from "@grpc/grpc-js";
+import * as protoLoader from "@grpc/proto-loader";
+import WebSocket from "ws";
 
-// DB Modules
-import { GenerateAvatarImage } from "../utils/imageProcessing.js";
-import { ParseBoolean } from "../utils/utils.js";
-
-// Models
-import InviteToken from "../db/models/Invite.js";
-import Team from "../db/models/Team.js";
-import MaintenanceWindow from "../db/models/MaintenanceWindow.js";
-import MonitorStats from "../db/models/MonitorStats.js";
-import NotificationModel from "../db/models/Notification.js";
-import RecoveryToken from "../db/models/RecoveryToken.js";
-
-// repositories
+// Repositories
 import {
 	MongoMonitorsRepository,
 	MongoChecksRepository,
+	MongoGeoChecksRepository,
 	MongoMonitorStatsRepository,
 	MongoStatusPagesRepository,
 	MongoUsersRepository,
 	MongoInvitesRepository,
 	MongoRecoveryTokensRepository,
 	MongoNotificationsRepository,
-	MongoIncidentRepository,
+	MongoIncidentsRepository,
 	MongoTeamsRepository,
 	MongoMaintenanceWindowsRepository,
+	MongoSettingsRepository,
+	TimescaleMonitorsRepository,
+	TimescaleChecksRepository,
+	TimescaleGeoChecksRepository,
+	TimescaleMonitorStatsRepository,
+	TimescaleStatusPagesRepository,
+	TimescaleUsersRepository,
+	TimescaleInvitesRepository,
+	TimescaleRecoveryTokensRepository,
+	TimescaleNotificationsRepository,
+	TimescaleIncidentsRepository,
+	TimescaleTeamsRepository,
+	TimescaleMaintenanceWindowsRepository,
+	TimescaleSettingsRepository,
 	IMonitorsRepository,
 	IChecksRepository,
+	IGeoChecksRepository,
 	IMonitorStatsRepository,
 	IStatusPagesRepository,
 	IUsersRepository,
@@ -80,30 +126,34 @@ import {
 	IMaintenanceWindowsRepository,
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
-import { EnvConfig } from "@/service/system/settingsService.js";
+import TimescaleDB from "@/db/TimescaleDB.js";
+import { AppError } from "@/utils/AppError.js";
 
 export type InitializedServices = {
-	settingsService: any;
-	db: any;
-	networkService: any;
-	emailService: any;
-	bufferService: any;
-	statusService: any;
-	jobQueue: any;
-	userService: any;
-	checkService: any;
-	diagnosticService: any;
-	inviteService: any;
-	maintenanceWindowService: any;
-	monitorService: any;
-	incidentService: any;
-	logger: any;
+	settingsService: ISettingsService;
+	db: IDb;
+	networkService: INetworkService;
+	emailService: IEmailService;
+	bufferService: IBufferService;
+	statusService: IStatusService;
+	jobQueue: ISuperSimpleQueue;
+	userService: IUserService;
+	checkService: ICheckService;
+	geoChecksService: IGeoChecksService;
+	diagnosticService: IDiagnosticService;
+	inviteService: IInviteService;
+	maintenanceWindowService: IMaintenanceWindowService;
+	monitorService: IMonitorService;
+	incidentService: IIncidentService;
+	logger: ILogger;
 	notificationsService: INotificationsService;
 	statusPageService: IStatusPageService;
+	notificationMessageBuilder: INotificationMessageBuilder;
 
 	// Repositories
 	monitorsRepository: IMonitorsRepository;
 	checksRepository: IChecksRepository;
+	geoChecksRepository: IGeoChecksRepository;
 	monitorStatsRepository: IMonitorStatsRepository;
 	statusPagesRepository: IStatusPagesRepository;
 	usersRepository: IUsersRepository;
@@ -120,70 +170,134 @@ export const initializeServices = async ({
 	logger,
 	envSettings,
 	settingsService,
-	settingsRepository,
 }: {
 	logger: ILogger;
 	envSettings: EnvConfig;
-	settingsService: any;
-	settingsRepository: ISettingsRepository;
+	settingsService: ISettingsService;
 }): Promise<InitializedServices> => {
 	// Create DB
 
-	const db = new MongoDB(logger, envSettings);
+	const dbType = envSettings.dbType;
+
+	let db: IDb | null = null;
+
+	if (dbType === "mongodb") {
+		db = new MongoDB(logger, envSettings);
+	} else if (dbType === "timescaledb") {
+		db = new TimescaleDB(logger, envSettings);
+	}
+
+	if (!db) {
+		throw new AppError({ message: "Unsupported database type", status: 500 });
+	}
 
 	await db.connect();
 
-	// Repositories
-	const monitorsRepository = new MongoMonitorsRepository();
-	const checksRepository = new MongoChecksRepository(logger);
-	const monitorStatsRepository = new MongoMonitorStatsRepository();
-	const statusPagesRepository = new MongoStatusPagesRepository();
-	const usersRepository = new MongoUsersRepository();
-	const invitesRepository = new MongoInvitesRepository();
-	const recoveryTokensRepository = new MongoRecoveryTokensRepository();
-	const notificationsRepository = new MongoNotificationsRepository();
-	const incidentsRepository = new MongoIncidentRepository();
-	const teamsRepository = new MongoTeamsRepository();
-	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
+	let monitorsRepository: IMonitorsRepository;
+	let checksRepository: IChecksRepository;
+	let geoChecksRepository: IGeoChecksRepository;
+	let monitorStatsRepository: IMonitorStatsRepository;
+	let statusPagesRepository: IStatusPagesRepository;
+	let usersRepository: IUsersRepository;
+	let invitesRepository: IInvitesRepository;
+	let recoveryTokensRepository: IRecoveryTokensRepository;
+	let settingsRepository: ISettingsRepository;
+	let notificationsRepository: INotificationsRepository;
+	let incidentsRepository: IIncidentsRepository;
+	let teamsRepository: ITeamsRepository;
+	let maintenanceWindowsRepository: IMaintenanceWindowsRepository;
 
-	const networkService = new NetworkService({
-		axios,
-		got,
-		https,
-		jmespath,
-		GameDig,
-		ping,
-		logger,
-		http,
-		Docker,
-		net,
-		settingsService,
-	});
+	// Repositories
+
+	if (dbType === "mongodb") {
+		monitorsRepository = new MongoMonitorsRepository();
+		checksRepository = new MongoChecksRepository(logger);
+		geoChecksRepository = new MongoGeoChecksRepository(logger);
+		monitorStatsRepository = new MongoMonitorStatsRepository();
+		statusPagesRepository = new MongoStatusPagesRepository();
+		usersRepository = new MongoUsersRepository();
+		invitesRepository = new MongoInvitesRepository();
+		recoveryTokensRepository = new MongoRecoveryTokensRepository();
+		settingsRepository = new MongoSettingsRepository();
+		notificationsRepository = new MongoNotificationsRepository();
+		incidentsRepository = new MongoIncidentsRepository();
+		teamsRepository = new MongoTeamsRepository();
+		maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
+	} else {
+		const pool = db.getPool();
+		if (!pool) {
+			throw new Error("Failed to get database pool");
+		}
+		monitorsRepository = new TimescaleMonitorsRepository(pool);
+		checksRepository = new TimescaleChecksRepository(pool);
+		geoChecksRepository = new TimescaleGeoChecksRepository(pool);
+		monitorStatsRepository = new TimescaleMonitorStatsRepository(pool);
+		statusPagesRepository = new TimescaleStatusPagesRepository(pool);
+		usersRepository = new TimescaleUsersRepository(pool);
+		invitesRepository = new TimescaleInvitesRepository(pool);
+		recoveryTokensRepository = new TimescaleRecoveryTokensRepository(pool);
+		settingsRepository = new TimescaleSettingsRepository(pool);
+		notificationsRepository = new TimescaleNotificationsRepository(pool);
+		incidentsRepository = new TimescaleIncidentsRepository(pool);
+		teamsRepository = new TimescaleTeamsRepository(pool);
+		maintenanceWindowsRepository = new TimescaleMaintenanceWindowsRepository(pool);
+	}
+
+	// Inject settings repository into settings service (now that DB is connected)
+	(settingsService as SettingsService).setRepository(settingsRepository);
+
+	// Network providers
+	const pingProvider = new PingProvider(ping);
+	const httpProvider = new HttpProvider(got, new AdvancedMatcher(jmespath));
+	const pageSpeedProvider = new PageSpeedProvider(httpProvider, settingsService, logger);
+	const hardwareProvider = new HardwareProvider(httpProvider);
+	const dockerProvider = new DockerProvider(logger, Docker);
+	const portProvider = new PortProvider(net);
+	const gameProvider = new GameProvider(logger, GameDig);
+	const grpcProvider = new GrpcProvider(grpc, protoLoader);
+	const webSocketProvider = new WebSocketProvider(WebSocket);
+
+	const networkService = new NetworkService(axios, logger, [
+		pingProvider,
+		httpProvider,
+		pageSpeedProvider,
+		hardwareProvider,
+		dockerProvider,
+		portProvider,
+		gameProvider,
+		grpcProvider,
+		webSocketProvider,
+	]);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 
-	const incidentService = new IncidentService({
+	const notificationMessageBuilder = new NotificationMessageBuilder();
+
+	const incidentService = new IncidentService(logger, incidentsRepository, monitorsRepository, usersRepository, notificationMessageBuilder);
+
+	const checkService = new CheckService(monitorsRepository, logger, checksRepository);
+
+	const globalPingService = new GlobalPingService(logger);
+
+	const geoChecksService = new GeoChecksService({
 		logger,
-		incidentsRepository,
+		geoChecksRepository,
+		globalPingService,
 		monitorsRepository,
-		usersRepository,
 	});
 
-	const checkService = new CheckService({
-		monitorsRepository,
-		logger,
-		checksRepository,
-	});
+	const bufferService = new BufferService(logger, checkService, geoChecksService, settingsService);
 
-	const bufferService = new BufferService({ logger, checkService, settingsService });
+	const statusService = new StatusService(logger, bufferService, monitorsRepository, monitorStatsRepository, checksRepository);
 
-	const statusService = new StatusService({ logger, buffer: bufferService, monitorsRepository });
-
+	// Notification providers
 	const webhookProvider = new WebhookProvider(logger);
 	const slackProvider = new SlackProvider(logger);
 	const emailProvider = new EmailProvider(emailService, logger);
 	const discordProvider = new DiscordProvider(logger);
 	const pagerDutyProvider = new PagerDutyProvider(logger);
 	const matrixProvider = new MatrixProvider(logger);
+	const teamsProvider = new TeamsProvider(logger);
+	const telegramProvider = new TelegramProvider(logger);
 
 	const notificationsService = new NotificationsService(
 		notificationsRepository,
@@ -194,25 +308,33 @@ export const initializeServices = async ({
 		discordProvider,
 		pagerDutyProvider,
 		matrixProvider,
-		logger
+		teamsProvider,
+		telegramProvider,
+		settingsService,
+		logger,
+		notificationMessageBuilder
 	);
 
-	const superSimpleQueueHelper = new SuperSimpleQueueHelper({
+	const superSimpleQueueHelper = new SuperSimpleQueueHelper(
 		logger,
 		networkService,
 		statusService,
 		notificationsService,
 		checkService,
-		buffer: bufferService,
+		settingsService,
+		bufferService,
 		incidentService,
 		maintenanceWindowsRepository,
-	});
-
-	const superSimpleQueue = await SuperSimpleQueue.create({
-		logger,
-		helper: superSimpleQueueHelper,
 		monitorsRepository,
-	});
+		teamsRepository,
+		monitorStatsRepository,
+		checksRepository,
+		incidentsRepository,
+		geoChecksService,
+		geoChecksRepository
+	);
+
+	const superSimpleQueue = await SuperSimpleQueue.create(logger, superSimpleQueueHelper, monitorsRepository);
 
 	// Business services
 	const userService = new UserService({
@@ -242,19 +364,19 @@ export const initializeServices = async ({
 	});
 	const monitorService = new MonitorService({
 		jobQueue: superSimpleQueue,
-		emailService,
 		logger,
 		games,
 		monitorsRepository,
 		checksRepository,
+		geoChecksRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
+		incidentsRepository,
 	});
 
 	const statusPageService = new StatusPageService(statusPagesRepository);
 
 	const services = {
-		//v1
 		settingsService,
 		db,
 		networkService,
@@ -264,6 +386,7 @@ export const initializeServices = async ({
 		jobQueue: superSimpleQueue,
 		userService,
 		checkService,
+		geoChecksService,
 		diagnosticService,
 		inviteService,
 		maintenanceWindowService,
@@ -272,10 +395,12 @@ export const initializeServices = async ({
 		logger,
 		notificationsService,
 		statusPageService,
+		notificationMessageBuilder,
 
 		// Repositories
 		monitorsRepository,
 		checksRepository,
+		geoChecksRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
 		usersRepository,

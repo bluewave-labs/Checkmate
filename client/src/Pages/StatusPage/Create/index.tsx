@@ -1,5 +1,7 @@
-import { BasePage, ConfigBox } from "@/Components/v2/design-elements";
+import { BasePage, ConfigBox } from "@/Components/design-elements";
 import Stack from "@mui/material/Stack";
+import { logger } from "@/Utils/logger";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -15,22 +17,31 @@ import {
 	Checkbox,
 	Dialog,
 	ColorInput,
-} from "@/Components/v2/inputs";
+} from "@/Components/inputs";
 
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useStatusPageForm } from "@/Hooks/useStatusPageForm";
 import type { StatusPageFormData } from "@/Validation/statusPage";
 import { useGet, usePost, usePut, useDelete } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
-import type { StatusPageResponse } from "@/Types/StatusPage";
+import type { MonitorDisplayType, StatusPageResponse } from "@/Types/StatusPage";
+import { getMonitorTypeLabel } from "@/Types/StatusPage";
 import timezones from "@/Utils/timezones.json";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { HeaderConfigStatusControls } from "./Components/HeaderConfigStatusControls";
+
+const monitorsUrl = (() => {
+	const params = new URLSearchParams();
+	["http", "ping", "port", "docker", "game", "grpc", "websocket", "hardware"].forEach(
+		(type) => params.append("type", type)
+	);
+	return `/monitors/team?${params.toString()}`;
+})();
 
 interface TimezoneOption {
 	_id: string;
@@ -47,11 +58,11 @@ const CreateStatusPage = () => {
 
 	// Fetch existing status page data when configuring
 	const { data: statusPageData, isLoading: isLoadingStatusPage } =
-		useGet<StatusPageResponse>(isCreate ? null : `/status-page/${url}?type=uptime`);
+		useGet<StatusPageResponse>(
+			isCreate ? null : `/status-page/${url}?type=uptime&type=infrastructure`
+		);
 
-	const { data: monitorsResponse } = useGet<Monitor[]>(
-		"/monitors/team?type=http&type=ping&type=port&type=docker"
-	);
+	const { data: monitorsResponse } = useGet<Monitor[]>(monitorsUrl);
 	const monitors = monitorsResponse ?? [];
 
 	const { post, loading: isSubmittingPost } = usePost();
@@ -79,8 +90,26 @@ const CreateStatusPage = () => {
 		reset(defaults);
 	}, [defaults, reset]);
 
+	const watchedMonitorIds: string[] = form.watch("monitors") ?? [];
+	const computedTypes: MonitorDisplayType[] = useMemo(() => {
+		const selectedMonitors = (watchedMonitorIds ?? [])
+			.map((id) => monitors.find((m) => m.id === id))
+			.filter((m): m is Monitor => m !== undefined);
+
+		const typesSet = new Set<MonitorDisplayType>();
+		selectedMonitors.forEach((m) => {
+			typesSet.add(m.type === "hardware" ? "infrastructure" : "uptime");
+		});
+
+		return typesSet.size ? Array.from(typesSet) : ["uptime"];
+	}, [watchedMonitorIds, monitors]);
+
+	useEffect(() => {
+		form.setValue("type", computedTypes);
+	}, [computedTypes]);
+
 	const onError = (errors: any) => {
-		console.log(errors);
+		logger.debug("Status page validation errors", errors);
 	};
 
 	const handleDeleteClick = () => {
@@ -101,7 +130,6 @@ const CreateStatusPage = () => {
 
 	const onSubmit = async (data: StatusPageFormData) => {
 		const fd = new FormData();
-		fd.append("type", "uptime");
 		fd.append("isPublished", String(data.isPublished));
 		if (data.companyName) fd.append("companyName", data.companyName);
 		if (data.url) fd.append("url", data.url);
@@ -110,9 +138,14 @@ const CreateStatusPage = () => {
 		fd.append("showCharts", String(data.showCharts));
 		fd.append("showUptimePercentage", String(data.showUptimePercentage));
 		fd.append("showAdminLoginLink", String(data.showAdminLoginLink));
+		fd.append("showInfrastructure", String(data.showInfrastructure));
 
 		data.monitors.forEach((monitorId) => {
 			fd.append("monitors[]", monitorId);
+		});
+
+		data.type.forEach((type) => {
+			fd.append("type[]", type);
 		});
 
 		// Handle logo upload
@@ -128,7 +161,7 @@ const CreateStatusPage = () => {
 					fd.append("logo", imageResult.data);
 					URL.revokeObjectURL(data.logo.data);
 				} catch (e) {
-					console.error("Error fetching logo blob:", e);
+					logger.error("Failed to fetch logo blob", e instanceof Error ? e : undefined);
 				}
 			}
 		}
@@ -165,7 +198,7 @@ const CreateStatusPage = () => {
 					<Stack
 						direction="row"
 						alignItems="center"
-						spacing={theme.spacing(2)}
+						spacing={theme.spacing(SPACING.MD)}
 					>
 						<Controller
 							name="isPublished"
@@ -187,7 +220,7 @@ const CreateStatusPage = () => {
 				title={t("pages.statusPages.form.basicInfo.title")}
 				subtitle={t("pages.statusPages.form.basicInfo.description")}
 				rightContent={
-					<Stack spacing={theme.spacing(6)}>
+					<Stack spacing={theme.spacing(LAYOUT.MD)}>
 						<Controller
 							name="companyName"
 							control={control}
@@ -242,7 +275,7 @@ const CreateStatusPage = () => {
 							};
 
 							return (
-								<Stack spacing={theme.spacing(4)}>
+								<Stack spacing={theme.spacing(LAYOUT.MD)}>
 									<Autocomplete
 										multiple
 										options={monitors}
@@ -290,9 +323,9 @@ const CreateStatusPage = () => {
 																		{...provided.dragHandleProps}
 																		direction="row"
 																		alignItems="center"
-																		spacing={theme.spacing(4)}
-																		padding={theme.spacing(4)}
-																		marginTop={theme.spacing(2)}
+																		spacing={theme.spacing(LAYOUT.XS)}
+																		padding={theme.spacing(LAYOUT.XS)}
+																		marginTop={theme.spacing(SPACING.LG)}
 																		borderRadius={1}
 																		sx={{
 																			border: `1px solid ${theme.palette.divider}`,
@@ -301,7 +334,9 @@ const CreateStatusPage = () => {
 																		}}
 																	>
 																		<GripVertical size={20} />
-																		<Typography flexGrow={1}>{monitor.name}</Typography>
+																		<Typography
+																			flexGrow={1}
+																		>{`${monitor.name} (${getMonitorTypeLabel(monitor.type, t)})`}</Typography>
 																		<IconButton
 																			size="small"
 																			onClick={() => {
@@ -366,7 +401,7 @@ const CreateStatusPage = () => {
 				title={t("pages.statusPages.form.appearance.title")}
 				subtitle={t("pages.statusPages.form.appearance.description")}
 				rightContent={
-					<Stack spacing={theme.spacing(8)}>
+					<Stack spacing={theme.spacing(LAYOUT.MD)}>
 						<Stack alignItems={"center"}>
 							<Controller
 								name="logo"
@@ -407,7 +442,7 @@ const CreateStatusPage = () => {
 				title={t("pages.statusPages.form.features.title")}
 				subtitle={t("pages.statusPages.form.features.description")}
 				rightContent={
-					<Stack spacing={theme.spacing(2)}>
+					<Stack spacing={theme.spacing(LAYOUT.MD)}>
 						<Controller
 							name="showCharts"
 							control={control}
@@ -420,6 +455,23 @@ const CreateStatusPage = () => {
 										/>
 									}
 									label={t("pages.statusPages.form.features.option.showCharts.label")}
+								/>
+							)}
+						/>
+						<Controller
+							name="showInfrastructure"
+							control={control}
+							render={({ field }) => (
+								<FormControlLabel
+									control={
+										<Checkbox
+											checked={field.value}
+											onChange={field.onChange}
+										/>
+									}
+									label={t(
+										"pages.statusPages.form.features.option.showInfrastructure.label"
+									)}
 								/>
 							)}
 						/>

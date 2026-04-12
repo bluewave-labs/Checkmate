@@ -1,29 +1,37 @@
 import { Request, Response, NextFunction } from "express";
-import { sendTestEmailBodyValidation, updateAppSettingsBodyValidation } from "@/validation/joi.js";
+import { updateAppSettingsBodyValidation } from "@/validation/settingsValidation.js";
+import { sendTestEmailBodyValidation } from "@/validation/notificationValidation.js";
 import { AppError } from "@/utils/AppError.js";
+import { IEmailService, ISettingsService } from "@/service/index.js";
+import { Settings } from "@/types/settings.js";
 
 const SERVICE_NAME = "SettingsController";
 
-class SettingsController {
+export interface ISettingsController {
+	serviceName: string;
+	getAppSettings(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	updateAppSettings(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	sendTestEmail(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+}
+
+class SettingsController implements ISettingsController {
 	static SERVICE_NAME = SERVICE_NAME;
-	private settingsService: any;
-	private emailService: any;
-	private db: any;
-	constructor(settingsService: any, emailService: any, db: any) {
+	private settingsService: ISettingsService;
+	private emailService: IEmailService;
+	constructor(settingsService: ISettingsService, emailService: IEmailService) {
 		this.settingsService = settingsService;
 		this.emailService = emailService;
-		this.db = db;
 	}
 
 	get serviceName() {
 		return SettingsController.SERVICE_NAME;
 	}
 
-	buildAppSettings = (dbSettings: any) => {
-		const sanitizedSettings = { ...dbSettings };
+	buildAppSettings = (dbSettings: Settings) => {
+		const sanitizedSettings: Record<string, unknown> = { ...dbSettings };
 		delete sanitizedSettings.version;
 		delete sanitizedSettings.jwtSecret;
-		const returnSettings = {
+		const returnSettings: Record<string, unknown | null> = {
 			pagespeedKeySet: false,
 			emailPasswordSet: false,
 			settings: null,
@@ -57,20 +65,24 @@ class SettingsController {
 	};
 
 	updateAppSettings = async (req: Request, res: Response, next: NextFunction) => {
-		await updateAppSettingsBodyValidation.validateAsync(req.body);
+		try {
+			const validatedBody = updateAppSettingsBodyValidation.parse(req.body);
 
-		const updatedSettings = await this.settingsService.updateDbSettings(req.body);
-		const returnSettings = this.buildAppSettings(updatedSettings);
-		return res.status(200).json({
-			success: true,
-			msg: "App settings updated successfully",
-			data: returnSettings,
-		});
+			const updatedSettings = await this.settingsService.updateDbSettings(validatedBody);
+			const returnSettings = this.buildAppSettings(updatedSettings);
+			return res.status(200).json({
+				success: true,
+				msg: "App settings updated successfully",
+				data: returnSettings,
+			});
+		} catch (error) {
+			next(error);
+		}
 	};
 
 	sendTestEmail = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await sendTestEmailBodyValidation.validateAsync(req.body);
+			sendTestEmailBodyValidation.parse(req.body);
 
 			const {
 				to,
@@ -92,6 +104,9 @@ class SettingsController {
 			const context = { testName: "Monitoring System" };
 
 			const html = await this.emailService.buildEmail("testEmailTemplate", context);
+			if (!html) {
+				throw new AppError({ message: "Failed to build email template.", status: 500 });
+			}
 			const messageId = await this.emailService.sendEmail(to, subject, html, {
 				systemEmailHost,
 				systemEmailPort,

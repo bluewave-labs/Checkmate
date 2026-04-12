@@ -20,6 +20,7 @@ class MongoMonitorStatsRepository implements IMonitorStatsRepository {
 			id: toStringId(doc._id),
 			monitorId: toStringId(doc.monitorId),
 			avgResponseTime: doc.avgResponseTime,
+			maxResponseTime: doc.maxResponseTime,
 			totalChecks: doc.totalChecks,
 			totalUpChecks: doc.totalUpChecks,
 			totalDownChecks: doc.totalDownChecks,
@@ -32,6 +33,11 @@ class MongoMonitorStatsRepository implements IMonitorStatsRepository {
 		};
 	};
 
+	create = async (data: Omit<MonitorStats, "id" | "createdAt" | "updatedAt">): Promise<MonitorStats> => {
+		const created = await MonitorStatsModel.create(data);
+		return this.toEntity(created);
+	};
+
 	findByMonitorId = async (monitorId: string): Promise<MonitorStats> => {
 		const monitorStats = await MonitorStatsModel.findOne({ monitorId: new mongoose.Types.ObjectId(monitorId) });
 		if (!monitorStats) {
@@ -40,12 +46,32 @@ class MongoMonitorStatsRepository implements IMonitorStatsRepository {
 		return this.toEntity(monitorStats);
 	};
 
+	updateByMonitorId = async (monitorId: string, data: Omit<MonitorStats, "id" | "monitorId" | "createdAt" | "updatedAt">): Promise<MonitorStats> => {
+		const updated = await MonitorStatsModel.findOneAndUpdate({ monitorId: new mongoose.Types.ObjectId(monitorId) }, { $set: data }, { new: true });
+		if (!updated) {
+			throw new AppError({ message: "Monitor stats not found", status: 404 });
+		}
+		return this.toEntity(updated);
+	};
+
 	deleteByMonitorId = async (monitorId: string) => {
 		const deleted = await MonitorStatsModel.findOneAndDelete({ monitorId: new mongoose.Types.ObjectId(monitorId) });
 		if (!deleted) {
 			throw new AppError({ message: "Monitor stats not found", status: 404 });
 		}
 		return this.toEntity(deleted);
+	};
+
+	deleteByMonitorIds = async (monitorIds: string[]): Promise<number> => {
+		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		const result = await MonitorStatsModel.deleteMany({ monitorId: { $in: objectIds } });
+		return result.deletedCount ?? 0;
+	};
+
+	deleteByMonitorIdsNotIn = async (monitorIds: string[]): Promise<number> => {
+		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		const result = await MonitorStatsModel.deleteMany({ monitorId: { $nin: objectIds } });
+		return result.deletedCount ?? 0;
 	};
 }
 

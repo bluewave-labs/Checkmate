@@ -1,18 +1,19 @@
-import type { Check } from "@/types/check.js";
 import type { CheckSnapshot } from "@/types/check.js";
 export type { CheckSnapshot } from "@/types/check.js";
+import type { GeoContinent, GroupedGeoCheck } from "@/types/geoCheck.js";
+export type { GeoContinent } from "@/types/geoCheck.js";
 
-export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "unknown"] as const;
+export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "unknown"] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
-export interface MonitorThresholds {
-	usage_cpu?: number;
-	usage_memory?: number;
-	usage_disk?: number;
-	usage_temperature?: number;
-}
+export const GeoCheckSupportedTypes: readonly MonitorType[] = ["http", "ping"] as const;
+export const supportsGeoCheck = (type: MonitorType): boolean => GeoCheckSupportedTypes.includes(type);
 
-export type MonitorMatchMethod = "equal" | "include" | "regex" | "";
+export const MonitorStatuses = ["up", "down", "paused", "initializing", "maintenance", "breached"] as const;
+export type MonitorStatus = (typeof MonitorStatuses)[number];
+
+export const MonitorMatchMethods = ["equal", "include", "regex"] as const;
+export type MonitorMatchMethod = (typeof MonitorMatchMethods)[number] | "";
 
 export interface Monitor {
 	id: string;
@@ -20,7 +21,7 @@ export interface Monitor {
 	teamId: string;
 	name: string;
 	description?: string;
-	status?: boolean;
+	status: MonitorStatus;
 	statusWindow: boolean[];
 	statusWindowSize: number;
 	statusWindowThreshold: number;
@@ -37,15 +38,21 @@ export interface Monitor {
 	uptimePercentage?: number;
 	notifications: string[];
 	secret?: string;
-	thresholds?: MonitorThresholds;
-	alertThreshold: number;
 	cpuAlertThreshold: number;
+	cpuAlertCounter: number;
 	memoryAlertThreshold: number;
+	memoryAlertCounter: number;
 	diskAlertThreshold: number;
+	diskAlertCounter: number;
 	tempAlertThreshold: number;
+	tempAlertCounter: number;
 	selectedDisks: string[];
 	gameId?: string;
+	grpcServiceName?: string;
 	group: string | null;
+	geoCheckEnabled?: boolean;
+	geoCheckLocations?: GeoContinent[];
+	geoCheckInterval?: number;
 	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;
@@ -56,12 +63,19 @@ export interface MonitorsSummary {
 	upMonitors: number;
 	downMonitors: number;
 	pausedMonitors: number;
+	initializingMonitors: number;
+	maintenanceMonitors: number;
+	breachedMonitors: number;
 }
 
 export interface MonitorsWithChecksByTeamIdResult {
 	summary: MonitorsSummary | null;
 	count: number;
 	monitors: Monitor[];
+}
+
+export interface GroupedGeoCheckResult {
+	groupedGeoChecks: GroupedGeoCheck[];
 }
 
 export interface UptimeDetailsResult {
@@ -125,8 +139,9 @@ export interface HardwareDetailsResult {
 }
 
 export interface PageSpeedDetailsResult {
-	monitor: Monitor & {
-		checks: import("./check.js").Check[];
+	monitorData: {
+		monitor: Monitor;
+		groupedChecks: import("./check.js").PageSpeedGroupedCheck[];
 	};
 	monitorStats: import("./monitorStats.js").MonitorStats | null;
 }

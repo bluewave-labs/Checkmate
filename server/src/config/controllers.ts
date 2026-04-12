@@ -2,6 +2,7 @@ import MonitorController from "../controllers/monitorController.js";
 import AuthController from "../controllers/authController.js";
 import SettingsController from "../controllers/settingsController.js";
 import CheckController from "../controllers/checkController.js";
+import GeoCheckController from "../controllers/geoCheckController.js";
 import InviteController from "../controllers/inviteController.js";
 import MaintenanceWindowController from "../controllers/maintenanceWindowController.js";
 import QueueController from "../controllers/queueController.js";
@@ -17,6 +18,7 @@ export interface InitializedControllers {
 	monitorController: MonitorController;
 	settingsController: SettingsController;
 	checkController: CheckController;
+	geoCheckController: GeoCheckController;
 	inviteController: InviteController;
 	maintenanceWindowController: MaintenanceWindowController;
 	queueController: QueueController;
@@ -29,9 +31,10 @@ export interface InitializedControllers {
 export const initializeControllers = (services: InitializedServices): InitializedControllers => {
 	return {
 		authController: new AuthController(services.userService),
-		monitorController: new MonitorController(services.monitorService),
-		settingsController: new SettingsController(services.settingsService, services.emailService, services.db),
+		monitorController: new MonitorController(services.monitorService, services.notificationsService),
+		settingsController: new SettingsController(services.settingsService, services.emailService),
 		checkController: new CheckController(services.checkService),
+		geoCheckController: new GeoCheckController(services.geoChecksService),
 		inviteController: new InviteController(services.inviteService),
 		maintenanceWindowController: new MaintenanceWindowController(services.maintenanceWindowService),
 		queueController: new QueueController(services.jobQueue),

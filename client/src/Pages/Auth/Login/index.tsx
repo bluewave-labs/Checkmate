@@ -1,5 +1,5 @@
-import { BaseAuthPage, TextLink } from "@/Components/v2/design-elements";
-import { Button, TextField } from "@/Components/v2/inputs";
+import { BaseAuthPage, TextLink } from "@/Components/design-elements";
+import { Button, TextField } from "@/Components/inputs";
 
 import { useTranslation } from "react-i18next";
 import { useForm, Controller } from "react-hook-form";

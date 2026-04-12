@@ -1,0 +1,17 @@
+import i18n from "@/Utils/i18n.js";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import type { RootState } from "@/store";
+const I18nLoader = () => {
+	const language = useSelector((state: RootState) => state.ui.language ?? "en");
+
+	useEffect(() => {
+		if (language && i18n.language !== language) {
+			i18n.changeLanguage(language);
+		}
+	}, [language]);
+
+	return null;
+};
+
+export default I18nLoader;

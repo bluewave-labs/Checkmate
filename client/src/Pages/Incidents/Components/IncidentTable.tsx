@@ -1,21 +1,21 @@
-import { Table } from "@/Components/v2/design-elements";
-import { Pagination } from "@/Components/v2/design-elements/Table";
-import type { Header } from "@/Components/v2/design-elements/Table";
-import { ValueLabel } from "@/Components/v2/design-elements";
-import type { ValueType } from "@/Components/v2/design-elements/StatusLabel";
-import { ActionsMenu } from "@/Components/v2/actions-menu";
+import { Table } from "@/Components/design-elements";
+import { Pagination } from "@/Components/design-elements/Table";
+import type { Header } from "@/Components/design-elements/Table";
+import { ValueLabel } from "@/Components/design-elements";
+import type { ValueType } from "@/Components/design-elements/StatusLabel";
+import { ActionsMenu } from "@/Components/actions-menu";
 import type { Incident } from "@/Types/Incident";
 import type { Monitor } from "@/Types/Monitor";
-import type { ActionMenuItem } from "@/Components/v2/actions-menu";
+import type { ActionMenuItem } from "@/Components/actions-menu";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { TypeToPathMap } from "@/Utils/monitorUtilsLegacy.js";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/Types/state";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
+import { getMonitorPath } from "@/Utils/MonitorUtils";
 
 interface IncidentsTableProps {
 	title?: string;
@@ -62,7 +62,7 @@ export const IncidentsTable = ({
 				label: t("pages.incidents.table.actions.goToMonitor"),
 				action: () => {
 					if (monitor) {
-						const path = TypeToPathMap[monitor.type as keyof typeof TypeToPathMap];
+						const path = getMonitorPath(monitor.type);
 						if (path && monitor.id) {
 							navigate(`/${path}/${monitor.id}`);
 						}

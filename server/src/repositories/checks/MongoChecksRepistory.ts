@@ -15,17 +15,10 @@ import type {
 } from "@/types/index.js";
 import { CheckModel, type CheckDocument } from "@/db/models/index.js";
 import mongoose from "mongoose";
+import { getDateForRange } from "@/utils/dataUtils.js";
+import { ILogger } from "@/utils/logger.js";
 
 const SERVICE_NAME = "StatusService";
-
-const dateRangeLookup: Record<string, Date | undefined> = {
-	recent: new Date(new Date().setHours(new Date().getHours() - 2)),
-	hour: new Date(new Date().setHours(new Date().getHours() - 1)),
-	day: new Date(new Date().setDate(new Date().getDate() - 1)),
-	week: new Date(new Date().setDate(new Date().getDate() - 7)),
-	month: new Date(new Date().setMonth(new Date().getMonth() - 1)),
-	all: undefined,
-};
 
 export type LatestChecksMap = Record<string, Check[]>;
 type DateRange = { start: Date; end: Date };
@@ -34,8 +27,8 @@ type HardwareUpChecks = { totalChecks: number };
 class MongoChecksRepository implements IChecksRepository {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private logger: any;
-	constructor(logger: any) {
+	private logger: ILogger;
+	constructor(logger: ILogger) {
 		this.logger = logger;
 	}
 
@@ -52,13 +45,6 @@ class MongoChecksRepository implements IChecksRepository {
 				return new Date(0).toISOString();
 			}
 			return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
-		};
-
-		const toOptionalDateString = (value?: Date | string | null): string | undefined => {
-			if (!value) {
-				return undefined;
-			}
-			return toDateString(value);
 		};
 
 		const mapTimings = (timings?: GotTimings): GotTimings => {
@@ -179,9 +165,6 @@ class MongoChecksRepository implements IChecksRepository {
 			timings: mapTimings(doc.timings),
 			statusCode: doc.statusCode ?? 0,
 			message: doc.message ?? "",
-			ack: doc.ack ?? false,
-			ackAt: toOptionalDateString(doc.ackAt),
-			expiry: toDateString(doc.expiry),
 			cpu: mapCpu(doc.cpu),
 			memory: mapMemory(doc.memory),
 			disk: mapDisks(doc.disk),
@@ -194,7 +177,6 @@ class MongoChecksRepository implements IChecksRepository {
 			seo: doc.seo,
 			performance: doc.performance,
 			audits: mapAudits(doc.audits),
-			__v: doc.__v ?? 0,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
@@ -210,21 +192,23 @@ class MongoChecksRepository implements IChecksRepository {
 	private toDocument = (check: Partial<Check>): CheckDocument => {
 		// Map id to _id for MongoDB storage
 		const { id, metadata, ...rest } = check;
+		if (!metadata || !metadata.monitorId || !metadata.teamId) {
+			throw new Error(`Check must have valid metadata with monitorId and teamId. Got: ${JSON.stringify({ id, metadata })}`);
+		}
 		return {
 			_id: id ? new mongoose.Types.ObjectId(id) : new mongoose.Types.ObjectId(),
-			metadata: metadata
-				? {
-						monitorId: new mongoose.Types.ObjectId(metadata.monitorId),
-						teamId: new mongoose.Types.ObjectId(metadata.teamId),
-						type: metadata.type,
-					}
-				: {
-						monitorId: new mongoose.Types.ObjectId(),
-						teamId: new mongoose.Types.ObjectId(),
-						type: "http",
-					},
+			metadata: {
+				monitorId: new mongoose.Types.ObjectId(metadata.monitorId),
+				teamId: new mongoose.Types.ObjectId(metadata.teamId),
+				type: metadata.type,
+			},
 			...rest,
 		} as unknown as CheckDocument;
+	};
+
+	create = async (check: Check) => {
+		const savedCheck = await CheckModel.create(check);
+		return this.toEntity(savedCheck);
 	};
 
 	createChecks = async (checks: Check[]) => {
@@ -237,18 +221,18 @@ class MongoChecksRepository implements IChecksRepository {
 		monitorId: string,
 		sortOrder: string,
 		dateRange: string,
-		filter: string,
+		filter: string | undefined,
 		page: number,
 		rowsPerPage: number,
 		status: boolean | undefined
 	) => {
 		// Match
-		const matchStage: Record<string, any> = {
+		const matchStage: Record<string, unknown> = {
 			"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 			...(typeof status !== "undefined" && { status }),
-			...(dateRangeLookup[dateRange] && {
+			...(getDateForRange(dateRange) && {
 				createdAt: {
-					$gte: dateRangeLookup[dateRange],
+					$gte: getDateForRange(dateRange),
 				},
 			}),
 		};
@@ -295,11 +279,11 @@ class MongoChecksRepository implements IChecksRepository {
 	};
 
 	findByTeamId = async (sortOrder: string, dateRange: string, filter: string, page: number, rowsPerPage: number, teamId: string) => {
-		const matchStage: Record<string, any> = {
+		const matchStage: Record<string, unknown> = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
-			...(dateRangeLookup[dateRange] && {
+			...(getDateForRange(dateRange) && {
 				createdAt: {
-					$gte: dateRangeLookup[dateRange],
+					$gte: getDateForRange(dateRange),
 				},
 			}),
 		};
@@ -364,7 +348,7 @@ class MongoChecksRepository implements IChecksRepository {
 		);
 
 		const mapped = results.reduce<LatestChecksMap>((acc, { monitorId, docs }) => {
-			acc[monitorId] = docs.map((doc: any) => this.toEntity(doc as CheckDocument));
+			acc[monitorId] = docs.map((doc: CheckDocument) => this.toEntity(doc));
 			return acc;
 		}, {});
 		return mapped;
@@ -376,7 +360,7 @@ class MongoChecksRepository implements IChecksRepository {
 			return this.findHardwareDateRangeChecks(monitorObjectId, startDate, endDate, dateString);
 		}
 		if (options?.type === "pagespeed") {
-			return this.findPageSpeedDateRangeChecks(monitorObjectId, startDate, endDate);
+			return this.findPageSpeedDateRangeChecks(monitorObjectId, startDate, endDate, dateString);
 		}
 		return this.findUptimeDateRangeChecks(options?.type ?? "http", monitorObjectId, startDate, endDate, dateString);
 	};
@@ -384,9 +368,9 @@ class MongoChecksRepository implements IChecksRepository {
 	findSummaryByTeamId = async (teamId: string, dateRange: string) => {
 		const baseMatch = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
-			...(dateRangeLookup[dateRange] && {
+			...(getDateForRange(dateRange) && {
 				createdAt: {
-					$gte: dateRangeLookup[dateRange],
+					$gte: getDateForRange(dateRange),
 				},
 			}),
 		};
@@ -412,6 +396,37 @@ class MongoChecksRepository implements IChecksRepository {
 		return deleteResult.deletedCount;
 	};
 
+	deleteByMonitorIdsNotIn = async (monitorIds: string[]): Promise<number> => {
+		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		const result = await CheckModel.deleteMany({ "metadata.monitorId": { $nin: objectIds } });
+		return result.deletedCount ?? 0;
+	};
+
+	deleteOlderThan = async (cutoffDate: Date, batchDays: number = 30): Promise<number> => {
+		// Find the oldest check that is older than the cutoff
+		const oldest = await CheckModel.findOne({ createdAt: { $lt: cutoffDate } })
+			.sort({ createdAt: 1 })
+			.select({ createdAt: 1 });
+		if (!oldest?.createdAt) return 0;
+
+		let totalDeleted = 0;
+		let batchStart = new Date(oldest.createdAt);
+		const batchMs = batchDays * 24 * 60 * 60 * 1000;
+
+		// Delete in 30 day chunks until we reach the cutoff
+		while (batchStart < cutoffDate) {
+			// Advance startTime by batchMs to get to the end of last batch
+			const nextStart = batchStart.getTime() + batchMs;
+			const batchEnd = new Date(Math.min(nextStart, cutoffDate.getTime()));
+			const result = await CheckModel.deleteMany({
+				createdAt: { $gte: batchStart, $lt: batchEnd },
+			});
+			totalDeleted += result.deletedCount ?? 0;
+			batchStart = batchEnd;
+		}
+
+		return totalDeleted;
+	};
 	private findUptimeDateRangeChecks = async (
 		monitorType: Exclude<MonitorType, "hardware" | "pagespeed">,
 		monitorObjectId: mongoose.Types.ObjectId,
@@ -564,16 +579,50 @@ class MongoChecksRepository implements IChecksRepository {
 		};
 	};
 
-	private findPageSpeedDateRangeChecks = async (monitorObjectId: mongoose.Types.ObjectId, startDate: Date, endDate: Date) => {
+	private findPageSpeedDateRangeChecks = async (monitorObjectId: mongoose.Types.ObjectId, startDate: Date, endDate: Date, dateString: string) => {
 		const matchStage = {
 			"metadata.monitorId": monitorObjectId,
 			createdAt: { $gte: startDate, $lte: endDate },
 		};
 
-		const checks = await CheckModel.find(matchStage).sort({ createdAt: -1 }).limit(25).lean();
+		const [result] = await CheckModel.aggregate([
+			{ $match: matchStage },
+			{ $sort: { createdAt: 1 } },
+			{
+				$facet: {
+					groupedChecks: [
+						{
+							$group: {
+								_id: {
+									$dateToString: { format: dateString, date: "$createdAt" },
+								},
+								avgPerformance: { $avg: "$performance" },
+								avgAccessibility: { $avg: "$accessibility" },
+								avgBestPractices: { $avg: "$bestPractices" },
+								avgSeo: { $avg: "$seo" },
+								totalChecks: { $sum: 1 },
+							},
+						},
+						{ $sort: { _id: 1 } },
+						{
+							$project: {
+								bucketDate: "$_id",
+								performance: "$avgPerformance",
+								accessibility: "$avgAccessibility",
+								bestPractices: "$avgBestPractices",
+								seo: "$avgSeo",
+								totalChecks: 1,
+								_id: 0,
+							},
+						},
+					],
+				},
+			},
+		]);
+
 		return {
 			monitorType: "pagespeed" as const,
-			checks: this.mapDocuments(checks),
+			groupedChecks: result?.groupedChecks ?? [],
 		};
 	};
 

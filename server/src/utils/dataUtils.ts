@@ -1,5 +1,25 @@
 import type { GroupedCheck, NormalizedCheck, NormalizedUptimeCheck, HasResponseTime } from "@/types/index.js";
 
+export const getDateForRange = (dateRange: string): Date | undefined => {
+	const now = Date.now();
+	switch (dateRange) {
+		case "recent":
+			return new Date(now - 2 * 60 * 60 * 1000); // 2 hours
+		case "hour":
+			return new Date(now - 60 * 60 * 1000); // 1 hour
+		case "day":
+			return new Date(now - 24 * 60 * 60 * 1000); // 1 day
+		case "week":
+			return new Date(now - 7 * 24 * 60 * 60 * 1000); // 7 days
+		case "month":
+			return new Date(now - 30 * 24 * 60 * 60 * 1000); // 30 days
+		case "all":
+			return undefined;
+		default:
+			return undefined;
+	}
+};
+
 const calculatePercentile = <T extends HasResponseTime>(arr: T[], percentile: number): number => {
 	const sorted = arr.slice().sort((a, b) => a.responseTime - b.responseTime);
 	const index = (percentile / 100) * (sorted.length - 1);
@@ -25,7 +45,7 @@ export const NormalizeData = <T extends HasResponseTime>(checks: T[], rangeMin: 
 		const min = calculatePercentile(checks, 0);
 		const max = calculatePercentile(checks, 95);
 		const normalizedChecks = checks.map((check) => {
-			const originalResponseTime = check.responseTime;
+			const originalResponseTime = typeof check.responseTime === "number" ? check.responseTime : 0;
 			let normalizedResponseTime = rangeMin + ((check.responseTime - min) * (rangeMax - rangeMin)) / (max - min);
 
 			normalizedResponseTime = Math.max(rangeMin, Math.min(rangeMax, normalizedResponseTime));
@@ -39,7 +59,8 @@ export const NormalizeData = <T extends HasResponseTime>(checks: T[], rangeMin: 
 		return normalizedChecks;
 	} else {
 		return checks.map((check) => {
-			return { ...check, originalResponseTime: check.responseTime };
+			const originalResponseTime = typeof check.responseTime === "number" ? check.responseTime : 0;
+			return { ...check, originalResponseTime: originalResponseTime };
 		});
 	}
 };

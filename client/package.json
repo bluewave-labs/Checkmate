@@ -13,7 +13,7 @@
 		"format-check": "prettier --check ."
 	},
 	"lint-staged": {
-		"**/*": "npm run format"
+		"**/*": "prettier --write"
 	},
 	"dependencies": {
 		"@emotion/react": "^11.13.3",
@@ -25,6 +25,7 @@
 		"@mui/x-charts": "7.29.1",
 		"@mui/x-date-pickers": "7.29.4",
 		"@reduxjs/toolkit": "2.7.0",
+		"@types/maplibre-gl": "^1.13.2",
 		"axios": "^1.7.4",
 		"dayjs": "1.11.13",
 		"flag-icons": "7.3.2",
@@ -33,6 +34,7 @@
 		"i18next": "25.4.2",
 		"joi": "17.13.3",
 		"lucide-react": "^0.562.0",
+		"maplibre-gl": "^5.19.0",
 		"mui-color-input": "^7.0.0",
 		"pretty-bytes": "^7.1.0",
 		"pretty-ms": "^9.3.0",
@@ -41,6 +43,7 @@
 		"react-hook-form": "^7.63.0",
 		"react-i18next": "^15.4.0",
 		"react-icons": "5.5.0",
+		"react-map-gl": "^8.1.0",
 		"react-redux": "9.2.0",
 		"react-router": "^6.23.0",
 		"react-router-dom": "^6.23.1",
@@ -49,7 +52,7 @@
 		"redux-persist": "6.0.0",
 		"swr": "^2.3.6",
 		"vite-plugin-svgr": "^4.2.0",
-		"zod": "^4.1.11"
+		"zod": "^4.3.6"
 	},
 	"devDependencies": {
 		"@types/node": "24.5.2",
@@ -63,6 +66,6 @@
 		"lint-staged": "^16.2.7",
 		"prettier": "^3.3.3",
 		"typescript": "5.9.3",
-		"vite": "6.3.6"
+		"vite": "6.4.1"
 	}
 }

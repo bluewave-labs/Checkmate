@@ -1,14 +1,9 @@
 import Stack from "@mui/material/Stack";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import {
-	MonitorBasePageWithStates,
-	UpStatusBox,
-	DownStatusBox,
-	PausedStatusBox,
-} from "@/Components/v2/design-elements";
-import { HeaderCreate } from "@/Components/v2/common";
-import { ControlsFilter } from "@/Components/v2/monitors";
-import { TextField, Dialog } from "@/Components/v2/inputs";
+import { MonitorBasePageWithStates } from "@/Components/design-elements";
+import { HeaderCreate } from "@/Components/common";
+import { ControlsFilter, HeaderMonitorsSummary } from "@/Components/monitors";
+import { TextField, Dialog } from "@/Components/inputs";
 
 import { useGet, useDelete } from "@/Hooks/UseApi";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
@@ -20,6 +15,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setRowsPerPage } from "@/Features/UI/uiSlice.js";
 import type { RootState } from "@/Types/state";
 import { InfraMonitorsTable } from "./Components/MonitorsTable";
+import useDebounce from "@/Hooks/useDebounce";
 
 const InfrastructureMonitors = () => {
 	const { t } = useTranslation();
@@ -42,6 +38,8 @@ const InfrastructureMonitors = () => {
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
 	const isDialogOpen = Boolean(selectedMonitor);
+
+	const debouncedSearch = useDebounce<string>(search, 300);
 
 	const handleClearFilters = useCallback(() => {
 		setSelectedStatus("");
@@ -69,8 +67,8 @@ const InfrastructureMonitors = () => {
 		[toFilterActive, "isActive"],
 	]);
 	const activeFilter = [...filterLookup].find(([key]) => key !== undefined);
-	const field = activeFilter?.[1] || (search ? "name" : sortField || undefined);
-	const filter = activeFilter?.[0] || search || undefined;
+	const field = activeFilter?.[1] || (debouncedSearch ? "name" : sortField || undefined);
+	const filter = activeFilter?.[0] || debouncedSearch || undefined;
 
 	// Build URL for monitors with checks
 	const monitorsWithChecksUrl = useMemo(() => {
@@ -96,7 +94,7 @@ const InfrastructureMonitors = () => {
 		{ refreshInterval: 5000, keepPreviousData: true }
 	);
 
-	const { summary, count } = monitorsWithChecksData ?? {};
+	const { summary, count } = monitorsWithChecksData ?? { summary: null, count: 0 };
 	const isLoading = monitorsWithChecksLoading;
 
 	// Check if any filters are active
@@ -135,14 +133,10 @@ const InfrastructureMonitors = () => {
 				isLoading={isLoading}
 				isAdmin={isAdmin}
 			/>
-			<Stack
-				direction={isSmall ? "column" : "row"}
-				gap={theme.spacing(8)}
-			>
-				<UpStatusBox n={summary?.upMonitors || 0} />
-				<DownStatusBox n={summary?.downMonitors || 0} />
-				<PausedStatusBox n={summary?.pausedMonitors || 0} />
-			</Stack>
+			<HeaderMonitorsSummary
+				summary={summary}
+				showBreached={true}
+			/>
 			<Stack
 				direction={isSmall ? "column" : "row"}
 				justifyContent={isSmall ? "flex-start" : "space-between"}

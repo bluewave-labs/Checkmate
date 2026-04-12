@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { GeoContinents } from "@/Types/GeoCheck";
 
 // URL schema with custom error message
 const urlSchema = z.url({ message: "Please enter a valid URL" });
@@ -20,6 +21,12 @@ const baseSchema = z.object({
 		.number({ message: "Threshold percentage is required" })
 		.min(1, "Incident percentage must be at least 1")
 		.max(100, "Incident percentage must be at most 100"),
+	geoCheckEnabled: z.boolean().optional(),
+	geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
+	geoCheckInterval: z
+		.number()
+		.min(300000, "Interval must be at least 5 minutes")
+		.optional(),
 });
 
 // HTTP monitor schema
@@ -66,6 +73,18 @@ const gameSchema = baseSchema.extend({
 	gameId: z.string().min(1, "Game type is required"),
 });
 
+// gRPC monitor schema
+const grpcSchema = baseSchema.extend({
+	type: z.literal("grpc"),
+	url: z.string().min(1, "Host is required"),
+	port: z
+		.number()
+		.min(1, "Port must be at least 1")
+		.max(65535, "Port must be at most 65535"),
+	grpcServiceName: z.string().optional(),
+	ignoreTlsErrors: z.boolean(),
+});
+
 // PageSpeed monitor schema
 const pagespeedSchema = baseSchema.extend({
 	type: z.literal("pagespeed"),
@@ -96,6 +115,13 @@ const hardwareSchema = baseSchema.extend({
 	selectedDisks: z.array(z.string()),
 });
 
+// WebSocket monitor schema
+const websocketSchema = baseSchema.extend({
+	type: z.literal("websocket"),
+	url: z.string().min(1, "WebSocket URL is required"),
+	ignoreTlsErrors: z.boolean(),
+});
+
 // Discriminated union of all monitor types
 export const monitorSchema = z.discriminatedUnion("type", [
 	httpSchema,
@@ -103,8 +129,10 @@ export const monitorSchema = z.discriminatedUnion("type", [
 	portSchema,
 	dockerSchema,
 	gameSchema,
+	grpcSchema,
 	pagespeedSchema,
 	hardwareSchema,
+	websocketSchema,
 ]);
 
 export type MonitorFormData = z.infer<typeof monitorSchema>;
@@ -116,6 +144,8 @@ export {
 	portSchema,
 	dockerSchema,
 	gameSchema,
+	grpcSchema,
 	pagespeedSchema,
 	hardwareSchema,
+	websocketSchema,
 };

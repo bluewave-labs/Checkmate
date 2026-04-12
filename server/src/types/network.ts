@@ -11,9 +11,22 @@ import type {
 	Monitor,
 	MonitorMatchMethod,
 	MonitorType,
+	MonitorStatus,
 } from "@/types/index.js";
 
-export interface MonitorStatusResponse<T = any> {
+import type { QueryResult } from "gamedig";
+
+export interface MonitorStatusResponse<
+	T =
+		| HttpStatusPayload
+		| PingStatusPayload
+		| PageSpeedStatusPayload
+		| HardwareStatusPayload
+		| DockerStatusPayload
+		| GameStatusPayload
+		| GrpcStatusPayload
+		| WebSocketStatusPayload,
+> {
 	monitorId: string;
 	teamId: string;
 	type: MonitorType;
@@ -39,7 +52,7 @@ export interface PingStatusPayload {
 	host: string;
 	numeric_host?: string;
 	alive: boolean;
-	time: number;
+	time: number | unknown;
 	times?: number[];
 	output?: string;
 	min?: string;
@@ -90,7 +103,18 @@ export interface PortStatusPayload {
 	success: boolean;
 }
 
-export type GameStatusPayload = Record<string, unknown>;
+export type GameStatusPayload = QueryResult;
+
+export interface GrpcStatusPayload {
+	grpcStatusCode: number;
+	grpcStatusName: string;
+	serviceName: string;
+	servingStatus: string;
+}
+
+export interface WebSocketStatusPayload {
+	connected: boolean;
+}
 
 export interface MonitorPayloadMap {
 	ping: PingStatusPayload;
@@ -100,13 +124,23 @@ export interface MonitorPayloadMap {
 	docker: DockerStatusPayload;
 	port: PortStatusPayload;
 	game: GameStatusPayload;
-	default: unknown;
+	grpc: GrpcStatusPayload;
+	websocket: WebSocketStatusPayload;
+	unknown: unknown;
 }
 
 export type StatusChangeResult = {
 	monitor: Monitor;
 	statusChanged: boolean;
-	prevStatus: boolean | undefined;
+	prevStatus: MonitorStatus;
 	code: number;
 	timestamp: number;
+	thresholdBreaches?: {
+		cpu: boolean;
+		memory: boolean;
+		disk: boolean;
+		temp: boolean;
+	};
 };
+
+export type MonitorStatusResponseOverrides<T> = Partial<Omit<MonitorStatusResponse<T>, "monitorId" | "teamId" | "type">>;

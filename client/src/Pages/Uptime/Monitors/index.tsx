@@ -1,14 +1,9 @@
-import { ControlsFilter } from "@/Components/v2/monitors";
-import {
-	MonitorBasePageWithStates,
-	UpStatusBox,
-	DownStatusBox,
-	PausedStatusBox,
-} from "@/Components/v2/design-elements";
-import { TextField, Dialog } from "@/Components/v2/inputs";
+import { ControlsFilter, HeaderMonitorsSummary } from "@/Components/monitors";
+import { MonitorBasePageWithStates } from "@/Components/design-elements";
+import { TextField, Dialog } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
 import { MonitorTable } from "@/Pages/Uptime/Monitors/Components/UptimeMonitorsTable";
-import { HeaderCreate } from "@/Components/v2/common";
+import { HeaderCreate } from "@/Components/common";
 
 import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -20,6 +15,7 @@ import { setRowsPerPage } from "@/Features/UI/uiSlice.js";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import type { RootState } from "@/Types/state";
 import { useTheme } from "@mui/material";
+import useDebounce from "@/Hooks/useDebounce";
 
 const UptimeMonitorsPage = () => {
 	const { t } = useTranslation();
@@ -43,12 +39,14 @@ const UptimeMonitorsPage = () => {
 	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
 	const isDialogOpen = Boolean(selectedMonitor);
 
+	const debouncedSearch = useDebounce<string>(search, 300);
+
 	// Convert filter selections to API filter values
-	// Status: "up" -> true, "down" -> false
+	// Status: pass "up"/"down" directly to the API
 	// State: "active" -> true, "paused" -> false
 	const toFilterStatus = useMemo(() => {
-		if (selectedStatus === "up") return "true";
-		if (selectedStatus === "down") return "false";
+		if (selectedStatus === "up") return "up";
+		if (selectedStatus === "down") return "down";
 		return undefined;
 	}, [selectedStatus]);
 
@@ -65,12 +63,14 @@ const UptimeMonitorsPage = () => {
 		[toFilterActive, "isActive"],
 	]);
 	const activeFilter = [...filterLookup].find(([key]) => key !== undefined);
-	const field = activeFilter?.[1] || (search ? "name" : sortField || undefined);
-	const filter = activeFilter?.[0] || search;
+	const field = activeFilter?.[1] || (debouncedSearch ? "name" : sortField || undefined);
+	const filter = activeFilter?.[0] || debouncedSearch;
 
 	// Default to all types when none selected
 	const effectiveTypes =
-		selectedTypes.length > 0 ? selectedTypes : ["http", "ping", "docker", "port", "game"];
+		selectedTypes.length > 0
+			? selectedTypes
+			: ["http", "ping", "docker", "port", "game", "grpc", "websocket"];
 
 	// Build URL for monitors with checks
 	const monitorsWithChecksUrl = useMemo(() => {
@@ -96,7 +96,11 @@ const UptimeMonitorsPage = () => {
 		{ refreshInterval: 5000, keepPreviousData: true }
 	);
 
-	const { monitors: monitorsWithChecks, summary, count } = monitorsWithChecksData ?? {};
+	const {
+		monitors: monitorsWithChecks,
+		summary,
+		count,
+	} = monitorsWithChecksData ?? { monitors: null, summary: null, count: 0 };
 
 	// Delete hook
 	const { deleteFn, loading: isDeleting } = useDelete();
@@ -147,14 +151,8 @@ const UptimeMonitorsPage = () => {
 				isLoading={isLoading}
 				isAdmin={isAdmin}
 			/>
-			<Stack
-				direction={isSmall ? "column" : "row"}
-				gap={theme.spacing(8)}
-			>
-				<UpStatusBox n={summary?.upMonitors || 0} />
-				<DownStatusBox n={summary?.downMonitors || 0} />
-				<PausedStatusBox n={summary?.pausedMonitors || 0} />
-			</Stack>
+
+			<HeaderMonitorsSummary summary={summary} />
 
 			<Stack
 				direction={isSmall ? "column" : "row"}

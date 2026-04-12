@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { isAllowed } from "../middleware/isAllowed.js";
+import { isAllowed } from "@/middleware/isAllowed.js";
+import { ILogController } from "@/controllers/logController.js";
 class LogRoutes {
 	private router: Router;
-	private logController: any;
+	private logController: ILogController;
 
-	constructor(logController: any) {
+	constructor(logController: ILogController) {
 		this.router = Router();
 		this.logController = logController;
 		this.initRoutes();

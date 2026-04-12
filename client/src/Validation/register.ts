@@ -1,7 +1,5 @@
 import { z } from "zod";
-
-const namePattern = /^[\p{L}\p{M}''()\-\. ]+$/u;
-const specialCharPattern = /[!?@#$%^&*()\-_=+[\]{};:'",.<>~`|\\/]/;
+import { specialCharPattern, namePattern } from "@/Validation/patterns";
 
 export const registerSchema = z
 	.object({

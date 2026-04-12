@@ -33,3 +33,9 @@ export { default as TeamModel } from "@/db/models/Team.js";
 
 export * from "@/db/models/MaintenanceWindow.js";
 export { default as MaintenanceWindowModel } from "@/db/models/MaintenanceWindow.js";
+
+export * from "@/db/models/GeoCheck.js";
+export { default as GeoCheckModel } from "@/db/models/GeoCheck.js";
+
+export * from "@/db/models/DLQItem.js";
+export { default as DLQItemModel } from "@/db/models/DLQItem.js";

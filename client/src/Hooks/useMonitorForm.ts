@@ -14,6 +14,9 @@ const getBaseDefaults = (data?: Monitor | null) => ({
 	notifications: data?.notifications || [],
 	statusWindowSize: data?.statusWindowSize || 5,
 	statusWindowThreshold: data?.statusWindowThreshold || 60,
+	geoCheckEnabled: data?.geoCheckEnabled ?? false,
+	geoCheckLocations: data?.geoCheckLocations || [],
+	geoCheckInterval: data?.geoCheckInterval || 300000,
 });
 
 export const useMonitorForm = ({
@@ -70,6 +73,16 @@ export const useMonitorForm = ({
 					gameId: data?.gameId || "",
 				};
 				break;
+			case "grpc":
+				defaults = {
+					...base,
+					type: "grpc",
+					url: data?.url || "",
+					port: data?.port || 50051,
+					grpcServiceName: data?.grpcServiceName || "",
+					ignoreTlsErrors: data?.ignoreTlsErrors || false,
+				};
+				break;
 			case "pagespeed":
 				defaults = {
 					...base,
@@ -83,11 +96,19 @@ export const useMonitorForm = ({
 					type: "hardware",
 					url: data?.url || "",
 					secret: data?.secret || "",
-					cpuAlertThreshold: data?.cpuAlertThreshold ?? 80,
-					memoryAlertThreshold: data?.memoryAlertThreshold ?? 80,
-					diskAlertThreshold: data?.diskAlertThreshold ?? 80,
-					tempAlertThreshold: data?.tempAlertThreshold ?? 80,
+					cpuAlertThreshold: data?.cpuAlertThreshold ?? 100,
+					memoryAlertThreshold: data?.memoryAlertThreshold ?? 100,
+					diskAlertThreshold: data?.diskAlertThreshold ?? 100,
+					tempAlertThreshold: data?.tempAlertThreshold ?? 100,
 					selectedDisks: data?.selectedDisks || [],
+				};
+				break;
+			case "websocket":
+				defaults = {
+					...base,
+					type: "websocket",
+					url: data?.url || "",
+					ignoreTlsErrors: data?.ignoreTlsErrors || false,
 				};
 				break;
 			default:

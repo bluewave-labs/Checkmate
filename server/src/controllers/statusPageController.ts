@@ -1,17 +1,30 @@
 import { Request, Response, NextFunction } from "express";
 
-import { createStatusPageBodyValidation, getStatusPageParamValidation, getStatusPageQueryValidation, imageValidation } from "@/validation/joi.js";
+import {
+	createStatusPageBodyValidation,
+	getStatusPageParamValidation,
+	getStatusPageQueryValidation,
+	imageValidation,
+} from "@/validation/statusPageValidation.js";
 import { AppError } from "@/utils/AppError.js";
 import { requireTeamId, requireUserId } from "@/controllers/controllerUtils.js";
 import { IStatusPageService } from "@/service/business/statusPageService.js";
 import { IMonitorsRepository } from "@/repositories/index.js";
 import { ISettingsService } from "@/service/system/settingsService.js";
-import { ParseBoolean } from "@/utils/utils.js";
 import { NormalizeData } from "@/utils/dataUtils.js";
 
 const SERVICE_NAME = "statusPageController";
 
-class StatusPageController {
+export interface IStatusPageController {
+	readonly serviceName: string;
+	createStatusPage(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	updateStatusPage(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	getStatusPageByUrl(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	getStatusPagesByTeamId(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	deleteStatusPage(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+}
+
+class StatusPageController implements IStatusPageController {
 	static SERVICE_NAME = SERVICE_NAME;
 	private statusPageService: IStatusPageService;
 	private monitorsRepository: IMonitorsRepository;
@@ -28,8 +41,10 @@ class StatusPageController {
 
 	createStatusPage = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await createStatusPageBodyValidation.validateAsync(req.body);
-			await imageValidation.validateAsync(req.file);
+			createStatusPageBodyValidation.parse(req.body);
+			if (req.file) {
+				imageValidation.parse(req.file);
+			}
 
 			const teamId = requireTeamId(req?.user?.teamId);
 			const userId = requireUserId(req?.user?.id);
@@ -47,8 +62,10 @@ class StatusPageController {
 
 	updateStatusPage = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await createStatusPageBodyValidation.validateAsync(req.body);
-			await imageValidation.validateAsync(req.file);
+			createStatusPageBodyValidation.parse(req.body);
+			if (req.file) {
+				imageValidation.parse(req.file);
+			}
 			const teamId = requireTeamId(req?.user?.teamId);
 			const statusPageId = req.params.id as string;
 			if (!statusPageId) {
@@ -58,7 +75,7 @@ class StatusPageController {
 			if (statusPage === null) {
 				throw new AppError({ message: "Status page not found", status: 404 });
 			}
-			return res.status(200).json({
+			res.status(200).json({
 				success: true,
 				msg: "Status page updated successfully",
 				data: statusPage,
@@ -70,14 +87,22 @@ class StatusPageController {
 
 	getStatusPageByUrl = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getStatusPageParamValidation.validateAsync(req.params);
-			await getStatusPageQueryValidation.validateAsync(req.query);
+			getStatusPageParamValidation.parse(req.params);
+			getStatusPageQueryValidation.parse(req.query);
 
 			if (!req.params.url) {
 				throw new AppError({ message: "Status page URL is required", status: 400 });
 			}
 
 			const statusPage = await this.statusPageService.getStatusPageByUrl(req.params.url as string);
+
+			if (!statusPage.isPublished) {
+				const teamId = requireTeamId(req?.user?.teamId);
+				if (statusPage.teamId !== teamId) {
+					throw new AppError({ message: "Forbidden", status: 403 });
+				}
+			}
+
 			const settings = await this.settingsService.getDBSettings();
 			const showURL = settings.showURL;
 
@@ -93,6 +118,7 @@ class StatusPageController {
 			const normalizedMonitors = sortedMonitors.map((monitor) => {
 				const normalizedChecks = NormalizeData(monitor.recentChecks, 10, 100);
 				if (!showURL) {
+					// eslint-disable-next-line @typescript-eslint/no-unused-vars
 					const { url, port, secret, notifications, ...rest } = monitor;
 					return { ...rest, checks: normalizedChecks };
 				}

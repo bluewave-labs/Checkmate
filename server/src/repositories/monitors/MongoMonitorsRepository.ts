@@ -1,8 +1,9 @@
 import { MonitorModel } from "@/db/models/index.js";
 import type { MonitorDocument, CheckSnapshotDocument } from "@/db/models/index.js";
-import type { Monitor, MonitorsSummary, CheckSnapshot, Check } from "@/types/index.js";
+import type { Monitor, MonitorsSummary, CheckSnapshot } from "@/types/index.js";
 import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "./IMonitorsRepository.js";
+import { MongoBulkWriteError } from "mongodb";
 import { AppError } from "@/utils/AppError.js";
 
 class MongoMonitorsRepository implements IMonitorsRepository {
@@ -12,13 +13,20 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return this.toEntity(saved);
 	};
 
-	createBulkMonitors = async (monitors: Monitor[]): Promise<Monitor[]> => {
+	createMonitors = async (monitors: Monitor[]): Promise<Monitor[]> => {
 		if (!monitors.length) {
 			return [];
 		}
 		const payload = monitors.map((monitor) => ({ ...monitor, notifications: undefined }));
-		const inserted = await MonitorModel.insertMany(payload, { ordered: false });
-		return this.mapDocuments(inserted);
+		try {
+			const inserted = await MonitorModel.insertMany(payload, { ordered: false });
+			return this.mapDocuments(inserted);
+		} catch (error: unknown) {
+			if (error instanceof MongoBulkWriteError && "insertedDocs" in error && Array.isArray(error.insertedDocs) && error.insertedDocs.length > 0) {
+				return this.mapDocuments(error.insertedDocs);
+			}
+			throw error;
+		}
 	};
 
 	findById = async (monitorId: string, teamId: string): Promise<Monitor> => {
@@ -36,7 +44,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	findByTeamId = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null> => {
-		const { page = 0, rowsPerPage = 0, filter, field = "createdAt", order = "desc", type, limit } = config ?? {};
+		const { page = 0, rowsPerPage = 0, filter, field = "createdAt", order = "desc", type } = config ?? {};
 
 		const query: Record<string, unknown> = {
 			teamId: new mongoose.Types.ObjectId(teamId),
@@ -55,7 +63,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 					query.isActive = filter === "true";
 					break;
 				case "status":
-					query.status = filter === "true";
+					query.status = filter;
 					break;
 				case "type":
 					query.type = filter;
@@ -181,7 +189,13 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 				{
 					$set: {
 						isActive: { $not: "$isActive" },
-						status: "$$REMOVE",
+						status: {
+							$cond: {
+								if: { $eq: ["$status", "paused"] },
+								then: "initializing",
+								else: "paused",
+							},
+						},
 					},
 				},
 			],
@@ -223,17 +237,32 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 					totalMonitors: { $sum: 1 },
 					upMonitors: {
 						$sum: {
-							$cond: [{ $eq: ["$status", true] }, 1, 0],
+							$cond: [{ $eq: ["$status", "up"] }, 1, 0],
 						},
 					},
 					downMonitors: {
 						$sum: {
-							$cond: [{ $eq: ["$status", false] }, 1, 0],
+							$cond: [{ $eq: ["$status", "down"] }, 1, 0],
 						},
 					},
 					pausedMonitors: {
 						$sum: {
-							$cond: [{ $eq: ["$isActive", false] }, 1, 0],
+							$cond: [{ $eq: ["$status", "paused"] }, 1, 0],
+						},
+					},
+					initializingMonitors: {
+						$sum: {
+							$cond: [{ $eq: ["$status", "initializing"] }, 1, 0],
+						},
+					},
+					maintenanceMonitors: {
+						$sum: {
+							$cond: [{ $eq: ["$status", "maintenance"] }, 1, 0],
+						},
+					},
+					breachedMonitors: {
+						$sum: {
+							$cond: [{ $eq: ["$status", "breached"] }, 1, 0],
 						},
 					},
 				},
@@ -242,7 +271,17 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		];
 
 		const [summary] = await MonitorModel.aggregate(pipeline);
-		return summary ?? { totalMonitors: 0, upMonitors: 0, downMonitors: 0, pausedMonitors: 0 };
+		return (
+			summary ?? {
+				totalMonitors: 0,
+				upMonitors: 0,
+				downMonitors: 0,
+				pausedMonitors: 0,
+				initializingMonitors: 0,
+				maintenanceMonitors: 0,
+				breachedMonitors: 0,
+			}
+		);
 	};
 
 	findGroupsByTeamId = async (teamId: string): Promise<string[]> => {
@@ -255,6 +294,41 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 
 	removeNotificationFromMonitors = async (notificationId: string): Promise<void> => {
 		await MonitorModel.updateMany({ notifications: notificationId }, { $pull: { notifications: notificationId } });
+	};
+
+	updateNotifications = async (
+		teamId: string,
+		monitorIds: string[],
+		notificationIds: string[],
+		action: "add" | "remove" | "set"
+	): Promise<number> => {
+		let objectIds;
+		let notificationObjectIds;
+		try {
+			objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+			notificationObjectIds = notificationIds.map((id) => new mongoose.Types.ObjectId(id));
+		} catch {
+			throw new AppError({ message: "One or more monitor or notification IDs are invalid", status: 400 });
+		}
+		const filter = { _id: { $in: objectIds }, teamId: new mongoose.Types.ObjectId(teamId) };
+
+		let update;
+		switch (action) {
+			case "add":
+				update = { $addToSet: { notifications: { $each: notificationObjectIds } } };
+				break;
+			case "remove":
+				update = { $pull: { notifications: { $in: notificationObjectIds } } };
+				break;
+			case "set":
+				update = { $set: { notifications: notificationObjectIds } };
+				break;
+			default:
+				throw new AppError({ message: `Invalid action: ${action}`, status: 400 });
+		}
+
+		const result = await MonitorModel.updateMany(filter, update);
+		return result.modifiedCount;
 	};
 
 	private mapDocuments = (documents: MonitorDocument[]): Monitor[] => {
@@ -284,7 +358,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			teamId: toStringId(doc.teamId),
 			name: doc.name,
 			description: doc.description ?? undefined,
-			status: doc.status ?? undefined,
+			status: doc.status ?? "initializing",
 			statusWindow: doc.statusWindow ?? [],
 			statusWindowSize: doc.statusWindowSize,
 			statusWindowThreshold: doc.statusWindowThreshold,
@@ -301,22 +375,28 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			uptimePercentage: doc.uptimePercentage ?? undefined,
 			notifications: notificationIds,
 			secret: doc.secret ?? undefined,
-			thresholds: doc.thresholds ?? undefined,
-			alertThreshold: doc.alertThreshold,
 			cpuAlertThreshold: doc.cpuAlertThreshold,
+			cpuAlertCounter: doc.cpuAlertCounter,
 			memoryAlertThreshold: doc.memoryAlertThreshold,
+			memoryAlertCounter: doc.memoryAlertCounter,
 			diskAlertThreshold: doc.diskAlertThreshold,
+			diskAlertCounter: doc.diskAlertCounter,
 			tempAlertThreshold: doc.tempAlertThreshold,
+			tempAlertCounter: doc.tempAlertCounter,
 			selectedDisks: doc.selectedDisks ?? [],
 			gameId: doc.gameId ?? undefined,
+			grpcServiceName: doc.grpcServiceName ?? undefined,
 			group: doc.group ?? null,
-			recentChecks: (doc.recentChecks ?? []).map((check: any) => this.toCheckSnapshot(check)),
+			recentChecks: (doc.recentChecks ?? []).map((check: CheckSnapshotDocument) => this.toCheckSnapshot(check)),
+			geoCheckEnabled: doc.geoCheckEnabled ?? false,
+			geoCheckLocations: doc.geoCheckLocations ?? [],
+			geoCheckInterval: doc.geoCheckInterval ?? 300000,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
 	};
 
-	private toEntityWithChecks = (doc: any): Monitor => {
+	private toEntityWithChecks = (doc: MonitorDocument): Monitor => {
 		const toStringId = (value: unknown): string => {
 			if (value instanceof mongoose.Types.ObjectId) {
 				return value.toString();
@@ -331,45 +411,13 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 
 		const notificationIds = (doc.notifications ?? []).map((notification: unknown) => toStringId(notification));
 
-		const checks: Check[] = (doc.checks ?? []).map((check: any) => ({
-			id: toStringId(check._id),
-			metadata: {
-				monitorId: toStringId(check.metadata?.monitorId),
-				teamId: toStringId(check.metadata?.teamId),
-				type: check.metadata?.type,
-			},
-			status: check.status,
-			responseTime: check.responseTime,
-			timings: check.timings,
-			statusCode: check.statusCode,
-			message: check.message,
-			ack: check.ack,
-			ackAt: check.ackAt ?? null,
-			expiry: toDateString(check.expiry),
-			cpu: check.cpu,
-			memory: check.memory,
-			disk: check.disk,
-			host: check.host,
-			errors: check.errors,
-			capture: check.capture,
-			net: check.net,
-			accessibility: check.accessibility,
-			bestPractices: check.bestPractices,
-			seo: check.seo,
-			performance: check.performance,
-			audits: check.audits,
-			__v: check.__v,
-			createdAt: toDateString(check.createdAt),
-			updatedAt: toDateString(check.updatedAt),
-		}));
-
 		return {
 			id: toStringId(doc._id),
 			userId: toStringId(doc.userId),
 			teamId: toStringId(doc.teamId),
 			name: doc.name,
 			description: doc.description ?? undefined,
-			status: doc.status ?? undefined,
+			status: doc.status ?? "initializing",
 			statusWindow: doc.statusWindow ?? [],
 			statusWindowSize: doc.statusWindowSize,
 			statusWindowThreshold: doc.statusWindowThreshold,
@@ -386,16 +434,22 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			uptimePercentage: doc.uptimePercentage ?? undefined,
 			notifications: notificationIds,
 			secret: doc.secret ?? undefined,
-			thresholds: doc.thresholds ?? undefined,
-			alertThreshold: doc.alertThreshold,
 			cpuAlertThreshold: doc.cpuAlertThreshold,
+			cpuAlertCounter: doc.cpuAlertCounter,
 			memoryAlertThreshold: doc.memoryAlertThreshold,
+			memoryAlertCounter: doc.memoryAlertCounter,
 			diskAlertThreshold: doc.diskAlertThreshold,
+			diskAlertCounter: doc.diskAlertCounter,
 			tempAlertThreshold: doc.tempAlertThreshold,
+			tempAlertCounter: doc.tempAlertCounter,
 			selectedDisks: doc.selectedDisks ?? [],
 			gameId: doc.gameId ?? undefined,
+			grpcServiceName: doc.grpcServiceName ?? undefined,
 			group: doc.group ?? null,
-			recentChecks: (doc.recentChecks ?? []).map((check: any) => this.toCheckSnapshot(check)),
+			recentChecks: (doc.recentChecks ?? []).map((check: CheckSnapshotDocument) => this.toCheckSnapshot(check)),
+			geoCheckEnabled: doc.geoCheckEnabled ?? false,
+			geoCheckLocations: doc.geoCheckLocations ?? [],
+			geoCheckInterval: doc.geoCheckInterval ?? 300000,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
@@ -427,6 +481,17 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			audits: doc.audits,
 			createdAt: toDateString(doc.createdAt),
 		};
+	};
+
+	deleteByTeamIdsNotIn = async (teamIds: string[]): Promise<number> => {
+		const objectIds = teamIds.map((id) => new mongoose.Types.ObjectId(id));
+		const result = await MonitorModel.deleteMany({ teamId: { $nin: objectIds } });
+		return result.deletedCount ?? 0;
+	};
+
+	findAllMonitorIds = async (): Promise<string[]> => {
+		const monitors = await MonitorModel.find({}, { _id: 1 }).lean();
+		return monitors.map((doc) => doc._id.toString());
 	};
 }
 

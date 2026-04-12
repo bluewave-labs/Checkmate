@@ -1,5 +1,7 @@
 import type { GroupedCheck, CheckSnapshot } from "@/Types/Check";
-export type MonitorStatus = boolean | undefined;
+import type { PageSpeedGroupedCheck } from "@/Types/Check";
+import type { GeoContinent } from "@/Types/GeoCheck";
+export type { GeoContinent } from "@/Types/GeoCheck";
 
 export const MonitorTypes = [
 	"http",
@@ -9,16 +11,30 @@ export const MonitorTypes = [
 	"docker",
 	"port",
 	"game",
+	"grpc",
+	"websocket",
 	"unknown",
 ] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
-export interface MonitorThresholds {
-	usage_cpu?: number;
-	usage_memory?: number;
-	usage_disk?: number;
-	usage_temperature?: number;
-}
+export const GeoCheckSupportedTypes: readonly MonitorType[] = ["http", "ping"] as const;
+
+export const supportsGeoCheck = (type: MonitorType | undefined): boolean => {
+	if (!type) {
+		return false;
+	}
+	return GeoCheckSupportedTypes.includes(type);
+};
+
+export const MonitorStatuses = [
+	"up",
+	"down",
+	"paused",
+	"initializing",
+	"maintenance",
+	"breached",
+] as const;
+export type MonitorStatus = (typeof MonitorStatuses)[number];
 
 export type MonitorMatchMethod = "equal" | "include" | "regex" | "";
 
@@ -28,7 +44,7 @@ export interface Monitor {
 	teamId: string;
 	name: string;
 	description?: string;
-	status?: boolean;
+	status: MonitorStatus;
 	statusWindow: boolean[];
 	statusWindowSize: number;
 	statusWindowThreshold: number;
@@ -45,15 +61,21 @@ export interface Monitor {
 	uptimePercentage?: number;
 	notifications: string[];
 	secret?: string;
-	thresholds?: MonitorThresholds;
-	alertThreshold: number;
 	cpuAlertThreshold: number;
+	cpuAlertCounter: number;
 	memoryAlertThreshold: number;
+	memoryAlertCounter: number;
 	diskAlertThreshold: number;
+	diskAlertCounter: number;
 	tempAlertThreshold: number;
+	tempAlertCounter: number;
 	selectedDisks: string[];
 	gameId?: string;
+	grpcServiceName?: string;
 	group: string | null;
+	geoCheckEnabled?: boolean;
+	geoCheckLocations?: GeoContinent[];
+	geoCheckInterval?: number;
 	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;
@@ -66,6 +88,9 @@ export interface MonitorsSummary {
 	upMonitors: number;
 	downMonitors: number;
 	pausedMonitors: number;
+	initializingMonitors: number;
+	maintenanceMonitors: number;
+	breachedMonitors: number;
 }
 
 export interface MonitorsWithChecksResponse {
@@ -78,6 +103,7 @@ export interface MonitorStats {
 	id: string;
 	monitorId: string;
 	avgResponseTime: number;
+	maxResponseTime: number;
 	totalChecks: number;
 	totalUpChecks: number;
 	totalDownChecks: number;
@@ -104,7 +130,10 @@ export interface MonitorDetailsResponse {
 }
 
 export interface PageSpeedDetailsResponse {
-	monitor: MonitorWithChecks;
+	monitorData: {
+		monitor: Monitor;
+		groupedChecks: PageSpeedGroupedCheck[];
+	};
 	monitorStats: MonitorStats | null;
 }
 

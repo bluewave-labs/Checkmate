@@ -1,4 +1,4 @@
-import { BasePage } from "@/Components/v2/design-elements";
+import { BasePage } from "@/Components/design-elements";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
@@ -11,7 +11,7 @@ import {
 import { IncidentsTable } from "@/Pages/Incidents/Components/IncidentTable";
 import { DialogResolution } from "@/Pages/Incidents/Components/DialogResolution";
 import { DialogIncidentDetails } from "@/Pages/Incidents/Components/DialogIncidentDetails";
-import { HeaderTimeRange } from "@/Components/v2/common";
+import { HeaderTimeRange } from "@/Components/common";
 import { ControlsIncidentFilter } from "@/Pages/Incidents/Components/ControlsIncidentFilter";
 
 import { useGet } from "@/Hooks/UseApi";

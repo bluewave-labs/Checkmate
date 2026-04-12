@@ -1,12 +1,19 @@
 import { Request, Response, NextFunction } from "express";
-import { inviteBodyValidation, inviteVerificationBodyValidation } from "@/validation/joi.js";
-import { requireTeamId, requireUserRoles } from "@/controllers/controllerUtils.js";
+import { inviteBodyValidation, inviteVerificationBodyValidation } from "@/validation/authValidation.js";
+import { requireFirstName, requireTeamId, requireUserRoles } from "@/controllers/controllerUtils.js";
+import { IInviteService } from "@/service/index.js";
 const SERVICE_NAME = "inviteController";
 
-class InviteController {
+export interface IInviteController {
+	getInviteToken: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	sendInviteEmail: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	verifyInviteToken: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+}
+
+class InviteController implements IInviteController {
 	static SERVICE_NAME = SERVICE_NAME;
-	private inviteService: any;
-	constructor(inviteService: any) {
+	private inviteService: IInviteService;
+	constructor(inviteService: IInviteService) {
 		this.inviteService = inviteService;
 	}
 
@@ -15,13 +22,12 @@ class InviteController {
 	}
 
 	getInviteToken = async (req: Request, res: Response, next: NextFunction) => {
-		console.log(req.body);
 		try {
 			const teamId = requireTeamId(req.user?.teamId);
 			const userRoles = requireUserRoles(req.user?.role);
 			const invite = req.body;
 			invite.teamId = teamId;
-			await inviteBodyValidation.validateAsync(invite);
+			inviteBodyValidation.parse(invite);
 			const inviteToken = await this.inviteService.getInviteToken({ invite, teamId, userRoles });
 			return res.status(200).json({
 				success: true,
@@ -35,16 +41,17 @@ class InviteController {
 
 	sendInviteEmail = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const teamId = requireTeamId(req?.user?.teamId);
-			const userRoles = requireUserRoles(req?.user?.role);
+			const teamId = requireTeamId(req.user?.teamId);
+			const userRoles = requireUserRoles(req.user?.role);
+			const firstName = requireFirstName(req.user?.firstName);
 
 			const inviteRequest = req.body;
 			inviteRequest.teamId = teamId;
-			await inviteBodyValidation.validateAsync(inviteRequest);
+			inviteBodyValidation.parse(inviteRequest);
 
 			const inviteToken = await this.inviteService.sendInviteEmail({
 				invite: inviteRequest,
-				firstName: req?.user?.firstName,
+				firstName,
 				userRoles,
 			});
 			return res.status(200).json({
@@ -59,7 +66,7 @@ class InviteController {
 
 	verifyInviteToken = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await inviteVerificationBodyValidation.validateAsync(req.body);
+			inviteVerificationBodyValidation.parse(req.body);
 			const invite = await this.inviteService.verifyInviteToken({ inviteToken: req?.body?.token });
 			return res.status(200).json({
 				success: true,

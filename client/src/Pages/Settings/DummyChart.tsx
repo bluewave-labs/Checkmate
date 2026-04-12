@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
-import { HeatmapResponseTime, HistogramResponseTime } from "@/Components/v2/common";
+import { HeatmapResponseTime, HistogramResponseTime } from "@/Components/common";
 import type { CheckSnapshot } from "@/Types/Check";
 
 interface DummyChartProps {

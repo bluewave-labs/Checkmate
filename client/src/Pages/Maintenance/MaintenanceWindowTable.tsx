@@ -1,13 +1,13 @@
 import Typography from "@mui/material/Typography";
-import { Table, ValueLabel } from "@/Components/v2/design-elements";
-import { Pagination } from "@/Components/v2/design-elements/Table";
-import { ActionsMenu } from "@/Components/v2/actions-menu";
-import { DialogInput } from "@/Components/v2/inputs/Dialog";
+import { Table, ValueLabel } from "@/Components/design-elements";
+import { Pagination } from "@/Components/design-elements/Table";
+import { ActionsMenu } from "@/Components/actions-menu";
+import { DialogInput } from "@/Components/inputs/Dialog";
 
 import prettyMilliseconds from "pretty-ms";
 import { useTheme } from "@mui/material";
-import type { Header } from "@/Components/v2/design-elements/Table";
-import type { ActionMenuItem } from "@/Components/v2/actions-menu";
+import type { Header } from "@/Components/design-elements/Table";
+import type { ActionMenuItem } from "@/Components/actions-menu";
 import type { MaintenanceWindow } from "@/Types/MaintenanceWindow";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -196,13 +196,13 @@ export const MaintenanceWindowTable = ({
 			/>
 			<DialogInput
 				open={deleteDialogOpen}
-				title={t("maintenanceTableActionMenuDialogTitle")}
+				title={t("common.dialogs.delete.title")}
+				content={t("common.dialogs.delete.description")}
 				onCancel={() => {
 					setDeleteDialogOpen(false);
 					setSelectedWindow(null);
 				}}
 				onConfirm={handleDelete}
-				confirmText={t("delete")}
 				loading={deleteLoading}
 			/>
 		</Box>

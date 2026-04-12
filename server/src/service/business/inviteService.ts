@@ -2,14 +2,22 @@ import type { Invite, UserRole } from "@/types/index.js";
 import { canManageRole } from "@/types/user.js";
 import type { IInvitesRepository } from "@/repositories/index.js";
 import { AppError } from "@/utils/AppError.js";
+import { ISettingsService } from "../system/settingsService.js";
+import { IEmailService } from "../infrastructure/emailService.js";
 
 const SERVICE_NAME = "inviteService";
 
-class InviteService {
+export interface IInviteService {
+	getInviteToken(params: { invite: Partial<Invite>; teamId: string; userRoles: UserRole[] }): Promise<Invite>;
+	sendInviteEmail(params: { invite: Partial<Invite>; firstName: string; userRoles: UserRole[] }): Promise<void>;
+	verifyInviteToken(params: { inviteToken: string }): Promise<Invite>;
+}
+
+export class InviteService implements IInviteService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private settingsService: any;
-	private emailService: any;
+	private settingsService: ISettingsService;
+	private emailService: IEmailService;
 	private invitesRepository: IInvitesRepository;
 
 	constructor({
@@ -18,8 +26,8 @@ class InviteService {
 		emailService,
 	}: {
 		invitesRepository: IInvitesRepository;
-		settingsService: any;
-		emailService: any;
+		settingsService: ISettingsService;
+		emailService: IEmailService;
 	}) {
 		this.invitesRepository = invitesRepository;
 		this.settingsService = settingsService;
@@ -51,8 +59,16 @@ class InviteService {
 		return inviteToken;
 	};
 
-	sendInviteEmail = async ({ invite, firstName, userRoles }: { invite: Partial<Invite>; firstName: any; userRoles: UserRole[] }) => {
+	sendInviteEmail = async ({ invite, firstName, userRoles }: { invite: Partial<Invite>; firstName: string; userRoles: UserRole[] }) => {
 		const inviteRoles = invite.role ?? [];
+		if (!invite.email) {
+			throw new AppError({
+				message: "Invite email is required to send an invite",
+				service: SERVICE_NAME,
+				method: "sendInviteEmail",
+				status: 400,
+			});
+		}
 
 		for (const targetRole of inviteRoles) {
 			const canManage = userRoles.some((actorRole) => canManageRole(actorRole, targetRole));
@@ -60,7 +76,7 @@ class InviteService {
 				throw new AppError({
 					message: "You do not have permission to create this invite",
 					service: SERVICE_NAME,
-					method: "getInviteToken",
+					method: "sendInviteEmail",
 					status: 403,
 				});
 			}
@@ -73,6 +89,16 @@ class InviteService {
 			name: firstName,
 			link: `${clientHost}/register/${inviteToken.token}`,
 		});
+
+		if (!html) {
+			throw new AppError({
+				message: "Failed to build invite e-mail... Please verify your settings.",
+				service: SERVICE_NAME,
+				method: "sendInviteEmail",
+				status: 500,
+			});
+		}
+
 		const result = await this.emailService.sendEmail(invite.email, "Welcome to Uptime Monitor", html);
 		if (!result) {
 			throw new AppError({
@@ -88,5 +114,3 @@ class InviteService {
 		return await this.invitesRepository.findByToken(inviteToken);
 	};
 }
-
-export default InviteService;

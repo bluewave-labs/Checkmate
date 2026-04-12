@@ -1,28 +1,54 @@
-import { requireTeamId } from "@/controllers/controllerUtils.js";
 import { Types } from "mongoose";
 import { IChecksRepository, IMonitorsRepository } from "@/repositories/index.js";
-import type { MonitorType, MonitorStatusResponse, CheckErrorInfo, Check } from "@/types/index.js";
+import type {
+	MonitorStatusResponse,
+	CheckErrorInfo,
+	Check,
+	ILighthouseAudit,
+	ChecksQueryResult,
+	ChecksSummary,
+	MonitorPayloadMap,
+} from "@/types/index.js";
 import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
-import { ParseBoolean } from "@/utils/utils.js";
+import { ILogger } from "@/utils/logger.js";
 
 const SERVICE_NAME = "checkService";
 
-class CheckService {
+export interface ICheckService {
+	createChecks(checks: Check[]): Promise<Check[]>;
+	buildCheck(statusResponse: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>): Check | undefined;
+	getChecksByMonitor(params: {
+		monitorId: string;
+		teamId: string;
+		sortOrder: string;
+		dateRange: string;
+		page: number;
+		rowsPerPage: number;
+		filter?: string;
+		status?: boolean;
+	}): Promise<ChecksQueryResult>;
+	getChecksByTeam(params: {
+		teamId: string;
+		sortOrder: string;
+		dateRange: string;
+		page: number;
+		rowsPerPage: number;
+		filter?: string;
+	}): Promise<ChecksQueryResult>;
+	getChecksSummaryByTeamId(params: { teamId: string; dateRange: string }): Promise<ChecksSummary>;
+	deleteChecks(params: { monitorId: string; teamId: string }): Promise<number>;
+	deleteChecksByTeamId(params: { teamId: string }): Promise<number>;
+	deleteOlderThan(date: Date): Promise<number>;
+}
+
+export class CheckService implements ICheckService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private monitorsRepository: IMonitorsRepository;
 	private checksRepository: IChecksRepository;
-	private logger: any;
-	constructor({
-		monitorsRepository,
-		logger,
-		checksRepository,
-	}: {
-		monitorsRepository: IMonitorsRepository;
-		logger: any;
-		checksRepository: IChecksRepository;
-	}) {
+	private logger: ILogger;
+	constructor(monitorsRepository: IMonitorsRepository, logger: ILogger, checksRepository: IChecksRepository) {
 		this.monitorsRepository = monitorsRepository;
 		this.logger = logger;
 		this.checksRepository = checksRepository;
@@ -36,12 +62,14 @@ class CheckService {
 		return this.checksRepository.createChecks(checks);
 	};
 
-	buildCheck = (statusResponse: MonitorStatusResponse<PageSpeedStatusPayload | HardwareStatusPayload | undefined>) => {
+	buildCheck = (statusResponse: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>): Check | undefined => {
 		const { monitorId, teamId, type, status, responseTime, code, message, payload, timings } = statusResponse;
 
-		const check: Partial<Check> = {
+		const now = new Date().toISOString();
+		const check: Check = {
 			id: new Types.ObjectId().toString(),
-			createdAt: new Date().toISOString(),
+			createdAt: now,
+			updatedAt: now,
 			metadata: {
 				monitorId,
 				teamId,
@@ -61,13 +89,12 @@ class CheckService {
 					message: "Failed to build check",
 					service: SERVICE_NAME,
 					method: "buildCheck",
-					details: "empty payload",
 				});
 				return undefined;
 			}
 			const categories = pageSpeedPayload.lighthouseResult?.categories ?? {};
 			const audits = pageSpeedPayload.lighthouseResult?.audits ?? {};
-			const mapAudit = (audit: any) => {
+			const mapAudit = (audit: ILighthouseAudit | undefined) => {
 				if (!audit || typeof audit !== "object") {
 					return undefined;
 				}
@@ -80,16 +107,16 @@ class CheckService {
 					numericUnit: audit.numericUnit,
 				};
 			};
-			check.accessibility = (categories?.accessibility?.score || 0) * 100;
-			check.bestPractices = (categories?.["best-practices"]?.score || 0) * 100;
-			check.seo = (categories?.seo?.score || 0) * 100;
-			check.performance = (categories?.performance?.score || 0) * 100;
+			check.accessibility = (categories.accessibility?.score || 0) * 100;
+			check.bestPractices = (categories["best-practices"]?.score || 0) * 100;
+			check.seo = (categories.seo?.score || 0) * 100;
+			check.performance = (categories.performance?.score || 0) * 100;
 			check.audits = {
-				cls: mapAudit(audits?.["cumulative-layout-shift"]),
-				si: mapAudit(audits?.["speed-index"]),
-				fcp: mapAudit(audits?.["first-contentful-paint"]),
-				lcp: mapAudit(audits?.["largest-contentful-paint"]),
-				tbt: mapAudit(audits?.["total-blocking-time"]),
+				cls: mapAudit(audits["cumulative-layout-shift"]),
+				si: mapAudit(audits["speed-index"]),
+				fcp: mapAudit(audits["first-contentful-paint"]),
+				lcp: mapAudit(audits["largest-contentful-paint"]),
+				tbt: mapAudit(audits["total-blocking-time"]),
 			};
 		}
 
@@ -97,7 +124,7 @@ class CheckService {
 			const hardwarePayload = payload as HardwareStatusPayload | undefined;
 			const { cpu, memory, disk, host, net } = hardwarePayload?.data ?? {};
 			const errorsSource = Array.isArray(hardwarePayload?.errors)
-				? hardwarePayload?.errors
+				? hardwarePayload.errors
 				: (hardwarePayload?.errors as { errors?: CheckErrorInfo[] } | undefined)?.errors;
 			check.cpu = cpu;
 			check.memory = memory;
@@ -110,7 +137,25 @@ class CheckService {
 		return check;
 	};
 
-	getChecksByMonitor = async ({ monitorId, query, teamId }: { monitorId: string; query: any; teamId: string }) => {
+	getChecksByMonitor = async ({
+		monitorId,
+		teamId,
+		sortOrder,
+		dateRange,
+		filter,
+		page,
+		rowsPerPage,
+		status,
+	}: {
+		monitorId: string;
+		teamId: string;
+		sortOrder: string;
+		dateRange: string;
+		page: number;
+		rowsPerPage: number;
+		status?: boolean;
+		filter?: string;
+	}) => {
 		if (!monitorId) {
 			throw new AppError({ message: "No monitor ID in request", service: SERVICE_NAME, method: "getChecksByMonitor", status: 400 });
 		}
@@ -118,68 +163,57 @@ class CheckService {
 			throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "getChecksByMonitor", status: 400 });
 		}
 
-		// For verificaiton, throws an error if monitor doesn't belong to team
+		// For verification, throws an error if monitor doesn't belong to team
 		await this.monitorsRepository.findById(monitorId, teamId);
 
-		let { sortOrder, dateRange, filter, page, rowsPerPage, status } = query;
-		const parsedStatus = typeof status === "undefined" ? status : ParseBoolean(status);
-		const parsedPage = page ? parseInt(page) : page;
-		const parsedRowsPerPage = rowsPerPage ? parseInt(rowsPerPage) : rowsPerPage;
+		const parsedPage = page ?? 0;
+		const parsedRowsPerPage = rowsPerPage ?? 5;
 
-		const result = await this.checksRepository.findByMonitorId(monitorId, sortOrder, dateRange, filter, parsedPage, parsedRowsPerPage, parsedStatus);
+		const result = await this.checksRepository.findByMonitorId(monitorId, sortOrder, dateRange, filter, parsedPage, parsedRowsPerPage, status);
 
 		return result;
 	};
 
-	getChecksByTeam = async ({ teamId, query }: { teamId: string; query: any }) => {
-		let { sortOrder, dateRange, filter, page, rowsPerPage } = query;
-
-		if (!teamId) {
-			throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "getChecksByTeam", status: 400 });
-		}
-
-		const parsedPage = page ? parseInt(page) : page;
-		const parsedRowsPerPage = rowsPerPage ? parseInt(rowsPerPage) : rowsPerPage;
+	getChecksByTeam = async ({
+		teamId,
+		sortOrder,
+		dateRange,
+		filter,
+		page,
+		rowsPerPage,
+	}: {
+		teamId: string;
+		sortOrder: string;
+		dateRange: string;
+		page: number;
+		rowsPerPage: number;
+		filter?: string;
+	}) => {
+		const parsedPage = page ?? 0;
+		const parsedRowsPerPage = rowsPerPage ?? 5;
 
 		const checkData = await this.checksRepository.findByTeamId(sortOrder, dateRange, filter, parsedPage, parsedRowsPerPage, teamId);
 		return checkData;
 	};
 
 	getChecksSummaryByTeamId = async ({ teamId, dateRange }: { teamId: string; dateRange: string }) => {
-		if (!teamId) {
-			throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "getChecksSummaryByTeamId", status: 400 });
-		}
 		const summary = await this.checksRepository.findSummaryByTeamId(teamId, dateRange);
 		return summary;
 	};
 
 	deleteChecks = async ({ monitorId, teamId }: { monitorId: string; teamId: string }) => {
-		if (!monitorId) {
-			throw new AppError({ message: "No monitor ID in request", service: SERVICE_NAME, method: "deleteChecks", status: 400 });
-		}
-
-		if (!teamId) {
-			throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "deleteChecks", status: 400 });
-		}
-
-		// For verificaiton, throws an error if monitor doesn't belong to team
 		await this.monitorsRepository.findById(monitorId, teamId);
 
 		const deletedCount = await this.checksRepository.deleteByMonitorId(monitorId);
 		return deletedCount;
 	};
 	deleteChecksByTeamId = async ({ teamId }: { teamId: string }) => {
-		if (!teamId) {
-			throw new AppError({ message: "No team ID in request", service: SERVICE_NAME, method: "deleteChecksByTeamId", status: 400 });
-		}
-
 		const deletedCount = await this.checksRepository.deleteByTeamId(teamId);
 		return deletedCount;
 	};
 
-	updateChecksTTL = async ({ teamId, ttl }: { teamId: string; ttl: string }) => {
-		throw new AppError({ message: "Not implemented", service: SERVICE_NAME, method: "updateChecksTTL", status: 500 });
+	deleteOlderThan = async (date: Date) => {
+		const deletedCount = await this.checksRepository.deleteOlderThan(date);
+		return deletedCount;
 	};
 }
-
-export default CheckService;

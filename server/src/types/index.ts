@@ -1,4 +1,5 @@
 export * from "@/types/check.js";
+export * from "@/types/geoCheck.js";
 export * from "@/types/monitor.js";
 export * from "@/types/monitorStats.js";
 export * from "@/types/statusPage.js";
@@ -13,3 +14,4 @@ export * from "@/types/incident.js";
 export * from "@/types/email.js";
 export * from "@/types/team.js";
 export * from "@/types/maintenanceWindow.js";
+export * from "@/types/dlqItem.js";

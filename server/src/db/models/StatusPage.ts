@@ -43,9 +43,9 @@ const StatusPageSchema = new Schema<StatusPageDocument>(
 			required: true,
 		},
 		type: {
-			type: String,
+			type: [String],
 			required: true,
-			default: "uptime",
+			default: ["uptime"],
 			enum: StatusPageTypes,
 		},
 		companyName: {
@@ -97,6 +97,10 @@ const StatusPageSchema = new Schema<StatusPageDocument>(
 			default: true,
 		},
 		showAdminLoginLink: {
+			type: Boolean,
+			default: false,
+		},
+		showInfrastructure: {
 			type: Boolean,
 			default: false,
 		},

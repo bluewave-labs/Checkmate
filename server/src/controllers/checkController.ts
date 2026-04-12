@@ -4,21 +4,28 @@ import {
 	getChecksParamValidation,
 	getChecksQueryValidation,
 	getTeamChecksQueryValidation,
+	getChecksSummaryByTeamIdQueryValidation,
 	deleteChecksParamValidation,
-	deleteChecksByTeamIdParamValidation,
-	updateChecksTTLBodyValidation,
-	ackCheckBodyValidation,
-	ackAllChecksParamValidation,
-	ackAllChecksBodyValidation,
-} from "@/validation/joi.js";
+} from "@/validation/checkValidation.js";
+import { ICheckService } from "@/service/index.js";
+import { requireTeamId } from "@/controllers/controllerUtils.js";
 
 const SERVICE_NAME = "checkController";
 
-class CheckController {
+export interface ICheckController {
+	serviceName: string;
+	getChecksByMonitor: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getChecksByTeam: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getChecksSummaryByTeamId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	deleteChecks: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	deleteChecksByTeamId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+}
+
+class CheckController implements ICheckController {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private checkService: any;
-	constructor(checkService: any) {
+	private checkService: ICheckService;
+	constructor(checkService: ICheckService) {
 		this.checkService = checkService;
 	}
 
@@ -28,13 +35,20 @@ class CheckController {
 
 	getChecksByMonitor = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getChecksParamValidation.validateAsync(req.params);
-			await getChecksQueryValidation.validateAsync(req.query);
+			const validatedParams = getChecksParamValidation.parse(req.params);
+			const validatedQuery = getChecksQueryValidation.parse(req.query);
+
+			const teamId = requireTeamId(req.user?.teamId);
 
 			const result = await this.checkService.getChecksByMonitor({
-				monitorId: req?.params?.monitorId,
-				query: req?.query,
-				teamId: req?.user?.teamId,
+				monitorId: validatedParams.monitorId,
+				teamId,
+				sortOrder: validatedQuery.sortOrder,
+				dateRange: validatedQuery.dateRange,
+				filter: validatedQuery.filter,
+				page: validatedQuery.page,
+				rowsPerPage: validatedQuery.rowsPerPage,
+				status: validatedQuery.status,
 			});
 
 			return res.status(200).json({
@@ -49,10 +63,16 @@ class CheckController {
 
 	getChecksByTeam = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await getTeamChecksQueryValidation.validateAsync(req.query);
+			const validatedQuery = getTeamChecksQueryValidation.parse(req.query);
+			const teamId = requireTeamId(req.user?.teamId);
+
 			const checkData = await this.checkService.getChecksByTeam({
-				teamId: req?.user?.teamId,
-				query: req?.query,
+				teamId,
+				sortOrder: validatedQuery.sortOrder,
+				dateRange: validatedQuery.dateRange,
+				page: validatedQuery.page,
+				rowsPerPage: validatedQuery.rowsPerPage,
+				filter: validatedQuery.filter,
 			});
 			return res.status(200).json({
 				success: true,
@@ -66,8 +86,11 @@ class CheckController {
 
 	getChecksSummaryByTeamId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const dateRange = req.query?.dateRange || "hour";
-			const summary = await this.checkService.getChecksSummaryByTeamId({ teamId: req?.user?.teamId, dateRange });
+			const validatedQuery = getChecksSummaryByTeamIdQueryValidation.parse(req.query);
+			const teamId = requireTeamId(req.user?.teamId);
+			const dateRange = validatedQuery.dateRange ?? "hour";
+
+			const summary = await this.checkService.getChecksSummaryByTeamId({ teamId, dateRange });
 			return res.status(200).json({
 				success: true,
 				msg: "Checks summary retrieved successfully",
@@ -80,11 +103,12 @@ class CheckController {
 
 	deleteChecks = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await deleteChecksParamValidation.validateAsync(req.params);
+			const validatedParams = deleteChecksParamValidation.parse(req.params);
+			const teamId = requireTeamId(req.user?.teamId);
 
 			const deletedCount = await this.checkService.deleteChecks({
-				monitorId: req.params.monitorId as string,
-				teamId: req?.user?.teamId,
+				monitorId: validatedParams.monitorId,
+				teamId,
 			});
 
 			return res.status(200).json({
@@ -99,32 +123,14 @@ class CheckController {
 
 	deleteChecksByTeamId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await deleteChecksByTeamIdParamValidation.validateAsync(req.params);
+			const teamId = requireTeamId(req.user?.teamId);
 
-			const deletedCount = await this.checkService.deleteChecksByTeamId({ teamId: req?.user?.teamId });
+			const deletedCount = await this.checkService.deleteChecksByTeamId({ teamId });
 
 			return res.status(200).json({
 				success: true,
 				msg: "Checks deleted successfully",
 				data: { deletedCount },
-			});
-		} catch (error) {
-			next(error);
-		}
-	};
-
-	updateChecksTTL = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			await updateChecksTTLBodyValidation.validateAsync(req.body);
-
-			await this.checkService.updateChecksTTL({
-				teamId: req?.user?.teamId,
-				ttl: req?.body?.ttl,
-			});
-
-			return res.status(200).json({
-				success: true,
-				msg: "Checks TTL updated successfully",
 			});
 		} catch (error) {
 			next(error);

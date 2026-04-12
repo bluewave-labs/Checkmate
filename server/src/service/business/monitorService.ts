@@ -7,13 +7,23 @@ import type {
 	HardwareDetailsResult,
 	PageSpeedDetailsResult,
 	GamesMap,
+	GroupedGeoCheckResult,
 } from "@/types/monitor.js";
-import type { IChecksRepository, IMonitorsRepository, IMonitorStatsRepository, IStatusPagesRepository } from "@/repositories/index.js";
-import fs from "fs";
-import { fileURLToPath } from "url";
-import path from "path";
+import { supportsGeoCheck } from "@/types/monitor.js";
+import type { GeoContinent } from "@/types/geoCheck.js";
+import type {
+	IChecksRepository,
+	IGeoChecksRepository,
+	IIncidentsRepository,
+	IMonitorsRepository,
+	IMonitorStatsRepository,
+	IStatusPagesRepository,
+} from "@/repositories/index.js";
+import demoMonitorsData from "@/utils/demoMonitors.json" with { type: "json" };
 import { AppError } from "@/utils/AppError.js";
+import type { ImportedMonitor } from "@/validation/monitorValidation.js";
 import { ISuperSimpleQueue } from "../infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
+import { ILogger } from "@/utils/logger.js";
 
 const SERVICE_NAME = "MonitorService";
 type DateRangeKey = "recent" | "day" | "week" | "month" | "all";
@@ -22,14 +32,20 @@ export interface IMonitorService {
 	readonly serviceName: string;
 
 	// create
-	createMonitor(teamId: string, userId: string, body: Monitor): Promise<void>;
-	createBulkMonitors(monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null>;
+	createMonitor(teamId: string, userId: string, body: Partial<Monitor>): Promise<void>;
+	createMonitors(monitors: Array<Monitor>): Promise<Monitor[] | null>;
 	addDemoMonitors(args: { userId: string; teamId: string }): Promise<Monitor[]>;
 
 	// read
-	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: string; normalize?: boolean }): Promise<UptimeDetailsResult>;
+	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<UptimeDetailsResult>;
 	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<HardwareDetailsResult>;
 	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<PageSpeedDetailsResult>;
+	getGeoChecksByMonitorId(args: {
+		teamId: string;
+		monitorId: string;
+		dateRange: string;
+		continents?: GeoContinent[];
+	}): Promise<GroupedGeoCheckResult>;
 	getMonitorById(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 	getMonitorsByTeamId(args: {
 		teamId: string;
@@ -50,63 +66,69 @@ export interface IMonitorService {
 		filter?: string;
 		field?: string;
 		order?: "asc" | "desc";
-		explain?: boolean;
 	}): Promise<MonitorsWithChecksByTeamIdResult>;
 	getAllGames(): GamesMap;
 	getGroupsByTeamId(args: { teamId: string }): Promise<string[]>;
 
 	// update
-	editMonitor(args: { teamId: string; monitorId: string; body: Monitor }): Promise<Monitor>;
+	editMonitor(args: { teamId: string; monitorId: string; body: Partial<Monitor> }): Promise<Monitor>;
 	pauseMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 
 	// delete
 	deleteMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 	deleteAllMonitors(args: { teamId: string }): Promise<number>;
 
+	// notifications
+	updateNotifications(args: { teamId: string; monitorIds: string[]; notificationIds: string[]; action: "add" | "remove" | "set" }): Promise<number>;
+
 	// other
-	sendTestEmail(args: { to: string }): Promise<string>;
 	exportMonitorsToJSON(args: { teamId: string }): Promise<Monitor[]>;
+	importMonitorsFromJSON(args: { teamId: string; userId: string; monitors: ImportedMonitor[] }): Promise<{ imported: number; errors: string[] }>;
 }
 
 export class MonitorService implements IMonitorService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private jobQueue: ISuperSimpleQueue;
-	private emailService: any;
-	private logger: any;
-	private games: any;
+	private logger: ILogger;
+	private games: GamesMap;
 	private monitorsRepository: IMonitorsRepository;
 	private checksRepository: IChecksRepository;
+	private geoChecksRepository: IGeoChecksRepository;
 	private monitorStatsRepository: IMonitorStatsRepository;
 	private statusPagesRepository: IStatusPagesRepository;
+	private incidentsRepository: IIncidentsRepository;
 
 	constructor({
 		jobQueue,
-		emailService,
 		logger,
 		games,
 		monitorsRepository,
 		checksRepository,
+		geoChecksRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
+		incidentsRepository,
 	}: {
 		jobQueue: ISuperSimpleQueue;
-		emailService: any;
-		logger: any;
-		games: any;
+		logger: ILogger;
+		games: GamesMap;
 		monitorsRepository: IMonitorsRepository;
 		checksRepository: IChecksRepository;
+		geoChecksRepository: IGeoChecksRepository;
 		monitorStatsRepository: IMonitorStatsRepository;
 		statusPagesRepository: IStatusPagesRepository;
+		incidentsRepository: IIncidentsRepository;
 	}) {
 		this.jobQueue = jobQueue;
-		this.emailService = emailService;
 		this.logger = logger;
 		this.games = games;
 		this.monitorsRepository = monitorsRepository;
 		this.checksRepository = checksRepository;
+		this.geoChecksRepository = geoChecksRepository;
 		this.monitorStatsRepository = monitorStatsRepository;
 		this.statusPagesRepository = statusPagesRepository;
+		this.incidentsRepository = incidentsRepository;
 	}
 
 	get serviceName(): string {
@@ -147,34 +169,27 @@ export class MonitorService implements IMonitorService {
 		this.jobQueue.addJob(monitor.id, monitor);
 	};
 
-	createBulkMonitors = async (monitors: Array<Monitor>, userId: string, teamId: string): Promise<Monitor[] | null> => {
-		const createdMonitors = await this.monitorsRepository.createBulkMonitors(monitors);
-		if (!monitors || monitors.length === 0) {
-			throw new AppError({ message: "Failed to create monitors", status: 500, service: SERVICE_NAME, method: "createBulkMonitors" });
+	createMonitors = async (monitors: Array<Monitor>): Promise<Monitor[] | null> => {
+		const createdMonitors = await this.monitorsRepository.createMonitors(monitors);
+		if (!createdMonitors || createdMonitors.length === 0) {
+			throw new AppError({ message: "Failed to create monitors", status: 500, service: SERVICE_NAME, method: "createMonitors" });
 		}
 
 		await Promise.all(createdMonitors.map((monitor) => this.jobQueue.addJob(monitor.id, monitor)));
 		return createdMonitors;
 	};
 
-	addDemoMonitors = async ({ userId, teamId }: { userId: string; teamId: string }): Promise<any[]> => {
-		const __filename = fileURLToPath(import.meta.url);
-		const __dirname = path.dirname(__filename);
-		const demoMonitorsPath = path.resolve(__dirname, "../../utils/demoMonitors.json");
-
-		const demoData = JSON.parse(fs.readFileSync(demoMonitorsPath, "utf8"));
-		const monitors: Monitor[] = demoData.map((monitor: Monitor) => {
-			return {
-				userId,
-				teamId,
-				name: monitor.name,
-				description: monitor.name,
-				type: "http",
-				url: monitor.url,
-				interval: 60000,
-			};
-		});
-		const demoMonitors = await this.monitorsRepository.createBulkMonitors(monitors);
+	addDemoMonitors = async ({ userId, teamId }: { userId: string; teamId: string }): Promise<Monitor[]> => {
+		const monitors = demoMonitorsData.map((monitor) => ({
+			userId,
+			teamId,
+			name: monitor.name,
+			description: monitor.name,
+			type: "http" as const,
+			url: monitor.url,
+			interval: 60000,
+		}));
+		const demoMonitors = await this.monitorsRepository.createMonitors(monitors as unknown as Monitor[]);
 
 		await Promise.all(demoMonitors.map((monitor) => this.jobQueue.addJob(monitor.id, monitor)));
 		return demoMonitors;
@@ -184,18 +199,16 @@ export class MonitorService implements IMonitorService {
 		teamId,
 		monitorId,
 		dateRange,
-		normalize,
 	}: {
 		teamId: string;
 		monitorId: string;
 		dateRange: string;
-		normalize?: boolean;
 	}): Promise<UptimeDetailsResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
 			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
 		}
-		const rangeKey = (dateRange as DateRangeKey) ?? "recent";
+		const rangeKey = dateRange as DateRangeKey;
 		const { start, end } = this.getDateRange(rangeKey);
 		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, start, end, this.getDateFormat(rangeKey), {
 			type: monitor.type,
@@ -207,7 +220,9 @@ export class MonitorService implements IMonitorService {
 			checksData.monitorType !== "ping" &&
 			checksData.monitorType !== "docker" &&
 			checksData.monitorType !== "port" &&
-			checksData.monitorType !== "game"
+			checksData.monitorType !== "game" &&
+			checksData.monitorType !== "grpc" &&
+			checksData.monitorType !== "websocket"
 		) {
 			throw new AppError({ message: `${monitor.type} monitors are not supported for uptime details`, status: 400 });
 		}
@@ -242,7 +257,7 @@ export class MonitorService implements IMonitorService {
 			throw new AppError({ message: `${monitor.type} monitors are not supported for hardware details`, status: 400 });
 		}
 
-		const rangeKey = (dateRange as DateRangeKey) ?? "recent";
+		const rangeKey = dateRange as DateRangeKey;
 		const { start, end } = this.getDateRange(rangeKey);
 		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, start, end, this.getDateFormat(rangeKey), {
 			type: monitor.type,
@@ -284,7 +299,7 @@ export class MonitorService implements IMonitorService {
 			throw new AppError({ message: `${monitor.type} monitors are not supported for pagespeed details`, status: 400 });
 		}
 
-		const rangeKey = (dateRange as DateRangeKey) ?? "recent";
+		const rangeKey = dateRange as DateRangeKey;
 		const { start, end } = this.getDateRange(rangeKey);
 		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, start, end, this.getDateFormat(rangeKey), {
 			type: monitor.type,
@@ -297,16 +312,49 @@ export class MonitorService implements IMonitorService {
 		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
 
 		return {
-			monitor: {
-				...monitor,
-				checks: checksData.checks,
+			monitorData: {
+				monitor,
+				groupedChecks: checksData.groupedChecks,
 			},
 			monitorStats,
 		};
 	};
-	getMonitorById = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
+
+	getGeoChecksByMonitorId = async ({
+		teamId,
+		monitorId,
+		dateRange,
+		continents,
+	}: {
+		teamId: string;
+		monitorId: string;
+		dateRange: string;
+		continents?: GeoContinent[];
+	}): Promise<GroupedGeoCheckResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
-		return monitor;
+		if (!monitor) {
+			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
+		}
+
+		if (!supportsGeoCheck(monitor.type) || !monitor.geoCheckEnabled) {
+			return { groupedGeoChecks: [] };
+		}
+
+		const rangeKey = dateRange as DateRangeKey;
+		const { start, end } = this.getDateRange(rangeKey);
+		const groupedGeoChecks = await this.geoChecksRepository.findGroupedByMonitorIdAndDateRange(
+			monitor.id,
+			start,
+			end,
+			this.getDateFormat(rangeKey),
+			continents
+		);
+
+		return { groupedGeoChecks };
+	};
+
+	getMonitorById = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
+		return await this.monitorsRepository.findById(monitorId, teamId);
 	};
 
 	getMonitorsByTeamId = async ({
@@ -318,11 +366,7 @@ export class MonitorService implements IMonitorService {
 		type?: MonitorType | MonitorType[];
 		filter?: string;
 	}): Promise<Monitor[] | null> => {
-		const monitors = await this.monitorsRepository.findByTeamId(teamId, {
-			type,
-			filter,
-		});
-		return monitors;
+		return await this.monitorsRepository.findByTeamId(teamId, { type, filter });
 	};
 
 	getMonitorsWithChecksByTeamId = async ({
@@ -334,7 +378,6 @@ export class MonitorService implements IMonitorService {
 		filter,
 		field,
 		order,
-		explain,
 	}: {
 		teamId: string;
 		limit?: number;
@@ -344,7 +387,6 @@ export class MonitorService implements IMonitorService {
 		filter?: string;
 		field?: string;
 		order?: "asc" | "desc";
-		explain?: boolean;
 	}): Promise<MonitorsWithChecksByTeamIdResult> => {
 		const summary = await this.monitorsRepository.findMonitorsSummaryByTeamId(teamId, { type });
 		const count = await this.monitorsRepository.findMonitorCountByTeamIdAndType(teamId, { type, filter });
@@ -379,45 +421,87 @@ export class MonitorService implements IMonitorService {
 	};
 
 	getGroupsByTeamId = async ({ teamId }: { teamId: string }): Promise<string[]> => {
-		const groups = await this.monitorsRepository.findGroupsByTeamId(teamId);
-		return groups;
+		return await this.monitorsRepository.findGroupsByTeamId(teamId);
 	};
 
-	editMonitor = async ({ teamId, monitorId, body }: { teamId: string; monitorId: string; body: Monitor }) => {
+	editMonitor = async ({ teamId, monitorId, body }: { teamId: string; monitorId: string; body: Partial<Monitor> }) => {
 		const editedMonitor = await this.monitorsRepository.updateById(monitorId, teamId, body);
 		await this.jobQueue.updateJob(editedMonitor);
 		return editedMonitor;
 	};
 
+	updateNotifications = async ({
+		teamId,
+		monitorIds,
+		notificationIds,
+		action,
+	}: {
+		teamId: string;
+		monitorIds: string[];
+		notificationIds: string[];
+		action: "add" | "remove" | "set";
+	}): Promise<number> => {
+		const modifiedCount = await this.monitorsRepository.updateNotifications(teamId, monitorIds, notificationIds, action);
+
+		// If notifications were updated, we should update the jobs in the queue
+		if (modifiedCount > 0) {
+			const monitors = await this.monitorsRepository.findByIds(monitorIds);
+			await Promise.all(monitors.map((monitor) => this.jobQueue.updateJob(monitor)));
+		}
+
+		return modifiedCount;
+	};
+
 	pauseMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
 		const monitor = await this.monitorsRepository.togglePauseById(monitorId, teamId);
-		monitor.isActive === true ? await this.jobQueue.resumeJob(monitor) : await this.jobQueue.pauseJob(monitor);
+		if (monitor.isActive) {
+			await this.jobQueue.resumeJob(monitor);
+		} else {
+			await this.jobQueue.pauseJob(monitor);
+		}
 		return monitor;
 	};
 
 	deleteMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
 		const monitor = await this.monitorsRepository.deleteById(monitorId, teamId);
-		await this.monitorStatsRepository.deleteByMonitorId(monitor.id).catch((err: any) => {
+		await this.monitorStatsRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
 			this.logger.warn({
 				message: `Error deleting monitor stats for monitor ${monitor.id} with name ${monitor.name}`,
 				service: SERVICE_NAME,
-				stack: err.stack,
+				stack: err instanceof Error ? err.stack : undefined,
 			});
 		});
-		await this.checksRepository.deleteByMonitorId(monitor.id).catch((err: any) => {
+		await this.checksRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
 			this.logger.warn({
 				message: `Error deleting checks for monitor ${monitor.id} with name ${monitor.name}`,
 				service: SERVICE_NAME,
-				stack: err.stack,
+				stack: err instanceof Error ? err.stack : undefined,
 			});
 		});
-		await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id).catch((err: any) => {
+		await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id).catch((err: unknown) => {
 			this.logger.warn({
 				message: `Error removing monitor ${monitor.id} with name ${monitor.name} from status pages`,
 				service: SERVICE_NAME,
-				stack: err.stack,
+				stack: err instanceof Error ? err.stack : undefined,
 			});
 		});
+
+		await this.incidentsRepository.deleteByMonitorId(monitor.id, teamId).catch((err: unknown) => {
+			this.logger.warn({
+				message: `Error deleting incidents for monitor ${monitor.id} with name ${monitor.name}`,
+				service: SERVICE_NAME,
+				stack: err instanceof Error ? err.stack : undefined,
+			});
+		});
+
+		await this.geoChecksRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
+			this.logger.warn({
+				message: `Error deleting geo checks for monitor ${monitor.id} with name ${monitor.name}`,
+				service: SERVICE_NAME,
+				stack: err instanceof Error ? err.stack : undefined,
+			});
+		});
+
 		await this.jobQueue.deleteJob(monitor);
 		return monitor;
 	};
@@ -429,14 +513,15 @@ export class MonitorService implements IMonitorService {
 				try {
 					await this.jobQueue.deleteJob(monitor);
 					await this.checksRepository.deleteByMonitorId(monitor.id);
+					await this.geoChecksRepository.deleteByMonitorId(monitor.id);
 					await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id);
 					await this.monitorStatsRepository.deleteByMonitorId(monitor.id);
-				} catch (error: any) {
+				} catch (error: unknown) {
 					this.logger.warn({
 						message: `Error deleting associated records for monitor ${monitor.id} with name ${monitor.name}`,
 						service: SERVICE_NAME,
 						method: "deleteAllMonitors",
-						stack: error.stack,
+						stack: error instanceof Error ? error.stack : undefined,
 					});
 				}
 			})
@@ -444,21 +529,7 @@ export class MonitorService implements IMonitorService {
 		return deletedCount;
 	};
 
-	sendTestEmail = async ({ to }: { to: string }): Promise<string> => {
-		const subject = "Test email from Checkmate";
-		const context = { testName: "Monitoring System" };
-
-		const html = await this.emailService.buildEmail("testEmailTemplate", context);
-		const messageId = await this.emailService.sendEmail(to, subject, html);
-
-		if (!messageId) {
-			throw new AppError({ message: "Failed to send test email.", service: SERVICE_NAME, method: "sendTestEmail", status: 500 });
-		}
-
-		return messageId;
-	};
-
-	exportMonitorsToJSON = async ({ teamId }: { teamId: string }): Promise<any[]> => {
+	exportMonitorsToJSON = async ({ teamId }: { teamId: string }): Promise<Monitor[]> => {
 		const monitors = await this.monitorsRepository.findByTeamId(teamId, {});
 
 		if (!monitors || monitors.length === 0) {
@@ -466,5 +537,31 @@ export class MonitorService implements IMonitorService {
 		}
 
 		return monitors;
+	};
+
+	importMonitorsFromJSON = async ({
+		teamId,
+		userId,
+		monitors,
+	}: {
+		teamId: string;
+		userId: string;
+		monitors: ImportedMonitor[];
+	}): Promise<{ imported: number; errors: string[] }> => {
+		const errors: string[] = [];
+
+		const cleanedMonitors: Monitor[] = monitors.map((monitor) => ({
+			...monitor,
+			id: "",
+			teamId,
+			userId,
+			recentChecks: [],
+			createdAt: "",
+			updatedAt: "",
+		}));
+
+		const createdMonitors = await this.createMonitors(cleanedMonitors);
+
+		return { imported: createdMonitors!.length, errors };
 	};
 }

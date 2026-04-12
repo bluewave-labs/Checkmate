@@ -1,37 +1,24 @@
 import {
 	MonitorBasePageWithStates,
-	UpStatusBox,
-	DownStatusBox,
-	PausedStatusBox,
 	PageSpeedKeyPriorityFallback,
-} from "@/Components/v2/design-elements";
-import { Dialog } from "@/Components/v2/inputs";
-import { HeaderCreate } from "@/Components/v2/common";
-import Stack from "@mui/material/Stack";
+} from "@/Components/design-elements";
+import { Dialog } from "@/Components/inputs";
+import { HeaderCreate } from "@/Components/common";
 import { PageSpeedMonitorsTable } from "@/Pages/PageSpeed/Monitors/Components/PageSpeedMonitorsTable";
 import type { Monitor } from "@/Types/Monitor";
 
-import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import { useGet, useDelete } from "@/Hooks/UseApi";
 import type { MonitorsWithChecksResponse } from "@/Types/Monitor";
 import type { AppSettingsResponse } from "@/Types/Settings";
+import { HeaderMonitorsSummary } from "@/Components/monitors";
 
 const PageSpeedMonitorsPage = () => {
 	const { t } = useTranslation();
-	const theme = useTheme();
 	const isAdmin = useIsAdmin();
 	const { deleteFn, loading: isDeleting } = useDelete();
-
-	const monitorsUrl = "/monitors/team/with-checks?type=pagespeed&limit=10";
-	const {
-		data: monitorsData,
-		isLoading: monitorsIsLoading,
-		error: monitorsError,
-		refetch,
-	} = useGet<MonitorsWithChecksResponse>(monitorsUrl, {}, { refreshInterval: 30000 });
 
 	const settingsUrl = "/settings";
 	const {
@@ -47,9 +34,31 @@ const PageSpeedMonitorsPage = () => {
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 
+	const monitorsWithChecksUrl = useMemo(() => {
+		const params = new URLSearchParams();
+		params.append("type", "pagespeed");
+		params.append("limit", "25");
+		if (page !== undefined) params.append("page", String(page));
+		if (rowsPerPage) params.append("rowsPerPage", String(rowsPerPage));
+		if (sortField) params.append("field", sortField);
+		if (sortOrder) params.append("order", sortOrder);
+		return `/monitors/team/with-checks?${params.toString()}`;
+	}, [page, rowsPerPage, sortField, sortOrder]);
+
+	const {
+		data: monitorsData,
+		isLoading: monitorsIsLoading,
+		error: monitorsError,
+		refetch,
+	} = useGet<MonitorsWithChecksResponse>(
+		monitorsWithChecksUrl,
+		{},
+		{ refreshInterval: 30000 }
+	);
+
 	const monitors = monitorsData?.monitors;
-	const monitorsCount = monitorsData?.count;
-	const summary = monitorsData?.summary;
+	const monitorsCount = monitorsData?.count ?? 0;
+	const summary = monitorsData?.summary ?? null;
 
 	const isLoading = monitorsIsLoading || settingsIsLoading;
 
@@ -80,14 +89,7 @@ const PageSpeedMonitorsPage = () => {
 				isLoading={isLoading}
 				isAdmin={isAdmin}
 			/>
-			<Stack
-				direction={{ xs: "column", md: "row" }}
-				gap={theme.spacing(8)}
-			>
-				<UpStatusBox n={summary?.upMonitors || 0} />
-				<DownStatusBox n={summary?.downMonitors || 0} />
-				<PausedStatusBox n={summary?.pausedMonitors || 0} />
-			</Stack>
+			<HeaderMonitorsSummary summary={summary} />
 			<PageSpeedMonitorsTable
 				monitors={monitors || []}
 				refetch={refetch}

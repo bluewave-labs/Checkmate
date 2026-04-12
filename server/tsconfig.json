@@ -8,12 +8,14 @@
 		},
 		"outDir": "./dist",
 		"strict": true,
+		"noImplicitAny": true,
 		"esModuleInterop": true,
 		"module": "nodenext",
 		"moduleResolution": "nodenext",
 		"skipLibCheck": true,
 		"noUncheckedIndexedAccess": true,
-		"isolatedModules": true
+		"isolatedModules": true,
+		"resolveJsonModule": true
 	},
 	"include": ["src"],
 	"exclude": ["tests", "dist", "node_modules"]

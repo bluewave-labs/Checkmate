@@ -1,23 +1,38 @@
 import type { Check } from "@/types/index.js";
-
+import type { GeoCheck } from "@/types/index.js";
+import type { IGeoChecksService } from "../business/geoChecksService.js";
+import type { ILogger } from "@/utils/logger.js";
+import type { ISettingsService } from "@/service/system/settingsService.js";
+import { ICheckService } from "../business/checkService.js";
 const SERVICE_NAME = "BufferService";
 
-class BufferService {
+export interface IBufferService {
+	addToBuffer(check: Check): void;
+	addGeoCheckToBuffer(geoCheck: GeoCheck): void;
+	scheduleNextFlush(): void;
+	flushBuffer(): Promise<void>;
+	flushGeoBuffer(): Promise<void>;
+}
+
+export class BufferService implements IBufferService {
 	static SERVICE_NAME = SERVICE_NAME;
 	private BUFFER_TIMEOUT: number;
-	private logger: any;
+	private logger: ILogger;
 	private SERVICE_NAME: string;
-	private buffer: any[];
+	private buffer: Check[];
+	private geoBuffer: GeoCheck[];
 	private bufferTimer: NodeJS.Timeout | null = null;
-	private checksService: any;
+	private checksService: ICheckService;
+	private geoChecksService: IGeoChecksService;
 
-	constructor({ logger, checkService, settingsService }: { logger: any; checkService: any; settingsService: any }) {
+	constructor(logger: ILogger, checkService: ICheckService, geoChecksService: IGeoChecksService, settingsService: ISettingsService) {
 		this.BUFFER_TIMEOUT = settingsService.getSettings().nodeEnv === "development" ? 10 : 1000 * 60 * 1; // 1 minute
-		console.log(this.BUFFER_TIMEOUT);
 		this.logger = logger;
 		this.checksService = checkService;
+		this.geoChecksService = geoChecksService;
 		this.SERVICE_NAME = SERVICE_NAME;
 		this.buffer = [];
+		this.geoBuffer = [];
 		this.scheduleNextFlush();
 		this.logger.info({
 			message: `Buffer service initialized, flushing every ${this.BUFFER_TIMEOUT / 1000}s`,
@@ -30,54 +45,29 @@ class BufferService {
 		return BufferService.SERVICE_NAME;
 	}
 
-	addToBuffer({ check }: { check: Check }) {
+	addToBuffer(check: Check) {
 		try {
 			this.buffer.push(check);
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({
-				message: error.message,
+				message: error instanceof Error ? error.message : "Unknown error",
 				service: this.SERVICE_NAME,
 				method: "addToBuffer",
-				stack: error.stack,
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 		}
 	}
 
-	removeCheckFromBuffer(checkToRemove: Check) {
+	addGeoCheckToBuffer(geoCheck: GeoCheck) {
 		try {
-			if (!checkToRemove) {
-				return false;
-			}
-
-			const index = this.buffer.findIndex((check) => {
-				if (checkToRemove.id && check.id) {
-					return check.id.toString() === checkToRemove.id.toString();
-				}
-				return (
-					check.monitorId?.toString() === checkToRemove.metadata.monitorId &&
-					check.teamId?.toString() === checkToRemove.metadata.teamId &&
-					check.type === checkToRemove.metadata.type &&
-					check.status === checkToRemove.status &&
-					check.statusCode === checkToRemove.statusCode &&
-					check.responseTime === checkToRemove.responseTime &&
-					check.message === checkToRemove.message
-				);
-			});
-
-			if (index !== -1) {
-				this.buffer.splice(index, 1);
-				return true;
-			}
-
-			return false;
-		} catch (error: any) {
+			this.geoBuffer.push(geoCheck);
+		} catch (error: unknown) {
 			this.logger.error({
-				message: error.message,
+				message: error instanceof Error ? error.message : "Unknown error",
 				service: this.SERVICE_NAME,
-				method: "removeCheckFromBuffer",
-				stack: error.stack,
+				method: "addGeoCheckToBuffer",
+				stack: error instanceof Error ? error.stack : undefined,
 			});
-			return false;
 		}
 	}
 
@@ -88,12 +78,13 @@ class BufferService {
 		this.bufferTimer = setTimeout(async () => {
 			try {
 				await this.flushBuffer();
-			} catch (error: any) {
+				await this.flushGeoBuffer();
+			} catch (error: unknown) {
 				this.logger.error({
-					message: `Error in flush cycle: ${error.message}`,
+					message: error instanceof Error ? error.message : "Unknown error",
 					service: this.SERVICE_NAME,
 					method: "scheduleNextFlush",
-					stack: error.stack,
+					stack: error instanceof Error ? error.stack : undefined,
 				});
 			} finally {
 				// Schedule the next flush only after the current one completes
@@ -104,19 +95,46 @@ class BufferService {
 	async flushBuffer() {
 		try {
 			if (this.buffer.length > 0) {
+				this.logger.debug({
+					message: `Flushing ${this.buffer.length} checks to database`,
+					service: this.SERVICE_NAME,
+					method: "flushBuffer",
+				});
 				await this.checksService.createChecks(this.buffer);
+				this.buffer = [];
 			}
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({
-				message: error.message,
+				message: error instanceof Error ? error.message : "Unknown error",
 				service: this.SERVICE_NAME,
 				method: "flushBuffer",
-				stack: error.stack,
+				stack: error instanceof Error ? error.stack : undefined,
 			});
+			// Clear buffer even on error to prevent infinite retry loops
+			this.buffer = [];
 		}
+	}
 
-		this.buffer = [];
+	async flushGeoBuffer() {
+		try {
+			if (this.geoBuffer.length > 0) {
+				this.logger.debug({
+					message: `Flushing ${this.geoBuffer.length} geo checks to database`,
+					service: this.SERVICE_NAME,
+					method: "flushGeoBuffer",
+				});
+				await this.geoChecksService.createGeoChecks(this.geoBuffer);
+				this.geoBuffer = [];
+			}
+		} catch (error: unknown) {
+			this.logger.error({
+				message: error instanceof Error ? error.message : "Unknown error",
+				service: this.SERVICE_NAME,
+				method: "flushGeoBuffer",
+				stack: error instanceof Error ? error.stack : undefined,
+			});
+			// Clear buffer even on error to prevent infinite retry loops
+			this.geoBuffer = [];
+		}
 	}
 }
-
-export default BufferService;

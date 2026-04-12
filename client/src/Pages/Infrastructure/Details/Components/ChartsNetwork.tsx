@@ -1,5 +1,5 @@
 import Grid from "@mui/material/Grid";
-import { HistogramInfrastructure } from "@/Components/v2/monitors";
+import { HistogramInfrastructure } from "@/Components/monitors";
 
 import { useTranslation } from "react-i18next";
 import type { HardwareCheckStats } from "@/Types/Monitor";
