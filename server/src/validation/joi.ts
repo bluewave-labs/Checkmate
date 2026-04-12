@@ -187,6 +187,7 @@ const editMonitorBodyValidation = joi
 		statusWindowSize: joi.number().min(1).max(20).default(5),
 		statusWindowThreshold: joi.number().min(1).max(100).default(60),
 		description: joi.string().allow(null, ""),
+		url: joi.string(),
 		interval: joi.number(),
 		notifications: joi.array().items(joi.string()),
 		secret: joi.string(),

@@ -321,9 +321,11 @@ const CreateMonitorPage = () => {
 							/>
 						)}
 						{isEditMode &&
-							generalSettingsConfig.showUrl &&
-							watchedUrl !== existingMonitor?.url && (
-								<Alert severity="warning">{t("urlUpdateWarning")}</Alert>
+							existingMonitor &&
+							watchedUrl !== existingMonitor.url && (
+								<Alert severity="warning">
+									{t("pages.createMonitor.form.general.url.alert")}
+								</Alert>
 							)}
 
 						{/* Port field - only for port and game types */}

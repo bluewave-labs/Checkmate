@@ -230,11 +230,11 @@ class MonitorController {
 	editMonitor = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			await getMonitorByIdParamValidation.validateAsync(req.params);
-			await editMonitorBodyValidation.validateAsync(req.body);
+			const validatedBody = await editMonitorBodyValidation.validateAsync(req.body);
 			const monitorId = requireString(req?.params?.monitorId, "Monitor ID");
 			const teamId = requireTeamId(req?.user?.teamId);
 
-			const editedMonitor = await this.monitorService.editMonitor({ teamId, monitorId, body: req.body });
+			const editedMonitor = await this.monitorService.editMonitor({ teamId, monitorId, body: validatedBody });
 
 			return res.status(200).json({
 				success: true,
