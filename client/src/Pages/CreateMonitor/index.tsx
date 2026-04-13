@@ -405,7 +405,6 @@ const CreateMonitorPage = () => {
 										fieldLabel={t(
 											"pages.createMonitor.form.general.option.strategy.label"
 										)}
-										disabled={isEditMode}
 										error={!!fieldState.error}
 									>
 										<MenuItem value="desktop">

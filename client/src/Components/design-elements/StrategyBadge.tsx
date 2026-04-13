@@ -22,12 +22,9 @@ export const StrategyBadge = ({ strategy, variant = "body2" }: StrategyBadgeProp
 			variant={variant}
 			px={SPACING.XXL}
 			py={SPACING.SM}
-			textTransform="capitalize"
-			sx={{
-				borderRadius: theme.shape.borderRadius,
-				backgroundColor: theme.palette.secondary.light,
-				color: theme.palette.text.primary,
-			}}
+			borderRadius={theme.shape.borderRadius}
+			bgcolor={theme.palette.secondary.light}
+			color={theme.palette.text.primary}
 		>
 			{t(`pages.pageSpeed.strategy.${strategy}`)}
 		</Typography>

@@ -3,7 +3,7 @@ import type { Pool } from "pg";
 export const addStrategyToMonitors = async (pool: Pool) => {
 	await pool.query(`
 		ALTER TABLE monitors
-		ADD COLUMN IF NOT EXISTS strategy TEXT DEFAULT 'desktop';
+		ADD COLUMN IF NOT EXISTS strategy TEXT DEFAULT NULL;
 	`);
 };
 

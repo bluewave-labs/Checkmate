@@ -1,6 +1,6 @@
 import type { Pool } from "pg";
-import type { Monitor, MonitorsSummary, MonitorStatus, MonitorType, MonitorMatchMethod, GeoContinent } from "@/types/monitor.js";
-import { DefaultPageSpeedStrategy } from "@/types/monitor.js";
+import type { Monitor, MonitorsSummary, MonitorStatus, MonitorType, MonitorMatchMethod, GeoContinent, PageSpeedStrategy } from "@/types/monitor.js";
+
 import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "./IMonitorsRepository.js";
 import { AppError } from "@/utils/AppError.js";
 
@@ -37,7 +37,7 @@ interface MonitorRow {
 	selected_disks: string[] | null;
 	game_id: string | null;
 	grpc_service_name: string | null;
-	strategy: string | null;
+	strategy: PageSpeedStrategy | null;
 	monitor_group: string | null;
 	geo_check_enabled: boolean;
 	geo_check_locations: GeoContinent[] | null;
@@ -98,7 +98,7 @@ export class TimescaleMonitorsRepository implements IMonitorsRepository {
 				monitor.selectedDisks ?? [],
 				monitor.gameId ?? null,
 				monitor.grpcServiceName ?? null,
-				monitor.strategy ?? DefaultPageSpeedStrategy,
+				monitor.strategy ?? null,
 				monitor.group ?? null,
 				monitor.geoCheckEnabled ?? false,
 				monitor.geoCheckLocations ?? [],
@@ -1037,7 +1037,7 @@ export class TimescaleMonitorsRepository implements IMonitorsRepository {
 		selectedDisks: row.selected_disks ?? [],
 		gameId: row.game_id ?? undefined,
 		grpcServiceName: row.grpc_service_name ?? undefined,
-		strategy: (row.strategy as Monitor["strategy"]) ?? undefined,
+		strategy: row.strategy ?? undefined,
 		group: row.monitor_group,
 		geoCheckEnabled: row.geo_check_enabled,
 		geoCheckLocations: row.geo_check_locations ?? [],
