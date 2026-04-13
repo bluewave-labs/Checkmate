@@ -1,7 +1,7 @@
 const SERVICE_NAME = "PagerDutyProvider";
 import got from "got";
 import type { Notification } from "@/types/index.js";
-import { NotificationProvider } from "@/service/index.js";
+import { NotificationProvider } from "@/service/infrastructure/notificationProviders/INotificationProvider.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
 import { AlertPagerDutyPayload } from "@/types/index.js";

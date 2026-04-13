@@ -1,6 +1,6 @@
 const SERVICE_NAME = "EmailProvider";
 import type { Notification } from "@/types/index.js";
-import { NotificationProvider } from "@/service/index.js";
+import { NotificationProvider } from "@/service/infrastructure/notificationProviders/INotificationProvider.js";
 import { buildTestEmail } from "@/service/infrastructure/notificationProviders/utils.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
 import type { ILogger } from "@/utils/logger.js";

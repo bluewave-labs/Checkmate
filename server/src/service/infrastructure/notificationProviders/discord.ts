@@ -1,6 +1,6 @@
 const SERVICE_NAME = "DiscordProvider";
 import type { AlertDiscordPayload, DiscordEmbedField, Notification } from "@/types/index.js";
-import { NotificationProvider } from "@/service/index.js";
+import { NotificationProvider } from "@/service/infrastructure/notificationProviders/INotificationProvider.js";
 import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
 import type { NotificationMessage, NotificationSeverity } from "@/types/notificationMessage.js";
 import got from "got";

@@ -1,6 +1,6 @@
 const SERVICE_NAME = "WebhookProvider";
 import type { Notification } from "@/types/index.js";
-import { NotificationProvider } from "@/service/index.js";
+import { NotificationProvider } from "@/service/infrastructure/notificationProviders/INotificationProvider.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
 import got from "got";
