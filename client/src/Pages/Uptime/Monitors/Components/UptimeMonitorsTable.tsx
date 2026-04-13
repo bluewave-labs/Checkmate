@@ -7,7 +7,10 @@ import {
 	Pagination,
 	StatusLabel,
 } from "@/Components/design-elements";
-import { HeatmapResponseTime, HistogramResponseTime } from "@/Components/common";
+import {
+	HeatmapResponseTime,
+	HistogramResponseTime,
+} from "@/Components/common";
 import { ActionsMenu } from "@/Components/actions-menu";
 import { ArrowDown, ArrowUp } from "lucide-react";
 
@@ -51,64 +54,99 @@ export const MonitorTable = ({
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const navigate = useNavigate();
-	const chartType = useSelector((state: RootState) => state.ui?.chartType ?? "histogram");
-	const {
-		post,
-		// loading: isPosting,
-		// error: postError,
-	} = usePost<any, Monitor>();
+	const chartType =
+		useSelector((state: RootState) => state.ui?.chartType ?? "histogram");
 
+	const { post } = usePost<any, Monitor>();
+
+	/**
+	 * Handles sorting logic for table headers
+	 */
 	const handleSort = (e: any, field: string) => {
 		e.preventDefault();
 		e.stopPropagation();
+
 		if (sortField === field) {
-			const newOrder = sortOrder === "asc" ? "desc" : "asc";
-			setSortOrder(newOrder);
+			setSortOrder(sortOrder === "asc" ? "desc" : "asc");
 		} else {
 			setSortField(field);
 			setSortOrder("asc");
 		}
+
 		refetch();
 	};
 
+	/**
+	 * Builds actions menu per monitor row
+	 * Hides "Open Site" for:
+	 * - hardware monitors
+	 * - port monitors
+	 * - internal HTTP targets (localhost / private / loopback)
+	 */
 	const getActions = (monitor: Monitor): ActionMenuItem[] => {
+		const hostname = (() => {
+			try {
+				return new URL(monitor.url).hostname;
+			} catch {
+				return "";
+			}
+		})();
+
+		// loopback detection
+		const isLoopback =
+			hostname === "localhost" ||
+			hostname === "127.0.0.1" ||
+			hostname === "::1";
+
+		// private-style domains
+		const isPrivateLike =
+			hostname.endsWith(".local") ||
+			hostname.endsWith(".internal");
+
+		// internal HTTP targets (should not be opened in browser)
+		const isInternalHttpTarget =
+			monitor.type === "http" &&
+			(hostname === "" || isLoopback || isPrivateLike);
+
+		const showOpenSite =
+			monitor.type !== "hardware" &&
+			monitor.type !== "port" &&
+			!isInternalHttpTarget;
+
 		return [
-			{
-				id: 1,
-				label: t("pages.common.monitors.actions.openSite"),
-				action: () => {
-					window.open(monitor.url, "_blank", "noreferrer");
-				},
-				closeMenu: true,
-			},
+			...(showOpenSite
+				? [
+						{
+							id: 1,
+							label: t("pages.common.monitors.actions.openSite"),
+							action: () => {
+								window.open(monitor.url, "_blank", "noreferrer");
+							},
+							closeMenu: true,
+						},
+					]
+				: []),
+
 			{
 				id: 2,
 				label: t("pages.common.monitors.actions.details"),
-				action: () => {
-					navigate(`${monitor.id}`);
-				},
+				action: () => navigate(`${monitor.id}`),
 			},
+
 			{
 				id: 3,
 				label: t("pages.common.monitors.actions.incidents"),
-				action: () => {
-					navigate(`/incidents?monitorId=${monitor.id}`);
-				},
+				action: () =>
+					navigate(`/incidents?monitorId=${monitor.id}`),
 			},
+
 			{
 				id: 4,
 				label: t("pages.common.monitors.actions.configure"),
-				action: () => {
-					navigate(`/uptime/configure/${monitor.id}`);
-				},
+				action: () =>
+					navigate(`/uptime/configure/${monitor.id}`),
 			},
-			// {
-			//   id: 5,
-			//   label: "Clone",
-			//   action: () => {
 
-			//   },
-			// },
 			{
 				id: 6,
 				label:
@@ -121,6 +159,7 @@ export const MonitorTable = ({
 				},
 				closeMenu: true,
 			},
+
 			{
 				id: 7,
 				label: (
@@ -134,30 +173,28 @@ export const MonitorTable = ({
 		];
 	};
 
+	/**
+	 * Table headers configuration
+	 */
 	const getHeaders = (chartType: string) => {
 		const renderSortIcon = (isActive: boolean) => (
-			<Box
-				width={16}
-				display="inline-flex"
-				justifyContent="center"
-			>
-				{isActive ? (
-					sortOrder === "asc" ? (
-						<ArrowUp size={16} />
-					) : (
-						<ArrowDown size={16} />
-					)
-				) : null}
+			<Box width={16} display="inline-flex" justifyContent="center">
+				{isActive
+					? sortOrder === "asc"
+						? <ArrowUp size={16} />
+						: <ArrowDown size={16} />
+					: null}
 			</Box>
 		);
+
 		const headers: Header<Monitor>[] = [
 			{
 				id: "name",
 				content: (
 					<Stack
 						gap={theme.spacing(4)}
-						direction={"row"}
-						alignItems={"center"}
+						direction="row"
+						alignItems="center"
 						onClick={(e) => handleSort(e, "name")}
 						sx={{ cursor: "pointer" }}
 					>
@@ -165,19 +202,17 @@ export const MonitorTable = ({
 						{renderSortIcon(sortField === "name")}
 					</Stack>
 				),
-
-				render: (row) => {
-					return row?.name;
-				},
+				render: (row) => row?.name,
 			},
+
 			{
 				id: "status",
 				content: (
 					<Stack
 						gap={theme.spacing(4)}
-						direction={"row"}
-						justifyContent={"center"}
-						alignItems={"center"}
+						direction="row"
+						justifyContent="center"
+						alignItems="center"
 						onClick={(e) => handleSort(e, "status")}
 						sx={{ cursor: "pointer" }}
 					>
@@ -186,29 +221,28 @@ export const MonitorTable = ({
 						{renderSortIcon(sortField === "status")}
 					</Stack>
 				),
-				render: (row) => {
-					return <StatusLabel status={row.status} />;
-				},
+				render: (row) => <StatusLabel status={row.status} />,
 			},
+
 			{
 				id: "histogram",
 				content: t("pages.uptime.table.headers.responseTime"),
-				render: (row) => {
-					if (chartType === "histogram") {
-						return <HistogramResponseTime checks={row.recentChecks} />;
-					} else {
-						return <HeatmapResponseTime checks={row.recentChecks} />;
-					}
-				},
+				render: (row) =>
+					chartType === "histogram" ? (
+						<HistogramResponseTime checks={row.recentChecks} />
+					) : (
+						<HeatmapResponseTime checks={row.recentChecks} />
+					),
 			},
+
 			{
 				id: "type",
 				content: (
 					<Stack
 						gap={theme.spacing(4)}
-						direction={"row"}
-						justifyContent={"center"}
-						alignItems={"center"}
+						direction="row"
+						justifyContent="center"
+						alignItems="center"
 						onClick={(e) => handleSort(e, "type")}
 						sx={{ cursor: "pointer" }}
 					>
@@ -217,18 +251,16 @@ export const MonitorTable = ({
 						{renderSortIcon(sortField === "type")}
 					</Stack>
 				),
-				render: (row) => {
-					return row.type;
-				},
+				render: (row) => row.type,
 			},
+
 			{
 				id: "actions",
 				content: t("common.table.headers.actions"),
-				render: (row) => {
-					return <ActionsMenu items={getActions(row)} />;
-				},
+				render: (row) => <ActionsMenu items={getActions(row)} />,
 			},
 		];
+
 		return headers;
 	};
 
@@ -239,17 +271,20 @@ export const MonitorTable = ({
 			<Table
 				headers={headers}
 				data={monitors}
-				onRowClick={(row) => {
-					navigate(`/uptime/${row.id}`);
-				}}
+				onRowClick={(row) =>
+					navigate(`/uptime/${row.id}`)
+				}
 			/>
+
 			<Pagination
 				component="div"
 				count={count}
 				page={page}
 				rowsPerPage={rowsPerPage}
 				onPageChange={(_e, newPage) => setPage(newPage)}
-				onRowsPerPageChange={(e) => setRowsPerPage(Number(e.target.value))}
+				onRowsPerPageChange={(e) =>
+					setRowsPerPage(Number(e.target.value))
+				}
 				itemsOnPage={monitors.length}
 			/>
 		</Box>
