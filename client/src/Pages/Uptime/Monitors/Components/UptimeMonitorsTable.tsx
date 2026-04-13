@@ -76,13 +76,6 @@ export const MonitorTable = ({
 		refetch();
 	};
 
-	/**
-	 * Builds actions menu per monitor row
-	 * Hides "Open Site" for:
-	 * - hardware monitors
-	 * - port monitors
-	 * - internal HTTP targets (localhost / private / loopback)
-	 */
 	const getActions = (monitor: Monitor): ActionMenuItem[] => {
 		const hostname = (() => {
 			try {
@@ -92,21 +85,22 @@ export const MonitorTable = ({
 			}
 		})();
 
-		// loopback detection
 		const isLoopback =
 			hostname === "localhost" ||
 			hostname === "127.0.0.1" ||
 			hostname === "::1";
 
-		// private-style domains
+		const isPrivateIpv4 = /^(10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})$/.test(
+			hostname
+		);
 		const isPrivateLike =
 			hostname.endsWith(".local") ||
-			hostname.endsWith(".internal");
+			hostname.endsWith(".internal") ||
+			(hostname !== "" && !hostname.includes("."));
 
-		// internal HTTP targets (should not be opened in browser)
 		const isInternalHttpTarget =
 			monitor.type === "http" &&
-			(hostname === "" || isLoopback || isPrivateLike);
+			(hostname === "" || isLoopback || isPrivateIpv4 || isPrivateLike);
 
 		const showOpenSite =
 			monitor.type !== "hardware" &&
