@@ -1,19 +1,12 @@
 const SERVICE_NAME = "MatrixProvider";
 import got from "got";
-import type { INotificationProvider } from "@/service/index.js";
+import { NotificationProvider } from "@/service/index.js";
 import type { AlertMatrixPayload, Notification } from "@/types/index.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
-import { ILogger } from "@/utils/logger.js";
 import { randomUUID } from "crypto";
 
-export class MatrixProvider implements INotificationProvider {
-	private logger: ILogger;
-
-	constructor(logger: ILogger) {
-		this.logger = logger;
-	}
-
+export class MatrixProvider extends NotificationProvider {
 	sendTestAlert = async (notification: Partial<Notification>) => {
 		const { homeserverUrl, accessToken, roomId } = notification;
 		if (!homeserverUrl || !accessToken || !roomId) {
@@ -55,6 +48,7 @@ export class MatrixProvider implements INotificationProvider {
 					"Content-Type": "application/json",
 					Authorization: `Bearer ${accessToken}`,
 				},
+				...this.gotRequestOptions(),
 			});
 			return true;
 		} catch (error) {

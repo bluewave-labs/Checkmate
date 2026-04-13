@@ -1,18 +1,11 @@
 const SERVICE_NAME = "TelegramProvider";
 import type { Notification } from "@/types/index.js";
-import { INotificationProvider } from "@/service/index.js";
+import { NotificationProvider } from "@/service/index.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
 import got from "got";
-import { ILogger } from "@/utils/logger.js";
 
-export class TelegramProvider implements INotificationProvider {
-	private logger: ILogger;
-
-	constructor(logger: ILogger) {
-		this.logger = logger;
-	}
-
+export class TelegramProvider extends NotificationProvider {
 	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
 		if (!notification.address || !notification.accessToken) {
 			return false;
@@ -25,6 +18,7 @@ export class TelegramProvider implements INotificationProvider {
 					text: getTestMessage(),
 					parse_mode: "HTML",
 				},
+				...this.gotRequestOptions(),
 			});
 			return true;
 		} catch (error) {
@@ -55,7 +49,9 @@ export class TelegramProvider implements INotificationProvider {
 					text,
 					parse_mode: "HTML",
 				},
+				...this.gotRequestOptions(),
 			});
+
 			this.logger.info({
 				message: "Telegram notification sent",
 				service: SERVICE_NAME,
