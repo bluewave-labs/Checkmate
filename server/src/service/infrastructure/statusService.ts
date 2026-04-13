@@ -14,7 +14,6 @@ import type {
 	GameStatusPayload,
 	GrpcStatusPayload,
 	CheckSnapshot,
-	MonitorStats,
 	CheckDiskInfo,
 } from "@/types/index.js";
 import { AppError } from "@/utils/AppError.js";
@@ -68,97 +67,11 @@ export class StatusService implements IStatusService {
 
 	async updateRunningStats(monitor: Monitor, networkResponse: MonitorStatusResponse) {
 		try {
-			const monitorId = monitor.id;
-			const { responseTime, status } = networkResponse;
-			let existingStats: MonitorStats | null = null;
-			existingStats = await this.monitorStatsRepository
-				.findByMonitorId(monitorId)
-				.then((result) => result)
-				.catch(() => {
-					this.logger.debug({
-						service: SERVICE_NAME,
-						method: "updateRunningStats",
-						message: `No existing stats found for monitor ${monitorId}, initializing new stats.`,
-					});
-					return null;
-				});
-
-			let stats: Omit<MonitorStats, "id" | "monitorId" | "createdAt" | "updatedAt">;
-
-			if (!existingStats) {
-				// Initialize new stats
-				stats = {
-					avgResponseTime: 0,
-					maxResponseTime: 0,
-					totalChecks: 0,
-					totalUpChecks: 0,
-					totalDownChecks: 0,
-					uptimePercentage: 0,
-					lastResponseTime: 0,
-					lastCheckTimestamp: 0,
-				};
-			} else {
-				// Use existing stats (omit id, monitorId, createdAt, updatedAt)
-				stats = {
-					avgResponseTime: existingStats.avgResponseTime,
-					maxResponseTime: existingStats.maxResponseTime,
-					totalChecks: existingStats.totalChecks,
-					totalUpChecks: existingStats.totalUpChecks,
-					totalDownChecks: existingStats.totalDownChecks,
-					uptimePercentage: existingStats.uptimePercentage,
-					lastResponseTime: existingStats.lastResponseTime,
-					lastCheckTimestamp: existingStats.lastCheckTimestamp,
-					timeOfLastFailure: existingStats.timeOfLastFailure,
-				};
-			}
-
-			// Update stats
-			stats.totalChecks++;
-
-			// Last response time
-			stats.lastResponseTime = responseTime ?? 0;
-
-			// Max response time
-			if (responseTime && responseTime > stats.maxResponseTime) {
-				stats.maxResponseTime = responseTime;
-			}
-
-			// Avg response time:
-			let avgResponseTime = stats.avgResponseTime;
-			if (typeof responseTime !== "undefined" && responseTime !== null) {
-				if (avgResponseTime === 0) {
-					avgResponseTime = responseTime;
-				} else {
-					avgResponseTime = (avgResponseTime * (stats.totalChecks - 1) + responseTime) / stats.totalChecks;
-				}
-			}
-			stats.avgResponseTime = avgResponseTime;
-
-			// Total checks
-			if (status === true) {
-				stats.totalUpChecks++;
-				// Update the timeSinceLastFailure if needed
-				if (stats.timeOfLastFailure === 0) {
-					stats.timeOfLastFailure = new Date().getTime();
-				}
-			} else {
-				stats.totalDownChecks++;
-				stats.timeOfLastFailure = 0;
-			}
-
-			// Calculate uptime percentage
-			stats.uptimePercentage = stats.totalUpChecks / stats.totalChecks;
-
-			// latest check
-			stats.lastCheckTimestamp = new Date().getTime();
-
-			// Create or update
-			if (!existingStats) {
-				await this.monitorStatsRepository.create({ monitorId, ...stats });
-			} else {
-				await this.monitorStatsRepository.updateByMonitorId(monitorId, stats);
-			}
-
+			await this.monitorStatsRepository.updateByMonitorId(monitor.id, {
+				status: networkResponse.status === true,
+				responseTime: networkResponse.responseTime ?? 0,
+				now: Date.now(),
+			});
 			return true;
 		} catch (error: unknown) {
 			this.logger.error({
@@ -190,7 +103,14 @@ export class StatusService implements IStatusService {
 			const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 
 			// Update running stats
-			this.updateRunningStats(monitor, statusResponse);
+			const statsOk = await this.updateRunningStats(monitor, statusResponse);
+			if (!statsOk) {
+				this.logger.warn({
+					service: SERVICE_NAME,
+					method: "updateMonitorStatus",
+					message: `Stats update failed for monitor ${monitor.id}`,
+				});
+			}
 
 			monitor.statusWindow = monitor.statusWindow || [];
 			monitor.statusWindow.push(status);
