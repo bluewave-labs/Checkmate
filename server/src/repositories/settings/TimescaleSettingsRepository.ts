@@ -21,6 +21,7 @@ interface SettingsRow {
 	system_email_require_tls: boolean | null;
 	system_email_reject_unauthorized: boolean | null;
 	show_url: boolean | null;
+	default_user_agent: string | null;
 	version: string | null;
 	threshold_cpu_usage: number | null;
 	threshold_memory_usage: number | null;
@@ -34,7 +35,7 @@ const COLUMNS = `id, check_ttl, language, jwt_secret, pagespeed_api_key,
 	system_email_host, system_email_port, system_email_address, system_email_password, system_email_user,
 	system_email_connection_host, system_email_tls_servername, system_email_secure, system_email_pool,
 	system_email_ignore_tls, system_email_require_tls, system_email_reject_unauthorized,
-	show_url, version, threshold_cpu_usage, threshold_memory_usage, threshold_disk_usage, threshold_temperature,
+	show_url, default_user_agent, version, threshold_cpu_usage, threshold_memory_usage, threshold_disk_usage, threshold_temperature,
 	created_at, updated_at`;
 
 export class TimescaleSettingsRepository implements ISettingsRepository {
@@ -46,8 +47,8 @@ export class TimescaleSettingsRepository implements ISettingsRepository {
 				system_email_host, system_email_port, system_email_address, system_email_password, system_email_user,
 				system_email_connection_host, system_email_tls_servername, system_email_secure, system_email_pool,
 				system_email_ignore_tls, system_email_require_tls, system_email_reject_unauthorized,
-				show_url, version, threshold_cpu_usage, threshold_memory_usage, threshold_disk_usage, threshold_temperature)
-			 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)
+				show_url, default_user_agent, version, threshold_cpu_usage, threshold_memory_usage, threshold_disk_usage, threshold_temperature)
+			 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23)
 			 RETURNING ${COLUMNS}`,
 			[
 				settings.checkTTL ?? 30,
@@ -67,6 +68,7 @@ export class TimescaleSettingsRepository implements ISettingsRepository {
 				settings.systemEmailRequireTLS ?? false,
 				settings.systemEmailRejectUnauthorized ?? true,
 				settings.showURL ?? false,
+				settings.defaultUserAgent ?? null,
 				settings.version ?? 1,
 				settings.globalThresholds?.cpu ?? null,
 				settings.globalThresholds?.memory ?? null,
@@ -113,6 +115,7 @@ export class TimescaleSettingsRepository implements ISettingsRepository {
 			["systemEmailRequireTLS", "system_email_require_tls"],
 			["systemEmailRejectUnauthorized", "system_email_reject_unauthorized"],
 			["showURL", "show_url"],
+			["defaultUserAgent", "default_user_agent"],
 			["version", "version"],
 		];
 
@@ -197,6 +200,7 @@ export class TimescaleSettingsRepository implements ISettingsRepository {
 		systemEmailRequireTLS: row.system_email_require_tls ?? false,
 		systemEmailRejectUnauthorized: row.system_email_reject_unauthorized ?? true,
 		showURL: row.show_url ?? false,
+		defaultUserAgent: row.default_user_agent ?? undefined,
 		singleton: true,
 		version: Number(row.version ?? 1),
 		globalThresholds:

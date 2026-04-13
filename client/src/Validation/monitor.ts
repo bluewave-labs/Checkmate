@@ -45,6 +45,8 @@ const httpSchema = baseSchema.extend({
 			/^[\t\x20-\x7E\x80-\xFF]*$/,
 			"Only printable characters, spaces, and tabs are allowed (RFC 7230 §3.2.6)"
 		)
+		.transform((val) => (val.trim() === "" ? null : val.trim()))
+		.nullable()
 		.optional(),
 });
 
