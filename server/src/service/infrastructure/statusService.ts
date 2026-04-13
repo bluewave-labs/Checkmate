@@ -96,6 +96,7 @@ export class StatusService implements IStatusService {
 					uptimePercentage: 0,
 					lastResponseTime: 0,
 					lastCheckTimestamp: 0,
+					timeOfLastFailure: 0,
 				};
 			} else {
 				// Use existing stats (omit id, monitorId, createdAt, updatedAt)
