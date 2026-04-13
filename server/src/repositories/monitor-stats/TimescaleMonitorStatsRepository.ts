@@ -1,6 +1,6 @@
 import type { Pool } from "pg";
 import type { IMonitorStatsRepository } from "./IMonitorStatsRepository.js";
-import type { MonitorStats } from "@/types/monitorStats.js";
+import type { MonitorStats, CheckResultInput } from "@/types/monitorStats.js";
 import { AppError } from "@/utils/AppError.js";
 
 interface MonitorStatsRow {
@@ -61,37 +61,60 @@ export class TimescaleMonitorStatsRepository implements IMonitorStatsRepository 
 		return this.toEntity(row);
 	};
 
-	updateByMonitorId = async (monitorId: string, data: Omit<MonitorStats, "id" | "monitorId" | "createdAt" | "updatedAt">): Promise<MonitorStats> => {
-		const result = await this.pool.query<MonitorStatsRow>(
-			`UPDATE monitor_stats SET
-				avg_response_time = $2,
-				max_response_time = $3,
-				total_checks = $4,
-				total_up_checks = $5,
-				total_down_checks = $6,
-				uptime_percentage = $7,
-				last_check_timestamp = $8,
-				last_response_time = $9,
-				time_of_last_failure = $10,
+	updateByMonitorId = async (monitorId: string, result: CheckResultInput): Promise<MonitorStats> => {
+		const { status, responseTime, now } = result;
+		const upDelta = status ? 1 : 0;
+		const downDelta = status ? 0 : 1;
+		const nowTs = new Date(now);
+
+		// Atomic upsert via INSERT ... ON CONFLICT DO UPDATE
+		const queryResult = await this.pool.query<MonitorStatsRow>(
+			`INSERT INTO monitor_stats (
+				monitor_id,
+				avg_response_time,
+				max_response_time,
+				total_checks,
+				total_up_checks,
+				total_down_checks,
+				uptime_percentage,
+				last_check_timestamp,
+				last_response_time,
+				time_of_last_failure
+			) VALUES (
+				$1,
+				$2,
+				$2,
+				1,
+				$3,
+				$4,
+				$3::float,
+				$5,
+				$2,
+				CASE WHEN $6::boolean THEN $5 ELSE NULL END
+			)
+			ON CONFLICT (monitor_id) DO UPDATE SET
+				total_checks      = monitor_stats.total_checks + 1,
+				total_up_checks   = monitor_stats.total_up_checks + $3,
+				total_down_checks = monitor_stats.total_down_checks + $4,
+				avg_response_time = (monitor_stats.avg_response_time * monitor_stats.total_checks + $2)
+				                    / (monitor_stats.total_checks + 1),
+				uptime_percentage = (monitor_stats.total_up_checks + $3)::float
+				                    / (monitor_stats.total_checks + 1),
+				max_response_time = GREATEST(monitor_stats.max_response_time, $2),
+				last_response_time = $2,
+				last_check_timestamp = $5,
+				time_of_last_failure = CASE
+					WHEN $6::boolean AND monitor_stats.time_of_last_failure IS NULL THEN $5
+					WHEN $6::boolean THEN monitor_stats.time_of_last_failure
+					ELSE NULL
+				END,
 				updated_at = NOW()
-			 WHERE monitor_id = $1
-			 RETURNING ${COLUMNS}`,
-			[
-				monitorId,
-				data.avgResponseTime,
-				data.maxResponseTime,
-				data.totalChecks,
-				data.totalUpChecks,
-				data.totalDownChecks,
-				data.uptimePercentage,
-				data.lastCheckTimestamp ? new Date(data.lastCheckTimestamp) : null,
-				data.lastResponseTime,
-				data.timeOfLastFailure ? new Date(data.timeOfLastFailure) : null,
-			]
+			RETURNING ${COLUMNS}`,
+			[monitorId, responseTime, upDelta, downDelta, nowTs, status]
 		);
-		const row = result.rows[0];
+		const row = queryResult.rows[0];
 		if (!row) {
-			throw new AppError({ message: "Monitor stats not found", status: 404 });
+			throw new AppError({ message: "Failed to apply check result to monitor stats", status: 500 });
 		}
 		return this.toEntity(row);
 	};
