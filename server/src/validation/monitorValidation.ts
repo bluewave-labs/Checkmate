@@ -73,7 +73,7 @@ export const createMonitorBodyValidation = z.object({
 	matchMethod: z.union([z.enum(MonitorMatchMethods), z.literal("")]).optional(),
 	gameId: z.union([z.string(), z.literal("")]).optional(),
 	grpcServiceName: z.union([z.string(), z.literal("")]).default(""),
-	strategy: z.enum(PageSpeedStrategies).default(DefaultPageSpeedStrategy),
+	strategy: z.enum(PageSpeedStrategies).optional(),
 	selectedDisks: z.array(z.string()).optional(),
 	group: z.union([z.string().max(50).trim(), z.null(), z.literal("")]).optional(),
 	geoCheckEnabled: z.boolean().optional(),
