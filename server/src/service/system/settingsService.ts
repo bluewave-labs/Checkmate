@@ -83,8 +83,6 @@ export class SettingsService implements ISettingsService {
 
 	updateDbSettings = async (newSettings: SettingsUpdate) => {
 		const updated = await this.getRepository().update(newSettings);
-		// Only refresh the cache if defaultUserAgent was actually part of the update payload.
-		// `?? null` would clobber the cache on partial updates that don't include this field.
 		if ("defaultUserAgent" in newSettings) {
 			this.cachedDefaultUserAgent = newSettings.defaultUserAgent ?? null;
 		}
