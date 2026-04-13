@@ -1,9 +1,8 @@
 const SERVICE_NAME = "TeamsProvider";
 import type { Notification } from "@/types/index.js";
-import { INotificationProvider } from "@/service/index.js";
+import { NotificationProvider } from "@/service/infrastructure/notificationProviders/INotificationProvider.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
-import type { ILogger } from "@/utils/logger.js";
 import got, { HTTPError } from "got";
 
 // Types for Adaptive Card elements
@@ -58,13 +57,7 @@ type TeamsMessage = {
 	}>;
 };
 
-export class TeamsProvider implements INotificationProvider {
-	private logger: ILogger;
-
-	constructor(logger: ILogger) {
-		this.logger = logger;
-	}
-
+export class TeamsProvider extends NotificationProvider {
 	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
 		if (!notification.address) {
 			return false;
@@ -90,6 +83,7 @@ export class TeamsProvider implements INotificationProvider {
 				headers: {
 					"Content-Type": "application/json",
 				},
+				...this.gotRequestOptions(),
 			});
 			return true;
 		} catch (error) {
@@ -117,6 +111,7 @@ export class TeamsProvider implements INotificationProvider {
 				headers: {
 					"Content-Type": "application/json",
 				},
+				...this.gotRequestOptions(),
 			});
 			this.logger.info({
 				message: "Teams notification sent via sendMessage",
