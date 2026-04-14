@@ -164,7 +164,7 @@ export class StatusService implements IStatusService {
 	private computeHardwareStatus = (params: {
 		currentStatus: MonitorStatus;
 		reachabilityDown: boolean;
-		metrics: HardwareStatusMetrics | undefined;
+		metrics: HardwareStatusMetrics;
 		thresholds: { cpu: number; memory: number; disk: number; temp: number };
 		counters: HardwareCounters;
 	}): {
@@ -172,9 +172,8 @@ export class StatusService implements IStatusService {
 		transitioned: boolean;
 		breaches: HardwareBreaches;
 		nextCounters: HardwareCounters;
-	} | null => {
+	} => {
 		const { metrics, thresholds, counters, currentStatus, reachabilityDown } = params;
-		if (!metrics) return null;
 
 		const cpuUsage = metrics.cpu?.usage_percent ?? -1;
 		const memoryUsage = metrics.memory?.usage_percent ?? -1;
@@ -195,24 +194,21 @@ export class StatusService implements IStatusService {
 			nextCounters[key] = breaches[key] ? Math.max(0, counters[key] - 1) : HARDWARE_ALERT_COUNTER_START;
 		}
 
-		// Status transition: reachability "down" takes precedence; hardware can only act when reachable.
+		// Status transition: reachability "down" takes precedence; hardware can only drive
+		// transitions into "breached" and back out to "up". Any other case leaves status untouched.
 		let nextStatus: MonitorStatus = currentStatus;
 		let transitioned = false;
 
 		if (!reachabilityDown) {
+			// A counter can only reach zero via the decrement path, which only runs when that
+			// metric is currently breaching — so anyCounterZero already implies anyBreached.
 			const anyCounterZero = HARDWARE_METRIC_KEYS.some((k) => nextCounters[k] === 0);
-			const anyBreached = HARDWARE_METRIC_KEYS.some((k) => breaches[k]);
-			const allNormal = !anyBreached;
+			const allNormal = HARDWARE_METRIC_KEYS.every((k) => !breaches[k]);
 
-			if (anyCounterZero && anyBreached && currentStatus !== "breached") {
-				// Initial breach: sustained N consecutive breaches, flip to 'breached'.
+			if (anyCounterZero && currentStatus !== "breached") {
 				nextStatus = "breached";
 				transitioned = true;
-			} else if (anyCounterZero && anyBreached && currentStatus === "breached") {
-				// Already breached; stay breached without marking as a transition.
-				nextStatus = "breached";
 			} else if (allNormal && currentStatus === "breached") {
-				// All thresholds back to normal: recover from breached state.
 				nextStatus = "up";
 				transitioned = true;
 			}
@@ -272,14 +268,14 @@ export class StatusService implements IStatusService {
 				statusChanged = true;
 			}
 
-			// Evaluate hardware threshold breaches
+			// Evaluate hardware threshold breaches (only for hardware monitors with metrics payload)
 			let thresholdBreaches: HardwareBreaches | undefined;
-			if (monitor.type === "hardware" && statusResponse.payload) {
-				const payload = statusResponse.payload as HardwareStatusPayload;
+			const hardwarePayload = statusResponse.payload as HardwareStatusPayload | undefined;
+			if (monitor.type === "hardware" && hardwarePayload?.data) {
 				const hardware = this.computeHardwareStatus({
 					currentStatus: monitor.status,
 					reachabilityDown: newStatus === "down",
-					metrics: payload.data,
+					metrics: hardwarePayload.data,
 					thresholds: {
 						cpu: monitor.cpuAlertThreshold,
 						memory: monitor.memoryAlertThreshold,
@@ -294,16 +290,14 @@ export class StatusService implements IStatusService {
 					},
 				});
 
-				if (hardware) {
-					monitor.cpuAlertCounter = hardware.nextCounters.cpu;
-					monitor.memoryAlertCounter = hardware.nextCounters.memory;
-					monitor.diskAlertCounter = hardware.nextCounters.disk;
-					monitor.tempAlertCounter = hardware.nextCounters.temp;
-					thresholdBreaches = hardware.breaches;
-					if (hardware.transitioned) {
-						newStatus = hardware.nextStatus;
-						statusChanged = true;
-					}
+				monitor.cpuAlertCounter = hardware.nextCounters.cpu;
+				monitor.memoryAlertCounter = hardware.nextCounters.memory;
+				monitor.diskAlertCounter = hardware.nextCounters.disk;
+				monitor.tempAlertCounter = hardware.nextCounters.temp;
+				thresholdBreaches = hardware.breaches;
+				if (hardware.transitioned) {
+					newStatus = hardware.nextStatus;
+					statusChanged = true;
 				}
 			}
 
