@@ -123,6 +123,57 @@ describe("Heartbeat job: hardware threshold breach", () => {
 		expect(incidents[0].resolutionType).toBe("automatic");
 	});
 
+	it("transitions breached hardware monitor to down when reachability also fails", async () => {
+		// A hardware monitor currently in "breached" state starts failing its reachability
+		// checks enough to cross the statusWindow threshold. "down" must take precedence
+		// over "breached" — when both conditions are true, the user wants the escalated
+		// alert. Unit-covered in statusService.test.ts via computeReachability; this is
+		// the end-to-end counterpart that exercises the full heartbeat path including
+		// incident-lifecycle handling.
+		const monitor = makeMonitor({
+			type: "hardware",
+			status: "breached",
+			cpuAlertThreshold: 80,
+			cpuAlertCounter: 0,
+			memoryAlertThreshold: 100,
+			memoryAlertCounter: 5,
+			diskAlertThreshold: 100,
+			diskAlertCounter: 5,
+			tempAlertThreshold: 100,
+			tempAlertCounter: 5,
+			selectedDisks: [],
+			// Window is fully healthy — the monitor is breached from hardware metrics,
+			// not from reachability. The test drives the window from clean → failing.
+			statusWindow: [true, true, true, true, true],
+		});
+		h.monitorsRepo.seed(monitor);
+
+		// Seed an active breached incident matching the initial state.
+		await h.incidentsRepo.create({
+			monitorId: "mon-1",
+			teamId: "team-1",
+			status: true,
+			statusCode: 9999,
+			message: "CPU: 90% (threshold: 80%)",
+		});
+
+		// Drive reachability failure: 3 consecutive failing heartbeats.
+		// Window evolves: [t,t,t,t,t] → [t,t,t,t,f] (20%) → [t,t,t,f,f] (40%) → [t,t,f,f,f] (60%)
+		// At 60% >= threshold, and current status "breached" !== "down", reachability fires.
+		// Reachability sends HTTP-shaped responses with no hardware payload, so the
+		// hardware block is correctly skipped for these checks.
+		h.setNextResponse(false, 503);
+		for (let i = 0; i < 3; i++) {
+			await h.heartbeatJob(monitor);
+		}
+
+		const stored = await h.monitorsRepo.findById("mon-1", "team-1");
+		expect(stored.status).toBe("down");
+
+		// Notification dispatch must have fired for the transition.
+		expect(h.notificationsService.handleNotifications).toHaveBeenCalled();
+	});
+
 	it("does not create duplicate incidents while remaining breached", async () => {
 		const monitor = makeMonitor({
 			type: "hardware",
