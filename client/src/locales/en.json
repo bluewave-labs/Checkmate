@@ -1209,8 +1209,16 @@
 			},
 			"statusBar": {
 				"allDown": "All systems are down",
+				"allMaintenance": "All systems are under maintenance",
 				"allUp": "All systems operational",
+				"allPaused": "All systems are paused",
+				"allBreached": "All systems have been breached",
+				"breachedAndDown": "Some systems are breached and down",
+				"breached": "Some systems have been breached",
 				"degraded": "Some systems are experiencing issues",
+				"maintenanceAndDown": "Some systems are down during maintenance",
+				"maintenance": "Some systems are under maintenance",
+				"partiallyPaused": "Some systems are paused",
 				"unknown": "Unable to determine system status"
 			},
 			"table": {
