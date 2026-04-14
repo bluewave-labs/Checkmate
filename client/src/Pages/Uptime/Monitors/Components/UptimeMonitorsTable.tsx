@@ -7,10 +7,7 @@ import {
 	Pagination,
 	StatusLabel,
 } from "@/Components/design-elements";
-import {
-	HeatmapResponseTime,
-	HistogramResponseTime,
-} from "@/Components/common";
+import { HeatmapResponseTime, HistogramResponseTime } from "@/Components/common";
 import { ActionsMenu } from "@/Components/actions-menu";
 import { ArrowDown, ArrowUp } from "lucide-react";
 
@@ -54,8 +51,7 @@ export const MonitorTable = ({
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const navigate = useNavigate();
-	const chartType =
-		useSelector((state: RootState) => state.ui?.chartType ?? "histogram");
+	const chartType = useSelector((state: RootState) => state.ui?.chartType ?? "histogram");
 
 	const { post } = usePost<any, Monitor>();
 
@@ -86,13 +82,12 @@ export const MonitorTable = ({
 		})();
 
 		const isLoopback =
-			hostname === "localhost" ||
-			hostname === "127.0.0.1" ||
-			hostname === "::1";
+			hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
 
-		const isPrivateIpv4 = /^(10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})$/.test(
-			hostname
-		);
+		const isPrivateIpv4 =
+			/^(10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})$/.test(
+				hostname
+			);
 		const isPrivateLike =
 			hostname.endsWith(".local") ||
 			hostname.endsWith(".internal") ||
@@ -103,9 +98,7 @@ export const MonitorTable = ({
 			(hostname === "" || isLoopback || isPrivateIpv4 || isPrivateLike);
 
 		const showOpenSite =
-			monitor.type !== "hardware" &&
-			monitor.type !== "port" &&
-			!isInternalHttpTarget;
+			monitor.type !== "hardware" && monitor.type !== "port" && !isInternalHttpTarget;
 
 		return [
 			...(showOpenSite
@@ -130,15 +123,13 @@ export const MonitorTable = ({
 			{
 				id: 3,
 				label: t("pages.common.monitors.actions.incidents"),
-				action: () =>
-					navigate(`/incidents?monitorId=${monitor.id}`),
+				action: () => navigate(`/incidents?monitorId=${monitor.id}`),
 			},
 
 			{
 				id: 4,
 				label: t("pages.common.monitors.actions.configure"),
-				action: () =>
-					navigate(`/uptime/configure/${monitor.id}`),
+				action: () => navigate(`/uptime/configure/${monitor.id}`),
 			},
 
 			{
@@ -172,12 +163,18 @@ export const MonitorTable = ({
 	 */
 	const getHeaders = (chartType: string) => {
 		const renderSortIcon = (isActive: boolean) => (
-			<Box width={16} display="inline-flex" justifyContent="center">
-				{isActive
-					? sortOrder === "asc"
-						? <ArrowUp size={16} />
-						: <ArrowDown size={16} />
-					: null}
+			<Box
+				width={16}
+				display="inline-flex"
+				justifyContent="center"
+			>
+				{isActive ? (
+					sortOrder === "asc" ? (
+						<ArrowUp size={16} />
+					) : (
+						<ArrowDown size={16} />
+					)
+				) : null}
 			</Box>
 		);
 
@@ -265,9 +262,7 @@ export const MonitorTable = ({
 			<Table
 				headers={headers}
 				data={monitors}
-				onRowClick={(row) =>
-					navigate(`/uptime/${row.id}`)
-				}
+				onRowClick={(row) => navigate(`/uptime/${row.id}`)}
 			/>
 
 			<Pagination
@@ -276,9 +271,7 @@ export const MonitorTable = ({
 				page={page}
 				rowsPerPage={rowsPerPage}
 				onPageChange={(_e, newPage) => setPage(newPage)}
-				onRowsPerPageChange={(e) =>
-					setRowsPerPage(Number(e.target.value))
-				}
+				onRowsPerPageChange={(e) => setRowsPerPage(Number(e.target.value))}
 				itemsOnPage={monitors.length}
 			/>
 		</Box>
