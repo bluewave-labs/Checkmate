@@ -19,7 +19,14 @@ import type {
 import { AppError } from "@/utils/AppError.js";
 import { ILogger } from "@/utils/logger.js";
 import { IBufferService } from "./bufferService.js";
+import type { HardwareStatusMetrics } from "@/types/network.js";
 const SERVICE_NAME = "StatusService";
+const MAX_RECENT_CHECKS = 25;
+const HARDWARE_ALERT_COUNTER_START = 5;
+const HARDWARE_METRIC_KEYS = ["cpu", "memory", "disk", "temp"] as const;
+type HardwareMetricKey = (typeof HARDWARE_METRIC_KEYS)[number];
+type HardwareBreaches = Record<HardwareMetricKey, boolean>;
+type HardwareCounters = Record<HardwareMetricKey, number>;
 
 export interface IStatusService {
 	updateRunningStats(monitor: Monitor, networkResponse: MonitorStatusResponse): Promise<boolean>;
@@ -84,6 +91,132 @@ export class StatusService implements IStatusService {
 		}
 	}
 
+	private tryUpdateRunningStats = async (monitor: Monitor, statusResponse: MonitorStatusResponse) => {
+		const statsOk = await this.updateRunningStats(monitor, statusResponse);
+		if (!statsOk) {
+			this.logger.warn({
+				service: SERVICE_NAME,
+				method: "updateMonitorStatus",
+				message: `Stats update failed for monitor ${monitor.id}`,
+			});
+		}
+	};
+
+	private appendToWindow = (monitor: Monitor, status: boolean) => {
+		monitor.statusWindow = monitor.statusWindow || [];
+		monitor.statusWindow.push(status);
+		while (monitor.statusWindow.length > monitor.statusWindowSize) {
+			monitor.statusWindow.shift();
+		}
+	};
+
+	private toCheckSnapshot = (check: Check): CheckSnapshot => {
+		return {
+			id: check.id,
+			status: check.status,
+			responseTime: check.responseTime,
+			timings: check.timings,
+			statusCode: check.statusCode,
+			message: check.message,
+			cpu: check.cpu,
+			memory: check.memory,
+			disk: check.disk,
+			host: check.host,
+			errors: check.errors,
+			capture: check.capture,
+			net: check.net,
+			accessibility: check.accessibility,
+			bestPractices: check.bestPractices,
+			seo: check.seo,
+			performance: check.performance,
+			audits: check.audits,
+			createdAt: check.createdAt,
+		};
+	};
+
+	private appendToRecentChecks = (monitor: Monitor, check: Check) => {
+		monitor.recentChecks = monitor.recentChecks || [];
+		const checkSnapshot = this.toCheckSnapshot(check);
+		monitor.recentChecks.push(checkSnapshot);
+		while (monitor.recentChecks.length > MAX_RECENT_CHECKS) {
+			monitor.recentChecks.shift();
+		}
+	};
+
+	private computeReachability = (
+		currentStatus: MonitorStatus,
+		window: Array<boolean>,
+		threshold: number
+	): { nextStatus: "up" | "down"; transitioned: boolean } => {
+		const failures = window.filter((status) => status === false).length;
+		const failureRate = (failures / window.length) * 100;
+
+		if (failureRate >= threshold && currentStatus !== "down") {
+			return { nextStatus: "down", transitioned: true };
+		}
+
+		if (failureRate < threshold && currentStatus === "down") {
+			return { nextStatus: "up", transitioned: true };
+		}
+		return { nextStatus: "up", transitioned: false };
+	};
+
+	private computeHardwareStatus = (params: {
+		currentStatus: MonitorStatus;
+		reachabilityDown: boolean;
+		metrics: HardwareStatusMetrics;
+		thresholds: { cpu: number; memory: number; disk: number; temp: number };
+		counters: HardwareCounters;
+	}): {
+		nextStatus: MonitorStatus;
+		transitioned: boolean;
+		breaches: HardwareBreaches;
+		nextCounters: HardwareCounters;
+	} => {
+		const { metrics, thresholds, counters, currentStatus, reachabilityDown } = params;
+
+		const cpuUsage = metrics.cpu?.usage_percent ?? -1;
+		const memoryUsage = metrics.memory?.usage_percent ?? -1;
+		const temps = metrics.cpu?.temperature ?? [];
+
+		const breaches: HardwareBreaches = {
+			cpu: cpuUsage !== -1 && cpuUsage > thresholds.cpu / 100,
+			memory: memoryUsage !== -1 && memoryUsage > thresholds.memory / 100,
+			disk: metrics.disk
+				? metrics.disk.some((d: CheckDiskInfo) => d != null && typeof d.usage_percent === "number" && d.usage_percent > thresholds.disk / 100)
+				: false,
+			temp: temps.some((temp: number) => temp > thresholds.temp),
+		};
+
+		// Update counters: decrement (floored at 0) if breached, reset to start otherwise.
+		const nextCounters = { ...counters };
+		for (const key of HARDWARE_METRIC_KEYS) {
+			nextCounters[key] = breaches[key] ? Math.max(0, counters[key] - 1) : HARDWARE_ALERT_COUNTER_START;
+		}
+
+		// Status transition: reachability "down" takes precedence; hardware can only drive
+		// transitions into "breached" and back out to "up". Any other case leaves status untouched.
+		let nextStatus: MonitorStatus = currentStatus;
+		let transitioned = false;
+
+		if (!reachabilityDown) {
+			// A counter can only reach zero via the decrement path, which only runs when that
+			// metric is currently breaching — so anyCounterZero already implies anyBreached.
+			const anyCounterZero = HARDWARE_METRIC_KEYS.some((k) => nextCounters[k] === 0);
+			const allNormal = HARDWARE_METRIC_KEYS.every((k) => !breaches[k]);
+
+			if (anyCounterZero && currentStatus !== "breached") {
+				nextStatus = "breached";
+				transitioned = true;
+			} else if (allNormal && currentStatus === "breached") {
+				nextStatus = "up";
+				transitioned = true;
+			}
+		}
+
+		return { nextStatus, transitioned, breaches, nextCounters };
+	};
+
 	updateMonitorStatus = async (
 		statusResponse: MonitorStatusResponse<
 			| PingStatusPayload
@@ -103,56 +236,17 @@ export class StatusService implements IStatusService {
 			const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 
 			// Update running stats
-			const statsOk = await this.updateRunningStats(monitor, statusResponse);
-			if (!statsOk) {
-				this.logger.warn({
-					service: SERVICE_NAME,
-					method: "updateMonitorStatus",
-					message: `Stats update failed for monitor ${monitor.id}`,
-				});
-			}
+			await this.tryUpdateRunningStats(monitor, statusResponse);
 
-			monitor.statusWindow = monitor.statusWindow || [];
-			monitor.statusWindow.push(status);
-			while (monitor.statusWindow.length > monitor.statusWindowSize) {
-				monitor.statusWindow.shift();
-			}
-
-			const checkSnapshot: CheckSnapshot = {
-				id: check.id,
-				status: check.status,
-				responseTime: check.responseTime,
-				timings: check.timings,
-				statusCode: check.statusCode,
-				message: check.message,
-				cpu: check.cpu,
-				memory: check.memory,
-				disk: check.disk,
-				host: check.host,
-				errors: check.errors,
-				capture: check.capture,
-				net: check.net,
-				accessibility: check.accessibility,
-				bestPractices: check.bestPractices,
-				seo: check.seo,
-				performance: check.performance,
-				audits: check.audits,
-				createdAt: check.createdAt,
-			};
-			monitor.recentChecks = monitor.recentChecks || [];
-			monitor.recentChecks.push(checkSnapshot);
-			const maxRecentChecks = 25;
-			while (monitor.recentChecks.length > maxRecentChecks) {
-				monitor.recentChecks.shift();
-			}
+			// Update the sliding window and recent checks
+			this.appendToWindow(monitor, status);
+			this.appendToRecentChecks(monitor, check);
 
 			const prevStatus = monitor.status;
-			let newStatus: MonitorStatus = status === true ? "up" : "down";
-			let statusChanged = false;
 
 			// Return early if not enough data points
 			if (monitor.statusWindow.length < monitor.statusWindowSize) {
-				monitor.status = newStatus;
+				monitor.status = status === true ? "up" : "down";
 				const updated = await this.monitorsRepository.updateById(monitor.id, monitor.teamId, monitor);
 				return {
 					monitor: updated,
@@ -163,101 +257,47 @@ export class StatusService implements IStatusService {
 				};
 			}
 
-			// Check if threshold has been met
-			const failures = monitor.statusWindow.filter((s) => s === false).length;
-			const failureRate = (failures / monitor.statusWindow.length) * 100;
+			// With a full window, a single raw check must not change monitor.status; only the sliding-window threshold can trigger a transition.
+			let newStatus = monitor.status;
+			let statusChanged = false;
 
-			// If threshold has been met and the monitor is not already down, mark down:
-			if (failureRate >= monitor.statusWindowThreshold && monitor.status !== "down") {
-				newStatus = "down";
-				statusChanged = true;
-			}
-			// If the failure rate is below the threshold and the monitor is down, recover:
-			else if (failureRate < monitor.statusWindowThreshold && monitor.status === "down") {
-				newStatus = "up";
+			// First evaluate reachability-based status changes, which apply to all monitor types and take precedence over hardware breaches.
+			const reachabilityResult = this.computeReachability(monitor.status, monitor.statusWindow, monitor.statusWindowThreshold);
+			if (reachabilityResult.transitioned) {
+				newStatus = reachabilityResult.nextStatus;
 				statusChanged = true;
 			}
 
-			// Evaluate hardware threshold breaches (only for hardware monitors)
-			let thresholdBreaches: { cpu: boolean; memory: boolean; disk: boolean; temp: boolean } | undefined;
-			if (monitor.type === "hardware" && statusResponse.payload) {
-				const payload = statusResponse.payload as HardwareStatusPayload;
-				const metrics = payload.data;
+			// Evaluate hardware threshold breaches (only for hardware monitors with metrics payload)
+			let thresholdBreaches: HardwareBreaches | undefined;
+			const hardwarePayload = statusResponse.payload as HardwareStatusPayload | undefined;
+			if (monitor.type === "hardware" && hardwarePayload?.data) {
+				const hardware = this.computeHardwareStatus({
+					currentStatus: monitor.status,
+					reachabilityDown: newStatus === "down",
+					metrics: hardwarePayload.data,
+					thresholds: {
+						cpu: monitor.cpuAlertThreshold,
+						memory: monitor.memoryAlertThreshold,
+						disk: monitor.diskAlertThreshold,
+						temp: monitor.tempAlertThreshold,
+					},
+					counters: {
+						cpu: monitor.cpuAlertCounter,
+						memory: monitor.memoryAlertCounter,
+						disk: monitor.diskAlertCounter,
+						temp: monitor.tempAlertCounter,
+					},
+				});
 
-				if (metrics) {
-					// Evaluate threshold breaches
-					const cpuUsage = metrics.cpu?.usage_percent ?? -1;
-					const cpuBreach = cpuUsage !== -1 && cpuUsage > monitor.cpuAlertThreshold / 100;
-
-					const memoryUsage = metrics.memory?.usage_percent ?? -1;
-					const memoryBreach = memoryUsage !== -1 && memoryUsage > monitor.memoryAlertThreshold / 100;
-
-					const diskBreach = metrics.disk
-						? metrics.disk.some(
-								(d: CheckDiskInfo) => d != null && typeof d.usage_percent === "number" && d.usage_percent > monitor.diskAlertThreshold / 100
-							)
-						: false;
-
-					const temps = metrics.cpu?.temperature ?? [];
-					const tempBreach = temps.some((temp: number) => temp > monitor.tempAlertThreshold);
-
-					thresholdBreaches = {
-						cpu: cpuBreach,
-						memory: memoryBreach,
-						disk: diskBreach,
-						temp: tempBreach,
-					};
-
-					// Update counters: decrement if breached, reset to 5 if not breached
-					if (cpuBreach) {
-						monitor.cpuAlertCounter = Math.max(0, monitor.cpuAlertCounter - 1);
-					} else {
-						monitor.cpuAlertCounter = 5;
-					}
-
-					if (memoryBreach) {
-						monitor.memoryAlertCounter = Math.max(0, monitor.memoryAlertCounter - 1);
-					} else {
-						monitor.memoryAlertCounter = 5;
-					}
-
-					if (diskBreach) {
-						monitor.diskAlertCounter = Math.max(0, monitor.diskAlertCounter - 1);
-					} else {
-						monitor.diskAlertCounter = 5;
-					}
-
-					if (tempBreach) {
-						monitor.tempAlertCounter = Math.max(0, monitor.tempAlertCounter - 1);
-					} else {
-						monitor.tempAlertCounter = 5;
-					}
-
-					// Check if any counter has reached zero (initial breach)
-					const anyCounterZero =
-						monitor.cpuAlertCounter === 0 || monitor.memoryAlertCounter === 0 || monitor.diskAlertCounter === 0 || monitor.tempAlertCounter === 0;
-
-					const anyThresholdBreached = cpuBreach || memoryBreach || diskBreach || tempBreach;
-					const allThresholdsNormal = !cpuBreach && !memoryBreach && !diskBreach && !tempBreach;
-
-					// Update monitor status based on threshold breach state
-					if (newStatus !== "down") {
-						// Don't override "down" status - service unreachable takes precedence
-						// Check current monitor status, not newStatus for comparison
-						if (anyCounterZero && anyThresholdBreached && monitor.status !== "breached") {
-							// Initial breach: counter hit zero, change status to breached
-							newStatus = "breached";
-							statusChanged = true;
-						} else if (anyCounterZero && anyThresholdBreached && monitor.status === "breached") {
-							// Already breached, keep status but don't mark as changed
-							newStatus = "breached";
-							// statusChanged remains false
-						} else if (allThresholdsNormal && monitor.status === "breached") {
-							// All thresholds returned to normal, recover from breached state
-							newStatus = "up";
-							statusChanged = true;
-						}
-					}
+				monitor.cpuAlertCounter = hardware.nextCounters.cpu;
+				monitor.memoryAlertCounter = hardware.nextCounters.memory;
+				monitor.diskAlertCounter = hardware.nextCounters.disk;
+				monitor.tempAlertCounter = hardware.nextCounters.temp;
+				thresholdBreaches = hardware.breaches;
+				if (hardware.transitioned) {
+					newStatus = hardware.nextStatus;
+					statusChanged = true;
 				}
 			}
 
