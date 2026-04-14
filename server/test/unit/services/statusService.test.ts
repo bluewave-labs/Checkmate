@@ -306,6 +306,26 @@ describe("StatusService", () => {
 			expect(result.monitor.status).toBe("up");
 		});
 
+		it("keeps status 'up' on a sub-threshold failed check (regression: #3438)", async () => {
+			// Monitor is up, window has one failure already, incoming check fails.
+			// 2/5 = 40% < 80% threshold — must NOT silently write status='down',
+			// otherwise the next successful check fires a spurious 'Recovered' notification.
+			const monitor = makeMonitor({
+				statusWindow: [true, true, true, false],
+				statusWindowSize: 5,
+				statusWindowThreshold: 80,
+				status: "up",
+			});
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
+
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: false }), makeCheck({ status: false }));
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.monitor.status).toBe("up");
+		});
+
 		it("does not change status when already down and still above threshold", async () => {
 			const monitor = makeMonitor({
 				statusWindow: [false, false, false, false],
