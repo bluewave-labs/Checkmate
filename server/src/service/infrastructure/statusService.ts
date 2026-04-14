@@ -163,6 +163,9 @@ export class StatusService implements IStatusService {
 				};
 			}
 
+			// With a full window, a single raw check must not change monitor.status; only the sliding-window threshold can trigger a transition.
+			newStatus = monitor.status;
+
 			// Check if threshold has been met
 			const failures = monitor.statusWindow.filter((s) => s === false).length;
 			const failureRate = (failures / monitor.statusWindow.length) * 100;
