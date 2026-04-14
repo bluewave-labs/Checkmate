@@ -1,7 +1,7 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import { StatusService } from "../../../src/service/infrastructure/statusService.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import type { Monitor, MonitorStatusResponse, Check, HardwareStatusPayload } from "../../../src/types/index.ts";
+import type { Monitor, MonitorStatus, MonitorStatusResponse, Check, HardwareStatusPayload } from "../../../src/types/index.ts";
 import type { IMonitorsRepository, IMonitorStatsRepository, IChecksRepository } from "../../../src/repositories/index.ts";
 import type { IBufferService } from "../../../src/service/infrastructure/bufferService.ts";
 
@@ -852,6 +852,303 @@ describe("StatusService", () => {
 				expect(monitor.diskAlertCounter).toBe(0);
 				expect(monitor.tempAlertCounter).toBe(0);
 			});
+		});
+	});
+
+	// ── Pure helpers ─────────────────────────────────────────────────────────
+	// These test the private state-machine helpers directly, without repository
+	// or logger mocks. The helpers are accessed via `service as any` because
+	// they're private implementation details; exposing them publicly would
+	// widen the API surface just for testability.
+
+	describe("computeReachability (pure)", () => {
+		const reach = (currentStatus: MonitorStatus, window: boolean[], threshold = 80) => {
+			const { service } = createService();
+			return (service as any).computeReachability(currentStatus, window, threshold) as {
+				nextStatus: "up" | "down";
+				transitioned: boolean;
+			};
+		};
+
+		// ── Monitor is "up" ──
+		it("up + window below threshold → no transition", () => {
+			expect(reach("up", [true, true, true, true, true])).toEqual({ nextStatus: "up", transitioned: false });
+		});
+
+		it("up + window exactly at threshold → transitions to down (>= boundary)", () => {
+			// 4/5 = 80% and threshold is 80, >= so this must trip
+			expect(reach("up", [false, false, false, false, true])).toEqual({ nextStatus: "down", transitioned: true });
+		});
+
+		it("up + window over threshold → transitions to down", () => {
+			expect(reach("up", [false, false, false, false, false])).toEqual({ nextStatus: "down", transitioned: true });
+		});
+
+		// ── Monitor is "down" ──
+		it("down + window below threshold → transitions to up (recovery)", () => {
+			// 0/5 failures, fully healthy window
+			expect(reach("down", [true, true, true, true, true])).toEqual({ nextStatus: "up", transitioned: true });
+		});
+
+		it("down + window exactly at threshold → no transition (strict < for recovery)", () => {
+			// 4/5 = 80%; recovery requires failureRate < threshold, not <=, so stays down
+			const result = reach("down", [false, false, false, false, true]);
+			expect(result.transitioned).toBe(false);
+			// Orchestrator ignores nextStatus when !transitioned, so the returned value
+			// is irrelevant to observable behavior; documenting here for clarity.
+		});
+
+		it("down + window over threshold → no transition", () => {
+			const result = reach("down", [false, false, false, false, false]);
+			expect(result.transitioned).toBe(false);
+		});
+
+		// ── Monitor is "breached" (hardware state, passes through reachability) ──
+		it("breached + healthy window → no transition (reachability does not touch breached)", () => {
+			// Critical: reachability must NOT claim to recover a breached monitor. That
+			// transition is owned by the hardware block (all thresholds back to normal).
+			const result = reach("breached", [true, true, true, true, true]);
+			expect(result.transitioned).toBe(false);
+		});
+
+		it("breached + window at threshold → transitions to down (down beats breached)", () => {
+			// A breached monitor that also loses reachability must flip to "down".
+			// Current status is "breached" which satisfies `!== "down"`, so the branch fires.
+			expect(reach("breached", [false, false, false, false, true])).toEqual({ nextStatus: "down", transitioned: true });
+		});
+
+		it("breached + window over threshold → transitions to down", () => {
+			expect(reach("breached", [false, false, false, false, false])).toEqual({ nextStatus: "down", transitioned: true });
+		});
+
+		// ── Threshold variations ──
+		it("non-default threshold (50%) trips at 3/5 failures", () => {
+			expect(reach("up", [false, false, false, true, true], 50)).toEqual({ nextStatus: "down", transitioned: true });
+		});
+
+		it("non-default threshold (50%) does not trip at 2/5 failures", () => {
+			expect(reach("up", [false, false, true, true, true], 50).transitioned).toBe(false);
+		});
+	});
+
+	describe("computeHardwareStatus (pure)", () => {
+		type Params = {
+			currentStatus: MonitorStatus;
+			reachabilityDown: boolean;
+			metrics: any;
+			thresholds: { cpu: number; memory: number; disk: number; temp: number };
+			counters: { cpu: number; memory: number; disk: number; temp: number };
+		};
+
+		const healthyMetrics = () => ({
+			cpu: { usage_percent: 0.1, temperature: [30] },
+			memory: { usage_percent: 0.1 },
+			disk: [{ usage_percent: 0.1 }],
+			host: {},
+		});
+
+		const defaults = (): Params => ({
+			currentStatus: "up",
+			reachabilityDown: false,
+			metrics: healthyMetrics(),
+			thresholds: { cpu: 80, memory: 80, disk: 80, temp: 80 },
+			counters: { cpu: 5, memory: 5, disk: 5, temp: 5 },
+		});
+
+		const compute = (overrides: Partial<Params> = {}) => {
+			const { service } = createService();
+			return (service as any).computeHardwareStatus({ ...defaults(), ...overrides });
+		};
+
+		// ── Breach detection ──
+		it("detects CPU breach when usage > threshold", () => {
+			const r = compute({ metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.9, temperature: [30] } } });
+			expect(r.breaches.cpu).toBe(true);
+		});
+
+		it("does not flag CPU at exactly the threshold (strict >, not >=)", () => {
+			const r = compute({ metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.8, temperature: [30] } } });
+			expect(r.breaches.cpu).toBe(false);
+		});
+
+		it("does not flag CPU when usage_percent is missing", () => {
+			const r = compute({ metrics: { ...healthyMetrics(), cpu: { temperature: [30] } } });
+			expect(r.breaches.cpu).toBe(false);
+		});
+
+		it("detects memory breach", () => {
+			const r = compute({ metrics: { ...healthyMetrics(), memory: { usage_percent: 0.9 } } });
+			expect(r.breaches.memory).toBe(true);
+		});
+
+		it("detects disk breach when any disk exceeds threshold", () => {
+			const r = compute({ metrics: { ...healthyMetrics(), disk: [{ usage_percent: 0.1 }, { usage_percent: 0.95 }] } });
+			expect(r.breaches.disk).toBe(true);
+		});
+
+		it("skips null disk entries", () => {
+			const r = compute({ metrics: { ...healthyMetrics(), disk: [null, { usage_percent: 0.1 }] } });
+			expect(r.breaches.disk).toBe(false);
+		});
+
+		it("skips disk entries missing usage_percent", () => {
+			const r = compute({ metrics: { ...healthyMetrics(), disk: [{ device: "/dev/sda" }] } });
+			expect(r.breaches.disk).toBe(false);
+		});
+
+		it("detects temperature breach when any core exceeds threshold", () => {
+			const r = compute({ metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.1, temperature: [30, 50, 90] } } });
+			expect(r.breaches.temp).toBe(true);
+		});
+
+		it("empty temperature array → no temp breach", () => {
+			const r = compute({ metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.1, temperature: [] } } });
+			expect(r.breaches.temp).toBe(false);
+		});
+
+		it("missing temperature → no temp breach", () => {
+			const r = compute({ metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.1 } } });
+			expect(r.breaches.temp).toBe(false);
+		});
+
+		it("detects multiple simultaneous breaches", () => {
+			const r = compute({
+				metrics: {
+					cpu: { usage_percent: 0.9, temperature: [90] },
+					memory: { usage_percent: 0.9 },
+					disk: [{ usage_percent: 0.95 }],
+					host: {},
+				},
+			});
+			expect(r.breaches).toEqual({ cpu: true, memory: true, disk: true, temp: true });
+		});
+
+		// ── Counter mechanics ──
+		it("decrements counter on breach", () => {
+			const r = compute({
+				metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.9, temperature: [30] } },
+				counters: { cpu: 3, memory: 5, disk: 5, temp: 5 },
+			});
+			expect(r.nextCounters.cpu).toBe(2);
+		});
+
+		it("resets counter to start value when metric returns to normal", () => {
+			const r = compute({ counters: { cpu: 2, memory: 2, disk: 2, temp: 2 } });
+			expect(r.nextCounters).toEqual({ cpu: 5, memory: 5, disk: 5, temp: 5 });
+		});
+
+		it("counter floors at zero (does not go negative)", () => {
+			const r = compute({
+				metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.9, temperature: [30] } },
+				counters: { cpu: 0, memory: 5, disk: 5, temp: 5 },
+			});
+			expect(r.nextCounters.cpu).toBe(0);
+		});
+
+		it("counters are independent per metric", () => {
+			// CPU breaching, memory normal: CPU decrements, memory resets.
+			const r = compute({
+				metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.9, temperature: [30] } },
+				counters: { cpu: 3, memory: 2, disk: 2, temp: 2 },
+			});
+			expect(r.nextCounters).toEqual({ cpu: 2, memory: 5, disk: 5, temp: 5 });
+		});
+
+		// ── Status transitions ──
+		it("up → breached when counter hits zero on breach", () => {
+			const r = compute({
+				currentStatus: "up",
+				metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.9, temperature: [30] } },
+				counters: { cpu: 1, memory: 5, disk: 5, temp: 5 },
+			});
+			expect(r.nextStatus).toBe("breached");
+			expect(r.transitioned).toBe(true);
+		});
+
+		it("up → up (no transition) while counter is still decrementing", () => {
+			const r = compute({
+				currentStatus: "up",
+				metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.9, temperature: [30] } },
+				counters: { cpu: 3, memory: 5, disk: 5, temp: 5 },
+			});
+			expect(r.nextStatus).toBe("up");
+			expect(r.transitioned).toBe(false);
+		});
+
+		it("breached → breached (no transition) when already breached and still breaching", () => {
+			const r = compute({
+				currentStatus: "breached",
+				metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.9, temperature: [30] } },
+				counters: { cpu: 0, memory: 5, disk: 5, temp: 5 },
+			});
+			expect(r.transitioned).toBe(false);
+			// nextStatus stays at currentStatus ("breached") since no transition fires
+			expect(r.nextStatus).toBe("breached");
+		});
+
+		it("breached → up when all metrics return to normal", () => {
+			const r = compute({ currentStatus: "breached" });
+			expect(r.nextStatus).toBe("up");
+			expect(r.transitioned).toBe(true);
+		});
+
+		it("any one counter at zero is enough to trigger initial breach", () => {
+			// memory counter at 1, memory currently breaching, cpu fine
+			const r = compute({
+				currentStatus: "up",
+				metrics: { ...healthyMetrics(), memory: { usage_percent: 0.9 } },
+				counters: { cpu: 5, memory: 1, disk: 5, temp: 5 },
+			});
+			expect(r.nextStatus).toBe("breached");
+			expect(r.transitioned).toBe(true);
+		});
+
+		// ── Reachability-down gate ──
+		it("reachabilityDown blocks status transition even when counter hits zero", () => {
+			const r = compute({
+				currentStatus: "up",
+				reachabilityDown: true,
+				metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.9, temperature: [30] } },
+				counters: { cpu: 1, memory: 5, disk: 5, temp: 5 },
+			});
+			expect(r.transitioned).toBe(false);
+			expect(r.nextStatus).toBe("up"); // stays at currentStatus
+		});
+
+		it("reachabilityDown still updates counters (the gate is only around status, not metrics math)", () => {
+			const r = compute({
+				reachabilityDown: true,
+				metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.9, temperature: [30] } },
+				counters: { cpu: 3, memory: 5, disk: 5, temp: 5 },
+			});
+			expect(r.nextCounters.cpu).toBe(2);
+			expect(r.breaches.cpu).toBe(true);
+		});
+
+		it("reachabilityDown blocks recovery from breached", () => {
+			// Even with all metrics normal, if reachability says down, we can't recover.
+			const r = compute({ currentStatus: "breached", reachabilityDown: true });
+			expect(r.transitioned).toBe(false);
+			expect(r.nextStatus).toBe("breached");
+		});
+
+		// ── Percentage vs raw-degree thresholds ──
+		it("CPU/memory/disk thresholds are percentages (compared against usage * 100)", () => {
+			// threshold 50 means 50%, usage 0.6 = 60% → breach
+			const r = compute({
+				metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.6, temperature: [30] } },
+				thresholds: { cpu: 50, memory: 80, disk: 80, temp: 80 },
+			});
+			expect(r.breaches.cpu).toBe(true);
+		});
+
+		it("temperature threshold is raw degrees (no /100 scaling)", () => {
+			// threshold 75, temp 80 → breach
+			const r = compute({
+				metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.1, temperature: [80] } },
+				thresholds: { cpu: 80, memory: 80, disk: 80, temp: 75 },
+			});
+			expect(r.breaches.temp).toBe(true);
 		});
 	});
 });
