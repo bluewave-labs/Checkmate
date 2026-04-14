@@ -69,20 +69,20 @@ export const MonitorTable = ({
 
 	// ONLY CHANGE: detect internal/private URLs (issue requirement)
 	const isInternalUrl = (url: string) => {
-  try {
-    const { hostname } = new URL(url);
-    return (
-      hostname === "localhost" ||
-      hostname === "127.0.0.1" ||
-      hostname === "::1" ||
-      hostname.endsWith(".local") ||
-      hostname.endsWith(".internal") ||
-      !hostname.includes(".")  
-    );
-  } catch {
-    return true; // unparseable = internal (port monitors with no protocol)
-  }
-};
+		try {
+			const { hostname } = new URL(url);
+			return (
+				hostname === "localhost" ||
+				hostname === "127.0.0.1" ||
+				hostname === "::1" ||
+				hostname.endsWith(".local") ||
+				hostname.endsWith(".internal") ||
+				!hostname.includes(".")
+			);
+		} catch {
+			return true; // unparseable = internal (port monitors with no protocol)
+		}
+	};
 
 	const getActions = (monitor: Monitor): ActionMenuItem[] => {
 		const actions: ActionMenuItem[] = [];
@@ -154,7 +154,11 @@ export const MonitorTable = ({
 
 	const getHeaders = (chartType: string) => {
 		const renderSortIcon = (isActive: boolean) => (
-			<Box width={16} display="inline-flex" justifyContent="center">
+			<Box
+				width={16}
+				display="inline-flex"
+				justifyContent="center"
+			>
 				{isActive ? (
 					sortOrder === "asc" ? (
 						<ArrowUp size={16} />
