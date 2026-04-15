@@ -397,7 +397,8 @@
 					"activeFor": "Active for",
 					"certificateExpiry": "Certificate expiry",
 					"lastCheck": "Last check",
-					"lastResponseTime": "Last response time"
+					"lastResponseTime": "Last response time",
+					"serviceIsDown": "Service is down"
 				},
 				"status": {
 					"down": "down",

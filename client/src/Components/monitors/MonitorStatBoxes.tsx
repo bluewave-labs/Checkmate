@@ -53,7 +53,7 @@ export const MonitorStatBoxes = ({
 				palette={palette}
 				title={
 					monitor?.status === "down"
-						? t("pages.common.monitors.status.down")
+						? t("pages.common.monitors.statBoxes.serviceIsDown")
 						: t("pages.common.monitors.statBoxes.activeFor")
 				}
 				subtitle={monitor?.status === "down" ? "" : streakTime}
