@@ -51,8 +51,12 @@ export const MonitorStatBoxes = ({
 		>
 			<StatBox
 				palette={palette}
-				title={t("pages.common.monitors.statBoxes.activeFor")}
-				subtitle={streakTime}
+				title={
+					monitor?.status === "down"
+						? t("pages.common.monitors.status.down")
+						: t("pages.common.monitors.statBoxes.activeFor")
+				}
+				subtitle={monitor?.status === "down" ? "" : streakTime}
 			/>
 			<StatBox
 				title={t("pages.common.monitors.statBoxes.lastCheck")}
