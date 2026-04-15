@@ -418,6 +418,45 @@ describe("StatusService", () => {
 			expect(result.monitor.status).toBe("down");
 		});
 
+		it("resumes from 'initializing' to 'up' on a passing check with a full window (regression: pause/resume)", async () => {
+			// When a monitor is paused and resumed, togglePauseById sets status='initializing'
+			// but does NOT reset statusWindow. On the next check the window is already full,
+			// so the warmup early-return is skipped. Pre-fix, newStatus was seeded from
+			// monitor.status ('initializing') and computeReachability never transitioned
+			// out of 'initializing' on a passing window, so the monitor was stuck forever.
+			const monitor = makeMonitor({
+				statusWindow: [true, true, true, true, true],
+				statusWindowSize: 5,
+				statusWindowThreshold: 80,
+				status: "initializing",
+			});
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
+
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: true }), makeCheck({ status: true }));
+
+			expect(result.monitor.status).toBe("up");
+		});
+
+		it("resumes from 'initializing' to 'down' on a failing check with a full window (regression: pause/resume mirror)", async () => {
+			// Mirror of the pause/resume regression with a failing check: should flip to 'down'
+			// immediately rather than stay stuck in 'initializing'.
+			const monitor = makeMonitor({
+				statusWindow: [false, false, false, false, false],
+				statusWindowSize: 5,
+				statusWindowThreshold: 80,
+				status: "initializing",
+			});
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
+
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: false }), makeCheck({ status: false }));
+
+			expect(result.monitor.status).toBe("down");
+		});
+
 		it("during warmup (window not full) the stored status tracks the raw check", async () => {
 			// Early-return branch: monitor.status is written to reflect the current check and
 			// no status-changed notification is emitted. This is the service's documented warmup behavior.
