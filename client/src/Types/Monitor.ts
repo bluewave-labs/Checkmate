@@ -36,7 +36,7 @@ export const MonitorStatuses = [
 ] as const;
 export type MonitorStatus = (typeof MonitorStatuses)[number];
 
-export type MonitorMatchMethod = "equal" | "include" | "regex" | "";
+export type MonitorMatchMethod = "equal" | "include" | "regex" | undefined;
 
 export interface Monitor {
 	id: string;
