@@ -1,18 +1,11 @@
 const SERVICE_NAME = "NtfyProvider";
 import type { Notification } from "@/types/index.js";
-import { INotificationProvider } from "@/service/index.js";
+import { NotificationProvider } from "@/service/infrastructure/notificationProviders/INotificationProvider.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
 import got from "got";
-import { ILogger } from "@/utils/logger.js";
 
-export class NtfyProvider implements INotificationProvider {
-	private logger: ILogger;
-
-	constructor(logger: ILogger) {
-		this.logger = logger;
-	}
-
+export class NtfyProvider extends NotificationProvider {
 	sendTestAlert = async (notification: Partial<Notification>) => {
 		if (!notification.address) {
 			return false;
@@ -27,6 +20,7 @@ export class NtfyProvider implements INotificationProvider {
 					"Content-Type": "text/plain",
 					...(auth ? { Authorization: auth } : {}),
 				},
+				...this.gotRequestOptions(),
 			});
 			return true;
 		} catch (error) {
@@ -62,6 +56,7 @@ export class NtfyProvider implements INotificationProvider {
 					Title: message.content.title,
 					...(auth ? { Authorization: auth } : {}),
 				},
+				...this.gotRequestOptions(),
 			});
 			return true;
 		} catch (error) {
