@@ -257,12 +257,18 @@ export class StatusService implements IStatusService {
 				};
 			}
 
-			// With a full window, a single raw check must not change monitor.status; only the sliding-window threshold can trigger a transition.
-			let newStatus = monitor.status;
+			// With a full window, a single raw check must not change UNLESS we are initializing. Otherwise, only the sliding-window threshold can trigger a transition.
+			let newStatus: MonitorStatus;
+			if (monitor.status === "initializing") {
+				newStatus = status === true ? "up" : "down";
+			} else {
+				newStatus = monitor.status;
+			}
+
 			let statusChanged = false;
 
 			// First evaluate reachability-based status changes, which apply to all monitor types and take precedence over hardware breaches.
-			const reachabilityResult = this.computeReachability(monitor.status, monitor.statusWindow, monitor.statusWindowThreshold);
+			const reachabilityResult = this.computeReachability(newStatus, monitor.statusWindow, monitor.statusWindowThreshold);
 			if (reachabilityResult.transitioned) {
 				newStatus = reachabilityResult.nextStatus;
 				statusChanged = true;
@@ -273,7 +279,7 @@ export class StatusService implements IStatusService {
 			const hardwarePayload = statusResponse.payload as HardwareStatusPayload | undefined;
 			if (monitor.type === "hardware" && hardwarePayload?.data) {
 				const hardware = this.computeHardwareStatus({
-					currentStatus: monitor.status,
+					currentStatus: newStatus,
 					reachabilityDown: newStatus === "down",
 					metrics: hardwarePayload.data,
 					thresholds: {
