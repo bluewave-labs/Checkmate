@@ -104,6 +104,7 @@ type HistogramInfrastructureTooltipProps = TooltipProps<ValueType, NameType> & {
 	range: string;
 	theme: Theme;
 	uiTimezone: string;
+	type: string;
 	labelFormatter?: (value: number) => string;
 };
 
@@ -116,37 +117,30 @@ const HistogramInfrastructureTooltip = ({
 	type,
 	uiTimezone,
 	labelFormatter,
-}: HistogramInfrastructureTooltipProps & { type: string }) => {
+}: HistogramInfrastructureTooltipProps) => {
 	const { t } = useTranslation();
-	if (!active || !payload || !payload.length || range === undefined || range === null) {
-		return null;
-	}
 
-	const dataKeys: Record<string, string> = {
-		cpu: "avgCpuUsage",
-		memory: "avgMemoryUsage",
-		temp: "avgTemperature",
-	};
-	const targetKey = dataKeys[type] ?? payload[0].dataKey;
-	if (!targetKey) return null;
-	const rawValue = payload[0].payload[targetKey];
+	if (!active || !payload?.length || range == null) return null;
 
-	const value = typeof rawValue === "number" ? rawValue : 0;
-	const formattedValue = labelFormatter ? labelFormatter(value) : value;
+	const formattedDate = tooltipDateFormatLookup(range);
 
 	const displayLabel = t(`pages.infrastructure.charts.labels.${type}`);
-	const formattedDate = tooltipDateFormatLookup(range);
 
 	return (
 		<BaseBox sx={{ py: theme.spacing(SPACING.LG), px: theme.spacing(SPACING.XS) }}>
-			<Typography>{formatDateWithTz(String(label), formattedDate, uiTimezone)}</Typography>
 			<Typography>
-				{displayLabel}: {formattedValue}
+				{formatDateWithTz(String(label), formattedDate, uiTimezone)}
 			</Typography>
+
+			{payload.map((entry) => (
+				<Typography key={entry.dataKey}>
+					{displayLabel}:{" "}
+					{labelFormatter ? labelFormatter(entry.value as number) : entry.value}
+				</Typography>
+			))}
 		</BaseBox>
 	);
 };
-
 export const HistogramInfrastructure = ({
 	dateRange,
 	title,

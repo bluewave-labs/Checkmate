@@ -152,7 +152,7 @@ export const HistogramDetails = ({
 					/>
 					<Area
 						type="monotone"
-						dataKey="originalAvgResponseTime"
+						dataKey="avgResponseTime"
 						stroke={theme.palette.primary.main}
 						fill="url(#colorUv)"
 					/>
