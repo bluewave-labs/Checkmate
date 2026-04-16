@@ -149,7 +149,8 @@ const NotificationsCreatePage = () => {
 			/>
 			{watchedType !== "matrix" &&
 				watchedType !== "telegram" &&
-				watchedType !== "pushover" && (
+				watchedType !== "pushover" &&
+				watchedType !== "twilio" && (
 					<ConfigBox
 						title={addressConfig.title}
 						subtitle={addressConfig.description}
@@ -252,6 +253,86 @@ const NotificationsCreatePage = () => {
 										placeholder={t(
 											"pages.notifications.form.pushover.placeholderUserKey"
 										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+						</Stack>
+					}
+				/>
+			)}
+			{watchedType === "twilio" && (
+				<ConfigBox
+					title={t("pages.notifications.form.twilio.title")}
+					subtitle={t("pages.notifications.form.twilio.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(8)}>
+							<Controller
+								name="address"
+								control={control}
+								defaultValue={"address" in defaults ? defaults.address : ""}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t("pages.notifications.form.twilio.optionAccountSid")}
+										placeholder={t(
+											"pages.notifications.form.twilio.placeholderAccountSid"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+							<Controller
+								name="accessToken"
+								control={control}
+								defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t("pages.notifications.form.twilio.optionAuthToken")}
+										placeholder={t(
+											"pages.notifications.form.twilio.placeholderAuthToken"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+							<Controller
+								name="homeserverUrl"
+								control={control}
+								defaultValue={"homeserverUrl" in defaults ? defaults.homeserverUrl : ""}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t("pages.notifications.form.twilio.optionFromNumber")}
+										placeholder={t(
+											"pages.notifications.form.twilio.placeholderFromNumber"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+							<Controller
+								name="phone"
+								control={control}
+								defaultValue={"phone" in defaults ? defaults.phone : ""}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t("pages.notifications.form.twilio.optionToNumber")}
+										placeholder={t("pages.notifications.form.twilio.placeholderToNumber")}
 										fullWidth
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message ?? ""}

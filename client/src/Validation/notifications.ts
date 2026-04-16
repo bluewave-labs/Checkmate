@@ -62,6 +62,14 @@ const pushoverSchema = baseSchema.extend({
 	accessToken: z.string().min(1, "App token is required"),
 });
 
+const twilioSchema = baseSchema.extend({
+	type: z.literal("twilio"),
+	address: z.string().min(1, "Account SID is required"),
+	accessToken: z.string().min(1, "Auth token is required"),
+	phone: z.string().min(1, "Recipient phone number is required"),
+	homeserverUrl: z.string().min(1, "Twilio phone number is required"),
+});
+
 export const notificationSchema = z.discriminatedUnion("type", [
 	emailSchema,
 	slackSchema,
@@ -72,6 +80,7 @@ export const notificationSchema = z.discriminatedUnion("type", [
 	teamsSchema,
 	telegramSchema,
 	pushoverSchema,
+	twilioSchema,
 ]);
 
 export type NotificationFormData = z.infer<typeof notificationSchema>;

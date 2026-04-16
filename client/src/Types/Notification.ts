@@ -8,6 +8,7 @@ export const NotificationChannels = [
 	"teams",
 	"telegram",
 	"pushover",
+	"twilio",
 ] as const;
 export type NotificationChannel = (typeof NotificationChannels)[number];
 
