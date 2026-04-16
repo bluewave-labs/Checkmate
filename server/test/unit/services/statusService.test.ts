@@ -11,11 +11,49 @@ const createBuffer = (): jest.Mocked<Pick<IBufferService, "addToBuffer">> => ({
 	addToBuffer: jest.fn(),
 });
 
-const createMonitorsRepo = () =>
-	({
-		findById: jest.fn(),
+const createMonitorsRepo = () => {
+	const findById = jest.fn();
+	const updateStatusWindowAndChecks = jest
+		.fn()
+		.mockImplementation(
+			(
+				_id: unknown,
+				_tid: unknown,
+				status: boolean,
+				checkSnapshot: unknown,
+				windowSize: number,
+				maxRecentChecks: number,
+				statusPatch?: Partial<Monitor>
+			) => {
+				// Grab the monitor that findById was configured to resolve with
+				const monitor = findById.mock.results.at(-1)?.value;
+				if (monitor && typeof monitor.then === "function") {
+					return monitor.then((m: any) => {
+						m.statusWindow = m.statusWindow || [];
+						m.statusWindow.push(status);
+						while (m.statusWindow.length > windowSize) {
+							m.statusWindow.shift();
+						}
+						m.recentChecks = m.recentChecks || [];
+						m.recentChecks.push(checkSnapshot);
+						while (m.recentChecks.length > maxRecentChecks) {
+							m.recentChecks.shift();
+						}
+						if (statusPatch) {
+							Object.assign(m, statusPatch);
+						}
+						return { ...m };
+					});
+				}
+				return Promise.reject(new Error("findById not mocked"));
+			}
+		);
+	return {
+		findById,
 		updateById: jest.fn(),
-	}) as unknown as jest.Mocked<IMonitorsRepository>;
+		updateStatusWindowAndChecks,
+	} as unknown as jest.Mocked<IMonitorsRepository>;
+};
 
 const createMonitorStatsRepo = () =>
 	({
@@ -233,11 +271,18 @@ describe("StatusService", () => {
 			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
 			(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
 
-			await service.updateMonitorStatus(makeStatusResponse({ status: false }), makeCheck());
+			await service.updateMonitorStatus(makeStatusResponse({ status: false }), makeCheck({ status: false }));
 
-			// Window should have shifted: [true, true, true, true, false]
-			expect(monitor.statusWindow).toHaveLength(5);
-			expect(monitor.statusWindow[4]).toBe(false);
+			// Atomic push should have been called with the correct status and window size
+			expect(monitorsRepository.updateStatusWindowAndChecks).toHaveBeenCalledWith(
+				"mon-1",
+				"team-1",
+				false,
+				expect.any(Object),
+				5,
+				25,
+				expect.objectContaining({ status: expect.any(String) })
+			);
 		});
 
 		it("pushes check snapshot to recentChecks and trims to 25", async () => {
@@ -542,7 +587,8 @@ describe("StatusService", () => {
 
 				expect(result.thresholdBreaches?.cpu).toBe(true);
 				expect(result.thresholdBreaches?.memory).toBe(false);
-				expect(monitor.cpuAlertCounter).toBe(0);
+				const patch = (monitorsRepository.updateStatusWindowAndChecks as jest.Mock).mock.calls.at(-1)?.[6];
+				expect(patch.cpuAlertCounter).toBe(0);
 				expect(result.statusChanged).toBe(true);
 				expect(result.monitor.status).toBe("breached");
 			});
@@ -557,7 +603,8 @@ describe("StatusService", () => {
 				const result = await service.updateMonitorStatus(response, makeCheck());
 
 				expect(result.thresholdBreaches?.memory).toBe(true);
-				expect(monitor.memoryAlertCounter).toBe(0);
+				const patch = (monitorsRepository.updateStatusWindowAndChecks as jest.Mock).mock.calls.at(-1)?.[6];
+				expect(patch.memoryAlertCounter).toBe(0);
 				expect(result.monitor.status).toBe("breached");
 			});
 
@@ -573,7 +620,8 @@ describe("StatusService", () => {
 				const result = await service.updateMonitorStatus(response, makeCheck());
 
 				expect(result.thresholdBreaches?.disk).toBe(true);
-				expect(monitor.diskAlertCounter).toBe(0);
+				const patch = (monitorsRepository.updateStatusWindowAndChecks as jest.Mock).mock.calls.at(-1)?.[6];
+				expect(patch.diskAlertCounter).toBe(0);
 				expect(result.monitor.status).toBe("breached");
 			});
 
@@ -589,7 +637,8 @@ describe("StatusService", () => {
 				const result = await service.updateMonitorStatus(response, makeCheck());
 
 				expect(result.thresholdBreaches?.temp).toBe(true);
-				expect(monitor.tempAlertCounter).toBe(0);
+				const patch = (monitorsRepository.updateStatusWindowAndChecks as jest.Mock).mock.calls.at(-1)?.[6];
+				expect(patch.tempAlertCounter).toBe(0);
 				expect(result.monitor.status).toBe("breached");
 			});
 
@@ -609,10 +658,11 @@ describe("StatusService", () => {
 				} as any);
 				await service.updateMonitorStatus(response, makeCheck());
 
-				expect(monitor.cpuAlertCounter).toBe(5);
-				expect(monitor.memoryAlertCounter).toBe(5);
-				expect(monitor.diskAlertCounter).toBe(5);
-				expect(monitor.tempAlertCounter).toBe(5);
+				const patch = (monitorsRepository.updateStatusWindowAndChecks as jest.Mock).mock.calls.at(-1)?.[6];
+				expect(patch.cpuAlertCounter).toBe(5);
+				expect(patch.memoryAlertCounter).toBe(5);
+				expect(patch.diskAlertCounter).toBe(5);
+				expect(patch.tempAlertCounter).toBe(5);
 			});
 
 			it("stays breached without statusChanged when already breached and counter still at 0", async () => {
@@ -841,7 +891,8 @@ describe("StatusService", () => {
 				const response = makeHardwareResponse({ data: { cpu: { usage_percent: 0.9 }, memory: { usage_percent: 0.1 }, disk: [], host: {} } } as any);
 				const result = await service.updateMonitorStatus(response, makeCheck());
 
-				expect(monitor.cpuAlertCounter).toBe(2);
+				const patch = (monitorsRepository.updateStatusWindowAndChecks as jest.Mock).mock.calls.at(-1)?.[6];
+				expect(patch.cpuAlertCounter).toBe(2);
 				expect(result.thresholdBreaches?.cpu).toBe(true);
 				expect(result.statusChanged).toBe(false);
 				expect(result.monitor.status).toBe("up");

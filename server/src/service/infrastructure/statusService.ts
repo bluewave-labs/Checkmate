@@ -102,14 +102,6 @@ export class StatusService implements IStatusService {
 		}
 	};
 
-	private appendToWindow = (monitor: Monitor, status: boolean) => {
-		monitor.statusWindow = monitor.statusWindow || [];
-		monitor.statusWindow.push(status);
-		while (monitor.statusWindow.length > monitor.statusWindowSize) {
-			monitor.statusWindow.shift();
-		}
-	};
-
 	private toCheckSnapshot = (check: Check): CheckSnapshot => {
 		return {
 			id: check.id,
@@ -132,15 +124,6 @@ export class StatusService implements IStatusService {
 			audits: check.audits,
 			createdAt: check.createdAt,
 		};
-	};
-
-	private appendToRecentChecks = (monitor: Monitor, check: Check) => {
-		monitor.recentChecks = monitor.recentChecks || [];
-		const checkSnapshot = this.toCheckSnapshot(check);
-		monitor.recentChecks.push(checkSnapshot);
-		while (monitor.recentChecks.length > MAX_RECENT_CHECKS) {
-			monitor.recentChecks.shift();
-		}
 	};
 
 	private computeReachability = (
@@ -238,16 +221,31 @@ export class StatusService implements IStatusService {
 			// Update running stats
 			await this.tryUpdateRunningStats(monitor, statusResponse);
 
-			// Update the sliding window and recent checks
-			this.appendToWindow(monitor, status);
-			this.appendToRecentChecks(monitor, check);
-
 			const prevStatus = monitor.status;
+			const checkSnapshot = this.toCheckSnapshot(check);
 
-			// Return early if not enough data points
-			if (monitor.statusWindow.length < monitor.statusWindowSize) {
-				monitor.status = status === true ? "up" : "down";
-				const updated = await this.monitorsRepository.updateById(monitor.id, monitor.teamId, monitor);
+			// Project the window as it will look after updating DB
+			// This is done because we need the updated status window to compute new status, but we don't
+			// want an an extra DB write just to get the window.
+			const projectedWindow = [...(monitor.statusWindow || []), check.status].slice(-monitor.statusWindowSize);
+
+			// Build the status patch — computed against the projected window
+			const patch: Partial<Monitor> = {};
+
+			// Not enough data points yet
+			if (projectedWindow.length < monitor.statusWindowSize) {
+				patch.status = status === true ? "up" : "down";
+
+				const updated = await this.monitorsRepository.updateStatusWindowAndChecks(
+					monitor.id,
+					monitor.teamId,
+					check.status,
+					checkSnapshot,
+					monitor.statusWindowSize,
+					MAX_RECENT_CHECKS,
+					patch
+				);
+
 				return {
 					monitor: updated,
 					statusChanged: false,
@@ -257,7 +255,8 @@ export class StatusService implements IStatusService {
 				};
 			}
 
-			// With a full window, a single raw check must not change UNLESS we are initializing. Otherwise, only the sliding-window threshold can trigger a transition.
+			// With a full window, a single raw check must not change UNLESS we are initializing.
+			// Otherwise, only the sliding-window threshold can trigger a transition.
 			let newStatus: MonitorStatus;
 			if (monitor.status === "initializing") {
 				newStatus = status === true ? "up" : "down";
@@ -267,8 +266,9 @@ export class StatusService implements IStatusService {
 
 			let statusChanged = false;
 
-			// First evaluate reachability-based status changes, which apply to all monitor types and take precedence over hardware breaches.
-			const reachabilityResult = this.computeReachability(newStatus, monitor.statusWindow, monitor.statusWindowThreshold);
+			// First evaluate reachability-based status changes, which apply to all monitor types
+			// and take precedence over hardware breaches.
+			const reachabilityResult = this.computeReachability(newStatus, projectedWindow, monitor.statusWindowThreshold);
 			if (reachabilityResult.transitioned) {
 				newStatus = reachabilityResult.nextStatus;
 				statusChanged = true;
@@ -296,10 +296,10 @@ export class StatusService implements IStatusService {
 					},
 				});
 
-				monitor.cpuAlertCounter = hardware.nextCounters.cpu;
-				monitor.memoryAlertCounter = hardware.nextCounters.memory;
-				monitor.diskAlertCounter = hardware.nextCounters.disk;
-				monitor.tempAlertCounter = hardware.nextCounters.temp;
+				patch.cpuAlertCounter = hardware.nextCounters.cpu;
+				patch.memoryAlertCounter = hardware.nextCounters.memory;
+				patch.diskAlertCounter = hardware.nextCounters.disk;
+				patch.tempAlertCounter = hardware.nextCounters.temp;
 				thresholdBreaches = hardware.breaches;
 				if (hardware.transitioned) {
 					newStatus = hardware.nextStatus;
@@ -307,10 +307,18 @@ export class StatusService implements IStatusService {
 				}
 			}
 
-			// Apply the final status
-			monitor.status = newStatus;
+			patch.status = newStatus;
 
-			const updated = await this.monitorsRepository.updateById(monitor.id, monitor.teamId, monitor);
+			// Single atomic write: push arrays + set status/counters
+			const updated = await this.monitorsRepository.updateStatusWindowAndChecks(
+				monitor.id,
+				monitor.teamId,
+				check.status,
+				checkSnapshot,
+				monitor.statusWindowSize,
+				MAX_RECENT_CHECKS,
+				patch
+			);
 
 			return {
 				monitor: updated,

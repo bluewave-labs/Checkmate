@@ -1,5 +1,5 @@
 import type { Pool } from "pg";
-import type { Monitor, MonitorsSummary, MonitorStatus, MonitorType, MonitorMatchMethod, GeoContinent } from "@/types/monitor.js";
+import type { Monitor, MonitorsSummary, MonitorStatus, MonitorType, MonitorMatchMethod, GeoContinent, CheckSnapshot } from "@/types/monitor.js";
 import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "./IMonitorsRepository.js";
 import { AppError } from "@/utils/AppError.js";
 
@@ -638,6 +638,55 @@ export class TimescaleMonitorsRepository implements IMonitorsRepository {
 
 		const entity = this.toEntity(row);
 		entity.notifications = patch.notifications ?? (await this.fetchNotificationIds([monitorId]).then((m) => m.get(monitorId) ?? []));
+		return entity;
+	};
+
+	updateStatusWindowAndChecks = async (
+		monitorId: string,
+		teamId: string,
+		status: boolean,
+		_checkSnapshot: CheckSnapshot,
+		windowSize: number,
+		_maxRecentChecks: number,
+		statusPatch?: Partial<Monitor>
+	): Promise<Monitor> => {
+		// In TimescaleDB, recentChecks live in the checks table (inserted by the buffer service),
+		// so we only need to atomically update status_window and any statusPatch fields.
+		const sets: string[] = [
+			`status_window = (array_append(COALESCE(status_window, ARRAY[]::boolean[]), $1))[array_length(array_append(COALESCE(status_window, ARRAY[]::boolean[]), $1), 1) - $2 + 1:]`,
+			`updated_at = NOW()`,
+		];
+		const values: unknown[] = [status, windowSize];
+		let paramIndex = 3;
+
+		if (statusPatch) {
+			const patchFieldMap: [keyof Monitor, string][] = [
+				["status", "status"],
+				["cpuAlertCounter", "cpu_alert_counter"],
+				["memoryAlertCounter", "memory_alert_counter"],
+				["diskAlertCounter", "disk_alert_counter"],
+				["tempAlertCounter", "temp_alert_counter"],
+			];
+			for (const [key, column] of patchFieldMap) {
+				if (statusPatch[key] !== undefined) {
+					sets.push(`${column} = $${paramIndex++}`);
+					values.push(statusPatch[key]);
+				}
+			}
+		}
+
+		values.push(monitorId, teamId);
+		const result = await this.pool.query<MonitorRow>(
+			`UPDATE monitors SET ${sets.join(", ")} WHERE id = $${paramIndex++} AND team_id = $${paramIndex}
+			 RETURNING ${MONITOR_COLUMNS}`,
+			values
+		);
+		const row = result.rows[0];
+		if (!row) {
+			throw new AppError({ message: `Failed to update status and checks for monitor with id ${monitorId}`, status: 500 });
+		}
+		const entity = this.toEntity(row);
+		entity.notifications = await this.fetchNotificationIds([monitorId]).then((m) => m.get(monitorId) ?? []);
 		return entity;
 	};
 
