@@ -200,8 +200,8 @@ export class NotificationsService implements INotificationsService {
 	};
 
 	deleteById = async (id: string, teamId: string): Promise<Notification> => {
-		const deleted = await this.notificationsRepository.deleteById(id, teamId);
 		await this.monitorsRepository.removeNotificationFromMonitors(id);
+		const deleted = await this.notificationsRepository.deleteById(id, teamId);
 		return deleted;
 	};
 }

@@ -25,10 +25,7 @@ export const MonitorStatBoxes = ({
 	}
 
 	const timeOfLastFailure = monitorStats?.timeOfLastFailure || 0;
-	const timeSinceLastFailure =
-		timeOfLastFailure > 0
-			? Date.now() - timeOfLastFailure
-			: Date.now() - new Date(monitorStats?.createdAt || 0).getTime();
+	const timeSinceLastFailure = timeOfLastFailure > 0 ? Date.now() - timeOfLastFailure : 0;
 
 	// Determine time since last check
 	const timeOfLastCheck = monitorStats?.lastCheckTimestamp || 0;
