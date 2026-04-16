@@ -1,6 +1,7 @@
 import type { NotificationFormData } from "@/Validation/notifications";
 
-export const normalizeNtfy = (data: NotificationFormData): NotificationFormData => {
+export const dropStaleAuth = (data: NotificationFormData): NotificationFormData => {
+	// Providers That Support Basic/Bearer Auth: Drop Stale Data
 	if (data.type !== "ntfy") return data;
 	const authType = data.authType ?? "none";
 	const base = { ...data, authType };

@@ -15,7 +15,7 @@ import { useNotificationForm } from "@/Hooks/useNotificationForm";
 import type { NotificationFormData } from "@/Validation/notifications";
 import { type Notification, NotificationChannels, AuthTypes } from "@/Types/Notification";
 import { useTranslation } from "react-i18next";
-import { normalizeNtfy } from "@/Utils/NotificationUtils";
+import { dropStaleAuth } from "@/Utils/NotificationUtils";
 
 const NotificationsCreatePage = () => {
 	const { t } = useTranslation();
@@ -78,7 +78,7 @@ const NotificationsCreatePage = () => {
 	}, [watchedType, t]);
 
 	const onSubmit = async (data: NotificationFormData) => {
-		const payload = normalizeNtfy(data);
+		const payload = dropStaleAuth(data);
 		const result = isEditMode
 			? await patch(`/notifications/${notificationId}`, payload)
 			: await post("/notifications", payload);
