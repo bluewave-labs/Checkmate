@@ -21,6 +21,8 @@ import type { Monitor } from "@/Types/Monitor";
 import type { ActionMenuItem } from "@/Components/actions-menu";
 import type { RootState } from "@/Types/state";
 
+const NON_BROWSER_TYPES = ["hardware", "docker"];
+
 export const MonitorTable = ({
 	monitors,
 	refetch,
@@ -52,7 +54,11 @@ export const MonitorTable = ({
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const chartType = useSelector((state: RootState) => state.ui?.chartType ?? "histogram");
-	const { post } = usePost<any, Monitor>();
+	const {
+		post,
+		// loading: isPosting,
+		// error: postError,
+	} = usePost<any, Monitor>();
 
 	const handleSort = (e: any, field: string) => {
 		e.preventDefault();
@@ -67,32 +73,10 @@ export const MonitorTable = ({
 		refetch();
 	};
 
-	// ONLY CHANGE: detect internal/private URLs (issue requirement)
-	const isInternalUrl = (url: string) => {
-		try {
-			const { hostname } = new URL(url);
-			return (
-				hostname === "localhost" ||
-				hostname === "127.0.0.1" ||
-				hostname === "::1" ||
-				hostname.endsWith(".local") ||
-				hostname.endsWith(".internal") ||
-				!hostname.includes(".")
-			);
-		} catch {
-			return true; // unparseable = internal (port monitors with no protocol)
-		}
-	};
-
 	const getActions = (monitor: Monitor): ActionMenuItem[] => {
 		const actions: ActionMenuItem[] = [];
 
-		// ONLY CHANGE: hide Open Site for hardware, port, and internal URLs
-		if (
-			monitor.type !== "hardware" &&
-			monitor.type !== "port" &&
-			!isInternalUrl(monitor.url)
-		) {
+		if (!NON_BROWSER_TYPES.includes(monitor.type)) {
 			actions.push({
 				id: 1,
 				label: t("pages.common.monitors.actions.openSite"),
@@ -125,6 +109,13 @@ export const MonitorTable = ({
 					navigate(`/uptime/configure/${monitor.id}`);
 				},
 			},
+			// {
+			//   id: 5,
+			//   label: "Clone",
+			//   action: () => {
+
+			//   },
+			// },
 			{
 				id: 6,
 				label:
@@ -168,7 +159,6 @@ export const MonitorTable = ({
 				) : null}
 			</Box>
 		);
-
 		const headers: Header<Monitor>[] = [
 			{
 				id: "name",
@@ -184,7 +174,9 @@ export const MonitorTable = ({
 						{renderSortIcon(sortField === "name")}
 					</Stack>
 				),
-				render: (row) => row?.name,
+				render: (row) => {
+					return row?.name;
+				},
 			},
 			{
 				id: "status",
@@ -202,17 +194,20 @@ export const MonitorTable = ({
 						{renderSortIcon(sortField === "status")}
 					</Stack>
 				),
-				render: (row) => <StatusLabel status={row.status} />,
+				render: (row) => {
+					return <StatusLabel status={row.status} />;
+				},
 			},
 			{
 				id: "histogram",
 				content: t("pages.uptime.table.headers.responseTime"),
-				render: (row) =>
-					chartType === "histogram" ? (
-						<HistogramResponseTime checks={row.recentChecks} />
-					) : (
-						<HeatmapResponseTime checks={row.recentChecks} />
-					),
+				render: (row) => {
+					if (chartType === "histogram") {
+						return <HistogramResponseTime checks={row.recentChecks} />;
+					} else {
+						return <HeatmapResponseTime checks={row.recentChecks} />;
+					}
+				},
 			},
 			{
 				id: "type",
@@ -230,15 +225,18 @@ export const MonitorTable = ({
 						{renderSortIcon(sortField === "type")}
 					</Stack>
 				),
-				render: (row) => row.type,
+				render: (row) => {
+					return row.type;
+				},
 			},
 			{
 				id: "actions",
 				content: t("common.table.headers.actions"),
-				render: (row) => <ActionsMenu items={getActions(row)} />,
+				render: (row) => {
+					return <ActionsMenu items={getActions(row)} />;
+				},
 			},
 		];
-
 		return headers;
 	};
 
