@@ -200,18 +200,6 @@ export class StatusService implements IStatusService {
 		return { nextStatus, transitioned, breaches, nextCounters };
 	};
 
-	private updateStatusWindowAndRecentChecks = async (monitor: Monitor, check: Check) => {
-		const checkSnapshot = this.toCheckSnapshot(check);
-		return await this.monitorsRepository.updateStatusWindowAndChecks(
-			monitor.id,
-			monitor.teamId,
-			check.status,
-			checkSnapshot,
-			monitor.statusWindowSize,
-			MAX_RECENT_CHECKS
-		);
-	};
-
 	updateMonitorStatus = async (
 		statusResponse: MonitorStatusResponse<
 			| PingStatusPayload
@@ -232,13 +220,32 @@ export class StatusService implements IStatusService {
 
 			// Update running stats
 			await this.tryUpdateRunningStats(monitor, statusResponse);
-			const updatedMonitor = await this.updateStatusWindowAndRecentChecks(monitor, check);
-			const prevStatus = updatedMonitor.status;
 
-			// Return early if not enough data points
-			if (updatedMonitor.statusWindow.length < updatedMonitor.statusWindowSize) {
-				updatedMonitor.status = status === true ? "up" : "down";
-				const updated = await this.monitorsRepository.updateById(updatedMonitor.id, updatedMonitor.teamId, { status: updatedMonitor.status });
+			const prevStatus = monitor.status;
+			const checkSnapshot = this.toCheckSnapshot(check);
+
+			// Project the window as it will look after updating DB
+			// This is done because we need the updated status window to compute new status, but we don't
+			// want an an extra DB write just to get the window.
+			const projectedWindow = [...(monitor.statusWindow || []), check.status].slice(-monitor.statusWindowSize);
+
+			// Build the status patch — computed against the projected window
+			const patch: Partial<Monitor> = {};
+
+			// Not enough data points yet
+			if (projectedWindow.length < monitor.statusWindowSize) {
+				patch.status = status === true ? "up" : "down";
+
+				const updated = await this.monitorsRepository.updateStatusWindowAndChecks(
+					monitor.id,
+					monitor.teamId,
+					check.status,
+					checkSnapshot,
+					monitor.statusWindowSize,
+					MAX_RECENT_CHECKS,
+					patch
+				);
+
 				return {
 					monitor: updated,
 					statusChanged: false,
@@ -248,18 +255,20 @@ export class StatusService implements IStatusService {
 				};
 			}
 
-			// With a full window, a single raw check must not change UNLESS we are initializing. Otherwise, only the sliding-window threshold can trigger a transition.
+			// With a full window, a single raw check must not change UNLESS we are initializing.
+			// Otherwise, only the sliding-window threshold can trigger a transition.
 			let newStatus: MonitorStatus;
-			if (updatedMonitor.status === "initializing") {
+			if (monitor.status === "initializing") {
 				newStatus = status === true ? "up" : "down";
 			} else {
-				newStatus = updatedMonitor.status;
+				newStatus = monitor.status;
 			}
 
 			let statusChanged = false;
 
-			// First evaluate reachability-based status changes, which apply to all monitor types and take precedence over hardware breaches.
-			const reachabilityResult = this.computeReachability(newStatus, updatedMonitor.statusWindow, updatedMonitor.statusWindowThreshold);
+			// First evaluate reachability-based status changes, which apply to all monitor types
+			// and take precedence over hardware breaches.
+			const reachabilityResult = this.computeReachability(newStatus, projectedWindow, monitor.statusWindowThreshold);
 			if (reachabilityResult.transitioned) {
 				newStatus = reachabilityResult.nextStatus;
 				statusChanged = true;
@@ -268,29 +277,29 @@ export class StatusService implements IStatusService {
 			// Evaluate hardware threshold breaches (only for hardware monitors with metrics payload)
 			let thresholdBreaches: HardwareBreaches | undefined;
 			const hardwarePayload = statusResponse.payload as HardwareStatusPayload | undefined;
-			if (updatedMonitor.type === "hardware" && hardwarePayload?.data) {
+			if (monitor.type === "hardware" && hardwarePayload?.data) {
 				const hardware = this.computeHardwareStatus({
 					currentStatus: newStatus,
 					reachabilityDown: newStatus === "down",
 					metrics: hardwarePayload.data,
 					thresholds: {
-						cpu: updatedMonitor.cpuAlertThreshold,
-						memory: updatedMonitor.memoryAlertThreshold,
-						disk: updatedMonitor.diskAlertThreshold,
-						temp: updatedMonitor.tempAlertThreshold,
+						cpu: monitor.cpuAlertThreshold,
+						memory: monitor.memoryAlertThreshold,
+						disk: monitor.diskAlertThreshold,
+						temp: monitor.tempAlertThreshold,
 					},
 					counters: {
-						cpu: updatedMonitor.cpuAlertCounter,
-						memory: updatedMonitor.memoryAlertCounter,
-						disk: updatedMonitor.diskAlertCounter,
-						temp: updatedMonitor.tempAlertCounter,
+						cpu: monitor.cpuAlertCounter,
+						memory: monitor.memoryAlertCounter,
+						disk: monitor.diskAlertCounter,
+						temp: monitor.tempAlertCounter,
 					},
 				});
 
-				updatedMonitor.cpuAlertCounter = hardware.nextCounters.cpu;
-				updatedMonitor.memoryAlertCounter = hardware.nextCounters.memory;
-				updatedMonitor.diskAlertCounter = hardware.nextCounters.disk;
-				updatedMonitor.tempAlertCounter = hardware.nextCounters.temp;
+				patch.cpuAlertCounter = hardware.nextCounters.cpu;
+				patch.memoryAlertCounter = hardware.nextCounters.memory;
+				patch.diskAlertCounter = hardware.nextCounters.disk;
+				patch.tempAlertCounter = hardware.nextCounters.temp;
 				thresholdBreaches = hardware.breaches;
 				if (hardware.transitioned) {
 					newStatus = hardware.nextStatus;
@@ -298,17 +307,18 @@ export class StatusService implements IStatusService {
 				}
 			}
 
-			// Apply the final status — only write fields computed by application logic,
-			// not statusWindow/recentChecks which are owned by the atomic push.
-			const patch: Partial<Monitor> = { status: newStatus };
-			if (updatedMonitor.type === "hardware" && hardwarePayload?.data) {
-				patch.cpuAlertCounter = updatedMonitor.cpuAlertCounter;
-				patch.memoryAlertCounter = updatedMonitor.memoryAlertCounter;
-				patch.diskAlertCounter = updatedMonitor.diskAlertCounter;
-				patch.tempAlertCounter = updatedMonitor.tempAlertCounter;
-			}
+			patch.status = newStatus;
 
-			const updated = await this.monitorsRepository.updateById(updatedMonitor.id, updatedMonitor.teamId, patch);
+			// Single atomic write: push arrays + set status/counters
+			const updated = await this.monitorsRepository.updateStatusWindowAndChecks(
+				monitor.id,
+				monitor.teamId,
+				check.status,
+				checkSnapshot,
+				monitor.statusWindowSize,
+				MAX_RECENT_CHECKS,
+				patch
+			);
 
 			return {
 				monitor: updated,

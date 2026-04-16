@@ -35,7 +35,8 @@ export interface IMonitorsRepository {
 		status: boolean,
 		checkSnapshot: CheckSnapshot,
 		windowSize: number,
-		maxRecentChecks: number
+		maxRecentChecks: number,
+		statusPatch?: Partial<Monitor>
 	): Promise<Monitor>;
 	togglePauseById(monitorId: string, teamId: string): Promise<Monitor>;
 	// delete

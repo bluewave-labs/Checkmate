@@ -188,7 +188,8 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		status: boolean,
 		checkSnapshot: CheckSnapshot,
 		windowSize: number,
-		maxRecentChecks: number
+		maxRecentChecks: number,
+		statusPatch?: Partial<Monitor>
 	): Promise<Monitor> => {
 		const updatedMonitor = await MonitorModel.findOneAndUpdate(
 			{ _id: monitorId, teamId },
@@ -197,6 +198,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 					statusWindow: { $each: [status], $slice: -windowSize },
 					recentChecks: { $each: [checkSnapshot], $slice: -maxRecentChecks },
 				},
+				...(statusPatch && { $set: statusPatch }),
 			},
 			{ returnDocument: "after" }
 		);
