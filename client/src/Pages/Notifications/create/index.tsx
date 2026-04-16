@@ -147,7 +147,7 @@ const NotificationsCreatePage = () => {
 					/>
 				}
 			/>
-			{watchedType !== "matrix" && watchedType !== "telegram" && (
+			{watchedType !== "matrix" && watchedType !== "telegram" && watchedType !== "pushover" && (
 				<ConfigBox
 					title={addressConfig.title}
 					subtitle={addressConfig.description}
@@ -204,6 +204,50 @@ const NotificationsCreatePage = () => {
 										type="text"
 										fieldLabel={t("pages.notifications.form.telegram.optionChatId")}
 										placeholder={t("pages.notifications.form.telegram.placeholderChatId")}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+						</Stack>
+					}
+				/>
+			)}
+			{watchedType === "pushover" && (
+				<ConfigBox
+					title={t("pages.notifications.form.pushover.title")}
+					subtitle={t("pages.notifications.form.pushover.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(8)}>
+							<Controller
+								name="accessToken"
+								control={control}
+								defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t("pages.notifications.form.pushover.optionAppToken")}
+										placeholder={t(
+											"pages.notifications.form.pushover.placeholderAppToken"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+							<Controller
+								name="address"
+								control={control}
+								defaultValue={"address" in defaults ? defaults.address : ""}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t("pages.notifications.form.pushover.optionUserKey")}
+										placeholder={t("pages.notifications.form.pushover.placeholderUserKey")}
 										fullWidth
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message ?? ""}
