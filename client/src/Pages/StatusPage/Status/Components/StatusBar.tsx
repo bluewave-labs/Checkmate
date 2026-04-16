@@ -1,7 +1,8 @@
 import {
 	AlertTriangle,
 	CircleCheck,
-	CircleX, Loader,
+	CircleX,
+	Loader,
 	PauseCircle,
 	ShieldAlert,
 	Wrench,
