@@ -29,6 +29,7 @@ import {
 	MatrixProvider,
 	TeamsProvider,
 	TelegramProvider,
+	PushoverProvider,
 	// Interfaces
 	INetworkService,
 	IEmailService,
@@ -298,6 +299,7 @@ export const initializeServices = async ({
 	const matrixProvider = new MatrixProvider(logger);
 	const teamsProvider = new TeamsProvider(logger);
 	const telegramProvider = new TelegramProvider(logger);
+	const pushoverProvider = new PushoverProvider(logger);
 
 	const notificationsService = new NotificationsService(
 		notificationsRepository,
@@ -310,6 +312,7 @@ export const initializeServices = async ({
 		matrixProvider,
 		teamsProvider,
 		telegramProvider,
+		pushoverProvider,
 		settingsService,
 		logger,
 		notificationMessageBuilder

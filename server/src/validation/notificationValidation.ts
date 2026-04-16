@@ -72,6 +72,13 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		address: z.string().min(1, "Chat ID is required"),
 		accessToken: z.string().min(1, "Bot token is required"),
 	}),
+	// Pushover notification
+	z.object({
+		notificationName: z.string().min(1, "Notification name is required"),
+		type: z.literal("pushover"),
+		address: z.string().min(1, "User key is required"),
+		accessToken: z.string().min(1, "App token is required"),
+	}),
 ]);
 
 export const testNotificationBodyValidation = createNotificationBodyValidation;

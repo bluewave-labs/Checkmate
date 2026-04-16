@@ -959,6 +959,14 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "Chat ID",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Pushover configuration",
+					"description": "Configure Pushover to receive push notifications on your devices.",
+					"optionAppToken": "Application API token",
+					"placeholderAppToken": "azGDORePK8gMaC0QOYAMyEEuzJnyUi",
+					"optionUserKey": "User key",
+					"placeholderUserKey": "uQiRzpo4DXghDmr9QzzfQu27cmVRsG"
 				}
 			},
 			"table": {

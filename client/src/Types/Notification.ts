@@ -7,6 +7,7 @@ export const NotificationChannels = [
 	"matrix",
 	"teams",
 	"telegram",
+	"pushover",
 ] as const;
 export type NotificationChannel = (typeof NotificationChannels)[number];
 
