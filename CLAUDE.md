@@ -105,6 +105,56 @@ client/src/
 - **Queue/Cache**: Redis + BullMQ + Pulse (cron scheduling)
 - **i18n**: i18next + react-i18next (translations via PoEditor)
 
+---
+
+## Backend Architecture Patterns
+
+### Repository Pattern & Separation of Concerns
+
+The backend enforces a strict three-layer separation between HTTP handling, business logic, and data access:
+
+```
+Request → Controller → Service → Repository → MongoDB (Mongoose)
+```
+
+- **Controllers** (`/controllers`) handle HTTP concerns only: parsing request params, calling the appropriate service, and returning a response via the `responseHandler` middleware. They contain no business logic.
+- **Services** (`/service/business`) contain all business logic: deciding whether an incident should be created, whether a notification should fire, what state a monitor is in, etc.
+- **Repositories** (`/repositories`) are the sole layer that talks to MongoDB through Mongoose. They expose clean, reusable query methods (e.g. `findByMonitorId`, `createCheck`) so that services never construct raw DB queries directly.
+
+This separation makes each layer independently testable and keeps Mongoose-specific code out of business logic. When adding a new feature, the pattern to follow is: add a repository method for any new DB query, call it from a service, and expose it via a controller route.
+
+### Monitoring Flow: From Check to Notification
+
+Background monitoring runs on a scheduled queue, not on the HTTP request cycle. The high-level flow for uptime monitoring is:
+
+```
+Pulse (cron) → BullMQ Job → StatusService
+                                 ├── performs HTTP/port/ping check
+                                 ├── saves Check via CheckRepository
+                                 ├── evaluates monitor state change
+                                 │     └── calls IncidentService (create / resolve incident)
+                                 └── calls NotificationService (email, Slack, Discord, webhook)
+```
+
+1. **Pulse** (cron scheduler) enqueues a job into a **BullMQ** queue for each active monitor at its configured interval.
+2. A **BullMQ worker** picks up the job and calls `StatusService`, which performs the actual check (HTTP request, TCP port probe, ping, etc.).
+3. The result is persisted as a `Check` document via the repository layer.
+4. `StatusService` compares the new result against the monitor's previous state. If the monitor transitions from up → down (or down → up), it delegates to `IncidentService` to open or resolve an `Incident` document.
+5. On a state change, `NotificationService` reads the monitor's configured `Notification` documents and dispatches alerts to all enabled channels (email, Discord, Slack, webhooks).
+
+### Queue System (BullMQ + Redis)
+
+Redis serves two roles: job queue storage for BullMQ and ephemeral caching. BullMQ manages concurrency, retries, and backpressure for monitoring jobs, ensuring checks are processed reliably even under load.
+
+- Each monitor type (HTTP, port, ping, infrastructure) maps to its own queue worker so failures in one type don't block others.
+- Job scheduling interval is driven by the `interval` field on the `Monitor` model.
+- Failed jobs are retried with configurable backoff before being moved to a dead-letter state.
+- Redis is also used to cache frequently read data (e.g. aggregated stats) to reduce MongoDB query pressure.
+
+When working on anything related to check scheduling, incident lifecycle, or notifications, trace the flow starting from the relevant BullMQ worker rather than from the controller layer.
+
+---
+
 ## Code Conventions
 
 ### Internationalization
