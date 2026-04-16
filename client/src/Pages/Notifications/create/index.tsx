@@ -147,30 +147,32 @@ const NotificationsCreatePage = () => {
 					/>
 				}
 			/>
-			{watchedType !== "matrix" && watchedType !== "telegram" && watchedType !== "pushover" && (
-				<ConfigBox
-					title={addressConfig.title}
-					subtitle={addressConfig.description}
-					rightContent={
-						<Controller
-							name="address"
-							control={control}
-							defaultValue={"address" in defaults ? defaults.address : ""}
-							render={({ field, fieldState }) => (
-								<TextField
-									{...field}
-									type="text"
-									fieldLabel={addressConfig.fieldLabel}
-									placeholder={addressConfig.placeholder}
-									fullWidth
-									error={!!fieldState.error}
-									helperText={fieldState.error?.message ?? ""}
-								/>
-							)}
-						/>
-					}
-				/>
-			)}
+			{watchedType !== "matrix" &&
+				watchedType !== "telegram" &&
+				watchedType !== "pushover" && (
+					<ConfigBox
+						title={addressConfig.title}
+						subtitle={addressConfig.description}
+						rightContent={
+							<Controller
+								name="address"
+								control={control}
+								defaultValue={"address" in defaults ? defaults.address : ""}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={addressConfig.fieldLabel}
+										placeholder={addressConfig.placeholder}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+						}
+					/>
+				)}
 			{watchedType === "telegram" && (
 				<ConfigBox
 					title={t("pages.notifications.form.telegram.title")}
@@ -247,7 +249,9 @@ const NotificationsCreatePage = () => {
 										{...field}
 										type="text"
 										fieldLabel={t("pages.notifications.form.pushover.optionUserKey")}
-										placeholder={t("pages.notifications.form.pushover.placeholderUserKey")}
+										placeholder={t(
+											"pages.notifications.form.pushover.placeholderUserKey"
+										)}
 										fullWidth
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message ?? ""}
