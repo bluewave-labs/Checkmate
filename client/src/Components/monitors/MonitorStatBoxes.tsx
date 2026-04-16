@@ -45,6 +45,7 @@ export const MonitorStatBoxes = ({
 	const isActive =
 		monitor?.status === "up" ||
 		monitor?.status === "paused" ||
+		monitor?.status === "maintenance" ||
 		monitor?.status === "initializing" ||
 		monitor?.status === "breached";
 	const palette = getStatusPalette(monitor?.status);
