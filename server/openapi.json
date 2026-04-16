@@ -3631,6 +3631,12 @@
 						"type": "string",
 						"default": ""
 					},
+					"strategy": {
+						"type": "string",
+						"enum": ["desktop", "mobile"],
+						"default": "desktop",
+						"description": "PageSpeed analysis strategy"
+					},
 					"selectedDisks": {
 						"type": "array",
 						"items": {
@@ -3736,6 +3742,11 @@
 					},
 					"grpcServiceName": {
 						"type": "string"
+					},
+					"strategy": {
+						"type": "string",
+						"enum": ["desktop", "mobile"],
+						"description": "PageSpeed analysis strategy"
 					},
 					"selectedDisks": {
 						"type": "array",

@@ -37,6 +37,7 @@ import {
 	type MonitorType,
 	type GamesMap,
 	supportsGeoCheck,
+	DefaultPageSpeedStrategy,
 } from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
 import type { MonitorFormData } from "@/Validation/monitor";
@@ -51,6 +52,7 @@ interface GeneralSettingsConfig {
 	showSecret: boolean;
 	showGrpcServiceName: boolean;
 	showIgnoreTls: boolean;
+	showStrategy: boolean;
 }
 
 const getGeneralSettingsConfig = (
@@ -68,6 +70,7 @@ const getGeneralSettingsConfig = (
 			showSecret: false,
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
+			showStrategy: false,
 		},
 		ping: {
 			urlLabel: t("pages.createMonitor.form.general.option.host.label"),
@@ -79,6 +82,7 @@ const getGeneralSettingsConfig = (
 			showSecret: false,
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
+			showStrategy: false,
 		},
 		docker: {
 			urlLabel: t("pages.createMonitor.form.general.option.container.label"),
@@ -90,6 +94,7 @@ const getGeneralSettingsConfig = (
 			showSecret: false,
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
+			showStrategy: false,
 		},
 		port: {
 			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
@@ -101,6 +106,7 @@ const getGeneralSettingsConfig = (
 			showSecret: false,
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
+			showStrategy: false,
 		},
 		game: {
 			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
@@ -112,6 +118,7 @@ const getGeneralSettingsConfig = (
 			showSecret: false,
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
+			showStrategy: false,
 		},
 		grpc: {
 			urlLabel: t("pages.createMonitor.form.general.option.host.label"),
@@ -123,6 +130,7 @@ const getGeneralSettingsConfig = (
 			showSecret: false,
 			showGrpcServiceName: true,
 			showIgnoreTls: true,
+			showStrategy: false,
 		},
 		pagespeed: {
 			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
@@ -134,6 +142,7 @@ const getGeneralSettingsConfig = (
 			showSecret: false,
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
+			showStrategy: true,
 		},
 		hardware: {
 			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
@@ -145,6 +154,7 @@ const getGeneralSettingsConfig = (
 			showSecret: true,
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
+			showStrategy: false,
 		},
 		websocket: {
 			urlLabel: t("pages.createMonitor.form.general.option.wsUrl.label"),
@@ -156,6 +166,7 @@ const getGeneralSettingsConfig = (
 			showSecret: false,
 			showGrpcServiceName: false,
 			showIgnoreTls: true,
+			showStrategy: false,
 		},
 	};
 	return configs[type] || configs.http;
@@ -378,6 +389,31 @@ const CreateMonitorPage = () => {
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message ?? ""}
 									/>
+								)}
+							/>
+						)}
+
+						{/* Strategy field - only for pagespeed type */}
+						{generalSettingsConfig.showStrategy && (
+							<Controller
+								name="strategy"
+								control={control}
+								render={({ field, fieldState }) => (
+									<Select
+										{...field}
+										value={field.value ?? DefaultPageSpeedStrategy}
+										fieldLabel={t(
+											"pages.createMonitor.form.general.option.strategy.label"
+										)}
+										error={!!fieldState.error}
+									>
+										<MenuItem value="desktop">
+											{t("pages.createMonitor.form.general.option.strategy.desktop")}
+										</MenuItem>
+										<MenuItem value="mobile">
+											{t("pages.createMonitor.form.general.option.strategy.mobile")}
+										</MenuItem>
+									</Select>
 								)}
 							/>
 						)}

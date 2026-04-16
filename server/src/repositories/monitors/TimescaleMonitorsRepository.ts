@@ -1,5 +1,6 @@
 import type { Pool } from "pg";
-import type { Monitor, MonitorsSummary, MonitorStatus, MonitorType, MonitorMatchMethod, GeoContinent } from "@/types/monitor.js";
+import type { Monitor, MonitorsSummary, MonitorStatus, MonitorType, MonitorMatchMethod, GeoContinent, PageSpeedStrategy } from "@/types/monitor.js";
+
 import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "./IMonitorsRepository.js";
 import { AppError } from "@/utils/AppError.js";
 
@@ -36,6 +37,7 @@ interface MonitorRow {
 	selected_disks: string[] | null;
 	game_id: string | null;
 	grpc_service_name: string | null;
+	strategy: PageSpeedStrategy | null;
 	monitor_group: string | null;
 	geo_check_enabled: boolean;
 	geo_check_locations: GeoContinent[] | null;
@@ -49,7 +51,7 @@ const MONITOR_COLUMNS = `id, user_id, team_id, name, description, type, status, 
 	interval_ms, is_active, status_window, status_window_size, status_window_threshold, uptime_percentage,
 	cpu_alert_threshold, cpu_alert_counter, memory_alert_threshold, memory_alert_counter,
 	disk_alert_threshold, disk_alert_counter, temp_alert_threshold, temp_alert_counter, selected_disks,
-	game_id, grpc_service_name, monitor_group, geo_check_enabled, geo_check_locations, geo_check_interval_ms,
+	game_id, grpc_service_name, strategy, monitor_group, geo_check_enabled, geo_check_locations, geo_check_interval_ms,
 	created_at, updated_at`;
 
 export class TimescaleMonitorsRepository implements IMonitorsRepository {
@@ -62,8 +64,8 @@ export class TimescaleMonitorsRepository implements IMonitorsRepository {
 				interval_ms, is_active, status_window, status_window_size, status_window_threshold,
 				cpu_alert_threshold, cpu_alert_counter, memory_alert_threshold, memory_alert_counter,
 				disk_alert_threshold, disk_alert_counter, temp_alert_threshold, temp_alert_counter, selected_disks,
-				game_id, grpc_service_name, monitor_group, geo_check_enabled, geo_check_locations, geo_check_interval_ms)
-			 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32,$33,$34)
+				game_id, grpc_service_name, strategy, monitor_group, geo_check_enabled, geo_check_locations, geo_check_interval_ms)
+			 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32,$33,$34,$35)
 			 RETURNING ${MONITOR_COLUMNS}`,
 			[
 				userId,
@@ -96,6 +98,7 @@ export class TimescaleMonitorsRepository implements IMonitorsRepository {
 				monitor.selectedDisks ?? [],
 				monitor.gameId ?? null,
 				monitor.grpcServiceName ?? null,
+				monitor.strategy ?? null,
 				monitor.group ?? null,
 				monitor.geoCheckEnabled ?? false,
 				monitor.geoCheckLocations ?? [],
@@ -594,6 +597,7 @@ export class TimescaleMonitorsRepository implements IMonitorsRepository {
 			["selectedDisks", "selected_disks"],
 			["gameId", "game_id"],
 			["grpcServiceName", "grpc_service_name"],
+			["strategy", "strategy"],
 			["group", "monitor_group"],
 			["geoCheckEnabled", "geo_check_enabled"],
 			["geoCheckLocations", "geo_check_locations"],
@@ -1033,6 +1037,7 @@ export class TimescaleMonitorsRepository implements IMonitorsRepository {
 		selectedDisks: row.selected_disks ?? [],
 		gameId: row.game_id ?? undefined,
 		grpcServiceName: row.grpc_service_name ?? undefined,
+		strategy: row.strategy ?? undefined,
 		group: row.monitor_group,
 		geoCheckEnabled: row.geo_check_enabled,
 		geoCheckLocations: row.geo_check_locations ?? [],

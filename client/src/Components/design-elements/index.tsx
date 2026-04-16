@@ -21,3 +21,4 @@ export * from "./SplitBox";
 export * from "./TextLink";
 export * from "./OfflineBanner";
 export * from "./Avatar";
+export * from "./StrategyBadge";

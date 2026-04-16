@@ -1,7 +1,13 @@
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { Table, Pagination, StatusLabel } from "@/Components/design-elements";
+import {
+	Table,
+	Pagination,
+	StatusLabel,
+	StrategyBadge,
+} from "@/Components/design-elements";
+import { LAYOUT } from "@/Utils/Theme/constants";
 import { HistogramPageSpeed } from "@/Components/monitors";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import type { Header } from "@/Components/design-elements/Table";
@@ -179,7 +185,19 @@ export const PageSpeedMonitorsTable = ({
 					</Stack>
 				),
 				render: (row) => {
-					return row.name;
+					return (
+						<Stack
+							direction="row"
+							alignItems="center"
+							gap={LAYOUT.XS}
+						>
+							<Typography>{row.name}</Typography>
+							<StrategyBadge
+								strategy={row.strategy}
+								variant="caption"
+							/>
+						</Stack>
+					);
 				},
 			},
 			{
