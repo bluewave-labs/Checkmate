@@ -102,14 +102,6 @@ export class StatusService implements IStatusService {
 		}
 	};
 
-	private appendToWindow = (monitor: Monitor, status: boolean) => {
-		monitor.statusWindow = monitor.statusWindow || [];
-		monitor.statusWindow.push(status);
-		while (monitor.statusWindow.length > monitor.statusWindowSize) {
-			monitor.statusWindow.shift();
-		}
-	};
-
 	private toCheckSnapshot = (check: Check): CheckSnapshot => {
 		return {
 			id: check.id,
@@ -132,15 +124,6 @@ export class StatusService implements IStatusService {
 			audits: check.audits,
 			createdAt: check.createdAt,
 		};
-	};
-
-	private appendToRecentChecks = (monitor: Monitor, check: Check) => {
-		monitor.recentChecks = monitor.recentChecks || [];
-		const checkSnapshot = this.toCheckSnapshot(check);
-		monitor.recentChecks.push(checkSnapshot);
-		while (monitor.recentChecks.length > MAX_RECENT_CHECKS) {
-			monitor.recentChecks.shift();
-		}
 	};
 
 	private computeReachability = (
@@ -229,7 +212,7 @@ export class StatusService implements IStatusService {
 		);
 	};
 
-	newUpdateMonitorStatus = async (
+	updateMonitorStatus = async (
 		statusResponse: MonitorStatusResponse<
 			| PingStatusPayload
 			| HttpStatusPayload
@@ -315,121 +298,17 @@ export class StatusService implements IStatusService {
 				}
 			}
 
-			// Apply the final status
-			updatedMonitor.status = newStatus;
-
-			const updated = await this.monitorsRepository.updateById(updatedMonitor.id, updatedMonitor.teamId, updatedMonitor);
-
-			return {
-				monitor: updated,
-				statusChanged,
-				prevStatus,
-				code,
-				timestamp: new Date().getTime(),
-				thresholdBreaches,
-			};
-		} catch (error: unknown) {
-			throw new AppError({
-				message: `Failed to update monitor with id ${check.metadata.monitorId} with status: ${error instanceof Error ? error.message : "Unknown error"}`,
-				service: SERVICE_NAME,
-				method: "updateMonitorStatus",
-			});
-		}
-	};
-	updateMonitorStatus = async (
-		statusResponse: MonitorStatusResponse<
-			| PingStatusPayload
-			| HttpStatusPayload
-			| PageSpeedStatusPayload
-			| HardwareStatusPayload
-			| DockerStatusPayload
-			| PortStatusPayload
-			| GameStatusPayload
-			| GrpcStatusPayload
-			| undefined
-		>,
-		check: Check
-	): Promise<StatusChangeResult> => {
-		try {
-			const { monitorId, teamId, status, code } = statusResponse;
-			const monitor = await this.monitorsRepository.findById(monitorId, teamId);
-
-			// Update running stats
-			await this.tryUpdateRunningStats(monitor, statusResponse);
-
-			// Update the sliding window and recent checks
-			this.appendToWindow(monitor, status);
-			this.appendToRecentChecks(monitor, check);
-
-			const prevStatus = monitor.status;
-
-			// Return early if not enough data points
-			if (monitor.statusWindow.length < monitor.statusWindowSize) {
-				monitor.status = status === true ? "up" : "down";
-				const updated = await this.monitorsRepository.updateById(monitor.id, monitor.teamId, monitor);
-				return {
-					monitor: updated,
-					statusChanged: false,
-					prevStatus,
-					code,
-					timestamp: Date.now(),
-				};
+			// Apply the final status — only write fields computed by application logic,
+			// not statusWindow/recentChecks which are owned by the atomic push.
+			const patch: Partial<Monitor> = { status: newStatus };
+			if (updatedMonitor.type === "hardware" && hardwarePayload?.data) {
+				patch.cpuAlertCounter = updatedMonitor.cpuAlertCounter;
+				patch.memoryAlertCounter = updatedMonitor.memoryAlertCounter;
+				patch.diskAlertCounter = updatedMonitor.diskAlertCounter;
+				patch.tempAlertCounter = updatedMonitor.tempAlertCounter;
 			}
 
-			// With a full window, a single raw check must not change UNLESS we are initializing. Otherwise, only the sliding-window threshold can trigger a transition.
-			let newStatus: MonitorStatus;
-			if (monitor.status === "initializing") {
-				newStatus = status === true ? "up" : "down";
-			} else {
-				newStatus = monitor.status;
-			}
-
-			let statusChanged = false;
-
-			// First evaluate reachability-based status changes, which apply to all monitor types and take precedence over hardware breaches.
-			const reachabilityResult = this.computeReachability(newStatus, monitor.statusWindow, monitor.statusWindowThreshold);
-			if (reachabilityResult.transitioned) {
-				newStatus = reachabilityResult.nextStatus;
-				statusChanged = true;
-			}
-
-			// Evaluate hardware threshold breaches (only for hardware monitors with metrics payload)
-			let thresholdBreaches: HardwareBreaches | undefined;
-			const hardwarePayload = statusResponse.payload as HardwareStatusPayload | undefined;
-			if (monitor.type === "hardware" && hardwarePayload?.data) {
-				const hardware = this.computeHardwareStatus({
-					currentStatus: newStatus,
-					reachabilityDown: newStatus === "down",
-					metrics: hardwarePayload.data,
-					thresholds: {
-						cpu: monitor.cpuAlertThreshold,
-						memory: monitor.memoryAlertThreshold,
-						disk: monitor.diskAlertThreshold,
-						temp: monitor.tempAlertThreshold,
-					},
-					counters: {
-						cpu: monitor.cpuAlertCounter,
-						memory: monitor.memoryAlertCounter,
-						disk: monitor.diskAlertCounter,
-						temp: monitor.tempAlertCounter,
-					},
-				});
-
-				monitor.cpuAlertCounter = hardware.nextCounters.cpu;
-				monitor.memoryAlertCounter = hardware.nextCounters.memory;
-				monitor.diskAlertCounter = hardware.nextCounters.disk;
-				monitor.tempAlertCounter = hardware.nextCounters.temp;
-				thresholdBreaches = hardware.breaches;
-				if (hardware.transitioned) {
-					newStatus = hardware.nextStatus;
-					statusChanged = true;
-				}
-			}
-
-			// Apply the final status
-			monitor.status = newStatus;
-
-			const updated = await this.monitorsRepository.updateById(monitor.id, monitor.teamId, monitor);
+			const updated = await this.monitorsRepository.updateById(updatedMonitor.id, updatedMonitor.teamId, patch);
 
 			return {
 				monitor: updated,
