@@ -1,4 +1,5 @@
 services:
+  #Gateway 
   gateway:
     image: nginx:1.27.1-alpine
     container_name: checkmate-gateway
@@ -9,6 +10,7 @@ services:
     volumes:
       - /etc/letsencrypt:/etc/nginx/ssl:ro
       - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+  # Production ----- 
   client-prod:
     image: ghcr.io/bluewave-labs/checkmate:frontend-demo
     restart: always
@@ -47,3 +49,54 @@ services:
       start_period: 0s
       start_interval: 1s
       retries: 30
+
+  # Staging -----
+  client-staging:
+    image: ghcr.io/bluewave-labs/checkmate:frontend-staging
+    restart: always
+    environment:
+      UPTIME_APP_API_BASE_URL: "https://staging.checkmate.so/api/v1"
+      UPTIME_APP_CLIENT_HOST: "https://staging.checkmate.so"
+    expose:
+      - "80"
+    depends_on:
+      - server-staging
+    volumes:
+      - ./nginx/conf.d/staging.conf:/etc/nginx/conf.d/default.conf:ro
+  server-staging:
+    image: ghcr.io/bluewave-labs/checkmate:backend-staging
+    restart: always
+    ports:
+      - "52345:52345"
+    env_file:
+      - server-staging.env
+    depends_on:
+      - mongodb-staging
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+  mongodb-staging:
+    image: ghcr.io/bluewave-labs/checkmate:mongo-staging
+    restart: always
+    command: [ "mongod", "--quiet", "--bind_ip_all" ]
+    volumes:
+      - ./mongo/data-staging:/data/db
+    env_file:
+      - mongo-staging.env
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--quiet" ]
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
+  capture:
+    image: ghcr.io/bluewave-labs/capture:latest
+    container_name: capture
+    restart: unless-stopped
+    ports:
+      - "59232:59232"
+    environment:
+      - API_SECRET=my_secret
+      - GIN_MODE=release
+    volumes:
+      - /etc/os-release:/etc/os-release:ro
