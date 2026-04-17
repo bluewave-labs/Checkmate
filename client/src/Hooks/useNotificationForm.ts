@@ -64,10 +64,10 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 		return {
 			type: "twilio",
 			notificationName: data.notificationName || "",
-			address: data.address || "",
+			accountSid: data.accountSid || "",
 			accessToken: data.accessToken || "",
 			phone: data.phone || "",
-			homeserverUrl: data.homeserverUrl || "",
+			twilioPhoneNumber: data.twilioPhoneNumber || "",
 		};
 	}
 	if (data?.type === "pushover") {

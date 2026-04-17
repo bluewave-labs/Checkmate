@@ -147,7 +147,7 @@ describe("NotificationsService", () => {
 		});
 
 		it("routes to correct provider for each notification type", async () => {
-			const types = ["webhook", "slack", "matrix", "pager_duty", "discord", "email", "teams", "telegram"] as const;
+			const types = ["webhook", "slack", "matrix", "pager_duty", "discord", "email", "teams", "telegram", "pushover", "twilio"] as const;
 			for (const type of types) {
 				const deps = createService();
 				(deps.notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([makeNotification({ type })]);
@@ -163,6 +163,8 @@ describe("NotificationsService", () => {
 					email: deps.emailProvider,
 					teams: deps.teamsProvider,
 					telegram: deps.telegramProvider,
+					pushover: deps.pushoverProvider,
+					twilio: deps.twilioProvider,
 				};
 				expect(providerMap[type].sendMessage).toHaveBeenCalledTimes(1);
 			}
@@ -236,7 +238,7 @@ describe("NotificationsService", () => {
 	// ── sendTestNotification ─────────────────────────────────────────────────
 
 	describe("sendTestNotification", () => {
-		it.each([["email"], ["slack"], ["discord"], ["pager_duty"], ["matrix"], ["webhook"], ["teams"], ["telegram"]] as const)(
+		it.each([["email"], ["slack"], ["discord"], ["pager_duty"], ["matrix"], ["webhook"], ["teams"], ["telegram"], ["pushover"], ["twilio"]] as const)(
 			"routes %s to the correct provider",
 			async (type) => {
 				const deps = createService();
@@ -254,6 +256,8 @@ describe("NotificationsService", () => {
 					email: deps.emailProvider,
 					teams: deps.teamsProvider,
 					telegram: deps.telegramProvider,
+					pushover: deps.pushoverProvider,
+					twilio: deps.twilioProvider,
 				};
 				expect(providerMap[type].sendTestAlert).toHaveBeenCalledWith(notification);
 			}

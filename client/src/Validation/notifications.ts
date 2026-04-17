@@ -64,10 +64,10 @@ const pushoverSchema = baseSchema.extend({
 
 const twilioSchema = baseSchema.extend({
 	type: z.literal("twilio"),
-	address: z.string().min(1, "Account SID is required"),
+	accountSid: z.string().min(1, "Account SID is required"),
 	accessToken: z.string().min(1, "Auth token is required"),
 	phone: z.string().min(1, "Recipient phone number is required"),
-	homeserverUrl: z.string().min(1, "Twilio phone number is required"),
+	twilioPhoneNumber: z.string().min(1, "Twilio phone number is required"),
 });
 
 export const notificationSchema = z.discriminatedUnion("type", [

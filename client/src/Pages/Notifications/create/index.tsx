@@ -270,9 +270,9 @@ const NotificationsCreatePage = () => {
 					rightContent={
 						<Stack spacing={theme.spacing(8)}>
 							<Controller
-								name="address"
+								name="accountSid"
 								control={control}
-								defaultValue={"address" in defaults ? defaults.address : ""}
+								defaultValue={"accountSid" in defaults ? defaults.accountSid : ""}
 								render={({ field, fieldState }) => (
 									<TextField
 										{...field}
@@ -306,9 +306,11 @@ const NotificationsCreatePage = () => {
 								)}
 							/>
 							<Controller
-								name="homeserverUrl"
+								name="twilioPhoneNumber"
 								control={control}
-								defaultValue={"homeserverUrl" in defaults ? defaults.homeserverUrl : ""}
+								defaultValue={
+									"twilioPhoneNumber" in defaults ? defaults.twilioPhoneNumber : ""
+								}
 								render={({ field, fieldState }) => (
 									<TextField
 										{...field}

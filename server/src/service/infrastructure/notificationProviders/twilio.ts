@@ -7,18 +7,18 @@ import got from "got";
 
 export class TwilioProvider extends NotificationProvider {
 	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
-		if (!notification.address || !notification.accessToken || !notification.phone || !notification.homeserverUrl) {
+		if (!notification.accountSid || !notification.accessToken || !notification.phone || !notification.twilioPhoneNumber) {
 			return false;
 		}
 
 		try {
-			await got.post(`https://api.twilio.com/2010-04-01/Accounts/${notification.address}/Messages.json`, {
+			await got.post(`https://api.twilio.com/2010-04-01/Accounts/${notification.accountSid}/Messages.json`, {
 				form: {
 					To: notification.phone,
-					From: notification.homeserverUrl,
+					From: notification.twilioPhoneNumber,
 					Body: getTestMessage(),
 				},
-				username: notification.address,
+				username: notification.accountSid,
 				password: notification.accessToken,
 				...this.gotRequestOptions(),
 			});
@@ -38,20 +38,20 @@ export class TwilioProvider extends NotificationProvider {
 	}
 
 	async sendMessage(notification: Notification, message: NotificationMessage): Promise<boolean> {
-		if (!notification.address || !notification.accessToken || !notification.phone || !notification.homeserverUrl) {
+		if (!notification.accountSid || !notification.accessToken || !notification.phone || !notification.twilioPhoneNumber) {
 			return false;
 		}
 
 		const text = this.buildSmsText(message);
 
 		try {
-			await got.post(`https://api.twilio.com/2010-04-01/Accounts/${notification.address}/Messages.json`, {
+			await got.post(`https://api.twilio.com/2010-04-01/Accounts/${notification.accountSid}/Messages.json`, {
 				form: {
 					To: notification.phone,
-					From: notification.homeserverUrl,
+					From: notification.twilioPhoneNumber,
 					Body: text,
 				},
-				username: notification.address,
+				username: notification.accountSid,
 				password: notification.accessToken,
 				...this.gotRequestOptions(),
 			});

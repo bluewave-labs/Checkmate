@@ -37,6 +37,8 @@ const NotificationSchema = new Schema<NotificationDocument>(
 		homeserverUrl: { type: String },
 		roomId: { type: String },
 		accessToken: { type: String },
+		accountSid: { type: String },
+		twilioPhoneNumber: { type: String },
 	},
 	{
 		timestamps: true,

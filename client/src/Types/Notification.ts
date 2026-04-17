@@ -23,6 +23,8 @@ export interface Notification {
 	homeserverUrl?: string;
 	roomId?: string;
 	accessToken?: string;
+	accountSid?: string;
+	twilioPhoneNumber?: string;
 	createdAt: string;
 	updatedAt: string;
 }

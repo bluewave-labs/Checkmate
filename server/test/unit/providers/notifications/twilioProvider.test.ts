@@ -16,7 +16,8 @@ const createProvider = () => {
 const makeTwilioNotification = (overrides?: Record<string, unknown>) =>
 	makeNotification({
 		phone: "+15559876543",
-		homeserverUrl: "+15551234567",
+		twilioPhoneNumber: "+15551234567",
+		accountSid: "ACtest123",
 		...overrides,
 	});
 
@@ -44,8 +45,8 @@ describe("TwilioProvider", () => {
 			);
 		});
 
-		it("returns false when address is missing", async () => {
-			expect(await createProvider().provider.sendTestAlert(makeTwilioNotification({ address: "" }))).toBe(false);
+		it("returns false when accountSid is missing", async () => {
+			expect(await createProvider().provider.sendTestAlert(makeTwilioNotification({ accountSid: "" }))).toBe(false);
 		});
 
 		it("returns false when accessToken is missing", async () => {
@@ -56,8 +57,8 @@ describe("TwilioProvider", () => {
 			expect(await createProvider().provider.sendTestAlert(makeTwilioNotification({ phone: "" }))).toBe(false);
 		});
 
-		it("returns false when homeserverUrl (from number) is missing", async () => {
-			expect(await createProvider().provider.sendTestAlert(makeTwilioNotification({ homeserverUrl: "" }))).toBe(false);
+		it("returns false when twilioPhoneNumber (from number) is missing", async () => {
+			expect(await createProvider().provider.sendTestAlert(makeTwilioNotification({ twilioPhoneNumber: "" }))).toBe(false);
 		});
 
 		it("returns false and logs on error", async () => {
@@ -85,8 +86,8 @@ describe("TwilioProvider", () => {
 			expect(form.From).toBe("+15551234567");
 		});
 
-		it("returns false when address is missing", async () => {
-			expect(await createProvider().provider.sendMessage(makeTwilioNotification({ address: "" }) as any, makeMessage())).toBe(false);
+		it("returns false when accountSid is missing", async () => {
+			expect(await createProvider().provider.sendMessage(makeTwilioNotification({ accountSid: "" }) as any, makeMessage())).toBe(false);
 		});
 
 		it("returns false when accessToken is missing", async () => {
