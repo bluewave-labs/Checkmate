@@ -1,3 +1,6 @@
+# sudo certbot certonly --standalone --http-01-port 8080
+# cerbot needs to run on 8080 since port 80 is used by the gateway
+
 services:
   # Gateway (Single Entry Point)
   gateway:
