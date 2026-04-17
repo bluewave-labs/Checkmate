@@ -3,8 +3,8 @@ services:
     image: ghcr.io/bluewave-labs/checkmate:frontend-demo
     restart: always
     environment:
-      UPTIME_APP_API_BASE_URL: "https://checkmate-demo.bluewavelabs.ca/api/v1"
-      UPTIME_APP_CLIENT_HOST: "https://checkmate-demo.bluewavelabs.ca"
+      UPTIME_APP_API_BASE_URL: "https://demo.checkmate.so/api/v1"
+      UPTIME_APP_CLIENT_HOST: "https://demo.checkmate.so"
     ports:
       - "80:80"
       - "443:443"
@@ -12,16 +12,7 @@ services:
       - server
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d/:ro
-      - ./certbot/www:/var/www/certbot/:ro
-      - ./certbot/conf/:/etc/nginx/ssl/:ro
-
-  certbot:
-    image: certbot/certbot:latest
-    restart: always
-    volumes:
-      - ./certbot/www/:/var/www/certbot/:rw
-      - ./certbot/conf/:/etc/letsencrypt/:rw
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot; sleep 12h & wait $${!}; done;'"
+      - /etc/letsencrypt:/etc/nginx/ssl:ro
 
   server:
     image: ghcr.io/bluewave-labs/checkmate:backend-demo
