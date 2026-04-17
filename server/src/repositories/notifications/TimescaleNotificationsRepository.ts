@@ -14,20 +14,22 @@ interface NotificationRow {
 	homeserver_url: string | null;
 	room_id: string | null;
 	access_token: string | null;
+	account_sid: string | null;
+	twilio_phone_number: string | null;
 	created_at: Date;
 	updated_at: Date;
 }
 
 const COLUMNS = `id, user_id, team_id, type, notification_name, address, phone,
-	homeserver_url, room_id, access_token, created_at, updated_at`;
+	homeserver_url, room_id, access_token, account_sid, twilio_phone_number, created_at, updated_at`;
 
 export class TimescaleNotificationsRepository implements INotificationsRepository {
 	constructor(private pool: Pool) {}
 
 	create = async (data: Partial<Notification>): Promise<Notification> => {
 		const result = await this.pool.query<NotificationRow>(
-			`INSERT INTO notifications (user_id, team_id, type, notification_name, address, phone, homeserver_url, room_id, access_token)
-			 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+			`INSERT INTO notifications (user_id, team_id, type, notification_name, address, phone, homeserver_url, room_id, access_token, account_sid, twilio_phone_number)
+			 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 			 RETURNING ${COLUMNS}`,
 			[
 				data.userId,
@@ -39,6 +41,8 @@ export class TimescaleNotificationsRepository implements INotificationsRepositor
 				data.homeserverUrl ?? null,
 				data.roomId ?? null,
 				data.accessToken ?? null,
+				data.accountSid ?? null,
+				data.twilioPhoneNumber ?? null,
 			]
 		);
 		const row = result.rows[0];
@@ -83,6 +87,8 @@ export class TimescaleNotificationsRepository implements INotificationsRepositor
 			["homeserverUrl", "homeserver_url"],
 			["roomId", "room_id"],
 			["accessToken", "access_token"],
+			["accountSid", "account_sid"],
+			["twilioPhoneNumber", "twilio_phone_number"],
 		];
 
 		for (const [key, column] of fieldMap) {
@@ -134,6 +140,8 @@ export class TimescaleNotificationsRepository implements INotificationsRepositor
 		homeserverUrl: row.homeserver_url ?? undefined,
 		roomId: row.room_id ?? undefined,
 		accessToken: row.access_token ?? undefined,
+		accountSid: row.account_sid ?? undefined,
+		twilioPhoneNumber: row.twilio_phone_number ?? undefined,
 		createdAt: row.created_at.toISOString(),
 		updatedAt: row.updated_at.toISOString(),
 	});
