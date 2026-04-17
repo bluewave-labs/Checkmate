@@ -1,5 +1,5 @@
 services:
-  #Gateway 
+  # Gateway (Single Entry Point)
   gateway:
     image: nginx:1.27.1-alpine
     container_name: checkmate-gateway
@@ -10,9 +10,11 @@ services:
     volumes:
       - /etc/letsencrypt:/etc/nginx/ssl:ro
       - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-  # Production ----- 
+
+  # Production Stack ----- 
   client-prod:
     image: ghcr.io/bluewave-labs/checkmate:frontend-demo
+    container_name: client-prod
     restart: always
     environment:
       UPTIME_APP_API_BASE_URL: "https://demo.checkmate.so/api/v1"
@@ -23,19 +25,21 @@ services:
       - server-prod
     volumes:
       - ./nginx/conf.d/prod.conf:/etc/nginx/conf.d/default.conf:ro
+
   server-prod:
     image: ghcr.io/bluewave-labs/checkmate:backend-demo
+    container_name: server-prod
     restart: always
-    ports:
-      - "52345:52345"
     env_file:
       - server-prod.env
     depends_on:
       - mongodb-prod
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+
   mongodb-prod:
     image: ghcr.io/bluewave-labs/checkmate:mongo-demo
+    container_name: mongodb-prod
     restart: always
     command: [ "mongod", "--quiet", "--bind_ip_all" ]
     volumes:
@@ -50,9 +54,10 @@ services:
       start_interval: 1s
       retries: 30
 
-  # Staging -----
+  # Staging Stack -----
   client-staging:
     image: ghcr.io/bluewave-labs/checkmate:frontend-staging
+    container_name: client-staging
     restart: always
     environment:
       UPTIME_APP_API_BASE_URL: "https://staging.checkmate.so/api/v1"
@@ -63,19 +68,21 @@ services:
       - server-staging
     volumes:
       - ./nginx/conf.d/staging.conf:/etc/nginx/conf.d/default.conf:ro
+
   server-staging:
     image: ghcr.io/bluewave-labs/checkmate:backend-staging
+    container_name: server-staging
     restart: always
-    ports:
-      - "52345:52345"
     env_file:
       - server-staging.env
     depends_on:
       - mongodb-staging
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+
   mongodb-staging:
     image: ghcr.io/bluewave-labs/checkmate:mongo-staging
+    container_name: mongodb-staging
     restart: always
     command: [ "mongod", "--quiet", "--bind_ip_all" ]
     volumes:
@@ -89,6 +96,8 @@ services:
       start_period: 0s
       start_interval: 1s
       retries: 30
+
+  # Shared Utils
   capture:
     image: ghcr.io/bluewave-labs/capture:latest
     container_name: capture
