@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { notificationSchema, baseNotificationSchema } from "@/Validation/notifications";
+import { notificationSchema } from "@/Validation/notifications";
 import type { NotificationFormData } from "@/Validation/notifications";
 import type { Notification } from "@/Types/Notification";
 
