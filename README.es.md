@@ -76,7 +76,7 @@ También puedes ver el consumo de memoria de MongoDB y Redis en el mismo servido
 Si tienes alguna pregunta, sugerencia o comentario, tienes varias opciones:
 
 - [Canal de Discord](https://discord.gg/NAb6H3UTjK)
-- [Discusiones en GitHub](https://github.com/bluewave-labs/bluewave-uptime/discussions)
+- [Discusiones en GitHub](https://github.com/bluewave-labs/checkmate/discussions)
 - [Grupo en Reddit](https://www.reddit.com/r/CheckmateMonitoring/)
 
 ¡No dudes en hacer preguntas o compartir tus ideas, nos encantaría saber de ti!
