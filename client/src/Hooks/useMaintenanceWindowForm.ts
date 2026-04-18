@@ -48,6 +48,9 @@ export const useMaintenanceWindowForm = ({
 			};
 		}
 
-		return { schema: data ? maintenanceWindowEditSchema : maintenanceWindowSchema, defaults };
+		return {
+			schema: data ? maintenanceWindowEditSchema : maintenanceWindowSchema,
+			defaults,
+		};
 	}, [data]);
 };
