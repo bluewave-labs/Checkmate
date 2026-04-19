@@ -528,6 +528,14 @@
 					},
 					"title": "TLS/SSL settings"
 				},
+				"userAgent": {
+					"title": "Custom User-Agent",
+					"description": "Override the User-Agent header sent with HTTP requests for this monitor. Useful for identifying Checkmate in WAF logs. Leave blank to use the global default.",
+					"option": {
+						"label": "User-Agent",
+						"placeholder": "Checkmate/X.X (uptime monitor)"
+					}
+				},
 				"incidents": {
 					"description": "A sliding window is used to determine when a monitor goes down. The status of a monitor will only change when the percentage of checks in the sliding window meet the specified value.",
 					"option": {
@@ -1058,6 +1066,14 @@
 							"enabled": "Enabled",
 							"disabled": "Disabled"
 						}
+					}
+				},
+				"userAgent": {
+					"title": "Default User-Agent",
+					"description": "Set a default User-Agent header sent with all HTTP uptime monitor requests. Individual monitors can override this. Useful for identifying Checkmate in WAF logs and whitelists.",
+					"option": {
+						"label": "Default User-Agent",
+						"placeholder": "Checkmate/X.X (uptime monitor)"
 					}
 				},
 				"stats": {

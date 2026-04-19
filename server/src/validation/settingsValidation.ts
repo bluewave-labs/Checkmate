@@ -1,5 +1,6 @@
 import { CHECK_TTL_SENTINEL } from "@/types/check.js";
 import { z } from "zod";
+import { httpHeaderValueSchema } from "@/validation/shared.js";
 
 //****************************************
 // Settings Validations
@@ -20,6 +21,7 @@ export const updateAppSettingsBodyValidation = z
 		systemEmailTLSServername: z.string().nullable().optional(),
 
 		showURL: z.boolean().optional(),
+		defaultUserAgent: httpHeaderValueSchema.nullable().optional(),
 		systemEmailSecure: z.boolean().optional(),
 		systemEmailPool: z.boolean().optional(),
 		systemEmailIgnoreTLS: z.boolean().optional(),

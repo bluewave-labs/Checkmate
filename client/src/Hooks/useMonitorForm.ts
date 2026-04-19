@@ -40,6 +40,7 @@ export const useMonitorForm = ({
 					matchMethod: data?.matchMethod || "",
 					expectedValue: data?.expectedValue || "",
 					jsonPath: data?.jsonPath || "",
+					customUserAgent: data?.customUserAgent || "",
 				};
 				break;
 			case "ping":

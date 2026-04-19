@@ -50,6 +50,7 @@ export interface Monitor {
 	gameId?: string;
 	grpcServiceName?: string;
 	group: string | null;
+	customUserAgent?: string | null;
 	geoCheckEnabled?: boolean;
 	geoCheckLocations?: GeoContinent[];
 	geoCheckInterval?: number;

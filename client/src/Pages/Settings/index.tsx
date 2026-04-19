@@ -425,6 +425,39 @@ export const SettingsPage = () => {
 					}
 				/>
 
+				{/* Default User-Agent - Admin Only */}
+				{isAdmin && (
+					<ConfigBox
+						title={t("pages.settings.form.userAgent.title")}
+						subtitle={t("pages.settings.form.userAgent.description")}
+						rightContent={
+							<Controller
+								name="defaultUserAgent"
+								control={form.control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value ?? ""}
+										fieldLabel={t("pages.settings.form.userAgent.option.label")}
+										placeholder={t("pages.settings.form.userAgent.option.placeholder")}
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message}
+										onChange={(e) => {
+											field.onChange(
+												e.target.value
+													.replace(/[<>]/g, "")
+													.replace(/(?:javascript|data|vbscript):/gi, "")
+													.replace(/[^\t\x20-\x7E\x80-\xFF]/g, "") // RFC 7230 header-safe chars only
+													.slice(0, 500)
+											);
+										}}
+									/>
+								)}
+							/>
+						}
+					/>
+				)}
+
 				{/* Clear All Stats */}
 				{isAdmin && (
 					<ConfigBox

@@ -797,6 +797,40 @@ const CreateMonitorPage = () => {
 
 			{watchedType === "http" && (
 				<ConfigBox
+					title={t("pages.createMonitor.form.userAgent.title")}
+					subtitle={t("pages.createMonitor.form.userAgent.description")}
+					rightContent={
+						<Controller
+							name="customUserAgent"
+							control={control}
+							render={({ field, fieldState }) => (
+								<TextField
+									{...field}
+									value={field.value ?? ""}
+									type="text"
+									fieldLabel={t("pages.createMonitor.form.userAgent.option.label")}
+									placeholder={t("pages.createMonitor.form.userAgent.option.placeholder")}
+									fullWidth
+									error={!!fieldState.error}
+									helperText={fieldState.error?.message ?? ""}
+									onChange={(e) => {
+										field.onChange(
+											e.target.value
+												.replace(/[<>]/g, "")
+												.replace(/(?:javascript|data|vbscript):/gi, "")
+												.replace(/[^\t\x20-\x7E\x80-\xFF]/g, "") // RFC 7230 header-safe chars only
+												.slice(0, 500)
+										);
+									}}
+								/>
+							)}
+						/>
+					}
+				/>
+			)}
+
+			{watchedType === "http" && (
+				<ConfigBox
 					title={t("pages.createMonitor.form.advanced.title")}
 					subtitle={t("pages.createMonitor.form.advanced.description")}
 					rightContent={

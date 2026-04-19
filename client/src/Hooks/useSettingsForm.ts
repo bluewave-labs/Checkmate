@@ -40,6 +40,7 @@ export const useSettingsForm = ({ data = null }: UseSettingsFormOptions = {}) =>
 						: 80,
 			},
 			checkTTL: data?.checkTTL ?? 30,
+			defaultUserAgent: data?.defaultUserAgent || "",
 			pagespeedApiKey: "",
 			systemEmailPassword: "",
 		};

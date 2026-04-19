@@ -339,6 +339,9 @@ const MonitorSchema = new Schema<MonitorDocument>(
 				return value && value.trim() ? value.trim() : null;
 			},
 		},
+		customUserAgent: {
+			type: String,
+		},
 		geoCheckEnabled: {
 			type: Boolean,
 			default: false,

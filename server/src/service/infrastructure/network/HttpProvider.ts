@@ -56,15 +56,30 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 		};
 	}
 
+	private sanitizeHeaderValue(value: string): string {
+		if (!value) return "";
+
+		return value
+			.replace(/[<>]/g, "")
+			.replace(/(?:javascript|data|vbscript):/gi, "")
+			.replace(/[^\t\x20-\x7E\x80-\xFF]/g, "") // allow only RFC 7230 header-safe characters
+			.trim()
+			.slice(0, 500);
+	}
+
 	async handle<T>(monitor: Monitor): Promise<MonitorStatusResponse<T>> {
-		const { url, secret, jsonPath, ignoreTlsErrors } = monitor;
+		const { url, secret, jsonPath, ignoreTlsErrors, customUserAgent } = monitor;
 
 		if (!url) {
 			throw new Error("URL is required for HTTP monitor");
 		}
 
+		const headers: Record<string, string> = {};
+		if (secret) headers["Authorization"] = `Bearer ${secret}`;
+		if (customUserAgent) headers["User-Agent"] = this.sanitizeHeaderValue(customUserAgent);
+
 		const options: Record<string, unknown> = {
-			headers: monitor.secret ? { Authorization: `Bearer ${secret}` } : undefined,
+			headers: Object.keys(headers).length > 0 ? headers : undefined,
 		};
 
 		options.agent = {
