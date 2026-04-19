@@ -68,6 +68,17 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 			accessToken: data.accessToken || "",
 		};
 	}
+	if (data?.type === "ntfy") {
+		return {
+			type: "ntfy",
+			notificationName: data.notificationName || "",
+			address: data.address || "",
+			authType: data.authType || "none",
+			username: data.username || "",
+			password: data.password || "",
+			accessToken: data.accessToken || "",
+		};
+	}
 	// Default: email (covers both data === null and data.type === "email")
 	return {
 		type: "email",

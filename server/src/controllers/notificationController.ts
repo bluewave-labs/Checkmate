@@ -12,6 +12,7 @@ import { AppError } from "@/utils/AppError.js";
 import { INotificationsService } from "@/service/index.js";
 import { requireTeamId, requireUserId } from "./controllerUtils.js";
 import { IMonitorsRepository } from "@/repositories/index.js";
+import type { Notification } from "@/types/notification.js";
 
 const SERVICE_NAME = "NotificationController";
 
@@ -31,6 +32,14 @@ class NotificationController implements INotificationController {
 		this.notificationsService = notificationsService;
 		this.monitorsRepository = monitorsRepository;
 	}
+
+	private sanitizeNotification = (notification: Notification): Omit<Notification, "username" | "password" | "accessToken"> => {
+		if (!notification) {
+			return notification;
+		}
+		const { username, password, accessToken, ...sanitized } = notification;
+		return sanitized;
+	};
 
 	testNotification = async (req: Request, res: Response, next: NextFunction) => {
 		try {
@@ -62,7 +71,7 @@ class NotificationController implements INotificationController {
 			return res.status(200).json({
 				success: true,
 				msg: "Notification created successfully",
-				data: notification,
+				data: this.sanitizeNotification(notification),
 			});
 		} catch (error) {
 			next(error);
@@ -77,7 +86,7 @@ class NotificationController implements INotificationController {
 			return res.status(200).json({
 				success: true,
 				msg: "Notifications fetched successfully",
-				data: notifications,
+				data: notifications.map(this.sanitizeNotification),
 			});
 		} catch (error) {
 			next(error);
@@ -109,7 +118,7 @@ class NotificationController implements INotificationController {
 			return res.status(200).json({
 				success: true,
 				msg: "Notification fetched successfully",
-				data: notification,
+				data: this.sanitizeNotification(notification),
 			});
 		} catch (error) {
 			next(error);
@@ -128,7 +137,7 @@ class NotificationController implements INotificationController {
 			return res.status(200).json({
 				success: true,
 				msg: "Notification updated successfully",
-				data: editedNotification,
+				data: this.sanitizeNotification(editedNotification),
 			});
 		} catch (error) {
 			next(error);

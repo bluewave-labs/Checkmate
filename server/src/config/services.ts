@@ -30,6 +30,7 @@ import {
 	TeamsProvider,
 	TelegramProvider,
 	PushoverProvider,
+	NtfyProvider,
 	// Interfaces
 	INetworkService,
 	IEmailService,
@@ -300,6 +301,7 @@ export const initializeServices = async ({
 	const teamsProvider = new TeamsProvider(logger);
 	const telegramProvider = new TelegramProvider(logger);
 	const pushoverProvider = new PushoverProvider(logger);
+	const ntfyProvider = new NtfyProvider(logger);
 
 	const notificationsService = new NotificationsService(
 		notificationsRepository,
@@ -313,6 +315,7 @@ export const initializeServices = async ({
 		teamsProvider,
 		telegramProvider,
 		pushoverProvider,
+		ntfyProvider,
 		settingsService,
 		logger,
 		notificationMessageBuilder

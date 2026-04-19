@@ -913,9 +913,16 @@
 				"title": "Notification channles are used to:"
 			},
 			"form": {
-				"accessToken": {
-					"optionAccessToken": "Access token",
-					"placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
+				"auth": {
+					"title": "Authentication",
+					"description": "Configure authentication for your notification channel.",
+					"optionAuthType": "Authentication Type",
+					"optionUsername": "Username",
+					"placeholderUsername": "Enter Username",
+					"optionPassword": "Password",
+					"placeholderPassword": "Enter Password",
+					"optionAccessToken": "Access Token",
+					"placeholderAccessToken": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
 				},
 				"address": {
 					"description": "The address where notifications will be sent.",
@@ -968,6 +975,12 @@
 					"placeholderAppToken": "azGDORePK8gMaC0QOYAMyEEuzJnyUi",
 					"optionUserKey": "User key",
 					"placeholderUserKey": "uQiRzpo4DXghDmr9QzzfQu27cmVRsG"
+				},
+				"ntfy": {
+					"title": "Ntfy configuration",
+					"description": "Configure your Ntfy URL for notifications.",
+					"optionNtfyAddress": "Ntfy URL",
+					"placeholderNtfyAddress": "https://ntfy.sh/your-topic"
 				}
 			},
 			"table": {

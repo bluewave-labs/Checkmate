@@ -1,3 +1,4 @@
+import { AuthTypes } from "@/types/notification.js";
 import { z } from "zod";
 
 //****************************************
@@ -79,6 +80,32 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		address: z.string().min(1, "User key is required"),
 		accessToken: z.string().min(1, "App token is required"),
 	}),
+	// Ntfy notification
+	z
+		.object({
+			notificationName: z.string().min(1, "Notification name is required"),
+			type: z.literal("ntfy"),
+			address: z.string().min(1, "URL is required").url("Please enter a valid URL"),
+			authType: z.enum(AuthTypes).optional(),
+			username: z.union([z.string(), z.literal("")]).optional(),
+			password: z.union([z.string(), z.literal("")]).optional(),
+			accessToken: z.union([z.string(), z.literal("")]).optional(),
+		})
+		.superRefine((data, ctx) => {
+			if (data.authType === "basic") {
+				if (!data.username) {
+					ctx.addIssue({ code: "custom", message: "Username is required for Basic Auth", path: ["username"] });
+				}
+				if (!data.password) {
+					ctx.addIssue({ code: "custom", message: "Password is required for Basic Auth", path: ["password"] });
+				}
+			}
+			if (data.authType === "bearer") {
+				if (!data.accessToken) {
+					ctx.addIssue({ code: "custom", message: "Token is required for Bearer Auth", path: ["accessToken"] });
+				}
+			}
+		}),
 ]);
 
 export const testNotificationBodyValidation = createNotificationBodyValidation;

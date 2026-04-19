@@ -1,6 +1,6 @@
 import type { Pool } from "pg";
 import { INotificationsRepository } from "@/repositories/notifications/INotificationsRepository.js";
-import type { Notification, NotificationChannel } from "@/types/notification.js";
+import type { AuthType, Notification, NotificationChannel } from "@/types/notification.js";
 import { AppError } from "@/utils/AppError.js";
 
 interface NotificationRow {
@@ -13,21 +13,24 @@ interface NotificationRow {
 	phone: string | null;
 	homeserver_url: string | null;
 	room_id: string | null;
+	auth_type: AuthType;
+	username: string | null;
+	password: string | null;
 	access_token: string | null;
 	created_at: Date;
 	updated_at: Date;
 }
 
 const COLUMNS = `id, user_id, team_id, type, notification_name, address, phone,
-	homeserver_url, room_id, access_token, created_at, updated_at`;
+	homeserver_url, room_id, auth_type, username, password, access_token, created_at, updated_at`;
 
 export class TimescaleNotificationsRepository implements INotificationsRepository {
 	constructor(private pool: Pool) {}
 
 	create = async (data: Partial<Notification>): Promise<Notification> => {
 		const result = await this.pool.query<NotificationRow>(
-			`INSERT INTO notifications (user_id, team_id, type, notification_name, address, phone, homeserver_url, room_id, access_token)
-			 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+			`INSERT INTO notifications (user_id, team_id, type, notification_name, address, phone, homeserver_url, room_id, auth_type, username, password, access_token)
+			 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 			 RETURNING ${COLUMNS}`,
 			[
 				data.userId,
@@ -38,6 +41,9 @@ export class TimescaleNotificationsRepository implements INotificationsRepositor
 				data.phone ?? null,
 				data.homeserverUrl ?? null,
 				data.roomId ?? null,
+				data.authType ?? "none",
+				data.username ?? null,
+				data.password ?? null,
 				data.accessToken ?? null,
 			]
 		);
@@ -82,6 +88,9 @@ export class TimescaleNotificationsRepository implements INotificationsRepositor
 			["phone", "phone"],
 			["homeserverUrl", "homeserver_url"],
 			["roomId", "room_id"],
+			["authType", "auth_type"],
+			["username", "username"],
+			["password", "password"],
 			["accessToken", "access_token"],
 		];
 
@@ -133,6 +142,9 @@ export class TimescaleNotificationsRepository implements INotificationsRepositor
 		phone: row.phone ?? undefined,
 		homeserverUrl: row.homeserver_url ?? undefined,
 		roomId: row.room_id ?? undefined,
+		authType: row.auth_type ?? "none",
+		username: row.username ?? undefined,
+		password: row.password ?? undefined,
 		accessToken: row.access_token ?? undefined,
 		createdAt: row.created_at.toISOString(),
 		updatedAt: row.updated_at.toISOString(),
