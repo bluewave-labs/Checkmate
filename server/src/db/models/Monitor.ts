@@ -25,6 +25,8 @@ type MonitorDocumentBase = Omit<
 	notifications: Types.ObjectId[];
 	selectedDisks: string[];
 	matchMethod?: MonitorMatchMethod;
+	dnsServer?: string;
+	dnsRecordType?: string;
 };
 
 interface MonitorDocument extends MonitorDocumentBase {
@@ -329,6 +331,12 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		grpcServiceName: {
 			type: String,
 			default: "",
+		},
+		dnsServer: {
+			type: String,
+		},
+		dnsRecordType: {
+			type: String,
 		},
 		group: {
 			type: String,
