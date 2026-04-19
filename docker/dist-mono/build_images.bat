@@ -7,10 +7,10 @@ cd ../..
 
 REM Define service names and their corresponding Dockerfiles
 set services[0]=uptime_database_mongo
-set dockerfiles[0]=.\docker\prod\mongoDB.Dockerfile
+set dockerfiles[0]=.\docker\dist-mono\mongoDB.Dockerfile
 
 set services[1]=uptime_server
-set dockerfiles[1]=.\docker\prod\server.Dockerfile
+set dockerfiles[1]=.\docker\dist-mono\server.Dockerfile
 
 REM Loop through each service and build the corresponding image
 for /L %%i in (0,1) do (
