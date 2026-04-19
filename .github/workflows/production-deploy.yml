@@ -2,7 +2,7 @@ name: Demo deploy
 
 on:
   push:
-    branches: ["demo"]
+    branches: [ "demo" ]
   workflow_dispatch:
 jobs:
   docker-build-and-push-client:
@@ -84,7 +84,8 @@ jobs:
           script: |
             cd checkmate
             git pull
-            cd docker/prod
+            cd docker/unified
             docker compose down
             docker compose pull
             docker compose up -d
+            docker system prune -af

@@ -45,6 +45,7 @@ const createService = (overrides?: Record<string, unknown>) => {
 	const matrixProvider = createProvider();
 	const teamsProvider = createProvider();
 	const telegramProvider = createProvider();
+	const pushoverProvider = createProvider();
 	const settingsService = createSettingsService();
 	const notificationMessageBuilder = createMessageBuilder();
 
@@ -60,6 +61,7 @@ const createService = (overrides?: Record<string, unknown>) => {
 		matrixProvider,
 		teamsProvider,
 		telegramProvider,
+		pushoverProvider,
 		settingsService,
 		notificationMessageBuilder,
 		...overrides,
@@ -76,6 +78,7 @@ const createService = (overrides?: Record<string, unknown>) => {
 		defaults.matrixProvider as any,
 		defaults.teamsProvider as any,
 		defaults.telegramProvider as any,
+		defaults.pushoverProvider as any,
 		defaults.settingsService as any,
 		defaults.logger as any,
 		defaults.notificationMessageBuilder as any

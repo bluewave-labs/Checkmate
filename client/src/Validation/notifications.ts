@@ -56,6 +56,12 @@ const telegramSchema = baseSchema.extend({
 	accessToken: z.string().min(1, "Bot token is required"),
 });
 
+const pushoverSchema = baseSchema.extend({
+	type: z.literal("pushover"),
+	address: z.string().min(1, "User key is required"),
+	accessToken: z.string().min(1, "App token is required"),
+});
+
 export const notificationSchema = z.discriminatedUnion("type", [
 	emailSchema,
 	slackSchema,
@@ -65,6 +71,7 @@ export const notificationSchema = z.discriminatedUnion("type", [
 	matrixSchema,
 	teamsSchema,
 	telegramSchema,
+	pushoverSchema,
 ]);
 
 export type NotificationFormData = z.infer<typeof notificationSchema>;

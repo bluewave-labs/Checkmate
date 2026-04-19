@@ -1,5 +1,5 @@
 import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "../../src/repositories/monitors/IMonitorsRepository.ts";
-import type { Monitor, MonitorsSummary } from "../../src/types/index.ts";
+import type { Monitor, MonitorsSummary, CheckSnapshot } from "../../src/types/index.ts";
 
 export class InMemoryMonitorsRepository implements IMonitorsRepository {
 	private monitors: Monitor[] = [];
@@ -49,6 +49,37 @@ export class InMemoryMonitorsRepository implements IMonitorsRepository {
 		return { ...updated };
 	}
 
+	async updateStatusWindowAndChecks(
+		monitorId: string,
+		teamId: string,
+		status: boolean,
+		checkSnapshot: CheckSnapshot,
+		windowSize: number,
+		maxRecentChecks: number,
+		statusPatch?: Partial<Monitor>
+	): Promise<Monitor> {
+		const index = this.monitors.findIndex((m) => m.id === monitorId && m.teamId === teamId);
+		if (index === -1) {
+			throw new Error(`Monitor ${monitorId} not found`);
+		}
+		const monitor = this.monitors[index];
+		monitor.statusWindow = monitor.statusWindow || [];
+		monitor.statusWindow.push(status);
+		while (monitor.statusWindow.length > windowSize) {
+			monitor.statusWindow.shift();
+		}
+		monitor.recentChecks = monitor.recentChecks || [];
+		monitor.recentChecks.push(checkSnapshot);
+		while (monitor.recentChecks.length > maxRecentChecks) {
+			monitor.recentChecks.shift();
+		}
+		if (statusPatch) {
+			Object.assign(monitor, statusPatch);
+		}
+		this.monitors[index] = monitor;
+		return { ...monitor };
+	}
+
 	async togglePauseById(monitorId: string, teamId: string): Promise<Monitor> {
 		const monitor = await this.findById(monitorId, teamId);
 		const newStatus = monitor.status === "paused" ? "up" : "paused";
@@ -80,6 +111,10 @@ export class InMemoryMonitorsRepository implements IMonitorsRepository {
 
 	async findGroupsByTeamId(_teamId: string): Promise<string[]> {
 		throw new Error("Not implemented");
+	}
+
+	async findByGroupAndTeamId(group: string, teamId: string): Promise<Monitor[]> {
+		return this.monitors.filter((m) => m.teamId === teamId && m.group === group).map((m) => ({ ...m }));
 	}
 
 	async removeNotificationFromMonitors(_notificationId: string): Promise<void> {

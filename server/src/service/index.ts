@@ -30,6 +30,7 @@ export * from "@/service/infrastructure/notificationProviders/slack.js";
 export * from "@/service/infrastructure/notificationProviders/teams.js";
 export * from "@/service/infrastructure/notificationProviders/webhook.js";
 export * from "@/service/infrastructure/notificationProviders/telegram.js";
+export * from "@/service/infrastructure/notificationProviders/pushover.js";
 
 // System services
 export * from "@/service/system/settingsService.js";

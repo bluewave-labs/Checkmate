@@ -1,7 +1,7 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import { StatusService } from "../../../src/service/infrastructure/statusService.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import type { Monitor, MonitorStatusResponse, Check, HardwareStatusPayload } from "../../../src/types/index.ts";
+import type { Monitor, MonitorStatus, MonitorStatusResponse, Check, HardwareStatusPayload } from "../../../src/types/index.ts";
 import type { IMonitorsRepository, IMonitorStatsRepository, IChecksRepository } from "../../../src/repositories/index.ts";
 import type { IBufferService } from "../../../src/service/infrastructure/bufferService.ts";
 
@@ -11,11 +11,49 @@ const createBuffer = (): jest.Mocked<Pick<IBufferService, "addToBuffer">> => ({
 	addToBuffer: jest.fn(),
 });
 
-const createMonitorsRepo = () =>
-	({
-		findById: jest.fn(),
+const createMonitorsRepo = () => {
+	const findById = jest.fn();
+	const updateStatusWindowAndChecks = jest
+		.fn()
+		.mockImplementation(
+			(
+				_id: unknown,
+				_tid: unknown,
+				status: boolean,
+				checkSnapshot: unknown,
+				windowSize: number,
+				maxRecentChecks: number,
+				statusPatch?: Partial<Monitor>
+			) => {
+				// Grab the monitor that findById was configured to resolve with
+				const monitor = findById.mock.results.at(-1)?.value;
+				if (monitor && typeof monitor.then === "function") {
+					return monitor.then((m: any) => {
+						m.statusWindow = m.statusWindow || [];
+						m.statusWindow.push(status);
+						while (m.statusWindow.length > windowSize) {
+							m.statusWindow.shift();
+						}
+						m.recentChecks = m.recentChecks || [];
+						m.recentChecks.push(checkSnapshot);
+						while (m.recentChecks.length > maxRecentChecks) {
+							m.recentChecks.shift();
+						}
+						if (statusPatch) {
+							Object.assign(m, statusPatch);
+						}
+						return { ...m };
+					});
+				}
+				return Promise.reject(new Error("findById not mocked"));
+			}
+		);
+	return {
+		findById,
 		updateById: jest.fn(),
-	}) as unknown as jest.Mocked<IMonitorsRepository>;
+		updateStatusWindowAndChecks,
+	} as unknown as jest.Mocked<IMonitorsRepository>;
+};
 
 const createMonitorStatsRepo = () =>
 	({
@@ -126,144 +164,67 @@ describe("StatusService", () => {
 	// ── updateRunningStats ───────────────────────────────────────────────────
 
 	describe("updateRunningStats", () => {
-		it("creates new stats when none exist", async () => {
+		// The service now delegates the entire running-stats computation to the repository's
+		// atomic `updateByMonitorId`, so the service-level tests only verify forwarding and error
+		// handling. The math (running average, uptimePercentage, timeOfLastFailure state machine)
+		// is a repository-level concern and is exercised by the repository tests.
+
+		it("forwards a successful check to updateByMonitorId", async () => {
 			const { service, monitorStatsRepository } = createService();
-			(monitorStatsRepository.findByMonitorId as jest.Mock).mockRejectedValue(new Error("not found"));
-			(monitorStatsRepository.create as jest.Mock).mockResolvedValue({});
+			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockResolvedValue({});
 
 			const result = await service.updateRunningStats(makeMonitor(), makeStatusResponse({ responseTime: 50 }));
 
 			expect(result).toBe(true);
-			expect(monitorStatsRepository.create).toHaveBeenCalledWith(
+			expect(monitorStatsRepository.updateByMonitorId).toHaveBeenCalledWith(
+				"mon-1",
 				expect.objectContaining({
-					monitorId: "mon-1",
-					totalChecks: 1,
-					totalUpChecks: 1,
-					avgResponseTime: 50,
-					lastResponseTime: 50,
+					status: true,
+					responseTime: 50,
+					now: expect.any(Number),
 				})
 			);
 		});
 
-		it("updates existing stats for a successful check", async () => {
+		it("forwards a failed check to updateByMonitorId", async () => {
 			const { service, monitorStatsRepository } = createService();
-			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(makeExistingStats());
 			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockResolvedValue({});
 
-			const result = await service.updateRunningStats(makeMonitor(), makeStatusResponse({ responseTime: 110 }));
+			const result = await service.updateRunningStats(makeMonitor(), makeStatusResponse({ status: false, responseTime: 100 }));
 
 			expect(result).toBe(true);
-			expect(monitorStatsRepository.updateByMonitorId).toHaveBeenCalledWith(
-				"mon-1",
-				expect.objectContaining({
-					totalChecks: 11,
-					totalUpChecks: 10,
-					totalDownChecks: 1,
-				})
-			);
+			expect(monitorStatsRepository.updateByMonitorId).toHaveBeenCalledWith("mon-1", expect.objectContaining({ status: false, responseTime: 100 }));
 		});
 
-		it("increments totalDownChecks and resets timeOfLastFailure on failure", async () => {
+		it("passes 0 when responseTime is undefined", async () => {
 			const { service, monitorStatsRepository } = createService();
-			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(makeExistingStats());
-			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockResolvedValue({});
-
-			await service.updateRunningStats(makeMonitor(), makeStatusResponse({ status: false, responseTime: 100 }));
-
-			expect(monitorStatsRepository.updateByMonitorId).toHaveBeenCalledWith(
-				"mon-1",
-				expect.objectContaining({
-					totalDownChecks: 2,
-					timeOfLastFailure: 0,
-				})
-			);
-		});
-
-		it("sets timeOfLastFailure when status is up and it was previously 0", async () => {
-			const { service, monitorStatsRepository } = createService();
-			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(makeExistingStats({ timeOfLastFailure: 0 }));
-			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockResolvedValue({});
-
-			await service.updateRunningStats(makeMonitor(), makeStatusResponse({ status: true }));
-
-			expect(monitorStatsRepository.updateByMonitorId).toHaveBeenCalledWith(
-				"mon-1",
-				expect.objectContaining({
-					timeOfLastFailure: expect.any(Number),
-				})
-			);
-			const call = (monitorStatsRepository.updateByMonitorId as jest.Mock).mock.calls[0] as [string, Record<string, unknown>];
-			expect(call[1].timeOfLastFailure).toBeGreaterThan(0);
-		});
-
-		it("updates maxResponseTime when new response is higher", async () => {
-			const { service, monitorStatsRepository } = createService();
-			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(makeExistingStats({ maxResponseTime: 200 }));
-			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockResolvedValue({});
-
-			await service.updateRunningStats(makeMonitor(), makeStatusResponse({ responseTime: 300 }));
-
-			expect(monitorStatsRepository.updateByMonitorId).toHaveBeenCalledWith("mon-1", expect.objectContaining({ maxResponseTime: 300 }));
-		});
-
-		it("does not update maxResponseTime when new response is lower", async () => {
-			const { service, monitorStatsRepository } = createService();
-			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(makeExistingStats({ maxResponseTime: 200 }));
-			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockResolvedValue({});
-
-			await service.updateRunningStats(makeMonitor(), makeStatusResponse({ responseTime: 50 }));
-
-			expect(monitorStatsRepository.updateByMonitorId).toHaveBeenCalledWith("mon-1", expect.objectContaining({ maxResponseTime: 200 }));
-		});
-
-		it("initializes avgResponseTime when previous avg was 0", async () => {
-			const { service, monitorStatsRepository } = createService();
-			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(makeExistingStats({ avgResponseTime: 0 }));
-			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockResolvedValue({});
-
-			await service.updateRunningStats(makeMonitor(), makeStatusResponse({ responseTime: 75 }));
-
-			expect(monitorStatsRepository.updateByMonitorId).toHaveBeenCalledWith("mon-1", expect.objectContaining({ avgResponseTime: 75 }));
-		});
-
-		it("computes running average when avgResponseTime is nonzero", async () => {
-			const { service, monitorStatsRepository } = createService();
-			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(makeExistingStats({ avgResponseTime: 100, totalChecks: 10 }));
-			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockResolvedValue({});
-
-			await service.updateRunningStats(makeMonitor(), makeStatusResponse({ responseTime: 210 }));
-
-			const call = (monitorStatsRepository.updateByMonitorId as jest.Mock).mock.calls[0] as [string, Record<string, unknown>];
-			// (100 * 10 + 210) / 11 = 110
-			expect(call[1].avgResponseTime).toBe(110);
-		});
-
-		it("leaves avgResponseTime unchanged when responseTime is undefined", async () => {
-			const { service, monitorStatsRepository } = createService();
-			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(makeExistingStats({ avgResponseTime: 100 }));
 			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockResolvedValue({});
 
 			await service.updateRunningStats(makeMonitor(), makeStatusResponse({ responseTime: undefined }));
 
-			expect(monitorStatsRepository.updateByMonitorId).toHaveBeenCalledWith("mon-1", expect.objectContaining({ avgResponseTime: 100 }));
+			expect(monitorStatsRepository.updateByMonitorId).toHaveBeenCalledWith("mon-1", expect.objectContaining({ responseTime: 0 }));
 		});
 
-		it("handles responseTime of 0 (falsy but defined)", async () => {
+		it("forwards responseTime of 0 as 0 (falsy but defined)", async () => {
 			const { service, monitorStatsRepository } = createService();
-			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(makeExistingStats({ avgResponseTime: 100, maxResponseTime: 200 }));
 			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockResolvedValue({});
 
 			await service.updateRunningStats(makeMonitor(), makeStatusResponse({ responseTime: 0 }));
 
-			const call = (monitorStatsRepository.updateByMonitorId as jest.Mock).mock.calls[0] as [string, Record<string, unknown>];
-			expect(call[1].lastResponseTime).toBe(0);
-			// responseTime 0 is falsy, so maxResponseTime stays unchanged
-			expect(call[1].maxResponseTime).toBe(200);
+			expect(monitorStatsRepository.updateByMonitorId).toHaveBeenCalledWith("mon-1", expect.objectContaining({ responseTime: 0 }));
 		});
 
-		it("returns false and logs error when an exception is thrown", async () => {
+		it("coerces a non-true status to false (e.g. undefined)", async () => {
+			const { service, monitorStatsRepository } = createService();
+			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockResolvedValue({});
+
+			await service.updateRunningStats(makeMonitor(), makeStatusResponse({ status: undefined as unknown as boolean }));
+
+			expect(monitorStatsRepository.updateByMonitorId).toHaveBeenCalledWith("mon-1", expect.objectContaining({ status: false }));
+		});
+
+		it("returns false and logs error when updateByMonitorId throws", async () => {
 			const { service, logger, monitorStatsRepository } = createService();
-			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(makeExistingStats());
 			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockRejectedValue(new Error("db write failed"));
 
 			const result = await service.updateRunningStats(makeMonitor(), makeStatusResponse());
@@ -280,24 +241,12 @@ describe("StatusService", () => {
 
 		it("logs error with 'Unknown error' for non-Error exceptions", async () => {
 			const { service, logger, monitorStatsRepository } = createService();
-			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(makeExistingStats());
 			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockRejectedValue("string error");
 
 			const result = await service.updateRunningStats(makeMonitor(), makeStatusResponse());
 
 			expect(result).toBe(false);
 			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error", stack: undefined }));
-		});
-
-		it("creates new stats when findByMonitorId resolves to null", async () => {
-			const { service, monitorStatsRepository } = createService();
-			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(null);
-			(monitorStatsRepository.create as jest.Mock).mockResolvedValue({});
-
-			const result = await service.updateRunningStats(makeMonitor(), makeStatusResponse({ responseTime: 50, status: true }));
-
-			expect(result).toBe(true);
-			expect(monitorStatsRepository.create).toHaveBeenCalled();
 		});
 	});
 
@@ -322,11 +271,18 @@ describe("StatusService", () => {
 			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
 			(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
 
-			await service.updateMonitorStatus(makeStatusResponse({ status: false }), makeCheck());
+			await service.updateMonitorStatus(makeStatusResponse({ status: false }), makeCheck({ status: false }));
 
-			// Window should have shifted: [true, true, true, true, false]
-			expect(monitor.statusWindow).toHaveLength(5);
-			expect(monitor.statusWindow[4]).toBe(false);
+			// Atomic push should have been called with the correct status and window size
+			expect(monitorsRepository.updateStatusWindowAndChecks).toHaveBeenCalledWith(
+				"mon-1",
+				"team-1",
+				false,
+				expect.any(Object),
+				5,
+				25,
+				expect.objectContaining({ status: expect.any(String) })
+			);
 		});
 
 		it("pushes check snapshot to recentChecks and trims to 25", async () => {
@@ -395,6 +351,26 @@ describe("StatusService", () => {
 			expect(result.monitor.status).toBe("up");
 		});
 
+		it("keeps status 'up' on a sub-threshold failed check (regression: #3438)", async () => {
+			// Monitor is up, window has one failure already, incoming check fails.
+			// 2/5 = 40% < 80% threshold — must NOT silently write status='down',
+			// otherwise the next successful check fires a spurious 'Recovered' notification.
+			const monitor = makeMonitor({
+				statusWindow: [true, true, true, false],
+				statusWindowSize: 5,
+				statusWindowThreshold: 80,
+				status: "up",
+			});
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
+
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: false }), makeCheck({ status: false }));
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.monitor.status).toBe("up");
+		});
+
 		it("does not change status when already down and still above threshold", async () => {
 			const monitor = makeMonitor({
 				statusWindow: [false, false, false, false],
@@ -448,6 +424,118 @@ describe("StatusService", () => {
 			await expect(service.updateMonitorStatus(makeStatusResponse(), makeCheck())).rejects.toThrow("Unknown error");
 		});
 
+		it("keeps status 'down' on a single successful check that leaves failure rate at threshold (regression: #3438 mirror)", async () => {
+			// Monitor is down, window is [false,false,false,false]. A single successful check makes it
+			// [false,false,false,false,true] → 4/5 = 80%, still at threshold, must NOT silently recover.
+			// Pre-fix, newStatus was seeded "up" from the raw check and fell through to be persisted,
+			// causing the next failing check to fire a spurious second 'Down' notification.
+			const monitor = makeMonitor({
+				statusWindow: [false, false, false, false],
+				statusWindowSize: 5,
+				statusWindowThreshold: 80,
+				status: "down",
+			});
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
+
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: true }), makeCheck({ status: true }));
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.monitor.status).toBe("down");
+		});
+
+		it("triggers 'down' transition exactly at the failure threshold boundary", async () => {
+			// 4/5 = 80%, threshold is 80, comparison is >= so this must trip.
+			const monitor = makeMonitor({
+				statusWindow: [false, false, false, true],
+				statusWindowSize: 5,
+				statusWindowThreshold: 80,
+				status: "up",
+			});
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
+
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: false }), makeCheck({ status: false }));
+
+			expect(result.statusChanged).toBe(true);
+			expect(result.monitor.status).toBe("down");
+		});
+
+		it("resumes from 'initializing' to 'up' on a passing check with a full window (regression: pause/resume)", async () => {
+			// When a monitor is paused and resumed, togglePauseById sets status='initializing'
+			// but does NOT reset statusWindow. On the next check the window is already full,
+			// so the warmup early-return is skipped. Pre-fix, newStatus was seeded from
+			// monitor.status ('initializing') and computeReachability never transitioned
+			// out of 'initializing' on a passing window, so the monitor was stuck forever.
+			const monitor = makeMonitor({
+				statusWindow: [true, true, true, true, true],
+				statusWindowSize: 5,
+				statusWindowThreshold: 80,
+				status: "initializing",
+			});
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
+
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: true }), makeCheck({ status: true }));
+
+			expect(result.monitor.status).toBe("up");
+		});
+
+		it("resumes from 'initializing' to 'down' on a failing check with a full window (regression: pause/resume mirror)", async () => {
+			// Mirror of the pause/resume regression with a failing check: should flip to 'down'
+			// immediately rather than stay stuck in 'initializing'.
+			const monitor = makeMonitor({
+				statusWindow: [false, false, false, false, false],
+				statusWindowSize: 5,
+				statusWindowThreshold: 80,
+				status: "initializing",
+			});
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
+
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: false }), makeCheck({ status: false }));
+
+			expect(result.monitor.status).toBe("down");
+		});
+
+		it("during warmup (window not full) the stored status tracks the raw check", async () => {
+			// Early-return branch: monitor.status is written to reflect the current check and
+			// no status-changed notification is emitted. This is the service's documented warmup behavior.
+			const monitor = makeMonitor({ statusWindow: [true, true], statusWindowSize: 5, status: "up" });
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
+
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: false }), makeCheck({ status: false }));
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.monitor.status).toBe("down");
+			expect(monitor.statusWindow).toEqual([true, true, false]);
+		});
+
+		it("logs a warning but still succeeds when running-stats update fails mid-flight", async () => {
+			const monitor = makeMonitor({ statusWindow: [true, true, true, true], statusWindowSize: 5, status: "up" });
+			const { service, logger, monitorsRepository, monitorStatsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
+			(monitorStatsRepository.updateByMonitorId as jest.Mock).mockRejectedValue(new Error("stats db down"));
+
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: true }), makeCheck());
+
+			expect(result.monitor.status).toBe("up");
+			expect(logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({
+					service: "StatusService",
+					method: "updateMonitorStatus",
+					message: expect.stringContaining("Stats update failed"),
+				})
+			);
+		});
+
 		it("returns code and timestamp in result", async () => {
 			const monitor = makeMonitor({ statusWindow: [true, true, true, true], statusWindowSize: 5 });
 			const { service, monitorsRepository } = createService();
@@ -499,7 +587,8 @@ describe("StatusService", () => {
 
 				expect(result.thresholdBreaches?.cpu).toBe(true);
 				expect(result.thresholdBreaches?.memory).toBe(false);
-				expect(monitor.cpuAlertCounter).toBe(0);
+				const patch = (monitorsRepository.updateStatusWindowAndChecks as jest.Mock).mock.calls.at(-1)?.[6];
+				expect(patch.cpuAlertCounter).toBe(0);
 				expect(result.statusChanged).toBe(true);
 				expect(result.monitor.status).toBe("breached");
 			});
@@ -514,7 +603,8 @@ describe("StatusService", () => {
 				const result = await service.updateMonitorStatus(response, makeCheck());
 
 				expect(result.thresholdBreaches?.memory).toBe(true);
-				expect(monitor.memoryAlertCounter).toBe(0);
+				const patch = (monitorsRepository.updateStatusWindowAndChecks as jest.Mock).mock.calls.at(-1)?.[6];
+				expect(patch.memoryAlertCounter).toBe(0);
 				expect(result.monitor.status).toBe("breached");
 			});
 
@@ -530,7 +620,8 @@ describe("StatusService", () => {
 				const result = await service.updateMonitorStatus(response, makeCheck());
 
 				expect(result.thresholdBreaches?.disk).toBe(true);
-				expect(monitor.diskAlertCounter).toBe(0);
+				const patch = (monitorsRepository.updateStatusWindowAndChecks as jest.Mock).mock.calls.at(-1)?.[6];
+				expect(patch.diskAlertCounter).toBe(0);
 				expect(result.monitor.status).toBe("breached");
 			});
 
@@ -546,7 +637,8 @@ describe("StatusService", () => {
 				const result = await service.updateMonitorStatus(response, makeCheck());
 
 				expect(result.thresholdBreaches?.temp).toBe(true);
-				expect(monitor.tempAlertCounter).toBe(0);
+				const patch = (monitorsRepository.updateStatusWindowAndChecks as jest.Mock).mock.calls.at(-1)?.[6];
+				expect(patch.tempAlertCounter).toBe(0);
 				expect(result.monitor.status).toBe("breached");
 			});
 
@@ -566,10 +658,11 @@ describe("StatusService", () => {
 				} as any);
 				await service.updateMonitorStatus(response, makeCheck());
 
-				expect(monitor.cpuAlertCounter).toBe(5);
-				expect(monitor.memoryAlertCounter).toBe(5);
-				expect(monitor.diskAlertCounter).toBe(5);
-				expect(monitor.tempAlertCounter).toBe(5);
+				const patch = (monitorsRepository.updateStatusWindowAndChecks as jest.Mock).mock.calls.at(-1)?.[6];
+				expect(patch.cpuAlertCounter).toBe(5);
+				expect(patch.memoryAlertCounter).toBe(5);
+				expect(patch.diskAlertCounter).toBe(5);
+				expect(patch.tempAlertCounter).toBe(5);
 			});
 
 			it("stays breached without statusChanged when already breached and counter still at 0", async () => {
@@ -787,6 +880,47 @@ describe("StatusService", () => {
 				expect(result.thresholdBreaches?.disk).toBe(false);
 			});
 
+			it("decrements breach counter without changing status while counter > 0", async () => {
+				// Counter at 3 → decrements to 2, status must stay 'up' and statusChanged must be false.
+				// Only counter→0 may flip to 'breached'.
+				const monitor = makeHardwareMonitor({ cpuAlertCounter: 3 });
+				const { service, monitorsRepository } = createService();
+				(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+				(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
+
+				const response = makeHardwareResponse({ data: { cpu: { usage_percent: 0.9 }, memory: { usage_percent: 0.1 }, disk: [], host: {} } } as any);
+				const result = await service.updateMonitorStatus(response, makeCheck());
+
+				const patch = (monitorsRepository.updateStatusWindowAndChecks as jest.Mock).mock.calls.at(-1)?.[6];
+				expect(patch.cpuAlertCounter).toBe(2);
+				expect(result.thresholdBreaches?.cpu).toBe(true);
+				expect(result.statusChanged).toBe(false);
+				expect(result.monitor.status).toBe("up");
+			});
+
+			it("transitions from 'breached' to 'down' when the reachability threshold trips", async () => {
+				// A hardware monitor currently in 'breached' state starts failing its reachability
+				// checks enough to cross the statusWindow threshold — 'down' must take precedence.
+				const monitor = makeHardwareMonitor({
+					status: "breached",
+					statusWindow: [false, false, false, false],
+					statusWindowSize: 5,
+					statusWindowThreshold: 80,
+				});
+				const { service, monitorsRepository } = createService();
+				(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+				(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
+
+				const response = makeHardwareResponse({
+					status: false,
+					data: { cpu: { usage_percent: 0.1 }, memory: { usage_percent: 0.1 }, disk: [], host: {} },
+				} as any);
+				const result = await service.updateMonitorStatus(response, makeCheck({ status: false }));
+
+				expect(result.statusChanged).toBe(true);
+				expect(result.monitor.status).toBe("down");
+			});
+
 			it("counters do not go below 0", async () => {
 				const monitor = makeHardwareMonitor({
 					cpuAlertCounter: 0,
@@ -808,6 +942,303 @@ describe("StatusService", () => {
 				expect(monitor.diskAlertCounter).toBe(0);
 				expect(monitor.tempAlertCounter).toBe(0);
 			});
+		});
+	});
+
+	// ── Pure helpers ─────────────────────────────────────────────────────────
+	// These test the private state-machine helpers directly, without repository
+	// or logger mocks. The helpers are accessed via `service as any` because
+	// they're private implementation details; exposing them publicly would
+	// widen the API surface just for testability.
+
+	describe("computeReachability (pure)", () => {
+		const reach = (currentStatus: MonitorStatus, window: boolean[], threshold = 80) => {
+			const { service } = createService();
+			return (service as any).computeReachability(currentStatus, window, threshold) as {
+				nextStatus: "up" | "down";
+				transitioned: boolean;
+			};
+		};
+
+		// ── Monitor is "up" ──
+		it("up + window below threshold → no transition", () => {
+			expect(reach("up", [true, true, true, true, true])).toEqual({ nextStatus: "up", transitioned: false });
+		});
+
+		it("up + window exactly at threshold → transitions to down (>= boundary)", () => {
+			// 4/5 = 80% and threshold is 80, >= so this must trip
+			expect(reach("up", [false, false, false, false, true])).toEqual({ nextStatus: "down", transitioned: true });
+		});
+
+		it("up + window over threshold → transitions to down", () => {
+			expect(reach("up", [false, false, false, false, false])).toEqual({ nextStatus: "down", transitioned: true });
+		});
+
+		// ── Monitor is "down" ──
+		it("down + window below threshold → transitions to up (recovery)", () => {
+			// 0/5 failures, fully healthy window
+			expect(reach("down", [true, true, true, true, true])).toEqual({ nextStatus: "up", transitioned: true });
+		});
+
+		it("down + window exactly at threshold → no transition (strict < for recovery)", () => {
+			// 4/5 = 80%; recovery requires failureRate < threshold, not <=, so stays down
+			const result = reach("down", [false, false, false, false, true]);
+			expect(result.transitioned).toBe(false);
+			// Orchestrator ignores nextStatus when !transitioned, so the returned value
+			// is irrelevant to observable behavior; documenting here for clarity.
+		});
+
+		it("down + window over threshold → no transition", () => {
+			const result = reach("down", [false, false, false, false, false]);
+			expect(result.transitioned).toBe(false);
+		});
+
+		// ── Monitor is "breached" (hardware state, passes through reachability) ──
+		it("breached + healthy window → no transition (reachability does not touch breached)", () => {
+			// Critical: reachability must NOT claim to recover a breached monitor. That
+			// transition is owned by the hardware block (all thresholds back to normal).
+			const result = reach("breached", [true, true, true, true, true]);
+			expect(result.transitioned).toBe(false);
+		});
+
+		it("breached + window at threshold → transitions to down (down beats breached)", () => {
+			// A breached monitor that also loses reachability must flip to "down".
+			// Current status is "breached" which satisfies `!== "down"`, so the branch fires.
+			expect(reach("breached", [false, false, false, false, true])).toEqual({ nextStatus: "down", transitioned: true });
+		});
+
+		it("breached + window over threshold → transitions to down", () => {
+			expect(reach("breached", [false, false, false, false, false])).toEqual({ nextStatus: "down", transitioned: true });
+		});
+
+		// ── Threshold variations ──
+		it("non-default threshold (50%) trips at 3/5 failures", () => {
+			expect(reach("up", [false, false, false, true, true], 50)).toEqual({ nextStatus: "down", transitioned: true });
+		});
+
+		it("non-default threshold (50%) does not trip at 2/5 failures", () => {
+			expect(reach("up", [false, false, true, true, true], 50).transitioned).toBe(false);
+		});
+	});
+
+	describe("computeHardwareStatus (pure)", () => {
+		type Params = {
+			currentStatus: MonitorStatus;
+			reachabilityDown: boolean;
+			metrics: any;
+			thresholds: { cpu: number; memory: number; disk: number; temp: number };
+			counters: { cpu: number; memory: number; disk: number; temp: number };
+		};
+
+		const healthyMetrics = () => ({
+			cpu: { usage_percent: 0.1, temperature: [30] },
+			memory: { usage_percent: 0.1 },
+			disk: [{ usage_percent: 0.1 }],
+			host: {},
+		});
+
+		const defaults = (): Params => ({
+			currentStatus: "up",
+			reachabilityDown: false,
+			metrics: healthyMetrics(),
+			thresholds: { cpu: 80, memory: 80, disk: 80, temp: 80 },
+			counters: { cpu: 5, memory: 5, disk: 5, temp: 5 },
+		});
+
+		const compute = (overrides: Partial<Params> = {}) => {
+			const { service } = createService();
+			return (service as any).computeHardwareStatus({ ...defaults(), ...overrides });
+		};
+
+		// ── Breach detection ──
+		it("detects CPU breach when usage > threshold", () => {
+			const r = compute({ metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.9, temperature: [30] } } });
+			expect(r.breaches.cpu).toBe(true);
+		});
+
+		it("does not flag CPU at exactly the threshold (strict >, not >=)", () => {
+			const r = compute({ metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.8, temperature: [30] } } });
+			expect(r.breaches.cpu).toBe(false);
+		});
+
+		it("does not flag CPU when usage_percent is missing", () => {
+			const r = compute({ metrics: { ...healthyMetrics(), cpu: { temperature: [30] } } });
+			expect(r.breaches.cpu).toBe(false);
+		});
+
+		it("detects memory breach", () => {
+			const r = compute({ metrics: { ...healthyMetrics(), memory: { usage_percent: 0.9 } } });
+			expect(r.breaches.memory).toBe(true);
+		});
+
+		it("detects disk breach when any disk exceeds threshold", () => {
+			const r = compute({ metrics: { ...healthyMetrics(), disk: [{ usage_percent: 0.1 }, { usage_percent: 0.95 }] } });
+			expect(r.breaches.disk).toBe(true);
+		});
+
+		it("skips null disk entries", () => {
+			const r = compute({ metrics: { ...healthyMetrics(), disk: [null, { usage_percent: 0.1 }] } });
+			expect(r.breaches.disk).toBe(false);
+		});
+
+		it("skips disk entries missing usage_percent", () => {
+			const r = compute({ metrics: { ...healthyMetrics(), disk: [{ device: "/dev/sda" }] } });
+			expect(r.breaches.disk).toBe(false);
+		});
+
+		it("detects temperature breach when any core exceeds threshold", () => {
+			const r = compute({ metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.1, temperature: [30, 50, 90] } } });
+			expect(r.breaches.temp).toBe(true);
+		});
+
+		it("empty temperature array → no temp breach", () => {
+			const r = compute({ metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.1, temperature: [] } } });
+			expect(r.breaches.temp).toBe(false);
+		});
+
+		it("missing temperature → no temp breach", () => {
+			const r = compute({ metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.1 } } });
+			expect(r.breaches.temp).toBe(false);
+		});
+
+		it("detects multiple simultaneous breaches", () => {
+			const r = compute({
+				metrics: {
+					cpu: { usage_percent: 0.9, temperature: [90] },
+					memory: { usage_percent: 0.9 },
+					disk: [{ usage_percent: 0.95 }],
+					host: {},
+				},
+			});
+			expect(r.breaches).toEqual({ cpu: true, memory: true, disk: true, temp: true });
+		});
+
+		// ── Counter mechanics ──
+		it("decrements counter on breach", () => {
+			const r = compute({
+				metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.9, temperature: [30] } },
+				counters: { cpu: 3, memory: 5, disk: 5, temp: 5 },
+			});
+			expect(r.nextCounters.cpu).toBe(2);
+		});
+
+		it("resets counter to start value when metric returns to normal", () => {
+			const r = compute({ counters: { cpu: 2, memory: 2, disk: 2, temp: 2 } });
+			expect(r.nextCounters).toEqual({ cpu: 5, memory: 5, disk: 5, temp: 5 });
+		});
+
+		it("counter floors at zero (does not go negative)", () => {
+			const r = compute({
+				metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.9, temperature: [30] } },
+				counters: { cpu: 0, memory: 5, disk: 5, temp: 5 },
+			});
+			expect(r.nextCounters.cpu).toBe(0);
+		});
+
+		it("counters are independent per metric", () => {
+			// CPU breaching, memory normal: CPU decrements, memory resets.
+			const r = compute({
+				metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.9, temperature: [30] } },
+				counters: { cpu: 3, memory: 2, disk: 2, temp: 2 },
+			});
+			expect(r.nextCounters).toEqual({ cpu: 2, memory: 5, disk: 5, temp: 5 });
+		});
+
+		// ── Status transitions ──
+		it("up → breached when counter hits zero on breach", () => {
+			const r = compute({
+				currentStatus: "up",
+				metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.9, temperature: [30] } },
+				counters: { cpu: 1, memory: 5, disk: 5, temp: 5 },
+			});
+			expect(r.nextStatus).toBe("breached");
+			expect(r.transitioned).toBe(true);
+		});
+
+		it("up → up (no transition) while counter is still decrementing", () => {
+			const r = compute({
+				currentStatus: "up",
+				metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.9, temperature: [30] } },
+				counters: { cpu: 3, memory: 5, disk: 5, temp: 5 },
+			});
+			expect(r.nextStatus).toBe("up");
+			expect(r.transitioned).toBe(false);
+		});
+
+		it("breached → breached (no transition) when already breached and still breaching", () => {
+			const r = compute({
+				currentStatus: "breached",
+				metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.9, temperature: [30] } },
+				counters: { cpu: 0, memory: 5, disk: 5, temp: 5 },
+			});
+			expect(r.transitioned).toBe(false);
+			// nextStatus stays at currentStatus ("breached") since no transition fires
+			expect(r.nextStatus).toBe("breached");
+		});
+
+		it("breached → up when all metrics return to normal", () => {
+			const r = compute({ currentStatus: "breached" });
+			expect(r.nextStatus).toBe("up");
+			expect(r.transitioned).toBe(true);
+		});
+
+		it("any one counter at zero is enough to trigger initial breach", () => {
+			// memory counter at 1, memory currently breaching, cpu fine
+			const r = compute({
+				currentStatus: "up",
+				metrics: { ...healthyMetrics(), memory: { usage_percent: 0.9 } },
+				counters: { cpu: 5, memory: 1, disk: 5, temp: 5 },
+			});
+			expect(r.nextStatus).toBe("breached");
+			expect(r.transitioned).toBe(true);
+		});
+
+		// ── Reachability-down gate ──
+		it("reachabilityDown blocks status transition even when counter hits zero", () => {
+			const r = compute({
+				currentStatus: "up",
+				reachabilityDown: true,
+				metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.9, temperature: [30] } },
+				counters: { cpu: 1, memory: 5, disk: 5, temp: 5 },
+			});
+			expect(r.transitioned).toBe(false);
+			expect(r.nextStatus).toBe("up"); // stays at currentStatus
+		});
+
+		it("reachabilityDown still updates counters (the gate is only around status, not metrics math)", () => {
+			const r = compute({
+				reachabilityDown: true,
+				metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.9, temperature: [30] } },
+				counters: { cpu: 3, memory: 5, disk: 5, temp: 5 },
+			});
+			expect(r.nextCounters.cpu).toBe(2);
+			expect(r.breaches.cpu).toBe(true);
+		});
+
+		it("reachabilityDown blocks recovery from breached", () => {
+			// Even with all metrics normal, if reachability says down, we can't recover.
+			const r = compute({ currentStatus: "breached", reachabilityDown: true });
+			expect(r.transitioned).toBe(false);
+			expect(r.nextStatus).toBe("breached");
+		});
+
+		// ── Percentage vs raw-degree thresholds ──
+		it("CPU/memory/disk thresholds are percentages (compared against usage * 100)", () => {
+			// threshold 50 means 50%, usage 0.6 = 60% → breach
+			const r = compute({
+				metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.6, temperature: [30] } },
+				thresholds: { cpu: 50, memory: 80, disk: 80, temp: 80 },
+			});
+			expect(r.breaches.cpu).toBe(true);
+		});
+
+		it("temperature threshold is raw degrees (no /100 scaling)", () => {
+			// threshold 75, temp 80 → breach
+			const r = compute({
+				metrics: { ...healthyMetrics(), cpu: { usage_percent: 0.1, temperature: [80] } },
+				thresholds: { cpu: 80, memory: 80, disk: 80, temp: 75 },
+			});
+			expect(r.breaches.temp).toBe(true);
 		});
 	});
 });

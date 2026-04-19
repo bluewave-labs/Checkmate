@@ -60,6 +60,14 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 			address: data.address || "",
 		};
 	}
+	if (data?.type === "pushover") {
+		return {
+			type: "pushover",
+			notificationName: data.notificationName || "",
+			address: data.address || "",
+			accessToken: data.accessToken || "",
+		};
+	}
 	// Default: email (covers both data === null and data.type === "email")
 	return {
 		type: "email",

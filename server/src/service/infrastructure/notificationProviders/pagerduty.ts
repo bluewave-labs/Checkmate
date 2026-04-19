@@ -1,19 +1,12 @@
 const SERVICE_NAME = "PagerDutyProvider";
 import got from "got";
 import type { Notification } from "@/types/index.js";
-import { INotificationProvider } from "@/service/index.js";
+import { NotificationProvider } from "@/service/infrastructure/notificationProviders/INotificationProvider.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
-import { ILogger } from "@/utils/logger.js";
 import { AlertPagerDutyPayload } from "@/types/index.js";
 
-export class PagerDutyProvider implements INotificationProvider {
-	private logger: ILogger;
-
-	constructor(logger: ILogger) {
-		this.logger = logger;
-	}
-
+export class PagerDutyProvider extends NotificationProvider {
 	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
 		try {
 			await got.post("https://events.pagerduty.com/v2/enqueue", {
@@ -28,6 +21,7 @@ export class PagerDutyProvider implements INotificationProvider {
 					},
 				},
 				responseType: "json",
+				...this.gotRequestOptions(),
 			});
 			return true;
 		} catch (error) {
@@ -59,6 +53,7 @@ export class PagerDutyProvider implements INotificationProvider {
 			const payload = this.buildPagerDutyPayload(notification, message);
 			await got.post("https://events.pagerduty.com/v2/enqueue", {
 				json: payload,
+				...this.gotRequestOptions(),
 			});
 			this.logger.info({
 				message: "[NEW] PagerDuty notification sent via sendMessage",

@@ -1,4 +1,22 @@
-# name: POEditor Translation Synchronization
+name: POEditor Translation Synchronization (disabled)
+
+# This workflow is intentionally disabled — kept for reference only.
+# The full definition is preserved commented-out below. To re-enable,
+# delete the stub job and uncomment the section starting at `on:`.
+
+on:
+    workflow_dispatch:
+
+jobs:
+    disabled:
+        if: false
+        runs-on: ubuntu-latest
+        steps:
+            - run: echo "This workflow is disabled. See comments below for the original definition."
+
+# ---------------------------------------------------------------------------
+# Original (disabled) workflow below. Do not uncomment if you don't know what you're doing.
+# ---------------------------------------------------------------------------
 
 # on:
 #   # For manual triggering

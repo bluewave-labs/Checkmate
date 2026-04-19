@@ -72,5 +72,31 @@ describe("Heartbeat job: down detection", () => {
 		const storedMonitor = await h.monitorsRepo.findById("mon-1", "team-1");
 		expect(storedMonitor.status).toBe("up");
 		expect(h.incidentsRepo.getAll()).toHaveLength(0);
+		// Regression guard for #3438: a sub-threshold blip must produce NO notification
+		// dispatches. Before PR #3505, a failing check below threshold silently wrote
+		// status="down" and the next passing check fired a spurious "Recovered" event.
+		expect(h.notificationsService.handleNotifications).not.toHaveBeenCalled();
+	});
+
+	it("fires zero notifications on a sub-threshold blip (regression #3438)", async () => {
+		// Dedicated end-to-end guard for the #3438 bug. Distinct from "stays up when
+		// failures are below threshold" because it pins the notification-dispatch
+		// contract independently of status/incident assertions, so a future refactor
+		// that reintroduces the silent-down-write can't sneak past by happening to
+		// leave status and incidents in the right shape.
+		const monitor = makeMonitor();
+		h.monitorsRepo.seed(monitor);
+
+		// Failing check below threshold (window [t,t,t,t,f], 20%)
+		h.setNextResponse(false, 503);
+		await h.heartbeatJob(monitor);
+
+		// Passing check — pre-fix, this is where the spurious "Recovered" fired
+		h.setNextResponse(true, 200);
+		await h.heartbeatJob(monitor);
+
+		expect((await h.monitorsRepo.findById("mon-1", "team-1")).status).toBe("up");
+		expect(h.incidentsRepo.getAll()).toHaveLength(0);
+		expect(h.notificationsService.handleNotifications).not.toHaveBeenCalled();
 	});
 });

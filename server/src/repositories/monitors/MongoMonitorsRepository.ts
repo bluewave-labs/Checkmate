@@ -182,6 +182,33 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return this.toEntity(updatedMonitor);
 	};
 
+	updateStatusWindowAndChecks = async (
+		monitorId: string,
+		teamId: string,
+		status: boolean,
+		checkSnapshot: CheckSnapshot,
+		windowSize: number,
+		maxRecentChecks: number,
+		statusPatch?: Partial<Monitor>
+	): Promise<Monitor> => {
+		const updatedMonitor = await MonitorModel.findOneAndUpdate(
+			{ _id: monitorId, teamId },
+			{
+				$push: {
+					statusWindow: { $each: [status], $slice: -windowSize },
+					recentChecks: { $each: [checkSnapshot], $slice: -maxRecentChecks },
+				},
+				...(statusPatch && { $set: statusPatch }),
+			},
+			{ returnDocument: "after" }
+		);
+
+		if (!updatedMonitor) {
+			throw new AppError({ message: `Failed to update status and checks for monitor with id ${monitorId}`, status: 500 });
+		}
+		return this.toEntity(updatedMonitor);
+	};
+
 	togglePauseById = async (monitorId: string, teamId: string) => {
 		const monitor = await MonitorModel.findOneAndUpdate(
 			{ _id: monitorId, teamId },

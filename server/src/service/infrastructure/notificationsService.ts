@@ -39,6 +39,7 @@ export class NotificationsService implements INotificationsService {
 	private matrixProvider: INotificationProvider;
 	private teamsProvider: INotificationProvider;
 	private telegramProvider: INotificationProvider;
+	private pushoverProvider: INotificationProvider;
 	private logger: ILogger;
 	private settingsService: ISettingsService;
 	private notificationMessageBuilder: INotificationMessageBuilder;
@@ -54,6 +55,7 @@ export class NotificationsService implements INotificationsService {
 		matrixProvider: INotificationProvider,
 		teamsProvider: INotificationProvider,
 		telegramProvider: INotificationProvider,
+		pushoverProvider: INotificationProvider,
 		settingsService: ISettingsService,
 		logger: ILogger,
 		notificationMessageBuilder: INotificationMessageBuilder
@@ -68,6 +70,7 @@ export class NotificationsService implements INotificationsService {
 		this.matrixProvider = matrixProvider;
 		this.teamsProvider = teamsProvider;
 		this.telegramProvider = telegramProvider;
+		this.pushoverProvider = pushoverProvider;
 		this.settingsService = settingsService;
 		this.logger = logger;
 		this.notificationMessageBuilder = notificationMessageBuilder;
@@ -107,6 +110,8 @@ export class NotificationsService implements INotificationsService {
 				return await this.teamsProvider.sendMessage!(notification, notificationMessage);
 			case "telegram":
 				return await this.telegramProvider.sendMessage!(notification, notificationMessage);
+			case "pushover":
+				return await this.pushoverProvider.sendMessage!(notification, notificationMessage);
 			default:
 				this.logger.warn({
 					message: `Unknown notification type: ${notification.type}`,
@@ -179,6 +184,8 @@ export class NotificationsService implements INotificationsService {
 				return await this.teamsProvider.sendTestAlert(notification);
 			case "telegram":
 				return await this.telegramProvider.sendTestAlert(notification);
+			case "pushover":
+				return await this.pushoverProvider.sendTestAlert(notification);
 			default:
 				return false;
 		}
@@ -215,8 +222,8 @@ export class NotificationsService implements INotificationsService {
 	};
 
 	deleteById = async (id: string, teamId: string): Promise<Notification> => {
-		const deleted = await this.notificationsRepository.deleteById(id, teamId);
 		await this.monitorsRepository.removeNotificationFromMonitors(id);
+		const deleted = await this.notificationsRepository.deleteById(id, teamId);
 		return deleted;
 	};
 }

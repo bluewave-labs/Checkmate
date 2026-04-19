@@ -397,7 +397,8 @@
 					"activeFor": "Active for",
 					"certificateExpiry": "Certificate expiry",
 					"lastCheck": "Last check",
-					"lastResponseTime": "Last response time"
+					"lastResponseTime": "Last response time",
+					"serviceIsDown": "Service is down"
 				},
 				"status": {
 					"down": "down",
@@ -964,6 +965,14 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "Chat ID",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Pushover configuration",
+					"description": "Configure Pushover to receive push notifications on your devices.",
+					"optionAppToken": "Application API token",
+					"placeholderAppToken": "azGDORePK8gMaC0QOYAMyEEuzJnyUi",
+					"optionUserKey": "User key",
+					"placeholderUserKey": "uQiRzpo4DXghDmr9QzzfQu27cmVRsG"
 				}
 			},
 			"table": {
@@ -1213,9 +1222,20 @@
 				}
 			},
 			"statusBar": {
-				"allDown": "All systems are down",
 				"allUp": "All systems operational",
+				"allBreached": "All systems have exceeded thresholds",
+				"allMaintenance": "All systems are under maintenance",
+				"allDown": "All systems are down",
+				"allPaused": "All systems are paused",
+				"allInitializing": "All systems are initializing",
+				"breachedAndDown": "Some systems have exceeded thresholds and are down",
+				"breached": "Some systems have exceeded thresholds",
 				"degraded": "Some systems are experiencing issues",
+				"maintenanceAndDown": "Some systems are down during maintenance",
+				"maintenance": "Some systems are under maintenance",
+				"partiallyPaused": "Some systems are paused",
+				"initializing": "Some systems are initializing",
+				"noMonitors": "No monitors have been configured",
 				"unknown": "Unable to determine system status"
 			},
 			"table": {

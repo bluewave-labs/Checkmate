@@ -33,4 +33,4 @@ Ensure you execute `npm run format` before submitting your pull requests in both
 
 ### Keep PRs focused
 
-It may be tempting to address a bug you suddenly remembered or make some tiny adjustments in some component that bothers you, but don’t!  Keep all commits in your pull request fully focused on the specific feature you are working on.  Open up another PR if you want to fix a big or work on another feature.
+It may be tempting to address a bug you suddenly remembered or make some tiny adjustments in some component that bothers you, but don’t!  Keep all commits in your pull request fully focused on the specific feature you are working on.  Open up another PR if you want to fix a bug or work on another feature.

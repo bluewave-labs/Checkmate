@@ -96,8 +96,14 @@ cd docker/dev
 
 Build the Docker images:
 
+Linux:
 ```bash
 ./build_images.sh
+```
+
+Windows:
+```bash
+./build_images.bat
 ```
 
 Run MongoDB container:

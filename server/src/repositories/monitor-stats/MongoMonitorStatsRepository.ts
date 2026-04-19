@@ -1,5 +1,5 @@
 import { type MonitorStatsDocument, MonitorStatsModel } from "@/db/models/index.js";
-import type { MonitorStats } from "@/types/index.js";
+import type { MonitorStats, CheckResultInput } from "@/types/index.js";
 import { IMonitorStatsRepository } from "@/repositories/index.js";
 import mongoose from "mongoose";
 import { AppError } from "@/utils/AppError.js";
@@ -46,10 +46,48 @@ class MongoMonitorStatsRepository implements IMonitorStatsRepository {
 		return this.toEntity(monitorStats);
 	};
 
-	updateByMonitorId = async (monitorId: string, data: Omit<MonitorStats, "id" | "monitorId" | "createdAt" | "updatedAt">): Promise<MonitorStats> => {
-		const updated = await MonitorStatsModel.findOneAndUpdate({ monitorId: new mongoose.Types.ObjectId(monitorId) }, { $set: data }, { new: true });
+	updateByMonitorId = async (monitorId: string, result: CheckResultInput): Promise<MonitorStats> => {
+		const { status, responseTime, now } = result;
+		const objectId = new mongoose.Types.ObjectId(monitorId);
+		const upDelta = status ? 1 : 0;
+		const downDelta = status ? 0 : 1;
+		const pipeline = [
+			{
+				$set: {
+					monitorId: objectId,
+					totalChecks: { $add: [{ $ifNull: ["$totalChecks", 0] }, 1] },
+					totalUpChecks: { $add: [{ $ifNull: ["$totalUpChecks", 0] }, upDelta] },
+					totalDownChecks: { $add: [{ $ifNull: ["$totalDownChecks", 0] }, downDelta] },
+					avgResponseTime: {
+						$divide: [
+							{
+								$add: [{ $multiply: [{ $ifNull: ["$avgResponseTime", 0] }, { $ifNull: ["$totalChecks", 0] }] }, responseTime],
+							},
+							{ $add: [{ $ifNull: ["$totalChecks", 0] }, 1] },
+						],
+					},
+					uptimePercentage: {
+						$divide: [{ $add: [{ $ifNull: ["$totalUpChecks", 0] }, upDelta] }, { $add: [{ $ifNull: ["$totalChecks", 0] }, 1] }],
+					},
+					maxResponseTime: { $max: [{ $ifNull: ["$maxResponseTime", 0] }, responseTime] },
+					lastResponseTime: responseTime,
+					lastCheckTimestamp: now,
+					timeOfLastFailure: status
+						? {
+								$cond: [{ $eq: [{ $ifNull: ["$timeOfLastFailure", 0] }, 0] }, now, "$timeOfLastFailure"],
+							}
+						: 0,
+				},
+			},
+		];
+
+		const updated = await MonitorStatsModel.findOneAndUpdate({ monitorId: objectId }, pipeline, {
+			upsert: true,
+			new: true,
+			setDefaultsOnInsert: true,
+		});
 		if (!updated) {
-			throw new AppError({ message: "Monitor stats not found", status: 404 });
+			throw new AppError({ message: "Failed to apply check result to monitor stats", status: 500 });
 		}
 		return this.toEntity(updated);
 	};
