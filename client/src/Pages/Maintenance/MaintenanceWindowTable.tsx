@@ -184,7 +184,7 @@ export const MaintenanceWindowTable = ({
 		},
 		{
 			id: "monitors",
-			content: t("common.table.headers.monitors", { defaultValue: "Monitors" }),
+			content: t("common.table.headers.monitor"),
 			render: (row) => row.monitors.length,
 		},
 	];
