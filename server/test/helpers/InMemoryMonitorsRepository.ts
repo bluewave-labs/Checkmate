@@ -113,6 +113,10 @@ export class InMemoryMonitorsRepository implements IMonitorsRepository {
 		throw new Error("Not implemented");
 	}
 
+	async findByGroupAndTeamId(group: string, teamId: string): Promise<Monitor[]> {
+		return this.monitors.filter((m) => m.teamId === teamId && m.group === group).map((m) => ({ ...m }));
+	}
+
 	async removeNotificationFromMonitors(_notificationId: string): Promise<void> {
 		throw new Error("Not implemented");
 	}

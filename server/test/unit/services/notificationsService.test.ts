@@ -225,7 +225,8 @@ describe("NotificationsService", () => {
 				expect.anything(),
 				expect.anything(),
 				expect.anything(),
-				"Host not defined"
+				"Host not defined",
+				undefined
 			);
 		});
 	});

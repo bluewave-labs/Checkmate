@@ -498,6 +498,28 @@ const CreateMonitorPage = () => {
 								/>
 							)}
 						/>
+						<Controller
+							name="group"
+							control={control}
+							render={({ field, fieldState }) => (
+								<TextField
+									{...field}
+									value={field.value ?? ""}
+									onChange={(e) => field.onChange(e.target.value || null)}
+									type="text"
+									fieldLabel={t("pages.createMonitor.form.general.option.group.label")}
+									placeholder={t(
+										"pages.createMonitor.form.general.option.group.placeholder"
+									)}
+									fullWidth
+									error={!!fieldState.error}
+									helperText={
+										fieldState.error?.message ??
+										t("pages.createMonitor.form.general.option.group.helper")
+									}
+								/>
+							)}
+						/>
 					</Stack>
 				}
 			/>

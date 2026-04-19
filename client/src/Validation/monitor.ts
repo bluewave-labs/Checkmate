@@ -27,6 +27,11 @@ const baseSchema = z.object({
 		.number()
 		.min(300000, "Interval must be at least 5 minutes")
 		.optional(),
+	group: z
+		.string()
+		.max(50, "Group name must be at most 50 characters")
+		.optional()
+		.nullable(),
 });
 
 // HTTP monitor schema

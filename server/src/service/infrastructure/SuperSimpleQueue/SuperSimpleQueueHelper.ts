@@ -23,6 +23,7 @@ import {
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
 import { IBufferService } from "@/service/index.js";
+import type { IncidentSeverity } from "@/types/incident.js";
 
 export interface ISuperSimpleQueueHelper {
 	readonly serviceName: string;
@@ -31,6 +32,17 @@ export interface ISuperSimpleQueueHelper {
 	getCleanupOrphanedJob(): () => Promise<void>;
 	getCleanupRetentionJob(): () => Promise<void>;
 	isInMaintenanceWindow(monitorId: string, teamId: string): Promise<boolean>;
+}
+
+export interface GroupCorrelation {
+	groupName: string;
+	downCount: number;
+	totalCount: number;
+	severity: Exclude<IncidentSeverity, "none">;
+}
+
+export interface IncidentContext {
+	groupCorrelation?: GroupCorrelation;
 }
 
 export interface MonitorActionDecision {
@@ -156,9 +168,35 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 				// Step 5.  Get decisions
 				const decision = this.evaluateMonitorAction(statusChangeResult);
 
+				// Step 5b. Evaluate group correlation if monitor belongs to a group and an incident will be created
+				let incidentContext: IncidentContext | undefined;
+				if (monitor.group && decision.shouldCreateIncident) {
+					try {
+						const groupMonitors = await this.monitorsRepository.findByGroupAndTeamId(monitor.group, teamId);
+						const totalCount = groupMonitors.length;
+						const downCount = groupMonitors.filter((m) => m.status === "down").length;
+						if (downCount > 0 && totalCount > 1) {
+							incidentContext = {
+								groupCorrelation: {
+									groupName: monitor.group,
+									downCount,
+									totalCount,
+									severity: downCount === totalCount ? "critical" : "high",
+								},
+							};
+						}
+					} catch (error: unknown) {
+						this.logger.warn({
+							message: `Could not evaluate group correlation for monitor ${monitorId}: ${error instanceof Error ? error.message : "Unknown error"}`,
+							service: SERVICE_NAME,
+							method: "getMonitorJob",
+						});
+					}
+				}
+
 				// Step 6. Handle notifications (best effort, continue even in event of failure, don't wait)
 				if (decision.shouldSendNotification) {
-					this.notificationsService.handleNotifications(statusChangeResult.monitor, status, decision).catch((error: unknown) => {
+					this.notificationsService.handleNotifications(statusChangeResult.monitor, status, decision, incidentContext).catch((error: unknown) => {
 						this.logger.error({
 							message: `Error sending notifications for job ${statusChangeResult.monitor.id}: ${error instanceof Error ? error.message : "Unknown error"}`,
 							service: SERVICE_NAME,
@@ -170,7 +208,7 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 
 				// Step 7. Handle incidents
 				try {
-					await this.incidentService.handleIncident(statusChangeResult.monitor, statusChangeResult.code, decision, status);
+					await this.incidentService.handleIncident(statusChangeResult.monitor, statusChangeResult.code, decision, status, incidentContext);
 				} catch (error: unknown) {
 					this.logger.warn({
 						message: `Error handling incident for job ${monitor.id}: ${error instanceof Error ? error.message : "Unknown error"}`,

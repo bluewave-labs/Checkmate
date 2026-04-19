@@ -791,6 +791,11 @@ export class TimescaleMonitorsRepository implements IMonitorsRepository {
 		return result.rows.map((row) => row.monitor_group);
 	};
 
+	findByGroupAndTeamId = async (group: string, teamId: string): Promise<Monitor[]> => {
+		const result = await this.pool.query(`SELECT * FROM monitors WHERE team_id = $1 AND monitor_group = $2 AND is_active = true`, [teamId, group]);
+		return result.rows.map(this.toEntity);
+	};
+
 	removeNotificationFromMonitors = async (notificationId: string): Promise<void> => {
 		await this.pool.query(`DELETE FROM monitor_notifications WHERE notification_id = $1`, [notificationId]);
 	};
