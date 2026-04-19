@@ -1,4 +1,4 @@
- import Typography from "@mui/material/Typography";
+import Typography from "@mui/material/Typography";
 import { Table, ValueLabel } from "@/Components/design-elements";
 import { Pagination } from "@/Components/design-elements/Table";
 import { ActionsMenu } from "@/Components/actions-menu";
@@ -8,7 +8,7 @@ import prettyMilliseconds from "pretty-ms";
 import { useTheme } from "@mui/material";
 import type { Header } from "@/Components/design-elements/Table";
 import type { ActionMenuItem } from "@/Components/actions-menu";
-import type { MaintenanceWindow, GroupedMaintenanceWindows } from "@/Types/MaintenanceWindow";
+import type { MaintenanceWindow } from "@/Types/MaintenanceWindow";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -55,18 +55,6 @@ const getTimeToNextWindow = (
 	}
 
 	return "N/A";
-};
-
-const groupWindows = (windows: MaintenanceWindow[]): GroupedMaintenanceWindows[] => {
-	const map = new Map<string, GroupedMaintenanceWindows>();
-	for (const w of windows) {
-		const key = `${w.name}_${w.start}_${w.end}`;
-		if (!map.has(key)) {
-			map.set(key, {id: w.id, name: w.name, start: w.start, end: w.end, repeat: w.repeat, active: w.active, monitors: []});
-		}
-		map.get(key)!.monitors.push(w);
-	}
-	return Array.from(map.values());
 };
 
 export const MaintenanceWindowTable = ({
@@ -139,7 +127,7 @@ export const MaintenanceWindowTable = ({
 		},
 	];
 
-	const getHeaders = (): Header<GroupedMaintenanceWindows>[] => [
+	const getHeaders = (): Header<MaintenanceWindow>[] => [
 		{
 			id: "name",
 			content: t("common.table.headers.name"),
@@ -169,9 +157,9 @@ export const MaintenanceWindowTable = ({
 					: prettyMilliseconds(row.repeat, { verbose: true }),
 		},
 		{
-			id: "monitors",
-			content: t("common.table.headers.monitors", {defaultValue: "Monitors"}),
-			render: (row) => row.monitors.length,
+			id: "actions",
+			content: t("common.table.headers.actions"),
+			render: (row) => <ActionsMenu items={getActions(row)} />,
 		},
 	];
 
@@ -189,39 +177,16 @@ export const MaintenanceWindowTable = ({
 		setPage(0);
 	};
 
-	const grouped = groupWindows(maintenanceWindows);
-
 	return (
 		<Box>
 			<Table
 				headers={getHeaders()}
-				data={grouped}
-				expandableRows={true}
-				renderExpandedContent={(row) => (
-					<Box sx={{pl: 2, pd: 2}}>
-						{row.monitors.map((monitor) => (
-							<Box
-								key={monitor.id}
-								sx={{
-									display: "flex",
-									alignItems: "center",
-									justifyContent: "space-between",
-									py: 1,
-									borderBottom: `1px solid`,
-									borderColor: "divider",
-									"&:last-child": { borderBottom: "none" },
-								}}
-							>
-								<Typography variant="body2" color="text.secondary">{monitor.name}</Typography>
-								<ActionsMenu items={getActions(monitor)} />
-							</Box>
-						))}
-					</Box>
-				)}
+				data={maintenanceWindows}
+				onRowClick={(row) => navigate(`/maintenance/create/${row.id}`)}
 				emptyViewText={t("common.table.empty")}
 			/>
 			<Pagination
-				itemsOnPage={grouped.length}
+				itemsOnPage={maintenanceWindows.length}
 				component="div"
 				count={maintenanceWindowCount}
 				page={page}
