@@ -1,4 +1,4 @@
- import Typography from "@mui/material/Typography";
+import Typography from "@mui/material/Typography";
 import { Table, ValueLabel } from "@/Components/design-elements";
 import { Pagination } from "@/Components/design-elements/Table";
 import { ActionsMenu } from "@/Components/actions-menu";
@@ -8,7 +8,10 @@ import prettyMilliseconds from "pretty-ms";
 import { useTheme } from "@mui/material";
 import type { Header } from "@/Components/design-elements/Table";
 import type { ActionMenuItem } from "@/Components/actions-menu";
-import type { MaintenanceWindow, GroupedMaintenanceWindows } from "@/Types/MaintenanceWindow";
+import type {
+	MaintenanceWindow,
+	GroupedMaintenanceWindows,
+} from "@/Types/MaintenanceWindow";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -17,7 +20,8 @@ import Box from "@mui/material/Box";
 import { setRowsPerPage } from "@/Features/UI/uiSlice";
 import dayjs from "dayjs";
 import { useState } from "react";
-import { useDelete, usePatch } from "@/Hooks/UseApi";
+import { useDelete, usePatch, useGet } from "@/Hooks/UseApi";
+import type { Monitor } from "@/Types/Monitor";
 
 interface MaintenanceWindowTableProps {
 	maintenanceWindows: MaintenanceWindow[];
@@ -62,7 +66,15 @@ const groupWindows = (windows: MaintenanceWindow[]): GroupedMaintenanceWindows[]
 	for (const w of windows) {
 		const key = `${w.name}_${w.start}_${w.end}`;
 		if (!map.has(key)) {
-			map.set(key, {id: w.id, name: w.name, start: w.start, end: w.end, repeat: w.repeat, active: w.active, monitors: []});
+			map.set(key, {
+				id: w.id,
+				name: w.name,
+				start: w.start,
+				end: w.end,
+				repeat: w.repeat,
+				active: w.active,
+				monitors: [],
+			});
 		}
 		map.get(key)!.monitors.push(w);
 	}
@@ -89,6 +101,8 @@ export const MaintenanceWindowTable = ({
 
 	const { deleteFn, loading: deleteLoading } = useDelete();
 	const { patch } = usePatch();
+	const { data: monitorsData } = useGet<Monitor[]>("/monitors/team");
+	const monitorsList = monitorsData ?? [];
 
 	const handleDelete = async () => {
 		if (!selectedWindow) return;
@@ -170,7 +184,7 @@ export const MaintenanceWindowTable = ({
 		},
 		{
 			id: "monitors",
-			content: t("common.table.headers.monitors", {defaultValue: "Monitors"}),
+			content: t("common.table.headers.monitors", { defaultValue: "Monitors" }),
 			render: (row) => row.monitors.length,
 		},
 	];
@@ -198,7 +212,7 @@ export const MaintenanceWindowTable = ({
 				data={grouped}
 				expandableRows={true}
 				renderExpandedContent={(row) => (
-					<Box sx={{pl: 2, pd: 2}}>
+					<Box sx={{ pl: 2, pd: 2 }}>
 						{row.monitors.map((monitor) => (
 							<Box
 								key={monitor.id}
@@ -212,7 +226,13 @@ export const MaintenanceWindowTable = ({
 									"&:last-child": { borderBottom: "none" },
 								}}
 							>
-								<Typography variant="body2" color="text.secondary">{monitor.name}</Typography>
+								<Typography
+									variant="body2"
+									color="text.secondary"
+								>
+									{monitorsList.find((m: Monitor) => m.id === monitor.monitorId)?.name ??
+										monitor.monitorId}
+								</Typography>
 								<ActionsMenu items={getActions(monitor)} />
 							</Box>
 						))}
