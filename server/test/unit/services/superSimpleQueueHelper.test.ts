@@ -187,7 +187,8 @@ describe("SuperSimpleQueueHelper", () => {
 			expect(defaults.notificationsService.handleNotifications).toHaveBeenCalledWith(
 				statusResult.monitor,
 				networkResponse,
-				expect.objectContaining({ shouldSendNotification: true, shouldCreateIncident: true })
+				expect.objectContaining({ shouldSendNotification: true, shouldCreateIncident: true }),
+				undefined
 			);
 		});
 
@@ -627,7 +628,8 @@ describe("SuperSimpleQueueHelper", () => {
 				expect.anything(),
 				expect.anything(),
 				expect.objectContaining({ shouldCreateIncident: false, shouldResolveIncident: false, shouldSendNotification: false }),
-				expect.anything()
+				expect.anything(),
+				undefined
 			);
 		});
 
@@ -647,7 +649,8 @@ describe("SuperSimpleQueueHelper", () => {
 					incidentReason: "status_down",
 					notificationReason: "status_change",
 				}),
-				expect.anything()
+				expect.anything(),
+				undefined
 			);
 		});
 
@@ -666,7 +669,8 @@ describe("SuperSimpleQueueHelper", () => {
 					incidentReason: "threshold_breach",
 					notificationReason: "threshold_breach",
 				}),
-				expect.anything()
+				expect.anything(),
+				undefined
 			);
 		});
 
@@ -681,7 +685,8 @@ describe("SuperSimpleQueueHelper", () => {
 				expect.anything(),
 				expect.anything(),
 				expect.objectContaining({ shouldResolveIncident: true, shouldSendNotification: true }),
-				expect.anything()
+				expect.anything(),
+				undefined
 			);
 		});
 
@@ -696,7 +701,8 @@ describe("SuperSimpleQueueHelper", () => {
 				expect.anything(),
 				expect.anything(),
 				expect.objectContaining({ shouldResolveIncident: true }),
-				expect.anything()
+				expect.anything(),
+				undefined
 			);
 		});
 
@@ -711,7 +717,8 @@ describe("SuperSimpleQueueHelper", () => {
 				expect.anything(),
 				expect.anything(),
 				expect.objectContaining({ shouldCreateIncident: false, shouldResolveIncident: false, shouldSendNotification: false }),
-				expect.anything()
+				expect.anything(),
+				undefined
 			);
 		});
 	});
