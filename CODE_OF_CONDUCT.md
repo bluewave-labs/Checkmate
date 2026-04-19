@@ -66,4 +66,4 @@ This Code of Conduct is adapted from the [Contributor Covenant](https://www.cont
 
 ---
 
-By following this Code of Conduct, we can ensure a welcoming and inclusive environment, encouraging new contributors to engage with the project and the community. Thank you for helping make **checkmate** a positive space for all!
+By following this Code of Conduct, we can ensure a welcoming and inclusive environment, encouraging new contributors to engage with the project and the community. Thank you for helping make **Checkmate** a positive space for all!
