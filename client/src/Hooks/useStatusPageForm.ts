@@ -35,6 +35,7 @@ export const useStatusPageForm = ({
 			showUptimePercentage: data?.showUptimePercentage ?? true,
 			showAdminLoginLink: data?.showAdminLoginLink ?? false,
 			showInfrastructure: data?.showInfrastructure ?? false,
+			showPageSpeed: data?.showPageSpeed ?? false,
 			customCSS: data?.customCSS || "",
 			logo: transformLogo(data?.logo),
 		};

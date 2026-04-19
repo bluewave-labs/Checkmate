@@ -6,6 +6,7 @@ import { HistogramResponseTime, HeatmapResponseTime } from "@/Components/common"
 import { StatusLabel, BaseBox } from "@/Components/design-elements";
 import { SwitchComponent } from "@/Components/inputs";
 import { InfrastructureMetrics } from "@/Pages/StatusPage/Status/Components/InfrastructureMetrics";
+import { PageSpeedMetrics } from "@/Pages/StatusPage/Status/Components/PageSpeedMetrics";
 
 import { useTheme, type Theme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
@@ -26,8 +27,12 @@ interface MonitorsListProps {
 }
 
 const getMonitorBadgeStyles = (monitorType: string, theme: Theme) => {
-	const bg =
-		monitorType === "hardware" ? theme.palette.info.light : theme.palette.success.light;
+	const monitorColors: Record<string, string> = {
+		hardware: theme.palette.info.light,
+		pagespeed: theme.palette.warning.light,
+	};
+
+	const bg = monitorColors[monitorType] || theme.palette.success.light;
 	return {
 		backgroundColor: bg,
 		color: theme.palette.background.paper,
@@ -103,6 +108,12 @@ const MonitorContent = ({
 	if (monitor.type === "hardware") {
 		if (statusPage.showInfrastructure === false) return null;
 		return <InfrastructureMetrics monitor={monitor} />;
+	}
+
+	if (monitor.type === "pagespeed") {
+		return statusPage.showPageSpeed === false ? null : (
+			<PageSpeedMetrics monitor={monitor} />
+		);
 	}
 
 	if (statusPage.showCharts === false) return null;

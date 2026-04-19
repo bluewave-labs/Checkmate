@@ -1,5 +1,6 @@
 import type { Monitor, MonitorType } from "@/Types/Monitor";
-export type MonitorDisplayType = "uptime" | "infrastructure";
+export const StatusPageTypes = ["uptime", "infrastructure", "pagespeed"] as const;
+export type StatusPageType = (typeof StatusPageTypes)[number];
 
 export const MONITOR_TYPE_KEYS: Partial<Record<MonitorType, string>> = {
 	http: "pages.common.monitors.monitorTypes.optionHttp",
@@ -25,7 +26,7 @@ export interface StatusPage {
 	id: string;
 	userId: string;
 	teamId: string;
-	type: MonitorDisplayType[];
+	type: StatusPageType[];
 	companyName: string;
 	url: string;
 	timezone?: string;
@@ -42,6 +43,7 @@ export interface StatusPage {
 	showUptimePercentage: boolean;
 	showAdminLoginLink: boolean;
 	showInfrastructure: boolean;
+	showPageSpeed: boolean;
 	customCSS: string;
 	createdAt: string;
 	updatedAt: string;

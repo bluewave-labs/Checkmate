@@ -78,6 +78,12 @@ export const getPageSpeedPalette = (score: number): PaletteKey => {
 	else return "error";
 };
 
+export const getPageSpeedGaugeColor = (val: number, theme: any) => {
+	if (val >= 90) return theme.palette.success.main;
+	else if (val >= 50) return theme.palette.warning.light;
+	else return theme.palette.error.light;
+};
+
 export const formatUrl = (url: string, maxLength: number = 55) => {
 	if (!url) return "";
 

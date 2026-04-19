@@ -23,7 +23,9 @@ const StatusPageView = () => {
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const isPublic = location.pathname.startsWith("/status/public");
 
-	const apiUrl = url ? `/status-page/${url}?type=uptime&type=infrastructure` : null;
+	const apiUrl = url
+		? `/status-page/${url}?type=uptime&type=infrastructure&type=pagespeed`
+		: null;
 
 	const { data, isLoading, error } = useGet<StatusPageResponse>(
 		apiUrl,

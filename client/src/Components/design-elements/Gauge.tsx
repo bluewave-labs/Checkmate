@@ -3,7 +3,7 @@ import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
-import { useTheme } from "@mui/material/styles";
+import { useTheme, type Theme } from "@mui/material/styles";
 import { useMemo, useState, useEffect } from "react";
 import { getInfraGaugeColor } from "@/Utils/MonitorUtils";
 
@@ -17,6 +17,10 @@ export const Gauge = ({
 	strokeWidth = 15,
 	precision = 1,
 	unit = "%",
+	// colorFn lets callers override the default color logic.
+	// The Gauge was originally designed for metrics where higher values are worse (e.g., CPU usage).
+	// PageSpeed scores are the opposite—higher is better—so a custom colorFn can be used to invert the behavior.
+	colorFn,
 }: {
 	isLoading?: boolean;
 	progress?: number;
@@ -24,6 +28,7 @@ export const Gauge = ({
 	strokeWidth?: number;
 	precision?: number;
 	unit?: string;
+	colorFn?: (val: number, theme: Theme) => string;
 }) => {
 	const theme = useTheme();
 	const progressWithinRange = Math.max(MINIMUM_VALUE, Math.min(progress, MAXIMUM_VALUE));
@@ -48,7 +53,8 @@ export const Gauge = ({
 		return () => clearTimeout(timer);
 	}, [progress, circumference, strokeLength]);
 
-	const fillColor = getInfraGaugeColor(progressWithinRange, theme);
+	const resolvedColorFn = colorFn ?? getInfraGaugeColor;
+	const fillColor = resolvedColorFn(progressWithinRange, theme);
 
 	if (isLoading) {
 		return;
