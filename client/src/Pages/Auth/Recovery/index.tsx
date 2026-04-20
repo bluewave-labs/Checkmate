@@ -20,6 +20,7 @@ const ForgotPasswordPage = () => {
 	});
 
 	const onSubmit = async (data: RecoveryFormData) => {
+		{/* Disabled
 		if (loading) return;
 
 		const result = await post("/auth/recovery/request", data);
@@ -27,6 +28,7 @@ const ForgotPasswordPage = () => {
 		if (result?.success) {
 			// Navigate to Check email page
 		}
+		*/}
 	};
 
 	return (
@@ -36,6 +38,7 @@ const ForgotPasswordPage = () => {
 			title={t("pages.auth.forgotPassword.title")}
 			subtitle={t("pages.auth.forgotPassword.subtitle")}
 		>
+			{/* Disabled
 			<Controller
 				name="email"
 				control={control}
@@ -60,6 +63,13 @@ const ForgotPasswordPage = () => {
 				alignSelf={"center"}
 				text={t("pages.auth.forgotPassword.links.login.text")}
 				linkText={t("pages.auth.forgotPassword.links.login.linkText")}
+				href="/login"
+			/>
+			*/}
+			<TextLink
+				alignSelf={"center"}
+				text="Recovery is currently disabled. Please contact the administrator to reset your password."
+				linkText="Go back to login"
 				href="/login"
 			/>
 		</BaseAuthPage>
