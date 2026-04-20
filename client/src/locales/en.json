@@ -343,6 +343,7 @@
 			"register": {
 				"title": "Welcome back to Checkmate!",
 				"subtitle": "Sign up to get started",
+				"setupNotice": "This page is only available during initial setup. Once a super admin is registered, additional users can be invited from team settings.",
 				"submit": "Register"
 			},
 			"forgotPassword": {

@@ -10,6 +10,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setAuthState } from "@/Features/Auth/authSlice";
 import { usePost } from "@/Hooks/UseApi";
+import { useSuperAdminRedirect } from "@/Hooks/useSuperAdminRedirect";
 
 const LoginPage = () => {
 	const { t } = useTranslation();
@@ -17,12 +18,19 @@ const LoginPage = () => {
 	const navigate = useNavigate();
 	const { post, loading } = usePost();
 
+	const { isLoading: isCheckingAdmin } = useSuperAdminRedirect({
+		redirectTo: "/register",
+		redirectWhen: false,
+	});
+
 	const { schema, defaults } = useLoginForm();
 
 	const { control, handleSubmit } = useForm<LoginFormData>({
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
+
+	if (isCheckingAdmin) return null;
 
 	const onSubmit = async (data: LoginFormData) => {
 		if (loading) return;
@@ -81,12 +89,6 @@ const LoginPage = () => {
 				text={t("pages.auth.login.links.forgotPassword.text")}
 				linkText={t("pages.auth.login.links.forgotPassword.linkText")}
 				href="/forgot-password"
-			/>
-			<TextLink
-				alignSelf={"center"}
-				text={t("pages.auth.login.links.register.text")}
-				linkText={t("pages.auth.login.links.register.linkText")}
-				href="/register"
 			/>
 		</BaseAuthPage>
 	);
