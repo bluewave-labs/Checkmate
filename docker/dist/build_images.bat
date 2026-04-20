@@ -25,17 +25,10 @@ for /L %%i in (0,1,2) do (
     REM Check if the build succeeded
     if errorlevel 1 (
         echo Error building !service! image. Exiting...
-<<<<<<< HEAD
         pause
-=======
->>>>>>> 3f35176651cb156eb271032d616f21318b24cb01
         exit /b 1
     )
 )
 
 echo All images built successfully
-<<<<<<< HEAD
 exit /b 0
-=======
-exit /b 0
->>>>>>> 3f35176651cb156eb271032d616f21318b24cb01
