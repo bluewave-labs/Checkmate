@@ -6,14 +6,14 @@ cd /d "%~dp0"
 cd ../..
 
 REM Define service names and their corresponding Dockerfiles
-set services[0]=bluewaveuptime/uptime_client
-set dockerfiles[0]=.\docker\dist\client.Dockerfile
+set services[0]=uptime_client
+set dockerfiles[0]=.\docker\unified\client.Dockerfile
 
-set services[1]=bluewaveuptime/uptime_database_mongo
-set dockerfiles[1]=.\docker\dist\mongoDB.Dockerfile
+set services[1]=uptime_database_mongo
+set dockerfiles[1]=.\docker\unified\mongoDB.Dockerfile
 
-set services[2]=bluewaveuptime/uptime_server
-set dockerfiles[2]=.\docker\dist\server.Dockerfile
+set services[2]=uptime_server
+set dockerfiles[2]=.\docker\unified\server.Dockerfile
 
 REM Loop through each service and build the corresponding image
 for /L %%i in (0,1,2) do (
@@ -25,17 +25,9 @@ for /L %%i in (0,1,2) do (
     REM Check if the build succeeded
     if errorlevel 1 (
         echo Error building !service! image. Exiting...
-<<<<<<< HEAD
-        pause
-=======
->>>>>>> 3f35176651cb156eb271032d616f21318b24cb01
         exit /b 1
     )
 )
 
 echo All images built successfully
-<<<<<<< HEAD
 exit /b 0
-=======
-exit /b 0
->>>>>>> 3f35176651cb156eb271032d616f21318b24cb01
