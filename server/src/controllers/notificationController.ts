@@ -16,23 +16,16 @@ import type { Notification } from "@/types/notification.js";
 
 const SENSITIVE_FIELDS: (keyof Notification)[] = ["accessToken", "accountSid"];
 
-const MASK_SUFFIX = "****";
+const sanitizeNotification = (notification: Notification) => {
+	const sanitized: Record<string, unknown> = { ...notification };
+	const sentinels: Record<string, boolean> = {};
 
-const maskValue = (value: string): string => {
-	if (value.length <= 4) return MASK_SUFFIX;
-	return value.slice(0, 4) + MASK_SUFFIX;
-};
-
-const isMasked = (value: string): boolean => value.endsWith(MASK_SUFFIX);
-
-const maskSensitiveFields = (notification: Notification): Notification => {
-	const masked = { ...notification };
 	for (const field of SENSITIVE_FIELDS) {
-		if (masked[field]) {
-			(masked as Record<string, unknown>)[field] = maskValue(masked[field] as string);
-		}
+		sentinels[`${field}Set`] = typeof sanitized[field] !== "undefined" && sanitized[field] !== null && sanitized[field] !== "";
+		delete sanitized[field];
 	}
-	return masked;
+
+	return { ...sanitized, ...sentinels };
 };
 
 const SERVICE_NAME = "NotificationController";
@@ -84,7 +77,7 @@ class NotificationController implements INotificationController {
 			return res.status(200).json({
 				success: true,
 				msg: "Notification created successfully",
-				data: maskSensitiveFields(notification),
+				data: sanitizeNotification(notification),
 			});
 		} catch (error) {
 			next(error);
@@ -99,7 +92,7 @@ class NotificationController implements INotificationController {
 			return res.status(200).json({
 				success: true,
 				msg: "Notifications fetched successfully",
-				data: notifications.map(maskSensitiveFields),
+				data: notifications.map(sanitizeNotification),
 			});
 		} catch (error) {
 			next(error);
@@ -131,7 +124,7 @@ class NotificationController implements INotificationController {
 			return res.status(200).json({
 				success: true,
 				msg: "Notification fetched successfully",
-				data: maskSensitiveFields(notification),
+				data: sanitizeNotification(notification),
 			});
 		} catch (error) {
 			next(error);
@@ -146,19 +139,11 @@ class NotificationController implements INotificationController {
 			const teamId = requireTeamId(req.user?.teamId);
 			const notificationId = validatedParams.id;
 
-			// Strip masked sensitive fields so they don't overwrite real values
-			const updateData = { ...validatedBody };
-			for (const field of SENSITIVE_FIELDS) {
-				if (updateData[field as keyof typeof updateData] && isMasked(updateData[field as keyof typeof updateData] as string)) {
-					delete updateData[field as keyof typeof updateData];
-				}
-			}
-
-			const editedNotification = await this.notificationsService.updateById(notificationId, teamId, updateData);
+			const editedNotification = await this.notificationsService.updateById(notificationId, teamId, validatedBody);
 			return res.status(200).json({
 				success: true,
 				msg: "Notification updated successfully",
-				data: maskSensitiveFields(editedNotification),
+				data: sanitizeNotification(editedNotification),
 			});
 		} catch (error) {
 			next(error);

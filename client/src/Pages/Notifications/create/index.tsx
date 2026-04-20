@@ -5,7 +5,8 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Box from "@mui/material/Box";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
@@ -47,9 +48,26 @@ const NotificationsCreatePage = () => {
 
 	const watchedType = watch("type");
 
+	const [isAccessTokenSet, setIsAccessTokenSet] = useState(false);
+	const [accessTokenReset, setAccessTokenReset] = useState(false);
+	const [isAccountSidSet, setIsAccountSidSet] = useState(false);
+	const [accountSidReset, setAccountSidReset] = useState(false);
+
+	useEffect(() => {
+		if (existingNotification) {
+			setIsAccessTokenSet(existingNotification.accessTokenSet ?? false);
+			setIsAccountSidSet(existingNotification.accountSidSet ?? false);
+			setAccessTokenReset(false);
+			setAccountSidReset(false);
+		}
+	}, [existingNotification]);
+
 	useEffect(() => {
 		clearErrors();
 	}, [watchedType, clearErrors]);
+
+	const showAccessTokenInput = !isAccessTokenSet || accessTokenReset || !isEditMode;
+	const showAccountSidInput = !isAccountSidSet || accountSidReset || !isEditMode;
 
 	const addressConfig = useMemo(() => {
 		if (watchedType === "pager_duty") {
@@ -77,9 +95,16 @@ const NotificationsCreatePage = () => {
 	}, [watchedType, t]);
 
 	const onSubmit = async (data: NotificationFormData) => {
+		const dataToSend = { ...data };
+		if (isEditMode && isAccessTokenSet && !accessTokenReset) {
+			delete (dataToSend as Record<string, unknown>).accessToken;
+		}
+		if (isEditMode && isAccountSidSet && !accountSidReset) {
+			delete (dataToSend as Record<string, unknown>).accountSid;
+		}
 		const result = isEditMode
-			? await patch(`/notifications/${notificationId}`, data)
-			: await post("/notifications", data);
+			? await patch(`/notifications/${notificationId}`, dataToSend)
+			: await post("/notifications", dataToSend);
 		if (result) {
 			navigate("/notifications");
 		}
@@ -180,24 +205,39 @@ const NotificationsCreatePage = () => {
 					subtitle={t("pages.notifications.form.telegram.description")}
 					rightContent={
 						<Stack spacing={theme.spacing(8)}>
-							<Controller
-								name="accessToken"
-								control={control}
-								defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t("pages.notifications.form.telegram.optionBotToken")}
-										placeholder={t(
-											"pages.notifications.form.telegram.placeholderBotToken"
-										)}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
-								)}
-							/>
+							{showAccessTokenInput ? (
+								<Controller
+									name="accessToken"
+									control={control}
+									defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
+									render={({ field, fieldState }) => (
+										<TextField
+											{...field}
+											type="text"
+											fieldLabel={t("pages.notifications.form.telegram.optionBotToken")}
+											placeholder={t(
+												"pages.notifications.form.telegram.placeholderBotToken"
+											)}
+											fullWidth
+											error={!!fieldState.error}
+											helperText={fieldState.error?.message ?? ""}
+										/>
+									)}
+								/>
+							) : (
+								<Box>
+									<Typography variant="body2">
+										{t("pages.notifications.form.sensitive.tokenSet")}
+									</Typography>
+									<Button
+										variant="contained"
+										color="error"
+										onClick={() => setAccessTokenReset(true)}
+									>
+										{t("common.buttons.reset")}
+									</Button>
+								</Box>
+							)}
 							<Controller
 								name="address"
 								control={control}
@@ -223,24 +263,39 @@ const NotificationsCreatePage = () => {
 					subtitle={t("pages.notifications.form.pushover.description")}
 					rightContent={
 						<Stack spacing={theme.spacing(8)}>
-							<Controller
-								name="accessToken"
-								control={control}
-								defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t("pages.notifications.form.pushover.optionAppToken")}
-										placeholder={t(
-											"pages.notifications.form.pushover.placeholderAppToken"
-										)}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
-								)}
-							/>
+							{showAccessTokenInput ? (
+								<Controller
+									name="accessToken"
+									control={control}
+									defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
+									render={({ field, fieldState }) => (
+										<TextField
+											{...field}
+											type="text"
+											fieldLabel={t("pages.notifications.form.pushover.optionAppToken")}
+											placeholder={t(
+												"pages.notifications.form.pushover.placeholderAppToken"
+											)}
+											fullWidth
+											error={!!fieldState.error}
+											helperText={fieldState.error?.message ?? ""}
+										/>
+									)}
+								/>
+							) : (
+								<Box>
+									<Typography variant="body2">
+										{t("pages.notifications.form.sensitive.tokenSet")}
+									</Typography>
+									<Button
+										variant="contained"
+										color="error"
+										onClick={() => setAccessTokenReset(true)}
+									>
+										{t("common.buttons.reset")}
+									</Button>
+								</Box>
+							)}
 							<Controller
 								name="address"
 								control={control}
@@ -269,42 +324,72 @@ const NotificationsCreatePage = () => {
 					subtitle={t("pages.notifications.form.twilio.description")}
 					rightContent={
 						<Stack spacing={theme.spacing(8)}>
-							<Controller
-								name="accountSid"
-								control={control}
-								defaultValue={"accountSid" in defaults ? defaults.accountSid : ""}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t("pages.notifications.form.twilio.optionAccountSid")}
-										placeholder={t(
-											"pages.notifications.form.twilio.placeholderAccountSid"
-										)}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
-								)}
-							/>
-							<Controller
-								name="accessToken"
-								control={control}
-								defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t("pages.notifications.form.twilio.optionAuthToken")}
-										placeholder={t(
-											"pages.notifications.form.twilio.placeholderAuthToken"
-										)}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
-								)}
-							/>
+							{showAccountSidInput ? (
+								<Controller
+									name="accountSid"
+									control={control}
+									defaultValue={"accountSid" in defaults ? defaults.accountSid : ""}
+									render={({ field, fieldState }) => (
+										<TextField
+											{...field}
+											type="text"
+											fieldLabel={t("pages.notifications.form.twilio.optionAccountSid")}
+											placeholder={t(
+												"pages.notifications.form.twilio.placeholderAccountSid"
+											)}
+											fullWidth
+											error={!!fieldState.error}
+											helperText={fieldState.error?.message ?? ""}
+										/>
+									)}
+								/>
+							) : (
+								<Box>
+									<Typography variant="body2">
+										{t("pages.notifications.form.sensitive.accountSidSet")}
+									</Typography>
+									<Button
+										variant="contained"
+										color="error"
+										onClick={() => setAccountSidReset(true)}
+									>
+										{t("common.buttons.reset")}
+									</Button>
+								</Box>
+							)}
+							{showAccessTokenInput ? (
+								<Controller
+									name="accessToken"
+									control={control}
+									defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
+									render={({ field, fieldState }) => (
+										<TextField
+											{...field}
+											type="text"
+											fieldLabel={t("pages.notifications.form.twilio.optionAuthToken")}
+											placeholder={t(
+												"pages.notifications.form.twilio.placeholderAuthToken"
+											)}
+											fullWidth
+											error={!!fieldState.error}
+											helperText={fieldState.error?.message ?? ""}
+										/>
+									)}
+								/>
+							) : (
+								<Box>
+									<Typography variant="body2">
+										{t("pages.notifications.form.sensitive.tokenSet")}
+									</Typography>
+									<Button
+										variant="contained"
+										color="error"
+										onClick={() => setAccessTokenReset(true)}
+									>
+										{t("common.buttons.reset")}
+									</Button>
+								</Box>
+							)}
 							<Controller
 								name="twilioPhoneNumber"
 								control={control}
@@ -383,24 +468,39 @@ const NotificationsCreatePage = () => {
 									/>
 								)}
 							/>
-							<Controller
-								name="accessToken"
-								control={control}
-								defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t(
-											"pages.notifications.form.accessToken.optionAccessToken"
-										)}
-										placeholder={t("pages.notifications.form.accessToken.placeholder")}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
-								)}
-							/>
+							{showAccessTokenInput ? (
+								<Controller
+									name="accessToken"
+									control={control}
+									defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
+									render={({ field, fieldState }) => (
+										<TextField
+											{...field}
+											type="text"
+											fieldLabel={t(
+												"pages.notifications.form.accessToken.optionAccessToken"
+											)}
+											placeholder={t("pages.notifications.form.accessToken.placeholder")}
+											fullWidth
+											error={!!fieldState.error}
+											helperText={fieldState.error?.message ?? ""}
+										/>
+									)}
+								/>
+							) : (
+								<Box>
+									<Typography variant="body2">
+										{t("pages.notifications.form.sensitive.tokenSet")}
+									</Typography>
+									<Button
+										variant="contained"
+										color="error"
+										onClick={() => setAccessTokenReset(true)}
+									>
+										{t("common.buttons.reset")}
+									</Button>
+								</Box>
+							)}
 						</Stack>
 					}
 				/>

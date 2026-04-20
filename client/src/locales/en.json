@@ -980,6 +980,10 @@
 					"placeholderFromNumber": "+15551234567",
 					"optionToNumber": "To number (recipient)",
 					"placeholderToNumber": "+15559876543"
+				},
+				"sensitive": {
+					"tokenSet": "Token is set. Click reset to change it.",
+					"accountSidSet": "Account SID is set. Click reset to change it."
 				}
 			},
 			"table": {
