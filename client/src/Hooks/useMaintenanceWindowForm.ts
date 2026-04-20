@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import dayjs from "dayjs";
 import {
 	maintenanceWindowSchema,
+	maintenanceWindowEditSchema,
 	repeatOptions,
 	type MaintenanceWindowFormData,
 } from "@/Validation/maintenanceWindow";
@@ -47,6 +48,9 @@ export const useMaintenanceWindowForm = ({
 			};
 		}
 
-		return { schema: maintenanceWindowSchema, defaults };
+		return {
+			schema: data ? maintenanceWindowEditSchema : maintenanceWindowSchema,
+			defaults,
+		};
 	}, [data]);
 };
