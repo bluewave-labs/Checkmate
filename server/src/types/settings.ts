@@ -1,4 +1,4 @@
-export const DbTypes = ["timescaledb", "mongodb"] as const;
+export const DbTypes = ["mongodb"] as const;
 export type DbType = (typeof DbTypes)[number];
 
 export interface SettingsThresholds {

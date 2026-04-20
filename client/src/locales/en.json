@@ -969,6 +969,18 @@
 					"placeholderAppToken": "azGDORePK8gMaC0QOYAMyEEuzJnyUi",
 					"optionUserKey": "User key",
 					"placeholderUserKey": "uQiRzpo4DXghDmr9QzzfQu27cmVRsG"
+				},
+				"twilio": {
+					"title": "Twilio SMS configuration",
+					"description": "Configure Twilio to send SMS notifications to a phone number.",
+					"optionAccountSid": "Account SID",
+					"placeholderAccountSid": "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+					"optionAuthToken": "Auth token",
+					"placeholderAuthToken": "your_auth_token",
+					"optionFromNumber": "From number (Twilio)",
+					"placeholderFromNumber": "+15551234567",
+					"optionToNumber": "To number (recipient)",
+					"placeholderToNumber": "+15559876543"
 				}
 			},
 			"table": {

@@ -25,7 +25,7 @@ const NotificationSchema = new Schema<NotificationDocument>(
 		},
 		type: {
 			type: String,
-			enum: ["email", "slack", "discord", "webhook", "pager_duty", "matrix", "teams", "telegram", "pushover"] as NotificationChannel[],
+			enum: ["email", "slack", "discord", "webhook", "pager_duty", "matrix", "teams", "telegram", "pushover", "twilio"] as NotificationChannel[],
 			required: true,
 		},
 		notificationName: {
@@ -37,6 +37,8 @@ const NotificationSchema = new Schema<NotificationDocument>(
 		homeserverUrl: { type: String },
 		roomId: { type: String },
 		accessToken: { type: String },
+		accountSid: { type: String },
+		twilioPhoneNumber: { type: String },
 	},
 	{
 		timestamps: true,
