@@ -90,9 +90,7 @@ const RegisterPage = () => {
 			title={t("pages.auth.register.title")}
 			subtitle={t("pages.auth.register.subtitle")}
 		>
-			{!token && (
-				<Alert severity="info">{t("pages.auth.register.setupNotice")}</Alert>
-			)}
+			{!token && <Alert severity="info">{t("pages.auth.register.setupNotice")}</Alert>}
 			<Controller
 				name="firstName"
 				control={control}
