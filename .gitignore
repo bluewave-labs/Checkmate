@@ -3,10 +3,8 @@
 .VSCodeCounter
 *.sh
 mongo
-timescaledb
 node_modules/
 docs/architecture
 docs/reviews
 docs/todo
 docs/frontend
-docs/timescale

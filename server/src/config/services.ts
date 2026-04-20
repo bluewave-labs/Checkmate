@@ -30,6 +30,7 @@ import {
 	TeamsProvider,
 	TelegramProvider,
 	PushoverProvider,
+	TwilioProvider,
 	// Interfaces
 	INetworkService,
 	IEmailService,
@@ -99,19 +100,6 @@ import {
 	MongoTeamsRepository,
 	MongoMaintenanceWindowsRepository,
 	MongoSettingsRepository,
-	TimescaleMonitorsRepository,
-	TimescaleChecksRepository,
-	TimescaleGeoChecksRepository,
-	TimescaleMonitorStatsRepository,
-	TimescaleStatusPagesRepository,
-	TimescaleUsersRepository,
-	TimescaleInvitesRepository,
-	TimescaleRecoveryTokensRepository,
-	TimescaleNotificationsRepository,
-	TimescaleIncidentsRepository,
-	TimescaleTeamsRepository,
-	TimescaleMaintenanceWindowsRepository,
-	TimescaleSettingsRepository,
 	IMonitorsRepository,
 	IChecksRepository,
 	IGeoChecksRepository,
@@ -127,7 +115,6 @@ import {
 	IMaintenanceWindowsRepository,
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
-import TimescaleDB from "@/db/TimescaleDB.js";
 import { AppError } from "@/utils/AppError.js";
 
 export type InitializedServices = {
@@ -184,8 +171,6 @@ export const initializeServices = async ({
 
 	if (dbType === "mongodb") {
 		db = new MongoDB(logger, envSettings);
-	} else if (dbType === "timescaledb") {
-		db = new TimescaleDB(logger, envSettings);
 	}
 
 	if (!db) {
@@ -225,23 +210,7 @@ export const initializeServices = async ({
 		teamsRepository = new MongoTeamsRepository();
 		maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
 	} else {
-		const pool = db.getPool();
-		if (!pool) {
-			throw new Error("Failed to get database pool");
-		}
-		monitorsRepository = new TimescaleMonitorsRepository(pool);
-		checksRepository = new TimescaleChecksRepository(pool);
-		geoChecksRepository = new TimescaleGeoChecksRepository(pool);
-		monitorStatsRepository = new TimescaleMonitorStatsRepository(pool);
-		statusPagesRepository = new TimescaleStatusPagesRepository(pool);
-		usersRepository = new TimescaleUsersRepository(pool);
-		invitesRepository = new TimescaleInvitesRepository(pool);
-		recoveryTokensRepository = new TimescaleRecoveryTokensRepository(pool);
-		settingsRepository = new TimescaleSettingsRepository(pool);
-		notificationsRepository = new TimescaleNotificationsRepository(pool);
-		incidentsRepository = new TimescaleIncidentsRepository(pool);
-		teamsRepository = new TimescaleTeamsRepository(pool);
-		maintenanceWindowsRepository = new TimescaleMaintenanceWindowsRepository(pool);
+		throw new AppError({ message: "Unsupported database type", status: 500 });
 	}
 
 	// Inject settings repository into settings service (now that DB is connected)
@@ -300,6 +269,7 @@ export const initializeServices = async ({
 	const teamsProvider = new TeamsProvider(logger);
 	const telegramProvider = new TelegramProvider(logger);
 	const pushoverProvider = new PushoverProvider(logger);
+	const twilioProvider = new TwilioProvider(logger);
 
 	const notificationsService = new NotificationsService(
 		notificationsRepository,
@@ -313,6 +283,7 @@ export const initializeServices = async ({
 		teamsProvider,
 		telegramProvider,
 		pushoverProvider,
+		twilioProvider,
 		settingsService,
 		logger,
 		notificationMessageBuilder
