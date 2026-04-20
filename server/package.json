@@ -79,7 +79,6 @@
 		"@types/multer": "^2.0.0",
 		"@types/nodemailer": "7.0.1",
 		"@types/papaparse": "^5.5.2",
-		"@types/pg": "8.20.0",
 		"@types/ping": "0.4.4",
 		"@types/swagger-ui-express": "4.1.8",
 		"@types/ws": "^8.18.1",
