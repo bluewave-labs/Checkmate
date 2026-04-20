@@ -6,9 +6,9 @@ cd ../../
 
 # Define an array of services and their Dockerfiles
 declare -A services=(
-  ["uptime_client"]="./docker/prod/client.Dockerfile"
-  ["uptime_database_mongo"]="./docker/prod/mongoDB.Dockerfile"
-  ["uptime_server"]="./docker/prod/server.Dockerfile"
+  ["uptime_client"]="./docker/unified/client.Dockerfile"
+  ["uptime_database_mongo"]="./docker/unified/mongoDB.Dockerfile"
+  ["uptime_server"]="./docker/unified/server.Dockerfile"
 )
 
 # Loop through each service and build the corresponding image
