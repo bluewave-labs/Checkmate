@@ -6,13 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { useRegisterForm } from "@/Hooks/useRegisterForm";
 import type { RegisterFormData } from "@/Validation/register";
 import { useTranslation } from "react-i18next";
-import { usePost } from "@/Hooks/UseApi";
-import { useSuperAdminRedirect } from "@/Hooks/useSuperAdminRedirect";
+import { useLazyGet, usePost } from "@/Hooks/UseApi";
 import { setAuthState } from "@/Features/Auth/authSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import type { AuthResponse } from "@/Types/User";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface RegisterPayload {
 	user: Omit<RegisterFormData, "confirm">;
@@ -34,11 +33,17 @@ const RegisterPage = () => {
 	const { post: verifyToken } = usePost<{ token: string }, InviteVerifyResponse>();
 	const hasVerified = useRef(false);
 
-	const { isLoading: isCheckingAdmin } = useSuperAdminRedirect({
-		redirectTo: "/login",
-		redirectWhen: true,
-		skip: !!token,
-	});
+	const [isCheckingAdmin, setIsCheckingAdmin] = useState(!token);
+	const { get } = useLazyGet<boolean>();
+
+	useEffect(() => {
+		if (token) return;
+		get("/auth/users/superadmin").then((res) => {
+			if (res?.data === true) navigate("/login", { replace: true });
+			else setIsCheckingAdmin(false);
+		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const { control, handleSubmit, setError, reset } = useForm<RegisterFormData>({
 		resolver: zodResolver(schema),

@@ -1,6 +1,7 @@
 import { BaseAuthPage, TextLink } from "@/Components/design-elements";
 import { Button, TextField } from "@/Components/inputs";
 
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
@@ -9,8 +10,7 @@ import type { LoginFormData } from "@/Validation/login";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setAuthState } from "@/Features/Auth/authSlice";
-import { usePost } from "@/Hooks/UseApi";
-import { useSuperAdminRedirect } from "@/Hooks/useSuperAdminRedirect";
+import { useLazyGet, usePost } from "@/Hooks/UseApi";
 
 const LoginPage = () => {
 	const { t } = useTranslation();
@@ -18,10 +18,16 @@ const LoginPage = () => {
 	const navigate = useNavigate();
 	const { post, loading } = usePost();
 
-	const { isLoading: isCheckingAdmin } = useSuperAdminRedirect({
-		redirectTo: "/register",
-		redirectWhen: false,
-	});
+	const [isCheckingAdmin, setIsCheckingAdmin] = useState(true);
+	const { get } = useLazyGet<boolean>();
+
+	useEffect(() => {
+		get("/auth/users/superadmin").then((res) => {
+			if (res?.data === false) navigate("/register", { replace: true });
+			else setIsCheckingAdmin(false);
+		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const { schema, defaults } = useLoginForm();
 
