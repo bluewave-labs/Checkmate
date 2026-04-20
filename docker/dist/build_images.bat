@@ -25,6 +25,7 @@ for /L %%i in (0,1,2) do (
     REM Check if the build succeeded
     if errorlevel 1 (
         echo Error building !service! image. Exiting...
+        pause
         exit /b 1
     )
 )

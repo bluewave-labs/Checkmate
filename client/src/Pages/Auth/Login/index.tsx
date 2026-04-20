@@ -1,4 +1,4 @@
-import { BaseAuthPage, TextLink } from "@/Components/design-elements";
+import { BaseAuthPage } from "@/Components/design-elements";
 import { Button, TextField } from "@/Components/inputs";
 
 import { useTranslation } from "react-i18next";

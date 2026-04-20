@@ -7,12 +7,11 @@ import { StatusLabel, BaseBox } from "@/Components/design-elements";
 import { SwitchComponent } from "@/Components/inputs";
 import { InfrastructureMetrics } from "@/Pages/StatusPage/Status/Components/InfrastructureMetrics";
 
-import { useTheme, type Theme } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import type { Monitor } from "@/Types/Monitor";
 import type { StatusPage } from "@/Types/StatusPage";
-import { getMonitorTypeLabel } from "@/Types/StatusPage";
 import type { RootState } from "@/Types/state";
 import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 
@@ -25,17 +24,6 @@ interface MonitorsListProps {
 	monitors: StatusPageMonitor[];
 }
 
-const getMonitorBadgeStyles = (monitorType: string, theme: Theme) => {
-	const bg =
-		monitorType === "hardware" ? theme.palette.info.light : theme.palette.success.light;
-	return {
-		backgroundColor: bg,
-		color: theme.palette.background.paper,
-		padding: `${theme.spacing(SPACING.SM)} ${theme.spacing(SPACING.LG)}`,
-		borderRadius: theme.shape.borderRadius,
-	};
-};
-
 const MonitorHeader = ({
 	monitor,
 	showURL,
@@ -44,7 +32,6 @@ const MonitorHeader = ({
 	showURL: boolean;
 }) => {
 	const theme = useTheme();
-	const { t } = useTranslation();
 
 	return (
 		<Stack

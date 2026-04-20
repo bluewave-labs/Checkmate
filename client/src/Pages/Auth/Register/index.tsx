@@ -1,21 +1,12 @@
-import { BaseAuthPage } from "@/Components/design-elements";
-import { Button, TextField } from "@/Components/inputs";
-import { useForm, Controller } from "react-hook-form";
+import { BaseAuthPage, TextLink } from "@/Components/design-elements";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { useRegisterForm } from "@/Hooks/useRegisterForm";
 import type { RegisterFormData } from "@/Validation/register";
 import { useTranslation } from "react-i18next";
 import { usePost, useGet } from "@/Hooks/UseApi";
-import { setAuthState } from "@/Features/Auth/authSlice";
-import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import type { AuthResponse } from "@/Types/User";
 import { useEffect, useRef } from "react";
-
-interface RegisterPayload {
-	user: Omit<RegisterFormData, "confirm">;
-	token?: string;
-}
 
 interface InviteVerifyResponse {
 	email: string;
@@ -24,8 +15,6 @@ interface InviteVerifyResponse {
 const RegisterPage = () => {
 	const { t } = useTranslation();
 	const { schema, defaults } = useRegisterForm();
-	const { post, loading } = usePost<RegisterPayload, AuthResponse>();
-	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const { token } = useParams<{ token?: string }>();
 
@@ -36,7 +25,7 @@ const RegisterPage = () => {
 		token ? null : "/auth/users/superadmin"
 	);
 
-	const { control, handleSubmit, setError, reset } = useForm<RegisterFormData>({
+	const { handleSubmit, reset } = useForm<RegisterFormData>({
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
@@ -65,7 +54,7 @@ const RegisterPage = () => {
 
 	if (isCheckingAdmin) return null;
 
-	const onSubmit = async (data: RegisterFormData) => {
+	const onSubmit = async ({/*data: RegisterFormData*/}) => {
 		{/* Disabled
 		if (loading) return;
 

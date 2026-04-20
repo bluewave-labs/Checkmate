@@ -1,25 +1,22 @@
-import { Button, TextField } from "@/Components/inputs";
 import { BaseAuthPage, TextLink } from "@/Components/design-elements";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { useRecoveryForm } from "@/Hooks/useRecoveryForm";
 import type { RecoveryFormData } from "@/Validation/recovery";
-import { usePost } from "@/Hooks/UseApi";
 import { useTranslation } from "react-i18next";
 
 const ForgotPasswordPage = () => {
 	const { t } = useTranslation();
-	const { post, loading } = usePost();
 
 	const { schema, defaults } = useRecoveryForm();
 
-	const { control, handleSubmit } = useForm<RecoveryFormData>({
+	const { handleSubmit } = useForm<RecoveryFormData>({
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
 
-	const onSubmit = async (data: RecoveryFormData) => {
+	const onSubmit = async ({/*data: RecoveryFormData*/}) => {
 		{/* Disabled
 		if (loading) return;
 
