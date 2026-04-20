@@ -67,12 +67,14 @@ const MonitorHeader = ({
 					>
 						{monitor.name}
 					</Typography>
+					{/* Removed due to security concerns
 					<Typography
 						variant="caption"
 						sx={getMonitorBadgeStyles(monitor.type ?? "", theme)}
 					>
 						{getMonitorTypeLabel(monitor.type, t)}
 					</Typography>
+					*/}
 				</Stack>
 				{showURL && monitor.url && (
 					<Typography

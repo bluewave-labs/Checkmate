@@ -66,6 +66,7 @@ const RegisterPage = () => {
 	if (isCheckingAdmin) return null;
 
 	const onSubmit = async (data: RegisterFormData) => {
+		{/* Disabled
 		if (loading) return;
 
 		const { confirm, ...userData } = data;
@@ -83,6 +84,7 @@ const RegisterPage = () => {
 				setError("email", { message: result.msg });
 			}
 		}
+		*/}
 	};
 
 	return (
@@ -92,6 +94,7 @@ const RegisterPage = () => {
 			title={t("pages.auth.register.title")}
 			subtitle={t("pages.auth.register.subtitle")}
 		>
+			{/* Disabled
 			<Controller
 				name="firstName"
 				control={control}
@@ -167,6 +170,13 @@ const RegisterPage = () => {
 			>
 				{t("pages.auth.register.submit")}
 			</Button>
+			*/}
+			<TextLink
+				alignSelf={"center"}
+				text="Registration is currently disabled. Please contact the administrator to create an account."
+				linkText="Go back to login"
+				href="/login"
+			/>
 		</BaseAuthPage>
 	);
 };

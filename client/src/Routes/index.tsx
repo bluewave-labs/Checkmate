@@ -53,6 +53,8 @@ import CreateMonitor from "@/Pages/CreateMonitor";
 const Routes = () => {
 	return (
 		<LibRoutes>
+			<Route index element={<Navigate to="/status/public/1" replace />} />
+
 			<Route
 				path="/"
 				element={
@@ -61,10 +63,11 @@ const Routes = () => {
 					</ProtectedRoute>
 				}
 			>
-				<Route
+				{/*<Route
 					path="/"
-					element={<Navigate to="/uptime" />}
-				/>
+				 	element={<Navigate to="/uptime" />}
+				/>*/}
+				
 				<Route
 					path="/uptime"
 					element={<Uptime />}

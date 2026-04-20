@@ -76,6 +76,7 @@ const LoginPage = () => {
 			>
 				{t("pages.auth.login.submit")}
 			</Button>
+			{/* Disabled 
 			<TextLink
 				alignSelf={"center"}
 				text={t("pages.auth.login.links.forgotPassword.text")}
@@ -88,6 +89,7 @@ const LoginPage = () => {
 				linkText={t("pages.auth.login.links.register.linkText")}
 				href="/register"
 			/>
+			*/}
 		</BaseAuthPage>
 	);
 };
