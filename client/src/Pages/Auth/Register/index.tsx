@@ -1,6 +1,6 @@
 import { BaseAuthPage } from "@/Components/design-elements";
 import { Button, TextField } from "@/Components/inputs";
-import { Alert } from "@mui/material";
+import Alert from "@mui/material/Alert";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { useRegisterForm } from "@/Hooks/useRegisterForm";
