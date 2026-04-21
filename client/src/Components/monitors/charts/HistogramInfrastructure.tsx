@@ -14,7 +14,6 @@ import { Typography } from "@mui/material";
 import { useTheme, type Theme } from "@mui/material/styles";
 import type { HardwareCheckStats } from "@/Types/Monitor";
 import { SPACING } from "@/Utils/Theme/constants";
-import { useTranslation } from "react-i18next";
 import type { TooltipProps } from "recharts";
 import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 import { formatDateWithTz, tooltipDateFormatLookup } from "@/Utils/TimeUtils";
@@ -104,7 +103,7 @@ type HistogramInfrastructureTooltipProps = TooltipProps<ValueType, NameType> & {
 	range: string;
 	theme: Theme;
 	uiTimezone: string;
-	type: string;
+	title?: string;
 	labelFormatter?: (value: number) => string;
 };
 
@@ -114,17 +113,13 @@ const HistogramInfrastructureTooltip = ({
 	range,
 	theme,
 	label,
-	type,
+	title,
 	uiTimezone,
 	labelFormatter,
 }: HistogramInfrastructureTooltipProps) => {
-	const { t } = useTranslation();
-
 	if (!active || !payload?.length || range == null) return null;
 
 	const formattedDate = tooltipDateFormatLookup(range);
-
-	const displayLabel = t(`pages.infrastructure.charts.labels.${type}`);
 
 	return (
 		<BaseBox sx={{ py: theme.spacing(SPACING.LG), px: theme.spacing(SPACING.XS) }}>
@@ -134,8 +129,7 @@ const HistogramInfrastructureTooltip = ({
 
 			{payload.map((entry) => (
 				<Typography key={entry.dataKey}>
-					{displayLabel}:{" "}
-					{labelFormatter ? labelFormatter(entry.value as number) : entry.value}
+					{title}: {labelFormatter ? labelFormatter(entry.value as number) : entry.value}
 				</Typography>
 			))}
 		</BaseBox>
@@ -253,8 +247,8 @@ export const HistogramInfrastructure = ({
 						content={(props) => (
 							<HistogramInfrastructureTooltip
 								{...props}
-								type={type}
 								theme={theme}
+								title={title}
 								labelFormatter={yAxisFormatter}
 								range={dateRange}
 								uiTimezone={uiTimezone}
