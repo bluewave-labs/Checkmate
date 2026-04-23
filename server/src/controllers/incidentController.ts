@@ -90,7 +90,8 @@ class IncidentController implements IIncidentController {
 				throw new AppError({ message: "Incident ID is required", service: SERVICE_NAME, status: 400 });
 			}
 
-			const resolvedIncident = await this.incidentService.resolveIncident(incidentId, userId, teamId, req?.body?.comment, userEmail);
+			const comment = Array.isArray(req.body.comment) ? req.body.comment[0] : req.body.comment;
+			const resolvedIncident = await this.incidentService.resolveIncident(incidentId, userId, teamId, comment, userEmail);
 
 			return res.status(200).json({
 				success: true,
