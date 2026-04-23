@@ -1,17 +1,16 @@
 # ---------------------
 # Frontend build stage
 # ---------------------
-FROM node:20-slim AS frontend-build
-
-
+# Build on the host arch (BUILDPLATFORM) rather than under QEMU — the output is
+# pure JS so it's arch-independent, and this avoids the esbuild host/native
+# binary version mismatch under emulation.
+FROM --platform=$BUILDPLATFORM node:20-slim AS frontend-build
 
 WORKDIR /app/client
 
-COPY client/package.json ./
+COPY client/package*.json ./
 
-RUN npm install
-
-RUN npm install esbuild@0.25.5 --build-from-source
+RUN npm ci
 
 COPY client ./
 
