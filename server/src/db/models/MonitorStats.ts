@@ -16,7 +16,7 @@ const MonitorStatsSchema = new Schema<MonitorStatsDocument>(
 		monitorId: {
 			type: Schema.Types.ObjectId,
 			ref: "Monitor",
-			index: true,
+			unique: true,
 			required: true,
 		},
 		avgResponseTime: {

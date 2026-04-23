@@ -1,19 +1,12 @@
 const SERVICE_NAME = "DiscordProvider";
 import type { AlertDiscordPayload, DiscordEmbedField, Notification } from "@/types/index.js";
-import { INotificationProvider } from "@/service/index.js";
+import { NotificationProvider } from "@/service/infrastructure/notificationProviders/INotificationProvider.js";
 import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
 import type { NotificationMessage, NotificationSeverity } from "@/types/notificationMessage.js";
 import got from "got";
-import { ILogger } from "@/utils/logger.js";
 
-export class DiscordProvider implements INotificationProvider {
-	private logger: ILogger;
-
-	constructor(logger: ILogger) {
-		this.logger = logger;
-	}
-
-	sendTestAlert = async (notification: Notification) => {
+export class DiscordProvider extends NotificationProvider {
+	sendTestAlert = async (notification: Partial<Notification>) => {
 		if (!notification.address) {
 			return false;
 		}
@@ -23,6 +16,7 @@ export class DiscordProvider implements INotificationProvider {
 				headers: {
 					"Content-Type": "application/json",
 				},
+				...this.gotRequestOptions(),
 			});
 			return true;
 		} catch (error) {
@@ -55,6 +49,7 @@ export class DiscordProvider implements INotificationProvider {
 				headers: {
 					"Content-Type": "application/json",
 				},
+				...this.gotRequestOptions(),
 			});
 			return true;
 		} catch (error) {

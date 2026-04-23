@@ -15,7 +15,16 @@ import { NormalizeData } from "@/utils/dataUtils.js";
 
 const SERVICE_NAME = "statusPageController";
 
-class StatusPageController {
+export interface IStatusPageController {
+	readonly serviceName: string;
+	createStatusPage(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	updateStatusPage(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	getStatusPageByUrl(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	getStatusPagesByTeamId(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	deleteStatusPage(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+}
+
+class StatusPageController implements IStatusPageController {
 	static SERVICE_NAME = SERVICE_NAME;
 	private statusPageService: IStatusPageService;
 	private monitorsRepository: IMonitorsRepository;
@@ -66,7 +75,7 @@ class StatusPageController {
 			if (statusPage === null) {
 				throw new AppError({ message: "Status page not found", status: 404 });
 			}
-			return res.status(200).json({
+			res.status(200).json({
 				success: true,
 				msg: "Status page updated successfully",
 				data: statusPage,

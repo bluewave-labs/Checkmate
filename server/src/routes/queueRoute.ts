@@ -1,20 +1,19 @@
 import { Router } from "express";
-import { isAllowed } from "../middleware/isAllowed.js";
+import { isAllowed } from "@/middleware/isAllowed.js";
+import { IJobQueueController } from "@/controllers/queueController.js";
 class QueueRoutes {
 	private router: Router;
-	private queueController: any;
+	private queueController: IJobQueueController;
 
-	constructor(queueController: any) {
+	constructor(queueController: IJobQueueController) {
 		this.router = Router();
 		this.queueController = queueController;
 		this.initRoutes();
 	}
 	initRoutes() {
 		this.router.get("/jobs", isAllowed(["admin", "superadmin"]), this.queueController.getJobs);
-		this.router.post("/jobs", isAllowed(["admin", "superadmin"]), this.queueController.addJob);
 
 		this.router.get("/metrics", isAllowed(["admin", "superadmin"]), this.queueController.getMetrics);
-		this.router.get("/health", isAllowed(["admin", "superadmin"]), this.queueController.checkQueueHealth);
 		this.router.get("/all-metrics", isAllowed(["admin", "superadmin"]), this.queueController.getAllMetrics);
 		this.router.post("/flush", isAllowed(["admin", "superadmin"]), this.queueController.flushQueue);
 	}

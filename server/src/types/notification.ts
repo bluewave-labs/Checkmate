@@ -1,4 +1,15 @@
-export const NotificationChannels = ["email", "slack", "discord", "webhook", "pager_duty", "matrix"] as const;
+export const NotificationChannels = [
+	"email",
+	"slack",
+	"discord",
+	"webhook",
+	"pager_duty",
+	"matrix",
+	"teams",
+	"telegram",
+	"pushover",
+	"twilio",
+] as const;
 export type NotificationChannel = (typeof NotificationChannels)[number];
 
 export interface Notification {
@@ -12,6 +23,8 @@ export interface Notification {
 	homeserverUrl?: string;
 	roomId?: string;
 	accessToken?: string;
+	accountSid?: string;
+	twilioPhoneNumber?: string;
 	createdAt: string;
 	updatedAt: string;
 }

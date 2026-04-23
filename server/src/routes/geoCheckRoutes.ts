@@ -1,10 +1,11 @@
+import { IGeoCheckController } from "@/controllers/geoCheckController.js";
 import { Router } from "express";
 
 class GeoCheckRoutes {
 	private router: Router;
-	private geoCheckController: any;
+	private geoCheckController: IGeoCheckController;
 
-	constructor(geoCheckController: any) {
+	constructor(geoCheckController: IGeoCheckController) {
 		this.router = Router();
 		this.geoCheckController = geoCheckController;
 		this.initRoutes();

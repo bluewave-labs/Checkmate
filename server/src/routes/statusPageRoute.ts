@@ -1,12 +1,13 @@
+import { IStatusPageController } from "@/controllers/statusPageController.js";
 import { RequestHandler, Router } from "express";
 import multer from "multer";
 const upload = multer();
 
 class StatusPageRoutes {
 	private router: Router;
-	private statusPageController: any;
+	private statusPageController: IStatusPageController;
 
-	constructor(statusPageController: any, verifyJWT: RequestHandler, verifyStatusPageAccess: RequestHandler) {
+	constructor(statusPageController: IStatusPageController, verifyJWT: RequestHandler, verifyStatusPageAccess: RequestHandler) {
 		this.router = Router();
 		this.statusPageController = statusPageController;
 		this.initRoutes(verifyJWT, verifyStatusPageAccess);

@@ -23,16 +23,22 @@ const StatusPageView = () => {
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const isPublic = location.pathname.startsWith("/status/public");
 
-	const apiUrl = url ? `/status-page/${url}?type=uptime` : null;
+	const apiUrl = url ? `/status-page/${url}?type=uptime&type=infrastructure` : null;
 
-	const { data, isLoading, error } = useGet<StatusPageResponse>(apiUrl);
+	const { data, isLoading, error } = useGet<StatusPageResponse>(
+		apiUrl,
+		{},
+		{
+			refreshInterval: 10000,
+		}
+	);
 
 	const statusPage = data?.statusPage;
 	const monitors = data?.monitors ?? [];
 
 	if (!statusPage) return null;
 
-	if (monitors?.length === 0) {
+	if (monitors.length === 0) {
 		return (
 			<BasePage
 				loading={isLoading}

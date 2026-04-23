@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "@/utils/AppError.js";
-import { requireTeamId, requireUserRoles } from "./controllerUtils.js";
-import type { UserRole } from "@/types/user.js";
+import { requireTeamId, requireUserEmail, requireUserId, requireUserRoles } from "@/controllers/controllerUtils.js";
 
 import {
 	registrationBodyValidation,
@@ -20,15 +19,33 @@ import {
 	editSuperadminUserByIdBodyValidation,
 	editUserPasswordByIdBodyValidation,
 } from "@/validation/userValidation.js";
+import { IUserService } from "@/service/index.js";
 
 const SERVICE_NAME = "authController";
 
-class AuthController {
+export interface IAuthController {
+	registerUser(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	createUser(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	loginUser(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	editUser(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	checkSuperadminExists(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	requestRecovery(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	validateRecovery(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	resetPassword(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	deleteUser(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	deleteUserById(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	getAllUsers(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	getUserById(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	editUserById(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	editUserPasswordById(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+}
+
+class AuthController implements IAuthController {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private userService: any;
+	private userService: IUserService;
 
-	constructor(userService: any) {
+	constructor(userService: IUserService) {
 		this.userService = userService;
 	}
 
@@ -41,11 +58,12 @@ class AuthController {
 			const newUser = req.body.user;
 			const newUserToken = req.body.token;
 			if (newUser?.email) {
-				newUser.email = newUser.email.toLowerCase();
+				const newUserEmail = requireUserEmail(newUser.email);
+				newUser.email = newUserEmail.toLowerCase();
 			}
-			registrationBodyValidation.parse(newUser);
+			const validatedBody = registrationBodyValidation.parse(newUser);
 
-			const { user, token } = await this.userService.registerUser(newUser, newUserToken, req.file);
+			const { user, token } = await this.userService.registerUser(validatedBody, newUserToken, req?.file ?? null);
 			res.status(200).json({
 				success: true,
 				msg: "User registered successfully",
@@ -62,11 +80,11 @@ class AuthController {
 			if (userData?.email) {
 				userData.email = userData.email.toLowerCase();
 			}
-			createUserBodyValidation.parse(userData);
+			const validatedBody = createUserBodyValidation.parse(userData);
 
 			const teamId = requireTeamId(req.user?.teamId);
-			const actorRoles = requireUserRoles(req.user?.role) as UserRole[];
-			const newUser = await this.userService.createUser(userData, teamId, actorRoles, req.file);
+			const actorRoles = requireUserRoles(req.user?.role);
+			const newUser = await this.userService.createUser(validatedBody, teamId, actorRoles, req?.file ?? null);
 			res.status(201).json({
 				success: true,
 				msg: "User created successfully",
@@ -100,8 +118,10 @@ class AuthController {
 
 	editUser = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			editUserBodyValidation.parse(req.body);
-			const updatedUser = await this.userService.editUser(req.body, req.file, req.user);
+			const validatedBody = editUserBodyValidation.parse(req.body);
+			const userId = requireUserId(req.user?.id);
+			const userEmail = requireUserEmail(req.user?.email);
+			const updatedUser = await this.userService.editUser(validatedBody, req?.file ?? null, userId, userEmail);
 
 			res.status(200).json({
 				success: true,
@@ -170,7 +190,15 @@ class AuthController {
 
 	deleteUser = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await this.userService.deleteUser(req.user);
+			const userId = requireUserId(req.user?.id);
+			const teamId = requireTeamId(req.user?.teamId);
+			const roles = requireUserRoles(req.user?.role);
+
+			await this.userService.deleteUser({
+				userId,
+				teamId,
+				roles,
+			});
 			return res.status(200).json({
 				success: true,
 				msg: "User deleted successfully",
@@ -182,9 +210,12 @@ class AuthController {
 
 	deleteUserById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			getUserByIdParamValidation.parse(req.params);
-			const targetUserId = req.params.userId;
-			await this.userService.deleteUserById(req.user, targetUserId);
+			const validatedParams = getUserByIdParamValidation.parse(req.params);
+			const targetUserId = validatedParams.userId;
+			const actorId = requireUserId(req.user?.id);
+			const actorTeamId = requireTeamId(req.user?.teamId);
+			const actorRoles = requireUserRoles(req.user?.role);
+			await this.userService.deleteUserById({ actorId, actorTeamId, actorRoles, targetUserId });
 			return res.status(200).json({
 				success: true,
 				msg: "User removed successfully",
@@ -209,19 +240,9 @@ class AuthController {
 
 	getUserById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			getUserByIdParamValidation.parse(req.params);
-			const userId = req?.params?.userId;
-			const roles = req?.user?.role;
-
-			if (!userId) {
-				throw new Error("No user ID in request");
-			}
-
-			if (!roles || roles.length === 0) {
-				throw new Error("No roles in request");
-			}
-
-			const user = await this.userService.getUserById(roles, userId);
+			const validatedParams = getUserByIdParamValidation.parse(req.params);
+			const actorRoles = requireUserRoles(req.user?.role);
+			const user = await this.userService.getUserById(actorRoles, validatedParams.userId);
 
 			return res.status(200).json({ success: true, msg: "ok", data: user });
 		} catch (error) {
@@ -231,24 +252,19 @@ class AuthController {
 
 	editUserById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const roles = req?.user?.role;
+			const actorRoles = requireUserRoles(req.user?.role);
+			const actorId = requireUserId(req.user?.id);
 
-			if (!roles || !roles.includes("superadmin")) {
+			if (!actorRoles.includes("superadmin")) {
 				throw new AppError({ message: "Unauthorized", status: 403 });
 			}
 
-			const userId = req.params.userId as string;
-			const user = { ...req.body };
-
-			editUserByIdParamValidation.parse(req.params);
+			const validatedParams = editUserByIdParamValidation.parse(req.params);
 			// If this is superadmin self edit, allow "superadmin" role
-			if (userId === req.user?.id) {
-				editSuperadminUserByIdBodyValidation.parse(req.body);
-			} else {
-				editUserByIdBodyValidation.parse(req.body);
-			}
+			const validatedBody =
+				validatedParams.userId === actorId ? editSuperadminUserByIdBodyValidation.parse(req.body) : editUserByIdBodyValidation.parse(req.body);
 
-			await this.userService.editUserById(userId, user);
+			await this.userService.editUserById(validatedParams.userId, validatedBody);
 			return res.status(200).json({ success: true, msg: "ok" });
 		} catch (error) {
 			next(error);
@@ -257,16 +273,14 @@ class AuthController {
 
 	editUserPasswordById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const roles = req?.user?.role;
-			if (!roles || !roles.includes("superadmin")) {
+			const actorRoles = requireUserRoles(req.user?.role);
+			if (!actorRoles.includes("superadmin")) {
 				throw new AppError({ message: "Unauthorized", status: 403 });
 			}
 
-			const userId = req.params.userId as string;
-			editUserByIdParamValidation.parse(req.params);
-			editUserPasswordByIdBodyValidation.parse(req.body);
-			const updatedPassword = req.body.password;
-			await this.userService.setPasswordByUserId(userId, updatedPassword);
+			const validatedParams = editUserByIdParamValidation.parse(req.params);
+			const validatedBody = editUserPasswordByIdBodyValidation.parse(req.body);
+			await this.userService.setPasswordByUserId(validatedParams.userId, validatedBody.password);
 			return res.status(200).json({ success: true, msg: "Password reset successfully" });
 		} catch (error) {
 			next(error);

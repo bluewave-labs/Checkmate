@@ -14,3 +14,4 @@ export * from "@/types/incident.js";
 export * from "@/types/email.js";
 export * from "@/types/team.js";
 export * from "@/types/maintenanceWindow.js";
+export * from "@/types/dlqItem.js";

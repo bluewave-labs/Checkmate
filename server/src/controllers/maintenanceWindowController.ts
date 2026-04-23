@@ -9,26 +9,37 @@ import {
 	deleteMaintenanceWindowByIdParamValidation,
 } from "@/validation/maintenanceWindowValidation.js";
 import { requireTeamId } from "@/controllers/controllerUtils.js";
+import { IMaintenanceWindowService } from "@/service/index.js";
 
-const SERVICE_NAME = "maintenanceWindowController";
-
-class MaintenanceWindowController {
-	static SERVICE_NAME = SERVICE_NAME;
-	private maintenanceWindowService: any;
-	constructor(maintenanceWindowService: any) {
+export interface IMaintenanceWindowController {
+	createMaintenanceWindows: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getMaintenanceWindowById: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getMaintenanceWindowsByTeamId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getMaintenanceWindowsByMonitorId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	deleteMaintenanceWindow: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	editMaintenanceWindow: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+}
+class MaintenanceWindowController implements IMaintenanceWindowController {
+	private maintenanceWindowService: IMaintenanceWindowService;
+	constructor(maintenanceWindowService: IMaintenanceWindowService) {
 		this.maintenanceWindowService = maintenanceWindowService;
-	}
-
-	get serviceName() {
-		return MaintenanceWindowController.SERVICE_NAME;
 	}
 
 	createMaintenanceWindows = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			createMaintenanceWindowBodyValidation.parse(req.body);
+			const validatedBody = createMaintenanceWindowBodyValidation.parse(req.body);
 			const teamId = requireTeamId(req?.user?.teamId);
 
-			await this.maintenanceWindowService.createMaintenanceWindow({ teamId, body: req.body });
+			const monitorIDs = validatedBody.monitors;
+			const name = validatedBody.name;
+			const active = validatedBody.active ?? true;
+			const duration = validatedBody.duration;
+			const durationUnit = validatedBody.durationUnit;
+			const repeat = validatedBody.repeat;
+			const start = validatedBody.start;
+			const end = validatedBody.end;
+
+			await this.maintenanceWindowService.createMaintenanceWindow({ teamId, monitorIDs, name, active, duration, durationUnit, repeat, start, end });
 
 			return res.status(200).json({
 				success: true,
@@ -40,11 +51,11 @@ class MaintenanceWindowController {
 	};
 	getMaintenanceWindowById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			getMaintenanceWindowByIdParamValidation.parse(req.params);
+			const validatedParams = getMaintenanceWindowByIdParamValidation.parse(req.params);
 
 			const teamId = requireTeamId(req.user?.teamId);
 
-			const maintenanceWindow = await this.maintenanceWindowService.getMaintenanceWindowById({ id: req.params.id as string, teamId });
+			const maintenanceWindow = await this.maintenanceWindowService.getMaintenanceWindowById({ id: validatedParams.id, teamId });
 
 			return res.status(200).json({
 				success: true,
@@ -58,11 +69,18 @@ class MaintenanceWindowController {
 
 	getMaintenanceWindowsByTeamId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			getMaintenanceWindowsByTeamIdQueryValidation.parse(req.query);
+			const validatedQuery = getMaintenanceWindowsByTeamIdQueryValidation.parse(req.query);
 
 			const teamId = requireTeamId(req?.user?.teamId);
 
-			const maintenanceWindows = await this.maintenanceWindowService.getMaintenanceWindowsByTeamId({ teamId, query: req.query });
+			const maintenanceWindows = await this.maintenanceWindowService.getMaintenanceWindowsByTeamId({
+				teamId,
+				active: validatedQuery.active,
+				page: validatedQuery.page,
+				rowsPerPage: validatedQuery.rowsPerPage,
+				field: validatedQuery.field,
+				order: validatedQuery.order,
+			});
 
 			return res.status(200).json({
 				success: true,
@@ -76,12 +94,12 @@ class MaintenanceWindowController {
 
 	getMaintenanceWindowsByMonitorId = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			getMaintenanceWindowsByMonitorIdParamValidation.parse(req.params);
+			const validatedParams = getMaintenanceWindowsByMonitorIdParamValidation.parse(req.params);
 
 			const teamId = requireTeamId(req?.user?.teamId);
 
 			const maintenanceWindows = await this.maintenanceWindowService.getMaintenanceWindowsByMonitorId({
-				monitorId: req.params.monitorId as string,
+				monitorId: validatedParams.monitorId,
 				teamId,
 			});
 
@@ -96,11 +114,11 @@ class MaintenanceWindowController {
 	};
 	deleteMaintenanceWindow = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			deleteMaintenanceWindowByIdParamValidation.parse(req.params);
+			const validatedParams = deleteMaintenanceWindowByIdParamValidation.parse(req.params);
 
 			const teamId = requireTeamId(req?.user?.teamId);
 
-			await this.maintenanceWindowService.deleteMaintenanceWindow({ id: req.params.id as string, teamId });
+			await this.maintenanceWindowService.deleteMaintenanceWindow({ id: validatedParams.id, teamId });
 
 			return res.status(200).json({
 				success: true,
@@ -113,14 +131,14 @@ class MaintenanceWindowController {
 
 	editMaintenanceWindow = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			editMaintenanceWindowByIdParamValidation.parse(req.params);
-			editMaintenanceByIdWindowBodyValidation.parse(req.body);
+			const validatedParams = editMaintenanceWindowByIdParamValidation.parse(req.params);
+			const validatedBody = editMaintenanceByIdWindowBodyValidation.parse(req.body);
 
 			const teamId = requireTeamId(req.user?.teamId);
 
 			const editedMaintenanceWindow = await this.maintenanceWindowService.editMaintenanceWindow({
-				id: req.params.id as string,
-				body: req.body,
+				id: validatedParams.id,
+				body: validatedBody,
 				teamId,
 			});
 			return res.status(200).json({

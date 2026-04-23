@@ -31,7 +31,7 @@ export interface InitializedControllers {
 export const initializeControllers = (services: InitializedServices): InitializedControllers => {
 	return {
 		authController: new AuthController(services.userService),
-		monitorController: new MonitorController(services.monitorService),
+		monitorController: new MonitorController(services.monitorService, services.notificationsService),
 		settingsController: new SettingsController(services.settingsService, services.emailService),
 		checkController: new CheckController(services.checkService),
 		geoCheckController: new GeoCheckController(services.geoChecksService),

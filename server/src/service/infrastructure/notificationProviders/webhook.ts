@@ -1,18 +1,11 @@
 const SERVICE_NAME = "WebhookProvider";
 import type { Notification } from "@/types/index.js";
-import { INotificationProvider } from "@/service/index.js";
+import { NotificationProvider } from "@/service/infrastructure/notificationProviders/INotificationProvider.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
 import got from "got";
-import { ILogger } from "@/utils/logger.js";
 
-export class WebhookProvider implements INotificationProvider {
-	private logger: ILogger;
-
-	constructor(logger: ILogger) {
-		this.logger = logger;
-	}
-
+export class WebhookProvider extends NotificationProvider {
 	sendMessage = async (notification: Notification, message: NotificationMessage): Promise<boolean> => {
 		if (!notification.address) {
 			return false;
@@ -27,6 +20,7 @@ export class WebhookProvider implements INotificationProvider {
 				headers: {
 					"Content-Type": "application/json",
 				},
+				...this.gotRequestOptions(),
 			});
 			this.logger.info({
 				message: "Webhook notification sent",
@@ -98,7 +92,7 @@ export class WebhookProvider implements INotificationProvider {
 		};
 	}
 
-	sendTestAlert = async (notification: Notification) => {
+	sendTestAlert = async (notification: Partial<Notification>) => {
 		if (!notification.address) {
 			return false;
 		}
@@ -108,6 +102,7 @@ export class WebhookProvider implements INotificationProvider {
 				headers: {
 					"Content-Type": "application/json",
 				},
+				...this.gotRequestOptions(),
 			});
 			return true;
 		} catch (error) {

@@ -1,14 +1,15 @@
 import { Router, RequestHandler } from "express";
 import { isAllowed } from "../middleware/isAllowed.js";
 import multer from "multer";
+import { IAuthController } from "@/controllers/authController.js";
 
 const upload = multer();
 
 class AuthRoutes {
 	private router: Router;
-	private authController: any;
+	private authController: IAuthController;
 
-	constructor(authController: any, verifyJWT: RequestHandler) {
+	constructor(authController: IAuthController, verifyJWT: RequestHandler) {
 		this.router = Router();
 		this.authController = authController;
 		this.initRoutes(verifyJWT);
@@ -31,8 +32,8 @@ class AuthRoutes {
 		this.router.patch("/users/:userId/password", verifyJWT, isAllowed(["superadmin"]), this.authController.editUserPasswordById);
 		this.router.delete("/users/:userId", verifyJWT, isAllowed(["admin", "superadmin"]), this.authController.deleteUserById);
 
-		this.router.patch("/user", verifyJWT, upload.single("profileImage"), this.authController.editUser);
-		this.router.delete("/user", verifyJWT, this.authController.deleteUser);
+		this.router.patch("/user", verifyJWT, upload.single("profileImage"), isAllowed(["admin", "superadmin", "user"]), this.authController.editUser);
+		this.router.delete("/user", verifyJWT, isAllowed(["admin", "superadmin", "user"]), this.authController.deleteUser);
 	}
 
 	getRouter() {

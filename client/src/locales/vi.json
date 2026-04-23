@@ -1,838 +1,1305 @@
 {
-	"submit": "",
-	"title": "",
-	"distributedStatusHeaderText": "",
-	"distributedStatusSubHeaderText": "",
-	"settingsDisabled": "",
-	"settingsSuccessSaved": "",
-	"settingsFailedToSave": "",
-	"settingsStatsCleared": "",
-	"settingsFailedToClearStats": "",
-	"settingsFailedToAddDemoMonitors": "",
-	"settingsMonitorsDeleted": "",
-	"settingsFailedToDeleteMonitors": "",
-	"starPromptTitle": "",
-	"starPromptDescription": "",
-	"https": "",
-	"http": "",
-	"monitor": "",
-	"aboutus": "",
-	"now": "",
-	"delete": "",
-	"configure": "",
-	"responseTime": "",
-	"ms": "",
-	"bar": "",
-	"area": "",
-	"country": "",
-	"city": "",
-	"response": "",
-	"monitorStatusUp": "",
-	"monitorStatusDown": "",
-	"webhookSendSuccess": "",
-	"webhookSendError": "",
-	"webhookUnsupportedPlatform": "",
-	"distributedRightCategoryTitle": "",
-	"distributedStatusServerMonitors": "",
-	"distributedStatusServerMonitorsDescription": "",
-	"distributedUptimeCreateSelectURL": "",
-	"distributedUptimeCreateChecks": "",
-	"distributedUptimeCreateChecksDescription": "",
-	"distributedUptimeCreateIncidentNotification": "",
-	"distributedUptimeCreateIncidentDescription": "",
-	"distributedUptimeCreateAdvancedSettings": "",
-	"distributedUptimeDetailsNoMonitorHistory": "",
-	"distributedUptimeDetailsStatusHeaderUptime": "",
-	"distributedUptimeDetailsStatusHeaderLastUpdate": "",
-	"notifications": {
-		"enableNotifications": "",
-		"testNotification": "",
-		"addOrEditNotifications": "",
-		"slack": {
-			"label": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": "",
-			"webhookRequired": ""
-		},
-		"discord": {
-			"label": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": "",
-			"webhookRequired": ""
-		},
-		"telegram": {
-			"label": "",
-			"description": "",
-			"tokenLabel": "",
-			"tokenPlaceholder": "",
-			"chatIdLabel": "",
-			"chatIdPlaceholder": "",
-			"fieldsRequired": ""
-		},
-		"webhook": {
-			"label": "",
-			"description": "",
-			"urlLabel": "",
-			"urlPlaceholder": "",
-			"urlRequired": ""
-		},
-		"testNotificationDevelop": "",
-		"integrationButton": "",
-		"testSuccess": "",
-		"testFailed": "",
-		"unsupportedType": "",
-		"networkError": "",
-		"fallback": {
-			"title": "",
-			"checks": [""]
-		},
-		"createButton": "",
-		"createTitle": "",
-		"create": {
-			"success": "",
-			"failed": ""
-		},
-		"fetch": {
-			"success": "",
-			"failed": ""
-		},
-		"delete": {
-			"success": "",
-			"failed": ""
-		},
-		"edit": {
-			"success": "",
-			"failed": ""
-		},
-		"test": {
-			"success": "",
-			"failed": ""
-		}
-	},
-	"testLocale": "",
-	"add": "",
-	"monitors": "",
-	"distributedUptimeStatusCreateStatusPage": "",
-	"distributedUptimeStatusCreateStatusPageAccess": "",
-	"distributedUptimeStatusCreateStatusPageReady": "",
-	"distributedUptimeStatusBasicInfoHeader": "",
-	"distributedUptimeStatusBasicInfoDescription": "",
-	"distributedUptimeStatusLogoHeader": "",
-	"distributedUptimeStatusLogoDescription": "",
-	"distributedUptimeStatusLogoUploadButton": "",
-	"distributedUptimeStatusStandardMonitorsHeader": "",
-	"distributedUptimeStatusStandardMonitorsDescription": "",
-	"distributedUptimeStatusCreateYour": "",
-	"distributedUptimeStatusEditYour": "",
-	"distributedUptimeStatusPublishedLabel": "",
-	"distributedUptimeStatusCompanyNameLabel": "",
-	"distributedUptimeStatusPageAddressLabel": "",
-	"distributedUptimeStatus30Days": "",
-	"distributedUptimeStatus60Days": "",
-	"distributedUptimeStatus90Days": "",
-	"distributedUptimeStatusPageNotSetUp": "",
-	"distributedUptimeStatusContactAdmin": "",
-	"distributedUptimeStatusPageNotPublic": "",
-	"distributedUptimeStatusPageDeleteDialog": "",
-	"distributedUptimeStatusPageDeleteConfirm": "",
-	"distributedUptimeStatusPageDeleteDescription": "",
-	"distributedUptimeStatusDevices": "",
-	"distributedUptimeStatusUpt": "",
-	"distributedUptimeStatusUptBurned": "",
-	"distributedUptimeStatusUptLogo": "",
-	"incidentsTableNoIncidents": "",
-	"incidentsTablePaginationLabel": "",
-	"incidentsTableMonitorName": "",
-	"incidentsTableStatus": "",
-	"incidentsTableDateTime": "",
-	"incidentsTableStatusCode": "",
-	"incidentsTableMessage": "",
-	"incidentsOptionsHeader": "",
-	"incidentsOptionsHeaderFilterBy": "",
-	"incidentsOptionsHeaderFilterAll": "",
-	"incidentsOptionsHeaderFilterDown": "",
-	"incidentsOptionsHeaderFilterCannotResolve": "",
-	"incidentsOptionsHeaderShow": "",
-	"incidentsOptionsHeaderLastHour": "",
-	"incidentsOptionsHeaderLastDay": "",
-	"incidentsOptionsHeaderLastWeek": "",
-	"incidentsOptionsPlaceholderAllServers": "",
-	"infrastructureCreateYour": "",
-	"infrastructureCreateGeneralSettingsDescription": "",
-	"infrastructureServerRequirement": "",
-	"infrastructureCustomizeAlerts": "",
-	"infrastructureAlertNotificationDescription": "",
-	"infrastructureCreateMonitor": "",
-	"infrastructureProtocol": "",
-	"infrastructureServerUrlLabel": "",
-	"infrastructureDisplayNameLabel": "",
-	"infrastructureAuthorizationSecretLabel": "",
-	"gb": "",
-	"mb": "",
-	"mem": "",
-	"memoryUsage": "",
-	"cpu": "",
-	"cpuUsage": "",
-	"cpuTemperature": "",
-	"diskUsage": "",
-	"used": "",
-	"total": "",
-	"cores": "",
-	"frequency": "",
-	"status": "",
-	"cpuPhysical": "",
-	"cpuLogical": "",
-	"cpuFrequency": "",
-	"avgCpuTemperature": "",
-	"memory": "",
-	"disk": "",
-	"uptime": "",
-	"os": "",
-	"host": "",
-	"actions": "",
-	"integrations": "",
-	"integrationsPrism": "",
-	"integrationsSlack": "",
-	"integrationsSlackInfo": "",
-	"integrationsDiscord": "",
-	"integrationsDiscordInfo": "",
-	"integrationsZapier": "",
-	"integrationsZapierInfo": "",
-	"commonSave": "",
-	"createYour": "",
-	"createMonitor": "",
-	"pause": "",
-	"resume": "",
-	"editing": "",
-	"url": "",
-	"access": "",
-	"timezone": "",
-	"features": "",
-	"administrator": "",
-	"loginHere": "",
-	"displayName": "",
-	"urlMonitor": "",
-	"portToMonitor": "",
-	"websiteMonitoring": "",
-	"websiteMonitoringDescription": "",
-	"pingMonitoring": "",
-	"pingMonitoringDescription": "",
-	"dockerContainerMonitoring": "",
-	"dockerContainerMonitoringDescription": "",
-	"portMonitoring": "",
-	"portMonitoringDescription": "",
-	"createMaintenanceWindow": "",
-	"createMaintenance": "",
-	"editMaintenance": "",
-	"maintenanceWindowName": "",
-	"friendlyNameInput": "",
-	"friendlyNamePlaceholder": "",
-	"maintenanceRepeat": "",
-	"maintenance": "",
-	"duration": "",
-	"addMonitors": "",
-	"window": "",
-	"cancel": "",
-	"message": "",
-	"low": "",
-	"high": "",
-	"statusCode": "",
-	"date&Time": "",
-	"type": "",
-	"statusPageName": "",
-	"publicURL": "",
-	"repeat": "",
-	"edit": "",
-	"createA": "",
-	"remove": "",
-	"maintenanceWindowDescription": "",
-	"startTime": "",
-	"timeZoneInfo": "",
-	"monitorsToApply": "",
-	"nextWindow": "",
-	"notFoundButton": "",
-	"pageSpeedConfigureSettingsDescription": "",
-	"monitorDisplayName": "",
-	"whenNewIncident": "",
-	"notifySMS": "",
-	"notifyEmails": "",
-	"seperateEmails": "",
-	"checkFrequency": "",
-	"chooseGame": "",
-	"matchMethod": "",
-	"expectedValue": "",
-	"deleteDialogTitle": "",
-	"deleteDialogDescription": "",
-	"pageSpeedMonitor": "",
-	"shown": "",
-	"ago": "",
-	"companyName": "",
-	"pageSpeedDetailsPerformanceReport": "",
-	"pageSpeedDetailsPerformanceReportCalculator": "",
-	"checkingEvery": "",
-	"statusPageCreateSettings": "",
-	"basicInformation": "",
-	"statusPageCreateBasicInfoDescription": "",
-	"statusPageCreateSelectTimeZoneDescription": "",
-	"statusPageCreateAppearanceDescription": "",
-	"statusPageCreateSettingsCheckboxLabel": "",
-	"statusPageCreateBasicInfoStatusPageAddress": "",
-	"statusPageCreateTabsContent": "",
-	"statusPageCreateTabsContentDescription": "",
-	"statusPageCreateTabsContentFeaturesDescription": "",
-	"showCharts": "",
-	"showUptimePercentage": "",
-	"removeLogo": "",
-	"statusPageStatus": "",
-	"statusPageStatusContactAdmin": "",
-	"statusPageStatusNotPublic": "",
-	"statusPageStatusNoPage": "",
-	"statusPageStatusServiceStatus": "",
-	"deleteStatusPage": "",
-	"deleteStatusPageConfirm": "",
-	"deleteStatusPageDescription": "",
-	"uptimeCreate": "",
-	"uptimeCreateJsonPath": "",
-	"uptimeCreateJsonPathQuery": "",
-	"maintenanceTableActionMenuDialogTitle": "",
-	"infrastructureEditYour": "",
-	"infrastructureEditMonitor": "",
-	"infrastructureMonitorCreated": "",
-	"infrastructureMonitorUpdated": "",
-	"errorInvalidTypeId": "",
-	"errorInvalidFieldId": "",
-	"inviteNoTokenFound": "",
-	"pageSpeedWarning": "",
-	"pageSpeedLearnMoreLink": "",
-	"pageSpeedAddApiKey": "",
-	"update": "",
-	"invalidFileFormat": "",
-	"invalidFileSize": "",
-	"ClickUpload": "",
-	"DragandDrop": "",
-	"MaxSize": "",
-	"SupportedFormats": "",
-	"FirstName": "",
-	"LastName": "",
-	"EmailDescriptionText": "",
-	"YourPhoto": "",
-	"PhotoDescriptionText": "",
-	"save": "",
-	"DeleteDescriptionText": "",
-	"DeleteAccountWarning": "",
-	"DeleteWarningTitle": "",
-	"bulkImport": {
-		"title": "",
-		"selectFileTips": "",
-		"selectFileDescription": "",
-		"selectFile": "",
-		"parsingFailed": "",
-		"uploadSuccess": "",
-		"validationFailed": "",
-		"noFileSelected": "",
-		"fallbackPage": ""
-	},
-	"DeleteAccountTitle": "",
-	"DeleteAccountButton": "",
-	"publicLink": "",
-	"maskedPageSpeedKeyPlaceholder": "",
-	"reset": "",
-	"ignoreTLSError": "",
-	"tlsErrorIgnored": "",
-	"ignoreTLSErrorDescription": "",
-	"createNew": "",
-	"greeting": {
-		"prepend": "",
-		"append": "",
-		"overview": ""
-	},
-	"roles": {
-		"superAdmin": "",
-		"admin": "",
-		"teamMember": "",
-		"demoUser": ""
-	},
-	"teamPanel": {
-		"teamMembers": "",
-		"filter": {
-			"all": "",
-			"member": ""
-		},
-		"inviteTeamMember": "",
-		"inviteNewTeamMember": "",
-		"inviteDescription": "",
-		"email": "",
-		"selectRole": "",
-		"inviteLink": "",
-		"cancel": "",
-		"noMembers": "",
-		"getToken": "",
-		"emailToken": "",
-		"table": {
-			"name": "",
-			"email": "",
-			"role": "",
-			"created": ""
-		}
-	},
-	"monitorState": {
-		"paused": "",
-		"resumed": "",
-		"active": ""
-	},
-	"menu": {
-		"uptime": "",
-		"pagespeed": "",
-		"infrastructure": "",
-		"incidents": "",
-		"statusPages": "",
-		"maintenance": "",
-		"integrations": "",
-		"settings": "",
-		"support": "",
-		"discussions": "",
-		"docs": "",
-		"changelog": "",
-		"profile": "",
-		"password": "",
-		"team": "",
-		"logOut": "",
-		"notifications": "",
-		"logs": ""
-	},
-	"settingsEmailUser": "",
-	"state": "",
-	"statusBreadCrumbsStatusPages": "",
-	"statusBreadCrumbsDetails": "",
-	"commonSaving": "",
-	"navControls": "",
-	"incidentsPageTitle": "",
-	"passwordPanel": {
-		"passwordChangedSuccess": "",
-		"passwordInputIncorrect": "",
-		"currentPassword": "",
-		"enterCurrentPassword": "",
-		"newPassword": "",
-		"enterNewPassword": "",
-		"confirmNewPassword": "",
-		"passwordRequirements": "",
-		"saving": ""
-	},
-	"emailSent": "",
-	"failedToSendEmail": "",
-	"settingsTestEmailSuccess": "",
-	"settingsTestEmailFailed": "",
-	"settingsTestEmailFailedWithReason": "",
-	"settingsTestEmailUnknownError": "",
-	"statusMsg": {
-		"paused": "",
-		"up": "",
-		"down": "",
-		"pending": ""
-	},
-	"uptimeGeneralInstructions": {
-		"http": "",
-		"ping": "",
-		"docker": "",
-		"port": "",
-		"game": ""
-	},
 	"common": {
-		"appName": "",
-		"monitoringAgentName": "",
-		"buttons": {
-			"toggleTheme": ""
+		"auth": {
+			"roles": {
+				"admin": "Quản trị viên",
+				"demo": "Demo",
+				"superadmin": "Quản trị viên cấp cao",
+				"user": "Người dùng"
+			}
 		},
-		"toasts": {
-			"networkError": "",
-			"checkConnection": "",
-			"unknownError": ""
+		"alerts": {
+			"pageSpeedApiKey": {
+				"content": "Cảnh báo: Bạn chưa thêm khóa API Google PageSpeed. Truy cập <settingsLink>Cài đặt</settingsLink> để thêm. Nếu không có khóa này, trình giám sát PageSpeed sẽ không hoạt động."
+			}
+		},
+		"appName": "",
+		"breadcrumbs": {
+			"details": "Chi tiết",
+			"home": "Trang chủ"
+		},
+		"buttons": {
+			"addMember": "Thêm thành viên",
+			"cancel": "Hủy",
+			"close": "Đóng",
+			"configure": "Cấu hình",
+			"confirm": "Xác nhận",
+			"create": "Tạo",
+			"delete": "Xóa",
+			"generateToken": "Tạo token",
+			"incidents": "Sự cố",
+			"inviteMember": "Mời thành viên",
+			"pause": "Tạm dừng",
+			"resume": "Tiếp tục",
+			"save": "",
+			"sendInvite": "Gửi lời mời",
+			"test": "Kiểm tra",
+			"testNotifications": "Kiểm tra thông báo",
+			"toggleTheme": "",
+			"flushQueue": "Xóa hàng đợi",
+			"notFound": "Về bảng điều khiển chính",
+			"resetPassword": "",
+			"reset": "",
+			"clear": "Xóa",
+			"addDemo": "Thêm trình giám sát mẫu",
+			"removeMonitors": "Xóa trình giám sát",
+			"sendTestEmail": "Gửi email kiểm tra",
+			"exportToJSON": "Xuất ra JSON",
+			"importFromJSON": "Nhập từ JSON",
+			"clearFilters": "Xóa bộ lọc",
+			"removeUser": "Xóa người dùng"
+		},
+		"charts": {
+			"labels": {
+				"averageResponseTime": "Thời gian phản hồi trung bình",
+				"downtime": "Thời gian ngừng hoạt động",
+				"high": "",
+				"low": "",
+				"uptime": "Thời gian hoạt động"
+			},
+			"histogram": {
+				"avg": "TB: {{value}} ms",
+				"max": "Tối đa: {{value}} ms"
+			}
+		},
+		"dialogs": {
+			"delete": {
+				"description": "Hành động này không thể hoàn tác.",
+				"title": "Bạn có chắc chắn muốn xóa không?"
+			}
+		},
+		"labels": {
+			"active": "Đang hoạt động",
+			"paused": "tạm dừng",
+			"na": "N/A",
+			"resolved": "Đã giải quyết",
+			"responseTime": "Thời gian phản hồi"
+		},
+		"form": {
+			"role": {
+				"option": {
+					"role": {
+						"label": "Vai trò"
+					}
+				}
+			},
+			"name": {
+				"option": {
+					"firstName": {
+						"label": "",
+						"placeholder": ""
+					},
+					"lastName": {
+						"label": "",
+						"placeholder": ""
+					}
+				}
+			},
+			"email": {
+				"option": {
+					"email": {
+						"label": "Email",
+						"placeholder": "you@example.com"
+					}
+				}
+			}
+		},
+		"table": {
+			"empty": "Không có dữ liệu",
+			"headers": {
+				"actions": "",
+				"dateTime": "Ngày & giờ",
+				"message": "Tin nhắn",
+				"monitor": "Trình giám sát",
+				"monitorId": "ID trình giám sát",
+				"name": "Tên",
+				"status": "Trạng thái",
+				"type": "",
+				"url": "Url",
+				"interval": "Khoảng thời gian",
+				"active": "Đang hoạt động",
+				"responseTime": "Thời gian phản hồi"
+			}
 		}
 	},
-	"auth": {
-		"common": {
-			"navigation": {
-				"continue": "",
-				"back": ""
-			},
-			"inputs": {
-				"email": {
-					"label": "",
-					"placeholder": "",
-					"errors": {
-						"empty": "",
-						"invalid": ""
-					}
-				},
-				"password": {
-					"label": "",
-					"rules": {
-						"length": {
-							"beginning": "",
-							"highlighted": ""
-						},
-						"special": {
-							"beginning": "",
-							"highlighted": ""
-						},
-						"number": {
-							"beginning": "",
-							"highlighted": ""
-						},
-						"uppercase": {
-							"beginning": "",
-							"highlighted": ""
-						},
-						"lowercase": {
-							"beginning": "",
-							"highlighted": ""
-						},
-						"match": {
-							"beginning": "",
-							"highlighted": ""
-						}
-					},
-					"errors": {
-						"empty": "",
-						"length": "",
-						"uppercase": "",
-						"lowercase": "",
-						"number": "",
-						"special": "",
-						"incorrect": ""
-					}
-				},
-				"passwordConfirm": {
-					"label": "",
-					"placeholder": "",
-					"errors": {
-						"empty": "",
-						"different": ""
-					}
-				},
-				"firstName": {
-					"label": "",
-					"placeholder": "",
-					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
-					}
-				},
-				"lastName": {
-					"label": "",
-					"placeholder": "",
-					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
-					}
-				}
-			},
+	"components": {
+		"imageUpload": {
+			"clickToUpload": "Nhấn để tải lên",
+			"dragAndDrop": "",
+			"supportedFormats": "",
+			"maxSize": "",
+			"orDragAndDrop": "hoặc kéo và thả",
 			"errors": {
-				"validation": ""
-			},
-			"fields": {
-				"password": {
-					"errors": {
-						"incorrect": ""
-					}
-				}
+				"invalidFileSize": "",
+				"invalidFileFormat": ""
 			}
 		},
-		"login": {
-			"heading": "",
-			"subheadings": {
-				"stepOne": "",
-				"stepTwo": ""
-			},
-			"links": {
-				"forgotPassword": "",
-				"register": "",
-				"forgotPasswordLink": "",
-				"registerLink": ""
-			},
-			"toasts": {
-				"success": "",
-				"incorrectPassword": ""
-			},
-			"errors": {
-				"password": {
-					"incorrect": ""
-				}
-			}
+		"headerStatusPageControls": {
+			"publicLink": ""
 		},
-		"registration": {
-			"heading": {
-				"superAdmin": "",
-				"user": ""
-			},
-			"subheadings": {
-				"stepOne": "",
-				"stepTwo": "",
-				"stepThree": ""
+		"headerTimeRange": {
+			"labels": {
+				"day": "Ngày",
+				"month": "Tháng",
+				"recent": "Gần đây",
+				"week": "Tuần"
 			},
 			"description": {
-				"superAdmin": "",
-				"user": ""
-			},
-			"gettingStartedButton": {
-				"superAdmin": "",
-				"user": ""
-			},
-			"termsAndPolicies": "",
-			"links": {
-				"login": ""
-			},
-			"toasts": {
-				"success": ""
+				"recent": "Hiển thị thống kê trong 2 giờ qua.",
+				"day": "Hiển thị thống kê trong 24 giờ qua.",
+				"week": "Hiển thị thống kê trong 7 ngày qua.",
+				"month": "Hiển thị thống kê trong 30 ngày qua."
 			}
 		},
-		"forgotPassword": {
-			"heading": "",
-			"subheadings": {
-				"stepOne": "",
-				"stepTwo": "",
-				"stepThree": "",
-				"stepFour": ""
+		"offlineBanner": {
+			"serverUnreachable": "Không thể kết nối đến máy chủ",
+			"retry": "Thử lại",
+			"retrying": "Đang thử lại...",
+			"reconnected": ""
+		},
+		"sidebar": {
+			"menu": {
+				"uptime": "",
+				"pagespeed": "",
+				"infrastructure": "",
+				"notifications": "",
+				"checks": "Kiểm tra",
+				"incidents": "",
+				"statusPages": "",
+				"maintenance": "",
+				"logs": "",
+				"settings": ""
 			},
-			"buttons": {
-				"openEmail": "",
-				"resetPassword": ""
+			"bottomMenu": {
+				"support": "",
+				"discussions": "",
+				"docs": "",
+				"changelog": ""
 			},
-			"imageAlts": {
-				"passwordKey": "",
-				"email": "",
-				"lock": "",
-				"passwordConfirm": ""
+			"accountMenu": {
+				"profile": "Hồ sơ",
+				"password": "Mật khẩu",
+				"team": "Nhóm"
 			},
-			"links": {
-				"login": "",
-				"resend": ""
+			"starPrompt": {
+				"title": "Gắn sao Checkmate",
+				"description": "Xem các bản phát hành mới nhất và giúp phát triển cộng đồng trên GitHub"
 			},
-			"toasts": {
-				"sent": "",
-				"emailNotFound": "",
-				"redirect": "",
-				"success": "",
-				"error": ""
+			"authFooter": {
+				"navControls": "",
+				"logOut": "",
+				"roles": {
+					"superAdmin": "Quản trị viên cấp cao",
+					"admin": "Quản trị viên",
+					"user": "Người dùng",
+					"demoUser": ""
+				}
 			}
+		},
+		"starPrompt": {
+			"title": "Gắn sao Checkmate",
+			"description": "Xem các bản phát hành mới nhất và giúp phát triển cộng đồng trên GitHub"
 		}
 	},
-	"errorPages": {
-		"serverUnreachable": {
-			"toasts": {
-				"reconnected": "",
-				"stillUnreachable": ""
+	"pages": {
+		"notFound": {
+			"title": "Ôi không! Bạn đã làm rơi sushi!",
+			"subtitle": "Either the URL doesn’t exist, or you don’t have access to it."
+		},
+		"account": {
+			"tabs": {
+				"profile": "Hồ sơ",
+				"password": "Mật khẩu",
+				"team": "Nhóm"
 			},
-			"alertBox": "",
-			"description": "",
-			"retryButton": {
-				"default": "",
-				"processing": ""
+			"form": {
+				"name": {
+					"title": "Tên",
+					"description": "Cập nhật thông tin cá nhân của bạn"
+				},
+				"photo": {
+					"title": "Ảnh hồ sơ",
+					"description": "Tải lên ảnh hồ sơ"
+				},
+				"currentPassword": {
+					"title": "Mật khẩu hiện tại",
+					"description": "Nhập mật khẩu hiện tại để xác minh danh tính",
+					"option": {
+						"label": "Mật khẩu hiện tại",
+						"placeholder": "Nhập mật khẩu hiện tại"
+					}
+				},
+				"newPassword": {
+					"title": "Mật khẩu mới",
+					"description": "Chọn mật khẩu mạnh có ít nhất 8 ký tự",
+					"option": {
+						"newPassword": {
+							"label": "Mật khẩu mới",
+							"placeholder": "Nhập mật khẩu mới"
+						},
+						"confirm": {
+							"label": "Xác nhận mật khẩu",
+							"placeholder": "Xác nhận mật khẩu mới"
+						}
+					}
+				},
+				"deleteAccount": {
+					"title": "Xóa tài khoản",
+					"description": "Hành động này là vĩnh viễn và không thể hoàn tác"
+				}
+			},
+			"team": {
+				"filter": {
+					"placeholder": "Lọc theo vai trò",
+					"all": "",
+					"admin": "Quản trị viên",
+					"member": ""
+				},
+				"table": {
+					"headers": {
+						"email": "Email",
+						"role": "",
+						"created": ""
+					}
+				},
+				"addMember": {
+					"title": "Đăng ký thành viên mới",
+					"description": "Tạo tài khoản người dùng mới. Chia sẻ thông tin đăng nhập một cách an toàn sau khi tạo."
+				},
+				"invite": {
+					"title": "Mời thành viên nhóm",
+					"description": "Gửi lời mời tham gia nhóm của bạn",
+					"email": {
+						"label": "Địa chỉ email",
+						"placeholder": "Nhập địa chỉ email"
+					},
+					"role": {
+						"label": "Vai trò",
+						"placeholder": "Chọn vai trò"
+					},
+					"linkLabel": "Liên kết mời"
+				}
 			}
-		}
-	},
-	"createNotifications": {
-		"title": "",
-		"nameSettings": {
-			"title": "",
-			"description": "",
-			"nameLabel": "",
-			"namePlaceholder": ""
 		},
-		"typeSettings": {
-			"title": "",
-			"description": "",
-			"typeLabel": ""
-		},
-		"emailSettings": {
-			"title": "",
-			"description": "",
-			"emailLabel": "",
-			"emailPlaceholder": ""
-		},
-		"slackSettings": {
-			"title": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": ""
-		},
-		"pagerdutySettings": {
-			"title": "",
-			"description": "",
-			"integrationKeyLabel": "",
-			"integrationKeyPlaceholder": ""
-		},
-		"discordSettings": {
-			"title": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": ""
-		},
-		"webhookSettings": {
-			"title": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": ""
-		}
-	},
-	"notificationConfig": {
-		"title": "",
-		"description": ""
-	},
-	"monitorStatus": {
-		"checkingEvery": "",
-		"withCaptureAgent": "",
-		"up": "",
-		"down": "",
-		"paused": ""
-	},
-	"advancedMatching": "",
-	"sendTestNotifications": "",
-	"testNotificationsDisabled": "",
-	"selectAll": "",
-	"showAdminLoginLink": "",
-	"logsPage": {
-		"title": "",
-		"description": "",
-		"tabs": {
-			"queue": "",
-			"logs": ""
-		},
-		"toast": {
-			"fetchLogsSuccess": ""
-		},
-		"logLevelSelect": {
-			"title": "",
-			"values": {
-				"all": "",
-				"info": "",
-				"warn": "",
-				"error": "",
-				"debug": ""
+		"auth": {
+			"common": {
+				"passwordRules": {
+					"length": {
+						"beginning": "",
+						"highlighted": ""
+					},
+					"lowercase": {
+						"beginning": "",
+						"highlighted": ""
+					},
+					"match": {
+						"beginning": "",
+						"highlighted": ""
+					},
+					"number": {
+						"beginning": "",
+						"highlighted": ""
+					},
+					"special": {
+						"beginning": "",
+						"highlighted": ""
+					},
+					"uppercase": {
+						"beginning": "",
+						"highlighted": ""
+					}
+				},
+				"form": {
+					"option": {
+						"email": {
+							"label": "Email",
+							"placeholder": "me@example.com"
+						},
+						"password": {
+							"label": "Mật khẩu",
+							"placeholder": "********"
+						},
+						"confirmPassword": {
+							"label": "Xác nhận mật khẩu"
+						}
+					}
+				}
+			},
+			"login": {
+				"title": "Chào mừng bạn trở lại Checkmate!",
+				"subtitle": "Đăng nhập để tiếp tục",
+				"submit": "Đăng nhập",
+				"links": {
+					"forgotPassword": {
+						"text": "Quên mật khẩu?",
+						"linkText": "Đặt lại mật khẩu"
+					},
+					"register": {
+						"text": "Chưa có tài khoản?",
+						"linkText": "Đăng ký tại đây"
+					}
+				}
+			},
+			"register": {
+				"title": "Chào mừng bạn trở lại Checkmate!",
+				"subtitle": "Đăng ký để bắt đầu",
+				"submit": "Đăng ký"
+			},
+			"forgotPassword": {
+				"title": "Quên mật khẩu?",
+				"subtitle": "Đừng lo, chúng tôi sẽ gửi hướng dẫn đặt lại mật khẩu cho bạn.",
+				"submit": "Yêu cầu khôi phục",
+				"links": {
+					"login": {
+						"text": "Quay lại",
+						"linkText": "đăng nhập"
+					}
+				}
+			},
+			"setNewPassword": {
+				"title": "Đặt lại mật khẩu",
+				"subtitle": "Mật khẩu mới phải khác với các mật khẩu đã sử dụng trước đó."
 			}
-		}
-	},
-	"queuePage": {
-		"title": "",
-		"refreshButton": "",
-		"flushButton": "",
-		"jobTable": {
-			"title": "",
-			"idHeader": "",
-			"urlHeader": "",
-			"typeHeader": "",
-			"activeHeader": "",
-			"lockedAtHeader": "",
-			"runCountHeader": "",
-			"failCountHeader": "",
-			"lastRunHeader": "",
-			"lastFinishedAtHeader": "",
-			"lastRunTookHeader": ""
 		},
-		"metricsTable": {
-			"title": "",
-			"metricHeader": "",
-			"valueHeader": ""
+		"checks": {
+			"selects": {
+				"monitor": {
+					"all": "Tất cả trình giám sát"
+				},
+				"status": {
+					"all": "Tất cả",
+					"down": "Ngừng hoạt động",
+					"up": "Hoạt động"
+				}
+			},
+			"table": {
+				"empty": "Không có kiểm tra lỗi trong khoảng thời gian này",
+				"headers": {
+					"statusCode": "Mã trạng thái",
+					"location": "Vị trí"
+				}
+			}
 		},
-		"failedJobTable": {
-			"title": "",
-			"monitorIdHeader": "",
-			"monitorUrlHeader": "",
-			"failCountHeader": "",
-			"failedAtHeader": "",
-			"failReasonHeader": ""
-		}
-	},
-	"export": {
-		"title": "",
-		"success": "",
-		"failed": ""
-	},
-	"monitorActions": {
-		"title": "",
-		"import": "",
-		"export": ""
-	},
-	"settingsPage": {
-		"aboutSettings": {
-			"labelDevelopedBy": "",
-			"labelVersion": "",
-			"title": ""
+		"common": {
+			"monitors": {
+				"actions": {
+					"configure": "Cấu hình",
+					"delete": "Xóa",
+					"generateToken": "Tạo token",
+					"details": "Chi tiết",
+					"incidents": "Sự cố",
+					"inviteMember": "Mời thành viên",
+					"openSite": "Mở trang web",
+					"pause": "Tạm dừng",
+					"resume": "Tiếp tục"
+				},
+				"statBoxes": {
+					"activeFor": "Hoạt động từ",
+					"certificateExpiry": "Hạn chứng chỉ",
+					"lastCheck": "Lần kiểm tra cuối",
+					"lastResponseTime": "Thời gian phản hồi cuối"
+				},
+				"status": {
+					"down": "ngừng hoạt động",
+					"breached": "vượt ngưỡng",
+					"initializing": "đang khởi tạo",
+					"maintenance": "bảo trì",
+					"paused": "tạm dừng",
+					"total": "tổng",
+					"up": "hoạt động"
+				},
+				"monitorTypes": {
+					"optionDocker": "Docker",
+					"optionGame": "Trò chơi",
+					"optionHttp": "HTTP(S)",
+					"optionPing": "Ping",
+					"optionPort": "Cổng",
+					"optionPagespeed": "PageSpeed",
+					"optionHardware": "Hạ tầng",
+					"optionGrpc": "gRPC",
+					"optionWebSocket": "WebSocket"
+				}
+			}
 		},
-		"demoMonitorsSettings": {
-			"buttonAddMonitors": "",
-			"description": "",
-			"title": ""
+		"createMonitor": {
+			"form": {
+				"advanced": {
+					"description": "Cài đặt tùy chọn cho các trường hợp sử dụng nâng cao",
+					"option": {
+						"advancedMatching": {
+							"label": "Sử dụng đối sánh nâng cao"
+						},
+						"expectedValue": {
+							"label": "Giá trị mong đợi"
+						},
+						"jsonPath": {
+							"description": "Biểu thức này sẽ được đánh giá với dữ liệu JSON phản hồi và kết quả sẽ được dùng để đối sánh với giá trị mong đợi. Xem <jmesLink>jmespath.org</jmesLink> để biết tài liệu ngôn ngữ truy vấn.",
+							"label": "Biểu thức JSONPath"
+						},
+						"matchMethod": {
+							"label": "Phương thức đối sánh",
+							"equal": "Bằng",
+							"include": "Bao gồm",
+							"regex": "Regex"
+						}
+					},
+					"title": "Cài đặt nâng cao"
+				},
+				"frequency": {
+					"description": "Bạn muốn kiểm tra trạng thái trình giám sát này bao lâu một lần?",
+					"option": {
+						"frequency": {
+							"label": "Tần suất kiểm tra",
+							"value": {
+								"fifteenMinutes": "15 phút",
+								"fifteenSeconds": "15 giây",
+								"fiveMinutes": "5 phút",
+								"fourMinutes": "4 phút",
+								"oneMinute": "1 phút",
+								"tenMinutes": "10 phút",
+								"thirtyMinutes": "30 phút",
+								"thirtySeconds": "30 giây",
+								"threeMinutes": "3 phút",
+								"twoMinutes": "2 phút"
+							}
+						}
+					},
+					"title": "Tần suất kiểm tra"
+				},
+				"general": {
+					"option": {
+						"container": {
+							"label": "Tên/ID container",
+							"placeholder": "my-app hoặc abcd1234"
+						},
+						"host": {
+							"label": "Máy chủ",
+							"placeholder": "192.168.1.100 hoặc example.com"
+						},
+						"name": {
+							"label": "Tên hiển thị",
+							"placeholder": "vd: Website của tôi"
+						},
+						"secret": {
+							"label": "Khóa xác thực",
+							"placeholder": "Nhập khóa bí mật của bạn"
+						},
+						"url": {
+							"label": "URL",
+							"placeholder": "https://www.google.com"
+						},
+						"game": {
+							"label": "Chọn trò chơi",
+							"placeholder": "Chọn một trò chơi"
+						},
+						"port": {
+							"label": "Cổng cần giám sát",
+							"placeholder": "80"
+						},
+						"grpcServiceName": {
+							"label": "Tên dịch vụ",
+							"placeholder": "vd: my.service.v1 (để trống cho kiểm tra sức khỏe tổng thể)"
+						},
+						"wsUrl": {
+							"label": "URL WebSocket",
+							"placeholder": "wss://example.com/socket"
+						}
+					},
+					"title": "Cài đặt chung",
+					"description": {
+						"http": "Nhập URL hoặc IP cần giám sát (vd: https://example.com/ hoặc 192.168.1.100) và thêm tên hiển thị rõ ràng trên bảng điều khiển.",
+						"ping": "",
+						"port": "",
+						"docker": "",
+						"game": "",
+						"pagespeed": "Theo dõi hiệu suất tải trang, Core Web Vitals và điểm tối ưu hóa cho trang web của bạn.",
+						"grpc": "Nhập tên máy chủ và cổng của máy chủ gRPC, tùy chọn chỉ định tên dịch vụ cho kiểm tra sức khỏe và thêm tên hiển thị.",
+						"websocket": "Nhập URL WebSocket cần giám sát (vd: wss://example.com/socket) và thêm tên hiển thị.",
+						"hardware": "Giám sát CPU, bộ nhớ, dung lượng ổ đĩa và nhiệt độ cho hạ tầng của bạn."
+					}
+				},
+				"ignoreTls": {
+					"description": "Cấu hình xác thực chứng chỉ TLS/SSL cho kết nối HTTPS.",
+					"option": {
+						"tls": {
+							"label": "Bỏ qua lỗi TLS/SSL"
+						}
+					},
+					"title": "Cài đặt TLS/SSL"
+				},
+				"incidents": {
+					"description": "Cửa sổ trượt được sử dụng để xác định khi nào trình giám sát ngừng hoạt động. Trạng thái của trình giám sát chỉ thay đổi khi tỷ lệ kiểm tra trong cửa sổ trượt đạt giá trị được chỉ định.",
+					"option": {
+						"checks": {
+							"label": "Số lần kiểm tra trong cửa sổ trượt"
+						},
+						"percentage": {
+							"label": "Bao nhiêu phần trăm kiểm tra trong cửa sổ trượt thất bại/thành công trước khi trạng thái trình giám sát thay đổi?"
+						}
+					},
+					"title": "Sự cố"
+				},
+				"notifications": {
+					"description": "Chọn các kênh thông báo bạn muốn sử dụng",
+					"title": "Thông báo"
+				},
+				"type": {
+					"description": "Chọn loại kiểm tra để thực hiện",
+					"optionDockerDescription": "Sử dụng Docker để giám sát xem container có đang chạy không.",
+					"optionGameDescription": "Giám sát xem máy chủ trò chơi cụ thể có trực tuyến không.",
+					"optionGrpcDescription": "Giám sát dịch vụ gRPC bằng Giao thức Kiểm tra Sức khỏe tiêu chuẩn.",
+					"optionWebSocketDescription": "Giám sát điểm cuối WebSocket về sức khỏe kết nối và thời gian phản hồi.",
+					"optionHttpDescription": "Sử dụng HTTP(S) để giám sát trang web hoặc điểm cuối API của bạn.",
+					"optionPingDescription": "Sử dụng ICMP Ping để giám sát xem máy chủ có trực tuyến không.",
+					"optionPortDescription": "Giám sát xem một cổng cụ thể trên máy chủ có mở không.",
+					"title": "Loại"
+				},
+				"thresholds": {
+					"title": "Ngưỡng cảnh báo",
+					"description": "Xác định các ngưỡng kích hoạt cảnh báo cho trình giám sát phần cứng này.",
+					"option": {
+						"cpuThreshold": {
+							"label": "Ngưỡng cảnh báo CPU (%)"
+						},
+						"memoryThreshold": {
+							"label": "Ngưỡng cảnh báo bộ nhớ (%)"
+						},
+						"diskThreshold": {
+							"label": "Ngưỡng cảnh báo ổ đĩa (%)"
+						},
+						"tempThreshold": {
+							"label": "Ngưỡng cảnh báo nhiệt độ (°C)"
+						}
+					}
+				},
+				"geoChecks": {
+					"title": "Kiểm tra phân tán địa lý",
+					"description": "Chạy kiểm tra từ nhiều vị trí địa lý để giám sát tính khả dụng và hiệu suất toàn cầu.",
+					"option": {
+						"enabled": {
+							"label": "Bật kiểm tra phân tán địa lý"
+						},
+						"locations": {
+							"label": "Vị trí",
+							"placeholder": "Chọn vị trí",
+							"options": {
+								"EU": "Châu Âu",
+								"NA": "Bắc Mỹ",
+								"AS": "Châu Á",
+								"SA": "Nam Mỹ",
+								"AF": "Châu Phi",
+								"OC": "Châu Đại Dương"
+							}
+						},
+						"interval": {
+							"label": "Khoảng thời gian kiểm tra",
+							"value": {
+								"fiveMinutes": "5 phút",
+								"tenMinutes": "10 phút",
+								"fifteenMinutes": "15 phút",
+								"thirtyMinutes": "30 phút"
+							}
+						}
+					}
+				},
+				"url": {
+					"title": "Giám sát IP/URL trên trang trạng thái",
+					"description": "Hiển thị địa chỉ IP hoặc URL của trình giám sát trên trang trạng thái công khai. Nếu tắt, chỉ tên trình giám sát được hiển thị để bảo vệ thông tin nhạy cảm.",
+					"option": {
+						"showURL": {
+							"label": "Hiển thị IP/URL trên trang trạng thái",
+							"enabled": "Đã bật",
+							"disabled": "Đã tắt"
+						}
+					}
+				},
+				"stats": {
+					"title": "Lịch sử giám sát",
+					"description": "Xóa tất cả lịch sử giám sát và thống kê cho nhóm của bạn. Hành động này không thể hoàn tác.",
+					"buttonText": "Xóa tất cả thống kê",
+					"dialog": {
+						"title": "Xóa tất cả lịch sử giám sát?",
+						"description": "Điều này sẽ xóa vĩnh viễn tất cả lịch sử giám sát, thống kê và dữ liệu kiểm tra cho nhóm của bạn. Hành động này không thể hoàn tác.",
+						"confirm": "Có, xóa tất cả thống kê"
+					}
+				}
+			}
 		},
-		"emailSettings": {
-			"buttonSendTestEmail": "",
-			"description": "",
-			"descriptionTransport": "",
-			"labelAddress": "",
-			"labelConnectionHost": "",
-			"labelHost": "",
-			"labelIgnoreTLS": "",
-			"labelPassword": "",
-			"labelPasswordSet": "",
-			"labelPool": "",
-			"labelPort": "",
-			"labelRejectUnauthorized": "",
-			"labelRequireTLS": "",
-			"labelSecure": "",
-			"labelTLSServername": "",
-			"labelUser": "",
-			"linkTransport": "",
-			"placeholderUser": "",
-			"title": ""
+		"editUser": {
+			"form": {
+				"roles": {
+					"title": "Vai trò",
+					"description": "Gán vai trò cho người dùng. Có thể chọn nhiều vai trò."
+				}
+			},
+			"dialog": {
+				"removeUser": {
+					"title": "Xóa người dùng",
+					"content": "Bạn có chắc chắn muốn xóa {{name}} khỏi nhóm không? Hành động này không thể hoàn tác."
+				}
+			}
 		},
-		"pageSpeedSettings": {
-			"description": "",
-			"labelApiKeySet": "",
-			"labelApiKey": "",
-			"title": ""
+		"incidents": {
+			"dialog": {
+				"resolveIncident": {
+					"title": "Giải quyết sự cố",
+					"option": {
+						"comment": {
+							"label": "Nhận xét (tùy chọn)",
+							"placeholder": "Thêm nhận xét về cách giải quyết..."
+						}
+					}
+				},
+				"details": {
+					"analysis": "Phân tích sự cố",
+					"comment": "Nhận xét:",
+					"detailsLabel": "Chi tiết",
+					"downtime": "Thời gian ngừng:",
+					"message": "Tin nhắn:",
+					"monitor": "Trình giám sát:",
+					"overview": "Tổng quan",
+					"resolutionDetails": "Chi tiết giải quyết",
+					"resolutionType": "Loại:",
+					"resolutionTypes": {
+						"automatic": "Tự động",
+						"manual": "Thủ công"
+					},
+					"resolve": "Giải quyết sự cố",
+					"resolvedAt": "Đã giải quyết lúc:",
+					"resolvedBy": "Giải quyết bởi:",
+					"startedAt": "Bắt đầu lúc:",
+					"status": "Trạng thái:",
+					"statusCode": "Mã trạng thái:",
+					"timeline": "Dòng thời gian",
+					"title": "Chi tiết sự cố",
+					"url": "URL:"
+				}
+			},
+			"filters": {
+				"allMonitors": "Tất cả trình giám sát",
+				"monitor": "Trình giám sát",
+				"resolutionType": "Loại giải quyết",
+				"resolutionTypes": {
+					"manual": "Thủ công",
+					"automatic": "Tự động",
+					"all": "Tất cả"
+				}
+			},
+			"summaryCard": {
+				"activeIncidents": {
+					"title": "Sự cố đang xảy ra",
+					"active_zero": "Không có sự cố đang xảy ra",
+					"active_one": "{{count}} sự cố đang xảy ra",
+					"active_other": "{{count}} sự cố đang xảy ra"
+				},
+				"incidentStats": {
+					"avgResolutionTime": "Thời gian giải quyết TB",
+					"mostAffectedMonitor": "Trình giám sát bị ảnh hưởng nhiều nhất",
+					"title": "Thống kê sự cố",
+					"totalIncidents": "Tổng số sự cố"
+				},
+				"latestIncidents": {
+					"title": "Sự cố mới nhất"
+				}
+			},
+			"table": {
+				"actions": {
+					"details": "Chi tiết",
+					"goToMonitor": "Đi đến trình giám sát",
+					"resolveManually": "Giải quyết thủ công"
+				},
+				"activeIncidents": "Sự cố đang xảy ra",
+				"headers": {
+					"endTime": "Thời gian kết thúc",
+					"resolutionType": "Loại giải quyết",
+					"startTime": "",
+					"statusCode": "Mã trạng thái"
+				},
+				"resolvedIncidents": "Sự cố đã giải quyết",
+				"status": {
+					"active": "Đang hoạt động",
+					"resolved": "Đã giải quyết"
+				}
+			}
 		},
-		"saveButtonLabel": "",
-		"statsSettings": {
-			"clearAllStatsButton": "",
-			"clearAllStatsDescription": "",
-			"clearAllStatsDialogConfirm": "",
-			"clearAllStatsDialogDescription": "",
-			"clearAllStatsDialogTitle": "",
-			"description": "",
-			"labelTTL": "",
-			"labelTTLOptional": "",
-			"title": ""
+		"infrastructure": {
+			"charts": {
+				"labels": {
+					"cpu": "Sử dụng CPU",
+					"disk": "Sử dụng ổ đĩa",
+					"memory": "Sử dụng bộ nhớ",
+					"netBytesRecv": "{{name}} - Byte nhận",
+					"netBytesSent": "{{name}} - Byte gửi",
+					"temp": "Nhiệt độ"
+				}
+			},
+			"gauges": {
+				"cpu": {
+					"lowerLabel": "Tần số tối đa",
+					"title": "Sử dụng CPU",
+					"upperLabel": "Tần số hiện tại"
+				},
+				"disk": {
+					"lowerLabel": "Còn trống",
+					"title": "Sử dụng ổ đĩa {{idx}}",
+					"upperLabel": "Đã dùng"
+				},
+				"memory": {
+					"lowerLabel": "Còn trống",
+					"title": "Sử dụng bộ nhớ",
+					"upperLabel": "Đã dùng"
+				}
+			},
+			"statBoxes": {
+				"avgCpuTemperature": "",
+				"cpuFrequency": "",
+				"cpuLogical": "",
+				"cpuPhysical": "",
+				"disk": "Ổ đĩa",
+				"memory": "Bộ nhớ",
+				"os": ""
+			},
+			"table": {
+				"headers": {
+					"cpu": "CPU",
+					"disk": "Ổ đĩa",
+					"memory": "Bộ nhớ"
+				}
+			},
+			"tabs": {
+				"labels": {
+					"network": "Mạng",
+					"overview": "Tổng quan"
+				}
+			},
+			"fallback": {
+				"actionButton": "Tạo trình giám sát!",
+				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
+				"title": "Trình giám sát hạ tầng dùng để:"
+			}
 		},
-		"systemResetSettings": {
-			"buttonRemoveAllMonitors": "",
-			"description": "",
-			"dialogConfirm": "",
-			"dialogDescription": "",
-			"dialogTitle": "",
-			"title": ""
+		"logs": {
+			"tabs": {
+				"diagnostics": "Chẩn đoán",
+				"logs": "",
+				"queue": ""
+			},
+			"logLevelSelect": {
+				"label": "Mức nhật ký"
+			},
+			"jobQueue": "Hàng đợi công việc",
+			"failedJobs": "Công việc thất bại",
+			"noLogs": "Không tìm thấy nhật ký",
+			"metrics": {
+				"jobs": "Công việc",
+				"activeJobs": "Công việc đang chạy",
+				"failingJobs": "Công việc đang lỗi",
+				"totalRuns": "Tổng số lần chạy",
+				"totalFailures": "Tổng số lỗi"
+			},
+			"diagnostics": {
+				"stats": {
+					"eventLoopDelay": "Độ trễ vòng lặp sự kiện",
+					"uptime": "Thời gian hoạt động",
+					"usedHeapSize": "Kích thước heap đã dùng",
+					"totalHeapSize": "Tổng kích thước heap",
+					"osMemoryLimit": "Giới hạn bộ nhớ hệ điều hành"
+				},
+				"gauges": {
+					"heapAllocation": "Cấp phát heap",
+					"heapUsage": "Sử dụng heap",
+					"heapUtilization": "Hiệu suất sử dụng heap",
+					"instantCpuUsage": "Sử dụng CPU tức thời",
+					"availableMemoryPercentage": "% bộ nhớ khả dụng",
+					"allocatedPercentage": "% đã cấp phát",
+					"usedSPercentage": "% của 1 giây CPU sử dụng",
+					"total": "Tổng",
+					"used": "Đã dùng"
+				}
+			},
+			"table": {
+				"headers": {
+					"timestamp": "Thời gian",
+					"level": "Mức",
+					"service": "Dịch vụ",
+					"method": "Phương thức",
+					"monitorId": "ID trình giám sát",
+					"runCount": "Số lần chạy",
+					"failCount": "Số lần lỗi",
+					"lastRunAt": "Chạy lần cuối lúc",
+					"lockedAt": "Khóa lúc",
+					"lastFinishedAt": "Hoàn thành lần cuối lúc",
+					"lastRunTook": "Lần chạy cuối mất",
+					"lastFailedAt": "Lỗi lần cuối lúc",
+					"failReason": "Lý do lỗi"
+				}
+			}
 		},
-		"timezoneSettings": {
-			"description": "",
-			"label": "",
-			"title": ""
+		"maintenanceWindow": {
+			"fallback": {
+				"actionButton": "Tạo cửa sổ bảo trì!",
+				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
+				"title": "Cửa sổ bảo trì dùng để:"
+			},
+			"table": {
+				"headers": {
+					"nextWindow": "",
+					"repeat": ""
+				}
+			},
+			"form": {
+				"general": {
+					"title": "Cài đặt chung",
+					"description": "Đặt tên và tùy chọn lặp lại cho cửa sổ bảo trì.",
+					"option": {
+						"name": {
+							"label": "Tên",
+							"placeholder": "vd: Bảo trì hàng tuần"
+						},
+						"repeat": {
+							"label": "Lặp lại"
+						}
+					}
+				},
+				"startDate": {
+					"title": "Ngày bắt đầu",
+					"description": "Chọn ngày bắt đầu cho cửa sổ bảo trì.",
+					"option": {
+						"startDate": {
+							"label": "Ngày bắt đầu"
+						}
+					}
+				},
+				"startTime": {
+					"title": "Thời gian bắt đầu",
+					"description": "Đặt thời gian bắt đầu và thời lượng cho cửa sổ bảo trì. Tất cả giá trị theo UTC",
+					"option": {
+						"duration": {
+							"label": "Thời lượng"
+						},
+						"startTime": {
+							"label": "Thời gian bắt đầu"
+						}
+					},
+					"monitors": {
+						"title": "Trình giám sát",
+						"description": "Trình giám sát mà cửa sổ bảo trì áp dụng",
+						"option": {
+							"addMonitors": {
+								"label": "Thêm trình giám sát"
+							}
+						}
+					}
+				}
+			}
 		},
-		"title": "",
-		"uiSettings": {
-			"description": "",
-			"labelLanguage": "",
-			"labelTheme": "",
-			"title": ""
+		"notifications": {
+			"fallback": {
+				"actionButton": "Tạo kênh",
+				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
+				"title": "Kênh thông báo dùng để:"
+			},
+			"form": {
+				"accessToken": {
+					"optionAccessToken": "Token truy cập",
+					"placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
+				},
+				"address": {
+					"description": "Địa chỉ nơi thông báo sẽ được gửi đến.",
+					"optionAddress": "Địa chỉ",
+					"placeholderEmail": "example@example.com",
+					"placeholderWebhook": "https://your-server.com/webhook",
+					"title": "Địa chỉ"
+				},
+				"homeServer": {
+					"optionHomeServer": "Máy chủ chính",
+					"placeholder": "example.com"
+				},
+				"matrix": {
+					"description": "Cấu hình kết nối máy chủ Matrix cho thông báo.",
+					"title": "Cấu hình Matrix"
+				},
+				"notificationName": {
+					"description": "Tên mô tả cho kênh thông báo",
+					"optionName": "Tên kênh",
+					"placeholder": "vd: Cảnh báo sản xuất",
+					"title": "Tên kênh"
+				},
+				"pagerDuty": {
+					"description": "Khóa tích hợp PagerDuty để nhận cảnh báo.",
+					"optionIntegrationKey": "Khóa tích hợp",
+					"placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+					"title": "Khóa tích hợp"
+				},
+				"roomId": {
+					"optionRoomId": "ID phòng",
+					"placeholder": "!abcdefg:matrix.org"
+				},
+				"type": {
+					"description": "Chọn loại kênh thông báo để tạo.",
+					"optionType": "Loại",
+					"title": "Loại kênh"
+				},
+				"telegram": {
+					"title": "Cấu hình Telegram",
+					"description": "",
+					"optionBotToken": "Token bot",
+					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
+					"optionChatId": "ID cuộc trò chuyện",
+					"placeholderChatId": "-1001234567890"
+				}
+			},
+			"table": {
+				"headers": {
+					"destination": "Đích đến"
+				}
+			}
 		},
-		"urlSettings": {
-			"description": "",
-			"label": "",
-			"selectDisabled": "",
-			"selectEnabled": "",
-			"title": ""
+		"pageSpeed": {
+			"charts": {
+				"common": {
+					"cls": "Cumulative Layout Shift (CLS)",
+					"fcp": "First Contentful Paint (FCP)",
+					"lcp": "Largest Contentful Paint (LCP)",
+					"si": "Speed Index (SI)",
+					"tbt": "Total Blocking Time (TBT)"
+				},
+				"legend": {
+					"title": "Báo cáo PageSpeed",
+					"weight": "Trọng số"
+				},
+				"pie": {
+					"title": "Báo cáo hiệu suất"
+				}
+			},
+			"table": {
+				"headers": {
+					"pageSpeedScore": "Điểm PageSpeed"
+				}
+			},
+			"fallback": {
+				"actionButton": "Tạo trình giám sát!",
+				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
+				"title": "Trình giám sát PageSpeed dùng để:"
+			}
+		},
+		"settings": {
+			"form": {
+				"timezone": {
+					"title": "Múi giờ hiển thị",
+					"description": "Chọn múi giờ dùng để hiển thị ngày và giờ trong toàn bộ ứng dụng.",
+					"option": {
+						"timezone": {
+							"label": "Múi giờ hiển thị"
+						}
+					}
+				},
+				"ui": {
+					"title": "Giao diện",
+					"description": "Chuyển đổi giữa chế độ sáng và tối, thay đổi ngôn ngữ hoặc tùy chỉnh kiểu hiển thị biểu đồ.",
+					"option": {
+						"theme": {
+							"label": "Chế độ giao diện",
+							"light": "Sáng",
+							"dark": "Tối"
+						},
+						"language": {
+							"label": "Ngôn ngữ"
+						},
+						"chartType": {
+							"label": "Loại biểu đồ",
+							"histogram": "Biểu đồ cột",
+							"heatmap": "Bản đồ nhiệt"
+						}
+					}
+				},
+				"pagespeed": {
+					"title": "Khóa API Google PageSpeed",
+					"description": "Nhập khóa API Google PageSpeed để bật giám sát PageSpeed. Nhấn Đặt lại để cập nhật khóa.",
+					"option": {
+						"apiKey": {
+							"label": "Khóa API PageSpeed",
+							"labelSet": "Khóa API đã được đặt. Nhấn Đặt lại để thay đổi.",
+							"placeholder": "Nhập khóa API Google PageSpeed của bạn"
+						}
+					}
+				},
+				"url": {
+					"title": "Giám sát IP/URL trên trang trạng thái",
+					"description": "Hiển thị địa chỉ IP hoặc URL của trình giám sát trên trang trạng thái công khai. Nếu tắt, chỉ tên trình giám sát được hiển thị để bảo vệ thông tin nhạy cảm.",
+					"option": {
+						"showURL": {
+							"label": "Hiển thị IP/URL trên trang trạng thái",
+							"enabled": "Đã bật",
+							"disabled": "Đã tắt"
+						}
+					}
+				},
+				"stats": {
+					"title": "Lịch sử giám sát",
+					"description": "Xóa tất cả lịch sử giám sát và thống kê cho nhóm của bạn. Hành động này không thể hoàn tác.",
+					"option": {
+						"clear": {
+							"label": "Xóa tất cả thống kê. Hành động này không thể hoàn tác."
+						}
+					},
+					"dialog": {
+						"title": "Xóa tất cả lịch sử giám sát?",
+						"description": "Không thể hoàn tác"
+					}
+				},
+				"retention": {
+					"title": "Lưu giữ dữ liệu kiểm tra",
+					"description": "Đặt thời gian lưu giữ dữ liệu kiểm tra trước khi tự động dọn dẹp.",
+					"option": {
+						"days": {
+							"label": "Thời gian lưu giữ (ngày)",
+							"unlimited": "Không giới hạn"
+						}
+					}
+				},
+				"thresholds": {
+					"title": "Ngưỡng toàn cục",
+					"description": "Đặt ngưỡng CPU, Bộ nhớ, Ổ đĩa và Nhiệt độ toàn cục cho giám sát hạ tầng. Áp dụng cho tất cả trình giám sát phần cứng trừ khi bị ghi đè.",
+					"option": {
+						"cpu": {
+							"label": "Ngưỡng CPU (%)",
+							"placeholder": "1 - 100"
+						},
+						"memory": {
+							"label": "Ngưỡng bộ nhớ (%)",
+							"placeholder": "1 - 100"
+						},
+						"disk": {
+							"label": "Ngưỡng ổ đĩa (%)",
+							"placeholder": "1 - 100"
+						},
+						"temperature": {
+							"label": "Ngưỡng nhiệt độ (°C)",
+							"placeholder": "1 - 150"
+						}
+					}
+				},
+				"email": {
+					"title": "Cài đặt email",
+					"description": "Cấu hình cài đặt email cho hệ thống. Được sử dụng để gửi thông báo và cảnh báo.",
+					"descriptionTransport": "",
+					"descriptionTransportLink": "Xem thông số kỹ thuật tại đây",
+					"option": {
+						"host": {
+							"label": "Máy chủ email - Tên máy chủ hoặc địa chỉ IP để kết nối",
+							"placeholder": "smtp.gmail.com"
+						},
+						"port": {
+							"label": "Cổng email - Cổng để kết nối",
+							"placeholder": "587"
+						},
+						"address": {
+							"label": "Địa chỉ email - Dùng để xác thực",
+							"placeholder": "you@example.com"
+						},
+						"user": {
+							"label": "Người dùng email - Tên đăng nhập để xác thực, ghi đè địa chỉ email nếu được chỉ định",
+							"placeholder": "Để trống nếu không cần"
+						},
+						"password": {
+							"label": "Mật khẩu email - Mật khẩu để xác thực",
+							"labelSet": "Mật khẩu đã được đặt. Nhấn Đặt lại để thay đổi.",
+							"placeholder": "Nhập mật khẩu của bạn"
+						},
+						"tlsServername": {
+							"label": "Tên máy chủ TLS - Tên máy chủ tùy chọn để xác thực TLS khi host là IP",
+							"placeholder": "example.com"
+						},
+						"connectionHost": {
+							"label": "Máy chủ kết nối email - Tên máy chủ dùng trong lời chào HELO/EHLO",
+							"placeholder": "localhost"
+						},
+						"secure": {
+							"label": "Sử dụng SSL (khuyến nghị): Mã hóa kết nối bằng SSL/TLS"
+						},
+						"pool": {
+							"label": "Bật gộp kết nối: Tái sử dụng kết nối hiện có để cải thiện hiệu suất"
+						},
+						"ignoreTLS": {
+							"label": "Tắt STARTTLS: Không sử dụng TLS ngay cả khi máy chủ hỗ trợ"
+						},
+						"requireTLS": {
+							"label": "Bắt buộc STARTTLS: Yêu cầu nâng cấp TLS, thất bại nếu không hỗ trợ"
+						},
+						"rejectUnauthorized": {
+							"label": "Từ chối chứng chỉ không hợp lệ: Từ chối kết nối với chứng chỉ tự ký hoặc không đáng tin cậy"
+						}
+					}
+				},
+				"demoMonitors": {
+					"title": "Trình giám sát mẫu",
+					"description": "Thêm trình giám sát mẫu cho mục đích trình diễn."
+				},
+				"removeMonitors": {
+					"title": "Đặt lại hệ thống",
+					"description": "Xóa tất cả trình giám sát khỏi hệ thống.",
+					"dialog": {
+						"title": "Xóa tất cả trình giám sát?",
+						"description": "Không thể hoàn tác."
+					}
+				},
+				"exportMonitors": {
+					"title": "Xuất trình giám sát"
+				},
+				"importExportMonitors": {
+					"title": "Nhập / Xuất trình giám sát",
+					"description": "Nhập hoặc xuất dữ liệu trình giám sát dưới dạng tệp JSON để sao lưu hoặc chuyển giao."
+				},
+				"about": {
+					"title": "Giới thiệu",
+					"developedBy": "Phát triển bởi Bluewave Labs"
+				},
+				"validation": {
+					"errorMessage": "Vui lòng sửa các lỗi xác thực sau:"
+				}
+			}
+		},
+		"statusPages": {
+			"deleteSuccess": "Đã xóa trang trạng thái thành công",
+			"fallback": {
+				"title": "Trang trạng thái dùng để:",
+				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
+				"actionButton": "Tạo trang trạng thái!"
+			},
+			"monitorsList": {
+				"chartTypeHeatmap": "Bản đồ nhiệt",
+				"chartTypeHistogram": "Biểu đồ cột",
+				"noData": "Không có dữ liệu",
+				"infrastructure": {
+					"title": "Hạ tầng",
+					"cpu": "CPU",
+					"memory": "RAM",
+					"memoryText": "Bộ nhớ",
+					"disk": "Ổ đĩa",
+					"usage": "Sử dụng",
+					"used": "Đã dùng",
+					"total": "Tổng"
+				},
+				"uptime": {
+					"title": "Thời gian hoạt động",
+					"responseTime": "Thời gian phản hồi"
+				}
+			},
+			"statusBar": {
+				"allDown": "Tất cả hệ thống đều ngừng hoạt động",
+				"allUp": "Tất cả hệ thống đang hoạt động",
+				"degraded": "Một số hệ thống đang gặp sự cố",
+				"unknown": "Không thể xác định trạng thái hệ thống"
+			},
+			"table": {
+				"headers": {
+					"name": "Tên trang trạng thái",
+					"url": "URL công khai"
+				},
+				"published": "Đã xuất bản",
+				"unpublished": "Chưa xuất bản"
+			},
+			"title": "Trang trạng thái",
+			"details": {
+				"empty": {
+					"title": "Chưa có gì ở đây",
+					"addMonitor": "Thêm trình giám sát để bắt đầu"
+				}
+			},
+			"form": {
+				"access": {
+					"title": "Truy cập",
+					"description": "Nếu trang trạng thái đã sẵn sàng, bạn có thể đánh dấu là đã xuất bản.",
+					"option": {
+						"published": {
+							"name": "Đã xuất bản và hiển thị công khai"
+						}
+					}
+				},
+				"basicInfo": {
+					"title": "Thông tin cơ bản",
+					"description": "Xác định tên công ty và tên miền phụ mà trang trạng thái trỏ đến.",
+					"option": {
+						"name": {
+							"label": "Tên công ty",
+							"placeholder": "Acme Inc."
+						},
+						"url": {
+							"label": "Địa chỉ trang trạng thái",
+							"placeholder": "my-status-page"
+						}
+					}
+				},
+				"monitors": {
+					"title": "Trình giám sát",
+					"description": "Chọn trình giám sát hiển thị trên trang trạng thái.",
+					"noMonitors": "Chưa chọn trình giám sát",
+					"option": {
+						"monitors": {
+							"label": "Chọn trình giám sát",
+							"placeholder": "Tìm kiếm và chọn trình giám sát..."
+						}
+					}
+				},
+				"timezone": {
+					"title": "Múi giờ",
+					"description": "Chọn múi giờ hiển thị cho trang trạng thái.",
+					"option": {
+						"timezone": {
+							"label": "Múi giờ",
+							"placeholder": "Chọn múi giờ..."
+						}
+					}
+				},
+				"appearance": {
+					"title": "Giao diện",
+					"description": "Xác định giao diện mặc định cho trang trạng thái công khai.",
+					"option": {
+						"logo": {
+							"label": "Logo"
+						},
+						"color": {
+							"label": "Màu thương hiệu"
+						}
+					}
+				},
+				"features": {
+					"title": "Tính năng",
+					"description": "Cấu hình thông tin hiển thị trên trang trạng thái.",
+					"option": {
+						"showCharts": {
+							"label": "Hiển thị biểu đồ thời gian phản hồi"
+						},
+						"showUptimePercentage": {
+							"label": "Hiển thị phần trăm thời gian hoạt động"
+						},
+						"showAdminLoginLink": {
+							"label": "Hiển thị liên kết đăng nhập quản trị"
+						},
+						"showInfrastructure": {
+							"label": "Hiển thị số liệu hạ tầng"
+						}
+					}
+				}
+			}
+		},
+		"uptime": {
+			"filters": {
+				"search": {
+					"placeholder": "Tìm kiếm trình giám sát..."
+				}
+			},
+			"table": {
+				"headers": {
+					"responseTime": "Thời gian phản hồi"
+				}
+			},
+			"fallback": {
+				"actionButton": "Tạo trình giám sát!",
+				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
+				"title": "Trình giám sát hoạt động dùng để:"
+			}
 		}
 	}
 }

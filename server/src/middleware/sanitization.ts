@@ -1,7 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
 import DOMPurify from "isomorphic-dompurify";
 
-export const sanitizeInput = (input: any, options = {}) => {
+export function sanitizeInput(input: string, options?: object): string;
+export function sanitizeInput(input: unknown, options?: object): unknown;
+export function sanitizeInput(input: unknown, options = {}): unknown {
 	if (typeof input !== "string") {
 		return input;
 	}
@@ -15,9 +17,9 @@ export const sanitizeInput = (input: any, options = {}) => {
 	};
 
 	return DOMPurify.sanitize(input, defaultConfig);
-};
+}
 
-export const sanitizeObject = (obj: Record<string, any>, options = {}): Record<string, any> => {
+export const sanitizeObject = (obj: unknown, options = {}): unknown => {
 	if (typeof obj !== "object" || obj === null) {
 		return obj;
 	}
@@ -26,7 +28,7 @@ export const sanitizeObject = (obj: Record<string, any>, options = {}): Record<s
 		return obj.map((item) => sanitizeObject(item, options));
 	}
 
-	const sanitized: Record<string, any> = {};
+	const sanitized: Record<string, unknown> = {};
 	for (const [key, value] of Object.entries(obj)) {
 		if (typeof value === "string") {
 			sanitized[key] = sanitizeInput(value, options);
@@ -52,7 +54,12 @@ export const sanitizeBody = (options = {}): ((req: Request, res: Response, next:
 export const sanitizeQuery = (options = {}): ((req: Request, res: Response, next: NextFunction) => void) => {
 	return (req: Request, res: Response, next: NextFunction) => {
 		if (req.query && typeof req.query === "object") {
-			req.query = sanitizeObject(req.query, options);
+			for (const key of Object.keys(req.query)) {
+				const value = req.query[key];
+				if (typeof value === "string") {
+					req.query[key] = sanitizeInput(value, options);
+				}
+			}
 		}
 		next();
 	};

@@ -1,9 +1,16 @@
+export const DbTypes = ["mongodb"] as const;
+export type DbType = (typeof DbTypes)[number];
+
 export interface SettingsThresholds {
 	cpu?: number;
 	memory?: number;
 	disk?: number;
 	temperature?: number;
 }
+
+export type SettingsUpdate = {
+	[K in keyof Settings]?: Settings[K] | null;
+};
 
 export interface Settings {
 	id: string;

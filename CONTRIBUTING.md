@@ -16,7 +16,7 @@ PS: **We work closely with contributors on our [Discord channel](https://discord
 Before you dive in, make sure you have these installed:
 
 ```bash
-# Check Node.js (v16+ required)
+# Check Node.js (v20+ required)
 node --version
 
 # Check npm
@@ -96,8 +96,14 @@ cd docker/dev
 
 Build the Docker images:
 
+Linux:
 ```bash
 ./build_images.sh
+```
+
+Windows:
+```bash
+./build_images.bat
 ```
 
 Run MongoDB container:

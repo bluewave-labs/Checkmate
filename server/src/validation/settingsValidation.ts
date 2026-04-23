@@ -1,3 +1,4 @@
+import { CHECK_TTL_SENTINEL } from "@/types/check.js";
 import { z } from "zod";
 
 //****************************************
@@ -6,18 +7,17 @@ import { z } from "zod";
 
 export const updateAppSettingsBodyValidation = z
 	.object({
-		checkTTL: z.union([z.number(), z.literal("")]).optional(),
-		systemEmailPort: z.union([z.number(), z.literal("")]).optional(),
-
-		pagespeedApiKey: z.union([z.string(), z.literal("")]).optional(),
-		language: z.union([z.string(), z.literal("")]).optional(),
-		timezone: z.union([z.string(), z.literal("")]).optional(),
-		systemEmailHost: z.union([z.string(), z.literal("")]).optional(),
-		systemEmailAddress: z.union([z.string(), z.literal("")]).optional(),
-		systemEmailPassword: z.union([z.string(), z.literal("")]).optional(),
-		systemEmailUser: z.union([z.string(), z.literal("")]).optional(),
-		systemEmailConnectionHost: z.union([z.string(), z.literal("")]).optional(),
-		systemEmailTLSServername: z.union([z.string(), z.literal("")]).optional(),
+		checkTTL: z.number().int().min(1).max(CHECK_TTL_SENTINEL).optional(),
+		systemEmailPort: z.number().nullable().optional(),
+		pagespeedApiKey: z.string().nullable().optional(),
+		language: z.string().optional(),
+		timezone: z.string().optional(),
+		systemEmailHost: z.string().nullable().optional(),
+		systemEmailAddress: z.string().nullable().optional(),
+		systemEmailPassword: z.string().nullable().optional(),
+		systemEmailUser: z.string().nullable().optional(),
+		systemEmailConnectionHost: z.string().nullable().optional(),
+		systemEmailTLSServername: z.string().nullable().optional(),
 
 		showURL: z.boolean().optional(),
 		systemEmailSecure: z.boolean().optional(),
@@ -28,10 +28,10 @@ export const updateAppSettingsBodyValidation = z
 
 		globalThresholds: z
 			.object({
-				cpu: z.union([z.number().min(1).max(100), z.literal("")]).optional(),
-				memory: z.union([z.number().min(1).max(100), z.literal("")]).optional(),
-				disk: z.union([z.number().min(1).max(100), z.literal("")]).optional(),
-				temperature: z.union([z.number().min(1).max(150), z.literal("")]).optional(),
+				cpu: z.number().min(1).max(100).optional(),
+				memory: z.number().min(1).max(100).optional(),
+				disk: z.number().min(1).max(100).optional(),
+				temperature: z.number().min(1).max(150).optional(),
 			})
 			.optional(),
 	})

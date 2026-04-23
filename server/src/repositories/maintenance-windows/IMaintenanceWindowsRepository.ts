@@ -5,12 +5,12 @@ export interface IMaintenanceWindowsRepository {
 	// fetch
 	findById(id: string, teamId: string): Promise<MaintenanceWindow>;
 	findByMonitorId(monitorId: string, teamId: string): Promise<MaintenanceWindow[]>;
-	findByTeamId(teamId: string, active: boolean, page: number, rowsPerPage: number, field: string, order: string): Promise<MaintenanceWindow[]>;
+	findByTeamId(teamId: string, page: number, rowsPerPage: number, field?: string, order?: string, active?: boolean): Promise<MaintenanceWindow[]>;
 
 	// update
 	updateById(id: string, teamId: string, data: Partial<MaintenanceWindow>): Promise<MaintenanceWindow>;
 	// delete
 	deleteById(id: string, teamId: string): Promise<MaintenanceWindow>;
 	// other
-	countByTeamId(teamId: string, active: boolean): Promise<number>;
+	countByTeamId(teamId: string, active?: boolean): Promise<number>;
 }

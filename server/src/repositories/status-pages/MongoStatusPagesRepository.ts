@@ -57,6 +57,7 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 			showCharts: doc.showCharts,
 			showUptimePercentage: doc.showUptimePercentage,
 			showAdminLoginLink: doc.showAdminLoginLink,
+			showInfrastructure: doc.showInfrastructure,
 			customCSS: doc.customCSS,
 			createdAt: this.toDateString(doc.createdAt),
 			updatedAt: this.toDateString(doc.updatedAt),
@@ -71,7 +72,8 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 	};
 
 	create = async (userId: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage> => {
-		const { logo: _logo, ...restData } = data;
+		const { logo, ...restData } = data;
+		void logo;
 		const statusPage = new StatusPageModel({
 			...restData,
 			userId,
@@ -109,7 +111,8 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 		image: Express.Multer.File | undefined,
 		patch: Partial<StatusPage> & { removeLogo?: string }
 	): Promise<StatusPage> => {
-		const { logo: _logo, removeLogo, ...restPatch } = patch;
+		const { logo, removeLogo, ...restPatch } = patch;
+		void logo;
 		const updateData: StatusPageUpdateData = { ...restPatch };
 		if (image) {
 			updateData.logo = {

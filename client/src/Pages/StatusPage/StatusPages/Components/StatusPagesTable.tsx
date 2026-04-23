@@ -97,7 +97,7 @@ export const StatusPagesTable = ({
 			{
 				id: "type",
 				content: t("common.table.headers.type"),
-				render: (row) => row.type,
+				render: (row) => row.type.join(", "),
 			},
 			{
 				id: "status",
