@@ -114,6 +114,15 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 
 If you would like to sponsor an additional feature, [see this page](https://checkmate.so/sponsored-features).
 
+## Monitor Lifecycle
+
+1. A monitor executes a check (HTTP / ping / port / hardware via Capture agent)
+2. The result is stored (success/failure + response time)
+3. Recent check results are evaluated against the monitor's configured status change threshold
+4. If the monitor's status change threshold is met and the current status is not equal to the previous status, the monitor's state changes (e.g. `initializing`, `up`, `down`, `breached`)
+5. Upon a state change: an incident is either created or resolved, depending on the monitor's current status
+6. Notifications are triggered based on configuration
+
 ## Screenshots
 
 <p>
