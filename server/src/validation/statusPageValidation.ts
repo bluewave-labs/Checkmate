@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { booleanCoercion } from "./shared.js";
-import { StatusPageTypes } from "@/types/statusPage.js";
+import { StatusPageTypes, StatusPageThemes, StatusPageThemeModes } from "@/types/statusPage.js";
 
 //****************************************
 // Status Page Validations
@@ -33,6 +33,8 @@ export const createStatusPageBodyValidation = z
 		showAdminLoginLink: booleanCoercion.optional(),
 		showInfrastructure: booleanCoercion.optional(),
 		removeLogo: z.union([z.literal("true"), z.literal("false")]).optional(),
+		theme: z.enum(StatusPageThemes).optional(),
+		themeMode: z.enum(StatusPageThemeModes).optional(),
 	})
 	.strip();
 

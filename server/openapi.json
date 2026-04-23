@@ -2807,6 +2807,12 @@
 									"url": {
 										"type": "string",
 										"description": "Custom URL for the status page"
+									},
+									"theme": {
+										"$ref": "#/components/schemas/StatusPageTheme"
+									},
+									"themeMode": {
+										"$ref": "#/components/schemas/StatusPageThemeMode"
 									}
 								}
 							}
@@ -2859,6 +2865,12 @@
 									"url": {
 										"type": "string",
 										"description": "Custom URL for the status page"
+									},
+									"theme": {
+										"$ref": "#/components/schemas/StatusPageTheme"
+									},
+									"themeMode": {
+										"$ref": "#/components/schemas/StatusPageThemeMode"
 									}
 								}
 							}
@@ -3339,6 +3351,16 @@
 			}
 		},
 		"schemas": {
+			"StatusPageTheme": {
+				"type": "string",
+				"enum": ["refined", "modern", "bold", "editorial"],
+				"description": "Visual theme for the public status page. Defaults to 'refined'."
+			},
+			"StatusPageThemeMode": {
+				"type": "string",
+				"enum": ["auto", "light", "dark"],
+				"description": "Forces a light/dark mode on the public page. 'auto' follows the visitor's OS preference. Defaults to 'auto'."
+			},
 			"SuccessResponse": {
 				"type": "object",
 				"required": ["success", "msg"],

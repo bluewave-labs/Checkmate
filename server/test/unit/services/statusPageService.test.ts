@@ -92,6 +92,15 @@ describe("StatusPageService", () => {
 			expect(repo.updateById).toHaveBeenCalledWith("sp-1", "team-1", file, { companyName: "Updated Co" });
 			expect(result).toBe(updated);
 		});
+
+		it("passes theme and themeMode through to the repository", async () => {
+			const { service, repo } = createService();
+			const patch = { theme: "modern" as const, themeMode: "dark" as const };
+
+			await service.updateStatusPage("sp-1", "team-1", undefined, patch);
+
+			expect(repo.updateById).toHaveBeenCalledWith("sp-1", "team-1", undefined, patch);
+		});
 	});
 
 	describe("deleteStatusPage", () => {
