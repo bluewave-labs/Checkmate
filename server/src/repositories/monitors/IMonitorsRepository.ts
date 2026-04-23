@@ -1,4 +1,4 @@
-import { type MonitorType, type Monitor, type MonitorsSummary } from "@/types/index.js";
+import { type MonitorType, type Monitor, type MonitorsSummary, CheckSnapshot } from "@/types/index.js";
 
 export interface TeamQueryConfig {
 	limit?: number;
@@ -29,6 +29,15 @@ export interface IMonitorsRepository {
 
 	// update
 	updateById(monitorId: string, teamId: string, updates: Partial<Monitor>): Promise<Monitor>;
+	updateStatusWindowAndChecks(
+		monitorId: string,
+		teamId: string,
+		status: boolean,
+		checkSnapshot: CheckSnapshot,
+		windowSize: number,
+		maxRecentChecks: number,
+		statusPatch?: Partial<Monitor>
+	): Promise<Monitor>;
 	togglePauseById(monitorId: string, teamId: string): Promise<Monitor>;
 	// delete
 	deleteById(monitorId: string, teamId: string): Promise<Monitor>;
@@ -41,6 +50,7 @@ export interface IMonitorsRepository {
 	findMonitorsSummaryByTeamId(teamId: string, config?: SummaryConfig): Promise<MonitorsSummary>;
 	findGroupsByTeamId(teamId: string): Promise<string[]>;
 	removeNotificationFromMonitors(notificationId: string): Promise<void>;
+	updateNotifications(teamId: string, monitorIds: string[], notificationIds: string[], action: "add" | "remove" | "set"): Promise<number>;
 	deleteByTeamIdsNotIn(teamIds: string[]): Promise<number>;
 	findAllMonitorIds(): Promise<string[]>;
 }

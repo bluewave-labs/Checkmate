@@ -20,7 +20,7 @@ import { useGet, usePatch, usePost, useLazyGet } from "@/Hooks/UseApi";
 import { useToast } from "@/Hooks/UseToast";
 import { useSettingsForm } from "@/Hooks/useSettingsForm";
 import { useIsAdmin } from "@/Hooks/useIsAdmin.js";
-import type { SettingsFormData } from "@/Validation/settings";
+import type { SettingsFormData, SettingsFormInput } from "@/Validation/settings";
 import { useState } from "react";
 import { Controller } from "react-hook-form";
 import { TextField, Button, FieldLabel, SliderWithLabel } from "@/Components/inputs";
@@ -37,6 +37,7 @@ import {
 } from "@/Features/UI/uiSlice.js";
 import timezones from "@/Utils/timezones.json";
 import type { RootState } from "@/Types/state";
+import { CHECK_TTL_SENTINEL } from "@/Types/Check";
 
 interface Timezone {
 	id: string;
@@ -88,7 +89,7 @@ export const SettingsPage = () => {
 	// Initialize form with schema and defaults
 	const { schema, defaults } = useSettingsForm({ data: fetchedSettings?.settings });
 
-	const form = useForm<SettingsFormData>({
+	const form = useForm<SettingsFormInput, unknown, SettingsFormData>({
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 		mode: "onChange",
@@ -255,28 +256,7 @@ export const SettingsPage = () => {
 			delete (dataToSend as any).systemEmailPassword;
 		}
 
-		// Convert undefined to empty string for backend unsetting
-		const processedData = Object.entries(dataToSend).reduce((acc, [key, value]) => {
-			const typedKey = key as keyof SettingsFormData;
-			if (value === undefined) {
-				(acc as any)[typedKey] = "";
-			} else if (typeof value === "object" && value !== null) {
-				// Handle nested objects like globalThresholds
-				// Convert 0 to "" for unsetting thresholds
-				(acc as any)[typedKey] = Object.entries(value).reduce(
-					(nested, [nestedKey, nestedValue]) => ({
-						...nested,
-						[nestedKey]: nestedValue === undefined ? "" : nestedValue,
-					}),
-					{}
-				);
-			} else {
-				(acc as any)[typedKey] = value;
-			}
-			return acc;
-		}, {} as Partial<SettingsFormData>);
-
-		const result = await patch("/settings", processedData as SettingsFormData);
+		const result = await patch("/settings", dataToSend as SettingsFormData);
 
 		if (result?.success) {
 			// Update API key state from response
@@ -458,6 +438,43 @@ export const SettingsPage = () => {
 							>
 								{t("common.buttons.clear")}
 							</Button>
+						}
+					/>
+				)}
+
+				{/* Check Retention */}
+				{isAdmin && (
+					<ConfigBox
+						title={t("pages.settings.form.retention.title")}
+						subtitle={t("pages.settings.form.retention.description")}
+						rightContent={
+							<Controller
+								name="checkTTL"
+								control={form.control}
+								defaultValue={defaults.checkTTL}
+								render={({ field }) => (
+									<SliderWithLabel
+										{...field}
+										fieldLabel={t("pages.settings.form.retention.option.days.label")}
+										min={1}
+										max={CHECK_TTL_SENTINEL}
+										sliderMaxWidth={{ xs: "100%", md: "50%" }}
+										value={field.value || 30}
+										onChange={(_, value) => field.onChange(value)}
+										valueLabelDisplay="auto"
+										valueLabelFormat={(value: number) =>
+											value >= CHECK_TTL_SENTINEL
+												? t("pages.settings.form.retention.option.days.unlimited")
+												: `${value}`
+										}
+										formatDisplayValue={(value: number) =>
+											value >= CHECK_TTL_SENTINEL
+												? t("pages.settings.form.retention.option.days.unlimited")
+												: `${value}`
+										}
+									/>
+								)}
+							/>
 						}
 					/>
 				)}

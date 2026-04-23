@@ -2,7 +2,7 @@ name: Staging deploy
 
 on:
   push:
-    branches: ["develop"]
+    branches: [ "develop" ]
 
 jobs:
   docker-build-and-push-client:
@@ -78,13 +78,13 @@ jobs:
       - name: SSH into server and restart container using Docker Compose
         uses: appleboy/ssh-action@v1.2.2
         with:
-          host: ${{ secrets.STAGING_SERVER_HOST }}
-          username: ${{ secrets.STAGING_SERVER_USER }}
-          key: ${{ secrets.STAGING_SERVER_SSH_KEY }}
+          host: ${{ secrets.DEMO_SERVER_HOST }}
+          username: ${{ secrets.DEMO_SERVER_USER }}
+          key: ${{ secrets.DEMO_SERVER_SSH_KEY }}
           script: |
             cd checkmate
             git pull
-            cd docker/staging
+            cd docker/unified
             docker compose down
             docker compose pull
             docker compose up -d

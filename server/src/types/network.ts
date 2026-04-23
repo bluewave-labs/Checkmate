@@ -126,7 +126,7 @@ export interface MonitorPayloadMap {
 	game: GameStatusPayload;
 	grpc: GrpcStatusPayload;
 	websocket: WebSocketStatusPayload;
-	default: unknown;
+	unknown: unknown;
 }
 
 export type StatusChangeResult = {

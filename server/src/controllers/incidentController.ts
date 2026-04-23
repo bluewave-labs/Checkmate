@@ -1,35 +1,37 @@
 import { AppError } from "@/utils/AppError.js";
 import { Request, Response, NextFunction } from "express";
 import { requireTeamId, requireUserId, requireUserEmail } from "./controllerUtils.js";
+import { IIncidentService } from "@/service/index.js";
+import { getIncidentsByTeamQueryValidation, getIncidentSummaryQueryValidation } from "@/validation/incidentValidation.js";
 
-const SERVICE_NAME = "incidentController";
+const SERVICE_NAME = "IncidentController";
 
-class IncidentController {
-	static SERVICE_NAME = SERVICE_NAME;
-
-	private incidentService: any;
-	constructor(incidentService: any) {
+export interface IIncidentController {
+	getIncidentsByTeam: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getIncidentSummary: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getIncidentById: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	resolveIncidentManually: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+}
+class IncidentController implements IIncidentController {
+	private incidentService: IIncidentService;
+	constructor(incidentService: IIncidentService) {
 		this.incidentService = incidentService;
-	}
-
-	get serviceName() {
-		return IncidentController.SERVICE_NAME;
 	}
 
 	getIncidentsByTeam = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const { sortOrder, dateRange, page, rowsPerPage, status, monitorId, resolutionType } = req.query || {};
+			const validatedQuery = getIncidentsByTeamQueryValidation.parse(req.query);
 
 			const teamId = requireTeamId(req.user?.teamId);
 			const result = await this.incidentService.getIncidentsByTeam(
 				teamId,
-				sortOrder,
-				dateRange,
-				page,
-				rowsPerPage,
-				status,
-				monitorId,
-				resolutionType
+				validatedQuery.sortOrder,
+				validatedQuery.dateRange,
+				validatedQuery.page,
+				validatedQuery.rowsPerPage,
+				validatedQuery.status,
+				validatedQuery.monitorId,
+				validatedQuery.resolutionType
 			);
 
 			return res.status(200).json({
@@ -45,10 +47,9 @@ class IncidentController {
 	getIncidentSummary = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const teamId = requireTeamId(req.user?.teamId);
+			const validatedQuery = getIncidentSummaryQueryValidation.parse(req.query);
 
-			const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
-
-			const summary = await this.incidentService.getIncidentSummary(teamId, limit);
+			const summary = await this.incidentService.getIncidentSummary(teamId, validatedQuery.limit);
 			return res.status(200).json({
 				success: true,
 				msg: "Incident summary retrieved successfully",
@@ -89,7 +90,8 @@ class IncidentController {
 				throw new AppError({ message: "Incident ID is required", service: SERVICE_NAME, status: 400 });
 			}
 
-			const resolvedIncident = await this.incidentService.resolveIncident(incidentId, userId, teamId, req?.body?.comment, userEmail);
+			const comment = Array.isArray(req.body.comment) ? req.body.comment[0] : req.body.comment;
+			const resolvedIncident = await this.incidentService.resolveIncident(incidentId, userId, teamId, comment, userEmail);
 
 			return res.status(200).json({
 				success: true,

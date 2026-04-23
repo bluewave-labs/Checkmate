@@ -1,7 +1,7 @@
 import type { MaintenanceWindow } from "@/types/index.js";
 import { type MaintenanceWindowDocument, MaintenanceWindowModel } from "@/db/models/index.js";
 import { IMaintenanceWindowsRepository } from "./IMaintenanceWindowsRepository.js";
-import mongoose from "mongoose";
+import mongoose, { SortOrder } from "mongoose";
 import { AppError } from "@/utils/AppError.js";
 
 class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository {
@@ -75,13 +75,13 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 
 	findByTeamId = async (
 		teamId: string,
-		active: boolean,
 		page: number,
 		rowsPerPage: number,
-		field: string,
-		order: string
+		field?: string,
+		order?: string,
+		active?: boolean
 	): Promise<MaintenanceWindow[]> => {
-		const maintenanceQuery: Record<string, any> = { teamId };
+		const maintenanceQuery: Record<string, unknown> = { teamId };
 
 		if (active !== undefined) maintenanceQuery.active = active;
 
@@ -92,7 +92,7 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 		}
 
 		// Sorting
-		const sort: Record<string, any> = {};
+		const sort: Record<string, SortOrder> = {};
 		if (field !== undefined && order !== undefined) {
 			sort[field] = order === "asc" ? 1 : -1;
 		}
@@ -126,8 +126,8 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 		}
 		return this.toEntity(deleted);
 	};
-	countByTeamId = async (teamId: string, active: boolean) => {
-		const maintenanceQuery: Record<string, any> = { teamId };
+	countByTeamId = async (teamId: string, active?: boolean) => {
+		const maintenanceQuery: Record<string, unknown> = { teamId };
 
 		if (active !== undefined) maintenanceQuery.active = active;
 

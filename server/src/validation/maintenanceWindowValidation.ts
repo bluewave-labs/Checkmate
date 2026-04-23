@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { booleanCoercion } from "./shared.js";
 
+const dateToString = z.coerce.date().transform((d) => d.toISOString());
+
 //****************************************
 // Maintenance Window Validations
 //****************************************
@@ -11,10 +13,10 @@ export const createMaintenanceWindowBodyValidation = z.object({
 	active: z.boolean().optional(),
 	duration: z.number().min(1, "Duration is required"),
 	durationUnit: z.enum(["seconds", "minutes", "hours", "days"]),
-	start: z.coerce.date(),
-	end: z.coerce.date(),
+	start: dateToString,
+	end: dateToString,
 	repeat: z.number().min(0, "Repeat must be a non-negative number"),
-	expiry: z.coerce.date().optional(),
+	expiry: dateToString.optional(),
 });
 
 export const getMaintenanceWindowByIdParamValidation = z.object({
@@ -45,10 +47,10 @@ export const editMaintenanceByIdWindowBodyValidation = z.object({
 	active: z.boolean().optional(),
 	name: z.string().optional(),
 	repeat: z.number().optional(),
-	start: z.coerce.date().optional(),
-	end: z.coerce.date().optional(),
-	expiry: z.coerce.date().optional(),
-	monitors: z.array(z.unknown()).optional(),
+	start: dateToString.optional(),
+	end: dateToString.optional(),
+	expiry: dateToString.optional(),
+	monitors: z.array(z.string()).optional(),
 	duration: z.number().optional(),
 	durationUnit: z.enum(["seconds", "minutes", "hours", "days"]).optional(),
 });

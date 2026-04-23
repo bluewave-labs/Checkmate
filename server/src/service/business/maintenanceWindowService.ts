@@ -1,16 +1,29 @@
 import { IMaintenanceWindowsRepository, IMonitorsRepository } from "@/repositories/index.js";
-import type { MaintenanceWindow } from "@/types/index.js";
-import { ParseBoolean } from "@/utils/utils.js";
+import type { DurationUnit, MaintenanceWindow } from "@/types/index.js";
 import { AppError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "maintenanceWindowService";
 
 export interface IMaintenanceWindowService {
-	createMaintenanceWindow(params: { teamId: string; body: Partial<MaintenanceWindow> & { monitors: string[] } }): Promise<void>;
+	createMaintenanceWindow(params: {
+		teamId: string;
+		monitorIDs: string[];
+		name: string;
+		active: boolean;
+		duration: number;
+		durationUnit: DurationUnit;
+		repeat: number;
+		start: string;
+		end: string;
+	}): Promise<void>;
 	getMaintenanceWindowById(params: { id: string; teamId: string }): Promise<MaintenanceWindow>;
 	getMaintenanceWindowsByTeamId(params: {
 		teamId: string;
-		query: Record<string, string>;
+		active?: boolean;
+		page?: number;
+		rowsPerPage?: number;
+		field?: string;
+		order?: string;
 	}): Promise<{ maintenanceWindows: MaintenanceWindow[]; maintenanceWindowCount: number }>;
 	getMaintenanceWindowsByMonitorId(params: { monitorId: string; teamId: string }): Promise<MaintenanceWindow[]>;
 	deleteMaintenanceWindow(params: { id: string; teamId: string }): Promise<MaintenanceWindow>;
@@ -37,9 +50,28 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		return MaintenanceWindowService.SERVICE_NAME;
 	}
 
-	createMaintenanceWindow = async ({ teamId, body }: { teamId: string; body: any }) => {
-		const monitorIds = body.monitors;
-		const monitors = await this.monitorsRepository.findByIds(monitorIds);
+	createMaintenanceWindow = async ({
+		teamId,
+		monitorIDs,
+		name,
+		active,
+		duration,
+		durationUnit,
+		repeat,
+		start,
+		end,
+	}: {
+		teamId: string;
+		monitorIDs: string[];
+		name: string;
+		active: boolean;
+		duration: number;
+		durationUnit: DurationUnit;
+		repeat: number;
+		start: string;
+		end: string;
+	}) => {
+		const monitors = await this.monitorsRepository.findByIds(monitorIDs);
 
 		const unauthorizedMonitors = monitors.filter((monitor) => monitor.teamId !== teamId);
 
@@ -52,17 +84,17 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 			});
 		}
 
-		const dbTransactions = monitorIds.map((monitorId: string) => {
+		const dbTransactions = monitorIDs.map((monitorId: string) => {
 			return this.maintenanceWindowsRepository.create({
 				teamId,
 				monitorId,
-				name: body.name,
-				active: body.active ? body.active : true,
-				duration: body.duration,
-				durationUnit: body.durationUnit,
-				repeat: body.repeat,
-				start: body.start,
-				end: body.end,
+				name: name,
+				active: active,
+				duration: duration,
+				durationUnit: durationUnit,
+				repeat: repeat,
+				start: start,
+				end: end,
 			});
 		});
 		await Promise.all(dbTransactions);
@@ -72,14 +104,25 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		return await this.maintenanceWindowsRepository.findById(id, teamId);
 	};
 
-	getMaintenanceWindowsByTeamId = async ({ teamId, query }: { teamId: string; query: any }) => {
-		let { active, page, rowsPerPage, field, order } = query || {};
+	getMaintenanceWindowsByTeamId = async ({
+		teamId,
+		active,
+		page,
+		rowsPerPage,
+		field,
+		order,
+	}: {
+		teamId: string;
+		active?: boolean;
+		page?: number;
+		rowsPerPage?: number;
+		field?: string;
+		order?: string;
+	}) => {
+		page = page ?? 0;
+		rowsPerPage = rowsPerPage ?? 10;
 
-		active = typeof active === "undefined" ? undefined : ParseBoolean(active);
-		page = parseInt(page) || 0;
-		rowsPerPage = parseInt(rowsPerPage) || 10;
-
-		const maintenanceWindows = await this.maintenanceWindowsRepository.findByTeamId(teamId, active, page, rowsPerPage, field, order);
+		const maintenanceWindows = await this.maintenanceWindowsRepository.findByTeamId(teamId, page, rowsPerPage, field, order, active);
 		const maintenanceWindowCount = await this.maintenanceWindowsRepository.countByTeamId(teamId, active);
 		return { maintenanceWindows, maintenanceWindowCount };
 	};
@@ -92,7 +135,7 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		return await this.maintenanceWindowsRepository.deleteById(id, teamId);
 	};
 
-	editMaintenanceWindow = async ({ id, teamId, body }: { id: string; teamId: string; body: any }) => {
+	editMaintenanceWindow = async ({ id, teamId, body }: { id: string; teamId: string; body: Partial<MaintenanceWindow> }) => {
 		return await this.maintenanceWindowsRepository.updateById(id, teamId, body);
 	};
 }

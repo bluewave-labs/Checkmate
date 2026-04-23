@@ -1,6 +1,9 @@
+import type { Application } from "express";
 import { createVerifyJWT } from "../middleware/verifyJWT.js";
 import { createVerifyStatusPageAccess } from "../middleware/verifyStatusPageAccess.js";
 import { authApiLimiter } from "../middleware/rateLimiter.js";
+import type { InitializedControllers } from "./controllers.js";
+import type { InitializedServices } from "./services.js";
 
 import AuthRoutes from "../routes/authRoute.js";
 import InviteRoutes from "../routes/inviteRoute.js";
@@ -17,7 +20,7 @@ import NotificationRoutes from "../routes/notificationRoute.js";
 
 import IncidentRoutes from "../routes/incidentRoute.js";
 
-export const setupRoutes = (app: any, controllers: Record<string, any>, services: Record<string, any>) => {
+export const setupRoutes = (app: Application, controllers: InitializedControllers, services: InitializedServices) => {
 	const verifyJWT = createVerifyJWT(services.settingsService);
 	const authRoutes = new AuthRoutes(controllers.authController, verifyJWT);
 	const monitorRoutes = new MonitorRoutes(controllers.monitorController);

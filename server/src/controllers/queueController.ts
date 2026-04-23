@@ -1,11 +1,19 @@
+import { ISuperSimpleQueue } from "@/service/index.js";
 import { Request, Response, NextFunction } from "express";
 
 const SERVICE_NAME = "JobQueueController";
 
-class JobQueueController {
+export interface IJobQueueController {
+	getMetrics(req: Request, res: Response, next: NextFunction): Promise<void>;
+	getJobs(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	getAllMetrics(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	flushQueue(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+}
+
+class JobQueueController implements IJobQueueController {
 	static SERVICE_NAME = SERVICE_NAME;
-	private jobQueue: any;
-	constructor(jobQueue: any) {
+	private jobQueue: ISuperSimpleQueue;
+	constructor(jobQueue: ISuperSimpleQueue) {
 		this.jobQueue = jobQueue;
 	}
 
@@ -53,18 +61,6 @@ class JobQueueController {
 		}
 	};
 
-	addJob = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			await this.jobQueue.addJob(Math.random().toString(36).substring(7));
-			return res.status(200).json({
-				success: true,
-				msg: "Job added to queue successfully",
-			});
-		} catch (error) {
-			next(error);
-		}
-	};
-
 	flushQueue = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const result = await this.jobQueue.flushQueues();
@@ -72,19 +68,6 @@ class JobQueueController {
 				success: true,
 				msg: "Queue flushed successfully",
 				data: result,
-			});
-		} catch (error) {
-			next(error);
-		}
-	};
-
-	checkQueueHealth = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const stuckQueues = await this.jobQueue.checkQueueHealth();
-			return res.status(200).json({
-				success: true,
-				msg: "Queue health checked successfully",
-				data: stuckQueues,
 			});
 		} catch (error) {
 			next(error);

@@ -1,15 +1,11 @@
 import { Router } from "express";
 import { isAllowed } from "@/middleware/isAllowed.js";
-import multer from "multer";
-import { fetchMonitorCertificate } from "@/controllers/controllerUtils.js";
-const upload = multer({
-	storage: multer.memoryStorage(), // Store file in memory as Buffer
-});
+import { IMonitorController } from "@/controllers/monitorController.js";
 
 class MonitorRoutes {
 	private router: Router;
-	private monitorController: any;
-	constructor(monitorController: any) {
+	private monitorController: IMonitorController;
+	constructor(monitorController: IMonitorController) {
 		this.router = Router();
 		this.monitorController = monitorController;
 		this.initRoutes();
@@ -38,10 +34,11 @@ class MonitorRoutes {
 
 		// Util routes
 		this.router.get("/certificate/:monitorId", (req, res, next) => {
-			this.monitorController.getMonitorCertificate(req, res, next, fetchMonitorCertificate);
+			this.monitorController.getMonitorCertificate(req, res, next);
 		});
 
 		// General monitor CRUD routes
+		this.router.patch("/notifications", isAllowed(["admin", "superadmin"]), this.monitorController.updateNotifications);
 		this.router.post("/", isAllowed(["admin", "superadmin"]), this.monitorController.createMonitor);
 		this.router.delete("/", isAllowed(["superadmin"]), this.monitorController.deleteAllMonitors);
 
@@ -50,7 +47,6 @@ class MonitorRoutes {
 		this.router.get("/export/json", isAllowed(["admin", "superadmin"]), this.monitorController.exportMonitorsToJSON);
 		this.router.post("/import/json", isAllowed(["admin", "superadmin"]), this.monitorController.importMonitorsFromJSON);
 
-		this.router.post("/test-email", isAllowed(["admin", "superadmin"]), this.monitorController.sendTestEmail);
 		this.router.get("/games", this.monitorController.getAllGames);
 
 		// Individual monitor CRUD routes

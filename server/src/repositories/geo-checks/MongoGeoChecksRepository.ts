@@ -1,8 +1,8 @@
 import { IGeoChecksRepository } from "./IGeoChecksRepository.js";
 import type { GeoCheck, GeoCheckMetadata, GeoCheckResult, GroupedGeoCheck, GeoContinent, FlatGeoCheck } from "@/types/geoCheck.js";
 import type { FlatGeoChecksQueryResult } from "./IGeoChecksRepository.js";
-import { GeoCheckModel, type GeoCheckDocument } from "@/db/models/index.js";
-import mongoose from "mongoose";
+import { GeoCheckMetadataDocument, GeoCheckModel, type GeoCheckDocument } from "@/db/models/index.js";
+import mongoose, { PipelineStage } from "mongoose";
 import { getDateForRange } from "@/utils/dataUtils.js";
 import { ILogger } from "@/utils/logger.js";
 
@@ -31,13 +31,13 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 			return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
 		};
 
-		const mapMetadata = (metadata: any): GeoCheckMetadata => ({
+		const mapMetadata = (metadata: GeoCheckMetadataDocument): GeoCheckMetadata => ({
 			monitorId: toStringId(metadata.monitorId),
 			teamId: toStringId(metadata.teamId),
 			type: metadata.type,
 		});
 
-		const mapResults = (results: any[]): GeoCheckResult[] => {
+		const mapResults = (results: GeoCheckResult[]): GeoCheckResult[] => {
 			if (!results || !Array.isArray(results)) {
 				return [];
 			}
@@ -89,12 +89,12 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 				}))
 			);
 			return docs.map((doc) => this.toEntity(doc));
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({
-				message: `Failed to createGeoChecks: ${error.message}`,
+				message: error instanceof Error ? `Failed to createGeoChecks: ${error.message}` : "Failed to createGeoChecks",
 				service: SERVICE_NAME,
 				method: "createGeoChecks",
-				stack: error.stack,
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 			throw error;
 		}
@@ -109,7 +109,7 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 		continents?: GeoContinent[]
 	): Promise<FlatGeoChecksQueryResult> => {
 		try {
-			const matchStage: Record<string, any> = {
+			const matchStage: Record<string, unknown> = {
 				"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 				...(getDateForRange(dateRange) && {
 					createdAt: {
@@ -125,22 +125,8 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 				skip = page * rowsPerPage;
 			}
 
-			if (continents && continents.length > 0) {
-				const pipeline: any[] = [
-					{ $match: matchStage },
-					{ $unwind: "$results" },
-					{
-						$match: {
-							"results.location.continent": { $in: continents },
-						},
-					},
-				];
-			} else {
-				const pipeline: any[] = [{ $match: matchStage }, { $unwind: "$results" }];
-			}
-
 			// Common pipeline stages for both paths
-			const pipeline: any[] = [
+			const pipeline: PipelineStage[] = [
 				{ $match: matchStage },
 				{ $unwind: "$results" },
 				// Filter by continent if specified
@@ -174,7 +160,7 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 			];
 
 			// Count pipeline
-			const countPipeline: any[] = [
+			const countPipeline: PipelineStage[] = [
 				{ $match: matchStage },
 				{ $unwind: "$results" },
 				...(continents && continents.length > 0
@@ -206,12 +192,12 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 			}));
 
 			return { geoChecksCount, geoChecks };
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({
-				message: `Error finding geo checks by monitor ID: ${error.message}`,
+				message: error instanceof Error ? `Error finding geo checks by monitor ID: ${error.message}` : "Error finding geo checks by monitor ID",
 				service: SERVICE_NAME,
 				method: "findByMonitorId",
-				stack: error.stack,
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 			throw error;
 		}
@@ -227,11 +213,15 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 				},
 			}).sort({ createdAt: -1 });
 			return docs.map(this.toEntity);
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({
-				message: `Error finding geo checks by monitor ID and date range: ${error.message}`,
+				message:
+					error instanceof Error
+						? `Error finding geo checks by monitor ID and date range: ${error.message}`
+						: "Error finding geo checks by monitor ID and date range",
 				service: SERVICE_NAME,
 				method: "findByMonitorIdAndDateRange",
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 			throw error;
 		}
@@ -245,7 +235,7 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 		continents?: GeoContinent[]
 	): Promise<GroupedGeoCheck[]> => {
 		try {
-			const pipeline: any[] = [
+			const pipeline: PipelineStage[] = [
 				// Match geo checks for this monitor in date range
 				{
 					$match: {
@@ -325,11 +315,12 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 
 			const results = await GeoCheckModel.aggregate(pipeline);
 			return results as GroupedGeoCheck[];
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({
-				message: `Error finding grouped geo checks: ${error.message}`,
+				message: error instanceof Error ? `Error finding grouped geo checks: ${error.message}` : "Error finding grouped geo checks",
 				service: SERVICE_NAME,
 				method: "findGroupedByMonitorIdAndDateRange",
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 			throw error;
 		}
@@ -341,11 +332,12 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 				"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 			});
 			return result.deletedCount || 0;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({
-				message: `Error deleting geo checks by monitor ID: ${error.message}`,
+				message: error instanceof Error ? `Error deleting geo checks by monitor ID: ${error.message}` : "Error deleting geo checks by monitor ID",
 				service: SERVICE_NAME,
 				method: "deleteByMonitorId",
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 			throw error;
 		}
@@ -357,11 +349,12 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 				"metadata.teamId": new mongoose.Types.ObjectId(teamId),
 			});
 			return result.deletedCount || 0;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({
-				message: `Error deleting geo checks by team ID: ${error.message}`,
+				message: error instanceof Error ? `Error deleting geo checks by team ID: ${error.message}` : "Error deleting geo checks by team ID",
 				service: SERVICE_NAME,
 				method: "deleteByTeamId",
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 			throw error;
 		}
@@ -372,11 +365,12 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 			const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
 			const result = await GeoCheckModel.deleteMany({ "metadata.monitorId": { $nin: objectIds } });
 			return result.deletedCount || 0;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			this.logger.error({
-				message: `Error deleting orphaned geo checks: ${error.message}`,
+				message: error instanceof Error ? `Error deleting orphaned geo checks: ${error.message}` : "Error deleting orphaned geo checks",
 				service: SERVICE_NAME,
 				method: "deleteByMonitorIdsNotIn",
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 			throw error;
 		}

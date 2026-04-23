@@ -1,3 +1,9 @@
+export interface CheckResultInput {
+	status: boolean;
+	responseTime: number;
+	now: number;
+}
+
 export interface MonitorStats {
 	id: string;
 	monitorId: string;

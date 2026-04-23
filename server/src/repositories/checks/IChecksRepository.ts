@@ -47,4 +47,5 @@ export interface IChecksRepository {
 	deleteByMonitorId(monitorId: string): Promise<number>;
 	deleteByTeamId(teamId: string): Promise<number>;
 	deleteByMonitorIdsNotIn(monitorIds: string[]): Promise<number>;
+	deleteOlderThan(date: Date): Promise<number>;
 }

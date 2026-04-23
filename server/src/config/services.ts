@@ -27,6 +27,10 @@ import {
 	DiscordProvider,
 	PagerDutyProvider,
 	MatrixProvider,
+	TeamsProvider,
+	TelegramProvider,
+	PushoverProvider,
+	TwilioProvider,
 	// Interfaces
 	INetworkService,
 	IEmailService,
@@ -45,6 +49,7 @@ import {
 	IIncidentService,
 	INotificationMessageBuilder,
 	ISettingsService,
+	SettingsService,
 	EnvConfig,
 } from "@/service/index.js";
 
@@ -91,9 +96,10 @@ import {
 	MongoInvitesRepository,
 	MongoRecoveryTokensRepository,
 	MongoNotificationsRepository,
-	MongoIncidentRepository,
+	MongoIncidentsRepository,
 	MongoTeamsRepository,
 	MongoMaintenanceWindowsRepository,
+	MongoSettingsRepository,
 	IMonitorsRepository,
 	IChecksRepository,
 	IGeoChecksRepository,
@@ -109,6 +115,7 @@ import {
 	IMaintenanceWindowsRepository,
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
+import { AppError } from "@/utils/AppError.js";
 
 export type InitializedServices = {
 	settingsService: ISettingsService;
@@ -151,32 +158,63 @@ export const initializeServices = async ({
 	logger,
 	envSettings,
 	settingsService,
-	settingsRepository,
 }: {
 	logger: ILogger;
 	envSettings: EnvConfig;
 	settingsService: ISettingsService;
-	settingsRepository: ISettingsRepository;
 }): Promise<InitializedServices> => {
 	// Create DB
 
-	const db = new MongoDB(logger, envSettings);
+	const dbType = envSettings.dbType;
+
+	let db: IDb | null = null;
+
+	if (dbType === "mongodb") {
+		db = new MongoDB(logger, envSettings);
+	}
+
+	if (!db) {
+		throw new AppError({ message: "Unsupported database type", status: 500 });
+	}
 
 	await db.connect();
 
+	let monitorsRepository: IMonitorsRepository;
+	let checksRepository: IChecksRepository;
+	let geoChecksRepository: IGeoChecksRepository;
+	let monitorStatsRepository: IMonitorStatsRepository;
+	let statusPagesRepository: IStatusPagesRepository;
+	let usersRepository: IUsersRepository;
+	let invitesRepository: IInvitesRepository;
+	let recoveryTokensRepository: IRecoveryTokensRepository;
+	let settingsRepository: ISettingsRepository;
+	let notificationsRepository: INotificationsRepository;
+	let incidentsRepository: IIncidentsRepository;
+	let teamsRepository: ITeamsRepository;
+	let maintenanceWindowsRepository: IMaintenanceWindowsRepository;
+
 	// Repositories
-	const monitorsRepository = new MongoMonitorsRepository();
-	const checksRepository = new MongoChecksRepository(logger);
-	const geoChecksRepository = new MongoGeoChecksRepository(logger);
-	const monitorStatsRepository = new MongoMonitorStatsRepository();
-	const statusPagesRepository = new MongoStatusPagesRepository();
-	const usersRepository = new MongoUsersRepository();
-	const invitesRepository = new MongoInvitesRepository();
-	const recoveryTokensRepository = new MongoRecoveryTokensRepository();
-	const notificationsRepository = new MongoNotificationsRepository();
-	const incidentsRepository = new MongoIncidentRepository();
-	const teamsRepository = new MongoTeamsRepository();
-	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
+
+	if (dbType === "mongodb") {
+		monitorsRepository = new MongoMonitorsRepository();
+		checksRepository = new MongoChecksRepository(logger);
+		geoChecksRepository = new MongoGeoChecksRepository(logger);
+		monitorStatsRepository = new MongoMonitorStatsRepository();
+		statusPagesRepository = new MongoStatusPagesRepository();
+		usersRepository = new MongoUsersRepository();
+		invitesRepository = new MongoInvitesRepository();
+		recoveryTokensRepository = new MongoRecoveryTokensRepository();
+		settingsRepository = new MongoSettingsRepository();
+		notificationsRepository = new MongoNotificationsRepository();
+		incidentsRepository = new MongoIncidentsRepository();
+		teamsRepository = new MongoTeamsRepository();
+		maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
+	} else {
+		throw new AppError({ message: "Unsupported database type", status: 500 });
+	}
+
+	// Inject settings repository into settings service (now that DB is connected)
+	(settingsService as SettingsService).setRepository(settingsRepository);
 
 	// Network providers
 	const pingProvider = new PingProvider(ping);
@@ -228,6 +266,10 @@ export const initializeServices = async ({
 	const discordProvider = new DiscordProvider(logger);
 	const pagerDutyProvider = new PagerDutyProvider(logger);
 	const matrixProvider = new MatrixProvider(logger);
+	const teamsProvider = new TeamsProvider(logger);
+	const telegramProvider = new TelegramProvider(logger);
+	const pushoverProvider = new PushoverProvider(logger);
+	const twilioProvider = new TwilioProvider(logger);
 
 	const notificationsService = new NotificationsService(
 		notificationsRepository,
@@ -238,6 +280,10 @@ export const initializeServices = async ({
 		discordProvider,
 		pagerDutyProvider,
 		matrixProvider,
+		teamsProvider,
+		telegramProvider,
+		pushoverProvider,
+		twilioProvider,
 		settingsService,
 		logger,
 		notificationMessageBuilder
@@ -249,6 +295,7 @@ export const initializeServices = async ({
 		statusService,
 		notificationsService,
 		checkService,
+		settingsService,
 		bufferService,
 		incidentService,
 		maintenanceWindowsRepository,
@@ -291,7 +338,6 @@ export const initializeServices = async ({
 	});
 	const monitorService = new MonitorService({
 		jobQueue: superSimpleQueue,
-		emailService,
 		logger,
 		games,
 		monitorsRepository,

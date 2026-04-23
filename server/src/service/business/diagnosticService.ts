@@ -24,8 +24,7 @@ export class DiagnosticService implements IDiagnosticService {
 		 * Clears performance marks after each measurement to prevent memory leaks.
 		 */
 		const obs = new PerformanceObserver((items) => {
-			// Get the first entry but we don't need to store it
-			items.getEntries()[0];
+			items.getEntries();
 			performance.clearMarks();
 		});
 		obs.observe({ entryTypes: ["measure"] });

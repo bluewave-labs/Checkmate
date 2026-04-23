@@ -343,6 +343,7 @@
 			"register": {
 				"title": "Welcome back to Checkmate!",
 				"subtitle": "Sign up to get started",
+				"setupNotice": "This page is only available during initial setup. Once a super admin is registered, additional users can be invited from team settings.",
 				"submit": "Register"
 			},
 			"forgotPassword": {
@@ -397,16 +398,28 @@
 					"activeFor": "Active for",
 					"certificateExpiry": "Certificate expiry",
 					"lastCheck": "Last check",
-					"lastResponseTime": "Last response time"
+					"lastResponseTime": "Last response time",
+					"serviceIsDown": "Service is down"
 				},
 				"status": {
 					"down": "down",
-					"breached": "breached",
+					"breached": "threshold exceeded",
 					"initializing": "initializing",
 					"maintenance": "maintenance",
 					"paused": "paused",
 					"total": "total",
 					"up": "up"
+				},
+				"monitorTypes": {
+					"optionDocker": "Docker",
+					"optionGame": "Game",
+					"optionHttp": "HTTP(S)",
+					"optionPing": "Ping",
+					"optionPort": "Port",
+					"optionPagespeed": "PageSpeed",
+					"optionHardware": "Infrastructure",
+					"optionGrpc": "gRPC",
+					"optionWebSocket": "WebSocket"
 				}
 			}
 		},
@@ -534,19 +547,12 @@
 				},
 				"type": {
 					"description": "Select the type of check to perform",
-					"optionDocker": "Docker",
 					"optionDockerDescription": "Use Docker to monitor if a container is running.",
-					"optionGame": "Game",
 					"optionGameDescription": "Monitor if a specific game server is online.",
-					"optionGrpc": "gRPC",
 					"optionGrpcDescription": "Monitor gRPC services using the standard Health Checking Protocol.",
-					"optionWebSocket": "WebSocket",
 					"optionWebSocketDescription": "Monitor WebSocket endpoints for connection health and response time.",
-					"optionHttp": "HTTP(S)",
 					"optionHttpDescription": "Use HTTP(S) to monitor your website or API endpoint.",
-					"optionPing": "Ping",
 					"optionPingDescription": "Use ICMP Ping to monitor if a server is online.",
-					"optionPort": "Port",
 					"optionPortDescription": "Monitor if a specific port on a server is open.",
 					"title": "Type"
 				},
@@ -947,6 +953,34 @@
 					"description": "Select the type of notification channel to create.",
 					"optionType": "Type",
 					"title": "Channel type"
+				},
+				"telegram": {
+					"title": "Telegram configuration",
+					"description": "Configure your Telegram bot to send notifications.",
+					"optionBotToken": "Bot token",
+					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
+					"optionChatId": "Chat ID",
+					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Pushover configuration",
+					"description": "Configure Pushover to receive push notifications on your devices.",
+					"optionAppToken": "Application API token",
+					"placeholderAppToken": "azGDORePK8gMaC0QOYAMyEEuzJnyUi",
+					"optionUserKey": "User key",
+					"placeholderUserKey": "uQiRzpo4DXghDmr9QzzfQu27cmVRsG"
+				},
+				"twilio": {
+					"title": "Twilio SMS configuration",
+					"description": "Configure Twilio to send SMS notifications to a phone number.",
+					"optionAccountSid": "Account SID",
+					"placeholderAccountSid": "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+					"optionAuthToken": "Auth token",
+					"placeholderAuthToken": "your_auth_token",
+					"optionFromNumber": "From number (Twilio)",
+					"placeholderFromNumber": "+15551234567",
+					"optionToNumber": "To number (recipient)",
+					"placeholderToNumber": "+15559876543"
 				}
 			},
 			"table": {
@@ -1041,7 +1075,7 @@
 				},
 				"stats": {
 					"title": "Monitor history",
-					"description": "Define how long you want to retain historical data. You can also clear all existing data.",
+					"description": "Clear all monitoring history and statistics for your team. This action is irreversible.",
 					"option": {
 						"clear": {
 							"label": "Clear all stats. This is irreversible."
@@ -1050,6 +1084,16 @@
 					"dialog": {
 						"title": "Clear all monitoring history?",
 						"description": "This cannot be undone"
+					}
+				},
+				"retention": {
+					"title": "Check retention",
+					"description": "Set how long check data is retained before being automatically cleaned up.",
+					"option": {
+						"days": {
+							"label": "Retention period (days)",
+							"unlimited": "Unlimited"
+						}
 					}
 				},
 				"thresholds": {
@@ -1168,12 +1212,38 @@
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Heatmap",
-				"chartTypeHistogram": "Histogram"
+				"chartTypeHistogram": "Histogram",
+				"noData": "No data available",
+				"infrastructure": {
+					"title": "Infrastructure",
+					"cpu": "CPU",
+					"memory": "RAM",
+					"memoryText": "Memory",
+					"disk": "Disk",
+					"usage": "Usage",
+					"used": "Used",
+					"total": "Total"
+				},
+				"uptime": {
+					"title": "Uptime",
+					"responseTime": "Response time"
+				}
 			},
 			"statusBar": {
-				"allDown": "All systems are down",
 				"allUp": "All systems operational",
+				"allBreached": "All systems have exceeded thresholds",
+				"allMaintenance": "All systems are under maintenance",
+				"allDown": "All systems are down",
+				"allPaused": "All systems are paused",
+				"allInitializing": "All systems are initializing",
+				"breachedAndDown": "Some systems have exceeded thresholds and are down",
+				"breached": "Some systems have exceeded thresholds",
 				"degraded": "Some systems are experiencing issues",
+				"maintenanceAndDown": "Some systems are down during maintenance",
+				"maintenance": "Some systems are under maintenance",
+				"partiallyPaused": "Some systems are paused",
+				"initializing": "Some systems are initializing",
+				"noMonitors": "No monitors have been configured",
 				"unknown": "Unable to determine system status"
 			},
 			"table": {
@@ -1260,6 +1330,9 @@
 						},
 						"showAdminLoginLink": {
 							"label": "Show admin login link"
+						},
+						"showInfrastructure": {
+							"label": "Show infrastructure metrics"
 						}
 					}
 				}
