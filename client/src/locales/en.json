@@ -911,7 +911,7 @@
 					"Let engineers know when incidents happen",
 					"Keep administrators informed of system changes"
 				],
-				"title": "Notification channles are used to:"
+				"title": "Notification channels are used to:"
 			},
 			"form": {
 				"accessToken": {
