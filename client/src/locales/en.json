@@ -1214,6 +1214,20 @@
 				"chartTypeHeatmap": "Heatmap",
 				"chartTypeHistogram": "Histogram",
 				"noData": "No data available",
+				"status": {
+					"up": "Operational",
+					"down": "Down",
+					"breached": "Threshold exceeded",
+					"maintenance": "Maintenance",
+					"paused": "Paused",
+					"initializing": "Initializing"
+				},
+				"chart": {
+					"avg": "avg {{value}}ms",
+					"max": "max {{value}}ms",
+					"downTooltip": "Down",
+					"heatmapAria": "Response time heatmap"
+				},
 				"infrastructure": {
 					"title": "Infrastructure",
 					"cpu": "CPU",
@@ -1230,6 +1244,8 @@
 				}
 			},
 			"statusBar": {
+				"monitoringSummary": "Monitoring {{count}} service · Updates every 10 seconds",
+				"monitoringSummary_other": "Monitoring {{count}} services · Updates every 10 seconds",
 				"allUp": "All systems operational",
 				"allBreached": "All systems have exceeded thresholds",
 				"allMaintenance": "All systems are under maintenance",
@@ -1260,6 +1276,13 @@
 					"title": "There's nothing here yet",
 					"addMonitor": "Add a monitor to get started"
 				}
+			},
+			"footer": {
+				"poweredBy": "Powered by"
+			},
+			"editorial": {
+				"reportTitle": "Service Report",
+				"allUp": "All systems are operating normally."
 			},
 			"form": {
 				"access": {
@@ -1317,6 +1340,38 @@
 							"label": "Brand color"
 						}
 					}
+				},
+				"theme": {
+					"title": "Page theme",
+					"description": "Choose the visual style for your public status page.",
+					"label": "Theme",
+					"previewLight": "Light",
+					"previewDark": "Dark",
+					"options": {
+						"refined": {
+							"name": "Refined",
+							"description": "Clean, professional, close to the classic Checkmate look."
+						},
+						"modern": {
+							"name": "Modern",
+							"description": "SaaS-grade with a pulsing status dot and softly fading cards."
+						},
+						"bold": {
+							"name": "Bold",
+							"description": "Large type and confident spacing. Great for brand-forward pages."
+						},
+						"editorial": {
+							"name": "Editorial",
+							"description": "Serif headings and hairline dividers. Distinctive and calm."
+						}
+					}
+				},
+				"themeMode": {
+					"label": "Theme mode",
+					"description": "Auto follows the visitor's device preference.",
+					"auto": "Auto (follow visitor's device)",
+					"light": "Light only",
+					"dark": "Dark only"
 				},
 				"features": {
 					"title": "Features",

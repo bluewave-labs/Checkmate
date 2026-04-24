@@ -37,6 +37,7 @@ export const HeaderStatusPageControls = ({
 			>
 				<Typography
 					variant="h1"
+					className="sp-heading"
 					overflow="hidden"
 					textOverflow="ellipsis"
 					sx={{

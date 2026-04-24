@@ -1,6 +1,10 @@
 import { useMemo } from "react";
 import { statusPageSchema, type StatusPageFormData } from "@/Validation/statusPage";
 import type { StatusPage } from "@/Types/StatusPage";
+import {
+	DEFAULT_STATUS_PAGE_THEME,
+	DEFAULT_STATUS_PAGE_THEME_MODE,
+} from "@/Types/StatusPage";
 import type { Monitor } from "@/Types/Monitor";
 
 interface UseStatusPageFormOptions {
@@ -36,6 +40,8 @@ export const useStatusPageForm = ({
 			showAdminLoginLink: data?.showAdminLoginLink ?? false,
 			showInfrastructure: data?.showInfrastructure ?? false,
 			customCSS: data?.customCSS || "",
+			theme: data?.theme ?? DEFAULT_STATUS_PAGE_THEME,
+			themeMode: data?.themeMode ?? DEFAULT_STATUS_PAGE_THEME_MODE,
 			logo: transformLogo(data?.logo),
 		};
 

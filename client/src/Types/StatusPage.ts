@@ -21,6 +21,14 @@ export const getMonitorTypeLabel = (
 	return key ? t(key) : type;
 };
 
+export const STATUS_PAGE_THEMES = ["refined", "modern", "bold", "editorial"] as const;
+export type StatusPageTheme = (typeof STATUS_PAGE_THEMES)[number];
+export const DEFAULT_STATUS_PAGE_THEME: StatusPageTheme = "refined";
+
+export const STATUS_PAGE_THEME_MODES = ["auto", "light", "dark"] as const;
+export type StatusPageThemeMode = (typeof STATUS_PAGE_THEME_MODES)[number];
+export const DEFAULT_STATUS_PAGE_THEME_MODE: StatusPageThemeMode = "auto";
+
 export interface StatusPage {
 	id: string;
 	userId: string;
@@ -43,6 +51,8 @@ export interface StatusPage {
 	showAdminLoginLink: boolean;
 	showInfrastructure: boolean;
 	customCSS: string;
+	theme?: StatusPageTheme;
+	themeMode?: StatusPageThemeMode;
 	createdAt: string;
 	updatedAt: string;
 }

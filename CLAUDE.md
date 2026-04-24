@@ -12,12 +12,14 @@ Checkmate is an open-source uptime and infrastructure monitoring application. It
 ```bash
 cd client
 npm install
-npm run dev              # Start dev server at http://localhost:5173
+npm run dev -- --port 10001 --strictPort   # Local dev port is 10001 (5173 is used by another project on this machine)
 npm run build            # TypeScript check + production build
 npm run lint             # ESLint (strict, max-warnings 0)
 npm run format           # Prettier formatting
 npm run format-check     # Check formatting
 ```
+
+Server `.env` on this machine is configured with `CLIENT_HOST="http://localhost:10001"` to match the client dev port. If you change the client port, keep `.env` in sync.
 
 ### Server (Node.js/Express)
 ```bash

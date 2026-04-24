@@ -1,0 +1,156 @@
+/*
+ * Scoped styling for the public status page themes.
+ * Every selector is prefixed with [data-status-theme="..."] so these styles
+ * only apply inside the StatusPageThemeProvider subtree.
+ *
+ * Colour tokens come from CSS custom properties set by the provider
+ * (see tokens.ts → toCssVars). This file adds structural and surface rules
+ * that a plain token swap can't express.
+ */
+
+/* --- shared: push tokens onto MUI surfaces inside the themed tree --- */
+[data-status-theme] {
+	color: var(--sp-text);
+}
+
+[data-status-theme] .sp-card,
+[data-status-theme] .MuiBox-root.sp-card {
+	background-color: var(--sp-surface) !important;
+	border-color: var(--sp-border) !important;
+	border-radius: var(--sp-radius) !important;
+	color: var(--sp-text);
+}
+
+[data-status-theme] .sp-heading {
+	color: var(--sp-text);
+}
+
+[data-status-theme] .sp-badge {
+	background-color: var(--sp-up-soft) !important;
+	color: var(--sp-up) !important;
+	border-radius: 999px;
+	padding: 2px 10px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+}
+
+/* Status bar / hero */
+[data-status-theme] .sp-hero {
+	border-radius: var(--sp-radius);
+}
+
+/* --- refined: soft shadow, small accent on card --- */
+[data-status-theme="refined"] .sp-card {
+	box-shadow:
+		0 1px 2px rgba(10, 16, 32, 0.06),
+		0 6px 18px rgba(10, 16, 32, 0.08) !important;
+}
+[data-status-theme="refined"] .sp-hero-title {
+	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+
+/* --- modern: stronger shadow, larger radius, pulse dot + staggered fade --- */
+[data-status-theme="modern"] .sp-card {
+	box-shadow:
+		0 2px 4px rgba(16, 24, 40, 0.04),
+		0 12px 32px rgba(16, 24, 40, 0.06) !important;
+	border-radius: 16px !important;
+	opacity: 0;
+	transform: translateY(8px);
+	animation: sp-card-fadein 0.5s forwards;
+}
+[data-status-theme="modern"] .sp-card:nth-of-type(1) {
+	animation-delay: 0.05s;
+}
+[data-status-theme="modern"] .sp-card:nth-of-type(2) {
+	animation-delay: 0.1s;
+}
+[data-status-theme="modern"] .sp-card:nth-of-type(3) {
+	animation-delay: 0.15s;
+}
+[data-status-theme="modern"] .sp-card:nth-of-type(4) {
+	animation-delay: 0.2s;
+}
+[data-status-theme="modern"] .sp-card:nth-of-type(5) {
+	animation-delay: 0.25s;
+}
+[data-status-theme="modern"] .sp-card:nth-of-type(n + 6) {
+	animation-delay: 0.3s;
+}
+@keyframes sp-card-fadein {
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+[data-status-theme="modern"] .sp-hero-title {
+	font-size: 22px;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+}
+
+/* --- bold: large type, conic-gradient hero accent when no logo --- */
+[data-status-theme="bold"] .sp-hero {
+	background:
+		linear-gradient(135deg, var(--sp-up-soft), transparent 60%), var(--sp-surface) !important;
+	border: 1px solid var(--sp-border) !important;
+}
+[data-status-theme="bold"] .sp-hero-title {
+	font-size: 32px;
+	font-weight: 800;
+	letter-spacing: -0.02em;
+	line-height: 1.1;
+	color: var(--sp-text) !important;
+}
+[data-status-theme="bold"] .sp-card {
+	border-radius: 18px !important;
+	border: 1px solid var(--sp-border) !important;
+}
+
+/* --- editorial: serif headings, hairline dividers instead of cards --- */
+[data-status-theme="editorial"] .sp-heading {
+	font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+	letter-spacing: -0.01em;
+}
+[data-status-theme="editorial"] .sp-card {
+	background-color: transparent !important;
+	border: 0 !important;
+	border-bottom: 1px solid var(--sp-border) !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+[data-status-theme="editorial"] .sp-card:last-of-type {
+	border-bottom: 0 !important;
+}
+[data-status-theme="editorial"] .sp-hero {
+	background: transparent !important;
+	color: var(--sp-text) !important;
+	border-bottom: 2px solid var(--sp-text) !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+}
+[data-status-theme="editorial"] .sp-hero-title {
+	font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+	font-weight: 700;
+}
+[data-status-theme="editorial"] .sp-badge {
+	background-color: transparent !important;
+	color: var(--sp-text-muted) !important;
+	border: 1px solid var(--sp-border) !important;
+	border-radius: 0 !important;
+	text-transform: uppercase;
+	font-size: 10px;
+	letter-spacing: 0.12em;
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+	[data-status-theme] .sp-card {
+		animation: none;
+		opacity: 1;
+		transform: none;
+	}
+}

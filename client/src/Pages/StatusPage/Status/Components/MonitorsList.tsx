@@ -63,12 +63,14 @@ const MonitorHeader = ({
 				>
 					<Typography
 						variant="h6"
+						className="sp-heading"
 						sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
 					>
 						{monitor.name}
 					</Typography>
 					<Typography
 						variant="caption"
+						className="sp-badge"
 						sx={getMonitorBadgeStyles(monitor.type ?? "", theme)}
 					>
 						{getMonitorTypeLabel(monitor.type, t)}
@@ -153,6 +155,7 @@ export const MonitorsList = ({ statusPage, monitors }: MonitorsListProps) => {
 			{monitors.map((monitor) => (
 				<BaseBox
 					key={monitor.id}
+					className="sp-card"
 					padding={theme.spacing(LAYOUT.MD)}
 				>
 					<MonitorHeader

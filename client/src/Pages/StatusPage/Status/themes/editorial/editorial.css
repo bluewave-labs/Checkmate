@@ -1,0 +1,353 @@
+/*
+ * Editorial theme — scoped to [data-status-theme="editorial"].
+ * Port of /Users/gorkemcetin/Desktop/checkmate-status-mockups/04-editorial.html.
+ * Signature traits: serif body, narrow 760px column, newspaper-style
+ * header with eyebrow + big "Service Report" title, flat rectangular
+ * badges (no border-radius), hairline dividers instead of cards,
+ * dateline below status, serif gauge values.
+ */
+
+[data-status-theme="editorial"]:not([data-status-transparent]) {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	background: var(--sp-bg);
+}
+
+[data-status-theme="editorial"] .ed-page {
+	flex: 1 0 auto;
+	max-width: 760px;
+	width: 100%;
+	margin: 0 auto;
+	padding: 64px 24px 96px;
+	font:
+		15px/1.6 Georgia,
+		"Iowan Old Style",
+		"Palatino Linotype",
+		serif;
+	color: var(--sp-text);
+	-webkit-font-smoothing: antialiased;
+}
+
+/* --- header: eyebrow caps + serif h1, 2px underline under whole block --- */
+[data-status-theme="editorial"] .ed-top {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	margin-bottom: 48px;
+	border-bottom: 2px solid var(--sp-text);
+	padding-bottom: 18px;
+}
+[data-status-theme="editorial"] .ed-brand-wrap {
+	display: flex;
+	flex-direction: column;
+}
+[data-status-theme="editorial"] .ed-logo-img {
+	max-height: 48px;
+	max-width: 160px;
+	object-fit: contain;
+	margin-bottom: 8px;
+}
+[data-status-theme="editorial"] .ed-brand-eyebrow {
+	margin: 0;
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 0.3em;
+	font-weight: 700;
+	color: var(--sp-text-muted);
+	font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+[data-status-theme="editorial"] .ed-brand-title {
+	margin: 6px 0 0;
+	font-size: 40px;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	line-height: 1;
+	color: var(--sp-text);
+}
+
+/* --- status line: single sentence, not a card --- */
+[data-status-theme="editorial"] .ed-status-line {
+	font-size: 22px;
+	font-weight: 400;
+	margin: 0 0 8px;
+	letter-spacing: -0.01em;
+	line-height: 1.35;
+	color: var(--sp-text);
+	font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+}
+[data-status-theme="editorial"] .ed-status-dot {
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: var(--sp-up);
+	margin-right: 10px;
+	vertical-align: middle;
+}
+[data-status-theme="editorial"] .ed-status-line.ed-tone-warn .ed-status-dot {
+	background: var(--sp-warn);
+}
+[data-status-theme="editorial"] .ed-status-line.ed-tone-down .ed-status-dot {
+	background: var(--sp-down);
+}
+[data-status-theme="editorial"] .ed-dateline {
+	font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	color: var(--sp-text-muted);
+	margin: 0 0 56px;
+}
+
+/* --- chart switch: rectangular, dark fill on active (no radius) --- */
+[data-status-theme="editorial"] .ed-chart-switch-wrap {
+	display: flex;
+	justify-content: flex-end;
+	margin-bottom: 20px;
+	font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+[data-status-theme="editorial"] .ed-chart-switch {
+	display: inline-flex;
+	border: 1px solid var(--sp-text);
+}
+[data-status-theme="editorial"] .ed-chart-switch > button {
+	font: inherit;
+	font-size: 10px;
+	text-transform: uppercase;
+	letter-spacing: 0.2em;
+	padding: 6px 14px;
+	border: 0;
+	background: transparent;
+	color: var(--sp-text);
+	cursor: pointer;
+	font-weight: 700;
+}
+[data-status-theme="editorial"] .ed-chart-switch > button + button {
+	border-left: 1px solid var(--sp-text);
+}
+[data-status-theme="editorial"] .ed-chart-switch > button.ed-active {
+	background: var(--sp-text);
+	color: var(--sp-bg);
+}
+
+/* --- monitor cards: transparent rows with bottom hairline --- */
+[data-status-theme="editorial"] .ed-monitor-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+}
+[data-status-theme="editorial"] .ed-card {
+	background: transparent;
+	border: 0;
+	border-bottom: 1px solid var(--sp-border);
+	margin-bottom: 0;
+	padding: 20px 0;
+}
+[data-status-theme="editorial"] .ed-card:last-of-type {
+	border-bottom: 0;
+}
+
+[data-status-theme="editorial"] .ed-card-row {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	align-items: baseline;
+	gap: 20px;
+}
+[data-status-theme="editorial"] .ed-card-left {
+	min-width: 0;
+}
+[data-status-theme="editorial"] .ed-monitor-name {
+	font-size: 20px;
+	font-weight: 700;
+	letter-spacing: -0.015em;
+	color: var(--sp-text);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+[data-status-theme="editorial"] .ed-monitor-meta {
+	font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+	font-size: 12px;
+	color: var(--sp-text-muted);
+	margin-top: 6px;
+	display: flex;
+	gap: 12px;
+	flex-wrap: wrap;
+	align-items: center;
+}
+[data-status-theme="editorial"] .ed-pill {
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	font-weight: 700;
+	color: var(--sp-text-muted);
+}
+[data-status-theme="editorial"] .ed-pill-hardware {
+	color: var(--sp-up);
+}
+[data-status-theme="editorial"] .ed-monitor-url {
+	font-family: ui-monospace, Menlo, monospace;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	max-width: 280px;
+	font-size: 12px;
+}
+
+/* --- badge: rectangular flat label --- */
+[data-status-theme="editorial"] .ed-badge {
+	font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+	font-size: 10px;
+	font-weight: 700;
+	padding: 4px 10px;
+	border-radius: 0;
+	text-transform: uppercase;
+	letter-spacing: 0.15em;
+	white-space: nowrap;
+}
+[data-status-theme="editorial"] .ed-badge-up {
+	background: var(--sp-up-soft);
+	color: var(--sp-up);
+}
+[data-status-theme="editorial"] .ed-badge-warn {
+	background: var(--sp-warn-soft);
+	color: var(--sp-warn);
+}
+[data-status-theme="editorial"] .ed-badge-down {
+	background: var(--sp-down-soft);
+	color: var(--sp-down);
+}
+
+/* --- charts: flat rectangles, no glow --- */
+[data-status-theme="editorial"] .ed-heatmap {
+	margin-top: 16px;
+	display: grid;
+	grid-template-columns: repeat(25, 1fr);
+	gap: 2px;
+	height: 40px;
+}
+[data-status-theme="editorial"] .ed-heatmap-cell {
+	background: var(--sp-up);
+}
+[data-status-theme="editorial"] .ed-heatmap-cell.ed-fast {
+	background: var(--sp-up);
+}
+[data-status-theme="editorial"] .ed-heatmap-cell.ed-med {
+	background: color-mix(in srgb, var(--sp-up) 60%, var(--sp-bg));
+}
+[data-status-theme="editorial"] .ed-heatmap-cell.ed-slow {
+	background: var(--sp-warn);
+}
+[data-status-theme="editorial"] .ed-heatmap-cell.ed-down {
+	background: var(--sp-down);
+}
+[data-status-theme="editorial"] .ed-heatmap-cell.ed-empty {
+	background: var(--sp-border);
+	opacity: 0.5;
+}
+
+[data-status-theme="editorial"] .ed-histogram {
+	margin-top: 16px;
+	display: grid;
+	grid-template-columns: repeat(25, 1fr);
+	gap: 2px;
+	align-items: flex-end;
+	height: 40px;
+}
+[data-status-theme="editorial"] .ed-bar {
+	background: var(--sp-up);
+	min-height: 3px;
+}
+[data-status-theme="editorial"] .ed-bar.ed-down {
+	background: var(--sp-down);
+}
+[data-status-theme="editorial"] .ed-bar.ed-empty {
+	background: var(--sp-border);
+	opacity: 0.5;
+}
+[data-status-theme="editorial"] .ed-chart-stats {
+	font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+	font-size: 11px;
+	color: var(--sp-text-muted);
+	font-variant-numeric: tabular-nums;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+}
+
+/* --- gauges: 3-column with serif value + 2px underline bar --- */
+[data-status-theme="editorial"] .ed-infra {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 24px;
+	margin-top: 20px;
+	font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+@media (max-width: 720px) {
+	[data-status-theme="editorial"] .ed-infra {
+		grid-template-columns: 1fr;
+	}
+}
+[data-status-theme="editorial"] .ed-infra-empty {
+	margin-top: 20px;
+	color: var(--sp-text-muted);
+	font-size: 13px;
+}
+[data-status-theme="editorial"] .ed-gauge-label {
+	font-size: 10px;
+	color: var(--sp-text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.18em;
+	font-weight: 700;
+}
+[data-status-theme="editorial"] .ed-gauge-value {
+	font-size: 28px;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	margin-top: 4px;
+	font-variant-numeric: tabular-nums;
+	font-family: Georgia, serif;
+	color: var(--sp-text);
+}
+[data-status-theme="editorial"] .ed-gauge-bar {
+	height: 2px;
+	background: var(--sp-border);
+	margin-top: 10px;
+}
+[data-status-theme="editorial"] .ed-gauge-fill {
+	display: block;
+	height: 100%;
+	background: var(--sp-up);
+	transition: width 0.8s;
+}
+[data-status-theme="editorial"] .ed-gauge-fill.ed-warm {
+	background: var(--sp-warn);
+}
+[data-status-theme="editorial"] .ed-gauge-fill.ed-hot {
+	background: var(--sp-down);
+}
+[data-status-theme="editorial"] .ed-gauge-sub {
+	font-size: 11px;
+	color: var(--sp-text-muted);
+	margin-top: 8px;
+	font-variant-numeric: tabular-nums;
+}
+
+/* --- footer: tiny uppercase tracked + underlined link --- */
+[data-status-theme="editorial"] .ed-footer {
+	text-align: center;
+	color: var(--sp-text-muted);
+	font-size: 11px;
+	margin-top: 56px;
+	text-transform: uppercase;
+	letter-spacing: 0.2em;
+	font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+[data-status-theme="editorial"] .ed-footer a {
+	color: var(--sp-text);
+	text-decoration: none;
+	border-bottom: 1px solid var(--sp-text);
+	padding-bottom: 2px;
+	font-weight: 700;
+}
