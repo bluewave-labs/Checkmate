@@ -812,7 +812,7 @@
 					"osMemoryLimit": "OS memory limit"
 				},
 				"gauges": {
-					"heapAllocation": "Heap allocaton",
+					"heapAllocation": "Heap allocation",
 					"heapUsage": "Heap usage",
 					"heapUtilization": "Heap utilization",
 					"instantCpuUsage": "Instant CPU usage",
