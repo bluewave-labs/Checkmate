@@ -4,6 +4,10 @@ import { Pagination } from "@/Components/design-elements/Table";
 import { ActionsMenu } from "@/Components/actions-menu";
 import { DialogInput } from "@/Components/inputs/Dialog";
 
+import { ChevronDown, ChevronRight } from "lucide-react";
+import Stack from "@mui/material/Stack";
+import IconButton from "@mui/material/IconButton";
+
 import prettyMilliseconds from "pretty-ms";
 import { useTheme } from "@mui/material";
 import type { Header } from "@/Components/design-elements/Table";
@@ -98,6 +102,7 @@ export const MaintenanceWindowTable = ({
 
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 	const [selectedWindow, setSelectedWindow] = useState<MaintenanceWindow | null>(null);
+	const [expandedId, setExpandedId] = useState<string | null>(null);
 
 	const { deleteFn, loading: deleteLoading } = useDelete();
 	const { patch } = usePatch();
@@ -157,7 +162,30 @@ export const MaintenanceWindowTable = ({
 		{
 			id: "name",
 			content: t("common.table.headers.name"),
-			render: (row) => row.name,
+			render: (row) => (
+				<Stack
+					direction="row"
+					alignItems="center"
+					spacing={1}
+				>
+					<IconButton size="small">
+						{expandedId === row.id ? (
+							<ChevronDown
+								size={16}
+								strokeWidth={1.5}
+								color={theme.palette.text.secondary}
+							/>
+						) : (
+							<ChevronRight
+								size={16}
+								strokeWidth={1.5}
+								color={theme.palette.text.secondary}
+							/>
+						)}
+					</IconButton>
+					<Typography variant="body2">{row.name}</Typography>
+				</Stack>
+			),
 		},
 		{
 			id: "status",
@@ -211,6 +239,7 @@ export const MaintenanceWindowTable = ({
 				headers={getHeaders()}
 				data={grouped}
 				expandableRows={true}
+				onExpandChange={(id) => setExpandedId(id as string | null)}
 				renderExpandedContent={(row) => (
 					<Box sx={{ pl: 2, pd: 2 }}>
 						{row.monitors.map((monitor) => (

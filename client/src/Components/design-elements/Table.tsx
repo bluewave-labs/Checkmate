@@ -50,6 +50,7 @@ type DataTableProps<T extends { id?: string | number; _id?: string | number }> =
 	emptyViewText?: string;
 	emptyViewPositive?: boolean;
 	getRowSx?: (row: T) => SxProps<Theme>;
+	onExpandChange?: (id: string | number | null) => void;
 };
 
 export function DataTable<
@@ -68,12 +69,15 @@ export function DataTable<
 	emptyViewText,
 	emptyViewPositive,
 	getRowSx,
+	onExpandChange,
 }: DataTableProps<T>) {
 	const theme = useTheme();
 	const [expanded, setExpanded] = useState<(string | number) | null>(null);
 	const handleExpand = (row: T) => {
 		const key = row.id || row._id || null;
-		setExpanded(expanded === key ? null : key);
+		const next = expanded === key ? null : key;
+		setExpanded(next);
+		onExpandChange?.(next);
 	};
 
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
