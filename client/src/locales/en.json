@@ -812,7 +812,7 @@
 					"osMemoryLimit": "OS memory limit"
 				},
 				"gauges": {
-					"heapAllocation": "Heap allocaton",
+					"heapAllocation": "Heap allocation",
 					"heapUsage": "Heap usage",
 					"heapUtilization": "Heap utilization",
 					"instantCpuUsage": "Instant CPU usage",
@@ -911,7 +911,7 @@
 					"Let engineers know when incidents happen",
 					"Keep administrators informed of system changes"
 				],
-				"title": "Notification channles are used to:"
+				"title": "Notification channels are used to:"
 			},
 			"form": {
 				"accessToken": {
