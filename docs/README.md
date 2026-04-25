@@ -35,4 +35,4 @@ If you find issues or want to improve the documentation:
 
 - [GitHub Discussions](https://github.com/bluewave-labs/checkmate/discussions)
 - [Discord Channel](https://discord.gg/NAb6H3UTjK)
-- [Documentation Portal](https://docs.checkmate.so/)
+- [Documentation Portal](https://checkmate.so/docs)

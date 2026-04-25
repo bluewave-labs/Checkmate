@@ -20,7 +20,7 @@ import { setCollapsed } from "@/Features/UI/uiSlice";
 const URL_MAP: Record<string, string> = {
 	support: "https://discord.com/invite/NAb6H3UTjK",
 	discussions: "https://github.com/bluewave-labs/checkmate/discussions",
-	docs: "https://bluewavelabs.gitbook.io/checkmate",
+	docs: "https://checkmate.so/docs",
 	changelog: "https://github.com/bluewave-labs/checkmate/releases",
 };
 
