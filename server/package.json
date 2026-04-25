@@ -64,6 +64,7 @@
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
+		"@asteasolutions/zod-to-openapi": "^8.5.0",
 		"@eslint/js": "^9.17.0",
 		"@types/compression": "1.8.1",
 		"@types/cookie-parser": "1.4.10",

@@ -3,9 +3,9 @@ import { initializeControllers } from "./config/controllers.js";
 import { createApp } from "./app.js";
 import { initShutdownListener } from "@/shutdown.js";
 import { validateEnv } from "@/validation/envValidation.js";
+import { getOpenApiSpec } from "@/openapi/index.js";
 import { fileURLToPath } from "url";
 import path from "path";
-import fs from "fs";
 
 import Logger, { ILogger } from "@/utils/logger.js";
 import { SettingsService } from "@/service/index.js";
@@ -20,7 +20,7 @@ const startApp = async () => {
 	// FE path
 	const __filename = fileURLToPath(import.meta.url);
 	const __dirname = path.dirname(__filename);
-	const openApiSpec = JSON.parse(fs.readFileSync(path.join(__dirname, "../openapi.json"), "utf8"));
+	const openApiSpec = getOpenApiSpec();
 	const frontendPath = path.join(__dirname, "..", "public");
 
 	// Create settings service (env only — DB repository injected after connect)
