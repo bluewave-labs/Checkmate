@@ -70,5 +70,5 @@ When you select specific disks, the following elements are filtered:
 
 ## Related Documentation
 
-- [Infrastructure Monitoring Setup](https://docs.checkmate.so/checkmate-2.1)
+- [Infrastructure Monitoring Setup](https://checkmate.so/docs)
 - [Capture Agent Installation](https://github.com/bluewave-labs/capture)
