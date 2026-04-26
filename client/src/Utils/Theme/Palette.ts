@@ -15,6 +15,7 @@ export const colors = {
 	gray900: "#151518",
 	gray850: "#1c1c21",
 	brandGreen: "#13715B",
+	brandGreenLight: "#4DAF94",
 };
 
 export const lightPalette = {
@@ -23,6 +24,9 @@ export const lightPalette = {
 	},
 	secondary: {
 		main: colors.gray200,
+	},
+	sidebar: {
+		accent: colors.brandGreen,
 	},
 };
 
@@ -36,5 +40,8 @@ export const darkPalette = {
 	background: {
 		default: colors.gray900,
 		paper: colors.gray850,
+	},
+	sidebar: {
+		accent: colors.brandGreenLight,
 	},
 };
