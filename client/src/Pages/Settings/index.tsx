@@ -579,7 +579,7 @@ export const SettingsPage = () => {
 							<Box
 								component="pre"
 								sx={{
-									fontFamily: "monospace",
+									fontFamily: theme.typography.fontFamilyMonospace,
 									p: 2,
 									borderRadius: 1,
 									overflow: "auto",
