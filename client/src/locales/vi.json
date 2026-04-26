@@ -199,6 +199,14 @@
 		"starPrompt": {
 			"title": "Gắn sao Checkmate",
 			"description": "Xem các bản phát hành mới nhất và giúp phát triển cộng đồng trên GitHub"
+		},
+		"pageHeader": {
+			"links": {
+				"support": "Hỗ trợ",
+				"discussions": "Thảo luận",
+				"docs": "Tài liệu",
+				"changelog": "Nhật ký thay đổi"
+			}
 		}
 	},
 	"pages": {
@@ -278,7 +286,15 @@
 						"placeholder": "Chọn vai trò"
 					},
 					"linkLabel": "Liên kết mời"
+				},
+				"fallback": {
+					"title": "Chưa có thành viên nhóm",
+					"description": "Mời đồng đội qua email hoặc thêm họ trực tiếp. Khi họ tham gia, họ sẽ xuất hiện tại đây với vai trò của họ."
 				}
+			},
+			"header": {
+				"title": "Tài khoản",
+				"description": "Quản lý hồ sơ, mật khẩu, đội ngũ và tùy chọn không gian làm việc."
 			}
 		},
 		"auth": {
@@ -378,6 +394,14 @@
 					"statusCode": "Mã trạng thái",
 					"location": "Vị trí"
 				}
+			},
+			"fallback": {
+				"title": "Chưa có kiểm tra nào",
+				"description": "Khi bạn tạo một trình giám sát, mỗi lần thăm dò trạng thái và thời gian phản hồi sẽ xuất hiện tại đây như một kiểm tra."
+			},
+			"header": {
+				"title": "Kiểm tra",
+				"description": "Mỗi lần thăm dò mà Checkmate chạy trên trình giám sát của bạn sẽ xuất hiện tại đây với mã trạng thái và thời gian phản hồi."
 			}
 		},
 		"common": {
@@ -640,6 +664,10 @@
 			}
 		},
 		"incidents": {
+			"fallback": {
+				"title": "Không có sự cố — tất cả hệ thống đều khỏe mạnh",
+				"description": "Khi một trình giám sát ngừng hoạt động hoặc phục hồi, sự cố sẽ xuất hiện tại đây kèm thời gian, chi tiết trình giám sát và lịch sử giải quyết."
+			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "Giải quyết sự cố",
@@ -720,6 +748,10 @@
 					"active": "Đang hoạt động",
 					"resolved": "Đã giải quyết"
 				}
+			},
+			"header": {
+				"title": "Sự cố",
+				"description": "Khi một trình giám sát ngừng hoạt động hoặc phục hồi, sự cố sẽ xuất hiện tại đây kèm thời gian, chi tiết trình giám sát và lịch sử giải quyết."
 			}
 		},
 		"infrastructure": {
@@ -774,11 +806,19 @@
 			},
 			"fallback": {
 				"actionButton": "Tạo trình giám sát!",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "Trình giám sát hạ tầng dùng để:"
+				"title": "Chưa có trình giám sát hạ tầng",
+				"description": "Theo dõi hiệu suất máy chủ, xác định nút thắt cổ chai và đảm bảo độ tin cậy với giám sát hạ tầng theo thời gian thực."
+			},
+			"header": {
+				"title": "Trình giám sát hạ tầng",
+				"description": "Theo dõi hiệu suất máy chủ, xác định nút thắt cổ chai và đảm bảo độ tin cậy với giám sát hạ tầng theo thời gian thực."
 			}
 		},
 		"logs": {
+			"fallback": {
+				"title": "Chưa có nhật ký",
+				"description": "Hoạt động máy chủ, cảnh báo và lỗi sẽ xuất hiện tại đây khi Checkmate đang chạy."
+			},
 			"tabs": {
 				"diagnostics": "Chẩn đoán",
 				"logs": "",
@@ -815,6 +855,16 @@
 					"usedSPercentage": "% của 1 giây CPU sử dụng",
 					"total": "Tổng",
 					"used": "Đã dùng"
+				},
+				"sections": {
+					"runtimeStats": {
+						"title": "Thống kê thời gian chạy",
+						"description": "Ảnh chụp nhanh tiến trình Node.js và máy chủ. Cập nhật mỗi 5 giây."
+					},
+					"memoryCpu": {
+						"title": "Bộ nhớ & CPU",
+						"description": "Cách tiến trình sử dụng bộ nhớ được cấp phát và CPU của máy chủ."
+					}
 				}
 			},
 			"table": {
@@ -833,13 +883,21 @@
 					"lastFailedAt": "Lỗi lần cuối lúc",
 					"failReason": "Lý do lỗi"
 				}
+			},
+			"queueFallback": {
+				"title": "Hàng đợi không có công việc",
+				"description": "Các kiểm tra trình giám sát đã lên lịch hoặc đang chạy sẽ xuất hiện tại đây. Một hàng đợi trống có nghĩa là mọi thứ đều cập nhật."
+			},
+			"header": {
+				"title": "Nhật ký & hàng đợi",
+				"description": "Kiểm tra nhật ký máy chủ, hàng đợi công việc giám sát và chẩn đoán runtime tại một nơi."
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "Tạo cửa sổ bảo trì!",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "Cửa sổ bảo trì dùng để:"
+				"title": "Chưa có cửa sổ bảo trì nào được lên lịch",
+				"description": "Lên lịch thời gian chết để các cảnh báo được tạm dừng và đội ngũ cũng như người dùng biết điều cần mong đợi."
 			},
 			"table": {
 				"headers": {
@@ -891,13 +949,17 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Cửa sổ bảo trì",
+				"description": "Lên lịch thời gian chết để các cảnh báo được tạm dừng và đội ngũ cũng như người dùng biết điều cần mong đợi."
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "Tạo kênh",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "Kênh thông báo dùng để:"
+				"title": "Chưa có kênh thông báo",
+				"description": "Kết nối Slack, Discord, email, webhook và nhiều hơn để đúng người nhận được thông báo ngay khi có sự cố."
 			},
 			"form": {
 				"accessToken": {
@@ -953,6 +1015,10 @@
 				"headers": {
 					"destination": "Đích đến"
 				}
+			},
+			"header": {
+				"title": "Thông báo",
+				"description": "Kết nối Slack, Discord, email, webhook và nhiều hơn để đúng người nhận được thông báo ngay khi có sự cố."
 			}
 		},
 		"pageSpeed": {
@@ -979,8 +1045,12 @@
 			},
 			"fallback": {
 				"actionButton": "Tạo trình giám sát!",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "Trình giám sát PageSpeed dùng để:"
+				"title": "Chưa có trình giám sát PageSpeed",
+				"description": "Theo dõi Core Web Vitals và điểm Lighthouse theo thời gian để phát hiện sự suy giảm trước khi người dùng nhận ra."
+			},
+			"header": {
+				"title": "Trình giám sát PageSpeed",
+				"description": "Theo dõi Core Web Vitals và điểm Lighthouse theo thời gian để phát hiện sự suy giảm trước khi người dùng nhận ra."
 			}
 		},
 		"settings": {
@@ -1158,14 +1228,18 @@
 				"validation": {
 					"errorMessage": "Vui lòng sửa các lỗi xác thực sau:"
 				}
+			},
+			"header": {
+				"title": "Cài đặt",
+				"description": "Cấu hình SMTP, tích hợp, lưu trữ và hành vi ứng dụng toàn cục."
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "Đã xóa trang trạng thái thành công",
 			"fallback": {
-				"title": "Trang trạng thái dùng để:",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "Tạo trang trạng thái!"
+				"title": "Chưa có trang trạng thái",
+				"actionButton": "Tạo trang trạng thái!",
+				"description": "Công bố một trang công khai cho khách hàng và các bên liên quan thấy thời gian hoạt động theo thời gian thực và lịch sử sự cố."
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Bản đồ nhiệt",
@@ -1282,6 +1356,10 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Trang trạng thái",
+				"description": "Công bố các trang công khai cho khách hàng và các bên liên quan thấy thời gian hoạt động theo thời gian thực và lịch sử sự cố."
 			}
 		},
 		"uptime": {
@@ -1297,8 +1375,12 @@
 			},
 			"fallback": {
 				"actionButton": "Tạo trình giám sát!",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "Trình giám sát hoạt động dùng để:"
+				"title": "Chưa có trình giám sát uptime",
+				"description": "Theo dõi các endpoint HTTP, ping, container và cổng — nhận cảnh báo ngay khi có sự cố."
+			},
+			"header": {
+				"title": "Trình giám sát uptime",
+				"description": "Theo dõi các endpoint HTTP, ping, container và cổng — nhận cảnh báo ngay khi có sự cố."
 			}
 		}
 	}

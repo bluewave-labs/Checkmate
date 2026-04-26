@@ -199,6 +199,14 @@
 		"starPrompt": {
 			"title": "Checkmate'e yıldız verin",
 			"description": "En son sürümleri görün ve GitHub'da topluluğun büyümesine katkıda bulunun"
+		},
+		"pageHeader": {
+			"links": {
+				"support": "Destek",
+				"discussions": "Tartışmalar",
+				"docs": "Dokümantasyon",
+				"changelog": "Değişiklik günlüğü"
+			}
 		}
 	},
 	"pages": {
@@ -278,7 +286,15 @@
 						"placeholder": "Bir rol seçin"
 					},
 					"linkLabel": "Davet bağlantısı"
+				},
+				"fallback": {
+					"title": "Henüz takım üyesi yok",
+					"description": "Ekip arkadaşlarınızı e-posta ile davet edin veya doğrudan ekleyin. Katıldıklarında, rolleriyle birlikte burada görünecekler."
 				}
+			},
+			"header": {
+				"title": "Hesap",
+				"description": "Profilinizi, parolanızı, ekibinizi ve çalışma alanı tercihlerinizi yönetin."
 			}
 		},
 		"auth": {
@@ -378,6 +394,14 @@
 					"statusCode": "Durum kodu",
 					"location": "Konum"
 				}
+			},
+			"fallback": {
+				"title": "Henüz kontrol yok",
+				"description": "Bir izleyici oluşturduğunuzda, her durum kontrolü ve yanıt süresi burada bir kontrol olarak görünecek."
+			},
+			"header": {
+				"title": "Kontroller",
+				"description": "Checkmate'in izleyicilerinize karşı çalıştırdığı her sondaj, durum kodu ve yanıt süresiyle birlikte burada görünür."
 			}
 		},
 		"common": {
@@ -640,6 +664,10 @@
 			}
 		},
 		"incidents": {
+			"fallback": {
+				"title": "Olay yok — tüm sistemler sağlıklı",
+				"description": "Bir izleyici devre dışı kaldığında veya kurtarıldığında, olay zamanlama, izleyici detayları ve çözüm geçmişiyle birlikte burada görünecek."
+			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "Olayı çöz",
@@ -720,6 +748,10 @@
 					"active": "Aktif",
 					"resolved": "Çözüldü"
 				}
+			},
+			"header": {
+				"title": "Olaylar",
+				"description": "Bir izleyici devre dışı kaldığında veya kurtarıldığında, olaylar zamanlama, izleyici detayları ve çözüm geçmişiyle birlikte burada görünür."
 			}
 		},
 		"infrastructure": {
@@ -774,11 +806,19 @@
 			},
 			"fallback": {
 				"actionButton": "Monitör oluşturun!",
-				"checks": "Sunucularınızın performansını takip edin,Darboğazları belirleyin ve kullanımı optimize edin,Gerçek zamanlı izleme ile güvenilirliği sağlayın",
-				"title": "Bir altyapı monitörü şunlar için kullanılır:"
+				"title": "Henüz altyapı izleyicisi yok",
+				"description": "Sunucu performansını izleyin, darboğazları belirleyin ve gerçek zamanlı altyapı izleme ile güvenilirliği sağlayın."
+			},
+			"header": {
+				"title": "Altyapı izleyicileri",
+				"description": "Sunucu performansını izleyin, darboğazları belirleyin ve gerçek zamanlı altyapı izleme ile güvenilirliği sağlayın."
 			}
 		},
 		"logs": {
+			"fallback": {
+				"title": "Henüz günlük yok",
+				"description": "Sunucu etkinliği, uyarılar ve hatalar Checkmate çalıştıkça burada görünecek."
+			},
 			"tabs": {
 				"diagnostics": "Teşhis",
 				"logs": "Sunucu günlükleri",
@@ -815,6 +855,16 @@
 					"usedSPercentage": "% CPU tarafından kullanılan (1s)",
 					"total": "Toplam",
 					"used": "Kullanılan"
+				},
+				"sections": {
+					"runtimeStats": {
+						"title": "Çalışma istatistikleri",
+						"description": "Node.js süreci ve ana makinenin anlık görüntüsü. 5 saniyede bir güncellenir."
+					},
+					"memoryCpu": {
+						"title": "Bellek ve CPU",
+						"description": "Sürecin ayrılmış belleğini ve ana makinenin CPU'sunu nasıl kullandığı."
+					}
 				}
 			},
 			"table": {
@@ -833,13 +883,21 @@
 					"lastFailedAt": "Son başarısızlık zamanı",
 					"failReason": "Başarısızlık nedeni"
 				}
+			},
+			"queueFallback": {
+				"title": "Kuyrukta iş yok",
+				"description": "Zamanlanmış veya çalışan izleyici kontrolleri burada görünür. Boş bir kuyruk her şeyin güncel olduğu anlamına gelir."
+			},
+			"header": {
+				"title": "Günlükler ve kuyruk",
+				"description": "Sunucu günlüklerini, izleyici iş kuyruğunu ve çalışma zamanı tanılarını tek bir yerde inceleyin."
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "Bakım penceresi oluşturun!",
-				"checks": "Bakım dönemlerinizi işaretleyin,Yanlış anlamaları ortadan kaldırın,Bakım pencerelerinde uyarı göndermeyi durdurun",
-				"title": "Bakım penceresi şunlar için kullanılır:"
+				"title": "Planlanmış bakım penceresi yok",
+				"description": "Planlı kesintileri zamanlayın; uyarılar bastırılsın, ekibiniz ve kullanıcılarınız ne bekleyeceklerini bilsin."
 			},
 			"table": {
 				"headers": {
@@ -891,13 +949,17 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Bakım pencereleri",
+				"description": "Planlı kesintileri zamanlayın; uyarılar bastırılsın, ekibiniz ve kullanıcılarınız ne bekleyeceklerini bilsin."
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "Kanal oluştur",
-				"checks": "Kesinti veya performans sorunları hakkında ekipleri uyarın,Olaylar meydana geldiğinde mühendisleri bilgilendirin,Yöneticileri sistem değişiklikleri hakkında haberdar edin",
-				"title": "Bildirim kanalları şunlar için kullanılır:"
+				"title": "Henüz bildirim kanalı yok",
+				"description": "Slack, Discord, e-posta, webhook ve daha fazlasını bağlayın — olaylar olur olmaz doğru kişilere haber verilir."
 			},
 			"form": {
 				"accessToken": {
@@ -953,6 +1015,10 @@
 				"headers": {
 					"destination": "Hedef"
 				}
+			},
+			"header": {
+				"title": "Bildirimler",
+				"description": "Slack, Discord, e-posta, webhook ve daha fazlasını bağlayın — olaylar olur olmaz doğru kişilere haber verilir."
 			}
 		},
 		"pageSpeed": {
@@ -979,8 +1045,12 @@
 			},
 			"fallback": {
 				"actionButton": "Monitör oluşturun!",
-				"checks": "Bir sayfanın kullanıcı deneyimini raporlayın,Web sayfası hızını analiz etmeye yardımcı olun,Sayfanın nasıl iyileştirilebileceğine dair öneriler sunun",
-				"title": "Bir PageSpeed monitörü şunlar için kullanılır:"
+				"title": "Henüz PageSpeed izleyicisi yok",
+				"description": "Core Web Vitals ve Lighthouse puanlarını zaman içinde izleyerek kullanıcılarınız fark etmeden gerilemeleri yakalayın."
+			},
+			"header": {
+				"title": "PageSpeed izleyicileri",
+				"description": "Core Web Vitals ve Lighthouse puanlarını zaman içinde izleyerek kullanıcılarınız fark etmeden gerilemeleri yakalayın."
 			}
 		},
 		"settings": {
@@ -1158,14 +1228,18 @@
 				"validation": {
 					"errorMessage": "Lütfen aşağıdaki doğrulama hatalarını düzeltin:"
 				}
+			},
+			"header": {
+				"title": "Ayarlar",
+				"description": "SMTP, entegrasyonlar, saklama ve genel uygulama davranışını yapılandırın."
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "Durum sayfası başarıyla silindi",
 			"fallback": {
-				"title": "Bir durum sayfası şunlar için kullanılır:",
-				"checks": "Kullanıcılara ve paydaşlara sistem durumunu iletin,Gerçek zamanlı çalışma süresi bilgilerini herkese açık olarak görüntüleyin,Şeffaf hizmet izleme ile güven oluşturun,Olaylar sırasında destek taleplerini azaltın",
-				"actionButton": "Durum sayfası oluşturun!"
+				"title": "Henüz durum sayfası yok",
+				"actionButton": "Durum sayfası oluşturun!",
+				"description": "Müşterilerinize ve paydaşlarınıza gerçek zamanlı çalışma süresi ve olay geçmişini gösteren herkese açık bir sayfa yayınlayın."
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Isı haritası",
@@ -1282,6 +1356,10 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Durum sayfaları",
+				"description": "Müşterilerinize ve paydaşlarınıza gerçek zamanlı çalışma süresi ve olay geçmişini gösteren herkese açık sayfalar yayınlayın."
 			}
 		},
 		"uptime": {
@@ -1297,8 +1375,12 @@
 			},
 			"fallback": {
 				"actionButton": "Monitör oluşturun!",
-				"checks": "Web sitelerinin veya sunucuların çevrimiçi ve yanıt verip vermediğini kontrol edin,Kesinti veya performans sorunları hakkında ekipleri uyarın,HTTP uç noktalarını, ping'leri, container'ları ve portları izleyin,Geçmiş çalışma süresi ve güvenilirlik trendlerini takip edin",
-				"title": "Bir çalışma süresi monitörü şunlar için kullanılır:"
+				"title": "Henüz çalışma süresi izleyicisi yok",
+				"description": "HTTP uç noktalarını, ping'leri, konteynerleri ve portları izleyin — bir şey kapandığında anında uyarı alın."
+			},
+			"header": {
+				"title": "Çalışma süresi izleyicileri",
+				"description": "HTTP uç noktalarını, ping'leri, konteynerleri ve portları izleyin — bir şey kapandığında anında uyarı alın."
 			}
 		}
 	}

@@ -199,6 +199,14 @@
 		"starPrompt": {
 			"title": "Star Checkmate",
 			"description": "Consultez les dernières versions et aidez la communauté à grandir sur GitHub"
+		},
+		"pageHeader": {
+			"links": {
+				"support": "Assistance",
+				"discussions": "Discussions",
+				"docs": "Documentation",
+				"changelog": "Journal des modifications"
+			}
 		}
 	},
 	"pages": {
@@ -278,7 +286,15 @@
 						"placeholder": "Sélectionnez un rôle"
 					},
 					"linkLabel": "Lien d'invitation"
+				},
+				"fallback": {
+					"title": "Aucun membre d'équipe pour le moment",
+					"description": "Invitez vos coéquipiers par e-mail ou ajoutez-les directement. Une fois qu'ils auront rejoint, ils apparaîtront ici avec leur rôle."
 				}
+			},
+			"header": {
+				"title": "Compte",
+				"description": "Gérez votre profil, mot de passe, équipe et préférences d'espace de travail."
 			}
 		},
 		"auth": {
@@ -378,6 +394,14 @@
 					"statusCode": "Code de statut",
 					"location": "Emplacement"
 				}
+			},
+			"fallback": {
+				"title": "Aucune vérification pour le moment",
+				"description": "Une fois que vous aurez créé un moniteur, chaque sonde d'état et temps de réponse apparaîtra ici sous forme de vérification."
+			},
+			"header": {
+				"title": "Vérifications",
+				"description": "Chaque sonde que Checkmate exécute contre vos moniteurs apparaît ici avec le code d'état et le temps de réponse."
 			}
 		},
 		"common": {
@@ -640,6 +664,10 @@
 			}
 		},
 		"incidents": {
+			"fallback": {
+				"title": "Aucun incident — tous les systèmes sont sains",
+				"description": "Lorsqu'un moniteur tombe en panne ou se rétablit, l'incident apparaîtra ici avec l'horodatage, les détails du moniteur et l'historique de résolution."
+			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "Résoudre l'incident",
@@ -720,6 +748,10 @@
 					"active": "Actif",
 					"resolved": "Résolu"
 				}
+			},
+			"header": {
+				"title": "Incidents",
+				"description": "Lorsqu'un moniteur tombe en panne ou se rétablit, les incidents apparaissent ici avec l'horodatage, les détails du moniteur et l'historique de résolution."
 			}
 		},
 		"infrastructure": {
@@ -774,11 +806,19 @@
 			},
 			"fallback": {
 				"actionButton": "Créer un moniteur !",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "Un moniteur d'infrastructure sert à :"
+				"title": "Aucun moniteur d'infrastructure",
+				"description": "Suivez les performances des serveurs, identifiez les goulots d'étranglement et garantissez la fiabilité avec une surveillance en temps réel."
+			},
+			"header": {
+				"title": "Moniteurs d'infrastructure",
+				"description": "Suivez les performances des serveurs, identifiez les goulots d'étranglement et garantissez la fiabilité avec une surveillance en temps réel."
 			}
 		},
 		"logs": {
+			"fallback": {
+				"title": "Aucun journal pour le moment",
+				"description": "L'activité du serveur, les avertissements et les erreurs apparaîtront ici pendant l'exécution de Checkmate."
+			},
 			"tabs": {
 				"diagnostics": "Diagnostic",
 				"logs": "Journaux des serveurs",
@@ -815,6 +855,16 @@
 					"usedSPercentage": "% de 1s utilisé par le CPU",
 					"total": "Total",
 					"used": "Utilisé"
+				},
+				"sections": {
+					"runtimeStats": {
+						"title": "Statistiques d'exécution",
+						"description": "Aperçu du processus Node.js et de la machine hôte. Mis à jour toutes les 5 secondes."
+					},
+					"memoryCpu": {
+						"title": "Mémoire et CPU",
+						"description": "Comment le processus utilise sa mémoire allouée et le CPU de l'hôte."
+					}
 				}
 			},
 			"table": {
@@ -833,13 +883,21 @@
 					"lastFailedAt": "Dernier échec",
 					"failReason": "Raison de l'échec"
 				}
+			},
+			"queueFallback": {
+				"title": "Aucun travail dans la file",
+				"description": "Les vérifications de moniteurs planifiées ou en cours apparaîtront ici. Une file vide signifie que tout est à jour."
+			},
+			"header": {
+				"title": "Journaux et file",
+				"description": "Inspectez les journaux serveur, la file des tâches de moniteur et les diagnostics d'exécution au même endroit."
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "Créer une fenêtre de maintenance !",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "Une fenêtre de maintenance sert à :"
+				"title": "Aucune fenêtre de maintenance planifiée",
+				"description": "Planifiez les interruptions afin que les alertes soient supprimées et que votre équipe et vos utilisateurs sachent à quoi s'attendre."
 			},
 			"table": {
 				"headers": {
@@ -891,13 +949,17 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Fenêtres de maintenance",
+				"description": "Planifiez les interruptions afin que les alertes soient supprimées et que votre équipe et vos utilisateurs sachent à quoi s'attendre."
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "Créer un canal",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "Les canaux de notification servent à :"
+				"title": "Aucun canal de notification",
+				"description": "Connectez Slack, Discord, e-mail, webhooks et plus encore pour que les bonnes personnes soient prévenues dès qu'un incident survient."
 			},
 			"form": {
 				"accessToken": {
@@ -953,6 +1015,10 @@
 				"headers": {
 					"destination": "Destination"
 				}
+			},
+			"header": {
+				"title": "Notifications",
+				"description": "Connectez Slack, Discord, e-mail, webhooks et plus encore pour que les bonnes personnes soient prévenues dès qu'un incident survient."
 			}
 		},
 		"pageSpeed": {
@@ -979,8 +1045,12 @@
 			},
 			"fallback": {
 				"actionButton": "Créer un moniteur !",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "Un moniteur PageSpeed sert à :"
+				"title": "Aucun moniteur PageSpeed",
+				"description": "Suivez les Core Web Vitals et les scores Lighthouse au fil du temps pour détecter les régressions avant vos utilisateurs."
+			},
+			"header": {
+				"title": "Moniteurs PageSpeed",
+				"description": "Suivez les Core Web Vitals et les scores Lighthouse au fil du temps pour détecter les régressions avant vos utilisateurs."
 			}
 		},
 		"settings": {
@@ -1158,14 +1228,18 @@
 				"validation": {
 					"errorMessage": "Veuillez corriger les erreurs de validation suivantes :"
 				}
+			},
+			"header": {
+				"title": "Paramètres",
+				"description": "Configurez SMTP, intégrations, rétention et comportement global de l'application."
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "Page de statut supprimée avec succès",
 			"fallback": {
-				"title": "Une page de statut sert à :",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "Créer une page de statut !"
+				"title": "Aucune page de statut",
+				"actionButton": "Créer une page de statut !",
+				"description": "Publiez une page publique qui montre à vos clients et parties prenantes la disponibilité en temps réel et l'historique des incidents."
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Carte thermique",
@@ -1282,6 +1356,10 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Pages de statut",
+				"description": "Publiez des pages publiques montrant à vos clients et parties prenantes la disponibilité en temps réel et l'historique des incidents."
 			}
 		},
 		"uptime": {
@@ -1297,8 +1375,12 @@
 			},
 			"fallback": {
 				"actionButton": "Créer un moniteur !",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "Un moniteur de disponibilité sert à :"
+				"title": "Aucun moniteur de disponibilité",
+				"description": "Surveillez les points de terminaison HTTP, les pings, les conteneurs et les ports — soyez alerté dès qu'une panne survient."
+			},
+			"header": {
+				"title": "Moniteurs de disponibilité",
+				"description": "Surveillez les points de terminaison HTTP, les pings, les conteneurs et les ports — soyez alerté dès qu'une panne survient."
 			}
 		}
 	}

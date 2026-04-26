@@ -199,6 +199,14 @@
 		"starPrompt": {
 			"title": "Dale estrella a Checkmate",
 			"description": "Vea las últimas versiones y ayude a crecer la comunidad en GitHub"
+		},
+		"pageHeader": {
+			"links": {
+				"support": "Soporte",
+				"discussions": "Discusiones",
+				"docs": "Documentación",
+				"changelog": "Registro de cambios"
+			}
 		}
 	},
 	"pages": {
@@ -278,7 +286,15 @@
 						"placeholder": "Seleccione un rol"
 					},
 					"linkLabel": "Enlace de invitación"
+				},
+				"fallback": {
+					"title": "Aún no hay miembros del equipo",
+					"description": "Invita a tus compañeros por correo o añádelos directamente. Una vez que se unan, aparecerán aquí con su rol."
 				}
+			},
+			"header": {
+				"title": "Cuenta",
+				"description": "Administra tu perfil, contraseña, equipo y preferencias del espacio de trabajo."
 			}
 		},
 		"auth": {
@@ -378,6 +394,14 @@
 					"statusCode": "Código de estado",
 					"location": "Ubicación"
 				}
+			},
+			"fallback": {
+				"title": "Aún no hay comprobaciones",
+				"description": "Una vez que crees un monitor, cada sonda de estado y tiempo de respuesta aparecerá aquí como una comprobación."
+			},
+			"header": {
+				"title": "Comprobaciones",
+				"description": "Cada sonda que Checkmate ejecuta contra tus monitores aparece aquí con código de estado y tiempo de respuesta."
 			}
 		},
 		"common": {
@@ -640,6 +664,10 @@
 			}
 		},
 		"incidents": {
+			"fallback": {
+				"title": "Sin incidentes — todos los sistemas saludables",
+				"description": "Cuando un monitor falla o se recupera, el incidente aparecerá aquí con los tiempos, los detalles del monitor y el historial de resolución."
+			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "Resolver incidente",
@@ -720,6 +748,10 @@
 					"active": "Activo",
 					"resolved": "Resuelto"
 				}
+			},
+			"header": {
+				"title": "Incidentes",
+				"description": "Cuando un monitor falla o se recupera, los incidentes aparecen aquí con los tiempos, los detalles del monitor y el historial de resolución."
 			}
 		},
 		"infrastructure": {
@@ -774,11 +806,19 @@
 			},
 			"fallback": {
 				"actionButton": "¡Cree un monitor!",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "Un monitor de infraestructura se usa para:"
+				"title": "Aún no hay monitores de infraestructura",
+				"description": "Rastrea el rendimiento de los servidores, identifica cuellos de botella y garantiza la fiabilidad con monitoreo en tiempo real."
+			},
+			"header": {
+				"title": "Monitores de infraestructura",
+				"description": "Rastrea el rendimiento de los servidores, identifica cuellos de botella y garantiza la fiabilidad con monitoreo en tiempo real."
 			}
 		},
 		"logs": {
+			"fallback": {
+				"title": "Aún no hay registros",
+				"description": "La actividad del servidor, advertencias y errores aparecerán aquí mientras Checkmate se ejecuta."
+			},
 			"tabs": {
 				"diagnostics": "",
 				"logs": "",
@@ -815,6 +855,16 @@
 					"usedSPercentage": "% de 1s usado por CPU",
 					"total": "Total",
 					"used": "Usado"
+				},
+				"sections": {
+					"runtimeStats": {
+						"title": "Estadísticas de ejecución",
+						"description": "Instantánea del proceso Node.js y la máquina anfitriona. Se actualiza cada 5 segundos."
+					},
+					"memoryCpu": {
+						"title": "Memoria y CPU",
+						"description": "Cómo el proceso utiliza la memoria asignada y la CPU del host."
+					}
 				}
 			},
 			"table": {
@@ -833,13 +883,21 @@
 					"lastFailedAt": "Última falla",
 					"failReason": "Razón de falla"
 				}
+			},
+			"queueFallback": {
+				"title": "No hay trabajos en la cola",
+				"description": "Las comprobaciones de monitores programadas o en ejecución aparecerán aquí. Una cola vacía significa que todo está al día."
+			},
+			"header": {
+				"title": "Registros y cola",
+				"description": "Inspecciona registros del servidor, la cola de trabajos del monitor y los diagnósticos de runtime en un solo lugar."
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "¡Cree una ventana de mantenimiento!",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "Una ventana de mantenimiento se usa para:"
+				"title": "No hay ventanas de mantenimiento programadas",
+				"description": "Programa interrupciones planificadas para silenciar las alertas y que tu equipo y usuarios sepan qué esperar."
 			},
 			"table": {
 				"headers": {
@@ -891,13 +949,17 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Ventanas de mantenimiento",
+				"description": "Programa interrupciones planificadas para silenciar las alertas y que tu equipo y usuarios sepan qué esperar."
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "Crear un canal",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "Los canales de notificación se usan para:"
+				"title": "Aún no hay canales de notificación",
+				"description": "Conecta Slack, Discord, correo electrónico, webhooks y más para que las personas adecuadas se enteren de los incidentes en cuanto ocurran."
 			},
 			"form": {
 				"accessToken": {
@@ -953,6 +1015,10 @@
 				"headers": {
 					"destination": "Destino"
 				}
+			},
+			"header": {
+				"title": "Notificaciones",
+				"description": "Conecta Slack, Discord, correo electrónico, webhooks y más para que las personas adecuadas se enteren de los incidentes en cuanto ocurran."
 			}
 		},
 		"pageSpeed": {
@@ -979,8 +1045,12 @@
 			},
 			"fallback": {
 				"actionButton": "¡Cree un monitor!",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "Un monitor de PageSpeed se usa para:"
+				"title": "Aún no hay monitores de PageSpeed",
+				"description": "Sigue las Core Web Vitals y las puntuaciones de Lighthouse a lo largo del tiempo para detectar regresiones antes que tus usuarios."
+			},
+			"header": {
+				"title": "Monitores de PageSpeed",
+				"description": "Sigue las Core Web Vitals y las puntuaciones de Lighthouse a lo largo del tiempo para detectar regresiones antes que tus usuarios."
 			}
 		},
 		"settings": {
@@ -1158,14 +1228,18 @@
 				"validation": {
 					"errorMessage": "Corrija los siguientes errores de validación:"
 				}
+			},
+			"header": {
+				"title": "Configuración",
+				"description": "Configura SMTP, integraciones, retención y comportamiento global de la app."
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "Página de estado eliminada exitosamente",
 			"fallback": {
-				"title": "Una página de estado se usa para:",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "¡Cree una página de estado!"
+				"title": "Aún no hay páginas de estado",
+				"actionButton": "¡Cree una página de estado!",
+				"description": "Publica una página pública que muestre a tus clientes y partes interesadas la disponibilidad en tiempo real y el historial de incidentes."
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Mapa de calor",
@@ -1282,6 +1356,10 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Páginas de estado",
+				"description": "Publica páginas públicas que muestren a tus clientes y partes interesadas la disponibilidad en tiempo real y el historial de incidentes."
 			}
 		},
 		"uptime": {
@@ -1297,8 +1375,12 @@
 			},
 			"fallback": {
 				"actionButton": "¡Cree un monitor!",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "Un monitor de tiempo de actividad se usa para:"
+				"title": "Aún no hay monitores de uptime",
+				"description": "Observa endpoints HTTP, pings, contenedores y puertos — recibe alertas en el momento en que algo falla."
+			},
+			"header": {
+				"title": "Monitores de uptime",
+				"description": "Observa endpoints HTTP, pings, contenedores y puertos — recibe alertas en el momento en que algo falla."
 			}
 		}
 	}
