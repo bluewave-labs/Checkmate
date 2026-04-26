@@ -883,12 +883,12 @@
 					"method": "Method",
 					"monitorId": "Monitor ID",
 					"runCount": "Run count",
-					"failCount": "Fail count",
+					"failCount": "Count",
 					"lastRunAt": "Last run at",
 					"lockedAt": "Locked at",
 					"lastFinishedAt": "Last finished at",
 					"lastRunTook": "Last run took",
-					"lastFailedAt": "Last failed at",
+					"lastFailedAt": "Last failed",
 					"failReason": "Fail reason"
 				}
 			},

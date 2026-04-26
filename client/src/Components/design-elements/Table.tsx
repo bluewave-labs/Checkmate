@@ -162,14 +162,19 @@ export function DataTable<
 					},
 					"& .MuiTableHead-root .MuiTableRow-root": {
 						height: "28px",
+						borderBottom: "1px solid rgba(0, 0, 0, 0.06)",
+					},
+					"& .MuiTableHead-root .MuiTableCell-root": {
+						borderBottom: "none",
 					},
 					"& :is(th)": {
 						backgroundColor: theme.palette.background.paper,
 						color: theme.palette.text.secondary,
 						fontWeight: 500,
 						textTransform: "uppercase",
+						letterSpacing: "0.08em",
 						padding: `${theme.spacing(SPACING.LG)} ${theme.spacing(LAYOUT.MD)}`,
-						fontSize: theme.typography.fontSize,
+						fontSize: 11,
 					},
 					"& :is(td)": {
 						backgroundColor: theme.palette.background.paper,
