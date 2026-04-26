@@ -43,61 +43,65 @@ export const TabQueue = () => {
 	};
 
 	return (
-		<Stack gap={theme.spacing(8)}>
+		<Stack gap={theme.spacing(16)}>
 			<Metrics metrics={metrics} />
-			<Stack gap={theme.spacing(1)}>
-				<Typography
-					variant="eyebrow"
-					color="text.secondary"
-				>
-					{t("pages.logs.jobQueue")}
-				</Typography>
-				<Typography
-					sx={{
-						fontSize: 13,
-						color: theme.palette.text.secondary,
-					}}
-				>
-					<Trans
-						i18nKey="pages.logs.jobQueueExplainer"
-						components={{
-							highlight: (
-								<Box
-									component="span"
-									sx={{
-										backgroundColor:
-											theme.palette.mode === "dark"
-												? "rgba(19, 113, 91, 0.18)"
-												: "#ECF7F2",
-										color: theme.palette.text.primary,
-										px: 1,
-										py: 0.25,
-										borderRadius: 0.5,
-									}}
-								/>
-							),
+			<Stack gap={theme.spacing(3)}>
+				<Stack gap={theme.spacing(1)}>
+					<Typography
+						variant="eyebrow"
+						color="text.secondary"
+					>
+						{t("pages.logs.jobQueue")}
+					</Typography>
+					<Typography
+						sx={{
+							fontSize: 13,
+							color: theme.palette.text.secondary,
 						}}
-					/>
-				</Typography>
+					>
+						<Trans
+							i18nKey="pages.logs.jobQueueExplainer"
+							components={{
+								highlight: (
+									<Box
+										component="span"
+										sx={{
+											backgroundColor:
+												theme.palette.mode === "dark"
+													? "rgba(19, 113, 91, 0.18)"
+													: "#ECF7F2",
+											color: theme.palette.text.primary,
+											px: 1,
+											py: 0.25,
+											borderRadius: 0.5,
+										}}
+									/>
+								),
+							}}
+						/>
+					</Typography>
+				</Stack>
+				<TableJobs jobs={jobs} />
 			</Stack>
-			<TableJobs jobs={jobs} />
-			<Stack gap={theme.spacing(1)}>
-				<Typography
-					variant="eyebrow"
-					color="text.secondary"
-				>
-					{t("pages.logs.failedJobs")}
-				</Typography>
-				<Typography
-					sx={{
-						fontSize: 13,
-						color: theme.palette.text.secondary,
-					}}
-				>
-					{t("pages.logs.failedJobsExplainer")}
-				</Typography>
+			<Stack gap={theme.spacing(3)}>
+				<Stack gap={theme.spacing(1)}>
+					<Typography
+						variant="eyebrow"
+						color="text.secondary"
+					>
+						{t("pages.logs.failedJobs")}
+					</Typography>
+					<Typography
+						sx={{
+							fontSize: 13,
+							color: theme.palette.text.secondary,
+						}}
+					>
+						{t("pages.logs.failedJobsExplainer")}
+					</Typography>
+				</Stack>
+				<TableFailedJobs metrics={metrics} />
 			</Stack>
-			<TableFailedJobs metrics={metrics} />
 			<Stack alignItems={"flex-end"}>
 				<Button
 					variant="contained"

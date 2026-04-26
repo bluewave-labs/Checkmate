@@ -23,8 +23,8 @@ export const TabDiagnostics = () => {
 			<Stack gap={theme.spacing(4)}>
 				<Stack gap={theme.spacing(1)}>
 					<Typography
-						variant="h6"
-						sx={{ textTransform: "uppercase" }}
+						variant="eyebrow"
+						color="text.secondary"
 					>
 						{t("pages.logs.diagnostics.sections.runtimeStats.title")}
 					</Typography>
@@ -37,8 +37,8 @@ export const TabDiagnostics = () => {
 			<Stack gap={theme.spacing(4)}>
 				<Stack gap={theme.spacing(1)}>
 					<Typography
-						variant="h6"
-						sx={{ textTransform: "uppercase" }}
+						variant="eyebrow"
+						color="text.secondary"
 					>
 						{t("pages.logs.diagnostics.sections.memoryCpu.title")}
 					</Typography>

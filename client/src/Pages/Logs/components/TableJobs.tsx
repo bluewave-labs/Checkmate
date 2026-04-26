@@ -121,6 +121,7 @@ interface TableFailedJobsProps {
 }
 export const TableFailedJobs = ({ metrics }: TableFailedJobsProps) => {
 	const { t } = useTranslation();
+	const theme = useTheme();
 	if (!metrics) {
 		return null;
 	}
