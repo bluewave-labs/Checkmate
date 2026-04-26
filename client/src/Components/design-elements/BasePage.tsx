@@ -1,15 +1,14 @@
 import Logo from "@/assets/icons/checkmate-icon.svg?react";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
-import Alert from "@mui/material/Alert";
 import Link from "@mui/material/Link";
 import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 import {
 	ErrorFallback,
 	EmptyFallback,
 	EmptyMonitorFallback,
-	BaseFallback,
 } from "@/Components/design-elements/Fallback";
+import { EmptyState } from "@/Components/design-elements/EmptyState";
 import { Breadcrumb } from "@/Components/design-elements/Breadcrumb";
 import CircularProgress from "@mui/material/CircularProgress";
 import { HeaderAuthControls } from "@/Pages/Auth/components/HeaderAuthControls";
@@ -21,32 +20,58 @@ import { Link as RouterLink } from "react-router-dom";
 import { Typography } from "@mui/material";
 
 export const PageSpeedKeyPriorityFallback = () => {
+	const theme = useTheme();
 	return (
-		<BaseFallback>
-			<Alert
-				severity="warning"
-				sx={{
-					width: "100%",
-					maxWidth: 600,
-				}}
-			>
-				<Typography>
-					<Trans
-						i18nKey="common.alerts.pageSpeedApiKey.content"
-						components={{
-							settingsLink: (
-								<Link
-									component={RouterLink}
-									to="/settings"
-									color="inherit"
-									fontWeight="inherit"
-								/>
-							),
+		<EmptyState
+			title="PageSpeed monitor needs an API key"
+			alert={
+				<Stack
+					direction="row"
+					alignItems="flex-start"
+					gap={theme.spacing(LAYOUT.SM)}
+					sx={{
+						width: "100%",
+						p: theme.spacing(LAYOUT.MD),
+						borderRadius: 1,
+						border: `1px solid ${theme.palette.warning.main}`,
+						backgroundColor: theme.palette.warning.light,
+						textAlign: "left",
+					}}
+				>
+					<Box
+						component="span"
+						sx={{
+							color: theme.palette.warning.dark,
+							fontSize: 18,
+							lineHeight: 1,
+							mt: "2px",
 						}}
-					/>
-				</Typography>
-			</Alert>
-		</BaseFallback>
+					>
+						⚠
+					</Box>
+					<Typography
+						sx={{ color: theme.palette.text.primary, lineHeight: 1.55, fontSize: 13 }}
+					>
+						<Trans
+							i18nKey="common.alerts.pageSpeedApiKey.content"
+							components={{
+								settingsLink: (
+									<Link
+										component={RouterLink}
+										to="/settings"
+										sx={{
+											color: theme.palette.primary.main,
+											fontWeight: 600,
+											textDecoration: "underline",
+										}}
+									/>
+								),
+							}}
+						/>
+					</Typography>
+				</Stack>
+			}
+		/>
 	);
 };
 
