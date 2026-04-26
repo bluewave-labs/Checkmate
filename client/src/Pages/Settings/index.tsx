@@ -277,6 +277,7 @@ export const SettingsPage = () => {
 
 	return (
 		<BasePage
+			headerKey="settings"
 			component="form"
 			onSubmit={form.handleSubmit(onSubmit, onError)}
 		>
