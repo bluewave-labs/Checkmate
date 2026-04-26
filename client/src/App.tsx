@@ -43,8 +43,8 @@ function App() {
 					theme={mode}
 					style={
 						{
-							"--toastify-color-progress-light": "#7C8BA1",
-							"--toastify-color-progress-dark": "#7C8BA1",
+							"--toastify-color-progress-light": theme.palette.primary.main,
+							"--toastify-color-progress-dark": theme.palette.primary.main,
 						} as CSSProperties
 					}
 				/>
