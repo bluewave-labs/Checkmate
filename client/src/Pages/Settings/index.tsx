@@ -975,19 +975,13 @@ export const SettingsPage = () => {
 				loading={isDeletingAllMonitors}
 			/>
 
-			{/* Sticky Save Button */}
 			<Stack
 				direction="row"
 				justifyContent="flex-end"
 				sx={{
 					position: "sticky",
 					bottom: 0,
-					backgroundColor: theme.palette.background.paper,
-					borderTop: `1px solid ${theme.palette.divider}`,
 					padding: theme.spacing(LAYOUT.MD),
-					marginLeft: theme.spacing(-LAYOUT.MD),
-					marginRight: theme.spacing(-LAYOUT.MD),
-					marginBottom: theme.spacing(-LAYOUT.MD),
 					zIndex: 1000,
 				}}
 			>
