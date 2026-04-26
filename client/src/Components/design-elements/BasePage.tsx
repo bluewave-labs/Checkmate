@@ -299,11 +299,9 @@ export const BaseAuthPage = ({
 			</Stack>
 			<Stack
 				gap={theme.spacing(LAYOUT.MD)}
-				width={{
-					xs: "80%",
-					md: "25%",
-					lg: "15%",
-				}}
+				width="100%"
+				maxWidth={400}
+				px={theme.spacing(LAYOUT.MD)}
 			>
 				{children}
 			</Stack>
