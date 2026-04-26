@@ -162,7 +162,7 @@ export function DataTable<
 					},
 					"& .MuiTableHead-root .MuiTableRow-root": {
 						height: "28px",
-						borderBottom: "1px solid rgba(0, 0, 0, 0.06)",
+						borderBottom: `1px solid ${theme.palette.divider}`,
 					},
 					"& .MuiTableHead-root .MuiTableCell-root": {
 						borderBottom: "none",
