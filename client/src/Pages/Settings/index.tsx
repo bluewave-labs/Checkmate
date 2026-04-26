@@ -127,7 +127,7 @@ export const SettingsPage = () => {
 		timezoneOptions.find((tz) => tz.id === selectedTimezoneId) ?? null;
 
 	const handleTimezoneChange = (newValue: Timezone | null) => {
-		if (!newValue?.id) return; 
+		if (!newValue?.id) return;
 		dispatch(setTimezone({ timezone: newValue.id }));
 	};
 
