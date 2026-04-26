@@ -199,6 +199,14 @@
 		"starPrompt": {
 			"title": "Star Checkmate",
 			"description": "Следите за последними релизами и помогайте развивать сообщество на GitHub"
+		},
+		"pageHeader": {
+			"links": {
+				"support": "Поддержка",
+				"discussions": "Обсуждения",
+				"docs": "Документация",
+				"changelog": "Журнал изменений"
+			}
 		}
 	},
 	"pages": {
@@ -278,7 +286,15 @@
 						"placeholder": "Выберите роль"
 					},
 					"linkLabel": "Ссылка-приглашение"
+				},
+				"fallback": {
+					"title": "Пока нет участников команды",
+					"description": "Пригласите коллег по электронной почте или добавьте их напрямую. Как только они присоединятся, они появятся здесь со своей ролью."
 				}
+			},
+			"header": {
+				"title": "Учётная запись",
+				"description": "Управляйте профилем, паролем, командой и настройками рабочего пространства."
 			}
 		},
 		"auth": {
@@ -378,6 +394,14 @@
 					"statusCode": "Код статуса",
 					"location": "Расположение"
 				}
+			},
+			"fallback": {
+				"title": "Пока нет проверок",
+				"description": "Как только вы создадите монитор, каждая проверка состояния и время отклика появятся здесь."
+			},
+			"header": {
+				"title": "Проверки",
+				"description": "Каждый зонд, который Checkmate выполняет к вашим мониторам, появится здесь с кодом состояния и временем отклика."
 			}
 		},
 		"common": {
@@ -640,6 +664,10 @@
 			}
 		},
 		"incidents": {
+			"fallback": {
+				"title": "Инцидентов нет — все системы исправны",
+				"description": "Когда монитор перестаёт работать или восстанавливается, инцидент появится здесь со временем, деталями монитора и историей решения."
+			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "Решить инцидент",
@@ -720,6 +748,10 @@
 					"active": "Активный",
 					"resolved": "Решён"
 				}
+			},
+			"header": {
+				"title": "Инциденты",
+				"description": "Когда монитор перестаёт работать или восстанавливается, инцидент появляется здесь со временем, деталями монитора и историей решения."
 			}
 		},
 		"infrastructure": {
@@ -774,11 +806,19 @@
 			},
 			"fallback": {
 				"actionButton": "Создать монитор!",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "Монитор инфраструктуры используется для:"
+				"title": "Пока нет инфраструктурных мониторов",
+				"description": "Отслеживайте производительность серверов, выявляйте узкие места и обеспечивайте надёжность с мониторингом в реальном времени."
+			},
+			"header": {
+				"title": "Инфраструктурные мониторы",
+				"description": "Отслеживайте производительность серверов, выявляйте узкие места и обеспечивайте надёжность с мониторингом в реальном времени."
 			}
 		},
 		"logs": {
+			"fallback": {
+				"title": "Пока нет журналов",
+				"description": "Активность сервера, предупреждения и ошибки появятся здесь во время работы Checkmate."
+			},
 			"tabs": {
 				"diagnostics": "Диагностика",
 				"logs": "Серверные логи",
@@ -815,6 +855,16 @@
 					"usedSPercentage": "% 1с использовано CPU",
 					"total": "Всего",
 					"used": "Использовано"
+				},
+				"sections": {
+					"runtimeStats": {
+						"title": "Статистика выполнения",
+						"description": "Снимок процесса Node.js и хост-машины. Обновляется каждые 5 секунд."
+					},
+					"memoryCpu": {
+						"title": "Память и ЦП",
+						"description": "Как процесс использует выделенную память и ЦП хоста."
+					}
 				}
 			},
 			"table": {
@@ -833,13 +883,21 @@
 					"lastFailedAt": "Последняя ошибка",
 					"failReason": "Причина ошибки"
 				}
+			},
+			"queueFallback": {
+				"title": "В очереди нет заданий",
+				"description": "Запланированные или выполняемые проверки мониторов будут отображаться здесь. Пустая очередь означает, что всё актуально."
+			},
+			"header": {
+				"title": "Журналы и очередь",
+				"description": "Изучайте журналы сервера, очередь заданий мониторов и диагностику в одном месте."
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "Создать окно обслуживания!",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "Окно обслуживания используется для:"
+				"title": "Нет запланированных окон обслуживания",
+				"description": "Планируйте плановые простои, чтобы оповещения были подавлены, а команда и пользователи знали, чего ожидать."
 			},
 			"table": {
 				"headers": {
@@ -891,13 +949,17 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Окна обслуживания",
+				"description": "Планируйте плановые простои, чтобы оповещения были подавлены, а команда и пользователи знали, чего ожидать."
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "Создать канал",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "Каналы уведомлений используются для:"
+				"title": "Пока нет каналов уведомлений",
+				"description": "Подключите Slack, Discord, email, вебхуки и другое, чтобы нужные люди узнавали об инцидентах сразу же."
 			},
 			"form": {
 				"accessToken": {
@@ -953,6 +1015,10 @@
 				"headers": {
 					"destination": "Назначение"
 				}
+			},
+			"header": {
+				"title": "Уведомления",
+				"description": "Подключите Slack, Discord, email, вебхуки и другое, чтобы нужные люди узнавали об инцидентах сразу же."
 			}
 		},
 		"pageSpeed": {
@@ -979,8 +1045,12 @@
 			},
 			"fallback": {
 				"actionButton": "Создать монитор!",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "Монитор PageSpeed используется для:"
+				"title": "Пока нет мониторов PageSpeed",
+				"description": "Отслеживайте Core Web Vitals и оценки Lighthouse во времени, чтобы заметить регрессии раньше пользователей."
+			},
+			"header": {
+				"title": "Мониторы PageSpeed",
+				"description": "Отслеживайте Core Web Vitals и оценки Lighthouse во времени, чтобы заметить регрессии раньше пользователей."
 			}
 		},
 		"settings": {
@@ -1158,14 +1228,18 @@
 				"validation": {
 					"errorMessage": "Пожалуйста, исправьте следующие ошибки валидации:"
 				}
+			},
+			"header": {
+				"title": "Настройки",
+				"description": "Настройте SMTP, интеграции, сроки хранения и общее поведение приложения."
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "Страница статуса успешно удалена",
 			"fallback": {
-				"title": "Страница статуса используется для:",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "Создать страницу статуса!"
+				"title": "Пока нет страниц состояния",
+				"actionButton": "Создать страницу статуса!",
+				"description": "Опубликуйте публичную страницу, показывающую клиентам и заинтересованным сторонам реальное время работы и историю инцидентов."
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Тепловая карта",
@@ -1282,6 +1356,10 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Страницы состояния",
+				"description": "Публикуйте публичные страницы со временем работы и историей инцидентов для клиентов и заинтересованных сторон."
 			}
 		},
 		"uptime": {
@@ -1297,8 +1375,12 @@
 			},
 			"fallback": {
 				"actionButton": "Создать монитор!",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "Монитор аптайма используется для:"
+				"title": "Пока нет мониторов работоспособности",
+				"description": "Наблюдайте за HTTP-конечными точками, пингами, контейнерами и портами — получайте уведомления в момент отказа."
+			},
+			"header": {
+				"title": "Мониторы работоспособности",
+				"description": "Наблюдайте за HTTP-конечными точками, пингами, контейнерами и портами — получайте уведомления в момент отказа."
 			}
 		}
 	}

@@ -199,6 +199,14 @@
 		"starPrompt": {
 			"title": "Lisää Checkmate suosikkeihin",
 			"description": "Katso uusimmat julkaisut ja auta kasvattamaan yhteisöä GitHubissa"
+		},
+		"pageHeader": {
+			"links": {
+				"support": "Tuki",
+				"discussions": "Keskustelut",
+				"docs": "Dokumentaatio",
+				"changelog": "Muutosloki"
+			}
 		}
 	},
 	"pages": {
@@ -278,7 +286,15 @@
 						"placeholder": "Valitse rooli"
 					},
 					"linkLabel": "Kutsulinkki"
+				},
+				"fallback": {
+					"title": "Ei vielä tiimin jäseniä",
+					"description": "Kutsu tiimin jäsenet sähköpostitse tai lisää heidät suoraan. Kun he liittyvät, he näkyvät tässä roolinsa kanssa."
 				}
+			},
+			"header": {
+				"title": "Tili",
+				"description": "Hallitse profiilia, salasanaa, tiimiä ja työtilan asetuksia."
 			}
 		},
 		"auth": {
@@ -378,6 +394,14 @@
 					"statusCode": "Tilakoodi",
 					"location": "Sijainti"
 				}
+			},
+			"fallback": {
+				"title": "Ei vielä tarkistuksia",
+				"description": "Kun luot monitorin, jokainen tilatarkistus ja vasteaika näkyy täällä tarkistuksena."
+			},
+			"header": {
+				"title": "Tarkistukset",
+				"description": "Jokainen tarkistus, jonka Checkmate suorittaa monitoreitasi vastaan, näkyy täällä tilakoodin ja vasteajan kanssa."
 			}
 		},
 		"common": {
@@ -640,6 +664,10 @@
 			}
 		},
 		"incidents": {
+			"fallback": {
+				"title": "Ei tapauksia — kaikki järjestelmät ovat kunnossa",
+				"description": "Kun monitori kaatuu tai palautuu, tapaus tulee näkyviin ajoituksen, monitorin tietojen ja ratkaisuhistorian kanssa."
+			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "Ratkaise häiriö",
@@ -720,6 +748,10 @@
 					"active": "Aktiivinen",
 					"resolved": "Ratkaistu"
 				}
+			},
+			"header": {
+				"title": "Tapaukset",
+				"description": "Kun monitori kaatuu tai palautuu, tapaukset näkyvät täällä ajoituksen, monitorin tietojen ja ratkaisuhistorian kanssa."
 			}
 		},
 		"infrastructure": {
@@ -774,11 +806,19 @@
 			},
 			"fallback": {
 				"actionButton": "Luo monitori!",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "Infrastruktuurimonitorilla voit:"
+				"title": "Ei vielä infrastruktuurimonitoreita",
+				"description": "Seuraa palvelinten suorituskykyä, tunnista pullonkauloja ja varmista luotettavuus reaaliaikaisella valvonnalla."
+			},
+			"header": {
+				"title": "Infrastruktuurimonitorit",
+				"description": "Seuraa palvelinten suorituskykyä, tunnista pullonkauloja ja varmista luotettavuus reaaliaikaisella valvonnalla."
 			}
 		},
 		"logs": {
+			"fallback": {
+				"title": "Ei vielä lokeja",
+				"description": "Palvelimen toiminta, varoitukset ja virheet näkyvät täällä Checkmaten toimiessa."
+			},
 			"tabs": {
 				"diagnostics": "",
 				"logs": "",
@@ -815,6 +855,16 @@
 					"usedSPercentage": "% sekunnista CPU:n käytössä",
 					"total": "Yhteensä",
 					"used": "Käytetty"
+				},
+				"sections": {
+					"runtimeStats": {
+						"title": "Suoritusajan tilastot",
+						"description": "Node.js-prosessin ja isäntäkoneen tilannekuva. Päivittyy 5 sekunnin välein."
+					},
+					"memoryCpu": {
+						"title": "Muisti ja CPU",
+						"description": "Miten prosessi käyttää sille varattua muistia ja isännän CPU:ta."
+					}
 				}
 			},
 			"table": {
@@ -833,13 +883,21 @@
 					"lastFailedAt": "Viimeisin epäonnistuminen",
 					"failReason": "Epäonnistumisen syy"
 				}
+			},
+			"queueFallback": {
+				"title": "Jonossa ei ole töitä",
+				"description": "Aikataulutetut tai käynnissä olevat monitoritarkistukset näkyvät täällä. Tyhjä jono tarkoittaa, että kaikki on ajan tasalla."
+			},
+			"header": {
+				"title": "Lokit ja jono",
+				"description": "Tarkasta palvelinlokit, monitorin työjono ja ajonaikaiset diagnostiikat yhdestä paikasta."
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "Luo huoltoikkuna!",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "Huoltoikkunalla voit:"
+				"title": "Ei suunniteltuja huoltokatkoja",
+				"description": "Aikatauluta suunnitellut katkot, jotta hälytykset vaimennetaan ja tiimisi sekä käyttäjät tietävät mitä odottaa."
 			},
 			"table": {
 				"headers": {
@@ -891,13 +949,17 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Huoltoikkunat",
+				"description": "Aikatauluta suunnitellut katkot, jotta hälytykset vaimennetaan ja tiimisi sekä käyttäjät tietävät mitä odottaa."
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "Luo kanava",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "Ilmoituskanavia käytetään:"
+				"title": "Ei vielä ilmoituskanavia",
+				"description": "Yhdistä Slack, Discord, sähköposti, webhookit ja muut, jotta oikeat ihmiset kuulevat tapauksista heti."
 			},
 			"form": {
 				"accessToken": {
@@ -953,6 +1015,10 @@
 				"headers": {
 					"destination": "Kohde"
 				}
+			},
+			"header": {
+				"title": "Ilmoitukset",
+				"description": "Yhdistä Slack, Discord, sähköposti, webhookit ja muut, jotta oikeat ihmiset kuulevat tapauksista heti."
 			}
 		},
 		"pageSpeed": {
@@ -979,8 +1045,12 @@
 			},
 			"fallback": {
 				"actionButton": "Luo monitori!",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "PageSpeed-monitorilla voit:"
+				"title": "Ei vielä PageSpeed-monitoreita",
+				"description": "Seuraa Core Web Vitals -mittareita ja Lighthouse-pisteitä ajan mittaan ja huomaa heikennykset ennen käyttäjiä."
+			},
+			"header": {
+				"title": "PageSpeed-monitorit",
+				"description": "Seuraa Core Web Vitals -mittareita ja Lighthouse-pisteitä ajan mittaan ja huomaa heikennykset ennen käyttäjiä."
 			}
 		},
 		"settings": {
@@ -1158,14 +1228,18 @@
 				"validation": {
 					"errorMessage": "Korjaa seuraavat vahvistusvirheet:"
 				}
+			},
+			"header": {
+				"title": "Asetukset",
+				"description": "Määritä SMTP, integraatiot, säilytys ja sovelluksen yleinen käyttäytyminen."
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "Tilasivu poistettu onnistuneesti",
 			"fallback": {
-				"title": "Tilasivulla voit:",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "Luo tilasivu!"
+				"title": "Ei vielä tilasivuja",
+				"actionButton": "Luo tilasivu!",
+				"description": "Julkaise julkinen sivu, joka näyttää asiakkaille ja sidosryhmille reaaliaikaisen käytettävyyden ja tapaushistorian."
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Lämpökartta",
@@ -1282,6 +1356,10 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Tilasivut",
+				"description": "Julkaise julkisia sivuja, jotka näyttävät asiakkaille ja sidosryhmille reaaliaikaisen käytettävyyden ja tapaushistorian."
 			}
 		},
 		"uptime": {
@@ -1297,8 +1375,12 @@
 			},
 			"fallback": {
 				"actionButton": "Luo monitori!",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "Käytettävyysmonitorilla voit:"
+				"title": "Ei vielä käytettävyysmonitoreita",
+				"description": "Tarkkaile HTTP-päätepisteitä, pingejä, kontteja ja portteja — saat hälytyksen heti, kun jokin kaatuu."
+			},
+			"header": {
+				"title": "Käytettävyysmonitorit",
+				"description": "Tarkkaile HTTP-päätepisteitä, pingejä, kontteja ja portteja — saat hälytyksen heti, kun jokin kaatuu."
 			}
 		}
 	}

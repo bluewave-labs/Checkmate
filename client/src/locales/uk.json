@@ -199,6 +199,14 @@
 		"starPrompt": {
 			"title": "Оцінити Checkmate",
 			"description": "Переглядайте останні оновлення та допомагайте розвивати спільноту на GitHub"
+		},
+		"pageHeader": {
+			"links": {
+				"support": "Підтримка",
+				"discussions": "Обговорення",
+				"docs": "Документація",
+				"changelog": "Журнал змін"
+			}
 		}
 	},
 	"pages": {
@@ -278,7 +286,15 @@
 						"placeholder": "Оберіть роль"
 					},
 					"linkLabel": "Посилання для запрошення"
+				},
+				"fallback": {
+					"title": "Поки що немає учасників команди",
+					"description": "Запросіть колег електронною поштою або додайте їх безпосередньо. Як тільки вони приєднаються, вони з'являться тут зі своєю роллю."
 				}
+			},
+			"header": {
+				"title": "Обліковий запис",
+				"description": "Керуйте профілем, паролем, командою та налаштуваннями робочого простору."
 			}
 		},
 		"auth": {
@@ -378,6 +394,14 @@
 					"statusCode": "Код статусу",
 					"location": "Розташування"
 				}
+			},
+			"fallback": {
+				"title": "Перевірок ще немає",
+				"description": "Як тільки ви створите монітор, кожна перевірка статусу та час відповіді з’являться тут."
+			},
+			"header": {
+				"title": "Перевірки",
+				"description": "Кожне зондування, яке Checkmate виконує проти ваших моніторів, з'явиться тут з кодом статусу та часом відповіді."
 			}
 		},
 		"common": {
@@ -640,6 +664,10 @@
 			}
 		},
 		"incidents": {
+			"fallback": {
+				"title": "Інцидентів немає — усі системи справні",
+				"description": "Коли монітор виходить з ладу або відновлюється, інцидент з’явиться тут з часом, деталями монітора та історією вирішення."
+			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "Вирішити інцидент",
@@ -720,6 +748,10 @@
 					"active": "Активний",
 					"resolved": "Вирішено"
 				}
+			},
+			"header": {
+				"title": "Інциденти",
+				"description": "Коли монітор виходить з ладу або відновлюється, інциденти з'являються тут з часом, деталями монітора та історією вирішення."
 			}
 		},
 		"infrastructure": {
@@ -774,11 +806,19 @@
 			},
 			"fallback": {
 				"actionButton": "Створити монітор!",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "Монітор інфраструктури використовується для:"
+				"title": "Ще немає моніторів інфраструктури",
+				"description": "Відстежуйте продуктивність серверів, виявляйте вузькі місця та забезпечуйте надійність з моніторингом у реальному часі."
+			},
+			"header": {
+				"title": "Монітори інфраструктури",
+				"description": "Відстежуйте продуктивність серверів, виявляйте вузькі місця та забезпечуйте надійність з моніторингом у реальному часі."
 			}
 		},
 		"logs": {
+			"fallback": {
+				"title": "Поки що немає журналів",
+				"description": "Активність сервера, попередження та помилки з’являться тут під час роботи Checkmate."
+			},
 			"tabs": {
 				"diagnostics": "Діагностика",
 				"logs": "",
@@ -815,6 +855,16 @@
 					"usedSPercentage": "% від 1с використано CPU",
 					"total": "Усього",
 					"used": "Використано"
+				},
+				"sections": {
+					"runtimeStats": {
+						"title": "Статистика виконання",
+						"description": "Знімок процесу Node.js і хост-машини. Оновлюється кожні 5 секунд."
+					},
+					"memoryCpu": {
+						"title": "Пам'ять і ЦП",
+						"description": "Як процес використовує виділену пам'ять і ЦП хоста."
+					}
 				}
 			},
 			"table": {
@@ -833,13 +883,21 @@
 					"lastFailedAt": "Остання помилка",
 					"failReason": "Причина помилки"
 				}
+			},
+			"queueFallback": {
+				"title": "У черзі немає завдань",
+				"description": "Заплановані або виконувані перевірки моніторів з’являться тут. Порожня черга означає, що все актуально."
+			},
+			"header": {
+				"title": "Журнали та черга",
+				"description": "Перевіряйте серверні журнали, чергу завдань моніторів і діагностику в одному місці."
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "Створити вікно обслуговування!",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "Вікно обслуговування використовується для:"
+				"title": "Немає запланованих вікон обслуговування",
+				"description": "Плануйте планові простої, щоб сповіщення було пригнічено, а команда та користувачі знали, чого очікувати."
 			},
 			"table": {
 				"headers": {
@@ -891,13 +949,17 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Вікна обслуговування",
+				"description": "Плануйте планові простої, щоб сповіщення було пригнічено, а команда та користувачі знали, чого очікувати."
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "Створити канал",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "Канали сповіщень використовуються для:"
+				"title": "Ще немає каналів сповіщень",
+				"description": "Підключіть Slack, Discord, електронну пошту, вебхуки та інше, щоб потрібні люди дізнавалися про інциденти одразу."
 			},
 			"form": {
 				"accessToken": {
@@ -953,6 +1015,10 @@
 				"headers": {
 					"destination": "Призначення"
 				}
+			},
+			"header": {
+				"title": "Сповіщення",
+				"description": "Підключіть Slack, Discord, електронну пошту, вебхуки та інше, щоб потрібні люди дізнавалися про інциденти одразу."
 			}
 		},
 		"pageSpeed": {
@@ -979,8 +1045,12 @@
 			},
 			"fallback": {
 				"actionButton": "Створити монітор!",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "Монітор PageSpeed використовується для:"
+				"title": "Ще немає моніторів PageSpeed",
+				"description": "Відстежуйте Core Web Vitals і оцінки Lighthouse у часі, щоб помітити регресії раніше за користувачів."
+			},
+			"header": {
+				"title": "Монітори PageSpeed",
+				"description": "Відстежуйте Core Web Vitals і оцінки Lighthouse у часі, щоб помітити регресії раніше за користувачів."
 			}
 		},
 		"settings": {
@@ -1158,14 +1228,18 @@
 				"validation": {
 					"errorMessage": "Будь ласка, виправте такі помилки валідації:"
 				}
+			},
+			"header": {
+				"title": "Налаштування",
+				"description": "Налаштуйте SMTP, інтеграції, зберігання та загальну поведінку додатку."
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "Сторінку статусу успішно видалено",
 			"fallback": {
-				"title": "Сторінка статусу використовується для:",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "Створити сторінку статусу!"
+				"title": "Ще немає сторінок статусу",
+				"actionButton": "Створити сторінку статусу!",
+				"description": "Опублікуйте публічну сторінку, що показує клієнтам і зацікавленим сторонам час роботи в реальному часі та історію інцидентів."
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Теплова карта",
@@ -1282,6 +1356,10 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Сторінки статусу",
+				"description": "Публікуйте публічні сторінки з часом роботи в реальному часі та історією інцидентів для клієнтів і зацікавлених сторін."
 			}
 		},
 		"uptime": {
@@ -1297,8 +1375,12 @@
 			},
 			"fallback": {
 				"actionButton": "Створити монітор!",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "Монітор доступності використовується для:"
+				"title": "Ще немає моніторів працездатності",
+				"description": "Спостерігайте за HTTP-кінцевими точками, пінгами, контейнерами та портами — отримуйте сповіщення в момент відмови."
+			},
+			"header": {
+				"title": "Монітори працездатності",
+				"description": "Спостерігайте за HTTP-кінцевими точками, пінгами, контейнерами та портами — отримуйте сповіщення в момент відмови."
 			}
 		}
 	}

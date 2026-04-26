@@ -123,6 +123,14 @@
 		}
 	},
 	"components": {
+		"pageHeader": {
+			"links": {
+				"support": "Support",
+				"discussions": "Discussions",
+				"docs": "Documentation",
+				"changelog": "Changelog"
+			}
+		},
 		"imageUpload": {
 			"clickToUpload": "Click to upload",
 			"dragAndDrop": "or drag and drop",
@@ -249,6 +257,10 @@
 				}
 			},
 			"team": {
+				"fallback": {
+					"title": "No team members yet",
+					"description": "Invite teammates by email or add them directly. Once they join, they'll appear here with their role."
+				},
 				"filter": {
 					"placeholder": "Filter by role",
 					"all": "All roles",
@@ -279,6 +291,10 @@
 					},
 					"linkLabel": "Invite link"
 				}
+			},
+			"header": {
+				"title": "Account",
+				"description": "Manage your profile, password, team, and workspace preferences."
 			}
 		},
 		"auth": {
@@ -363,6 +379,10 @@
 			}
 		},
 		"checks": {
+			"fallback": {
+				"title": "No checks yet",
+				"description": "Once you create a monitor, every status probe and response time will appear here as a check."
+			},
 			"selects": {
 				"monitor": {
 					"all": "All monitors"
@@ -379,6 +399,10 @@
 					"statusCode": "Status code",
 					"location": "Location"
 				}
+			},
+			"header": {
+				"title": "Checks",
+				"description": "Every probe Checkmate runs against your monitors lands here, with status code and response time."
 			}
 		},
 		"common": {
@@ -642,6 +666,10 @@
 			}
 		},
 		"incidents": {
+			"fallback": {
+				"title": "No incidents — all systems healthy",
+				"description": "When a monitor goes down or recovers, the incident will appear here with timing, monitor details, and resolution history."
+			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "Resolve incident",
@@ -722,6 +750,10 @@
 					"active": "Active",
 					"resolved": "Resolved"
 				}
+			},
+			"header": {
+				"title": "Incidents",
+				"description": "When monitors go down or recover, incidents appear here with timing, monitor details and resolution history."
 			}
 		},
 		"infrastructure": {
@@ -775,16 +807,24 @@
 				}
 			},
 			"fallback": {
-				"actionButton": "Create a monitor!",
-				"checks": [
-					"Track the performance of your servers",
-					"Identify bottlenecks and optimize usage",
-					"Ensure reliability with real-time monitoring"
-				],
-				"title": "An infrastructure monitor is used to:"
+				"actionButton": "Create a monitor",
+				"description": "Track server performance, identify bottlenecks, and ensure reliability with real-time infrastructure monitoring.",
+				"title": "No infrastructure monitors yet"
+			},
+			"header": {
+				"title": "Infrastructure monitors",
+				"description": "Track server performance, identify bottlenecks, and ensure reliability with real-time infrastructure monitoring."
 			}
 		},
 		"logs": {
+			"fallback": {
+				"title": "No logs yet",
+				"description": "Server activity, warnings, and errors will appear here as Checkmate runs."
+			},
+			"queueFallback": {
+				"title": "No jobs in the queue",
+				"description": "Monitor checks that are scheduled or running will appear here. An empty queue means everything is up to date."
+			},
 			"tabs": {
 				"diagnostics": "Diagnostics",
 				"logs": "Logs",
@@ -794,7 +834,9 @@
 				"label": "Log level"
 			},
 			"jobQueue": "Job queue",
+			"jobQueueExplainer": "<highlight>Highlighted rows</highlight> are jobs currently being processed by a worker.",
 			"failedJobs": "Failed jobs",
+			"failedJobsExplainer": "Recent failures by monitor — last failure time, fail count, and the reason.",
 			"noLogs": "No logs found",
 			"metrics": {
 				"jobs": "Jobs",
@@ -804,6 +846,16 @@
 				"totalFailures": "Total failures"
 			},
 			"diagnostics": {
+				"sections": {
+					"runtimeStats": {
+						"title": "Runtime stats",
+						"description": "Snapshot of the Node.js process and host machine. Updates every 5 seconds."
+					},
+					"memoryCpu": {
+						"title": "Memory & CPU",
+						"description": "How the process is using its allocated memory and host CPU."
+					}
+				},
 				"stats": {
 					"eventLoopDelay": "Event loop delay",
 					"uptime": "Uptime",
@@ -839,17 +891,17 @@
 					"lastFailedAt": "Last failed at",
 					"failReason": "Fail reason"
 				}
+			},
+			"header": {
+				"title": "Logs & queue",
+				"description": "Inspect server logs, the monitor job queue, and runtime diagnostics in one place."
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
-				"actionButton": "Create a maintenance window!",
-				"checks": [
-					"Mark your maintenance periods",
-					"Eliminate any misunderstandings",
-					"Stop sending alerts in maintenance windows"
-				],
-				"title": "A maintenance window is used to:"
+				"actionButton": "Create a maintenance window",
+				"description": "Schedule planned downtime so alerts are suppressed and your team and users know what to expect.",
+				"title": "No maintenance windows scheduled"
 			},
 			"table": {
 				"headers": {
@@ -901,17 +953,17 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Maintenance windows",
+				"description": "Schedule planned downtime so alerts are suppressed and your team and users know what to expect."
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "Create a channel",
-				"checks": [
-					"Alert teams about downtime or performance issues",
-					"Let engineers know when incidents happen",
-					"Keep administrators informed of system changes"
-				],
-				"title": "Notification channels are used to:"
+				"description": "Connect Slack, Discord, email, webhooks and more so the right people hear about incidents the moment they happen.",
+				"title": "No notification channels yet"
 			},
 			"form": {
 				"accessToken": {
@@ -987,6 +1039,10 @@
 				"headers": {
 					"destination": "Destination"
 				}
+			},
+			"header": {
+				"title": "Notifications",
+				"description": "Connect Slack, Discord, email, webhooks and more so the right people hear about incidents the moment they happen."
 			}
 		},
 		"pageSpeed": {
@@ -1012,13 +1068,13 @@
 				}
 			},
 			"fallback": {
-				"actionButton": "Create a monitor!",
-				"checks": [
-					"Report on the user experience of a page",
-					"Help analyze webpage speed",
-					"Give suggestions on how the page can be improved"
-				],
-				"title": "A PageSpeed monitor is used to:"
+				"actionButton": "Create a monitor",
+				"description": "Track Core Web Vitals and Lighthouse scores over time so you can spot regressions before users do.",
+				"title": "No PageSpeed monitors yet"
+			},
+			"header": {
+				"title": "PageSpeed monitors",
+				"description": "Track Core Web Vitals and Lighthouse scores over time so you can spot regressions before users do."
 			}
 		},
 		"settings": {
@@ -1196,19 +1252,18 @@
 				"validation": {
 					"errorMessage": "Please fix the following validation errors:"
 				}
+			},
+			"header": {
+				"title": "Settings",
+				"description": "Configure SMTP, integrations, retention, and global app behavior."
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "Status page deleted successfully",
 			"fallback": {
-				"title": "A status page is used to:",
-				"checks": [
-					"Communicate system status to users and stakeholders",
-					"Display real-time uptime information publicly",
-					"Build trust with transparent service monitoring",
-					"Reduce support requests during incidents"
-				],
-				"actionButton": "Create a status page!"
+				"title": "No status pages yet",
+				"description": "Publish a public page that shows real-time uptime and incident history to your customers and stakeholders.",
+				"actionButton": "Create a status page"
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Heatmap",
@@ -1336,6 +1391,10 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Status pages",
+				"description": "Publish public pages that show real-time uptime and incident history to your customers and stakeholders."
 			}
 		},
 		"uptime": {
@@ -1350,14 +1409,13 @@
 				}
 			},
 			"fallback": {
-				"actionButton": "Create a monitor!",
-				"checks": [
-					"Check if websites or servers are online & responsive",
-					"Alert teams about downtime or performance issues",
-					"Monitor HTTP endpoints, pings, containers & ports",
-					"Track historical uptime and reliability trends"
-				],
-				"title": "An uptime monitor is used to:"
+				"actionButton": "Create a monitor",
+				"description": "Watch HTTP endpoints, pings, containers, and ports — and get alerted the moment something goes down.",
+				"title": "No uptime monitors yet"
+			},
+			"header": {
+				"title": "Uptime monitors",
+				"description": "Watch HTTP endpoints, pings, containers, and ports — and get alerted the moment something goes down."
 			}
 		}
 	}
