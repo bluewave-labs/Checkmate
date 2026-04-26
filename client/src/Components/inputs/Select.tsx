@@ -19,7 +19,7 @@ const SelectInputInner = <T,>(
 	ref: React.ForwardedRef<HTMLDivElement>
 ) => {
 	const theme = useTheme();
-	const emptyPlaceholderColor = placeholderColor || theme.palette.text.disabled;
+	const emptyPlaceholderColor = placeholderColor || theme.palette.text.secondary;
 
 	const renderValue = (selected: unknown) => {
 		const isMultiple = Boolean((props as { multiple?: boolean }).multiple);
