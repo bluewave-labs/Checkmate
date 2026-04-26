@@ -65,7 +65,7 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 	});
 
 	const menuItemSx = {
-		gap: theme.spacing(4),
+		gap: theme.spacing(LAYOUT.MD),
 		borderRadius: theme.shape.borderRadius,
 		pl: theme.spacing(LAYOUT.XS),
 		"& svg": {

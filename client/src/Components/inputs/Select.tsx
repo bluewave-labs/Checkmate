@@ -11,15 +11,14 @@ interface SelectInputProps<T> extends Omit<SelectProps<T>, "label"> {
 	fieldLabel?: string;
 	required?: boolean;
 	placeholder?: string;
-	placeholderColor?: string;
 }
 
 const SelectInputInner = <T,>(
-	{ fieldLabel, required, placeholder, placeholderColor, ...props }: SelectInputProps<T>,
+	{ fieldLabel, required, placeholder, ...props }: SelectInputProps<T>,
 	ref: React.ForwardedRef<HTMLDivElement>
 ) => {
 	const theme = useTheme();
-	const emptyPlaceholderColor = placeholderColor || theme.palette.text.secondary;
+	const emptyPlaceholderColor = theme.palette.text.secondary;
 
 	const renderValue = (selected: unknown) => {
 		const isMultiple = Boolean((props as { multiple?: boolean }).multiple);
