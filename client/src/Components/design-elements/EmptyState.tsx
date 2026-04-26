@@ -17,6 +17,7 @@ interface EmptyStateProps {
 	secondaryText?: string;
 	secondaryHref?: string;
 	compact?: boolean;
+	fullscreen?: boolean;
 	alert?: ReactNode;
 	children?: ReactNode;
 }
@@ -30,6 +31,7 @@ export const EmptyState = ({
 	secondaryText,
 	secondaryHref,
 	compact = false,
+	fullscreen = false,
 	alert,
 	children,
 }: EmptyStateProps) => {
@@ -78,6 +80,7 @@ export const EmptyState = ({
 			alignItems="center"
 			justifyContent="center"
 			sx={{
+				...(fullscreen && { minHeight: "65vh" }),
 				py: theme.spacing(LAYOUT.XXL),
 				px: theme.spacing(LAYOUT.MD),
 				textAlign: "center",

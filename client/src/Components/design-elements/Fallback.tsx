@@ -32,32 +32,29 @@ export const ErrorFallback = ({
 }) => {
 	return (
 		<EmptyState
+			fullscreen
 			title={title}
 			description={subtitle}
 		/>
 	);
 };
 
-const bulletsToDescription = (bullets: unknown): string | undefined => {
-	if (!Array.isArray(bullets) || bullets.length === 0) return undefined;
-	return bullets.join(" • ");
-};
-
 export const EmptyFallback = ({
 	title,
-	bullets,
+	description,
 	actionButtonText,
 	actionLink,
 }: {
 	title: string;
-	bullets: unknown;
+	description?: string;
 	actionButtonText: string;
 	actionLink: string;
 }) => {
 	return (
 		<EmptyState
+			fullscreen
 			title={title}
-			description={bulletsToDescription(bullets)}
+			description={description}
 			actionText={actionButtonText}
 			actionTo={actionLink}
 		/>
@@ -66,20 +63,21 @@ export const EmptyFallback = ({
 
 export const EmptyMonitorFallback = ({
 	title,
-	bullets,
+	description,
 	actionButtonText,
 	actionLink,
 }: {
 	page: string;
 	title: string;
-	bullets: unknown;
+	description?: string;
 	actionButtonText: string;
 	actionLink: string;
 }) => {
 	return (
 		<EmptyState
+			fullscreen
 			title={title}
-			description={bulletsToDescription(bullets)}
+			description={description}
 			actionText={actionButtonText}
 			actionTo={actionLink}
 		/>
