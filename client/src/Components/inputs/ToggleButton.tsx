@@ -7,6 +7,13 @@ import { alpha } from "@mui/material/styles";
 
 export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 	const theme = useTheme();
+	const isDark = theme.palette.mode === "dark";
+	const selectedBg = isDark
+		? alpha(theme.palette.primary.main, 0.22)
+		: alpha(theme.palette.primary.main, 0.06);
+	const selectedHoverBg = isDark
+		? alpha(theme.palette.primary.main, 0.3)
+		: alpha(theme.palette.primary.main, 0.1);
 	return (
 		<ToggleButton
 			{...props}
@@ -25,11 +32,11 @@ export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 					backgroundColor: theme.palette.action.hover,
 				},
 				"&.Mui-selected": {
-					backgroundColor: alpha(theme.palette.primary.main, 0.06),
+					backgroundColor: selectedBg,
 					color: theme.palette.text.primary,
 					fontWeight: 500,
 					"&:hover": {
-						backgroundColor: alpha(theme.palette.primary.main, 0.1),
+						backgroundColor: selectedHoverBg,
 					},
 				},
 				...sx,
