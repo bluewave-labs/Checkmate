@@ -828,7 +828,9 @@
 				"label": "日誌等級"
 			},
 			"jobQueue": "工作佇列",
+			"jobQueueExplainer": "<highlight>反白的列</highlight>是目前正由工作程序處理的工作。",
 			"failedJobs": "失敗的工作",
+			"failedJobsExplainer": "依監控的最近失敗 — 最近失敗時間、失敗次數及原因。",
 			"noLogs": "找不到日誌",
 			"metrics": {
 				"jobs": "工作",

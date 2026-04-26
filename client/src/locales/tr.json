@@ -828,7 +828,9 @@
 				"label": "Günlük seviyesi"
 			},
 			"jobQueue": "İş kuyruğu",
+			"jobQueueExplainer": "<highlight>Vurgulanan satırlar</highlight> şu anda bir işçi tarafından işlenmekte olan işlerdir.",
 			"failedJobs": "Başarısız işler",
+			"failedJobsExplainer": "Monitöre göre son başarısızlıklar — son başarısızlık zamanı, başarısızlık sayısı ve nedeni.",
 			"noLogs": "Günlük bulunamadı",
 			"metrics": {
 				"jobs": "İşler",

@@ -828,7 +828,9 @@
 				"label": "Mức nhật ký"
 			},
 			"jobQueue": "Hàng đợi công việc",
+			"jobQueueExplainer": "<highlight>Các hàng được làm nổi bật</highlight> là các công việc hiện đang được worker xử lý.",
 			"failedJobs": "Công việc thất bại",
+			"failedJobsExplainer": "Các lần thất bại gần đây theo trình giám sát — thời gian thất bại gần nhất, số lần thất bại và lý do.",
 			"noLogs": "Không tìm thấy nhật ký",
 			"metrics": {
 				"jobs": "Công việc",

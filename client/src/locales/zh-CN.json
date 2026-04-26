@@ -828,7 +828,9 @@
 				"label": "日志级别"
 			},
 			"jobQueue": "作业队列",
+			"jobQueueExplainer": "<highlight>高亮的行</highlight>是当前正在被工作进程处理的作业。",
 			"failedJobs": "失败作业",
+			"failedJobsExplainer": "按监控的最近失败 — 最近失败时间、失败次数及原因。",
 			"noLogs": "未找到日志",
 			"metrics": {
 				"jobs": "作业",

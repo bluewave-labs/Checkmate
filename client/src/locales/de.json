@@ -828,7 +828,9 @@
 				"label": "Log-Level"
 			},
 			"jobQueue": "Job-Warteschlange",
+			"jobQueueExplainer": "<highlight>Hervorgehobene Zeilen</highlight> sind Jobs, die derzeit von einem Worker verarbeitet werden.",
 			"failedJobs": "Fehlgeschlagene Jobs",
+			"failedJobsExplainer": "Aktuelle Fehler nach Monitor — Zeit des letzten Fehlers, Fehleranzahl und Grund.",
 			"noLogs": "Keine Protokolle gefunden",
 			"metrics": {
 				"jobs": "Jobs",

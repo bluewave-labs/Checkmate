@@ -828,7 +828,9 @@
 				"label": "ログレベル"
 			},
 			"jobQueue": "ジョブキュー",
+			"jobQueueExplainer": "<highlight>ハイライトされた行</highlight>は、現在ワーカーによって処理中のジョブです。",
 			"failedJobs": "失敗したジョブ",
+			"failedJobsExplainer": "モニター別の最近の失敗 — 最終失敗時刻、失敗回数、および理由。",
 			"noLogs": "ログが見つかりません",
 			"metrics": {
 				"jobs": "ジョブ",
