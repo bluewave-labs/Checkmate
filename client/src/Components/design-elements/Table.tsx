@@ -18,10 +18,9 @@ import {
 	ChevronsRight,
 	ChevronLeft,
 	ChevronRight,
-	Coffee,
 	Ellipsis,
-	PartyPopper,
 } from "lucide-react";
+import { EmptyState } from "./EmptyState";
 
 import TablePagination from "@mui/material/TablePagination";
 import type { TablePaginationOwnProps } from "@mui/material/TablePagination";
@@ -548,49 +547,18 @@ export const Pagination = ({ ...props }: PaginationProps) => {
 	);
 };
 
-const EmptyView = ({ text, positive }: { text?: string; positive?: boolean }) => {
-	const theme = useTheme();
+const EmptyView = ({ text }: { text?: string; positive?: boolean }) => {
 	const { t } = useTranslation();
-	const Icon = positive ? PartyPopper : Coffee;
+	const theme = useTheme();
 	return (
-		<Stack
-			alignItems={"center"}
-			justifyContent={"center"}
+		<Box
 			sx={{
-				py: theme.spacing(LAYOUT.XL),
-				px: theme.spacing(LAYOUT.XS),
-				borderWidth: 1,
-				borderStyle: "solid",
-				borderColor: theme.palette.divider,
-				borderRadius: theme.shape.borderRadius,
-				textAlign: "center",
+				border: `1px solid ${theme.palette.divider}`,
+				borderRadius: 1,
+				backgroundColor: theme.palette.background.paper,
 			}}
 		>
-			<Box
-				sx={{
-					width: 64,
-					height: 64,
-					borderRadius: "50%",
-					backgroundColor: theme.palette.action.hover,
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "center",
-					mb: theme.spacing(SPACING.LG),
-				}}
-			>
-				<Icon
-					size={28}
-					strokeWidth={1}
-					color={theme.palette.text.secondary}
-				/>
-			</Box>
-			<Typography
-				variant="subtitle1"
-				color={theme.palette.text.primary}
-				sx={{ fontWeight: 500 }}
-			>
-				{text ?? t("common.table.empty")}
-			</Typography>
-		</Stack>
+			<EmptyState title={text ?? t("common.table.empty")} />
+		</Box>
 	);
 };

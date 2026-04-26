@@ -1,12 +1,37 @@
+import { useTheme } from "@mui/material/styles";
+
 interface EmptyStateIllustrationProps {
 	width?: number | string;
 	height?: number | string;
 }
 
+const PALETTE = {
+	light: {
+		grid: "#CBD5E1",
+		backFill: "#F5F7FA",
+		backStroke: "#D5DBE3",
+		backInner: "#B6C2CF",
+		frontFill: "#EEF4FE",
+		frontStroke: "#7DA8E8",
+		frontInner: "#7DA8E8",
+	},
+	dark: {
+		grid: "#3A4452",
+		backFill: "#475569",
+		backStroke: "#64748B",
+		backInner: "#CBD5E1",
+		frontFill: "#1E40AF",
+		frontStroke: "#60A5FA",
+		frontInner: "#DBEAFE",
+	},
+};
+
 export const EmptyStateIllustration = ({
 	width = 160,
 	height = 120,
 }: EmptyStateIllustrationProps) => {
+	const theme = useTheme();
+	const p = theme.palette.mode === "dark" ? PALETTE.dark : PALETTE.light;
 	return (
 		<svg
 			viewBox="0 0 160 120"
@@ -14,50 +39,8 @@ export const EmptyStateIllustration = ({
 			height={height}
 			aria-hidden="true"
 		>
-			<defs>
-				<linearGradient
-					id="emptyStateCardFade"
-					x1="0"
-					y1="0"
-					x2="0"
-					y2="1"
-				>
-					<stop
-						offset="0%"
-						stopColor="white"
-						stopOpacity="1"
-					/>
-					<stop
-						offset="65%"
-						stopColor="white"
-						stopOpacity="1"
-					/>
-					<stop
-						offset="100%"
-						stopColor="white"
-						stopOpacity="0.35"
-					/>
-				</linearGradient>
-				<mask
-					id="emptyStateCardMask"
-					maskUnits="userSpaceOnUse"
-					x="0"
-					y="0"
-					width="160"
-					height="120"
-				>
-					<rect
-						x="0"
-						y="0"
-						width="160"
-						height="120"
-						fill="url(#emptyStateCardFade)"
-					/>
-				</mask>
-			</defs>
-
 			<g
-				stroke="#CBD5E1"
+				stroke={p.grid}
 				strokeWidth="0.75"
 			>
 				<line
@@ -114,15 +97,15 @@ export const EmptyStateIllustration = ({
 				/>
 			</g>
 
-			<g mask="url(#emptyStateCardMask)">
+			<g>
 				<rect
 					x="38"
 					y="22"
 					width="92"
 					height="42"
 					rx="6"
-					fill="#F5F7FA"
-					stroke="#D5DBE3"
+					fill={p.backFill}
+					stroke={p.backStroke}
 					strokeWidth="0.5"
 				/>
 				<rect
@@ -131,7 +114,7 @@ export const EmptyStateIllustration = ({
 					width="14"
 					height="22"
 					rx="2"
-					fill="#B6C2CF"
+					fill={p.backInner}
 					opacity="0.5"
 				/>
 				<rect
@@ -140,7 +123,7 @@ export const EmptyStateIllustration = ({
 					width="50"
 					height="2.5"
 					rx="1.25"
-					fill="#B6C2CF"
+					fill={p.backInner}
 					opacity="0.7"
 				/>
 				<rect
@@ -149,7 +132,7 @@ export const EmptyStateIllustration = ({
 					width="38"
 					height="2.5"
 					rx="1.25"
-					fill="#B6C2CF"
+					fill={p.backInner}
 					opacity="0.55"
 				/>
 				<rect
@@ -158,7 +141,7 @@ export const EmptyStateIllustration = ({
 					width="44"
 					height="2.5"
 					rx="1.25"
-					fill="#B6C2CF"
+					fill={p.backInner}
 					opacity="0.55"
 				/>
 				<rect
@@ -167,8 +150,8 @@ export const EmptyStateIllustration = ({
 					width="92"
 					height="42"
 					rx="6"
-					fill="#EEF4FE"
-					stroke="#7DA8E8"
+					fill={p.frontFill}
+					stroke={p.frontStroke}
 					strokeWidth="0.5"
 					strokeOpacity="0.4"
 				/>
@@ -178,7 +161,7 @@ export const EmptyStateIllustration = ({
 					width="14"
 					height="22"
 					rx="2"
-					fill="#7DA8E8"
+					fill={p.frontInner}
 					opacity="0.35"
 				/>
 				<rect
@@ -187,7 +170,7 @@ export const EmptyStateIllustration = ({
 					width="50"
 					height="2.5"
 					rx="1.25"
-					fill="#7DA8E8"
+					fill={p.frontInner}
 					opacity="0.55"
 				/>
 				<rect
@@ -196,7 +179,7 @@ export const EmptyStateIllustration = ({
 					width="38"
 					height="2.5"
 					rx="1.25"
-					fill="#7DA8E8"
+					fill={p.frontInner}
 					opacity="0.4"
 				/>
 				<rect
@@ -205,7 +188,7 @@ export const EmptyStateIllustration = ({
 					width="44"
 					height="2.5"
 					rx="1.25"
-					fill="#7DA8E8"
+					fill={p.frontInner}
 					opacity="0.4"
 				/>
 			</g>

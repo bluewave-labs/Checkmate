@@ -1,4 +1,4 @@
-import { BasePage } from "@/Components/design-elements";
+import { BasePage, EmptyState } from "@/Components/design-elements";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
@@ -153,8 +153,20 @@ const IncidentsPage = () => {
 		refetchSummary();
 	};
 
+	const trulyEmpty = summaryData !== undefined && (summaryData?.total ?? 0) === 0;
+
+	if (trulyEmpty) {
+		return (
+			<EmptyState
+				fullscreen
+				title={t("pages.incidents.fallback.title")}
+				description={t("pages.incidents.fallback.description")}
+			/>
+		);
+	}
+
 	return (
-		<BasePage>
+		<BasePage headerKey="incidents">
 			<Stack
 				direction={{ xs: "column", md: "row" }}
 				gap={theme.spacing(8)}
@@ -171,7 +183,7 @@ const IncidentsPage = () => {
 				setSelectedResolutionType={setFilter}
 				onClearFilters={handleClearFilters}
 			/>
-			{activeIncidentsCount > 0 ? (
+			{activeIncidentsCount > 0 && (
 				<>
 					<Typography
 						variant="h6"
@@ -193,13 +205,6 @@ const IncidentsPage = () => {
 					/>
 					<Divider />
 				</>
-			) : (
-				<Typography
-					variant="body1"
-					sx={{ mb: theme.spacing(4), color: theme.palette.success.main }}
-				>
-					{t("pages.incidents.summaryCard.activeIncidents.active_zero")}
-				</Typography>
 			)}
 
 			<Typography
