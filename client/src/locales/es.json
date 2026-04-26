@@ -298,6 +298,11 @@
 			}
 		},
 		"auth": {
+			"brandPanel": {
+				"eyebrow": "Monitorización de infraestructura de código abierto",
+				"tagline": "Vigila cada movimiento de tus servidores.",
+				"description": "Monitorización en tiempo real de disponibilidad, tiempo de respuesta e incidentes - autoalojada y tuya."
+			},
 			"common": {
 				"passwordRules": {
 					"length": {

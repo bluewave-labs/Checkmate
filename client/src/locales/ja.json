@@ -298,6 +298,11 @@
 			}
 		},
 		"auth": {
+			"brandPanel": {
+				"eyebrow": "オープンソースのインフラ監視",
+				"tagline": "サーバーのすべての動きを見守ろう。",
+				"description": "稼働状況、応答時間、インシデントをリアルタイムで追跡 - セルフホスト型で完全にあなたのもの。"
+			},
 			"common": {
 				"passwordRules": {
 					"length": {

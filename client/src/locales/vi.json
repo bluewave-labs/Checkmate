@@ -298,6 +298,11 @@
 			}
 		},
 		"auth": {
+			"brandPanel": {
+				"eyebrow": "Giám sát hạ tầng mã nguồn mở",
+				"tagline": "Theo dõi mọi chuyển động của các máy chủ của bạn.",
+				"description": "Theo dõi thời gian hoạt động, thời gian phản hồi và sự cố theo thời gian thực - tự lưu trữ và thuộc về bạn."
+			},
 			"common": {
 				"passwordRules": {
 					"length": {

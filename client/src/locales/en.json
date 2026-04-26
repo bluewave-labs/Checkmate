@@ -298,6 +298,11 @@
 			}
 		},
 		"auth": {
+			"brandPanel": {
+				"eyebrow": "Open-source infrastructure monitoring",
+				"tagline": "Watch every move your servers make.",
+				"description": "Real-time uptime, response time and incident tracking - self-hosted and yours to keep."
+			},
 			"common": {
 				"passwordRules": {
 					"length": {
