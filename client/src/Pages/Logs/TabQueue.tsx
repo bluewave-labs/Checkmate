@@ -47,8 +47,8 @@ export const TabQueue = () => {
 			<Metrics metrics={metrics} />
 			<Stack gap={theme.spacing(1)}>
 				<Typography
-					variant="h6"
-					sx={{ textTransform: "uppercase" }}
+					variant="eyebrow"
+					color="text.secondary"
 				>
 					{t("pages.logs.jobQueue")}
 				</Typography>
@@ -83,8 +83,8 @@ export const TabQueue = () => {
 			<TableJobs jobs={jobs} />
 			<Stack gap={theme.spacing(1)}>
 				<Typography
-					variant="h6"
-					sx={{ textTransform: "uppercase" }}
+					variant="eyebrow"
+					color="text.secondary"
 				>
 					{t("pages.logs.failedJobs")}
 				</Typography>

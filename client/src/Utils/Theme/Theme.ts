@@ -2,12 +2,32 @@ import { createTheme } from "@mui/material";
 import { lightPalette, darkPalette, typographyLevels } from "@/Utils/Theme/Palette";
 
 import type { Theme } from "@mui/material/styles";
+import type {} from "@mui/material/styles";
+
+declare module "@mui/material/styles" {
+	interface TypographyVariants {
+		eyebrow: React.CSSProperties;
+		fontFamilyMonospace: string;
+	}
+	interface TypographyVariantsOptions {
+		eyebrow?: React.CSSProperties;
+		fontFamilyMonospace?: string;
+	}
+}
+
+declare module "@mui/material/Typography" {
+	interface TypographyPropsVariantOverrides {
+		eyebrow: true;
+	}
+}
 
 export type PaletteKey = {
 	[K in keyof Theme["palette"]]: Theme["palette"][K] extends { main: any } ? K : never;
 }[keyof Theme["palette"]];
 
 const fontFamilyPrimary = "system-ui, sans-serif";
+const fontFamilyMonospace =
+	'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace';
 const shadow =
 	"0px 4px 24px -4px rgba(16, 24, 40, 0.08), 0px 3px 3px -3px rgba(16, 24, 40, 0.03)";
 
@@ -29,6 +49,7 @@ export const theme = (mode: string, palette: any) =>
 		},
 		typography: {
 			fontFamily: fontFamilyPrimary,
+			fontFamilyMonospace,
 			fontSize: typographyLevels.base,
 			h1: {
 				fontSize: typographyLevels.xl,
@@ -45,6 +66,13 @@ export const theme = (mode: string, palette: any) =>
 			body2: {
 				fontSize: typographyLevels.s,
 				fontWeight: 400,
+			},
+			eyebrow: {
+				fontSize: 13,
+				fontWeight: 500,
+				textTransform: "uppercase",
+				letterSpacing: "0.08em",
+				lineHeight: 1.4,
 			},
 		},
 

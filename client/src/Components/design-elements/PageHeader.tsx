@@ -94,11 +94,11 @@ export const PageHeader = ({
 				)}
 				<Typography
 					sx={{
-						fontSize: 24,
-						fontWeight: 600,
+						fontSize: 26,
+						fontWeight: 400,
 						color: theme.palette.text.primary,
-						lineHeight: 1.2,
-						letterSpacing: "-0.01em",
+						lineHeight: 1.15,
+						letterSpacing: "-0.02em",
 					}}
 				>
 					{title}
