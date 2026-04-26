@@ -298,6 +298,11 @@
 			}
 		},
 		"auth": {
+			"brandPanel": {
+				"eyebrow": "Açık kaynaklı altyapı izleme",
+				"tagline": "Sunucularınızın her hareketini izleyin.",
+				"description": "Sistemlerinizin çalışma süresini, yanıt hızını ve yaşanan kesintileri tek bir panelden anlık takip edin. Kendi sunucunuzda çalışır, verileriniz sizde kalır."
+			},
 			"common": {
 				"passwordRules": {
 					"length": {

@@ -298,6 +298,11 @@
 			}
 		},
 		"auth": {
+			"brandPanel": {
+				"eyebrow": "Open-source monitoring infrastruktury",
+				"tagline": "Sledujte každý krok vašich serverů.",
+				"description": "Monitorování dostupnosti, doby odezvy a incidentů v reálném čase - self-hosted a vaše."
+			},
 			"common": {
 				"passwordRules": {
 					"length": {

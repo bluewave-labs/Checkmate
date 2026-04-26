@@ -298,6 +298,11 @@
 			}
 		},
 		"auth": {
+			"brandPanel": {
+				"eyebrow": "Surveillance d'infrastructure open source",
+				"tagline": "Surveillez chaque mouvement de vos serveurs.",
+				"description": "Suivi en temps réel de la disponibilité, du temps de réponse et des incidents - auto-hébergé et à vous."
+			},
 			"common": {
 				"passwordRules": {
 					"length": {

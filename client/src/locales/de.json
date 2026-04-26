@@ -298,6 +298,11 @@
 			}
 		},
 		"auth": {
+			"brandPanel": {
+				"eyebrow": "Open-Source-Infrastruktur-Monitoring",
+				"tagline": "Beobachten Sie jeden Zug Ihrer Server.",
+				"description": "Echtzeit-Überwachung von Verfügbarkeit, Antwortzeiten und Vorfällen - selbst gehostet und in Ihrer Hand."
+			},
 			"common": {
 				"passwordRules": {
 					"length": {

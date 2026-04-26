@@ -298,6 +298,11 @@
 			}
 		},
 		"auth": {
+			"brandPanel": {
+				"eyebrow": "开源基础设施监控",
+				"tagline": "关注您服务器的每一步动作。",
+				"description": "实时跟踪运行状态、响应时间和事件 - 自托管，完全属于您。"
+			},
 			"common": {
 				"passwordRules": {
 					"length": {

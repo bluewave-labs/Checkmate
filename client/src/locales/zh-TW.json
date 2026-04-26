@@ -298,6 +298,11 @@
 			}
 		},
 		"auth": {
+			"brandPanel": {
+				"eyebrow": "開源基礎設施監控",
+				"tagline": "關注您伺服器的每一步動作。",
+				"description": "即時追蹤運行狀態、回應時間和事件 - 自主託管，完全屬於您。"
+			},
 			"common": {
 				"passwordRules": {
 					"length": {

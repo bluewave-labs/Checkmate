@@ -298,6 +298,11 @@
 			}
 		},
 		"auth": {
+			"brandPanel": {
+				"eyebrow": "Monitoramento de infraestrutura open-source",
+				"tagline": "Acompanhe cada passo dos seus servidores.",
+				"description": "Monitoramento em tempo real de disponibilidade, tempo de resposta e incidentes - auto-hospedado e seu."
+			},
 			"common": {
 				"passwordRules": {
 					"length": {
