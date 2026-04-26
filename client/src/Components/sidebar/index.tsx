@@ -6,7 +6,7 @@ import Divider from "@mui/material/Divider";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { useSidebar } from "@/Hooks/useSidebar.js";
 import { Logo } from "@/Components/sidebar/Logo";
-import { getMenu, getBottomMenu, getAccountMenu } from "@/Components/sidebar/Menu";
+import { getMenu, getAccountMenu } from "@/Components/sidebar/Menu";
 import { NavItem } from "@/Components/sidebar/NavItem";
 import { StarPrompt } from "@/Components/sidebar/StarPrompt";
 import { AuthFooter } from "@/Components/sidebar/Authfooter";
@@ -33,7 +33,6 @@ export const Sidebar = () => {
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const menu = getMenu(t);
-	const bottomMenu = getBottomMenu(t);
 	const accountMenu = getAccountMenu(t);
 
 	useEffect(() => {
@@ -103,23 +102,6 @@ export const Sidebar = () => {
 					})}
 				</List>
 				<StarPrompt />
-				<List
-					component="nav"
-					disablePadding
-					sx={{ px: theme.spacing(LAYOUT.SM) }}
-				>
-					{bottomMenu.map((item) => {
-						const selected = location.pathname.startsWith(`/${item.path}`);
-						return (
-							<NavItem
-								key={item.path}
-								item={item}
-								selected={selected}
-								onClick={() => handleNavClick(item.path)}
-							/>
-						);
-					})}
-				</List>
 				<Divider sx={{ borderColor: theme.palette.divider }} />
 
 				<AuthFooter

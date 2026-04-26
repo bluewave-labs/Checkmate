@@ -1,4 +1,5 @@
 export * from "./Breadcrumb";
+export * from "./PageHeader";
 export * from "./BasePage";
 export * from "./EmptyState";
 export * from "./EmptyStateIllustration";

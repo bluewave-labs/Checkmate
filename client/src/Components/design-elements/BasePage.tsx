@@ -10,6 +10,7 @@ import {
 } from "@/Components/design-elements/Fallback";
 import { EmptyState } from "@/Components/design-elements/EmptyState";
 import { Breadcrumb } from "@/Components/design-elements/Breadcrumb";
+import { PageHeader } from "@/Components/design-elements/PageHeader";
 import CircularProgress from "@mui/material/CircularProgress";
 import { HeaderAuthControls } from "@/Pages/Auth/components/HeaderAuthControls";
 
@@ -21,9 +22,16 @@ import { Typography } from "@mui/material";
 
 export const PageSpeedKeyPriorityFallback = () => {
 	const theme = useTheme();
+	const { t } = useTranslation();
+	const isDark = theme.palette.mode === "dark";
+	const alertBg = isDark ? "rgba(245, 158, 11, 0.08)" : "#FFFAEB";
+	const alertBorder = isDark ? "rgba(245, 158, 11, 0.45)" : "#F59E0B";
+	const alertIcon = isDark ? "#FBBF24" : "#F59E0B";
 	return (
 		<EmptyState
-			title="PageSpeed monitor needs an API key"
+			fullscreen
+			title={t("pages.pageSpeed.fallback.title")}
+			description={t("pages.pageSpeed.fallback.description")}
 			alert={
 				<Stack
 					direction="row"
@@ -33,15 +41,15 @@ export const PageSpeedKeyPriorityFallback = () => {
 						width: "100%",
 						p: theme.spacing(LAYOUT.MD),
 						borderRadius: 1,
-						border: `1px solid ${theme.palette.warning.main}`,
-						backgroundColor: theme.palette.warning.light,
+						border: `1px solid ${alertBorder}`,
+						backgroundColor: alertBg,
 						textAlign: "left",
 					}}
 				>
 					<Box
 						component="span"
 						sx={{
-							color: theme.palette.warning.dark,
+							color: alertIcon,
 							fontSize: 18,
 							lineHeight: 1,
 							mt: "2px",
@@ -80,6 +88,9 @@ interface BasePageProps extends StackProps {
 	error?: boolean;
 	children: React.ReactNode;
 	breadcrumbOverride?: string[];
+	headerKey?: string;
+	backTo?: string;
+	backLabel?: string;
 }
 
 export const BasePage = ({
@@ -87,9 +98,13 @@ export const BasePage = ({
 	error,
 	children,
 	breadcrumbOverride,
+	headerKey,
+	backTo,
+	backLabel,
 	...props
 }: BasePageProps) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	if (loading) {
 		return (
@@ -120,7 +135,16 @@ export const BasePage = ({
 			spacing={theme.spacing(LAYOUT.LG)}
 			{...props}
 		>
-			<Breadcrumb breadcrumbOverride={breadcrumbOverride} />
+			{headerKey ? (
+				<PageHeader
+					title={t(`pages.${headerKey}.header.title`)}
+					description={t(`pages.${headerKey}.header.description`)}
+					backTo={backTo}
+					backLabel={backLabel}
+				/>
+			) : (
+				<Breadcrumb breadcrumbOverride={breadcrumbOverride} />
+			)}
 			{children}
 		</Stack>
 	);
@@ -130,11 +154,12 @@ interface BasePageWithStatesProps extends StackProps {
 	loading: boolean;
 	error: any;
 	totalCount: number;
-	bullets: string[] | unknown;
+	description?: string;
 	page: string;
 	actionButtonText: string;
 	actionLink: string;
 	children: React.ReactNode;
+	headerKey?: string;
 }
 
 export const BasePageWithStates = ({
@@ -142,10 +167,11 @@ export const BasePageWithStates = ({
 	error,
 	totalCount,
 	page,
-	bullets,
+	description,
 	actionButtonText,
 	actionLink,
 	children,
+	headerKey,
 	...props
 }: BasePageWithStatesProps) => {
 	const showLoading = loading && totalCount === 0;
@@ -153,7 +179,7 @@ export const BasePageWithStates = ({
 	if (!loading && totalCount === 0) {
 		return (
 			<EmptyFallback
-				bullets={bullets}
+				description={description}
 				title={page}
 				actionButtonText={actionButtonText}
 				actionLink={actionLink}
@@ -165,6 +191,7 @@ export const BasePageWithStates = ({
 		<BasePage
 			loading={showLoading}
 			error={error}
+			headerKey={headerKey}
 			{...props}
 		>
 			{children}
@@ -180,6 +207,7 @@ interface MonitorBasePageWithStatesProps extends StackProps {
 	actionLink?: string;
 	children: React.ReactNode;
 	priorityFallback?: React.ReactNode;
+	headerKey?: string;
 }
 
 export const MonitorBasePageWithStates = ({
@@ -190,6 +218,7 @@ export const MonitorBasePageWithStates = ({
 	actionLink,
 	children,
 	priorityFallback,
+	headerKey,
 	...props
 }: MonitorBasePageWithStatesProps) => {
 	const { t } = useTranslation();
@@ -197,15 +226,7 @@ export const MonitorBasePageWithStates = ({
 	const showLoading = loading && totalCount === 0;
 
 	if (priorityFallback) {
-		return (
-			<BasePage
-				loading={loading}
-				error={error}
-				{...props}
-			>
-				<Stack height={"100%"}>{priorityFallback}</Stack>
-			</BasePage>
-		);
+		return <>{priorityFallback}</>;
 	}
 
 	if (!loading && totalCount === 0) {
@@ -213,7 +234,7 @@ export const MonitorBasePageWithStates = ({
 			<EmptyMonitorFallback
 				page={page}
 				title={t(`pages.${page}.fallback.title`)}
-				bullets={t(`pages.${page}.fallback.checks`, { returnObjects: true })}
+				description={t(`pages.${page}.fallback.description`)}
 				actionButtonText={t(`pages.${page}.fallback.actionButton`)}
 				actionLink={actionLink || ""}
 			/>
@@ -224,6 +245,7 @@ export const MonitorBasePageWithStates = ({
 		<BasePage
 			loading={showLoading}
 			error={error}
+			headerKey={headerKey}
 			{...props}
 		>
 			{children}
