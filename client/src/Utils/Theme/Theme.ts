@@ -13,6 +13,12 @@ declare module "@mui/material/styles" {
 		eyebrow?: React.CSSProperties;
 		fontFamilyMonospace?: string;
 	}
+	interface Palette {
+		sidebar: { accent: string };
+	}
+	interface PaletteOptions {
+		sidebar?: { accent: string };
+	}
 }
 
 declare module "@mui/material/Typography" {
