@@ -2,9 +2,11 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { Table, type Header, ValueLabel } from "@/Components/design-elements";
+import { Pagination } from "@/Components/design-elements/Table";
 import { ActionsMenu, type ActionMenuItem } from "@/Components/actions-menu";
 import { ExternalLink } from "lucide-react";
 
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +25,8 @@ export const StatusPagesTable = ({
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const navigate = useNavigate();
+	const [page, setPage] = useState(0);
+	const [rowsPerPage, setRowsPerPage] = useState(10);
 
 	const getActions = (row: StatusPage): ActionMenuItem[] => {
 		return [
@@ -129,14 +133,41 @@ export const StatusPagesTable = ({
 		navigate(`/status/${statusPage.url}`);
 	};
 
+	const handlePageChange = (
+		_e: React.MouseEvent<HTMLButtonElement> | null,
+		newPage: number
+	) => {
+		setPage(newPage);
+	};
+
+	const handleRowsPerPageChange = (
+		e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+	) => {
+		setPage(0);
+		setRowsPerPage(Number(e.target.value));
+	};
+
+	const pagedData = data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
 	return (
 		<Box>
 			<Table
 				headers={getHeaders()}
-				data={data}
+				data={pagedData}
 				onRowClick={handleRowClick}
 				emptyViewText={t("common.table.empty")}
 			/>
+			{data.length > 0 && (
+				<Pagination
+					component="div"
+					count={data.length}
+					page={page}
+					rowsPerPage={rowsPerPage}
+					onPageChange={handlePageChange}
+					onRowsPerPageChange={handleRowsPerPageChange}
+					itemsOnPage={pagedData.length}
+				/>
+			)}
 		</Box>
 	);
 };
