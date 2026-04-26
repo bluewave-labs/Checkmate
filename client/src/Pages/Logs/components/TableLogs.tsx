@@ -45,6 +45,7 @@ const LevelBadge = ({ level }: { level: LogLevel }) => {
 
 export const TableLogs = ({ logs, logCount, page, setPage }: TableLogsProps) => {
 	const { t } = useTranslation();
+	const theme = useTheme();
 	const dispatch = useDispatch();
 	const rowsPerPage = useSelector(
 		(state: RootState) => state?.ui?.logs?.rowsPerPage ?? 15
