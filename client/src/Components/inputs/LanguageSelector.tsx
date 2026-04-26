@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 import { setLanguage } from "@/Features/UI/uiSlice";
 import type { RootState } from "@/Types/state";
 
-const languageNames: Record<string, string> = {
+export const languageNames: Record<string, string> = {
 	en: "English",
 	de: "Deutsch",
 	es: "Español",

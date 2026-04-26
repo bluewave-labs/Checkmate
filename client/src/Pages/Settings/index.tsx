@@ -24,6 +24,7 @@ import type { SettingsFormData, SettingsFormInput } from "@/Validation/settings"
 import { useState } from "react";
 import { Controller } from "react-hook-form";
 import { TextField, Button, FieldLabel, SliderWithLabel } from "@/Components/inputs";
+import { languageNames } from "@/Components/inputs/LanguageSelector";
 import { Box, Typography } from "@mui/material";
 import { useDelete } from "@/Hooks/UseApi";
 
@@ -327,7 +328,7 @@ export const SettingsPage = () => {
 										key={lang}
 										value={lang}
 									>
-										{lang.toUpperCase()}
+										{languageNames[lang] ?? lang}
 									</MenuItem>
 								))}
 							</Select>
