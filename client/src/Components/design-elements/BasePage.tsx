@@ -15,7 +15,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { HeaderAuthControls } from "@/Pages/Auth/components/HeaderAuthControls";
 
 import type { StackProps } from "@mui/material/Stack";
-import { useTheme } from "@mui/material/styles";
+import { useTheme, alpha } from "@mui/material/styles";
 import { Trans, useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
 import { Typography } from "@mui/material";
@@ -23,10 +23,9 @@ import { Typography } from "@mui/material";
 export const PageSpeedKeyPriorityFallback = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const isDark = theme.palette.mode === "dark";
-	const alertBg = isDark ? "rgba(245, 158, 11, 0.08)" : "#FFFAEB";
-	const alertBorder = isDark ? "rgba(245, 158, 11, 0.45)" : "#F59E0B";
-	const alertIcon = isDark ? "#FBBF24" : "#F59E0B";
+	const alertBg = alpha(theme.palette.warning.main, 0.08);
+	const alertBorder = alpha(theme.palette.warning.main, 0.45);
+	const alertIcon = theme.palette.warning.main;
 	return (
 		<EmptyState
 			fullscreen
