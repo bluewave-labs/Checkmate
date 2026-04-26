@@ -584,7 +584,7 @@ export const SettingsPage = () => {
 									p: 2,
 									borderRadius: 1,
 									overflow: "auto",
-									backgroundColor: theme.palette.mode === "dark" ? "#1e1e1e" : "#f5f5f5",
+									backgroundColor: theme.palette.action.hover,
 								}}
 							>
 								<code>
