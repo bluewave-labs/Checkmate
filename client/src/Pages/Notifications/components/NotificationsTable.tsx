@@ -1,8 +1,11 @@
 import { ActionsMenu, type ActionMenuItem } from "@/Components/actions-menu";
+import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import type { Header } from "@/Components/design-elements/Table";
 import { Table } from "@/Components/design-elements";
+import { Pagination } from "@/Components/design-elements/Table";
 
+import { useState } from "react";
 import type { Notification } from "@/Types/Notification";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -20,6 +23,8 @@ export const NotificationsTable = ({
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 	const theme = useTheme();
+	const [page, setPage] = useState(0);
+	const [rowsPerPage, setRowsPerPage] = useState(10);
 
 	const getActions = (channel: Notification): ActionMenuItem[] => {
 		return [
@@ -84,13 +89,45 @@ export const NotificationsTable = ({
 
 	const headers = getHeaders();
 
+	const handlePageChange = (
+		_e: React.MouseEvent<HTMLButtonElement> | null,
+		newPage: number
+	) => {
+		setPage(newPage);
+	};
+
+	const handleRowsPerPageChange = (
+		e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+	) => {
+		setPage(0);
+		setRowsPerPage(Number(e.target.value));
+	};
+
+	const pagedNotifications = notifications.slice(
+		page * rowsPerPage,
+		page * rowsPerPage + rowsPerPage
+	);
+
 	return (
-		<Table
-			headers={headers}
-			data={notifications}
-			onRowClick={(row) => {
-				navigate(`/notifications/configure/${row.id}`);
-			}}
-		/>
+		<Box>
+			<Table
+				headers={headers}
+				data={pagedNotifications}
+				onRowClick={(row) => {
+					navigate(`/notifications/configure/${row.id}`);
+				}}
+			/>
+			{notifications.length > 0 && (
+				<Pagination
+					component="div"
+					count={notifications.length}
+					page={page}
+					rowsPerPage={rowsPerPage}
+					onPageChange={handlePageChange}
+					onRowsPerPageChange={handleRowsPerPageChange}
+					itemsOnPage={pagedNotifications.length}
+				/>
+			)}
+		</Box>
 	);
 };
