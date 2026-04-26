@@ -6,6 +6,7 @@ import { toggleSidebar } from "@/Features/UI/uiSlice.js";
 import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import useSidebar from "@/Hooks/useSidebar";
+import KingIcon from "@/assets/icons/checkmate-icon.svg?react";
 
 export const Logo = (props: StackProps) => {
 	const { t } = useTranslation();
@@ -23,19 +24,21 @@ export const Logo = (props: StackProps) => {
 			sx={{ cursor: "pointer" }}
 			{...props}
 		>
-			<Typography
-				minWidth={theme.spacing(16)}
-				minHeight={theme.spacing(16)}
-				display={"flex"}
-				justifyContent={"center"}
-				alignItems={"center"}
-				bgcolor={theme.palette.primary.main}
-				borderRadius={theme.shape.borderRadius}
-				color={theme.palette.primary.contrastText}
-				fontSize={18}
+			<Box
+				sx={{
+					width: theme.spacing(16),
+					height: theme.spacing(16),
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+					"& svg": {
+						width: "100%",
+						height: "100%",
+					},
+				}}
 			>
-				C
-			</Typography>
+				<KingIcon />
+			</Box>
 			<Box
 				overflow={"hidden"}
 				sx={{
