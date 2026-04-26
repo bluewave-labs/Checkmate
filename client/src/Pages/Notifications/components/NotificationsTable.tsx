@@ -1,4 +1,5 @@
 import { ActionsMenu, type ActionMenuItem } from "@/Components/actions-menu";
+import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import type { Header } from "@/Components/design-elements/Table";
 import { Table } from "@/Components/design-elements";
@@ -71,7 +72,23 @@ export const NotificationsTable = ({
 				id: "destination",
 				content: t("pages.notifications.table.headers.destination"),
 				render: (row) => {
-					return <Typography>{row?.address}</Typography>;
+					return (
+						<Box sx={{ maxWidth: 320, mx: "auto" }}>
+							<Typography
+								title={row?.address}
+								sx={{
+									direction: "rtl",
+									textAlign: "left",
+									unicodeBidi: "plaintext",
+									whiteSpace: "nowrap",
+									overflow: "hidden",
+									textOverflow: "ellipsis",
+								}}
+							>
+								{row?.address}
+							</Typography>
+						</Box>
+					);
 				},
 			},
 			{
