@@ -1,12 +1,8 @@
 import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-import { BulletPointCheck, SkeletonCard } from "@/Components/design-elements";
-import { Button } from "@/Components/inputs";
-import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
-
-import { useNavigate } from "react-router";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
+import { LAYOUT } from "@/Utils/Theme/constants";
+import { EmptyState } from "./EmptyState";
+
 import type { StackProps } from "@mui/material/Stack";
 
 interface BaseFallbackProps extends StackProps {
@@ -15,30 +11,13 @@ interface BaseFallbackProps extends StackProps {
 
 export const BaseFallback = ({ children, ...props }: BaseFallbackProps) => {
 	const theme = useTheme();
-	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
-
 	return (
 		<Stack
-			alignItems={"center"}
-			margin={isSmall ? "inherit" : "auto"}
-			marginTop={isSmall ? "33%" : "10%"}
-			width={{
-				sm: "90%",
-				md: "70%",
-				lg: "50%",
-				xl: "40%",
-			}}
-			padding={{ xs: theme.spacing(LAYOUT.MD), md: theme.spacing(LAYOUT.XXL) }}
-			bgcolor={theme.palette.background.paper}
-			border={1}
-			borderColor={theme.palette.divider}
-			borderRadius={theme.shape.borderRadius}
-			sx={{
-				borderStyle: "dashed",
-			}}
+			alignItems="center"
+			justifyContent="center"
+			sx={{ width: "100%", py: theme.spacing(LAYOUT.LG) }}
 			{...props}
 		>
-			<SkeletonCard showHalo={true} />
 			{children}
 		</Stack>
 	);
@@ -51,19 +30,17 @@ export const ErrorFallback = ({
 	title: string;
 	subtitle: string;
 }) => {
-	const theme = useTheme();
 	return (
-		<BaseFallback>
-			<Typography
-				variant="h1"
-				marginY={theme.spacing(LAYOUT.XS)}
-				color={theme.palette.text.secondary}
-			>
-				{title}
-			</Typography>
-			<Typography>{subtitle}</Typography>
-		</BaseFallback>
+		<EmptyState
+			title={title}
+			description={subtitle}
+		/>
 	);
+};
+
+const bulletsToDescription = (bullets: unknown): string | undefined => {
+	if (!Array.isArray(bullets) || bullets.length === 0) return undefined;
+	return bullets.join(" • ");
 };
 
 export const EmptyFallback = ({
@@ -73,52 +50,21 @@ export const EmptyFallback = ({
 	actionLink,
 }: {
 	title: string;
-	bullets: any;
+	bullets: unknown;
 	actionButtonText: string;
 	actionLink: string;
 }) => {
-	const theme = useTheme();
-	const navigate = useNavigate();
 	return (
-		<BaseFallback>
-			<Stack
-				gap={theme.spacing(LAYOUT.MD)}
-				zIndex={1}
-				alignItems="center"
-			>
-				<Typography component="h1">{title}</Typography>
-				<Stack
-					sx={{
-						flexWrap: "wrap",
-						gap: theme.spacing(SPACING.MD),
-						maxWidth: "1100px",
-						width: "100%",
-					}}
-				>
-					{Array.isArray(bullets) &&
-						bullets?.map((bullet: string) => (
-							<BulletPointCheck
-								text={bullet}
-								key={`${bullet}-${Math.random()}`}
-							/>
-						))}
-				</Stack>
-				<Stack>
-					<Button
-						variant="contained"
-						color="primary"
-						onClick={() => navigate(actionLink)}
-					>
-						{actionButtonText}
-					</Button>
-				</Stack>
-			</Stack>
-		</BaseFallback>
+		<EmptyState
+			title={title}
+			description={bulletsToDescription(bullets)}
+			actionText={actionButtonText}
+			actionTo={actionLink}
+		/>
 	);
 };
 
 export const EmptyMonitorFallback = ({
-	page,
 	title,
 	bullets,
 	actionButtonText,
@@ -126,51 +72,16 @@ export const EmptyMonitorFallback = ({
 }: {
 	page: string;
 	title: string;
-	bullets: any;
+	bullets: unknown;
 	actionButtonText: string;
 	actionLink: string;
 }) => {
-	const theme = useTheme();
-	const navigate = useNavigate();
 	return (
-		<BaseFallback>
-			<Stack
-				gap={theme.spacing(LAYOUT.MD)}
-				zIndex={1}
-				alignItems="center"
-			>
-				<Typography
-					component="h1"
-					color={theme.palette.primary.contrastText}
-				>
-					{title}
-				</Typography>
-				<Stack
-					sx={{
-						flexWrap: "wrap",
-						gap: theme.spacing(SPACING.MD),
-						maxWidth: "1100px",
-						width: "100%",
-					}}
-				>
-					{Array.isArray(bullets) &&
-						bullets?.map((bullet: string, index: number) => (
-							<BulletPointCheck
-								text={bullet}
-								key={`${(page + "Monitors").trim().split(" ")[0]}-${index}`}
-							/>
-						))}
-				</Stack>
-				<Stack>
-					<Button
-						variant="contained"
-						color="primary"
-						onClick={() => navigate(actionLink)}
-					>
-						{actionButtonText}
-					</Button>
-				</Stack>
-			</Stack>
-		</BaseFallback>
+		<EmptyState
+			title={title}
+			description={bulletsToDescription(bullets)}
+			actionText={actionButtonText}
+			actionTo={actionLink}
+		/>
 	);
 };

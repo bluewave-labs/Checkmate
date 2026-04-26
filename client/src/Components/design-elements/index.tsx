@@ -1,5 +1,7 @@
 export * from "./Breadcrumb";
 export * from "./BasePage";
+export * from "./EmptyState";
+export * from "./EmptyStateIllustration";
 export * from "./Fallback";
 export * from "./SkeletonCard";
 export * from "./BulletPointCheck";
