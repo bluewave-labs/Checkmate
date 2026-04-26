@@ -52,9 +52,9 @@ export const EmptyState = ({
 				<Stack sx={{ flex: 1 }}>
 					<Typography
 						sx={{
-							fontSize: 15,
-							fontWeight: 600,
-							color: theme.palette.text.primary,
+							fontSize: 14,
+							fontWeight: 400,
+							color: theme.palette.text.secondary,
 						}}
 					>
 						{title}
@@ -91,9 +91,9 @@ export const EmptyState = ({
 				sx={{
 					mt: theme.spacing(LAYOUT.MD),
 					mb: theme.spacing(LAYOUT.XS),
-					fontSize: 16,
-					fontWeight: 600,
-					color: theme.palette.text.primary,
+					fontSize: 14,
+					fontWeight: 400,
+					color: theme.palette.text.secondary,
 				}}
 			>
 				{title}

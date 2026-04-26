@@ -105,7 +105,7 @@
 			}
 		},
 		"table": {
-			"empty": "Nothing here",
+			"empty": "Nothing to show yet",
 			"headers": {
 				"actions": "Actions",
 				"dateTime": "Date & time",
