@@ -2,7 +2,7 @@ import Logo from "@/assets/icons/checkmate-icon.svg?react";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
-import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
+import { LAYOUT } from "@/Utils/Theme/constants";
 import {
 	ErrorFallback,
 	EmptyFallback,
@@ -12,7 +12,6 @@ import { EmptyState } from "@/Components/design-elements/EmptyState";
 import { Breadcrumb } from "@/Components/design-elements/Breadcrumb";
 import { PageHeader } from "@/Components/design-elements/PageHeader";
 import CircularProgress from "@mui/material/CircularProgress";
-import { HeaderAuthControls } from "@/Pages/Auth/components/HeaderAuthControls";
 import { LanguageSelector, SwitchTheme } from "@/Components/inputs";
 
 import type { StackProps } from "@mui/material/Stack";
@@ -297,12 +296,16 @@ export const BaseAuthPage = ({
 					<LanguageSelector />
 					<SwitchTheme />
 				</Stack>
-				<Stack
-					component={component}
+				<Box
+					component={component as React.ElementType}
 					onSubmit={onSubmit}
-					gap={theme.spacing(LAYOUT.MD)}
-					width="100%"
-					maxWidth={360}
+					sx={{
+						display: "flex",
+						flexDirection: "column",
+						gap: theme.spacing(LAYOUT.MD),
+						width: "100%",
+						maxWidth: 360,
+					}}
 				>
 					<Stack
 						direction="row"
@@ -339,7 +342,7 @@ export const BaseAuthPage = ({
 						</Typography>
 					</Stack>
 					{children}
-				</Stack>
+				</Box>
 			</Stack>
 			<Stack
 				flex={1}
