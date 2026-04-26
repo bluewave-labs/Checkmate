@@ -35,7 +35,7 @@ export const TableJobs = ({ jobs }: TableJobsProps) => {
 			content: t("common.table.headers.monitorId"),
 			render: (row) => (
 				<Typography
-					fontFamily="monospace"
+					fontFamily={theme.typography.fontFamilyMonospace}
 					title={String(row.monitorId)}
 					sx={cellSx}
 				>
@@ -137,7 +137,11 @@ export const TableFailedJobs = ({ metrics }: TableFailedJobsProps) => {
 			id: "monitorId",
 			content: t("common.table.headers.monitorId"),
 			render: (row) => {
-				return <Typography fontFamily={"monospace"}>{row.monitorId}</Typography>;
+				return (
+					<Typography fontFamily={theme.typography.fontFamilyMonospace}>
+						{row.monitorId}
+					</Typography>
+				);
 			},
 		},
 		{

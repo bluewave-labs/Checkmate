@@ -55,7 +55,7 @@ export const TableLogs = ({ logs, logCount, page, setPage }: TableLogsProps) => 
 			id: "timestamp",
 			content: t("pages.logs.table.headers.timestamp"),
 			render: (row) => (
-				<Typography sx={{ fontFamily: "monospace" }}>
+				<Typography sx={{ fontFamily: theme.typography.fontFamilyMonospace }}>
 					{formatTimestamp(row.timestamp)}
 				</Typography>
 			),
@@ -74,7 +74,9 @@ export const TableLogs = ({ logs, logCount, page, setPage }: TableLogsProps) => 
 			id: "method",
 			content: t("pages.logs.table.headers.method"),
 			render: (row) => (
-				<Typography fontFamily={"monospace"}>{row.method || "-"}</Typography>
+				<Typography fontFamily={theme.typography.fontFamilyMonospace}>
+					{row.method || "-"}
+				</Typography>
 			),
 		},
 		{
