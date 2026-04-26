@@ -65,9 +65,13 @@ const StatusBox = ({
 		<BGBox sx={sx}>
 			<Stack spacing={theme.spacing(4)}>
 				<Typography
-					variant={"h2"}
 					textTransform="uppercase"
 					color={theme.palette.text.secondary}
+					sx={{
+						fontSize: 11,
+						fontWeight: 500,
+						letterSpacing: "0.08em",
+					}}
 				>
 					{label}
 				</Typography>
