@@ -828,7 +828,9 @@
 				"label": "Nível de log"
 			},
 			"jobQueue": "Fila de tarefas",
+			"jobQueueExplainer": "<highlight>As linhas destacadas</highlight> são as tarefas que estão sendo processadas atualmente por um worker.",
 			"failedJobs": "Tarefas com falha",
+			"failedJobsExplainer": "Falhas recentes por monitor — horário da última falha, contagem de falhas e o motivo.",
 			"noLogs": "Nenhum log encontrado",
 			"metrics": {
 				"jobs": "Tarefas",

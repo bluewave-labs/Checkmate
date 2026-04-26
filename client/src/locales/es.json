@@ -828,7 +828,9 @@
 				"label": "Nivel de registro"
 			},
 			"jobQueue": "Cola de trabajos",
+			"jobQueueExplainer": "<highlight>Las filas resaltadas</highlight> son los trabajos que un worker está procesando actualmente.",
 			"failedJobs": "Trabajos fallidos",
+			"failedJobsExplainer": "Fallos recientes por monitor — hora del último fallo, número de fallos y motivo.",
 			"noLogs": "No se encontraron registros",
 			"metrics": {
 				"jobs": "Trabajos",

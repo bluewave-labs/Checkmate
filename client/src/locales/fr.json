@@ -828,7 +828,9 @@
 				"label": "Niveau de log"
 			},
 			"jobQueue": "File d'attente des tâches",
+			"jobQueueExplainer": "<highlight>Les lignes mises en évidence</highlight> sont les tâches actuellement traitées par un worker.",
 			"failedJobs": "Tâches échouées",
+			"failedJobsExplainer": "Échecs récents par moniteur — heure du dernier échec, nombre d'échecs et raison.",
 			"noLogs": "Aucun log trouvé",
 			"metrics": {
 				"jobs": "Tâches",

@@ -828,7 +828,9 @@
 				"label": "Lokitaso"
 			},
 			"jobQueue": "Työnojono",
+			"jobQueueExplainer": "<highlight>Korostetut rivit</highlight> ovat työt, joita työntekijä käsittelee parhaillaan.",
 			"failedJobs": "Epäonnistuneet työt",
+			"failedJobsExplainer": "Viimeisimmät epäonnistumiset valvojan mukaan — viimeisin epäonnistumisaika, epäonnistumismäärä ja syy.",
 			"noLogs": "Lokeja ei löytynyt",
 			"metrics": {
 				"jobs": "Työt",

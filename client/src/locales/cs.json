@@ -828,7 +828,9 @@
 				"label": "Úroveň logování"
 			},
 			"jobQueue": "Fronta úloh",
+			"jobQueueExplainer": "<highlight>Zvýrazněné řádky</highlight> jsou úlohy, které právě zpracovává worker.",
 			"failedJobs": "Neúspěšné úlohy",
+			"failedJobsExplainer": "Nedávná selhání podle monitoru — čas posledního selhání, počet selhání a důvod.",
 			"noLogs": "Žádné logy nebyly nalezeny",
 			"metrics": {
 				"jobs": "Úlohy",
