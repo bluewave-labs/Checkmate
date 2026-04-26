@@ -21,7 +21,7 @@ export const BGBox = ({ children, sx }: StatusBoxProps) => {
 				overflow: "hidden",
 				position: "relative",
 				flex: 1,
-				padding: theme.spacing(4),
+				padding: theme.spacing(6),
 				...sx,
 			}}
 		>
