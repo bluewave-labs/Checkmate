@@ -40,6 +40,9 @@ class StatusPageController implements IStatusPageController {
 		return StatusPageController.SERVICE_NAME;
 	}
 
+	// Used when STATUS_PAGE_THEMES_ENABLED is false: drop incoming theme fields
+	// before persisting so an admin client can't accidentally store a value the
+	// public page won't honour.
 	private withoutThemeFields = (body: Record<string, unknown>): Record<string, unknown> => {
 		const rest = { ...body };
 		delete rest.theme;
@@ -47,6 +50,10 @@ class StatusPageController implements IStatusPageController {
 		return rest;
 	};
 
+	// Used when STATUS_PAGE_THEMES_ENABLED is false: overwrite the stored
+	// theme/themeMode with their defaults on read so callers see consistent
+	// values regardless of what's in the DB. Whatever a user previously chose
+	// is preserved in Mongo and resurfaces if the flag is flipped back on.
 	private applyDefaultTheme = (statusPage: StatusPage): StatusPage => ({
 		...statusPage,
 		theme: DEFAULT_STATUS_PAGE_THEME,

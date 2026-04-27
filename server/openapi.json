@@ -3354,11 +3354,13 @@
 			"StatusPageTheme": {
 				"type": "string",
 				"enum": ["refined", "modern", "bold", "editorial"],
+				"default": "refined",
 				"description": "Visual theme for the public status page. Defaults to 'refined'."
 			},
 			"StatusPageThemeMode": {
 				"type": "string",
 				"enum": ["auto", "light", "dark"],
+				"default": "auto",
 				"description": "Forces a light/dark mode on the public page. 'auto' follows the visitor's OS preference. Defaults to 'auto'."
 			},
 			"SuccessResponse": {
