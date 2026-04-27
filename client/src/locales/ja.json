@@ -199,6 +199,14 @@
 		"starPrompt": {
 			"title": "Checkmateにスターを付ける",
 			"description": "GitHubで最新リリースを確認し、コミュニティの成長に貢献しましょう"
+		},
+		"pageHeader": {
+			"links": {
+				"support": "サポート",
+				"discussions": "ディスカッション",
+				"docs": "ドキュメント",
+				"changelog": "変更履歴"
+			}
 		}
 	},
 	"pages": {
@@ -278,10 +286,23 @@
 						"placeholder": "ロールを選択"
 					},
 					"linkLabel": "招待リンク"
+				},
+				"fallback": {
+					"title": "チームメンバーがまだいません",
+					"description": "メールでチームメイトを招待するか、直接追加してください。参加すると、役割とともにここに表示されます。"
 				}
+			},
+			"header": {
+				"title": "アカウント",
+				"description": "プロファイル、パスワード、チーム、ワークスペースの設定を管理します。"
 			}
 		},
 		"auth": {
+			"brandPanel": {
+				"eyebrow": "オープンソースのインフラ監視",
+				"tagline": "サーバーのすべての動きを見守ろう。",
+				"description": "稼働状況、応答時間、インシデントをリアルタイムで追跡 - セルフホスト型で完全にあなたのもの。"
+			},
 			"common": {
 				"passwordRules": {
 					"length": {
@@ -343,7 +364,8 @@
 			"register": {
 				"title": "Checkmateへようこそ！",
 				"subtitle": "サインアップして始めましょう",
-				"submit": "登録"
+				"submit": "登録",
+				"setupNotice": "このページは初期セットアップ中のみ利用できます。スーパー管理者が登録されると、追加のユーザーはチーム設定から招待できます。"
 			},
 			"forgotPassword": {
 				"title": "パスワードをお忘れですか？",
@@ -378,6 +400,14 @@
 					"statusCode": "ステータスコード",
 					"location": "ロケーション"
 				}
+			},
+			"fallback": {
+				"title": "チェックがまだありません",
+				"description": "モニターを作成すると、すべてのステータスプローブと応答時間がここにチェックとして表示されます。"
+			},
+			"header": {
+				"title": "チェック",
+				"description": "Checkmateがモニターに対して実行するすべてのプローブが、ステータスコードと応答時間とともにここに表示されます。"
 			}
 		},
 		"common": {
@@ -397,7 +427,8 @@
 					"activeFor": "稼働期間",
 					"certificateExpiry": "証明書の有効期限",
 					"lastCheck": "最終チェック",
-					"lastResponseTime": "最終応答時間"
+					"lastResponseTime": "最終応答時間",
+					"serviceIsDown": "サービスがダウンしています"
 				},
 				"status": {
 					"down": "ダウン",
@@ -640,6 +671,10 @@
 			}
 		},
 		"incidents": {
+			"fallback": {
+				"title": "インシデントなし — すべてのシステムが正常です",
+				"description": "モニターがダウンまたは復旧すると、タイミング、モニターの詳細、解決履歴とともにここに表示されます。"
+			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "インシデントを解決",
@@ -720,6 +755,10 @@
 					"active": "アクティブ",
 					"resolved": "解決済み"
 				}
+			},
+			"header": {
+				"title": "インシデント",
+				"description": "モニターがダウンまたは復旧すると、インシデントがタイミング、モニターの詳細、解決履歴とともにここに表示されます。"
 			}
 		},
 		"infrastructure": {
@@ -774,11 +813,19 @@
 			},
 			"fallback": {
 				"actionButton": "モニターを作成！",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "インフラストラクチャモニターの用途："
+				"title": "インフラモニターがまだありません",
+				"description": "サーバーのパフォーマンスを追跡し、ボトルネックを特定し、リアルタイムのインフラ監視で信頼性を確保します。"
+			},
+			"header": {
+				"title": "インフラ監視",
+				"description": "サーバーのパフォーマンスを追跡し、ボトルネックを特定し、リアルタイムのインフラ監視で信頼性を確保します。"
 			}
 		},
 		"logs": {
+			"fallback": {
+				"title": "ログがまだありません",
+				"description": "サーバーのアクティビティ、警告、エラーがCheckmateの実行中にここに表示されます。"
+			},
 			"tabs": {
 				"diagnostics": "診断",
 				"logs": "サーバーログ",
@@ -788,7 +835,9 @@
 				"label": "ログレベル"
 			},
 			"jobQueue": "ジョブキュー",
+			"jobQueueExplainer": "<highlight>ハイライトされた行</highlight>は、現在ワーカーによって処理中のジョブです。",
 			"failedJobs": "失敗したジョブ",
+			"failedJobsExplainer": "モニター別の最近の失敗 — 最終失敗時刻、失敗回数、および理由。",
 			"noLogs": "ログが見つかりません",
 			"metrics": {
 				"jobs": "ジョブ",
@@ -815,6 +864,16 @@
 					"usedSPercentage": "CPUによる1秒あたりの使用%",
 					"total": "合計",
 					"used": "使用済み"
+				},
+				"sections": {
+					"runtimeStats": {
+						"title": "ランタイム統計",
+						"description": "Node.jsプロセスとホストマシンのスナップショット。5秒ごとに更新されます。"
+					},
+					"memoryCpu": {
+						"title": "メモリとCPU",
+						"description": "プロセスが割り当てられたメモリとホストCPUをどのように使用しているか。"
+					}
 				}
 			},
 			"table": {
@@ -833,13 +892,21 @@
 					"lastFailedAt": "最終失敗日時",
 					"failReason": "失敗理由"
 				}
+			},
+			"queueFallback": {
+				"title": "キューにジョブがありません",
+				"description": "スケジュールされたモニターチェックや実行中のチェックがここに表示されます。空のキューはすべてが最新であることを意味します。"
+			},
+			"header": {
+				"title": "ログとキュー",
+				"description": "サーバーログ、モニタージョブキュー、ランタイム診断を一か所で確認できます。"
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "メンテナンスウィンドウを作成！",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "メンテナンスウィンドウの用途："
+				"title": "予定されているメンテナンスウィンドウはありません",
+				"description": "計画されたダウンタイムをスケジュールしてアラートを抑制し、チームとユーザーに事前に知らせます。"
 			},
 			"table": {
 				"headers": {
@@ -891,13 +958,17 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "メンテナンスウィンドウ",
+				"description": "計画されたダウンタイムをスケジュールしてアラートを抑制し、チームとユーザーに事前に知らせます。"
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "チャンネルを作成",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "通知チャンネルの用途："
+				"title": "通知チャンネルがまだありません",
+				"description": "Slack、Discord、メール、Webhookなどを接続して、インシデント発生時に適切な担当者に通知します。"
 			},
 			"form": {
 				"accessToken": {
@@ -947,12 +1018,36 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "チャットID",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Pushover の設定",
+					"description": "Pushover のアプリケーショントークンとユーザーキーを入力してください。",
+					"optionAppToken": "アプリトークン",
+					"placeholderAppToken": "アプリトークンを入力",
+					"optionUserKey": "ユーザーキー",
+					"placeholderUserKey": "ユーザーキーを入力"
+				},
+				"twilio": {
+					"title": "Twilio の設定",
+					"description": "SMS を送信するための Twilio アカウント認証情報を入力してください。",
+					"optionAccountSid": "アカウント SID",
+					"placeholderAccountSid": "アカウント SID を入力",
+					"optionAuthToken": "認証トークン",
+					"placeholderAuthToken": "認証トークンを入力",
+					"optionFromNumber": "送信元番号",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "送信先番号",
+					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
 				"headers": {
 					"destination": "送信先"
 				}
+			},
+			"header": {
+				"title": "通知",
+				"description": "Slack、Discord、メール、Webhookなどを接続して、インシデント発生時に適切な担当者に通知します。"
 			}
 		},
 		"pageSpeed": {
@@ -979,8 +1074,12 @@
 			},
 			"fallback": {
 				"actionButton": "モニターを作成！",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "PageSpeedモニターの用途："
+				"title": "PageSpeedモニターがまだありません",
+				"description": "Core Web VitalsとLighthouseスコアを継続的に追跡し、ユーザーが気付く前に劣化を発見します。"
+			},
+			"header": {
+				"title": "PageSpeed監視",
+				"description": "Core Web VitalsとLighthouseスコアを継続的に追跡し、ユーザーが気付く前に劣化を発見します。"
 			}
 		},
 		"settings": {
@@ -1158,14 +1257,18 @@
 				"validation": {
 					"errorMessage": "以下のバリデーションエラーを修正してください："
 				}
+			},
+			"header": {
+				"title": "設定",
+				"description": "SMTP、統合、保持、グローバルアプリの動作を設定します。"
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "ステータスページが正常に削除されました",
 			"fallback": {
-				"title": "ステータスページの用途：",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "ステータスページを作成！"
+				"title": "ステータスページがまだありません",
+				"actionButton": "ステータスページを作成！",
+				"description": "顧客と関係者にリアルタイムの稼働状況とインシデント履歴を表示する公開ページを公開します。"
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "ヒートマップ",
@@ -1190,7 +1293,18 @@
 				"allDown": "すべてのシステムがダウンしています",
 				"allUp": "すべてのシステムが正常に稼働しています",
 				"degraded": "一部のシステムに問題が発生しています",
-				"unknown": "システムステータスを判定できません"
+				"unknown": "システムステータスを判定できません",
+				"allBreached": "すべてのシステムがしきい値を超えました",
+				"allMaintenance": "すべてのシステムがメンテナンス中です",
+				"allPaused": "すべてのシステムが一時停止中です",
+				"allInitializing": "すべてのシステムが初期化中です",
+				"breachedAndDown": "一部のシステムがしきい値を超えてダウンしています",
+				"breached": "一部のシステムがしきい値を超えています",
+				"maintenanceAndDown": "一部のシステムがメンテナンス中にダウンしています",
+				"maintenance": "一部のシステムがメンテナンス中です",
+				"partiallyPaused": "一部のシステムが一時停止中です",
+				"initializing": "一部のシステムが初期化中です",
+				"noMonitors": "モニターが設定されていません"
 			},
 			"table": {
 				"headers": {
@@ -1282,6 +1396,10 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "ステータスページ",
+				"description": "顧客と関係者にリアルタイムの稼働状況とインシデント履歴を表示する公開ページを公開します。"
 			}
 		},
 		"uptime": {
@@ -1297,8 +1415,12 @@
 			},
 			"fallback": {
 				"actionButton": "モニターを作成！",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "稼働時間モニターの用途："
+				"title": "アップタイムモニターがまだありません",
+				"description": "HTTPエンドポイント、Ping、コンテナ、ポートを監視し、ダウンした瞬間に通知を受け取ります。"
+			},
+			"header": {
+				"title": "稼働監視",
+				"description": "HTTPエンドポイント、Ping、コンテナ、ポートを監視し、ダウンした瞬間に通知を受け取ります。"
 			}
 		}
 	}

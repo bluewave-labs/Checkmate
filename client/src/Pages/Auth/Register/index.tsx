@@ -95,7 +95,23 @@ const RegisterPage = () => {
 			title={t("pages.auth.register.title")}
 			subtitle={t("pages.auth.register.subtitle")}
 		>
-			{!token && <Alert severity="info">{t("pages.auth.register.setupNotice")}</Alert>}
+			{!token && (
+				<Alert
+					severity="info"
+					icon={false}
+					sx={(theme) => ({
+						fontSize: 13,
+						lineHeight: 1.55,
+						color: theme.palette.text.secondary,
+						backgroundColor: theme.palette.action.hover,
+						border: `1px solid ${theme.palette.divider}`,
+						borderRadius: 1,
+						"& .MuiAlert-message": { padding: 0 },
+					})}
+				>
+					{t("pages.auth.register.setupNotice")}
+				</Alert>
+			)}
 			<Controller
 				name="firstName"
 				control={control}

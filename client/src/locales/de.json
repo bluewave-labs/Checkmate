@@ -199,6 +199,14 @@
 		"starPrompt": {
 			"title": "Checkmate bewerten",
 			"description": "Entdecken Sie die neuesten Versionen und helfen Sie der Community auf GitHub"
+		},
+		"pageHeader": {
+			"links": {
+				"support": "Support",
+				"discussions": "Diskussionen",
+				"docs": "Dokumentation",
+				"changelog": "Änderungsverlauf"
+			}
 		}
 	},
 	"pages": {
@@ -278,10 +286,23 @@
 						"placeholder": "Rolle auswählen"
 					},
 					"linkLabel": "Einladungslink"
+				},
+				"fallback": {
+					"title": "Noch keine Teammitglieder",
+					"description": "Laden Sie Teammitglieder per E-Mail ein oder fügen Sie sie direkt hinzu. Sobald sie beitreten, erscheinen sie hier mit ihrer Rolle."
 				}
+			},
+			"header": {
+				"title": "Konto",
+				"description": "Verwalten Sie Profil, Passwort, Team und Workspace-Einstellungen."
 			}
 		},
 		"auth": {
+			"brandPanel": {
+				"eyebrow": "Open-Source-Infrastruktur-Monitoring",
+				"tagline": "Beobachten Sie jeden Zug Ihrer Server.",
+				"description": "Echtzeit-Überwachung von Verfügbarkeit, Antwortzeiten und Vorfällen - selbst gehostet und in Ihrer Hand."
+			},
 			"common": {
 				"passwordRules": {
 					"length": {
@@ -343,7 +364,8 @@
 			"register": {
 				"title": "Willkommen bei Checkmate!",
 				"subtitle": "Registrieren Sie sich, um loszulegen",
-				"submit": "Registrieren"
+				"submit": "Registrieren",
+				"setupNotice": "Diese Seite ist nur während der Ersteinrichtung verfügbar. Sobald ein Super-Admin registriert ist, können weitere Benutzer in den Team-Einstellungen eingeladen werden."
 			},
 			"forgotPassword": {
 				"title": "Passwort vergessen?",
@@ -378,6 +400,14 @@
 					"statusCode": "Statuscode",
 					"location": "Standort"
 				}
+			},
+			"fallback": {
+				"title": "Noch keine Prüfungen",
+				"description": "Sobald Sie einen Monitor erstellen, erscheinen jede Statusprüfung und Antwortzeit hier als Prüfung."
+			},
+			"header": {
+				"title": "Prüfungen",
+				"description": "Jede Sondierung, die Checkmate gegen Ihre Monitore ausführt, erscheint hier mit Statuscode und Antwortzeit."
 			}
 		},
 		"common": {
@@ -397,7 +427,8 @@
 					"activeFor": "Aktiv seit",
 					"certificateExpiry": "Zertifikatablauf",
 					"lastCheck": "Letzter Check",
-					"lastResponseTime": "Letzte Antwortzeit"
+					"lastResponseTime": "Letzte Antwortzeit",
+					"serviceIsDown": "Dienst ist nicht erreichbar"
 				},
 				"status": {
 					"down": "ausgefallen",
@@ -640,6 +671,10 @@
 			}
 		},
 		"incidents": {
+			"fallback": {
+				"title": "Keine Vorfälle — alle Systeme funktionieren",
+				"description": "Wenn ein Monitor ausfällt oder wiederhergestellt wird, erscheint der Vorfall hier mit Zeitangaben, Monitordetails und Lösungsverlauf."
+			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "Vorfall lösen",
@@ -720,6 +755,10 @@
 					"active": "Aktiv",
 					"resolved": "Gelöst"
 				}
+			},
+			"header": {
+				"title": "Vorfälle",
+				"description": "Wenn ein Monitor ausfällt oder wiederhergestellt wird, erscheinen Vorfälle hier mit Zeitangaben, Monitordetails und Lösungsverlauf."
 			}
 		},
 		"infrastructure": {
@@ -774,11 +813,19 @@
 			},
 			"fallback": {
 				"actionButton": "Monitor erstellen!",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "Ein Infrastruktur-Monitor wird verwendet, um:"
+				"title": "Noch keine Infrastruktur-Monitore",
+				"description": "Verfolgen Sie die Serverleistung, identifizieren Sie Engpässe und gewährleisten Sie Zuverlässigkeit mit Echtzeit-Infrastrukturüberwachung."
+			},
+			"header": {
+				"title": "Infrastruktur-Monitore",
+				"description": "Verfolgen Sie die Serverleistung, identifizieren Sie Engpässe und gewährleisten Sie Zuverlässigkeit mit Echtzeit-Infrastrukturüberwachung."
 			}
 		},
 		"logs": {
+			"fallback": {
+				"title": "Noch keine Protokolle",
+				"description": "Serveraktivitäten, Warnungen und Fehler werden hier angezeigt, während Checkmate läuft."
+			},
 			"tabs": {
 				"diagnostics": "Diagnose",
 				"logs": "Server logs",
@@ -788,7 +835,9 @@
 				"label": "Log-Level"
 			},
 			"jobQueue": "Job-Warteschlange",
+			"jobQueueExplainer": "<highlight>Hervorgehobene Zeilen</highlight> sind Jobs, die derzeit von einem Worker verarbeitet werden.",
 			"failedJobs": "Fehlgeschlagene Jobs",
+			"failedJobsExplainer": "Aktuelle Fehler nach Monitor — Zeit des letzten Fehlers, Fehleranzahl und Grund.",
 			"noLogs": "Keine Protokolle gefunden",
 			"metrics": {
 				"jobs": "Jobs",
@@ -815,6 +864,16 @@
 					"usedSPercentage": "% von 1s durch CPU genutzt",
 					"total": "Gesamt",
 					"used": "Belegt"
+				},
+				"sections": {
+					"runtimeStats": {
+						"title": "Laufzeitstatistiken",
+						"description": "Snapshot des Node.js-Prozesses und Host-Rechners. Wird alle 5 Sekunden aktualisiert."
+					},
+					"memoryCpu": {
+						"title": "Speicher & CPU",
+						"description": "Wie der Prozess seinen zugewiesenen Speicher und die Host-CPU nutzt."
+					}
 				}
 			},
 			"table": {
@@ -833,13 +892,21 @@
 					"lastFailedAt": "Letzter Fehler am",
 					"failReason": "Fehlergrund"
 				}
+			},
+			"queueFallback": {
+				"title": "Keine Aufträge in der Warteschlange",
+				"description": "Geplante oder laufende Monitorprüfungen erscheinen hier. Eine leere Warteschlange bedeutet, dass alles aktuell ist."
+			},
+			"header": {
+				"title": "Protokolle & Warteschlange",
+				"description": "Serverprotokolle, Monitor-Warteschlange und Laufzeitdiagnosen an einem Ort."
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "Wartungsfenster erstellen!",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "Ein Wartungsfenster wird verwendet, um:"
+				"title": "Keine Wartungsfenster geplant",
+				"description": "Planen Sie Wartungsausfälle, damit Warnungen unterdrückt werden und Team und Nutzer wissen, was sie erwartet."
 			},
 			"table": {
 				"headers": {
@@ -891,13 +958,17 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Wartungsfenster",
+				"description": "Planen Sie Wartungsausfälle, damit Warnungen unterdrückt werden und Team und Nutzer wissen, was sie erwartet."
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "Kanal erstellen",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "Benachrichtigungskanäle werden verwendet, um:"
+				"title": "Noch keine Benachrichtigungskanäle",
+				"description": "Verbinden Sie Slack, Discord, E-Mail, Webhooks und mehr, damit die richtigen Personen sofort von Vorfällen erfahren."
 			},
 			"form": {
 				"accessToken": {
@@ -947,12 +1018,36 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "Chat-ID",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Pushover-Konfiguration",
+					"description": "Geben Sie Ihr Anwendungstoken und Ihren Benutzerschlüssel von Pushover ein.",
+					"optionAppToken": "Anwendungstoken",
+					"placeholderAppToken": "Anwendungstoken eingeben",
+					"optionUserKey": "Benutzerschlüssel",
+					"placeholderUserKey": "Benutzerschlüssel eingeben"
+				},
+				"twilio": {
+					"title": "Twilio-Konfiguration",
+					"description": "Geben Sie Ihre Twilio-Kontoanmeldeinformationen ein, um SMS zu senden.",
+					"optionAccountSid": "Account-SID",
+					"placeholderAccountSid": "Account-SID eingeben",
+					"optionAuthToken": "Auth-Token",
+					"placeholderAuthToken": "Auth-Token eingeben",
+					"optionFromNumber": "Absendernummer",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "Empfängernummer",
+					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
 				"headers": {
 					"destination": "Ziel"
 				}
+			},
+			"header": {
+				"title": "Benachrichtigungen",
+				"description": "Verbinden Sie Slack, Discord, E-Mail, Webhooks und mehr, damit die richtigen Personen sofort von Vorfällen erfahren."
 			}
 		},
 		"pageSpeed": {
@@ -979,8 +1074,12 @@
 			},
 			"fallback": {
 				"actionButton": "Monitor erstellen!",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "Ein PageSpeed-Monitor wird verwendet, um:"
+				"title": "Noch keine PageSpeed-Monitore",
+				"description": "Verfolgen Sie Core Web Vitals und Lighthouse-Werte im Zeitverlauf, um Regressionen zu erkennen, bevor Nutzer es tun."
+			},
+			"header": {
+				"title": "PageSpeed-Monitore",
+				"description": "Verfolgen Sie Core Web Vitals und Lighthouse-Werte im Zeitverlauf, um Regressionen zu erkennen, bevor Nutzer es tun."
 			}
 		},
 		"settings": {
@@ -1158,14 +1257,18 @@
 				"validation": {
 					"errorMessage": "Bitte beheben Sie die folgenden Validierungsfehler:"
 				}
+			},
+			"header": {
+				"title": "Einstellungen",
+				"description": "Konfigurieren Sie SMTP, Integrationen, Aufbewahrung und globales App-Verhalten."
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "Statusseite erfolgreich gelöscht",
 			"fallback": {
-				"title": "Eine Statusseite wird verwendet, um:",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "Statusseite erstellen!"
+				"title": "Noch keine Statusseiten",
+				"actionButton": "Statusseite erstellen!",
+				"description": "Veröffentlichen Sie eine öffentliche Seite, die Kunden und Stakeholdern Echtzeit-Verfügbarkeit und Vorfallsverlauf zeigt."
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Heatmap",
@@ -1190,7 +1293,18 @@
 				"allDown": "Alle Systeme sind ausgefallen",
 				"allUp": "Alle Systeme funktionsfähig",
 				"degraded": "Einige Systeme haben Probleme",
-				"unknown": "Systemstatus kann nicht ermittelt werden"
+				"unknown": "Systemstatus kann nicht ermittelt werden",
+				"allBreached": "Alle Systeme haben Schwellenwerte überschritten",
+				"allMaintenance": "Alle Systeme befinden sich in Wartung",
+				"allPaused": "Alle Systeme sind pausiert",
+				"allInitializing": "Alle Systeme werden initialisiert",
+				"breachedAndDown": "Einige Systeme haben Schwellenwerte überschritten und sind ausgefallen",
+				"breached": "Einige Systeme haben Schwellenwerte überschritten",
+				"maintenanceAndDown": "Einige Systeme sind während der Wartung ausgefallen",
+				"maintenance": "Einige Systeme befinden sich in Wartung",
+				"partiallyPaused": "Einige Systeme sind pausiert",
+				"initializing": "Einige Systeme werden initialisiert",
+				"noMonitors": "Es wurden keine Monitore konfiguriert"
 			},
 			"table": {
 				"headers": {
@@ -1282,6 +1396,10 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Statusseiten",
+				"description": "Veröffentlichen Sie öffentliche Seiten, die Kunden und Stakeholdern Echtzeit-Verfügbarkeit und Vorfallsverlauf zeigen."
 			}
 		},
 		"uptime": {
@@ -1297,8 +1415,12 @@
 			},
 			"fallback": {
 				"actionButton": "Monitor erstellen!",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "Ein Verfügbarkeitsmonitor wird verwendet, um:"
+				"title": "Noch keine Uptime-Monitore",
+				"description": "Überwachen Sie HTTP-Endpunkte, Pings, Container und Ports und werden Sie sofort benachrichtigt, wenn etwas ausfällt."
+			},
+			"header": {
+				"title": "Uptime-Monitore",
+				"description": "Überwachen Sie HTTP-Endpunkte, Pings, Container und Ports und werden Sie sofort benachrichtigt, wenn etwas ausfällt."
 			}
 		}
 	}

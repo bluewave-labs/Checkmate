@@ -14,21 +14,25 @@ export const colors = {
 	gray700: "#313131",
 	gray900: "#151518",
 	gray850: "#1c1c21",
-	blueBlueWave: "#1570EF",
+	brandGreen: "#13715B",
+	brandGreenLight: "#4DAF94",
 };
 
 export const lightPalette = {
 	primary: {
-		main: colors.blueBlueWave,
+		main: colors.brandGreen,
 	},
 	secondary: {
 		main: colors.gray200,
+	},
+	sidebar: {
+		accent: colors.brandGreen,
 	},
 };
 
 export const darkPalette = {
 	primary: {
-		main: colors.blueBlueWave,
+		main: colors.brandGreen,
 	},
 	secondary: {
 		main: colors.gray700,
@@ -36,5 +40,8 @@ export const darkPalette = {
 	background: {
 		default: colors.gray900,
 		paper: colors.gray850,
+	},
+	sidebar: {
+		accent: colors.brandGreenLight,
 	},
 };

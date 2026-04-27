@@ -13,7 +13,7 @@
 				"content": "Advertencia: Aún no ha agregado una clave de API de Google PageSpeed. Visite <settingsLink>Configuración</settingsLink> para agregar una. Sin ella, el monitor de PageSpeed no funcionará."
 			}
 		},
-		"appName": "",
+		"appName": "Checkmate",
 		"breadcrumbs": {
 			"details": "Detalles",
 			"home": "Inicio"
@@ -35,11 +35,11 @@
 			"sendInvite": "Enviar invitación",
 			"test": "Probar",
 			"testNotifications": "Probar notificaciones",
-			"toggleTheme": "",
+			"toggleTheme": "Cambiar tema claro / oscuro",
 			"flushQueue": "Vaciar cola",
 			"notFound": "Ir al panel principal",
-			"resetPassword": "",
-			"reset": "",
+			"resetPassword": "Restablecer contraseña",
+			"reset": "Restablecer",
 			"clear": "Limpiar",
 			"addDemo": "Agregar monitores de demostración",
 			"removeMonitors": "Eliminar monitores",
@@ -47,7 +47,14 @@
 			"exportToJSON": "Exportar a JSON",
 			"importFromJSON": "Importar desde JSON",
 			"clearFilters": "Limpiar filtros",
-			"removeUser": "Eliminar usuario"
+			"removeUser": "Eliminar usuario",
+			"testNotification": "Probar notificación",
+			"invite": "Invitar",
+			"copyLink": "Copiar enlace",
+			"regenerateToken": "Regenerar token",
+			"copyToken": "Copiar token",
+			"exportLogs": "Exportar registros",
+			"refresh": "Actualizar"
 		},
 		"charts": {
 			"labels": {
@@ -86,12 +93,12 @@
 			"name": {
 				"option": {
 					"firstName": {
-						"label": "",
-						"placeholder": ""
+						"label": "Nombre",
+						"placeholder": "Introduce tu nombre"
 					},
 					"lastName": {
-						"label": "",
-						"placeholder": ""
+						"label": "Apellidos",
+						"placeholder": "Introduce tus apellidos"
 					}
 				}
 			},
@@ -99,7 +106,7 @@
 				"option": {
 					"email": {
 						"label": "Correo electrónico",
-						"placeholder": "you@example.com"
+						"placeholder": "tu@ejemplo.com"
 					}
 				}
 			}
@@ -107,14 +114,14 @@
 		"table": {
 			"empty": "No hay nada aquí",
 			"headers": {
-				"actions": "",
+				"actions": "Acciones",
 				"dateTime": "Fecha y hora",
 				"message": "Mensaje",
 				"monitor": "Monitor",
 				"monitorId": "ID de monitor",
 				"name": "Nombre",
 				"status": "Estado",
-				"type": "",
+				"type": "Tipo",
 				"url": "URL",
 				"interval": "Intervalo",
 				"active": "Activo",
@@ -125,17 +132,17 @@
 	"components": {
 		"imageUpload": {
 			"clickToUpload": "Haga clic para subir",
-			"dragAndDrop": "",
-			"supportedFormats": "",
-			"maxSize": "",
+			"dragAndDrop": "o arrastra y suelta",
+			"supportedFormats": "Formatos admitidos",
+			"maxSize": "Tamaño máximo",
 			"orDragAndDrop": "o arrastre y suelte",
 			"errors": {
-				"invalidFileSize": "",
-				"invalidFileFormat": ""
+				"invalidFileSize": "¡El archivo es demasiado grande!",
+				"invalidFileFormat": "¡Formato de archivo no admitido!"
 			}
 		},
 		"headerStatusPageControls": {
-			"publicLink": ""
+			"publicLink": "Enlace público"
 		},
 		"headerTimeRange": {
 			"labels": {
@@ -155,26 +162,26 @@
 			"serverUnreachable": "No se puede conectar al servidor",
 			"retry": "Reintentar",
 			"retrying": "Reintentando...",
-			"reconnected": ""
+			"reconnected": "Conexión restablecida"
 		},
 		"sidebar": {
 			"menu": {
-				"uptime": "",
-				"pagespeed": "",
-				"infrastructure": "",
-				"notifications": "",
+				"uptime": "Disponibilidad",
+				"pagespeed": "Pagespeed",
+				"infrastructure": "Infraestructura",
+				"notifications": "Notificaciones",
 				"checks": "Verificaciones",
-				"incidents": "",
-				"statusPages": "",
-				"maintenance": "",
-				"logs": "",
-				"settings": ""
+				"incidents": "Incidentes",
+				"statusPages": "Páginas de estado",
+				"maintenance": "Mantenimiento",
+				"logs": "Registros",
+				"settings": "Configuración"
 			},
 			"bottomMenu": {
-				"support": "",
-				"discussions": "",
-				"docs": "",
-				"changelog": ""
+				"support": "Soporte",
+				"discussions": "Discusiones",
+				"docs": "Documentación",
+				"changelog": "Registro de cambios"
 			},
 			"accountMenu": {
 				"profile": "Perfil",
@@ -186,19 +193,27 @@
 				"description": "Vea las últimas versiones y ayude a crecer la comunidad en GitHub"
 			},
 			"authFooter": {
-				"navControls": "",
-				"logOut": "",
+				"navControls": "Controles",
+				"logOut": "Cerrar sesión",
 				"roles": {
 					"superAdmin": "Superadministrador",
 					"admin": "Administrador",
 					"user": "Usuario",
-					"demoUser": ""
+					"demoUser": "Usuario demo"
 				}
 			}
 		},
 		"starPrompt": {
 			"title": "Dale estrella a Checkmate",
 			"description": "Vea las últimas versiones y ayude a crecer la comunidad en GitHub"
+		},
+		"pageHeader": {
+			"links": {
+				"support": "Soporte",
+				"discussions": "Discusiones",
+				"docs": "Documentación",
+				"changelog": "Registro de cambios"
+			}
 		}
 	},
 	"pages": {
@@ -251,15 +266,15 @@
 			"team": {
 				"filter": {
 					"placeholder": "Filtrar por rol",
-					"all": "",
+					"all": "Todos los roles",
 					"admin": "Administrador",
-					"member": ""
+					"member": "Miembro"
 				},
 				"table": {
 					"headers": {
 						"email": "Correo electrónico",
 						"role": "Rol",
-						"created": ""
+						"created": "Creado el"
 					}
 				},
 				"addMember": {
@@ -278,42 +293,55 @@
 						"placeholder": "Seleccione un rol"
 					},
 					"linkLabel": "Enlace de invitación"
+				},
+				"fallback": {
+					"title": "Aún no hay miembros del equipo",
+					"description": "Invita a tus compañeros por correo o añádelos directamente. Una vez que se unan, aparecerán aquí con su rol."
 				}
+			},
+			"header": {
+				"title": "Cuenta",
+				"description": "Administra tu perfil, contraseña, equipo y preferencias del espacio de trabajo."
 			}
 		},
 		"auth": {
+			"brandPanel": {
+				"eyebrow": "Monitorización de infraestructura de código abierto",
+				"tagline": "Vigila cada movimiento de tus servidores.",
+				"description": "Monitorización en tiempo real de disponibilidad, tiempo de respuesta e incidentes - autoalojada y tuya."
+			},
 			"common": {
 				"passwordRules": {
 					"length": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "Debe tener al menos",
+						"highlighted": "8 caracteres"
 					},
 					"lowercase": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "Debe contener al menos",
+						"highlighted": "una letra minúscula"
 					},
 					"match": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "Las contraseñas",
+						"highlighted": "deben coincidir"
 					},
 					"number": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "Debe contener al menos",
+						"highlighted": "un número"
 					},
 					"special": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "Debe contener al menos",
+						"highlighted": "un carácter especial (!?@#$%^&*()-_=+[]{}|;:'\",./\\~`)"
 					},
 					"uppercase": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "Debe contener al menos",
+						"highlighted": "una letra mayúscula"
 					}
 				},
 				"form": {
 					"option": {
 						"email": {
 							"label": "Correo electrónico",
-							"placeholder": "me@example.com"
+							"placeholder": "yo@ejemplo.com"
 						},
 						"password": {
 							"label": "Contraseña",
@@ -343,7 +371,8 @@
 			"register": {
 				"title": "¡Bienvenido de nuevo a Checkmate!",
 				"subtitle": "Regístrese para comenzar",
-				"submit": "Registrarse"
+				"submit": "Registrarse",
+				"setupNotice": "Esta página solo está disponible durante la configuración inicial. Una vez que se haya registrado un super administrador, se podrá invitar a usuarios adicionales desde la configuración del equipo."
 			},
 			"forgotPassword": {
 				"title": "¿Olvidó su contraseña?",
@@ -378,6 +407,14 @@
 					"statusCode": "Código de estado",
 					"location": "Ubicación"
 				}
+			},
+			"fallback": {
+				"title": "Aún no hay comprobaciones",
+				"description": "Una vez que crees un monitor, cada sonda de estado y tiempo de respuesta aparecerá aquí como una comprobación."
+			},
+			"header": {
+				"title": "Comprobaciones",
+				"description": "Cada sonda que Checkmate ejecuta contra tus monitores aparece aquí con código de estado y tiempo de respuesta."
 			}
 		},
 		"common": {
@@ -397,7 +434,8 @@
 					"activeFor": "Activo desde hace",
 					"certificateExpiry": "Vencimiento del certificado",
 					"lastCheck": "Última verificación",
-					"lastResponseTime": "Último tiempo de respuesta"
+					"lastResponseTime": "Último tiempo de respuesta",
+					"serviceIsDown": "El servicio está caído"
 				},
 				"status": {
 					"down": "caído",
@@ -438,9 +476,9 @@
 						},
 						"matchMethod": {
 							"label": "Método de coincidencia",
-							"equal": "",
-							"include": "",
-							"regex": ""
+							"equal": "Igual",
+							"include": "Contiene",
+							"regex": "Regex"
 						}
 					},
 					"title": "Configuración avanzada"
@@ -452,15 +490,15 @@
 							"label": "Frecuencia de verificación",
 							"value": {
 								"fifteenMinutes": "15 minutos",
-								"fifteenSeconds": "",
+								"fifteenSeconds": "15 segundos",
 								"fiveMinutes": "5 minutos",
-								"fourMinutes": "",
-								"oneMinute": "",
+								"fourMinutes": "4 minutos",
+								"oneMinute": "1 minuto",
 								"tenMinutes": "10 minutos",
 								"thirtyMinutes": "30 minutos",
-								"thirtySeconds": "",
-								"threeMinutes": "",
-								"twoMinutes": ""
+								"thirtySeconds": "30 segundos",
+								"threeMinutes": "3 minutos",
+								"twoMinutes": "2 minutos"
 							}
 						}
 					},
@@ -489,8 +527,8 @@
 							"placeholder": "https://www.google.com"
 						},
 						"game": {
-							"label": "",
-							"placeholder": ""
+							"label": "Elige el juego",
+							"placeholder": "Selecciona un juego"
 						},
 						"port": {
 							"label": "Puerto a monitorear",
@@ -508,10 +546,10 @@
 					"title": "Configuración general",
 					"description": {
 						"http": "Ingrese la URL o IP a monitorear (p. ej., https://example.com/ o 192.168.1.100) y agregue un nombre para mostrar que aparecerá en el panel.",
-						"ping": "",
-						"port": "",
-						"docker": "",
-						"game": "",
+						"ping": "Introduce la dirección IP o el nombre de host para hacer ping (p. ej., 192.168.1.100 o ejemplo.com) y un nombre descriptivo que aparecerá en el panel.",
+						"port": "Introduce la URL o IP del servidor, el número de puerto y un nombre descriptivo que aparecerá en el panel.",
+						"docker": "Introduce el nombre o ID del contenedor de Docker. Puedes usar el nombre del contenedor (p. ej., my-app) o su ID.",
+						"game": "Introduce la dirección IP o el nombre de host y el número de puerto para hacer ping (p. ej., 192.168.1.100 o ejemplo.com) y un nombre descriptivo que aparecerá en el panel.",
 						"pagespeed": "Rastree el rendimiento de carga de página, Core Web Vitals y puntuaciones de optimización de su sitio web.",
 						"grpc": "Ingrese el nombre de host y puerto del servidor gRPC, opcionalmente especifique un nombre de servicio para la verificación de salud, y agregue un nombre para mostrar.",
 						"websocket": "Ingrese la URL de WebSocket a monitorear (p. ej., wss://example.com/socket) y agregue un nombre para mostrar.",
@@ -640,6 +678,10 @@
 			}
 		},
 		"incidents": {
+			"fallback": {
+				"title": "Sin incidentes — todos los sistemas saludables",
+				"description": "Cuando un monitor falla o se recupera, el incidente aparecerá aquí con los tiempos, los detalles del monitor y el historial de resolución."
+			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "Resolver incidente",
@@ -712,7 +754,7 @@
 				"headers": {
 					"endTime": "Hora de fin",
 					"resolutionType": "Tipo de resolución",
-					"startTime": "",
+					"startTime": "Hora de inicio",
 					"statusCode": "Código de estado"
 				},
 				"resolvedIncidents": "Incidentes resueltos",
@@ -720,6 +762,10 @@
 					"active": "Activo",
 					"resolved": "Resuelto"
 				}
+			},
+			"header": {
+				"title": "Incidentes",
+				"description": "Cuando un monitor falla o se recupera, los incidentes aparecen aquí con los tiempos, los detalles del monitor y el historial de resolución."
 			}
 		},
 		"infrastructure": {
@@ -751,10 +797,10 @@
 				}
 			},
 			"statBoxes": {
-				"avgCpuTemperature": "",
-				"cpuFrequency": "",
-				"cpuLogical": "",
-				"cpuPhysical": "",
+				"avgCpuTemperature": "Temperatura media de la CPU",
+				"cpuFrequency": "Frecuencia de la CPU",
+				"cpuLogical": "CPU (lógicas)",
+				"cpuPhysical": "CPU (físicas)",
 				"disk": "Disco",
 				"memory": "Memoria",
 				"os": "SO"
@@ -768,27 +814,37 @@
 			},
 			"tabs": {
 				"labels": {
-					"network": "",
+					"network": "Red",
 					"overview": "Resumen"
 				}
 			},
 			"fallback": {
 				"actionButton": "¡Cree un monitor!",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "Un monitor de infraestructura se usa para:"
+				"title": "Aún no hay monitores de infraestructura",
+				"description": "Rastrea el rendimiento de los servidores, identifica cuellos de botella y garantiza la fiabilidad con monitoreo en tiempo real."
+			},
+			"header": {
+				"title": "Monitores de infraestructura",
+				"description": "Rastrea el rendimiento de los servidores, identifica cuellos de botella y garantiza la fiabilidad con monitoreo en tiempo real."
 			}
 		},
 		"logs": {
+			"fallback": {
+				"title": "Aún no hay registros",
+				"description": "La actividad del servidor, advertencias y errores aparecerán aquí mientras Checkmate se ejecuta."
+			},
 			"tabs": {
-				"diagnostics": "",
-				"logs": "",
-				"queue": ""
+				"diagnostics": "Diagnóstico",
+				"logs": "Registros",
+				"queue": "Cola de trabajos"
 			},
 			"logLevelSelect": {
 				"label": "Nivel de registro"
 			},
 			"jobQueue": "Cola de trabajos",
+			"jobQueueExplainer": "<highlight>Las filas resaltadas</highlight> son los trabajos que un worker está procesando actualmente.",
 			"failedJobs": "Trabajos fallidos",
+			"failedJobsExplainer": "Fallos recientes por monitor — hora del último fallo, número de fallos y motivo.",
 			"noLogs": "No se encontraron registros",
 			"metrics": {
 				"jobs": "Trabajos",
@@ -815,6 +871,16 @@
 					"usedSPercentage": "% de 1s usado por CPU",
 					"total": "Total",
 					"used": "Usado"
+				},
+				"sections": {
+					"runtimeStats": {
+						"title": "Estadísticas de tiempo de ejecución",
+						"description": "Instantánea del proceso Node.js y la máquina anfitriona. Se actualiza cada 5 segundos."
+					},
+					"memoryCpu": {
+						"title": "Memoria y CPU",
+						"description": "Cómo el proceso utiliza la memoria asignada y la CPU del host."
+					}
 				}
 			},
 			"table": {
@@ -833,18 +899,26 @@
 					"lastFailedAt": "Última falla",
 					"failReason": "Razón de falla"
 				}
+			},
+			"queueFallback": {
+				"title": "No hay trabajos en la cola",
+				"description": "Las comprobaciones de monitores programadas o en ejecución aparecerán aquí. Una cola vacía significa que todo está al día."
+			},
+			"header": {
+				"title": "Registros y cola",
+				"description": "Inspecciona registros del servidor, la cola de trabajos del monitor y los diagnósticos de runtime en un solo lugar."
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "¡Cree una ventana de mantenimiento!",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "Una ventana de mantenimiento se usa para:"
+				"title": "No hay ventanas de mantenimiento programadas",
+				"description": "Programa interrupciones planificadas para silenciar las alertas y que tu equipo y usuarios sepan qué esperar."
 			},
 			"table": {
 				"headers": {
-					"nextWindow": "",
-					"repeat": ""
+					"nextWindow": "Próxima ventana",
+					"repeat": "Repetición"
 				}
 			},
 			"form": {
@@ -891,13 +965,17 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Ventanas de mantenimiento",
+				"description": "Programa interrupciones planificadas para silenciar las alertas y que tu equipo y usuarios sepan qué esperar."
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "Crear un canal",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "Los canales de notificación se usan para:"
+				"title": "Aún no hay canales de notificación",
+				"description": "Conecta Slack, Discord, correo electrónico, webhooks y más para que las personas adecuadas se enteren de los incidentes en cuanto ocurran."
 			},
 			"form": {
 				"accessToken": {
@@ -947,12 +1025,36 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "ID de chat",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Configuración de Pushover",
+					"description": "Introduce tu token de aplicación y la clave de usuario de Pushover.",
+					"optionAppToken": "Token de aplicación",
+					"placeholderAppToken": "Introduce el token de aplicación",
+					"optionUserKey": "Clave de usuario",
+					"placeholderUserKey": "Introduce la clave de usuario"
+				},
+				"twilio": {
+					"title": "Configuración de Twilio",
+					"description": "Introduce las credenciales de tu cuenta de Twilio para enviar SMS.",
+					"optionAccountSid": "SID de la cuenta",
+					"placeholderAccountSid": "Introduce el SID de la cuenta",
+					"optionAuthToken": "Token de autenticación",
+					"placeholderAuthToken": "Introduce el token de autenticación",
+					"optionFromNumber": "Número de origen",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "Número de destino",
+					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
 				"headers": {
 					"destination": "Destino"
 				}
+			},
+			"header": {
+				"title": "Notificaciones",
+				"description": "Conecta Slack, Discord, correo electrónico, webhooks y más para que las personas adecuadas se enteren de los incidentes en cuanto ocurran."
 			}
 		},
 		"pageSpeed": {
@@ -979,8 +1081,12 @@
 			},
 			"fallback": {
 				"actionButton": "¡Cree un monitor!",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "Un monitor de PageSpeed se usa para:"
+				"title": "Aún no hay monitores de PageSpeed",
+				"description": "Sigue las Core Web Vitals y las puntuaciones de Lighthouse a lo largo del tiempo para detectar regresiones antes que tus usuarios."
+			},
+			"header": {
+				"title": "Monitores de PageSpeed",
+				"description": "Sigue las Core Web Vitals y las puntuaciones de Lighthouse a lo largo del tiempo para detectar regresiones antes que tus usuarios."
 			}
 		},
 		"settings": {
@@ -1083,7 +1189,7 @@
 				"email": {
 					"title": "Configuración de correo electrónico",
 					"description": "Configure los ajustes de correo electrónico de su sistema. Se usa para enviar notificaciones y alertas.",
-					"descriptionTransport": "",
+					"descriptionTransport": "Esto crea un transporte SMTP para NodeMailer",
 					"descriptionTransportLink": "Ver especificaciones aquí",
 					"option": {
 						"host": {
@@ -1158,14 +1264,18 @@
 				"validation": {
 					"errorMessage": "Corrija los siguientes errores de validación:"
 				}
+			},
+			"header": {
+				"title": "Configuración",
+				"description": "Configura SMTP, integraciones, retención y comportamiento global de la app."
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "Página de estado eliminada exitosamente",
 			"fallback": {
-				"title": "Una página de estado se usa para:",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "¡Cree una página de estado!"
+				"title": "Aún no hay páginas de estado",
+				"actionButton": "¡Cree una página de estado!",
+				"description": "Publica una página pública que muestre a tus clientes y partes interesadas la disponibilidad en tiempo real y el historial de incidentes."
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Mapa de calor",
@@ -1190,7 +1300,18 @@
 				"allDown": "Todos los sistemas están caídos",
 				"allUp": "Todos los sistemas operativos",
 				"degraded": "Algunos sistemas están experimentando problemas",
-				"unknown": "No se puede determinar el estado del sistema"
+				"unknown": "No se puede determinar el estado del sistema",
+				"allBreached": "Todos los sistemas han superado los umbrales",
+				"allMaintenance": "Todos los sistemas están en mantenimiento",
+				"allPaused": "Todos los sistemas están en pausa",
+				"allInitializing": "Todos los sistemas se están inicializando",
+				"breachedAndDown": "Algunos sistemas han superado los umbrales y están caídos",
+				"breached": "Algunos sistemas han superado los umbrales",
+				"maintenanceAndDown": "Algunos sistemas están caídos durante el mantenimiento",
+				"maintenance": "Algunos sistemas están en mantenimiento",
+				"partiallyPaused": "Algunos sistemas están en pausa",
+				"initializing": "Algunos sistemas se están inicializando",
+				"noMonitors": "No se ha configurado ningún monitor"
 			},
 			"table": {
 				"headers": {
@@ -1282,6 +1403,17 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Páginas de estado",
+				"description": "Publica páginas públicas que muestren a tus clientes y partes interesadas la disponibilidad en tiempo real y el historial de incidentes."
+			},
+			"publicPage": {
+				"maintenance": {
+					"upcoming": "Mantenimiento programado",
+					"inProgress": "Mantenimiento en curso",
+					"completed": "Mantenimiento completado"
+				}
 			}
 		},
 		"uptime": {
@@ -1297,8 +1429,12 @@
 			},
 			"fallback": {
 				"actionButton": "¡Cree un monitor!",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "Un monitor de tiempo de actividad se usa para:"
+				"title": "Aún no hay monitores de uptime",
+				"description": "Observa endpoints HTTP, pings, contenedores y puertos — recibe alertas en el momento en que algo falla."
+			},
+			"header": {
+				"title": "Monitores de uptime",
+				"description": "Observa endpoints HTTP, pings, contenedores y puertos — recibe alertas en el momento en que algo falla."
 			}
 		}
 	}

@@ -2,12 +2,38 @@ import { createTheme } from "@mui/material";
 import { lightPalette, darkPalette, typographyLevels } from "@/Utils/Theme/Palette";
 
 import type { Theme } from "@mui/material/styles";
+import type {} from "@mui/material/styles";
+
+declare module "@mui/material/styles" {
+	interface TypographyVariants {
+		eyebrow: React.CSSProperties;
+		fontFamilyMonospace: string;
+	}
+	interface TypographyVariantsOptions {
+		eyebrow?: React.CSSProperties;
+		fontFamilyMonospace?: string;
+	}
+	interface Palette {
+		sidebar: { accent: string };
+	}
+	interface PaletteOptions {
+		sidebar?: { accent: string };
+	}
+}
+
+declare module "@mui/material/Typography" {
+	interface TypographyPropsVariantOverrides {
+		eyebrow: true;
+	}
+}
 
 export type PaletteKey = {
 	[K in keyof Theme["palette"]]: Theme["palette"][K] extends { main: any } ? K : never;
 }[keyof Theme["palette"]];
 
 const fontFamilyPrimary = "system-ui, sans-serif";
+const fontFamilyMonospace =
+	'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace';
 const shadow =
 	"0px 4px 24px -4px rgba(16, 24, 40, 0.08), 0px 3px 3px -3px rgba(16, 24, 40, 0.03)";
 
@@ -29,6 +55,7 @@ export const theme = (mode: string, palette: any) =>
 		},
 		typography: {
 			fontFamily: fontFamilyPrimary,
+			fontFamilyMonospace,
 			fontSize: typographyLevels.base,
 			h1: {
 				fontSize: typographyLevels.xl,
@@ -45,6 +72,13 @@ export const theme = (mode: string, palette: any) =>
 			body2: {
 				fontSize: typographyLevels.s,
 				fontWeight: 400,
+			},
+			eyebrow: {
+				fontSize: 13,
+				fontWeight: 500,
+				textTransform: "uppercase",
+				letterSpacing: "0.08em",
+				lineHeight: 1.4,
 			},
 		},
 
@@ -120,11 +154,17 @@ export const theme = (mode: string, palette: any) =>
 
 			MuiOutlinedInput: {
 				styleOverrides: {
-					root: {
+					root: ({ theme }) => ({
+						"&:hover .MuiOutlinedInput-notchedOutline": {
+							borderColor:
+								theme.palette.mode === "dark"
+									? "rgba(255, 255, 255, 0.23)"
+									: theme.palette.text.primary,
+						},
 						"&.Mui-focused .MuiOutlinedInput-notchedOutline": {
 							borderColor: palette.primary.main,
 						},
-					},
+					}),
 				},
 			},
 
@@ -143,6 +183,113 @@ export const theme = (mode: string, palette: any) =>
 							backgroundImage: "none",
 						};
 					},
+				},
+			},
+
+			MuiSwitch: {
+				defaultProps: { disableRipple: true },
+				styleOverrides: {
+					root: {
+						width: 36,
+						height: 20,
+						padding: "0 6px 0 0",
+						boxSizing: "content-box",
+						overflow: "visible",
+					},
+					switchBase: ({ theme }) => ({
+						padding: 2,
+						"&.Mui-checked": {
+							transform: "translateX(16px)",
+							color: "#fff",
+							"& + .MuiSwitch-track": {
+								backgroundColor: theme.palette.primary.main,
+								opacity: 1,
+								border: 0,
+							},
+						},
+					}),
+					thumb: {
+						width: 16,
+						height: 16,
+						boxShadow: "0 1px 2px rgba(16, 24, 40, 0.1)",
+					},
+					track: ({ theme }) => ({
+						borderRadius: 999,
+						backgroundColor:
+							theme.palette.mode === "dark"
+								? "rgba(255,255,255,0.16)"
+								: theme.palette.action.disabledBackground,
+						opacity: 1,
+					}),
+				},
+			},
+
+			MuiRadio: {
+				defaultProps: { disableRipple: true },
+				styleOverrides: {
+					root: ({ theme }) => ({
+						padding: theme.spacing(2),
+						color: theme.palette.divider,
+						"& .MuiSvgIcon-root": {
+							fontSize: 20,
+							transition: "none",
+						},
+						"&.Mui-checked": {
+							color: theme.palette.primary.main,
+						},
+						"&.Mui-checked .MuiSvgIcon-root:last-of-type": {
+							transform: "scale(0.6)",
+						},
+					}),
+				},
+			},
+
+			MuiSlider: {
+				styleOverrides: {
+					root: ({ theme }) => ({
+						height: 4,
+						padding: "13px 0",
+						color: theme.palette.primary.main,
+					}),
+					rail: ({ theme }) => ({
+						height: 4,
+						borderRadius: 999,
+						opacity: 1,
+						backgroundColor:
+							theme.palette.mode === "dark"
+								? "rgba(255,255,255,0.16)"
+								: theme.palette.action.disabledBackground,
+					}),
+					track: {
+						height: 4,
+						borderRadius: 999,
+						border: "none",
+					},
+					thumb: ({ theme }) => ({
+						width: 18,
+						height: 18,
+						backgroundColor: theme.palette.background.paper,
+						border: `2px solid ${theme.palette.primary.main}`,
+						boxShadow: "0 1px 2px rgba(16, 24, 40, 0.1)",
+						"&:hover, &.Mui-focusVisible": {
+							boxShadow: `0 0 0 6px ${theme.palette.primary.main}1f`,
+						},
+						"&.Mui-active": {
+							boxShadow: `0 0 0 8px ${theme.palette.primary.main}29`,
+						},
+						"&::before": { display: "none" },
+					}),
+					mark: ({ theme }) => ({
+						width: 2,
+						height: 2,
+						borderRadius: 999,
+						backgroundColor: theme.palette.text.disabled,
+						opacity: 0.5,
+					}),
+					markActive: ({ theme }) => ({
+						backgroundColor: theme.palette.primary.main,
+						opacity: 0.5,
+					}),
 				},
 			},
 		},
