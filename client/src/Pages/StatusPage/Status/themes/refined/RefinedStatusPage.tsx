@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import { useTranslation } from "react-i18next";
@@ -27,7 +27,7 @@ interface Props {
 export const RefinedStatusPage = ({ statusPage, monitors }: Props) => {
 	const { t } = useTranslation();
 	const { tokens, mode } = useStatusPageTheme();
-	const styles = refinedStyles(tokens, mode === "dark");
+	const styles = useMemo(() => refinedStyles(tokens, mode === "dark"), [tokens, mode]);
 	const [chartMode, setChartMode] = useState<"heatmap" | "histogram">("heatmap");
 
 	const overall = resolveOverallStatus(monitors, t);
@@ -62,7 +62,7 @@ export const RefinedStatusPage = ({ statusPage, monitors }: Props) => {
 			</Box>
 
 			<Box sx={styles.hero}>
-				<Box sx={(styles.statusDot as Function)(overall.tone)} />
+				<Box sx={styles.statusDot(overall.tone)} />
 				<Box sx={styles.statusCopy}>
 					<Box
 						component="h1"
@@ -79,7 +79,7 @@ export const RefinedStatusPage = ({ statusPage, monitors }: Props) => {
 						})}
 					</Box>
 				</Box>
-				<Box sx={(styles.heroIcon as Function)(overall.tone)}>{overall.icon}</Box>
+				<Box sx={styles.heroIcon(overall.tone)}>{overall.icon}</Box>
 			</Box>
 
 			{statusPage.showCharts && (
@@ -94,7 +94,7 @@ export const RefinedStatusPage = ({ statusPage, monitors }: Props) => {
 							role="radio"
 							aria-checked={chartMode === "heatmap"}
 							onClick={() => setChartMode("heatmap")}
-							sx={(styles.chartSwitchButton as Function)(chartMode === "heatmap")}
+							sx={styles.chartSwitchButton(chartMode === "heatmap")}
 						>
 							{t("pages.statusPages.monitorsList.chartTypeHeatmap")}
 						</Box>
@@ -104,7 +104,7 @@ export const RefinedStatusPage = ({ statusPage, monitors }: Props) => {
 							role="radio"
 							aria-checked={chartMode === "histogram"}
 							onClick={() => setChartMode("histogram")}
-							sx={(styles.chartSwitchButton as Function)(chartMode === "histogram")}
+							sx={styles.chartSwitchButton(chartMode === "histogram")}
 						>
 							{t("pages.statusPages.monitorsList.chartTypeHistogram")}
 						</Box>
@@ -151,7 +151,7 @@ export const RefinedStatusPage = ({ statusPage, monitors }: Props) => {
 								</Box>
 								<Box
 									component="span"
-									sx={(styles.badge as Function)(badgeTone)}
+									sx={styles.badge(badgeTone)}
 								>
 									{t(statusBadgeKey[monitor.status])}
 								</Box>
@@ -167,10 +167,7 @@ export const RefinedStatusPage = ({ statusPage, monitors }: Props) => {
 										gaugeLabelSx: styles.gaugeLabel,
 										gaugeValueSx: styles.gaugeValue,
 										gaugeBarSx: styles.gaugeBar,
-										gaugeFillSx: styles.gaugeFill as (
-											level: "ok" | "warm" | "hot",
-											width: number
-										) => any,
+										gaugeFillSx: styles.gaugeFill,
 										gaugeSubSx: styles.gaugeSub,
 									}}
 								/>
@@ -180,13 +177,13 @@ export const RefinedStatusPage = ({ statusPage, monitors }: Props) => {
 									<ThemedHeatmap
 										checks={monitor.recentChecks ?? []}
 										containerSx={styles.heatmap}
-										cellSx={styles.heatmapCell as (kind: any) => any}
+										cellSx={styles.heatmapCell}
 									/>
 								) : (
 									<ThemedHistogram
 										checks={monitor.recentChecks ?? []}
 										containerSx={styles.histogram}
-										barSx={styles.bar as (kind: any, h: number) => any}
+										barSx={styles.bar}
 										statsSx={styles.chartStats}
 									/>
 								))}

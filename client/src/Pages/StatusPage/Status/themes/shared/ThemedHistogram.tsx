@@ -36,7 +36,7 @@ export const ThemedHistogram = ({
 	statsGap = 1,
 }: Props) => {
 	const { t } = useTranslation();
-	const useSxApi = Boolean(barSx);
+	const useSxApi = Boolean(containerSx && barSx && statsSx);
 
 	const { padded, max, avg, peak } = useMemo(() => {
 		const source = checks.slice(0, CELLS).reverse();

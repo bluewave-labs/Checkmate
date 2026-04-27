@@ -30,7 +30,7 @@ const classify = (check: CheckSnapshot): Exclude<HeatCellKind, "empty"> => {
 
 export const ThemedHeatmap = ({ checks, containerSx, cellSx, classPrefix }: Props) => {
 	const { t } = useTranslation();
-	const useSxApi = Boolean(cellSx);
+	const useSxApi = Boolean(containerSx && cellSx);
 
 	const source = checks.slice(0, CELLS).reverse();
 	const padded: (CheckSnapshot | null)[] = [

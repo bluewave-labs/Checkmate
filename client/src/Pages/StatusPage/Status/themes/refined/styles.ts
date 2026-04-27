@@ -1,9 +1,52 @@
+import type { SxProps, Theme } from "@mui/material/styles";
 import type { StatusPageThemeTokens } from "../tokens";
+import { type OverallTone, toneColor, toneSoft } from "../shared/overallStatus";
 
-export type RefinedTone = "up" | "warn" | "down";
 export type RefinedHeatCell = "fast" | "med" | "slow" | "down" | "empty";
 export type RefinedBarKind = "up" | "down" | "empty";
 export type RefinedGaugeFill = "ok" | "warm" | "hot";
+
+export interface RefinedStyles {
+	page: SxProps<Theme>;
+	top: SxProps<Theme>;
+	brand: SxProps<Theme>;
+	logoMono: SxProps<Theme>;
+	logoImg: SxProps<Theme>;
+	company: SxProps<Theme>;
+	hero: SxProps<Theme>;
+	statusDot: (tone: OverallTone) => SxProps<Theme>;
+	statusCopy: SxProps<Theme>;
+	heroTitle: SxProps<Theme>;
+	heroSub: SxProps<Theme>;
+	heroIcon: (tone: OverallTone) => SxProps<Theme>;
+	chartSwitchWrap: SxProps<Theme>;
+	chartSwitch: SxProps<Theme>;
+	chartSwitchButton: (active: boolean) => SxProps<Theme>;
+	monitorList: SxProps<Theme>;
+	card: SxProps<Theme>;
+	cardRow: SxProps<Theme>;
+	cardLeft: SxProps<Theme>;
+	monitorName: SxProps<Theme>;
+	monitorMeta: SxProps<Theme>;
+	pill: SxProps<Theme>;
+	pillHardware: SxProps<Theme>;
+	monitorUrl: SxProps<Theme>;
+	badge: (tone: OverallTone) => SxProps<Theme>;
+	heatmap: SxProps<Theme>;
+	heatmapCell: (kind: RefinedHeatCell) => SxProps<Theme>;
+	histogram: SxProps<Theme>;
+	bar: (kind: RefinedBarKind, heightPct: number) => SxProps<Theme>;
+	chartStats: SxProps<Theme>;
+	infra: SxProps<Theme>;
+	infraEmpty: SxProps<Theme>;
+	gauge: SxProps<Theme>;
+	gaugeLabel: SxProps<Theme>;
+	gaugeValue: SxProps<Theme>;
+	gaugeBar: SxProps<Theme>;
+	gaugeFill: (level: RefinedGaugeFill, widthPct: number) => SxProps<Theme>;
+	gaugeSub: SxProps<Theme>;
+	footer: SxProps<Theme>;
+}
 
 const sansFontStack =
 	'-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif';
@@ -12,13 +55,10 @@ const cardShadow = "0 1px 2px rgba(10, 16, 32, 0.06), 0 6px 18px rgba(10, 16, 32
 const cardShadowHover =
 	"0 2px 4px rgba(16, 24, 40, 0.06), 0 10px 24px rgba(16, 24, 40, 0.06)";
 
-const toneColor = (tone: RefinedTone, t: StatusPageThemeTokens) =>
-	tone === "down" ? t.down : tone === "warn" ? t.warn : t.up;
-
-const toneSoft = (tone: RefinedTone, t: StatusPageThemeTokens) =>
-	tone === "down" ? t.downSoft : tone === "warn" ? t.warnSoft : t.upSoft;
-
-export const refinedStyles = (tokens: StatusPageThemeTokens, isDark: boolean) => {
+export const refinedStyles = (
+	tokens: StatusPageThemeTokens,
+	isDark: boolean
+): RefinedStyles => {
 	const heatCellBg: Record<RefinedHeatCell, string> = {
 		fast: tokens.up,
 		med: `color-mix(in srgb, ${tokens.up} 60%, #ffffff 40%)`,
@@ -39,7 +79,7 @@ export const refinedStyles = (tokens: StatusPageThemeTokens, isDark: boolean) =>
 		hot: tokens.down,
 	};
 
-	const sx: Record<string, any> = {
+	return {
 		page: {
 			flex: "1 0 auto",
 			maxWidth: 960,
@@ -78,11 +118,7 @@ export const refinedStyles = (tokens: StatusPageThemeTokens, isDark: boolean) =>
 			fontWeight: 700,
 			fontSize: 13,
 		},
-		logoImg: {
-			maxHeight: 32,
-			maxWidth: 120,
-			objectFit: "contain",
-		},
+		logoImg: { maxHeight: 32, maxWidth: 120, objectFit: "contain" },
 		company: { fontSize: 14 },
 
 		hero: {
@@ -96,7 +132,7 @@ export const refinedStyles = (tokens: StatusPageThemeTokens, isDark: boolean) =>
 			boxShadow: cardShadow,
 			mb: "20px",
 		},
-		statusDot: (tone: RefinedTone) => ({
+		statusDot: (tone) => ({
 			width: 10,
 			height: 10,
 			borderRadius: "50%",
@@ -114,17 +150,13 @@ export const refinedStyles = (tokens: StatusPageThemeTokens, isDark: boolean) =>
 			color: tokens.text,
 		},
 		heroSub: { m: 0, color: tokens.textMuted, fontSize: 13 },
-		heroIcon: (tone: RefinedTone) => ({
+		heroIcon: (tone) => ({
 			color: toneColor(tone, tokens),
 			display: "flex",
 			alignItems: "center",
 		}),
 
-		chartSwitchWrap: {
-			display: "flex",
-			justifyContent: "flex-end",
-			mb: "12px",
-		},
+		chartSwitchWrap: { display: "flex", justifyContent: "flex-end", mb: "12px" },
 		chartSwitch: {
 			display: "inline-flex",
 			border: `1px solid ${tokens.border}`,
@@ -133,7 +165,7 @@ export const refinedStyles = (tokens: StatusPageThemeTokens, isDark: boolean) =>
 			p: "3px",
 			gap: "2px",
 		},
-		chartSwitchButton: (active: boolean) => ({
+		chartSwitchButton: (active) => ({
 			border: 0,
 			background: active ? tokens.upSoft : "transparent",
 			fontFamily: "inherit",
@@ -199,29 +231,19 @@ export const refinedStyles = (tokens: StatusPageThemeTokens, isDark: boolean) =>
 			borderRadius: "999px",
 			fontWeight: 600,
 		},
-		pillHardware: isDark
-			? {
-					fontSize: 10,
-					textTransform: "uppercase",
-					letterSpacing: "0.08em",
-					padding: "2px 8px",
-					borderRadius: "999px",
-					fontWeight: 600,
-					color: "#60a5fa",
-					border: "1px solid rgba(96, 165, 250, 0.3)",
-					background: "rgba(96, 165, 250, 0.1)",
-				}
-			: {
-					fontSize: 10,
-					textTransform: "uppercase",
-					letterSpacing: "0.08em",
-					padding: "2px 8px",
-					borderRadius: "999px",
-					fontWeight: 600,
-					color: "#1d4ed8",
-					border: "1px solid rgba(29, 78, 216, 0.3)",
-					background: "rgba(29, 78, 216, 0.06)",
-				},
+		pillHardware: {
+			fontSize: 10,
+			textTransform: "uppercase",
+			letterSpacing: "0.08em",
+			padding: "2px 8px",
+			borderRadius: "999px",
+			fontWeight: 600,
+			color: isDark ? "#60a5fa" : "#1d4ed8",
+			border: `1px solid ${
+				isDark ? "rgba(96, 165, 250, 0.3)" : "rgba(29, 78, 216, 0.3)"
+			}`,
+			background: isDark ? "rgba(96, 165, 250, 0.1)" : "rgba(29, 78, 216, 0.06)",
+		},
 		monitorUrl: {
 			fontSize: 12,
 			color: tokens.textMuted,
@@ -232,7 +254,7 @@ export const refinedStyles = (tokens: StatusPageThemeTokens, isDark: boolean) =>
 			maxWidth: 280,
 		},
 
-		badge: (tone: RefinedTone) => ({
+		badge: (tone) => ({
 			fontSize: 11,
 			fontWeight: 600,
 			padding: "4px 10px",
@@ -249,7 +271,7 @@ export const refinedStyles = (tokens: StatusPageThemeTokens, isDark: boolean) =>
 			gap: "3px",
 			height: 42,
 		},
-		heatmapCell: (kind: RefinedHeatCell) => ({
+		heatmapCell: (kind) => ({
 			borderRadius: "2px",
 			background: heatCellBg[kind],
 			opacity: kind === "empty" ? 0.4 : 1,
@@ -265,7 +287,7 @@ export const refinedStyles = (tokens: StatusPageThemeTokens, isDark: boolean) =>
 			alignItems: "flex-end",
 			height: 42,
 		},
-		bar: (kind: RefinedBarKind, heightPct: number) => ({
+		bar: (kind, heightPct) => ({
 			background: barBg[kind],
 			borderRadius: "2px",
 			minHeight: 3,
@@ -318,7 +340,7 @@ export const refinedStyles = (tokens: StatusPageThemeTokens, isDark: boolean) =>
 			overflow: "hidden",
 			mt: "8px",
 		},
-		gaugeFill: (level: RefinedGaugeFill, widthPct: number) => ({
+		gaugeFill: (level, widthPct) => ({
 			display: "block",
 			height: "100%",
 			background: gaugeFillBg[level],
@@ -347,6 +369,4 @@ export const refinedStyles = (tokens: StatusPageThemeTokens, isDark: boolean) =>
 			},
 		},
 	};
-
-	return sx;
 };

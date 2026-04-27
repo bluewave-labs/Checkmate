@@ -9,8 +9,15 @@ import {
 	Wrench,
 } from "lucide-react";
 import type { Monitor, MonitorStatus } from "@/Types/Monitor";
+import type { StatusPageThemeTokens } from "../tokens";
 
 export type OverallTone = "up" | "warn" | "down";
+
+export const toneColor = (tone: OverallTone, t: StatusPageThemeTokens): string =>
+	tone === "down" ? t.down : tone === "warn" ? t.warn : t.up;
+
+export const toneSoft = (tone: OverallTone, t: StatusPageThemeTokens): string =>
+	tone === "down" ? t.downSoft : tone === "warn" ? t.warnSoft : t.upSoft;
 
 export interface OverallStatus {
 	tone: OverallTone;

@@ -118,8 +118,8 @@ export const ThemedInfrastructure = ({ monitor, sxApi, classPrefix }: Props) => 
 	return (
 		<Box className={`${classPrefix}-infra`}>
 			{gauges.map((g) => {
-				const heatClass =
-					g.value > 85 ? `${classPrefix}-hot` : g.value > 70 ? `${classPrefix}-warm` : "";
+				const level = heatLevel(g.value);
+				const heatClass = level === "ok" ? "" : `${classPrefix}-${level}`;
 				return (
 					<Box
 						key={g.key}
