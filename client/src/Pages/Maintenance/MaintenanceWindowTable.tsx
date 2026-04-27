@@ -107,7 +107,7 @@ export const MaintenanceWindowTable = ({
 	const { deleteFn, loading: deleteLoading } = useDelete();
 	const { patch } = usePatch();
 	const { data: monitorsData } = useGet<Monitor[]>("/monitors/team");
-	const monitorsMap = useMemo (
+	const monitorsMap = useMemo(
 		() => new Map(monitorsData?.map((m) => [m.id, m]) ?? []),
 		[monitorsData]
 	);
