@@ -4,9 +4,8 @@ export const useToast = () => {
 	const showToast = (message: string, options?: ToastOptions) => {
 		toast.dismiss();
 		const baseStyle: React.CSSProperties = {
-			whiteSpace: "nowrap",
-			overflow: "hidden",
-			textOverflow: "ellipsis",
+			whiteSpace: "pre-line",
+			wordBreak: "break-word",
 		};
 		toast(message, {
 			...options,

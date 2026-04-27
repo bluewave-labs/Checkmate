@@ -8,7 +8,7 @@ import type { ResponsiveStyleValue } from "@mui/system";
 import { useTheme } from "@mui/material/styles";
 
 type BaseChartProps = React.PropsWithChildren<{
-	icon?: React.ReactNode;
+	icon: React.ReactNode;
 	title: string;
 	width?: number | string;
 	maxWidth?: number | string;
@@ -17,6 +17,7 @@ type BaseChartProps = React.PropsWithChildren<{
 
 export const BaseChart = ({
 	children,
+	icon,
 	title,
 	width = "100%",
 	maxWidth = "100%",
@@ -37,12 +38,34 @@ export const BaseChart = ({
 				gap={theme.spacing(LAYOUT.MD)}
 				flex={1}
 			>
-				<Typography
-					variant="eyebrow"
-					color="text.secondary"
+				<Stack
+					direction="row"
+					alignItems={"center"}
+					gap={theme.spacing(LAYOUT.XS)}
 				>
-					{title}
-				</Typography>
+					{icon && (
+						<BaseBox
+							sx={{
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "center",
+								width: 34,
+								height: 34,
+								backgroundColor: theme.palette.action.hover,
+								"& svg": {
+									width: 20,
+									height: 20,
+									"& path": {
+										stroke: theme.palette.text.secondary,
+									},
+								},
+							}}
+						>
+							{icon}
+						</BaseBox>
+					)}
+					<Typography variant="h2">{title}</Typography>
+				</Stack>
 				<Box flex={1}>{children}</Box>
 			</Stack>
 		</BaseBox>

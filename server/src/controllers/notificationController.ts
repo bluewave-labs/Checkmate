@@ -37,9 +37,13 @@ class NotificationController implements INotificationController {
 			const notification = testNotificationBodyValidation.parse(req.body);
 			const success = await this.notificationsService.sendTestNotification(notification);
 
+			if (!success) {
+				throw new AppError({ message: "Sending notification failed", status: 500 });
+			}
+
 			return res.status(200).json({
-				success,
-				msg: success ? "Notification sent successfully" : "Notification could not be sent — check the destination details.",
+				success: true,
+				msg: "Notification sent successfully",
 				details: { service: SERVICE_NAME },
 			});
 		} catch (error) {

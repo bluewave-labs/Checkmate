@@ -46,9 +46,6 @@ export const DialogInput = ({
 			open={open}
 			maxWidth={maxWidth}
 			fullWidth={fullWidth}
-			onClose={(_event, reason) => {
-				if (reason !== "backdropClick" && onCancel) onCancel(undefined);
-			}}
 		>
 			{title && <DialogTitle sx={{ fontSize: typographyLevels.l }}>{title}</DialogTitle>}
 			<DialogContent>

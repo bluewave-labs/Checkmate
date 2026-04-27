@@ -114,7 +114,6 @@ export const DetailGauge = ({
 	upperValue,
 	lowerLabel,
 	lowerValue,
-	maxWidth = 225,
 }: {
 	title: string;
 	progress: number;
@@ -122,14 +121,13 @@ export const DetailGauge = ({
 	upperValue?: string | number;
 	lowerLabel?: string;
 	lowerValue?: string | number;
-	maxWidth?: number;
 }) => {
 	const theme = useTheme();
 	return (
 		<BaseChart
 			icon={null}
 			title={title}
-			maxWidth={maxWidth}
+			maxWidth={225}
 		>
 			<Stack
 				alignItems={"center"}

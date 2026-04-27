@@ -4,7 +4,6 @@ import Typography from "@mui/material/Typography";
 import { useSelector } from "react-redux";
 import { Select } from "@/Components/inputs";
 import { TableLogs } from "@/Pages/Logs/components/TableLogs";
-import { EmptyState } from "@/Components/design-elements";
 
 import { useTheme } from "@mui/material";
 import { useGet } from "@/Hooks/UseApi";
@@ -16,7 +15,7 @@ import type { RootState } from "@/Types/state";
 
 export const TabLogs = () => {
 	const theme = useTheme();
-	const { data: logs, isLoading } = useGet<Log[]>("/logs");
+	const { data: logs } = useGet<Log[]>("/logs");
 	const [selectedLogLevel, setSelectedLogLevel] = useState<LogLevelOption>("all");
 	const [page, setPage] = useState(0);
 	const rowsPerPage = useSelector(
@@ -33,16 +32,6 @@ export const TabLogs = () => {
 
 	const paginatedLogs =
 		filteredLogs?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) ?? [];
-
-	if (!isLoading && (logs?.length ?? 0) === 0) {
-		return (
-			<EmptyState
-				fullscreen
-				title={t("pages.logs.fallback.title")}
-				description={t("pages.logs.fallback.description")}
-			/>
-		);
-	}
 
 	return (
 		<Stack gap={theme.spacing(8)}>

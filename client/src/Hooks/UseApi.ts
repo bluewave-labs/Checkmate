@@ -57,11 +57,7 @@ export const usePost = <B = any, R = any>() => {
 					...config?.headers,
 				},
 			});
-			if (res.data?.success === false) {
-				toastError(res.data?.msg || "Operation failed");
-			} else {
-				toastSuccess(res.data?.msg || "Operation successful");
-			}
+			toastSuccess(res.data?.msg || "Operation successful");
 
 			return res.data;
 		} catch (err: any) {

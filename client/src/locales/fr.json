@@ -199,14 +199,6 @@
 		"starPrompt": {
 			"title": "Star Checkmate",
 			"description": "Consultez les dernières versions et aidez la communauté à grandir sur GitHub"
-		},
-		"pageHeader": {
-			"links": {
-				"support": "Assistance",
-				"discussions": "Discussions",
-				"docs": "Documentation",
-				"changelog": "Journal des modifications"
-			}
 		}
 	},
 	"pages": {
@@ -286,23 +278,10 @@
 						"placeholder": "Sélectionnez un rôle"
 					},
 					"linkLabel": "Lien d'invitation"
-				},
-				"fallback": {
-					"title": "Aucun membre d'équipe pour le moment",
-					"description": "Invitez vos coéquipiers par e-mail ou ajoutez-les directement. Une fois qu'ils auront rejoint, ils apparaîtront ici avec leur rôle."
 				}
-			},
-			"header": {
-				"title": "Compte",
-				"description": "Gérez votre profil, mot de passe, équipe et préférences d'espace de travail."
 			}
 		},
 		"auth": {
-			"brandPanel": {
-				"eyebrow": "Surveillance d'infrastructure open source",
-				"tagline": "Surveillez chaque mouvement de vos serveurs.",
-				"description": "Suivi en temps réel de la disponibilité, du temps de réponse et des incidents - auto-hébergé et à vous."
-			},
 			"common": {
 				"passwordRules": {
 					"length": {
@@ -364,8 +343,7 @@
 			"register": {
 				"title": "Bienvenue sur Checkmate !",
 				"subtitle": "Inscrivez-vous pour commencer",
-				"submit": "S'inscrire",
-				"setupNotice": "Cette page n'est disponible que lors de la configuration initiale. Une fois qu'un super administrateur est enregistré, des utilisateurs supplémentaires peuvent être invités depuis les paramètres de l'équipe."
+				"submit": "S'inscrire"
 			},
 			"forgotPassword": {
 				"title": "Mot de passe oublié ?",
@@ -400,14 +378,6 @@
 					"statusCode": "Code de statut",
 					"location": "Emplacement"
 				}
-			},
-			"fallback": {
-				"title": "Aucune vérification pour le moment",
-				"description": "Une fois que vous aurez créé un moniteur, chaque sonde d'état et temps de réponse apparaîtra ici sous forme de vérification."
-			},
-			"header": {
-				"title": "Vérifications",
-				"description": "Chaque sonde que Checkmate exécute contre vos moniteurs apparaît ici avec le code d'état et le temps de réponse."
 			}
 		},
 		"common": {
@@ -427,8 +397,7 @@
 					"activeFor": "Actif depuis",
 					"certificateExpiry": "Expiration du certificat",
 					"lastCheck": "Dernière vérification",
-					"lastResponseTime": "Dernier temps de réponse",
-					"serviceIsDown": "Le service est indisponible"
+					"lastResponseTime": "Dernier temps de réponse"
 				},
 				"status": {
 					"down": "hors ligne",
@@ -671,10 +640,6 @@
 			}
 		},
 		"incidents": {
-			"fallback": {
-				"title": "Aucun incident — tous les systèmes sont sains",
-				"description": "Lorsqu'un moniteur tombe en panne ou se rétablit, l'incident apparaîtra ici avec l'horodatage, les détails du moniteur et l'historique de résolution."
-			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "Résoudre l'incident",
@@ -755,10 +720,6 @@
 					"active": "Actif",
 					"resolved": "Résolu"
 				}
-			},
-			"header": {
-				"title": "Incidents",
-				"description": "Lorsqu'un moniteur tombe en panne ou se rétablit, les incidents apparaissent ici avec l'horodatage, les détails du moniteur et l'historique de résolution."
 			}
 		},
 		"infrastructure": {
@@ -813,19 +774,11 @@
 			},
 			"fallback": {
 				"actionButton": "Créer un moniteur !",
-				"title": "Aucun moniteur d'infrastructure",
-				"description": "Suivez les performances des serveurs, identifiez les goulots d'étranglement et garantissez la fiabilité avec une surveillance en temps réel."
-			},
-			"header": {
-				"title": "Moniteurs d'infrastructure",
-				"description": "Suivez les performances des serveurs, identifiez les goulots d'étranglement et garantissez la fiabilité avec une surveillance en temps réel."
+				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
+				"title": "Un moniteur d'infrastructure sert à :"
 			}
 		},
 		"logs": {
-			"fallback": {
-				"title": "Aucun journal pour le moment",
-				"description": "L'activité du serveur, les avertissements et les erreurs apparaîtront ici pendant l'exécution de Checkmate."
-			},
 			"tabs": {
 				"diagnostics": "Diagnostic",
 				"logs": "Journaux des serveurs",
@@ -835,9 +788,7 @@
 				"label": "Niveau de log"
 			},
 			"jobQueue": "File d'attente des tâches",
-			"jobQueueExplainer": "<highlight>Les lignes mises en évidence</highlight> sont les tâches actuellement traitées par un worker.",
 			"failedJobs": "Tâches échouées",
-			"failedJobsExplainer": "Échecs récents par moniteur — heure du dernier échec, nombre d'échecs et raison.",
 			"noLogs": "Aucun log trouvé",
 			"metrics": {
 				"jobs": "Tâches",
@@ -864,16 +815,6 @@
 					"usedSPercentage": "% de 1s utilisé par le CPU",
 					"total": "Total",
 					"used": "Utilisé"
-				},
-				"sections": {
-					"runtimeStats": {
-						"title": "Statistiques d'exécution",
-						"description": "Aperçu du processus Node.js et de la machine hôte. Mis à jour toutes les 5 secondes."
-					},
-					"memoryCpu": {
-						"title": "Mémoire et CPU",
-						"description": "Comment le processus utilise sa mémoire allouée et le CPU de l'hôte."
-					}
 				}
 			},
 			"table": {
@@ -892,21 +833,13 @@
 					"lastFailedAt": "Dernier échec",
 					"failReason": "Raison de l'échec"
 				}
-			},
-			"queueFallback": {
-				"title": "Aucun travail dans la file",
-				"description": "Les vérifications de moniteurs planifiées ou en cours apparaîtront ici. Une file vide signifie que tout est à jour."
-			},
-			"header": {
-				"title": "Journaux et file",
-				"description": "Inspectez les journaux serveur, la file des tâches de moniteur et les diagnostics d'exécution au même endroit."
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "Créer une fenêtre de maintenance !",
-				"title": "Aucune fenêtre de maintenance planifiée",
-				"description": "Planifiez les interruptions afin que les alertes soient supprimées et que votre équipe et vos utilisateurs sachent à quoi s'attendre."
+				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
+				"title": "Une fenêtre de maintenance sert à :"
 			},
 			"table": {
 				"headers": {
@@ -958,17 +891,13 @@
 						}
 					}
 				}
-			},
-			"header": {
-				"title": "Fenêtres de maintenance",
-				"description": "Planifiez les interruptions afin que les alertes soient supprimées et que votre équipe et vos utilisateurs sachent à quoi s'attendre."
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "Créer un canal",
-				"title": "Aucun canal de notification",
-				"description": "Connectez Slack, Discord, e-mail, webhooks et plus encore pour que les bonnes personnes soient prévenues dès qu'un incident survient."
+				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
+				"title": "Les canaux de notification servent à :"
 			},
 			"form": {
 				"accessToken": {
@@ -1018,36 +947,12 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "ID du chat",
 					"placeholderChatId": "-1001234567890"
-				},
-				"pushover": {
-					"title": "Configuration Pushover",
-					"description": "Entrez votre jeton d'application et votre clé utilisateur Pushover.",
-					"optionAppToken": "Jeton d'application",
-					"placeholderAppToken": "Entrez le jeton d'application",
-					"optionUserKey": "Clé utilisateur",
-					"placeholderUserKey": "Entrez la clé utilisateur"
-				},
-				"twilio": {
-					"title": "Configuration Twilio",
-					"description": "Entrez les identifiants de votre compte Twilio pour envoyer des SMS.",
-					"optionAccountSid": "SID du compte",
-					"placeholderAccountSid": "Entrez le SID du compte",
-					"optionAuthToken": "Jeton d'authentification",
-					"placeholderAuthToken": "Entrez le jeton d'authentification",
-					"optionFromNumber": "Numéro d'origine",
-					"placeholderFromNumber": "+1234567890",
-					"optionToNumber": "Numéro de destination",
-					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
 				"headers": {
 					"destination": "Destination"
 				}
-			},
-			"header": {
-				"title": "Notifications",
-				"description": "Connectez Slack, Discord, e-mail, webhooks et plus encore pour que les bonnes personnes soient prévenues dès qu'un incident survient."
 			}
 		},
 		"pageSpeed": {
@@ -1074,12 +979,8 @@
 			},
 			"fallback": {
 				"actionButton": "Créer un moniteur !",
-				"title": "Aucun moniteur PageSpeed",
-				"description": "Suivez les Core Web Vitals et les scores Lighthouse au fil du temps pour détecter les régressions avant vos utilisateurs."
-			},
-			"header": {
-				"title": "Moniteurs PageSpeed",
-				"description": "Suivez les Core Web Vitals et les scores Lighthouse au fil du temps pour détecter les régressions avant vos utilisateurs."
+				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
+				"title": "Un moniteur PageSpeed sert à :"
 			}
 		},
 		"settings": {
@@ -1257,18 +1158,14 @@
 				"validation": {
 					"errorMessage": "Veuillez corriger les erreurs de validation suivantes :"
 				}
-			},
-			"header": {
-				"title": "Paramètres",
-				"description": "Configurez SMTP, intégrations, rétention et comportement global de l'application."
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "Page de statut supprimée avec succès",
 			"fallback": {
-				"title": "Aucune page de statut",
-				"actionButton": "Créer une page de statut !",
-				"description": "Publiez une page publique qui montre à vos clients et parties prenantes la disponibilité en temps réel et l'historique des incidents."
+				"title": "Une page de statut sert à :",
+				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
+				"actionButton": "Créer une page de statut !"
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Carte thermique",
@@ -1293,18 +1190,7 @@
 				"allDown": "Tous les systèmes sont hors service",
 				"allUp": "Tous les systèmes sont opérationnels",
 				"degraded": "Certains systèmes rencontrent des problèmes",
-				"unknown": "Impossible de déterminer le statut du système",
-				"allBreached": "Tous les systèmes ont dépassé les seuils",
-				"allMaintenance": "Tous les systèmes sont en maintenance",
-				"allPaused": "Tous les systèmes sont en pause",
-				"allInitializing": "Tous les systèmes sont en cours d'initialisation",
-				"breachedAndDown": "Certains systèmes ont dépassé les seuils et sont hors ligne",
-				"breached": "Certains systèmes ont dépassé les seuils",
-				"maintenanceAndDown": "Certains systèmes sont hors ligne pendant la maintenance",
-				"maintenance": "Certains systèmes sont en maintenance",
-				"partiallyPaused": "Certains systèmes sont en pause",
-				"initializing": "Certains systèmes sont en cours d'initialisation",
-				"noMonitors": "Aucun moniteur n'a été configuré"
+				"unknown": "Impossible de déterminer le statut du système"
 			},
 			"table": {
 				"headers": {
@@ -1396,10 +1282,6 @@
 						}
 					}
 				}
-			},
-			"header": {
-				"title": "Pages de statut",
-				"description": "Publiez des pages publiques montrant à vos clients et parties prenantes la disponibilité en temps réel et l'historique des incidents."
 			}
 		},
 		"uptime": {
@@ -1415,12 +1297,8 @@
 			},
 			"fallback": {
 				"actionButton": "Créer un moniteur !",
-				"title": "Aucun moniteur de disponibilité",
-				"description": "Surveillez les points de terminaison HTTP, les pings, les conteneurs et les ports — soyez alerté dès qu'une panne survient."
-			},
-			"header": {
-				"title": "Moniteurs de disponibilité",
-				"description": "Surveillez les points de terminaison HTTP, les pings, les conteneurs et les ports — soyez alerté dès qu'une panne survient."
+				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
+				"title": "Un moniteur de disponibilité sert à :"
 			}
 		}
 	}

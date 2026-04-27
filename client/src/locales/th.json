@@ -199,14 +199,6 @@
 		"starPrompt": {
 			"title": "ให้ดาว Checkmate",
 			"description": "ดูรุ่นล่าสุดและช่วยเติบโตชุมชนบน GitHub"
-		},
-		"pageHeader": {
-			"links": {
-				"support": "ฝ่ายสนับสนุน",
-				"discussions": "การสนทนา",
-				"docs": "เอกสาร",
-				"changelog": "บันทึกการเปลี่ยนแปลง"
-			}
 		}
 	},
 	"pages": {
@@ -286,23 +278,10 @@
 						"placeholder": "เลือกบทบาท"
 					},
 					"linkLabel": "ลิงก์เชิญ"
-				},
-				"fallback": {
-					"title": "ยังไม่มีสมาชิกทีม",
-					"description": "เชิญเพื่อนร่วมทีมทางอีเมลหรือเพิ่มพวกเขาโดยตรง เมื่อพวกเขาเข้าร่วม พวกเขาจะปรากฏที่นี่พร้อมบทบาทของพวกเขา"
 				}
-			},
-			"header": {
-				"title": "บัญชี",
-				"description": "จัดการโปรไฟล์ รหัสผ่าน ทีม และการตั้งค่าพื้นที่ทำงานของคุณ"
 			}
 		},
 		"auth": {
-			"brandPanel": {
-				"eyebrow": "การมอนิเตอร์โครงสร้างพื้นฐานโอเพนซอร์ส",
-				"tagline": "คอยจับตาดูทุกการเคลื่อนไหวของเซิร์ฟเวอร์ของคุณ",
-				"description": "ติดตามสถานะ เวลาตอบสนอง และเหตุการณ์ผิดปกติแบบเรียลไทม์ - โฮสต์เองและเป็นของคุณ"
-			},
 			"common": {
 				"passwordRules": {
 					"length": {
@@ -364,8 +343,7 @@
 			"register": {
 				"title": "ยินดีต้อนรับกลับสู่ Checkmate!",
 				"subtitle": "สมัครสมาชิกเพื่อเริ่มต้น",
-				"submit": "ลงทะเบียน",
-				"setupNotice": "หน้านี้พร้อมใช้งานเฉพาะระหว่างการตั้งค่าเริ่มต้นเท่านั้น เมื่อลงทะเบียนผู้ดูแลระบบสูงสุดแล้ว สามารถเชิญผู้ใช้เพิ่มเติมได้จากการตั้งค่าทีม"
+				"submit": "ลงทะเบียน"
 			},
 			"forgotPassword": {
 				"title": "ลืมรหัสผ่านใช่ไหม?",
@@ -400,14 +378,6 @@
 					"statusCode": "รหัสสถานะ",
 					"location": "ตำแหน่ง"
 				}
-			},
-			"fallback": {
-				"title": "ยังไม่มีการตรวจสอบ",
-				"description": "เมื่อคุณสร้างตัวตรวจสอบ การตรวจสอบสถานะและเวลาตอบสนองทุกครั้งจะปรากฏที่นี่เป็นการตรวจสอบ"
-			},
-			"header": {
-				"title": "การตรวจสอบ",
-				"description": "การตรวจสอบทุกครั้งที่ Checkmate ทำกับตัวตรวจสอบของคุณจะปรากฏที่นี่พร้อมรหัสสถานะและเวลาตอบสนอง"
 			}
 		},
 		"common": {
@@ -427,8 +397,7 @@
 					"activeFor": "ทำงานมาแล้ว",
 					"certificateExpiry": "วันหมดอายุใบรับรอง",
 					"lastCheck": "ตรวจสอบล่าสุด",
-					"lastResponseTime": "เวลาตอบสนองล่าสุด",
-					"serviceIsDown": "บริการขัดข้อง"
+					"lastResponseTime": "เวลาตอบสนองล่าสุด"
 				},
 				"status": {
 					"down": "ล่ม",
@@ -671,10 +640,6 @@
 			}
 		},
 		"incidents": {
-			"fallback": {
-				"title": "ไม่มีเหตุการณ์ — ระบบทั้งหมดทำงานปกติ",
-				"description": "เมื่อตัวตรวจสอบล่มหรือฟื้นตัว เหตุการณ์จะปรากฏที่นี่พร้อมเวลา รายละเอียดตัวตรวจสอบ และประวัติการแก้ไข"
-			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "แก้ไขเหตุการณ์",
@@ -755,10 +720,6 @@
 					"active": "ใช้งานอยู่",
 					"resolved": "แก้ไขแล้ว"
 				}
-			},
-			"header": {
-				"title": "เหตุการณ์",
-				"description": "เมื่อตัวตรวจสอบล่มหรือฟื้นตัว เหตุการณ์จะปรากฏที่นี่พร้อมเวลา รายละเอียดตัวตรวจสอบ และประวัติการแก้ไข"
 			}
 		},
 		"infrastructure": {
@@ -813,19 +774,11 @@
 			},
 			"fallback": {
 				"actionButton": "สร้างมอนิเตอร์!",
-				"title": "ยังไม่มีตัวตรวจสอบโครงสร้างพื้นฐาน",
-				"description": "ติดตามประสิทธิภาพเซิร์ฟเวอร์ ระบุคอขวด และมั่นใจในความน่าเชื่อถือด้วยการตรวจสอบโครงสร้างพื้นฐานแบบเรียลไทม์"
-			},
-			"header": {
-				"title": "ตัวตรวจสอบโครงสร้างพื้นฐาน",
-				"description": "ติดตามประสิทธิภาพเซิร์ฟเวอร์ ระบุคอขวด และมั่นใจในความน่าเชื่อถือด้วยการตรวจสอบโครงสร้างพื้นฐานแบบเรียลไทม์"
+				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
+				"title": "มอนิเตอร์โครงสร้างพื้นฐานใช้เพื่อ:"
 			}
 		},
 		"logs": {
-			"fallback": {
-				"title": "ยังไม่มีบันทึก",
-				"description": "กิจกรรมเซิร์ฟเวอร์ คำเตือน และข้อผิดพลาดจะปรากฏที่นี่ในขณะที่ Checkmate ทำงาน"
-			},
 			"tabs": {
 				"diagnostics": "วินิจฉัย",
 				"logs": "Logs เซิร์ฟเวอร์",
@@ -835,9 +788,7 @@
 				"label": "ระดับบันทึก"
 			},
 			"jobQueue": "คิวงาน",
-			"jobQueueExplainer": "<highlight>แถวที่ไฮไลต์</highlight> คืองานที่กำลังถูกประมวลผลโดยเวิร์กเกอร์อยู่ในขณะนี้",
 			"failedJobs": "งานที่ล้มเหลว",
-			"failedJobsExplainer": "ความล้มเหลวล่าสุดตามมอนิเตอร์ — เวลาที่ล้มเหลวล่าสุด จำนวนครั้งที่ล้มเหลว และเหตุผล",
 			"noLogs": "ไม่พบบันทึก",
 			"metrics": {
 				"jobs": "งาน",
@@ -864,16 +815,6 @@
 					"usedSPercentage": "% ของ 1 วินาทีที่ CPU ใช้",
 					"total": "ทั้งหมด",
 					"used": "ใช้แล้ว"
-				},
-				"sections": {
-					"runtimeStats": {
-						"title": "สถิติรันไทม์",
-						"description": "ภาพรวมของโปรเซส Node.js และเครื่องโฮสต์ อัปเดตทุก 5 วินาที"
-					},
-					"memoryCpu": {
-						"title": "หน่วยความจำและ CPU",
-						"description": "กระบวนการใช้หน่วยความจำที่จัดสรรและ CPU ของโฮสต์อย่างไร"
-					}
 				}
 			},
 			"table": {
@@ -892,21 +833,13 @@
 					"lastFailedAt": "ล้มเหลวล่าสุดเมื่อ",
 					"failReason": "สาเหตุที่ล้มเหลว"
 				}
-			},
-			"queueFallback": {
-				"title": "ไม่มีงานในคิว",
-				"description": "การตรวจสอบตัวตรวจสอบที่กำหนดเวลาหรือกำลังทำงานจะปรากฏที่นี่ คิวที่ว่างหมายความว่าทุกอย่างเป็นปัจจุบัน"
-			},
-			"header": {
-				"title": "บันทึกและคิว",
-				"description": "ตรวจสอบบันทึกเซิร์ฟเวอร์ คิวงานตัวตรวจสอบ และการวินิจฉัยรันไทม์ในที่เดียว"
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "สร้างช่วงเวลาบำรุงรักษา!",
-				"title": "ไม่มีช่วงเวลาบำรุงรักษาที่กำหนด",
-				"description": "กำหนดเวลาหยุดทำงานเพื่อระงับการแจ้งเตือน และให้ทีมและผู้ใช้รู้ถึงสิ่งที่จะเกิดขึ้น"
+				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
+				"title": "ช่วงเวลาบำรุงรักษาใช้เพื่อ:"
 			},
 			"table": {
 				"headers": {
@@ -958,17 +891,13 @@
 						}
 					}
 				}
-			},
-			"header": {
-				"title": "ช่วงเวลาบำรุงรักษา",
-				"description": "กำหนดเวลาหยุดทำงานเพื่อระงับการแจ้งเตือน และให้ทีมและผู้ใช้รู้ถึงสิ่งที่จะเกิดขึ้น"
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "สร้างช่องทาง",
-				"title": "ยังไม่มีช่องทางการแจ้งเตือน",
-				"description": "เชื่อมต่อ Slack, Discord, อีเมล, webhooks และอื่น ๆ เพื่อให้คนที่ถูกต้องรู้เกี่ยวกับเหตุการณ์ทันทีที่เกิดขึ้น"
+				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
+				"title": "ช่องทางการแจ้งเตือนใช้เพื่อ:"
 			},
 			"form": {
 				"accessToken": {
@@ -1018,36 +947,12 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "Chat ID",
 					"placeholderChatId": "-1001234567890"
-				},
-				"pushover": {
-					"title": "การตั้งค่า Pushover",
-					"description": "ป้อนโทเค็นแอปและคีย์ผู้ใช้ Pushover ของคุณ",
-					"optionAppToken": "โทเค็นแอป",
-					"placeholderAppToken": "ป้อนโทเค็นแอป",
-					"optionUserKey": "คีย์ผู้ใช้",
-					"placeholderUserKey": "ป้อนคีย์ผู้ใช้"
-				},
-				"twilio": {
-					"title": "การตั้งค่า Twilio",
-					"description": "ป้อนข้อมูลรับรองบัญชี Twilio เพื่อส่ง SMS",
-					"optionAccountSid": "SID บัญชี",
-					"placeholderAccountSid": "ป้อน SID บัญชี",
-					"optionAuthToken": "โทเค็นการรับรอง",
-					"placeholderAuthToken": "ป้อนโทเค็นการรับรอง",
-					"optionFromNumber": "หมายเลขผู้ส่ง",
-					"placeholderFromNumber": "+1234567890",
-					"optionToNumber": "หมายเลขผู้รับ",
-					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
 				"headers": {
 					"destination": "ปลายทาง"
 				}
-			},
-			"header": {
-				"title": "การแจ้งเตือน",
-				"description": "เชื่อมต่อ Slack, Discord, อีเมล, webhooks และอื่น ๆ เพื่อให้คนที่ถูกต้องรู้เกี่ยวกับเหตุการณ์ทันทีที่เกิดขึ้น"
 			}
 		},
 		"pageSpeed": {
@@ -1074,12 +979,8 @@
 			},
 			"fallback": {
 				"actionButton": "สร้างมอนิเตอร์!",
-				"title": "ยังไม่มีตัวตรวจสอบ PageSpeed",
-				"description": "ติดตาม Core Web Vitals และคะแนน Lighthouse เพื่อจับความถดถอยก่อนที่ผู้ใช้จะสังเกตเห็น"
-			},
-			"header": {
-				"title": "ตัวตรวจสอบ PageSpeed",
-				"description": "ติดตาม Core Web Vitals และคะแนน Lighthouse เพื่อจับความถดถอยก่อนที่ผู้ใช้จะสังเกตเห็น"
+				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
+				"title": "มอนิเตอร์ PageSpeed ใช้เพื่อ:"
 			}
 		},
 		"settings": {
@@ -1257,18 +1158,14 @@
 				"validation": {
 					"errorMessage": "กรุณาแก้ไขข้อผิดพลาดการตรวจสอบต่อไปนี้:"
 				}
-			},
-			"header": {
-				"title": "การตั้งค่า",
-				"description": "กำหนดค่า SMTP, การผสานรวม, การเก็บรักษา และพฤติกรรมแอปทั่วโลก"
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "ลบหน้าสถานะสำเร็จ",
 			"fallback": {
-				"title": "ยังไม่มีหน้าสถานะ",
-				"actionButton": "สร้างหน้าสถานะ!",
-				"description": "เผยแพร่หน้าสาธารณะที่แสดง uptime แบบเรียลไทม์และประวัติเหตุการณ์ให้กับลูกค้าและผู้มีส่วนได้ส่วนเสีย"
+				"title": "หน้าสถานะใช้เพื่อ:",
+				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
+				"actionButton": "สร้างหน้าสถานะ!"
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "แผนที่ความร้อน",
@@ -1293,18 +1190,7 @@
 				"allDown": "ระบบทั้งหมดล่ม",
 				"allUp": "ระบบทั้งหมดทำงานปกติ",
 				"degraded": "บางระบบกำลังประสบปัญหา",
-				"unknown": "ไม่สามารถระบุสถานะระบบได้",
-				"allBreached": "ทุกระบบเกินขีดจำกัด",
-				"allMaintenance": "ทุกระบบอยู่ระหว่างการบำรุงรักษา",
-				"allPaused": "ทุกระบบถูกหยุดชั่วคราว",
-				"allInitializing": "ทุกระบบกำลังเริ่มต้น",
-				"breachedAndDown": "บางระบบเกินขีดจำกัดและขัดข้อง",
-				"breached": "บางระบบเกินขีดจำกัด",
-				"maintenanceAndDown": "บางระบบขัดข้องระหว่างการบำรุงรักษา",
-				"maintenance": "บางระบบอยู่ระหว่างการบำรุงรักษา",
-				"partiallyPaused": "บางระบบถูกหยุดชั่วคราว",
-				"initializing": "บางระบบกำลังเริ่มต้น",
-				"noMonitors": "ยังไม่มีการกำหนดค่ามอนิเตอร์"
+				"unknown": "ไม่สามารถระบุสถานะระบบได้"
 			},
 			"table": {
 				"headers": {
@@ -1396,10 +1282,6 @@
 						}
 					}
 				}
-			},
-			"header": {
-				"title": "หน้าสถานะ",
-				"description": "เผยแพร่หน้าสาธารณะที่แสดง uptime แบบเรียลไทม์และประวัติเหตุการณ์ให้กับลูกค้าและผู้มีส่วนได้ส่วนเสีย"
 			}
 		},
 		"uptime": {
@@ -1415,12 +1297,8 @@
 			},
 			"fallback": {
 				"actionButton": "สร้างมอนิเตอร์!",
-				"title": "ยังไม่มีตัวตรวจสอบ uptime",
-				"description": "ติดตาม HTTP endpoints, ping, คอนเทนเนอร์ และพอร์ต — รับการแจ้งเตือนทันทีที่บางอย่างล่ม"
-			},
-			"header": {
-				"title": "ตัวตรวจสอบ uptime",
-				"description": "ติดตาม HTTP endpoints, ping, คอนเทนเนอร์ และพอร์ต — รับการแจ้งเตือนทันทีที่บางอย่างล่ม"
+				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
+				"title": "มอนิเตอร์อัปไทม์ใช้เพื่อ:"
 			}
 		}
 	}

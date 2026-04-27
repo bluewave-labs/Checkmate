@@ -1,4 +1,4 @@
-import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
 import { DetailGauge } from "@/Components/design-elements";
 
 import { getPercentage, formatPercentageFromWhole } from "@/Utils/FormatUtils";
@@ -11,78 +11,62 @@ interface StatGaugesProps {
 	diagnostics: Diagnostics | null;
 }
 
-const PLACEHOLDER = "—";
-
 export const StatGauges = ({ diagnostics }: StatGaugesProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
+	if (!diagnostics) {
+		return null;
+	}
 
-	const heapTotalSize = diagnostics
-		? getPercentage(
-				diagnostics.v8HeapStats?.totalHeapSizeBytes,
-				diagnostics.v8HeapStats?.heapSizeLimitBytes
-			)
-		: 0;
-	const heapUsedSize = diagnostics
-		? getPercentage(
-				diagnostics.v8HeapStats?.usedHeapSizeBytes,
-				diagnostics.v8HeapStats?.heapSizeLimitBytes
-			)
-		: 0;
-	const actualHeapUsed = diagnostics
-		? getPercentage(
-				diagnostics.v8HeapStats?.usedHeapSizeBytes,
-				diagnostics.v8HeapStats?.totalHeapSizeBytes
-			)
-		: 0;
-	const cpuUsage = diagnostics?.cpuUsage?.usagePercentage ?? 0;
+	const heapTotalSize = getPercentage(
+		diagnostics?.v8HeapStats?.totalHeapSizeBytes,
+		diagnostics?.v8HeapStats?.heapSizeLimitBytes
+	);
 
-	const fmt = (n: number) => (diagnostics ? formatPercentageFromWhole(n) : PLACEHOLDER);
-	const bytes = (n: number | undefined) =>
-		diagnostics ? prettyBytes(n ?? 0) : PLACEHOLDER;
+	const heapUsedSize = getPercentage(
+		diagnostics?.v8HeapStats?.usedHeapSizeBytes,
+		diagnostics?.v8HeapStats?.heapSizeLimitBytes
+	);
+
+	const actualHeapUsed = getPercentage(
+		diagnostics?.v8HeapStats?.usedHeapSizeBytes,
+		diagnostics?.v8HeapStats?.totalHeapSizeBytes
+	);
 
 	return (
-		<Box
-			sx={{
-				display: "grid",
-				gridTemplateColumns: { xs: "1fr", md: "repeat(4, 1fr)" },
-				gap: theme.spacing(8),
-				"& > *": { width: "100% !important" },
-			}}
+		<Stack
+			direction={{ xs: "column", md: "row" }}
+			gap={theme.spacing(8)}
 		>
 			<DetailGauge
-				maxWidth={9999}
 				title={t("pages.logs.diagnostics.gauges.heapAllocation")}
 				progress={heapTotalSize}
-				upperValue={fmt(heapTotalSize)}
+				upperValue={formatPercentageFromWhole(heapTotalSize)}
 				lowerLabel={t("pages.logs.diagnostics.gauges.total")}
-				lowerValue={bytes(diagnostics?.v8HeapStats?.heapSizeLimitBytes)}
+				lowerValue={prettyBytes(diagnostics.v8HeapStats?.heapSizeLimitBytes ?? 0)}
 			/>
 			<DetailGauge
-				maxWidth={9999}
 				title={t("pages.logs.diagnostics.gauges.heapUsage")}
 				progress={heapUsedSize}
 				upperLabel={t("pages.logs.diagnostics.gauges.availableMemoryPercentage")}
-				upperValue={fmt(heapUsedSize)}
+				upperValue={formatPercentageFromWhole(heapUsedSize)}
 				lowerLabel={t("pages.logs.diagnostics.gauges.used")}
-				lowerValue={bytes(diagnostics?.v8HeapStats?.usedHeapSizeBytes)}
+				lowerValue={prettyBytes(diagnostics.v8HeapStats?.usedHeapSizeBytes ?? 0)}
 			/>
 			<DetailGauge
-				maxWidth={9999}
 				title={t("pages.logs.diagnostics.gauges.heapUtilization")}
 				progress={actualHeapUsed}
 				upperLabel={t("pages.logs.diagnostics.gauges.allocatedPercentage")}
-				upperValue={fmt(actualHeapUsed)}
+				upperValue={formatPercentageFromWhole(actualHeapUsed)}
 				lowerLabel={t("pages.logs.diagnostics.gauges.total")}
-				lowerValue={bytes(diagnostics?.v8HeapStats?.usedHeapSizeBytes)}
+				lowerValue={prettyBytes(diagnostics.v8HeapStats?.usedHeapSizeBytes ?? 0)}
 			/>
 			<DetailGauge
-				maxWidth={9999}
 				title={t("pages.logs.diagnostics.gauges.instantCpuUsage")}
-				progress={cpuUsage}
+				progress={diagnostics.cpuUsage?.usagePercentage ?? 0}
 				upperLabel={t("pages.logs.diagnostics.gauges.usedSPercentage")}
-				upperValue={fmt(cpuUsage)}
+				upperValue={formatPercentageFromWhole(diagnostics.cpuUsage?.usagePercentage ?? 0)}
 			/>
-		</Box>
+		</Stack>
 	);
 };

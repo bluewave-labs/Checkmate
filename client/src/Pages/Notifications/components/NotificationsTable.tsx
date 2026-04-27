@@ -1,10 +1,7 @@
 import { ActionsMenu, type ActionMenuItem } from "@/Components/actions-menu";
-import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import type { Header } from "@/Components/design-elements/Table";
 import { Table } from "@/Components/design-elements";
-import { Pagination } from "@/Components/design-elements/Table";
-import { useClientPagination } from "@/Hooks/useClientPagination";
 
 import type { Notification } from "@/Types/Notification";
 import { useNavigate } from "react-router";
@@ -23,7 +20,6 @@ export const NotificationsTable = ({
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const { pagedRows, paginationProps } = useClientPagination(notifications);
 
 	const getActions = (channel: Notification): ActionMenuItem[] => {
 		return [
@@ -72,23 +68,7 @@ export const NotificationsTable = ({
 				id: "destination",
 				content: t("pages.notifications.table.headers.destination"),
 				render: (row) => {
-					return (
-						<Box sx={{ maxWidth: 320, mx: "auto" }}>
-							<Typography
-								title={row?.address}
-								sx={{
-									direction: "rtl",
-									textAlign: "left",
-									unicodeBidi: "plaintext",
-									whiteSpace: "nowrap",
-									overflow: "hidden",
-									textOverflow: "ellipsis",
-								}}
-							>
-								{row?.address}
-							</Typography>
-						</Box>
-					);
+					return <Typography>{row?.address}</Typography>;
 				},
 			},
 			{
@@ -102,16 +82,15 @@ export const NotificationsTable = ({
 		return headers;
 	};
 
+	const headers = getHeaders();
+
 	return (
-		<>
-			<Table
-				headers={getHeaders()}
-				data={pagedRows}
-				onRowClick={(row) => {
-					navigate(`/notifications/configure/${row.id}`);
-				}}
-			/>
-			{notifications.length > 0 && <Pagination {...paginationProps} />}
-		</>
+		<Table
+			headers={headers}
+			data={notifications}
+			onRowClick={(row) => {
+				navigate(`/notifications/configure/${row.id}`);
+			}}
+		/>
 	);
 };

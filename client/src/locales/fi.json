@@ -13,7 +13,7 @@
 				"content": "Varoitus: Et ole vielä lisännyt Google PageSpeed API -avainta. Siirry <settingsLink>Asetuksiin</settingsLink> lisätäksesi sellainen. Ilman sitä PageSpeed-monitorointi ei toimi."
 			}
 		},
-		"appName": "Checkmate",
+		"appName": "",
 		"breadcrumbs": {
 			"details": "Tiedot",
 			"home": "Etusivu"
@@ -35,10 +35,10 @@
 			"sendInvite": "Lähetä kutsu",
 			"test": "Testaa",
 			"testNotifications": "Testaa ilmoitukset",
-			"toggleTheme": "Vaihda vaalea / tumma",
+			"toggleTheme": "",
 			"flushQueue": "Tyhjennä jono",
 			"notFound": "Siirry pääsivulle",
-			"resetPassword": "Nollaa salasana",
+			"resetPassword": "",
 			"reset": "Palauta",
 			"clear": "Tyhjennä",
 			"addDemo": "Lisää demomonitorit",
@@ -53,8 +53,8 @@
 			"labels": {
 				"averageResponseTime": "Keskimääräinen vasteaika",
 				"downtime": "Käyttökatko",
-				"high": "Korkea",
-				"low": "Matala",
+				"high": "",
+				"low": "",
 				"uptime": "Käytettävyys"
 			},
 			"histogram": {
@@ -86,12 +86,12 @@
 			"name": {
 				"option": {
 					"firstName": {
-						"label": "Etunimi",
-						"placeholder": "Anna etunimesi"
+						"label": "",
+						"placeholder": ""
 					},
 					"lastName": {
-						"label": "Sukunimi",
-						"placeholder": "Anna sukunimesi"
+						"label": "",
+						"placeholder": ""
 					}
 				}
 			},
@@ -107,14 +107,14 @@
 		"table": {
 			"empty": "Täällä ei ole mitään",
 			"headers": {
-				"actions": "Toiminnot",
+				"actions": "",
 				"dateTime": "Päivämäärä ja aika",
 				"message": "Viesti",
 				"monitor": "Monitori",
 				"monitorId": "Monitorin tunnus",
 				"name": "Nimi",
 				"status": "Tila",
-				"type": "Tyyppi",
+				"type": "",
 				"url": "Osoite",
 				"interval": "Aikaväli",
 				"active": "Aktiivinen",
@@ -131,7 +131,7 @@
 			"orDragAndDrop": "tai vedä ja pudota",
 			"errors": {
 				"invalidFileSize": "Tiedoston koko on liian suuri!",
-				"invalidFileFormat": "Tiedostomuotoa ei tueta!"
+				"invalidFileFormat": ""
 			}
 		},
 		"headerStatusPageControls": {
@@ -155,19 +155,19 @@
 			"serverUnreachable": "Palvelimeen ei saada yhteyttä",
 			"retry": "Yritä uudelleen",
 			"retrying": "Yritetään uudelleen...",
-			"reconnected": "Yhteys palautettu"
+			"reconnected": ""
 		},
 		"sidebar": {
 			"menu": {
-				"uptime": "Käytettävyys",
-				"pagespeed": "Pagespeed",
+				"uptime": "",
+				"pagespeed": "",
 				"infrastructure": "Infrastruktuuri",
-				"notifications": "Ilmoitukset",
+				"notifications": "",
 				"checks": "Tarkistukset",
-				"incidents": "Häiriöt",
+				"incidents": "",
 				"statusPages": "Tilasivut",
 				"maintenance": "Huolto",
-				"logs": "Lokit",
+				"logs": "",
 				"settings": "Asetukset"
 			},
 			"bottomMenu": {
@@ -199,14 +199,6 @@
 		"starPrompt": {
 			"title": "Lisää Checkmate suosikkeihin",
 			"description": "Katso uusimmat julkaisut ja auta kasvattamaan yhteisöä GitHubissa"
-		},
-		"pageHeader": {
-			"links": {
-				"support": "Tuki",
-				"discussions": "Keskustelut",
-				"docs": "Dokumentaatio",
-				"changelog": "Muutosloki"
-			}
 		}
 	},
 	"pages": {
@@ -286,23 +278,10 @@
 						"placeholder": "Valitse rooli"
 					},
 					"linkLabel": "Kutsulinkki"
-				},
-				"fallback": {
-					"title": "Ei vielä tiimin jäseniä",
-					"description": "Kutsu tiimin jäsenet sähköpostitse tai lisää heidät suoraan. Kun he liittyvät, he näkyvät tässä roolinsa kanssa."
 				}
-			},
-			"header": {
-				"title": "Tili",
-				"description": "Hallitse profiilia, salasanaa, tiimiä ja työtilan asetuksia."
 			}
 		},
 		"auth": {
-			"brandPanel": {
-				"eyebrow": "Avoimen lähdekoodin infrastruktuurin valvonta",
-				"tagline": "Seuraa palvelimiesi jokaista liikettä.",
-				"description": "Reaaliaikainen käytettävyyden, vasteajan ja häiriöiden valvonta - itse isännöity ja sinun."
-			},
 			"common": {
 				"passwordRules": {
 					"length": {
@@ -364,8 +343,7 @@
 			"register": {
 				"title": "Tervetuloa takaisin Checkmateen!",
 				"subtitle": "Rekisteröidy aloittaaksesi",
-				"submit": "Rekisteröidy",
-				"setupNotice": "Tämä sivu on käytettävissä vain alkuasennuksen aikana. Kun super-admin on rekisteröity, lisäkäyttäjiä voi kutsua tiimiasetuksista."
+				"submit": "Rekisteröidy"
 			},
 			"forgotPassword": {
 				"title": "Unohditko salasanasi?",
@@ -400,14 +378,6 @@
 					"statusCode": "Tilakoodi",
 					"location": "Sijainti"
 				}
-			},
-			"fallback": {
-				"title": "Ei vielä tarkistuksia",
-				"description": "Kun luot monitorin, jokainen tilatarkistus ja vasteaika näkyy täällä tarkistuksena."
-			},
-			"header": {
-				"title": "Tarkistukset",
-				"description": "Jokainen tarkistus, jonka Checkmate suorittaa monitoreitasi vastaan, näkyy täällä tilakoodin ja vasteajan kanssa."
 			}
 		},
 		"common": {
@@ -427,8 +397,7 @@
 					"activeFor": "Aktiivinen",
 					"certificateExpiry": "Varmenteen vanheneminen",
 					"lastCheck": "Viimeisin tarkistus",
-					"lastResponseTime": "Viimeisin vasteaika",
-					"serviceIsDown": "Palvelu ei ole käytettävissä"
+					"lastResponseTime": "Viimeisin vasteaika"
 				},
 				"status": {
 					"down": "alhaalla",
@@ -671,10 +640,6 @@
 			}
 		},
 		"incidents": {
-			"fallback": {
-				"title": "Ei tapauksia — kaikki järjestelmät ovat kunnossa",
-				"description": "Kun monitori kaatuu tai palautuu, tapaus tulee näkyviin ajoituksen, monitorin tietojen ja ratkaisuhistorian kanssa."
-			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "Ratkaise häiriö",
@@ -755,10 +720,6 @@
 					"active": "Aktiivinen",
 					"resolved": "Ratkaistu"
 				}
-			},
-			"header": {
-				"title": "Tapaukset",
-				"description": "Kun monitori kaatuu tai palautuu, tapaukset näkyvät täällä ajoituksen, monitorin tietojen ja ratkaisuhistorian kanssa."
 			}
 		},
 		"infrastructure": {
@@ -813,31 +774,21 @@
 			},
 			"fallback": {
 				"actionButton": "Luo monitori!",
-				"title": "Ei vielä infrastruktuurimonitoreita",
-				"description": "Seuraa palvelinten suorituskykyä, tunnista pullonkauloja ja varmista luotettavuus reaaliaikaisella valvonnalla."
-			},
-			"header": {
-				"title": "Infrastruktuurimonitorit",
-				"description": "Seuraa palvelinten suorituskykyä, tunnista pullonkauloja ja varmista luotettavuus reaaliaikaisella valvonnalla."
+				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
+				"title": "Infrastruktuurimonitorilla voit:"
 			}
 		},
 		"logs": {
-			"fallback": {
-				"title": "Ei vielä lokeja",
-				"description": "Palvelimen toiminta, varoitukset ja virheet näkyvät täällä Checkmaten toimiessa."
-			},
 			"tabs": {
-				"diagnostics": "Diagnostiikka",
-				"logs": "Lokit",
-				"queue": "Työjono"
+				"diagnostics": "",
+				"logs": "",
+				"queue": ""
 			},
 			"logLevelSelect": {
 				"label": "Lokitaso"
 			},
 			"jobQueue": "Työnojono",
-			"jobQueueExplainer": "<highlight>Korostetut rivit</highlight> ovat työt, joita työntekijä käsittelee parhaillaan.",
 			"failedJobs": "Epäonnistuneet työt",
-			"failedJobsExplainer": "Viimeisimmät epäonnistumiset valvojan mukaan — viimeisin epäonnistumisaika, epäonnistumismäärä ja syy.",
 			"noLogs": "Lokeja ei löytynyt",
 			"metrics": {
 				"jobs": "Työt",
@@ -864,16 +815,6 @@
 					"usedSPercentage": "% sekunnista CPU:n käytössä",
 					"total": "Yhteensä",
 					"used": "Käytetty"
-				},
-				"sections": {
-					"runtimeStats": {
-						"title": "Suoritusajan tilastot",
-						"description": "Node.js-prosessin ja isäntäkoneen tilannekuva. Päivittyy 5 sekunnin välein."
-					},
-					"memoryCpu": {
-						"title": "Muisti ja CPU",
-						"description": "Miten prosessi käyttää sille varattua muistia ja isännän CPU:ta."
-					}
 				}
 			},
 			"table": {
@@ -892,21 +833,13 @@
 					"lastFailedAt": "Viimeisin epäonnistuminen",
 					"failReason": "Epäonnistumisen syy"
 				}
-			},
-			"queueFallback": {
-				"title": "Jonossa ei ole töitä",
-				"description": "Aikataulutetut tai käynnissä olevat monitoritarkistukset näkyvät täällä. Tyhjä jono tarkoittaa, että kaikki on ajan tasalla."
-			},
-			"header": {
-				"title": "Lokit ja jono",
-				"description": "Tarkasta palvelinlokit, monitorin työjono ja ajonaikaiset diagnostiikat yhdestä paikasta."
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "Luo huoltoikkuna!",
-				"title": "Ei suunniteltuja huoltokatkoja",
-				"description": "Aikatauluta suunnitellut katkot, jotta hälytykset vaimennetaan ja tiimisi sekä käyttäjät tietävät mitä odottaa."
+				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
+				"title": "Huoltoikkunalla voit:"
 			},
 			"table": {
 				"headers": {
@@ -958,17 +891,13 @@
 						}
 					}
 				}
-			},
-			"header": {
-				"title": "Huoltoikkunat",
-				"description": "Aikatauluta suunnitellut katkot, jotta hälytykset vaimennetaan ja tiimisi sekä käyttäjät tietävät mitä odottaa."
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "Luo kanava",
-				"title": "Ei vielä ilmoituskanavia",
-				"description": "Yhdistä Slack, Discord, sähköposti, webhookit ja muut, jotta oikeat ihmiset kuulevat tapauksista heti."
+				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
+				"title": "Ilmoituskanavia käytetään:"
 			},
 			"form": {
 				"accessToken": {
@@ -1018,36 +947,12 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "Chat-tunnus",
 					"placeholderChatId": "-1001234567890"
-				},
-				"pushover": {
-					"title": "Pushover-määritys",
-					"description": "Anna Pushover-sovellustunnus ja käyttäjäavain.",
-					"optionAppToken": "Sovellustunnus",
-					"placeholderAppToken": "Anna sovellustunnus",
-					"optionUserKey": "Käyttäjäavain",
-					"placeholderUserKey": "Anna käyttäjäavain"
-				},
-				"twilio": {
-					"title": "Twilio-määritys",
-					"description": "Anna Twilio-tilin tunnistetiedot tekstiviestien lähettämistä varten.",
-					"optionAccountSid": "Tilin SID",
-					"placeholderAccountSid": "Anna tilin SID",
-					"optionAuthToken": "Todennustunnus",
-					"placeholderAuthToken": "Anna todennustunnus",
-					"optionFromNumber": "Lähettäjän numero",
-					"placeholderFromNumber": "+1234567890",
-					"optionToNumber": "Vastaanottajan numero",
-					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
 				"headers": {
 					"destination": "Kohde"
 				}
-			},
-			"header": {
-				"title": "Ilmoitukset",
-				"description": "Yhdistä Slack, Discord, sähköposti, webhookit ja muut, jotta oikeat ihmiset kuulevat tapauksista heti."
 			}
 		},
 		"pageSpeed": {
@@ -1074,12 +979,8 @@
 			},
 			"fallback": {
 				"actionButton": "Luo monitori!",
-				"title": "Ei vielä PageSpeed-monitoreita",
-				"description": "Seuraa Core Web Vitals -mittareita ja Lighthouse-pisteitä ajan mittaan ja huomaa heikennykset ennen käyttäjiä."
-			},
-			"header": {
-				"title": "PageSpeed-monitorit",
-				"description": "Seuraa Core Web Vitals -mittareita ja Lighthouse-pisteitä ajan mittaan ja huomaa heikennykset ennen käyttäjiä."
+				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
+				"title": "PageSpeed-monitorilla voit:"
 			}
 		},
 		"settings": {
@@ -1257,18 +1158,14 @@
 				"validation": {
 					"errorMessage": "Korjaa seuraavat vahvistusvirheet:"
 				}
-			},
-			"header": {
-				"title": "Asetukset",
-				"description": "Määritä SMTP, integraatiot, säilytys ja sovelluksen yleinen käyttäytyminen."
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "Tilasivu poistettu onnistuneesti",
 			"fallback": {
-				"title": "Ei vielä tilasivuja",
-				"actionButton": "Luo tilasivu!",
-				"description": "Julkaise julkinen sivu, joka näyttää asiakkaille ja sidosryhmille reaaliaikaisen käytettävyyden ja tapaushistorian."
+				"title": "Tilasivulla voit:",
+				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
+				"actionButton": "Luo tilasivu!"
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Lämpökartta",
@@ -1293,18 +1190,7 @@
 				"allDown": "Kaikki järjestelmät ovat alhaalla",
 				"allUp": "Kaikki järjestelmät toiminnassa",
 				"degraded": "Joissakin järjestelmissä on ongelmia",
-				"unknown": "Järjestelmän tilaa ei voida määrittää",
-				"allBreached": "Kaikki järjestelmät ovat ylittäneet kynnysarvot",
-				"allMaintenance": "Kaikki järjestelmät ovat huollossa",
-				"allPaused": "Kaikki järjestelmät on keskeytetty",
-				"allInitializing": "Kaikki järjestelmät alustuvat",
-				"breachedAndDown": "Jotkin järjestelmät ovat ylittäneet kynnysarvot ja ovat alhaalla",
-				"breached": "Jotkin järjestelmät ovat ylittäneet kynnysarvot",
-				"maintenanceAndDown": "Jotkin järjestelmät ovat alhaalla huollon aikana",
-				"maintenance": "Jotkin järjestelmät ovat huollossa",
-				"partiallyPaused": "Jotkin järjestelmät on keskeytetty",
-				"initializing": "Jotkin järjestelmät alustuvat",
-				"noMonitors": "Yhtään monitoria ei ole määritetty"
+				"unknown": "Järjestelmän tilaa ei voida määrittää"
 			},
 			"table": {
 				"headers": {
@@ -1396,10 +1282,6 @@
 						}
 					}
 				}
-			},
-			"header": {
-				"title": "Tilasivut",
-				"description": "Julkaise julkisia sivuja, jotka näyttävät asiakkaille ja sidosryhmille reaaliaikaisen käytettävyyden ja tapaushistorian."
 			}
 		},
 		"uptime": {
@@ -1415,12 +1297,8 @@
 			},
 			"fallback": {
 				"actionButton": "Luo monitori!",
-				"title": "Ei vielä käytettävyysmonitoreita",
-				"description": "Tarkkaile HTTP-päätepisteitä, pingejä, kontteja ja portteja — saat hälytyksen heti, kun jokin kaatuu."
-			},
-			"header": {
-				"title": "Käytettävyysmonitorit",
-				"description": "Tarkkaile HTTP-päätepisteitä, pingejä, kontteja ja portteja — saat hälytyksen heti, kun jokin kaatuu."
+				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
+				"title": "Käytettävyysmonitorilla voit:"
 			}
 		}
 	}

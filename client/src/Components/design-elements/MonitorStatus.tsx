@@ -34,7 +34,7 @@ export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 				<Typography
 					fontSize={typographyLevels.l}
 					fontWeight={"bolder"}
-					fontFamily={theme.typography.fontFamilyMonospace}
+					fontFamily={"monospace"}
 					overflow={"hidden"}
 					textOverflow={"ellipsis"}
 					whiteSpace={"nowrap"}
