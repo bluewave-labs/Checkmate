@@ -130,6 +130,7 @@ class StatusPageController implements IStatusPageController {
 				}
 				return { ...monitor, checks: normalizedChecks };
 			});
+
 			const themesEnabled = this.settingsService.areStatusPageThemesEnabled();
 			return res.status(200).json({
 				success: true,

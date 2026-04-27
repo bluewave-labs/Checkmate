@@ -232,7 +232,7 @@ Keys to add:
 **Component tests (existing test setup):**
 - Admin form: selecting a theme card updates form state and survives submit
 - Admin form: `themeMode` dropdown changes payload
-- `StatusPageThemeProvider`: `auto` mode resolves to `prefers-color-scheme` when no localStorage; localStorage overrides when set; admin-forced mode wins over both
+- `StatusPageThemeProvider`: `auto` mode resolves to `prefers-color-scheme`; admin-forced `light`/`dark` modes win over the OS setting
 - Mode resolution: `themeMode="auto"` picks up `prefers-color-scheme`; `themeMode="light"` and `"dark"` lock the mode regardless of OS setting
 - Admin picker shows both light + dark preview SVGs for every theme, regardless of admin UI mode
 - Jest/Vitest snapshot tests (plain, no visual-regression tool): `Status/index.tsx` rendered under each of `refined | modern | bold | editorial` × `light | dark`. 8 snapshots via a single parametrised test.
@@ -263,7 +263,6 @@ Two PRs, small-enough individually to review carefully.
 | Four themes = 4× visual-regression surface going forward | Parametrised snapshot tests in PR 2 cover all 4 themes × both modes × key status states. Regressions caught at PR time. |
 | Editorial hairline dividers fail WCAG 3:1 for UI borders | Axe pass in 2.12; darken divider token until it clears. |
 | Older clients posting create/update without `theme` break | Validator makes fields optional; model default handles it. Covered by backend test 1.6. |
-| Per-page localStorage theme mode leaks across status pages | Storage key namespaced by `statusPage.url`. Covered in 2.3 and 2.11. |
 | `customCSS` collides with theme tokens | Themes set CSS variables on a wrapper; `customCSS` is injected inline after and can override any `--sp-*` variable. No code change. Document in settings help text. |
 | Shared chart components look off-brand on bold/modern dark | Decided in 2.6: pass an optional `paletteOverride` prop from the status page subtree. |
 | Rollback needed if feature misbehaves in prod | Feature flag `STATUS_PAGE_THEMES_ENABLED` in 1.5 disables writes and forces `refined` on reads. |
