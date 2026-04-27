@@ -2,6 +2,7 @@ import type { SxProps, Theme } from "@mui/material/styles";
 import { keyframes } from "@mui/system";
 import type { StatusPageThemeTokens } from "../tokens";
 import { type OverallTone, toneColor, toneSoft } from "../shared/overallStatus";
+import { MONO_STACK, SANS_STACK } from "../shared/fontStacks";
 
 export type ModernHeatCell = "fast" | "med" | "slow" | "down" | "empty";
 export type ModernBarKind = "up" | "down" | "empty";
@@ -48,14 +49,21 @@ export interface ModernStyles {
 	footer: SxProps<Theme>;
 }
 
-const sansFontStack =
-	'-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif';
-
 const lightShadow =
 	"0 2px 4px rgba(16, 24, 40, 0.04), 0 12px 32px rgba(16, 24, 40, 0.06)";
 const darkShadow = "0 2px 6px rgba(0, 0, 0, 0.5), 0 20px 40px rgba(0, 0, 0, 0.4)";
 const lightShadowHover =
 	"0 4px 8px rgba(16, 24, 40, 0.05), 0 16px 40px rgba(16, 24, 40, 0.08)";
+const darkShadowHover = "0 4px 10px rgba(0, 0, 0, 0.55), 0 24px 48px rgba(0, 0, 0, 0.45)";
+
+const pillBase = {
+	fontSize: 10,
+	textTransform: "uppercase" as const,
+	letterSpacing: "0.08em",
+	padding: "3px 9px",
+	borderRadius: "999px",
+	fontWeight: 600,
+};
 
 const pulseKeyframes = keyframes`
 	0% { transform: scale(1); opacity: 0.5; }
@@ -71,6 +79,7 @@ export const modernStyles = (
 	isDark: boolean
 ): ModernStyles => {
 	const cardShadow = isDark ? darkShadow : lightShadow;
+	const cardHoverShadow = isDark ? darkShadowHover : lightShadowHover;
 
 	const heatCellBg: Record<ModernHeatCell, string> = {
 		fast: `linear-gradient(180deg, ${tokens.up}, ${tokens.upStrong})`,
@@ -99,7 +108,7 @@ export const modernStyles = (
 			width: "100%",
 			mx: "auto",
 			p: "56px 20px 80px",
-			fontFamily: sansFontStack,
+			fontFamily: SANS_STACK,
 			fontSize: 14,
 			lineHeight: 1.5,
 			color: tokens.text,
@@ -237,7 +246,7 @@ export const modernStyles = (
 			"&:nth-of-type(4)": { animationDelay: "0.2s" },
 			"&:nth-of-type(5)": { animationDelay: "0.25s" },
 			"&:nth-of-type(n+6)": { animationDelay: "0.3s" },
-			"&:hover": { transform: "translateY(-2px)", boxShadow: lightShadowHover },
+			"&:hover": { transform: "translateY(-2px)", boxShadow: cardHoverShadow },
 			"@media (prefers-reduced-motion: reduce)": {
 				animation: "none",
 				opacity: 1,
@@ -269,29 +278,19 @@ export const modernStyles = (
 			flexWrap: "wrap",
 		},
 		pill: {
-			fontSize: 10,
-			textTransform: "uppercase",
-			letterSpacing: "0.08em",
+			...pillBase,
 			color: tokens.textMuted,
 			background: tokens.bg,
-			padding: "3px 9px",
-			borderRadius: "999px",
-			fontWeight: 600,
 		},
 		pillHardware: {
-			fontSize: 10,
-			textTransform: "uppercase",
-			letterSpacing: "0.08em",
-			padding: "3px 9px",
-			borderRadius: "999px",
-			fontWeight: 600,
-			color: isDark ? "#60a5fa" : "#2563eb",
-			background: isDark ? "rgba(96, 165, 250, 0.15)" : "rgba(37, 99, 235, 0.1)",
+			...pillBase,
+			color: tokens.up,
+			background: tokens.upSoft,
 		},
 		monitorUrl: {
 			fontSize: 12,
 			color: tokens.textMuted,
-			fontFamily: "ui-monospace, Menlo, monospace",
+			fontFamily: MONO_STACK,
 			overflow: "hidden",
 			textOverflow: "ellipsis",
 			whiteSpace: "nowrap",

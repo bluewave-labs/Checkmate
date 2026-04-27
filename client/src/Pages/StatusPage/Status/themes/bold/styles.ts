@@ -1,6 +1,7 @@
 import type { SxProps, Theme } from "@mui/material/styles";
 import type { StatusPageThemeTokens } from "../tokens";
 import { type OverallTone, toneColor, toneSoft } from "../shared/overallStatus";
+import { BOLD_SANS_STACK, MONO_STACK } from "../shared/fontStacks";
 
 export type BoldHeatCell = "fast" | "med" | "slow" | "down" | "empty";
 export type BoldBarKind = "up" | "down" | "empty";
@@ -44,9 +45,6 @@ export interface BoldStyles {
 	gaugeSub: SxProps<Theme>;
 	footer: SxProps<Theme>;
 }
-
-const sansFontStack =
-	'ui-sans-serif, -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif';
 
 export const boldStyles = (
 	tokens: StatusPageThemeTokens,
@@ -92,7 +90,7 @@ export const boldStyles = (
 			width: "100%",
 			mx: "auto",
 			p: "56px 24px 96px",
-			fontFamily: sansFontStack,
+			fontFamily: BOLD_SANS_STACK,
 			fontSize: 14,
 			lineHeight: 1.55,
 			color: tokens.text,
@@ -266,7 +264,7 @@ export const boldStyles = (
 		monitorUrl: {
 			fontSize: 12,
 			color: tokens.textMuted,
-			fontFamily: "ui-monospace, Menlo, monospace",
+			fontFamily: MONO_STACK,
 			overflow: "hidden",
 			textOverflow: "ellipsis",
 			whiteSpace: "nowrap",

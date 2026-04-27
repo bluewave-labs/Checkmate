@@ -1,6 +1,7 @@
 import type { SxProps, Theme } from "@mui/material/styles";
 import type { StatusPageThemeTokens } from "../tokens";
 import { type OverallTone, toneColor, toneSoft } from "../shared/overallStatus";
+import { MONO_STACK, SANS_STACK } from "../shared/fontStacks";
 
 export type RefinedHeatCell = "fast" | "med" | "slow" | "down" | "empty";
 export type RefinedBarKind = "up" | "down" | "empty";
@@ -48,17 +49,24 @@ export interface RefinedStyles {
 	footer: SxProps<Theme>;
 }
 
-const sansFontStack =
-	'-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif';
-
 const cardShadow = "0 1px 2px rgba(10, 16, 32, 0.06), 0 6px 18px rgba(10, 16, 32, 0.08)";
 const cardShadowHover =
 	"0 2px 4px rgba(16, 24, 40, 0.06), 0 10px 24px rgba(16, 24, 40, 0.06)";
+
+const pillBase = {
+	fontSize: 10,
+	textTransform: "uppercase" as const,
+	letterSpacing: "0.08em",
+	padding: "2px 8px",
+	borderRadius: "999px",
+	fontWeight: 600,
+};
 
 export const refinedStyles = (
 	tokens: StatusPageThemeTokens,
 	isDark: boolean
 ): RefinedStyles => {
+	void isDark;
 	const heatCellBg: Record<RefinedHeatCell, string> = {
 		fast: tokens.up,
 		med: `color-mix(in srgb, ${tokens.up} 60%, #ffffff 40%)`,
@@ -86,7 +94,7 @@ export const refinedStyles = (
 			width: "100%",
 			mx: "auto",
 			p: "48px 20px 80px",
-			fontFamily: sansFontStack,
+			fontFamily: SANS_STACK,
 			fontSize: 14,
 			lineHeight: 1.5,
 			color: tokens.text,
@@ -222,32 +230,20 @@ export const refinedStyles = (
 			flexWrap: "wrap",
 		},
 		pill: {
-			fontSize: 10,
-			textTransform: "uppercase",
-			letterSpacing: "0.08em",
+			...pillBase,
 			color: tokens.textMuted,
 			border: `1px solid ${tokens.border}`,
-			padding: "2px 8px",
-			borderRadius: "999px",
-			fontWeight: 600,
 		},
 		pillHardware: {
-			fontSize: 10,
-			textTransform: "uppercase",
-			letterSpacing: "0.08em",
-			padding: "2px 8px",
-			borderRadius: "999px",
-			fontWeight: 600,
-			color: isDark ? "#60a5fa" : "#1d4ed8",
-			border: `1px solid ${
-				isDark ? "rgba(96, 165, 250, 0.3)" : "rgba(29, 78, 216, 0.3)"
-			}`,
-			background: isDark ? "rgba(96, 165, 250, 0.1)" : "rgba(29, 78, 216, 0.06)",
+			...pillBase,
+			color: tokens.up,
+			border: `1px solid ${tokens.border}`,
+			background: tokens.upSoft,
 		},
 		monitorUrl: {
 			fontSize: 12,
 			color: tokens.textMuted,
-			fontFamily: "ui-monospace, Menlo, monospace",
+			fontFamily: MONO_STACK,
 			overflow: "hidden",
 			textOverflow: "ellipsis",
 			whiteSpace: "nowrap",

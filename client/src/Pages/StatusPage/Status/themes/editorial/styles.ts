@@ -1,6 +1,11 @@
 import type { SxProps, Theme } from "@mui/material/styles";
 import type { StatusPageThemeTokens } from "../tokens";
 import { type OverallTone, toneColor, toneSoft } from "../shared/overallStatus";
+import {
+	EDITORIAL_SECONDARY_SANS_STACK,
+	MONO_STACK,
+	SERIF_STACK,
+} from "../shared/fontStacks";
 
 export type EditorialHeatCell = "fast" | "med" | "slow" | "down" | "empty";
 export type EditorialBarKind = "up" | "down" | "empty";
@@ -45,9 +50,6 @@ export interface EditorialStyles {
 	footer: SxProps<Theme>;
 }
 
-const serifStack = 'Georgia, "Iowan Old Style", "Palatino Linotype", serif';
-const sansStack = '-apple-system, "Helvetica Neue", Arial, sans-serif';
-
 export const editorialStyles = (
 	tokens: StatusPageThemeTokens,
 	isDark: boolean
@@ -80,7 +82,7 @@ export const editorialStyles = (
 			width: "100%",
 			mx: "auto",
 			p: "64px 24px 96px",
-			fontFamily: serifStack,
+			fontFamily: SERIF_STACK,
 			fontSize: 15,
 			lineHeight: 1.6,
 			color: tokens.text,
@@ -104,7 +106,7 @@ export const editorialStyles = (
 			letterSpacing: "0.3em",
 			fontWeight: 700,
 			color: tokens.textMuted,
-			fontFamily: sansStack,
+			fontFamily: EDITORIAL_SECONDARY_SANS_STACK,
 		},
 		brandTitle: {
 			mt: "6px",
@@ -124,7 +126,7 @@ export const editorialStyles = (
 			letterSpacing: "-0.01em",
 			lineHeight: 1.35,
 			color: tokens.text,
-			fontFamily: serifStack,
+			fontFamily: SERIF_STACK,
 		},
 		statusDot: (tone) => ({
 			display: "inline-block",
@@ -136,7 +138,7 @@ export const editorialStyles = (
 			verticalAlign: "middle",
 		}),
 		dateline: {
-			fontFamily: sansStack,
+			fontFamily: EDITORIAL_SECONDARY_SANS_STACK,
 			fontSize: 11,
 			textTransform: "uppercase",
 			letterSpacing: "0.12em",
@@ -149,7 +151,7 @@ export const editorialStyles = (
 			display: "flex",
 			justifyContent: "flex-end",
 			mb: "20px",
-			fontFamily: sansStack,
+			fontFamily: EDITORIAL_SECONDARY_SANS_STACK,
 		},
 		chartSwitch: {
 			display: "inline-flex",
@@ -201,7 +203,7 @@ export const editorialStyles = (
 			whiteSpace: "nowrap",
 		},
 		monitorMeta: {
-			fontFamily: sansStack,
+			fontFamily: EDITORIAL_SECONDARY_SANS_STACK,
 			fontSize: 12,
 			color: tokens.textMuted,
 			mt: "6px",
@@ -223,7 +225,7 @@ export const editorialStyles = (
 			color: tokens.up,
 		},
 		monitorUrl: {
-			fontFamily: "ui-monospace, Menlo, monospace",
+			fontFamily: MONO_STACK,
 			overflow: "hidden",
 			textOverflow: "ellipsis",
 			whiteSpace: "nowrap",
@@ -232,7 +234,7 @@ export const editorialStyles = (
 		},
 
 		badge: (tone) => ({
-			fontFamily: sansStack,
+			fontFamily: EDITORIAL_SECONDARY_SANS_STACK,
 			fontSize: 10,
 			fontWeight: 700,
 			padding: "4px 10px",
@@ -271,7 +273,7 @@ export const editorialStyles = (
 			height: `${heightPct}%`,
 		}),
 		chartStats: {
-			fontFamily: sansStack,
+			fontFamily: EDITORIAL_SECONDARY_SANS_STACK,
 			fontSize: 11,
 			color: tokens.textMuted,
 			fontVariantNumeric: "tabular-nums",
@@ -284,7 +286,7 @@ export const editorialStyles = (
 			gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
 			gap: "24px",
 			mt: "20px",
-			fontFamily: sansStack,
+			fontFamily: EDITORIAL_SECONDARY_SANS_STACK,
 		},
 		infraEmpty: { mt: "20px", color: tokens.textMuted, fontSize: 13 },
 		gauge: {},
@@ -301,7 +303,7 @@ export const editorialStyles = (
 			letterSpacing: "-0.02em",
 			mt: "4px",
 			fontVariantNumeric: "tabular-nums",
-			fontFamily: serifStack,
+			fontFamily: SERIF_STACK,
 			color: tokens.text,
 		},
 		gaugeBar: { height: 2, background: tokens.border, mt: "10px" },
@@ -326,7 +328,7 @@ export const editorialStyles = (
 			mt: "56px",
 			textTransform: "uppercase",
 			letterSpacing: "0.2em",
-			fontFamily: sansStack,
+			fontFamily: EDITORIAL_SECONDARY_SANS_STACK,
 			"& a": {
 				color: tokens.text,
 				textDecoration: "none",
