@@ -40,6 +40,12 @@ RUN npm run build
 
 COPY --from=frontend-build /app/client/dist ./public
 
+RUN chown -R node:node ./public \
+    && chown -R node:node ./dist \
+    && chown -R node:node ./scripts
+
+USER node
+
 EXPOSE 52345
 
 CMD ["sh", "-c", "./scripts/inject-vars.sh && node ./dist/index.js"]
