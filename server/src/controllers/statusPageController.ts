@@ -12,7 +12,7 @@ import { IStatusPageService } from "@/service/business/statusPageService.js";
 import { IMonitorsRepository } from "@/repositories/index.js";
 import { ISettingsService } from "@/service/system/settingsService.js";
 import { NormalizeData } from "@/utils/dataUtils.js";
-import { DEFAULT_STATUS_PAGE_THEME, DEFAULT_STATUS_PAGE_THEME_MODE, type StatusPage } from "@/types/statusPage.js";
+import { applyDefaultTheme, withoutThemeFields } from "@/controllers/statusPageThemeFlag.js";
 
 const SERVICE_NAME = "statusPageController";
 
@@ -40,26 +40,6 @@ class StatusPageController implements IStatusPageController {
 		return StatusPageController.SERVICE_NAME;
 	}
 
-	// Used when STATUS_PAGE_THEMES_ENABLED is false: drop incoming theme fields
-	// before persisting so an admin client can't accidentally store a value the
-	// public page won't honour.
-	private withoutThemeFields = (body: Record<string, unknown>): Record<string, unknown> => {
-		const rest = { ...body };
-		delete rest.theme;
-		delete rest.themeMode;
-		return rest;
-	};
-
-	// Used when STATUS_PAGE_THEMES_ENABLED is false: overwrite the stored
-	// theme/themeMode with their defaults on read so callers see consistent
-	// values regardless of what's in the DB. Whatever a user previously chose
-	// is preserved in Mongo and resurfaces if the flag is flipped back on.
-	private applyDefaultTheme = (statusPage: StatusPage): StatusPage => ({
-		...statusPage,
-		theme: DEFAULT_STATUS_PAGE_THEME,
-		themeMode: DEFAULT_STATUS_PAGE_THEME_MODE,
-	});
-
 	createStatusPage = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			createStatusPageBodyValidation.parse(req.body);
@@ -68,7 +48,7 @@ class StatusPageController implements IStatusPageController {
 			}
 
 			const themesEnabled = this.settingsService.areStatusPageThemesEnabled();
-			const body = themesEnabled ? req.body : this.withoutThemeFields(req.body);
+			const body = themesEnabled ? req.body : withoutThemeFields(req.body);
 			const teamId = requireTeamId(req?.user?.teamId);
 			const userId = requireUserId(req?.user?.id);
 			const statusPage = await this.statusPageService.createStatusPage(userId, teamId, req.file, body);
@@ -76,7 +56,7 @@ class StatusPageController implements IStatusPageController {
 			return res.status(200).json({
 				success: true,
 				msg: "Status page created successfully",
-				data: themesEnabled ? statusPage : this.applyDefaultTheme(statusPage),
+				data: themesEnabled ? statusPage : applyDefaultTheme(statusPage),
 			});
 		} catch (error) {
 			next(error);
@@ -91,7 +71,7 @@ class StatusPageController implements IStatusPageController {
 			}
 
 			const themesEnabled = this.settingsService.areStatusPageThemesEnabled();
-			const body = themesEnabled ? req.body : this.withoutThemeFields(req.body);
+			const body = themesEnabled ? req.body : withoutThemeFields(req.body);
 			const teamId = requireTeamId(req?.user?.teamId);
 			const statusPageId = req.params.id as string;
 			if (!statusPageId) {
@@ -104,7 +84,7 @@ class StatusPageController implements IStatusPageController {
 			res.status(200).json({
 				success: true,
 				msg: "Status page updated successfully",
-				data: themesEnabled ? statusPage : this.applyDefaultTheme(statusPage),
+				data: themesEnabled ? statusPage : applyDefaultTheme(statusPage),
 			});
 		} catch (error) {
 			next(error);
@@ -155,7 +135,7 @@ class StatusPageController implements IStatusPageController {
 				success: true,
 				msg: "Status page retrieved successfully",
 				data: {
-					statusPage: themesEnabled ? statusPage : this.applyDefaultTheme(statusPage),
+					statusPage: themesEnabled ? statusPage : applyDefaultTheme(statusPage),
 					monitors: normalizedMonitors,
 				},
 			});
@@ -172,7 +152,7 @@ class StatusPageController implements IStatusPageController {
 			return res.status(200).json({
 				success: true,
 				msg: "Status pages retrieved successfully",
-				data: themesEnabled ? statusPages : statusPages.map((sp) => this.applyDefaultTheme(sp)),
+				data: themesEnabled ? statusPages : statusPages.map((sp) => applyDefaultTheme(sp)),
 			});
 		} catch (error) {
 			next(error);
