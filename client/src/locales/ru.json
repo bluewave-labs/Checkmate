@@ -364,7 +364,8 @@
 			"register": {
 				"title": "С возвращением в Checkmate!",
 				"subtitle": "Зарегистрируйтесь, чтобы начать",
-				"submit": "Регистрация"
+				"submit": "Регистрация",
+				"setupNotice": "Эта страница доступна только во время первоначальной настройки. После регистрации суперадминистратора дополнительных пользователей можно пригласить из настроек команды."
 			},
 			"forgotPassword": {
 				"title": "Забыли пароль?",
@@ -426,7 +427,8 @@
 					"activeFor": "Активен",
 					"certificateExpiry": "Истечение сертификата",
 					"lastCheck": "Последняя проверка",
-					"lastResponseTime": "Последнее время ответа"
+					"lastResponseTime": "Последнее время ответа",
+					"serviceIsDown": "Сервис недоступен"
 				},
 				"status": {
 					"down": "недоступен",
@@ -1016,6 +1018,26 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "ID чата",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Настройка Pushover",
+					"description": "Введите токен приложения и ключ пользователя Pushover.",
+					"optionAppToken": "Токен приложения",
+					"placeholderAppToken": "Введите токен приложения",
+					"optionUserKey": "Ключ пользователя",
+					"placeholderUserKey": "Введите ключ пользователя"
+				},
+				"twilio": {
+					"title": "Настройка Twilio",
+					"description": "Введите учётные данные аккаунта Twilio для отправки SMS.",
+					"optionAccountSid": "SID аккаунта",
+					"placeholderAccountSid": "Введите SID аккаунта",
+					"optionAuthToken": "Токен аутентификации",
+					"placeholderAuthToken": "Введите токен аутентификации",
+					"optionFromNumber": "Номер отправителя",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "Номер получателя",
+					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
@@ -1271,7 +1293,18 @@
 				"allDown": "Все системы недоступны",
 				"allUp": "Все системы работают",
 				"degraded": "Некоторые системы испытывают проблемы",
-				"unknown": "Не удаётся определить статус системы"
+				"unknown": "Не удаётся определить статус системы",
+				"allBreached": "Все системы превысили пороговые значения",
+				"allMaintenance": "Все системы на техническом обслуживании",
+				"allPaused": "Все системы приостановлены",
+				"allInitializing": "Все системы инициализируются",
+				"breachedAndDown": "Некоторые системы превысили пороги и недоступны",
+				"breached": "Некоторые системы превысили пороги",
+				"maintenanceAndDown": "Некоторые системы недоступны во время техобслуживания",
+				"maintenance": "Некоторые системы на техобслуживании",
+				"partiallyPaused": "Некоторые системы приостановлены",
+				"initializing": "Некоторые системы инициализируются",
+				"noMonitors": "Мониторы не настроены"
 			},
 			"table": {
 				"headers": {

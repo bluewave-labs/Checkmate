@@ -35,7 +35,7 @@
 			"sendInvite": "Davet gönder",
 			"test": "Test",
 			"testNotifications": "Bildirimleri test et",
-			"toggleTheme": "",
+			"toggleTheme": "Açık / koyu temayı değiştir",
 			"flushQueue": "Kuyruğu temizle",
 			"notFound": "Ana panele git",
 			"resetPassword": "Parolayı sıfırla",
@@ -86,7 +86,7 @@
 			"name": {
 				"option": {
 					"firstName": {
-						"label": "",
+						"label": "Ad",
 						"placeholder": "Jordan"
 					},
 					"lastName": {
@@ -155,13 +155,13 @@
 			"serverUnreachable": "Sunucuya ulaşılamıyor",
 			"retry": "Tekrar dene",
 			"retrying": "Yeniden deneniyor...",
-			"reconnected": ""
+			"reconnected": "Bağlantı yeniden kuruldu"
 		},
 		"sidebar": {
 			"menu": {
-				"uptime": "",
+				"uptime": "Çalışma süresi",
 				"pagespeed": "Sayfa hızı",
-				"infrastructure": "",
+				"infrastructure": "Altyapı",
 				"notifications": "Bildirimler",
 				"checks": "Kontroller",
 				"incidents": "Olaylar",
@@ -364,7 +364,8 @@
 			"register": {
 				"title": "Checkmate'e tekrar hoş geldiniz!",
 				"subtitle": "Başlamak için kaydolun",
-				"submit": "Kaydol"
+				"submit": "Kaydol",
+				"setupNotice": "Bu sayfa yalnızca ilk kurulum sırasında kullanılabilir. Süper yönetici kaydedildikten sonra, ek kullanıcılar takım ayarlarından davet edilebilir."
 			},
 			"forgotPassword": {
 				"title": "Parolanızı mı unuttunuz?",
@@ -426,7 +427,8 @@
 					"activeFor": "Aktif süresi",
 					"certificateExpiry": "Sertifika bitiş tarihi",
 					"lastCheck": "Son kontrol",
-					"lastResponseTime": "Son yanıt süresi"
+					"lastResponseTime": "Son yanıt süresi",
+					"serviceIsDown": "Servis çalışmıyor"
 				},
 				"status": {
 					"down": "çevrimdışı",
@@ -1016,6 +1018,26 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "Sohbet ID",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Pushover yapılandırması",
+					"description": "Pushover uygulama belirtecinizi ve kullanıcı anahtarınızı girin.",
+					"optionAppToken": "Uygulama belirteci",
+					"placeholderAppToken": "Uygulama belirtecini girin",
+					"optionUserKey": "Kullanıcı anahtarı",
+					"placeholderUserKey": "Kullanıcı anahtarını girin"
+				},
+				"twilio": {
+					"title": "Twilio yapılandırması",
+					"description": "SMS göndermek için Twilio hesap kimlik bilgilerinizi girin.",
+					"optionAccountSid": "Hesap SID",
+					"placeholderAccountSid": "Hesap SID girin",
+					"optionAuthToken": "Kimlik doğrulama belirteci",
+					"placeholderAuthToken": "Kimlik doğrulama belirtecini girin",
+					"optionFromNumber": "Gönderen numara",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "Alıcı numara",
+					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
@@ -1271,7 +1293,18 @@
 				"allDown": "Tüm sistemler çevrimdışı",
 				"allUp": "Tüm sistemler çalışıyor",
 				"degraded": "Bazı sistemlerde sorun yaşanıyor",
-				"unknown": "Sistem durumu belirlenemiyor"
+				"unknown": "Sistem durumu belirlenemiyor",
+				"allBreached": "Tüm sistemler eşik değerlerini aştı",
+				"allMaintenance": "Tüm sistemler bakımda",
+				"allPaused": "Tüm sistemler duraklatıldı",
+				"allInitializing": "Tüm sistemler başlatılıyor",
+				"breachedAndDown": "Bazı sistemler eşik değerlerini aştı ve çalışmıyor",
+				"breached": "Bazı sistemler eşik değerlerini aştı",
+				"maintenanceAndDown": "Bazı sistemler bakım sırasında çalışmıyor",
+				"maintenance": "Bazı sistemler bakımda",
+				"partiallyPaused": "Bazı sistemler duraklatıldı",
+				"initializing": "Bazı sistemler başlatılıyor",
+				"noMonitors": "Hiç monitör yapılandırılmadı"
 			},
 			"table": {
 				"headers": {

@@ -364,7 +364,8 @@
 			"register": {
 				"title": "歡迎回到 Checkmate！",
 				"subtitle": "註冊以開始使用",
-				"submit": "註冊"
+				"submit": "註冊",
+				"setupNotice": "此頁面僅在初始設定期間可用。註冊超級管理員後,可以從團隊設定中邀請更多使用者。"
 			},
 			"forgotPassword": {
 				"title": "忘記密碼了嗎？",
@@ -426,7 +427,8 @@
 					"activeFor": "已啟用",
 					"certificateExpiry": "憑證到期",
 					"lastCheck": "最後檢查",
-					"lastResponseTime": "最後回應時間"
+					"lastResponseTime": "最後回應時間",
+					"serviceIsDown": "服務已停止"
 				},
 				"status": {
 					"down": "離線",
@@ -1016,6 +1018,26 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "聊天室 ID",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Pushover 設定",
+					"description": "輸入您的 Pushover 應用程式權杖和使用者金鑰。",
+					"optionAppToken": "應用程式權杖",
+					"placeholderAppToken": "輸入應用程式權杖",
+					"optionUserKey": "使用者金鑰",
+					"placeholderUserKey": "輸入使用者金鑰"
+				},
+				"twilio": {
+					"title": "Twilio 設定",
+					"description": "輸入 Twilio 帳戶憑證以傳送簡訊。",
+					"optionAccountSid": "帳戶 SID",
+					"placeholderAccountSid": "輸入帳戶 SID",
+					"optionAuthToken": "驗證權杖",
+					"placeholderAuthToken": "輸入驗證權杖",
+					"optionFromNumber": "發送號碼",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "接收號碼",
+					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
@@ -1271,7 +1293,18 @@
 				"allDown": "所有系統已停機",
 				"allUp": "所有系統運作正常",
 				"degraded": "部分系統正在發生問題",
-				"unknown": "無法判斷系統狀態"
+				"unknown": "無法判斷系統狀態",
+				"allBreached": "所有系統已超過閾值",
+				"allMaintenance": "所有系統正在維護中",
+				"allPaused": "所有系統已暫停",
+				"allInitializing": "所有系統正在初始化",
+				"breachedAndDown": "部分系統超過閾值且已停止",
+				"breached": "部分系統超過閾值",
+				"maintenanceAndDown": "部分系統在維護期間停止",
+				"maintenance": "部分系統正在維護",
+				"partiallyPaused": "部分系統已暫停",
+				"initializing": "部分系統正在初始化",
+				"noMonitors": "尚未設定任何監視器"
 			},
 			"table": {
 				"headers": {

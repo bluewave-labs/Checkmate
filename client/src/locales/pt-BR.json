@@ -364,7 +364,8 @@
 			"register": {
 				"title": "Bem-vindo ao Checkmate!",
 				"subtitle": "Cadastre-se para começar",
-				"submit": "Cadastrar"
+				"submit": "Cadastrar",
+				"setupNotice": "Esta página está disponível apenas durante a configuração inicial. Após o registro de um super administrador, usuários adicionais podem ser convidados a partir das configurações da equipe."
 			},
 			"forgotPassword": {
 				"title": "Esqueceu sua senha?",
@@ -426,7 +427,8 @@
 					"activeFor": "Ativo há",
 					"certificateExpiry": "Validade do certificado",
 					"lastCheck": "Última verificação",
-					"lastResponseTime": "Último tempo de resposta"
+					"lastResponseTime": "Último tempo de resposta",
+					"serviceIsDown": "O serviço está fora do ar"
 				},
 				"status": {
 					"down": "fora do ar",
@@ -1016,6 +1018,26 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "ID do chat",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Configuração do Pushover",
+					"description": "Insira o token de aplicação e a chave de usuário do Pushover.",
+					"optionAppToken": "Token de aplicação",
+					"placeholderAppToken": "Insira o token de aplicação",
+					"optionUserKey": "Chave de usuário",
+					"placeholderUserKey": "Insira a chave de usuário"
+				},
+				"twilio": {
+					"title": "Configuração do Twilio",
+					"description": "Insira as credenciais da conta Twilio para enviar SMS.",
+					"optionAccountSid": "SID da conta",
+					"placeholderAccountSid": "Insira o SID da conta",
+					"optionAuthToken": "Token de autenticação",
+					"placeholderAuthToken": "Insira o token de autenticação",
+					"optionFromNumber": "Número de origem",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "Número de destino",
+					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
@@ -1271,7 +1293,18 @@
 				"allDown": "Todos os sistemas estão fora do ar",
 				"allUp": "Todos os sistemas operacionais",
 				"degraded": "Alguns sistemas estão com problemas",
-				"unknown": "Não foi possível determinar o status do sistema"
+				"unknown": "Não foi possível determinar o status do sistema",
+				"allBreached": "Todos os sistemas excederam os limites",
+				"allMaintenance": "Todos os sistemas estão em manutenção",
+				"allPaused": "Todos os sistemas estão pausados",
+				"allInitializing": "Todos os sistemas estão inicializando",
+				"breachedAndDown": "Alguns sistemas excederam os limites e estão fora do ar",
+				"breached": "Alguns sistemas excederam os limites",
+				"maintenanceAndDown": "Alguns sistemas estão fora do ar durante a manutenção",
+				"maintenance": "Alguns sistemas estão em manutenção",
+				"partiallyPaused": "Alguns sistemas estão pausados",
+				"initializing": "Alguns sistemas estão inicializando",
+				"noMonitors": "Nenhum monitor foi configurado"
 			},
 			"table": {
 				"headers": {

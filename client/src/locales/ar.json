@@ -13,7 +13,7 @@
 				"content": "تحذير: لم تقم بإضافة مفتاح Google PageSpeed API بعد. قم بزيارة <settingsLink>الإعدادات</settingsLink> لإضافته. بدونه، لن تعمل مراقبة PageSpeed."
 			}
 		},
-		"appName": "",
+		"appName": "Checkmate",
 		"breadcrumbs": {
 			"details": "التفاصيل",
 			"home": "الرئيسية"
@@ -35,11 +35,11 @@
 			"sendInvite": "إرسال دعوة",
 			"test": "اختبار",
 			"testNotifications": "اختبار الإشعارات",
-			"toggleTheme": "",
+			"toggleTheme": "تبديل الوضع الفاتح والداكن",
 			"flushQueue": "تفريغ قائمة الانتظار",
 			"notFound": "الانتقال إلى لوحة التحكم الرئيسية",
-			"resetPassword": "",
-			"reset": "",
+			"resetPassword": "إعادة تعيين كلمة المرور",
+			"reset": "إعادة تعيين",
 			"clear": "مسح",
 			"addDemo": "إضافة مراقبات تجريبية",
 			"removeMonitors": "إزالة المراقبات",
@@ -53,8 +53,8 @@
 			"labels": {
 				"averageResponseTime": "متوسط وقت الاستجابة",
 				"downtime": "وقت التوقف",
-				"high": "",
-				"low": "",
+				"high": "مرتفع",
+				"low": "منخفض",
 				"uptime": "وقت التشغيل"
 			},
 			"histogram": {
@@ -86,12 +86,12 @@
 			"name": {
 				"option": {
 					"firstName": {
-						"label": "",
-						"placeholder": ""
+						"label": "الاسم الأول",
+						"placeholder": "أدخل اسمك الأول"
 					},
 					"lastName": {
-						"label": "",
-						"placeholder": ""
+						"label": "اسم العائلة",
+						"placeholder": "أدخل اسم عائلتك"
 					}
 				}
 			},
@@ -107,14 +107,14 @@
 		"table": {
 			"empty": "لا يوجد شيء هنا",
 			"headers": {
-				"actions": "",
+				"actions": "إجراءات",
 				"dateTime": "التاريخ والوقت",
 				"message": "الرسالة",
 				"monitor": "المراقب",
 				"monitorId": "معرّف المراقب",
 				"name": "الاسم",
 				"status": "الحالة",
-				"type": "",
+				"type": "النوع",
 				"url": "الرابط",
 				"interval": "الفاصل الزمني",
 				"active": "نشط",
@@ -125,17 +125,17 @@
 	"components": {
 		"imageUpload": {
 			"clickToUpload": "انقر للرفع",
-			"dragAndDrop": "",
-			"supportedFormats": "",
-			"maxSize": "",
+			"dragAndDrop": "أو اسحب وأسقط",
+			"supportedFormats": "الصيغ المدعومة",
+			"maxSize": "الحجم الأقصى",
 			"orDragAndDrop": "أو اسحب وأفلت",
 			"errors": {
-				"invalidFileSize": "",
-				"invalidFileFormat": ""
+				"invalidFileSize": "حجم الملف كبير جدًا!",
+				"invalidFileFormat": "تنسيق الملف غير مدعوم!"
 			}
 		},
 		"headerStatusPageControls": {
-			"publicLink": ""
+			"publicLink": "رابط عام"
 		},
 		"headerTimeRange": {
 			"labels": {
@@ -155,26 +155,26 @@
 			"serverUnreachable": "تعذر الوصول إلى الخادم",
 			"retry": "إعادة المحاولة",
 			"retrying": "جارٍ إعادة المحاولة...",
-			"reconnected": ""
+			"reconnected": "تمت استعادة الاتصال"
 		},
 		"sidebar": {
 			"menu": {
-				"uptime": "",
-				"pagespeed": "",
-				"infrastructure": "",
-				"notifications": "",
+				"uptime": "وقت التشغيل",
+				"pagespeed": "Pagespeed",
+				"infrastructure": "البنية التحتية",
+				"notifications": "الإشعارات",
 				"checks": "الفحوصات",
-				"incidents": "",
-				"statusPages": "",
-				"maintenance": "",
-				"logs": "",
-				"settings": ""
+				"incidents": "الحوادث",
+				"statusPages": "صفحات الحالة",
+				"maintenance": "الصيانة",
+				"logs": "السجلات",
+				"settings": "الإعدادات"
 			},
 			"bottomMenu": {
-				"support": "",
-				"discussions": "",
-				"docs": "",
-				"changelog": ""
+				"support": "الدعم",
+				"discussions": "المناقشات",
+				"docs": "الوثائق",
+				"changelog": "سجل التغييرات"
 			},
 			"accountMenu": {
 				"profile": "الملف الشخصي",
@@ -186,13 +186,13 @@
 				"description": "اطلع على أحدث الإصدارات وساعد في تنمية المجتمع على GitHub"
 			},
 			"authFooter": {
-				"navControls": "",
-				"logOut": "",
+				"navControls": "عناصر التحكم",
+				"logOut": "تسجيل الخروج",
 				"roles": {
 					"superAdmin": "مسؤول أعلى",
 					"admin": "مسؤول",
 					"user": "مستخدم",
-					"demoUser": ""
+					"demoUser": "مستخدم تجريبي"
 				}
 			}
 		},
@@ -259,15 +259,15 @@
 			"team": {
 				"filter": {
 					"placeholder": "تصفية حسب الدور",
-					"all": "",
+					"all": "كل الأدوار",
 					"admin": "مسؤول",
-					"member": ""
+					"member": "عضو"
 				},
 				"table": {
 					"headers": {
 						"email": "البريد الإلكتروني",
 						"role": "الدور",
-						"created": ""
+						"created": "تم الإنشاء في"
 					}
 				},
 				"addMember": {
@@ -364,7 +364,8 @@
 			"register": {
 				"title": "مرحباً بعودتك إلى Checkmate!",
 				"subtitle": "سجّل للبدء",
-				"submit": "تسجيل"
+				"submit": "تسجيل",
+				"setupNotice": "هذه الصفحة متاحة فقط أثناء الإعداد الأولي. بمجرد تسجيل المسؤول الأعلى، يمكن دعوة مستخدمين إضافيين من إعدادات الفريق."
 			},
 			"forgotPassword": {
 				"title": "نسيت كلمة المرور؟",
@@ -426,7 +427,8 @@
 					"activeFor": "نشط منذ",
 					"certificateExpiry": "انتهاء الشهادة",
 					"lastCheck": "آخر فحص",
-					"lastResponseTime": "آخر وقت استجابة"
+					"lastResponseTime": "آخر وقت استجابة",
+					"serviceIsDown": "الخدمة معطلة"
 				},
 				"status": {
 					"down": "متوقف",
@@ -825,9 +827,9 @@
 				"description": "ستظهر هنا نشاط الخادم والتحذيرات والأخطاء أثناء تشغيل Checkmate."
 			},
 			"tabs": {
-				"diagnostics": "",
-				"logs": "",
-				"queue": ""
+				"diagnostics": "التشخيص",
+				"logs": "السجلات",
+				"queue": "قائمة المهام"
 			},
 			"logLevelSelect": {
 				"label": "مستوى السجل"
@@ -1016,6 +1018,26 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "معرّف المحادثة",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "إعدادات Pushover",
+					"description": "أدخل رمز التطبيق ومفتاح المستخدم في Pushover.",
+					"optionAppToken": "رمز التطبيق",
+					"placeholderAppToken": "أدخل رمز التطبيق",
+					"optionUserKey": "مفتاح المستخدم",
+					"placeholderUserKey": "أدخل مفتاح المستخدم"
+				},
+				"twilio": {
+					"title": "إعدادات Twilio",
+					"description": "أدخل بيانات اعتماد حساب Twilio لإرسال الرسائل النصية.",
+					"optionAccountSid": "معرف الحساب (SID)",
+					"placeholderAccountSid": "أدخل معرف الحساب",
+					"optionAuthToken": "رمز المصادقة",
+					"placeholderAuthToken": "أدخل رمز المصادقة",
+					"optionFromNumber": "من الرقم",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "إلى الرقم",
+					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
@@ -1271,7 +1293,18 @@
 				"allDown": "جميع الأنظمة متوقفة",
 				"allUp": "جميع الأنظمة تعمل بشكل طبيعي",
 				"degraded": "بعض الأنظمة تواجه مشكلات",
-				"unknown": "تعذر تحديد حالة النظام"
+				"unknown": "تعذر تحديد حالة النظام",
+				"allBreached": "تجاوزت جميع الأنظمة الحدود",
+				"allMaintenance": "جميع الأنظمة قيد الصيانة",
+				"allPaused": "جميع الأنظمة متوقفة مؤقتًا",
+				"allInitializing": "جميع الأنظمة قيد التهيئة",
+				"breachedAndDown": "تجاوزت بعض الأنظمة الحدود وهي معطلة",
+				"breached": "تجاوزت بعض الأنظمة الحدود",
+				"maintenanceAndDown": "بعض الأنظمة معطلة أثناء الصيانة",
+				"maintenance": "بعض الأنظمة قيد الصيانة",
+				"partiallyPaused": "بعض الأنظمة متوقفة مؤقتًا",
+				"initializing": "بعض الأنظمة قيد التهيئة",
+				"noMonitors": "لم يتم تكوين أي شاشة"
 			},
 			"table": {
 				"headers": {

@@ -364,7 +364,8 @@
 			"register": {
 				"title": "ยินดีต้อนรับกลับสู่ Checkmate!",
 				"subtitle": "สมัครสมาชิกเพื่อเริ่มต้น",
-				"submit": "ลงทะเบียน"
+				"submit": "ลงทะเบียน",
+				"setupNotice": "หน้านี้พร้อมใช้งานเฉพาะระหว่างการตั้งค่าเริ่มต้นเท่านั้น เมื่อลงทะเบียนผู้ดูแลระบบสูงสุดแล้ว สามารถเชิญผู้ใช้เพิ่มเติมได้จากการตั้งค่าทีม"
 			},
 			"forgotPassword": {
 				"title": "ลืมรหัสผ่านใช่ไหม?",
@@ -426,7 +427,8 @@
 					"activeFor": "ทำงานมาแล้ว",
 					"certificateExpiry": "วันหมดอายุใบรับรอง",
 					"lastCheck": "ตรวจสอบล่าสุด",
-					"lastResponseTime": "เวลาตอบสนองล่าสุด"
+					"lastResponseTime": "เวลาตอบสนองล่าสุด",
+					"serviceIsDown": "บริการขัดข้อง"
 				},
 				"status": {
 					"down": "ล่ม",
@@ -1016,6 +1018,26 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "Chat ID",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "การตั้งค่า Pushover",
+					"description": "ป้อนโทเค็นแอปและคีย์ผู้ใช้ Pushover ของคุณ",
+					"optionAppToken": "โทเค็นแอป",
+					"placeholderAppToken": "ป้อนโทเค็นแอป",
+					"optionUserKey": "คีย์ผู้ใช้",
+					"placeholderUserKey": "ป้อนคีย์ผู้ใช้"
+				},
+				"twilio": {
+					"title": "การตั้งค่า Twilio",
+					"description": "ป้อนข้อมูลรับรองบัญชี Twilio เพื่อส่ง SMS",
+					"optionAccountSid": "SID บัญชี",
+					"placeholderAccountSid": "ป้อน SID บัญชี",
+					"optionAuthToken": "โทเค็นการรับรอง",
+					"placeholderAuthToken": "ป้อนโทเค็นการรับรอง",
+					"optionFromNumber": "หมายเลขผู้ส่ง",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "หมายเลขผู้รับ",
+					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
@@ -1271,7 +1293,18 @@
 				"allDown": "ระบบทั้งหมดล่ม",
 				"allUp": "ระบบทั้งหมดทำงานปกติ",
 				"degraded": "บางระบบกำลังประสบปัญหา",
-				"unknown": "ไม่สามารถระบุสถานะระบบได้"
+				"unknown": "ไม่สามารถระบุสถานะระบบได้",
+				"allBreached": "ทุกระบบเกินขีดจำกัด",
+				"allMaintenance": "ทุกระบบอยู่ระหว่างการบำรุงรักษา",
+				"allPaused": "ทุกระบบถูกหยุดชั่วคราว",
+				"allInitializing": "ทุกระบบกำลังเริ่มต้น",
+				"breachedAndDown": "บางระบบเกินขีดจำกัดและขัดข้อง",
+				"breached": "บางระบบเกินขีดจำกัด",
+				"maintenanceAndDown": "บางระบบขัดข้องระหว่างการบำรุงรักษา",
+				"maintenance": "บางระบบอยู่ระหว่างการบำรุงรักษา",
+				"partiallyPaused": "บางระบบถูกหยุดชั่วคราว",
+				"initializing": "บางระบบกำลังเริ่มต้น",
+				"noMonitors": "ยังไม่มีการกำหนดค่ามอนิเตอร์"
 			},
 			"table": {
 				"headers": {

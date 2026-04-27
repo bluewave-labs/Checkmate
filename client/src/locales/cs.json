@@ -39,7 +39,7 @@
 			"flushQueue": "Vyprázdnit frontu",
 			"notFound": "Přejít na hlavní přehled",
 			"resetPassword": "Obnovit heslo",
-			"reset": "",
+			"reset": "Resetovat",
 			"clear": "Vymazat",
 			"addDemo": "Přidat ukázkové monitory",
 			"removeMonitors": "Odebrat monitory",
@@ -53,8 +53,8 @@
 			"labels": {
 				"averageResponseTime": "Průměrná doba odezvy",
 				"downtime": "Výpadek",
-				"high": "",
-				"low": "",
+				"high": "Vysoké",
+				"low": "Nízké",
 				"uptime": "Dostupnost"
 			},
 			"histogram": {
@@ -107,14 +107,14 @@
 		"table": {
 			"empty": "Zde nic není",
 			"headers": {
-				"actions": "",
+				"actions": "Akce",
 				"dateTime": "Datum a čas",
 				"message": "Zpráva",
 				"monitor": "Monitor",
 				"monitorId": "ID monitoru",
 				"name": "Název",
 				"status": "Stav",
-				"type": "",
+				"type": "Typ",
 				"url": "URL",
 				"interval": "Interval",
 				"active": "Aktivní",
@@ -125,17 +125,17 @@
 	"components": {
 		"imageUpload": {
 			"clickToUpload": "Klikněte pro nahrání",
-			"dragAndDrop": "",
-			"supportedFormats": "",
-			"maxSize": "",
+			"dragAndDrop": "nebo přetáhněte",
+			"supportedFormats": "Podporované formáty",
+			"maxSize": "Max. velikost",
 			"orDragAndDrop": "nebo přetáhněte soubor",
 			"errors": {
-				"invalidFileSize": "",
-				"invalidFileFormat": ""
+				"invalidFileSize": "Soubor je příliš velký!",
+				"invalidFileFormat": "Nepodporovaný formát souboru!"
 			}
 		},
 		"headerStatusPageControls": {
-			"publicLink": ""
+			"publicLink": "Veřejný odkaz"
 		},
 		"headerTimeRange": {
 			"labels": {
@@ -159,22 +159,22 @@
 		},
 		"sidebar": {
 			"menu": {
-				"uptime": "",
-				"pagespeed": "",
-				"infrastructure": "",
-				"notifications": "",
+				"uptime": "Dostupnost",
+				"pagespeed": "Pagespeed",
+				"infrastructure": "Infrastruktura",
+				"notifications": "Oznámení",
 				"checks": "Kontroly",
-				"incidents": "",
-				"statusPages": "",
-				"maintenance": "",
-				"logs": "",
-				"settings": ""
+				"incidents": "Incidenty",
+				"statusPages": "Stavové stránky",
+				"maintenance": "Údržba",
+				"logs": "Záznamy",
+				"settings": "Nastavení"
 			},
 			"bottomMenu": {
-				"support": "",
-				"discussions": "",
-				"docs": "",
-				"changelog": ""
+				"support": "Podpora",
+				"discussions": "Diskuze",
+				"docs": "Dokumentace",
+				"changelog": "Záznam změn"
 			},
 			"accountMenu": {
 				"profile": "Profil",
@@ -186,13 +186,13 @@
 				"description": "Sledujte nejnovější vydání a pomozte rozšířit komunitu na GitHubu"
 			},
 			"authFooter": {
-				"navControls": "",
-				"logOut": "",
+				"navControls": "Ovládací prvky",
+				"logOut": "Odhlásit se",
 				"roles": {
 					"superAdmin": "Superadministrátor",
 					"admin": "Administrátor",
 					"user": "Uživatel",
-					"demoUser": ""
+					"demoUser": "Demo uživatel"
 				}
 			}
 		},
@@ -259,15 +259,15 @@
 			"team": {
 				"filter": {
 					"placeholder": "Filtrovat podle role",
-					"all": "",
+					"all": "Všechny role",
 					"admin": "Administrátor",
-					"member": ""
+					"member": "Člen"
 				},
 				"table": {
 					"headers": {
 						"email": "Email",
 						"role": "Role",
-						"created": ""
+						"created": "Vytvořeno"
 					}
 				},
 				"addMember": {
@@ -364,7 +364,8 @@
 			"register": {
 				"title": "Vítejte v Checkmate!",
 				"subtitle": "Zaregistrujte se a začněte",
-				"submit": "Registrovat"
+				"submit": "Registrovat",
+				"setupNotice": "Tato stránka je k dispozici pouze během počátečního nastavení. Po zaregistrování super administrátora lze pozvat další uživatele z nastavení týmu."
 			},
 			"forgotPassword": {
 				"title": "Zapomněli jste heslo?",
@@ -426,7 +427,8 @@
 					"activeFor": "Aktivní po dobu",
 					"certificateExpiry": "Expirace certifikátu",
 					"lastCheck": "Poslední kontrola",
-					"lastResponseTime": "Poslední doba odezvy"
+					"lastResponseTime": "Poslední doba odezvy",
+					"serviceIsDown": "Služba je nedostupná"
 				},
 				"status": {
 					"down": "nedostupný",
@@ -825,9 +827,9 @@
 				"description": "Aktivita serveru, varování a chyby se zobrazí zde, jak Checkmate běží."
 			},
 			"tabs": {
-				"diagnostics": "",
-				"logs": "",
-				"queue": ""
+				"diagnostics": "Diagnostika",
+				"logs": "Záznamy",
+				"queue": "Fronta úloh"
 			},
 			"logLevelSelect": {
 				"label": "Úroveň logování"
@@ -1016,6 +1018,26 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "ID chatu",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Konfigurace Pushover",
+					"description": "Zadejte token aplikace a uživatelský klíč Pushover.",
+					"optionAppToken": "Token aplikace",
+					"placeholderAppToken": "Zadejte token aplikace",
+					"optionUserKey": "Uživatelský klíč",
+					"placeholderUserKey": "Zadejte uživatelský klíč"
+				},
+				"twilio": {
+					"title": "Konfigurace Twilio",
+					"description": "Zadejte přihlašovací údaje účtu Twilio pro odesílání SMS.",
+					"optionAccountSid": "SID účtu",
+					"placeholderAccountSid": "Zadejte SID účtu",
+					"optionAuthToken": "Autentizační token",
+					"placeholderAuthToken": "Zadejte autentizační token",
+					"optionFromNumber": "Z čísla",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "Na číslo",
+					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
@@ -1271,7 +1293,18 @@
 				"allDown": "Všechny systémy jsou nedostupné",
 				"allUp": "Všechny systémy fungují",
 				"degraded": "Některé systémy mají problémy",
-				"unknown": "Nelze určit stav systému"
+				"unknown": "Nelze určit stav systému",
+				"allBreached": "Všechny systémy překročily prahové hodnoty",
+				"allMaintenance": "Všechny systémy jsou v údržbě",
+				"allPaused": "Všechny systémy jsou pozastavené",
+				"allInitializing": "Všechny systémy se inicializují",
+				"breachedAndDown": "Některé systémy překročily prahové hodnoty a jsou nedostupné",
+				"breached": "Některé systémy překročily prahové hodnoty",
+				"maintenanceAndDown": "Některé systémy jsou nedostupné během údržby",
+				"maintenance": "Některé systémy jsou v údržbě",
+				"partiallyPaused": "Některé systémy jsou pozastavené",
+				"initializing": "Některé systémy se inicializují",
+				"noMonitors": "Nebyly nakonfigurovány žádné monitory"
 			},
 			"table": {
 				"headers": {

@@ -364,7 +364,8 @@
 			"register": {
 				"title": "Willkommen bei Checkmate!",
 				"subtitle": "Registrieren Sie sich, um loszulegen",
-				"submit": "Registrieren"
+				"submit": "Registrieren",
+				"setupNotice": "Diese Seite ist nur während der Ersteinrichtung verfügbar. Sobald ein Super-Admin registriert ist, können weitere Benutzer in den Team-Einstellungen eingeladen werden."
 			},
 			"forgotPassword": {
 				"title": "Passwort vergessen?",
@@ -426,7 +427,8 @@
 					"activeFor": "Aktiv seit",
 					"certificateExpiry": "Zertifikatablauf",
 					"lastCheck": "Letzter Check",
-					"lastResponseTime": "Letzte Antwortzeit"
+					"lastResponseTime": "Letzte Antwortzeit",
+					"serviceIsDown": "Dienst ist nicht erreichbar"
 				},
 				"status": {
 					"down": "ausgefallen",
@@ -1016,6 +1018,26 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "Chat-ID",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Pushover-Konfiguration",
+					"description": "Geben Sie Ihr Anwendungstoken und Ihren Benutzerschlüssel von Pushover ein.",
+					"optionAppToken": "Anwendungstoken",
+					"placeholderAppToken": "Anwendungstoken eingeben",
+					"optionUserKey": "Benutzerschlüssel",
+					"placeholderUserKey": "Benutzerschlüssel eingeben"
+				},
+				"twilio": {
+					"title": "Twilio-Konfiguration",
+					"description": "Geben Sie Ihre Twilio-Kontoanmeldeinformationen ein, um SMS zu senden.",
+					"optionAccountSid": "Account-SID",
+					"placeholderAccountSid": "Account-SID eingeben",
+					"optionAuthToken": "Auth-Token",
+					"placeholderAuthToken": "Auth-Token eingeben",
+					"optionFromNumber": "Absendernummer",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "Empfängernummer",
+					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
@@ -1271,7 +1293,18 @@
 				"allDown": "Alle Systeme sind ausgefallen",
 				"allUp": "Alle Systeme funktionsfähig",
 				"degraded": "Einige Systeme haben Probleme",
-				"unknown": "Systemstatus kann nicht ermittelt werden"
+				"unknown": "Systemstatus kann nicht ermittelt werden",
+				"allBreached": "Alle Systeme haben Schwellenwerte überschritten",
+				"allMaintenance": "Alle Systeme befinden sich in Wartung",
+				"allPaused": "Alle Systeme sind pausiert",
+				"allInitializing": "Alle Systeme werden initialisiert",
+				"breachedAndDown": "Einige Systeme haben Schwellenwerte überschritten und sind ausgefallen",
+				"breached": "Einige Systeme haben Schwellenwerte überschritten",
+				"maintenanceAndDown": "Einige Systeme sind während der Wartung ausgefallen",
+				"maintenance": "Einige Systeme befinden sich in Wartung",
+				"partiallyPaused": "Einige Systeme sind pausiert",
+				"initializing": "Einige Systeme werden initialisiert",
+				"noMonitors": "Es wurden keine Monitore konfiguriert"
 			},
 			"table": {
 				"headers": {

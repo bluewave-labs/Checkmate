@@ -364,7 +364,8 @@
 			"register": {
 				"title": "Checkmateへようこそ！",
 				"subtitle": "サインアップして始めましょう",
-				"submit": "登録"
+				"submit": "登録",
+				"setupNotice": "このページは初期セットアップ中のみ利用できます。スーパー管理者が登録されると、追加のユーザーはチーム設定から招待できます。"
 			},
 			"forgotPassword": {
 				"title": "パスワードをお忘れですか？",
@@ -426,7 +427,8 @@
 					"activeFor": "稼働期間",
 					"certificateExpiry": "証明書の有効期限",
 					"lastCheck": "最終チェック",
-					"lastResponseTime": "最終応答時間"
+					"lastResponseTime": "最終応答時間",
+					"serviceIsDown": "サービスがダウンしています"
 				},
 				"status": {
 					"down": "ダウン",
@@ -1016,6 +1018,26 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "チャットID",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Pushover の設定",
+					"description": "Pushover のアプリケーショントークンとユーザーキーを入力してください。",
+					"optionAppToken": "アプリトークン",
+					"placeholderAppToken": "アプリトークンを入力",
+					"optionUserKey": "ユーザーキー",
+					"placeholderUserKey": "ユーザーキーを入力"
+				},
+				"twilio": {
+					"title": "Twilio の設定",
+					"description": "SMS を送信するための Twilio アカウント認証情報を入力してください。",
+					"optionAccountSid": "アカウント SID",
+					"placeholderAccountSid": "アカウント SID を入力",
+					"optionAuthToken": "認証トークン",
+					"placeholderAuthToken": "認証トークンを入力",
+					"optionFromNumber": "送信元番号",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "送信先番号",
+					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
@@ -1271,7 +1293,18 @@
 				"allDown": "すべてのシステムがダウンしています",
 				"allUp": "すべてのシステムが正常に稼働しています",
 				"degraded": "一部のシステムに問題が発生しています",
-				"unknown": "システムステータスを判定できません"
+				"unknown": "システムステータスを判定できません",
+				"allBreached": "すべてのシステムがしきい値を超えました",
+				"allMaintenance": "すべてのシステムがメンテナンス中です",
+				"allPaused": "すべてのシステムが一時停止中です",
+				"allInitializing": "すべてのシステムが初期化中です",
+				"breachedAndDown": "一部のシステムがしきい値を超えてダウンしています",
+				"breached": "一部のシステムがしきい値を超えています",
+				"maintenanceAndDown": "一部のシステムがメンテナンス中にダウンしています",
+				"maintenance": "一部のシステムがメンテナンス中です",
+				"partiallyPaused": "一部のシステムが一時停止中です",
+				"initializing": "一部のシステムが初期化中です",
+				"noMonitors": "モニターが設定されていません"
 			},
 			"table": {
 				"headers": {

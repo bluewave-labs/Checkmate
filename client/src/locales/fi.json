@@ -13,7 +13,7 @@
 				"content": "Varoitus: Et ole vielä lisännyt Google PageSpeed API -avainta. Siirry <settingsLink>Asetuksiin</settingsLink> lisätäksesi sellainen. Ilman sitä PageSpeed-monitorointi ei toimi."
 			}
 		},
-		"appName": "",
+		"appName": "Checkmate",
 		"breadcrumbs": {
 			"details": "Tiedot",
 			"home": "Etusivu"
@@ -35,10 +35,10 @@
 			"sendInvite": "Lähetä kutsu",
 			"test": "Testaa",
 			"testNotifications": "Testaa ilmoitukset",
-			"toggleTheme": "",
+			"toggleTheme": "Vaihda vaalea / tumma",
 			"flushQueue": "Tyhjennä jono",
 			"notFound": "Siirry pääsivulle",
-			"resetPassword": "",
+			"resetPassword": "Nollaa salasana",
 			"reset": "Palauta",
 			"clear": "Tyhjennä",
 			"addDemo": "Lisää demomonitorit",
@@ -53,8 +53,8 @@
 			"labels": {
 				"averageResponseTime": "Keskimääräinen vasteaika",
 				"downtime": "Käyttökatko",
-				"high": "",
-				"low": "",
+				"high": "Korkea",
+				"low": "Matala",
 				"uptime": "Käytettävyys"
 			},
 			"histogram": {
@@ -86,12 +86,12 @@
 			"name": {
 				"option": {
 					"firstName": {
-						"label": "",
-						"placeholder": ""
+						"label": "Etunimi",
+						"placeholder": "Anna etunimesi"
 					},
 					"lastName": {
-						"label": "",
-						"placeholder": ""
+						"label": "Sukunimi",
+						"placeholder": "Anna sukunimesi"
 					}
 				}
 			},
@@ -107,14 +107,14 @@
 		"table": {
 			"empty": "Täällä ei ole mitään",
 			"headers": {
-				"actions": "",
+				"actions": "Toiminnot",
 				"dateTime": "Päivämäärä ja aika",
 				"message": "Viesti",
 				"monitor": "Monitori",
 				"monitorId": "Monitorin tunnus",
 				"name": "Nimi",
 				"status": "Tila",
-				"type": "",
+				"type": "Tyyppi",
 				"url": "Osoite",
 				"interval": "Aikaväli",
 				"active": "Aktiivinen",
@@ -131,7 +131,7 @@
 			"orDragAndDrop": "tai vedä ja pudota",
 			"errors": {
 				"invalidFileSize": "Tiedoston koko on liian suuri!",
-				"invalidFileFormat": ""
+				"invalidFileFormat": "Tiedostomuotoa ei tueta!"
 			}
 		},
 		"headerStatusPageControls": {
@@ -155,19 +155,19 @@
 			"serverUnreachable": "Palvelimeen ei saada yhteyttä",
 			"retry": "Yritä uudelleen",
 			"retrying": "Yritetään uudelleen...",
-			"reconnected": ""
+			"reconnected": "Yhteys palautettu"
 		},
 		"sidebar": {
 			"menu": {
-				"uptime": "",
-				"pagespeed": "",
+				"uptime": "Käytettävyys",
+				"pagespeed": "Pagespeed",
 				"infrastructure": "Infrastruktuuri",
-				"notifications": "",
+				"notifications": "Ilmoitukset",
 				"checks": "Tarkistukset",
-				"incidents": "",
+				"incidents": "Häiriöt",
 				"statusPages": "Tilasivut",
 				"maintenance": "Huolto",
-				"logs": "",
+				"logs": "Lokit",
 				"settings": "Asetukset"
 			},
 			"bottomMenu": {
@@ -364,7 +364,8 @@
 			"register": {
 				"title": "Tervetuloa takaisin Checkmateen!",
 				"subtitle": "Rekisteröidy aloittaaksesi",
-				"submit": "Rekisteröidy"
+				"submit": "Rekisteröidy",
+				"setupNotice": "Tämä sivu on käytettävissä vain alkuasennuksen aikana. Kun super-admin on rekisteröity, lisäkäyttäjiä voi kutsua tiimiasetuksista."
 			},
 			"forgotPassword": {
 				"title": "Unohditko salasanasi?",
@@ -426,7 +427,8 @@
 					"activeFor": "Aktiivinen",
 					"certificateExpiry": "Varmenteen vanheneminen",
 					"lastCheck": "Viimeisin tarkistus",
-					"lastResponseTime": "Viimeisin vasteaika"
+					"lastResponseTime": "Viimeisin vasteaika",
+					"serviceIsDown": "Palvelu ei ole käytettävissä"
 				},
 				"status": {
 					"down": "alhaalla",
@@ -825,9 +827,9 @@
 				"description": "Palvelimen toiminta, varoitukset ja virheet näkyvät täällä Checkmaten toimiessa."
 			},
 			"tabs": {
-				"diagnostics": "",
-				"logs": "",
-				"queue": ""
+				"diagnostics": "Diagnostiikka",
+				"logs": "Lokit",
+				"queue": "Työjono"
 			},
 			"logLevelSelect": {
 				"label": "Lokitaso"
@@ -1016,6 +1018,26 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "Chat-tunnus",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Pushover-määritys",
+					"description": "Anna Pushover-sovellustunnus ja käyttäjäavain.",
+					"optionAppToken": "Sovellustunnus",
+					"placeholderAppToken": "Anna sovellustunnus",
+					"optionUserKey": "Käyttäjäavain",
+					"placeholderUserKey": "Anna käyttäjäavain"
+				},
+				"twilio": {
+					"title": "Twilio-määritys",
+					"description": "Anna Twilio-tilin tunnistetiedot tekstiviestien lähettämistä varten.",
+					"optionAccountSid": "Tilin SID",
+					"placeholderAccountSid": "Anna tilin SID",
+					"optionAuthToken": "Todennustunnus",
+					"placeholderAuthToken": "Anna todennustunnus",
+					"optionFromNumber": "Lähettäjän numero",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "Vastaanottajan numero",
+					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
@@ -1271,7 +1293,18 @@
 				"allDown": "Kaikki järjestelmät ovat alhaalla",
 				"allUp": "Kaikki järjestelmät toiminnassa",
 				"degraded": "Joissakin järjestelmissä on ongelmia",
-				"unknown": "Järjestelmän tilaa ei voida määrittää"
+				"unknown": "Järjestelmän tilaa ei voida määrittää",
+				"allBreached": "Kaikki järjestelmät ovat ylittäneet kynnysarvot",
+				"allMaintenance": "Kaikki järjestelmät ovat huollossa",
+				"allPaused": "Kaikki järjestelmät on keskeytetty",
+				"allInitializing": "Kaikki järjestelmät alustuvat",
+				"breachedAndDown": "Jotkin järjestelmät ovat ylittäneet kynnysarvot ja ovat alhaalla",
+				"breached": "Jotkin järjestelmät ovat ylittäneet kynnysarvot",
+				"maintenanceAndDown": "Jotkin järjestelmät ovat alhaalla huollon aikana",
+				"maintenance": "Jotkin järjestelmät ovat huollossa",
+				"partiallyPaused": "Jotkin järjestelmät on keskeytetty",
+				"initializing": "Jotkin järjestelmät alustuvat",
+				"noMonitors": "Yhtään monitoria ei ole määritetty"
 			},
 			"table": {
 				"headers": {

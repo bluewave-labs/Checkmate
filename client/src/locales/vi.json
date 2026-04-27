@@ -13,7 +13,7 @@
 				"content": "Cảnh báo: Bạn chưa thêm khóa API Google PageSpeed. Truy cập <settingsLink>Cài đặt</settingsLink> để thêm. Nếu không có khóa này, trình giám sát PageSpeed sẽ không hoạt động."
 			}
 		},
-		"appName": "",
+		"appName": "Checkmate",
 		"breadcrumbs": {
 			"details": "Chi tiết",
 			"home": "Trang chủ"
@@ -31,15 +31,15 @@
 			"inviteMember": "Mời thành viên",
 			"pause": "Tạm dừng",
 			"resume": "Tiếp tục",
-			"save": "",
+			"save": "Lưu",
 			"sendInvite": "Gửi lời mời",
 			"test": "Kiểm tra",
 			"testNotifications": "Kiểm tra thông báo",
-			"toggleTheme": "",
+			"toggleTheme": "Chuyển sáng / tối",
 			"flushQueue": "Xóa hàng đợi",
 			"notFound": "Về bảng điều khiển chính",
-			"resetPassword": "",
-			"reset": "",
+			"resetPassword": "Đặt lại mật khẩu",
+			"reset": "Đặt lại",
 			"clear": "Xóa",
 			"addDemo": "Thêm trình giám sát mẫu",
 			"removeMonitors": "Xóa trình giám sát",
@@ -53,8 +53,8 @@
 			"labels": {
 				"averageResponseTime": "Thời gian phản hồi trung bình",
 				"downtime": "Thời gian ngừng hoạt động",
-				"high": "",
-				"low": "",
+				"high": "Cao",
+				"low": "Thấp",
 				"uptime": "Thời gian hoạt động"
 			},
 			"histogram": {
@@ -86,12 +86,12 @@
 			"name": {
 				"option": {
 					"firstName": {
-						"label": "",
-						"placeholder": ""
+						"label": "Tên",
+						"placeholder": "Nhập tên của bạn"
 					},
 					"lastName": {
-						"label": "",
-						"placeholder": ""
+						"label": "Họ",
+						"placeholder": "Nhập họ của bạn"
 					}
 				}
 			},
@@ -107,14 +107,14 @@
 		"table": {
 			"empty": "Không có dữ liệu",
 			"headers": {
-				"actions": "",
+				"actions": "Hành động",
 				"dateTime": "Ngày & giờ",
 				"message": "Tin nhắn",
 				"monitor": "Trình giám sát",
 				"monitorId": "ID trình giám sát",
 				"name": "Tên",
 				"status": "Trạng thái",
-				"type": "",
+				"type": "Loại",
 				"url": "Url",
 				"interval": "Khoảng thời gian",
 				"active": "Đang hoạt động",
@@ -125,17 +125,17 @@
 	"components": {
 		"imageUpload": {
 			"clickToUpload": "Nhấn để tải lên",
-			"dragAndDrop": "",
-			"supportedFormats": "",
-			"maxSize": "",
+			"dragAndDrop": "hoặc kéo và thả",
+			"supportedFormats": "Định dạng hỗ trợ",
+			"maxSize": "Kích thước tối đa",
 			"orDragAndDrop": "hoặc kéo và thả",
 			"errors": {
-				"invalidFileSize": "",
-				"invalidFileFormat": ""
+				"invalidFileSize": "Tệp quá lớn!",
+				"invalidFileFormat": "Định dạng tệp không được hỗ trợ!"
 			}
 		},
 		"headerStatusPageControls": {
-			"publicLink": ""
+			"publicLink": "Liên kết công khai"
 		},
 		"headerTimeRange": {
 			"labels": {
@@ -155,26 +155,26 @@
 			"serverUnreachable": "Không thể kết nối đến máy chủ",
 			"retry": "Thử lại",
 			"retrying": "Đang thử lại...",
-			"reconnected": ""
+			"reconnected": "Đã khôi phục kết nối"
 		},
 		"sidebar": {
 			"menu": {
-				"uptime": "",
-				"pagespeed": "",
-				"infrastructure": "",
-				"notifications": "",
+				"uptime": "Thời gian hoạt động",
+				"pagespeed": "Pagespeed",
+				"infrastructure": "Hạ tầng",
+				"notifications": "Thông báo",
 				"checks": "Kiểm tra",
-				"incidents": "",
-				"statusPages": "",
-				"maintenance": "",
-				"logs": "",
-				"settings": ""
+				"incidents": "Sự cố",
+				"statusPages": "Trang trạng thái",
+				"maintenance": "Bảo trì",
+				"logs": "Nhật ký",
+				"settings": "Cài đặt"
 			},
 			"bottomMenu": {
-				"support": "",
-				"discussions": "",
-				"docs": "",
-				"changelog": ""
+				"support": "Hỗ trợ",
+				"discussions": "Thảo luận",
+				"docs": "Tài liệu",
+				"changelog": "Nhật ký thay đổi"
 			},
 			"accountMenu": {
 				"profile": "Hồ sơ",
@@ -186,13 +186,13 @@
 				"description": "Xem các bản phát hành mới nhất và giúp phát triển cộng đồng trên GitHub"
 			},
 			"authFooter": {
-				"navControls": "",
-				"logOut": "",
+				"navControls": "Điều khiển",
+				"logOut": "Đăng xuất",
 				"roles": {
 					"superAdmin": "Quản trị viên cấp cao",
 					"admin": "Quản trị viên",
 					"user": "Người dùng",
-					"demoUser": ""
+					"demoUser": "Người dùng demo"
 				}
 			}
 		},
@@ -259,15 +259,15 @@
 			"team": {
 				"filter": {
 					"placeholder": "Lọc theo vai trò",
-					"all": "",
+					"all": "Tất cả vai trò",
 					"admin": "Quản trị viên",
-					"member": ""
+					"member": "Thành viên"
 				},
 				"table": {
 					"headers": {
 						"email": "Email",
-						"role": "",
-						"created": ""
+						"role": "Vai trò",
+						"created": "Đã tạo"
 					}
 				},
 				"addMember": {
@@ -364,7 +364,8 @@
 			"register": {
 				"title": "Chào mừng bạn trở lại Checkmate!",
 				"subtitle": "Đăng ký để bắt đầu",
-				"submit": "Đăng ký"
+				"submit": "Đăng ký",
+				"setupNotice": "Trang này chỉ khả dụng trong quá trình thiết lập ban đầu. Sau khi siêu quản trị viên được đăng ký, có thể mời thêm người dùng từ cài đặt nhóm."
 			},
 			"forgotPassword": {
 				"title": "Quên mật khẩu?",
@@ -426,7 +427,8 @@
 					"activeFor": "Hoạt động từ",
 					"certificateExpiry": "Hạn chứng chỉ",
 					"lastCheck": "Lần kiểm tra cuối",
-					"lastResponseTime": "Thời gian phản hồi cuối"
+					"lastResponseTime": "Thời gian phản hồi cuối",
+					"serviceIsDown": "Dịch vụ đang ngừng hoạt động"
 				},
 				"status": {
 					"down": "ngừng hoạt động",
@@ -826,8 +828,8 @@
 			},
 			"tabs": {
 				"diagnostics": "Chẩn đoán",
-				"logs": "",
-				"queue": ""
+				"logs": "Nhật ký",
+				"queue": "Hàng đợi tác vụ"
 			},
 			"logLevelSelect": {
 				"label": "Mức nhật ký"
@@ -1016,6 +1018,26 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "ID cuộc trò chuyện",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Cấu hình Pushover",
+					"description": "Nhập mã thông báo ứng dụng và khóa người dùng Pushover của bạn.",
+					"optionAppToken": "Mã thông báo ứng dụng",
+					"placeholderAppToken": "Nhập mã thông báo ứng dụng",
+					"optionUserKey": "Khóa người dùng",
+					"placeholderUserKey": "Nhập khóa người dùng"
+				},
+				"twilio": {
+					"title": "Cấu hình Twilio",
+					"description": "Nhập thông tin xác thực tài khoản Twilio để gửi SMS.",
+					"optionAccountSid": "SID tài khoản",
+					"placeholderAccountSid": "Nhập SID tài khoản",
+					"optionAuthToken": "Mã thông báo xác thực",
+					"placeholderAuthToken": "Nhập mã thông báo xác thực",
+					"optionFromNumber": "Số gửi",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "Số nhận",
+					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
@@ -1271,7 +1293,18 @@
 				"allDown": "Tất cả hệ thống đều ngừng hoạt động",
 				"allUp": "Tất cả hệ thống đang hoạt động",
 				"degraded": "Một số hệ thống đang gặp sự cố",
-				"unknown": "Không thể xác định trạng thái hệ thống"
+				"unknown": "Không thể xác định trạng thái hệ thống",
+				"allBreached": "Tất cả hệ thống đã vượt ngưỡng",
+				"allMaintenance": "Tất cả hệ thống đang bảo trì",
+				"allPaused": "Tất cả hệ thống đã tạm dừng",
+				"allInitializing": "Tất cả hệ thống đang khởi tạo",
+				"breachedAndDown": "Một số hệ thống đã vượt ngưỡng và đang ngừng hoạt động",
+				"breached": "Một số hệ thống đã vượt ngưỡng",
+				"maintenanceAndDown": "Một số hệ thống ngừng hoạt động trong quá trình bảo trì",
+				"maintenance": "Một số hệ thống đang bảo trì",
+				"partiallyPaused": "Một số hệ thống đã tạm dừng",
+				"initializing": "Một số hệ thống đang khởi tạo",
+				"noMonitors": "Chưa cấu hình màn hình giám sát nào"
 			},
 			"table": {
 				"headers": {

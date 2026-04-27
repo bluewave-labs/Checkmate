@@ -13,7 +13,7 @@
 				"content": "Увага: Ви ще не додали ключ API Google PageSpeed. Перейдіть у <settingsLink>Налаштування</settingsLink>, щоб додати його. Без нього моніторинг PageSpeed не працюватиме."
 			}
 		},
-		"appName": "",
+		"appName": "Checkmate",
 		"breadcrumbs": {
 			"details": "Деталі",
 			"home": "Головна"
@@ -31,15 +31,15 @@
 			"inviteMember": "Запросити учасника",
 			"pause": "Призупинити",
 			"resume": "Відновити",
-			"save": "",
+			"save": "Зберегти",
 			"sendInvite": "Надіслати запрошення",
 			"test": "Тест",
 			"testNotifications": "Тестові сповіщення",
-			"toggleTheme": "",
+			"toggleTheme": "Перемкнути світлу / темну",
 			"flushQueue": "Очистити чергу",
 			"notFound": "Перейти на головну панель",
-			"resetPassword": "",
-			"reset": "",
+			"resetPassword": "Скинути пароль",
+			"reset": "Скинути",
 			"clear": "Очистити",
 			"addDemo": "Додати демо-монітори",
 			"removeMonitors": "Видалити монітори",
@@ -53,8 +53,8 @@
 			"labels": {
 				"averageResponseTime": "Середній час відповіді",
 				"downtime": "Час простою",
-				"high": "",
-				"low": "",
+				"high": "Високий",
+				"low": "Низький",
 				"uptime": "Час роботи"
 			},
 			"histogram": {
@@ -86,12 +86,12 @@
 			"name": {
 				"option": {
 					"firstName": {
-						"label": "",
-						"placeholder": ""
+						"label": "Ім'я",
+						"placeholder": "Введіть ім'я"
 					},
 					"lastName": {
-						"label": "",
-						"placeholder": ""
+						"label": "Прізвище",
+						"placeholder": "Введіть прізвище"
 					}
 				}
 			},
@@ -107,14 +107,14 @@
 		"table": {
 			"empty": "Тут нічого немає",
 			"headers": {
-				"actions": "",
+				"actions": "Дії",
 				"dateTime": "Дата і час",
 				"message": "Повідомлення",
 				"monitor": "Монітор",
 				"monitorId": "ID монітора",
 				"name": "Ім'я",
 				"status": "Статус",
-				"type": "",
+				"type": "Тип",
 				"url": "URL",
 				"interval": "Інтервал",
 				"active": "Активний",
@@ -125,17 +125,17 @@
 	"components": {
 		"imageUpload": {
 			"clickToUpload": "Натисніть, щоб завантажити",
-			"dragAndDrop": "",
-			"supportedFormats": "",
-			"maxSize": "",
+			"dragAndDrop": "або перетягніть",
+			"supportedFormats": "Підтримувані формати",
+			"maxSize": "Макс. розмір",
 			"orDragAndDrop": "або перетягніть файл",
 			"errors": {
-				"invalidFileSize": "",
-				"invalidFileFormat": ""
+				"invalidFileSize": "Розмір файлу занадто великий!",
+				"invalidFileFormat": "Непідтримуваний формат файлу!"
 			}
 		},
 		"headerStatusPageControls": {
-			"publicLink": ""
+			"publicLink": "Публічне посилання"
 		},
 		"headerTimeRange": {
 			"labels": {
@@ -155,26 +155,26 @@
 			"serverUnreachable": "Не вдається з'єднатися з сервером",
 			"retry": "Повторити",
 			"retrying": "Повторна спроба...",
-			"reconnected": ""
+			"reconnected": "З'єднання відновлено"
 		},
 		"sidebar": {
 			"menu": {
-				"uptime": "",
-				"pagespeed": "",
-				"infrastructure": "",
-				"notifications": "",
+				"uptime": "Доступність",
+				"pagespeed": "Pagespeed",
+				"infrastructure": "Інфраструктура",
+				"notifications": "Сповіщення",
 				"checks": "Перевірки",
-				"incidents": "",
-				"statusPages": "",
-				"maintenance": "",
-				"logs": "",
-				"settings": ""
+				"incidents": "Інциденти",
+				"statusPages": "Сторінки статусу",
+				"maintenance": "Обслуговування",
+				"logs": "Журнали",
+				"settings": "Налаштування"
 			},
 			"bottomMenu": {
-				"support": "",
-				"discussions": "",
-				"docs": "",
-				"changelog": ""
+				"support": "Підтримка",
+				"discussions": "Обговорення",
+				"docs": "Документація",
+				"changelog": "Журнал змін"
 			},
 			"accountMenu": {
 				"profile": "Профіль",
@@ -186,13 +186,13 @@
 				"description": "Переглядайте останні оновлення та допомагайте розвивати спільноту на GitHub"
 			},
 			"authFooter": {
-				"navControls": "",
-				"logOut": "",
+				"navControls": "Керування",
+				"logOut": "Вийти",
 				"roles": {
 					"superAdmin": "Суперадміністратор",
 					"admin": "Адміністратор",
 					"user": "Користувач",
-					"demoUser": ""
+					"demoUser": "Демо-користувач"
 				}
 			}
 		},
@@ -259,15 +259,15 @@
 			"team": {
 				"filter": {
 					"placeholder": "Фільтрувати за роллю",
-					"all": "",
+					"all": "Усі ролі",
 					"admin": "Адміністратор",
-					"member": ""
+					"member": "Учасник"
 				},
 				"table": {
 					"headers": {
 						"email": "Електронна пошта",
-						"role": "",
-						"created": ""
+						"role": "Роль",
+						"created": "Створено"
 					}
 				},
 				"addMember": {
@@ -364,7 +364,8 @@
 			"register": {
 				"title": "Ласкаво просимо до Checkmate!",
 				"subtitle": "Зареєструйтесь, щоб розпочати",
-				"submit": "Зареєструватися"
+				"submit": "Зареєструватися",
+				"setupNotice": "Ця сторінка доступна лише під час початкового налаштування. Після реєстрації суперадміністратора додаткових користувачів можна запросити з налаштувань команди."
 			},
 			"forgotPassword": {
 				"title": "Забули пароль?",
@@ -426,7 +427,8 @@
 					"activeFor": "Активний протягом",
 					"certificateExpiry": "Закінчення сертифіката",
 					"lastCheck": "Остання перевірка",
-					"lastResponseTime": "Останній час відповіді"
+					"lastResponseTime": "Останній час відповіді",
+					"serviceIsDown": "Сервіс недоступний"
 				},
 				"status": {
 					"down": "недоступний",
@@ -826,8 +828,8 @@
 			},
 			"tabs": {
 				"diagnostics": "Діагностика",
-				"logs": "",
-				"queue": ""
+				"logs": "Журнали",
+				"queue": "Черга завдань"
 			},
 			"logLevelSelect": {
 				"label": "Рівень логів"
@@ -1016,6 +1018,26 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "ID чату",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Налаштування Pushover",
+					"description": "Введіть токен застосунку та ключ користувача Pushover.",
+					"optionAppToken": "Токен застосунку",
+					"placeholderAppToken": "Введіть токен застосунку",
+					"optionUserKey": "Ключ користувача",
+					"placeholderUserKey": "Введіть ключ користувача"
+				},
+				"twilio": {
+					"title": "Налаштування Twilio",
+					"description": "Введіть облікові дані Twilio для надсилання SMS.",
+					"optionAccountSid": "SID акаунта",
+					"placeholderAccountSid": "Введіть SID акаунта",
+					"optionAuthToken": "Токен автентифікації",
+					"placeholderAuthToken": "Введіть токен автентифікації",
+					"optionFromNumber": "Номер відправника",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "Номер отримувача",
+					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
@@ -1271,7 +1293,18 @@
 				"allDown": "Усі системи недоступні",
 				"allUp": "Усі системи працюють",
 				"degraded": "Деякі системи мають проблеми",
-				"unknown": "Неможливо визначити стан системи"
+				"unknown": "Неможливо визначити стан системи",
+				"allBreached": "Усі системи перевищили порогові значення",
+				"allMaintenance": "Усі системи на технічному обслуговуванні",
+				"allPaused": "Усі системи призупинено",
+				"allInitializing": "Усі системи ініціалізуються",
+				"breachedAndDown": "Деякі системи перевищили пороги та недоступні",
+				"breached": "Деякі системи перевищили пороги",
+				"maintenanceAndDown": "Деякі системи недоступні під час техобслуговування",
+				"maintenance": "Деякі системи на техобслуговуванні",
+				"partiallyPaused": "Деякі системи призупинено",
+				"initializing": "Деякі системи ініціалізуються",
+				"noMonitors": "Не налаштовано жодного монітора"
 			},
 			"table": {
 				"headers": {
