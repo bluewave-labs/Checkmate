@@ -13,7 +13,7 @@
 				"content": "تحذير: لم تقم بإضافة مفتاح Google PageSpeed API بعد. قم بزيارة <settingsLink>الإعدادات</settingsLink> لإضافته. بدونه، لن تعمل مراقبة PageSpeed."
 			}
 		},
-		"appName": "Checkmate",
+		"appName": "",
 		"breadcrumbs": {
 			"details": "التفاصيل",
 			"home": "الرئيسية"
@@ -35,11 +35,11 @@
 			"sendInvite": "إرسال دعوة",
 			"test": "اختبار",
 			"testNotifications": "اختبار الإشعارات",
-			"toggleTheme": "تبديل الوضع الفاتح والداكن",
+			"toggleTheme": "",
 			"flushQueue": "تفريغ قائمة الانتظار",
 			"notFound": "الانتقال إلى لوحة التحكم الرئيسية",
-			"resetPassword": "إعادة تعيين كلمة المرور",
-			"reset": "إعادة تعيين",
+			"resetPassword": "",
+			"reset": "",
 			"clear": "مسح",
 			"addDemo": "إضافة مراقبات تجريبية",
 			"removeMonitors": "إزالة المراقبات",
@@ -53,8 +53,8 @@
 			"labels": {
 				"averageResponseTime": "متوسط وقت الاستجابة",
 				"downtime": "وقت التوقف",
-				"high": "مرتفع",
-				"low": "منخفض",
+				"high": "",
+				"low": "",
 				"uptime": "وقت التشغيل"
 			},
 			"histogram": {
@@ -86,12 +86,12 @@
 			"name": {
 				"option": {
 					"firstName": {
-						"label": "الاسم الأول",
-						"placeholder": "أدخل اسمك الأول"
+						"label": "",
+						"placeholder": ""
 					},
 					"lastName": {
-						"label": "اسم العائلة",
-						"placeholder": "أدخل اسم عائلتك"
+						"label": "",
+						"placeholder": ""
 					}
 				}
 			},
@@ -107,14 +107,14 @@
 		"table": {
 			"empty": "لا يوجد شيء هنا",
 			"headers": {
-				"actions": "إجراءات",
+				"actions": "",
 				"dateTime": "التاريخ والوقت",
 				"message": "الرسالة",
 				"monitor": "المراقب",
 				"monitorId": "معرّف المراقب",
 				"name": "الاسم",
 				"status": "الحالة",
-				"type": "النوع",
+				"type": "",
 				"url": "الرابط",
 				"interval": "الفاصل الزمني",
 				"active": "نشط",
@@ -125,17 +125,17 @@
 	"components": {
 		"imageUpload": {
 			"clickToUpload": "انقر للرفع",
-			"dragAndDrop": "أو اسحب وأسقط",
-			"supportedFormats": "الصيغ المدعومة",
-			"maxSize": "الحجم الأقصى",
+			"dragAndDrop": "",
+			"supportedFormats": "",
+			"maxSize": "",
 			"orDragAndDrop": "أو اسحب وأفلت",
 			"errors": {
-				"invalidFileSize": "حجم الملف كبير جدًا!",
-				"invalidFileFormat": "تنسيق الملف غير مدعوم!"
+				"invalidFileSize": "",
+				"invalidFileFormat": ""
 			}
 		},
 		"headerStatusPageControls": {
-			"publicLink": "رابط عام"
+			"publicLink": ""
 		},
 		"headerTimeRange": {
 			"labels": {
@@ -155,26 +155,26 @@
 			"serverUnreachable": "تعذر الوصول إلى الخادم",
 			"retry": "إعادة المحاولة",
 			"retrying": "جارٍ إعادة المحاولة...",
-			"reconnected": "تمت استعادة الاتصال"
+			"reconnected": ""
 		},
 		"sidebar": {
 			"menu": {
-				"uptime": "وقت التشغيل",
-				"pagespeed": "Pagespeed",
-				"infrastructure": "البنية التحتية",
-				"notifications": "الإشعارات",
+				"uptime": "",
+				"pagespeed": "",
+				"infrastructure": "",
+				"notifications": "",
 				"checks": "الفحوصات",
-				"incidents": "الحوادث",
-				"statusPages": "صفحات الحالة",
-				"maintenance": "الصيانة",
-				"logs": "السجلات",
-				"settings": "الإعدادات"
+				"incidents": "",
+				"statusPages": "",
+				"maintenance": "",
+				"logs": "",
+				"settings": ""
 			},
 			"bottomMenu": {
-				"support": "الدعم",
-				"discussions": "المناقشات",
-				"docs": "الوثائق",
-				"changelog": "سجل التغييرات"
+				"support": "",
+				"discussions": "",
+				"docs": "",
+				"changelog": ""
 			},
 			"accountMenu": {
 				"profile": "الملف الشخصي",
@@ -186,27 +186,19 @@
 				"description": "اطلع على أحدث الإصدارات وساعد في تنمية المجتمع على GitHub"
 			},
 			"authFooter": {
-				"navControls": "عناصر التحكم",
-				"logOut": "تسجيل الخروج",
+				"navControls": "",
+				"logOut": "",
 				"roles": {
 					"superAdmin": "مسؤول أعلى",
 					"admin": "مسؤول",
 					"user": "مستخدم",
-					"demoUser": "مستخدم تجريبي"
+					"demoUser": ""
 				}
 			}
 		},
 		"starPrompt": {
 			"title": "أضف نجمة لـ Checkmate",
 			"description": "اطلع على أحدث الإصدارات وساعد في تنمية المجتمع على GitHub"
-		},
-		"pageHeader": {
-			"links": {
-				"support": "الدعم",
-				"discussions": "المناقشات",
-				"docs": "التوثيق",
-				"changelog": "سجل التغييرات"
-			}
 		}
 	},
 	"pages": {
@@ -259,15 +251,15 @@
 			"team": {
 				"filter": {
 					"placeholder": "تصفية حسب الدور",
-					"all": "كل الأدوار",
+					"all": "",
 					"admin": "مسؤول",
-					"member": "عضو"
+					"member": ""
 				},
 				"table": {
 					"headers": {
 						"email": "البريد الإلكتروني",
 						"role": "الدور",
-						"created": "تم الإنشاء في"
+						"created": ""
 					}
 				},
 				"addMember": {
@@ -286,23 +278,10 @@
 						"placeholder": "اختر دوراً"
 					},
 					"linkLabel": "رابط الدعوة"
-				},
-				"fallback": {
-					"title": "لا يوجد بعد أعضاء فريق",
-					"description": "ادعُ زملاءك عبر البريد الإلكتروني أو أضفهم مباشرة. بمجرد انضمامهم، سيظهرون هنا مع دورهم."
 				}
-			},
-			"header": {
-				"title": "الحساب",
-				"description": "إدارة ملفك الشخصي وكلمة المرور والفريق وتفضيلات مساحة العمل."
 			}
 		},
 		"auth": {
-			"brandPanel": {
-				"eyebrow": "المراقبة المفتوحة المصدر للبنية التحتية",
-				"tagline": "راقب كل خطوة تقوم بها خوادمك.",
-				"description": "تتبع حالة التشغيل وأوقات الاستجابة والحوادث في الوقت الفعلي - ذاتية الاستضافة وتبقى لك."
-			},
 			"common": {
 				"passwordRules": {
 					"length": {
@@ -364,8 +343,7 @@
 			"register": {
 				"title": "مرحباً بعودتك إلى Checkmate!",
 				"subtitle": "سجّل للبدء",
-				"submit": "تسجيل",
-				"setupNotice": "هذه الصفحة متاحة فقط أثناء الإعداد الأولي. بمجرد تسجيل المسؤول الأعلى، يمكن دعوة مستخدمين إضافيين من إعدادات الفريق."
+				"submit": "تسجيل"
 			},
 			"forgotPassword": {
 				"title": "نسيت كلمة المرور؟",
@@ -400,14 +378,6 @@
 					"statusCode": "رمز الحالة",
 					"location": "الموقع"
 				}
-			},
-			"fallback": {
-				"title": "لا توجد فحوصات بعد",
-				"description": "بمجرد إنشاء جهاز مراقبة، ستظهر هنا كل عملية فحص حالة ووقت استجابة كفحص."
-			},
-			"header": {
-				"title": "الفحوصات",
-				"description": "كل فحص يجريه Checkmate على مراقبيك يظهر هنا برمز الحالة ووقت الاستجابة."
 			}
 		},
 		"common": {
@@ -427,8 +397,7 @@
 					"activeFor": "نشط منذ",
 					"certificateExpiry": "انتهاء الشهادة",
 					"lastCheck": "آخر فحص",
-					"lastResponseTime": "آخر وقت استجابة",
-					"serviceIsDown": "الخدمة معطلة"
+					"lastResponseTime": "آخر وقت استجابة"
 				},
 				"status": {
 					"down": "متوقف",
@@ -671,10 +640,6 @@
 			}
 		},
 		"incidents": {
-			"fallback": {
-				"title": "لا حوادث — جميع الأنظمة سليمة",
-				"description": "عندما يتعطل جهاز مراقبة أو يتعافى، سيظهر الحادث هنا مع الأوقات وتفاصيل الجهاز وسجل الحل."
-			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "حل الحادثة",
@@ -755,10 +720,6 @@
 					"active": "نشط",
 					"resolved": "تم الحل"
 				}
-			},
-			"header": {
-				"title": "الحوادث",
-				"description": "عندما يتعطل جهاز مراقبة أو يتعافى، تظهر الحوادث هنا مع الأوقات وتفاصيل الجهاز وسجل الحل."
 			}
 		},
 		"infrastructure": {
@@ -813,31 +774,21 @@
 			},
 			"fallback": {
 				"actionButton": "أنشئ مراقباً!",
-				"title": "لا توجد بعد أجهزة مراقبة للبنية التحتية",
-				"description": "تتبّع أداء الخوادم وحدد الاختناقات واضمن الموثوقية مع مراقبة البنية التحتية في الوقت الفعلي."
-			},
-			"header": {
-				"title": "مراقبات البنية التحتية",
-				"description": "تتبّع أداء الخوادم وحدد الاختناقات واضمن الموثوقية مع مراقبة البنية التحتية في الوقت الفعلي."
+				"checks": "تتبع أداء خوادمك,تحديد الاختناقات وتحسين الاستخدام,ضمان الموثوقية من خلال المراقبة في الوقت الفعلي",
+				"title": "يُستخدم مراقب البنية التحتية من أجل:"
 			}
 		},
 		"logs": {
-			"fallback": {
-				"title": "لا توجد سجلات بعد",
-				"description": "ستظهر هنا نشاط الخادم والتحذيرات والأخطاء أثناء تشغيل Checkmate."
-			},
 			"tabs": {
-				"diagnostics": "التشخيص",
-				"logs": "السجلات",
-				"queue": "قائمة المهام"
+				"diagnostics": "",
+				"logs": "",
+				"queue": ""
 			},
 			"logLevelSelect": {
 				"label": "مستوى السجل"
 			},
 			"jobQueue": "قائمة المهام",
-			"jobQueueExplainer": "<highlight>الصفوف المميزة</highlight> هي المهام التي تتم معالجتها حالياً بواسطة عامل.",
 			"failedJobs": "المهام الفاشلة",
-			"failedJobsExplainer": "حالات الفشل الأخيرة حسب المراقب — وقت آخر فشل، وعدد مرات الفشل، والسبب.",
 			"noLogs": "لم يتم العثور على سجلات",
 			"metrics": {
 				"jobs": "المهام",
@@ -864,16 +815,6 @@
 					"usedSPercentage": "% من 1 ثانية مستخدمة بواسطة CPU",
 					"total": "الإجمالي",
 					"used": "مستخدم"
-				},
-				"sections": {
-					"runtimeStats": {
-						"title": "إحصائيات التشغيل",
-						"description": "لقطة لعملية Node.js والجهاز المضيف. يتم التحديث كل 5 ثوانٍ."
-					},
-					"memoryCpu": {
-						"title": "الذاكرة والمعالج",
-						"description": "كيف تستخدم العملية الذاكرة المخصصة لها ومعالج الجهاز المضيف."
-					}
 				}
 			},
 			"table": {
@@ -892,21 +833,13 @@
 					"lastFailedAt": "آخر فشل في",
 					"failReason": "سبب الفشل"
 				}
-			},
-			"queueFallback": {
-				"title": "لا توجد مهام في قائمة الانتظار",
-				"description": "ستظهر هنا فحوصات أجهزة المراقبة المجدولة أو قيد التشغيل. قائمة الانتظار الفارغة تعني أن كل شيء محدّث."
-			},
-			"header": {
-				"title": "السجلات وقائمة الانتظار",
-				"description": "افحص سجلات الخادم وقائمة انتظار مهام المراقبة وتشخيصات وقت التشغيل في مكان واحد."
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "أنشئ نافذة صيانة!",
-				"title": "لا توجد نوافذ صيانة مجدولة",
-				"description": "حدد مواعيد التوقف المخطط لها لإيقاف التنبيهات وإعلام فريقك ومستخدميك بما يتوقعونه."
+				"checks": "تحديد فترات الصيانة,التخلص من أي سوء فهم,إيقاف إرسال التنبيهات أثناء نوافذ الصيانة",
+				"title": "تُستخدم نافذة الصيانة من أجل:"
 			},
 			"table": {
 				"headers": {
@@ -958,17 +891,13 @@
 						}
 					}
 				}
-			},
-			"header": {
-				"title": "نوافذ الصيانة",
-				"description": "حدد مواعيد التوقف المخطط لها لإيقاف التنبيهات وإعلام فريقك ومستخدميك بما يتوقعونه."
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "إنشاء قناة",
-				"title": "لا توجد بعد قنوات إشعار",
-				"description": "اربط Slack وDiscord والبريد الإلكتروني وWebhooks والمزيد ليعلم الأشخاص المناسبون بالحوادث فور حدوثها."
+				"checks": "تنبيه الفرق حول التوقف أو مشكلات الأداء,إعلام المهندسين عند حدوث الحوادث,إبقاء المسؤولين على اطلاع بتغييرات النظام",
+				"title": "تُستخدم قنوات الإشعارات من أجل:"
 			},
 			"form": {
 				"accessToken": {
@@ -1018,36 +947,12 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "معرّف المحادثة",
 					"placeholderChatId": "-1001234567890"
-				},
-				"pushover": {
-					"title": "إعدادات Pushover",
-					"description": "أدخل رمز التطبيق ومفتاح المستخدم في Pushover.",
-					"optionAppToken": "رمز التطبيق",
-					"placeholderAppToken": "أدخل رمز التطبيق",
-					"optionUserKey": "مفتاح المستخدم",
-					"placeholderUserKey": "أدخل مفتاح المستخدم"
-				},
-				"twilio": {
-					"title": "إعدادات Twilio",
-					"description": "أدخل بيانات اعتماد حساب Twilio لإرسال الرسائل النصية.",
-					"optionAccountSid": "معرف الحساب (SID)",
-					"placeholderAccountSid": "أدخل معرف الحساب",
-					"optionAuthToken": "رمز المصادقة",
-					"placeholderAuthToken": "أدخل رمز المصادقة",
-					"optionFromNumber": "من الرقم",
-					"placeholderFromNumber": "+1234567890",
-					"optionToNumber": "إلى الرقم",
-					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
 				"headers": {
 					"destination": "الوجهة"
 				}
-			},
-			"header": {
-				"title": "الإشعارات",
-				"description": "اربط Slack وDiscord والبريد الإلكتروني وWebhooks والمزيد ليعلم الأشخاص المناسبون بالحوادث فور حدوثها."
 			}
 		},
 		"pageSpeed": {
@@ -1074,12 +979,8 @@
 			},
 			"fallback": {
 				"actionButton": "أنشئ مراقباً!",
-				"title": "لا توجد بعد أجهزة مراقبة PageSpeed",
-				"description": "تابع Core Web Vitals ودرجات Lighthouse عبر الزمن لاكتشاف التراجع قبل أن يلاحظه المستخدمون."
-			},
-			"header": {
-				"title": "مراقبات PageSpeed",
-				"description": "تابع Core Web Vitals ودرجات Lighthouse عبر الزمن لاكتشاف التراجع قبل أن يلاحظه المستخدمون."
+				"checks": "تقديم تقرير عن تجربة المستخدم للصفحة,المساعدة في تحليل سرعة الصفحة,تقديم اقتراحات لتحسين الصفحة",
+				"title": "يُستخدم مراقب PageSpeed من أجل:"
 			}
 		},
 		"settings": {
@@ -1257,18 +1158,14 @@
 				"validation": {
 					"errorMessage": "يرجى إصلاح أخطاء التحقق التالية:"
 				}
-			},
-			"header": {
-				"title": "الإعدادات",
-				"description": "تكوين SMTP والتكاملات والاحتفاظ والسلوك العام للتطبيق."
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "تم حذف صفحة الحالة بنجاح",
 			"fallback": {
-				"title": "لا توجد بعد صفحات حالة",
-				"actionButton": "أنشئ صفحة حالة!",
-				"description": "انشر صفحة عامة تُظهر للعملاء وأصحاب المصلحة وقت التشغيل الفعلي وتاريخ الحوادث."
+				"title": "تُستخدم صفحة الحالة من أجل:",
+				"checks": "إيصال حالة النظام للمستخدمين وأصحاب المصلحة,عرض معلومات وقت التشغيل في الوقت الفعلي للعامة,بناء الثقة من خلال مراقبة الخدمة الشفافة,تقليل طلبات الدعم أثناء الحوادث",
+				"actionButton": "أنشئ صفحة حالة!"
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "خريطة حرارية",
@@ -1293,18 +1190,7 @@
 				"allDown": "جميع الأنظمة متوقفة",
 				"allUp": "جميع الأنظمة تعمل بشكل طبيعي",
 				"degraded": "بعض الأنظمة تواجه مشكلات",
-				"unknown": "تعذر تحديد حالة النظام",
-				"allBreached": "تجاوزت جميع الأنظمة الحدود",
-				"allMaintenance": "جميع الأنظمة قيد الصيانة",
-				"allPaused": "جميع الأنظمة متوقفة مؤقتًا",
-				"allInitializing": "جميع الأنظمة قيد التهيئة",
-				"breachedAndDown": "تجاوزت بعض الأنظمة الحدود وهي معطلة",
-				"breached": "تجاوزت بعض الأنظمة الحدود",
-				"maintenanceAndDown": "بعض الأنظمة معطلة أثناء الصيانة",
-				"maintenance": "بعض الأنظمة قيد الصيانة",
-				"partiallyPaused": "بعض الأنظمة متوقفة مؤقتًا",
-				"initializing": "بعض الأنظمة قيد التهيئة",
-				"noMonitors": "لم يتم تكوين أي شاشة"
+				"unknown": "تعذر تحديد حالة النظام"
 			},
 			"table": {
 				"headers": {
@@ -1396,10 +1282,6 @@
 						}
 					}
 				}
-			},
-			"header": {
-				"title": "صفحات الحالة",
-				"description": "انشر صفحات عامة تُظهر للعملاء وأصحاب المصلحة وقت التشغيل الفعلي وتاريخ الحوادث."
 			}
 		},
 		"uptime": {
@@ -1415,12 +1297,8 @@
 			},
 			"fallback": {
 				"actionButton": "أنشئ مراقباً!",
-				"title": "لا توجد بعد أجهزة مراقبة وقت التشغيل",
-				"description": "راقب نقاط نهاية HTTP وعمليات Ping والحاويات والمنافذ — احصل على تنبيه فور حدوث عطل."
-			},
-			"header": {
-				"title": "مراقبات وقت التشغيل",
-				"description": "راقب نقاط نهاية HTTP وعمليات Ping والحاويات والمنافذ — احصل على تنبيه فور حدوث عطل."
+				"checks": "التحقق مما إذا كانت المواقع أو الخوادم متصلة ومتجاوبة,تنبيه الفرق حول التوقف أو مشكلات الأداء,مراقبة نقاط نهاية HTTP والـ Ping والحاويات والمنافذ,تتبع اتجاهات وقت التشغيل والموثوقية التاريخية",
+				"title": "يُستخدم مراقب وقت التشغيل من أجل:"
 			}
 		}
 	}

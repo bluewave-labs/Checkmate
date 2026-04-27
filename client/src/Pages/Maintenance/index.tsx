@@ -32,10 +32,11 @@ const MaintenanceWindowPage = () => {
 
 	return (
 		<BasePageWithStates
-			headerKey="maintenanceWindow"
 			page={t("pages.maintenanceWindow.fallback.title")}
 			totalCount={maintenanceWindowCount}
-			description={t("pages.maintenanceWindow.fallback.description")}
+			bullets={
+				t("pages.maintenanceWindow.fallback.checks", { returnObjects: true }) as string[]
+			}
 			loading={isLoading}
 			error={!!error}
 			actionButtonText={t("pages.maintenanceWindow.fallback.actionButton")}

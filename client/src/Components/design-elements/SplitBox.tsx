@@ -63,9 +63,9 @@ export const ConfigBox = ({
 			left={
 				<Stack spacing={theme.spacing(LAYOUT.XS)}>
 					<Typography
+						textTransform={"capitalize"}
 						component="h2"
-						variant="eyebrow"
-						color="text.secondary"
+						variant="h2"
 					>
 						{title}
 					</Typography>

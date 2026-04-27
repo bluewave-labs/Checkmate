@@ -1,4 +1,4 @@
-import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
 import { StatBox } from "@/Components/design-elements";
 
 import prettyBytes from "pretty-bytes";
@@ -11,59 +11,41 @@ interface StatsProps {
 	diagnostics: Diagnostics | null;
 }
 
-const PLACEHOLDER = "—";
-
 export const Stats = ({ diagnostics }: StatsProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 
-	const eventLoopDelay = diagnostics
-		? prettyMilliseconds(diagnostics.eventLoopDelayMs ?? 0, {
-				millisecondsDecimalDigits: 2,
-			})
-		: PLACEHOLDER;
-	const uptime = diagnostics
-		? prettyMilliseconds(diagnostics.uptimeMs ?? 0, { hideSeconds: true })
-		: PLACEHOLDER;
-	const usedHeap = diagnostics
-		? prettyBytes(diagnostics.v8HeapStats?.usedHeapSizeBytes ?? 0)
-		: PLACEHOLDER;
-	const totalHeap = diagnostics
-		? prettyBytes(diagnostics.v8HeapStats?.totalHeapSizeBytes ?? 0)
-		: PLACEHOLDER;
-	const osMemory = diagnostics
-		? prettyBytes(diagnostics.osStats?.totalMemoryBytes ?? 0)
-		: PLACEHOLDER;
+	if (!diagnostics) {
+		return null;
+	}
 
 	return (
-		<Box
-			sx={{
-				display: "grid",
-				gridTemplateColumns: { xs: "1fr", md: "repeat(5, 1fr)" },
-				gap: theme.spacing(8),
-				"& > *": { width: "100% !important" },
-			}}
+		<Stack
+			direction={{ xs: "column", md: "row" }}
+			gap={theme.spacing(8)}
 		>
 			<StatBox
 				title={t("pages.logs.diagnostics.stats.eventLoopDelay")}
-				subtitle={eventLoopDelay}
+				subtitle={prettyMilliseconds(diagnostics.eventLoopDelayMs ?? 0, {
+					millisecondsDecimalDigits: 2,
+				})}
 			/>
 			<StatBox
 				title={t("pages.logs.diagnostics.stats.uptime")}
-				subtitle={uptime}
+				subtitle={prettyMilliseconds(diagnostics.uptimeMs ?? 0, { hideSeconds: true })}
 			/>
 			<StatBox
 				title={t("pages.logs.diagnostics.stats.usedHeapSize")}
-				subtitle={usedHeap}
+				subtitle={prettyBytes(diagnostics.v8HeapStats?.usedHeapSizeBytes ?? 0)}
 			/>
 			<StatBox
 				title={t("pages.logs.diagnostics.stats.totalHeapSize")}
-				subtitle={totalHeap}
+				subtitle={prettyBytes(diagnostics.v8HeapStats?.totalHeapSizeBytes ?? 0)}
 			/>
 			<StatBox
 				title={t("pages.logs.diagnostics.stats.osMemoryLimit")}
-				subtitle={osMemory}
+				subtitle={prettyBytes(diagnostics.osStats?.totalMemoryBytes ?? 0)}
 			/>
-		</Box>
+		</Stack>
 	);
 };

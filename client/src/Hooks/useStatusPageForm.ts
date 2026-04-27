@@ -28,7 +28,7 @@ export const useStatusPageForm = ({
 			url: data?.url || generateDefaultUrl(),
 			timezone: data?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
 			type: data?.type || ["uptime"],
-			color: data?.color || "#13715B",
+			color: data?.color || "#4169E1",
 			monitors: data?.monitors || [],
 			isPublished: data?.isPublished ?? false,
 			showCharts: data?.showCharts ?? true,

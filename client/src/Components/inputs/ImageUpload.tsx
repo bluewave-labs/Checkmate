@@ -126,12 +126,7 @@ export const ImageUpload = ({
 						onChange={(e) => handleFile(e.target.files?.[0])}
 						style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer" }}
 					/>
-					<Upload
-						size={20}
-						strokeWidth={1.5}
-						color="currentColor"
-						style={{ opacity: 0.7 }}
-					/>
+					<Upload size={24} />
 					<Typography
 						variant="body2"
 						color="text.secondary"

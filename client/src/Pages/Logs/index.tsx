@@ -10,7 +10,7 @@ const LogsPage = () => {
 	const { t } = useTranslation();
 	const [activeTab, setActiveTab] = useState<number>(1);
 	return (
-		<BasePage headerKey="logs">
+		<BasePage>
 			<Tabs
 				value={activeTab}
 				onChange={(_, newValue: number) => setActiveTab(newValue)}

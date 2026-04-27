@@ -13,7 +13,7 @@
 				"content": "Увага: Ви ще не додали ключ API Google PageSpeed. Перейдіть у <settingsLink>Налаштування</settingsLink>, щоб додати його. Без нього моніторинг PageSpeed не працюватиме."
 			}
 		},
-		"appName": "Checkmate",
+		"appName": "",
 		"breadcrumbs": {
 			"details": "Деталі",
 			"home": "Головна"
@@ -31,15 +31,15 @@
 			"inviteMember": "Запросити учасника",
 			"pause": "Призупинити",
 			"resume": "Відновити",
-			"save": "Зберегти",
+			"save": "",
 			"sendInvite": "Надіслати запрошення",
 			"test": "Тест",
 			"testNotifications": "Тестові сповіщення",
-			"toggleTheme": "Перемкнути світлу / темну",
+			"toggleTheme": "",
 			"flushQueue": "Очистити чергу",
 			"notFound": "Перейти на головну панель",
-			"resetPassword": "Скинути пароль",
-			"reset": "Скинути",
+			"resetPassword": "",
+			"reset": "",
 			"clear": "Очистити",
 			"addDemo": "Додати демо-монітори",
 			"removeMonitors": "Видалити монітори",
@@ -53,8 +53,8 @@
 			"labels": {
 				"averageResponseTime": "Середній час відповіді",
 				"downtime": "Час простою",
-				"high": "Високий",
-				"low": "Низький",
+				"high": "",
+				"low": "",
 				"uptime": "Час роботи"
 			},
 			"histogram": {
@@ -86,12 +86,12 @@
 			"name": {
 				"option": {
 					"firstName": {
-						"label": "Ім'я",
-						"placeholder": "Введіть ім'я"
+						"label": "",
+						"placeholder": ""
 					},
 					"lastName": {
-						"label": "Прізвище",
-						"placeholder": "Введіть прізвище"
+						"label": "",
+						"placeholder": ""
 					}
 				}
 			},
@@ -107,14 +107,14 @@
 		"table": {
 			"empty": "Тут нічого немає",
 			"headers": {
-				"actions": "Дії",
+				"actions": "",
 				"dateTime": "Дата і час",
 				"message": "Повідомлення",
 				"monitor": "Монітор",
 				"monitorId": "ID монітора",
 				"name": "Ім'я",
 				"status": "Статус",
-				"type": "Тип",
+				"type": "",
 				"url": "URL",
 				"interval": "Інтервал",
 				"active": "Активний",
@@ -125,17 +125,17 @@
 	"components": {
 		"imageUpload": {
 			"clickToUpload": "Натисніть, щоб завантажити",
-			"dragAndDrop": "або перетягніть",
-			"supportedFormats": "Підтримувані формати",
-			"maxSize": "Макс. розмір",
+			"dragAndDrop": "",
+			"supportedFormats": "",
+			"maxSize": "",
 			"orDragAndDrop": "або перетягніть файл",
 			"errors": {
-				"invalidFileSize": "Розмір файлу занадто великий!",
-				"invalidFileFormat": "Непідтримуваний формат файлу!"
+				"invalidFileSize": "",
+				"invalidFileFormat": ""
 			}
 		},
 		"headerStatusPageControls": {
-			"publicLink": "Публічне посилання"
+			"publicLink": ""
 		},
 		"headerTimeRange": {
 			"labels": {
@@ -155,26 +155,26 @@
 			"serverUnreachable": "Не вдається з'єднатися з сервером",
 			"retry": "Повторити",
 			"retrying": "Повторна спроба...",
-			"reconnected": "З'єднання відновлено"
+			"reconnected": ""
 		},
 		"sidebar": {
 			"menu": {
-				"uptime": "Доступність",
-				"pagespeed": "Pagespeed",
-				"infrastructure": "Інфраструктура",
-				"notifications": "Сповіщення",
+				"uptime": "",
+				"pagespeed": "",
+				"infrastructure": "",
+				"notifications": "",
 				"checks": "Перевірки",
-				"incidents": "Інциденти",
-				"statusPages": "Сторінки статусу",
-				"maintenance": "Обслуговування",
-				"logs": "Журнали",
-				"settings": "Налаштування"
+				"incidents": "",
+				"statusPages": "",
+				"maintenance": "",
+				"logs": "",
+				"settings": ""
 			},
 			"bottomMenu": {
-				"support": "Підтримка",
-				"discussions": "Обговорення",
-				"docs": "Документація",
-				"changelog": "Журнал змін"
+				"support": "",
+				"discussions": "",
+				"docs": "",
+				"changelog": ""
 			},
 			"accountMenu": {
 				"profile": "Профіль",
@@ -186,27 +186,19 @@
 				"description": "Переглядайте останні оновлення та допомагайте розвивати спільноту на GitHub"
 			},
 			"authFooter": {
-				"navControls": "Керування",
-				"logOut": "Вийти",
+				"navControls": "",
+				"logOut": "",
 				"roles": {
 					"superAdmin": "Суперадміністратор",
 					"admin": "Адміністратор",
 					"user": "Користувач",
-					"demoUser": "Демо-користувач"
+					"demoUser": ""
 				}
 			}
 		},
 		"starPrompt": {
 			"title": "Оцінити Checkmate",
 			"description": "Переглядайте останні оновлення та допомагайте розвивати спільноту на GitHub"
-		},
-		"pageHeader": {
-			"links": {
-				"support": "Підтримка",
-				"discussions": "Обговорення",
-				"docs": "Документація",
-				"changelog": "Журнал змін"
-			}
 		}
 	},
 	"pages": {
@@ -259,15 +251,15 @@
 			"team": {
 				"filter": {
 					"placeholder": "Фільтрувати за роллю",
-					"all": "Усі ролі",
+					"all": "",
 					"admin": "Адміністратор",
-					"member": "Учасник"
+					"member": ""
 				},
 				"table": {
 					"headers": {
 						"email": "Електронна пошта",
-						"role": "Роль",
-						"created": "Створено"
+						"role": "",
+						"created": ""
 					}
 				},
 				"addMember": {
@@ -286,23 +278,10 @@
 						"placeholder": "Оберіть роль"
 					},
 					"linkLabel": "Посилання для запрошення"
-				},
-				"fallback": {
-					"title": "Поки що немає учасників команди",
-					"description": "Запросіть колег електронною поштою або додайте їх безпосередньо. Як тільки вони приєднаються, вони з'являться тут зі своєю роллю."
 				}
-			},
-			"header": {
-				"title": "Обліковий запис",
-				"description": "Керуйте профілем, паролем, командою та налаштуваннями робочого простору."
 			}
 		},
 		"auth": {
-			"brandPanel": {
-				"eyebrow": "Моніторинг інфраструктури з відкритим кодом",
-				"tagline": "Слідкуйте за кожним кроком ваших серверів.",
-				"description": "Моніторинг доступності, часу відгуку та інцидентів у реальному часі - self-hosted і належить вам."
-			},
 			"common": {
 				"passwordRules": {
 					"length": {
@@ -364,8 +343,7 @@
 			"register": {
 				"title": "Ласкаво просимо до Checkmate!",
 				"subtitle": "Зареєструйтесь, щоб розпочати",
-				"submit": "Зареєструватися",
-				"setupNotice": "Ця сторінка доступна лише під час початкового налаштування. Після реєстрації суперадміністратора додаткових користувачів можна запросити з налаштувань команди."
+				"submit": "Зареєструватися"
 			},
 			"forgotPassword": {
 				"title": "Забули пароль?",
@@ -400,14 +378,6 @@
 					"statusCode": "Код статусу",
 					"location": "Розташування"
 				}
-			},
-			"fallback": {
-				"title": "Перевірок ще немає",
-				"description": "Як тільки ви створите монітор, кожна перевірка статусу та час відповіді з’являться тут."
-			},
-			"header": {
-				"title": "Перевірки",
-				"description": "Кожне зондування, яке Checkmate виконує проти ваших моніторів, з'явиться тут з кодом статусу та часом відповіді."
 			}
 		},
 		"common": {
@@ -427,8 +397,7 @@
 					"activeFor": "Активний протягом",
 					"certificateExpiry": "Закінчення сертифіката",
 					"lastCheck": "Остання перевірка",
-					"lastResponseTime": "Останній час відповіді",
-					"serviceIsDown": "Сервіс недоступний"
+					"lastResponseTime": "Останній час відповіді"
 				},
 				"status": {
 					"down": "недоступний",
@@ -671,10 +640,6 @@
 			}
 		},
 		"incidents": {
-			"fallback": {
-				"title": "Інцидентів немає — усі системи справні",
-				"description": "Коли монітор виходить з ладу або відновлюється, інцидент з’явиться тут з часом, деталями монітора та історією вирішення."
-			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "Вирішити інцидент",
@@ -755,10 +720,6 @@
 					"active": "Активний",
 					"resolved": "Вирішено"
 				}
-			},
-			"header": {
-				"title": "Інциденти",
-				"description": "Коли монітор виходить з ладу або відновлюється, інциденти з'являються тут з часом, деталями монітора та історією вирішення."
 			}
 		},
 		"infrastructure": {
@@ -813,31 +774,21 @@
 			},
 			"fallback": {
 				"actionButton": "Створити монітор!",
-				"title": "Ще немає моніторів інфраструктури",
-				"description": "Відстежуйте продуктивність серверів, виявляйте вузькі місця та забезпечуйте надійність з моніторингом у реальному часі."
-			},
-			"header": {
-				"title": "Монітори інфраструктури",
-				"description": "Відстежуйте продуктивність серверів, виявляйте вузькі місця та забезпечуйте надійність з моніторингом у реальному часі."
+				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
+				"title": "Монітор інфраструктури використовується для:"
 			}
 		},
 		"logs": {
-			"fallback": {
-				"title": "Поки що немає журналів",
-				"description": "Активність сервера, попередження та помилки з’являться тут під час роботи Checkmate."
-			},
 			"tabs": {
 				"diagnostics": "Діагностика",
-				"logs": "Журнали",
-				"queue": "Черга завдань"
+				"logs": "",
+				"queue": ""
 			},
 			"logLevelSelect": {
 				"label": "Рівень логів"
 			},
 			"jobQueue": "Черга завдань",
-			"jobQueueExplainer": "<highlight>Виділені рядки</highlight> — це завдання, які наразі обробляються воркером.",
 			"failedJobs": "Невдалі завдання",
-			"failedJobsExplainer": "Останні збої за моніторами — час останнього збою, кількість збоїв і причина.",
 			"noLogs": "Логи не знайдено",
 			"metrics": {
 				"jobs": "Завдання",
@@ -864,16 +815,6 @@
 					"usedSPercentage": "% від 1с використано CPU",
 					"total": "Усього",
 					"used": "Використано"
-				},
-				"sections": {
-					"runtimeStats": {
-						"title": "Статистика виконання",
-						"description": "Знімок процесу Node.js і хост-машини. Оновлюється кожні 5 секунд."
-					},
-					"memoryCpu": {
-						"title": "Пам'ять і ЦП",
-						"description": "Як процес використовує виділену пам'ять і ЦП хоста."
-					}
 				}
 			},
 			"table": {
@@ -892,21 +833,13 @@
 					"lastFailedAt": "Остання помилка",
 					"failReason": "Причина помилки"
 				}
-			},
-			"queueFallback": {
-				"title": "У черзі немає завдань",
-				"description": "Заплановані або виконувані перевірки моніторів з’являться тут. Порожня черга означає, що все актуально."
-			},
-			"header": {
-				"title": "Журнали та черга",
-				"description": "Перевіряйте серверні журнали, чергу завдань моніторів і діагностику в одному місці."
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "Створити вікно обслуговування!",
-				"title": "Немає запланованих вікон обслуговування",
-				"description": "Плануйте планові простої, щоб сповіщення було пригнічено, а команда та користувачі знали, чого очікувати."
+				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
+				"title": "Вікно обслуговування використовується для:"
 			},
 			"table": {
 				"headers": {
@@ -958,17 +891,13 @@
 						}
 					}
 				}
-			},
-			"header": {
-				"title": "Вікна обслуговування",
-				"description": "Плануйте планові простої, щоб сповіщення було пригнічено, а команда та користувачі знали, чого очікувати."
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "Створити канал",
-				"title": "Ще немає каналів сповіщень",
-				"description": "Підключіть Slack, Discord, електронну пошту, вебхуки та інше, щоб потрібні люди дізнавалися про інциденти одразу."
+				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
+				"title": "Канали сповіщень використовуються для:"
 			},
 			"form": {
 				"accessToken": {
@@ -1018,36 +947,12 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "ID чату",
 					"placeholderChatId": "-1001234567890"
-				},
-				"pushover": {
-					"title": "Налаштування Pushover",
-					"description": "Введіть токен застосунку та ключ користувача Pushover.",
-					"optionAppToken": "Токен застосунку",
-					"placeholderAppToken": "Введіть токен застосунку",
-					"optionUserKey": "Ключ користувача",
-					"placeholderUserKey": "Введіть ключ користувача"
-				},
-				"twilio": {
-					"title": "Налаштування Twilio",
-					"description": "Введіть облікові дані Twilio для надсилання SMS.",
-					"optionAccountSid": "SID акаунта",
-					"placeholderAccountSid": "Введіть SID акаунта",
-					"optionAuthToken": "Токен автентифікації",
-					"placeholderAuthToken": "Введіть токен автентифікації",
-					"optionFromNumber": "Номер відправника",
-					"placeholderFromNumber": "+1234567890",
-					"optionToNumber": "Номер отримувача",
-					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
 				"headers": {
 					"destination": "Призначення"
 				}
-			},
-			"header": {
-				"title": "Сповіщення",
-				"description": "Підключіть Slack, Discord, електронну пошту, вебхуки та інше, щоб потрібні люди дізнавалися про інциденти одразу."
 			}
 		},
 		"pageSpeed": {
@@ -1074,12 +979,8 @@
 			},
 			"fallback": {
 				"actionButton": "Створити монітор!",
-				"title": "Ще немає моніторів PageSpeed",
-				"description": "Відстежуйте Core Web Vitals і оцінки Lighthouse у часі, щоб помітити регресії раніше за користувачів."
-			},
-			"header": {
-				"title": "Монітори PageSpeed",
-				"description": "Відстежуйте Core Web Vitals і оцінки Lighthouse у часі, щоб помітити регресії раніше за користувачів."
+				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
+				"title": "Монітор PageSpeed використовується для:"
 			}
 		},
 		"settings": {
@@ -1257,18 +1158,14 @@
 				"validation": {
 					"errorMessage": "Будь ласка, виправте такі помилки валідації:"
 				}
-			},
-			"header": {
-				"title": "Налаштування",
-				"description": "Налаштуйте SMTP, інтеграції, зберігання та загальну поведінку додатку."
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "Сторінку статусу успішно видалено",
 			"fallback": {
-				"title": "Ще немає сторінок статусу",
-				"actionButton": "Створити сторінку статусу!",
-				"description": "Опублікуйте публічну сторінку, що показує клієнтам і зацікавленим сторонам час роботи в реальному часі та історію інцидентів."
+				"title": "Сторінка статусу використовується для:",
+				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
+				"actionButton": "Створити сторінку статусу!"
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Теплова карта",
@@ -1293,18 +1190,7 @@
 				"allDown": "Усі системи недоступні",
 				"allUp": "Усі системи працюють",
 				"degraded": "Деякі системи мають проблеми",
-				"unknown": "Неможливо визначити стан системи",
-				"allBreached": "Усі системи перевищили порогові значення",
-				"allMaintenance": "Усі системи на технічному обслуговуванні",
-				"allPaused": "Усі системи призупинено",
-				"allInitializing": "Усі системи ініціалізуються",
-				"breachedAndDown": "Деякі системи перевищили пороги та недоступні",
-				"breached": "Деякі системи перевищили пороги",
-				"maintenanceAndDown": "Деякі системи недоступні під час техобслуговування",
-				"maintenance": "Деякі системи на техобслуговуванні",
-				"partiallyPaused": "Деякі системи призупинено",
-				"initializing": "Деякі системи ініціалізуються",
-				"noMonitors": "Не налаштовано жодного монітора"
+				"unknown": "Неможливо визначити стан системи"
 			},
 			"table": {
 				"headers": {
@@ -1396,10 +1282,6 @@
 						}
 					}
 				}
-			},
-			"header": {
-				"title": "Сторінки статусу",
-				"description": "Публікуйте публічні сторінки з часом роботи в реальному часі та історією інцидентів для клієнтів і зацікавлених сторін."
 			}
 		},
 		"uptime": {
@@ -1415,12 +1297,8 @@
 			},
 			"fallback": {
 				"actionButton": "Створити монітор!",
-				"title": "Ще немає моніторів працездатності",
-				"description": "Спостерігайте за HTTP-кінцевими точками, пінгами, контейнерами та портами — отримуйте сповіщення в момент відмови."
-			},
-			"header": {
-				"title": "Монітори працездатності",
-				"description": "Спостерігайте за HTTP-кінцевими точками, пінгами, контейнерами та портами — отримуйте сповіщення в момент відмови."
+				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
+				"title": "Монітор доступності використовується для:"
 			}
 		}
 	}

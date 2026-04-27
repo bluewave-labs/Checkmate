@@ -21,16 +21,24 @@ export const SwitchComponent = forwardRef<HTMLInputElement, SwitchComponentProps
 					},
 				}}
 				sx={[
-					...(dualOption
-						? [
-								{
-									"& .MuiSwitch-track": {
-										backgroundColor: theme.palette.primary.main,
-										opacity: 1,
-									},
+					{
+						"& .MuiSwitch-switchBase": {
+							"&.Mui-checked": {
+								color: "#E0E0E0",
+								"& + .MuiSwitch-track": {
+									backgroundColor: theme.palette.primary.main,
+									opacity: 1,
+									border: 0,
 								},
-							]
-						: []),
+							},
+						},
+						...(dualOption && {
+							"& .MuiSwitch-track": {
+								backgroundColor: theme.palette.primary.main,
+								opacity: 1,
+							},
+						}),
+					},
 					...additionalSx,
 				]}
 			/>

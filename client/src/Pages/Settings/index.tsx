@@ -24,7 +24,6 @@ import type { SettingsFormData, SettingsFormInput } from "@/Validation/settings"
 import { useState } from "react";
 import { Controller } from "react-hook-form";
 import { TextField, Button, FieldLabel, SliderWithLabel } from "@/Components/inputs";
-import { languageNames } from "@/Components/inputs/LanguageSelector";
 import { Box, Typography } from "@mui/material";
 import { useDelete } from "@/Hooks/UseApi";
 
@@ -278,7 +277,6 @@ export const SettingsPage = () => {
 
 	return (
 		<BasePage
-			headerKey="settings"
 			component="form"
 			onSubmit={form.handleSubmit(onSubmit, onError)}
 		>
@@ -328,7 +326,7 @@ export const SettingsPage = () => {
 										key={lang}
 										value={lang}
 									>
-										{languageNames[lang] ?? lang}
+										{lang.toUpperCase()}
 									</MenuItem>
 								))}
 							</Select>
@@ -580,11 +578,11 @@ export const SettingsPage = () => {
 							<Box
 								component="pre"
 								sx={{
-									fontFamily: theme.typography.fontFamilyMonospace,
+									fontFamily: "monospace",
 									p: 2,
 									borderRadius: 1,
 									overflow: "auto",
-									backgroundColor: theme.palette.action.hover,
+									backgroundColor: theme.palette.mode === "dark" ? "#1e1e1e" : "#f5f5f5",
 								}}
 							>
 								<code>
@@ -976,13 +974,19 @@ export const SettingsPage = () => {
 				loading={isDeletingAllMonitors}
 			/>
 
+			{/* Sticky Save Button */}
 			<Stack
 				direction="row"
 				justifyContent="flex-end"
 				sx={{
 					position: "sticky",
 					bottom: 0,
+					backgroundColor: theme.palette.background.paper,
+					borderTop: `1px solid ${theme.palette.divider}`,
 					padding: theme.spacing(LAYOUT.MD),
+					marginLeft: theme.spacing(-LAYOUT.MD),
+					marginRight: theme.spacing(-LAYOUT.MD),
+					marginBottom: theme.spacing(-LAYOUT.MD),
 					zIndex: 1000,
 				}}
 			>

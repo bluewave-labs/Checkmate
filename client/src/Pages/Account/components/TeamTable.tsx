@@ -2,10 +2,8 @@ import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Table } from "@/Components/design-elements";
-import { Pagination } from "@/Components/design-elements/Table";
 import type { Header } from "@/Components/design-elements/Table";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
-import { useClientPagination } from "@/Hooks/useClientPagination";
 import type { User } from "@/Types/User";
 
 interface TeamTableProps {
@@ -16,7 +14,6 @@ export const TeamTable = ({ users }: TeamTableProps) => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const isAdmin = useIsAdmin();
-	const { pagedRows, paginationProps } = useClientPagination(users);
 
 	const headers: Header<User>[] = [
 		{
@@ -54,13 +51,10 @@ export const TeamTable = ({ users }: TeamTableProps) => {
 	};
 
 	return (
-		<>
-			<Table
-				headers={headers}
-				data={pagedRows}
-				onRowClick={isAdmin ? handleRowClick : undefined}
-			/>
-			{users.length > 0 && <Pagination {...paginationProps} />}
-		</>
+		<Table
+			headers={headers}
+			data={users}
+			onRowClick={isAdmin ? handleRowClick : undefined}
+		/>
 	);
 };

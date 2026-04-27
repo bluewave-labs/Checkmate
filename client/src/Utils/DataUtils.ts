@@ -56,12 +56,10 @@ export const getResponseColor = (
 	// 0–300ms: interpolate start (good) -> mid (warning)
 	// 300–600ms: interpolate mid (warning) -> end (error)
 	// >600ms: solid end (error)
-	// MUI default success/warning/error.main values, used only when the caller
-	// fails to pass theme colors (defensive — keeps the gradient meaningful).
 	const safe = { ...colors };
-	if (!safe.start) safe.start = "#4caf50";
-	if (!safe.mid) safe.mid = "#ff9800";
-	if (!safe.end) safe.end = "#f44336";
+	if (!safe.start) safe.start = "#4caf50"; // fallback green
+	if (!safe.mid) safe.mid = "#ff9800"; // fallback orange
+	if (!safe.end) safe.end = "#f44336"; // fallback red
 
 	const toHex = (c: number) => c.toString(16).padStart(2, "0");
 	const clamp = (n: number) => Math.min(255, Math.max(0, Math.round(n)));

@@ -140,7 +140,6 @@ const UptimeMonitorsPage = () => {
 
 	return (
 		<MonitorBasePageWithStates
-			headerKey="uptime"
 			loading={isLoading}
 			error={monitorsWithChecksError}
 			totalCount={effectiveTotalCount}

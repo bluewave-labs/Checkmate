@@ -199,14 +199,6 @@
 		"starPrompt": {
 			"title": "Star Checkmate",
 			"description": "查看最新版本并在 GitHub 上帮助发展社区"
-		},
-		"pageHeader": {
-			"links": {
-				"support": "支持",
-				"discussions": "讨论",
-				"docs": "文档",
-				"changelog": "更新日志"
-			}
 		}
 	},
 	"pages": {
@@ -286,23 +278,10 @@
 						"placeholder": "选择角色"
 					},
 					"linkLabel": "邀请链接"
-				},
-				"fallback": {
-					"title": "暂无团队成员",
-					"description": "通过电子邮件邀请队友或直接添加他们。一旦加入，他们将与角色一起显示在这里。"
 				}
-			},
-			"header": {
-				"title": "账户",
-				"description": "管理个人资料、密码、团队和工作区设置。"
 			}
 		},
 		"auth": {
-			"brandPanel": {
-				"eyebrow": "开源基础设施监控",
-				"tagline": "关注您服务器的每一步动作。",
-				"description": "实时跟踪运行状态、响应时间和事件 - 自托管，完全属于您。"
-			},
 			"common": {
 				"passwordRules": {
 					"length": {
@@ -364,8 +343,7 @@
 			"register": {
 				"title": "欢迎回到 Checkmate！",
 				"subtitle": "注册以开始使用",
-				"submit": "注册",
-				"setupNotice": "此页面仅在初始设置期间可用。注册超级管理员后,可以从团队设置中邀请更多用户。"
+				"submit": "注册"
 			},
 			"forgotPassword": {
 				"title": "忘记密码了？",
@@ -400,14 +378,6 @@
 					"statusCode": "状态码",
 					"location": "位置"
 				}
-			},
-			"fallback": {
-				"title": "暂无检查",
-				"description": "创建监控器后，每次状态探测和响应时间都会以一次检查的形式显示在这里。"
-			},
-			"header": {
-				"title": "检查",
-				"description": "Checkmate 对监控器执行的每次探测都会在此显示，包含状态码和响应时间。"
 			}
 		},
 		"common": {
@@ -427,8 +397,7 @@
 					"activeFor": "已活跃",
 					"certificateExpiry": "证书到期",
 					"lastCheck": "上次检查",
-					"lastResponseTime": "上次响应时间",
-					"serviceIsDown": "服务已停止"
+					"lastResponseTime": "上次响应时间"
 				},
 				"status": {
 					"down": "宕机",
@@ -671,10 +640,6 @@
 			}
 		},
 		"incidents": {
-			"fallback": {
-				"title": "无事件 — 所有系统正常",
-				"description": "当监控器宕机或恢复时，事件将连同时间、监控器详情和解决记录一起显示在这里。"
-			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "解决事件",
@@ -755,10 +720,6 @@
 					"active": "活跃",
 					"resolved": "已解决"
 				}
-			},
-			"header": {
-				"title": "事件",
-				"description": "当监控器宕机或恢复时，事件将连同时间、监控器详情和解决记录一起显示在这里。"
 			}
 		},
 		"infrastructure": {
@@ -813,19 +774,11 @@
 			},
 			"fallback": {
 				"actionButton": "创建监控！",
-				"title": "暂无基础设施监控器",
-				"description": "跟踪服务器性能、识别瓶颈，通过实时基础设施监控确保可靠性。"
-			},
-			"header": {
-				"title": "基础设施监控器",
-				"description": "跟踪服务器性能、识别瓶颈，通过实时基础设施监控确保可靠性。"
+				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
+				"title": "基础设施监控用于："
 			}
 		},
 		"logs": {
-			"fallback": {
-				"title": "暂无日志",
-				"description": "Checkmate 运行时的服务器活动、警告和错误将显示在这里。"
-			},
 			"tabs": {
 				"diagnostics": "诊断",
 				"logs": "服务器日志",
@@ -835,9 +788,7 @@
 				"label": "日志级别"
 			},
 			"jobQueue": "作业队列",
-			"jobQueueExplainer": "<highlight>高亮的行</highlight>是当前正在被工作进程处理的作业。",
 			"failedJobs": "失败作业",
-			"failedJobsExplainer": "按监控的最近失败 — 最近失败时间、失败次数及原因。",
 			"noLogs": "未找到日志",
 			"metrics": {
 				"jobs": "作业",
@@ -864,16 +815,6 @@
 					"usedSPercentage": "CPU 1 秒使用百分比",
 					"total": "总计",
 					"used": "已使用"
-				},
-				"sections": {
-					"runtimeStats": {
-						"title": "运行时统计",
-						"description": "Node.js 进程和主机的快照。每 5 秒更新一次。"
-					},
-					"memoryCpu": {
-						"title": "内存与 CPU",
-						"description": "进程如何使用其分配的内存和主机 CPU。"
-					}
 				}
 			},
 			"table": {
@@ -892,21 +833,13 @@
 					"lastFailedAt": "上次失败于",
 					"failReason": "失败原因"
 				}
-			},
-			"queueFallback": {
-				"title": "队列中没有任务",
-				"description": "已安排或正在运行的监控检查将显示在这里。空队列意味着一切都是最新的。"
-			},
-			"header": {
-				"title": "日志与队列",
-				"description": "在一处查看服务器日志、监控器作业队列和运行时诊断。"
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "创建维护窗口！",
-				"title": "暂无计划维护窗口",
-				"description": "安排计划停机时间以抑制告警，让团队和用户知晓预期。"
+				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
+				"title": "维护窗口用于："
 			},
 			"table": {
 				"headers": {
@@ -958,17 +891,13 @@
 						}
 					}
 				}
-			},
-			"header": {
-				"title": "维护窗口",
-				"description": "安排计划停机时间以抑制告警，让团队和用户知晓预期。"
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "创建渠道",
-				"title": "暂无通知渠道",
-				"description": "连接 Slack、Discord、邮件、Webhook 等，让事件发生时正确的人立即收到通知。"
+				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
+				"title": "通知渠道用于："
 			},
 			"form": {
 				"accessToken": {
@@ -1018,36 +947,12 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "聊天 ID",
 					"placeholderChatId": "-1001234567890"
-				},
-				"pushover": {
-					"title": "Pushover 配置",
-					"description": "输入您的 Pushover 应用令牌和用户密钥。",
-					"optionAppToken": "应用令牌",
-					"placeholderAppToken": "输入应用令牌",
-					"optionUserKey": "用户密钥",
-					"placeholderUserKey": "输入用户密钥"
-				},
-				"twilio": {
-					"title": "Twilio 配置",
-					"description": "输入 Twilio 帐户凭据以发送短信。",
-					"optionAccountSid": "帐户 SID",
-					"placeholderAccountSid": "输入帐户 SID",
-					"optionAuthToken": "认证令牌",
-					"placeholderAuthToken": "输入认证令牌",
-					"optionFromNumber": "发送号码",
-					"placeholderFromNumber": "+1234567890",
-					"optionToNumber": "接收号码",
-					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
 				"headers": {
 					"destination": "目标"
 				}
-			},
-			"header": {
-				"title": "通知",
-				"description": "连接 Slack、Discord、邮件、Webhook 等，让事件发生时正确的人立即收到通知。"
 			}
 		},
 		"pageSpeed": {
@@ -1074,12 +979,8 @@
 			},
 			"fallback": {
 				"actionButton": "创建监控！",
-				"title": "暂无 PageSpeed 监控器",
-				"description": "持续追踪 Core Web Vitals 和 Lighthouse 评分，在用户察觉之前发现性能回退。"
-			},
-			"header": {
-				"title": "PageSpeed 监控器",
-				"description": "持续追踪 Core Web Vitals 和 Lighthouse 评分，在用户察觉之前发现性能回退。"
+				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
+				"title": "PageSpeed 监控用于："
 			}
 		},
 		"settings": {
@@ -1257,18 +1158,14 @@
 				"validation": {
 					"errorMessage": "请修复以下验证错误："
 				}
-			},
-			"header": {
-				"title": "设置",
-				"description": "配置 SMTP、集成、保留和全局应用行为。"
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "状态页已成功删除",
 			"fallback": {
-				"title": "暂无状态页面",
-				"actionButton": "创建状态页！",
-				"description": "发布一个公开页面，向客户和利益相关者展示实时运行情况和事件历史。"
+				"title": "状态页用于：",
+				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
+				"actionButton": "创建状态页！"
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "热力图",
@@ -1293,18 +1190,7 @@
 				"allDown": "所有系统已宕机",
 				"allUp": "所有系统运行正常",
 				"degraded": "部分系统正在出现问题",
-				"unknown": "无法确定系统状态",
-				"allBreached": "所有系统已超过阈值",
-				"allMaintenance": "所有系统正在维护中",
-				"allPaused": "所有系统已暂停",
-				"allInitializing": "所有系统正在初始化",
-				"breachedAndDown": "部分系统超过阈值且已停止",
-				"breached": "部分系统超过阈值",
-				"maintenanceAndDown": "部分系统在维护期间停止",
-				"maintenance": "部分系统正在维护",
-				"partiallyPaused": "部分系统已暂停",
-				"initializing": "部分系统正在初始化",
-				"noMonitors": "尚未配置任何监控器"
+				"unknown": "无法确定系统状态"
 			},
 			"table": {
 				"headers": {
@@ -1396,10 +1282,6 @@
 						}
 					}
 				}
-			},
-			"header": {
-				"title": "状态页面",
-				"description": "发布公开页面，向客户和利益相关者展示实时运行情况和事件历史。"
 			}
 		},
 		"uptime": {
@@ -1415,12 +1297,8 @@
 			},
 			"fallback": {
 				"actionButton": "创建监控！",
-				"title": "暂无运行时间监控器",
-				"description": "监控 HTTP 端点、Ping、容器和端口 — 一旦故障即刻收到提醒。"
-			},
-			"header": {
-				"title": "运行时间监控器",
-				"description": "监控 HTTP 端点、Ping、容器和端口 — 一旦故障即刻收到提醒。"
+				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
+				"title": "正常运行时间监控用于："
 			}
 		}
 	}

@@ -37,10 +37,11 @@ const StatusPages = () => {
 
 	return (
 		<BasePageWithStates
-			headerKey="statusPages"
-			page={t("pages.statusPages.fallback.title")}
+			page={t("pages.statusPages.title")}
 			loading={isLoading}
-			description={t("pages.statusPages.fallback.description")}
+			bullets={
+				t("pages.statusPages.fallback.checks", { returnObjects: true }) as string[]
+			}
 			error={!!error}
 			totalCount={statusPages?.length ?? 0}
 			actionButtonText={t("pages.statusPages.fallback.actionButton")}

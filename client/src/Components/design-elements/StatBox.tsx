@@ -69,12 +69,7 @@ export const StatBox = ({
 		>
 			<Stack onClick={onClick}>
 				<Box sx={{ display: "flex", alignItems: "center", gap: theme.spacing(2) }}>
-					<Typography
-						variant="eyebrow"
-						color={palette ? textColor : "text.secondary"}
-					>
-						{title}
-					</Typography>
+					<Typography color={textColor}>{title}</Typography>
 					{tooltip && (
 						<TooltipWithInfo
 							title={tooltip}

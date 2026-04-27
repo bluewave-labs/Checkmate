@@ -2,9 +2,7 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { Table, type Header, ValueLabel } from "@/Components/design-elements";
-import { Pagination } from "@/Components/design-elements/Table";
 import { ActionsMenu, type ActionMenuItem } from "@/Components/actions-menu";
-import { useClientPagination } from "@/Hooks/useClientPagination";
 import { ExternalLink } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
@@ -25,7 +23,6 @@ export const StatusPagesTable = ({
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const navigate = useNavigate();
-	const { pagedRows, paginationProps } = useClientPagination(data);
 
 	const getActions = (row: StatusPage): ActionMenuItem[] => {
 		return [
@@ -136,11 +133,10 @@ export const StatusPagesTable = ({
 		<Box>
 			<Table
 				headers={getHeaders()}
-				data={pagedRows}
+				data={data}
 				onRowClick={handleRowClick}
 				emptyViewText={t("common.table.empty")}
 			/>
-			{data.length > 0 && <Pagination {...paginationProps} />}
 		</Box>
 	);
 };

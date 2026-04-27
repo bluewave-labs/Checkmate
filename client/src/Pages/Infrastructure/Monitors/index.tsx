@@ -122,7 +122,6 @@ const InfrastructureMonitors = () => {
 
 	return (
 		<MonitorBasePageWithStates
-			headerKey="infrastructure"
 			loading={isLoading}
 			error={monitorsWithChecksError}
 			totalCount={effectiveTotalCount}
