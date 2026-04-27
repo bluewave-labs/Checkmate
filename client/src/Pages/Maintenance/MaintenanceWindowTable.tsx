@@ -23,7 +23,7 @@ import type { RootState } from "@/Types/state";
 import Box from "@mui/material/Box";
 import { setRowsPerPage } from "@/Features/UI/uiSlice";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useDelete, usePatch, useGet } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
 
@@ -107,7 +107,10 @@ export const MaintenanceWindowTable = ({
 	const { deleteFn, loading: deleteLoading } = useDelete();
 	const { patch } = usePatch();
 	const { data: monitorsData } = useGet<Monitor[]>("/monitors/team");
-	const monitorsList = monitorsData ?? [];
+	const monitorsMap = useMemo (
+		() => new Map(monitorsData?.map((m) => [m.id, m]) ?? []),
+		[monitorsData]
+	);
 
 	const handleDelete = async () => {
 		if (!selectedWindow) return;
@@ -231,7 +234,7 @@ export const MaintenanceWindowTable = ({
 		setPage(0);
 	};
 
-	const grouped = groupWindows(maintenanceWindows);
+	const grouped = useMemo(() => groupWindows(maintenanceWindows), [maintenanceWindows]);
 
 	return (
 		<Box>
@@ -259,8 +262,7 @@ export const MaintenanceWindowTable = ({
 									variant="body2"
 									color="text.secondary"
 								>
-									{monitorsList.find((m: Monitor) => m.id === monitor.monitorId)?.name ??
-										monitor.monitorId}
+									{monitorsMap.get(monitor.monitorId)?.name ?? monitor.monitorId}
 								</Typography>
 								<ActionsMenu items={getActions(monitor)} />
 							</Box>
