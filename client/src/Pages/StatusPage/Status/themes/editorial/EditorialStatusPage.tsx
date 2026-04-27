@@ -108,7 +108,7 @@ export const EditorialStatusPage = ({ statusPage, monitors }: Props) => {
 							role="radio"
 							aria-checked={chartMode === "heatmap"}
 							onClick={() => setChartMode("heatmap")}
-							sx={styles.chartSwitchButton(chartMode === "heatmap", true)}
+							sx={styles.chartSwitchButton(chartMode === "heatmap")}
 						>
 							{t("pages.statusPages.monitorsList.chartTypeHeatmap")}
 						</Box>
@@ -118,7 +118,7 @@ export const EditorialStatusPage = ({ statusPage, monitors }: Props) => {
 							role="radio"
 							aria-checked={chartMode === "histogram"}
 							onClick={() => setChartMode("histogram")}
-							sx={styles.chartSwitchButton(chartMode === "histogram", false)}
+							sx={styles.chartSwitchButton(chartMode === "histogram")}
 						>
 							{t("pages.statusPages.monitorsList.chartTypeHistogram")}
 						</Box>

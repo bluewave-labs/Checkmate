@@ -52,12 +52,7 @@ export const ModernStatusPage = ({ statusPage, monitors }: Props) => {
 					) : (
 						<Box sx={styles.logoGrad}>{monoFirstChar(statusPage.companyName)}</Box>
 					)}
-					<Box
-						component="span"
-						sx={styles.company}
-					>
-						{statusPage.companyName}
-					</Box>
+					{statusPage.companyName}
 				</Box>
 			</Box>
 

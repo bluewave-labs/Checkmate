@@ -12,7 +12,6 @@ export interface BoldStyles {
 	brand: SxProps<Theme>;
 	logoConic: SxProps<Theme>;
 	logoImg: SxProps<Theme>;
-	company: SxProps<Theme>;
 	hero: SxProps<Theme>;
 	heroTitle: SxProps<Theme>;
 	heroCheck: (tone: OverallTone) => SxProps<Theme>;
@@ -128,7 +127,6 @@ export const boldStyles = (
 			boxShadow: `0 8px 24px color-mix(in srgb, ${tokens.up} 30%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.2)`,
 		},
 		logoImg: { maxHeight: 36, maxWidth: 140, objectFit: "contain" },
-		company: {},
 
 		hero: {
 			position: "relative",

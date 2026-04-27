@@ -18,7 +18,7 @@ export interface EditorialStyles {
 	dateline: SxProps<Theme>;
 	chartSwitchWrap: SxProps<Theme>;
 	chartSwitch: SxProps<Theme>;
-	chartSwitchButton: (active: boolean, isFirst: boolean) => SxProps<Theme>;
+	chartSwitchButton: (active: boolean) => SxProps<Theme>;
 	monitorList: SxProps<Theme>;
 	card: SxProps<Theme>;
 	cardRow: SxProps<Theme>;
@@ -50,8 +50,9 @@ const sansStack = '-apple-system, "Helvetica Neue", Arial, sans-serif';
 
 export const editorialStyles = (
 	tokens: StatusPageThemeTokens,
-	_isDark: boolean
+	isDark: boolean
 ): EditorialStyles => {
+	void isDark;
 	const heatCellBg: Record<EditorialHeatCell, string> = {
 		fast: tokens.up,
 		med: `color-mix(in srgb, ${tokens.up} 60%, ${tokens.bg})`,
@@ -150,8 +151,12 @@ export const editorialStyles = (
 			mb: "20px",
 			fontFamily: sansStack,
 		},
-		chartSwitch: { display: "inline-flex", border: `1px solid ${tokens.text}` },
-		chartSwitchButton: (active, isFirst) => ({
+		chartSwitch: {
+			display: "inline-flex",
+			border: `1px solid ${tokens.text}`,
+			"& > button + button": { borderLeft: `1px solid ${tokens.text}` },
+		},
+		chartSwitchButton: (active) => ({
 			fontFamily: "inherit",
 			fontSize: 10,
 			textTransform: "uppercase",
@@ -162,7 +167,6 @@ export const editorialStyles = (
 			color: active ? tokens.bg : tokens.text,
 			cursor: "pointer",
 			fontWeight: 700,
-			...(isFirst ? {} : { borderLeft: `1px solid ${tokens.text}` }),
 		}),
 
 		monitorList: {

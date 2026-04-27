@@ -13,7 +13,6 @@ export interface ModernStyles {
 	brand: SxProps<Theme>;
 	logoGrad: SxProps<Theme>;
 	logoImg: SxProps<Theme>;
-	company: SxProps<Theme>;
 	hero: SxProps<Theme>;
 	pulse: (tone: OverallTone) => SxProps<Theme>;
 	statusCopy: SxProps<Theme>;
@@ -135,7 +134,6 @@ export const modernStyles = (
 			boxShadow: `0 4px 10px color-mix(in srgb, ${tokens.up} 40%, transparent)`,
 		},
 		logoImg: { maxHeight: 32, maxWidth: 120, objectFit: "contain" },
-		company: {},
 
 		hero: {
 			position: "relative",
