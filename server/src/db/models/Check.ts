@@ -271,6 +271,7 @@ const CheckSchema = new Schema<CheckDocument>(
 	{
 		timestamps: true,
 		strict: false,
+		suppressReservedKeysWarning: true,
 		timeseries: {
 			timeField: "createdAt",
 			metaField: "metadata",

@@ -199,6 +199,14 @@
 		"starPrompt": {
 			"title": "Star Checkmate",
 			"description": "Следите за последними релизами и помогайте развивать сообщество на GitHub"
+		},
+		"pageHeader": {
+			"links": {
+				"support": "Поддержка",
+				"discussions": "Обсуждения",
+				"docs": "Документация",
+				"changelog": "Журнал изменений"
+			}
 		}
 	},
 	"pages": {
@@ -278,10 +286,23 @@
 						"placeholder": "Выберите роль"
 					},
 					"linkLabel": "Ссылка-приглашение"
+				},
+				"fallback": {
+					"title": "Пока нет участников команды",
+					"description": "Пригласите коллег по электронной почте или добавьте их напрямую. Как только они присоединятся, они появятся здесь со своей ролью."
 				}
+			},
+			"header": {
+				"title": "Учётная запись",
+				"description": "Управляйте профилем, паролем, командой и настройками рабочего пространства."
 			}
 		},
 		"auth": {
+			"brandPanel": {
+				"eyebrow": "Мониторинг инфраструктуры с открытым исходным кодом",
+				"tagline": "Следите за каждым шагом ваших серверов.",
+				"description": "Мониторинг доступности, времени отклика и инцидентов в реальном времени - self-hosted и принадлежит вам."
+			},
 			"common": {
 				"passwordRules": {
 					"length": {
@@ -343,7 +364,8 @@
 			"register": {
 				"title": "С возвращением в Checkmate!",
 				"subtitle": "Зарегистрируйтесь, чтобы начать",
-				"submit": "Регистрация"
+				"submit": "Регистрация",
+				"setupNotice": "Эта страница доступна только во время первоначальной настройки. После регистрации суперадминистратора дополнительных пользователей можно пригласить из настроек команды."
 			},
 			"forgotPassword": {
 				"title": "Забыли пароль?",
@@ -378,6 +400,14 @@
 					"statusCode": "Код статуса",
 					"location": "Расположение"
 				}
+			},
+			"fallback": {
+				"title": "Пока нет проверок",
+				"description": "Как только вы создадите монитор, каждая проверка состояния и время отклика появятся здесь."
+			},
+			"header": {
+				"title": "Проверки",
+				"description": "Каждый зонд, который Checkmate выполняет к вашим мониторам, появится здесь с кодом состояния и временем отклика."
 			}
 		},
 		"common": {
@@ -397,7 +427,8 @@
 					"activeFor": "Активен",
 					"certificateExpiry": "Истечение сертификата",
 					"lastCheck": "Последняя проверка",
-					"lastResponseTime": "Последнее время ответа"
+					"lastResponseTime": "Последнее время ответа",
+					"serviceIsDown": "Сервис недоступен"
 				},
 				"status": {
 					"down": "недоступен",
@@ -640,6 +671,10 @@
 			}
 		},
 		"incidents": {
+			"fallback": {
+				"title": "Инцидентов нет — все системы исправны",
+				"description": "Когда монитор перестаёт работать или восстанавливается, инцидент появится здесь со временем, деталями монитора и историей решения."
+			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "Решить инцидент",
@@ -720,6 +755,10 @@
 					"active": "Активный",
 					"resolved": "Решён"
 				}
+			},
+			"header": {
+				"title": "Инциденты",
+				"description": "Когда монитор перестаёт работать или восстанавливается, инцидент появляется здесь со временем, деталями монитора и историей решения."
 			}
 		},
 		"infrastructure": {
@@ -774,11 +813,19 @@
 			},
 			"fallback": {
 				"actionButton": "Создать монитор!",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "Монитор инфраструктуры используется для:"
+				"title": "Пока нет инфраструктурных мониторов",
+				"description": "Отслеживайте производительность серверов, выявляйте узкие места и обеспечивайте надёжность с мониторингом в реальном времени."
+			},
+			"header": {
+				"title": "Инфраструктурные мониторы",
+				"description": "Отслеживайте производительность серверов, выявляйте узкие места и обеспечивайте надёжность с мониторингом в реальном времени."
 			}
 		},
 		"logs": {
+			"fallback": {
+				"title": "Пока нет журналов",
+				"description": "Активность сервера, предупреждения и ошибки появятся здесь во время работы Checkmate."
+			},
 			"tabs": {
 				"diagnostics": "Диагностика",
 				"logs": "Серверные логи",
@@ -788,7 +835,9 @@
 				"label": "Уровень логов"
 			},
 			"jobQueue": "Очередь заданий",
+			"jobQueueExplainer": "<highlight>Выделенные строки</highlight> — это задания, которые в данный момент обрабатываются воркером.",
 			"failedJobs": "Неудачные задания",
+			"failedJobsExplainer": "Недавние сбои по мониторам — время последнего сбоя, количество сбоев и причина.",
 			"noLogs": "Логи не найдены",
 			"metrics": {
 				"jobs": "Задания",
@@ -815,6 +864,16 @@
 					"usedSPercentage": "% 1с использовано CPU",
 					"total": "Всего",
 					"used": "Использовано"
+				},
+				"sections": {
+					"runtimeStats": {
+						"title": "Статистика выполнения",
+						"description": "Снимок процесса Node.js и хост-машины. Обновляется каждые 5 секунд."
+					},
+					"memoryCpu": {
+						"title": "Память и ЦП",
+						"description": "Как процесс использует выделенную память и ЦП хоста."
+					}
 				}
 			},
 			"table": {
@@ -833,13 +892,21 @@
 					"lastFailedAt": "Последняя ошибка",
 					"failReason": "Причина ошибки"
 				}
+			},
+			"queueFallback": {
+				"title": "В очереди нет заданий",
+				"description": "Запланированные или выполняемые проверки мониторов будут отображаться здесь. Пустая очередь означает, что всё актуально."
+			},
+			"header": {
+				"title": "Журналы и очередь",
+				"description": "Изучайте журналы сервера, очередь заданий мониторов и диагностику в одном месте."
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "Создать окно обслуживания!",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "Окно обслуживания используется для:"
+				"title": "Нет запланированных окон обслуживания",
+				"description": "Планируйте плановые простои, чтобы оповещения были подавлены, а команда и пользователи знали, чего ожидать."
 			},
 			"table": {
 				"headers": {
@@ -891,13 +958,17 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Окна обслуживания",
+				"description": "Планируйте плановые простои, чтобы оповещения были подавлены, а команда и пользователи знали, чего ожидать."
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "Создать канал",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "Каналы уведомлений используются для:"
+				"title": "Пока нет каналов уведомлений",
+				"description": "Подключите Slack, Discord, email, вебхуки и другое, чтобы нужные люди узнавали об инцидентах сразу же."
 			},
 			"form": {
 				"accessToken": {
@@ -947,12 +1018,36 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "ID чата",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Настройка Pushover",
+					"description": "Введите токен приложения и ключ пользователя Pushover.",
+					"optionAppToken": "Токен приложения",
+					"placeholderAppToken": "Введите токен приложения",
+					"optionUserKey": "Ключ пользователя",
+					"placeholderUserKey": "Введите ключ пользователя"
+				},
+				"twilio": {
+					"title": "Настройка Twilio",
+					"description": "Введите учётные данные аккаунта Twilio для отправки SMS.",
+					"optionAccountSid": "SID аккаунта",
+					"placeholderAccountSid": "Введите SID аккаунта",
+					"optionAuthToken": "Токен аутентификации",
+					"placeholderAuthToken": "Введите токен аутентификации",
+					"optionFromNumber": "Номер отправителя",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "Номер получателя",
+					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
 				"headers": {
 					"destination": "Назначение"
 				}
+			},
+			"header": {
+				"title": "Уведомления",
+				"description": "Подключите Slack, Discord, email, вебхуки и другое, чтобы нужные люди узнавали об инцидентах сразу же."
 			}
 		},
 		"pageSpeed": {
@@ -979,8 +1074,12 @@
 			},
 			"fallback": {
 				"actionButton": "Создать монитор!",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "Монитор PageSpeed используется для:"
+				"title": "Пока нет мониторов PageSpeed",
+				"description": "Отслеживайте Core Web Vitals и оценки Lighthouse во времени, чтобы заметить регрессии раньше пользователей."
+			},
+			"header": {
+				"title": "Мониторы PageSpeed",
+				"description": "Отслеживайте Core Web Vitals и оценки Lighthouse во времени, чтобы заметить регрессии раньше пользователей."
 			}
 		},
 		"settings": {
@@ -1158,14 +1257,18 @@
 				"validation": {
 					"errorMessage": "Пожалуйста, исправьте следующие ошибки валидации:"
 				}
+			},
+			"header": {
+				"title": "Настройки",
+				"description": "Настройте SMTP, интеграции, сроки хранения и общее поведение приложения."
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "Страница статуса успешно удалена",
 			"fallback": {
-				"title": "Страница статуса используется для:",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "Создать страницу статуса!"
+				"title": "Пока нет страниц состояния",
+				"actionButton": "Создать страницу статуса!",
+				"description": "Опубликуйте публичную страницу, показывающую клиентам и заинтересованным сторонам реальное время работы и историю инцидентов."
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Тепловая карта",
@@ -1190,7 +1293,18 @@
 				"allDown": "Все системы недоступны",
 				"allUp": "Все системы работают",
 				"degraded": "Некоторые системы испытывают проблемы",
-				"unknown": "Не удаётся определить статус системы"
+				"unknown": "Не удаётся определить статус системы",
+				"allBreached": "Все системы превысили пороговые значения",
+				"allMaintenance": "Все системы на техническом обслуживании",
+				"allPaused": "Все системы приостановлены",
+				"allInitializing": "Все системы инициализируются",
+				"breachedAndDown": "Некоторые системы превысили пороги и недоступны",
+				"breached": "Некоторые системы превысили пороги",
+				"maintenanceAndDown": "Некоторые системы недоступны во время техобслуживания",
+				"maintenance": "Некоторые системы на техобслуживании",
+				"partiallyPaused": "Некоторые системы приостановлены",
+				"initializing": "Некоторые системы инициализируются",
+				"noMonitors": "Мониторы не настроены"
 			},
 			"table": {
 				"headers": {
@@ -1282,6 +1396,10 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Страницы состояния",
+				"description": "Публикуйте публичные страницы со временем работы и историей инцидентов для клиентов и заинтересованных сторон."
 			}
 		},
 		"uptime": {
@@ -1297,8 +1415,12 @@
 			},
 			"fallback": {
 				"actionButton": "Создать монитор!",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "Монитор аптайма используется для:"
+				"title": "Пока нет мониторов работоспособности",
+				"description": "Наблюдайте за HTTP-конечными точками, пингами, контейнерами и портами — получайте уведомления в момент отказа."
+			},
+			"header": {
+				"title": "Мониторы работоспособности",
+				"description": "Наблюдайте за HTTP-конечными точками, пингами, контейнерами и портами — получайте уведомления в момент отказа."
 			}
 		}
 	}
