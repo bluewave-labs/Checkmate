@@ -3,6 +3,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import type { SxProps, Theme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import type { CheckSnapshot } from "@/Types/Check";
 import { formatCheckTimestamp } from "./timeFormat";
@@ -10,16 +11,32 @@ import { formatCheckTimestamp } from "./timeFormat";
 const CELLS = 25;
 const MIN_HEIGHT_PCT = 6;
 
+export type BarKind = "up" | "down" | "empty";
+
 interface Props {
 	checks: CheckSnapshot[];
-	classPrefix: string;
+	/** sx-based API — preferred. */
+	containerSx?: SxProps<Theme>;
+	barSx?: (kind: BarKind, heightPct: number) => SxProps<Theme>;
+	statsSx?: SxProps<Theme>;
+	/** Legacy className-based API. Will be removed once all themes move to sx. */
+	classPrefix?: string;
 	statsGap?: number;
 }
 
-const tone = (check: CheckSnapshot): "up" | "down" => (check.status ? "up" : "down");
+const tone = (check: CheckSnapshot): Exclude<BarKind, "empty"> =>
+	check.status ? "up" : "down";
 
-export const ThemedHistogram = ({ checks, classPrefix, statsGap = 1 }: Props) => {
+export const ThemedHistogram = ({
+	checks,
+	containerSx,
+	barSx,
+	statsSx,
+	classPrefix,
+	statsGap = 1,
+}: Props) => {
 	const { t } = useTranslation();
+	const useSxApi = Boolean(barSx);
 
 	const { padded, max, avg, peak } = useMemo(() => {
 		const source = checks.slice(0, CELLS).reverse();
@@ -35,12 +52,25 @@ export const ThemedHistogram = ({ checks, classPrefix, statsGap = 1 }: Props) =>
 		return { padded: out, max: maxRt, avg: avgRt, peak: valid.length ? maxRt : 0 };
 	}, [checks]);
 
+	const containerProps = useSxApi
+		? { sx: containerSx }
+		: { className: `${classPrefix}-histogram` };
+
+	const statsProps = useSxApi
+		? { sx: statsSx }
+		: { className: `${classPrefix}-chart-stats` };
+
 	return (
 		<Stack gap={statsGap}>
-			<Box className={`${classPrefix}-histogram`}>
+			<Box {...containerProps}>
 				{padded.map((check, i) => {
 					if (!check) {
-						return (
+						return useSxApi ? (
+							<Box
+								key={`empty-${i}`}
+								sx={barSx!("empty", MIN_HEIGHT_PCT)}
+							/>
+						) : (
 							<Box
 								key={`empty-${i}`}
 								className={`${classPrefix}-bar ${classPrefix}-empty`}
@@ -77,11 +107,18 @@ export const ThemedHistogram = ({ checks, classPrefix, statsGap = 1 }: Props) =>
 							arrow
 							placement="top"
 						>
-							<Box
-								className={`${classPrefix}-bar ${classPrefix}-${tone(check)}`}
-								style={{ height: `${height}%` }}
-								aria-label={`${check.responseTime} ms`}
-							/>
+							{useSxApi ? (
+								<Box
+									sx={barSx!(tone(check), height)}
+									aria-label={`${check.responseTime} ms`}
+								/>
+							) : (
+								<Box
+									className={`${classPrefix}-bar ${classPrefix}-${tone(check)}`}
+									style={{ height: `${height}%` }}
+									aria-label={`${check.responseTime} ms`}
+								/>
+							)}
 						</Tooltip>
 					);
 				})}
@@ -89,7 +126,7 @@ export const ThemedHistogram = ({ checks, classPrefix, statsGap = 1 }: Props) =>
 			<Stack
 				direction="row"
 				justifyContent="space-between"
-				className={`${classPrefix}-chart-stats`}
+				{...statsProps}
 			>
 				<span>{t("pages.statusPages.monitorsList.chart.avg", { value: avg })}</span>
 				<span>{t("pages.statusPages.monitorsList.chart.max", { value: peak })}</span>

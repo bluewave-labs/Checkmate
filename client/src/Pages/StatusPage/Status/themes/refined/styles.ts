@@ -1,0 +1,352 @@
+import type { StatusPageThemeTokens } from "../tokens";
+
+export type RefinedTone = "up" | "warn" | "down";
+export type RefinedHeatCell = "fast" | "med" | "slow" | "down" | "empty";
+export type RefinedBarKind = "up" | "down" | "empty";
+export type RefinedGaugeFill = "ok" | "warm" | "hot";
+
+const sansFontStack =
+	'-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif';
+
+const cardShadow = "0 1px 2px rgba(10, 16, 32, 0.06), 0 6px 18px rgba(10, 16, 32, 0.08)";
+const cardShadowHover =
+	"0 2px 4px rgba(16, 24, 40, 0.06), 0 10px 24px rgba(16, 24, 40, 0.06)";
+
+const toneColor = (tone: RefinedTone, t: StatusPageThemeTokens) =>
+	tone === "down" ? t.down : tone === "warn" ? t.warn : t.up;
+
+const toneSoft = (tone: RefinedTone, t: StatusPageThemeTokens) =>
+	tone === "down" ? t.downSoft : tone === "warn" ? t.warnSoft : t.upSoft;
+
+export const refinedStyles = (tokens: StatusPageThemeTokens, isDark: boolean) => {
+	const heatCellBg: Record<RefinedHeatCell, string> = {
+		fast: tokens.up,
+		med: `color-mix(in srgb, ${tokens.up} 60%, #ffffff 40%)`,
+		slow: tokens.warn,
+		down: tokens.down,
+		empty: tokens.border,
+	};
+
+	const barBg: Record<RefinedBarKind, string> = {
+		up: tokens.up,
+		down: tokens.down,
+		empty: tokens.border,
+	};
+
+	const gaugeFillBg: Record<RefinedGaugeFill, string> = {
+		ok: tokens.up,
+		warm: tokens.warn,
+		hot: tokens.down,
+	};
+
+	const sx: Record<string, any> = {
+		page: {
+			flex: "1 0 auto",
+			maxWidth: 960,
+			width: "100%",
+			mx: "auto",
+			p: "48px 20px 80px",
+			fontFamily: sansFontStack,
+			fontSize: 14,
+			lineHeight: 1.5,
+			color: tokens.text,
+			WebkitFontSmoothing: "antialiased",
+		},
+
+		top: {
+			display: "flex",
+			alignItems: "center",
+			justifyContent: "space-between",
+			mb: "28px",
+		},
+		brand: {
+			display: "flex",
+			alignItems: "center",
+			gap: "10px",
+			fontWeight: 600,
+			letterSpacing: "-0.01em",
+			color: tokens.text,
+		},
+		logoMono: {
+			width: 28,
+			height: 28,
+			borderRadius: "8px",
+			background: tokens.up,
+			display: "grid",
+			placeItems: "center",
+			color: "#fff",
+			fontWeight: 700,
+			fontSize: 13,
+		},
+		logoImg: {
+			maxHeight: 32,
+			maxWidth: 120,
+			objectFit: "contain",
+		},
+		company: { fontSize: 14 },
+
+		hero: {
+			background: tokens.surface,
+			border: `1px solid ${tokens.border}`,
+			borderRadius: tokens.radius,
+			padding: "22px 24px",
+			display: "flex",
+			alignItems: "center",
+			gap: "16px",
+			boxShadow: cardShadow,
+			mb: "20px",
+		},
+		statusDot: (tone: RefinedTone) => ({
+			width: 10,
+			height: 10,
+			borderRadius: "50%",
+			background: toneColor(tone, tokens),
+			boxShadow: `0 0 0 4px ${toneSoft(tone, tokens)}`,
+			flexShrink: 0,
+		}),
+		statusCopy: { flex: 1, minWidth: 0 },
+		heroTitle: {
+			m: 0,
+			mb: "2px",
+			fontSize: 17,
+			fontWeight: 600,
+			letterSpacing: "-0.01em",
+			color: tokens.text,
+		},
+		heroSub: { m: 0, color: tokens.textMuted, fontSize: 13 },
+		heroIcon: (tone: RefinedTone) => ({
+			color: toneColor(tone, tokens),
+			display: "flex",
+			alignItems: "center",
+		}),
+
+		chartSwitchWrap: {
+			display: "flex",
+			justifyContent: "flex-end",
+			mb: "12px",
+		},
+		chartSwitch: {
+			display: "inline-flex",
+			border: `1px solid ${tokens.border}`,
+			borderRadius: "8px",
+			background: tokens.surface,
+			p: "3px",
+			gap: "2px",
+		},
+		chartSwitchButton: (active: boolean) => ({
+			border: 0,
+			background: active ? tokens.upSoft : "transparent",
+			fontFamily: "inherit",
+			fontSize: 11,
+			padding: "5px 14px",
+			cursor: "pointer",
+			color: active ? tokens.up : tokens.textMuted,
+			borderRadius: "5px",
+			transition: "background 0.15s ease, color 0.15s ease",
+			fontWeight: active ? 600 : 500,
+			"&:hover": { color: active ? tokens.up : tokens.text },
+		}),
+
+		monitorList: {
+			listStyle: "none",
+			m: 0,
+			p: 0,
+			display: "flex",
+			flexDirection: "column",
+			gap: "12px",
+		},
+		card: {
+			background: tokens.surface,
+			border: `1px solid ${tokens.border}`,
+			borderRadius: tokens.radius,
+			boxShadow: cardShadow,
+			overflow: "hidden",
+			position: "relative",
+			transition: "transform 0.15s, box-shadow 0.15s",
+			"&:hover": { transform: "translateY(-1px)", boxShadow: cardShadowHover },
+		},
+		cardRow: {
+			display: "grid",
+			gridTemplateColumns: "1fr auto",
+			alignItems: "center",
+			gap: "16px",
+			p: "16px 20px",
+		},
+		cardLeft: { minWidth: 0 },
+		monitorName: {
+			fontWeight: 600,
+			fontSize: 14,
+			letterSpacing: "-0.005em",
+			color: tokens.text,
+			overflow: "hidden",
+			textOverflow: "ellipsis",
+			whiteSpace: "nowrap",
+		},
+		monitorMeta: {
+			display: "flex",
+			gap: "10px",
+			alignItems: "center",
+			mt: "4px",
+			flexWrap: "wrap",
+		},
+		pill: {
+			fontSize: 10,
+			textTransform: "uppercase",
+			letterSpacing: "0.08em",
+			color: tokens.textMuted,
+			border: `1px solid ${tokens.border}`,
+			padding: "2px 8px",
+			borderRadius: "999px",
+			fontWeight: 600,
+		},
+		pillHardware: isDark
+			? {
+					fontSize: 10,
+					textTransform: "uppercase",
+					letterSpacing: "0.08em",
+					padding: "2px 8px",
+					borderRadius: "999px",
+					fontWeight: 600,
+					color: "#60a5fa",
+					border: "1px solid rgba(96, 165, 250, 0.3)",
+					background: "rgba(96, 165, 250, 0.1)",
+				}
+			: {
+					fontSize: 10,
+					textTransform: "uppercase",
+					letterSpacing: "0.08em",
+					padding: "2px 8px",
+					borderRadius: "999px",
+					fontWeight: 600,
+					color: "#1d4ed8",
+					border: "1px solid rgba(29, 78, 216, 0.3)",
+					background: "rgba(29, 78, 216, 0.06)",
+				},
+		monitorUrl: {
+			fontSize: 12,
+			color: tokens.textMuted,
+			fontFamily: "ui-monospace, Menlo, monospace",
+			overflow: "hidden",
+			textOverflow: "ellipsis",
+			whiteSpace: "nowrap",
+			maxWidth: 280,
+		},
+
+		badge: (tone: RefinedTone) => ({
+			fontSize: 11,
+			fontWeight: 600,
+			padding: "4px 10px",
+			borderRadius: "999px",
+			whiteSpace: "nowrap",
+			background: toneSoft(tone, tokens),
+			color: toneColor(tone, tokens),
+		}),
+
+		heatmap: {
+			padding: "0 20px 16px",
+			display: "grid",
+			gridTemplateColumns: "repeat(25, 1fr)",
+			gap: "3px",
+			height: 42,
+		},
+		heatmapCell: (kind: RefinedHeatCell) => ({
+			borderRadius: "2px",
+			background: heatCellBg[kind],
+			opacity: kind === "empty" ? 0.4 : 1,
+			transition: "transform 0.15s",
+			"&:hover": { transform: "scaleY(1.15)" },
+		}),
+
+		histogram: {
+			padding: "0 20px",
+			display: "grid",
+			gridTemplateColumns: "repeat(25, 1fr)",
+			gap: "3px",
+			alignItems: "flex-end",
+			height: 42,
+		},
+		bar: (kind: RefinedBarKind, heightPct: number) => ({
+			background: barBg[kind],
+			borderRadius: "2px",
+			minHeight: 3,
+			opacity: kind === "empty" ? 0.4 : 1,
+			height: `${heightPct}%`,
+		}),
+		chartStats: {
+			padding: "0 20px 16px",
+			fontSize: 11,
+			color: tokens.textMuted,
+			fontVariantNumeric: "tabular-nums",
+		},
+
+		infra: {
+			padding: "14px 20px 18px",
+			display: "grid",
+			gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
+			gap: "12px",
+		},
+		infraEmpty: {
+			padding: "14px 20px 18px",
+			color: tokens.textMuted,
+			fontSize: 13,
+		},
+		gauge: {
+			border: `1px solid ${tokens.border}`,
+			borderRadius: "10px",
+			p: "12px 14px",
+			background: tokens.bg,
+		},
+		gaugeLabel: {
+			fontSize: 11,
+			color: tokens.textMuted,
+			textTransform: "uppercase",
+			letterSpacing: "0.08em",
+			fontWeight: 600,
+		},
+		gaugeValue: {
+			fontSize: 20,
+			fontWeight: 600,
+			letterSpacing: "-0.01em",
+			mt: "2px",
+			fontVariantNumeric: "tabular-nums",
+			color: tokens.text,
+		},
+		gaugeBar: {
+			height: 4,
+			background: tokens.border,
+			borderRadius: "2px",
+			overflow: "hidden",
+			mt: "8px",
+		},
+		gaugeFill: (level: RefinedGaugeFill, widthPct: number) => ({
+			display: "block",
+			height: "100%",
+			background: gaugeFillBg[level],
+			borderRadius: "2px",
+			transition: "width 0.6s",
+			width: `${Math.max(0, Math.min(100, widthPct))}%`,
+		}),
+		gaugeSub: {
+			fontSize: 11,
+			color: tokens.textMuted,
+			mt: "6px",
+			fontVariantNumeric: "tabular-nums",
+		},
+
+		footer: {
+			textAlign: "center",
+			color: tokens.textMuted,
+			fontSize: 12,
+			mt: "40px",
+			"& a": {
+				color: tokens.up,
+				textDecoration: "underline",
+				textUnderlineOffset: "3px",
+				fontWeight: 600,
+				"&:hover": { color: tokens.upStrong || tokens.up },
+			},
+		},
+	};
+
+	return sx;
+};

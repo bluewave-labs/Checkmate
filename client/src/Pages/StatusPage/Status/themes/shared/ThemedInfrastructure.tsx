@@ -1,11 +1,28 @@
 import Box from "@mui/material/Box";
 import prettyBytes from "pretty-bytes";
+import type { SxProps, Theme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import type { Monitor } from "@/Types/Monitor";
 
+export type GaugeFillLevel = "ok" | "warm" | "hot";
+
+interface InfraSx {
+	containerSx: SxProps<Theme>;
+	emptySx: SxProps<Theme>;
+	gaugeSx: SxProps<Theme>;
+	gaugeLabelSx: SxProps<Theme>;
+	gaugeValueSx: SxProps<Theme>;
+	gaugeBarSx: SxProps<Theme>;
+	gaugeFillSx: (level: GaugeFillLevel, widthPct: number) => SxProps<Theme>;
+	gaugeSubSx: SxProps<Theme>;
+}
+
 interface Props {
 	monitor: Monitor & { checks?: Monitor["recentChecks"] };
-	classPrefix: string;
+	/** sx-based API — preferred. */
+	sxApi?: InfraSx;
+	/** Legacy className-based API. Will be removed once all themes move to sx. */
+	classPrefix?: string;
 }
 
 interface Gauge {
@@ -17,16 +34,24 @@ interface Gauge {
 
 const PCT = 100;
 
-export const ThemedInfrastructure = ({ monitor, classPrefix }: Props) => {
+const heatLevel = (value: number): GaugeFillLevel =>
+	value > 85 ? "hot" : value > 70 ? "warm" : "ok";
+
+export const ThemedInfrastructure = ({ monitor, sxApi, classPrefix }: Props) => {
 	const { t } = useTranslation();
+	const useSxApi = Boolean(sxApi);
 	const latest = monitor.recentChecks?.[0] ?? monitor.checks?.[0];
-	if (!latest) {
-		return (
-			<Box className={`${classPrefix}-infra-empty`}>
-				{t("pages.statusPages.monitorsList.noData")}
-			</Box>
+
+	const renderEmpty = () => {
+		const message = t("pages.statusPages.monitorsList.noData");
+		return useSxApi ? (
+			<Box sx={sxApi!.emptySx}>{message}</Box>
+		) : (
+			<Box className={`${classPrefix}-infra-empty`}>{message}</Box>
 		);
-	}
+	};
+
+	if (!latest) return renderEmpty();
 
 	const gauges: Gauge[] = [];
 
@@ -67,10 +92,25 @@ export const ThemedInfrastructure = ({ monitor, classPrefix }: Props) => {
 		});
 	}
 
-	if (gauges.length === 0) {
+	if (gauges.length === 0) return renderEmpty();
+
+	if (useSxApi) {
+		const s = sxApi!;
 		return (
-			<Box className={`${classPrefix}-infra-empty`}>
-				{t("pages.statusPages.monitorsList.noData")}
+			<Box sx={s.containerSx}>
+				{gauges.map((g) => (
+					<Box
+						key={g.key}
+						sx={s.gaugeSx}
+					>
+						<Box sx={s.gaugeLabelSx}>{g.label}</Box>
+						<Box sx={s.gaugeValueSx}>{g.value.toFixed(0)}%</Box>
+						<Box sx={s.gaugeBarSx}>
+							<Box sx={s.gaugeFillSx(heatLevel(g.value), Math.min(100, g.value))} />
+						</Box>
+						<Box sx={s.gaugeSubSx}>{g.sub}</Box>
+					</Box>
+				))}
 			</Box>
 		);
 	}
