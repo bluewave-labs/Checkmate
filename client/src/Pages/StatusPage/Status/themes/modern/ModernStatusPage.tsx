@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import { useTranslation } from "react-i18next";
@@ -14,7 +14,8 @@ import {
 	resolveOverallStatus,
 	statusBadgeKey,
 } from "../shared/overallStatus";
-import "./modern.css";
+import { useStatusPageTheme } from "../StatusPageThemeProvider";
+import { modernStyles } from "./styles";
 
 type StatusPageMonitor = Monitor & { checks?: Monitor["recentChecks"] };
 
@@ -23,10 +24,10 @@ interface Props {
 	monitors: StatusPageMonitor[];
 }
 
-const PREFIX = "mod";
-
 export const ModernStatusPage = ({ statusPage, monitors }: Props) => {
 	const { t } = useTranslation();
+	const { tokens, mode } = useStatusPageTheme();
+	const styles = useMemo(() => modernStyles(tokens, mode === "dark"), [tokens, mode]);
 	const [chartMode, setChartMode] = useState<"heatmap" | "histogram">("heatmap");
 
 	const overall = resolveOverallStatus(monitors, t, { iconSize: 20 });
@@ -35,72 +36,85 @@ export const ModernStatusPage = ({ statusPage, monitors }: Props) => {
 		: null;
 
 	return (
-		<Box className={`${PREFIX}-page`}>
+		<Box sx={styles.page}>
 			<Box
 				component="header"
-				className={`${PREFIX}-top`}
+				sx={styles.top}
 			>
-				<Box className={`${PREFIX}-brand`}>
+				<Box sx={styles.brand}>
 					{logoSrc ? (
 						<Box
 							component="img"
 							src={logoSrc}
 							alt={statusPage.companyName}
-							className={`${PREFIX}-logo-img`}
+							sx={styles.logoImg}
 						/>
 					) : (
-						<Box className={`${PREFIX}-logo-grad`}>
-							{monoFirstChar(statusPage.companyName)}
-						</Box>
+						<Box sx={styles.logoGrad}>{monoFirstChar(statusPage.companyName)}</Box>
 					)}
-					<span className={`${PREFIX}-company`}>{statusPage.companyName}</span>
+					<Box
+						component="span"
+						sx={styles.company}
+					>
+						{statusPage.companyName}
+					</Box>
 				</Box>
 			</Box>
 
-			<Box className={`${PREFIX}-hero ${PREFIX}-tone-${overall.tone}`}>
-				<Box className={`${PREFIX}-pulse`} />
-				<Box className={`${PREFIX}-status-copy`}>
-					<h1 className={`${PREFIX}-hero-title`}>{overall.message}</h1>
-					<p className={`${PREFIX}-hero-sub`}>
+			<Box sx={styles.hero}>
+				<Box sx={styles.pulse(overall.tone)} />
+				<Box sx={styles.statusCopy}>
+					<Box
+						component="h1"
+						sx={styles.heroTitle}
+					>
+						{overall.message}
+					</Box>
+					<Box
+						component="p"
+						sx={styles.heroSub}
+					>
 						{t("pages.statusPages.statusBar.monitoringSummary", {
 							count: monitors.length,
 						})}
-					</p>
+					</Box>
 				</Box>
-				<Box className={`${PREFIX}-hero-icon`}>{overall.icon}</Box>
+				<Box sx={styles.heroIcon(overall.tone)}>{overall.icon}</Box>
 			</Box>
 
 			{statusPage.showCharts && (
-				<Box className={`${PREFIX}-chart-switch-wrap`}>
+				<Box sx={styles.chartSwitchWrap}>
 					<Box
-						className={`${PREFIX}-chart-switch`}
+						sx={styles.chartSwitch}
 						role="radiogroup"
 					>
-						<button
+						<Box
+							component="button"
 							type="button"
 							role="radio"
 							aria-checked={chartMode === "heatmap"}
-							className={chartMode === "heatmap" ? `${PREFIX}-active` : ""}
 							onClick={() => setChartMode("heatmap")}
+							sx={styles.chartSwitchButton(chartMode === "heatmap")}
 						>
 							{t("pages.statusPages.monitorsList.chartTypeHeatmap")}
-						</button>
-						<button
+						</Box>
+						<Box
+							component="button"
 							type="button"
 							role="radio"
 							aria-checked={chartMode === "histogram"}
-							className={chartMode === "histogram" ? `${PREFIX}-active` : ""}
 							onClick={() => setChartMode("histogram")}
+							sx={styles.chartSwitchButton(chartMode === "histogram")}
 						>
 							{t("pages.statusPages.monitorsList.chartTypeHistogram")}
-						</button>
+						</Box>
 					</Box>
 				</Box>
 			)}
 
 			<Stack
 				component="ul"
-				className={`${PREFIX}-monitor-list`}
+				sx={styles.monitorList}
 			>
 				{monitors.map((monitor) => {
 					const isHardware = monitor.type === "hardware";
@@ -112,48 +126,65 @@ export const ModernStatusPage = ({ statusPage, monitors }: Props) => {
 						<Box
 							component="li"
 							key={monitor.id}
-							className={`${PREFIX}-card ${PREFIX}-card-${monitor.status}`}
+							sx={styles.card}
 						>
-							<Box className={`${PREFIX}-card-row`}>
-								<Box className={`${PREFIX}-card-left`}>
-									<Box className={`${PREFIX}-monitor-name`}>{monitor.name}</Box>
-									<Box className={`${PREFIX}-monitor-meta`}>
-										<span
-											className={`${PREFIX}-pill ${PREFIX}-pill-${isHardware ? "hardware" : "default"}`}
+							<Box sx={styles.cardRow}>
+								<Box sx={styles.cardLeft}>
+									<Box sx={styles.monitorName}>{monitor.name}</Box>
+									<Box sx={styles.monitorMeta}>
+										<Box
+											component="span"
+											sx={isHardware ? styles.pillHardware : styles.pill}
 										>
 											{getMonitorTypeLabel(monitor.type, t)}
-										</span>
+										</Box>
 										{monitor.url && (
-											<span
-												className={`${PREFIX}-monitor-url`}
+											<Box
+												component="span"
+												sx={styles.monitorUrl}
 												title={monitor.url}
 											>
 												{monitor.url}
-											</span>
+											</Box>
 										)}
 									</Box>
 								</Box>
-								<span className={`${PREFIX}-badge ${PREFIX}-badge-${badgeTone}`}>
+								<Box
+									component="span"
+									sx={styles.badge(badgeTone)}
+								>
 									{t(statusBadgeKey[monitor.status])}
-								</span>
+								</Box>
 							</Box>
 
 							{showInfra && (
 								<ThemedInfrastructure
 									monitor={monitor}
-									classPrefix={PREFIX}
+									sxApi={{
+										containerSx: styles.infra,
+										emptySx: styles.infraEmpty,
+										gaugeSx: styles.gauge,
+										gaugeLabelSx: styles.gaugeLabel,
+										gaugeValueSx: styles.gaugeValue,
+										gaugeBarSx: styles.gaugeBar,
+										gaugeFillSx: styles.gaugeFill,
+										gaugeSubSx: styles.gaugeSub,
+									}}
 								/>
 							)}
 							{showChart &&
 								(chartMode === "heatmap" ? (
 									<ThemedHeatmap
 										checks={monitor.recentChecks ?? []}
-										classPrefix={PREFIX}
+										containerSx={styles.heatmap}
+										cellSx={styles.heatmapCell}
 									/>
 								) : (
 									<ThemedHistogram
 										checks={monitor.recentChecks ?? []}
-										classPrefix={PREFIX}
+										containerSx={styles.histogram}
+										barSx={styles.bar}
+										statsSx={styles.chartStats}
 									/>
 								))}
 						</Box>
@@ -163,7 +194,7 @@ export const ModernStatusPage = ({ statusPage, monitors }: Props) => {
 
 			<Box
 				component="footer"
-				className={`${PREFIX}-footer`}
+				sx={styles.footer}
 			>
 				{t("pages.statusPages.footer.poweredBy")}{" "}
 				<a

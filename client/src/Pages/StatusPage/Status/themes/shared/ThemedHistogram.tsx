@@ -15,12 +15,9 @@ export type BarKind = "up" | "down" | "empty";
 
 interface Props {
 	checks: CheckSnapshot[];
-	/** sx-based API — preferred. */
-	containerSx?: SxProps<Theme>;
-	barSx?: (kind: BarKind, heightPct: number) => SxProps<Theme>;
-	statsSx?: SxProps<Theme>;
-	/** Legacy className-based API. Will be removed once all themes move to sx. */
-	classPrefix?: string;
+	containerSx: SxProps<Theme>;
+	barSx: (kind: BarKind, heightPct: number) => SxProps<Theme>;
+	statsSx: SxProps<Theme>;
 	statsGap?: number;
 }
 
@@ -32,11 +29,9 @@ export const ThemedHistogram = ({
 	containerSx,
 	barSx,
 	statsSx,
-	classPrefix,
 	statsGap = 1,
 }: Props) => {
 	const { t } = useTranslation();
-	const useSxApi = Boolean(containerSx && barSx && statsSx);
 
 	const { padded, max, avg, peak } = useMemo(() => {
 		const source = checks.slice(0, CELLS).reverse();
@@ -52,29 +47,15 @@ export const ThemedHistogram = ({
 		return { padded: out, max: maxRt, avg: avgRt, peak: valid.length ? maxRt : 0 };
 	}, [checks]);
 
-	const containerProps = useSxApi
-		? { sx: containerSx }
-		: { className: `${classPrefix}-histogram` };
-
-	const statsProps = useSxApi
-		? { sx: statsSx }
-		: { className: `${classPrefix}-chart-stats` };
-
 	return (
 		<Stack gap={statsGap}>
-			<Box {...containerProps}>
+			<Box sx={containerSx}>
 				{padded.map((check, i) => {
 					if (!check) {
-						return useSxApi ? (
+						return (
 							<Box
 								key={`empty-${i}`}
-								sx={barSx!("empty", MIN_HEIGHT_PCT)}
-							/>
-						) : (
-							<Box
-								key={`empty-${i}`}
-								className={`${classPrefix}-bar ${classPrefix}-empty`}
-								style={{ height: `${MIN_HEIGHT_PCT}%` }}
+								sx={barSx("empty", MIN_HEIGHT_PCT)}
 							/>
 						);
 					}
@@ -107,18 +88,10 @@ export const ThemedHistogram = ({
 							arrow
 							placement="top"
 						>
-							{useSxApi ? (
-								<Box
-									sx={barSx!(tone(check), height)}
-									aria-label={`${check.responseTime} ms`}
-								/>
-							) : (
-								<Box
-									className={`${classPrefix}-bar ${classPrefix}-${tone(check)}`}
-									style={{ height: `${height}%` }}
-									aria-label={`${check.responseTime} ms`}
-								/>
-							)}
+							<Box
+								sx={barSx(tone(check), height)}
+								aria-label={`${check.responseTime} ms`}
+							/>
 						</Tooltip>
 					);
 				})}
@@ -126,7 +99,7 @@ export const ThemedHistogram = ({
 			<Stack
 				direction="row"
 				justifyContent="space-between"
-				{...statsProps}
+				sx={statsSx}
 			>
 				<span>{t("pages.statusPages.monitorsList.chart.avg", { value: avg })}</span>
 				<span>{t("pages.statusPages.monitorsList.chart.max", { value: peak })}</span>

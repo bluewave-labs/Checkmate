@@ -13,11 +13,8 @@ export type HeatCellKind = "fast" | "med" | "slow" | "down" | "empty";
 
 interface Props {
 	checks: CheckSnapshot[];
-	/** sx-based API — preferred. Themes pass their own container + cell recipes. */
-	containerSx?: SxProps<Theme>;
-	cellSx?: (kind: HeatCellKind) => SxProps<Theme>;
-	/** Legacy className-based API — kept for unmigrated themes. Will be removed once all themes move to sx. */
-	classPrefix?: string;
+	containerSx: SxProps<Theme>;
+	cellSx: (kind: HeatCellKind) => SxProps<Theme>;
 }
 
 const classify = (check: CheckSnapshot): Exclude<HeatCellKind, "empty"> => {
@@ -28,9 +25,8 @@ const classify = (check: CheckSnapshot): Exclude<HeatCellKind, "empty"> => {
 	return "fast";
 };
 
-export const ThemedHeatmap = ({ checks, containerSx, cellSx, classPrefix }: Props) => {
+export const ThemedHeatmap = ({ checks, containerSx, cellSx }: Props) => {
 	const { t } = useTranslation();
-	const useSxApi = Boolean(containerSx && cellSx);
 
 	const source = checks.slice(0, CELLS).reverse();
 	const padded: (CheckSnapshot | null)[] = [
@@ -38,18 +34,9 @@ export const ThemedHeatmap = ({ checks, containerSx, cellSx, classPrefix }: Prop
 		...source,
 	];
 
-	const containerProps = useSxApi
-		? { sx: containerSx }
-		: { className: `${classPrefix}-heatmap` };
-
-	const cellProps = (kind: HeatCellKind) =>
-		useSxApi
-			? { sx: cellSx!(kind) }
-			: { className: `${classPrefix}-heatmap-cell ${classPrefix}-${kind}` };
-
 	return (
 		<Box
-			{...containerProps}
+			sx={containerSx}
 			role="img"
 			aria-label={t("pages.statusPages.monitorsList.chart.heatmapAria")}
 		>
@@ -58,7 +45,7 @@ export const ThemedHeatmap = ({ checks, containerSx, cellSx, classPrefix }: Prop
 					return (
 						<Box
 							key={`empty-${i}`}
-							{...cellProps("empty")}
+							sx={cellSx("empty")}
 						/>
 					);
 				}
@@ -89,7 +76,7 @@ export const ThemedHeatmap = ({ checks, containerSx, cellSx, classPrefix }: Prop
 						placement="top"
 					>
 						<Box
-							{...cellProps(kind)}
+							sx={cellSx(kind)}
 							aria-label={`${check.responseTime} ms, ${check.status ? "up" : "down"}`}
 						/>
 					</Tooltip>

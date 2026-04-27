@@ -13,7 +13,8 @@ import {
 	resolveOverallStatus,
 	statusBadgeKey,
 } from "../shared/overallStatus";
-import "./editorial.css";
+import { useStatusPageTheme } from "../StatusPageThemeProvider";
+import { editorialStyles } from "./styles";
 
 type StatusPageMonitor = Monitor & { checks?: Monitor["recentChecks"] };
 
@@ -22,14 +23,12 @@ interface Props {
 	monitors: StatusPageMonitor[];
 }
 
-const PREFIX = "ed";
-
 export const EditorialStatusPage = ({ statusPage, monitors }: Props) => {
 	const { t } = useTranslation();
+	const { tokens, mode } = useStatusPageTheme();
+	const styles = useMemo(() => editorialStyles(tokens, mode === "dark"), [tokens, mode]);
 	const [chartMode, setChartMode] = useState<"heatmap" | "histogram">("heatmap");
 
-	// Stable date across re-renders; the page polls every 10s and we don't
-	// want the dateline to jitter.
 	const todayLabel = useMemo(
 		() =>
 			new Date().toLocaleDateString(undefined, {
@@ -48,69 +47,88 @@ export const EditorialStatusPage = ({ statusPage, monitors }: Props) => {
 		: null;
 
 	return (
-		<Box className={`${PREFIX}-page`}>
+		<Box sx={styles.page}>
 			<Box
 				component="header"
-				className={`${PREFIX}-top`}
+				sx={styles.top}
 			>
-				<Box className={`${PREFIX}-brand-wrap`}>
+				<Box sx={styles.brandWrap}>
 					{logoSrc && (
 						<Box
 							component="img"
 							src={logoSrc}
 							alt={statusPage.companyName}
-							className={`${PREFIX}-logo-img`}
+							sx={styles.logoImg}
 						/>
 					)}
-					<h2 className={`${PREFIX}-brand-eyebrow`}>{statusPage.companyName}</h2>
-					<h1 className={`${PREFIX}-brand-title`}>
+					<Box
+						component="h2"
+						sx={styles.brandEyebrow}
+					>
+						{statusPage.companyName}
+					</Box>
+					<Box
+						component="h1"
+						sx={styles.brandTitle}
+					>
 						{t("pages.statusPages.editorial.reportTitle")}
-					</h1>
+					</Box>
 				</Box>
 			</Box>
 
-			<p className={`${PREFIX}-status-line ${PREFIX}-tone-${overall.tone}`}>
-				<span className={`${PREFIX}-status-dot`} />
+			<Box
+				component="p"
+				sx={styles.statusLine}
+			>
+				<Box
+					component="span"
+					sx={styles.statusDot(overall.tone)}
+				/>
 				{overall.message}
-			</p>
-			<p className={`${PREFIX}-dateline`}>
+			</Box>
+			<Box
+				component="p"
+				sx={styles.dateline}
+			>
 				{todayLabel} ·{" "}
 				{t("pages.statusPages.statusBar.monitoringSummary", {
 					count: monitors.length,
 				})}
-			</p>
+			</Box>
 
 			{statusPage.showCharts && (
-				<Box className={`${PREFIX}-chart-switch-wrap`}>
+				<Box sx={styles.chartSwitchWrap}>
 					<Box
-						className={`${PREFIX}-chart-switch`}
+						sx={styles.chartSwitch}
 						role="radiogroup"
 					>
-						<button
+						<Box
+							component="button"
 							type="button"
 							role="radio"
 							aria-checked={chartMode === "heatmap"}
-							className={chartMode === "heatmap" ? `${PREFIX}-active` : ""}
 							onClick={() => setChartMode("heatmap")}
+							sx={styles.chartSwitchButton(chartMode === "heatmap", true)}
 						>
 							{t("pages.statusPages.monitorsList.chartTypeHeatmap")}
-						</button>
-						<button
+						</Box>
+						<Box
+							component="button"
 							type="button"
 							role="radio"
 							aria-checked={chartMode === "histogram"}
-							className={chartMode === "histogram" ? `${PREFIX}-active` : ""}
 							onClick={() => setChartMode("histogram")}
+							sx={styles.chartSwitchButton(chartMode === "histogram", false)}
 						>
 							{t("pages.statusPages.monitorsList.chartTypeHistogram")}
-						</button>
+						</Box>
 					</Box>
 				</Box>
 			)}
 
 			<Stack
 				component="ul"
-				className={`${PREFIX}-monitor-list`}
+				sx={styles.monitorList}
 			>
 				{monitors.map((monitor) => {
 					const isHardware = monitor.type === "hardware";
@@ -122,48 +140,65 @@ export const EditorialStatusPage = ({ statusPage, monitors }: Props) => {
 						<Box
 							component="li"
 							key={monitor.id}
-							className={`${PREFIX}-card ${PREFIX}-card-${monitor.status}`}
+							sx={styles.card}
 						>
-							<Box className={`${PREFIX}-card-row`}>
-								<Box className={`${PREFIX}-card-left`}>
-									<Box className={`${PREFIX}-monitor-name`}>{monitor.name}</Box>
-									<Box className={`${PREFIX}-monitor-meta`}>
-										<span
-											className={`${PREFIX}-pill ${PREFIX}-pill-${isHardware ? "hardware" : "default"}`}
+							<Box sx={styles.cardRow}>
+								<Box sx={styles.cardLeft}>
+									<Box sx={styles.monitorName}>{monitor.name}</Box>
+									<Box sx={styles.monitorMeta}>
+										<Box
+											component="span"
+											sx={isHardware ? styles.pillHardware : styles.pill}
 										>
 											{getMonitorTypeLabel(monitor.type, t)}
-										</span>
+										</Box>
 										{monitor.url && (
-											<span
-												className={`${PREFIX}-monitor-url`}
+											<Box
+												component="span"
+												sx={styles.monitorUrl}
 												title={monitor.url}
 											>
 												{monitor.url}
-											</span>
+											</Box>
 										)}
 									</Box>
 								</Box>
-								<span className={`${PREFIX}-badge ${PREFIX}-badge-${badgeTone}`}>
+								<Box
+									component="span"
+									sx={styles.badge(badgeTone)}
+								>
 									{t(statusBadgeKey[monitor.status])}
-								</span>
+								</Box>
 							</Box>
 
 							{showInfra && (
 								<ThemedInfrastructure
 									monitor={monitor}
-									classPrefix={PREFIX}
+									sxApi={{
+										containerSx: styles.infra,
+										emptySx: styles.infraEmpty,
+										gaugeSx: styles.gauge,
+										gaugeLabelSx: styles.gaugeLabel,
+										gaugeValueSx: styles.gaugeValue,
+										gaugeBarSx: styles.gaugeBar,
+										gaugeFillSx: styles.gaugeFill,
+										gaugeSubSx: styles.gaugeSub,
+									}}
 								/>
 							)}
 							{showChart &&
 								(chartMode === "heatmap" ? (
 									<ThemedHeatmap
 										checks={monitor.recentChecks ?? []}
-										classPrefix={PREFIX}
+										containerSx={styles.heatmap}
+										cellSx={styles.heatmapCell}
 									/>
 								) : (
 									<ThemedHistogram
 										checks={monitor.recentChecks ?? []}
-										classPrefix={PREFIX}
+										containerSx={styles.histogram}
+										barSx={styles.bar}
+										statsSx={styles.chartStats}
 									/>
 								))}
 						</Box>
@@ -173,7 +208,7 @@ export const EditorialStatusPage = ({ statusPage, monitors }: Props) => {
 
 			<Box
 				component="footer"
-				className={`${PREFIX}-footer`}
+				sx={styles.footer}
 			>
 				{t("pages.statusPages.footer.poweredBy")}{" "}
 				<a

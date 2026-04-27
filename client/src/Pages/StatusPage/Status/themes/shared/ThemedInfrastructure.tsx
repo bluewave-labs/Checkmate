@@ -6,7 +6,7 @@ import type { Monitor } from "@/Types/Monitor";
 
 export type GaugeFillLevel = "ok" | "warm" | "hot";
 
-interface InfraSx {
+export interface InfraSx {
 	containerSx: SxProps<Theme>;
 	emptySx: SxProps<Theme>;
 	gaugeSx: SxProps<Theme>;
@@ -19,10 +19,7 @@ interface InfraSx {
 
 interface Props {
 	monitor: Monitor & { checks?: Monitor["recentChecks"] };
-	/** sx-based API — preferred. */
-	sxApi?: InfraSx;
-	/** Legacy className-based API. Will be removed once all themes move to sx. */
-	classPrefix?: string;
+	sxApi: InfraSx;
 }
 
 interface Gauge {
@@ -37,19 +34,13 @@ const PCT = 100;
 const heatLevel = (value: number): GaugeFillLevel =>
 	value > 85 ? "hot" : value > 70 ? "warm" : "ok";
 
-export const ThemedInfrastructure = ({ monitor, sxApi, classPrefix }: Props) => {
+export const ThemedInfrastructure = ({ monitor, sxApi }: Props) => {
 	const { t } = useTranslation();
-	const useSxApi = Boolean(sxApi);
 	const latest = monitor.recentChecks?.[0] ?? monitor.checks?.[0];
 
-	const renderEmpty = () => {
-		const message = t("pages.statusPages.monitorsList.noData");
-		return useSxApi ? (
-			<Box sx={sxApi!.emptySx}>{message}</Box>
-		) : (
-			<Box className={`${classPrefix}-infra-empty`}>{message}</Box>
-		);
-	};
+	const renderEmpty = () => (
+		<Box sx={sxApi.emptySx}>{t("pages.statusPages.monitorsList.noData")}</Box>
+	);
 
 	if (!latest) return renderEmpty();
 
@@ -94,49 +85,21 @@ export const ThemedInfrastructure = ({ monitor, sxApi, classPrefix }: Props) => 
 
 	if (gauges.length === 0) return renderEmpty();
 
-	if (useSxApi) {
-		const s = sxApi!;
-		return (
-			<Box sx={s.containerSx}>
-				{gauges.map((g) => (
-					<Box
-						key={g.key}
-						sx={s.gaugeSx}
-					>
-						<Box sx={s.gaugeLabelSx}>{g.label}</Box>
-						<Box sx={s.gaugeValueSx}>{g.value.toFixed(0)}%</Box>
-						<Box sx={s.gaugeBarSx}>
-							<Box sx={s.gaugeFillSx(heatLevel(g.value), Math.min(100, g.value))} />
-						</Box>
-						<Box sx={s.gaugeSubSx}>{g.sub}</Box>
-					</Box>
-				))}
-			</Box>
-		);
-	}
-
 	return (
-		<Box className={`${classPrefix}-infra`}>
-			{gauges.map((g) => {
-				const level = heatLevel(g.value);
-				const heatClass = level === "ok" ? "" : `${classPrefix}-${level}`;
-				return (
-					<Box
-						key={g.key}
-						className={`${classPrefix}-gauge`}
-					>
-						<Box className={`${classPrefix}-gauge-label`}>{g.label}</Box>
-						<Box className={`${classPrefix}-gauge-value`}>{g.value.toFixed(0)}%</Box>
-						<Box className={`${classPrefix}-gauge-bar`}>
-							<Box
-								className={`${classPrefix}-gauge-fill ${heatClass}`}
-								style={{ width: `${Math.min(100, g.value)}%` }}
-							/>
-						</Box>
-						<Box className={`${classPrefix}-gauge-sub`}>{g.sub}</Box>
+		<Box sx={sxApi.containerSx}>
+			{gauges.map((g) => (
+				<Box
+					key={g.key}
+					sx={sxApi.gaugeSx}
+				>
+					<Box sx={sxApi.gaugeLabelSx}>{g.label}</Box>
+					<Box sx={sxApi.gaugeValueSx}>{g.value.toFixed(0)}%</Box>
+					<Box sx={sxApi.gaugeBarSx}>
+						<Box sx={sxApi.gaugeFillSx(heatLevel(g.value), Math.min(100, g.value))} />
 					</Box>
-				);
-			})}
+					<Box sx={sxApi.gaugeSubSx}>{g.sub}</Box>
+				</Box>
+			))}
 		</Box>
 	);
 };
