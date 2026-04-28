@@ -542,7 +542,7 @@
 						"ping": "",
 						"port": "",
 						"docker": "",
-						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type. Some games require enabling server queries in their config file — check your game server's documentation. See the <gamedigLink>supported games list</gamedigLink> for protocol details.",
+						"game": "Anna IP-osoite tai isäntänimi ja portin numero pingausta varten (esim. 192.168.1.100 tai example.com) ja valitse pelityyppi. Jotkin pelit vaativat palvelinkyselyiden käyttöönoton asetustiedostossaan — tarkista pelipalvelimesi dokumentaatio. Katso protokollatiedot <gamedigLink>tuettujen pelien luettelosta</gamedigLink>.",
 						"pagespeed": "Seuraa sivun latausnopeutta, Core Web Vitals -arvoja ja optimointipisteitä verkkosivustollasi.",
 						"grpc": "Syötä gRPC-palvelimen isäntänimi ja portti, määritä halutessasi palvelun nimi terveystarkistusta varten ja lisää näyttönimi.",
 						"websocket": "Syötä monitoroitava WebSocket URL (esim. wss://example.com/socket) ja lisää näyttönimi.",

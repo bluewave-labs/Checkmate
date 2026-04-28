@@ -542,7 +542,7 @@
 						"ping": "pingするIPアドレスまたはホスト名を入力（例: 192.168.1.100 または example.com）し、ダッシュボードに表示される明確な表示名を追加。",
 						"port": "サーバーのURLまたはIP、ポート番号、ダッシュボードに表示される明確な表示名を入力。",
 						"docker": "コンテナのDocker IDを入力。Docker IDは64文字のフルDocker IDである必要があります。docker inspect <short_id>を実行してフルコンテナIDを取得できます。",
-						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type. Some games require enabling server queries in their config file — check your game server's documentation. See the <gamedigLink>supported games list</gamedigLink> for protocol details.",
+						"game": "Ping を実行する IP アドレスまたはホスト名とポート番号（例: 192.168.1.100 や example.com）を入力し、ゲームタイプを選択してください。一部のゲームでは設定ファイルでサーバークエリを有効にする必要があります — ゲームサーバーのドキュメントを確認してください。プロトコルの詳細は<gamedigLink>サポートされているゲームの一覧</gamedigLink>をご覧ください。",
 						"pagespeed": "Webサイトのページ読み込みパフォーマンス、Core Web Vitals、最適化スコアを追跡します。",
 						"grpc": "gRPCサーバーのホスト名とポートを入力し、必要に応じてヘルスチェック用のサービス名を指定し、表示名を追加してください。",
 						"websocket": "監視するWebSocket URLを入力し（例: wss://example.com/socket）、表示名を追加してください。",
