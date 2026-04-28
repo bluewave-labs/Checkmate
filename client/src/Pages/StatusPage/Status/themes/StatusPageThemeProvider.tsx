@@ -13,7 +13,6 @@ import {
 	type StatusPageThemeMode,
 } from "@/Types/StatusPage";
 import { themeTokens, toCssVars, type StatusPageThemeTokens } from "./tokens";
-import "./theme-overrides.css";
 
 type ResolvedMode = "light" | "dark";
 
