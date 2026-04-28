@@ -57,7 +57,7 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		address: z.union([z.string(), z.literal("")]).optional(),
 		homeserverUrl: z.url({ message: "Please enter a valid Homeserver URL" }),
 		roomId: z.string().min(1, "Room ID is required"),
-		accessToken: z.string().min(1, "Access Token is required"),
+		accessToken: z.string().min(1, "Access Token is required").optional(),
 	}),
 	// Teams notification
 	z.object({
@@ -70,21 +70,21 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		notificationName: z.string().min(1, "Notification name is required"),
 		type: z.literal("telegram"),
 		address: z.string().min(1, "Chat ID is required"),
-		accessToken: z.string().min(1, "Bot token is required"),
+		accessToken: z.string().min(1, "Bot token is required").optional(),
 	}),
 	// Pushover notification
 	z.object({
 		notificationName: z.string().min(1, "Notification name is required"),
 		type: z.literal("pushover"),
 		address: z.string().min(1, "User key is required"),
-		accessToken: z.string().min(1, "App token is required"),
+		accessToken: z.string().min(1, "App token is required").optional(),
 	}),
 	// Twilio SMS notification
 	z.object({
 		notificationName: z.string().min(1, "Notification name is required"),
 		type: z.literal("twilio"),
-		accountSid: z.string().min(1, "Account SID is required"),
-		accessToken: z.string().min(1, "Auth token is required"),
+		accountSid: z.string().min(1, "Account SID is required").optional(),
+		accessToken: z.string().min(1, "Auth token is required").optional(),
 		phone: z.string().min(1, "Recipient phone number is required"),
 		twilioPhoneNumber: z.string().min(1, "Twilio phone number is required"),
 	}),
