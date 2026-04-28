@@ -542,7 +542,7 @@
 						"ping": "输入要 ping 的 IP 地址或主机名（例如.. 192.168.1.100 或 example.com），并添加显示在仪表板上的清晰显示名称。",
 						"port": "输入服务器的 URL 或 IP、端口号和仪表板上显示的清晰显示名称。",
 						"docker": "码输入 Docker 容器名称或 ID。您可以使用容器名称（例如.. my-app）或容器 ID（完整的 64 字符 ID 或短 ID）。",
-						"game": "输入要 ping 的 IP 地址或主机名和端口号（例如.. 192.168.1.100 或 example.com）并选择游戏类型。",
+						"game": "输入要 ping 的 IP 地址或主机名和端口号（例如.. 192.168.1.100 或 example.com）并选择游戏类型。某些游戏需要在配置文件中启用服务器查询 — 请查阅你的游戏服务器文档。详见<gamedigLink>支持的游戏列表</gamedigLink>了解协议细节。",
 						"pagespeed": "跟踪网站的页面加载性能、Core Web Vitals 和优化评分。",
 						"grpc": "输入 gRPC 服务器的主机名和端口，可选指定健康检查的服务名称，并添加显示名称。",
 						"websocket": "输入要监控的 WebSocket URL（例如 wss://example.com/socket），并添加显示名称。",

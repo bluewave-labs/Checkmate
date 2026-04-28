@@ -542,7 +542,7 @@
 						"ping": "",
 						"port": "",
 						"docker": "",
-						"game": "",
+						"game": "Nhập địa chỉ IP hoặc tên máy chủ và số cổng để ping (ví dụ: 192.168.1.100 hoặc example.com) và chọn loại trò chơi. Một số trò chơi yêu cầu bật truy vấn máy chủ trong tệp cấu hình của chúng — hãy xem tài liệu của máy chủ trò chơi. Xem <gamedigLink>danh sách các trò chơi được hỗ trợ</gamedigLink> để biết chi tiết giao thức.",
 						"pagespeed": "Theo dõi hiệu suất tải trang, Core Web Vitals và điểm tối ưu hóa cho trang web của bạn.",
 						"grpc": "Nhập tên máy chủ và cổng của máy chủ gRPC, tùy chọn chỉ định tên dịch vụ cho kiểm tra sức khỏe và thêm tên hiển thị.",
 						"websocket": "Nhập URL WebSocket cần giám sát (vd: wss://example.com/socket) và thêm tên hiển thị.",

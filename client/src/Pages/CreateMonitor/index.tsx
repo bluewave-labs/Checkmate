@@ -359,7 +359,20 @@ const CreateMonitorPage = () => {
 
 			<ConfigBox
 				title={t("pages.createMonitor.form.general.title")}
-				subtitle={t(`pages.createMonitor.form.general.description.${watchedType}`)}
+				subtitle={
+					<Trans
+						i18nKey={`pages.createMonitor.form.general.description.${watchedType}`}
+						components={{
+							gamedigLink: (
+								<Link
+									href="https://github.com/gamedig/node-gamedig/blob/master/GAMES_LIST.md"
+									target="_blank"
+									rel="noopener noreferrer"
+								/>
+							),
+						}}
+					/>
+				}
 				rightContent={
 					<Stack spacing={theme.spacing(LAYOUT.MD)}>
 						{/* URL/Host/Container field - not shown for hardware */}
