@@ -105,7 +105,17 @@ export const StatusPageThemeProvider = ({
 		resolvedThemeMode === "auto" ? systemMode : resolvedThemeMode;
 	const tokens = themeTokens[resolvedTheme][resolvedMode];
 
-	const style = useMemo(() => toCssVars(tokens) as React.CSSProperties, [tokens]);
+	const style = useMemo<React.CSSProperties>(
+		() =>
+			transparent
+				? (toCssVars(tokens) as React.CSSProperties)
+				: {
+						...(toCssVars(tokens) as React.CSSProperties),
+						background: tokens.bg,
+						minHeight: "100vh",
+					},
+		[tokens, transparent]
+	);
 
 	const value = useMemo(
 		() => ({ theme: resolvedTheme, mode: resolvedMode, tokens }),
@@ -118,15 +128,7 @@ export const StatusPageThemeProvider = ({
 				data-status-theme={resolvedTheme}
 				data-status-mode={resolvedMode}
 				data-status-transparent={transparent ? "" : undefined}
-				style={
-					transparent
-						? (style as React.CSSProperties)
-						: {
-								...style,
-								background: tokens.bg,
-								minHeight: "100vh",
-							}
-				}
+				style={style}
 			>
 				{children}
 			</div>

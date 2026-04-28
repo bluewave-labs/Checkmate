@@ -29,6 +29,8 @@ export const STATUS_PAGE_THEME_MODES = ["auto", "light", "dark"] as const;
 export type StatusPageThemeMode = (typeof STATUS_PAGE_THEME_MODES)[number];
 export const DEFAULT_STATUS_PAGE_THEME_MODE: StatusPageThemeMode = "auto";
 
+export const PUBLIC_STATUS_PAGE_PREFIX = "/status/public";
+
 export interface StatusPage {
 	id: string;
 	userId: string;

@@ -11,6 +11,7 @@ import { useGet } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
 import {
 	DEFAULT_STATUS_PAGE_THEME,
+	PUBLIC_STATUS_PAGE_PREFIX,
 	type StatusPage,
 	type StatusPageResponse,
 	type StatusPageTheme,
@@ -44,7 +45,7 @@ const StatusPageView = () => {
 	const { url } = useParams();
 	const isAdmin = useIsAdmin();
 	const location = useLocation();
-	const isPublic = location.pathname.startsWith("/status/public");
+	const isPublic = location.pathname.startsWith(PUBLIC_STATUS_PAGE_PREFIX);
 
 	const apiUrl = url ? `/status-page/${url}?type=uptime&type=infrastructure` : null;
 
@@ -88,9 +89,7 @@ const StatusPageView = () => {
 		);
 	}
 
-	const ThemedRenderer =
-		THEMED_RENDERERS[statusPage.theme ?? DEFAULT_STATUS_PAGE_THEME] ??
-		THEMED_RENDERERS[DEFAULT_STATUS_PAGE_THEME];
+	const ThemedRenderer = THEMED_RENDERERS[statusPage.theme ?? DEFAULT_STATUS_PAGE_THEME];
 	const themedRenderer = (
 		<ThemedRenderer
 			statusPage={statusPage}
@@ -98,7 +97,6 @@ const StatusPageView = () => {
 		/>
 	);
 
-	// Public route: render directly on the viewport, themed background covers everything.
 	if (isPublic) {
 		return (
 			<StatusPageThemeProvider
@@ -111,8 +109,7 @@ const StatusPageView = () => {
 		);
 	}
 
-	// Admin preview: wrap in a mock browser frame inside the admin shell.
-	const publicUrl = `${window.location.origin}/status/public/${statusPage.url}`;
+	const publicUrl = `${window.location.origin}${PUBLIC_STATUS_PAGE_PREFIX}/${statusPage.url}`;
 	return (
 		<BasePage
 			loading={isLoading}
