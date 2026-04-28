@@ -542,7 +542,7 @@
 						"ping": "Insira o endereço IP ou nome de domínio para ping (ex. 192.168.1.100 ou exemplo.com.br) e adicione uma descrição que aparecerá na dashboard.",
 						"port": "Insira a URL ou o IP do servidor, aporta e uma descrição que aparecerá na dashboard.",
 						"docker": "Insira o Docker Id do seu container. Docker Ids devem ser todos os 64 caracteres. Você pode executar docker inspect <short_id> para descobrir o Id completo.",
-						"game": "",
+						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type. Some games require enabling server queries in their config file — check your game server's documentation. See the <gamedigLink>supported games list</gamedigLink> for protocol details.",
 						"pagespeed": "Acompanhe o desempenho de carregamento da página, Core Web Vitals e pontuações de otimização do seu site.",
 						"grpc": "Digite o hostname e a porta do servidor gRPC, opcionalmente especifique um nome de serviço para a verificação de saúde e adicione um nome de exibição.",
 						"websocket": "Digite a URL do WebSocket para monitorar (ex.: wss://exemplo.com/socket) e adicione um nome de exibição.",

@@ -53,7 +53,7 @@ export const ConfigBox = ({
 	rightContent,
 }: {
 	title: string;
-	subtitle: string;
+	subtitle: React.ReactNode;
 	leftContent?: React.ReactNode;
 	rightContent: React.ReactNode;
 }) => {

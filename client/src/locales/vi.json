@@ -542,7 +542,7 @@
 						"ping": "",
 						"port": "",
 						"docker": "",
-						"game": "",
+						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type. Some games require enabling server queries in their config file — check your game server's documentation. See the <gamedigLink>supported games list</gamedigLink> for protocol details.",
 						"pagespeed": "Theo dõi hiệu suất tải trang, Core Web Vitals và điểm tối ưu hóa cho trang web của bạn.",
 						"grpc": "Nhập tên máy chủ và cổng của máy chủ gRPC, tùy chọn chỉ định tên dịch vụ cho kiểm tra sức khỏe và thêm tên hiển thị.",
 						"websocket": "Nhập URL WebSocket cần giám sát (vd: wss://example.com/socket) và thêm tên hiển thị.",
