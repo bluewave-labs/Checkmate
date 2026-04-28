@@ -536,6 +536,9 @@
 							"placeholder": "wss://example.com/socket"
 						}
 					},
+					"url": {
+						"alert": "The dashboard will now pull its data from the updated URL."
+					},
 					"title": "General settings",
 					"description": {
 						"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
