@@ -255,20 +255,6 @@ docker rm uptime_database_mongo
 
 Start with [good first issues](https://github.com/bluewave-labs/checkmate/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 
-### Improve the documentation?
-
-Docs live in [checkmate-documentation](https://github.com/bluewave-labs/checkmate-documentation). You can fix typos, add guides, or explain features better.
-
-### Help with translations?
-
-We use [PoEditor](https://poeditor.com) for translations. You can:
-
-- [Sign up and join your language team](https://poeditor.com/join/project/lRUoGZFCsJ).
-- Translate UI strings.
-- Ask questions on Discord in the relevant #translations channel.
-
-Make sure all new UI strings in code use `t('key')`.
-
 ### Submit a pull request?
 
 Follow the [pull request checklist](#pull-request-checklist). Your PR should:
