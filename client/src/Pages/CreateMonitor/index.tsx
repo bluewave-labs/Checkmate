@@ -381,13 +381,11 @@ const CreateMonitorPage = () => {
 								)}
 							/>
 						)}
-						{isEditMode &&
-							existingMonitor &&
-							watchedUrl !== existingMonitor.url && (
-								<Alert severity="warning">
-									{t("pages.createMonitor.form.general.url.alert")}
-								</Alert>
-							)}
+						{isEditMode && existingMonitor && watchedUrl !== existingMonitor.url && (
+							<Alert severity="warning">
+								{t("pages.createMonitor.form.general.url.alert")}
+							</Alert>
+						)}
 
 						{/* Port field - only for port and game types */}
 						{generalSettingsConfig.showPort && (
