@@ -269,7 +269,7 @@ Follow the [pull request checklist](#pull-request-checklist). Your PR should:
 
 ## Code guidelines
 
-- Use ESLint and Prettier (`npm run lint`).
+- Use ESLint and Prettier. Run `npm run lint` and `npm run format-check` in both `client` and `server`. If `format-check` reports issues, fix them with `npm run format` before committing.
 - Follow naming conventions: `camelCase` for variables, `PascalCase` for components, `UPPER_CASE` for constants.
 - No hard-coded strings — use `t('your.key')` for everything visible.
 - Use the shared theme and components. No magic numbers or hardcoded styles.
@@ -290,7 +290,7 @@ Before submitting your pull request, please confirm the following:
 - You used the shared theme for any styling — no magic numbers or inline styles.
 - The pull request addresses only one issue or topic.
 - You added screenshots or a video for any UI-related changes.
-- Your code passes linting and has no TypeScript errors.
+- Your code passes `npm run lint`, `npm run format-check`, and `npm run build` in both `client` and `server` with no errors.
 
 If one or more of these are missing, we may ask you to update your pull request before we can merge it.
 
