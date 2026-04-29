@@ -510,7 +510,7 @@ export const SettingsPage = () => {
 								</Box>
 								{globalpingTestStatus === "ok" && globalpingQuota && (
 									<Typography
-										variant="body2"
+										variant="body1"
 										color={theme.palette.success.main}
 									>
 										{globalpingQuota.authenticated
@@ -529,7 +529,7 @@ export const SettingsPage = () => {
 								)}
 								{globalpingTestStatus === "invalid" && (
 									<Typography
-										variant="body2"
+										variant="body1"
 										color={theme.palette.error.main}
 									>
 										{t("pages.settings.form.distributedMonitoring.status.invalid")}
