@@ -127,9 +127,6 @@ export class EmailService implements IEmailService {
 			systemEmailRejectUnauthorized,
 		} = config;
 
-		const trimmedDisplayName = systemEmailDisplayName?.trim();
-		const from = trimmedDisplayName && systemEmailAddress ? { name: trimmedDisplayName, address: systemEmailAddress } : systemEmailAddress;
-
 		const emailConfig = {
 			host: systemEmailHost,
 			port: Number(systemEmailPort),
@@ -141,7 +138,6 @@ export class EmailService implements IEmailService {
 			name: systemEmailConnectionHost || "localhost",
 			connectionTimeout: 5000,
 			pool: systemEmailPool,
-			from,
 			tls: {
 				rejectUnauthorized: systemEmailRejectUnauthorized,
 				ignoreTLS: systemEmailIgnoreTLS,
@@ -163,9 +159,13 @@ export class EmailService implements IEmailService {
 			return false;
 		}
 
+		const trimmedDisplayName = systemEmailDisplayName?.trim();
+		const from = trimmedDisplayName && systemEmailAddress ? { name: trimmedDisplayName, address: systemEmailAddress } : systemEmailAddress;
+
 		try {
 			const info = await this.transporter.sendMail({
 				to: to,
+				from: from,
 				subject: subject,
 				html: html,
 			});
