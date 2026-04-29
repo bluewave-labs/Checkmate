@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/Types/state";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { getIncidentsDuration } from "@/Pages/Incidents/utils";
+import { theme } from "@/Utils/Theme/Theme";
 
 interface CardDetailsProps {
 	incident: Incident | null;
@@ -20,15 +21,19 @@ interface CardDetailsProps {
 	sx?: object;
 }
 
-const SectionHeading = ({ children }: { children: React.ReactNode }) => (
-	<Typography
-		component="h2"
-		variant="eyebrow"
-		color="text.secondary"
-	>
-		{children}
-	</Typography>
-);
+const SectionHeading = ({ children }: { children: React.ReactNode }) => {
+	const theme = useTheme();
+
+	return (
+		<Typography
+			component="h2"
+			variant="eyebrow"
+			color={theme.palette.text.secondary}
+		>
+			{children}
+		</Typography>
+	);
+};
 
 const Cell = ({ children }: { children: React.ReactNode }) => (
 	<Typography variant="body1">{children}</Typography>

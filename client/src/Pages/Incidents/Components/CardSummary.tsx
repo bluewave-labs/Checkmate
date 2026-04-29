@@ -68,7 +68,7 @@ export const SummaryCard = ({
 				<Typography
 					component="h2"
 					variant="eyebrow"
-					color="text.secondary"
+					color={theme.palette.text.secondary}
 				>
 					{title}
 				</Typography>

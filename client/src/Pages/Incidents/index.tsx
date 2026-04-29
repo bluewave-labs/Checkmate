@@ -188,8 +188,8 @@ const IncidentsPage = () => {
 				<>
 					<Typography
 						variant="eyebrow"
-						color="text.secondary"
-						sx={{ mb: theme.spacing(LAYOUT.XS) }}
+						color={theme.palette.text.secondary}
+						mb={theme.spacing(LAYOUT.XS)}
 					>
 						{t("pages.incidents.table.activeIncidents")}
 					</Typography>
@@ -211,8 +211,8 @@ const IncidentsPage = () => {
 
 			<Typography
 				variant="eyebrow"
-				color="text.secondary"
-				sx={{ mb: theme.spacing(LAYOUT.XS) }}
+				color={theme.palette.text.secondary}
+				mb={theme.spacing(LAYOUT.XS)}
 			>
 				{t("pages.incidents.table.resolvedIncidents")}
 			</Typography>
