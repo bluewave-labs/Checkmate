@@ -34,6 +34,7 @@ class SettingsController implements ISettingsController {
 		const returnSettings: Record<string, unknown | null> = {
 			pagespeedKeySet: false,
 			emailPasswordSet: false,
+			globalpingTokenSet: false,
 			settings: null,
 		};
 
@@ -44,6 +45,10 @@ class SettingsController implements ISettingsController {
 		if (typeof sanitizedSettings.systemEmailPassword !== "undefined") {
 			returnSettings.emailPasswordSet = true;
 			delete sanitizedSettings.systemEmailPassword;
+		}
+		if (typeof sanitizedSettings.globalpingApiToken !== "undefined") {
+			returnSettings.globalpingTokenSet = true;
+			delete sanitizedSettings.globalpingApiToken;
 		}
 		returnSettings.settings = sanitizedSettings;
 		return returnSettings;
