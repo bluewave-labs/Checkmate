@@ -1126,7 +1126,7 @@
 				},
 				"distributedMonitoring": {
 					"title": "Distributed monitoring (GlobalPing)",
-					"description": "Configure a GlobalPing API token to lift the per-instance quota from 50 to 500 measurements per hour for distributed geo-checks.",
+					"description": "GlobalPing provides access to thousands of community-hosted probes to run distributed network tests. Anonymous users are capped at 250 measurements per hour. Save a token below to double the limit to 500 per hour.",
 					"getTokenLink": "Get an API token at globalping.io",
 					"option": {
 						"apiToken": {
@@ -1148,7 +1148,8 @@
 						"invalid": "Could not verify the token. Check the value and try again.",
 						"verified": "Connection verified.",
 						"saved": "Token saved."
-					}
+					},
+					"docsLink": "Read the documentation"
 				},
 				"url": {
 					"title": "Monitorin IP/URL tilasivulla",

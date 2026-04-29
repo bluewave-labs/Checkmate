@@ -467,13 +467,25 @@ export const SettingsPage = () => {
 						subtitle={t("pages.settings.form.distributedMonitoring.description")}
 						rightContent={
 							<Stack gap={theme.spacing(LAYOUT.MD)}>
-								<Link
-									href="https://dash.globalping.io/"
-									target="_blank"
-									rel="noopener noreferrer"
+								<Stack
+									direction="row"
+									gap={theme.spacing(LAYOUT.MD)}
 								>
-									{t("pages.settings.form.distributedMonitoring.getTokenLink")}
-								</Link>
+									<Link
+										href="https://dash.globalping.io/"
+										target="_blank"
+										rel="noopener noreferrer"
+									>
+										{t("pages.settings.form.distributedMonitoring.getTokenLink")}
+									</Link>
+									<Link
+										href="https://globalping.io/docs/api"
+										target="_blank"
+										rel="noopener noreferrer"
+									>
+										{t("pages.settings.form.distributedMonitoring.docsLink")}
+									</Link>
+								</Stack>
 								{(isGlobalpingTokenSet === false ||
 									globalpingTokenHasBeenReset === true) && (
 									<Controller
