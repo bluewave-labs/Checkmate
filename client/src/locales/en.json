@@ -1241,7 +1241,8 @@
 					"description": "Remove all monitors from your system.",
 					"dialog": {
 						"title": "Remove all monitors?",
-						"description": "This cannot be undone."
+						"description": "This cannot be undone.",
+						"paragraph": "All check history, incidents, scheduled maintenance windows, and any status pages that referenced these monitors will be removed too. Export your monitors first to keep a backup of their data."
 					}
 				},
 				"exportMonitors": {

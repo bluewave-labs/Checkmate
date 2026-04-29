@@ -1248,7 +1248,8 @@
 					"description": "Eliminar todos los monitores del sistema.",
 					"dialog": {
 						"title": "¿Eliminar todos los monitores?",
-						"description": "Esto no se puede deshacer."
+						"description": "Esta acción no se puede deshacer.",
+						"paragraph": "También se eliminarán todo el historial de comprobaciones, los incidentes, las ventanas de mantenimiento programadas y las páginas de estado que usaban estos monitores. Exporta los monitores primero si quieres conservar una copia de seguridad de sus datos."
 					}
 				},
 				"exportMonitors": {

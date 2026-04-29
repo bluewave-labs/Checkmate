@@ -1241,7 +1241,8 @@
 					"description": "Supprimer tous les moniteurs de votre système.",
 					"dialog": {
 						"title": "Supprimer tous les moniteurs ?",
-						"description": "Cette action est irréversible."
+						"description": "Cette action est irréversible.",
+						"paragraph": "L'historique des vérifications, les incidents, les fenêtres de maintenance planifiées et les pages de statut qui utilisaient ces moniteurs seront également supprimés. Exportez d'abord les moniteurs si vous souhaitez conserver une sauvegarde de leurs données."
 					}
 				},
 				"exportMonitors": {

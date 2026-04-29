@@ -1241,7 +1241,8 @@
 					"description": "从系统中移除所有监视器。",
 					"dialog": {
 						"title": "移除所有监控？",
-						"description": "此操作无法撤销。"
+						"description": "此操作无法撤销。",
+						"paragraph": "所有检查历史、事件、计划维护窗口以及使用这些监控的状态页面也将一并被移除。如需保留数据备份，请先导出监控。"
 					}
 				},
 				"exportMonitors": {

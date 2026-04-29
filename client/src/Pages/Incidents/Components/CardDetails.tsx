@@ -13,7 +13,6 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/Types/state";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { getIncidentsDuration } from "@/Pages/Incidents/utils";
-import { theme } from "@/Utils/Theme/Theme";
 
 interface CardDetailsProps {
 	incident: Incident | null;

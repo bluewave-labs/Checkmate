@@ -1241,7 +1241,8 @@
 					"description": "Sistemdeki tüm monitörleri kaldır.",
 					"dialog": {
 						"title": "Tüm monitörler kaldırılsın mı?",
-						"description": "Bu işlem geri alınamaz."
+						"description": "Bu işlem geri alınamaz.",
+						"paragraph": "Tüm kontrol geçmişi, olaylar, planlanmış bakım pencereleri ve bu monitörleri kullanan durum sayfaları da kaldırılacaktır. Verilerin yedeğini saklamak istiyorsanız, önce monitörleri dışa aktarın."
 					}
 				},
 				"exportMonitors": {
