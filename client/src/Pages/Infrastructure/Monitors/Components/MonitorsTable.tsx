@@ -81,14 +81,6 @@ export const InfraMonitorsTable = ({
 	const getActions = (monitor: Monitor): ActionMenuItem[] => {
 		return [
 			{
-				id: 1,
-				label: t("pages.common.monitors.actions.openSite"),
-				action: () => {
-					window.open(monitor.url, "_blank", "noreferrer");
-				},
-				closeMenu: true,
-			},
-			{
 				id: 2,
 				label: t("pages.common.monitors.actions.details"),
 				action: () => {

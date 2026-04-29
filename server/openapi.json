@@ -597,8 +597,79 @@
 						"schema": {
 							"type": "integer",
 							"minimum": 1,
-							"maximum": 50,
-							"default": 10
+							"maximum": 100
+						}
+					},
+					{
+						"name": "page",
+						"in": "query",
+						"description": "Zero-based page index for pagination",
+						"schema": {
+							"type": "integer",
+							"minimum": 0
+						}
+					},
+					{
+						"name": "rowsPerPage",
+						"in": "query",
+						"description": "Number of monitors per page",
+						"schema": {
+							"type": "integer",
+							"minimum": 1,
+							"maximum": 100
+						}
+					},
+					{
+						"name": "filter",
+						"in": "query",
+						"description": "Search filter value",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "field",
+						"in": "query",
+						"description": "Field to sort by",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "order",
+						"in": "query",
+						"description": "Sort order",
+						"schema": {
+							"type": "string",
+							"enum": ["asc", "desc"]
+						}
+					},
+					{
+						"name": "type",
+						"in": "query",
+						"description": "Filter by monitor type",
+						"schema": {
+							"oneOf": [
+								{
+									"type": "string",
+									"enum": ["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"]
+								},
+								{
+									"type": "array",
+									"items": {
+										"type": "string",
+										"enum": ["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"]
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "explain",
+						"in": "query",
+						"description": "Include MongoDB query explain output (debug)",
+						"schema": {
+							"type": "boolean"
 						}
 					}
 				],
@@ -2807,6 +2878,12 @@
 									"url": {
 										"type": "string",
 										"description": "Custom URL for the status page"
+									},
+									"theme": {
+										"$ref": "#/components/schemas/StatusPageTheme"
+									},
+									"themeMode": {
+										"$ref": "#/components/schemas/StatusPageThemeMode"
 									}
 								}
 							}
@@ -2859,6 +2936,12 @@
 									"url": {
 										"type": "string",
 										"description": "Custom URL for the status page"
+									},
+									"theme": {
+										"$ref": "#/components/schemas/StatusPageTheme"
+									},
+									"themeMode": {
+										"$ref": "#/components/schemas/StatusPageThemeMode"
 									}
 								}
 							}
@@ -3339,6 +3422,18 @@
 			}
 		},
 		"schemas": {
+			"StatusPageTheme": {
+				"type": "string",
+				"enum": ["refined", "modern", "bold", "editorial"],
+				"default": "refined",
+				"description": "Visual theme for the public status page. Defaults to 'refined'."
+			},
+			"StatusPageThemeMode": {
+				"type": "string",
+				"enum": ["auto", "light", "dark"],
+				"default": "auto",
+				"description": "Forces a light/dark mode on the public page. 'auto' follows the visitor's OS preference. Defaults to 'auto'."
+			},
 			"SuccessResponse": {
 				"type": "object",
 				"required": ["success", "msg"],

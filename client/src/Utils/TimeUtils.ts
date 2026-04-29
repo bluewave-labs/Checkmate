@@ -19,8 +19,11 @@ export const formatDateWithTz = (timestamp: string, format: string, timezone: st
 	if (!timestamp) {
 		return "Unknown time";
 	}
-	const formattedDate = dayjs(timestamp).tz(timezone).format(format);
-	return formattedDate;
+	try {
+		return dayjs(timestamp).tz(timezone).format(format);
+	} catch {
+		return dayjs(timestamp).utc().format(format);
+	}
 };
 
 export const tickDateFormatLookup = (range: string) => {

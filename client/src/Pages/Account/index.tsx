@@ -25,7 +25,7 @@ const Account = ({ open = "profile" }: AccountProps) => {
 	}, [open]);
 
 	return (
-		<BasePage>
+		<BasePage headerKey="account">
 			<Tabs
 				value={activeTab}
 				onChange={(_, newValue: number) => setActiveTab(newValue)}

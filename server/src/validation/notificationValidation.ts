@@ -113,6 +113,7 @@ export const sendTestEmailBodyValidation = z.object({
 	systemEmailSecure: z.boolean().optional(),
 	systemEmailPool: z.boolean().optional(),
 	systemEmailAddress: z.string().optional(),
+	systemEmailDisplayName: z.string().optional(),
 	systemEmailPassword: z.string().optional(),
 	systemEmailUser: z.string().optional(),
 	systemEmailConnectionHost: z.union([z.string(), z.literal("")]).optional(),

@@ -5,6 +5,7 @@ export type EmailTransportConfig = Pick<
 	| "systemEmailHost"
 	| "systemEmailPort"
 	| "systemEmailAddress"
+	| "systemEmailDisplayName"
 	| "systemEmailPassword"
 	| "systemEmailUser"
 	| "systemEmailConnectionHost"

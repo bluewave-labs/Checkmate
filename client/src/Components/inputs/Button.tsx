@@ -1,19 +1,43 @@
 import Button from "@mui/material/Button";
 import type { ButtonProps } from "@mui/material/Button";
-import { useTheme } from "@mui/material/styles";
+import { useTheme, darken } from "@mui/material/styles";
+import { HOVER } from "@/Utils/Theme/constants";
+
+const PALETTE_COLORS = [
+	"primary",
+	"secondary",
+	"error",
+	"warning",
+	"info",
+	"success",
+] as const;
+type PaletteColor = (typeof PALETTE_COLORS)[number];
 
 export const ButtonInput = ({ sx, ...props }: ButtonProps) => {
 	const theme = useTheme();
-	const outlinedSx =
+
+	const hoverOverrides: Record<string, unknown> = { boxShadow: "none" };
+
+	if (props.variant === "outlined") {
+		hoverOverrides.borderColor = theme.palette.text.secondary;
+	}
+
+	if (props.variant === "contained") {
+		const colorKey = (props.color ?? "primary") as PaletteColor;
+		const palette = theme.palette[colorKey];
+		if (palette && typeof palette === "object" && "main" in palette) {
+			hoverOverrides.backgroundColor = darken(palette.main, HOVER.DARKEN);
+		}
+	}
+
+	const variantSx =
 		props.variant === "outlined"
 			? {
 					color: theme.palette.text.primary,
 					borderColor: theme.palette.divider,
-					"&:hover": {
-						borderColor: theme.palette.text.secondary,
-					},
 				}
 			: {};
+
 	return (
 		<Button
 			{...props}
@@ -26,10 +50,8 @@ export const ButtonInput = ({ sx, ...props }: ButtonProps) => {
 				textOverflow: "ellipsis",
 				overflow: "hidden",
 				boxShadow: "none",
-				"&:hover": {
-					boxShadow: "none",
-				},
-				...outlinedSx,
+				"&:hover": hoverOverrides,
+				...variantSx,
 				...sx,
 			}}
 		/>

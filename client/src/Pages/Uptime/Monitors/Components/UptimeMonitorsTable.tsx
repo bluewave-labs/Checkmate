@@ -71,16 +71,24 @@ export const MonitorTable = ({
 		refetch();
 	};
 
+	const isBrowserOpenable = (monitor: Monitor): boolean => {
+		if (monitor.type !== "http" && monitor.type !== "pagespeed") return false;
+		return /^https?:\/\//i.test(monitor.url ?? "");
+	};
+
 	const getActions = (monitor: Monitor): ActionMenuItem[] => {
-		return [
-			{
+		const actions: ActionMenuItem[] = [];
+		if (isBrowserOpenable(monitor)) {
+			actions.push({
 				id: 1,
 				label: t("pages.common.monitors.actions.openSite"),
 				action: () => {
 					window.open(monitor.url, "_blank", "noreferrer");
 				},
 				closeMenu: true,
-			},
+			});
+		}
+		actions.push(
 			{
 				id: 2,
 				label: t("pages.common.monitors.actions.details"),
@@ -130,8 +138,9 @@ export const MonitorTable = ({
 				),
 				action: () => setSelectedMonitor(monitor),
 				closeMenu: true,
-			},
-		];
+			}
+		);
+		return actions;
 	};
 
 	const getHeaders = (chartType: string) => {

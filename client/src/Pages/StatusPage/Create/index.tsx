@@ -34,6 +34,7 @@ import timezones from "@/Utils/timezones.json";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { HeaderConfigStatusControls } from "./Components/HeaderConfigStatusControls";
+import { ThemePicker } from "./Components/ThemePicker";
 
 const monitorsUrl = (() => {
 	const params = new URLSearchParams();
@@ -139,6 +140,8 @@ const CreateStatusPage = () => {
 		fd.append("showUptimePercentage", String(data.showUptimePercentage));
 		fd.append("showAdminLoginLink", String(data.showAdminLoginLink));
 		fd.append("showInfrastructure", String(data.showInfrastructure));
+		if (data.theme) fd.append("theme", data.theme);
+		if (data.themeMode) fd.append("themeMode", data.themeMode);
 
 		data.monitors.forEach((monitorId) => {
 			fd.append("monitors[]", monitorId);
@@ -436,6 +439,30 @@ const CreateStatusPage = () => {
 							)}
 						/>
 					</Stack>
+				}
+			/>
+			<ConfigBox
+				title={t("pages.statusPages.form.theme.title")}
+				subtitle={t("pages.statusPages.form.theme.description")}
+				rightContent={
+					<Controller
+						name="theme"
+						control={control}
+						render={({ field: themeField }) => (
+							<Controller
+								name="themeMode"
+								control={control}
+								render={({ field: modeField }) => (
+									<ThemePicker
+										theme={themeField.value ?? "refined"}
+										themeMode={modeField.value ?? "auto"}
+										onThemeChange={themeField.onChange}
+										onThemeModeChange={modeField.onChange}
+									/>
+								)}
+							/>
+						)}
+					/>
 				}
 			/>
 			<ConfigBox

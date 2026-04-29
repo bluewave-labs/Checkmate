@@ -59,6 +59,8 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 			showAdminLoginLink: doc.showAdminLoginLink,
 			showInfrastructure: doc.showInfrastructure,
 			customCSS: doc.customCSS,
+			theme: doc.theme,
+			themeMode: doc.themeMode,
 			createdAt: this.toDateString(doc.createdAt),
 			updatedAt: this.toDateString(doc.updatedAt),
 		};

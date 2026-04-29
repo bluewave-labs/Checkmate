@@ -12,12 +12,14 @@ Checkmate is an open-source uptime and infrastructure monitoring application. It
 ```bash
 cd client
 npm install
-npm run dev              # Start dev server at http://localhost:5173
+npm run dev -- --port 10001 --strictPort   # Local dev port is 10001 (5173 is used by another project on this machine)
 npm run build            # TypeScript check + production build
 npm run lint             # ESLint (strict, max-warnings 0)
 npm run format           # Prettier formatting
 npm run format-check     # Check formatting
 ```
+
+Server `.env` on this machine is configured with `CLIENT_HOST="http://localhost:10001"` to match the client dev port. If you change the client port, keep `.env` in sync.
 
 ### Server (Node.js/Express)
 ```bash
@@ -25,7 +27,7 @@ cd server
 npm install
 npm run dev              # Start with hot-reload (nodemon + tsx) at http://localhost:52345
 npm run build            # TypeScript compile + path alias resolution
-npm run test             # Run Mocha tests with c8 coverage
+npm run test             # Run Jest tests with coverage
 npm run lint             # ESLint v9
 npm run lint-fix         # Auto-fix lint issues
 npm run format           # Prettier formatting
@@ -157,6 +159,14 @@ When working on anything related to check scheduling, incident lifecycle, or not
 
 ## Code Conventions
 
+### Frontend conventions (mandatory for `client/src`)
+Read `docs/frontend-conventions.md` before touching any `.tsx` file. Five rules, all enforced in code review:
+1. Prefer MUI native props over `sx` (e.g. `color={…}`, `bgcolor={…}`, `mt={…}` — not `sx={{ color, bgcolor, mt }}`).
+2. Use the full theme path for colors: `color={theme.palette.text.secondary}`, never `color="text.secondary"` (greppability).
+3. No hardcoded literals — use `LAYOUT.*`, `typographyLevels.*`, `theme.shape.borderRadius`, `theme.palette.*`.
+4. Use `useTheme()` inside components; don't `import { theme } from "@/Utils/Theme/Theme"`.
+5. Pair runtime tuples with derived types: `const X = [...] as const; type X = (typeof X)[number]`.
+
 ### Internationalization
 All user-facing strings must use the translation function:
 ```javascript
@@ -174,12 +184,13 @@ t('your.key')  // Never hardcode UI strings
 - Both use ESLint with strict settings
 
 ### Testing
-Server tests use Mocha + Chai + Sinon:
+Server tests use Jest (with `--experimental-vm-modules` for ESM):
 ```bash
-npm test                    # Run all tests with coverage
-npm test -- --grep "pattern"  # Run specific tests
+npm test                              # Run all tests with coverage
+npm test -- -t "pattern"              # Run tests matching name pattern
+npm test -- path/to/file.test.ts      # Run a specific file
 ```
-Test files: `server/tests/**/*.test.js`
+Test files: `server/test/**/*.test.ts`
 
 ## Database Models
 

@@ -1,6 +1,6 @@
 import { AppError } from "@/utils/AppError.js";
 import { Request, Response, NextFunction } from "express";
-import { requireTeamId, requireUserId, requireUserEmail } from "./controllerUtils.js";
+import { requireTeamId, requireUserId, requireUserEmail, extractString } from "./controllerUtils.js";
 import { IIncidentService } from "@/service/index.js";
 import { getIncidentsByTeamQueryValidation, getIncidentSummaryQueryValidation } from "@/validation/incidentValidation.js";
 
@@ -85,12 +85,12 @@ class IncidentController implements IIncidentController {
 			const teamId = requireTeamId(req.user?.teamId);
 			const userId = requireUserId(req.user?.id);
 			const userEmail = requireUserEmail(req.user?.email);
-			const incidentId = req.params?.incidentId;
+			const incidentId = extractString(req.params?.incidentId);
 			if (!incidentId) {
 				throw new AppError({ message: "Incident ID is required", service: SERVICE_NAME, status: 400 });
 			}
 
-			const comment = Array.isArray(req.body.comment) ? req.body.comment[0] : req.body.comment;
+			const comment = extractString(req.body?.comment);
 			const resolvedIncident = await this.incidentService.resolveIncident(incidentId, userId, teamId, comment, userEmail);
 
 			return res.status(200).json({

@@ -502,9 +502,12 @@ describe("StatusService", () => {
 			expect(result.monitor.status).toBe("down");
 		});
 
-		it("during warmup (window not full) the stored status tracks the raw check", async () => {
-			// Early-return branch: monitor.status is written to reflect the current check and
-			// no status-changed notification is emitted. This is the service's documented warmup behavior.
+		it("during warmup, sub-threshold raw checks no longer flip stored status (regression: down-during-init incident not resolving)", async () => {
+			// Once the monitor has left 'initializing', the warmup branch must NOT silently
+			// flip status from raw checks. Otherwise a down check during warmup writes
+			// status='down' without statusChanged, and the next up check leaks status='up'
+			// the same way — by the time the window fills, monitor.status is already 'up'
+			// and computeReachability cannot fire down→up to resolve the incident.
 			const monitor = makeMonitor({ statusWindow: [true, true], statusWindowSize: 5, status: "up" });
 			const { service, monitorsRepository } = createService();
 			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
@@ -513,8 +516,56 @@ describe("StatusService", () => {
 			const result = await service.updateMonitorStatus(makeStatusResponse({ status: false }), makeCheck({ status: false }));
 
 			expect(result.statusChanged).toBe(false);
-			expect(result.monitor.status).toBe("down");
+			expect(result.monitor.status).toBe("up");
 			expect(monitor.statusWindow).toEqual([true, true, false]);
+		});
+
+		it("creates incident on initial down check when statusWindowSize is 1 (regression: alert on initial down skips warmup branch)", async () => {
+			// statusWindowSize=1 means the very first check skips the warmup branch entirely
+			// (1 < 1 is false) and lands in the full-window branch. The 'initializing' override
+			// must still surface statusChanged=true on a down result, otherwise computeReachability
+			// sees currentStatus='down' and refuses to transition, and no incident is opened.
+			const monitor = makeMonitor({ statusWindow: [], statusWindowSize: 1, statusWindowThreshold: 60, status: "initializing" });
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
+
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: false }), makeCheck({ status: false }));
+
+			expect(result.statusChanged).toBe(true);
+			expect(result.monitor.status).toBe("down");
+			expect(result.prevStatus).toBe("initializing");
+		});
+
+		it("creates incident on initial down check for a brand-new monitor (regression: alert on initial down)", async () => {
+			// Brand-new monitor: status='initializing', empty statusWindow. First check is down.
+			// Must surface statusChanged=true with monitor.status='down' so the helper opens an incident.
+			const monitor = makeMonitor({ statusWindow: [], statusWindowSize: 5, status: "initializing" });
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
+
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: false }), makeCheck({ status: false }));
+
+			expect(result.statusChanged).toBe(true);
+			expect(result.monitor.status).toBe("down");
+			expect(result.prevStatus).toBe("initializing");
+		});
+
+		it("does not flip status on subsequent checks during warmup once 'initializing' has been left (regression: down→up incident resolves once window fills)", async () => {
+			// After a 'initializing'→'down' transition on check #1, monitor.status is now 'down'
+			// and statusWindow has one false. Subsequent up checks during warmup must leave
+			// monitor.status='down' so the sliding window can detect the down→up transition
+			// once the window fills.
+			const monitor = makeMonitor({ statusWindow: [false], statusWindowSize: 5, status: "down" });
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
+
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: true }), makeCheck({ status: true }));
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.monitor.status).toBe("down");
 		});
 
 		it("logs a warning but still succeeds when running-stats update fails mid-flight", async () => {

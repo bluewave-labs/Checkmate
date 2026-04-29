@@ -39,7 +39,7 @@
 			"flushQueue": "Vyprázdnit frontu",
 			"notFound": "Přejít na hlavní přehled",
 			"resetPassword": "Obnovit heslo",
-			"reset": "",
+			"reset": "Resetovat",
 			"clear": "Vymazat",
 			"addDemo": "Přidat ukázkové monitory",
 			"removeMonitors": "Odebrat monitory",
@@ -53,8 +53,8 @@
 			"labels": {
 				"averageResponseTime": "Průměrná doba odezvy",
 				"downtime": "Výpadek",
-				"high": "",
-				"low": "",
+				"high": "Vysoké",
+				"low": "Nízké",
 				"uptime": "Dostupnost"
 			},
 			"histogram": {
@@ -107,14 +107,14 @@
 		"table": {
 			"empty": "Zde nic není",
 			"headers": {
-				"actions": "",
+				"actions": "Akce",
 				"dateTime": "Datum a čas",
 				"message": "Zpráva",
 				"monitor": "Monitor",
 				"monitorId": "ID monitoru",
 				"name": "Název",
 				"status": "Stav",
-				"type": "",
+				"type": "Typ",
 				"url": "URL",
 				"interval": "Interval",
 				"active": "Aktivní",
@@ -125,17 +125,17 @@
 	"components": {
 		"imageUpload": {
 			"clickToUpload": "Klikněte pro nahrání",
-			"dragAndDrop": "",
-			"supportedFormats": "",
-			"maxSize": "",
+			"dragAndDrop": "nebo přetáhněte",
+			"supportedFormats": "Podporované formáty",
+			"maxSize": "Max. velikost",
 			"orDragAndDrop": "nebo přetáhněte soubor",
 			"errors": {
-				"invalidFileSize": "",
-				"invalidFileFormat": ""
+				"invalidFileSize": "Soubor je příliš velký!",
+				"invalidFileFormat": "Nepodporovaný formát souboru!"
 			}
 		},
 		"headerStatusPageControls": {
-			"publicLink": ""
+			"publicLink": "Veřejný odkaz"
 		},
 		"headerTimeRange": {
 			"labels": {
@@ -159,22 +159,22 @@
 		},
 		"sidebar": {
 			"menu": {
-				"uptime": "",
-				"pagespeed": "",
-				"infrastructure": "",
-				"notifications": "",
+				"uptime": "Dostupnost",
+				"pagespeed": "Pagespeed",
+				"infrastructure": "Infrastruktura",
+				"notifications": "Oznámení",
 				"checks": "Kontroly",
-				"incidents": "",
-				"statusPages": "",
-				"maintenance": "",
-				"logs": "",
-				"settings": ""
+				"incidents": "Incidenty",
+				"statusPages": "Stavové stránky",
+				"maintenance": "Údržba",
+				"logs": "Záznamy",
+				"settings": "Nastavení"
 			},
 			"bottomMenu": {
-				"support": "",
-				"discussions": "",
-				"docs": "",
-				"changelog": ""
+				"support": "Podpora",
+				"discussions": "Diskuze",
+				"docs": "Dokumentace",
+				"changelog": "Záznam změn"
 			},
 			"accountMenu": {
 				"profile": "Profil",
@@ -186,19 +186,27 @@
 				"description": "Sledujte nejnovější vydání a pomozte rozšířit komunitu na GitHubu"
 			},
 			"authFooter": {
-				"navControls": "",
-				"logOut": "",
+				"navControls": "Ovládací prvky",
+				"logOut": "Odhlásit se",
 				"roles": {
 					"superAdmin": "Superadministrátor",
 					"admin": "Administrátor",
 					"user": "Uživatel",
-					"demoUser": ""
+					"demoUser": "Demo uživatel"
 				}
 			}
 		},
 		"starPrompt": {
 			"title": "Ohodnoťte Checkmate",
 			"description": "Sledujte nejnovější vydání a pomozte rozšířit komunitu na GitHubu"
+		},
+		"pageHeader": {
+			"links": {
+				"support": "Podpora",
+				"discussions": "Diskuze",
+				"docs": "Dokumentace",
+				"changelog": "Seznam změn"
+			}
 		}
 	},
 	"pages": {
@@ -251,15 +259,15 @@
 			"team": {
 				"filter": {
 					"placeholder": "Filtrovat podle role",
-					"all": "",
+					"all": "Všechny role",
 					"admin": "Administrátor",
-					"member": ""
+					"member": "Člen"
 				},
 				"table": {
 					"headers": {
 						"email": "Email",
 						"role": "Role",
-						"created": ""
+						"created": "Vytvořeno"
 					}
 				},
 				"addMember": {
@@ -278,10 +286,23 @@
 						"placeholder": "Vyberte roli"
 					},
 					"linkLabel": "Odkaz pro pozvánku"
+				},
+				"fallback": {
+					"title": "Zatím žádní členové týmu",
+					"description": "Pozvěte kolegy e-mailem nebo je přidejte přímo. Jakmile se připojí, objeví se zde se svou rolí."
 				}
+			},
+			"header": {
+				"title": "Účet",
+				"description": "Spravujte profil, heslo, tým a předvolby pracovního prostoru."
 			}
 		},
 		"auth": {
+			"brandPanel": {
+				"eyebrow": "Open-source monitoring infrastruktury",
+				"tagline": "Sledujte každý krok vašich serverů.",
+				"description": "Monitorování dostupnosti, doby odezvy a incidentů v reálném čase - self-hosted a vaše."
+			},
 			"common": {
 				"passwordRules": {
 					"length": {
@@ -343,7 +364,8 @@
 			"register": {
 				"title": "Vítejte v Checkmate!",
 				"subtitle": "Zaregistrujte se a začněte",
-				"submit": "Registrovat"
+				"submit": "Registrovat",
+				"setupNotice": "Tato stránka je k dispozici pouze během počátečního nastavení. Po zaregistrování super administrátora lze pozvat další uživatele z nastavení týmu."
 			},
 			"forgotPassword": {
 				"title": "Zapomněli jste heslo?",
@@ -378,6 +400,14 @@
 					"statusCode": "Stavový kód",
 					"location": "Umístění"
 				}
+			},
+			"fallback": {
+				"title": "Zatím žádné kontroly",
+				"description": "Jakmile vytvoříte monitor, každá kontrola stavu a doba odezvy se zde zobrazí jako kontrola."
+			},
+			"header": {
+				"title": "Kontroly",
+				"description": "Každá sonda, kterou Checkmate spustí proti vašim monitorům, se zde objeví se stavovým kódem a dobou odezvy."
 			}
 		},
 		"common": {
@@ -397,7 +427,8 @@
 					"activeFor": "Aktivní po dobu",
 					"certificateExpiry": "Expirace certifikátu",
 					"lastCheck": "Poslední kontrola",
-					"lastResponseTime": "Poslední doba odezvy"
+					"lastResponseTime": "Poslední doba odezvy",
+					"serviceIsDown": "Služba je nedostupná"
 				},
 				"status": {
 					"down": "nedostupný",
@@ -511,7 +542,7 @@
 						"ping": "",
 						"port": "",
 						"docker": "",
-						"game": "",
+						"game": "Zadejte IP adresu nebo název hostitele a číslo portu pro ping (např. 192.168.1.100 nebo example.com) a vyberte typ hry. Některé hry vyžadují povolení dotazů na server v jejich konfiguračním souboru — viz dokumentace vašeho herního serveru. Podrobnosti o protokolu najdete v <gamedigLink>seznamu podporovaných her</gamedigLink>.",
 						"pagespeed": "Sledujte výkon načítání stránky, metriky Core Web Vitals a hodnocení optimalizace vašeho webu.",
 						"grpc": "Zadejte název hostitele a port gRPC serveru, volitelně zadejte název služby pro kontrolu stavu a přidejte zobrazovaný název.",
 						"websocket": "Zadejte WebSocket URL ke sledování (např. wss://example.com/socket) a přidejte zobrazovaný název.",
@@ -640,6 +671,10 @@
 			}
 		},
 		"incidents": {
+			"fallback": {
+				"title": "Žádné incidenty — všechny systémy v pořádku",
+				"description": "Když monitor vypadne nebo se zotaví, incident se zobrazí zde spolu s časem, detaily monitoru a historií řešení."
+			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "Vyřešit incident",
@@ -720,6 +755,10 @@
 					"active": "Aktivní",
 					"resolved": "Vyřešeno"
 				}
+			},
+			"header": {
+				"title": "Incidenty",
+				"description": "Když monitor vypadne nebo se zotaví, incidenty se zobrazí zde spolu s časem, detaily monitoru a historií řešení."
 			}
 		},
 		"infrastructure": {
@@ -730,6 +769,7 @@
 					"memory": "Využití paměti",
 					"netBytesRecv": "{{name}} - přijaté bajty",
 					"netBytesSent": "{{name}} - odeslané bajty",
+					"netNoTraffic": "Capture hlásí nulový provoz na všech rozhraních. To je normální, když Capture běží uvnitř kontejneru, který vidí pouze loopback rozhraní — spusťte Capture přímo na hostiteli, abyste viděli skutečnou síťovou aktivitu.",
 					"temp": "Teplota"
 				}
 			},
@@ -774,21 +814,31 @@
 			},
 			"fallback": {
 				"actionButton": "Vytvořte monitor!",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "Monitor infrastruktury slouží k:"
+				"title": "Zatím žádné monitory infrastruktury",
+				"description": "Sledujte výkon serverů, identifikujte úzká místa a zajistěte spolehlivost pomocí monitoringu infrastruktury v reálném čase."
+			},
+			"header": {
+				"title": "Monitory infrastruktury",
+				"description": "Sledujte výkon serverů, identifikujte úzká místa a zajistěte spolehlivost pomocí monitoringu infrastruktury v reálném čase."
 			}
 		},
 		"logs": {
+			"fallback": {
+				"title": "Zatím žádné protokoly",
+				"description": "Aktivita serveru, varování a chyby se zobrazí zde, jak Checkmate běží."
+			},
 			"tabs": {
-				"diagnostics": "",
-				"logs": "",
-				"queue": ""
+				"diagnostics": "Diagnostika",
+				"logs": "Záznamy",
+				"queue": "Fronta úloh"
 			},
 			"logLevelSelect": {
 				"label": "Úroveň logování"
 			},
 			"jobQueue": "Fronta úloh",
+			"jobQueueExplainer": "<highlight>Zvýrazněné řádky</highlight> jsou úlohy, které právě zpracovává worker.",
 			"failedJobs": "Neúspěšné úlohy",
+			"failedJobsExplainer": "Nedávná selhání podle monitoru — čas posledního selhání, počet selhání a důvod.",
 			"noLogs": "Žádné logy nebyly nalezeny",
 			"metrics": {
 				"jobs": "Úlohy",
@@ -815,6 +865,16 @@
 					"usedSPercentage": "% z 1s využito CPU",
 					"total": "Celkem",
 					"used": "Použité"
+				},
+				"sections": {
+					"runtimeStats": {
+						"title": "Statistiky běhu",
+						"description": "Snímek procesu Node.js a hostitelského počítače. Aktualizuje se každých 5 sekund."
+					},
+					"memoryCpu": {
+						"title": "Paměť a CPU",
+						"description": "Jak proces využívá přidělenou paměť a CPU hostitele."
+					}
 				}
 			},
 			"table": {
@@ -833,13 +893,21 @@
 					"lastFailedAt": "Poslední selhání",
 					"failReason": "Důvod selhání"
 				}
+			},
+			"queueFallback": {
+				"title": "Žádné úlohy ve frontě",
+				"description": "Naplánované nebo běžící kontroly monitorů se objeví zde. Prázdná fronta znamená, že je vše aktuální."
+			},
+			"header": {
+				"title": "Protokoly a fronta",
+				"description": "Zkontrolujte serverové protokoly, frontu úloh monitoru a diagnostiku v jednom místě."
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "Vytvořte okno údržby!",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "Okno údržby slouží k:"
+				"title": "Žádná naplánovaná okna údržby",
+				"description": "Naplánujte plánované odstávky, aby byly výstrahy potlačeny a váš tým i uživatelé věděli, co očekávat."
 			},
 			"table": {
 				"headers": {
@@ -891,13 +959,17 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Okna údržby",
+				"description": "Naplánujte plánované odstávky, aby byly výstrahy potlačeny a váš tým i uživatelé věděli, co očekávat."
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "Vytvořit kanál",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "Kanály oznámení slouží k:"
+				"title": "Zatím žádné notifikační kanály",
+				"description": "Připojte Slack, Discord, e-mail, webhooky a další, aby se ti správní lidé dozvěděli o incidentech v okamžiku, kdy nastanou."
 			},
 			"form": {
 				"accessToken": {
@@ -947,12 +1019,36 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "ID chatu",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Konfigurace Pushover",
+					"description": "Zadejte token aplikace a uživatelský klíč Pushover.",
+					"optionAppToken": "Token aplikace",
+					"placeholderAppToken": "Zadejte token aplikace",
+					"optionUserKey": "Uživatelský klíč",
+					"placeholderUserKey": "Zadejte uživatelský klíč"
+				},
+				"twilio": {
+					"title": "Konfigurace Twilio",
+					"description": "Zadejte přihlašovací údaje účtu Twilio pro odesílání SMS.",
+					"optionAccountSid": "SID účtu",
+					"placeholderAccountSid": "Zadejte SID účtu",
+					"optionAuthToken": "Autentizační token",
+					"placeholderAuthToken": "Zadejte autentizační token",
+					"optionFromNumber": "Z čísla",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "Na číslo",
+					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
 				"headers": {
 					"destination": "Cíl"
 				}
+			},
+			"header": {
+				"title": "Notifikace",
+				"description": "Připojte Slack, Discord, e-mail, webhooky a další, aby se ti správní lidé dozvěděli o incidentech v okamžiku, kdy nastanou."
 			}
 		},
 		"pageSpeed": {
@@ -979,8 +1075,12 @@
 			},
 			"fallback": {
 				"actionButton": "Vytvořte monitor!",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "Monitor PageSpeed slouží k:"
+				"title": "Zatím žádné PageSpeed monitory",
+				"description": "Sledujte Core Web Vitals a skóre Lighthouse v čase a zachyťte regrese dříve než vaši uživatelé."
+			},
+			"header": {
+				"title": "Monitory PageSpeed",
+				"description": "Sledujte Core Web Vitals a skóre Lighthouse v čase a zachyťte regrese dříve než vaši uživatelé."
 			}
 		},
 		"settings": {
@@ -1137,11 +1237,12 @@
 					"description": "Přidejte ukázkové monitory pro demonstrační účely."
 				},
 				"removeMonitors": {
-					"title": "Obnovení systému",
-					"description": "Odeberte všechny monitory z vašeho systému.",
+					"title": "Reset systému",
+					"description": "Odstranit všechny monitory ze systému.",
 					"dialog": {
 						"title": "Odebrat všechny monitory?",
-						"description": "Tuto akci nelze vrátit zpět."
+						"description": "Tuto akci nelze vrátit zpět.",
+						"paragraph": "Smaže se také veškerá historie kontrol, incidenty, naplánovaná údržbová okna a stavové stránky, které tyto monitory používaly. Pokud si chcete data zachovat, nejprve monitory exportujte."
 					}
 				},
 				"exportMonitors": {
@@ -1158,14 +1259,18 @@
 				"validation": {
 					"errorMessage": "Opravte prosím následující chyby validace:"
 				}
+			},
+			"header": {
+				"title": "Nastavení",
+				"description": "Nakonfigurujte SMTP, integrace, uchovávání a globální chování aplikace."
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "Stavová stránka byla úspěšně smazána",
 			"fallback": {
-				"title": "Stavová stránka slouží k:",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "Vytvořte stavovou stránku!"
+				"title": "Zatím žádné stavové stránky",
+				"actionButton": "Vytvořte stavovou stránku!",
+				"description": "Publikujte veřejnou stránku, která zákazníkům a zúčastněným stranám zobrazuje dostupnost v reálném čase a historii incidentů."
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Heatmapa",
@@ -1190,7 +1295,18 @@
 				"allDown": "Všechny systémy jsou nedostupné",
 				"allUp": "Všechny systémy fungují",
 				"degraded": "Některé systémy mají problémy",
-				"unknown": "Nelze určit stav systému"
+				"unknown": "Nelze určit stav systému",
+				"allBreached": "Všechny systémy překročily prahové hodnoty",
+				"allMaintenance": "Všechny systémy jsou v údržbě",
+				"allPaused": "Všechny systémy jsou pozastavené",
+				"allInitializing": "Všechny systémy se inicializují",
+				"breachedAndDown": "Některé systémy překročily prahové hodnoty a jsou nedostupné",
+				"breached": "Některé systémy překročily prahové hodnoty",
+				"maintenanceAndDown": "Některé systémy jsou nedostupné během údržby",
+				"maintenance": "Některé systémy jsou v údržbě",
+				"partiallyPaused": "Některé systémy jsou pozastavené",
+				"initializing": "Některé systémy se inicializují",
+				"noMonitors": "Nebyly nakonfigurovány žádné monitory"
 			},
 			"table": {
 				"headers": {
@@ -1282,6 +1398,10 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Stavové stránky",
+				"description": "Publikujte veřejné stránky, které zákazníkům a zúčastněným stranám zobrazují dostupnost v reálném čase a historii incidentů."
 			}
 		},
 		"uptime": {
@@ -1297,8 +1417,12 @@
 			},
 			"fallback": {
 				"actionButton": "Vytvořte monitor!",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "Monitor dostupnosti slouží k:"
+				"title": "Zatím žádné monitory dostupnosti",
+				"description": "Sledujte HTTP koncové body, pingy, kontejnery a porty — buďte upozorněni v okamžiku, kdy něco vypadne."
+			},
+			"header": {
+				"title": "Monitory dostupnosti",
+				"description": "Sledujte HTTP koncové body, pingy, kontejnery a porty — buďte upozorněni v okamžiku, kdy něco vypadne."
 			}
 		}
 	}
