@@ -88,9 +88,10 @@ export class GlobalPingService implements IGlobalPingService {
 		return GlobalPingService.SERVICE_NAME;
 	}
 
-	private async authHeaders(tokenOverride?: string): Promise<Record<string, string>> {
+	private async resolveAuth(tokenOverride?: string): Promise<{ token: string | undefined; headers: Record<string, string> }> {
 		const token = tokenOverride ?? (await this.settingsService.getGlobalpingApiToken());
-		return token ? { Authorization: `Bearer ${token}` } : {};
+		const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+		return { token, headers };
 	}
 
 	async createMeasurement(monitorType: MonitorType, url: string, locations: GeoContinent[]): Promise<string | null> {
@@ -107,7 +108,7 @@ export class GlobalPingService implements IGlobalPingService {
 				limit: locations.length,
 			};
 
-			const headers = await this.authHeaders();
+			const { headers } = await this.resolveAuth();
 
 			const response = await got.post<GlobalPingMeasurementResponse>(`${GLOBAL_PING_API_BASE}/measurements`, {
 				json: requestBody,
@@ -138,7 +139,7 @@ export class GlobalPingService implements IGlobalPingService {
 
 	async pollForResults(measurementId: string, timeoutMs: number = MAX_POLL_TIMEOUT_MS): Promise<GeoCheckResult[]> {
 		const startTime = Date.now();
-		const headers = await this.authHeaders();
+		const { headers } = await this.resolveAuth();
 
 		while (Date.now() - startTime < timeoutMs) {
 			try {
@@ -192,7 +193,7 @@ export class GlobalPingService implements IGlobalPingService {
 	}
 
 	async getQuota(tokenOverride?: string): Promise<GlobalPingQuota> {
-		const headers = await this.authHeaders(tokenOverride);
+		const { token, headers } = await this.resolveAuth(tokenOverride);
 		const response = await got.get<{ rateLimit?: { measurements?: { create?: { limit?: number; remaining?: number } } } }>(
 			`${GLOBAL_PING_API_BASE}/limits`,
 			{
@@ -206,7 +207,7 @@ export class GlobalPingService implements IGlobalPingService {
 		const limit = create?.limit ?? 0;
 		const remaining = create?.remaining ?? 0;
 		return {
-			authenticated: Object.keys(headers).length > 0,
+			authenticated: Boolean(token),
 			limit,
 			remaining,
 		};
