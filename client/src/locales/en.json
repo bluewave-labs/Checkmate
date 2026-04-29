@@ -1138,13 +1138,16 @@
 					"actions": {
 						"test": "Test connection",
 						"testing": "Testing…",
-						"reset": "Reset"
+						"reset": "Reset",
+						"save": "Save token",
+						"saving": "Saving…"
 					},
 					"status": {
 						"authenticated": "Authenticated · {{remaining}} / {{limit}} measurements remaining this hour",
 						"anonymous": "Anonymous · {{remaining}} / {{limit}} measurements remaining this hour",
 						"invalid": "Could not verify the token. Check the value and try again.",
-						"verified": "Connection verified."
+						"verified": "Connection verified.",
+						"saved": "Token saved."
 					}
 				},
 				"url": {

@@ -91,8 +91,9 @@ export const SettingsPage = () => {
 		limit: number;
 	} | null>(null);
 	const [globalpingTestStatus, setGlobalpingTestStatus] = useState<
-		"idle" | "loading" | "ok" | "invalid"
+		"idle" | "loading" | "ok" | "invalid" | "saved"
 	>("idle");
+	const [isSavingGlobalpingToken, setIsSavingGlobalpingToken] = useState(false);
 	const { post: testGlobalpingToken } = usePost<
 		{ token?: string },
 		{ authenticated: boolean; remaining: number; limit: number } | null
@@ -193,6 +194,21 @@ export const SettingsPage = () => {
 		} else {
 			setGlobalpingQuota(null);
 			setGlobalpingTestStatus("invalid");
+		}
+	};
+
+	const handleSaveGlobalpingToken = async () => {
+		const tokenValue = form.getValues("globalpingApiToken");
+		if (!tokenValue) return;
+		setIsSavingGlobalpingToken(true);
+		const result = await patch("/settings", {
+			globalpingApiToken: tokenValue,
+		} as unknown as SettingsFormData);
+		setIsSavingGlobalpingToken(false);
+		if (result?.success && result.data) {
+			setIsGlobalpingTokenSet(result.data.globalpingTokenSet);
+			setGlobalpingTokenHasBeenReset(false);
+			setGlobalpingTestStatus("saved");
 		}
 	};
 
@@ -497,17 +513,32 @@ export const SettingsPage = () => {
 											</Button>
 										</Box>
 									)}
-								<Box>
-									<Button
-										onClick={handleTestGlobalpingToken}
-										variant="outlined"
-										disabled={globalpingTestStatus === "loading"}
+								{(isGlobalpingTokenSet === false ||
+									globalpingTokenHasBeenReset === true) && (
+									<Stack
+										direction="row"
+										gap={theme.spacing(LAYOUT.SM)}
 									>
-										{globalpingTestStatus === "loading"
-											? t("pages.settings.form.distributedMonitoring.actions.testing")
-											: t("pages.settings.form.distributedMonitoring.actions.test")}
-									</Button>
-								</Box>
+										<Button
+											onClick={handleTestGlobalpingToken}
+											variant="outlined"
+											disabled={globalpingTestStatus === "loading"}
+										>
+											{globalpingTestStatus === "loading"
+												? t("pages.settings.form.distributedMonitoring.actions.testing")
+												: t("pages.settings.form.distributedMonitoring.actions.test")}
+										</Button>
+										<Button
+											onClick={handleSaveGlobalpingToken}
+											variant="contained"
+											disabled={isSavingGlobalpingToken}
+										>
+											{isSavingGlobalpingToken
+												? t("pages.settings.form.distributedMonitoring.actions.saving")
+												: t("pages.settings.form.distributedMonitoring.actions.save")}
+										</Button>
+									</Stack>
+								)}
 								{globalpingTestStatus === "ok" && globalpingQuota && (
 									<Typography
 										variant="body1"
@@ -533,6 +564,14 @@ export const SettingsPage = () => {
 										color={theme.palette.error.main}
 									>
 										{t("pages.settings.form.distributedMonitoring.status.invalid")}
+									</Typography>
+								)}
+								{globalpingTestStatus === "saved" && (
+									<Typography
+										variant="body1"
+										color={theme.palette.success.main}
+									>
+										{t("pages.settings.form.distributedMonitoring.status.saved")}
 									</Typography>
 								)}
 							</Stack>
