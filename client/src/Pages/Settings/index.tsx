@@ -182,6 +182,9 @@ export const SettingsPage = () => {
 			systemEmailRequireTLS: formValues.systemEmailRequireTLS,
 			systemEmailRejectUnauthorized: formValues.systemEmailRejectUnauthorized,
 			...(formValues.systemEmailUser && { systemEmailUser: formValues.systemEmailUser }),
+			...(formValues.systemEmailDisplayName && {
+				systemEmailDisplayName: formValues.systemEmailDisplayName,
+			}),
 			...(formValues.systemEmailTLSServername && {
 				systemEmailTLSServername: formValues.systemEmailTLSServername,
 			}),
@@ -577,44 +580,50 @@ export const SettingsPage = () => {
 								href="https://nodemailer.com/smtp/"
 								target="_blank"
 							/>
-							<Box
-								component="pre"
-								sx={{
-									fontFamily: theme.typography.fontFamilyMonospace,
-									p: 2,
-									borderRadius: 1,
-									overflow: "auto",
-									backgroundColor: theme.palette.action.hover,
-								}}
-							>
-								<code>
-									{JSON.stringify(
-										{
-											host: form.watch("systemEmailHost") || "",
-											port: form.watch("systemEmailPort") || "",
-											secure: form.watch("systemEmailSecure") ?? false,
-											auth: {
-												user:
-													form.watch("systemEmailUser") ||
-													form.watch("systemEmailAddress") ||
-													"",
-												pass: "<your_password>",
-											},
-											name: form.watch("systemEmailConnectionHost") || "localhost",
-											pool: form.watch("systemEmailPool") ?? false,
-											tls: {
-												rejectUnauthorized:
-													form.watch("systemEmailRejectUnauthorized") ?? true,
-												ignoreTLS: form.watch("systemEmailIgnoreTLS") ?? false,
-												requireTLS: form.watch("systemEmailRequireTLS") ?? false,
-												servername: form.watch("systemEmailTLSServername") || "",
-											},
-										},
-										null,
-										2
-									)}
-								</code>
-							</Box>
+							{(() => {
+								const address = form.watch("systemEmailAddress") || "";
+								const displayName = form.watch("systemEmailDisplayName")?.trim();
+								const from =
+									displayName && address ? { name: displayName, address } : address;
+								return (
+									<Box
+										component="pre"
+										p={2}
+										borderRadius={theme.shape.borderRadius}
+										bgcolor={theme.palette.action.hover}
+										sx={{
+											fontFamily: theme.typography.fontFamilyMonospace,
+											overflow: "auto",
+										}}
+									>
+										<code>
+											{JSON.stringify(
+												{
+													host: form.watch("systemEmailHost") || "",
+													port: form.watch("systemEmailPort") || "",
+													secure: form.watch("systemEmailSecure") ?? false,
+													auth: {
+														user: form.watch("systemEmailUser") || address,
+														pass: "<your_password>",
+													},
+													name: form.watch("systemEmailConnectionHost") || "localhost",
+													pool: form.watch("systemEmailPool") ?? false,
+													from,
+													tls: {
+														rejectUnauthorized:
+															form.watch("systemEmailRejectUnauthorized") ?? true,
+														ignoreTLS: form.watch("systemEmailIgnoreTLS") ?? false,
+														requireTLS: form.watch("systemEmailRequireTLS") ?? false,
+														servername: form.watch("systemEmailTLSServername") || "",
+													},
+												},
+												null,
+												2
+											)}
+										</code>
+									</Box>
+								);
+							})()}
 						</Stack>
 					}
 					rightContent={
@@ -674,6 +683,24 @@ export const SettingsPage = () => {
 											"pages.settings.form.email.option.address.placeholder"
 										)}
 										type="email"
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message}
+									/>
+								)}
+							/>
+
+							{/* Email Display Name (Optional) */}
+							<Controller
+								name="systemEmailDisplayName"
+								control={form.control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value ?? ""}
+										fieldLabel={t("pages.settings.form.email.option.displayName.label")}
+										placeholder={t(
+											"pages.settings.form.email.option.displayName.placeholder"
+										)}
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message}
 									/>

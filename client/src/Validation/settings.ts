@@ -32,6 +32,11 @@ export const settingsSchema = z.object({
 		.or(z.literal(""))
 		.transform((val) => (val === "" ? null : val.toLowerCase().trim()))
 		.optional(),
+	systemEmailDisplayName: z
+		.string()
+		.max(100, "Display name must be 100 characters or fewer")
+		.transform((val) => (val.trim() === "" ? null : val.trim()))
+		.optional(),
 	systemEmailUser: z
 		.string()
 		.transform((val) => (val.trim() === "" ? null : val.trim()))
