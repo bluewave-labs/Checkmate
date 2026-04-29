@@ -25,6 +25,7 @@ class MongoSettingsRepository implements ISettingsRepository {
 			language: doc.language,
 			jwtSecret: doc.jwtSecret ?? undefined,
 			pagespeedApiKey: doc.pagespeedApiKey ?? undefined,
+			globalpingApiToken: doc.globalpingApiToken ?? undefined,
 			systemEmailHost: doc.systemEmailHost ?? undefined,
 			systemEmailPort: doc.systemEmailPort ?? undefined,
 			systemEmailAddress: doc.systemEmailAddress ?? undefined,
