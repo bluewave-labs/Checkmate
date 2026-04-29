@@ -26,8 +26,8 @@ interface Props {
 
 export const RefinedStatusPage = ({ statusPage, monitors }: Props) => {
 	const { t } = useTranslation();
-	const { tokens, mode } = useStatusPageTheme();
-	const styles = useMemo(() => refinedStyles(tokens, mode === "dark"), [tokens, mode]);
+	const { tokens } = useStatusPageTheme();
+	const styles = useMemo(() => refinedStyles(tokens), [tokens]);
 	const [chartMode, setChartMode] = useState<"heatmap" | "histogram">("heatmap");
 
 	const overall = resolveOverallStatus(monitors, t);

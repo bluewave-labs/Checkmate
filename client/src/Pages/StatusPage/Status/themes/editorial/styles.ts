@@ -50,11 +50,7 @@ export interface EditorialStyles {
 	footer: SxProps<Theme>;
 }
 
-export const editorialStyles = (
-	tokens: StatusPageThemeTokens,
-	isDark: boolean
-): EditorialStyles => {
-	void isDark;
+export const editorialStyles = (tokens: StatusPageThemeTokens): EditorialStyles => {
 	const heatCellBg: Record<EditorialHeatCell, string> = {
 		fast: tokens.up,
 		med: `color-mix(in srgb, ${tokens.up} 60%, ${tokens.bg})`,

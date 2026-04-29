@@ -25,8 +25,8 @@ interface Props {
 
 export const EditorialStatusPage = ({ statusPage, monitors }: Props) => {
 	const { t } = useTranslation();
-	const { tokens, mode } = useStatusPageTheme();
-	const styles = useMemo(() => editorialStyles(tokens, mode === "dark"), [tokens, mode]);
+	const { tokens } = useStatusPageTheme();
+	const styles = useMemo(() => editorialStyles(tokens), [tokens]);
 	const [chartMode, setChartMode] = useState<"heatmap" | "histogram">("heatmap");
 
 	const todayLabel = useMemo(
