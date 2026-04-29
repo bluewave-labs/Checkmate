@@ -1241,7 +1241,8 @@
 					"description": "Xóa tất cả các monitor khỏi hệ thống của bạn.",
 					"dialog": {
 						"title": "Xóa tất cả trình giám sát?",
-						"description": "Không thể hoàn tác."
+						"description": "Hành động này không thể hoàn tác.",
+						"paragraph": "Toàn bộ lịch sử kiểm tra, sự cố, cửa sổ bảo trì đã lên lịch và các trang trạng thái sử dụng những trình giám sát này cũng sẽ bị xóa. Hãy xuất trình giám sát trước nếu bạn muốn giữ một bản sao lưu dữ liệu."
 					}
 				},
 				"exportMonitors": {

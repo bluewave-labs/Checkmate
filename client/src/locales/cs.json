@@ -1241,7 +1241,8 @@
 					"description": "Odstranit všechny monitory ze systému.",
 					"dialog": {
 						"title": "Odebrat všechny monitory?",
-						"description": "Tuto akci nelze vrátit zpět."
+						"description": "Tuto akci nelze vrátit zpět.",
+						"paragraph": "Smaže se také veškerá historie kontrol, incidenty, naplánovaná údržbová okna a stavové stránky, které tyto monitory používaly. Pokud si chcete data zachovat, nejprve monitory exportujte."
 					}
 				},
 				"exportMonitors": {

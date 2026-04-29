@@ -1241,7 +1241,8 @@
 					"description": "從系統中移除所有監視器。",
 					"dialog": {
 						"title": "移除所有監控？",
-						"description": "此操作無法復原。"
+						"description": "此操作無法復原。",
+						"paragraph": "所有檢查歷史、事件、排定的維護時段以及使用這些監控的狀態頁面也將一併被移除。如需保留資料備份，請先匯出監控。"
 					}
 				},
 				"exportMonitors": {

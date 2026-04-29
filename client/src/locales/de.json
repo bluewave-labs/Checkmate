@@ -1241,7 +1241,8 @@
 					"description": "Alle Monitore aus dem System entfernen.",
 					"dialog": {
 						"title": "Alle Monitore entfernen?",
-						"description": "Dies kann nicht rückgängig gemacht werden."
+						"description": "Diese Aktion kann nicht rückgängig gemacht werden.",
+						"paragraph": "Dabei werden auch der gesamte Prüfverlauf, alle Vorfälle, geplante Wartungsfenster sowie Statusseiten entfernt, die diese Monitore verwenden. Exportiere die Monitore zuerst, wenn du eine Sicherung der Daten behalten möchtest."
 					}
 				},
 				"exportMonitors": {

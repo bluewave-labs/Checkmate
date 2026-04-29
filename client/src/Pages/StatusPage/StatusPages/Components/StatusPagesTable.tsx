@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 
-import type { StatusPage } from "@/Types/StatusPage";
+import { PUBLIC_STATUS_PAGE_PREFIX, type StatusPage } from "@/Types/StatusPage";
 
 interface StatusPagesTableProps {
 	data: StatusPage[];
@@ -53,7 +53,7 @@ export const StatusPagesTable = ({
 	const handleUrlClick = (e: React.MouseEvent, row: StatusPage) => {
 		if (row.isPublished) {
 			e.stopPropagation();
-			const url = `/status/public/${row.url}`;
+			const url = `${PUBLIC_STATUS_PAGE_PREFIX}/${row.url}`;
 			window.open(url, "_blank", "noopener,noreferrer");
 		}
 	};

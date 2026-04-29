@@ -12,12 +12,14 @@ Checkmate is an open-source uptime and infrastructure monitoring application. It
 ```bash
 cd client
 npm install
-npm run dev              # Start dev server at http://localhost:5173
+npm run dev -- --port 10001 --strictPort   # Local dev port is 10001 (5173 is used by another project on this machine)
 npm run build            # TypeScript check + production build
 npm run lint             # ESLint (strict, max-warnings 0)
 npm run format           # Prettier formatting
 npm run format-check     # Check formatting
 ```
+
+Server `.env` on this machine is configured with `CLIENT_HOST="http://localhost:10001"` to match the client dev port. If you change the client port, keep `.env` in sync.
 
 ### Server (Node.js/Express)
 ```bash
@@ -156,6 +158,14 @@ When working on anything related to check scheduling, incident lifecycle, or not
 ---
 
 ## Code Conventions
+
+### Frontend conventions (mandatory for `client/src`)
+Read `docs/frontend-conventions.md` before touching any `.tsx` file. Five rules, all enforced in code review:
+1. Prefer MUI native props over `sx` (e.g. `color={…}`, `bgcolor={…}`, `mt={…}` — not `sx={{ color, bgcolor, mt }}`).
+2. Use the full theme path for colors: `color={theme.palette.text.secondary}`, never `color="text.secondary"` (greppability).
+3. No hardcoded literals — use `LAYOUT.*`, `typographyLevels.*`, `theme.shape.borderRadius`, `theme.palette.*`.
+4. Use `useTheme()` inside components; don't `import { theme } from "@/Utils/Theme/Theme"`.
+5. Pair runtime tuples with derived types: `const X = [...] as const; type X = (typeof X)[number]`.
 
 ### Internationalization
 All user-facing strings must use the translation function:
