@@ -68,7 +68,12 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 		gap: theme.spacing(LAYOUT.MD),
 		borderRadius: theme.shape.borderRadius,
 		pl: theme.spacing(LAYOUT.XS),
-		"& svg": { stroke: theme.palette.text.secondary },
+		"& svg": {
+			height: 16,
+			width: 16,
+			opacity: 0.81,
+			stroke: theme.palette.text.secondary,
+		},
 	};
 
 	return (

@@ -1,13 +1,14 @@
 {
 	"name": "client",
 	"private": true,
-	"version": "0.0.0",
+	"version": "3.7.0",
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc -b && vite build",
 		"build-dev": "tsc -b && vite build --mode development",
-		"lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+		"lint": "eslint . --ext js,jsx,ts,tsx --report-unused-disable-directives",
+		"lint-strict": "eslint . --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0",
 		"preview": "vite preview",
 		"format": "prettier --write .",
 		"format-check": "prettier --check ."
@@ -28,7 +29,6 @@
 		"@types/maplibre-gl": "^1.13.2",
 		"axios": "^1.7.4",
 		"dayjs": "1.11.13",
-		"flag-icons": "7.3.2",
 		"html2canvas": "^1.4.1",
 		"human-interval": "2.0.1",
 		"i18next": "25.4.2",
@@ -58,6 +58,8 @@
 		"@types/node": "24.5.2",
 		"@types/react": "^18.2.66",
 		"@types/react-dom": "^18.2.22",
+		"@typescript-eslint/eslint-plugin": "^7.18.0",
+		"@typescript-eslint/parser": "^7.18.0",
 		"@vitejs/plugin-react": "^4.2.1",
 		"eslint": "^8.57.0",
 		"eslint-plugin-react": "^7.34.1",

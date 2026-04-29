@@ -199,6 +199,14 @@
 		"starPrompt": {
 			"title": "為 Checkmate 加星",
 			"description": "查看最新版本並在 GitHub 上幫助社群成長"
+		},
+		"pageHeader": {
+			"links": {
+				"support": "支援",
+				"discussions": "討論",
+				"docs": "文件",
+				"changelog": "更新日誌"
+			}
 		}
 	},
 	"pages": {
@@ -278,10 +286,23 @@
 						"placeholder": "選擇角色"
 					},
 					"linkLabel": "邀請連結"
+				},
+				"fallback": {
+					"title": "尚無團隊成員",
+					"description": "透過電子郵件邀請隊友或直接新增他們。一旦加入，他們將與角色一起顯示在此。"
 				}
+			},
+			"header": {
+				"title": "帳號",
+				"description": "管理個人資料、密碼、團隊和工作區設定。"
 			}
 		},
 		"auth": {
+			"brandPanel": {
+				"eyebrow": "開源基礎設施監控",
+				"tagline": "關注您伺服器的每一步動作。",
+				"description": "即時追蹤運行狀態、回應時間和事件 - 自主託管，完全屬於您。"
+			},
 			"common": {
 				"passwordRules": {
 					"length": {
@@ -343,7 +364,8 @@
 			"register": {
 				"title": "歡迎回到 Checkmate！",
 				"subtitle": "註冊以開始使用",
-				"submit": "註冊"
+				"submit": "註冊",
+				"setupNotice": "此頁面僅在初始設定期間可用。註冊超級管理員後,可以從團隊設定中邀請更多使用者。"
 			},
 			"forgotPassword": {
 				"title": "忘記密碼了嗎？",
@@ -378,6 +400,14 @@
 					"statusCode": "狀態碼",
 					"location": "位置"
 				}
+			},
+			"fallback": {
+				"title": "尚無檢查",
+				"description": "建立監視器後，每次狀態探測與回應時間都會以一次檢查的形式顯示在此。"
+			},
+			"header": {
+				"title": "檢查",
+				"description": "Checkmate 對您的監視器執行的每次探測都會在此顯示，包含狀態碼與回應時間。"
 			}
 		},
 		"common": {
@@ -397,7 +427,8 @@
 					"activeFor": "已啟用",
 					"certificateExpiry": "憑證到期",
 					"lastCheck": "最後檢查",
-					"lastResponseTime": "最後回應時間"
+					"lastResponseTime": "最後回應時間",
+					"serviceIsDown": "服務已停止"
 				},
 				"status": {
 					"down": "離線",
@@ -511,7 +542,7 @@
 						"ping": "輸入要 Ping 的 IP 位址或主機名稱（例如 192.168.1.100 或 example.com），並新增一個顯示在儀表板上的清晰顯示名稱。",
 						"port": "輸入伺服器的 URL 或 IP、連接埠號碼，以及顯示在儀表板上的清晰顯示名稱。",
 						"docker": "輸入 Docker 容器名稱或 ID。您可以使用容器名稱（例如 my-app）或容器 ID（完整的 64 字元 ID 或短 ID）。",
-						"game": "輸入要 Ping 的 IP 位址或主機名稱及連接埠號碼（例如 192.168.1.100 或 example.com），並選擇遊戲類型。",
+						"game": "輸入要 Ping 的 IP 位址或主機名稱及連接埠號碼（例如 192.168.1.100 或 example.com），並選擇遊戲類型。部分遊戲需要在設定檔中啟用伺服器查詢 — 請參閱你的遊戲伺服器文件。詳見<gamedigLink>支援的遊戲清單</gamedigLink>了解協定細節。",
 						"pagespeed": "追蹤您網站的頁面載入效能、Core Web Vitals 和最佳化分數。",
 						"grpc": "輸入 gRPC 伺服器的主機名稱和連接埠，可選擇指定健康檢查的服務名稱，並新增一個顯示名稱。",
 						"websocket": "輸入要監控的 WebSocket URL（例如 wss://example.com/socket），並新增一個顯示名稱。",
@@ -640,6 +671,10 @@
 			}
 		},
 		"incidents": {
+			"fallback": {
+				"title": "無事件 — 所有系統健康",
+				"description": "當監視器宕機或恢復時，事件將連同時間、監視器詳情與解決紀錄一起顯示在此。"
+			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "解決事件",
@@ -720,6 +755,10 @@
 					"active": "啟用中",
 					"resolved": "已解決"
 				}
+			},
+			"header": {
+				"title": "事件",
+				"description": "當監視器宕機或恢復時，事件將連同時間、監視器詳情與解決紀錄一起顯示在此。"
 			}
 		},
 		"infrastructure": {
@@ -730,6 +769,7 @@
 					"memory": "記憶體使用率",
 					"netBytesRecv": "{{name}} - 接收位元組",
 					"netBytesSent": "{{name}} - 發送位元組",
+					"netNoTraffic": "Capture 回報所有介面的流量皆為零。當 Capture 在只能看到回環介面的容器中執行時，這是正常情況——請直接在主機上執行 Capture 才能看到實際的網路活動。",
 					"temp": "溫度"
 				}
 			},
@@ -774,15 +814,19 @@
 			},
 			"fallback": {
 				"actionButton": "建立監控！",
-				"checks": [
-					"追蹤您伺服器的效能",
-					"找出瓶頸並最佳化使用",
-					"透過即時監控確保可靠性"
-				],
-				"title": "基礎架構監控用於："
+				"title": "尚無基礎設施監視器",
+				"description": "追蹤伺服器效能、找出瓶頸，透過即時基礎設施監控確保可靠性。"
+			},
+			"header": {
+				"title": "基礎設施監視器",
+				"description": "追蹤伺服器效能、找出瓶頸，透過即時基礎設施監控確保可靠性。"
 			}
 		},
 		"logs": {
+			"fallback": {
+				"title": "尚無日誌",
+				"description": "Checkmate 運行時的伺服器活動、警告與錯誤將顯示在此。"
+			},
 			"tabs": {
 				"diagnostics": "診斷",
 				"logs": "日誌",
@@ -792,7 +836,9 @@
 				"label": "日誌等級"
 			},
 			"jobQueue": "工作佇列",
+			"jobQueueExplainer": "<highlight>反白的列</highlight>是目前正由工作程序處理的工作。",
 			"failedJobs": "失敗的工作",
+			"failedJobsExplainer": "依監控的最近失敗 — 最近失敗時間、失敗次數及原因。",
 			"noLogs": "找不到日誌",
 			"metrics": {
 				"jobs": "工作",
@@ -819,6 +865,16 @@
 					"usedSPercentage": "CPU 使用 1 秒百分比",
 					"total": "總計",
 					"used": "已使用"
+				},
+				"sections": {
+					"runtimeStats": {
+						"title": "執行階段統計",
+						"description": "Node.js 程序和主機的快照。每 5 秒更新一次。"
+					},
+					"memoryCpu": {
+						"title": "記憶體與 CPU",
+						"description": "程序如何使用其分配的記憶體和主機 CPU。"
+					}
 				}
 			},
 			"table": {
@@ -837,13 +893,21 @@
 					"lastFailedAt": "最後失敗於",
 					"failReason": "失敗原因"
 				}
+			},
+			"queueFallback": {
+				"title": "佇列中沒有任務",
+				"description": "已排定或正在執行的監視器檢查將顯示在此。空佇列代表一切都是最新狀態。"
+			},
+			"header": {
+				"title": "日誌與佇列",
+				"description": "在一處查看伺服器日誌、監視器作業佇列和執行時診斷。"
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "建立維護時段！",
-				"checks": ["標記您的維護期間", "消除任何誤解", "在維護時段停止發送警報"],
-				"title": "維護時段用於："
+				"title": "尚無排定的維護時段",
+				"description": "安排計畫性停機，抑制警報，並讓團隊和使用者知曉預期狀況。"
 			},
 			"table": {
 				"headers": {
@@ -895,17 +959,17 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "維護時段",
+				"description": "安排計畫性停機，抑制警報，並讓團隊和使用者知曉預期狀況。"
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "建立頻道",
-				"checks": [
-					"針對停機或效能問題通知團隊",
-					"在事件發生時通知工程師",
-					"讓管理員隨時了解系統變更"
-				],
-				"title": "通知頻道用於："
+				"title": "尚無通知頻道",
+				"description": "連接 Slack、Discord、電子郵件、Webhook 等，讓事件發生時正確的人立即收到通知。"
 			},
 			"form": {
 				"accessToken": {
@@ -955,12 +1019,36 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "聊天室 ID",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Pushover 設定",
+					"description": "輸入您的 Pushover 應用程式權杖和使用者金鑰。",
+					"optionAppToken": "應用程式權杖",
+					"placeholderAppToken": "輸入應用程式權杖",
+					"optionUserKey": "使用者金鑰",
+					"placeholderUserKey": "輸入使用者金鑰"
+				},
+				"twilio": {
+					"title": "Twilio 設定",
+					"description": "輸入 Twilio 帳戶憑證以傳送簡訊。",
+					"optionAccountSid": "帳戶 SID",
+					"placeholderAccountSid": "輸入帳戶 SID",
+					"optionAuthToken": "驗證權杖",
+					"placeholderAuthToken": "輸入驗證權杖",
+					"optionFromNumber": "發送號碼",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "接收號碼",
+					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
 				"headers": {
 					"destination": "目的地"
 				}
+			},
+			"header": {
+				"title": "通知",
+				"description": "連接 Slack、Discord、電子郵件、Webhook 等，讓事件發生時正確的人立即收到通知。"
 			}
 		},
 		"pageSpeed": {
@@ -987,8 +1075,12 @@
 			},
 			"fallback": {
 				"actionButton": "建立監控！",
-				"checks": ["報告頁面的使用者體驗", "協助分析網頁速度", "提供頁面改善建議"],
-				"title": "PageSpeed 監控用於："
+				"title": "尚無 PageSpeed 監視器",
+				"description": "持續追蹤 Core Web Vitals 與 Lighthouse 評分，在使用者察覺前發現效能退化。"
+			},
+			"header": {
+				"title": "PageSpeed 監視器",
+				"description": "持續追蹤 Core Web Vitals 與 Lighthouse 評分，在使用者察覺前發現效能退化。"
 			}
 		},
 		"settings": {
@@ -1145,11 +1237,12 @@
 					"description": "新增範例監控以供示範用途。"
 				},
 				"removeMonitors": {
-					"title": "系統重設",
-					"description": "從系統中移除所有監控。",
+					"title": "系統重置",
+					"description": "從系統中移除所有監視器。",
 					"dialog": {
 						"title": "移除所有監控？",
-						"description": "此操作無法復原。"
+						"description": "此操作無法復原。",
+						"paragraph": "所有檢查歷史、事件、排定的維護時段以及使用這些監控的狀態頁面也將一併被移除。如需保留資料備份，請先匯出監控。"
 					}
 				},
 				"exportMonitors": {
@@ -1166,19 +1259,18 @@
 				"validation": {
 					"errorMessage": "請修正以下驗證錯誤："
 				}
+			},
+			"header": {
+				"title": "設定",
+				"description": "設定 SMTP、整合、保留與全域應用程式行為。"
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "狀態頁面已成功刪除",
 			"fallback": {
-				"title": "狀態頁面用於：",
-				"checks": [
-					"向使用者和利害關係人傳達系統狀態",
-					"公開顯示即時正常運行時間資訊",
-					"透過透明的服務監控建立信任",
-					"在事件期間減少支援請求"
-				],
-				"actionButton": "建立狀態頁面！"
+				"title": "尚無狀態頁面",
+				"actionButton": "建立狀態頁面！",
+				"description": "發佈一個公開頁面，向客戶和利害關係人顯示即時的運行狀態與事件歷史。"
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "熱力圖",
@@ -1203,7 +1295,18 @@
 				"allDown": "所有系統已停機",
 				"allUp": "所有系統運作正常",
 				"degraded": "部分系統正在發生問題",
-				"unknown": "無法判斷系統狀態"
+				"unknown": "無法判斷系統狀態",
+				"allBreached": "所有系統已超過閾值",
+				"allMaintenance": "所有系統正在維護中",
+				"allPaused": "所有系統已暫停",
+				"allInitializing": "所有系統正在初始化",
+				"breachedAndDown": "部分系統超過閾值且已停止",
+				"breached": "部分系統超過閾值",
+				"maintenanceAndDown": "部分系統在維護期間停止",
+				"maintenance": "部分系統正在維護",
+				"partiallyPaused": "部分系統已暫停",
+				"initializing": "部分系統正在初始化",
+				"noMonitors": "尚未設定任何監視器"
 			},
 			"table": {
 				"headers": {
@@ -1295,6 +1398,10 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "狀態頁面",
+				"description": "發佈公開頁面，向客戶和利害關係人顯示即時的運行狀態與事件歷史。"
 			}
 		},
 		"uptime": {
@@ -1310,13 +1417,12 @@
 			},
 			"fallback": {
 				"actionButton": "建立監控！",
-				"checks": [
-					"檢查網站或伺服器是否上線並回應",
-					"針對停機或效能問題通知團隊",
-					"監控 HTTP 端點、Ping、容器和連接埠",
-					"追蹤歷史正常運行時間和可靠性趨勢"
-				],
-				"title": "正常運行時間監控用於："
+				"title": "尚無運行時間監視器",
+				"description": "監控 HTTP 端點、Ping、容器和連接埠 — 一旦發生故障即刻收到提醒。"
+			},
+			"header": {
+				"title": "運行時間監視器",
+				"description": "監控 HTTP 端點、Ping、容器和連接埠 — 一旦發生故障即刻收到提醒。"
 			}
 		}
 	}

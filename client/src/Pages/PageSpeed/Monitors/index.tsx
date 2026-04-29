@@ -77,6 +77,7 @@ const PageSpeedMonitorsPage = () => {
 
 	return (
 		<MonitorBasePageWithStates
+			headerKey="pageSpeed"
 			loading={isLoading}
 			error={monitorsError || settingsError}
 			totalCount={summary?.totalMonitors ?? 0}

@@ -1,6 +1,7 @@
 import Stack from "@mui/material/Stack";
 import {
 	BasePage,
+	EmptyState,
 	TotalChecksBox,
 	UpChecksBox,
 	DownChecksBox,
@@ -102,8 +103,19 @@ const Checks = () => {
 	const downChecks = summaryResponse?.downChecks || 0;
 	const upChecks = totalChecks - (summaryResponse?.downChecks || 0);
 
+	const noMonitors = !isLoadingMonitors && (monitorsResponse?.length ?? 0) === 0;
+	if (noMonitors) {
+		return (
+			<EmptyState
+				fullscreen
+				title={t("pages.checks.fallback.title")}
+				description={t("pages.checks.fallback.description")}
+			/>
+		);
+	}
+
 	return (
-		<BasePage>
+		<BasePage headerKey="checks">
 			<Stack
 				direction={{ xs: "column", md: "row" }}
 				gap={4}

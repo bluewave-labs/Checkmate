@@ -33,6 +33,14 @@ function App() {
 						body: {
 							backgroundColor: theme.palette.background.default,
 						},
+						".Toastify__progress-bar": {
+							height: 2,
+							bottom: 0,
+							top: "auto",
+						},
+						".Toastify__progress-bar--bg": {
+							display: "none",
+						},
 					}}
 				/>
 				<AppLayout>
@@ -41,12 +49,23 @@ function App() {
 				<ToastContainer
 					newestOnTop={true}
 					theme={mode}
+					icon={false}
 					style={
 						{
-							"--toastify-color-progress-light": "#7C8BA1",
-							"--toastify-color-progress-dark": "#7C8BA1",
+							"--toastify-color-progress-light": theme.palette.primary.main,
+							"--toastify-color-progress-dark": theme.palette.primary.main,
+							"--toastify-toast-min-height": "40px",
+							"--toastify-toast-padding": "8px 12px",
+							"--toastify-toast-width": "auto",
 						} as CSSProperties
 					}
+					toastStyle={{
+						minHeight: 40,
+						padding: "8px 12px",
+						width: "auto",
+						maxWidth: "min(560px, calc(100vw - 32px))",
+					}}
+					progressStyle={{ height: 2 }}
 				/>
 			</ThemeProvider>
 		</SWRConfig>
