@@ -974,7 +974,13 @@ export const SettingsPage = () => {
 					setIsDemoMonitorsDialogOpen(false);
 				}}
 				loading={isDeletingAllMonitors}
-			/>
+				confirmColor="error"
+				confirmText={t("common.buttons.removeMonitors")}
+			>
+				<Typography variant="body1">
+					{t("pages.settings.form.removeMonitors.dialog.paragraph")}
+				</Typography>
+			</Dialog>
 
 			<Stack
 				direction="row"

@@ -1236,11 +1236,12 @@
 					"description": "Adicione monitores de exemplo para fins de demonstração."
 				},
 				"removeMonitors": {
-					"title": "Redefinição do sistema",
-					"description": "Remova todos os monitores do seu sistema.",
+					"title": "Redefinir sistema",
+					"description": "Remover todos os monitores do seu sistema.",
 					"dialog": {
 						"title": "Remover todos os monitores?",
-						"description": "Isso não pode ser desfeito."
+						"description": "Esta ação não pode ser desfeita.",
+						"paragraph": "Todo o histórico de verificações, incidentes, janelas de manutenção agendadas e páginas de status que usavam esses monitores também serão removidos. Exporte os monitores antes se quiser manter uma cópia de segurança dos dados."
 					}
 				},
 				"exportMonitors": {

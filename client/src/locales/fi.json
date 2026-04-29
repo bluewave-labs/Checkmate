@@ -1236,11 +1236,12 @@
 					"description": "Lisää esimerkkimonitoreja esittelytarkoituksiin."
 				},
 				"removeMonitors": {
-					"title": "Järjestelmän nollaus",
+					"title": "Järjestelmän palautus",
 					"description": "Poista kaikki monitorit järjestelmästäsi.",
 					"dialog": {
 						"title": "Poistetaanko kaikki monitorit?",
-						"description": "Tätä ei voi kumota."
+						"description": "Tätä toimintoa ei voi kumota.",
+						"paragraph": "Mukana poistuvat myös kaikki tarkistushistoria, häiriöt, ajoitetut huoltoikkunat sekä tilasivut, jotka käyttivät näitä monitoreja. Vie monitorit ensin, jos haluat säilyttää varmuuskopion niiden tiedoista."
 					}
 				},
 				"exportMonitors": {
