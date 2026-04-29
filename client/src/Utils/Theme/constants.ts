@@ -16,3 +16,7 @@ export const LAYOUT = {
 	XL: 12,
 	XXL: 16,
 } as const;
+
+export const HOVER = {
+	DARKEN: 0.06, // This is a coefficient for darkening function
+} as const;
