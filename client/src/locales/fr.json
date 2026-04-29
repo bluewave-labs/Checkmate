@@ -1124,6 +1124,29 @@
 						}
 					}
 				},
+				"distributedMonitoring": {
+					"title": "Distributed monitoring (GlobalPing)",
+					"description": "Configure a GlobalPing API token to lift the per-instance quota from 50 to 500 measurements per hour for distributed geo-checks.",
+					"getTokenLink": "Get an API token at globalping.io",
+					"option": {
+						"apiToken": {
+							"label": "GlobalPing API token",
+							"labelSet": "Token is set. Click Reset to change it.",
+							"placeholder": "Paste your GlobalPing API token"
+						}
+					},
+					"actions": {
+						"test": "Test connection",
+						"testing": "Testing…",
+						"reset": "Reset"
+					},
+					"status": {
+						"authenticated": "Authenticated · {{remaining}} / {{limit}} measurements remaining this hour",
+						"anonymous": "Anonymous · {{remaining}} / {{limit}} measurements remaining this hour",
+						"invalid": "Could not verify the token. Check the value and try again.",
+						"verified": "Connection verified."
+					}
+				},
 				"url": {
 					"title": "IP/URL du moniteur sur la page de statut",
 					"description": "Affichez l'adresse IP ou l'URL du moniteur sur la page de statut publique. Si désactivé, seul le nom du moniteur sera affiché pour protéger les informations sensibles.",

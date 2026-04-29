@@ -49,6 +49,7 @@ interface SettingsResponse {
 	settings: any;
 	pagespeedKeySet: boolean;
 	emailPasswordSet: boolean;
+	globalpingTokenSet: boolean;
 }
 
 export const SettingsPage = () => {
@@ -79,6 +80,23 @@ export const SettingsPage = () => {
 		fetchedSettings?.emailPasswordSet ?? false
 	);
 	const [emailPasswordHasBeenReset, setEmailPasswordHasBeenReset] = useState(false);
+	// Local state for GlobalPing token reset
+	const [isGlobalpingTokenSet, setIsGlobalpingTokenSet] = useState(
+		fetchedSettings?.globalpingTokenSet ?? false
+	);
+	const [globalpingTokenHasBeenReset, setGlobalpingTokenHasBeenReset] = useState(false);
+	const [globalpingQuota, setGlobalpingQuota] = useState<{
+		authenticated: boolean;
+		remaining: number;
+		limit: number;
+	} | null>(null);
+	const [globalpingTestStatus, setGlobalpingTestStatus] = useState<
+		"idle" | "loading" | "ok" | "invalid"
+	>("idle");
+	const { post: testGlobalpingToken } = usePost<
+		{ token?: string },
+		{ authenticated: boolean; remaining: number; limit: number } | null
+	>();
 	// Test email functionality
 	const { post: sendTestEmail, loading: isSendingTestEmail } = usePost();
 	// Local state for clear stats dialog
@@ -106,6 +124,7 @@ export const SettingsPage = () => {
 		if (fetchedSettings) {
 			setIsApiKeySet(fetchedSettings.pagespeedKeySet);
 			setIsEmailPasswordSet(fetchedSettings.emailPasswordSet);
+			setIsGlobalpingTokenSet(fetchedSettings.globalpingTokenSet);
 		}
 	}, [fetchedSettings]);
 
@@ -152,6 +171,29 @@ export const SettingsPage = () => {
 	const handleResetEmailPassword = () => {
 		form.setValue("systemEmailPassword", "");
 		setEmailPasswordHasBeenReset(true);
+	};
+
+	const handleResetGlobalpingToken = () => {
+		form.setValue("globalpingApiToken", "");
+		setGlobalpingTokenHasBeenReset(true);
+		setIsGlobalpingTokenSet(false);
+		setGlobalpingQuota(null);
+		setGlobalpingTestStatus("idle");
+	};
+
+	const handleTestGlobalpingToken = async () => {
+		setGlobalpingTestStatus("loading");
+		const tokenValue = form.getValues("globalpingApiToken");
+		const result = await testGlobalpingToken("/settings/globalping/test", {
+			token: tokenValue || undefined,
+		});
+		if (result?.success && result.data) {
+			setGlobalpingQuota(result.data);
+			setGlobalpingTestStatus("ok");
+		} else {
+			setGlobalpingQuota(null);
+			setGlobalpingTestStatus("invalid");
+		}
 	};
 
 	const handleSendTestEmail = async () => {
@@ -259,6 +301,9 @@ export const SettingsPage = () => {
 		if (isEmailPasswordSet && !emailPasswordHasBeenReset) {
 			delete (dataToSend as any).systemEmailPassword;
 		}
+		if (isGlobalpingTokenSet && !globalpingTokenHasBeenReset) {
+			delete (dataToSend as any).globalpingApiToken;
+		}
 
 		const result = await patch("/settings", dataToSend as SettingsFormData);
 
@@ -269,6 +314,8 @@ export const SettingsPage = () => {
 				setApiKeyHasBeenReset(false);
 				setIsEmailPasswordSet(result.data.emailPasswordSet);
 				setEmailPasswordHasBeenReset(false);
+				setIsGlobalpingTokenSet(result.data.globalpingTokenSet);
+				setGlobalpingTokenHasBeenReset(false);
 			}
 		}
 	};
@@ -394,6 +441,101 @@ export const SettingsPage = () => {
 									</Box>
 								)}
 							</>
+						}
+					/>
+				)}
+
+				{isAdmin && (
+					<ConfigBox
+						title={t("pages.settings.form.distributedMonitoring.title")}
+						subtitle={t("pages.settings.form.distributedMonitoring.description")}
+						rightContent={
+							<Stack gap={theme.spacing(LAYOUT.MD)}>
+								<Link
+									href="https://globalping.io/dashboard"
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									{t("pages.settings.form.distributedMonitoring.getTokenLink")}
+								</Link>
+								{(isGlobalpingTokenSet === false ||
+									globalpingTokenHasBeenReset === true) && (
+									<Controller
+										name="globalpingApiToken"
+										control={form.control}
+										defaultValue={defaults.globalpingApiToken}
+										render={({ field, fieldState }) => (
+											<TextField
+												{...field}
+												fieldLabel={t(
+													"pages.settings.form.distributedMonitoring.option.apiToken.label"
+												)}
+												type="password"
+												placeholder={t(
+													"pages.settings.form.distributedMonitoring.option.apiToken.placeholder"
+												)}
+												error={!!fieldState.error}
+												helperText={fieldState.error?.message}
+											/>
+										)}
+									/>
+								)}
+								{isGlobalpingTokenSet === true &&
+									globalpingTokenHasBeenReset === false && (
+										<Box>
+											<FieldLabel>
+												{t(
+													"pages.settings.form.distributedMonitoring.option.apiToken.labelSet"
+												)}
+											</FieldLabel>
+											<Button
+												onClick={handleResetGlobalpingToken}
+												variant="contained"
+												color="error"
+											>
+												{t("pages.settings.form.distributedMonitoring.actions.reset")}
+											</Button>
+										</Box>
+									)}
+								<Box>
+									<Button
+										onClick={handleTestGlobalpingToken}
+										variant="outlined"
+										disabled={globalpingTestStatus === "loading"}
+									>
+										{globalpingTestStatus === "loading"
+											? t("pages.settings.form.distributedMonitoring.actions.testing")
+											: t("pages.settings.form.distributedMonitoring.actions.test")}
+									</Button>
+								</Box>
+								{globalpingTestStatus === "ok" && globalpingQuota && (
+									<Typography
+										variant="body2"
+										color={theme.palette.success.main}
+									>
+										{globalpingQuota.authenticated
+											? t(
+													"pages.settings.form.distributedMonitoring.status.authenticated",
+													{
+														remaining: globalpingQuota.remaining,
+														limit: globalpingQuota.limit,
+													}
+												)
+											: t("pages.settings.form.distributedMonitoring.status.anonymous", {
+													remaining: globalpingQuota.remaining,
+													limit: globalpingQuota.limit,
+												})}
+									</Typography>
+								)}
+								{globalpingTestStatus === "invalid" && (
+									<Typography
+										variant="body2"
+										color={theme.palette.error.main}
+									>
+										{t("pages.settings.form.distributedMonitoring.status.invalid")}
+									</Typography>
+								)}
+							</Stack>
 						}
 					/>
 				)}
