@@ -15,6 +15,7 @@ import { HeaderTimeRange } from "@/Components/common";
 import { ControlsIncidentFilter } from "@/Pages/Incidents/Components/ControlsIncidentFilter";
 
 import { useGet } from "@/Hooks/UseApi";
+import { LAYOUT } from "@/Utils/Theme/constants";
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import type { Incident, IncidentsResponse, IncidentSummary } from "@/Types/Incident";
@@ -186,8 +187,9 @@ const IncidentsPage = () => {
 			{activeIncidentsCount > 0 && (
 				<>
 					<Typography
-						variant="h6"
-						sx={{ mb: theme.spacing(4), textTransform: "uppercase" }}
+						variant="eyebrow"
+						color={theme.palette.text.secondary}
+						mb={theme.spacing(LAYOUT.XS)}
 					>
 						{t("pages.incidents.table.activeIncidents")}
 					</Typography>
@@ -208,8 +210,9 @@ const IncidentsPage = () => {
 			)}
 
 			<Typography
-				variant="h6"
-				sx={{ mb: theme.spacing(4), textTransform: "uppercase" }}
+				variant="eyebrow"
+				color={theme.palette.text.secondary}
+				mb={theme.spacing(LAYOUT.XS)}
 			>
 				{t("pages.incidents.table.resolvedIncidents")}
 			</Typography>

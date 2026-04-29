@@ -542,7 +542,7 @@
 						"ping": "輸入要 Ping 的 IP 位址或主機名稱（例如 192.168.1.100 或 example.com），並新增一個顯示在儀表板上的清晰顯示名稱。",
 						"port": "輸入伺服器的 URL 或 IP、連接埠號碼，以及顯示在儀表板上的清晰顯示名稱。",
 						"docker": "輸入 Docker 容器名稱或 ID。您可以使用容器名稱（例如 my-app）或容器 ID（完整的 64 字元 ID 或短 ID）。",
-						"game": "輸入要 Ping 的 IP 位址或主機名稱及連接埠號碼（例如 192.168.1.100 或 example.com），並選擇遊戲類型。",
+						"game": "輸入要 Ping 的 IP 位址或主機名稱及連接埠號碼（例如 192.168.1.100 或 example.com），並選擇遊戲類型。部分遊戲需要在設定檔中啟用伺服器查詢 — 請參閱你的遊戲伺服器文件。詳見<gamedigLink>支援的遊戲清單</gamedigLink>了解協定細節。",
 						"pagespeed": "追蹤您網站的頁面載入效能、Core Web Vitals 和最佳化分數。",
 						"grpc": "輸入 gRPC 伺服器的主機名稱和連接埠，可選擇指定健康檢查的服務名稱，並新增一個顯示名稱。",
 						"websocket": "輸入要監控的 WebSocket URL（例如 wss://example.com/socket），並新增一個顯示名稱。",
@@ -769,6 +769,7 @@
 					"memory": "記憶體使用率",
 					"netBytesRecv": "{{name}} - 接收位元組",
 					"netBytesSent": "{{name}} - 發送位元組",
+					"netNoTraffic": "Capture 回報所有介面的流量皆為零。當 Capture 在只能看到回環介面的容器中執行時，這是正常情況——請直接在主機上執行 Capture 才能看到實際的網路活動。",
 					"temp": "溫度"
 				}
 			},
@@ -1236,8 +1237,8 @@
 					"description": "新增範例監控以供示範用途。"
 				},
 				"removeMonitors": {
-					"title": "系統重設",
-					"description": "從系統中移除所有監控。",
+					"title": "系統重置",
+					"description": "從系統中移除所有監視器。",
 					"dialog": {
 						"title": "移除所有監控？",
 						"description": "此操作無法復原。"

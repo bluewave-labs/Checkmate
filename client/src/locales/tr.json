@@ -542,7 +542,7 @@
 						"ping": "",
 						"port": "",
 						"docker": "",
-						"game": "",
+						"game": "Ping atılacak IP adresini veya ana bilgisayar adını ve port numarasını girin (ör. 192.168.1.100 veya example.com) ve oyun türünü seçin. Bazı oyunlar yapılandırma dosyasında sunucu sorgularının etkinleştirilmesini gerektirir — oyun sunucunuzun belgelerine bakın. Protokol ayrıntıları için <gamedigLink>desteklenen oyunlar listesine</gamedigLink> bakın.",
 						"pagespeed": "Web sitenizin sayfa yükleme performansını, Core Web Vitals metriklerini ve optimizasyon puanlarını takip edin.",
 						"grpc": "gRPC sunucusunun ana bilgisayar adını ve portunu girin, isteğe bağlı olarak sağlık kontrolü için bir servis adı belirtin ve bir görünen ad ekleyin.",
 						"websocket": "İzlenecek WebSocket URL'sini girin (örn. wss://example.com/socket) ve bir görünen ad ekleyin.",
@@ -769,6 +769,7 @@
 					"memory": "Bellek kullanımı",
 					"netBytesRecv": "{{name}} - Alınan bayt",
 					"netBytesSent": "{{name}} - Gönderilen bayt",
+					"netNoTraffic": "Capture tüm arabirimlerde sıfır trafik raporluyor. Bu, Capture yalnızca loopback arabirimlerini görebilen bir konteyner içinde çalışırken normaldir — gerçek ağ etkinliğini görmek için Capture'ı doğrudan host üzerinde çalıştırın.",
 					"temp": "Sıcaklık"
 				}
 			},
@@ -1236,8 +1237,8 @@
 					"description": "Gösterim amaçlı örnek monitörler ekleyin."
 				},
 				"removeMonitors": {
-					"title": "Sistem sıfırlama",
-					"description": "Sisteminizdeki tüm monitörleri kaldırın.",
+					"title": "Sistemi sıfırla",
+					"description": "Sistemdeki tüm monitörleri kaldır.",
 					"dialog": {
 						"title": "Tüm monitörler kaldırılsın mı?",
 						"description": "Bu işlem geri alınamaz."

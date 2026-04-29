@@ -25,7 +25,7 @@ cd server
 npm install
 npm run dev              # Start with hot-reload (nodemon + tsx) at http://localhost:52345
 npm run build            # TypeScript compile + path alias resolution
-npm run test             # Run Mocha tests with c8 coverage
+npm run test             # Run Jest tests with coverage
 npm run lint             # ESLint v9
 npm run lint-fix         # Auto-fix lint issues
 npm run format           # Prettier formatting
@@ -174,12 +174,13 @@ t('your.key')  // Never hardcode UI strings
 - Both use ESLint with strict settings
 
 ### Testing
-Server tests use Mocha + Chai + Sinon:
+Server tests use Jest (with `--experimental-vm-modules` for ESM):
 ```bash
-npm test                    # Run all tests with coverage
-npm test -- --grep "pattern"  # Run specific tests
+npm test                              # Run all tests with coverage
+npm test -- -t "pattern"              # Run tests matching name pattern
+npm test -- path/to/file.test.ts      # Run a specific file
 ```
-Test files: `server/tests/**/*.test.js`
+Test files: `server/test/**/*.test.ts`
 
 ## Database Models
 

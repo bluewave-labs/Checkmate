@@ -542,7 +542,7 @@
 						"ping": "",
 						"port": "",
 						"docker": "",
-						"game": "",
+						"game": "Zadejte IP adresu nebo název hostitele a číslo portu pro ping (např. 192.168.1.100 nebo example.com) a vyberte typ hry. Některé hry vyžadují povolení dotazů na server v jejich konfiguračním souboru — viz dokumentace vašeho herního serveru. Podrobnosti o protokolu najdete v <gamedigLink>seznamu podporovaných her</gamedigLink>.",
 						"pagespeed": "Sledujte výkon načítání stránky, metriky Core Web Vitals a hodnocení optimalizace vašeho webu.",
 						"grpc": "Zadejte název hostitele a port gRPC serveru, volitelně zadejte název služby pro kontrolu stavu a přidejte zobrazovaný název.",
 						"websocket": "Zadejte WebSocket URL ke sledování (např. wss://example.com/socket) a přidejte zobrazovaný název.",
@@ -769,6 +769,7 @@
 					"memory": "Využití paměti",
 					"netBytesRecv": "{{name}} - přijaté bajty",
 					"netBytesSent": "{{name}} - odeslané bajty",
+					"netNoTraffic": "Capture hlásí nulový provoz na všech rozhraních. To je normální, když Capture běží uvnitř kontejneru, který vidí pouze loopback rozhraní — spusťte Capture přímo na hostiteli, abyste viděli skutečnou síťovou aktivitu.",
 					"temp": "Teplota"
 				}
 			},
@@ -1236,8 +1237,8 @@
 					"description": "Přidejte ukázkové monitory pro demonstrační účely."
 				},
 				"removeMonitors": {
-					"title": "Obnovení systému",
-					"description": "Odeberte všechny monitory z vašeho systému.",
+					"title": "Reset systému",
+					"description": "Odstranit všechny monitory ze systému.",
 					"dialog": {
 						"title": "Odebrat všechny monitory?",
 						"description": "Tuto akci nelze vrátit zpět."

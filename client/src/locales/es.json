@@ -549,7 +549,7 @@
 						"ping": "Introduce la dirección IP o el nombre de host para hacer ping (p. ej., 192.168.1.100 o ejemplo.com) y un nombre descriptivo que aparecerá en el panel.",
 						"port": "Introduce la URL o IP del servidor, el número de puerto y un nombre descriptivo que aparecerá en el panel.",
 						"docker": "Introduce el nombre o ID del contenedor de Docker. Puedes usar el nombre del contenedor (p. ej., my-app) o su ID.",
-						"game": "Introduce la dirección IP o el nombre de host y el número de puerto para hacer ping (p. ej., 192.168.1.100 o ejemplo.com) y un nombre descriptivo que aparecerá en el panel.",
+						"game": "Introduce la dirección IP o el nombre de host y el número de puerto para hacer ping (p. ej., 192.168.1.100 o ejemplo.com) y un nombre descriptivo que aparecerá en el panel. Algunos juegos requieren habilitar consultas del servidor en su archivo de configuración — consulta la documentación de tu servidor. Consulta la <gamedigLink>lista de juegos compatibles</gamedigLink> para ver los detalles del protocolo.",
 						"pagespeed": "Rastree el rendimiento de carga de página, Core Web Vitals y puntuaciones de optimización de su sitio web.",
 						"grpc": "Ingrese el nombre de host y puerto del servidor gRPC, opcionalmente especifique un nombre de servicio para la verificación de salud, y agregue un nombre para mostrar.",
 						"websocket": "Ingrese la URL de WebSocket a monitorear (p. ej., wss://example.com/socket) y agregue un nombre para mostrar.",
@@ -776,6 +776,7 @@
 					"memory": "Uso de memoria",
 					"netBytesRecv": "{{name}} - Bytes recibidos",
 					"netBytesSent": "{{name}} - Bytes enviados",
+					"netNoTraffic": "Capture no informa tráfico en ninguna interfaz. Esto es normal cuando Capture se ejecuta dentro de un contenedor que solo ve interfaces de loopback — ejecuta Capture directamente en el host para ver actividad de red real.",
 					"temp": "Temp"
 				}
 			},
@@ -1243,8 +1244,8 @@
 					"description": "Agregue monitores de ejemplo con fines demostrativos."
 				},
 				"removeMonitors": {
-					"title": "Reinicio del sistema",
-					"description": "Elimine todos los monitores de su sistema.",
+					"title": "Reiniciar sistema",
+					"description": "Eliminar todos los monitores del sistema.",
 					"dialog": {
 						"title": "¿Eliminar todos los monitores?",
 						"description": "Esto no se puede deshacer."

@@ -75,7 +75,7 @@ export const ControlsIncidentFilter = ({
 					variant="contained"
 					onClick={onClearFilters}
 				>
-					{t("pages.incidents.filters.clearFilters")}
+					{t("common.buttons.clearFilters")}
 				</Button>
 			)}
 		</Stack>

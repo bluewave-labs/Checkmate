@@ -542,7 +542,7 @@
 						"ping": "Geben Sie die IP-Adresse oder den Hostnamen ein, der angepingt werden soll (z. B. 192.168.1.100 oder example.com), und fügen Sie einen eindeutigen Anzeigenamen hinzu, der auf dem Dashboard angezeigt wird.",
 						"port": "Geben Sie die URL oder IP des Servers, die Portnummer und einen eindeutigen Anzeigenamen ein, der auf dem Dashboard angezeigt wird.",
 						"docker": "Geben Sie die Docker-ID Ihres Containers ein. Docker-IDs müssen die vollständige 64-Zeichen-ID sein. Sie können docker inspect <short_id> ausführen, um die vollständige Container-ID abzurufen.",
-						"game": "IP Adresse oder Hostnamen und Port für Ping eingeben (z.B. 192.168.1.100 oder beispiel.de) und Spieletyp auswählen.",
+						"game": "IP Adresse oder Hostnamen und Port für Ping eingeben (z.B. 192.168.1.100 oder beispiel.de) und Spieletyp auswählen. Einige Spiele erfordern das Aktivieren von Server-Abfragen in ihrer Konfigurationsdatei — sieh in der Dokumentation deines Spielservers nach. In der <gamedigLink>Liste unterstützter Spiele</gamedigLink> findest du Protokolldetails.",
 						"pagespeed": "Verfolgen Sie die Ladezeit, Core Web Vitals und Optimierungswerte Ihrer Website.",
 						"grpc": "Geben Sie den Hostnamen und Port des gRPC-Servers ein, optional einen Dienstnamen für den Health-Check, und fügen Sie einen Anzeigenamen hinzu.",
 						"websocket": "Geben Sie die zu überwachende WebSocket-URL ein (z. B. wss://example.com/socket) und fügen Sie einen Anzeigenamen hinzu.",
@@ -769,6 +769,7 @@
 					"memory": "Arbeitsspeicherauslastung",
 					"netBytesRecv": "{{name}} - Empfangene Bytes",
 					"netBytesSent": "{{name}} - Gesendete Bytes",
+					"netNoTraffic": "Capture meldet null Datenverkehr auf allen Schnittstellen. Das ist normal, wenn Capture in einem Container läuft, der nur Loopback-Schnittstellen sieht — führe Capture direkt auf dem Host aus, um echten Netzwerkverkehr zu sehen.",
 					"temp": "Temp."
 				}
 			},
@@ -1237,7 +1238,7 @@
 				},
 				"removeMonitors": {
 					"title": "System zurücksetzen",
-					"description": "Alle Monitore aus Ihrem System entfernen.",
+					"description": "Alle Monitore aus dem System entfernen.",
 					"dialog": {
 						"title": "Alle Monitore entfernen?",
 						"description": "Dies kann nicht rückgängig gemacht werden."

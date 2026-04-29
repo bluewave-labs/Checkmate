@@ -180,8 +180,3 @@ Here's how you can contribute:
 
 [![Star History Chart](https://api.star-history.com/svg?repos=bluewave-labs/checkmate&type=Date)](https://star-history.com/#bluewave-labs/Checkmate&Date)
 
-## Our sponsors
-
-Thanks to [Gitbook](https://gitbook.io/) for giving us a free tier for their documentation platform, and [Poeditor](https://poeditor.com/) providing us a free account to use their i18n services. If you would like to sponsor Checkmate, please send an email to hello@bluewavelabs.ca
-
-If you would like to sponsor a feature, [see this page](https://checkmate.so/sponsored-features).
