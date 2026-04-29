@@ -586,42 +586,60 @@ export const SettingsPage = () => {
 								const from =
 									displayName && address ? { name: displayName, address } : address;
 								return (
-									<Box
-										component="pre"
-										p={2}
-										borderRadius={theme.shape.borderRadius}
-										bgcolor={theme.palette.action.hover}
-										sx={{
-											fontFamily: theme.typography.fontFamilyMonospace,
-											overflow: "auto",
-										}}
-									>
-										<code>
-											{JSON.stringify(
-												{
-													host: form.watch("systemEmailHost") || "",
-													port: form.watch("systemEmailPort") || "",
-													secure: form.watch("systemEmailSecure") ?? false,
-													auth: {
-														user: form.watch("systemEmailUser") || address,
-														pass: "<your_password>",
+									<>
+										<Box
+											component="pre"
+											p={2}
+											borderRadius={theme.shape.borderRadius}
+											bgcolor={theme.palette.action.hover}
+											sx={{
+												fontFamily: theme.typography.fontFamilyMonospace,
+												overflow: "auto",
+											}}
+										>
+											<code>
+												{JSON.stringify(
+													{
+														host: form.watch("systemEmailHost") || "",
+														port: form.watch("systemEmailPort") || "",
+														secure: form.watch("systemEmailSecure") ?? false,
+														auth: {
+															user: form.watch("systemEmailUser") || address,
+															pass: "<your_password>",
+														},
+														name: form.watch("systemEmailConnectionHost") || "localhost",
+														pool: form.watch("systemEmailPool") ?? false,
+														from,
+														tls: {
+															rejectUnauthorized:
+																form.watch("systemEmailRejectUnauthorized") ?? true,
+															ignoreTLS: form.watch("systemEmailIgnoreTLS") ?? false,
+															requireTLS: form.watch("systemEmailRequireTLS") ?? false,
+															servername: form.watch("systemEmailTLSServername") || "",
+														},
 													},
-													name: form.watch("systemEmailConnectionHost") || "localhost",
-													pool: form.watch("systemEmailPool") ?? false,
-													from,
-													tls: {
-														rejectUnauthorized:
-															form.watch("systemEmailRejectUnauthorized") ?? true,
-														ignoreTLS: form.watch("systemEmailIgnoreTLS") ?? false,
-														requireTLS: form.watch("systemEmailRequireTLS") ?? false,
-														servername: form.watch("systemEmailTLSServername") || "",
-													},
-												},
-												null,
-												2
-											)}
-										</code>
-									</Box>
+													null,
+													2
+												)}
+											</code>
+										</Box>
+										{address && (
+											<Box
+												component="pre"
+												p={2}
+												borderRadius={theme.shape.borderRadius}
+												bgcolor={theme.palette.action.hover}
+												sx={{
+													fontFamily: theme.typography.fontFamilyMonospace,
+													overflow: "auto",
+												}}
+											>
+												<code>
+													{`From: ${displayName ? `"${displayName}" <${address}>` : address}`}
+												</code>
+											</Box>
+										)}
+									</>
 								);
 							})()}
 						</Stack>
