@@ -24,8 +24,6 @@ Checkmate also has an agent, called [Capture](https://github.com/bluewave-labs/c
 
 Checkmate has been stress-tested with 1000+ active monitors without any particular issues or performance bottlenecks.
 
-**If you would like to sponsor a feature, [see this link](https://checkmate.so/sponsored-features).**
-
 ## 📚 Table of contents
 
 - [📦 Demo](#demo)  
@@ -38,7 +36,6 @@ Checkmate has been stress-tested with 1000+ active monitors without any particul
 - [🏗️ Tech stack](#tech-stack)  
 - [🔗 A few links](#a-few-links)  
 - [🤝 Contributing](#contributing)  
-- [💰 Our sponsors](#our-sponsors)
 
 
 ## Demo
@@ -89,30 +86,17 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 ## Features
 
 - Completely open source, deployable on your servers or home devices (e.g Raspberry Pi 4 or 5)
-- Website monitoring
+- Several monitoring options: Uptime, Docker, Ping, SSL, Port, Game server
 - Page speed monitoring
 - Infrastructure monitoring (memory, disk usage, CPU performance, network etc) - requires [Capture](https://github.com/bluewave-labs/capture) agent
   - Selective disk monitoring with mountpoint selection
-- Docker monitoring
-- Ping monitoring
-- SSL monitoring
-- Port monitoring
-- Game server monitoring (3.0)
 - Incidents at a glance
-- Status pages
-- E-mail, Webhooks, Discord and Slack notifications
+- Status pages with 4 beautiful themes
+- E-mail, Webhooks, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS) notifications
 - Scheduled maintenance
 - JSON query monitoring
-- Multi-language support for English, German, Japanese, Portuguese (Brazil), Russian, Turkish, Ukrainian, Vietnamese, Chinese (Traditional, Taiwan)
+- Multi-language support for Arabic, Chinese (Simplified), Chinese (Traditional, Taiwan), Czech, English, Finnish, French, German, Japanese, Portuguese (Brazil), Russian, Spanish, Thai, Turkish, Ukrainian, and Vietnamese
 
-**Short term roadmap:** 
-
-- Plugins that will help Checkmate get any information from a remote service (e.g database, etc)
-- Better notifications
-- Network monitoring
-- ..and a few more features
-
-If you would like to sponsor an additional feature, [see this page](https://checkmate.so/sponsored-features).
 
 ## Monitor Lifecycle
 
