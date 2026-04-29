@@ -452,7 +452,7 @@ export const SettingsPage = () => {
 						rightContent={
 							<Stack gap={theme.spacing(LAYOUT.MD)}>
 								<Link
-									href="https://globalping.io/dashboard"
+									href="https://dash.globalping.io/"
 									target="_blank"
 									rel="noopener noreferrer"
 								>
