@@ -9,13 +9,14 @@ import {
 	EmptyMonitorFallback,
 } from "@/Components/design-elements/Fallback";
 import { EmptyState } from "@/Components/design-elements/EmptyState";
+import { NoticeBanner } from "@/Components/design-elements/NoticeBanner";
 import { Breadcrumb } from "@/Components/design-elements/Breadcrumb";
 import { PageHeader } from "@/Components/design-elements/PageHeader";
 import CircularProgress from "@mui/material/CircularProgress";
 import { LanguageSelector, SwitchTheme } from "@/Components/inputs";
 
 import type { StackProps } from "@mui/material/Stack";
-import { useTheme, alpha } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import { Trans, useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
 import { Typography } from "@mui/material";
@@ -23,60 +24,30 @@ import { Typography } from "@mui/material";
 export const PageSpeedKeyPriorityFallback = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const alertBg = alpha(theme.palette.warning.main, 0.08);
-	const alertBorder = alpha(theme.palette.warning.main, 0.45);
-	const alertIcon = theme.palette.warning.main;
 	return (
 		<EmptyState
 			fullscreen
 			title={t("pages.pageSpeed.fallback.title")}
 			description={t("pages.pageSpeed.fallback.description")}
 			alert={
-				<Stack
-					direction="row"
-					alignItems="flex-start"
-					gap={theme.spacing(LAYOUT.SM)}
-					sx={{
-						width: "100%",
-						p: theme.spacing(LAYOUT.MD),
-						borderRadius: 1,
-						border: `1px solid ${alertBorder}`,
-						backgroundColor: alertBg,
-						textAlign: "left",
-					}}
-				>
-					<Box
-						component="span"
-						sx={{
-							color: alertIcon,
-							fontSize: 18,
-							lineHeight: 1,
-							mt: "2px",
+				<NoticeBanner severity="warning">
+					<Trans
+						i18nKey="common.alerts.pageSpeedApiKey.content"
+						components={{
+							settingsLink: (
+								<Link
+									component={RouterLink}
+									to="/settings"
+									color={theme.palette.primary.main}
+									fontWeight={600}
+									sx={{
+										textDecoration: "underline",
+									}}
+								/>
+							),
 						}}
-					>
-						⚠
-					</Box>
-					<Typography
-						sx={{ color: theme.palette.text.primary, lineHeight: 1.55, fontSize: 13 }}
-					>
-						<Trans
-							i18nKey="common.alerts.pageSpeedApiKey.content"
-							components={{
-								settingsLink: (
-									<Link
-										component={RouterLink}
-										to="/settings"
-										sx={{
-											color: theme.palette.primary.main,
-											fontWeight: 600,
-											textDecoration: "underline",
-										}}
-									/>
-								),
-							}}
-						/>
-					</Typography>
-				</Stack>
+					/>
+				</NoticeBanner>
 			}
 		/>
 	);

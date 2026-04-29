@@ -17,7 +17,7 @@ export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 	return (
 		<Stack>
 			<Typography
-				fontSize={typographyLevels.xl}
+				fontSize={typographyLevels.xxl}
 				fontWeight={500}
 				overflow={"hidden"}
 				textOverflow={"ellipsis"}
