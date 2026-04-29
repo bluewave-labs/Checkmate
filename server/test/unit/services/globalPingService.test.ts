@@ -555,9 +555,7 @@ describe("GlobalPingService", () => {
 
 			await service.createMeasurement("http", "https://example.com", ["EU"] as GeoContinent[]);
 
-			const errorCall = (logger.error as jest.Mock).mock.calls.find(
-				(args) => (args[0] as { method?: string }).method === "createMeasurement"
-			);
+			const errorCall = (logger.error as jest.Mock).mock.calls.find((args) => (args[0] as { method?: string }).method === "createMeasurement");
 			expect(errorCall).toBeDefined();
 			const detailsError = (errorCall![0] as { details: { error: string } }).details.error;
 			expect(detailsError).not.toContain("secret-token");
