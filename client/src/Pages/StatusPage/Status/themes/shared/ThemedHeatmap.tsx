@@ -31,10 +31,10 @@ export const ThemedHeatmap = ({ checks, containerSx, cellSx }: Props) => {
 	const { t } = useTranslation();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 
-	const source = checks.slice(0, CELLS).reverse();
+	const source = checks.slice(-CELLS);
 	const padded: (CheckSnapshot | null)[] = [
-		...Array.from({ length: Math.max(0, CELLS - source.length) }, () => null),
 		...source,
+		...Array.from({ length: Math.max(0, CELLS - source.length) }, () => null),
 	];
 
 	return (

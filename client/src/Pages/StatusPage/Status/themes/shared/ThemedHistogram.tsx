@@ -37,10 +37,10 @@ export const ThemedHistogram = ({
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 
 	const { padded, max, avg, peak } = useMemo(() => {
-		const source = checks.slice(0, CELLS).reverse();
+		const source = checks.slice(-CELLS);
 		const out: (CheckSnapshot | null)[] = [
-			...Array.from({ length: Math.max(0, CELLS - source.length) }, () => null),
 			...source,
+			...Array.from({ length: Math.max(0, CELLS - source.length) }, () => null),
 		];
 		const valid = out.filter((c): c is CheckSnapshot => c !== null && c.responseTime > 0);
 		const maxRt = valid.length ? Math.max(...valid.map((c) => c.responseTime)) : 1;
