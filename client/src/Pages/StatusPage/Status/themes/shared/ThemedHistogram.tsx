@@ -77,7 +77,7 @@ export const ThemedHistogram = ({
 								variant="caption"
 								sx={{ opacity: 0.8 }}
 							>
-								{formatCheckTimestamp(check.createdAt as unknown as string)}
+								{formatCheckTimestamp(check.createdAt)}
 							</Typography>
 						</Stack>
 					);

@@ -1345,8 +1345,6 @@
 					"title": "Page theme",
 					"description": "Choose the visual style for your public status page.",
 					"label": "Theme",
-					"previewLight": "Light",
-					"previewDark": "Dark",
 					"options": {
 						"refined": {
 							"name": "Refined",
@@ -1368,7 +1366,6 @@
 				},
 				"themeMode": {
 					"label": "Theme mode",
-					"description": "Auto follows the visitor's device preference.",
 					"auto": "Auto (follow visitor's device)",
 					"light": "Light only",
 					"dark": "Dark only"
