@@ -12,7 +12,6 @@ import { IStatusPageService } from "@/service/business/statusPageService.js";
 import { IMonitorsRepository } from "@/repositories/index.js";
 import { ISettingsService } from "@/service/system/settingsService.js";
 import { NormalizeData } from "@/utils/dataUtils.js";
-import { DEFAULT_STATUS_PAGE_THEME, DEFAULT_STATUS_PAGE_THEME_MODE, type StatusPage } from "@/types/statusPage.js";
 
 const SERVICE_NAME = "statusPageController";
 
@@ -40,19 +39,6 @@ class StatusPageController implements IStatusPageController {
 		return StatusPageController.SERVICE_NAME;
 	}
 
-	private withoutThemeFields = (body: Record<string, unknown>): Record<string, unknown> => {
-		const rest = { ...body };
-		delete rest.theme;
-		delete rest.themeMode;
-		return rest;
-	};
-
-	private applyDefaultTheme = (statusPage: StatusPage): StatusPage => ({
-		...statusPage,
-		theme: DEFAULT_STATUS_PAGE_THEME,
-		themeMode: DEFAULT_STATUS_PAGE_THEME_MODE,
-	});
-
 	createStatusPage = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			createStatusPageBodyValidation.parse(req.body);
@@ -60,16 +46,14 @@ class StatusPageController implements IStatusPageController {
 				imageValidation.parse(req.file);
 			}
 
-			const themesEnabled = this.settingsService.areStatusPageThemesEnabled();
-			const body = themesEnabled ? req.body : this.withoutThemeFields(req.body);
 			const teamId = requireTeamId(req?.user?.teamId);
 			const userId = requireUserId(req?.user?.id);
-			const statusPage = await this.statusPageService.createStatusPage(userId, teamId, req.file, body);
+			const statusPage = await this.statusPageService.createStatusPage(userId, teamId, req.file, req.body);
 
 			return res.status(200).json({
 				success: true,
 				msg: "Status page created successfully",
-				data: themesEnabled ? statusPage : this.applyDefaultTheme(statusPage),
+				data: statusPage,
 			});
 		} catch (error) {
 			next(error);
@@ -83,21 +67,19 @@ class StatusPageController implements IStatusPageController {
 				imageValidation.parse(req.file);
 			}
 
-			const themesEnabled = this.settingsService.areStatusPageThemesEnabled();
-			const body = themesEnabled ? req.body : this.withoutThemeFields(req.body);
 			const teamId = requireTeamId(req?.user?.teamId);
 			const statusPageId = req.params.id as string;
 			if (!statusPageId) {
 				throw new AppError({ message: "Status page ID is required", status: 400 });
 			}
-			const statusPage = await this.statusPageService.updateStatusPage(statusPageId, teamId, req.file, body);
+			const statusPage = await this.statusPageService.updateStatusPage(statusPageId, teamId, req.file, req.body);
 			if (statusPage === null) {
 				throw new AppError({ message: "Status page not found", status: 404 });
 			}
 			res.status(200).json({
 				success: true,
 				msg: "Status page updated successfully",
-				data: themesEnabled ? statusPage : this.applyDefaultTheme(statusPage),
+				data: statusPage,
 			});
 		} catch (error) {
 			next(error);
@@ -143,12 +125,11 @@ class StatusPageController implements IStatusPageController {
 				}
 				return { ...monitor, checks: normalizedChecks };
 			});
-			const themesEnabled = this.settingsService.areStatusPageThemesEnabled();
 			return res.status(200).json({
 				success: true,
 				msg: "Status page retrieved successfully",
 				data: {
-					statusPage: themesEnabled ? statusPage : this.applyDefaultTheme(statusPage),
+					statusPage,
 					monitors: normalizedMonitors,
 				},
 			});
@@ -161,11 +142,10 @@ class StatusPageController implements IStatusPageController {
 			const teamId = requireTeamId(req.user?.teamId);
 			const statusPages = await this.statusPageService.getStatusPagesByTeamId(teamId);
 
-			const themesEnabled = this.settingsService.areStatusPageThemesEnabled();
 			return res.status(200).json({
 				success: true,
 				msg: "Status pages retrieved successfully",
-				data: themesEnabled ? statusPages : statusPages.map((sp) => this.applyDefaultTheme(sp)),
+				data: statusPages,
 			});
 		} catch (error) {
 			next(error);
