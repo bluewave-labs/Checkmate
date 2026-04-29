@@ -51,8 +51,8 @@ export interface StatusPage {
 	showAdminLoginLink: boolean;
 	showInfrastructure: boolean;
 	customCSS: string;
-	theme?: StatusPageTheme;
-	themeMode?: StatusPageThemeMode;
+	theme: StatusPageTheme;
+	themeMode: StatusPageThemeMode;
 	createdAt: string;
 	updatedAt: string;
 }
