@@ -66,6 +66,7 @@ class StatusPageController implements IStatusPageController {
 			if (req.file) {
 				imageValidation.parse(req.file);
 			}
+
 			const teamId = requireTeamId(req?.user?.teamId);
 			const statusPageId = req.params.id as string;
 			if (!statusPageId) {
@@ -127,7 +128,10 @@ class StatusPageController implements IStatusPageController {
 			return res.status(200).json({
 				success: true,
 				msg: "Status page retrieved successfully",
-				data: { statusPage, monitors: normalizedMonitors },
+				data: {
+					statusPage,
+					monitors: normalizedMonitors,
+				},
 			});
 		} catch (error) {
 			next(error);
