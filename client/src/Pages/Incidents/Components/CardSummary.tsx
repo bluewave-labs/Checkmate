@@ -1,8 +1,7 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
-import { BaseBox, ValueLabel } from "@/Components/design-elements";
+import { BaseBox, Icon, ValueLabel } from "@/Components/design-elements";
 import { CircleCheck, TriangleAlert, Bell, Wrench, Globe } from "lucide-react";
 import Box from "@mui/material/Box";
 
@@ -25,6 +24,7 @@ const SummaryItem = ({ icon, label, value }: SummaryItemProps) => {
 			alignItems="center"
 			justifyContent="space-between"
 			gap={theme.spacing(2)}
+			minHeight={32}
 		>
 			<Stack
 				direction="row"
@@ -32,10 +32,10 @@ const SummaryItem = ({ icon, label, value }: SummaryItemProps) => {
 				gap={theme.spacing(2)}
 			>
 				{icon}
-				<Typography variant="body2">{label}</Typography>
+				<Typography variant="body1">{label}</Typography>
 			</Stack>
 			<Typography
-				variant="body2"
+				variant="body1"
 				fontWeight={600}
 			>
 				{value}
@@ -67,15 +67,11 @@ export const SummaryCard = ({
 			>
 				<Typography
 					component="h2"
-					sx={{
-						textTransform: "uppercase",
-						fontWeight: 500,
-						fontSize: 13,
-					}}
+					variant="eyebrow"
+					color="text.secondary"
 				>
 					{title}
 				</Typography>
-				<Divider />
 				{children}
 			</Stack>
 		</BaseBox>
@@ -97,10 +93,13 @@ export const SummaryCardActiveIncidents = ({
 	const activeCount = summary.totalActive;
 	const hasActive = activeCount > 0;
 	const color = hasActive ? theme.palette.error.main : theme.palette.success.main;
-	const icon = hasActive ? (
-		<TriangleAlert color={color} />
-	) : (
-		<CircleCheck color={color} />
+	const icon = (
+		<Box sx={{ color, display: "inline-flex" }}>
+			<Icon
+				icon={hasActive ? TriangleAlert : CircleCheck}
+				size={32}
+			/>
+		</Box>
 	);
 	const msg = t("pages.incidents.summaryCard.activeIncidents.active", {
 		count: activeCount,
@@ -133,10 +132,7 @@ const SummaryIncidentItem = ({ incident }: { incident: IncidentSummaryItem }) =>
 			container
 			alignItems="center"
 			spacing={2}
-			sx={{
-				width: "100%",
-				py: theme.spacing(0.5),
-			}}
+			sx={{ width: "100%", minHeight: 32 }}
 		>
 			<Grid
 				size={{ xs: 12, lg: 5 }}
@@ -147,7 +143,7 @@ const SummaryIncidentItem = ({ incident }: { incident: IncidentSummaryItem }) =>
 					gap: theme.spacing(2),
 				}}
 			>
-				<Globe />
+				<Icon icon={Globe} />
 				<Typography
 					variant="body1"
 					fontWeight={500}
@@ -159,9 +155,7 @@ const SummaryIncidentItem = ({ incident }: { incident: IncidentSummaryItem }) =>
 
 			<Grid
 				size={{ xs: 12, md: 6, lg: 3 }}
-				sx={{
-					display: "flex",
-				}}
+				sx={{ display: "flex" }}
 			>
 				<ValueLabel
 					value={incident.status ? "negative" : "positive"}
@@ -173,7 +167,7 @@ const SummaryIncidentItem = ({ incident }: { incident: IncidentSummaryItem }) =>
 				size={{ xs: 12, md: 6, lg: 4 }}
 				sx={{
 					textAlign: { xs: "left", md: "right" },
-					fontWeight: 500,
+					fontWeight: 600,
 				}}
 			>
 				<Typography variant="body1">{duration}</Typography>
@@ -190,22 +184,17 @@ export const SummaryCardLatestIncidents = ({
 	summary,
 }: SummaryCardLatestIncidentsProps) => {
 	const { t } = useTranslation();
-	const theme = useTheme();
 
 	const latestIncidents = summary?.latestIncidents ?? [];
 
 	return (
 		<SummaryCard title={t("pages.incidents.summaryCard.latestIncidents.title")}>
-			<Stack gap={theme.spacing(4)}>
-				{latestIncidents.slice(0, 3).map((incident, index) => (
-					<Box key={incident.id}>
-						<SummaryIncidentItem incident={incident} />
-						{index < latestIncidents.length - 1 && (
-							<Divider sx={{ mt: theme.spacing(2) }} />
-						)}
-					</Box>
-				))}
-			</Stack>
+			{latestIncidents.slice(0, 3).map((incident) => (
+				<SummaryIncidentItem
+					key={incident.id}
+					incident={incident}
+				/>
+			))}
 		</SummaryCard>
 	);
 };
@@ -224,17 +213,17 @@ export const SummaryCardStats = ({ summary }: SummaryCardStatsProps) => {
 	return (
 		<SummaryCard title={t("pages.incidents.summaryCard.incidentStats.title")}>
 			<SummaryItem
-				icon={<Bell size={18} />}
+				icon={<Icon icon={Bell} />}
 				label={t("pages.incidents.summaryCard.incidentStats.totalIncidents")}
 				value={summary?.total || 0}
 			/>
 			<SummaryItem
-				icon={<TriangleAlert size={18} />}
+				icon={<Icon icon={TriangleAlert} />}
 				label={t("pages.incidents.summaryCard.incidentStats.mostAffectedMonitor")}
 				value={mostAffected}
 			/>
 			<SummaryItem
-				icon={<Wrench size={18} />}
+				icon={<Icon icon={Wrench} />}
 				label={t("pages.incidents.summaryCard.incidentStats.avgResolutionTime")}
 				value={
 					summary.total > 0

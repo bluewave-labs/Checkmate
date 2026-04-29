@@ -20,6 +20,20 @@ interface CardDetailsProps {
 	sx?: object;
 }
 
+const SectionHeading = ({ children }: { children: React.ReactNode }) => (
+	<Typography
+		component="h2"
+		variant="eyebrow"
+		color="text.secondary"
+	>
+		{children}
+	</Typography>
+);
+
+const Cell = ({ children }: { children: React.ReactNode }) => (
+	<Typography variant="body1">{children}</Typography>
+);
+
 export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
@@ -33,22 +47,18 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 			gap={theme.spacing(LAYOUT.MD)}
 			sx={sx}
 		>
-			<Typography textTransform={"uppercase"}>
-				{t("pages.incidents.dialog.details.title")}
-			</Typography>
+			<SectionHeading>{t("pages.incidents.dialog.details.title")}</SectionHeading>
 			<BaseBox padding={LAYOUT.MD}>
 				<Stack gap={theme.spacing(LAYOUT.MD)}>
-					<Typography textTransform={"uppercase"}>
-						{t("pages.incidents.dialog.details.overview")}
-					</Typography>
-					<Divider />
-
+					<SectionHeading>{t("pages.incidents.dialog.details.overview")}</SectionHeading>
 					<Grid
 						container
 						spacing={theme.spacing(LAYOUT.MD)}
 						alignItems="center"
 					>
-						<Grid size={2}>{t("pages.incidents.dialog.details.status")}</Grid>
+						<Grid size={2}>
+							<Cell>{t("pages.incidents.dialog.details.status")}</Cell>
+						</Grid>
 						<Grid size={10}>
 							<ValueLabel
 								value={incident.status ? "negative" : "positive"}
@@ -61,15 +71,17 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 						</Grid>
 						{monitor && (
 							<>
-								<Grid size={2}>{t("pages.incidents.dialog.details.monitor")}</Grid>
+								<Grid size={2}>
+									<Cell>{t("pages.incidents.dialog.details.monitor")}</Cell>
+								</Grid>
 								<Grid size={10}>
-									<Typography>{monitor.name ?? "N/A"}</Typography>
+									<Cell>{monitor.name ?? "N/A"}</Cell>
 								</Grid>
 								<Grid size={2}>
-									<Typography>{t("pages.incidents.dialog.details.url")}</Typography>
+									<Cell>{t("pages.incidents.dialog.details.url")}</Cell>
 								</Grid>
 								<Grid size={10}>
-									<Typography>{monitor.url ?? "N/A"}</Typography>
+									<Cell>{monitor.url ?? "N/A"}</Cell>
 								</Grid>
 							</>
 						)}
@@ -78,51 +90,48 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 			</BaseBox>
 			<BaseBox padding={LAYOUT.MD}>
 				<Stack gap={theme.spacing(LAYOUT.MD)}>
-					<Typography textTransform={"uppercase"}>
-						{t("pages.incidents.dialog.details.analysis")}
-					</Typography>
-					<Divider />
+					<SectionHeading>{t("pages.incidents.dialog.details.analysis")}</SectionHeading>
 					<Grid
 						container
 						spacing={theme.spacing(LAYOUT.MD)}
 					>
 						<Grid size={6}>
-							<Typography>{t("pages.incidents.dialog.details.timeline")}</Typography>
+							<Cell>{t("pages.incidents.dialog.details.timeline")}</Cell>
 						</Grid>
 						<Grid size={6}>
-							<Typography>{t("pages.incidents.dialog.details.detailsLabel")}</Typography>
+							<Cell>{t("pages.incidents.dialog.details.detailsLabel")}</Cell>
 						</Grid>
 						<Grid size={6}>
-							<Divider></Divider>
+							<Divider />
 						</Grid>
 						<Grid size={6}>
-							<Divider></Divider>
+							<Divider />
 						</Grid>
 						<Grid size={2}>
-							<Typography>{t("pages.incidents.dialog.details.startedAt")}</Typography>
+							<Cell>{t("pages.incidents.dialog.details.startedAt")}</Cell>
 						</Grid>
 						<Grid size={4}>
-							<Typography>
+							<Cell>
 								{formatDateWithTz(incident.startTime, "D MMM YYYY, h:mm A", uiTimezone)}
-							</Typography>
+							</Cell>
 						</Grid>
 						<Grid size={2}>
-							<Typography>{t("pages.incidents.dialog.details.statusCode")}</Typography>
+							<Cell>{t("pages.incidents.dialog.details.statusCode")}</Cell>
 						</Grid>
 						<Grid size={4}>
-							<Typography>{incident.statusCode ?? "N/A"}</Typography>
+							<Cell>{incident.statusCode ?? "N/A"}</Cell>
 						</Grid>
 						<Grid size={2}>
-							<Typography>{t("pages.incidents.dialog.details.downtime")}</Typography>
+							<Cell>{t("pages.incidents.dialog.details.downtime")}</Cell>
 						</Grid>
 						<Grid size={4}>
-							<Typography>{getIncidentsDuration(incident)}</Typography>
+							<Cell>{getIncidentsDuration(incident)}</Cell>
 						</Grid>
 						<Grid size={2}>
-							<Typography>{t("pages.incidents.dialog.details.message")}</Typography>
+							<Cell>{t("pages.incidents.dialog.details.message")}</Cell>
 						</Grid>
 						<Grid size={4}>
-							<Typography>{incident.message ?? "N/A"}</Typography>
+							<Cell>{incident.message ?? "N/A"}</Cell>
 						</Grid>
 					</Grid>
 				</Stack>
@@ -130,60 +139,53 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 			{!incident.status && (
 				<BaseBox padding={LAYOUT.MD}>
 					<Stack gap={theme.spacing(LAYOUT.XS)}>
-						<Typography textTransform={"uppercase"}>
+						<SectionHeading>
 							{t("pages.incidents.dialog.details.resolutionDetails")}
-						</Typography>
-						<Divider />
+						</SectionHeading>
 						<Grid
 							container
 							spacing={theme.spacing(LAYOUT.MD)}
 							alignItems="center"
 						>
 							<Grid size={2}>
-								<Typography>{t("pages.incidents.dialog.details.resolvedAt")}</Typography>
+								<Cell>{t("pages.incidents.dialog.details.resolvedAt")}</Cell>
 							</Grid>
 							<Grid size={10}>
-								<Typography>
+								<Cell>
 									{incident.endTime
 										? formatDateWithTz(incident.endTime, "D MMM YYYY, h:mm A", uiTimezone)
 										: "N/A"}
-								</Typography>
+								</Cell>
 							</Grid>
 							<Grid size={2}>
-								<Typography>
-									{t("pages.incidents.dialog.details.resolutionType")}
-								</Typography>
+								<Cell>{t("pages.incidents.dialog.details.resolutionType")}</Cell>
 							</Grid>
 							<Grid size={10}>
-								<Typography>
+								<Cell>
 									{incident.resolutionType
 										? t(
 												`pages.incidents.dialog.details.resolutionTypes.${incident.resolutionType}`
 											)
 										: "N/A"}
-								</Typography>
+								</Cell>
 							</Grid>
 							{incident.resolvedBy && (
 								<>
 									<Grid size={2}>
-										<Typography>
-											{t("pages.incidents.dialog.details.resolvedBy")}
-										</Typography>
+										<Cell>{t("pages.incidents.dialog.details.resolvedBy")}</Cell>
 									</Grid>
 									<Grid size={10}>
-										<Typography>
-											{incident.resolvedByEmail ?? incident.resolvedBy}
-										</Typography>
+										<Cell>{incident.resolvedByEmail ?? incident.resolvedBy}</Cell>
 									</Grid>
 								</>
 							)}
 							{incident.comment && (
 								<>
 									<Grid size={2}>
-										<Typography>{t("pages.incidents.dialog.details.comment")}</Typography>
+										<Cell>{t("pages.incidents.dialog.details.comment")}</Cell>
 									</Grid>
 									<Grid size={10}>
-										<Typography>{incident.comment}</Typography>
+										<Cell>{incident.comment}</Cell>
 									</Grid>
 								</>
 							)}
