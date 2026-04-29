@@ -128,8 +128,8 @@ export const SettingsPage = () => {
 		timezoneOptions.find((tz) => tz.id === selectedTimezoneId) ?? null;
 
 	const handleTimezoneChange = (newValue: Timezone | null) => {
-		const newId = newValue?.id ?? "";
-		dispatch(setTimezone({ timezone: newId }));
+		if (!newValue?.id) return;
+		dispatch(setTimezone({ timezone: newValue.id }));
 	};
 
 	const handleModeChange = (e: SelectChangeEvent<ThemeMode>) => {
