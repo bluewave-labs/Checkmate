@@ -9,8 +9,13 @@ import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import { useLocation, useParams } from "react-router-dom";
 import { useGet } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
-import type { StatusPage, StatusPageResponse, StatusPageTheme } from "@/Types/StatusPage";
 import { resolveStatusPageTheme } from "@/Types/StatusPage";
+import {
+	PUBLIC_STATUS_PAGE_PREFIX,
+	type StatusPage,
+	type StatusPageResponse,
+	type StatusPageTheme,
+} from "@/Types/StatusPage";
 import { HeaderStatusPageControls } from "./Components/HeaderStatusPageControls";
 import { StatusPageThemeProvider } from "./themes/StatusPageThemeProvider";
 import { RefinedStatusPage } from "./themes/refined/RefinedStatusPage";
@@ -40,7 +45,8 @@ const StatusPageView = () => {
 	const { url } = useParams();
 	const isAdmin = useIsAdmin();
 	const location = useLocation();
-	const isPublic = location.pathname.startsWith("/status/public");
+
+	const isPublic = location.pathname.startsWith(PUBLIC_STATUS_PAGE_PREFIX);
 
 	const apiUrl = url ? `/status-page/${url}?type=uptime&type=infrastructure` : null;
 
@@ -105,8 +111,7 @@ const StatusPageView = () => {
 		);
 	}
 
-	// Admin preview: wrap in a mock browser frame inside the admin shell.
-	const publicUrl = `${window.location.origin}/status/public/${statusPage.url}`;
+	const publicUrl = `${window.location.origin}${PUBLIC_STATUS_PAGE_PREFIX}/${statusPage.url}`;
 	return (
 		<BasePage
 			loading={isLoading}

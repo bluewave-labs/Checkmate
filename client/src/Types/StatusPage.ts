@@ -38,6 +38,7 @@ export const resolveStatusPageThemeMode = (
 	value: string | null | undefined
 ): StatusPageThemeMode =>
 	STATUS_PAGE_THEME_MODES.find((m) => m === value) ?? DEFAULT_STATUS_PAGE_THEME_MODE;
+export const PUBLIC_STATUS_PAGE_PREFIX = "/status/public";
 
 export interface StatusPage {
 	id: string;
