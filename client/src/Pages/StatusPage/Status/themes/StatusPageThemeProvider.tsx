@@ -8,7 +8,8 @@ import {
 } from "react";
 import {
 	DEFAULT_STATUS_PAGE_THEME,
-	DEFAULT_STATUS_PAGE_THEME_MODE,
+	resolveStatusPageTheme,
+	resolveStatusPageThemeMode,
 	type StatusPageTheme,
 	type StatusPageThemeMode,
 } from "@/Types/StatusPage";
@@ -58,8 +59,8 @@ export const StatusPageThemeProvider = ({
 	transparent = false,
 	children,
 }: Props) => {
-	const resolvedTheme = theme ?? DEFAULT_STATUS_PAGE_THEME;
-	const resolvedThemeMode = themeMode ?? DEFAULT_STATUS_PAGE_THEME_MODE;
+	const resolvedTheme = resolveStatusPageTheme(theme);
+	const resolvedThemeMode = resolveStatusPageThemeMode(themeMode);
 
 	const [systemMode, setSystemMode] = useState<ResolvedMode>(resolveSystemMode);
 
@@ -89,7 +90,7 @@ export const StatusPageThemeProvider = ({
 			htmlColorScheme: html.style.colorScheme,
 		};
 		const resolvedMode = resolvedThemeMode === "auto" ? systemMode : resolvedThemeMode;
-		const bg = themeTokens[theme ?? DEFAULT_STATUS_PAGE_THEME][resolvedMode].bg;
+		const bg = themeTokens[resolvedTheme][resolvedMode].bg;
 		html.style.background = bg;
 		body.style.background = bg;
 		body.style.margin = "0";
@@ -100,7 +101,7 @@ export const StatusPageThemeProvider = ({
 			body.style.margin = prev.bodyMargin;
 			html.style.colorScheme = prev.htmlColorScheme;
 		};
-	}, [paintBody, theme, resolvedThemeMode, systemMode]);
+	}, [paintBody, resolvedTheme, resolvedThemeMode, systemMode]);
 
 	const resolvedMode: ResolvedMode =
 		resolvedThemeMode === "auto" ? systemMode : resolvedThemeMode;

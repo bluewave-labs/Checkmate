@@ -13,6 +13,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { useGet } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
 import type { StatusPage, StatusPageResponse, StatusPageTheme } from "@/Types/StatusPage";
+import { resolveStatusPageTheme } from "@/Types/StatusPage";
 import { HeaderStatusPageControls } from "./Components/HeaderStatusPageControls";
 import { StatusPageThemeProvider } from "./themes/StatusPageThemeProvider";
 import { RefinedStatusPage } from "./themes/refined/RefinedStatusPage";
@@ -26,8 +27,9 @@ type ThemedRendererProps = {
 	monitors: (Monitor & { checks?: Monitor["recentChecks"] })[];
 };
 
-const THEMED_RENDERERS: Partial<
-	Record<StatusPageTheme, React.ComponentType<ThemedRendererProps>>
+const THEMED_RENDERERS: Record<
+	StatusPageTheme,
+	React.ComponentType<ThemedRendererProps>
 > = {
 	refined: RefinedStatusPage,
 	modern: ModernStatusPage,
@@ -97,15 +99,13 @@ const StatusPageView = () => {
 		? `data:${statusPage.logo.contentType};base64,${statusPage.logo.data}`
 		: null;
 
-	const ThemedRenderer = statusPage.theme
-		? THEMED_RENDERERS[statusPage.theme]
-		: undefined;
-	const themedRenderer = ThemedRenderer ? (
+	const ThemedRenderer = THEMED_RENDERERS[resolveStatusPageTheme(statusPage.theme)];
+	const themedRenderer = (
 		<ThemedRenderer
 			statusPage={statusPage}
 			monitors={monitors}
 		/>
-	) : null;
+	);
 
 	if (themedRenderer) {
 		// Public route: render directly on the viewport, themed background covers everything.

@@ -29,6 +29,16 @@ export const STATUS_PAGE_THEME_MODES = ["auto", "light", "dark"] as const;
 export type StatusPageThemeMode = (typeof STATUS_PAGE_THEME_MODES)[number];
 export const DEFAULT_STATUS_PAGE_THEME_MODE: StatusPageThemeMode = "auto";
 
+export const resolveStatusPageTheme = (
+	value: string | null | undefined
+): StatusPageTheme =>
+	STATUS_PAGE_THEMES.find((t) => t === value) ?? DEFAULT_STATUS_PAGE_THEME;
+
+export const resolveStatusPageThemeMode = (
+	value: string | null | undefined
+): StatusPageThemeMode =>
+	STATUS_PAGE_THEME_MODES.find((m) => m === value) ?? DEFAULT_STATUS_PAGE_THEME_MODE;
+
 export interface StatusPage {
 	id: string;
 	userId: string;
