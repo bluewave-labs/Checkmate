@@ -1,12 +1,13 @@
 const typographyBase = 13;
 
 export const typographyLevels = {
-	base: typographyBase,
-	xs: `${(typographyBase - 4) / 16}rem`,
-	s: `${(typographyBase - 2) / 16}rem`,
-	m: `${typographyBase / 16}rem`,
-	l: `${(typographyBase + 2) / 16}rem`,
-	xl: `${(typographyBase + 10) / 16}rem`,
+	base: typographyBase, // 13px
+	xs: `${(typographyBase - 4) / 16}rem`, // 9px
+	s: `${(typographyBase - 2) / 16}rem`, // 11px
+	m: `${typographyBase / 16}rem`, // 13px
+	l: `${(typographyBase + 2) / 16}rem`, // 15px
+	xl: `${(typographyBase + 5) / 16}rem`, // 18px
+	xxl: `${(typographyBase + 10) / 16}rem`, // 23px
 };
 
 export const colors = {
