@@ -23,6 +23,7 @@ export interface ISettingsService {
 	areStatusPageThemesEnabled(): boolean;
 	getDBSettings(): Promise<Settings>;
 	updateDbSettings(newSettings: SettingsUpdate): Promise<Settings>;
+	getGlobalpingApiToken(): Promise<string | undefined>;
 }
 
 export class SettingsService implements ISettingsService {
@@ -94,5 +95,11 @@ export class SettingsService implements ISettingsService {
 		}
 
 		return settings;
+	};
+
+	getGlobalpingApiToken = async (): Promise<string | undefined> => {
+		const settings = await this.getDBSettings();
+		const token = settings?.globalpingApiToken?.trim();
+		return token && token.length > 0 ? token : undefined;
 	};
 }
