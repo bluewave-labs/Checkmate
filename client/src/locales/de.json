@@ -769,6 +769,7 @@
 					"memory": "Arbeitsspeicherauslastung",
 					"netBytesRecv": "{{name}} - Empfangene Bytes",
 					"netBytesSent": "{{name}} - Gesendete Bytes",
+					"netNoTraffic": "Capture meldet null Datenverkehr auf allen Schnittstellen. Das ist normal, wenn Capture in einem Container läuft, der nur Loopback-Schnittstellen sieht — führe Capture direkt auf dem Host aus, um echten Netzwerkverkehr zu sehen.",
 					"temp": "Temp."
 				}
 			},

@@ -769,6 +769,7 @@
 					"memory": "記憶體使用率",
 					"netBytesRecv": "{{name}} - 接收位元組",
 					"netBytesSent": "{{name}} - 發送位元組",
+					"netNoTraffic": "Capture 回報所有介面的流量皆為零。當 Capture 在只能看到回環介面的容器中執行時，這是正常情況——請直接在主機上執行 Capture 才能看到實際的網路活動。",
 					"temp": "溫度"
 				}
 			},

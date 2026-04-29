@@ -769,6 +769,7 @@
 					"memory": "Muistin käyttö",
 					"netBytesRecv": "{{name}} - tavua vastaanotettu",
 					"netBytesSent": "{{name}} - tavua lähetetty",
+					"netNoTraffic": "Capture ilmoittaa nollaliikennettä kaikilla rajapinnoilla. Tämä on normaalia, kun Capture käynnistetään säiliössä, joka näkee vain loopback-rajapinnat — suorita Capture suoraan isännällä nähdäksesi todellisen verkkoaktiviteetin.",
 					"temp": "Lämpö"
 				}
 			},

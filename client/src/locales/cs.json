@@ -769,6 +769,7 @@
 					"memory": "Využití paměti",
 					"netBytesRecv": "{{name}} - přijaté bajty",
 					"netBytesSent": "{{name}} - odeslané bajty",
+					"netNoTraffic": "Capture hlásí nulový provoz na všech rozhraních. To je normální, když Capture běží uvnitř kontejneru, který vidí pouze loopback rozhraní — spusťte Capture přímo na hostiteli, abyste viděli skutečnou síťovou aktivitu.",
 					"temp": "Teplota"
 				}
 			},

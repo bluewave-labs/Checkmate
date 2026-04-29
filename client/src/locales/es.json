@@ -776,6 +776,7 @@
 					"memory": "Uso de memoria",
 					"netBytesRecv": "{{name}} - Bytes recibidos",
 					"netBytesSent": "{{name}} - Bytes enviados",
+					"netNoTraffic": "Capture no informa tráfico en ninguna interfaz. Esto es normal cuando Capture se ejecuta dentro de un contenedor que solo ve interfaces de loopback — ejecuta Capture directamente en el host para ver actividad de red real.",
 					"temp": "Temp"
 				}
 			},

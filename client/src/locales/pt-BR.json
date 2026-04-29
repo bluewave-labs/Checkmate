@@ -769,6 +769,7 @@
 					"memory": "Uso de memória",
 					"netBytesRecv": "{{name}} - Bytes recebidos",
 					"netBytesSent": "{{name}} - Bytes enviados",
+					"netNoTraffic": "Capture está reportando zero tráfego em todas as interfaces. Isso é normal quando Capture é executado dentro de um container que só consegue ver interfaces de loopback — execute Capture diretamente no host para ver a atividade real da rede.",
 					"temp": "Temp"
 				}
 			},

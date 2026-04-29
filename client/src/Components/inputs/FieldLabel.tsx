@@ -15,9 +15,9 @@ export const FieldLabel = ({ children, required = false, htmlFor }: FieldLabelPr
 	return (
 		<Typography
 			component="label"
+			variant="body1"
 			htmlFor={htmlFor}
 			sx={{
-				fontSize: "14px",
 				fontWeight: 500,
 				color: theme.palette.text.secondary,
 				marginBottom: theme.spacing(2),
