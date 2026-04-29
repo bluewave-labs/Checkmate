@@ -769,6 +769,7 @@
 					"memory": "Muistin käyttö",
 					"netBytesRecv": "{{name}} - tavua vastaanotettu",
 					"netBytesSent": "{{name}} - tavua lähetetty",
+					"netNoTraffic": "Capture ilmoittaa nollaliikennettä kaikilla rajapinnoilla. Tämä on normaalia, kun Capture käynnistetään säiliössä, joka näkee vain loopback-rajapinnat — suorita Capture suoraan isännällä nähdäksesi todellisen verkkoaktiviteetin.",
 					"temp": "Lämpö"
 				}
 			},
@@ -1236,7 +1237,7 @@
 					"description": "Lisää esimerkkimonitoreja esittelytarkoituksiin."
 				},
 				"removeMonitors": {
-					"title": "Järjestelmän nollaus",
+					"title": "Järjestelmän palautus",
 					"description": "Poista kaikki monitorit järjestelmästäsi.",
 					"dialog": {
 						"title": "Poistetaanko kaikki monitorit?",

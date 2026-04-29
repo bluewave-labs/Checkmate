@@ -769,6 +769,7 @@
 					"memory": "Bellek kullanımı",
 					"netBytesRecv": "{{name}} - Alınan bayt",
 					"netBytesSent": "{{name}} - Gönderilen bayt",
+					"netNoTraffic": "Capture tüm arabirimlerde sıfır trafik raporluyor. Bu, Capture yalnızca loopback arabirimlerini görebilen bir konteyner içinde çalışırken normaldir — gerçek ağ etkinliğini görmek için Capture'ı doğrudan host üzerinde çalıştırın.",
 					"temp": "Sıcaklık"
 				}
 			},
@@ -1236,8 +1237,8 @@
 					"description": "Gösterim amaçlı örnek monitörler ekleyin."
 				},
 				"removeMonitors": {
-					"title": "Sistem sıfırlama",
-					"description": "Sisteminizdeki tüm monitörleri kaldırın.",
+					"title": "Sistemi sıfırla",
+					"description": "Sistemdeki tüm monitörleri kaldır.",
 					"dialog": {
 						"title": "Tüm monitörler kaldırılsın mı?",
 						"description": "Bu işlem geri alınamaz."

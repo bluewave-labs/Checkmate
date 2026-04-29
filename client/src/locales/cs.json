@@ -769,6 +769,7 @@
 					"memory": "Využití paměti",
 					"netBytesRecv": "{{name}} - přijaté bajty",
 					"netBytesSent": "{{name}} - odeslané bajty",
+					"netNoTraffic": "Capture hlásí nulový provoz na všech rozhraních. To je normální, když Capture běží uvnitř kontejneru, který vidí pouze loopback rozhraní — spusťte Capture přímo na hostiteli, abyste viděli skutečnou síťovou aktivitu.",
 					"temp": "Teplota"
 				}
 			},
@@ -1236,8 +1237,8 @@
 					"description": "Přidejte ukázkové monitory pro demonstrační účely."
 				},
 				"removeMonitors": {
-					"title": "Obnovení systému",
-					"description": "Odeberte všechny monitory z vašeho systému.",
+					"title": "Reset systému",
+					"description": "Odstranit všechny monitory ze systému.",
 					"dialog": {
 						"title": "Odebrat všechny monitory?",
 						"description": "Tuto akci nelze vrátit zpět."
