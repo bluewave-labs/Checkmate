@@ -769,6 +769,7 @@
 					"memory": "内存使用率",
 					"netBytesRecv": "{{name}} - 接收字节",
 					"netBytesSent": "{{name}} - 发送字节",
+					"netNoTraffic": "Capture 报告所有接口的流量均为零。当 Capture 在只能看到回环接口的容器内运行时，这属于正常情况——请直接在主机上运行 Capture 才能看到真实的网络活动。",
 					"temp": "温度"
 				}
 			},
@@ -1237,7 +1238,7 @@
 				},
 				"removeMonitors": {
 					"title": "系统重置",
-					"description": "从系统中移除所有监控。",
+					"description": "从系统中移除所有监视器。",
 					"dialog": {
 						"title": "移除所有监控？",
 						"description": "此操作无法撤销。"

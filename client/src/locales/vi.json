@@ -769,6 +769,7 @@
 					"memory": "Sử dụng bộ nhớ",
 					"netBytesRecv": "{{name}} - Byte nhận",
 					"netBytesSent": "{{name}} - Byte gửi",
+					"netNoTraffic": "Capture đang báo cáo lưu lượng bằng không trên mọi giao diện. Điều này là bình thường khi Capture chạy bên trong một container chỉ có thể thấy các giao diện loopback — hãy chạy Capture trực tiếp trên máy chủ để xem hoạt động mạng thực tế.",
 					"temp": "Nhiệt độ"
 				}
 			},
@@ -1237,7 +1238,7 @@
 				},
 				"removeMonitors": {
 					"title": "Đặt lại hệ thống",
-					"description": "Xóa tất cả trình giám sát khỏi hệ thống.",
+					"description": "Xóa tất cả các monitor khỏi hệ thống của bạn.",
 					"dialog": {
 						"title": "Xóa tất cả trình giám sát?",
 						"description": "Không thể hoàn tác."

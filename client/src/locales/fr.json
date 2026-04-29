@@ -769,6 +769,7 @@
 					"memory": "Utilisation mémoire",
 					"netBytesRecv": "{{name}} - Octets reçus",
 					"netBytesSent": "{{name}} - Octets envoyés",
+					"netNoTraffic": "Capture ne signale aucun trafic sur toutes les interfaces. C'est normal lorsque Capture s'exécute dans un conteneur qui ne voit que les interfaces de loopback — exécutez Capture directement sur l'hôte pour voir l'activité réseau réelle.",
 					"temp": "Temp."
 				}
 			},
@@ -1236,8 +1237,8 @@
 					"description": "Ajoutez des moniteurs d'exemple à des fins de démonstration."
 				},
 				"removeMonitors": {
-					"title": "Réinitialisation du système",
-					"description": "Supprimez tous les moniteurs de votre système.",
+					"title": "Réinitialiser le système",
+					"description": "Supprimer tous les moniteurs de votre système.",
 					"dialog": {
 						"title": "Supprimer tous les moniteurs ?",
 						"description": "Cette action est irréversible."

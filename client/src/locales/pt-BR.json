@@ -769,6 +769,7 @@
 					"memory": "Uso de memória",
 					"netBytesRecv": "{{name}} - Bytes recebidos",
 					"netBytesSent": "{{name}} - Bytes enviados",
+					"netNoTraffic": "Capture está reportando zero tráfego em todas as interfaces. Isso é normal quando Capture é executado dentro de um container que só consegue ver interfaces de loopback — execute Capture diretamente no host para ver a atividade real da rede.",
 					"temp": "Temp"
 				}
 			},
@@ -1236,8 +1237,8 @@
 					"description": "Adicione monitores de exemplo para fins de demonstração."
 				},
 				"removeMonitors": {
-					"title": "Redefinição do sistema",
-					"description": "Remova todos os monitores do seu sistema.",
+					"title": "Redefinir sistema",
+					"description": "Remover todos os monitores do seu sistema.",
 					"dialog": {
 						"title": "Remover todos os monitores?",
 						"description": "Isso não pode ser desfeito."
