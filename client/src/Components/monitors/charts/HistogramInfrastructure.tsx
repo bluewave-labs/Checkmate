@@ -1,4 +1,4 @@
-import { BaseChart } from "@/Components/design-elements";
+import { BaseChart, BaseBox } from "@/Components/design-elements";
 import {
 	AreaChart,
 	Area,
@@ -6,12 +6,19 @@ import {
 	YAxis,
 	CartesianGrid,
 	ResponsiveContainer,
+	Tooltip,
 } from "recharts";
 import { Fragment, useId } from "react";
 import { XTick } from "@/Components/monitors";
-
-import { useTheme } from "@mui/material/styles";
+import { Typography } from "@mui/material";
+import { useTheme, type Theme } from "@mui/material/styles";
 import type { HardwareCheckStats } from "@/Types/Monitor";
+import { SPACING } from "@/Utils/Theme/constants";
+import type { TooltipProps } from "recharts";
+import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
+import { formatDateWithTz, tooltipDateFormatLookup } from "@/Utils/TimeUtils";
+import type { RootState } from "@/Types/state";
+import { useSelector } from "react-redux";
 
 const AREA_COLORS = [
 	// Blues
@@ -92,6 +99,42 @@ const createGradient = ({
 	</defs>
 );
 
+type HistogramInfrastructureTooltipProps = TooltipProps<ValueType, NameType> & {
+	range: string;
+	theme: Theme;
+	uiTimezone: string;
+	title?: string;
+	labelFormatter?: (value: number) => string;
+};
+
+const HistogramInfrastructureTooltip = ({
+	active,
+	payload,
+	range,
+	theme,
+	label,
+	title,
+	uiTimezone,
+	labelFormatter,
+}: HistogramInfrastructureTooltipProps) => {
+	if (!active || !payload?.length || range == null) return null;
+
+	const formattedDate = tooltipDateFormatLookup(range);
+
+	return (
+		<BaseBox sx={{ py: theme.spacing(SPACING.LG), px: theme.spacing(SPACING.XS) }}>
+			<Typography>
+				{formatDateWithTz(String(label), formattedDate, uiTimezone)}
+			</Typography>
+
+			{payload.map((entry) => (
+				<Typography key={entry.dataKey}>
+					{title}: {labelFormatter ? labelFormatter(entry.value as number) : entry.value}
+				</Typography>
+			))}
+		</BaseBox>
+	);
+};
 export const HistogramInfrastructure = ({
 	dateRange,
 	title,
@@ -128,6 +171,7 @@ export const HistogramInfrastructure = ({
 	const theme = useTheme();
 	const uniqueId = useId();
 	const data = checks;
+	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 
 	let avgTemps: { bucketDate: string; avg_temp: number | null }[] = [];
 	let tempYDomain: number[] = [];
@@ -199,6 +243,18 @@ export const HistogramInfrastructure = ({
 							</Fragment>
 						);
 					})}
+					<Tooltip
+						content={(props) => (
+							<HistogramInfrastructureTooltip
+								{...props}
+								theme={theme}
+								title={title}
+								labelFormatter={yAxisFormatter}
+								range={dateRange}
+								uiTimezone={uiTimezone}
+							/>
+						)}
+					/>
 				</AreaChart>
 			</ResponsiveContainer>
 		</BaseChart>
