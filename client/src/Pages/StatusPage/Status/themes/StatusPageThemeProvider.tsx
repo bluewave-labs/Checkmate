@@ -13,8 +13,7 @@ import {
 	type StatusPageTheme,
 	type StatusPageThemeMode,
 } from "@/Types/StatusPage";
-import { themeTokens, toCssVars, type StatusPageThemeTokens } from "./tokens";
-import "./theme-overrides.css";
+import { themeTokens, type StatusPageThemeTokens } from "./tokens";
 
 type ResolvedMode = "light" | "dark";
 
@@ -107,8 +106,6 @@ export const StatusPageThemeProvider = ({
 		resolvedThemeMode === "auto" ? systemMode : resolvedThemeMode;
 	const tokens = themeTokens[resolvedTheme][resolvedMode];
 
-	const style = useMemo(() => toCssVars(tokens) as React.CSSProperties, [tokens]);
-
 	const value = useMemo(
 		() => ({ theme: resolvedTheme, mode: resolvedMode, tokens }),
 		[resolvedTheme, resolvedMode, tokens]
@@ -117,14 +114,10 @@ export const StatusPageThemeProvider = ({
 	return (
 		<StatusPageThemeContext.Provider value={value}>
 			<div
-				data-status-theme={resolvedTheme}
-				data-status-mode={resolvedMode}
-				data-status-transparent={transparent ? "" : undefined}
 				style={
 					transparent
-						? (style as React.CSSProperties)
+						? undefined
 						: {
-								...style,
 								background: tokens.bg,
 								minHeight: "100vh",
 							}

@@ -197,22 +197,3 @@ export const themeTokens: Record<StatusPageTheme, ThemeVariants> = {
 	bold,
 	editorial,
 };
-
-export const toCssVars = (tokens: StatusPageThemeTokens): Record<string, string> => ({
-	"--sp-bg": tokens.bg,
-	"--sp-surface": tokens.surface,
-	"--sp-border": tokens.border,
-	"--sp-text": tokens.text,
-	"--sp-text-muted": tokens.textMuted,
-	"--sp-up": tokens.up,
-	"--sp-up-strong": tokens.upStrong,
-	"--sp-up-soft": tokens.upSoft,
-	"--sp-degraded": tokens.degraded,
-	"--sp-degraded-soft": tokens.degradedSoft,
-	"--sp-down": tokens.down,
-	"--sp-down-soft": tokens.downSoft,
-	"--sp-warn": tokens.warn,
-	"--sp-warn-soft": tokens.warnSoft,
-	"--sp-radius": tokens.radius,
-	...(tokens.chartBarRadius ? { "--sp-chart-bar-radius": tokens.chartBarRadius } : {}),
-});

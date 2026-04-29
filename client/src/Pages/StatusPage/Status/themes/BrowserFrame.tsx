@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Box from "@mui/material/Box";
-import { useTheme } from "@mui/material/styles";
+import { useStatusPageTheme } from "./StatusPageThemeProvider";
 
 interface Props {
 	url: string;
@@ -8,7 +8,7 @@ interface Props {
 }
 
 export const BrowserFrame = ({ url, children }: Props) => {
-	const theme = useTheme();
+	const { tokens } = useStatusPageTheme();
 
 	return (
 		<Box
@@ -19,9 +19,9 @@ export const BrowserFrame = ({ url, children }: Props) => {
 				flexDirection: "column",
 				borderRadius: "12px",
 				overflow: "hidden",
-				border: "1px solid var(--sp-border, " + theme.palette.divider + ")",
-				background: "var(--sp-surface, " + theme.palette.background.paper + ")",
-				color: "var(--sp-text, " + theme.palette.text.primary + ")",
+				border: `1px solid ${tokens.border}`,
+				background: tokens.surface,
+				color: tokens.text,
 			}}
 		>
 			<Box
@@ -30,11 +30,8 @@ export const BrowserFrame = ({ url, children }: Props) => {
 					alignItems: "center",
 					gap: 1.25,
 					padding: "10px 14px",
-					background:
-						"var(--sp-bg, " +
-						(theme.palette.mode === "dark" ? "#1a1a1a" : "#f1f2f4") +
-						")",
-					borderBottom: "1px solid var(--sp-border, " + theme.palette.divider + ")",
+					background: tokens.bg,
+					borderBottom: `1px solid ${tokens.border}`,
 				}}
 			>
 				<Box sx={{ display: "flex", gap: 0.75 }}>
@@ -54,14 +51,11 @@ export const BrowserFrame = ({ url, children }: Props) => {
 						padding: "4px 12px",
 						marginLeft: 2,
 						borderRadius: "6px",
-						background:
-							"var(--sp-surface, " +
-							(theme.palette.mode === "dark" ? "#2a2a2a" : "#ffffff") +
-							")",
-						border: "1px solid var(--sp-border, " + theme.palette.divider + ")",
+						background: tokens.surface,
+						border: `1px solid ${tokens.border}`,
 						fontFamily: "ui-monospace, Menlo, monospace",
 						fontSize: 12,
-						color: "var(--sp-text-muted, " + theme.palette.text.secondary + ")",
+						color: tokens.textMuted,
 						overflow: "hidden",
 						textOverflow: "ellipsis",
 						whiteSpace: "nowrap",
