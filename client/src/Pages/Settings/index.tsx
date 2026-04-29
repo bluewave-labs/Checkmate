@@ -479,7 +479,7 @@ export const SettingsPage = () => {
 										{t("pages.settings.form.distributedMonitoring.getTokenLink")}
 									</Link>
 									<Link
-										href="https://globalping.io/docs/api"
+										href="https://globalping.io/docs/api.globalping.io#overview"
 										target="_blank"
 										rel="noopener noreferrer"
 									>
