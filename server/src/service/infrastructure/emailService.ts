@@ -118,6 +118,7 @@ export class EmailService implements IEmailService {
 			systemEmailPool,
 			systemEmailUser,
 			systemEmailAddress,
+			systemEmailDisplayName,
 			systemEmailPassword,
 			systemEmailConnectionHost,
 			systemEmailTLSServername,
@@ -158,10 +159,13 @@ export class EmailService implements IEmailService {
 			return false;
 		}
 
+		const trimmedDisplayName = systemEmailDisplayName?.trim();
+		const from = trimmedDisplayName && systemEmailAddress ? { name: trimmedDisplayName, address: systemEmailAddress } : systemEmailAddress;
+
 		try {
 			const info = await this.transporter.sendMail({
 				to: to,
-				from: systemEmailAddress,
+				from: from,
 				subject: subject,
 				html: html,
 			});

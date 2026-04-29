@@ -1198,6 +1198,10 @@
 							"label": "Email address - Used for authentication",
 							"placeholder": "you@example.com"
 						},
+						"displayName": {
+							"label": "Sender name (optional) - Friendly name shown in the From field",
+							"placeholder": "Checkmate notifications"
+						},
 						"user": {
 							"label": "Email user - Username for authentication, overrides email address if specified",
 							"placeholder": "Leave empty if not required"
