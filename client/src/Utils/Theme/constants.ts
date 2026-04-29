@@ -8,6 +8,7 @@ export const SPACING = {
 } as const;
 
 export const LAYOUT = {
+	XXS: 2,
 	XS: 4,
 	SM: 6,
 	MD: 8,
