@@ -3,8 +3,10 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useTheme, alpha } from "@mui/material/styles";
 import { LAYOUT } from "@/Utils/Theme/constants";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 
-type Severity = "info" | "warning" | "error";
+export const Severities = ["info", "warning", "error"] as const;
+export type Severity = (typeof Severities)[number];
 
 const SEVERITY_GLYPH: Record<Severity, string> = {
 	info: "ⓘ",
@@ -25,29 +27,26 @@ export const NoticeBanner = ({ severity = "info", children }: NoticeBannerProps)
 			direction="row"
 			alignItems="flex-start"
 			gap={theme.spacing(LAYOUT.SM)}
-			sx={{
-				width: "100%",
-				p: theme.spacing(LAYOUT.MD),
-				borderRadius: 1,
-				border: `1px solid ${alpha(tone, 0.45)}`,
-				backgroundColor: alpha(tone, 0.08),
-				textAlign: "left",
-			}}
+			width={"100%"}
+			p={theme.spacing(LAYOUT.MD)}
+			borderRadius={theme.shape.borderRadius}
+			border={`1px solid ${alpha(tone, 0.45)}`}
+			bgcolor={alpha(tone, 0.08)}
+			textAlign={"left"}
 		>
 			<Box
 				component="span"
-				sx={{
-					color: tone,
-					fontSize: 18,
-					lineHeight: 1,
-					mt: "2px",
-				}}
+				color={tone}
+				fontSize={typographyLevels.xl}
+				lineHeight={1}
+				mt={LAYOUT.XXS}
 				aria-hidden
 			>
 				{SEVERITY_GLYPH[severity]}
 			</Box>
 			<Typography
-				sx={{ color: theme.palette.text.primary, lineHeight: 1.55, fontSize: 13 }}
+				color={theme.palette.text.primary}
+				lineHeight={1.55}
 			>
 				{children}
 			</Typography>

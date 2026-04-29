@@ -38,9 +38,9 @@ export const PageSpeedKeyPriorityFallback = () => {
 								<Link
 									component={RouterLink}
 									to="/settings"
+									color={theme.palette.primary.main}
+									fontWeight={600}
 									sx={{
-										color: theme.palette.primary.main,
-										fontWeight: 600,
 										textDecoration: "underline",
 									}}
 								/>

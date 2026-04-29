@@ -53,24 +53,24 @@ export const DialogInput = ({
 		>
 			{title && (
 				<DialogTitle
-					sx={{
-						pb: theme.spacing(LAYOUT.XS),
-						backgroundColor: theme.palette.action.hover,
-						borderBottom: `1px solid ${theme.palette.divider}`,
-					}}
+					pb={theme.spacing(LAYOUT.XS)}
+					bgcolor={theme.palette.action.hover}
+					borderBottom={`1px solid ${theme.palette.divider}`}
 				>
 					<Typography
 						component="span"
 						variant="h2"
-						sx={{ fontWeight: 600, display: "block" }}
+						fontWeight={600}
+						display={"block"}
 					>
 						{title}
 					</Typography>
 					{content && (
 						<Typography
 							variant="body1"
-							color="text.secondary"
-							sx={{ mt: theme.spacing(LAYOUT.XS), display: "block" }}
+							color={theme.palette.text.secondary}
+							mt={theme.spacing(LAYOUT.XS)}
+							display={"block"}
 						>
 							{content}
 						</Typography>
@@ -79,7 +79,7 @@ export const DialogInput = ({
 			)}
 			{children && (
 				<DialogContent sx={{ pt: theme.spacing(LAYOUT.MD) }}>
-					<Box sx={{ pt: theme.spacing(LAYOUT.XS) }}>{children}</Box>
+					<Box pt={theme.spacing(LAYOUT.XS)}>{children}</Box>
 				</DialogContent>
 			)}
 			<DialogActions

@@ -58,7 +58,7 @@ export const theme = (mode: string, palette: any) =>
 			fontFamilyMonospace,
 			fontSize: typographyLevels.base,
 			h1: {
-				fontSize: typographyLevels.xl,
+				fontSize: typographyLevels.xxl,
 				fontWeight: 500,
 			},
 			h2: {
