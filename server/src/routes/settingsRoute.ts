@@ -16,6 +16,7 @@ class SettingsRoutes {
 		this.router.get("/", this.settingsController.getAppSettings);
 		this.router.patch("/", isAllowed(["admin", "superadmin"]), this.settingsController.updateAppSettings);
 		this.router.post("/test-email", isAllowed(["admin", "superadmin"]), this.settingsController.sendTestEmail);
+		this.router.post("/globalping/test", isAllowed(["admin", "superadmin"]), this.settingsController.testGlobalpingToken);
 	}
 
 	getRouter() {
