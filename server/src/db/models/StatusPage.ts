@@ -1,6 +1,12 @@
 import { Schema, model, type Types } from "mongoose";
 import type { StatusPage, StatusPageLogoDocument } from "@/types/statusPage.js";
-import { StatusPageTypes, StatusPageThemes, StatusPageThemeModes } from "@/types/statusPage.js";
+import {
+	DEFAULT_STATUS_PAGE_THEME,
+	DEFAULT_STATUS_PAGE_THEME_MODE,
+	StatusPageThemeModes,
+	StatusPageThemes,
+	StatusPageTypes,
+} from "@/types/statusPage.js";
 
 type StatusPageDocumentBase = Omit<
 	StatusPage,
@@ -111,12 +117,12 @@ const StatusPageSchema = new Schema<StatusPageDocument>(
 		theme: {
 			type: String,
 			enum: StatusPageThemes,
-			default: "refined",
+			default: DEFAULT_STATUS_PAGE_THEME,
 		},
 		themeMode: {
 			type: String,
 			enum: StatusPageThemeModes,
-			default: "auto",
+			default: DEFAULT_STATUS_PAGE_THEME_MODE,
 		},
 	},
 	{ timestamps: true }
