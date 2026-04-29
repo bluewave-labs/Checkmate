@@ -583,8 +583,6 @@ export const SettingsPage = () => {
 							{(() => {
 								const address = form.watch("systemEmailAddress") || "";
 								const displayName = form.watch("systemEmailDisplayName")?.trim();
-								const from =
-									displayName && address ? { name: displayName, address } : address;
 								return (
 									<>
 										<Box
@@ -609,7 +607,6 @@ export const SettingsPage = () => {
 														},
 														name: form.watch("systemEmailConnectionHost") || "localhost",
 														pool: form.watch("systemEmailPool") ?? false,
-														from,
 														tls: {
 															rejectUnauthorized:
 																form.watch("systemEmailRejectUnauthorized") ?? true,
