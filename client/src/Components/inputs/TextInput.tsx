@@ -5,6 +5,7 @@ import { typographyLevels } from "@/Utils/Theme/Palette";
 import { useTheme } from "@mui/material/styles";
 import Stack from "@mui/material/Stack";
 import { FieldLabel } from "./FieldLabel";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface TextInputProps extends Omit<TextFieldProps, "label"> {
 	fieldLabel?: string;
@@ -56,7 +57,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function T
 	if (fieldLabel) {
 		return (
 			<Stack
-				spacing={theme.spacing(2)}
+				spacing={theme.spacing(LAYOUT.XXS)}
 				sx={sx}
 			>
 				<FieldLabel required={required}>{fieldLabel}</FieldLabel>

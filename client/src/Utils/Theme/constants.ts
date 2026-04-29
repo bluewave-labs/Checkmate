@@ -18,5 +18,5 @@ export const LAYOUT = {
 } as const;
 
 export const HOVER = {
-	DARKEN: 0.06,
+	DARKEN: 0.06, // This is a coefficient for darkening function
 } as const;
