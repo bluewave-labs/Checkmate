@@ -8,35 +8,56 @@ import { useTranslation } from "react-i18next";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import { useLocation, useParams } from "react-router-dom";
 import { useGet } from "@/Hooks/UseApi";
-import type { Monitor } from "@/Types/Monitor";
 import { resolveStatusPageTheme } from "@/Types/StatusPage";
 import {
 	PUBLIC_STATUS_PAGE_PREFIX,
-	type StatusPage,
 	type StatusPageResponse,
 	type StatusPageTheme,
 } from "@/Types/StatusPage";
-import { HeaderStatusPageControls } from "./Components/HeaderStatusPageControls";
-import { StatusPageThemeProvider } from "./themes/StatusPageThemeProvider";
-import { RefinedStatusPage } from "./themes/refined/RefinedStatusPage";
-import { ModernStatusPage } from "./themes/modern/ModernStatusPage";
-import { BoldStatusPage } from "./themes/bold/BoldStatusPage";
-import { EditorialStatusPage } from "./themes/editorial/EditorialStatusPage";
-import { BrowserFrame } from "./themes/BrowserFrame";
+import { HeaderStatusPageControls } from "@/Pages/StatusPage/Status/Components/HeaderStatusPageControls";
+import { StatusPageThemeProvider } from "@/Pages/StatusPage/Status/themes/StatusPageThemeProvider";
+import {
+	BaseStatusPage,
+	type ThemeConfig,
+} from "@/Pages/StatusPage/Status/themes/shared/BaseStatusPage";
+import { BrowserFrame } from "@/Pages/StatusPage/Status/themes/BrowserFrame";
+import { refinedStyles } from "@/Pages/StatusPage/Status/themes/refined/styles";
+import { RefinedHeader } from "@/Pages/StatusPage/Status/themes/refined/RefinedHeader";
+import { RefinedHero } from "@/Pages/StatusPage/Status/themes/refined/RefinedHero";
+import { modernStyles } from "@/Pages/StatusPage/Status/themes/modern/styles";
+import { ModernHeader } from "@/Pages/StatusPage/Status/themes/modern/ModernHeader";
+import { ModernHero } from "@/Pages/StatusPage/Status/themes/modern/ModernHero";
+import { boldStyles } from "@/Pages/StatusPage/Status/themes/bold/styles";
+import { BoldHeader } from "@/Pages/StatusPage/Status/themes/bold/BoldHeader";
+import { BoldHero } from "@/Pages/StatusPage/Status/themes/bold/BoldHero";
+import { editorialStyles } from "@/Pages/StatusPage/Status/themes/editorial/styles";
+import { EditorialHeader } from "@/Pages/StatusPage/Status/themes/editorial/EditorialHeader";
+import { EditorialHero } from "@/Pages/StatusPage/Status/themes/editorial/EditorialHero";
 
-type ThemedRendererProps = {
-	statusPage: StatusPage;
-	monitors: (Monitor & { checks?: Monitor["recentChecks"] })[];
-};
-
-const THEMED_RENDERERS: Record<
-	StatusPageTheme,
-	React.ComponentType<ThemedRendererProps>
-> = {
-	refined: RefinedStatusPage,
-	modern: ModernStatusPage,
-	bold: BoldStatusPage,
-	editorial: EditorialStatusPage,
+const THEME_CONFIGS: Record<StatusPageTheme, ThemeConfig<any>> = {
+	refined: {
+		createStyles: refinedStyles,
+		HeaderSlot: RefinedHeader,
+		HeroSlot: RefinedHero,
+	},
+	modern: {
+		createStyles: modernStyles,
+		HeaderSlot: ModernHeader,
+		HeroSlot: ModernHero,
+		overallStatusOptions: { iconSize: 20 },
+	},
+	bold: {
+		createStyles: boldStyles,
+		HeaderSlot: BoldHeader,
+		HeroSlot: BoldHero,
+		overallStatusOptions: { iconSize: 18 },
+	},
+	editorial: {
+		createStyles: editorialStyles,
+		HeaderSlot: EditorialHeader,
+		HeroSlot: EditorialHero,
+		overallStatusOptions: { allUpKey: "pages.statusPages.editorial.allUp" },
+	},
 };
 
 const StatusPageView = () => {
@@ -90,11 +111,12 @@ const StatusPageView = () => {
 		);
 	}
 
-	const ThemedRenderer = THEMED_RENDERERS[resolveStatusPageTheme(statusPage.theme)];
+	const themeConfig = THEME_CONFIGS[resolveStatusPageTheme(statusPage.theme)];
 	const themedRenderer = (
-		<ThemedRenderer
+		<BaseStatusPage
 			statusPage={statusPage}
 			monitors={monitors}
+			config={themeConfig}
 		/>
 	);
 
