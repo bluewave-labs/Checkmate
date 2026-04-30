@@ -14,6 +14,7 @@ export type MonitorStatus = (typeof MonitorStatuses)[number];
 
 export const MonitorMatchMethods = ["equal", "include", "regex"] as const;
 export type MonitorMatchMethod = (typeof MonitorMatchMethods)[number] | "";
+export const MAX_RECENT_CHECKS = 50;
 
 export interface Monitor {
 	id: string;

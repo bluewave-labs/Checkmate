@@ -9,8 +9,8 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/store";
 import type { CheckSnapshot } from "@/Types/Check";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
-
-const CELLS = 25;
+import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
+const CELLS = MAX_RECENT_CHECKS;
 const MIN_HEIGHT_PCT = 6;
 
 export type BarKind = "up" | "down" | "empty";

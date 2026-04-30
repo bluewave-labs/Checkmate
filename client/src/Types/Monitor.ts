@@ -3,6 +3,8 @@ import type { PageSpeedGroupedCheck } from "@/Types/Check";
 import type { GeoContinent } from "@/Types/GeoCheck";
 export type { GeoContinent } from "@/Types/GeoCheck";
 
+export const MAX_RECENT_CHECKS = 50;
+
 export const MonitorTypes = [
 	"http",
 	"ping",

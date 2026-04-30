@@ -7,6 +7,7 @@ import type { CheckSnapshot } from "@/Types/Check";
 import { HeatmapResponseTimeTooltip } from "./HeatmapResponseTimeTooltip";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 
 interface HistogramResponseTimeProps {
 	checks: CheckSnapshot[];
@@ -57,8 +58,11 @@ export const HistogramResponseTime = ({
 	if (!Array.isArray(checks) || checks.length === 0) return null;
 
 	const data =
-		checks.length !== 25
-			? [...checks, ...Array(25 - checks.length).fill({ status: "placeholder" })]
+		checks.length !== MAX_RECENT_CHECKS
+			? [
+					...checks,
+					...Array(MAX_RECENT_CHECKS - checks.length).fill({ status: "placeholder" }),
+				]
 			: checks;
 
 	const chartHeight = typeof height === "number" ? `${height}px` : height;
@@ -86,17 +90,17 @@ export const HistogramResponseTime = ({
 		<Stack
 			direction={statsPosition === "left" ? "row-reverse" : "row"}
 			alignItems="center"
-			sx={{ width: "100%" }}
+			width={"100%"}
 		>
 			<Box sx={{ flex: 1 }}>
 				<Box
+					width={"100%"}
+					display={"grid"}
+					gap={gridGap}
+					height={chartHeight}
 					sx={{
-						width: "100%",
-						display: "grid",
-						gridTemplateColumns: "repeat(25, 1fr)",
-						gap: gridGap,
+						gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
 						alignItems: "end",
-						height: chartHeight,
 					}}
 				>
 					{data.map((check, index) => {
@@ -108,23 +112,23 @@ export const HistogramResponseTime = ({
 								: theme.palette.error.light;
 						const bar = (
 							<Box
+								width={"100%"}
+								height={"100%"}
+								borderRadius={theme.shape.borderRadius}
+								bgcolor={theme.palette.action.hover}
 								sx={{
 									position: "relative",
-									width: "100%",
-									height: "100%",
-									borderRadius: theme.spacing(1),
-									bgcolor: theme.palette.action.hover,
 									overflow: "hidden",
 								}}
 							>
 								<Box
+									width={"100%"}
+									height={isPlaceholder ? 0 : heightPct}
+									bgcolor={barColor}
 									sx={{
 										position: "absolute",
 										bottom: 0,
 										left: 0,
-										width: "100%",
-										height: isPlaceholder ? 0 : heightPct,
-										bgcolor: barColor,
 										transition: "height 500ms cubic-bezier(0.4, 0, 0.2, 1)",
 									}}
 								/>
@@ -133,8 +137,8 @@ export const HistogramResponseTime = ({
 
 						return isPlaceholder ? (
 							<Box
+								height={"100%"}
 								key={index}
-								sx={{ height: "100%" }}
 							>
 								{bar}
 							</Box>
