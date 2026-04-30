@@ -80,7 +80,6 @@ export const SettingsPage = () => {
 		fetchedSettings?.emailPasswordSet ?? false
 	);
 	const [emailPasswordHasBeenReset, setEmailPasswordHasBeenReset] = useState(false);
-	// Local state for GlobalPing token reset
 	const [isGlobalpingTokenSet, setIsGlobalpingTokenSet] = useState(
 		fetchedSettings?.globalpingTokenSet ?? false
 	);
@@ -91,10 +90,9 @@ export const SettingsPage = () => {
 		limit: number;
 	} | null>(null);
 	const [globalpingTestStatus, setGlobalpingTestStatus] = useState<
-		"idle" | "loading" | "ok" | "invalid" | "saved"
+		"idle" | "ok" | "invalid" | "saved"
 	>("idle");
-	const [isSavingGlobalpingToken, setIsSavingGlobalpingToken] = useState(false);
-	const { post: testGlobalpingToken } = usePost<
+	const { post: testGlobalpingToken, loading: isTestingGlobalping } = usePost<
 		{ token?: string },
 		{ authenticated: boolean; remaining: number; limit: number } | null
 	>();
@@ -174,6 +172,8 @@ export const SettingsPage = () => {
 		setEmailPasswordHasBeenReset(true);
 	};
 
+	const showGlobalpingInput = !isGlobalpingTokenSet || globalpingTokenHasBeenReset;
+
 	const handleResetGlobalpingToken = () => {
 		form.setValue("globalpingApiToken", "");
 		setGlobalpingTokenHasBeenReset(true);
@@ -183,7 +183,8 @@ export const SettingsPage = () => {
 	};
 
 	const handleTestGlobalpingToken = async () => {
-		setGlobalpingTestStatus("loading");
+		setGlobalpingQuota(null);
+		setGlobalpingTestStatus("idle");
 		const tokenValue = form.getValues("globalpingApiToken");
 		const result = await testGlobalpingToken("/settings/globalping/test", {
 			token: tokenValue || undefined,
@@ -192,7 +193,6 @@ export const SettingsPage = () => {
 			setGlobalpingQuota(result.data);
 			setGlobalpingTestStatus("ok");
 		} else {
-			setGlobalpingQuota(null);
 			setGlobalpingTestStatus("invalid");
 		}
 	};
@@ -200,11 +200,9 @@ export const SettingsPage = () => {
 	const handleSaveGlobalpingToken = async () => {
 		const tokenValue = form.getValues("globalpingApiToken");
 		if (!tokenValue) return;
-		setIsSavingGlobalpingToken(true);
 		const result = await patch("/settings", {
 			globalpingApiToken: tokenValue,
 		} as unknown as SettingsFormData);
-		setIsSavingGlobalpingToken(false);
 		if (result?.success && result.data) {
 			setIsGlobalpingTokenSet(result.data.globalpingTokenSet);
 			setGlobalpingTokenHasBeenReset(false);
@@ -486,8 +484,7 @@ export const SettingsPage = () => {
 										{t("pages.settings.form.distributedMonitoring.docsLink")}
 									</Link>
 								</Stack>
-								{(isGlobalpingTokenSet === false ||
-									globalpingTokenHasBeenReset === true) && (
+								{showGlobalpingInput && (
 									<Controller
 										name="globalpingApiToken"
 										control={form.control}
@@ -508,25 +505,23 @@ export const SettingsPage = () => {
 										)}
 									/>
 								)}
-								{isGlobalpingTokenSet === true &&
-									globalpingTokenHasBeenReset === false && (
-										<Box>
-											<FieldLabel>
-												{t(
-													"pages.settings.form.distributedMonitoring.option.apiToken.labelSet"
-												)}
-											</FieldLabel>
-											<Button
-												onClick={handleResetGlobalpingToken}
-												variant="contained"
-												color="error"
-											>
-												{t("pages.settings.form.distributedMonitoring.actions.reset")}
-											</Button>
-										</Box>
-									)}
-								{(isGlobalpingTokenSet === false ||
-									globalpingTokenHasBeenReset === true) && (
+								{!showGlobalpingInput && (
+									<Box>
+										<FieldLabel>
+											{t(
+												"pages.settings.form.distributedMonitoring.option.apiToken.labelSet"
+											)}
+										</FieldLabel>
+										<Button
+											onClick={handleResetGlobalpingToken}
+											variant="contained"
+											color="error"
+										>
+											{t("common.buttons.reset")}
+										</Button>
+									</Box>
+								)}
+								{showGlobalpingInput && (
 									<Stack
 										direction="row"
 										gap={theme.spacing(LAYOUT.SM)}
@@ -534,18 +529,18 @@ export const SettingsPage = () => {
 										<Button
 											onClick={handleTestGlobalpingToken}
 											variant="outlined"
-											disabled={globalpingTestStatus === "loading"}
+											disabled={isTestingGlobalping}
 										>
-											{globalpingTestStatus === "loading"
+											{isTestingGlobalping
 												? t("pages.settings.form.distributedMonitoring.actions.testing")
 												: t("pages.settings.form.distributedMonitoring.actions.test")}
 										</Button>
 										<Button
 											onClick={handleSaveGlobalpingToken}
 											variant="contained"
-											disabled={isSavingGlobalpingToken}
+											disabled={isSaving}
 										>
-											{isSavingGlobalpingToken
+											{isSaving
 												? t("pages.settings.form.distributedMonitoring.actions.saving")
 												: t("pages.settings.form.distributedMonitoring.actions.save")}
 										</Button>

@@ -1145,7 +1145,6 @@
 					"actions": {
 						"test": "Test connection",
 						"testing": "Testing…",
-						"reset": "Reset",
 						"save": "Save token",
 						"saving": "Saving…"
 					},

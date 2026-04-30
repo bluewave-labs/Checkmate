@@ -42,18 +42,16 @@ class SettingsController implements ISettingsController {
 			settings: null,
 		};
 
-		if (typeof sanitizedSettings.pagespeedApiKey !== "undefined") {
-			returnSettings.pagespeedKeySet = true;
-			delete sanitizedSettings.pagespeedApiKey;
-		}
-		if (typeof sanitizedSettings.systemEmailPassword !== "undefined") {
-			returnSettings.emailPasswordSet = true;
-			delete sanitizedSettings.systemEmailPassword;
-		}
-		if (typeof sanitizedSettings.globalpingApiToken !== "undefined") {
-			returnSettings.globalpingTokenSet = true;
-			delete sanitizedSettings.globalpingApiToken;
-		}
+		const maskSecret = (secretKey: string, flagKey: string) => {
+			if (typeof sanitizedSettings[secretKey] !== "undefined") {
+				returnSettings[flagKey] = true;
+				delete sanitizedSettings[secretKey];
+			}
+		};
+		maskSecret("pagespeedApiKey", "pagespeedKeySet");
+		maskSecret("systemEmailPassword", "emailPasswordSet");
+		maskSecret("globalpingApiToken", "globalpingTokenSet");
+
 		returnSettings.settings = sanitizedSettings;
 		return returnSettings;
 	};
