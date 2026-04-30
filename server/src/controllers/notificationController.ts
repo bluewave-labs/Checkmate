@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 
 import {
 	createNotificationBodyValidation,
+	editNotificationBodyValidation,
 	deleteNotificationParamValidation,
 	getNotificationByIdParamValidation,
 	testNotificationBodyValidation,
@@ -133,7 +134,7 @@ class NotificationController implements INotificationController {
 
 	editNotification = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const validatedBody = createNotificationBodyValidation.parse(req.body);
+			const validatedBody = editNotificationBodyValidation.parse(req.body);
 			const validatedParams = editNotificationParamValidation.parse(req.params);
 
 			const teamId = requireTeamId(req.user?.teamId);
