@@ -14,3 +14,13 @@ export interface MaintenanceWindow {
 	createdAt: string;
 	updatedAt: string;
 }
+
+export interface GroupedMaintenanceWindows {
+	id: string;
+	name: string;
+	start: string;
+	end: string;
+	repeat: number;
+	active: boolean;
+	monitors: MaintenanceWindow[];
+}
