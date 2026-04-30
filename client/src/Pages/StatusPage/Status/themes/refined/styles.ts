@@ -63,7 +63,10 @@ const pillBase = {
 	fontWeight: 600,
 };
 
-export const refinedStyles = (tokens: StatusPageThemeTokens): RefinedStyles => {
+export const refinedStyles = (
+	tokens: StatusPageThemeTokens,
+	_isDark: boolean
+): RefinedStyles => {
 	const heatCellBg: Record<RefinedHeatCell, string> = {
 		fast: tokens.up,
 		med: `color-mix(in srgb, ${tokens.up} 60%, #ffffff 40%)`,
