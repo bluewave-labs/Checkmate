@@ -3,6 +3,7 @@ import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { HeatmapResponseTime, HistogramResponseTime } from "@/Components/common";
 import type { CheckSnapshot } from "@/Types/Check";
+import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 
 interface DummyChartProps {
 	chartType: string;
@@ -10,7 +11,7 @@ interface DummyChartProps {
 
 const generateDummyChecks = (): CheckSnapshot[] => {
 	const checks: CheckSnapshot[] = [];
-	for (let i = 0; i < 25; i++) {
+	for (let i = 0; i < MAX_RECENT_CHECKS; i++) {
 		const isUp = Math.random() > 0.1;
 		const responseTime = Math.floor(Math.random() * 80) + 20;
 		checks.push({

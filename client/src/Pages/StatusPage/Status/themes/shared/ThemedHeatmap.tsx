@@ -8,8 +8,9 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/store";
 import type { CheckSnapshot } from "@/Types/Check";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
+import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 
-const CELLS = 25;
+const CELLS = MAX_RECENT_CHECKS;
 
 export type HeatCellKind = "fast" | "med" | "slow" | "down" | "empty";
 
