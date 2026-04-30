@@ -32,6 +32,7 @@ import type { MonitorDisplayType, StatusPageResponse } from "@/Types/StatusPage"
 import { getMonitorTypeLabel } from "@/Types/StatusPage";
 import timezones from "@/Utils/timezones.json";
 import { useNavigate, useParams } from "react-router-dom";
+import { mutate } from "swr";
 import axios from "axios";
 import { HeaderConfigStatusControls } from "./Components/HeaderConfigStatusControls";
 import { ThemePicker } from "./Components/ThemePicker";
@@ -49,6 +50,9 @@ interface TimezoneOption {
 	name: string;
 }
 
+const buildStatusPageKey = (slug: string | null | undefined) =>
+	slug ? `/status-page/${slug}?type=uptime&type=infrastructure` : null;
+
 const CreateStatusPage = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -59,9 +63,7 @@ const CreateStatusPage = () => {
 
 	// Fetch existing status page data when configuring
 	const { data: statusPageData, isLoading: isLoadingStatusPage } =
-		useGet<StatusPageResponse>(
-			isCreate ? null : `/status-page/${url}?type=uptime&type=infrastructure`
-		);
+		useGet<StatusPageResponse>(isCreate ? null : buildStatusPageKey(url));
 
 	const { data: monitorsResponse } = useGet<Monitor[]>(monitorsUrl);
 	const monitors = monitorsResponse ?? [];
@@ -181,6 +183,10 @@ const CreateStatusPage = () => {
 		}
 
 		if (result) {
+			await mutate(buildStatusPageKey(data.url));
+			if (!isCreate && url !== data.url) {
+				await mutate(buildStatusPageKey(url));
+			}
 			navigate(`/status/${data.url}`);
 		}
 	};
