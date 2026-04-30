@@ -27,7 +27,7 @@
 		"@mui/x-date-pickers": "7.29.4",
 		"@reduxjs/toolkit": "2.7.0",
 		"@types/maplibre-gl": "^1.13.2",
-		"axios": "^1.7.4",
+		"axios": "^1.15.2",
 		"dayjs": "1.11.13",
 		"html2canvas": "^1.4.1",
 		"human-interval": "2.0.1",
