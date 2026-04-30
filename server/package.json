@@ -52,7 +52,7 @@
 		"mailersend": "^2.2.0",
 		"mjml": "^5.0.0-alpha.4",
 		"mongoose": "^8.3.3",
-		"multer": "^1.4.5-lts.1",
+		"multer": "^1.4.5-lts.2",
 		"nodemailer": "8.0.5",
 		"ping": "0.4.4",
 		"sharp": "0.33.5",
