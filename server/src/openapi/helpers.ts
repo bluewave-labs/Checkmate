@@ -21,8 +21,8 @@ export const errorEnvelope = z.object({
 
 export const bearer = [{ bearerAuth: [] }];
 
-export const json = <T extends z.ZodTypeAny>(schema: T) => ({
-	"application/json": { schema },
+export const json = <T extends z.ZodTypeAny>(schema: T, example?: unknown) => ({
+	"application/json": example === undefined ? { schema } : { schema, example },
 });
 
 export const standardErrors = {
@@ -31,14 +31,14 @@ export const standardErrors = {
 	"500": { description: "Internal server error", content: json(errorEnvelope) },
 };
 
-export const okJson = <T extends z.ZodTypeAny>(data: T, description = "OK") => ({
+export const okJson = <T extends z.ZodTypeAny>(data: T, description = "OK", example?: unknown) => ({
 	description,
-	content: json(successEnvelope(data)),
+	content: json(successEnvelope(data), example === undefined ? undefined : { success: true, msg: "OK", data: example }),
 });
 
 export const okJsonNoData = (description = "OK") => ({
 	description,
-	content: json(successEnvelopeNoData),
+	content: json(successEnvelopeNoData, { success: true, msg: "OK" }),
 });
 
 export const okUnknown = okJson(z.unknown());

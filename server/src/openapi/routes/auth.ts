@@ -21,20 +21,25 @@ const tags = ["auth"];
 
 const userObject = z
 	.object({
-		_id: z.string(),
-		firstName: z.string(),
-		lastName: z.string(),
-		email: z.string(),
-		role: z.array(z.string()),
-		teamId: z.string().optional(),
+		_id: z.string().openapi({ example: "65f1c2a4d8b9e0123456789a" }),
+		firstName: z.string().openapi({ example: "Ada" }),
+		lastName: z.string().openapi({ example: "Lovelace" }),
+		email: z.string().openapi({ example: "ada@example.com" }),
+		role: z.array(z.string()).openapi({ example: ["admin"] }),
+		teamId: z.string().optional().openapi({ example: "65f1c2a4d8b9e01234567890" }),
 		profileImage: z.string().nullable().optional(),
-		createdAt: z.string(),
-		updatedAt: z.string(),
+		createdAt: z.string().openapi({ example: "2026-04-01T10:00:00.000Z" }),
+		updatedAt: z.string().openapi({ example: "2026-04-15T14:30:00.000Z" }),
 	})
 	.passthrough()
 	.openapi("User");
 
-const authPayload = z.object({ user: userObject, token: z.string().optional() }).openapi("AuthPayload");
+const authPayload = z
+	.object({
+		user: userObject,
+		token: z.string().optional().openapi({ example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }),
+	})
+	.openapi("AuthPayload");
 
 registry.registerPath({
 	method: "post",
@@ -50,9 +55,25 @@ registry.registerPath({
 	path: "/auth/login",
 	tags,
 	summary: "Log in",
-	request: { body: { content: json(loginValidation) } },
+	request: {
+		body: {
+			content: json(loginValidation, { email: "ada@example.com", password: "S3cure!Passw0rd" }),
+		},
+	},
 	responses: {
-		"200": okJson(authPayload),
+		"200": okJson(authPayload, "OK", {
+			user: {
+				_id: "65f1c2a4d8b9e0123456789a",
+				firstName: "Ada",
+				lastName: "Lovelace",
+				email: "ada@example.com",
+				role: ["admin"],
+				teamId: "65f1c2a4d8b9e01234567890",
+				createdAt: "2026-04-01T10:00:00.000Z",
+				updatedAt: "2026-04-15T14:30:00.000Z",
+			},
+			token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+		}),
 		"401": { description: "Invalid credentials", content: json(z.object({ success: z.literal(false), msg: z.string() })) },
 		"500": standardErrors["500"],
 	},
@@ -63,7 +84,7 @@ registry.registerPath({
 	path: "/auth/recovery/request",
 	tags,
 	summary: "Request a password recovery email",
-	request: { body: { content: json(recoveryValidation) } },
+	request: { body: { content: json(recoveryValidation, { email: "ada@example.com" }) } },
 	responses: { "200": okJsonNoData(), "500": standardErrors["500"] },
 });
 

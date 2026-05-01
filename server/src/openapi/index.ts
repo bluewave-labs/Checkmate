@@ -31,6 +31,24 @@ export function getOpenApiSpec(): JsonObject {
 			description: "Generated from Zod validation schemas. Source of truth: server/src/validation/*.ts",
 		},
 		servers: [{ url: "/api/v1", description: "Current server" }],
+		tags: [
+			{ name: "auth", description: "Sign up, log in, password reset, and the authenticated user's profile." },
+			{ name: "monitors", description: "Configure and inspect monitors (HTTP, port, ping, hardware, docker, game, gRPC) for the caller's team." },
+			{ name: "checks", description: "Individual monitoring check results, including history, summaries, and bulk deletes." },
+			{ name: "geo-checks", description: "Geographic check results for monitors with multi-region probing enabled." },
+			{ name: "incidents", description: "Downtime incidents derived from monitor state changes, including filtering and CSV export." },
+			{
+				name: "notifications",
+				description: "Notification channels (email, webhook, Slack, Discord, PagerDuty, Matrix, Teams, Telegram, Pushover, Twilio) and test alerts.",
+			},
+			{ name: "maintenance-window", description: "Scheduled maintenance windows during which monitors do not generate incidents or alerts." },
+			{ name: "status-page", description: "Public status pages, their configuration, and the monitors they expose." },
+			{ name: "settings", description: "Global application settings (admin/superadmin)." },
+			{ name: "invite", description: "Team invitations and accepting them." },
+			{ name: "queue", description: "Background job queue introspection and admin actions (admin/superadmin)." },
+			{ name: "diagnostic", description: "System diagnostics for the running server (admin/superadmin)." },
+			{ name: "logs", description: "Application logs for the running server (admin/superadmin)." },
+		],
 	});
 
 	cached = document as unknown as JsonObject;
