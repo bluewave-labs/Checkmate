@@ -513,8 +513,7 @@
 						},
 						"secret": {
 							"label": "Khóa xác thực",
-							"placeholder": "Nhập khóa bí mật của bạn",
-							"helperText": "Paste only the token string. Don't include 'Bearer' — it's added automatically."
+							"placeholder": "Nhập khóa bí mật của bạn"
 						},
 						"url": {
 							"label": "URL",
@@ -538,8 +537,7 @@
 						},
 						"captureUrl": {
 							"label": "Capture endpoint",
-							"placeholder": "http://192.168.1.10:5001/api/v1/metrics",
-							"helperText": "The full Capture metrics endpoint, including the path. Example: http://192.168.1.10:5001/api/v1/metrics"
+							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
 						}
 					},
 					"title": "Cài đặt chung",
@@ -552,7 +550,7 @@
 						"pagespeed": "Theo dõi hiệu suất tải trang, Core Web Vitals và điểm tối ưu hóa cho trang web của bạn.",
 						"grpc": "Nhập tên máy chủ và cổng của máy chủ gRPC, tùy chọn chỉ định tên dịch vụ cho kiểm tra sức khỏe và thêm tên hiển thị.",
 						"websocket": "Nhập URL WebSocket cần giám sát (vd: wss://example.com/socket) và thêm tên hiển thị.",
-						"hardware": "Giám sát CPU, bộ nhớ, dung lượng ổ đĩa và nhiệt độ cho hạ tầng của bạn."
+						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure. The Capture endpoint URL must include the full path /api/v1/metrics (e.g. http://192.168.1.10:5001/api/v1/metrics). For the authorization secret, paste only the token string — don't include 'Bearer'."
 					}
 				},
 				"ignoreTls": {

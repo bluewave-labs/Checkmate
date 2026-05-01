@@ -513,8 +513,7 @@
 						},
 						"secret": {
 							"label": "Secret d'autorisation",
-							"placeholder": "Saisissez votre clé secrète",
-							"helperText": "Paste only the token string. Don't include 'Bearer' — it's added automatically."
+							"placeholder": "Saisissez votre clé secrète"
 						},
 						"url": {
 							"label": "URL",
@@ -538,8 +537,7 @@
 						},
 						"captureUrl": {
 							"label": "Capture endpoint",
-							"placeholder": "http://192.168.1.10:5001/api/v1/metrics",
-							"helperText": "The full Capture metrics endpoint, including the path. Example: http://192.168.1.10:5001/api/v1/metrics"
+							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
 						}
 					},
 					"title": "Paramètres généraux",
@@ -552,7 +550,7 @@
 						"pagespeed": "Suivez les performances de chargement, les Core Web Vitals et les scores d'optimisation de votre site web.",
 						"grpc": "Saisissez le nom d'hôte et le port du serveur gRPC, spécifiez éventuellement un nom de service pour le bilan de santé, et ajoutez un nom d'affichage.",
 						"websocket": "Saisissez l'URL WebSocket à surveiller (ex. wss://example.com/socket) et ajoutez un nom d'affichage.",
-						"hardware": "Surveillez l'utilisation du CPU, de la mémoire, du disque et la température de votre infrastructure."
+						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure. The Capture endpoint URL must include the full path /api/v1/metrics (e.g. http://192.168.1.10:5001/api/v1/metrics). For the authorization secret, paste only the token string — don't include 'Bearer'."
 					}
 				},
 				"ignoreTls": {

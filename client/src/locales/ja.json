@@ -513,8 +513,7 @@
 						},
 						"secret": {
 							"label": "認証シークレット",
-							"placeholder": "シークレットキーを入力",
-							"helperText": "Paste only the token string. Don't include 'Bearer' — it's added automatically."
+							"placeholder": "シークレットキーを入力"
 						},
 						"url": {
 							"label": "URL",
@@ -538,8 +537,7 @@
 						},
 						"captureUrl": {
 							"label": "Capture endpoint",
-							"placeholder": "http://192.168.1.10:5001/api/v1/metrics",
-							"helperText": "The full Capture metrics endpoint, including the path. Example: http://192.168.1.10:5001/api/v1/metrics"
+							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
 						}
 					},
 					"title": "一般設定",
@@ -552,7 +550,7 @@
 						"pagespeed": "Webサイトのページ読み込みパフォーマンス、Core Web Vitals、最適化スコアを追跡します。",
 						"grpc": "gRPCサーバーのホスト名とポートを入力し、必要に応じてヘルスチェック用のサービス名を指定し、表示名を追加してください。",
 						"websocket": "監視するWebSocket URLを入力し（例: wss://example.com/socket）、表示名を追加してください。",
-						"hardware": "インフラストラクチャのCPU、メモリ、ディスク使用量、温度を監視します。"
+						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure. The Capture endpoint URL must include the full path /api/v1/metrics (e.g. http://192.168.1.10:5001/api/v1/metrics). For the authorization secret, paste only the token string — don't include 'Bearer'."
 					}
 				},
 				"ignoreTls": {

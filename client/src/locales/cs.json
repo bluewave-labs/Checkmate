@@ -513,8 +513,7 @@
 						},
 						"secret": {
 							"label": "Autorizační tajný klíč",
-							"placeholder": "Zadejte svůj tajný klíč",
-							"helperText": "Paste only the token string. Don't include 'Bearer' — it's added automatically."
+							"placeholder": "Zadejte svůj tajný klíč"
 						},
 						"url": {
 							"label": "URL",
@@ -538,8 +537,7 @@
 						},
 						"captureUrl": {
 							"label": "Capture endpoint",
-							"placeholder": "http://192.168.1.10:5001/api/v1/metrics",
-							"helperText": "The full Capture metrics endpoint, including the path. Example: http://192.168.1.10:5001/api/v1/metrics"
+							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
 						}
 					},
 					"title": "Obecná nastavení",
@@ -552,7 +550,7 @@
 						"pagespeed": "Sledujte výkon načítání stránky, metriky Core Web Vitals a hodnocení optimalizace vašeho webu.",
 						"grpc": "Zadejte název hostitele a port gRPC serveru, volitelně zadejte název služby pro kontrolu stavu a přidejte zobrazovaný název.",
 						"websocket": "Zadejte WebSocket URL ke sledování (např. wss://example.com/socket) a přidejte zobrazovaný název.",
-						"hardware": "Sledujte využití CPU, paměti, disku a teplotu vaší infrastruktury."
+						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure. The Capture endpoint URL must include the full path /api/v1/metrics (e.g. http://192.168.1.10:5001/api/v1/metrics). For the authorization secret, paste only the token string — don't include 'Bearer'."
 					}
 				},
 				"ignoreTls": {

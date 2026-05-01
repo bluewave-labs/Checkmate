@@ -513,8 +513,7 @@
 						},
 						"secret": {
 							"label": "Valtuutusavain",
-							"placeholder": "Syötä salausavaimesi",
-							"helperText": "Paste only the token string. Don't include 'Bearer' — it's added automatically."
+							"placeholder": "Syötä salausavaimesi"
 						},
 						"url": {
 							"label": "URL",
@@ -538,8 +537,7 @@
 						},
 						"captureUrl": {
 							"label": "Capture endpoint",
-							"placeholder": "http://192.168.1.10:5001/api/v1/metrics",
-							"helperText": "The full Capture metrics endpoint, including the path. Example: http://192.168.1.10:5001/api/v1/metrics"
+							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
 						}
 					},
 					"title": "Yleiset asetukset",
@@ -552,7 +550,7 @@
 						"pagespeed": "Seuraa sivun latausnopeutta, Core Web Vitals -arvoja ja optimointipisteitä verkkosivustollasi.",
 						"grpc": "Syötä gRPC-palvelimen isäntänimi ja portti, määritä halutessasi palvelun nimi terveystarkistusta varten ja lisää näyttönimi.",
 						"websocket": "Syötä monitoroitava WebSocket URL (esim. wss://example.com/socket) ja lisää näyttönimi.",
-						"hardware": "Monitoroi infrastruktuurisi CPU:n, muistin ja levyn käyttöä sekä lämpötilaa."
+						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure. The Capture endpoint URL must include the full path /api/v1/metrics (e.g. http://192.168.1.10:5001/api/v1/metrics). For the authorization secret, paste only the token string — don't include 'Bearer'."
 					}
 				},
 				"ignoreTls": {
