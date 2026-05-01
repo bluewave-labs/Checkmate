@@ -520,7 +520,8 @@
 						},
 						"secret": {
 							"label": "Secreto de autorización",
-							"placeholder": "Ingrese su clave secreta"
+							"placeholder": "Ingrese su clave secreta",
+							"helperText": "Paste only the token string. Don't include 'Bearer' — it's added automatically."
 						},
 						"url": {
 							"label": "URL",
@@ -541,6 +542,11 @@
 						"wsUrl": {
 							"label": "URL de WebSocket",
 							"placeholder": "wss://example.com/socket"
+						},
+						"captureUrl": {
+							"label": "Capture endpoint",
+							"placeholder": "http://192.168.1.10:5001/api/v1/metrics",
+							"helperText": "The full Capture metrics endpoint, including the path. Example: http://192.168.1.10:5001/api/v1/metrics"
 						}
 					},
 					"title": "Configuración general",

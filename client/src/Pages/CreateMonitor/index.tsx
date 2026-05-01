@@ -44,11 +44,13 @@ import type { MonitorFormData } from "@/Validation/monitor";
 interface GeneralSettingsConfig {
 	urlLabel: string;
 	urlPlaceholder: string;
+	urlHelperText?: string;
 	namePlaceholder: string;
 	showUrl: boolean;
 	showPort: boolean;
 	showGameSelect: boolean;
 	showSecret: boolean;
+	secretHelperText?: string;
 	showGrpcServiceName: boolean;
 	showIgnoreTls: boolean;
 }
@@ -136,13 +138,15 @@ const getGeneralSettingsConfig = (
 			showIgnoreTls: false,
 		},
 		hardware: {
-			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
-			urlPlaceholder: t("pages.createMonitor.form.general.option.url.placeholder"),
+			urlLabel: t("pages.createMonitor.form.general.option.captureUrl.label"),
+			urlPlaceholder: t("pages.createMonitor.form.general.option.captureUrl.placeholder"),
+			urlHelperText: t("pages.createMonitor.form.general.option.captureUrl.helperText"),
 			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
 			showUrl: true,
 			showPort: false,
 			showGameSelect: false,
 			showSecret: true,
+			secretHelperText: t("pages.createMonitor.form.general.option.secret.helperText"),
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
 		},
@@ -389,7 +393,11 @@ const CreateMonitorPage = () => {
 										fullWidth
 										disabled={isEditMode}
 										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
+										helperText={
+											fieldState.error?.message ??
+											generalSettingsConfig.urlHelperText ??
+											""
+										}
 									/>
 								)}
 							/>
@@ -490,7 +498,11 @@ const CreateMonitorPage = () => {
 										)}
 										fullWidth
 										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
+										helperText={
+											fieldState.error?.message ??
+											generalSettingsConfig.secretHelperText ??
+											""
+										}
 									/>
 								)}
 							/>

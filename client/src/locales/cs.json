@@ -513,7 +513,8 @@
 						},
 						"secret": {
 							"label": "Autorizační tajný klíč",
-							"placeholder": "Zadejte svůj tajný klíč"
+							"placeholder": "Zadejte svůj tajný klíč",
+							"helperText": "Paste only the token string. Don't include 'Bearer' — it's added automatically."
 						},
 						"url": {
 							"label": "URL",
@@ -534,6 +535,11 @@
 						"wsUrl": {
 							"label": "WebSocket URL",
 							"placeholder": "wss://example.com/socket"
+						},
+						"captureUrl": {
+							"label": "Capture endpoint",
+							"placeholder": "http://192.168.1.10:5001/api/v1/metrics",
+							"helperText": "The full Capture metrics endpoint, including the path. Example: http://192.168.1.10:5001/api/v1/metrics"
 						}
 					},
 					"title": "Obecná nastavení",

@@ -513,7 +513,8 @@
 						},
 						"secret": {
 							"label": "รหัสลับสำหรับยืนยันตัวตน",
-							"placeholder": "กรอกรหัสลับของคุณ"
+							"placeholder": "กรอกรหัสลับของคุณ",
+							"helperText": "Paste only the token string. Don't include 'Bearer' — it's added automatically."
 						},
 						"url": {
 							"label": "URL",
@@ -534,6 +535,11 @@
 						"wsUrl": {
 							"label": "URL ของ WebSocket",
 							"placeholder": "wss://example.com/socket"
+						},
+						"captureUrl": {
+							"label": "Capture endpoint",
+							"placeholder": "http://192.168.1.10:5001/api/v1/metrics",
+							"helperText": "The full Capture metrics endpoint, including the path. Example: http://192.168.1.10:5001/api/v1/metrics"
 						}
 					},
 					"title": "ตั้งค่าทั่วไป",
