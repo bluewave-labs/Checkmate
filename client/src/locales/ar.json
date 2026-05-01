@@ -421,7 +421,10 @@
 					"inviteMember": "دعوة عضو",
 					"openSite": "فتح الموقع",
 					"pause": "إيقاف مؤقت",
-					"resume": "استئناف"
+					"resume": "استئناف",
+					"bulkSelected": "تم تحديد {{count}} جهاز(أجهزة) مراقبة",
+					"selectAll": "تحديد جميع أجهزة المراقبة",
+					"selectMonitor": "تحديد {{name}}"
 				},
 				"statBoxes": {
 					"activeFor": "نشط منذ",

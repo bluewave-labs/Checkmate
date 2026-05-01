@@ -421,7 +421,10 @@
 					"inviteMember": "Запросити учасника",
 					"openSite": "Відкрити сайт",
 					"pause": "Призупинити",
-					"resume": "Відновити"
+					"resume": "Відновити",
+					"bulkSelected": "Вибрано моніторів: {{count}}",
+					"selectAll": "Вибрати всі монітори",
+					"selectMonitor": "Вибрати {{name}}"
 				},
 				"statBoxes": {
 					"activeFor": "Активний протягом",

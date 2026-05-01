@@ -421,7 +421,10 @@
 					"inviteMember": "Üye davet et",
 					"openSite": "Siteyi aç",
 					"pause": "Duraklat",
-					"resume": "Devam et"
+					"resume": "Devam et",
+					"bulkSelected": "{{count}} monitör seçildi",
+					"selectAll": "Tüm monitörleri seç",
+					"selectMonitor": "{{name}} seç"
 				},
 				"statBoxes": {
 					"activeFor": "Aktif süresi",

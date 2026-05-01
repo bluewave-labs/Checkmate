@@ -421,7 +421,10 @@
 					"inviteMember": "Mitglied einladen",
 					"openSite": "Seite öffnen",
 					"pause": "Pausieren",
-					"resume": "Fortsetzen"
+					"resume": "Fortsetzen",
+					"bulkSelected": "{{count}} Monitor(e) ausgewählt",
+					"selectAll": "Alle Monitore auswählen",
+					"selectMonitor": "{{name}} auswählen"
 				},
 				"statBoxes": {
 					"activeFor": "Aktiv seit",

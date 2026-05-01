@@ -421,7 +421,10 @@
 					"inviteMember": "เชิญสมาชิก",
 					"openSite": "เปิดเว็บไซต์",
 					"pause": "หยุดชั่วคราว",
-					"resume": "ดำเนินการต่อ"
+					"resume": "ดำเนินการต่อ",
+					"bulkSelected": "เลือก {{count}} มอนิเตอร์แล้ว",
+					"selectAll": "เลือกมอนิเตอร์ทั้งหมด",
+					"selectMonitor": "เลือก {{name}}"
 				},
 				"statBoxes": {
 					"activeFor": "ทำงานมาแล้ว",

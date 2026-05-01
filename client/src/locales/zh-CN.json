@@ -421,7 +421,10 @@
 					"inviteMember": "邀请成员",
 					"openSite": "打开站点",
 					"pause": "暂停",
-					"resume": "恢复"
+					"resume": "恢复",
+					"bulkSelected": "已选择 {{count}} 个监控",
+					"selectAll": "选择所有监控",
+					"selectMonitor": "选择 {{name}}"
 				},
 				"statBoxes": {
 					"activeFor": "已活跃",

@@ -421,7 +421,10 @@
 					"inviteMember": "Kutsu jäsen",
 					"openSite": "Avaa sivusto",
 					"pause": "Keskeytä",
-					"resume": "Jatka"
+					"resume": "Jatka",
+					"bulkSelected": "{{count}} monitori(a) valittu",
+					"selectAll": "Valitse kaikki monitorit",
+					"selectMonitor": "Valitse {{name}}"
 				},
 				"statBoxes": {
 					"activeFor": "Aktiivinen",

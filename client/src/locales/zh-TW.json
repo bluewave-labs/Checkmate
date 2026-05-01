@@ -421,7 +421,10 @@
 					"inviteMember": "邀請成員",
 					"openSite": "開啟網站",
 					"pause": "暫停",
-					"resume": "恢復"
+					"resume": "恢復",
+					"bulkSelected": "已選擇 {{count}} 個監控",
+					"selectAll": "選擇所有監控",
+					"selectMonitor": "選擇 {{name}}"
 				},
 				"statBoxes": {
 					"activeFor": "已啟用",

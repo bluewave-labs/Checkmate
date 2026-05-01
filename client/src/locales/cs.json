@@ -421,7 +421,10 @@
 					"inviteMember": "Pozvat člena",
 					"openSite": "Otevřít stránku",
 					"pause": "Pozastavit",
-					"resume": "Obnovit"
+					"resume": "Obnovit",
+					"bulkSelected": "{{count}} monitor(ů) vybráno",
+					"selectAll": "Vybrat všechny monitory",
+					"selectMonitor": "Vybrat {{name}}"
 				},
 				"statBoxes": {
 					"activeFor": "Aktivní po dobu",

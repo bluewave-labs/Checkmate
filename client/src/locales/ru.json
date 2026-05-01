@@ -421,7 +421,10 @@
 					"inviteMember": "Пригласить участника",
 					"openSite": "Открыть сайт",
 					"pause": "Пауза",
-					"resume": "Продолжить"
+					"resume": "Продолжить",
+					"bulkSelected": "Выбрано мониторов: {{count}}",
+					"selectAll": "Выбрать все мониторы",
+					"selectMonitor": "Выбрать {{name}}"
 				},
 				"statBoxes": {
 					"activeFor": "Активен",

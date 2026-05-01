@@ -421,7 +421,10 @@
 					"inviteMember": "Mời thành viên",
 					"openSite": "Mở trang web",
 					"pause": "Tạm dừng",
-					"resume": "Tiếp tục"
+					"resume": "Tiếp tục",
+					"bulkSelected": "Đã chọn {{count}} monitor",
+					"selectAll": "Chọn tất cả monitor",
+					"selectMonitor": "Chọn {{name}}"
 				},
 				"statBoxes": {
 					"activeFor": "Hoạt động từ",

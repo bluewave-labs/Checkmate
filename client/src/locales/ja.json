@@ -421,7 +421,10 @@
 					"inviteMember": "メンバーを招待",
 					"openSite": "サイトを開く",
 					"pause": "一時停止",
-					"resume": "再開"
+					"resume": "再開",
+					"bulkSelected": "{{count}} 件のモニターを選択中",
+					"selectAll": "すべてのモニターを選択",
+					"selectMonitor": "{{name}} を選択"
 				},
 				"statBoxes": {
 					"activeFor": "稼働期間",
