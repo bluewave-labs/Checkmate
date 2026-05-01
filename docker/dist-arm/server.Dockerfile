@@ -44,7 +44,6 @@ RUN chown -R node:node ./public \
     && chown -R node:node ./dist \
     && chown -R node:node ./scripts
 
-USER node
 
 EXPOSE 52345
 
