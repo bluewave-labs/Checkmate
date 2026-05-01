@@ -117,7 +117,7 @@ registry.registerPath({
 	summary: "Get PageSpeed detail for a monitor",
 	security: bearer,
 	request: { params: getHardwareDetailsByIdParamValidation, query: getHardwareDetailsByIdQueryValidation },
-	responses: { "200": okJsonNoData(), ...standardErrors },
+	responses: { "200": okUnknown, ...standardErrors },
 });
 
 registry.registerPath({
@@ -127,7 +127,7 @@ registry.registerPath({
 	summary: "Get geo check results for a monitor",
 	security: bearer,
 	request: { params: getMonitorByIdParamValidation, query: getMonitorByIdQueryValidation },
-	responses: { "200": okJsonNoData(), ...standardErrors },
+	responses: { "200": okUnknown, ...standardErrors },
 });
 
 registry.registerPath({

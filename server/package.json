@@ -27,6 +27,7 @@
 		"node": ">=20"
 	},
 	"dependencies": {
+		"@asteasolutions/zod-to-openapi": "^8.5.0",
 		"@grpc/grpc-js": "^1.14.3",
 		"@grpc/proto-loader": "^0.8.0",
 		"@pulsecron/pulse": "1.6.8",
@@ -64,7 +65,6 @@
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
-		"@asteasolutions/zod-to-openapi": "^8.5.0",
 		"@eslint/js": "^9.17.0",
 		"@types/compression": "1.8.1",
 		"@types/cookie-parser": "1.4.10",
