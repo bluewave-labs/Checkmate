@@ -11,7 +11,9 @@
 		"test:integration": "NODE_OPTIONS=--experimental-vm-modules jest --no-coverage test/integration",
 		"dev": "nodemon --exec tsx src/index.js",
 		"start": "node --watch ./dist/index.js",
-		"build": "tsc && tsc-alias && cp -r src/templates dist/templates",
+		"clean": "rm -rf dist",
+		"build": "npm run clean && npm run build:openapi && tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json && cp -r src/templates dist/templates",
+		"build:openapi": "tsc --noEmit && tsx scripts/buildOpenApi.ts",
 		"lint": "eslint .",
 		"lint-fix": "eslint --fix .",
 		"format": "prettier --write .",
@@ -64,6 +66,7 @@
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
+		"@asteasolutions/zod-to-openapi": "8.5.0",
 		"@eslint/js": "^9.17.0",
 		"@types/compression": "1.8.1",
 		"@types/cookie-parser": "1.4.10",
