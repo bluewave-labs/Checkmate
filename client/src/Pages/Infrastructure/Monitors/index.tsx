@@ -2,7 +2,11 @@ import Stack from "@mui/material/Stack";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { MonitorBasePageWithStates } from "@/Components/design-elements";
 import { HeaderCreate } from "@/Components/common";
-import { ControlsFilter, HeaderMonitorsSummary } from "@/Components/monitors";
+import {
+	ControlsFilter,
+	HeaderMonitorsSummary,
+	BulkActionsBar,
+} from "@/Components/monitors";
 import { TextField, Dialog } from "@/Components/inputs";
 
 import { useGet, useDelete } from "@/Hooks/UseApi";
@@ -16,6 +20,7 @@ import { setRowsPerPage } from "@/Features/UI/uiSlice.js";
 import type { RootState } from "@/Types/state";
 import { InfraMonitorsTable } from "./Components/MonitorsTable";
 import useDebounce from "@/Hooks/useDebounce";
+import { useBulkMonitorActions } from "@/Hooks/useBulkMonitorActions";
 
 const InfrastructureMonitors = () => {
 	const { t } = useTranslation();
@@ -37,6 +42,7 @@ const InfrastructureMonitors = () => {
 	const [sortField, setSortField] = useState<string>("");
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
+
 	const isDialogOpen = Boolean(selectedMonitor);
 
 	const debouncedSearch = useDebounce<string>(search, 300);
@@ -96,6 +102,15 @@ const InfrastructureMonitors = () => {
 
 	const { summary, count } = monitorsWithChecksData ?? { summary: null, count: 0 };
 	const isLoading = monitorsWithChecksLoading;
+
+	// Bulk actions
+	const {
+		selectedRows,
+		setSelectedRows,
+		handleBulkPause,
+		handleBulkResume,
+		handleCancelSelection,
+	} = useBulkMonitorActions(refetch, page);
 
 	// Check if any filters are active
 	const hasActiveFilters = Boolean(selectedStatus || selectedState || search);
@@ -159,6 +174,16 @@ const InfrastructureMonitors = () => {
 					}}
 				/>
 			</Stack>
+
+			{!isLoading && (
+				<BulkActionsBar
+					selectedCount={selectedRows.length}
+					onResume={handleBulkResume}
+					onPause={handleBulkPause}
+					onCancel={handleCancelSelection}
+				/>
+			)}
+
 			<InfraMonitorsTable
 				monitors={monitorsWithChecksData?.monitors || []}
 				refetch={refetch}
@@ -180,6 +205,8 @@ const InfrastructureMonitors = () => {
 					);
 					setPage(0);
 				}}
+				selectedRows={selectedRows}
+				onSelectionChange={setSelectedRows}
 			/>
 			<Dialog
 				open={isDialogOpen}

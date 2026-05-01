@@ -12,6 +12,25 @@ import { useNavigate } from "react-router-dom";
 import { usePost } from "@/Hooks/UseApi";
 
 import type { Monitor } from "@/Types/Monitor";
+import { Checkbox } from "@/Components/inputs";
+import { useTableSelection } from "@/Hooks/useTableSelection";
+
+interface InfraMonitorsTableProps {
+	monitors: Monitor[];
+	refetch: () => void;
+	setSelectedMonitor: (monitor: Monitor | null) => void;
+	sortField: string;
+	setSortField: (field: string) => void;
+	sortOrder: "asc" | "desc";
+	setSortOrder: (order: "asc" | "desc") => void;
+	count: number;
+	page: number;
+	setPage: (page: number) => void;
+	rowsPerPage: number;
+	setRowsPerPage: (rowsPerPage: number) => void;
+	selectedRows?: string[];
+	onSelectionChange?: (selected: string[]) => void;
+}
 
 export const InfraMonitorsTable = ({
 	monitors,
@@ -26,29 +45,22 @@ export const InfraMonitorsTable = ({
 	setPage,
 	rowsPerPage,
 	setRowsPerPage,
-}: {
-	monitors: Monitor[];
-	refetch: Function;
-	setSelectedMonitor: Function;
-	sortField: string;
-	setSortField: (field: string) => void;
-	sortOrder: "asc" | "desc";
-	setSortOrder: (order: "asc" | "desc") => void;
-	count: number;
-	page: number;
-	setPage: (page: number) => void;
-	rowsPerPage: number;
-	setRowsPerPage: (rowsPerPage: number) => void;
-}) => {
+	selectedRows = [],
+	onSelectionChange,
+}: InfraMonitorsTableProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const navigate = useNavigate();
+	const { post } = usePost<Record<string, never>, Monitor>();
+
 	const {
-		post,
-		// loading: isPatching,
-		// error: postError,
-	} = usePost<any, Monitor>();
+		isAllSelected,
+		isSomeSelected,
+		handleSelectAll,
+		handleSelectRow,
+		isRowSelected,
+	} = useTableSelection(monitors, selectedRows, onSelectionChange);
 
 	const handlePageChange = (
 		_e: React.MouseEvent<HTMLButtonElement> | null,
@@ -65,7 +77,7 @@ export const InfraMonitorsTable = ({
 		setRowsPerPage(value);
 	};
 
-	const handleSort = (e: any, field: string) => {
+	const handleSort = (e: React.MouseEvent, field: string) => {
 		e.preventDefault();
 		e.stopPropagation();
 		if (sortField === field) {
@@ -101,13 +113,6 @@ export const InfraMonitorsTable = ({
 					navigate(`/infrastructure/configure/${monitor.id}`);
 				},
 			},
-			// {
-			//   id: 5,
-			//   label: "Clone",
-			//   action: () => {
-
-			//   },
-			// },
 			{
 				id: 6,
 				label:
@@ -115,7 +120,7 @@ export const InfraMonitorsTable = ({
 						? t("common.buttons.resume")
 						: t("common.buttons.pause"),
 				action: async () => {
-					await post(`/monitors/pause/${monitor.id}`, {});
+					await post(`/monitors/pause/${monitor.id}`, {} as Record<string, never>);
 					refetch();
 				},
 				closeMenu: true,
@@ -153,7 +158,33 @@ export const InfraMonitorsTable = ({
 		);
 		const headers: Header<Monitor>[] = [
 			{
+				id: "selection",
+				content: (
+					<Checkbox
+						aria-label={t("pages.common.monitors.actions.selectAll")}
+						indeterminate={isSomeSelected}
+						checked={isAllSelected}
+						onChange={(e) => handleSelectAll(e.target.checked)}
+					/>
+				),
+				mobileLabel: null,
+				render: (row) => (
+					<Checkbox
+						aria-label={t("pages.common.monitors.actions.selectMonitor", {
+							name: row.name,
+						})}
+						checked={isRowSelected(row.id)}
+						onChange={(e) => {
+							handleSelectRow(row.id, e.target.checked);
+						}}
+						onClick={(e) => e.stopPropagation()}
+					/>
+				),
+				onClick: (e) => e?.stopPropagation(),
+			},
+			{
 				id: "name",
+				mobileLabel: t("common.table.headers.name"),
 				content: (
 					<Typography
 						component="div"
@@ -173,6 +204,7 @@ export const InfraMonitorsTable = ({
 			},
 			{
 				id: "status",
+				mobileLabel: t("common.table.headers.status"),
 				content: (
 					<Typography
 						component="div"
@@ -248,6 +280,11 @@ export const InfraMonitorsTable = ({
 				onRowClick={(row) => {
 					navigate(`/infrastructure/${row.id}`);
 				}}
+				getRowSx={(row) => ({
+					backgroundColor: isRowSelected(row.id)
+						? theme.palette.action.selected
+						: "inherit",
+				})}
 			/>
 			<Pagination
 				component="div"

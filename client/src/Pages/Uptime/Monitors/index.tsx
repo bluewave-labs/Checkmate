@@ -1,4 +1,8 @@
-import { ControlsFilter, HeaderMonitorsSummary } from "@/Components/monitors";
+import {
+	ControlsFilter,
+	HeaderMonitorsSummary,
+	BulkActionsBar,
+} from "@/Components/monitors";
 import { MonitorBasePageWithStates } from "@/Components/design-elements";
 import { TextField, Dialog } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
@@ -16,6 +20,7 @@ import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import type { RootState } from "@/Types/state";
 import { useTheme } from "@mui/material";
 import useDebounce from "@/Hooks/useDebounce";
+import { useBulkMonitorActions } from "@/Hooks/useBulkMonitorActions";
 
 const UptimeMonitorsPage = () => {
 	const { t } = useTranslation();
@@ -37,6 +42,7 @@ const UptimeMonitorsPage = () => {
 	const [sortField, setSortField] = useState<string>("");
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
+
 	const isDialogOpen = Boolean(selectedMonitor);
 
 	const debouncedSearch = useDebounce<string>(search, 300);
@@ -101,6 +107,15 @@ const UptimeMonitorsPage = () => {
 		summary,
 		count,
 	} = monitorsWithChecksData ?? { monitors: null, summary: null, count: 0 };
+
+	// Bulk actions
+	const {
+		selectedRows,
+		setSelectedRows,
+		handleBulkPause,
+		handleBulkResume,
+		handleCancelSelection,
+	} = useBulkMonitorActions(refetch, page);
 
 	// Delete hook
 	const { deleteFn, loading: isDeleting } = useDelete();
@@ -177,6 +192,16 @@ const UptimeMonitorsPage = () => {
 					}}
 				/>
 			</Stack>
+
+			{!isLoading && (
+				<BulkActionsBar
+					selectedCount={selectedRows.length}
+					onResume={handleBulkResume}
+					onPause={handleBulkPause}
+					onCancel={handleCancelSelection}
+				/>
+			)}
+
 			<MonitorTable
 				monitors={monitorsWithChecks || []}
 				refetch={refetch}
@@ -198,6 +223,8 @@ const UptimeMonitorsPage = () => {
 					);
 					setPage(0);
 				}}
+				selectedRows={selectedRows}
+				onSelectionChange={setSelectedRows}
 			/>
 			<Dialog
 				open={isDialogOpen}
