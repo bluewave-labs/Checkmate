@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { booleanCoercion } from "./shared.js";
 import { GeoContinents } from "@/types/geoCheck.js";
-import { MonitorMatchMethods, MonitorTypes } from "@/types/monitor.js";
+import { MonitorMatchMethods, MonitorStatuses, MonitorTypes } from "@/types/monitor.js";
 
 export const getMonitorByIdParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
@@ -177,3 +177,43 @@ export const getHardwareDetailsByIdParamValidation = z.object({
 export const getHardwareDetailsByIdQueryValidation = z.object({
 	dateRange: z.enum(["recent", "hour", "day", "week", "month", "all"]).optional(),
 });
+
+// Canonical monitor shape returned by /monitors endpoints. Keep aligned with
+// what the controllers actually serialize.
+export const monitorResponseSchema = z
+	.object({
+		_id: z.string(),
+		name: z.string(),
+		description: z.string().optional(),
+		type: z.enum(MonitorTypes),
+		url: z.string(),
+		port: z.number().optional(),
+		isActive: z.boolean(),
+		interval: z.number(),
+		status: z.enum(MonitorStatuses),
+		statusWindowSize: z.number(),
+		statusWindowThreshold: z.number(),
+		ignoreTlsErrors: z.boolean(),
+		useAdvancedMatching: z.boolean(),
+		jsonPath: z.string().optional(),
+		expectedValue: z.string().optional(),
+		matchMethod: z.enum(MonitorMatchMethods).optional(),
+		notifications: z.array(z.string()),
+		secret: z.string().optional(),
+		cpuAlertThreshold: z.number(),
+		memoryAlertThreshold: z.number(),
+		diskAlertThreshold: z.number(),
+		tempAlertThreshold: z.number(),
+		selectedDisks: z.array(z.string()),
+		gameId: z.string().optional(),
+		grpcServiceName: z.string().optional(),
+		group: z.string().nullable().optional(),
+		geoCheckEnabled: z.boolean(),
+		geoCheckLocations: z.array(z.enum(GeoContinents)),
+		geoCheckInterval: z.number(),
+		teamId: z.string(),
+		userId: z.string(),
+		createdAt: z.string(),
+		updatedAt: z.string(),
+	})
+	.passthrough();

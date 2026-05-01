@@ -1,8 +1,6 @@
 import { z } from "zod";
 import { registry } from "../registry.js";
 import { bearer, json, okJson, okJsonNoData, okUnknown, standardErrors } from "../helpers.js";
-import { GeoContinents } from "@/types/geoCheck.js";
-import { MonitorMatchMethods, MonitorTypes } from "@/types/monitor.js";
 import {
 	getMonitorByIdParamValidation,
 	getMonitorByIdQueryValidation,
@@ -17,49 +15,42 @@ import {
 	importMonitorsBodyValidation,
 	getHardwareDetailsByIdParamValidation,
 	getHardwareDetailsByIdQueryValidation,
+	monitorResponseSchema,
 } from "@/validation/monitorValidation.js";
 import { updateNotificationsValidation } from "@/validation/notificationValidation.js";
 
 const tags = ["monitors"];
 
-const monitorObject = z
-	.object({
-		_id: z.string().openapi({ example: "65f1c2a4d8b9e0123456789a" }),
-		name: z.string().openapi({ example: "Marketing site" }),
-		description: z.string().optional().openapi({ example: "Production marketing site monitored from the EU region" }),
-		type: z.enum(MonitorTypes).openapi({ example: "http" }),
-		url: z.string().openapi({ example: "https://www.example.com" }),
-		port: z.number().optional().openapi({ example: 443 }),
-		isActive: z.boolean().openapi({ example: true }),
-		interval: z.number().openapi({ example: 60000 }),
-		status: z.enum(["up", "down", "paused", "initializing", "maintenance", "breached"]).openapi({ example: "up" }),
-		statusWindowSize: z.number().openapi({ example: 5 }),
-		statusWindowThreshold: z.number().openapi({ example: 3 }),
-		ignoreTlsErrors: z.boolean().openapi({ example: false }),
-		useAdvancedMatching: z.boolean().openapi({ example: false }),
-		jsonPath: z.string().optional(),
-		expectedValue: z.string().optional(),
-		matchMethod: z.enum(MonitorMatchMethods).optional(),
-		notifications: z.array(z.string()).openapi({ example: ["65f1c2a4d8b9e0123456789b"] }),
-		secret: z.string().optional(),
-		cpuAlertThreshold: z.number().openapi({ example: 90 }),
-		memoryAlertThreshold: z.number().openapi({ example: 90 }),
-		diskAlertThreshold: z.number().openapi({ example: 90 }),
-		tempAlertThreshold: z.number().openapi({ example: 80 }),
-		selectedDisks: z.array(z.string()).openapi({ example: [] }),
-		gameId: z.string().optional(),
-		grpcServiceName: z.string().optional(),
-		group: z.string().nullable().optional(),
-		geoCheckEnabled: z.boolean().openapi({ example: false }),
-		geoCheckLocations: z.array(z.enum(GeoContinents)).openapi({ example: [] }),
-		geoCheckInterval: z.number().openapi({ example: 300000 }),
-		teamId: z.string().openapi({ example: "65f1c2a4d8b9e01234567890" }),
-		userId: z.string().openapi({ example: "65f1c2a4d8b9e01234567891" }),
-		createdAt: z.string().openapi({ example: "2026-04-01T10:00:00.000Z" }),
-		updatedAt: z.string().openapi({ example: "2026-04-15T14:30:00.000Z" }),
-	})
-	.passthrough()
-	.openapi("Monitor");
+const monitorObject = monitorResponseSchema.openapi("Monitor", {
+	example: {
+		_id: "65f1c2a4d8b9e0123456789a",
+		name: "Marketing site",
+		description: "Production marketing site monitored from the EU region",
+		type: "http",
+		url: "https://www.example.com",
+		port: 443,
+		isActive: true,
+		interval: 60000,
+		status: "up",
+		statusWindowSize: 5,
+		statusWindowThreshold: 3,
+		ignoreTlsErrors: false,
+		useAdvancedMatching: false,
+		notifications: ["65f1c2a4d8b9e0123456789b"],
+		cpuAlertThreshold: 90,
+		memoryAlertThreshold: 90,
+		diskAlertThreshold: 90,
+		tempAlertThreshold: 80,
+		selectedDisks: [],
+		geoCheckEnabled: false,
+		geoCheckLocations: [],
+		geoCheckInterval: 300000,
+		teamId: "65f1c2a4d8b9e01234567890",
+		userId: "65f1c2a4d8b9e01234567891",
+		createdAt: "2026-04-01T10:00:00.000Z",
+		updatedAt: "2026-04-15T14:30:00.000Z",
+	},
+});
 
 registry.registerPath({
 	method: "get",

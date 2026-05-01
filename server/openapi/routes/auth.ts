@@ -15,31 +15,35 @@ import {
 	editUserPasswordByIdBodyValidation,
 	createUserBodyValidation,
 	editUserBodyValidation,
+	userResponseSchema,
 } from "@/validation/userValidation.js";
 
 const tags = ["auth"];
 
-const userObject = z
-	.object({
-		_id: z.string().openapi({ example: "65f1c2a4d8b9e0123456789a" }),
-		firstName: z.string().openapi({ example: "Ada" }),
-		lastName: z.string().openapi({ example: "Lovelace" }),
-		email: z.string().openapi({ example: "ada@example.com" }),
-		role: z.array(z.string()).openapi({ example: ["admin"] }),
-		teamId: z.string().optional().openapi({ example: "65f1c2a4d8b9e01234567890" }),
-		profileImage: z.string().nullable().optional(),
-		createdAt: z.string().openapi({ example: "2026-04-01T10:00:00.000Z" }),
-		updatedAt: z.string().openapi({ example: "2026-04-15T14:30:00.000Z" }),
-	})
-	.passthrough()
-	.openapi("User");
+const userExample = {
+	_id: "65f1c2a4d8b9e0123456789a",
+	firstName: "Ada",
+	lastName: "Lovelace",
+	email: "ada@example.com",
+	role: ["admin"],
+	teamId: "65f1c2a4d8b9e01234567890",
+	createdAt: "2026-04-01T10:00:00.000Z",
+	updatedAt: "2026-04-15T14:30:00.000Z",
+};
+
+const userObject = userResponseSchema.openapi("User", { example: userExample });
 
 const authPayload = z
 	.object({
 		user: userObject,
-		token: z.string().optional().openapi({ example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }),
+		token: z.string().optional(),
 	})
-	.openapi("AuthPayload");
+	.openapi("AuthPayload", {
+		example: {
+			user: userExample,
+			token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+		},
+	});
 
 registry.registerPath({
 	method: "post",

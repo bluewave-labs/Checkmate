@@ -81,58 +81,72 @@
 						"$ref": "#/components/schemas/User"
 					},
 					"token": {
-						"type": "string",
-						"example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+						"type": "string"
 					}
 				},
-				"required": ["user"]
+				"required": ["user"],
+				"example": {
+					"user": {
+						"_id": "65f1c2a4d8b9e0123456789a",
+						"firstName": "Ada",
+						"lastName": "Lovelace",
+						"email": "ada@example.com",
+						"role": ["admin"],
+						"teamId": "65f1c2a4d8b9e01234567890",
+						"createdAt": "2026-04-01T10:00:00.000Z",
+						"updatedAt": "2026-04-15T14:30:00.000Z"
+					},
+					"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+				}
 			},
 			"User": {
 				"type": "object",
 				"properties": {
 					"_id": {
-						"type": "string",
-						"example": "65f1c2a4d8b9e0123456789a"
+						"type": "string"
 					},
 					"firstName": {
-						"type": "string",
-						"example": "Ada"
+						"type": "string"
 					},
 					"lastName": {
-						"type": "string",
-						"example": "Lovelace"
+						"type": "string"
 					},
 					"email": {
-						"type": "string",
-						"example": "ada@example.com"
+						"type": "string"
 					},
 					"role": {
 						"type": "array",
 						"items": {
 							"type": "string"
-						},
-						"example": ["admin"]
+						}
 					},
 					"teamId": {
-						"type": "string",
-						"example": "65f1c2a4d8b9e01234567890"
+						"type": "string"
 					},
 					"profileImage": {
 						"type": "string",
 						"nullable": true
 					},
 					"createdAt": {
-						"type": "string",
-						"example": "2026-04-01T10:00:00.000Z"
+						"type": "string"
 					},
 					"updatedAt": {
-						"type": "string",
-						"example": "2026-04-15T14:30:00.000Z"
+						"type": "string"
 					}
 				},
 				"required": ["_id", "firstName", "lastName", "email", "role", "createdAt", "updatedAt"],
 				"additionalProperties": {
 					"nullable": true
+				},
+				"example": {
+					"_id": "65f1c2a4d8b9e0123456789a",
+					"firstName": "Ada",
+					"lastName": "Lovelace",
+					"email": "ada@example.com",
+					"role": ["admin"],
+					"teamId": "65f1c2a4d8b9e01234567890",
+					"createdAt": "2026-04-01T10:00:00.000Z",
+					"updatedAt": "2026-04-15T14:30:00.000Z"
 				}
 			},
 			"Incident": {
@@ -322,58 +336,45 @@
 				"type": "object",
 				"properties": {
 					"_id": {
-						"type": "string",
-						"example": "65f1c2a4d8b9e0123456789a"
+						"type": "string"
 					},
 					"name": {
-						"type": "string",
-						"example": "Marketing site"
+						"type": "string"
 					},
 					"description": {
-						"type": "string",
-						"example": "Production marketing site monitored from the EU region"
+						"type": "string"
 					},
 					"type": {
 						"type": "string",
-						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "unknown"],
-						"example": "http"
+						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "unknown"]
 					},
 					"url": {
-						"type": "string",
-						"example": "https://www.example.com"
+						"type": "string"
 					},
 					"port": {
-						"type": "number",
-						"example": 443
+						"type": "number"
 					},
 					"isActive": {
-						"type": "boolean",
-						"example": true
+						"type": "boolean"
 					},
 					"interval": {
-						"type": "number",
-						"example": 60000
+						"type": "number"
 					},
 					"status": {
 						"type": "string",
-						"enum": ["up", "down", "paused", "initializing", "maintenance", "breached"],
-						"example": "up"
+						"enum": ["up", "down", "paused", "initializing", "maintenance", "breached"]
 					},
 					"statusWindowSize": {
-						"type": "number",
-						"example": 5
+						"type": "number"
 					},
 					"statusWindowThreshold": {
-						"type": "number",
-						"example": 3
+						"type": "number"
 					},
 					"ignoreTlsErrors": {
-						"type": "boolean",
-						"example": false
+						"type": "boolean"
 					},
 					"useAdvancedMatching": {
-						"type": "boolean",
-						"example": false
+						"type": "boolean"
 					},
 					"jsonPath": {
 						"type": "string"
@@ -389,34 +390,28 @@
 						"type": "array",
 						"items": {
 							"type": "string"
-						},
-						"example": ["65f1c2a4d8b9e0123456789b"]
+						}
 					},
 					"secret": {
 						"type": "string"
 					},
 					"cpuAlertThreshold": {
-						"type": "number",
-						"example": 90
+						"type": "number"
 					},
 					"memoryAlertThreshold": {
-						"type": "number",
-						"example": 90
+						"type": "number"
 					},
 					"diskAlertThreshold": {
-						"type": "number",
-						"example": 90
+						"type": "number"
 					},
 					"tempAlertThreshold": {
-						"type": "number",
-						"example": 80
+						"type": "number"
 					},
 					"selectedDisks": {
 						"type": "array",
 						"items": {
 							"type": "string"
-						},
-						"example": []
+						}
 					},
 					"gameId": {
 						"type": "string"
@@ -429,36 +424,29 @@
 						"nullable": true
 					},
 					"geoCheckEnabled": {
-						"type": "boolean",
-						"example": false
+						"type": "boolean"
 					},
 					"geoCheckLocations": {
 						"type": "array",
 						"items": {
 							"type": "string",
 							"enum": ["EU", "NA", "AS", "SA", "AF", "OC"]
-						},
-						"example": []
+						}
 					},
 					"geoCheckInterval": {
-						"type": "number",
-						"example": 300000
+						"type": "number"
 					},
 					"teamId": {
-						"type": "string",
-						"example": "65f1c2a4d8b9e01234567890"
+						"type": "string"
 					},
 					"userId": {
-						"type": "string",
-						"example": "65f1c2a4d8b9e01234567891"
+						"type": "string"
 					},
 					"createdAt": {
-						"type": "string",
-						"example": "2026-04-01T10:00:00.000Z"
+						"type": "string"
 					},
 					"updatedAt": {
-						"type": "string",
-						"example": "2026-04-15T14:30:00.000Z"
+						"type": "string"
 					}
 				},
 				"required": [
@@ -489,6 +477,34 @@
 				],
 				"additionalProperties": {
 					"nullable": true
+				},
+				"example": {
+					"_id": "65f1c2a4d8b9e0123456789a",
+					"name": "Marketing site",
+					"description": "Production marketing site monitored from the EU region",
+					"type": "http",
+					"url": "https://www.example.com",
+					"port": 443,
+					"isActive": true,
+					"interval": 60000,
+					"status": "up",
+					"statusWindowSize": 5,
+					"statusWindowThreshold": 3,
+					"ignoreTlsErrors": false,
+					"useAdvancedMatching": false,
+					"notifications": ["65f1c2a4d8b9e0123456789b"],
+					"cpuAlertThreshold": 90,
+					"memoryAlertThreshold": 90,
+					"diskAlertThreshold": 90,
+					"tempAlertThreshold": 80,
+					"selectedDisks": [],
+					"geoCheckEnabled": false,
+					"geoCheckLocations": [],
+					"geoCheckInterval": 300000,
+					"teamId": "65f1c2a4d8b9e01234567890",
+					"userId": "65f1c2a4d8b9e01234567891",
+					"createdAt": "2026-04-01T10:00:00.000Z",
+					"updatedAt": "2026-04-15T14:30:00.000Z"
 				}
 			},
 			"NotificationChannelBody": {
