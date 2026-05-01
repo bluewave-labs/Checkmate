@@ -1,4 +1,3 @@
-import "./registry.js";
 import { z } from "zod";
 
 export const successEnvelope = <T extends z.ZodTypeAny>(data: T) =>
