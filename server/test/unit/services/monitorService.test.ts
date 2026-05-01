@@ -23,6 +23,7 @@ const createMonitorsRepositoryMock = () =>
 		updateById: jest.fn(),
 		updateNotifications: jest.fn(),
 		togglePauseById: jest.fn(),
+		bulkTogglePause: jest.fn(),
 		deleteById: jest.fn(),
 		deleteByTeamId: jest.fn(),
 	}) as unknown as IMonitorsRepository;
@@ -836,6 +837,96 @@ describe("MonitorService", () => {
 			expect(result.isActive).toBe(false);
 			expect(jobQueue.pauseJob).toHaveBeenCalledWith(monitor);
 			expect(jobQueue.resumeJob).not.toHaveBeenCalled();
+		});
+	});
+
+	describe("bulkPauseMonitors", () => {
+		it("resumes jobs for monitors that are active after bulk toggle", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const monitors = [makeMonitor({ id: "m1", isActive: true }), makeMonitor({ id: "m2", isActive: true })];
+			(monitorsRepository.bulkTogglePause as jest.Mock).mockResolvedValue(monitors);
+			const { service, jobQueue } = createService({ monitorsRepository });
+
+			const result = await service.bulkPauseMonitors({
+				teamId: TEAM_ID,
+				monitorIds: ["m1", "m2"],
+				pause: false,
+			});
+
+			expect(result).toHaveLength(2);
+			expect(monitorsRepository.bulkTogglePause).toHaveBeenCalledWith(["m1", "m2"], TEAM_ID, false);
+			expect(jobQueue.resumeJob).toHaveBeenCalledTimes(2);
+			expect(jobQueue.pauseJob).not.toHaveBeenCalled();
+		});
+
+		it("pauses jobs for monitors that are inactive after bulk toggle", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const monitors = [makeMonitor({ id: "m1", isActive: false }), makeMonitor({ id: "m2", isActive: false })];
+			(monitorsRepository.bulkTogglePause as jest.Mock).mockResolvedValue(monitors);
+			const { service, jobQueue } = createService({ monitorsRepository });
+
+			const result = await service.bulkPauseMonitors({
+				teamId: TEAM_ID,
+				monitorIds: ["m1", "m2"],
+				pause: true,
+			});
+
+			expect(result).toHaveLength(2);
+			expect(monitorsRepository.bulkTogglePause).toHaveBeenCalledWith(["m1", "m2"], TEAM_ID, true);
+			expect(jobQueue.pauseJob).toHaveBeenCalledTimes(2);
+			expect(jobQueue.resumeJob).not.toHaveBeenCalled();
+		});
+
+		it("handles mixed active/inactive monitors correctly", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const activeMonitor = makeMonitor({ id: "m1", isActive: true });
+			const pausedMonitor = makeMonitor({ id: "m2", isActive: false });
+			(monitorsRepository.bulkTogglePause as jest.Mock).mockResolvedValue([activeMonitor, pausedMonitor]);
+			const { service, jobQueue } = createService({ monitorsRepository });
+
+			const result = await service.bulkPauseMonitors({
+				teamId: TEAM_ID,
+				monitorIds: ["m1", "m2"],
+				pause: true,
+			});
+
+			expect(result).toHaveLength(2);
+			expect(jobQueue.resumeJob).toHaveBeenCalledTimes(1);
+			expect(jobQueue.resumeJob).toHaveBeenCalledWith(activeMonitor);
+			expect(jobQueue.pauseJob).toHaveBeenCalledTimes(1);
+			expect(jobQueue.pauseJob).toHaveBeenCalledWith(pausedMonitor);
+		});
+
+		it("returns empty array when no monitors were affected", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.bulkTogglePause as jest.Mock).mockResolvedValue([]);
+			const { service, jobQueue } = createService({ monitorsRepository });
+
+			const result = await service.bulkPauseMonitors({
+				teamId: TEAM_ID,
+				monitorIds: ["m1", "m2"],
+				pause: true,
+			});
+
+			expect(result).toHaveLength(0);
+			expect(jobQueue.pauseJob).not.toHaveBeenCalled();
+			expect(jobQueue.resumeJob).not.toHaveBeenCalled();
+		});
+
+		it("works with a single monitor", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const monitor = makeMonitor({ id: "m1", isActive: false });
+			(monitorsRepository.bulkTogglePause as jest.Mock).mockResolvedValue([monitor]);
+			const { service, jobQueue } = createService({ monitorsRepository });
+
+			const result = await service.bulkPauseMonitors({
+				teamId: TEAM_ID,
+				monitorIds: ["m1"],
+				pause: true,
+			});
+
+			expect(result).toHaveLength(1);
+			expect(jobQueue.pauseJob).toHaveBeenCalledWith(monitor);
 		});
 	});
 

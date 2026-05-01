@@ -14,12 +14,12 @@ import {
 	getUptimeDetailsByIdParamValidation,
 	getUptimeDetailsByIdQueryValidation,
 	importMonitorsBodyValidation,
+	bulkPauseMonitorBodyValidation,
 } from "@/validation/monitorValidation.js";
 import sslChecker from "ssl-checker";
 import { fetchMonitorCertificate, requireTeamId, requireUserId } from "@/controllers/controllerUtils.js";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorService, INotificationsService } from "@/service/index.js";
-import { GeoContinent } from "@/types/geoCheck.js";
 
 const SERVICE_NAME = "monitorController";
 
@@ -36,6 +36,7 @@ export interface IMonitorController {
 	deleteAllMonitors: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	editMonitor: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	pauseMonitor: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	bulkPauseMonitors: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	addDemoMonitors: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	getMonitorsByTeamId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	getMonitorsWithChecksByTeamId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
@@ -301,6 +302,27 @@ class MonitorController implements IMonitorController {
 				success: true,
 				msg: monitor.isActive ? "Monitor resumed successfully" : "Monitor paused successfully",
 				data: monitor,
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	bulkPauseMonitors = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const validatedBody = bulkPauseMonitorBodyValidation.parse(req.body);
+
+			const { monitorIds, pause } = validatedBody;
+			const teamId = requireTeamId(req.user?.teamId);
+
+			const monitors = await this.monitorService.bulkPauseMonitors({ teamId, monitorIds, pause });
+
+			const action = pause ? "paused" : "resumed";
+
+			return res.status(200).json({
+				success: true,
+				msg: `${monitors.length} monitor(s) ${action} successfully`,
+				data: monitors,
 			});
 		} catch (error) {
 			next(error);

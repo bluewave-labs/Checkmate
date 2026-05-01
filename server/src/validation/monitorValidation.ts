@@ -113,6 +113,14 @@ export const pauseMonitorParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
 });
 
+export const bulkPauseMonitorBodyValidation = z.object({
+	monitorIds: z
+		.array(z.string().min(1, "Monitor ID must not be empty"))
+		.min(1, "At least one monitor ID is required")
+		.max(100, "Cannot bulk update more than 100 monitors at once"),
+	pause: z.boolean(),
+});
+
 export const getUptimeDetailsByIdParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
 });

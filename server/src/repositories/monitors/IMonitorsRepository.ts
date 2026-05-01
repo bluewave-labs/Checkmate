@@ -39,6 +39,7 @@ export interface IMonitorsRepository {
 		statusPatch?: Partial<Monitor>
 	): Promise<Monitor>;
 	togglePauseById(monitorId: string, teamId: string): Promise<Monitor>;
+	bulkTogglePause(monitorIds: string[], teamId: string, pause: boolean): Promise<Monitor[]>;
 	// delete
 	deleteById(monitorId: string, teamId: string): Promise<Monitor>;
 	deleteByTeamId(teamId: string): Promise<{ monitors: Monitor[]; deletedCount: number }>;
