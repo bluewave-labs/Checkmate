@@ -550,7 +550,7 @@
 						"pagespeed": "追蹤您網站的頁面載入效能、Core Web Vitals 和最佳化分數。",
 						"grpc": "輸入 gRPC 伺服器的主機名稱和連接埠，可選擇指定健康檢查的服務名稱，並新增一個顯示名稱。",
 						"websocket": "輸入要監控的 WebSocket URL（例如 wss://example.com/socket），並新增一個顯示名稱。",
-						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure. The Capture endpoint URL must include the full path /api/v1/metrics (e.g. http://192.168.1.10:5001/api/v1/metrics). For the authorization secret, paste only the token string — don't include 'Bearer'."
+						"hardware": "監控您基礎架構的 CPU、記憶體、磁碟使用量和溫度。"
 					}
 				},
 				"ignoreTls": {

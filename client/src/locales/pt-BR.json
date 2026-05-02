@@ -550,7 +550,7 @@
 						"pagespeed": "Acompanhe o desempenho de carregamento da página, Core Web Vitals e pontuações de otimização do seu site.",
 						"grpc": "Digite o hostname e a porta do servidor gRPC, opcionalmente especifique um nome de serviço para a verificação de saúde e adicione um nome de exibição.",
 						"websocket": "Digite a URL do WebSocket para monitorar (ex.: wss://exemplo.com/socket) e adicione um nome de exibição.",
-						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure. The Capture endpoint URL must include the full path /api/v1/metrics (e.g. http://192.168.1.10:5001/api/v1/metrics). For the authorization secret, paste only the token string — don't include 'Bearer'."
+						"hardware": "Monitore o uso de CPU, memória, disco e temperatura da sua infraestrutura."
 					}
 				},
 				"ignoreTls": {
