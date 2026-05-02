@@ -422,9 +422,10 @@
 					"openSite": "Seite öffnen",
 					"pause": "Pausieren",
 					"resume": "Fortsetzen",
-					"bulkSelected": "{{count}} Monitor(e) ausgewählt",
 					"selectAll": "Alle Monitore auswählen",
-					"selectMonitor": "{{name}} auswählen"
+					"selectMonitor": "{{name}} auswählen",
+					"bulkSelected_one": "{{count}} Monitor ausgewählt",
+					"bulkSelected_other": "{{count}} Monitore ausgewählt"
 				},
 				"statBoxes": {
 					"activeFor": "Aktiv seit",
@@ -452,6 +453,16 @@
 					"optionHardware": "Infrastruktur",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket"
+				},
+				"bulkPause": {
+					"paused_one": "{{count}} Monitor pausiert",
+					"paused_other": "{{count}} Monitore pausiert",
+					"resumed_one": "{{count}} Monitor fortgesetzt",
+					"resumed_other": "{{count}} Monitore fortgesetzt",
+					"alreadyPaused_one": "Der ausgewählte Monitor ist bereits pausiert",
+					"alreadyPaused_other": "Alle ausgewählten Monitore sind bereits pausiert",
+					"alreadyRunning_one": "Der ausgewählte Monitor wird bereits ausgeführt",
+					"alreadyRunning_other": "Alle ausgewählten Monitore werden bereits ausgeführt"
 				}
 			}
 		},

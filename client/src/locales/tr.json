@@ -422,9 +422,10 @@
 					"openSite": "Siteyi aç",
 					"pause": "Duraklat",
 					"resume": "Devam et",
-					"bulkSelected": "{{count}} monitör seçildi",
 					"selectAll": "Tüm monitörleri seç",
-					"selectMonitor": "{{name}} seç"
+					"selectMonitor": "{{name}}'i seç",
+					"bulkSelected_one": "{{count}} monitör seçildi",
+					"bulkSelected_other": "{{count}} monitör seçildi"
 				},
 				"statBoxes": {
 					"activeFor": "Aktif süresi",
@@ -452,6 +453,16 @@
 					"optionHardware": "Altyapı",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket"
+				},
+				"bulkPause": {
+					"paused_one": "{{count}} monitör duraklatıldı",
+					"paused_other": "{{count}} monitör duraklatıldı",
+					"resumed_one": "{{count}} monitör sürdürüldü",
+					"resumed_other": "{{count}} monitör sürdürüldü",
+					"alreadyPaused_one": "Seçili monitör zaten duraklatıldı",
+					"alreadyPaused_other": "Seçili tüm monitörler zaten duraklatıldı",
+					"alreadyRunning_one": "Seçili monitör zaten çalışıyor",
+					"alreadyRunning_other": "Seçili tüm monitörler zaten çalışıyor"
 				}
 			}
 		},

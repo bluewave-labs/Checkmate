@@ -422,9 +422,10 @@
 					"openSite": "Ouvrir le site",
 					"pause": "Pause",
 					"resume": "Reprendre",
-					"bulkSelected": "{{count}} moniteur(s) sélectionné(s)",
 					"selectAll": "Sélectionner tous les moniteurs",
-					"selectMonitor": "Sélectionner {{name}}"
+					"selectMonitor": "Sélectionner {{name}}",
+					"bulkSelected_one": "{{count}} moniteur sélectionné",
+					"bulkSelected_other": "{{count}} moniteurs sélectionnés"
 				},
 				"statBoxes": {
 					"activeFor": "Actif depuis",
@@ -452,6 +453,16 @@
 					"optionHardware": "Infrastructure",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket"
+				},
+				"bulkPause": {
+					"paused_one": "{{count}} moniteur en pause",
+					"paused_other": "{{count}} moniteurs en pause",
+					"resumed_one": "{{count}} moniteur repris",
+					"resumed_other": "{{count}} moniteurs repris",
+					"alreadyPaused_one": "Le moniteur sélectionné est déjà en pause",
+					"alreadyPaused_other": "Tous les moniteurs sélectionnés sont déjà en pause",
+					"alreadyRunning_one": "Le moniteur sélectionné est déjà en cours d'exécution",
+					"alreadyRunning_other": "Tous les moniteurs sélectionnés sont déjà en cours d'exécution"
 				}
 			}
 		},

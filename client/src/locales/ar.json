@@ -422,9 +422,10 @@
 					"openSite": "فتح الموقع",
 					"pause": "إيقاف مؤقت",
 					"resume": "استئناف",
-					"bulkSelected": "تم تحديد {{count}} جهاز(أجهزة) مراقبة",
-					"selectAll": "تحديد جميع أجهزة المراقبة",
-					"selectMonitor": "تحديد {{name}}"
+					"selectAll": "تحديد جميع الشاشات",
+					"selectMonitor": "تحديد {{name}}",
+					"bulkSelected_one": "{{count}} شاشة محددة",
+					"bulkSelected_other": "{{count}} شاشات محددة"
 				},
 				"statBoxes": {
 					"activeFor": "نشط منذ",
@@ -452,6 +453,16 @@
 					"optionHardware": "البنية التحتية",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket"
+				},
+				"bulkPause": {
+					"paused_one": "تم إيقاف {{count}} شاشة مؤقتاً",
+					"paused_other": "تم إيقاف {{count}} شاشات مؤقتاً",
+					"resumed_one": "تم استئناف {{count}} شاشة",
+					"resumed_other": "تم استئناف {{count}} شاشات",
+					"alreadyPaused_one": "الشاشة المحددة متوقفة مؤقتاً بالفعل",
+					"alreadyPaused_other": "جميع الشاشات المحددة متوقفة مؤقتاً بالفعل",
+					"alreadyRunning_one": "الشاشة المحددة قيد التشغيل بالفعل",
+					"alreadyRunning_other": "جميع الشاشات المحددة قيد التشغيل بالفعل"
 				}
 			}
 		},

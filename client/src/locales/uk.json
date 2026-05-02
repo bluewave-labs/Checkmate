@@ -422,9 +422,10 @@
 					"openSite": "Відкрити сайт",
 					"pause": "Призупинити",
 					"resume": "Відновити",
-					"bulkSelected": "Вибрано моніторів: {{count}}",
 					"selectAll": "Вибрати всі монітори",
-					"selectMonitor": "Вибрати {{name}}"
+					"selectMonitor": "Вибрати {{name}}",
+					"bulkSelected_one": "Вибрано {{count}} монітор",
+					"bulkSelected_other": "Вибрано {{count}} моніторів"
 				},
 				"statBoxes": {
 					"activeFor": "Активний протягом",
@@ -452,6 +453,16 @@
 					"optionHardware": "Інфраструктура",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket"
+				},
+				"bulkPause": {
+					"paused_one": "{{count}} монітор призупинено",
+					"paused_other": "{{count}} моніторів призупинено",
+					"resumed_one": "{{count}} монітор відновлено",
+					"resumed_other": "{{count}} моніторів відновлено",
+					"alreadyPaused_one": "Вибраний монітор уже призупинено",
+					"alreadyPaused_other": "Всі вибрані монітори уже призупинено",
+					"alreadyRunning_one": "Вибраний монітор уже запущено",
+					"alreadyRunning_other": "Всі вибрані монітори уже запущено"
 				}
 			}
 		},

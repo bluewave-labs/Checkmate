@@ -318,10 +318,11 @@ class MonitorController implements IMonitorController {
 			const monitors = await this.monitorService.bulkPauseMonitors({ teamId, monitorIds, pause });
 
 			const action = pause ? "paused" : "resumed";
+			const monitorStr = monitors.length === 1 ? "monitor" : "monitors";
 
 			return res.status(200).json({
 				success: true,
-				msg: `${monitors.length} monitor(s) ${action} successfully`,
+				msg: `${monitors.length} ${monitorStr} ${action} successfully`,
 				data: monitors,
 			});
 		} catch (error) {
