@@ -22,6 +22,7 @@ import { useSelector } from "react-redux";
 import type { Monitor } from "@/Types/Monitor";
 import type { ActionMenuItem } from "@/Components/actions-menu";
 import type { RootState } from "@/Types/state";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 
 export const MonitorTable = ({
 	monitors,
@@ -194,7 +195,7 @@ export const MonitorTable = ({
 				id: "name",
 				content: (
 					<Stack
-						gap={theme.spacing(4)}
+						gap={theme.spacing(LAYOUT.XS)}
 						direction={"row"}
 						alignItems={"center"}
 						onClick={(e) => handleSort(e, "name")}
@@ -213,14 +214,14 @@ export const MonitorTable = ({
 				id: "status",
 				content: (
 					<Stack
-						gap={theme.spacing(4)}
+						gap={theme.spacing(LAYOUT.XS)}
 						direction={"row"}
 						justifyContent={"center"}
 						alignItems={"center"}
 						onClick={(e) => handleSort(e, "status")}
 						sx={{ cursor: "pointer" }}
 					>
-						<Box width={theme.spacing(8)} />
+						<Box width={theme.spacing(LAYOUT.MD)} />
 						{t("common.table.headers.status")}
 						{renderSortIcon(sortField === "status")}
 					</Stack>
@@ -244,14 +245,14 @@ export const MonitorTable = ({
 				id: "type",
 				content: (
 					<Stack
-						gap={theme.spacing(4)}
+						gap={theme.spacing(LAYOUT.XS)}
 						direction={"row"}
 						justifyContent={"center"}
 						alignItems={"center"}
 						onClick={(e) => handleSort(e, "type")}
 						sx={{ cursor: "pointer" }}
 					>
-						<Box width={theme.spacing(8)} />
+						<Box width={theme.spacing(LAYOUT.MD)} />
 						{t("common.table.headers.type")}
 						{renderSortIcon(sortField === "type")}
 					</Stack>
@@ -277,13 +278,13 @@ export const MonitorTable = ({
 		<Box>
 			{isSmall && (
 				<Box
-					px={1}
-					pb={2}
+					px={SPACING.SM}
+					pb={SPACING.LG}
 				>
 					<Stack
 						direction="row"
 						alignItems="center"
-						spacing={1}
+						spacing={SPACING.SM}
 					>
 						<Checkbox
 							checked={monitors.length > 0 && selectedMonitors.length === monitors.length}

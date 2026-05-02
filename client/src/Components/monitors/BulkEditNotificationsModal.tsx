@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { Dialog, Select, RadioWithDescription } from "@/Components/inputs";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import Stack from "@mui/material/Stack";
 import RadioGroup from "@mui/material/RadioGroup";
 import MenuItem from "@mui/material/MenuItem";
@@ -58,7 +59,7 @@ export const BulkEditNotificationsModal: React.FC<BulkEditNotificationsModalProp
 		onComplete(!!res);
 	};
 
-	// Prevent submitting empty arrays unless the action is 'set' (as per PR feedback!)
+	// Prevent submitting empty arrays unless the action is 'set'
 	const isMissingSelection = action !== "set" && notificationIds.length === 0;
 
 	return (
@@ -72,8 +73,8 @@ export const BulkEditNotificationsModal: React.FC<BulkEditNotificationsModalProp
 			fullWidth
 		>
 			<Stack
-				spacing={theme.spacing(4)}
-				mt={theme.spacing(2)}
+				spacing={theme.spacing(LAYOUT.XS)}
+				mt={theme.spacing(SPACING.LG)}
 			>
 				{error && <Alert severity="error">{error}</Alert>}
 				<Typography variant="body1">
@@ -84,7 +85,12 @@ export const BulkEditNotificationsModal: React.FC<BulkEditNotificationsModalProp
 
 				<RadioGroup
 					value={action}
-					onChange={(e) => setAction(e.target.value as "add" | "remove" | "set")}
+					onChange={(e) => {
+						const val = e.target.value;
+						if (val === "add" || val === "remove" || val === "set") {
+							setAction(val);
+						}
+					}}
 				>
 					<RadioWithDescription
 						value="add"
@@ -106,7 +112,14 @@ export const BulkEditNotificationsModal: React.FC<BulkEditNotificationsModalProp
 				<Select
 					multiple
 					value={notificationIds}
-					onChange={(e) => setNotificationIds(e.target.value as string[])}
+					onChange={(e) => {
+						const val = e.target.value;
+						if (typeof val === "string") {
+							setNotificationIds(val.split(","));
+						} else if (Array.isArray(val)) {
+							setNotificationIds(val.filter((v) => typeof v === "string"));
+						}
+					}}
 					fieldLabel={t("pages.common.monitors.bulkEdit.selectLabel")}
 					placeholder={t("pages.common.monitors.bulkEdit.selectPlaceholder")}
 				>
