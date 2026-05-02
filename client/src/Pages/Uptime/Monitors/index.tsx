@@ -17,7 +17,7 @@ import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import type { RootState } from "@/Types/state";
 import { useTheme } from "@mui/material";
 import useDebounce from "@/Hooks/useDebounce";
-import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const UptimeMonitorsPage = () => {
 	const { t } = useTranslation();
