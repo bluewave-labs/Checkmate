@@ -1,9 +1,14 @@
-import { ControlsFilter, HeaderMonitorsSummary } from "@/Components/monitors";
+import {
+	ControlsFilter,
+	HeaderMonitorsSummary,
+	BulkActionsBar,
+} from "@/Components/monitors";
 import { MonitorBasePageWithStates } from "@/Components/design-elements";
-import { TextField, Dialog } from "@/Components/inputs";
+import { TextField, Dialog, Button } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
 import { MonitorTable } from "@/Pages/Uptime/Monitors/Components/UptimeMonitorsTable";
 import { HeaderCreate } from "@/Components/common";
+import { Play, Pause } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -16,6 +21,7 @@ import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import type { RootState } from "@/Types/state";
 import { useTheme } from "@mui/material";
 import useDebounce from "@/Hooks/useDebounce";
+import { useBulkMonitorActions } from "@/Hooks/useBulkMonitorActions";
 
 const UptimeMonitorsPage = () => {
 	const { t } = useTranslation();
@@ -37,6 +43,7 @@ const UptimeMonitorsPage = () => {
 	const [sortField, setSortField] = useState<string>("");
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
+
 	const isDialogOpen = Boolean(selectedMonitor);
 
 	const debouncedSearch = useDebounce<string>(search, 300);
@@ -101,6 +108,15 @@ const UptimeMonitorsPage = () => {
 		summary,
 		count,
 	} = monitorsWithChecksData ?? { monitors: null, summary: null, count: 0 };
+
+	// Bulk actions
+	const {
+		selectedRows,
+		setSelectedRows,
+		handleBulkPause,
+		handleBulkResume,
+		handleCancelSelection,
+	} = useBulkMonitorActions(refetch, page);
 
 	// Delete hook
 	const { deleteFn, loading: isDeleting } = useDelete();
@@ -177,6 +193,29 @@ const UptimeMonitorsPage = () => {
 					}}
 				/>
 			</Stack>
+
+			{!isLoading && (
+				<BulkActionsBar
+					selectedCount={selectedRows.length}
+					onCancel={handleCancelSelection}
+				>
+					<Button
+						size="small"
+						startIcon={<Play size={16} />}
+						onClick={handleBulkResume}
+					>
+						{t("common.buttons.resume")}
+					</Button>
+					<Button
+						size="small"
+						startIcon={<Pause size={16} />}
+						onClick={handleBulkPause}
+					>
+						{t("common.buttons.pause")}
+					</Button>
+				</BulkActionsBar>
+			)}
+
 			<MonitorTable
 				monitors={monitorsWithChecks || []}
 				refetch={refetch}
@@ -198,6 +237,8 @@ const UptimeMonitorsPage = () => {
 					);
 					setPage(0);
 				}}
+				selectedRows={selectedRows}
+				onSelectionChange={setSelectedRows}
 			/>
 			<Dialog
 				open={isDialogOpen}

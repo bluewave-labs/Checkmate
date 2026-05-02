@@ -234,6 +234,31 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return this.toEntity(monitor);
 	};
 
+	bulkTogglePause = async (monitorIds: string[], teamId: string, pause: boolean): Promise<Monitor[]> => {
+		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		const filter = {
+			_id: { $in: objectIds },
+			teamId: new mongoose.Types.ObjectId(teamId),
+			isActive: pause, // Only pause if active (true), only resume if inactive (false)
+		};
+
+		const eligibleIds = (await MonitorModel.find(filter).select("_id").lean()).map((doc) => doc._id);
+		if (eligibleIds.length === 0) return [];
+
+		await MonitorModel.updateMany(
+			{ _id: { $in: eligibleIds } },
+			{
+				$set: {
+					isActive: !pause,
+					status: pause ? "paused" : "initializing",
+				},
+			}
+		);
+
+		const updatedMonitors = await MonitorModel.find({ _id: { $in: eligibleIds } });
+		return this.mapDocuments(updatedMonitors);
+	};
+
 	deleteById = async (monitorId: string, teamId: string) => {
 		const deletedMonitor = await MonitorModel.findOneAndDelete({ _id: monitorId, teamId });
 

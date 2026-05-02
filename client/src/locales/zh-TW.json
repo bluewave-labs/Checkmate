@@ -421,7 +421,11 @@
 					"inviteMember": "邀請成員",
 					"openSite": "開啟網站",
 					"pause": "暫停",
-					"resume": "恢復"
+					"resume": "恢復",
+					"selectAll": "選擇所有監視器",
+					"selectMonitor": "選擇 {{name}}",
+					"bulkSelected_one": "已選擇 {{count}} 個監視器",
+					"bulkSelected_other": "已選擇 {{count}} 個監視器"
 				},
 				"statBoxes": {
 					"activeFor": "已啟用",
@@ -449,6 +453,16 @@
 					"optionHardware": "基礎架構",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket"
+				},
+				"bulkPause": {
+					"paused_one": "已暫停 {{count}} 個監視器",
+					"paused_other": "已暫停 {{count}} 個監視器",
+					"resumed_one": "已恢復 {{count}} 個監視器",
+					"resumed_other": "已恢復 {{count}} 個監視器",
+					"alreadyPaused_one": "所選監視器已暫停",
+					"alreadyPaused_other": "所有選定的監視器均已暫停",
+					"alreadyRunning_one": "所選監視器已經在運行",
+					"alreadyRunning_other": "所有選定的監視器均已在運行"
 				}
 			}
 		},

@@ -421,7 +421,11 @@
 					"inviteMember": "邀请成员",
 					"openSite": "打开站点",
 					"pause": "暂停",
-					"resume": "恢复"
+					"resume": "恢复",
+					"selectAll": "选择所有监视器",
+					"selectMonitor": "选择 {{name}}",
+					"bulkSelected_one": "已选择 {{count}} 个监视器",
+					"bulkSelected_other": "已选择 {{count}} 个监视器"
 				},
 				"statBoxes": {
 					"activeFor": "已活跃",
@@ -449,6 +453,16 @@
 					"optionHardware": "基础设施",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket"
+				},
+				"bulkPause": {
+					"paused_one": "已暂停 {{count}} 个监视器",
+					"paused_other": "已暂停 {{count}} 个监视器",
+					"resumed_one": "已恢复 {{count}} 个监视器",
+					"resumed_other": "已恢复 {{count}} 个监视器",
+					"alreadyPaused_one": "所选监视器已暂停",
+					"alreadyPaused_other": "所有选定的监视器均已暂停",
+					"alreadyRunning_one": "所选监视器已经在运行",
+					"alreadyRunning_other": "所有选定的监视器均已在运行"
 				}
 			}
 		},

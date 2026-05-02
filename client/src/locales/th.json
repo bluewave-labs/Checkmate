@@ -421,7 +421,11 @@
 					"inviteMember": "เชิญสมาชิก",
 					"openSite": "เปิดเว็บไซต์",
 					"pause": "หยุดชั่วคราว",
-					"resume": "ดำเนินการต่อ"
+					"resume": "ดำเนินการต่อ",
+					"selectAll": "เลือกจอภาพทั้งหมด",
+					"selectMonitor": "เลือก {{name}}",
+					"bulkSelected_one": "เลือกแล้ว {{count}} จอภาพ",
+					"bulkSelected_other": "เลือกแล้ว {{count}} จอภาพ"
 				},
 				"statBoxes": {
 					"activeFor": "ทำงานมาแล้ว",
@@ -449,6 +453,16 @@
 					"optionHardware": "โครงสร้างพื้นฐาน",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket"
+				},
+				"bulkPause": {
+					"paused_one": "หยุดจอภาพชั่วคราว {{count}} จอ",
+					"paused_other": "หยุดจอภาพชั่วคราว {{count}} จอ",
+					"resumed_one": "กลับมาทำงานต่อ {{count}} จอ",
+					"resumed_other": "กลับมาทำงานต่อ {{count}} จอ",
+					"alreadyPaused_one": "จอภาพที่เลือกถูกหยุดชั่วคราวแล้ว",
+					"alreadyPaused_other": "จอภาพที่เลือกทั้งหมดถูกหยุดชั่วคราวแล้ว",
+					"alreadyRunning_one": "จอภาพที่เลือกกำลังทำงานอยู่แล้ว",
+					"alreadyRunning_other": "จอภาพที่เลือกทั้งหมดกำลังทำงานอยู่แล้ว"
 				}
 			}
 		},

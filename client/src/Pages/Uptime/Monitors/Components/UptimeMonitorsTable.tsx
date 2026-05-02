@@ -20,6 +20,25 @@ import { useSelector } from "react-redux";
 import type { Monitor } from "@/Types/Monitor";
 import type { ActionMenuItem } from "@/Components/actions-menu";
 import type { RootState } from "@/Types/state";
+import { Checkbox } from "@/Components/inputs";
+import { useTableSelection } from "@/Hooks/useTableSelection";
+
+interface MonitorTableProps {
+	monitors: Monitor[];
+	refetch: () => void;
+	setSelectedMonitor: (monitor: Monitor | null) => void;
+	sortField: string;
+	setSortField: (field: string) => void;
+	sortOrder: "asc" | "desc";
+	setSortOrder: (order: "asc" | "desc") => void;
+	count: number;
+	page: number;
+	setPage: (page: number) => void;
+	rowsPerPage: number;
+	setRowsPerPage: (rowsPerPage: number) => void;
+	selectedRows?: string[];
+	onSelectionChange?: (selected: string[]) => void;
+}
 
 export const MonitorTable = ({
 	monitors,
@@ -34,31 +53,24 @@ export const MonitorTable = ({
 	setPage,
 	rowsPerPage,
 	setRowsPerPage,
-}: {
-	monitors: Monitor[];
-	refetch: Function;
-	setSelectedMonitor: (monitor: Monitor | null) => void;
-	sortField: string;
-	setSortField: (field: string) => void;
-	sortOrder: "asc" | "desc";
-	setSortOrder: (order: "asc" | "desc") => void;
-	count: number;
-	page: number;
-	setPage: (page: number) => void;
-	rowsPerPage: number;
-	setRowsPerPage: (rowsPerPage: number) => void;
-}) => {
+	selectedRows = [],
+	onSelectionChange,
+}: MonitorTableProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const chartType = useSelector((state: RootState) => state.ui?.chartType ?? "histogram");
-	const {
-		post,
-		// loading: isPosting,
-		// error: postError,
-	} = usePost<any, Monitor>();
+	const { post } = usePost<Record<string, never>, Monitor>();
 
-	const handleSort = (e: any, field: string) => {
+	const {
+		isAllSelected,
+		isSomeSelected,
+		handleSelectAll,
+		handleSelectRow,
+		isRowSelected,
+	} = useTableSelection(monitors, selectedRows, onSelectionChange);
+
+	const handleSort = (e: React.MouseEvent, field: string) => {
 		e.preventDefault();
 		e.stopPropagation();
 		if (sortField === field) {
@@ -110,13 +122,6 @@ export const MonitorTable = ({
 					navigate(`/uptime/configure/${monitor.id}`);
 				},
 			},
-			// {
-			//   id: 5,
-			//   label: "Clone",
-			//   action: () => {
-
-			//   },
-			// },
 			{
 				id: 6,
 				label:
@@ -124,7 +129,7 @@ export const MonitorTable = ({
 						? t("pages.common.monitors.actions.resume")
 						: t("pages.common.monitors.actions.pause"),
 				action: async () => {
-					await post(`/monitors/pause/${monitor.id}`, {});
+					await post(`/monitors/pause/${monitor.id}`, {} as Record<string, never>);
 					refetch();
 				},
 				closeMenu: true,
@@ -161,7 +166,34 @@ export const MonitorTable = ({
 		);
 		const headers: Header<Monitor>[] = [
 			{
+				id: "selection",
+				content: (
+					<Checkbox
+						aria-label={t("pages.common.monitors.actions.selectAll")}
+						indeterminate={isSomeSelected}
+						checked={isAllSelected}
+						onChange={(e) => handleSelectAll(e.target.checked)}
+					/>
+				),
+				mobileLabel: null,
+				render: (row) => (
+					<Checkbox
+						aria-label={t("pages.common.monitors.actions.selectMonitor", {
+							name: row.name,
+						})}
+						checked={isRowSelected(row.id)}
+						onChange={(e) => {
+							handleSelectRow(row.id, e.target.checked);
+						}}
+						onClick={(e) => e.stopPropagation()}
+					/>
+				),
+				onClick: (e) => e?.stopPropagation(),
+			},
+			{
 				id: "name",
+				align: "left",
+				mobileLabel: t("common.table.headers.name"),
 				content: (
 					<Stack
 						gap={theme.spacing(4)}
@@ -181,6 +213,7 @@ export const MonitorTable = ({
 			},
 			{
 				id: "status",
+				mobileLabel: t("common.table.headers.status"),
 				content: (
 					<Stack
 						gap={theme.spacing(4)}
@@ -212,6 +245,7 @@ export const MonitorTable = ({
 			},
 			{
 				id: "type",
+				mobileLabel: t("common.table.headers.type"),
 				content: (
 					<Stack
 						gap={theme.spacing(4)}
@@ -251,6 +285,11 @@ export const MonitorTable = ({
 				onRowClick={(row) => {
 					navigate(`/uptime/${row.id}`);
 				}}
+				getRowSx={(row) => ({
+					backgroundColor: isRowSelected(row.id)
+						? theme.palette.action.selected
+						: "inherit",
+				})}
 			/>
 			<Pagination
 				component="div"
