@@ -13,6 +13,7 @@ import {
 	type StatusPageTheme,
 	type StatusPageThemeMode,
 } from "@/Types/StatusPage";
+import { resolveTimezone } from "@/Utils/TimeUtils";
 import { themeTokens, type StatusPageThemeTokens } from "./tokens";
 
 type ResolvedMode = "light" | "dark";
@@ -21,6 +22,7 @@ interface StatusPageThemeContextValue {
 	theme: StatusPageTheme;
 	mode: ResolvedMode;
 	tokens: StatusPageThemeTokens;
+	timezone: string;
 }
 
 const StatusPageThemeContext = createContext<StatusPageThemeContextValue | null>(null);
@@ -33,6 +35,7 @@ const resolveSystemMode = (): ResolvedMode => {
 interface Props {
 	theme?: StatusPageTheme;
 	themeMode?: StatusPageThemeMode;
+	timezone?: string;
 	/**
 	 * When true, paint the document body with the theme background so it
 	 * covers beyond the provider's wrapper (useful on the public route
@@ -54,12 +57,14 @@ interface Props {
 export const StatusPageThemeProvider = ({
 	theme,
 	themeMode,
+	timezone,
 	paintBody = false,
 	transparent = false,
 	children,
 }: Props) => {
 	const resolvedTheme = resolveStatusPageTheme(theme);
 	const resolvedThemeMode = resolveStatusPageThemeMode(themeMode);
+	const resolvedTimezone = resolveTimezone(timezone);
 
 	const [systemMode, setSystemMode] = useState<ResolvedMode>(resolveSystemMode);
 
@@ -107,8 +112,13 @@ export const StatusPageThemeProvider = ({
 	const tokens = themeTokens[resolvedTheme][resolvedMode];
 
 	const value = useMemo(
-		() => ({ theme: resolvedTheme, mode: resolvedMode, tokens }),
-		[resolvedTheme, resolvedMode, tokens]
+		() => ({
+			theme: resolvedTheme,
+			mode: resolvedMode,
+			tokens,
+			timezone: resolvedTimezone,
+		}),
+		[resolvedTheme, resolvedMode, tokens, resolvedTimezone]
 	);
 
 	return (
@@ -136,6 +146,7 @@ export const useStatusPageTheme = (): StatusPageThemeContextValue => {
 			theme: DEFAULT_STATUS_PAGE_THEME,
 			mode: resolveSystemMode(),
 			tokens: themeTokens[DEFAULT_STATUS_PAGE_THEME][resolveSystemMode()],
+			timezone: resolveTimezone(),
 		};
 	}
 	return ctx;
