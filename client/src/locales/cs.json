@@ -534,6 +534,10 @@
 						"wsUrl": {
 							"label": "WebSocket URL",
 							"placeholder": "wss://example.com/socket"
+						},
+						"captureUrl": {
+							"label": "Endpoint Capture",
+							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
 						}
 					},
 					"title": "Obecná nastavení",
@@ -546,7 +550,7 @@
 						"pagespeed": "Sledujte výkon načítání stránky, metriky Core Web Vitals a hodnocení optimalizace vašeho webu.",
 						"grpc": "Zadejte název hostitele a port gRPC serveru, volitelně zadejte název služby pro kontrolu stavu a přidejte zobrazovaný název.",
 						"websocket": "Zadejte WebSocket URL ke sledování (např. wss://example.com/socket) a přidejte zobrazovaný název.",
-						"hardware": "Sledujte využití CPU, paměti, disku a teplotu vaší infrastruktury."
+						"hardware": "Sledujte využití CPU, paměti, disku a teplotu vaší infrastruktury. URL endpointu Capture musí obsahovat celou cestu /api/v1/metrics (např. http://192.168.1.10:5001/api/v1/metrics). Do autorizačního klíče vložte pouze řetězec tokenu — nezahrnujte 'Bearer'."
 					}
 				},
 				"ignoreTls": {

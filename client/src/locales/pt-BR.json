@@ -534,6 +534,10 @@
 						"wsUrl": {
 							"label": "URL do WebSocket",
 							"placeholder": "wss://exemplo.com/socket"
+						},
+						"captureUrl": {
+							"label": "Endpoint do Capture",
+							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
 						}
 					},
 					"title": "Configurações gerais",
@@ -546,7 +550,7 @@
 						"pagespeed": "Acompanhe o desempenho de carregamento da página, Core Web Vitals e pontuações de otimização do seu site.",
 						"grpc": "Digite o hostname e a porta do servidor gRPC, opcionalmente especifique um nome de serviço para a verificação de saúde e adicione um nome de exibição.",
 						"websocket": "Digite a URL do WebSocket para monitorar (ex.: wss://exemplo.com/socket) e adicione um nome de exibição.",
-						"hardware": "Monitore o uso de CPU, memória, disco e temperatura da sua infraestrutura."
+						"hardware": "Monitore o uso de CPU, memória, disco e temperatura da sua infraestrutura. A URL do endpoint do Capture deve incluir o caminho completo /api/v1/metrics (por exemplo, http://192.168.1.10:5001/api/v1/metrics). Para a chave de autorização, cole apenas a string do token — não inclua 'Bearer'."
 					}
 				},
 				"ignoreTls": {

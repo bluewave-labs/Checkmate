@@ -534,6 +534,10 @@
 						"wsUrl": {
 							"label": "WebSocket URL",
 							"placeholder": "wss://example.com/socket"
+						},
+						"captureUrl": {
+							"label": "Capture uç noktası",
+							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
 						}
 					},
 					"title": "Genel ayarlar",
@@ -546,7 +550,7 @@
 						"pagespeed": "Web sitenizin sayfa yükleme performansını, Core Web Vitals metriklerini ve optimizasyon puanlarını takip edin.",
 						"grpc": "gRPC sunucusunun ana bilgisayar adını ve portunu girin, isteğe bağlı olarak sağlık kontrolü için bir servis adı belirtin ve bir görünen ad ekleyin.",
 						"websocket": "İzlenecek WebSocket URL'sini girin (örn. wss://example.com/socket) ve bir görünen ad ekleyin.",
-						"hardware": "Altyapınız için CPU, bellek, disk kullanımı ve sıcaklığı izleyin."
+						"hardware": "Altyapınızın CPU, bellek, disk kullanımını ve sıcaklığını izleyin. Capture uç nokta URL'si tam yolu /api/v1/metrics içermelidir (ör. http://192.168.1.10:5001/api/v1/metrics). Yetkilendirme anahtarına yalnızca token dizesini yapıştırın — 'Bearer' eklemeyin."
 					}
 				},
 				"ignoreTls": {

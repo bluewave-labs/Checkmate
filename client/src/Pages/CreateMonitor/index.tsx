@@ -136,8 +136,8 @@ const getGeneralSettingsConfig = (
 			showIgnoreTls: false,
 		},
 		hardware: {
-			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
-			urlPlaceholder: t("pages.createMonitor.form.general.option.url.placeholder"),
+			urlLabel: t("pages.createMonitor.form.general.option.captureUrl.label"),
+			urlPlaceholder: t("pages.createMonitor.form.general.option.captureUrl.placeholder"),
 			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
 			showUrl: true,
 			showPort: false,

@@ -534,6 +534,10 @@
 						"wsUrl": {
 							"label": "WebSocket URL",
 							"placeholder": "wss://example.com/socket"
+						},
+						"captureUrl": {
+							"label": "Capture 端点",
+							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
 						}
 					},
 					"title": "常规设置",
@@ -546,7 +550,7 @@
 						"pagespeed": "跟踪网站的页面加载性能、Core Web Vitals 和优化评分。",
 						"grpc": "输入 gRPC 服务器的主机名和端口，可选指定健康检查的服务名称，并添加显示名称。",
 						"websocket": "输入要监控的 WebSocket URL（例如 wss://example.com/socket），并添加显示名称。",
-						"hardware": "监控基础设施的 CPU、内存、磁盘使用率和温度。"
+						"hardware": "监控基础设施的 CPU、内存、磁盘使用情况和温度。Capture 端点 URL 必须包含完整路径 /api/v1/metrics（例如 http://192.168.1.10:5001/api/v1/metrics）。授权密钥只需粘贴令牌字符串——请勿包含 'Bearer'。"
 					}
 				},
 				"ignoreTls": {
