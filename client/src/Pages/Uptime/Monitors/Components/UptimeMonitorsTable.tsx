@@ -1,5 +1,6 @@
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
+import Checkbox from "@mui/material/Checkbox";
 import Typography from "@mui/material/Typography";
 import {
 	Table,
@@ -13,6 +14,7 @@ import { ArrowDown, ArrowUp } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { useNavigate } from "react-router-dom";
 import { usePost } from "@/Hooks/UseApi";
 import { useSelector } from "react-redux";
@@ -20,11 +22,15 @@ import { useSelector } from "react-redux";
 import type { Monitor } from "@/Types/Monitor";
 import type { ActionMenuItem } from "@/Components/actions-menu";
 import type { RootState } from "@/Types/state";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 
 export const MonitorTable = ({
 	monitors,
 	refetch,
 	setSelectedMonitor,
+	selectedMonitors,
+	onSelectMonitor,
+	onSelectAll,
 	sortField,
 	setSortField,
 	sortOrder,
@@ -38,6 +44,9 @@ export const MonitorTable = ({
 	monitors: Monitor[];
 	refetch: Function;
 	setSelectedMonitor: (monitor: Monitor | null) => void;
+	selectedMonitors: string[];
+	onSelectMonitor: (id: string) => void;
+	onSelectAll: (ids: string[]) => void;
 	sortField: string;
 	setSortField: (field: string) => void;
 	sortOrder: "asc" | "desc";
@@ -50,6 +59,7 @@ export const MonitorTable = ({
 }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
+	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const navigate = useNavigate();
 	const chartType = useSelector((state: RootState) => state.ui?.chartType ?? "histogram");
 	const {
@@ -161,10 +171,40 @@ export const MonitorTable = ({
 		);
 		const headers: Header<Monitor>[] = [
 			{
+				id: "select",
+				content: isSmall ? (
+					""
+				) : (
+					<Checkbox
+						checked={monitors.length > 0 && selectedMonitors.length === monitors.length}
+						indeterminate={
+							selectedMonitors.length > 0 && selectedMonitors.length < monitors.length
+						}
+						onChange={(e) => {
+							if (e.target.checked) {
+								onSelectAll(monitors.map((m) => m.id));
+							} else {
+								onSelectAll([]);
+							}
+						}}
+						onClick={(e) => e.stopPropagation()}
+					/>
+				),
+				render: (row) => {
+					return (
+						<Checkbox
+							checked={selectedMonitors.includes(row.id)}
+							onChange={() => onSelectMonitor(row.id)}
+							onClick={(e) => e.stopPropagation()}
+						/>
+					);
+				},
+			},
+			{
 				id: "name",
 				content: (
 					<Stack
-						gap={theme.spacing(4)}
+						gap={theme.spacing(LAYOUT.XS)}
 						direction={"row"}
 						alignItems={"center"}
 						onClick={(e) => handleSort(e, "name")}
@@ -183,14 +223,14 @@ export const MonitorTable = ({
 				id: "status",
 				content: (
 					<Stack
-						gap={theme.spacing(4)}
+						gap={theme.spacing(LAYOUT.XS)}
 						direction={"row"}
 						justifyContent={"center"}
 						alignItems={"center"}
 						onClick={(e) => handleSort(e, "status")}
 						sx={{ cursor: "pointer" }}
 					>
-						<Box width={theme.spacing(8)} />
+						<Box width={theme.spacing(LAYOUT.MD)} />
 						{t("common.table.headers.status")}
 						{renderSortIcon(sortField === "status")}
 					</Stack>
@@ -214,14 +254,14 @@ export const MonitorTable = ({
 				id: "type",
 				content: (
 					<Stack
-						gap={theme.spacing(4)}
+						gap={theme.spacing(LAYOUT.XS)}
 						direction={"row"}
 						justifyContent={"center"}
 						alignItems={"center"}
 						onClick={(e) => handleSort(e, "type")}
 						sx={{ cursor: "pointer" }}
 					>
-						<Box width={theme.spacing(8)} />
+						<Box width={theme.spacing(LAYOUT.MD)} />
 						{t("common.table.headers.type")}
 						{renderSortIcon(sortField === "type")}
 					</Stack>
@@ -245,6 +285,38 @@ export const MonitorTable = ({
 
 	return (
 		<Box>
+			{isSmall && (
+				<Box
+					px={SPACING.SM}
+					pb={SPACING.LG}
+				>
+					<Stack
+						direction="row"
+						alignItems="center"
+						spacing={SPACING.SM}
+					>
+						<Checkbox
+							checked={monitors.length > 0 && selectedMonitors.length === monitors.length}
+							indeterminate={
+								selectedMonitors.length > 0 && selectedMonitors.length < monitors.length
+							}
+							onChange={(e) => {
+								if (e.target.checked) {
+									onSelectAll(monitors.map((m) => m.id));
+								} else {
+									onSelectAll([]);
+								}
+							}}
+						/>
+						<Typography
+							variant="body2"
+							color="text.secondary"
+						>
+							{t("pages.common.monitors.bulkEdit.selectAll", "Select All")}
+						</Typography>
+					</Stack>
+				</Box>
+			)}
 			<Table
 				headers={headers}
 				data={monitors}

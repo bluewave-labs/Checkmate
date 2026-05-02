@@ -1,9 +1,10 @@
 import { ControlsFilter, HeaderMonitorsSummary } from "@/Components/monitors";
 import { MonitorBasePageWithStates } from "@/Components/design-elements";
-import { TextField, Dialog } from "@/Components/inputs";
+import { TextField, Dialog, Button } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
 import { MonitorTable } from "@/Pages/Uptime/Monitors/Components/UptimeMonitorsTable";
-import { HeaderCreate } from "@/Components/common";
+import { HeaderCreate, FloatingActionBar } from "@/Components/common";
+import { BulkEditNotificationsModal } from "@/Components/monitors";
 
 import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -16,6 +17,7 @@ import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import type { RootState } from "@/Types/state";
 import { useTheme } from "@mui/material";
 import useDebounce from "@/Hooks/useDebounce";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const UptimeMonitorsPage = () => {
 	const { t } = useTranslation();
@@ -36,10 +38,26 @@ const UptimeMonitorsPage = () => {
 	const [search, setSearch] = useState<string>("");
 	const [sortField, setSortField] = useState<string>("");
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
+	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null); // For deletion
+	const [selectedMonitors, setSelectedMonitors] = useState<string[]>([]); // For bulk edit
+	const [isBulkEditModalOpen, setIsBulkEditModalOpen] = useState(false);
 	const isDialogOpen = Boolean(selectedMonitor);
 
 	const debouncedSearch = useDebounce<string>(search, 300);
+
+	const handleSelectAll = (ids: string[]) => {
+		setSelectedMonitors(ids);
+	};
+
+	const handleSelectMonitor = (id: string) => {
+		setSelectedMonitors((prev) =>
+			prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id]
+		);
+	};
+
+	const handleClearSelection = () => {
+		setSelectedMonitors([]);
+	};
 
 	// Convert filter selections to API filter values
 	// Status: pass "up"/"down" directly to the API
@@ -120,6 +138,14 @@ const UptimeMonitorsPage = () => {
 		refetch();
 	};
 
+	const handleBulkEditComplete = (success: boolean) => {
+		setIsBulkEditModalOpen(false);
+		if (success) {
+			handleClearSelection();
+			refetch();
+		}
+	};
+
 	const handleCancel = () => {
 		setSelectedMonitor(null);
 	};
@@ -158,7 +184,7 @@ const UptimeMonitorsPage = () => {
 			<Stack
 				direction={isSmall ? "column" : "row"}
 				justifyContent={isSmall ? "flex-start" : "space-between"}
-				gap={theme.spacing(4)}
+				gap={theme.spacing(LAYOUT.XS)}
 			>
 				<ControlsFilter
 					selectedTypes={selectedTypes}
@@ -178,12 +204,18 @@ const UptimeMonitorsPage = () => {
 				/>
 			</Stack>
 			<MonitorTable
+				page={page}
 				monitors={monitorsWithChecks || []}
 				refetch={refetch}
 				setSelectedMonitor={setSelectedMonitor}
+				selectedMonitors={selectedMonitors}
+				onSelectMonitor={handleSelectMonitor}
+				onSelectAll={handleSelectAll}
 				count={count || 0}
-				page={page}
-				setPage={setPage}
+				setPage={(newPage) => {
+					setPage(newPage);
+					handleClearSelection();
+				}}
 				rowsPerPage={rowsPerPage}
 				sortField={sortField}
 				setSortField={setSortField}
@@ -197,6 +229,7 @@ const UptimeMonitorsPage = () => {
 						})
 					);
 					setPage(0);
+					handleClearSelection();
 				}}
 			/>
 			<Dialog
@@ -206,6 +239,27 @@ const UptimeMonitorsPage = () => {
 				onConfirm={handleConfirm}
 				onCancel={handleCancel}
 				loading={isDeleting}
+			/>
+			{!isBulkEditModalOpen && (
+				<FloatingActionBar
+					selectedCount={selectedMonitors.length}
+					onClearSelection={handleClearSelection}
+				>
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={() => setIsBulkEditModalOpen(true)}
+					>
+						{t("pages.common.monitors.bulkEdit.editButton")}
+					</Button>
+				</FloatingActionBar>
+			)}
+
+			<BulkEditNotificationsModal
+				open={isBulkEditModalOpen}
+				onClose={() => setIsBulkEditModalOpen(false)}
+				selectedMonitors={selectedMonitors}
+				onComplete={handleBulkEditComplete}
 			/>
 		</MonitorBasePageWithStates>
 	);

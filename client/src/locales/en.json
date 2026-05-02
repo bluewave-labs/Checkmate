@@ -19,6 +19,7 @@
 			"home": "Home"
 		},
 		"buttons": {
+			"selected": "selected",
 			"addMember": "Add member",
 			"cancel": "Cancel",
 			"close": "Close",
@@ -412,6 +413,20 @@
 		},
 		"common": {
 			"monitors": {
+				"bulkEdit": {
+					"selectAll": "Select All",
+					"editButton": "Edit Notifications",
+					"title": "Edit Notifications",
+					"selectedText": "You are applying changes to {{count}} monitor(s).",
+					"actionAdd": "Add",
+					"actionAddDesc": "Adds the selected notifications to these monitors without removing existing ones.",
+					"actionRemove": "Remove",
+					"actionRemoveDesc": "Removes exclusively the selected notifications from these monitors.",
+					"actionSet": "Replace all",
+					"actionSetDesc": "Replaces all existing notifications. Leave empty to clear all notifications.",
+					"selectLabel": "Notification Channels",
+					"selectPlaceholder": "Select channels..."
+				},
 				"actions": {
 					"configure": "Configure",
 					"delete": "Delete",
