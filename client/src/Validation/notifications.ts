@@ -28,6 +28,10 @@ const discordSchema = baseSchema.extend({
 const webhookSchema = baseSchema.extend({
 	type: z.literal("webhook"),
 	address: z.string().min(1, "Webhook URL is required").url("Please enter a valid URL"),
+	authType: z.enum(["none", "basic", "bearer"]),
+	authUsername: z.string().max(256).optional(),
+	authPassword: z.string().max(1024).optional(),
+	authToken: z.string().max(4096).optional(),
 });
 
 const pagerDutySchema = baseSchema.extend({
@@ -70,7 +74,7 @@ const twilioSchema = baseSchema.extend({
 	twilioPhoneNumber: z.string().min(1, "Twilio phone number is required"),
 });
 
-export const notificationSchema = z.discriminatedUnion("type", [
+export const baseNotificationSchema = z.discriminatedUnion("type", [
 	emailSchema,
 	slackSchema,
 	discordSchema,
@@ -82,5 +86,35 @@ export const notificationSchema = z.discriminatedUnion("type", [
 	pushoverSchema,
 	twilioSchema,
 ]);
+
+export const notificationSchema = baseNotificationSchema.superRefine((data, ctx) => {
+	if (data.type === "webhook") {
+		if (data.authType === "basic") {
+			if (!data.authUsername) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message: "Username is required",
+					path: ["authUsername"],
+				});
+			}
+			if (!data.authPassword) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message: "Password is required",
+					path: ["authPassword"],
+				});
+			}
+		}
+		if (data.authType === "bearer") {
+			if (!data.authToken) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message: "Token is required",
+					path: ["authToken"],
+				});
+			}
+		}
+	}
+});
 
 export type NotificationFormData = z.infer<typeof notificationSchema>;
