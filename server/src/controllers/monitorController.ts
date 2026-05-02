@@ -19,7 +19,6 @@ import sslChecker from "ssl-checker";
 import { fetchMonitorCertificate, requireTeamId, requireUserId } from "@/controllers/controllerUtils.js";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorService, INotificationsService } from "@/service/index.js";
-import { GeoContinent } from "@/types/geoCheck.js";
 
 const SERVICE_NAME = "monitorController";
 

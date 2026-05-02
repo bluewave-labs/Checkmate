@@ -21,6 +21,11 @@ export const settingsSchema = z.object({
 		.string()
 		.transform((val) => (val.trim() === "" ? null : val.trim()))
 		.optional(),
+	globalpingApiToken: z
+		.string()
+		.max(256, "Token must be 256 characters or fewer")
+		.transform((val) => (val.trim() === "" ? null : val.trim()))
+		.optional(),
 	systemEmailHost: z
 		.string()
 		.regex(/^[a-zA-Z0-9.-]*$/, "Invalid hostname or IP address")

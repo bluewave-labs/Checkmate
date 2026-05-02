@@ -10,6 +10,7 @@ export const updateAppSettingsBodyValidation = z
 		checkTTL: z.number().int().min(1).max(CHECK_TTL_SENTINEL).optional(),
 		systemEmailPort: z.number().nullable().optional(),
 		pagespeedApiKey: z.string().nullable().optional(),
+		globalpingApiToken: z.string().trim().max(256).nullable().optional(),
 		language: z.string().optional(),
 		timezone: z.string().optional(),
 		systemEmailHost: z.string().nullable().optional(),

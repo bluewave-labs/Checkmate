@@ -35,6 +35,7 @@ import {
 	INetworkService,
 	IEmailService,
 	IBufferService,
+	IGlobalPingService,
 	ISuperSimpleQueue,
 	INotificationsService,
 	IStatusService,
@@ -137,6 +138,7 @@ export type InitializedServices = {
 	notificationsService: INotificationsService;
 	statusPageService: IStatusPageService;
 	notificationMessageBuilder: INotificationMessageBuilder;
+	globalPingService: IGlobalPingService;
 
 	// Repositories
 	monitorsRepository: IMonitorsRepository;
@@ -246,7 +248,7 @@ export const initializeServices = async ({
 
 	const checkService = new CheckService(monitorsRepository, logger, checksRepository);
 
-	const globalPingService = new GlobalPingService(logger);
+	const globalPingService = new GlobalPingService(logger, settingsService);
 
 	const geoChecksService = new GeoChecksService({
 		logger,
@@ -370,6 +372,7 @@ export const initializeServices = async ({
 		notificationsService,
 		statusPageService,
 		notificationMessageBuilder,
+		globalPingService,
 
 		// Repositories
 		monitorsRepository,

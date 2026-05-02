@@ -19,10 +19,13 @@ const { GlobalPingService } = await import("../../../src/service/infrastructure/
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-const createService = () => {
+const createService = (token?: string) => {
 	const logger = createMockLogger();
-	const service = new GlobalPingService(logger as any);
-	return { service, logger };
+	const settingsService = {
+		getGlobalpingApiToken: jest.fn(async () => token),
+	};
+	const service = new GlobalPingService(logger as any, settingsService as any);
+	return { service, logger, settingsService };
 };
 
 const makeProbeResult = (overrides?: Record<string, any>) => ({
@@ -165,13 +168,18 @@ describe("GlobalPingService", () => {
 			);
 		});
 
-		it("logs stack as undefined for non-Error thrown values", async () => {
+		it("logs redacted error details for non-Error thrown values", async () => {
 			const { service, logger } = createService();
 			mockGotPost.mockRejectedValue("string error");
 
 			await service.createMeasurement("http", "https://example.com", ["NA"] as GeoContinent[]);
 
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined }));
+			expect(logger.error).toHaveBeenCalledWith(
+				expect.objectContaining({
+					method: "createMeasurement",
+					details: { error: "Unknown error" },
+				})
+			);
 		});
 
 		it("supports ping monitor type", async () => {
@@ -284,13 +292,18 @@ describe("GlobalPingService", () => {
 			);
 		});
 
-		it("logs stack as undefined for non-Error thrown values in poll", async () => {
+		it("logs redacted error details for non-Error thrown values in poll", async () => {
 			const { service, logger } = createService();
-			mockGotGet.mockRejectedValue(42);
+			mockGotGet.mockRejectedValue("string error");
 
 			await service.pollForResults("meas-123");
 
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined }));
+			expect(logger.error).toHaveBeenCalledWith(
+				expect.objectContaining({
+					method: "pollForResults",
+					details: { error: "Unknown error" },
+				})
+			);
 		});
 
 		it("returns empty array and logs warning on timeout", async () => {
@@ -494,6 +507,134 @@ describe("GlobalPingService", () => {
 			expect(results).toHaveLength(2);
 			expect(results[0].location.continent).toBe("NA");
 			expect(results[1].location.continent).toBe("EU");
+		});
+	});
+
+	describe("authentication", () => {
+		it("sends Authorization header on createMeasurement when token is configured", async () => {
+			const { service } = createService("test-token");
+			mockGotPost.mockResolvedValue({ body: { id: "abc" } });
+
+			await service.createMeasurement("http", "https://example.com", ["EU"] as GeoContinent[]);
+
+			expect(mockGotPost).toHaveBeenCalledWith(
+				expect.any(String),
+				expect.objectContaining({
+					headers: { Authorization: "Bearer test-token" },
+				})
+			);
+		});
+
+		it("omits Authorization header on createMeasurement when no token is configured", async () => {
+			const { service } = createService();
+			mockGotPost.mockResolvedValue({ body: { id: "abc" } });
+
+			await service.createMeasurement("http", "https://example.com", ["EU"] as GeoContinent[]);
+
+			const call = mockGotPost.mock.calls[0][1] as { headers: Record<string, string> };
+			expect(call.headers).toEqual({});
+		});
+
+		it("sends Authorization header on pollForResults when token is configured", async () => {
+			const { service } = createService("poll-token");
+			mockGotGet.mockResolvedValue({ body: { status: "finished", results: [] } });
+
+			await service.pollForResults("meas-1");
+
+			expect(mockGotGet).toHaveBeenCalledWith(
+				expect.any(String),
+				expect.objectContaining({
+					headers: { Authorization: "Bearer poll-token" },
+				})
+			);
+		});
+
+		it("redacts Bearer tokens from logged error messages", async () => {
+			const { service, logger } = createService("secret-token");
+			mockGotPost.mockRejectedValue(new Error("Request failed: Authorization: Bearer secret-token"));
+
+			await service.createMeasurement("http", "https://example.com", ["EU"] as GeoContinent[]);
+
+			const errorCall = (logger.error as jest.Mock).mock.calls.find((args) => (args[0] as { method?: string }).method === "createMeasurement");
+			expect(errorCall).toBeDefined();
+			const detailsError = (errorCall![0] as { details: { error: string } }).details.error;
+			expect(detailsError).not.toContain("secret-token");
+			expect(detailsError).toContain("***REDACTED***");
+		});
+	});
+
+	describe("getQuota", () => {
+		it("returns authenticated true and parsed limits when token is configured", async () => {
+			const { service } = createService("real-token");
+			mockGotGet.mockResolvedValue({
+				body: {
+					rateLimit: {
+						measurements: {
+							create: { limit: 500, remaining: 487 },
+						},
+					},
+				},
+			});
+
+			const quota = await service.getQuota();
+
+			expect(quota).toEqual({ authenticated: true, limit: 500, remaining: 487 });
+			expect(mockGotGet).toHaveBeenCalledWith(
+				expect.stringContaining("/limits"),
+				expect.objectContaining({
+					headers: { Authorization: "Bearer real-token" },
+				})
+			);
+		});
+
+		it("returns authenticated false when no token is configured", async () => {
+			const { service } = createService();
+			mockGotGet.mockResolvedValue({
+				body: {
+					rateLimit: {
+						measurements: {
+							create: { limit: 50, remaining: 50 },
+						},
+					},
+				},
+			});
+
+			const quota = await service.getQuota();
+
+			expect(quota).toEqual({ authenticated: false, limit: 50, remaining: 50 });
+		});
+
+		it("uses tokenOverride when provided, ignoring saved token", async () => {
+			const { service } = createService("saved-token");
+			mockGotGet.mockResolvedValue({
+				body: { rateLimit: { measurements: { create: { limit: 500, remaining: 100 } } } },
+			});
+
+			await service.getQuota("override-token");
+
+			expect(mockGotGet).toHaveBeenCalledWith(
+				expect.stringContaining("/limits"),
+				expect.objectContaining({
+					headers: { Authorization: "Bearer override-token" },
+				})
+			);
+		});
+
+		it("defaults limit and remaining to 0 when API response is missing those fields", async () => {
+			const { service } = createService();
+			mockGotGet.mockResolvedValue({ body: {} });
+
+			const quota = await service.getQuota();
+
+			expect(quota).toEqual({ authenticated: false, limit: 0, remaining: 0 });
+		});
+
+		it("propagates errors so the caller can distinguish 401 from network errors", async () => {
+			const { service } = createService("bad-token");
+			const apiError = Object.assign(new Error("Unauthorized"), { response: { statusCode: 401 } });
+			mockGotGet.mockRejectedValue(apiError);
+
+			await expect(service.getQuota()).rejects.toBe(apiError);
 		});
 	});
 });

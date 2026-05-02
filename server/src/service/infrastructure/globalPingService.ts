@@ -2,6 +2,7 @@ import type { GeoContinent, GeoCheckResult, GeoCheckTimings, GeoCheckLocation } 
 import { supportsGeoCheck } from "@/types/monitor.js";
 import { MonitorType } from "@/types/index.js";
 import type { ILogger } from "@/utils/logger.js";
+import type { ISettingsService } from "@/service/system/settingsService.js";
 import got from "got";
 
 const SERVICE_NAME = "GlobalPingService";
@@ -59,23 +60,38 @@ interface GlobalPingProbeResult {
 	};
 }
 
+export interface GlobalPingQuota {
+	authenticated: boolean;
+	remaining: number;
+	limit: number;
+}
+
 export interface IGlobalPingService {
 	readonly serviceName: string;
 	createMeasurement(monitorType: MonitorType, url: string, locations: GeoContinent[]): Promise<string | null>;
 	pollForResults(measurementId: string, timeoutMs?: number): Promise<GeoCheckResult[]>;
+	getQuota(tokenOverride?: string): Promise<GlobalPingQuota>;
 }
 
 export class GlobalPingService implements IGlobalPingService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: ILogger;
+	private settingsService: ISettingsService;
 
-	constructor(logger: ILogger) {
+	constructor(logger: ILogger, settingsService: ISettingsService) {
 		this.logger = logger;
+		this.settingsService = settingsService;
 	}
 
 	get serviceName() {
 		return GlobalPingService.SERVICE_NAME;
+	}
+
+	private async resolveAuth(tokenOverride?: string): Promise<{ token: string | undefined; headers: Record<string, string> }> {
+		const token = tokenOverride ?? (await this.settingsService.getGlobalpingApiToken());
+		const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+		return { token, headers };
 	}
 
 	async createMeasurement(monitorType: MonitorType, url: string, locations: GeoContinent[]): Promise<string | null> {
@@ -83,7 +99,6 @@ export class GlobalPingService implements IGlobalPingService {
 			if (!supportsGeoCheck(monitorType)) {
 				throw new Error(`Unsupported monitor type for GlobalPing: ${monitorType}`);
 			}
-			// GlobalPing API expects target without protocol (http:// or https://)
 			const cleanTarget = url.replace(/^https?:\/\//, "");
 
 			const requestBody: GlobalPingMeasurementRequest = {
@@ -93,8 +108,11 @@ export class GlobalPingService implements IGlobalPingService {
 				limit: locations.length,
 			};
 
+			const { headers } = await this.resolveAuth();
+
 			const response = await got.post<GlobalPingMeasurementResponse>(`${GLOBAL_PING_API_BASE}/measurements`, {
 				json: requestBody,
+				headers,
 				responseType: "json",
 				timeout: { request: 10000 },
 			});
@@ -113,7 +131,7 @@ export class GlobalPingService implements IGlobalPingService {
 				message: "GlobalPing API unavailable, skipping geo check",
 				service: SERVICE_NAME,
 				method: "createMeasurement",
-				stack: error instanceof Error ? error.stack : undefined,
+				details: { error: this.redactErrorMessage(error) },
 			});
 			return null;
 		}
@@ -121,10 +139,12 @@ export class GlobalPingService implements IGlobalPingService {
 
 	async pollForResults(measurementId: string, timeoutMs: number = MAX_POLL_TIMEOUT_MS): Promise<GeoCheckResult[]> {
 		const startTime = Date.now();
+		const { headers } = await this.resolveAuth();
 
 		while (Date.now() - startTime < timeoutMs) {
 			try {
 				const response = await got.get<GlobalPingMeasurementResponse>(`${GLOBAL_PING_API_BASE}/measurements/${measurementId}`, {
+					headers,
 					responseType: "json",
 					timeout: { request: 5000 },
 				});
@@ -151,20 +171,18 @@ export class GlobalPingService implements IGlobalPingService {
 					return [];
 				}
 
-				// Still in-progress, wait and poll again
 				await this.sleep(POLL_INTERVAL_MS);
 			} catch (error: unknown) {
 				this.logger.error({
 					message: "Error polling GlobalPing API",
 					service: SERVICE_NAME,
 					method: "pollForResults",
-					stack: error instanceof Error ? error.stack : undefined,
+					details: { error: this.redactErrorMessage(error) },
 				});
 				return [];
 			}
 		}
 
-		// Timeout reached
 		this.logger.warn({
 			message: `GlobalPing measurement polling timeout: ${measurementId}`,
 			service: SERVICE_NAME,
@@ -172,6 +190,32 @@ export class GlobalPingService implements IGlobalPingService {
 			details: { measurementId, timeoutMs },
 		});
 		return [];
+	}
+
+	async getQuota(tokenOverride?: string): Promise<GlobalPingQuota> {
+		const { token, headers } = await this.resolveAuth(tokenOverride);
+		const response = await got.get<{ rateLimit?: { measurements?: { create?: { limit?: number; remaining?: number } } } }>(
+			`${GLOBAL_PING_API_BASE}/limits`,
+			{
+				headers,
+				responseType: "json",
+				timeout: { request: 5000 },
+			}
+		);
+
+		const create = response.body.rateLimit?.measurements?.create;
+		const limit = create?.limit ?? 0;
+		const remaining = create?.remaining ?? 0;
+		return {
+			authenticated: Boolean(token),
+			limit,
+			remaining,
+		};
+	}
+
+	private redactErrorMessage(error: unknown): string {
+		if (!(error instanceof Error)) return "Unknown error";
+		return error.message.replace(/Bearer\s+[^\s"']+/gi, "Bearer ***REDACTED***");
 	}
 
 	private transformResults(probeResults: GlobalPingProbeResult[]): GeoCheckResult[] {

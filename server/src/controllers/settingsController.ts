@@ -3,6 +3,7 @@ import { updateAppSettingsBodyValidation } from "@/validation/settingsValidation
 import { sendTestEmailBodyValidation } from "@/validation/notificationValidation.js";
 import { AppError } from "@/utils/AppError.js";
 import { IEmailService, ISettingsService } from "@/service/index.js";
+import { IGlobalPingService } from "@/service/infrastructure/globalPingService.js";
 import { Settings } from "@/types/settings.js";
 
 const SERVICE_NAME = "SettingsController";
@@ -12,15 +13,18 @@ export interface ISettingsController {
 	getAppSettings(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 	updateAppSettings(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 	sendTestEmail(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	testGlobalpingToken(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 }
 
 class SettingsController implements ISettingsController {
 	static SERVICE_NAME = SERVICE_NAME;
 	private settingsService: ISettingsService;
 	private emailService: IEmailService;
-	constructor(settingsService: ISettingsService, emailService: IEmailService) {
+	private globalPingService: IGlobalPingService;
+	constructor(settingsService: ISettingsService, emailService: IEmailService, globalPingService: IGlobalPingService) {
 		this.settingsService = settingsService;
 		this.emailService = emailService;
+		this.globalPingService = globalPingService;
 	}
 
 	get serviceName() {
@@ -34,17 +38,20 @@ class SettingsController implements ISettingsController {
 		const returnSettings: Record<string, unknown | null> = {
 			pagespeedKeySet: false,
 			emailPasswordSet: false,
+			globalpingTokenSet: false,
 			settings: null,
 		};
 
-		if (typeof sanitizedSettings.pagespeedApiKey !== "undefined") {
-			returnSettings.pagespeedKeySet = true;
-			delete sanitizedSettings.pagespeedApiKey;
-		}
-		if (typeof sanitizedSettings.systemEmailPassword !== "undefined") {
-			returnSettings.emailPasswordSet = true;
-			delete sanitizedSettings.systemEmailPassword;
-		}
+		const maskSecret = (secretKey: string, flagKey: string) => {
+			if (typeof sanitizedSettings[secretKey] !== "undefined") {
+				returnSettings[flagKey] = true;
+				delete sanitizedSettings[secretKey];
+			}
+		};
+		maskSecret("pagespeedApiKey", "pagespeedKeySet");
+		maskSecret("systemEmailPassword", "emailPasswordSet");
+		maskSecret("globalpingApiToken", "globalpingTokenSet");
+
 		returnSettings.settings = sanitizedSettings;
 		return returnSettings;
 	};
@@ -134,6 +141,31 @@ class SettingsController implements ISettingsController {
 				data: { messageId },
 			});
 		} catch (error) {
+			next(error);
+		}
+	};
+
+	testGlobalpingToken = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const tokenInput = typeof req.body?.token === "string" ? req.body.token.trim() : undefined;
+			const tokenOverride = tokenInput && tokenInput.length > 0 ? tokenInput : undefined;
+			const quota = await this.globalPingService.getQuota(tokenOverride);
+			return res.status(200).json({
+				success: true,
+				msg: "GlobalPing connection verified",
+				data: quota,
+			});
+		} catch (error) {
+			if (error && typeof error === "object" && "response" in error) {
+				const statusCode = (error as { response?: { statusCode?: number } }).response?.statusCode;
+				if (statusCode === 401 || statusCode === 403) {
+					return res.status(200).json({
+						success: false,
+						msg: "Invalid GlobalPing token",
+						data: null,
+					});
+				}
+			}
 			next(error);
 		}
 	};

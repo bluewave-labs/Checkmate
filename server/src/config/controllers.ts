@@ -32,7 +32,7 @@ export const initializeControllers = (services: InitializedServices): Initialize
 	return {
 		authController: new AuthController(services.userService),
 		monitorController: new MonitorController(services.monitorService, services.notificationsService),
-		settingsController: new SettingsController(services.settingsService, services.emailService),
+		settingsController: new SettingsController(services.settingsService, services.emailService, services.globalPingService),
 		checkController: new CheckController(services.checkService),
 		geoCheckController: new GeoCheckController(services.geoChecksService),
 		inviteController: new InviteController(services.inviteService),

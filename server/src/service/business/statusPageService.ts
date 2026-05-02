@@ -20,6 +20,7 @@ export class StatusPageService implements IStatusPageService {
 	}
 
 	private withoutThemeFields = (data: Partial<StatusPage>): Partial<StatusPage> => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const { theme: _theme, themeMode: _themeMode, ...rest } = data;
 		return rest;
 	};

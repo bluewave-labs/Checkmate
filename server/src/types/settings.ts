@@ -18,6 +18,7 @@ export interface Settings {
 	language: string;
 	jwtSecret?: string;
 	pagespeedApiKey?: string;
+	globalpingApiToken?: string;
 	systemEmailHost?: string;
 	systemEmailPort?: number;
 	systemEmailAddress?: string;
