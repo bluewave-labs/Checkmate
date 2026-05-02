@@ -1,78 +1,102 @@
+import React from "react";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import Collapse from "@mui/material/Collapse";
-import { Play, Pause } from "lucide-react";
+import Paper from "@mui/material/Paper";
+import Slide from "@mui/material/Slide";
+import IconButton from "@mui/material/IconButton";
+import { X } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { LAYOUT } from "@/Utils/Theme/constants";
+import { useSidebar } from "@/Hooks/useSidebar";
 
 interface BulkActionsBarProps {
 	selectedCount: number;
-	onResume: () => void;
-	onPause: () => void;
 	onCancel: () => void;
+	children?: React.ReactNode;
 }
 
 export const BulkActionsBar = ({
 	selectedCount,
-	onResume,
-	onPause,
 	onCancel,
+	children,
 }: BulkActionsBarProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
+	const isOpen = selectedCount > 0;
+
+	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
+	const { width, collapsedWidth, transition } = useSidebar();
 
 	return (
-		<Collapse in={selectedCount > 0}>
-			<Box
-				p={theme.spacing(2, 4)}
-				bgcolor={theme.palette.action.hover}
-				borderRadius={1}
-				border={1}
-				borderColor={theme.palette.divider}
-				sx={{ borderStyle: "dashed" }}
+		<Box
+			sx={{
+				position: "fixed",
+				bottom: theme.spacing(LAYOUT.XS),
+				left: isSmall ? collapsedWidth : width,
+				right: 0,
+				display: "flex",
+				justifyContent: "center",
+				pointerEvents: "none",
+				zIndex: theme.zIndex.snackbar,
+				transition: transition.replace("width", "left"),
+			}}
+		>
+			<Slide
+				direction="up"
+				in={isOpen}
+				mountOnEnter
+				unmountOnExit
 			>
-				<Stack
-					direction="row"
-					alignItems="center"
-					justifyContent="space-between"
+				<Paper
+					elevation={6}
+					sx={{
+						pointerEvents: "auto",
+						px: LAYOUT.MD,
+						py: LAYOUT.XS,
+						borderRadius: theme.shape.borderRadius,
+						backgroundColor: theme.palette.background.paper,
+						border: `1px solid ${theme.palette.divider}`,
+						display: "flex",
+						alignItems: "center",
+						gap: LAYOUT.XS,
+						boxShadow: theme.shadows[8],
+					}}
 				>
-					<Typography variant="body2">
-						{t("pages.common.monitors.actions.bulkSelected", {
-							count: selectedCount,
-						})}
-					</Typography>
 					<Stack
 						direction="row"
-						gap={theme.spacing(2)}
+						alignItems="center"
+						gap={LAYOUT.XXS}
 					>
-						<Button
-							size="small"
-							startIcon={<Play size={16} />}
-							onClick={onResume}
+						<Typography
+							variant="body1"
+							fontWeight={600}
+							color={theme.palette.text.primary}
 						>
-							{t("common.buttons.resume")}
-						</Button>
-						<Button
+							{t("pages.common.monitors.actions.bulkSelected", {
+								count: selectedCount,
+							})}
+						</Typography>
+						<IconButton
 							size="small"
-							startIcon={<Pause size={16} />}
-							onClick={onPause}
-						>
-							{t("common.buttons.pause")}
-						</Button>
-						<Button
-							size="small"
-							variant="text"
-							color="inherit"
 							onClick={onCancel}
+							aria-label={t("common.buttons.cancel")}
 						>
-							{t("common.buttons.cancel")}
-						</Button>
+							<X size={18} />
+						</IconButton>
 					</Stack>
-				</Stack>
-			</Box>
-		</Collapse>
+					<Stack
+						direction="row"
+						alignItems="center"
+						gap={LAYOUT.XXS}
+					>
+						{children}
+					</Stack>
+				</Paper>
+			</Slide>
+		</Box>
 	);
 };

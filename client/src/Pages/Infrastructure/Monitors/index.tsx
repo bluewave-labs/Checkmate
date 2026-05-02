@@ -7,7 +7,8 @@ import {
 	HeaderMonitorsSummary,
 	BulkActionsBar,
 } from "@/Components/monitors";
-import { TextField, Dialog } from "@/Components/inputs";
+import { TextField, Dialog, Button } from "@/Components/inputs";
+import { Play, Pause } from "lucide-react";
 
 import { useGet, useDelete } from "@/Hooks/UseApi";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
@@ -178,10 +179,23 @@ const InfrastructureMonitors = () => {
 			{!isLoading && (
 				<BulkActionsBar
 					selectedCount={selectedRows.length}
-					onResume={handleBulkResume}
-					onPause={handleBulkPause}
 					onCancel={handleCancelSelection}
-				/>
+				>
+					<Button
+						size="small"
+						startIcon={<Play size={16} />}
+						onClick={handleBulkResume}
+					>
+						{t("common.buttons.resume")}
+					</Button>
+					<Button
+						size="small"
+						startIcon={<Pause size={16} />}
+						onClick={handleBulkPause}
+					>
+						{t("common.buttons.pause")}
+					</Button>
+				</BulkActionsBar>
 			)}
 
 			<InfraMonitorsTable

@@ -4,10 +4,11 @@ import {
 	BulkActionsBar,
 } from "@/Components/monitors";
 import { MonitorBasePageWithStates } from "@/Components/design-elements";
-import { TextField, Dialog } from "@/Components/inputs";
+import { TextField, Dialog, Button } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
 import { MonitorTable } from "@/Pages/Uptime/Monitors/Components/UptimeMonitorsTable";
 import { HeaderCreate } from "@/Components/common";
+import { Play, Pause } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -196,10 +197,23 @@ const UptimeMonitorsPage = () => {
 			{!isLoading && (
 				<BulkActionsBar
 					selectedCount={selectedRows.length}
-					onResume={handleBulkResume}
-					onPause={handleBulkPause}
 					onCancel={handleCancelSelection}
-				/>
+				>
+					<Button
+						size="small"
+						startIcon={<Play size={16} />}
+						onClick={handleBulkResume}
+					>
+						{t("common.buttons.resume")}
+					</Button>
+					<Button
+						size="small"
+						startIcon={<Pause size={16} />}
+						onClick={handleBulkPause}
+					>
+						{t("common.buttons.pause")}
+					</Button>
+				</BulkActionsBar>
 			)}
 
 			<MonitorTable
