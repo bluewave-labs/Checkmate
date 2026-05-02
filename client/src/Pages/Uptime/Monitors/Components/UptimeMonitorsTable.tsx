@@ -192,6 +192,7 @@ export const MonitorTable = ({
 			},
 			{
 				id: "name",
+				align: "left",
 				mobileLabel: t("common.table.headers.name"),
 				content: (
 					<Stack
@@ -217,6 +218,7 @@ export const MonitorTable = ({
 					<Stack
 						gap={theme.spacing(4)}
 						direction={"row"}
+						justifyContent={"center"}
 						alignItems={"center"}
 						onClick={(e) => handleSort(e, "status")}
 						sx={{ cursor: "pointer" }}

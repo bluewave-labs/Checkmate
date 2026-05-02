@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { Table, Pagination, StatusLabel, Gauge } from "@/Components/design-elements";
 import type { Header } from "@/Components/design-elements/Table";
@@ -184,6 +185,7 @@ export const InfraMonitorsTable = ({
 			},
 			{
 				id: "name",
+				align: "left",
 				mobileLabel: t("common.table.headers.name"),
 				content: (
 					<Typography
@@ -206,17 +208,18 @@ export const InfraMonitorsTable = ({
 				id: "status",
 				mobileLabel: t("common.table.headers.status"),
 				content: (
-					<Typography
-						component="div"
-						display="inline-flex"
-						alignItems="center"
+					<Stack
 						gap={theme.spacing(4)}
+						direction={"row"}
+						justifyContent={"center"}
+						alignItems={"center"}
 						onClick={(e) => handleSort(e, "status")}
 						sx={{ cursor: "pointer" }}
 					>
+						<Box width={theme.spacing(8)} />
 						{t("common.table.headers.status")}
 						{renderSortIcon(sortField === "status")}
-					</Typography>
+					</Stack>
 				),
 				render: (row) => {
 					return <StatusLabel status={row.status} />;

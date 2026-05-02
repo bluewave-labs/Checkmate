@@ -36,6 +36,7 @@ export type Header<T> = {
 	id: number | string;
 	content: React.ReactNode;
 	mobileLabel?: React.ReactNode;
+	align?: "left" | "center" | "right" | "justify" | "inherit";
 	onClick?: (event: React.MouseEvent<HTMLTableCellElement | null>, row: T) => void;
 	render: (row: T) => React.ReactNode;
 };
@@ -214,7 +215,7 @@ export function DataTable<
 						{headers.map((header, idx) => {
 							return (
 								<TableCell
-									align={idx === 0 ? "left" : "center"}
+									align={header.align ?? (idx === 0 ? "left" : "center")}
 									key={header.id}
 								>
 									{header.content}
@@ -243,7 +244,7 @@ export function DataTable<
 									{headers.map((header, index) => {
 										return (
 											<TableCell
-												align={index === 0 ? "left" : "center"}
+												align={header.align ?? (index === 0 ? "left" : "center")}
 												key={header.id}
 												onClick={
 													header.onClick ? (e) => header.onClick!(e, row) : undefined
