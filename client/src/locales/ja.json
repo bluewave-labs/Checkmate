@@ -536,7 +536,7 @@
 							"placeholder": "wss://example.com/socket"
 						},
 						"captureUrl": {
-							"label": "Capture endpoint",
+							"label": "Capture エンドポイント",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
 						}
 					},
@@ -550,7 +550,7 @@
 						"pagespeed": "Webサイトのページ読み込みパフォーマンス、Core Web Vitals、最適化スコアを追跡します。",
 						"grpc": "gRPCサーバーのホスト名とポートを入力し、必要に応じてヘルスチェック用のサービス名を指定し、表示名を追加してください。",
 						"websocket": "監視するWebSocket URLを入力し（例: wss://example.com/socket）、表示名を追加してください。",
-						"hardware": "インフラストラクチャのCPU、メモリ、ディスク使用量、温度を監視します。"
+						"hardware": "インフラの CPU、メモリ、ディスク使用率、温度を監視します。Capture エンドポイント URL には完全なパス /api/v1/metrics を含める必要があります (例: http://192.168.1.10:5001/api/v1/metrics)。認証シークレットにはトークン文字列のみを貼り付けてください — 'Bearer' は含めないでください。"
 					}
 				},
 				"ignoreTls": {

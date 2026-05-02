@@ -536,7 +536,7 @@
 							"placeholder": "wss://example.com/socket"
 						},
 						"captureUrl": {
-							"label": "Capture endpoint",
+							"label": "Capture 端點",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
 						}
 					},
@@ -550,7 +550,7 @@
 						"pagespeed": "追蹤您網站的頁面載入效能、Core Web Vitals 和最佳化分數。",
 						"grpc": "輸入 gRPC 伺服器的主機名稱和連接埠，可選擇指定健康檢查的服務名稱，並新增一個顯示名稱。",
 						"websocket": "輸入要監控的 WebSocket URL（例如 wss://example.com/socket），並新增一個顯示名稱。",
-						"hardware": "監控您基礎架構的 CPU、記憶體、磁碟使用量和溫度。"
+						"hardware": "監控基礎架構的 CPU、記憶體、磁碟使用情況和溫度。Capture 端點 URL 必須包含完整路徑 /api/v1/metrics（例如 http://192.168.1.10:5001/api/v1/metrics）。授權密鑰僅貼上權杖字串——請勿包含 'Bearer'。"
 					}
 				},
 				"ignoreTls": {
