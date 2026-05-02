@@ -126,6 +126,7 @@ const StatusPageView = () => {
 			<StatusPageThemeProvider
 				theme={statusPage.theme}
 				themeMode={statusPage.themeMode}
+				timezone={statusPage.timezone}
 				paintBody
 			>
 				{themedRenderer}
@@ -149,6 +150,7 @@ const StatusPageView = () => {
 			<StatusPageThemeProvider
 				theme={statusPage.theme}
 				themeMode={statusPage.themeMode}
+				timezone={statusPage.timezone}
 				transparent
 			>
 				<BrowserFrame url={publicUrl}>{themedRenderer}</BrowserFrame>

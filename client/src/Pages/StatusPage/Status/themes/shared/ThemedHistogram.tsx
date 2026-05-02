@@ -5,11 +5,10 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import type { SxProps, Theme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/store";
 import type { CheckSnapshot } from "@/Types/Check";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
+import { useStatusPageTheme } from "../StatusPageThemeProvider";
 const CELLS = MAX_RECENT_CHECKS;
 const MIN_HEIGHT_PCT = 6;
 
@@ -34,7 +33,7 @@ export const ThemedHistogram = ({
 	statsGap = 1,
 }: Props) => {
 	const { t } = useTranslation();
-	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
+	const { timezone } = useStatusPageTheme();
 
 	const { padded, max, avg, peak } = useMemo(() => {
 		const source = checks.slice(-CELLS);
@@ -83,7 +82,7 @@ export const ThemedHistogram = ({
 								{formatDateWithTz(
 									check.createdAt,
 									"ddd, MMMM D, YYYY, HH:mm A",
-									uiTimezone
+									timezone
 								)}
 							</Typography>
 						</Stack>
