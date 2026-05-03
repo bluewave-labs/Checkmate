@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 
 import {
 	createNotificationBodyValidation,
+	editNotificationBodyValidation,
 	deleteNotificationParamValidation,
 	getNotificationByIdParamValidation,
 	testNotificationBodyValidation,
@@ -12,6 +13,21 @@ import { AppError } from "@/utils/AppError.js";
 import { INotificationsService } from "@/service/index.js";
 import { requireTeamId, requireUserId } from "./controllerUtils.js";
 import { IMonitorsRepository } from "@/repositories/index.js";
+import type { Notification } from "@/types/notification.js";
+
+const SENSITIVE_FIELDS: (keyof Notification)[] = ["accessToken", "accountSid"];
+
+const sanitizeNotification = (notification: Notification) => {
+	const sanitized: Record<string, unknown> = { ...notification };
+	const sentinels: Record<string, boolean> = {};
+
+	for (const field of SENSITIVE_FIELDS) {
+		sentinels[`${field}Set`] = typeof sanitized[field] !== "undefined" && sanitized[field] !== null && sanitized[field] !== "";
+		delete sanitized[field];
+	}
+
+	return { ...sanitized, ...sentinels };
+};
 
 const SERVICE_NAME = "NotificationController";
 
@@ -58,7 +74,7 @@ class NotificationController implements INotificationController {
 			return res.status(200).json({
 				success: true,
 				msg: "Notification created successfully",
-				data: notification,
+				data: sanitizeNotification(notification),
 			});
 		} catch (error) {
 			next(error);
@@ -73,7 +89,7 @@ class NotificationController implements INotificationController {
 			return res.status(200).json({
 				success: true,
 				msg: "Notifications fetched successfully",
-				data: notifications,
+				data: notifications.map(sanitizeNotification),
 			});
 		} catch (error) {
 			next(error);
@@ -105,7 +121,7 @@ class NotificationController implements INotificationController {
 			return res.status(200).json({
 				success: true,
 				msg: "Notification fetched successfully",
-				data: notification,
+				data: sanitizeNotification(notification),
 			});
 		} catch (error) {
 			next(error);
@@ -114,17 +130,25 @@ class NotificationController implements INotificationController {
 
 	editNotification = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const validatedBody = createNotificationBodyValidation.parse(req.body);
+			const validatedBody = editNotificationBodyValidation.parse(req.body);
 			const validatedParams = editNotificationParamValidation.parse(req.params);
 
 			const teamId = requireTeamId(req.user?.teamId);
 			const notificationId = validatedParams.id;
 
-			const editedNotification = await this.notificationsService.updateById(notificationId, teamId, validatedBody);
+			// Strip undefined sensitive fields so they don't overwrite stored values
+			const updateData = { ...validatedBody };
+			for (const field of SENSITIVE_FIELDS) {
+				if (updateData[field as keyof typeof updateData] === undefined) {
+					delete updateData[field as keyof typeof updateData];
+				}
+			}
+
+			const editedNotification = await this.notificationsService.updateById(notificationId, teamId, updateData);
 			return res.status(200).json({
 				success: true,
 				msg: "Notification updated successfully",
-				data: editedNotification,
+				data: sanitizeNotification(editedNotification),
 			});
 		} catch (error) {
 			next(error);
