@@ -140,7 +140,15 @@ class NotificationController implements INotificationController {
 			const teamId = requireTeamId(req.user?.teamId);
 			const notificationId = validatedParams.id;
 
-			const editedNotification = await this.notificationsService.updateById(notificationId, teamId, validatedBody);
+			// Strip undefined sensitive fields so they don't overwrite stored values
+			const updateData = { ...validatedBody };
+			for (const field of SENSITIVE_FIELDS) {
+				if (updateData[field as keyof typeof updateData] === undefined) {
+					delete updateData[field as keyof typeof updateData];
+				}
+			}
+
+			const editedNotification = await this.notificationsService.updateById(notificationId, teamId, updateData);
 			return res.status(200).json({
 				success: true,
 				msg: "Notification updated successfully",

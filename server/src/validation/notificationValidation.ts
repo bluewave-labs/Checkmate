@@ -4,179 +4,119 @@ import { z } from "zod";
 // Notification Validations
 //****************************************
 
+// Individual notification schemas
+const emailSchema = z.object({
+	notificationName: z.string().min(1, "Notification name is required"),
+	type: z.literal("email"),
+	address: z.email("Please enter a valid e-mail address"),
+	homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
+	roomId: z.union([z.string(), z.literal("")]).optional(),
+	accessToken: z.union([z.string(), z.literal("")]).optional(),
+});
+
+const webhookSchema = z.object({
+	notificationName: z.string().min(1, "Notification name is required"),
+	type: z.literal("webhook"),
+	address: z.url({ message: "Please enter a valid Webhook URL" }),
+	homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
+	roomId: z.union([z.string(), z.literal("")]).optional(),
+	accessToken: z.union([z.string(), z.literal("")]).optional(),
+});
+
+const slackSchema = z.object({
+	notificationName: z.string().min(1, "Notification name is required"),
+	type: z.literal("slack"),
+	address: z.url({ message: "Please enter a valid Webhook URL" }),
+	homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
+	roomId: z.union([z.string(), z.literal("")]).optional(),
+	accessToken: z.union([z.string(), z.literal("")]).optional(),
+});
+
+const discordSchema = z.object({
+	notificationName: z.string().min(1, "Notification name is required"),
+	type: z.literal("discord"),
+	address: z.url({ message: "Please enter a valid Webhook URL" }),
+	homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
+	roomId: z.union([z.string(), z.literal("")]).optional(),
+	accessToken: z.union([z.string(), z.literal("")]).optional(),
+});
+
+const pagerDutySchema = z.object({
+	notificationName: z.string().min(1, "Notification name is required"),
+	type: z.literal("pager_duty"),
+	address: z.string().min(1, "PagerDuty integration key is required"),
+	homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
+	roomId: z.union([z.string(), z.literal("")]).optional(),
+	accessToken: z.union([z.string(), z.literal("")]).optional(),
+});
+
+const matrixSchema = z.object({
+	notificationName: z.string().min(1, "Notification name is required"),
+	type: z.literal("matrix"),
+	address: z.union([z.string(), z.literal("")]).optional(),
+	homeserverUrl: z.url({ message: "Please enter a valid Homeserver URL" }),
+	roomId: z.string().min(1, "Room ID is required"),
+	accessToken: z.string().min(1, "Access Token is required"),
+});
+
+const teamsSchema = z.object({
+	notificationName: z.string().min(1, "Notification name is required"),
+	type: z.literal("teams"),
+	address: z.url({ message: "Please enter a valid Webhook URL" }),
+});
+
+const telegramSchema = z.object({
+	notificationName: z.string().min(1, "Notification name is required"),
+	type: z.literal("telegram"),
+	address: z.string().min(1, "Chat ID is required"),
+	accessToken: z.string().min(1, "Bot token is required"),
+});
+
+const pushoverSchema = z.object({
+	notificationName: z.string().min(1, "Notification name is required"),
+	type: z.literal("pushover"),
+	address: z.string().min(1, "User key is required"),
+	accessToken: z.string().min(1, "App token is required"),
+});
+
+const twilioSchema = z.object({
+	notificationName: z.string().min(1, "Notification name is required"),
+	type: z.literal("twilio"),
+	accountSid: z.string().min(1, "Account SID is required"),
+	accessToken: z.string().min(1, "Auth token is required"),
+	phone: z.string().min(1, "Recipient phone number is required"),
+	twilioPhoneNumber: z.string().min(1, "Twilio phone number is required"),
+});
+
+// Create validation — all fields required
 export const createNotificationBodyValidation = z.discriminatedUnion("type", [
-	// Email notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("email"),
-		address: z.email("Please enter a valid e-mail address"),
-		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
-		roomId: z.union([z.string(), z.literal("")]).optional(),
-		accessToken: z.union([z.string(), z.literal("")]).optional(),
-	}),
-	// Webhook notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("webhook"),
-		address: z.url({ message: "Please enter a valid Webhook URL" }),
-		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
-		roomId: z.union([z.string(), z.literal("")]).optional(),
-		accessToken: z.union([z.string(), z.literal("")]).optional(),
-	}),
-	// Slack notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("slack"),
-		address: z.url({ message: "Please enter a valid Webhook URL" }),
-		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
-		roomId: z.union([z.string(), z.literal("")]).optional(),
-		accessToken: z.union([z.string(), z.literal("")]).optional(),
-	}),
-	// Discord notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("discord"),
-		address: z.url({ message: "Please enter a valid Webhook URL" }),
-		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
-		roomId: z.union([z.string(), z.literal("")]).optional(),
-		accessToken: z.union([z.string(), z.literal("")]).optional(),
-	}),
-	// PagerDuty notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("pager_duty"),
-		address: z.string().min(1, "PagerDuty integration key is required"),
-		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
-		roomId: z.union([z.string(), z.literal("")]).optional(),
-		accessToken: z.union([z.string(), z.literal("")]).optional(),
-	}),
-	// Matrix notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("matrix"),
-		address: z.union([z.string(), z.literal("")]).optional(),
-		homeserverUrl: z.url({ message: "Please enter a valid Homeserver URL" }),
-		roomId: z.string().min(1, "Room ID is required"),
-		accessToken: z.string().min(1, "Access Token is required"),
-	}),
-	// Teams notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("teams"),
-		address: z.url({ message: "Please enter a valid Webhook URL" }),
-	}),
-	// Telegram notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("telegram"),
-		address: z.string().min(1, "Chat ID is required"),
-		accessToken: z.string().min(1, "Bot token is required"),
-	}),
-	// Pushover notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("pushover"),
-		address: z.string().min(1, "User key is required"),
-		accessToken: z.string().min(1, "App token is required"),
-	}),
-	// Twilio SMS notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("twilio"),
-		accountSid: z.string().min(1, "Account SID is required"),
-		accessToken: z.string().min(1, "Auth token is required"),
-		phone: z.string().min(1, "Recipient phone number is required"),
-		twilioPhoneNumber: z.string().min(1, "Twilio phone number is required"),
-	}),
+	emailSchema,
+	webhookSchema,
+	slackSchema,
+	discordSchema,
+	pagerDutySchema,
+	matrixSchema,
+	teamsSchema,
+	telegramSchema,
+	pushoverSchema,
+	twilioSchema,
+]);
+
+// Edit validation — sensitive fields optional (already stored in DB)
+export const editNotificationBodyValidation = z.discriminatedUnion("type", [
+	emailSchema,
+	webhookSchema,
+	slackSchema,
+	discordSchema,
+	pagerDutySchema,
+	matrixSchema.partial({ accessToken: true }),
+	teamsSchema,
+	telegramSchema.partial({ accessToken: true }),
+	pushoverSchema.partial({ accessToken: true }),
+	twilioSchema.partial({ accessToken: true, accountSid: true }),
 ]);
 
 export const testNotificationBodyValidation = createNotificationBodyValidation;
-
-export const editNotificationBodyValidation = z.discriminatedUnion("type", [
-	// Email notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("email"),
-		address: z.email("Please enter a valid e-mail address"),
-		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
-		roomId: z.union([z.string(), z.literal("")]).optional(),
-		accessToken: z.union([z.string(), z.literal("")]).optional(),
-	}),
-	// Webhook notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("webhook"),
-		address: z.url({ message: "Please enter a valid Webhook URL" }),
-		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
-		roomId: z.union([z.string(), z.literal("")]).optional(),
-		accessToken: z.union([z.string(), z.literal("")]).optional(),
-	}),
-	// Slack notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("slack"),
-		address: z.url({ message: "Please enter a valid Webhook URL" }),
-		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
-		roomId: z.union([z.string(), z.literal("")]).optional(),
-		accessToken: z.union([z.string(), z.literal("")]).optional(),
-	}),
-	// Discord notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("discord"),
-		address: z.url({ message: "Please enter a valid Webhook URL" }),
-		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
-		roomId: z.union([z.string(), z.literal("")]).optional(),
-		accessToken: z.union([z.string(), z.literal("")]).optional(),
-	}),
-	// PagerDuty notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("pager_duty"),
-		address: z.string().min(1, "PagerDuty integration key is required"),
-		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
-		roomId: z.union([z.string(), z.literal("")]).optional(),
-		accessToken: z.union([z.string(), z.literal("")]).optional(),
-	}),
-	// Matrix notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("matrix"),
-		address: z.union([z.string(), z.literal("")]).optional(),
-		homeserverUrl: z.url({ message: "Please enter a valid Homeserver URL" }),
-		roomId: z.string().min(1, "Room ID is required"),
-		accessToken: z.string().min(1, "Access Token is required").optional(),
-	}),
-	// Teams notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("teams"),
-		address: z.url({ message: "Please enter a valid Webhook URL" }),
-	}),
-	// Telegram notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("telegram"),
-		address: z.string().min(1, "Chat ID is required"),
-		accessToken: z.string().min(1, "Bot token is required").optional(),
-	}),
-	// Pushover notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("pushover"),
-		address: z.string().min(1, "User key is required"),
-		accessToken: z.string().min(1, "App token is required").optional(),
-	}),
-	// Twilio SMS notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("twilio"),
-		accountSid: z.string().min(1, "Account SID is required").optional(),
-		accessToken: z.string().min(1, "Auth token is required").optional(),
-		phone: z.string().min(1, "Recipient phone number is required"),
-		twilioPhoneNumber: z.string().min(1, "Twilio phone number is required"),
-	}),
-]);
 
 export const deleteNotificationParamValidation = z.object({
 	id: z.string().min(1, "Notification ID is required"),
