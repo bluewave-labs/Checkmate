@@ -302,6 +302,17 @@ describe("SuperSimpleQueue", () => {
 			expect(logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: "Paused monitor mon-1" }));
 		});
 
+		it("refreshes scheduler data with current monitor on pause", async () => {
+			const { queue, scheduler } = createQueue();
+			(scheduler.getJob as jest.Mock).mockResolvedValue({ id: "mon-1-geo" });
+			const monitor = makeMonitor({ isActive: false, status: "paused" });
+
+			await queue.pauseJob(monitor);
+
+			expect(scheduler.updateJob).toHaveBeenCalledWith("mon-1", { data: monitor });
+			expect(scheduler.updateJob).toHaveBeenCalledWith("mon-1-geo", { data: monitor });
+		});
+
 		it("does not pause geo job when it does not exist", async () => {
 			const { queue, scheduler } = createQueue();
 			await queue.pauseJob(makeMonitor());
@@ -309,10 +320,24 @@ describe("SuperSimpleQueue", () => {
 			expect(scheduler.pauseJob).not.toHaveBeenCalledWith("mon-1-geo");
 		});
 
+		it("does not refresh geo data when geo job does not exist", async () => {
+			const { queue, scheduler } = createQueue();
+			await queue.pauseJob(makeMonitor());
+			expect(scheduler.updateJob).toHaveBeenCalledWith("mon-1", expect.objectContaining({ data: expect.anything() }));
+			expect(scheduler.updateJob).not.toHaveBeenCalledWith("mon-1-geo", expect.anything());
+		});
+
 		it("throws when scheduler.pauseJob returns false for the main job", async () => {
 			const { queue, scheduler } = createQueue();
 			(scheduler.pauseJob as jest.Mock).mockResolvedValue(false);
 			await expect(queue.pauseJob(makeMonitor())).rejects.toThrow("Failed to pause monitor");
+		});
+
+		it("does not refresh data when main pauseJob throws", async () => {
+			const { queue, scheduler } = createQueue();
+			(scheduler.pauseJob as jest.Mock).mockResolvedValue(false);
+			await expect(queue.pauseJob(makeMonitor())).rejects.toThrow();
+			expect(scheduler.updateJob).not.toHaveBeenCalled();
 		});
 
 		it("logs error but does not throw when geo pauseJob returns false", async () => {
@@ -338,6 +363,17 @@ describe("SuperSimpleQueue", () => {
 			expect(logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: "Resumed monitor mon-1" }));
 		});
 
+		it("refreshes scheduler data with current monitor on resume", async () => {
+			const { queue, scheduler } = createQueue();
+			(scheduler.getJob as jest.Mock).mockResolvedValue({ id: "mon-1-geo" });
+			const monitor = makeMonitor({ isActive: true, status: "initializing" });
+
+			await queue.resumeJob(monitor);
+
+			expect(scheduler.updateJob).toHaveBeenCalledWith("mon-1", { data: monitor });
+			expect(scheduler.updateJob).toHaveBeenCalledWith("mon-1-geo", { data: monitor });
+		});
+
 		it("does not resume geo job when it does not exist", async () => {
 			const { queue, scheduler } = createQueue();
 			await queue.resumeJob(makeMonitor());
@@ -345,10 +381,24 @@ describe("SuperSimpleQueue", () => {
 			expect(scheduler.resumeJob).not.toHaveBeenCalledWith("mon-1-geo");
 		});
 
+		it("does not refresh geo data when geo job does not exist", async () => {
+			const { queue, scheduler } = createQueue();
+			await queue.resumeJob(makeMonitor());
+			expect(scheduler.updateJob).toHaveBeenCalledWith("mon-1", expect.objectContaining({ data: expect.anything() }));
+			expect(scheduler.updateJob).not.toHaveBeenCalledWith("mon-1-geo", expect.anything());
+		});
+
 		it("throws when scheduler.resumeJob returns false for the main job", async () => {
 			const { queue, scheduler } = createQueue();
 			(scheduler.resumeJob as jest.Mock).mockResolvedValue(false);
 			await expect(queue.resumeJob(makeMonitor())).rejects.toThrow("Failed to resume monitor");
+		});
+
+		it("does not refresh data when main resumeJob throws", async () => {
+			const { queue, scheduler } = createQueue();
+			(scheduler.resumeJob as jest.Mock).mockResolvedValue(false);
+			await expect(queue.resumeJob(makeMonitor())).rejects.toThrow();
+			expect(scheduler.updateJob).not.toHaveBeenCalled();
 		});
 
 		it("logs error but does not throw when geo resumeJob returns false", async () => {
@@ -507,6 +557,7 @@ describe("SuperSimpleQueue", () => {
 				{
 					id: "m1",
 					active: true,
+					repeat: 60000,
 					lockedAt: null,
 					runCount: 5,
 					failCount: 1,
@@ -514,7 +565,7 @@ describe("SuperSimpleQueue", () => {
 					lastRunAt: 1000,
 					lastFinishedAt: 1100,
 					lastFailedAt: 900,
-					data: { url: "http://a.com", type: "http", interval: 60000 },
+					data: { url: "http://a.com", type: "http", interval: 60000, geoCheckInterval: 300000, isActive: true },
 				},
 			]);
 			const jobs = await queue.getJobs();
@@ -525,7 +576,10 @@ describe("SuperSimpleQueue", () => {
 				monitorUrl: "http://a.com",
 				monitorType: "http",
 				monitorInterval: 60000,
+				monitorGeoInterval: 300000,
+				monitorActive: true,
 				active: true,
+				repeat: 60000,
 				lockedAt: null,
 				runCount: 5,
 				failCount: 1,
@@ -553,6 +607,30 @@ describe("SuperSimpleQueue", () => {
 			expect(jobs[0].monitorUrl).toBeNull();
 			expect(jobs[0].monitorType).toBeNull();
 			expect(jobs[0].monitorInterval).toBeNull();
+			expect(jobs[0].monitorGeoInterval).toBeNull();
+			expect(jobs[0].monitorActive).toBeNull();
+			expect(jobs[0].repeat).toBeNull();
+		});
+
+		it("exposes monitor.isActive as monitorActive in the summary", async () => {
+			const { queue, scheduler } = createQueue();
+			(scheduler.getJobs as jest.Mock).mockResolvedValue([
+				{ id: "m1", active: true, data: { url: "a", type: "http", interval: 60000, isActive: true } },
+				{ id: "m2", active: false, data: { url: "b", type: "http", interval: 60000, isActive: false } },
+			]);
+			const jobs = await queue.getJobs();
+			expect(jobs[0].monitorActive).toBe(true);
+			expect(jobs[1].monitorActive).toBe(false);
+		});
+
+		it("exposes geo check interval and repeat", async () => {
+			const { queue, scheduler } = createQueue();
+			(scheduler.getJobs as jest.Mock).mockResolvedValue([
+				{ id: "m1", active: true, repeat: 120000, data: { url: "a", type: "http", interval: 60000, geoCheckInterval: 600000 } },
+			]);
+			const jobs = await queue.getJobs();
+			expect(jobs[0].repeat).toBe(120000);
+			expect(jobs[0].monitorGeoInterval).toBe(600000);
 		});
 	});
 

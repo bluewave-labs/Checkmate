@@ -28,6 +28,8 @@ type QueueJobSummary = {
 	monitorUrl: string | null;
 	monitorType: string | null;
 	monitorInterval: number | null;
+	monitorGeoInterval: number | null;
+	monitorActive: boolean | null;
 	active: boolean;
 	lockedAt: number | null;
 	runCount: number;
@@ -37,6 +39,7 @@ type QueueJobSummary = {
 	lastFinishedAt: number | null;
 	lastRunTook: number | null;
 	lastFailedAt: number | null;
+	repeat: number | null;
 };
 
 export interface ISuperSimpleQueue {
@@ -223,6 +226,8 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 		if (result === false) {
 			throw new Error("Failed to pause monitor");
 		}
+		this.scheduler.updateJob(monitor.id, { data: monitor });
+
 		const geoJob = await this.scheduler.getJob(`${monitor.id}-geo`);
 		if (geoJob) {
 			const geoRes = await this.scheduler.pauseJob(`${monitor.id}-geo`);
@@ -233,6 +238,7 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 					method: "pauseJob",
 				});
 			}
+			this.scheduler.updateJob(`${monitor.id}-geo`, { data: monitor });
 		}
 
 		this.logger.debug({
@@ -247,6 +253,7 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 		if (result === false) {
 			throw new Error("Failed to resume monitor");
 		}
+		this.scheduler.updateJob(monitor.id, { data: monitor });
 
 		const geoJob = await this.scheduler.getJob(`${monitor.id}-geo`);
 		if (geoJob) {
@@ -258,6 +265,7 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 					method: "resumeJob",
 				});
 			}
+			this.scheduler.updateJob(`${monitor.id}-geo`, { data: monitor });
 		}
 		this.logger.debug({
 			message: `Resumed monitor ${monitor.id}`,
@@ -359,7 +367,10 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 				monitorUrl: job.data?.url || null,
 				monitorType: job.data?.type || null,
 				monitorInterval: job.data?.interval || null,
+				monitorGeoInterval: job.data?.geoCheckInterval || null,
+				monitorActive: job.data?.isActive ?? null,
 				active: job.active,
+				repeat: job.repeat ?? null,
 				lockedAt: job.lockedAt ?? null,
 				runCount: job.runCount ?? 0,
 				failCount: job.failCount ?? 0,
