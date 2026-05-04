@@ -31,6 +31,22 @@ export const TableJobs = ({ jobs }: TableJobsProps) => {
 
 	const headers: Header<QueueJobWithId>[] = [
 		{
+			id: "state",
+			content: t("pages.logs.table.headers.state"),
+			render: (row) => {
+				if (row.lockedAt) {
+					return t("common.labels.running");
+				}
+				if (row.monitorActive === true) {
+					return t("common.labels.active");
+				}
+				if (row.monitorActive === false) {
+					return t("common.labels.paused");
+				}
+				return t("common.labels.idle");
+			},
+		},
+		{
 			id: "id",
 			content: t("common.table.headers.monitorId"),
 			render: (row) => (
@@ -47,7 +63,10 @@ export const TableJobs = ({ jobs }: TableJobsProps) => {
 			id: "url",
 			content: t("common.table.headers.url"),
 			render: (row) => (
-				<Typography title={row.monitorUrl ?? ""} sx={cellSx}>
+				<Typography
+					title={row.monitorUrl ?? ""}
+					sx={cellSx}
+				>
 					{row.monitorUrl}
 				</Typography>
 			),
@@ -60,9 +79,15 @@ export const TableJobs = ({ jobs }: TableJobsProps) => {
 		{
 			id: "interval",
 			content: t("common.table.headers.interval"),
-			render: (row) => (
-				<Typography sx={cellSx}>{prettyMilliseconds(row.monitorInterval ?? 0)}</Typography>
-			),
+			render: (row) => {
+				let interval;
+				if (row.monitorId.toString().includes("geo")) {
+					interval = row.monitorGeoInterval ?? 0;
+				} else {
+					interval = row.repeat ?? 0;
+				}
+				return <Typography sx={cellSx}>{prettyMilliseconds(interval)}</Typography>;
+			},
 		},
 		{
 			id: "lastRun",
@@ -70,7 +95,10 @@ export const TableJobs = ({ jobs }: TableJobsProps) => {
 			render: (row) => {
 				const v = formatTimestamp(row.lastRunAt) ?? "-";
 				return (
-					<Typography title={v} sx={cellSx}>
+					<Typography
+						title={v}
+						sx={cellSx}
+					>
 						{v}
 					</Typography>
 				);
@@ -90,7 +118,10 @@ export const TableJobs = ({ jobs }: TableJobsProps) => {
 			render: (row) => {
 				const v = formatTimestamp(row.lockedAt) ?? "-";
 				return (
-					<Typography title={v} sx={cellSx}>
+					<Typography
+						title={v}
+						sx={cellSx}
+					>
 						{v}
 					</Typography>
 				);
@@ -100,6 +131,7 @@ export const TableJobs = ({ jobs }: TableJobsProps) => {
 
 	const isDark = theme.palette.mode === "dark";
 	const runningBg = isDark ? "rgba(19, 113, 91, 0.18)" : "#ECF7F2";
+	const pausedBg = isDark ? "rgba(255, 165, 0, 0.18)" : "#FFF4E5";
 
 	return (
 		<Table
@@ -108,6 +140,9 @@ export const TableJobs = ({ jobs }: TableJobsProps) => {
 			getRowSx={(row) => ({
 				...(row.lockedAt && {
 					"& td": { backgroundColor: runningBg },
+				}),
+				...(row.monitorActive === false && {
+					"& td": { backgroundColor: pausedBg },
 				}),
 			})}
 		/>

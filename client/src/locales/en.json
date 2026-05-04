@@ -70,7 +70,9 @@
 		},
 		"labels": {
 			"active": "Active",
-			"paused": "paused",
+			"running": "Running",
+			"paused": "Paused",
+			"idle": "Idle",
 			"na": "N/A",
 			"resolved": "Resolved",
 			"responseTime": "Response time"
@@ -887,6 +889,7 @@
 			},
 			"table": {
 				"headers": {
+					"state": "State",
 					"timestamp": "Timestamp",
 					"level": "Level",
 					"service": "Service",

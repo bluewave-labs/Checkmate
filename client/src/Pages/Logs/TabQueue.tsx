@@ -19,7 +19,7 @@ export const TabQueue = () => {
 		isLoading,
 		// error,
 		refetch,
-	} = useGet<QueueData>("/queue/all-metrics", {}, { refreshInterval: 5000 });
+	} = useGet<QueueData>("/queue/all-metrics", {}, { refreshInterval: 1000 });
 
 	const { post, loading: isFlushing } = usePost();
 
