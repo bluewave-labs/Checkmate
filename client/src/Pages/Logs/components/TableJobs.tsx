@@ -129,20 +129,16 @@ export const TableJobs = ({ jobs }: TableJobsProps) => {
 		},
 	];
 
-	const isDark = theme.palette.mode === "dark";
-	const runningBg = isDark ? "rgba(19, 113, 91, 0.18)" : "#ECF7F2";
-	const pausedBg = isDark ? "rgba(255, 165, 0, 0.18)" : "#FFF4E5";
-
 	return (
 		<Table
 			headers={headers}
 			data={jobsWithId}
 			getRowSx={(row) => ({
 				...(row.lockedAt && {
-					"& td": { backgroundColor: runningBg },
+					"& td": { backgroundColor: theme.palette.rowStatus.running },
 				}),
 				...(row.monitorActive === false && {
-					"& td": { backgroundColor: pausedBg },
+					"& td": { backgroundColor: theme.palette.rowStatus.paused },
 				}),
 			})}
 		/>

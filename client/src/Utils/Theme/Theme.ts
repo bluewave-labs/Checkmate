@@ -15,9 +15,11 @@ declare module "@mui/material/styles" {
 	}
 	interface Palette {
 		sidebar: { accent: string };
+		rowStatus: { running: string; paused: string };
 	}
 	interface PaletteOptions {
 		sidebar?: { accent: string };
+		rowStatus?: { running: string; paused: string };
 	}
 }
 

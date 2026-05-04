@@ -61,11 +61,7 @@ export const TabQueue = () => {
 								highlight: (
 									<Box
 										component="span"
-										bgcolor={
-											theme.palette.mode === "dark"
-												? "rgba(19, 113, 91, 0.18)"
-												: "#ECF7F2"
-										}
+										bgcolor={theme.palette.rowStatus.running}
 										color={theme.palette.text.primary}
 										px={SPACING.SM}
 										py={SPACING.XXS}
