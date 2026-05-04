@@ -224,7 +224,7 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 			throw new Error("Failed to pause monitor");
 		}
 		const geoJob = await this.scheduler.getJob(`${monitor.id}-geo`);
-		if (geoJob) await this.scheduler.removeJob(`${monitor.id}-geo`);
+		if (geoJob) await this.scheduler.pauseJob(`${monitor.id}-geo`);
 
 		this.logger.debug({
 			message: `Paused monitor ${monitor.id}`,
@@ -239,8 +239,10 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 			throw new Error("Failed to resume monitor");
 		}
 
-		await this.scheduler.resumeJob(`${monitor.id}-geo`);
-
+		const geoJob = await this.scheduler.getJob(`${monitor.id}-geo`);
+		if (geoJob) {
+			await this.scheduler.resumeJob(`${monitor.id}-geo`);
+		}
 		this.logger.debug({
 			message: `Resumed monitor ${monitor.id}`,
 			service: SERVICE_NAME,
