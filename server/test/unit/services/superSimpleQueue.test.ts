@@ -291,34 +291,46 @@ describe("SuperSimpleQueue", () => {
 	// ── pauseJob ─────────────────────────────────────────────────────────────
 
 	describe("pauseJob", () => {
-		it("pauses monitor and removes geo job if it exists", async () => {
+		it("pauses monitor and pauses geo job when geo exists", async () => {
 			const { queue, scheduler, logger } = createQueue();
 			(scheduler.getJob as jest.Mock).mockResolvedValue({ id: "mon-1-geo" });
 			await queue.pauseJob(makeMonitor());
 
 			expect(scheduler.pauseJob).toHaveBeenCalledWith("mon-1");
-			expect(scheduler.removeJob).toHaveBeenCalledWith("mon-1-geo");
+			expect(scheduler.pauseJob).toHaveBeenCalledWith("mon-1-geo");
+			expect(scheduler.removeJob).not.toHaveBeenCalledWith("mon-1-geo");
 			expect(logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: "Paused monitor mon-1" }));
 		});
 
-		it("does not remove geo job if it does not exist", async () => {
+		it("does not pause geo job when it does not exist", async () => {
 			const { queue, scheduler } = createQueue();
 			await queue.pauseJob(makeMonitor());
-			expect(scheduler.removeJob).not.toHaveBeenCalledWith("mon-1-geo");
+			expect(scheduler.pauseJob).toHaveBeenCalledWith("mon-1");
+			expect(scheduler.pauseJob).not.toHaveBeenCalledWith("mon-1-geo");
 		});
 
-		it("throws when scheduler.pauseJob returns false", async () => {
+		it("throws when scheduler.pauseJob returns false for the main job", async () => {
 			const { queue, scheduler } = createQueue();
 			(scheduler.pauseJob as jest.Mock).mockResolvedValue(false);
 			await expect(queue.pauseJob(makeMonitor())).rejects.toThrow("Failed to pause monitor");
+		});
+
+		it("logs error but does not throw when geo pauseJob returns false", async () => {
+			const { queue, scheduler, logger } = createQueue();
+			(scheduler.getJob as jest.Mock).mockResolvedValue({ id: "mon-1-geo" });
+			(scheduler.pauseJob as jest.Mock).mockImplementation(async (id: string) => id !== "mon-1-geo");
+
+			await expect(queue.pauseJob(makeMonitor())).resolves.toBeUndefined();
+			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to pause geo check job for monitor mon-1" }));
 		});
 	});
 
 	// ── resumeJob ────────────────────────────────────────────────────────────
 
 	describe("resumeJob", () => {
-		it("resumes monitor and geo job", async () => {
+		it("resumes monitor and geo job when geo exists", async () => {
 			const { queue, scheduler, logger } = createQueue();
+			(scheduler.getJob as jest.Mock).mockResolvedValue({ id: "mon-1-geo" });
 			await queue.resumeJob(makeMonitor());
 
 			expect(scheduler.resumeJob).toHaveBeenCalledWith("mon-1");
@@ -326,10 +338,38 @@ describe("SuperSimpleQueue", () => {
 			expect(logger.debug).toHaveBeenCalledWith(expect.objectContaining({ message: "Resumed monitor mon-1" }));
 		});
 
-		it("throws when scheduler.resumeJob returns false", async () => {
+		it("does not resume geo job when it does not exist", async () => {
+			const { queue, scheduler } = createQueue();
+			await queue.resumeJob(makeMonitor());
+			expect(scheduler.resumeJob).toHaveBeenCalledWith("mon-1");
+			expect(scheduler.resumeJob).not.toHaveBeenCalledWith("mon-1-geo");
+		});
+
+		it("throws when scheduler.resumeJob returns false for the main job", async () => {
 			const { queue, scheduler } = createQueue();
 			(scheduler.resumeJob as jest.Mock).mockResolvedValue(false);
 			await expect(queue.resumeJob(makeMonitor())).rejects.toThrow("Failed to resume monitor");
+		});
+
+		it("logs error but does not throw when geo resumeJob returns false", async () => {
+			const { queue, scheduler, logger } = createQueue();
+			(scheduler.getJob as jest.Mock).mockResolvedValue({ id: "mon-1-geo" });
+			(scheduler.resumeJob as jest.Mock).mockImplementation(async (id: string) => id !== "mon-1-geo");
+
+			await expect(queue.resumeJob(makeMonitor())).resolves.toBeUndefined();
+			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to resume geo check job for monitor mon-1" }));
+		});
+
+		it("preserves geo job through a pause/resume cycle", async () => {
+			const { queue, scheduler } = createQueue();
+			(scheduler.getJob as jest.Mock).mockResolvedValue({ id: "mon-1-geo" });
+
+			await queue.pauseJob(makeMonitor());
+			await queue.resumeJob(makeMonitor());
+
+			expect(scheduler.removeJob).not.toHaveBeenCalledWith("mon-1-geo");
+			expect(scheduler.pauseJob).toHaveBeenCalledWith("mon-1-geo");
+			expect(scheduler.resumeJob).toHaveBeenCalledWith("mon-1-geo");
 		});
 	});
 
