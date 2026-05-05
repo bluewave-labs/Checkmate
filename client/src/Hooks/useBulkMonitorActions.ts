@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import { post } from "@/Utils/ApiClient";
 import { useToast } from "@/Hooks/UseToast";
 import { useTranslation } from "react-i18next";
@@ -55,9 +56,18 @@ export const useBulkMonitorActions = (
 
 			setSelectedRows([]);
 			refetch();
-		} catch (err: any) {
-			const errMsg = err?.response?.data?.msg || err.message || "An error occurred";
-			logger.error("Bulk pause/resume failed", err, { pause });
+		} catch (err: unknown) {
+			let errMsg = "An error occurred";
+
+			if (axios.isAxiosError(err)) {
+				errMsg = err.response?.data?.msg || err.message || errMsg;
+			} else if (err instanceof Error) {
+				errMsg = err.message;
+			}
+
+			logger.error("Bulk pause/resume failed", err instanceof Error ? err : undefined, {
+				pause,
+			});
 			toastError(errMsg);
 		}
 	};
