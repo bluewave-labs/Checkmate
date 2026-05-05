@@ -36,6 +36,7 @@ export type Header<T> = {
 	id: number | string;
 	content: React.ReactNode;
 	mobileLabel?: React.ReactNode;
+	hideMobileLabel?: boolean;
 	align?: "left" | "center" | "right" | "justify" | "inherit";
 	onClick?: (event: React.MouseEvent<HTMLTableCellElement | null>, row: T) => void;
 	render: (row: T) => React.ReactNode;
@@ -111,7 +112,7 @@ export function DataTable<
 							key={key}
 						>
 							{headers.map((header) => {
-								if (header.mobileLabel === null) {
+								if (header.hideMobileLabel) {
 									return (
 										<Grid2
 											container
@@ -143,9 +144,7 @@ export function DataTable<
 												component="div"
 												color={theme.palette.text.primary}
 											>
-												{header.mobileLabel !== undefined
-													? header.mobileLabel
-													: header.content}
+												{header.mobileLabel ?? header.content}
 											</Typography>
 										</Grid2>
 										<Grid2

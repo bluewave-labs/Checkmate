@@ -21,7 +21,6 @@ import type { Monitor } from "@/Types/Monitor";
 import type { ActionMenuItem } from "@/Components/actions-menu";
 import type { RootState } from "@/Types/state";
 import { Checkbox } from "@/Components/inputs";
-import { useTableSelection } from "@/Hooks/useTableSelection";
 
 interface MonitorTableProps {
 	monitors: Monitor[];
@@ -62,13 +61,23 @@ export const MonitorTable = ({
 	const chartType = useSelector((state: RootState) => state.ui?.chartType ?? "histogram");
 	const { post } = usePost<Record<string, never>, Monitor>();
 
-	const {
-		isAllSelected,
-		isSomeSelected,
-		handleSelectAll,
-		handleSelectRow,
-		isRowSelected,
-	} = useTableSelection(monitors, selectedRows, onSelectionChange);
+	const selectedSet = new Set(selectedRows);
+	const isAllSelected =
+		monitors.length > 0 && monitors.every((m) => selectedSet.has(m.id));
+	const isSomeSelected = selectedRows.length > 0 && !isAllSelected;
+
+	const handleSelectAll = (checked: boolean) => {
+		onSelectionChange?.(checked ? monitors.map((m) => m.id) : []);
+	};
+
+	const handleSelectRow = (id: string, checked: boolean) => {
+		if (!onSelectionChange) return;
+		onSelectionChange(
+			checked ? [...selectedRows, id] : selectedRows.filter((rowId) => rowId !== id)
+		);
+	};
+
+	const isRowSelected = (id: string) => selectedSet.has(id);
 
 	const handleSort = (e: React.MouseEvent, field: string) => {
 		e.preventDefault();
@@ -129,7 +138,7 @@ export const MonitorTable = ({
 						? t("pages.common.monitors.actions.resume")
 						: t("pages.common.monitors.actions.pause"),
 				action: async () => {
-					await post(`/monitors/pause/${monitor.id}`, {} as Record<string, never>);
+					await post(`/monitors/pause/${monitor.id}`, {});
 					refetch();
 				},
 				closeMenu: true,
@@ -175,7 +184,7 @@ export const MonitorTable = ({
 						onChange={(e) => handleSelectAll(e.target.checked)}
 					/>
 				),
-				mobileLabel: null,
+				hideMobileLabel: true,
 				render: (row) => (
 					<Checkbox
 						aria-label={t("pages.common.monitors.actions.selectMonitor", {

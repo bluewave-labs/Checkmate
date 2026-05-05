@@ -14,7 +14,6 @@ import { usePost } from "@/Hooks/UseApi";
 
 import type { Monitor } from "@/Types/Monitor";
 import { Checkbox } from "@/Components/inputs";
-import { useTableSelection } from "@/Hooks/useTableSelection";
 
 interface InfraMonitorsTableProps {
 	monitors: Monitor[];
@@ -55,13 +54,23 @@ export const InfraMonitorsTable = ({
 	const navigate = useNavigate();
 	const { post } = usePost<Record<string, never>, Monitor>();
 
-	const {
-		isAllSelected,
-		isSomeSelected,
-		handleSelectAll,
-		handleSelectRow,
-		isRowSelected,
-	} = useTableSelection(monitors, selectedRows, onSelectionChange);
+	const selectedSet = new Set(selectedRows);
+	const isAllSelected =
+		monitors.length > 0 && monitors.every((m) => selectedSet.has(m.id));
+	const isSomeSelected = selectedRows.length > 0 && !isAllSelected;
+
+	const handleSelectAll = (checked: boolean) => {
+		onSelectionChange?.(checked ? monitors.map((m) => m.id) : []);
+	};
+
+	const handleSelectRow = (id: string, checked: boolean) => {
+		if (!onSelectionChange) return;
+		onSelectionChange(
+			checked ? [...selectedRows, id] : selectedRows.filter((rowId) => rowId !== id)
+		);
+	};
+
+	const isRowSelected = (id: string) => selectedSet.has(id);
 
 	const handlePageChange = (
 		_e: React.MouseEvent<HTMLButtonElement> | null,
@@ -121,7 +130,7 @@ export const InfraMonitorsTable = ({
 						? t("common.buttons.resume")
 						: t("common.buttons.pause"),
 				action: async () => {
-					await post(`/monitors/pause/${monitor.id}`, {} as Record<string, never>);
+					await post(`/monitors/pause/${monitor.id}`, {});
 					refetch();
 				},
 				closeMenu: true,
@@ -168,7 +177,7 @@ export const InfraMonitorsTable = ({
 						onChange={(e) => handleSelectAll(e.target.checked)}
 					/>
 				),
-				mobileLabel: null,
+				hideMobileLabel: true,
 				render: (row) => (
 					<Checkbox
 						aria-label={t("pages.common.monitors.actions.selectMonitor", {
