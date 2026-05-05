@@ -73,7 +73,7 @@ export interface IMonitorService {
 	// update
 	editMonitor(args: { teamId: string; monitorId: string; body: Partial<Monitor> }): Promise<Monitor>;
 	pauseMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
-	bulkPauseMonitors(args: { teamId: string; monitorIds: string[]; pause: boolean }): Promise<Monitor[]>;
+	bulkPauseMonitors(args: { teamId: string; monitorIds: string[]; pause: boolean }): Promise<{ monitors: Monitor[]; failedCount: number }>;
 
 	// delete
 	deleteMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
@@ -463,10 +463,18 @@ export class MonitorService implements IMonitorService {
 		return monitor;
 	};
 
-	bulkPauseMonitors = async ({ teamId, monitorIds, pause }: { teamId: string; monitorIds: string[]; pause: boolean }): Promise<Monitor[]> => {
+	bulkPauseMonitors = async ({
+		teamId,
+		monitorIds,
+		pause,
+	}: {
+		teamId: string;
+		monitorIds: string[];
+		pause: boolean;
+	}): Promise<{ monitors: Monitor[]; failedCount: number }> => {
 		const monitors = await this.monitorsRepository.bulkTogglePause(monitorIds, teamId, pause);
 
-		await Promise.all(
+		const results = await Promise.allSettled(
 			monitors.map(async (monitor) => {
 				if (monitor.isActive) {
 					await this.jobQueue.resumeJob(monitor);
@@ -476,7 +484,20 @@ export class MonitorService implements IMonitorService {
 			})
 		);
 
-		return monitors;
+		let failedCount = 0;
+		results.forEach((result, index) => {
+			if (result.status === "rejected") {
+				failedCount++;
+				this.logger.error({
+					message: `Failed to sync job queue for monitor ${monitors[index].id} during bulk ${pause ? "pause" : "resume"}`,
+					service: SERVICE_NAME,
+					method: "bulkPauseMonitors",
+					stack: result.reason instanceof Error ? result.reason.stack : undefined,
+				});
+			}
+		});
+
+		return { monitors, failedCount };
 	};
 
 	deleteMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {

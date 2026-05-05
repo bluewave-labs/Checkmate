@@ -315,14 +315,19 @@ class MonitorController implements IMonitorController {
 			const { monitorIds, pause } = validatedBody;
 			const teamId = requireTeamId(req.user?.teamId);
 
-			const monitors = await this.monitorService.bulkPauseMonitors({ teamId, monitorIds, pause });
+			const { monitors, failedCount } = await this.monitorService.bulkPauseMonitors({ teamId, monitorIds, pause });
 
 			const action = pause ? "paused" : "resumed";
 			const monitorStr = monitors.length === 1 ? "monitor" : "monitors";
 
+			let msg = `${monitors.length} ${monitorStr} ${action} successfully`;
+			if (failedCount > 0) {
+				msg = `${monitors.length} ${monitorStr} ${action} in database, but ${failedCount} failed to sync with the job queue. Please check logs.`;
+			}
+
 			return res.status(200).json({
 				success: true,
-				msg: `${monitors.length} ${monitorStr} ${action} successfully`,
+				msg,
 				data: monitors,
 			});
 		} catch (error) {

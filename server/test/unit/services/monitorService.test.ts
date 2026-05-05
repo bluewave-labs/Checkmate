@@ -853,7 +853,8 @@ describe("MonitorService", () => {
 				pause: false,
 			});
 
-			expect(result).toHaveLength(2);
+			expect(result.monitors).toHaveLength(2);
+			expect(result.failedCount).toBe(0);
 			expect(monitorsRepository.bulkTogglePause).toHaveBeenCalledWith(["m1", "m2"], TEAM_ID, false);
 			expect(jobQueue.resumeJob).toHaveBeenCalledTimes(2);
 			expect(jobQueue.pauseJob).not.toHaveBeenCalled();
@@ -871,7 +872,8 @@ describe("MonitorService", () => {
 				pause: true,
 			});
 
-			expect(result).toHaveLength(2);
+			expect(result.monitors).toHaveLength(2);
+			expect(result.failedCount).toBe(0);
 			expect(monitorsRepository.bulkTogglePause).toHaveBeenCalledWith(["m1", "m2"], TEAM_ID, true);
 			expect(jobQueue.pauseJob).toHaveBeenCalledTimes(2);
 			expect(jobQueue.resumeJob).not.toHaveBeenCalled();
@@ -890,7 +892,8 @@ describe("MonitorService", () => {
 				pause: true,
 			});
 
-			expect(result).toHaveLength(2);
+			expect(result.monitors).toHaveLength(2);
+			expect(result.failedCount).toBe(0);
 			expect(jobQueue.resumeJob).toHaveBeenCalledTimes(1);
 			expect(jobQueue.resumeJob).toHaveBeenCalledWith(activeMonitor);
 			expect(jobQueue.pauseJob).toHaveBeenCalledTimes(1);
@@ -908,7 +911,8 @@ describe("MonitorService", () => {
 				pause: true,
 			});
 
-			expect(result).toHaveLength(0);
+			expect(result.monitors).toHaveLength(0);
+			expect(result.failedCount).toBe(0);
 			expect(jobQueue.pauseJob).not.toHaveBeenCalled();
 			expect(jobQueue.resumeJob).not.toHaveBeenCalled();
 		});
@@ -925,8 +929,49 @@ describe("MonitorService", () => {
 				pause: true,
 			});
 
-			expect(result).toHaveLength(1);
+			expect(result.monitors).toHaveLength(1);
+			expect(result.failedCount).toBe(0);
 			expect(jobQueue.pauseJob).toHaveBeenCalledWith(monitor);
+		});
+
+		it("returns failedCount and logs errors when multiple job operations reject", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const monitors = [
+				makeMonitor({ id: "m1", isActive: false }),
+				makeMonitor({ id: "m2", isActive: false }),
+				makeMonitor({ id: "m3", isActive: false }),
+			];
+			(monitorsRepository.bulkTogglePause as jest.Mock).mockResolvedValue(monitors);
+			const jobQueue = createJobQueueMock();
+			(jobQueue.pauseJob as jest.Mock)
+				.mockRejectedValueOnce(new Error("Queue failure 1"))
+				.mockResolvedValueOnce(undefined)
+				.mockRejectedValueOnce(new Error("Queue failure 2"));
+
+			const logger = createMockLogger();
+			const { service } = createService({ monitorsRepository, jobQueue, logger });
+
+			const result = await service.bulkPauseMonitors({
+				teamId: TEAM_ID,
+				monitorIds: ["m1", "m2", "m3"],
+				pause: true,
+			});
+
+			expect(result.monitors).toHaveLength(3);
+			expect(result.failedCount).toBe(2);
+			expect(logger.error).toHaveBeenCalledTimes(2);
+			expect(logger.error).toHaveBeenCalledWith(
+				expect.objectContaining({
+					message: expect.stringContaining("Failed to sync job queue for monitor m1"),
+					method: "bulkPauseMonitors",
+				})
+			);
+			expect(logger.error).toHaveBeenCalledWith(
+				expect.objectContaining({
+					message: expect.stringContaining("Failed to sync job queue for monitor m3"),
+					method: "bulkPauseMonitors",
+				})
+			);
 		});
 	});
 
