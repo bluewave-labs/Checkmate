@@ -241,22 +241,25 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			teamId: new mongoose.Types.ObjectId(teamId),
 			isActive: pause, // Only pause if active (true), only resume if inactive (false)
 		};
+		const nextStatus = pause ? "paused" : "initializing";
 
-		const eligibleIds = (await MonitorModel.find(filter).select("_id").lean()).map((doc) => doc._id);
-		if (eligibleIds.length === 0) return [];
+		const eligible = await MonitorModel.find(filter);
+		if (eligible.length === 0) return [];
 
+		const now = new Date();
 		await MonitorModel.updateMany(
-			{ _id: { $in: eligibleIds } },
-			{
-				$set: {
-					isActive: !pause,
-					status: pause ? "paused" : "initializing",
-				},
-			}
+			{ _id: { $in: eligible.map((doc) => doc._id) } },
+			{ $set: { isActive: !pause, status: nextStatus, updatedAt: now } },
+			{ timestamps: false }
 		);
 
-		const updatedMonitors = await MonitorModel.find({ _id: { $in: eligibleIds } });
-		return this.mapDocuments(updatedMonitors);
+		eligible.forEach((doc) => {
+			doc.isActive = !pause;
+			doc.status = nextStatus;
+			doc.updatedAt = now;
+		});
+
+		return this.mapDocuments(eligible);
 	};
 
 	deleteById = async (monitorId: string, teamId: string) => {
