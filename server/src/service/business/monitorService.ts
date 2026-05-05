@@ -489,7 +489,7 @@ export class MonitorService implements IMonitorService {
 			if (result.status === "rejected") {
 				failedCount++;
 				this.logger.error({
-					message: `Failed to sync job queue for monitor ${monitors[index].id} during bulk ${pause ? "pause" : "resume"}`,
+					message: `Failed to sync job queue for monitor ${monitors[index]?.id || "unknown"} during bulk ${pause ? "pause" : "resume"}`,
 					service: SERVICE_NAME,
 					method: "bulkPauseMonitors",
 					stack: result.reason instanceof Error ? result.reason.stack : undefined,
