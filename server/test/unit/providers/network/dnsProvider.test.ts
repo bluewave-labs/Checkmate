@@ -114,6 +114,56 @@ describe("DnsProvider", () => {
 		await expect(provider.handle(makeMonitor({ url: undefined }))).rejects.toThrow("Hostname is required");
 	});
 
+	describe("expected-value matching", () => {
+		it("stays up when no expectedValue is set", async () => {
+			mock.resolve4.mockResolvedValue(["1.2.3.4"]);
+			const result = await provider.handle(makeMonitor());
+			expect(result.status).toBe(true);
+		});
+
+		it("stays up when an A record matches expectedValue", async () => {
+			mock.resolve4.mockResolvedValue(["203.0.113.5", "203.0.113.6"]);
+			const result = await provider.handle(makeMonitor({ expectedValue: "203.0.113.5" }));
+			expect(result.status).toBe(true);
+		});
+
+		it("goes down when no A record matches expectedValue", async () => {
+			mock.resolve4.mockResolvedValue(["203.0.113.7"]);
+			const result = await provider.handle(makeMonitor({ expectedValue: "203.0.113.5" }));
+			expect(result.status).toBe(false);
+			expect(result.code).toBe(NETWORK_ERROR);
+			expect(result.message).toContain("203.0.113.5");
+			expect(result.payload.resolved).toBe(true);
+			expect(result.payload.results).toEqual(["203.0.113.7"]);
+		});
+
+		it("matches MX records by exchange", async () => {
+			mock.resolveMx.mockResolvedValue([
+				{ exchange: "mail.example.com", priority: 10 },
+				{ exchange: "backup.example.com", priority: 20 },
+			]);
+			const result = await provider.handle(makeMonitor({ dnsRecordType: "MX", expectedValue: "mail.example.com" }));
+			expect(result.status).toBe(true);
+		});
+
+		it("matches TXT records by joined chunks", async () => {
+			mock.resolveTxt.mockResolvedValue([["v=spf1 ", "include:_spf.example.com ~all"]]);
+			const result = await provider.handle(
+				makeMonitor({
+					dnsRecordType: "TXT",
+					expectedValue: "v=spf1 include:_spf.example.com ~all",
+				})
+			);
+			expect(result.status).toBe(true);
+		});
+
+		it("ignores case and surrounding whitespace", async () => {
+			mock.resolveCname.mockResolvedValue(["target.example.com"]);
+			const result = await provider.handle(makeMonitor({ dnsRecordType: "CNAME", expectedValue: "  TARGET.example.com  " }));
+			expect(result.status).toBe(true);
+		});
+	});
+
 	it("times out long-running DNS queries", async () => {
 		mock.resolve4.mockImplementation(() => new Promise(() => {}));
 

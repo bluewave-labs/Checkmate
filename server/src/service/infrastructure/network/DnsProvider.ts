@@ -48,6 +48,24 @@ const runQuery = (resolver: ResolverInstance, hostname: string, recordType: DnsR
 	}
 };
 
+const normalize = (s: string): string => s.trim().toLowerCase();
+
+const matchesExpected = (results: unknown, recordType: DnsRecordType, expected: string): boolean => {
+	const target = normalize(expected);
+	if (!target) return true;
+	switch (recordType) {
+		case "A":
+		case "AAAA":
+		case "CNAME":
+		case "NS":
+			return Array.isArray(results) && (results as string[]).some((r) => normalize(r) === target);
+		case "TXT":
+			return Array.isArray(results) && (results as string[][]).some((chunks) => normalize(chunks.join("")) === target);
+		case "MX":
+			return Array.isArray(results) && (results as { exchange: string }[]).some((r) => normalize(r.exchange) === target);
+	}
+};
+
 export class DnsProvider implements IStatusProvider<DnsStatusPayload> {
 	readonly type = "dns";
 
@@ -103,6 +121,26 @@ export class DnsProvider implements IStatusProvider<DnsStatusPayload> {
 						recordType,
 						resolved: false,
 						results: null,
+					},
+				};
+			}
+
+			const expected = monitor.expectedValue?.trim();
+			if (expected && !matchesExpected(response, recordType, expected)) {
+				return {
+					monitorId: monitor.id,
+					teamId: monitor.teamId,
+					type: monitor.type,
+					status: false,
+					code: NETWORK_ERROR,
+					message: `Resolved records do not match expected value "${expected}"`,
+					responseTime,
+					payload: {
+						hostname,
+						dnsServer: dnsServer || "default",
+						recordType,
+						resolved: true,
+						results: response,
 					},
 				};
 			}
