@@ -1511,7 +1511,8 @@
 					"hostname": "Hostname",
 					"records_one": "{{count}} record",
 					"records_other": "{{count}} records",
-					"noRecords": "No records returned"
+					"noRecords": "No records returned",
+					"notMatched": "Did not match expected value"
 				}
 			}
 		}

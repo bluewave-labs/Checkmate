@@ -1466,7 +1466,8 @@
 					"hostname": "Nombre de host",
 					"records_one": "{{count}} registro",
 					"records_other": "{{count}} registros",
-					"noRecords": "No se devolvieron registros"
+					"noRecords": "No se devolvieron registros",
+					"notMatched": "No coincide con el valor esperado"
 				}
 			}
 		}

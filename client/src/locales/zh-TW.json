@@ -1452,7 +1452,8 @@
 					"hostname": "主機名稱",
 					"records_one": "{{count}} 筆記錄",
 					"records_other": "{{count}} 筆記錄",
-					"noRecords": "沒有返回任何記錄"
+					"noRecords": "沒有返回任何記錄",
+					"notMatched": "未符合期望值"
 				}
 			}
 		}

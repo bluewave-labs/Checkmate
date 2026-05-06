@@ -1452,7 +1452,8 @@
 					"hostname": "Hostname",
 					"records_one": "{{count}} registro",
 					"records_other": "{{count}} registros",
-					"noRecords": "Nenhum registro retornado"
+					"noRecords": "Nenhum registro retornado",
+					"notMatched": "Não corresponde ao valor esperado"
 				}
 			}
 		}

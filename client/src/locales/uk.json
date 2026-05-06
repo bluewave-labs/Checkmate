@@ -1452,7 +1452,8 @@
 					"hostname": "Ім'я хоста",
 					"records_one": "{{count}} запис",
 					"records_other": "{{count}} записів",
-					"noRecords": "Записи не повернуто"
+					"noRecords": "Записи не повернуто",
+					"notMatched": "Не відповідає очікуваному значенню"
 				}
 			}
 		}

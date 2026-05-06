@@ -1452,7 +1452,8 @@
 					"hostname": "Ana bilgisayar adı",
 					"records_one": "{{count}} kayıt",
 					"records_other": "{{count}} kayıt",
-					"noRecords": "Kayıt döndürülmedi"
+					"noRecords": "Kayıt döndürülmedi",
+					"notMatched": "Beklenen değerle eşleşmedi"
 				}
 			}
 		}

@@ -1452,7 +1452,8 @@
 					"hostname": "主机名",
 					"records_one": "{{count}} 条记录",
 					"records_other": "{{count}} 条记录",
-					"noRecords": "未返回任何记录"
+					"noRecords": "未返回任何记录",
+					"notMatched": "未匹配期望值"
 				}
 			}
 		}

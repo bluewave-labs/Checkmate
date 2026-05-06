@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
@@ -26,26 +25,26 @@ const formatRecord = (recordType: DnsRecordType, record: unknown): string => {
 	return JSON.stringify(record);
 };
 
-const toRecordList = (recordType: DnsRecordType, results: unknown): string[] => {
-	if (!Array.isArray(results)) return [];
-	return (results as unknown[]).map((r) => formatRecord(recordType, r));
-};
+const toRecordList = (recordType: DnsRecordType, results: unknown): string[] =>
+	Array.isArray(results) ? results.map((r) => formatRecord(recordType, r)) : [];
 
 export const DnsResolvedRecordsCard = ({ resolution }: Props) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 
-	const records = useMemo(
-		() => toRecordList(resolution.recordType, resolution.results),
-		[resolution.recordType, resolution.results]
-	);
-
+	const records = toRecordList(resolution.recordType, resolution.results);
 	const resolvedAtFormatted = formatDateWithTz(
 		resolution.resolvedAt,
 		"ddd, MMM D, YYYY, HH:mm",
 		uiTimezone
 	);
+
+	const meta: { label: string; value: string }[] = [
+		{ label: t("pages.uptime.details.dns.recordType"), value: resolution.recordType },
+		{ label: t("pages.uptime.details.dns.dnsServer"), value: resolution.dnsServer },
+		{ label: t("pages.uptime.details.dns.hostname"), value: resolution.hostname },
+	];
 
 	return (
 		<BaseBox padding={theme.spacing(LAYOUT.LG)}>
@@ -58,12 +57,26 @@ export const DnsResolvedRecordsCard = ({ resolution }: Props) => {
 					flexWrap="wrap"
 				>
 					<Typography variant="h2">{t("pages.uptime.details.dns.title")}</Typography>
-					<Typography
-						variant="body2"
-						color={theme.palette.text.secondary}
+					<Stack
+						direction="row"
+						gap={theme.spacing(LAYOUT.SM)}
+						alignItems="baseline"
 					>
-						{t("pages.uptime.details.dns.resolvedAt", { time: resolvedAtFormatted })}
-					</Typography>
+						{!resolution.matched && (
+							<Typography
+								variant="body2"
+								color={theme.palette.error.main}
+							>
+								{t("pages.uptime.details.dns.notMatched")}
+							</Typography>
+						)}
+						<Typography
+							variant="body2"
+							color={theme.palette.text.secondary}
+						>
+							{t("pages.uptime.details.dns.resolvedAt", { time: resolvedAtFormatted })}
+						</Typography>
+					</Stack>
 				</Stack>
 
 				<Stack
@@ -71,33 +84,17 @@ export const DnsResolvedRecordsCard = ({ resolution }: Props) => {
 					gap={theme.spacing(LAYOUT.LG)}
 					flexWrap="wrap"
 				>
-					<Stack>
-						<Typography
-							variant="caption"
-							color={theme.palette.text.secondary}
-						>
-							{t("pages.uptime.details.dns.recordType")}
-						</Typography>
-						<Typography variant="body1">{resolution.recordType}</Typography>
-					</Stack>
-					<Stack>
-						<Typography
-							variant="caption"
-							color={theme.palette.text.secondary}
-						>
-							{t("pages.uptime.details.dns.dnsServer")}
-						</Typography>
-						<Typography variant="body1">{resolution.dnsServer}</Typography>
-					</Stack>
-					<Stack>
-						<Typography
-							variant="caption"
-							color={theme.palette.text.secondary}
-						>
-							{t("pages.uptime.details.dns.hostname")}
-						</Typography>
-						<Typography variant="body1">{resolution.hostname}</Typography>
-					</Stack>
+					{meta.map(({ label, value }) => (
+						<Stack key={label}>
+							<Typography
+								variant="caption"
+								color={theme.palette.text.secondary}
+							>
+								{label}
+							</Typography>
+							<Typography variant="body1">{value}</Typography>
+						</Stack>
+					))}
 				</Stack>
 
 				<Stack gap={theme.spacing(LAYOUT.XXS)}>
@@ -119,7 +116,9 @@ export const DnsResolvedRecordsCard = ({ resolution }: Props) => {
 						<Stack
 							component="ul"
 							gap={theme.spacing(LAYOUT.XXS)}
-							sx={{ listStyle: "none", padding: 0, margin: 0 }}
+							p={0}
+							m={0}
+							sx={{ listStyle: "none" }}
 						>
 							{records.map((record, idx) => (
 								<Typography

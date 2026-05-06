@@ -1452,7 +1452,8 @@
 					"hostname": "Isäntänimi",
 					"records_one": "{{count}} tietue",
 					"records_other": "{{count}} tietuetta",
-					"noRecords": "Tietueita ei palautettu"
+					"noRecords": "Tietueita ei palautettu",
+					"notMatched": "Ei vastaa odotettua arvoa"
 				}
 			}
 		}

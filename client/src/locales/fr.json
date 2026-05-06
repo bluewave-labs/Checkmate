@@ -1452,7 +1452,8 @@
 					"hostname": "Nom d'hôte",
 					"records_one": "{{count}} enregistrement",
 					"records_other": "{{count}} enregistrements",
-					"noRecords": "Aucun enregistrement renvoyé"
+					"noRecords": "Aucun enregistrement renvoyé",
+					"notMatched": "Ne correspond pas à la valeur attendue"
 				}
 			}
 		}

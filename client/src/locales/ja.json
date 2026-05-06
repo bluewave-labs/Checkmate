@@ -1452,7 +1452,8 @@
 					"hostname": "ホスト名",
 					"records_one": "{{count}} 件のレコード",
 					"records_other": "{{count}} 件のレコード",
-					"noRecords": "レコードは返されませんでした"
+					"noRecords": "レコードは返されませんでした",
+					"notMatched": "期待値と一致しませんでした"
 				}
 			}
 		}

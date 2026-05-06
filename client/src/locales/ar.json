@@ -1452,7 +1452,8 @@
 					"hostname": "اسم المضيف",
 					"records_one": "سجل {{count}}",
 					"records_other": "{{count}} سجلات",
-					"noRecords": "لا توجد سجلات مُعادة"
+					"noRecords": "لا توجد سجلات مُعادة",
+					"notMatched": "لم تتطابق مع القيمة المتوقعة"
 				}
 			}
 		}

@@ -1452,7 +1452,8 @@
 					"hostname": "Název hostitele",
 					"records_one": "{{count}} záznam",
 					"records_other": "{{count}} záznamů",
-					"noRecords": "Nebyly vráceny žádné záznamy"
+					"noRecords": "Nebyly vráceny žádné záznamy",
+					"notMatched": "Neodpovídá očekávané hodnotě"
 				}
 			}
 		}

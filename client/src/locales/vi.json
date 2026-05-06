@@ -1452,7 +1452,8 @@
 					"hostname": "Tên máy chủ",
 					"records_one": "{{count}} bản ghi",
 					"records_other": "{{count}} bản ghi",
-					"noRecords": "Không có bản ghi được trả về"
+					"noRecords": "Không có bản ghi được trả về",
+					"notMatched": "Không khớp với giá trị mong đợi"
 				}
 			}
 		}
