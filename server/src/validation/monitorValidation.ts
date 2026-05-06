@@ -203,6 +203,19 @@ export const monitorResponseSchema = z
 		selectedDisks: z.array(z.string()),
 		gameId: z.string().optional(),
 		grpcServiceName: z.string().optional(),
+		dnsServer: z.string().optional(),
+		dnsRecordType: z.enum(DnsRecordTypes).optional(),
+		lastDnsResolution: z
+			.object({
+				hostname: z.string(),
+				dnsServer: z.string(),
+				recordType: z.enum(DnsRecordTypes),
+				results: z.unknown(),
+				matched: z.boolean(),
+				resolvedAt: z.string(),
+			})
+			.nullable()
+			.optional(),
 		group: z.string().nullable().optional(),
 		geoCheckEnabled: z.boolean(),
 		geoCheckLocations: z.array(z.enum(GeoContinents)),
