@@ -25,7 +25,8 @@ export interface MonitorStatusResponse<
 		| DockerStatusPayload
 		| GameStatusPayload
 		| GrpcStatusPayload
-		| WebSocketStatusPayload,
+		| WebSocketStatusPayload
+		| DnsStatusPayload,
 > {
 	monitorId: string;
 	teamId: string;
@@ -116,6 +117,14 @@ export interface WebSocketStatusPayload {
 	connected: boolean;
 }
 
+export interface DnsStatusPayload {
+	hostname: string;
+	dnsServer: string;
+	recordType: string;
+	resolved: boolean;
+	results: unknown;
+}
+
 export interface MonitorPayloadMap {
 	ping: PingStatusPayload;
 	http: HttpStatusPayload;
@@ -126,6 +135,7 @@ export interface MonitorPayloadMap {
 	game: GameStatusPayload;
 	grpc: GrpcStatusPayload;
 	websocket: WebSocketStatusPayload;
+	dns: DnsStatusPayload;
 	unknown: unknown;
 }
 
