@@ -421,7 +421,11 @@
 					"inviteMember": "Kutsu jäsen",
 					"openSite": "Avaa sivusto",
 					"pause": "Keskeytä",
-					"resume": "Jatka"
+					"resume": "Jatka",
+					"selectAll": "Valitse kaikki näytöt",
+					"selectMonitor": "Valitse {{name}}",
+					"bulkSelected_one": "{{count}} näyttö valittu",
+					"bulkSelected_other": "{{count}} näyttöä valittu"
 				},
 				"statBoxes": {
 					"activeFor": "Aktiivinen",
@@ -449,6 +453,16 @@
 					"optionHardware": "Infrastruktuuri",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket"
+				},
+				"bulkPause": {
+					"paused_one": "{{count}} näyttö keskeytetty",
+					"paused_other": "{{count}} näyttöä keskeytetty",
+					"resumed_one": "{{count}} näyttö jatkettu",
+					"resumed_other": "{{count}} näyttöä jatkettu",
+					"alreadyPaused_one": "Valittu näyttö on jo keskeytetty",
+					"alreadyPaused_other": "Kaikki valitut näytöt on jo keskeytetty",
+					"alreadyRunning_one": "Valittu näyttö on jo käynnissä",
+					"alreadyRunning_other": "Kaikki valitut näytöt ovat jo käynnissä"
 				}
 			}
 		},

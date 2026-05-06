@@ -423,7 +423,21 @@
 					"inviteMember": "Invite member",
 					"openSite": "Open site",
 					"pause": "Pause",
-					"resume": "Resume"
+					"resume": "Resume",
+					"bulkSelected_one": "{{count}} monitor selected",
+					"bulkSelected_other": "{{count}} monitors selected",
+					"selectAll": "Select all monitors",
+					"selectMonitor": "Select {{name}}"
+				},
+				"bulkPause": {
+					"alreadyPaused_one": "The selected monitor is already paused",
+					"alreadyPaused_other": "All selected monitors are already paused",
+					"alreadyRunning_one": "The selected monitor is already running",
+					"alreadyRunning_other": "All selected monitors are already running",
+					"paused_one": "{{count}} monitor paused",
+					"paused_other": "{{count}} monitors paused",
+					"resumed_one": "{{count}} monitor resumed",
+					"resumed_other": "{{count}} monitors resumed"
 				},
 				"statBoxes": {
 					"activeFor": "Active for",

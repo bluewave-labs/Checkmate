@@ -421,7 +421,11 @@
 					"inviteMember": "Пригласить участника",
 					"openSite": "Открыть сайт",
 					"pause": "Пауза",
-					"resume": "Продолжить"
+					"resume": "Продолжить",
+					"selectAll": "Выбрать все мониторы",
+					"selectMonitor": "Выбрать {{name}}",
+					"bulkSelected_one": "Выбран {{count}} монитор",
+					"bulkSelected_other": "Выбрано {{count}} мониторов"
 				},
 				"statBoxes": {
 					"activeFor": "Активен",
@@ -449,6 +453,16 @@
 					"optionHardware": "Инфраструктура",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket"
+				},
+				"bulkPause": {
+					"paused_one": "{{count}} монитор приостановлен",
+					"paused_other": "{{count}} мониторов приостановлено",
+					"resumed_one": "{{count}} монитор возобновлен",
+					"resumed_other": "{{count}} мониторов возобновлено",
+					"alreadyPaused_one": "Выбранный монитор уже приостановлен",
+					"alreadyPaused_other": "Все выбранные мониторы уже приостановлены",
+					"alreadyRunning_one": "Выбранный монитор уже запущен",
+					"alreadyRunning_other": "Все выбранные мониторы уже запущены"
 				}
 			}
 		},

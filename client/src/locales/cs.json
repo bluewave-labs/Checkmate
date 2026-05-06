@@ -421,7 +421,11 @@
 					"inviteMember": "Pozvat člena",
 					"openSite": "Otevřít stránku",
 					"pause": "Pozastavit",
-					"resume": "Obnovit"
+					"resume": "Obnovit",
+					"selectAll": "Vybrat všechny monitory",
+					"selectMonitor": "Vybrat {{name}}",
+					"bulkSelected_one": "Vybrán {{count}} monitor",
+					"bulkSelected_other": "Vybráno {{count}} monitorů"
 				},
 				"statBoxes": {
 					"activeFor": "Aktivní po dobu",
@@ -449,6 +453,16 @@
 					"optionHardware": "Infrastruktura",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket"
+				},
+				"bulkPause": {
+					"paused_one": "{{count}} monitor pozastaven",
+					"paused_other": "{{count}} monitorů pozastaveno",
+					"resumed_one": "{{count}} monitor obnoven",
+					"resumed_other": "{{count}} monitorů obnoveno",
+					"alreadyPaused_one": "Vybraný monitor je již pozastaven",
+					"alreadyPaused_other": "Všechny vybrané monitory jsou již pozastaveny",
+					"alreadyRunning_one": "Vybraný monitor již běží",
+					"alreadyRunning_other": "Všechny vybrané monitory již běží"
 				}
 			}
 		},

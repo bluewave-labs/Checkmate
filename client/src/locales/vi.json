@@ -421,7 +421,11 @@
 					"inviteMember": "Mời thành viên",
 					"openSite": "Mở trang web",
 					"pause": "Tạm dừng",
-					"resume": "Tiếp tục"
+					"resume": "Tiếp tục",
+					"selectAll": "Chọn tất cả màn hình",
+					"selectMonitor": "Chọn {{name}}",
+					"bulkSelected_one": "Đã chọn {{count}} màn hình",
+					"bulkSelected_other": "Đã chọn {{count}} màn hình"
 				},
 				"statBoxes": {
 					"activeFor": "Hoạt động từ",
@@ -449,6 +453,16 @@
 					"optionHardware": "Hạ tầng",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket"
+				},
+				"bulkPause": {
+					"paused_one": "Đã tạm dừng {{count}} màn hình",
+					"paused_other": "Đã tạm dừng {{count}} màn hình",
+					"resumed_one": "Đã tiếp tục {{count}} màn hình",
+					"resumed_other": "Đã tiếp tục {{count}} màn hình",
+					"alreadyPaused_one": "Màn hình đã chọn đã được tạm dừng",
+					"alreadyPaused_other": "Tất cả các màn hình đã chọn đã được tạm dừng",
+					"alreadyRunning_one": "Màn hình đã chọn đã đang chạy",
+					"alreadyRunning_other": "Tất cả các màn hình đã chọn đã đang chạy"
 				}
 			}
 		},
