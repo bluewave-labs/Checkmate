@@ -546,6 +546,11 @@
 						},
 						"dnsRecordType": {
 							"label": "Loại bản ghi"
+						},
+						"dnsExpectedValue": {
+							"label": "Giá trị mong đợi (tùy chọn)",
+							"placeholder": "ví dụ: 203.0.113.5",
+							"helperText": "Nếu được đặt, theo dõi sẽ chuyển sang trạng thái offline khi không có bản ghi đã phân giải nào khớp với giá trị này. So khớp không phân biệt chữ hoa/thường. Đối với bản ghi MX, so khớp với tên máy chủ exchange; đối với TXT, so khớp với chuỗi bản ghi đã ghép."
 						}
 					},
 					"title": "Cài đặt chung",

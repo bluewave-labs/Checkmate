@@ -546,6 +546,11 @@
 						},
 						"dnsRecordType": {
 							"label": "Tietuetyyppi"
+						},
+						"dnsExpectedValue": {
+							"label": "Odotettu arvo (valinnainen)",
+							"placeholder": "esim. 203.0.113.5",
+							"helperText": "Jos asetettu, valvonta menee alas, kun mikään selvitetty tietue ei vastaa tätä arvoa. Vertailu ei erota kirjainkokoa. MX-tietueille vertailu tehdään exchange-isäntänimeen; TXT-tietueille yhdistettyyn tietueen merkkijonoon."
 						}
 					},
 					"title": "Yleiset asetukset",

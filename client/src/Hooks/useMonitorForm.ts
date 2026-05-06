@@ -118,6 +118,7 @@ export const useMonitorForm = ({
 					url: data?.url || "",
 					dnsServer: data?.dnsServer || "",
 					dnsRecordType: data?.dnsRecordType ?? DnsRecordTypes[0],
+					expectedValue: data?.expectedValue || "",
 				};
 				break;
 			default:

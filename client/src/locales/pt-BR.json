@@ -546,6 +546,11 @@
 						},
 						"dnsRecordType": {
 							"label": "Tipo de registro"
+						},
+						"dnsExpectedValue": {
+							"label": "Valor esperado (opcional)",
+							"placeholder": "ex.: 203.0.113.5",
+							"helperText": "Se definido, o monitor cai quando nenhum registro resolvido corresponde a este valor. A correspondência não diferencia maiúsculas/minúsculas. Para registros MX, a correspondência é com o hostname de exchange; para TXT, com a string do registro unida."
 						}
 					},
 					"title": "Configurações gerais",

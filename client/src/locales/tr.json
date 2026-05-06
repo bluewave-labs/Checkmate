@@ -546,6 +546,11 @@
 						},
 						"dnsRecordType": {
 							"label": "Kayıt türü"
+						},
+						"dnsExpectedValue": {
+							"label": "Beklenen değer (isteğe bağlı)",
+							"placeholder": "ör. 203.0.113.5",
+							"helperText": "Ayarlandığında, çözümlenen hiçbir kayıt bu değerle eşleşmezse monitör çevrimdışı olur. Eşleşme büyük/küçük harf duyarsızdır. MX kayıtları için exchange ana bilgisayar adıyla, TXT kayıtları için birleştirilmiş kayıt dizesi ile eşleştirilir."
 						}
 					},
 					"title": "Genel ayarlar",

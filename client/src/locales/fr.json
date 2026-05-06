@@ -546,6 +546,11 @@
 						},
 						"dnsRecordType": {
 							"label": "Type d'enregistrement"
+						},
+						"dnsExpectedValue": {
+							"label": "Valeur attendue (facultatif)",
+							"placeholder": "ex. 203.0.113.5",
+							"helperText": "Si défini, le moniteur passe hors ligne lorsqu'aucun enregistrement résolu ne correspond à cette valeur. La comparaison ne tient pas compte de la casse. Pour les enregistrements MX, la correspondance se fait sur le nom d'hôte d'échange ; pour TXT, sur la chaîne jointe de l'enregistrement."
 						}
 					},
 					"title": "Paramètres généraux",

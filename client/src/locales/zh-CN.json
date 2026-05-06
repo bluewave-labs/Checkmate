@@ -546,6 +546,11 @@
 						},
 						"dnsRecordType": {
 							"label": "记录类型"
+						},
+						"dnsExpectedValue": {
+							"label": "期望值(可选)",
+							"placeholder": "例如 203.0.113.5",
+							"helperText": "若设置,当没有解析到的记录与此值匹配时监控将判定为停机。匹配不区分大小写。MX 记录与 exchange 主机名匹配;TXT 记录与拼接后的记录字符串匹配。"
 						}
 					},
 					"title": "常规设置",

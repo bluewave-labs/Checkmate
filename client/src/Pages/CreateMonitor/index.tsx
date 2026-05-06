@@ -549,6 +549,31 @@ const CreateMonitorPage = () => {
 										</Select>
 									)}
 								/>
+								<Controller
+									name="expectedValue"
+									control={control}
+									render={({ field, fieldState }) => (
+										<TextField
+											{...field}
+											value={field.value ?? ""}
+											type="text"
+											fieldLabel={t(
+												"pages.createMonitor.form.general.option.dnsExpectedValue.label"
+											)}
+											placeholder={t(
+												"pages.createMonitor.form.general.option.dnsExpectedValue.placeholder"
+											)}
+											fullWidth
+											error={!!fieldState.error}
+											helperText={
+												fieldState.error?.message ??
+												t(
+													"pages.createMonitor.form.general.option.dnsExpectedValue.helperText"
+												)
+											}
+										/>
+									)}
+								/>
 							</>
 						)}
 

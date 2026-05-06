@@ -546,6 +546,11 @@
 						},
 						"dnsRecordType": {
 							"label": "Eintragstyp"
+						},
+						"dnsExpectedValue": {
+							"label": "Erwarteter Wert (optional)",
+							"placeholder": "z. B. 203.0.113.5",
+							"helperText": "Wenn gesetzt, wird der Monitor offline geschaltet, wenn kein aufgelöster Eintrag diesem Wert entspricht. Vergleich ist Groß-/Kleinschreibung-unabhängig. Bei MX-Einträgen wird gegen den Exchange-Hostname verglichen; bei TXT gegen die zusammengefügte Eintragszeichenkette."
 						}
 					},
 					"title": "Allgemeine Einstellungen",

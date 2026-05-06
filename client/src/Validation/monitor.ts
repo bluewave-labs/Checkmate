@@ -129,6 +129,7 @@ const dnsSchema = baseSchema.extend({
 	url: z.string().min(1, "Hostname is required"),
 	dnsServer: z.string().optional(),
 	dnsRecordType: z.enum(DnsRecordTypes),
+	expectedValue: z.string().optional(),
 });
 
 // Discriminated union of all monitor types

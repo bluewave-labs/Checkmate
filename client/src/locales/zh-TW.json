@@ -546,6 +546,11 @@
 						},
 						"dnsRecordType": {
 							"label": "記錄類型"
+						},
+						"dnsExpectedValue": {
+							"label": "期望值(可選)",
+							"placeholder": "例如 203.0.113.5",
+							"helperText": "若設定,當沒有解析到的記錄與此值符合時監控將判定為停機。比對不區分大小寫。MX 記錄與 exchange 主機名稱比對;TXT 記錄與拼接後的記錄字串比對。"
 						}
 					},
 					"title": "一般設定",

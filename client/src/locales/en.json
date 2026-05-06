@@ -548,6 +548,11 @@
 						},
 						"dnsRecordType": {
 							"label": "Record type"
+						},
+						"dnsExpectedValue": {
+							"label": "Expected value (optional)",
+							"placeholder": "e.g. 203.0.113.5",
+							"helperText": "If set, the monitor goes down when no resolved record matches this value. Match is case-insensitive. For MX records, match against the exchange hostname; for TXT, against the joined record string."
 						}
 					},
 					"title": "General settings",

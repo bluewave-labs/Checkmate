@@ -553,6 +553,11 @@
 						},
 						"dnsRecordType": {
 							"label": "Tipo de registro"
+						},
+						"dnsExpectedValue": {
+							"label": "Valor esperado (opcional)",
+							"placeholder": "p. ej., 203.0.113.5",
+							"helperText": "Si se establece, el monitor se marca como caído cuando ningún registro resuelto coincide con este valor. La coincidencia no distingue mayúsculas/minúsculas. Para registros MX, se compara con el nombre de host del intercambio (exchange); para TXT, con la cadena del registro unida."
 						}
 					},
 					"title": "Configuración general",
