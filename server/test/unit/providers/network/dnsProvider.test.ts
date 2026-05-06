@@ -1,4 +1,4 @@
-import { describe, expect, it, jest, beforeEach } from "@jest/globals";
+import { describe, expect, it, jest } from "@jest/globals";
 import type { Resolver } from "dns/promises";
 import { DnsProvider } from "../../../../src/service/infrastructure/network/DnsProvider.ts";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
@@ -31,13 +31,18 @@ const createMockResolver = (): MockResolver =>
 		resolve: jest.fn(),
 	}) as unknown as MockResolver;
 
-const createResolverCtor = (mock: MockResolver): typeof Resolver => jest.fn().mockImplementation(() => mock) as unknown as typeof Resolver;
+const setup = () => {
+	const mock = createMockResolver();
+	const ResolverCtor = jest.fn().mockImplementation(() => mock) as unknown as typeof Resolver;
+	const provider = new DnsProvider(ResolverCtor);
+	return { mock, provider };
+};
 
 testStatusProviderContract("DnsProvider", {
 	create: () => {
-		const mock = createMockResolver();
+		const { mock, provider } = setup();
 		mock.resolve4.mockResolvedValue(["1.2.3.4"]);
-		return new DnsProvider(createResolverCtor(mock));
+		return provider;
 	},
 	supportedType: "dns",
 	unsupportedType: "http",
@@ -45,15 +50,8 @@ testStatusProviderContract("DnsProvider", {
 });
 
 describe("DnsProvider", () => {
-	let mock: MockResolver;
-	let provider: DnsProvider;
-
-	beforeEach(() => {
-		mock = createMockResolver();
-		provider = new DnsProvider(createResolverCtor(mock));
-	});
-
 	it("resolves A records", async () => {
+		const { mock, provider } = setup();
 		mock.resolve4.mockResolvedValue(["1.2.3.4"]);
 
 		const result = await provider.handle(makeMonitor());
@@ -67,6 +65,7 @@ describe("DnsProvider", () => {
 	});
 
 	it("uses the configured DNS server", async () => {
+		const { mock, provider } = setup();
 		mock.resolve4.mockResolvedValue(["1.2.3.4"]);
 
 		await provider.handle(makeMonitor({ dnsServer: "8.8.8.8" }));
@@ -75,6 +74,7 @@ describe("DnsProvider", () => {
 	});
 
 	it("returns down status on resolution failure", async () => {
+		const { mock, provider } = setup();
 		mock.resolve4.mockRejectedValue(new Error("ENOTFOUND example.com"));
 
 		const result = await provider.handle(makeMonitor({ url: "nonexistent.invalid" }));
@@ -87,6 +87,7 @@ describe("DnsProvider", () => {
 	});
 
 	it("resolves MX records", async () => {
+		const { mock, provider } = setup();
 		const mxRecords = [{ exchange: "mail.example.com", priority: 10 }];
 		mock.resolveMx.mockResolvedValue(mxRecords);
 
@@ -98,6 +99,7 @@ describe("DnsProvider", () => {
 	});
 
 	it("normalizes the record type to uppercase", async () => {
+		const { mock, provider } = setup();
 		mock.resolve6.mockResolvedValue(["::1"]);
 
 		const result = await provider.handle(makeMonitor({ dnsRecordType: "aaaa" }));
@@ -107,27 +109,32 @@ describe("DnsProvider", () => {
 	});
 
 	it("rejects unsupported record types with AppError", async () => {
+		const { provider } = setup();
 		await expect(provider.handle(makeMonitor({ dnsRecordType: "SRV" }))).rejects.toThrow("Unsupported DNS record type: SRV");
 	});
 
 	it("throws AppError when hostname is missing", async () => {
+		const { provider } = setup();
 		await expect(provider.handle(makeMonitor({ url: undefined }))).rejects.toThrow("Hostname is required");
 	});
 
 	describe("expected-value matching", () => {
 		it("stays up when no expectedValue is set", async () => {
+			const { mock, provider } = setup();
 			mock.resolve4.mockResolvedValue(["1.2.3.4"]);
 			const result = await provider.handle(makeMonitor());
 			expect(result.status).toBe(true);
 		});
 
 		it("stays up when an A record matches expectedValue", async () => {
+			const { mock, provider } = setup();
 			mock.resolve4.mockResolvedValue(["203.0.113.5", "203.0.113.6"]);
 			const result = await provider.handle(makeMonitor({ expectedValue: "203.0.113.5" }));
 			expect(result.status).toBe(true);
 		});
 
 		it("goes down when no A record matches expectedValue", async () => {
+			const { mock, provider } = setup();
 			mock.resolve4.mockResolvedValue(["203.0.113.7"]);
 			const result = await provider.handle(makeMonitor({ expectedValue: "203.0.113.5" }));
 			expect(result.status).toBe(false);
@@ -138,6 +145,7 @@ describe("DnsProvider", () => {
 		});
 
 		it("matches MX records by exchange", async () => {
+			const { mock, provider } = setup();
 			mock.resolveMx.mockResolvedValue([
 				{ exchange: "mail.example.com", priority: 10 },
 				{ exchange: "backup.example.com", priority: 20 },
@@ -147,6 +155,7 @@ describe("DnsProvider", () => {
 		});
 
 		it("matches TXT records by joined chunks", async () => {
+			const { mock, provider } = setup();
 			mock.resolveTxt.mockResolvedValue([["v=spf1 ", "include:_spf.example.com ~all"]]);
 			const result = await provider.handle(
 				makeMonitor({
@@ -158,6 +167,7 @@ describe("DnsProvider", () => {
 		});
 
 		it("ignores case and surrounding whitespace", async () => {
+			const { mock, provider } = setup();
 			mock.resolveCname.mockResolvedValue(["target.example.com"]);
 			const result = await provider.handle(makeMonitor({ dnsRecordType: "CNAME", expectedValue: "  TARGET.example.com  " }));
 			expect(result.status).toBe(true);
@@ -165,6 +175,7 @@ describe("DnsProvider", () => {
 	});
 
 	it("times out long-running DNS queries", async () => {
+		const { mock, provider } = setup();
 		mock.resolve4.mockImplementation(() => new Promise(() => {}));
 
 		const result = await provider.handle(makeMonitor());
