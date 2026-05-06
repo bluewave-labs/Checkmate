@@ -15,9 +15,13 @@ export const MonitorTypes = [
 	"game",
 	"grpc",
 	"websocket",
+	"dns",
 	"unknown",
 ] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
+
+export const DnsRecordTypes = ["A", "AAAA", "CNAME", "MX", "TXT", "NS"] as const;
+export type DnsRecordType = (typeof DnsRecordTypes)[number];
 
 export const GeoCheckSupportedTypes: readonly MonitorType[] = ["http", "ping"] as const;
 
@@ -74,6 +78,8 @@ export interface Monitor {
 	selectedDisks: string[];
 	gameId?: string;
 	grpcServiceName?: string;
+	dnsServer?: string;
+	dnsRecordType?: DnsRecordType;
 	group: string | null;
 	geoCheckEnabled?: boolean;
 	geoCheckLocations?: GeoContinent[];

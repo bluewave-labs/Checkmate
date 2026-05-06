@@ -448,7 +448,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "Infraestrutura",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				}
 			}
 		},
@@ -538,6 +539,13 @@
 						"captureUrl": {
 							"label": "Endpoint do Capture",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsServer": {
+							"label": "Servidor DNS",
+							"placeholder": "ex.: 8.8.8.8 (opcional)"
+						},
+						"dnsRecordType": {
+							"label": "Tipo de registro"
 						}
 					},
 					"title": "Configurações gerais",
@@ -550,7 +558,8 @@
 						"pagespeed": "Acompanhe o desempenho de carregamento da página, Core Web Vitals e pontuações de otimização do seu site.",
 						"grpc": "Digite o hostname e a porta do servidor gRPC, opcionalmente especifique um nome de serviço para a verificação de saúde e adicione um nome de exibição.",
 						"websocket": "Digite a URL do WebSocket para monitorar (ex.: wss://exemplo.com/socket) e adicione um nome de exibição.",
-						"hardware": "Monitore o uso de CPU, memória, disco e temperatura da sua infraestrutura. A URL do endpoint do Capture deve incluir o caminho completo /api/v1/metrics (por exemplo, http://192.168.1.10:5001/api/v1/metrics). Para a chave de autorização, cole apenas a string do token — não inclua 'Bearer'."
+						"hardware": "Monitore o uso de CPU, memória, disco e temperatura da sua infraestrutura. A URL do endpoint do Capture deve incluir o caminho completo /api/v1/metrics (por exemplo, http://192.168.1.10:5001/api/v1/metrics). Para a chave de autorização, cole apenas a string do token — não inclua 'Bearer'.",
+						"dns": "Digite o nome do host a ser resolvido (ex.: example.com), especifique opcionalmente um servidor DNS personalizado, escolha um tipo de registro e adicione um nome de exibição."
 					}
 				},
 				"ignoreTls": {
@@ -587,7 +596,8 @@
 					"optionHttpDescription": "Use HTTP(S) para monitorar seu site ou endpoint de API.",
 					"optionPingDescription": "Use ICMP Ping para monitorar se um servidor está online.",
 					"optionPortDescription": "Monitore se uma porta específica em um servidor está aberta.",
-					"title": "Tipo"
+					"title": "Tipo",
+					"optionDnsDescription": "Acompanhe a resolução de nomes de domínio e a latência de consultas em servidores DNS públicos ou personalizados."
 				},
 				"thresholds": {
 					"title": "Limites de alerta",

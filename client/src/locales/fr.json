@@ -448,7 +448,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "Infrastructure",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				}
 			}
 		},
@@ -538,6 +539,13 @@
 						"captureUrl": {
 							"label": "Point de terminaison Capture",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsServer": {
+							"label": "Serveur DNS",
+							"placeholder": "ex. 8.8.8.8 (facultatif)"
+						},
+						"dnsRecordType": {
+							"label": "Type d'enregistrement"
 						}
 					},
 					"title": "Paramètres généraux",
@@ -550,7 +558,8 @@
 						"pagespeed": "Suivez les performances de chargement, les Core Web Vitals et les scores d'optimisation de votre site web.",
 						"grpc": "Saisissez le nom d'hôte et le port du serveur gRPC, spécifiez éventuellement un nom de service pour le bilan de santé, et ajoutez un nom d'affichage.",
 						"websocket": "Saisissez l'URL WebSocket à surveiller (ex. wss://example.com/socket) et ajoutez un nom d'affichage.",
-						"hardware": "Surveillez l'utilisation du processeur, de la mémoire, du disque et la température de votre infrastructure. L'URL du point de terminaison Capture doit inclure le chemin complet /api/v1/metrics (par ex. http://192.168.1.10:5001/api/v1/metrics). Pour le secret d'autorisation, collez uniquement la chaîne du jeton — n'incluez pas 'Bearer'."
+						"hardware": "Surveillez l'utilisation du processeur, de la mémoire, du disque et la température de votre infrastructure. L'URL du point de terminaison Capture doit inclure le chemin complet /api/v1/metrics (par ex. http://192.168.1.10:5001/api/v1/metrics). Pour le secret d'autorisation, collez uniquement la chaîne du jeton — n'incluez pas 'Bearer'.",
+						"dns": "Saisissez le nom d'hôte à résoudre (par ex. example.com), spécifiez éventuellement un serveur DNS personnalisé, choisissez un type d'enregistrement et ajoutez un nom d'affichage."
 					}
 				},
 				"ignoreTls": {
@@ -587,7 +596,8 @@
 					"optionHttpDescription": "Utilisez HTTP(S) pour surveiller votre site web ou point de terminaison API.",
 					"optionPingDescription": "Utilisez le Ping ICMP pour surveiller si un serveur est en ligne.",
 					"optionPortDescription": "Surveillez si un port spécifique sur un serveur est ouvert.",
-					"title": "Type"
+					"title": "Type",
+					"optionDnsDescription": "Surveillez la résolution des noms de domaine et la latence des requêtes depuis des serveurs DNS publics ou personnalisés."
 				},
 				"thresholds": {
 					"title": "Seuils d'alerte",

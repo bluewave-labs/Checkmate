@@ -33,6 +33,7 @@ import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import { useGet, usePost, usePatch, useDelete } from "@/Hooks/UseApi";
 import { useMonitorForm } from "@/Hooks/useMonitorForm";
 import {
+	DnsRecordTypes,
 	type Monitor,
 	type MonitorType,
 	type GamesMap,
@@ -50,6 +51,7 @@ interface GeneralSettingsConfig {
 	showGameSelect: boolean;
 	showSecret: boolean;
 	showGrpcServiceName: boolean;
+	showDnsFields: boolean;
 	showIgnoreTls: boolean;
 }
 
@@ -67,6 +69,7 @@ const getGeneralSettingsConfig = (
 			showGameSelect: false,
 			showSecret: false,
 			showGrpcServiceName: false,
+			showDnsFields: false,
 			showIgnoreTls: false,
 		},
 		ping: {
@@ -78,6 +81,7 @@ const getGeneralSettingsConfig = (
 			showGameSelect: false,
 			showSecret: false,
 			showGrpcServiceName: false,
+			showDnsFields: false,
 			showIgnoreTls: false,
 		},
 		docker: {
@@ -89,6 +93,7 @@ const getGeneralSettingsConfig = (
 			showGameSelect: false,
 			showSecret: false,
 			showGrpcServiceName: false,
+			showDnsFields: false,
 			showIgnoreTls: false,
 		},
 		port: {
@@ -100,6 +105,7 @@ const getGeneralSettingsConfig = (
 			showGameSelect: false,
 			showSecret: false,
 			showGrpcServiceName: false,
+			showDnsFields: false,
 			showIgnoreTls: false,
 		},
 		game: {
@@ -111,6 +117,7 @@ const getGeneralSettingsConfig = (
 			showGameSelect: true,
 			showSecret: false,
 			showGrpcServiceName: false,
+			showDnsFields: false,
 			showIgnoreTls: false,
 		},
 		grpc: {
@@ -122,6 +129,7 @@ const getGeneralSettingsConfig = (
 			showGameSelect: false,
 			showSecret: false,
 			showGrpcServiceName: true,
+			showDnsFields: false,
 			showIgnoreTls: true,
 		},
 		pagespeed: {
@@ -133,6 +141,7 @@ const getGeneralSettingsConfig = (
 			showGameSelect: false,
 			showSecret: false,
 			showGrpcServiceName: false,
+			showDnsFields: false,
 			showIgnoreTls: false,
 		},
 		hardware: {
@@ -144,6 +153,7 @@ const getGeneralSettingsConfig = (
 			showGameSelect: false,
 			showSecret: true,
 			showGrpcServiceName: false,
+			showDnsFields: false,
 			showIgnoreTls: false,
 		},
 		websocket: {
@@ -155,7 +165,20 @@ const getGeneralSettingsConfig = (
 			showGameSelect: false,
 			showSecret: false,
 			showGrpcServiceName: false,
+			showDnsFields: false,
 			showIgnoreTls: true,
+		},
+		dns: {
+			urlLabel: t("pages.createMonitor.form.general.option.host.label"),
+			urlPlaceholder: t("pages.createMonitor.form.general.option.host.placeholder"),
+			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
+			showUrl: true,
+			showPort: false,
+			showGameSelect: false,
+			showSecret: false,
+			showGrpcServiceName: false,
+			showDnsFields: true,
+			showIgnoreTls: false,
 		},
 	};
 	return configs[type] || configs.http;
@@ -349,6 +372,13 @@ const CreateMonitorPage = () => {
 												"pages.createMonitor.form.type.optionWebSocketDescription"
 											)}
 										/>
+										<RadioWithDescription
+											value="dns"
+											label={t("pages.common.monitors.monitorTypes.optionDns")}
+											description={t(
+												"pages.createMonitor.form.type.optionDnsDescription"
+											)}
+										/>
 									</RadioGroup>
 								</FormControl>
 							)}
@@ -474,7 +504,54 @@ const CreateMonitorPage = () => {
 							/>
 						)}
 
-						{/* Secret field - only for hardware type */}
+						{generalSettingsConfig.showDnsFields && (
+							<>
+								<Controller
+									name="dnsServer"
+									control={control}
+									render={({ field, fieldState }) => (
+										<TextField
+											{...field}
+											value={field.value ?? ""}
+											type="text"
+											fieldLabel={t(
+												"pages.createMonitor.form.general.option.dnsServer.label"
+											)}
+											placeholder={t(
+												"pages.createMonitor.form.general.option.dnsServer.placeholder"
+											)}
+											fullWidth
+											error={!!fieldState.error}
+											helperText={fieldState.error?.message ?? ""}
+										/>
+									)}
+								/>
+								<Controller
+									name="dnsRecordType"
+									control={control}
+									render={({ field, fieldState }) => (
+										<Select
+											{...field}
+											value={field.value ?? "A"}
+											fieldLabel={t(
+												"pages.createMonitor.form.general.option.dnsRecordType.label"
+											)}
+											error={!!fieldState.error}
+										>
+											{DnsRecordTypes.map((rt) => (
+												<MenuItem
+													key={rt}
+													value={rt}
+												>
+													{rt}
+												</MenuItem>
+											))}
+										</Select>
+									)}
+								/>
+							</>
+						)}
+
 						{generalSettingsConfig.showSecret && (
 							<Controller
 								name="secret"

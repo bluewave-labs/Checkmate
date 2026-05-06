@@ -448,7 +448,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "基礎架構",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				}
 			}
 		},
@@ -538,6 +539,13 @@
 						"captureUrl": {
 							"label": "Capture 端點",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsServer": {
+							"label": "DNS 伺服器",
+							"placeholder": "例如 8.8.8.8(可選)"
+						},
+						"dnsRecordType": {
+							"label": "記錄類型"
 						}
 					},
 					"title": "一般設定",
@@ -550,7 +558,8 @@
 						"pagespeed": "追蹤您網站的頁面載入效能、Core Web Vitals 和最佳化分數。",
 						"grpc": "輸入 gRPC 伺服器的主機名稱和連接埠，可選擇指定健康檢查的服務名稱，並新增一個顯示名稱。",
 						"websocket": "輸入要監控的 WebSocket URL（例如 wss://example.com/socket），並新增一個顯示名稱。",
-						"hardware": "監控基礎架構的 CPU、記憶體、磁碟使用情況和溫度。Capture 端點 URL 必須包含完整路徑 /api/v1/metrics（例如 http://192.168.1.10:5001/api/v1/metrics）。授權密鑰僅貼上權杖字串——請勿包含 'Bearer'。"
+						"hardware": "監控基礎架構的 CPU、記憶體、磁碟使用情況和溫度。Capture 端點 URL 必須包含完整路徑 /api/v1/metrics（例如 http://192.168.1.10:5001/api/v1/metrics）。授權密鑰僅貼上權杖字串——請勿包含 'Bearer'。",
+						"dns": "輸入要解析的主機名稱(例如 example.com),可選擇指定自訂 DNS 伺服器,選擇記錄類型並新增顯示名稱。"
 					}
 				},
 				"ignoreTls": {
@@ -587,7 +596,8 @@
 					"optionHttpDescription": "使用 HTTP(S) 監控您的網站或 API 端點。",
 					"optionPingDescription": "使用 ICMP Ping 監控伺服器是否上線。",
 					"optionPortDescription": "監控伺服器上的特定連接埠是否開啟。",
-					"title": "類型"
+					"title": "類型",
+					"optionDnsDescription": "追蹤網域名稱解析以及來自公共或自訂 DNS 伺服器的查詢延遲。"
 				},
 				"thresholds": {
 					"title": "警報閾值",

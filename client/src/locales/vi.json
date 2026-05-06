@@ -448,7 +448,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "Hạ tầng",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				}
 			}
 		},
@@ -538,6 +539,13 @@
 						"captureUrl": {
 							"label": "Điểm cuối Capture",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsServer": {
+							"label": "Máy chủ DNS",
+							"placeholder": "ví dụ: 8.8.8.8 (tùy chọn)"
+						},
+						"dnsRecordType": {
+							"label": "Loại bản ghi"
 						}
 					},
 					"title": "Cài đặt chung",
@@ -550,7 +558,8 @@
 						"pagespeed": "Theo dõi hiệu suất tải trang, Core Web Vitals và điểm tối ưu hóa cho trang web của bạn.",
 						"grpc": "Nhập tên máy chủ và cổng của máy chủ gRPC, tùy chọn chỉ định tên dịch vụ cho kiểm tra sức khỏe và thêm tên hiển thị.",
 						"websocket": "Nhập URL WebSocket cần giám sát (vd: wss://example.com/socket) và thêm tên hiển thị.",
-						"hardware": "Giám sát mức sử dụng CPU, bộ nhớ, ổ đĩa và nhiệt độ của hạ tầng. URL điểm cuối Capture phải bao gồm đường dẫn đầy đủ /api/v1/metrics (ví dụ: http://192.168.1.10:5001/api/v1/metrics). Đối với khóa xác thực, chỉ dán chuỗi token — không bao gồm 'Bearer'."
+						"hardware": "Giám sát mức sử dụng CPU, bộ nhớ, ổ đĩa và nhiệt độ của hạ tầng. URL điểm cuối Capture phải bao gồm đường dẫn đầy đủ /api/v1/metrics (ví dụ: http://192.168.1.10:5001/api/v1/metrics). Đối với khóa xác thực, chỉ dán chuỗi token — không bao gồm 'Bearer'.",
+						"dns": "Nhập tên máy chủ cần phân giải (ví dụ: example.com), tùy chọn chỉ định máy chủ DNS tùy chỉnh, chọn loại bản ghi và thêm tên hiển thị."
 					}
 				},
 				"ignoreTls": {
@@ -587,7 +596,8 @@
 					"optionHttpDescription": "Sử dụng HTTP(S) để giám sát trang web hoặc điểm cuối API của bạn.",
 					"optionPingDescription": "Sử dụng ICMP Ping để giám sát xem máy chủ có trực tuyến không.",
 					"optionPortDescription": "Giám sát xem một cổng cụ thể trên máy chủ có mở không.",
-					"title": "Loại"
+					"title": "Loại",
+					"optionDnsDescription": "Theo dõi phân giải tên miền và độ trễ truy vấn từ máy chủ DNS công cộng hoặc tùy chỉnh."
 				},
 				"thresholds": {
 					"title": "Ngưỡng cảnh báo",

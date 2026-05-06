@@ -450,7 +450,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "Infrastructure",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				}
 			}
 		},
@@ -540,6 +541,13 @@
 						"captureUrl": {
 							"label": "Capture endpoint",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsServer": {
+							"label": "DNS server",
+							"placeholder": "e.g. 8.8.8.8 (optional)"
+						},
+						"dnsRecordType": {
+							"label": "Record type"
 						}
 					},
 					"title": "General settings",
@@ -552,7 +560,8 @@
 						"pagespeed": "Track page load performance, Core Web Vitals, and optimization scores for your website.",
 						"grpc": "Enter the hostname and port of the gRPC server, optionally specify a service name for the health check, and add a display name.",
 						"websocket": "Enter the WebSocket URL to monitor (e.g., wss://example.com/socket) and add a display name.",
-						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure. The Capture endpoint URL must include the full path /api/v1/metrics (e.g. http://192.168.1.10:5001/api/v1/metrics). For the authorization secret, paste only the token string — don't include 'Bearer'."
+						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure. The Capture endpoint URL must include the full path /api/v1/metrics (e.g. http://192.168.1.10:5001/api/v1/metrics). For the authorization secret, paste only the token string — don't include 'Bearer'.",
+						"dns": "Enter the hostname to resolve (e.g., example.com), optionally specify a custom DNS server, choose a record type, and add a display name."
 					}
 				},
 				"ignoreTls": {
@@ -586,6 +595,7 @@
 					"optionGameDescription": "Monitor if a specific game server is online.",
 					"optionGrpcDescription": "Monitor gRPC services using the standard Health Checking Protocol.",
 					"optionWebSocketDescription": "Monitor WebSocket endpoints for connection health and response time.",
+					"optionDnsDescription": "Track domain name resolution and query latency from public or custom DNS servers.",
 					"optionHttpDescription": "Use HTTP(S) to monitor your website or API endpoint.",
 					"optionPingDescription": "Use ICMP Ping to monitor if a server is online.",
 					"optionPortDescription": "Monitor if a specific port on a server is open.",

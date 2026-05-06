@@ -39,9 +39,17 @@ import { ThemePicker } from "./Components/ThemePicker";
 
 const monitorsUrl = (() => {
 	const params = new URLSearchParams();
-	["http", "ping", "port", "docker", "game", "grpc", "websocket", "hardware"].forEach(
-		(type) => params.append("type", type)
-	);
+	[
+		"http",
+		"ping",
+		"port",
+		"docker",
+		"game",
+		"grpc",
+		"websocket",
+		"dns",
+		"hardware",
+	].forEach((type) => params.append("type", type));
 	return `/monitors/team?${params.toString()}`;
 })();
 

@@ -448,7 +448,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "Infrastruktuuri",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				}
 			}
 		},
@@ -538,6 +539,13 @@
 						"captureUrl": {
 							"label": "Capture-päätepiste",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsServer": {
+							"label": "DNS-palvelin",
+							"placeholder": "esim. 8.8.8.8 (valinnainen)"
+						},
+						"dnsRecordType": {
+							"label": "Tietuetyyppi"
 						}
 					},
 					"title": "Yleiset asetukset",
@@ -550,7 +558,8 @@
 						"pagespeed": "Seuraa sivun latausnopeutta, Core Web Vitals -arvoja ja optimointipisteitä verkkosivustollasi.",
 						"grpc": "Syötä gRPC-palvelimen isäntänimi ja portti, määritä halutessasi palvelun nimi terveystarkistusta varten ja lisää näyttönimi.",
 						"websocket": "Syötä monitoroitava WebSocket URL (esim. wss://example.com/socket) ja lisää näyttönimi.",
-						"hardware": "Seuraa infrastruktuurisi suorittimen, muistin, levyn käyttöä ja lämpötilaa. Capture-päätepisteen URL-osoitteen on sisällettävä koko polku /api/v1/metrics (esim. http://192.168.1.10:5001/api/v1/metrics). Liitä valtuutusavaimeen vain tokenin merkkijono — älä sisällytä sanaa 'Bearer'."
+						"hardware": "Seuraa infrastruktuurisi suorittimen, muistin, levyn käyttöä ja lämpötilaa. Capture-päätepisteen URL-osoitteen on sisällettävä koko polku /api/v1/metrics (esim. http://192.168.1.10:5001/api/v1/metrics). Liitä valtuutusavaimeen vain tokenin merkkijono — älä sisällytä sanaa 'Bearer'.",
+						"dns": "Anna selvitettävä isäntänimi (esim. example.com), valinnaisesti mukautettu DNS-palvelin, valitse tietuetyyppi ja lisää näyttönimi."
 					}
 				},
 				"ignoreTls": {
@@ -587,7 +596,8 @@
 					"optionHttpDescription": "Käytä HTTP(S)-protokollaa verkkosivustosi tai API-päätepisteen monitorointiin.",
 					"optionPingDescription": "Käytä ICMP Ping -komentoa monitoroimaan, onko palvelin verkossa.",
 					"optionPortDescription": "Monitoroi, onko tietty palvelimen portti auki.",
-					"title": "Tyyppi"
+					"title": "Tyyppi",
+					"optionDnsDescription": "Seuraa verkkotunnusten selvitystä ja kyselyiden viivettä julkisilta tai mukautetuilta DNS-palvelimilta."
 				},
 				"thresholds": {
 					"title": "Hälytysrajat",

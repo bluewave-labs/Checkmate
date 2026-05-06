@@ -9,6 +9,7 @@ export const MONITOR_TYPE_KEYS: Partial<Record<MonitorType, string>> = {
 	game: "pages.common.monitors.monitorTypes.optionGame",
 	grpc: "pages.common.monitors.monitorTypes.optionGrpc",
 	websocket: "pages.common.monitors.monitorTypes.optionWebSocket",
+	dns: "pages.common.monitors.monitorTypes.optionDns",
 	hardware: "pages.common.monitors.monitorTypes.optionHardware",
 	pagespeed: "pages.common.monitors.monitorTypes.optionPagespeed",
 };

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { GeoContinents } from "@/Types/GeoCheck";
+import { DnsRecordTypes } from "@/Types/Monitor";
 
 // URL schema with custom error message
 const urlSchema = z.url({ message: "Please enter a valid URL" });
@@ -122,6 +123,14 @@ const websocketSchema = baseSchema.extend({
 	ignoreTlsErrors: z.boolean(),
 });
 
+// DNS monitor schema
+const dnsSchema = baseSchema.extend({
+	type: z.literal("dns"),
+	url: z.string().min(1, "Hostname is required"),
+	dnsServer: z.string().optional(),
+	dnsRecordType: z.enum(DnsRecordTypes),
+});
+
 // Discriminated union of all monitor types
 export const monitorSchema = z.discriminatedUnion("type", [
 	httpSchema,
@@ -133,6 +142,7 @@ export const monitorSchema = z.discriminatedUnion("type", [
 	pagespeedSchema,
 	hardwareSchema,
 	websocketSchema,
+	dnsSchema,
 ]);
 
 export type MonitorFormData = z.infer<typeof monitorSchema>;
@@ -148,4 +158,5 @@ export {
 	pagespeedSchema,
 	hardwareSchema,
 	websocketSchema,
+	dnsSchema,
 };

@@ -448,7 +448,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "Altyapı",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				}
 			}
 		},
@@ -538,6 +539,13 @@
 						"captureUrl": {
 							"label": "Capture uç noktası",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsServer": {
+							"label": "DNS sunucusu",
+							"placeholder": "ör. 8.8.8.8 (isteğe bağlı)"
+						},
+						"dnsRecordType": {
+							"label": "Kayıt türü"
 						}
 					},
 					"title": "Genel ayarlar",
@@ -550,7 +558,8 @@
 						"pagespeed": "Web sitenizin sayfa yükleme performansını, Core Web Vitals metriklerini ve optimizasyon puanlarını takip edin.",
 						"grpc": "gRPC sunucusunun ana bilgisayar adını ve portunu girin, isteğe bağlı olarak sağlık kontrolü için bir servis adı belirtin ve bir görünen ad ekleyin.",
 						"websocket": "İzlenecek WebSocket URL'sini girin (örn. wss://example.com/socket) ve bir görünen ad ekleyin.",
-						"hardware": "Altyapınızın CPU, bellek, disk kullanımını ve sıcaklığını izleyin. Capture uç nokta URL'si tam yolu /api/v1/metrics içermelidir (ör. http://192.168.1.10:5001/api/v1/metrics). Yetkilendirme anahtarına yalnızca token dizesini yapıştırın — 'Bearer' eklemeyin."
+						"hardware": "Altyapınızın CPU, bellek, disk kullanımını ve sıcaklığını izleyin. Capture uç nokta URL'si tam yolu /api/v1/metrics içermelidir (ör. http://192.168.1.10:5001/api/v1/metrics). Yetkilendirme anahtarına yalnızca token dizesini yapıştırın — 'Bearer' eklemeyin.",
+						"dns": "Çözümlenecek ana bilgisayar adını girin (ör. example.com), isteğe bağlı olarak özel bir DNS sunucusu belirtin, bir kayıt türü seçin ve bir görünen ad ekleyin."
 					}
 				},
 				"ignoreTls": {
@@ -587,7 +596,8 @@
 					"optionHttpDescription": "Web sitenizi veya API uç noktanızı izlemek için HTTP(S) kullanın.",
 					"optionPingDescription": "Bir sunucunun çevrimiçi olup olmadığını izlemek için ICMP Ping kullanın.",
 					"optionPortDescription": "Bir sunucuda belirli bir portun açık olup olmadığını izleyin.",
-					"title": "Tür"
+					"title": "Tür",
+					"optionDnsDescription": "Genel veya özel DNS sunucularından alan adı çözümlemesini ve sorgu gecikmesini izleyin."
 				},
 				"thresholds": {
 					"title": "Uyarı eşikleri",

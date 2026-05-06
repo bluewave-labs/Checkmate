@@ -7,7 +7,7 @@ import type { MonitorType } from "@/Types/Monitor";
 import { Typography, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-const types = ["http", "ping", "port", "docker", "game", "grpc", "websocket"];
+const types = ["http", "ping", "port", "docker", "game", "grpc", "websocket", "dns"];
 const typeDisplayNames: Record<string, string> = {
 	http: "HTTP",
 	ping: "Ping",
@@ -16,6 +16,7 @@ const typeDisplayNames: Record<string, string> = {
 	game: "Game",
 	grpc: "gRPC",
 	websocket: "WebSocket",
+	dns: "DNS",
 };
 const statuses = ["up", "down"];
 const states = ["active", "paused"];

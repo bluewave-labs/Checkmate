@@ -448,7 +448,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "Infrastruktur",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				}
 			}
 		},
@@ -538,6 +539,13 @@
 						"captureUrl": {
 							"label": "Capture-Endpunkt",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsServer": {
+							"label": "DNS-Server",
+							"placeholder": "z. B. 8.8.8.8 (optional)"
+						},
+						"dnsRecordType": {
+							"label": "Eintragstyp"
 						}
 					},
 					"title": "Allgemeine Einstellungen",
@@ -550,7 +558,8 @@
 						"pagespeed": "Verfolgen Sie die Ladezeit, Core Web Vitals und Optimierungswerte Ihrer Website.",
 						"grpc": "Geben Sie den Hostnamen und Port des gRPC-Servers ein, optional einen Dienstnamen für den Health-Check, und fügen Sie einen Anzeigenamen hinzu.",
 						"websocket": "Geben Sie die zu überwachende WebSocket-URL ein (z. B. wss://example.com/socket) und fügen Sie einen Anzeigenamen hinzu.",
-						"hardware": "Überwachen Sie CPU-, Speicher-, Festplattenauslastung und Temperatur Ihrer Infrastruktur. Die URL des Capture-Endpunkts muss den vollständigen Pfad /api/v1/metrics enthalten (z. B. http://192.168.1.10:5001/api/v1/metrics). Fügen Sie für das Autorisierungsgeheimnis nur den Token-String ein — geben Sie 'Bearer' nicht mit an."
+						"hardware": "Überwachen Sie CPU-, Speicher-, Festplattenauslastung und Temperatur Ihrer Infrastruktur. Die URL des Capture-Endpunkts muss den vollständigen Pfad /api/v1/metrics enthalten (z. B. http://192.168.1.10:5001/api/v1/metrics). Fügen Sie für das Autorisierungsgeheimnis nur den Token-String ein — geben Sie 'Bearer' nicht mit an.",
+						"dns": "Geben Sie den aufzulösenden Hostnamen ein (z. B. example.com), optional einen benutzerdefinierten DNS-Server, wählen Sie einen Eintragstyp und einen Anzeigenamen."
 					}
 				},
 				"ignoreTls": {
@@ -587,7 +596,8 @@
 					"optionHttpDescription": "HTTP(S) verwenden, um Ihre Website oder Ihren API-Endpunkt zu überwachen.",
 					"optionPingDescription": "ICMP-Ping verwenden, um zu überwachen, ob ein Server online ist.",
 					"optionPortDescription": "Überwachen, ob ein bestimmter Port auf einem Server geöffnet ist.",
-					"title": "Typ"
+					"title": "Typ",
+					"optionDnsDescription": "Überwachen Sie die Auflösung von Domainnamen und die Abfragelatenz öffentlicher oder benutzerdefinierter DNS-Server."
 				},
 				"thresholds": {
 					"title": "Alarmschwellenwerte",

@@ -448,7 +448,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "Infrastruktura",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				}
 			}
 		},
@@ -538,6 +539,13 @@
 						"captureUrl": {
 							"label": "Endpoint Capture",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsServer": {
+							"label": "DNS server",
+							"placeholder": "např. 8.8.8.8 (volitelné)"
+						},
+						"dnsRecordType": {
+							"label": "Typ záznamu"
 						}
 					},
 					"title": "Obecná nastavení",
@@ -550,7 +558,8 @@
 						"pagespeed": "Sledujte výkon načítání stránky, metriky Core Web Vitals a hodnocení optimalizace vašeho webu.",
 						"grpc": "Zadejte název hostitele a port gRPC serveru, volitelně zadejte název služby pro kontrolu stavu a přidejte zobrazovaný název.",
 						"websocket": "Zadejte WebSocket URL ke sledování (např. wss://example.com/socket) a přidejte zobrazovaný název.",
-						"hardware": "Sledujte využití CPU, paměti, disku a teplotu vaší infrastruktury. URL endpointu Capture musí obsahovat celou cestu /api/v1/metrics (např. http://192.168.1.10:5001/api/v1/metrics). Do autorizačního klíče vložte pouze řetězec tokenu — nezahrnujte 'Bearer'."
+						"hardware": "Sledujte využití CPU, paměti, disku a teplotu vaší infrastruktury. URL endpointu Capture musí obsahovat celou cestu /api/v1/metrics (např. http://192.168.1.10:5001/api/v1/metrics). Do autorizačního klíče vložte pouze řetězec tokenu — nezahrnujte 'Bearer'.",
+						"dns": "Zadejte název hostitele, který má být rozlišen (např. example.com), volitelně zadejte vlastní DNS server, vyberte typ záznamu a přidejte zobrazovaný název."
 					}
 				},
 				"ignoreTls": {
@@ -587,7 +596,8 @@
 					"optionHttpDescription": "Použijte HTTP(S) ke sledování vašeho webu nebo API koncového bodu.",
 					"optionPingDescription": "Použijte ICMP Ping ke sledování, zda je server online.",
 					"optionPortDescription": "Sledujte, zda je konkrétní port na serveru otevřen.",
-					"title": "Typ"
+					"title": "Typ",
+					"optionDnsDescription": "Sledujte rozlišení názvů domén a latenci dotazů z veřejných nebo vlastních DNS serverů."
 				},
 				"thresholds": {
 					"title": "Prahové hodnoty upozornění",

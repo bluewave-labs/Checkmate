@@ -448,7 +448,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "البنية التحتية",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				}
 			}
 		},
@@ -538,6 +539,13 @@
 						"captureUrl": {
 							"label": "نقطة نهاية Capture",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsServer": {
+							"label": "خادم DNS",
+							"placeholder": "مثال: 8.8.8.8 (اختياري)"
+						},
+						"dnsRecordType": {
+							"label": "نوع السجل"
 						}
 					},
 					"title": "الإعدادات العامة",
@@ -550,7 +558,8 @@
 						"pagespeed": "تتبع أداء تحميل الصفحة ومؤشرات Core Web Vitals ودرجات التحسين لموقعك.",
 						"grpc": "أدخل اسم المضيف ومنفذ خادم gRPC، وحدد اختيارياً اسم خدمة لفحص الصحة، وأضف اسم عرض.",
 						"websocket": "أدخل رابط WebSocket للمراقبة (مثال: wss://example.com/socket) وأضف اسم عرض.",
-						"hardware": "راقب استخدام وحدة المعالجة المركزية والذاكرة والقرص ودرجة الحرارة لبنيتك التحتية. يجب أن يتضمن عنوان URL لنقطة نهاية Capture المسار الكامل ‎/api/v1/metrics‎ (مثال: ‎http://192.168.1.10:5001/api/v1/metrics‎). بالنسبة لمفتاح التفويض، الصق سلسلة الرمز فقط — لا تُضمّن كلمة 'Bearer'."
+						"hardware": "راقب استخدام وحدة المعالجة المركزية والذاكرة والقرص ودرجة الحرارة لبنيتك التحتية. يجب أن يتضمن عنوان URL لنقطة نهاية Capture المسار الكامل ‎/api/v1/metrics‎ (مثال: ‎http://192.168.1.10:5001/api/v1/metrics‎). بالنسبة لمفتاح التفويض، الصق سلسلة الرمز فقط — لا تُضمّن كلمة 'Bearer'.",
+						"dns": "أدخل اسم المضيف المراد تحويله (مثل example.com)، حدّد اختيارياً خادم DNS مخصصاً، اختر نوع السجل، وأضف اسماً للعرض."
 					}
 				},
 				"ignoreTls": {
@@ -587,7 +596,8 @@
 					"optionHttpDescription": "استخدم HTTP(S) لمراقبة موقعك الإلكتروني أو نقطة نهاية API.",
 					"optionPingDescription": "استخدم ICMP Ping لمراقبة ما إذا كان الخادم متصلاً.",
 					"optionPortDescription": "مراقبة ما إذا كان منفذ معين على الخادم مفتوحاً.",
-					"title": "النوع"
+					"title": "النوع",
+					"optionDnsDescription": "تتبّع تحويل أسماء النطاقات وزمن الاستجابة من خوادم DNS العامة أو المخصصة."
 				},
 				"thresholds": {
 					"title": "حدود التنبيه",
