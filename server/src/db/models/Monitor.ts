@@ -339,6 +339,20 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			type: String,
 			enum: DnsRecordTypes,
 		},
+		lastDnsResolution: {
+			type: new Schema(
+				{
+					hostname: { type: String, required: true },
+					dnsServer: { type: String, required: true },
+					recordType: { type: String, enum: DnsRecordTypes, required: true },
+					results: { type: Schema.Types.Mixed },
+					matched: { type: Boolean, required: true },
+					resolvedAt: { type: Date, required: true },
+				},
+				{ _id: false }
+			),
+			default: null,
+		},
 		group: {
 			type: String,
 			trim: true,

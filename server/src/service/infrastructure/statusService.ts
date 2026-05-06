@@ -13,8 +13,11 @@ import type {
 	PortStatusPayload,
 	GameStatusPayload,
 	GrpcStatusPayload,
+	DnsStatusPayload,
 	CheckSnapshot,
 	CheckDiskInfo,
+	DnsResolutionSnapshot,
+	DnsRecordType,
 } from "@/types/index.js";
 import { AppError } from "@/utils/AppError.js";
 import { ILogger } from "@/utils/logger.js";
@@ -211,6 +214,7 @@ export class StatusService implements IStatusService {
 			| PortStatusPayload
 			| GameStatusPayload
 			| GrpcStatusPayload
+			| DnsStatusPayload
 			| undefined
 		>,
 		check: Check
@@ -232,6 +236,22 @@ export class StatusService implements IStatusService {
 
 			// Build the status patch — computed against the projected window
 			const patch: Partial<Monitor> = {};
+
+			// Capture the latest DNS resolution so the UI can display resolved records
+			if (monitor.type === "dns" && statusResponse.payload) {
+				const dnsPayload = statusResponse.payload as DnsStatusPayload;
+				if (dnsPayload.resolved) {
+					const snapshot: DnsResolutionSnapshot = {
+						hostname: dnsPayload.hostname,
+						dnsServer: dnsPayload.dnsServer,
+						recordType: dnsPayload.recordType as DnsRecordType,
+						results: dnsPayload.results,
+						matched: status === true,
+						resolvedAt: new Date().toISOString(),
+					};
+					patch.lastDnsResolution = snapshot;
+				}
+			}
 
 			// Resolve "initializing" up-front, incidents should be created on initialization && down
 			let newStatus: MonitorStatus = monitor.status;

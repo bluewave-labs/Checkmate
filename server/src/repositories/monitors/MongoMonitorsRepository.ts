@@ -1,6 +1,6 @@
 import { MonitorModel } from "@/db/models/index.js";
 import type { MonitorDocument, CheckSnapshotDocument } from "@/db/models/index.js";
-import type { Monitor, MonitorsSummary, CheckSnapshot } from "@/types/index.js";
+import type { Monitor, MonitorsSummary, CheckSnapshot, DnsRecordType } from "@/types/index.js";
 import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "./IMonitorsRepository.js";
 import { MongoBulkWriteError } from "mongodb";
@@ -415,6 +415,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			grpcServiceName: doc.grpcServiceName ?? undefined,
 			dnsServer: doc.dnsServer ?? undefined,
 			dnsRecordType: doc.dnsRecordType ?? undefined,
+			lastDnsResolution: this.toDnsResolutionEntity(doc.lastDnsResolution),
 			group: doc.group ?? null,
 			recentChecks: (doc.recentChecks ?? []).map((check: CheckSnapshotDocument) => this.toCheckSnapshot(check)),
 			geoCheckEnabled: doc.geoCheckEnabled ?? false,
@@ -476,6 +477,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			grpcServiceName: doc.grpcServiceName ?? undefined,
 			dnsServer: doc.dnsServer ?? undefined,
 			dnsRecordType: doc.dnsRecordType ?? undefined,
+			lastDnsResolution: this.toDnsResolutionEntity(doc.lastDnsResolution),
 			group: doc.group ?? null,
 			recentChecks: (doc.recentChecks ?? []).map((check: CheckSnapshotDocument) => this.toCheckSnapshot(check)),
 			geoCheckEnabled: doc.geoCheckEnabled ?? false,
@@ -483,6 +485,27 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			geoCheckInterval: doc.geoCheckInterval ?? 300000,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
+		};
+	};
+
+	private toDnsResolutionEntity = (doc: unknown): Monitor["lastDnsResolution"] => {
+		if (!doc || typeof doc !== "object") return null;
+		const d = doc as {
+			hostname?: string;
+			dnsServer?: string;
+			recordType?: string;
+			results?: unknown;
+			matched?: boolean;
+			resolvedAt?: Date | string;
+		};
+		if (!d.hostname || !d.dnsServer || !d.recordType || !d.resolvedAt) return null;
+		return {
+			hostname: d.hostname,
+			dnsServer: d.dnsServer,
+			recordType: d.recordType as DnsRecordType,
+			results: d.results ?? null,
+			matched: d.matched ?? false,
+			resolvedAt: d.resolvedAt instanceof Date ? d.resolvedAt.toISOString() : d.resolvedAt,
 		};
 	};
 

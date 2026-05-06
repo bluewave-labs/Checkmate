@@ -16,6 +16,15 @@ export const MonitorMatchMethods = ["equal", "include", "regex"] as const;
 
 export const DnsRecordTypes = ["A", "AAAA", "CNAME", "MX", "TXT", "NS"] as const;
 export type DnsRecordType = (typeof DnsRecordTypes)[number];
+
+export interface DnsResolutionSnapshot {
+	hostname: string;
+	dnsServer: string;
+	recordType: DnsRecordType;
+	results: unknown;
+	matched: boolean;
+	resolvedAt: string;
+}
 export type MonitorMatchMethod = (typeof MonitorMatchMethods)[number] | "";
 export const MAX_RECENT_CHECKS = 50;
 
@@ -55,6 +64,7 @@ export interface Monitor {
 	grpcServiceName?: string;
 	dnsServer?: string;
 	dnsRecordType?: string;
+	lastDnsResolution?: DnsResolutionSnapshot | null;
 	group: string | null;
 	geoCheckEnabled?: boolean;
 	geoCheckLocations?: GeoContinent[];
