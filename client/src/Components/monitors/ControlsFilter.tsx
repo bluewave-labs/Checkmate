@@ -3,11 +3,11 @@ import { Select, Button } from "@/Components/inputs";
 import MenuItem from "@mui/material/MenuItem";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-import type { MonitorType } from "@/Types/Monitor";
+import { UPTIME_MONITOR_TYPES, type MonitorType } from "@/Types/Monitor";
 import { Typography, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-const types = ["http", "ping", "port", "docker", "game", "grpc", "websocket", "dns"];
+const types = UPTIME_MONITOR_TYPES;
 const typeDisplayNames: Record<string, string> = {
 	http: "HTTP",
 	ping: "Ping",

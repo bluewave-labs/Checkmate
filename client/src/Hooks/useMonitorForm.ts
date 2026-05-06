@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { monitorSchema, type MonitorFormData } from "@/Validation/monitor";
-import type { Monitor, MonitorType } from "@/Types/Monitor";
+import { DnsRecordTypes, type Monitor, type MonitorType } from "@/Types/Monitor";
 
 interface UseMonitorFormOptions {
 	data?: Monitor | null;
@@ -117,7 +117,7 @@ export const useMonitorForm = ({
 					type: "dns",
 					url: data?.url || "",
 					dnsServer: data?.dnsServer || "",
-					dnsRecordType: data?.dnsRecordType ?? "A",
+					dnsRecordType: data?.dnsRecordType ?? DnsRecordTypes[0],
 				};
 				break;
 			default:

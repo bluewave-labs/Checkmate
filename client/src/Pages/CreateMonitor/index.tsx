@@ -532,7 +532,7 @@ const CreateMonitorPage = () => {
 									render={({ field, fieldState }) => (
 										<Select
 											{...field}
-											value={field.value ?? "A"}
+											value={field.value ?? DnsRecordTypes[0]}
 											fieldLabel={t(
 												"pages.createMonitor.form.general.option.dnsRecordType.label"
 											)}

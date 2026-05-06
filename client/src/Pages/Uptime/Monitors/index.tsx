@@ -8,7 +8,12 @@ import { HeaderCreate } from "@/Components/common";
 import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useGet, useDelete } from "@/Hooks/UseApi";
-import type { Monitor, MonitorType, MonitorsWithChecksResponse } from "@/Types/Monitor";
+import {
+	UPTIME_MONITOR_TYPES,
+	type Monitor,
+	type MonitorType,
+	type MonitorsWithChecksResponse,
+} from "@/Types/Monitor";
 import { useState, useMemo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setRowsPerPage } from "@/Features/UI/uiSlice.js";
@@ -67,10 +72,7 @@ const UptimeMonitorsPage = () => {
 	const filter = activeFilter?.[0] || debouncedSearch;
 
 	// Default to all types when none selected
-	const effectiveTypes =
-		selectedTypes.length > 0
-			? selectedTypes
-			: ["http", "ping", "docker", "port", "game", "grpc", "websocket", "dns"];
+	const effectiveTypes = selectedTypes.length > 0 ? selectedTypes : UPTIME_MONITOR_TYPES;
 
 	// Build URL for monitors with checks
 	const monitorsWithChecksUrl = useMemo(() => {

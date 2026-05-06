@@ -23,6 +23,17 @@ export type MonitorType = (typeof MonitorTypes)[number];
 export const DnsRecordTypes = ["A", "AAAA", "CNAME", "MX", "TXT", "NS"] as const;
 export type DnsRecordType = (typeof DnsRecordTypes)[number];
 
+export const UPTIME_MONITOR_TYPES = [
+	"http",
+	"ping",
+	"docker",
+	"port",
+	"game",
+	"grpc",
+	"websocket",
+	"dns",
+] as const satisfies readonly MonitorType[];
+
 export const GeoCheckSupportedTypes: readonly MonitorType[] = ["http", "ping"] as const;
 
 export const supportsGeoCheck = (type: MonitorType | undefined): boolean => {
