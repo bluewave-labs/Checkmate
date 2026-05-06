@@ -1442,6 +1442,18 @@
 			"header": {
 				"title": "稼働監視",
 				"description": "HTTPエンドポイント、Ping、コンテナ、ポートを監視し、ダウンした瞬間に通知を受け取ります。"
+			},
+			"details": {
+				"dns": {
+					"title": "最後に解決されたレコード",
+					"resolvedAt": "{{time}} に解決",
+					"recordType": "レコードタイプ",
+					"dnsServer": "DNS サーバー",
+					"hostname": "ホスト名",
+					"records_one": "{{count}} 件のレコード",
+					"records_other": "{{count}} 件のレコード",
+					"noRecords": "レコードは返されませんでした"
+				}
 			}
 		}
 	}

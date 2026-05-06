@@ -1442,6 +1442,18 @@
 			"header": {
 				"title": "Monitores de uptime",
 				"description": "Acompanhe endpoints HTTP, pings, contêineres e portas — receba alertas no momento em que algo falhar."
+			},
+			"details": {
+				"dns": {
+					"title": "Últimos registros resolvidos",
+					"resolvedAt": "Resolvido em {{time}}",
+					"recordType": "Tipo de registro",
+					"dnsServer": "Servidor DNS",
+					"hostname": "Hostname",
+					"records_one": "{{count}} registro",
+					"records_other": "{{count}} registros",
+					"noRecords": "Nenhum registro retornado"
+				}
 			}
 		}
 	}

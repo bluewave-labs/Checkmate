@@ -1442,6 +1442,18 @@
 			"header": {
 				"title": "运行时间监控器",
 				"description": "监控 HTTP 端点、Ping、容器和端口 — 一旦故障即刻收到提醒。"
+			},
+			"details": {
+				"dns": {
+					"title": "最近解析的记录",
+					"resolvedAt": "解析于 {{time}}",
+					"recordType": "记录类型",
+					"dnsServer": "DNS 服务器",
+					"hostname": "主机名",
+					"records_one": "{{count}} 条记录",
+					"records_other": "{{count}} 条记录",
+					"noRecords": "未返回任何记录"
+				}
 			}
 		}
 	}

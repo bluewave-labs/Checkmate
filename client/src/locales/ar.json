@@ -1442,6 +1442,18 @@
 			"header": {
 				"title": "مراقبات وقت التشغيل",
 				"description": "راقب نقاط نهاية HTTP وعمليات Ping والحاويات والمنافذ — احصل على تنبيه فور حدوث عطل."
+			},
+			"details": {
+				"dns": {
+					"title": "آخر السجلات المُحلّلة",
+					"resolvedAt": "تم التحليل في {{time}}",
+					"recordType": "نوع السجل",
+					"dnsServer": "خادم DNS",
+					"hostname": "اسم المضيف",
+					"records_one": "سجل {{count}}",
+					"records_other": "{{count}} سجلات",
+					"noRecords": "لا توجد سجلات مُعادة"
+				}
 			}
 		}
 	}

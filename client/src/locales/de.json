@@ -1442,6 +1442,18 @@
 			"header": {
 				"title": "Uptime-Monitore",
 				"description": "Überwachen Sie HTTP-Endpunkte, Pings, Container und Ports und werden Sie sofort benachrichtigt, wenn etwas ausfällt."
+			},
+			"details": {
+				"dns": {
+					"title": "Letzte aufgelöste Einträge",
+					"resolvedAt": "Aufgelöst um {{time}}",
+					"recordType": "Eintragstyp",
+					"dnsServer": "DNS-Server",
+					"hostname": "Hostname",
+					"records_one": "{{count}} Eintrag",
+					"records_other": "{{count}} Einträge",
+					"noRecords": "Keine Einträge zurückgegeben"
+				}
 			}
 		}
 	}

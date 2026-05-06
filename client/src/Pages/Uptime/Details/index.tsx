@@ -8,6 +8,7 @@ import {
 	HeaderMonitorControls,
 	HeaderGeoTabs,
 	GeoChecksMap,
+	DnsResolvedRecordsCard,
 } from "@/Components/monitors";
 import { TrendingUp, AlertTriangle } from "lucide-react";
 import { ChecksTable } from "@/Pages/Uptime/Details/Components/ChecksTable";
@@ -186,6 +187,9 @@ const UptimeDetailsPage = () => {
 				monitorStats={monitorStats}
 				certificateExpiry={certificateExpiry}
 			/>
+			{monitor?.type === "dns" && monitor.lastDnsResolution && (
+				<DnsResolvedRecordsCard resolution={monitor.lastDnsResolution} />
+			)}
 			<HeaderTimeRange
 				isLoading={monitorIsLoading || checksIsLoading}
 				hasDateRange={true}

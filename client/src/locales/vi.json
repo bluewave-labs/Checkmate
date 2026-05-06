@@ -1442,6 +1442,18 @@
 			"header": {
 				"title": "Trình giám sát uptime",
 				"description": "Theo dõi các endpoint HTTP, ping, container và cổng — nhận cảnh báo ngay khi có sự cố."
+			},
+			"details": {
+				"dns": {
+					"title": "Các bản ghi được phân giải gần nhất",
+					"resolvedAt": "Đã phân giải lúc {{time}}",
+					"recordType": "Loại bản ghi",
+					"dnsServer": "Máy chủ DNS",
+					"hostname": "Tên máy chủ",
+					"records_one": "{{count}} bản ghi",
+					"records_other": "{{count}} bản ghi",
+					"noRecords": "Không có bản ghi được trả về"
+				}
 			}
 		}
 	}

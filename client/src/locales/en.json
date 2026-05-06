@@ -1501,6 +1501,18 @@
 			"header": {
 				"title": "Uptime monitors",
 				"description": "Watch HTTP endpoints, pings, containers, and ports — and get alerted the moment something goes down."
+			},
+			"details": {
+				"dns": {
+					"title": "Last resolved records",
+					"resolvedAt": "Resolved at {{time}}",
+					"recordType": "Record type",
+					"dnsServer": "DNS server",
+					"hostname": "Hostname",
+					"records_one": "{{count}} record",
+					"records_other": "{{count}} records",
+					"noRecords": "No records returned"
+				}
 			}
 		}
 	}

@@ -1442,6 +1442,18 @@
 			"header": {
 				"title": "Monitory dostupnosti",
 				"description": "Sledujte HTTP koncové body, pingy, kontejnery a porty — buďte upozorněni v okamžiku, kdy něco vypadne."
+			},
+			"details": {
+				"dns": {
+					"title": "Poslední rozlišené záznamy",
+					"resolvedAt": "Rozlišeno v {{time}}",
+					"recordType": "Typ záznamu",
+					"dnsServer": "DNS server",
+					"hostname": "Název hostitele",
+					"records_one": "{{count}} záznam",
+					"records_other": "{{count}} záznamů",
+					"noRecords": "Nebyly vráceny žádné záznamy"
+				}
 			}
 		}
 	}

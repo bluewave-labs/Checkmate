@@ -1442,6 +1442,18 @@
 			"header": {
 				"title": "Käytettävyysmonitorit",
 				"description": "Tarkkaile HTTP-päätepisteitä, pingejä, kontteja ja portteja — saat hälytyksen heti, kun jokin kaatuu."
+			},
+			"details": {
+				"dns": {
+					"title": "Viimeisimmät selvitetyt tietueet",
+					"resolvedAt": "Selvitetty {{time}}",
+					"recordType": "Tietuetyyppi",
+					"dnsServer": "DNS-palvelin",
+					"hostname": "Isäntänimi",
+					"records_one": "{{count}} tietue",
+					"records_other": "{{count}} tietuetta",
+					"noRecords": "Tietueita ei palautettu"
+				}
 			}
 		}
 	}

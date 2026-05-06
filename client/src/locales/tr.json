@@ -1442,6 +1442,18 @@
 			"header": {
 				"title": "Çalışma süresi izleyicileri",
 				"description": "HTTP uç noktalarını, ping'leri, konteynerleri ve portları izleyin — bir şey kapandığında anında uyarı alın."
+			},
+			"details": {
+				"dns": {
+					"title": "Son çözümlenen kayıtlar",
+					"resolvedAt": "{{time}} tarihinde çözümlendi",
+					"recordType": "Kayıt türü",
+					"dnsServer": "DNS sunucusu",
+					"hostname": "Ana bilgisayar adı",
+					"records_one": "{{count}} kayıt",
+					"records_other": "{{count}} kayıt",
+					"noRecords": "Kayıt döndürülmedi"
+				}
 			}
 		}
 	}

@@ -23,6 +23,15 @@ export type MonitorType = (typeof MonitorTypes)[number];
 export const DnsRecordTypes = ["A", "AAAA", "CNAME", "MX", "TXT", "NS"] as const;
 export type DnsRecordType = (typeof DnsRecordTypes)[number];
 
+export interface DnsResolutionSnapshot {
+	hostname: string;
+	dnsServer: string;
+	recordType: DnsRecordType;
+	results: unknown;
+	matched: boolean;
+	resolvedAt: string;
+}
+
 export const UPTIME_MONITOR_TYPES = [
 	"http",
 	"ping",
@@ -91,6 +100,7 @@ export interface Monitor {
 	grpcServiceName?: string;
 	dnsServer?: string;
 	dnsRecordType?: DnsRecordType;
+	lastDnsResolution?: DnsResolutionSnapshot | null;
 	group: string | null;
 	geoCheckEnabled?: boolean;
 	geoCheckLocations?: GeoContinent[];

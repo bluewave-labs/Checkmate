@@ -1442,6 +1442,18 @@
 			"header": {
 				"title": "Moniteurs de disponibilité",
 				"description": "Surveillez les points de terminaison HTTP, les pings, les conteneurs et les ports — soyez alerté dès qu'une panne survient."
+			},
+			"details": {
+				"dns": {
+					"title": "Derniers enregistrements résolus",
+					"resolvedAt": "Résolu à {{time}}",
+					"recordType": "Type d'enregistrement",
+					"dnsServer": "Serveur DNS",
+					"hostname": "Nom d'hôte",
+					"records_one": "{{count}} enregistrement",
+					"records_other": "{{count}} enregistrements",
+					"noRecords": "Aucun enregistrement renvoyé"
+				}
 			}
 		}
 	}
