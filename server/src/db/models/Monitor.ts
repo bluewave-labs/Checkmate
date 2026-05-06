@@ -1,6 +1,6 @@
 import { Schema, model, Types } from "mongoose";
 import type { Monitor, MonitorMatchMethod, CheckSnapshot } from "@/types/monitor.js";
-import { MonitorTypes, MonitorStatuses } from "@/types/monitor.js";
+import { DnsRecordTypes, MonitorTypes, MonitorStatuses } from "@/types/monitor.js";
 import type {
 	CheckAudits,
 	CheckCaptureInfo,
@@ -337,6 +337,7 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		},
 		dnsRecordType: {
 			type: String,
+			enum: DnsRecordTypes,
 		},
 		group: {
 			type: String,

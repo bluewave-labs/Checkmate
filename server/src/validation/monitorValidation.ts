@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { booleanCoercion } from "./shared.js";
 import { GeoContinents } from "@/types/geoCheck.js";
-import { MonitorMatchMethods, MonitorStatuses, MonitorTypes } from "@/types/monitor.js";
+import { DnsRecordTypes, MonitorMatchMethods, MonitorStatuses, MonitorTypes } from "@/types/monitor.js";
 
 export const getMonitorByIdParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
@@ -64,7 +64,7 @@ export const createMonitorBodyValidation = z.object({
 	gameId: z.union([z.string(), z.literal("")]).optional(),
 	grpcServiceName: z.union([z.string(), z.literal("")]).default(""),
 	dnsServer: z.union([z.string(), z.literal("")]).optional(),
-	dnsRecordType: z.enum(["A", "AAAA", "CNAME", "MX", "TXT", "NS"]).default("A"),
+	dnsRecordType: z.enum(DnsRecordTypes).default("A"),
 	selectedDisks: z.array(z.string()).optional(),
 	group: z.union([z.string().max(50).trim(), z.null(), z.literal("")]).optional(),
 	geoCheckEnabled: z.boolean().optional(),
@@ -95,7 +95,7 @@ export const editMonitorBodyValidation = z.object({
 	gameId: z.union([z.string(), z.literal("")]).optional(),
 	grpcServiceName: z.union([z.string(), z.literal("")]).optional(),
 	dnsServer: z.union([z.string(), z.literal("")]).optional(),
-	dnsRecordType: z.enum(["A", "AAAA", "CNAME", "MX", "TXT", "NS"]).optional(),
+	dnsRecordType: z.enum(DnsRecordTypes).optional(),
 	selectedDisks: z.array(z.string()).optional(),
 	group: z.union([z.string().max(50).trim(), z.null(), z.literal("")]).optional(),
 	geoCheckEnabled: z.boolean().optional(),
@@ -151,7 +151,7 @@ const importedMonitorSchema = z.object({
 	gameId: z.union([z.string(), z.literal("")]).optional(),
 	grpcServiceName: z.union([z.string(), z.literal("")]).default(""),
 	dnsServer: z.union([z.string(), z.literal("")]).optional(),
-	dnsRecordType: z.enum(["A", "AAAA", "CNAME", "MX", "TXT", "NS"]).default("A"),
+	dnsRecordType: z.enum(DnsRecordTypes).default("A"),
 	group: z.union([z.string().max(50).trim(), z.null()]).default(null),
 	geoCheckEnabled: z.boolean().default(false),
 	geoCheckLocations: z.array(z.enum(GeoContinents)).default([]),

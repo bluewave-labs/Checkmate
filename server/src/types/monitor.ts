@@ -13,6 +13,9 @@ export const MonitorStatuses = ["up", "down", "paused", "initializing", "mainten
 export type MonitorStatus = (typeof MonitorStatuses)[number];
 
 export const MonitorMatchMethods = ["equal", "include", "regex"] as const;
+
+export const DnsRecordTypes = ["A", "AAAA", "CNAME", "MX", "TXT", "NS"] as const;
+export type DnsRecordType = (typeof DnsRecordTypes)[number];
 export type MonitorMatchMethod = (typeof MonitorMatchMethods)[number] | "";
 export const MAX_RECENT_CHECKS = 50;
 

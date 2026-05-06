@@ -1,4 +1,5 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
+import type { Resolver } from "dns/promises";
 import { DnsProvider } from "../../../../src/service/infrastructure/network/DnsProvider.ts";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
 import { NETWORK_ERROR } from "../../../../src/service/infrastructure/network/utils.ts";
@@ -14,35 +15,29 @@ const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
 		...overrides,
 	}) as Monitor;
 
-interface MockResolver {
-	setServers: jest.Mock;
-	resolve4: jest.Mock;
-	resolve6: jest.Mock;
-	resolveCname: jest.Mock;
-	resolveMx: jest.Mock;
-	resolveTxt: jest.Mock;
-	resolveNs: jest.Mock;
-	resolve: jest.Mock;
-}
+type MockResolver = {
+	[K in keyof Resolver]: jest.Mock;
+};
 
-const createMockResolver = (): MockResolver => ({
-	setServers: jest.fn(),
-	resolve4: jest.fn(),
-	resolve6: jest.fn(),
-	resolveCname: jest.fn(),
-	resolveMx: jest.fn(),
-	resolveTxt: jest.fn(),
-	resolveNs: jest.fn(),
-	resolve: jest.fn(),
-});
+const createMockResolver = (): MockResolver =>
+	({
+		setServers: jest.fn(),
+		resolve4: jest.fn(),
+		resolve6: jest.fn(),
+		resolveCname: jest.fn(),
+		resolveMx: jest.fn(),
+		resolveTxt: jest.fn(),
+		resolveNs: jest.fn(),
+		resolve: jest.fn(),
+	}) as unknown as MockResolver;
 
-const createResolverCtor = (mock: MockResolver) => jest.fn().mockImplementation(() => mock) as unknown as new () => MockResolver;
+const createResolverCtor = (mock: MockResolver): typeof Resolver => jest.fn().mockImplementation(() => mock) as unknown as typeof Resolver;
 
 testStatusProviderContract("DnsProvider", {
 	create: () => {
 		const mock = createMockResolver();
 		mock.resolve4.mockResolvedValue(["1.2.3.4"]);
-		return new DnsProvider(createResolverCtor(mock) as any);
+		return new DnsProvider(createResolverCtor(mock));
 	},
 	supportedType: "dns",
 	unsupportedType: "http",
@@ -55,7 +50,7 @@ describe("DnsProvider", () => {
 
 	beforeEach(() => {
 		mock = createMockResolver();
-		provider = new DnsProvider(createResolverCtor(mock) as any);
+		provider = new DnsProvider(createResolverCtor(mock));
 	});
 
 	it("resolves A records", async () => {
@@ -111,13 +106,8 @@ describe("DnsProvider", () => {
 		expect(mock.resolve6).toHaveBeenCalledWith("example.com");
 	});
 
-	it("falls through to generic resolve() for unknown record types", async () => {
-		mock.resolve.mockResolvedValue(["payload"]);
-
-		const result = await provider.handle(makeMonitor({ dnsRecordType: "SRV" }));
-
-		expect(result.status).toBe(true);
-		expect(mock.resolve).toHaveBeenCalledWith("example.com", "SRV");
+	it("rejects unsupported record types with AppError", async () => {
+		await expect(provider.handle(makeMonitor({ dnsRecordType: "SRV" }))).rejects.toThrow("Unsupported DNS record type: SRV");
 	});
 
 	it("throws AppError when hostname is missing", async () => {
