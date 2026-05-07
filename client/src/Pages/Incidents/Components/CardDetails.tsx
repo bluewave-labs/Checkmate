@@ -2,7 +2,7 @@ import Stack from "@mui/material/Stack";
 import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
-import { BaseBox, ValueLabel, Tooltip } from "@/Components/design-elements";
+import { BaseBox, ValueLabel, StatusCodeLabel } from "@/Components/design-elements";
 import { LAYOUT } from "@/Utils/Theme/constants";
 
 import { useTranslation } from "react-i18next";
@@ -13,7 +13,6 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/Types/state";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { getIncidentsDuration } from "@/Pages/Incidents/utils";
-import { formatStatusCode, getStatusCodeTooltip } from "@/Utils/statusCode";
 
 interface CardDetailsProps {
 	incident: Incident | null;
@@ -47,13 +46,6 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 	if (!incident) {
 		return null;
 	}
-
-	const statusCodeText = formatStatusCode(incident.statusCode, t);
-	const statusCodeTooltip = getStatusCodeTooltip(
-		incident.statusCode,
-		incident.message,
-		t
-	);
 
 	return (
 		<Stack
@@ -133,13 +125,10 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 						</Grid>
 						<Grid size={4}>
 							<Cell>
-								{statusCodeTooltip ? (
-									<Tooltip title={statusCodeTooltip}>
-										<span>{statusCodeText}</span>
-									</Tooltip>
-								) : (
-									statusCodeText
-								)}
+								<StatusCodeLabel
+									statusCode={incident.statusCode}
+									message={incident.message}
+								/>
 							</Cell>
 						</Grid>
 						<Grid size={2}>

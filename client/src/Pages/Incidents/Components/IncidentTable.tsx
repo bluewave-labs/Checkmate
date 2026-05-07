@@ -1,4 +1,4 @@
-import { Table, ValueLabel, Tooltip } from "@/Components/design-elements";
+import { Table, ValueLabel, StatusCodeLabel } from "@/Components/design-elements";
 import { Pagination } from "@/Components/design-elements/Table";
 import type { Header } from "@/Components/design-elements/Table";
 import { ActionsMenu } from "@/Components/actions-menu";
@@ -14,11 +14,6 @@ import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import { getMonitorPath } from "@/Utils/MonitorUtils";
-import {
-	formatStatusCode,
-	getStatusCodeTooltip,
-	getStatusCodeValueType,
-} from "@/Utils/statusCode";
 
 interface IncidentsTableProps {
 	title?: string;
@@ -139,13 +134,12 @@ export const IncidentsTable = ({
 						return (
 							<Typography
 								variant="body2"
-								sx={{
-									textTransform: "capitalize",
-									color:
-										row.resolutionType === "manual"
-											? theme.palette.warning.main
-											: theme.palette.success.main,
-								}}
+								color={
+									row.resolutionType === "manual"
+										? theme.palette.warning.main
+										: theme.palette.success.main
+								}
+								textTransform={"capitalize"}
 							>
 								{row.resolutionType}
 							</Typography>
@@ -158,22 +152,11 @@ export const IncidentsTable = ({
 				id: "statusCode",
 				content: t("pages.incidents.table.headers.statusCode"),
 				render: (row) => {
-					const code = row.statusCode;
-					if (!code) return "N/A";
-					const text = formatStatusCode(code, t);
-					const tooltip = getStatusCodeTooltip(code, row.message, t);
-					const label = (
-						<ValueLabel
-							value={getStatusCodeValueType(code)}
-							text={text}
+					return (
+						<StatusCodeLabel
+							statusCode={row.statusCode}
+							message={row.message}
 						/>
-					);
-					return tooltip ? (
-						<Tooltip title={tooltip}>
-							<span>{label}</span>
-						</Tooltip>
-					) : (
-						label
 					);
 				},
 			},

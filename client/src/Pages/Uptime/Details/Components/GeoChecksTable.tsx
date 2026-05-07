@@ -1,15 +1,36 @@
-import { Table, Pagination, StatusLabel, Tooltip } from "@/Components/design-elements";
+import {
+	Table,
+	Pagination,
+	StatusLabel,
+	StatusCodeLabel,
+} from "@/Components/design-elements";
 import Box from "@mui/material/Box";
 import type { Header } from "@/Components/design-elements";
 import type { FlatGeoCheck } from "@/Types/GeoCheck";
 import { useTranslation } from "react-i18next";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
-import { formatStatusCode, getStatusCodeTooltip } from "@/Utils/statusCode";
 import type { RootState } from "@/Types/state";
 import { useSelector } from "react-redux";
 import prettyMilliseconds from "pretty-ms";
 
-const getHeaders = (t: (key: string) => string, uiTimezone: string) => {
+export const GeoChecksTable = ({
+	geoChecks,
+	count,
+	page,
+	setPage,
+	rowsPerPage,
+	setRowsPerPage,
+}: {
+	geoChecks: FlatGeoCheck[];
+	count: number;
+	page: number;
+	setPage: (page: number) => void;
+	rowsPerPage: number;
+	setRowsPerPage: (rowsPerPage: number) => void;
+}) => {
+	const { t } = useTranslation();
+	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
+
 	const headers: Header<FlatGeoCheck>[] = [
 		{
 			id: "status",
@@ -30,16 +51,7 @@ const getHeaders = (t: (key: string) => string, uiTimezone: string) => {
 			id: "statusCode",
 			content: t("pages.checks.table.headers.statusCode"),
 			render: (row) => {
-				if (!row.statusCode) return "N/A";
-				const text = formatStatusCode(row.statusCode, t);
-				const tooltip = getStatusCodeTooltip(row.statusCode, undefined, t);
-				return tooltip ? (
-					<Tooltip title={tooltip}>
-						<span>{text}</span>
-					</Tooltip>
-				) : (
-					text
-				);
+				return <StatusCodeLabel statusCode={row.statusCode} />;
 			},
 		},
 		{
@@ -61,27 +73,6 @@ const getHeaders = (t: (key: string) => string, uiTimezone: string) => {
 			},
 		},
 	];
-	return headers;
-};
-
-export const GeoChecksTable = ({
-	geoChecks,
-	count,
-	page,
-	setPage,
-	rowsPerPage,
-	setRowsPerPage,
-}: {
-	geoChecks: FlatGeoCheck[];
-	count: number;
-	page: number;
-	setPage: (page: number) => void;
-	rowsPerPage: number;
-	setRowsPerPage: (rowsPerPage: number) => void;
-}) => {
-	const { t } = useTranslation();
-	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
-	const headers = getHeaders(t, uiTimezone);
 
 	const handlePageChange = (
 		_e: React.MouseEvent<HTMLButtonElement> | null,
