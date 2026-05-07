@@ -2,7 +2,7 @@ import Stack from "@mui/material/Stack";
 import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
-import { BaseBox, ValueLabel } from "@/Components/design-elements";
+import { BaseBox, ValueLabel, StatusCodeLabel } from "@/Components/design-elements";
 import { LAYOUT } from "@/Utils/Theme/constants";
 
 import { useTranslation } from "react-i18next";
@@ -46,6 +46,7 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 	if (!incident) {
 		return null;
 	}
+
 	return (
 		<Stack
 			gap={theme.spacing(LAYOUT.MD)}
@@ -123,7 +124,12 @@ export const CardDetails = ({ incident, monitor, sx }: CardDetailsProps) => {
 							<Cell>{t("pages.incidents.dialog.details.statusCode")}</Cell>
 						</Grid>
 						<Grid size={4}>
-							<Cell>{incident.statusCode ?? "N/A"}</Cell>
+							<Cell>
+								<StatusCodeLabel
+									statusCode={incident.statusCode}
+									message={incident.message}
+								/>
+							</Cell>
 						</Grid>
 						<Grid size={2}>
 							<Cell>{t("pages.incidents.dialog.details.downtime")}</Cell>
