@@ -25,3 +25,4 @@ export * from "./TextLink";
 export * from "./NoticeBanner";
 export * from "./OfflineBanner";
 export * from "./Avatar";
+export * from "./StatusCodeLabel";
