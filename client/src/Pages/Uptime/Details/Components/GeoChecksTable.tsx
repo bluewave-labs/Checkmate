@@ -1,14 +1,15 @@
-import { Table, Pagination, StatusLabel } from "@/Components/design-elements";
+import { Table, Pagination, StatusLabel, Tooltip } from "@/Components/design-elements";
 import Box from "@mui/material/Box";
 import type { Header } from "@/Components/design-elements";
 import type { FlatGeoCheck } from "@/Types/GeoCheck";
 import { useTranslation } from "react-i18next";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
+import { formatStatusCode, getStatusCodeTooltip } from "@/Utils/statusCode";
 import type { RootState } from "@/Types/state";
 import { useSelector } from "react-redux";
 import prettyMilliseconds from "pretty-ms";
 
-const getHeaders = (t: Function, uiTimezone: string) => {
+const getHeaders = (t: (key: string) => string, uiTimezone: string) => {
 	const headers: Header<FlatGeoCheck>[] = [
 		{
 			id: "status",
@@ -29,7 +30,16 @@ const getHeaders = (t: Function, uiTimezone: string) => {
 			id: "statusCode",
 			content: t("pages.checks.table.headers.statusCode"),
 			render: (row) => {
-				return row.statusCode || "N/A";
+				if (!row.statusCode) return "N/A";
+				const text = formatStatusCode(row.statusCode, t);
+				const tooltip = getStatusCodeTooltip(row.statusCode, undefined, t);
+				return tooltip ? (
+					<Tooltip title={tooltip}>
+						<span>{text}</span>
+					</Tooltip>
+				) : (
+					text
+				);
 			},
 		},
 		{

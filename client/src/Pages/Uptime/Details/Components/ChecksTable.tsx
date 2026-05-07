@@ -1,4 +1,4 @@
-import { Table, Pagination, StatusLabel } from "@/Components/design-elements";
+import { Table, Pagination, StatusLabel, Tooltip } from "@/Components/design-elements";
 import Box from "@mui/material/Box";
 import type { Header } from "@/Components/design-elements";
 import type { Check } from "@/Types/Check";
@@ -6,10 +6,11 @@ import type { Check } from "@/Types/Check";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
+import { formatStatusCode, getStatusCodeTooltip } from "@/Utils/statusCode";
 import type { RootState } from "@/Types/state";
 import { useSelector } from "react-redux";
 
-const getHeaders = (t: Function, uiTimezone: string) => {
+const getHeaders = (t: (key: string) => string, uiTimezone: string) => {
 	const headers: Header<Check>[] = [
 		{
 			id: "status",
@@ -36,7 +37,16 @@ const getHeaders = (t: Function, uiTimezone: string) => {
 			id: "statusCode",
 			content: t("pages.checks.table.headers.statusCode"),
 			render: (row) => {
-				return row.statusCode || "N/A";
+				if (!row.statusCode) return "N/A";
+				const text = formatStatusCode(row.statusCode, t);
+				const tooltip = getStatusCodeTooltip(row.statusCode, row.message, t);
+				return tooltip ? (
+					<Tooltip title={tooltip}>
+						<span>{text}</span>
+					</Tooltip>
+				) : (
+					text
+				);
 			},
 		},
 	];

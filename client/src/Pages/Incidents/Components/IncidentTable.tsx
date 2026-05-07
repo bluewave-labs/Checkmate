@@ -1,8 +1,6 @@
-import { Table } from "@/Components/design-elements";
+import { Table, ValueLabel, Tooltip } from "@/Components/design-elements";
 import { Pagination } from "@/Components/design-elements/Table";
 import type { Header } from "@/Components/design-elements/Table";
-import { ValueLabel } from "@/Components/design-elements";
-import type { ValueType } from "@/Components/design-elements/StatusLabel";
 import { ActionsMenu } from "@/Components/actions-menu";
 import type { Incident } from "@/Types/Incident";
 import type { Monitor } from "@/Types/Monitor";
@@ -16,6 +14,11 @@ import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import { getMonitorPath } from "@/Utils/MonitorUtils";
+import {
+	formatStatusCode,
+	getStatusCodeTooltip,
+	getStatusCodeValueType,
+} from "@/Utils/statusCode";
 
 interface IncidentsTableProps {
 	title?: string;
@@ -157,14 +160,20 @@ export const IncidentsTable = ({
 				render: (row) => {
 					const code = row.statusCode;
 					if (!code) return "N/A";
-					let value: ValueType = "neutral";
-					if (code < 300) value = "positive";
-					else if (code >= 400) value = "negative";
-					return (
+					const text = formatStatusCode(code, t);
+					const tooltip = getStatusCodeTooltip(code, row.message, t);
+					const label = (
 						<ValueLabel
-							value={value}
-							text={String(code)}
+							value={getStatusCodeValueType(code)}
+							text={text}
 						/>
+					);
+					return tooltip ? (
+						<Tooltip title={tooltip}>
+							<span>{label}</span>
+						</Tooltip>
+					) : (
+						label
 					);
 				},
 			},

@@ -14,6 +14,17 @@
 			}
 		},
 		"appName": "Checkmate",
+		"statusCode": {
+			"down": "Down",
+			"networkError": {
+				"timeout": "The server didn't respond in time (request timed out).",
+				"dns": "Couldn't resolve the hostname (DNS lookup failed).",
+				"refused": "The server refused the connection (port closed or service not listening).",
+				"tls": "TLS or SSL handshake failed (certificate or encryption issue).",
+				"reset": "The connection was reset before a response was received.",
+				"unknown": "No HTTP response was received from the target."
+			}
+		},
 		"breadcrumbs": {
 			"details": "Details",
 			"home": "Home"
