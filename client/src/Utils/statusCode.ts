@@ -49,10 +49,8 @@ export const getNetworkErrorSubtype = (message?: string | null): NetworkErrorSub
 
 export const formatStatusCode = (
 	code: number | null | undefined,
-	t: TranslateFn,
-	fallback: string = "N/A"
+	t: TranslateFn
 ): string => {
-	if (code == null) return fallback;
 	if (isNetworkError(code)) return t("common.statusCode.down");
 	return String(code);
 };
