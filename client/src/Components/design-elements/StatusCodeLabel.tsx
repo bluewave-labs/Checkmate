@@ -32,5 +32,9 @@ export const StatusCodeLabel = ({
 		/>
 	);
 	if (!tooltip) return body;
-	return <Tooltip title={tooltip}>{body}</Tooltip>;
+	return (
+		<Tooltip title={tooltip}>
+			<span>{body}</span>
+		</Tooltip>
+	);
 };
