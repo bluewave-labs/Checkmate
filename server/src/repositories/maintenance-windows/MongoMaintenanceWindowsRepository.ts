@@ -45,11 +45,6 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 
 	create = async (data: Partial<MaintenanceWindow>): Promise<MaintenanceWindow> => {
 		const maintenanceWindow = new MaintenanceWindowModel(data);
-
-		// If the maintenance window is a one time window, set the expiry to the end date
-		if (maintenanceWindow.repeat === 0) {
-			maintenanceWindow.expiry = maintenanceWindow.end;
-		}
 		const result = await maintenanceWindow.save();
 		return this.toEntity(result);
 	};
