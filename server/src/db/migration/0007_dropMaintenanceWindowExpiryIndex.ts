@@ -1,23 +1,33 @@
-import { MaintenanceWindowModel } from "../models/MaintenanceWindow.js";
+import mongoose from "mongoose";
 import { logger } from "@/utils/logger.js";
 
 /**
- * Drops the TTL index on MaintenanceWindow.expiry and unsets the expiry field.
+ * Drops the TTL index on MaintenanceWindow.expiry and unsets the field on existing rows.
  *
- * Earlier versions auto-set expiry = end for one-time maintenance windows. Combined with the
- * TTL index ({ expires: "0s" }), this caused Mongo to silently delete completed one-time
- * windows shortly after their end-date passed — including windows whose end-date was already
- * in the past at creation time (e.g. timezone-mismatched payloads from automation tools).
- * The fix stops writing expiry on create, and this migration removes the index and stale field
- * so legacy rows are no longer at risk of being deleted by the TTL monitor.
+ * Why: a previous version copied `end` into `expiry` for one-time windows. Combined with the
+ * TTL index on `expiry`, this caused Mongo to silently delete rows whose `end` was in the past
+ * at creation time (a common symptom for automation tools sending non-UTC timestamps). The
+ * fix stops writing `expiry`; this migration removes the live exposure on existing installs.
  */
 export async function dropMaintenanceWindowExpiryIndex(): Promise<void> {
 	const SERVICE_NAME = "Migration:DropMaintenanceWindowExpiryIndex";
 
 	try {
-		const collection = MaintenanceWindowModel.collection;
+		logger.info({
+			service: SERVICE_NAME,
+			message: "Starting drop of MaintenanceWindow.expiry TTL index",
+		});
+
+		const db = mongoose.connection.db;
+		if (!db) {
+			throw new Error("Mongo connection not initialized");
+		}
+		const collection = db.collection("maintenancewindows");
+
 		const indexes = await collection.indexes();
-		const expiryIndex = indexes.find((idx) => idx.key && idx.key.expiry === 1);
+		const expiryIndex = indexes.find(
+			(idx) => idx.expireAfterSeconds !== undefined && idx.key && Object.keys(idx.key).length === 1 && idx.key.expiry === 1
+		);
 
 		if (expiryIndex?.name) {
 			await collection.dropIndex(expiryIndex.name);

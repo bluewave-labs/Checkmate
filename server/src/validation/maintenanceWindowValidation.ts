@@ -19,13 +19,23 @@ export const createMaintenanceWindowBodyValidation = z
 		repeat: z.number().min(0, "Repeat must be a non-negative number"),
 	})
 	.strict()
-	.refine((data) => new Date(data.end).getTime() > new Date(data.start).getTime(), {
-		message: "End must be after start",
-		path: ["end"],
-	})
-	.refine((data) => data.repeat > 0 || new Date(data.end).getTime() > Date.now(), {
-		message: "End must be in the future for one-time maintenance windows",
-		path: ["end"],
+	.superRefine((data, ctx) => {
+		const start = new Date(data.start).getTime();
+		const end = new Date(data.end).getTime();
+		if (end <= start) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "End must be after start",
+				path: ["end"],
+			});
+		}
+		if (data.repeat === 0 && end <= Date.now()) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "End must be in the future for one-time maintenance windows",
+				path: ["end"],
+			});
+		}
 	});
 
 export const getMaintenanceWindowByIdParamValidation = z.object({
@@ -64,7 +74,16 @@ export const editMaintenanceByIdWindowBodyValidation = z
 		durationUnit: z.enum(["seconds", "minutes", "hours", "days"]).optional(),
 	})
 	.strict()
-	.refine((data) => !data.start || !data.end || new Date(data.end).getTime() > new Date(data.start).getTime(), {
-		message: "End must be after start",
-		path: ["end"],
+	.superRefine((data, ctx) => {
+		if (data.start && data.end) {
+			const start = new Date(data.start).getTime();
+			const end = new Date(data.end).getTime();
+			if (end <= start) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message: "End must be after start",
+					path: ["end"],
+				});
+			}
+		}
 	});
