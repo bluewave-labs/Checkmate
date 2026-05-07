@@ -4657,6 +4657,11 @@
 									"repeat": {
 										"type": "number",
 										"minimum": 0
+									},
+									"expiry": {
+										"type": "string",
+										"nullable": true,
+										"format": "date-time"
 									}
 								},
 								"required": ["monitors", "name", "duration", "durationUnit", "start", "end", "repeat"]
@@ -5181,6 +5186,11 @@
 										"format": "date-time"
 									},
 									"end": {
+										"type": "string",
+										"nullable": true,
+										"format": "date-time"
+									},
+									"expiry": {
 										"type": "string",
 										"nullable": true,
 										"format": "date-time"

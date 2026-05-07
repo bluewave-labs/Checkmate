@@ -5,7 +5,6 @@ import { fixInfrastructureThresholds } from "./0004_fixInfrastructureThresholds.
 import MigrationModel from "../models/Migration.js";
 import { migrateStatusPageTypeToArray } from "./0005_migrateStatusPageTypeToArray.js";
 import { cleanupDuplicateMonitorStatsForUniqueIndex } from "./0006_cleanupDuplicateMonitorStatsForUniqueIndex.js";
-import { dropMaintenanceWindowExpiryIndex } from "./0007_dropMaintenanceWindowExpiryIndex.js";
 import type { ILogger } from "@/utils/logger.js";
 
 type MigrationEntry = {
@@ -20,7 +19,6 @@ const migrations: MigrationEntry[] = [
 	{ name: "0004_fixInfrastructureThresholds", execute: fixInfrastructureThresholds },
 	{ name: "0005_migrateStatusPageTypeToArray", execute: migrateStatusPageTypeToArray },
 	{ name: "0006_cleanupDuplicateMonitorStatsForUniqueIndex", execute: cleanupDuplicateMonitorStatsForUniqueIndex },
-	{ name: "0007_dropMaintenanceWindowExpiryIndex", execute: dropMaintenanceWindowExpiryIndex },
 ];
 
 const runMigrations = async (logger?: ILogger) => {

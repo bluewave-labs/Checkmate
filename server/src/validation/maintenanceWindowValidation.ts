@@ -18,6 +18,7 @@ export const createMaintenanceWindowBodyValidation = z
 		start: dateToString,
 		end: dateToString,
 		repeat: z.number().min(0, "Repeat must be a non-negative number"),
+		expiry: dateToString.optional(),
 	})
 	.strict()
 	.superRefine((data, ctx) => {
@@ -70,6 +71,7 @@ export const editMaintenanceByIdWindowBodyValidation = z
 		repeat: z.number().optional(),
 		start: dateToString.optional(),
 		end: dateToString.optional(),
+		expiry: dateToString.optional(),
 		monitors: z.array(z.string()).optional(),
 		duration: z.number().optional(),
 		durationUnit: z.enum(DurationUnits).optional(),

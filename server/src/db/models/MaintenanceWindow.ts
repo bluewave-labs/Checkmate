@@ -6,6 +6,7 @@ type MaintenanceWindowDocumentBase = Omit<MaintenanceWindow, "id" | "monitorId" 
 	teamId: Types.ObjectId;
 	start: Date;
 	end: Date;
+	expiry?: Date;
 	createdAt: Date;
 	updatedAt: Date;
 };
@@ -48,6 +49,10 @@ const MaintenanceWindowSchema = new Schema<MaintenanceWindowDocument>(
 		},
 		end: {
 			type: Date,
+		},
+		expiry: {
+			type: Date,
+			index: { expires: "0s" },
 		},
 	},
 	{
