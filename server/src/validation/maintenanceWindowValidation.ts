@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { booleanCoercion } from "./shared.js";
+import { DurationUnits } from "@/types/maintenanceWindow.js";
 
 const dateToString = z.coerce.date().transform((d) => d.toISOString());
 
@@ -13,7 +14,7 @@ export const createMaintenanceWindowBodyValidation = z
 		name: z.string().min(1, "Name is required"),
 		active: z.boolean().optional(),
 		duration: z.number().min(1, "Duration is required"),
-		durationUnit: z.enum(["seconds", "minutes", "hours", "days"]),
+		durationUnit: z.enum(DurationUnits),
 		start: dateToString,
 		end: dateToString,
 		repeat: z.number().min(0, "Repeat must be a non-negative number"),
@@ -71,7 +72,7 @@ export const editMaintenanceByIdWindowBodyValidation = z
 		end: dateToString.optional(),
 		monitors: z.array(z.string()).optional(),
 		duration: z.number().optional(),
-		durationUnit: z.enum(["seconds", "minutes", "hours", "days"]).optional(),
+		durationUnit: z.enum(DurationUnits).optional(),
 	})
 	.strict()
 	.superRefine((data, ctx) => {
