@@ -20,12 +20,7 @@ export const getMonitorByIdQueryValidation = z.object({
 export const getMonitorsByTeamIdParamValidation = z.object({});
 
 export const getMonitorsByTeamIdQueryValidation = z.object({
-	type: z
-		.union([
-			z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"]),
-			z.array(z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"])),
-		])
-		.optional(),
+	type: z.union([z.enum(MonitorTypes), z.array(z.enum(MonitorTypes))]).optional(),
 	filter: z.union([z.string(), z.literal("")]).optional(),
 });
 
@@ -36,12 +31,7 @@ export const getMonitorsWithChecksQueryValidation = z.object({
 	filter: z.union([z.string(), z.literal("")]).optional(),
 	field: z.string().optional(),
 	order: z.enum(["asc", "desc"]).optional(),
-	type: z
-		.union([
-			z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"]),
-			z.array(z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"])),
-		])
-		.optional(),
+	type: z.union([z.enum(MonitorTypes), z.array(z.enum(MonitorTypes))]).optional(),
 	explain: booleanCoercion.optional(),
 });
 

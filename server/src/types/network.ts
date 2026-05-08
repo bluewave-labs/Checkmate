@@ -8,6 +8,7 @@ import type {
 	CheckNetworkInterfaceInfo,
 	GotTimings,
 	ILighthouseAudit,
+	DnsRecordType,
 	Monitor,
 	MonitorMatchMethod,
 	MonitorType,
@@ -119,7 +120,7 @@ export interface WebSocketStatusPayload {
 export interface DNSStatusPayload {
 	hostname: string;
 	dnsServer: string;
-	recordType: string;
+	recordType: DnsRecordType;
 	resolved: boolean;
 	results: unknown;
 }
