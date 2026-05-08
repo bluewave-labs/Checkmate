@@ -21,8 +21,7 @@ export class DNSProvider implements IStatusProvider<DNSStatusPayload> {
 				throw new Error("DNS server is required for DNS monitoring");
 			}
 
-			const resolver = new Resolver();
-			resolver.setServers([dnsServer]);
+			this.resolver.setServers([dnsServer]);
 
 			const {
 				response: results,
@@ -31,19 +30,19 @@ export class DNSProvider implements IStatusProvider<DNSStatusPayload> {
 			} = await timeRequest(() => {
 				switch (dnsRecordType.toUpperCase()) {
 					case "A":
-						return resolver.resolve4(hostname);
+						return this.resolver.resolve4(hostname);
 					case "AAAA":
-						return resolver.resolve6(hostname);
+						return this.resolver.resolve6(hostname);
 					case "CNAME":
-						return resolver.resolveCname(hostname);
+						return this.resolver.resolveCname(hostname);
 					case "MX":
-						return resolver.resolveMx(hostname);
+						return this.resolver.resolveMx(hostname);
 					case "TXT":
-						return resolver.resolveTxt(hostname);
+						return this.resolver.resolveTxt(hostname);
 					case "NS":
-						return resolver.resolveNs(hostname);
+						return this.resolver.resolveNs(hostname);
 					default:
-						return resolver.resolve(hostname, dnsRecordType);
+						return this.resolver.resolve(hostname, dnsRecordType);
 				}
 			});
 
