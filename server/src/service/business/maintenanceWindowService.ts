@@ -4,6 +4,10 @@ import { AppError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "maintenanceWindowService";
 
+type EditMaintenanceWindowBody = Partial<MaintenanceWindow> & {
+	monitors?: string[];
+};
+
 export interface IMaintenanceWindowService {
 	createMaintenanceWindow(params: {
 		teamId: string;
@@ -27,7 +31,7 @@ export interface IMaintenanceWindowService {
 	}): Promise<{ maintenanceWindows: MaintenanceWindow[]; maintenanceWindowCount: number }>;
 	getMaintenanceWindowsByMonitorId(params: { monitorId: string; teamId: string }): Promise<MaintenanceWindow[]>;
 	deleteMaintenanceWindow(params: { id: string; teamId: string }): Promise<MaintenanceWindow>;
-	editMaintenanceWindow(params: { id: string; teamId: string; body: Partial<MaintenanceWindow> }): Promise<MaintenanceWindow>;
+	editMaintenanceWindow(params: { id: string; teamId: string; body: EditMaintenanceWindowBody }): Promise<MaintenanceWindow>;
 }
 
 export class MaintenanceWindowService implements IMaintenanceWindowService {
@@ -135,7 +139,30 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		return await this.maintenanceWindowsRepository.deleteById(id, teamId);
 	};
 
-	editMaintenanceWindow = async ({ id, teamId, body }: { id: string; teamId: string; body: Partial<MaintenanceWindow> }) => {
-		return await this.maintenanceWindowsRepository.updateById(id, teamId, body);
+	private verifyMonitorOwnership = async (monitorIDs: string[], teamId: string, method: string, message: string) => {
+		const monitors = await this.monitorsRepository.findByIds(monitorIDs);
+
+		const unauthorizedMonitors = monitors.filter((monitor) => monitor.teamId !== teamId);
+
+		if (unauthorizedMonitors.length > 0) {
+			throw new AppError({
+				message,
+				service: SERVICE_NAME,
+				method,
+				status: 403,
+			});
+		}
+	};
+
+	editMaintenanceWindow = async ({ id, teamId, body }: { id: string; teamId: string; body: EditMaintenanceWindowBody }) => {
+		const { monitors, ...updates } = body;
+		const updatePayload: Partial<MaintenanceWindow> = { ...updates };
+
+		if (monitors !== undefined) {
+			await this.verifyMonitorOwnership(monitors, teamId, "editMaintenanceWindow", "Unauthorized to edit maintenance window for one or more monitors");
+			updatePayload.monitorId = monitors[0];
+		}
+
+		return await this.maintenanceWindowsRepository.updateById(id, teamId, updatePayload);
 	};
 }

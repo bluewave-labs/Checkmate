@@ -20,7 +20,6 @@ const MaintenanceWindowSchema = new Schema<MaintenanceWindowDocument>(
 		monitorId: {
 			type: Schema.Types.ObjectId,
 			ref: "Monitor",
-			immutable: true,
 		},
 		teamId: {
 			type: Schema.Types.ObjectId,

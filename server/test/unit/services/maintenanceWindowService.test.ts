@@ -248,5 +248,18 @@ describe("MaintenanceWindowService", () => {
 
 			expect(maintenanceWindowsRepository.updateById).toHaveBeenCalledWith("mw-1", "team-1", { active: false, repeat: 3600000 });
 		});
+
+		it("updates the affected monitor when monitors are provided", async () => {
+			const { service, maintenanceWindowsRepository, monitorsRepository } = createService();
+
+			await service.editMaintenanceWindow({
+				id: "mw-1",
+				teamId: "team-1",
+				body: { monitors: ["mon-2"], name: "Updated Name" },
+			});
+
+			expect(monitorsRepository.findByIds).toHaveBeenCalledWith(["mon-2"]);
+			expect(maintenanceWindowsRepository.updateById).toHaveBeenCalledWith("mw-1", "team-1", { name: "Updated Name", monitorId: "mon-2" });
+		});
 	});
 });
