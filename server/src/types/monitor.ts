@@ -14,6 +14,10 @@ export type MonitorStatus = (typeof MonitorStatuses)[number];
 
 export const MonitorMatchMethods = ["equal", "include", "regex"] as const;
 export type MonitorMatchMethod = (typeof MonitorMatchMethods)[number] | "";
+
+export const DnsRecordTypes = ["A", "AAAA", "CNAME", "MX", "TXT", "NS"] as const;
+export type DnsRecordType = (typeof DnsRecordTypes)[number];
+
 export const MAX_RECENT_CHECKS = 50;
 
 export interface Monitor {
@@ -55,7 +59,7 @@ export interface Monitor {
 	geoCheckLocations?: GeoContinent[];
 	geoCheckInterval?: number;
 	dnsServer?: string;
-	dnsRecordType?: string;
+	dnsRecordType?: DnsRecordType;
 	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;

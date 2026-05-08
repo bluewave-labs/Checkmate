@@ -134,6 +134,7 @@ export interface MonitorPayloadMap {
 	game: GameStatusPayload;
 	grpc: GrpcStatusPayload;
 	websocket: WebSocketStatusPayload;
+	dns: DNSStatusPayload;
 	unknown: unknown;
 }
 
