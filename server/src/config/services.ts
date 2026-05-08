@@ -228,7 +228,7 @@ export const initializeServices = async ({
 	const gameProvider = new GameProvider(logger, GameDig);
 	const grpcProvider = new GrpcProvider(grpc, protoLoader);
 	const webSocketProvider = new WebSocketProvider(WebSocket);
-	const dnsProvider = new DNSProvider(new Resolver());
+	const dnsProvider = new DNSProvider(() => new Resolver());
 
 	const networkService = new NetworkService(axios, logger, [
 		pingProvider,

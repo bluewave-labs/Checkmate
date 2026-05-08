@@ -1,6 +1,6 @@
 import { DNSStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 import { IStatusProvider } from "@/service/infrastructure/network/IStatusProvider.js";
-import { Resolver } from "dns/promises";
+import type { Resolver } from "dns/promises";
 import { Monitor, MonitorType } from "@/types/monitor.js";
 import { AppError } from "@/utils/AppError.js";
 import { NETWORK_ERROR, timeRequest } from "@/service/infrastructure/network/utils.js";
@@ -9,7 +9,7 @@ const SERVICE_NAME = "DNSProvider";
 
 export class DNSProvider implements IStatusProvider<DNSStatusPayload> {
 	readonly type = "dns";
-	constructor(private resolver: Resolver) {}
+	constructor(private createResolver: () => Resolver) {}
 	supports(type: MonitorType) {
 		return type === "dns";
 	}
@@ -21,7 +21,8 @@ export class DNSProvider implements IStatusProvider<DNSStatusPayload> {
 				throw new Error("DNS server is required for DNS monitoring");
 			}
 
-			this.resolver.setServers([dnsServer]);
+			const resolver = this.createResolver();
+			resolver.setServers([dnsServer]);
 
 			const {
 				response: results,
@@ -30,19 +31,19 @@ export class DNSProvider implements IStatusProvider<DNSStatusPayload> {
 			} = await timeRequest(() => {
 				switch (dnsRecordType.toUpperCase()) {
 					case "A":
-						return this.resolver.resolve4(hostname);
+						return resolver.resolve4(hostname);
 					case "AAAA":
-						return this.resolver.resolve6(hostname);
+						return resolver.resolve6(hostname);
 					case "CNAME":
-						return this.resolver.resolveCname(hostname);
+						return resolver.resolveCname(hostname);
 					case "MX":
-						return this.resolver.resolveMx(hostname);
+						return resolver.resolveMx(hostname);
 					case "TXT":
-						return this.resolver.resolveTxt(hostname);
+						return resolver.resolveTxt(hostname);
 					case "NS":
-						return this.resolver.resolveNs(hostname);
+						return resolver.resolveNs(hostname);
 					default:
-						return this.resolver.resolve(hostname, dnsRecordType);
+						return resolver.resolve(hostname, dnsRecordType);
 				}
 			});
 
