@@ -8,6 +8,7 @@ import type {
 	CheckNetworkInterfaceInfo,
 	GotTimings,
 	ILighthouseAudit,
+	DnsRecordType,
 	Monitor,
 	MonitorMatchMethod,
 	MonitorType,
@@ -116,6 +117,14 @@ export interface WebSocketStatusPayload {
 	connected: boolean;
 }
 
+export interface DNSStatusPayload {
+	hostname: string;
+	dnsServer: string;
+	recordType: DnsRecordType;
+	resolved: boolean;
+	results: unknown;
+}
+
 export interface MonitorPayloadMap {
 	ping: PingStatusPayload;
 	http: HttpStatusPayload;
@@ -126,6 +135,7 @@ export interface MonitorPayloadMap {
 	game: GameStatusPayload;
 	grpc: GrpcStatusPayload;
 	websocket: WebSocketStatusPayload;
+	dns: DNSStatusPayload;
 	unknown: unknown;
 }
 
