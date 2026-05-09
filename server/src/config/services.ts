@@ -64,8 +64,10 @@ import { PortProvider } from "@/service/infrastructure/network/PortProvider.js";
 import { GameProvider } from "@/service/infrastructure/network/GameProvider.js";
 import { GrpcProvider } from "@/service/infrastructure/network/GrpcProvider.js";
 import { WebSocketProvider } from "@/service/infrastructure/network/WebSocketProvider.js";
+import { DNSProvider } from "@/service/infrastructure/network/DNSProvider.js";
 
 // Third-party
+import { Resolver } from "dns/promises";
 import axios from "axios";
 import got from "got";
 import ping from "ping";
@@ -226,6 +228,7 @@ export const initializeServices = async ({
 	const gameProvider = new GameProvider(logger, GameDig);
 	const grpcProvider = new GrpcProvider(grpc, protoLoader);
 	const webSocketProvider = new WebSocketProvider(WebSocket);
+	const dnsProvider = new DNSProvider(() => new Resolver());
 
 	const networkService = new NetworkService(axios, logger, [
 		pingProvider,
@@ -237,6 +240,7 @@ export const initializeServices = async ({
 		gameProvider,
 		grpcProvider,
 		webSocketProvider,
+		dnsProvider,
 	]);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 

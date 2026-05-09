@@ -421,7 +421,11 @@
 					"inviteMember": "メンバーを招待",
 					"openSite": "サイトを開く",
 					"pause": "一時停止",
-					"resume": "再開"
+					"resume": "再開",
+					"selectAll": "すべてのモニターを選択",
+					"selectMonitor": "{{name}} を選択",
+					"bulkSelected_one": "{{count}} 個のモニターが選択されました",
+					"bulkSelected_other": "{{count}} 個のモニターが選択されました"
 				},
 				"statBoxes": {
 					"activeFor": "稼働期間",
@@ -449,6 +453,16 @@
 					"optionHardware": "インフラストラクチャ",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket"
+				},
+				"bulkPause": {
+					"paused_one": "{{count}} 個のモニターを一時停止しました",
+					"paused_other": "{{count}} 個のモニターを一時停止しました",
+					"resumed_one": "{{count}} 個のモニターを再開しました",
+					"resumed_other": "{{count}} 個のモニターを再開しました",
+					"alreadyPaused_one": "選択したモニターはすでに一時停止されています",
+					"alreadyPaused_other": "選択したすべてのモニターはすでに一時停止されています",
+					"alreadyRunning_one": "選択したモニターはすでに実行中です",
+					"alreadyRunning_other": "選択したすべてのモニターはすでに実行中です"
 				}
 			}
 		},

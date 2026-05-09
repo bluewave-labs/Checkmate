@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { booleanCoercion } from "./shared.js";
 import { GeoContinents } from "@/types/geoCheck.js";
-import { MonitorMatchMethods, MonitorStatuses, MonitorTypes } from "@/types/monitor.js";
+import { DnsRecordTypes, MonitorMatchMethods, MonitorStatuses, MonitorTypes } from "@/types/monitor.js";
 
 export const getMonitorByIdParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
@@ -20,12 +20,7 @@ export const getMonitorByIdQueryValidation = z.object({
 export const getMonitorsByTeamIdParamValidation = z.object({});
 
 export const getMonitorsByTeamIdQueryValidation = z.object({
-	type: z
-		.union([
-			z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"]),
-			z.array(z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"])),
-		])
-		.optional(),
+	type: z.union([z.enum(MonitorTypes), z.array(z.enum(MonitorTypes))]).optional(),
 	filter: z.union([z.string(), z.literal("")]).optional(),
 });
 
@@ -36,12 +31,7 @@ export const getMonitorsWithChecksQueryValidation = z.object({
 	filter: z.union([z.string(), z.literal("")]).optional(),
 	field: z.string().optional(),
 	order: z.enum(["asc", "desc"]).optional(),
-	type: z
-		.union([
-			z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"]),
-			z.array(z.enum(["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"])),
-		])
-		.optional(),
+	type: z.union([z.enum(MonitorTypes), z.array(z.enum(MonitorTypes))]).optional(),
 	explain: booleanCoercion.optional(),
 });
 
@@ -78,6 +68,8 @@ export const createMonitorBodyValidation = z.object({
 	geoCheckEnabled: z.boolean().optional(),
 	geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 	geoCheckInterval: z.number().min(300000).optional(),
+	dnsServer: z.string().optional(),
+	dnsRecordType: z.enum(DnsRecordTypes).optional(),
 });
 
 export const editMonitorBodyValidation = z.object({
@@ -107,10 +99,20 @@ export const editMonitorBodyValidation = z.object({
 	geoCheckEnabled: z.boolean().optional(),
 	geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 	geoCheckInterval: z.number().min(300000).optional(),
+	dnsServer: z.string().optional(),
+	dnsRecordType: z.enum(DnsRecordTypes).optional(),
 });
 
 export const pauseMonitorParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
+});
+
+export const bulkPauseMonitorBodyValidation = z.object({
+	monitorIds: z
+		.array(z.string().min(1, "Monitor ID must not be empty"))
+		.min(1, "At least one monitor ID is required")
+		.max(100, "Cannot bulk update more than 100 monitors at once"),
+	pause: z.boolean(),
 });
 
 export const getUptimeDetailsByIdParamValidation = z.object({
@@ -160,6 +162,8 @@ const importedMonitorSchema = z.object({
 	geoCheckEnabled: z.boolean().default(false),
 	geoCheckLocations: z.array(z.enum(GeoContinents)).default([]),
 	geoCheckInterval: z.number().min(300000).default(300000),
+	dnsServer: z.string().optional(),
+	dnsRecordType: z.enum(DnsRecordTypes).optional(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
 });
@@ -211,6 +215,8 @@ export const monitorResponseSchema = z
 		geoCheckEnabled: z.boolean(),
 		geoCheckLocations: z.array(z.enum(GeoContinents)),
 		geoCheckInterval: z.number(),
+		dnsServer: z.string().optional(),
+		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 		teamId: z.string(),
 		userId: z.string(),
 		createdAt: z.string(),

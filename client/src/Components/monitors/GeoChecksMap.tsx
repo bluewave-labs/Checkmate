@@ -3,6 +3,8 @@ import { Box, Typography, Stack, useTheme, GlobalStyles } from "@mui/material";
 import Map, { Marker, Popup } from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import type { FlatGeoCheck } from "@/Types/GeoCheck";
+import { useTranslation } from "react-i18next";
+import { formatStatusCode } from "@/Utils/statusCode";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 interface GeoChecksMapProps {
@@ -14,6 +16,7 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 	const [selectedCheck, setSelectedCheck] = useState<FlatGeoCheck | null>(null);
 	const theme = useTheme();
 	const isDarkMode = theme.palette.mode === "dark";
+	const { t } = useTranslation();
 
 	const mapPopupStyles = (
 		<GlobalStyles
@@ -174,7 +177,7 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 										>
 											Status Code:
 										</Typography>{" "}
-										{selectedCheck.statusCode}
+										{formatStatusCode(selectedCheck.statusCode, t)}
 									</Typography>
 									<Typography variant="body2">
 										<Typography

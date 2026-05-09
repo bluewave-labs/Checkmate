@@ -1,4 +1,9 @@
-import { Table, Pagination, StatusLabel } from "@/Components/design-elements";
+import {
+	Table,
+	Pagination,
+	StatusLabel,
+	StatusCodeLabel,
+} from "@/Components/design-elements";
 import Box from "@mui/material/Box";
 import type { Header } from "@/Components/design-elements";
 import type { Check } from "@/Types/Check";
@@ -9,7 +14,25 @@ import { formatDateWithTz } from "@/Utils/TimeUtils";
 import type { RootState } from "@/Types/state";
 import { useSelector } from "react-redux";
 
-const getHeaders = (t: Function, uiTimezone: string) => {
+export const ChecksTable = ({
+	checks,
+	count,
+	page,
+	setPage,
+	rowsPerPage,
+	setRowsPerPage,
+}: {
+	checks: Check[];
+	count: number;
+	page: number;
+	setPage: (page: number) => void;
+	rowsPerPage: number;
+	setRowsPerPage: (rowsPerPage: number) => void;
+}) => {
+	const navigate = useNavigate();
+	const { t } = useTranslation();
+	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
+
 	const headers: Header<Check>[] = [
 		{
 			id: "status",
@@ -36,32 +59,15 @@ const getHeaders = (t: Function, uiTimezone: string) => {
 			id: "statusCode",
 			content: t("pages.checks.table.headers.statusCode"),
 			render: (row) => {
-				return row.statusCode || "N/A";
+				return (
+					<StatusCodeLabel
+						statusCode={row.statusCode}
+						message={row.message}
+					/>
+				);
 			},
 		},
 	];
-	return headers;
-};
-
-export const ChecksTable = ({
-	checks,
-	count,
-	page,
-	setPage,
-	rowsPerPage,
-	setRowsPerPage,
-}: {
-	checks: Check[];
-	count: number;
-	page: number;
-	setPage: (page: number) => void;
-	rowsPerPage: number;
-	setRowsPerPage: (rowsPerPage: number) => void;
-}) => {
-	const navigate = useNavigate();
-	const { t } = useTranslation();
-	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
-	const headers = getHeaders(t, uiTimezone);
 
 	const handlePageChange = (
 		_e: React.MouseEvent<HTMLButtonElement> | null,

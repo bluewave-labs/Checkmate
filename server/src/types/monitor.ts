@@ -3,7 +3,7 @@ export type { CheckSnapshot } from "@/types/check.js";
 import type { GeoContinent, GroupedGeoCheck } from "@/types/geoCheck.js";
 export type { GeoContinent } from "@/types/geoCheck.js";
 
-export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "unknown"] as const;
+export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
 export const GeoCheckSupportedTypes: readonly MonitorType[] = ["http", "ping"] as const;
@@ -14,6 +14,10 @@ export type MonitorStatus = (typeof MonitorStatuses)[number];
 
 export const MonitorMatchMethods = ["equal", "include", "regex"] as const;
 export type MonitorMatchMethod = (typeof MonitorMatchMethods)[number] | "";
+
+export const DnsRecordTypes = ["A", "AAAA", "CNAME", "MX", "TXT", "NS"] as const;
+export type DnsRecordType = (typeof DnsRecordTypes)[number];
+
 export const MAX_RECENT_CHECKS = 50;
 
 export interface Monitor {
@@ -54,6 +58,8 @@ export interface Monitor {
 	geoCheckEnabled?: boolean;
 	geoCheckLocations?: GeoContinent[];
 	geoCheckInterval?: number;
+	dnsServer?: string;
+	dnsRecordType?: DnsRecordType;
 	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;

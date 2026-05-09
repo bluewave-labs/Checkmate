@@ -10,6 +10,7 @@ import type { QueueData } from "@/Types/Queue";
 import { Metrics } from "@/Pages/Logs/components/Metrics";
 import { Button } from "@/Components/inputs";
 import { EmptyState } from "@/Components/design-elements";
+import { SPACING } from "@/Utils/Theme/constants";
 
 export const TabQueue = () => {
 	const theme = useTheme();
@@ -19,7 +20,7 @@ export const TabQueue = () => {
 		isLoading,
 		// error,
 		refetch,
-	} = useGet<QueueData>("/queue/all-metrics", {}, { refreshInterval: 5000 });
+	} = useGet<QueueData>("/queue/all-metrics", {}, { refreshInterval: 1000 });
 
 	const { post, loading: isFlushing } = usePost();
 
@@ -49,32 +50,22 @@ export const TabQueue = () => {
 				<Stack gap={theme.spacing(1)}>
 					<Typography
 						variant="eyebrow"
-						color="text.secondary"
+						color={theme.palette.text.secondary}
 					>
 						{t("pages.logs.jobQueue")}
 					</Typography>
-					<Typography
-						sx={{
-							fontSize: 13,
-							color: theme.palette.text.secondary,
-						}}
-					>
+					<Typography color={theme.palette.text.secondary}>
 						<Trans
 							i18nKey="pages.logs.jobQueueExplainer"
 							components={{
 								highlight: (
 									<Box
 										component="span"
-										sx={{
-											backgroundColor:
-												theme.palette.mode === "dark"
-													? "rgba(19, 113, 91, 0.18)"
-													: "#ECF7F2",
-											color: theme.palette.text.primary,
-											px: 1,
-											py: 0.25,
-											borderRadius: 0.5,
-										}}
+										bgcolor={theme.palette.rowStatus.running}
+										color={theme.palette.text.primary}
+										px={SPACING.SM}
+										py={SPACING.XXS}
+										borderRadius={theme.shape.borderRadius}
 									/>
 								),
 							}}
@@ -87,16 +78,11 @@ export const TabQueue = () => {
 				<Stack gap={theme.spacing(1)}>
 					<Typography
 						variant="eyebrow"
-						color="text.secondary"
+						color={theme.palette.text.secondary}
 					>
 						{t("pages.logs.failedJobs")}
 					</Typography>
-					<Typography
-						sx={{
-							fontSize: 13,
-							color: theme.palette.text.secondary,
-						}}
-					>
+					<Typography color={theme.palette.text.secondary}>
 						{t("pages.logs.failedJobsExplainer")}
 					</Typography>
 				</Stack>

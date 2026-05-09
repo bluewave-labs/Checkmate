@@ -234,6 +234,34 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return this.toEntity(monitor);
 	};
 
+	bulkTogglePause = async (monitorIds: string[], teamId: string, pause: boolean): Promise<Monitor[]> => {
+		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		const filter = {
+			_id: { $in: objectIds },
+			teamId: new mongoose.Types.ObjectId(teamId),
+			isActive: pause, // Only pause if active (true), only resume if inactive (false)
+		};
+		const nextStatus = pause ? "paused" : "initializing";
+
+		const eligible = await MonitorModel.find(filter);
+		if (eligible.length === 0) return [];
+
+		const now = new Date();
+		await MonitorModel.updateMany(
+			{ _id: { $in: eligible.map((doc) => doc._id) } },
+			{ $set: { isActive: !pause, status: nextStatus, updatedAt: now } },
+			{ timestamps: false }
+		);
+
+		eligible.forEach((doc) => {
+			doc.isActive = !pause;
+			doc.status = nextStatus;
+			doc.updatedAt = now;
+		});
+
+		return this.mapDocuments(eligible);
+	};
+
 	deleteById = async (monitorId: string, teamId: string) => {
 		const deletedMonitor = await MonitorModel.findOneAndDelete({ _id: monitorId, teamId });
 
@@ -418,6 +446,8 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			geoCheckEnabled: doc.geoCheckEnabled ?? false,
 			geoCheckLocations: doc.geoCheckLocations ?? [],
 			geoCheckInterval: doc.geoCheckInterval ?? 300000,
+			dnsServer: doc.dnsServer ?? undefined,
+			dnsRecordType: doc.dnsRecordType ?? undefined,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
@@ -477,6 +507,8 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			geoCheckEnabled: doc.geoCheckEnabled ?? false,
 			geoCheckLocations: doc.geoCheckLocations ?? [],
 			geoCheckInterval: doc.geoCheckInterval ?? 300000,
+			dnsServer: doc.dnsServer ?? undefined,
+			dnsRecordType: doc.dnsRecordType ?? undefined,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};

@@ -14,6 +14,17 @@
 			}
 		},
 		"appName": "Checkmate",
+		"statusCode": {
+			"down": "Down",
+			"networkError": {
+				"timeout": "The server didn't respond in time (request timed out).",
+				"dns": "Couldn't resolve the hostname (DNS lookup failed).",
+				"refused": "The server refused the connection (port closed or service not listening).",
+				"tls": "TLS or SSL handshake failed (certificate or encryption issue).",
+				"reset": "The connection was reset before a response was received.",
+				"unknown": "No HTTP response was received from the target."
+			}
+		},
 		"breadcrumbs": {
 			"details": "Details",
 			"home": "Home"
@@ -70,7 +81,9 @@
 		},
 		"labels": {
 			"active": "Active",
-			"paused": "paused",
+			"running": "Running",
+			"paused": "Paused",
+			"idle": "Idle",
 			"na": "N/A",
 			"resolved": "Resolved",
 			"responseTime": "Response time"
@@ -421,7 +434,21 @@
 					"inviteMember": "Invite member",
 					"openSite": "Open site",
 					"pause": "Pause",
-					"resume": "Resume"
+					"resume": "Resume",
+					"bulkSelected_one": "{{count}} monitor selected",
+					"bulkSelected_other": "{{count}} monitors selected",
+					"selectAll": "Select all monitors",
+					"selectMonitor": "Select {{name}}"
+				},
+				"bulkPause": {
+					"alreadyPaused_one": "The selected monitor is already paused",
+					"alreadyPaused_other": "All selected monitors are already paused",
+					"alreadyRunning_one": "The selected monitor is already running",
+					"alreadyRunning_other": "All selected monitors are already running",
+					"paused_one": "{{count}} monitor paused",
+					"paused_other": "{{count}} monitors paused",
+					"resumed_one": "{{count}} monitor resumed",
+					"resumed_other": "{{count}} monitors resumed"
 				},
 				"statBoxes": {
 					"activeFor": "Active for",
@@ -887,6 +914,7 @@
 			},
 			"table": {
 				"headers": {
+					"state": "State",
 					"timestamp": "Timestamp",
 					"level": "Level",
 					"service": "Service",
