@@ -10,6 +10,7 @@ const createMaintenanceWindowsRepo = () =>
 	({
 		create: jest.fn().mockResolvedValue(makeWindow()),
 		findById: jest.fn().mockResolvedValue(makeWindow()),
+		findRelated: jest.fn().mockResolvedValue([makeWindow()]),
 		findByMonitorId: jest.fn().mockResolvedValue([makeWindow()]),
 		findByTeamId: jest.fn().mockResolvedValue([makeWindow()]),
 		updateById: jest.fn().mockResolvedValue(makeWindow()),
@@ -19,10 +20,7 @@ const createMaintenanceWindowsRepo = () =>
 
 const createMonitorsRepo = () =>
 	({
-		findByIds: jest.fn().mockResolvedValue([
-			{ id: "mon-1", teamId: "team-1" },
-			{ id: "mon-2", teamId: "team-1" },
-		]),
+		findByIds: jest.fn(async (ids: string[]) => ids.map((id) => ({ id, teamId: "team-1" }))),
 	}) as unknown as jest.Mocked<IMonitorsRepository>;
 
 const createService = (overrides?: {
@@ -86,6 +84,9 @@ describe("MaintenanceWindowService", () => {
 			await service.createMaintenanceWindow(defaultCreateParams);
 
 			expect(maintenanceWindowsRepository.create).toHaveBeenCalledTimes(2);
+			const createCalls = maintenanceWindowsRepository.create.mock.calls;
+			expect(createCalls[0][0].groupId).toEqual(expect.any(String));
+			expect(createCalls[1][0].groupId).toBe(createCalls[0][0].groupId);
 			expect(maintenanceWindowsRepository.create).toHaveBeenCalledWith(
 				expect.objectContaining({
 					teamId: "team-1",
@@ -149,8 +150,9 @@ describe("MaintenanceWindowService", () => {
 
 			const result = await service.getMaintenanceWindowById({ id: "mw-1", teamId: "team-1" });
 
-			expect(result).toBe(expected);
+			expect(result).toEqual({ ...expected, monitors: ["mon-1"] });
 			expect(maintenanceWindowsRepository.findById).toHaveBeenCalledWith("mw-1", "team-1");
+			expect(maintenanceWindowsRepository.findRelated).toHaveBeenCalledWith(expected);
 		});
 	});
 
@@ -227,18 +229,23 @@ describe("MaintenanceWindowService", () => {
 
 	describe("editMaintenanceWindow", () => {
 		it("delegates to repository with id, teamId, and body", async () => {
-			const updated = makeWindow({ name: "Updated Name" });
+			const existing = makeWindow({ groupId: "group-1" });
+			const updated = makeWindow({ name: "Updated Name", groupId: "group-1" });
 			const { service, maintenanceWindowsRepository } = createService();
+			(maintenanceWindowsRepository.findById as jest.Mock).mockResolvedValue(existing);
+			(maintenanceWindowsRepository.findRelated as jest.Mock).mockResolvedValue([existing]);
 			(maintenanceWindowsRepository.updateById as jest.Mock).mockResolvedValue(updated);
 
 			const result = await service.editMaintenanceWindow({ id: "mw-1", teamId: "team-1", body: { name: "Updated Name" } });
 
 			expect(result).toBe(updated);
-			expect(maintenanceWindowsRepository.updateById).toHaveBeenCalledWith("mw-1", "team-1", { name: "Updated Name" });
+			expect(maintenanceWindowsRepository.updateById).toHaveBeenCalledWith("mw-1", "team-1", { name: "Updated Name", groupId: "group-1" });
 		});
 
 		it("passes partial body fields through", async () => {
 			const { service, maintenanceWindowsRepository } = createService();
+			(maintenanceWindowsRepository.findById as jest.Mock).mockResolvedValue(makeWindow({ groupId: "group-1" }));
+			(maintenanceWindowsRepository.findRelated as jest.Mock).mockResolvedValue([makeWindow({ groupId: "group-1" })]);
 
 			await service.editMaintenanceWindow({
 				id: "mw-1",
@@ -246,11 +253,31 @@ describe("MaintenanceWindowService", () => {
 				body: { active: false, repeat: 3600000 },
 			});
 
-			expect(maintenanceWindowsRepository.updateById).toHaveBeenCalledWith("mw-1", "team-1", { active: false, repeat: 3600000 });
+			expect(maintenanceWindowsRepository.updateById).toHaveBeenCalledWith("mw-1", "team-1", { active: false, repeat: 3600000, groupId: "group-1" });
+		});
+
+		it("updates all related monitor windows when monitors are not provided", async () => {
+			const { service, maintenanceWindowsRepository } = createService();
+			(maintenanceWindowsRepository.findById as jest.Mock).mockResolvedValue(makeWindow({ id: "mw-1", monitorId: "mon-1", groupId: "group-1" }));
+			(maintenanceWindowsRepository.findRelated as jest.Mock).mockResolvedValue([
+				makeWindow({ id: "mw-1", monitorId: "mon-1", groupId: "group-1" }),
+				makeWindow({ id: "mw-2", monitorId: "mon-2", groupId: "group-1" }),
+			]);
+
+			await service.editMaintenanceWindow({
+				id: "mw-1",
+				teamId: "team-1",
+				body: { active: false },
+			});
+
+			expect(maintenanceWindowsRepository.updateById).toHaveBeenCalledWith("mw-1", "team-1", { active: false, groupId: "group-1" });
+			expect(maintenanceWindowsRepository.updateById).toHaveBeenCalledWith("mw-2", "team-1", { active: false, groupId: "group-1" });
 		});
 
 		it("updates the affected monitor when monitors are provided", async () => {
 			const { service, maintenanceWindowsRepository, monitorsRepository } = createService();
+			(maintenanceWindowsRepository.findById as jest.Mock).mockResolvedValue(makeWindow({ id: "mw-1", monitorId: "mon-1", groupId: "group-1" }));
+			(maintenanceWindowsRepository.findRelated as jest.Mock).mockResolvedValue([makeWindow({ id: "mw-1", monitorId: "mon-1", groupId: "group-1" })]);
 
 			await service.editMaintenanceWindow({
 				id: "mw-1",
@@ -259,7 +286,41 @@ describe("MaintenanceWindowService", () => {
 			});
 
 			expect(monitorsRepository.findByIds).toHaveBeenCalledWith(["mon-2"]);
-			expect(maintenanceWindowsRepository.updateById).toHaveBeenCalledWith("mw-1", "team-1", { name: "Updated Name", monitorId: "mon-2" });
+			expect(maintenanceWindowsRepository.create).toHaveBeenCalledWith(
+				expect.objectContaining({
+					teamId: "team-1",
+					groupId: "group-1",
+					monitorId: "mon-2",
+					name: "Updated Name",
+				})
+			);
+			expect(maintenanceWindowsRepository.deleteById).toHaveBeenCalledWith("mw-1", "team-1");
+		});
+
+		it("adds and removes monitor windows when monitors are edited", async () => {
+			const { service, maintenanceWindowsRepository } = createService();
+			(maintenanceWindowsRepository.findById as jest.Mock).mockResolvedValue(makeWindow({ id: "mw-1", monitorId: "mon-1", groupId: "group-1" }));
+			(maintenanceWindowsRepository.findRelated as jest.Mock).mockResolvedValue([
+				makeWindow({ id: "mw-1", monitorId: "mon-1", groupId: "group-1" }),
+				makeWindow({ id: "mw-2", monitorId: "mon-2", groupId: "group-1" }),
+			]);
+
+			await service.editMaintenanceWindow({
+				id: "mw-1",
+				teamId: "team-1",
+				body: { monitors: ["mon-2", "mon-3"], name: "Updated Name" },
+			});
+
+			expect(maintenanceWindowsRepository.updateById).toHaveBeenCalledWith("mw-2", "team-1", { name: "Updated Name", groupId: "group-1" });
+			expect(maintenanceWindowsRepository.create).toHaveBeenCalledWith(
+				expect.objectContaining({
+					teamId: "team-1",
+					groupId: "group-1",
+					monitorId: "mon-3",
+					name: "Updated Name",
+				})
+			);
+			expect(maintenanceWindowsRepository.deleteById).toHaveBeenCalledWith("mw-1", "team-1");
 		});
 	});
 });

@@ -2,7 +2,9 @@ export type DurationUnit = "seconds" | "minutes" | "hours" | "days";
 
 export interface MaintenanceWindow {
 	id: string;
+	groupId?: string;
 	monitorId: string;
+	monitors?: string[];
 	teamId: string;
 	active: boolean;
 	name: string;

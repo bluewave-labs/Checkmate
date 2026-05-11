@@ -3,7 +3,9 @@ export type DurationUnit = (typeof DurationUnits)[number];
 
 export interface MaintenanceWindow {
 	id: string;
+	groupId?: string;
 	monitorId: string;
+	monitors?: string[];
 	teamId: string;
 	active: boolean;
 	name: string;

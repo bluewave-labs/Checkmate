@@ -32,7 +32,7 @@ export const useMaintenanceWindowForm = ({
 				startTime: startDate.format("HH:mm"),
 				duration: data.duration ?? 0,
 				durationUnit: data.durationUnit ?? "minutes",
-				monitors: [data.monitorId],
+				monitors: data.monitors ?? [data.monitorId],
 			};
 		} else {
 			const now = dayjs();

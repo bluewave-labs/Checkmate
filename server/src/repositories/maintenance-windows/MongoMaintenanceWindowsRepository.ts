@@ -26,9 +26,62 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 		return documents.map((doc) => this.toEntity(doc));
 	};
 
+	private groupKey = (maintenanceWindow: MaintenanceWindow): string => {
+		return (
+			maintenanceWindow.groupId ??
+			[
+				maintenanceWindow.teamId,
+				maintenanceWindow.name,
+				maintenanceWindow.start,
+				maintenanceWindow.end,
+				maintenanceWindow.duration,
+				maintenanceWindow.durationUnit,
+				maintenanceWindow.repeat,
+			].join("|")
+		);
+	};
+
+	private groupMaintenanceWindows = (maintenanceWindows: MaintenanceWindow[]): MaintenanceWindow[] => {
+		const grouped = new Map<string, MaintenanceWindow>();
+
+		for (const maintenanceWindow of maintenanceWindows) {
+			const key = this.groupKey(maintenanceWindow);
+			const existing = grouped.get(key);
+
+			if (!existing) {
+				grouped.set(key, { ...maintenanceWindow, monitors: [maintenanceWindow.monitorId] });
+				continue;
+			}
+
+			existing.monitors = [...(existing.monitors ?? []), maintenanceWindow.monitorId];
+		}
+
+		return Array.from(grouped.values());
+	};
+
+	private relatedQuery = (maintenanceWindow: MaintenanceWindow): Record<string, unknown> => {
+		if (maintenanceWindow.groupId) {
+			return {
+				groupId: maintenanceWindow.groupId,
+				teamId: new mongoose.Types.ObjectId(maintenanceWindow.teamId),
+			};
+		}
+
+		return {
+			teamId: new mongoose.Types.ObjectId(maintenanceWindow.teamId),
+			name: maintenanceWindow.name,
+			duration: maintenanceWindow.duration,
+			durationUnit: maintenanceWindow.durationUnit,
+			repeat: maintenanceWindow.repeat,
+			start: new Date(maintenanceWindow.start),
+			end: new Date(maintenanceWindow.end),
+		};
+	};
+
 	private toEntity = (doc: MaintenanceWindowDocument): MaintenanceWindow => {
 		return {
 			id: this.toStringId(doc._id),
+			groupId: doc.groupId,
 			monitorId: this.toStringId(doc.monitorId),
 			teamId: this.toStringId(doc.teamId),
 			active: doc.active,
@@ -65,6 +118,11 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 		return this.toEntity(maintenanceWindow);
 	};
 
+	findRelated = async (maintenanceWindow: MaintenanceWindow): Promise<MaintenanceWindow[]> => {
+		const maintenanceWindows = await MaintenanceWindowModel.find(this.relatedQuery(maintenanceWindow));
+		return this.mapDocuments(maintenanceWindows);
+	};
+
 	findByMonitorId = async (monitorId: string, teamId: string): Promise<MaintenanceWindow[]> => {
 		const maintenanceWindows = await MaintenanceWindowModel.find({
 			monitorId: monitorId,
@@ -85,20 +143,17 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 
 		if (active !== undefined) maintenanceQuery.active = active;
 
-		// Pagination
-		let skip = 0;
-		if (page && rowsPerPage) {
-			skip = page * rowsPerPage;
-		}
-
 		// Sorting
 		const sort: Record<string, SortOrder> = {};
 		if (field !== undefined && order !== undefined) {
 			sort[field] = order === "asc" ? 1 : -1;
 		}
 
-		const maintenanceWindows = await MaintenanceWindowModel.find(maintenanceQuery).skip(skip).limit(rowsPerPage).sort(sort);
-		return this.mapDocuments(maintenanceWindows);
+		const maintenanceWindows = await MaintenanceWindowModel.find(maintenanceQuery).sort(sort);
+		const groupedMaintenanceWindows = this.groupMaintenanceWindows(this.mapDocuments(maintenanceWindows));
+
+		const skip = page * rowsPerPage;
+		return groupedMaintenanceWindows.slice(skip, skip + rowsPerPage);
 	};
 
 	updateById = async (id: string, teamId: string, data: Partial<MaintenanceWindow>): Promise<MaintenanceWindow> => {
@@ -131,7 +186,8 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 
 		if (active !== undefined) maintenanceQuery.active = active;
 
-		return await MaintenanceWindowModel.countDocuments(maintenanceQuery);
+		const maintenanceWindows = await MaintenanceWindowModel.find(maintenanceQuery);
+		return this.groupMaintenanceWindows(this.mapDocuments(maintenanceWindows)).length;
 	};
 }
 

@@ -1,6 +1,7 @@
 import { IMaintenanceWindowsRepository, IMonitorsRepository } from "@/repositories/index.js";
 import type { DurationUnit, MaintenanceWindow } from "@/types/index.js";
 import { AppError } from "@/utils/AppError.js";
+import { randomUUID } from "node:crypto";
 
 const SERVICE_NAME = "maintenanceWindowService";
 
@@ -75,11 +76,12 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		start: string;
 		end: string;
 	}) => {
-		const monitors = await this.monitorsRepository.findByIds(monitorIDs);
+		const uniqueMonitorIDs = [...new Set(monitorIDs)];
+		const monitors = await this.monitorsRepository.findByIds(uniqueMonitorIDs);
 
-		const unauthorizedMonitors = monitors.filter((monitor) => monitor.teamId !== teamId);
+		const unauthorizedMonitors = monitors.length !== uniqueMonitorIDs.length || monitors.some((monitor) => monitor.teamId !== teamId);
 
-		if (unauthorizedMonitors.length > 0) {
+		if (unauthorizedMonitors) {
 			throw new AppError({
 				message: "Unauthorized to create maintenance window for one or more monitors",
 				service: SERVICE_NAME,
@@ -88,8 +90,10 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 			});
 		}
 
-		const dbTransactions = monitorIDs.map((monitorId: string) => {
+		const groupId = randomUUID();
+		const dbTransactions = uniqueMonitorIDs.map((monitorId: string) => {
 			return this.maintenanceWindowsRepository.create({
+				groupId,
 				teamId,
 				monitorId,
 				name: name,
@@ -105,7 +109,12 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 	};
 
 	getMaintenanceWindowById = async ({ id, teamId }: { id: string; teamId: string }) => {
-		return await this.maintenanceWindowsRepository.findById(id, teamId);
+		const maintenanceWindow = await this.maintenanceWindowsRepository.findById(id, teamId);
+		const relatedWindows = await this.getRelatedWindows(maintenanceWindow);
+		return {
+			...maintenanceWindow,
+			monitors: relatedWindows.map((relatedWindow) => relatedWindow.monitorId),
+		};
 	};
 
 	getMaintenanceWindowsByTeamId = async ({
@@ -136,15 +145,21 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 	};
 
 	deleteMaintenanceWindow = async ({ id, teamId }: { id: string; teamId: string }) => {
-		return await this.maintenanceWindowsRepository.deleteById(id, teamId);
+		const maintenanceWindow = await this.maintenanceWindowsRepository.findById(id, teamId);
+		const relatedWindows = await this.getRelatedWindows(maintenanceWindow);
+		const deletedWindows = await Promise.all(
+			relatedWindows.map((relatedWindow) => this.maintenanceWindowsRepository.deleteById(relatedWindow.id, teamId))
+		);
+		return deletedWindows.find((deletedWindow) => deletedWindow.id === id) ?? deletedWindows[0] ?? maintenanceWindow;
 	};
 
 	private verifyMonitorOwnership = async (monitorIDs: string[], teamId: string, method: string, message: string) => {
-		const monitors = await this.monitorsRepository.findByIds(monitorIDs);
+		const uniqueMonitorIDs = [...new Set(monitorIDs)];
+		const monitors = await this.monitorsRepository.findByIds(uniqueMonitorIDs);
 
-		const unauthorizedMonitors = monitors.filter((monitor) => monitor.teamId !== teamId);
+		const unauthorizedMonitors = monitors.length !== uniqueMonitorIDs.length || monitors.some((monitor) => monitor.teamId !== teamId);
 
-		if (unauthorizedMonitors.length > 0) {
+		if (unauthorizedMonitors) {
 			throw new AppError({
 				message,
 				service: SERVICE_NAME,
@@ -154,20 +169,70 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		}
 	};
 
+	private getRelatedWindows = async (maintenanceWindow: MaintenanceWindow) => {
+		const relatedWindows = await this.maintenanceWindowsRepository.findRelated(maintenanceWindow);
+		return relatedWindows.length > 0 ? relatedWindows : [maintenanceWindow];
+	};
+
 	editMaintenanceWindow = async ({ id, teamId, body }: { id: string; teamId: string; body: EditMaintenanceWindowBody }) => {
 		const { monitors, ...updates } = body;
-		const updatePayload: Partial<MaintenanceWindow> = { ...updates };
+		const maintenanceWindow = await this.maintenanceWindowsRepository.findById(id, teamId);
+		const relatedWindows = await this.getRelatedWindows(maintenanceWindow);
+		const groupId = maintenanceWindow.groupId ?? randomUUID();
 
-		if (monitors !== undefined) {
-			await this.verifyMonitorOwnership(
-				monitors,
-				teamId,
-				"editMaintenanceWindow",
-				"Unauthorized to edit maintenance window for one or more monitors"
+		if (monitors === undefined) {
+			const updatedWindows = await Promise.all(
+				relatedWindows.map((relatedWindow) =>
+					this.maintenanceWindowsRepository.updateById(relatedWindow.id, teamId, {
+						...updates,
+						groupId,
+					})
+				)
 			);
-			updatePayload.monitorId = monitors[0];
+			return updatedWindows.find((updatedWindow) => updatedWindow.id === id) ?? updatedWindows[0] ?? maintenanceWindow;
 		}
 
-		return await this.maintenanceWindowsRepository.updateById(id, teamId, updatePayload);
+		const selectedMonitorIDs = [...new Set(monitors)];
+
+		await this.verifyMonitorOwnership(
+			selectedMonitorIDs,
+			teamId,
+			"editMaintenanceWindow",
+			"Unauthorized to edit maintenance window for one or more monitors"
+		);
+
+		const selectedMonitorIds = new Set(selectedMonitorIDs);
+		const existingWindowsByMonitorId = new Map(relatedWindows.map((relatedWindow) => [relatedWindow.monitorId, relatedWindow]));
+		const selectedExistingWindows = relatedWindows.filter((relatedWindow) => selectedMonitorIds.has(relatedWindow.monitorId));
+		const removedWindows = relatedWindows.filter((relatedWindow) => !selectedMonitorIds.has(relatedWindow.monitorId));
+		const addedMonitorIds = selectedMonitorIDs.filter((monitorId) => !existingWindowsByMonitorId.has(monitorId));
+
+		const baseWindow = { ...maintenanceWindow, ...updates, groupId };
+		const updatedWindows = await Promise.all([
+			...selectedExistingWindows.map((relatedWindow) =>
+				this.maintenanceWindowsRepository.updateById(relatedWindow.id, teamId, {
+					...updates,
+					groupId,
+				})
+			),
+			...addedMonitorIds.map((monitorId) =>
+				this.maintenanceWindowsRepository.create({
+					teamId,
+					groupId,
+					monitorId,
+					active: baseWindow.active,
+					name: baseWindow.name,
+					duration: baseWindow.duration,
+					durationUnit: baseWindow.durationUnit,
+					repeat: baseWindow.repeat,
+					start: baseWindow.start,
+					end: baseWindow.end,
+				})
+			),
+		]);
+
+		await Promise.all(removedWindows.map((relatedWindow) => this.maintenanceWindowsRepository.deleteById(relatedWindow.id, teamId)));
+
+		return updatedWindows.find((updatedWindow) => updatedWindow.id === id) ?? updatedWindows[0] ?? maintenanceWindow;
 	};
 }
