@@ -572,7 +572,7 @@
 							"placeholder": "8.8.8.8"
 						},
 						"dnsRecordType": {
-							"label": "DNS Record Type",
+							"label": "DNS record type",
 							"value": {
 								"A": "A",
 								"AAAA": "AAAA",

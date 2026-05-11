@@ -51,6 +51,39 @@ describe("monitorValidation — DNS fields", () => {
 			expect(parsed.dnsServer).toBeUndefined();
 			expect(parsed.dnsRecordType).toBeUndefined();
 		});
+
+		it("rejects a DNS monitor whose url has a scheme or path", () => {
+			for (const badUrl of ["https://example.com", "example.com/path", "example.com:53", " example.com"]) {
+				expect(() =>
+					createMonitorBodyValidation.parse({
+						...baseDnsBody,
+						url: badUrl,
+						dnsServer: "8.8.8.8",
+						dnsRecordType: "A",
+					})
+				).toThrow();
+			}
+		});
+
+		it("rejects a DNS monitor with an invalid dnsServer", () => {
+			expect(() =>
+				createMonitorBodyValidation.parse({
+					...baseDnsBody,
+					dnsServer: "not-an-ip",
+					dnsRecordType: "A",
+				})
+			).toThrow();
+		});
+
+		it("does not enforce the hostname rule for non-DNS monitors", () => {
+			const parsed = createMonitorBodyValidation.parse({
+				name: "HTTP check",
+				type: "http",
+				url: "https://example.com/some/path",
+			});
+
+			expect(parsed.url).toBe("https://example.com/some/path");
+		});
 	});
 
 	describe("editMonitorBodyValidation", () => {

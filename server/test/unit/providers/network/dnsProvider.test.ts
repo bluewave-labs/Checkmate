@@ -187,6 +187,28 @@ describe("DNSProvider", () => {
 		await expect(provider.handle(makeMonitor())).rejects.toThrow("Error performing DNS check");
 	});
 
+	it("strips scheme from url before querying the resolver", async () => {
+		const provider = new DNSProvider(createResolver);
+		const result = await provider.handle(makeMonitor({ url: "https://www.google.ca" }));
+
+		expect(mockResolverInstance.resolve4).toHaveBeenCalledWith("www.google.ca");
+		expect(result.payload?.hostname).toBe("www.google.ca");
+	});
+
+	it("strips port and path from url before querying the resolver", async () => {
+		const provider = new DNSProvider(createResolver);
+		await provider.handle(makeMonitor({ url: "example.com:53/some/path" }));
+
+		expect(mockResolverInstance.resolve4).toHaveBeenCalledWith("example.com");
+	});
+
+	it("passes a bare hostname through unchanged", async () => {
+		const provider = new DNSProvider(createResolver);
+		await provider.handle(makeMonitor({ url: "example.com" }));
+
+		expect(mockResolverInstance.resolve4).toHaveBeenCalledWith("example.com");
+	});
+
 	it("stringifies non-Error throws from outside timeRequest", async () => {
 		mockResolverInstance.setServers.mockImplementationOnce(() => {
 			throw 42;

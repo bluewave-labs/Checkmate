@@ -20,6 +20,11 @@ export const dnsServerValidation = z
 	.min(1, "DNS server is required")
 	.refine((v) => z.ipv4().safeParse(v).success || z.ipv6().safeParse(v).success, "Enter a valid IPv4 or IPv6 address (e.g. 8.8.8.8)");
 
+// Hostname (FQDN) — labels of 1-63 alphanumerics/hyphens separated by dots,
+// no scheme, port, path, or whitespace. Total length ≤ 253. Kept in sync with
+// the client-side regex in client/src/Validation/monitor.ts.
+export const dnsHostnameRegex = /^(?=.{1,253}$)([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,63}$/;
+
 export const booleanCoercion = z.preprocess((val) => {
 	if (val === "true" || val === true) return true;
 	if (val === "false" || val === false) return false;
