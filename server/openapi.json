@@ -346,7 +346,7 @@
 					},
 					"type": {
 						"type": "string",
-						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "unknown"]
+						"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
 					},
 					"url": {
 						"type": "string"
@@ -435,6 +435,13 @@
 					},
 					"geoCheckInterval": {
 						"type": "number"
+					},
+					"dnsServer": {
+						"type": "string"
+					},
+					"dnsRecordType": {
+						"type": "string",
+						"enum": ["A", "AAAA", "CNAME", "MX", "TXT", "NS"]
 					},
 					"teamId": {
 						"type": "string"
@@ -2981,7 +2988,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket"]
+							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
 						},
 						"required": false,
 						"name": "type",
@@ -3416,7 +3423,7 @@
 					{
 						"schema": {
 							"type": "string",
-							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket"]
+							"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
 						},
 						"required": false,
 						"name": "type",
@@ -4664,7 +4671,8 @@
 										"format": "date-time"
 									}
 								},
-								"required": ["monitors", "name", "duration", "durationUnit", "start", "end", "repeat"]
+								"required": ["monitors", "name", "duration", "durationUnit", "start", "end", "repeat"],
+								"additionalProperties": false
 							}
 						}
 					}
@@ -5208,7 +5216,8 @@
 										"type": "string",
 										"enum": ["seconds", "minutes", "hours", "days"]
 									}
-								}
+								},
+								"additionalProperties": false
 							}
 						}
 					}
@@ -5439,13 +5448,13 @@
 							"anyOf": [
 								{
 									"type": "string",
-									"enum": ["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"]
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
 								},
 								{
 									"type": "array",
 									"items": {
 										"type": "string",
-										"enum": ["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"]
+										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
 									}
 								}
 							]
@@ -5648,13 +5657,13 @@
 							"anyOf": [
 								{
 									"type": "string",
-									"enum": ["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"]
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
 								},
 								{
 									"type": "array",
 									"items": {
 										"type": "string",
-										"enum": ["http", "ping", "pagespeed", "docker", "hardware", "port", "game", "grpc", "websocket"]
+										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
 									}
 								}
 							]
@@ -6862,7 +6871,7 @@
 									},
 									"type": {
 										"type": "string",
-										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "unknown"]
+										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
 									},
 									"statusWindowSize": {
 										"type": "number",
@@ -6975,6 +6984,10 @@
 										],
 										"default": ""
 									},
+									"strategy": {
+										"type": "string",
+										"enum": ["desktop", "mobile"]
+									},
 									"selectedDisks": {
 										"type": "array",
 										"items": {
@@ -7009,6 +7022,14 @@
 									"geoCheckInterval": {
 										"type": "number",
 										"minimum": 300000
+									},
+									"dnsServer": {
+										"type": "string",
+										"minLength": 1
+									},
+									"dnsRecordType": {
+										"type": "string",
+										"enum": ["A", "AAAA", "CNAME", "MX", "TXT", "NS"]
 									}
 								},
 								"required": ["name", "type", "url"]
@@ -7496,7 +7517,7 @@
 												},
 												"type": {
 													"type": "string",
-													"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "unknown"]
+													"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
 												},
 												"ignoreTlsErrors": {
 													"type": "boolean",
@@ -7630,6 +7651,10 @@
 													],
 													"default": ""
 												},
+												"strategy": {
+													"type": "string",
+													"enum": ["desktop", "mobile"]
+												},
 												"group": {
 													"anyOf": [
 														{
@@ -7658,6 +7683,14 @@
 													"type": "number",
 													"minimum": 300000,
 													"default": 300000
+												},
+												"dnsServer": {
+													"type": "string",
+													"minLength": 1
+												},
+												"dnsRecordType": {
+													"type": "string",
+													"enum": ["A", "AAAA", "CNAME", "MX", "TXT", "NS"]
 												},
 												"createdAt": {
 													"type": "string"
@@ -8034,7 +8067,7 @@
 									},
 									"type": {
 										"type": "string",
-										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "unknown"]
+										"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
 									},
 									"url": {
 										"type": "string"
@@ -8153,6 +8186,10 @@
 											}
 										]
 									},
+									"strategy": {
+										"type": "string",
+										"enum": ["desktop", "mobile"]
+									},
 									"selectedDisks": {
 										"type": "array",
 										"items": {
@@ -8187,6 +8224,14 @@
 									"geoCheckInterval": {
 										"type": "number",
 										"minimum": 300000
+									},
+									"dnsServer": {
+										"type": "string",
+										"minLength": 1
+									},
+									"dnsRecordType": {
+										"type": "string",
+										"enum": ["A", "AAAA", "CNAME", "MX", "TXT", "NS"]
 									}
 								}
 							}
