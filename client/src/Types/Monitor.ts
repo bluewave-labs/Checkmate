@@ -44,6 +44,10 @@ export type MonitorStatus = (typeof MonitorStatuses)[number];
 
 export type MonitorMatchMethod = "equal" | "include" | "regex" | "";
 
+export const PageSpeedStrategies = ["desktop", "mobile"] as const;
+export type PageSpeedStrategy = (typeof PageSpeedStrategies)[number];
+export const DefaultPageSpeedStrategy: PageSpeedStrategy = "desktop";
+
 export interface Monitor {
 	id: string;
 	userId: string;
@@ -78,6 +82,7 @@ export interface Monitor {
 	selectedDisks: string[];
 	gameId?: string;
 	grpcServiceName?: string;
+	strategy?: PageSpeedStrategy;
 	group: string | null;
 	geoCheckEnabled?: boolean;
 	geoCheckLocations?: GeoContinent[];

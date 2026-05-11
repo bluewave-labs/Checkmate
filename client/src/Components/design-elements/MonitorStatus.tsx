@@ -1,12 +1,13 @@
 import type { Monitor } from "@/Types/Monitor";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { PulseDot, Dot } from "@/Components/design-elements";
+import { PulseDot, Dot, StrategyBadge } from "@/Components/design-elements";
 import { getStatusColor, formatUrl } from "@/Utils/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
 import prettyMilliseconds from "pretty-ms";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { LAYOUT } from "@/Utils/Theme/constants";
 export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -28,7 +29,7 @@ export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 			<Stack
 				direction="row"
 				alignItems={"center"}
-				gap={theme.spacing(4)}
+				gap={theme.spacing(LAYOUT.XS)}
 			>
 				<PulseDot color={getStatusColor(monitor.status, theme)} />
 				<Typography
@@ -41,6 +42,12 @@ export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 				>
 					{formatUrl(monitor?.url)}
 				</Typography>
+				{monitor.type === "pagespeed" && monitor.strategy && (
+					<>
+						<Dot />
+						<StrategyBadge strategy={monitor.strategy} />
+					</>
+				)}
 				{!isSmall && (
 					<>
 						<Dot />

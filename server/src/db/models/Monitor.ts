@@ -1,6 +1,6 @@
 import { Schema, model, Types } from "mongoose";
 import type { Monitor, MonitorMatchMethod, CheckSnapshot } from "@/types/monitor.js";
-import { DnsRecordTypes, MonitorTypes, MonitorStatuses } from "@/types/monitor.js";
+import { DnsRecordTypes, MonitorTypes, MonitorStatuses, PageSpeedStrategies } from "@/types/monitor.js";
 import type {
 	CheckAudits,
 	CheckCaptureInfo,
@@ -329,6 +329,10 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		grpcServiceName: {
 			type: String,
 			default: "",
+		},
+		strategy: {
+			type: String,
+			enum: PageSpeedStrategies,
 		},
 		group: {
 			type: String,

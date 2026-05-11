@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { booleanCoercion, dnsHostnameRegex, dnsServerValidation } from "./shared.js";
 import { GeoContinents } from "@/types/geoCheck.js";
-import { DnsRecordTypes, MonitorMatchMethods, MonitorStatuses, MonitorTypes } from "@/types/monitor.js";
+import { DnsRecordTypes, MonitorMatchMethods, MonitorStatuses, MonitorTypes, PageSpeedStrategies } from "@/types/monitor.js";
 
 export const getMonitorByIdParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
@@ -49,6 +49,16 @@ const refineDnsHostname = (body: { type?: string; url?: string }, ctx: z.Refinem
 	}
 };
 
+const refineStrategyType = (body: { type?: string; strategy?: string }, ctx: z.RefinementCtx) => {
+	if (body.strategy !== undefined && body.type !== undefined && body.type !== "pagespeed") {
+		ctx.addIssue({
+			code: "custom",
+			path: ["strategy"],
+			message: "Strategy is only valid for pagespeed monitors",
+		});
+	}
+};
+
 export const createMonitorBodyValidation = z
 	.object({
 		_id: z.string().optional(),
@@ -74,6 +84,7 @@ export const createMonitorBodyValidation = z
 		matchMethod: z.union([z.enum(MonitorMatchMethods), z.literal("")]).optional(),
 		gameId: z.union([z.string(), z.literal("")]).optional(),
 		grpcServiceName: z.union([z.string(), z.literal("")]).default(""),
+		strategy: z.enum(PageSpeedStrategies).optional(),
 		selectedDisks: z.array(z.string()).optional(),
 		group: z.union([z.string().max(50).trim(), z.null(), z.literal("")]).optional(),
 		geoCheckEnabled: z.boolean().optional(),
@@ -82,7 +93,8 @@ export const createMonitorBodyValidation = z
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 	})
-	.superRefine(refineDnsHostname);
+	.superRefine(refineDnsHostname)
+	.superRefine(refineStrategyType);
 
 export const editMonitorBodyValidation = z
 	.object({
@@ -107,6 +119,7 @@ export const editMonitorBodyValidation = z
 		tempAlertThreshold: z.number().optional(),
 		gameId: z.union([z.string(), z.literal("")]).optional(),
 		grpcServiceName: z.union([z.string(), z.literal("")]).optional(),
+		strategy: z.enum(PageSpeedStrategies).optional(),
 		selectedDisks: z.array(z.string()).optional(),
 		group: z.union([z.string().max(50).trim(), z.null(), z.literal("")]).optional(),
 		geoCheckEnabled: z.boolean().optional(),
@@ -115,7 +128,8 @@ export const editMonitorBodyValidation = z
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 	})
-	.superRefine(refineDnsHostname);
+	.superRefine(refineDnsHostname)
+	.superRefine(refineStrategyType);
 
 export const pauseMonitorParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
@@ -173,6 +187,7 @@ const importedMonitorSchema = z
 		selectedDisks: z.array(z.string()).default([]),
 		gameId: z.union([z.string(), z.literal("")]).optional(),
 		grpcServiceName: z.union([z.string(), z.literal("")]).default(""),
+		strategy: z.enum(PageSpeedStrategies).optional(),
 		group: z.union([z.string().max(50).trim(), z.null()]).default(null),
 		geoCheckEnabled: z.boolean().default(false),
 		geoCheckLocations: z.array(z.enum(GeoContinents)).default([]),
@@ -182,7 +197,8 @@ const importedMonitorSchema = z
 		createdAt: z.string().optional(),
 		updatedAt: z.string().optional(),
 	})
-	.superRefine(refineDnsHostname);
+	.superRefine(refineDnsHostname)
+	.superRefine(refineStrategyType);
 
 export const importMonitorsBodyValidation = z.object({
 	monitors: z.array(importedMonitorSchema).min(1, "At least one monitor is required"),

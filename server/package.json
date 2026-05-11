@@ -41,7 +41,7 @@
 		"dockerode": "4.0.6",
 		"dotenv": "^16.4.5",
 		"express": "^4.19.2",
-		"express-rate-limit": "8.3.2",
+		"express-rate-limit": "^8.5.1",
 		"gamedig": "5.2.0",
 		"got": "14.4.7",
 		"handlebars": "^4.7.8",

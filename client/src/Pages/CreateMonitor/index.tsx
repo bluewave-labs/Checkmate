@@ -37,6 +37,7 @@ import {
 	type MonitorType,
 	type GamesMap,
 	supportsGeoCheck,
+	DefaultPageSpeedStrategy,
 } from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
 import type { MonitorFormData } from "@/Validation/monitor";
@@ -51,6 +52,7 @@ interface GeneralSettingsConfig {
 	showSecret: boolean;
 	showGrpcServiceName: boolean;
 	showIgnoreTls: boolean;
+	showStrategy: boolean;
 	showDnsServer: boolean;
 	showDnsRecordType: boolean;
 }
@@ -70,6 +72,7 @@ const getGeneralSettingsConfig = (
 			showSecret: false,
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
+			showStrategy: false,
 			showDnsServer: false,
 			showDnsRecordType: false,
 		},
@@ -83,6 +86,7 @@ const getGeneralSettingsConfig = (
 			showSecret: false,
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
+			showStrategy: false,
 			showDnsServer: false,
 			showDnsRecordType: false,
 		},
@@ -96,6 +100,7 @@ const getGeneralSettingsConfig = (
 			showSecret: false,
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
+			showStrategy: false,
 			showDnsServer: false,
 			showDnsRecordType: false,
 		},
@@ -109,6 +114,7 @@ const getGeneralSettingsConfig = (
 			showSecret: false,
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
+			showStrategy: false,
 			showDnsServer: false,
 			showDnsRecordType: false,
 		},
@@ -122,6 +128,7 @@ const getGeneralSettingsConfig = (
 			showSecret: false,
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
+			showStrategy: false,
 			showDnsServer: false,
 			showDnsRecordType: false,
 		},
@@ -135,6 +142,7 @@ const getGeneralSettingsConfig = (
 			showSecret: false,
 			showGrpcServiceName: true,
 			showIgnoreTls: true,
+			showStrategy: false,
 			showDnsServer: false,
 			showDnsRecordType: false,
 		},
@@ -148,6 +156,7 @@ const getGeneralSettingsConfig = (
 			showSecret: false,
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
+			showStrategy: true,
 			showDnsServer: false,
 			showDnsRecordType: false,
 		},
@@ -161,6 +170,7 @@ const getGeneralSettingsConfig = (
 			showSecret: true,
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
+			showStrategy: false,
 			showDnsServer: false,
 			showDnsRecordType: false,
 		},
@@ -174,6 +184,7 @@ const getGeneralSettingsConfig = (
 			showSecret: false,
 			showGrpcServiceName: false,
 			showIgnoreTls: true,
+			showStrategy: false,
 			showDnsServer: false,
 			showDnsRecordType: false,
 		},
@@ -187,6 +198,7 @@ const getGeneralSettingsConfig = (
 			showSecret: false,
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
+			showStrategy: false,
 			showDnsServer: true,
 			showDnsRecordType: true,
 		},
@@ -431,6 +443,31 @@ const CreateMonitorPage = () => {
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message ?? ""}
 									/>
+								)}
+							/>
+						)}
+
+						{/* Strategy field - only for pagespeed type */}
+						{generalSettingsConfig.showStrategy && (
+							<Controller
+								name="strategy"
+								control={control}
+								render={({ field, fieldState }) => (
+									<Select
+										{...field}
+										value={field.value ?? DefaultPageSpeedStrategy}
+										fieldLabel={t(
+											"pages.createMonitor.form.general.option.strategy.label"
+										)}
+										error={!!fieldState.error}
+									>
+										<MenuItem value="desktop">
+											{t("pages.createMonitor.form.general.option.strategy.desktop")}
+										</MenuItem>
+										<MenuItem value="mobile">
+											{t("pages.createMonitor.form.general.option.strategy.mobile")}
+										</MenuItem>
+									</Select>
 								)}
 							/>
 						)}

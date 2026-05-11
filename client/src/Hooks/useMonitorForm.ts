@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { monitorSchema, type MonitorFormData } from "@/Validation/monitor";
+import { DefaultPageSpeedStrategy } from "@/Types/Monitor";
 import type { Monitor, MonitorType } from "@/Types/Monitor";
 
 interface UseMonitorFormOptions {
@@ -88,6 +89,7 @@ export const useMonitorForm = ({
 					...base,
 					type: "pagespeed",
 					url: data?.url || "",
+					strategy: data?.strategy ?? DefaultPageSpeedStrategy,
 				};
 				break;
 			case "hardware":

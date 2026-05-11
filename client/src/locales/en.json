@@ -563,6 +563,11 @@
 							"label": "WebSocket URL",
 							"placeholder": "wss://example.com/socket"
 						},
+						"strategy": {
+							"label": "Strategy",
+							"desktop": "Desktop",
+							"mobile": "Mobile"
+						},
 						"captureUrl": {
 							"label": "Capture endpoint",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
@@ -1102,6 +1107,10 @@
 			}
 		},
 		"pageSpeed": {
+			"strategy": {
+				"desktop": "Desktop",
+				"mobile": "Mobile"
+			},
 			"charts": {
 				"common": {
 					"cls": "Cumulative Layout Shift (CLS)",

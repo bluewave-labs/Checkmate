@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { GeoContinents } from "@/Types/GeoCheck";
-import { DnsRecordTypes } from "@/Types/Monitor";
+import { DnsRecordTypes, PageSpeedStrategies } from "@/Types/Monitor";
 
 // URL schema with custom error message
 const urlSchema = z.url({ message: "Please enter a valid URL" });
@@ -90,6 +90,7 @@ const grpcSchema = baseSchema.extend({
 const pagespeedSchema = baseSchema.extend({
 	type: z.literal("pagespeed"),
 	url: urlSchema,
+	strategy: z.enum(PageSpeedStrategies),
 });
 
 // Hardware/Infrastructure monitor schema
