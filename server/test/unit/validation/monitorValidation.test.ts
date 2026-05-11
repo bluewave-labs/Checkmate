@@ -129,3 +129,96 @@ describe("monitorValidation — DNS fields", () => {
 		});
 	});
 });
+
+describe("monitorValidation — strategy gating", () => {
+	describe("createMonitorBodyValidation", () => {
+		it("accepts strategy on pagespeed monitors", () => {
+			const parsed = createMonitorBodyValidation.parse({
+				name: "PS check",
+				type: "pagespeed",
+				url: "https://example.com",
+				strategy: "mobile",
+			});
+			expect(parsed.strategy).toBe("mobile");
+		});
+
+		it("accepts pagespeed monitors without a strategy", () => {
+			const parsed = createMonitorBodyValidation.parse({
+				name: "PS check",
+				type: "pagespeed",
+				url: "https://example.com",
+			});
+			expect(parsed.strategy).toBeUndefined();
+		});
+
+		it("rejects strategy on non-pagespeed monitor types", () => {
+			for (const type of ["http", "ping", "docker", "port", "game", "grpc", "websocket", "dns", "hardware"] as const) {
+				expect(() =>
+					createMonitorBodyValidation.parse({
+						name: "wrong-type check",
+						type,
+						url: type === "dns" ? "example.com" : "https://example.com",
+						strategy: "desktop",
+					})
+				).toThrow();
+			}
+		});
+
+		it("allows non-pagespeed monitors without a strategy", () => {
+			const parsed = createMonitorBodyValidation.parse({
+				name: "HTTP check",
+				type: "http",
+				url: "https://example.com",
+			});
+			expect(parsed.strategy).toBeUndefined();
+		});
+	});
+
+	describe("editMonitorBodyValidation", () => {
+		it("rejects strategy when type is explicitly non-pagespeed", () => {
+			expect(() =>
+				editMonitorBodyValidation.parse({
+					type: "http",
+					strategy: "mobile",
+				})
+			).toThrow();
+		});
+
+		it("allows strategy when type is omitted (partial edit)", () => {
+			const parsed = editMonitorBodyValidation.parse({
+				strategy: "mobile",
+			});
+			expect(parsed.strategy).toBe("mobile");
+		});
+	});
+
+	describe("importMonitorsBodyValidation", () => {
+		it("does not inject a default strategy on imported HTTP monitors", () => {
+			const parsed = importMonitorsBodyValidation.parse({
+				monitors: [
+					{
+						name: "Imported HTTP",
+						type: "http",
+						url: "https://example.com",
+					},
+				],
+			});
+			expect(parsed.monitors[0].strategy).toBeUndefined();
+		});
+
+		it("rejects strategy on imported non-pagespeed monitors", () => {
+			expect(() =>
+				importMonitorsBodyValidation.parse({
+					monitors: [
+						{
+							name: "Imported HTTP",
+							type: "http",
+							url: "https://example.com",
+							strategy: "desktop",
+						},
+					],
+				})
+			).toThrow();
+		});
+	});
+});
