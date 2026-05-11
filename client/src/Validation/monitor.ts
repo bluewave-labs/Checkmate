@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { GeoContinents } from "@/Types/GeoCheck";
+import { DnsRecordTypes } from "@/Types/Monitor";
 
 // URL schema with custom error message
 const urlSchema = z.url({ message: "Please enter a valid URL" });
@@ -122,6 +123,28 @@ const websocketSchema = baseSchema.extend({
 	ignoreTlsErrors: z.boolean(),
 });
 
+// Hostname (FQDN) — labels of 1-63 alphanumerics/hyphens separated by dots,
+// no scheme, port, path, or whitespace. Total length ≤ 253.
+const hostnameRegex =
+	/^(?=.{1,253}$)([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,63}$/;
+
+// DNS monitor schema
+const dnsSchema = baseSchema.extend({
+	type: z.literal("dns"),
+	url: z
+		.string()
+		.min(1, "Domain is required")
+		.regex(hostnameRegex, "Enter a valid domain (e.g. www.example.com)"),
+	dnsServer: z
+		.string()
+		.min(1, "DNS server is required")
+		.refine(
+			(v) => z.ipv4().safeParse(v).success || z.ipv6().safeParse(v).success,
+			"Enter a valid IPv4 or IPv6 address (e.g. 8.8.8.8)"
+		),
+	dnsRecordType: z.enum(DnsRecordTypes),
+});
+
 // Discriminated union of all monitor types
 export const monitorSchema = z.discriminatedUnion("type", [
 	httpSchema,
@@ -133,6 +156,7 @@ export const monitorSchema = z.discriminatedUnion("type", [
 	pagespeedSchema,
 	hardwareSchema,
 	websocketSchema,
+	dnsSchema,
 ]);
 
 export type MonitorFormData = z.infer<typeof monitorSchema>;
