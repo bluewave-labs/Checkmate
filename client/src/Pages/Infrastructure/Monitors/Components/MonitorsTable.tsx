@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { Table, Pagination, StatusLabel, Gauge } from "@/Components/design-elements";
 import type { Header } from "@/Components/design-elements/Table";
@@ -12,6 +13,24 @@ import { useNavigate } from "react-router-dom";
 import { usePost } from "@/Hooks/UseApi";
 
 import type { Monitor } from "@/Types/Monitor";
+import { Checkbox } from "@/Components/inputs";
+
+interface InfraMonitorsTableProps {
+	monitors: Monitor[];
+	refetch: () => void;
+	setSelectedMonitor: (monitor: Monitor | null) => void;
+	sortField: string;
+	setSortField: (field: string) => void;
+	sortOrder: "asc" | "desc";
+	setSortOrder: (order: "asc" | "desc") => void;
+	count: number;
+	page: number;
+	setPage: (page: number) => void;
+	rowsPerPage: number;
+	setRowsPerPage: (rowsPerPage: number) => void;
+	selectedRows?: string[];
+	onSelectionChange?: (selected: string[]) => void;
+}
 
 export const InfraMonitorsTable = ({
 	monitors,
@@ -26,29 +45,32 @@ export const InfraMonitorsTable = ({
 	setPage,
 	rowsPerPage,
 	setRowsPerPage,
-}: {
-	monitors: Monitor[];
-	refetch: Function;
-	setSelectedMonitor: Function;
-	sortField: string;
-	setSortField: (field: string) => void;
-	sortOrder: "asc" | "desc";
-	setSortOrder: (order: "asc" | "desc") => void;
-	count: number;
-	page: number;
-	setPage: (page: number) => void;
-	rowsPerPage: number;
-	setRowsPerPage: (rowsPerPage: number) => void;
-}) => {
+	selectedRows = [],
+	onSelectionChange,
+}: InfraMonitorsTableProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const navigate = useNavigate();
-	const {
-		post,
-		// loading: isPatching,
-		// error: postError,
-	} = usePost<any, Monitor>();
+	const { post } = usePost<Record<string, never>, Monitor>();
+
+	const selectedSet = new Set(selectedRows);
+	const isAllSelected =
+		monitors.length > 0 && monitors.every((m) => selectedSet.has(m.id));
+	const isSomeSelected = selectedRows.length > 0 && !isAllSelected;
+
+	const handleSelectAll = (checked: boolean) => {
+		onSelectionChange?.(checked ? monitors.map((m) => m.id) : []);
+	};
+
+	const handleSelectRow = (id: string, checked: boolean) => {
+		if (!onSelectionChange) return;
+		onSelectionChange(
+			checked ? [...selectedRows, id] : selectedRows.filter((rowId) => rowId !== id)
+		);
+	};
+
+	const isRowSelected = (id: string) => selectedSet.has(id);
 
 	const handlePageChange = (
 		_e: React.MouseEvent<HTMLButtonElement> | null,
@@ -65,7 +87,7 @@ export const InfraMonitorsTable = ({
 		setRowsPerPage(value);
 	};
 
-	const handleSort = (e: any, field: string) => {
+	const handleSort = (e: React.MouseEvent, field: string) => {
 		e.preventDefault();
 		e.stopPropagation();
 		if (sortField === field) {
@@ -80,14 +102,6 @@ export const InfraMonitorsTable = ({
 
 	const getActions = (monitor: Monitor): ActionMenuItem[] => {
 		return [
-			{
-				id: 1,
-				label: t("pages.common.monitors.actions.openSite"),
-				action: () => {
-					window.open(monitor.url, "_blank", "noreferrer");
-				},
-				closeMenu: true,
-			},
 			{
 				id: 2,
 				label: t("pages.common.monitors.actions.details"),
@@ -109,13 +123,6 @@ export const InfraMonitorsTable = ({
 					navigate(`/infrastructure/configure/${monitor.id}`);
 				},
 			},
-			// {
-			//   id: 5,
-			//   label: "Clone",
-			//   action: () => {
-
-			//   },
-			// },
 			{
 				id: 6,
 				label:
@@ -161,7 +168,34 @@ export const InfraMonitorsTable = ({
 		);
 		const headers: Header<Monitor>[] = [
 			{
+				id: "selection",
+				content: (
+					<Checkbox
+						aria-label={t("pages.common.monitors.actions.selectAll")}
+						indeterminate={isSomeSelected}
+						checked={isAllSelected}
+						onChange={(e) => handleSelectAll(e.target.checked)}
+					/>
+				),
+				hideMobileLabel: true,
+				render: (row) => (
+					<Checkbox
+						aria-label={t("pages.common.monitors.actions.selectMonitor", {
+							name: row.name,
+						})}
+						checked={isRowSelected(row.id)}
+						onChange={(e) => {
+							handleSelectRow(row.id, e.target.checked);
+						}}
+						onClick={(e) => e.stopPropagation()}
+					/>
+				),
+				onClick: (e) => e?.stopPropagation(),
+			},
+			{
 				id: "name",
+				align: "left",
+				mobileLabel: t("common.table.headers.name"),
 				content: (
 					<Typography
 						component="div"
@@ -181,18 +215,20 @@ export const InfraMonitorsTable = ({
 			},
 			{
 				id: "status",
+				mobileLabel: t("common.table.headers.status"),
 				content: (
-					<Typography
-						component="div"
-						display="inline-flex"
-						alignItems="center"
+					<Stack
 						gap={theme.spacing(4)}
+						direction={"row"}
+						justifyContent={"center"}
+						alignItems={"center"}
 						onClick={(e) => handleSort(e, "status")}
 						sx={{ cursor: "pointer" }}
 					>
+						<Box width={theme.spacing(8)} />
 						{t("common.table.headers.status")}
 						{renderSortIcon(sortField === "status")}
-					</Typography>
+					</Stack>
 				),
 				render: (row) => {
 					return <StatusLabel status={row.status} />;
@@ -256,6 +292,11 @@ export const InfraMonitorsTable = ({
 				onRowClick={(row) => {
 					navigate(`/infrastructure/${row.id}`);
 				}}
+				getRowSx={(row) => ({
+					backgroundColor: isRowSelected(row.id)
+						? theme.palette.action.selected
+						: "inherit",
+				})}
 			/>
 			<Pagination
 				component="div"

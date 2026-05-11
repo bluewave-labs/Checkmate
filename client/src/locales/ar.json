@@ -1,1108 +1,1447 @@
 {
-	"submit": "",
-	"title": "",
-	"distributedStatusHeaderText": "",
-	"distributedStatusSubHeaderText": "",
-	"settingsDisabled": "",
-	"settingsSuccessSaved": "",
-	"settingsFailedToSave": "",
-	"settingsStatsCleared": "",
-	"settingsFailedToClearStats": "",
-	"settingsMonitorsDeleted": "",
-	"settingsFailedToDeleteMonitors": "",
-	"starPromptTitle": "",
-	"starPromptDescription": "",
-	"https": "",
-	"http": "",
-	"monitor": "",
-	"aboutus": "",
-	"now": "",
-	"delete": "",
-	"configure": "",
-	"responseTime": "",
-	"ms": "",
-	"bar": "",
-	"area": "",
-	"country": "",
-	"city": "",
-	"response": "",
-	"monitorStatusUp": "",
-	"monitorStatusDown": "",
-	"webhookSendSuccess": "",
-	"webhookSendError": "",
-	"webhookUnsupportedPlatform": "",
-	"distributedRightCategoryTitle": "",
-	"distributedStatusServerMonitors": "",
-	"distributedStatusServerMonitorsDescription": "",
-	"distributedUptimeCreateSelectURL": "",
-	"distributedUptimeCreateChecks": "",
-	"distributedUptimeCreateChecksDescription": "",
-	"distributedUptimeCreateIncidentNotification": "",
-	"distributedUptimeCreateIncidentDescription": "",
-	"distributedUptimeCreateAdvancedSettings": "",
-	"distributedUptimeDetailsNoMonitorHistory": "",
-	"distributedUptimeDetailsStatusHeaderUptime": "",
-	"distributedUptimeDetailsStatusHeaderLastUpdate": "",
-	"notifications": {
-		"enableNotifications": "",
-		"testNotification": "",
-		"addOrEditNotifications": "",
-		"slack": {
-			"label": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": "",
-			"webhookRequired": ""
-		},
-		"discord": {
-			"label": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": "",
-			"webhookRequired": ""
-		},
-		"telegram": {
-			"label": "",
-			"description": "",
-			"tokenLabel": "",
-			"tokenPlaceholder": "",
-			"chatIdLabel": "",
-			"chatIdPlaceholder": "",
-			"fieldsRequired": ""
-		},
-		"webhook": {
-			"label": "",
-			"description": "",
-			"urlLabel": "",
-			"urlPlaceholder": "",
-			"urlRequired": ""
-		},
-		"testNotificationDevelop": "",
-		"integrationButton": "",
-		"testSuccess": "",
-		"testFailed": "",
-		"unsupportedType": "",
-		"networkError": "",
-		"fallback": {
-			"title": "",
-			"checks": [""],
-			"actionButton": ""
-		},
-		"createButton": "",
-		"createTitle": "",
-		"create": {
-			"success": "",
-			"failed": ""
-		},
-		"fetch": {
-			"success": "",
-			"failed": ""
-		},
-		"delete": {
-			"success": "",
-			"failed": ""
-		},
-		"edit": {
-			"success": "",
-			"failed": ""
-		},
-		"test": {
-			"success": "",
-			"failed": ""
-		}
-	},
-	"testLocale": "",
-	"add": "",
-	"monitors": "",
-	"distributedUptimeStatusCreateStatusPage": "",
-	"distributedUptimeStatusCreateStatusPageAccess": "",
-	"distributedUptimeStatusCreateStatusPageReady": "",
-	"distributedUptimeStatusBasicInfoHeader": "",
-	"distributedUptimeStatusBasicInfoDescription": "",
-	"distributedUptimeStatusLogoHeader": "",
-	"distributedUptimeStatusLogoDescription": "",
-	"distributedUptimeStatusLogoUploadButton": "",
-	"distributedUptimeStatusStandardMonitorsHeader": "",
-	"distributedUptimeStatusStandardMonitorsDescription": "",
-	"distributedUptimeStatusCreateYour": "",
-	"distributedUptimeStatusEditYour": "",
-	"distributedUptimeStatusPublishedLabel": "",
-	"distributedUptimeStatusCompanyNameLabel": "",
-	"distributedUptimeStatusPageAddressLabel": "",
-	"distributedUptimeStatus30Days": "",
-	"distributedUptimeStatus60Days": "",
-	"distributedUptimeStatus90Days": "",
-	"distributedUptimeStatusPageNotSetUp": "",
-	"distributedUptimeStatusContactAdmin": "",
-	"distributedUptimeStatusPageNotPublic": "",
-	"distributedUptimeStatusPageDeleteDialog": "",
-	"distributedUptimeStatusPageDeleteConfirm": "",
-	"distributedUptimeStatusPageDeleteDescription": "",
-	"distributedUptimeStatusDevices": "",
-	"distributedUptimeStatusUpt": "",
-	"distributedUptimeStatusUptBurned": "",
-	"distributedUptimeStatusUptLogo": "",
-	"incidentsTableNoIncidents": "",
-	"incidentsTablePaginationLabel": "",
-	"incidentsTableMonitorName": "",
-	"incidentsTableStatus": "",
-	"incidentsTableDateTime": "",
-	"incidentsTableStatusCode": "",
-	"incidentsTableMessage": "",
-	"incidentsOptionsHeader": "",
-	"incidentsOptionsHeaderFilterBy": "",
-	"incidentsOptionsHeaderFilterAll": "",
-	"incidentsOptionsHeaderFilterDown": "",
-	"incidentsOptionsHeaderFilterCannotResolve": "",
-	"incidentsOptionsHeaderShow": "",
-	"incidentsOptionsHeaderLastHour": "",
-	"incidentsOptionsHeaderLastDay": "",
-	"incidentsOptionsHeaderLastWeek": "",
-	"incidentsOptionsPlaceholderAllServers": "",
-	"infrastructureCreateYour": "",
-	"infrastructureCreateGeneralSettingsDescription": "",
-	"infrastructureServerRequirement": "",
-	"infrastructureCustomizeAlerts": "",
-	"infrastructureAlertNotificationDescription": "",
-	"infrastructureCreateMonitor": "",
-	"infrastructureProtocol": "",
-	"infrastructureServerUrlLabel": "",
-	"infrastructureDisplayNameLabel": "",
-	"infrastructureAuthorizationSecretLabel": "",
-	"gb": "",
-	"mb": "",
-	"mem": "",
-	"memoryUsage": "",
-	"cpu": "",
-	"cpuUsage": "",
-	"cpuTemperature": "",
-	"diskUsage": "",
-	"used": "",
-	"total": "",
-	"cores": "",
-	"frequency": "",
-	"status": "",
-	"cpuPhysical": "",
-	"cpuLogical": "",
-	"cpuFrequency": "",
-	"avgCpuTemperature": "",
-	"memory": "",
-	"disk": "",
-	"uptime": "",
-	"os": "",
-	"host": "",
-	"actions": "",
-	"integrations": "",
-	"integrationsPrism": "",
-	"integrationsSlack": "",
-	"integrationsSlackInfo": "",
-	"integrationsDiscord": "",
-	"integrationsDiscordInfo": "",
-	"integrationsZapier": "",
-	"integrationsZapierInfo": "",
-	"commonSave": "",
-	"createYour": "",
-	"createMonitor": "",
-	"pause": "",
-	"resume": "",
-	"editing": "",
-	"url": "",
-	"access": "",
-	"timezone": "",
-	"features": "",
-	"administrator": "",
-	"loginHere": "",
-	"displayName": "",
-	"urlMonitor": "",
-	"portToMonitor": "",
-	"websiteMonitoring": "",
-	"websiteMonitoringDescription": "",
-	"pingMonitoring": "",
-	"pingMonitoringDescription": "",
-	"dockerContainerMonitoring": "",
-	"dockerContainerMonitoringDescription": "",
-	"portMonitoring": "",
-	"portMonitoringDescription": "",
-	"createMaintenanceWindow": "",
-	"createMaintenance": "",
-	"editMaintenance": "",
-	"maintenanceWindowName": "",
-	"friendlyNameInput": "",
-	"friendlyNamePlaceholder": "",
-	"maintenanceRepeat": "",
-	"maintenance": "",
-	"duration": "",
-	"addMonitors": "",
-	"window": "",
-	"cancel": "",
-	"message": "",
-	"low": "",
-	"high": "",
-	"statusCode": "",
-	"date&Time": "",
-	"type": "",
-	"statusPageName": "",
-	"publicURL": "",
-	"repeat": "",
-	"edit": "",
-	"createA": "",
-	"remove": "",
-	"maintenanceWindowDescription": "",
-	"startTime": "",
-	"timeZoneInfo": "",
-	"monitorsToApply": "",
-	"nextWindow": "",
-	"notFoundButton": "",
-	"pageSpeedConfigureSettingsDescription": "",
-	"monitorDisplayName": "",
-	"whenNewIncident": "",
-	"notifySMS": "",
-	"notifyEmails": "",
-	"seperateEmails": "",
-	"checkFrequency": "",
-	"matchMethod": "",
-	"expectedValue": "",
-	"deleteDialogTitle": "",
-	"deleteDialogDescription": "",
-	"pageSpeedMonitor": "",
-	"shown": "",
-	"ago": "",
-	"companyName": "",
-	"pageSpeedDetailsPerformanceReport": "",
-	"pageSpeedDetailsPerformanceReportCalculator": "",
-	"checkingEvery": "",
-	"statusPageCreateSettings": "",
-	"basicInformation": "",
-	"statusPageCreateBasicInfoDescription": "",
-	"statusPageCreateSelectTimeZoneDescription": "",
-	"statusPageCreateAppearanceDescription": "",
-	"statusPageCreateSettingsCheckboxLabel": "",
-	"statusPageCreateBasicInfoStatusPageAddress": "",
-	"statusPageCreateTabsContent": "",
-	"statusPageCreateTabsContentDescription": "",
-	"statusPageCreateTabsContentFeaturesDescription": "",
-	"showCharts": "",
-	"showUptimePercentage": "",
-	"removeLogo": "",
-	"statusPageStatus": "",
-	"statusPageStatusContactAdmin": "",
-	"statusPageStatusNotPublic": "",
-	"statusPageStatusNoPage": "",
-	"statusPageStatusServiceStatus": "",
-	"deleteStatusPage": "",
-	"deleteStatusPageConfirm": "",
-	"deleteStatusPageDescription": "",
-	"uptimeCreate": "",
-	"uptimeCreateJsonPath": "",
-	"uptimeCreateJsonPathQuery": "",
-	"maintenanceTableActionMenuDialogTitle": "",
-	"infrastructureEditYour": "",
-	"infrastructureEditMonitor": "",
-	"infrastructureMonitorCreated": "",
-	"infrastructureMonitorUpdated": "",
-	"errorInvalidTypeId": "",
-	"errorInvalidFieldId": "",
-	"inviteNoTokenFound": "",
-	"pageSpeedWarning": "",
-	"pageSpeedLearnMoreLink": "",
-	"pageSpeedAddApiKey": "",
-	"update": "",
-	"invalidFileFormat": "",
-	"invalidFileSize": "",
-	"ClickUpload": "",
-	"DragandDrop": "",
-	"MaxSize": "",
-	"SupportedFormats": "",
-	"FirstName": "",
-	"LastName": "",
-	"EmailDescriptionText": "",
-	"YourPhoto": "",
-	"PhotoDescriptionText": "",
-	"save": "",
-	"DeleteDescriptionText": "",
-	"DeleteAccountWarning": "",
-	"DeleteWarningTitle": "",
-	"bulkImport": {
-		"title": "",
-		"selectFileTips": "",
-		"selectFileDescription": "",
-		"selectFile": "",
-		"parsingFailed": "",
-		"uploadSuccess": "",
-		"validationFailed": "",
-		"noFileSelected": "",
-		"fallbackPage": "",
-		"invalidFileType": "",
-		"uploadFailed": ""
-	},
-	"DeleteAccountTitle": "",
-	"DeleteAccountButton": "",
-	"publicLink": "",
-	"maskedPageSpeedKeyPlaceholder": "",
-	"reset": "",
-	"ignoreTLSError": "",
-	"tlsErrorIgnored": "",
-	"ignoreTLSErrorDescription": "",
-	"createNew": "",
-	"greeting": {
-		"prepend": "",
-		"append": "",
-		"overview": ""
-	},
-	"roles": {
-		"superAdmin": "",
-		"admin": "",
-		"teamMember": "",
-		"demoUser": ""
-	},
-	"teamPanel": {
-		"teamMembers": "",
-		"filter": {
-			"all": "",
-			"member": ""
-		},
-		"inviteTeamMember": "",
-		"inviteNewTeamMember": "",
-		"inviteDescription": "",
-		"email": "",
-		"selectRole": "",
-		"inviteLink": "",
-		"cancel": "",
-		"noMembers": "",
-		"getToken": "",
-		"emailToken": "",
-		"table": {
-			"name": "",
-			"email": "",
-			"role": "",
-			"created": ""
-		},
-		"addTeamMember": {
-			"addMemberMenu": "",
-			"title": "",
-			"description": "",
-			"addButton": ""
-		},
-		"register": "",
-		"registerToast": {
-			"success": "",
-			"dbUserExists": "",
-			"unknownError": ""
-		},
-		"registerTeamMember": {
-			"title": "",
-			"auth": {
-				"common": {
-					"inputs": {
-						"firstName": {
-							"errors": {
-								"empty": "",
-								"pattern": ""
-							}
-						},
-						"lastName": {
-							"errors": {
-								"empty": "",
-								"pattern": ""
-							}
-						},
-						"email": {
-							"errors": {
-								"empty": "",
-								"invalid": ""
-							}
-						},
-						"role": {
-							"errors": {
-								"empty": ""
-							}
-						}
-					}
-				}
-			}
-		},
-		"role": "",
-		"changeTeamPassword": {
-			"changePasswordMenu": "",
-			"title": "",
-			"description": "",
-			"success": ""
-		}
-	},
-	"monitorState": {
-		"paused": "",
-		"resumed": "",
-		"active": ""
-	},
-	"menu": {
-		"uptime": "",
-		"pagespeed": "",
-		"infrastructure": "",
-		"incidents": "",
-		"statusPages": "",
-		"maintenance": "",
-		"integrations": "",
-		"settings": "",
-		"support": "",
-		"discussions": "",
-		"docs": "",
-		"changelog": "",
-		"profile": "",
-		"password": "",
-		"team": "",
-		"logOut": "",
-		"notifications": "",
-		"logs": ""
-	},
-	"settingsEmailUser": "",
-	"state": "",
-	"statusBreadCrumbsStatusPages": "",
-	"statusBreadCrumbsDetails": "",
-	"commonSaving": "",
-	"navControls": "",
-	"incidentsPageTitle": "",
-	"passwordPanel": {
-		"passwordChangedSuccess": "",
-		"passwordInputIncorrect": "",
-		"currentPassword": "",
-		"enterCurrentPassword": "",
-		"newPassword": "",
-		"enterNewPassword": "",
-		"confirmNewPassword": "",
-		"passwordRequirements": "",
-		"saving": ""
-	},
-	"emailSent": "",
-	"failedToSendEmail": "",
-	"settingsTestEmailSuccess": "",
-	"settingsTestEmailFailed": "",
-	"settingsTestEmailFailedWithReason": "",
-	"settingsTestEmailUnknownError": "",
-	"statusMsg": {
-		"paused": "",
-		"up": "",
-		"down": "",
-		"pending": ""
-	},
-	"uptimeGeneralInstructions": {
-		"http": "",
-		"ping": "",
-		"docker": "",
-		"port": "",
-		"game": "",
-		"https": ""
-	},
 	"common": {
-		"appName": "",
-		"monitoringAgentName": "",
-		"buttons": {
-			"toggleTheme": ""
+		"auth": {
+			"roles": {
+				"admin": "مسؤول",
+				"demo": "عرض توضيحي",
+				"superadmin": "مسؤول أعلى",
+				"user": "مستخدم"
+			}
 		},
-		"toasts": {
-			"networkError": "",
-			"checkConnection": "",
-			"unknownError": ""
-		}
-	},
-	"auth": {
-		"common": {
-			"navigation": {
-				"continue": "",
-				"back": ""
+		"alerts": {
+			"pageSpeedApiKey": {
+				"content": "تحذير: لم تقم بإضافة مفتاح Google PageSpeed API بعد. قم بزيارة <settingsLink>الإعدادات</settingsLink> لإضافته. بدونه، لن تعمل مراقبة PageSpeed."
+			}
+		},
+		"appName": "Checkmate",
+		"breadcrumbs": {
+			"details": "التفاصيل",
+			"home": "الرئيسية"
+		},
+		"buttons": {
+			"addMember": "إضافة عضو",
+			"cancel": "إلغاء",
+			"close": "إغلاق",
+			"configure": "تهيئة",
+			"confirm": "تأكيد",
+			"create": "إنشاء",
+			"delete": "حذف",
+			"generateToken": "إنشاء رمز",
+			"incidents": "الحوادث",
+			"inviteMember": "دعوة عضو",
+			"pause": "إيقاف مؤقت",
+			"resume": "استئناف",
+			"save": "حفظ",
+			"sendInvite": "إرسال دعوة",
+			"test": "اختبار",
+			"testNotifications": "اختبار الإشعارات",
+			"toggleTheme": "تبديل الوضع الفاتح والداكن",
+			"flushQueue": "تفريغ قائمة الانتظار",
+			"notFound": "الانتقال إلى لوحة التحكم الرئيسية",
+			"resetPassword": "إعادة تعيين كلمة المرور",
+			"reset": "إعادة تعيين",
+			"clear": "مسح",
+			"addDemo": "إضافة مراقبات تجريبية",
+			"removeMonitors": "إزالة المراقبات",
+			"sendTestEmail": "إرسال بريد تجريبي",
+			"exportToJSON": "تصدير إلى JSON",
+			"importFromJSON": "استيراد من JSON",
+			"clearFilters": "مسح المرشحات",
+			"removeUser": "إزالة المستخدم"
+		},
+		"charts": {
+			"labels": {
+				"averageResponseTime": "متوسط وقت الاستجابة",
+				"downtime": "وقت التوقف",
+				"high": "مرتفع",
+				"low": "منخفض",
+				"uptime": "وقت التشغيل"
 			},
-			"inputs": {
-				"email": {
-					"label": "",
-					"placeholder": "",
-					"errors": {
-						"empty": "",
-						"invalid": ""
-					}
-				},
-				"password": {
-					"label": "",
-					"rules": {
-						"length": {
-							"beginning": "",
-							"highlighted": ""
-						},
-						"special": {
-							"beginning": "",
-							"highlighted": ""
-						},
-						"number": {
-							"beginning": "",
-							"highlighted": ""
-						},
-						"uppercase": {
-							"beginning": "",
-							"highlighted": ""
-						},
-						"lowercase": {
-							"beginning": "",
-							"highlighted": ""
-						},
-						"match": {
-							"beginning": "",
-							"highlighted": ""
-						}
-					},
-					"errors": {
-						"empty": "",
-						"length": "",
-						"uppercase": "",
-						"lowercase": "",
-						"number": "",
-						"special": "",
-						"incorrect": ""
-					}
-				},
-				"passwordConfirm": {
-					"label": "",
-					"placeholder": "",
-					"errors": {
-						"empty": "",
-						"different": ""
-					}
-				},
-				"firstName": {
-					"label": "",
-					"placeholder": "",
-					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
-					}
-				},
-				"lastName": {
-					"label": "",
-					"placeholder": "",
-					"errors": {
-						"empty": "",
-						"length": "",
-						"pattern": ""
+			"histogram": {
+				"avg": "المتوسط: {{value}} مللي ثانية",
+				"max": "الحد الأقصى: {{value}} مللي ثانية"
+			}
+		},
+		"dialogs": {
+			"delete": {
+				"description": "لا يمكن التراجع عن هذا الإجراء.",
+				"title": "هل أنت متأكد أنك تريد حذف هذا؟"
+			}
+		},
+		"labels": {
+			"active": "نشط",
+			"paused": "متوقف مؤقتاً",
+			"na": "غير متوفر",
+			"resolved": "تم الحل",
+			"responseTime": "وقت الاستجابة"
+		},
+		"form": {
+			"role": {
+				"option": {
+					"role": {
+						"label": "الأدوار"
 					}
 				}
 			},
-			"errors": {
-				"validation": ""
-			},
-			"fields": {
-				"password": {
-					"errors": {
-						"incorrect": ""
+			"name": {
+				"option": {
+					"firstName": {
+						"label": "الاسم الأول",
+						"placeholder": "أدخل اسمك الأول"
+					},
+					"lastName": {
+						"label": "اسم العائلة",
+						"placeholder": "أدخل اسم عائلتك"
 					}
-				},
-				"role": {
-					"errors": {
-						"min": ""
+				}
+			},
+			"email": {
+				"option": {
+					"email": {
+						"label": "البريد الإلكتروني",
+						"placeholder": "you@example.com"
 					}
 				}
 			}
 		},
-		"login": {
-			"heading": "",
-			"subheadings": {
-				"stepOne": "",
-				"stepTwo": ""
-			},
-			"links": {
-				"forgotPassword": "",
-				"register": "",
-				"forgotPasswordLink": "",
-				"registerLink": ""
-			},
-			"toasts": {
-				"success": "",
-				"incorrectPassword": ""
-			},
+		"table": {
+			"empty": "لا يوجد شيء هنا",
+			"headers": {
+				"actions": "إجراءات",
+				"dateTime": "التاريخ والوقت",
+				"message": "الرسالة",
+				"monitor": "المراقب",
+				"monitorId": "معرّف المراقب",
+				"name": "الاسم",
+				"status": "الحالة",
+				"type": "النوع",
+				"url": "الرابط",
+				"interval": "الفاصل الزمني",
+				"active": "نشط",
+				"responseTime": "وقت الاستجابة"
+			}
+		}
+	},
+	"components": {
+		"imageUpload": {
+			"clickToUpload": "انقر للرفع",
+			"dragAndDrop": "أو اسحب وأسقط",
+			"supportedFormats": "الصيغ المدعومة",
+			"maxSize": "الحجم الأقصى",
+			"orDragAndDrop": "أو اسحب وأفلت",
 			"errors": {
-				"password": {
-					"incorrect": ""
-				}
-			},
-			"welcome": ""
+				"invalidFileSize": "حجم الملف كبير جدًا!",
+				"invalidFileFormat": "تنسيق الملف غير مدعوم!"
+			}
 		},
-		"registration": {
-			"heading": {
-				"superAdmin": "",
-				"user": ""
-			},
-			"subheadings": {
-				"stepOne": "",
-				"stepTwo": "",
-				"stepThree": ""
+		"headerStatusPageControls": {
+			"publicLink": "رابط عام"
+		},
+		"headerTimeRange": {
+			"labels": {
+				"day": "يوم",
+				"month": "شهر",
+				"recent": "الأخيرة",
+				"week": "أسبوع"
 			},
 			"description": {
-				"superAdmin": "",
-				"user": ""
+				"recent": "عرض الإحصائيات لآخر ساعتين.",
+				"day": "عرض الإحصائيات لآخر 24 ساعة.",
+				"week": "عرض الإحصائيات لآخر 7 أيام.",
+				"month": "عرض الإحصائيات لآخر 30 يوماً."
+			}
+		},
+		"offlineBanner": {
+			"serverUnreachable": "تعذر الوصول إلى الخادم",
+			"retry": "إعادة المحاولة",
+			"retrying": "جارٍ إعادة المحاولة...",
+			"reconnected": "تمت استعادة الاتصال"
+		},
+		"sidebar": {
+			"menu": {
+				"uptime": "وقت التشغيل",
+				"pagespeed": "Pagespeed",
+				"infrastructure": "البنية التحتية",
+				"notifications": "الإشعارات",
+				"checks": "الفحوصات",
+				"incidents": "الحوادث",
+				"statusPages": "صفحات الحالة",
+				"maintenance": "الصيانة",
+				"logs": "السجلات",
+				"settings": "الإعدادات"
 			},
-			"gettingStartedButton": {
-				"superAdmin": "",
-				"user": ""
+			"bottomMenu": {
+				"support": "الدعم",
+				"discussions": "المناقشات",
+				"docs": "الوثائق",
+				"changelog": "سجل التغييرات"
 			},
-			"termsAndPolicies": "",
+			"accountMenu": {
+				"profile": "الملف الشخصي",
+				"password": "كلمة المرور",
+				"team": "الفريق"
+			},
+			"starPrompt": {
+				"title": "أضف نجمة لـ Checkmate",
+				"description": "اطلع على أحدث الإصدارات وساعد في تنمية المجتمع على GitHub"
+			},
+			"authFooter": {
+				"navControls": "عناصر التحكم",
+				"logOut": "تسجيل الخروج",
+				"roles": {
+					"superAdmin": "مسؤول أعلى",
+					"admin": "مسؤول",
+					"user": "مستخدم",
+					"demoUser": "مستخدم تجريبي"
+				}
+			}
+		},
+		"starPrompt": {
+			"title": "أضف نجمة لـ Checkmate",
+			"description": "اطلع على أحدث الإصدارات وساعد في تنمية المجتمع على GitHub"
+		},
+		"pageHeader": {
 			"links": {
-				"login": ""
-			},
-			"toasts": {
-				"success": ""
-			},
-			"welcome": ""
-		},
-		"forgotPassword": {
-			"heading": "",
-			"subheadings": {
-				"stepOne": "",
-				"stepTwo": "",
-				"stepThree": "",
-				"stepFour": ""
-			},
-			"buttons": {
-				"openEmail": "",
-				"resetPassword": ""
-			},
-			"imageAlts": {
-				"passwordKey": "",
-				"email": "",
-				"lock": "",
-				"passwordConfirm": ""
-			},
-			"links": {
-				"login": "",
-				"resend": ""
-			},
-			"toasts": {
-				"sent": "",
-				"emailNotFound": "",
-				"redirect": "",
-				"success": "",
-				"error": ""
+				"support": "الدعم",
+				"discussions": "المناقشات",
+				"docs": "التوثيق",
+				"changelog": "سجل التغييرات"
 			}
 		}
 	},
-	"errorPages": {
-		"serverUnreachable": {
-			"toasts": {
-				"reconnected": "",
-				"stillUnreachable": ""
+	"pages": {
+		"notFound": {
+			"title": "يا إلهي! لقد أسقطت السوشي!",
+			"subtitle": "إما أن الرابط غير موجود، أو ليس لديك صلاحية الوصول إليه."
+		},
+		"account": {
+			"tabs": {
+				"profile": "الملف الشخصي",
+				"password": "كلمة المرور",
+				"team": "الفريق"
 			},
-			"alertBox": "",
-			"description": "",
-			"retryButton": {
-				"default": "",
-				"processing": ""
+			"form": {
+				"name": {
+					"title": "الاسم",
+					"description": "تحديث معلوماتك الشخصية"
+				},
+				"photo": {
+					"title": "صورة الملف الشخصي",
+					"description": "رفع صورة للملف الشخصي"
+				},
+				"currentPassword": {
+					"title": "كلمة المرور الحالية",
+					"description": "أدخل كلمة المرور الحالية للتحقق من هويتك",
+					"option": {
+						"label": "كلمة المرور الحالية",
+						"placeholder": "أدخل كلمة المرور الحالية"
+					}
+				},
+				"newPassword": {
+					"title": "كلمة مرور جديدة",
+					"description": "اختر كلمة مرور قوية مكونة من 8 أحرف على الأقل",
+					"option": {
+						"newPassword": {
+							"label": "كلمة مرور جديدة",
+							"placeholder": "أدخل كلمة المرور الجديدة"
+						},
+						"confirm": {
+							"label": "تأكيد كلمة المرور",
+							"placeholder": "تأكيد كلمة المرور الجديدة"
+						}
+					}
+				},
+				"deleteAccount": {
+					"title": "حذف الحساب",
+					"description": "هذا الإجراء دائم ولا يمكن التراجع عنه"
+				}
+			},
+			"team": {
+				"filter": {
+					"placeholder": "تصفية حسب الدور",
+					"all": "كل الأدوار",
+					"admin": "مسؤول",
+					"member": "عضو"
+				},
+				"table": {
+					"headers": {
+						"email": "البريد الإلكتروني",
+						"role": "الدور",
+						"created": "تم الإنشاء في"
+					}
+				},
+				"addMember": {
+					"title": "تسجيل عضو فريق جديد",
+					"description": "إنشاء حساب مستخدم جديد. شارك بيانات الاعتماد بشكل آمن بعد الإنشاء."
+				},
+				"invite": {
+					"title": "دعوة عضو فريق",
+					"description": "إرسال دعوة للانضمام إلى فريقك",
+					"email": {
+						"label": "عنوان البريد الإلكتروني",
+						"placeholder": "أدخل عنوان البريد الإلكتروني"
+					},
+					"role": {
+						"label": "الدور",
+						"placeholder": "اختر دوراً"
+					},
+					"linkLabel": "رابط الدعوة"
+				},
+				"fallback": {
+					"title": "لا يوجد بعد أعضاء فريق",
+					"description": "ادعُ زملاءك عبر البريد الإلكتروني أو أضفهم مباشرة. بمجرد انضمامهم، سيظهرون هنا مع دورهم."
+				}
+			},
+			"header": {
+				"title": "الحساب",
+				"description": "إدارة ملفك الشخصي وكلمة المرور والفريق وتفضيلات مساحة العمل."
+			}
+		},
+		"auth": {
+			"brandPanel": {
+				"eyebrow": "المراقبة المفتوحة المصدر للبنية التحتية",
+				"tagline": "راقب كل خطوة تقوم بها خوادمك.",
+				"description": "تتبع حالة التشغيل وأوقات الاستجابة والحوادث في الوقت الفعلي - ذاتية الاستضافة وتبقى لك."
+			},
+			"common": {
+				"passwordRules": {
+					"length": {
+						"beginning": "",
+						"highlighted": ""
+					},
+					"lowercase": {
+						"beginning": "",
+						"highlighted": ""
+					},
+					"match": {
+						"beginning": "",
+						"highlighted": ""
+					},
+					"number": {
+						"beginning": "",
+						"highlighted": ""
+					},
+					"special": {
+						"beginning": "",
+						"highlighted": ""
+					},
+					"uppercase": {
+						"beginning": "",
+						"highlighted": ""
+					}
+				},
+				"form": {
+					"option": {
+						"email": {
+							"label": "البريد الإلكتروني",
+							"placeholder": "me@example.com"
+						},
+						"password": {
+							"label": "كلمة المرور",
+							"placeholder": "********"
+						},
+						"confirmPassword": {
+							"label": "تأكيد كلمة المرور"
+						}
+					}
+				}
+			},
+			"login": {
+				"title": "مرحباً بعودتك إلى Checkmate!",
+				"subtitle": "سجّل الدخول للمتابعة",
+				"submit": "تسجيل الدخول",
+				"links": {
+					"forgotPassword": {
+						"text": "نسيت كلمة المرور؟",
+						"linkText": "إعادة تعيين كلمة المرور"
+					},
+					"register": {
+						"text": "ليس لديك حساب؟",
+						"linkText": "سجّل هنا"
+					}
+				}
+			},
+			"register": {
+				"title": "مرحباً بعودتك إلى Checkmate!",
+				"subtitle": "سجّل للبدء",
+				"submit": "تسجيل",
+				"setupNotice": "هذه الصفحة متاحة فقط أثناء الإعداد الأولي. بمجرد تسجيل المسؤول الأعلى، يمكن دعوة مستخدمين إضافيين من إعدادات الفريق."
+			},
+			"forgotPassword": {
+				"title": "نسيت كلمة المرور؟",
+				"subtitle": "لا تقلق، سنرسل لك تعليمات إعادة التعيين.",
+				"submit": "طلب استرداد",
+				"links": {
+					"login": {
+						"text": "العودة إلى",
+						"linkText": "تسجيل الدخول"
+					}
+				}
+			},
+			"setNewPassword": {
+				"title": "إعادة تعيين كلمة المرور",
+				"subtitle": "يجب أن تكون كلمة المرور الجديدة مختلفة عن كلمات المرور المستخدمة سابقاً."
+			}
+		},
+		"checks": {
+			"selects": {
+				"monitor": {
+					"all": "جميع المراقبات"
+				},
+				"status": {
+					"all": "الكل",
+					"down": "متوقف",
+					"up": "يعمل"
+				}
+			},
+			"table": {
+				"empty": "لا توجد فحوصات متوقفة في هذا النطاق الزمني",
+				"headers": {
+					"statusCode": "رمز الحالة",
+					"location": "الموقع"
+				}
+			},
+			"fallback": {
+				"title": "لا توجد فحوصات بعد",
+				"description": "بمجرد إنشاء جهاز مراقبة، ستظهر هنا كل عملية فحص حالة ووقت استجابة كفحص."
+			},
+			"header": {
+				"title": "الفحوصات",
+				"description": "كل فحص يجريه Checkmate على مراقبيك يظهر هنا برمز الحالة ووقت الاستجابة."
+			}
+		},
+		"common": {
+			"monitors": {
+				"actions": {
+					"configure": "تهيئة",
+					"delete": "حذف",
+					"generateToken": "إنشاء رمز",
+					"details": "التفاصيل",
+					"incidents": "الحوادث",
+					"inviteMember": "دعوة عضو",
+					"openSite": "فتح الموقع",
+					"pause": "إيقاف مؤقت",
+					"resume": "استئناف",
+					"selectAll": "تحديد جميع الشاشات",
+					"selectMonitor": "تحديد {{name}}",
+					"bulkSelected_one": "{{count}} شاشة محددة",
+					"bulkSelected_other": "{{count}} شاشات محددة"
+				},
+				"statBoxes": {
+					"activeFor": "نشط منذ",
+					"certificateExpiry": "انتهاء الشهادة",
+					"lastCheck": "آخر فحص",
+					"lastResponseTime": "آخر وقت استجابة",
+					"serviceIsDown": "الخدمة معطلة"
+				},
+				"status": {
+					"down": "متوقف",
+					"breached": "تم تجاوز الحد",
+					"initializing": "جارٍ التهيئة",
+					"maintenance": "صيانة",
+					"paused": "متوقف مؤقتاً",
+					"total": "الإجمالي",
+					"up": "يعمل"
+				},
+				"monitorTypes": {
+					"optionDocker": "Docker",
+					"optionGame": "ألعاب",
+					"optionHttp": "HTTP(S)",
+					"optionPing": "Ping",
+					"optionPort": "منفذ",
+					"optionPagespeed": "PageSpeed",
+					"optionHardware": "البنية التحتية",
+					"optionGrpc": "gRPC",
+					"optionWebSocket": "WebSocket"
+				},
+				"bulkPause": {
+					"paused_one": "تم إيقاف {{count}} شاشة مؤقتاً",
+					"paused_other": "تم إيقاف {{count}} شاشات مؤقتاً",
+					"resumed_one": "تم استئناف {{count}} شاشة",
+					"resumed_other": "تم استئناف {{count}} شاشات",
+					"alreadyPaused_one": "الشاشة المحددة متوقفة مؤقتاً بالفعل",
+					"alreadyPaused_other": "جميع الشاشات المحددة متوقفة مؤقتاً بالفعل",
+					"alreadyRunning_one": "الشاشة المحددة قيد التشغيل بالفعل",
+					"alreadyRunning_other": "جميع الشاشات المحددة قيد التشغيل بالفعل"
+				}
+			}
+		},
+		"createMonitor": {
+			"form": {
+				"advanced": {
+					"description": "إعدادات اختيارية لحالات الاستخدام المتقدمة",
+					"option": {
+						"advancedMatching": {
+							"label": "استخدام المطابقة المتقدمة"
+						},
+						"expectedValue": {
+							"label": "القيمة المتوقعة"
+						},
+						"jsonPath": {
+							"description": "سيتم تقييم هذا التعبير مقابل بيانات JSON للاستجابة وسيتم استخدام النتيجة للمطابقة مع القيمة المتوقعة. راجع <jmesLink>jmespath.org</jmesLink> لتوثيق لغة الاستعلام.",
+							"label": "تعبير JSONPath"
+						},
+						"matchMethod": {
+							"label": "طريقة المطابقة",
+							"equal": "",
+							"include": "",
+							"regex": ""
+						}
+					},
+					"title": "إعدادات متقدمة"
+				},
+				"frequency": {
+					"description": "كم مرة تريد التحقق من حالة هذا المراقب؟",
+					"option": {
+						"frequency": {
+							"label": "تكرار الفحص",
+							"value": {
+								"fifteenMinutes": "15 دقيقة",
+								"fifteenSeconds": "",
+								"fiveMinutes": "5 دقائق",
+								"fourMinutes": "",
+								"oneMinute": "",
+								"tenMinutes": "10 دقائق",
+								"thirtyMinutes": "30 دقيقة",
+								"thirtySeconds": "",
+								"threeMinutes": "",
+								"twoMinutes": ""
+							}
+						}
+					},
+					"title": "تكرار الفحص"
+				},
+				"general": {
+					"option": {
+						"container": {
+							"label": "اسم/معرّف الحاوية",
+							"placeholder": "my-app أو abcd1234"
+						},
+						"host": {
+							"label": "المضيف",
+							"placeholder": "192.168.1.100 أو example.com"
+						},
+						"name": {
+							"label": "اسم العرض",
+							"placeholder": "مثال: موقعي الإلكتروني"
+						},
+						"secret": {
+							"label": "مفتاح التفويض",
+							"placeholder": "أدخل مفتاحك السري"
+						},
+						"url": {
+							"label": "URL",
+							"placeholder": "https://www.google.com"
+						},
+						"game": {
+							"label": "",
+							"placeholder": ""
+						},
+						"port": {
+							"label": "المنفذ المراد مراقبته",
+							"placeholder": "80"
+						},
+						"grpcServiceName": {
+							"label": "اسم الخدمة",
+							"placeholder": "مثال: my.service.v1 (اتركه فارغاً للفحص العام)"
+						},
+						"wsUrl": {
+							"label": "رابط WebSocket",
+							"placeholder": "wss://example.com/socket"
+						},
+						"captureUrl": {
+							"label": "نقطة نهاية Capture",
+							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						}
+					},
+					"title": "الإعدادات العامة",
+					"description": {
+						"http": "أدخل الرابط أو عنوان IP للمراقبة (مثال: https://example.com/ أو 192.168.1.100) وأضف اسم عرض واضح يظهر في لوحة التحكم.",
+						"ping": "",
+						"port": "",
+						"docker": "",
+						"game": "أدخل عنوان IP أو اسم المضيف ورقم المنفذ للاختبار (مثل 192.168.1.100 أو example.com) واختر نوع اللعبة. تتطلب بعض الألعاب تفعيل استعلامات الخادم في ملف الإعدادات الخاص بها — يُرجى مراجعة وثائق خادم اللعبة. اطّلع على <gamedigLink>قائمة الألعاب المدعومة</gamedigLink> لمعرفة تفاصيل البروتوكول.",
+						"pagespeed": "تتبع أداء تحميل الصفحة ومؤشرات Core Web Vitals ودرجات التحسين لموقعك.",
+						"grpc": "أدخل اسم المضيف ومنفذ خادم gRPC، وحدد اختيارياً اسم خدمة لفحص الصحة، وأضف اسم عرض.",
+						"websocket": "أدخل رابط WebSocket للمراقبة (مثال: wss://example.com/socket) وأضف اسم عرض.",
+						"hardware": "راقب استخدام وحدة المعالجة المركزية والذاكرة والقرص ودرجة الحرارة لبنيتك التحتية. يجب أن يتضمن عنوان URL لنقطة نهاية Capture المسار الكامل ‎/api/v1/metrics‎ (مثال: ‎http://192.168.1.10:5001/api/v1/metrics‎). بالنسبة لمفتاح التفويض، الصق سلسلة الرمز فقط — لا تُضمّن كلمة 'Bearer'."
+					}
+				},
+				"ignoreTls": {
+					"description": "تهيئة التحقق من شهادة TLS/SSL لاتصالات HTTPS.",
+					"option": {
+						"tls": {
+							"label": "تجاهل أخطاء TLS/SSL"
+						}
+					},
+					"title": "إعدادات TLS/SSL"
+				},
+				"incidents": {
+					"description": "يتم استخدام نافذة منزلقة لتحديد متى يتوقف المراقب. ستتغير حالة المراقب فقط عندما تستوفي نسبة الفحوصات في النافذة المنزلقة القيمة المحددة.",
+					"option": {
+						"checks": {
+							"label": "عدد الفحوصات في النافذة المنزلقة"
+						},
+						"percentage": {
+							"label": "ما نسبة الفحوصات في النافذة المنزلقة التي يجب أن تفشل/تنجح قبل تغيير حالة المراقب؟"
+						}
+					},
+					"title": "الحوادث"
+				},
+				"notifications": {
+					"description": "اختر قنوات الإشعارات التي تريد استخدامها",
+					"title": "الإشعارات"
+				},
+				"type": {
+					"description": "اختر نوع الفحص المراد تنفيذه",
+					"optionDockerDescription": "استخدم Docker لمراقبة ما إذا كانت الحاوية تعمل.",
+					"optionGameDescription": "مراقبة ما إذا كان خادم لعبة معين متصلاً.",
+					"optionGrpcDescription": "مراقبة خدمات gRPC باستخدام بروتوكول فحص الصحة القياسي.",
+					"optionWebSocketDescription": "مراقبة نقاط نهاية WebSocket لصحة الاتصال ووقت الاستجابة.",
+					"optionHttpDescription": "استخدم HTTP(S) لمراقبة موقعك الإلكتروني أو نقطة نهاية API.",
+					"optionPingDescription": "استخدم ICMP Ping لمراقبة ما إذا كان الخادم متصلاً.",
+					"optionPortDescription": "مراقبة ما إذا كان منفذ معين على الخادم مفتوحاً.",
+					"title": "النوع"
+				},
+				"thresholds": {
+					"title": "حدود التنبيه",
+					"description": "حدد الحدود التي يجب عندها تشغيل التنبيهات لمراقب الأجهزة هذا.",
+					"option": {
+						"cpuThreshold": {
+							"label": "حد تنبيه CPU (%)"
+						},
+						"memoryThreshold": {
+							"label": "حد تنبيه الذاكرة (%)"
+						},
+						"diskThreshold": {
+							"label": "حد تنبيه القرص (%)"
+						},
+						"tempThreshold": {
+							"label": "حد تنبيه الحرارة (°C)"
+						}
+					}
+				},
+				"geoChecks": {
+					"title": "فحوصات موزعة جغرافياً",
+					"description": "تشغيل فحوصات من مواقع جغرافية متعددة لمراقبة التوفر والأداء العالمي.",
+					"option": {
+						"enabled": {
+							"label": "تفعيل الفحوصات الموزعة جغرافياً"
+						},
+						"locations": {
+							"label": "المواقع",
+							"placeholder": "اختر المواقع",
+							"options": {
+								"EU": "أوروبا",
+								"NA": "أمريكا الشمالية",
+								"AS": "آسيا",
+								"SA": "أمريكا الجنوبية",
+								"AF": "أفريقيا",
+								"OC": "أوقيانوسيا"
+							}
+						},
+						"interval": {
+							"label": "فاصل الفحص",
+							"value": {
+								"fiveMinutes": "5 دقائق",
+								"tenMinutes": "10 دقائق",
+								"fifteenMinutes": "15 دقيقة",
+								"thirtyMinutes": "30 دقيقة"
+							}
+						}
+					}
+				},
+				"url": {
+					"title": "عرض IP/URL للمراقب في صفحة الحالة",
+					"description": "عرض عنوان IP أو رابط المراقب في صفحة الحالة العامة. إذا تم تعطيله، سيظهر فقط اسم المراقب لحماية المعلومات الحساسة.",
+					"option": {
+						"showURL": {
+							"label": "عرض IP/URL في صفحة الحالة",
+							"enabled": "مفعّل",
+							"disabled": "معطّل"
+						}
+					}
+				},
+				"stats": {
+					"title": "سجل المراقبة",
+					"description": "مسح جميع سجلات وإحصائيات المراقبة لفريقك. هذا الإجراء لا يمكن التراجع عنه.",
+					"buttonText": "مسح جميع الإحصائيات",
+					"dialog": {
+						"title": "مسح جميع سجلات المراقبة؟",
+						"description": "سيتم حذف جميع سجلات المراقبة والإحصائيات وبيانات الفحص لفريقك نهائياً. لا يمكن التراجع عن هذا الإجراء.",
+						"confirm": "نعم، مسح جميع الإحصائيات"
+					}
+				}
+			}
+		},
+		"editUser": {
+			"form": {
+				"roles": {
+					"title": "الأدوار",
+					"description": "تعيين أدوار للمستخدم. يمكن اختيار أدوار متعددة."
+				}
+			},
+			"dialog": {
+				"removeUser": {
+					"title": "إزالة المستخدم",
+					"content": "هل أنت متأكد أنك تريد إزالة {{name}} من فريقك؟ لا يمكن التراجع عن هذا الإجراء."
+				}
+			}
+		},
+		"incidents": {
+			"fallback": {
+				"title": "لا حوادث — جميع الأنظمة سليمة",
+				"description": "عندما يتعطل جهاز مراقبة أو يتعافى، سيظهر الحادث هنا مع الأوقات وتفاصيل الجهاز وسجل الحل."
+			},
+			"dialog": {
+				"resolveIncident": {
+					"title": "حل الحادثة",
+					"option": {
+						"comment": {
+							"label": "تعليق (اختياري)",
+							"placeholder": "أضف تعليقاً حول الحل..."
+						}
+					}
+				},
+				"details": {
+					"analysis": "تحليل الحادثة",
+					"comment": "تعليق:",
+					"detailsLabel": "التفاصيل",
+					"downtime": "وقت التوقف:",
+					"message": "الرسالة:",
+					"monitor": "المراقب:",
+					"overview": "نظرة عامة",
+					"resolutionDetails": "تفاصيل الحل",
+					"resolutionType": "النوع:",
+					"resolutionTypes": {
+						"automatic": "تلقائي",
+						"manual": "يدوي"
+					},
+					"resolve": "حل الحادثة",
+					"resolvedAt": "تم الحل في:",
+					"resolvedBy": "تم الحل بواسطة:",
+					"startedAt": "بدأت في:",
+					"status": "الحالة:",
+					"statusCode": "رمز الحالة:",
+					"timeline": "الجدول الزمني",
+					"title": "تفاصيل الحادثة",
+					"url": "URL:"
+				}
+			},
+			"filters": {
+				"allMonitors": "جميع المراقبات",
+				"monitor": "المراقب",
+				"resolutionType": "نوع الحل",
+				"resolutionTypes": {
+					"manual": "يدوي",
+					"automatic": "تلقائي",
+					"all": "الكل"
+				}
+			},
+			"summaryCard": {
+				"activeIncidents": {
+					"title": "الحوادث النشطة",
+					"active_zero": "لا توجد حوادث نشطة",
+					"active_one": "{{count}} حادثة نشطة",
+					"active_other": "{{count}} حوادث نشطة"
+				},
+				"incidentStats": {
+					"avgResolutionTime": "متوسط وقت الحل",
+					"mostAffectedMonitor": "المراقب الأكثر تأثراً",
+					"title": "إحصائيات الحوادث",
+					"totalIncidents": "إجمالي الحوادث"
+				},
+				"latestIncidents": {
+					"title": "أحدث الحوادث"
+				}
+			},
+			"table": {
+				"actions": {
+					"details": "التفاصيل",
+					"goToMonitor": "الانتقال إلى المراقب",
+					"resolveManually": "حل يدوياً"
+				},
+				"activeIncidents": "الحوادث النشطة",
+				"headers": {
+					"endTime": "وقت الانتهاء",
+					"resolutionType": "نوع الحل",
+					"startTime": "",
+					"statusCode": "رمز الحالة"
+				},
+				"resolvedIncidents": "الحوادث المحلولة",
+				"status": {
+					"active": "نشط",
+					"resolved": "تم الحل"
+				}
+			},
+			"header": {
+				"title": "الحوادث",
+				"description": "عندما يتعطل جهاز مراقبة أو يتعافى، تظهر الحوادث هنا مع الأوقات وتفاصيل الجهاز وسجل الحل."
+			}
+		},
+		"infrastructure": {
+			"charts": {
+				"labels": {
+					"cpu": "استخدام CPU",
+					"disk": "استخدام القرص",
+					"memory": "استخدام الذاكرة",
+					"netBytesRecv": "{{name}} - البايتات المستلمة",
+					"netBytesSent": "{{name}} - البايتات المرسلة",
+					"netNoTraffic": "Capture يبلغ عن عدم وجود حركة بيانات على أي واجهة. هذا أمر طبيعي عندما يعمل Capture داخل حاوية لا ترى سوى واجهات الاسترجاع — قم بتشغيل Capture مباشرة على المضيف لرؤية نشاط الشبكة الحقيقي.",
+					"temp": "الحرارة"
+				}
+			},
+			"gauges": {
+				"cpu": {
+					"lowerLabel": "أقصى تردد",
+					"title": "استخدام CPU",
+					"upperLabel": "التردد الحالي"
+				},
+				"disk": {
+					"lowerLabel": "متاح",
+					"title": "استخدام القرص {{idx}}",
+					"upperLabel": "مستخدم"
+				},
+				"memory": {
+					"lowerLabel": "متاح",
+					"title": "استخدام الذاكرة",
+					"upperLabel": "مستخدم"
+				}
+			},
+			"statBoxes": {
+				"avgCpuTemperature": "",
+				"cpuFrequency": "",
+				"cpuLogical": "",
+				"cpuPhysical": "",
+				"disk": "القرص",
+				"memory": "الذاكرة",
+				"os": ""
+			},
+			"table": {
+				"headers": {
+					"cpu": "CPU",
+					"disk": "القرص",
+					"memory": "الذاكرة"
+				}
+			},
+			"tabs": {
+				"labels": {
+					"network": "",
+					"overview": "نظرة عامة"
+				}
+			},
+			"fallback": {
+				"actionButton": "أنشئ مراقباً!",
+				"title": "لا توجد بعد أجهزة مراقبة للبنية التحتية",
+				"description": "تتبّع أداء الخوادم وحدد الاختناقات واضمن الموثوقية مع مراقبة البنية التحتية في الوقت الفعلي."
+			},
+			"header": {
+				"title": "مراقبات البنية التحتية",
+				"description": "تتبّع أداء الخوادم وحدد الاختناقات واضمن الموثوقية مع مراقبة البنية التحتية في الوقت الفعلي."
+			}
+		},
+		"logs": {
+			"fallback": {
+				"title": "لا توجد سجلات بعد",
+				"description": "ستظهر هنا نشاط الخادم والتحذيرات والأخطاء أثناء تشغيل Checkmate."
+			},
+			"tabs": {
+				"diagnostics": "التشخيص",
+				"logs": "السجلات",
+				"queue": "قائمة المهام"
+			},
+			"logLevelSelect": {
+				"label": "مستوى السجل"
+			},
+			"jobQueue": "قائمة المهام",
+			"jobQueueExplainer": "<highlight>الصفوف المميزة</highlight> هي المهام التي تتم معالجتها حالياً بواسطة عامل.",
+			"failedJobs": "المهام الفاشلة",
+			"failedJobsExplainer": "حالات الفشل الأخيرة حسب المراقب — وقت آخر فشل، وعدد مرات الفشل، والسبب.",
+			"noLogs": "لم يتم العثور على سجلات",
+			"metrics": {
+				"jobs": "المهام",
+				"activeJobs": "المهام النشطة",
+				"failingJobs": "المهام الفاشلة",
+				"totalRuns": "إجمالي عمليات التشغيل",
+				"totalFailures": "إجمالي حالات الفشل"
+			},
+			"diagnostics": {
+				"stats": {
+					"eventLoopDelay": "تأخير حلقة الأحداث",
+					"uptime": "وقت التشغيل",
+					"usedHeapSize": "حجم الذاكرة المستخدمة",
+					"totalHeapSize": "إجمالي حجم الذاكرة",
+					"osMemoryLimit": "حد ذاكرة نظام التشغيل"
+				},
+				"gauges": {
+					"heapAllocation": "تخصيص الذاكرة",
+					"heapUsage": "استخدام الذاكرة",
+					"heapUtilization": "معدل استخدام الذاكرة",
+					"instantCpuUsage": "استخدام CPU اللحظي",
+					"availableMemoryPercentage": "% من الذاكرة المتاحة",
+					"allocatedPercentage": "% مخصص",
+					"usedSPercentage": "% من 1 ثانية مستخدمة بواسطة CPU",
+					"total": "الإجمالي",
+					"used": "مستخدم"
+				},
+				"sections": {
+					"runtimeStats": {
+						"title": "إحصائيات التشغيل",
+						"description": "لقطة لعملية Node.js والجهاز المضيف. يتم التحديث كل 5 ثوانٍ."
+					},
+					"memoryCpu": {
+						"title": "الذاكرة والمعالج",
+						"description": "كيف تستخدم العملية الذاكرة المخصصة لها ومعالج الجهاز المضيف."
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"timestamp": "الطابع الزمني",
+					"level": "المستوى",
+					"service": "الخدمة",
+					"method": "الطريقة",
+					"monitorId": "معرّف المراقب",
+					"runCount": "عدد التشغيلات",
+					"failCount": "عدد حالات الفشل",
+					"lastRunAt": "آخر تشغيل في",
+					"lockedAt": "مقفل في",
+					"lastFinishedAt": "آخر انتهاء في",
+					"lastRunTook": "مدة آخر تشغيل",
+					"lastFailedAt": "آخر فشل في",
+					"failReason": "سبب الفشل"
+				}
+			},
+			"queueFallback": {
+				"title": "لا توجد مهام في قائمة الانتظار",
+				"description": "ستظهر هنا فحوصات أجهزة المراقبة المجدولة أو قيد التشغيل. قائمة الانتظار الفارغة تعني أن كل شيء محدّث."
+			},
+			"header": {
+				"title": "السجلات وقائمة الانتظار",
+				"description": "افحص سجلات الخادم وقائمة انتظار مهام المراقبة وتشخيصات وقت التشغيل في مكان واحد."
+			}
+		},
+		"maintenanceWindow": {
+			"fallback": {
+				"actionButton": "أنشئ نافذة صيانة!",
+				"title": "لا توجد نوافذ صيانة مجدولة",
+				"description": "حدد مواعيد التوقف المخطط لها لإيقاف التنبيهات وإعلام فريقك ومستخدميك بما يتوقعونه."
+			},
+			"table": {
+				"headers": {
+					"nextWindow": "",
+					"repeat": ""
+				}
+			},
+			"form": {
+				"general": {
+					"title": "الإعدادات العامة",
+					"description": "حدد اسماً وخيار التكرار لنافذة الصيانة الخاصة بك.",
+					"option": {
+						"name": {
+							"label": "الاسم",
+							"placeholder": "مثال: صيانة أسبوعية"
+						},
+						"repeat": {
+							"label": "تكرار"
+						}
+					}
+				},
+				"startDate": {
+					"title": "تاريخ البدء",
+					"description": "اختر تاريخ البدء لنافذة الصيانة الخاصة بك.",
+					"option": {
+						"startDate": {
+							"label": "تاريخ البدء"
+						}
+					}
+				},
+				"startTime": {
+					"title": "وقت البدء",
+					"description": "حدد وقت البدء والمدة لنافذة الصيانة الخاصة بك. جميع القيم بتوقيت UTC",
+					"option": {
+						"duration": {
+							"label": "المدة"
+						},
+						"startTime": {
+							"label": "وقت البدء"
+						}
+					},
+					"monitors": {
+						"title": "المراقبات",
+						"description": "المراقبات التي يجب أن تنطبق عليها نافذة الصيانة",
+						"option": {
+							"addMonitors": {
+								"label": "إضافة مراقبات"
+							}
+						}
+					}
+				}
+			},
+			"header": {
+				"title": "نوافذ الصيانة",
+				"description": "حدد مواعيد التوقف المخطط لها لإيقاف التنبيهات وإعلام فريقك ومستخدميك بما يتوقعونه."
+			}
+		},
+		"notifications": {
+			"fallback": {
+				"actionButton": "إنشاء قناة",
+				"title": "لا توجد بعد قنوات إشعار",
+				"description": "اربط Slack وDiscord والبريد الإلكتروني وWebhooks والمزيد ليعلم الأشخاص المناسبون بالحوادث فور حدوثها."
+			},
+			"form": {
+				"accessToken": {
+					"optionAccessToken": "رمز الوصول",
+					"placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
+				},
+				"address": {
+					"description": "العنوان الذي سيتم إرسال الإشعارات إليه.",
+					"optionAddress": "العنوان",
+					"placeholderEmail": "example@example.com",
+					"placeholderWebhook": "https://your-server.com/webhook",
+					"title": "العنوان"
+				},
+				"homeServer": {
+					"optionHomeServer": "الخادم الرئيسي",
+					"placeholder": "example.com"
+				},
+				"matrix": {
+					"description": "تهيئة اتصال خادم Matrix الرئيسي للإشعارات.",
+					"title": "تهيئة Matrix"
+				},
+				"notificationName": {
+					"description": "اسم وصفي لقناة الإشعارات",
+					"optionName": "اسم القناة",
+					"placeholder": "مثال: تنبيهات الإنتاج",
+					"title": "اسم القناة"
+				},
+				"pagerDuty": {
+					"description": "مفتاح تكامل PagerDuty لتلقي التنبيهات.",
+					"optionIntegrationKey": "مفتاح التكامل",
+					"placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+					"title": "مفتاح التكامل"
+				},
+				"roomId": {
+					"optionRoomId": "معرّف الغرفة",
+					"placeholder": "!abcdefg:matrix.org"
+				},
+				"type": {
+					"description": "اختر نوع قناة الإشعارات المراد إنشاؤها.",
+					"optionType": "النوع",
+					"title": "نوع القناة"
+				},
+				"telegram": {
+					"title": "تهيئة Telegram",
+					"description": "",
+					"optionBotToken": "رمز البوت",
+					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
+					"optionChatId": "معرّف المحادثة",
+					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "إعدادات Pushover",
+					"description": "أدخل رمز التطبيق ومفتاح المستخدم في Pushover.",
+					"optionAppToken": "رمز التطبيق",
+					"placeholderAppToken": "أدخل رمز التطبيق",
+					"optionUserKey": "مفتاح المستخدم",
+					"placeholderUserKey": "أدخل مفتاح المستخدم"
+				},
+				"twilio": {
+					"title": "إعدادات Twilio",
+					"description": "أدخل بيانات اعتماد حساب Twilio لإرسال الرسائل النصية.",
+					"optionAccountSid": "معرف الحساب (SID)",
+					"placeholderAccountSid": "أدخل معرف الحساب",
+					"optionAuthToken": "رمز المصادقة",
+					"placeholderAuthToken": "أدخل رمز المصادقة",
+					"optionFromNumber": "من الرقم",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "إلى الرقم",
+					"placeholderToNumber": "+1234567890"
+				}
+			},
+			"table": {
+				"headers": {
+					"destination": "الوجهة"
+				}
+			},
+			"header": {
+				"title": "الإشعارات",
+				"description": "اربط Slack وDiscord والبريد الإلكتروني وWebhooks والمزيد ليعلم الأشخاص المناسبون بالحوادث فور حدوثها."
+			}
+		},
+		"pageSpeed": {
+			"charts": {
+				"common": {
+					"cls": "إزاحة التخطيط التراكمية (CLS)",
+					"fcp": "أول رسم للمحتوى (FCP)",
+					"lcp": "أكبر رسم للمحتوى (LCP)",
+					"si": "مؤشر السرعة (SI)",
+					"tbt": "إجمالي وقت الحظر (TBT)"
+				},
+				"legend": {
+					"title": "تقرير PageSpeed",
+					"weight": "الوزن"
+				},
+				"pie": {
+					"title": "تقرير الأداء"
+				}
+			},
+			"table": {
+				"headers": {
+					"pageSpeedScore": "درجة PageSpeed"
+				}
+			},
+			"fallback": {
+				"actionButton": "أنشئ مراقباً!",
+				"title": "لا توجد بعد أجهزة مراقبة PageSpeed",
+				"description": "تابع Core Web Vitals ودرجات Lighthouse عبر الزمن لاكتشاف التراجع قبل أن يلاحظه المستخدمون."
+			},
+			"header": {
+				"title": "مراقبات PageSpeed",
+				"description": "تابع Core Web Vitals ودرجات Lighthouse عبر الزمن لاكتشاف التراجع قبل أن يلاحظه المستخدمون."
+			}
+		},
+		"settings": {
+			"form": {
+				"timezone": {
+					"title": "المنطقة الزمنية للعرض",
+					"description": "اختر المنطقة الزمنية المستخدمة لعرض التواريخ والأوقات في جميع أنحاء التطبيق.",
+					"option": {
+						"timezone": {
+							"label": "المنطقة الزمنية للعرض"
+						}
+					}
+				},
+				"ui": {
+					"title": "المظهر",
+					"description": "التبديل بين الوضع الفاتح والداكن، أو تغيير اللغة، أو تخصيص نوع عرض المخططات.",
+					"option": {
+						"theme": {
+							"label": "وضع السمة",
+							"light": "فاتح",
+							"dark": "داكن"
+						},
+						"language": {
+							"label": "اللغة"
+						},
+						"chartType": {
+							"label": "نوع المخطط",
+							"histogram": "مدرج تكراري",
+							"heatmap": "خريطة حرارية"
+						}
+					}
+				},
+				"pagespeed": {
+					"title": "مفتاح Google PageSpeed API",
+					"description": "أدخل مفتاح Google PageSpeed API لتفعيل مراقبة Google PageSpeed. انقر على إعادة تعيين لتحديث المفتاح.",
+					"option": {
+						"apiKey": {
+							"label": "مفتاح PageSpeed API",
+							"labelSet": "تم تعيين مفتاح API. انقر على إعادة تعيين لتغييره.",
+							"placeholder": "أدخل مفتاح Google PageSpeed API الخاص بك"
+						}
+					}
+				},
+				"url": {
+					"title": "عرض IP/URL للمراقب في صفحة الحالة",
+					"description": "عرض عنوان IP أو رابط المراقب في صفحة الحالة العامة. إذا تم تعطيله، سيظهر فقط اسم المراقب لحماية المعلومات الحساسة.",
+					"option": {
+						"showURL": {
+							"label": "عرض IP/URL في صفحة الحالة",
+							"enabled": "مفعّل",
+							"disabled": "معطّل"
+						}
+					}
+				},
+				"stats": {
+					"title": "سجل المراقبة",
+					"description": "مسح جميع سجلات وإحصائيات المراقبة لفريقك. هذا الإجراء لا يمكن التراجع عنه.",
+					"option": {
+						"clear": {
+							"label": "مسح جميع الإحصائيات. هذا الإجراء لا يمكن التراجع عنه."
+						}
+					},
+					"dialog": {
+						"title": "مسح جميع سجلات المراقبة؟",
+						"description": "لا يمكن التراجع عن هذا"
+					}
+				},
+				"retention": {
+					"title": "الاحتفاظ بالفحوصات",
+					"description": "حدد مدة الاحتفاظ ببيانات الفحص قبل التنظيف التلقائي.",
+					"option": {
+						"days": {
+							"label": "فترة الاحتفاظ (أيام)",
+							"unlimited": "غير محدود"
+						}
+					}
+				},
+				"thresholds": {
+					"title": "الحدود العامة",
+					"description": "تعيين حدود عامة لـ CPU والذاكرة والقرص والحرارة لمراقبة البنية التحتية. تنطبق على جميع مراقبات الأجهزة ما لم يتم تجاوزها.",
+					"option": {
+						"cpu": {
+							"label": "حد CPU (%)",
+							"placeholder": "1 - 100"
+						},
+						"memory": {
+							"label": "حد الذاكرة (%)",
+							"placeholder": "1 - 100"
+						},
+						"disk": {
+							"label": "حد القرص (%)",
+							"placeholder": "1 - 100"
+						},
+						"temperature": {
+							"label": "حد الحرارة (°C)",
+							"placeholder": "1 - 150"
+						}
+					}
+				},
+				"email": {
+					"title": "إعدادات البريد الإلكتروني",
+					"description": "تهيئة إعدادات البريد الإلكتروني لنظامك. يُستخدم لإرسال الإشعارات والتنبيهات.",
+					"descriptionTransport": "",
+					"descriptionTransportLink": "اطلع على المواصفات هنا",
+					"option": {
+						"host": {
+							"label": "مضيف البريد - اسم المضيف أو عنوان IP للاتصال",
+							"placeholder": "smtp.gmail.com"
+						},
+						"port": {
+							"label": "منفذ البريد - المنفذ للاتصال",
+							"placeholder": "587"
+						},
+						"address": {
+							"label": "عنوان البريد الإلكتروني - يُستخدم للمصادقة",
+							"placeholder": "you@example.com"
+						},
+						"user": {
+							"label": "مستخدم البريد - اسم المستخدم للمصادقة، يتجاوز عنوان البريد إذا تم تحديده",
+							"placeholder": "اتركه فارغاً إذا لم يكن مطلوباً"
+						},
+						"password": {
+							"label": "كلمة مرور البريد - كلمة المرور للمصادقة",
+							"labelSet": "تم تعيين كلمة المرور. انقر على إعادة تعيين لتغييرها.",
+							"placeholder": "أدخل كلمة المرور"
+						},
+						"tlsServername": {
+							"label": "اسم خادم TLS - اسم مضيف اختياري للتحقق من TLS عندما يكون المضيف عنوان IP",
+							"placeholder": "example.com"
+						},
+						"connectionHost": {
+							"label": "مضيف اتصال البريد - اسم المضيف المستخدم في تحية HELO/EHLO",
+							"placeholder": "localhost"
+						},
+						"secure": {
+							"label": "استخدام SSL (موصى به): تشفير الاتصال باستخدام SSL/TLS"
+						},
+						"pool": {
+							"label": "تفعيل تجميع الاتصالات: إعادة استخدام الاتصالات الموجودة لتحسين الأداء"
+						},
+						"ignoreTLS": {
+							"label": "تعطيل STARTTLS: عدم استخدام TLS حتى لو كان الخادم يدعمه"
+						},
+						"requireTLS": {
+							"label": "فرض STARTTLS: يتطلب ترقية TLS، يفشل إذا لم يكن مدعوماً"
+						},
+						"rejectUnauthorized": {
+							"label": "رفض الشهادات غير الصالحة: رفض الاتصالات ذات الشهادات الموقعة ذاتياً أو غير الموثوقة"
+						}
+					}
+				},
+				"demoMonitors": {
+					"title": "مراقبات تجريبية",
+					"description": "إضافة مراقبات نموذجية لأغراض العرض التوضيحي."
+				},
+				"removeMonitors": {
+					"title": "إعادة ضبط النظام",
+					"description": "إزالة جميع المراقبات من نظامك.",
+					"dialog": {
+						"title": "إزالة جميع المراقبات؟",
+						"description": "لا يمكن التراجع عن هذا الإجراء.",
+						"paragraph": "سيتم أيضًا إزالة جميع سجلات الفحص والحوادث ونوافذ الصيانة المجدولة وأي صفحات حالة كانت تعتمد على هذه المراقبات. صدّر المراقبات أولًا للاحتفاظ بنسخة احتياطية من بياناتها."
+					}
+				},
+				"exportMonitors": {
+					"title": "تصدير المراقبات"
+				},
+				"importExportMonitors": {
+					"title": "استيراد / تصدير المراقبات",
+					"description": "استيراد أو تصدير بيانات المراقبات كملف JSON للنسخ الاحتياطي أو النقل."
+				},
+				"about": {
+					"title": "حول",
+					"developedBy": "تم التطوير بواسطة Bluewave Labs"
+				},
+				"validation": {
+					"errorMessage": "يرجى إصلاح أخطاء التحقق التالية:"
+				}
+			},
+			"header": {
+				"title": "الإعدادات",
+				"description": "تكوين SMTP والتكاملات والاحتفاظ والسلوك العام للتطبيق."
+			}
+		},
+		"statusPages": {
+			"deleteSuccess": "تم حذف صفحة الحالة بنجاح",
+			"fallback": {
+				"title": "لا توجد بعد صفحات حالة",
+				"actionButton": "أنشئ صفحة حالة!",
+				"description": "انشر صفحة عامة تُظهر للعملاء وأصحاب المصلحة وقت التشغيل الفعلي وتاريخ الحوادث."
+			},
+			"monitorsList": {
+				"chartTypeHeatmap": "خريطة حرارية",
+				"chartTypeHistogram": "مدرج تكراري",
+				"noData": "لا تتوفر بيانات",
+				"infrastructure": {
+					"title": "البنية التحتية",
+					"cpu": "CPU",
+					"memory": "RAM",
+					"memoryText": "الذاكرة",
+					"disk": "القرص",
+					"usage": "الاستخدام",
+					"used": "مستخدم",
+					"total": "الإجمالي"
+				},
+				"uptime": {
+					"title": "وقت التشغيل",
+					"responseTime": "وقت الاستجابة"
+				}
+			},
+			"statusBar": {
+				"allDown": "جميع الأنظمة متوقفة",
+				"allUp": "جميع الأنظمة تعمل بشكل طبيعي",
+				"degraded": "بعض الأنظمة تواجه مشكلات",
+				"unknown": "تعذر تحديد حالة النظام",
+				"allBreached": "تجاوزت جميع الأنظمة الحدود",
+				"allMaintenance": "جميع الأنظمة قيد الصيانة",
+				"allPaused": "جميع الأنظمة متوقفة مؤقتًا",
+				"allInitializing": "جميع الأنظمة قيد التهيئة",
+				"breachedAndDown": "تجاوزت بعض الأنظمة الحدود وهي معطلة",
+				"breached": "تجاوزت بعض الأنظمة الحدود",
+				"maintenanceAndDown": "بعض الأنظمة معطلة أثناء الصيانة",
+				"maintenance": "بعض الأنظمة قيد الصيانة",
+				"partiallyPaused": "بعض الأنظمة متوقفة مؤقتًا",
+				"initializing": "بعض الأنظمة قيد التهيئة",
+				"noMonitors": "لم يتم تكوين أي شاشة"
+			},
+			"table": {
+				"headers": {
+					"name": "اسم صفحة الحالة",
+					"url": "الرابط العام"
+				},
+				"published": "منشور",
+				"unpublished": "غير منشور"
+			},
+			"title": "صفحات الحالة",
+			"details": {
+				"empty": {
+					"title": "لا يوجد شيء هنا بعد",
+					"addMonitor": "أضف مراقباً للبدء"
+				}
+			},
+			"form": {
+				"access": {
+					"title": "الوصول",
+					"description": "إذا كانت صفحة الحالة جاهزة، يمكنك وضع علامة منشور عليها.",
+					"option": {
+						"published": {
+							"name": "منشورة ومرئية للعامة"
+						}
+					}
+				},
+				"basicInfo": {
+					"title": "المعلومات الأساسية",
+					"description": "حدد اسم الشركة والنطاق الفرعي الذي تشير إليه صفحة الحالة.",
+					"option": {
+						"name": {
+							"label": "اسم الشركة",
+							"placeholder": "Acme Inc."
+						},
+						"url": {
+							"label": "عنوان صفحة الحالة",
+							"placeholder": "my-status-page"
+						}
+					}
+				},
+				"monitors": {
+					"title": "المراقبات",
+					"description": "اختر المراقبات لعرضها في صفحة الحالة.",
+					"noMonitors": "لم يتم اختيار مراقبات",
+					"option": {
+						"monitors": {
+							"label": "اختر المراقبات",
+							"placeholder": "ابحث واختر المراقبات..."
+						}
+					}
+				},
+				"timezone": {
+					"title": "المنطقة الزمنية",
+					"description": "اختر المنطقة الزمنية التي ستُعرض بها صفحة الحالة.",
+					"option": {
+						"timezone": {
+							"label": "المنطقة الزمنية",
+							"placeholder": "اختر المنطقة الزمنية..."
+						}
+					}
+				},
+				"appearance": {
+					"title": "المظهر",
+					"description": "حدد المظهر الافتراضي لصفحة الحالة العامة.",
+					"option": {
+						"logo": {
+							"label": "الشعار"
+						},
+						"color": {
+							"label": "لون العلامة التجارية"
+						}
+					}
+				},
+				"features": {
+					"title": "الميزات",
+					"description": "تهيئة المعلومات المعروضة في صفحة الحالة.",
+					"option": {
+						"showCharts": {
+							"label": "إظهار مخططات وقت الاستجابة"
+						},
+						"showUptimePercentage": {
+							"label": "إظهار نسبة وقت التشغيل"
+						},
+						"showAdminLoginLink": {
+							"label": "إظهار رابط تسجيل دخول المسؤول"
+						},
+						"showInfrastructure": {
+							"label": "إظهار مقاييس البنية التحتية"
+						}
+					}
+				}
+			},
+			"header": {
+				"title": "صفحات الحالة",
+				"description": "انشر صفحات عامة تُظهر للعملاء وأصحاب المصلحة وقت التشغيل الفعلي وتاريخ الحوادث."
+			}
+		},
+		"uptime": {
+			"filters": {
+				"search": {
+					"placeholder": "البحث في المراقبات..."
+				}
+			},
+			"table": {
+				"headers": {
+					"responseTime": "وقت الاستجابة"
+				}
+			},
+			"fallback": {
+				"actionButton": "أنشئ مراقباً!",
+				"title": "لا توجد بعد أجهزة مراقبة وقت التشغيل",
+				"description": "راقب نقاط نهاية HTTP وعمليات Ping والحاويات والمنافذ — احصل على تنبيه فور حدوث عطل."
+			},
+			"header": {
+				"title": "مراقبات وقت التشغيل",
+				"description": "راقب نقاط نهاية HTTP وعمليات Ping والحاويات والمنافذ — احصل على تنبيه فور حدوث عطل."
 			}
 		}
-	},
-	"createNotifications": {
-		"title": "",
-		"nameSettings": {
-			"title": "",
-			"description": "",
-			"nameLabel": "",
-			"namePlaceholder": ""
-		},
-		"typeSettings": {
-			"title": "",
-			"description": "",
-			"typeLabel": ""
-		},
-		"emailSettings": {
-			"title": "",
-			"description": "",
-			"emailLabel": "",
-			"emailPlaceholder": ""
-		},
-		"slackSettings": {
-			"title": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": ""
-		},
-		"pagerdutySettings": {
-			"title": "",
-			"description": "",
-			"integrationKeyLabel": "",
-			"integrationKeyPlaceholder": ""
-		},
-		"discordSettings": {
-			"title": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": ""
-		},
-		"webhookSettings": {
-			"title": "",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": ""
-		},
-		"testNotification": "",
-		"dialogDeleteTitle": "",
-		"dialogDeleteConfirm": ""
-	},
-	"notificationConfig": {
-		"title": "",
-		"description": ""
-	},
-	"monitorStatus": {
-		"checkingEvery": "",
-		"withCaptureAgent": "",
-		"up": "",
-		"down": "",
-		"paused": ""
-	},
-	"advancedMatching": "",
-	"sendTestNotifications": "",
-	"selectAll": "",
-	"showAdminLoginLink": "",
-	"logsPage": {
-		"title": "",
-		"description": "",
-		"tabs": {
-			"queue": "",
-			"logs": "",
-			"diagnostics": ""
-		},
-		"toast": {
-			"fetchLogsSuccess": ""
-		},
-		"logLevelSelect": {
-			"title": "",
-			"values": {
-				"all": "",
-				"info": "",
-				"warn": "",
-				"error": "",
-				"debug": ""
-			}
-		}
-	},
-	"queuePage": {
-		"title": "",
-		"refreshButton": "",
-		"flushButton": "",
-		"jobTable": {
-			"title": "",
-			"idHeader": "",
-			"urlHeader": "",
-			"typeHeader": "",
-			"activeHeader": "",
-			"lockedAtHeader": "",
-			"runCountHeader": "",
-			"failCountHeader": "",
-			"lastRunHeader": "",
-			"lastFinishedAtHeader": "",
-			"lastRunTookHeader": "",
-			"intervalHeader": ""
-		},
-		"metricsTable": {
-			"title": "",
-			"metricHeader": "",
-			"valueHeader": ""
-		},
-		"failedJobTable": {
-			"title": "",
-			"monitorIdHeader": "",
-			"monitorUrlHeader": "",
-			"failCountHeader": "",
-			"failedAtHeader": "",
-			"failReasonHeader": ""
-		}
-	},
-	"export": {
-		"title": "",
-		"success": "",
-		"failed": ""
-	},
-	"monitorActions": {
-		"title": "",
-		"import": "",
-		"export": "",
-		"deleteSuccess": "",
-		"deleteFailed": "",
-		"details": ""
-	},
-	"settingsPage": {
-		"aboutSettings": {
-			"labelDevelopedBy": "",
-			"labelVersion": "",
-			"title": ""
-		},
-		"demoMonitorsSettings": {
-			"buttonAddMonitors": "",
-			"description": "",
-			"title": ""
-		},
-		"emailSettings": {
-			"buttonSendTestEmail": "",
-			"description": "",
-			"descriptionTransport": "",
-			"labelAddress": "",
-			"labelConnectionHost": "",
-			"labelHost": "",
-			"labelIgnoreTLS": "",
-			"labelPassword": "",
-			"labelPasswordSet": "",
-			"labelPool": "",
-			"labelPort": "",
-			"labelRejectUnauthorized": "",
-			"labelRequireTLS": "",
-			"labelSecure": "",
-			"labelTLSServername": "",
-			"labelUser": "",
-			"linkTransport": "",
-			"placeholderUser": "",
-			"title": "",
-			"toastEmailRequiredFieldsError": ""
-		},
-		"pageSpeedSettings": {
-			"description": "",
-			"labelApiKeySet": "",
-			"labelApiKey": "",
-			"title": ""
-		},
-		"saveButtonLabel": "",
-		"statsSettings": {
-			"clearAllStatsButton": "",
-			"clearAllStatsDescription": "",
-			"clearAllStatsDialogConfirm": "",
-			"clearAllStatsDialogDescription": "",
-			"clearAllStatsDialogTitle": "",
-			"description": "",
-			"labelTTL": "",
-			"labelTTLOptional": "",
-			"title": ""
-		},
-		"systemResetSettings": {
-			"buttonRemoveAllMonitors": "",
-			"description": "",
-			"dialogConfirm": "",
-			"dialogDescription": "",
-			"dialogTitle": "",
-			"title": ""
-		},
-		"timezoneSettings": {
-			"description": "",
-			"label": "",
-			"title": ""
-		},
-		"title": "",
-		"uiSettings": {
-			"description": "",
-			"labelLanguage": "",
-			"labelTheme": "",
-			"title": ""
-		},
-		"urlSettings": {
-			"description": "",
-			"label": "",
-			"selectDisabled": "",
-			"selectEnabled": "",
-			"title": ""
-		},
-		"globalThresholds": {
-			"title": "",
-			"description": ""
-		}
-	},
-	"statusPageCreate": {
-		"buttonSave": ""
-	},
-	"incidentsOptionsHeaderFilterResolved": "",
-	"settingsSave": "",
-	"statusPageCreateAppearanceTitle": "",
-	"confirmPassword": "",
-	"monitorHooks": {
-		"failureAddDemoMonitors": "",
-		"successAddDemoMonitors": ""
-	},
-	"settingsAppearance": "",
-	"settingsDisplayTimezone": "",
-	"settingsGeneralSettings": "",
-	"incidentsOptionsHeaderTotalIncidents": "",
-	"statusPage": {
-		"deleteSuccess": "",
-		"deleteFailed": "",
-		"createSuccess": "",
-		"updateSuccess": "",
-		"generalSettings": "",
-		"contents": "",
-		"fallback": {
-			"checks": [""],
-			"title": "",
-			"actionButton": ""
-		}
-	},
-	"testNotificationsDisabled": "",
-	"incidentsTableResolvedAt": "",
-	"incidentsTableActionResolve": "",
-	"checkHooks": {
-		"failureResolveOne": "",
-		"failureResolveAll": "",
-		"failureResolveMonitor": ""
-	},
-	"checkFormError": "",
-	"diagnosticsPage": {
-		"diagnosticDescription": "",
-		"statsDescription": "",
-		"gauges": {
-			"heapAllocationTitle": "",
-			"heapAllocationSubtitle": "",
-			"heapUsageTitle": "",
-			"heapUsageSubtitle": "",
-			"heapUtilizationTitle": "",
-			"heapUtilizationSubtitle": "",
-			"instantCpuUsageTitle": "",
-			"instantCpuUsageSubtitle": ""
-		},
-		"stats": {
-			"eventLoopDelayTitle": "",
-			"uptimeTitle": "",
-			"usedHeapSizeTitle": "",
-			"totalHeapSizeTitle": "",
-			"osMemoryLimitTitle": ""
-		}
-	},
-	"pageSpeedLighthouseAPI": "",
-	"time": {
-		"threeMinutes": "",
-		"fiveMinutes": "",
-		"tenMinutes": "",
-		"twentyMinutes": "",
-		"oneHour": "",
-		"oneDay": "",
-		"oneWeek": "",
-		"fourMinutes": "",
-		"oneMinute": "",
-		"twoMinutes": "",
-		"fifteenSeconds": "",
-		"thirtySeconds": ""
-	},
-	"general": {
-		"noOptionsFound": ""
-	},
-	"infrastructureMonitor": {
-		"fallback": {
-			"checks": [""],
-			"title": "",
-			"actionButton": ""
-		}
-	},
-	"maintenanceWindow": {
-		"fallback": {
-			"checks": [""],
-			"title": "",
-			"actionButton": ""
-		}
-	},
-	"pageSpeed": {
-		"fallback": {
-			"checks": [""],
-			"title": "",
-			"actionButton": ""
-		}
-	},
-	"uptimeMonitor": {
-		"fallback": {
-			"checks": [""],
-			"title": "",
-			"actionButton": ""
-		}
-	},
-	"editUserPage": {
-		"form": {
-			"email": "",
-			"firstName": "",
-			"lastName": "",
-			"role": "",
-			"save": ""
-		},
-		"table": {
-			"actionHeader": "",
-			"roleHeader": ""
-		},
-		"title": "",
-		"toast": {
-			"successUserUpdate": "",
-			"validationErrors": ""
-		}
-	},
-	"incidentsPageActionResolveMonitor": "",
-	"incidentsPageActionResolveAll": "",
-	"matchMethodOptions": {
-		"equal": "",
-		"equalPlaceholder": "",
-		"include": "",
-		"includePlaceholder": "",
-		"regex": "",
-		"regexPlaceholder": "",
-		"text": ""
-	},
-	"monitorType": {
-		"docker": {
-			"label": "",
-			"namePlaceholder": "",
-			"placeholder": ""
-		},
-		"http": {
-			"label": "",
-			"namePlaceholder": "",
-			"placeholder": ""
-		},
-		"ping": {
-			"label": "",
-			"namePlaceholder": "",
-			"placeholder": ""
-		},
-		"port": {
-			"label": "",
-			"namePlaceholder": "",
-			"placeholder": ""
-		},
-		"game": {
-			"label": "",
-			"namePlaceholder": "",
-			"placeholder": ""
-		}
-	},
-	"uptimeAdvancedMatching": {
-		"jsonPath": ""
-	},
-	"bytesPerSecond": "",
-	"bytesReceived": "",
-	"bytesSent": "",
-	"chooseGame": "",
-	"createMonitorPage": {
-		"incidentConfigDescription": "",
-		"incidentConfigStatusWindowLabel": "",
-		"incidentConfigStatusWindowThresholdLabel": "",
-		"incidentConfigTitle": "",
-		"incidentConfigDescriptionV2": "",
-		"incidentConfigStatusCheckNumber": "",
-		"intervalTitle": "",
-		"intervalDescription": ""
-	},
-	"dataRate": "",
-	"dataReceived": "",
-	"dataSent": "",
-	"details": "",
-	"drops": "",
-	"errors": "",
-	"errorsIn": "",
-	"errorsOut": "",
-	"gameServerMonitoring": "",
-	"gameServerMonitoringDescription": "",
-	"network": "",
-	"networkDrops": "",
-	"networkErrors": "",
-	"networkInterface": "",
-	"noNetworkStatsAvailable": "",
-	"packetsPerSecond": "",
-	"packetsReceived": "",
-	"packetsReceivedRate": "",
-	"packetsSent": "",
-	"rate": "",
-	"selectInterface": ""
+	}
 }

@@ -7,14 +7,18 @@
 ![](https://img.shields.io/github/languages/top/bluewave-labs/checkmate)
 ![](https://img.shields.io/github/issues/bluewave-labs/checkmate)
 ![](https://img.shields.io/github/issues-pr/bluewave-labs/checkmate)
-[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/9901/badge)](https://www.bestpractices.dev/projects/9901)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/bluewave-labs/checkmate)
 
 <h1 align="center"><a href="https://bluewavelabs.ca" target="_blank">Checkmate</a></h1>
 
 <p align="center"><strong>An open source uptime and infrastructure monitoring application</strong></p>
 
-<img width="1660" alt="image" src="https://github.com/user-attachments/assets/b748f36d-a271-4965-ad0a-18bf153bbee7" />
+[![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
+
+<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+
+<br>
+
 
 This repository contains both the frontend and the backend of Checkmate, an open-source, self-hosted monitoring tool for tracking server hardware, uptime, response times, and incidents in real-time with beautiful visualizations. Checkmate regularly checks whether a server/website is accessible and performs optimally, providing real-time alerts and reports on the monitored services' availability, downtime, and response time.
 
@@ -22,14 +26,11 @@ Checkmate also has an agent, called [Capture](https://github.com/bluewave-labs/c
 
 Checkmate has been stress-tested with 1000+ active monitors without any particular issues or performance bottlenecks.
 
-**If you would like to sponsor a feature, [see this link](https://checkmate.so/sponsored-features).**
-
 ## 📚 Table of contents
 
 - [📦 Demo](#demo)  
 - [🔗 User's guide](#users-guide)  
 - [🛠️ Installation](#installation)
-- [🏁 Translations](#translations)  
 - [🚀 Performance](#performance)  
 - [💚 Questions & Ideas](#questions--ideas)  
 - [🧩 Features](#features)  
@@ -37,12 +38,13 @@ Checkmate has been stress-tested with 1000+ active monitors without any particul
 - [🏗️ Tech stack](#tech-stack)  
 - [🔗 A few links](#a-few-links)  
 - [🤝 Contributing](#contributing)  
-- [💰 Our sponsors](#our-sponsors)
 
 
 ## Demo
 
-You can see the latest build of [Checkmate](https://checkmate-demo.bluewavelabs.ca/) in action. The username is demouser@demo.com and the password is Demouser1! (just a note that we update the demo server from time to time, so if it doesn't work for you, please ping us on the Discussions channel).
+You can see the latest build of [Checkmate](https://demo.checkmate.so/) in action. 
+
+The username is demouser@demo.com and the password is Demouser1! (just a note that we update the demo server from time to time, so if it doesn't work for you, please ping us on the Discussions channel).
 
 ## User's guide
 
@@ -56,18 +58,13 @@ Usage instructions can be found [here](https://checkmate.so/docs).
 
 See installation instructions in [Checkmate documentation portal](https://checkmate.so/docs). 
 
-Alternatively, you can also use [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (South Africa) or [Pikapods](https://www.pikapods.com/) to quickly spin off a Checkmate instance. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
+Alternatively, you can also use [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (South Africa), [Cloudzy](https://cloudzy.com/marketplace/checkmate) or [Pikapods](https://www.pikapods.com/) to quickly spin off a Checkmate instance. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
 
 ### Using a Custom CA
 
 If you need to monitor internal HTTPS endpoints with certificates from private Certificate Authorities (like Smallstep), see our [Custom CA Trust Guide](./docs/custom-ca-trust.md) for Docker configuration options.
 
 For more documentation, see the [docs directory](./docs/).
-
-
-## Translations
-
-If you would like to use Checkmate in your language, please [go to this page](https://poeditor.com/join/project/lRUoGZFCsJ) and register for the language you would like to translate Checkmate to. 
 
 ## Performance
 
@@ -91,30 +88,26 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 ## Features
 
 - Completely open source, deployable on your servers or home devices (e.g Raspberry Pi 4 or 5)
-- Website monitoring
+- Several monitoring options: Uptime, Docker, Ping, SSL, Port, Game server
 - Page speed monitoring
 - Infrastructure monitoring (memory, disk usage, CPU performance, network etc) - requires [Capture](https://github.com/bluewave-labs/capture) agent
   - Selective disk monitoring with mountpoint selection
-- Docker monitoring
-- Ping monitoring
-- SSL monitoring
-- Port monitoring
-- Game server monitoring (3.0)
 - Incidents at a glance
-- Status pages
-- E-mail, Webhooks, Discord and Slack notifications
+- Status pages with 4 beautiful themes
+- E-mail, Webhooks, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS) notifications
 - Scheduled maintenance
 - JSON query monitoring
-- Multi-language support for English, German, Japanese, Portuguese (Brazil), Russian, Turkish, Ukrainian, Vietnamese, Chinese (Traditional, Taiwan)
+- Multi-language support for Arabic, Chinese (Simplified), Chinese (Traditional, Taiwan), Czech, English, Finnish, French, German, Japanese, Portuguese (Brazil), Russian, Spanish, Thai, Turkish, Ukrainian, and Vietnamese
 
-**Short term roadmap:** 
 
-- Plugins that will help Checkmate get any information from a remote service (e.g database, etc)
-- Better notifications
-- Network monitoring
-- ..and a few more features
+## Monitor Lifecycle
 
-If you would like to sponsor an additional feature, [see this page](https://checkmate.so/sponsored-features).
+1. A monitor executes a check (HTTP / ping / port / hardware via Capture agent)
+2. The result is stored (success/failure + response time)
+3. Recent check results are evaluated against the monitor's configured status change threshold
+4. If the monitor's status change threshold is met and the current status is not equal to the previous status, the monitor's state changes (e.g. `initializing`, `up`, `down`, `breached`)
+5. Upon a state change: an incident is either created or resolved, depending on the monitor's current status
+6. Notifications are triggered based on configuration
 
 ## Screenshots
 
@@ -173,8 +166,3 @@ Here's how you can contribute:
 
 [![Star History Chart](https://api.star-history.com/svg?repos=bluewave-labs/checkmate&type=Date)](https://star-history.com/#bluewave-labs/Checkmate&Date)
 
-## Our sponsors
-
-Thanks to [Gitbook](https://gitbook.io/) for giving us a free tier for their documentation platform, and [Poeditor](https://poeditor.com/) providing us a free account to use their i18n services. If you would like to sponsor Checkmate, please send an email to hello@bluewavelabs.ca
-
-If you would like to sponsor a feature, [see this page](https://checkmate.so/sponsored-features).

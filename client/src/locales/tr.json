@@ -1,1108 +1,1447 @@
 {
-	"submit": "Gönder",
-	"title": "Başlık",
-	"distributedStatusHeaderText": "Gerçek zamanlı, Gerçek cihazlar kapsamı",
-	"distributedStatusSubHeaderText": "Dünya çapında milyonlarca cihaz tarafından desteklenen sistem performansını küresel bölgeye, ülkeye veya şehre göre görüntüleyin",
-	"settingsDisabled": "Devre dışı",
-	"settingsSuccessSaved": "Ayarlar başarıyla kaydedildi",
-	"settingsFailedToSave": "Ayarlar kaydedilemedi",
-	"settingsStatsCleared": "İstatistikler başarıyla temizlendi",
-	"settingsFailedToClearStats": "İstatistikler temizlenemedi",
-	"settingsMonitorsDeleted": "Tüm monitörler başarıyla silindi",
-	"settingsFailedToDeleteMonitors": "Monitörler silinemedi",
-	"starPromptTitle": "Checkmate yıldızla değerlendirin",
-	"starPromptDescription": "En son sürümleri görün ve GitHub'daki topluluğun büyümesine yardımcı olun",
-	"https": "HTTPS",
-	"http": "HTTP",
-	"monitor": "monitör",
-	"aboutus": "Hakkımızda",
-	"now": "Şimdi",
-	"delete": "Sil",
-	"configure": "Yapılandır",
-	"responseTime": "Yanıt süresi:",
-	"ms": "ms",
-	"bar": "Çubuk",
-	"area": "Alan",
-	"country": "ÜLKE",
-	"city": "ŞEHİR",
-	"response": "YANIT",
-	"monitorStatusUp": "Monitör {name} ({url}) ayakta ve yanıt veriyor",
-	"monitorStatusDown": "Monitör {name} ({url}) yanıt vermiyor",
-	"webhookSendSuccess": "Web kanca bildirimi başarıyla gönderildi",
-	"webhookSendError": "Web kanca bildirimi bu platforma gönderilemedi: {platform}",
-	"webhookUnsupportedPlatform": "Desteklenmeyen platform: {platform}",
-	"distributedRightCategoryTitle": "Monitör",
-	"distributedStatusServerMonitors": "Sunucu monitörleri",
-	"distributedStatusServerMonitorsDescription": "İlgili sunucuların monitör durumları",
-	"distributedUptimeCreateSelectURL": "Burada sunucu adresini (URL) ve monitör türünü girebilirsiniz.",
-	"distributedUptimeCreateChecks": "Yapılacak kontroller",
-	"distributedUptimeCreateChecksDescription": "Adresi girdikten sonra kontrol ekleyebilir ya da çıkartabilirsiniz.",
-	"distributedUptimeCreateIncidentNotification": "Olay bildirimleri",
-	"distributedUptimeCreateIncidentDescription": "Bir olay olduğunda kullanıcıları bilgilendir.",
-	"distributedUptimeCreateAdvancedSettings": "Gelişmiş ayarlar",
-	"distributedUptimeDetailsNoMonitorHistory": "Bu monitör için henüz bir denetim günlüğü oluşturulmadı.",
-	"distributedUptimeDetailsStatusHeaderUptime": "Erişilebilirlik",
-	"distributedUptimeDetailsStatusHeaderLastUpdate": "Son güncelleme",
-	"notifications": {
-		"enableNotifications": "{{platform}} bildirimlerini etkinleştir",
-		"testNotification": "Bildirimi test et",
-		"addOrEditNotifications": "Bildirimleri ekle ya da düzenle",
-		"slack": {
-			"label": "Slack",
-			"description": "Slack bildirimlerini etkinleştirmek için bir Slack uygulaması oluşturun ve gelen web kancalarını etkinleştirin. Daha sonra, webhook URL’sini buraya girmeniz yeterlidir.\n\n\n\n\n\n",
-			"webhookLabel": "Web kanca URL:",
-			"webhookPlaceholder": "https://hooks.slack.com/services/...",
-			"webhookRequired": "Slack webhook URL'si gereklidir"
-		},
-		"discord": {
-			"label": "Discord",
-			"description": "Checkmate’ten Discord bildirimleri aracılığıyla bir Discord kanalına veri göndermek için Discord’un gelen web kancaları özelliğini kullanabilirsiniz.\n\n\n\n\n\n\n\n",
-			"webhookLabel": "Discord web kanca URL",
-			"webhookPlaceholder": "https://discord.com/api/webhooks/...",
-			"webhookRequired": "Discord webhook URL'si gerekli"
-		},
-		"telegram": {
-			"label": "Telegram",
-			"description": "Telegram bildirimlerini etkinleştirmek için, Telegram botlarını oluşturup yönetmek için kullanılan resmi bot BotFather ile bir Telegram botu oluşturun. Daha sonra, API jetonunu (token) ve sohbet kimliğini (chat ID) alın ve buraya yazın.",
-			"tokenLabel": "Bot jetonu (token)",
-			"tokenPlaceholder": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11",
-			"chatIdLabel": "Sohbet ID",
-			"chatIdPlaceholder": "-1001234567890",
-			"fieldsRequired": "Telegram token ve sohbet kimliği gereklidir"
-		},
-		"webhook": {
-			"label": "Web kancaları",
-			"description": "Olaylar meydana geldiğinde bildirim almak için özel bir web kancası ayarlayabilirsiniz.",
-			"urlLabel": "Web kanca URL:",
-			"urlPlaceholder": "https://sunucu-adresiniz.com/webhook",
-			"urlRequired": "Webhook URL'si gerekli"
-		},
-		"testNotificationDevelop": "Test bildirimi 2",
-		"integrationButton": "Bildirim Entegrasyonu",
-		"testSuccess": "Test bildirimi başarıyla gönderildi",
-		"testFailed": "Test bildirimi gönderilemedi",
-		"unsupportedType": "Desteklenmeyen bildirim türü",
-		"networkError": "Ağ hatası oluştu",
-		"fallback": {
-			"title": "",
-			"checks": [""],
-			"actionButton": ""
-		},
-		"createButton": "Bildirim kanalı oluştur",
-		"createTitle": "Bildirim kanalı",
-		"create": {
-			"success": "",
-			"failed": "Bildirim kanalı oluşturulamadı"
-		},
-		"fetch": {
-			"success": "Bildirimler başarıyla alındı",
-			"failed": "Bildirimler alınamadı"
-		},
-		"delete": {
-			"success": "Bildirim başarıyla silindi",
-			"failed": "Bildirim silinemedi"
-		},
-		"edit": {
-			"success": "Bildirim başarıyla güncellendi",
-			"failed": "Bildirim güncellenemedi"
-		},
-		"test": {
-			"success": "Test bildirimi başarıyla gönderildi",
-			"failed": ""
-		}
-	},
-	"testLocale": "TEST13 UPLOAD",
-	"add": "Ekle",
-	"monitors": "Monitörler",
-	"distributedUptimeStatusCreateStatusPage": "durum sayfası",
-	"distributedUptimeStatusCreateStatusPageAccess": "Erişim",
-	"distributedUptimeStatusCreateStatusPageReady": "Durum sayfanız hazırsa yayınlayabilirsiniz.",
-	"distributedUptimeStatusBasicInfoHeader": "Temel bilgiler",
-	"distributedUptimeStatusBasicInfoDescription": "Şirket adınızı ve durum sayfanızın işaret ettiği alt alan adını tanımlayın.",
-	"distributedUptimeStatusLogoHeader": "Logo",
-	"distributedUptimeStatusLogoDescription": "Durum sayfanız için bir logo yükleyin",
-	"distributedUptimeStatusLogoUploadButton": "Logo yükle",
-	"distributedUptimeStatusStandardMonitorsHeader": "Standart monitörler",
-	"distributedUptimeStatusStandardMonitorsDescription": "Durum sayfanıza standart monitörleri ekleyin.",
-	"distributedUptimeStatusCreateYour": "Oluştur:",
-	"distributedUptimeStatusEditYour": "Düzenle:",
-	"distributedUptimeStatusPublishedLabel": "Yayında ve herkes tarafından görülebilir",
-	"distributedUptimeStatusCompanyNameLabel": "Şirket adı",
-	"distributedUptimeStatusPageAddressLabel": "Durum sayfası adresi",
-	"distributedUptimeStatus30Days": "30 gün",
-	"distributedUptimeStatus60Days": "60 gün",
-	"distributedUptimeStatus90Days": "90 gün",
-	"distributedUptimeStatusPageNotSetUp": "Henüz bir durum sayfası oluşturulmadı.",
-	"distributedUptimeStatusContactAdmin": "Lütfen yöneticiniz ile görüşün",
-	"distributedUptimeStatusPageNotPublic": "Bu durum sayfası herkese açık değil",
-	"distributedUptimeStatusPageDeleteDialog": "Bu durum sayfasını silmek istiyor musunuz? ",
-	"distributedUptimeStatusPageDeleteConfirm": "Evet, durum sayfasını sil",
-	"distributedUptimeStatusPageDeleteDescription": "Silindiği zaman durum sayfalarını geri getiremezsiniz.",
-	"distributedUptimeStatusDevices": "Cihazlar",
-	"distributedUptimeStatusUpt": "UPT",
-	"distributedUptimeStatusUptBurned": "Yakılan UPT",
-	"distributedUptimeStatusUptLogo": "Upt Logo",
-	"incidentsTableNoIncidents": "Hiç olay kaydedilmedi",
-	"incidentsTablePaginationLabel": "olaylar",
-	"incidentsTableMonitorName": "Monitör adı",
-	"incidentsTableStatus": "Durum",
-	"incidentsTableDateTime": "Tarih ve saat",
-	"incidentsTableStatusCode": "Durum kodu",
-	"incidentsTableMessage": "Mesaj",
-	"incidentsOptionsHeader": "Servisler:",
-	"incidentsOptionsHeaderFilterBy": "Filtrele:",
-	"incidentsOptionsHeaderFilterAll": "Tümü",
-	"incidentsOptionsHeaderFilterDown": "Erişilemiyor",
-	"incidentsOptionsHeaderFilterCannotResolve": "Çözümlenemiyor",
-	"incidentsOptionsHeaderShow": "Göster:",
-	"incidentsOptionsHeaderLastHour": "Son saat",
-	"incidentsOptionsHeaderLastDay": "Son gün",
-	"incidentsOptionsHeaderLastWeek": "Son hafta",
-	"incidentsOptionsPlaceholderAllServers": "Tüm sunucular",
-	"infrastructureCreateYour": "Oluştur:",
-	"infrastructureCreateGeneralSettingsDescription": "Burada, sunucu aracısına bağlanmak için kolay ad ve yetkilendirme sırrıyla birlikte ana bilgisayarın URL'sini seçebilirsiniz.",
-	"infrastructureServerRequirement": "İzlediğiniz sunucunun şu şekilde çalışması gerekir:",
-	"infrastructureCustomizeAlerts": "Alarmları özelleştir",
-	"infrastructureAlertNotificationDescription": "Eşikler belirtilen bir yüzdeyi aştığında kullanıcıya bildirim gönder.",
-	"infrastructureCreateMonitor": "Altyapı Monitörü oluştur",
-	"infrastructureProtocol": "Protokol",
-	"infrastructureServerUrlLabel": "Sunucu adresi",
-	"infrastructureDisplayNameLabel": "Görünen adı",
-	"infrastructureAuthorizationSecretLabel": "Kimlik denetimi parolası",
-	"gb": "GB",
-	"mb": "MB",
-	"mem": "Bellek",
-	"memoryUsage": "Bellek kullanımı",
-	"cpu": "CPU",
-	"cpuUsage": "CPU kullanımı",
-	"cpuTemperature": "CPU sıcaklığı",
-	"diskUsage": "Disk kullanımı",
-	"used": "Kullanılan",
-	"total": "Toplam",
-	"cores": "Çekirdek",
-	"frequency": "Frekans",
-	"status": "Durum",
-	"cpuPhysical": "CPU (fiziksel)",
-	"cpuLogical": "CPU (Mantıksal)",
-	"cpuFrequency": "CPU Frekansı",
-	"avgCpuTemperature": "Ortalama CPU Isısı",
-	"memory": "Bellek",
-	"disk": "Disk",
-	"uptime": "Çalışma süresi",
-	"os": "İşletim sistemi",
-	"host": "Makine",
-	"actions": "İşlemler",
-	"integrations": "Entegrasyonlar",
-	"integrationsPrism": "Prism'i favori servisinize bağlayın.",
-	"integrationsSlack": "Slack",
-	"integrationsSlackInfo": "Slack'e bağlanın ve bir kanaldaki olayları görün",
-	"integrationsDiscord": "Discord",
-	"integrationsDiscordInfo": "Discord'a bağlanın ve olayları doğrudan bir kanalda görüntüleyin",
-	"integrationsZapier": "Zapier",
-	"integrationsZapierInfo": "Tüm olayları Zapier'a gönderin ve sonra her yerde görün",
-	"commonSave": "Kaydet",
-	"createYour": "Senin yarat",
-	"createMonitor": "Monitör oluştur",
-	"pause": "Beklet",
-	"resume": "Yeniden başlat",
-	"editing": "Düzenleniyor...",
-	"url": "URL",
-	"access": "Erişim",
-	"timezone": "Zaman dilimi",
-	"features": "Özellikler",
-	"administrator": "Yönetici misin?",
-	"loginHere": "Buradan giriş yap",
-	"displayName": "Görüntülenecek isim",
-	"urlMonitor": "Monitör edilecek URL",
-	"portToMonitor": "Monitör edilecek port",
-	"websiteMonitoring": "Web sitesi monitörü",
-	"websiteMonitoringDescription": "Web sitenizi veya API uç noktanızı izlemek için HTTP(s) kullanın.",
-	"pingMonitoring": "Ping monitörü",
-	"pingMonitoringDescription": "Sitenizin ayakta olup olmadığını denetleyin.",
-	"dockerContainerMonitoring": "Docker konteyner monitörü",
-	"dockerContainerMonitoringDescription": "Docker konteynerinizin ayakta olup olmadığını denetleyin.",
-	"portMonitoring": "Port monitörü",
-	"portMonitoringDescription": "Portunuzun açık olup olmadığını denetleyin.",
-	"createMaintenanceWindow": "Bakım aralığı oluşturun",
-	"createMaintenance": "Bakım oluştur",
-	"editMaintenance": "Bakımı düzenle",
-	"maintenanceWindowName": "Bakım aralığı adı",
-	"friendlyNameInput": "Görünen ad",
-	"friendlyNamePlaceholder": "__:__ saatinde __ dakika boyunca bakım var",
-	"maintenanceRepeat": "Bakım Tekrarı",
-	"maintenance": "bakım",
-	"duration": "Süre",
-	"addMonitors": "Monitör ekle",
-	"window": "pencere",
-	"cancel": "İptal",
-	"message": "Mesaj",
-	"low": "düşük",
-	"high": "yüksek",
-	"statusCode": "Durum kodu",
-	"date&Time": "Tarih & saat",
-	"type": "Tür",
-	"statusPageName": "Durum sayfası adı",
-	"publicURL": "Genel URL",
-	"repeat": "Tekrarla",
-	"edit": "Düzenle",
-	"createA": "Bir tane oluştur",
-	"remove": "Kaldırmak",
-	"maintenanceWindowDescription": "Bu zaman diliminde pingleriniz gönderilmeyecek",
-	"startTime": "Başlangıç saati",
-	"timeZoneInfo": "Tüm tarihler ve saatler GMT+0 zaman dilimindedir.",
-	"monitorsToApply": "Bakım penceresini uygulamak için monitörler",
-	"nextWindow": "Sonraki pencere",
-	"notFoundButton": "Ana panoya git",
-	"pageSpeedConfigureSettingsDescription": "Burada, monitör tipiyle birlikte sunucunun URL'sini seçebilirsiniz.",
-	"monitorDisplayName": "Monitör görüntüleme adı",
-	"whenNewIncident": "Yeni bir olay oluştuğunda,",
-	"notifySMS": "SMS ile bildir (yakında)",
-	"notifyEmails": "Ayrıca birden fazla eposta adresine bildirim gönderebilirsiniz (yakında geliyor)",
-	"seperateEmails": "Birden fazla epostayı virgülle ayırabilirsiniz",
-	"checkFrequency": "Frekansı denetle",
-	"matchMethod": "Eşleşme yöntemi",
-	"expectedValue": "Beklenen değer",
-	"deleteDialogTitle": "Gerçekten bu monitörü silmek istiyor musunuz?",
-	"deleteDialogDescription": "Bir kez silindiği zaman tekrar getiremezsiniz.",
-	"pageSpeedMonitor": "Sayfa Hızı Monitörü",
-	"shown": "Gösteriliyor: ",
-	"ago": "önce",
-	"companyName": "Firma adı",
-	"pageSpeedDetailsPerformanceReport": "Değerler yaklaşıktır ve değişebilir",
-	"pageSpeedDetailsPerformanceReportCalculator": "Hesap makinesini gör",
-	"checkingEvery": "Denetleme sıklığı",
-	"statusPageCreateSettings": "Eğer durum sayfanız hazırsa, herkese açık yayınlayabilirsiniz",
-	"basicInformation": "Temel Bilgiler",
-	"statusPageCreateBasicInfoDescription": "Şirket adınızı ve durum sayfanızın işaret ettiği alt alan adını tanımlayın.",
-	"statusPageCreateSelectTimeZoneDescription": "Durum sayfanızın hangi zaman diliminde görüntüleneceğini seçin.",
-	"statusPageCreateAppearanceDescription": "Genel durum sayfanızın varsayılan görünümünü ve hissini tanımlayın.",
-	"statusPageCreateSettingsCheckboxLabel": "Yayınlandı ve herkese açık",
-	"statusPageCreateBasicInfoStatusPageAddress": "Durum sayfası adresiniz",
-	"statusPageCreateTabsContent": "Durum sayfası sunucuları",
-	"statusPageCreateTabsContentDescription": "İzlediğiniz herhangi bir sayıda sunucuyu durum sayfanıza ekleyebilirsiniz. Ayrıca en iyi görüntüleme deneyimi için bunları yeniden sıralayabilirsiniz.",
-	"statusPageCreateTabsContentFeaturesDescription": "Durum sayfasında daha fazla bilgi göster",
-	"showCharts": "Çizelgeleri göster",
-	"showUptimePercentage": "Çalışma süresi yüzdesini göster",
-	"removeLogo": "Logoyu sil",
-	"statusPageStatus": "Herkese açık bir durum sayfası henüz oluşturulmadı.",
-	"statusPageStatusContactAdmin": "Lütfen yöneticinizle iletişime geçin.",
-	"statusPageStatusNotPublic": "Durum sayfası herkese açık değil.",
-	"statusPageStatusNoPage": "Burada bir durum sayfası bulunmuyor.",
-	"statusPageStatusServiceStatus": "Servis durumu",
-	"deleteStatusPage": "Gerçekten bu durum sayfasını silmek istiyor musunuz?",
-	"deleteStatusPageConfirm": "Evet, durum sayfasını sil",
-	"deleteStatusPageDescription": "Silindikten sonra durum sayfasını geri getiremezsiniz.",
-	"uptimeCreate": "Beklenen değer, yanıt sonucuyla eşleştirilir ve bu eşleşme durumu belirler.",
-	"uptimeCreateJsonPath": "Bu ifade, yanıt JSON verisi üzerinde değerlendirilir, ortaya çıkan sonuç beklenen değerle karşılaştırılır. Bkz:",
-	"uptimeCreateJsonPathQuery": "Sorgu dili dokümantasyonu için.",
-	"maintenanceTableActionMenuDialogTitle": "Gerçekten bu bakım aralığını silmek istiyor musunuz?",
-	"infrastructureEditYour": "Düzenle",
-	"infrastructureEditMonitor": "Altyapı İzlemeyi Kaydet",
-	"infrastructureMonitorCreated": "Altyapı izleyicisi başarıyla oluşturuldu!",
-	"infrastructureMonitorUpdated": "Altyapı izleyicisi başarıyla güncellendi!",
-	"errorInvalidTypeId": "Geçersiz bildirim türü sağlandı",
-	"errorInvalidFieldId": "Geçersiz alan kimliği sağlandı",
-	"inviteNoTokenFound": "Davet belirteci bulunamadı",
-	"pageSpeedWarning": "Uyarı: Henüz bir Google PageSpeed API anahtarı eklemediniz. Bu olmadan PageSpeed izleyicisi çalışmayacaktır.",
-	"pageSpeedLearnMoreLink": "Buraya tıklayın",
-	"pageSpeedAddApiKey": "(API anahtarınızı eklemek için)",
-	"update": "Güncelleme",
-	"invalidFileFormat": "Desteklenmeyen dosya biçimi!",
-	"invalidFileSize": "Dosya boyutu çok büyük!",
-	"ClickUpload": "Yüklemek için tıklayın",
-	"DragandDrop": "sürükle ve bırak",
-	"MaxSize": "Azami Boyut",
-	"SupportedFormats": "Desteklenen formatlar",
-	"FirstName": "İsim",
-	"LastName": "Soyisim",
-	"EmailDescriptionText": "Geçerli epostanız - bu eposta değiştirilemez.",
-	"YourPhoto": "Profil fotoğrafı",
-	"PhotoDescriptionText": "Bu fotoğrafınız profil sayfasında görüntülenecektir.",
-	"save": "Kaydet",
-	"DeleteDescriptionText": "Bu, hesabı ve ilişkili tüm verileri sunucudan kaldıracaktır. Bu geri alınamaz.",
-	"DeleteAccountWarning": "Hesabınızı kaldırmanız, tekrar oturum açamayacağınız ve tüm verilerinizin silineceği anlamına gelir. Bu geri alınamaz.",
-	"DeleteWarningTitle": "Gerçekten bu hesabı silmek istiyor musunuz?",
-	"bulkImport": {
-		"title": "Toplu içeri alma",
-		"selectFileTips": "Yüklenecek CSV dosyasını seçin",
-		"selectFileDescription": "<template>Şablonumuzu</template> veya <sample>örneğimizi</sample> indirebilirsiniz",
-		"selectFile": "Dosyayı seçin",
-		"parsingFailed": "Ayrıştırma başarısız oldu",
-		"uploadSuccess": "Monitör başarıyla oluşturuldu!",
-		"validationFailed": "Doğrulama başarısız oldu",
-		"noFileSelected": "Hiçbir dosya seçilmedi",
-		"fallbackPage": "Toplu olarak sunucu listesini yüklemek için bir dosyayı içe aktarın",
-		"invalidFileType": "",
-		"uploadFailed": ""
-	},
-	"DeleteAccountTitle": "Hesabı sil",
-	"DeleteAccountButton": "Hesabı sil",
-	"publicLink": "Herkese açık bağlantı",
-	"maskedPageSpeedKeyPlaceholder": "*************************************",
-	"reset": "Sıfırla",
-	"ignoreTLSError": "TLS/SSL hatalarını gözardı et",
-	"tlsErrorIgnored": "TLS/SSL hataları gözardı ediliyor",
-	"ignoreTLSErrorDescription": "TLS/SSL hatalarını gözardı et ve websitesinin ayakta olduğunu denetle",
-	"createNew": "Yeni oluştur",
-	"greeting": {
-		"prepend": "Merhaba",
-		"append": "Öğleden sonra muhteşem geçsin!",
-		"overview": ""
-	},
-	"roles": {
-		"superAdmin": "Süper yönetici",
-		"admin": "Yönetici",
-		"teamMember": "Ekip elemanı",
-		"demoUser": "Demo kullanıcısı"
-	},
-	"teamPanel": {
-		"teamMembers": "Ekip elemanları",
-		"filter": {
-			"all": "Tümü",
-			"member": "Eleman"
-		},
-		"inviteTeamMember": "Ekip elemanı davet et",
-		"inviteNewTeamMember": "Yeni ekip elemanı davet et",
-		"inviteDescription": "",
-		"email": "Eposta",
-		"selectRole": "Rolü seçin",
-		"inviteLink": "Davet linki",
-		"cancel": "İptal",
-		"noMembers": "Bu role sahip hiç üye yok",
-		"getToken": "",
-		"emailToken": "",
-		"table": {
-			"name": "İsim",
-			"email": "Eposta",
-			"role": "Rol",
-			"created": "Oluşturulma"
-		},
-		"addTeamMember": {
-			"addMemberMenu": "",
-			"title": "",
-			"description": "",
-			"addButton": ""
-		},
-		"register": "",
-		"registerToast": {
-			"success": "",
-			"dbUserExists": "",
-			"unknownError": ""
-		},
-		"registerTeamMember": {
-			"title": "",
-			"auth": {
-				"common": {
-					"inputs": {
-						"firstName": {
-							"errors": {
-								"empty": "",
-								"pattern": ""
-							}
-						},
-						"lastName": {
-							"errors": {
-								"empty": "",
-								"pattern": ""
-							}
-						},
-						"email": {
-							"errors": {
-								"empty": "",
-								"invalid": ""
-							}
-						},
-						"role": {
-							"errors": {
-								"empty": ""
-							}
-						}
-					}
-				}
-			}
-		},
-		"role": "",
-		"changeTeamPassword": {
-			"changePasswordMenu": "",
-			"title": "",
-			"description": "",
-			"success": ""
-		}
-	},
-	"monitorState": {
-		"paused": "Durduruldu",
-		"resumed": "Yeniden başlatıldı",
-		"active": "Aktif"
-	},
-	"menu": {
-		"uptime": "",
-		"pagespeed": "Sayfa hızı",
-		"infrastructure": "",
-		"incidents": "Olaylar",
-		"statusPages": "Durum sayfaları",
-		"maintenance": "Bakım",
-		"integrations": "Entegrasyonlar",
-		"settings": "Ayarlar",
-		"support": "Destek",
-		"discussions": "Soru-cevap",
-		"docs": "Dokümanlar",
-		"changelog": "Değişiklik günlüğü",
-		"profile": "Profil",
-		"password": "Parola",
-		"team": "Ekip",
-		"logOut": "Çıkış yap",
-		"notifications": "Bildirimler",
-		"logs": "Günlükler"
-	},
-	"settingsEmailUser": "E-posta kullanıcısı – Kimlik doğrulama için kullanıcı adı; belirtilirse e-posta adresinin yerine geçer.",
-	"state": "Durum",
-	"statusBreadCrumbsStatusPages": "Durum sayfası",
-	"statusBreadCrumbsDetails": "Detaylar",
-	"commonSaving": "Kaydediliyor.",
-	"navControls": "Kontroller",
-	"incidentsPageTitle": "Olaylar",
-	"passwordPanel": {
-		"passwordChangedSuccess": "Şifreniz başarı ile değiştirildi.",
-		"passwordInputIncorrect": "Şifreniz hatalı",
-		"currentPassword": "Mevcut parola",
-		"enterCurrentPassword": "Mevcut parolanızı girin",
-		"newPassword": "Yeni parola",
-		"enterNewPassword": "Yeni parolanızı girin",
-		"confirmNewPassword": "Yeni şifrenizi onaylayın",
-		"passwordRequirements": "Yeni şifreniz en az 8 karakterden oluşmalı ve en az bir büyük harf, bir küçük harf, bir rakam ve bir özel karakter içermelidir.",
-		"saving": "Kaydediliyor..."
-	},
-	"emailSent": "E-posta başarı ile gönderildi.",
-	"failedToSendEmail": "E-posta gönderimi başarısız.",
-	"settingsTestEmailSuccess": "Test E-postası başarı ile gönderildi.",
-	"settingsTestEmailFailed": "Test E-postası gönderimi başarısız.",
-	"settingsTestEmailFailedWithReason": "Test E-postası gönderimi başarısız: {{reason}}",
-	"settingsTestEmailUnknownError": "Bilinmeyen hata.",
-	"statusMsg": {
-		"paused": "İzleme duraklatıldı.",
-		"up": "Siteniz yayında.",
-		"down": "Siteniz kapalı.",
-		"pending": "Sırada.."
-	},
-	"uptimeGeneralInstructions": {
-		"http": "",
-		"ping": "",
-		"docker": "",
-		"port": "",
-		"game": "",
-		"https": ""
-	},
 	"common": {
-		"appName": "Checkmate",
-		"monitoringAgentName": "",
-		"buttons": {
-			"toggleTheme": ""
+		"auth": {
+			"roles": {
+				"admin": "Yönetici",
+				"demo": "Demo",
+				"superadmin": "Süper yönetici",
+				"user": "Kullanıcı"
+			}
 		},
-		"toasts": {
-			"networkError": "",
-			"checkConnection": "Lütfen bağlantınızı kontrol edin",
-			"unknownError": "Bilinmeyen hata"
-		}
-	},
-	"auth": {
-		"common": {
-			"navigation": {
-				"continue": "Devam et",
-				"back": "Geri"
+		"alerts": {
+			"pageSpeedApiKey": {
+				"content": "Uyarı: Henüz bir Google PageSpeed API anahtarı eklemediniz. Eklemek için <settingsLink>Ayarlar</settingsLink> sayfasını ziyaret edin. Bu anahtar olmadan PageSpeed monitörü çalışmayacaktır."
+			}
+		},
+		"appName": "Checkmate",
+		"breadcrumbs": {
+			"details": "Detaylar",
+			"home": "Ana sayfa"
+		},
+		"buttons": {
+			"addMember": "Üye ekle",
+			"cancel": "İptal",
+			"close": "Kapat",
+			"configure": "Yapılandır",
+			"confirm": "Onayla",
+			"create": "Oluştur",
+			"delete": "Sil",
+			"generateToken": "Token oluştur",
+			"incidents": "Olaylar",
+			"inviteMember": "Üye davet et",
+			"pause": "Duraklat",
+			"resume": "Devam et",
+			"save": "Kaydet",
+			"sendInvite": "Davet gönder",
+			"test": "Test",
+			"testNotifications": "Bildirimleri test et",
+			"toggleTheme": "Açık / koyu temayı değiştir",
+			"flushQueue": "Kuyruğu temizle",
+			"notFound": "Ana panele git",
+			"resetPassword": "Parolayı sıfırla",
+			"reset": "Sıfırla",
+			"clear": "Temizle",
+			"addDemo": "Demo monitörler ekle",
+			"removeMonitors": "Monitörleri kaldır",
+			"sendTestEmail": "Test e-postası gönder",
+			"exportToJSON": "JSON olarak dışa aktar",
+			"importFromJSON": "JSON dosyasından içe aktar",
+			"clearFilters": "Filtreleri temizle",
+			"removeUser": "Kullanıcıyı kaldır"
+		},
+		"charts": {
+			"labels": {
+				"averageResponseTime": "Ortalama yanıt süresi",
+				"downtime": "Kesinti süresi",
+				"high": "yüksek",
+				"low": "düşük",
+				"uptime": "Çalışma süresi"
 			},
-			"inputs": {
-				"email": {
-					"label": "Eposta",
-					"placeholder": "",
-					"errors": {
-						"empty": "Devam etmek için eposta adresinizi girin",
-						"invalid": ""
-					}
-				},
-				"password": {
-					"label": "Parola",
-					"rules": {
-						"length": {
-							"beginning": "",
-							"highlighted": "8 karakter uzunluğunda"
-						},
-						"special": {
-							"beginning": "En az içermelidir: ",
-							"highlighted": "bir özel karakter"
-						},
-						"number": {
-							"beginning": "En az içermelidir: ",
-							"highlighted": "bir sayı"
-						},
-						"uppercase": {
-							"beginning": "En az içermelidir: ",
-							"highlighted": "Bir büyük harf"
-						},
-						"lowercase": {
-							"beginning": "En az içermelidir: ",
-							"highlighted": "Bir küçük harf"
-						},
-						"match": {
-							"beginning": "",
-							"highlighted": "eşleşmelidir"
-						}
-					},
-					"errors": {
-						"empty": "Lütfen parolanızı girin",
-						"length": "Parolanız en az 8 karakter uzunluğunda olmalıdır",
-						"uppercase": "Parola en az 1 büyük harf içermelidir",
-						"lowercase": "Parola en az 1 küçük harf içermelidir",
-						"number": "Parola en az 1 sayı içermelidir",
-						"special": "Parola en az 1 özel karakter içermelidir",
-						"incorrect": "Parolanız sistemdeki ile uyuşmuyor"
-					}
-				},
-				"passwordConfirm": {
-					"label": "Parolayı onayla",
-					"placeholder": "Onaylamak için parolayı yeniden gir",
-					"errors": {
-						"empty": "",
-						"different": ""
-					}
-				},
-				"firstName": {
-					"label": "",
-					"placeholder": "Jordan",
-					"errors": {
-						"empty": "Lütfen adınızı girin",
-						"length": "İsim 50 karakterden az olmalıdır",
-						"pattern": "İsim yalnızca harfler, boşluklar, kesme işaretleri veya tireler içerebilir"
-					}
-				},
-				"lastName": {
-					"label": "Soyadı",
-					"placeholder": "Ellis",
-					"errors": {
-						"empty": "Lütfen soyadınızı girin",
-						"length": "Soyadı en çok 50 karakter olmalıdır",
-						"pattern": "Soyad yalnızca harfler, boşluklar, kesme işaretleri veya tireler içerebilir"
+			"histogram": {
+				"avg": "Ort: {{value}} ms",
+				"max": "Maks: {{value}} ms"
+			}
+		},
+		"dialogs": {
+			"delete": {
+				"description": "Bu işlem geri alınamaz.",
+				"title": "Bunu silmek istediğinizden emin misiniz?"
+			}
+		},
+		"labels": {
+			"active": "Aktif",
+			"paused": "duraklatıldı",
+			"na": "N/A",
+			"resolved": "Çözüldü",
+			"responseTime": "Yanıt süresi"
+		},
+		"form": {
+			"role": {
+				"option": {
+					"role": {
+						"label": "Roller"
 					}
 				}
 			},
-			"errors": {
-				"validation": "Veriyi işlerken hata oluştu."
-			},
-			"fields": {
-				"password": {
-					"errors": {
-						"incorrect": ""
+			"name": {
+				"option": {
+					"firstName": {
+						"label": "Ad",
+						"placeholder": "Jordan"
+					},
+					"lastName": {
+						"label": "Soyadı",
+						"placeholder": "Ellis"
 					}
-				},
-				"role": {
-					"errors": {
-						"min": ""
+				}
+			},
+			"email": {
+				"option": {
+					"email": {
+						"label": "E-posta",
+						"placeholder": "you@example.com"
 					}
 				}
 			}
 		},
-		"login": {
-			"heading": "Giriş yap",
-			"subheadings": {
-				"stepOne": "Eposta adresinizi girin",
-				"stepTwo": "Parolanızı girin"
-			},
-			"links": {
-				"forgotPassword": "Parolanızı mı unuttunuz?",
-				"register": "Hesabınız yok mu?",
-				"forgotPasswordLink": "Parolayı sıfırla",
-				"registerLink": "Buradan kayıt olun"
-			},
-			"toasts": {
-				"success": "Tekrar hoşgeldiniz! Başarıyla sisteme giriş yaptınız.",
-				"incorrectPassword": "Hatalı parola"
-			},
+		"table": {
+			"empty": "Burada hiçbir şey yok",
+			"headers": {
+				"actions": "İşlemler",
+				"dateTime": "Tarih ve saat",
+				"message": "Mesaj",
+				"monitor": "Monitör",
+				"monitorId": "Monitör ID",
+				"name": "Ad",
+				"status": "Durum",
+				"type": "Tür",
+				"url": "URL",
+				"interval": "Aralık",
+				"active": "Aktif",
+				"responseTime": "Yanıt süresi"
+			}
+		}
+	},
+	"components": {
+		"imageUpload": {
+			"clickToUpload": "Yüklemek için tıklayın",
+			"dragAndDrop": "sürükle ve bırak",
+			"supportedFormats": "Desteklenen formatlar",
+			"maxSize": "Azami Boyut",
+			"orDragAndDrop": "veya sürükle bırak",
 			"errors": {
-				"password": {
-					"incorrect": "Giriş yaptığınız parola sistemdekiyle uyuşmuyor"
-				}
-			},
-			"welcome": ""
+				"invalidFileSize": "Dosya boyutu çok büyük!",
+				"invalidFileFormat": "Desteklenmeyen dosya biçimi!"
+			}
 		},
-		"registration": {
-			"heading": {
-				"superAdmin": "Süper yönetici oluştur",
-				"user": "Kayıt ol"
-			},
-			"subheadings": {
-				"stepOne": "Kişisel bilgilerinizi girin",
-				"stepTwo": "Eposta adresinizi girin",
-				"stepThree": "Parolanızı oluturun"
+		"headerStatusPageControls": {
+			"publicLink": "Herkese açık bağlantı"
+		},
+		"headerTimeRange": {
+			"labels": {
+				"day": "Gün",
+				"month": "Ay",
+				"recent": "Son",
+				"week": "Hafta"
 			},
 			"description": {
-				"superAdmin": "Başlamak için süper yönetici hesabı oluşturun",
-				"user": ""
+				"recent": "Son 2 saatin istatistikleri gösteriliyor.",
+				"day": "Son 24 saatin istatistikleri gösteriliyor.",
+				"week": "Son 7 günün istatistikleri gösteriliyor.",
+				"month": "Son 30 günün istatistikleri gösteriliyor."
+			}
+		},
+		"offlineBanner": {
+			"serverUnreachable": "Sunucuya ulaşılamıyor",
+			"retry": "Tekrar dene",
+			"retrying": "Yeniden deneniyor...",
+			"reconnected": "Bağlantı yeniden kuruldu"
+		},
+		"sidebar": {
+			"menu": {
+				"uptime": "Çalışma süresi",
+				"pagespeed": "Sayfa hızı",
+				"infrastructure": "Altyapı",
+				"notifications": "Bildirimler",
+				"checks": "Kontroller",
+				"incidents": "Olaylar",
+				"statusPages": "Durum sayfaları",
+				"maintenance": "Bakım",
+				"logs": "Günlükler",
+				"settings": "Ayarlar"
 			},
-			"gettingStartedButton": {
-				"superAdmin": "Süper yönetici hesabı oluşturun",
-				"user": ""
+			"bottomMenu": {
+				"support": "Destek",
+				"discussions": "Soru-cevap",
+				"docs": "Dokümanlar",
+				"changelog": "Değişiklik günlüğü"
 			},
-			"termsAndPolicies": "Bir hesap oluşturarak <a1>Hizmet Şartları</a1> ve <a2>Gizlilik Politikası</a2>'nı kabul etmiş olursunuz.",
+			"accountMenu": {
+				"profile": "Profil",
+				"password": "Parola",
+				"team": "Ekip"
+			},
+			"starPrompt": {
+				"title": "Checkmate'e yıldız verin",
+				"description": "En son sürümleri görün ve GitHub'da topluluğun büyümesine katkıda bulunun"
+			},
+			"authFooter": {
+				"navControls": "Kontroller",
+				"logOut": "Çıkış yap",
+				"roles": {
+					"superAdmin": "Süper yönetici",
+					"admin": "Yönetici",
+					"user": "Kullanıcı",
+					"demoUser": "Demo kullanıcısı"
+				}
+			}
+		},
+		"starPrompt": {
+			"title": "Checkmate'e yıldız verin",
+			"description": "En son sürümleri görün ve GitHub'da topluluğun büyümesine katkıda bulunun"
+		},
+		"pageHeader": {
 			"links": {
-				"login": "Bir hesabınız mı var? <a>Giriş yapın</a>"
-			},
-			"toasts": {
-				"success": "Hoşgeldiniz! Hesabınız başarıyla oluşturuldu."
-			},
-			"welcome": ""
-		},
-		"forgotPassword": {
-			"heading": "Parolanızı mı kaybettiniz?",
-			"subheadings": {
-				"stepOne": "Endişelenmeyin, sıfırlamak için gerekli bilgileri göndereceğiz.",
-				"stepTwo": "Parola sıfırlama için gerekli bilgileri <email/> hesabına ilettik.",
-				"stepThree": "Parolanız daha önce kullandığınız paroladan farklı olmalıdır.",
-				"stepFour": "Parolanız başarıyla sıfırlandı. Buraya tıklayarak giriş yapabilirsiniz."
-			},
-			"buttons": {
-				"openEmail": "Eposta uygulamasını aç",
-				"resetPassword": "Parolayı sıfırla"
-			},
-			"imageAlts": {
-				"passwordKey": "",
-				"email": "",
-				"lock": "",
-				"passwordConfirm": ""
-			},
-			"links": {
-				"login": "",
-				"resend": ""
-			},
-			"toasts": {
-				"sent": "",
-				"emailNotFound": "Eposta bulunamadı.",
-				"redirect": "",
-				"success": "",
-				"error": ""
+				"support": "Destek",
+				"discussions": "Tartışmalar",
+				"docs": "Dokümantasyon",
+				"changelog": "Değişiklik günlüğü"
 			}
 		}
 	},
-	"errorPages": {
-		"serverUnreachable": {
-			"toasts": {
-				"reconnected": "",
-				"stillUnreachable": ""
+	"pages": {
+		"notFound": {
+			"title": "Eyvah! Sushini düşürdün!",
+			"subtitle": "URL mevcut değil veya erişim yetkiniz yok."
+		},
+		"account": {
+			"tabs": {
+				"profile": "Profil",
+				"password": "Parola",
+				"team": "Ekip"
 			},
-			"alertBox": "Sunucu bağlantı hatası",
-			"description": "",
-			"retryButton": {
-				"default": "Bağlantıyı tekrarla",
-				"processing": "Bağlanıyor..."
+			"form": {
+				"name": {
+					"title": "Ad",
+					"description": "Kişisel bilgilerinizi güncelleyin"
+				},
+				"photo": {
+					"title": "Profil fotoğrafı",
+					"description": "Bir profil fotoğrafı yükleyin"
+				},
+				"currentPassword": {
+					"title": "Mevcut parola",
+					"description": "Kimliğinizi doğrulamak için mevcut parolanızı girin",
+					"option": {
+						"label": "Mevcut parola",
+						"placeholder": "Mevcut parolanızı girin"
+					}
+				},
+				"newPassword": {
+					"title": "Yeni parola",
+					"description": "En az 8 karakter içeren güçlü bir parola seçin",
+					"option": {
+						"newPassword": {
+							"label": "Yeni parola",
+							"placeholder": "Yeni parolanızı girin"
+						},
+						"confirm": {
+							"label": "Parolayı onaylayın",
+							"placeholder": "Yeni parolanızı onaylayın"
+						}
+					}
+				},
+				"deleteAccount": {
+					"title": "Hesabı sil",
+					"description": "Bu işlem kalıcıdır ve geri alınamaz"
+				}
+			},
+			"team": {
+				"filter": {
+					"placeholder": "Role göre filtrele",
+					"all": "Tümü",
+					"admin": "Yönetici",
+					"member": "Eleman"
+				},
+				"table": {
+					"headers": {
+						"email": "E-posta",
+						"role": "Rol",
+						"created": "Oluşturulma"
+					}
+				},
+				"addMember": {
+					"title": "Yeni ekip üyesi kaydet",
+					"description": "Yeni bir kullanıcı hesabı oluşturun. Kimlik bilgilerini oluşturduktan sonra güvenli bir şekilde paylaşın."
+				},
+				"invite": {
+					"title": "Ekip üyesi davet et",
+					"description": "Ekibinize katılmak için bir davet gönderin",
+					"email": {
+						"label": "E-posta adresi",
+						"placeholder": "E-posta adresini girin"
+					},
+					"role": {
+						"label": "Rol",
+						"placeholder": "Bir rol seçin"
+					},
+					"linkLabel": "Davet bağlantısı"
+				},
+				"fallback": {
+					"title": "Henüz takım üyesi yok",
+					"description": "Ekip arkadaşlarınızı e-posta ile davet edin veya doğrudan ekleyin. Katıldıklarında, rolleriyle birlikte burada görünecekler."
+				}
+			},
+			"header": {
+				"title": "Hesap",
+				"description": "Profilinizi, parolanızı, ekibinizi ve çalışma alanı tercihlerinizi yönetin."
+			}
+		},
+		"auth": {
+			"brandPanel": {
+				"eyebrow": "Açık kaynaklı altyapı izleme",
+				"tagline": "Sunucularınızın her hareketini izleyin.",
+				"description": "Sistemlerinizin çalışma süresini, yanıt hızını ve yaşanan kesintileri tek bir panelden anlık takip edin. Kendi sunucunuzda çalışır, verileriniz sizde kalır."
+			},
+			"common": {
+				"passwordRules": {
+					"length": {
+						"beginning": "",
+						"highlighted": "8 karakter uzunluğunda"
+					},
+					"lowercase": {
+						"beginning": "En az içermelidir: ",
+						"highlighted": "Bir küçük harf"
+					},
+					"match": {
+						"beginning": "",
+						"highlighted": "eşleşmelidir"
+					},
+					"number": {
+						"beginning": "En az içermelidir: ",
+						"highlighted": "bir sayı"
+					},
+					"special": {
+						"beginning": "En az içermelidir: ",
+						"highlighted": "bir özel karakter"
+					},
+					"uppercase": {
+						"beginning": "En az içermelidir: ",
+						"highlighted": "Bir büyük harf"
+					}
+				},
+				"form": {
+					"option": {
+						"email": {
+							"label": "E-posta",
+							"placeholder": "me@example.com"
+						},
+						"password": {
+							"label": "Parola",
+							"placeholder": "********"
+						},
+						"confirmPassword": {
+							"label": "Parolayı onaylayın"
+						}
+					}
+				}
+			},
+			"login": {
+				"title": "Checkmate'e tekrar hoş geldiniz!",
+				"subtitle": "Devam etmek için giriş yapın",
+				"submit": "Giriş yap",
+				"links": {
+					"forgotPassword": {
+						"text": "Parolanızı mı unuttunuz?",
+						"linkText": "Parolayı sıfırla"
+					},
+					"register": {
+						"text": "Hesabınız yok mu?",
+						"linkText": "Buradan kaydolun"
+					}
+				}
+			},
+			"register": {
+				"title": "Checkmate'e tekrar hoş geldiniz!",
+				"subtitle": "Başlamak için kaydolun",
+				"submit": "Kaydol",
+				"setupNotice": "Bu sayfa yalnızca ilk kurulum sırasında kullanılabilir. Süper yönetici kaydedildikten sonra, ek kullanıcılar takım ayarlarından davet edilebilir."
+			},
+			"forgotPassword": {
+				"title": "Parolanızı mı unuttunuz?",
+				"subtitle": "Endişelenmeyin, size sıfırlama talimatları göndereceğiz.",
+				"submit": "Kurtarma talebi gönder",
+				"links": {
+					"login": {
+						"text": "Geri dön:",
+						"linkText": "giriş"
+					}
+				}
+			},
+			"setNewPassword": {
+				"title": "Parolanızı sıfırlayın",
+				"subtitle": "Yeni parolanız daha önce kullandığınız parolalardan farklı olmalıdır."
+			}
+		},
+		"checks": {
+			"selects": {
+				"monitor": {
+					"all": "Tüm monitörler"
+				},
+				"status": {
+					"all": "Tümü",
+					"down": "Çevrimdışı",
+					"up": "Çevrimiçi"
+				}
+			},
+			"table": {
+				"empty": "Bu zaman aralığında çevrimdışı kontrol yok",
+				"headers": {
+					"statusCode": "Durum kodu",
+					"location": "Konum"
+				}
+			},
+			"fallback": {
+				"title": "Henüz kontrol yok",
+				"description": "Bir izleyici oluşturduğunuzda, her durum kontrolü ve yanıt süresi burada bir kontrol olarak görünecek."
+			},
+			"header": {
+				"title": "Kontroller",
+				"description": "Checkmate'in izleyicilerinize karşı çalıştırdığı her sondaj, durum kodu ve yanıt süresiyle birlikte burada görünür."
+			}
+		},
+		"common": {
+			"monitors": {
+				"actions": {
+					"configure": "Yapılandır",
+					"delete": "Sil",
+					"generateToken": "Token oluştur",
+					"details": "Detaylar",
+					"incidents": "Olaylar",
+					"inviteMember": "Üye davet et",
+					"openSite": "Siteyi aç",
+					"pause": "Duraklat",
+					"resume": "Devam et",
+					"selectAll": "Tüm monitörleri seç",
+					"selectMonitor": "{{name}}'i seç",
+					"bulkSelected_one": "{{count}} monitör seçildi",
+					"bulkSelected_other": "{{count}} monitör seçildi"
+				},
+				"statBoxes": {
+					"activeFor": "Aktif süresi",
+					"certificateExpiry": "Sertifika bitiş tarihi",
+					"lastCheck": "Son kontrol",
+					"lastResponseTime": "Son yanıt süresi",
+					"serviceIsDown": "Servis çalışmıyor"
+				},
+				"status": {
+					"down": "çevrimdışı",
+					"breached": "eşik aşıldı",
+					"initializing": "başlatılıyor",
+					"maintenance": "bakım",
+					"paused": "duraklatıldı",
+					"total": "toplam",
+					"up": "çevrimiçi"
+				},
+				"monitorTypes": {
+					"optionDocker": "Docker",
+					"optionGame": "Oyun",
+					"optionHttp": "HTTP(S)",
+					"optionPing": "Ping",
+					"optionPort": "Port",
+					"optionPagespeed": "PageSpeed",
+					"optionHardware": "Altyapı",
+					"optionGrpc": "gRPC",
+					"optionWebSocket": "WebSocket"
+				},
+				"bulkPause": {
+					"paused_one": "{{count}} monitör duraklatıldı",
+					"paused_other": "{{count}} monitör duraklatıldı",
+					"resumed_one": "{{count}} monitör sürdürüldü",
+					"resumed_other": "{{count}} monitör sürdürüldü",
+					"alreadyPaused_one": "Seçili monitör zaten duraklatıldı",
+					"alreadyPaused_other": "Seçili tüm monitörler zaten duraklatıldı",
+					"alreadyRunning_one": "Seçili monitör zaten çalışıyor",
+					"alreadyRunning_other": "Seçili tüm monitörler zaten çalışıyor"
+				}
+			}
+		},
+		"createMonitor": {
+			"form": {
+				"advanced": {
+					"description": "Gelişmiş kullanım senaryoları için isteğe bağlı ayarlar",
+					"option": {
+						"advancedMatching": {
+							"label": "Gelişmiş eşleştirme kullan"
+						},
+						"expectedValue": {
+							"label": "Beklenen değer"
+						},
+						"jsonPath": {
+							"description": "Bu ifade, yanıt JSON verisi üzerinde değerlendirilecek ve sonuç beklenen değerle eşleştirilecektir. Sorgu dili belgeleri için <jmesLink>jmespath.org</jmesLink> sayfasına bakın.",
+							"label": "JSONPath ifadesi"
+						},
+						"matchMethod": {
+							"label": "Eşleştirme yöntemi",
+							"equal": "",
+							"include": "",
+							"regex": ""
+						}
+					},
+					"title": "Gelişmiş ayarlar"
+				},
+				"frequency": {
+					"description": "Bu monitörün durumunu ne sıklıkla kontrol etmek istiyorsunuz?",
+					"option": {
+						"frequency": {
+							"label": "Kontrol sıklığı",
+							"value": {
+								"fifteenMinutes": "15 dakika",
+								"fifteenSeconds": "",
+								"fiveMinutes": "5 dakika",
+								"fourMinutes": "",
+								"oneMinute": "",
+								"tenMinutes": "10 dakika",
+								"thirtyMinutes": "30 dakika",
+								"thirtySeconds": "",
+								"threeMinutes": "",
+								"twoMinutes": ""
+							}
+						}
+					},
+					"title": "Kontrol sıklığı"
+				},
+				"general": {
+					"option": {
+						"container": {
+							"label": "Container adı/ID",
+							"placeholder": "uygulamam veya abcd1234"
+						},
+						"host": {
+							"label": "Ana bilgisayar",
+							"placeholder": "192.168.1.100 veya example.com"
+						},
+						"name": {
+							"label": "Görünen ad",
+							"placeholder": "örn. Web Sitem"
+						},
+						"secret": {
+							"label": "Yetkilendirme anahtarı",
+							"placeholder": "Gizli anahtarınızı girin"
+						},
+						"url": {
+							"label": "URL",
+							"placeholder": "https://www.google.com"
+						},
+						"game": {
+							"label": "",
+							"placeholder": ""
+						},
+						"port": {
+							"label": "İzlenecek port",
+							"placeholder": "80"
+						},
+						"grpcServiceName": {
+							"label": "Servis adı",
+							"placeholder": "örn. my.service.v1 (genel sağlık için boş bırakın)"
+						},
+						"wsUrl": {
+							"label": "WebSocket URL",
+							"placeholder": "wss://example.com/socket"
+						},
+						"captureUrl": {
+							"label": "Capture uç noktası",
+							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						}
+					},
+					"title": "Genel ayarlar",
+					"description": {
+						"http": "İzlenecek URL veya IP adresini girin (örn. https://example.com/ veya 192.168.1.100) ve panoda görünecek açık bir ad ekleyin.",
+						"ping": "",
+						"port": "",
+						"docker": "",
+						"game": "Ping atılacak IP adresini veya ana bilgisayar adını ve port numarasını girin (ör. 192.168.1.100 veya example.com) ve oyun türünü seçin. Bazı oyunlar yapılandırma dosyasında sunucu sorgularının etkinleştirilmesini gerektirir — oyun sunucunuzun belgelerine bakın. Protokol ayrıntıları için <gamedigLink>desteklenen oyunlar listesine</gamedigLink> bakın.",
+						"pagespeed": "Web sitenizin sayfa yükleme performansını, Core Web Vitals metriklerini ve optimizasyon puanlarını takip edin.",
+						"grpc": "gRPC sunucusunun ana bilgisayar adını ve portunu girin, isteğe bağlı olarak sağlık kontrolü için bir servis adı belirtin ve bir görünen ad ekleyin.",
+						"websocket": "İzlenecek WebSocket URL'sini girin (örn. wss://example.com/socket) ve bir görünen ad ekleyin.",
+						"hardware": "Altyapınızın CPU, bellek, disk kullanımını ve sıcaklığını izleyin. Capture uç nokta URL'si tam yolu /api/v1/metrics içermelidir (ör. http://192.168.1.10:5001/api/v1/metrics). Yetkilendirme anahtarına yalnızca token dizesini yapıştırın — 'Bearer' eklemeyin."
+					}
+				},
+				"ignoreTls": {
+					"description": "HTTPS bağlantıları için TLS/SSL sertifika doğrulamasını yapılandırın.",
+					"option": {
+						"tls": {
+							"label": "TLS/SSL hatalarını yoksay"
+						}
+					},
+					"title": "TLS/SSL ayarları"
+				},
+				"incidents": {
+					"description": "Bir monitörün ne zaman çevrimdışı olduğunu belirlemek için kayan pencere kullanılır. Monitörün durumu, yalnızca kayan penceredeki kontrol yüzdesi belirlenen değeri karşıladığında değişir.",
+					"option": {
+						"checks": {
+							"label": "Kayan penceredeki kontrol sayısı"
+						},
+						"percentage": {
+							"label": "Monitör durumu değişmeden önce kayan penceredeki kontrollerin yüzde kaçı başarısız/başarılı olmalı?"
+						}
+					},
+					"title": "Olaylar"
+				},
+				"notifications": {
+					"description": "Kullanmak istediğiniz bildirim kanallarını seçin",
+					"title": "Bildirimler"
+				},
+				"type": {
+					"description": "Gerçekleştirilecek kontrol türünü seçin",
+					"optionDockerDescription": "Bir container'ın çalışıp çalışmadığını izlemek için Docker kullanın.",
+					"optionGameDescription": "Belirli bir oyun sunucusunun çevrimiçi olup olmadığını izleyin.",
+					"optionGrpcDescription": "Standart Health Checking Protocol kullanarak gRPC servislerini izleyin.",
+					"optionWebSocketDescription": "Bağlantı sağlığı ve yanıt süresi için WebSocket uç noktalarını izleyin.",
+					"optionHttpDescription": "Web sitenizi veya API uç noktanızı izlemek için HTTP(S) kullanın.",
+					"optionPingDescription": "Bir sunucunun çevrimiçi olup olmadığını izlemek için ICMP Ping kullanın.",
+					"optionPortDescription": "Bir sunucuda belirli bir portun açık olup olmadığını izleyin.",
+					"title": "Tür"
+				},
+				"thresholds": {
+					"title": "Uyarı eşikleri",
+					"description": "Bu altyapı monitörü için uyarıların tetikleneceği eşikleri tanımlayın.",
+					"option": {
+						"cpuThreshold": {
+							"label": "CPU uyarı eşiği (%)"
+						},
+						"memoryThreshold": {
+							"label": "Bellek uyarı eşiği (%)"
+						},
+						"diskThreshold": {
+							"label": "Disk uyarı eşiği (%)"
+						},
+						"tempThreshold": {
+							"label": "Sıcaklık uyarı eşiği (°C)"
+						}
+					}
+				},
+				"geoChecks": {
+					"title": "Coğrafi dağıtılmış kontroller",
+					"description": "Küresel erişilebilirlik ve performansı izlemek için birden fazla coğrafi konumdan kontrol çalıştırın.",
+					"option": {
+						"enabled": {
+							"label": "Coğrafi dağıtılmış kontrolleri etkinleştir"
+						},
+						"locations": {
+							"label": "Konumlar",
+							"placeholder": "Konum seçin",
+							"options": {
+								"EU": "Avrupa",
+								"NA": "Kuzey Amerika",
+								"AS": "Asya",
+								"SA": "Güney Amerika",
+								"AF": "Afrika",
+								"OC": "Okyanusya"
+							}
+						},
+						"interval": {
+							"label": "Kontrol aralığı",
+							"value": {
+								"fiveMinutes": "5 dakika",
+								"tenMinutes": "10 dakika",
+								"fifteenMinutes": "15 dakika",
+								"thirtyMinutes": "30 dakika"
+							}
+						}
+					}
+				},
+				"url": {
+					"title": "Durum sayfasında monitör IP/URL gösterimi",
+					"description": "Monitörün IP adresini veya URL'sini herkese açık durum sayfasında görüntüleyin. Devre dışı bırakılırsa hassas bilgileri korumak için yalnızca monitör adı gösterilir.",
+					"option": {
+						"showURL": {
+							"label": "Durum sayfasında IP/URL göster",
+							"enabled": "Etkin",
+							"disabled": "Devre dışı"
+						}
+					}
+				},
+				"stats": {
+					"title": "Monitör geçmişi",
+					"description": "Ekibinizin tüm izleme geçmişini ve istatistiklerini temizleyin. Bu işlem geri alınamaz.",
+					"buttonText": "Tüm istatistikleri temizle",
+					"dialog": {
+						"title": "Tüm izleme geçmişi temizlensin mi?",
+						"description": "Bu işlem ekibinizin tüm izleme geçmişini, istatistiklerini ve kontrol verilerini kalıcı olarak silecektir. Bu işlem geri alınamaz.",
+						"confirm": "Evet, tüm istatistikleri temizle"
+					}
+				}
+			}
+		},
+		"editUser": {
+			"form": {
+				"roles": {
+					"title": "Roller",
+					"description": "Kullanıcıya roller atayın. Birden fazla rol seçilebilir."
+				}
+			},
+			"dialog": {
+				"removeUser": {
+					"title": "Kullanıcıyı kaldır",
+					"content": "{{name}} adlı kullanıcıyı ekibinizden kaldırmak istediğinizden emin misiniz? Bu işlem geri alınamaz."
+				}
+			}
+		},
+		"incidents": {
+			"fallback": {
+				"title": "Olay yok — tüm sistemler sağlıklı",
+				"description": "Bir izleyici devre dışı kaldığında veya kurtarıldığında, olay zamanlama, izleyici detayları ve çözüm geçmişiyle birlikte burada görünecek."
+			},
+			"dialog": {
+				"resolveIncident": {
+					"title": "Olayı çöz",
+					"option": {
+						"comment": {
+							"label": "Yorum (isteğe bağlı)",
+							"placeholder": "Çözüm hakkında bir yorum ekleyin..."
+						}
+					}
+				},
+				"details": {
+					"analysis": "Olay analizi",
+					"comment": "Yorum:",
+					"detailsLabel": "Detaylar",
+					"downtime": "Kesinti süresi:",
+					"message": "Mesaj:",
+					"monitor": "Monitör:",
+					"overview": "Genel bakış",
+					"resolutionDetails": "Çözüm detayları",
+					"resolutionType": "Tür:",
+					"resolutionTypes": {
+						"automatic": "Otomatik",
+						"manual": "Manuel"
+					},
+					"resolve": "Olayı çöz",
+					"resolvedAt": "Çözülme zamanı:",
+					"resolvedBy": "Çözen:",
+					"startedAt": "Başlangıç zamanı:",
+					"status": "Durum:",
+					"statusCode": "Durum kodu:",
+					"timeline": "Zaman çizelgesi",
+					"title": "Olay detayları",
+					"url": "URL:"
+				}
+			},
+			"filters": {
+				"allMonitors": "Tüm monitörler",
+				"monitor": "Monitör",
+				"resolutionType": "Çözüm türü",
+				"resolutionTypes": {
+					"manual": "Manuel",
+					"automatic": "Otomatik",
+					"all": "Tümü"
+				}
+			},
+			"summaryCard": {
+				"activeIncidents": {
+					"title": "Aktif olaylar",
+					"active_zero": "Aktif olay yok",
+					"active_one": "{{count}} aktif olay",
+					"active_other": "{{count}} aktif olay"
+				},
+				"incidentStats": {
+					"avgResolutionTime": "Ort. çözüm süresi",
+					"mostAffectedMonitor": "En çok etkilenen monitör",
+					"title": "Olay istatistikleri",
+					"totalIncidents": "Toplam olay sayısı"
+				},
+				"latestIncidents": {
+					"title": "Son olaylar"
+				}
+			},
+			"table": {
+				"actions": {
+					"details": "Detaylar",
+					"goToMonitor": "Monitöre git",
+					"resolveManually": "Manuel olarak çöz"
+				},
+				"activeIncidents": "Aktif olaylar",
+				"headers": {
+					"endTime": "Bitiş zamanı",
+					"resolutionType": "Çözüm türü",
+					"startTime": "Başlangıç saati",
+					"statusCode": "Durum kodu"
+				},
+				"resolvedIncidents": "Çözülen olaylar",
+				"status": {
+					"active": "Aktif",
+					"resolved": "Çözüldü"
+				}
+			},
+			"header": {
+				"title": "Olaylar",
+				"description": "Bir izleyici devre dışı kaldığında veya kurtarıldığında, olaylar zamanlama, izleyici detayları ve çözüm geçmişiyle birlikte burada görünür."
+			}
+		},
+		"infrastructure": {
+			"charts": {
+				"labels": {
+					"cpu": "CPU kullanımı",
+					"disk": "Disk kullanımı",
+					"memory": "Bellek kullanımı",
+					"netBytesRecv": "{{name}} - Alınan bayt",
+					"netBytesSent": "{{name}} - Gönderilen bayt",
+					"netNoTraffic": "Capture tüm arabirimlerde sıfır trafik raporluyor. Bu, Capture yalnızca loopback arabirimlerini görebilen bir konteyner içinde çalışırken normaldir — gerçek ağ etkinliğini görmek için Capture'ı doğrudan host üzerinde çalıştırın.",
+					"temp": "Sıcaklık"
+				}
+			},
+			"gauges": {
+				"cpu": {
+					"lowerLabel": "Maks frekans",
+					"title": "CPU kullanımı",
+					"upperLabel": "Mevcut frekans"
+				},
+				"disk": {
+					"lowerLabel": "Boş",
+					"title": "Disk {{idx}} kullanımı",
+					"upperLabel": "Kullanılan"
+				},
+				"memory": {
+					"lowerLabel": "Boş",
+					"title": "Bellek kullanımı",
+					"upperLabel": "Kullanılan"
+				}
+			},
+			"statBoxes": {
+				"avgCpuTemperature": "Ortalama CPU Isısı",
+				"cpuFrequency": "CPU Frekansı",
+				"cpuLogical": "CPU (Mantıksal)",
+				"cpuPhysical": "CPU (fiziksel)",
+				"disk": "Disk",
+				"memory": "Bellek",
+				"os": "İşletim sistemi"
+			},
+			"table": {
+				"headers": {
+					"cpu": "CPU",
+					"disk": "Disk",
+					"memory": "Bellek"
+				}
+			},
+			"tabs": {
+				"labels": {
+					"network": "",
+					"overview": "Genel bakış"
+				}
+			},
+			"fallback": {
+				"actionButton": "Monitör oluşturun!",
+				"title": "Henüz altyapı izleyicisi yok",
+				"description": "Sunucu performansını izleyin, darboğazları belirleyin ve gerçek zamanlı altyapı izleme ile güvenilirliği sağlayın."
+			},
+			"header": {
+				"title": "Altyapı izleyicileri",
+				"description": "Sunucu performansını izleyin, darboğazları belirleyin ve gerçek zamanlı altyapı izleme ile güvenilirliği sağlayın."
+			}
+		},
+		"logs": {
+			"fallback": {
+				"title": "Henüz günlük yok",
+				"description": "Sunucu etkinliği, uyarılar ve hatalar Checkmate çalıştıkça burada görünecek."
+			},
+			"tabs": {
+				"diagnostics": "Teşhis",
+				"logs": "Sunucu günlükleri",
+				"queue": "İş kuyruğu"
+			},
+			"logLevelSelect": {
+				"label": "Günlük seviyesi"
+			},
+			"jobQueue": "İş kuyruğu",
+			"jobQueueExplainer": "<highlight>Vurgulanan satırlar</highlight> şu anda bir işçi tarafından işlenmekte olan işlerdir.",
+			"failedJobs": "Başarısız işler",
+			"failedJobsExplainer": "Monitöre göre son başarısızlıklar — son başarısızlık zamanı, başarısızlık sayısı ve nedeni.",
+			"noLogs": "Günlük bulunamadı",
+			"metrics": {
+				"jobs": "İşler",
+				"activeJobs": "Aktif işler",
+				"failingJobs": "Başarısız olan işler",
+				"totalRuns": "Toplam çalıştırma",
+				"totalFailures": "Toplam başarısızlık"
+			},
+			"diagnostics": {
+				"stats": {
+					"eventLoopDelay": "Olay döngüsü gecikmesi",
+					"uptime": "Çalışma süresi",
+					"usedHeapSize": "Kullanılan heap boyutu",
+					"totalHeapSize": "Toplam heap boyutu",
+					"osMemoryLimit": "İşletim sistemi bellek limiti"
+				},
+				"gauges": {
+					"heapAllocation": "Heap tahsisi",
+					"heapUsage": "Heap kullanımı",
+					"heapUtilization": "Heap verimliliği",
+					"instantCpuUsage": "Anlık CPU kullanımı",
+					"availableMemoryPercentage": "% kullanılabilir bellek",
+					"allocatedPercentage": "% tahsis edilmiş",
+					"usedSPercentage": "% CPU tarafından kullanılan (1s)",
+					"total": "Toplam",
+					"used": "Kullanılan"
+				},
+				"sections": {
+					"runtimeStats": {
+						"title": "Çalışma istatistikleri",
+						"description": "Node.js süreci ve ana makinenin anlık görüntüsü. 5 saniyede bir güncellenir."
+					},
+					"memoryCpu": {
+						"title": "Bellek ve CPU",
+						"description": "Sürecin ayrılmış belleğini ve ana makinenin CPU'sunu nasıl kullandığı."
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"timestamp": "Zaman damgası",
+					"level": "Seviye",
+					"service": "Servis",
+					"method": "Yöntem",
+					"monitorId": "Monitör ID",
+					"runCount": "Çalışma sayısı",
+					"failCount": "Başarısızlık sayısı",
+					"lastRunAt": "Son çalışma zamanı",
+					"lockedAt": "Kilitlenme zamanı",
+					"lastFinishedAt": "Son tamamlanma zamanı",
+					"lastRunTook": "Son çalışma süresi",
+					"lastFailedAt": "Son başarısızlık zamanı",
+					"failReason": "Başarısızlık nedeni"
+				}
+			},
+			"queueFallback": {
+				"title": "Kuyrukta iş yok",
+				"description": "Zamanlanmış veya çalışan izleyici kontrolleri burada görünür. Boş bir kuyruk her şeyin güncel olduğu anlamına gelir."
+			},
+			"header": {
+				"title": "Günlükler ve kuyruk",
+				"description": "Sunucu günlüklerini, izleyici iş kuyruğunu ve çalışma zamanı tanılarını tek bir yerde inceleyin."
+			}
+		},
+		"maintenanceWindow": {
+			"fallback": {
+				"actionButton": "Bakım penceresi oluşturun!",
+				"title": "Planlanmış bakım penceresi yok",
+				"description": "Planlı kesintileri zamanlayın; uyarılar bastırılsın, ekibiniz ve kullanıcılarınız ne bekleyeceklerini bilsin."
+			},
+			"table": {
+				"headers": {
+					"nextWindow": "Sonraki pencere",
+					"repeat": "Tekrarla"
+				}
+			},
+			"form": {
+				"general": {
+					"title": "Genel ayarlar",
+					"description": "Bakım pencereniz için bir ad ve tekrar seçeneği belirleyin.",
+					"option": {
+						"name": {
+							"label": "Ad",
+							"placeholder": "örn. Haftalık Bakım"
+						},
+						"repeat": {
+							"label": "Tekrarla"
+						}
+					}
+				},
+				"startDate": {
+					"title": "Başlangıç tarihi",
+					"description": "Bakım pencereniz için başlangıç tarihini seçin.",
+					"option": {
+						"startDate": {
+							"label": "Başlangıç tarihi"
+						}
+					}
+				},
+				"startTime": {
+					"title": "Başlangıç saati",
+					"description": "Bakım pencereniz için başlangıç saati ve süreyi ayarlayın. Tüm değerler UTC cinsindendir",
+					"option": {
+						"duration": {
+							"label": "Süre"
+						},
+						"startTime": {
+							"label": "Başlangıç saati"
+						}
+					},
+					"monitors": {
+						"title": "Monitörler",
+						"description": "Bakım penceresinin uygulanacağı monitörler",
+						"option": {
+							"addMonitors": {
+								"label": "Monitör ekle"
+							}
+						}
+					}
+				}
+			},
+			"header": {
+				"title": "Bakım pencereleri",
+				"description": "Planlı kesintileri zamanlayın; uyarılar bastırılsın, ekibiniz ve kullanıcılarınız ne bekleyeceklerini bilsin."
+			}
+		},
+		"notifications": {
+			"fallback": {
+				"actionButton": "Kanal oluştur",
+				"title": "Henüz bildirim kanalı yok",
+				"description": "Slack, Discord, e-posta, webhook ve daha fazlasını bağlayın — olaylar olur olmaz doğru kişilere haber verilir."
+			},
+			"form": {
+				"accessToken": {
+					"optionAccessToken": "Erişim token'ı",
+					"placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
+				},
+				"address": {
+					"description": "Bildirimlerin gönderileceği adres.",
+					"optionAddress": "Adres",
+					"placeholderEmail": "example@example.com",
+					"placeholderWebhook": "https://your-server.com/webhook",
+					"title": "Adres"
+				},
+				"homeServer": {
+					"optionHomeServer": "Ana sunucu",
+					"placeholder": "example.com"
+				},
+				"matrix": {
+					"description": "Bildirimler için Matrix ana sunucu bağlantınızı yapılandırın.",
+					"title": "Matrix yapılandırması"
+				},
+				"notificationName": {
+					"description": "Bildirim kanalı için açıklayıcı bir ad",
+					"optionName": "Kanal adı",
+					"placeholder": "örn. Üretim Uyarıları",
+					"title": "Kanal adı"
+				},
+				"pagerDuty": {
+					"description": "Uyarıları almak için PagerDuty entegrasyon anahtarınız.",
+					"optionIntegrationKey": "Entegrasyon anahtarı",
+					"placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+					"title": "Entegrasyon anahtarı"
+				},
+				"roomId": {
+					"optionRoomId": "Oda ID",
+					"placeholder": "!abcdefg:matrix.org"
+				},
+				"type": {
+					"description": "Oluşturulacak bildirim kanalı türünü seçin.",
+					"optionType": "Tür",
+					"title": "Kanal türü"
+				},
+				"telegram": {
+					"title": "Telegram yapılandırması",
+					"description": "Telegram bildirimlerini etkinleştirmek için, Telegram botlarını oluşturup yönetmek için kullanılan resmi bot BotFather ile bir Telegram botu oluşturun. Daha sonra, API jetonunu (token) ve sohbet kimliğini (chat ID) alın ve buraya yazın.",
+					"optionBotToken": "Bot token",
+					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
+					"optionChatId": "Sohbet ID",
+					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Pushover yapılandırması",
+					"description": "Pushover uygulama belirtecinizi ve kullanıcı anahtarınızı girin.",
+					"optionAppToken": "Uygulama belirteci",
+					"placeholderAppToken": "Uygulama belirtecini girin",
+					"optionUserKey": "Kullanıcı anahtarı",
+					"placeholderUserKey": "Kullanıcı anahtarını girin"
+				},
+				"twilio": {
+					"title": "Twilio yapılandırması",
+					"description": "SMS göndermek için Twilio hesap kimlik bilgilerinizi girin.",
+					"optionAccountSid": "Hesap SID",
+					"placeholderAccountSid": "Hesap SID girin",
+					"optionAuthToken": "Kimlik doğrulama belirteci",
+					"placeholderAuthToken": "Kimlik doğrulama belirtecini girin",
+					"optionFromNumber": "Gönderen numara",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "Alıcı numara",
+					"placeholderToNumber": "+1234567890"
+				}
+			},
+			"table": {
+				"headers": {
+					"destination": "Hedef"
+				}
+			},
+			"header": {
+				"title": "Bildirimler",
+				"description": "Slack, Discord, e-posta, webhook ve daha fazlasını bağlayın — olaylar olur olmaz doğru kişilere haber verilir."
+			}
+		},
+		"pageSpeed": {
+			"charts": {
+				"common": {
+					"cls": "Cumulative Layout Shift (CLS)",
+					"fcp": "First Contentful Paint (FCP)",
+					"lcp": "Largest Contentful Paint (LCP)",
+					"si": "Speed Index (SI)",
+					"tbt": "Total Blocking Time (TBT)"
+				},
+				"legend": {
+					"title": "PageSpeed raporu",
+					"weight": "Ağırlık"
+				},
+				"pie": {
+					"title": "Performans raporu"
+				}
+			},
+			"table": {
+				"headers": {
+					"pageSpeedScore": "PageSpeed puanı"
+				}
+			},
+			"fallback": {
+				"actionButton": "Monitör oluşturun!",
+				"title": "Henüz PageSpeed izleyicisi yok",
+				"description": "Core Web Vitals ve Lighthouse puanlarını zaman içinde izleyerek kullanıcılarınız fark etmeden gerilemeleri yakalayın."
+			},
+			"header": {
+				"title": "PageSpeed izleyicileri",
+				"description": "Core Web Vitals ve Lighthouse puanlarını zaman içinde izleyerek kullanıcılarınız fark etmeden gerilemeleri yakalayın."
+			}
+		},
+		"settings": {
+			"form": {
+				"timezone": {
+					"title": "Görüntüleme saat dilimi",
+					"description": "Uygulama genelinde tarih ve saatleri görüntülemek için kullanılacak saat dilimini seçin.",
+					"option": {
+						"timezone": {
+							"label": "Görüntüleme saat dilimi"
+						}
+					}
+				},
+				"ui": {
+					"title": "Görünüm",
+					"description": "Açık ve koyu mod arasında geçiş yapın, dili değiştirin veya grafik görüntüleme türünü özelleştirin.",
+					"option": {
+						"theme": {
+							"label": "Tema modu",
+							"light": "Açık",
+							"dark": "Koyu"
+						},
+						"language": {
+							"label": "Dil"
+						},
+						"chartType": {
+							"label": "Grafik türü",
+							"histogram": "Histogram",
+							"heatmap": "Isı haritası"
+						}
+					}
+				},
+				"pagespeed": {
+					"title": "Google PageSpeed API anahtarı",
+					"description": "Google PageSpeed izlemesini etkinleştirmek için Google PageSpeed API anahtarınızı girin. Anahtarı güncellemek için Sıfırla'ya tıklayın.",
+					"option": {
+						"apiKey": {
+							"label": "PageSpeed API anahtarı",
+							"labelSet": "API anahtarı ayarlandı. Değiştirmek için Sıfırla'ya tıklayın.",
+							"placeholder": "Google PageSpeed API anahtarınızı girin"
+						}
+					}
+				},
+				"url": {
+					"title": "Durum sayfasında monitör IP/URL gösterimi",
+					"description": "Monitörün IP adresini veya URL'sini herkese açık durum sayfasında görüntüleyin. Devre dışı bırakılırsa hassas bilgileri korumak için yalnızca monitör adı gösterilir.",
+					"option": {
+						"showURL": {
+							"label": "Durum sayfasında IP/URL göster",
+							"enabled": "Etkin",
+							"disabled": "Devre dışı"
+						}
+					}
+				},
+				"stats": {
+					"title": "Monitör geçmişi",
+					"description": "Ekibinizin tüm izleme geçmişini ve istatistiklerini temizleyin. Bu işlem geri alınamaz.",
+					"option": {
+						"clear": {
+							"label": "Tüm istatistikleri temizle. Bu işlem geri alınamaz."
+						}
+					},
+					"dialog": {
+						"title": "Tüm izleme geçmişi temizlensin mi?",
+						"description": "Bu işlem geri alınamaz"
+					}
+				},
+				"retention": {
+					"title": "Kontrol saklama",
+					"description": "Kontrol verilerinin otomatik temizlenmeden önce ne kadar süre saklanacağını ayarlayın.",
+					"option": {
+						"days": {
+							"label": "Saklama süresi (gün)",
+							"unlimited": "Sınırsız"
+						}
+					}
+				},
+				"thresholds": {
+					"title": "Genel eşikler",
+					"description": "Altyapı izleme için genel CPU, bellek, disk ve sıcaklık eşiklerini ayarlayın. Bunlar, geçersiz kılınmadığı sürece tüm donanım monitörlerine uygulanır.",
+					"option": {
+						"cpu": {
+							"label": "CPU eşiği (%)",
+							"placeholder": "1 - 100"
+						},
+						"memory": {
+							"label": "Bellek eşiği (%)",
+							"placeholder": "1 - 100"
+						},
+						"disk": {
+							"label": "Disk eşiği (%)",
+							"placeholder": "1 - 100"
+						},
+						"temperature": {
+							"label": "Sıcaklık eşiği (°C)",
+							"placeholder": "1 - 150"
+						}
+					}
+				},
+				"email": {
+					"title": "E-posta ayarları",
+					"description": "Sisteminiz için e-posta ayarlarını yapılandırın. Bu, bildirim ve uyarı göndermek için kullanılır.",
+					"descriptionTransport": "",
+					"descriptionTransportLink": "Özellikleri burada görün",
+					"option": {
+						"host": {
+							"label": "E-posta sunucusu - Bağlanılacak ana bilgisayar adı veya IP adresi",
+							"placeholder": "smtp.gmail.com"
+						},
+						"port": {
+							"label": "E-posta portu - Bağlanılacak port",
+							"placeholder": "587"
+						},
+						"address": {
+							"label": "E-posta adresi - Kimlik doğrulama için kullanılır",
+							"placeholder": "you@example.com"
+						},
+						"user": {
+							"label": "E-posta kullanıcısı - Kimlik doğrulama için kullanıcı adı, belirtilirse e-posta adresini geçersiz kılar",
+							"placeholder": "Gerekli değilse boş bırakın"
+						},
+						"password": {
+							"label": "E-posta parolası - Kimlik doğrulama için parola",
+							"labelSet": "Parola ayarlandı. Değiştirmek için Sıfırla'ya tıklayın.",
+							"placeholder": "Parolanızı girin"
+						},
+						"tlsServername": {
+							"label": "TLS sunucu adı - Ana bilgisayar IP olduğunda TLS doğrulama için isteğe bağlı ana bilgisayar adı",
+							"placeholder": "example.com"
+						},
+						"connectionHost": {
+							"label": "E-posta bağlantı sunucusu - HELO/EHLO karşılamasında kullanılacak ana bilgisayar adı",
+							"placeholder": "localhost"
+						},
+						"secure": {
+							"label": "SSL kullan (önerilen): Bağlantıyı SSL/TLS ile şifreleyin"
+						},
+						"pool": {
+							"label": "Bağlantı havuzunu etkinleştir: Performansı artırmak için mevcut bağlantıları yeniden kullanın"
+						},
+						"ignoreTLS": {
+							"label": "STARTTLS'yi devre dışı bırak: Sunucu desteklese bile TLS kullanma"
+						},
+						"requireTLS": {
+							"label": "STARTTLS'yi zorunlu kıl: TLS yükseltmesini zorunlu kıl, desteklenmiyorsa başarısız ol"
+						},
+						"rejectUnauthorized": {
+							"label": "Geçersiz sertifikaları reddet: Kendinden imzalı veya güvenilmeyen sertifikalı bağlantıları reddet"
+						}
+					}
+				},
+				"demoMonitors": {
+					"title": "Demo monitörler",
+					"description": "Gösterim amaçlı örnek monitörler ekleyin."
+				},
+				"removeMonitors": {
+					"title": "Sistemi sıfırla",
+					"description": "Sistemdeki tüm monitörleri kaldır.",
+					"dialog": {
+						"title": "Tüm monitörler kaldırılsın mı?",
+						"description": "Bu işlem geri alınamaz.",
+						"paragraph": "Tüm kontrol geçmişi, olaylar, planlanmış bakım pencereleri ve bu monitörleri kullanan durum sayfaları da kaldırılacaktır. Verilerin yedeğini saklamak istiyorsanız, önce monitörleri dışa aktarın."
+					}
+				},
+				"exportMonitors": {
+					"title": "Monitörleri dışa aktar"
+				},
+				"importExportMonitors": {
+					"title": "Monitörleri içe / dışa aktar",
+					"description": "Yedekleme veya aktarım için monitör verilerinizi JSON dosyası olarak içe veya dışa aktarın."
+				},
+				"about": {
+					"title": "Hakkında",
+					"developedBy": "Bluewave Labs tarafından geliştirildi"
+				},
+				"validation": {
+					"errorMessage": "Lütfen aşağıdaki doğrulama hatalarını düzeltin:"
+				}
+			},
+			"header": {
+				"title": "Ayarlar",
+				"description": "SMTP, entegrasyonlar, saklama ve genel uygulama davranışını yapılandırın."
+			}
+		},
+		"statusPages": {
+			"deleteSuccess": "Durum sayfası başarıyla silindi",
+			"fallback": {
+				"title": "Henüz durum sayfası yok",
+				"actionButton": "Durum sayfası oluşturun!",
+				"description": "Müşterilerinize ve paydaşlarınıza gerçek zamanlı çalışma süresi ve olay geçmişini gösteren herkese açık bir sayfa yayınlayın."
+			},
+			"monitorsList": {
+				"chartTypeHeatmap": "Isı haritası",
+				"chartTypeHistogram": "Histogram",
+				"noData": "Veri mevcut değil",
+				"infrastructure": {
+					"title": "Altyapı",
+					"cpu": "CPU",
+					"memory": "RAM",
+					"memoryText": "Bellek",
+					"disk": "Disk",
+					"usage": "Kullanım",
+					"used": "Kullanılan",
+					"total": "Toplam"
+				},
+				"uptime": {
+					"title": "Çalışma süresi",
+					"responseTime": "Yanıt süresi"
+				}
+			},
+			"statusBar": {
+				"allDown": "Tüm sistemler çevrimdışı",
+				"allUp": "Tüm sistemler çalışıyor",
+				"degraded": "Bazı sistemlerde sorun yaşanıyor",
+				"unknown": "Sistem durumu belirlenemiyor",
+				"allBreached": "Tüm sistemler eşik değerlerini aştı",
+				"allMaintenance": "Tüm sistemler bakımda",
+				"allPaused": "Tüm sistemler duraklatıldı",
+				"allInitializing": "Tüm sistemler başlatılıyor",
+				"breachedAndDown": "Bazı sistemler eşik değerlerini aştı ve çalışmıyor",
+				"breached": "Bazı sistemler eşik değerlerini aştı",
+				"maintenanceAndDown": "Bazı sistemler bakım sırasında çalışmıyor",
+				"maintenance": "Bazı sistemler bakımda",
+				"partiallyPaused": "Bazı sistemler duraklatıldı",
+				"initializing": "Bazı sistemler başlatılıyor",
+				"noMonitors": "Hiç monitör yapılandırılmadı"
+			},
+			"table": {
+				"headers": {
+					"name": "Durum sayfası adı",
+					"url": "Herkese açık URL"
+				},
+				"published": "Yayında",
+				"unpublished": "Yayında değil"
+			},
+			"title": "Durum sayfaları",
+			"details": {
+				"empty": {
+					"title": "Burada henüz hiçbir şey yok",
+					"addMonitor": "Başlamak için bir monitör ekleyin"
+				}
+			},
+			"form": {
+				"access": {
+					"title": "Erişim",
+					"description": "Durum sayfanız hazırsa yayında olarak işaretleyebilirsiniz.",
+					"option": {
+						"published": {
+							"name": "Yayında ve herkese açık"
+						}
+					}
+				},
+				"basicInfo": {
+					"title": "Temel bilgiler",
+					"description": "Şirket adını ve durum sayfanızın işaret ettiği alt alan adını tanımlayın.",
+					"option": {
+						"name": {
+							"label": "Şirket adı",
+							"placeholder": "Acme Inc."
+						},
+						"url": {
+							"label": "Durum sayfası adresiniz",
+							"placeholder": "my-status-page"
+						}
+					}
+				},
+				"monitors": {
+					"title": "Monitörler",
+					"description": "Durum sayfanızda görüntülenecek monitörleri seçin.",
+					"noMonitors": "Monitör seçilmedi",
+					"option": {
+						"monitors": {
+							"label": "Monitör seçin",
+							"placeholder": "Monitör arayın ve seçin..."
+						}
+					}
+				},
+				"timezone": {
+					"title": "Saat dilimi",
+					"description": "Durum sayfanızın görüntüleneceği saat dilimini seçin.",
+					"option": {
+						"timezone": {
+							"label": "Saat dilimi",
+							"placeholder": "Saat dilimi seçin..."
+						}
+					}
+				},
+				"appearance": {
+					"title": "Görünüm",
+					"description": "Herkese açık durum sayfanızın varsayılan görünümünü ve hissini tanımlayın.",
+					"option": {
+						"logo": {
+							"label": "Logo"
+						},
+						"color": {
+							"label": "Marka rengi"
+						}
+					}
+				},
+				"features": {
+					"title": "Özellikler",
+					"description": "Durum sayfanızda hangi bilgilerin görüntüleneceğini yapılandırın.",
+					"option": {
+						"showCharts": {
+							"label": "Yanıt süresi grafiklerini göster"
+						},
+						"showUptimePercentage": {
+							"label": "Çalışma süresi yüzdesini göster"
+						},
+						"showAdminLoginLink": {
+							"label": "Yönetici giriş bağlantısını göster"
+						},
+						"showInfrastructure": {
+							"label": "Altyapı metriklerini göster"
+						}
+					}
+				}
+			},
+			"header": {
+				"title": "Durum sayfaları",
+				"description": "Müşterilerinize ve paydaşlarınıza gerçek zamanlı çalışma süresi ve olay geçmişini gösteren herkese açık sayfalar yayınlayın."
+			}
+		},
+		"uptime": {
+			"filters": {
+				"search": {
+					"placeholder": "Monitör ara..."
+				}
+			},
+			"table": {
+				"headers": {
+					"responseTime": "Yanıt süresi"
+				}
+			},
+			"fallback": {
+				"actionButton": "Monitör oluşturun!",
+				"title": "Henüz çalışma süresi izleyicisi yok",
+				"description": "HTTP uç noktalarını, ping'leri, konteynerleri ve portları izleyin — bir şey kapandığında anında uyarı alın."
+			},
+			"header": {
+				"title": "Çalışma süresi izleyicileri",
+				"description": "HTTP uç noktalarını, ping'leri, konteynerleri ve portları izleyin — bir şey kapandığında anında uyarı alın."
 			}
 		}
-	},
-	"createNotifications": {
-		"title": "Bildirim kanalları oluştur",
-		"nameSettings": {
-			"title": "İsim",
-			"description": "Entegrasyon için açıklama",
-			"nameLabel": "İsim",
-			"namePlaceholder": "örn. Slack bildirimleri"
-		},
-		"typeSettings": {
-			"title": "Tür",
-			"description": "",
-			"typeLabel": "Tür"
-		},
-		"emailSettings": {
-			"title": "Eposta",
-			"description": "Hedef eposta adresi",
-			"emailLabel": "Eposta adresi",
-			"emailPlaceholder": "örn. john@example.com"
-		},
-		"slackSettings": {
-			"title": "Slack",
-			"description": "Slack webhook'u burada tanımlayın",
-			"webhookLabel": "Slack webhook adresi",
-			"webhookPlaceholder": "https://hooks.slack.com/services/...\n"
-		},
-		"pagerdutySettings": {
-			"title": "PagerDuty",
-			"description": "PagerDuty entegrasyonunu burada yapın",
-			"integrationKeyLabel": "Entegrasyon anahtarı",
-			"integrationKeyPlaceholder": "1234567890"
-		},
-		"discordSettings": {
-			"title": "Discord",
-			"description": "Discord webhook'u buradan ayarlayın",
-			"webhookLabel": "Discord Webhook adresi",
-			"webhookPlaceholder": "https://sunucu-adı.com/webhook\n"
-		},
-		"webhookSettings": {
-			"title": "Webhook",
-			"description": "",
-			"webhookLabel": "",
-			"webhookPlaceholder": "https://sunucu-adı.com/webhook\n"
-		},
-		"testNotification": "Test bildirimi",
-		"dialogDeleteTitle": "Gerçekten bu bildirimi silmek istiyor musunuz?",
-		"dialogDeleteConfirm": "Sil"
-	},
-	"notificationConfig": {
-		"title": "Bildirimler",
-		"description": ""
-	},
-	"monitorStatus": {
-		"checkingEvery": "",
-		"withCaptureAgent": "",
-		"up": "ayakta",
-		"down": "çalışmıyor",
-		"paused": "beklemede"
-	},
-	"advancedMatching": "Gelişmiş eşleştirme",
-	"sendTestNotifications": "Bildirimleri dene",
-	"selectAll": "Tümünü seç",
-	"showAdminLoginLink": "",
-	"logsPage": {
-		"title": "Günlükler",
-		"description": "Sistem günlükleri - son 1000 satır",
-		"tabs": {
-			"queue": "İş kuyruğu",
-			"logs": "Sunucu günlükleri",
-			"diagnostics": "Teşhis"
-		},
-		"toast": {
-			"fetchLogsSuccess": "Günlükler başarıyla alındı"
-		},
-		"logLevelSelect": {
-			"title": "",
-			"values": {
-				"all": "",
-				"info": "",
-				"warn": "",
-				"error": "",
-				"debug": ""
-			}
-		}
-	},
-	"queuePage": {
-		"title": "",
-		"refreshButton": "",
-		"flushButton": "",
-		"jobTable": {
-			"title": "",
-			"idHeader": "",
-			"urlHeader": "",
-			"typeHeader": "",
-			"activeHeader": "Aktif",
-			"lockedAtHeader": "",
-			"runCountHeader": "",
-			"failCountHeader": "",
-			"lastRunHeader": "",
-			"lastFinishedAtHeader": "Son tamamlama",
-			"lastRunTookHeader": "",
-			"intervalHeader": ""
-		},
-		"metricsTable": {
-			"title": "",
-			"metricHeader": "Metrik",
-			"valueHeader": "Değer"
-		},
-		"failedJobTable": {
-			"title": "Tamamlanamayan işler",
-			"monitorIdHeader": "Monitör ID",
-			"monitorUrlHeader": "Monitör URL",
-			"failCountHeader": "Hata sayısı",
-			"failedAtHeader": "",
-			"failReasonHeader": ""
-		}
-	},
-	"export": {
-		"title": "Monitörleri dışarı al",
-		"success": "Monitörler başarıyla dışarıya alındı",
-		"failed": "Monitörleri dışarıya alırken bir hata oluştu"
-	},
-	"monitorActions": {
-		"title": "Dışarı/İçeri al",
-		"import": "",
-		"export": "",
-		"deleteSuccess": "Monitör başarıyla silindi",
-		"deleteFailed": "Monitör silinemedi",
-		"details": "Detaylar"
-	},
-	"settingsPage": {
-		"aboutSettings": {
-			"labelDevelopedBy": "",
-			"labelVersion": "",
-			"title": ""
-		},
-		"demoMonitorsSettings": {
-			"buttonAddMonitors": "",
-			"description": "",
-			"title": ""
-		},
-		"emailSettings": {
-			"buttonSendTestEmail": "",
-			"description": "",
-			"descriptionTransport": "",
-			"labelAddress": "",
-			"labelConnectionHost": "",
-			"labelHost": "",
-			"labelIgnoreTLS": "",
-			"labelPassword": "",
-			"labelPasswordSet": "",
-			"labelPool": "",
-			"labelPort": "",
-			"labelRejectUnauthorized": "",
-			"labelRequireTLS": "",
-			"labelSecure": "",
-			"labelTLSServername": "",
-			"labelUser": "",
-			"linkTransport": "",
-			"placeholderUser": "Eğer gerekmiyorsa boş bırakabilirsiniz",
-			"title": "Eposta",
-			"toastEmailRequiredFieldsError": ""
-		},
-		"pageSpeedSettings": {
-			"description": "Google PageSpeed izlemeyi etkinleştirmek için Google PageSpeed API anahtarınızı girin. Anahtarı güncellemek için Sıfırla'ya tıklayın.",
-			"labelApiKeySet": "API key tanımlandı. Sıfırla düğmesine tıklayarak değiştirebilirsiniz.",
-			"labelApiKey": "PageSpeed API anahtarı",
-			"title": "Google PageSpeed API anahtarı"
-		},
-		"saveButtonLabel": "Kaydet",
-		"statsSettings": {
-			"clearAllStatsButton": "",
-			"clearAllStatsDescription": "",
-			"clearAllStatsDialogConfirm": "",
-			"clearAllStatsDialogDescription": "",
-			"clearAllStatsDialogTitle": "",
-			"description": "",
-			"labelTTL": "",
-			"labelTTLOptional": "Sonsuz için 0",
-			"title": "İzleme geçmişi"
-		},
-		"systemResetSettings": {
-			"buttonRemoveAllMonitors": "Tüm monitörleri sil",
-			"description": "Sistemden tüm monitörleri sil",
-			"dialogConfirm": "Evet, tüm monitörleri sil",
-			"dialogDescription": "",
-			"dialogTitle": "Gerçekten tüm monitörleri silmek istiyor musunuz?",
-			"title": "Sistemi sıfırla"
-		},
-		"timezoneSettings": {
-			"description": "",
-			"label": "Görünüm zaman dilimi",
-			"title": "Görünüm zaman dilimi"
-		},
-		"title": "Ayarlar",
-		"uiSettings": {
-			"description": "Aydınlık ve karanlık mod arasında geçiş yapın ya da kullanıcı arayüzü dilini değiştirin.",
-			"labelLanguage": "Dil",
-			"labelTheme": "Tema modu",
-			"title": "Görünüm"
-		},
-		"urlSettings": {
-			"description": "",
-			"label": "",
-			"selectDisabled": "Kapalı",
-			"selectEnabled": "Etkin",
-			"title": ""
-		},
-		"globalThresholds": {
-			"title": "",
-			"description": ""
-		}
-	},
-	"statusPageCreate": {
-		"buttonSave": ""
-	},
-	"incidentsOptionsHeaderFilterResolved": "",
-	"settingsSave": "",
-	"statusPageCreateAppearanceTitle": "",
-	"confirmPassword": "",
-	"monitorHooks": {
-		"failureAddDemoMonitors": "",
-		"successAddDemoMonitors": ""
-	},
-	"settingsAppearance": "",
-	"settingsDisplayTimezone": "",
-	"settingsGeneralSettings": "",
-	"incidentsOptionsHeaderTotalIncidents": "",
-	"statusPage": {
-		"deleteSuccess": "Durum sayfası başarıyla silindi",
-		"deleteFailed": "Durum sayfası silinemedi",
-		"createSuccess": "Durum sayfası başarıyla oluşturuldu",
-		"updateSuccess": "Durum sayfası başarıyla güncellendi",
-		"generalSettings": "Genel ayarlar",
-		"contents": "İçerikler",
-		"fallback": {
-			"checks": [""],
-			"title": "",
-			"actionButton": ""
-		}
-	},
-	"testNotificationsDisabled": "Bu izleyici için ayarlanmış bir bildirim yok. 'Yapılandır' düğmesine tıklayarak bir bildirim eklemeniz gerekiyor.",
-	"incidentsTableResolvedAt": "",
-	"incidentsTableActionResolve": "Çözümle",
-	"checkHooks": {
-		"failureResolveOne": "Olay çözümlenirken bir hata oluştu.",
-		"failureResolveAll": "Tüm olayları çözümlerken bir hata oluştu.",
-		"failureResolveMonitor": ""
-	},
-	"checkFormError": "Formda hatalar var. Lütfen kontrol edin.",
-	"diagnosticsPage": {
-		"diagnosticDescription": "",
-		"statsDescription": "",
-		"gauges": {
-			"heapAllocationTitle": "",
-			"heapAllocationSubtitle": "",
-			"heapUsageTitle": "",
-			"heapUsageSubtitle": "",
-			"heapUtilizationTitle": "",
-			"heapUtilizationSubtitle": "",
-			"instantCpuUsageTitle": "",
-			"instantCpuUsageSubtitle": ""
-		},
-		"stats": {
-			"eventLoopDelayTitle": "",
-			"uptimeTitle": "",
-			"usedHeapSizeTitle": "",
-			"totalHeapSizeTitle": "",
-			"osMemoryLimitTitle": ""
-		}
-	},
-	"pageSpeedLighthouseAPI": "",
-	"time": {
-		"threeMinutes": "",
-		"fiveMinutes": "",
-		"tenMinutes": "",
-		"twentyMinutes": "",
-		"oneHour": "1 saat",
-		"oneDay": "1 gün",
-		"oneWeek": "1 hafta",
-		"fourMinutes": "",
-		"oneMinute": "",
-		"twoMinutes": "",
-		"fifteenSeconds": "",
-		"thirtySeconds": ""
-	},
-	"general": {
-		"noOptionsFound": ""
-	},
-	"infrastructureMonitor": {
-		"fallback": {
-			"checks": [""],
-			"title": "",
-			"actionButton": ""
-		}
-	},
-	"maintenanceWindow": {
-		"fallback": {
-			"checks": [""],
-			"title": "",
-			"actionButton": ""
-		}
-	},
-	"pageSpeed": {
-		"fallback": {
-			"checks": [""],
-			"title": "",
-			"actionButton": ""
-		}
-	},
-	"uptimeMonitor": {
-		"fallback": {
-			"checks": [""],
-			"title": "",
-			"actionButton": ""
-		}
-	},
-	"editUserPage": {
-		"form": {
-			"email": "",
-			"firstName": "",
-			"lastName": "",
-			"role": "",
-			"save": ""
-		},
-		"table": {
-			"actionHeader": "",
-			"roleHeader": ""
-		},
-		"title": "",
-		"toast": {
-			"successUserUpdate": "",
-			"validationErrors": ""
-		}
-	},
-	"incidentsPageActionResolveMonitor": "",
-	"incidentsPageActionResolveAll": "",
-	"matchMethodOptions": {
-		"equal": "",
-		"equalPlaceholder": "",
-		"include": "",
-		"includePlaceholder": "",
-		"regex": "",
-		"regexPlaceholder": "",
-		"text": ""
-	},
-	"monitorType": {
-		"docker": {
-			"label": "",
-			"namePlaceholder": "",
-			"placeholder": ""
-		},
-		"http": {
-			"label": "",
-			"namePlaceholder": "",
-			"placeholder": ""
-		},
-		"ping": {
-			"label": "",
-			"namePlaceholder": "",
-			"placeholder": ""
-		},
-		"port": {
-			"label": "",
-			"namePlaceholder": "",
-			"placeholder": ""
-		},
-		"game": {
-			"label": "",
-			"namePlaceholder": "",
-			"placeholder": ""
-		}
-	},
-	"uptimeAdvancedMatching": {
-		"jsonPath": ""
-	},
-	"bytesPerSecond": "",
-	"bytesReceived": "",
-	"bytesSent": "",
-	"chooseGame": "",
-	"createMonitorPage": {
-		"incidentConfigDescription": "",
-		"incidentConfigStatusWindowLabel": "",
-		"incidentConfigStatusWindowThresholdLabel": "",
-		"incidentConfigTitle": "",
-		"incidentConfigDescriptionV2": "",
-		"incidentConfigStatusCheckNumber": "",
-		"intervalTitle": "",
-		"intervalDescription": ""
-	},
-	"dataRate": "",
-	"dataReceived": "",
-	"dataSent": "",
-	"details": "",
-	"drops": "",
-	"errors": "",
-	"errorsIn": "",
-	"errorsOut": "",
-	"gameServerMonitoring": "",
-	"gameServerMonitoringDescription": "",
-	"network": "",
-	"networkDrops": "",
-	"networkErrors": "",
-	"networkInterface": "",
-	"noNetworkStatsAvailable": "",
-	"packetsPerSecond": "",
-	"packetsReceived": "",
-	"packetsReceivedRate": "",
-	"packetsSent": "",
-	"rate": "",
-	"selectInterface": ""
+	}
 }

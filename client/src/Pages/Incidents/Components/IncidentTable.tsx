@@ -1,8 +1,6 @@
-import { Table } from "@/Components/design-elements";
+import { Table, ValueLabel, StatusCodeLabel } from "@/Components/design-elements";
 import { Pagination } from "@/Components/design-elements/Table";
 import type { Header } from "@/Components/design-elements/Table";
-import { ValueLabel } from "@/Components/design-elements";
-import type { ValueType } from "@/Components/design-elements/StatusLabel";
 import { ActionsMenu } from "@/Components/actions-menu";
 import type { Incident } from "@/Types/Incident";
 import type { Monitor } from "@/Types/Monitor";
@@ -136,13 +134,12 @@ export const IncidentsTable = ({
 						return (
 							<Typography
 								variant="body2"
-								sx={{
-									textTransform: "capitalize",
-									color:
-										row.resolutionType === "manual"
-											? theme.palette.warning.main
-											: theme.palette.success.main,
-								}}
+								color={
+									row.resolutionType === "manual"
+										? theme.palette.warning.main
+										: theme.palette.success.main
+								}
+								textTransform={"capitalize"}
 							>
 								{row.resolutionType}
 							</Typography>
@@ -155,15 +152,10 @@ export const IncidentsTable = ({
 				id: "statusCode",
 				content: t("pages.incidents.table.headers.statusCode"),
 				render: (row) => {
-					const code = row.statusCode;
-					if (!code) return "N/A";
-					let value: ValueType = "neutral";
-					if (code < 300) value = "positive";
-					else if (code >= 400) value = "negative";
 					return (
-						<ValueLabel
-							value={value}
-							text={String(code)}
+						<StatusCodeLabel
+							statusCode={row.statusCode}
+							message={row.message}
 						/>
 					);
 				},

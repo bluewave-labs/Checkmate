@@ -147,30 +147,33 @@ const NotificationsCreatePage = () => {
 					/>
 				}
 			/>
-			{watchedType !== "matrix" && watchedType !== "telegram" && (
-				<ConfigBox
-					title={addressConfig.title}
-					subtitle={addressConfig.description}
-					rightContent={
-						<Controller
-							name="address"
-							control={control}
-							defaultValue={"address" in defaults ? defaults.address : ""}
-							render={({ field, fieldState }) => (
-								<TextField
-									{...field}
-									type="text"
-									fieldLabel={addressConfig.fieldLabel}
-									placeholder={addressConfig.placeholder}
-									fullWidth
-									error={!!fieldState.error}
-									helperText={fieldState.error?.message ?? ""}
-								/>
-							)}
-						/>
-					}
-				/>
-			)}
+			{watchedType !== "matrix" &&
+				watchedType !== "telegram" &&
+				watchedType !== "pushover" &&
+				watchedType !== "twilio" && (
+					<ConfigBox
+						title={addressConfig.title}
+						subtitle={addressConfig.description}
+						rightContent={
+							<Controller
+								name="address"
+								control={control}
+								defaultValue={"address" in defaults ? defaults.address : ""}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={addressConfig.fieldLabel}
+										placeholder={addressConfig.placeholder}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+						}
+					/>
+				)}
 			{watchedType === "telegram" && (
 				<ConfigBox
 					title={t("pages.notifications.form.telegram.title")}
@@ -204,6 +207,134 @@ const NotificationsCreatePage = () => {
 										type="text"
 										fieldLabel={t("pages.notifications.form.telegram.optionChatId")}
 										placeholder={t("pages.notifications.form.telegram.placeholderChatId")}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+						</Stack>
+					}
+				/>
+			)}
+			{watchedType === "pushover" && (
+				<ConfigBox
+					title={t("pages.notifications.form.pushover.title")}
+					subtitle={t("pages.notifications.form.pushover.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(8)}>
+							<Controller
+								name="accessToken"
+								control={control}
+								defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t("pages.notifications.form.pushover.optionAppToken")}
+										placeholder={t(
+											"pages.notifications.form.pushover.placeholderAppToken"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+							<Controller
+								name="address"
+								control={control}
+								defaultValue={"address" in defaults ? defaults.address : ""}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t("pages.notifications.form.pushover.optionUserKey")}
+										placeholder={t(
+											"pages.notifications.form.pushover.placeholderUserKey"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+						</Stack>
+					}
+				/>
+			)}
+			{watchedType === "twilio" && (
+				<ConfigBox
+					title={t("pages.notifications.form.twilio.title")}
+					subtitle={t("pages.notifications.form.twilio.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(8)}>
+							<Controller
+								name="accountSid"
+								control={control}
+								defaultValue={"accountSid" in defaults ? defaults.accountSid : ""}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t("pages.notifications.form.twilio.optionAccountSid")}
+										placeholder={t(
+											"pages.notifications.form.twilio.placeholderAccountSid"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+							<Controller
+								name="accessToken"
+								control={control}
+								defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t("pages.notifications.form.twilio.optionAuthToken")}
+										placeholder={t(
+											"pages.notifications.form.twilio.placeholderAuthToken"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+							<Controller
+								name="twilioPhoneNumber"
+								control={control}
+								defaultValue={
+									"twilioPhoneNumber" in defaults ? defaults.twilioPhoneNumber : ""
+								}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t("pages.notifications.form.twilio.optionFromNumber")}
+										placeholder={t(
+											"pages.notifications.form.twilio.placeholderFromNumber"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+							<Controller
+								name="phone"
+								control={control}
+								defaultValue={"phone" in defaults ? defaults.phone : ""}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t("pages.notifications.form.twilio.optionToNumber")}
+										placeholder={t("pages.notifications.form.twilio.placeholderToNumber")}
 										fullWidth
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message ?? ""}

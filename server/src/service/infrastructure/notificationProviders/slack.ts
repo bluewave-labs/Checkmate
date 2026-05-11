@@ -1,18 +1,11 @@
 const SERVICE_NAME = "SlackProvider";
 import type { Notification } from "@/types/index.js";
-import { INotificationProvider } from "@/service/index.js";
+import { NotificationProvider } from "@/service/infrastructure/notificationProviders/INotificationProvider.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { getTestMessage } from "@/service/infrastructure/notificationProviders/utils.js";
 import got, { HTTPError } from "got";
-import { ILogger } from "@/utils/logger.js";
 
-export class SlackProvider implements INotificationProvider {
-	private logger: ILogger;
-
-	constructor(logger: ILogger) {
-		this.logger = logger;
-	}
-
+export class SlackProvider extends NotificationProvider {
 	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
 		if (!notification.address) {
 			return false;
@@ -24,6 +17,7 @@ export class SlackProvider implements INotificationProvider {
 				headers: {
 					"Content-Type": "application/json",
 				},
+				...this.gotRequestOptions(),
 			});
 			return true;
 		} catch (error) {
@@ -54,6 +48,7 @@ export class SlackProvider implements INotificationProvider {
 				headers: {
 					"Content-Type": "application/json",
 				},
+				...this.gotRequestOptions(),
 			});
 			this.logger.info({
 				message: "[NEW] Slack notification sent via sendMessage",

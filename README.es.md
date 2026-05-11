@@ -49,11 +49,11 @@ Puedes ver la última versión de [Checkmate](https://checkmate-demo.bluewavelab
 
 ## Guía del usuario
 
-Las instrucciones de uso se pueden encontrar [aquí](https://docs.checkmate.so/checkmate-2.1). Todavía está en desarrollo y parte de la información puede estar desactualizada ya que continuamente añadimos funciones cada semana. ¡Ten por seguro que estamos haciendo lo mejor posible! :)
+Las instrucciones de uso se pueden encontrar [aquí](https://checkmate.so/docs). Todavía está en desarrollo y parte de la información puede estar desactualizada ya que continuamente añadimos funciones cada semana. ¡Ten por seguro que estamos haciendo lo mejor posible! :)
 
 ## Instalación
 
-Consulta las instrucciones de instalación en el [portal de documentación de Checkmate](https://docs.checkmate.so/checkmate-2.1/users-guide/quickstart).
+Consulta las instrucciones de instalación en el [portal de documentación de Checkmate](https://checkmate.so/docs/getting-started/installation).
 
 Alternativamente, también puedes usar [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md) o [Pikapods](https://www.pikapods.com/) para desplegar rápidamente una instancia de Checkmate. Si deseas monitorear tu infraestructura de servidores, necesitarás el agente [Capture](https://github.com/bluewave-labs/capture). El repositorio de Capture también contiene las instrucciones de instalación.
 
@@ -76,7 +76,7 @@ También puedes ver el consumo de memoria de MongoDB y Redis en el mismo servido
 Si tienes alguna pregunta, sugerencia o comentario, tienes varias opciones:
 
 - [Canal de Discord](https://discord.gg/NAb6H3UTjK)
-- [Discusiones en GitHub](https://github.com/bluewave-labs/bluewave-uptime/discussions)
+- [Discusiones en GitHub](https://github.com/bluewave-labs/checkmate/discussions)
 - [Grupo en Reddit](https://www.reddit.com/r/CheckmateMonitoring/)
 
 ¡No dudes en hacer preguntas o compartir tus ideas, nos encantaría saber de ti!
@@ -147,7 +147,7 @@ Cómo contribuir:
 
 0. Dale una estrella al repositorio :)
 1. Revisa la [guía para contribuidores](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). Se anima a los nuevos a revisar las etiquetas `good-first-issue`.
-2. Consulta la [estructura del proyecto](https://docs.checkmate.so/checkmate-2.1/developers-guide/general-project-structure) y la [visión general](https://bluewavelabs.gitbook.io/checkmate/developers-guide/high-level-overview).
+2. Consulta la [estructura del proyecto](https://deepwiki.com/bluewave-labs/Checkmate#system-architecture) y la [visión general](https://deepwiki.com/bluewave-labs/Checkmate#overview).
 3. Lee una estructura detallada de [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate) si deseas profundizar en la arquitectura.
 4. Abre un issue si crees que has encontrado un error.
 5. Revisa los issues con la etiqueta `good-first-issue` si eres nuevo.

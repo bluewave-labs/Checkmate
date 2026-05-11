@@ -19,15 +19,19 @@ WORKDIR /app/server
 
 COPY server ./
 
-
 RUN npm install
 
 RUN npm run build
+RUN cp -r src/templates dist/templates
 
 COPY --from=frontend-build /app/client/dist ./public
 
-RUN chmod +x ./scripts/inject-vars.sh
+RUN chmod +x ./scripts/inject-vars.sh \
+    && chown -R node:node ./public \
+    && chown -R node:node ./dist \
+    && chown -R node:node ./scripts
+
 
 EXPOSE 52345
 
-CMD ./scripts/inject-vars.sh && node ./dist/index.js
+CMD ["sh", "-c", "./scripts/inject-vars.sh && node ./dist/index.js"]

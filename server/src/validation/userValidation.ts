@@ -50,3 +50,19 @@ export const editUserBodyValidation = z.object({
 	email: lowercaseEmailValidation.optional(),
 	profilePicture: z.string().optional(),
 });
+
+// Canonical user shape returned by auth/user endpoints. Keep aligned with what
+// the controllers actually serialize (password is intentionally omitted).
+export const userResponseSchema = z
+	.object({
+		_id: z.string(),
+		firstName: z.string(),
+		lastName: z.string(),
+		email: z.string(),
+		role: z.array(z.string()),
+		teamId: z.string().optional(),
+		profileImage: z.string().nullable().optional(),
+		createdAt: z.string(),
+		updatedAt: z.string(),
+	})
+	.passthrough();

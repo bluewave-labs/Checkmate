@@ -16,7 +16,7 @@ PS: **We work closely with contributors on our [Discord channel](https://discord
 Before you dive in, make sure you have these installed:
 
 ```bash
-# Check Node.js (v16+ required)
+# Check Node.js (v20+ required)
 node --version
 
 # Check npm
@@ -96,8 +96,14 @@ cd docker/dev
 
 Build the Docker images:
 
+Linux:
 ```bash
 ./build_images.sh
+```
+
+Windows:
+```bash
+./build_images.bat
 ```
 
 Run MongoDB container:
@@ -234,7 +240,7 @@ docker rm uptime_database_mongo
 
 **Need more help?**
 
-- Check the [full documentation](https://docs.checkmate.so)
+- Check the [full documentation](https://checkmate.so/docs)
 - Ask on [Discord](https://discord.com/invite/NAb6H3UTjK)
 
 ### Start contributing code?
@@ -248,20 +254,6 @@ docker rm uptime_database_mongo
 7. Open a PR to `develop`.
 
 Start with [good first issues](https://github.com/bluewave-labs/checkmate/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
-
-### Improve the documentation?
-
-Docs live in [checkmate-documentation](https://github.com/bluewave-labs/checkmate-documentation). You can fix typos, add guides, or explain features better.
-
-### Help with translations?
-
-We use [PoEditor](https://poeditor.com) for translations. You can:
-
-- [Sign up and join your language team](https://poeditor.com/join/project/lRUoGZFCsJ).
-- Translate UI strings.
-- Ask questions on Discord in the relevant #translations channel.
-
-Make sure all new UI strings in code use `t('key')`.
 
 ### Submit a pull request?
 
@@ -277,7 +269,7 @@ Follow the [pull request checklist](#pull-request-checklist). Your PR should:
 
 ## Code guidelines
 
-- Use ESLint and Prettier (`npm run lint`).
+- Use ESLint and Prettier. Run `npm run lint` and `npm run format-check` in both `client` and `server`. If `format-check` reports issues, fix them with `npm run format` before committing.
 - Follow naming conventions: `camelCase` for variables, `PascalCase` for components, `UPPER_CASE` for constants.
 - No hard-coded strings — use `t('your.key')` for everything visible.
 - Use the shared theme and components. No magic numbers or hardcoded styles.
@@ -298,7 +290,7 @@ Before submitting your pull request, please confirm the following:
 - You used the shared theme for any styling — no magic numbers or inline styles.
 - The pull request addresses only one issue or topic.
 - You added screenshots or a video for any UI-related changes.
-- Your code passes linting and has no TypeScript errors.
+- Your code passes `npm run lint`, `npm run format-check`, and `npm run build` in both `client` and `server` with no errors.
 
 If one or more of these are missing, we may ask you to update your pull request before we can merge it.
 
@@ -310,7 +302,7 @@ If one or more of these are missing, we may ask you to update your pull request 
 - `master` is used for stable releases.
 - Use descriptive branch names, like `fix/login-error` or `feat/add-alerts`.
 - Make sure that you are using the latest version.
-- Make sure you run the code locally. The Checkmate [documentation](https://docs.checkmate.so) covers it.
+- Make sure you run the code locally. The Checkmate [documentation](https://checkmate.so/docs) covers it.
 - Find out if the functionality is already covered, maybe by an individual configuration.
 - Perform a [search](/issues) to see if the enhancement has already been suggested. If it has, add a comment to the existing issue instead of opening a new one.
 - Find out whether your idea fits with the scope and aims of the project. It's up to you to make a strong case to convince the project's developers of the merits of this feature. Keep in mind that we want features that will be useful to the majority of our users and not just a small subset. If you're just targeting a minority of users, consider writing an add-on/plugin library.

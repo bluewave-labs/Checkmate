@@ -1,6 +1,6 @@
 import { Schema, model, Types } from "mongoose";
 import type { Monitor, MonitorMatchMethod, CheckSnapshot } from "@/types/monitor.js";
-import { MonitorTypes, MonitorStatuses, PageSpeedStrategies } from "@/types/monitor.js";
+import { DnsRecordTypes, MonitorTypes, MonitorStatuses, PageSpeedStrategies } from "@/types/monitor.js";
 import type {
 	CheckAudits,
 	CheckCaptureInfo,
@@ -354,6 +354,13 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		geoCheckInterval: {
 			type: Number,
 			default: 300000,
+		},
+		dnsServer: {
+			type: String,
+		},
+		dnsRecordType: {
+			type: String,
+			enum: DnsRecordTypes,
 		},
 		recentChecks: {
 			type: [checkSnapshotSchema],

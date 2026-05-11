@@ -9,6 +9,7 @@ import type { UserRole } from "@/Types/User";
 import { useInviteForm } from "@/Hooks/useInviteForm";
 import type { InviteFormData } from "@/Validation/invite";
 import { usePost } from "@/Hooks/UseApi";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const CLIENT_HOST = import.meta.env.VITE_APP_CLIENT_HOST;
 
@@ -48,6 +49,7 @@ export const InviteTeamMemberDialog = ({
 	const roleOptions: { value: UserRole; label: string }[] = [
 		{ value: "admin", label: t("common.auth.roles.admin") },
 		{ value: "user", label: t("common.auth.roles.user") },
+		{ value: "demo", label: t("common.auth.roles.demo") },
 	];
 
 	const handleGenerateToken = async (data: InviteFormData) => {
@@ -94,10 +96,7 @@ export const InviteTeamMemberDialog = ({
 				</Button>
 			}
 		>
-			<Stack
-				gap={theme.spacing(4)}
-				mt={theme.spacing(4)}
-			>
+			<Stack gap={theme.spacing(LAYOUT.XS)}>
 				<Controller
 					name="email"
 					control={control}

@@ -85,10 +85,6 @@ const CreateMaintenanceWindowPage = () => {
 			repeat,
 		};
 
-		if (repeat === 0) {
-			payload.expiry = endDateTime.toISOString();
-		}
-
 		return payload;
 	};
 

@@ -9,7 +9,7 @@ import {
 	AlertTriangle,
 	Wifi,
 	Wrench,
-	Database,
+	ScrollText,
 	Settings,
 	HelpCircle,
 	MessageCircle,
@@ -64,7 +64,7 @@ export const getMenu = (t: Function) => {
 		{
 			name: t("components.sidebar.menu.logs"),
 			path: "logs",
-			icon: <Icon icon={Database} />,
+			icon: <Icon icon={ScrollText} />,
 		},
 		{
 			name: t("components.sidebar.menu.settings"),

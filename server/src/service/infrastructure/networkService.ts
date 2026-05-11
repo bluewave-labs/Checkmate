@@ -118,7 +118,7 @@ export class NetworkService implements INetworkService {
 				},
 			});
 
-			if (response?.data?.status !== "success") return false;
+			if (response.data?.status !== "success") return false;
 			return true;
 		} catch (err: unknown) {
 			const originalMessage = err instanceof Error ? err.message : String(err);

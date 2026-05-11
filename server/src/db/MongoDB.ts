@@ -5,7 +5,6 @@ import { ILogger } from "@/utils/logger.js";
 import { EnvConfig } from "@/service/system/settingsService.js";
 const SERVICE_NAME = "MongoDB";
 import { IDb } from "@/db/IDb.js";
-import { Pool } from "pg";
 
 class MongoDB implements IDb {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -35,6 +34,12 @@ class MongoDB implements IDb {
 					setDefaultsOnInsert: true,
 				}
 			);
+			// Run migrations BEFORE syncIndexes. The 0006 dedupe migration must run before
+			// the unique index on MonitorStats.monitorId is enforced, otherwise databases
+			// with stray duplicates (caused by the pre-fix race in updateRunningStats)
+			// will crash at startup when the unique index fails to build.
+			await runMigrations();
+
 			// Sync indexes
 			const models = mongoose.modelNames();
 			for (const modelName of models) {
@@ -47,8 +52,6 @@ class MongoDB implements IDb {
 				service: SERVICE_NAME,
 				method: "connect",
 			});
-
-			await runMigrations();
 		} catch (error: unknown) {
 			this.logger.error({
 				message: error instanceof Error ? error.message : "Unknown error",
@@ -74,10 +77,6 @@ class MongoDB implements IDb {
 				stack: error instanceof Error ? error.stack : undefined,
 			});
 		}
-	};
-
-	getPool = () => {
-		return null;
 	};
 }
 

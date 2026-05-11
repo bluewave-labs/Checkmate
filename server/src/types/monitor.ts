@@ -3,7 +3,7 @@ export type { CheckSnapshot } from "@/types/check.js";
 import type { GeoContinent, GroupedGeoCheck } from "@/types/geoCheck.js";
 export type { GeoContinent } from "@/types/geoCheck.js";
 
-export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "unknown"] as const;
+export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
 export const PageSpeedStrategies = ["desktop", "mobile"] as const;
@@ -13,11 +13,29 @@ export const DefaultPageSpeedStrategy: PageSpeedStrategy = "desktop";
 export const GeoCheckSupportedTypes: readonly MonitorType[] = ["http", "ping"] as const;
 export const supportsGeoCheck = (type: MonitorType): boolean => GeoCheckSupportedTypes.includes(type);
 
+export const UptimeDetailsSupportedTypes = [
+	"http",
+	"ping",
+	"docker",
+	"port",
+	"game",
+	"grpc",
+	"websocket",
+	"dns",
+] as const satisfies readonly MonitorType[];
+export type UptimeDetailsSupportedType = (typeof UptimeDetailsSupportedTypes)[number];
+export const supportsUptimeDetails = (type: MonitorType): type is UptimeDetailsSupportedType => UptimeDetailsSupportedTypes.some((t) => t === type);
+
 export const MonitorStatuses = ["up", "down", "paused", "initializing", "maintenance", "breached"] as const;
 export type MonitorStatus = (typeof MonitorStatuses)[number];
 
 export const MonitorMatchMethods = ["equal", "include", "regex"] as const;
 export type MonitorMatchMethod = (typeof MonitorMatchMethods)[number] | "";
+
+export const DnsRecordTypes = ["A", "AAAA", "CNAME", "MX", "TXT", "NS"] as const;
+export type DnsRecordType = (typeof DnsRecordTypes)[number];
+
+export const MAX_RECENT_CHECKS = 50;
 
 export interface Monitor {
 	id: string;
@@ -58,6 +76,8 @@ export interface Monitor {
 	geoCheckEnabled?: boolean;
 	geoCheckLocations?: GeoContinent[];
 	geoCheckInterval?: number;
+	dnsServer?: string;
+	dnsRecordType?: DnsRecordType;
 	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;

@@ -24,6 +24,7 @@ import type { SettingsFormData, SettingsFormInput } from "@/Validation/settings"
 import { useState } from "react";
 import { Controller } from "react-hook-form";
 import { TextField, Button, FieldLabel, SliderWithLabel } from "@/Components/inputs";
+import { languageNames } from "@/Components/inputs/LanguageSelector";
 import { Box, Typography } from "@mui/material";
 import { useDelete } from "@/Hooks/UseApi";
 
@@ -127,8 +128,8 @@ export const SettingsPage = () => {
 		timezoneOptions.find((tz) => tz.id === selectedTimezoneId) ?? null;
 
 	const handleTimezoneChange = (newValue: Timezone | null) => {
-		const newId = newValue?.id ?? "";
-		dispatch(setTimezone({ timezone: newId }));
+		if (!newValue?.id) return;
+		dispatch(setTimezone({ timezone: newValue.id }));
 	};
 
 	const handleModeChange = (e: SelectChangeEvent<ThemeMode>) => {
@@ -181,6 +182,9 @@ export const SettingsPage = () => {
 			systemEmailRequireTLS: formValues.systemEmailRequireTLS,
 			systemEmailRejectUnauthorized: formValues.systemEmailRejectUnauthorized,
 			...(formValues.systemEmailUser && { systemEmailUser: formValues.systemEmailUser }),
+			...(formValues.systemEmailDisplayName && {
+				systemEmailDisplayName: formValues.systemEmailDisplayName,
+			}),
 			...(formValues.systemEmailTLSServername && {
 				systemEmailTLSServername: formValues.systemEmailTLSServername,
 			}),
@@ -277,6 +281,7 @@ export const SettingsPage = () => {
 
 	return (
 		<BasePage
+			headerKey="settings"
 			component="form"
 			onSubmit={form.handleSubmit(onSubmit, onError)}
 		>
@@ -326,7 +331,7 @@ export const SettingsPage = () => {
 										key={lang}
 										value={lang}
 									>
-										{lang.toUpperCase()}
+										{languageNames[lang] ?? lang}
 									</MenuItem>
 								))}
 							</Select>
@@ -575,44 +580,65 @@ export const SettingsPage = () => {
 								href="https://nodemailer.com/smtp/"
 								target="_blank"
 							/>
-							<Box
-								component="pre"
-								sx={{
-									fontFamily: "monospace",
-									p: 2,
-									borderRadius: 1,
-									overflow: "auto",
-									backgroundColor: theme.palette.mode === "dark" ? "#1e1e1e" : "#f5f5f5",
-								}}
-							>
-								<code>
-									{JSON.stringify(
-										{
-											host: form.watch("systemEmailHost") || "",
-											port: form.watch("systemEmailPort") || "",
-											secure: form.watch("systemEmailSecure") ?? false,
-											auth: {
-												user:
-													form.watch("systemEmailUser") ||
-													form.watch("systemEmailAddress") ||
-													"",
-												pass: "<your_password>",
-											},
-											name: form.watch("systemEmailConnectionHost") || "localhost",
-											pool: form.watch("systemEmailPool") ?? false,
-											tls: {
-												rejectUnauthorized:
-													form.watch("systemEmailRejectUnauthorized") ?? true,
-												ignoreTLS: form.watch("systemEmailIgnoreTLS") ?? false,
-												requireTLS: form.watch("systemEmailRequireTLS") ?? false,
-												servername: form.watch("systemEmailTLSServername") || "",
-											},
-										},
-										null,
-										2
-									)}
-								</code>
-							</Box>
+							{(() => {
+								const address = form.watch("systemEmailAddress") || "";
+								const displayName = form.watch("systemEmailDisplayName")?.trim();
+								return (
+									<>
+										<Box
+											component="pre"
+											p={2}
+											borderRadius={theme.shape.borderRadius}
+											bgcolor={theme.palette.action.hover}
+											sx={{
+												fontFamily: theme.typography.fontFamilyMonospace,
+												overflow: "auto",
+											}}
+										>
+											<code>
+												{JSON.stringify(
+													{
+														host: form.watch("systemEmailHost") || "",
+														port: form.watch("systemEmailPort") || "",
+														secure: form.watch("systemEmailSecure") ?? false,
+														auth: {
+															user: form.watch("systemEmailUser") || address,
+															pass: "<your_password>",
+														},
+														name: form.watch("systemEmailConnectionHost") || "localhost",
+														pool: form.watch("systemEmailPool") ?? false,
+														tls: {
+															rejectUnauthorized:
+																form.watch("systemEmailRejectUnauthorized") ?? true,
+															ignoreTLS: form.watch("systemEmailIgnoreTLS") ?? false,
+															requireTLS: form.watch("systemEmailRequireTLS") ?? false,
+															servername: form.watch("systemEmailTLSServername") || "",
+														},
+													},
+													null,
+													2
+												)}
+											</code>
+										</Box>
+										{address && (
+											<Box
+												component="pre"
+												p={2}
+												borderRadius={theme.shape.borderRadius}
+												bgcolor={theme.palette.action.hover}
+												sx={{
+													fontFamily: theme.typography.fontFamilyMonospace,
+													overflow: "auto",
+												}}
+											>
+												<code>
+													{`From: ${displayName ? `"${displayName}" <${address}>` : address}`}
+												</code>
+											</Box>
+										)}
+									</>
+								);
+							})()}
 						</Stack>
 					}
 					rightContent={
@@ -672,6 +698,24 @@ export const SettingsPage = () => {
 											"pages.settings.form.email.option.address.placeholder"
 										)}
 										type="email"
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message}
+									/>
+								)}
+							/>
+
+							{/* Email Display Name (Optional) */}
+							<Controller
+								name="systemEmailDisplayName"
+								control={form.control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value ?? ""}
+										fieldLabel={t("pages.settings.form.email.option.displayName.label")}
+										placeholder={t(
+											"pages.settings.form.email.option.displayName.placeholder"
+										)}
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message}
 									/>
@@ -972,21 +1016,21 @@ export const SettingsPage = () => {
 					setIsDemoMonitorsDialogOpen(false);
 				}}
 				loading={isDeletingAllMonitors}
-			/>
+				confirmColor="error"
+				confirmText={t("common.buttons.removeMonitors")}
+			>
+				<Typography variant="body1">
+					{t("pages.settings.form.removeMonitors.dialog.paragraph")}
+				</Typography>
+			</Dialog>
 
-			{/* Sticky Save Button */}
 			<Stack
 				direction="row"
 				justifyContent="flex-end"
 				sx={{
 					position: "sticky",
 					bottom: 0,
-					backgroundColor: theme.palette.background.paper,
-					borderTop: `1px solid ${theme.palette.divider}`,
 					padding: theme.spacing(LAYOUT.MD),
-					marginLeft: theme.spacing(-LAYOUT.MD),
-					marginRight: theme.spacing(-LAYOUT.MD),
-					marginBottom: theme.spacing(-LAYOUT.MD),
 					zIndex: 1000,
 				}}
 			>

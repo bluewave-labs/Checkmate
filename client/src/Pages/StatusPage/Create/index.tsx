@@ -32,8 +32,10 @@ import type { MonitorDisplayType, StatusPageResponse } from "@/Types/StatusPage"
 import { getMonitorTypeLabel } from "@/Types/StatusPage";
 import timezones from "@/Utils/timezones.json";
 import { useNavigate, useParams } from "react-router-dom";
+import { mutate } from "swr";
 import axios from "axios";
 import { HeaderConfigStatusControls } from "./Components/HeaderConfigStatusControls";
+import { ThemePicker } from "./Components/ThemePicker";
 
 const monitorsUrl = (() => {
 	const params = new URLSearchParams();
@@ -48,6 +50,9 @@ interface TimezoneOption {
 	name: string;
 }
 
+const buildStatusPageKey = (slug: string | null | undefined) =>
+	slug ? `/status-page/${slug}?type=uptime&type=infrastructure` : null;
+
 const CreateStatusPage = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -58,9 +63,7 @@ const CreateStatusPage = () => {
 
 	// Fetch existing status page data when configuring
 	const { data: statusPageData, isLoading: isLoadingStatusPage } =
-		useGet<StatusPageResponse>(
-			isCreate ? null : `/status-page/${url}?type=uptime&type=infrastructure`
-		);
+		useGet<StatusPageResponse>(isCreate ? null : buildStatusPageKey(url));
 
 	const { data: monitorsResponse } = useGet<Monitor[]>(monitorsUrl);
 	const monitors = monitorsResponse ?? [];
@@ -139,6 +142,8 @@ const CreateStatusPage = () => {
 		fd.append("showUptimePercentage", String(data.showUptimePercentage));
 		fd.append("showAdminLoginLink", String(data.showAdminLoginLink));
 		fd.append("showInfrastructure", String(data.showInfrastructure));
+		if (data.theme) fd.append("theme", data.theme);
+		if (data.themeMode) fd.append("themeMode", data.themeMode);
 
 		data.monitors.forEach((monitorId) => {
 			fd.append("monitors[]", monitorId);
@@ -178,6 +183,10 @@ const CreateStatusPage = () => {
 		}
 
 		if (result) {
+			await mutate(buildStatusPageKey(data.url));
+			if (!isCreate && url !== data.url) {
+				await mutate(buildStatusPageKey(url));
+			}
 			navigate(`/status/${data.url}`);
 		}
 	};
@@ -436,6 +445,30 @@ const CreateStatusPage = () => {
 							)}
 						/>
 					</Stack>
+				}
+			/>
+			<ConfigBox
+				title={t("pages.statusPages.form.theme.title")}
+				subtitle={t("pages.statusPages.form.theme.description")}
+				rightContent={
+					<Controller
+						name="theme"
+						control={control}
+						render={({ field: themeField }) => (
+							<Controller
+								name="themeMode"
+								control={control}
+								render={({ field: modeField }) => (
+									<ThemePicker
+										theme={themeField.value ?? "refined"}
+										themeMode={modeField.value ?? "auto"}
+										onThemeChange={themeField.onChange}
+										onThemeModeChange={modeField.onChange}
+									/>
+								)}
+							/>
+						)}
+					/>
 				}
 			/>
 			<ConfigBox

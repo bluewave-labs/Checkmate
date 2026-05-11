@@ -13,12 +13,14 @@ export type EnvConfig = {
 	clientHost: string;
 	dbConnectionString: string;
 	dbType: DbType;
+	statusPageThemesEnabled: boolean;
 };
 
 export interface ISettingsService {
 	readonly serviceName: string;
 	loadSettings(): EnvConfig;
 	getSettings(): EnvConfig;
+	areStatusPageThemesEnabled(): boolean;
 	getDBSettings(): Promise<Settings>;
 	updateDbSettings(newSettings: SettingsUpdate): Promise<Settings>;
 }
@@ -37,6 +39,7 @@ export class SettingsService implements ISettingsService {
 			clientHost: env.CLIENT_HOST,
 			dbConnectionString: env.DB_CONNECTION_STRING,
 			dbType: env.DB_TYPE,
+			statusPageThemesEnabled: env.STATUS_PAGE_THEMES_ENABLED,
 		};
 	}
 
@@ -53,10 +56,11 @@ export class SettingsService implements ISettingsService {
 	}
 
 	getSettings() {
-		if (!this.settings) {
-			throw new Error("Settings have not been loaded");
-		}
 		return this.settings;
+	}
+
+	areStatusPageThemesEnabled() {
+		return this.settings.statusPageThemesEnabled;
 	}
 
 	private getRepository(): ISettingsRepository {

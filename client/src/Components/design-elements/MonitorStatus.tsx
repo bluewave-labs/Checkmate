@@ -18,7 +18,7 @@ export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 	return (
 		<Stack>
 			<Typography
-				fontSize={typographyLevels.xl}
+				fontSize={typographyLevels.xxl}
 				fontWeight={500}
 				overflow={"hidden"}
 				textOverflow={"ellipsis"}
@@ -35,7 +35,7 @@ export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 				<Typography
 					fontSize={typographyLevels.l}
 					fontWeight={"bolder"}
-					fontFamily={"monospace"}
+					fontFamily={theme.typography.fontFamilyMonospace}
 					overflow={"hidden"}
 					textOverflow={"ellipsis"}
 					whiteSpace={"nowrap"}

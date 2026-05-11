@@ -60,6 +60,24 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 			address: data.address || "",
 		};
 	}
+	if (data?.type === "twilio") {
+		return {
+			type: "twilio",
+			notificationName: data.notificationName || "",
+			accountSid: data.accountSid || "",
+			accessToken: data.accessToken || "",
+			phone: data.phone || "",
+			twilioPhoneNumber: data.twilioPhoneNumber || "",
+		};
+	}
+	if (data?.type === "pushover") {
+		return {
+			type: "pushover",
+			notificationName: data.notificationName || "",
+			address: data.address || "",
+			accessToken: data.accessToken || "",
+		};
+	}
 	// Default: email (covers both data === null and data.type === "email")
 	return {
 		type: "email",

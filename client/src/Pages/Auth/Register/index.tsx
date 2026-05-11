@@ -1,16 +1,17 @@
 import { BaseAuthPage } from "@/Components/design-elements";
 import { Button, TextField } from "@/Components/inputs";
+import Alert from "@mui/material/Alert";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { useRegisterForm } from "@/Hooks/useRegisterForm";
 import type { RegisterFormData } from "@/Validation/register";
 import { useTranslation } from "react-i18next";
-import { usePost, useGet } from "@/Hooks/UseApi";
+import { useLazyGet, usePost } from "@/Hooks/UseApi";
 import { setAuthState } from "@/Features/Auth/authSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import type { AuthResponse } from "@/Types/User";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface RegisterPayload {
 	user: Omit<RegisterFormData, "confirm">;
@@ -32,20 +33,22 @@ const RegisterPage = () => {
 	const { post: verifyToken } = usePost<{ token: string }, InviteVerifyResponse>();
 	const hasVerified = useRef(false);
 
-	const { data: superAdminExists, isLoading: isCheckingAdmin } = useGet<boolean>(
-		token ? null : "/auth/users/superadmin"
-	);
+	const [isCheckingAdmin, setIsCheckingAdmin] = useState(!token);
+	const { get } = useLazyGet<boolean>();
+
+	useEffect(() => {
+		if (token) return;
+		get("/auth/users/superadmin").then((res) => {
+			if (res?.data === true) navigate("/login", { replace: true });
+			else setIsCheckingAdmin(false);
+		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const { control, handleSubmit, setError, reset } = useForm<RegisterFormData>({
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
-
-	useEffect(() => {
-		if (superAdminExists === true) {
-			navigate("/login", { replace: true });
-		}
-	}, [superAdminExists, navigate]);
 
 	useEffect(() => {
 		if (!token || hasVerified.current) return;
@@ -92,6 +95,23 @@ const RegisterPage = () => {
 			title={t("pages.auth.register.title")}
 			subtitle={t("pages.auth.register.subtitle")}
 		>
+			{!token && (
+				<Alert
+					severity="info"
+					icon={false}
+					sx={(theme) => ({
+						fontSize: 13,
+						lineHeight: 1.55,
+						color: theme.palette.text.secondary,
+						backgroundColor: theme.palette.action.hover,
+						border: `1px solid ${theme.palette.divider}`,
+						borderRadius: 1,
+						"& .MuiAlert-message": { padding: 0 },
+					})}
+				>
+					{t("pages.auth.register.setupNotice")}
+				</Alert>
+			)}
 			<Controller
 				name="firstName"
 				control={control}

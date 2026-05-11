@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { passwordPattern, nameValidation, lowercaseEmailValidation } from "./shared.js";
+import { UserRoles } from "@/types/user.js";
 
 //****************************************
 // Auth Validations
@@ -41,7 +42,7 @@ export const newPasswordValidation = z.object({
 
 export const inviteBodyValidation = z.object({
 	email: z.email("Must be a valid email address"),
-	role: z.array(z.string()).min(1, "At least one role is required"),
+	role: z.array(z.enum(UserRoles)).min(1, "At least one role is required"),
 	teamId: z.string().min(1, "Team ID is required"),
 });
 

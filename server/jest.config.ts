@@ -9,11 +9,11 @@ const config: Config = {
 	},
 	moduleNameMapper: {
 		"^@/validation/(.*)\\.js$": "<rootDir>/src/validation/$1.js",
-		"^@/utils/(AppError)\\.js$": "<rootDir>/src/utils/$1.ts",
-		"^@/utils/(.*)\\.js$": "<rootDir>/src/utils/$1.js",
+		"^@/utils/(.*)\\.js$": "<rootDir>/src/utils/$1.ts",
 		"^@/(.*)\\.ts$": "<rootDir>/src/$1.ts",
 		"^@/(.*)\\.js$": "<rootDir>/src/$1.ts",
 		"^@/(.*)$": "<rootDir>/src/$1",
+		"^(\\.{1,2}/.*)\\.js$": "$1",
 	},
 	testMatch: ["<rootDir>/test/**/*.test.ts"],
 	setupFilesAfterEnv: [],

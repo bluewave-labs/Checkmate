@@ -1,0 +1,1489 @@
+{
+	"common": {
+		"auth": {
+			"roles": {
+				"admin": "Administrador",
+				"demo": "Demo",
+				"superadmin": "Superadministrador",
+				"user": "Usuari"
+			}
+		},
+		"alerts": {
+			"pageSpeedApiKey": {
+				"content": "Avís: Encara no heu afegit una clau API de Google PageSpeed. Aneu a <settingsLink>Configuració</settingsLink> per afegir-ne una. Sense ella, el monitor PageSpeed no funcionarà."
+			}
+		},
+		"appName": "Checkmate",
+		"breadcrumbs": {
+			"details": "Detalls",
+			"home": "Inici"
+		},
+		"buttons": {
+			"addMember": "Afegir membre",
+			"cancel": "Cancel·lar",
+			"close": "Tancar",
+			"configure": "Configurar",
+			"confirm": "Confirmar",
+			"create": "Crear",
+			"delete": "Eliminar",
+			"generateToken": "Generar token",
+			"incidents": "Incidents",
+			"inviteMember": "Convidar membre",
+			"pause": "Pausar",
+			"resume": "Reprendre",
+			"save": "Desar",
+			"sendInvite": "Enviar convit",
+			"test": "Provar",
+			"testNotifications": "Provar notificacions",
+			"toggleTheme": "Canviar tema clar/fosc",
+			"flushQueue": "Buidar cua",
+			"notFound": "Anar al tauler principal",
+			"resetPassword": "Restablir contrasenya",
+			"reset": "Restablir",
+			"clear": "Netejar",
+			"addDemo": "Afegir monitors de demostració",
+			"removeMonitors": "Eliminar monitors",
+			"sendTestEmail": "Enviar correu de prova",
+			"exportToJSON": "Exportar a JSON",
+			"importFromJSON": "Importar des de JSON",
+			"clearFilters": "Netejar filtres",
+			"removeUser": "Eliminar usuari"
+		},
+		"charts": {
+			"labels": {
+				"averageResponseTime": "Temps de resposta mitjà",
+				"downtime": "Temps d'inactivitat",
+				"high": "Alt",
+				"low": "Baix",
+				"uptime": "Temps en línia"
+			},
+			"histogram": {
+				"avg": "Mitjana: {{value}} ms",
+				"max": "Màx: {{value}} ms"
+			}
+		},
+		"dialogs": {
+			"delete": {
+				"description": "Aquesta acció no es pot desfer.",
+				"title": "Esteu segur que voleu eliminar això?"
+			}
+		},
+		"labels": {
+			"active": "Actiu",
+			"paused": "pausat",
+			"na": "N/D",
+			"resolved": "Resolt",
+			"responseTime": "Temps de resposta"
+		},
+		"form": {
+			"role": {
+				"option": {
+					"role": {
+						"label": "Rols"
+					}
+				}
+			},
+			"name": {
+				"option": {
+					"firstName": {
+						"label": "Nom",
+						"placeholder": "Introduïu el vostre nom"
+					},
+					"lastName": {
+						"label": "Cognoms",
+						"placeholder": "Introduïu els vostres cognoms"
+					}
+				}
+			},
+			"email": {
+				"option": {
+					"email": {
+						"label": "Correu electrònic",
+						"placeholder": "vosaltres@exemple.com"
+					}
+				}
+			}
+		},
+		"table": {
+			"empty": "Encara no hi ha res per mostrar",
+			"headers": {
+				"actions": "Accions",
+				"dateTime": "Data i hora",
+				"message": "Missatge",
+				"monitor": "Monitor",
+				"monitorId": "ID del monitor",
+				"name": "Nom",
+				"status": "Estat",
+				"type": "Tipus",
+				"url": "URL",
+				"interval": "Interval",
+				"active": "Actiu",
+				"responseTime": "Temps de resposta"
+			}
+		}
+	},
+	"components": {
+		"pageHeader": {
+			"links": {
+				"support": "Suport",
+				"discussions": "Discussions",
+				"docs": "Documentació",
+				"changelog": "Registre de canvis"
+			}
+		},
+		"imageUpload": {
+			"clickToUpload": "Feu clic per pujar",
+			"dragAndDrop": "o arrossegueu i deixeu anar",
+			"supportedFormats": "Formats admesos",
+			"maxSize": "Mida màxima",
+			"orDragAndDrop": "o arrossegueu i deixeu anar",
+			"errors": {
+				"invalidFileSize": "La mida del fitxer és massa gran!",
+				"invalidFileFormat": "Format de fitxer no admès!"
+			}
+		},
+		"headerStatusPageControls": {
+			"publicLink": "Enllaç públic"
+		},
+		"headerTimeRange": {
+			"labels": {
+				"day": "Dia",
+				"month": "Mes",
+				"recent": "Recent",
+				"week": "Setmana"
+			},
+			"description": {
+				"recent": "Mostrant estadístiques de les darreres 2 hores.",
+				"day": "Mostrant estadístiques de les darreres 24 hores.",
+				"week": "Mostrant estadístiques dels darrers 7 dies.",
+				"month": "Mostrant estadístiques dels darrers 30 dies."
+			}
+		},
+		"offlineBanner": {
+			"serverUnreachable": "No es pot arribar al servidor",
+			"retry": "Tornar a intentar",
+			"retrying": "Reintentant...",
+			"reconnected": "Connexió restablerta"
+		},
+		"sidebar": {
+			"menu": {
+				"uptime": "Temps en línia",
+				"pagespeed": "Velocitat de pàgina",
+				"infrastructure": "Infraestructura",
+				"notifications": "Notificacions",
+				"checks": "Comprovacions",
+				"incidents": "Incidents",
+				"statusPages": "Pàgines d'estat",
+				"maintenance": "Manteniment",
+				"logs": "Registres",
+				"settings": "Configuració"
+			},
+			"bottomMenu": {
+				"support": "Suport",
+				"discussions": "Discussions",
+				"docs": "Docs",
+				"changelog": "Novetats"
+			},
+			"accountMenu": {
+				"profile": "Perfil",
+				"password": "Contrasenya",
+				"team": "Equip"
+			},
+			"starPrompt": {
+				"title": "Dona una estrella a Checkmate",
+				"description": "Veu les darreres versions i ajuda a fer créixer la comunitat a GitHub"
+			},
+			"authFooter": {
+				"navControls": "Controls",
+				"logOut": "Tancar sessió",
+				"roles": {
+					"superAdmin": "Superadministrador",
+					"admin": "Administrador",
+					"user": "Usuari",
+					"demoUser": "Usuari de demostració"
+				}
+			}
+		},
+		"starPrompt": {
+			"title": "Dona una estrella a Checkmate",
+			"description": "Veu les darreres versions i ajuda a fer créixer la comunitat a GitHub"
+		}
+	},
+	"pages": {
+		"notFound": {
+			"title": "Oh no! Has deixat caure el teu sushi!",
+			"subtitle": "O bé la URL no existeix, o bé no tens accés."
+		},
+		"account": {
+			"tabs": {
+				"profile": "Perfil",
+				"password": "Contrasenya",
+				"team": "Equip"
+			},
+			"form": {
+				"name": {
+					"title": "Nom",
+					"description": "Actualitza la teva informació personal"
+				},
+				"photo": {
+					"title": "Foto de perfil",
+					"description": "Puja una foto de perfil"
+				},
+				"currentPassword": {
+					"title": "Contrasenya actual",
+					"description": "Introdueix la teva contrasenya actual per verificar la teva identitat",
+					"option": {
+						"label": "Contrasenya actual",
+						"placeholder": "Introdueix la contrasenya actual"
+					}
+				},
+				"newPassword": {
+					"title": "Nova contrasenya",
+					"description": "Tria una contrasenya forta amb almenys 8 caràcters",
+					"option": {
+						"newPassword": {
+							"label": "Nova contrasenya",
+							"placeholder": "Introdueix la nova contrasenya"
+						},
+						"confirm": {
+							"label": "Confirmar contrasenya",
+							"placeholder": "Confirma la nova contrasenya"
+						}
+					}
+				},
+				"deleteAccount": {
+					"title": "Eliminar compte",
+					"description": "Aquesta acció és permanent i no es pot desfer"
+				}
+			},
+			"team": {
+				"fallback": {
+					"title": "Encara no hi ha membres a l'equip",
+					"description": "Convida companys per correu electrònic o afegeix-los directament. Un cop s'uneixin, apareixeran aquí amb el seu rol."
+				},
+				"filter": {
+					"placeholder": "Filtrar per rol",
+					"all": "Tots els rols",
+					"admin": "Administrador",
+					"member": "Membre"
+				},
+				"table": {
+					"headers": {
+						"email": "Correu electrònic",
+						"role": "Rol",
+						"created": "Creat el"
+					}
+				},
+				"addMember": {
+					"title": "Registrar nou membre de l'equip",
+					"description": "Crea un nou compte d'usuari. Comparteix les credencials de forma segura després de la creació."
+				},
+				"invite": {
+					"title": "Convidar membre a l'equip",
+					"description": "Envia una invitació per unir-se al teu equip",
+					"email": {
+						"label": "Adreça de correu electrònic",
+						"placeholder": "Introdueix l'adreça de correu"
+					},
+					"role": {
+						"label": "Rol",
+						"placeholder": "Selecciona un rol"
+					},
+					"linkLabel": "Enllaç d'invitació"
+				}
+			},
+			"header": {
+				"title": "Compte",
+				"description": "Gestiona el teu perfil, contrasenya, equip i preferències de l'espai de treball."
+			}
+		},
+		"auth": {
+			"brandPanel": {
+				"eyebrow": "Monitoratge d'infraestructura de codi obert",
+				"tagline": "Vigila cada moviment dels teus servidors.",
+				"description": "Seguiment en temps real del temps en línia, temps de resposta i incidents — allotjat per tu i sempre teu."
+			},
+			"common": {
+				"passwordRules": {
+					"length": {
+						"beginning": "Ha de tenir almenys",
+						"highlighted": "8 caràcters"
+					},
+					"lowercase": {
+						"beginning": "Ha de contenir almenys",
+						"highlighted": "una lletra minúscula"
+					},
+					"match": {
+						"beginning": "Les contrasenyes",
+						"highlighted": "han de coincidir"
+					},
+					"number": {
+						"beginning": "Ha de contenir almenys",
+						"highlighted": "un número"
+					},
+					"special": {
+						"beginning": "Ha de contenir almenys",
+						"highlighted": "un caràcter especial (!?@#$%^&*()-_=+[]{}|;:'\",./\\~`)"
+					},
+					"uppercase": {
+						"beginning": "Ha de contenir almenys",
+						"highlighted": "una lletra majúscula"
+					}
+				},
+				"form": {
+					"option": {
+						"email": {
+							"label": "Correu electrònic",
+							"placeholder": "jo@exemple.com"
+						},
+						"password": {
+							"label": "Contrasenya",
+							"placeholder": "********"
+						},
+						"confirmPassword": {
+							"label": "Confirmar contrasenya"
+						}
+					}
+				}
+			},
+			"login": {
+				"title": "Benvingut de nou a Checkmate!",
+				"subtitle": "Inicia sessió per continuar",
+				"submit": "Iniciar sessió",
+				"links": {
+					"forgotPassword": {
+						"text": "Has oblidat la contrasenya?",
+						"linkText": "Restablir contrasenya"
+					},
+					"register": {
+						"text": "No tens un compte?",
+						"linkText": "Registra't aquí"
+					}
+				}
+			},
+			"register": {
+				"title": "Benvingut a Checkmate!",
+				"subtitle": "Registra't per començar",
+				"setupNotice": "Aquesta pàgina només és accessible durant la configuració inicial. Un cop registrat el superadministrador, els usuaris addicionals es poden convidar des de la configuració de l'equip.",
+				"submit": "Registrar"
+			},
+			"forgotPassword": {
+				"title": "Has oblidat la teva contrasenya?",
+				"subtitle": "No et preocupis, t'enviarem instruccions per restablir-la.",
+				"submit": "Sol·licitar recuperació",
+				"links": {
+					"login": {
+						"text": "Torna a",
+						"linkText": "iniciar sessió"
+					}
+				}
+			},
+			"setNewPassword": {
+				"title": "Restableix la teva contrasenya",
+				"subtitle": "La teva nova contrasenya ha de ser diferent de les contrasenyes usades anteriorment."
+			}
+		},
+		"checks": {
+			"fallback": {
+				"title": "Encara no hi ha comprovacions",
+				"description": "Un cop creïs un monitor, cada sonda d'estat i temps de resposta apareixerà aquí com a comprovació."
+			},
+			"selects": {
+				"monitor": {
+					"all": "Tots els monitors"
+				},
+				"status": {
+					"all": "Tots",
+					"down": "Caigut",
+					"up": "En línia"
+				}
+			},
+			"table": {
+				"empty": "Cap comprovació caiguda en aquest interval de temps",
+				"headers": {
+					"statusCode": "Codi d'estat",
+					"location": "Ubicació"
+				}
+			},
+			"header": {
+				"title": "Comprovacions",
+				"description": "Cada sonda que Checkmate executa contra els teus monitors apareix aquí, amb codi d'estat i temps de resposta."
+			}
+		},
+		"common": {
+			"monitors": {
+				"actions": {
+					"configure": "Configurar",
+					"delete": "Eliminar",
+					"generateToken": "Generar token",
+					"details": "Detalls",
+					"incidents": "Incidents",
+					"inviteMember": "Convidar membre",
+					"openSite": "Obrir lloc",
+					"pause": "Pausar",
+					"resume": "Reprendre"
+				},
+				"statBoxes": {
+					"activeFor": "Actiu des de",
+					"certificateExpiry": "Caducitat del certificat",
+					"lastCheck": "Última comprovació",
+					"lastResponseTime": "Últim temps de resposta",
+					"serviceIsDown": "El servei és caigut"
+				},
+				"status": {
+					"down": "caigut",
+					"breached": "llindar superat",
+					"initializing": "inicialitzant",
+					"maintenance": "manteniment",
+					"paused": "pausat",
+					"total": "total",
+					"up": "en línia"
+				},
+				"monitorTypes": {
+					"optionDocker": "Docker",
+					"optionGame": "Joc",
+					"optionHttp": "HTTP(S)",
+					"optionPing": "Ping",
+					"optionPort": "Port",
+					"optionPagespeed": "PageSpeed",
+					"optionHardware": "Infraestructura",
+					"optionGrpc": "gRPC",
+					"optionWebSocket": "WebSocket"
+				}
+			}
+		},
+		"createMonitor": {
+			"form": {
+				"advanced": {
+					"description": "Configuració opcional per a casos d'ús avançats",
+					"option": {
+						"advancedMatching": {
+							"label": "Usar coincidència avançada"
+						},
+						"expectedValue": {
+							"label": "Valor esperat"
+						},
+						"jsonPath": {
+							"description": "Aquesta expressió s'avaluarà contra les dades JSON de resposta i el resultat s'usarà per coincidir amb el valor esperat. Vegeu <jmesLink>jmespath.org</jmesLink> per a la documentació del llenguatge de consulta.",
+							"label": "Expressió JSONPath"
+						},
+						"matchMethod": {
+							"label": "Mètode de coincidència",
+							"equal": "Igual",
+							"include": "Inclou",
+							"regex": "Regex"
+						}
+					},
+					"title": "Configuració avançada"
+				},
+				"frequency": {
+					"description": "Amb quina freqüència voleu comprovar l'estat d'aquest monitor?",
+					"option": {
+						"frequency": {
+							"label": "Freqüència de comprovació",
+							"value": {
+								"fifteenMinutes": "15 minuts",
+								"fifteenSeconds": "15 segons",
+								"fiveMinutes": "5 minuts",
+								"fourMinutes": "4 minuts",
+								"oneMinute": "1 minut",
+								"tenMinutes": "10 minuts",
+								"thirtyMinutes": "30 minuts",
+								"thirtySeconds": "30 segons",
+								"threeMinutes": "3 minuts",
+								"twoMinutes": "2 minuts"
+							}
+						}
+					},
+					"title": "Freqüència de comprovació"
+				},
+				"general": {
+					"option": {
+						"container": {
+							"label": "Nom/ID del contenidor",
+							"placeholder": "my-app o abcd1234"
+						},
+						"host": {
+							"label": "Host",
+							"placeholder": "192.168.1.100 o example.com"
+						},
+						"name": {
+							"label": "Nom de visualització",
+							"placeholder": "p. ex. El meu lloc web"
+						},
+						"secret": {
+							"label": "Secret d'autorització",
+							"placeholder": "Introdueix la teva clau secreta"
+						},
+						"url": {
+							"label": "URL",
+							"placeholder": "https://www.google.com"
+						},
+						"game": {
+							"label": "Escull el joc",
+							"placeholder": "Selecciona un joc"
+						},
+						"port": {
+							"label": "Port a monitorar",
+							"placeholder": 80
+						},
+						"grpcServiceName": {
+							"label": "Nom del servei",
+							"placeholder": "p. ex. my.service.v1 (deixeu buit per a la salut general)"
+						},
+						"wsUrl": {
+							"label": "URL de WebSocket",
+							"placeholder": "wss://example.com/socket"
+						},
+						"captureUrl": {
+							"label": "Endpoint de captura",
+							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						}
+					},
+					"title": "Configuració general",
+					"description": {
+						"http": "Introdueix la URL o IP a monitorar (p. ex., https://example.com/ o 192.168.1.100) i afegeix un nom de visualització clar que aparegui al tauler.",
+						"ping": "Introdueix l'adreça IP o el nom d'host per fer ping (p. ex., 192.168.1.100 o example.com) i afegeix un nom de visualització clar que aparegui al tauler.",
+						"port": "Introdueix la URL o IP del servidor, el número de port i un nom de visualització clar que aparegui al tauler.",
+						"docker": "Introdueix el nom o ID del contenidor Docker. Pots usar el nom del contenidor (p. ex., my-app) o l'ID del contenidor (ID complet de 64 caràcters o ID curt).",
+						"game": "Introdueix l'adreça IP o el nom d'host i el número de port per fer ping (p. ex., 192.168.1.100 o example.com) i escull el tipus de joc. Alguns jocs requereixen activar les consultes del servidor al seu fitxer de configuració — consulta la documentació del teu servidor de joc. Consulta la <gamedigLink>llista de jocs admesos</gamedigLink> per obtenir detalls del protocol.",
+						"pagespeed": "Fes un seguiment del rendiment de càrrega de pàgina, Core Web Vitals i puntuacions d'optimització del teu lloc web.",
+						"grpc": "Introdueix el nom d'host i el port del servidor gRPC, opcionalment especifica un nom de servei per a la comprovació de salut, i afegeix un nom de visualització.",
+						"websocket": "Introdueix la URL de WebSocket a monitorar (p. ex., wss://example.com/socket) i afegeix un nom de visualització.",
+						"hardware": "Monitoritza l'ús de CPU, memòria, disc i temperatura per a la teva infraestructura. La URL de l'endpoint de captura ha d'incloure la ruta completa /api/v1/metrics (p. ex., http://192.168.1.10:5001/api/v1/metrics). Per al secret d'autorització, enganxa només la cadena del token — no incloguis 'Bearer'."
+					}
+				},
+				"ignoreTls": {
+					"description": "Configura la validació del certificat TLS/SSL per a connexions HTTPS.",
+					"option": {
+						"tls": {
+							"label": "Ignorar errors TLS/SSL"
+						}
+					},
+					"title": "Configuració TLS/SSL"
+				},
+				"incidents": {
+					"description": "S'usa una finestra lliscant per determinar quan un monitor cau. L'estat d'un monitor només canviarà quan el percentatge de comprovacions a la finestra lliscant arribi al valor especificat.",
+					"option": {
+						"checks": {
+							"label": "Nombre de comprovacions a la finestra lliscant"
+						},
+						"percentage": {
+							"label": "Quin percentatge de comprovacions a la finestra lliscant fallen/réïxen abans que canviï l'estat del monitor?"
+						}
+					},
+					"title": "Incidents"
+				},
+				"notifications": {
+					"description": "Selecciona els canals de notificació que vols usar",
+					"title": "Notificacions"
+				},
+				"type": {
+					"description": "Selecciona el tipus de comprovació a realitzar",
+					"optionDockerDescription": "Usa Docker per monitorar si un contenidor s'executa.",
+					"optionGameDescription": "Monitoritza si un servidor de joc específic està en línia.",
+					"optionGrpcDescription": "Monitoritza serveis gRPC usant el protocol estàndard de comprovació de salut.",
+					"optionWebSocketDescription": "Monitoritza endpoints de WebSocket per a la salut de la connexió i el temps de resposta.",
+					"optionHttpDescription": "Usa HTTP(S) per monitorar el teu lloc web o endpoint d'API.",
+					"optionPingDescription": "Usa ICMP Ping per monitorar si un servidor és en línia.",
+					"optionPortDescription": "Monitoritza si un port específic d'un servidor és obert.",
+					"title": "Tipus"
+				},
+				"thresholds": {
+					"title": "Llindars d'alerta",
+					"description": "Defineix els llindars als quals s'han de desencadenar alertes per a aquest monitor de maquinari.",
+					"option": {
+						"cpuThreshold": {
+							"label": "Llindar d'alerta de CPU (%)"
+						},
+						"memoryThreshold": {
+							"label": "Llindar d'alerta de memòria (%)"
+						},
+						"diskThreshold": {
+							"label": "Llindar d'alerta de disc (%)"
+						},
+						"tempThreshold": {
+							"label": "Llindar d'alerta de temperatura (°C)"
+						}
+					}
+				},
+				"geoChecks": {
+					"title": "Comprovacions geodistribuïdes",
+					"description": "Executa comprovacions des de múltiples ubicacions geogràfiques per monitorar la disponibilitat i el rendiment globals.",
+					"option": {
+						"enabled": {
+							"label": "Activar comprovacions geodistribuïdes"
+						},
+						"locations": {
+							"label": "Ubicacions",
+							"placeholder": "Selecciona ubicacions",
+							"options": {
+								"EU": "Europa",
+								"NA": "Amèrica del Nord",
+								"AS": "Àsia",
+								"SA": "Amèrica del Sud",
+								"AF": "Àfrica",
+								"OC": "Oceania"
+							}
+						},
+						"interval": {
+							"label": "Interval de comprovació",
+							"value": {
+								"fiveMinutes": "5 minuts",
+								"tenMinutes": "10 minuts",
+								"fifteenMinutes": "15 minuts",
+								"thirtyMinutes": "30 minuts"
+							}
+						}
+					}
+				},
+				"url": {
+					"title": "IP/URL del monitor a la pàgina d'estat",
+					"description": "Mostra l'adreça IP o URL del monitor a la pàgina d'estat pública. Si està desactivat, només es mostrarà el nom del monitor per protegir informació sensible.",
+					"option": {
+						"showURL": {
+							"label": "Mostrar IP/URL a la pàgina d'estat",
+							"enabled": "Activat",
+							"disabled": "Desactivat"
+						}
+					}
+				},
+				"stats": {
+					"title": "Historial del monitor",
+					"description": "Neteja tot l'historial de monitoratge i les estadístiques del teu equip. Aquesta acció és irreversible.",
+					"buttonText": "Netejar totes les estadístiques",
+					"dialog": {
+						"title": "Netejar tot l'historial de monitoratge?",
+						"description": "Això eliminarà permanentment tot l'historial de monitoratge, les estadístiques i les dades de comprovació del teu equip. Aquesta acció no es pot desfer.",
+						"confirm": "Sí, netejar totes les estadístiques"
+					}
+				}
+			}
+		},
+		"editUser": {
+			"form": {
+				"roles": {
+					"title": "Rols",
+					"description": "Assigna rols a l'usuari. Es poden seleccionar múltiples rols."
+				}
+			},
+			"dialog": {
+				"removeUser": {
+					"title": "Eliminar usuari",
+					"content": "Esteu segur que voleu eliminar {{name}} del vostre equip? Aquesta acció no es pot desfer."
+				}
+			}
+		},
+		"incidents": {
+			"fallback": {
+				"title": "Cap incident — tots els sistemes sans",
+				"description": "Quan un monitor cau o es recupera, l'incident apareixerà aquí amb el moment, els detalls del monitor i l'historial de resolució."
+			},
+			"dialog": {
+				"resolveIncident": {
+					"title": "Resoldre incident",
+					"option": {
+						"comment": {
+							"label": "Comentari (opcional)",
+							"placeholder": "Afegeix un comentari sobre la resolució..."
+						}
+					}
+				},
+				"details": {
+					"analysis": "Anàlisi de l'incident",
+					"comment": "Comentari:",
+					"detailsLabel": "Detalls",
+					"downtime": "Temps d'inactivitat:",
+					"message": "Missatge:",
+					"monitor": "Monitor:",
+					"overview": "Visió general",
+					"resolutionDetails": "Detalls de la resolució",
+					"resolutionType": "Tipus:",
+					"resolutionTypes": {
+						"automatic": "Automàtica",
+						"manual": "Manual"
+					},
+					"resolve": "Resoldre incident",
+					"resolvedAt": "Resolt el:",
+					"resolvedBy": "Resolt per:",
+					"startedAt": "Iniciat el:",
+					"status": "Estat:",
+					"statusCode": "Codi d'estat:",
+					"timeline": "Línia de temps",
+					"title": "Detalls de l'incident",
+					"url": "URL:"
+				}
+			},
+			"filters": {
+				"allMonitors": "Tots els monitors",
+				"monitor": "Monitor",
+				"resolutionType": "Tipus de resolució",
+				"resolutionTypes": {
+					"manual": "Manual",
+					"automatic": "Automàtica",
+					"all": "Tots"
+				}
+			},
+			"summaryCard": {
+				"activeIncidents": {
+					"title": "Incidents actius",
+					"active_zero": "Cap incident actiu",
+					"active_one": "{{count}} incident actiu",
+					"active_other": "{{count}} incidents actius"
+				},
+				"incidentStats": {
+					"avgResolutionTime": "Temps de resolució mitjà",
+					"mostAffectedMonitor": "Monitor més afectat",
+					"title": "Estadístiques d'incidents",
+					"totalIncidents": "Total d'incidents"
+				},
+				"latestIncidents": {
+					"title": "Darrers incidents"
+				}
+			},
+			"table": {
+				"actions": {
+					"details": "Detalls",
+					"goToMonitor": "Anar al monitor",
+					"resolveManually": "Resoldre manualment"
+				},
+				"activeIncidents": "Incidents actius",
+				"headers": {
+					"endTime": "Hora de fi",
+					"resolutionType": "Tipus de resolució",
+					"startTime": "Hora d'inici",
+					"statusCode": "Codi d'estat"
+				},
+				"resolvedIncidents": "Incidents resolts",
+				"status": {
+					"active": "Actiu",
+					"resolved": "Resolt"
+				}
+			},
+			"header": {
+				"title": "Incidents",
+				"description": "Quan els monitors cauen o es recuperen, els incidents apareixen aquí amb el moment, els detalls del monitor i l'historial de resolució."
+			}
+		},
+		"infrastructure": {
+			"charts": {
+				"labels": {
+					"cpu": "Ús de CPU",
+					"disk": "Ús de disc",
+					"memory": "Ús de memòria",
+					"netBytesRecv": "{{name}} - Bytes rebuts",
+					"netBytesSent": "{{name}} - Bytes enviats",
+					"netNoTraffic": "La captura informa de zero tràfic en totes les interfícies. Això és normal quan la captura s'executa dins d'un contenidor que només pot veure interfícies de loopback — executa la captura directament a l'amfitrió per veure l'activitat de xarxa real.",
+					"temp": "Temperatura"
+				}
+			},
+			"gauges": {
+				"cpu": {
+					"lowerLabel": "Freqüència màxima",
+					"title": "Ús de CPU",
+					"upperLabel": "Freqüència actual"
+				},
+				"disk": {
+					"lowerLabel": "Lliure",
+					"title": "Ús del disc {{idx}}",
+					"upperLabel": "Usat"
+				},
+				"memory": {
+					"lowerLabel": "Lliure",
+					"title": "Ús de memòria",
+					"upperLabel": "Usada"
+				}
+			},
+			"statBoxes": {
+				"avgCpuTemperature": "Temperatura mitjana de CPU",
+				"cpuFrequency": "Freqüència de CPU",
+				"cpuLogical": "CPU (lògica)",
+				"cpuPhysical": "CPU (física)",
+				"disk": "Disc",
+				"memory": "Memòria",
+				"os": "SO"
+			},
+			"table": {
+				"headers": {
+					"cpu": "CPU",
+					"disk": "Disc",
+					"memory": "Memòria"
+				}
+			},
+			"tabs": {
+				"labels": {
+					"network": "Xarxa",
+					"overview": "Visió general"
+				}
+			},
+			"fallback": {
+				"actionButton": "Crear un monitor",
+				"description": "Fes un seguiment del rendiment del servidor, identifica colls d'ampolla i garanteix la fiabilitat amb monitoratge d'infraestructura en temps real.",
+				"title": "Encara no hi ha monitors d'infraestructura"
+			},
+			"header": {
+				"title": "Monitors d'infraestructura",
+				"description": "Fes un seguiment del rendiment del servidor, identifica colls d'ampolla i garanteix la fiabilitat amb monitoratge d'infraestructura en temps real."
+			}
+		},
+		"logs": {
+			"fallback": {
+				"title": "Encara no hi ha registres",
+				"description": "L'activitat del servidor, els avisos i els errors apareixeran aquí mentre s'executa Checkmate."
+			},
+			"queueFallback": {
+				"title": "Cap feina a la cua",
+				"description": "Les comprovacions de monitor que estan programades o en execució apareixeran aquí. Una cua buida significa que tot és al dia."
+			},
+			"tabs": {
+				"diagnostics": "Diagnòstics",
+				"logs": "Registres",
+				"queue": "Cua de feines"
+			},
+			"logLevelSelect": {
+				"label": "Nivell de registre"
+			},
+			"jobQueue": "Cua de feines",
+			"jobQueueExplainer": "<highlight>Les files ressaltades</highlight> són feines que s'estan processant per un treballador.",
+			"failedJobs": "Feines fallides",
+			"failedJobsExplainer": "Fallades recents per monitor — darrera vegada de fallada, recompte de fallades i el motiu.",
+			"noLogs": "No s'han trobat registres",
+			"metrics": {
+				"jobs": "Feines",
+				"activeJobs": "Feines actives",
+				"failingJobs": "Feines fallides",
+				"totalRuns": "Total d'execucions",
+				"totalFailures": "Total de fallades"
+			},
+			"diagnostics": {
+				"sections": {
+					"runtimeStats": {
+						"title": "Estadístiques d'execució",
+						"description": "Instantània del procés Node.js i de la màquina amfitriona. S'actualitza cada 5 segons."
+					},
+					"memoryCpu": {
+						"title": "Memòria i CPU",
+						"description": "Com el procés usa la seva memòria assignada i la CPU de l'amfitrió."
+					}
+				},
+				"stats": {
+					"eventLoopDelay": "Retard del bucle d'esdeveniments",
+					"uptime": "Temps en funcionament",
+					"usedHeapSize": "Mida del heap usat",
+					"totalHeapSize": "Mida total del heap",
+					"osMemoryLimit": "Límit de memòria del SO"
+				},
+				"gauges": {
+					"heapAllocation": "Assignació de heap",
+					"heapUsage": "Ús del heap",
+					"heapUtilization": "Utilització del heap",
+					"instantCpuUsage": "Ús instantani de CPU",
+					"availableMemoryPercentage": "% de memòria disponible",
+					"allocatedPercentage": "% assignat",
+					"usedSPercentage": "% d'1s usat per la CPU",
+					"total": "Total",
+					"used": "Usat"
+				}
+			},
+			"table": {
+				"headers": {
+					"timestamp": "Marca de temps",
+					"level": "Nivell",
+					"service": "Servei",
+					"method": "Mètode",
+					"monitorId": "ID del monitor",
+					"runCount": "Recompte d'execucions",
+					"failCount": "Recompte",
+					"lastRunAt": "Darrera execució",
+					"lockedAt": "Bloquejat el",
+					"lastFinishedAt": "Darrera finalització",
+					"lastRunTook": "Durada de la darrera execució",
+					"lastFailedAt": "Darrera fallada",
+					"failReason": "Motiu de la fallada"
+				}
+			},
+			"header": {
+				"title": "Registres i cua",
+				"description": "Inspecciona els registres del servidor, la cua de feines del monitor i els diagnòstics d'execució en un sol lloc."
+			}
+		},
+		"maintenanceWindow": {
+			"fallback": {
+				"actionButton": "Crear una finestra de manteniment",
+				"description": "Programa temps d'inactivitat planificat perquè les alertes s'evitin i el teu equip i usuaris sàpiguen què esperar.",
+				"title": "Cap finestra de manteniment programada"
+			},
+			"table": {
+				"headers": {
+					"nextWindow": "Propera finestra",
+					"repeat": "Repetició"
+				}
+			},
+			"form": {
+				"general": {
+					"title": "Configuració general",
+					"description": "Estableix un nom i opció de repetició per a la teva finestra de manteniment.",
+					"option": {
+						"name": {
+							"label": "Nom",
+							"placeholder": "p. ex. Manteniment setmanal"
+						},
+						"repeat": {
+							"label": "Repetició"
+						}
+					}
+				},
+				"startDate": {
+					"title": "Data d'inici",
+					"description": "Selecciona la data d'inici per a la teva finestra de manteniment.",
+					"option": {
+						"startDate": {
+							"label": "Data d'inici"
+						}
+					}
+				},
+				"startTime": {
+					"title": "Hora d'inici",
+					"description": "Estableix l'hora d'inici i la durada per a la teva finestra de manteniment. Tots els valors són en UTC.",
+					"option": {
+						"duration": {
+							"label": "Durada"
+						},
+						"startTime": {
+							"label": "Hora d'inici"
+						}
+					},
+					"monitors": {
+						"title": "Monitors",
+						"description": "Monitors als quals s'ha d'aplicar la finestra de manteniment",
+						"option": {
+							"addMonitors": {
+								"label": "Afegir monitors"
+							}
+						}
+					}
+				}
+			},
+			"header": {
+				"title": "Finestres de manteniment",
+				"description": "Programa temps d'inactivitat planificat perquè les alertes s'evitin i el teu equip i usuaris sàpiguen què esperar."
+			}
+		},
+		"notifications": {
+			"fallback": {
+				"actionButton": "Crear un canal",
+				"description": "Connecta Slack, Discord, correu electrònic, webhooks i més perquè les persones adequades s'assabentin dels incidents en el moment en què passen.",
+				"title": "Encara no hi ha canals de notificació"
+			},
+			"form": {
+				"accessToken": {
+					"optionAccessToken": "Token d'accés",
+					"placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
+				},
+				"address": {
+					"description": "L'adreça on s'enviaran les notificacions.",
+					"optionAddress": "Adreça",
+					"placeholderEmail": "exemple@exemple.com",
+					"placeholderWebhook": "https://el-teu-servidor.com/webhook",
+					"title": "Adreça"
+				},
+				"homeServer": {
+					"optionHomeServer": "Servidor principal",
+					"placeholder": "example.com"
+				},
+				"matrix": {
+					"description": "Configura la connexió del teu servidor Matrix per a notificacions.",
+					"title": "Configuració de Matrix"
+				},
+				"notificationName": {
+					"description": "Un nom descriptiu per al canal de notificació",
+					"optionName": "Nom del canal",
+					"placeholder": "p. ex. Alertes de producció",
+					"title": "Nom del canal"
+				},
+				"pagerDuty": {
+					"description": "La teva clau d'integració PagerDuty per rebre alertes.",
+					"optionIntegrationKey": "Clau d'integració",
+					"placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+					"title": "Clau d'integració"
+				},
+				"roomId": {
+					"optionRoomId": "ID de sala",
+					"placeholder": "!abcdefg:matrix.org"
+				},
+				"type": {
+					"description": "Selecciona el tipus de canal de notificació a crear.",
+					"optionType": "Tipus",
+					"title": "Tipus de canal"
+				},
+				"telegram": {
+					"title": "Configuració de Telegram",
+					"description": "Configura el teu bot de Telegram per enviar notificacions.",
+					"optionBotToken": "Token del bot",
+					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
+					"optionChatId": "ID del xat",
+					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Configuració de Pushover",
+					"description": "Configura Pushover per rebre notificacions push als teus dispositius.",
+					"optionAppToken": "Token de l'API de l'aplicació",
+					"placeholderAppToken": "azGDORePK8gMaC0QOYAMyEEuzJnyUi",
+					"optionUserKey": "Clau d'usuari",
+					"placeholderUserKey": "uQiRzpo4DXghDmr9QzzfQu27cmVRsG"
+				},
+				"twilio": {
+					"title": "Configuració de SMS de Twilio",
+					"description": "Configura Twilio per enviar notificacions SMS a un número de telèfon.",
+					"optionAccountSid": "SID del compte",
+					"placeholderAccountSid": "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+					"optionAuthToken": "Token d'autenticació",
+					"placeholderAuthToken": "el_teu_token_auth",
+					"optionFromNumber": "Número d'origen (Twilio)",
+					"placeholderFromNumber": "+34931234567",
+					"optionToNumber": "Número de destinació (receptor)",
+					"placeholderToNumber": "+34939876543"
+				}
+			},
+			"table": {
+				"headers": {
+					"destination": "Destinació"
+				}
+			},
+			"header": {
+				"title": "Notificacions",
+				"description": "Connecta Slack, Discord, correu electrònic, webhooks i més perquè les persones adequades s'assabentin dels incidents en el moment en què passen."
+			}
+		},
+		"pageSpeed": {
+			"charts": {
+				"common": {
+					"cls": "Canvi acumulat de maquetació (CLS)",
+					"fcp": "Primera pintura amb contingut (FCP)",
+					"lcp": "Pintura amb contingut més gran (LCP)",
+					"si": "Índex de velocitat (SI)",
+					"tbt": "Temps total de bloqueig (TBT)"
+				},
+				"legend": {
+					"title": "Informe de PageSpeed",
+					"weight": "Pes"
+				},
+				"pie": {
+					"title": "Informe de rendiment"
+				}
+			},
+			"table": {
+				"headers": {
+					"pageSpeedScore": "Puntuació de PageSpeed"
+				}
+			},
+			"fallback": {
+				"actionButton": "Crear un monitor",
+				"description": "Fes un seguiment de les Core Web Vitals i les puntuacions de Lighthouse al llarg del temps per detectar regressions abans que els usuaris ho facin.",
+				"title": "Encara no hi ha monitors de PageSpeed"
+			},
+			"header": {
+				"title": "Monitors de PageSpeed",
+				"description": "Fes un seguiment de les Core Web Vitals i les puntuacions de Lighthouse al llarg del temps per detectar regressions abans que els usuaris ho facin."
+			}
+		},
+		"settings": {
+			"form": {
+				"timezone": {
+					"title": "Zona horària de visualització",
+					"description": "Selecciona la zona horària que s'usa per mostrar dates i hores a tota l'aplicació.",
+					"option": {
+						"timezone": {
+							"label": "Zona horària de visualització"
+						}
+					}
+				},
+				"ui": {
+					"title": "Aparença",
+					"description": "Canvia entre el mode clar i fosc, canvia l'idioma o personalitza el tipus de gràfic.",
+					"option": {
+						"theme": {
+							"label": "Mode del tema",
+							"light": "Clar",
+							"dark": "Fosc"
+						},
+						"language": {
+							"label": "Idioma"
+						},
+						"chartType": {
+							"label": "Tipus de gràfic",
+							"histogram": "Histograma",
+							"heatmap": "Mapa de calor"
+						}
+					}
+				},
+				"pagespeed": {
+					"title": "Clau API de Google PageSpeed",
+					"description": "Introdueix la teva clau API de Google PageSpeed per activar el monitoratge de Google PageSpeed. Fes clic a Restablir per actualitzar la clau.",
+					"option": {
+						"apiKey": {
+							"label": "Clau API de PageSpeed",
+							"labelSet": "La clau API està configurada. Fes clic a Restablir per canviar-la.",
+							"placeholder": "Introdueix la teva clau API de Google PageSpeed"
+						}
+					}
+				},
+				"url": {
+					"title": "IP/URL del monitor a la pàgina d'estat",
+					"description": "Mostra l'adreça IP o URL del monitor a la pàgina d'estat pública. Si està desactivat, només es mostrarà el nom del monitor per protegir informació sensible.",
+					"option": {
+						"showURL": {
+							"label": "Mostrar IP/URL a la pàgina d'estat",
+							"enabled": "Activat",
+							"disabled": "Desactivat"
+						}
+					}
+				},
+				"stats": {
+					"title": "Historial del monitor",
+					"description": "Neteja tot l'historial de monitoratge i les estadístiques del teu equip. Aquesta acció és irreversible.",
+					"option": {
+						"clear": {
+							"label": "Netejar totes les estadístiques. Això és irreversible."
+						}
+					},
+					"dialog": {
+						"title": "Netejar tot l'historial de monitoratge?",
+						"description": "Això no es pot desfer"
+					}
+				},
+				"retention": {
+					"title": "Retenció de comprovacions",
+					"description": "Estableix quant de temps es retenen les dades de comprovació abans de ser netejades automàticament.",
+					"option": {
+						"days": {
+							"label": "Període de retenció (dies)",
+							"unlimited": "Il·limitat"
+						}
+					}
+				},
+				"thresholds": {
+					"title": "Llindars globals",
+					"description": "Estableix llindars globals de CPU, memòria, disc i temperatura per al monitoratge d'infraestructura. S'apliquen a tots els monitors de maquinari tret que se substitueixin.",
+					"option": {
+						"cpu": {
+							"label": "Llindar de CPU (%)",
+							"placeholder": "1 - 100"
+						},
+						"memory": {
+							"label": "Llindar de memòria (%)",
+							"placeholder": "1 - 100"
+						},
+						"disk": {
+							"label": "Llindar de disc (%)",
+							"placeholder": "1 - 100"
+						},
+						"temperature": {
+							"label": "Llindar de temperatura (°C)",
+							"placeholder": "1 - 150"
+						}
+					}
+				},
+				"email": {
+					"title": "Configuració de correu electrònic",
+					"description": "Configura els paràmetres de correu electrònic del teu sistema. S'usa per enviar notificacions i alertes.",
+					"descriptionTransport": "Això crea un transport SMTP per a NodeMailer",
+					"descriptionTransportLink": "Veu les especificacions aquí",
+					"option": {
+						"host": {
+							"label": "Servidor de correu — Nom d'host o adreça IP per connectar",
+							"placeholder": "smtp.gmail.com"
+						},
+						"port": {
+							"label": "Port de correu — Port per connectar",
+							"placeholder": "587"
+						},
+						"address": {
+							"label": "Adreça de correu — Usada per a l'autenticació",
+							"placeholder": "tu@exemple.com"
+						},
+						"displayName": {
+							"label": "Nom del remitent (opcional) — Nom amigable que apareix al camp De",
+							"placeholder": "Notificacions de Checkmate"
+						},
+						"user": {
+							"label": "Usuari de correu — Nom d'usuari per a l'autenticació, substitueix l'adreça de correu si s'especifica",
+							"placeholder": "Deixa buit si no és necessari"
+						},
+						"password": {
+							"label": "Contrasenya de correu — Contrasenya per a l'autenticació",
+							"labelSet": "La contrasenya està configurada. Fes clic a Restablir per canviar-la.",
+							"placeholder": "Introdueix la teva contrasenya"
+						},
+						"tlsServername": {
+							"label": "Nom de servidor TLS — Nom d'host opcional per a la validació TLS quan el host és una IP",
+							"placeholder": "example.com"
+						},
+						"connectionHost": {
+							"label": "Host de connexió de correu — Nom d'host per usar a la salutació HELO/EHLO",
+							"placeholder": "localhost"
+						},
+						"secure": {
+							"label": "Usar SSL (recomanat): Xifrar la connexió usant SSL/TLS"
+						},
+						"pool": {
+							"label": "Activar agrupació de connexions: Reutilitzar connexions existents per millorar el rendiment"
+						},
+						"ignoreTLS": {
+							"label": "Deshabilitar STARTTLS: No usar TLS encara que el servidor ho admeti"
+						},
+						"requireTLS": {
+							"label": "Forçar STARTTLS: Requerir l'actualització TLS, fallar si no s'admet"
+						},
+						"rejectUnauthorized": {
+							"label": "Rebutjar certificats no vàlids: Rebutjar connexions amb certificats autofirmats o no de confiança"
+						}
+					}
+				},
+				"demoMonitors": {
+					"title": "Monitors de demostració",
+					"description": "Afegeix monitors de mostra amb finalitats de demostració."
+				},
+				"removeMonitors": {
+					"title": "Restabliment del sistema",
+					"description": "Elimina tots els monitors del teu sistema.",
+					"dialog": {
+						"title": "Eliminar tots els monitors?",
+						"description": "Això no es pot desfer.",
+						"paragraph": "Tot l'historial de comprovacions, incidents, finestres de manteniment programades i qualsevol pàgina d'estat que referenciés aquests monitors també s'eliminarà. Exporta els teus monitors primer per conservar una còpia de seguretat de les seves dades."
+					}
+				},
+				"exportMonitors": {
+					"title": "Exportar monitors"
+				},
+				"importExportMonitors": {
+					"title": "Importar / Exportar monitors",
+					"description": "Importa o exporta les dades dels teus monitors com a fitxer JSON per a còpia de seguretat o transferència."
+				},
+				"about": {
+					"title": "Quant a",
+					"developedBy": "Desenvolupat per Bluewave Labs"
+				},
+				"validation": {
+					"errorMessage": "Si us plau, corregiu els errors de validació següents:"
+				}
+			},
+			"header": {
+				"title": "Configuració",
+				"description": "Configura SMTP, integracions, retenció i el comportament general de l'aplicació."
+			}
+		},
+		"statusPages": {
+			"deleteSuccess": "Pàgina d'estat eliminada correctament",
+			"fallback": {
+				"title": "Encara no hi ha pàgines d'estat",
+				"description": "Publica una pàgina pública que mostri el temps en línia en temps real i l'historial d'incidents als teus clients i parts interessades.",
+				"actionButton": "Crear una pàgina d'estat"
+			},
+			"monitorsList": {
+				"chartTypeHeatmap": "Mapa de calor",
+				"chartTypeHistogram": "Histograma",
+				"noData": "No hi ha dades disponibles",
+				"status": {
+					"up": "Operatiu",
+					"down": "Caigut",
+					"breached": "Llindar superat",
+					"maintenance": "Manteniment",
+					"paused": "Pausat",
+					"initializing": "Inicialitzant"
+				},
+				"chart": {
+					"avg": "mitj {{value}}ms",
+					"max": "màx {{value}}ms",
+					"downTooltip": "Caigut",
+					"heatmapAria": "Mapa de calor del temps de resposta"
+				},
+				"infrastructure": {
+					"title": "Infraestructura",
+					"cpu": "CPU",
+					"memory": "RAM",
+					"memoryText": "Memòria",
+					"disk": "Disc",
+					"usage": "Ús",
+					"used": "Usat",
+					"total": "Total"
+				},
+				"uptime": {
+					"title": "Temps en línia",
+					"responseTime": "Temps de resposta"
+				}
+			},
+			"statusBar": {
+				"monitoringSummary": "Monitorant {{count}} servei · S'actualitza cada 10 segons",
+				"monitoringSummary_other": "Monitorant {{count}} serveis · S'actualitza cada 10 segons",
+				"allUp": "Tots els sistemes operatius",
+				"allBreached": "Tots els sistemes han superat els llindars",
+				"allMaintenance": "Tots els sistemes estan en manteniment",
+				"allDown": "Tots els sistemes estan caiguts",
+				"allPaused": "Tots els sistemes estan pausats",
+				"allInitializing": "Tots els sistemes s'estan inicialitzant",
+				"breachedAndDown": "Alguns sistemes han superat els llindars i estan caiguts",
+				"breached": "Alguns sistemes han superat els llindars",
+				"degraded": "Alguns sistemes estan experimentant problemes",
+				"maintenanceAndDown": "Alguns sistemes estan caiguts durant el manteniment",
+				"maintenance": "Alguns sistemes estan en manteniment",
+				"partiallyPaused": "Alguns sistemes estan pausats",
+				"initializing": "Alguns sistemes s'estan inicialitzant",
+				"noMonitors": "No s'han configurat monitors",
+				"unknown": "No es pot determinar l'estat del sistema"
+			},
+			"table": {
+				"headers": {
+					"name": "Nom de la pàgina d'estat",
+					"url": "URL pública"
+				},
+				"published": "Publicada",
+				"unpublished": "No publicada"
+			},
+			"title": "Pàgines d'estat",
+			"details": {
+				"empty": {
+					"title": "Encara no hi ha res aquí",
+					"addMonitor": "Afegeix un monitor per començar"
+				}
+			},
+			"footer": {
+				"poweredBy": "Powered by"
+			},
+			"editorial": {
+				"reportTitle": "Informe del servei",
+				"allUp": "Tots els sistemes funcionen amb normalitat."
+			},
+			"form": {
+				"access": {
+					"title": "Accés",
+					"description": "Si la teva pàgina d'estat és llesta, pots marcar-la com a publicada.",
+					"option": {
+						"published": {
+							"name": "Publicada i visible al públic"
+						}
+					}
+				},
+				"basicInfo": {
+					"title": "Informació bàsica",
+					"description": "Defineix el nom de l'empresa i el subdomini al qual apunta la teva pàgina d'estat.",
+					"option": {
+						"name": {
+							"label": "Nom de l'empresa",
+							"placeholder": "Acme S.A."
+						},
+						"url": {
+							"label": "L'adreça de la teva pàgina d'estat",
+							"placeholder": "la-meva-pagina-destat"
+						}
+					}
+				},
+				"monitors": {
+					"title": "Monitors",
+					"description": "Selecciona els monitors que es mostraran a la teva pàgina d'estat.",
+					"noMonitors": "Cap monitor seleccionat",
+					"option": {
+						"monitors": {
+							"label": "Seleccionar monitors",
+							"placeholder": "Cerca i selecciona monitors..."
+						}
+					}
+				},
+				"timezone": {
+					"title": "Zona horària",
+					"description": "Selecciona la zona horària en què es mostrarà la teva pàgina d'estat.",
+					"option": {
+						"timezone": {
+							"label": "Zona horària",
+							"placeholder": "Selecciona la zona horària..."
+						}
+					}
+				},
+				"appearance": {
+					"title": "Aparença",
+					"description": "Defineix l'aspecte predeterminat de la teva pàgina d'estat pública.",
+					"option": {
+						"logo": {
+							"label": "Logotip"
+						},
+						"color": {
+							"label": "Color de marca"
+						}
+					}
+				},
+				"theme": {
+					"title": "Tema de la pàgina",
+					"description": "Tria l'estil visual per a la teva pàgina d'estat pública.",
+					"label": "Tema",
+					"options": {
+						"refined": {
+							"name": "Refinat",
+							"description": "Net, professional, proper a l'aspecte clàssic de Checkmate."
+						},
+						"modern": {
+							"name": "Modern",
+							"description": "De nivell SaaS amb un punt d'estat pulsant i targetes de desfosa suau."
+						},
+						"bold": {
+							"name": "Atrevit",
+							"description": "Tipografia gran i espaiat confident. Ideal per a pàgines orientades a la marca."
+						},
+						"editorial": {
+							"name": "Editorial",
+							"description": "Capçaleres amb serifa i separadors de línia fina. Distintiu i tranquil."
+						}
+					}
+				},
+				"themeMode": {
+					"label": "Mode del tema",
+					"auto": "Automàtic (segueix el dispositiu del visitant)",
+					"light": "Només clar",
+					"dark": "Només fosc"
+				},
+				"features": {
+					"title": "Funcionalitats",
+					"description": "Configura quina informació es mostra a la teva pàgina d'estat.",
+					"option": {
+						"showCharts": {
+							"label": "Mostrar gràfics de temps de resposta"
+						},
+						"showUptimePercentage": {
+							"label": "Mostrar percentatge de temps en línia"
+						},
+						"showAdminLoginLink": {
+							"label": "Mostrar l'enllaç d'inici de sessió de l'administrador"
+						},
+						"showInfrastructure": {
+							"label": "Mostrar mètriques d'infraestructura"
+						}
+					}
+				}
+			},
+			"header": {
+				"title": "Pàgines d'estat",
+				"description": "Publica pàgines públiques que mostrin el temps en línia en temps real i l'historial d'incidents als teus clients i parts interessades."
+			}
+		},
+		"uptime": {
+			"filters": {
+				"search": {
+					"placeholder": "Cerca monitors..."
+				}
+			},
+			"table": {
+				"headers": {
+					"responseTime": "Temps de resposta"
+				}
+			},
+			"fallback": {
+				"actionButton": "Crear un monitor",
+				"description": "Vigila endpoints HTTP, pings, contenidors i ports — i rep alertes en el moment en que alguna cosa cau.",
+				"title": "Encara no hi ha monitors de temps en línia"
+			},
+			"header": {
+				"title": "Monitors de temps en línia",
+				"description": "Vigila endpoints HTTP, pings, contenidors i ports — i rep alertes en el moment en que alguna cosa cau."
+			}
+		}
+	}
+}

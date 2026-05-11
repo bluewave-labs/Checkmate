@@ -1,4 +1,5 @@
-export type DurationUnit = "seconds" | "minutes" | "hours" | "days";
+export const DurationUnits = ["seconds", "minutes", "hours", "days"] as const;
+export type DurationUnit = (typeof DurationUnits)[number];
 
 export interface MaintenanceWindow {
 	id: string;

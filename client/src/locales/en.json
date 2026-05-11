@@ -14,6 +14,17 @@
 			}
 		},
 		"appName": "Checkmate",
+		"statusCode": {
+			"down": "Down",
+			"networkError": {
+				"timeout": "The server didn't respond in time (request timed out).",
+				"dns": "Couldn't resolve the hostname (DNS lookup failed).",
+				"refused": "The server refused the connection (port closed or service not listening).",
+				"tls": "TLS or SSL handshake failed (certificate or encryption issue).",
+				"reset": "The connection was reset before a response was received.",
+				"unknown": "No HTTP response was received from the target."
+			}
+		},
 		"breadcrumbs": {
 			"details": "Details",
 			"home": "Home"
@@ -70,7 +81,9 @@
 		},
 		"labels": {
 			"active": "Active",
-			"paused": "paused",
+			"running": "Running",
+			"paused": "Paused",
+			"idle": "Idle",
 			"na": "N/A",
 			"resolved": "Resolved",
 			"responseTime": "Response time"
@@ -105,7 +118,7 @@
 			}
 		},
 		"table": {
-			"empty": "Nothing here",
+			"empty": "Nothing to show yet",
 			"headers": {
 				"actions": "Actions",
 				"dateTime": "Date & time",
@@ -123,6 +136,14 @@
 		}
 	},
 	"components": {
+		"pageHeader": {
+			"links": {
+				"support": "Support",
+				"discussions": "Discussions",
+				"docs": "Documentation",
+				"changelog": "Changelog"
+			}
+		},
 		"imageUpload": {
 			"clickToUpload": "Click to upload",
 			"dragAndDrop": "or drag and drop",
@@ -249,6 +270,10 @@
 				}
 			},
 			"team": {
+				"fallback": {
+					"title": "No team members yet",
+					"description": "Invite teammates by email or add them directly. Once they join, they'll appear here with their role."
+				},
 				"filter": {
 					"placeholder": "Filter by role",
 					"all": "All roles",
@@ -279,9 +304,18 @@
 					},
 					"linkLabel": "Invite link"
 				}
+			},
+			"header": {
+				"title": "Account",
+				"description": "Manage your profile, password, team, and workspace preferences."
 			}
 		},
 		"auth": {
+			"brandPanel": {
+				"eyebrow": "Open-source infrastructure monitoring",
+				"tagline": "Watch every move your servers make.",
+				"description": "Real-time uptime, response time and incident tracking - self-hosted and yours to keep."
+			},
 			"common": {
 				"passwordRules": {
 					"length": {
@@ -343,6 +377,7 @@
 			"register": {
 				"title": "Welcome back to Checkmate!",
 				"subtitle": "Sign up to get started",
+				"setupNotice": "This page is only available during initial setup. Once a super admin is registered, additional users can be invited from team settings.",
 				"submit": "Register"
 			},
 			"forgotPassword": {
@@ -362,6 +397,10 @@
 			}
 		},
 		"checks": {
+			"fallback": {
+				"title": "No checks yet",
+				"description": "Once you create a monitor, every status probe and response time will appear here as a check."
+			},
 			"selects": {
 				"monitor": {
 					"all": "All monitors"
@@ -378,6 +417,10 @@
 					"statusCode": "Status code",
 					"location": "Location"
 				}
+			},
+			"header": {
+				"title": "Checks",
+				"description": "Every probe Checkmate runs against your monitors lands here, with status code and response time."
 			}
 		},
 		"common": {
@@ -391,13 +434,28 @@
 					"inviteMember": "Invite member",
 					"openSite": "Open site",
 					"pause": "Pause",
-					"resume": "Resume"
+					"resume": "Resume",
+					"bulkSelected_one": "{{count}} monitor selected",
+					"bulkSelected_other": "{{count}} monitors selected",
+					"selectAll": "Select all monitors",
+					"selectMonitor": "Select {{name}}"
+				},
+				"bulkPause": {
+					"alreadyPaused_one": "The selected monitor is already paused",
+					"alreadyPaused_other": "All selected monitors are already paused",
+					"alreadyRunning_one": "The selected monitor is already running",
+					"alreadyRunning_other": "All selected monitors are already running",
+					"paused_one": "{{count}} monitor paused",
+					"paused_other": "{{count}} monitors paused",
+					"resumed_one": "{{count}} monitor resumed",
+					"resumed_other": "{{count}} monitors resumed"
 				},
 				"statBoxes": {
 					"activeFor": "Active for",
 					"certificateExpiry": "Certificate expiry",
 					"lastCheck": "Last check",
-					"lastResponseTime": "Last response time"
+					"lastResponseTime": "Last response time",
+					"serviceIsDown": "Service is down"
 				},
 				"status": {
 					"down": "down",
@@ -417,7 +475,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "Infrastructure",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				}
 			}
 		},
@@ -508,6 +567,25 @@
 							"label": "Strategy",
 							"desktop": "Desktop",
 							"mobile": "Mobile"
+						},
+						"captureUrl": {
+							"label": "Capture endpoint",
+							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsServer": {
+							"label": "DNS server",
+							"placeholder": "8.8.8.8"
+						},
+						"dnsRecordType": {
+							"label": "DNS record type",
+							"value": {
+								"A": "A",
+								"AAAA": "AAAA",
+								"CNAME": "CNAME",
+								"MX": "MX",
+								"NS": "NS",
+								"TXT": "TXT"
+							}
 						}
 					},
 					"title": "General settings",
@@ -516,11 +594,12 @@
 						"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
 						"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
 						"docker": "Enter the Docker container name or ID. You can use either the container name (e.g., my-app) or the container ID (full 64-char ID or short ID).",
-						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type.",
+						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type. Some games require enabling server queries in their config file — check your game server's documentation. See the <gamedigLink>supported games list</gamedigLink> for protocol details.",
 						"pagespeed": "Track page load performance, Core Web Vitals, and optimization scores for your website.",
 						"grpc": "Enter the hostname and port of the gRPC server, optionally specify a service name for the health check, and add a display name.",
 						"websocket": "Enter the WebSocket URL to monitor (e.g., wss://example.com/socket) and add a display name.",
-						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure."
+						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure. The Capture endpoint URL must include the full path /api/v1/metrics (e.g. http://192.168.1.10:5001/api/v1/metrics). For the authorization secret, paste only the token string — don't include 'Bearer'.",
+						"dns": "Monitor if a specific DNS server is responding."
 					}
 				},
 				"ignoreTls": {
@@ -557,6 +636,7 @@
 					"optionHttpDescription": "Use HTTP(S) to monitor your website or API endpoint.",
 					"optionPingDescription": "Use ICMP Ping to monitor if a server is online.",
 					"optionPortDescription": "Monitor if a specific port on a server is open.",
+					"optionDnsDescription": "Monitor if a specific DNS server is responding.",
 					"title": "Type"
 				},
 				"thresholds": {
@@ -645,6 +725,10 @@
 			}
 		},
 		"incidents": {
+			"fallback": {
+				"title": "No incidents — all systems healthy",
+				"description": "When a monitor goes down or recovers, the incident will appear here with timing, monitor details, and resolution history."
+			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "Resolve incident",
@@ -725,6 +809,10 @@
 					"active": "Active",
 					"resolved": "Resolved"
 				}
+			},
+			"header": {
+				"title": "Incidents",
+				"description": "When monitors go down or recover, incidents appear here with timing, monitor details and resolution history."
 			}
 		},
 		"infrastructure": {
@@ -735,6 +823,7 @@
 					"memory": "Memory usage",
 					"netBytesRecv": "{{name}} - Bytes Received",
 					"netBytesSent": "{{name}} - Bytes Sent",
+					"netNoTraffic": "Capture is reporting zero traffic on every interface. This is normal when Capture runs inside a container that can only see loopback interfaces — run Capture directly on the host to see real network activity.",
 					"temp": "Temp"
 				}
 			},
@@ -778,16 +867,24 @@
 				}
 			},
 			"fallback": {
-				"actionButton": "Create a monitor!",
-				"checks": [
-					"Track the performance of your servers",
-					"Identify bottlenecks and optimize usage",
-					"Ensure reliability with real-time monitoring"
-				],
-				"title": "An infrastructure monitor is used to:"
+				"actionButton": "Create a monitor",
+				"description": "Track server performance, identify bottlenecks, and ensure reliability with real-time infrastructure monitoring.",
+				"title": "No infrastructure monitors yet"
+			},
+			"header": {
+				"title": "Infrastructure monitors",
+				"description": "Track server performance, identify bottlenecks, and ensure reliability with real-time infrastructure monitoring."
 			}
 		},
 		"logs": {
+			"fallback": {
+				"title": "No logs yet",
+				"description": "Server activity, warnings, and errors will appear here as Checkmate runs."
+			},
+			"queueFallback": {
+				"title": "No jobs in the queue",
+				"description": "Monitor checks that are scheduled or running will appear here. An empty queue means everything is up to date."
+			},
 			"tabs": {
 				"diagnostics": "Diagnostics",
 				"logs": "Logs",
@@ -797,7 +894,9 @@
 				"label": "Log level"
 			},
 			"jobQueue": "Job queue",
+			"jobQueueExplainer": "<highlight>Highlighted rows</highlight> are jobs currently being processed by a worker.",
 			"failedJobs": "Failed jobs",
+			"failedJobsExplainer": "Recent failures by monitor — last failure time, fail count, and the reason.",
 			"noLogs": "No logs found",
 			"metrics": {
 				"jobs": "Jobs",
@@ -807,6 +906,16 @@
 				"totalFailures": "Total failures"
 			},
 			"diagnostics": {
+				"sections": {
+					"runtimeStats": {
+						"title": "Runtime stats",
+						"description": "Snapshot of the Node.js process and host machine. Updates every 5 seconds."
+					},
+					"memoryCpu": {
+						"title": "Memory & CPU",
+						"description": "How the process is using its allocated memory and host CPU."
+					}
+				},
 				"stats": {
 					"eventLoopDelay": "Event loop delay",
 					"uptime": "Uptime",
@@ -815,7 +924,7 @@
 					"osMemoryLimit": "OS memory limit"
 				},
 				"gauges": {
-					"heapAllocation": "Heap allocaton",
+					"heapAllocation": "Heap allocation",
 					"heapUsage": "Heap usage",
 					"heapUtilization": "Heap utilization",
 					"instantCpuUsage": "Instant CPU usage",
@@ -828,31 +937,32 @@
 			},
 			"table": {
 				"headers": {
+					"state": "State",
 					"timestamp": "Timestamp",
 					"level": "Level",
 					"service": "Service",
 					"method": "Method",
 					"monitorId": "Monitor ID",
 					"runCount": "Run count",
-					"failCount": "Fail count",
+					"failCount": "Count",
 					"lastRunAt": "Last run at",
 					"lockedAt": "Locked at",
 					"lastFinishedAt": "Last finished at",
 					"lastRunTook": "Last run took",
-					"lastFailedAt": "Last failed at",
+					"lastFailedAt": "Last failed",
 					"failReason": "Fail reason"
 				}
+			},
+			"header": {
+				"title": "Logs & queue",
+				"description": "Inspect server logs, the monitor job queue, and runtime diagnostics in one place."
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
-				"actionButton": "Create a maintenance window!",
-				"checks": [
-					"Mark your maintenance periods",
-					"Eliminate any misunderstandings",
-					"Stop sending alerts in maintenance windows"
-				],
-				"title": "A maintenance window is used to:"
+				"actionButton": "Create a maintenance window",
+				"description": "Schedule planned downtime so alerts are suppressed and your team and users know what to expect.",
+				"title": "No maintenance windows scheduled"
 			},
 			"table": {
 				"headers": {
@@ -904,17 +1014,17 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Maintenance windows",
+				"description": "Schedule planned downtime so alerts are suppressed and your team and users know what to expect."
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "Create a channel",
-				"checks": [
-					"Alert teams about downtime or performance issues",
-					"Let engineers know when incidents happen",
-					"Keep administrators informed of system changes"
-				],
-				"title": "Notification channles are used to:"
+				"description": "Connect Slack, Discord, email, webhooks and more so the right people hear about incidents the moment they happen.",
+				"title": "No notification channels yet"
 			},
 			"form": {
 				"accessToken": {
@@ -964,12 +1074,36 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "Chat ID",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Pushover configuration",
+					"description": "Configure Pushover to receive push notifications on your devices.",
+					"optionAppToken": "Application API token",
+					"placeholderAppToken": "azGDORePK8gMaC0QOYAMyEEuzJnyUi",
+					"optionUserKey": "User key",
+					"placeholderUserKey": "uQiRzpo4DXghDmr9QzzfQu27cmVRsG"
+				},
+				"twilio": {
+					"title": "Twilio SMS configuration",
+					"description": "Configure Twilio to send SMS notifications to a phone number.",
+					"optionAccountSid": "Account SID",
+					"placeholderAccountSid": "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+					"optionAuthToken": "Auth token",
+					"placeholderAuthToken": "your_auth_token",
+					"optionFromNumber": "From number (Twilio)",
+					"placeholderFromNumber": "+15551234567",
+					"optionToNumber": "To number (recipient)",
+					"placeholderToNumber": "+15559876543"
 				}
 			},
 			"table": {
 				"headers": {
 					"destination": "Destination"
 				}
+			},
+			"header": {
+				"title": "Notifications",
+				"description": "Connect Slack, Discord, email, webhooks and more so the right people hear about incidents the moment they happen."
 			}
 		},
 		"pageSpeed": {
@@ -999,13 +1133,13 @@
 				}
 			},
 			"fallback": {
-				"actionButton": "Create a monitor!",
-				"checks": [
-					"Report on the user experience of a page",
-					"Help analyze webpage speed",
-					"Give suggestions on how the page can be improved"
-				],
-				"title": "A PageSpeed monitor is used to:"
+				"actionButton": "Create a monitor",
+				"description": "Track Core Web Vitals and Lighthouse scores over time so you can spot regressions before users do.",
+				"title": "No PageSpeed monitors yet"
+			},
+			"header": {
+				"title": "PageSpeed monitors",
+				"description": "Track Core Web Vitals and Lighthouse scores over time so you can spot regressions before users do."
 			}
 		},
 		"settings": {
@@ -1123,6 +1257,10 @@
 							"label": "Email address - Used for authentication",
 							"placeholder": "you@example.com"
 						},
+						"displayName": {
+							"label": "Sender name (optional) - Friendly name shown in the From field",
+							"placeholder": "Checkmate notifications"
+						},
 						"user": {
 							"label": "Email user - Username for authentication, overrides email address if specified",
 							"placeholder": "Leave empty if not required"
@@ -1166,7 +1304,8 @@
 					"description": "Remove all monitors from your system.",
 					"dialog": {
 						"title": "Remove all monitors?",
-						"description": "This cannot be undone."
+						"description": "This cannot be undone.",
+						"paragraph": "All check history, incidents, scheduled maintenance windows, and any status pages that referenced these monitors will be removed too. Export your monitors first to keep a backup of their data."
 					}
 				},
 				"exportMonitors": {
@@ -1183,24 +1322,37 @@
 				"validation": {
 					"errorMessage": "Please fix the following validation errors:"
 				}
+			},
+			"header": {
+				"title": "Settings",
+				"description": "Configure SMTP, integrations, retention, and global app behavior."
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "Status page deleted successfully",
 			"fallback": {
-				"title": "A status page is used to:",
-				"checks": [
-					"Communicate system status to users and stakeholders",
-					"Display real-time uptime information publicly",
-					"Build trust with transparent service monitoring",
-					"Reduce support requests during incidents"
-				],
-				"actionButton": "Create a status page!"
+				"title": "No status pages yet",
+				"description": "Publish a public page that shows real-time uptime and incident history to your customers and stakeholders.",
+				"actionButton": "Create a status page"
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "Heatmap",
 				"chartTypeHistogram": "Histogram",
 				"noData": "No data available",
+				"status": {
+					"up": "Operational",
+					"down": "Down",
+					"breached": "Threshold exceeded",
+					"maintenance": "Maintenance",
+					"paused": "Paused",
+					"initializing": "Initializing"
+				},
+				"chart": {
+					"avg": "avg {{value}}ms",
+					"max": "max {{value}}ms",
+					"downTooltip": "Down",
+					"heatmapAria": "Response time heatmap"
+				},
 				"infrastructure": {
 					"title": "Infrastructure",
 					"cpu": "CPU",
@@ -1217,9 +1369,22 @@
 				}
 			},
 			"statusBar": {
-				"allDown": "All systems are down",
+				"monitoringSummary": "Monitoring {{count}} service · Updates every 10 seconds",
+				"monitoringSummary_other": "Monitoring {{count}} services · Updates every 10 seconds",
 				"allUp": "All systems operational",
+				"allBreached": "All systems have exceeded thresholds",
+				"allMaintenance": "All systems are under maintenance",
+				"allDown": "All systems are down",
+				"allPaused": "All systems are paused",
+				"allInitializing": "All systems are initializing",
+				"breachedAndDown": "Some systems have exceeded thresholds and are down",
+				"breached": "Some systems have exceeded thresholds",
 				"degraded": "Some systems are experiencing issues",
+				"maintenanceAndDown": "Some systems are down during maintenance",
+				"maintenance": "Some systems are under maintenance",
+				"partiallyPaused": "Some systems are paused",
+				"initializing": "Some systems are initializing",
+				"noMonitors": "No monitors have been configured",
 				"unknown": "Unable to determine system status"
 			},
 			"table": {
@@ -1236,6 +1401,13 @@
 					"title": "There's nothing here yet",
 					"addMonitor": "Add a monitor to get started"
 				}
+			},
+			"footer": {
+				"poweredBy": "Powered by"
+			},
+			"editorial": {
+				"reportTitle": "Service Report",
+				"allUp": "All systems are operating normally."
 			},
 			"form": {
 				"access": {
@@ -1294,6 +1466,35 @@
 						}
 					}
 				},
+				"theme": {
+					"title": "Page theme",
+					"description": "Choose the visual style for your public status page.",
+					"label": "Theme",
+					"options": {
+						"refined": {
+							"name": "Refined",
+							"description": "Clean, professional, close to the classic Checkmate look."
+						},
+						"modern": {
+							"name": "Modern",
+							"description": "SaaS-grade with a pulsing status dot and softly fading cards."
+						},
+						"bold": {
+							"name": "Bold",
+							"description": "Large type and confident spacing. Great for brand-forward pages."
+						},
+						"editorial": {
+							"name": "Editorial",
+							"description": "Serif headings and hairline dividers. Distinctive and calm."
+						}
+					}
+				},
+				"themeMode": {
+					"label": "Theme mode",
+					"auto": "Auto (follow visitor's device)",
+					"light": "Light only",
+					"dark": "Dark only"
+				},
 				"features": {
 					"title": "Features",
 					"description": "Configure what information is displayed on your status page.",
@@ -1312,6 +1513,10 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "Status pages",
+				"description": "Publish public pages that show real-time uptime and incident history to your customers and stakeholders."
 			}
 		},
 		"uptime": {
@@ -1326,14 +1531,13 @@
 				}
 			},
 			"fallback": {
-				"actionButton": "Create a monitor!",
-				"checks": [
-					"Check if websites or servers are online & responsive",
-					"Alert teams about downtime or performance issues",
-					"Monitor HTTP endpoints, pings, containers & ports",
-					"Track historical uptime and reliability trends"
-				],
-				"title": "An uptime monitor is used to:"
+				"actionButton": "Create a monitor",
+				"description": "Watch HTTP endpoints, pings, containers, and ports — and get alerted the moment something goes down.",
+				"title": "No uptime monitors yet"
+			},
+			"header": {
+				"title": "Uptime monitors",
+				"description": "Watch HTTP endpoints, pings, containers, and ports — and get alerted the moment something goes down."
 			}
 		}
 	}

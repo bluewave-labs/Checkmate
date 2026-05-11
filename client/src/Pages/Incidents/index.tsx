@@ -1,4 +1,4 @@
-import { BasePage } from "@/Components/design-elements";
+import { BasePage, EmptyState } from "@/Components/design-elements";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
@@ -15,6 +15,7 @@ import { HeaderTimeRange } from "@/Components/common";
 import { ControlsIncidentFilter } from "@/Pages/Incidents/Components/ControlsIncidentFilter";
 
 import { useGet } from "@/Hooks/UseApi";
+import { LAYOUT } from "@/Utils/Theme/constants";
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import type { Incident, IncidentsResponse, IncidentSummary } from "@/Types/Incident";
@@ -153,8 +154,20 @@ const IncidentsPage = () => {
 		refetchSummary();
 	};
 
+	const trulyEmpty = summaryData !== undefined && (summaryData?.total ?? 0) === 0;
+
+	if (trulyEmpty) {
+		return (
+			<EmptyState
+				fullscreen
+				title={t("pages.incidents.fallback.title")}
+				description={t("pages.incidents.fallback.description")}
+			/>
+		);
+	}
+
 	return (
-		<BasePage>
+		<BasePage headerKey="incidents">
 			<Stack
 				direction={{ xs: "column", md: "row" }}
 				gap={theme.spacing(8)}
@@ -171,11 +184,12 @@ const IncidentsPage = () => {
 				setSelectedResolutionType={setFilter}
 				onClearFilters={handleClearFilters}
 			/>
-			{activeIncidentsCount > 0 ? (
+			{activeIncidentsCount > 0 && (
 				<>
 					<Typography
-						variant="h6"
-						sx={{ mb: theme.spacing(4), textTransform: "uppercase" }}
+						variant="eyebrow"
+						color={theme.palette.text.secondary}
+						mb={theme.spacing(LAYOUT.XS)}
 					>
 						{t("pages.incidents.table.activeIncidents")}
 					</Typography>
@@ -193,18 +207,12 @@ const IncidentsPage = () => {
 					/>
 					<Divider />
 				</>
-			) : (
-				<Typography
-					variant="body1"
-					sx={{ mb: theme.spacing(4), color: theme.palette.success.main }}
-				>
-					{t("pages.incidents.summaryCard.activeIncidents.active_zero")}
-				</Typography>
 			)}
 
 			<Typography
-				variant="h6"
-				sx={{ mb: theme.spacing(4), textTransform: "uppercase" }}
+				variant="eyebrow"
+				color={theme.palette.text.secondary}
+				mb={theme.spacing(LAYOUT.XS)}
 			>
 				{t("pages.incidents.table.resolvedIncidents")}
 			</Typography>

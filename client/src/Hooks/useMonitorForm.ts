@@ -113,6 +113,15 @@ export const useMonitorForm = ({
 					ignoreTlsErrors: data?.ignoreTlsErrors || false,
 				};
 				break;
+			case "dns":
+				defaults = {
+					...base,
+					type: "dns",
+					url: data?.url || "",
+					dnsServer: data?.dnsServer || "",
+					dnsRecordType: data?.dnsRecordType || "A",
+				};
+				break;
 			default:
 				defaults = {
 					...base,

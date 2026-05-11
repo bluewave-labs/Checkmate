@@ -1,17 +1,16 @@
 const SERVICE_NAME = "EmailProvider";
 import type { Notification } from "@/types/index.js";
-import { INotificationProvider } from "@/service/index.js";
+import { NotificationProvider } from "@/service/infrastructure/notificationProviders/INotificationProvider.js";
 import { buildTestEmail } from "@/service/infrastructure/notificationProviders/utils.js";
 import type { NotificationMessage } from "@/types/notificationMessage.js";
 import type { ILogger } from "@/utils/logger.js";
 import { IEmailService } from "@/service/infrastructure/emailService.js";
-export class EmailProvider implements INotificationProvider {
+export class EmailProvider extends NotificationProvider {
 	private emailService: IEmailService;
-	private logger: ILogger;
 
 	constructor(emailService: IEmailService, logger: ILogger) {
+		super(logger);
 		this.emailService = emailService;
-		this.logger = logger;
 	}
 
 	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {

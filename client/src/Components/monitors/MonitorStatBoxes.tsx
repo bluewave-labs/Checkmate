@@ -25,10 +25,7 @@ export const MonitorStatBoxes = ({
 	}
 
 	const timeOfLastFailure = monitorStats?.timeOfLastFailure || 0;
-	const timeSinceLastFailure =
-		timeOfLastFailure > 0
-			? Date.now() - timeOfLastFailure
-			: Date.now() - new Date(monitorStats?.createdAt || 0).getTime();
+	const timeSinceLastFailure = timeOfLastFailure > 0 ? Date.now() - timeOfLastFailure : 0;
 
 	// Determine time since last check
 	const timeOfLastCheck = monitorStats?.lastCheckTimestamp || 0;
@@ -42,6 +39,12 @@ export const MonitorStatBoxes = ({
 	const streakTime = prettyMilliseconds(timeSinceLastFailure, options);
 
 	const lastCheckTime = prettyMilliseconds(timeSinceLastCheck, options);
+	const isActive =
+		monitor?.status === "up" ||
+		monitor?.status === "paused" ||
+		monitor?.status === "maintenance" ||
+		monitor?.status === "initializing" ||
+		monitor?.status === "breached";
 	const palette = getStatusPalette(monitor?.status);
 
 	return (
@@ -51,8 +54,12 @@ export const MonitorStatBoxes = ({
 		>
 			<StatBox
 				palette={palette}
-				title={t("pages.common.monitors.statBoxes.activeFor")}
-				subtitle={streakTime}
+				title={
+					isActive
+						? t("pages.common.monitors.statBoxes.activeFor")
+						: t("pages.common.monitors.statBoxes.serviceIsDown")
+				}
+				subtitle={isActive ? streakTime : ""}
 			/>
 			<StatBox
 				title={t("pages.common.monitors.statBoxes.lastCheck")}

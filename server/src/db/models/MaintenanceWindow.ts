@@ -1,5 +1,5 @@
 import { Schema, model, type Types } from "mongoose";
-import type { MaintenanceWindow } from "@/types/maintenanceWindow.js";
+import { DurationUnits, type MaintenanceWindow } from "@/types/maintenanceWindow.js";
 
 type MaintenanceWindowDocumentBase = Omit<MaintenanceWindow, "id" | "monitorId" | "teamId" | "start" | "end" | "createdAt" | "updatedAt"> & {
 	monitorId: Types.ObjectId;
@@ -39,7 +39,7 @@ const MaintenanceWindowSchema = new Schema<MaintenanceWindowDocument>(
 		},
 		durationUnit: {
 			type: String,
-			enum: ["seconds", "minutes", "hours", "days"],
+			enum: DurationUnits,
 		},
 		repeat: {
 			type: Number,

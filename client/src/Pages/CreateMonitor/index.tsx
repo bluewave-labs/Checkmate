@@ -53,6 +53,8 @@ interface GeneralSettingsConfig {
 	showGrpcServiceName: boolean;
 	showIgnoreTls: boolean;
 	showStrategy: boolean;
+	showDnsServer: boolean;
+	showDnsRecordType: boolean;
 }
 
 const getGeneralSettingsConfig = (
@@ -71,6 +73,8 @@ const getGeneralSettingsConfig = (
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
 			showStrategy: false,
+			showDnsServer: false,
+			showDnsRecordType: false,
 		},
 		ping: {
 			urlLabel: t("pages.createMonitor.form.general.option.host.label"),
@@ -83,6 +87,8 @@ const getGeneralSettingsConfig = (
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
 			showStrategy: false,
+			showDnsServer: false,
+			showDnsRecordType: false,
 		},
 		docker: {
 			urlLabel: t("pages.createMonitor.form.general.option.container.label"),
@@ -95,6 +101,8 @@ const getGeneralSettingsConfig = (
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
 			showStrategy: false,
+			showDnsServer: false,
+			showDnsRecordType: false,
 		},
 		port: {
 			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
@@ -107,6 +115,8 @@ const getGeneralSettingsConfig = (
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
 			showStrategy: false,
+			showDnsServer: false,
+			showDnsRecordType: false,
 		},
 		game: {
 			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
@@ -119,6 +129,8 @@ const getGeneralSettingsConfig = (
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
 			showStrategy: false,
+			showDnsServer: false,
+			showDnsRecordType: false,
 		},
 		grpc: {
 			urlLabel: t("pages.createMonitor.form.general.option.host.label"),
@@ -131,6 +143,8 @@ const getGeneralSettingsConfig = (
 			showGrpcServiceName: true,
 			showIgnoreTls: true,
 			showStrategy: false,
+			showDnsServer: false,
+			showDnsRecordType: false,
 		},
 		pagespeed: {
 			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
@@ -143,10 +157,12 @@ const getGeneralSettingsConfig = (
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
 			showStrategy: true,
+			showDnsServer: false,
+			showDnsRecordType: false,
 		},
 		hardware: {
-			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
-			urlPlaceholder: t("pages.createMonitor.form.general.option.url.placeholder"),
+			urlLabel: t("pages.createMonitor.form.general.option.captureUrl.label"),
+			urlPlaceholder: t("pages.createMonitor.form.general.option.captureUrl.placeholder"),
 			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
 			showUrl: true,
 			showPort: false,
@@ -155,6 +171,8 @@ const getGeneralSettingsConfig = (
 			showGrpcServiceName: false,
 			showIgnoreTls: false,
 			showStrategy: false,
+			showDnsServer: false,
+			showDnsRecordType: false,
 		},
 		websocket: {
 			urlLabel: t("pages.createMonitor.form.general.option.wsUrl.label"),
@@ -167,6 +185,22 @@ const getGeneralSettingsConfig = (
 			showGrpcServiceName: false,
 			showIgnoreTls: true,
 			showStrategy: false,
+			showDnsServer: false,
+			showDnsRecordType: false,
+		},
+		dns: {
+			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
+			urlPlaceholder: t("pages.createMonitor.form.general.option.url.placeholder"),
+			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
+			showUrl: true,
+			showPort: false,
+			showGameSelect: false,
+			showSecret: false,
+			showGrpcServiceName: false,
+			showIgnoreTls: false,
+			showStrategy: false,
+			showDnsServer: true,
+			showDnsRecordType: true,
 		},
 	};
 	return configs[type] || configs.http;
@@ -360,6 +394,13 @@ const CreateMonitorPage = () => {
 												"pages.createMonitor.form.type.optionWebSocketDescription"
 											)}
 										/>
+										<RadioWithDescription
+											value="dns"
+											label={t("pages.common.monitors.monitorTypes.optionDns")}
+											description={t(
+												"pages.createMonitor.form.type.optionDnsDescription"
+											)}
+										/>
 									</RadioGroup>
 								</FormControl>
 							)}
@@ -370,7 +411,20 @@ const CreateMonitorPage = () => {
 
 			<ConfigBox
 				title={t("pages.createMonitor.form.general.title")}
-				subtitle={t(`pages.createMonitor.form.general.description.${watchedType}`)}
+				subtitle={
+					<Trans
+						i18nKey={`pages.createMonitor.form.general.description.${watchedType}`}
+						components={{
+							gamedigLink: (
+								<Link
+									href="https://github.com/gamedig/node-gamedig/blob/master/GAMES_LIST.md"
+									target="_blank"
+									rel="noopener noreferrer"
+								/>
+							),
+						}}
+					/>
+				}
 				rightContent={
 					<Stack spacing={theme.spacing(LAYOUT.MD)}>
 						{/* URL/Host/Container field - not shown for hardware */}
@@ -515,6 +569,74 @@ const CreateMonitorPage = () => {
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message ?? ""}
 									/>
+								)}
+							/>
+						)}
+						{generalSettingsConfig.showDnsServer && (
+							<Controller
+								name="dnsServer"
+								control={control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value ?? ""}
+										type="text"
+										fieldLabel={t(
+											"pages.createMonitor.form.general.option.dnsServer.label"
+										)}
+										placeholder={t(
+											"pages.createMonitor.form.general.option.dnsServer.placeholder"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+						)}
+						{generalSettingsConfig.showDnsRecordType && (
+							<Controller
+								name="dnsRecordType"
+								control={control}
+								defaultValue="A"
+								render={({ field, fieldState }) => (
+									<Select
+										{...field}
+										value={field.value ?? "A"}
+										fieldLabel={t(
+											"pages.createMonitor.form.general.option.dnsRecordType.label"
+										)}
+										error={!!fieldState.error}
+									>
+										<MenuItem value={"A"}>
+											{t("pages.createMonitor.form.general.option.dnsRecordType.value.A")}
+										</MenuItem>
+										<MenuItem value={"AAAA"}>
+											{t(
+												"pages.createMonitor.form.general.option.dnsRecordType.value.AAAA"
+											)}
+										</MenuItem>
+										<MenuItem value={"CNAME"}>
+											{t(
+												"pages.createMonitor.form.general.option.dnsRecordType.value.CNAME"
+											)}
+										</MenuItem>
+										<MenuItem value={"MX"}>
+											{t(
+												"pages.createMonitor.form.general.option.dnsRecordType.value.MX"
+											)}
+										</MenuItem>
+										<MenuItem value={"NS"}>
+											{t(
+												"pages.createMonitor.form.general.option.dnsRecordType.value.NS"
+											)}
+										</MenuItem>
+										<MenuItem value={"TXT"}>
+											{t(
+												"pages.createMonitor.form.general.option.dnsRecordType.value.TXT"
+											)}
+										</MenuItem>
+									</Select>
 								)}
 							/>
 						)}
@@ -923,7 +1045,7 @@ const CreateMonitorPage = () => {
 									/>
 									<Typography
 										component="span"
-										color="text.secondary"
+										color={theme.palette.text.secondary}
 										sx={{ opacity: 0.8 }}
 									>
 										<Trans
