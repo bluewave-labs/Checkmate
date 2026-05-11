@@ -11,7 +11,7 @@ export const getChecksParamValidation = z.object({
 });
 
 export const getChecksQueryValidation = z.object({
-	type: z.enum(["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket"]).optional(),
+	type: z.enum(["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns"]).optional(),
 	sortOrder: z.enum(["asc", "desc"]),
 	limit: z.coerce.number().optional(),
 	dateRange: z.enum(["recent", "hour", "day", "week", "month", "all"]),

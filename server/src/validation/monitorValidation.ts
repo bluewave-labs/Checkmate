@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { booleanCoercion } from "./shared.js";
+import { booleanCoercion, dnsServerValidation } from "./shared.js";
 import { GeoContinents } from "@/types/geoCheck.js";
 import { DnsRecordTypes, MonitorMatchMethods, MonitorStatuses, MonitorTypes } from "@/types/monitor.js";
 
@@ -68,7 +68,7 @@ export const createMonitorBodyValidation = z.object({
 	geoCheckEnabled: z.boolean().optional(),
 	geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 	geoCheckInterval: z.number().min(300000).optional(),
-	dnsServer: z.string().optional(),
+	dnsServer: dnsServerValidation.optional(),
 	dnsRecordType: z.enum(DnsRecordTypes).optional(),
 });
 
@@ -99,7 +99,7 @@ export const editMonitorBodyValidation = z.object({
 	geoCheckEnabled: z.boolean().optional(),
 	geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 	geoCheckInterval: z.number().min(300000).optional(),
-	dnsServer: z.string().optional(),
+	dnsServer: dnsServerValidation.optional(),
 	dnsRecordType: z.enum(DnsRecordTypes).optional(),
 });
 
@@ -162,7 +162,7 @@ const importedMonitorSchema = z.object({
 	geoCheckEnabled: z.boolean().default(false),
 	geoCheckLocations: z.array(z.enum(GeoContinents)).default([]),
 	geoCheckInterval: z.number().min(300000).default(300000),
-	dnsServer: z.string().optional(),
+	dnsServer: dnsServerValidation.optional(),
 	dnsRecordType: z.enum(DnsRecordTypes).optional(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),

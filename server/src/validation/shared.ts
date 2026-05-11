@@ -15,6 +15,11 @@ export const nameValidation = z
 
 export const lowercaseEmailValidation = z.email().transform((val) => val.toLowerCase());
 
+export const dnsServerValidation = z
+	.string()
+	.min(1, "DNS server is required")
+	.refine((v) => z.ipv4().safeParse(v).success || z.ipv6().safeParse(v).success, "Enter a valid IPv4 or IPv6 address (e.g. 8.8.8.8)");
+
 export const booleanCoercion = z.preprocess((val) => {
 	if (val === "true" || val === true) return true;
 	if (val === "false" || val === false) return false;
