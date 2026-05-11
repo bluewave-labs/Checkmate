@@ -9,6 +9,19 @@ export type MonitorType = (typeof MonitorTypes)[number];
 export const GeoCheckSupportedTypes: readonly MonitorType[] = ["http", "ping"] as const;
 export const supportsGeoCheck = (type: MonitorType): boolean => GeoCheckSupportedTypes.includes(type);
 
+export const UptimeDetailsSupportedTypes = [
+	"http",
+	"ping",
+	"docker",
+	"port",
+	"game",
+	"grpc",
+	"websocket",
+	"dns",
+] as const satisfies readonly MonitorType[];
+export type UptimeDetailsSupportedType = (typeof UptimeDetailsSupportedTypes)[number];
+export const supportsUptimeDetails = (type: MonitorType): type is UptimeDetailsSupportedType => UptimeDetailsSupportedTypes.some((t) => t === type);
+
 export const MonitorStatuses = ["up", "down", "paused", "initializing", "maintenance", "breached"] as const;
 export type MonitorStatus = (typeof MonitorStatuses)[number];
 

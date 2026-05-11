@@ -9,7 +9,8 @@ import type {
 	GamesMap,
 	GroupedGeoCheckResult,
 } from "@/types/monitor.js";
-import { supportsGeoCheck } from "@/types/monitor.js";
+import { supportsGeoCheck, supportsUptimeDetails } from "@/types/monitor.js";
+import type { UptimeChecksResult, HardwareChecksResult, PageSpeedChecksResult } from "@/types/check.js";
 import type { GeoContinent } from "@/types/geoCheck.js";
 import type {
 	IChecksRepository,
@@ -27,6 +28,9 @@ import { ILogger } from "@/utils/logger.js";
 
 const SERVICE_NAME = "MonitorService";
 type DateRangeKey = "recent" | "day" | "week" | "month" | "all";
+
+const isUptimeChecksResult = (result: UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult): result is UptimeChecksResult =>
+	supportsUptimeDetails(result.monitorType);
 
 export interface IMonitorService {
 	readonly serviceName: string;
@@ -216,15 +220,7 @@ export class MonitorService implements IMonitorService {
 		});
 		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
 
-		if (
-			checksData.monitorType !== "http" &&
-			checksData.monitorType !== "ping" &&
-			checksData.monitorType !== "docker" &&
-			checksData.monitorType !== "port" &&
-			checksData.monitorType !== "game" &&
-			checksData.monitorType !== "grpc" &&
-			checksData.monitorType !== "websocket"
-		) {
+		if (!isUptimeChecksResult(checksData)) {
 			throw new AppError({ message: `${monitor.type} monitors are not supported for uptime details`, status: 400 });
 		}
 

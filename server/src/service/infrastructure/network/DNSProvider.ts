@@ -16,9 +16,17 @@ export class DNSProvider implements IStatusProvider<DNSStatusPayload> {
 
 	async handle(monitor: Monitor): Promise<MonitorStatusResponse<DNSStatusPayload>> {
 		try {
-			const { url: hostname, dnsServer, dnsRecordType = "A" } = monitor;
+			const { url, dnsServer, dnsRecordType = "A" } = monitor;
 			if (!dnsServer) {
 				throw new Error("DNS server is required for DNS monitoring");
+			}
+
+			let hostname: string;
+			try {
+				const withScheme = /^[a-z]+:\/\//i.test(url) ? url : `http://${url}`; // Ensure URL has a scheme for proper parsing
+				hostname = new URL(withScheme).hostname;
+			} catch {
+				hostname = url;
 			}
 
 			const resolver = this.createResolver();
