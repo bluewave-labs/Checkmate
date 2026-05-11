@@ -159,7 +159,12 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		const updatePayload: Partial<MaintenanceWindow> = { ...updates };
 
 		if (monitors !== undefined) {
-			await this.verifyMonitorOwnership(monitors, teamId, "editMaintenanceWindow", "Unauthorized to edit maintenance window for one or more monitors");
+			await this.verifyMonitorOwnership(
+				monitors,
+				teamId,
+				"editMaintenanceWindow",
+				"Unauthorized to edit maintenance window for one or more monitors"
+			);
 			updatePayload.monitorId = monitors[0];
 		}
 

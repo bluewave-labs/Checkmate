@@ -173,7 +173,9 @@ describe("editMaintenanceByIdWindowBodyValidation", () => {
 		const result = editMaintenanceByIdWindowBodyValidation.safeParse({ monitors: [] });
 		expect(result.success).toBe(false);
 		if (!result.success) {
-			expect(result.error.issues).toEqual(expect.arrayContaining([expect.objectContaining({ message: "At least one monitor is required", path: ["monitors"] })]));
+			expect(result.error.issues).toEqual(
+				expect.arrayContaining([expect.objectContaining({ message: "At least one monitor is required", path: ["monitors"] })])
+			);
 		}
 	});
 });
