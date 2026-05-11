@@ -124,9 +124,10 @@ const websocketSchema = baseSchema.extend({
 });
 
 // Hostname (FQDN) — labels of 1-63 alphanumerics/hyphens separated by dots,
-// no scheme, port, path, or whitespace. Total length ≤ 253.
+// optionally prefixed with `_` for service labels (e.g. _dmarc, _imaps._tcp).
+// No scheme, port, path, or whitespace. Total length ≤ 253.
 const hostnameRegex =
-	/^(?=.{1,253}$)([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,63}$/;
+	/^(?=.{1,253}$)([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,63}$/;
 
 // DNS monitor schema
 const dnsSchema = baseSchema.extend({

@@ -75,6 +75,18 @@ describe("monitorValidation — DNS fields", () => {
 			).toThrow();
 		});
 
+		it("accepts service labels with leading underscore (DMARC, SRV, ACME)", () => {
+			for (const url of ["_dmarc.example.com", "_imaps._tcp.example.com", "_acme-challenge.example.com"]) {
+				const parsed = createMonitorBodyValidation.parse({
+					...baseDnsBody,
+					url,
+					dnsServer: "8.8.8.8",
+					dnsRecordType: "TXT",
+				});
+				expect(parsed.url).toBe(url);
+			}
+		});
+
 		it("does not enforce the hostname rule for non-DNS monitors", () => {
 			const parsed = createMonitorBodyValidation.parse({
 				name: "HTTP check",
