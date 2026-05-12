@@ -9,6 +9,8 @@ import {
 	ResponsiveContainer,
 	Text,
 } from "recharts";
+import type { TooltipProps } from "recharts";
+import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 import Typography from "@mui/material/Typography";
 
 import { useSelector } from "react-redux";
@@ -18,13 +20,14 @@ import {
 	tooltipDateFormatLookup,
 } from "@/Utils/TimeUtils";
 import { useTheme } from "@mui/material/styles";
+import type { Theme } from "@mui/material/styles";
 import type { GroupedCheck } from "@/Types/Check";
 import type { RootState } from "@/Types/state";
 
 type XTickProps = {
 	x: number;
 	y: number;
-	payload: { value: any };
+	payload: { value: string };
 	range: string;
 };
 
@@ -46,12 +49,9 @@ export const XTick = ({ x, y, payload, range }: XTickProps) => {
 	);
 };
 
-type ResponseTimeToolTipProps = {
-	active?: boolean | undefined;
-	payload?: any[];
-	label?: string | number;
+type ResponseTimeToolTipProps = TooltipProps<ValueType, NameType> & {
 	range: string;
-	theme: any;
+	theme: Theme;
 	uiTimezone: string;
 };
 
@@ -68,7 +68,8 @@ const ResponseTimeToolTip = ({
 	if (!active) return null;
 
 	const format = tooltipDateFormatLookup(range);
-	const responseTime = Math.floor(payload?.[0]?.payload?.avgResponseTime || 0);
+	console.log(payload);
+	const responseTime = Math.floor(payload[0]?.payload?.originalAvgResponseTime || 0);
 	return (
 		<BaseBox sx={{ py: theme.spacing(2), px: theme.spacing(4) }}>
 			<Typography>{formatDateWithTz(String(label), format, uiTimezone)}</Typography>
