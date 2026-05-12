@@ -2,32 +2,66 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: checkmate-redis
+  name: {{ include "checkmate.fullname" . }}-redis
+  namespace: {{ include "checkmate.namespace" . }}
+  labels:
+    {{- include "checkmate.componentLabels" (dict "root" . "component" "redis") | nindent 4 }}
+  {{- with .Values.global.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   replicas: 1
+  serviceName: {{ include "checkmate.fullname" . }}-redis
   selector:
     matchLabels:
-      app: checkmate-redis
+      {{- include "checkmate.componentSelectorLabels" (dict "root" . "component" "redis") | nindent 6 }}
   template:
     metadata:
       labels:
-        app: checkmate-redis
+        {{- include "checkmate.componentSelectorLabels" (dict "root" . "component" "redis") | nindent 8 }}
     spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.redis.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.redis.affinity }}
+      affinity:
+        {{- include "checkmate.tplrender" (dict "value" . "context" $) | nindent 8 }}
+      {{- end }}
+      {{- with .Values.redis.tolerations }}
+      tolerations:
+        {{- include "checkmate.tplrender" (dict "value" . "context" $) | nindent 8 }}
+      {{- end }}
       containers:
         - name: redis
           image: {{ .Values.redis.image }}
+          imagePullPolicy: {{ .Values.redis.imagePullPolicy }}
           ports:
-            - containerPort: {{ .Values.redis.port }}
+            - name: redis
+              containerPort: {{ .Values.redis.port }}
+              protocol: TCP
           volumeMounts:
-            - name: redis-data
+            - name: data
               mountPath: /data
+          {{- with .Values.redis.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
   volumeClaimTemplates:
     - metadata:
-        name: checkmate-redis-persistent-storage
+        name: data
       spec:
-        storageClassName: {{ .Values.persistence.redis.storageClass | quote }}
+        {{- $sc := include "checkmate.redisStorageClass" . }}
+        {{- if $sc }}
+        storageClassName: {{ $sc | quote }}
+        {{- end }}
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: {{ .Values.persistence.redis.size | default "1Gi" | quote }}
+            storage: {{ include "checkmate.redisPVCSize" . | quote }}
 {{- end }}

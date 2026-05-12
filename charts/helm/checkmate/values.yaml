@@ -1,70 +1,367 @@
+## ─────────────────────────────────────────────────────────────────────────────
+## Checkmate Helm Chart — values.yaml
+##
+## Defaults reproduce the previous chart's behavior out of the box.
+## Change only what you need; everything else falls back to a sane value.
+##
+## Smart defaults that differ from the old chart:
+##   • secrets.DB_CONNECTION_STRING — auto-derived from release+namespace when
+##     mongodb.enabled is true and this key is left empty.
+##   • secrets.CLIENT_HOST — auto-derived from client.ingress.host (or the first
+##     httproute hostname) when left empty.
+## ─────────────────────────────────────────────────────────────────────────────
+
+# -- Override the chart name portion of every resource name.
+nameOverride: ""
+
+# -- Override the full release-name prefix for every resource.
+fullnameOverride: ""
+
+# -- Override the target namespace (defaults to .Release.Namespace).
+namespaceOverride: ""
+
+## ── Global settings ───────────────────────────────────────────────────────────
+global:
+  # -- Labels merged onto every resource created by this chart.
+  labels: {}
+
+  # -- Annotations merged onto every resource created by this chart.
+  annotations: {}
+
+  # -- Image pull secrets applied to every Pod spec.
+  imagePullSecrets: []
+  # - name: my-registry-secret
+
+## ── Client (React frontend served by nginx) ───────────────────────────────────
 client:
+  # -- OCI image for the frontend container.
   image: ghcr.io/bluewave-labs/checkmate-client:v3.2.0
+
+  # -- Image pull policy.
+  imagePullPolicy: IfNotPresent
+
+  # -- Number of Pod replicas.
+  replicas: 1
+
+  # -- TCP port nginx listens on inside the Pod.
   port: 80
-  protocol: http
-  ingress:
-    enabled: true
-    host: change_me
-    className: nginx
-    annotations: {}
-    # Example annotations for cert-manager:
-    # annotations:
-    #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    tls:
-      enabled: false
-      # secretName: {{ .Release.Name }}-client-tls  # Optional; defaults to <release>-client-tls if omitted
-      # Note: when enabling TLS, also set client.protocol: https and add
-      # a cert-manager issuer annotation (e.g. cert-manager.io/cluster-issuer: "letsencrypt-prod").
-      # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation
 
+  # -- Protocol the browser uses to reach the frontend: "http" or "https".
+  # Affects the UPTIME_APP_CLIENT_HOST env var and TLS pre-flight validation.
+  protocol: http
+
+  # -- CPU/memory requests and limits for the client container.
+  resources: {}
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+
+  # -- Additional environment variables injected into the client container.
+  extraEnv: []
+  # - name: MY_VAR
+  #   value: "my-value"
+
+  # ── Ingress (Kubernetes Ingress API) ─────────────────────────────────────────
+  ingress:
+    # -- Create a Kubernetes Ingress for the client.
+    # Set to false and enable client.httproute to use the Gateway API instead.
+    # At most one of ingress.enabled / httproute.enabled may be true; both may be
+    # false when accessing via kubectl port-forward (no public routing needed).
+    enabled: true
+
+    # -- Public hostname that resolves to the cluster Ingress controller.
+    # REQUIRED — must be changed from the placeholder before deploying.
+    host: change_me
+
+    # -- IngressClass name (e.g. nginx, traefik, haproxy).
+    className: nginx
+
+    # -- Extra annotations merged onto the Ingress resource.
+    annotations: {}
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+
+    tls:
+      # -- Terminate TLS at the Ingress.
+      # Also requires: client.protocol: https and either a cert-manager issuer
+      # annotation or a pre-existing TLS Secret referenced by secretName.
+      enabled: false
+
+      # -- Name of the TLS Secret. Defaults to "<release>-client-tls" when empty.
+      secretName: ""
+
+  # ── HTTPRoute (Gateway API — gateway.networking.k8s.io/v1) ───────────────────
+  httproute:
+    # -- Create a Gateway API HTTPRoute for the client.
+    # Mutually exclusive with client.ingress.enabled — enable at most one.
+    enabled: false
+
+    # -- Name of the Gateway this route attaches to. Required when enabled.
+    gatewayName: ""
+
+    # -- Namespace of the Gateway. Defaults to the same namespace as the chart.
+    gatewayNamespace: ""
+
+    # -- Hostnames the route matches. Leave empty to match all hostnames on the Gateway.
+    hostnames: []
+    # - checkmate.example.com
+
+    # -- Extra annotations on the HTTPRoute resource.
+    annotations: {}
+
+  # ── Pod scheduling ────────────────────────────────────────────────────────────
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  # -- Annotations added to client Pods (merged with global.annotations).
+  podAnnotations: {}
+
+  # -- Extra labels added to client Pods.
+  podLabels: {}
+
+  # -- Pod-level security context (fsGroup, runAsUser, etc.).
+  podSecurityContext: {}
+
+  # -- Container-level security context (readOnlyRootFilesystem, capabilities, etc.).
+  containerSecurityContext: {}
+
+## ── Server (Node.js API backend) ──────────────────────────────────────────────
 server:
+  # -- OCI image for the backend container.
   image: ghcr.io/bluewave-labs/checkmate-backend:v3.2.0
+
+  # -- Image pull policy.
+  imagePullPolicy: IfNotPresent
+
+  # -- Number of Pod replicas.
+  replicas: 1
+
+  # -- TCP port the server process listens on inside the Pod.
   port: 52345
+
+  # -- Protocol the browser uses to reach the API: "http" or "https".
+  # Must match client.protocol when the client uses HTTPS (browser mixed-content rule).
   protocol: http
+
+  # -- CPU/memory requests and limits for the server container.
+  resources: {}
+
+  # -- Explicit server API base URL injected into the client container (UPTIME_APP_API_BASE_URL).
+  # Auto-derived from server.ingress.host or server.httproute.hostnames when left empty.
+  # Set this explicitly when both ingress and httproute are disabled (e.g., local/port-forward access).
+  # Example: "http://localhost:52345/api/v1"
+  apiBaseURL: ""
+
+  # -- Additional environment variables injected into the server container.
+  # Variables already loaded via envFrom (from the Secret) take lower precedence.
+  extraEnv: []
+
+  # ── Ingress ───────────────────────────────────────────────────────────────────
   ingress:
+    # -- Create a Kubernetes Ingress for the server API.
+    # Set to false and enable server.httproute for Gateway API.
+    # At most one of ingress.enabled / httproute.enabled may be true; both may be
+    # false when accessing via kubectl port-forward (no public routing needed).
     enabled: true
+
+    # -- Public hostname for the API endpoint.
+    # REQUIRED — must be changed from the placeholder before deploying.
     host: change_me
+
+    # -- IngressClass name.
     className: nginx
+
+    # -- Extra annotations merged onto the Ingress resource.
     annotations: {}
-    # Example annotations for cert-manager:
-    # annotations:
-    #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+
     tls:
+      # -- Terminate TLS at the Ingress for the API.
       enabled: false
-      # secretName: {{ .Release.Name }}-server-tls  # Optional; defaults to <release>-server-tls if omitted
-      # Note: when enabling TLS, also set server.protocol: https and add
-      # a cert-manager issuer annotation (e.g. cert-manager.io/cluster-issuer: "letsencrypt-prod").
-      # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation
 
-redis:
-  enabled: false
-  image: redis:7.2
-  port: 6379
+      # -- Name of the TLS Secret. Defaults to "<release>-server-tls" when empty.
+      secretName: ""
 
+  # ── HTTPRoute (Gateway API) ───────────────────────────────────────────────────
+  httproute:
+    # -- Create a Gateway API HTTPRoute for the server API.
+    # Mutually exclusive with server.ingress.enabled.
+    enabled: false
+
+    # -- Name of the Gateway this route attaches to. Required when enabled.
+    gatewayName: ""
+
+    # -- Namespace of the Gateway. Defaults to the chart namespace.
+    gatewayNamespace: ""
+
+    # -- Hostnames the route matches.
+    hostnames: []
+    # - api.checkmate.example.com
+
+    # -- Extra annotations on the HTTPRoute resource.
+    annotations: {}
+
+  # ── Pod scheduling ────────────────────────────────────────────────────────────
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  # -- Annotations added to server Pods (merged with global.annotations).
+  podAnnotations: {}
+
+  # -- Extra labels added to server Pods.
+  podLabels: {}
+
+  # -- Pod-level security context.
+  podSecurityContext: {}
+
+  # -- Container-level security context.
+  containerSecurityContext: {}
+
+## ── Secrets ───────────────────────────────────────────────────────────────────
+##
+## Two mutually exclusive modes:
+##
+##   Mode A — existingSecret
+##     Point to a pre-existing Kubernetes Secret.  No new Secret resource is
+##     created by the chart.  The Secret must contain every key the server needs
+##     (JWT_SECRET, DB_CONNECTION_STRING, CLIENT_HOST, plus any optional keys).
+##
+##   Mode B — inline values (default)
+##     The chart creates a Secret resource from the values below.
+##     Extra keys beyond the documented ones are passed through verbatim.
+##     DB_CONNECTION_STRING and CLIENT_HOST are auto-derived when left empty.
+##
+secrets:
+  # -- [Mode A] Name of an existing Kubernetes Secret loaded via envFrom.
+  # When set, every inline value below is ignored and no Secret is created.
+  existingSecret: ""
+
+  # ── Required keys (Mode B only) ───────────────────────────────────────────────
+
+  # -- JWT signing secret for authentication tokens.
+  # Must be changed — the chart aborts if this is still "change_me".
+  JWT_SECRET: change_me
+
+  # -- MongoDB connection URI.
+  # Auto-derived when mongodb.enabled is true and this is left empty:
+  #   mongodb://<release>-mongodb.<namespace>.svc:<port>/uptime_db
+  # Must be set when mongodb.enabled is false (external cluster).
+  DB_CONNECTION_STRING: ""
+
+  # -- Base URL of the frontend, used by the server for CORS validation.
+  # Auto-derived from client.protocol + client.ingress.host (or the first
+  # httproute hostname) when left empty.
+  # Must be set explicitly when both ingress and httproute are disabled
+  # (e.g., local access via port-forward: "http://127.0.0.1:8080").
+  CLIENT_HOST: ""
+
+  # ── Optional keys ─────────────────────────────────────────────────────────────
+  # Uncomment and fill in the keys you need; they are included in the Secret as-is.
+
+  # -- Outbound email for alert notifications.
+  # SYSTEM_EMAIL_ADDRESS: ""
+  # SYSTEM_EMAIL_PASSWORD: ""
+  # SYSTEM_EMAIL_HOST: "smtp.example.com"
+  # SYSTEM_EMAIL_PORT: "587"
+
+  # -- Google PageSpeed Insights API key.
+  # PAGESPEED_API_KEY: ""
+
+  # -- External Redis (only needed when redis.enabled is false and you still
+  # want the server to use Redis for caching).
+  # When redis.enabled is true, these are auto-injected — do not set them here.
+  # REDIS_HOST: ""
+  # REDIS_PORT: "6379"
+
+  # -- Miscellaneous server settings.
+  # ORIGIN: "example.com"     # Base domain for CORS (no protocol or port). Required when
+  #                           # CLIENT_HOST is set manually (e.g., local port-forward mode).
+  # DB_TYPE: "MongoDB"
+  # TOKEN_TTL: "99d"
+  # REFRESH_TOKEN_TTL: "99d"
+
+## ── MongoDB ───────────────────────────────────────────────────────────────────
 mongodb:
+  # -- Deploy a MongoDB StatefulSet inside the cluster.
+  # Set to false to use an external MongoDB; in that case secrets.DB_CONNECTION_STRING
+  # must be provided explicitly.
+  enabled: true
+
+  # -- OCI image for MongoDB.
   image: ghcr.io/bluewave-labs/checkmate-mongo:v3.2.0
+
+  # -- Image pull policy.
+  imagePullPolicy: IfNotPresent
+
+  # -- MongoDB port.
   port: 27017
 
-secrets:
-  JWT_SECRET: change_me
-#  REFRESH_TOKEN_SECRET: change_me
-#  SYSTEM_EMAIL_ADDRESS: test@example.com
-#  SYSTEM_EMAIL_PASSWORD: change_me
-#  SYSTEM_EMAIL_HOST: smtp.example.com
-#  SYSTEM_EMAIL_PORT: "587"
-#  PAGESPEED_API_KEY: change_me
-  DB_CONNECTION_STRING: mongodb://checkmate-mongodb.namespace.svc:27017/uptime_db
-  CLIENT_HOST: change_me
-#  REDIS_HOST: redis
-#  REDIS_PORT: "6379"
-#  DB_TYPE: MongoDB
-#  TOKEN_TTL: 99d
-#  REFRESH_TOKEN_TTL: 99d
+  # -- CPU/memory requests and limits.
+  resources: {}
 
+  persistence:
+    # -- Size of the MongoDB PersistentVolumeClaim.
+    size: 5Gi
+
+    # -- StorageClass for the MongoDB PVC. Empty string uses the cluster default.
+    storageClass: ""
+
+  # ── Pod scheduling ────────────────────────────────────────────────────────────
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+## ── Redis ─────────────────────────────────────────────────────────────────────
+redis:
+  # -- Deploy a Redis StatefulSet inside the cluster.
+  # When true, REDIS_HOST and REDIS_PORT are auto-injected into the server Secret.
+  # When false (default), Redis is not deployed; configure an external Redis via
+  # secrets.REDIS_HOST / secrets.REDIS_PORT if the application needs it.
+  enabled: false
+
+  # -- OCI image for Redis.
+  image: redis:7.2
+
+  # -- Image pull policy.
+  imagePullPolicy: IfNotPresent
+
+  # -- Redis port.
+  port: 6379
+
+  # -- CPU/memory requests and limits.
+  resources: {}
+
+  persistence:
+    # -- Size of the Redis PersistentVolumeClaim.
+    size: 1Gi
+
+    # -- StorageClass for the Redis PVC. Empty string uses the cluster default.
+    storageClass: ""
+
+  # ── Pod scheduling ────────────────────────────────────────────────────────────
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+## ── Persistence (legacy — retained for backward compatibility) ────────────────
+##
+## These keys were the only persistence configuration in chart v0.1.x.
+## They are superseded by mongodb.persistence.* and redis.persistence.*,
+## but non-empty values here still take precedence (safe upgrade path).
+## New installations should use the component-scoped persistence keys above.
+##
 persistence:
   mongo:
-    size: 5Gi
+    # -- Overrides mongodb.persistence.size when non-empty.
+    size: ""
+    # -- Overrides mongodb.persistence.storageClass when non-empty.
     storageClass: ""
   redis:
-    size: 1Gi
+    # -- Overrides redis.persistence.size when non-empty.
+    size: ""
+    # -- Overrides redis.persistence.storageClass when non-empty.
     storageClass: ""

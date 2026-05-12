@@ -1,0 +1,40 @@
+{{- if .Values.server.httproute.enabled }}
+{{- if not (.Capabilities.APIVersions.Has "gateway.networking.k8s.io/v1") }}
+  {{- fail "Gateway API CRDs (gateway.networking.k8s.io/v1) not found in the cluster. Install them before enabling server.httproute." }}
+{{- end }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ include "checkmate.fullname" . }}-server
+  namespace: {{ include "checkmate.namespace" . }}
+  labels:
+    {{- include "checkmate.componentLabels" (dict "root" . "component" "server") | nindent 4 }}
+  {{- $ann := merge (default dict .Values.server.httproute.annotations) (default dict .Values.global.annotations) }}
+  {{- if $ann }}
+  annotations:
+    {{- toYaml $ann | nindent 4 }}
+  {{- end }}
+spec:
+  parentRefs:
+    - name: {{ .Values.server.httproute.gatewayName }}
+      namespace: {{ default (include "checkmate.namespace" .) .Values.server.httproute.gatewayNamespace }}
+  {{- if .Values.server.httproute.hostnames }}
+  hostnames:
+    {{- toYaml .Values.server.httproute.hostnames | nindent 4 }}
+  {{- end }}
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/v1
+      backendRefs:
+        - name: {{ include "checkmate.fullname" . }}-server
+          port: {{ .Values.server.port }}
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api-docs
+      backendRefs:
+        - name: {{ include "checkmate.fullname" . }}-server
+          port: {{ .Values.server.port }}
+{{- end }}

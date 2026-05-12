@@ -1,44 +1,68 @@
+{{- if .Values.mongodb.enabled }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: checkmate-mongodb
+  name: {{ include "checkmate.fullname" . }}-mongodb
+  namespace: {{ include "checkmate.namespace" . }}
+  labels:
+    {{- include "checkmate.componentLabels" (dict "root" . "component" "mongodb") | nindent 4 }}
+  {{- with .Values.global.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   replicas: 1
+  serviceName: {{ include "checkmate.fullname" . }}-mongodb
   selector:
     matchLabels:
-      app: checkmate-mongodb
+      {{- include "checkmate.componentSelectorLabels" (dict "root" . "component" "mongodb") | nindent 6 }}
   template:
     metadata:
       labels:
-        app: checkmate-mongodb
+        {{- include "checkmate.componentSelectorLabels" (dict "root" . "component" "mongodb") | nindent 8 }}
     spec:
-    {{- with .Values.mongodb.affinity }}
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.mongodb.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.mongodb.affinity }}
       affinity:
-        {{- tpl ( . | toYaml) $ | nindent 8 }}
-    {{- end }}
-    {{- with .Values.mongodb.tolerations }}
+        {{- include "checkmate.tplrender" (dict "value" . "context" $) | nindent 8 }}
+      {{- end }}
+      {{- with .Values.mongodb.tolerations }}
       tolerations:
-        {{- tpl ( . | toYaml) $ | nindent 8 }}
-    {{- end }}
+        {{- include "checkmate.tplrender" (dict "value" . "context" $) | nindent 8 }}
+      {{- end }}
       containers:
         - name: mongodb
           image: {{ .Values.mongodb.image }}
+          imagePullPolicy: {{ .Values.mongodb.imagePullPolicy }}
           ports:
-            - containerPort: {{ .Values.mongodb.port }}
+            - name: mongodb
+              containerPort: {{ .Values.mongodb.port }}
+              protocol: TCP
           command: ["mongod", "--quiet", "--bind_ip_all"]
           volumeMounts:
-            - name: checkmate-mongo-persistent-storage
+            - name: data
               mountPath: /data/db
           {{- with .Values.mongodb.resources }}
           resources:
-              {{- tpl ( . | toYaml) $ | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
   volumeClaimTemplates:
     - metadata:
-        name: checkmate-mongo-persistent-storage
+        name: data
       spec:
-        storageClassName: {{ .Values.persistence.mongo.storageClass | quote }}
+        {{- $sc := include "checkmate.mongodbStorageClass" . }}
+        {{- if $sc }}
+        storageClassName: {{ $sc | quote }}
+        {{- end }}
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: {{ .Values.persistence.mongo.size | default "5Gi" | quote }}
+            storage: {{ include "checkmate.mongodbPVCSize" . | quote }}
+{{- end }}

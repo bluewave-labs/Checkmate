@@ -21,24 +21,22 @@ cd checkmate/charts/helm/checkmate
 Edit `values.yaml` to update:
 - `client.ingress.host` and `server.ingress.host` with your domain names
 - `server.protocol` (usually http or https)
-- **If upgrading**: Migrate persistence settings from flat structure to nested:
-  - Old: `persistence.mongodbSize` → New: `persistence.mongo.size`
-  - Old: `persistence.redisSize` → New: `persistence.redis.size`
-  - Add: `persistence.mongo.storageClass` and `persistence.redis.storageClass` (leave empty for default)
-- Secrets under the `secrets` section (`JWT_SECRET`, email credentials, API keys, etc.) — replace all change_me values
+- Secrets under the `secrets` section (`JWT_SECRET`, email credentials, API keys, etc.) — replace all `change_me` values
 - **For TLS/HTTPS**: Configure ingress TLS settings (see section below)
+- **For external databases**: Set `mongodb.enabled: false` and provide `secrets.DB_CONNECTION_STRING`, or set `redis.enabled: true` to use the bundled Redis
+- **To use a pre-existing Kubernetes Secret**: Set `secrets.existingSecret: "your-secret-name"` instead of inline values
 
 ### 3. Deploy the Helm chart
 ```bash
-helm install checkmate ./charts/helm/checkmate
+helm install checkmate ./charts/helm/checkmate --namespace checkmate --create-namespace
 ```
-This will deploy the client, server, MongoDB, and Redis components.
+This will deploy the client, server, and MongoDB. Redis is disabled by default — set `redis.enabled: true` in `values.yaml` to include it.
 
 ### 4. Verify the deployment
 Check pods and services:
 ```bash
-kubectl get pods
-kubectl get svc
+kubectl get pods -n checkmate
+kubectl get svc -n checkmate
 ```
 
 Once all pods are `Running` and `Ready`, you can access Checkmate via the configured ingress hosts.
@@ -72,7 +70,7 @@ server:
   protocol: https
   ingress:
     enabled: true
-    host: checkmate.example.com
+    host: api.checkmate.example.com
     className: nginx
     annotations:
       cert-manager.io/cluster-issuer: "letsencrypt-prod"
@@ -103,14 +101,27 @@ After deployment, cert-manager will automatically create the TLS secrets. You ca
 
 ```bash
 # Check certificates
-kubectl get certificates
+kubectl get certificates -n checkmate
 
 # Check certificate details
-kubectl describe certificate checkmate-client-tls
-kubectl describe certificate checkmate-server-tls
+kubectl describe certificate checkmate-client-tls -n checkmate
+kubectl describe certificate checkmate-server-tls -n checkmate
 
 # Verify the secrets were created
-kubectl get secrets | grep checkmate-tls
+kubectl get secrets -n checkmate | grep tls
 ```
 
 The ingress will automatically use these secrets to enable HTTPS access to your Checkmate instance.
+
+## Upgrading from v0.1.x
+
+Persistence keys moved to component-scoped locations. The old keys are still accepted for backward compatibility, but new installations should use the new paths:
+
+| Old (v0.1.x)                    | New (v0.2.0+)                      |
+|---------------------------------|------------------------------------|
+| `persistence.mongo.size`        | `mongodb.persistence.size`         |
+| `persistence.redis.size`        | `redis.persistence.size`           |
+| `persistence.mongo.storageClass`| `mongodb.persistence.storageClass` |
+| `persistence.redis.storageClass`| `redis.persistence.storageClass`   |
+
+Redis is now disabled by default. If you were using the bundled Redis, add `redis.enabled: true` to your values.

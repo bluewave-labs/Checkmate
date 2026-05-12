@@ -2,12 +2,14 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: checkmate-client-ingress
-  {{- if .Values.client.ingress.annotations }}
+  name: {{ include "checkmate.fullname" . }}-client
+  namespace: {{ include "checkmate.namespace" . }}
+  labels:
+    {{- include "checkmate.componentLabels" (dict "root" . "component" "client") | nindent 4 }}
+  {{- $ann := merge (default dict .Values.client.ingress.annotations) (default dict .Values.global.annotations) }}
+  {{- if $ann }}
   annotations:
-    {{- range $key, $value := .Values.client.ingress.annotations }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
+    {{- toYaml $ann | nindent 4 }}
   {{- end }}
 spec:
   ingressClassName: {{ .Values.client.ingress.className }}
@@ -15,7 +17,7 @@ spec:
   tls:
     - hosts:
         - {{ .Values.client.ingress.host }}
-      secretName: {{ default (printf "%s-client-tls" .Release.Name) .Values.client.ingress.tls.secretName }}
+      secretName: {{ include "checkmate.clientIngressTLSSecretName" . }}
   {{- end }}
   rules:
     - host: {{ .Values.client.ingress.host }}
@@ -25,7 +27,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: checkmate-client
+                name: {{ include "checkmate.fullname" . }}-client
                 port:
                   number: {{ .Values.client.port }}
 {{- end }}
