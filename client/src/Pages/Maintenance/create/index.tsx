@@ -22,6 +22,7 @@ import type { MaintenanceWindowFormData } from "@/Validation/maintenanceWindow";
 import { repeatOptions, durationUnitOptions } from "@/Validation/maintenanceWindow";
 import { useMaintenanceWindowForm } from "@/Hooks/useMaintenanceWindowForm";
 import { useGet, usePost, usePatch } from "@/Hooks/UseApi";
+import { mutate } from "swr";
 import { useParams, useNavigate } from "react-router-dom";
 import type { Monitor } from "@/Types/Monitor";
 import { useForm, Controller } from "react-hook-form";
@@ -99,6 +100,9 @@ const CreateMaintenanceWindowPage = () => {
 		}
 
 		if (result?.success) {
+			await mutate(
+				(key) => typeof key === "string" && key.startsWith("/maintenance-window")
+			);
 			navigate("/maintenance");
 		}
 	};
