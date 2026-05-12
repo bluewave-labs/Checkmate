@@ -37,7 +37,7 @@ const createService = (overrides?: {
 
 const makeWindow = (overrides?: Partial<MaintenanceWindow>): MaintenanceWindow => ({
 	id: "mw-1",
-	monitorId: "mon-1",
+	monitorIds: ["mon-1"],
 	teamId: "team-1",
 	active: true,
 	name: "Scheduled Maintenance",
@@ -80,16 +80,16 @@ describe("MaintenanceWindowService", () => {
 	// ── createMaintenanceWindow ──────────────────────────────────────────────
 
 	describe("createMaintenanceWindow", () => {
-		it("creates a maintenance window for each monitor", async () => {
+		it("creates a single maintenance window covering all monitor IDs", async () => {
 			const { service, maintenanceWindowsRepository } = createService();
 
 			await service.createMaintenanceWindow(defaultCreateParams);
 
-			expect(maintenanceWindowsRepository.create).toHaveBeenCalledTimes(2);
+			expect(maintenanceWindowsRepository.create).toHaveBeenCalledTimes(1);
 			expect(maintenanceWindowsRepository.create).toHaveBeenCalledWith(
 				expect.objectContaining({
 					teamId: "team-1",
-					monitorId: "mon-1",
+					monitorIds: ["mon-1", "mon-2"],
 					name: "Scheduled Maintenance",
 					active: true,
 					duration: 60,
@@ -99,7 +99,6 @@ describe("MaintenanceWindowService", () => {
 					end: "2026-04-10T03:00:00Z",
 				})
 			);
-			expect(maintenanceWindowsRepository.create).toHaveBeenCalledWith(expect.objectContaining({ monitorId: "mon-2" }));
 		});
 
 		it("verifies monitor ownership via findByIds", async () => {
@@ -130,12 +129,13 @@ describe("MaintenanceWindowService", () => {
 			await expect(service.createMaintenanceWindow(defaultCreateParams)).resolves.toBeUndefined();
 		});
 
-		it("creates a single window when monitorIDs has one entry", async () => {
+		it("passes a single-element monitorIds array when only one monitor is provided", async () => {
 			const { service, maintenanceWindowsRepository } = createService();
 
 			await service.createMaintenanceWindow({ ...defaultCreateParams, monitorIDs: ["mon-1"] });
 
 			expect(maintenanceWindowsRepository.create).toHaveBeenCalledTimes(1);
+			expect(maintenanceWindowsRepository.create).toHaveBeenCalledWith(expect.objectContaining({ monitorIds: ["mon-1"] }));
 		});
 	});
 
@@ -247,6 +247,60 @@ describe("MaintenanceWindowService", () => {
 			});
 
 			expect(maintenanceWindowsRepository.updateById).toHaveBeenCalledWith("mw-1", "team-1", { active: false, repeat: 3600000 });
+		});
+
+		it("maps the monitors body field to monitorIds when calling the repository", async () => {
+			const { service, maintenanceWindowsRepository } = createService();
+
+			await service.editMaintenanceWindow({
+				id: "mw-1",
+				teamId: "team-1",
+				body: { monitors: ["mon-1", "mon-2"] },
+			});
+
+			expect(maintenanceWindowsRepository.updateById).toHaveBeenCalledWith("mw-1", "team-1", { monitorIds: ["mon-1", "mon-2"] });
+		});
+
+		it("verifies monitor ownership when monitors is in the body", async () => {
+			const { service, monitorsRepository } = createService();
+
+			await service.editMaintenanceWindow({
+				id: "mw-1",
+				teamId: "team-1",
+				body: { monitors: ["mon-1", "mon-2"] },
+			});
+
+			expect(monitorsRepository.findByIds).toHaveBeenCalledWith(["mon-1", "mon-2"]);
+		});
+
+		it("throws 403 when a new monitor belongs to a different team", async () => {
+			const monitorsRepository = createMonitorsRepo();
+			(monitorsRepository.findByIds as jest.Mock).mockResolvedValue([
+				{ id: "mon-1", teamId: "team-1" },
+				{ id: "mon-2", teamId: "team-other" },
+			]);
+			const { service, maintenanceWindowsRepository } = createService({ monitorsRepository });
+
+			await expect(
+				service.editMaintenanceWindow({
+					id: "mw-1",
+					teamId: "team-1",
+					body: { monitors: ["mon-1", "mon-2"] },
+				})
+			).rejects.toThrow("Unauthorized to edit maintenance window for one or more monitors");
+			expect(maintenanceWindowsRepository.updateById).not.toHaveBeenCalled();
+		});
+
+		it("does not call findByIds when monitors is not in the body", async () => {
+			const { service, monitorsRepository } = createService();
+
+			await service.editMaintenanceWindow({
+				id: "mw-1",
+				teamId: "team-1",
+				body: { name: "Updated Name" },
+			});
+
+			expect(monitorsRepository.findByIds).not.toHaveBeenCalled();
 		});
 	});
 });

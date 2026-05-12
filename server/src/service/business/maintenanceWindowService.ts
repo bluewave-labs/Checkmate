@@ -27,7 +27,11 @@ export interface IMaintenanceWindowService {
 	}): Promise<{ maintenanceWindows: MaintenanceWindow[]; maintenanceWindowCount: number }>;
 	getMaintenanceWindowsByMonitorId(params: { monitorId: string; teamId: string }): Promise<MaintenanceWindow[]>;
 	deleteMaintenanceWindow(params: { id: string; teamId: string }): Promise<MaintenanceWindow>;
-	editMaintenanceWindow(params: { id: string; teamId: string; body: Partial<MaintenanceWindow> }): Promise<MaintenanceWindow>;
+	editMaintenanceWindow(params: {
+		id: string;
+		teamId: string;
+		body: Partial<Omit<MaintenanceWindow, "monitorIds">> & { monitors?: string[] };
+	}): Promise<MaintenanceWindow>;
 }
 
 export class MaintenanceWindowService implements IMaintenanceWindowService {
@@ -84,20 +88,17 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 			});
 		}
 
-		const dbTransactions = monitorIDs.map((monitorId: string) => {
-			return this.maintenanceWindowsRepository.create({
-				teamId,
-				monitorId,
-				name: name,
-				active: active,
-				duration: duration,
-				durationUnit: durationUnit,
-				repeat: repeat,
-				start: start,
-				end: end,
-			});
+		await this.maintenanceWindowsRepository.create({
+			teamId,
+			monitorIds: monitorIDs,
+			name: name,
+			active: active,
+			duration: duration,
+			durationUnit: durationUnit,
+			repeat: repeat,
+			start: start,
+			end: end,
 		});
-		await Promise.all(dbTransactions);
 	};
 
 	getMaintenanceWindowById = async ({ id, teamId }: { id: string; teamId: string }) => {
@@ -135,7 +136,32 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		return await this.maintenanceWindowsRepository.deleteById(id, teamId);
 	};
 
-	editMaintenanceWindow = async ({ id, teamId, body }: { id: string; teamId: string; body: Partial<MaintenanceWindow> }) => {
-		return await this.maintenanceWindowsRepository.updateById(id, teamId, body);
+	editMaintenanceWindow = async ({
+		id,
+		teamId,
+		body,
+	}: {
+		id: string;
+		teamId: string;
+		body: Partial<Omit<MaintenanceWindow, "monitorIds">> & { monitors?: string[] };
+	}) => {
+		const { monitors, ...rest } = body;
+		const update: Partial<MaintenanceWindow> = rest;
+
+		if (monitors !== undefined) {
+			const monitorDocs = await this.monitorsRepository.findByIds(monitors);
+			const unauthorizedMonitors = monitorDocs.filter((monitor) => monitor.teamId !== teamId);
+			if (unauthorizedMonitors.length > 0) {
+				throw new AppError({
+					message: "Unauthorized to edit maintenance window for one or more monitors",
+					service: SERVICE_NAME,
+					method: "editMaintenanceWindow",
+					status: 403,
+				});
+			}
+			update.monitorIds = monitors;
+		}
+
+		return await this.maintenanceWindowsRepository.updateById(id, teamId, update);
 	};
 }

@@ -29,7 +29,7 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 	private toEntity = (doc: MaintenanceWindowDocument): MaintenanceWindow => {
 		return {
 			id: this.toStringId(doc._id),
-			monitorId: this.toStringId(doc.monitorId),
+			monitorIds: doc.monitorIds.map(this.toStringId),
 			teamId: this.toStringId(doc.teamId),
 			active: doc.active,
 			name: doc.name,
@@ -67,7 +67,7 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 
 	findByMonitorId = async (monitorId: string, teamId: string): Promise<MaintenanceWindow[]> => {
 		const maintenanceWindows = await MaintenanceWindowModel.find({
-			monitorId: monitorId,
+			monitorIds: monitorId,
 			teamId: teamId,
 		});
 		return this.mapDocuments(maintenanceWindows);
