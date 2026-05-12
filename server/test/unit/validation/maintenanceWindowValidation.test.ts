@@ -168,4 +168,24 @@ describe("editMaintenanceByIdWindowBodyValidation", () => {
 		});
 		expect(result.success).toBe(true);
 	});
+
+	it("accepts a body without a monitors field (monitors is optional on edit)", () => {
+		const result = editMaintenanceByIdWindowBodyValidation.safeParse({ name: "Updated Name" });
+		expect(result.success).toBe(true);
+	});
+
+	it("accepts a body with one or more monitors", () => {
+		const result = editMaintenanceByIdWindowBodyValidation.safeParse({ monitors: ["mon-1"] });
+		expect(result.success).toBe(true);
+	});
+
+	it("rejects an empty monitors array", () => {
+		const result = editMaintenanceByIdWindowBodyValidation.safeParse({ monitors: [] });
+		expect(result.success).toBe(false);
+		if (!result.success) {
+			expect(result.error.issues).toEqual(
+				expect.arrayContaining([expect.objectContaining({ message: "At least one monitor is required", path: ["monitors"] })])
+			);
+		}
+	});
 });
