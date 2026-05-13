@@ -4,7 +4,7 @@ import { logger } from "@/Utils/logger";
 import { useParams, useLocation, useNavigate } from "react-router";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTheme } from "@mui/material";
+import { useTheme, Alert } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControl from "@mui/material/FormControl";
@@ -254,6 +254,7 @@ const CreateMonitorPage = () => {
 	}, [defaults, form]);
 
 	const watchedType = watch("type") as MonitorType;
+	const watchedUrl = watch("url");
 
 	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
 	const watchGeoCheckEnabled = watch("geoCheckEnabled") as boolean;
@@ -439,12 +440,16 @@ const CreateMonitorPage = () => {
 										fieldLabel={generalSettingsConfig.urlLabel}
 										placeholder={generalSettingsConfig.urlPlaceholder}
 										fullWidth
-										disabled={isEditMode}
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message ?? ""}
 									/>
 								)}
 							/>
+						)}
+						{isEditMode && existingMonitor && watchedUrl !== existingMonitor.url && (
+							<Alert severity="warning">
+								{t("pages.createMonitor.form.general.url.alert")}
+							</Alert>
 						)}
 
 						{/* Strategy field - only for pagespeed type */}
