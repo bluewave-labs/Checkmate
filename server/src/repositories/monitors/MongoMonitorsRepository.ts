@@ -108,7 +108,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 				$lookup: {
 					from: "maintenancewindows",
 					let: { monitorId: "$_id" },
-					pipeline: [{ $match: { $expr: { $eq: ["$monitorId", "$$monitorId"] } } }],
+					pipeline: [{ $match: { $expr: { $in: ["$$monitorId", { $ifNull: ["$monitorIds", []] }] } } }],
 					as: "maintenanceWindows",
 				},
 			},
