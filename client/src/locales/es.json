@@ -47,14 +47,7 @@
 			"exportToJSON": "Exportar a JSON",
 			"importFromJSON": "Importar desde JSON",
 			"clearFilters": "Limpiar filtros",
-			"removeUser": "Eliminar usuario",
-			"testNotification": "Probar notificación",
-			"invite": "Invitar",
-			"copyLink": "Copiar enlace",
-			"regenerateToken": "Regenerar token",
-			"copyToken": "Copiar token",
-			"exportLogs": "Exportar registros",
-			"refresh": "Actualizar"
+			"removeUser": "Eliminar usuario"
 		},
 		"charts": {
 			"labels": {
@@ -80,7 +73,9 @@
 			"paused": "pausado",
 			"na": "N/D",
 			"resolved": "Resuelto",
-			"responseTime": "Tiempo de respuesta"
+			"responseTime": "Tiempo de respuesta",
+			"idle": "Inactivo",
+			"running": "En ejecución"
 		},
 		"form": {
 			"role": {
@@ -126,6 +121,17 @@
 				"interval": "Intervalo",
 				"active": "Activo",
 				"responseTime": "Tiempo de respuesta"
+			}
+		},
+		"statusCode": {
+			"down": "Caído",
+			"networkError": {
+				"dns": "No se pudo resolver el nombre de host (la búsqueda DNS falló).",
+				"refused": "El servidor rechazó la conexión (puerto cerrado o servicio inactivo).",
+				"reset": "La conexión se restableció antes de recibir una respuesta.",
+				"timeout": "El servidor no respondió a tiempo (tiempo de espera agotado).",
+				"tls": "Falló el protocolo TLS o SSL (problema de certificado o cifrado).",
+				"unknown": "No se recibió ninguna respuesta HTTP del destino."
 			}
 		}
 	},
@@ -459,7 +465,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "Infraestructura",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				},
 				"bulkPause": {
 					"paused_one": "{{count}} monitor pausado",
@@ -559,6 +566,26 @@
 						"captureUrl": {
 							"label": "Endpoint de Capture",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsRecordType": {
+							"label": "Tipo de registro DNS",
+							"value": {
+								"A": "A",
+								"AAAA": "AAAA",
+								"CNAME": "CNAME",
+								"MX": "MX",
+								"NS": "NS",
+								"TXT": "TXT"
+							}
+						},
+						"dnsServer": {
+							"label": "Servidor DNS",
+							"placeholder": "8.8.8.8"
+						},
+						"strategy": {
+							"desktop": "Escritorio",
+							"label": "Estrategia",
+							"mobile": "Móvil"
 						}
 					},
 					"title": "Configuración general",
@@ -571,7 +598,8 @@
 						"pagespeed": "Rastree el rendimiento de carga de página, Core Web Vitals y puntuaciones de optimización de su sitio web.",
 						"grpc": "Ingrese el nombre de host y puerto del servidor gRPC, opcionalmente especifique un nombre de servicio para la verificación de salud, y agregue un nombre para mostrar.",
 						"websocket": "Ingrese la URL de WebSocket a monitorear (p. ej., wss://example.com/socket) y agregue un nombre para mostrar.",
-						"hardware": "Supervisa el uso de CPU, memoria, disco y temperatura de tu infraestructura. La URL del endpoint de Capture debe incluir la ruta completa /api/v1/metrics (p. ej., http://192.168.1.10:5001/api/v1/metrics). Para el secreto de autorización, pega solo la cadena del token — no incluyas 'Bearer'."
+						"hardware": "Supervisa el uso de CPU, memoria, disco y temperatura de tu infraestructura. La URL del endpoint de Capture debe incluir la ruta completa /api/v1/metrics (p. ej., http://192.168.1.10:5001/api/v1/metrics). Para el secreto de autorización, pega solo la cadena del token — no incluyas 'Bearer'.",
+						"dns": "Monitorea si un servidor DNS específico responde."
 					}
 				},
 				"ignoreTls": {
@@ -608,7 +636,8 @@
 					"optionHttpDescription": "Use HTTP(S) para monitorear su sitio web o endpoint de API.",
 					"optionPingDescription": "Use ICMP Ping para monitorear si un servidor está en línea.",
 					"optionPortDescription": "Monitoree si un puerto específico de un servidor está abierto.",
-					"title": "Tipo"
+					"title": "Tipo",
+					"optionDnsDescription": "Monitorea si un servidor DNS específico responde."
 				},
 				"thresholds": {
 					"title": "Umbrales de alerta",
@@ -916,7 +945,8 @@
 					"lastFinishedAt": "Última finalización",
 					"lastRunTook": "Última ejecución tomó",
 					"lastFailedAt": "Última falla",
-					"failReason": "Razón de falla"
+					"failReason": "Razón de falla",
+					"state": "Estado"
 				}
 			},
 			"queueFallback": {
@@ -1106,6 +1136,10 @@
 			"header": {
 				"title": "Monitores de PageSpeed",
 				"description": "Sigue las Core Web Vitals y las puntuaciones de Lighthouse a lo largo del tiempo para detectar regresiones antes que tus usuarios."
+			},
+			"strategy": {
+				"desktop": "Escritorio",
+				"mobile": "Móvil"
 			}
 		},
 		"settings": {
@@ -1254,6 +1288,10 @@
 						},
 						"rejectUnauthorized": {
 							"label": "Rechazar certificados inválidos: Rechazar conexiones con certificados autofirmados o no confiables"
+						},
+						"displayName": {
+							"label": "Nombre del remitente (opcional) - Nombre amigable mostrado en el campo De",
+							"placeholder": "Notificaciones de Checkmate"
 						}
 					}
 				},
@@ -1314,6 +1352,20 @@
 				"uptime": {
 					"title": "Tiempo de actividad",
 					"responseTime": "Tiempo de respuesta"
+				},
+				"chart": {
+					"avg": "prom {{value}}ms",
+					"downTooltip": "Caído",
+					"heatmapAria": "Mapa de calor del tiempo de respuesta",
+					"max": "máx {{value}}ms"
+				},
+				"status": {
+					"breached": "Umbral superado",
+					"down": "Caído",
+					"initializing": "Inicializando",
+					"maintenance": "Mantenimiento",
+					"paused": "Pausado",
+					"up": "Operativo"
 				}
 			},
 			"statusBar": {
@@ -1331,7 +1383,9 @@
 				"maintenance": "Algunos sistemas están en mantenimiento",
 				"partiallyPaused": "Algunos sistemas están en pausa",
 				"initializing": "Algunos sistemas se están inicializando",
-				"noMonitors": "No se ha configurado ningún monitor"
+				"noMonitors": "No se ha configurado ningún monitor",
+				"monitoringSummary": "Monitoreando {{count}} servicio · Actualizaciones cada 10 segundos",
+				"monitoringSummary_other": "Monitoreando {{count}} servicios · Actualizaciones cada 10 segundos"
 			},
 			"table": {
 				"headers": {
@@ -1422,18 +1476,47 @@
 							"label": "Mostrar métricas de infraestructura"
 						}
 					}
+				},
+				"theme": {
+					"description": "Elige el estilo visual para tu página de estado pública.",
+					"label": "Tema",
+					"options": {
+						"bold": {
+							"description": "Tipografía grande y espaciado confiado. Ideal para páginas centradas en la marca.",
+							"name": "Audaz"
+						},
+						"editorial": {
+							"description": "Encabezados con serifa y divisores finos. Distintivo y tranquilo.",
+							"name": "Editorial"
+						},
+						"modern": {
+							"description": "Calidad SaaS con un punto de estado pulsante y tarjetas que se desvanecen suavemente.",
+							"name": "Moderno"
+						},
+						"refined": {
+							"description": "Limpio, profesional, cercano al aspecto clásico de Checkmate.",
+							"name": "Refinado"
+						}
+					},
+					"title": "Tema de la página"
+				},
+				"themeMode": {
+					"auto": "Automático (seguir dispositivo del visitante)",
+					"dark": "Solo oscuro",
+					"label": "Modo de tema",
+					"light": "Solo claro"
 				}
 			},
 			"header": {
 				"title": "Páginas de estado",
 				"description": "Publica páginas públicas que muestren a tus clientes y partes interesadas la disponibilidad en tiempo real y el historial de incidentes."
 			},
-			"publicPage": {
-				"maintenance": {
-					"upcoming": "Mantenimiento programado",
-					"inProgress": "Mantenimiento en curso",
-					"completed": "Mantenimiento completado"
-				}
+			"editorial": {
+				"allUp": "Todos los sistemas funcionan con normalidad.",
+				"reportTitle": "Informe de servicio"
+			},
+			"footer": {
+				"poweredBy": "Desarrollado por"
 			}
 		},
 		"uptime": {

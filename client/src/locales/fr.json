@@ -73,7 +73,9 @@
 			"paused": "en pause",
 			"na": "N/A",
 			"resolved": "Résolu",
-			"responseTime": "Temps de réponse"
+			"responseTime": "Temps de réponse",
+			"idle": "Inactif",
+			"running": "En cours d'exécution"
 		},
 		"form": {
 			"role": {
@@ -119,6 +121,17 @@
 				"interval": "Intervalle",
 				"active": "Actif",
 				"responseTime": "Temps de réponse"
+			}
+		},
+		"statusCode": {
+			"down": "Hors service",
+			"networkError": {
+				"dns": "Impossible de résoudre le nom d'hôte (échec de la recherche DNS).",
+				"refused": "Le serveur a refusé la connexion (port fermé ou service non à l'écoute).",
+				"reset": "La connexion a été réinitialisée avant la réception d'une réponse.",
+				"timeout": "Le serveur n'a pas répondu à temps (délai d'attente dépassé).",
+				"tls": "Échec de la négociation TLS ou SSL (problème de certificat ou de chiffrement).",
+				"unknown": "Aucune réponse HTTP reçue de la cible."
 			}
 		}
 	},
@@ -452,7 +465,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "Infrastructure",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				},
 				"bulkPause": {
 					"paused_one": "{{count}} moniteur en pause",
@@ -534,8 +548,8 @@
 							"placeholder": "https://www.google.com"
 						},
 						"game": {
-							"label": "",
-							"placeholder": ""
+							"label": "Choisir un jeu",
+							"placeholder": "Sélectionner un jeu"
 						},
 						"port": {
 							"label": "Port à surveiller",
@@ -552,6 +566,26 @@
 						"captureUrl": {
 							"label": "Point de terminaison Capture",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsRecordType": {
+							"label": "Type d'enregistrement DNS",
+							"value": {
+								"A": "A",
+								"AAAA": "AAAA",
+								"CNAME": "CNAME",
+								"MX": "MX",
+								"NS": "NS",
+								"TXT": "TXT"
+							}
+						},
+						"dnsServer": {
+							"label": "Serveur DNS",
+							"placeholder": "8.8.8.8"
+						},
+						"strategy": {
+							"desktop": "Bureau",
+							"label": "Stratégie",
+							"mobile": "Mobile"
 						}
 					},
 					"title": "Paramètres généraux",
@@ -564,7 +598,8 @@
 						"pagespeed": "Suivez les performances de chargement, les Core Web Vitals et les scores d'optimisation de votre site web.",
 						"grpc": "Saisissez le nom d'hôte et le port du serveur gRPC, spécifiez éventuellement un nom de service pour le bilan de santé, et ajoutez un nom d'affichage.",
 						"websocket": "Saisissez l'URL WebSocket à surveiller (ex. wss://example.com/socket) et ajoutez un nom d'affichage.",
-						"hardware": "Surveillez l'utilisation du processeur, de la mémoire, du disque et la température de votre infrastructure. L'URL du point de terminaison Capture doit inclure le chemin complet /api/v1/metrics (par ex. http://192.168.1.10:5001/api/v1/metrics). Pour le secret d'autorisation, collez uniquement la chaîne du jeton — n'incluez pas 'Bearer'."
+						"hardware": "Surveillez l'utilisation du processeur, de la mémoire, du disque et la température de votre infrastructure. L'URL du point de terminaison Capture doit inclure le chemin complet /api/v1/metrics (par ex. http://192.168.1.10:5001/api/v1/metrics). Pour le secret d'autorisation, collez uniquement la chaîne du jeton — n'incluez pas 'Bearer'.",
+						"dns": "Surveillez si un serveur DNS spécifique répond."
 					}
 				},
 				"ignoreTls": {
@@ -601,7 +636,8 @@
 					"optionHttpDescription": "Utilisez HTTP(S) pour surveiller votre site web ou point de terminaison API.",
 					"optionPingDescription": "Utilisez le Ping ICMP pour surveiller si un serveur est en ligne.",
 					"optionPortDescription": "Surveillez si un port spécifique sur un serveur est ouvert.",
-					"title": "Type"
+					"title": "Type",
+					"optionDnsDescription": "Surveillez si un serveur DNS spécifique répond."
 				},
 				"thresholds": {
 					"title": "Seuils d'alerte",
@@ -826,7 +862,7 @@
 			},
 			"tabs": {
 				"labels": {
-					"network": "",
+					"network": "Réseau",
 					"overview": "Aperçu"
 				}
 			},
@@ -909,7 +945,8 @@
 					"lastFinishedAt": "Dernière fin",
 					"lastRunTook": "Durée dernière exécution",
 					"lastFailedAt": "Dernier échec",
-					"failReason": "Raison de l'échec"
+					"failReason": "Raison de l'échec",
+					"state": "État"
 				}
 			},
 			"queueFallback": {
@@ -1099,6 +1136,10 @@
 			"header": {
 				"title": "Moniteurs PageSpeed",
 				"description": "Suivez les Core Web Vitals et les scores Lighthouse au fil du temps pour détecter les régressions avant vos utilisateurs."
+			},
+			"strategy": {
+				"desktop": "Bureau",
+				"mobile": "Mobile"
 			}
 		},
 		"settings": {
@@ -1247,6 +1288,10 @@
 						},
 						"rejectUnauthorized": {
 							"label": "Rejeter les certificats invalides : refuser les connexions avec des certificats auto-signés ou non fiables"
+						},
+						"displayName": {
+							"label": "Nom de l'expéditeur (facultatif) - Nom convivial affiché dans le champ De",
+							"placeholder": "Notifications Checkmate"
 						}
 					}
 				},
@@ -1307,6 +1352,20 @@
 				"uptime": {
 					"title": "Disponibilité",
 					"responseTime": "Temps de réponse"
+				},
+				"chart": {
+					"avg": "moy {{value}}ms",
+					"downTooltip": "Hors service",
+					"heatmapAria": "Carte thermique des temps de réponse",
+					"max": "max {{value}}ms"
+				},
+				"status": {
+					"breached": "Seuil dépassé",
+					"down": "Hors service",
+					"initializing": "Initialisation",
+					"maintenance": "Maintenance",
+					"paused": "En pause",
+					"up": "Opérationnel"
 				}
 			},
 			"statusBar": {
@@ -1324,7 +1383,9 @@
 				"maintenance": "Certains systèmes sont en maintenance",
 				"partiallyPaused": "Certains systèmes sont en pause",
 				"initializing": "Certains systèmes sont en cours d'initialisation",
-				"noMonitors": "Aucun moniteur n'a été configuré"
+				"noMonitors": "Aucun moniteur n'a été configuré",
+				"monitoringSummary": "Surveillance de {{count}} service · Mises à jour toutes les 10 secondes",
+				"monitoringSummary_other": "Surveillance de {{count}} services · Mises à jour toutes les 10 secondes"
 			},
 			"table": {
 				"headers": {
@@ -1415,11 +1476,47 @@
 							"label": "Afficher les métriques d'infrastructure"
 						}
 					}
+				},
+				"theme": {
+					"description": "Choisissez le style visuel de votre page de statut publique.",
+					"label": "Thème",
+					"options": {
+						"bold": {
+							"description": "Grande typographie et espacement assuré. Idéal pour les pages axées sur la marque.",
+							"name": "Audacieux"
+						},
+						"editorial": {
+							"description": "Titres avec serif et séparateurs fins. Distinctif et calme.",
+							"name": "Éditorial"
+						},
+						"modern": {
+							"description": "Qualité SaaS avec un point de statut pulsant et des cartes qui s'estompent doucement.",
+							"name": "Moderne"
+						},
+						"refined": {
+							"description": "Propre, professionnel, proche du look classique de Checkmate.",
+							"name": "Raffiné"
+						}
+					},
+					"title": "Thème de la page"
+				},
+				"themeMode": {
+					"auto": "Automatique (selon l'appareil du visiteur)",
+					"dark": "Sombre uniquement",
+					"label": "Mode de thème",
+					"light": "Clair uniquement"
 				}
 			},
 			"header": {
 				"title": "Pages de statut",
 				"description": "Publiez des pages publiques montrant à vos clients et parties prenantes la disponibilité en temps réel et l'historique des incidents."
+			},
+			"editorial": {
+				"allUp": "Tous les systèmes fonctionnent normalement.",
+				"reportTitle": "Rapport de service"
+			},
+			"footer": {
+				"poweredBy": "Propulsé par"
 			}
 		},
 		"uptime": {

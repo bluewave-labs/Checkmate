@@ -73,7 +73,9 @@
 			"paused": "duraklatıldı",
 			"na": "N/A",
 			"resolved": "Çözüldü",
-			"responseTime": "Yanıt süresi"
+			"responseTime": "Yanıt süresi",
+			"idle": "Boşta",
+			"running": "Çalışıyor"
 		},
 		"form": {
 			"role": {
@@ -119,6 +121,17 @@
 				"interval": "Aralık",
 				"active": "Aktif",
 				"responseTime": "Yanıt süresi"
+			}
+		},
+		"statusCode": {
+			"down": "Çalışmıyor",
+			"networkError": {
+				"dns": "Ana bilgisayar adı çözümlenemedi (DNS araması başarısız oldu).",
+				"refused": "Sunucu bağlantıyı reddetti (bağlantı noktası kapalı veya hizmet dinlemiyor).",
+				"reset": "Yanıt alınmadan bağlantı sıfırlandı.",
+				"timeout": "Sunucu zamanında yanıt vermedi (istek zaman aşımına uğradı).",
+				"tls": "TLS veya SSL el sıkışması başarısız (sertifika veya şifreleme sorunu).",
+				"unknown": "Hedeften HTTP yanıtı alınamadı."
 			}
 		}
 	},
@@ -306,7 +319,7 @@
 			"common": {
 				"passwordRules": {
 					"length": {
-						"beginning": "",
+						"beginning": "En az",
 						"highlighted": "8 karakter uzunluğunda"
 					},
 					"lowercase": {
@@ -314,7 +327,7 @@
 						"highlighted": "Bir küçük harf"
 					},
 					"match": {
-						"beginning": "",
+						"beginning": "Parolalar",
 						"highlighted": "eşleşmelidir"
 					},
 					"number": {
@@ -452,7 +465,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "Altyapı",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				},
 				"bulkPause": {
 					"paused_one": "{{count}} monitör duraklatıldı",
@@ -483,9 +497,9 @@
 						},
 						"matchMethod": {
 							"label": "Eşleştirme yöntemi",
-							"equal": "",
-							"include": "",
-							"regex": ""
+							"equal": "Eşit",
+							"include": "İçerir",
+							"regex": "Regex"
 						}
 					},
 					"title": "Gelişmiş ayarlar"
@@ -497,15 +511,15 @@
 							"label": "Kontrol sıklığı",
 							"value": {
 								"fifteenMinutes": "15 dakika",
-								"fifteenSeconds": "",
+								"fifteenSeconds": "15 saniye",
 								"fiveMinutes": "5 dakika",
-								"fourMinutes": "",
-								"oneMinute": "",
+								"fourMinutes": "4 dakika",
+								"oneMinute": "1 dakika",
 								"tenMinutes": "10 dakika",
 								"thirtyMinutes": "30 dakika",
-								"thirtySeconds": "",
-								"threeMinutes": "",
-								"twoMinutes": ""
+								"thirtySeconds": "30 saniye",
+								"threeMinutes": "3 dakika",
+								"twoMinutes": "2 dakika"
 							}
 						}
 					},
@@ -534,8 +548,8 @@
 							"placeholder": "https://www.google.com"
 						},
 						"game": {
-							"label": "",
-							"placeholder": ""
+							"label": "Oyun seç",
+							"placeholder": "Bir oyun seçin"
 						},
 						"port": {
 							"label": "İzlenecek port",
@@ -552,19 +566,40 @@
 						"captureUrl": {
 							"label": "Capture uç noktası",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsRecordType": {
+							"label": "DNS kayıt türü",
+							"value": {
+								"A": "A",
+								"AAAA": "AAAA",
+								"CNAME": "CNAME",
+								"MX": "MX",
+								"NS": "NS",
+								"TXT": "TXT"
+							}
+						},
+						"dnsServer": {
+							"label": "DNS sunucusu",
+							"placeholder": "8.8.8.8"
+						},
+						"strategy": {
+							"desktop": "Masaüstü",
+							"label": "Strateji",
+							"mobile": "Mobil"
 						}
 					},
 					"title": "Genel ayarlar",
 					"description": {
 						"http": "İzlenecek URL veya IP adresini girin (örn. https://example.com/ veya 192.168.1.100) ve panoda görünecek açık bir ad ekleyin.",
-						"ping": "",
-						"port": "",
-						"docker": "",
+						"ping": "Ping atılacak IP adresini veya ana bilgisayar adını girin (ör. 192.168.1.100 veya example.com) ve panoda görünen net bir görünen ad ekleyin.",
+						"port": "Sunucunun URL veya IP adresini, port numarasını ve panoda görünen net bir görünen ad girin.",
+						"docker": "Docker kapsayıcı adını veya kimliğini girin. Kapsayıcı adını (ör. my-app) veya kapsayıcı kimliğini (tam 64 karakterli kimlik veya kısa kimlik) kullanabilirsiniz.",
 						"game": "Ping atılacak IP adresini veya ana bilgisayar adını ve port numarasını girin (ör. 192.168.1.100 veya example.com) ve oyun türünü seçin. Bazı oyunlar yapılandırma dosyasında sunucu sorgularının etkinleştirilmesini gerektirir — oyun sunucunuzun belgelerine bakın. Protokol ayrıntıları için <gamedigLink>desteklenen oyunlar listesine</gamedigLink> bakın.",
 						"pagespeed": "Web sitenizin sayfa yükleme performansını, Core Web Vitals metriklerini ve optimizasyon puanlarını takip edin.",
 						"grpc": "gRPC sunucusunun ana bilgisayar adını ve portunu girin, isteğe bağlı olarak sağlık kontrolü için bir servis adı belirtin ve bir görünen ad ekleyin.",
 						"websocket": "İzlenecek WebSocket URL'sini girin (örn. wss://example.com/socket) ve bir görünen ad ekleyin.",
-						"hardware": "Altyapınızın CPU, bellek, disk kullanımını ve sıcaklığını izleyin. Capture uç nokta URL'si tam yolu /api/v1/metrics içermelidir (ör. http://192.168.1.10:5001/api/v1/metrics). Yetkilendirme anahtarına yalnızca token dizesini yapıştırın — 'Bearer' eklemeyin."
+						"hardware": "Altyapınızın CPU, bellek, disk kullanımını ve sıcaklığını izleyin. Capture uç nokta URL'si tam yolu /api/v1/metrics içermelidir (ör. http://192.168.1.10:5001/api/v1/metrics). Yetkilendirme anahtarına yalnızca token dizesini yapıştırın — 'Bearer' eklemeyin.",
+						"dns": "Belirli bir DNS sunucusunun yanıt verip vermediğini izleyin."
 					}
 				},
 				"ignoreTls": {
@@ -601,7 +636,8 @@
 					"optionHttpDescription": "Web sitenizi veya API uç noktanızı izlemek için HTTP(S) kullanın.",
 					"optionPingDescription": "Bir sunucunun çevrimiçi olup olmadığını izlemek için ICMP Ping kullanın.",
 					"optionPortDescription": "Bir sunucuda belirli bir portun açık olup olmadığını izleyin.",
-					"title": "Tür"
+					"title": "Tür",
+					"optionDnsDescription": "Belirli bir DNS sunucusunun yanıt verip vermediğini izleyin."
 				},
 				"thresholds": {
 					"title": "Uyarı eşikleri",
@@ -826,7 +862,7 @@
 			},
 			"tabs": {
 				"labels": {
-					"network": "",
+					"network": "Ağ",
 					"overview": "Genel bakış"
 				}
 			},
@@ -909,7 +945,8 @@
 					"lastFinishedAt": "Son tamamlanma zamanı",
 					"lastRunTook": "Son çalışma süresi",
 					"lastFailedAt": "Son başarısızlık zamanı",
-					"failReason": "Başarısızlık nedeni"
+					"failReason": "Başarısızlık nedeni",
+					"state": "Durum"
 				}
 			},
 			"queueFallback": {
@@ -1099,6 +1136,10 @@
 			"header": {
 				"title": "PageSpeed izleyicileri",
 				"description": "Core Web Vitals ve Lighthouse puanlarını zaman içinde izleyerek kullanıcılarınız fark etmeden gerilemeleri yakalayın."
+			},
+			"strategy": {
+				"desktop": "Masaüstü",
+				"mobile": "Mobil"
 			}
 		},
 		"settings": {
@@ -1201,7 +1242,7 @@
 				"email": {
 					"title": "E-posta ayarları",
 					"description": "Sisteminiz için e-posta ayarlarını yapılandırın. Bu, bildirim ve uyarı göndermek için kullanılır.",
-					"descriptionTransport": "",
+					"descriptionTransport": "Bu, NodeMailer için SMTP aktarımı oluşturur",
 					"descriptionTransportLink": "Özellikleri burada görün",
 					"option": {
 						"host": {
@@ -1247,6 +1288,10 @@
 						},
 						"rejectUnauthorized": {
 							"label": "Geçersiz sertifikaları reddet: Kendinden imzalı veya güvenilmeyen sertifikalı bağlantıları reddet"
+						},
+						"displayName": {
+							"label": "Gönderen adı (isteğe bağlı) - Gönderen alanında gösterilen kullanıcı dostu ad",
+							"placeholder": "Checkmate bildirimleri"
 						}
 					}
 				},
@@ -1307,6 +1352,20 @@
 				"uptime": {
 					"title": "Çalışma süresi",
 					"responseTime": "Yanıt süresi"
+				},
+				"chart": {
+					"avg": "ort {{value}}ms",
+					"downTooltip": "Çalışmıyor",
+					"heatmapAria": "Yanıt süresi ısı haritası",
+					"max": "maks {{value}}ms"
+				},
+				"status": {
+					"breached": "Eşik aşıldı",
+					"down": "Çalışmıyor",
+					"initializing": "Başlatılıyor",
+					"maintenance": "Bakım",
+					"paused": "Duraklatıldı",
+					"up": "Çalışıyor"
 				}
 			},
 			"statusBar": {
@@ -1324,7 +1383,9 @@
 				"maintenance": "Bazı sistemler bakımda",
 				"partiallyPaused": "Bazı sistemler duraklatıldı",
 				"initializing": "Bazı sistemler başlatılıyor",
-				"noMonitors": "Hiç monitör yapılandırılmadı"
+				"noMonitors": "Hiç monitör yapılandırılmadı",
+				"monitoringSummary": "{{count}} hizmet izleniyor · 10 saniyede bir güncellenir",
+				"monitoringSummary_other": "{{count}} hizmet izleniyor · 10 saniyede bir güncellenir"
 			},
 			"table": {
 				"headers": {
@@ -1415,11 +1476,47 @@
 							"label": "Altyapı metriklerini göster"
 						}
 					}
+				},
+				"theme": {
+					"description": "Genel durum sayfanız için görsel stili seçin.",
+					"label": "Tema",
+					"options": {
+						"bold": {
+							"description": "Büyük tipografi ve kendinden emin aralıklar. Marka odaklı sayfalar için harika.",
+							"name": "Kalın"
+						},
+						"editorial": {
+							"description": "Serifli başlıklar ve ince ayraçlar. Belirgin ve sakin.",
+							"name": "Editöryal"
+						},
+						"modern": {
+							"description": "Atan bir durum noktası ve yumuşakça solan kartlarla SaaS kalitesinde.",
+							"name": "Modern"
+						},
+						"refined": {
+							"description": "Temiz, profesyonel, klasik Checkmate görünümüne yakın.",
+							"name": "Zarif"
+						}
+					},
+					"title": "Sayfa teması"
+				},
+				"themeMode": {
+					"auto": "Otomatik (ziyaretçinin cihazına göre)",
+					"dark": "Yalnızca koyu",
+					"label": "Tema modu",
+					"light": "Yalnızca açık"
 				}
 			},
 			"header": {
 				"title": "Durum sayfaları",
 				"description": "Müşterilerinize ve paydaşlarınıza gerçek zamanlı çalışma süresi ve olay geçmişini gösteren herkese açık sayfalar yayınlayın."
+			},
+			"editorial": {
+				"allUp": "Tüm sistemler normal şekilde çalışıyor.",
+				"reportTitle": "Hizmet raporu"
+			},
+			"footer": {
+				"poweredBy": "Sağlayan"
 			}
 		},
 		"uptime": {

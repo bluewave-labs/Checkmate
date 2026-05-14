@@ -73,7 +73,9 @@
 			"paused": "pausat",
 			"na": "N/D",
 			"resolved": "Resolt",
-			"responseTime": "Temps de resposta"
+			"responseTime": "Temps de resposta",
+			"idle": "Inactiu",
+			"running": "En execució"
 		},
 		"form": {
 			"role": {
@@ -119,6 +121,17 @@
 				"interval": "Interval",
 				"active": "Actiu",
 				"responseTime": "Temps de resposta"
+			}
+		},
+		"statusCode": {
+			"down": "Inactiu",
+			"networkError": {
+				"dns": "No s'ha pogut resoldre el nom d'amfitrió (la cerca DNS ha fallat).",
+				"refused": "El servidor ha rebutjat la connexió (port tancat o servei no actiu).",
+				"reset": "La connexió s'ha reiniciat abans de rebre una resposta.",
+				"timeout": "El servidor no ha respost a temps (s'ha esgotat el temps d'espera).",
+				"tls": "Ha fallat la negociació TLS o SSL (problema de certificat o xifratge).",
+				"unknown": "No s'ha rebut cap resposta HTTP de l'objectiu."
 			}
 		}
 	},
@@ -421,7 +434,11 @@
 					"inviteMember": "Convidar membre",
 					"openSite": "Obrir lloc",
 					"pause": "Pausar",
-					"resume": "Reprendre"
+					"resume": "Reprendre",
+					"bulkSelected_one": "{{count}} monitor seleccionat",
+					"bulkSelected_other": "{{count}} monitors seleccionats",
+					"selectAll": "Selecciona tots els monitors",
+					"selectMonitor": "Selecciona {{name}}"
 				},
 				"statBoxes": {
 					"activeFor": "Actiu des de",
@@ -448,7 +465,18 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "Infraestructura",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
+				},
+				"bulkPause": {
+					"alreadyPaused_one": "El monitor seleccionat ja està pausat",
+					"alreadyPaused_other": "Tots els monitors seleccionats ja estan pausats",
+					"alreadyRunning_one": "El monitor seleccionat ja s'està executant",
+					"alreadyRunning_other": "Tots els monitors seleccionats ja s'estan executant",
+					"paused_one": "{{count}} monitor pausat",
+					"paused_other": "{{count}} monitors pausats",
+					"resumed_one": "{{count}} monitor reprès",
+					"resumed_other": "{{count}} monitors represos"
 				}
 			}
 		},
@@ -538,6 +566,26 @@
 						"captureUrl": {
 							"label": "Endpoint de captura",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsRecordType": {
+							"label": "Tipus de registre DNS",
+							"value": {
+								"A": "A",
+								"AAAA": "AAAA",
+								"CNAME": "CNAME",
+								"MX": "MX",
+								"NS": "NS",
+								"TXT": "TXT"
+							}
+						},
+						"dnsServer": {
+							"label": "Servidor DNS",
+							"placeholder": "8.8.8.8"
+						},
+						"strategy": {
+							"desktop": "Escriptori",
+							"label": "Estratègia",
+							"mobile": "Mòbil"
 						}
 					},
 					"title": "Configuració general",
@@ -550,7 +598,8 @@
 						"pagespeed": "Fes un seguiment del rendiment de càrrega de pàgina, Core Web Vitals i puntuacions d'optimització del teu lloc web.",
 						"grpc": "Introdueix el nom d'host i el port del servidor gRPC, opcionalment especifica un nom de servei per a la comprovació de salut, i afegeix un nom de visualització.",
 						"websocket": "Introdueix la URL de WebSocket a monitorar (p. ex., wss://example.com/socket) i afegeix un nom de visualització.",
-						"hardware": "Monitoritza l'ús de CPU, memòria, disc i temperatura per a la teva infraestructura. La URL de l'endpoint de captura ha d'incloure la ruta completa /api/v1/metrics (p. ex., http://192.168.1.10:5001/api/v1/metrics). Per al secret d'autorització, enganxa només la cadena del token — no incloguis 'Bearer'."
+						"hardware": "Monitoritza l'ús de CPU, memòria, disc i temperatura per a la teva infraestructura. La URL de l'endpoint de captura ha d'incloure la ruta completa /api/v1/metrics (p. ex., http://192.168.1.10:5001/api/v1/metrics). Per al secret d'autorització, enganxa només la cadena del token — no incloguis 'Bearer'.",
+						"dns": "Monitoritza si un servidor DNS específic respon."
 					}
 				},
 				"ignoreTls": {
@@ -587,7 +636,8 @@
 					"optionHttpDescription": "Usa HTTP(S) per monitorar el teu lloc web o endpoint d'API.",
 					"optionPingDescription": "Usa ICMP Ping per monitorar si un servidor és en línia.",
 					"optionPortDescription": "Monitoritza si un port específic d'un servidor és obert.",
-					"title": "Tipus"
+					"title": "Tipus",
+					"optionDnsDescription": "Monitoritza si un servidor DNS específic respon."
 				},
 				"thresholds": {
 					"title": "Llindars d'alerta",
@@ -899,7 +949,8 @@
 					"lastFinishedAt": "Darrera finalització",
 					"lastRunTook": "Durada de la darrera execució",
 					"lastFailedAt": "Darrera fallada",
-					"failReason": "Motiu de la fallada"
+					"failReason": "Motiu de la fallada",
+					"state": "Estat"
 				}
 			},
 			"header": {
@@ -1085,6 +1136,10 @@
 			"header": {
 				"title": "Monitors de PageSpeed",
 				"description": "Fes un seguiment de les Core Web Vitals i les puntuacions de Lighthouse al llarg del temps per detectar regressions abans que els usuaris ho facin."
+			},
+			"strategy": {
+				"desktop": "Escriptori",
+				"mobile": "Mòbil"
 			}
 		},
 		"settings": {

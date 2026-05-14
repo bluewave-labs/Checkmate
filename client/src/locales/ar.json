@@ -73,7 +73,9 @@
 			"paused": "متوقف مؤقتاً",
 			"na": "غير متوفر",
 			"resolved": "تم الحل",
-			"responseTime": "وقت الاستجابة"
+			"responseTime": "وقت الاستجابة",
+			"idle": "خامل",
+			"running": "قيد التشغيل"
 		},
 		"form": {
 			"role": {
@@ -119,6 +121,17 @@
 				"interval": "الفاصل الزمني",
 				"active": "نشط",
 				"responseTime": "وقت الاستجابة"
+			}
+		},
+		"statusCode": {
+			"down": "متوقف",
+			"networkError": {
+				"dns": "تعذر تحليل اسم المضيف (فشل بحث DNS).",
+				"refused": "رفض الخادم الاتصال (المنفذ مغلق أو الخدمة لا تستمع).",
+				"reset": "تمت إعادة تعيين الاتصال قبل تلقي استجابة.",
+				"timeout": "لم يستجب الخادم في الوقت المحدد (انتهت مهلة الطلب).",
+				"tls": "فشل تأكيد اتصال TLS أو SSL (مشكلة في الشهادة أو التشفير).",
+				"unknown": "لم يتم تلقي أي استجابة HTTP من الهدف."
 			}
 		}
 	},
@@ -306,28 +319,28 @@
 			"common": {
 				"passwordRules": {
 					"length": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "يجب أن يكون على الأقل",
+						"highlighted": "8 أحرف"
 					},
 					"lowercase": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "يجب أن يحتوي على الأقل على",
+						"highlighted": "حرف صغير واحد"
 					},
 					"match": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "كلمات المرور",
+						"highlighted": "يجب أن تتطابق"
 					},
 					"number": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "يجب أن يحتوي على الأقل على",
+						"highlighted": "رقم واحد"
 					},
 					"special": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "يجب أن يحتوي على الأقل على",
+						"highlighted": "حرف خاص واحد (!?@#$%^&*()-_=+[]{}|;:'\",./\\~`)"
 					},
 					"uppercase": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "يجب أن يحتوي على الأقل على",
+						"highlighted": "حرف كبير واحد"
 					}
 				},
 				"form": {
@@ -452,7 +465,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "البنية التحتية",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				},
 				"bulkPause": {
 					"paused_one": "تم إيقاف {{count}} شاشة مؤقتاً",
@@ -483,9 +497,9 @@
 						},
 						"matchMethod": {
 							"label": "طريقة المطابقة",
-							"equal": "",
-							"include": "",
-							"regex": ""
+							"equal": "يساوي",
+							"include": "يحتوي",
+							"regex": "تعبير عادي"
 						}
 					},
 					"title": "إعدادات متقدمة"
@@ -497,15 +511,15 @@
 							"label": "تكرار الفحص",
 							"value": {
 								"fifteenMinutes": "15 دقيقة",
-								"fifteenSeconds": "",
+								"fifteenSeconds": "15 ثانية",
 								"fiveMinutes": "5 دقائق",
-								"fourMinutes": "",
-								"oneMinute": "",
+								"fourMinutes": "4 دقائق",
+								"oneMinute": "دقيقة واحدة",
 								"tenMinutes": "10 دقائق",
 								"thirtyMinutes": "30 دقيقة",
-								"thirtySeconds": "",
-								"threeMinutes": "",
-								"twoMinutes": ""
+								"thirtySeconds": "30 ثانية",
+								"threeMinutes": "3 دقائق",
+								"twoMinutes": "دقيقتان"
 							}
 						}
 					},
@@ -534,8 +548,8 @@
 							"placeholder": "https://www.google.com"
 						},
 						"game": {
-							"label": "",
-							"placeholder": ""
+							"label": "اختر اللعبة",
+							"placeholder": "حدد لعبة"
 						},
 						"port": {
 							"label": "المنفذ المراد مراقبته",
@@ -552,19 +566,40 @@
 						"captureUrl": {
 							"label": "نقطة نهاية Capture",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsRecordType": {
+							"label": "نوع سجل DNS",
+							"value": {
+								"A": "A",
+								"AAAA": "AAAA",
+								"CNAME": "CNAME",
+								"MX": "MX",
+								"NS": "NS",
+								"TXT": "TXT"
+							}
+						},
+						"dnsServer": {
+							"label": "خادم DNS",
+							"placeholder": "8.8.8.8"
+						},
+						"strategy": {
+							"desktop": "سطح المكتب",
+							"label": "الاستراتيجية",
+							"mobile": "الجوال"
 						}
 					},
 					"title": "الإعدادات العامة",
 					"description": {
 						"http": "أدخل الرابط أو عنوان IP للمراقبة (مثال: https://example.com/ أو 192.168.1.100) وأضف اسم عرض واضح يظهر في لوحة التحكم.",
-						"ping": "",
-						"port": "",
-						"docker": "",
+						"ping": "أدخل عنوان IP أو اسم المضيف للاتصال (على سبيل المثال، 192.168.1.100 أو example.com) وأضف اسماً واضحاً يظهر في لوحة المعلومات.",
+						"port": "أدخل عنوان URL أو IP للخادم ورقم المنفذ واسماً واضحاً يظهر في لوحة المعلومات.",
+						"docker": "أدخل اسم حاوية Docker أو المعرف. يمكنك استخدام اسم الحاوية (مثل my-app) أو معرف الحاوية (معرف كامل 64 حرف أو معرف قصير).",
 						"game": "أدخل عنوان IP أو اسم المضيف ورقم المنفذ للاختبار (مثل 192.168.1.100 أو example.com) واختر نوع اللعبة. تتطلب بعض الألعاب تفعيل استعلامات الخادم في ملف الإعدادات الخاص بها — يُرجى مراجعة وثائق خادم اللعبة. اطّلع على <gamedigLink>قائمة الألعاب المدعومة</gamedigLink> لمعرفة تفاصيل البروتوكول.",
 						"pagespeed": "تتبع أداء تحميل الصفحة ومؤشرات Core Web Vitals ودرجات التحسين لموقعك.",
 						"grpc": "أدخل اسم المضيف ومنفذ خادم gRPC، وحدد اختيارياً اسم خدمة لفحص الصحة، وأضف اسم عرض.",
 						"websocket": "أدخل رابط WebSocket للمراقبة (مثال: wss://example.com/socket) وأضف اسم عرض.",
-						"hardware": "راقب استخدام وحدة المعالجة المركزية والذاكرة والقرص ودرجة الحرارة لبنيتك التحتية. يجب أن يتضمن عنوان URL لنقطة نهاية Capture المسار الكامل ‎/api/v1/metrics‎ (مثال: ‎http://192.168.1.10:5001/api/v1/metrics‎). بالنسبة لمفتاح التفويض، الصق سلسلة الرمز فقط — لا تُضمّن كلمة 'Bearer'."
+						"hardware": "راقب استخدام وحدة المعالجة المركزية والذاكرة والقرص ودرجة الحرارة لبنيتك التحتية. يجب أن يتضمن عنوان URL لنقطة نهاية Capture المسار الكامل ‎/api/v1/metrics‎ (مثال: ‎http://192.168.1.10:5001/api/v1/metrics‎). بالنسبة لمفتاح التفويض، الصق سلسلة الرمز فقط — لا تُضمّن كلمة 'Bearer'.",
+						"dns": "راقب ما إذا كان خادم DNS محدد يستجيب."
 					}
 				},
 				"ignoreTls": {
@@ -601,7 +636,8 @@
 					"optionHttpDescription": "استخدم HTTP(S) لمراقبة موقعك الإلكتروني أو نقطة نهاية API.",
 					"optionPingDescription": "استخدم ICMP Ping لمراقبة ما إذا كان الخادم متصلاً.",
 					"optionPortDescription": "مراقبة ما إذا كان منفذ معين على الخادم مفتوحاً.",
-					"title": "النوع"
+					"title": "النوع",
+					"optionDnsDescription": "راقب ما إذا كان خادم DNS محدد يستجيب."
 				},
 				"thresholds": {
 					"title": "حدود التنبيه",
@@ -765,7 +801,7 @@
 				"headers": {
 					"endTime": "وقت الانتهاء",
 					"resolutionType": "نوع الحل",
-					"startTime": "",
+					"startTime": "وقت البدء",
 					"statusCode": "رمز الحالة"
 				},
 				"resolvedIncidents": "الحوادث المحلولة",
@@ -809,13 +845,13 @@
 				}
 			},
 			"statBoxes": {
-				"avgCpuTemperature": "",
-				"cpuFrequency": "",
-				"cpuLogical": "",
-				"cpuPhysical": "",
+				"avgCpuTemperature": "متوسط درجة حرارة المعالج",
+				"cpuFrequency": "تردد المعالج",
+				"cpuLogical": "المعالج (المنطقي)",
+				"cpuPhysical": "المعالج (الفعلي)",
 				"disk": "القرص",
 				"memory": "الذاكرة",
-				"os": ""
+				"os": "نظام التشغيل"
 			},
 			"table": {
 				"headers": {
@@ -826,7 +862,7 @@
 			},
 			"tabs": {
 				"labels": {
-					"network": "",
+					"network": "الشبكة",
 					"overview": "نظرة عامة"
 				}
 			},
@@ -909,7 +945,8 @@
 					"lastFinishedAt": "آخر انتهاء في",
 					"lastRunTook": "مدة آخر تشغيل",
 					"lastFailedAt": "آخر فشل في",
-					"failReason": "سبب الفشل"
+					"failReason": "سبب الفشل",
+					"state": "الحالة"
 				}
 			},
 			"queueFallback": {
@@ -929,8 +966,8 @@
 			},
 			"table": {
 				"headers": {
-					"nextWindow": "",
-					"repeat": ""
+					"nextWindow": "النافذة التالية",
+					"repeat": "تكرار"
 				}
 			},
 			"form": {
@@ -1032,7 +1069,7 @@
 				},
 				"telegram": {
 					"title": "تهيئة Telegram",
-					"description": "",
+					"description": "قم بتكوين بوت Telegram الخاص بك لإرسال الإشعارات.",
 					"optionBotToken": "رمز البوت",
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "معرّف المحادثة",
@@ -1099,6 +1136,10 @@
 			"header": {
 				"title": "مراقبات PageSpeed",
 				"description": "تابع Core Web Vitals ودرجات Lighthouse عبر الزمن لاكتشاف التراجع قبل أن يلاحظه المستخدمون."
+			},
+			"strategy": {
+				"desktop": "سطح المكتب",
+				"mobile": "الجوال"
 			}
 		},
 		"settings": {
@@ -1201,7 +1242,7 @@
 				"email": {
 					"title": "إعدادات البريد الإلكتروني",
 					"description": "تهيئة إعدادات البريد الإلكتروني لنظامك. يُستخدم لإرسال الإشعارات والتنبيهات.",
-					"descriptionTransport": "",
+					"descriptionTransport": "هذا يبني نقل SMTP لـ NodeMailer",
 					"descriptionTransportLink": "اطلع على المواصفات هنا",
 					"option": {
 						"host": {
@@ -1247,6 +1288,10 @@
 						},
 						"rejectUnauthorized": {
 							"label": "رفض الشهادات غير الصالحة: رفض الاتصالات ذات الشهادات الموقعة ذاتياً أو غير الموثوقة"
+						},
+						"displayName": {
+							"label": "اسم المرسل (اختياري) - الاسم الودي المعروض في حقل المرسل",
+							"placeholder": "إشعارات Checkmate"
 						}
 					}
 				},
@@ -1307,6 +1352,20 @@
 				"uptime": {
 					"title": "وقت التشغيل",
 					"responseTime": "وقت الاستجابة"
+				},
+				"chart": {
+					"avg": "متوسط {{value}} مللي ثانية",
+					"downTooltip": "متوقف",
+					"heatmapAria": "خريطة حرارية لزمن الاستجابة",
+					"max": "أقصى {{value}} مللي ثانية"
+				},
+				"status": {
+					"breached": "تم تجاوز الحد",
+					"down": "متوقف",
+					"initializing": "قيد التهيئة",
+					"maintenance": "صيانة",
+					"paused": "متوقف مؤقتاً",
+					"up": "قيد التشغيل"
 				}
 			},
 			"statusBar": {
@@ -1324,7 +1383,9 @@
 				"maintenance": "بعض الأنظمة قيد الصيانة",
 				"partiallyPaused": "بعض الأنظمة متوقفة مؤقتًا",
 				"initializing": "بعض الأنظمة قيد التهيئة",
-				"noMonitors": "لم يتم تكوين أي شاشة"
+				"noMonitors": "لم يتم تكوين أي شاشة",
+				"monitoringSummary": "مراقبة {{count}} خدمة · يتم التحديث كل 10 ثوانٍ",
+				"monitoringSummary_other": "مراقبة {{count}} خدمات · يتم التحديث كل 10 ثوانٍ"
 			},
 			"table": {
 				"headers": {
@@ -1415,11 +1476,47 @@
 							"label": "إظهار مقاييس البنية التحتية"
 						}
 					}
+				},
+				"theme": {
+					"description": "اختر النمط المرئي لصفحة الحالة العامة الخاصة بك.",
+					"label": "السمة",
+					"options": {
+						"bold": {
+							"description": "خط كبير ومسافات واثقة. رائعة للصفحات التي تركز على العلامة التجارية.",
+							"name": "غامق"
+						},
+						"editorial": {
+							"description": "عناوين بخط مسرف وفواصل دقيقة. مميز وهادئ.",
+							"name": "تحريري"
+						},
+						"modern": {
+							"description": "بجودة SaaS مع نقطة حالة نابضة وبطاقات تتلاشى بنعومة.",
+							"name": "حديث"
+						},
+						"refined": {
+							"description": "نظيف واحترافي وقريب من مظهر Checkmate الكلاسيكي.",
+							"name": "مكرر"
+						}
+					},
+					"title": "سمة الصفحة"
+				},
+				"themeMode": {
+					"auto": "تلقائي (اتبع جهاز الزائر)",
+					"dark": "داكن فقط",
+					"label": "وضع السمة",
+					"light": "فاتح فقط"
 				}
 			},
 			"header": {
 				"title": "صفحات الحالة",
 				"description": "انشر صفحات عامة تُظهر للعملاء وأصحاب المصلحة وقت التشغيل الفعلي وتاريخ الحوادث."
+			},
+			"editorial": {
+				"allUp": "جميع الأنظمة تعمل بشكل طبيعي.",
+				"reportTitle": "تقرير الخدمة"
+			},
+			"footer": {
+				"poweredBy": "مشغل بواسطة"
 			}
 		},
 		"uptime": {

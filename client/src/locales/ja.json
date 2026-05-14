@@ -73,7 +73,9 @@
 			"paused": "一時停止中",
 			"na": "N/A",
 			"resolved": "解決済み",
-			"responseTime": "応答時間"
+			"responseTime": "応答時間",
+			"idle": "アイドル",
+			"running": "実行中"
 		},
 		"form": {
 			"role": {
@@ -119,6 +121,17 @@
 				"interval": "間隔",
 				"active": "アクティブ",
 				"responseTime": "応答時間"
+			}
+		},
+		"statusCode": {
+			"down": "ダウン",
+			"networkError": {
+				"dns": "ホスト名を解決できませんでした（DNSルックアップに失敗）。",
+				"refused": "サーバーが接続を拒否しました（ポートが閉じているか、サービスがリッスンしていません）。",
+				"reset": "応答を受信する前に接続がリセットされました。",
+				"timeout": "サーバーがタイムアウト内に応答しませんでした（リクエストタイムアウト）。",
+				"tls": "TLSまたはSSLハンドシェイクに失敗しました（証明書または暗号化の問題）。",
+				"unknown": "ターゲットからのHTTP応答がありませんでした。"
 			}
 		}
 	},
@@ -452,7 +465,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "インフラストラクチャ",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				},
 				"bulkPause": {
 					"paused_one": "{{count}} 個のモニターを一時停止しました",
@@ -483,9 +497,9 @@
 						},
 						"matchMethod": {
 							"label": "マッチ方法",
-							"equal": "",
-							"include": "",
-							"regex": ""
+							"equal": "等しい",
+							"include": "含む",
+							"regex": "正規表現"
 						}
 					},
 					"title": "詳細設定"
@@ -497,15 +511,15 @@
 							"label": "チェック頻度",
 							"value": {
 								"fifteenMinutes": "15分",
-								"fifteenSeconds": "",
+								"fifteenSeconds": "15秒",
 								"fiveMinutes": "5分",
-								"fourMinutes": "",
-								"oneMinute": "",
+								"fourMinutes": "4分",
+								"oneMinute": "1分",
 								"tenMinutes": "10分",
 								"thirtyMinutes": "30分",
-								"thirtySeconds": "",
+								"thirtySeconds": "30秒",
 								"threeMinutes": "3分",
-								"twoMinutes": ""
+								"twoMinutes": "2分"
 							}
 						}
 					},
@@ -534,8 +548,8 @@
 							"placeholder": "https://www.google.com"
 						},
 						"game": {
-							"label": "",
-							"placeholder": ""
+							"label": "ゲームを選択",
+							"placeholder": "ゲームを選択"
 						},
 						"port": {
 							"label": "監視するポート",
@@ -552,6 +566,26 @@
 						"captureUrl": {
 							"label": "Capture エンドポイント",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsRecordType": {
+							"label": "DNSレコードタイプ",
+							"value": {
+								"A": "A",
+								"AAAA": "AAAA",
+								"CNAME": "CNAME",
+								"MX": "MX",
+								"NS": "NS",
+								"TXT": "TXT"
+							}
+						},
+						"dnsServer": {
+							"label": "DNSサーバー",
+							"placeholder": "8.8.8.8"
+						},
+						"strategy": {
+							"desktop": "デスクトップ",
+							"label": "ストラテジー",
+							"mobile": "モバイル"
 						}
 					},
 					"title": "一般設定",
@@ -564,7 +598,8 @@
 						"pagespeed": "Webサイトのページ読み込みパフォーマンス、Core Web Vitals、最適化スコアを追跡します。",
 						"grpc": "gRPCサーバーのホスト名とポートを入力し、必要に応じてヘルスチェック用のサービス名を指定し、表示名を追加してください。",
 						"websocket": "監視するWebSocket URLを入力し（例: wss://example.com/socket）、表示名を追加してください。",
-						"hardware": "インフラの CPU、メモリ、ディスク使用率、温度を監視します。Capture エンドポイント URL には完全なパス /api/v1/metrics を含める必要があります (例: http://192.168.1.10:5001/api/v1/metrics)。認証シークレットにはトークン文字列のみを貼り付けてください — 'Bearer' は含めないでください。"
+						"hardware": "インフラの CPU、メモリ、ディスク使用率、温度を監視します。Capture エンドポイント URL には完全なパス /api/v1/metrics を含める必要があります (例: http://192.168.1.10:5001/api/v1/metrics)。認証シークレットにはトークン文字列のみを貼り付けてください — 'Bearer' は含めないでください。",
+						"dns": "特定のDNSサーバーが応答しているかを監視します。"
 					}
 				},
 				"ignoreTls": {
@@ -601,7 +636,8 @@
 					"optionHttpDescription": "HTTP(S)を使用してWebサイトまたはAPIエンドポイントを監視します。",
 					"optionPingDescription": "ICMP Pingを使用してサーバーがオンラインかどうかを監視します。",
 					"optionPortDescription": "サーバーの特定のポートが開いているかどうかを監視します。",
-					"title": "タイプ"
+					"title": "タイプ",
+					"optionDnsDescription": "特定のDNSサーバーが応答しているかを監視します。"
 				},
 				"thresholds": {
 					"title": "アラートしきい値",
@@ -826,7 +862,7 @@
 			},
 			"tabs": {
 				"labels": {
-					"network": "",
+					"network": "ネットワーク",
 					"overview": "概要"
 				}
 			},
@@ -909,7 +945,8 @@
 					"lastFinishedAt": "最終完了日時",
 					"lastRunTook": "最終実行時間",
 					"lastFailedAt": "最終失敗日時",
-					"failReason": "失敗理由"
+					"failReason": "失敗理由",
+					"state": "状態"
 				}
 			},
 			"queueFallback": {
@@ -1099,6 +1136,10 @@
 			"header": {
 				"title": "PageSpeed監視",
 				"description": "Core Web VitalsとLighthouseスコアを継続的に追跡し、ユーザーが気付く前に劣化を発見します。"
+			},
+			"strategy": {
+				"desktop": "デスクトップ",
+				"mobile": "モバイル"
 			}
 		},
 		"settings": {
@@ -1247,6 +1288,10 @@
 						},
 						"rejectUnauthorized": {
 							"label": "無効な証明書を拒否: 自己署名または信頼されていない証明書の接続を拒否"
+						},
+						"displayName": {
+							"label": "送信者名（任意）- 差出人フィールドに表示されるわかりやすい名前",
+							"placeholder": "Checkmate通知"
 						}
 					}
 				},
@@ -1307,6 +1352,20 @@
 				"uptime": {
 					"title": "稼働時間",
 					"responseTime": "応答時間"
+				},
+				"chart": {
+					"avg": "平均 {{value}}ms",
+					"downTooltip": "ダウン",
+					"heatmapAria": "応答時間のヒートマップ",
+					"max": "最大 {{value}}ms"
+				},
+				"status": {
+					"breached": "しきい値超過",
+					"down": "ダウン",
+					"initializing": "初期化中",
+					"maintenance": "メンテナンス",
+					"paused": "一時停止中",
+					"up": "稼働中"
 				}
 			},
 			"statusBar": {
@@ -1324,7 +1383,9 @@
 				"maintenance": "一部のシステムがメンテナンス中です",
 				"partiallyPaused": "一部のシステムが一時停止中です",
 				"initializing": "一部のシステムが初期化中です",
-				"noMonitors": "モニターが設定されていません"
+				"noMonitors": "モニターが設定されていません",
+				"monitoringSummary": "{{count}}サービスを監視中 · 10秒ごとに更新",
+				"monitoringSummary_other": "{{count}}サービスを監視中 · 10秒ごとに更新"
 			},
 			"table": {
 				"headers": {
@@ -1415,11 +1476,47 @@
 							"label": "インフラストラクチャメトリクスを表示"
 						}
 					}
+				},
+				"theme": {
+					"description": "公開ステータスページの視覚スタイルを選択します。",
+					"label": "テーマ",
+					"options": {
+						"bold": {
+							"description": "大きな書体と自信のある間隔。ブランド中心のページに最適です。",
+							"name": "ボールド"
+						},
+						"editorial": {
+							"description": "セリフ見出しと細い区切り線。独特で落ち着いています。",
+							"name": "エディトリアル"
+						},
+						"modern": {
+							"description": "脈動するステータスドットと柔らかくフェードするカードを備えたSaaS品質。",
+							"name": "モダン"
+						},
+						"refined": {
+							"description": "クリーンでプロフェッショナル、Checkmateのクラシックな外観に近い。",
+							"name": "リファインド"
+						}
+					},
+					"title": "ページテーマ"
+				},
+				"themeMode": {
+					"auto": "自動（訪問者のデバイスに従う）",
+					"dark": "ダークのみ",
+					"label": "テーマモード",
+					"light": "ライトのみ"
 				}
 			},
 			"header": {
 				"title": "ステータスページ",
 				"description": "顧客と関係者にリアルタイムの稼働状況とインシデント履歴を表示する公開ページを公開します。"
+			},
+			"editorial": {
+				"allUp": "すべてのシステムは正常に動作しています。",
+				"reportTitle": "サービスレポート"
+			},
+			"footer": {
+				"poweredBy": "提供元"
 			}
 		},
 		"uptime": {
