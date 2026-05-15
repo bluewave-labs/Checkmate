@@ -4,6 +4,11 @@ import { type UserRole } from "@/types/user.js";
 export const passwordPattern =
 	/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\-_=+[\]{};:'",.~`|\\/])[A-Za-z0-9!?@#$%^&*()\-_=+[\]{};:'",.~`|\\/]+$/;
 
+export const passwordValidation = z
+	.string()
+	.min(8, "Password must be at least 8 characters")
+	.regex(passwordPattern, "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character");
+
 export const nameValidation = z
 	.string()
 	.trim()
