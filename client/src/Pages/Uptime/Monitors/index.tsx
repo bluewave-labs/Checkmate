@@ -9,6 +9,7 @@ import Stack from "@mui/material/Stack";
 import { MonitorTable } from "@/Pages/Uptime/Monitors/Components/UptimeMonitorsTable";
 import { HeaderCreate } from "@/Components/common";
 import { Play, Pause } from "lucide-react";
+import { BulkEditNotificationsModal } from "@/Components/monitors";
 
 import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -22,6 +23,7 @@ import type { RootState } from "@/Types/state";
 import { useTheme } from "@mui/material";
 import useDebounce from "@/Hooks/useDebounce";
 import { useBulkMonitorActions } from "@/Hooks/useBulkMonitorActions";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 const UptimeMonitorsPage = () => {
 	const { t } = useTranslation();
@@ -43,7 +45,7 @@ const UptimeMonitorsPage = () => {
 	const [sortField, setSortField] = useState<string>("");
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
-
+	const [isBulkEditModalOpen, setIsBulkEditModalOpen] = useState(false);
 	const isDialogOpen = Boolean(selectedMonitor);
 
 	const debouncedSearch = useDebounce<string>(search, 300);
@@ -136,6 +138,14 @@ const UptimeMonitorsPage = () => {
 		refetch();
 	};
 
+	const handleBulkEditComplete = (success: boolean) => {
+		setIsBulkEditModalOpen(false);
+		if (success) {
+			setSelectedRows([]);
+			refetch();
+		}
+	};
+
 	const handleCancel = () => {
 		setSelectedMonitor(null);
 	};
@@ -174,7 +184,7 @@ const UptimeMonitorsPage = () => {
 			<Stack
 				direction={isSmall ? "column" : "row"}
 				justifyContent={isSmall ? "flex-start" : "space-between"}
-				gap={theme.spacing(4)}
+				gap={theme.spacing(LAYOUT.XS)}
 			>
 				<ControlsFilter
 					selectedTypes={selectedTypes}
@@ -213,16 +223,27 @@ const UptimeMonitorsPage = () => {
 					>
 						{t("common.buttons.pause")}
 					</Button>
+					<Button
+						size="small"
+						onClick={() => setIsBulkEditModalOpen(true)}
+					>
+						{t("pages.common.monitors.bulkEdit.editButton", {
+							defaultValue: "Edit Notifications",
+						})}
+					</Button>
 				</BulkActionsBar>
 			)}
 
 			<MonitorTable
+				page={page}
 				monitors={monitorsWithChecks || []}
 				refetch={refetch}
 				setSelectedMonitor={setSelectedMonitor}
 				count={count || 0}
-				page={page}
-				setPage={setPage}
+				setPage={(newPage) => {
+					setPage(newPage);
+					setSelectedRows([]);
+				}}
 				rowsPerPage={rowsPerPage}
 				sortField={sortField}
 				setSortField={setSortField}
@@ -236,6 +257,7 @@ const UptimeMonitorsPage = () => {
 						})
 					);
 					setPage(0);
+					setSelectedRows([]);
 				}}
 				selectedRows={selectedRows}
 				onSelectionChange={setSelectedRows}
@@ -247,6 +269,12 @@ const UptimeMonitorsPage = () => {
 				onConfirm={handleConfirm}
 				onCancel={handleCancel}
 				loading={isDeleting}
+			/>
+			<BulkEditNotificationsModal
+				open={isBulkEditModalOpen}
+				onClose={() => setIsBulkEditModalOpen(false)}
+				selectedMonitors={selectedRows}
+				onComplete={handleBulkEditComplete}
 			/>
 		</MonitorBasePageWithStates>
 	);

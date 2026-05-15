@@ -13,6 +13,7 @@ import { ArrowDown, ArrowUp } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { useNavigate } from "react-router-dom";
 import { usePost } from "@/Hooks/UseApi";
 import { useSelector } from "react-redux";
@@ -21,6 +22,7 @@ import type { Monitor } from "@/Types/Monitor";
 import type { ActionMenuItem } from "@/Components/actions-menu";
 import type { RootState } from "@/Types/state";
 import { Checkbox } from "@/Components/inputs";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 
 interface MonitorTableProps {
 	monitors: Monitor[];
@@ -57,6 +59,7 @@ export const MonitorTable = ({
 }: MonitorTableProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
+	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const navigate = useNavigate();
 	const chartType = useSelector((state: RootState) => state.ui?.chartType ?? "histogram");
 	const { post } = usePost<Record<string, never>, Monitor>();
@@ -205,7 +208,7 @@ export const MonitorTable = ({
 				mobileLabel: t("common.table.headers.name"),
 				content: (
 					<Stack
-						gap={theme.spacing(4)}
+						gap={theme.spacing(LAYOUT.XS)}
 						direction={"row"}
 						alignItems={"center"}
 						onClick={(e) => handleSort(e, "name")}
@@ -225,14 +228,14 @@ export const MonitorTable = ({
 				mobileLabel: t("common.table.headers.status"),
 				content: (
 					<Stack
-						gap={theme.spacing(4)}
+						gap={theme.spacing(LAYOUT.XS)}
 						direction={"row"}
 						justifyContent={"center"}
 						alignItems={"center"}
 						onClick={(e) => handleSort(e, "status")}
 						sx={{ cursor: "pointer" }}
 					>
-						<Box width={theme.spacing(8)} />
+						<Box width={theme.spacing(LAYOUT.MD)} />
 						{t("common.table.headers.status")}
 						{renderSortIcon(sortField === "status")}
 					</Stack>
@@ -257,14 +260,14 @@ export const MonitorTable = ({
 				mobileLabel: t("common.table.headers.type"),
 				content: (
 					<Stack
-						gap={theme.spacing(4)}
+						gap={theme.spacing(LAYOUT.XS)}
 						direction={"row"}
 						justifyContent={"center"}
 						alignItems={"center"}
 						onClick={(e) => handleSort(e, "type")}
 						sx={{ cursor: "pointer" }}
 					>
-						<Box width={theme.spacing(8)} />
+						<Box width={theme.spacing(LAYOUT.MD)} />
 						{t("common.table.headers.type")}
 						{renderSortIcon(sortField === "type")}
 					</Stack>
@@ -288,6 +291,30 @@ export const MonitorTable = ({
 
 	return (
 		<Box>
+			{isSmall && (
+				<Box
+					px={SPACING.SM}
+					pb={SPACING.LG}
+				>
+					<Stack
+						direction="row"
+						alignItems="center"
+						spacing={SPACING.SM}
+					>
+						<Checkbox
+							checked={isAllSelected}
+							indeterminate={isSomeSelected}
+							onChange={(e) => handleSelectAll(e.target.checked)}
+						/>
+						<Typography
+							variant="body2"
+							color="text.secondary"
+						>
+							{t("pages.common.monitors.bulkEdit.selectAll", "Select All")}
+						</Typography>
+					</Stack>
+				</Box>
+			)}
 			<Table
 				headers={headers}
 				data={monitors}

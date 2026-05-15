@@ -142,7 +142,7 @@ export function DataTable<
 										>
 											<Typography
 												component="div"
-												color={theme.palette.text.primary}
+												color={theme.palette.text.secondary}
 											>
 												{header.mobileLabel ?? header.content}
 											</Typography>
