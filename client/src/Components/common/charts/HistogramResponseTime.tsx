@@ -35,7 +35,7 @@ const calculateResponseTimeStats = (checks: CheckSnapshot[]): ResponseTimeStats 
 	}
 
 	const responseTimes = validChecks.map((check) => check.originalResponseTime);
-	const max = Math.max(...responseTimes);
+	const max = Math.round(Math.max(...responseTimes));
 	const avg = Math.round(
 		responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length
 	);
@@ -73,14 +73,20 @@ export const HistogramResponseTime = ({
 			<Stack
 				justifyContent="center"
 				alignItems={statsPosition === "left" ? "flex-end" : "flex-start"}
-				minWidth={70}
+				width={110}
 				pr={statsPosition === "left" ? theme.spacing(8) : 0}
 				pl={statsPosition === "right" ? theme.spacing(8) : 0}
 			>
-				<Typography variant="body2">
+				<Typography
+					variant="body2"
+					noWrap
+				>
 					{t("common.charts.histogram.avg", { value: stats.avg })}
 				</Typography>
-				<Typography variant="body2">
+				<Typography
+					variant="body2"
+					noWrap
+				>
 					{t("common.charts.histogram.max", { value: stats.max })}
 				</Typography>
 			</Stack>
