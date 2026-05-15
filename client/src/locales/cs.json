@@ -73,7 +73,9 @@
 			"paused": "pozastaveno",
 			"na": "N/A",
 			"resolved": "Vyřešeno",
-			"responseTime": "Doba odezvy"
+			"responseTime": "Doba odezvy",
+			"idle": "Nečinný",
+			"running": "Spuštěno"
 		},
 		"form": {
 			"role": {
@@ -119,6 +121,17 @@
 				"interval": "Interval",
 				"active": "Aktivní",
 				"responseTime": "Doba odezvy"
+			}
+		},
+		"statusCode": {
+			"down": "Mimo provoz",
+			"networkError": {
+				"dns": "Nepodařilo se přeložit název hostitele (vyhledávání DNS selhalo).",
+				"refused": "Server odmítl spojení (port je uzavřený nebo služba neposlouchá).",
+				"reset": "Spojení bylo resetováno před přijetím odpovědi.",
+				"timeout": "Server neodpověděl včas (vypršel časový limit požadavku).",
+				"tls": "Selhal handshake TLS nebo SSL (problém s certifikátem nebo šifrováním).",
+				"unknown": "Z cíle nebyla obdržena žádná odpověď HTTP."
 			}
 		}
 	},
@@ -452,7 +465,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "Infrastruktura",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				},
 				"bulkPause": {
 					"paused_one": "{{count}} monitor pozastaven",
@@ -483,9 +497,9 @@
 						},
 						"matchMethod": {
 							"label": "Metoda porovnání",
-							"equal": "",
-							"include": "",
-							"regex": ""
+							"equal": "Rovná se",
+							"include": "Obsahuje",
+							"regex": "Regulární výraz"
 						}
 					},
 					"title": "Pokročilá nastavení"
@@ -497,15 +511,15 @@
 							"label": "Frekvence kontroly",
 							"value": {
 								"fifteenMinutes": "15 minut",
-								"fifteenSeconds": "",
+								"fifteenSeconds": "15 sekund",
 								"fiveMinutes": "5 minut",
-								"fourMinutes": "",
-								"oneMinute": "",
+								"fourMinutes": "4 minuty",
+								"oneMinute": "1 minuta",
 								"tenMinutes": "10 minut",
 								"thirtyMinutes": "30 minut",
-								"thirtySeconds": "",
-								"threeMinutes": "",
-								"twoMinutes": ""
+								"thirtySeconds": "30 sekund",
+								"threeMinutes": "3 minuty",
+								"twoMinutes": "2 minuty"
 							}
 						}
 					},
@@ -534,8 +548,8 @@
 							"placeholder": "https://www.google.com"
 						},
 						"game": {
-							"label": "",
-							"placeholder": ""
+							"label": "Vybrat hru",
+							"placeholder": "Vyberte hru"
 						},
 						"port": {
 							"label": "Port ke sledování",
@@ -552,19 +566,40 @@
 						"captureUrl": {
 							"label": "Endpoint Capture",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsRecordType": {
+							"label": "Typ záznamu DNS",
+							"value": {
+								"A": "A",
+								"AAAA": "AAAA",
+								"CNAME": "CNAME",
+								"MX": "MX",
+								"NS": "NS",
+								"TXT": "TXT"
+							}
+						},
+						"dnsServer": {
+							"label": "DNS server",
+							"placeholder": "8.8.8.8"
+						},
+						"strategy": {
+							"desktop": "Stolní počítač",
+							"label": "Strategie",
+							"mobile": "Mobil"
 						}
 					},
 					"title": "Obecná nastavení",
 					"description": {
 						"http": "Zadejte URL nebo IP adresu ke sledování (např. https://example.com/ nebo 192.168.1.100) a přidejte jasný zobrazovaný název, který se zobrazí na přehledu.",
-						"ping": "",
-						"port": "",
-						"docker": "",
+						"ping": "Zadejte IP adresu nebo název hostitele pro ping (např. 192.168.1.100 nebo example.com) a přidejte přehledný název, který se zobrazí na dashboardu.",
+						"port": "Zadejte URL nebo IP serveru, číslo portu a přehledný název, který se zobrazí na dashboardu.",
+						"docker": "Zadejte název nebo ID Docker kontejneru. Můžete použít buď název kontejneru (např. my-app) nebo ID kontejneru (úplné 64znakové ID nebo krátké ID).",
 						"game": "Zadejte IP adresu nebo název hostitele a číslo portu pro ping (např. 192.168.1.100 nebo example.com) a vyberte typ hry. Některé hry vyžadují povolení dotazů na server v jejich konfiguračním souboru — viz dokumentace vašeho herního serveru. Podrobnosti o protokolu najdete v <gamedigLink>seznamu podporovaných her</gamedigLink>.",
 						"pagespeed": "Sledujte výkon načítání stránky, metriky Core Web Vitals a hodnocení optimalizace vašeho webu.",
 						"grpc": "Zadejte název hostitele a port gRPC serveru, volitelně zadejte název služby pro kontrolu stavu a přidejte zobrazovaný název.",
 						"websocket": "Zadejte WebSocket URL ke sledování (např. wss://example.com/socket) a přidejte zobrazovaný název.",
-						"hardware": "Sledujte využití CPU, paměti, disku a teplotu vaší infrastruktury. URL endpointu Capture musí obsahovat celou cestu /api/v1/metrics (např. http://192.168.1.10:5001/api/v1/metrics). Do autorizačního klíče vložte pouze řetězec tokenu — nezahrnujte 'Bearer'."
+						"hardware": "Sledujte využití CPU, paměti, disku a teplotu vaší infrastruktury. URL endpointu Capture musí obsahovat celou cestu /api/v1/metrics (např. http://192.168.1.10:5001/api/v1/metrics). Do autorizačního klíče vložte pouze řetězec tokenu — nezahrnujte 'Bearer'.",
+						"dns": "Sledujte, zda konkrétní DNS server odpovídá."
 					}
 				},
 				"ignoreTls": {
@@ -601,7 +636,8 @@
 					"optionHttpDescription": "Použijte HTTP(S) ke sledování vašeho webu nebo API koncového bodu.",
 					"optionPingDescription": "Použijte ICMP Ping ke sledování, zda je server online.",
 					"optionPortDescription": "Sledujte, zda je konkrétní port na serveru otevřen.",
-					"title": "Typ"
+					"title": "Typ",
+					"optionDnsDescription": "Sledujte, zda konkrétní DNS server odpovídá."
 				},
 				"thresholds": {
 					"title": "Prahové hodnoty upozornění",
@@ -765,7 +801,7 @@
 				"headers": {
 					"endTime": "Čas ukončení",
 					"resolutionType": "Typ řešení",
-					"startTime": "",
+					"startTime": "Čas zahájení",
 					"statusCode": "Stavový kód"
 				},
 				"resolvedIncidents": "Vyřešené incidenty",
@@ -809,13 +845,13 @@
 				}
 			},
 			"statBoxes": {
-				"avgCpuTemperature": "",
-				"cpuFrequency": "",
-				"cpuLogical": "",
-				"cpuPhysical": "",
+				"avgCpuTemperature": "Průměrná teplota CPU",
+				"cpuFrequency": "Frekvence CPU",
+				"cpuLogical": "CPU (logický)",
+				"cpuPhysical": "CPU (fyzický)",
 				"disk": "Disk",
 				"memory": "Paměť",
-				"os": ""
+				"os": "OS"
 			},
 			"table": {
 				"headers": {
@@ -826,7 +862,7 @@
 			},
 			"tabs": {
 				"labels": {
-					"network": "",
+					"network": "Síť",
 					"overview": "Přehled"
 				}
 			},
@@ -909,7 +945,8 @@
 					"lastFinishedAt": "Naposledy dokončeno",
 					"lastRunTook": "Poslední běh trval",
 					"lastFailedAt": "Poslední selhání",
-					"failReason": "Důvod selhání"
+					"failReason": "Důvod selhání",
+					"state": "Stav"
 				}
 			},
 			"queueFallback": {
@@ -929,8 +966,8 @@
 			},
 			"table": {
 				"headers": {
-					"nextWindow": "",
-					"repeat": ""
+					"nextWindow": "Další okno",
+					"repeat": "Opakovat"
 				}
 			},
 			"form": {
@@ -1032,7 +1069,7 @@
 				},
 				"telegram": {
 					"title": "Konfigurace Telegramu",
-					"description": "",
+					"description": "Nakonfigurujte svého Telegram bota pro odesílání oznámení.",
 					"optionBotToken": "Token bota",
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "ID chatu",
@@ -1099,6 +1136,10 @@
 			"header": {
 				"title": "Monitory PageSpeed",
 				"description": "Sledujte Core Web Vitals a skóre Lighthouse v čase a zachyťte regrese dříve než vaši uživatelé."
+			},
+			"strategy": {
+				"desktop": "Stolní počítač",
+				"mobile": "Mobil"
 			}
 		},
 		"settings": {
@@ -1201,7 +1242,7 @@
 				"email": {
 					"title": "Nastavení emailu",
 					"description": "Nastavte emailovou konfiguraci pro váš systém. Používá se k odesílání oznámení a upozornění.",
-					"descriptionTransport": "",
+					"descriptionTransport": "Toto vytvoří SMTP transport pro NodeMailer",
 					"descriptionTransportLink": "Zobrazit specifikace zde",
 					"option": {
 						"host": {
@@ -1247,6 +1288,10 @@
 						},
 						"rejectUnauthorized": {
 							"label": "Odmítnout neplatné certifikáty: Odmítnout připojení se sebou podepsanými nebo nedůvěryhodnými certifikáty"
+						},
+						"displayName": {
+							"label": "Jméno odesílatele (nepovinné) - Přátelské jméno zobrazené v poli Od",
+							"placeholder": "Oznámení Checkmate"
 						}
 					}
 				},
@@ -1307,6 +1352,20 @@
 				"uptime": {
 					"title": "Dostupnost",
 					"responseTime": "Doba odezvy"
+				},
+				"chart": {
+					"avg": "průměr {{value}}ms",
+					"downTooltip": "Mimo provoz",
+					"heatmapAria": "Tepelná mapa doby odezvy",
+					"max": "max {{value}}ms"
+				},
+				"status": {
+					"breached": "Překročen limit",
+					"down": "Mimo provoz",
+					"initializing": "Inicializace",
+					"maintenance": "Údržba",
+					"paused": "Pozastaveno",
+					"up": "V provozu"
 				}
 			},
 			"statusBar": {
@@ -1324,7 +1383,9 @@
 				"maintenance": "Některé systémy jsou v údržbě",
 				"partiallyPaused": "Některé systémy jsou pozastavené",
 				"initializing": "Některé systémy se inicializují",
-				"noMonitors": "Nebyly nakonfigurovány žádné monitory"
+				"noMonitors": "Nebyly nakonfigurovány žádné monitory",
+				"monitoringSummary": "Sledování {{count}} služby · Aktualizace každých 10 sekund",
+				"monitoringSummary_other": "Sledování {{count}} služeb · Aktualizace každých 10 sekund"
 			},
 			"table": {
 				"headers": {
@@ -1415,11 +1476,47 @@
 							"label": "Zobrazit metriky infrastruktury"
 						}
 					}
+				},
+				"theme": {
+					"description": "Vyberte vizuální styl pro veřejnou stavovou stránku.",
+					"label": "Motiv",
+					"options": {
+						"bold": {
+							"description": "Velké písmo a sebevědomé rozložení. Vhodné pro stránky zaměřené na značku.",
+							"name": "Tučný"
+						},
+						"editorial": {
+							"description": "Patkové nadpisy a tenké oddělovače. Odlišný a klidný.",
+							"name": "Redakční"
+						},
+						"modern": {
+							"description": "Úroveň SaaS s pulzující stavovou tečkou a jemně mizejícími kartami.",
+							"name": "Moderní"
+						},
+						"refined": {
+							"description": "Čistý, profesionální, blízký klasickému vzhledu Checkmate.",
+							"name": "Vytříbený"
+						}
+					},
+					"title": "Motiv stránky"
+				},
+				"themeMode": {
+					"auto": "Automaticky (podle zařízení návštěvníka)",
+					"dark": "Pouze tmavý",
+					"label": "Režim motivu",
+					"light": "Pouze světlý"
 				}
 			},
 			"header": {
 				"title": "Stavové stránky",
 				"description": "Publikujte veřejné stránky, které zákazníkům a zúčastněným stranám zobrazují dostupnost v reálném čase a historii incidentů."
+			},
+			"editorial": {
+				"allUp": "Všechny systémy fungují normálně.",
+				"reportTitle": "Zpráva o službě"
+			},
+			"footer": {
+				"poweredBy": "Provozováno službou"
 			}
 		},
 		"uptime": {

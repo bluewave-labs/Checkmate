@@ -73,7 +73,9 @@
 			"paused": "已暂停",
 			"na": "不适用",
 			"resolved": "已解决",
-			"responseTime": "响应时间"
+			"responseTime": "响应时间",
+			"idle": "空闲",
+			"running": "运行中"
 		},
 		"form": {
 			"role": {
@@ -119,6 +121,17 @@
 				"interval": "间隔",
 				"active": "活跃",
 				"responseTime": "响应时间"
+			}
+		},
+		"statusCode": {
+			"down": "宕机",
+			"networkError": {
+				"dns": "无法解析主机名（DNS查找失败）。",
+				"refused": "服务器拒绝连接（端口关闭或服务未监听）。",
+				"reset": "在收到响应之前连接被重置。",
+				"timeout": "服务器未及时响应（请求超时）。",
+				"tls": "TLS或SSL握手失败（证书或加密问题）。",
+				"unknown": "未从目标接收HTTP响应。"
 			}
 		}
 	},
@@ -452,7 +465,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "基础设施",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				},
 				"bulkPause": {
 					"paused_one": "已暂停 {{count}} 个监视器",
@@ -552,6 +566,26 @@
 						"captureUrl": {
 							"label": "Capture 端点",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsRecordType": {
+							"label": "DNS记录类型",
+							"value": {
+								"A": "A",
+								"AAAA": "AAAA",
+								"CNAME": "CNAME",
+								"MX": "MX",
+								"NS": "NS",
+								"TXT": "TXT"
+							}
+						},
+						"dnsServer": {
+							"label": "DNS服务器",
+							"placeholder": "8.8.8.8"
+						},
+						"strategy": {
+							"desktop": "桌面",
+							"label": "策略",
+							"mobile": "移动端"
 						}
 					},
 					"title": "常规设置",
@@ -564,7 +598,8 @@
 						"pagespeed": "跟踪网站的页面加载性能、Core Web Vitals 和优化评分。",
 						"grpc": "输入 gRPC 服务器的主机名和端口，可选指定健康检查的服务名称，并添加显示名称。",
 						"websocket": "输入要监控的 WebSocket URL（例如 wss://example.com/socket），并添加显示名称。",
-						"hardware": "监控基础设施的 CPU、内存、磁盘使用情况和温度。Capture 端点 URL 必须包含完整路径 /api/v1/metrics（例如 http://192.168.1.10:5001/api/v1/metrics）。授权密钥只需粘贴令牌字符串——请勿包含 'Bearer'。"
+						"hardware": "监控基础设施的 CPU、内存、磁盘使用情况和温度。Capture 端点 URL 必须包含完整路径 /api/v1/metrics（例如 http://192.168.1.10:5001/api/v1/metrics）。授权密钥只需粘贴令牌字符串——请勿包含 'Bearer'。",
+						"dns": "监控特定DNS服务器是否响应。"
 					}
 				},
 				"ignoreTls": {
@@ -601,7 +636,8 @@
 					"optionHttpDescription": "使用 HTTP(S) 监控您的网站或 API 端点。",
 					"optionPingDescription": "使用 ICMP Ping 监控服务器是否在线。",
 					"optionPortDescription": "监控服务器上的特定端口是否开放。",
-					"title": "类型"
+					"title": "类型",
+					"optionDnsDescription": "监控特定DNS服务器是否响应。"
 				},
 				"thresholds": {
 					"title": "告警阈值",
@@ -909,7 +945,8 @@
 					"lastFinishedAt": "上次完成于",
 					"lastRunTook": "上次运行耗时",
 					"lastFailedAt": "上次失败于",
-					"failReason": "失败原因"
+					"failReason": "失败原因",
+					"state": "状态"
 				}
 			},
 			"queueFallback": {
@@ -1099,6 +1136,10 @@
 			"header": {
 				"title": "PageSpeed 监控器",
 				"description": "持续追踪 Core Web Vitals 和 Lighthouse 评分，在用户察觉之前发现性能回退。"
+			},
+			"strategy": {
+				"desktop": "桌面",
+				"mobile": "移动端"
 			}
 		},
 		"settings": {
@@ -1247,6 +1288,10 @@
 						},
 						"rejectUnauthorized": {
 							"label": "拒绝无效证书：拒绝自签名或不受信任证书的连接"
+						},
+						"displayName": {
+							"label": "发件人姓名（可选）- 显示在发件人字段中的友好名称",
+							"placeholder": "Checkmate通知"
 						}
 					}
 				},
@@ -1307,6 +1352,20 @@
 				"uptime": {
 					"title": "正常运行时间",
 					"responseTime": "响应时间"
+				},
+				"chart": {
+					"avg": "平均 {{value}}ms",
+					"downTooltip": "宕机",
+					"heatmapAria": "响应时间热图",
+					"max": "最大 {{value}}ms"
+				},
+				"status": {
+					"breached": "超出阈值",
+					"down": "宕机",
+					"initializing": "初始化中",
+					"maintenance": "维护中",
+					"paused": "已暂停",
+					"up": "运行中"
 				}
 			},
 			"statusBar": {
@@ -1324,7 +1383,9 @@
 				"maintenance": "部分系统正在维护",
 				"partiallyPaused": "部分系统已暂停",
 				"initializing": "部分系统正在初始化",
-				"noMonitors": "尚未配置任何监控器"
+				"noMonitors": "尚未配置任何监控器",
+				"monitoringSummary": "正在监控{{count}}个服务 · 每10秒更新一次",
+				"monitoringSummary_other": "正在监控{{count}}个服务 · 每10秒更新一次"
 			},
 			"table": {
 				"headers": {
@@ -1415,11 +1476,47 @@
 							"label": "显示基础设施指标"
 						}
 					}
+				},
+				"theme": {
+					"description": "为您的公共状态页面选择视觉样式。",
+					"label": "主题",
+					"options": {
+						"bold": {
+							"description": "大字体和自信的间距。非常适合品牌导向的页面。",
+							"name": "粗体"
+						},
+						"editorial": {
+							"description": "衬线标题和细分隔线。独特而平静。",
+							"name": "编辑风格"
+						},
+						"modern": {
+							"description": "SaaS级品质，带有脉动状态点和柔和褪色卡片。",
+							"name": "现代"
+						},
+						"refined": {
+							"description": "干净、专业，接近经典Checkmate外观。",
+							"name": "精致"
+						}
+					},
+					"title": "页面主题"
+				},
+				"themeMode": {
+					"auto": "自动（跟随访客设备）",
+					"dark": "仅深色",
+					"label": "主题模式",
+					"light": "仅浅色"
 				}
 			},
 			"header": {
 				"title": "状态页面",
 				"description": "发布公开页面，向客户和利益相关者展示实时运行情况和事件历史。"
+			},
+			"editorial": {
+				"allUp": "所有系统运行正常。",
+				"reportTitle": "服务报告"
+			},
+			"footer": {
+				"poweredBy": "技术支持"
 			}
 		},
 		"uptime": {

@@ -73,7 +73,9 @@
 			"paused": "keskeytetty",
 			"na": "Ei saatavilla",
 			"resolved": "Ratkaistu",
-			"responseTime": "Vasteaika"
+			"responseTime": "Vasteaika",
+			"idle": "Toimeton",
+			"running": "Käynnissä"
 		},
 		"form": {
 			"role": {
@@ -119,6 +121,17 @@
 				"interval": "Aikaväli",
 				"active": "Aktiivinen",
 				"responseTime": "Vasteaika"
+			}
+		},
+		"statusCode": {
+			"down": "Alhaalla",
+			"networkError": {
+				"dns": "Isäntänimeä ei voitu selvittää (DNS-haku epäonnistui).",
+				"refused": "Palvelin hylkäsi yhteyden (portti suljettu tai palvelu ei kuuntele).",
+				"reset": "Yhteys nollattiin ennen vastauksen vastaanottamista.",
+				"timeout": "Palvelin ei vastannut ajoissa (pyynnön aikakatkaisu).",
+				"tls": "TLS- tai SSL-kättely epäonnistui (sertifikaatti- tai salausongelma).",
+				"unknown": "Kohteesta ei vastaanotettu HTTP-vastausta."
 			}
 		}
 	},
@@ -306,28 +319,28 @@
 			"common": {
 				"passwordRules": {
 					"length": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "Vähintään",
+						"highlighted": "8 merkkiä pitkä"
 					},
 					"lowercase": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "Sisällettävä vähintään",
+						"highlighted": "yksi pieni kirjain"
 					},
 					"match": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "Salasanat",
+						"highlighted": "täytyy täsmätä"
 					},
 					"number": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "Sisällettävä vähintään",
+						"highlighted": "yksi numero"
 					},
 					"special": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "Sisällettävä vähintään",
+						"highlighted": "yksi erikoismerkki (!?@#$%^&*()-_=+[]{}|;:'\",./\\~`)"
 					},
 					"uppercase": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "Sisällettävä vähintään",
+						"highlighted": "yksi iso kirjain"
 					}
 				},
 				"form": {
@@ -452,7 +465,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "Infrastruktuuri",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				},
 				"bulkPause": {
 					"paused_one": "{{count}} näyttö keskeytetty",
@@ -483,9 +497,9 @@
 						},
 						"matchMethod": {
 							"label": "Vertailutapa",
-							"equal": "",
-							"include": "",
-							"regex": ""
+							"equal": "Yhtä suuri",
+							"include": "Sisältää",
+							"regex": "Säännöllinen lauseke"
 						}
 					},
 					"title": "Lisäasetukset"
@@ -497,15 +511,15 @@
 							"label": "Tarkistusväli",
 							"value": {
 								"fifteenMinutes": "15 minuuttia",
-								"fifteenSeconds": "",
+								"fifteenSeconds": "15 sekuntia",
 								"fiveMinutes": "5 minuuttia",
-								"fourMinutes": "",
-								"oneMinute": "",
+								"fourMinutes": "4 minuuttia",
+								"oneMinute": "1 minuutti",
 								"tenMinutes": "10 minuuttia",
 								"thirtyMinutes": "30 minuuttia",
-								"thirtySeconds": "",
-								"threeMinutes": "",
-								"twoMinutes": ""
+								"thirtySeconds": "30 sekuntia",
+								"threeMinutes": "3 minuuttia",
+								"twoMinutes": "2 minuuttia"
 							}
 						}
 					},
@@ -534,8 +548,8 @@
 							"placeholder": "https://www.google.com"
 						},
 						"game": {
-							"label": "",
-							"placeholder": ""
+							"label": "Valitse peli",
+							"placeholder": "Valitse peli"
 						},
 						"port": {
 							"label": "Monitoroitava portti",
@@ -552,19 +566,40 @@
 						"captureUrl": {
 							"label": "Capture-päätepiste",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsRecordType": {
+							"label": "DNS-tietuetyyppi",
+							"value": {
+								"A": "A",
+								"AAAA": "AAAA",
+								"CNAME": "CNAME",
+								"MX": "MX",
+								"NS": "NS",
+								"TXT": "TXT"
+							}
+						},
+						"dnsServer": {
+							"label": "DNS-palvelin",
+							"placeholder": "8.8.8.8"
+						},
+						"strategy": {
+							"desktop": "Työpöytä",
+							"label": "Strategia",
+							"mobile": "Mobiili"
 						}
 					},
 					"title": "Yleiset asetukset",
 					"description": {
 						"http": "Syötä monitoroitava URL tai IP (esim. https://example.com/ tai 192.168.1.100) ja lisää selkeä näyttönimi, joka näkyy hallintapaneelissa.",
-						"ping": "",
-						"port": "",
-						"docker": "",
+						"ping": "Anna pingattava IP-osoite tai isäntänimi (esim. 192.168.1.100 tai example.com) ja lisää selkeä näyttönimi, joka näkyy hallintapaneelissa.",
+						"port": "Anna palvelimen URL tai IP, portin numero ja selkeä näyttönimi, joka näkyy hallintapaneelissa.",
+						"docker": "Anna Docker-kontin nimi tai tunnus. Voit käyttää joko kontin nimeä (esim. my-app) tai kontin tunnusta (täysi 64-merkkinen tunnus tai lyhyt tunnus).",
 						"game": "Anna IP-osoite tai isäntänimi ja portin numero pingausta varten (esim. 192.168.1.100 tai example.com) ja valitse pelityyppi. Jotkin pelit vaativat palvelinkyselyiden käyttöönoton asetustiedostossaan — tarkista pelipalvelimesi dokumentaatio. Katso protokollatiedot <gamedigLink>tuettujen pelien luettelosta</gamedigLink>.",
 						"pagespeed": "Seuraa sivun latausnopeutta, Core Web Vitals -arvoja ja optimointipisteitä verkkosivustollasi.",
 						"grpc": "Syötä gRPC-palvelimen isäntänimi ja portti, määritä halutessasi palvelun nimi terveystarkistusta varten ja lisää näyttönimi.",
 						"websocket": "Syötä monitoroitava WebSocket URL (esim. wss://example.com/socket) ja lisää näyttönimi.",
-						"hardware": "Seuraa infrastruktuurisi suorittimen, muistin, levyn käyttöä ja lämpötilaa. Capture-päätepisteen URL-osoitteen on sisällettävä koko polku /api/v1/metrics (esim. http://192.168.1.10:5001/api/v1/metrics). Liitä valtuutusavaimeen vain tokenin merkkijono — älä sisällytä sanaa 'Bearer'."
+						"hardware": "Seuraa infrastruktuurisi suorittimen, muistin, levyn käyttöä ja lämpötilaa. Capture-päätepisteen URL-osoitteen on sisällettävä koko polku /api/v1/metrics (esim. http://192.168.1.10:5001/api/v1/metrics). Liitä valtuutusavaimeen vain tokenin merkkijono — älä sisällytä sanaa 'Bearer'.",
+						"dns": "Tarkkaile, vastaako tietty DNS-palvelin."
 					}
 				},
 				"ignoreTls": {
@@ -601,7 +636,8 @@
 					"optionHttpDescription": "Käytä HTTP(S)-protokollaa verkkosivustosi tai API-päätepisteen monitorointiin.",
 					"optionPingDescription": "Käytä ICMP Ping -komentoa monitoroimaan, onko palvelin verkossa.",
 					"optionPortDescription": "Monitoroi, onko tietty palvelimen portti auki.",
-					"title": "Tyyppi"
+					"title": "Tyyppi",
+					"optionDnsDescription": "Tarkkaile, vastaako tietty DNS-palvelin."
 				},
 				"thresholds": {
 					"title": "Hälytysrajat",
@@ -765,7 +801,7 @@
 				"headers": {
 					"endTime": "Päättymisaika",
 					"resolutionType": "Ratkaisun tyyppi",
-					"startTime": "",
+					"startTime": "Aloitusaika",
 					"statusCode": "Tilakoodi"
 				},
 				"resolvedIncidents": "Ratkaistut häiriöt",
@@ -809,13 +845,13 @@
 				}
 			},
 			"statBoxes": {
-				"avgCpuTemperature": "",
-				"cpuFrequency": "",
-				"cpuLogical": "",
-				"cpuPhysical": "",
+				"avgCpuTemperature": "Keskimääräinen CPU-lämpötila",
+				"cpuFrequency": "CPU-taajuus",
+				"cpuLogical": "CPU (looginen)",
+				"cpuPhysical": "CPU (fyysinen)",
 				"disk": "Levy",
 				"memory": "Muisti",
-				"os": ""
+				"os": "Käyttöjärjestelmä"
 			},
 			"table": {
 				"headers": {
@@ -826,7 +862,7 @@
 			},
 			"tabs": {
 				"labels": {
-					"network": "",
+					"network": "Verkko",
 					"overview": "Yleiskatsaus"
 				}
 			},
@@ -909,7 +945,8 @@
 					"lastFinishedAt": "Viimeisin valmistuminen",
 					"lastRunTook": "Viimeisin suoritus kesti",
 					"lastFailedAt": "Viimeisin epäonnistuminen",
-					"failReason": "Epäonnistumisen syy"
+					"failReason": "Epäonnistumisen syy",
+					"state": "Tila"
 				}
 			},
 			"queueFallback": {
@@ -929,8 +966,8 @@
 			},
 			"table": {
 				"headers": {
-					"nextWindow": "",
-					"repeat": ""
+					"nextWindow": "Seuraava ikkuna",
+					"repeat": "Toista"
 				}
 			},
 			"form": {
@@ -1032,7 +1069,7 @@
 				},
 				"telegram": {
 					"title": "Telegram-määritykset",
-					"description": "",
+					"description": "Määritä Telegram-bottisi lähettämään ilmoituksia.",
 					"optionBotToken": "Bottitunniste",
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "Chat-tunnus",
@@ -1099,6 +1136,10 @@
 			"header": {
 				"title": "PageSpeed-monitorit",
 				"description": "Seuraa Core Web Vitals -mittareita ja Lighthouse-pisteitä ajan mittaan ja huomaa heikennykset ennen käyttäjiä."
+			},
+			"strategy": {
+				"desktop": "Työpöytä",
+				"mobile": "Mobiili"
 			}
 		},
 		"settings": {
@@ -1201,7 +1242,7 @@
 				"email": {
 					"title": "Sähköpostiasetukset",
 					"description": "Määritä järjestelmäsi sähköpostiasetukset. Niitä käytetään ilmoitusten ja hälytysten lähettämiseen.",
-					"descriptionTransport": "",
+					"descriptionTransport": "Tämä rakentaa SMTP-kuljetuksen NodeMailerille",
 					"descriptionTransportLink": "Katso tekniset tiedot täältä",
 					"option": {
 						"host": {
@@ -1247,6 +1288,10 @@
 						},
 						"rejectUnauthorized": {
 							"label": "Hylkää virheelliset varmenteet: Hylkää yhteydet itseallekirjoitetuilla tai ei-luotetuilla varmenteilla"
+						},
+						"displayName": {
+							"label": "Lähettäjän nimi (valinnainen) - Lähettäjäkentässä näkyvä ystävällinen nimi",
+							"placeholder": "Checkmate-ilmoitukset"
 						}
 					}
 				},
@@ -1307,6 +1352,20 @@
 				"uptime": {
 					"title": "Käytettävyys",
 					"responseTime": "Vasteaika"
+				},
+				"chart": {
+					"avg": "ka {{value}}ms",
+					"downTooltip": "Alhaalla",
+					"heatmapAria": "Vasteajan lämpökartta",
+					"max": "max {{value}}ms"
+				},
+				"status": {
+					"breached": "Kynnys ylittyi",
+					"down": "Alhaalla",
+					"initializing": "Alustetaan",
+					"maintenance": "Huolto",
+					"paused": "Keskeytetty",
+					"up": "Toiminnassa"
 				}
 			},
 			"statusBar": {
@@ -1324,7 +1383,9 @@
 				"maintenance": "Jotkin järjestelmät ovat huollossa",
 				"partiallyPaused": "Jotkin järjestelmät on keskeytetty",
 				"initializing": "Jotkin järjestelmät alustuvat",
-				"noMonitors": "Yhtään monitoria ei ole määritetty"
+				"noMonitors": "Yhtään monitoria ei ole määritetty",
+				"monitoringSummary": "Tarkkaillaan {{count}} palvelua · Päivitykset 10 sekunnin välein",
+				"monitoringSummary_other": "Tarkkaillaan {{count}} palvelua · Päivitykset 10 sekunnin välein"
 			},
 			"table": {
 				"headers": {
@@ -1415,11 +1476,47 @@
 							"label": "Näytä infrastruktuurin mittarit"
 						}
 					}
+				},
+				"theme": {
+					"description": "Valitse julkisen tilasivusi visuaalinen tyyli.",
+					"label": "Teema",
+					"options": {
+						"bold": {
+							"description": "Suuri typografia ja itsevarma välistys. Sopii brändilähtöisille sivuille.",
+							"name": "Rohkea"
+						},
+						"editorial": {
+							"description": "Antiikvaotsikot ja ohuet erottimet. Erottuva ja rauhallinen.",
+							"name": "Toimituksellinen"
+						},
+						"modern": {
+							"description": "SaaS-tasoa sykkivällä tilapisteellä ja pehmeästi haalistuvilla korteilla.",
+							"name": "Moderni"
+						},
+						"refined": {
+							"description": "Siisti, ammattimainen, lähellä klassista Checkmate-ilmettä.",
+							"name": "Hienostunut"
+						}
+					},
+					"title": "Sivun teema"
+				},
+				"themeMode": {
+					"auto": "Automaattinen (seuraa vierailijan laitetta)",
+					"dark": "Vain tumma",
+					"label": "Teematila",
+					"light": "Vain vaalea"
 				}
 			},
 			"header": {
 				"title": "Tilasivut",
 				"description": "Julkaise julkisia sivuja, jotka näyttävät asiakkaille ja sidosryhmille reaaliaikaisen käytettävyyden ja tapaushistorian."
+			},
+			"editorial": {
+				"allUp": "Kaikki järjestelmät toimivat normaalisti.",
+				"reportTitle": "Palveluraportti"
+			},
+			"footer": {
+				"poweredBy": "Tarjoaa"
 			}
 		},
 		"uptime": {

@@ -73,7 +73,9 @@
 			"paused": "tạm dừng",
 			"na": "N/A",
 			"resolved": "Đã giải quyết",
-			"responseTime": "Thời gian phản hồi"
+			"responseTime": "Thời gian phản hồi",
+			"idle": "Không hoạt động",
+			"running": "Đang chạy"
 		},
 		"form": {
 			"role": {
@@ -119,6 +121,17 @@
 				"interval": "Khoảng thời gian",
 				"active": "Đang hoạt động",
 				"responseTime": "Thời gian phản hồi"
+			}
+		},
+		"statusCode": {
+			"down": "Ngừng hoạt động",
+			"networkError": {
+				"dns": "Không thể phân giải tên máy chủ (tra cứu DNS thất bại).",
+				"refused": "Máy chủ từ chối kết nối (cổng đã đóng hoặc dịch vụ không lắng nghe).",
+				"reset": "Kết nối đã được đặt lại trước khi nhận được phản hồi.",
+				"timeout": "Máy chủ không phản hồi kịp thời (yêu cầu hết thời gian chờ).",
+				"tls": "Bắt tay TLS hoặc SSL thất bại (vấn đề chứng chỉ hoặc mã hóa).",
+				"unknown": "Không nhận được phản hồi HTTP từ mục tiêu."
 			}
 		}
 	},
@@ -306,28 +319,28 @@
 			"common": {
 				"passwordRules": {
 					"length": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "Phải có ít nhất",
+						"highlighted": "8 ký tự"
 					},
 					"lowercase": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "Phải chứa ít nhất",
+						"highlighted": "một chữ thường"
 					},
 					"match": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "Mật khẩu",
+						"highlighted": "phải khớp"
 					},
 					"number": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "Phải chứa ít nhất",
+						"highlighted": "một chữ số"
 					},
 					"special": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "Phải chứa ít nhất",
+						"highlighted": "một ký tự đặc biệt (!?@#$%^&*()-_=+[]{}|;:'\",./\\~`)"
 					},
 					"uppercase": {
-						"beginning": "",
-						"highlighted": ""
+						"beginning": "Phải chứa ít nhất",
+						"highlighted": "một chữ hoa"
 					}
 				},
 				"form": {
@@ -452,7 +465,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "Hạ tầng",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				},
 				"bulkPause": {
 					"paused_one": "Đã tạm dừng {{count}} màn hình",
@@ -552,19 +566,40 @@
 						"captureUrl": {
 							"label": "Điểm cuối Capture",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsRecordType": {
+							"label": "Loại bản ghi DNS",
+							"value": {
+								"A": "A",
+								"AAAA": "AAAA",
+								"CNAME": "CNAME",
+								"MX": "MX",
+								"NS": "NS",
+								"TXT": "TXT"
+							}
+						},
+						"dnsServer": {
+							"label": "Máy chủ DNS",
+							"placeholder": "8.8.8.8"
+						},
+						"strategy": {
+							"desktop": "Máy tính để bàn",
+							"label": "Chiến lược",
+							"mobile": "Di động"
 						}
 					},
 					"title": "Cài đặt chung",
 					"description": {
 						"http": "Nhập URL hoặc IP cần giám sát (vd: https://example.com/ hoặc 192.168.1.100) và thêm tên hiển thị rõ ràng trên bảng điều khiển.",
-						"ping": "",
-						"port": "",
-						"docker": "",
+						"ping": "Nhập địa chỉ IP hoặc tên máy chủ để ping (ví dụ: 192.168.1.100 hoặc example.com) và thêm tên hiển thị rõ ràng xuất hiện trên bảng điều khiển.",
+						"port": "Nhập URL hoặc IP của máy chủ, số cổng và tên hiển thị rõ ràng xuất hiện trên bảng điều khiển.",
+						"docker": "Nhập tên hoặc ID của container Docker. Bạn có thể sử dụng tên container (ví dụ: my-app) hoặc ID container (ID đầy đủ 64 ký tự hoặc ID ngắn).",
 						"game": "Nhập địa chỉ IP hoặc tên máy chủ và số cổng để ping (ví dụ: 192.168.1.100 hoặc example.com) và chọn loại trò chơi. Một số trò chơi yêu cầu bật truy vấn máy chủ trong tệp cấu hình của chúng — hãy xem tài liệu của máy chủ trò chơi. Xem <gamedigLink>danh sách các trò chơi được hỗ trợ</gamedigLink> để biết chi tiết giao thức.",
 						"pagespeed": "Theo dõi hiệu suất tải trang, Core Web Vitals và điểm tối ưu hóa cho trang web của bạn.",
 						"grpc": "Nhập tên máy chủ và cổng của máy chủ gRPC, tùy chọn chỉ định tên dịch vụ cho kiểm tra sức khỏe và thêm tên hiển thị.",
 						"websocket": "Nhập URL WebSocket cần giám sát (vd: wss://example.com/socket) và thêm tên hiển thị.",
-						"hardware": "Giám sát mức sử dụng CPU, bộ nhớ, ổ đĩa và nhiệt độ của hạ tầng. URL điểm cuối Capture phải bao gồm đường dẫn đầy đủ /api/v1/metrics (ví dụ: http://192.168.1.10:5001/api/v1/metrics). Đối với khóa xác thực, chỉ dán chuỗi token — không bao gồm 'Bearer'."
+						"hardware": "Giám sát mức sử dụng CPU, bộ nhớ, ổ đĩa và nhiệt độ của hạ tầng. URL điểm cuối Capture phải bao gồm đường dẫn đầy đủ /api/v1/metrics (ví dụ: http://192.168.1.10:5001/api/v1/metrics). Đối với khóa xác thực, chỉ dán chuỗi token — không bao gồm 'Bearer'.",
+						"dns": "Giám sát xem một máy chủ DNS cụ thể có phản hồi hay không."
 					}
 				},
 				"ignoreTls": {
@@ -601,7 +636,8 @@
 					"optionHttpDescription": "Sử dụng HTTP(S) để giám sát trang web hoặc điểm cuối API của bạn.",
 					"optionPingDescription": "Sử dụng ICMP Ping để giám sát xem máy chủ có trực tuyến không.",
 					"optionPortDescription": "Giám sát xem một cổng cụ thể trên máy chủ có mở không.",
-					"title": "Loại"
+					"title": "Loại",
+					"optionDnsDescription": "Giám sát xem một máy chủ DNS cụ thể có phản hồi hay không."
 				},
 				"thresholds": {
 					"title": "Ngưỡng cảnh báo",
@@ -765,7 +801,7 @@
 				"headers": {
 					"endTime": "Thời gian kết thúc",
 					"resolutionType": "Loại giải quyết",
-					"startTime": "",
+					"startTime": "Thời gian bắt đầu",
 					"statusCode": "Mã trạng thái"
 				},
 				"resolvedIncidents": "Sự cố đã giải quyết",
@@ -809,13 +845,13 @@
 				}
 			},
 			"statBoxes": {
-				"avgCpuTemperature": "",
-				"cpuFrequency": "",
-				"cpuLogical": "",
-				"cpuPhysical": "",
+				"avgCpuTemperature": "Nhiệt độ CPU trung bình",
+				"cpuFrequency": "Tần số CPU",
+				"cpuLogical": "CPU (logic)",
+				"cpuPhysical": "CPU (vật lý)",
 				"disk": "Ổ đĩa",
 				"memory": "Bộ nhớ",
-				"os": ""
+				"os": "Hệ điều hành"
 			},
 			"table": {
 				"headers": {
@@ -909,7 +945,8 @@
 					"lastFinishedAt": "Hoàn thành lần cuối lúc",
 					"lastRunTook": "Lần chạy cuối mất",
 					"lastFailedAt": "Lỗi lần cuối lúc",
-					"failReason": "Lý do lỗi"
+					"failReason": "Lý do lỗi",
+					"state": "Trạng thái"
 				}
 			},
 			"queueFallback": {
@@ -929,8 +966,8 @@
 			},
 			"table": {
 				"headers": {
-					"nextWindow": "",
-					"repeat": ""
+					"nextWindow": "Cửa sổ tiếp theo",
+					"repeat": "Lặp lại"
 				}
 			},
 			"form": {
@@ -1032,7 +1069,7 @@
 				},
 				"telegram": {
 					"title": "Cấu hình Telegram",
-					"description": "",
+					"description": "Cấu hình bot Telegram của bạn để gửi thông báo.",
 					"optionBotToken": "Token bot",
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "ID cuộc trò chuyện",
@@ -1099,6 +1136,10 @@
 			"header": {
 				"title": "Trình giám sát PageSpeed",
 				"description": "Theo dõi Core Web Vitals và điểm Lighthouse theo thời gian để phát hiện sự suy giảm trước khi người dùng nhận ra."
+			},
+			"strategy": {
+				"desktop": "Máy tính để bàn",
+				"mobile": "Di động"
 			}
 		},
 		"settings": {
@@ -1201,7 +1242,7 @@
 				"email": {
 					"title": "Cài đặt email",
 					"description": "Cấu hình cài đặt email cho hệ thống. Được sử dụng để gửi thông báo và cảnh báo.",
-					"descriptionTransport": "",
+					"descriptionTransport": "Điều này xây dựng một SMTP transport cho NodeMailer",
 					"descriptionTransportLink": "Xem thông số kỹ thuật tại đây",
 					"option": {
 						"host": {
@@ -1247,6 +1288,10 @@
 						},
 						"rejectUnauthorized": {
 							"label": "Từ chối chứng chỉ không hợp lệ: Từ chối kết nối với chứng chỉ tự ký hoặc không đáng tin cậy"
+						},
+						"displayName": {
+							"label": "Tên người gửi (tùy chọn) - Tên thân thiện hiển thị trong trường Từ",
+							"placeholder": "Thông báo Checkmate"
 						}
 					}
 				},
@@ -1307,6 +1352,20 @@
 				"uptime": {
 					"title": "Thời gian hoạt động",
 					"responseTime": "Thời gian phản hồi"
+				},
+				"chart": {
+					"avg": "TB {{value}}ms",
+					"downTooltip": "Ngừng hoạt động",
+					"heatmapAria": "Bản đồ nhiệt thời gian phản hồi",
+					"max": "tối đa {{value}}ms"
+				},
+				"status": {
+					"breached": "Vượt ngưỡng",
+					"down": "Ngừng hoạt động",
+					"initializing": "Đang khởi tạo",
+					"maintenance": "Bảo trì",
+					"paused": "Tạm dừng",
+					"up": "Hoạt động"
 				}
 			},
 			"statusBar": {
@@ -1324,7 +1383,9 @@
 				"maintenance": "Một số hệ thống đang bảo trì",
 				"partiallyPaused": "Một số hệ thống đã tạm dừng",
 				"initializing": "Một số hệ thống đang khởi tạo",
-				"noMonitors": "Chưa cấu hình màn hình giám sát nào"
+				"noMonitors": "Chưa cấu hình màn hình giám sát nào",
+				"monitoringSummary": "Đang giám sát {{count}} dịch vụ · Cập nhật mỗi 10 giây",
+				"monitoringSummary_other": "Đang giám sát {{count}} dịch vụ · Cập nhật mỗi 10 giây"
 			},
 			"table": {
 				"headers": {
@@ -1415,11 +1476,47 @@
 							"label": "Hiển thị số liệu hạ tầng"
 						}
 					}
+				},
+				"theme": {
+					"description": "Chọn kiểu hiển thị cho trang trạng thái công khai của bạn.",
+					"label": "Chủ đề",
+					"options": {
+						"bold": {
+							"description": "Kiểu chữ lớn và khoảng cách tự tin. Tuyệt vời cho các trang tập trung vào thương hiệu.",
+							"name": "Đậm"
+						},
+						"editorial": {
+							"description": "Tiêu đề serif và dải phân cách mỏng. Đặc biệt và tĩnh lặng.",
+							"name": "Biên tập"
+						},
+						"modern": {
+							"description": "Chất lượng SaaS với chấm trạng thái nhấp nháy và thẻ mờ dần nhẹ nhàng.",
+							"name": "Hiện đại"
+						},
+						"refined": {
+							"description": "Sạch sẽ, chuyên nghiệp, gần với giao diện Checkmate cổ điển.",
+							"name": "Tinh tế"
+						}
+					},
+					"title": "Chủ đề trang"
+				},
+				"themeMode": {
+					"auto": "Tự động (theo thiết bị của khách)",
+					"dark": "Chỉ tối",
+					"label": "Chế độ chủ đề",
+					"light": "Chỉ sáng"
 				}
 			},
 			"header": {
 				"title": "Trang trạng thái",
 				"description": "Công bố các trang công khai cho khách hàng và các bên liên quan thấy thời gian hoạt động theo thời gian thực và lịch sử sự cố."
+			},
+			"editorial": {
+				"allUp": "Tất cả các hệ thống đang hoạt động bình thường.",
+				"reportTitle": "Báo cáo dịch vụ"
+			},
+			"footer": {
+				"poweredBy": "Được cung cấp bởi"
 			}
 		},
 		"uptime": {

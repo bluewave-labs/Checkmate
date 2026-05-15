@@ -73,7 +73,9 @@
 			"paused": "已暫停",
 			"na": "N/A",
 			"resolved": "已解決",
-			"responseTime": "回應時間"
+			"responseTime": "回應時間",
+			"idle": "閒置",
+			"running": "執行中"
 		},
 		"form": {
 			"role": {
@@ -119,6 +121,17 @@
 				"interval": "間隔",
 				"active": "啟用中",
 				"responseTime": "回應時間"
+			}
+		},
+		"statusCode": {
+			"down": "停機",
+			"networkError": {
+				"dns": "無法解析主機名稱（DNS查詢失敗）。",
+				"refused": "伺服器拒絕連線（連接埠關閉或服務未監聽）。",
+				"reset": "在收到回應之前連線被重設。",
+				"timeout": "伺服器未及時回應（請求逾時）。",
+				"tls": "TLS或SSL交握失敗（憑證或加密問題）。",
+				"unknown": "未從目標接收HTTP回應。"
 			}
 		}
 	},
@@ -452,7 +465,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "基礎架構",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				},
 				"bulkPause": {
 					"paused_one": "已暫停 {{count}} 個監視器",
@@ -552,6 +566,26 @@
 						"captureUrl": {
 							"label": "Capture 端點",
 							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsRecordType": {
+							"label": "DNS記錄類型",
+							"value": {
+								"A": "A",
+								"AAAA": "AAAA",
+								"CNAME": "CNAME",
+								"MX": "MX",
+								"NS": "NS",
+								"TXT": "TXT"
+							}
+						},
+						"dnsServer": {
+							"label": "DNS伺服器",
+							"placeholder": "8.8.8.8"
+						},
+						"strategy": {
+							"desktop": "桌面",
+							"label": "策略",
+							"mobile": "行動裝置"
 						}
 					},
 					"title": "一般設定",
@@ -564,7 +598,8 @@
 						"pagespeed": "追蹤您網站的頁面載入效能、Core Web Vitals 和最佳化分數。",
 						"grpc": "輸入 gRPC 伺服器的主機名稱和連接埠，可選擇指定健康檢查的服務名稱，並新增一個顯示名稱。",
 						"websocket": "輸入要監控的 WebSocket URL（例如 wss://example.com/socket），並新增一個顯示名稱。",
-						"hardware": "監控基礎架構的 CPU、記憶體、磁碟使用情況和溫度。Capture 端點 URL 必須包含完整路徑 /api/v1/metrics（例如 http://192.168.1.10:5001/api/v1/metrics）。授權密鑰僅貼上權杖字串——請勿包含 'Bearer'。"
+						"hardware": "監控基礎架構的 CPU、記憶體、磁碟使用情況和溫度。Capture 端點 URL 必須包含完整路徑 /api/v1/metrics（例如 http://192.168.1.10:5001/api/v1/metrics）。授權密鑰僅貼上權杖字串——請勿包含 'Bearer'。",
+						"dns": "監控特定DNS伺服器是否回應。"
 					}
 				},
 				"ignoreTls": {
@@ -601,7 +636,8 @@
 					"optionHttpDescription": "使用 HTTP(S) 監控您的網站或 API 端點。",
 					"optionPingDescription": "使用 ICMP Ping 監控伺服器是否上線。",
 					"optionPortDescription": "監控伺服器上的特定連接埠是否開啟。",
-					"title": "類型"
+					"title": "類型",
+					"optionDnsDescription": "監控特定DNS伺服器是否回應。"
 				},
 				"thresholds": {
 					"title": "警報閾值",
@@ -909,7 +945,8 @@
 					"lastFinishedAt": "最後完成於",
 					"lastRunTook": "最後執行耗時",
 					"lastFailedAt": "最後失敗於",
-					"failReason": "失敗原因"
+					"failReason": "失敗原因",
+					"state": "狀態"
 				}
 			},
 			"queueFallback": {
@@ -1099,6 +1136,10 @@
 			"header": {
 				"title": "PageSpeed 監視器",
 				"description": "持續追蹤 Core Web Vitals 與 Lighthouse 評分，在使用者察覺前發現效能退化。"
+			},
+			"strategy": {
+				"desktop": "桌面",
+				"mobile": "行動裝置"
 			}
 		},
 		"settings": {
@@ -1247,6 +1288,10 @@
 						},
 						"rejectUnauthorized": {
 							"label": "拒絕無效憑證：拒絕使用自簽或不受信任憑證的連線"
+						},
+						"displayName": {
+							"label": "寄件者名稱（選填）- 顯示在寄件者欄位的友善名稱",
+							"placeholder": "Checkmate通知"
 						}
 					}
 				},
@@ -1307,6 +1352,20 @@
 				"uptime": {
 					"title": "正常運行時間",
 					"responseTime": "回應時間"
+				},
+				"chart": {
+					"avg": "平均 {{value}}ms",
+					"downTooltip": "停機",
+					"heatmapAria": "回應時間熱圖",
+					"max": "最大 {{value}}ms"
+				},
+				"status": {
+					"breached": "超過閾值",
+					"down": "停機",
+					"initializing": "初始化中",
+					"maintenance": "維護中",
+					"paused": "已暫停",
+					"up": "運行中"
 				}
 			},
 			"statusBar": {
@@ -1324,7 +1383,9 @@
 				"maintenance": "部分系統正在維護",
 				"partiallyPaused": "部分系統已暫停",
 				"initializing": "部分系統正在初始化",
-				"noMonitors": "尚未設定任何監視器"
+				"noMonitors": "尚未設定任何監視器",
+				"monitoringSummary": "正在監控{{count}}個服務 · 每10秒更新一次",
+				"monitoringSummary_other": "正在監控{{count}}個服務 · 每10秒更新一次"
 			},
 			"table": {
 				"headers": {
@@ -1415,11 +1476,47 @@
 							"label": "顯示基礎架構指標"
 						}
 					}
+				},
+				"theme": {
+					"description": "為您的公開狀態頁面選擇視覺樣式。",
+					"label": "主題",
+					"options": {
+						"bold": {
+							"description": "大字體和自信的間距。非常適合品牌導向的頁面。",
+							"name": "粗體"
+						},
+						"editorial": {
+							"description": "襯線標題和細分隔線。獨特而平靜。",
+							"name": "編輯風格"
+						},
+						"modern": {
+							"description": "SaaS級品質，帶有脈動狀態點和柔和淡出的卡片。",
+							"name": "現代"
+						},
+						"refined": {
+							"description": "乾淨、專業，接近經典Checkmate外觀。",
+							"name": "精緻"
+						}
+					},
+					"title": "頁面主題"
+				},
+				"themeMode": {
+					"auto": "自動（依照訪客裝置）",
+					"dark": "僅深色",
+					"label": "主題模式",
+					"light": "僅淺色"
 				}
 			},
 			"header": {
 				"title": "狀態頁面",
 				"description": "發佈公開頁面，向客戶和利害關係人顯示即時的運行狀態與事件歷史。"
+			},
+			"editorial": {
+				"allUp": "所有系統運作正常。",
+				"reportTitle": "服務報告"
+			},
+			"footer": {
+				"poweredBy": "技術支援"
 			}
 		},
 		"uptime": {
