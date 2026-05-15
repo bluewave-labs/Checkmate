@@ -1,9 +1,22 @@
+{{- if .Values.mongodb.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: checkmate-mongodb
+  name: {{ include "checkmate.fullname" . }}-mongodb
+  namespace: {{ include "checkmate.namespace" . }}
+  labels:
+    {{- include "checkmate.componentLabels" (dict "root" . "component" "mongodb") | nindent 4 }}
+  {{- with .Values.global.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
+  type: ClusterIP
   selector:
-    app: checkmate-mongodb
+    {{- include "checkmate.componentSelectorLabels" (dict "root" . "component" "mongodb") | nindent 4 }}
   ports:
-    - port: {{ .Values.mongodb.port }}
+    - name: mongodb
+      port: {{ .Values.mongodb.port }}
+      targetPort: mongodb
+      protocol: TCP
+{{- end }}

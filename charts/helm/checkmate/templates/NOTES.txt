@@ -1,0 +1,68 @@
+Thank you for installing {{ .Chart.Name }} v{{ .Chart.AppVersion }}!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ACCESSING CHECKMATE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{{- if .Values.client.ingress.enabled }}
+
+  Frontend  ➜  {{ .Values.client.protocol }}://{{ .Values.client.ingress.host }}
+{{- else if .Values.client.httproute.enabled }}
+  {{- if .Values.client.httproute.hostnames }}
+
+  Frontend  ➜  {{ .Values.client.protocol }}://{{ first .Values.client.httproute.hostnames }}
+  {{- else }}
+
+  Frontend  ➜  (HTTPRoute — check your Gateway for the external address)
+  {{- end }}
+{{- end }}
+{{- if .Values.server.ingress.enabled }}
+  API       ➜  {{ .Values.server.protocol }}://{{ .Values.server.ingress.host }}/api/v1
+  Docs      ➜  {{ .Values.server.protocol }}://{{ .Values.server.ingress.host }}/api-docs
+{{- else if .Values.server.httproute.enabled }}
+  {{- if .Values.server.httproute.hostnames }}
+  API       ➜  {{ .Values.server.protocol }}://{{ first .Values.server.httproute.hostnames }}/api/v1
+  Docs      ➜  {{ .Values.server.protocol }}://{{ first .Values.server.httproute.hostnames }}/api-docs
+  {{- else }}
+  API       ➜  (HTTPRoute — check your Gateway for the external address)
+  {{- end }}
+{{- end }}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VERIFY PODS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  kubectl get pods -n {{ include "checkmate.namespace" . }} \
+    -l app.kubernetes.io/instance={{ .Release.Name }}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DATABASES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{{- if .Values.mongodb.enabled }}
+
+  MongoDB  ✔ in-cluster StatefulSet
+             ({{ include "checkmate.fullname" . }}-mongodb.{{ include "checkmate.namespace" . }}.svc)
+{{- else }}
+
+  MongoDB  ✔ external — ensure secrets.DB_CONNECTION_STRING is correct
+{{- end }}
+{{- if .Values.redis.enabled }}
+
+  Redis    ✔ in-cluster StatefulSet
+             ({{ include "checkmate.fullname" . }}-redis.{{ include "checkmate.namespace" . }}.svc)
+{{- else }}
+
+  Redis    — disabled
+             Set redis.enabled=true to deploy Redis,
+             or add REDIS_HOST/REDIS_PORT to secrets for an external instance.
+{{- end }}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECRETS MODE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{{- if .Values.secrets.existingSecret }}
+
+  Using existing Secret: {{ .Values.secrets.existingSecret }}
+{{- else }}
+
+  Using chart-managed Secret: {{ include "checkmate.fullname" . }}-secrets
+{{- end }}

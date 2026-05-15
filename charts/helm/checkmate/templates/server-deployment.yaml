@@ -1,37 +1,73 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: checkmate-server
+  name: {{ include "checkmate.fullname" . }}-server
+  namespace: {{ include "checkmate.namespace" . }}
+  labels:
+    {{- include "checkmate.componentLabels" (dict "root" . "component" "server") | nindent 4 }}
+  {{- with .Values.global.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.server.replicas }}
   selector:
     matchLabels:
-      app: checkmate-server
+      {{- include "checkmate.componentSelectorLabels" (dict "root" . "component" "server") | nindent 6 }}
   template:
     metadata:
       labels:
-        app: checkmate-server
+        {{- include "checkmate.componentSelectorLabels" (dict "root" . "component" "server") | nindent 8 }}
+        {{- with .Values.server.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.server.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
-    {{- with .Values.server.affinity }}
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.server.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.server.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.server.affinity }}
       affinity:
-        {{- tpl ( . | toYaml) $ | nindent 8 }}
-    {{- end }}
-    {{- with .Values.server.tolerations }}
+        {{- include "checkmate.tplrender" (dict "value" . "context" $) | nindent 8 }}
+      {{- end }}
+      {{- with .Values.server.tolerations }}
       tolerations:
-        {{- tpl ( . | toYaml) $ | nindent 8 }}
-    {{- end }}
+        {{- include "checkmate.tplrender" (dict "value" . "context" $) | nindent 8 }}
+      {{- end }}
       containers:
         - name: server
           image: {{ .Values.server.image }}
+          imagePullPolicy: {{ .Values.server.imagePullPolicy }}
           ports:
-            - containerPort: {{ .Values.server.port }}
+            - name: http
+              containerPort: {{ .Values.server.port }}
+              protocol: TCP
+          # All environment variables are loaded from the Secret (envFrom).
+          # Use server.extraEnv for additional variables or per-key secretKeyRef overrides.
           envFrom:
             - secretRef:
-                name: checkmate-secrets
+                name: {{ include "checkmate.secretName" . }}
+          {{- with .Values.server.extraEnv }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.server.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with .Values.server.resources }}
           resources:
-              {{- tpl ( . | toYaml) $ | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-          env:
-          - name: CLIENT_HOST
-            value: "{{ .Values.client.protocol }}://{{ .Values.client.ingress.host }}"
