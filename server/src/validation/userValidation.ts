@@ -49,6 +49,16 @@ export const editUserBodyValidation = z.object({
 	lastName: nameValidation.optional(),
 	email: lowercaseEmailValidation.optional(),
 	profilePicture: z.string().optional(),
+	password: z
+		.string()
+		.min(8, "Password must be at least 8 characters")
+		.regex(passwordPattern, "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character")
+		.optional(),
+	newPassword: z
+		.string()
+		.min(8, "Password must be at least 8 characters")
+		.regex(passwordPattern, "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character")
+		.optional(),
 });
 
 // Canonical user shape returned by auth/user endpoints. Keep aligned with what
