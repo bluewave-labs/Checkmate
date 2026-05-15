@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { UserRoles } from "@/types/user.js";
-import { nameValidation, lowercaseEmailValidation, passwordPattern } from "./shared.js";
+import { nameValidation, lowercaseEmailValidation, passwordValidation } from "./shared.js";
 
 //****************************************
 // User Validations
@@ -27,29 +27,33 @@ export const editSuperadminUserByIdBodyValidation = z.object({
 });
 
 export const editUserPasswordByIdBodyValidation = z.object({
-	password: z
-		.string()
-		.min(8, "Password must be at least 8 characters")
-		.regex(passwordPattern, "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character"),
+	password: passwordValidation,
 });
 
 export const createUserBodyValidation = z.object({
 	firstName: nameValidation,
 	lastName: nameValidation,
 	email: lowercaseEmailValidation,
-	password: z
-		.string()
-		.min(8, "Password must be at least 8 characters")
-		.regex(passwordPattern, "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character"),
+	password: passwordValidation,
 	role: z.array(z.enum(UserRoles)).min(1, "At least one role is required"),
 });
 
-export const editUserBodyValidation = z.object({
-	firstName: nameValidation.optional(),
-	lastName: nameValidation.optional(),
-	email: lowercaseEmailValidation.optional(),
-	profilePicture: z.string().optional(),
-});
+export const editUserBodyValidation = z
+	.object({
+		firstName: nameValidation.optional(),
+		lastName: nameValidation.optional(),
+		email: lowercaseEmailValidation.optional(),
+		profilePicture: z.string().optional(),
+		password: passwordValidation.optional(),
+		newPassword: passwordValidation.optional(),
+	})
+	// Changing a password requires both the current password and the new one.
+	// The service only runs the change-password flow when both are present, so
+	// reject a half-filled request
+	.refine((data) => (data.password === undefined) === (data.newPassword === undefined), {
+		message: "Both current password and new password are required to change your password",
+		path: ["newPassword"],
+	});
 
 // Canonical user shape returned by auth/user endpoints. Keep aligned with what
 // the controllers actually serialize (password is intentionally omitted).
