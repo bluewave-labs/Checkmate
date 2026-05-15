@@ -139,3 +139,9 @@ export const updateNotificationsValidation = z
 			path: ["notificationIds"],
 		}
 	);
+
+export const setDefaultNotificationBodyValidation = z.object({
+	isDefault: z.boolean(),
+});
+
+export const applyToAllBodyValidation = z.object({});

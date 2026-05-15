@@ -9266,6 +9266,330 @@
 				}
 			}
 		},
+		"/notifications/defaults": {
+			"get": {
+				"tags": ["notifications"],
+				"summary": "Get default notification channels",
+				"description": "Retrieve all notification channels marked as default for the team. These are automatically attached to new monitors.",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/NotificationChannel"
+											}
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/notifications/{id}/default": {
+			"patch": {
+				"tags": ["notifications"],
+				"summary": "Set or remove default status",
+				"description": "Mark a notification channel as default or remove the default status. Default notifications are automatically attached to new monitors.",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "id",
+						"in": "path"
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"isDefault": {
+										"type": "boolean",
+										"description": "Set to true to mark as default, false to remove"
+									}
+								},
+								"required": ["isDefault"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "number",
+											"description": "Number of notifications updated (0 or 1)"
+										}
+									},
+									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK",
+									"data": 1
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/notifications/{id}/apply-to-all": {
+			"post": {
+				"tags": ["notifications"],
+				"summary": "Apply notification to all monitors",
+				"description": "Add a notification channel to all monitors in the team. Useful for adding a new notification channel to existing infrastructure.",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "number",
+											"description": "Number of monitors updated"
+										}
+									},
+									"required": ["success", "msg"]
+								},
+								"example": {
+									"success": true,
+									"msg": "OK",
+									"data": 15
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/queue/jobs": {
 			"get": {
 				"tags": ["queue"],

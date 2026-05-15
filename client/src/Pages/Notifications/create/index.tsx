@@ -3,6 +3,8 @@ import { TextField, Select, Button } from "@/Components/inputs";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
 import { useTheme } from "@mui/material/styles";
 
 import { useEffect, useMemo } from "react";
@@ -31,6 +33,10 @@ const NotificationsCreatePage = () => {
 	const { post, loading: isSubmitting } = usePost<NotificationFormData, Notification>();
 	const { patch, loading: isPatching } = usePatch<NotificationFormData, Notification>();
 	const { post: testPost, loading: isTesting } = usePost<NotificationFormData, void>();
+	const { post: applyPost, loading: isApplying } = usePost<
+		void,
+		{ modifiedCount: number }
+	>();
 
 	const { schema, defaults } = useNotificationForm({ data: existingNotification });
 
@@ -92,6 +98,11 @@ const NotificationsCreatePage = () => {
 		await testPost("/notifications/test", data);
 	};
 
+	const handleApplyToAll = async () => {
+		if (!notificationId) return;
+		await applyPost(`/notifications/${notificationId}/apply-to-all`, {});
+	};
+
 	return (
 		<BasePage
 			component="form"
@@ -114,6 +125,29 @@ const NotificationsCreatePage = () => {
 								fullWidth
 								error={!!fieldState.error}
 								helperText={fieldState.error?.message ?? ""}
+							/>
+						)}
+					/>
+				}
+			/>
+			<ConfigBox
+				title={t("pages.notifications.form.isDefault.title")}
+				subtitle={t("pages.notifications.form.isDefault.description")}
+				rightContent={
+					<Controller
+						name="isDefault"
+						control={control}
+						defaultValue={defaults.isDefault ?? false}
+						render={({ field }) => (
+							<FormControlLabel
+								control={
+									<Switch
+										checked={field.value ?? false}
+										onChange={field.onChange}
+										color="primary"
+									/>
+								}
+								label=""
 							/>
 						)}
 					/>
@@ -410,6 +444,16 @@ const NotificationsCreatePage = () => {
 				justifyContent="flex-end"
 				spacing={theme.spacing(2)}
 			>
+				{isEditMode && (
+					<Button
+						variant="outlined"
+						color="primary"
+						onClick={handleApplyToAll}
+						loading={isApplying}
+					>
+						{t("pages.notifications.form.applyToAll.button")}
+					</Button>
+				)}
 				<Button
 					variant="contained"
 					color="primary"

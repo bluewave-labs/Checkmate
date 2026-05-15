@@ -9,7 +9,7 @@ import type { Monitor } from "@/Types/Monitor";
 interface ApiResponse {
 	success: boolean;
 	msg: string;
-	data: Monitor[];
+	data: Monitor[] | number;
 }
 
 interface UseBulkMonitorActionsReturn {
@@ -17,6 +17,8 @@ interface UseBulkMonitorActionsReturn {
 	setSelectedRows: (rows: string[]) => void;
 	handleBulkPause: () => Promise<void>;
 	handleBulkResume: () => Promise<void>;
+	handleBulkAddNotifications: (notificationIds: string[]) => Promise<void>;
+	handleBulkRemoveNotifications: (notificationIds: string[]) => Promise<void>;
 	handleCancelSelection: () => void;
 }
 
@@ -84,11 +86,59 @@ export const useBulkMonitorActions = (
 		setSelectedRows([]);
 	};
 
+	const handleBulkNotifications = (action: "add" | "remove") => {
+		return async (notificationIds: string[]) => {
+			try {
+				const res = await post<ApiResponse>("/monitors/notifications", {
+					monitorIds: selectedRows,
+					notificationIds,
+					action,
+				});
+
+				const affectedCount = typeof res.data?.data === "number" ? res.data.data : 0;
+
+				if (affectedCount === 0) {
+					toastInfo(
+						t("pages.common.monitors.bulkNotifications.noChange", {
+							count: selectedRows.length,
+						})
+					);
+				} else {
+					const key =
+						action === "add"
+							? "pages.common.monitors.bulkNotifications.added"
+							: "pages.common.monitors.bulkNotifications.removed";
+					toastSuccess(t(key, { count: affectedCount }));
+				}
+
+				setSelectedRows([]);
+				refetch();
+			} catch (err: unknown) {
+				let errMsg = "An error occurred";
+
+				if (axios.isAxiosError(err)) {
+					errMsg = err.response?.data?.msg || err.message || errMsg;
+				} else if (err instanceof Error) {
+					errMsg = err.message;
+				}
+
+				logger.error(
+					"Bulk notification update failed",
+					err instanceof Error ? err : undefined,
+					{ action }
+				);
+				toastError(errMsg);
+			}
+		};
+	};
+
 	return {
 		selectedRows,
 		setSelectedRows,
 		handleBulkPause,
 		handleBulkResume,
+		handleBulkAddNotifications: handleBulkNotifications("add"),
+		handleBulkRemoveNotifications: handleBulkNotifications("remove"),
 		handleCancelSelection,
 	};
 };

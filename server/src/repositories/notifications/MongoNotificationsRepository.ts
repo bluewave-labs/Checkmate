@@ -34,6 +34,7 @@ class MongoNotificationsRepository implements INotificationsRepository {
 			accessToken: doc.accessToken ?? undefined,
 			accountSid: doc.accountSid ?? undefined,
 			twilioPhoneNumber: doc.twilioPhoneNumber ?? undefined,
+			isDefault: doc.isDefault ?? false,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
@@ -93,6 +94,25 @@ class MongoNotificationsRepository implements INotificationsRepository {
 			throw new AppError({ message: "Notification not found or could not be deleted", status: 404 });
 		}
 		return this.toEntity(deleted);
+	};
+
+	setDefault = async (id: string, teamId: string, isDefault: boolean): Promise<number> => {
+		if (isDefault) {
+			await NotificationModel.updateMany({ teamId: new mongoose.Types.ObjectId(teamId) }, { $set: { isDefault: false } });
+		}
+		const result = await NotificationModel.updateOne(
+			{ _id: new mongoose.Types.ObjectId(id), teamId: new mongoose.Types.ObjectId(teamId) },
+			{ $set: { isDefault } }
+		);
+		return result.modifiedCount;
+	};
+
+	findDefaultsByTeamId = async (teamId: string): Promise<Notification[]> => {
+		const documents = await NotificationModel.find({
+			teamId: new mongoose.Types.ObjectId(teamId),
+			isDefault: true,
+		});
+		return this.mapDocuments(documents);
 	};
 }
 

@@ -441,42 +441,15 @@
 					"selectMonitor": "Select {{name}}"
 				},
 				"bulkPause": {
-					"alreadyPaused_one": "The selected monitor is already paused",
-					"alreadyPaused_other": "All selected monitors are already paused",
-					"alreadyRunning_one": "The selected monitor is already running",
-					"alreadyRunning_other": "All selected monitors are already running",
-					"paused_one": "{{count}} monitor paused",
-					"paused_other": "{{count}} monitors paused",
-					"resumed_one": "{{count}} monitor resumed",
-					"resumed_other": "{{count}} monitors resumed"
+					"paused": "Paused {count} monitor(s)",
+					"resumed": "Resumed {count} monitor(s)",
+					"alreadyPaused": "{count} monitor(s) already paused",
+					"alreadyRunning": "{count} monitor(s) already running"
 				},
-				"statBoxes": {
-					"activeFor": "Active for",
-					"certificateExpiry": "Certificate expiry",
-					"lastCheck": "Last check",
-					"lastResponseTime": "Last response time",
-					"serviceIsDown": "Service is down"
-				},
-				"status": {
-					"down": "down",
-					"breached": "threshold exceeded",
-					"initializing": "initializing",
-					"maintenance": "maintenance",
-					"paused": "paused",
-					"total": "total",
-					"up": "up"
-				},
-				"monitorTypes": {
-					"optionDocker": "Docker",
-					"optionGame": "Game",
-					"optionHttp": "HTTP(S)",
-					"optionPing": "Ping",
-					"optionPort": "Port",
-					"optionPagespeed": "PageSpeed",
-					"optionHardware": "Infrastructure",
-					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+				"bulkNotifications": {
+					"added": "Notification added to {count} monitor(s)",
+					"removed": "Notification removed from {count} monitor(s)",
+					"noChange": "No changes made to {count} monitor(s)"
 				}
 			}
 		},
@@ -1094,6 +1067,13 @@
 					"placeholderFromNumber": "+15551234567",
 					"optionToNumber": "To number (recipient)",
 					"placeholderToNumber": "+15559876543"
+				},
+				"isDefault": {
+					"title": "Default channel",
+					"description": "When enabled, this channel will be automatically attached to every new monitor you create."
+				},
+				"applyToAll": {
+					"button": "Apply to all monitors"
 				}
 			},
 			"table": {
@@ -1538,6 +1518,15 @@
 			"header": {
 				"title": "Uptime monitors",
 				"description": "Watch HTTP endpoints, pings, containers, and ports — and get alerted the moment something goes down."
+			},
+			"monitors": {
+				"bulkActions": {
+					"addNotifications": "Add notification",
+					"removeNotifications": "Remove notification",
+					"selectToAdd": "Select the notification channels to add to the selected monitors:",
+					"selectToRemove": "Select the notification channels to remove from the selected monitors:",
+					"selectPlaceholder": "Select channels..."
+				}
 			}
 		}
 	}

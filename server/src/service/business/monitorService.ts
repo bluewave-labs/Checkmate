@@ -19,6 +19,7 @@ import type {
 	IMonitorsRepository,
 	IMonitorStatsRepository,
 	IStatusPagesRepository,
+	INotificationsRepository,
 } from "@/repositories/index.js";
 import demoMonitorsData from "@/utils/demoMonitors.json" with { type: "json" };
 import { AppError } from "@/utils/AppError.js";
@@ -103,6 +104,7 @@ export class MonitorService implements IMonitorService {
 	private monitorStatsRepository: IMonitorStatsRepository;
 	private statusPagesRepository: IStatusPagesRepository;
 	private incidentsRepository: IIncidentsRepository;
+	private notificationsRepository: INotificationsRepository;
 
 	constructor({
 		jobQueue,
@@ -114,6 +116,7 @@ export class MonitorService implements IMonitorService {
 		monitorStatsRepository,
 		statusPagesRepository,
 		incidentsRepository,
+		notificationsRepository,
 	}: {
 		jobQueue: ISuperSimpleQueue;
 		logger: ILogger;
@@ -124,6 +127,7 @@ export class MonitorService implements IMonitorService {
 		monitorStatsRepository: IMonitorStatsRepository;
 		statusPagesRepository: IStatusPagesRepository;
 		incidentsRepository: IIncidentsRepository;
+		notificationsRepository: INotificationsRepository;
 	}) {
 		this.jobQueue = jobQueue;
 		this.logger = logger;
@@ -134,6 +138,7 @@ export class MonitorService implements IMonitorService {
 		this.monitorStatsRepository = monitorStatsRepository;
 		this.statusPagesRepository = statusPagesRepository;
 		this.incidentsRepository = incidentsRepository;
+		this.notificationsRepository = notificationsRepository;
 	}
 
 	get serviceName(): string {
@@ -166,7 +171,14 @@ export class MonitorService implements IMonitorService {
 	};
 
 	createMonitor = async (teamId: string, userId: string, body: Monitor): Promise<void> => {
-		const monitor = await this.monitorsRepository.create(body, teamId, userId);
+		let notifications = body.notifications ?? [];
+		if (notifications.length === 0) {
+			const defaults = await this.notificationsRepository.findDefaultsByTeamId(teamId);
+			if (defaults.length > 0) {
+				notifications = defaults.map((n) => n.id);
+			}
+		}
+		const monitor = await this.monitorsRepository.create({ ...body, notifications }, teamId, userId);
 		if (!monitor) {
 			throw new AppError({ message: "Failed to create monitor", status: 500, service: SERVICE_NAME, method: "createMonitor" });
 		}

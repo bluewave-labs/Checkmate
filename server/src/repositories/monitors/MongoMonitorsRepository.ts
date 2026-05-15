@@ -544,6 +544,14 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		};
 	};
 
+	addNotificationToAllMonitors = async (teamId: string, notificationId: string): Promise<number> => {
+		const result = await MonitorModel.updateMany(
+			{ teamId: new mongoose.Types.ObjectId(teamId) },
+			{ $addToSet: { notifications: new mongoose.Types.ObjectId(notificationId) } }
+		);
+		return result.modifiedCount;
+	};
+
 	deleteByTeamIdsNotIn = async (teamIds: string[]): Promise<number> => {
 		const objectIds = teamIds.map((id) => new mongoose.Types.ObjectId(id));
 		const result = await MonitorModel.deleteMany({ teamId: { $nin: objectIds } });

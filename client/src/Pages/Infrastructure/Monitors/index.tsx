@@ -7,21 +7,24 @@ import {
 	HeaderMonitorsSummary,
 	BulkActionsBar,
 } from "@/Components/monitors";
-import { TextField, Dialog, Button } from "@/Components/inputs";
-import { Play, Pause } from "lucide-react";
+import { TextField, Dialog, Button, Autocomplete } from "@/Components/inputs";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import { MonitorsTable } from "@/Pages/Infrastructure/Monitors/Components/MonitorsTable";
+import { Play, Pause, Bell } from "lucide-react";
 
-import { useGet, useDelete } from "@/Hooks/UseApi";
-import { useIsAdmin } from "@/Hooks/useIsAdmin";
-import type { Monitor, MonitorsWithChecksResponse } from "@/Types/Monitor";
-import { useTheme } from "@mui/material";
-import { useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useGet, useDelete } from "@/Hooks/UseApi";
+import type { Monitor, MonitorsWithChecksResponse } from "@/Types/Monitor";
+import { useState, useMemo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setRowsPerPage } from "@/Features/UI/uiSlice.js";
+import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import type { RootState } from "@/Types/state";
-import { InfraMonitorsTable } from "./Components/MonitorsTable";
+import { useTheme } from "@mui/material";
 import useDebounce from "@/Hooks/useDebounce";
 import { useBulkMonitorActions } from "@/Hooks/useBulkMonitorActions";
+import type { Notification } from "@/Types/Notification";
 
 const InfrastructureMonitors = () => {
 	const { t } = useTranslation();
@@ -43,6 +46,9 @@ const InfrastructureMonitors = () => {
 	const [sortField, setSortField] = useState<string>("");
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
+	const [notificationDialogOpen, setNotificationDialogOpen] = useState(false);
+	const [selectedNotificationIds, setSelectedNotificationIds] = useState<string[]>([]);
+	const [notificationAction, setNotificationAction] = useState<"add" | "remove">("add");
 
 	const isDialogOpen = Boolean(selectedMonitor);
 
@@ -104,12 +110,16 @@ const InfrastructureMonitors = () => {
 	const { summary, count } = monitorsWithChecksData ?? { summary: null, count: 0 };
 	const isLoading = monitorsWithChecksLoading;
 
+	const { data: notifications } = useGet<Notification[]>("/notifications/team");
+
 	// Bulk actions
 	const {
 		selectedRows,
 		setSelectedRows,
 		handleBulkPause,
 		handleBulkResume,
+		handleBulkAddNotifications,
+		handleBulkRemoveNotifications,
 		handleCancelSelection,
 	} = useBulkMonitorActions(refetch, page);
 
@@ -134,6 +144,28 @@ const InfrastructureMonitors = () => {
 
 	const handleCancel = () => {
 		setSelectedMonitor(null);
+	};
+
+	const openAddNotifications = () => {
+		setNotificationAction("add");
+		setSelectedNotificationIds([]);
+		setNotificationDialogOpen(true);
+	};
+
+	const openRemoveNotifications = () => {
+		setNotificationAction("remove");
+		setSelectedNotificationIds([]);
+		setNotificationDialogOpen(true);
+	};
+
+	const handleNotificationConfirm = async () => {
+		if (notificationAction === "add") {
+			await handleBulkAddNotifications(selectedNotificationIds);
+		} else {
+			await handleBulkRemoveNotifications(selectedNotificationIds);
+		}
+		setNotificationDialogOpen(false);
+		setSelectedNotificationIds([]);
 	};
 
 	return (
@@ -195,10 +227,25 @@ const InfrastructureMonitors = () => {
 					>
 						{t("common.buttons.pause")}
 					</Button>
+					<Button
+						size="small"
+						startIcon={<Bell size={16} />}
+						onClick={openAddNotifications}
+					>
+						{t("pages.uptime.monitors.bulkActions.addNotifications")}
+					</Button>
+					<Button
+						size="small"
+						color="error"
+						startIcon={<Bell size={16} />}
+						onClick={openRemoveNotifications}
+					>
+						{t("pages.uptime.monitors.bulkActions.removeNotifications")}
+					</Button>
 				</BulkActionsBar>
 			)}
 
-			<InfraMonitorsTable
+			<MonitorsTable
 				monitors={monitorsWithChecksData?.monitors || []}
 				refetch={refetch}
 				setSelectedMonitor={setSelectedMonitor}
@@ -230,6 +277,42 @@ const InfrastructureMonitors = () => {
 				onCancel={handleCancel}
 				loading={isDeleting}
 			/>
+			<Dialog
+				open={notificationDialogOpen}
+				title={
+					notificationAction === "add"
+						? t("pages.uptime.monitors.bulkActions.addNotifications")
+						: t("pages.uptime.monitors.bulkActions.removeNotifications")
+				}
+				onConfirm={handleNotificationConfirm}
+				onCancel={() => setNotificationDialogOpen(false)}
+				confirmText={t("common.buttons.confirm")}
+			>
+				<Box>
+					<Typography mb={2}>
+						{notificationAction === "add"
+							? t("pages.uptime.monitors.bulkActions.selectToAdd")
+							: t("pages.uptime.monitors.bulkActions.selectToRemove")}
+					</Typography>
+					<Autocomplete
+						multiple
+						options={notifications ?? []}
+						getOptionLabel={(option) => option.notificationName}
+						value={(notifications ?? []).filter((n) =>
+							selectedNotificationIds.includes(n.id)
+						)}
+						onChange={(_, newValue) =>
+							setSelectedNotificationIds(newValue.map((n) => n.id))
+						}
+						renderInput={(params) => (
+							<TextField
+								{...params}
+								placeholder={t("pages.uptime.monitors.bulkActions.selectPlaceholder")}
+							/>
+						)}
+					/>
+				</Box>
+			</Dialog>
 		</MonitorBasePageWithStates>
 	);
 };

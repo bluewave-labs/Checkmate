@@ -7,6 +7,8 @@ import {
 	testNotificationBodyValidation,
 	editNotificationParamValidation,
 	testAllNotificationsBodyValidation,
+	setDefaultNotificationBodyValidation,
+	applyToAllBodyValidation,
 } from "@/validation/notificationValidation.js";
 import { AppError } from "@/utils/AppError.js";
 import { INotificationsService } from "@/service/index.js";
@@ -19,10 +21,13 @@ export interface INotificationController {
 	testNotification: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	createNotification: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	getNotificationsByTeamId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	getDefaultNotifications: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	deleteNotification: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	getNotificationById: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	editNotification: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	testAllNotifications: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	setDefaultNotification: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	applyToAllMonitors: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 }
 class NotificationController implements INotificationController {
 	private notificationsService: INotificationsService;
@@ -74,6 +79,21 @@ class NotificationController implements INotificationController {
 				success: true,
 				msg: "Notifications fetched successfully",
 				data: notifications,
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	getDefaultNotifications = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const teamId = requireTeamId(req.user?.teamId);
+			const defaults = await this.notificationsService.findDefaultsByTeamId(teamId);
+
+			return res.status(200).json({
+				success: true,
+				msg: "Default notifications fetched successfully",
+				data: defaults,
 			});
 		} catch (error) {
 			next(error);
@@ -153,6 +173,43 @@ class NotificationController implements INotificationController {
 			return res.status(200).json({
 				success: true,
 				msg: "All notifications sent successfully",
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	setDefaultNotification = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const validatedBody = setDefaultNotificationBodyValidation.parse(req.body);
+			const validatedParams = editNotificationParamValidation.parse(req.params);
+
+			const teamId = requireTeamId(req.user?.teamId);
+			const notificationId = validatedParams.id;
+
+			const modifiedCount = await this.notificationsService.setDefault(notificationId, teamId, validatedBody.isDefault);
+			return res.status(200).json({
+				success: true,
+				msg: `Default notification ${validatedBody.isDefault ? "set" : "removed"}`,
+				data: { modifiedCount },
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	applyToAllMonitors = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const validatedParams = editNotificationParamValidation.parse(req.params);
+
+			const teamId = requireTeamId(req.user?.teamId);
+			const notificationId = validatedParams.id;
+
+			const modifiedCount = await this.notificationsService.applyToAllMonitors(notificationId, teamId);
+			return res.status(200).json({
+				success: true,
+				msg: `Notification applied to ${modifiedCount} monitor(s)`,
+				data: { modifiedCount },
 			});
 		} catch (error) {
 			next(error);

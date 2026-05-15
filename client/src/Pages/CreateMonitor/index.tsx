@@ -236,11 +236,16 @@ const CreateMonitorPage = () => {
 	);
 
 	const { data: notifications } = useGet<Notification[]>("/notifications/team");
+	const { data: defaultNotifications } = useGet<Notification[]>(
+		"/notifications/defaults"
+	);
+	const defaultNotificationIds = defaultNotifications?.map((n) => n.id) ?? [];
 	const { data: games } = useGet<GamesMap>("/monitors/games");
 
 	const { schema, defaults } = useMonitorForm({
 		data: existingMonitor ?? null,
 		defaultType,
+		defaultNotifications: defaultNotificationIds,
 	});
 
 	const form = useForm<MonitorFormData>({

@@ -8,6 +8,7 @@ interface UseNotificationFormOptions {
 }
 
 function buildDefaults(data: Notification | null): NotificationFormData {
+	const isDefault = data?.isDefault ?? false;
 	if (data?.type === "matrix") {
 		return {
 			type: "matrix",
@@ -15,6 +16,7 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 			homeserverUrl: data.homeserverUrl || "",
 			roomId: data.roomId || "",
 			accessToken: data.accessToken || "",
+			isDefault,
 		};
 	}
 	if (data?.type === "telegram") {
@@ -23,6 +25,7 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 			notificationName: data.notificationName || "",
 			address: data.address || "",
 			accessToken: data.accessToken || "",
+			isDefault,
 		};
 	}
 	if (data?.type === "slack") {
@@ -30,6 +33,7 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 			type: "slack",
 			notificationName: data.notificationName || "",
 			address: data.address || "",
+			isDefault,
 		};
 	}
 	if (data?.type === "discord") {
@@ -37,6 +41,7 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 			type: "discord",
 			notificationName: data.notificationName || "",
 			address: data.address || "",
+			isDefault,
 		};
 	}
 	if (data?.type === "webhook") {
@@ -44,6 +49,7 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 			type: "webhook",
 			notificationName: data.notificationName || "",
 			address: data.address || "",
+			isDefault,
 		};
 	}
 	if (data?.type === "pager_duty") {
@@ -51,6 +57,7 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 			type: "pager_duty",
 			notificationName: data.notificationName || "",
 			address: data.address || "",
+			isDefault,
 		};
 	}
 	if (data?.type === "teams") {
@@ -58,6 +65,7 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 			type: "teams",
 			notificationName: data.notificationName || "",
 			address: data.address || "",
+			isDefault,
 		};
 	}
 	if (data?.type === "twilio") {
@@ -68,6 +76,7 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 			accessToken: data.accessToken || "",
 			phone: data.phone || "",
 			twilioPhoneNumber: data.twilioPhoneNumber || "",
+			isDefault,
 		};
 	}
 	if (data?.type === "pushover") {
@@ -76,13 +85,14 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 			notificationName: data.notificationName || "",
 			address: data.address || "",
 			accessToken: data.accessToken || "",
+			isDefault,
 		};
 	}
-	// Default: email (covers both data === null and data.type === "email")
 	return {
 		type: "email",
 		notificationName: data?.notificationName || "",
 		address: data?.address || "",
+		isDefault,
 	};
 }
 

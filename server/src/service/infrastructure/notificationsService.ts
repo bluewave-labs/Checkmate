@@ -11,8 +11,11 @@ export interface INotificationsService {
 	createNotification: (notificationData: Partial<Notification>, userId: string, teamId: string) => Promise<Notification>;
 	findById: (id: string, teamId: string) => Promise<Notification>;
 	findNotificationsByTeamId: (teamId: string) => Promise<Notification[]>;
+	findDefaultsByTeamId: (teamId: string) => Promise<Notification[]>;
 	updateById(id: string, teamId: string, updateData: Partial<Notification>): Promise<Notification>;
+	setDefault(id: string, teamId: string, isDefault: boolean): Promise<number>;
 	deleteById: (id: string, teamId: string) => Promise<Notification>;
+	applyToAllMonitors: (notificationId: string, teamId: string) => Promise<number>;
 	handleNotifications: (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => Promise<boolean>;
 
 	sendTestNotification: (notification: Partial<Notification>) => Promise<boolean>;
@@ -217,5 +220,17 @@ export class NotificationsService implements INotificationsService {
 		await this.monitorsRepository.removeNotificationFromMonitors(id);
 		const deleted = await this.notificationsRepository.deleteById(id, teamId);
 		return deleted;
+	};
+
+	setDefault = async (id: string, teamId: string, isDefault: boolean): Promise<number> => {
+		return await this.notificationsRepository.setDefault(id, teamId, isDefault);
+	};
+
+	findDefaultsByTeamId = async (teamId: string): Promise<Notification[]> => {
+		return await this.notificationsRepository.findDefaultsByTeamId(teamId);
+	};
+
+	applyToAllMonitors = async (notificationId: string, teamId: string): Promise<number> => {
+		return await this.monitorsRepository.addNotificationToAllMonitors(teamId, notificationId);
 	};
 }
