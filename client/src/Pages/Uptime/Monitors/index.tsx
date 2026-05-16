@@ -320,7 +320,7 @@ const UptimeMonitorsPage = () => {
 							selectedNotificationIds.includes(n.id)
 						)}
 						onChange={(_, newValue) =>
-							setSelectedNotificationIds(newValue.map((n) => n.id))
+							setSelectedNotificationIds(newValue.map((n: Notification) => n.id))
 						}
 						renderInput={(params) => (
 							<TextField

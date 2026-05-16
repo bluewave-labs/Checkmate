@@ -42,7 +42,7 @@ export const useBulkMonitorActions = (
 				pause,
 			});
 
-			const affectedCount = res.data?.data?.length ?? 0;
+			const affectedCount = Array.isArray(res.data?.data) ? res.data.data.length : 0;
 
 			if (affectedCount === 0) {
 				const key = pause

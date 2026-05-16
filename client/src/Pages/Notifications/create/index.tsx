@@ -34,7 +34,7 @@ const NotificationsCreatePage = () => {
 	const { patch, loading: isPatching } = usePatch<NotificationFormData, Notification>();
 	const { post: testPost, loading: isTesting } = usePost<NotificationFormData, void>();
 	const { post: applyPost, loading: isApplying } = usePost<
-		void,
+		Record<string, never>,
 		{ modifiedCount: number }
 	>();
 

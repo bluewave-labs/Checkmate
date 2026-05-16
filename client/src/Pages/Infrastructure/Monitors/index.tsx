@@ -10,7 +10,7 @@ import {
 import { TextField, Dialog, Button, Autocomplete } from "@/Components/inputs";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { MonitorsTable } from "@/Pages/Infrastructure/Monitors/Components/MonitorsTable";
+import { InfraMonitorsTable } from "@/Pages/Infrastructure/Monitors/Components/MonitorsTable";
 import { Play, Pause, Bell } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
@@ -245,7 +245,7 @@ const InfrastructureMonitors = () => {
 				</BulkActionsBar>
 			)}
 
-			<MonitorsTable
+			<InfraMonitorsTable
 				monitors={monitorsWithChecksData?.monitors || []}
 				refetch={refetch}
 				setSelectedMonitor={setSelectedMonitor}
@@ -302,7 +302,7 @@ const InfrastructureMonitors = () => {
 							selectedNotificationIds.includes(n.id)
 						)}
 						onChange={(_, newValue) =>
-							setSelectedNotificationIds(newValue.map((n) => n.id))
+							setSelectedNotificationIds(newValue.map((n: Notification) => n.id))
 						}
 						renderInput={(params) => (
 							<TextField
