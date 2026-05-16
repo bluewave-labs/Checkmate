@@ -15,14 +15,34 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		accessToken: z.union([z.string(), z.literal("")]).optional(),
 	}),
 	// Webhook notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("webhook"),
-		address: z.url({ message: "Please enter a valid Webhook URL" }),
-		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
-		roomId: z.union([z.string(), z.literal("")]).optional(),
-		accessToken: z.union([z.string(), z.literal("")]).optional(),
-	}),
+	z
+		.object({
+			notificationName: z.string().min(1, "Notification name is required"),
+			type: z.literal("webhook"),
+			address: z.url({ message: "Please enter a valid Webhook URL" }),
+			authType: z.enum(["none", "basic", "bearer"]).optional().default("none"),
+			authUsername: z.string().max(256).optional(),
+			authPassword: z.string().max(1024).optional(),
+			authToken: z.string().max(4096).optional(),
+			homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
+			roomId: z.union([z.string(), z.literal("")]).optional(),
+			accessToken: z.union([z.string(), z.literal("")]).optional(),
+		})
+		.superRefine((data, ctx) => {
+			if (data.authType === "basic") {
+				if (!data.authUsername) {
+					ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Username is required for Basic Auth", path: ["authUsername"] });
+				}
+				if (!data.authPassword) {
+					ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Password is required for Basic Auth", path: ["authPassword"] });
+				}
+			}
+			if (data.authType === "bearer") {
+				if (!data.authToken) {
+					ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Token is required for Bearer Auth", path: ["authToken"] });
+				}
+			}
+		}),
 	// Slack notification
 	z.object({
 		notificationName: z.string().min(1, "Notification name is required"),

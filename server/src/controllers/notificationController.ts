@@ -47,6 +47,12 @@ class NotificationController implements INotificationController {
 		}
 	};
 
+	private sanitizeNotification = (notification: any) => {
+		if (!notification) return notification;
+		const { authPassword, authToken, accessToken, ...sanitized } = notification;
+		return sanitized;
+	};
+
 	createNotification = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const validatedBody = createNotificationBodyValidation.parse(req.body);
@@ -58,7 +64,7 @@ class NotificationController implements INotificationController {
 			return res.status(200).json({
 				success: true,
 				msg: "Notification created successfully",
-				data: notification,
+				data: this.sanitizeNotification(notification),
 			});
 		} catch (error) {
 			next(error);
@@ -73,7 +79,7 @@ class NotificationController implements INotificationController {
 			return res.status(200).json({
 				success: true,
 				msg: "Notifications fetched successfully",
-				data: notifications,
+				data: notifications.map(this.sanitizeNotification),
 			});
 		} catch (error) {
 			next(error);
@@ -105,7 +111,7 @@ class NotificationController implements INotificationController {
 			return res.status(200).json({
 				success: true,
 				msg: "Notification fetched successfully",
-				data: notification,
+				data: this.sanitizeNotification(notification),
 			});
 		} catch (error) {
 			next(error);
@@ -124,7 +130,7 @@ class NotificationController implements INotificationController {
 			return res.status(200).json({
 				success: true,
 				msg: "Notification updated successfully",
-				data: editedNotification,
+				data: this.sanitizeNotification(editedNotification),
 			});
 		} catch (error) {
 			next(error);
