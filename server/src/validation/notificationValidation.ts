@@ -13,6 +13,7 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
 		roomId: z.union([z.string(), z.literal("")]).optional(),
 		accessToken: z.union([z.string(), z.literal("")]).optional(),
+		isDefault: z.boolean().optional(),
 	}),
 	// Webhook notification
 	z.object({
@@ -22,6 +23,7 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
 		roomId: z.union([z.string(), z.literal("")]).optional(),
 		accessToken: z.union([z.string(), z.literal("")]).optional(),
+		isDefault: z.boolean().optional(),
 	}),
 	// Slack notification
 	z.object({
@@ -31,6 +33,7 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
 		roomId: z.union([z.string(), z.literal("")]).optional(),
 		accessToken: z.union([z.string(), z.literal("")]).optional(),
+		isDefault: z.boolean().optional(),
 	}),
 	// Discord notification
 	z.object({
@@ -40,6 +43,7 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
 		roomId: z.union([z.string(), z.literal("")]).optional(),
 		accessToken: z.union([z.string(), z.literal("")]).optional(),
+		isDefault: z.boolean().optional(),
 	}),
 	// PagerDuty notification
 	z.object({
@@ -49,6 +53,7 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
 		roomId: z.union([z.string(), z.literal("")]).optional(),
 		accessToken: z.union([z.string(), z.literal("")]).optional(),
+		isDefault: z.boolean().optional(),
 	}),
 	// Matrix notification
 	z.object({
@@ -58,12 +63,14 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		homeserverUrl: z.url({ message: "Please enter a valid Homeserver URL" }),
 		roomId: z.string().min(1, "Room ID is required"),
 		accessToken: z.string().min(1, "Access Token is required"),
+		isDefault: z.boolean().optional(),
 	}),
 	// Teams notification
 	z.object({
 		notificationName: z.string().min(1, "Notification name is required"),
 		type: z.literal("teams"),
 		address: z.url({ message: "Please enter a valid Webhook URL" }),
+		isDefault: z.boolean().optional(),
 	}),
 	// Telegram notification
 	z.object({
@@ -71,6 +78,7 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		type: z.literal("telegram"),
 		address: z.string().min(1, "Chat ID is required"),
 		accessToken: z.string().min(1, "Bot token is required"),
+		isDefault: z.boolean().optional(),
 	}),
 	// Pushover notification
 	z.object({
@@ -78,6 +86,7 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		type: z.literal("pushover"),
 		address: z.string().min(1, "User key is required"),
 		accessToken: z.string().min(1, "App token is required"),
+		isDefault: z.boolean().optional(),
 	}),
 	// Twilio SMS notification
 	z.object({
@@ -87,6 +96,7 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		accessToken: z.string().min(1, "Auth token is required"),
 		phone: z.string().min(1, "Recipient phone number is required"),
 		twilioPhoneNumber: z.string().min(1, "Twilio phone number is required"),
+		isDefault: z.boolean().optional(),
 	}),
 ]);
 
@@ -139,3 +149,9 @@ export const updateNotificationsValidation = z
 			path: ["notificationIds"],
 		}
 	);
+
+export const setDefaultNotificationBodyValidation = z.object({
+	isDefault: z.boolean(),
+});
+
+export const applyToAllBodyValidation = z.object({});

@@ -1,6 +1,7 @@
 import { ActionsMenu, type ActionMenuItem } from "@/Components/actions-menu";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import Chip from "@mui/material/Chip";
 import type { Header } from "@/Components/design-elements/Table";
 import { Table } from "@/Components/design-elements";
 import { Pagination } from "@/Components/design-elements/Table";
@@ -57,7 +58,22 @@ export const NotificationsTable = ({
 				id: "name",
 				content: t("common.table.headers.name"),
 				render: (row) => {
-					return <Typography>{row?.notificationName}</Typography>;
+					return (
+						<Box
+							display="flex"
+							alignItems="center"
+							gap={1}
+						>
+							<Typography>{row?.notificationName}</Typography>
+							{row?.isDefault && (
+								<Chip
+									label="Default"
+									size="small"
+									sx={{ height: 20, fontSize: "0.65rem" }}
+								/>
+							)}
+						</Box>
+					);
 				},
 			},
 

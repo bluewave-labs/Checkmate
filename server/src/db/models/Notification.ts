@@ -5,6 +5,7 @@ interface NotificationDocument extends Omit<Notification, "id" | "userId" | "tea
 	_id: Types.ObjectId;
 	userId: Types.ObjectId;
 	teamId: Types.ObjectId;
+	isDefault: boolean;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -39,6 +40,10 @@ const NotificationSchema = new Schema<NotificationDocument>(
 		accessToken: { type: String },
 		accountSid: { type: String },
 		twilioPhoneNumber: { type: String },
+		isDefault: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	{
 		timestamps: true,

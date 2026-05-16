@@ -17,10 +17,13 @@ class NotificationRoutes {
 		this.router.post("/test", this.notificationController.testNotification);
 
 		this.router.get("/team", this.notificationController.getNotificationsByTeamId);
+		this.router.get("/defaults", this.notificationController.getDefaultNotifications);
 
 		this.router.get("/:id", this.notificationController.getNotificationById);
 		this.router.delete("/:id", this.notificationController.deleteNotification);
 		this.router.patch("/:id", this.notificationController.editNotification);
+		this.router.patch("/:id/default", this.notificationController.setDefaultNotification);
+		this.router.post("/:id/apply-to-all", this.notificationController.applyToAllMonitors);
 	}
 
 	getRouter() {

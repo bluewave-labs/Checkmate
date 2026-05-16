@@ -8,6 +8,8 @@ export interface INotificationsRepository {
 	findByTeamId(teamId: string): Promise<Notification[]>;
 	// update
 	updateById(id: string, teamId: string, updateData: Partial<Notification>): Promise<Notification>;
+	setDefault(id: string, teamId: string, isDefault: boolean): Promise<number>;
+	findDefaultsByTeamId(teamId: string): Promise<Notification[]>;
 	// delete
 	deleteById(id: string, teamId: string): Promise<Notification>;
 }

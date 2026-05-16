@@ -6,13 +6,16 @@ import type { Monitor, MonitorType } from "@/Types/Monitor";
 interface UseMonitorFormOptions {
 	data?: Monitor | null;
 	defaultType?: MonitorType;
+	defaultNotifications?: string[];
 }
 
-const getBaseDefaults = (data?: Monitor | null) => ({
+const getBaseDefaults = (data?: Monitor | null, defaultNotifications?: string[]) => ({
 	name: data?.name || "",
 	description: data?.description || "",
 	interval: data?.interval || 60000,
-	notifications: data?.notifications || [],
+	notifications: data?.notifications?.length
+		? data.notifications
+		: (defaultNotifications ?? []),
 	statusWindowSize: data?.statusWindowSize || 5,
 	statusWindowThreshold: data?.statusWindowThreshold || 60,
 	geoCheckEnabled: data?.geoCheckEnabled ?? false,
@@ -23,10 +26,11 @@ const getBaseDefaults = (data?: Monitor | null) => ({
 export const useMonitorForm = ({
 	data = null,
 	defaultType = "http",
+	defaultNotifications,
 }: UseMonitorFormOptions = {}) => {
 	return useMemo(() => {
 		const type = data?.type || defaultType;
-		const base = getBaseDefaults(data);
+		const base = getBaseDefaults(data, defaultNotifications);
 
 		let defaults: MonitorFormData;
 
@@ -136,5 +140,5 @@ export const useMonitorForm = ({
 		}
 
 		return { schema: monitorSchema, defaults };
-	}, [data, defaultType]);
+	}, [data, defaultType, defaultNotifications]);
 };

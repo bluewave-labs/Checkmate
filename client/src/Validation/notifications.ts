@@ -5,6 +5,7 @@ const baseSchema = z.object({
 		.string()
 		.min(1, "Notification name is required")
 		.max(100, "Notification name must be at most 100 characters"),
+	isDefault: z.boolean().optional(),
 });
 
 const emailSchema = baseSchema.extend({
