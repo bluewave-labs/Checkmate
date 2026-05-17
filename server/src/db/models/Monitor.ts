@@ -366,6 +366,10 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			type: [checkSnapshotSchema],
 			default: [],
 		},
+		acceptedStatusCodes: {
+			type: [Number],
+			default: [],
+		}
 	},
 	{
 		timestamps: true,

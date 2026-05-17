@@ -41,6 +41,7 @@ export const useMonitorForm = ({
 					matchMethod: data?.matchMethod || "",
 					expectedValue: data?.expectedValue || "",
 					jsonPath: data?.jsonPath || "",
+					acceptedStatusCodes: data?.acceptedStatusCodes || [],
 				};
 				break;
 			case "ping":
@@ -132,6 +133,7 @@ export const useMonitorForm = ({
 					matchMethod: "",
 					expectedValue: "",
 					jsonPath: "",
+					acceptedStatusCodes: [],
 				};
 		}
 

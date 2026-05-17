@@ -92,6 +92,7 @@ export const createMonitorBodyValidation = z
 		geoCheckInterval: z.number().min(300000).optional(),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
+		acceptedStatusCodes: z.array(z.number().int().min(100).max(599)).optional(),
 	})
 	.superRefine(refineDnsHostname)
 	.superRefine(refineStrategyType);
@@ -127,6 +128,7 @@ export const editMonitorBodyValidation = z
 		geoCheckInterval: z.number().min(300000).optional(),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
+		acceptedStatusCodes: z.array(z.number().int().min(100).max(599)).optional(),
 	})
 	.superRefine(refineDnsHostname)
 	.superRefine(refineStrategyType);
@@ -194,6 +196,7 @@ const importedMonitorSchema = z
 		geoCheckInterval: z.number().min(300000).default(300000),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
+		acceptedStatusCodes: z.array(z.number().int().min(100).max(599)).default([]),
 		createdAt: z.string().optional(),
 		updatedAt: z.string().optional(),
 	})
@@ -249,6 +252,7 @@ export const monitorResponseSchema = z
 		geoCheckInterval: z.number(),
 		dnsServer: z.string().optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
+		acceptedStatusCodes: z.array(z.number()).optional(),
 		teamId: z.string(),
 		userId: z.string(),
 		createdAt: z.string(),

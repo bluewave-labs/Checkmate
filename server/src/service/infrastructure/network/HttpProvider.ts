@@ -29,15 +29,24 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 		return type === "http";
 	}
 
+	private isStatusAccepted(statusCode: number, monitor: Monitor): boolean {
+		if (monitor.acceptedStatusCodes && monitor.acceptedStatusCodes.length > 0) {
+			return monitor.acceptedStatusCodes.includes(statusCode);
+		}
+		return statusCode >= 200 && statusCode < 300;
+	}
+
 	private handleHttpError<T>(error: unknown, monitor: Monitor): MonitorStatusResponse<T> {
 		if (error instanceof HTTPError || error instanceof RequestError) {
+			const code = error.response?.statusCode ?? NETWORK_ERROR;
+			const accepted = typeof code === "number" && this.isStatusAccepted(code, monitor);
 			return {
 				monitorId: monitor.id,
 				teamId: monitor.teamId,
 				type: monitor.type,
-				status: false,
-				code: error.response?.statusCode ?? NETWORK_ERROR,
-				message: error.message,
+				status: accepted,
+				code,
+				message: accepted ? (error.response?.statusMessage ?? String(code)) : error.message,
 				responseTime: error.timings?.phases?.total ?? 0,
 				timings: error.timings,
 				payload: null as T,
@@ -106,7 +115,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 				monitorId: monitor.id,
 				teamId: monitor.teamId,
 				type: monitor.type,
-				status: response.ok && matchResult.ok,
+				status: this.isStatusAccepted(response.statusCode, monitor) && matchResult.ok,
 				code: response.statusCode,
 				message: matchResult.ok ? (response.statusMessage ?? "OK") : matchResult.message,
 				responseTime: response.timings.phases.total ?? 0,

@@ -78,6 +78,7 @@ export interface Monitor {
 	geoCheckInterval?: number;
 	dnsServer?: string;
 	dnsRecordType?: DnsRecordType;
+	acceptedStatusCodes?: number[];
 	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;

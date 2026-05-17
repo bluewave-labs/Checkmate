@@ -504,6 +504,11 @@
 					},
 					"title": "Advanced settings"
 				},
+				"acceptedStatusCodes": {
+					"title": "Accepted status codes",
+					"description": "HTTP status codes that count as 'up'. Leave empty to accept only 2xx responses.",
+					"label": "Status codes (e.g. 200, 201, 401)"
+				},
 				"frequency": {
 					"description": "How often do you want to check the status of this monitor?",
 					"option": {

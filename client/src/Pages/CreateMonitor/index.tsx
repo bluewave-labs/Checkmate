@@ -955,6 +955,36 @@ const CreateMonitorPage = () => {
 
 			{watchedType === "http" && (
 				<ConfigBox
+					title={t("pages.createMonitor.form.acceptedStatusCodes.title")}
+					subtitle={t("pages.createMonitor.form.acceptedStatusCodes.description")}
+					rightContent={
+						<Controller
+							name="acceptedStatusCodes"
+							control={control}
+							render={({ field, fieldState }) => (
+								<TextField
+									value={(field.value ?? []).join(", ")}
+									onChange={(e) => {
+										const raw = e.target.value;
+										const codes = raw
+											.split(",")
+											.map((s) => parseInt(s.trim(), 10))
+											.filter((n) => !isNaN(n) && n >= 100 && n <= 599);
+										field.onChange(raw.trim() === "" ? [] : codes);
+									}}
+									fieldLabel={t("pages.createMonitor.form.acceptedStatusCodes.label")}
+									fullWidth
+									error={!!fieldState.error}
+									helperText={fieldState.error?.message ?? ""}
+								/>
+							)}
+						/>
+					}
+				/>
+			)}
+
+			{watchedType === "http" && (
+				<ConfigBox
 					title={t("pages.createMonitor.form.advanced.title")}
 					subtitle={t("pages.createMonitor.form.advanced.description")}
 					rightContent={
