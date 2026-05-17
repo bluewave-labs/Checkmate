@@ -369,7 +369,7 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		acceptedStatusCodes: {
 			type: [Number],
 			default: [],
-		}
+		},
 	},
 	{
 		timestamps: true,
