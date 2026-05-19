@@ -3,6 +3,7 @@ import { type MonitorType, type Monitor, type MonitorsSummary, CheckSnapshot } f
 export interface TeamQueryConfig {
 	limit?: number;
 	type?: MonitorType | MonitorType[];
+	tags?: string | string[];
 	page?: number;
 	rowsPerPage?: number;
 	filter?: string;

@@ -44,7 +44,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	findByTeamId = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null> => {
-		const { page = 0, rowsPerPage = 0, filter, field = "createdAt", order = "desc", type } = config ?? {};
+		const { page = 0, rowsPerPage = 0, filter, field = "createdAt", order = "desc", type, tags } = config ?? {};
 
 		const query: Record<string, unknown> = {
 			teamId: new mongoose.Types.ObjectId(teamId),
@@ -52,6 +52,10 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 
 		if (type !== undefined) {
 			query.type = Array.isArray(type) ? { $in: type } : type;
+		}
+
+		if (tags !== undefined) {
+			query.tags = Array.isArray(tags) ? { $in: tags } : tags;
 		}
 
 		if (filter !== undefined) {
@@ -152,7 +156,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	findMonitorCountByTeamIdAndType = async (teamId: string, config?: TeamQueryConfig): Promise<number> => {
-		const { type } = config ?? {};
+		const { type, tags } = config ?? {};
 
 		const query: FilterQuery<MonitorDocument> = {
 			teamId: new mongoose.Types.ObjectId(teamId),
@@ -160,6 +164,10 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 
 		if (type !== undefined) {
 			query.type = Array.isArray(type) ? { $in: type } : type;
+		}
+
+		if (tags !== undefined) {
+			query.tags = Array.isArray(tags) ? { $in: tags } : tags;
 		}
 
 		const count = await MonitorModel.countDocuments(query);
