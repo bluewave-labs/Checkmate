@@ -9,6 +9,7 @@ import {
 	SuperSimpleQueue,
 	SuperSimpleQueueHelper,
 	NotificationsService,
+	TagsService,
 	StatusService,
 	NotificationMessageBuilder,
 	MonitorService,
@@ -37,6 +38,7 @@ import {
 	IBufferService,
 	ISuperSimpleQueue,
 	INotificationsService,
+	ITagsService,
 	IStatusService,
 	IMonitorService,
 	IUserService,
@@ -98,6 +100,7 @@ import {
 	MongoInvitesRepository,
 	MongoRecoveryTokensRepository,
 	MongoNotificationsRepository,
+	MongoTagsRepository,
 	MongoIncidentsRepository,
 	MongoTeamsRepository,
 	MongoMaintenanceWindowsRepository,
@@ -112,6 +115,7 @@ import {
 	IRecoveryTokensRepository,
 	ISettingsRepository,
 	INotificationsRepository,
+	ITagsRepository,
 	IIncidentsRepository,
 	ITeamsRepository,
 	IMaintenanceWindowsRepository,
@@ -137,6 +141,7 @@ export type InitializedServices = {
 	incidentService: IIncidentService;
 	logger: ILogger;
 	notificationsService: INotificationsService;
+	tagsService: ITagsService;
 	statusPageService: IStatusPageService;
 	notificationMessageBuilder: INotificationMessageBuilder;
 
@@ -151,6 +156,7 @@ export type InitializedServices = {
 	recoveryTokensRepository: IRecoveryTokensRepository;
 	settingsRepository: ISettingsRepository;
 	notificationsRepository: INotificationsRepository;
+	tagsRepository: ITagsRepository;
 	incidentsRepository: IIncidentsRepository;
 	teamsRepository: ITeamsRepository;
 	maintenanceWindowsRepository: IMaintenanceWindowsRepository;
@@ -191,6 +197,7 @@ export const initializeServices = async ({
 	let recoveryTokensRepository: IRecoveryTokensRepository;
 	let settingsRepository: ISettingsRepository;
 	let notificationsRepository: INotificationsRepository;
+	let tagsRepository: ITagsRepository;
 	let incidentsRepository: IIncidentsRepository;
 	let teamsRepository: ITeamsRepository;
 	let maintenanceWindowsRepository: IMaintenanceWindowsRepository;
@@ -208,6 +215,7 @@ export const initializeServices = async ({
 		recoveryTokensRepository = new MongoRecoveryTokensRepository();
 		settingsRepository = new MongoSettingsRepository();
 		notificationsRepository = new MongoNotificationsRepository();
+		tagsRepository = new MongoTagsRepository();
 		incidentsRepository = new MongoIncidentsRepository();
 		teamsRepository = new MongoTeamsRepository();
 		maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
@@ -293,6 +301,8 @@ export const initializeServices = async ({
 		notificationMessageBuilder
 	);
 
+	const tagsService = new TagsService(tagsRepository, monitorsRepository);
+
 	const superSimpleQueueHelper = new SuperSimpleQueueHelper(
 		logger,
 		networkService,
@@ -372,6 +382,7 @@ export const initializeServices = async ({
 		incidentService,
 		logger,
 		notificationsService,
+		tagsService,
 		statusPageService,
 		notificationMessageBuilder,
 
@@ -386,6 +397,7 @@ export const initializeServices = async ({
 		recoveryTokensRepository,
 		settingsRepository,
 		notificationsRepository,
+		tagsRepository,
 		incidentsRepository,
 		teamsRepository,
 		maintenanceWindowsRepository,
