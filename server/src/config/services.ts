@@ -94,6 +94,7 @@ import {
 	MongoGeoChecksRepository,
 	MongoMonitorStatsRepository,
 	MongoStatusPagesRepository,
+	MongoStatusPageLockoutsRepository,
 	MongoUsersRepository,
 	MongoInvitesRepository,
 	MongoRecoveryTokensRepository,
@@ -107,6 +108,7 @@ import {
 	IGeoChecksRepository,
 	IMonitorStatsRepository,
 	IStatusPagesRepository,
+	IStatusPageLockoutsRepository,
 	IUsersRepository,
 	IInvitesRepository,
 	IRecoveryTokensRepository,
@@ -116,6 +118,7 @@ import {
 	ITeamsRepository,
 	IMaintenanceWindowsRepository,
 } from "@/repositories/index.js";
+import { StatusPageBruteForceService } from "@/service/business/statusPageBruteForceService.js";
 import { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";
 
@@ -138,6 +141,7 @@ export type InitializedServices = {
 	logger: ILogger;
 	notificationsService: INotificationsService;
 	statusPageService: IStatusPageService;
+	statusPageBruteForceService: StatusPageBruteForceService;
 	notificationMessageBuilder: INotificationMessageBuilder;
 
 	// Repositories
@@ -146,6 +150,7 @@ export type InitializedServices = {
 	geoChecksRepository: IGeoChecksRepository;
 	monitorStatsRepository: IMonitorStatsRepository;
 	statusPagesRepository: IStatusPagesRepository;
+	statusPageLockoutsRepository: IStatusPageLockoutsRepository;
 	usersRepository: IUsersRepository;
 	invitesRepository: IInvitesRepository;
 	recoveryTokensRepository: IRecoveryTokensRepository;
@@ -186,6 +191,7 @@ export const initializeServices = async ({
 	let geoChecksRepository: IGeoChecksRepository;
 	let monitorStatsRepository: IMonitorStatsRepository;
 	let statusPagesRepository: IStatusPagesRepository;
+	let statusPageLockoutsRepository: IStatusPageLockoutsRepository;
 	let usersRepository: IUsersRepository;
 	let invitesRepository: IInvitesRepository;
 	let recoveryTokensRepository: IRecoveryTokensRepository;
@@ -203,6 +209,7 @@ export const initializeServices = async ({
 		geoChecksRepository = new MongoGeoChecksRepository(logger);
 		monitorStatsRepository = new MongoMonitorStatsRepository();
 		statusPagesRepository = new MongoStatusPagesRepository();
+		statusPageLockoutsRepository = new MongoStatusPageLockoutsRepository();
 		usersRepository = new MongoUsersRepository();
 		invitesRepository = new MongoInvitesRepository();
 		recoveryTokensRepository = new MongoRecoveryTokensRepository();
@@ -353,6 +360,7 @@ export const initializeServices = async ({
 	});
 
 	const statusPageService = new StatusPageService(statusPagesRepository, settingsService);
+	const statusPageBruteForceService = new StatusPageBruteForceService(statusPageLockoutsRepository);
 
 	const services = {
 		settingsService,
@@ -373,6 +381,7 @@ export const initializeServices = async ({
 		logger,
 		notificationsService,
 		statusPageService,
+		statusPageBruteForceService,
 		notificationMessageBuilder,
 
 		// Repositories
@@ -381,6 +390,7 @@ export const initializeServices = async ({
 		geoChecksRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
+		statusPageLockoutsRepository,
 		usersRepository,
 		invitesRepository,
 		recoveryTokensRepository,

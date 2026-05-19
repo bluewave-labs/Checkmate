@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { booleanCoercion } from "./shared.js";
-import { StatusPageTypes, StatusPageThemes, StatusPageThemeModes } from "@/types/statusPage.js";
+import { StatusPageTypes, StatusPageThemes, StatusPageThemeModes, STATUSPAGE_PASSWORD_MIN_LENGTH } from "@/types/statusPage.js";
 
 //****************************************
 // Status Page Validations
@@ -15,28 +15,50 @@ export const getStatusPageQueryValidation = z.object({
 	timeFrame: z.coerce.number().optional(),
 });
 
-export const createStatusPageBodyValidation = z
-	.object({
-		type: z.union([z.enum(StatusPageTypes), z.array(z.enum(StatusPageTypes))]).transform((val) => (Array.isArray(val) ? val : [val])),
-		companyName: z.string().min(1, "Company name is required"),
-		url: z.string().regex(/^[a-zA-Z0-9_-]+$/, {
-			message: "URL can only contain letters, numbers, underscores, and hyphens",
-		}),
-		timezone: z.string().optional(),
-		color: z.string().optional(),
-		monitors: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Must be a valid monitor ID")).min(1, "At least one monitor is required"),
-		subMonitors: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/)).optional(),
-		deleteSubmonitors: z.boolean().optional(),
-		isPublished: booleanCoercion,
-		showCharts: booleanCoercion.optional(),
-		showUptimePercentage: booleanCoercion,
-		showAdminLoginLink: booleanCoercion.optional(),
-		showInfrastructure: booleanCoercion.optional(),
-		removeLogo: z.union([z.literal("true"), z.literal("false")]).optional(),
-		theme: z.enum(StatusPageThemes).optional(),
-		themeMode: z.enum(StatusPageThemeModes).optional(),
+const passwordField = z
+	.string()
+	.min(STATUSPAGE_PASSWORD_MIN_LENGTH, `Password must be at least ${STATUSPAGE_PASSWORD_MIN_LENGTH} characters`)
+	.optional();
+
+const baseStatusPageBody = z.object({
+	type: z.union([z.enum(StatusPageTypes), z.array(z.enum(StatusPageTypes))]).transform((val) => (Array.isArray(val) ? val : [val])),
+	companyName: z.string().min(1, "Company name is required"),
+	url: z.string().regex(/^[a-zA-Z0-9_-]+$/, {
+		message: "URL can only contain letters, numbers, underscores, and hyphens",
+	}),
+	timezone: z.string().optional(),
+	color: z.string().optional(),
+	monitors: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Must be a valid monitor ID")).min(1, "At least one monitor is required"),
+	subMonitors: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/)).optional(),
+	deleteSubmonitors: z.boolean().optional(),
+	isPublished: booleanCoercion,
+	showCharts: booleanCoercion.optional(),
+	showUptimePercentage: booleanCoercion,
+	showAdminLoginLink: booleanCoercion.optional(),
+	showInfrastructure: booleanCoercion.optional(),
+	removeLogo: z.union([z.literal("true"), z.literal("false")]).optional(),
+	theme: z.enum(StatusPageThemes).optional(),
+	themeMode: z.enum(StatusPageThemeModes).optional(),
+	password: passwordField,
+});
+
+export const createStatusPageBodyValidation = baseStatusPageBody.strip();
+
+const updateStatusPageBodyObject = baseStatusPageBody
+	.extend({
+		removePassword: booleanCoercion.optional(),
 	})
 	.strip();
+
+export const updateStatusPageBodyValidation = updateStatusPageBodyObject.refine((body) => !(body.password && body.removePassword), {
+	message: "Cannot set and remove password in the same request",
+});
+
+export const updateStatusPageBodyShape = updateStatusPageBodyObject.shape;
+
+export const unlockBodyValidation = z.object({
+	password: z.string().min(1, "Password is required"),
+});
 
 export const imageValidation = z
 	.object({

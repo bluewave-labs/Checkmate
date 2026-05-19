@@ -1,4 +1,5 @@
 import { describe, expect, it, jest } from "@jest/globals";
+import bcrypt from "bcryptjs";
 import { StatusPageService } from "../../../src/service/business/statusPageService.ts";
 import type { IStatusPagesRepository } from "../../../src/repositories/status-pages/IStatusPagesRepository.ts";
 import type { ISettingsService } from "../../../src/service/system/settingsService.ts";
@@ -26,8 +27,10 @@ const createRepo = () =>
 	({
 		create: jest.fn().mockResolvedValue(makeStatusPage()),
 		findByUrl: jest.fn().mockResolvedValue(makeStatusPage()),
+		findByUrlWithSecret: jest.fn().mockResolvedValue({ ...makeStatusPage(), passwordHash: null, passwordVersion: 0 }),
 		findByTeamId: jest.fn().mockResolvedValue([makeStatusPage()]),
 		updateById: jest.fn().mockResolvedValue(makeStatusPage()),
+		updatePasswordHash: jest.fn().mockResolvedValue(undefined),
 		deleteById: jest.fn().mockResolvedValue(makeStatusPage()),
 		removeMonitorFromStatusPages: jest.fn().mockResolvedValue(1),
 	}) as unknown as jest.Mocked<IStatusPagesRepository>;
@@ -169,5 +172,69 @@ describe("StatusPageService", () => {
 			expect(repo.deleteById).toHaveBeenCalledWith("sp-1", "team-1");
 			expect(result).toEqual(makeStatusPage());
 		});
+	});
+});
+
+describe("StatusPageService — passwords", () => {
+	it("setPassword hashes the password and writes via repo", async () => {
+		const { service, repo } = createService(true);
+
+		await service.setPassword("sp-1", "supersecret");
+
+		expect(repo.updatePasswordHash).toHaveBeenCalledTimes(1);
+		const [calledId, calledHash] = (repo.updatePasswordHash as jest.Mock).mock.calls[0];
+		expect(calledId).toBe("sp-1");
+		expect(typeof calledHash).toBe("string");
+		expect(await bcrypt.compare("supersecret", calledHash as string)).toBe(true);
+	});
+
+	it("setPassword rejects passwords shorter than 8 chars", async () => {
+		const { service } = createService(true);
+		await expect(service.setPassword("sp-1", "short")).rejects.toMatchObject({ status: 400 });
+	});
+
+	it("removePassword writes null", async () => {
+		const { service, repo } = createService(true);
+		await service.removePassword("sp-1");
+		expect(repo.updatePasswordHash).toHaveBeenCalledWith("sp-1", null);
+	});
+
+	it("verifyPassword returns true for matching password", async () => {
+		const { service, repo } = createService(true);
+		const hash = bcrypt.hashSync("supersecret", 10);
+		(repo.findByUrlWithSecret as jest.Mock).mockResolvedValue({
+			...makeStatusPage({ id: "sp-1" }),
+			passwordHash: hash,
+			passwordVersion: 0,
+		});
+		const result = await service.verifyPassword("my-page", "supersecret");
+		expect(result.ok).toBe(true);
+		expect(result.statusPageId).toBe("sp-1");
+		expect(result.passwordVersion).toBe(0);
+	});
+
+	it("verifyPassword returns false for wrong password but still exposes statusPageId", async () => {
+		const { service, repo } = createService(true);
+		const hash = bcrypt.hashSync("supersecret", 10);
+		(repo.findByUrlWithSecret as jest.Mock).mockResolvedValue({
+			...makeStatusPage({ id: "sp-1" }),
+			passwordHash: hash,
+			passwordVersion: 0,
+		});
+		const result = await service.verifyPassword("my-page", "wrong");
+		expect(result.ok).toBe(false);
+		expect(result.statusPageId).toBe("sp-1");
+	});
+
+	it("verifyPassword returns false when page has no password (with dummy compare for timing)", async () => {
+		const { service, repo } = createService(true);
+		(repo.findByUrlWithSecret as jest.Mock).mockResolvedValue({
+			...makeStatusPage({ id: "sp-1" }),
+			passwordHash: null,
+			passwordVersion: 0,
+		});
+		const result = await service.verifyPassword("my-page", "anything");
+		expect(result.ok).toBe(false);
+		expect(result.statusPageId).toBe("sp-1");
 	});
 });

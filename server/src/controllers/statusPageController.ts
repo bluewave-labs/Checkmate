@@ -1,7 +1,9 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, RequestHandler, Response, NextFunction } from "express";
 
 import {
 	createStatusPageBodyValidation,
+	updateStatusPageBodyValidation,
+	unlockBodyValidation,
 	getStatusPageParamValidation,
 	getStatusPageQueryValidation,
 	imageValidation,
@@ -12,6 +14,8 @@ import { IStatusPageService } from "@/service/business/statusPageService.js";
 import { IMonitorsRepository } from "@/repositories/index.js";
 import { ISettingsService } from "@/service/system/settingsService.js";
 import { NormalizeData } from "@/utils/dataUtils.js";
+import { StatusPageBruteForceService } from "@/service/business/statusPageBruteForceService.js";
+import { buildCookieName, signUnlockToken, UNLOCK_TOKEN_TTL_SECONDS, UNLOCK_COOKIE_PATH } from "@/utils/statusPagePasswordCookie.js";
 
 const SERVICE_NAME = "statusPageController";
 
@@ -22,6 +26,8 @@ export interface IStatusPageController {
 	getStatusPageByUrl(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 	getStatusPagesByTeamId(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 	deleteStatusPage(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	unlockStatusPage: RequestHandler;
+	lockStatusPage: RequestHandler;
 }
 
 class StatusPageController implements IStatusPageController {
@@ -29,10 +35,17 @@ class StatusPageController implements IStatusPageController {
 	private statusPageService: IStatusPageService;
 	private monitorsRepository: IMonitorsRepository;
 	private settingsService: ISettingsService;
-	constructor(statusPageService: IStatusPageService, monitorsRepository: IMonitorsRepository, settingsService: ISettingsService) {
+	private bruteForceService: StatusPageBruteForceService;
+	constructor(
+		statusPageService: IStatusPageService,
+		monitorsRepository: IMonitorsRepository,
+		settingsService: ISettingsService,
+		bruteForceService: StatusPageBruteForceService
+	) {
 		this.statusPageService = statusPageService;
 		this.monitorsRepository = monitorsRepository;
 		this.settingsService = settingsService;
+		this.bruteForceService = bruteForceService;
 	}
 
 	get serviceName() {
@@ -41,7 +54,7 @@ class StatusPageController implements IStatusPageController {
 
 	createStatusPage = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			createStatusPageBodyValidation.parse(req.body);
+			const body = createStatusPageBodyValidation.parse(req.body);
 			if (req.file) {
 				imageValidation.parse(req.file);
 			}
@@ -49,6 +62,10 @@ class StatusPageController implements IStatusPageController {
 			const teamId = requireTeamId(req?.user?.teamId);
 			const userId = requireUserId(req?.user?.id);
 			const statusPage = await this.statusPageService.createStatusPage(userId, teamId, req.file, req.body);
+
+			if (body.password) {
+				await this.statusPageService.setPassword(statusPage.id, body.password);
+			}
 
 			return res.status(200).json({
 				success: true,
@@ -62,7 +79,7 @@ class StatusPageController implements IStatusPageController {
 
 	updateStatusPage = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			createStatusPageBodyValidation.parse(req.body);
+			const body = updateStatusPageBodyValidation.parse(req.body);
 			if (req.file) {
 				imageValidation.parse(req.file);
 			}
@@ -76,6 +93,14 @@ class StatusPageController implements IStatusPageController {
 			if (statusPage === null) {
 				throw new AppError({ message: "Status page not found", status: 404 });
 			}
+
+			if (body.password) {
+				await this.statusPageService.setPassword(statusPage.id, body.password);
+			}
+			if (body.removePassword) {
+				await this.statusPageService.removePassword(statusPage.id);
+			}
+
 			res.status(200).json({
 				success: true,
 				msg: "Status page updated successfully",
@@ -97,6 +122,11 @@ class StatusPageController implements IStatusPageController {
 
 			const statusPage = await this.statusPageService.getStatusPageByUrl(req.params.url as string);
 
+			// Published pages are reachable by anonymous viewers (with `req.user` undefined)
+			// after they clear the password gate via the unlock cookie. Unpublished pages
+			// require an authenticated owning-team user. Keep this branch gated on
+			// `!isPublished` — calling requireTeamId() against an anonymous viewer would
+			// throw on the protected-but-published path.
 			if (!statusPage.isPublished) {
 				const teamId = requireTeamId(req?.user?.teamId);
 				if (statusPage.teamId !== teamId) {
@@ -108,7 +138,6 @@ class StatusPageController implements IStatusPageController {
 			const showURL = settings.showURL;
 
 			const monitors = await this.monitorsRepository.findByIds(statusPage.monitors);
-			// Sort monitors according to the order in statusPage.monitors
 			const monitorOrder = new Map(statusPage.monitors.map((id, index) => [id, index]));
 			const sortedMonitors = [...monitors].sort((a, b) => {
 				const orderA = monitorOrder.get(a.id) ?? Number.MAX_SAFE_INTEGER;
@@ -164,6 +193,75 @@ class StatusPageController implements IStatusPageController {
 				success: true,
 				msg: "Status page deleted successfully",
 			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	unlockStatusPage = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+		try {
+			const { url } = getStatusPageParamValidation.parse(req.params);
+			const { password } = unlockBodyValidation.parse(req.body);
+			const ip = req.ip ?? "unknown";
+			const ipHash = this.bruteForceService.hashIp(ip);
+
+			// verifyPassword performs the single DB fetch and always returns the
+			// statusPageId when the page exists (regardless of password match),
+			// so the controller no longer needs a separate prefetch for the
+			// brute-force check.
+			const result = await this.statusPageService.verifyPassword(url, password);
+
+			if (result.statusPageId && (await this.bruteForceService.isLockedOut(result.statusPageId, ipHash))) {
+				return res.status(429).json({
+					success: false,
+					msg: "Too many failed attempts. Please try again later.",
+				});
+			}
+
+			if (result.ok && result.statusPageId) {
+				const { jwtSecret } = this.settingsService.getSettings();
+				const token = signUnlockToken({ statusPageId: result.statusPageId, passwordVersion: result.passwordVersion! }, jwtSecret);
+				await this.bruteForceService.clear(result.statusPageId, ipHash);
+				// `req.secure` is `false` behind a reverse proxy unless `app.set("trust proxy", …)`
+				// is configured. Fall back to NODE_ENV so production always gets the Secure flag
+				// regardless of proxy configuration. Dev/test stay insecure so cookies work over HTTP.
+				const isSecureRequest = req.secure || process.env.NODE_ENV === "production";
+				res.cookie(buildCookieName(result.statusPageId), token, {
+					httpOnly: true,
+					sameSite: "lax",
+					secure: isSecureRequest,
+					path: UNLOCK_COOKIE_PATH,
+					maxAge: UNLOCK_TOKEN_TTL_SECONDS * 1000,
+				});
+				return res.status(204).send();
+			}
+
+			if (result.statusPageId) {
+				await this.bruteForceService.recordFailure(result.statusPageId, ipHash);
+				if (await this.bruteForceService.isLockedOut(result.statusPageId, ipHash)) {
+					return res.status(429).json({
+						success: false,
+						msg: "Too many failed attempts. Please try again later.",
+					});
+				}
+			}
+
+			// requiresPassword:true tells the client's 401 interceptor that this is a
+			// password challenge (not an expired session) so it should NOT redirect to /login.
+			return res.status(401).json({ success: false, msg: "Incorrect password", requiresPassword: true });
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	lockStatusPage = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+		try {
+			const { url } = getStatusPageParamValidation.parse(req.params);
+			const statusPage = await this.statusPageService.findByUrlOrNull(url);
+			if (statusPage) {
+				res.clearCookie(buildCookieName(statusPage.id), { path: UNLOCK_COOKIE_PATH });
+			}
+			return res.status(204).send();
 		} catch (error) {
 			next(error);
 		}

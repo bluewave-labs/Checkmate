@@ -2362,6 +2362,16 @@
 									"profilePicture": {
 										"type": "string"
 									},
+									"password": {
+										"type": "string",
+										"minLength": 8,
+										"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/])[A-Za-z0-9!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/]+$"
+									},
+									"newPassword": {
+										"type": "string",
+										"minLength": 8,
+										"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/])[A-Za-z0-9!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/]+$"
+									},
 									"profileImage": {
 										"type": "string",
 										"format": "binary"
@@ -5207,7 +5217,8 @@
 										"type": "array",
 										"items": {
 											"type": "string"
-										}
+										},
+										"minItems": 1
 									},
 									"duration": {
 										"type": "number"
@@ -10376,6 +10387,10 @@
 										"type": "string",
 										"enum": ["auto", "light", "dark"]
 									},
+									"password": {
+										"type": "string",
+										"minLength": 8
+									},
 									"logo": {
 										"type": "string",
 										"format": "binary"
@@ -10578,6 +10593,13 @@
 									"themeMode": {
 										"type": "string",
 										"enum": ["auto", "light", "dark"]
+									},
+									"password": {
+										"type": "string",
+										"minLength": 8
+									},
+									"removePassword": {
+										"type": "boolean"
 									},
 									"logo": {
 										"type": "string",
@@ -10857,6 +10879,9 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Password required for protected page"
+					},
 					"404": {
 						"description": "Status page not found"
 					},
@@ -10882,6 +10907,72 @@
 								}
 							}
 						}
+					}
+				}
+			}
+		},
+		"/status-page/{url}/unlock": {
+			"post": {
+				"tags": ["status-page"],
+				"summary": "Unlock a password-protected status page; sets the unlock cookie on success",
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "url",
+						"in": "path"
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"password": {
+										"type": "string",
+										"minLength": 1
+									}
+								},
+								"required": ["password"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"204": {
+						"description": "Unlock succeeded; cookie set"
+					},
+					"401": {
+						"description": "Incorrect password"
+					},
+					"429": {
+						"description": "Too many failed attempts"
+					}
+				}
+			}
+		},
+		"/status-page/{url}/lock": {
+			"post": {
+				"tags": ["status-page"],
+				"summary": "Clear the unlock cookie for a status page",
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "url",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Cookie cleared"
 					}
 				}
 			}

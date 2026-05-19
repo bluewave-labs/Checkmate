@@ -29,6 +29,17 @@ export const createApp = ({
 	const allowedOrigin = envSettings.clientHost;
 	const app = express();
 
+	// Trust the first proxy hop so req.ip resolves from X-Forwarded-For (instead of
+	// the socket address) and req.secure / req.protocol resolve from X-Forwarded-Proto.
+	// Without this, behind nginx/Cloudflare/Docker:
+	//   - every client looks like the proxy IP (rate limiters and the status-page
+	//     brute-force lockout collapse to one shared bucket)
+	//   - req.secure is false even on HTTPS (cookies miss the Secure flag)
+	//   - the swagger UI server URL renders as http instead of https
+	// "1" matches the documented Docker-behind-nginx deployment. Multi-hop deployments
+	// (e.g. Cloudflare → CDN → nginx) should override this.
+	app.set("trust proxy", 1);
+
 	app.use(generalApiLimiter);
 
 	app.use(
