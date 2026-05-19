@@ -357,9 +357,10 @@ class MonitorController implements IMonitorController {
 
 			const teamId = requireTeamId(req.user?.teamId);
 			const type = validatedQuery.type;
+			const tags = validatedQuery.tags;
 			const filter = validatedQuery.filter;
 
-			const monitors = await this.monitorService.getMonitorsByTeamId({ teamId, type, filter });
+			const monitors = await this.monitorService.getMonitorsByTeamId({ teamId, type, tags, filter });
 
 			return res.status(200).json({
 				success: true,
@@ -382,12 +383,14 @@ class MonitorController implements IMonitorController {
 			const field = validatedQuery.field;
 			const order = validatedQuery.order;
 			const type = validatedQuery.type;
+			const tags = validatedQuery.tags;
 			const teamId = requireTeamId(req.user?.teamId);
 
 			const monitors = await this.monitorService.getMonitorsWithChecksByTeamId({
 				teamId,
 				limit,
 				type,
+				tags,
 				page,
 				rowsPerPage,
 				filter,
