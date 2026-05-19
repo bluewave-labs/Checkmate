@@ -13,7 +13,12 @@ import {
 	PUBLIC_STATUS_PAGE_PREFIX,
 	type StatusPageResponse,
 	type StatusPageTheme,
+	type LockedStatusPageResponse,
 } from "@/Types/StatusPage";
+import {
+	StatusPageLockScreen,
+	type LockScreenBranding,
+} from "@/Pages/StatusPage/Status/Components/StatusPageLockScreen";
 import { HeaderStatusPageControls } from "@/Pages/StatusPage/Status/Components/HeaderStatusPageControls";
 import { StatusPageThemeProvider } from "@/Pages/StatusPage/Status/themes/StatusPageThemeProvider";
 import {
@@ -71,13 +76,37 @@ const StatusPageView = () => {
 
 	const apiUrl = url ? `/status-page/${url}?type=uptime&type=infrastructure` : null;
 
-	const { data, isLoading, error } = useGet<StatusPageResponse>(
+	const { data, isLoading, error, refetch } = useGet<StatusPageResponse>(
 		apiUrl,
 		{},
 		{
 			refreshInterval: 10000,
 		}
 	);
+
+	const lockedPayload = (
+		error as
+			| { response?: { status?: number; data?: Partial<LockedStatusPageResponse> } }
+			| undefined
+	)?.response?.data;
+	if (lockedPayload?.requiresPassword && lockedPayload.branding) {
+		const branding = lockedPayload.branding as LockScreenBranding;
+		return (
+			<StatusPageThemeProvider
+				theme={branding.theme}
+				themeMode={branding.themeMode}
+				paintBody
+			>
+				<StatusPageLockScreen
+					url={url!}
+					branding={branding}
+					onUnlocked={() => {
+						void refetch();
+					}}
+				/>
+			</StatusPageThemeProvider>
+		);
+	}
 
 	const statusPage = data?.statusPage;
 	const monitors = data?.monitors ?? [];

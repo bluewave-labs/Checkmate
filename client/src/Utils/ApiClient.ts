@@ -6,6 +6,9 @@ const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
 const api = axios.create({
 	baseURL: BASE_URL,
+	// Status-page unlock sets an httpOnly cookie; the follow-up status-page GET
+	// must send it. Server CORS already returns Allow-Credentials: true.
+	withCredentials: true,
 });
 
 type StoreType = {
@@ -61,7 +64,11 @@ export const initApiClient = (store: StoreType): void => {
 		}
 
 		if (error.response?.status === 401) {
-			if (window.location.pathname !== "/login") {
+			// A 401 with `requiresPassword: true` signals an expected auth challenge
+			// the component will handle (e.g. status-page lock screen) — skip the
+			// session-expired redirect so the error propagates to the caller.
+			const data = error.response.data as { requiresPassword?: boolean } | undefined;
+			if (!data?.requiresPassword && window.location.pathname !== "/login") {
 				window.location.href = "/login";
 			}
 		}

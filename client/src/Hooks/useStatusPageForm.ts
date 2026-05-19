@@ -44,6 +44,8 @@ export const useStatusPageForm = ({
 			theme: data?.theme ?? DEFAULT_STATUS_PAGE_THEME,
 			themeMode: data?.themeMode ?? DEFAULT_STATUS_PAGE_THEME_MODE,
 			logo: transformLogo(data?.logo),
+			password: "",
+			removePassword: false,
 		};
 
 		return { schema: statusPageSchema, defaults };

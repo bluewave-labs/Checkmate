@@ -26,6 +26,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useStatusPageForm } from "@/Hooks/useStatusPageForm";
 import type { StatusPageFormData } from "@/Validation/statusPage";
+import { AccessControlSection } from "@/Pages/StatusPage/Create/Components/AccessControlSection";
 import { useGet, usePost, usePut, useDelete } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
 import type { MonitorDisplayType, StatusPageResponse } from "@/Types/StatusPage";
@@ -86,7 +87,7 @@ const CreateStatusPage = () => {
 		defaultValues: defaults,
 	});
 
-	const { control, reset, handleSubmit } = form;
+	const { control, reset, handleSubmit, setValue } = form;
 
 	// Reset form when defaults change (from fetched data)
 	useEffect(() => {
@@ -144,6 +145,8 @@ const CreateStatusPage = () => {
 		fd.append("showInfrastructure", String(data.showInfrastructure));
 		if (data.theme) fd.append("theme", data.theme);
 		if (data.themeMode) fd.append("themeMode", data.themeMode);
+		if (data.password) fd.append("password", data.password);
+		if (data.removePassword) fd.append("removePassword", "true");
 
 		data.monitors.forEach((monitorId) => {
 			fd.append("monitors[]", monitorId);
@@ -223,6 +226,17 @@ const CreateStatusPage = () => {
 							{t("pages.statusPages.form.access.option.published.name")}
 						</Typography>
 					</Stack>
+				}
+			/>
+			<ConfigBox
+				title={t("pages.statusPages.accessControl.sectionTitle")}
+				subtitle={t("pages.statusPages.accessControl.helperText")}
+				rightContent={
+					<AccessControlSection
+						control={control as unknown as Parameters<typeof AccessControlSection>[0]["control"]}
+						setValue={setValue as unknown as Parameters<typeof AccessControlSection>[0]["setValue"]}
+						hasExistingPassword={Boolean(statusPageData?.statusPage?.passwordProtected)}
+					/>
 				}
 			/>
 			<ConfigBox

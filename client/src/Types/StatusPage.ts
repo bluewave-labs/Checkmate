@@ -40,6 +40,8 @@ export const resolveStatusPageThemeMode = (
 	STATUS_PAGE_THEME_MODES.find((m) => m === value) ?? DEFAULT_STATUS_PAGE_THEME_MODE;
 export const PUBLIC_STATUS_PAGE_PREFIX = "/status/public";
 
+export const STATUSPAGE_PASSWORD_MIN_LENGTH = 8;
+
 export interface StatusPage {
 	id: string;
 	userId: string;
@@ -64,6 +66,7 @@ export interface StatusPage {
 	customCSS: string;
 	theme: StatusPageTheme;
 	themeMode: StatusPageThemeMode;
+	passwordProtected: boolean;
 	createdAt: string;
 	updatedAt: string;
 }
@@ -71,4 +74,18 @@ export interface StatusPage {
 export interface StatusPageResponse {
 	statusPage: StatusPage;
 	monitors: Monitor[];
+}
+
+export interface LockedStatusPageResponse {
+	success: false;
+	msg: string;
+	requiresPassword: true;
+	statusPageId: string;
+	branding: {
+		companyName: string;
+		logo: { data: string; contentType: string } | null;
+		color: string;
+		theme: StatusPageTheme;
+		themeMode: StatusPageThemeMode;
+	};
 }

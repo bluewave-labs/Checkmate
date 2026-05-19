@@ -1330,6 +1330,21 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "Status page deleted successfully",
+			"lock": {
+				"title": "This status page is password protected",
+				"passwordLabel": "Password",
+				"submit": "Unlock",
+				"incorrect": "Incorrect password",
+				"rateLimited": "Too many failed attempts. Please try again later."
+			},
+			"accessControl": {
+				"sectionTitle": "Access control",
+				"requirePassword": "Require a password to view this page",
+				"passwordPlaceholder": "Minimum 8 characters",
+				"passwordPlaceholderExisting": "••••••••  (leave blank to keep current)",
+				"removePassword": "Remove password",
+				"helperText": "Anyone with this password can view the page."
+			},
 			"fallback": {
 				"title": "No status pages yet",
 				"description": "Publish a public page that shows real-time uptime and incident history to your customers and stakeholders.",
@@ -1390,7 +1405,12 @@
 			"table": {
 				"headers": {
 					"name": "Status page name",
-					"url": "Public URL"
+					"url": "Public URL",
+					"access": "Access"
+				},
+				"access": {
+					"protected": "Protected",
+					"public": "Public"
 				},
 				"published": "Published",
 				"unpublished": "Unpublished"

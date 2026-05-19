@@ -5,7 +5,8 @@ import { Table, type Header, ValueLabel } from "@/Components/design-elements";
 import { Pagination } from "@/Components/design-elements/Table";
 import { ActionsMenu, type ActionMenuItem } from "@/Components/actions-menu";
 import { useClientPagination } from "@/Hooks/useClientPagination";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Globe, Lock } from "lucide-react";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
@@ -103,20 +104,41 @@ export const StatusPagesTable = ({
 				render: (row) => row.type.join(", "),
 			},
 			{
-				id: "status",
-				content: t("common.table.headers.status"),
+				id: "access",
+				content: t("pages.statusPages.table.headers.access"),
+				align: "center",
 				render: (row) => {
+					const Icon = row.passwordProtected ? Lock : Globe;
+					const label = row.passwordProtected
+						? t("pages.statusPages.table.access.protected")
+						: t("pages.statusPages.table.access.public");
 					return (
-						<ValueLabel
-							value={row.isPublished ? "positive" : "neutral"}
-							text={
-								row.isPublished
-									? t("pages.statusPages.table.published")
-									: t("pages.statusPages.table.unpublished")
-							}
-						/>
+						<Stack
+							direction="row"
+							alignItems="center"
+							justifyContent="center"
+							gap={theme.spacing(LAYOUT.XS)}
+							color={theme.palette.text.secondary}
+						>
+							<Icon size={16} aria-hidden />
+							<Typography color={theme.palette.text.secondary}>{label}</Typography>
+						</Stack>
 					);
 				},
+			},
+			{
+				id: "status",
+				content: t("common.table.headers.status"),
+				render: (row) => (
+					<ValueLabel
+						value={row.isPublished ? "positive" : "neutral"}
+						text={
+							row.isPublished
+								? t("pages.statusPages.table.published")
+								: t("pages.statusPages.table.unpublished")
+						}
+					/>
+				),
 			},
 			{
 				id: "actions",

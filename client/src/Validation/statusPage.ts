@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { STATUS_PAGE_THEMES, STATUS_PAGE_THEME_MODES } from "@/Types/StatusPage";
+import {
+	STATUS_PAGE_THEMES,
+	STATUS_PAGE_THEME_MODES,
+	STATUSPAGE_PASSWORD_MIN_LENGTH,
+} from "@/Types/StatusPage";
 
 export const statusPageSchema = z.object({
 	companyName: z
@@ -35,6 +39,15 @@ export const statusPageSchema = z.object({
 		})
 		.nullable()
 		.optional(),
+	password: z
+		.string()
+		.min(
+			STATUSPAGE_PASSWORD_MIN_LENGTH,
+			`Password must be at least ${STATUSPAGE_PASSWORD_MIN_LENGTH} characters`
+		)
+		.optional()
+		.or(z.literal("")),
+	removePassword: z.boolean().optional(),
 });
 
 export type StatusPageFormData = z.infer<typeof statusPageSchema>;
