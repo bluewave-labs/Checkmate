@@ -1,4 +1,4 @@
-import { IStatusPagesRepository } from "@/repositories/index.js";
+import { IStatusPagesRepository, type StatusPageWithSecret } from "@/repositories/index.js";
 import { type StatusPageDocument, StatusPageModel } from "@/db/models/StatusPage.js";
 import type { StatusPage, StatusPageLogo, StatusPageLogoDocument } from "@/types/statusPage.js";
 import mongoose from "mongoose";
@@ -61,8 +61,17 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 			customCSS: doc.customCSS,
 			theme: doc.theme,
 			themeMode: doc.themeMode,
+			passwordProtected: Boolean(doc.passwordHash),
 			createdAt: this.toDateString(doc.createdAt),
 			updatedAt: this.toDateString(doc.updatedAt),
+		};
+	};
+
+	private toEntityWithSecret = (doc: StatusPageDocument): StatusPageWithSecret => {
+		return {
+			...this.toEntity(doc),
+			passwordHash: doc.passwordHash ?? null,
+			passwordVersion: doc.passwordVersion ?? 0,
 		};
 	};
 
@@ -94,7 +103,7 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 	findByUrl = async (url: string): Promise<StatusPage> => {
 		const statusPage = await StatusPageModel.findOne({
 			url,
-		});
+		}).select("+passwordHash");
 		if (!statusPage) {
 			throw new AppError({ message: "Status page not found", status: 404 });
 		}
@@ -102,8 +111,23 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 		// Get status page
 	};
 
+	findByUrlWithSecret = async (url: string): Promise<StatusPageWithSecret> => {
+		const statusPage = await StatusPageModel.findOne({ url }).select("+passwordHash");
+		if (!statusPage) {
+			throw new AppError({ message: "Status page not found", status: 404 });
+		}
+		return this.toEntityWithSecret(statusPage);
+	};
+
+	updatePasswordHash = async (id: string, hash: string | null): Promise<void> => {
+		const result = await StatusPageModel.findByIdAndUpdate(id, { $set: { passwordHash: hash }, $inc: { passwordVersion: 1 } }, { new: true });
+		if (!result) {
+			throw new AppError({ message: "Status page not found", status: 404 });
+		}
+	};
+
 	findByTeamId = async (teamId: string): Promise<StatusPage[]> => {
-		const statusPages = await StatusPageModel.find({ teamId });
+		const statusPages = await StatusPageModel.find({ teamId }).select("+passwordHash");
 		return this.mapDocuments(statusPages);
 	};
 
@@ -127,7 +151,7 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 
 		const statusPage = await StatusPageModel.findOneAndUpdate({ teamId, _id: id }, updateData, {
 			new: true,
-		});
+		}).select("+passwordHash");
 
 		if (!statusPage) {
 			throw new AppError({ message: "Status page not found", status: 404 });
@@ -137,7 +161,7 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 	};
 
 	deleteById = async (id: string, teamId: string): Promise<StatusPage> => {
-		const statusPage = await StatusPageModel.findOneAndDelete({ _id: id, teamId });
+		const statusPage = await StatusPageModel.findOneAndDelete({ _id: id, teamId }).select("+passwordHash");
 		if (!statusPage) {
 			throw new AppError({ message: "Status page not found", status: 404 });
 		}

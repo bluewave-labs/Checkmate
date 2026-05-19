@@ -10,6 +10,9 @@ export { default as MongoMonitorStatsRepository } from "@/repositories/monitor-s
 export * from "@/repositories/status-pages/IStatusPagesRepository.js";
 export { default as MongoStatusPagesRepository } from "@/repositories/status-pages/MongoStatusPagesRepository.js";
 
+export * from "@/repositories/status-page-lockouts/IStatusPageLockoutsRepository.js";
+export { default as MongoStatusPageLockoutsRepository } from "@/repositories/status-page-lockouts/MongoStatusPageLockoutsRepository.js";
+
 export * from "@/repositories/users/IUsersRepository.js";
 export { default as MongoUsersRepository } from "@/repositories/users/MongoUsersRepository.js";
 

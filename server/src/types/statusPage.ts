@@ -9,6 +9,8 @@ export const StatusPageThemeModes = ["auto", "light", "dark"] as const;
 export type StatusPageThemeMode = (typeof StatusPageThemeModes)[number];
 export const DEFAULT_STATUS_PAGE_THEME_MODE: StatusPageThemeMode = "auto";
 
+export const STATUSPAGE_PASSWORD_MIN_LENGTH = 8;
+
 export interface StatusPageLogo {
 	data: string;
 	contentType: string;
@@ -40,6 +42,7 @@ export interface StatusPage {
 	customCSS: string;
 	theme: StatusPageTheme;
 	themeMode: StatusPageThemeMode;
+	passwordProtected: boolean;
 	createdAt: string;
 	updatedAt: string;
 }

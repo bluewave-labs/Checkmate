@@ -10,12 +10,14 @@ import {
 
 type StatusPageDocumentBase = Omit<
 	StatusPage,
-	"id" | "userId" | "teamId" | "monitors" | "subMonitors" | "originalMonitors" | "logo" | "createdAt" | "updatedAt"
+	"id" | "userId" | "teamId" | "monitors" | "subMonitors" | "originalMonitors" | "logo" | "createdAt" | "updatedAt" | "passwordProtected"
 > & {
 	monitors: Types.ObjectId[];
 	subMonitors: Types.ObjectId[];
 	originalMonitors?: Types.ObjectId[];
 	logo?: StatusPageLogoDocument | null;
+	passwordHash?: string | null;
+	passwordVersion: number;
 };
 
 interface StatusPageDocument extends StatusPageDocumentBase {
@@ -123,6 +125,15 @@ const StatusPageSchema = new Schema<StatusPageDocument>(
 			type: String,
 			enum: StatusPageThemeModes,
 			default: DEFAULT_STATUS_PAGE_THEME_MODE,
+		},
+		passwordHash: {
+			type: String,
+			default: null,
+			select: false,
+		},
+		passwordVersion: {
+			type: Number,
+			default: 0,
 		},
 	},
 	{ timestamps: true }
