@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { getChecksParamValidation, getChecksQueryValidation } from "@/validation/checkValidation.js";
 import type { IGeoChecksService } from "@/service/business/geoChecksService.js";
 import { requireTeamId } from "./controllerUtils.js";
+import { AppError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "geoCheckController";
 

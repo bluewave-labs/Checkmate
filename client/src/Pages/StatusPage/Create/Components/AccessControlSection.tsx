@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { Controller, type Control, type FieldValues, type UseFormSetValue } from "react-hook-form";
+import {
+	Controller,
+	type Control,
+	type FieldValues,
+	type UseFormSetValue,
+} from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import Stack from "@mui/material/Stack";
@@ -17,7 +22,11 @@ interface Props {
 	hasExistingPassword: boolean;
 }
 
-export const AccessControlSection = ({ control, setValue, hasExistingPassword }: Props) => {
+export const AccessControlSection = ({
+	control,
+	setValue,
+	hasExistingPassword,
+}: Props) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const [enabled, setEnabled] = useState<boolean>(hasExistingPassword);
@@ -52,7 +61,11 @@ export const AccessControlSection = ({ control, setValue, hasExistingPassword }:
 				{t("pages.statusPages.accessControl.sectionTitle")}
 			</Typography>
 
-			<Stack direction="row" alignItems="center" gap={theme.spacing(LAYOUT.SM)}>
+			<Stack
+				direction="row"
+				alignItems="center"
+				gap={theme.spacing(LAYOUT.SM)}
+			>
 				<SwitchComponent
 					checked={enabled}
 					onChange={(_e, v) => handleSwitchChange(v)}

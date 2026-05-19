@@ -14,6 +14,8 @@ import { useNavigate } from "react-router-dom";
 
 import { PUBLIC_STATUS_PAGE_PREFIX, type StatusPage } from "@/Types/StatusPage";
 
+const ACCESS_ICON_SIZE = 16;
+
 interface StatusPagesTableProps {
 	data: StatusPage[];
 	setSelectedStatusPage: (statusPage: StatusPage | null) => void;
@@ -120,7 +122,10 @@ export const StatusPagesTable = ({
 							gap={theme.spacing(LAYOUT.XS)}
 							color={theme.palette.text.secondary}
 						>
-							<Icon size={16} aria-hidden />
+							<Icon
+								size={ACCESS_ICON_SIZE}
+								aria-hidden
+							/>
 							<Typography color={theme.palette.text.secondary}>{label}</Typography>
 						</Stack>
 					);

@@ -233,8 +233,14 @@ const CreateStatusPage = () => {
 				subtitle={t("pages.statusPages.accessControl.helperText")}
 				rightContent={
 					<AccessControlSection
-						control={control as unknown as Parameters<typeof AccessControlSection>[0]["control"]}
-						setValue={setValue as unknown as Parameters<typeof AccessControlSection>[0]["setValue"]}
+						control={
+							control as unknown as Parameters<typeof AccessControlSection>[0]["control"]
+						}
+						setValue={
+							setValue as unknown as Parameters<
+								typeof AccessControlSection
+							>[0]["setValue"]
+						}
 						hasExistingPassword={Boolean(statusPageData?.statusPage?.passwordProtected)}
 					/>
 				}

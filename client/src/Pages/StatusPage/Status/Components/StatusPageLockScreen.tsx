@@ -12,6 +12,9 @@ import { typographyLevels } from "@/Utils/Theme/Palette";
 import { post } from "@/Utils/ApiClient";
 import type { StatusPageTheme, StatusPageThemeMode } from "@/Types/StatusPage";
 
+const CARD_MAX_WIDTH = 420;
+const LOGO_MAX_HEIGHT = 48;
+
 export interface LockScreenBranding {
 	companyName: string;
 	logo: { data: string; contentType: string } | null;
@@ -59,7 +62,7 @@ export const StatusPageLockScreen = ({ url, branding, onUnlocked }: Props) => {
 			<Stack
 				gap={theme.spacing(LAYOUT.MD)}
 				alignItems="center"
-				maxWidth={420}
+				maxWidth={CARD_MAX_WIDTH}
 				width="100%"
 			>
 				{branding.logo && (
@@ -67,7 +70,7 @@ export const StatusPageLockScreen = ({ url, branding, onUnlocked }: Props) => {
 						component="img"
 						src={`data:${branding.logo.contentType};base64,${branding.logo.data}`}
 						alt={branding.companyName}
-						maxHeight={48}
+						maxHeight={LOGO_MAX_HEIGHT}
 					/>
 				)}
 				<Typography
@@ -77,11 +80,18 @@ export const StatusPageLockScreen = ({ url, branding, onUnlocked }: Props) => {
 				>
 					{branding.companyName}
 				</Typography>
-				<Typography color={theme.palette.text.secondary} textAlign="center">
+				<Typography
+					color={theme.palette.text.secondary}
+					textAlign="center"
+				>
 					{t("pages.statusPages.lock.title")}
 				</Typography>
 
-				<Box component="form" onSubmit={handleSubmit} width="100%">
+				<Box
+					component="form"
+					onSubmit={handleSubmit}
+					width="100%"
+				>
 					<Stack gap={theme.spacing(LAYOUT.MD)}>
 						<TextField
 							type="password"
