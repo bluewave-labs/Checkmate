@@ -22,6 +22,7 @@ export const getMonitorsByTeamIdParamValidation = z.object({});
 export const getMonitorsByTeamIdQueryValidation = z.object({
 	type: z.union([z.enum(MonitorTypes), z.array(z.enum(MonitorTypes))]).optional(),
 	filter: z.union([z.string(), z.literal("")]).optional(),
+	tags: z.union([z.string(), z.array(z.string())]).optional(),
 });
 
 export const getMonitorsWithChecksQueryValidation = z.object({
@@ -32,6 +33,7 @@ export const getMonitorsWithChecksQueryValidation = z.object({
 	field: z.string().optional(),
 	order: z.enum(["asc", "desc"]).optional(),
 	type: z.union([z.enum(MonitorTypes), z.array(z.enum(MonitorTypes))]).optional(),
+	tags: z.union([z.string(), z.array(z.string())]).optional(),
 	explain: booleanCoercion.optional(),
 });
 
@@ -238,6 +240,7 @@ export const monitorResponseSchema = z
 		expectedValue: z.string().optional(),
 		matchMethod: z.enum(MonitorMatchMethods).optional(),
 		notifications: z.array(z.string()),
+		tags: z.array(z.string()),
 		secret: z.string().optional(),
 		cpuAlertThreshold: z.number(),
 		memoryAlertThreshold: z.number(),
