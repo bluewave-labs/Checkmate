@@ -1,6 +1,7 @@
 import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { MonitorBasePageWithStates } from "@/Components/design-elements";
+import { MonitorBasePageWithStates, ColoredLabel } from "@/Components/design-elements";
 import { HeaderCreate } from "@/Components/common";
 import {
 	ControlsFilter,
@@ -13,7 +14,9 @@ import { Play, Pause } from "lucide-react";
 import { useGet, useDelete } from "@/Hooks/UseApi";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import type { Monitor, MonitorsWithChecksResponse } from "@/Types/Monitor";
+import type { Tag } from "@/Types/Tag";
 import { useTheme } from "@mui/material";
+import { SPACING } from "@/Utils/Theme/constants";
 import { useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
@@ -38,11 +41,14 @@ const InfrastructureMonitors = () => {
 	// Local state
 	const [selectedStatus, setSelectedStatus] = useState<string>("");
 	const [selectedState, setSelectedState] = useState<string>("");
+	const [selectedTags, setSelectedTags] = useState<string[]>([]);
 	const [search, setSearch] = useState<string>("");
 	const [page, setPage] = useState<number>(0);
 	const [sortField, setSortField] = useState<string>("");
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
+
+	const { data: tags } = useGet<Tag[]>("/tags/team");
 
 	const isDialogOpen = Boolean(selectedMonitor);
 
@@ -51,6 +57,7 @@ const InfrastructureMonitors = () => {
 	const handleClearFilters = useCallback(() => {
 		setSelectedStatus("");
 		setSelectedState("");
+		setSelectedTags([]);
 		setSearch("");
 	}, []);
 
@@ -81,6 +88,7 @@ const InfrastructureMonitors = () => {
 	const monitorsWithChecksUrl = useMemo(() => {
 		const params = new URLSearchParams();
 		params.append("type", "hardware");
+		selectedTags.forEach((tagId) => params.append("tags", tagId));
 		params.append("limit", "1");
 		if (page !== undefined) params.append("page", String(page));
 		if (rowsPerPage) params.append("rowsPerPage", String(rowsPerPage));
@@ -88,7 +96,7 @@ const InfrastructureMonitors = () => {
 		if (field) params.append("field", field);
 		if (sortOrder) params.append("order", sortOrder);
 		return `/monitors/team/with-checks?${params.toString()}`;
-	}, [page, rowsPerPage, filter, field, sortOrder]);
+	}, [page, rowsPerPage, filter, field, sortOrder, selectedTags]);
 
 	const {
 		data: monitorsWithChecksData,
@@ -114,7 +122,9 @@ const InfrastructureMonitors = () => {
 	} = useBulkMonitorActions(refetch, page);
 
 	// Check if any filters are active
-	const hasActiveFilters = Boolean(selectedStatus || selectedState || search);
+	const hasActiveFilters = Boolean(
+		selectedStatus || selectedState || selectedTags.length > 0 || search
+	);
 
 	// Show empty state only when there are truly no monitors (not just filtered out)
 	const effectiveTotalCount =
@@ -165,6 +175,9 @@ const InfrastructureMonitors = () => {
 					setSelectedStatus={setSelectedStatus}
 					selectedState={selectedState}
 					setSelectedState={setSelectedState}
+					tagOptions={tags ?? []}
+					selectedTags={selectedTags}
+					setSelectedTags={setSelectedTags}
 					onClearFilters={handleClearFilters}
 				/>
 				<TextField
@@ -175,6 +188,30 @@ const InfrastructureMonitors = () => {
 					}}
 				/>
 			</Stack>
+
+			{selectedTags.length > 0 && (
+				<Stack
+					direction={isSmall ? "column" : "row"}
+					alignItems={isSmall ? "flex-start" : "center"}
+					flexWrap="wrap"
+					gap={theme.spacing(SPACING.XL)}
+				>
+					<Typography color={theme.palette.text.secondary}>
+						{t("pages.uptime.filters.activeTags")}
+					</Typography>
+					{selectedTags.map((tagId) => {
+						const tag = tags?.find((t) => t.id === tagId);
+						if (!tag) return null;
+						return (
+							<ColoredLabel
+								key={tag.id}
+								text={tag.name}
+								color={tag.color}
+							/>
+						);
+					})}
+				</Stack>
+			)}
 
 			{!isLoading && (
 				<BulkActionsBar
@@ -200,6 +237,7 @@ const InfrastructureMonitors = () => {
 
 			<InfraMonitorsTable
 				monitors={monitorsWithChecksData?.monitors || []}
+				tags={tags ?? []}
 				refetch={refetch}
 				setSelectedMonitor={setSelectedMonitor}
 				sortField={sortField}
