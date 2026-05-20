@@ -100,10 +100,7 @@ export const ColoredLabel = ({ text, color }: { text: string; color: string }) =
 	return (
 		<BaseBox
 			sx={{
-				display: "inline-flex",
-				flexDirection: "row",
-				alignItems: "center",
-				justifyContent: "center",
+				width: "fit-content",
 				padding: theme.spacing(1, 3),
 				color: color,
 				borderColor: color,
