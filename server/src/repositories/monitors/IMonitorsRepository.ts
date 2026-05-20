@@ -3,6 +3,7 @@ import { type MonitorType, type Monitor, type MonitorsSummary, CheckSnapshot } f
 export interface TeamQueryConfig {
 	limit?: number;
 	type?: MonitorType | MonitorType[];
+	tags?: string | string[];
 	page?: number;
 	rowsPerPage?: number;
 	filter?: string;
@@ -51,6 +52,7 @@ export interface IMonitorsRepository {
 	findMonitorsSummaryByTeamId(teamId: string, config?: SummaryConfig): Promise<MonitorsSummary>;
 	findGroupsByTeamId(teamId: string): Promise<string[]>;
 	removeNotificationFromMonitors(notificationId: string): Promise<void>;
+	removeTagFromMonitors(tagId: string): Promise<void>;
 	updateNotifications(teamId: string, monitorIds: string[], notificationIds: string[], action: "add" | "remove" | "set"): Promise<number>;
 	deleteByTeamIdsNotIn(teamIds: string[]): Promise<number>;
 	findAllMonitorIds(): Promise<string[]>;

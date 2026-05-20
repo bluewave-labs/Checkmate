@@ -44,7 +44,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	findByTeamId = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null> => {
-		const { page = 0, rowsPerPage = 0, filter, field = "createdAt", order = "desc", type } = config ?? {};
+		const { page = 0, rowsPerPage = 0, filter, field = "createdAt", order = "desc", type, tags } = config ?? {};
 
 		const query: Record<string, unknown> = {
 			teamId: new mongoose.Types.ObjectId(teamId),
@@ -52,6 +52,10 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 
 		if (type !== undefined) {
 			query.type = Array.isArray(type) ? { $in: type } : type;
+		}
+
+		if (tags !== undefined) {
+			query.tags = Array.isArray(tags) ? { $in: tags } : tags;
 		}
 
 		if (filter !== undefined) {
@@ -152,7 +156,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	findMonitorCountByTeamIdAndType = async (teamId: string, config?: TeamQueryConfig): Promise<number> => {
-		const { type } = config ?? {};
+		const { type, tags } = config ?? {};
 
 		const query: FilterQuery<MonitorDocument> = {
 			teamId: new mongoose.Types.ObjectId(teamId),
@@ -160,6 +164,10 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 
 		if (type !== undefined) {
 			query.type = Array.isArray(type) ? { $in: type } : type;
+		}
+
+		if (tags !== undefined) {
+			query.tags = Array.isArray(tags) ? { $in: tags } : tags;
 		}
 
 		const count = await MonitorModel.countDocuments(query);
@@ -351,6 +359,10 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		await MonitorModel.updateMany({ notifications: notificationId }, { $pull: { notifications: notificationId } });
 	};
 
+	removeTagFromMonitors = async (tagId: string): Promise<void> => {
+		await MonitorModel.updateMany({ tags: tagId }, { $pull: { tags: tagId } });
+	};
+
 	updateNotifications = async (
 		teamId: string,
 		monitorIds: string[],
@@ -406,7 +418,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		};
 
 		const notificationIds = (doc.notifications ?? []).map((notification) => toStringId(notification));
-
+		const tagIds = (doc.tags ?? []).map((tag) => toStringId(tag));
 		return {
 			id: toStringId(doc._id),
 			userId: toStringId(doc.userId),
@@ -429,6 +441,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			interval: doc.interval,
 			uptimePercentage: doc.uptimePercentage ?? undefined,
 			notifications: notificationIds,
+			tags: tagIds,
 			secret: doc.secret ?? undefined,
 			cpuAlertThreshold: doc.cpuAlertThreshold,
 			cpuAlertCounter: doc.cpuAlertCounter,
@@ -468,6 +481,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		};
 
 		const notificationIds = (doc.notifications ?? []).map((notification: unknown) => toStringId(notification));
+		const tagIds = (doc.tags ?? []).map((tag: unknown) => toStringId(tag));
 
 		return {
 			id: toStringId(doc._id),
@@ -491,6 +505,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			interval: doc.interval,
 			uptimePercentage: doc.uptimePercentage ?? undefined,
 			notifications: notificationIds,
+			tags: tagIds,
 			secret: doc.secret ?? undefined,
 			cpuAlertThreshold: doc.cpuAlertThreshold,
 			cpuAlertCounter: doc.cpuAlertCounter,

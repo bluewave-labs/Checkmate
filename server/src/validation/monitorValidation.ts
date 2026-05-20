@@ -22,6 +22,7 @@ export const getMonitorsByTeamIdParamValidation = z.object({});
 export const getMonitorsByTeamIdQueryValidation = z.object({
 	type: z.union([z.enum(MonitorTypes), z.array(z.enum(MonitorTypes))]).optional(),
 	filter: z.union([z.string(), z.literal("")]).optional(),
+	tags: z.union([z.string(), z.array(z.string())]).optional(),
 });
 
 export const getMonitorsWithChecksQueryValidation = z.object({
@@ -32,6 +33,7 @@ export const getMonitorsWithChecksQueryValidation = z.object({
 	field: z.string().optional(),
 	order: z.enum(["asc", "desc"]).optional(),
 	type: z.union([z.enum(MonitorTypes), z.array(z.enum(MonitorTypes))]).optional(),
+	tags: z.union([z.string(), z.array(z.string())]).optional(),
 	explain: booleanCoercion.optional(),
 });
 
@@ -78,6 +80,7 @@ export const createMonitorBodyValidation = z
 		diskAlertThreshold: z.number().optional(),
 		tempAlertThreshold: z.number().optional(),
 		notifications: z.array(z.string()).optional(),
+		tags: z.array(z.string()).optional(),
 		secret: z.string().optional(),
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
@@ -106,6 +109,7 @@ export const editMonitorBodyValidation = z
 		description: z.union([z.string(), z.literal("")]).optional(),
 		interval: z.number().optional(),
 		notifications: z.array(z.string()).optional(),
+		tags: z.array(z.string()).optional(),
 		secret: z.string().optional(),
 		ignoreTlsErrors: z.boolean().optional(),
 		useAdvancedMatching: z.boolean().optional(),
@@ -175,6 +179,7 @@ const importedMonitorSchema = z
 		interval: z.number().default(60000),
 		uptimePercentage: z.number().optional(),
 		notifications: z.array(z.string()).default([]),
+		tags: z.array(z.string()).default([]),
 		secret: z.string().optional(),
 		cpuAlertThreshold: z.number().default(100),
 		cpuAlertCounter: z.number().default(5),
@@ -235,6 +240,7 @@ export const monitorResponseSchema = z
 		expectedValue: z.string().optional(),
 		matchMethod: z.enum(MonitorMatchMethods).optional(),
 		notifications: z.array(z.string()),
+		tags: z.array(z.string()),
 		secret: z.string().optional(),
 		cpuAlertThreshold: z.number(),
 		memoryAlertThreshold: z.number(),

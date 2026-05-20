@@ -55,6 +55,7 @@ export interface IMonitorService {
 		teamId: string;
 		limit?: number;
 		type?: MonitorType | MonitorType[];
+		tags?: string | string[];
 		page?: number;
 		rowsPerPage?: number;
 		filter?: string;
@@ -65,6 +66,7 @@ export interface IMonitorService {
 		teamId: string;
 		limit?: number;
 		type?: MonitorType | MonitorType[];
+		tags?: string | string[];
 		page?: number;
 		rowsPerPage?: number;
 		filter?: string;
@@ -357,19 +359,22 @@ export class MonitorService implements IMonitorService {
 	getMonitorsByTeamId = async ({
 		teamId,
 		type,
+		tags,
 		filter,
 	}: {
 		teamId: string;
 		type?: MonitorType | MonitorType[];
+		tags?: string | string[];
 		filter?: string;
 	}): Promise<Monitor[] | null> => {
-		return await this.monitorsRepository.findByTeamId(teamId, { type, filter });
+		return await this.monitorsRepository.findByTeamId(teamId, { type, tags, filter });
 	};
 
 	getMonitorsWithChecksByTeamId = async ({
 		teamId,
 		limit,
 		type,
+		tags,
 		page,
 		rowsPerPage,
 		filter,
@@ -379,6 +384,7 @@ export class MonitorService implements IMonitorService {
 		teamId: string;
 		limit?: number;
 		type?: MonitorType | MonitorType[];
+		tags?: string | string[];
 		page?: number;
 		rowsPerPage?: number;
 		filter?: string;
@@ -386,10 +392,11 @@ export class MonitorService implements IMonitorService {
 		order?: "asc" | "desc";
 	}): Promise<MonitorsWithChecksByTeamIdResult> => {
 		const summary = await this.monitorsRepository.findMonitorsSummaryByTeamId(teamId, { type });
-		const count = await this.monitorsRepository.findMonitorCountByTeamIdAndType(teamId, { type, filter });
+		const count = await this.monitorsRepository.findMonitorCountByTeamIdAndType(teamId, { type, tags, filter });
 		const monitors = await this.monitorsRepository.findByTeamId(teamId, {
 			limit,
 			type,
+			tags,
 			page,
 			rowsPerPage,
 			filter,
