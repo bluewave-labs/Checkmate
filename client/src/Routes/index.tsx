@@ -31,8 +31,13 @@ import CreateStatus from "@/Pages/StatusPage/Create/";
 import StatusPages from "@/Pages/StatusPage/StatusPages";
 import Status from "@/Pages/StatusPage/Status";
 
+// Notifications
 import Notifications from "@/Pages/Notifications";
 import CreateNotifications from "@/Pages/Notifications/create";
+
+// Tags
+import Tags from "@/Pages/Tags";
+import CreateTags from "@/Pages/Tags/create";
 
 // Settings
 import Account from "@/Pages/Account";
@@ -158,6 +163,19 @@ const Routes = () => {
 				<Route
 					path="notifications/configure/:notificationId"
 					element={<CreateNotifications />}
+				/>
+				<Route
+					path="tags"
+					element={<Tags />}
+				/>
+				<Route
+					path="tags/create"
+					element={<CreateTags />}
+				/>
+
+				<Route
+					path="tags/configure/:tagId"
+					element={<CreateTags />}
 				/>
 
 				<Route
