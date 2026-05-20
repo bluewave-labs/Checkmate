@@ -1,7 +1,7 @@
 import { ActionsMenu, type ActionMenuItem } from "@/Components/actions-menu";
 import Typography from "@mui/material/Typography";
 import type { Header } from "@/Components/design-elements/Table";
-import { Table, Chip } from "@/Components/design-elements";
+import { Table, Chip, ColoredLabel } from "@/Components/design-elements";
 import { Pagination } from "@/Components/design-elements/Table";
 import { useClientPagination } from "@/Hooks/useClientPagination";
 
@@ -66,10 +66,10 @@ export const TagsTable = ({ tags, setSelectedTag }: TagsTableProps) => {
 			},
 			{
 				id: "chip",
-				content: t("pages.tags.table.headers.chip"),
+				content: t("pages.tags.table.headers.appearance"),
 				render: (row) => {
 					return (
-						<Chip
+						<ColoredLabel
 							text={row.name}
 							color={row.color}
 						/>
