@@ -93,3 +93,23 @@ export const ValueLabel = ({ value, text }: { value: ValueType; text: string }) 
 		</BaseBox>
 	);
 };
+
+export const ColoredLabel = ({ text, color }: { text: string; color: string }) => {
+	const theme = useTheme();
+
+	return (
+		<BaseBox
+			sx={{
+				display: "inline-flex",
+				flexDirection: "row",
+				alignItems: "center",
+				justifyContent: "center",
+				padding: theme.spacing(1, 3),
+				color: color,
+				borderColor: color,
+			}}
+		>
+			<Typography>{text}</Typography>
+		</BaseBox>
+	);
+};
