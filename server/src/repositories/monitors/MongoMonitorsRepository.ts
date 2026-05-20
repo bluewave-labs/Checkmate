@@ -292,6 +292,10 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		if (config?.type !== undefined) {
 			match.type = Array.isArray(config.type) ? { $in: config.type } : config.type;
 		}
+		if (config?.tags !== undefined) {
+			const tagIds = (Array.isArray(config.tags) ? config.tags : [config.tags]).map((tag) => new mongoose.Types.ObjectId(tag));
+			match.tags = { $in: tagIds };
+		}
 		const pipeline = [
 			{ $match: match },
 			{
