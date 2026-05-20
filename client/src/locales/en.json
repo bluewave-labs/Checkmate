@@ -1560,7 +1560,8 @@
 			"filters": {
 				"search": {
 					"placeholder": "Search monitors..."
-				}
+				},
+				"activeTags": "Active tags"
 			},
 			"table": {
 				"headers": {
