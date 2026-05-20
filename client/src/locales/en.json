@@ -131,7 +131,8 @@
 				"url": "Url",
 				"interval": "Interval",
 				"active": "Active",
-				"responseTime": "Response time"
+				"responseTime": "Response time",
+				"tags": "Tags"
 			}
 		}
 	},
@@ -184,6 +185,7 @@
 				"pagespeed": "Pagespeed",
 				"infrastructure": "Infrastructure",
 				"notifications": "Notifications",
+				"tags": "Tags",
 				"checks": "Checks",
 				"incidents": "Incidents",
 				"statusPages": "Status pages",
@@ -627,6 +629,10 @@
 					"description": "Select the notification channels you want to use",
 					"title": "Notifications"
 				},
+				"tags": {
+					"description": "Select the tags you want to apply to this monitor",
+					"title": "Tags"
+				},
 				"type": {
 					"description": "Select the type of check to perform",
 					"optionDockerDescription": "Use Docker to monitor if a container is running.",
@@ -874,6 +880,37 @@
 			"header": {
 				"title": "Infrastructure monitors",
 				"description": "Track server performance, identify bottlenecks, and ensure reliability with real-time infrastructure monitoring."
+			}
+		},
+		"tags": {
+			"header": {
+				"title": "Tags",
+				"description": "Organize your monitors with tags"
+			},
+			"fallback": {
+				"title": "No tags yet",
+				"description": "Organize your monitors with tags. Once you create a tag and assign it to a monitor, you'll be able to filter by that tag across the app and see tag details here.",
+				"actionButton": "Create a tag"
+			},
+			"table": {
+				"headers": {
+					"color": "Color",
+					"appearance": "Appearance"
+				}
+			},
+			"form": {
+				"name": {
+					"title": "Tag name",
+					"description": "Choose a name for your tag",
+					"optionName": "Tag name",
+					"placeholder": "e.g. Group 1"
+				},
+				"color": {
+					"title": "Tag color",
+					"description": "Choose a color for your tag",
+					"optionName": "Tag color",
+					"placeholder": "e.g. #13715B"
+				}
 			}
 		},
 		"logs": {
@@ -1523,7 +1560,8 @@
 			"filters": {
 				"search": {
 					"placeholder": "Search monitors..."
-				}
+				},
+				"activeTags": "Active tags"
 			},
 			"table": {
 				"headers": {

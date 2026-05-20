@@ -18,7 +18,7 @@ import { Trash2 } from "lucide-react";
 import { HeaderDeleteControls } from "@/Components/monitors";
 import { GeoContinents } from "@/Types/GeoCheck";
 
-import { BasePage, ConfigBox } from "@/Components/design-elements";
+import { BasePage, ColoredLabel, ConfigBox } from "@/Components/design-elements";
 import {
 	RadioWithDescription,
 	Button,
@@ -40,6 +40,7 @@ import {
 	DefaultPageSpeedStrategy,
 } from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
+import type { Tag } from "@/Types/Tag";
 import type { MonitorFormData } from "@/Validation/monitor";
 
 interface GeneralSettingsConfig {
@@ -237,6 +238,7 @@ const CreateMonitorPage = () => {
 
 	const { data: notifications } = useGet<Notification[]>("/notifications/team");
 	const { data: games } = useGet<GamesMap>("/monitors/games");
+	const { data: tags } = useGet<Tag[]>("/tags/team");
 
 	const { schema, defaults } = useMonitorForm({
 		data: existingMonitor ?? null,
@@ -912,6 +914,78 @@ const CreateMonitorPage = () => {
 														<Trash2 size={16} />
 													</IconButton>
 													{index < selectedNotifications.length - 1 && <Divider />}
+												</Stack>
+											))}
+										</Stack>
+									)}
+								</Stack>
+							);
+						}}
+					/>
+				}
+			/>
+
+			<ConfigBox
+				title={t("pages.createMonitor.form.tags.title")}
+				subtitle={t("pages.createMonitor.form.tags.description")}
+				rightContent={
+					<Controller
+						name="tags"
+						control={control}
+						render={({ field }) => {
+							const tagOptions = tags ?? [];
+							const selectedTags = tagOptions.filter((tag) =>
+								(field.value ?? []).includes(tag.id)
+							);
+							return (
+								<Stack spacing={theme.spacing(LAYOUT.MD)}>
+									<Autocomplete
+										multiple
+										options={tagOptions}
+										value={selectedTags}
+										getOptionLabel={(option) => option.name}
+										onChange={(_: unknown, newValue: typeof tagOptions) => {
+											field.onChange(newValue.map((tag) => tag.id));
+										}}
+										isOptionEqualToValue={(option, value) => option.id === value.id}
+										renderOptionContent={(option) => (
+											<ColoredLabel
+												text={option.name}
+												color={option.color}
+											/>
+										)}
+									/>
+									{selectedTags.length > 0 && (
+										<Stack
+											flex={1}
+											gap={theme.spacing(SPACING.XL)}
+											width="100%"
+										>
+											{selectedTags.map((tag, index) => (
+												<Stack
+													direction="row"
+													justifyContent={"space-between"}
+													alignItems="center"
+													key={tag.id}
+													width="100%"
+												>
+													<ColoredLabel
+														text={tag.name}
+														color={tag.color}
+													/>
+													<div style={{ flexGrow: 1 }} />
+													<IconButton
+														size="small"
+														onClick={() => {
+															field.onChange(
+																(field.value ?? []).filter((id: string) => id !== tag.id)
+															);
+														}}
+														aria-label="Remove tag"
+													>
+														<Trash2 size={16} />
+													</IconButton>
+													{index < selectedTags.length - 1 && <Divider />}
 												</Stack>
 											))}
 										</Stack>

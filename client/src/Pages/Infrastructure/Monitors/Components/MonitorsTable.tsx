@@ -1,7 +1,14 @@
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { Table, Pagination, StatusLabel, Gauge } from "@/Components/design-elements";
+import {
+	Table,
+	Pagination,
+	StatusLabel,
+	Gauge,
+	ColoredLabel,
+} from "@/Components/design-elements";
+import { SPACING } from "@/Utils/Theme/constants";
 import type { Header } from "@/Components/design-elements/Table";
 import { ActionsMenu, type ActionMenuItem } from "@/Components/actions-menu";
 import { ArrowUp, ArrowDown } from "lucide-react";
@@ -13,10 +20,12 @@ import { useNavigate } from "react-router-dom";
 import { usePost } from "@/Hooks/UseApi";
 
 import type { Monitor } from "@/Types/Monitor";
+import type { Tag } from "@/Types/Tag";
 import { Checkbox } from "@/Components/inputs";
 
 interface InfraMonitorsTableProps {
 	monitors: Monitor[];
+	tags: Tag[];
 	refetch: () => void;
 	setSelectedMonitor: (monitor: Monitor | null) => void;
 	sortField: string;
@@ -34,6 +43,7 @@ interface InfraMonitorsTableProps {
 
 export const InfraMonitorsTable = ({
 	monitors,
+	tags,
 	refetch,
 	setSelectedMonitor,
 	sortField,
@@ -265,6 +275,32 @@ export const InfraMonitorsTable = ({
 					const diskCount = check?.disk?.length || 1;
 					const diskUsage = ((totalDiskUsage || 0) / diskCount) * 100;
 					return <Gauge progress={diskUsage} />;
+				},
+			},
+			{
+				id: "tags",
+				content: t("common.table.headers.tags"),
+				render: (row) => {
+					if (row.tags.length === 0) return "-";
+					return (
+						<Stack
+							justifyContent={"center"}
+							direction={isSmall ? "column" : "row"}
+							gap={theme.spacing(SPACING.LG)}
+						>
+							{row.tags.map((tagId) => {
+								const fullTag = tags.find((t) => t.id === tagId);
+								if (!fullTag) return null;
+								return (
+									<ColoredLabel
+										key={fullTag.id}
+										text={fullTag.name}
+										color={fullTag.color}
+									/>
+								);
+							})}
+						</Stack>
+					);
 				},
 			},
 
