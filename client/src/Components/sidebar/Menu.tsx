@@ -42,6 +42,11 @@ export const getMenu = (t: Function) => {
 			icon: <Icon icon={Bell} />,
 		},
 		{
+			name: t("components.sidebar.menu.notifications"),
+			path: "tags",
+			icon: <Icon icon={Bell} />,
+		},
+		{
 			name: t("components.sidebar.menu.checks"),
 			path: "checks",
 			icon: <Icon icon={FileText} />,
