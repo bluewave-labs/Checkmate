@@ -261,7 +261,7 @@ export const MonitorTable = ({
 			},
 			{
 				id: "tags",
-				content: t("pages.uptime.table.headers.responseTime"),
+				content: t("common.table.headers.tags"),
 				render: (row) => {
 					if (row.tags.length === 0) return "-";
 

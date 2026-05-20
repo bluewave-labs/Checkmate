@@ -131,7 +131,8 @@
 				"url": "Url",
 				"interval": "Interval",
 				"active": "Active",
-				"responseTime": "Response time"
+				"responseTime": "Response time",
+				"tags": "Tags"
 			}
 		}
 	},
@@ -627,6 +628,10 @@
 				"notifications": {
 					"description": "Select the notification channels you want to use",
 					"title": "Notifications"
+				},
+				"tags": {
+					"description": "Select the tags you want to apply to this monitor",
+					"title": "Tags"
 				},
 				"type": {
 					"description": "Select the type of check to perform",

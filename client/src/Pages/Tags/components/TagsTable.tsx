@@ -1,7 +1,7 @@
 import { ActionsMenu, type ActionMenuItem } from "@/Components/actions-menu";
 import Typography from "@mui/material/Typography";
 import type { Header } from "@/Components/design-elements/Table";
-import { Table, Chip, ColoredLabel } from "@/Components/design-elements";
+import { Table, ColoredLabel } from "@/Components/design-elements";
 import { Pagination } from "@/Components/design-elements/Table";
 import { useClientPagination } from "@/Hooks/useClientPagination";
 
