@@ -876,6 +876,37 @@
 				"description": "Track server performance, identify bottlenecks, and ensure reliability with real-time infrastructure monitoring."
 			}
 		},
+		"tags": {
+			"header": {
+				"title": "Tags",
+				"description": "Organize your monitors with tags"
+			},
+			"fallback": {
+				"title": "No tags yet",
+				"description": "Organize your monitors with tags. Once you create a tag and assign it to a monitor, you'll be able to filter by that tag across the app and see tag details here.",
+				"actionButton": "Create a tag"
+			},
+			"table": {
+				"headers": {
+					"color": "Color",
+					"chip": "Chip"
+				}
+			},
+			"form": {
+				"name": {
+					"title": "Tag name",
+					"description": "Choose a name for your tag",
+					"optionName": "Tag name",
+					"placeholder": "e.g. Group 1"
+				},
+				"color": {
+					"title": "Tag color",
+					"description": "Choose a color for your tag",
+					"optionName": "Tag color",
+					"placeholder": "e.g. #13715B"
+				}
+			}
+		},
 		"logs": {
 			"fallback": {
 				"title": "No logs yet",
