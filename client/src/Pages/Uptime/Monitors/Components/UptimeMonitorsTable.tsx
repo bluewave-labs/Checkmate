@@ -6,6 +6,7 @@ import {
 	type Header,
 	Pagination,
 	StatusLabel,
+	ColoredLabel,
 } from "@/Components/design-elements";
 import { HeatmapResponseTime, HistogramResponseTime } from "@/Components/common";
 import { ActionsMenu } from "@/Components/actions-menu";
@@ -16,14 +17,18 @@ import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { usePost } from "@/Hooks/UseApi";
 import { useSelector } from "react-redux";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import type { Monitor } from "@/Types/Monitor";
 import type { ActionMenuItem } from "@/Components/actions-menu";
 import type { RootState } from "@/Types/state";
 import { Checkbox } from "@/Components/inputs";
+import type { Tag } from "@/Types/Tag";
+import { SPACING } from "@/Utils/Theme/constants";
 
 interface MonitorTableProps {
 	monitors: Monitor[];
+	tags: Tag[];
 	refetch: () => void;
 	setSelectedMonitor: (monitor: Monitor | null) => void;
 	sortField: string;
@@ -41,6 +46,7 @@ interface MonitorTableProps {
 
 export const MonitorTable = ({
 	monitors,
+	tags,
 	refetch,
 	setSelectedMonitor,
 	sortField,
@@ -60,6 +66,7 @@ export const MonitorTable = ({
 	const navigate = useNavigate();
 	const chartType = useSelector((state: RootState) => state.ui?.chartType ?? "histogram");
 	const { post } = usePost<Record<string, never>, Monitor>();
+	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 
 	const selectedSet = new Set(selectedRows);
 	const isAllSelected =
@@ -250,6 +257,33 @@ export const MonitorTable = ({
 					} else {
 						return <HeatmapResponseTime checks={row.recentChecks} />;
 					}
+				},
+			},
+			{
+				id: "tags",
+				content: t("pages.uptime.table.headers.responseTime"),
+				render: (row) => {
+					if (row.tags.length === 0) return "-";
+
+					return (
+						<Stack
+							justifyContent={"center"}
+							direction={isSmall ? "column" : "row"}
+							gap={theme.spacing(SPACING.LG)}
+						>
+							{row.tags.map((tag) => {
+								const fullTag = tags.find((t) => t.id === tag);
+								if (!fullTag) return null;
+								return (
+									<ColoredLabel
+										key={fullTag.id}
+										text={fullTag.name}
+										color={fullTag.color}
+									/>
+								);
+							})}
+						</Stack>
+					);
 				},
 			},
 			{

@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useGet, useDelete } from "@/Hooks/UseApi";
 import type { Monitor, MonitorType, MonitorsWithChecksResponse } from "@/Types/Monitor";
+import type { Tag } from "@/Types/Tag";
 import { useState, useMemo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setRowsPerPage } from "@/Features/UI/uiSlice.js";
@@ -102,6 +103,8 @@ const UptimeMonitorsPage = () => {
 		{},
 		{ refreshInterval: 5000, keepPreviousData: true }
 	);
+
+	const { data: tags } = useGet<Tag[]>("/tags/team");
 
 	const {
 		monitors: monitorsWithChecks,
@@ -218,6 +221,7 @@ const UptimeMonitorsPage = () => {
 
 			<MonitorTable
 				monitors={monitorsWithChecks || []}
+				tags={tags || []}
 				refetch={refetch}
 				setSelectedMonitor={setSelectedMonitor}
 				count={count || 0}
