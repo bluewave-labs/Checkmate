@@ -38,10 +38,10 @@ export const ControlsFilter = ({
 	showTypes?: boolean;
 	selectedTypes?: MonitorType[];
 	setSelectedTypes?: React.Dispatch<React.SetStateAction<MonitorType[]>>;
-	selectedStatus: string;
-	setSelectedStatus: React.Dispatch<React.SetStateAction<string>>;
-	selectedState: string;
-	setSelectedState: React.Dispatch<React.SetStateAction<string>>;
+	selectedStatus?: string;
+	setSelectedStatus?: React.Dispatch<React.SetStateAction<string>>;
+	selectedState?: string;
+	setSelectedState?: React.Dispatch<React.SetStateAction<string>>;
 	tagOptions?: Tag[];
 	selectedTags?: string[];
 	setSelectedTags?: React.Dispatch<React.SetStateAction<string[]>>;
@@ -52,8 +52,8 @@ export const ControlsFilter = ({
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const isFilterActive =
 		(selectedTypes?.length ?? 0) > 0 ||
-		selectedStatus !== "" ||
-		selectedState !== "" ||
+		Boolean(selectedStatus) ||
+		Boolean(selectedState) ||
 		(selectedTags?.length ?? 0) > 0;
 	const selectedTagObjects = (tagOptions ?? []).filter((tag) =>
 		(selectedTags ?? []).includes(tag.id)
@@ -80,34 +80,38 @@ export const ControlsFilter = ({
 					))}
 				</Select>
 			)}
-			<Select
-				placeholder="Status"
-				value={selectedStatus}
-				onChange={(e) => setSelectedStatus(e.target.value)}
-			>
-				{statuses.map((status) => (
-					<MenuItem
-						key={status}
-						value={status}
-					>
-						<Typography textTransform={"capitalize"}>{status}</Typography>
-					</MenuItem>
-				))}
-			</Select>
-			<Select
-				placeholder="State"
-				value={selectedState}
-				onChange={(e) => setSelectedState(e.target.value)}
-			>
-				{states.map((state) => (
-					<MenuItem
-						key={state}
-						value={state}
-					>
-						<Typography textTransform={"capitalize"}>{state}</Typography>
-					</MenuItem>
-				))}
-			</Select>
+			{setSelectedStatus && (
+				<Select
+					placeholder="Status"
+					value={selectedStatus ?? ""}
+					onChange={(e) => setSelectedStatus(e.target.value)}
+				>
+					{statuses.map((status) => (
+						<MenuItem
+							key={status}
+							value={status}
+						>
+							<Typography textTransform={"capitalize"}>{status}</Typography>
+						</MenuItem>
+					))}
+				</Select>
+			)}
+			{setSelectedState && (
+				<Select
+					placeholder="State"
+					value={selectedState ?? ""}
+					onChange={(e) => setSelectedState(e.target.value)}
+				>
+					{states.map((state) => (
+						<MenuItem
+							key={state}
+							value={state}
+						>
+							<Typography textTransform={"capitalize"}>{state}</Typography>
+						</MenuItem>
+					))}
+				</Select>
+			)}
 			{tagOptions && setSelectedTags && (
 				<Autocomplete
 					multiple
