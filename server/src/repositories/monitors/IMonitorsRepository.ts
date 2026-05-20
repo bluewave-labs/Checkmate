@@ -13,6 +13,7 @@ export interface TeamQueryConfig {
 
 export interface SummaryConfig {
 	type?: MonitorType | MonitorType[];
+	tags?: string | string[];
 }
 
 export interface IMonitorsRepository {
