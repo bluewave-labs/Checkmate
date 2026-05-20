@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { mutate } from "swr";
 import { useGet, usePost, usePatch } from "@/Hooks/UseApi";
 import type { TagFormData } from "@/Validation/tag";
 import type { Tag } from "@/Types/Tag";
@@ -43,7 +44,8 @@ const TagsCreatePage = () => {
 		const result = isEditMode
 			? await patch(`/tags/${tagId}`, data)
 			: await post("/tags", data);
-		if (result) {
+		if (result?.success) {
+			await mutate((key) => typeof key === "string" && key.startsWith("/tags"));
 			navigate("/tags");
 		}
 	};
