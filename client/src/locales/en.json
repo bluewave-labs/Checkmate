@@ -184,6 +184,7 @@
 				"pagespeed": "Pagespeed",
 				"infrastructure": "Infrastructure",
 				"notifications": "Notifications",
+				"tags": "Tags",
 				"checks": "Checks",
 				"incidents": "Incidents",
 				"statusPages": "Status pages",
@@ -889,7 +890,7 @@
 			"table": {
 				"headers": {
 					"color": "Color",
-					"chip": "Chip"
+					"appearance": "Appearance"
 				}
 			},
 			"form": {
