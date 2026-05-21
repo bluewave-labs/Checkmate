@@ -25,10 +25,30 @@ const discordSchema = baseSchema.extend({
 	address: z.string().min(1, "Webhook URL is required").url("Please enter a valid URL"),
 });
 
-const webhookSchema = baseSchema.extend({
-	type: z.literal("webhook"),
-	address: z.string().min(1, "Webhook URL is required").url("Please enter a valid URL"),
-});
+const webhookSchema = baseSchema
+	.extend({
+		type: z.literal("webhook"),
+		address: z.string().min(1, "Webhook URL is required").url("Please enter a valid URL"),
+		webhookAuthType: z.enum(["none", "basic", "bearer"]).default("none"),
+		webhookAuthUsername: z.string().optional(),
+		webhookAuthPassword: z.string().optional(),
+		webhookAuthToken: z.string().optional(),
+	})
+	.superRefine((data, ctx) => {
+		if (data.webhookAuthType === "basic") {
+			if (!data.webhookAuthUsername || data.webhookAuthUsername.trim() === "") {
+				ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Username is required for Basic Auth", path: ["webhookAuthUsername"] });
+			}
+			if (!data.webhookAuthPassword || data.webhookAuthPassword.trim() === "") {
+				ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Password is required for Basic Auth", path: ["webhookAuthPassword"] });
+			}
+		}
+		if (data.webhookAuthType === "bearer") {
+			if (!data.webhookAuthToken || data.webhookAuthToken.trim() === "") {
+				ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Token is required for Bearer Auth", path: ["webhookAuthToken"] });
+			}
+		}
+	});
 
 const pagerDutySchema = baseSchema.extend({
 	type: z.literal("pager_duty"),

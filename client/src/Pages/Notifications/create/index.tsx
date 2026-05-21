@@ -46,6 +46,7 @@ const NotificationsCreatePage = () => {
 	}, [defaults, reset]);
 
 	const watchedType = watch("type");
+	const watchedWebhookAuthType = watchedType === "webhook" ? watch("webhookAuthType" as any) : "none";
 
 	useEffect(() => {
 		clearErrors();
@@ -401,6 +402,86 @@ const NotificationsCreatePage = () => {
 									/>
 								)}
 							/>
+						</Stack>
+					}
+				/>
+			)}
+			{watchedType === "webhook" && (
+				<ConfigBox
+					title="Authentication"
+					subtitle="Optional auth headers sent with every webhook request."
+					rightContent={
+						<Stack spacing={theme.spacing(8)}>
+							<Controller
+								name={"webhookAuthType" as any}
+								control={control}
+								defaultValue="none"
+								render={({ field }) => (
+									<Select
+										value={field.value ?? "none"}
+										fieldLabel="Authentication type"
+										onChange={field.onChange}
+									>
+										<MenuItem value="none">None</MenuItem>
+										<MenuItem value="basic">Basic Auth</MenuItem>
+										<MenuItem value="bearer">Bearer Token</MenuItem>
+									</Select>
+								)}
+							/>
+							{watchedWebhookAuthType === "basic" && (
+								<>
+									<Controller
+										name={"webhookAuthUsername" as any}
+										control={control}
+										defaultValue=""
+										render={({ field, fieldState }) => (
+											<TextField
+												{...field}
+												type="text"
+												fieldLabel="Username"
+												placeholder="Enter username"
+												fullWidth
+												error={!!fieldState.error}
+												helperText={fieldState.error?.message ?? ""}
+											/>
+										)}
+									/>
+									<Controller
+										name={"webhookAuthPassword" as any}
+										control={control}
+										defaultValue=""
+										render={({ field, fieldState }) => (
+											<TextField
+												{...field}
+												type="password"
+												fieldLabel="Password"
+												placeholder="Enter password"
+												fullWidth
+												error={!!fieldState.error}
+												helperText={fieldState.error?.message ?? ""}
+											/>
+										)}
+									/>
+								</>
+							)}
+							{watchedWebhookAuthType === "bearer" && (
+								<Controller
+									name={"webhookAuthToken" as any}
+									control={control}
+									defaultValue=""
+									render={({ field, fieldState }) => (
+										<TextField
+											{...field}
+											type="password"
+											fieldLabel="Bearer token"
+											placeholder="Enter token"
+											fullWidth
+											error={!!fieldState.error}
+											helperText={fieldState.error?.message ?? ""}
+										/>
+									)}
+								/>
+							)}
 						</Stack>
 					}
 				/>

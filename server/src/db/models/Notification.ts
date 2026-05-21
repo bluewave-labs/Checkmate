@@ -1,5 +1,5 @@
 import { Schema, model, type Types } from "mongoose";
-import type { Notification, NotificationChannel } from "@/types/notification.js";
+import type { Notification, NotificationChannel, WebhookAuthType } from "@/types/notification.js";
 
 interface NotificationDocument extends Omit<Notification, "id" | "userId" | "teamId" | "createdAt" | "updatedAt"> {
 	_id: Types.ObjectId;
@@ -39,6 +39,14 @@ const NotificationSchema = new Schema<NotificationDocument>(
 		accessToken: { type: String },
 		accountSid: { type: String },
 		twilioPhoneNumber: { type: String },
+		webhookAuthType: {
+			type: String,
+			enum: ["none", "basic", "bearer"] as WebhookAuthType[],
+			default: "none",
+		},
+		webhookAuthUsername: { type: String },
+		webhookAuthPassword: { type: String },
+		webhookAuthToken: { type: String },
 	},
 	{
 		timestamps: true,

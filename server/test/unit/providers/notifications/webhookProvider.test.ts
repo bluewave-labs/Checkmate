@@ -99,4 +99,73 @@ describe("WebhookProvider", () => {
 			expect(text).not.toContain("View Incident");
 		});
 	});
+
+	describe("webhook authentication", () => {
+		describe("sendMessage", () => {
+			it("sends no Authorization header when authType is none", async () => {
+				const { provider } = createProvider();
+				await provider.sendMessage(makeNotification({ webhookAuthType: "none" }) as any, makeMessage());
+				const headers = mockGotPost.mock.calls[0][1].headers;
+				expect(headers.Authorization).toBeUndefined();
+			});
+
+			it("sends no Authorization header when webhookAuthType is absent", async () => {
+				const { provider } = createProvider();
+				await provider.sendMessage(makeNotification() as any, makeMessage());
+				const headers = mockGotPost.mock.calls[0][1].headers;
+				expect(headers.Authorization).toBeUndefined();
+			});
+
+			it("sends Basic auth header with base64-encoded credentials", async () => {
+				const { provider } = createProvider();
+				await provider.sendMessage(
+					makeNotification({ webhookAuthType: "basic", webhookAuthUsername: "user", webhookAuthPassword: "pass" }) as any,
+					makeMessage()
+				);
+				const headers = mockGotPost.mock.calls[0][1].headers;
+				const expected = `Basic ${Buffer.from("user:pass").toString("base64")}`;
+				expect(headers.Authorization).toBe(expected);
+			});
+
+			it("sends no Authorization header for basic auth when credentials are missing", async () => {
+				const { provider } = createProvider();
+				await provider.sendMessage(makeNotification({ webhookAuthType: "basic" }) as any, makeMessage());
+				const headers = mockGotPost.mock.calls[0][1].headers;
+				expect(headers.Authorization).toBeUndefined();
+			});
+
+			it("sends Bearer auth header with token", async () => {
+				const { provider } = createProvider();
+				await provider.sendMessage(
+					makeNotification({ webhookAuthType: "bearer", webhookAuthToken: "my-secret-token" }) as any,
+					makeMessage()
+				);
+				const headers = mockGotPost.mock.calls[0][1].headers;
+				expect(headers.Authorization).toBe("Bearer my-secret-token");
+			});
+
+			it("sends no Authorization header for bearer auth when token is missing", async () => {
+				const { provider } = createProvider();
+				await provider.sendMessage(makeNotification({ webhookAuthType: "bearer" }) as any, makeMessage());
+				const headers = mockGotPost.mock.calls[0][1].headers;
+				expect(headers.Authorization).toBeUndefined();
+			});
+		});
+
+		describe("sendTestAlert", () => {
+			it("includes Basic auth header in test alert", async () => {
+				const { provider } = createProvider();
+				await provider.sendTestAlert(makeNotification({ webhookAuthType: "basic", webhookAuthUsername: "admin", webhookAuthPassword: "secret" }));
+				const headers = mockGotPost.mock.calls[0][1].headers;
+				expect(headers.Authorization).toBe(`Basic ${Buffer.from("admin:secret").toString("base64")}`);
+			});
+
+			it("includes Bearer auth header in test alert", async () => {
+				const { provider } = createProvider();
+				await provider.sendTestAlert(makeNotification({ webhookAuthType: "bearer", webhookAuthToken: "tok123" }));
+				const headers = mockGotPost.mock.calls[0][1].headers;
+				expect(headers.Authorization).toBe("Bearer tok123");
+			});
+		});
+	});
 });

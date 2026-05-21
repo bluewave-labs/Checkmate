@@ -22,6 +22,10 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
 		roomId: z.union([z.string(), z.literal("")]).optional(),
 		accessToken: z.union([z.string(), z.literal("")]).optional(),
+		webhookAuthType: z.enum(["none", "basic", "bearer"]).default("none"),
+		webhookAuthUsername: z.union([z.string(), z.literal("")]).optional(),
+		webhookAuthPassword: z.union([z.string(), z.literal("")]).optional(),
+		webhookAuthToken: z.union([z.string(), z.literal("")]).optional(),
 	}),
 	// Slack notification
 	z.object({
