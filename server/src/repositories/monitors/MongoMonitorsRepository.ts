@@ -1,6 +1,6 @@
 import { MonitorModel } from "@/db/models/index.js";
 import type { MonitorDocument, CheckSnapshotDocument } from "@/db/models/index.js";
-import type { Monitor, MonitorsSummary, CheckSnapshot } from "@/types/index.js";
+import type { Monitor, MonitorStatus, MonitorsSummary, CheckSnapshot } from "@/types/index.js";
 import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "./IMonitorsRepository.js";
 import { MongoBulkWriteError } from "mongodb";
@@ -188,6 +188,16 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			throw new AppError({ message: `Failed to update monitor with id ${monitorId}`, status: 500 });
 		}
 		return this.toEntity(updatedMonitor);
+	};
+
+	updateByIds = async (monitorIds: string[], teamId: string, updates: Partial<Monitor>, excludeStatuses?: MonitorStatus[]) => {
+		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		const filter: Record<string, unknown> = { _id: { $in: objectIds }, teamId };
+		if (excludeStatuses && excludeStatuses.length > 0) {
+			filter.status = { $nin: excludeStatuses };
+		}
+		const updated = await MonitorModel.updateMany(filter, { $set: updates }, { runValidators: true });
+		return updated.modifiedCount;
 	};
 
 	updateStatusWindowAndChecks = async (

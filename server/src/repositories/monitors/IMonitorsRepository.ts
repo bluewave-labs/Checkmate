@@ -1,4 +1,4 @@
-import { type MonitorType, type Monitor, type MonitorsSummary, CheckSnapshot } from "@/types/index.js";
+import { type MonitorType, type Monitor, type MonitorStatus, type MonitorsSummary, CheckSnapshot } from "@/types/index.js";
 
 export interface TeamQueryConfig {
 	limit?: number;
@@ -31,6 +31,7 @@ export interface IMonitorsRepository {
 
 	// update
 	updateById(monitorId: string, teamId: string, updates: Partial<Monitor>): Promise<Monitor>;
+	updateByIds(monitorIds: string[], teamId: string, updates: Partial<Monitor>, excludeStatuses?: MonitorStatus[]): Promise<number>;
 	updateStatusWindowAndChecks(
 		monitorId: string,
 		teamId: string,

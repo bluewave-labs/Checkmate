@@ -11,6 +11,7 @@ const createMaintenanceWindowsRepo = () =>
 		create: jest.fn().mockResolvedValue(makeWindow()),
 		findById: jest.fn().mockResolvedValue(makeWindow()),
 		findByMonitorId: jest.fn().mockResolvedValue([makeWindow()]),
+		findByMonitorIds: jest.fn().mockResolvedValue([]),
 		findByTeamId: jest.fn().mockResolvedValue([makeWindow()]),
 		updateById: jest.fn().mockResolvedValue(makeWindow()),
 		deleteById: jest.fn().mockResolvedValue(makeWindow()),
@@ -23,6 +24,7 @@ const createMonitorsRepo = () =>
 			{ id: "mon-1", teamId: "team-1" },
 			{ id: "mon-2", teamId: "team-1" },
 		]),
+		updateByIds: jest.fn().mockResolvedValue(0),
 	}) as unknown as jest.Mocked<IMonitorsRepository>;
 
 const createService = (overrides?: {
@@ -50,6 +52,16 @@ const makeWindow = (overrides?: Partial<MaintenanceWindow>): MaintenanceWindow =
 	updatedAt: "2026-01-01T00:00:00Z",
 	...overrides,
 });
+
+// A window whose start/end straddle "now" — active per isWindowActive
+const makeActiveWindow = (overrides?: Partial<MaintenanceWindow>): MaintenanceWindow => {
+	const now = Date.now();
+	return makeWindow({
+		start: new Date(now - 60_000).toISOString(),
+		end: new Date(now + 60_000).toISOString(),
+		...overrides,
+	});
+};
 
 const defaultCreateParams = {
 	teamId: "team-1",
@@ -137,6 +149,26 @@ describe("MaintenanceWindowService", () => {
 			expect(maintenanceWindowsRepository.create).toHaveBeenCalledTimes(1);
 			expect(maintenanceWindowsRepository.create).toHaveBeenCalledWith(expect.objectContaining({ monitorIds: ["mon-1"] }));
 		});
+
+		it("flips monitors to maintenance when the created window is active", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.create as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1", "mon-2"] }));
+			const { service, monitorsRepository } = createService({ maintenanceWindowsRepository });
+
+			await service.createMaintenanceWindow(defaultCreateParams);
+
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], "team-1", { status: "maintenance" }, ["paused"]);
+		});
+
+		it("does not touch monitor status when the created window is inactive", async () => {
+			// default mock returns makeWindow() with past dates → inactive
+			const { service, monitorsRepository } = createService();
+
+			await service.createMaintenanceWindow(defaultCreateParams);
+
+			expect(monitorsRepository.updateByIds).not.toHaveBeenCalled();
+		});
 	});
 
 	// ── getMaintenanceWindowById ─────────────────────────────────────────────
@@ -221,6 +253,49 @@ describe("MaintenanceWindowService", () => {
 			expect(result).toBe(deleted);
 			expect(maintenanceWindowsRepository.deleteById).toHaveBeenCalledWith("mw-1", "team-1");
 		});
+
+		it("does not touch monitor status when deleting an inactive window", async () => {
+			// default fixture has past dates → inactive
+			const { service, monitorsRepository, maintenanceWindowsRepository } = createService();
+
+			await service.deleteMaintenanceWindow({ id: "mw-1", teamId: "team-1" });
+
+			expect(monitorsRepository.updateByIds).not.toHaveBeenCalled();
+			expect(maintenanceWindowsRepository.findByMonitorIds).not.toHaveBeenCalled();
+		});
+
+		it("flips covered monitors to initializing when deleting an active window", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.deleteById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1", "mon-2"] }));
+			const { service, monitorsRepository } = createService({ maintenanceWindowsRepository });
+
+			await service.deleteMaintenanceWindow({ id: "mw-1", teamId: "team-1" });
+
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], "team-1", { status: "initializing" }, ["paused"]);
+		});
+
+		it("excludes the deleted window from the overlap check", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.deleteById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1"] }));
+			const { service } = createService({ maintenanceWindowsRepository });
+
+			await service.deleteMaintenanceWindow({ id: "mw-1", teamId: "team-1" });
+
+			expect(maintenanceWindowsRepository.findByMonitorIds).toHaveBeenCalledWith(["mon-1"], "team-1", "mw-1");
+		});
+
+		it("does not flip a monitor still covered by another active window", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.deleteById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1", "mon-2"] }));
+			(maintenanceWindowsRepository.findByMonitorIds as jest.Mock).mockResolvedValue([makeActiveWindow({ id: "mw-2", monitorIds: ["mon-2"] })]);
+			const { service, monitorsRepository } = createService({ maintenanceWindowsRepository });
+
+			await service.deleteMaintenanceWindow({ id: "mw-1", teamId: "team-1" });
+
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1"], "team-1", { status: "initializing" }, ["paused"]);
+		});
 	});
 
 	// ── editMaintenanceWindow ────────────────────────────────────────────────
@@ -301,6 +376,150 @@ describe("MaintenanceWindowService", () => {
 			});
 
 			expect(monitorsRepository.findByIds).not.toHaveBeenCalled();
+		});
+
+		// ── transitions ──────────────────────────────────────────────────
+
+		it("does not touch monitor status when window was inactive and stays inactive", async () => {
+			// default fixture: start/end in 2026-04-10 (past) → inactive
+			const { service, monitorsRepository } = createService();
+
+			await service.editMaintenanceWindow({
+				id: "mw-1",
+				teamId: "team-1",
+				body: { name: "Updated Name" },
+			});
+
+			expect(monitorsRepository.updateByIds).not.toHaveBeenCalled();
+		});
+
+		it("sets all monitors to maintenance when window transitions inactive → active", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.findById as jest.Mock).mockResolvedValue(makeWindow({ monitorIds: ["mon-1", "mon-2"] }));
+			(maintenanceWindowsRepository.updateById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1", "mon-2"] }));
+			const { service, monitorsRepository } = createService({ maintenanceWindowsRepository });
+
+			await service.editMaintenanceWindow({
+				id: "mw-1",
+				teamId: "team-1",
+				body: { start: new Date(Date.now() - 60_000).toISOString() },
+			});
+
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], "team-1", { status: "maintenance" }, ["paused"]);
+		});
+
+		it("sets all monitors to initializing when window transitions active → inactive", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.findById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1", "mon-2"] }));
+			(maintenanceWindowsRepository.updateById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1", "mon-2"], active: false }));
+			const { service, monitorsRepository } = createService({ maintenanceWindowsRepository });
+
+			await service.editMaintenanceWindow({
+				id: "mw-1",
+				teamId: "team-1",
+				body: { active: false },
+			});
+
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], "team-1", { status: "initializing" }, ["paused"]);
+		});
+
+		it("flips only newly added monitors to maintenance when window stays active", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.findById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1"] }));
+			(maintenanceWindowsRepository.updateById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1", "mon-2"] }));
+			const { service, monitorsRepository } = createService({ maintenanceWindowsRepository });
+
+			await service.editMaintenanceWindow({
+				id: "mw-1",
+				teamId: "team-1",
+				body: { monitors: ["mon-1", "mon-2"] },
+			});
+
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-2"], "team-1", { status: "maintenance" }, ["paused"]);
+		});
+
+		it("flips only removed monitors to initializing when window stays active", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.findById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1", "mon-2"] }));
+			(maintenanceWindowsRepository.updateById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1"] }));
+			const { service, monitorsRepository } = createService({ maintenanceWindowsRepository });
+
+			await service.editMaintenanceWindow({
+				id: "mw-1",
+				teamId: "team-1",
+				body: { monitors: ["mon-1"] },
+			});
+
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-2"], "team-1", { status: "initializing" }, ["paused"]);
+		});
+
+		it("makes no monitor updates when window stays active and monitor set is unchanged", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.findById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1", "mon-2"] }));
+			(maintenanceWindowsRepository.updateById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1", "mon-2"], name: "Renamed" }));
+			const { service, monitorsRepository } = createService({ maintenanceWindowsRepository });
+
+			await service.editMaintenanceWindow({
+				id: "mw-1",
+				teamId: "team-1",
+				body: { name: "Renamed" },
+			});
+
+			expect(monitorsRepository.updateByIds).not.toHaveBeenCalled();
+		});
+
+		it("does not flip a leaving monitor to initializing if another active window still covers it", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.findById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1", "mon-2"] }));
+			(maintenanceWindowsRepository.updateById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1", "mon-2"], active: false }));
+			(maintenanceWindowsRepository.findByMonitorIds as jest.Mock).mockResolvedValue([makeActiveWindow({ id: "mw-2", monitorIds: ["mon-2"] })]);
+			const { service, monitorsRepository } = createService({ maintenanceWindowsRepository });
+
+			await service.editMaintenanceWindow({
+				id: "mw-1",
+				teamId: "team-1",
+				body: { active: false },
+			});
+
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1"], "team-1", { status: "initializing" }, ["paused"]);
+		});
+
+		it("excludes the current window from the overlap check", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.findById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1"] }));
+			(maintenanceWindowsRepository.updateById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1"], active: false }));
+			const { service } = createService({ maintenanceWindowsRepository });
+
+			await service.editMaintenanceWindow({
+				id: "mw-1",
+				teamId: "team-1",
+				body: { active: false },
+			});
+
+			expect(maintenanceWindowsRepository.findByMonitorIds).toHaveBeenCalledWith(["mon-1"], "team-1", "mw-1");
+		});
+
+		it("flips a leaving monitor to initializing if other windows covering it are inactive", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.findById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1"] }));
+			(maintenanceWindowsRepository.updateById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1"], active: false }));
+			(maintenanceWindowsRepository.findByMonitorIds as jest.Mock).mockResolvedValue([
+				makeWindow({ id: "mw-2", monitorIds: ["mon-1"], active: false }),
+			]);
+			const { service, monitorsRepository } = createService({ maintenanceWindowsRepository });
+
+			await service.editMaintenanceWindow({
+				id: "mw-1",
+				teamId: "team-1",
+				body: { active: false },
+			});
+
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1"], "team-1", { status: "initializing" }, ["paused"]);
 		});
 	});
 });
