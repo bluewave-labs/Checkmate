@@ -69,7 +69,7 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 
 		const toInitializing = monitorIds.filter((monitorId) => !stillCovered.has(monitorId));
 		if (toInitializing.length > 0) {
-			await this.monitorsRepository.updateByIds(toInitializing, teamId, { status: "initializing" });
+			await this.monitorsRepository.updateByIds(toInitializing, teamId, { status: "initializing" }, ["paused"]);
 		}
 	};
 
@@ -120,7 +120,7 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		});
 
 		if (isWindowActive(created)) {
-			await this.monitorsRepository.updateByIds(created.monitorIds, teamId, { status: "maintenance" });
+			await this.monitorsRepository.updateByIds(created.monitorIds, teamId, { status: "maintenance" }, ["paused"]);
 		}
 	};
 
@@ -205,7 +205,7 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		const leavingCandidates = wasActive ? existing.monitorIds.filter((monitorId) => !isActive || !updated.monitorIds.includes(monitorId)) : [];
 
 		if (enteringMaintenance.length > 0) {
-			await this.monitorsRepository.updateByIds(enteringMaintenance, teamId, { status: "maintenance" });
+			await this.monitorsRepository.updateByIds(enteringMaintenance, teamId, { status: "maintenance" }, ["paused"]);
 		}
 
 		if (leavingCandidates.length > 0) {

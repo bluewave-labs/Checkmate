@@ -158,7 +158,7 @@ describe("MaintenanceWindowService", () => {
 			await service.createMaintenanceWindow(defaultCreateParams);
 
 			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
-			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], "team-1", { status: "maintenance" });
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], "team-1", { status: "maintenance" }, ["paused"]);
 		});
 
 		it("does not touch monitor status when the created window is inactive", async () => {
@@ -272,7 +272,7 @@ describe("MaintenanceWindowService", () => {
 			await service.deleteMaintenanceWindow({ id: "mw-1", teamId: "team-1" });
 
 			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
-			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], "team-1", { status: "initializing" });
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], "team-1", { status: "initializing" }, ["paused"]);
 		});
 
 		it("excludes the deleted window from the overlap check", async () => {
@@ -294,7 +294,7 @@ describe("MaintenanceWindowService", () => {
 			await service.deleteMaintenanceWindow({ id: "mw-1", teamId: "team-1" });
 
 			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
-			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1"], "team-1", { status: "initializing" });
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1"], "team-1", { status: "initializing" }, ["paused"]);
 		});
 	});
 
@@ -406,7 +406,7 @@ describe("MaintenanceWindowService", () => {
 			});
 
 			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
-			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], "team-1", { status: "maintenance" });
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], "team-1", { status: "maintenance" }, ["paused"]);
 		});
 
 		it("sets all monitors to initializing when window transitions active → inactive", async () => {
@@ -422,7 +422,7 @@ describe("MaintenanceWindowService", () => {
 			});
 
 			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
-			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], "team-1", { status: "initializing" });
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], "team-1", { status: "initializing" }, ["paused"]);
 		});
 
 		it("flips only newly added monitors to maintenance when window stays active", async () => {
@@ -438,7 +438,7 @@ describe("MaintenanceWindowService", () => {
 			});
 
 			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
-			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-2"], "team-1", { status: "maintenance" });
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-2"], "team-1", { status: "maintenance" }, ["paused"]);
 		});
 
 		it("flips only removed monitors to initializing when window stays active", async () => {
@@ -454,7 +454,7 @@ describe("MaintenanceWindowService", () => {
 			});
 
 			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
-			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-2"], "team-1", { status: "initializing" });
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-2"], "team-1", { status: "initializing" }, ["paused"]);
 		});
 
 		it("makes no monitor updates when window stays active and monitor set is unchanged", async () => {
@@ -486,7 +486,7 @@ describe("MaintenanceWindowService", () => {
 			});
 
 			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
-			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1"], "team-1", { status: "initializing" });
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1"], "team-1", { status: "initializing" }, ["paused"]);
 		});
 
 		it("excludes the current window from the overlap check", async () => {
@@ -519,7 +519,7 @@ describe("MaintenanceWindowService", () => {
 				body: { active: false },
 			});
 
-			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1"], "team-1", { status: "initializing" });
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1"], "team-1", { status: "initializing" }, ["paused"]);
 		});
 	});
 });
