@@ -1075,6 +1075,20 @@
 					"placeholderWebhook": "https://your-server.com/webhook",
 					"title": "Address"
 				},
+				"webhookAuth": {
+					"title": "Webhook authentication",
+					"description": "Add an optional Authorization header to webhook requests.",
+					"optionType": "Authentication type",
+					"none": "None",
+					"basic": "Basic auth",
+					"bearer": "Bearer token",
+					"optionUsername": "Username",
+					"placeholderUsername": "username",
+					"optionPassword": "Password",
+					"placeholderPassword": "password",
+					"optionToken": "Token",
+					"placeholderToken": "token"
+				},
 				"homeServer": {
 					"optionHomeServer": "Home server",
 					"placeholder": "example.com"

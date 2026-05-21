@@ -4,6 +4,7 @@ import type { NotificationMessage } from "../../src/types/notificationMessage.ts
 export const makeNotification = (overrides?: Partial<Notification>): Notification =>
 	({
 		address: "https://hooks.example.com/webhook",
+		webhookAuthType: "none",
 		accessToken: "token-abc",
 		homeserverUrl: "https://matrix.example.com",
 		roomId: "!room:example.com",

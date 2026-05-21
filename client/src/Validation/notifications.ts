@@ -28,6 +28,10 @@ const discordSchema = baseSchema.extend({
 const webhookSchema = baseSchema.extend({
 	type: z.literal("webhook"),
 	address: z.string().min(1, "Webhook URL is required").url("Please enter a valid URL"),
+	webhookAuthType: z.enum(["none", "basic", "bearer"]),
+	webhookAuthUsername: z.string().optional(),
+	webhookAuthPassword: z.string().optional(),
+	webhookAuthToken: z.string().optional(),
 });
 
 const pagerDutySchema = baseSchema.extend({

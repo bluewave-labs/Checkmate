@@ -46,6 +46,7 @@ const NotificationsCreatePage = () => {
 	}, [defaults, reset]);
 
 	const watchedType = watch("type");
+	const watchedWebhookAuthType = watch("webhookAuthType");
 
 	useEffect(() => {
 		clearErrors();
@@ -174,6 +175,115 @@ const NotificationsCreatePage = () => {
 						}
 					/>
 				)}
+			{watchedType === "webhook" && (
+				<ConfigBox
+					title={t("pages.notifications.form.webhookAuth.title")}
+					subtitle={t("pages.notifications.form.webhookAuth.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(8)}>
+							<Controller
+								name="webhookAuthType"
+								control={control}
+								defaultValue={
+									"webhookAuthType" in defaults ? defaults.webhookAuthType : "none"
+								}
+								render={({ field, fieldState }) => (
+									<Select
+										value={field.value}
+										fieldLabel={t("pages.notifications.form.webhookAuth.optionType")}
+										error={!!fieldState.error}
+										onChange={field.onChange}
+									>
+										<MenuItem value="none">
+											{t("pages.notifications.form.webhookAuth.none")}
+										</MenuItem>
+										<MenuItem value="basic">
+											{t("pages.notifications.form.webhookAuth.basic")}
+										</MenuItem>
+										<MenuItem value="bearer">
+											{t("pages.notifications.form.webhookAuth.bearer")}
+										</MenuItem>
+									</Select>
+								)}
+							/>
+							{watchedWebhookAuthType === "basic" && (
+								<>
+									<Controller
+										name="webhookAuthUsername"
+										control={control}
+										defaultValue={
+											"webhookAuthUsername" in defaults
+												? defaults.webhookAuthUsername
+												: ""
+										}
+										render={({ field, fieldState }) => (
+											<TextField
+												{...field}
+												type="text"
+												fieldLabel={t(
+													"pages.notifications.form.webhookAuth.optionUsername"
+												)}
+												placeholder={t(
+													"pages.notifications.form.webhookAuth.placeholderUsername"
+												)}
+												fullWidth
+												error={!!fieldState.error}
+												helperText={fieldState.error?.message ?? ""}
+											/>
+										)}
+									/>
+									<Controller
+										name="webhookAuthPassword"
+										control={control}
+										defaultValue={
+											"webhookAuthPassword" in defaults
+												? defaults.webhookAuthPassword
+												: ""
+										}
+										render={({ field, fieldState }) => (
+											<TextField
+												{...field}
+												type="password"
+												fieldLabel={t(
+													"pages.notifications.form.webhookAuth.optionPassword"
+												)}
+												placeholder={t(
+													"pages.notifications.form.webhookAuth.placeholderPassword"
+												)}
+												fullWidth
+												error={!!fieldState.error}
+												helperText={fieldState.error?.message ?? ""}
+											/>
+										)}
+									/>
+								</>
+							)}
+							{watchedWebhookAuthType === "bearer" && (
+								<Controller
+									name="webhookAuthToken"
+									control={control}
+									defaultValue={
+										"webhookAuthToken" in defaults ? defaults.webhookAuthToken : ""
+									}
+									render={({ field, fieldState }) => (
+										<TextField
+											{...field}
+											type="password"
+											fieldLabel={t("pages.notifications.form.webhookAuth.optionToken")}
+											placeholder={t(
+												"pages.notifications.form.webhookAuth.placeholderToken"
+											)}
+											fullWidth
+											error={!!fieldState.error}
+											helperText={fieldState.error?.message ?? ""}
+										/>
+									)}
+								/>
+							)}
+						</Stack>
+					}
+				/>
+			)}
 			{watchedType === "telegram" && (
 				<ConfigBox
 					title={t("pages.notifications.form.telegram.title")}

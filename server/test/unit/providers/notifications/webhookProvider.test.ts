@@ -29,6 +29,54 @@ describe("WebhookProvider", () => {
 			expect(await createProvider().provider.sendTestAlert(makeNotification())).toBe(true);
 		});
 
+		it("sends basic auth header when configured", async () => {
+			await createProvider().provider.sendTestAlert(
+				makeNotification({
+					webhookAuthType: "basic",
+					webhookAuthUsername: "user",
+					webhookAuthPassword: "pass",
+				})
+			);
+
+			expect(mockGotPost.mock.calls[0][1].headers.Authorization).toBe("Basic dXNlcjpwYXNz");
+		});
+
+		it("sends bearer auth header when configured", async () => {
+			await createProvider().provider.sendTestAlert(
+				makeNotification({
+					webhookAuthType: "bearer",
+					webhookAuthToken: "secret-token",
+				})
+			);
+
+			expect(mockGotPost.mock.calls[0][1].headers.Authorization).toBe("Bearer secret-token");
+		});
+
+		it("returns false when basic auth fields are incomplete", async () => {
+			expect(
+				await createProvider().provider.sendTestAlert(
+					makeNotification({
+						webhookAuthType: "basic",
+						webhookAuthUsername: "user",
+						webhookAuthPassword: "",
+					})
+				)
+			).toBe(false);
+			expect(mockGotPost).not.toHaveBeenCalled();
+		});
+
+		it("returns false when bearer token is missing", async () => {
+			expect(
+				await createProvider().provider.sendTestAlert(
+					makeNotification({
+						webhookAuthType: "bearer",
+						webhookAuthToken: "",
+					})
+				)
+			).toBe(false);
+			expect(mockGotPost).not.toHaveBeenCalled();
+		});
+
 		it("returns false when address is missing", async () => {
 			expect(await createProvider().provider.sendTestAlert(makeNotification({ address: "" }))).toBe(false);
 		});
@@ -51,10 +99,11 @@ describe("WebhookProvider", () => {
 		it("sends payload with text and structured data", async () => {
 			const { provider } = createProvider();
 			expect(await provider.sendMessage(makeNotification() as any, makeMessage())).toBe(true);
-			const payload = mockGotPost.mock.calls[0][1].json;
-			expect(payload.text).toContain("Monitor Down");
-			expect(payload.severity).toBe("critical");
-			expect(payload.monitor.id).toBe("mon-1");
+			const requestOptions = mockGotPost.mock.calls[0][1];
+			expect(requestOptions.json.text).toContain("Monitor Down");
+			expect(requestOptions.json.severity).toBe("critical");
+			expect(requestOptions.json.monitor.id).toBe("mon-1");
+			expect(requestOptions.headers.Authorization).toBeUndefined();
 		});
 
 		it("returns false when address is missing", async () => {

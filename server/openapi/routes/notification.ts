@@ -21,7 +21,13 @@ const notificationVariantMeta: Record<string, { component: string; example: Reco
 	},
 	webhook: {
 		component: "WebhookNotification",
-		example: { notificationName: "Custom webhook", type: "webhook", address: "https://example.com/hooks/checkmate" },
+		example: {
+			notificationName: "Custom webhook",
+			type: "webhook",
+			address: "https://example.com/hooks/checkmate",
+			webhookAuthType: "bearer",
+			webhookAuthToken: "webhook-token",
+		},
 	},
 	slack: {
 		component: "SlackNotification",
