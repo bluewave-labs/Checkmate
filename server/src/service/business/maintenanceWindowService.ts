@@ -107,7 +107,7 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 			});
 		}
 
-		await this.maintenanceWindowsRepository.create({
+		const created = await this.maintenanceWindowsRepository.create({
 			teamId,
 			monitorIds: monitorIDs,
 			name: name,
@@ -118,6 +118,10 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 			start: start,
 			end: end,
 		});
+
+		if (isWindowActive(created)) {
+			await this.monitorsRepository.updateByIds(created.monitorIds, teamId, { status: "maintenance" });
+		}
 	};
 
 	getMaintenanceWindowById = async ({ id, teamId }: { id: string; teamId: string }) => {

@@ -149,6 +149,26 @@ describe("MaintenanceWindowService", () => {
 			expect(maintenanceWindowsRepository.create).toHaveBeenCalledTimes(1);
 			expect(maintenanceWindowsRepository.create).toHaveBeenCalledWith(expect.objectContaining({ monitorIds: ["mon-1"] }));
 		});
+
+		it("flips monitors to maintenance when the created window is active", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.create as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1", "mon-2"] }));
+			const { service, monitorsRepository } = createService({ maintenanceWindowsRepository });
+
+			await service.createMaintenanceWindow(defaultCreateParams);
+
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], "team-1", { status: "maintenance" });
+		});
+
+		it("does not touch monitor status when the created window is inactive", async () => {
+			// default mock returns makeWindow() with past dates → inactive
+			const { service, monitorsRepository } = createService();
+
+			await service.createMaintenanceWindow(defaultCreateParams);
+
+			expect(monitorsRepository.updateByIds).not.toHaveBeenCalled();
+		});
 	});
 
 	// ── getMaintenanceWindowById ─────────────────────────────────────────────
