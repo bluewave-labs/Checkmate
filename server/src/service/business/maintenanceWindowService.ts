@@ -1,6 +1,7 @@
 import { IMaintenanceWindowsRepository, IMonitorsRepository } from "@/repositories/index.js";
 import type { DurationUnit, MaintenanceWindow } from "@/types/index.js";
 import { AppError } from "@/utils/AppError.js";
+import { isWindowActive } from "@/utils/maintenanceWindow.js";
 
 const SERVICE_NAME = "maintenanceWindowService";
 
@@ -145,6 +146,8 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		teamId: string;
 		body: Partial<Omit<MaintenanceWindow, "monitorIds">> & { monitors?: string[] };
 	}) => {
+		const existing = await this.maintenanceWindowsRepository.findById(id, teamId);
+
 		const { monitors, ...rest } = body;
 		const update: Partial<MaintenanceWindow> = rest;
 
@@ -162,6 +165,35 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 			update.monitorIds = monitors;
 		}
 
-		return await this.maintenanceWindowsRepository.updateById(id, teamId, update);
+		const updated = await this.maintenanceWindowsRepository.updateById(id, teamId, update);
+
+		const now = new Date();
+		const wasActive = isWindowActive(existing, now);
+		const isActive = isWindowActive(updated, now);
+
+		const enteringMaintenance = isActive ? updated.monitorIds.filter((monitorId) => !wasActive || !existing.monitorIds.includes(monitorId)) : [];
+
+		const leavingCandidates = wasActive ? existing.monitorIds.filter((monitorId) => !isActive || !updated.monitorIds.includes(monitorId)) : [];
+
+		if (enteringMaintenance.length > 0) {
+			await this.monitorsRepository.updateByIds(enteringMaintenance, teamId, { status: "maintenance" });
+		}
+
+		if (leavingCandidates.length > 0) {
+			const otherWindows = await this.maintenanceWindowsRepository.findByMonitorIds(leavingCandidates, teamId, existing.id);
+			const stillCovered = new Set<string>();
+			for (const otherWindow of otherWindows) {
+				if (!isWindowActive(otherWindow, now)) continue;
+				for (const monitorId of otherWindow.monitorIds) {
+					if (leavingCandidates.includes(monitorId)) stillCovered.add(monitorId);
+				}
+			}
+			const toInitializing = leavingCandidates.filter((monitorId) => !stillCovered.has(monitorId));
+			if (toInitializing.length > 0) {
+				await this.monitorsRepository.updateByIds(toInitializing, teamId, { status: "initializing" });
+			}
+		}
+
+		return updated;
 	};
 }
