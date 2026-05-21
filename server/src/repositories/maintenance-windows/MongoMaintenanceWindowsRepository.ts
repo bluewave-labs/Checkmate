@@ -65,6 +65,18 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 		return this.toEntity(maintenanceWindow);
 	};
 
+	findByMonitorIds = async (monitorIds: string[], teamId: string, excludeId?: string): Promise<MaintenanceWindow[]> => {
+		const query: Record<string, unknown> = {
+			monitorIds: { $in: monitorIds },
+			teamId,
+		};
+		if (excludeId) {
+			query._id = { $ne: new mongoose.Types.ObjectId(excludeId) };
+		}
+		const maintenanceWindows = await MaintenanceWindowModel.find(query);
+		return this.mapDocuments(maintenanceWindows);
+	};
+
 	findByMonitorId = async (monitorId: string, teamId: string): Promise<MaintenanceWindow[]> => {
 		const maintenanceWindows = await MaintenanceWindowModel.find({
 			monitorIds: monitorId,
@@ -113,6 +125,7 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 		if (!updated) {
 			throw new AppError({ message: "Maintenance window not found or could not be updated", status: 404 });
 		}
+
 		return this.toEntity(updated);
 	};
 
@@ -124,6 +137,7 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 		if (!deleted) {
 			throw new AppError({ message: "Maintenance window not found or could not be deleted", status: 404 });
 		}
+
 		return this.toEntity(deleted);
 	};
 	countByTeamId = async (teamId: string, active?: boolean) => {
