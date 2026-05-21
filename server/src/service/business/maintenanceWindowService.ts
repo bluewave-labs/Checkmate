@@ -55,6 +55,24 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		return MaintenanceWindowService.SERVICE_NAME;
 	}
 
+	private flipMonitorsLeavingMaintenance = async (monitorIds: string[], teamId: string, excludeWindowId: string, now: Date): Promise<void> => {
+		if (monitorIds.length === 0) return;
+
+		const otherWindows = await this.maintenanceWindowsRepository.findByMonitorIds(monitorIds, teamId, excludeWindowId);
+		const stillCovered = new Set<string>();
+		for (const otherWindow of otherWindows) {
+			if (!isWindowActive(otherWindow, now)) continue;
+			for (const monitorId of otherWindow.monitorIds) {
+				if (monitorIds.includes(monitorId)) stillCovered.add(monitorId);
+			}
+		}
+
+		const toInitializing = monitorIds.filter((monitorId) => !stillCovered.has(monitorId));
+		if (toInitializing.length > 0) {
+			await this.monitorsRepository.updateByIds(toInitializing, teamId, { status: "initializing" });
+		}
+	};
+
 	createMaintenanceWindow = async ({
 		teamId,
 		monitorIDs,
@@ -134,7 +152,14 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 	};
 
 	deleteMaintenanceWindow = async ({ id, teamId }: { id: string; teamId: string }) => {
-		return await this.maintenanceWindowsRepository.deleteById(id, teamId);
+		const deleted = await this.maintenanceWindowsRepository.deleteById(id, teamId);
+
+		const now = new Date();
+		if (isWindowActive(deleted, now)) {
+			await this.flipMonitorsLeavingMaintenance(deleted.monitorIds, teamId, deleted.id, now);
+		}
+
+		return deleted;
 	};
 
 	editMaintenanceWindow = async ({
@@ -180,18 +205,7 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		}
 
 		if (leavingCandidates.length > 0) {
-			const otherWindows = await this.maintenanceWindowsRepository.findByMonitorIds(leavingCandidates, teamId, existing.id);
-			const stillCovered = new Set<string>();
-			for (const otherWindow of otherWindows) {
-				if (!isWindowActive(otherWindow, now)) continue;
-				for (const monitorId of otherWindow.monitorIds) {
-					if (leavingCandidates.includes(monitorId)) stillCovered.add(monitorId);
-				}
-			}
-			const toInitializing = leavingCandidates.filter((monitorId) => !stillCovered.has(monitorId));
-			if (toInitializing.length > 0) {
-				await this.monitorsRepository.updateByIds(toInitializing, teamId, { status: "initializing" });
-			}
+			await this.flipMonitorsLeavingMaintenance(leavingCandidates, teamId, existing.id, now);
 		}
 
 		return updated;
