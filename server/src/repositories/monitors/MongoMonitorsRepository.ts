@@ -190,6 +190,12 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return this.toEntity(updatedMonitor);
 	};
 
+	updateByIds = async (monitorIds: string[], teamId: string, updates: Partial<Monitor>) => {
+		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		const updated = await MonitorModel.updateMany({ _id: { $in: objectIds }, teamId }, { $set: updates }, { runValidators: true });
+		return updated.modifiedCount;
+	};
+
 	updateStatusWindowAndChecks = async (
 		monitorId: string,
 		teamId: string,

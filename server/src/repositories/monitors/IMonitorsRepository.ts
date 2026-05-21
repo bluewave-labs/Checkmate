@@ -31,6 +31,7 @@ export interface IMonitorsRepository {
 
 	// update
 	updateById(monitorId: string, teamId: string, updates: Partial<Monitor>): Promise<Monitor>;
+	updateByIds(monitorIds: string[], teamId: string, updates: Partial<Monitor>): Promise<number>;
 	updateStatusWindowAndChecks(
 		monitorId: string,
 		teamId: string,
