@@ -33,6 +33,11 @@ export default defineConfig({
         github: "https://github.com/bluewave-labs/Checkmate",
       },
 
+      // Inject a "Releases" link into the site header.
+      components: {
+        SocialIcons: "./src/components/HeaderLinks.astro",
+      },
+
       sidebar: [
         {
           label: "Getting started",

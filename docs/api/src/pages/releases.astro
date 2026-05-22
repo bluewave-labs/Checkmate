@@ -1,0 +1,59 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+import ReleaseCard from "../components/ReleaseCard.astro";
+import { releases } from "../data/releases";
+---
+
+<StarlightPage
+	frontmatter={{
+		title: "Releases",
+		description: "What's new in Checkmate — every release with the most important features.",
+		template: "splash",
+		pagefind: false,
+	}}
+>
+	<div class="releases-intro">
+		<p>
+			Every meaningful Checkmate release, newest first. For the
+			complete commit history, see the
+			<a href="https://github.com/bluewave-labs/Checkmate/releases" rel="noopener">GitHub releases page</a>.
+		</p>
+	</div>
+
+	<div class="releases-timeline">
+		{releases.map((release, index) => (
+			<ReleaseCard
+				version={release.version}
+				date={release.date}
+				headline={release.headline}
+				highlights={release.highlights}
+				isLatest={index === 0}
+			/>
+		))}
+	</div>
+</StarlightPage>
+
+<style>
+.releases-intro {
+	max-width: 60ch;
+	margin: 0 0 2rem 0;
+	color: var(--sl-color-gray-3);
+	font-size: var(--sl-text-base);
+	line-height: 1.55;
+}
+
+.releases-intro a {
+	color: var(--sl-color-accent-high);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.releases-timeline {
+	max-width: 56rem;
+	margin: 0;
+}
+
+:global([data-theme="light"]) .releases-intro {
+	color: var(--sl-color-gray-5);
+}
+</style>

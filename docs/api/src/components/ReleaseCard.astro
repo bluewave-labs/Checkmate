@@ -1,0 +1,139 @@
+---
+interface Props {
+	version: string;
+	date: string;
+	headline: string;
+	highlights: string[];
+	isLatest?: boolean;
+}
+
+const { version, date, headline, highlights, isLatest = false } = Astro.props;
+
+const formattedDate = new Date(date).toLocaleDateString("en-US", {
+	month: "long",
+	day: "numeric",
+	year: "numeric",
+});
+---
+
+<article class="release-card">
+	<aside class="release-meta">
+		<time datetime={date}>{formattedDate}</time>
+		<span class="release-version">
+			{version}
+			{isLatest && <span class="latest-badge">Latest</span>}
+		</span>
+	</aside>
+	<div class="release-content">
+		<h2 class="release-headline">{headline}</h2>
+		<ul class="release-highlights">
+			{highlights.map((item) => <li>{item}</li>)}
+		</ul>
+	</div>
+</article>
+
+<style>
+.release-card {
+	display: grid;
+	grid-template-columns: 200px 1fr;
+	gap: 2.5rem;
+	padding: 2rem 0;
+	border-bottom: 1px solid var(--sl-color-gray-5);
+	align-items: flex-start;
+}
+
+.release-card:last-child {
+	border-bottom: none;
+}
+
+.release-meta {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+	position: sticky;
+	top: 6rem;
+}
+
+.release-meta time {
+	color: var(--sl-color-gray-3);
+	font-size: var(--sl-text-sm);
+	font-feature-settings: "tnum";
+}
+
+.release-version {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	color: var(--sl-color-white);
+	font-weight: 600;
+	font-size: var(--sl-text-base);
+	font-variant-numeric: tabular-nums;
+}
+
+.latest-badge {
+	background: var(--sl-color-accent);
+	color: var(--sl-color-white);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	padding: 0.15rem 0.5rem;
+	border-radius: 0.25rem;
+	line-height: 1.2;
+}
+
+.release-content {
+	min-width: 0;
+}
+
+.release-headline {
+	margin: 0 0 1rem 0;
+	font-size: var(--sl-text-xl);
+	font-weight: 600;
+	color: var(--sl-color-white);
+	line-height: 1.3;
+}
+
+.release-highlights {
+	margin: 0;
+	padding-left: 1.25rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.release-highlights li {
+	color: var(--sl-color-gray-2);
+	line-height: 1.55;
+	font-size: var(--sl-text-base);
+}
+
+.release-highlights li::marker {
+	color: var(--sl-color-accent);
+}
+
+:global([data-theme="light"]) .release-card {
+	border-bottom-color: var(--sl-color-gray-2);
+}
+:global([data-theme="light"]) .release-version,
+:global([data-theme="light"]) .release-headline {
+	color: var(--sl-color-gray-6);
+}
+:global([data-theme="light"]) .release-highlights li {
+	color: var(--sl-color-gray-5);
+}
+
+@media (max-width: 768px) {
+	.release-card {
+		grid-template-columns: 1fr;
+		gap: 0.75rem;
+		padding: 1.5rem 0;
+	}
+	.release-meta {
+		position: static;
+		flex-direction: row;
+		align-items: center;
+		gap: 1rem;
+	}
+}
+</style>
