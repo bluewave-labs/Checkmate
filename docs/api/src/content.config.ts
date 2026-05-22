@@ -13,7 +13,10 @@ import { docsSchema } from "@astrojs/starlight/schema";
 export const collections = {
 	docs: defineCollection({
 		loader: glob({
-			base: "../api-content",
+			// Vendored from /docs/api-content/ by scripts/sync-sources.mjs.
+			// This indirection keeps the build self-contained for Vercel
+			// (whose Root Directory setting limits the upload to docs/api/).
+			base: "./src/vendored/api-content",
 			// README is contributor-facing docs (how to build the site),
 			// not part of the published content.
 			pattern: ["**/[^_]*.{md,mdx}", "!README.md"],

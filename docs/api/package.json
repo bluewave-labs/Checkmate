@@ -5,6 +5,8 @@
   "private": true,
   "description": "Public API documentation for Checkmate. Built with Astro Starlight.",
   "scripts": {
+    "prebuild": "node ./scripts/sync-sources.mjs",
+    "predev": "node ./scripts/sync-sources.mjs",
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",

@@ -2,6 +2,10 @@
 dist/
 .astro/
 
+# Sources copied in at build time by scripts/sync-sources.mjs.
+# Edit /docs/api-content/ and /server/openapi.json instead.
+src/vendored/
+
 # Dependencies
 node_modules/
 
@@ -14,3 +18,4 @@ pnpm-debug.log*
 # Env
 .env
 .env.production
+.vercel

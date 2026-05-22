@@ -2,9 +2,12 @@ import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import starlightOpenAPI, { openAPISidebarGroups } from "starlight-openapi";
 
-// The OpenAPI spec lives in the server package. The Starlight integration
-// reads it at build time and generates the full /api/reference/* tree.
-const OPENAPI_PATH = "../../server/openapi.json";
+// The OpenAPI spec is vendored from server/openapi.json by
+// scripts/sync-sources.mjs (runs as predev/prebuild). We point at the
+// vendored copy so the build is self-contained — Vercel only uploads
+// the docs/api/ subtree, so paths outside this directory are not
+// available at build time.
+const OPENAPI_PATH = "./src/vendored/openapi.json";
 
 export default defineConfig({
   // Served at https://checkmate.so/docs — the leading slash is included so
