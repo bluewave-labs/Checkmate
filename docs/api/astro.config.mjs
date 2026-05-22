@@ -10,9 +10,10 @@ import starlightOpenAPI, { openAPISidebarGroups } from "starlight-openapi";
 const OPENAPI_PATH = "./src/vendored/openapi.json";
 
 export default defineConfig({
-  // Served at https://checkmate.so/docs — the leading slash is included so
-  // every internal link resolves correctly when fronted by a reverse proxy.
-  base: "/docs",
+  // The deployed site serves at the root of its Vercel domain. The
+  // reverse proxy that maps checkmate.so/docs/* → Vercel must strip
+  // the /docs/ prefix before forwarding (the Cloudflare Worker snippet
+  // in docs/api-content/README.md does this).
   site: "https://checkmate.so",
 
   integrations: [
