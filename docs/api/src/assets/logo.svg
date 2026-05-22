@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 32" fill="none">
+  <rect x="2" y="6" width="20" height="20" rx="4" fill="#13715B"/>
+  <path d="M7 16l3.5 3.5L17 12" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="30" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="18" font-weight="600" fill="currentColor">Checkmate</text>
+</svg>

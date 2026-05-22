@@ -1,0 +1,23 @@
+/* Checkmate brand colors layered on top of Starlight defaults. */
+:root {
+	--sl-color-accent-low: #0e5a48;
+	--sl-color-accent: #13715b;
+	--sl-color-accent-high: #1a8a6f;
+
+	--sl-color-white: #ffffff;
+	--sl-color-gray-1: #eef2f0;
+	--sl-color-gray-2: #c9d3cf;
+	--sl-color-gray-3: #95a39d;
+	--sl-color-gray-4: #5c6d66;
+	--sl-color-gray-5: #3a4844;
+	--sl-color-gray-6: #2a3531;
+	--sl-color-black: #1a201e;
+}
+
+/* Light mode tweaks so the green accent reads against white. */
+:root[data-theme="light"] {
+	--sl-color-accent-low: #d0e4dc;
+	--sl-color-accent: #13715b;
+	--sl-color-accent-high: #0e5a48;
+	--sl-color-text-accent: #0e5a48;
+}
