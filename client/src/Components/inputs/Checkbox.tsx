@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import Checkbox from "@mui/material/Checkbox";
 import type { CheckboxProps } from "@mui/material/Checkbox";
-import { Square, SquareCheck } from "lucide-react";
+import { Square, SquareCheck, SquareMinus } from "lucide-react";
 import { useTheme } from "@mui/material/styles";
 
 type CheckboxInputProps = CheckboxProps & {
@@ -34,9 +34,15 @@ export const CheckboxInput = forwardRef<HTMLInputElement, CheckboxInputProps>(
 						strokeWidth={1.5}
 					/>
 				}
+				indeterminateIcon={
+					<SquareMinus
+						size={16}
+						strokeWidth={1.5}
+					/>
+				}
 				sx={{
 					color: theme.palette.text.secondary,
-					"&.Mui-checked": {
+					"&.Mui-checked, &.MuiCheckbox-indeterminate": {
 						color: theme.palette.primary.main,
 					},
 					"&:hover": { backgroundColor: "transparent" },
