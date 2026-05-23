@@ -476,7 +476,8 @@
 					"alreadyPaused_one": "所选监视器已暂停",
 					"alreadyPaused_other": "所有选定的监视器均已暂停",
 					"alreadyRunning_one": "所选监视器已经在运行",
-					"alreadyRunning_other": "所有选定的监视器均已在运行"
+					"alreadyRunning_other": "所有选定的监视器均已在运行",
+					"partialFailure": "已更新 {{successCount}} 个监控，但有 {{failedCount}} 个无法与任务队列同步"
 				}
 			}
 		},

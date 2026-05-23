@@ -476,7 +476,8 @@
 					"alreadyPaused_one": "O monitor selecionado já está pausado",
 					"alreadyPaused_other": "Todos os monitores selecionados já estão pausados",
 					"alreadyRunning_one": "O monitor selecionado já está em execução",
-					"alreadyRunning_other": "Todos os monitores selecionados já estão em execução"
+					"alreadyRunning_other": "Todos os monitores selecionados já estão em execução",
+					"partialFailure": "{{successCount}} monitores atualizados, mas {{failedCount}} falharam ao sincronizar com a fila de trabalhos"
 				}
 			}
 		},

@@ -476,7 +476,8 @@
 					"alreadyPaused_one": "Valittu näyttö on jo keskeytetty",
 					"alreadyPaused_other": "Kaikki valitut näytöt on jo keskeytetty",
 					"alreadyRunning_one": "Valittu näyttö on jo käynnissä",
-					"alreadyRunning_other": "Kaikki valitut näytöt ovat jo käynnissä"
+					"alreadyRunning_other": "Kaikki valitut näytöt ovat jo käynnissä",
+					"partialFailure": "{{successCount}} monitoria päivitettiin, mutta {{failedCount}} epäonnistui synkronoinnissa työjonon kanssa"
 				}
 			}
 		},

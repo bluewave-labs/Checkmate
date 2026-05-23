@@ -476,7 +476,8 @@
 					"alreadyPaused_one": "Le moniteur sélectionné est déjà en pause",
 					"alreadyPaused_other": "Tous les moniteurs sélectionnés sont déjà en pause",
 					"alreadyRunning_one": "Le moniteur sélectionné est déjà en cours d'exécution",
-					"alreadyRunning_other": "Tous les moniteurs sélectionnés sont déjà en cours d'exécution"
+					"alreadyRunning_other": "Tous les moniteurs sélectionnés sont déjà en cours d'exécution",
+					"partialFailure": "{{successCount}} moniteurs mis à jour, mais {{failedCount}} n'ont pas pu se synchroniser avec la file d'attente des tâches"
 				}
 			}
 		},

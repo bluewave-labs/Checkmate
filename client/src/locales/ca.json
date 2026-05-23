@@ -476,7 +476,8 @@
 					"paused_one": "{{count}} monitor pausat",
 					"paused_other": "{{count}} monitors pausats",
 					"resumed_one": "{{count}} monitor reprès",
-					"resumed_other": "{{count}} monitors represos"
+					"resumed_other": "{{count}} monitors represos",
+					"partialFailure": "S'han actualitzat {{successCount}} monitors, però {{failedCount}} han fallat en sincronitzar-se amb la cua de tasques"
 				}
 			}
 		},

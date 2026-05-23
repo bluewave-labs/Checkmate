@@ -450,7 +450,8 @@
 					"paused_one": "{{count}} monitor paused",
 					"paused_other": "{{count}} monitors paused",
 					"resumed_one": "{{count}} monitor resumed",
-					"resumed_other": "{{count}} monitors resumed"
+					"resumed_other": "{{count}} monitors resumed",
+					"partialFailure": "{{successCount}} monitors updated, but {{failedCount}} failed to sync with the job queue"
 				},
 				"statBoxes": {
 					"activeFor": "Active for",

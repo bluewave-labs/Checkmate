@@ -476,7 +476,8 @@
 					"alreadyPaused_one": "Выбранный монитор уже приостановлен",
 					"alreadyPaused_other": "Все выбранные мониторы уже приостановлены",
 					"alreadyRunning_one": "Выбранный монитор уже запущен",
-					"alreadyRunning_other": "Все выбранные мониторы уже запущены"
+					"alreadyRunning_other": "Все выбранные мониторы уже запущены",
+					"partialFailure": "Обновлено {{successCount}} мониторов, но {{failedCount}} не удалось синхронизировать с очередью задач"
 				}
 			}
 		},

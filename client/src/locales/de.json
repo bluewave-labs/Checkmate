@@ -476,7 +476,8 @@
 					"alreadyPaused_one": "Der ausgewählte Monitor ist bereits pausiert",
 					"alreadyPaused_other": "Alle ausgewählten Monitore sind bereits pausiert",
 					"alreadyRunning_one": "Der ausgewählte Monitor wird bereits ausgeführt",
-					"alreadyRunning_other": "Alle ausgewählten Monitore werden bereits ausgeführt"
+					"alreadyRunning_other": "Alle ausgewählten Monitore werden bereits ausgeführt",
+					"partialFailure": "{{successCount}} Monitore aktualisiert, aber {{failedCount}} konnten nicht mit der Job-Warteschlange synchronisiert werden"
 				}
 			}
 		},
