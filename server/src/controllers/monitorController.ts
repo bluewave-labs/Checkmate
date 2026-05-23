@@ -328,7 +328,7 @@ class MonitorController implements IMonitorController {
 			return res.status(200).json({
 				success: true,
 				msg,
-				data: monitors,
+				data: { monitors, failedCount },
 			});
 		} catch (error) {
 			next(error);
