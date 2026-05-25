@@ -1,4 +1,4 @@
-export const DbTypes = ["timescaledb", "mongodb"] as const;
+export const DbTypes = ["mongodb"] as const;
 export type DbType = (typeof DbTypes)[number];
 
 export interface SettingsThresholds {
@@ -21,6 +21,7 @@ export interface Settings {
 	systemEmailHost?: string;
 	systemEmailPort?: number;
 	systemEmailAddress?: string;
+	systemEmailDisplayName?: string;
 	systemEmailPassword?: string;
 	systemEmailUser?: string;
 	systemEmailConnectionHost?: string;

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { STATUS_PAGE_THEMES, STATUS_PAGE_THEME_MODES } from "@/Types/StatusPage";
 
 export const statusPageSchema = z.object({
 	companyName: z
@@ -25,6 +26,8 @@ export const statusPageSchema = z.object({
 	showAdminLoginLink: z.boolean(),
 	showInfrastructure: z.boolean(),
 	customCSS: z.string().optional(),
+	theme: z.enum(STATUS_PAGE_THEMES).optional(),
+	themeMode: z.enum(STATUS_PAGE_THEME_MODES).optional(),
 	logo: z
 		.object({
 			data: z.string(),

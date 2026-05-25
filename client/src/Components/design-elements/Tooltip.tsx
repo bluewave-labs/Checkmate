@@ -16,16 +16,15 @@ export const Tooltip = ({ placement = "top", ...props }: StyledTooltipProps) => 
 			slotProps={{
 				tooltip: {
 					sx: {
-						background:
+						backgroundColor:
 							theme.palette.mode === "dark"
-								? "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)"
-								: "linear-gradient(135deg, #2c3e50 0%, #1a252f 100%)",
-						backgroundColor: "transparent",
-						color: "#ffffff",
+								? theme.palette.grey[900]
+								: theme.palette.grey[800],
+						color: theme.palette.common.white,
 						fontSize: "13px",
 						padding: `${theme.spacing(4)} ${theme.spacing(5)}`,
 						borderRadius: `${theme.shape.borderRadius}px`,
-						boxShadow: "0 8px 24px rgba(0, 0, 0, 0.4)",
+						boxShadow: theme.shadows[6],
 					},
 				},
 			}}

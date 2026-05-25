@@ -1,7 +1,12 @@
 import { useMemo } from "react";
 import { statusPageSchema, type StatusPageFormData } from "@/Validation/statusPage";
 import type { StatusPage } from "@/Types/StatusPage";
+import {
+	DEFAULT_STATUS_PAGE_THEME,
+	DEFAULT_STATUS_PAGE_THEME_MODE,
+} from "@/Types/StatusPage";
 import type { Monitor } from "@/Types/Monitor";
+import { resolveTimezone } from "@/Utils/TimeUtils";
 
 interface UseStatusPageFormOptions {
 	data?: StatusPage | null;
@@ -26,9 +31,9 @@ export const useStatusPageForm = ({
 		const defaults: StatusPageFormData = {
 			companyName: data?.companyName || "",
 			url: data?.url || generateDefaultUrl(),
-			timezone: data?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+			timezone: resolveTimezone(data?.timezone),
 			type: data?.type || ["uptime"],
-			color: data?.color || "#4169E1",
+			color: data?.color || "#13715B",
 			monitors: data?.monitors || [],
 			isPublished: data?.isPublished ?? false,
 			showCharts: data?.showCharts ?? true,
@@ -36,6 +41,8 @@ export const useStatusPageForm = ({
 			showAdminLoginLink: data?.showAdminLoginLink ?? false,
 			showInfrastructure: data?.showInfrastructure ?? false,
 			customCSS: data?.customCSS || "",
+			theme: data?.theme ?? DEFAULT_STATUS_PAGE_THEME,
+			themeMode: data?.themeMode ?? DEFAULT_STATUS_PAGE_THEME_MODE,
 			logo: transformLogo(data?.logo),
 		};
 

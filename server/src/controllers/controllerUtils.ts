@@ -29,6 +29,14 @@ export const optionalString = (value: unknown, fieldName: string): string | unde
 	throw new AppError({ message: `${fieldName} must be a string`, status: 400 });
 };
 
+export const extractString = (value: unknown): string | undefined => {
+	const candidate = Array.isArray(value) ? value[0] : value;
+	if (typeof candidate !== "string" || candidate.length === 0) {
+		return undefined;
+	}
+	return candidate;
+};
+
 export const optionalNumber = (value: unknown, fieldName: string): number | undefined => {
 	if (value === undefined) {
 		return undefined;

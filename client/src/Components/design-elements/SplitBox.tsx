@@ -53,7 +53,7 @@ export const ConfigBox = ({
 	rightContent,
 }: {
 	title: string;
-	subtitle: string;
+	subtitle: React.ReactNode;
 	leftContent?: React.ReactNode;
 	rightContent: React.ReactNode;
 }) => {
@@ -63,9 +63,9 @@ export const ConfigBox = ({
 			left={
 				<Stack spacing={theme.spacing(LAYOUT.XS)}>
 					<Typography
-						textTransform={"capitalize"}
 						component="h2"
-						variant="h2"
+						variant="eyebrow"
+						color="text.secondary"
 					>
 						{title}
 					</Typography>

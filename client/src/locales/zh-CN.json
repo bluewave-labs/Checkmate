@@ -73,7 +73,9 @@
 			"paused": "已暂停",
 			"na": "不适用",
 			"resolved": "已解决",
-			"responseTime": "响应时间"
+			"responseTime": "响应时间",
+			"idle": "空闲",
+			"running": "运行中"
 		},
 		"form": {
 			"role": {
@@ -119,6 +121,17 @@
 				"interval": "间隔",
 				"active": "活跃",
 				"responseTime": "响应时间"
+			}
+		},
+		"statusCode": {
+			"down": "宕机",
+			"networkError": {
+				"dns": "无法解析主机名（DNS查找失败）。",
+				"refused": "服务器拒绝连接（端口关闭或服务未监听）。",
+				"reset": "在收到响应之前连接被重置。",
+				"timeout": "服务器未及时响应（请求超时）。",
+				"tls": "TLS或SSL握手失败（证书或加密问题）。",
+				"unknown": "未从目标接收HTTP响应。"
 			}
 		}
 	},
@@ -199,6 +212,14 @@
 		"starPrompt": {
 			"title": "Star Checkmate",
 			"description": "查看最新版本并在 GitHub 上帮助发展社区"
+		},
+		"pageHeader": {
+			"links": {
+				"support": "支持",
+				"discussions": "讨论",
+				"docs": "文档",
+				"changelog": "更新日志"
+			}
 		}
 	},
 	"pages": {
@@ -278,10 +299,23 @@
 						"placeholder": "选择角色"
 					},
 					"linkLabel": "邀请链接"
+				},
+				"fallback": {
+					"title": "暂无团队成员",
+					"description": "通过电子邮件邀请队友或直接添加他们。一旦加入，他们将与角色一起显示在这里。"
 				}
+			},
+			"header": {
+				"title": "账户",
+				"description": "管理个人资料、密码、团队和工作区设置。"
 			}
 		},
 		"auth": {
+			"brandPanel": {
+				"eyebrow": "开源基础设施监控",
+				"tagline": "关注您服务器的每一步动作。",
+				"description": "实时跟踪运行状态、响应时间和事件 - 自托管，完全属于您。"
+			},
 			"common": {
 				"passwordRules": {
 					"length": {
@@ -343,7 +377,8 @@
 			"register": {
 				"title": "欢迎回到 Checkmate！",
 				"subtitle": "注册以开始使用",
-				"submit": "注册"
+				"submit": "注册",
+				"setupNotice": "此页面仅在初始设置期间可用。注册超级管理员后,可以从团队设置中邀请更多用户。"
 			},
 			"forgotPassword": {
 				"title": "忘记密码了？",
@@ -378,6 +413,14 @@
 					"statusCode": "状态码",
 					"location": "位置"
 				}
+			},
+			"fallback": {
+				"title": "暂无检查",
+				"description": "创建监控器后，每次状态探测和响应时间都会以一次检查的形式显示在这里。"
+			},
+			"header": {
+				"title": "检查",
+				"description": "Checkmate 对监控器执行的每次探测都会在此显示，包含状态码和响应时间。"
 			}
 		},
 		"common": {
@@ -391,13 +434,18 @@
 					"inviteMember": "邀请成员",
 					"openSite": "打开站点",
 					"pause": "暂停",
-					"resume": "恢复"
+					"resume": "恢复",
+					"selectAll": "选择所有监视器",
+					"selectMonitor": "选择 {{name}}",
+					"bulkSelected_one": "已选择 {{count}} 个监视器",
+					"bulkSelected_other": "已选择 {{count}} 个监视器"
 				},
 				"statBoxes": {
 					"activeFor": "已活跃",
 					"certificateExpiry": "证书到期",
 					"lastCheck": "上次检查",
-					"lastResponseTime": "上次响应时间"
+					"lastResponseTime": "上次响应时间",
+					"serviceIsDown": "服务已停止"
 				},
 				"status": {
 					"down": "宕机",
@@ -417,7 +465,19 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "基础设施",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
+				},
+				"bulkPause": {
+					"paused_one": "已暂停 {{count}} 个监视器",
+					"paused_other": "已暂停 {{count}} 个监视器",
+					"resumed_one": "已恢复 {{count}} 个监视器",
+					"resumed_other": "已恢复 {{count}} 个监视器",
+					"alreadyPaused_one": "所选监视器已暂停",
+					"alreadyPaused_other": "所有选定的监视器均已暂停",
+					"alreadyRunning_one": "所选监视器已经在运行",
+					"alreadyRunning_other": "所有选定的监视器均已在运行",
+					"partialFailure": "已更新 {{successCount}} 个监控，但有 {{failedCount}} 个无法与任务队列同步"
 				}
 			}
 		},
@@ -503,6 +563,30 @@
 						"wsUrl": {
 							"label": "WebSocket URL",
 							"placeholder": "wss://example.com/socket"
+						},
+						"captureUrl": {
+							"label": "Capture 端点",
+							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsRecordType": {
+							"label": "DNS记录类型",
+							"value": {
+								"A": "A",
+								"AAAA": "AAAA",
+								"CNAME": "CNAME",
+								"MX": "MX",
+								"NS": "NS",
+								"TXT": "TXT"
+							}
+						},
+						"dnsServer": {
+							"label": "DNS服务器",
+							"placeholder": "8.8.8.8"
+						},
+						"strategy": {
+							"desktop": "桌面",
+							"label": "策略",
+							"mobile": "移动端"
 						}
 					},
 					"title": "常规设置",
@@ -511,11 +595,12 @@
 						"ping": "输入要 ping 的 IP 地址或主机名（例如.. 192.168.1.100 或 example.com），并添加显示在仪表板上的清晰显示名称。",
 						"port": "输入服务器的 URL 或 IP、端口号和仪表板上显示的清晰显示名称。",
 						"docker": "码输入 Docker 容器名称或 ID。您可以使用容器名称（例如.. my-app）或容器 ID（完整的 64 字符 ID 或短 ID）。",
-						"game": "输入要 ping 的 IP 地址或主机名和端口号（例如.. 192.168.1.100 或 example.com）并选择游戏类型。",
+						"game": "输入要 ping 的 IP 地址或主机名和端口号（例如.. 192.168.1.100 或 example.com）并选择游戏类型。某些游戏需要在配置文件中启用服务器查询 — 请查阅你的游戏服务器文档。详见<gamedigLink>支持的游戏列表</gamedigLink>了解协议细节。",
 						"pagespeed": "跟踪网站的页面加载性能、Core Web Vitals 和优化评分。",
 						"grpc": "输入 gRPC 服务器的主机名和端口，可选指定健康检查的服务名称，并添加显示名称。",
 						"websocket": "输入要监控的 WebSocket URL（例如 wss://example.com/socket），并添加显示名称。",
-						"hardware": "监控基础设施的 CPU、内存、磁盘使用率和温度。"
+						"hardware": "监控基础设施的 CPU、内存、磁盘使用情况和温度。Capture 端点 URL 必须包含完整路径 /api/v1/metrics（例如 http://192.168.1.10:5001/api/v1/metrics）。授权密钥只需粘贴令牌字符串——请勿包含 'Bearer'。",
+						"dns": "监控特定DNS服务器是否响应。"
 					}
 				},
 				"ignoreTls": {
@@ -552,7 +637,8 @@
 					"optionHttpDescription": "使用 HTTP(S) 监控您的网站或 API 端点。",
 					"optionPingDescription": "使用 ICMP Ping 监控服务器是否在线。",
 					"optionPortDescription": "监控服务器上的特定端口是否开放。",
-					"title": "类型"
+					"title": "类型",
+					"optionDnsDescription": "监控特定DNS服务器是否响应。"
 				},
 				"thresholds": {
 					"title": "告警阈值",
@@ -640,6 +726,10 @@
 			}
 		},
 		"incidents": {
+			"fallback": {
+				"title": "无事件 — 所有系统正常",
+				"description": "当监控器宕机或恢复时，事件将连同时间、监控器详情和解决记录一起显示在这里。"
+			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "解决事件",
@@ -720,6 +810,10 @@
 					"active": "活跃",
 					"resolved": "已解决"
 				}
+			},
+			"header": {
+				"title": "事件",
+				"description": "当监控器宕机或恢复时，事件将连同时间、监控器详情和解决记录一起显示在这里。"
 			}
 		},
 		"infrastructure": {
@@ -730,6 +824,7 @@
 					"memory": "内存使用率",
 					"netBytesRecv": "{{name}} - 接收字节",
 					"netBytesSent": "{{name}} - 发送字节",
+					"netNoTraffic": "Capture 报告所有接口的流量均为零。当 Capture 在只能看到回环接口的容器内运行时，这属于正常情况——请直接在主机上运行 Capture 才能看到真实的网络活动。",
 					"temp": "温度"
 				}
 			},
@@ -774,11 +869,19 @@
 			},
 			"fallback": {
 				"actionButton": "创建监控！",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "基础设施监控用于："
+				"title": "暂无基础设施监控器",
+				"description": "跟踪服务器性能、识别瓶颈，通过实时基础设施监控确保可靠性。"
+			},
+			"header": {
+				"title": "基础设施监控器",
+				"description": "跟踪服务器性能、识别瓶颈，通过实时基础设施监控确保可靠性。"
 			}
 		},
 		"logs": {
+			"fallback": {
+				"title": "暂无日志",
+				"description": "Checkmate 运行时的服务器活动、警告和错误将显示在这里。"
+			},
 			"tabs": {
 				"diagnostics": "诊断",
 				"logs": "服务器日志",
@@ -788,7 +891,9 @@
 				"label": "日志级别"
 			},
 			"jobQueue": "作业队列",
+			"jobQueueExplainer": "<highlight>高亮的行</highlight>是当前正在被工作进程处理的作业。",
 			"failedJobs": "失败作业",
+			"failedJobsExplainer": "按监控的最近失败 — 最近失败时间、失败次数及原因。",
 			"noLogs": "未找到日志",
 			"metrics": {
 				"jobs": "作业",
@@ -815,6 +920,16 @@
 					"usedSPercentage": "CPU 1 秒使用百分比",
 					"total": "总计",
 					"used": "已使用"
+				},
+				"sections": {
+					"runtimeStats": {
+						"title": "运行时统计",
+						"description": "Node.js 进程和主机的快照。每 5 秒更新一次。"
+					},
+					"memoryCpu": {
+						"title": "内存与 CPU",
+						"description": "进程如何使用其分配的内存和主机 CPU。"
+					}
 				}
 			},
 			"table": {
@@ -831,15 +946,24 @@
 					"lastFinishedAt": "上次完成于",
 					"lastRunTook": "上次运行耗时",
 					"lastFailedAt": "上次失败于",
-					"failReason": "失败原因"
+					"failReason": "失败原因",
+					"state": "状态"
 				}
+			},
+			"queueFallback": {
+				"title": "队列中没有任务",
+				"description": "已安排或正在运行的监控检查将显示在这里。空队列意味着一切都是最新的。"
+			},
+			"header": {
+				"title": "日志与队列",
+				"description": "在一处查看服务器日志、监控器作业队列和运行时诊断。"
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "创建维护窗口！",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "维护窗口用于："
+				"title": "暂无计划维护窗口",
+				"description": "安排计划停机时间以抑制告警，让团队和用户知晓预期。"
 			},
 			"table": {
 				"headers": {
@@ -891,13 +1015,17 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "维护窗口",
+				"description": "安排计划停机时间以抑制告警，让团队和用户知晓预期。"
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "创建渠道",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "通知渠道用于："
+				"title": "暂无通知渠道",
+				"description": "连接 Slack、Discord、邮件、Webhook 等，让事件发生时正确的人立即收到通知。"
 			},
 			"form": {
 				"accessToken": {
@@ -947,12 +1075,36 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "聊天 ID",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Pushover 配置",
+					"description": "输入您的 Pushover 应用令牌和用户密钥。",
+					"optionAppToken": "应用令牌",
+					"placeholderAppToken": "输入应用令牌",
+					"optionUserKey": "用户密钥",
+					"placeholderUserKey": "输入用户密钥"
+				},
+				"twilio": {
+					"title": "Twilio 配置",
+					"description": "输入 Twilio 帐户凭据以发送短信。",
+					"optionAccountSid": "帐户 SID",
+					"placeholderAccountSid": "输入帐户 SID",
+					"optionAuthToken": "认证令牌",
+					"placeholderAuthToken": "输入认证令牌",
+					"optionFromNumber": "发送号码",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "接收号码",
+					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
 				"headers": {
 					"destination": "目标"
 				}
+			},
+			"header": {
+				"title": "通知",
+				"description": "连接 Slack、Discord、邮件、Webhook 等，让事件发生时正确的人立即收到通知。"
 			}
 		},
 		"pageSpeed": {
@@ -979,8 +1131,16 @@
 			},
 			"fallback": {
 				"actionButton": "创建监控！",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "PageSpeed 监控用于："
+				"title": "暂无 PageSpeed 监控器",
+				"description": "持续追踪 Core Web Vitals 和 Lighthouse 评分，在用户察觉之前发现性能回退。"
+			},
+			"header": {
+				"title": "PageSpeed 监控器",
+				"description": "持续追踪 Core Web Vitals 和 Lighthouse 评分，在用户察觉之前发现性能回退。"
+			},
+			"strategy": {
+				"desktop": "桌面",
+				"mobile": "移动端"
 			}
 		},
 		"settings": {
@@ -1129,6 +1289,10 @@
 						},
 						"rejectUnauthorized": {
 							"label": "拒绝无效证书：拒绝自签名或不受信任证书的连接"
+						},
+						"displayName": {
+							"label": "发件人姓名（可选）- 显示在发件人字段中的友好名称",
+							"placeholder": "Checkmate通知"
 						}
 					}
 				},
@@ -1138,10 +1302,11 @@
 				},
 				"removeMonitors": {
 					"title": "系统重置",
-					"description": "从系统中移除所有监控。",
+					"description": "从系统中移除所有监视器。",
 					"dialog": {
 						"title": "移除所有监控？",
-						"description": "此操作无法撤销。"
+						"description": "此操作无法撤销。",
+						"paragraph": "所有检查历史、事件、计划维护窗口以及使用这些监控的状态页面也将一并被移除。如需保留数据备份，请先导出监控。"
 					}
 				},
 				"exportMonitors": {
@@ -1158,14 +1323,18 @@
 				"validation": {
 					"errorMessage": "请修复以下验证错误："
 				}
+			},
+			"header": {
+				"title": "设置",
+				"description": "配置 SMTP、集成、保留和全局应用行为。"
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "状态页已成功删除",
 			"fallback": {
-				"title": "状态页用于：",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "创建状态页！"
+				"title": "暂无状态页面",
+				"actionButton": "创建状态页！",
+				"description": "发布一个公开页面，向客户和利益相关者展示实时运行情况和事件历史。"
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "热力图",
@@ -1184,13 +1353,40 @@
 				"uptime": {
 					"title": "正常运行时间",
 					"responseTime": "响应时间"
+				},
+				"chart": {
+					"avg": "平均 {{value}}ms",
+					"downTooltip": "宕机",
+					"heatmapAria": "响应时间热图",
+					"max": "最大 {{value}}ms"
+				},
+				"status": {
+					"breached": "超出阈值",
+					"down": "宕机",
+					"initializing": "初始化中",
+					"maintenance": "维护中",
+					"paused": "已暂停",
+					"up": "运行中"
 				}
 			},
 			"statusBar": {
 				"allDown": "所有系统已宕机",
 				"allUp": "所有系统运行正常",
 				"degraded": "部分系统正在出现问题",
-				"unknown": "无法确定系统状态"
+				"unknown": "无法确定系统状态",
+				"allBreached": "所有系统已超过阈值",
+				"allMaintenance": "所有系统正在维护中",
+				"allPaused": "所有系统已暂停",
+				"allInitializing": "所有系统正在初始化",
+				"breachedAndDown": "部分系统超过阈值且已停止",
+				"breached": "部分系统超过阈值",
+				"maintenanceAndDown": "部分系统在维护期间停止",
+				"maintenance": "部分系统正在维护",
+				"partiallyPaused": "部分系统已暂停",
+				"initializing": "部分系统正在初始化",
+				"noMonitors": "尚未配置任何监控器",
+				"monitoringSummary": "正在监控{{count}}个服务 · 每10秒更新一次",
+				"monitoringSummary_other": "正在监控{{count}}个服务 · 每10秒更新一次"
 			},
 			"table": {
 				"headers": {
@@ -1281,7 +1477,47 @@
 							"label": "显示基础设施指标"
 						}
 					}
+				},
+				"theme": {
+					"description": "为您的公共状态页面选择视觉样式。",
+					"label": "主题",
+					"options": {
+						"bold": {
+							"description": "大字体和自信的间距。非常适合品牌导向的页面。",
+							"name": "粗体"
+						},
+						"editorial": {
+							"description": "衬线标题和细分隔线。独特而平静。",
+							"name": "编辑风格"
+						},
+						"modern": {
+							"description": "SaaS级品质，带有脉动状态点和柔和褪色卡片。",
+							"name": "现代"
+						},
+						"refined": {
+							"description": "干净、专业，接近经典Checkmate外观。",
+							"name": "精致"
+						}
+					},
+					"title": "页面主题"
+				},
+				"themeMode": {
+					"auto": "自动（跟随访客设备）",
+					"dark": "仅深色",
+					"label": "主题模式",
+					"light": "仅浅色"
 				}
+			},
+			"header": {
+				"title": "状态页面",
+				"description": "发布公开页面，向客户和利益相关者展示实时运行情况和事件历史。"
+			},
+			"editorial": {
+				"allUp": "所有系统运行正常。",
+				"reportTitle": "服务报告"
+			},
+			"footer": {
+				"poweredBy": "技术支持"
 			}
 		},
 		"uptime": {
@@ -1297,8 +1533,12 @@
 			},
 			"fallback": {
 				"actionButton": "创建监控！",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "正常运行时间监控用于："
+				"title": "暂无运行时间监控器",
+				"description": "监控 HTTP 端点、Ping、容器和端口 — 一旦故障即刻收到提醒。"
+			},
+			"header": {
+				"title": "运行时间监控器",
+				"description": "监控 HTTP 端点、Ping、容器和端口 — 一旦故障即刻收到提醒。"
 			}
 		}
 	}

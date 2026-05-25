@@ -3,8 +3,17 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import type { ToggleButtonProps } from "@mui/material/ToggleButton";
 import type { ToggleButtonGroupProps } from "@mui/material/ToggleButtonGroup";
 import { useTheme } from "@mui/material/styles";
+import { alpha } from "@mui/material/styles";
 
 export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
+	const theme = useTheme();
+	const isDark = theme.palette.mode === "dark";
+	const selectedBg = isDark
+		? alpha(theme.palette.primary.main, 0.22)
+		: alpha(theme.palette.primary.main, 0.06);
+	const selectedHoverBg = isDark
+		? alpha(theme.palette.primary.main, 0.3)
+		: alpha(theme.palette.primary.main, 0.1);
 	return (
 		<ToggleButton
 			{...props}
@@ -17,8 +26,18 @@ export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 				textOverflow: "ellipsis",
 				overflow: "hidden",
 				boxShadow: "none",
+				color: theme.palette.text.secondary,
 				"&:hover": {
 					boxShadow: "none",
+					backgroundColor: theme.palette.action.hover,
+				},
+				"&.Mui-selected": {
+					backgroundColor: selectedBg,
+					color: theme.palette.text.primary,
+					fontWeight: 500,
+					"&:hover": {
+						backgroundColor: selectedHoverBg,
+					},
 				},
 				...sx,
 			}}
@@ -34,7 +53,6 @@ export const ToggleButtonGroupInput = ({ sx, ...props }: ToggleButtonGroupProps)
 			sx={{
 				"& .MuiToggleButtonGroup-grouped": {
 					borderColor: theme.palette.divider,
-
 					borderRadius: 0,
 					"&:first-of-type": {
 						borderTopLeftRadius: 2,

@@ -11,7 +11,8 @@ import {
 	IncidentService,
 	type IGeoChecksService,
 } from "@/service/index.js";
-import { CHECK_TTL_SENTINEL, type MaintenanceWindow, type StatusChangeResult } from "@/types/index.js";
+import { CHECK_TTL_SENTINEL, type StatusChangeResult } from "@/types/index.js";
+import { isWindowActive } from "@/utils/maintenanceWindow.js";
 import {
 	IMaintenanceWindowsRepository,
 	IMonitorsRepository,
@@ -396,32 +397,8 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 
 	async isInMaintenanceWindow(monitorId: string, teamId: string) {
 		const maintenanceWindows = await this.maintenanceWindowsRepository.findByMonitorId(monitorId, teamId);
-		// Check for active maintenance window:
-		const maintenanceWindowIsActive = maintenanceWindows.reduce((acc: boolean, window: MaintenanceWindow) => {
-			if (window.active) {
-				const start = new Date(window.start);
-				const end = new Date(window.end);
-				const now = new Date();
-				const repeatInterval = window.repeat || 0;
-
-				// If start is < now and end > now, we're in maintenance
-				if (start <= now && end >= now) return true;
-
-				// If maintenance window was set in the past with a repeat,
-				// we need to advance start and end to see if we are in range
-
-				while (start < now && repeatInterval !== 0) {
-					start.setTime(start.getTime() + repeatInterval);
-					end.setTime(end.getTime() + repeatInterval);
-					if (start <= now && end >= now) {
-						return true;
-					}
-				}
-				return acc;
-			}
-			return acc;
-		}, false);
-		return maintenanceWindowIsActive;
+		const now = new Date();
+		return maintenanceWindows.some((window) => isWindowActive(window, now));
 	}
 
 	getCleanupRetentionJob = () => {

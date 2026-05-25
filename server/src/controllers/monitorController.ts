@@ -14,12 +14,12 @@ import {
 	getUptimeDetailsByIdParamValidation,
 	getUptimeDetailsByIdQueryValidation,
 	importMonitorsBodyValidation,
+	bulkPauseMonitorBodyValidation,
 } from "@/validation/monitorValidation.js";
 import sslChecker from "ssl-checker";
 import { fetchMonitorCertificate, requireTeamId, requireUserId } from "@/controllers/controllerUtils.js";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorService, INotificationsService } from "@/service/index.js";
-import { GeoContinent } from "@/types/geoCheck.js";
 
 const SERVICE_NAME = "monitorController";
 
@@ -36,6 +36,7 @@ export interface IMonitorController {
 	deleteAllMonitors: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	editMonitor: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	pauseMonitor: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	bulkPauseMonitors: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	addDemoMonitors: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	getMonitorsByTeamId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	getMonitorsWithChecksByTeamId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
@@ -307,6 +308,33 @@ class MonitorController implements IMonitorController {
 		}
 	};
 
+	bulkPauseMonitors = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const validatedBody = bulkPauseMonitorBodyValidation.parse(req.body);
+
+			const { monitorIds, pause } = validatedBody;
+			const teamId = requireTeamId(req.user?.teamId);
+
+			const { monitors, failedCount } = await this.monitorService.bulkPauseMonitors({ teamId, monitorIds, pause });
+
+			const action = pause ? "paused" : "resumed";
+			const monitorStr = monitors.length === 1 ? "monitor" : "monitors";
+
+			let msg = `${monitors.length} ${monitorStr} ${action} successfully`;
+			if (failedCount > 0) {
+				msg = `${monitors.length} ${monitorStr} ${action} in database, but ${failedCount} failed to sync with the job queue. Please check logs.`;
+			}
+
+			return res.status(200).json({
+				success: true,
+				msg,
+				data: { monitors, failedCount },
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
 	addDemoMonitors = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const id = requireUserId(req.user?.id);
@@ -329,9 +357,10 @@ class MonitorController implements IMonitorController {
 
 			const teamId = requireTeamId(req.user?.teamId);
 			const type = validatedQuery.type;
+			const tags = validatedQuery.tags;
 			const filter = validatedQuery.filter;
 
-			const monitors = await this.monitorService.getMonitorsByTeamId({ teamId, type, filter });
+			const monitors = await this.monitorService.getMonitorsByTeamId({ teamId, type, tags, filter });
 
 			return res.status(200).json({
 				success: true,
@@ -354,12 +383,14 @@ class MonitorController implements IMonitorController {
 			const field = validatedQuery.field;
 			const order = validatedQuery.order;
 			const type = validatedQuery.type;
+			const tags = validatedQuery.tags;
 			const teamId = requireTeamId(req.user?.teamId);
 
 			const monitors = await this.monitorService.getMonitorsWithChecksByTeamId({
 				teamId,
 				limit,
 				type,
+				tags,
 				page,
 				rowsPerPage,
 				filter,

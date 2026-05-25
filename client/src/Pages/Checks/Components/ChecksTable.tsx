@@ -1,8 +1,12 @@
-import { Table, Pagination, ValueLabel, StatusLabel } from "@/Components/design-elements";
+import {
+	Table,
+	Pagination,
+	StatusLabel,
+	StatusCodeLabel,
+} from "@/Components/design-elements";
 import Box from "@mui/material/Box";
 import type { Header } from "@/Components/design-elements/Table";
 import type { Monitor } from "@/Types/Monitor";
-
 import { useTranslation } from "react-i18next";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import type { Check } from "@/Types/Check";
@@ -29,7 +33,7 @@ export const ChecksTable = ({
 	const { t } = useTranslation();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 
-	const getHeaders = (t: Function, uiTimezone: string) => {
+	const getHeaders = () => {
 		const headers: Header<Check>[] = [
 			{
 				id: "monitorName",
@@ -63,13 +67,10 @@ export const ChecksTable = ({
 				id: "statusCode",
 				content: t("pages.checks.table.headers.statusCode"),
 				render: (row) => {
-					const code = row.statusCode;
-					if (!code) return "N/A";
-					const value = code < 300 ? "positive" : code < 400 ? "neutral" : "negative";
 					return (
-						<ValueLabel
-							value={value}
-							text={String(code)}
+						<StatusCodeLabel
+							statusCode={row.statusCode}
+							message={row.message}
 						/>
 					);
 				},
@@ -85,7 +86,7 @@ export const ChecksTable = ({
 		return headers;
 	};
 
-	const headers = getHeaders(t, uiTimezone);
+	const headers = getHeaders();
 
 	const handlePageChange = (
 		_e: React.MouseEvent<HTMLButtonElement> | null,

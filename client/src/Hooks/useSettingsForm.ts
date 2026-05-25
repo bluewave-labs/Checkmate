@@ -18,6 +18,7 @@ export const useSettingsForm = ({ data = null }: UseSettingsFormOptions = {}) =>
 			systemEmailHost: data?.systemEmailHost || "",
 			systemEmailUser: data?.systemEmailUser || "",
 			systemEmailAddress: data?.systemEmailAddress || "",
+			systemEmailDisplayName: data?.systemEmailDisplayName || "",
 			systemEmailConnectionHost: data?.systemEmailConnectionHost || "localhost",
 			systemEmailTLSServername: data?.systemEmailTLSServername || "",
 			systemEmailPort: data?.systemEmailPort,

@@ -1,6 +1,6 @@
 import { IStatusProvider } from "@/service/infrastructure/network/IStatusProvider.js";
 import { MonitorStatusResponse, PageSpeedStatusPayload } from "@/types/network.js";
-import { Monitor, MonitorType } from "@/types/monitor.js";
+import { Monitor, MonitorType, DefaultPageSpeedStrategy } from "@/types/monitor.js";
 import { HttpProvider } from "@/service/infrastructure/network/HttpProvider.js";
 import { ISettingsService } from "@/service/system/settingsService.js";
 import { ILogger } from "@/utils/logger.js";
@@ -19,14 +19,15 @@ export class PageSpeedProvider implements IStatusProvider<PageSpeedStatusPayload
 	}
 
 	async handle(monitor: Monitor): Promise<MonitorStatusResponse<PageSpeedStatusPayload>> {
-		const { url } = monitor;
+		const { url, strategy } = monitor;
 		try {
 			if (!url) throw new Error("URL is required for PageSpeed monitor");
 			const dbSettings = await this.settingsService.getDBSettings();
 			const apiKey = dbSettings?.pagespeedApiKey;
+			const resolvedStrategy = strategy ?? DefaultPageSpeedStrategy;
 			let pageSpeedUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(
 				url
-			)}&category=seo&category=accessibility&category=best-practices&category=performance`;
+			)}&strategy=${encodeURIComponent(resolvedStrategy)}&category=seo&category=accessibility&category=best-practices&category=performance`;
 
 			if (apiKey) {
 				pageSpeedUrl += `&key=${apiKey}`;

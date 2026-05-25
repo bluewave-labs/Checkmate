@@ -22,7 +22,9 @@ export const NavItem = ({
 }) => {
 	const { collapsed } = useSidebar();
 	const theme = useTheme();
-	const iconStroke = selected ? theme.palette.primary.main : theme.palette.text.secondary;
+	const iconStroke = selected
+		? theme.palette.sidebar.accent
+		: theme.palette.text.secondary;
 
 	const buttonBgColor = selected ? theme.palette.action.selected : "transparent";
 	const buttonBgHoverColor = selected
@@ -79,7 +81,7 @@ export const NavItem = ({
 						},
 						".MuiListItemButton-root:hover &": {
 							"& svg path, & svg line, & svg polyline, & svg rect, & svg circle": {
-								stroke: theme.palette.primary.main,
+								stroke: theme.palette.sidebar.accent,
 							},
 						},
 					}}

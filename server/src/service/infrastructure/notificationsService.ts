@@ -40,6 +40,7 @@ export class NotificationsService implements INotificationsService {
 	private teamsProvider: INotificationProvider;
 	private telegramProvider: INotificationProvider;
 	private pushoverProvider: INotificationProvider;
+	private twilioProvider: INotificationProvider;
 	private logger: ILogger;
 	private settingsService: ISettingsService;
 	private notificationMessageBuilder: INotificationMessageBuilder;
@@ -56,6 +57,7 @@ export class NotificationsService implements INotificationsService {
 		teamsProvider: INotificationProvider,
 		telegramProvider: INotificationProvider,
 		pushoverProvider: INotificationProvider,
+		twilioProvider: INotificationProvider,
 		settingsService: ISettingsService,
 		logger: ILogger,
 		notificationMessageBuilder: INotificationMessageBuilder
@@ -71,6 +73,7 @@ export class NotificationsService implements INotificationsService {
 		this.teamsProvider = teamsProvider;
 		this.telegramProvider = telegramProvider;
 		this.pushoverProvider = pushoverProvider;
+		this.twilioProvider = twilioProvider;
 		this.settingsService = settingsService;
 		this.logger = logger;
 		this.notificationMessageBuilder = notificationMessageBuilder;
@@ -112,6 +115,8 @@ export class NotificationsService implements INotificationsService {
 				return await this.telegramProvider.sendMessage!(notification, notificationMessage);
 			case "pushover":
 				return await this.pushoverProvider.sendMessage!(notification, notificationMessage);
+			case "twilio":
+				return await this.twilioProvider.sendMessage!(notification, notificationMessage);
 			default:
 				this.logger.warn({
 					message: `Unknown notification type: ${notification.type}`,
@@ -186,6 +191,8 @@ export class NotificationsService implements INotificationsService {
 				return await this.telegramProvider.sendTestAlert(notification);
 			case "pushover":
 				return await this.pushoverProvider.sendTestAlert(notification);
+			case "twilio":
+				return await this.twilioProvider.sendTestAlert(notification);
 			default:
 				return false;
 		}

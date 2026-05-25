@@ -4,8 +4,9 @@ export const useToast = () => {
 	const showToast = (message: string, options?: ToastOptions) => {
 		toast.dismiss();
 		const baseStyle: React.CSSProperties = {
-			whiteSpace: "pre-line",
-			wordBreak: "break-word",
+			whiteSpace: "nowrap",
+			overflow: "hidden",
+			textOverflow: "ellipsis",
 		};
 		toast(message, {
 			...options,
@@ -19,6 +20,8 @@ export const useToast = () => {
 		showToast(msg, { ...opts, type: "error" });
 	const toastInfo = (msg: string, opts?: ToastOptions) =>
 		showToast(msg, { ...opts, type: "info" });
+	const toastWarning = (msg: string, opts?: ToastOptions) =>
+		showToast(msg, { ...opts, type: "warning" });
 
-	return { showToast, toastSuccess, toastError, toastInfo };
+	return { showToast, toastSuccess, toastError, toastInfo, toastWarning };
 };

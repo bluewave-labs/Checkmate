@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
-import Box from "@mui/material/Box";
 import { Dialog, TextField } from "@/Components/inputs";
 import { usePut } from "@/Hooks/UseApi";
 import { useTranslation } from "react-i18next";
-import { useTheme } from "@mui/material";
 
 interface DialogResolutionProps {
 	open: boolean;
@@ -19,7 +17,6 @@ export const DialogResolution = ({
 	onResolved,
 }: DialogResolutionProps) => {
 	const { t } = useTranslation();
-	const theme = useTheme();
 	const [comment, setComment] = useState("");
 	const { put: resolveIncident, loading: isResolving } = usePut();
 
@@ -50,22 +47,19 @@ export const DialogResolution = ({
 			onCancel={handleCancel}
 			onConfirm={handleConfirm}
 			confirmColor="error"
-			cancelColor="primary"
 			loading={isResolving}
 			maxWidth="sm"
 			fullWidth
 		>
-			<Box sx={{ mt: theme.spacing(4) }}>
-				<TextField
-					fieldLabel={t("pages.incidents.dialog.resolveIncident.option.comment.label")}
-					placeholder={t(
-						"pages.incidents.dialog.resolveIncident.option.comment.placeholder"
-					)}
-					value={comment}
-					onChange={(e) => setComment(e.target.value)}
-					fullWidth
-				/>
-			</Box>
+			<TextField
+				fieldLabel={t("pages.incidents.dialog.resolveIncident.option.comment.label")}
+				placeholder={t(
+					"pages.incidents.dialog.resolveIncident.option.comment.placeholder"
+				)}
+				value={comment}
+				onChange={(e) => setComment(e.target.value)}
+				fullWidth
+			/>
 		</Dialog>
 	);
 };

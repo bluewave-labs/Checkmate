@@ -2,7 +2,7 @@
 
 ## Our Pledge
 
-We as members, contributors, and leaders pledge to make participation in the **bluewave-uptime** project and community a harassment-free experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, religion, or sexual identity and orientation.
+We as members, contributors, and leaders pledge to make participation in the **checkmate** project and community a harassment-free experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, religion, or sexual identity and orientation.
 
 We pledge to act and interact in ways that contribute to an open, welcoming, diverse, inclusive, and healthy community, especially during Hacktoberfest, where we encourage new contributors to join and feel supported.
 
@@ -66,4 +66,4 @@ This Code of Conduct is adapted from the [Contributor Covenant](https://www.cont
 
 ---
 
-By following this Code of Conduct, we can ensure a welcoming and inclusive environment, encouraging new contributors to engage with the project and the community. Thank you for helping make **bluewave-uptime** a positive space for all!
+By following this Code of Conduct, we can ensure a welcoming and inclusive environment, encouraging new contributors to engage with the project and the community. Thank you for helping make **checkmate** a positive space for all!

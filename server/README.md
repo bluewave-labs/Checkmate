@@ -8,7 +8,7 @@ Checkmate's backend is designed to be lightweight and scalable, ensuring reliabl
 
 ## Installation & documentation
 
-For setup instructions, configuration details, and deployment guidelines, please visit our official documentation at [docs.checkmate.so](https://docs.checkmate.so).
+For setup instructions, configuration details, and deployment guidelines, please visit our official documentation at [docs.checkmate.so](https://checkmate.so/docs).
 
 ## Related repositories
 

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { DbTypes } from "@/types/settings.js";
+import { booleanCoercion } from "./shared.js";
 
 const envSchema = z.object({
 	// Server Configuration
@@ -20,6 +21,9 @@ const envSchema = z.object({
 
 	// Optional
 	ORIGIN: z.string().optional(),
+
+	// Feature flags
+	STATUS_PAGE_THEMES_ENABLED: booleanCoercion.default(true),
 });
 
 export type ValidatedEnv = z.infer<typeof envSchema>;

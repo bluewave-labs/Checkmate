@@ -39,3 +39,5 @@ export { default as GeoCheckModel } from "@/db/models/GeoCheck.js";
 
 export * from "@/db/models/DLQItem.js";
 export { default as DLQItemModel } from "@/db/models/DLQItem.js";
+export * from "@/db/models/Tag.js";
+export { default as TagModel } from "@/db/models/Tag.js";

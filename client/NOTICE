@@ -1,0 +1,18 @@
+Checkmate
+Copyright (c) BlueWave Labs
+
+This product includes assets developed by third parties.
+
+----------------------------------------------------------------------
+
+King chess-piece silhouette used in the Checkmate logo
+(client/src/assets/icons/checkmate-icon.svg and
+ client/public/checkmate_favicon.svg)
+is adapted from "Chess klt45.svg" by Cburnett, available at:
+  https://commons.wikimedia.org/wiki/File:Chess_klt45.svg
+Licensed under Creative Commons Attribution-ShareAlike 3.0 Unported
+(CC BY-SA 3.0): https://creativecommons.org/licenses/by-sa/3.0/
+
+The original artwork has been recolored from the white-with-black-stroke
+chess piece to the Checkmate brand green (#13715B) for use as a logo.
+Modifications: stroke color change only; geometry unchanged.

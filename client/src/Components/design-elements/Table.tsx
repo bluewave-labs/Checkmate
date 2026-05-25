@@ -18,10 +18,9 @@ import {
 	ChevronsRight,
 	ChevronLeft,
 	ChevronRight,
-	Coffee,
 	Ellipsis,
-	PartyPopper,
 } from "lucide-react";
+import { EmptyState } from "./EmptyState";
 
 import TablePagination from "@mui/material/TablePagination";
 import type { TablePaginationOwnProps } from "@mui/material/TablePagination";
@@ -36,6 +35,9 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 export type Header<T> = {
 	id: number | string;
 	content: React.ReactNode;
+	mobileLabel?: React.ReactNode;
+	hideMobileLabel?: boolean;
+	align?: "left" | "center" | "right" | "justify" | "inherit";
 	onClick?: (event: React.MouseEvent<HTMLTableCellElement | null>, row: T) => void;
 	render: (row: T) => React.ReactNode;
 };
@@ -110,6 +112,24 @@ export function DataTable<
 							key={key}
 						>
 							{headers.map((header) => {
+								if (header.hideMobileLabel) {
+									return (
+										<Grid2
+											container
+											key={header.id}
+										>
+											<Grid2
+												size={12}
+												display="flex"
+												alignItems="center"
+												justifyContent="flex-end"
+											>
+												{header.render(row)}
+											</Grid2>
+										</Grid2>
+									);
+								}
+
 								return (
 									<Grid2
 										container
@@ -124,7 +144,7 @@ export function DataTable<
 												component="div"
 												color={theme.palette.text.primary}
 											>
-												{header.content}
+												{header.mobileLabel ?? header.content}
 											</Typography>
 										</Grid2>
 										<Grid2
@@ -163,14 +183,19 @@ export function DataTable<
 					},
 					"& .MuiTableHead-root .MuiTableRow-root": {
 						height: "28px",
+						borderBottom: `1px solid ${theme.palette.divider}`,
+					},
+					"& .MuiTableHead-root .MuiTableCell-root": {
+						borderBottom: "none",
 					},
 					"& :is(th)": {
 						backgroundColor: theme.palette.background.paper,
 						color: theme.palette.text.secondary,
 						fontWeight: 500,
 						textTransform: "uppercase",
+						letterSpacing: "0.08em",
 						padding: `${theme.spacing(SPACING.LG)} ${theme.spacing(LAYOUT.MD)}`,
-						fontSize: theme.typography.fontSize,
+						fontSize: 11,
 					},
 					"& :is(td)": {
 						backgroundColor: theme.palette.background.paper,
@@ -189,7 +214,7 @@ export function DataTable<
 						{headers.map((header, idx) => {
 							return (
 								<TableCell
-									align={idx === 0 ? "left" : "center"}
+									align={header.align ?? (idx === 0 ? "left" : "center")}
 									key={header.id}
 								>
 									{header.content}
@@ -218,7 +243,7 @@ export function DataTable<
 									{headers.map((header, index) => {
 										return (
 											<TableCell
-												align={index === 0 ? "left" : "center"}
+												align={header.align ?? (index === 0 ? "left" : "center")}
 												key={header.id}
 												onClick={
 													header.onClick ? (e) => header.onClick!(e, row) : undefined
@@ -548,49 +573,18 @@ export const Pagination = ({ ...props }: PaginationProps) => {
 	);
 };
 
-const EmptyView = ({ text, positive }: { text?: string; positive?: boolean }) => {
-	const theme = useTheme();
+const EmptyView = ({ text }: { text?: string; positive?: boolean }) => {
 	const { t } = useTranslation();
-	const Icon = positive ? PartyPopper : Coffee;
+	const theme = useTheme();
 	return (
-		<Stack
-			alignItems={"center"}
-			justifyContent={"center"}
+		<Box
 			sx={{
-				py: theme.spacing(LAYOUT.XL),
-				px: theme.spacing(LAYOUT.XS),
-				borderWidth: 1,
-				borderStyle: "solid",
-				borderColor: theme.palette.divider,
-				borderRadius: theme.shape.borderRadius,
-				textAlign: "center",
+				border: `1px solid ${theme.palette.divider}`,
+				borderRadius: 1,
+				backgroundColor: theme.palette.background.paper,
 			}}
 		>
-			<Box
-				sx={{
-					width: 64,
-					height: 64,
-					borderRadius: "50%",
-					backgroundColor: theme.palette.action.hover,
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "center",
-					mb: theme.spacing(SPACING.LG),
-				}}
-			>
-				<Icon
-					size={28}
-					strokeWidth={1}
-					color={theme.palette.text.secondary}
-				/>
-			</Box>
-			<Typography
-				variant="subtitle1"
-				color={theme.palette.text.primary}
-				sx={{ fontWeight: 500 }}
-			>
-				{text ?? t("common.table.empty")}
-			</Typography>
-		</Stack>
+			<EmptyState title={text ?? t("common.table.empty")} />
+		</Box>
 	);
 };

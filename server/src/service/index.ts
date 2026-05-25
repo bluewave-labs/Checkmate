@@ -18,6 +18,7 @@ export * from "@/service/infrastructure/emailService.js";
 export * from "@/service/infrastructure/globalPingService.js";
 export * from "@/service/infrastructure/networkService.js";
 export * from "@/service/infrastructure/notificationsService.js";
+export * from "@/service/infrastructure/tagService.js";
 export * from "@/service/infrastructure/statusService.js";
 
 // Notification providers
@@ -31,6 +32,7 @@ export * from "@/service/infrastructure/notificationProviders/teams.js";
 export * from "@/service/infrastructure/notificationProviders/webhook.js";
 export * from "@/service/infrastructure/notificationProviders/telegram.js";
 export * from "@/service/infrastructure/notificationProviders/pushover.js";
+export * from "@/service/infrastructure/notificationProviders/twilio.js";
 
 // System services
 export * from "@/service/system/settingsService.js";

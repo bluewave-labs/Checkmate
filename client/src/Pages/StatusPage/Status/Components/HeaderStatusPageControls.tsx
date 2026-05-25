@@ -8,7 +8,7 @@ import { Settings, ExternalLink } from "lucide-react";
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import type { StatusPage } from "@/Types/StatusPage";
+import { PUBLIC_STATUS_PAGE_PREFIX, type StatusPage } from "@/Types/StatusPage";
 
 interface HeaderStatusPageControlsProps {
 	isAdmin: boolean;
@@ -50,7 +50,7 @@ export const HeaderStatusPageControls = ({
 						<Typography
 							onClick={() => {
 								window.open(
-									`/status/public/${statusPage.url}`,
+									`${PUBLIC_STATUS_PAGE_PREFIX}/${statusPage.url}`,
 									"_blank",
 									"noopener,noreferrer"
 								);

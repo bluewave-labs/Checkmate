@@ -396,5 +396,80 @@ describe("EmailService", () => {
 				})
 			);
 		});
+
+		// ── from-header formatting ───────────────────────────────────────
+
+		describe("from header formatting", () => {
+			const sendAndGetFrom = async (overrides: Partial<EmailTransportConfig>) => {
+				const transporter = createMockTransporter();
+				const nodemailer = createMockNodemailer(transporter);
+				const { service } = createService({ nodemailer });
+
+				await service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig(overrides));
+
+				const call = (transporter.sendMail as jest.Mock).mock.calls[0]?.[0] as { from: unknown } | undefined;
+				return call?.from;
+			};
+
+			it("uses bare address when systemEmailDisplayName is undefined", async () => {
+				const from = await sendAndGetFrom({
+					systemEmailAddress: "noreply@example.com",
+					systemEmailDisplayName: undefined,
+				});
+
+				expect(from).toBe("noreply@example.com");
+			});
+
+			it("uses bare address when systemEmailDisplayName is empty string", async () => {
+				const from = await sendAndGetFrom({
+					systemEmailAddress: "noreply@example.com",
+					systemEmailDisplayName: "",
+				});
+
+				expect(from).toBe("noreply@example.com");
+			});
+
+			it("uses bare address when systemEmailDisplayName is whitespace-only", async () => {
+				const from = await sendAndGetFrom({
+					systemEmailAddress: "noreply@example.com",
+					systemEmailDisplayName: "   ",
+				});
+
+				expect(from).toBe("noreply@example.com");
+			});
+
+			it("uses {name, address} when display name and address are both set", async () => {
+				const from = await sendAndGetFrom({
+					systemEmailAddress: "noreply@example.com",
+					systemEmailDisplayName: "Checkmate notifications",
+				});
+
+				expect(from).toEqual({
+					name: "Checkmate notifications",
+					address: "noreply@example.com",
+				});
+			});
+
+			it("trims surrounding whitespace from display name", async () => {
+				const from = await sendAndGetFrom({
+					systemEmailAddress: "noreply@example.com",
+					systemEmailDisplayName: "   Checkmate   ",
+				});
+
+				expect(from).toEqual({
+					name: "Checkmate",
+					address: "noreply@example.com",
+				});
+			});
+
+			it("falls back to bare address when display name is set but address is empty", async () => {
+				const from = await sendAndGetFrom({
+					systemEmailAddress: "",
+					systemEmailDisplayName: "Checkmate",
+				});
+
+				expect(from).toBe("");
+			});
+		});
 	});
 });

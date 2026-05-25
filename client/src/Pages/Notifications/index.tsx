@@ -39,10 +39,9 @@ const NotificationsPage = () => {
 
 	return (
 		<BasePageWithStates
+			headerKey="notifications"
 			page={t("pages.notifications.fallback.title")}
-			bullets={
-				t("pages.notifications.fallback.checks", { returnObjects: true }) as string[]
-			}
+			description={t("pages.notifications.fallback.description")}
 			loading={isLoading || isValidating}
 			error={!!error}
 			totalCount={notifications?.length ?? 0}

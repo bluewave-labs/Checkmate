@@ -89,7 +89,9 @@ const uiSlice = createSlice({
 		},
 
 		setTimezone: (state, action: PayloadAction<{ timezone: string }>) => {
-			state.timezone = action.payload.timezone;
+			if (action.payload.timezone) {
+				state.timezone = action.payload.timezone;
+			}
 		},
 		setLanguage: (state, action: PayloadAction<string>) => {
 			state.language = action.payload;

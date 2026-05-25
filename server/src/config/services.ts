@@ -9,6 +9,7 @@ import {
 	SuperSimpleQueue,
 	SuperSimpleQueueHelper,
 	NotificationsService,
+	TagsService,
 	StatusService,
 	NotificationMessageBuilder,
 	MonitorService,
@@ -30,12 +31,14 @@ import {
 	TeamsProvider,
 	TelegramProvider,
 	PushoverProvider,
+	TwilioProvider,
 	// Interfaces
 	INetworkService,
 	IEmailService,
 	IBufferService,
 	ISuperSimpleQueue,
 	INotificationsService,
+	ITagsService,
 	IStatusService,
 	IMonitorService,
 	IUserService,
@@ -63,8 +66,10 @@ import { PortProvider } from "@/service/infrastructure/network/PortProvider.js";
 import { GameProvider } from "@/service/infrastructure/network/GameProvider.js";
 import { GrpcProvider } from "@/service/infrastructure/network/GrpcProvider.js";
 import { WebSocketProvider } from "@/service/infrastructure/network/WebSocketProvider.js";
+import { DNSProvider } from "@/service/infrastructure/network/DNSProvider.js";
 
 // Third-party
+import { Resolver } from "dns/promises";
 import axios from "axios";
 import got from "got";
 import ping from "ping";
@@ -95,23 +100,11 @@ import {
 	MongoInvitesRepository,
 	MongoRecoveryTokensRepository,
 	MongoNotificationsRepository,
+	MongoTagsRepository,
 	MongoIncidentsRepository,
 	MongoTeamsRepository,
 	MongoMaintenanceWindowsRepository,
 	MongoSettingsRepository,
-	TimescaleMonitorsRepository,
-	TimescaleChecksRepository,
-	TimescaleGeoChecksRepository,
-	TimescaleMonitorStatsRepository,
-	TimescaleStatusPagesRepository,
-	TimescaleUsersRepository,
-	TimescaleInvitesRepository,
-	TimescaleRecoveryTokensRepository,
-	TimescaleNotificationsRepository,
-	TimescaleIncidentsRepository,
-	TimescaleTeamsRepository,
-	TimescaleMaintenanceWindowsRepository,
-	TimescaleSettingsRepository,
 	IMonitorsRepository,
 	IChecksRepository,
 	IGeoChecksRepository,
@@ -122,12 +115,12 @@ import {
 	IRecoveryTokensRepository,
 	ISettingsRepository,
 	INotificationsRepository,
+	ITagsRepository,
 	IIncidentsRepository,
 	ITeamsRepository,
 	IMaintenanceWindowsRepository,
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
-import TimescaleDB from "@/db/TimescaleDB.js";
 import { AppError } from "@/utils/AppError.js";
 
 export type InitializedServices = {
@@ -148,6 +141,7 @@ export type InitializedServices = {
 	incidentService: IIncidentService;
 	logger: ILogger;
 	notificationsService: INotificationsService;
+	tagsService: ITagsService;
 	statusPageService: IStatusPageService;
 	notificationMessageBuilder: INotificationMessageBuilder;
 
@@ -162,6 +156,7 @@ export type InitializedServices = {
 	recoveryTokensRepository: IRecoveryTokensRepository;
 	settingsRepository: ISettingsRepository;
 	notificationsRepository: INotificationsRepository;
+	tagsRepository: ITagsRepository;
 	incidentsRepository: IIncidentsRepository;
 	teamsRepository: ITeamsRepository;
 	maintenanceWindowsRepository: IMaintenanceWindowsRepository;
@@ -184,8 +179,6 @@ export const initializeServices = async ({
 
 	if (dbType === "mongodb") {
 		db = new MongoDB(logger, envSettings);
-	} else if (dbType === "timescaledb") {
-		db = new TimescaleDB(logger, envSettings);
 	}
 
 	if (!db) {
@@ -204,6 +197,7 @@ export const initializeServices = async ({
 	let recoveryTokensRepository: IRecoveryTokensRepository;
 	let settingsRepository: ISettingsRepository;
 	let notificationsRepository: INotificationsRepository;
+	let tagsRepository: ITagsRepository;
 	let incidentsRepository: IIncidentsRepository;
 	let teamsRepository: ITeamsRepository;
 	let maintenanceWindowsRepository: IMaintenanceWindowsRepository;
@@ -221,27 +215,12 @@ export const initializeServices = async ({
 		recoveryTokensRepository = new MongoRecoveryTokensRepository();
 		settingsRepository = new MongoSettingsRepository();
 		notificationsRepository = new MongoNotificationsRepository();
+		tagsRepository = new MongoTagsRepository();
 		incidentsRepository = new MongoIncidentsRepository();
 		teamsRepository = new MongoTeamsRepository();
 		maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
 	} else {
-		const pool = db.getPool();
-		if (!pool) {
-			throw new Error("Failed to get database pool");
-		}
-		monitorsRepository = new TimescaleMonitorsRepository(pool);
-		checksRepository = new TimescaleChecksRepository(pool);
-		geoChecksRepository = new TimescaleGeoChecksRepository(pool);
-		monitorStatsRepository = new TimescaleMonitorStatsRepository(pool);
-		statusPagesRepository = new TimescaleStatusPagesRepository(pool);
-		usersRepository = new TimescaleUsersRepository(pool);
-		invitesRepository = new TimescaleInvitesRepository(pool);
-		recoveryTokensRepository = new TimescaleRecoveryTokensRepository(pool);
-		settingsRepository = new TimescaleSettingsRepository(pool);
-		notificationsRepository = new TimescaleNotificationsRepository(pool);
-		incidentsRepository = new TimescaleIncidentsRepository(pool);
-		teamsRepository = new TimescaleTeamsRepository(pool);
-		maintenanceWindowsRepository = new TimescaleMaintenanceWindowsRepository(pool);
+		throw new AppError({ message: "Unsupported database type", status: 500 });
 	}
 
 	// Inject settings repository into settings service (now that DB is connected)
@@ -257,6 +236,7 @@ export const initializeServices = async ({
 	const gameProvider = new GameProvider(logger, GameDig);
 	const grpcProvider = new GrpcProvider(grpc, protoLoader);
 	const webSocketProvider = new WebSocketProvider(WebSocket);
+	const dnsProvider = new DNSProvider(() => new Resolver());
 
 	const networkService = new NetworkService(axios, logger, [
 		pingProvider,
@@ -268,6 +248,7 @@ export const initializeServices = async ({
 		gameProvider,
 		grpcProvider,
 		webSocketProvider,
+		dnsProvider,
 	]);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 
@@ -300,6 +281,7 @@ export const initializeServices = async ({
 	const teamsProvider = new TeamsProvider(logger);
 	const telegramProvider = new TelegramProvider(logger);
 	const pushoverProvider = new PushoverProvider(logger);
+	const twilioProvider = new TwilioProvider(logger);
 
 	const notificationsService = new NotificationsService(
 		notificationsRepository,
@@ -313,10 +295,13 @@ export const initializeServices = async ({
 		teamsProvider,
 		telegramProvider,
 		pushoverProvider,
+		twilioProvider,
 		settingsService,
 		logger,
 		notificationMessageBuilder
 	);
+
+	const tagsService = new TagsService(tagsRepository, monitorsRepository);
 
 	const superSimpleQueueHelper = new SuperSimpleQueueHelper(
 		logger,
@@ -377,7 +362,7 @@ export const initializeServices = async ({
 		incidentsRepository,
 	});
 
-	const statusPageService = new StatusPageService(statusPagesRepository);
+	const statusPageService = new StatusPageService(statusPagesRepository, settingsService);
 
 	const services = {
 		settingsService,
@@ -397,6 +382,7 @@ export const initializeServices = async ({
 		incidentService,
 		logger,
 		notificationsService,
+		tagsService,
 		statusPageService,
 		notificationMessageBuilder,
 
@@ -411,6 +397,7 @@ export const initializeServices = async ({
 		recoveryTokensRepository,
 		settingsRepository,
 		notificationsRepository,
+		tagsRepository,
 		incidentsRepository,
 		teamsRepository,
 		maintenanceWindowsRepository,

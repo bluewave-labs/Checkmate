@@ -1,7 +1,14 @@
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { Table, Pagination, StatusLabel } from "@/Components/design-elements";
+import {
+	Table,
+	Pagination,
+	StatusLabel,
+	StrategyBadge,
+	ColoredLabel,
+} from "@/Components/design-elements";
+import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 import { HistogramPageSpeed } from "@/Components/monitors";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import type { Header } from "@/Components/design-elements/Table";
@@ -14,10 +21,12 @@ import { useNavigate } from "react-router-dom";
 import { usePatch } from "@/Hooks/UseApi";
 
 import type { Monitor, MonitorWithChecks } from "@/Types/Monitor";
+import type { Tag } from "@/Types/Tag";
 import type { ActionMenuItem } from "@/Components/actions-menu";
 
 export const PageSpeedMonitorsTable = ({
 	monitors,
+	tags,
 	refetch,
 	setSelectedMonitor,
 	sortField,
@@ -31,6 +40,7 @@ export const PageSpeedMonitorsTable = ({
 	setRowsPerPage,
 }: {
 	monitors: MonitorWithChecks[];
+	tags: Tag[];
 	refetch: Function;
 	setSelectedMonitor: Function;
 	sortField: string;
@@ -179,7 +189,19 @@ export const PageSpeedMonitorsTable = ({
 					</Stack>
 				),
 				render: (row) => {
-					return row.name;
+					return (
+						<Stack
+							direction="row"
+							alignItems="center"
+							gap={LAYOUT.XS}
+						>
+							<Typography>{row.name}</Typography>
+							<StrategyBadge
+								strategy={row.strategy}
+								variant="caption"
+							/>
+						</Stack>
+					);
 				},
 			},
 			{
@@ -211,6 +233,32 @@ export const PageSpeedMonitorsTable = ({
 								checks={row.recentChecks}
 								status={row.status}
 							/>
+						</Stack>
+					);
+				},
+			},
+			{
+				id: "tags",
+				content: t("common.table.headers.tags"),
+				render: (row) => {
+					if (row.tags.length === 0) return "-";
+					return (
+						<Stack
+							justifyContent={"center"}
+							direction={isSmall ? "column" : "row"}
+							gap={theme.spacing(SPACING.LG)}
+						>
+							{row.tags.map((tagId) => {
+								const fullTag = tags.find((tag) => tag.id === tagId);
+								if (!fullTag) return null;
+								return (
+									<ColoredLabel
+										key={fullTag.id}
+										text={fullTag.name}
+										color={fullTag.color}
+									/>
+								);
+							})}
 						</Stack>
 					);
 				},

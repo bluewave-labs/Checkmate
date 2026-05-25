@@ -15,6 +15,7 @@ const makeEnv = (overrides?: Partial<ValidatedEnv>): ValidatedEnv =>
 		CLIENT_HOST: "http://localhost:5173",
 		DB_CONNECTION_STRING: "mongodb://localhost:27017/test_db",
 		DB_TYPE: "mongodb",
+		STATUS_PAGE_THEMES_ENABLED: false,
 		...overrides,
 	}) as ValidatedEnv;
 
@@ -81,6 +82,7 @@ describe("SettingsService", () => {
 				clientHost: "http://localhost:5173",
 				dbConnectionString: "mongodb://localhost:27017/test_db",
 				dbType: "mongodb",
+				statusPageThemesEnabled: false,
 			});
 		});
 
@@ -100,6 +102,22 @@ describe("SettingsService", () => {
 			const { service } = createService();
 
 			expect(service.getSettings()).toEqual(service.loadSettings());
+		});
+	});
+
+	// ── areStatusPageThemesEnabled ──────────────────────────────────────────
+
+	describe("areStatusPageThemesEnabled", () => {
+		it("returns false when STATUS_PAGE_THEMES_ENABLED env is false", () => {
+			const { service } = createService({ STATUS_PAGE_THEMES_ENABLED: false });
+
+			expect(service.areStatusPageThemesEnabled()).toBe(false);
+		});
+
+		it("returns true when STATUS_PAGE_THEMES_ENABLED env is true", () => {
+			const { service } = createService({ STATUS_PAGE_THEMES_ENABLED: true });
+
+			expect(service.areStatusPageThemesEnabled()).toBe(true);
 		});
 	});
 

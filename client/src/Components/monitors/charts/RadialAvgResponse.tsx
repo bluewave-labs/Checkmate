@@ -52,7 +52,7 @@ export const RadialAvgResponse = ({ avg, max }: { avg: number; max: number }) =>
 					>
 						<RadialBar
 							dataKey="value"
-							background={{ fill: theme.palette[palette].light }}
+							background={{ fill: theme.palette.action.disabledBackground }}
 						>
 							<Cell visibility={"hidden"} />
 							<Cell fill={theme.palette[palette].main} />
@@ -75,13 +75,14 @@ export const RadialAvgResponse = ({ avg, max }: { avg: number; max: number }) =>
 					}}
 				>
 					<Typography
-						variant="h6"
+						variant="eyebrow"
+						color={theme.palette[palette].main}
 						textAlign={"center"}
 					>
 						{msg[palette]}
 					</Typography>
 					<Typography
-						variant="h6"
+						variant="h1"
 						textAlign={"center"}
 					>{`${avg?.toFixed()}ms`}</Typography>
 				</Stack>

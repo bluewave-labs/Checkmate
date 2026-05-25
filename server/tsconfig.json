@@ -1,6 +1,5 @@
 {
 	"compilerOptions": {
-		"rootDir": "./src",
 		"allowJs": true,
 		"checkJs": false,
 		"paths": {
@@ -15,8 +14,9 @@
 		"skipLibCheck": true,
 		"noUncheckedIndexedAccess": true,
 		"isolatedModules": true,
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"noEmit": true
 	},
-	"include": ["src"],
+	"include": ["src", "openapi", "scripts"],
 	"exclude": ["tests", "dist", "node_modules"]
 }

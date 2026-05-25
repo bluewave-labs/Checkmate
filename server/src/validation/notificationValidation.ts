@@ -79,6 +79,15 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		address: z.string().min(1, "User key is required"),
 		accessToken: z.string().min(1, "App token is required"),
 	}),
+	// Twilio SMS notification
+	z.object({
+		notificationName: z.string().min(1, "Notification name is required"),
+		type: z.literal("twilio"),
+		accountSid: z.string().min(1, "Account SID is required"),
+		accessToken: z.string().min(1, "Auth token is required"),
+		phone: z.string().min(1, "Recipient phone number is required"),
+		twilioPhoneNumber: z.string().min(1, "Twilio phone number is required"),
+	}),
 ]);
 
 export const testNotificationBodyValidation = createNotificationBodyValidation;
@@ -104,6 +113,7 @@ export const sendTestEmailBodyValidation = z.object({
 	systemEmailSecure: z.boolean().optional(),
 	systemEmailPool: z.boolean().optional(),
 	systemEmailAddress: z.string().optional(),
+	systemEmailDisplayName: z.string().optional(),
 	systemEmailPassword: z.string().optional(),
 	systemEmailUser: z.string().optional(),
 	systemEmailConnectionHost: z.union([z.string(), z.literal("")]).optional(),

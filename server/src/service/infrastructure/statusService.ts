@@ -20,8 +20,9 @@ import { AppError } from "@/utils/AppError.js";
 import { ILogger } from "@/utils/logger.js";
 import { IBufferService } from "./bufferService.js";
 import type { HardwareStatusMetrics } from "@/types/network.js";
+import { MAX_RECENT_CHECKS } from "@/types/index.js";
+
 const SERVICE_NAME = "StatusService";
-const MAX_RECENT_CHECKS = 25;
 const HARDWARE_ALERT_COUNTER_START = 5;
 const HARDWARE_METRIC_KEYS = ["cpu", "memory", "disk", "temp"] as const;
 type HardwareMetricKey = (typeof HARDWARE_METRIC_KEYS)[number];
@@ -232,10 +233,17 @@ export class StatusService implements IStatusService {
 			// Build the status patch — computed against the projected window
 			const patch: Partial<Monitor> = {};
 
-			// Not enough data points yet
-			if (projectedWindow.length < monitor.statusWindowSize) {
-				patch.status = status === true ? "up" : "down";
+			// Resolve "initializing" up-front, incidents should be created on initialization && down
+			let newStatus: MonitorStatus = monitor.status;
+			let statusChanged = false;
+			if (monitor.status === "initializing") {
+				newStatus = status === true ? "up" : "down";
+				patch.status = newStatus;
+				statusChanged = newStatus === "down";
+			}
 
+			// Not enough data points yet — record the check and return
+			if (projectedWindow.length < monitor.statusWindowSize) {
 				const updated = await this.monitorsRepository.updateStatusWindowAndChecks(
 					monitor.id,
 					monitor.teamId,
@@ -248,23 +256,12 @@ export class StatusService implements IStatusService {
 
 				return {
 					monitor: updated,
-					statusChanged: false,
+					statusChanged,
 					prevStatus,
 					code,
 					timestamp: Date.now(),
 				};
 			}
-
-			// With a full window, a single raw check must not change UNLESS we are initializing.
-			// Otherwise, only the sliding-window threshold can trigger a transition.
-			let newStatus: MonitorStatus;
-			if (monitor.status === "initializing") {
-				newStatus = status === true ? "up" : "down";
-			} else {
-				newStatus = monitor.status;
-			}
-
-			let statusChanged = false;
 
 			// First evaluate reachability-based status changes, which apply to all monitor types
 			// and take precedence over hardware breaches.

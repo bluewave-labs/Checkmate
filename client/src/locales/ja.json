@@ -73,7 +73,9 @@
 			"paused": "一時停止中",
 			"na": "N/A",
 			"resolved": "解決済み",
-			"responseTime": "応答時間"
+			"responseTime": "応答時間",
+			"idle": "アイドル",
+			"running": "実行中"
 		},
 		"form": {
 			"role": {
@@ -119,6 +121,17 @@
 				"interval": "間隔",
 				"active": "アクティブ",
 				"responseTime": "応答時間"
+			}
+		},
+		"statusCode": {
+			"down": "ダウン",
+			"networkError": {
+				"dns": "ホスト名を解決できませんでした（DNSルックアップに失敗）。",
+				"refused": "サーバーが接続を拒否しました（ポートが閉じているか、サービスがリッスンしていません）。",
+				"reset": "応答を受信する前に接続がリセットされました。",
+				"timeout": "サーバーがタイムアウト内に応答しませんでした（リクエストタイムアウト）。",
+				"tls": "TLSまたはSSLハンドシェイクに失敗しました（証明書または暗号化の問題）。",
+				"unknown": "ターゲットからのHTTP応答がありませんでした。"
 			}
 		}
 	},
@@ -199,6 +212,14 @@
 		"starPrompt": {
 			"title": "Checkmateにスターを付ける",
 			"description": "GitHubで最新リリースを確認し、コミュニティの成長に貢献しましょう"
+		},
+		"pageHeader": {
+			"links": {
+				"support": "サポート",
+				"discussions": "ディスカッション",
+				"docs": "ドキュメント",
+				"changelog": "変更履歴"
+			}
 		}
 	},
 	"pages": {
@@ -278,10 +299,23 @@
 						"placeholder": "ロールを選択"
 					},
 					"linkLabel": "招待リンク"
+				},
+				"fallback": {
+					"title": "チームメンバーがまだいません",
+					"description": "メールでチームメイトを招待するか、直接追加してください。参加すると、役割とともにここに表示されます。"
 				}
+			},
+			"header": {
+				"title": "アカウント",
+				"description": "プロファイル、パスワード、チーム、ワークスペースの設定を管理します。"
 			}
 		},
 		"auth": {
+			"brandPanel": {
+				"eyebrow": "オープンソースのインフラ監視",
+				"tagline": "サーバーのすべての動きを見守ろう。",
+				"description": "稼働状況、応答時間、インシデントをリアルタイムで追跡 - セルフホスト型で完全にあなたのもの。"
+			},
 			"common": {
 				"passwordRules": {
 					"length": {
@@ -343,7 +377,8 @@
 			"register": {
 				"title": "Checkmateへようこそ！",
 				"subtitle": "サインアップして始めましょう",
-				"submit": "登録"
+				"submit": "登録",
+				"setupNotice": "このページは初期セットアップ中のみ利用できます。スーパー管理者が登録されると、追加のユーザーはチーム設定から招待できます。"
 			},
 			"forgotPassword": {
 				"title": "パスワードをお忘れですか？",
@@ -378,6 +413,14 @@
 					"statusCode": "ステータスコード",
 					"location": "ロケーション"
 				}
+			},
+			"fallback": {
+				"title": "チェックがまだありません",
+				"description": "モニターを作成すると、すべてのステータスプローブと応答時間がここにチェックとして表示されます。"
+			},
+			"header": {
+				"title": "チェック",
+				"description": "Checkmateがモニターに対して実行するすべてのプローブが、ステータスコードと応答時間とともにここに表示されます。"
 			}
 		},
 		"common": {
@@ -391,13 +434,18 @@
 					"inviteMember": "メンバーを招待",
 					"openSite": "サイトを開く",
 					"pause": "一時停止",
-					"resume": "再開"
+					"resume": "再開",
+					"selectAll": "すべてのモニターを選択",
+					"selectMonitor": "{{name}} を選択",
+					"bulkSelected_one": "{{count}} 個のモニターが選択されました",
+					"bulkSelected_other": "{{count}} 個のモニターが選択されました"
 				},
 				"statBoxes": {
 					"activeFor": "稼働期間",
 					"certificateExpiry": "証明書の有効期限",
 					"lastCheck": "最終チェック",
-					"lastResponseTime": "最終応答時間"
+					"lastResponseTime": "最終応答時間",
+					"serviceIsDown": "サービスがダウンしています"
 				},
 				"status": {
 					"down": "ダウン",
@@ -417,7 +465,19 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "インフラストラクチャ",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
+				},
+				"bulkPause": {
+					"paused_one": "{{count}} 個のモニターを一時停止しました",
+					"paused_other": "{{count}} 個のモニターを一時停止しました",
+					"resumed_one": "{{count}} 個のモニターを再開しました",
+					"resumed_other": "{{count}} 個のモニターを再開しました",
+					"alreadyPaused_one": "選択したモニターはすでに一時停止されています",
+					"alreadyPaused_other": "選択したすべてのモニターはすでに一時停止されています",
+					"alreadyRunning_one": "選択したモニターはすでに実行中です",
+					"alreadyRunning_other": "選択したすべてのモニターはすでに実行中です",
+					"partialFailure": "{{successCount}} 個のモニターが更新されましたが、{{failedCount}} 個はジョブキューとの同期に失敗しました"
 				}
 			}
 		},
@@ -438,9 +498,9 @@
 						},
 						"matchMethod": {
 							"label": "マッチ方法",
-							"equal": "",
-							"include": "",
-							"regex": ""
+							"equal": "等しい",
+							"include": "含む",
+							"regex": "正規表現"
 						}
 					},
 					"title": "詳細設定"
@@ -452,15 +512,15 @@
 							"label": "チェック頻度",
 							"value": {
 								"fifteenMinutes": "15分",
-								"fifteenSeconds": "",
+								"fifteenSeconds": "15秒",
 								"fiveMinutes": "5分",
-								"fourMinutes": "",
-								"oneMinute": "",
+								"fourMinutes": "4分",
+								"oneMinute": "1分",
 								"tenMinutes": "10分",
 								"thirtyMinutes": "30分",
-								"thirtySeconds": "",
+								"thirtySeconds": "30秒",
 								"threeMinutes": "3分",
-								"twoMinutes": ""
+								"twoMinutes": "2分"
 							}
 						}
 					},
@@ -489,8 +549,8 @@
 							"placeholder": "https://www.google.com"
 						},
 						"game": {
-							"label": "",
-							"placeholder": ""
+							"label": "ゲームを選択",
+							"placeholder": "ゲームを選択"
 						},
 						"port": {
 							"label": "監視するポート",
@@ -503,6 +563,30 @@
 						"wsUrl": {
 							"label": "WebSocket URL",
 							"placeholder": "wss://example.com/socket"
+						},
+						"captureUrl": {
+							"label": "Capture エンドポイント",
+							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsRecordType": {
+							"label": "DNSレコードタイプ",
+							"value": {
+								"A": "A",
+								"AAAA": "AAAA",
+								"CNAME": "CNAME",
+								"MX": "MX",
+								"NS": "NS",
+								"TXT": "TXT"
+							}
+						},
+						"dnsServer": {
+							"label": "DNSサーバー",
+							"placeholder": "8.8.8.8"
+						},
+						"strategy": {
+							"desktop": "デスクトップ",
+							"label": "ストラテジー",
+							"mobile": "モバイル"
 						}
 					},
 					"title": "一般設定",
@@ -511,11 +595,12 @@
 						"ping": "pingするIPアドレスまたはホスト名を入力（例: 192.168.1.100 または example.com）し、ダッシュボードに表示される明確な表示名を追加。",
 						"port": "サーバーのURLまたはIP、ポート番号、ダッシュボードに表示される明確な表示名を入力。",
 						"docker": "コンテナのDocker IDを入力。Docker IDは64文字のフルDocker IDである必要があります。docker inspect <short_id>を実行してフルコンテナIDを取得できます。",
-						"game": "",
+						"game": "Ping を実行する IP アドレスまたはホスト名とポート番号（例: 192.168.1.100 や example.com）を入力し、ゲームタイプを選択してください。一部のゲームでは設定ファイルでサーバークエリを有効にする必要があります — ゲームサーバーのドキュメントを確認してください。プロトコルの詳細は<gamedigLink>サポートされているゲームの一覧</gamedigLink>をご覧ください。",
 						"pagespeed": "Webサイトのページ読み込みパフォーマンス、Core Web Vitals、最適化スコアを追跡します。",
 						"grpc": "gRPCサーバーのホスト名とポートを入力し、必要に応じてヘルスチェック用のサービス名を指定し、表示名を追加してください。",
 						"websocket": "監視するWebSocket URLを入力し（例: wss://example.com/socket）、表示名を追加してください。",
-						"hardware": "インフラストラクチャのCPU、メモリ、ディスク使用量、温度を監視します。"
+						"hardware": "インフラの CPU、メモリ、ディスク使用率、温度を監視します。Capture エンドポイント URL には完全なパス /api/v1/metrics を含める必要があります (例: http://192.168.1.10:5001/api/v1/metrics)。認証シークレットにはトークン文字列のみを貼り付けてください — 'Bearer' は含めないでください。",
+						"dns": "特定のDNSサーバーが応答しているかを監視します。"
 					}
 				},
 				"ignoreTls": {
@@ -552,7 +637,8 @@
 					"optionHttpDescription": "HTTP(S)を使用してWebサイトまたはAPIエンドポイントを監視します。",
 					"optionPingDescription": "ICMP Pingを使用してサーバーがオンラインかどうかを監視します。",
 					"optionPortDescription": "サーバーの特定のポートが開いているかどうかを監視します。",
-					"title": "タイプ"
+					"title": "タイプ",
+					"optionDnsDescription": "特定のDNSサーバーが応答しているかを監視します。"
 				},
 				"thresholds": {
 					"title": "アラートしきい値",
@@ -640,6 +726,10 @@
 			}
 		},
 		"incidents": {
+			"fallback": {
+				"title": "インシデントなし — すべてのシステムが正常です",
+				"description": "モニターがダウンまたは復旧すると、タイミング、モニターの詳細、解決履歴とともにここに表示されます。"
+			},
 			"dialog": {
 				"resolveIncident": {
 					"title": "インシデントを解決",
@@ -720,6 +810,10 @@
 					"active": "アクティブ",
 					"resolved": "解決済み"
 				}
+			},
+			"header": {
+				"title": "インシデント",
+				"description": "モニターがダウンまたは復旧すると、インシデントがタイミング、モニターの詳細、解決履歴とともにここに表示されます。"
 			}
 		},
 		"infrastructure": {
@@ -730,6 +824,7 @@
 					"memory": "メモリ使用率",
 					"netBytesRecv": "{{name}} - 受信バイト数",
 					"netBytesSent": "{{name}} - 送信バイト数",
+					"netNoTraffic": "Capture はすべてのインターフェイスでゼロのトラフィックを報告しています。これは Capture がループバックインターフェイスのみを認識できるコンテナ内で実行されている場合に正常です — 実際のネットワークアクティビティを表示するには、ホスト上で Capture を直接実行してください。",
 					"temp": "温度"
 				}
 			},
@@ -768,17 +863,25 @@
 			},
 			"tabs": {
 				"labels": {
-					"network": "",
+					"network": "ネットワーク",
 					"overview": "概要"
 				}
 			},
 			"fallback": {
 				"actionButton": "モニターを作成！",
-				"checks": "Track the performance of your servers,Identify bottlenecks and optimize usage,Ensure reliability with real-time monitoring",
-				"title": "インフラストラクチャモニターの用途："
+				"title": "インフラモニターがまだありません",
+				"description": "サーバーのパフォーマンスを追跡し、ボトルネックを特定し、リアルタイムのインフラ監視で信頼性を確保します。"
+			},
+			"header": {
+				"title": "インフラ監視",
+				"description": "サーバーのパフォーマンスを追跡し、ボトルネックを特定し、リアルタイムのインフラ監視で信頼性を確保します。"
 			}
 		},
 		"logs": {
+			"fallback": {
+				"title": "ログがまだありません",
+				"description": "サーバーのアクティビティ、警告、エラーがCheckmateの実行中にここに表示されます。"
+			},
 			"tabs": {
 				"diagnostics": "診断",
 				"logs": "サーバーログ",
@@ -788,7 +891,9 @@
 				"label": "ログレベル"
 			},
 			"jobQueue": "ジョブキュー",
+			"jobQueueExplainer": "<highlight>ハイライトされた行</highlight>は、現在ワーカーによって処理中のジョブです。",
 			"failedJobs": "失敗したジョブ",
+			"failedJobsExplainer": "モニター別の最近の失敗 — 最終失敗時刻、失敗回数、および理由。",
 			"noLogs": "ログが見つかりません",
 			"metrics": {
 				"jobs": "ジョブ",
@@ -815,6 +920,16 @@
 					"usedSPercentage": "CPUによる1秒あたりの使用%",
 					"total": "合計",
 					"used": "使用済み"
+				},
+				"sections": {
+					"runtimeStats": {
+						"title": "ランタイム統計",
+						"description": "Node.jsプロセスとホストマシンのスナップショット。5秒ごとに更新されます。"
+					},
+					"memoryCpu": {
+						"title": "メモリとCPU",
+						"description": "プロセスが割り当てられたメモリとホストCPUをどのように使用しているか。"
+					}
 				}
 			},
 			"table": {
@@ -831,15 +946,24 @@
 					"lastFinishedAt": "最終完了日時",
 					"lastRunTook": "最終実行時間",
 					"lastFailedAt": "最終失敗日時",
-					"failReason": "失敗理由"
+					"failReason": "失敗理由",
+					"state": "状態"
 				}
+			},
+			"queueFallback": {
+				"title": "キューにジョブがありません",
+				"description": "スケジュールされたモニターチェックや実行中のチェックがここに表示されます。空のキューはすべてが最新であることを意味します。"
+			},
+			"header": {
+				"title": "ログとキュー",
+				"description": "サーバーログ、モニタージョブキュー、ランタイム診断を一か所で確認できます。"
 			}
 		},
 		"maintenanceWindow": {
 			"fallback": {
 				"actionButton": "メンテナンスウィンドウを作成！",
-				"checks": "Mark your maintenance periods,Eliminate any misunderstandings,Stop sending alerts in maintenance windows",
-				"title": "メンテナンスウィンドウの用途："
+				"title": "予定されているメンテナンスウィンドウはありません",
+				"description": "計画されたダウンタイムをスケジュールしてアラートを抑制し、チームとユーザーに事前に知らせます。"
 			},
 			"table": {
 				"headers": {
@@ -891,13 +1015,17 @@
 						}
 					}
 				}
+			},
+			"header": {
+				"title": "メンテナンスウィンドウ",
+				"description": "計画されたダウンタイムをスケジュールしてアラートを抑制し、チームとユーザーに事前に知らせます。"
 			}
 		},
 		"notifications": {
 			"fallback": {
 				"actionButton": "チャンネルを作成",
-				"checks": "Alert teams about downtime or performance issues,Let engineers know when incidents happen,Keep administrators informed of system changes",
-				"title": "通知チャンネルの用途："
+				"title": "通知チャンネルがまだありません",
+				"description": "Slack、Discord、メール、Webhookなどを接続して、インシデント発生時に適切な担当者に通知します。"
 			},
 			"form": {
 				"accessToken": {
@@ -947,12 +1075,36 @@
 					"placeholderBotToken": "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
 					"optionChatId": "チャットID",
 					"placeholderChatId": "-1001234567890"
+				},
+				"pushover": {
+					"title": "Pushover の設定",
+					"description": "Pushover のアプリケーショントークンとユーザーキーを入力してください。",
+					"optionAppToken": "アプリトークン",
+					"placeholderAppToken": "アプリトークンを入力",
+					"optionUserKey": "ユーザーキー",
+					"placeholderUserKey": "ユーザーキーを入力"
+				},
+				"twilio": {
+					"title": "Twilio の設定",
+					"description": "SMS を送信するための Twilio アカウント認証情報を入力してください。",
+					"optionAccountSid": "アカウント SID",
+					"placeholderAccountSid": "アカウント SID を入力",
+					"optionAuthToken": "認証トークン",
+					"placeholderAuthToken": "認証トークンを入力",
+					"optionFromNumber": "送信元番号",
+					"placeholderFromNumber": "+1234567890",
+					"optionToNumber": "送信先番号",
+					"placeholderToNumber": "+1234567890"
 				}
 			},
 			"table": {
 				"headers": {
 					"destination": "送信先"
 				}
+			},
+			"header": {
+				"title": "通知",
+				"description": "Slack、Discord、メール、Webhookなどを接続して、インシデント発生時に適切な担当者に通知します。"
 			}
 		},
 		"pageSpeed": {
@@ -979,8 +1131,16 @@
 			},
 			"fallback": {
 				"actionButton": "モニターを作成！",
-				"checks": "Report on the user experience of a page,Help analyze webpage speed,Give suggestions on how the page can be improved",
-				"title": "PageSpeedモニターの用途："
+				"title": "PageSpeedモニターがまだありません",
+				"description": "Core Web VitalsとLighthouseスコアを継続的に追跡し、ユーザーが気付く前に劣化を発見します。"
+			},
+			"header": {
+				"title": "PageSpeed監視",
+				"description": "Core Web VitalsとLighthouseスコアを継続的に追跡し、ユーザーが気付く前に劣化を発見します。"
+			},
+			"strategy": {
+				"desktop": "デスクトップ",
+				"mobile": "モバイル"
 			}
 		},
 		"settings": {
@@ -1129,6 +1289,10 @@
 						},
 						"rejectUnauthorized": {
 							"label": "無効な証明書を拒否: 自己署名または信頼されていない証明書の接続を拒否"
+						},
+						"displayName": {
+							"label": "送信者名（任意）- 差出人フィールドに表示されるわかりやすい名前",
+							"placeholder": "Checkmate通知"
 						}
 					}
 				},
@@ -1141,7 +1305,8 @@
 					"description": "システムからすべてのモニターを削除します。",
 					"dialog": {
 						"title": "すべてのモニターを削除しますか？",
-						"description": "この操作は元に戻せません。"
+						"description": "この操作は元に戻せません。",
+						"paragraph": "これらのモニターに関連するチェック履歴、インシデント、予定されたメンテナンスウィンドウ、ステータスページもすべて削除されます。データのバックアップを残したい場合は、先にモニターをエクスポートしてください。"
 					}
 				},
 				"exportMonitors": {
@@ -1158,14 +1323,18 @@
 				"validation": {
 					"errorMessage": "以下のバリデーションエラーを修正してください："
 				}
+			},
+			"header": {
+				"title": "設定",
+				"description": "SMTP、統合、保持、グローバルアプリの動作を設定します。"
 			}
 		},
 		"statusPages": {
 			"deleteSuccess": "ステータスページが正常に削除されました",
 			"fallback": {
-				"title": "ステータスページの用途：",
-				"checks": "Communicate system status to users and stakeholders,Display real-time uptime information publicly,Build trust with transparent service monitoring,Reduce support requests during incidents",
-				"actionButton": "ステータスページを作成！"
+				"title": "ステータスページがまだありません",
+				"actionButton": "ステータスページを作成！",
+				"description": "顧客と関係者にリアルタイムの稼働状況とインシデント履歴を表示する公開ページを公開します。"
 			},
 			"monitorsList": {
 				"chartTypeHeatmap": "ヒートマップ",
@@ -1184,13 +1353,40 @@
 				"uptime": {
 					"title": "稼働時間",
 					"responseTime": "応答時間"
+				},
+				"chart": {
+					"avg": "平均 {{value}}ms",
+					"downTooltip": "ダウン",
+					"heatmapAria": "応答時間のヒートマップ",
+					"max": "最大 {{value}}ms"
+				},
+				"status": {
+					"breached": "しきい値超過",
+					"down": "ダウン",
+					"initializing": "初期化中",
+					"maintenance": "メンテナンス",
+					"paused": "一時停止中",
+					"up": "稼働中"
 				}
 			},
 			"statusBar": {
 				"allDown": "すべてのシステムがダウンしています",
 				"allUp": "すべてのシステムが正常に稼働しています",
 				"degraded": "一部のシステムに問題が発生しています",
-				"unknown": "システムステータスを判定できません"
+				"unknown": "システムステータスを判定できません",
+				"allBreached": "すべてのシステムがしきい値を超えました",
+				"allMaintenance": "すべてのシステムがメンテナンス中です",
+				"allPaused": "すべてのシステムが一時停止中です",
+				"allInitializing": "すべてのシステムが初期化中です",
+				"breachedAndDown": "一部のシステムがしきい値を超えてダウンしています",
+				"breached": "一部のシステムがしきい値を超えています",
+				"maintenanceAndDown": "一部のシステムがメンテナンス中にダウンしています",
+				"maintenance": "一部のシステムがメンテナンス中です",
+				"partiallyPaused": "一部のシステムが一時停止中です",
+				"initializing": "一部のシステムが初期化中です",
+				"noMonitors": "モニターが設定されていません",
+				"monitoringSummary": "{{count}}サービスを監視中 · 10秒ごとに更新",
+				"monitoringSummary_other": "{{count}}サービスを監視中 · 10秒ごとに更新"
 			},
 			"table": {
 				"headers": {
@@ -1281,7 +1477,47 @@
 							"label": "インフラストラクチャメトリクスを表示"
 						}
 					}
+				},
+				"theme": {
+					"description": "公開ステータスページの視覚スタイルを選択します。",
+					"label": "テーマ",
+					"options": {
+						"bold": {
+							"description": "大きな書体と自信のある間隔。ブランド中心のページに最適です。",
+							"name": "ボールド"
+						},
+						"editorial": {
+							"description": "セリフ見出しと細い区切り線。独特で落ち着いています。",
+							"name": "エディトリアル"
+						},
+						"modern": {
+							"description": "脈動するステータスドットと柔らかくフェードするカードを備えたSaaS品質。",
+							"name": "モダン"
+						},
+						"refined": {
+							"description": "クリーンでプロフェッショナル、Checkmateのクラシックな外観に近い。",
+							"name": "リファインド"
+						}
+					},
+					"title": "ページテーマ"
+				},
+				"themeMode": {
+					"auto": "自動（訪問者のデバイスに従う）",
+					"dark": "ダークのみ",
+					"label": "テーマモード",
+					"light": "ライトのみ"
 				}
+			},
+			"header": {
+				"title": "ステータスページ",
+				"description": "顧客と関係者にリアルタイムの稼働状況とインシデント履歴を表示する公開ページを公開します。"
+			},
+			"editorial": {
+				"allUp": "すべてのシステムは正常に動作しています。",
+				"reportTitle": "サービスレポート"
+			},
+			"footer": {
+				"poweredBy": "提供元"
 			}
 		},
 		"uptime": {
@@ -1297,8 +1533,12 @@
 			},
 			"fallback": {
 				"actionButton": "モニターを作成！",
-				"checks": "Check if websites or servers are online & responsive,Alert teams about downtime or performance issues,Monitor HTTP endpoints, pings, containers & ports,Track historical uptime and reliability trends",
-				"title": "稼働時間モニターの用途："
+				"title": "アップタイムモニターがまだありません",
+				"description": "HTTPエンドポイント、Ping、コンテナ、ポートを監視し、ダウンした瞬間に通知を受け取ります。"
+			},
+			"header": {
+				"title": "稼働監視",
+				"description": "HTTPエンドポイント、Ping、コンテナ、ポートを監視し、ダウンした瞬間に通知を受け取ります。"
 			}
 		}
 	}

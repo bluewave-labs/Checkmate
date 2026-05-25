@@ -23,6 +23,8 @@ export interface QueueJobSummary {
 	monitorUrl: string | null;
 	monitorType: MonitorType | null;
 	monitorInterval: number | null;
+	monitorGeoInterval: number | null;
+	monitorActive: boolean | null;
 	active: boolean;
 	lockedAt: number | null;
 	runCount: number;
@@ -32,6 +34,7 @@ export interface QueueJobSummary {
 	lastFinishedAt: number | null;
 	lastRunTook: number | null;
 	lastFailedAt: number | null;
+	repeat: number | null;
 }
 
 export interface QueueData {

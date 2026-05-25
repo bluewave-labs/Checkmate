@@ -9,7 +9,8 @@ import type {
 	GamesMap,
 	GroupedGeoCheckResult,
 } from "@/types/monitor.js";
-import { supportsGeoCheck } from "@/types/monitor.js";
+import { supportsGeoCheck, supportsUptimeDetails } from "@/types/monitor.js";
+import type { UptimeChecksResult, HardwareChecksResult, PageSpeedChecksResult } from "@/types/check.js";
 import type { GeoContinent } from "@/types/geoCheck.js";
 import type {
 	IChecksRepository,
@@ -27,6 +28,9 @@ import { ILogger } from "@/utils/logger.js";
 
 const SERVICE_NAME = "MonitorService";
 type DateRangeKey = "recent" | "day" | "week" | "month" | "all";
+
+const isUptimeChecksResult = (result: UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult): result is UptimeChecksResult =>
+	supportsUptimeDetails(result.monitorType);
 
 export interface IMonitorService {
 	readonly serviceName: string;
@@ -51,6 +55,7 @@ export interface IMonitorService {
 		teamId: string;
 		limit?: number;
 		type?: MonitorType | MonitorType[];
+		tags?: string | string[];
 		page?: number;
 		rowsPerPage?: number;
 		filter?: string;
@@ -61,6 +66,7 @@ export interface IMonitorService {
 		teamId: string;
 		limit?: number;
 		type?: MonitorType | MonitorType[];
+		tags?: string | string[];
 		page?: number;
 		rowsPerPage?: number;
 		filter?: string;
@@ -73,6 +79,7 @@ export interface IMonitorService {
 	// update
 	editMonitor(args: { teamId: string; monitorId: string; body: Partial<Monitor> }): Promise<Monitor>;
 	pauseMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
+	bulkPauseMonitors(args: { teamId: string; monitorIds: string[]; pause: boolean }): Promise<{ monitors: Monitor[]; failedCount: number }>;
 
 	// delete
 	deleteMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
@@ -215,15 +222,7 @@ export class MonitorService implements IMonitorService {
 		});
 		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
 
-		if (
-			checksData.monitorType !== "http" &&
-			checksData.monitorType !== "ping" &&
-			checksData.monitorType !== "docker" &&
-			checksData.monitorType !== "port" &&
-			checksData.monitorType !== "game" &&
-			checksData.monitorType !== "grpc" &&
-			checksData.monitorType !== "websocket"
-		) {
+		if (!isUptimeChecksResult(checksData)) {
 			throw new AppError({ message: `${monitor.type} monitors are not supported for uptime details`, status: 400 });
 		}
 
@@ -360,19 +359,22 @@ export class MonitorService implements IMonitorService {
 	getMonitorsByTeamId = async ({
 		teamId,
 		type,
+		tags,
 		filter,
 	}: {
 		teamId: string;
 		type?: MonitorType | MonitorType[];
+		tags?: string | string[];
 		filter?: string;
 	}): Promise<Monitor[] | null> => {
-		return await this.monitorsRepository.findByTeamId(teamId, { type, filter });
+		return await this.monitorsRepository.findByTeamId(teamId, { type, tags, filter });
 	};
 
 	getMonitorsWithChecksByTeamId = async ({
 		teamId,
 		limit,
 		type,
+		tags,
 		page,
 		rowsPerPage,
 		filter,
@@ -382,17 +384,19 @@ export class MonitorService implements IMonitorService {
 		teamId: string;
 		limit?: number;
 		type?: MonitorType | MonitorType[];
+		tags?: string | string[];
 		page?: number;
 		rowsPerPage?: number;
 		filter?: string;
 		field?: string;
 		order?: "asc" | "desc";
 	}): Promise<MonitorsWithChecksByTeamIdResult> => {
-		const summary = await this.monitorsRepository.findMonitorsSummaryByTeamId(teamId, { type });
-		const count = await this.monitorsRepository.findMonitorCountByTeamIdAndType(teamId, { type, filter });
+		const summary = await this.monitorsRepository.findMonitorsSummaryByTeamId(teamId, { type, tags });
+		const count = await this.monitorsRepository.findMonitorCountByTeamIdAndType(teamId, { type, tags, filter });
 		const monitors = await this.monitorsRepository.findByTeamId(teamId, {
 			limit,
 			type,
+			tags,
 			page,
 			rowsPerPage,
 			filter,
@@ -460,6 +464,43 @@ export class MonitorService implements IMonitorService {
 			await this.jobQueue.pauseJob(monitor);
 		}
 		return monitor;
+	};
+
+	bulkPauseMonitors = async ({
+		teamId,
+		monitorIds,
+		pause,
+	}: {
+		teamId: string;
+		monitorIds: string[];
+		pause: boolean;
+	}): Promise<{ monitors: Monitor[]; failedCount: number }> => {
+		const monitors = await this.monitorsRepository.bulkTogglePause(monitorIds, teamId, pause);
+
+		const results = await Promise.allSettled(
+			monitors.map(async (monitor) => {
+				if (monitor.isActive) {
+					await this.jobQueue.resumeJob(monitor);
+				} else {
+					await this.jobQueue.pauseJob(monitor);
+				}
+			})
+		);
+
+		let failedCount = 0;
+		results.forEach((result, index) => {
+			if (result.status === "rejected") {
+				failedCount++;
+				this.logger.error({
+					message: `Failed to sync job queue for monitor ${monitors[index]?.id || "unknown"} during bulk ${pause ? "pause" : "resume"}`,
+					service: SERVICE_NAME,
+					method: "bulkPauseMonitors",
+					stack: result.reason instanceof Error ? result.reason.stack : undefined,
+				});
+			}
+		});
+
+		return { monitors, failedCount };
 	};
 
 	deleteMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {

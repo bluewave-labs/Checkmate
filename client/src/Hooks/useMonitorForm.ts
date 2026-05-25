@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { monitorSchema, type MonitorFormData } from "@/Validation/monitor";
+import { DefaultPageSpeedStrategy } from "@/Types/Monitor";
 import type { Monitor, MonitorType } from "@/Types/Monitor";
 
 interface UseMonitorFormOptions {
@@ -12,6 +13,7 @@ const getBaseDefaults = (data?: Monitor | null) => ({
 	description: data?.description || "",
 	interval: data?.interval || 60000,
 	notifications: data?.notifications || [],
+	tags: data?.tags || [],
 	statusWindowSize: data?.statusWindowSize || 5,
 	statusWindowThreshold: data?.statusWindowThreshold || 60,
 	geoCheckEnabled: data?.geoCheckEnabled ?? false,
@@ -89,6 +91,7 @@ export const useMonitorForm = ({
 					...base,
 					type: "pagespeed",
 					url: data?.url || "",
+					strategy: data?.strategy ?? DefaultPageSpeedStrategy,
 				};
 				break;
 			case "hardware":
@@ -110,6 +113,15 @@ export const useMonitorForm = ({
 					type: "websocket",
 					url: data?.url || "",
 					ignoreTlsErrors: data?.ignoreTlsErrors || false,
+				};
+				break;
+			case "dns":
+				defaults = {
+					...base,
+					type: "dns",
+					url: data?.url || "",
+					dnsServer: data?.dnsServer || "",
+					dnsRecordType: data?.dnsRecordType || "A",
 				};
 				break;
 			default:

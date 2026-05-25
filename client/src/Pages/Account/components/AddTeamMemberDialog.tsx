@@ -9,6 +9,7 @@ import { useAddTeamMemberForm } from "@/Hooks/useAddTeamMemberForm";
 import type { AddTeamMemberFormData } from "@/Validation/addTeamMember";
 import type { UserRole, User } from "@/Types/User";
 import { usePost } from "@/Hooks/UseApi";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface AddTeamMemberDialogProps {
 	open: boolean;
@@ -82,38 +83,40 @@ export const AddTeamMemberDialog = ({
 			maxWidth="sm"
 			fullWidth
 		>
-			<Stack
-				gap={theme.spacing(4)}
-				mt={theme.spacing(4)}
-			>
-				<Controller
-					name="firstName"
-					control={control}
-					render={({ field, fieldState }) => (
-						<TextField
-							{...field}
-							fieldLabel={t("common.form.name.option.firstName.label")}
-							placeholder={t("common.form.name.option.firstName.placeholder")}
-							error={!!fieldState.error}
-							helperText={fieldState.error?.message ?? ""}
-							fullWidth
-						/>
-					)}
-				/>
-				<Controller
-					name="lastName"
-					control={control}
-					render={({ field, fieldState }) => (
-						<TextField
-							{...field}
-							fieldLabel={t("common.form.name.option.lastName.label")}
-							placeholder={t("common.form.name.option.lastName.placeholder")}
-							error={!!fieldState.error}
-							helperText={fieldState.error?.message ?? ""}
-							fullWidth
-						/>
-					)}
-				/>
+			<Stack gap={theme.spacing(LAYOUT.XS)}>
+				<Stack
+					direction="row"
+					gap={theme.spacing(LAYOUT.XS)}
+				>
+					<Controller
+						name="firstName"
+						control={control}
+						render={({ field, fieldState }) => (
+							<TextField
+								{...field}
+								fieldLabel={t("common.form.name.option.firstName.label")}
+								placeholder={t("common.form.name.option.firstName.placeholder")}
+								error={!!fieldState.error}
+								helperText={fieldState.error?.message ?? ""}
+								sx={{ flex: 1 }}
+							/>
+						)}
+					/>
+					<Controller
+						name="lastName"
+						control={control}
+						render={({ field, fieldState }) => (
+							<TextField
+								{...field}
+								fieldLabel={t("common.form.name.option.lastName.label")}
+								placeholder={t("common.form.name.option.lastName.placeholder")}
+								error={!!fieldState.error}
+								helperText={fieldState.error?.message ?? ""}
+								sx={{ flex: 1 }}
+							/>
+						)}
+					/>
+				</Stack>
 				<Controller
 					name="email"
 					control={control}
@@ -151,36 +154,41 @@ export const AddTeamMemberDialog = ({
 						</Select>
 					)}
 				/>
-				<Controller
-					name="password"
-					control={control}
-					render={({ field, fieldState }) => (
-						<TextField
-							{...field}
-							fieldLabel={t("pages.auth.common.form.option.password.label")}
-							placeholder={t("pages.auth.common.form.option.password.placeholder")}
-							type="password"
-							error={!!fieldState.error}
-							helperText={fieldState.error?.message ?? ""}
-							fullWidth
-						/>
-					)}
-				/>
-				<Controller
-					name="confirm"
-					control={control}
-					render={({ field, fieldState }) => (
-						<TextField
-							{...field}
-							fieldLabel={t("pages.auth.common.form.option.confirmPassword.label")}
-							placeholder={t("pages.auth.common.form.option.password.placeholder")}
-							type="password"
-							error={!!fieldState.error}
-							helperText={fieldState.error?.message ?? ""}
-							fullWidth
-						/>
-					)}
-				/>
+				<Stack
+					direction="row"
+					gap={theme.spacing(LAYOUT.XS)}
+				>
+					<Controller
+						name="password"
+						control={control}
+						render={({ field, fieldState }) => (
+							<TextField
+								{...field}
+								fieldLabel={t("pages.auth.common.form.option.password.label")}
+								placeholder={t("pages.auth.common.form.option.password.placeholder")}
+								type="password"
+								error={!!fieldState.error}
+								helperText={fieldState.error?.message ?? ""}
+								sx={{ flex: 1 }}
+							/>
+						)}
+					/>
+					<Controller
+						name="confirm"
+						control={control}
+						render={({ field, fieldState }) => (
+							<TextField
+								{...field}
+								fieldLabel={t("pages.auth.common.form.option.confirmPassword.label")}
+								placeholder={t("pages.auth.common.form.option.password.placeholder")}
+								type="password"
+								error={!!fieldState.error}
+								helperText={fieldState.error?.message ?? ""}
+								sx={{ flex: 1 }}
+							/>
+						)}
+					/>
+				</Stack>
 			</Stack>
 		</Dialog>
 	);

@@ -4,6 +4,11 @@ import { type UserRole } from "@/types/user.js";
 export const passwordPattern =
 	/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\-_=+[\]{};:'",.~`|\\/])[A-Za-z0-9!?@#$%^&*()\-_=+[\]{};:'",.~`|\\/]+$/;
 
+export const passwordValidation = z
+	.string()
+	.min(8, "Password must be at least 8 characters")
+	.regex(passwordPattern, "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character");
+
 export const nameValidation = z
 	.string()
 	.trim()
@@ -14,6 +19,17 @@ export const nameValidation = z
 	);
 
 export const lowercaseEmailValidation = z.email().transform((val) => val.toLowerCase());
+
+export const dnsServerValidation = z
+	.string()
+	.min(1, "DNS server is required")
+	.refine((v) => z.ipv4().safeParse(v).success || z.ipv6().safeParse(v).success, "Enter a valid IPv4 or IPv6 address (e.g. 8.8.8.8)");
+
+// Hostname (FQDN) — labels of 1-63 alphanumerics/hyphens separated by dots,
+// optionally prefixed with `_` for service labels (e.g. _dmarc, _imaps._tcp).
+// No scheme, port, path, or whitespace. Total length ≤ 253. Kept in sync with
+// the client-side regex in client/src/Validation/monitor.ts.
+export const dnsHostnameRegex = /^(?=.{1,253}$)([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,63}$/;
 
 export const booleanCoercion = z.preprocess((val) => {
 	if (val === "true" || val === true) return true;
