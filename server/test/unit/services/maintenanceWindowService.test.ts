@@ -296,6 +296,45 @@ describe("MaintenanceWindowService", () => {
 			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
 			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1"], "team-1", { status: "initializing" }, ["paused"]);
 		});
+
+		it("skips the overlap lookup when an active window with no monitorIds is deleted", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.deleteById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: [] }));
+			const { service, monitorsRepository } = createService({ maintenanceWindowsRepository });
+
+			await service.deleteMaintenanceWindow({ id: "mw-1", teamId: "team-1" });
+
+			expect(maintenanceWindowsRepository.findByMonitorIds).not.toHaveBeenCalled();
+			expect(monitorsRepository.updateByIds).not.toHaveBeenCalled();
+		});
+
+		it("ignores monitorIds in overlapping windows that are outside the leaving set", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.deleteById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1"] }));
+			// overlapping window covers mon-1 (in the leaving set) plus mon-99 (unrelated, must be skipped)
+			(maintenanceWindowsRepository.findByMonitorIds as jest.Mock).mockResolvedValue([
+				makeActiveWindow({ id: "mw-2", monitorIds: ["mon-1", "mon-99"] }),
+			]);
+			const { service, monitorsRepository } = createService({ maintenanceWindowsRepository });
+
+			await service.deleteMaintenanceWindow({ id: "mw-1", teamId: "team-1" });
+
+			// mon-1 is still covered by mw-2; mon-99 must not leak into the update
+			expect(monitorsRepository.updateByIds).not.toHaveBeenCalled();
+		});
+
+		it("makes no monitor updates when every leaving monitor is still covered by another active window", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.deleteById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1", "mon-2"] }));
+			(maintenanceWindowsRepository.findByMonitorIds as jest.Mock).mockResolvedValue([
+				makeActiveWindow({ id: "mw-2", monitorIds: ["mon-1", "mon-2"] }),
+			]);
+			const { service, monitorsRepository } = createService({ maintenanceWindowsRepository });
+
+			await service.deleteMaintenanceWindow({ id: "mw-1", teamId: "team-1" });
+
+			expect(monitorsRepository.updateByIds).not.toHaveBeenCalled();
+		});
 	});
 
 	// ── editMaintenanceWindow ────────────────────────────────────────────────
