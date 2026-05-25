@@ -476,7 +476,8 @@
 					"alreadyPaused_one": "所選監視器已暫停",
 					"alreadyPaused_other": "所有選定的監視器均已暫停",
 					"alreadyRunning_one": "所選監視器已經在運行",
-					"alreadyRunning_other": "所有選定的監視器均已在運行"
+					"alreadyRunning_other": "所有選定的監視器均已在運行",
+					"partialFailure": "已更新 {{successCount}} 個監控，但有 {{failedCount}} 個無法與工作佇列同步"
 				}
 			}
 		},

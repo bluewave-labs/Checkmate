@@ -476,7 +476,8 @@
 					"alreadyPaused_one": "Vybraný monitor je již pozastaven",
 					"alreadyPaused_other": "Všechny vybrané monitory jsou již pozastaveny",
 					"alreadyRunning_one": "Vybraný monitor již běží",
-					"alreadyRunning_other": "Všechny vybrané monitory již běží"
+					"alreadyRunning_other": "Všechny vybrané monitory již běží",
+					"partialFailure": "Bylo aktualizováno {{successCount}} monitorů, ale u {{failedCount}} se nezdařila synchronizace s frontou úloh"
 				}
 			}
 		},

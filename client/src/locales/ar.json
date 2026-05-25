@@ -476,7 +476,8 @@
 					"alreadyPaused_one": "الشاشة المحددة متوقفة مؤقتاً بالفعل",
 					"alreadyPaused_other": "جميع الشاشات المحددة متوقفة مؤقتاً بالفعل",
 					"alreadyRunning_one": "الشاشة المحددة قيد التشغيل بالفعل",
-					"alreadyRunning_other": "جميع الشاشات المحددة قيد التشغيل بالفعل"
+					"alreadyRunning_other": "جميع الشاشات المحددة قيد التشغيل بالفعل",
+					"partialFailure": "تم تحديث {{successCount}} من أجهزة المراقبة، ولكن فشلت مزامنة {{failedCount}} مع قائمة انتظار الوظائف"
 				}
 			}
 		},

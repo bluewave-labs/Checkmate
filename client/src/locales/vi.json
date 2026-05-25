@@ -476,7 +476,8 @@
 					"alreadyPaused_one": "Màn hình đã chọn đã được tạm dừng",
 					"alreadyPaused_other": "Tất cả các màn hình đã chọn đã được tạm dừng",
 					"alreadyRunning_one": "Màn hình đã chọn đã đang chạy",
-					"alreadyRunning_other": "Tất cả các màn hình đã chọn đã đang chạy"
+					"alreadyRunning_other": "Tất cả các màn hình đã chọn đã đang chạy",
+					"partialFailure": "Đã cập nhật {{successCount}} trình giám sát, nhưng {{failedCount}} trình giám sát không thể đồng bộ hóa với hàng đợi công việc"
 				}
 			}
 		},

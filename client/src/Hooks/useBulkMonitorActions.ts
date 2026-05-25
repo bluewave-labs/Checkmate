@@ -9,7 +9,10 @@ import type { Monitor } from "@/Types/Monitor";
 interface ApiResponse {
 	success: boolean;
 	msg: string;
-	data: Monitor[];
+	data: {
+		monitors: Monitor[];
+		failedCount: number;
+	};
 }
 
 interface UseBulkMonitorActionsReturn {
@@ -25,7 +28,7 @@ export const useBulkMonitorActions = (
 	page?: number
 ): UseBulkMonitorActionsReturn => {
 	const [selectedRows, setSelectedRows] = useState<string[]>([]);
-	const { toastSuccess, toastError, toastInfo } = useToast();
+	const { toastSuccess, toastError, toastInfo, toastWarning } = useToast();
 	const { t } = useTranslation();
 
 	// Clear selection when page changes
@@ -40,13 +43,21 @@ export const useBulkMonitorActions = (
 				pause,
 			});
 
-			const affectedCount = res.data?.data?.length ?? 0;
+			const affectedCount = res.data?.data?.monitors?.length ?? 0;
+			const failedCount = res.data?.data?.failedCount ?? 0;
 
 			if (affectedCount === 0) {
 				const key = pause
 					? "pages.common.monitors.bulkPause.alreadyPaused"
 					: "pages.common.monitors.bulkPause.alreadyRunning";
 				toastInfo(t(key, { count: selectedRows.length }));
+			} else if (failedCount > 0) {
+				toastWarning(
+					t("pages.common.monitors.bulkPause.partialFailure", {
+						successCount: affectedCount,
+						failedCount,
+					})
+				);
 			} else {
 				const key = pause
 					? "pages.common.monitors.bulkPause.paused"

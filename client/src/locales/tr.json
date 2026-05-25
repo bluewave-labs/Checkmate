@@ -476,7 +476,8 @@
 					"alreadyPaused_one": "Seçili monitör zaten duraklatıldı",
 					"alreadyPaused_other": "Seçili tüm monitörler zaten duraklatıldı",
 					"alreadyRunning_one": "Seçili monitör zaten çalışıyor",
-					"alreadyRunning_other": "Seçili tüm monitörler zaten çalışıyor"
+					"alreadyRunning_other": "Seçili tüm monitörler zaten çalışıyor",
+					"partialFailure": "{{successCount}} monitör güncellendi, ancak {{failedCount}} tanesi iş kuyruğuyla senkronize edilemedi"
 				}
 			}
 		},

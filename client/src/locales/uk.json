@@ -476,7 +476,8 @@
 					"alreadyPaused_one": "Вибраний монітор уже призупинено",
 					"alreadyPaused_other": "Всі вибрані монітори уже призупинено",
 					"alreadyRunning_one": "Вибраний монітор уже запущено",
-					"alreadyRunning_other": "Всі вибрані монітори уже запущено"
+					"alreadyRunning_other": "Всі вибрані монітори уже запущено",
+					"partialFailure": "Оновлено {{successCount}} моніторів, але {{failedCount}} не вдалося синхронізувати з чергою завдань"
 				}
 			}
 		},

@@ -476,7 +476,8 @@
 					"alreadyPaused_one": "選択したモニターはすでに一時停止されています",
 					"alreadyPaused_other": "選択したすべてのモニターはすでに一時停止されています",
 					"alreadyRunning_one": "選択したモニターはすでに実行中です",
-					"alreadyRunning_other": "選択したすべてのモニターはすでに実行中です"
+					"alreadyRunning_other": "選択したすべてのモニターはすでに実行中です",
+					"partialFailure": "{{successCount}} 個のモニターが更新されましたが、{{failedCount}} 個はジョブキューとの同期に失敗しました"
 				}
 			}
 		},
