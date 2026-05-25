@@ -1366,6 +1366,7 @@ const CreateMonitorPage = () => {
 				)}
 				{isWizard && currentStep < TOTAL_STEPS - 1 ? (
 					<Button
+						key="wizard-next"
 						type="button"
 						variant="contained"
 						color="primary"
@@ -1375,6 +1376,7 @@ const CreateMonitorPage = () => {
 					</Button>
 				) : (
 					<Button
+						key="wizard-save"
 						loading={isSubmitting}
 						type="submit"
 						variant="contained"
