@@ -12,6 +12,7 @@ import { AppError } from "@/utils/AppError.js";
 import { INotificationsService } from "@/service/index.js";
 import { requireTeamId, requireUserId } from "./controllerUtils.js";
 import { IMonitorsRepository } from "@/repositories/index.js";
+import type { Notification } from "@/types/notification.js";
 
 const SERVICE_NAME = "NotificationController";
 
@@ -47,10 +48,10 @@ class NotificationController implements INotificationController {
 		}
 	};
 
-	private sanitizeNotification = (notification: any) => {
+	private sanitizeNotification = (notification: Notification | null | undefined): Notification | null | undefined => {
 		if (!notification) return notification;
-		const { authPassword, authToken, accessToken, ...sanitized } = notification;
-		return sanitized;
+		const { authPassword, authToken, ...sanitized } = notification;
+		return sanitized as Notification;
 	};
 
 	createNotification = async (req: Request, res: Response, next: NextFunction) => {
