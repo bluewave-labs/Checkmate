@@ -1,5 +1,6 @@
 import { ActionsMenu, type ActionMenuItem } from "@/Components/actions-menu";
 import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 import type { Header } from "@/Components/design-elements/Table";
 import { Table, ColoredLabel } from "@/Components/design-elements";
 import { Pagination } from "@/Components/design-elements/Table";
@@ -69,10 +70,15 @@ export const TagsTable = ({ tags, setSelectedTag }: TagsTableProps) => {
 				content: t("pages.tags.table.headers.appearance"),
 				render: (row) => {
 					return (
-						<ColoredLabel
-							text={row.name}
-							color={row.color}
-						/>
+						<Box
+							display="flex"
+							justifyContent="center"
+						>
+							<ColoredLabel
+								text={row.name}
+								color={row.color}
+							/>
+						</Box>
 					);
 				},
 			},
