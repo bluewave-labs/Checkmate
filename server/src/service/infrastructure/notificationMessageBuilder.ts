@@ -1,5 +1,5 @@
 import type { HardwareStatusPayload, Monitor, MonitorStatusResponse } from "@/types/index.js";
-import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+import type { MonitorActionDecision, GroupCorrelation, IncidentContext } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import type {
 	NotificationMessage,
 	NotificationType,
@@ -13,7 +13,8 @@ export interface INotificationMessageBuilder {
 		monitor: Monitor,
 		monitorStatusResponse: MonitorStatusResponse,
 		decision: MonitorActionDecision,
-		clientHost: string
+		clientHost: string,
+		context?: IncidentContext
 	): NotificationMessage;
 	extractThresholdBreaches(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): ThresholdBreach[];
 }
@@ -27,11 +28,17 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		monitor: Monitor,
 		monitorStatusResponse: MonitorStatusResponse,
 		decision: MonitorActionDecision,
-		clientHost: string
+		clientHost: string,
+		context?: IncidentContext
 	): NotificationMessage {
 		const type = this.determineNotificationType(decision, monitor);
-		const severity = this.determineSeverity(type);
-		const content = this.buildContent(type, monitor, monitorStatusResponse);
+		let severity = this.determineSeverity(type);
+
+		if (context?.groupCorrelation && monitor.status === "down") {
+			severity = context.groupCorrelation.severity === "critical" ? "critical" : "warning";
+		}
+
+		const content = this.buildContent(type, monitor, monitorStatusResponse, context?.groupCorrelation);
 
 		return {
 			type,
@@ -48,6 +55,14 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 			metadata: {
 				teamId: monitor.teamId,
 				notificationReason: decision.notificationReason || "status_change",
+				groupCorrelation: context?.groupCorrelation
+					? {
+							groupName: context.groupCorrelation.groupName,
+							downCount: context.groupCorrelation.downCount,
+							totalCount: context.groupCorrelation.totalCount,
+							severity: context.groupCorrelation.severity,
+						}
+					: undefined,
 			},
 		};
 	}
@@ -93,10 +108,15 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		}
 	}
 
-	private buildContent(type: NotificationType, monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): NotificationContent {
+	private buildContent(
+		type: NotificationType,
+		monitor: Monitor,
+		monitorStatusResponse: MonitorStatusResponse,
+		groupCorrelation?: GroupCorrelation
+	): NotificationContent {
 		switch (type) {
 			case "monitor_down":
-				return this.buildMonitorDownContent(monitor, monitorStatusResponse);
+				return this.buildMonitorDownContent(monitor, monitorStatusResponse, groupCorrelation);
 			case "monitor_up":
 				return this.buildMonitorUpContent(monitor);
 			case "threshold_breach":
@@ -108,9 +128,22 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		}
 	}
 
-	private buildMonitorDownContent(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): NotificationContent {
-		const title = `Monitor Down: ${monitor.name}`;
-		const summary = `Monitor "${monitor.name}" is currently down and unreachable.`;
+	private buildMonitorDownContent(
+		monitor: Monitor,
+		monitorStatusResponse: MonitorStatusResponse,
+		groupCorrelation?: GroupCorrelation
+	): NotificationContent {
+		const title =
+			groupCorrelation?.severity === "critical"
+				? `[CRITICAL] All Links Down: ${groupCorrelation.groupName}`
+				: groupCorrelation
+					? `[HIGH] Link Down: ${monitor.name}`
+					: `Monitor Down: ${monitor.name}`;
+
+		const summary = groupCorrelation
+			? `Monitor "${monitor.name}" is down. Group "${groupCorrelation.groupName}": ${groupCorrelation.downCount}/${groupCorrelation.totalCount} link(s) down.${groupCorrelation.severity === "critical" ? " ALL links are down — critical outage." : ""}`
+			: `Monitor "${monitor.name}" is currently down and unreachable.`;
+
 		const details = [`URL: ${monitor.url}`, `Status: Down`, `Type: ${monitor.type}`];
 
 		// Add response code if available

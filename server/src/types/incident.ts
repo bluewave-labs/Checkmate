@@ -3,6 +3,9 @@
 export const IncidentResolutionTypes = ["automatic", "manual", null] as const;
 export type IncidentResolutionType = (typeof IncidentResolutionTypes)[number];
 
+export const IncidentSeverities = ["none", "high", "critical"] as const;
+export type IncidentSeverity = (typeof IncidentSeverities)[number];
+
 export interface Incident {
 	id: string;
 	monitorId: string;
@@ -16,6 +19,7 @@ export interface Incident {
 	resolvedBy?: string | null;
 	resolvedByEmail?: string | null;
 	comment?: string | null;
+	severity?: IncidentSeverity;
 	createdAt: string;
 	updatedAt: string;
 }

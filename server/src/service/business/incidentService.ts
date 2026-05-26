@@ -5,7 +5,7 @@ import { AppError } from "@/utils/AppError.js";
 import { getDateForRange } from "@/utils/dataUtils.js";
 import type { IIncidentsRepository, IMonitorsRepository, IUsersRepository } from "@/repositories/index.js";
 import type { Incident, IncidentSummary, User } from "@/types/index.js";
-import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+import type { MonitorActionDecision, IncidentContext } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import type { INotificationMessageBuilder } from "@/service/infrastructure/notificationMessageBuilder.js";
 import type { ILogger } from "@/utils/logger.js";
 
@@ -14,7 +14,8 @@ export interface IIncidentService {
 		monitor: Monitor,
 		code: number,
 		decision: MonitorActionDecision,
-		monitorStatusResponse?: MonitorStatusResponse
+		monitorStatusResponse?: MonitorStatusResponse,
+		context?: IncidentContext
 	): Promise<Incident | null>;
 	resolveIncident(incidentId: string, userId: string, teamId: string, comment?: string, userEmail?: string): Promise<Incident>;
 	getIncidentsByTeam(
@@ -62,7 +63,8 @@ export class IncidentService implements IIncidentService {
 		monitor: Monitor,
 		code: number,
 		decision: MonitorActionDecision,
-		monitorStatusResponse?: MonitorStatusResponse
+		monitorStatusResponse?: MonitorStatusResponse,
+		context?: IncidentContext
 	): Promise<Incident | null> => {
 		if (!decision.shouldCreateIncident && !decision.shouldResolveIncident) {
 			return null;
@@ -83,13 +85,14 @@ export class IncidentService implements IIncidentService {
 					message = this.buildThresholdBreachMessage(monitor, monitorStatusResponse);
 				}
 
-				const incident = {
+				const incident: Partial<Incident> = {
 					monitorId: monitor.id,
 					teamId: monitor.teamId,
 					startTime: Date.now().toString(),
 					status: true,
 					statusCode,
 					message,
+					severity: context?.groupCorrelation?.severity ?? "none",
 				};
 				return await this.incidentsRepository.create(incident);
 			}

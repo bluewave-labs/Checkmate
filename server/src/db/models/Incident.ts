@@ -72,6 +72,11 @@ const IncidentSchema = new Schema<IncidentDocument>(
 			type: String,
 			default: null,
 		},
+		severity: {
+			type: String,
+			enum: ["none", "high", "critical"],
+			default: "none",
+		},
 	},
 	{ timestamps: true }
 );

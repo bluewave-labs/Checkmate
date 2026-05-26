@@ -49,5 +49,11 @@ export interface NotificationMessage {
 	metadata: {
 		teamId: string;
 		notificationReason: string;
+		groupCorrelation?: {
+			groupName: string;
+			downCount: number;
+			totalCount: number;
+			severity: "high" | "critical";
+		};
 	};
 }
