@@ -145,6 +145,7 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 
 	static async create(logger: ILogger, helper: ISuperSimpleQueueHelper, monitorsRepository: IMonitorsRepository) {
 		const scheduler = new Scheduler({
+			concurrency: 50,
 			// storeType: "mongo",
 			// storeType: "redis",
 			// dbUri: envSettings.dbConnectionString,
