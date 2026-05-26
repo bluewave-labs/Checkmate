@@ -1,5 +1,8 @@
 import v8 from "v8";
 import os from "os";
+import { IDb } from "@/db/IDb.js";
+import { Mongoose } from "mongoose";
+import { AppError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "diagnosticService";
 
@@ -18,7 +21,7 @@ export interface IDiagnosticService {
 export class DiagnosticService implements IDiagnosticService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	constructor() {
+	constructor(private db: IDb<Mongoose>) {
 		/**
 		 * Performance Observer for monitoring system performance metrics.
 		 * Clears performance marks after each measurement to prevent memory leaks.
@@ -45,6 +48,44 @@ export class DiagnosticService implements IDiagnosticService {
 			usagePercentage: ((endUsage.user + endUsage.system) / 1000 / timingPeriod) * 100,
 		};
 		return cpuUsage;
+	};
+
+	private getMongoDBStats = async () => {
+		const mongo = await this.db.getConnection();
+		const db = mongo.connection.db;
+		if (!db) {
+			throw new AppError({ message: "Database connection is not available", service: SERVICE_NAME, method: "getMongoDBStats" });
+		}
+
+		const readyState = mongo.connection.readyState;
+		const host = mongo.connection.host;
+		const port = mongo.connection.port;
+		const dbName = mongo.connection.name;
+
+		const serverStatus = await db.admin().serverStatus();
+		const serverInfo = await db.admin().serverInfo();
+
+		const stats = await db.stats();
+		const collections = await db.collections();
+
+		const collectionStats = await Promise.all(
+			(collections || []).map(async (collection) => {
+				const stats = await db.command({ collStats: collection.collectionName });
+				const documentCount = await db.collection(collection.collectionName).countDocuments({});
+				return { name: collection.collectionName, documentCount, ...stats };
+			})
+		);
+
+		return {
+			readyState,
+			host,
+			port,
+			dbName,
+			serverStatus,
+			serverInfo,
+			stats,
+			collectionStats,
+		};
 	};
 
 	getSystemStats = async () => {
@@ -93,6 +134,9 @@ export class DiagnosticService implements IDiagnosticService {
 		// Uptime
 		const uptimeMs = process.uptime() * 1000; // ms
 
+		// Mongo
+		const mongoStats = await this.getMongoDBStats();
+
 		// Combine Metrics
 		const diagnostics = {
 			osStats,
@@ -101,6 +145,7 @@ export class DiagnosticService implements IDiagnosticService {
 			v8HeapStats: v8Metrics,
 			eventLoopDelayMs: eventLoopDelay,
 			uptimeMs,
+			mongoStats,
 		};
 
 		return diagnostics;
