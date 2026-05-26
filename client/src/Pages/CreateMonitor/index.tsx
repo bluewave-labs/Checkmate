@@ -37,7 +37,7 @@ import {
 } from "@/Components/inputs";
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import { useGet, usePost, usePatch, useDelete } from "@/Hooks/UseApi";
-import { useMonitorForm } from "@/Hooks/useMonitorForm";
+import { useMonitorForm, getMonitorDefaults } from "@/Hooks/useMonitorForm";
 import {
 	type Monitor,
 	type MonitorType,
@@ -213,7 +213,10 @@ const getGeneralSettingsConfig = (
 	return configs[type] || configs.http;
 };
 
-const TOTAL_STEPS = 3;
+// Whether the wizard's "Advanced" step (TLS / matching / geo) has any content
+// for this monitor type. Types without it skip the step entirely.
+const hasAdvancedStep = (type: MonitorType): boolean =>
+	type === "http" || type === "grpc" || type === "websocket" || supportsGeoCheck(type);
 
 // Fields validated before advancing past each wizard step (uptime create only).
 const STEP_FIELDS: FieldPath<MonitorFormData>[][] = [
@@ -282,33 +285,41 @@ const CreateMonitorPage = () => {
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
-	const { control, watch, handleSubmit, clearErrors, trigger } = form;
+	const { control, watch, handleSubmit, clearErrors, trigger, reset } = form;
 
 	useEffect(() => {
-		form.reset(defaults);
-	}, [defaults, form]);
+		reset(defaults);
+	}, [defaults, reset]);
 
-	// Multi-step wizard (uptime create only). Other flows keep the flat form.
-	const isWizard = showTypeSelector;
+	// Multi-step wizard, uptime create only (showTypeSelector). Other flows
+	// keep the flat form, where showStep() is always true.
 	const [currentStep, setCurrentStep] = useState(0);
-	const showStep = (step: number) => !isWizard || currentStep === step;
+	const showStep = (step: number) => !showTypeSelector || currentStep === step;
+
+	const watchedType = watch("type") as MonitorType;
+	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
+	const watchGeoCheckEnabled = watch("geoCheckEnabled") as boolean;
+
+	// Steps without an advanced section drop it, so the last step is the form's.
+	const totalSteps = hasAdvancedStep(watchedType) ? 3 : 2;
 
 	const handleNext = async () => {
 		const isValid = await trigger(STEP_FIELDS[currentStep]);
 		if (isValid) {
-			setCurrentStep((step) => Math.min(step + 1, TOTAL_STEPS - 1));
+			setCurrentStep((step) => step + 1);
 		}
 	};
-	const handleBack = () => setCurrentStep((step) => Math.max(step - 1, 0));
+	const handleBack = () => setCurrentStep((step) => step - 1);
 
-	const watchedType = watch("type") as MonitorType;
-
-	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
-	const watchGeoCheckEnabled = watch("geoCheckEnabled") as boolean;
-
+	// Reset the form when the monitor type changes so stale type-specific fields
+	// can't produce an invalid monitor. Type can only be changed on step 0.
 	useEffect(() => {
-		clearErrors();
-	}, [watchedType, clearErrors]);
+		if (showTypeSelector) {
+			reset(getMonitorDefaults(watchedType));
+		} else {
+			clearErrors();
+		}
+	}, [watchedType, showTypeSelector, reset, clearErrors]);
 
 	const generalSettingsConfig = useMemo(
 		() => getGeneralSettingsConfig(watchedType, t),
@@ -378,9 +389,9 @@ const CreateMonitorPage = () => {
 				refetch={refetchMonitor}
 				onDelete={handleDeleteClick}
 			/>
-			{isWizard && (
+			{showTypeSelector && (
 				<StepProgress
-					steps={TOTAL_STEPS}
+					steps={totalSteps}
 					current={currentStep}
 				/>
 			)}
@@ -1351,9 +1362,9 @@ const CreateMonitorPage = () => {
 
 			<Stack
 				direction="row"
-				justifyContent={isWizard ? "space-between" : "flex-end"}
+				justifyContent={showTypeSelector ? "space-between" : "flex-end"}
 			>
-				{isWizard && (
+				{showTypeSelector && (
 					<Button
 						type="button"
 						variant="outlined"
@@ -1364,7 +1375,7 @@ const CreateMonitorPage = () => {
 						{t("common.buttons.back")}
 					</Button>
 				)}
-				{isWizard && currentStep < TOTAL_STEPS - 1 ? (
+				{showTypeSelector && currentStep < totalSteps - 1 ? (
 					<Button
 						key="wizard-next"
 						type="button"
