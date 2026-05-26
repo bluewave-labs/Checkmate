@@ -1,3 +1,4 @@
+import { Mongoose } from "mongoose";
 import MongoDB from "../db/MongoDB.js";
 import { IDb } from "@/db/IDb.js";
 import {
@@ -125,7 +126,7 @@ import { ILogger } from "@/utils/logger.js";
 
 export type InitializedServices = {
 	settingsService: ISettingsService;
-	db: IDb;
+	db: IDb<Mongoose>;
 	networkService: INetworkService;
 	emailService: IEmailService;
 	bufferService: IBufferService;
@@ -173,7 +174,7 @@ export const initializeServices = async ({
 }): Promise<InitializedServices> => {
 	// Create DB
 
-	let db: IDb | null = null;
+	let db: IDb<Mongoose> | null = null;
 	db = new MongoDB(logger, envSettings);
 	await db.connect();
 
