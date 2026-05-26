@@ -1,8 +1,5 @@
-import type { ConnectionStates, mongo } from "mongoose";
-
 export interface Diagnostics {
 	osStats: OsStats;
-	memoryUsage: MemoryUsage;
 	cpuUsage: CpuUsage;
 	v8HeapStats: V8HeapStats;
 	eventLoopDelayMs: number;
@@ -11,21 +8,10 @@ export interface Diagnostics {
 }
 
 export interface OsStats {
-	freeMemoryBytes: number;
 	totalMemoryBytes: number;
 }
 
-export interface MemoryUsage {
-	rss: number;
-	heapTotal: number;
-	heapUsed: number;
-	external: number;
-	arrayBuffers: number;
-}
-
 export interface CpuUsage {
-	userUsageMs: number;
-	systemUsageMs: number;
 	usagePercentage: number;
 }
 
@@ -36,12 +22,19 @@ export interface V8HeapStats {
 }
 
 export interface MongoStats {
-	readyState: ConnectionStates;
+	readyState: number;
 	host: string;
 	port: number;
 	dbName: string;
-	serverStatus: mongo.Document;
-	serverInfo: mongo.Document;
-	stats: mongo.Document;
-	collectionStats: mongo.Document[];
+	totalSize: number;
+	collections: CollectionStats[];
+}
+
+export interface CollectionStats {
+	name: string;
+	documentCount: number;
+	storageSize: number;
+	totalIndexSize: number;
+	totalSize: number;
+	bucketCount?: number;
 }
