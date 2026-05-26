@@ -6,7 +6,11 @@ import type { TooltipProps } from "@mui/material/Tooltip";
 
 type StyledTooltipProps = TooltipProps;
 
-export const Tooltip = ({ placement = "top", ...props }: StyledTooltipProps) => {
+export const Tooltip = ({
+	placement = "top",
+	slotProps,
+	...props
+}: StyledTooltipProps) => {
 	const theme = useTheme();
 
 	return (
@@ -27,6 +31,7 @@ export const Tooltip = ({ placement = "top", ...props }: StyledTooltipProps) => 
 						boxShadow: theme.shadows[6],
 					},
 				},
+				...slotProps,
 			}}
 		>
 			{props.children}

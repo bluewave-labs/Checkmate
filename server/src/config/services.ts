@@ -1,3 +1,4 @@
+import { Mongoose } from "mongoose";
 import MongoDB from "../db/MongoDB.js";
 import { IDb } from "@/db/IDb.js";
 import {
@@ -121,11 +122,11 @@ import {
 	IMaintenanceWindowsRepository,
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
-import { AppError } from "@/utils/AppError.js";
+// import { AppError } from "@/utils/AppError.js";
 
 export type InitializedServices = {
 	settingsService: ISettingsService;
-	db: IDb;
+	db: IDb<Mongoose>;
 	networkService: INetworkService;
 	emailService: IEmailService;
 	bufferService: IBufferService;
@@ -173,55 +174,76 @@ export const initializeServices = async ({
 }): Promise<InitializedServices> => {
 	// Create DB
 
-	const dbType = envSettings.dbType;
-
-	let db: IDb | null = null;
-
-	if (dbType === "mongodb") {
-		db = new MongoDB(logger, envSettings);
-	}
-
-	if (!db) {
-		throw new AppError({ message: "Unsupported database type", status: 500 });
-	}
-
+	let db: IDb<Mongoose> | null = null;
+	db = new MongoDB(logger, envSettings);
 	await db.connect();
 
-	let monitorsRepository: IMonitorsRepository;
-	let checksRepository: IChecksRepository;
-	let geoChecksRepository: IGeoChecksRepository;
-	let monitorStatsRepository: IMonitorStatsRepository;
-	let statusPagesRepository: IStatusPagesRepository;
-	let usersRepository: IUsersRepository;
-	let invitesRepository: IInvitesRepository;
-	let recoveryTokensRepository: IRecoveryTokensRepository;
-	let settingsRepository: ISettingsRepository;
-	let notificationsRepository: INotificationsRepository;
-	let tagsRepository: ITagsRepository;
-	let incidentsRepository: IIncidentsRepository;
-	let teamsRepository: ITeamsRepository;
-	let maintenanceWindowsRepository: IMaintenanceWindowsRepository;
+	// ** NOTE **
+	// const dbType = envSettings.dbType;
+	// DB type has been fixed to MongoDB for now
+
+	// if (dbType === "mongodb") {
+	// 	db = new MongoDB(logger, envSettings);
+	// }
+
+	// if (!db) {
+	// 	throw new AppError({ message: "Unsupported database type", status: 500 });
+	// }
+
+	// await db.connect();
 
 	// Repositories
 
-	if (dbType === "mongodb") {
-		monitorsRepository = new MongoMonitorsRepository();
-		checksRepository = new MongoChecksRepository(logger);
-		geoChecksRepository = new MongoGeoChecksRepository(logger);
-		monitorStatsRepository = new MongoMonitorStatsRepository();
-		statusPagesRepository = new MongoStatusPagesRepository();
-		usersRepository = new MongoUsersRepository();
-		invitesRepository = new MongoInvitesRepository();
-		recoveryTokensRepository = new MongoRecoveryTokensRepository();
-		settingsRepository = new MongoSettingsRepository();
-		notificationsRepository = new MongoNotificationsRepository();
-		tagsRepository = new MongoTagsRepository();
-		incidentsRepository = new MongoIncidentsRepository();
-		teamsRepository = new MongoTeamsRepository();
-		maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
-	} else {
-		throw new AppError({ message: "Unsupported database type", status: 500 });
-	}
+	// ** NOTE **
+	// DB Type fixed to MongoDB for now
+	// let monitorsRepository: IMonitorsRepository;
+	// let checksRepository: IChecksRepository;
+	// let geoChecksRepository: IGeoChecksRepository;
+	// let monitorStatsRepository: IMonitorStatsRepository;
+	// let statusPagesRepository: IStatusPagesRepository;
+	// let usersRepository: IUsersRepository;
+	// let invitesRepository: IInvitesRepository;
+	// let recoveryTokensRepository: IRecoveryTokensRepository;
+	// let settingsRepository: ISettingsRepository;
+	// let notificationsRepository: INotificationsRepository;
+	// let tagsRepository: ITagsRepository;
+	// let incidentsRepository: IIncidentsRepository;
+	// let teamsRepository: ITeamsRepository;
+	// let maintenanceWindowsRepository: IMaintenanceWindowsRepository;
+
+	// if (dbType === "mongodb") {
+	// 	monitorsRepository = new MongoMonitorsRepository();
+	// 	checksRepository = new MongoChecksRepository(logger);
+	// 	geoChecksRepository = new MongoGeoChecksRepository(logger);
+	// 	monitorStatsRepository = new MongoMonitorStatsRepository();
+	// 	statusPagesRepository = new MongoStatusPagesRepository();
+	// 	usersRepository = new MongoUsersRepository();
+	// 	invitesRepository = new MongoInvitesRepository();
+	// 	recoveryTokensRepository = new MongoRecoveryTokensRepository();
+	// 	settingsRepository = new MongoSettingsRepository();
+	// 	notificationsRepository = new MongoNotificationsRepository();
+	// 	tagsRepository = new MongoTagsRepository();
+	// 	incidentsRepository = new MongoIncidentsRepository();
+	// 	teamsRepository = new MongoTeamsRepository();
+	// 	maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
+	// } else {
+	// 	throw new AppError({ message: "Unsupported database type", status: 500 });
+	// }
+
+	const monitorsRepository = new MongoMonitorsRepository();
+	const checksRepository = new MongoChecksRepository(logger);
+	const geoChecksRepository = new MongoGeoChecksRepository(logger);
+	const monitorStatsRepository = new MongoMonitorStatsRepository();
+	const statusPagesRepository = new MongoStatusPagesRepository();
+	const usersRepository = new MongoUsersRepository();
+	const invitesRepository = new MongoInvitesRepository();
+	const recoveryTokensRepository = new MongoRecoveryTokensRepository();
+	const settingsRepository = new MongoSettingsRepository();
+	const notificationsRepository = new MongoNotificationsRepository();
+	const tagsRepository = new MongoTagsRepository();
+	const incidentsRepository = new MongoIncidentsRepository();
+	const teamsRepository = new MongoTeamsRepository();
+	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
 
 	// Inject settings repository into settings service (now that DB is connected)
 	(settingsService as SettingsService).setRepository(settingsRepository);
@@ -340,7 +362,7 @@ export const initializeServices = async ({
 		teamsRepository,
 	});
 
-	const diagnosticService = new DiagnosticService();
+	const diagnosticService = new DiagnosticService(db);
 	const inviteService = new InviteService({
 		invitesRepository,
 		settingsService,
