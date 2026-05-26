@@ -2,14 +2,13 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { Stats } from "@/Pages/Logs/components/Stats";
 import { MongoStats } from "@/Pages/Logs/components/MongoStats";
+import { MongoCollectionStats } from "./components/MongoCollectionStats";
 import { StatGauges } from "@/Pages/Logs/components/StatGauges";
-import { StatBox } from "@/Components/design-elements";
 
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useGet } from "@/Hooks/UseApi";
 import type { Diagnostics } from "@/Types/Diagnostics";
-import { LAYOUT } from "@/Utils/Theme/constants";
 
 export const TabDiagnostics = () => {
 	const theme = useTheme();
@@ -52,7 +51,28 @@ export const TabDiagnostics = () => {
 				<StatGauges diagnostics={diagnostics} />
 			</Stack>
 			<Stack gap={theme.spacing(4)}>
+				<Typography
+					variant="eyebrow"
+					color={theme.palette.text.secondary}
+				>
+					{t("MongoDB Stats")}
+				</Typography>
+				<Typography color={theme.palette.text.secondary}>
+					{t("Information about MongoDB")}
+				</Typography>
 				<MongoStats diagnostics={diagnostics} />
+			</Stack>
+			<Stack gap={theme.spacing(4)}>
+				<Typography
+					variant="eyebrow"
+					color={theme.palette.text.secondary}
+				>
+					{t("MongoDB Collection Stats")}
+				</Typography>
+				<Typography color={theme.palette.text.secondary}>
+					{t("Information about Collections")}
+				</Typography>
+				<MongoCollectionStats diagnostics={diagnostics} />
 			</Stack>
 		</Stack>
 	);
