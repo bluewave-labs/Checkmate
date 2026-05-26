@@ -3,6 +3,7 @@ import { StatBox, Gauge, Tooltip } from "@/Components/design-elements";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 
+import { useTranslation } from "react-i18next";
 import prettyBytes from "pretty-bytes";
 import { useTheme } from "@mui/material";
 import type { Diagnostics } from "@/Types/Diagnostics";
@@ -14,6 +15,7 @@ interface MongoStatsProps {
 
 export const MongoCollectionStats = ({ diagnostics }: MongoStatsProps) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	const mongoStats = diagnostics?.mongoStats;
 	if (!mongoStats) {
@@ -41,17 +43,42 @@ export const MongoCollectionStats = ({ diagnostics }: MongoStatsProps) => {
 						justifyContent={"space-between"}
 					>
 						<Stack>
-							<Typography variant="body2">{`Documents: ${colStat.documentCount}`}</Typography>
+							{/* <Typography variant="body2">{`Documents: ${colStat.documentCount}`}</Typography> */}
+							<Typography variant="body2">
+								{t("pages.logs.diagnostics.mongoDBCollectionStats.documents", {
+									count: colStat.documentCount,
+								})}
+							</Typography>
 							{colStat.bucketCount !== undefined && (
-								<Typography variant="body2">{`Bucket count: ${colStat.bucketCount}`}</Typography>
+								<Typography variant="body2">
+									{t("pages.logs.diagnostics.mongoDBCollectionStats.bucketCount", {
+										count: colStat.bucketCount,
+									})}
+								</Typography>
 							)}
-							<Typography variant="body2">{`Storage size: ${prettyBytes(colStat.storageSize)}`}</Typography>
-							<Typography variant="body2">{`Index size: ${prettyBytes(colStat.totalIndexSize)}`}</Typography>
-							<Typography variant="body2">{`Total size: ${prettyBytes(colStat.totalSize)}`}</Typography>
+							<Typography variant="body2">
+								{t("pages.logs.diagnostics.mongoDBCollectionStats.storageSize", {
+									size: prettyBytes(colStat.storageSize),
+								})}
+							</Typography>
+							<Typography variant="body2">
+								{t("pages.logs.diagnostics.mongoDBCollectionStats.indexSize", {
+									size: prettyBytes(colStat.totalIndexSize),
+								})}
+							</Typography>
+							<Typography variant="body2">
+								{t("pages.logs.diagnostics.mongoDBCollectionStats.totalSize", {
+									size: prettyBytes(colStat.totalSize),
+								})}
+							</Typography>
 						</Stack>
 						<Stack alignItems={"center"}>
 							<Tooltip
-								title={`% of MongoDB storage used by ${colStat.name.toUpperCase()}`}
+								title={t("pages.logs.diagnostics.mongoDBCollectionStats.dbUsageTooltip", {
+									percentage: ((colStat.totalSize / mongoStats.totalSize) * 100).toFixed(
+										2
+									),
+								})}
 								placement="top"
 								slotProps={{
 									popper: {
@@ -66,10 +93,7 @@ export const MongoCollectionStats = ({ diagnostics }: MongoStatsProps) => {
 									},
 								}}
 							>
-								<Gauge
-									progress={(colStat.totalSize / mongoStats.totalSize) * 100}
-									unit="%"
-								/>
+								<Gauge progress={(colStat.totalSize / mongoStats.totalSize) * 100} />
 							</Tooltip>
 						</Stack>
 					</Stack>

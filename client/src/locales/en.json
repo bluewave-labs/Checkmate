@@ -952,6 +952,14 @@
 					"memoryCpu": {
 						"title": "Memory & CPU",
 						"description": "How the process is using its allocated memory and host CPU."
+					},
+					"mongoDBStats": {
+						"title": "MongoDB stats",
+						"description": "Snapshot of MongoDB metrics"
+					},
+					"mongoDBCollectionStats": {
+						"title": "MongoDB collection stats",
+						"description": "Stats for MongoDB collections"
 					}
 				},
 				"stats": {
@@ -960,6 +968,21 @@
 					"usedHeapSize": "Used heap size",
 					"totalHeapSize": "Total heap size",
 					"osMemoryLimit": "OS memory limit"
+				},
+				"mongoDBStats": {
+					"readyState": "Ready state",
+					"host": "Host",
+					"port": "Port",
+					"dbName": "Database name",
+					"storageSize": "Storage size"
+				},
+				"mongoDBCollectionStats": {
+					"documents": "Documents: {{count}}",
+					"bucketCount": "Bucket count: {{count}}",
+					"storageSize": "Storage size: {{size}}",
+					"indexSize": "Index size: {{size}}",
+					"totalSize": "Total size: {{size}}",
+					"dbUsageTooltip": "{{percentage}}% of DB storage"
 				},
 				"gauges": {
 					"heapAllocation": "Heap allocation",

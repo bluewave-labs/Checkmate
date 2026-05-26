@@ -9,6 +9,7 @@ import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useGet } from "@/Hooks/UseApi";
 import type { Diagnostics } from "@/Types/Diagnostics";
+import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 
 export const TabDiagnostics = () => {
 	const theme = useTheme();
@@ -21,9 +22,9 @@ export const TabDiagnostics = () => {
 	} = useGet<Diagnostics>("/diagnostic/system", {}, { refreshInterval: 5000 });
 
 	return (
-		<Stack gap={theme.spacing(12)}>
-			<Stack gap={theme.spacing(4)}>
-				<Stack gap={theme.spacing(1)}>
+		<Stack gap={theme.spacing(LAYOUT.XL)}>
+			<Stack gap={theme.spacing(LAYOUT.XS)}>
+				<Stack gap={theme.spacing(SPACING.SM)}>
 					<Typography
 						variant="eyebrow"
 						color={theme.palette.text.secondary}
@@ -36,8 +37,8 @@ export const TabDiagnostics = () => {
 				</Stack>
 				<Stats diagnostics={diagnostics} />
 			</Stack>
-			<Stack gap={theme.spacing(4)}>
-				<Stack gap={theme.spacing(1)}>
+			<Stack gap={theme.spacing(LAYOUT.XS)}>
+				<Stack gap={theme.spacing(SPACING.SM)}>
 					<Typography
 						variant="eyebrow"
 						color={theme.palette.text.secondary}
@@ -50,27 +51,27 @@ export const TabDiagnostics = () => {
 				</Stack>
 				<StatGauges diagnostics={diagnostics} />
 			</Stack>
-			<Stack gap={theme.spacing(4)}>
+			<Stack gap={theme.spacing(LAYOUT.XS)}>
 				<Typography
 					variant="eyebrow"
 					color={theme.palette.text.secondary}
 				>
-					{t("MongoDB Stats")}
+					{t("pages.logs.diagnostics.sections.mongoDBStats.title")}
 				</Typography>
 				<Typography color={theme.palette.text.secondary}>
-					{t("Information about MongoDB")}
+					{t("pages.logs.diagnostics.sections.mongoDBStats.description")}
 				</Typography>
 				<MongoStats diagnostics={diagnostics} />
 			</Stack>
-			<Stack gap={theme.spacing(4)}>
+			<Stack gap={theme.spacing(LAYOUT.XS)}>
 				<Typography
 					variant="eyebrow"
 					color={theme.palette.text.secondary}
 				>
-					{t("MongoDB Collection Stats")}
+					{t("pages.logs.diagnostics.sections.mongoDBCollectionStats.title")}
 				</Typography>
 				<Typography color={theme.palette.text.secondary}>
-					{t("Information about Collections")}
+					{t("pages.logs.diagnostics.sections.mongoDBCollectionStats.description")}
 				</Typography>
 				<MongoCollectionStats diagnostics={diagnostics} />
 			</Stack>
