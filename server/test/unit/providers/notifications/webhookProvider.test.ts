@@ -57,6 +57,33 @@ describe("WebhookProvider", () => {
 			expect(payload.monitor.id).toBe("mon-1");
 		});
 
+		it("adds a Basic Authorization header when basic auth is configured", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(
+				makeNotification({
+					webhookAuthType: "basic",
+					webhookUsername: "checkmate",
+					webhookPassword: "secret",
+				}) as any,
+				makeMessage()
+			);
+
+			expect(mockGotPost.mock.calls[0][1].headers.Authorization).toBe("Basic Y2hlY2ttYXRlOnNlY3JldA==");
+		});
+
+		it("adds a Bearer Authorization header when bearer auth is configured", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(
+				makeNotification({
+					webhookAuthType: "bearer",
+					webhookToken: "token-123",
+				}) as any,
+				makeMessage()
+			);
+
+			expect(mockGotPost.mock.calls[0][1].headers.Authorization).toBe("Bearer token-123");
+		});
+
 		it("returns false when address is missing", async () => {
 			expect(await createProvider().provider.sendMessage(makeNotification({ address: "" }) as any, makeMessage())).toBe(false);
 		});

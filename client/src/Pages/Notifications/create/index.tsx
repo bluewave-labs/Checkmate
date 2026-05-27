@@ -46,6 +46,7 @@ const NotificationsCreatePage = () => {
 	}, [defaults, reset]);
 
 	const watchedType = watch("type");
+	const watchedWebhookAuthType = watch("webhookAuthType");
 
 	useEffect(() => {
 		clearErrors();
@@ -174,6 +175,114 @@ const NotificationsCreatePage = () => {
 						}
 					/>
 				)}
+			{watchedType === "webhook" && (
+				<ConfigBox
+					title={t("pages.notifications.form.webhookAuth.title", "Webhook authentication")}
+					subtitle={t(
+						"pages.notifications.form.webhookAuth.description",
+						"Optionally add an Authorization header when Checkmate sends webhook notifications."
+					)}
+					rightContent={
+						<Stack spacing={theme.spacing(8)}>
+							<Controller
+								name="webhookAuthType"
+								control={control}
+								defaultValue={"webhookAuthType" in defaults ? defaults.webhookAuthType : "none"}
+								render={({ field, fieldState }) => (
+									<Select
+										value={field.value ?? "none"}
+										fieldLabel={t(
+											"pages.notifications.form.webhookAuth.optionAuthType",
+											"Authentication type"
+										)}
+										error={!!fieldState.error}
+										onChange={field.onChange}
+									>
+										<MenuItem value="none">
+											<Typography>{t("pages.notifications.form.webhookAuth.optionNone", "None")}</Typography>
+										</MenuItem>
+										<MenuItem value="basic">
+											<Typography>{t("pages.notifications.form.webhookAuth.optionBasic", "Basic Auth")}</Typography>
+										</MenuItem>
+										<MenuItem value="bearer">
+											<Typography>{t("pages.notifications.form.webhookAuth.optionBearer", "Bearer Token")}</Typography>
+										</MenuItem>
+									</Select>
+								)}
+							/>
+							{watchedWebhookAuthType === "basic" && (
+								<>
+									<Controller
+										name="webhookUsername"
+										control={control}
+										defaultValue={"webhookUsername" in defaults ? defaults.webhookUsername : ""}
+										render={({ field, fieldState }) => (
+											<TextField
+												{...field}
+												type="text"
+												fieldLabel={t(
+													"pages.notifications.form.webhookAuth.optionUsername",
+													"Username"
+												)}
+												placeholder={t(
+													"pages.notifications.form.webhookAuth.placeholderUsername",
+													"username"
+												)}
+												fullWidth
+												error={!!fieldState.error}
+												helperText={fieldState.error?.message ?? ""}
+											/>
+										)}
+									/>
+									<Controller
+										name="webhookPassword"
+										control={control}
+										defaultValue={"webhookPassword" in defaults ? defaults.webhookPassword : ""}
+										render={({ field, fieldState }) => (
+											<TextField
+												{...field}
+												type="password"
+												fieldLabel={t(
+													"pages.notifications.form.webhookAuth.optionPassword",
+													"Password"
+												)}
+												placeholder={t(
+													"pages.notifications.form.webhookAuth.placeholderPassword",
+													"password"
+												)}
+												fullWidth
+												error={!!fieldState.error}
+												helperText={fieldState.error?.message ?? ""}
+											/>
+										)}
+									/>
+								</>
+							)}
+							{watchedWebhookAuthType === "bearer" && (
+								<Controller
+									name="webhookToken"
+									control={control}
+									defaultValue={"webhookToken" in defaults ? defaults.webhookToken : ""}
+									render={({ field, fieldState }) => (
+										<TextField
+											{...field}
+											type="password"
+											fieldLabel={t("pages.notifications.form.webhookAuth.optionToken", "Token")}
+											placeholder={t(
+												"pages.notifications.form.webhookAuth.placeholderToken",
+												"your_token"
+											)}
+											fullWidth
+											error={!!fieldState.error}
+											helperText={fieldState.error?.message ?? ""}
+										/>
+									)}
+								/>
+							)}
+						</Stack>
+					}
+				/>
+			)}
 			{watchedType === "telegram" && (
 				<ConfigBox
 					title={t("pages.notifications.form.telegram.title")}

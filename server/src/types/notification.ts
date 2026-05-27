@@ -19,6 +19,10 @@ export interface Notification {
 	type: NotificationChannel;
 	notificationName: string;
 	address?: string;
+	webhookAuthType?: "none" | "basic" | "bearer";
+	webhookUsername?: string;
+	webhookPassword?: string;
+	webhookToken?: string;
 	phone?: string;
 	homeserverUrl?: string;
 	roomId?: string;
