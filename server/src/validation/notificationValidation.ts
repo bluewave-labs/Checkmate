@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const webhookAuthTypeSchema = z.enum(["none", "basic", "bearer"]);
+
 //****************************************
 // Notification Validations
 //****************************************
@@ -19,9 +21,38 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		notificationName: z.string().min(1, "Notification name is required"),
 		type: z.literal("webhook"),
 		address: z.url({ message: "Please enter a valid Webhook URL" }),
+		authType: webhookAuthTypeSchema,
+		authUsername: z.union([z.string(), z.literal("")]).optional(),
+		authPassword: z.union([z.string(), z.literal("")]).optional(),
+		authToken: z.union([z.string(), z.literal("")]).optional(),
 		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
 		roomId: z.union([z.string(), z.literal("")]).optional(),
 		accessToken: z.union([z.string(), z.literal("")]).optional(),
+	}).superRefine((data, ctx) => {
+		if (data.authType === "basic") {
+			if (!data.authUsername?.trim()) {
+				ctx.addIssue({
+					code: "custom",
+					path: ["authUsername"],
+					message: "Username is required",
+				});
+			}
+			if (!data.authPassword?.trim()) {
+				ctx.addIssue({
+					code: "custom",
+					path: ["authPassword"],
+					message: "Password is required",
+				});
+			}
+		}
+
+		if (data.authType === "bearer" && !data.authToken?.trim()) {
+			ctx.addIssue({
+				code: "custom",
+				path: ["authToken"],
+				message: "Token is required",
+			});
+		}
 	}),
 	// Slack notification
 	z.object({

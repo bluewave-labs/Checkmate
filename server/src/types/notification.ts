@@ -11,6 +11,8 @@ export const NotificationChannels = [
 	"twilio",
 ] as const;
 export type NotificationChannel = (typeof NotificationChannels)[number];
+export const WebhookAuthTypes = ["none", "basic", "bearer"] as const;
+export type WebhookAuthType = (typeof WebhookAuthTypes)[number];
 
 export interface Notification {
 	id: string;
@@ -19,6 +21,10 @@ export interface Notification {
 	type: NotificationChannel;
 	notificationName: string;
 	address?: string;
+	authType?: WebhookAuthType;
+	authUsername?: string;
+	authPassword?: string;
+	authToken?: string;
 	phone?: string;
 	homeserverUrl?: string;
 	roomId?: string;

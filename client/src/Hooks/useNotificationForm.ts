@@ -44,6 +44,10 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 			type: "webhook",
 			notificationName: data.notificationName || "",
 			address: data.address || "",
+			authType: data.authType || "none",
+			authUsername: data.authUsername || "",
+			authPassword: data.authPassword || "",
+			authToken: data.authToken || "",
 		};
 	}
 	if (data?.type === "pager_duty") {

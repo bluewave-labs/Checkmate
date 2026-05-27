@@ -1059,6 +1059,22 @@
 					"placeholder": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
 					"title": "集成密钥"
 				},
+				"webhookAuth": {
+					"title": "Webhook 璁よ瘉",
+					"description": "鍙€夊湴涓?webhook 璇锋眰闄勫姞 Authorization 璇锋眰澶淬€?",
+					"optionAuthType": "璁よ瘉鏂瑰紡",
+					"optionUsername": "鐢ㄦ埛鍚?",
+					"optionPassword": "瀵嗙爜",
+					"optionToken": "Bearer Token",
+					"placeholderUsername": "webhook-user",
+					"placeholderPassword": "璇疯緭鍏ュ瘑鐮?",
+					"placeholderToken": "璇疯緭鍏?Bearer Token",
+					"types": {
+						"none": "鏃?",
+						"basic": "Basic Auth",
+						"bearer": "Bearer Token"
+					}
+				},
 				"roomId": {
 					"optionRoomId": "房间 ID",
 					"placeholder": "!abcdefg:matrix.org"

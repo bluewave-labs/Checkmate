@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const webhookAuthTypeSchema = z.enum(["none", "basic", "bearer"]);
+
 const baseSchema = z.object({
 	notificationName: z
 		.string()
@@ -28,6 +30,35 @@ const discordSchema = baseSchema.extend({
 const webhookSchema = baseSchema.extend({
 	type: z.literal("webhook"),
 	address: z.string().min(1, "Webhook URL is required").url("Please enter a valid URL"),
+	authType: webhookAuthTypeSchema,
+	authUsername: z.string().optional(),
+	authPassword: z.string().optional(),
+	authToken: z.string().optional(),
+}).superRefine((data, ctx) => {
+	if (data.authType === "basic") {
+		if (!data.authUsername?.trim()) {
+			ctx.addIssue({
+				code: "custom",
+				path: ["authUsername"],
+				message: "Username is required",
+			});
+		}
+		if (!data.authPassword?.trim()) {
+			ctx.addIssue({
+				code: "custom",
+				path: ["authPassword"],
+				message: "Password is required",
+			});
+		}
+	}
+
+	if (data.authType === "bearer" && !data.authToken?.trim()) {
+		ctx.addIssue({
+			code: "custom",
+			path: ["authToken"],
+			message: "Token is required",
+		});
+	}
 });
 
 const pagerDutySchema = baseSchema.extend({

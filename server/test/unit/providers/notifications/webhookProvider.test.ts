@@ -29,6 +29,22 @@ describe("WebhookProvider", () => {
 			expect(await createProvider().provider.sendTestAlert(makeNotification())).toBe(true);
 		});
 
+		it("uses webhook auth headers for test alerts", async () => {
+			const { provider } = createProvider();
+			await provider.sendTestAlert(
+				makeNotification({
+					authType: "bearer",
+					authToken: "token-123",
+				})
+			);
+
+			expect(mockGotPost.mock.calls[0][1].headers).toEqual(
+				expect.objectContaining({
+					Authorization: "Bearer token-123",
+				})
+			);
+		});
+
 		it("returns false when address is missing", async () => {
 			expect(await createProvider().provider.sendTestAlert(makeNotification({ address: "" }))).toBe(false);
 		});
@@ -55,6 +71,41 @@ describe("WebhookProvider", () => {
 			expect(payload.text).toContain("Monitor Down");
 			expect(payload.severity).toBe("critical");
 			expect(payload.monitor.id).toBe("mon-1");
+		});
+
+		it("adds a Basic Authorization header when configured", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(
+				makeNotification({
+					authType: "basic",
+					authUsername: "alice",
+					authPassword: "secret",
+				}) as any,
+				makeMessage()
+			);
+
+			expect(mockGotPost.mock.calls[0][1].headers).toEqual(
+				expect.objectContaining({
+					Authorization: `Basic ${Buffer.from("alice:secret").toString("base64")}`,
+				})
+			);
+		});
+
+		it("adds a Bearer Authorization header when configured", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(
+				makeNotification({
+					authType: "bearer",
+					authToken: "token-123",
+				}) as any,
+				makeMessage()
+			);
+
+			expect(mockGotPost.mock.calls[0][1].headers).toEqual(
+				expect.objectContaining({
+					Authorization: "Bearer token-123",
+				})
+			);
 		});
 
 		it("returns false when address is missing", async () => {

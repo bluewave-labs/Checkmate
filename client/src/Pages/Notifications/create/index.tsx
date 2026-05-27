@@ -13,9 +13,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useGet, usePost, usePatch } from "@/Hooks/UseApi";
 import { useNotificationForm } from "@/Hooks/useNotificationForm";
 import type { NotificationFormData } from "@/Validation/notifications";
-import type { Notification } from "@/Types/Notification";
+import { NotificationChannels, WebhookAuthTypes, type Notification } from "@/Types/Notification";
 import { useTranslation } from "react-i18next";
-import { NotificationChannels } from "@/Types/Notification";
 
 const NotificationsCreatePage = () => {
 	const { t } = useTranslation();
@@ -46,10 +45,13 @@ const NotificationsCreatePage = () => {
 	}, [defaults, reset]);
 
 	const watchedType = watch("type");
+	const watchedValues = watch();
+	const watchedAuthType =
+		watchedType === "webhook" && "authType" in watchedValues ? watchedValues.authType : "none";
 
 	useEffect(() => {
 		clearErrors();
-	}, [watchedType, clearErrors]);
+	}, [watchedType, watchedAuthType, clearErrors]);
 
 	const addressConfig = useMemo(() => {
 		if (watchedType === "pager_duty") {
@@ -174,6 +176,104 @@ const NotificationsCreatePage = () => {
 						}
 					/>
 				)}
+			{watchedType === "webhook" && (
+				<ConfigBox
+					title={t("pages.notifications.form.webhookAuth.title")}
+					subtitle={t("pages.notifications.form.webhookAuth.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(8)}>
+							<Controller
+								name="authType"
+								control={control}
+								defaultValue={"authType" in defaults ? defaults.authType : "none"}
+								render={({ field, fieldState }) => (
+									<Select
+										value={field.value}
+										fieldLabel={t("pages.notifications.form.webhookAuth.optionAuthType")}
+										error={!!fieldState.error}
+										onChange={field.onChange}
+									>
+										{WebhookAuthTypes.map((authType) => (
+											<MenuItem
+												key={authType}
+												value={authType}
+											>
+												<Typography textTransform="capitalize">
+													{t(`pages.notifications.form.webhookAuth.types.${authType}`)}
+												</Typography>
+											</MenuItem>
+										))}
+									</Select>
+								)}
+							/>
+							{watchedAuthType === "basic" && (
+								<>
+									<Controller
+										name="authUsername"
+										control={control}
+										defaultValue={"authUsername" in defaults ? defaults.authUsername : ""}
+										render={({ field, fieldState }) => (
+											<TextField
+												{...field}
+												type="text"
+												fieldLabel={t(
+													"pages.notifications.form.webhookAuth.optionUsername"
+												)}
+												placeholder={t(
+													"pages.notifications.form.webhookAuth.placeholderUsername"
+												)}
+												fullWidth
+												error={!!fieldState.error}
+												helperText={fieldState.error?.message ?? ""}
+											/>
+										)}
+									/>
+									<Controller
+										name="authPassword"
+										control={control}
+										defaultValue={"authPassword" in defaults ? defaults.authPassword : ""}
+										render={({ field, fieldState }) => (
+											<TextField
+												{...field}
+												type="password"
+												fieldLabel={t(
+													"pages.notifications.form.webhookAuth.optionPassword"
+												)}
+												placeholder={t(
+													"pages.notifications.form.webhookAuth.placeholderPassword"
+												)}
+												fullWidth
+												error={!!fieldState.error}
+												helperText={fieldState.error?.message ?? ""}
+											/>
+										)}
+									/>
+								</>
+							)}
+							{watchedAuthType === "bearer" && (
+								<Controller
+									name="authToken"
+									control={control}
+									defaultValue={"authToken" in defaults ? defaults.authToken : ""}
+									render={({ field, fieldState }) => (
+										<TextField
+											{...field}
+											type="password"
+											fieldLabel={t("pages.notifications.form.webhookAuth.optionToken")}
+											placeholder={t(
+												"pages.notifications.form.webhookAuth.placeholderToken"
+											)}
+											fullWidth
+											error={!!fieldState.error}
+											helperText={fieldState.error?.message ?? ""}
+										/>
+									)}
+								/>
+							)}
+						</Stack>
+					}
+				/>
+			)}
 			{watchedType === "telegram" && (
 				<ConfigBox
 					title={t("pages.notifications.form.telegram.title")}
