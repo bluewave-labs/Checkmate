@@ -47,7 +47,7 @@ import {
 } from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
 import type { Tag } from "@/Types/Tag";
-import type { MonitorFormData } from "@/Validation/monitor";
+import { monitorFieldsByType, type MonitorFormData } from "@/Validation/monitor";
 
 interface GeneralSettingsConfig {
 	urlLabel: string;
@@ -218,30 +218,31 @@ const getGeneralSettingsConfig = (
 const hasAdvancedStep = (type: MonitorType): boolean =>
 	type === "http" || type === "grpc" || type === "websocket" || supportsGeoCheck(type);
 
-// Fields validated before advancing past each wizard step (uptime create only).
-const STEP_FIELDS: FieldPath<MonitorFormData>[][] = [
-	[
-		"type",
-		"url",
-		"name",
-		"port",
-		"gameId",
-		"grpcServiceName",
-		"dnsServer",
-		"dnsRecordType",
-	],
-	["interval", "statusWindowSize", "statusWindowThreshold", "notifications", "tags"],
-	[
-		"ignoreTlsErrors",
-		"useAdvancedMatching",
-		"matchMethod",
-		"expectedValue",
-		"jsonPath",
-		"geoCheckEnabled",
-		"geoCheckLocations",
-		"geoCheckInterval",
-	],
-];
+// The wizard step on which each field is validated. Fields not listed default
+// to step 0, so a field added to the schema is validated by default rather than
+// silently skipped. Step membership is the only thing hardcoded here; the field
+// set itself is derived from the schema via `monitorFieldsByType`.
+const FIELD_STEP: Record<string, number> = {
+	interval: 1,
+	statusWindowSize: 1,
+	statusWindowThreshold: 1,
+	notifications: 1,
+	tags: 1,
+	ignoreTlsErrors: 2,
+	useAdvancedMatching: 2,
+	matchMethod: 2,
+	expectedValue: 2,
+	jsonPath: 2,
+	geoCheckEnabled: 2,
+	geoCheckLocations: 2,
+	geoCheckInterval: 2,
+};
+
+// Exactly the selected type's fields that belong to the given step.
+const stepFieldsFor = (type: MonitorType, step: number): FieldPath<MonitorFormData>[] =>
+	(monitorFieldsByType[type] ?? []).filter(
+		(field) => (FIELD_STEP[field] ?? 0) === step
+	) as FieldPath<MonitorFormData>[];
 
 const CreateMonitorPage = () => {
 	const theme = useTheme();
@@ -304,7 +305,7 @@ const CreateMonitorPage = () => {
 	const totalSteps = hasAdvancedStep(watchedType) ? 3 : 2;
 
 	const handleNext = async () => {
-		const isValid = await trigger(STEP_FIELDS[currentStep]);
+		const isValid = await trigger(stepFieldsFor(watchedType, currentStep));
 		if (isValid) {
 			setCurrentStep((step) => step + 1);
 		}

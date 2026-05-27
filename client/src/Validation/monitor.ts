@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { GeoContinents } from "@/Types/GeoCheck";
-import { DnsRecordTypes, PageSpeedStrategies } from "@/Types/Monitor";
+import { DnsRecordTypes, PageSpeedStrategies, type MonitorType } from "@/Types/Monitor";
 
 // URL schema with custom error message
 const urlSchema = z.url({ message: "Please enter a valid URL" });
@@ -163,6 +163,16 @@ export const monitorSchema = z.discriminatedUnion("type", [
 ]);
 
 export type MonitorFormData = z.infer<typeof monitorSchema>;
+
+// Field names present in each monitor type's schema, derived from the schema
+// itself. Consumers (e.g. the create wizard's per-step validation) should read
+// this rather than hardcoding field lists, so renames/additions stay in sync.
+export const monitorFieldsByType = Object.fromEntries(
+	monitorSchema.options.map((option) => [
+		option.shape.type.value,
+		Object.keys(option.shape),
+	])
+) as Record<MonitorType, string[]>;
 
 // Type-specific schemas exported for individual use
 export {
