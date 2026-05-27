@@ -33,6 +33,7 @@ export * from "@/service/infrastructure/notificationProviders/webhook.js";
 export * from "@/service/infrastructure/notificationProviders/telegram.js";
 export * from "@/service/infrastructure/notificationProviders/pushover.js";
 export * from "@/service/infrastructure/notificationProviders/twilio.js";
+export * from "@/service/infrastructure/notificationProviders/ntfy.js";
 
 // System services
 export * from "@/service/system/settingsService.js";

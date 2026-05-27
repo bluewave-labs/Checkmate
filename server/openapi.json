@@ -392,6 +392,12 @@
 							"type": "string"
 						}
 					},
+					"tags": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
 					"secret": {
 						"type": "string"
 					},
@@ -469,6 +475,7 @@
 					"ignoreTlsErrors",
 					"useAdvancedMatching",
 					"notifications",
+					"tags",
 					"cpuAlertThreshold",
 					"memoryAlertThreshold",
 					"diskAlertThreshold",
@@ -545,6 +552,9 @@
 					},
 					{
 						"$ref": "#/components/schemas/TwilioNotification"
+					},
+					{
+						"$ref": "#/components/schemas/NtfyNotification"
 					}
 				],
 				"discriminator": {
@@ -559,7 +569,8 @@
 						"teams": "#/components/schemas/TeamsNotification",
 						"telegram": "#/components/schemas/TelegramNotification",
 						"pushover": "#/components/schemas/PushoverNotification",
-						"twilio": "#/components/schemas/TwilioNotification"
+						"twilio": "#/components/schemas/TwilioNotification",
+						"ntfy": "#/components/schemas/NtfyNotification"
 					}
 				}
 			},
@@ -1002,6 +1013,34 @@
 					"accessToken": "your-auth-token",
 					"phone": "+15551234567",
 					"twilioPhoneNumber": "+15557654321"
+				}
+			},
+			"NtfyNotification": {
+				"type": "object",
+				"properties": {
+					"notificationName": {
+						"type": "string",
+						"minLength": 1
+					},
+					"type": {
+						"type": "string",
+						"enum": ["ntfy"]
+					},
+					"address": {
+						"type": "string",
+						"format": "uri"
+					},
+					"topic": {
+						"type": "string",
+						"minLength": 1
+					}
+				},
+				"required": ["notificationName", "type", "address", "topic"],
+				"example": {
+					"notificationName": "ntfy topic",
+					"type": "ntfy",
+					"address": "https://ntfy.sh",
+					"topic": "checkmate-alerts"
 				}
 			}
 		},
@@ -2361,6 +2400,16 @@
 									},
 									"profilePicture": {
 										"type": "string"
+									},
+									"password": {
+										"type": "string",
+										"minLength": 8,
+										"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/])[A-Za-z0-9!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/]+$"
+									},
+									"newPassword": {
+										"type": "string",
+										"minLength": 8,
+										"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/])[A-Za-z0-9!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/]+$"
 									},
 									"profileImage": {
 										"type": "string",
@@ -5207,7 +5256,8 @@
 										"type": "array",
 										"items": {
 											"type": "string"
-										}
+										},
+										"minItems": 1
 									},
 									"duration": {
 										"type": "number"
@@ -5478,6 +5528,24 @@
 						"required": false,
 						"name": "filter",
 						"in": "query"
+					},
+					{
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							]
+						},
+						"required": false,
+						"name": "tags",
+						"in": "query"
 					}
 				],
 				"responses": {
@@ -5670,6 +5738,24 @@
 						},
 						"required": false,
 						"name": "type",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							]
+						},
+						"required": false,
+						"name": "tags",
 						"in": "query"
 					},
 					{
@@ -6924,6 +7010,12 @@
 											"type": "string"
 										}
 									},
+									"tags": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
 									"secret": {
 										"type": "string"
 									},
@@ -7586,6 +7678,13 @@
 													},
 													"default": []
 												},
+												"tags": {
+													"type": "array",
+													"items": {
+														"type": "string"
+													},
+													"default": []
+												},
 												"secret": {
 													"type": "string"
 												},
@@ -8099,6 +8198,12 @@
 										"type": "number"
 									},
 									"notifications": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"tags": {
 										"type": "array",
 										"items": {
 											"type": "string"
