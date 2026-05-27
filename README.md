@@ -58,6 +58,8 @@ Usage instructions can be found [here](https://checkmate.so/docs).
 
 See installation instructions in [Checkmate documentation portal](https://checkmate.so/docs). 
 
+If you prefer to run Checkmate without Docker, see the [source installation guide](./docs/source-installation.md).
+
 Alternatively, you can also use [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (South Africa), [Cloudzy](https://cloudzy.com/marketplace/checkmate) or [Pikapods](https://www.pikapods.com/) to quickly spin off a Checkmate instance. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
 
 ### Using a Custom CA
@@ -165,4 +167,3 @@ Here's how you can contribute:
 </a>
 
 [![Star History Chart](https://api.star-history.com/svg?repos=bluewave-labs/checkmate&type=Date)](https://star-history.com/#bluewave-labs/Checkmate&Date)
-
