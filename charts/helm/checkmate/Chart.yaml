@@ -4,3 +4,22 @@ description: A Helm chart for Checkmate App
 type: application
 version: 0.1.0
 appVersion: "2.3"
+dependencies:
+  - name: app-template
+    alias: client
+    version: 4.4.0
+    repository: https://bjw-s-labs.github.io/helm-charts
+    condition: client.enabled
+  - name: app-template
+    alias: server
+    version: 4.4.0
+    repository: https://bjw-s-labs.github.io/helm-charts
+    condition: server.enabled
+  - name: mongodb
+    version: 19.0.3
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: mongodb.enabled
+  - name: redis
+    version: 24.1.2
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: redis.enabled

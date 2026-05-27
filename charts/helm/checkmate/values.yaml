@@ -1,49 +1,140 @@
 client:
-  image: ghcr.io/bluewave-labs/checkmate-client:v3.2.0
-  port: 80
-  protocol: http
+  enabled: true
+  global:
+    nameOverride: client
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/bluewave-labs/checkmate-client
+            tag: v3.2.0
+          env:
+            UPTIME_APP_API_BASE_URL: "http://change_me/api/v1"
+            UPTIME_APP_CLIENT_HOST: "http://change_me"
+  service:
+    main:
+      controller: main
+      ports:
+        http:
+          port: 80
   ingress:
-    enabled: true
-    host: change_me
-    className: nginx
-    annotations: {}
-    # Example annotations for cert-manager:
-    # annotations:
-    #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    tls:
-      enabled: false
-      # secretName: {{ .Release.Name }}-client-tls  # Optional; defaults to <release>-client-tls if omitted
-      # Note: when enabling TLS, also set client.protocol: https and add
-      # a cert-manager issuer annotation (e.g. cert-manager.io/cluster-issuer: "letsencrypt-prod").
-      # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation
+    main:
+      enabled: true
+      className: nginx
+      annotations: {}
+      hosts:
+        - host: change_me
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: main
+                port: http
+      tls: []
+  configMaps:
+    nginx:
+      enabled: true
+      data:
+        default.conf: |
+          server {
+            listen       80;
+            listen  [::]:80;
+
+            server_name _;
+            server_tokens off;
+
+            location /.well-known/acme-challenge/ {
+              root /var/www/certbot;
+            }
+
+            location / {
+              root   /usr/share/nginx/html;
+              index  index.html index.htm;
+              try_files $uri $uri/ /index.html;
+            }
+
+            location /api-docs/ {
+              proxy_pass http://{{ .Release.Name }}-server:52345/api-docs/;
+              proxy_http_version 1.1;
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+            }
+          }
+  persistence:
+    nginx-config:
+      enabled: true
+      type: configMap
+      identifier: nginx
+      globalMounts:
+        - path: /etc/nginx/conf.d/default.conf
+          subPath: default.conf
+  resources: {}
+  affinity: {}
+  tolerations: []
 
 server:
-  image: ghcr.io/bluewave-labs/checkmate-backend:v3.2.0
-  port: 52345
-  protocol: http
+  enabled: true
+  global:
+    nameOverride: server
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/bluewave-labs/checkmate-backend
+            tag: v3.2.0
+          env:
+            CLIENT_HOST: "http://change_me"
+          envFrom:
+            - secretRef:
+                name: checkmate-secrets
+  service:
+    main:
+      controller: main
+      ports:
+        http:
+          port: 52345
   ingress:
+    main:
+      enabled: true
+      className: nginx
+      annotations: {}
+      hosts:
+        - host: change_me
+          paths:
+            - path: /api/v1
+              pathType: Prefix
+              service:
+                identifier: main
+                port: http
+      tls: []
+  resources: {}
+  affinity: {}
+  tolerations: []
+
+mongodb:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false
+  persistence:
     enabled: true
-    host: change_me
-    className: nginx
-    annotations: {}
-    # Example annotations for cert-manager:
-    # annotations:
-    #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    tls:
-      enabled: false
-      # secretName: {{ .Release.Name }}-server-tls  # Optional; defaults to <release>-server-tls if omitted
-      # Note: when enabling TLS, also set server.protocol: https and add
-      # a cert-manager issuer annotation (e.g. cert-manager.io/cluster-issuer: "letsencrypt-prod").
-      # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation
+    size: 5Gi
+    storageClass: ""
 
 redis:
   enabled: false
-  image: redis:7.2
-  port: 6379
-
-mongodb:
-  image: ghcr.io/bluewave-labs/checkmate-mongo:v3.2.0
-  port: 27017
+  architecture: standalone
+  auth:
+    enabled: false
+  master:
+    persistence:
+      enabled: true
+      size: 1Gi
+      storageClass: ""
 
 secrets:
   JWT_SECRET: change_me
@@ -53,18 +144,10 @@ secrets:
 #  SYSTEM_EMAIL_HOST: smtp.example.com
 #  SYSTEM_EMAIL_PORT: "587"
 #  PAGESPEED_API_KEY: change_me
-  DB_CONNECTION_STRING: mongodb://checkmate-mongodb.namespace.svc:27017/uptime_db
-  CLIENT_HOST: change_me
-#  REDIS_HOST: redis
+  DB_CONNECTION_STRING: "mongodb://{{ .Release.Name }}-mongodb:27017/uptime_db"
+  CLIENT_HOST: "{{ .Values.server.controllers.main.containers.main.env.CLIENT_HOST }}"
+#  REDIS_HOST: "{{ .Release.Name }}-redis-master"
 #  REDIS_PORT: "6379"
 #  DB_TYPE: MongoDB
 #  TOKEN_TTL: 99d
 #  REFRESH_TOKEN_TTL: 99d
-
-persistence:
-  mongo:
-    size: 5Gi
-    storageClass: ""
-  redis:
-    size: 1Gi
-    storageClass: ""
