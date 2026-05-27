@@ -80,6 +80,7 @@ export interface IMonitorService {
 	editMonitor(args: { teamId: string; monitorId: string; body: Partial<Monitor> }): Promise<Monitor>;
 	pauseMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 	bulkPauseMonitors(args: { teamId: string; monitorIds: string[]; pause: boolean }): Promise<{ monitors: Monitor[]; failedCount: number }>;
+	checkMonitorNow(args: { teamId: string; monitorId: string }): Promise<Monitor>;
 
 	// delete
 	deleteMonitor(args: { teamId: string; monitorId: string }): Promise<Monitor>;
@@ -464,6 +465,17 @@ export class MonitorService implements IMonitorService {
 			await this.jobQueue.pauseJob(monitor);
 		}
 		return monitor;
+	};
+
+	checkMonitorNow = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
+		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
+		if (!monitor) {
+			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
+		}
+
+		await this.jobQueue.runMonitorNow(monitor);
+
+		return (await this.monitorsRepository.findById(monitorId, teamId)) ?? monitor;
 	};
 
 	bulkPauseMonitors = async ({

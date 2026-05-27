@@ -438,7 +438,8 @@
 					"selectAll": "すべてのモニターを選択",
 					"selectMonitor": "{{name}} を選択",
 					"bulkSelected_one": "{{count}} 個のモニターが選択されました",
-					"bulkSelected_other": "{{count}} 個のモニターが選択されました"
+					"bulkSelected_other": "{{count}} 個のモニターが選択されました",
+					"checkNow": "Check now"
 				},
 				"statBoxes": {
 					"activeFor": "稼働期間",

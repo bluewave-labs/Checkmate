@@ -438,7 +438,8 @@
 					"selectAll": "Chọn tất cả màn hình",
 					"selectMonitor": "Chọn {{name}}",
 					"bulkSelected_one": "Đã chọn {{count}} màn hình",
-					"bulkSelected_other": "Đã chọn {{count}} màn hình"
+					"bulkSelected_other": "Đã chọn {{count}} màn hình",
+					"checkNow": "Check now"
 				},
 				"statBoxes": {
 					"activeFor": "Hoạt động từ",

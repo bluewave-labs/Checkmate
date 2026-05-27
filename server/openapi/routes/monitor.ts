@@ -132,6 +132,16 @@ registry.registerPath({
 });
 
 registry.registerPath({
+	method: "post",
+	path: "/monitors/check/{monitorId}",
+	tags,
+	summary: "Run a monitor check immediately",
+	security: bearer,
+	request: { params: getMonitorByIdParamValidation },
+	responses: { "200": okJson(monitorObject), ...standardErrors },
+});
+
+registry.registerPath({
 	method: "get",
 	path: "/monitors/certificate/{monitorId}",
 	tags,

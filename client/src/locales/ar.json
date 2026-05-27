@@ -438,7 +438,8 @@
 					"selectAll": "تحديد جميع الشاشات",
 					"selectMonitor": "تحديد {{name}}",
 					"bulkSelected_one": "{{count}} شاشة محددة",
-					"bulkSelected_other": "{{count}} شاشات محددة"
+					"bulkSelected_other": "{{count}} شاشات محددة",
+					"checkNow": "Check now"
 				},
 				"statBoxes": {
 					"activeFor": "نشط منذ",

@@ -438,7 +438,8 @@
 					"selectAll": "选择所有监视器",
 					"selectMonitor": "选择 {{name}}",
 					"bulkSelected_one": "已选择 {{count}} 个监视器",
-					"bulkSelected_other": "已选择 {{count}} 个监视器"
+					"bulkSelected_other": "已选择 {{count}} 个监视器",
+					"checkNow": "Check now"
 				},
 				"statBoxes": {
 					"activeFor": "已活跃",

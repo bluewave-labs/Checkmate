@@ -438,7 +438,8 @@
 					"selectAll": "Vybrat všechny monitory",
 					"selectMonitor": "Vybrat {{name}}",
 					"bulkSelected_one": "Vybrán {{count}} monitor",
-					"bulkSelected_other": "Vybráno {{count}} monitorů"
+					"bulkSelected_other": "Vybráno {{count}} monitorů",
+					"checkNow": "Check now"
 				},
 				"statBoxes": {
 					"activeFor": "Aktivní po dobu",

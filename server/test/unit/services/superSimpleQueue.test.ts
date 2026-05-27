@@ -434,6 +434,21 @@ describe("SuperSimpleQueue", () => {
 		});
 	});
 
+	describe("runMonitorNow", () => {
+		it("runs the heartbeat job immediately with the monitor", async () => {
+			const heartbeatJob = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+			const helper = createQueueHelper();
+			(helper.getHeartbeatJob as jest.Mock).mockReturnValue(heartbeatJob);
+			const { queue } = createQueue({ helper });
+			const monitor = makeMonitor();
+
+			await queue.runMonitorNow(monitor);
+
+			expect(helper.getHeartbeatJob).toHaveBeenCalledTimes(1);
+			expect(heartbeatJob).toHaveBeenCalledWith(monitor);
+		});
+	});
+
 	// ── syncGeoJob (via updateJob) ───────────────────────────────────────────
 
 	describe("syncGeoJob (via updateJob)", () => {

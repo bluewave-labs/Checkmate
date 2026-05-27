@@ -392,6 +392,12 @@
 							"type": "string"
 						}
 					},
+					"tags": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
 					"secret": {
 						"type": "string"
 					},
@@ -469,6 +475,7 @@
 					"ignoreTlsErrors",
 					"useAdvancedMatching",
 					"notifications",
+					"tags",
 					"cpuAlertThreshold",
 					"memoryAlertThreshold",
 					"diskAlertThreshold",
@@ -2361,6 +2368,16 @@
 									},
 									"profilePicture": {
 										"type": "string"
+									},
+									"password": {
+										"type": "string",
+										"minLength": 8,
+										"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/])[A-Za-z0-9!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/]+$"
+									},
+									"newPassword": {
+										"type": "string",
+										"minLength": 8,
+										"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/])[A-Za-z0-9!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/]+$"
 									},
 									"profileImage": {
 										"type": "string",
@@ -5207,7 +5224,8 @@
 										"type": "array",
 										"items": {
 											"type": "string"
-										}
+										},
+										"minItems": 1
 									},
 									"duration": {
 										"type": "number"
@@ -5478,6 +5496,24 @@
 						"required": false,
 						"name": "filter",
 						"in": "query"
+					},
+					{
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							]
+						},
+						"required": false,
+						"name": "tags",
+						"in": "query"
 					}
 				],
 				"responses": {
@@ -5670,6 +5706,24 @@
 						},
 						"required": false,
 						"name": "type",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							]
+						},
+						"required": false,
+						"name": "tags",
 						"in": "query"
 					},
 					{
@@ -6572,6 +6626,122 @@
 				}
 			}
 		},
+		"/monitors/check/{monitorId}": {
+			"post": {
+				"tags": ["monitors"],
+				"summary": "Run a monitor check immediately",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "monitorId",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"$ref": "#/components/schemas/Monitor"
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/monitors/certificate/{monitorId}": {
 			"get": {
 				"tags": ["monitors"],
@@ -6919,6 +7089,12 @@
 										"type": "number"
 									},
 									"notifications": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"tags": {
 										"type": "array",
 										"items": {
 											"type": "string"
@@ -7586,6 +7762,13 @@
 													},
 													"default": []
 												},
+												"tags": {
+													"type": "array",
+													"items": {
+														"type": "string"
+													},
+													"default": []
+												},
 												"secret": {
 													"type": "string"
 												},
@@ -8099,6 +8282,12 @@
 										"type": "number"
 									},
 									"notifications": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"tags": {
 										"type": "array",
 										"items": {
 											"type": "string"

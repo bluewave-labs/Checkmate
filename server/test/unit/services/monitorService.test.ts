@@ -62,6 +62,7 @@ const createJobQueueMock = () => ({
 	resumeJob: jest.fn(),
 	pauseJob: jest.fn(),
 	deleteJob: jest.fn(),
+	runMonitorNow: jest.fn(),
 });
 
 const TEAM_ID = "team-1";
@@ -837,6 +838,32 @@ describe("MonitorService", () => {
 			expect(result.isActive).toBe(false);
 			expect(jobQueue.pauseJob).toHaveBeenCalledWith(monitor);
 			expect(jobQueue.resumeJob).not.toHaveBeenCalled();
+		});
+	});
+
+	describe("checkMonitorNow", () => {
+		it("runs a monitor check and returns the refreshed monitor", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const monitor = makeMonitor({ status: "up" });
+			const refreshedMonitor = makeMonitor({ status: "down" });
+			(monitorsRepository.findById as jest.Mock).mockResolvedValueOnce(monitor).mockResolvedValueOnce(refreshedMonitor);
+			const { service, jobQueue } = createService({ monitorsRepository });
+
+			const result = await service.checkMonitorNow({ teamId: TEAM_ID, monitorId: MONITOR_ID });
+
+			expect(jobQueue.runMonitorNow).toHaveBeenCalledWith(monitor);
+			expect(monitorsRepository.findById).toHaveBeenNthCalledWith(1, MONITOR_ID, TEAM_ID);
+			expect(monitorsRepository.findById).toHaveBeenNthCalledWith(2, MONITOR_ID, TEAM_ID);
+			expect(result).toBe(refreshedMonitor);
+		});
+
+		it("throws when monitor is not found", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(null);
+			const { service, jobQueue } = createService({ monitorsRepository });
+
+			await expect(service.checkMonitorNow({ teamId: TEAM_ID, monitorId: MONITOR_ID })).rejects.toThrow(`Monitor with ID ${MONITOR_ID} not found.`);
+			expect(jobQueue.runMonitorNow).not.toHaveBeenCalled();
 		});
 	});
 

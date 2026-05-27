@@ -440,7 +440,8 @@
 					"bulkSelected_one": "{{count}} monitor selected",
 					"bulkSelected_other": "{{count}} monitors selected",
 					"selectAll": "Select all monitors",
-					"selectMonitor": "Select {{name}}"
+					"selectMonitor": "Select {{name}}",
+					"checkNow": "Check now"
 				},
 				"bulkPause": {
 					"alreadyPaused_one": "The selected monitor is already paused",
