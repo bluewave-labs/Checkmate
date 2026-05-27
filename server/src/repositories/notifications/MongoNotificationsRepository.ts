@@ -74,12 +74,27 @@ class MongoNotificationsRepository implements INotificationsRepository {
 	};
 
 	updateById = async (id: string, teamId: string, patch: Partial<Notification>): Promise<Notification> => {
+		const $set: Record<string, unknown> = {};
+		const $unset: Record<string, 1> = {};
+
+		for (const [key, value] of Object.entries(patch)) {
+			if (value === undefined) {
+				$unset[key] = 1;
+			} else {
+				$set[key] = value;
+			}
+		}
+
+		const update: Record<string, unknown> = {};
+		if (Object.keys($set).length > 0) update.$set = $set;
+		if (Object.keys($unset).length > 0) update.$unset = $unset;
+
 		const notification = await NotificationModel.findOneAndUpdate(
 			{
 				_id: new mongoose.Types.ObjectId(id),
 				teamId: new mongoose.Types.ObjectId(teamId),
 			},
-			{ $set: patch },
+			update,
 			{ new: true, runValidators: true }
 		);
 		if (!notification) {

@@ -1145,6 +1145,9 @@
 					"placeholderPassword": "Enter password",
 					"optionToken": "Token",
 					"placeholderToken": "Enter bearer token"
+				},
+				"secrets": {
+					"placeholderKeepExisting": "Leave blank to keep existing"
 				}
 			},
 			"table": {

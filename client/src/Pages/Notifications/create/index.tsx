@@ -11,9 +11,12 @@ import { useNavigate } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useGet, usePost, usePatch } from "@/Hooks/UseApi";
+import { useToast } from "@/Hooks/UseToast";
 import { useNotificationForm } from "@/Hooks/useNotificationForm";
 import type { NotificationFormData } from "@/Validation/notifications";
+import { notificationSchema } from "@/Validation/notifications";
 import type { Notification } from "@/Types/Notification";
+import type { ZodIssue } from "zod";
 import { useTranslation } from "react-i18next";
 import { NotificationChannels, WebhookAuthTypes } from "@/Types/Notification";
 
@@ -21,6 +24,7 @@ const NotificationsCreatePage = () => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const navigate = useNavigate();
+	const { toastError } = useToast();
 	const { notificationId } = useParams<{ notificationId: string }>();
 	const isEditMode = Boolean(notificationId);
 
@@ -32,14 +36,17 @@ const NotificationsCreatePage = () => {
 	const { patch, loading: isPatching } = usePatch<NotificationFormData, Notification>();
 	const { post: testPost, loading: isTesting } = usePost<NotificationFormData, void>();
 
-	const { schema, defaults } = useNotificationForm({ data: existingNotification });
+	const { schema, defaults } = useNotificationForm({
+		data: existingNotification,
+		isEditMode,
+	});
 
 	const form = useForm<NotificationFormData>({
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
 
-	const { control, watch, reset, handleSubmit, clearErrors, trigger, getValues } = form;
+	const { control, watch, reset, handleSubmit, clearErrors, getValues } = form;
 
 	useEffect(() => {
 		reset(defaults);
@@ -47,6 +54,10 @@ const NotificationsCreatePage = () => {
 
 	const watchedType = watch("type");
 	const watchedAuthType = watch("authType");
+
+	const keepExistingHint = isEditMode
+		? t("pages.notifications.form.secrets.placeholderKeepExisting")
+		: undefined;
 
 	useEffect(() => {
 		clearErrors();
@@ -87,9 +98,24 @@ const NotificationsCreatePage = () => {
 	};
 
 	const handleTest = async () => {
-		const isValid = await trigger();
-		if (!isValid) return;
 		const data = getValues();
+		const result = notificationSchema.safeParse(data);
+		if (!result.success) {
+			toastError("Please provide all required credentials to test this notification.");
+			result.error.issues.forEach((err: ZodIssue, index: number) => {
+				if (err.path.length > 0) {
+					form.setError(
+						err.path[0] as keyof NotificationFormData,
+						{
+							type: "manual",
+							message: err.message,
+						},
+						{ shouldFocus: index === 0 }
+					);
+				}
+			});
+			return;
+		}
 		await testPost("/notifications/test", data);
 	};
 
@@ -239,9 +265,10 @@ const NotificationsCreatePage = () => {
 												fieldLabel={t(
 													"pages.notifications.form.webhookAuth.optionPassword"
 												)}
-												placeholder={t(
-													"pages.notifications.form.webhookAuth.placeholderPassword"
-												)}
+												placeholder={
+													keepExistingHint ??
+													t("pages.notifications.form.webhookAuth.placeholderPassword")
+												}
 												fullWidth
 												error={!!fieldState.error}
 												helperText={fieldState.error?.message ?? ""}
@@ -260,9 +287,10 @@ const NotificationsCreatePage = () => {
 											{...field}
 											type="password"
 											fieldLabel={t("pages.notifications.form.webhookAuth.optionToken")}
-											placeholder={t(
-												"pages.notifications.form.webhookAuth.placeholderToken"
-											)}
+											placeholder={
+												keepExistingHint ??
+												t("pages.notifications.form.webhookAuth.placeholderToken")
+											}
 											fullWidth
 											error={!!fieldState.error}
 											helperText={fieldState.error?.message ?? ""}
@@ -289,9 +317,10 @@ const NotificationsCreatePage = () => {
 										{...field}
 										type="text"
 										fieldLabel={t("pages.notifications.form.telegram.optionBotToken")}
-										placeholder={t(
-											"pages.notifications.form.telegram.placeholderBotToken"
-										)}
+										placeholder={
+											keepExistingHint ??
+											t("pages.notifications.form.telegram.placeholderBotToken")
+										}
 										fullWidth
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message ?? ""}
@@ -332,9 +361,10 @@ const NotificationsCreatePage = () => {
 										{...field}
 										type="text"
 										fieldLabel={t("pages.notifications.form.pushover.optionAppToken")}
-										placeholder={t(
-											"pages.notifications.form.pushover.placeholderAppToken"
-										)}
+										placeholder={
+											keepExistingHint ??
+											t("pages.notifications.form.pushover.placeholderAppToken")
+										}
 										fullWidth
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message ?? ""}
@@ -396,9 +426,10 @@ const NotificationsCreatePage = () => {
 										{...field}
 										type="text"
 										fieldLabel={t("pages.notifications.form.twilio.optionAuthToken")}
-										placeholder={t(
-											"pages.notifications.form.twilio.placeholderAuthToken"
-										)}
+										placeholder={
+											keepExistingHint ??
+											t("pages.notifications.form.twilio.placeholderAuthToken")
+										}
 										fullWidth
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message ?? ""}
@@ -494,7 +525,10 @@ const NotificationsCreatePage = () => {
 										fieldLabel={t(
 											"pages.notifications.form.accessToken.optionAccessToken"
 										)}
-										placeholder={t("pages.notifications.form.accessToken.placeholder")}
+										placeholder={
+											keepExistingHint ??
+											t("pages.notifications.form.accessToken.placeholder")
+										}
 										fullWidth
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message ?? ""}

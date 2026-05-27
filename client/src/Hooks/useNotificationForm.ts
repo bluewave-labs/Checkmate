@@ -1,10 +1,11 @@
 import { useMemo } from "react";
-import { notificationSchema } from "@/Validation/notifications";
+import { notificationSchema, editNotificationSchema } from "@/Validation/notifications";
 import type { NotificationFormData } from "@/Validation/notifications";
 import type { Notification } from "@/Types/Notification";
 
 interface UseNotificationFormOptions {
 	data?: Notification | null;
+	isEditMode?: boolean;
 }
 
 function buildDefaults(data: Notification | null): NotificationFormData {
@@ -90,12 +91,15 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 	};
 }
 
-export const useNotificationForm = ({ data = null }: UseNotificationFormOptions = {}) => {
+export const useNotificationForm = ({
+	data = null,
+	isEditMode = false,
+}: UseNotificationFormOptions = {}) => {
 	return useMemo(() => {
 		const defaults = buildDefaults(data);
 		return {
-			schema: notificationSchema,
+			schema: isEditMode ? editNotificationSchema : notificationSchema,
 			defaults,
 		};
-	}, [data]);
+	}, [data, isEditMode]);
 };

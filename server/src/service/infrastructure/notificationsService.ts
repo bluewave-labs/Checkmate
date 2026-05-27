@@ -5,6 +5,7 @@ import { INotificationProvider } from "./notificationProviders/INotificationProv
 import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
 import type { ISettingsService } from "@/service/system/settingsService.js";
 import { ILogger } from "@/utils/logger.js";
+import { AppError } from "@/utils/AppError.js";
 import type { INotificationMessageBuilder } from "@/service/infrastructure/notificationMessageBuilder.js";
 
 export interface INotificationsService {
@@ -209,8 +210,64 @@ export class NotificationsService implements INotificationsService {
 		return await this.notificationsRepository.findByTeamId(teamId);
 	};
 
+	private static readonly SENSITIVE_FIELDS: ReadonlyArray<keyof Notification> = ["accessToken", "authPassword", "authToken"];
+	private static readonly CHANNEL_SPECIFIC_FIELDS: ReadonlyArray<keyof Notification> = [
+		"address",
+		"phone",
+		"homeserverUrl",
+		"roomId",
+		"accessToken",
+		"accountSid",
+		"twilioPhoneNumber",
+		"authType",
+		"authUsername",
+		"authPassword",
+		"authToken",
+	];
+
 	updateById = async (id: string, teamId: string, updateData: Partial<Notification>): Promise<Notification> => {
-		return await this.notificationsRepository.updateById(id, teamId, updateData);
+		const patch: Record<string, unknown> = { ...updateData };
+		const existing = await this.notificationsRepository.findById(id, teamId);
+
+		if (patch.type !== undefined && existing.type !== patch.type) {
+			for (const field of NotificationsService.CHANNEL_SPECIFIC_FIELDS) {
+				if (NotificationsService.SENSITIVE_FIELDS.includes(field)) {
+					if (!updateData[field]) {
+						patch[field] = undefined;
+					}
+				} else {
+					if (!(field in updateData)) {
+						patch[field] = undefined;
+					}
+				}
+			}
+		} else {
+			for (const field of NotificationsService.SENSITIVE_FIELDS) {
+				if (field in patch && !patch[field]) {
+					delete patch[field];
+				}
+			}
+			if (patch.authType !== undefined && existing.authType !== patch.authType) {
+				if (patch.authType === "none") {
+					patch.authUsername = undefined;
+					patch.authPassword = undefined;
+					patch.authToken = undefined;
+				} else if (patch.authType === "basic") {
+					if (!updateData.authUsername || !updateData.authPassword) {
+						throw new AppError({ message: "Username and password are required when switching to Basic Auth", status: 400 });
+					}
+					patch.authToken = undefined;
+				} else if (patch.authType === "bearer") {
+					if (!updateData.authToken) {
+						throw new AppError({ message: "Token is required when switching to Bearer Auth", status: 400 });
+					}
+					patch.authUsername = undefined;
+					patch.authPassword = undefined;
+				}
+			}
+		}
+
+		return await this.notificationsRepository.updateById(id, teamId, patch as Partial<Notification>);
 	};
 
 	deleteById = async (id: string, teamId: string): Promise<Notification> => {

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { WebhookAuthTypes } from "@/Types/Notification";
 
 const baseSchema = z.object({
 	notificationName: z
@@ -28,7 +29,7 @@ const discordSchema = baseSchema.extend({
 const webhookSchema = baseSchema.extend({
 	type: z.literal("webhook"),
 	address: z.string().min(1, "Webhook URL is required").url("Please enter a valid URL"),
-	authType: z.enum(["none", "basic", "bearer"]),
+	authType: z.enum(WebhookAuthTypes),
 	authUsername: z.string().max(256).optional(),
 	authPassword: z.string().max(1024).optional(),
 	authToken: z.string().max(4096).optional(),
@@ -117,4 +118,51 @@ export const notificationSchema = baseNotificationSchema.superRefine((data, ctx)
 	}
 });
 
-export type NotificationFormData = z.infer<typeof notificationSchema>;
+const editMatrixSchema = baseSchema.extend({
+	type: z.literal("matrix"),
+	homeserverUrl: z
+		.string()
+		.min(1, "Homeserver URL is required")
+		.url("Please enter a valid URL"),
+	roomId: z.string().min(1, "Room ID is required"),
+	accessToken: z.string().optional(),
+});
+
+const editTelegramSchema = baseSchema.extend({
+	type: z.literal("telegram"),
+	address: z.string().min(1, "Chat ID is required"),
+	accessToken: z.string().optional(),
+});
+
+const editPushoverSchema = baseSchema.extend({
+	type: z.literal("pushover"),
+	address: z.string().min(1, "User key is required"),
+	accessToken: z.string().optional(),
+});
+
+const editTwilioSchema = baseSchema.extend({
+	type: z.literal("twilio"),
+	accountSid: z.string().min(1, "Account SID is required"),
+	accessToken: z.string().optional(),
+	phone: z.string().min(1, "Recipient phone number is required"),
+	twilioPhoneNumber: z.string().min(1, "Twilio phone number is required"),
+});
+
+const baseEditNotificationSchema = z.discriminatedUnion("type", [
+	emailSchema,
+	slackSchema,
+	discordSchema,
+	webhookSchema,
+	pagerDutySchema,
+	editMatrixSchema,
+	teamsSchema,
+	editTelegramSchema,
+	editPushoverSchema,
+	editTwilioSchema,
+]);
+
+export const editNotificationSchema = baseEditNotificationSchema;
+
+export type NotificationFormData =
+	| z.infer<typeof notificationSchema>
+	| z.infer<typeof editNotificationSchema>;
