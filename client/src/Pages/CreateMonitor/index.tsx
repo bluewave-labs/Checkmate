@@ -249,7 +249,7 @@ const CreateMonitorPage = () => {
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
-	const { control, watch, handleSubmit, clearErrors } = form;
+	const { control, watch, handleSubmit, clearErrors, setValue } = form;
 
 	useEffect(() => {
 		form.reset(defaults);
@@ -259,6 +259,10 @@ const CreateMonitorPage = () => {
 
 	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
 	const watchGeoCheckEnabled = watch("geoCheckEnabled") as boolean;
+
+	const enableAdvancedMatching = () => {
+		setValue("useAdvancedMatching", true, { shouldDirty: true });
+	};
 
 	useEffect(() => {
 		clearErrors();
@@ -1092,6 +1096,10 @@ const CreateMonitorPage = () => {
 											<TextField
 												{...field}
 												value={field.value ?? ""}
+												onChange={(event) => {
+													enableAdvancedMatching();
+													field.onChange(event);
+												}}
 												fieldLabel={t(
 													"pages.createMonitor.form.advanced.option.expectedValue.label"
 												)}
@@ -1108,6 +1116,10 @@ const CreateMonitorPage = () => {
 											<TextField
 												{...field}
 												value={field.value ?? ""}
+												onChange={(event) => {
+													enableAdvancedMatching();
+													field.onChange(event);
+												}}
 												fieldLabel={t(
 													"pages.createMonitor.form.advanced.option.jsonPath.label"
 												)}

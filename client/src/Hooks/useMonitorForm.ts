@@ -21,6 +21,14 @@ const getBaseDefaults = (data?: Monitor | null) => ({
 	geoCheckInterval: data?.geoCheckInterval || 300000,
 });
 
+const hasAdvancedMatchingConfig = (data?: Monitor | null) =>
+	Boolean(
+		data?.useAdvancedMatching ||
+		data?.matchMethod ||
+		data?.expectedValue ||
+		data?.jsonPath
+	);
+
 export const useMonitorForm = ({
 	data = null,
 	defaultType = "http",
@@ -38,7 +46,7 @@ export const useMonitorForm = ({
 					type: "http",
 					url: data?.url || "",
 					ignoreTlsErrors: data?.ignoreTlsErrors || false,
-					useAdvancedMatching: data?.useAdvancedMatching || false,
+					useAdvancedMatching: hasAdvancedMatchingConfig(data),
 					matchMethod: data?.matchMethod || "",
 					expectedValue: data?.expectedValue || "",
 					jsonPath: data?.jsonPath || "",
