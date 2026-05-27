@@ -177,7 +177,10 @@ const NotificationsCreatePage = () => {
 				)}
 			{watchedType === "webhook" && (
 				<ConfigBox
-					title={t("pages.notifications.form.webhookAuth.title", "Webhook authentication")}
+					title={t(
+						"pages.notifications.form.webhookAuth.title",
+						"Webhook authentication"
+					)}
 					subtitle={t(
 						"pages.notifications.form.webhookAuth.description",
 						"Optionally add an Authorization header when Checkmate sends webhook notifications."
@@ -187,7 +190,9 @@ const NotificationsCreatePage = () => {
 							<Controller
 								name="webhookAuthType"
 								control={control}
-								defaultValue={"webhookAuthType" in defaults ? defaults.webhookAuthType : "none"}
+								defaultValue={
+									"webhookAuthType" in defaults ? defaults.webhookAuthType : "none"
+								}
 								render={({ field, fieldState }) => (
 									<Select
 										value={field.value ?? "none"}
@@ -199,13 +204,25 @@ const NotificationsCreatePage = () => {
 										onChange={field.onChange}
 									>
 										<MenuItem value="none">
-											<Typography>{t("pages.notifications.form.webhookAuth.optionNone", "None")}</Typography>
+											<Typography>
+												{t("pages.notifications.form.webhookAuth.optionNone", "None")}
+											</Typography>
 										</MenuItem>
 										<MenuItem value="basic">
-											<Typography>{t("pages.notifications.form.webhookAuth.optionBasic", "Basic Auth")}</Typography>
+											<Typography>
+												{t(
+													"pages.notifications.form.webhookAuth.optionBasic",
+													"Basic Auth"
+												)}
+											</Typography>
 										</MenuItem>
 										<MenuItem value="bearer">
-											<Typography>{t("pages.notifications.form.webhookAuth.optionBearer", "Bearer Token")}</Typography>
+											<Typography>
+												{t(
+													"pages.notifications.form.webhookAuth.optionBearer",
+													"Bearer Token"
+												)}
+											</Typography>
 										</MenuItem>
 									</Select>
 								)}
@@ -215,7 +232,9 @@ const NotificationsCreatePage = () => {
 									<Controller
 										name="webhookUsername"
 										control={control}
-										defaultValue={"webhookUsername" in defaults ? defaults.webhookUsername : ""}
+										defaultValue={
+											"webhookUsername" in defaults ? defaults.webhookUsername : ""
+										}
 										render={({ field, fieldState }) => (
 											<TextField
 												{...field}
@@ -237,7 +256,9 @@ const NotificationsCreatePage = () => {
 									<Controller
 										name="webhookPassword"
 										control={control}
-										defaultValue={"webhookPassword" in defaults ? defaults.webhookPassword : ""}
+										defaultValue={
+											"webhookPassword" in defaults ? defaults.webhookPassword : ""
+										}
 										render={({ field, fieldState }) => (
 											<TextField
 												{...field}
@@ -267,7 +288,10 @@ const NotificationsCreatePage = () => {
 										<TextField
 											{...field}
 											type="password"
-											fieldLabel={t("pages.notifications.form.webhookAuth.optionToken", "Token")}
+											fieldLabel={t(
+												"pages.notifications.form.webhookAuth.optionToken",
+												"Token"
+											)}
 											placeholder={t(
 												"pages.notifications.form.webhookAuth.placeholderToken",
 												"your_token"
