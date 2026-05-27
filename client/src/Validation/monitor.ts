@@ -2,6 +2,11 @@ import { z } from "zod";
 import { GeoContinents } from "@/Types/GeoCheck";
 import { DnsRecordTypes, PageSpeedStrategies, type MonitorType } from "@/Types/Monitor";
 
+// Wizard step a field is validated on. Attached inline to each field below so
+// the grouping lives next to the field definition; unannotated fields default
+// to step 0. Read via `stepFieldsFor`.
+export const monitorStepRegistry = z.registry<{ step: number }>();
+
 // URL schema with custom error message
 const urlSchema = z.url({ message: "Please enter a valid URL" });
 
@@ -12,34 +17,46 @@ const baseSchema = z.object({
 		.min(1, "Monitor name is required")
 		.max(50, "Monitor name must be at most 50 characters"),
 	description: z.string().optional(),
-	interval: z.number().min(15000, "Interval must be at least 15 seconds"),
-	notifications: z.array(z.string()),
-	tags: z.array(z.string()),
+	interval: z
+		.number()
+		.min(15000, "Interval must be at least 15 seconds")
+		.register(monitorStepRegistry, { step: 1 }),
+	notifications: z.array(z.string()).register(monitorStepRegistry, { step: 1 }),
+	tags: z.array(z.string()).register(monitorStepRegistry, { step: 1 }),
 	statusWindowSize: z
 		.number({ message: "Status window size is required" })
 		.min(1, "Status window size must be at least 1")
-		.max(25, "Status window size must be at most 25"),
+		.max(25, "Status window size must be at most 25")
+		.register(monitorStepRegistry, { step: 1 }),
 	statusWindowThreshold: z
 		.number({ message: "Threshold percentage is required" })
 		.min(1, "Incident percentage must be at least 1")
-		.max(100, "Incident percentage must be at most 100"),
-	geoCheckEnabled: z.boolean().optional(),
-	geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
+		.max(100, "Incident percentage must be at most 100")
+		.register(monitorStepRegistry, { step: 1 }),
+	geoCheckEnabled: z.boolean().optional().register(monitorStepRegistry, { step: 2 }),
+	geoCheckLocations: z
+		.array(z.enum(GeoContinents))
+		.optional()
+		.register(monitorStepRegistry, { step: 2 }),
 	geoCheckInterval: z
 		.number()
 		.min(300000, "Interval must be at least 5 minutes")
-		.optional(),
+		.optional()
+		.register(monitorStepRegistry, { step: 2 }),
 });
 
 // HTTP monitor schema
 const httpSchema = baseSchema.extend({
 	type: z.literal("http"),
 	url: urlSchema,
-	ignoreTlsErrors: z.boolean(),
-	useAdvancedMatching: z.boolean(),
-	matchMethod: z.enum(["equal", "include", "regex", ""]).optional(),
-	expectedValue: z.string().optional(),
-	jsonPath: z.string().optional(),
+	ignoreTlsErrors: z.boolean().register(monitorStepRegistry, { step: 2 }),
+	useAdvancedMatching: z.boolean().register(monitorStepRegistry, { step: 2 }),
+	matchMethod: z
+		.enum(["equal", "include", "regex", ""])
+		.optional()
+		.register(monitorStepRegistry, { step: 2 }),
+	expectedValue: z.string().optional().register(monitorStepRegistry, { step: 2 }),
+	jsonPath: z.string().optional().register(monitorStepRegistry, { step: 2 }),
 });
 
 // Ping monitor schema
@@ -84,7 +101,7 @@ const grpcSchema = baseSchema.extend({
 		.min(1, "Port must be at least 1")
 		.max(65535, "Port must be at most 65535"),
 	grpcServiceName: z.string().optional(),
-	ignoreTlsErrors: z.boolean(),
+	ignoreTlsErrors: z.boolean().register(monitorStepRegistry, { step: 2 }),
 });
 
 // PageSpeed monitor schema
@@ -122,7 +139,7 @@ const hardwareSchema = baseSchema.extend({
 const websocketSchema = baseSchema.extend({
 	type: z.literal("websocket"),
 	url: z.string().min(1, "WebSocket URL is required"),
-	ignoreTlsErrors: z.boolean(),
+	ignoreTlsErrors: z.boolean().register(monitorStepRegistry, { step: 2 }),
 });
 
 // Hostname (FQDN) — labels of 1-63 alphanumerics/hyphens separated by dots,
@@ -164,15 +181,16 @@ export const monitorSchema = z.discriminatedUnion("type", [
 
 export type MonitorFormData = z.infer<typeof monitorSchema>;
 
-// Field names present in each monitor type's schema, derived from the schema
-// itself. Consumers (e.g. the create wizard's per-step validation) should read
-// this rather than hardcoding field lists, so renames/additions stay in sync.
-export const monitorFieldsByType = Object.fromEntries(
-	monitorSchema.options.map((option) => [
-		option.shape.type.value,
-		Object.keys(option.shape),
-	])
-) as Record<MonitorType, string[]>;
+// The selected type's fields that belong to a given wizard step, read from the
+// per-field `monitorStepRegistry` metadata (unannotated fields default to step
+// 0). Derived from the schema so it can't drift from the field definitions.
+export const stepFieldsFor = (type: MonitorType, step: number): string[] => {
+	const option = monitorSchema.options.find((o) => o.shape.type.value === type);
+	if (!option) return [];
+	return Object.entries(option.shape)
+		.filter(([, field]) => (monitorStepRegistry.get(field)?.step ?? 0) === step)
+		.map(([name]) => name);
+};
 
 // Type-specific schemas exported for individual use
 export {
