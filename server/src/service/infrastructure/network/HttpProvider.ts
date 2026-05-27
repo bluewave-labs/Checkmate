@@ -8,6 +8,14 @@ import { Monitor, MonitorType } from "@/types/monitor.js";
 import { NETWORK_ERROR } from "@/service/infrastructure/network/utils.js";
 import CacheableLookup from "cacheable-lookup";
 
+const parseAcceptedStatusCodes = (value?: string): number[] =>
+	(value ?? "")
+		.split(",")
+		.map((code) => Number(code.trim()))
+		.filter((code) => Number.isInteger(code) && code >= 100 && code <= 599);
+
+const formatAcceptedStatusCodes = (codes: number[]): string => codes.join(", ");
+
 export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 	readonly type = "http";
 
@@ -63,8 +71,10 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 			throw new Error("URL is required for HTTP monitor");
 		}
 
+		const acceptedStatusCodes = parseAcceptedStatusCodes(monitor.acceptedStatusCodes);
 		const options: Record<string, unknown> = {
 			headers: monitor.secret ? { Authorization: `Bearer ${secret}` } : undefined,
+			throwHttpErrors: acceptedStatusCodes.length > 0 ? false : undefined,
 		};
 
 		options.agent = {
@@ -102,13 +112,18 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 			}
 
 			const matchResult = this.advancedMatcher.validate<T>(payload, monitor);
+			const statusCodeMatches = acceptedStatusCodes.length > 0 ? acceptedStatusCodes.includes(response.statusCode) : response.ok;
+			const statusCodeMessage =
+				acceptedStatusCodes.length > 0
+					? `Expected status code ${formatAcceptedStatusCodes(acceptedStatusCodes)} but received ${response.statusCode}`
+					: (response.statusMessage ?? "HTTP status check failed");
 			return {
 				monitorId: monitor.id,
 				teamId: monitor.teamId,
 				type: monitor.type,
-				status: response.ok && matchResult.ok,
+				status: statusCodeMatches && matchResult.ok,
 				code: response.statusCode,
-				message: matchResult.ok ? (response.statusMessage ?? "OK") : matchResult.message,
+				message: !statusCodeMatches ? statusCodeMessage : matchResult.ok ? (response.statusMessage ?? "OK") : matchResult.message,
 				responseTime: response.timings.phases.total ?? 0,
 				timings: response.timings,
 				payload,

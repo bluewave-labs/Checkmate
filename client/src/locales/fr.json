@@ -501,6 +501,10 @@
 							"equal": "Égal",
 							"include": "Inclure",
 							"regex": "Regex"
+						},
+						"acceptedStatusCodes": {
+							"description": "Comma-separated HTTP status codes that should count as up. Leave empty to use the default 2xx response check.",
+							"label": "Accepted status codes"
 						}
 					},
 					"title": "Paramètres avancés"

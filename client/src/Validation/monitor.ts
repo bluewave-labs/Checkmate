@@ -4,6 +4,13 @@ import { DnsRecordTypes, PageSpeedStrategies } from "@/Types/Monitor";
 
 // URL schema with custom error message
 const urlSchema = z.url({ message: "Please enter a valid URL" });
+const acceptedStatusCodesSchema = z
+	.string()
+	.optional()
+	.refine(
+		(value) => !value || /^\s*[1-5]\d{2}(?:\s*,\s*[1-5]\d{2})*\s*$/.test(value),
+		"Enter comma-separated HTTP status codes between 100 and 599"
+	);
 
 // Common base schema for all monitor types
 const baseSchema = z.object({
@@ -37,6 +44,7 @@ const httpSchema = baseSchema.extend({
 	url: urlSchema,
 	ignoreTlsErrors: z.boolean(),
 	useAdvancedMatching: z.boolean(),
+	acceptedStatusCodes: acceptedStatusCodesSchema,
 	matchMethod: z.enum(["equal", "include", "regex", ""]).optional(),
 	expectedValue: z.string().optional(),
 	jsonPath: z.string().optional(),

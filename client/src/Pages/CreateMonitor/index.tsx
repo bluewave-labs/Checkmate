@@ -1034,6 +1034,28 @@ const CreateMonitorPage = () => {
 					rightContent={
 						<Stack spacing={theme.spacing(LAYOUT.MD)}>
 							<Controller
+								name="acceptedStatusCodes"
+								control={control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value ?? ""}
+										fieldLabel={t(
+											"pages.createMonitor.form.advanced.option.acceptedStatusCodes.label"
+										)}
+										placeholder="200, 204, 401"
+										fullWidth
+										error={!!fieldState.error}
+										helperText={
+											fieldState.error?.message ??
+											t(
+												"pages.createMonitor.form.advanced.option.acceptedStatusCodes.description"
+											)
+										}
+									/>
+								)}
+							/>
+							<Controller
 								name="useAdvancedMatching"
 								control={control}
 								render={({ field }) => (

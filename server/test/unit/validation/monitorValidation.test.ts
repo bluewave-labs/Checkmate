@@ -222,3 +222,37 @@ describe("monitorValidation — strategy gating", () => {
 		});
 	});
 });
+
+describe("monitorValidation — accepted status codes", () => {
+	it("retains comma-separated HTTP status codes on create", () => {
+		const parsed = createMonitorBodyValidation.parse({
+			name: "HTTP check",
+			type: "http",
+			url: "https://example.com",
+			acceptedStatusCodes: "200, 204, 401",
+		});
+
+		expect(parsed.acceptedStatusCodes).toBe("200, 204, 401");
+	});
+
+	it("retains accepted status codes on edit", () => {
+		const parsed = editMonitorBodyValidation.parse({
+			acceptedStatusCodes: "200,403",
+		});
+
+		expect(parsed.acceptedStatusCodes).toBe("200,403");
+	});
+
+	it("rejects invalid accepted status codes", () => {
+		for (const acceptedStatusCodes of ["99", "600", "200, nope", "200-204"]) {
+			expect(() =>
+				createMonitorBodyValidation.parse({
+					name: "HTTP check",
+					type: "http",
+					url: "https://example.com",
+					acceptedStatusCodes,
+				})
+			).toThrow();
+		}
+	});
+});

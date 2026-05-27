@@ -491,6 +491,10 @@
 						"advancedMatching": {
 							"label": "Use advanced matching"
 						},
+						"acceptedStatusCodes": {
+							"description": "Comma-separated HTTP status codes that should count as up. Leave empty to use the default 2xx response check.",
+							"label": "Accepted status codes"
+						},
 						"expectedValue": {
 							"label": "Expected value"
 						},

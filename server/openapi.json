@@ -376,6 +376,9 @@
 					"useAdvancedMatching": {
 						"type": "boolean"
 					},
+					"acceptedStatusCodes": {
+						"type": "string"
+					},
 					"jsonPath": {
 						"type": "string"
 					},
@@ -387,6 +390,12 @@
 						"enum": ["equal", "include", "regex"]
 					},
 					"notifications": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"tags": {
 						"type": "array",
 						"items": {
 							"type": "string"
@@ -469,6 +478,7 @@
 					"ignoreTlsErrors",
 					"useAdvancedMatching",
 					"notifications",
+					"tags",
 					"cpuAlertThreshold",
 					"memoryAlertThreshold",
 					"diskAlertThreshold",
@@ -2361,6 +2371,16 @@
 									},
 									"profilePicture": {
 										"type": "string"
+									},
+									"password": {
+										"type": "string",
+										"minLength": 8,
+										"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/])[A-Za-z0-9!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/]+$"
+									},
+									"newPassword": {
+										"type": "string",
+										"minLength": 8,
+										"pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/])[A-Za-z0-9!?@#$%^&*()\\-_=+[\\]{};:'\",.~`|\\\\/]+$"
 									},
 									"profileImage": {
 										"type": "string",
@@ -5207,7 +5227,8 @@
 										"type": "array",
 										"items": {
 											"type": "string"
-										}
+										},
+										"minItems": 1
 									},
 									"duration": {
 										"type": "number"
@@ -5478,6 +5499,24 @@
 						"required": false,
 						"name": "filter",
 						"in": "query"
+					},
+					{
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							]
+						},
+						"required": false,
+						"name": "tags",
+						"in": "query"
 					}
 				],
 				"responses": {
@@ -5670,6 +5709,24 @@
 						},
 						"required": false,
 						"name": "type",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							]
+						},
+						"required": false,
+						"name": "tags",
 						"in": "query"
 					},
 					{
@@ -6897,6 +6954,17 @@
 										"type": "boolean",
 										"default": false
 									},
+									"acceptedStatusCodes": {
+										"anyOf": [
+											{
+												"type": "string"
+											},
+											{
+												"type": "string",
+												"enum": [""]
+											}
+										]
+									},
 									"port": {
 										"type": "number"
 									},
@@ -6919,6 +6987,12 @@
 										"type": "number"
 									},
 									"notifications": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"tags": {
 										"type": "array",
 										"items": {
 											"type": "string"
@@ -7527,6 +7601,17 @@
 													"type": "boolean",
 													"default": false
 												},
+												"acceptedStatusCodes": {
+													"anyOf": [
+														{
+															"type": "string"
+														},
+														{
+															"type": "string",
+															"enum": [""]
+														}
+													]
+												},
 												"jsonPath": {
 													"anyOf": [
 														{
@@ -7580,6 +7665,13 @@
 													"type": "number"
 												},
 												"notifications": {
+													"type": "array",
+													"items": {
+														"type": "string"
+													},
+													"default": []
+												},
+												"tags": {
 													"type": "array",
 													"items": {
 														"type": "string"
@@ -8104,6 +8196,12 @@
 											"type": "string"
 										}
 									},
+									"tags": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
 									"secret": {
 										"type": "string"
 									},
@@ -8112,6 +8210,17 @@
 									},
 									"useAdvancedMatching": {
 										"type": "boolean"
+									},
+									"acceptedStatusCodes": {
+										"anyOf": [
+											{
+												"type": "string"
+											},
+											{
+												"type": "string",
+												"enum": [""]
+											}
+										]
 									},
 									"jsonPath": {
 										"anyOf": [

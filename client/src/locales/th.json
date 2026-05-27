@@ -501,6 +501,10 @@
 							"equal": "เท่ากับ",
 							"include": "รวม",
 							"regex": "Regex"
+						},
+						"acceptedStatusCodes": {
+							"description": "Comma-separated HTTP status codes that should count as up. Leave empty to use the default 2xx response check.",
+							"label": "Accepted status codes"
 						}
 					},
 					"title": "ตั้งค่าขั้นสูง"

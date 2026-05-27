@@ -501,6 +501,10 @@
 							"equal": "等しい",
 							"include": "含む",
 							"regex": "正規表現"
+						},
+						"acceptedStatusCodes": {
+							"description": "Comma-separated HTTP status codes that should count as up. Leave empty to use the default 2xx response check.",
+							"label": "Accepted status codes"
 						}
 					},
 					"title": "詳細設定"

@@ -501,6 +501,10 @@
 							"equal": "相等",
 							"include": "包含",
 							"regex": "正则表达式"
+						},
+						"acceptedStatusCodes": {
+							"description": "Comma-separated HTTP status codes that should count as up. Leave empty to use the default 2xx response check.",
+							"label": "Accepted status codes"
 						}
 					},
 					"title": "高级设置"

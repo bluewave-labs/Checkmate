@@ -250,6 +250,9 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			type: Boolean,
 			default: false,
 		},
+		acceptedStatusCodes: {
+			type: String,
+		},
 		jsonPath: {
 			type: String,
 		},

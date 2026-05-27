@@ -181,6 +181,42 @@ describe("HttpProvider", () => {
 			);
 		});
 
+		it("counts configured accepted status codes as successful", async () => {
+			mockGot.mockResolvedValue(makeGotResponse({ ok: false, statusCode: 401, statusMessage: "Unauthorized" }));
+			const { provider } = createProvider();
+
+			const result = await provider.handle(makeMonitor({ acceptedStatusCodes: "200, 401" }));
+
+			expect(mockGot).toHaveBeenCalledWith(
+				"https://example.com",
+				expect.objectContaining({
+					throwHttpErrors: false,
+				})
+			);
+			expect(result).toEqual(
+				expect.objectContaining({
+					status: true,
+					code: 401,
+					message: "Unauthorized",
+				})
+			);
+		});
+
+		it("fails when a response is outside configured accepted status codes", async () => {
+			mockGot.mockResolvedValue(makeGotResponse({ ok: true, statusCode: 204, statusMessage: "No Content" }));
+			const { provider } = createProvider();
+
+			const result = await provider.handle(makeMonitor({ acceptedStatusCodes: "200, 201" }));
+
+			expect(result).toEqual(
+				expect.objectContaining({
+					status: false,
+					code: 204,
+					message: "Expected status code 200, 201 but received 204",
+				})
+			);
+		});
+
 		it("defaults responseTime to 0 when timings.phases.total is undefined", async () => {
 			mockGot.mockResolvedValue(makeGotResponse({ timings: { phases: { total: undefined } } }));
 			const { provider } = createProvider();

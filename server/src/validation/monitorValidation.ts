@@ -61,6 +61,12 @@ const refineStrategyType = (body: { type?: string; strategy?: string }, ctx: z.R
 	}
 };
 
+const acceptedStatusCodesValidation = z
+	.union([z.string(), z.literal("")])
+	.refine((value) => value === "" || /^\s*[1-5]\d{2}(?:\s*,\s*[1-5]\d{2})*\s*$/.test(value), {
+		message: "Enter comma-separated HTTP status codes between 100 and 599",
+	});
+
 export const createMonitorBodyValidation = z
 	.object({
 		_id: z.string().optional(),
@@ -72,6 +78,7 @@ export const createMonitorBodyValidation = z
 		url: z.string().min(1, "URL is required"),
 		ignoreTlsErrors: z.boolean().default(false),
 		useAdvancedMatching: z.boolean().default(false),
+		acceptedStatusCodes: acceptedStatusCodesValidation.optional(),
 		port: z.number().optional(),
 		isActive: z.boolean().optional(),
 		interval: z.number().optional(),
@@ -113,6 +120,7 @@ export const editMonitorBodyValidation = z
 		secret: z.string().optional(),
 		ignoreTlsErrors: z.boolean().optional(),
 		useAdvancedMatching: z.boolean().optional(),
+		acceptedStatusCodes: acceptedStatusCodesValidation.optional(),
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
 		matchMethod: z.union([z.enum(MonitorMatchMethods), z.literal("")]).optional(),
@@ -170,6 +178,7 @@ const importedMonitorSchema = z
 		type: z.enum(MonitorTypes, "Invalid monitor type"),
 		ignoreTlsErrors: z.boolean().default(false),
 		useAdvancedMatching: z.boolean().default(false),
+		acceptedStatusCodes: acceptedStatusCodesValidation.optional(),
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
 		matchMethod: z.union([z.enum(MonitorMatchMethods), z.literal("")]).optional(),
@@ -236,6 +245,7 @@ export const monitorResponseSchema = z
 		statusWindowThreshold: z.number(),
 		ignoreTlsErrors: z.boolean(),
 		useAdvancedMatching: z.boolean(),
+		acceptedStatusCodes: z.string().optional(),
 		jsonPath: z.string().optional(),
 		expectedValue: z.string().optional(),
 		matchMethod: z.enum(MonitorMatchMethods).optional(),

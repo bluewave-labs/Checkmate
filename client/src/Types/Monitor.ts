@@ -61,6 +61,7 @@ export interface Monitor {
 	type: MonitorType;
 	ignoreTlsErrors: boolean;
 	useAdvancedMatching: boolean;
+	acceptedStatusCodes?: string;
 	jsonPath?: string;
 	expectedValue?: string;
 	matchMethod?: MonitorMatchMethod;
