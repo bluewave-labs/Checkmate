@@ -33,6 +33,12 @@ const baseSchema = z.object({
 		.min(1, "Incident percentage must be at least 1")
 		.max(100, "Incident percentage must be at most 100")
 		.register(monitorStepRegistry, { step: 1 }),
+});
+
+// Geo-distributed check fields. Only http and ping support geo checks
+// (GeoCheckSupportedTypes), so these live on those schemas rather than the base
+// — that way each type's step count is exactly what its own fields declare.
+const geoCheckFields = {
 	geoCheckEnabled: z.boolean().optional().register(monitorStepRegistry, { step: 2 }),
 	geoCheckLocations: z
 		.array(z.enum(GeoContinents))
@@ -43,7 +49,7 @@ const baseSchema = z.object({
 		.min(300000, "Interval must be at least 5 minutes")
 		.optional()
 		.register(monitorStepRegistry, { step: 2 }),
-});
+};
 
 // HTTP monitor schema
 const httpSchema = baseSchema.extend({
@@ -57,12 +63,14 @@ const httpSchema = baseSchema.extend({
 		.register(monitorStepRegistry, { step: 2 }),
 	expectedValue: z.string().optional().register(monitorStepRegistry, { step: 2 }),
 	jsonPath: z.string().optional().register(monitorStepRegistry, { step: 2 }),
+	...geoCheckFields,
 });
 
 // Ping monitor schema
 const pingSchema = baseSchema.extend({
 	type: z.literal("ping"),
 	url: z.string().min(1, "Host is required"),
+	...geoCheckFields,
 });
 
 // Port monitor schema
@@ -181,16 +189,28 @@ export const monitorSchema = z.discriminatedUnion("type", [
 
 export type MonitorFormData = z.infer<typeof monitorSchema>;
 
-// The selected type's fields that belong to a given wizard step, read from the
-// per-field `monitorStepRegistry` metadata (unannotated fields default to step
-// 0). Derived from the schema so it can't drift from the field definitions.
-export const stepFieldsFor = (type: MonitorType, step: number): string[] => {
-	const option = monitorSchema.options.find((o) => o.shape.type.value === type);
-	if (!option) return [];
-	return Object.entries(option.shape)
-		.filter(([, field]) => (monitorStepRegistry.get(field)?.step ?? 0) === step)
+const optionForType = (type: MonitorType) =>
+	monitorSchema.options.find((o) => o.shape.type.value === type);
+
+// The step each field of a type is validated on, from the per-field
+// `monitorStepRegistry` metadata (unannotated fields default to step 0).
+const fieldStepsFor = (type: MonitorType): [name: string, step: number][] =>
+	Object.entries(optionForType(type)?.shape ?? {}).map(([name, field]) => [
+		name,
+		monitorStepRegistry.get(field)?.step ?? 0,
+	]);
+
+// The selected type's fields that belong to a given wizard step. Derived from
+// the schema so it can't drift from the field definitions.
+export const stepFieldsFor = (type: MonitorType, step: number): string[] =>
+	fieldStepsFor(type)
+		.filter(([, fieldStep]) => fieldStep === step)
 		.map(([name]) => name);
-};
+
+// Number of wizard steps a type has, derived from the highest step its fields
+// declare. A type with no step-2 fields is a 2-step form, and so on.
+export const monitorStepCount = (type: MonitorType): number =>
+	Math.max(0, ...fieldStepsFor(type).map(([, step]) => step)) + 1;
 
 // Type-specific schemas exported for individual use
 export {

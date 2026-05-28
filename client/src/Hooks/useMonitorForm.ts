@@ -16,6 +16,10 @@ const getBaseDefaults = (data?: Monitor | null) => ({
 	tags: data?.tags || [],
 	statusWindowSize: data?.statusWindowSize || 5,
 	statusWindowThreshold: data?.statusWindowThreshold || 60,
+});
+
+// Geo-check defaults — only http and ping support geo checks.
+const getGeoCheckDefaults = (data?: Monitor | null) => ({
 	geoCheckEnabled: data?.geoCheckEnabled ?? false,
 	geoCheckLocations: data?.geoCheckLocations || [],
 	geoCheckInterval: data?.geoCheckInterval || 300000,
@@ -33,6 +37,7 @@ export const getMonitorDefaults = (
 		case "http":
 			defaults = {
 				...base,
+				...getGeoCheckDefaults(data),
 				type: "http",
 				url: data?.url || "",
 				ignoreTlsErrors: data?.ignoreTlsErrors || false,
@@ -45,6 +50,7 @@ export const getMonitorDefaults = (
 		case "ping":
 			defaults = {
 				...base,
+				...getGeoCheckDefaults(data),
 				type: "ping",
 				url: data?.url || "",
 			};
@@ -124,6 +130,7 @@ export const getMonitorDefaults = (
 		default:
 			defaults = {
 				...base,
+				...getGeoCheckDefaults(data),
 				type: "http",
 				url: "",
 				ignoreTlsErrors: false,

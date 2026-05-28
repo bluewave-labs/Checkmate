@@ -47,7 +47,11 @@ import {
 } from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
 import type { Tag } from "@/Types/Tag";
-import { stepFieldsFor, type MonitorFormData } from "@/Validation/monitor";
+import {
+	stepFieldsFor,
+	monitorStepCount,
+	type MonitorFormData,
+} from "@/Validation/monitor";
 
 interface GeneralSettingsConfig {
 	urlLabel: string;
@@ -213,11 +217,6 @@ const getGeneralSettingsConfig = (
 	return configs[type] || configs.http;
 };
 
-// Whether the wizard's "Advanced" step (TLS / matching / geo) has any content
-// for this monitor type. Types without it skip the step entirely.
-const hasAdvancedStep = (type: MonitorType): boolean =>
-	type === "http" || type === "grpc" || type === "websocket" || supportsGeoCheck(type);
-
 const CreateMonitorPage = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -276,7 +275,7 @@ const CreateMonitorPage = () => {
 	const watchGeoCheckEnabled = watch("geoCheckEnabled") as boolean;
 
 	// Steps without an advanced section drop it, so the last step is the form's.
-	const totalSteps = hasAdvancedStep(watchedType) ? 3 : 2;
+	const totalSteps = monitorStepCount(watchedType);
 
 	const handleNext = async () => {
 		const isValid = await trigger(
