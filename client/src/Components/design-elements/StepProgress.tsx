@@ -1,7 +1,6 @@
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
-import { useTheme } from "@mui/material/styles";
-import { alpha } from "@mui/material/styles";
+import { useTheme, alpha } from "@mui/material/styles";
 import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface StepProgressProps {

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { FieldPath } from "react-hook-form";
 import { GeoContinents } from "@/Types/GeoCheck";
 import { DnsRecordTypes, PageSpeedStrategies, type MonitorType } from "@/Types/Monitor";
 
@@ -194,15 +195,20 @@ const optionForType = (type: MonitorType) =>
 
 // The step each field of a type is validated on, from the per-field
 // `monitorStepRegistry` metadata (unannotated fields default to step 0).
-const fieldStepsFor = (type: MonitorType): [name: string, step: number][] =>
+const fieldStepsFor = (
+	type: MonitorType
+): [name: FieldPath<MonitorFormData>, step: number][] =>
 	Object.entries(optionForType(type)?.shape ?? {}).map(([name, field]) => [
-		name,
+		name as FieldPath<MonitorFormData>,
 		monitorStepRegistry.get(field)?.step ?? 0,
 	]);
 
 // The selected type's fields that belong to a given wizard step. Derived from
 // the schema so it can't drift from the field definitions.
-export const stepFieldsFor = (type: MonitorType, step: number): string[] =>
+export const stepFieldsFor = (
+	type: MonitorType,
+	step: number
+): FieldPath<MonitorFormData>[] =>
 	fieldStepsFor(type)
 		.filter(([, fieldStep]) => fieldStep === step)
 		.map(([name]) => name);

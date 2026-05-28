@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { logger } from "@/Utils/logger";
 import { useParams, useLocation, useNavigate } from "react-router";
 import { useForm, Controller } from "react-hook-form";
-import type { FieldPath } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTheme } from "@mui/material";
 import Stack from "@mui/material/Stack";
@@ -278,9 +277,7 @@ const CreateMonitorPage = () => {
 	const totalSteps = monitorStepCount(watchedType);
 
 	const handleNext = async () => {
-		const isValid = await trigger(
-			stepFieldsFor(watchedType, currentStep) as FieldPath<MonitorFormData>[]
-		);
+		const isValid = await trigger(stepFieldsFor(watchedType, currentStep));
 		if (isValid) {
 			setCurrentStep((step) => step + 1);
 		}
