@@ -8,6 +8,7 @@ import { cleanupDuplicateMonitorStatsForUniqueIndex } from "./0006_cleanupDuplic
 import { migrateMaintenanceWindowMonitorIdToArray } from "./0007_migrateMaintenanceWindowMonitorIdToArray.js";
 import { addScriptMonitorSupport } from "./0008_addScriptMonitorSupport.js";
 import { migrateProbesToCaptureAgents } from "./0009_migrateProbesToCaptureAgents.js";
+import { normalizeScriptMonitorUrls } from "./0010_normalizeScriptMonitorUrls.js";
 import type { ILogger } from "@/utils/logger.js";
 
 type MigrationEntry = {
@@ -25,6 +26,7 @@ const migrations: MigrationEntry[] = [
 	{ name: "0007_migrateMaintenanceWindowMonitorIdToArray", execute: migrateMaintenanceWindowMonitorIdToArray },
 	{ name: "0008_addScriptMonitorSupport", execute: addScriptMonitorSupport },
 	{ name: "0009_migrateProbesToCaptureAgents", execute: migrateProbesToCaptureAgents },
+	{ name: "0010_normalizeScriptMonitorUrls", execute: normalizeScriptMonitorUrls },
 ];
 
 const runMigrations = async (logger?: ILogger) => {

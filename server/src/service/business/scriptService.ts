@@ -452,6 +452,14 @@ export class ScriptService implements IScriptService {
 		}
 	};
 
+	private toCaptureBaseUrl = (raw: string): string => {
+		try {
+			return new URL(raw).origin;
+		} catch {
+			return raw;
+		}
+	};
+
 	private resolveTarget = async (monitor: Monitor): Promise<{ targetUrl: string; authToken: string }> => {
 		// Preferred path: monitor references a CaptureAgent. The token is
 		// retrieved from the encrypted store so it is never persisted alongside
@@ -483,7 +491,10 @@ export class ScriptService implements IScriptService {
 		// compatibility with pre-migration monitors.
 		if (monitor.scriptExecutionTarget === "capture") {
 			return {
-				targetUrl: monitor.url,
+				// Strip any path component so users who paste the hardware-monitor
+				// metrics URL (e.g. http://host:59232/api/v1/metrics) still resolve
+				// to the correct capture agent base URL.
+				targetUrl: this.toCaptureBaseUrl(monitor.url),
 				authToken: monitor.secret ?? "",
 			};
 		}
