@@ -36,6 +36,7 @@ export interface IMonitorController {
 	deleteAllMonitors: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	editMonitor: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	pauseMonitor: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+	checkMonitorNow: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	bulkPauseMonitors: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	addDemoMonitors: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	getMonitorsByTeamId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
@@ -301,6 +302,25 @@ class MonitorController implements IMonitorController {
 			return res.status(200).json({
 				success: true,
 				msg: monitor.isActive ? "Monitor resumed successfully" : "Monitor paused successfully",
+				data: monitor,
+			});
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	checkMonitorNow = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const validatedParams = getMonitorByIdParamValidation.parse(req.params);
+
+			const monitorId = validatedParams.monitorId;
+			const teamId = requireTeamId(req.user?.teamId);
+
+			const monitor = await this.monitorService.checkMonitorNow({ teamId, monitorId });
+
+			return res.status(200).json({
+				success: true,
+				msg: "Monitor check completed successfully",
 				data: monitor,
 			});
 		} catch (error) {

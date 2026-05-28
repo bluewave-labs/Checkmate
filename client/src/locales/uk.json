@@ -438,7 +438,8 @@
 					"selectAll": "Вибрати всі монітори",
 					"selectMonitor": "Вибрати {{name}}",
 					"bulkSelected_one": "Вибрано {{count}} монітор",
-					"bulkSelected_other": "Вибрано {{count}} моніторів"
+					"bulkSelected_other": "Вибрано {{count}} моніторів",
+					"checkNow": "Check now"
 				},
 				"statBoxes": {
 					"activeFor": "Активний протягом",

@@ -139,6 +139,15 @@ export const MonitorTable = ({
 				},
 			},
 			{
+				id: 5,
+				label: t("pages.common.monitors.actions.checkNow"),
+				action: async () => {
+					await post(`/monitors/check/${monitor.id}`, {});
+					refetch();
+				},
+				closeMenu: true,
+			},
+			{
 				id: 6,
 				label:
 					monitor.isActive === false

@@ -438,7 +438,8 @@
 					"selectAll": "Выбрать все мониторы",
 					"selectMonitor": "Выбрать {{name}}",
 					"bulkSelected_one": "Выбран {{count}} монитор",
-					"bulkSelected_other": "Выбрано {{count}} мониторов"
+					"bulkSelected_other": "Выбрано {{count}} мониторов",
+					"checkNow": "Check now"
 				},
 				"statBoxes": {
 					"activeFor": "Активен",

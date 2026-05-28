@@ -50,6 +50,7 @@ export interface ISuperSimpleQueue {
 	pauseJob(monitor: Monitor): Promise<void>;
 	resumeJob(monitor: Monitor): Promise<void>;
 	updateJob(monitor: Monitor): Promise<void>;
+	runMonitorNow(monitor: Monitor): Promise<void>;
 	shutdown(): Promise<void>;
 	getMetrics(): Promise<QueueMetrics>;
 	getJobs(): Promise<QueueJobSummary[]>;
@@ -304,6 +305,11 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 	updateJob = async (monitor: Monitor) => {
 		this.scheduler.updateJob(monitor.id, { repeat: monitor.interval, data: monitor });
 		await this.syncGeoJob(monitor);
+	};
+
+	runMonitorNow = async (monitor: Monitor) => {
+		const job = this.helper.getHeartbeatJob();
+		await job(monitor);
 	};
 
 	shutdown = async () => {

@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
-import { usePatch } from "@/Hooks/UseApi";
+import { usePatch, usePost } from "@/Hooks/UseApi";
 
 import type { Monitor, MonitorWithChecks } from "@/Types/Monitor";
 import type { Tag } from "@/Types/Tag";
@@ -62,6 +62,7 @@ export const PageSpeedMonitorsTable = ({
 		// loading: isPatching,
 		// error: postError,
 	} = usePatch<any, Monitor>();
+	const { post } = usePost<Record<string, never>, Monitor>();
 
 	const handlePageChange = (
 		_e: React.MouseEvent<HTMLButtonElement> | null,
@@ -122,13 +123,15 @@ export const PageSpeedMonitorsTable = ({
 					navigate(`/pagespeed/configure/${monitor.id}`);
 				},
 			},
-			// {
-			//   id: 5,
-			//   label: "Clone",
-			//   action: () => {
-
-			//   },
-			// },
+			{
+				id: 5,
+				label: t("pages.common.monitors.actions.checkNow"),
+				action: async () => {
+					await post(`/monitors/check/${monitor.id}`, {});
+					refetch();
+				},
+				closeMenu: true,
+			},
 			{
 				id: 6,
 				label:

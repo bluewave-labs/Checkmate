@@ -438,7 +438,8 @@
 					"selectAll": "Seleccionar todos los monitores",
 					"selectMonitor": "Seleccionar {{name}}",
 					"bulkSelected_one": "{{count}} monitor seleccionado",
-					"bulkSelected_other": "{{count}} monitores seleccionados"
+					"bulkSelected_other": "{{count}} monitores seleccionados",
+					"checkNow": "Check now"
 				},
 				"statBoxes": {
 					"activeFor": "Activo desde hace",

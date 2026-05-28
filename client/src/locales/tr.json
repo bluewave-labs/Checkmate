@@ -438,7 +438,8 @@
 					"selectAll": "Tüm monitörleri seç",
 					"selectMonitor": "{{name}}'i seç",
 					"bulkSelected_one": "{{count}} monitör seçildi",
-					"bulkSelected_other": "{{count}} monitör seçildi"
+					"bulkSelected_other": "{{count}} monitör seçildi",
+					"checkNow": "Check now"
 				},
 				"statBoxes": {
 					"activeFor": "Aktif süresi",

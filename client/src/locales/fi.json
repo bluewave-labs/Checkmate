@@ -438,7 +438,8 @@
 					"selectAll": "Valitse kaikki näytöt",
 					"selectMonitor": "Valitse {{name}}",
 					"bulkSelected_one": "{{count}} näyttö valittu",
-					"bulkSelected_other": "{{count}} näyttöä valittu"
+					"bulkSelected_other": "{{count}} näyttöä valittu",
+					"checkNow": "Check now"
 				},
 				"statBoxes": {
 					"activeFor": "Aktiivinen",
