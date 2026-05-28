@@ -9,7 +9,7 @@ import type { Tag } from "@/Types/Tag";
 import { Typography, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-const types = ["http", "ping", "port", "docker", "game", "grpc", "websocket"];
+const types = ["http", "ping", "port", "docker", "game", "grpc", "websocket", "script"];
 const typeDisplayNames: Record<string, string> = {
 	http: "HTTP",
 	ping: "Ping",
@@ -18,6 +18,7 @@ const typeDisplayNames: Record<string, string> = {
 	game: "Game",
 	grpc: "gRPC",
 	websocket: "WebSocket",
+	script: "Script",
 };
 const statuses = ["up", "down"];
 const states = ["active", "paused"];
@@ -50,6 +51,19 @@ export const ControlsFilter = ({
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
+	const typeLabel = (type: string): string => {
+		const key: Record<string, string> = {
+			http: "pages.common.monitors.monitorTypes.optionHttp",
+			ping: "pages.common.monitors.monitorTypes.optionPing",
+			port: "pages.common.monitors.monitorTypes.optionPort",
+			docker: "pages.common.monitors.monitorTypes.optionDocker",
+			game: "pages.common.monitors.monitorTypes.optionGame",
+			grpc: "pages.common.monitors.monitorTypes.optionGrpc",
+			websocket: "pages.common.monitors.monitorTypes.optionWebSocket",
+			script: "pages.common.monitors.monitorTypes.optionScript",
+		};
+		return key[type] ? t(key[type]) : (typeDisplayNames[type] ?? type);
+	};
 	const isFilterActive =
 		(selectedTypes?.length ?? 0) > 0 ||
 		Boolean(selectedStatus) ||
@@ -75,7 +89,7 @@ export const ControlsFilter = ({
 							key={type}
 							value={type}
 						>
-							<Typography>{typeDisplayNames[type] ?? type}</Typography>
+							<Typography>{typeLabel(type)}</Typography>
 						</MenuItem>
 					))}
 				</Select>

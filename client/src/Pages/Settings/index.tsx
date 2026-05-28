@@ -1,5 +1,6 @@
 import { BasePage, ConfigBox, TextLink } from "@/Components/design-elements";
 import { Autocomplete, Select, Dialog, SwitchComponent } from "@/Components/inputs";
+import { useNavigate } from "react-router";
 import { logger } from "@/Utils/logger";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import {
@@ -56,6 +57,7 @@ export const SettingsPage = () => {
 	const { t, i18n } = useTranslation();
 	const dispatch = useDispatch();
 	const isAdmin = useIsAdmin();
+	const navigate = useNavigate();
 	const { toastError } = useToast();
 	// Local state for demo monitors dialog
 	const [isDemoMonitorsDialogOpen, setIsDemoMonitorsDialogOpen] = useState(false);
@@ -446,6 +448,23 @@ export const SettingsPage = () => {
 						}
 					/>
 				)}
+
+				{/* Capture Agents shortcut */}
+				<ConfigBox
+					title={t("pages.captureAgents.header.title", "Capture agents")}
+					subtitle={t(
+						"pages.captureAgents.header.description",
+						"Manage agents that collect metrics and execute scripts."
+					)}
+					rightContent={
+						<Button
+							variant="contained"
+							onClick={() => navigate("/settings/capture-agents")}
+						>
+							{t("pages.captureAgents.header.manage", "Manage capture agents")}
+						</Button>
+					}
+				/>
 
 				{/* Check Retention */}
 				{isAdmin && (

@@ -14,6 +14,7 @@ import {
 	HelpCircle,
 	MessageCircle,
 	Code,
+	Code2,
 	User,
 	Lock,
 	Users,
@@ -46,6 +47,11 @@ export const getMenu = (t: Function) => {
 			name: t("components.sidebar.menu.tags"),
 			path: "tags",
 			icon: <Icon icon={Tag} />,
+		},
+		{
+			name: t("components.sidebar.menu.scripts", "Scripts"),
+			path: "scripts",
+			icon: <Icon icon={Code2} />,
 		},
 		{
 			name: t("components.sidebar.menu.checks"),

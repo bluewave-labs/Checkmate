@@ -36,6 +36,7 @@ import {
 	type Monitor,
 	type MonitorType,
 	type GamesMap,
+	type Script,
 	supportsGeoCheck,
 	DefaultPageSpeedStrategy,
 } from "@/Types/Monitor";
@@ -203,6 +204,20 @@ const getGeneralSettingsConfig = (
 			showDnsServer: true,
 			showDnsRecordType: true,
 		},
+		script: {
+			urlLabel: t("pages.createMonitor.form.general.option.url.label"),
+			urlPlaceholder: "https://capture.internal:59232",
+			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
+			showUrl: true,
+			showPort: false,
+			showGameSelect: false,
+			showSecret: true,
+			showGrpcServiceName: false,
+			showIgnoreTls: false,
+			showStrategy: false,
+			showDnsServer: false,
+			showDnsRecordType: false,
+		},
 	};
 	return configs[type] || configs.http;
 };
@@ -239,6 +254,7 @@ const CreateMonitorPage = () => {
 	const { data: notifications } = useGet<Notification[]>("/notifications/team");
 	const { data: games } = useGet<GamesMap>("/monitors/games");
 	const { data: tags } = useGet<Tag[]>("/tags/team");
+	const { data: scripts } = useGet<Script[]>("/scripts");
 
 	const { schema, defaults } = useMonitorForm({
 		data: existingMonitor ?? null,
@@ -401,6 +417,14 @@ const CreateMonitorPage = () => {
 											label={t("pages.common.monitors.monitorTypes.optionDns")}
 											description={t(
 												"pages.createMonitor.form.type.optionDnsDescription"
+											)}
+										/>
+										<RadioWithDescription
+											value="script"
+											label={t("pages.common.monitors.monitorTypes.optionScript", "Script")}
+											description={t(
+												"pages.createMonitor.form.type.optionScriptDescription",
+												"Run a Bash, PowerShell, or Python script on a Capture or Probe agent."
 											)}
 										/>
 									</RadioGroup>
@@ -662,6 +686,135 @@ const CreateMonitorPage = () => {
 				}
 			/>
 
+			{watchedType === "script" && (
+				<ConfigBox
+					title={t("pages.createMonitor.form.script.title", "Script configuration")}
+					subtitle={t(
+						"pages.createMonitor.form.script.description",
+						"Choose a saved script and how the agent should execute it."
+					)}
+					rightContent={
+						<Stack spacing={theme.spacing(LAYOUT.MD)}>
+							<Controller
+								name="scriptExecutionTarget"
+								control={control}
+								render={({ field, fieldState }) => (
+									<Select
+										{...field}
+										value={field.value ?? "capture"}
+										fieldLabel={t(
+											"pages.createMonitor.form.script.option.target.label",
+											"Execution target"
+										)}
+										error={!!fieldState.error}
+									>
+										<MenuItem value="capture">
+											{t(
+												"pages.createMonitor.form.script.option.target.capture",
+												"Capture agent"
+											)}
+										</MenuItem>
+										<MenuItem value="probe">
+											{t(
+												"pages.createMonitor.form.script.option.target.probe",
+												"Probe server"
+											)}
+										</MenuItem>
+									</Select>
+								)}
+							/>
+							<Controller
+								name="scriptId"
+								control={control}
+								render={({ field, fieldState }) => (
+									<Select
+										{...field}
+										value={field.value ?? ""}
+										fieldLabel={t(
+											"pages.createMonitor.form.script.option.scriptId.label",
+											"Script"
+										)}
+										displayEmpty
+										error={!!fieldState.error}
+									>
+										<MenuItem
+											value=""
+											disabled
+										>
+											{t(
+												"pages.createMonitor.form.script.option.scriptId.placeholder",
+												"Select a script"
+											)}
+										</MenuItem>
+										{(scripts ?? []).map((script) => (
+											<MenuItem
+												key={script.id}
+												value={script.id}
+											>
+												{`${script.name} (${script.runtime})`}
+											</MenuItem>
+										))}
+									</Select>
+								)}
+							/>
+							<Controller
+								name="scriptExitCodeSuccess"
+								control={control}
+								render={({ field }) => (
+									<TextField
+										{...field}
+										value={field.value ?? 0}
+										onChange={(e) => field.onChange(Number(e.target.value))}
+										type="number"
+										fieldLabel={t(
+											"pages.createMonitor.form.script.option.expectedExit.label",
+											"Expected exit code"
+										)}
+									/>
+								)}
+							/>
+							<Controller
+								name="scriptOutputMatchRegex"
+								control={control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value ?? ""}
+										fieldLabel={t(
+											"pages.createMonitor.form.script.option.regex.label",
+											"Output match regex (optional)"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+							<Controller
+								name="scriptMaxExecutionTimeMs"
+								control={control}
+								render={({ field }) => (
+									<SliderWithLabel
+										{...field}
+										value={field.value ?? 30000}
+										sliderMaxWidth={{ xs: "100%", md: "50%" }}
+										fieldLabel={t(
+											"pages.createMonitor.form.script.option.timeout.label",
+											"Max execution time"
+										)}
+										min={5000}
+										max={300000}
+										step={5000}
+										valueLabelDisplay="auto"
+										valueLabelFormat={(value) => `${Math.round(value / 1000)}s`}
+									/>
+								)}
+							/>
+						</Stack>
+					}
+				/>
+			)}
+
 			<ConfigBox
 				title={t("pages.createMonitor.form.frequency.title")}
 				subtitle={t("pages.createMonitor.form.frequency.description")}
@@ -735,7 +888,7 @@ const CreateMonitorPage = () => {
 			/>
 
 			{/* Alert Thresholds - only for hardware type */}
-			{generalSettingsConfig.showSecret && (
+			{watchedType === "hardware" && (
 				<ConfigBox
 					title={t("pages.createMonitor.form.thresholds.title")}
 					subtitle={t("pages.createMonitor.form.thresholds.description")}

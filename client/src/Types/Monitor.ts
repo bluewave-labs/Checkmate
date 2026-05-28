@@ -6,19 +6,57 @@ export type { GeoContinent } from "@/Types/GeoCheck";
 export const MAX_RECENT_CHECKS = 50;
 
 export const MonitorTypes = [
-	"http",
-	"ping",
-	"pagespeed",
-	"hardware",
+	"dns",
 	"docker",
-	"port",
 	"game",
 	"grpc",
+	"hardware",
+	"http",
+	"pagespeed",
+	"ping",
+	"port",
+	"script",
 	"websocket",
-	"dns",
 	"unknown",
 ] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
+
+export const ScriptRuntimes = ["bash", "powershell", "python"] as const;
+export type ScriptRuntime = (typeof ScriptRuntimes)[number];
+
+export const ScriptExecutionTargets = ["capture", "probe"] as const;
+export type ScriptExecutionTarget = (typeof ScriptExecutionTargets)[number];
+
+export interface Script {
+	id: string;
+	teamId: string;
+	name: string;
+	description?: string;
+	runtime: ScriptRuntime;
+	bodyHash: string;
+	parameters: Record<string, string>;
+	createdBy: string;
+	createdAt: string;
+	updatedAt: string;
+	// `body` is only returned by GET /scripts/:id, never by listings.
+	body?: string;
+}
+
+export interface ProbeServer {
+	id: string;
+	name: string;
+	url: string;
+	isActive: boolean;
+	lastSeen?: string;
+}
+
+export interface ScriptCheckMessage {
+	stdout: string;
+	stderr: string;
+	exitCode: number;
+	executionTimeMs: number;
+	timedOut: boolean;
+}
 
 export const DnsRecordTypes = ["A", "AAAA", "CNAME", "MX", "TXT", "NS"] as const;
 export type DnsRecordType = (typeof DnsRecordTypes)[number];
@@ -90,6 +128,16 @@ export interface Monitor {
 	geoCheckInterval?: number;
 	dnsServer?: string;
 	dnsRecordType?: DnsRecordType;
+	scriptId?: string;
+	scriptExecutionTarget?: ScriptExecutionTarget;
+	probeId?: string;
+	captureAgentId?: string;
+	deviceId?: string;
+	warningCountsAsDown?: boolean;
+	scriptExitCodeSuccess?: number;
+	scriptOutputMatchRegex?: string;
+	scriptMaxExecutionTimeMs?: number;
+	scriptParameterOverrides?: Record<string, string>;
 	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;

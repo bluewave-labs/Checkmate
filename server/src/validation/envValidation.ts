@@ -24,6 +24,13 @@ const envSchema = z.object({
 
 	// Feature flags
 	STATUS_PAGE_THEMES_ENABLED: booleanCoercion.default(true),
+
+	// Script monitor (optional – required only when script monitors are used)
+	SCRIPT_ENCRYPTION_KEY: z
+		.string()
+		.regex(/^[0-9a-fA-F]{64}$/, "SCRIPT_ENCRYPTION_KEY must be 64 hex characters (32 bytes)")
+		.optional(),
+	PROBE_JWT_SECRET: z.string().min(32, "PROBE_JWT_SECRET must be at least 32 characters").optional(),
 });
 
 export type ValidatedEnv = z.infer<typeof envSchema>;

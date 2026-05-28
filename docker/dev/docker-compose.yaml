@@ -33,3 +33,17 @@ services:
       start_period: 0s
       start_interval: 1s
       retries: 30
+  # Optional Probe service for script execution on isolated networks.
+  # The image must be built separately from /probe (see probe/Dockerfile).
+  probe:
+    image: checkmate_probe:latest
+    restart: unless-stopped
+    ports:
+      - "59233:59233"
+    environment:
+      PORT: "59233"
+      PROBE_SECRET: "${PROBE_SECRET:-change-me}"
+      PROBE_JWT_SECRET: "${PROBE_JWT_SECRET:-}"
+      CHECKMATE_URL: "http://server:52345"
+      ALLOWED_SCRIPT_RUNTIMES: "bash"
+    profiles: ["script"]

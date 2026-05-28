@@ -20,6 +20,8 @@ import NotificationRoutes from "../routes/notificationRoute.js";
 import TagRoutes from "../routes/tagRoutes.js";
 
 import IncidentRoutes from "../routes/incidentRoute.js";
+import ScriptRoutes, { ProbeRoutes } from "../routes/scriptRoute.js";
+import CaptureAgentRoutes from "../routes/captureAgentRoute.js";
 
 export const setupRoutes = (app: Application, controllers: InitializedControllers, services: InitializedServices) => {
 	const verifyJWT = createVerifyJWT(services.settingsService);
@@ -38,6 +40,9 @@ export const setupRoutes = (app: Application, controllers: InitializedController
 	const tagRoutes = new TagRoutes(controllers.tagController);
 	const diagnosticRoutes = new DiagnosticRoutes(controllers.diagnosticController, verifyJWT);
 	const incidentRoutes = new IncidentRoutes(controllers.incidentController);
+	const scriptRoutes = new ScriptRoutes(controllers.scriptController);
+	const probeRoutes = new ProbeRoutes(controllers.scriptController);
+	const captureAgentRoutes = new CaptureAgentRoutes(controllers.captureAgentController);
 
 	app.use("/api/v1/auth", authApiLimiter, authRoutes.getRouter());
 	app.use("/api/v1/monitors", verifyJWT, monitorRoutes.getRouter());
@@ -53,4 +58,7 @@ export const setupRoutes = (app: Application, controllers: InitializedController
 	app.use("/api/v1/tags", verifyJWT, tagRoutes.getRouter());
 	app.use("/api/v1/diagnostic", verifyJWT, diagnosticRoutes.getRouter());
 	app.use("/api/v1/incidents", verifyJWT, incidentRoutes.getRouter());
+	app.use("/api/v1/scripts", verifyJWT, scriptRoutes.getRouter());
+	app.use("/api/v1/probes", verifyJWT, probeRoutes.getRouter());
+	app.use("/api/v1/capture-agents", verifyJWT, captureAgentRoutes.getRouter());
 };

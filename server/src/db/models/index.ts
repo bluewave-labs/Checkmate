@@ -41,3 +41,18 @@ export * from "@/db/models/DLQItem.js";
 export { default as DLQItemModel } from "@/db/models/DLQItem.js";
 export * from "@/db/models/Tag.js";
 export { default as TagModel } from "@/db/models/Tag.js";
+
+export * from "@/db/models/Script.js";
+export { default as ScriptModel } from "@/db/models/Script.js";
+
+export * from "@/db/models/ProbeServer.js";
+export { default as ProbeServerModel } from "@/db/models/ProbeServer.js";
+
+export * from "@/db/models/AuditLog.js";
+export { default as AuditLogModel } from "@/db/models/AuditLog.js";
+
+export * from "@/db/models/CaptureAgent.js";
+export { default as CaptureAgentModel } from "@/db/models/CaptureAgent.js";
+
+export * from "@/db/models/CaptureAgentDevice.js";
+export { default as CaptureAgentDeviceModel } from "@/db/models/CaptureAgentDevice.js";

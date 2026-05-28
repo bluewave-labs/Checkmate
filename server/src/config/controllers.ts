@@ -12,6 +12,8 @@ import NotificationController from "../controllers/notificationController.js";
 import TagsController from "../controllers/tagController.js";
 import DiagnosticController from "../controllers/diagnosticController.js";
 import IncidentController from "../controllers/incidentController.js";
+import ScriptController from "../controllers/scriptController.js";
+import CaptureAgentController from "../controllers/captureAgentController.js";
 import type { InitializedServices } from "@/config/services.js";
 
 export interface InitializedControllers {
@@ -29,6 +31,8 @@ export interface InitializedControllers {
 	tagController: TagsController;
 	diagnosticController: DiagnosticController;
 	incidentController: IncidentController;
+	scriptController: ScriptController;
+	captureAgentController: CaptureAgentController;
 }
 export const initializeControllers = (services: InitializedServices): InitializedControllers => {
 	return {
@@ -46,5 +50,7 @@ export const initializeControllers = (services: InitializedServices): Initialize
 		tagController: new TagsController(services.tagsService),
 		diagnosticController: new DiagnosticController(services.diagnosticService),
 		incidentController: new IncidentController(services.incidentService),
+		scriptController: new ScriptController(services.scriptService),
+		captureAgentController: new CaptureAgentController(services.captureAgentService),
 	};
 };

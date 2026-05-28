@@ -134,6 +134,18 @@
 				"responseTime": "Response time",
 				"tags": "Tags"
 			}
+		},
+		"actions": {
+			"cancel": "Cancel",
+			"save": "Save",
+			"create": "Create",
+			"delete": "Delete",
+			"edit": "Edit",
+			"show": "Show",
+			"hide": "Hide",
+			"back": "Back",
+			"copy": "Copy",
+			"expand": "Expand"
 		}
 	},
 	"components": {
@@ -479,7 +491,8 @@
 					"optionHardware": "Infrastructure",
 					"optionGrpc": "gRPC",
 					"optionWebSocket": "WebSocket",
-					"optionDns": "DNS"
+					"optionDns": "DNS",
+					"optionScript": "Script"
 				}
 			}
 		},
@@ -602,8 +615,10 @@
 						"grpc": "Enter the hostname and port of the gRPC server, optionally specify a service name for the health check, and add a display name.",
 						"websocket": "Enter the WebSocket URL to monitor (e.g., wss://example.com/socket) and add a display name.",
 						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure. The Capture endpoint URL must include the full path /api/v1/metrics (e.g. http://192.168.1.10:5001/api/v1/metrics). For the authorization secret, paste only the token string — don't include 'Bearer'.",
-						"dns": "Monitor if a specific DNS server is responding."
-					}
+						"dns": "Monitor if a specific DNS server is responding.",
+						"script": "Run a Bash, PowerShell, or Python script on a registered Capture agent. The Capture agent URL is the network address Checkmate calls to dispatch the execution."
+					},
+					"description-mch": "Enter the URL or address of the resource to monitor"
 				},
 				"ignoreTls": {
 					"description": "Configure TLS/SSL certificate validation for HTTPS connections.",
@@ -644,7 +659,8 @@
 					"optionPingDescription": "Use ICMP Ping to monitor if a server is online.",
 					"optionPortDescription": "Monitor if a specific port on a server is open.",
 					"optionDnsDescription": "Monitor if a specific DNS server is responding.",
-					"title": "Type"
+					"title": "Type",
+					"optionScriptDescription": "Run a custom Bash, Python, or PowerShell script on a server or probe and use the exit code as the monitor status."
 				},
 				"thresholds": {
 					"title": "Alert thresholds",
@@ -713,6 +729,44 @@
 						"title": "Clear all monitoring history?",
 						"description": "This will permanently delete all monitoring history, statistics, and check data for your team. This action cannot be undone.",
 						"confirm": "Yes, clear all stats"
+					}
+				},
+				"script": {
+					"title": "Script configuration",
+					"description": "Choose a saved script and how the agent should execute it.",
+					"option": {
+						"target": {
+							"label": "Execution target",
+							"capture": "Capture agent",
+							"probe": "Probe server"
+						},
+						"scriptId": {
+							"label": "Script",
+							"placeholder": "Select a script"
+						},
+						"expectedExit": {
+							"label": "Expected exit code"
+						},
+						"regex": {
+							"label": "Output match regex (optional)"
+						},
+						"timeout": {
+							"label": "Max execution time"
+						},
+						"captureAgent": {
+							"label": "Capture agent",
+							"placeholder": "Select a capture agent",
+							"helper": "The agent that will dispatch script executions."
+						},
+						"device": {
+							"label": "Target device",
+							"placeholder": "Select a device",
+							"helper": "Optional: feed %%hostname%% / %%ip%% / %%devicename%% from this device."
+						},
+						"warningCountsAsDown": {
+							"label": "Warning counts as down",
+							"description": "When enabled, a Warning status line will mark the monitor as down."
+						}
 					}
 				}
 			}
@@ -1600,6 +1654,197 @@
 			"header": {
 				"title": "Uptime monitors",
 				"description": "Watch HTTP endpoints, pings, containers, and ports — and get alerted the moment something goes down."
+			}
+		},
+		"scripts": {
+			"header": {
+				"title": "Scripts",
+				"description": "Manage scripts that power your script monitors"
+			},
+			"fallback": {
+				"title": "No scripts yet",
+				"description": "Scripts are reusable pieces of code that run on your servers or probes and return a status. Create one to use it in a script monitor.",
+				"actionButton": "Create your first script"
+			},
+			"table": {
+				"name": "Name",
+				"runtime": "Runtime",
+				"updated": "Last modified",
+				"actions": "Actions"
+			},
+			"create": {
+				"title": "Create script",
+				"editTitle": "Edit script",
+				"name": "Name",
+				"description": "Description",
+				"runtime": "Runtime",
+				"body": "Script body",
+				"parameters": "Default parameters",
+				"addParameter": "Add parameter",
+				"parameterKey": "Key",
+				"parameterValue": "Value",
+				"runtimes": {
+					"bash": "Bash",
+					"python": "Python",
+					"powershell": "PowerShell"
+				},
+				"help": {
+					"outputFormat": {
+						"title": "Output format",
+						"description": "Emit one of these status lines to set monitor state."
+					},
+					"variables": {
+						"title": "Available variables",
+						"columnVariable": "Variable",
+						"columnDescription": "Description"
+					},
+					"datapoints": {
+						"title": "Tracking datapoints",
+						"description": "Add numeric values to track over time as sparkline charts."
+					},
+					"examples": {
+						"title": "Example scripts",
+						"use": "Use this template"
+					}
+				}
+			}
+		},
+		"captureAgents": {
+			"header": {
+				"title": "Capture agents",
+				"description": "Manage agents that collect metrics and execute scripts.",
+				"manage": "Manage capture agents"
+			},
+			"list": {
+				"addAgent": "Add agent",
+				"empty": "No capture agents yet. Add your first Capture agent to start monitoring.",
+				"columnName": "Name",
+				"columnUrl": "URL",
+				"columnCapabilities": "Capabilities",
+				"columnLastSeen": "Last seen",
+				"columnActions": "Actions",
+				"chipMetrics": "Metrics",
+				"chipScripts": "Scripts",
+				"devices": "Devices",
+				"never": "Never",
+				"deleteDialog": {
+					"title": "Delete capture agent?",
+					"description": "This will remove the agent and every device that depends on it."
+				}
+			},
+			"add": {
+				"title": "Register capture agent",
+				"description": "Provide the agent's URL and shared secret. The secret is hashed on the server before storage.",
+				"submit": "Register agent",
+				"connection": {
+					"title": "Connection",
+					"description": "How Checkmate reaches the capture agent."
+				},
+				"capabilities": {
+					"title": "Capabilities",
+					"description": "Pick which workloads this agent should accept.",
+					"metrics": "Can collect metrics",
+					"scripts": "Can execute scripts"
+				},
+				"fields": {
+					"name": {
+						"label": "Name",
+						"placeholder": "prod-capture-eu"
+					},
+					"url": {
+						"label": "URL"
+					},
+					"secret": {
+						"label": "Shared secret",
+						"placeholder": "32+ characters recommended"
+					}
+				},
+				"errors": {
+					"name": "Name is required",
+					"url": "URL is required",
+					"urlScheme": "URL must start with http:// or https://",
+					"secret": "Secret must be at least 8 characters"
+				}
+			},
+			"devices": {
+				"title": "Devices",
+				"description": "Targets the capture agent uses when executing scripts.",
+				"add": {
+					"title": "Add device",
+					"description": "Devices feed the %%hostname%%, %%ip%%, and %%devicename%% variables when scripts run.",
+					"submit": "Add device",
+					"identity": {
+						"title": "Identity",
+						"description": "How Checkmate addresses this host."
+					},
+					"auth": {
+						"title": "Authentication",
+						"description": "Choose how the capture agent should authenticate when running a script on this device."
+					},
+					"fields": {
+						"name": "Name",
+						"hostname": "Hostname",
+						"ip": "IP address",
+						"ipPlaceholder": "optional — for %%ip%% variable",
+						"os": "Operating system",
+						"authType": "Auth type",
+						"username": "Username",
+						"password": "Password",
+						"port": "Port",
+						"sshKeyFingerprint": "SSH key fingerprint"
+					},
+					"errors": {
+						"name": "Name is required",
+						"hostname": "Hostname is required"
+					}
+				},
+				"empty": "No devices yet. Devices unlock per-host variables like %%hostname%%.",
+				"columnName": "Name",
+				"columnHostname": "Hostname",
+				"columnIp": "IP",
+				"columnOs": "OS",
+				"columnAuth": "Auth",
+				"columnCredentials": "Has creds",
+				"columnActions": "Actions",
+				"deleteDialog": {
+					"title": "Delete device?",
+					"description": "Monitors that reference this device will be unable to inject device variables until you reassign them."
+				},
+				"os": {
+					"unknown": "Unknown",
+					"linux": "Linux",
+					"windows": "Windows",
+					"macos": "macOS"
+				},
+				"auth": {
+					"none": "None",
+					"ssh": "SSH",
+					"winrm": "WinRM"
+				}
+			}
+		},
+		"scriptMonitor": {
+			"details": {
+				"unknown": "Script monitor",
+				"statusBanner": "Status",
+				"lastCheck": "Last check",
+				"lastExecution": "Last execution",
+				"datapoints": "Datapoints",
+				"datapointEmpty": "No data points yet for {{name}}",
+				"executionHistory": "Execution history",
+				"columnTime": "Time",
+				"columnStatus": "Status",
+				"columnMessage": "Message",
+				"columnExit": "Exit",
+				"columnDuration": "Duration",
+				"target": "Target",
+				"exitCode": "Exit code",
+				"duration": "Duration",
+				"timedOut": "Timed out",
+				"rawOutput": "Raw output",
+				"toggleRaw": "Toggle raw output",
+				"noOutput": "No output captured.",
+				"noStdout": "(no stdout)"
 			}
 		}
 	}

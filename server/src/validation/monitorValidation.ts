@@ -2,6 +2,24 @@ import { z } from "zod";
 import { booleanCoercion, dnsHostnameRegex, dnsServerValidation } from "./shared.js";
 import { GeoContinents } from "@/types/geoCheck.js";
 import { DnsRecordTypes, MonitorMatchMethods, MonitorStatuses, MonitorTypes, PageSpeedStrategies } from "@/types/monitor.js";
+import { ScriptExecutionTargets, SCRIPT_MAX_EXECUTION_TIME_MS_DEFAULT, SCRIPT_MAX_EXECUTION_TIME_MS_HARD_CAP } from "@/types/script.js";
+
+const objectIdLike = z.string().regex(/^[a-f0-9]{24}$/i, "Invalid ID format");
+const scriptParametersValidation = z.record(z.string(), z.string());
+const scriptRegexValidation = z
+	.string()
+	.refine(
+		(value) => {
+			if (!value || value.length === 0) return true;
+			try {
+				new RegExp(value);
+				return true;
+			} catch {
+				return false;
+			}
+		},
+		{ message: "Must be a valid regular expression" }
+	);
 
 export const getMonitorByIdParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
@@ -61,6 +79,41 @@ const refineStrategyType = (body: { type?: string; strategy?: string }, ctx: z.R
 	}
 };
 
+const refineScriptMonitor = (
+	body: {
+		type?: string;
+		scriptId?: string;
+		scriptExecutionTarget?: string;
+		probeId?: string;
+		captureAgentId?: string;
+	},
+	ctx: z.RefinementCtx
+) => {
+	if (body.type !== "script") {
+		return;
+	}
+	if (!body.scriptId) {
+		ctx.addIssue({ code: "custom", path: ["scriptId"], message: "scriptId is required for script monitors" });
+	}
+	// Either a captureAgentId, a legacy probeId (with target=probe), or a
+	// legacy capture target with the monitor URL acting as the execution
+	// endpoint must be present so the script service can resolve a target.
+	const hasExecutionTarget =
+		Boolean(body.captureAgentId) ||
+		Boolean(body.probeId) ||
+		body.scriptExecutionTarget === "capture";
+	if (!hasExecutionTarget) {
+		ctx.addIssue({
+			code: "custom",
+			path: ["captureAgentId"],
+			message: "captureAgentId is required for script monitors (or supply probeId for legacy probe-target monitors)",
+		});
+	}
+	if (body.scriptExecutionTarget === "probe" && !body.probeId) {
+		ctx.addIssue({ code: "custom", path: ["probeId"], message: "probeId is required when scriptExecutionTarget is probe" });
+	}
+};
+
 export const createMonitorBodyValidation = z
 	.object({
 		_id: z.string().optional(),
@@ -95,9 +148,25 @@ export const createMonitorBodyValidation = z
 		geoCheckInterval: z.number().min(300000).optional(),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
+		scriptId: objectIdLike.optional(),
+		scriptExecutionTarget: z.enum(ScriptExecutionTargets).optional(),
+		probeId: objectIdLike.optional(),
+		captureAgentId: objectIdLike.optional(),
+		deviceId: objectIdLike.optional(),
+		warningCountsAsDown: z.boolean().optional(),
+		scriptExitCodeSuccess: z.number().int().min(0).max(255).default(0),
+		scriptOutputMatchRegex: z.union([scriptRegexValidation, z.literal("")]).optional(),
+		scriptMaxExecutionTimeMs: z
+			.number()
+			.int()
+			.min(1000)
+			.max(SCRIPT_MAX_EXECUTION_TIME_MS_HARD_CAP)
+			.default(SCRIPT_MAX_EXECUTION_TIME_MS_DEFAULT),
+		scriptParameterOverrides: scriptParametersValidation.optional(),
 	})
 	.superRefine(refineDnsHostname)
-	.superRefine(refineStrategyType);
+	.superRefine(refineStrategyType)
+	.superRefine(refineScriptMonitor);
 
 export const editMonitorBodyValidation = z
 	.object({
@@ -131,6 +200,16 @@ export const editMonitorBodyValidation = z
 		geoCheckInterval: z.number().min(300000).optional(),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
+		scriptId: objectIdLike.optional(),
+		scriptExecutionTarget: z.enum(ScriptExecutionTargets).optional(),
+		probeId: objectIdLike.optional(),
+		captureAgentId: objectIdLike.optional(),
+		deviceId: objectIdLike.optional(),
+		warningCountsAsDown: z.boolean().optional(),
+		scriptExitCodeSuccess: z.number().int().min(0).max(255).optional(),
+		scriptOutputMatchRegex: z.union([scriptRegexValidation, z.literal("")]).optional(),
+		scriptMaxExecutionTimeMs: z.number().int().min(1000).max(SCRIPT_MAX_EXECUTION_TIME_MS_HARD_CAP).optional(),
+		scriptParameterOverrides: scriptParametersValidation.optional(),
 	})
 	.superRefine(refineDnsHostname)
 	.superRefine(refineStrategyType);

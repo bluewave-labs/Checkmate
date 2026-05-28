@@ -39,10 +39,18 @@ import CreateNotifications from "@/Pages/Notifications/create";
 import Tags from "@/Pages/Tags";
 import CreateTags from "@/Pages/Tags/create";
 
+// Scripts
+import Scripts from "@/Pages/Scripts";
+import CreateScript from "@/Pages/Scripts/Create";
+
 // Settings
 import Account from "@/Pages/Account";
 import EditUser from "@/Pages/Account/EditUser";
 import Settings from "@/Pages/Settings";
+import CaptureAgents from "@/Pages/Settings/CaptureAgents";
+import AddCaptureAgent from "@/Pages/Settings/CaptureAgents/AddAgent";
+import CaptureAgentDevices from "@/Pages/Settings/CaptureAgents/Devices";
+import AddCaptureAgentDevice from "@/Pages/Settings/CaptureAgents/Devices/AddDevice";
 
 import Maintenance from "@/Pages/Maintenance";
 import CreateNewMaintenanceWindow from "@/Pages/Maintenance/create";
@@ -179,6 +187,19 @@ const Routes = () => {
 				/>
 
 				<Route
+					path="scripts"
+					element={<Scripts />}
+				/>
+				<Route
+					path="scripts/create"
+					element={<CreateScript />}
+				/>
+				<Route
+					path="scripts/configure/:scriptId"
+					element={<CreateScript />}
+				/>
+
+				<Route
 					path="maintenance"
 					element={<Maintenance />}
 				/>
@@ -189,6 +210,30 @@ const Routes = () => {
 				<Route
 					path="settings"
 					element={<Settings />}
+				/>
+				<Route
+					path="settings/capture-agents"
+					element={<CaptureAgents />}
+				/>
+				<Route
+					path="settings/capture-agents/new"
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<AddCaptureAgent />
+						</RoleProtectedRoute>
+					}
+				/>
+				<Route
+					path="settings/capture-agents/:agentId/devices"
+					element={<CaptureAgentDevices />}
+				/>
+				<Route
+					path="settings/capture-agents/:agentId/devices/new"
+					element={
+						<RoleProtectedRoute roles={["admin", "superadmin"]}>
+							<AddCaptureAgentDevice />
+						</RoleProtectedRoute>
+					}
 				/>
 
 				<Route

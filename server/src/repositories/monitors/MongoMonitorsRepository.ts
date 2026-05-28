@@ -476,6 +476,20 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			geoCheckInterval: doc.geoCheckInterval ?? 300000,
 			dnsServer: doc.dnsServer ?? undefined,
 			dnsRecordType: doc.dnsRecordType ?? undefined,
+			scriptId: (doc as unknown as { scriptId?: unknown }).scriptId ? toStringId((doc as unknown as { scriptId?: unknown }).scriptId) : undefined,
+			scriptExecutionTarget: (doc as unknown as { scriptExecutionTarget?: Monitor["scriptExecutionTarget"] }).scriptExecutionTarget,
+			probeId: (doc as unknown as { probeId?: unknown }).probeId ? toStringId((doc as unknown as { probeId?: unknown }).probeId) : undefined,
+			captureAgentId: (doc as unknown as { captureAgentId?: unknown }).captureAgentId
+				? toStringId((doc as unknown as { captureAgentId?: unknown }).captureAgentId)
+				: undefined,
+			deviceId: (doc as unknown as { deviceId?: unknown }).deviceId
+				? toStringId((doc as unknown as { deviceId?: unknown }).deviceId)
+				: undefined,
+			warningCountsAsDown: (doc as unknown as { warningCountsAsDown?: boolean }).warningCountsAsDown ?? false,
+			scriptExitCodeSuccess: (doc as unknown as { scriptExitCodeSuccess?: number }).scriptExitCodeSuccess,
+			scriptOutputMatchRegex: (doc as unknown as { scriptOutputMatchRegex?: string }).scriptOutputMatchRegex,
+			scriptMaxExecutionTimeMs: (doc as unknown as { scriptMaxExecutionTimeMs?: number }).scriptMaxExecutionTimeMs,
+			scriptParameterOverrides: (doc as unknown as { scriptParameterOverrides?: Record<string, string> }).scriptParameterOverrides ?? {},
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
@@ -540,6 +554,20 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			geoCheckInterval: doc.geoCheckInterval ?? 300000,
 			dnsServer: doc.dnsServer ?? undefined,
 			dnsRecordType: doc.dnsRecordType ?? undefined,
+			scriptId: (doc as unknown as { scriptId?: unknown }).scriptId ? toStringId((doc as unknown as { scriptId?: unknown }).scriptId) : undefined,
+			scriptExecutionTarget: (doc as unknown as { scriptExecutionTarget?: Monitor["scriptExecutionTarget"] }).scriptExecutionTarget,
+			probeId: (doc as unknown as { probeId?: unknown }).probeId ? toStringId((doc as unknown as { probeId?: unknown }).probeId) : undefined,
+			captureAgentId: (doc as unknown as { captureAgentId?: unknown }).captureAgentId
+				? toStringId((doc as unknown as { captureAgentId?: unknown }).captureAgentId)
+				: undefined,
+			deviceId: (doc as unknown as { deviceId?: unknown }).deviceId
+				? toStringId((doc as unknown as { deviceId?: unknown }).deviceId)
+				: undefined,
+			warningCountsAsDown: (doc as unknown as { warningCountsAsDown?: boolean }).warningCountsAsDown ?? false,
+			scriptExitCodeSuccess: (doc as unknown as { scriptExitCodeSuccess?: number }).scriptExitCodeSuccess,
+			scriptOutputMatchRegex: (doc as unknown as { scriptOutputMatchRegex?: string }).scriptOutputMatchRegex,
+			scriptMaxExecutionTimeMs: (doc as unknown as { scriptMaxExecutionTimeMs?: number }).scriptMaxExecutionTimeMs,
+			scriptParameterOverrides: (doc as unknown as { scriptParameterOverrides?: Record<string, string> }).scriptParameterOverrides ?? {},
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};

@@ -2,8 +2,23 @@ import type { CheckSnapshot } from "@/types/check.js";
 export type { CheckSnapshot } from "@/types/check.js";
 import type { GeoContinent, GroupedGeoCheck } from "@/types/geoCheck.js";
 export type { GeoContinent } from "@/types/geoCheck.js";
+import type { ScriptExecutionTarget } from "@/types/script.js";
 
-export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"] as const;
+// MonitorTypes is alphabetical (with "unknown" last as a sentinel).
+export const MonitorTypes = [
+	"dns",
+	"docker",
+	"game",
+	"grpc",
+	"hardware",
+	"http",
+	"pagespeed",
+	"ping",
+	"port",
+	"script",
+	"websocket",
+	"unknown",
+] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
 export const PageSpeedStrategies = ["desktop", "mobile"] as const;
@@ -79,6 +94,17 @@ export interface Monitor {
 	geoCheckInterval?: number;
 	dnsServer?: string;
 	dnsRecordType?: DnsRecordType;
+	// Script monitor fields
+	scriptId?: string;
+	scriptExecutionTarget?: ScriptExecutionTarget;
+	probeId?: string;
+	captureAgentId?: string;
+	deviceId?: string;
+	warningCountsAsDown?: boolean;
+	scriptExitCodeSuccess?: number;
+	scriptOutputMatchRegex?: string;
+	scriptMaxExecutionTimeMs?: number;
+	scriptParameterOverrides?: Record<string, string>;
 	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;
@@ -113,6 +139,20 @@ export interface UptimeDetailsResult {
 		groupedAvgResponseTime: number;
 		groupedUptimePercentage: number;
 	};
+	monitorStats: import("./monitorStats.js").MonitorStats | null;
+}
+
+export interface ScriptMonitorSummary {
+	totalChecks: number;
+	upChecks: number;
+	downChecks: number;
+	uptimePercentage: number;
+}
+
+export interface ScriptMonitorDetailsResult {
+	monitor: Monitor;
+	checks: import("./check.js").Check[];
+	summary: ScriptMonitorSummary;
 	monitorStats: import("./monitorStats.js").MonitorStats | null;
 }
 

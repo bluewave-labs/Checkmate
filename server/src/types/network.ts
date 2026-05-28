@@ -125,6 +125,10 @@ export interface DNSStatusPayload {
 	results: unknown;
 }
 
+// ScriptStatusPayload is re-exported from types/script via types/index.
+// We import it here to keep MonitorPayloadMap exhaustive.
+import type { ScriptStatusPayload } from "@/types/script.js";
+
 export interface MonitorPayloadMap {
 	ping: PingStatusPayload;
 	http: HttpStatusPayload;
@@ -136,6 +140,7 @@ export interface MonitorPayloadMap {
 	grpc: GrpcStatusPayload;
 	websocket: WebSocketStatusPayload;
 	dns: DNSStatusPayload;
+	script: ScriptStatusPayload;
 	unknown: unknown;
 }
 

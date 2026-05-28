@@ -6,6 +6,8 @@ import MigrationModel from "../models/Migration.js";
 import { migrateStatusPageTypeToArray } from "./0005_migrateStatusPageTypeToArray.js";
 import { cleanupDuplicateMonitorStatsForUniqueIndex } from "./0006_cleanupDuplicateMonitorStatsForUniqueIndex.js";
 import { migrateMaintenanceWindowMonitorIdToArray } from "./0007_migrateMaintenanceWindowMonitorIdToArray.js";
+import { addScriptMonitorSupport } from "./0008_addScriptMonitorSupport.js";
+import { migrateProbesToCaptureAgents } from "./0009_migrateProbesToCaptureAgents.js";
 import type { ILogger } from "@/utils/logger.js";
 
 type MigrationEntry = {
@@ -21,6 +23,8 @@ const migrations: MigrationEntry[] = [
 	{ name: "0005_migrateStatusPageTypeToArray", execute: migrateStatusPageTypeToArray },
 	{ name: "0006_cleanupDuplicateMonitorStatsForUniqueIndex", execute: cleanupDuplicateMonitorStatsForUniqueIndex },
 	{ name: "0007_migrateMaintenanceWindowMonitorIdToArray", execute: migrateMaintenanceWindowMonitorIdToArray },
+	{ name: "0008_addScriptMonitorSupport", execute: addScriptMonitorSupport },
+	{ name: "0009_migrateProbesToCaptureAgents", execute: migrateProbesToCaptureAgents },
 ];
 
 const runMigrations = async (logger?: ILogger) => {

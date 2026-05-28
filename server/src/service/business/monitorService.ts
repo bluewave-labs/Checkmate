@@ -8,6 +8,7 @@ import type {
 	PageSpeedDetailsResult,
 	GamesMap,
 	GroupedGeoCheckResult,
+	ScriptMonitorDetailsResult,
 } from "@/types/monitor.js";
 import { supportsGeoCheck, supportsUptimeDetails } from "@/types/monitor.js";
 import type { UptimeChecksResult, HardwareChecksResult, PageSpeedChecksResult } from "@/types/check.js";
@@ -41,7 +42,8 @@ export interface IMonitorService {
 	addDemoMonitors(args: { userId: string; teamId: string }): Promise<Monitor[]>;
 
 	// read
-	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<UptimeDetailsResult>;
+	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<UptimeDetailsResult | ScriptMonitorDetailsResult>;
+	getScriptMonitorDetailsById(args: { teamId: string; monitorId: string }): Promise<ScriptMonitorDetailsResult>;
 	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<HardwareDetailsResult>;
 	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<PageSpeedDetailsResult>;
 	getGeoChecksByMonitorId(args: {
@@ -210,11 +212,19 @@ export class MonitorService implements IMonitorService {
 		teamId: string;
 		monitorId: string;
 		dateRange: string;
-	}): Promise<UptimeDetailsResult> => {
+	}): Promise<UptimeDetailsResult | ScriptMonitorDetailsResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
 			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
 		}
+
+		// Script monitors do not have grouped uptime histograms but they do
+		// have a per-check execution history. Delegate to the script-specific
+		// loader so the controller can serve a single endpoint for both.
+		if (monitor.type === "script") {
+			return this.getScriptMonitorDetailsById({ teamId, monitorId });
+		}
+
 		const rangeKey = dateRange as DateRangeKey;
 		const { start, end } = this.getDateRange(rangeKey);
 		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, start, end, this.getDateFormat(rangeKey), {
@@ -235,6 +245,37 @@ export class MonitorService implements IMonitorService {
 				groupedAvgResponseTime: checksData.avgResponseTime,
 				groupedUptimePercentage: checksData.uptimePercentage,
 			},
+			monitorStats,
+		};
+	};
+
+	getScriptMonitorDetailsById = async ({
+		teamId,
+		monitorId,
+	}: {
+		teamId: string;
+		monitorId: string;
+	}): Promise<ScriptMonitorDetailsResult> => {
+		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
+		if (!monitor) {
+			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
+		}
+		if (monitor.type !== "script") {
+			throw new AppError({ message: `Monitor ${monitor.id} is not a script monitor`, status: 400 });
+		}
+
+		const { checks } = await this.checksRepository.findByMonitorId(monitor.id, "desc", "all", undefined, 0, 50, undefined);
+		const totalChecks = checks.length;
+		const upChecks = checks.filter((c) => c.status === true).length;
+		const downChecks = checks.filter((c) => c.status === false).length;
+		const uptimePercentage = totalChecks === 0 ? 0 : Math.round((upChecks / totalChecks) * 1000) / 10;
+
+		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
+
+		return {
+			monitor,
+			checks,
+			summary: { totalChecks, upChecks, downChecks, uptimePercentage },
 			monitorStats,
 		};
 	};

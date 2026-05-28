@@ -1,6 +1,7 @@
 import { Schema, model, Types } from "mongoose";
 import type { Monitor, MonitorMatchMethod, CheckSnapshot } from "@/types/monitor.js";
 import { DnsRecordTypes, MonitorTypes, MonitorStatuses, PageSpeedStrategies } from "@/types/monitor.js";
+import { ScriptExecutionTargets, SCRIPT_MAX_EXECUTION_TIME_MS_DEFAULT } from "@/types/script.js";
 import type {
 	CheckAudits,
 	CheckCaptureInfo,
@@ -368,6 +369,50 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		dnsRecordType: {
 			type: String,
 			enum: DnsRecordTypes,
+		},
+		scriptId: {
+			type: Schema.Types.ObjectId,
+			ref: "Script",
+		},
+		scriptExecutionTarget: {
+			type: String,
+			enum: ScriptExecutionTargets,
+		},
+		probeId: {
+			type: Schema.Types.ObjectId,
+			ref: "ProbeServer",
+		},
+		captureAgentId: {
+			type: Schema.Types.ObjectId,
+			ref: "CaptureAgent",
+		},
+		deviceId: {
+			type: Schema.Types.ObjectId,
+			ref: "CaptureAgentDevice",
+		},
+		warningCountsAsDown: {
+			type: Boolean,
+			default: false,
+		},
+		scriptExitCodeSuccess: {
+			type: Number,
+			default: 0,
+			min: 0,
+			max: 255,
+		},
+		scriptOutputMatchRegex: {
+			type: String,
+			default: "",
+		},
+		scriptMaxExecutionTimeMs: {
+			type: Number,
+			default: SCRIPT_MAX_EXECUTION_TIME_MS_DEFAULT,
+			min: 1000,
+			max: 300000,
+		},
+		scriptParameterOverrides: {
+			type: Schema.Types.Mixed,
+			default: {},
 		},
 		recentChecks: {
 			type: [checkSnapshotSchema],

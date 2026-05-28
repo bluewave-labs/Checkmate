@@ -3,17 +3,20 @@ import { Request, Response, NextFunction } from "express";
 import {
 	getChecksParamValidation,
 	getChecksQueryValidation,
+	getChecksFlexibleQueryValidation,
 	getTeamChecksQueryValidation,
 	getChecksSummaryByTeamIdQueryValidation,
 	deleteChecksParamValidation,
 } from "@/validation/checkValidation.js";
 import { ICheckService } from "@/service/index.js";
 import { requireTeamId } from "@/controllers/controllerUtils.js";
+import { AppError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "checkController";
 
 export interface ICheckController {
 	serviceName: string;
+	getChecks: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	getChecksByMonitor: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	getChecksByTeam: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 	getChecksSummaryByTeamId: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
@@ -32,6 +35,54 @@ class CheckController implements ICheckController {
 	get serviceName() {
 		return CheckController.SERVICE_NAME;
 	}
+
+	getChecks = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const validatedQuery = getChecksFlexibleQueryValidation.parse(req.query);
+			const teamId = requireTeamId(req.user?.teamId);
+
+			if (validatedQuery.monitorId) {
+				// Use rowsPerPage as the upper bound; if `limit` is provided it
+				// takes precedence (still capped to 500).
+				const rowsPerPage = validatedQuery.limit ?? validatedQuery.rowsPerPage;
+				const result = await this.checkService.getChecksByMonitor({
+					monitorId: validatedQuery.monitorId,
+					teamId,
+					sortOrder: validatedQuery.sortOrder,
+					dateRange: validatedQuery.dateRange,
+					filter: validatedQuery.filter,
+					page: validatedQuery.page,
+					rowsPerPage,
+					status: validatedQuery.status,
+				});
+				return res.status(200).json({
+					success: true,
+					msg: "Checks retrieved successfully",
+					data: result,
+				});
+			}
+
+			// When no monitorId is provided we list the team's checks.
+			const result = await this.checkService.getChecksByTeam({
+				teamId,
+				sortOrder: validatedQuery.sortOrder,
+				dateRange: validatedQuery.dateRange,
+				page: validatedQuery.page,
+				rowsPerPage: validatedQuery.limit ?? validatedQuery.rowsPerPage,
+				filter: validatedQuery.filter,
+			});
+			return res.status(200).json({
+				success: true,
+				msg: "Checks retrieved successfully",
+				data: result,
+			});
+		} catch (error) {
+			if (error instanceof AppError) {
+				return next(error);
+			}
+			return next(error);
+		}
+	};
 
 	getChecksByMonitor = async (req: Request, res: Response, next: NextFunction) => {
 		try {

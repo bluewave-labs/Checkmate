@@ -42,3 +42,18 @@ export { default as MongoGeoChecksRepository } from "@/repositories/geo-checks/M
 
 export * from "@/repositories/dlq/IDLQRepository.js";
 export { default as MongoDLQRepository } from "@/repositories/dlq/MongoDLQRepository.js";
+
+export * from "@/repositories/scripts/IScriptRepository.js";
+export { default as MongoScriptRepository } from "@/repositories/scripts/MongoScriptRepository.js";
+
+export * from "@/repositories/probes/IProbeRepository.js";
+export { default as MongoProbeRepository } from "@/repositories/probes/MongoProbeRepository.js";
+
+export * from "@/repositories/audit/IAuditRepository.js";
+export { default as MongoAuditRepository } from "@/repositories/audit/MongoAuditRepository.js";
+
+export * from "@/repositories/captureAgents/ICaptureAgentRepository.js";
+export { default as MongoCaptureAgentRepository } from "@/repositories/captureAgents/MongoCaptureAgentRepository.js";
+
+export * from "@/repositories/captureAgentDevices/ICaptureAgentDeviceRepository.js";
+export { default as MongoCaptureAgentDeviceRepository } from "@/repositories/captureAgentDevices/MongoCaptureAgentDeviceRepository.js";

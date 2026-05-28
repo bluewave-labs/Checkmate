@@ -131,6 +131,20 @@ const websocketSchema = baseSchema.extend({
 const hostnameRegex =
 	/^(?=.{1,253}$)([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,63}$/;
 
+// Script monitor schema
+const scriptSchema = baseSchema.extend({
+	type: z.literal("script"),
+	url: z.string().min(1, "Agent URL is required"),
+	secret: z.string().optional(),
+	scriptId: z.string().min(1, "Select a script"),
+	scriptExecutionTarget: z.enum(["capture", "probe"]),
+	probeId: z.string().optional(),
+	scriptExitCodeSuccess: z.number().min(0).max(255).optional(),
+	scriptOutputMatchRegex: z.string().optional(),
+	scriptMaxExecutionTimeMs: z.number().min(1000).max(300000).optional(),
+	scriptParameterOverrides: z.record(z.string(), z.string()).optional(),
+});
+
 // DNS monitor schema
 const dnsSchema = baseSchema.extend({
 	type: z.literal("dns"),
@@ -160,6 +174,7 @@ export const monitorSchema = z.discriminatedUnion("type", [
 	hardwareSchema,
 	websocketSchema,
 	dnsSchema,
+	scriptSchema,
 ]);
 
 export type MonitorFormData = z.infer<typeof monitorSchema>;
@@ -175,4 +190,5 @@ export {
 	pagespeedSchema,
 	hardwareSchema,
 	websocketSchema,
+	scriptSchema,
 };

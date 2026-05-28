@@ -13,6 +13,7 @@ import { TrendingUp, AlertTriangle } from "lucide-react";
 import { ChecksTable } from "@/Pages/Uptime/Details/Components/ChecksTable";
 import { GeoChecksTable } from "@/Pages/Uptime/Details/Components/GeoChecksTable";
 import { MonitorStatBoxes } from "@/Components/monitors";
+import ScriptMonitorDetails from "@/Pages/Uptime/Details/ScriptMonitorDetails";
 
 import { useTheme } from "@mui/material/styles";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
@@ -44,6 +45,15 @@ const UptimeDetailsPage = () => {
 	const { monitorId } = useParams<{ monitorId: string }>();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 
+	// Look up the monitor's type independent of the details endpoint so we
+	// can route script monitors to their dedicated UI without ever calling
+	// the uptime aggregation, which is shaped for HTTP/ping/port families.
+	const { data: monitorTypeData } = useGet<{ type?: string }>(
+		monitorId ? `/monitors/${monitorId}` : null,
+		{},
+		{ keepPreviousData: true, revalidateOnFocus: false }
+	);
+
 	const [page, setPage] = useState<number>(0);
 	const [rowsPerPage, setRowsPerPage] = useState<number>(5);
 	const [geoPage, setGeoPage] = useState<number>(0);
@@ -55,11 +65,17 @@ const UptimeDetailsPage = () => {
 		if (!monitorId) {
 			return null;
 		}
+		if (monitorTypeData?.type === "script") {
+			// Script monitors render via <ScriptMonitorDetails /> below, so we
+			// avoid issuing the uptime aggregation request that does not apply
+			// to scripts.
+			return null;
+		}
 		const params = new URLSearchParams();
 		params.append("dateRange", dateRange);
 		params.append("normalize", "true");
 		return `/monitors/uptime/details/${monitorId}?${params.toString()}`;
-	}, [monitorId, dateRange]);
+	}, [monitorId, monitorTypeData?.type, dateRange]);
 
 	const {
 		data: monitorDetailsData,
@@ -172,6 +188,10 @@ const UptimeDetailsPage = () => {
 
 	const checks = checksData?.checks ?? [];
 	const checksCount = checksData?.checksCount ?? 0;
+
+	if (monitorTypeData?.type === "script" && monitorId) {
+		return <ScriptMonitorDetails monitorId={monitorId} />;
+	}
 
 	return (
 		<BasePage>

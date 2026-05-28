@@ -54,7 +54,12 @@ import {
 	ISettingsService,
 	SettingsService,
 	EnvConfig,
+	IScriptService,
+	ScriptService,
+	ICaptureAgentService,
+	CaptureAgentService,
 } from "@/service/index.js";
+import { ScriptProvider } from "@/service/infrastructure/network/ScriptProvider.js";
 
 // Network providers
 import { PingProvider } from "@/service/infrastructure/network/PingProvider.js";
@@ -106,6 +111,13 @@ import {
 	MongoTeamsRepository,
 	MongoMaintenanceWindowsRepository,
 	MongoSettingsRepository,
+	MongoScriptRepository,
+	MongoProbeRepository,
+	MongoAuditRepository,
+	MongoCaptureAgentRepository,
+	MongoCaptureAgentDeviceRepository,
+	ICaptureAgentRepository,
+	ICaptureAgentDeviceRepository,
 	IMonitorsRepository,
 	IChecksRepository,
 	IGeoChecksRepository,
@@ -120,6 +132,9 @@ import {
 	IIncidentsRepository,
 	ITeamsRepository,
 	IMaintenanceWindowsRepository,
+	IScriptRepository,
+	IProbeRepository,
+	IAuditRepository,
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
 // import { AppError } from "@/utils/AppError.js";
@@ -161,6 +176,13 @@ export type InitializedServices = {
 	incidentsRepository: IIncidentsRepository;
 	teamsRepository: ITeamsRepository;
 	maintenanceWindowsRepository: IMaintenanceWindowsRepository;
+	scriptsRepository: IScriptRepository;
+	probesRepository: IProbeRepository;
+	auditRepository: IAuditRepository;
+	captureAgentsRepository: ICaptureAgentRepository;
+	captureAgentDevicesRepository: ICaptureAgentDeviceRepository;
+	scriptService: IScriptService;
+	captureAgentService: ICaptureAgentService;
 };
 
 export const initializeServices = async ({
@@ -244,6 +266,11 @@ export const initializeServices = async ({
 	const incidentsRepository = new MongoIncidentsRepository();
 	const teamsRepository = new MongoTeamsRepository();
 	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
+	const scriptsRepository = new MongoScriptRepository();
+	const probesRepository = new MongoProbeRepository();
+	const auditRepository = new MongoAuditRepository();
+	const captureAgentsRepository = new MongoCaptureAgentRepository();
+	const captureAgentDevicesRepository = new MongoCaptureAgentDeviceRepository();
 
 	// Inject settings repository into settings service (now that DB is connected)
 	(settingsService as SettingsService).setRepository(settingsRepository);
@@ -260,6 +287,22 @@ export const initializeServices = async ({
 	const webSocketProvider = new WebSocketProvider(WebSocket);
 	const dnsProvider = new DNSProvider(() => new Resolver());
 
+	const scriptService = new ScriptService({
+		scriptRepository: scriptsRepository,
+		probeRepository: probesRepository,
+		auditRepository,
+		captureAgentRepository: captureAgentsRepository,
+		captureAgentDeviceRepository: captureAgentDevicesRepository,
+		logger,
+	});
+	const captureAgentService = new CaptureAgentService({
+		captureAgentRepository: captureAgentsRepository,
+		captureAgentDeviceRepository: captureAgentDevicesRepository,
+		auditRepository,
+		logger,
+	});
+	const scriptProvider = new ScriptProvider(scriptService, logger);
+
 	const networkService = new NetworkService(axios, logger, [
 		pingProvider,
 		httpProvider,
@@ -271,6 +314,7 @@ export const initializeServices = async ({
 		grpcProvider,
 		webSocketProvider,
 		dnsProvider,
+		scriptProvider,
 	]);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 
@@ -423,6 +467,13 @@ export const initializeServices = async ({
 		incidentsRepository,
 		teamsRepository,
 		maintenanceWindowsRepository,
+		scriptsRepository,
+		probesRepository,
+		auditRepository,
+		captureAgentsRepository,
+		captureAgentDevicesRepository,
+		scriptService,
+		captureAgentService,
 	};
 
 	return services;

@@ -123,6 +123,21 @@ export const useMonitorForm = ({
 					dnsRecordType: data?.dnsRecordType || "A",
 				};
 				break;
+			case "script":
+				defaults = {
+					...base,
+					type: "script",
+					url: data?.url || "",
+					secret: data?.secret || "",
+					scriptId: data?.scriptId || "",
+					scriptExecutionTarget: data?.scriptExecutionTarget || "capture",
+					probeId: data?.probeId || "",
+					scriptExitCodeSuccess: data?.scriptExitCodeSuccess ?? 0,
+					scriptOutputMatchRegex: data?.scriptOutputMatchRegex || "",
+					scriptMaxExecutionTimeMs: data?.scriptMaxExecutionTimeMs ?? 30000,
+					scriptParameterOverrides: data?.scriptParameterOverrides || {},
+				};
+				break;
 			default:
 				defaults = {
 					...base,

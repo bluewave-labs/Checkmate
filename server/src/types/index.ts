@@ -16,3 +16,5 @@ export * from "@/types/team.js";
 export * from "@/types/maintenanceWindow.js";
 export * from "@/types/dlqItem.js";
 export * from "@/types/tag.js";
+export * from "@/types/script.js";
+export * from "@/types/captureAgent.js";
