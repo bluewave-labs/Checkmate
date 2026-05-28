@@ -43,6 +43,8 @@
 			"pause": "Pause",
 			"resume": "Resume",
 			"save": "Save",
+			"next": "Next",
+			"back": "Back",
 			"sendInvite": "Send invite",
 			"test": "Test",
 			"testNotifications": "Test notifications",

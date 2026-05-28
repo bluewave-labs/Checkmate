@@ -27,3 +27,4 @@ export * from "./OfflineBanner";
 export * from "./Avatar";
 export * from "./StatusCodeLabel";
 export * from "./StrategyBadge";
+export * from "./StepProgress";
