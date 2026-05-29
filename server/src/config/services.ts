@@ -7,8 +7,9 @@ import {
 	EmailService,
 	BufferService,
 	GlobalPingService,
+	LessSimpleQueue,
 	SuperSimpleQueue,
-	SuperSimpleQueueHelper,
+	QueueHelper,
 	NotificationsService,
 	TagsService,
 	StatusService,
@@ -37,7 +38,7 @@ import {
 	INetworkService,
 	IEmailService,
 	IBufferService,
-	ISuperSimpleQueue,
+	IJobQueue,
 	INotificationsService,
 	ITagsService,
 	IStatusService,
@@ -131,7 +132,7 @@ export type InitializedServices = {
 	emailService: IEmailService;
 	bufferService: IBufferService;
 	statusService: IStatusService;
-	jobQueue: ISuperSimpleQueue;
+	jobQueue: IJobQueue;
 	userService: IUserService;
 	checkService: ICheckService;
 	geoChecksService: IGeoChecksService;
@@ -325,7 +326,7 @@ export const initializeServices = async ({
 
 	const tagsService = new TagsService(tagsRepository, monitorsRepository);
 
-	const superSimpleQueueHelper = new SuperSimpleQueueHelper(
+	const queueHelper = new QueueHelper(
 		logger,
 		networkService,
 		statusService,
@@ -344,7 +345,14 @@ export const initializeServices = async ({
 		geoChecksRepository
 	);
 
-	const superSimpleQueue = await SuperSimpleQueue.create(logger, superSimpleQueueHelper, monitorsRepository);
+	let jobQueue: IJobQueue;
+	switch (envSettings.queueType) {
+		case "lessSimpleQueue":
+			jobQueue = await LessSimpleQueue.create(logger, queueHelper, monitorsRepository, envSettings);
+			break;
+		default:
+			jobQueue = await SuperSimpleQueue.create(logger, queueHelper, monitorsRepository);
+	}
 
 	// Business services
 	const userService = new UserService({
@@ -353,7 +361,7 @@ export const initializeServices = async ({
 		settingsService,
 		logger,
 		jwt,
-		jobQueue: superSimpleQueue,
+		jobQueue,
 		monitorsRepository,
 		usersRepository,
 		invitesRepository,
@@ -373,7 +381,7 @@ export const initializeServices = async ({
 		maintenanceWindowsRepository,
 	});
 	const monitorService = new MonitorService({
-		jobQueue: superSimpleQueue,
+		jobQueue,
 		logger,
 		games,
 		monitorsRepository,
@@ -393,7 +401,7 @@ export const initializeServices = async ({
 		emailService,
 		bufferService,
 		statusService,
-		jobQueue: superSimpleQueue,
+		jobQueue,
 		userService,
 		checkService,
 		geoChecksService,
