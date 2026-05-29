@@ -40,11 +40,11 @@
 <br>
 
 
-Dieses Repository enthält sowohl das Frontend als auch das Backend von Checkmate, einem Open-Source- und selbst gehosteten Überwachungstool zum Verfolgen von Server-Hardware, Verfügbarkeit, Antwortzeiten und Vorfällen in Echtzeit mit ansprechenden Visualisierungen. Checkmate prüft regelmäßig, ob ein Server oder eine Website erreichbar ist und optimal funktioniert, und liefert Echtzeit-Warnungen sowie Berichte zu Verfügbarkeit, Ausfallzeiten und Antwortzeiten der überwachten Dienste.
+Dieses Repository enthält Frontend und Backend von Checkmate — einem Open-Source-, selbst gehosteten Monitoring-Tool, das Server-Hardware, Verfügbarkeit, Antwortzeiten und Vorfälle in Echtzeit mit klaren Visualisierungen verfolgt. Checkmate prüft regelmäßig, ob ein Server oder eine Website erreichbar ist und sauber läuft, und liefert Echtzeit-Alerts und Reports zu Verfügbarkeit, Ausfallzeiten und Antwortzeiten der überwachten Dienste.
 
-Checkmate hat außerdem einen Agenten namens [Capture](https://github.com/bluewave-labs/capture), um Daten von entfernten Servern abzurufen. Capture ist für den Betrieb von Checkmate nicht zwingend erforderlich, liefert aber zusätzliche Einblicke in CPU, RAM, Festplatte und Temperatur Ihrer Server. Capture läuft auf Linux, Windows, Mac, Raspberry Pi oder jedem anderen Gerät, das Go ausführen kann.
+Checkmate hat außerdem einen Agenten namens [Capture](https://github.com/bluewave-labs/capture), der Daten von entfernten Servern abholt. Capture ist nicht zwingend erforderlich, liefert aber zusätzliche Informationen zu CPU, RAM, Festplatte und Temperatur deiner Server. Capture läuft auf Linux, Windows, macOS, Raspberry Pi oder jedem anderen Gerät, das Go ausführen kann.
 
-Checkmate wurde mit über 1.000 aktiven Monitoren ohne nennenswerte Probleme oder Leistungseinbußen erfolgreich getestet.
+Checkmate wurde mit über 1.000 aktiven Monitoren stresstestet — ohne erkennbare Probleme oder Performance-Engpässe.
 
 ## 📚 Inhaltsverzeichnis
 
@@ -63,14 +63,14 @@ Checkmate wurde mit über 1.000 aktiven Monitoren ohne nennenswerte Probleme ode
 <a id="demo"></a>
 ## Demo
 
-Sie können den neuesten Build von [Checkmate](https://demo.checkmate.so/) live ausprobieren.
+Den aktuellen Build von [Checkmate](https://demo.checkmate.so/) kannst du live ausprobieren.
 
-Der Benutzername lautet demouser@demo.com und das Passwort ist Demouser1! (Hinweis: wir aktualisieren den Demo-Server gelegentlich; falls etwas nicht funktioniert, melden Sie sich bitte im Discussions-Kanal).
+Der Benutzername ist demouser@demo.com, das Passwort Demouser1!. (Wir aktualisieren den Demo-Server ab und zu — sollte er gerade nicht erreichbar sein, sag uns Bescheid im Discussions-Kanal.)
 
 <a id="users-guide"></a>
 ## Benutzerhandbuch
 
-Eine Nutzungsanleitung finden Sie [hier](https://checkmate.so/docs).
+Die Nutzungsanleitung findest du [hier](https://checkmate.so/docs).
 
 ## Voraussetzungen
 - [Docker](https://www.docker.com/) installiert
@@ -79,20 +79,20 @@ Eine Nutzungsanleitung finden Sie [hier](https://checkmate.so/docs).
 <a id="installation"></a>
 ## Installation
 
-Die Installationsanleitung finden Sie im [Dokumentationsportal von Checkmate](https://checkmate.so/docs).
+Die Installationsanleitung findest du im [Dokumentationsportal von Checkmate](https://checkmate.so/docs).
 
-Alternativ können Sie auch [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Südafrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) oder [Pikapods](https://www.pikapods.com/) verwenden, um schnell eine Checkmate-Instanz aufzusetzen. Wenn Sie Ihre Server-Infrastruktur überwachen möchten, benötigen Sie den [Capture-Agenten](https://github.com/bluewave-labs/capture). Das Capture-Repository enthält ebenfalls die Installationsanleitung.
+Alternativ kannst du [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Südafrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) oder [Pikapods](https://www.pikapods.com/) nutzen, um schnell eine Checkmate-Instanz hochzuziehen. Für das Monitoring deiner Server-Infrastruktur brauchst du den [Capture-Agenten](https://github.com/bluewave-labs/capture); dessen Repository enthält ebenfalls eine Installationsanleitung.
 
-### Verwendung einer benutzerdefinierten CA
+### Eigene CA verwenden
 
-Wenn Sie interne HTTPS-Endpunkte mit Zertifikaten von privaten Zertifizierungsstellen (wie Smallstep) überwachen müssen, lesen Sie unseren [Leitfaden für vertrauenswürdige benutzerdefinierte CAs](../custom-ca-trust.md) für Docker-Konfigurationsoptionen.
+Wenn du interne HTTPS-Endpunkte mit Zertifikaten privater Zertifizierungsstellen (z. B. Smallstep) überwachen möchtest, schau in unseren [Leitfaden für eigene CAs](../custom-ca-trust.md) — dort stehen die passenden Docker-Konfigurationen.
 
-Weitere Dokumentation finden Sie im [docs-Verzeichnis](../).
+Weitere Dokumentation liegt im [docs-Verzeichnis](../).
 
 <a id="performance"></a>
 ## Leistung
 
-Dank umfangreicher Optimierungen läuft Checkmate mit einem außergewöhnlich geringen Speicherverbrauch und benötigt nur minimale RAM- und CPU-Ressourcen. Hier sehen Sie den Speicherverbrauch einer Node.js-Instanz auf einem Server, der 323 Server jede Minute überwacht:
+Dank umfangreicher Optimierungen läuft Checkmate mit einem außergewöhnlich geringen Speicherverbrauch und braucht nur sehr wenig RAM und CPU. Hier der Speicherverbrauch einer Node.js-Instanz auf einem Server, der jede Minute 323 Server prüft:
 
 ![image](https://github.com/user-attachments/assets/37e04a75-d83a-488f-b25c-025511b492c9)
 
@@ -103,12 +103,12 @@ Hier der Speicherverbrauch von MongoDB und Redis auf demselben Server (398 MB bz
 <a id="questions--ideas"></a>
 ## Fragen & Ideen
 
-Wenn Sie Fragen, Vorschläge oder Anmerkungen haben, stehen Ihnen mehrere Möglichkeiten offen:
+Falls du Fragen, Vorschläge oder Anmerkungen hast, gibt es mehrere Anlaufstellen:
 
-- [Discord-Kanal](https://discord.gg/NAb6H3UTjK) (bevorzugt)
-- [GitHub Discussions](https://github.com/bluewave-labs/Checkmate/discussions) (wir schauen dort von Zeit zu Zeit vorbei)
+- [Discord](https://discord.gg/NAb6H3UTjK) (bevorzugt)
+- [GitHub Discussions](https://github.com/bluewave-labs/Checkmate/discussions) (wir schauen regelmäßig vorbei)
 
-Stellen Sie gerne Fragen oder teilen Sie Ihre Ideen — wir freuen uns auf Ihr Feedback!
+Frag einfach drauflos oder teile deine Ideen — wir freuen uns auf dein Feedback!
 
 <a id="features"></a>
 ## Funktionen
@@ -166,10 +166,10 @@ Stellen Sie gerne Fragen oder teilen Sie Ihre Ideen — wir freuen uns auf Ihr F
 <a id="a-few-links"></a>
 ## Einige Links
 
-- Wenn Sie uns unterstützen möchten, geben Sie dem Projekt gerne einen ⭐ und klicken Sie auf „watch“.
-- Haben Sie eine Frage oder einen Vorschlag zur Roadmap oder zum Funktionsumfang? Schauen Sie in unseren [Discord-Kanal](https://discord.gg/NAb6H3UTjK) oder ins [Discussions](https://github.com/bluewave-labs/checkmate/discussions)-Forum.
-- Sie möchten benachrichtigt werden, wenn es ein neues Release gibt? Nutzen Sie [Newreleases](https://newreleases.io/), einen kostenlosen Dienst zum Verfolgen von Releases.
-- Sehen Sie sich ein [Installations- und Anwendungs-Video](https://www.youtube.com/watch?v=GfFOc0xHIwY) zu Checkmate an.
+- Wenn dir das Projekt gefällt, gib ihm gerne einen ⭐ und klick auf „watch“.
+- Frage oder Vorschlag zur Roadmap oder zum Funktionsumfang? Komm in unseren [Discord-Kanal](https://discord.gg/NAb6H3UTjK) oder ins [Discussions](https://github.com/bluewave-labs/checkmate/discussions)-Forum.
+- Du willst benachrichtigt werden, wenn ein neues Release rauskommt? [Newreleases](https://newreleases.io/) ist ein kostenloser Release-Tracker.
+- Schau dir gerne ein [Installations- und Anwendungs-Video](https://www.youtube.com/watch?v=GfFOc0xHIwY) zu Checkmate an.
 
 <a id="contributing"></a>
 ## Mitwirken
@@ -178,17 +178,17 @@ Wir sind [Alex](http://github.com/ajhollid) (Team-Lead), [Gorkem](http://github.
 
 Wir sind stolz darauf, auf jeder Ebene starke Beziehungen zu unseren Beitragenden zu pflegen. Obwohl Checkmate ein junges Projekt ist, hat es bereits über 7.000 Sterne und mehr als 90 Beitragende aus aller Welt angezogen.
 
-Unser Repository ist mit Sternen von Mitarbeitern aus **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes und NEC** versehen — zögern Sie also nicht, mitzumachen, beizutragen und gemeinsam mit uns zu lernen!
+Mitarbeiterinnen und Mitarbeiter von **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes und NEC** haben unser Repository bereits gesternt — also keine falsche Zurückhaltung: mitmachen, beitragen und mit uns lernen!
 
-So können Sie beitragen:
+So kannst du beitragen:
 
-0. Diesem Repo einen Stern geben :)
-1. Lesen Sie den [Beitragsleitfaden](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). Neueinsteigende sind eingeladen, das Tag `good-first-issue` zu prüfen.
-2. Lesen Sie die detaillierte Struktur von [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate), wenn Sie tiefer in die Architektur einsteigen möchten.
-3. Öffnen Sie ein Issue, wenn Sie auf einen Bug stoßen.
-4. Schauen Sie sich `good-first-issue`-Einträge an, wenn Sie neu sind.
-5. Reichen Sie einen Pull Request ein, um neue Funktionen hinzuzufügen, Qualitätsverbesserungen vorzunehmen oder Bugs zu beheben.
-6. Erkunden Sie diesen interaktiven Walkthrough der `Checkmate`-Codebasis auf CodeCanvas [hier](https://www.code-canvas.com/?session=unauthenticatedGithub&repo=Checkmate&owner=bluewave-labs&branch=develop&OnboardingTutorial=true). Um vorhandene Datenfluss-Simulationen zu verfeinern oder neue zu erstellen, folgen Sie dem Schnelltutorial [hier](https://docs.code-canvas.com/updating-diagram).
+0. Gib dem Repo einen Stern :)
+1. Lies den [Beitragsleitfaden](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). Neulinge schauen am besten zuerst nach dem Tag `good-first-issue`.
+2. Wenn du tiefer in die Architektur einsteigen willst, lies die ausführliche Struktur von [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate).
+3. Öffne ein Issue, wenn du einen Bug findest.
+4. Wenn du neu hier bist, schau dir die `good-first-issue`-Tasks an.
+5. Mach einen Pull Request, um neue Funktionen einzubringen, die Nutzung zu verbessern oder Bugs zu fixen.
+6. Schau dir den interaktiven Walkthrough durch die `Checkmate`-Codebasis auf CodeCanvas an: [hier](https://www.code-canvas.com/?session=unauthenticatedGithub&repo=Checkmate&owner=bluewave-labs&branch=develop&OnboardingTutorial=true). Um bestehende Datenfluss-Simulationen zu verfeinern oder neue anzulegen, folge dem kurzen Tutorial [hier](https://docs.code-canvas.com/updating-diagram).
 
 <a href="https://github.com/bluewave-labs/checkmate/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=bluewave-labs/checkmate" />
