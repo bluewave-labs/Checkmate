@@ -63,9 +63,9 @@ Checkmate ha sido sometido a pruebas de carga con más de 1000 monitores activos
 <a id="demo"></a>
 ## Demo
 
-Puedes ver la última versión de [Checkmate](https://demo.checkmate.so/) en acción.
+Puedes probar la última versión de [Checkmate](https://demo.checkmate.so/) en directo.
 
-El usuario es demouser@demo.com y la contraseña es Demouser1! (ten en cuenta que actualizamos el servidor de demostración de vez en cuando; si no funciona, escríbenos en el canal Discussions).
+El usuario es demouser@demo.com y la contraseña Demouser1!. (Actualizamos el servidor de demostración cada cierto tiempo; si no funciona, escríbenos por el canal Discussions.)
 
 <a id="users-guide"></a>
 ## Guía de usuario
@@ -92,7 +92,7 @@ Para más documentación, consulta el [directorio docs](../).
 <a id="performance"></a>
 ## Rendimiento
 
-Gracias a optimizaciones extensas, Checkmate funciona con una huella de memoria excepcionalmente baja y requiere un mínimo de memoria y CPU. A continuación se muestra el uso de memoria de una instancia de Node.js en un servidor que monitoriza 323 servidores cada minuto:
+Gracias a múltiples optimizaciones, Checkmate funciona con una huella de memoria muy baja y necesita muy poca RAM y CPU. Aquí tienes el uso de memoria de una instancia de Node.js en un servidor que monitoriza 323 servidores cada minuto:
 
 ![image](https://github.com/user-attachments/assets/37e04a75-d83a-488f-b25c-025511b492c9)
 
