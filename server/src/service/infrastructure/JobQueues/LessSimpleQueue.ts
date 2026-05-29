@@ -337,6 +337,7 @@ export class LessSimpleQueue implements IJobQueue {
 				runCount: job.runCount ?? 0,
 				failCount: job.failCount ?? 0,
 				failReason: job.lastError ?? null,
+				lastRunAt: job.lastStartedAt ?? null,
 				lastFinishedAt: job.lastFinishedAt ?? null,
 				lastRunTook: job.lockedAt || !job.lastFinishedAt || !job.lastStartedAt ? null : job.lastFinishedAt - job.lastStartedAt,
 				lastFailedAt: job.lastFailedAt ?? null,

@@ -30,6 +30,7 @@ export type QueueJobSummary = {
 	runCount: number;
 	failCount: number;
 	failReason: string | null;
+	lastRunAt: number | null;
 	lastFinishedAt: number | null;
 	lastRunTook: number | null;
 	lastFailedAt: number | null;
