@@ -22,6 +22,9 @@
   🇹🇼 <a href="README.zh-TW.md">繁體中文</a>
 </p>
 
+> ⚠️ هذه الترجمة مسودة آلية. مرحبًا بمراجعات الناطقين الأصليين عبر pull request.
+
+
 ![](https://img.shields.io/github/license/bluewave-labs/checkmate)
 ![](https://img.shields.io/github/repo-size/bluewave-labs/checkmate)
 ![](https://img.shields.io/github/commit-activity/m/bluewave-labs/checkmate)

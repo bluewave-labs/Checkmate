@@ -20,6 +20,9 @@
   🇹🇼 <a href="README.zh-TW.md">繁體中文</a>
 </p>
 
+> ⚠️ Tento překlad je strojový koncept. Revize od rodilých mluvčích jsou vítány formou pull requestu.
+
+
 ![](https://img.shields.io/github/license/bluewave-labs/checkmate)
 ![](https://img.shields.io/github/repo-size/bluewave-labs/checkmate)
 ![](https://img.shields.io/github/commit-activity/m/bluewave-labs/checkmate)
