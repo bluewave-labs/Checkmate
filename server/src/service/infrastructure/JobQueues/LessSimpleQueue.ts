@@ -282,11 +282,11 @@ export class LessSimpleQueue implements IJobQueue {
 				const runCount = job.runCount ?? 0;
 				const failCount = job.failCount ?? 0;
 				const lastFailedAt = job.lastFailedAt ?? 0;
-				const lastRunAt = job.lastRunAt ?? 0;
+				const lastFinishedAt = job.lastFinishedAt ?? 0;
 				acc.totalRuns += runCount;
 				acc.totalFailures += failCount;
 				acc.jobs++;
-				if (failCount > 0 && lastFailedAt >= lastRunAt) {
+				if (failCount > 0 && lastFailedAt >= lastFinishedAt) {
 					acc.failingJobs++;
 				}
 
@@ -323,6 +323,7 @@ export class LessSimpleQueue implements IJobQueue {
 		const jobs = await this.scheduler.getJobs();
 		return jobs.map((job) => {
 			const monitor = isMonitorJob(job) ? job.data : undefined;
+
 			return {
 				monitorId: job.id,
 				monitorUrl: monitor?.url || null,
@@ -336,9 +337,8 @@ export class LessSimpleQueue implements IJobQueue {
 				runCount: job.runCount ?? 0,
 				failCount: job.failCount ?? 0,
 				failReason: job.lastError ?? null,
-				lastRunAt: job.lastRunAt ?? null,
-				lastFinishedAt: job.lastRunAt ?? null,
-				lastRunTook: job.lockedAt ? null : (job.lastRunAt ?? 0) - (job.lastRunAt ?? 0),
+				lastFinishedAt: job.lastFinishedAt ?? null,
+				lastRunTook: job.lockedAt || !job.lastFinishedAt || !job.lastStartedAt ? null : job.lastFinishedAt - job.lastStartedAt,
 				lastFailedAt: job.lastFailedAt ?? null,
 			};
 		});
