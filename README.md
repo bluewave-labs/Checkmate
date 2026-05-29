@@ -1,5 +1,25 @@
 <p align=center> <a href="https://trendshift.io/repositories/12443" target="_blank"><img src="https://trendshift.io/api/badge/repositories/12443" alt="bluewave-labs%2Fcheckmate | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a></p>
-  
+
+<p align="center">
+  🇺🇸 <a href="README.md">English</a> |
+  🇸🇦 <a href="docs/translations/README.ar.md">العربية</a> |
+  🇪🇸 <a href="docs/translations/README.ca.md">Català</a> |
+  🇨🇿 <a href="docs/translations/README.cs.md">Čeština</a> |
+  🇩🇪 <a href="docs/translations/README.de.md">Deutsch</a> |
+  🇪🇸 <a href="docs/translations/README.es.md">Español</a> |
+  🇫🇮 <a href="docs/translations/README.fi.md">Suomi</a> |
+  🇫🇷 <a href="docs/translations/README.fr.md">Français</a> |
+  🇯🇵 <a href="docs/translations/README.ja.md">日本語</a> |
+  🇧🇷 <a href="docs/translations/README.pt-BR.md">Português (Brasil)</a> |
+  🇷🇺 <a href="docs/translations/README.ru.md">Русский</a> |
+  🇹🇭 <a href="docs/translations/README.th.md">ไทย</a> |
+  🇹🇷 <a href="docs/translations/README.tr.md">Türkçe</a> |
+  🇺🇦 <a href="docs/translations/README.uk.md">Українська</a> |
+  🇻🇳 <a href="docs/translations/README.vi.md">Tiếng Việt</a> |
+  🇨🇳 <a href="docs/translations/README.zh-CN.md">简体中文</a> |
+  🇹🇼 <a href="docs/translations/README.zh-TW.md">繁體中文</a>
+</p>
+
 ![](https://img.shields.io/github/license/bluewave-labs/checkmate)
 ![](https://img.shields.io/github/repo-size/bluewave-labs/checkmate)
 ![](https://img.shields.io/github/commit-activity/m/bluewave-labs/checkmate)
@@ -40,12 +60,14 @@ Checkmate has been stress-tested with 1000+ active monitors without any particul
 - [🤝 Contributing](#contributing)  
 
 
+<a id="demo"></a>
 ## Demo
 
 You can see the latest build of [Checkmate](https://demo.checkmate.so/) in action. 
 
 The username is demouser@demo.com and the password is Demouser1! (just a note that we update the demo server from time to time, so if it doesn't work for you, please ping us on the Discussions channel).
 
+<a id="users-guide"></a>
 ## User's guide
 
 Usage instructions can be found [here](https://checkmate.so/docs). 
@@ -54,6 +76,7 @@ Usage instructions can be found [here](https://checkmate.so/docs).
 - [Docker](https://www.docker.com/) installed
 - [Git](https://git-scm.com/) installed
 
+<a id="installation"></a>
 ## Installation
 
 See installation instructions in [Checkmate documentation portal](https://checkmate.so/docs). 
@@ -66,6 +89,7 @@ If you need to monitor internal HTTPS endpoints with certificates from private C
 
 For more documentation, see the [docs directory](./docs/).
 
+<a id="performance"></a>
 ## Performance
 
 Thanks to extensive optimizations, Checkmate operates with an exceptionally small memory footprint, requiring minimal memory and CPU resources. Here’s the memory usage of a Node.js instance running on a server that monitors 323 servers every minute:
@@ -76,6 +100,7 @@ You can see the memory footprint of MongoDB and Redis on the same server (398Mb 
 
 ![image](https://github.com/user-attachments/assets/3b469e85-e675-4040-a162-3f24c1afc751)
 
+<a id="questions--ideas"></a>
 ## Questions & Ideas
 
 If you have any questions, suggestions or comments, you have several options: 
@@ -85,6 +110,7 @@ If you have any questions, suggestions or comments, you have several options:
 
 Feel free to ask questions or share your ideas - we'd love to hear from you!
 
+<a id="features"></a>
 ## Features
 
 - Completely open source, deployable on your servers or home devices (e.g Raspberry Pi 4 or 5)
@@ -109,6 +135,7 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 5. Upon a state change: an incident is either created or resolved, depending on the monitor's current status
 6. Notifications are triggered based on configuration
 
+<a id="screenshots"></a>
 ## Screenshots
 
 <p>
@@ -126,6 +153,7 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 
 
 
+<a id="tech-stack"></a>
 ## Tech stack
 
 - [ReactJs](https://react.dev/)
@@ -135,6 +163,7 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 - [Recharts](https://recharts.org)
 - Lots of other open source components!
 
+<a id="a-few-links"></a>
 ## A few links
 
 - If you would like to support us, please consider giving it a ⭐ and click on "watch".
@@ -142,6 +171,7 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 - Need a ping when there's a new release? Use [Newreleases](https://newreleases.io/), a free service to track releases.
 - Watch a Checkmate [installation and usage video](https://www.youtube.com/watch?v=GfFOc0xHIwY)
 
+<a id="contributing"></a>
 ## Contributing
 
 We are [Alex](http://github.com/ajhollid) (team lead), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) and [Karen](https://github.com/karenvicent) helping individuals and businesses monitor their infra and servers.
