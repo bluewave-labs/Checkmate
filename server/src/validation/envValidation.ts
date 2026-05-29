@@ -11,6 +11,7 @@ const envSchema = z.object({
 	// Database
 	DB_CONNECTION_STRING: z.string().min(1, "Database connection string is required"),
 	DB_TYPE: z.enum(DbTypes).default("mongodb"),
+	QUEUE_TYPE: z.enum(["lessSimpleQueue", "superSimpleQueue"]).default("superSimpleQueue"),
 
 	// JWT Authentication
 	JWT_SECRET: z.string().min(1, "JWT_SECRET is required"),
