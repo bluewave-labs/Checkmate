@@ -144,7 +144,7 @@ export class LessSimpleQueue implements IJobQueue {
 			return true;
 		} catch (error: unknown) {
 			this.logger.error({
-				message: `Failed to initialize SuperSimpleQueue: ${error instanceof Error ? error.message : String(error)}`,
+				message: `Failed to initialize LessSimpleQueue: ${error instanceof Error ? error.message : String(error)}`,
 				service: SERVICE_NAME,
 				method: "init",
 			});
