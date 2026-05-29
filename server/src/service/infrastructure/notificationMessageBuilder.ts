@@ -1,5 +1,5 @@
 import type { HardwareStatusPayload, Monitor, MonitorStatusResponse } from "@/types/index.js";
-import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+import type { MonitorActionDecision } from "@/service/infrastructure/JobQueues/QueueHelper.js";
 import type {
 	NotificationMessage,
 	NotificationType,

@@ -10,8 +10,10 @@ export * from "@/service/business/statusPageService.js";
 export * from "@/service/business/userService.js";
 
 // Infrastructure services
-export * from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
-export * from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+export * from "@/service/infrastructure/JobQueues/IJobQueue.js";
+export * from "@/service/infrastructure/JobQueues/SuperSimpleQueue.js";
+export * from "@/service/infrastructure/JobQueues/LessSimpleQueue.js";
+export * from "@/service/infrastructure/JobQueues/QueueHelper.js";
 export * from "@/service/infrastructure/notificationMessageBuilder.js";
 export * from "@/service/infrastructure/bufferService.js";
 export * from "@/service/infrastructure/emailService.js";

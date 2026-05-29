@@ -23,7 +23,7 @@ import type {
 import demoMonitorsData from "@/utils/demoMonitors.json" with { type: "json" };
 import { AppError } from "@/utils/AppError.js";
 import type { ImportedMonitor } from "@/validation/monitorValidation.js";
-import { ISuperSimpleQueue } from "../infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
+import { IJobQueue } from "@/service/infrastructure/JobQueues/IJobQueue.js";
 import { ILogger } from "@/utils/logger.js";
 
 const SERVICE_NAME = "MonitorService";
@@ -96,7 +96,7 @@ export interface IMonitorService {
 export class MonitorService implements IMonitorService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private jobQueue: ISuperSimpleQueue;
+	private jobQueue: IJobQueue;
 	private logger: ILogger;
 	private games: GamesMap;
 	private monitorsRepository: IMonitorsRepository;
@@ -117,7 +117,7 @@ export class MonitorService implements IMonitorService {
 		statusPagesRepository,
 		incidentsRepository,
 	}: {
-		jobQueue: ISuperSimpleQueue;
+		jobQueue: IJobQueue;
 		logger: ILogger;
 		games: GamesMap;
 		monitorsRepository: IMonitorsRepository;

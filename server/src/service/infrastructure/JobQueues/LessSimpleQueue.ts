@@ -1,70 +1,26 @@
 import { IMonitorsRepository } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
-import Scheduler from "super-simple-scheduler";
-import { ISuperSimpleQueueHelper } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
-import { Monitor, MonitorType, supportsGeoCheck } from "@/types/monitor.js";
+import { MongoStore, Scheduler, IJob } from "less-simple-scheduler";
+import { IQueueHelper } from "@/service/infrastructure/JobQueues/QueueHelper.js";
+import { Monitor, supportsGeoCheck } from "@/types/monitor.js";
+import { type QueueMetrics, IJobQueue } from "@/service/infrastructure/JobQueues/IJobQueue.js";
+import { EnvConfig } from "@/service/system/settingsService.js";
 const SERVICE_NAME = "JobQueue";
 
-type QueueJobFailure = {
-	monitorId: string | number;
-	monitorUrl: string | null;
-	monitorType: string | null;
-	failedAt: number | null;
-	failCount: number;
-	failReason: string | null;
-};
+// For discriminating job types
+type MonitorJob = Omit<IJob, "data"> & { data: Monitor };
+const MONITOR_TEMPLATES = new Set<string>(["monitor-job", "geo-check-job"]);
+const isMonitorJob = (job: IJob): job is MonitorJob => MONITOR_TEMPLATES.has(job.template);
 
-type QueueMetrics = {
-	jobs: number;
-	activeJobs: number;
-	failingJobs: number;
-	jobsWithFailures: QueueJobFailure[];
-	totalRuns: number;
-	totalFailures: number;
-};
-
-type QueueJobSummary = {
-	monitorId: string | number;
-	monitorUrl: string | null;
-	monitorType: string | null;
-	monitorInterval: number | null;
-	monitorGeoInterval: number | null;
-	monitorActive: boolean | null;
-	active: boolean;
-	lockedAt: number | null;
-	runCount: number;
-	failCount: number;
-	failReason: string | null;
-	lastRunAt: number | null;
-	lastFinishedAt: number | null;
-	lastRunTook: number | null;
-	lastFailedAt: number | null;
-	repeat: number | null;
-};
-
-export interface ISuperSimpleQueue {
-	readonly serviceName: string;
-	init(): Promise<boolean>;
-	addJob(monitorId: string, monitor: Monitor): Promise<void>;
-	deleteJob(monitor: Monitor): Promise<void>;
-	pauseJob(monitor: Monitor): Promise<void>;
-	resumeJob(monitor: Monitor): Promise<void>;
-	updateJob(monitor: Monitor): Promise<void>;
-	shutdown(): Promise<void>;
-	getMetrics(): Promise<QueueMetrics>;
-	getJobs(): Promise<QueueJobSummary[]>;
-	flushQueues(): Promise<{ success: boolean }>;
-}
-
-export class SuperSimpleQueue implements ISuperSimpleQueue {
+export class LessSimpleQueue implements IJobQueue {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: ILogger;
-	private helper: ISuperSimpleQueueHelper;
+	private helper: IQueueHelper;
 	private monitorsRepository: IMonitorsRepository;
 	private readonly scheduler: Scheduler;
 
-	constructor(logger: ILogger, helper: ISuperSimpleQueueHelper, monitorsRepository: IMonitorsRepository, scheduler: Scheduler) {
+	constructor(logger: ILogger, helper: IQueueHelper, monitorsRepository: IMonitorsRepository, scheduler: Scheduler) {
 		this.logger = logger;
 		this.helper = helper;
 		this.monitorsRepository = monitorsRepository;
@@ -72,7 +28,7 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 	}
 
 	get serviceName() {
-		return SuperSimpleQueue.SERVICE_NAME;
+		return LessSimpleQueue.SERVICE_NAME;
 	}
 
 	private registerListeners = () => {
@@ -90,67 +46,74 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 			});
 		});
 
-		this.scheduler.on("scheduler:error", (error) => {
+		this.scheduler.on("scheduler:error", (workerId, error) => {
 			this.logger.error({
-				message: `Scheduler error: ${error instanceof Error ? error.message : String(error)}`,
+				message: `w${workerId} error: ${error instanceof Error ? error.message : String(error)}`,
 				service: SERVICE_NAME,
 				stack: error instanceof Error ? error.stack : undefined,
 			});
 		});
 
-		this.scheduler.on("job:abort", (job, reason) => {
+		this.scheduler.on("job:locked", (workerId, job) => {
+			this.logger.debug({
+				message: `w${workerId} ${job.id} locked`,
+				service: SERVICE_NAME,
+			});
+		});
+
+		this.scheduler.on("job:abort", (workerId, job, reason) => {
 			this.logger.warn({
-				message: `${job.id} aborted: ${reason}`,
+				message: `w${workerId} ${job.id} aborted: ${reason}`,
 				service: SERVICE_NAME,
 			});
 		});
 
-		this.scheduler.on("job:attempt", (job, attempt) => {
+		this.scheduler.on("job:attempt", (workerId, job, attempt) => {
 			this.logger.debug({
-				message: `${job.id} attempt ${attempt}`,
+				message: `w${workerId} ${job.id} attempt ${attempt}`,
 				service: SERVICE_NAME,
 			});
 		});
 
-		this.scheduler.on("job:complete", (job) => {
+		this.scheduler.on("job:complete", (workerId, job) => {
 			this.logger.debug({
-				message: `${job.id} completed successfully`,
+				message: `w${workerId} ${job.id} completed successfully`,
 				service: SERVICE_NAME,
 			});
 		});
 
-		this.scheduler.on("job:exhausted", (job, error) => {
+		this.scheduler.on("job:exhausted", (workerId, job, error) => {
 			this.logger.error({
-				message: `${job.id} exhausted all retries: ${error instanceof Error ? error.message : String(error)}`,
+				message: `w${workerId} ${job.id} exhausted all retries: ${error instanceof Error ? error.message : String(error)}`,
 				service: SERVICE_NAME,
 				stack: error instanceof Error ? error.stack : undefined,
 			});
 		});
 
-		this.scheduler.on("job:fail", (job, error, attempt) => {
+		this.scheduler.on("job:fail", (workerId, job, error, attempt) => {
 			this.logger.warn({
-				message: `${job.id} failed on attempt ${attempt}: ${error instanceof Error ? error.message : String(error)}`,
+				message: `w${workerId} ${job.id} failed on attempt ${attempt}: ${error instanceof Error ? error.message : String(error)}`,
 				service: SERVICE_NAME,
 				stack: error instanceof Error ? error.stack : undefined,
 			});
 		});
 
-		this.scheduler.on("job:start", (job) => {
+		this.scheduler.on("job:start", (workerId, job) => {
 			this.logger.debug({
-				message: `${job.id} started`,
+				message: `w${workerId} ${job.id} started`,
 				service: SERVICE_NAME,
 			});
 		});
 	};
 
-	static async create(logger: ILogger, helper: ISuperSimpleQueueHelper, monitorsRepository: IMonitorsRepository) {
-		const scheduler = new Scheduler({
-			concurrency: 50,
-			// storeType: "mongo",
-			// storeType: "redis",
-			// dbUri: envSettings.dbConnectionString,
+	static async create(logger: ILogger, helper: IQueueHelper, monitorsRepository: IMonitorsRepository, envSettings: EnvConfig) {
+		const store = new MongoStore({
+			url: envSettings.dbConnectionString ?? "mongodb://localhost:27017/uptime_db",
 		});
-		const instance = new SuperSimpleQueue(logger, helper, monitorsRepository, scheduler);
+		const scheduler = new Scheduler(store, {
+			concurrency: 50,
+		});
+		const instance = new LessSimpleQueue(logger, helper, monitorsRepository, scheduler);
 		await instance.init();
 
 		return instance;
@@ -159,8 +122,7 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 	init = async () => {
 		try {
 			this.registerListeners();
-
-			this.scheduler.start();
+			await this.scheduler.start();
 			this.scheduler.addTemplate("monitor-job", this.helper.getHeartbeatJob());
 			this.scheduler.addTemplate("geo-check-job", this.helper.getHeartbeatGeoJob());
 			this.scheduler.addTemplate("cleanup-orphaned", this.helper.getCleanupOrphanedJob());
@@ -176,13 +138,13 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 				}, randomOffset);
 			}
 
-			this.scheduler.addJob({ id: "cleanup-orphaned", template: "cleanup-orphaned", active: true });
-			this.scheduler.addJob({ id: "cleanup-retention", template: "cleanup-retention-job", active: true, repeat: 24 * 60 * 60 * 1000 });
+			this.scheduler.addJob({ id: "cleanup-orphaned", template: "cleanup-orphaned", active: true, upsert: true });
+			this.scheduler.addJob({ id: "cleanup-retention", template: "cleanup-retention-job", active: true, repeat: 24 * 60 * 60 * 1000, upsert: true });
 
 			return true;
 		} catch (error: unknown) {
 			this.logger.error({
-				message: `Failed to initialize SuperSimpleQueue: ${error instanceof Error ? error.message : String(error)}`,
+				message: `Failed to initialize LessSimpleQueue: ${error instanceof Error ? error.message : String(error)}`,
 				service: SERVICE_NAME,
 				method: "init",
 			});
@@ -197,6 +159,7 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 			repeat: monitor.interval,
 			active: monitor.isActive,
 			data: monitor,
+			upsert: true,
 		});
 
 		// Return early if we don't need geo checks
@@ -212,6 +175,7 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 				repeat: monitor.geoCheckInterval,
 				active: monitor.isActive,
 				data: monitor,
+				upsert: true,
 			});
 		}
 	};
@@ -298,6 +262,7 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 			repeat: monitor.geoCheckInterval,
 			active: monitor.isActive,
 			data: monitor,
+			upsert: true,
 		});
 	};
 
@@ -312,16 +277,16 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 
 	getMetrics = async () => {
 		const jobs = await this.scheduler.getJobs();
-		const metrics = jobs.reduce(
+		const metrics = jobs.reduce<QueueMetrics>(
 			(acc, job) => {
 				const runCount = job.runCount ?? 0;
 				const failCount = job.failCount ?? 0;
 				const lastFailedAt = job.lastFailedAt ?? 0;
-				const lastRunAt = job.lastRunAt ?? 0;
+				const lastFinishedAt = job.lastFinishedAt ?? 0;
 				acc.totalRuns += runCount;
 				acc.totalFailures += failCount;
 				acc.jobs++;
-				if (failCount > 0 && lastFailedAt >= lastRunAt) {
+				if (failCount > 0 && lastFailedAt >= lastFinishedAt) {
 					acc.failingJobs++;
 				}
 
@@ -330,13 +295,14 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 				}
 
 				if (failCount > 0) {
+					const monitor = isMonitorJob(job) ? job.data : undefined;
 					acc.jobsWithFailures.push({
 						monitorId: job.id,
-						monitorUrl: job.data?.url || null,
-						monitorType: job.data?.type || null,
+						monitorUrl: monitor?.url || null,
+						monitorType: monitor?.type || null,
 						failedAt: job.lastFailedAt ?? null,
 						failCount,
-						failReason: job.lastFailReason ?? null,
+						failReason: job.lastError ?? null,
 					});
 				}
 				return acc;
@@ -345,14 +311,7 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 				jobs: 0,
 				activeJobs: 0,
 				failingJobs: 0,
-				jobsWithFailures: [] as Array<{
-					monitorId: string | number;
-					monitorUrl: string;
-					monitorType: MonitorType;
-					failedAt: number | null;
-					failCount: number;
-					failReason: string | null;
-				}>,
+				jobsWithFailures: [],
 				totalRuns: 0,
 				totalFailures: 0,
 			}
@@ -363,22 +322,24 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 	getJobs = async () => {
 		const jobs = await this.scheduler.getJobs();
 		return jobs.map((job) => {
+			const monitor = isMonitorJob(job) ? job.data : undefined;
+
 			return {
 				monitorId: job.id,
-				monitorUrl: job.data?.url || null,
-				monitorType: job.data?.type || null,
-				monitorInterval: job.data?.interval || null,
-				monitorGeoInterval: job.data?.geoCheckInterval || null,
-				monitorActive: job.data?.isActive ?? null,
+				monitorUrl: monitor?.url || null,
+				monitorType: monitor?.type || null,
+				monitorInterval: monitor?.interval || null,
+				monitorGeoInterval: monitor?.geoCheckInterval || null,
+				monitorActive: monitor?.isActive ?? null,
 				active: job.active,
 				repeat: job.repeat ?? null,
 				lockedAt: job.lockedAt ?? null,
 				runCount: job.runCount ?? 0,
 				failCount: job.failCount ?? 0,
-				failReason: job.lastFailReason ?? null,
-				lastRunAt: job.lastRunAt ?? null,
+				failReason: job.lastError ?? null,
+				lastRunAt: job.lastStartedAt ?? null,
 				lastFinishedAt: job.lastFinishedAt ?? null,
-				lastRunTook: job.lockedAt ? null : (job.lastFinishedAt ?? 0) - (job.lastRunAt ?? 0),
+				lastRunTook: job.lockedAt || !job.lastFinishedAt || !job.lastStartedAt ? null : job.lastFinishedAt - job.lastStartedAt,
 				lastFailedAt: job.lastFailedAt ?? null,
 			};
 		});

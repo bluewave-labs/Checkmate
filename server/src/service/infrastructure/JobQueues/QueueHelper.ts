@@ -25,7 +25,7 @@ import {
 import { ILogger } from "@/utils/logger.js";
 import { IBufferService } from "@/service/index.js";
 
-export interface ISuperSimpleQueueHelper {
+export interface IQueueHelper {
 	readonly serviceName: string;
 	getHeartbeatJob(): (monitor: Monitor) => Promise<void>;
 	getHeartbeatGeoJob(): (monitor: Monitor) => Promise<void>;
@@ -48,7 +48,7 @@ export interface MonitorActionDecision {
 	};
 }
 
-export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
+export class QueueHelper implements IQueueHelper {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: ILogger;
@@ -105,7 +105,7 @@ export class SuperSimpleQueueHelper implements ISuperSimpleQueueHelper {
 	}
 
 	get serviceName() {
-		return SuperSimpleQueueHelper.SERVICE_NAME;
+		return QueueHelper.SERVICE_NAME;
 	}
 
 	getHeartbeatJob = () => {

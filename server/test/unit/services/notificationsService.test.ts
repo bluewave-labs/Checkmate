@@ -2,7 +2,7 @@ import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import { NotificationsService } from "../../../src/service/infrastructure/notificationsService.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 import type { Notification, Monitor, MonitorStatusResponse } from "../../../src/types/index.ts";
-import type { MonitorActionDecision } from "../../../src/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.ts";
+import type { MonitorActionDecision } from "../../../src/service/infrastructure/JobQueues/QueueHelper.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

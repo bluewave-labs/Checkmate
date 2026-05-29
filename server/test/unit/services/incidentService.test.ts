@@ -5,7 +5,7 @@ import type { IIncidentsRepository, IMonitorsRepository, IUsersRepository } from
 import type { INotificationMessageBuilder } from "../../../src/service/infrastructure/notificationMessageBuilder.ts";
 import type { Monitor } from "../../../src/types/monitor.ts";
 import type { Incident } from "../../../src/types/index.ts";
-import type { MonitorActionDecision } from "../../../src/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.ts";
+import type { MonitorActionDecision } from "../../../src/service/infrastructure/JobQueues/QueueHelper.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
