@@ -40,11 +40,11 @@
 <br>
 
 
-本仓库同时包含 Checkmate 的前端和后端代码。Checkmate 是一款开源、可自托管的监控工具，通过精美的可视化效果实时追踪服务器硬件、可用性、响应时间以及事件。Checkmate 会定期检查服务器或网站是否可访问、运行是否正常，并针对被监控服务的可用性、停机时间和响应时间提供实时告警与报告。
+本仓库同时包含 Checkmate 的前端和后端代码。Checkmate 是一款开源、可自托管的监控工具，通过清晰的可视化实时追踪服务器硬件、可用性、响应时间以及事件。Checkmate 会定期检查服务器或网站是否可访问、运行是否正常，并针对被监控服务的可用性、停机时间和响应时间提供实时告警与报告。
 
-Checkmate 还提供了一个名为 [Capture](https://github.com/bluewave-labs/capture) 的代理，用于从远程服务器拉取数据。Capture 并不是运行 Checkmate 所必需的，但它能提供服务器 CPU、内存、磁盘和温度的额外信息。Capture 可在 Linux、Windows、Mac、Raspberry Pi 或任何能运行 Go 的设备上运行。
+Checkmate 还附带一个名为 [Capture](https://github.com/bluewave-labs/capture) 的代理，用于从远程服务器拉取数据。Capture 不是运行 Checkmate 的必需项，但能提供服务器 CPU、内存、磁盘和温度的额外信息。Capture 可在 Linux、Windows、macOS、Raspberry Pi 以及任何能运行 Go 的设备上运行。
 
-Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未出现任何明显问题或性能瓶颈。
+Checkmate 已经在 1000+ 个活跃监控项的场景下完成了压力测试，未出现明显问题或性能瓶颈。
 
 ## 📚 目录
 
@@ -63,9 +63,9 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 <a id="demo"></a>
 ## 演示
 
-你可以体验最新版本的 [Checkmate](https://demo.checkmate.so/)。
+你可以直接体验最新版本的 [Checkmate](https://demo.checkmate.so/)。
 
-用户名是 demouser@demo.com，密码是 Demouser1!（请注意，我们会不定期更新演示服务器，如果遇到问题，请在 Discussions 频道告诉我们）。
+用户名是 demouser@demo.com，密码是 Demouser1!。（演示服务器会不定期更新；如果遇到无法访问的情况，请在 Discussions 频道告诉我们。）
 
 <a id="users-guide"></a>
 ## 用户指南
@@ -81,7 +81,7 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 
 请参阅 [Checkmate 文档门户](https://checkmate.so/docs)中的安装说明。
 
-你也可以使用 [Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](./charts/helm/checkmate/INSTALLATION.md)、[Sive Host](https://sive.host)（南非）、[Cloudzy](https://cloudzy.com/marketplace/checkmate) 或 [Pikapods](https://www.pikapods.com/) 快速启动一个 Checkmate 实例。如果想监控服务器基础设施，你需要 [Capture 代理](https://github.com/bluewave-labs/capture)，Capture 仓库中也提供了安装说明。
+也可以通过 [Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](./charts/helm/checkmate/INSTALLATION.md)、[Sive Host](https://sive.host)（南非）、[Cloudzy](https://cloudzy.com/marketplace/checkmate) 或 [Pikapods](https://www.pikapods.com/) 快速启动一个 Checkmate 实例。如果想监控服务器基础设施，你需要 [Capture 代理](https://github.com/bluewave-labs/capture)；Capture 仓库中也提供了安装说明。
 
 ### 使用自定义 CA
 
@@ -92,29 +92,29 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 <a id="performance"></a>
 ## 性能
 
-得益于大量优化，Checkmate 在运行时占用的内存非常少，对内存和 CPU 资源的需求极低。下方是一个每分钟监控 323 台服务器的 Node.js 实例的内存使用情况:
+得益于大量优化，Checkmate 在运行时占用的内存非常少，对内存和 CPU 资源的需求极低。下面是一个每分钟监控 323 台服务器的 Node.js 实例的内存使用情况：
 
 ![image](https://github.com/user-attachments/assets/37e04a75-d83a-488f-b25c-025511b492c9)
 
-同一台服务器、相同监控数量下的 MongoDB 与 Redis 的内存占用（分别为 398MB 与 15MB）:
+同一台服务器、相同监控数量下的 MongoDB 与 Redis 的内存占用（分别为 398MB 与 15MB）：
 
 ![image](https://github.com/user-attachments/assets/3b469e85-e675-4040-a162-3f24c1afc751)
 
 <a id="questions--ideas"></a>
 ## 问题与想法
 
-如果你有任何问题、建议或意见，欢迎通过以下方式联系我们:
+如果你有任何问题、建议或意见，可以通过以下方式联系我们：
 
-- [Discord 频道](https://discord.gg/NAb6H3UTjK)（推荐）
+- [Discord](https://discord.gg/NAb6H3UTjK)（推荐）
 - [GitHub Discussions](https://github.com/bluewave-labs/Checkmate/discussions)（我们会不定期查看）
 
-欢迎提问或分享你的想法 — 期待听到你的声音！
+欢迎提问或分享想法 — 期待听到你的声音。
 
 <a id="features"></a>
 ## 功能
 
 - 完全开源，可部署到自己的服务器或家用设备（如 Raspberry Pi 4/5）
-- 多种监控选项: 可用性、Docker、Ping、SSL、端口、游戏服务器
+- 多种监控选项：可用性、Docker、Ping、SSL、端口、游戏服务器
 - 页面速度监控
 - 基础设施监控（内存、磁盘使用情况、CPU 性能、网络等） — 需要 [Capture](https://github.com/bluewave-labs/capture) 代理
   - 通过挂载点选择实现的选择性磁盘监控
