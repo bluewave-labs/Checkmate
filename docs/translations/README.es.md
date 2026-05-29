@@ -1,5 +1,25 @@
 <p align=center> <a href="https://trendshift.io/repositories/12443" target="_blank"><img src="https://trendshift.io/api/badge/repositories/12443" alt="bluewave-labs%2Fcheckmate | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a></p>
 
+<p align="center">
+  🇺🇸 <a href="../../README.md">English</a> |
+  🇸🇦 <a href="README.ar.md">العربية</a> |
+  🇪🇸 <a href="README.ca.md">Català</a> |
+  🇨🇿 <a href="README.cs.md">Čeština</a> |
+  🇩🇪 <a href="README.de.md">Deutsch</a> |
+  🇪🇸 <a href="README.es.md">Español</a> |
+  🇫🇮 <a href="README.fi.md">Suomi</a> |
+  🇫🇷 <a href="README.fr.md">Français</a> |
+  🇯🇵 <a href="README.ja.md">日本語</a> |
+  🇧🇷 <a href="README.pt-BR.md">Português (Brasil)</a> |
+  🇷🇺 <a href="README.ru.md">Русский</a> |
+  🇹🇭 <a href="README.th.md">ไทย</a> |
+  🇹🇷 <a href="README.tr.md">Türkçe</a> |
+  🇺🇦 <a href="README.uk.md">Українська</a> |
+  🇻🇳 <a href="README.vi.md">Tiếng Việt</a> |
+  🇨🇳 <a href="README.zh-CN.md">简体中文</a> |
+  🇹🇼 <a href="README.zh-TW.md">繁體中文</a>
+</p>
+
 ![](https://img.shields.io/github/license/bluewave-labs/checkmate)
 ![](https://img.shields.io/github/repo-size/bluewave-labs/checkmate)
 ![](https://img.shields.io/github/commit-activity/m/bluewave-labs/checkmate)
