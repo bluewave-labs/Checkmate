@@ -60,12 +60,14 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 - [🤝 参与贡献](#contributing)
 
 
+<a id="demo"></a>
 ## 演示
 
 你可以体验最新版本的 [Checkmate](https://demo.checkmate.so/)。
 
 用户名是 demouser@demo.com，密码是 Demouser1!（请注意，我们会不定期更新演示服务器，如果遇到问题，请在 Discussions 频道告诉我们）。
 
+<a id="users-guide"></a>
 ## 用户指南
 
 使用说明请参见[这里](https://checkmate.so/docs)。
@@ -74,6 +76,7 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 - 已安装 [Docker](https://www.docker.com/)
 - 已安装 [Git](https://git-scm.com/)
 
+<a id="installation"></a>
 ## 安装
 
 请参阅 [Checkmate 文档门户](https://checkmate.so/docs)中的安装说明。
@@ -86,6 +89,7 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 
 更多文档请参见 [docs 目录](../)。
 
+<a id="performance"></a>
 ## 性能
 
 得益于大量优化，Checkmate 在运行时占用的内存非常少，对内存和 CPU 资源的需求极低。下方是一个每分钟监控 323 台服务器的 Node.js 实例的内存使用情况:
@@ -96,6 +100,7 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 
 ![image](https://github.com/user-attachments/assets/3b469e85-e675-4040-a162-3f24c1afc751)
 
+<a id="questions--ideas"></a>
 ## 问题与想法
 
 如果你有任何问题、建议或意见，欢迎通过以下方式联系我们:
@@ -105,6 +110,7 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 
 欢迎提问或分享你的想法 — 期待听到你的声音！
 
+<a id="features"></a>
 ## 功能
 
 - 完全开源，可部署到自己的服务器或家用设备（如 Raspberry Pi 4/5）
@@ -129,6 +135,7 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 5. 状态发生变化时，会根据监控项当前状态创建或解决一个事件
 6. 根据配置触发通知
 
+<a id="screenshots"></a>
 ## 截图
 
 <p>
@@ -146,6 +153,7 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 
 
 
+<a id="tech-stack"></a>
 ## 技术栈
 
 - [ReactJs](https://react.dev/)
@@ -155,6 +163,7 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 - [Recharts](https://recharts.org)
 - 以及大量其他开源组件！
 
+<a id="a-few-links"></a>
 ## 一些链接
 
 - 如果你想支持我们，请考虑给项目点 ⭐ 并点击 “watch”。
@@ -162,6 +171,7 @@ Checkmate 已经在 1000+ 个活跃监控项的环境下完成压力测试，未
 - 想在新版本发布时收到通知？可以使用免费的版本追踪服务 [Newreleases](https://newreleases.io/)。
 - 观看 Checkmate 的 [安装与使用视频](https://www.youtube.com/watch?v=GfFOc0xHIwY)。
 
+<a id="contributing"></a>
 ## 参与贡献
 
 我们是 [Alex](http://github.com/ajhollid)（团队负责人）、[Gorkem](http://github.com/gorkem-bwl/)、[Aryaman](https://github.com/Br0wnHammer)、[Mert](https://github.com/mertssmnoglu) 和 [Karen](https://github.com/karenvicent)，致力于帮助个人和企业监控他们的基础设施与服务器。

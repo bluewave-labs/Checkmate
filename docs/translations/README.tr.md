@@ -60,12 +60,14 @@ Checkmate, 1000'den fazla aktif monitör ile herhangi bir sorun ya da performans
 - [🤝 Katkıda bulunma](#contributing)
 
 
+<a id="demo"></a>
 ## Demo
 
 [Checkmate](https://demo.checkmate.so/)'in en son sürümünü iş başında görebilirsiniz.
 
 Kullanıcı adı demouser@demo.com, şifre Demouser1!'dir (Not: Demo sunucusunu zaman zaman güncelliyoruz; çalışmazsa Discussions kanalından bize haber verin).
 
+<a id="users-guide"></a>
 ## Kullanıcı kılavuzu
 
 Kullanım talimatlarını [burada](https://checkmate.so/docs) bulabilirsiniz.
@@ -74,6 +76,7 @@ Kullanım talimatlarını [burada](https://checkmate.so/docs) bulabilirsiniz.
 - [Docker](https://www.docker.com/) kurulu
 - [Git](https://git-scm.com/) kurulu
 
+<a id="installation"></a>
 ## Kurulum
 
 Kurulum talimatları için [Checkmate dokümantasyon portalına](https://checkmate.so/docs) bakın.
@@ -86,6 +89,7 @@ Alternatif olarak hızlıca bir Checkmate örneği çalıştırmak için [Coolif
 
 Daha fazla dokümantasyon için [docs dizinine](../) göz atın.
 
+<a id="performance"></a>
 ## Performans
 
 Geniş kapsamlı optimizasyonlar sayesinde Checkmate son derece düşük bellek ayak iziyle çalışır ve minimum bellek ile CPU kaynağı gerektirir. Aşağıda her dakika 323 sunucuyu izleyen bir sunucudaki Node.js örneğinin bellek kullanımı yer almaktadır:
@@ -96,6 +100,7 @@ Aynı sayıda sunucu için aynı sunucudaki MongoDB ve Redis bellek ayak izini d
 
 ![image](https://github.com/user-attachments/assets/3b469e85-e675-4040-a162-3f24c1afc751)
 
+<a id="questions--ideas"></a>
 ## Sorular & fikirler
 
 Sorularınız, önerileriniz ya da yorumlarınız varsa birkaç seçeneğiniz var:
@@ -105,6 +110,7 @@ Sorularınız, önerileriniz ya da yorumlarınız varsa birkaç seçeneğiniz va
 
 Soru sormaktan ya da fikirlerinizi paylaşmaktan çekinmeyin — sizi dinlemekten mutluluk duyarız!
 
+<a id="features"></a>
 ## Özellikler
 
 - Tamamen açık kaynak; kendi sunucularınızda ya da ev cihazlarınızda (örn. Raspberry Pi 4 veya 5) çalıştırılabilir
@@ -129,6 +135,7 @@ Soru sormaktan ya da fikirlerinizi paylaşmaktan çekinmeyin — sizi dinlemekte
 5. Durum değişikliğinde, monitörün geçerli durumuna bağlı olarak bir olay oluşturulur ya da çözülür
 6. Yapılandırmaya göre bildirimler tetiklenir
 
+<a id="screenshots"></a>
 ## Ekran görüntüleri
 
 <p>
@@ -146,6 +153,7 @@ Soru sormaktan ya da fikirlerinizi paylaşmaktan çekinmeyin — sizi dinlemekte
 
 
 
+<a id="tech-stack"></a>
 ## Teknoloji yığını
 
 - [ReactJs](https://react.dev/)
@@ -155,6 +163,7 @@ Soru sormaktan ya da fikirlerinizi paylaşmaktan çekinmeyin — sizi dinlemekte
 - [Recharts](https://recharts.org)
 - Ve birçok başka açık kaynak bileşen!
 
+<a id="a-few-links"></a>
 ## Birkaç bağlantı
 
 - Bizi desteklemek isterseniz, lütfen ⭐ verip "watch" düğmesine basmayı düşünün.
@@ -162,6 +171,7 @@ Soru sormaktan ya da fikirlerinizi paylaşmaktan çekinmeyin — sizi dinlemekte
 - Yeni bir sürüm çıktığında haber almak ister misiniz? Ücretsiz bir sürüm takip servisi olan [Newreleases](https://newreleases.io/)'ü kullanın.
 - Bir Checkmate [kurulum ve kullanım videosu](https://www.youtube.com/watch?v=GfFOc0xHIwY) izleyin.
 
+<a id="contributing"></a>
 ## Katkıda bulunma
 
 Biz; [Alex](http://github.com/ajhollid) (takım lideri), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) ve [Karen](https://github.com/karenvicent) olarak bireylerin ve işletmelerin altyapı ile sunucularını izlemelerine yardımcı oluyoruz.

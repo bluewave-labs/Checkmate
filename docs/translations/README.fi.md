@@ -60,12 +60,14 @@ Checkmate on rasitustestattu yli 1000 aktiivisella valvomolla ilman merkittävi�
 - [🤝 Osallistuminen](#contributing)
 
 
+<a id="demo"></a>
 ## Demo
 
 Voit kokeilla uusinta [Checkmate-versiota](https://demo.checkmate.so/) käytännössä.
 
 Käyttäjätunnus on demouser@demo.com ja salasana Demouser1! (Huom: päivitämme demopalvelinta ajoittain; jos se ei toimi, kerro meille Discussions-kanavalla).
 
+<a id="users-guide"></a>
 ## Käyttöopas
 
 Käyttöohjeet löytyvät [täältä](https://checkmate.so/docs).
@@ -74,6 +76,7 @@ Käyttöohjeet löytyvät [täältä](https://checkmate.so/docs).
 - [Docker](https://www.docker.com/) asennettuna
 - [Git](https://git-scm.com/) asennettuna
 
+<a id="installation"></a>
 ## Asennus
 
 Asennusohjeet löytyvät [Checkmaten dokumentaatioportaalista](https://checkmate.so/docs).
@@ -86,6 +89,7 @@ Jos haluat valvoa sisäisiä HTTPS-päätepisteitä yksityisten varmenneauktorit
 
 Lisää dokumentaatiota löydät [docs-hakemistosta](../).
 
+<a id="performance"></a>
 ## Suorituskyky
 
 Laajojen optimointien ansiosta Checkmate toimii poikkeuksellisen pienellä muistinkulutuksella ja vaatii minimaalisesti muistia ja CPU:ta. Tässä Node.js-instanssin muistinkulutus palvelimella, joka valvoo 323 palvelinta minuutin välein:
@@ -96,6 +100,7 @@ Ja tässä MongoDB:n ja Redisin muistijälki samalla palvelimella (398 Mt ja 15 
 
 ![image](https://github.com/user-attachments/assets/3b469e85-e675-4040-a162-3f24c1afc751)
 
+<a id="questions--ideas"></a>
 ## Kysymykset & ideat
 
 Jos sinulla on kysymyksiä, ehdotuksia tai kommentteja, vaihtoehtoja on useita:
@@ -105,6 +110,7 @@ Jos sinulla on kysymyksiä, ehdotuksia tai kommentteja, vaihtoehtoja on useita:
 
 Kysy rohkeasti tai jaa ideoitasi — kuulemme sinusta mielellämme!
 
+<a id="features"></a>
 ## Ominaisuudet
 
 - Täysin avoimen lähdekoodin, asennettavissa omille palvelimille tai kotilaitteille (esim. Raspberry Pi 4 tai 5)
@@ -129,6 +135,7 @@ Kysy rohkeasti tai jaa ideoitasi — kuulemme sinusta mielellämme!
 5. Tilamuutoksen yhteydessä häiriö joko luodaan tai ratkaistaan monitorin nykyisen tilan mukaan
 6. Ilmoitukset laukaistaan asetusten mukaisesti
 
+<a id="screenshots"></a>
 ## Kuvakaappaukset
 
 <p>
@@ -146,6 +153,7 @@ Kysy rohkeasti tai jaa ideoitasi — kuulemme sinusta mielellämme!
 
 
 
+<a id="tech-stack"></a>
 ## Teknologiat
 
 - [ReactJs](https://react.dev/)
@@ -155,6 +163,7 @@ Kysy rohkeasti tai jaa ideoitasi — kuulemme sinusta mielellämme!
 - [Recharts](https://recharts.org)
 - Ja monia muita avoimen lähdekoodin komponentteja!
 
+<a id="a-few-links"></a>
 ## Muutamia linkkejä
 
 - Jos haluat tukea meitä, harkitse ⭐ antamista ja "watch"-napin painamista.
@@ -162,6 +171,7 @@ Kysy rohkeasti tai jaa ideoitasi — kuulemme sinusta mielellämme!
 - Haluatko ilmoituksen uusista julkaisuista? Käytä [Newreleases](https://newreleases.io/) -palvelua, joka on ilmainen julkaisujen seuraamiseen.
 - Katso Checkmaten [asennus- ja käyttövideo](https://www.youtube.com/watch?v=GfFOc0xHIwY)
 
+<a id="contributing"></a>
 ## Osallistuminen
 
 Olemme [Alex](http://github.com/ajhollid) (tiiminvetäjä), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) ja [Karen](https://github.com/karenvicent) — autamme yksityishenkilöitä ja yrityksiä valvomaan infrastruktuuriaan ja palvelimiaan.

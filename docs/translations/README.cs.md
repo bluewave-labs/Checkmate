@@ -60,12 +60,14 @@ Checkmate byl zátěžově otestován s více než 1000 aktivními monitory bez 
 - [🤝 Přispívání](#contributing)
 
 
+<a id="demo"></a>
 ## Demo
 
 Nejnovější sestavení [Checkmate](https://demo.checkmate.so/) si můžete vyzkoušet v akci.
 
 Uživatelské jméno je demouser@demo.com a heslo Demouser1! (Poznámka: demo server čas od času aktualizujeme; pokud něco nefunguje, dejte nám prosím vědět na kanále Discussions).
 
+<a id="users-guide"></a>
 ## Uživatelská příručka
 
 Pokyny k použití najdete [zde](https://checkmate.so/docs).
@@ -74,6 +76,7 @@ Pokyny k použití najdete [zde](https://checkmate.so/docs).
 - Nainstalovaný [Docker](https://www.docker.com/)
 - Nainstalovaný [Git](https://git-scm.com/)
 
+<a id="installation"></a>
 ## Instalace
 
 Pokyny k instalaci najdete v [dokumentačním portálu Checkmate](https://checkmate.so/docs).
@@ -86,6 +89,7 @@ Pokud potřebujete monitorovat interní HTTPS endpointy s certifikáty od soukro
 
 Další dokumentaci najdete v [adresáři docs](../).
 
+<a id="performance"></a>
 ## Výkon
 
 Díky rozsáhlým optimalizacím funguje Checkmate s mimořádně malým paměťovým otiskem a vyžaduje jen minimum paměti a CPU. Zde je využití paměti instance Node.js na serveru, který každou minutu monitoruje 323 serverů:
@@ -96,6 +100,7 @@ A zde paměťový otisk MongoDB a Redis na stejném serveru (398 MB, resp. 15 MB
 
 ![image](https://github.com/user-attachments/assets/3b469e85-e675-4040-a162-3f24c1afc751)
 
+<a id="questions--ideas"></a>
 ## Dotazy & nápady
 
 Pokud máte dotazy, návrhy nebo komentáře, máte několik možností:
@@ -105,6 +110,7 @@ Pokud máte dotazy, návrhy nebo komentáře, máte několik možností:
 
 Neváhejte se ptát nebo sdílet své nápady — moc rádi vás slyšíme!
 
+<a id="features"></a>
 ## Funkce
 
 - Plně open source, nasaditelné na vlastních serverech nebo domácích zařízeních (např. Raspberry Pi 4 nebo 5)
@@ -129,6 +135,7 @@ Neváhejte se ptát nebo sdílet své nápady — moc rádi vás slyšíme!
 5. Při změně stavu se podle aktuálního stavu vytvoří nebo vyřeší incident
 6. Notifikace se spouštějí podle konfigurace
 
+<a id="screenshots"></a>
 ## Snímky obrazovky
 
 <p>
@@ -146,6 +153,7 @@ Neváhejte se ptát nebo sdílet své nápady — moc rádi vás slyšíme!
 
 
 
+<a id="tech-stack"></a>
 ## Technologie
 
 - [ReactJs](https://react.dev/)
@@ -155,6 +163,7 @@ Neváhejte se ptát nebo sdílet své nápady — moc rádi vás slyšíme!
 - [Recharts](https://recharts.org)
 - A mnoho dalších open source komponent!
 
+<a id="a-few-links"></a>
 ## Několik odkazů
 
 - Pokud nás chcete podpořit, zvažte přidělení ⭐ a kliknutí na „watch“.
@@ -162,6 +171,7 @@ Neváhejte se ptát nebo sdílet své nápady — moc rádi vás slyšíme!
 - Chcete být upozorněni na nové vydání? Použijte [Newreleases](https://newreleases.io/), bezplatnou službu pro sledování vydání.
 - Podívejte se na [instalační a uživatelské video Checkmate](https://www.youtube.com/watch?v=GfFOc0xHIwY)
 
+<a id="contributing"></a>
 ## Přispívání
 
 Jsme [Alex](http://github.com/ajhollid) (vedoucí týmu), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) a [Karen](https://github.com/karenvicent) a pomáháme jednotlivcům a firmám monitorovat jejich infrastrukturu a servery.

@@ -60,12 +60,14 @@ Checkmate đã được kiểm thử với hơn 1000 monitor đang hoạt độn
 - [🤝 Đóng góp](#contributing)
 
 
+<a id="demo"></a>
 ## Demo
 
 Bạn có thể xem bản dựng mới nhất của [Checkmate](https://demo.checkmate.so/) đang chạy.
 
 Tên đăng nhập là demouser@demo.com và mật khẩu là Demouser1! (lưu ý: chúng tôi cập nhật máy chủ demo theo thời gian; nếu không hoạt động, hãy báo cho chúng tôi qua kênh Discussions).
 
+<a id="users-guide"></a>
 ## Hướng dẫn sử dụng
 
 Có thể tìm thấy hướng dẫn sử dụng [tại đây](https://checkmate.so/docs).
@@ -74,6 +76,7 @@ Có thể tìm thấy hướng dẫn sử dụng [tại đây](https://checkmate
 - Đã cài [Docker](https://www.docker.com/)
 - Đã cài [Git](https://git-scm.com/)
 
+<a id="installation"></a>
 ## Cài đặt
 
 Xem hướng dẫn cài đặt trong [cổng tài liệu của Checkmate](https://checkmate.so/docs).
@@ -86,6 +89,7 @@ Nếu bạn cần giám sát các endpoint HTTPS nội bộ với chứng chỉ 
 
 Để biết thêm tài liệu, xem [thư mục docs](../).
 
+<a id="performance"></a>
 ## Hiệu năng
 
 Nhờ tối ưu rộng rãi, Checkmate hoạt động với mức sử dụng bộ nhớ rất nhỏ, chỉ cần lượng RAM và CPU tối thiểu. Dưới đây là mức sử dụng bộ nhớ của một instance Node.js trên máy chủ giám sát 323 máy chủ mỗi phút:
@@ -96,6 +100,7 @@ Bạn cũng có thể thấy dung lượng bộ nhớ của MongoDB và Redis tr
 
 ![image](https://github.com/user-attachments/assets/3b469e85-e675-4040-a162-3f24c1afc751)
 
+<a id="questions--ideas"></a>
 ## Câu hỏi & ý tưởng
 
 Nếu bạn có câu hỏi, góp ý hoặc bình luận, có một vài tuỳ chọn:
@@ -105,6 +110,7 @@ Nếu bạn có câu hỏi, góp ý hoặc bình luận, có một vài tuỳ ch
 
 Đừng ngần ngại hỏi hoặc chia sẻ ý tưởng — chúng tôi rất mong nghe ý kiến của bạn!
 
+<a id="features"></a>
 ## Tính năng
 
 - Hoàn toàn mã nguồn mở, có thể triển khai trên máy chủ riêng hoặc thiết bị tại nhà (ví dụ Raspberry Pi 4 hoặc 5)
@@ -129,6 +135,7 @@ Nếu bạn có câu hỏi, góp ý hoặc bình luận, có một vài tuỳ ch
 5. Khi trạng thái thay đổi, một sự cố sẽ được tạo hoặc giải quyết tuỳ vào trạng thái hiện tại
 6. Thông báo được kích hoạt theo cấu hình
 
+<a id="screenshots"></a>
 ## Ảnh chụp màn hình
 
 <p>
@@ -146,6 +153,7 @@ Nếu bạn có câu hỏi, góp ý hoặc bình luận, có một vài tuỳ ch
 
 
 
+<a id="tech-stack"></a>
 ## Tech stack
 
 - [ReactJs](https://react.dev/)
@@ -155,6 +163,7 @@ Nếu bạn có câu hỏi, góp ý hoặc bình luận, có một vài tuỳ ch
 - [Recharts](https://recharts.org)
 - Và rất nhiều thành phần mã nguồn mở khác!
 
+<a id="a-few-links"></a>
 ## Một vài liên kết
 
 - Nếu bạn muốn ủng hộ chúng tôi, hãy cân nhắc cho dự án một ⭐ và nhấn "watch".
@@ -162,6 +171,7 @@ Nếu bạn có câu hỏi, góp ý hoặc bình luận, có một vài tuỳ ch
 - Muốn nhận thông báo khi có bản phát hành mới? Hãy dùng [Newreleases](https://newreleases.io/) — dịch vụ miễn phí theo dõi phiên bản phát hành.
 - Xem video [cài đặt và sử dụng Checkmate](https://www.youtube.com/watch?v=GfFOc0xHIwY)
 
+<a id="contributing"></a>
 ## Đóng góp
 
 Chúng tôi là [Alex](http://github.com/ajhollid) (trưởng nhóm), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) và [Karen](https://github.com/karenvicent), hỗ trợ cá nhân và doanh nghiệp giám sát hạ tầng và máy chủ.

@@ -62,12 +62,14 @@
 - [🤝 المساهمة](#contributing)
 
 
+<a id="demo"></a>
 ## العرض التجريبي
 
 يمكنك مشاهدة آخر إصدار من [Checkmate](https://demo.checkmate.so/) أثناء التشغيل.
 
 اسم المستخدم هو demouser@demo.com وكلمة المرور Demouser1! (ملاحظة: نقوم بتحديث خادم العرض التجريبي من حين لآخر، فإذا لم يعمل، يُرجى إخبارنا في قناة Discussions).
 
+<a id="users-guide"></a>
 ## دليل المستخدم
 
 يمكنك العثور على تعليمات الاستخدام [هنا](https://checkmate.so/docs).
@@ -76,6 +78,7 @@
 - تثبيت [Docker](https://www.docker.com/)
 - تثبيت [Git](https://git-scm.com/)
 
+<a id="installation"></a>
 ## التثبيت
 
 اطّلع على تعليمات التثبيت في [بوابة وثائق Checkmate](https://checkmate.so/docs).
@@ -88,6 +91,7 @@
 
 للمزيد من الوثائق، راجع [مجلد docs](../).
 
+<a id="performance"></a>
 ## الأداء
 
 بفضل التحسينات الواسعة، يعمل Checkmate ببصمة ذاكرة صغيرة استثنائيًا، ولا يتطلب سوى الحد الأدنى من الذاكرة وموارد المعالج. فيما يلي استخدام الذاكرة لنسخة Node.js على خادم يراقب 323 خادمًا كل دقيقة:
@@ -98,6 +102,7 @@
 
 ![image](https://github.com/user-attachments/assets/3b469e85-e675-4040-a162-3f24c1afc751)
 
+<a id="questions--ideas"></a>
 ## الأسئلة والأفكار
 
 إذا كانت لديك أسئلة أو اقتراحات أو تعليقات، فلديك عدة خيارات:
@@ -107,6 +112,7 @@
 
 لا تتردد في طرح الأسئلة أو مشاركة أفكارك — يسعدنا التواصل معك!
 
+<a id="features"></a>
 ## المزايا
 
 - مفتوح المصدر بالكامل، يمكن نشره على خوادمك أو على أجهزتك المنزلية (مثل Raspberry Pi 4 أو 5)
@@ -131,6 +137,7 @@
 5. عند تغير الحالة، يتم إنشاء حادث أو حله بحسب الحالة الحالية للمراقبة
 6. تُطلَق الإشعارات استنادًا إلى الإعدادات
 
+<a id="screenshots"></a>
 ## لقطات الشاشة
 
 <p>
@@ -148,6 +155,7 @@
 
 
 
+<a id="tech-stack"></a>
 ## التقنيات المستخدمة
 
 - [ReactJs](https://react.dev/)
@@ -157,6 +165,7 @@
 - [Recharts](https://recharts.org)
 - والكثير من المكونات مفتوحة المصدر الأخرى!
 
+<a id="a-few-links"></a>
 ## بعض الروابط
 
 - إذا أردت دعمنا، فضع ⭐ على المستودع وانقر على "watch".
@@ -164,6 +173,7 @@
 - هل تحتاج إشعارًا عند صدور إصدار جديد؟ استخدم [Newreleases](https://newreleases.io/) — وهي خدمة مجانية لتتبع الإصدارات.
 - شاهد [فيديو تثبيت Checkmate واستخدامه](https://www.youtube.com/watch?v=GfFOc0xHIwY)
 
+<a id="contributing"></a>
 ## المساهمة
 
 نحن [Alex](http://github.com/ajhollid) (قائد الفريق)، و[Gorkem](http://github.com/gorkem-bwl/)، و[Aryaman](https://github.com/Br0wnHammer)، و[Mert](https://github.com/mertssmnoglu)، و[Karen](https://github.com/karenvicent) نساعد الأفراد والشركات على مراقبة بنيتهم التحتية وخوادمهم.

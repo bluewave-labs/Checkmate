@@ -60,12 +60,14 @@ Checkmate s'ha provat sota càrrega amb més de 1.000 monitors actius sense cap 
 - [🤝 Contribuir](#contributing)
 
 
+<a id="demo"></a>
 ## Demo
 
 Pots veure la darrera versió de [Checkmate](https://demo.checkmate.so/) en acció.
 
 L'usuari és demouser@demo.com i la contrasenya és Demouser1! (Nota: actualitzem el servidor de demostració de tant en tant; si no funciona, escriu-nos al canal Discussions).
 
+<a id="users-guide"></a>
 ## Guia d'usuari
 
 Pots trobar les instruccions d'ús [aquí](https://checkmate.so/docs).
@@ -74,6 +76,7 @@ Pots trobar les instruccions d'ús [aquí](https://checkmate.so/docs).
 - [Docker](https://www.docker.com/) instal·lat
 - [Git](https://git-scm.com/) instal·lat
 
+<a id="installation"></a>
 ## Instal·lació
 
 Consulta les instruccions d'instal·lació al [portal de documentació de Checkmate](https://checkmate.so/docs).
@@ -86,6 +89,7 @@ Si necessites monitoritzar punts HTTPS interns amb certificats d'autoritats cert
 
 Per a més documentació, consulta el [directori docs](../).
 
+<a id="performance"></a>
 ## Rendiment
 
 Gràcies a una optimització exhaustiva, Checkmate funciona amb un consum de memòria excepcionalment baix, requerint un mínim de RAM i CPU. Aquí tens l'ús de memòria d'una instància de Node.js en un servidor que monitoritza 323 servidors cada minut:
@@ -96,6 +100,7 @@ Aquí pots veure la petjada de memòria de MongoDB i Redis al mateix servidor (3
 
 ![image](https://github.com/user-attachments/assets/3b469e85-e675-4040-a162-3f24c1afc751)
 
+<a id="questions--ideas"></a>
 ## Preguntes i idees
 
 Si tens preguntes, suggeriments o comentaris, tens diverses opcions:
@@ -105,6 +110,7 @@ Si tens preguntes, suggeriments o comentaris, tens diverses opcions:
 
 No dubtis a preguntar o compartir les teves idees — ens encantarà tenir notícies teves!
 
+<a id="features"></a>
 ## Funcionalitats
 
 - Totalment de codi obert, desplegable als teus servidors o dispositius domèstics (per ex. Raspberry Pi 4 o 5)
@@ -129,6 +135,7 @@ No dubtis a preguntar o compartir les teves idees — ens encantarà tenir notí
 5. En un canvi d'estat, es crea o resol un incident, segons l'estat actual del monitor
 6. Es disparen les notificacions segons la configuració
 
+<a id="screenshots"></a>
 ## Captures de pantalla
 
 <p>
@@ -146,6 +153,7 @@ No dubtis a preguntar o compartir les teves idees — ens encantarà tenir notí
 
 
 
+<a id="tech-stack"></a>
 ## Stack tecnològic
 
 - [ReactJs](https://react.dev/)
@@ -155,6 +163,7 @@ No dubtis a preguntar o compartir les teves idees — ens encantarà tenir notí
 - [Recharts](https://recharts.org)
 - I molts altres components de codi obert!
 
+<a id="a-few-links"></a>
 ## Alguns enllaços
 
 - Si vols donar-nos suport, considera donar-nos una ⭐ i prémer "watch".
@@ -162,6 +171,7 @@ No dubtis a preguntar o compartir les teves idees — ens encantarà tenir notí
 - Vols rebre una notificació quan hi hagi una nova versió? Utilitza [Newreleases](https://newreleases.io/), un servei gratuït per seguir versions.
 - Mira un [vídeo d'instal·lació i ús de Checkmate](https://www.youtube.com/watch?v=GfFOc0xHIwY)
 
+<a id="contributing"></a>
 ## Contribuir
 
 Som l'[Alex](http://github.com/ajhollid) (líder d'equip), en [Gorkem](http://github.com/gorkem-bwl/), l'[Aryaman](https://github.com/Br0wnHammer), en [Mert](https://github.com/mertssmnoglu) i la [Karen](https://github.com/karenvicent), i ajudem persones i empreses a monitoritzar la seva infraestructura i els seus servidors.

@@ -60,12 +60,14 @@ Checkmate wurde mit über 1.000 aktiven Monitoren ohne nennenswerte Probleme ode
 - [🤝 Mitwirken](#contributing)
 
 
+<a id="demo"></a>
 ## Demo
 
 Sie können den neuesten Build von [Checkmate](https://demo.checkmate.so/) live ausprobieren.
 
 Der Benutzername lautet demouser@demo.com und das Passwort ist Demouser1! (Hinweis: wir aktualisieren den Demo-Server gelegentlich; falls etwas nicht funktioniert, melden Sie sich bitte im Discussions-Kanal).
 
+<a id="users-guide"></a>
 ## Benutzerhandbuch
 
 Eine Nutzungsanleitung finden Sie [hier](https://checkmate.so/docs).
@@ -74,6 +76,7 @@ Eine Nutzungsanleitung finden Sie [hier](https://checkmate.so/docs).
 - [Docker](https://www.docker.com/) installiert
 - [Git](https://git-scm.com/) installiert
 
+<a id="installation"></a>
 ## Installation
 
 Die Installationsanleitung finden Sie im [Dokumentationsportal von Checkmate](https://checkmate.so/docs).
@@ -86,6 +89,7 @@ Wenn Sie interne HTTPS-Endpunkte mit Zertifikaten von privaten Zertifizierungsst
 
 Weitere Dokumentation finden Sie im [docs-Verzeichnis](../).
 
+<a id="performance"></a>
 ## Leistung
 
 Dank umfangreicher Optimierungen läuft Checkmate mit einem außergewöhnlich geringen Speicherverbrauch und benötigt nur minimale RAM- und CPU-Ressourcen. Hier sehen Sie den Speicherverbrauch einer Node.js-Instanz auf einem Server, der 323 Server jede Minute überwacht:
@@ -96,6 +100,7 @@ Hier der Speicherverbrauch von MongoDB und Redis auf demselben Server (398 MB bz
 
 ![image](https://github.com/user-attachments/assets/3b469e85-e675-4040-a162-3f24c1afc751)
 
+<a id="questions--ideas"></a>
 ## Fragen & Ideen
 
 Wenn Sie Fragen, Vorschläge oder Anmerkungen haben, stehen Ihnen mehrere Möglichkeiten offen:
@@ -105,6 +110,7 @@ Wenn Sie Fragen, Vorschläge oder Anmerkungen haben, stehen Ihnen mehrere Mögli
 
 Stellen Sie gerne Fragen oder teilen Sie Ihre Ideen — wir freuen uns auf Ihr Feedback!
 
+<a id="features"></a>
 ## Funktionen
 
 - Vollständig Open Source, auf eigenen Servern oder Heimgeräten (z. B. Raspberry Pi 4 oder 5) bereitstellbar
@@ -129,6 +135,7 @@ Stellen Sie gerne Fragen oder teilen Sie Ihre Ideen — wir freuen uns auf Ihr F
 5. Bei einem Zustandswechsel wird je nach aktuellem Status entweder ein Vorfall erstellt oder geschlossen
 6. Benachrichtigungen werden je nach Konfiguration ausgelöst
 
+<a id="screenshots"></a>
 ## Screenshots
 
 <p>
@@ -146,6 +153,7 @@ Stellen Sie gerne Fragen oder teilen Sie Ihre Ideen — wir freuen uns auf Ihr F
 
 
 
+<a id="tech-stack"></a>
 ## Tech-Stack
 
 - [ReactJs](https://react.dev/)
@@ -155,6 +163,7 @@ Stellen Sie gerne Fragen oder teilen Sie Ihre Ideen — wir freuen uns auf Ihr F
 - [Recharts](https://recharts.org)
 - Viele weitere Open-Source-Komponenten!
 
+<a id="a-few-links"></a>
 ## Einige Links
 
 - Wenn Sie uns unterstützen möchten, geben Sie dem Projekt gerne einen ⭐ und klicken Sie auf „watch“.
@@ -162,6 +171,7 @@ Stellen Sie gerne Fragen oder teilen Sie Ihre Ideen — wir freuen uns auf Ihr F
 - Sie möchten benachrichtigt werden, wenn es ein neues Release gibt? Nutzen Sie [Newreleases](https://newreleases.io/), einen kostenlosen Dienst zum Verfolgen von Releases.
 - Sehen Sie sich ein [Installations- und Anwendungs-Video](https://www.youtube.com/watch?v=GfFOc0xHIwY) zu Checkmate an.
 
+<a id="contributing"></a>
 ## Mitwirken
 
 Wir sind [Alex](http://github.com/ajhollid) (Team-Lead), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) und [Karen](https://github.com/karenvicent) und helfen Einzelpersonen und Unternehmen dabei, ihre Infrastruktur und Server zu überwachen.
