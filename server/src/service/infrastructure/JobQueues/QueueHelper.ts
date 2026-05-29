@@ -105,7 +105,7 @@ export class QueueHelper implements IQueueHelper {
 	}
 
 	get serviceName() {
-		return SuperSimpleQueueHelper.SERVICE_NAME;
+		return QueueHelper.SERVICE_NAME;
 	}
 
 	getHeartbeatJob = () => {
