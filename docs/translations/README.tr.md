@@ -40,11 +40,11 @@
 <br>
 
 
-Bu depo, sunucu donanımını, çalışma süresini, yanıt sürelerini ve olayları zarif görselleştirmelerle gerçek zamanlı takip eden, açık kaynaklı ve kendi sunucunuzda barındırılan bir izleme aracı olan Checkmate'in hem frontend hem de backend tarafını içerir. Checkmate, bir sunucunun ya da web sitesinin erişilebilir ve düzgün çalışıyor olup olmadığını düzenli olarak kontrol eder; izlenen servislerin kullanılabilirliği, kesintileri ve yanıt süreleri hakkında gerçek zamanlı uyarılar ve raporlar sağlar.
+Bu depo, sunucu donanımını, çalışma süresini, yanıt sürelerini ve olayları gerçek zamanlı olarak şık görselleştirmelerle takip eden, açık kaynaklı ve kendi sunucunuzda barındırabileceğiniz bir izleme aracı olan Checkmate'in hem frontend hem de backend tarafını içerir. Checkmate, bir sunucunun veya web sitesinin erişilebilir olup olmadığını ve düzgün çalışıp çalışmadığını düzenli olarak kontrol eder; izlenen servislerin erişilebilirliği, kesintileri ve yanıt süreleri hakkında gerçek zamanlı uyarılar ve raporlar sunar.
 
-Checkmate'in ayrıca uzak sunuculardan veri çekmek için [Capture](https://github.com/bluewave-labs/capture) adında bir ajanı vardır. Capture, Checkmate'i çalıştırmak için zorunlu değildir; ancak sunucularınızın CPU, RAM, disk ve sıcaklık durumu hakkında ek bilgi sağlar. Capture; Linux, Windows, Mac, Raspberry Pi ve Go çalıştırabilen herhangi bir cihazda kullanılabilir.
+Checkmate, uzak sunuculardan veri çekmek için [Capture](https://github.com/bluewave-labs/capture) adlı bir agent ile birlikte gelir. Capture, Checkmate'i çalıştırmak için zorunlu değildir; ancak sunucularınızın CPU, RAM, disk ve sıcaklık durumu hakkında ek bilgi sağlar. Capture; Linux, Windows, macOS, Raspberry Pi ve Go çalıştırabilen herhangi bir cihazda kullanılabilir.
 
-Checkmate, 1000'den fazla aktif monitör ile herhangi bir sorun ya da performans darboğazı yaşamadan stres testinden geçirilmiştir.
+Checkmate, 1000'den fazla aktif monitör ile fark edilir bir sorun veya performans darboğazı yaşamadan stres testinden geçirilmiştir.
 
 ## 📚 İçindekiler
 
@@ -63,9 +63,9 @@ Checkmate, 1000'den fazla aktif monitör ile herhangi bir sorun ya da performans
 <a id="demo"></a>
 ## Demo
 
-[Checkmate](https://demo.checkmate.so/)'in en son sürümünü iş başında görebilirsiniz.
+[Checkmate](https://demo.checkmate.so/)'in en son sürümünü canlı olarak deneyebilirsiniz.
 
-Kullanıcı adı demouser@demo.com, şifre Demouser1!'dir (Not: Demo sunucusunu zaman zaman güncelliyoruz; çalışmazsa Discussions kanalından bize haber verin).
+Kullanıcı adı demouser@demo.com, şifre Demouser1!'dir. (Demo sunucusunu zaman zaman güncelliyoruz; çalışmıyorsa Discussions kanalından bize haber verin.)
 
 <a id="users-guide"></a>
 ## Kullanıcı kılavuzu
@@ -81,7 +81,7 @@ Kullanım talimatlarını [burada](https://checkmate.so/docs) bulabilirsiniz.
 
 Kurulum talimatları için [Checkmate dokümantasyon portalına](https://checkmate.so/docs) bakın.
 
-Alternatif olarak hızlıca bir Checkmate örneği çalıştırmak için [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Güney Afrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) veya [Pikapods](https://www.pikapods.com/)'u kullanabilirsiniz. Sunucu altyapınızı izlemek isterseniz [Capture ajanına](https://github.com/bluewave-labs/capture) ihtiyacınız olacak. Capture deposu da kurulum talimatlarını içerir.
+Bir Checkmate örneğini hızlıca ayağa kaldırmak için [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Güney Afrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) veya [Pikapods](https://www.pikapods.com/) da kullanabilirsiniz. Sunucu altyapınızı izlemek istiyorsanız [Capture agent'ına](https://github.com/bluewave-labs/capture) ihtiyacınız olacak; Capture deposunda da kurulum talimatları bulunur.
 
 ### Özel CA Kullanımı
 
@@ -92,7 +92,7 @@ Daha fazla dokümantasyon için [docs dizinine](../) göz atın.
 <a id="performance"></a>
 ## Performans
 
-Geniş kapsamlı optimizasyonlar sayesinde Checkmate son derece düşük bellek ayak iziyle çalışır ve minimum bellek ile CPU kaynağı gerektirir. Aşağıda her dakika 323 sunucuyu izleyen bir sunucudaki Node.js örneğinin bellek kullanımı yer almaktadır:
+Yapılan geniş çaplı optimizasyonlar sayesinde Checkmate çok düşük bir bellek ayak iziyle çalışır ve çok az RAM ile CPU yeterlidir. Aşağıda, her dakika 323 sunucuyu izleyen bir sunucudaki Node.js örneğinin bellek kullanımı görülüyor:
 
 ![image](https://github.com/user-attachments/assets/37e04a75-d83a-488f-b25c-025511b492c9)
 
@@ -103,12 +103,12 @@ Aynı sayıda sunucu için aynı sunucudaki MongoDB ve Redis bellek ayak izini d
 <a id="questions--ideas"></a>
 ## Sorular & fikirler
 
-Sorularınız, önerileriniz ya da yorumlarınız varsa birkaç seçeneğiniz var:
+Sorularınız, önerileriniz veya yorumlarınız varsa birkaç seçenek var:
 
-- [Discord kanalı](https://discord.gg/NAb6H3UTjK) (tercih edilen)
+- [Discord](https://discord.gg/NAb6H3UTjK) (tercih edilen)
 - [GitHub Discussions](https://github.com/bluewave-labs/Checkmate/discussions) (zaman zaman buraya bakıyoruz)
 
-Soru sormaktan ya da fikirlerinizi paylaşmaktan çekinmeyin — sizi dinlemekten mutluluk duyarız!
+Soru sormaktan ya da fikirlerinizi paylaşmaktan çekinmeyin — sizden haber almak güzel olur!
 
 <a id="features"></a>
 ## Özellikler
