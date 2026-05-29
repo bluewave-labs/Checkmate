@@ -25,6 +25,7 @@ export class LessSimpleQueue implements IJobQueue {
 		this.helper = helper;
 		this.monitorsRepository = monitorsRepository;
 		this.scheduler = scheduler;
+		this.registerListeners();
 	}
 
 	get serviceName() {
@@ -121,7 +122,6 @@ export class LessSimpleQueue implements IJobQueue {
 
 	init = async () => {
 		try {
-			this.registerListeners();
 			await this.scheduler.start();
 			this.scheduler.addTemplate("monitor-job", this.helper.getHeartbeatJob());
 			this.scheduler.addTemplate("geo-check-job", this.helper.getHeartbeatGeoJob());

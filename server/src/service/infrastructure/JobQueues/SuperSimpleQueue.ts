@@ -69,6 +69,7 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 		this.helper = helper;
 		this.monitorsRepository = monitorsRepository;
 		this.scheduler = scheduler;
+		this.registerListeners();
 	}
 
 	get serviceName() {
@@ -158,8 +159,6 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 
 	init = async () => {
 		try {
-			this.registerListeners();
-
 			this.scheduler.start();
 			this.scheduler.addTemplate("monitor-job", this.helper.getHeartbeatJob());
 			this.scheduler.addTemplate("geo-check-job", this.helper.getHeartbeatGeoJob());
