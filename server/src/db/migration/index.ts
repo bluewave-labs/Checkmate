@@ -9,6 +9,7 @@ import { migrateMaintenanceWindowMonitorIdToArray } from "./0007_migrateMaintena
 import { addScriptMonitorSupport } from "./0008_addScriptMonitorSupport.js";
 import { migrateProbesToCaptureAgents } from "./0009_migrateProbesToCaptureAgents.js";
 import { normalizeScriptMonitorUrls } from "./0010_normalizeScriptMonitorUrls.js";
+import { seedDefaultScripts } from "./0011_seedDefaultScripts.js";
 import type { ILogger } from "@/utils/logger.js";
 
 type MigrationEntry = {
@@ -27,6 +28,7 @@ const migrations: MigrationEntry[] = [
 	{ name: "0008_addScriptMonitorSupport", execute: addScriptMonitorSupport },
 	{ name: "0009_migrateProbesToCaptureAgents", execute: migrateProbesToCaptureAgents },
 	{ name: "0010_normalizeScriptMonitorUrls", execute: normalizeScriptMonitorUrls },
+	{ name: "0011_seedDefaultScripts", execute: seedDefaultScripts },
 ];
 
 const runMigrations = async (logger?: ILogger) => {
