@@ -40,11 +40,11 @@
 <br>
 
 
-Ce dépôt contient à la fois le frontend et le backend de Checkmate, un outil de surveillance open source et auto-hébergeable permettant de suivre le matériel des serveurs, la disponibilité, les temps de réponse et les incidents en temps réel grâce à de belles visualisations. Checkmate vérifie régulièrement la disponibilité et le bon fonctionnement de vos serveurs ou sites web, et fournit des alertes et rapports en temps réel sur la disponibilité, les pannes et les temps de réponse des services surveillés.
+Ce dépôt contient le frontend et le backend de Checkmate, un outil de monitoring open source et auto-hébergeable qui suit en temps réel le matériel des serveurs, la disponibilité, les temps de réponse et les incidents avec des visualisations soignées. Checkmate vérifie périodiquement si vos serveurs ou sites web sont accessibles et performants, et envoie alertes et rapports en temps réel sur leur disponibilité, leurs interruptions et leurs temps de réponse.
 
-Checkmate dispose aussi d'un agent, appelé [Capture](https://github.com/bluewave-labs/capture), pour récupérer des données depuis des serveurs distants. Capture n'est pas requis pour faire tourner Checkmate, mais il apporte des informations supplémentaires sur l'état du CPU, de la RAM, du disque et de la température de vos serveurs. Capture fonctionne sur Linux, Windows, Mac, Raspberry Pi ou tout appareil capable d'exécuter Go.
+Checkmate s'accompagne d'un agent appelé [Capture](https://github.com/bluewave-labs/capture), qui collecte des données depuis des serveurs distants. Capture n'est pas obligatoire, mais il apporte des informations supplémentaires sur le CPU, la RAM, le disque et la température de vos serveurs. Il tourne sous Linux, Windows, macOS, Raspberry Pi, ou n'importe quel appareil capable d'exécuter Go.
 
-Checkmate a été testé en charge avec plus de 1 000 moniteurs actifs sans aucun problème ni goulet d'étranglement notable.
+Checkmate a été testé sous charge avec plus de 1 000 moniteurs actifs, sans problème ni baisse de performance notable.
 
 ## 📚 Table des matières
 
@@ -63,9 +63,9 @@ Checkmate a été testé en charge avec plus de 1 000 moniteurs actifs sans aucu
 <a id="demo"></a>
 ## Démo
 
-Vous pouvez voir la dernière version de [Checkmate](https://demo.checkmate.so/) en action.
+La dernière version de [Checkmate](https://demo.checkmate.so/) est consultable en ligne.
 
-L'identifiant est demouser@demo.com et le mot de passe Demouser1! (Note : nous mettons à jour le serveur de démo de temps en temps ; si cela ne fonctionne pas, faites-nous signe sur le canal Discussions).
+L'identifiant est demouser@demo.com et le mot de passe Demouser1!. (Le serveur de démo est mis à jour de temps en temps ; s'il est indisponible, dites-le-nous sur le canal Discussions.)
 
 <a id="users-guide"></a>
 ## Guide utilisateur
@@ -85,14 +85,14 @@ Vous pouvez également utiliser [Coolify](https://coolify.io/), [Elestio](https:
 
 ### Utiliser une autorité de certification personnalisée
 
-Si vous devez surveiller des points d'accès HTTPS internes avec des certificats issus d'autorités de certification privées (comme Smallstep), consultez notre [guide de confiance d'autorité de certification personnalisée](../custom-ca-trust.md) pour les options de configuration Docker.
+Si vous devez surveiller des endpoints HTTPS internes dont les certificats sont signés par une autorité de certification privée (comme Smallstep), consultez notre [guide d'autorité de certification personnalisée](../custom-ca-trust.md) — il décrit les options de configuration Docker.
 
-Pour plus de documentation, consultez le [répertoire docs](../).
+Pour plus de documentation, voyez le [répertoire docs](../).
 
 <a id="performance"></a>
 ## Performance
 
-Grâce à de nombreuses optimisations, Checkmate fonctionne avec une empreinte mémoire exceptionnellement faible, nécessitant un minimum de RAM et de CPU. Voici l'utilisation mémoire d'une instance Node.js sur un serveur qui surveille 323 serveurs chaque minute :
+Grâce à de nombreuses optimisations, Checkmate fonctionne avec une empreinte mémoire exceptionnellement faible et n'a besoin que de très peu de RAM et de CPU. Voici l'utilisation mémoire d'une instance Node.js sur un serveur qui surveille 323 serveurs chaque minute :
 
 ![image](https://github.com/user-attachments/assets/37e04a75-d83a-488f-b25c-025511b492c9)
 
@@ -108,21 +108,21 @@ Si vous avez des questions, suggestions ou commentaires, plusieurs options s'off
 - [Canal Discord](https://discord.gg/NAb6H3UTjK) (préféré)
 - [Discussions GitHub](https://github.com/bluewave-labs/Checkmate/discussions) (nous y passons de temps en temps)
 
-N'hésitez pas à poser vos questions ou partager vos idées — nous adorerions vous entendre !
+N'hésitez pas à poser vos questions ou à partager vos idées — vos retours nous intéressent !
 
 <a id="features"></a>
 ## Fonctionnalités
 
 - Entièrement open source, déployable sur vos serveurs ou appareils personnels (par ex. Raspberry Pi 4 ou 5)
-- Plusieurs options de surveillance : disponibilité, Docker, ping, SSL, port, serveur de jeu
-- Surveillance de la vitesse des pages
-- Surveillance de l'infrastructure (mémoire, utilisation du disque, performance CPU, réseau, etc.) — nécessite l'agent [Capture](https://github.com/bluewave-labs/capture)
-  - Surveillance sélective du disque avec choix de points de montage
+- Plusieurs types de monitoring : uptime, Docker, ping, SSL, port, serveur de jeu
+- Monitoring de la vitesse des pages
+- Monitoring d'infrastructure (mémoire, disque, CPU, réseau, etc.) — nécessite l'agent [Capture](https://github.com/bluewave-labs/capture)
+  - Monitoring de disque sélectif via choix des points de montage
 - Incidents en un coup d'œil
-- Pages de statut avec 4 thèmes élégants
+- Pages de statut avec 4 thèmes soignés
 - Notifications par e-mail, webhooks, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS)
 - Maintenance planifiée
-- Surveillance par requête JSON
+- Monitoring via requête JSON
 - Support multilingue : arabe, chinois (simplifié), chinois (traditionnel, Taïwan), tchèque, anglais, finnois, français, allemand, japonais, portugais (Brésil), russe, espagnol, thaï, turc, ukrainien et vietnamien
 
 
@@ -166,29 +166,29 @@ N'hésitez pas à poser vos questions ou partager vos idées — nous adorerions
 <a id="a-few-links"></a>
 ## Quelques liens
 
-- Si vous souhaitez nous soutenir, merci de mettre une ⭐ et de cliquer sur « watch ».
-- Une question ou une suggestion pour la roadmap ou les fonctionnalités ? Rejoignez notre [canal Discord](https://discord.gg/NAb6H3UTjK) ou les [Discussions](https://github.com/bluewave-labs/checkmate/discussions).
-- Besoin d'être notifié à chaque nouvelle version ? Utilisez [Newreleases](https://newreleases.io/), un service gratuit de suivi des sorties.
-- Regardez une [vidéo d'installation et d'utilisation de Checkmate](https://www.youtube.com/watch?v=GfFOc0xHIwY)
+- Pour nous soutenir, laissez une ⭐ et cliquez sur « watch ».
+- Une question ou une suggestion sur la roadmap ou les fonctionnalités ? Passez par notre [Discord](https://discord.gg/NAb6H3UTjK) ou par les [Discussions](https://github.com/bluewave-labs/checkmate/discussions).
+- Vous voulez être prévenu des nouvelles versions ? [Newreleases](https://newreleases.io/) est un service gratuit de suivi des sorties.
+- Regardez une [vidéo d'installation et d'utilisation de Checkmate](https://www.youtube.com/watch?v=GfFOc0xHIwY).
 
 <a id="contributing"></a>
 ## Contribuer
 
-Nous sommes [Alex](http://github.com/ajhollid) (chef d'équipe), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) et [Karen](https://github.com/karenvicent), et nous aidons les particuliers et les entreprises à surveiller leur infrastructure et leurs serveurs.
+Nous sommes [Alex](http://github.com/ajhollid) (chef d'équipe), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) et [Karen](https://github.com/karenvicent), et nous aidons particuliers et entreprises à monitorer leur infrastructure et leurs serveurs.
 
-Nous sommes fiers de construire des liens solides avec les contributeurs à tous les niveaux. Bien que jeune, Checkmate a déjà obtenu plus de 7 000 étoiles et attiré plus de 90 contributeurs du monde entier.
+Nous tenons à construire des liens solides avec les contributeurs, quel que soit leur niveau. Bien que jeune, Checkmate a déjà dépassé 7 000 étoiles et attiré plus de 90 contributeurs partout dans le monde.
 
-Notre dépôt a été suivi par des employés de **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes et NEC** — alors n'hésitez pas, rejoignez-nous, contribuez et apprenez avec nous !
+Notre dépôt est suivi par des employés de **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes et NEC** — alors lancez-vous, rejoignez-nous, contribuez et apprenez avec nous.
 
-Voici comment contribuer :
+Comment contribuer :
 
 0. Mettez une étoile à ce dépôt :)
-1. Consultez le [guide du contributeur](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). Les nouveaux contributeurs sont encouragés à consulter le tag `good-first-issue`.
-2. Lisez une structure détaillée de [Checkmate](https://deepwiki.com/bluewave-labs/Checkmate) si vous souhaitez plonger dans l'architecture.
-3. Ouvrez une issue si vous pensez avoir rencontré un bug.
-4. Cherchez les `good-first-issue` si vous débutez.
-5. Faites une pull request pour ajouter de nouvelles fonctionnalités, des améliorations ou corriger des bugs.
-6. Découvrez ce parcours interactif de la base de code `Checkmate` sur CodeCanvas [ici](https://www.code-canvas.com/?session=unauthenticatedGithub&repo=Checkmate&owner=bluewave-labs&branch=develop&OnboardingTutorial=true). Pour affiner les simulations de flux de données existantes ou en créer de nouvelles, suivez le tutoriel rapide [ici](https://docs.code-canvas.com/updating-diagram).
+1. Lisez le [guide du contributeur](https://github.com/bluewave-labs/Checkmate/blob/develop/CONTRIBUTING.md). Si c'est votre première contribution, jetez d'abord un œil au tag `good-first-issue`.
+2. Si vous voulez plonger dans l'architecture, lisez la [structure détaillée de Checkmate](https://deepwiki.com/bluewave-labs/Checkmate).
+3. Ouvrez une issue si vous pensez avoir trouvé un bug.
+4. Pour débuter, cherchez les tickets marqués `good-first-issue`.
+5. Ouvrez une pull request pour ajouter une fonctionnalité, améliorer l'existant ou corriger un bug.
+6. Parcourez la base de code `Checkmate` via la visite interactive sur CodeCanvas, [ici](https://www.code-canvas.com/?session=unauthenticatedGithub&repo=Checkmate&owner=bluewave-labs&branch=develop&OnboardingTutorial=true). Pour affiner les simulations de flux de données existantes ou en créer de nouvelles, suivez le tutoriel rapide [ici](https://docs.code-canvas.com/updating-diagram).
 
 <a href="https://github.com/bluewave-labs/checkmate/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=bluewave-labs/checkmate" />
