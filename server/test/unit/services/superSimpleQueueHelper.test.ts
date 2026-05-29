@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { SuperSimpleQueueHelper } from "../../../src/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.ts";
+import { QueueHelper } from "../../../src/service/infrastructure/JobQueues/QueueHelper.ts";
 import type { Monitor } from "../../../src/types/monitor.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 
@@ -59,7 +59,7 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		...overrides,
 	};
 
-	const helper = new SuperSimpleQueueHelper(
+	const helper = new QueueHelper(
 		defaults.logger as any,
 		defaults.networkService as any,
 		defaults.statusService as any,
@@ -94,7 +94,7 @@ const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
 
 // ── Tests ────────────────────────────────────────────────────────────────────
 
-describe("SuperSimpleQueueHelper", () => {
+describe("QueueHelper", () => {
 	describe("serviceName", () => {
 		it("returns JobQueueHelper", () => {
 			const { helper } = createHelper();
