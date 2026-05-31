@@ -291,6 +291,10 @@ const MonitorSchema = new Schema<MonitorDocument>(
 				ref: "Tag",
 			},
 		],
+		customUpCodes: {
+			type: [Number],
+			default: [],
+		},
 		secret: {
 			type: String,
 		},

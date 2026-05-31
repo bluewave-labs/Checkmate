@@ -31,11 +31,13 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 
 	private handleHttpError<T>(error: unknown, monitor: Monitor): MonitorStatusResponse<T> {
 		if (error instanceof HTTPError || error instanceof RequestError) {
+			const isCustomUp = error instanceof HTTPError && (monitor.customUpCodes ?? []).includes(error.response?.statusCode);
+
 			return {
 				monitorId: monitor.id,
 				teamId: monitor.teamId,
 				type: monitor.type,
-				status: false,
+				status: isCustomUp,
 				code: error.response?.statusCode ?? NETWORK_ERROR,
 				message: error.message,
 				responseTime: error.timings?.phases?.total ?? 0,
@@ -106,7 +108,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 				monitorId: monitor.id,
 				teamId: monitor.teamId,
 				type: monitor.type,
-				status: response.ok && matchResult.ok,
+				status: ((monitor.customUpCodes ?? []).includes(response.statusCode) || response.ok) && matchResult.ok,
 				code: response.statusCode,
 				message: matchResult.ok ? (response.statusMessage ?? "OK") : matchResult.message,
 				responseTime: response.timings.phases.total ?? 0,

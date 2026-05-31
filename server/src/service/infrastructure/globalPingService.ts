@@ -62,7 +62,7 @@ interface GlobalPingProbeResult {
 export interface IGlobalPingService {
 	readonly serviceName: string;
 	createMeasurement(monitorType: MonitorType, url: string, locations: GeoContinent[]): Promise<string | null>;
-	pollForResults(measurementId: string, timeoutMs?: number): Promise<GeoCheckResult[]>;
+	pollForResults(measurementId: string, timeoutMs?: number, customUpCodes?: number[]): Promise<GeoCheckResult[]>;
 }
 
 export class GlobalPingService implements IGlobalPingService {
@@ -119,7 +119,7 @@ export class GlobalPingService implements IGlobalPingService {
 		}
 	}
 
-	async pollForResults(measurementId: string, timeoutMs: number = MAX_POLL_TIMEOUT_MS): Promise<GeoCheckResult[]> {
+	async pollForResults(measurementId: string, timeoutMs: number = MAX_POLL_TIMEOUT_MS, customUpCodes: number[] = []): Promise<GeoCheckResult[]> {
 		const startTime = Date.now();
 
 		while (Date.now() - startTime < timeoutMs) {
@@ -132,7 +132,7 @@ export class GlobalPingService implements IGlobalPingService {
 				const measurement = response.body;
 
 				if (measurement.status === "finished") {
-					const results = this.transformResults(measurement.results || []);
+					const results = this.transformResults(measurement.results || [], customUpCodes);
 					this.logger.debug({
 						message: `GlobalPing measurement completed: ${measurementId}`,
 						service: SERVICE_NAME,
@@ -174,7 +174,7 @@ export class GlobalPingService implements IGlobalPingService {
 		return [];
 	}
 
-	private transformResults(probeResults: GlobalPingProbeResult[]): GeoCheckResult[] {
+	private transformResults(probeResults: GlobalPingProbeResult[], customUpCodes: number[] = []): GeoCheckResult[] {
 		const successfulResults: GeoCheckResult[] = [];
 
 		for (const probeResult of probeResults) {
@@ -205,7 +205,8 @@ export class GlobalPingService implements IGlobalPingService {
 
 				successfulResults.push({
 					location,
-					status: probeResult.result.statusCode >= 200 && probeResult.result.statusCode < 300,
+					status:
+						customUpCodes.includes(probeResult.result.statusCode) || (probeResult.result.statusCode >= 200 && probeResult.result.statusCode < 300),
 					statusCode: probeResult.result.statusCode,
 					timings,
 				});

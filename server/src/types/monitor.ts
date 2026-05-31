@@ -60,6 +60,7 @@ export interface Monitor {
 	uptimePercentage?: number;
 	notifications: string[];
 	tags: string[];
+	customUpCodes: number[];
 	secret?: string;
 	cpuAlertThreshold: number;
 	cpuAlertCounter: number;

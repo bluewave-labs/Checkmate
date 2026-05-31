@@ -89,7 +89,7 @@ export class GeoChecksService implements IGeoChecksService {
 			}
 
 			// Step 2: Poll for results
-			const results = await this.globalPingService.pollForResults(measurementId);
+			const results = await this.globalPingService.pollForResults(measurementId, undefined, monitor.customUpCodes ?? []);
 
 			if (results.length === 0) {
 				// No successful results (all locations timed out or failed)
