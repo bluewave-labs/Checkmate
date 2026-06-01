@@ -140,6 +140,9 @@ export class LessSimpleQueue implements IJobQueue {
 			}
 
 			const monitors = await this.monitorsRepository.findAll();
+			if (!monitors) {
+				return true;
+			}
 			for (const monitor of monitors) {
 				const randomOffset = Math.floor(Math.random() * 100);
 				setTimeout(() => {
