@@ -222,3 +222,93 @@ describe("monitorValidation — strategy gating", () => {
 		});
 	});
 });
+
+describe("monitorValidation — customUpCodes", () => {
+	const baseHttpBody = {
+		name: "HTTP check",
+		type: "http" as const,
+		url: "https://example.com",
+	};
+
+	describe("createMonitorBodyValidation", () => {
+		it("accepts valid HTTP status codes", () => {
+			const parsed = createMonitorBodyValidation.parse({
+				...baseHttpBody,
+				customUpCodes: [200, 301, 404, 503],
+			});
+			expect(parsed.customUpCodes).toEqual([200, 301, 404, 503]);
+		});
+
+		it("rejects invalid HTTP status codes", () => {
+			expect(() =>
+				createMonitorBodyValidation.parse({
+					...baseHttpBody,
+					customUpCodes: [5000],
+				})
+			).toThrow();
+
+			expect(() =>
+				createMonitorBodyValidation.parse({
+					...baseHttpBody,
+					customUpCodes: [-1],
+				})
+			).toThrow();
+		});
+
+		it("defaults to an empty array when not provided", () => {
+			const parsed = createMonitorBodyValidation.parse(baseHttpBody);
+			expect(parsed.customUpCodes).toEqual([]);
+		});
+	});
+
+	describe("editMonitorBodyValidation", () => {
+		it("accepts valid HTTP status codes on edits", () => {
+			const parsed = editMonitorBodyValidation.parse({
+				customUpCodes: [200, 201],
+			});
+			expect(parsed.customUpCodes).toEqual([200, 201]);
+		});
+
+		it("rejects invalid HTTP status codes on edits", () => {
+			expect(() =>
+				editMonitorBodyValidation.parse({
+					customUpCodes: [9999],
+				})
+			).toThrow();
+		});
+	});
+
+	describe("importMonitorsBodyValidation", () => {
+		it("retains valid HTTP status codes on imported HTTP monitors", () => {
+			const parsed = importMonitorsBodyValidation.parse({
+				monitors: [
+					{
+						...baseHttpBody,
+						customUpCodes: [404],
+					},
+				],
+			});
+			expect(parsed.monitors[0].customUpCodes).toEqual([404]);
+		});
+
+		it("rejects invalid HTTP status codes on imported HTTP monitors", () => {
+			expect(() =>
+				importMonitorsBodyValidation.parse({
+					monitors: [
+						{
+							...baseHttpBody,
+							customUpCodes: [5000],
+						},
+					],
+				})
+			).toThrow();
+		});
+
+		it("defaults to an empty array when not provided on import", () => {
+			const parsed = importMonitorsBodyValidation.parse({
+				monitors: [baseHttpBody],
+			});
+			expect(parsed.monitors[0].customUpCodes).toEqual([]);
+		});
+	});
+});
