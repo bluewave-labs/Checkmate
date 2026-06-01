@@ -123,7 +123,9 @@ import {
 	IMaintenanceWindowsRepository,
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
-// import { AppError } from "@/utils/AppError.js";
+import { AppError } from "@/utils/AppError.js";
+import { QueueModes, type QueueMode } from "@/types/settings.js";
+import { env } from "process";
 
 export type InitializedServices = {
 	settingsService: ISettingsService;
@@ -168,10 +170,12 @@ export const initializeServices = async ({
 	logger,
 	envSettings,
 	settingsService,
+	queueMode = "primary",
 }: {
 	logger: ILogger;
 	envSettings: EnvConfig;
 	settingsService: ISettingsService;
+	queueMode?: QueueMode;
 }): Promise<InitializedServices> => {
 	// Create DB
 
@@ -345,10 +349,19 @@ export const initializeServices = async ({
 		geoChecksRepository
 	);
 
+	if (queueMode === "worker" && envSettings.queueType !== "lessSimpleQueue") {
+		throw new AppError({
+			message: `Worker mode requires QUEUE_TYPE="lessSimpleQueue" got ${envSettings.queueType}`,
+			status: 500,
+			service: "config services",
+			method: "initializeServices",
+		});
+	}
+
 	let jobQueue: IJobQueue;
 	switch (envSettings.queueType) {
 		case "lessSimpleQueue":
-			jobQueue = await LessSimpleQueue.create(logger, queueHelper, monitorsRepository, envSettings);
+			jobQueue = await LessSimpleQueue.create(logger, queueHelper, monitorsRepository, envSettings, queueMode);
 			break;
 		default:
 			jobQueue = await SuperSimpleQueue.create(logger, queueHelper, monitorsRepository);
