@@ -1,5 +1,5 @@
 import { ISettingsRepository } from "@/repositories/index.js";
-import { type DbType, type QueueType, Settings, SettingsUpdate } from "@/types/index.js";
+import { type DbType, type QueueType, type QueueMode, Settings, SettingsUpdate } from "@/types/index.js";
 import { AppError } from "@/utils/AppError.js";
 import { ValidatedEnv } from "@/validation/envValidation.js";
 import type { StringValue } from "ms";
@@ -14,6 +14,7 @@ export type EnvConfig = {
 	dbConnectionString: string;
 	dbType: DbType;
 	queueType: QueueType;
+	queueMode: QueueMode;
 	statusPageThemesEnabled: boolean;
 };
 
@@ -41,6 +42,7 @@ export class SettingsService implements ISettingsService {
 			dbConnectionString: env.DB_CONNECTION_STRING,
 			dbType: env.DB_TYPE,
 			queueType: env.QUEUE_TYPE,
+			queueMode: env.QUEUE_MODE,
 			statusPageThemesEnabled: env.STATUS_PAGE_THEMES_ENABLED,
 		};
 	}

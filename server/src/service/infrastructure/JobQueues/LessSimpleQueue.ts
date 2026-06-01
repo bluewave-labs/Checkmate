@@ -4,6 +4,7 @@ import { MongoStore, Scheduler, IJob } from "less-simple-scheduler";
 import { IQueueHelper } from "@/service/infrastructure/JobQueues/QueueHelper.js";
 import { Monitor, supportsGeoCheck } from "@/types/monitor.js";
 import { type QueueMetrics, IJobQueue } from "@/service/infrastructure/JobQueues/IJobQueue.js";
+import { type QueueMode } from "@/types/settings.js";
 import { EnvConfig } from "@/service/system/settingsService.js";
 const SERVICE_NAME = "JobQueue";
 
@@ -49,7 +50,7 @@ export class LessSimpleQueue implements IJobQueue {
 
 		this.scheduler.on("scheduler:error", (workerId, error) => {
 			this.logger.error({
-				message: `w${workerId} error: ${error instanceof Error ? error.message : String(error)}`,
+				message: `${workerId} error: ${error instanceof Error ? error.message : String(error)}`,
 				service: SERVICE_NAME,
 				stack: error instanceof Error ? error.stack : undefined,
 			});
@@ -57,35 +58,35 @@ export class LessSimpleQueue implements IJobQueue {
 
 		this.scheduler.on("job:locked", (workerId, job) => {
 			this.logger.debug({
-				message: `w${workerId} ${job.id} locked`,
+				message: `${workerId} ${job.id} locked`,
 				service: SERVICE_NAME,
 			});
 		});
 
 		this.scheduler.on("job:abort", (workerId, job, reason) => {
 			this.logger.warn({
-				message: `w${workerId} ${job.id} aborted: ${reason}`,
+				message: `${workerId} ${job.id} aborted: ${reason}`,
 				service: SERVICE_NAME,
 			});
 		});
 
 		this.scheduler.on("job:attempt", (workerId, job, attempt) => {
 			this.logger.debug({
-				message: `w${workerId} ${job.id} attempt ${attempt}`,
+				message: `${workerId} ${job.id} attempt ${attempt}`,
 				service: SERVICE_NAME,
 			});
 		});
 
 		this.scheduler.on("job:complete", (workerId, job) => {
 			this.logger.debug({
-				message: `w${workerId} ${job.id} completed successfully`,
+				message: `${workerId} ${job.id} completed successfully`,
 				service: SERVICE_NAME,
 			});
 		});
 
 		this.scheduler.on("job:exhausted", (workerId, job, error) => {
 			this.logger.error({
-				message: `w${workerId} ${job.id} exhausted all retries: ${error instanceof Error ? error.message : String(error)}`,
+				message: `${workerId} ${job.id} exhausted all retries: ${error instanceof Error ? error.message : String(error)}`,
 				service: SERVICE_NAME,
 				stack: error instanceof Error ? error.stack : undefined,
 			});
@@ -93,7 +94,7 @@ export class LessSimpleQueue implements IJobQueue {
 
 		this.scheduler.on("job:fail", (workerId, job, error, attempt) => {
 			this.logger.warn({
-				message: `w${workerId} ${job.id} failed on attempt ${attempt}: ${error instanceof Error ? error.message : String(error)}`,
+				message: `${workerId} ${job.id} failed on attempt ${attempt}: ${error instanceof Error ? error.message : String(error)}`,
 				service: SERVICE_NAME,
 				stack: error instanceof Error ? error.stack : undefined,
 			});
@@ -101,13 +102,13 @@ export class LessSimpleQueue implements IJobQueue {
 
 		this.scheduler.on("job:start", (workerId, job) => {
 			this.logger.debug({
-				message: `w${workerId} ${job.id} started`,
+				message: `${workerId} ${job.id} started`,
 				service: SERVICE_NAME,
 			});
 		});
 	};
 
-	static async create(logger: ILogger, helper: IQueueHelper, monitorsRepository: IMonitorsRepository, envSettings: EnvConfig) {
+	static async create(logger: ILogger, helper: IQueueHelper, monitorsRepository: IMonitorsRepository, envSettings: EnvConfig, queueMode: QueueMode) {
 		const store = new MongoStore({
 			url: envSettings.dbConnectionString ?? "mongodb://localhost:27017/uptime_db",
 		});
@@ -115,18 +116,29 @@ export class LessSimpleQueue implements IJobQueue {
 			concurrency: 50,
 		});
 		const instance = new LessSimpleQueue(logger, helper, monitorsRepository, scheduler);
-		await instance.init();
+		await instance.init(queueMode);
 
 		return instance;
 	}
 
-	init = async () => {
+	init = async (queueMode: QueueMode = "primary") => {
 		try {
 			await this.scheduler.start();
 			this.scheduler.addTemplate("monitor-job", this.helper.getHeartbeatJob());
 			this.scheduler.addTemplate("geo-check-job", this.helper.getHeartbeatGeoJob());
 			this.scheduler.addTemplate("cleanup-orphaned", this.helper.getCleanupOrphanedJob());
 			this.scheduler.addTemplate("cleanup-retention-job", this.helper.getCleanupRetentionJob());
+
+			// If this is a worker, return early - primary will populate queue
+			if (queueMode === "worker") {
+				this.logger.info({
+					message: `Worker queue: ${this.scheduler.workerId} initialized`,
+					service: SERVICE_NAME,
+					method: "init",
+				});
+				return true;
+			}
+
 			const monitors = await this.monitorsRepository.findAll();
 			if (!monitors) {
 				return true;
