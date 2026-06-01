@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DbTypes, QueueTypes } from "@/types/settings.js";
+import { DbTypes, QueueTypes, QueueModes } from "@/types/settings.js";
 import { booleanCoercion } from "./shared.js";
 
 const envSchema = z.object({
@@ -11,7 +11,9 @@ const envSchema = z.object({
 	// Database
 	DB_CONNECTION_STRING: z.string().min(1, "Database connection string is required"),
 	DB_TYPE: z.enum(DbTypes).default("mongodb"),
+
 	QUEUE_TYPE: z.enum(QueueTypes).default("superSimpleQueue"),
+	QUEUE_MODE: z.enum(QueueModes).default("primary"),
 
 	// JWT Authentication
 	JWT_SECRET: z.string().min(1, "JWT_SECRET is required"),
