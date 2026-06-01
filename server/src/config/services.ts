@@ -124,8 +124,7 @@ import {
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";
-import { QueueModes, type QueueMode } from "@/types/settings.js";
-import { env } from "process";
+import { type QueueMode } from "@/types/settings.js";
 
 export type InitializedServices = {
 	settingsService: ISettingsService;
