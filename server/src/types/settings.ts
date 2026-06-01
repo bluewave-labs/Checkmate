@@ -4,6 +4,9 @@ export type DbType = (typeof DbTypes)[number];
 export const QueueTypes = ["lessSimpleQueue", "superSimpleQueue"] as const;
 export type QueueType = (typeof QueueTypes)[number];
 
+export const QueueModes = ["primary", "worker"] as const;
+export type QueueMode = (typeof QueueModes)[number];
+
 export interface SettingsThresholds {
 	cpu?: number;
 	memory?: number;
