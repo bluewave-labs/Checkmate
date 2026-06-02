@@ -42,3 +42,6 @@ export { default as MongoGeoChecksRepository } from "@/repositories/geo-checks/M
 
 export * from "@/repositories/dlq/IDLQRepository.js";
 export { default as MongoDLQRepository } from "@/repositories/dlq/MongoDLQRepository.js";
+
+export * from "@/repositories/queue-workers/IQueueWorkersRepository.js";
+export { default as MongoQueueWorkersRepository } from "@/repositories/queue-workers/MongoQueueWorkersRepository.js";
