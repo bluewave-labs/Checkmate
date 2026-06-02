@@ -41,3 +41,6 @@ export * from "@/db/models/DLQItem.js";
 export { default as DLQItemModel } from "@/db/models/DLQItem.js";
 export * from "@/db/models/Tag.js";
 export { default as TagModel } from "@/db/models/Tag.js";
+
+export * from "@/db/models/QueueWorker.js";
+export { default as QueueWorkerModel } from "@/db/models/QueueWorker.js";
