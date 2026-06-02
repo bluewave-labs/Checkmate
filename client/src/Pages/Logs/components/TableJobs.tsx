@@ -127,6 +127,27 @@ export const TableJobs = ({ jobs }: TableJobsProps) => {
 				);
 			},
 		},
+		{
+			id: "lockedBy",
+			content: t("pages.logs.table.headers.lockedBy"),
+			render: (row) => {
+				const lockedBy = row.lockedBy;
+				if (!lockedBy) {
+					return <Typography sx={cellSx}>-</Typography>;
+				}
+
+				const workerId = lockedBy.split(":")[2];
+				const shortWorkerId = workerId.slice(workerId.length - 8);
+				return (
+					<Typography
+						title={workerId}
+						sx={cellSx}
+					>
+						{`...${shortWorkerId}`}
+					</Typography>
+				);
+			},
+		},
 	];
 
 	return (

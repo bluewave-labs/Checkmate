@@ -486,10 +486,25 @@ describe("SuperSimpleQueue", () => {
 	// ── getMetrics ───────────────────────────────────────────────────────────
 
 	describe("getMetrics", () => {
-		it("returns empty metrics when no jobs", async () => {
+		it("returns empty job metrics plus this process as the sole worker when no jobs", async () => {
 			const { queue } = createQueue();
 			const metrics = await queue.getMetrics();
-			expect(metrics).toEqual({ jobs: 0, activeJobs: 0, failingJobs: 0, jobsWithFailures: [], totalRuns: 0, totalFailures: 0 });
+			expect(metrics).toEqual({
+				jobs: 0,
+				activeJobs: 0,
+				failingJobs: 0,
+				jobsWithFailures: [],
+				totalRuns: 0,
+				totalFailures: 0,
+				workers: [
+					{
+						// hostname:pid:uuid, matching less-simple-scheduler's workerId format
+						workerId: expect.stringMatching(/^.+:\d+:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/),
+						mode: "primary",
+						lastSeenAt: expect.any(Number),
+					},
+				],
+			});
 		});
 
 		it("aggregates metrics from jobs", async () => {
@@ -580,6 +595,8 @@ describe("SuperSimpleQueue", () => {
 				monitorActive: true,
 				active: true,
 				repeat: 60000,
+				lockedBy: null,
+				lockedUntil: null,
 				lockedAt: null,
 				runCount: 5,
 				failCount: 1,

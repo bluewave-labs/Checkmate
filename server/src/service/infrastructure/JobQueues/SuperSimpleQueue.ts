@@ -3,6 +3,10 @@ import { ILogger } from "@/utils/logger.js";
 import Scheduler from "super-simple-scheduler";
 import { IQueueHelper } from "@/service/infrastructure/JobQueues/QueueHelper.js";
 import { Monitor, MonitorType, supportsGeoCheck } from "@/types/monitor.js";
+import { hostname } from "node:os";
+import { randomUUID } from "node:crypto";
+import { QueueMode } from "@/types/settings.js";
+
 const SERVICE_NAME = "JobQueue";
 
 type QueueJobFailure = {
@@ -61,6 +65,7 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 
 	private logger: ILogger;
 	private helper: IQueueHelper;
+	private workerId: string;
 	private monitorsRepository: IMonitorsRepository;
 	private readonly scheduler: Scheduler;
 
@@ -70,6 +75,7 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 		this.monitorsRepository = monitorsRepository;
 		this.scheduler = scheduler;
 		this.registerListeners();
+		this.workerId = `${hostname()}:${process.pid}:${randomUUID()}`;
 	}
 
 	get serviceName() {
@@ -311,7 +317,26 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 
 	getMetrics = async () => {
 		const jobs = await this.scheduler.getJobs();
-		const metrics = jobs.reduce(
+		const metrics: {
+			jobs: number;
+			activeJobs: number;
+			failingJobs: number;
+			jobsWithFailures: Array<{
+				monitorId: string | number;
+				monitorUrl: string;
+				monitorType: MonitorType;
+				failedAt: number | null;
+				failCount: number;
+				failReason: string | null;
+			}>;
+			totalRuns: number;
+			totalFailures: number;
+			workers: Array<{
+				workerId: string;
+				mode: QueueMode;
+				lastSeenAt: number;
+			}>;
+		} = jobs.reduce(
 			(acc, job) => {
 				const runCount = job.runCount ?? 0;
 				const failCount = job.failCount ?? 0;
@@ -354,6 +379,13 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 				}>,
 				totalRuns: 0,
 				totalFailures: 0,
+				workers: [
+					{
+						workerId: this.workerId,
+						mode: "primary",
+						lastSeenAt: Date.now(),
+					},
+				],
 			}
 		);
 		return metrics;
@@ -371,6 +403,8 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 				monitorActive: job.data?.isActive ?? null,
 				active: job.active,
 				repeat: job.repeat ?? null,
+				lockedBy: job.lockedAt ? this.workerId : null,
+				lockedUntil: null,
 				lockedAt: job.lockedAt ?? null,
 				runCount: job.runCount ?? 0,
 				failCount: job.failCount ?? 0,
