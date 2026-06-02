@@ -67,14 +67,15 @@ const createQueue = (overrides?: Record<string, unknown>) => {
 	const workersRepository = createWorkersRepo();
 	const scheduler = createScheduler();
 
-	const defaults = { logger, helper, monitorsRepository, workersRepository, scheduler, ...overrides };
+	const defaults = { logger, helper, monitorsRepository, workersRepository, scheduler, queueMode: "primary", ...overrides };
 
 	const queue = new LessSimpleQueue(
 		defaults.logger as any,
 		defaults.helper as any,
 		defaults.monitorsRepository as any,
 		defaults.workersRepository as any,
-		defaults.scheduler as any
+		defaults.scheduler as any,
+		defaults.queueMode as any
 	);
 	return { queue, ...defaults };
 };
@@ -684,6 +685,29 @@ describe("LessSimpleQueue", () => {
 			expect(scheduler.stop).toHaveBeenCalled();
 			expect(scheduler.flushJobs).toHaveBeenCalled();
 			expect(result.success).toBe(true);
+		});
+
+		it("flushes before stopping, so the store is still connected for removeAll", async () => {
+			const { queue, scheduler } = createQueue();
+			const order: string[] = [];
+			(scheduler.flushJobs as jest.Mock).mockImplementation(async () => {
+				order.push("flush");
+				return true;
+			});
+			(scheduler.stop as jest.Mock).mockImplementation(async () => {
+				order.push("stop");
+				return true;
+			});
+			await queue.flushQueues();
+			expect(order).toEqual(["flush", "stop"]);
+		});
+
+		it("refuses to flush on a non-primary worker without touching the scheduler", async () => {
+			const { queue, scheduler } = createQueue({ queueMode: "worker" });
+			const result = await queue.flushQueues();
+			expect(result.success).toBe(false);
+			expect(scheduler.flushJobs).not.toHaveBeenCalled();
+			expect(scheduler.stop).not.toHaveBeenCalled();
 		});
 
 		it("returns false when flush fails", async () => {
