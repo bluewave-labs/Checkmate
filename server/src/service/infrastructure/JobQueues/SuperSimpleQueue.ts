@@ -354,6 +354,7 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 				}>,
 				totalRuns: 0,
 				totalFailures: 0,
+				workers: [],
 			}
 		);
 		return metrics;
@@ -371,6 +372,8 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 				monitorActive: job.data?.isActive ?? null,
 				active: job.active,
 				repeat: job.repeat ?? null,
+				lockedBy: null,
+				lockedUntil: null,
 				lockedAt: job.lockedAt ?? null,
 				runCount: job.runCount ?? 0,
 				failCount: job.failCount ?? 0,

@@ -1,4 +1,4 @@
-import { IMonitorsRepository } from "@/repositories/index.js";
+import { IMonitorsRepository, IQueueWorkersRepository } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
 import { MongoStore, Scheduler, IJob } from "less-simple-scheduler";
 import { IQueueHelper } from "@/service/infrastructure/JobQueues/QueueHelper.js";
@@ -7,6 +7,12 @@ import { type QueueMetrics, IJobQueue } from "@/service/infrastructure/JobQueues
 import { type QueueMode } from "@/types/settings.js";
 import { EnvConfig } from "@/service/system/settingsService.js";
 const SERVICE_NAME = "JobQueue";
+
+// How long after its last heartbeat a worker is still considered alive. The
+// model's TTL index uses the same window to garbage-collect stale records.
+// Heartbeats are driven by the scheduler's `scheduler:heartbeat` event (emitted
+// every lockMs/3, so ~5s with the default lockMs), comfortably inside this TTL.
+const WORKER_TTL_MS = 30_000;
 
 // For discriminating job types
 type MonitorJob = Omit<IJob, "data"> & { data: Monitor };
@@ -19,12 +25,21 @@ export class LessSimpleQueue implements IJobQueue {
 	private logger: ILogger;
 	private helper: IQueueHelper;
 	private monitorsRepository: IMonitorsRepository;
+	private workersRepository: IQueueWorkersRepository;
 	private readonly scheduler: Scheduler;
+	private heartbeatListener: ((workerId: string) => void) | null = null;
 
-	constructor(logger: ILogger, helper: IQueueHelper, monitorsRepository: IMonitorsRepository, scheduler: Scheduler) {
+	constructor(
+		logger: ILogger,
+		helper: IQueueHelper,
+		monitorsRepository: IMonitorsRepository,
+		workersRepository: IQueueWorkersRepository,
+		scheduler: Scheduler
+	) {
 		this.logger = logger;
 		this.helper = helper;
 		this.monitorsRepository = monitorsRepository;
+		this.workersRepository = workersRepository;
 		this.scheduler = scheduler;
 		this.registerListeners();
 	}
@@ -108,18 +123,44 @@ export class LessSimpleQueue implements IJobQueue {
 		});
 	};
 
-	static async create(logger: ILogger, helper: IQueueHelper, monitorsRepository: IMonitorsRepository, envSettings: EnvConfig, queueMode: QueueMode) {
+	static async create(
+		logger: ILogger,
+		helper: IQueueHelper,
+		monitorsRepository: IMonitorsRepository,
+		workersRepository: IQueueWorkersRepository,
+		envSettings: EnvConfig,
+		queueMode: QueueMode
+	) {
 		const store = new MongoStore({
 			url: envSettings.dbConnectionString ?? "mongodb://localhost:27017/uptime_db",
 		});
 		const scheduler = new Scheduler(store, {
 			concurrency: 50,
 		});
-		const instance = new LessSimpleQueue(logger, helper, monitorsRepository, scheduler);
+		const instance = new LessSimpleQueue(logger, helper, monitorsRepository, workersRepository, scheduler);
 		await instance.init(queueMode);
 
 		return instance;
 	}
+
+	private startHeartbeat = (queueMode: QueueMode) => {
+		const beat = (
+			workerId: string // This is the heartbeat function that registers workers
+		) =>
+			this.workersRepository.upsert(workerId, queueMode).catch((error: unknown) => {
+				this.logger.warn({
+					message: `Worker heartbeat failed: ${error instanceof Error ? error.message : String(error)}`,
+					service: SERVICE_NAME,
+					method: "startHeartbeat",
+				});
+			});
+		beat(this.scheduler.workerId); // Beat immediately to register
+		if (this.heartbeatListener) {
+			this.scheduler.off("scheduler:heartbeat", this.heartbeatListener); // remove old listeners
+		}
+		this.heartbeatListener = beat; /// Keep a reference to the listener
+		this.scheduler.on("scheduler:heartbeat", beat); // beat on every heartbeat
+	};
 
 	init = async (queueMode: QueueMode = "primary") => {
 		try {
@@ -128,6 +169,9 @@ export class LessSimpleQueue implements IJobQueue {
 			this.scheduler.addTemplate("geo-check-job", this.helper.getHeartbeatGeoJob());
 			this.scheduler.addTemplate("cleanup-orphaned", this.helper.getCleanupOrphanedJob());
 			this.scheduler.addTemplate("cleanup-retention-job", this.helper.getCleanupRetentionJob());
+
+			// Register in the worker registry
+			this.startHeartbeat(queueMode);
 
 			// If this is a worker, return early - primary will populate queue
 			if (queueMode === "worker") {
@@ -284,11 +328,26 @@ export class LessSimpleQueue implements IJobQueue {
 	};
 
 	shutdown = async () => {
+		// Stop beating before we remove this worker, so a heartbeat firing between
+		// the remove and the scheduler stopping can't re-insert it.
+		if (this.heartbeatListener) {
+			this.scheduler.off("scheduler:heartbeat", this.heartbeatListener);
+			this.heartbeatListener = null;
+		}
+		await this.workersRepository.deleteById(this.scheduler.workerId).catch((error: unknown) => {
+			this.logger.warn({
+				message: `Failed to deregister worker on shutdown: ${error instanceof Error ? error.message : String(error)}`,
+				service: SERVICE_NAME,
+				method: "shutdown",
+			});
+		});
 		this.scheduler.stop();
 	};
 
 	getMetrics = async () => {
 		const jobs = await this.scheduler.getJobs();
+		const now = Date.now();
+
 		const metrics = jobs.reduce<QueueMetrics>(
 			(acc, job) => {
 				const runCount = job.runCount ?? 0;
@@ -302,7 +361,8 @@ export class LessSimpleQueue implements IJobQueue {
 					acc.failingJobs++;
 				}
 
-				if (job.lockedAt) {
+				// A job currently held by a live lock is in flight on some worker
+				if (job.lockedBy && job.lockedUntil && job.lockedUntil > now) {
 					acc.activeJobs++;
 				}
 
@@ -326,8 +386,10 @@ export class LessSimpleQueue implements IJobQueue {
 				jobsWithFailures: [],
 				totalRuns: 0,
 				totalFailures: 0,
+				workers: [],
 			}
 		);
+		metrics.workers = await this.workersRepository.findRecent(WORKER_TTL_MS);
 		return metrics;
 	};
 
@@ -345,6 +407,8 @@ export class LessSimpleQueue implements IJobQueue {
 				monitorActive: monitor?.isActive ?? null,
 				active: job.active,
 				repeat: job.repeat ?? null,
+				lockedBy: job.lockedBy ?? null,
+				lockedUntil: job.lockedUntil ?? null,
 				lockedAt: job.lockedAt ?? null,
 				runCount: job.runCount ?? 0,
 				failCount: job.failCount ?? 0,
