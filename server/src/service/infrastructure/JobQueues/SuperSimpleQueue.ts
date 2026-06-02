@@ -5,6 +5,7 @@ import { IQueueHelper } from "@/service/infrastructure/JobQueues/QueueHelper.js"
 import { Monitor, MonitorType, supportsGeoCheck } from "@/types/monitor.js";
 import { hostname } from "node:os";
 import { randomUUID } from "node:crypto";
+import { QueueMode } from "@/types/settings.js";
 
 const SERVICE_NAME = "JobQueue";
 
@@ -316,7 +317,26 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 
 	getMetrics = async () => {
 		const jobs = await this.scheduler.getJobs();
-		const metrics = jobs.reduce(
+		const metrics: {
+			jobs: number;
+			activeJobs: number;
+			failingJobs: number;
+			jobsWithFailures: Array<{
+				monitorId: string | number;
+				monitorUrl: string;
+				monitorType: MonitorType;
+				failedAt: number | null;
+				failCount: number;
+				failReason: string | null;
+			}>;
+			totalRuns: number;
+			totalFailures: number;
+			workers: Array<{
+				workerId: string;
+				mode: QueueMode;
+				lastSeenAt: number;
+			}>;
+		} = jobs.reduce(
 			(acc, job) => {
 				const runCount = job.runCount ?? 0;
 				const failCount = job.failCount ?? 0;
