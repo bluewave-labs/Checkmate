@@ -66,9 +66,7 @@ const fieldSteps = (): [name: FieldPath<StatusPageFormData>, step: number][] =>
 
 // The fields that belong to a given wizard step. Derived from the schema so it
 // can't drift from the field definitions.
-export const statusPageStepFieldsFor = (
-	step: number
-): FieldPath<StatusPageFormData>[] =>
+export const statusPageStepFieldsFor = (step: number): FieldPath<StatusPageFormData>[] =>
 	fieldSteps()
 		.filter(([, fieldStep]) => fieldStep === step)
 		.map(([name]) => name);
