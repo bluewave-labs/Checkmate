@@ -2,7 +2,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { TableJobs, TableFailedJobs } from "./components/TableJobs";
-
+import { TableWorkers } from "./components/TableWorkers";
 import { useTheme } from "@mui/material";
 import { useTranslation, Trans } from "react-i18next";
 import { useGet, usePost } from "@/Hooks/UseApi";
@@ -25,6 +25,10 @@ export const TabQueue = () => {
 	const { post, loading: isFlushing } = usePost();
 
 	const jobs = queueData?.jobs ?? [];
+	const workers = (queueData?.metrics?.workers ?? []).map((worker, idx) => ({
+		...worker,
+		id: idx,
+	}));
 	const metrics = queueData?.metrics ?? null;
 	const hasNeverRun = !isLoading && metrics !== null && (metrics.totalRuns ?? 0) === 0;
 	const noQueueData = !isLoading && metrics === null && jobs.length === 0;
@@ -46,6 +50,34 @@ export const TabQueue = () => {
 	return (
 		<Stack gap={theme.spacing(16)}>
 			<Metrics metrics={metrics} />
+			<Stack gap={theme.spacing(3)}>
+				<Stack gap={theme.spacing(1)}>
+					<Typography
+						variant="eyebrow"
+						color={theme.palette.text.secondary}
+					>
+						{t("pages.logs.workers")}
+					</Typography>
+					<Typography color={theme.palette.text.secondary}>
+						<Trans
+							i18nKey="pages.logs.workersExplainers"
+							components={{
+								highlight: (
+									<Box
+										component="span"
+										bgcolor={theme.palette.rowStatus.running}
+										color={theme.palette.text.primary}
+										px={SPACING.SM}
+										py={SPACING.XXS}
+										borderRadius={theme.shape.borderRadius}
+									/>
+								),
+							}}
+						/>
+					</Typography>
+				</Stack>
+				<TableWorkers queueWorkers={workers} />
+			</Stack>
 			<Stack gap={theme.spacing(3)}>
 				<Stack gap={theme.spacing(1)}>
 					<Typography
