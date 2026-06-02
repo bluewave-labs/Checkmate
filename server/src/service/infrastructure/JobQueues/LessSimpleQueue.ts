@@ -27,6 +27,7 @@ export class LessSimpleQueue implements IJobQueue {
 	private monitorsRepository: IMonitorsRepository;
 	private workersRepository: IQueueWorkersRepository;
 	private readonly scheduler: Scheduler;
+	private queueMode: QueueMode;
 	private heartbeatListener: ((workerId: string) => void) | null = null;
 
 	constructor(
@@ -34,13 +35,15 @@ export class LessSimpleQueue implements IJobQueue {
 		helper: IQueueHelper,
 		monitorsRepository: IMonitorsRepository,
 		workersRepository: IQueueWorkersRepository,
-		scheduler: Scheduler
+		scheduler: Scheduler,
+		queueMode: QueueMode
 	) {
 		this.logger = logger;
 		this.helper = helper;
 		this.monitorsRepository = monitorsRepository;
 		this.workersRepository = workersRepository;
 		this.scheduler = scheduler;
+		this.queueMode = queueMode;
 		this.registerListeners();
 	}
 
@@ -137,7 +140,7 @@ export class LessSimpleQueue implements IJobQueue {
 		const scheduler = new Scheduler(store, {
 			concurrency: 50,
 		});
-		const instance = new LessSimpleQueue(logger, helper, monitorsRepository, workersRepository, scheduler);
+		const instance = new LessSimpleQueue(logger, helper, monitorsRepository, workersRepository, scheduler, queueMode);
 		await instance.init(queueMode);
 
 		return instance;
@@ -422,8 +425,14 @@ export class LessSimpleQueue implements IJobQueue {
 	};
 
 	flushQueues = async () => {
-		const stopRes = await this.scheduler.stop();
-		const flushRes = await this.scheduler.flushJobs();
+		if (this.queueMode !== "primary") {
+			// Don't allow workers to flush, though this isn't currently reachable since workers have no API endpoints
+			this.logger.warn({ message: "Ignoring flush on non-primary worker", service: SERVICE_NAME, method: "flushQueues" });
+			return { success: false };
+		}
+
+		const flushRes = await this.scheduler.flushJobs(); // Less Simple Queue must flush before stopping as it needs DB
+		const stopRes = await this.scheduler.stop(); // Destructive, other workers will abort their jobs
 		const initRes = await this.init();
 		return {
 			success: Boolean(stopRes && flushRes && initRes),
