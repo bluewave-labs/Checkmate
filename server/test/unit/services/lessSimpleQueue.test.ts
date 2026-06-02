@@ -12,6 +12,9 @@ const createScheduler = () => {
 			listeners[event] = listeners[event] || [];
 			listeners[event].push(cb);
 		}),
+		off: jest.fn((event: string, cb: Function) => {
+			listeners[event] = (listeners[event] || []).filter((fn) => fn !== cb);
+		}),
 		emit: (event: string, ...args: unknown[]) => {
 			(listeners[event] || []).forEach((cb) => cb(...args));
 		},
@@ -51,17 +54,33 @@ const createMonitorsRepo = () => ({
 	findAll: jest.fn().mockResolvedValue([]),
 });
 
+const createWorkersRepo = () => ({
+	upsert: jest.fn().mockResolvedValue(undefined),
+	findRecent: jest.fn().mockResolvedValue([]),
+	deleteById: jest.fn().mockResolvedValue(undefined),
+});
+
 const createQueue = (overrides?: Record<string, unknown>) => {
 	const logger = createMockLogger();
 	const helper = createQueueHelper();
 	const monitorsRepository = createMonitorsRepo();
+	const workersRepository = createWorkersRepo();
 	const scheduler = createScheduler();
 
-	const defaults = { logger, helper, monitorsRepository, scheduler, ...overrides };
+	const defaults = { logger, helper, monitorsRepository, workersRepository, scheduler, ...overrides };
 
-	const queue = new LessSimpleQueue(defaults.logger as any, defaults.helper as any, defaults.monitorsRepository as any, defaults.scheduler as any);
+	const queue = new LessSimpleQueue(
+		defaults.logger as any,
+		defaults.helper as any,
+		defaults.monitorsRepository as any,
+		defaults.workersRepository as any,
+		defaults.scheduler as any
+	);
 	return { queue, ...defaults };
 };
+
+// A lockedUntil far enough ahead that it is always > Date.now() at assertion time.
+const FAR_FUTURE = 4_000_000_000_000; // year 2096
 
 const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
 	({
@@ -112,7 +131,8 @@ describe("LessSimpleQueue", () => {
 			(monitorsRepository.findAll as jest.Mock).mockResolvedValue(monitors);
 
 			await queue.init();
-			jest.runAllTimers();
+			// advance past the <100ms seed offsets
+			jest.advanceTimersByTime(100);
 
 			expect(scheduler.addJob).toHaveBeenCalledWith(expect.objectContaining({ id: "m1", template: "monitor-job" }));
 			expect(scheduler.addJob).toHaveBeenCalledWith(expect.objectContaining({ id: "m2", template: "monitor-job" }));
@@ -454,7 +474,7 @@ describe("LessSimpleQueue", () => {
 		it("returns empty metrics when no jobs", async () => {
 			const { queue } = createQueue();
 			const metrics = await queue.getMetrics();
-			expect(metrics).toEqual({ jobs: 0, activeJobs: 0, failingJobs: 0, jobsWithFailures: [], totalRuns: 0, totalFailures: 0 });
+			expect(metrics).toEqual({ jobs: 0, activeJobs: 0, failingJobs: 0, jobsWithFailures: [], totalRuns: 0, totalFailures: 0, workers: [] });
 		});
 
 		it("aggregates metrics from jobs", async () => {
@@ -478,6 +498,9 @@ describe("LessSimpleQueue", () => {
 					failCount: 0,
 					lastFailedAt: 0,
 					lastFinishedAt: 50,
+					// live lock held by a worker
+					lockedBy: "host-1:1234:abcd",
+					lockedUntil: FAR_FUTURE,
 					lockedAt: 999,
 					data: { url: "http://b.com", type: "ping" },
 				},
@@ -526,6 +549,56 @@ describe("LessSimpleQueue", () => {
 		});
 	});
 
+	// ── getMetrics: activeJobs (in-flight) ───────────────────────────────────────
+
+	describe("getMetrics - activeJobs", () => {
+		it("counts jobs held by a live lock as active", async () => {
+			const { queue, scheduler } = createQueue();
+			(scheduler.getJobs as jest.Mock).mockResolvedValue([
+				{ id: "m1", template: "monitor-job", lockedBy: "worker-a", lockedUntil: FAR_FUTURE, lockedAt: 100, data: { url: "a" } },
+				{ id: "m2", template: "monitor-job", lockedBy: "worker-b", lockedUntil: FAR_FUTURE, lockedAt: 250, data: { url: "b" } },
+			]);
+			const metrics = await queue.getMetrics();
+			expect(metrics.activeJobs).toBe(2);
+		});
+
+		it("does not count unlocked jobs (lockedBy null)", async () => {
+			const { queue, scheduler } = createQueue();
+			(scheduler.getJobs as jest.Mock).mockResolvedValue([
+				{ id: "m1", template: "monitor-job", lockedBy: null, lockedUntil: null, lockedAt: null, data: { url: "a" } },
+			]);
+			const metrics = await queue.getMetrics();
+			expect(metrics.activeJobs).toBe(0);
+		});
+
+		it("does not count jobs whose lock has expired (lockedUntil <= now)", async () => {
+			const { queue, scheduler } = createQueue();
+			(scheduler.getJobs as jest.Mock).mockResolvedValue([
+				{ id: "m1", template: "monitor-job", lockedBy: "worker-a", lockedUntil: 1, lockedAt: 1, data: { url: "a" } },
+			]);
+			const metrics = await queue.getMetrics();
+			expect(metrics.activeJobs).toBe(0);
+		});
+	});
+
+	// ── getMetrics: worker registry ──────────────────────────────────────────────
+
+	describe("getMetrics - worker registry", () => {
+		it("returns the alive workers from the registry", async () => {
+			const { queue, workersRepository } = createQueue();
+			const alive = [
+				{ workerId: "host:1:aaa", mode: "primary", lastSeenAt: 1000 },
+				{ workerId: "host:2:bbb", mode: "worker", lastSeenAt: 2000 },
+			];
+			(workersRepository.findRecent as jest.Mock).mockResolvedValue(alive);
+
+			const metrics = await queue.getMetrics();
+
+			expect(workersRepository.findRecent).toHaveBeenCalledWith(30000);
+			expect(metrics.workers).toEqual(alive);
+		});
+	});
+
 	// ── getJobs ────────────────────────────────────────────────────────────────
 
 	describe("getJobs", () => {
@@ -559,6 +632,8 @@ describe("LessSimpleQueue", () => {
 				monitorActive: true,
 				active: true,
 				repeat: 60000,
+				lockedBy: null,
+				lockedUntil: null,
 				lockedAt: null,
 				runCount: 5,
 				failCount: 1,
@@ -628,8 +703,16 @@ describe("LessSimpleQueue", () => {
 			const logger = createMockLogger();
 			const helper = createQueueHelper();
 			const monitorsRepository = createMonitorsRepo();
+			const workersRepository = createWorkersRepo();
 
-			const instance = await LessSimpleQueue.create(logger as any, helper as any, monitorsRepository as any, envSettings, "primary");
+			const instance = await LessSimpleQueue.create(
+				logger as any,
+				helper as any,
+				monitorsRepository as any,
+				workersRepository as any,
+				envSettings,
+				"primary"
+			);
 
 			expect(MockMongoStore).toHaveBeenCalledWith(expect.objectContaining({ url: "mongodb://localhost:27017/test_db" }));
 			expect(MockScheduler).toHaveBeenCalled();
@@ -642,11 +725,66 @@ describe("LessSimpleQueue", () => {
 			const logger = createMockLogger();
 			const helper = createQueueHelper();
 			const monitorsRepository = createMonitorsRepo();
+			const workersRepository = createWorkersRepo();
 
-			const instance = await LessSimpleQueue.create(logger as any, helper as any, monitorsRepository as any, envSettings, "worker");
+			const instance = await LessSimpleQueue.create(
+				logger as any,
+				helper as any,
+				monitorsRepository as any,
+				workersRepository as any,
+				envSettings,
+				"worker"
+			);
 
 			expect(instance).toBeInstanceOf(LessSimpleQueue);
 			expect(monitorsRepository.findAll).not.toHaveBeenCalled();
+		});
+	});
+
+	// ── worker heartbeat / deregistration ────────────────────────────────────────
+
+	describe("worker heartbeat", () => {
+		it("writes a heartbeat on init with the workerId and mode (primary)", async () => {
+			const { queue, workersRepository } = createQueue();
+			await queue.init("primary");
+			expect(workersRepository.upsert).toHaveBeenCalledWith("host-1:1234:abcd", "primary");
+		});
+
+		it("writes a heartbeat on init with the workerId and mode (worker)", async () => {
+			const { queue, workersRepository } = createQueue();
+			await queue.init("worker");
+			expect(workersRepository.upsert).toHaveBeenCalledWith("host-1:1234:abcd", "worker");
+		});
+
+		it("beats again on each scheduler:heartbeat event", async () => {
+			const { queue, scheduler, workersRepository } = createQueue();
+			await queue.init("worker");
+			(workersRepository.upsert as jest.Mock).mockClear();
+
+			scheduler.emit("scheduler:heartbeat", "host-1:1234:abcd");
+			scheduler.emit("scheduler:heartbeat", "host-1:1234:abcd");
+
+			expect(workersRepository.upsert).toHaveBeenCalledTimes(2);
+			expect(workersRepository.upsert).toHaveBeenCalledWith("host-1:1234:abcd", "worker");
+		});
+
+		it("stops beating after shutdown", async () => {
+			const { queue, scheduler, workersRepository } = createQueue();
+			await queue.init("worker");
+			await queue.shutdown();
+			(workersRepository.upsert as jest.Mock).mockClear();
+
+			scheduler.emit("scheduler:heartbeat", "host-1:1234:abcd");
+
+			expect(workersRepository.upsert).not.toHaveBeenCalled();
+		});
+
+		it("deregisters the worker and stops the scheduler on shutdown", async () => {
+			const { queue, scheduler, workersRepository } = createQueue();
+			await queue.init("worker");
+			await queue.shutdown();
+			expect(workersRepository.deleteById).toHaveBeenCalledWith("host-1:1234:abcd");
+			expect(scheduler.stop).toHaveBeenCalled();
 		});
 	});
 });

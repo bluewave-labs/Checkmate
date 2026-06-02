@@ -489,7 +489,7 @@ describe("SuperSimpleQueue", () => {
 		it("returns empty metrics when no jobs", async () => {
 			const { queue } = createQueue();
 			const metrics = await queue.getMetrics();
-			expect(metrics).toEqual({ jobs: 0, activeJobs: 0, failingJobs: 0, jobsWithFailures: [], totalRuns: 0, totalFailures: 0 });
+			expect(metrics).toEqual({ jobs: 0, activeJobs: 0, failingJobs: 0, jobsWithFailures: [], totalRuns: 0, totalFailures: 0, workers: [] });
 		});
 
 		it("aggregates metrics from jobs", async () => {
@@ -580,6 +580,8 @@ describe("SuperSimpleQueue", () => {
 				monitorActive: true,
 				active: true,
 				repeat: 60000,
+				lockedBy: null,
+				lockedUntil: null,
 				lockedAt: null,
 				runCount: 5,
 				failCount: 1,
