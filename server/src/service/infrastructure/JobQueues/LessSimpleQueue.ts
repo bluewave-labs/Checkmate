@@ -14,6 +14,9 @@ const SERVICE_NAME = "JobQueue";
 // every lockMs/3, so ~5s with the default lockMs), comfortably inside this TTL.
 const WORKER_TTL_MS = 30_000;
 
+// Derived from the scheduler
+type SchedulerJobInput = Parameters<Scheduler["addJobs"]>[0][number];
+
 // For discriminating job types
 type MonitorJob = Omit<IJob, "data"> & { data: Monitor };
 const MONITOR_TEMPLATES = new Set<string>(["monitor-job", "geo-check-job"]);
@@ -138,7 +141,7 @@ export class LessSimpleQueue implements IJobQueue {
 			url: envSettings.dbConnectionString ?? "mongodb://localhost:27017/uptime_db",
 		});
 		const scheduler = new Scheduler(store, {
-			concurrency: 50,
+			concurrency: envSettings.queueMode === "primary" ? 0 : 50,
 		});
 		const instance = new LessSimpleQueue(logger, helper, monitorsRepository, workersRepository, scheduler, queueMode);
 		await instance.init(queueMode);
@@ -190,11 +193,9 @@ export class LessSimpleQueue implements IJobQueue {
 			if (!monitors) {
 				return true;
 			}
-			for (const monitor of monitors) {
-				const randomOffset = Math.floor(Math.random() * 100);
-				setTimeout(() => {
-					this.addJob(monitor.id, monitor);
-				}, randomOffset);
+			const jobInputs = monitors.flatMap((monitor) => this.buildJobInputs(monitor));
+			if (jobInputs.length > 0) {
+				await this.scheduler.addJobs(jobInputs);
 			}
 
 			this.scheduler.addJob({ id: "cleanup-orphaned", template: "cleanup-orphaned", active: true, upsert: true });
@@ -211,32 +212,38 @@ export class LessSimpleQueue implements IJobQueue {
 		}
 	};
 
-	addJob = async (monitorId: string, monitor: Monitor) => {
-		this.scheduler.addJob({
-			id: monitorId,
-			template: "monitor-job",
-			repeat: monitor.interval,
-			active: monitor.isActive,
-			data: monitor,
-			upsert: true,
-		});
+	// Builds the scheduler inputs for a monitor: always a monitor-job, plus a
+	// geo-check job when the monitor supports and enables geo checks.
+	private buildJobInputs = (monitor: Monitor): SchedulerJobInput[] => {
+		const inputs: SchedulerJobInput[] = [
+			{
+				id: monitor.id,
+				template: "monitor-job",
+				repeat: monitor.interval,
+				active: monitor.isActive,
+				data: monitor,
+				upsert: true,
+				jitter: true,
+			},
+		];
 
-		// Return early if we don't need geo checks
-		if (!supportsGeoCheck(monitor.type)) {
-			return;
-		}
-
-		// Add geo check job if enabled for HTTP monitors
-		if (monitor.geoCheckEnabled) {
-			this.scheduler.addJob({
-				id: `${monitorId}-geo`,
+		if (supportsGeoCheck(monitor.type) && monitor.geoCheckEnabled) {
+			inputs.push({
+				id: `${monitor.id}-geo`,
 				template: "geo-check-job",
 				repeat: monitor.geoCheckInterval,
 				active: monitor.isActive,
 				data: monitor,
 				upsert: true,
+				jitter: true,
 			});
 		}
+
+		return inputs;
+	};
+
+	addJob = async (_monitorId: string, monitor: Monitor) => {
+		await this.scheduler.addJobs(this.buildJobInputs(monitor));
 	};
 
 	deleteJob = async (monitor: Monitor) => {

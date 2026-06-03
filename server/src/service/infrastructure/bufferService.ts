@@ -26,7 +26,7 @@ export class BufferService implements IBufferService {
 	private geoChecksService: IGeoChecksService;
 
 	constructor(logger: ILogger, checkService: ICheckService, geoChecksService: IGeoChecksService, settingsService: ISettingsService) {
-		this.BUFFER_TIMEOUT = settingsService.getSettings().nodeEnv === "development" ? 10 : 1000 * 60 * 1; // 1 minute
+		this.BUFFER_TIMEOUT = settingsService.getSettings().nodeEnv === "development" ? 1000 : 1000 * 60 * 1; // 1 minute
 		this.logger = logger;
 		this.checksService = checkService;
 		this.geoChecksService = geoChecksService;
