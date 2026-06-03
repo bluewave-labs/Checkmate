@@ -56,6 +56,7 @@ const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
 		useAdvancedMatching: false,
 		matchMethod: undefined,
 		expectedValue: undefined,
+		customUpCodes: [],
 		...overrides,
 	}) as Monitor;
 

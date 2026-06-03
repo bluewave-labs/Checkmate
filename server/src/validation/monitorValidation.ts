@@ -1,10 +1,9 @@
 import { z } from "zod";
 import { booleanCoercion, dnsHostnameRegex, dnsServerValidation } from "./shared.js";
 import { GeoContinents } from "@/types/geoCheck.js";
-import { DnsRecordTypes, MonitorMatchMethods, MonitorStatuses, MonitorTypes, PageSpeedStrategies } from "@/types/monitor.js";
-import http from "node:http";
+import { DnsRecordTypes, HttpStatusCodeSet, MonitorMatchMethods, MonitorStatuses, MonitorTypes, PageSpeedStrategies } from "@/types/monitor.js";
 
-const httpStatusCode = z.number().refine((code) => code.toString() in http.STATUS_CODES, { message: "Must be a valid HTTP status code" });
+const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
 export const getMonitorByIdParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),

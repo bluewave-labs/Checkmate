@@ -31,14 +31,15 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 
 	private handleHttpError<T>(error: unknown, monitor: Monitor): MonitorStatusResponse<T> {
 		if (error instanceof HTTPError || error instanceof RequestError) {
-			const isCustomUp = error instanceof HTTPError && (monitor.customUpCodes ?? []).includes(error.response?.statusCode);
+			const statusCode = error.response?.statusCode;
+			const statusUp = statusCode !== undefined && monitor.customUpCodes.includes(statusCode);
 
 			return {
 				monitorId: monitor.id,
 				teamId: monitor.teamId,
 				type: monitor.type,
-				status: isCustomUp,
-				code: error.response?.statusCode ?? NETWORK_ERROR,
+				status: statusUp,
+				code: statusCode ?? NETWORK_ERROR,
 				message: error.message,
 				responseTime: error.timings?.phases?.total ?? 0,
 				timings: error.timings,
@@ -104,11 +105,12 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 			}
 
 			const matchResult = this.advancedMatcher.validate<T>(payload, monitor);
+			const statusUp = monitor.customUpCodes.includes(response.statusCode) || response.ok;
 			return {
 				monitorId: monitor.id,
 				teamId: monitor.teamId,
 				type: monitor.type,
-				status: ((monitor.customUpCodes ?? []).includes(response.statusCode) || response.ok) && matchResult.ok,
+				status: statusUp && matchResult.ok,
 				code: response.statusCode,
 				message: matchResult.ok ? (response.statusMessage ?? "OK") : matchResult.message,
 				responseTime: response.timings.phases.total ?? 0,

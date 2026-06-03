@@ -1,5 +1,5 @@
 import type { GeoContinent, GeoCheckResult, GeoCheckTimings, GeoCheckLocation } from "@/types/geoCheck.js";
-import { supportsGeoCheck } from "@/types/monitor.js";
+import { supportsGeoCheck, type HttpStatusCode } from "@/types/monitor.js";
 import { MonitorType } from "@/types/index.js";
 import type { ILogger } from "@/utils/logger.js";
 import got from "got";
@@ -62,7 +62,7 @@ interface GlobalPingProbeResult {
 export interface IGlobalPingService {
 	readonly serviceName: string;
 	createMeasurement(monitorType: MonitorType, url: string, locations: GeoContinent[]): Promise<string | null>;
-	pollForResults(measurementId: string, timeoutMs?: number, customUpCodes?: number[]): Promise<GeoCheckResult[]>;
+	pollForResults(measurementId: string, timeoutMs?: number, customUpCodes?: HttpStatusCode[]): Promise<GeoCheckResult[]>;
 }
 
 export class GlobalPingService implements IGlobalPingService {
@@ -119,7 +119,11 @@ export class GlobalPingService implements IGlobalPingService {
 		}
 	}
 
-	async pollForResults(measurementId: string, timeoutMs: number = MAX_POLL_TIMEOUT_MS, customUpCodes: number[] = []): Promise<GeoCheckResult[]> {
+	async pollForResults(
+		measurementId: string,
+		timeoutMs: number = MAX_POLL_TIMEOUT_MS,
+		customUpCodes: HttpStatusCode[] = []
+	): Promise<GeoCheckResult[]> {
 		const startTime = Date.now();
 
 		while (Date.now() - startTime < timeoutMs) {
@@ -174,7 +178,7 @@ export class GlobalPingService implements IGlobalPingService {
 		return [];
 	}
 
-	private transformResults(probeResults: GlobalPingProbeResult[], customUpCodes: number[] = []): GeoCheckResult[] {
+	private transformResults(probeResults: GlobalPingProbeResult[], customUpCodes: HttpStatusCode[] = []): GeoCheckResult[] {
 		const successfulResults: GeoCheckResult[] = [];
 
 		for (const probeResult of probeResults) {
