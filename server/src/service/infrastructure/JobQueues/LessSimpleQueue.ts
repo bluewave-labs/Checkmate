@@ -142,6 +142,7 @@ export class LessSimpleQueue implements IJobQueue {
 		});
 		const scheduler = new Scheduler(store, {
 			concurrency: envSettings.queueMode === "primary" ? 0 : 50,
+			processEvery: 100,
 		});
 		const instance = new LessSimpleQueue(logger, helper, monitorsRepository, workersRepository, scheduler, queueMode);
 		await instance.init(queueMode);
