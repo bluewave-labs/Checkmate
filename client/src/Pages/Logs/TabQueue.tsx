@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import { TableJobs, TableFailedJobs } from "./components/TableJobs";
 import { TableWorkers } from "./components/TableWorkers";
 import { useTheme } from "@mui/material";
+import { useState } from "react";
 import { useTranslation, Trans } from "react-i18next";
 import { useGet, usePost } from "@/Hooks/UseApi";
 import type { QueueData } from "@/Types/Queue";
@@ -15,16 +16,23 @@ import { SPACING } from "@/Utils/Theme/constants";
 export const TabQueue = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
+	const [page, setPage] = useState(0);
+	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const {
 		data: queueData,
 		isLoading,
 		// error,
 		refetch,
-	} = useGet<QueueData>("/queue/all-metrics", {}, { refreshInterval: 1000 });
+	} = useGet<QueueData>(
+		`/queue/all-metrics?page=${page}&rowsPerPage=${rowsPerPage}`,
+		{},
+		{ refreshInterval: 1000, keepPreviousData: true }
+	);
 
 	const { post, loading: isFlushing } = usePost();
 
 	const jobs = queueData?.jobs ?? [];
+	const jobsCount = queueData?.count ?? 0;
 	const workers = (queueData?.metrics?.workers ?? []).map((worker, idx) => ({
 		...worker,
 		id: idx,
@@ -104,7 +112,17 @@ export const TabQueue = () => {
 						/>
 					</Typography>
 				</Stack>
-				<TableJobs jobs={jobs} />
+				<TableJobs
+					jobs={jobs}
+					count={jobsCount}
+					page={page}
+					rowsPerPage={rowsPerPage}
+					onPageChange={(_, newPage) => setPage(newPage)}
+					onRowsPerPageChange={(event) => {
+						setRowsPerPage(parseInt(event.target.value, 10));
+						setPage(0);
+					}}
+				/>
 			</Stack>
 			<Stack gap={theme.spacing(3)}>
 				<Stack gap={theme.spacing(1)}>
