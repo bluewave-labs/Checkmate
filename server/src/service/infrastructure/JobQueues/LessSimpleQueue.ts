@@ -1,21 +1,15 @@
 import { IMonitorsRepository, IQueueWorkersRepository } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
-import { MongoStore, Scheduler, IJob } from "less-simple-scheduler";
+import { MongoStore, Scheduler, IJob, AddJobInput } from "less-simple-scheduler";
 import { IQueueHelper } from "@/service/infrastructure/JobQueues/QueueHelper.js";
 import { Monitor, supportsGeoCheck } from "@/types/monitor.js";
-import { type QueueMetrics, IJobQueue } from "@/service/infrastructure/JobQueues/IJobQueue.js";
+import { type QueueMetrics, type QueueJobsPagination, type QueueJobsPage, IJobQueue } from "@/service/infrastructure/JobQueues/IJobQueue.js";
 import { type QueueMode } from "@/types/settings.js";
 import { EnvConfig } from "@/service/system/settingsService.js";
 const SERVICE_NAME = "JobQueue";
 
-// How long after its last heartbeat a worker is still considered alive. The
-// model's TTL index uses the same window to garbage-collect stale records.
-// Heartbeats are driven by the scheduler's `scheduler:heartbeat` event (emitted
-// every lockMs/3, so ~5s with the default lockMs), comfortably inside this TTL.
+// How long after its last heartbeat a worker is still considered alive.  Must be longer than the scheduler's heartbeat
 const WORKER_TTL_MS = 30_000;
-
-// Derived from the scheduler
-type SchedulerJobInput = Parameters<Scheduler["addJobs"]>[0][number];
 
 // For discriminating job types
 type MonitorJob = Omit<IJob, "data"> & { data: Monitor };
@@ -215,8 +209,8 @@ export class LessSimpleQueue implements IJobQueue {
 
 	// Builds the scheduler inputs for a monitor: always a monitor-job, plus a
 	// geo-check job when the monitor supports and enables geo checks.
-	private buildJobInputs = (monitor: Monitor): SchedulerJobInput[] => {
-		const inputs: SchedulerJobInput[] = [
+	private buildJobInputs = (monitor: Monitor): AddJobInput[] => {
+		const inputs: AddJobInput[] = [
 			{
 				id: monitor.id,
 				template: "monitor-job",
@@ -355,58 +349,39 @@ export class LessSimpleQueue implements IJobQueue {
 		this.scheduler.stop();
 	};
 
-	getMetrics = async () => {
-		const jobs = await this.scheduler.getJobs();
-		const now = Date.now();
+	getMetrics = async (): Promise<QueueMetrics> => {
+		const stats = await this.scheduler.getStats();
 
-		const metrics = jobs.reduce<QueueMetrics>(
-			(acc, job) => {
-				const runCount = job.runCount ?? 0;
-				const failCount = job.failCount ?? 0;
-				const lastFailedAt = job.lastFailedAt ?? 0;
-				const lastFinishedAt = job.lastFinishedAt ?? 0;
-				acc.totalRuns += runCount;
-				acc.totalFailures += failCount;
-				acc.jobs++;
-				if (failCount > 0 && lastFailedAt >= lastFinishedAt) {
-					acc.failingJobs++;
-				}
+		const jobsWithFailures = stats.jobsWithFailures.map((failure) => {
+			// `data` is untyped at the store level: for monitor jobs it's the Monitor,
+			// for system jobs (e.g. cleanup) it has no url/type => null
+			const monitor = failure.data as Monitor | undefined;
+			return {
+				monitorId: failure.id,
+				monitorUrl: monitor?.url ?? null,
+				monitorType: monitor?.type ?? null,
+				failedAt: failure.failedAt,
+				failCount: failure.failCount,
+				failReason: failure.failReason,
+			};
+		});
 
-				// A job currently held by a live lock is in flight on some worker
-				if (job.lockedBy && job.lockedUntil && job.lockedUntil > now) {
-					acc.activeJobs++;
-				}
-
-				if (failCount > 0) {
-					const monitor = isMonitorJob(job) ? job.data : undefined;
-					acc.jobsWithFailures.push({
-						monitorId: job.id,
-						monitorUrl: monitor?.url || null,
-						monitorType: monitor?.type || null,
-						failedAt: job.lastFailedAt ?? null,
-						failCount,
-						failReason: job.lastError ?? null,
-					});
-				}
-				return acc;
-			},
-			{
-				jobs: 0,
-				activeJobs: 0,
-				failingJobs: 0,
-				jobsWithFailures: [],
-				totalRuns: 0,
-				totalFailures: 0,
-				workers: [],
-			}
-		);
-		metrics.workers = await this.workersRepository.findRecent(WORKER_TTL_MS);
-		return metrics;
+		const workers = await this.workersRepository.findRecent(WORKER_TTL_MS);
+		return {
+			jobs: stats.jobs,
+			activeJobs: stats.activeJobs,
+			failingJobs: stats.failingJobs,
+			totalRuns: stats.totalRuns,
+			totalFailures: stats.totalFailures,
+			jobsWithFailures,
+			workers,
+		};
 	};
 
-	getJobs = async () => {
-		const jobs = await this.scheduler.getJobs();
-		return jobs.map((job) => {
+	getJobs = async ({ page = 0, rowsPerPage = 0 }: QueueJobsPagination): Promise<QueueJobsPage> => {
+		const listOptions = rowsPerPage > 0 ? { skip: Math.max(page, 0) * rowsPerPage, limit: rowsPerPage } : undefined;
+		const [jobs, count] = await Promise.all([this.scheduler.getJobs(listOptions), this.scheduler.countJobs()]);
+		const mapped = jobs.map((job) => {
 			const monitor = isMonitorJob(job) ? job.data : undefined;
 
 			return {
@@ -430,6 +405,8 @@ export class LessSimpleQueue implements IJobQueue {
 				lastFailedAt: job.lastFailedAt ?? null,
 			};
 		});
+
+		return { jobs: mapped, count };
 	};
 
 	flushQueues = async () => {

@@ -6,61 +6,11 @@ import { Monitor, MonitorType, supportsGeoCheck } from "@/types/monitor.js";
 import { hostname } from "node:os";
 import { randomUUID } from "node:crypto";
 import { QueueMode } from "@/types/settings.js";
+import { IJobQueue, type QueueJobSummary } from "@/service/infrastructure/JobQueues/IJobQueue.js";
 
 const SERVICE_NAME = "JobQueue";
 
-type QueueJobFailure = {
-	monitorId: string | number;
-	monitorUrl: string | null;
-	monitorType: string | null;
-	failedAt: number | null;
-	failCount: number;
-	failReason: string | null;
-};
-
-type QueueMetrics = {
-	jobs: number;
-	activeJobs: number;
-	failingJobs: number;
-	jobsWithFailures: QueueJobFailure[];
-	totalRuns: number;
-	totalFailures: number;
-};
-
-type QueueJobSummary = {
-	monitorId: string | number;
-	monitorUrl: string | null;
-	monitorType: string | null;
-	monitorInterval: number | null;
-	monitorGeoInterval: number | null;
-	monitorActive: boolean | null;
-	active: boolean;
-	lockedAt: number | null;
-	runCount: number;
-	failCount: number;
-	failReason: string | null;
-	lastRunAt: number | null;
-	lastFinishedAt: number | null;
-	lastRunTook: number | null;
-	lastFailedAt: number | null;
-	repeat: number | null;
-};
-
-export interface ISuperSimpleQueue {
-	readonly serviceName: string;
-	init(): Promise<boolean>;
-	addJob(monitorId: string, monitor: Monitor): Promise<void>;
-	deleteJob(monitor: Monitor): Promise<void>;
-	pauseJob(monitor: Monitor): Promise<void>;
-	resumeJob(monitor: Monitor): Promise<void>;
-	updateJob(monitor: Monitor): Promise<void>;
-	shutdown(): Promise<void>;
-	getMetrics(): Promise<QueueMetrics>;
-	getJobs(): Promise<QueueJobSummary[]>;
-	flushQueues(): Promise<{ success: boolean }>;
-}
-
-export class SuperSimpleQueue implements ISuperSimpleQueue {
+export class SuperSimpleQueue implements IJobQueue {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: ILogger;
@@ -391,9 +341,9 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 		return metrics;
 	};
 
-	getJobs = async () => {
+	getJobs = async ({ page = 0, rowsPerPage = 0 }: { page?: number; rowsPerPage?: number }): Promise<{ jobs: QueueJobSummary[]; count: number }> => {
 		const jobs = await this.scheduler.getJobs();
-		return jobs.map((job) => {
+		const mapped = jobs.map((job) => {
 			return {
 				monitorId: job.id,
 				monitorUrl: job.data?.url || null,
@@ -415,6 +365,12 @@ export class SuperSimpleQueue implements ISuperSimpleQueue {
 				lastFailedAt: job.lastFailedAt ?? null,
 			};
 		});
+
+		const start = Math.max(page, 0) * rowsPerPage;
+		return {
+			jobs: rowsPerPage > 0 ? mapped.slice(start, start + rowsPerPage) : mapped,
+			count: mapped.length,
+		};
 	};
 
 	flushQueues = async () => {

@@ -41,6 +41,16 @@ export type QueueJobSummary = {
 	repeat: number | null;
 };
 
+export type QueueJobsPagination = {
+	page?: number;
+	rowsPerPage?: number;
+};
+
+export type QueueJobsPage = {
+	jobs: QueueJobSummary[];
+	count: number;
+};
+
 export interface IJobQueue {
 	readonly serviceName: string;
 	init(): Promise<boolean>;
@@ -51,6 +61,6 @@ export interface IJobQueue {
 	updateJob(monitor: Monitor): Promise<void>;
 	shutdown(): Promise<void>;
 	getMetrics(): Promise<QueueMetrics>;
-	getJobs(): Promise<QueueJobSummary[]>;
+	getJobs(pagination: QueueJobsPagination): Promise<QueueJobsPage>;
 	flushQueues(): Promise<{ success: boolean }>;
 }
