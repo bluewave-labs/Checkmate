@@ -69,7 +69,7 @@ const makeGotResponse = (overrides?: Record<string, any>) => ({
 	statusMessage: "OK",
 	headers: { "content-type": "text/html" },
 	body: "<html></html>",
-	timings: { phases: { total: 100 } },
+	timings: { phases: { firstByte: 100, total: 120 } },
 	...overrides,
 });
 
@@ -181,8 +181,8 @@ describe("HttpProvider", () => {
 			);
 		});
 
-		it("defaults responseTime to 0 when timings.phases.total is undefined", async () => {
-			mockGot.mockResolvedValue(makeGotResponse({ timings: { phases: { total: undefined } } }));
+		it("defaults responseTime to 0 when timings.phases.firstByte is undefined", async () => {
+			mockGot.mockResolvedValue(makeGotResponse({ timings: { phases: { firstByte: undefined } } }));
 			const { provider } = createProvider();
 
 			const result = await provider.handle(makeMonitor());
@@ -223,11 +223,11 @@ describe("HttpProvider", () => {
 			expect(result.message).toBe("Response is not JSON");
 		});
 
-		it("defaults responseTime to 0 in non-JSON jsonPath response when total is undefined", async () => {
+		it("defaults responseTime to 0 in non-JSON jsonPath response when firstByte is undefined", async () => {
 			mockGot.mockResolvedValue(
 				makeGotResponse({
 					headers: { "content-type": "text/html" },
-					timings: { phases: { total: undefined } },
+					timings: { phases: { firstByte: undefined } },
 				})
 			);
 			const { provider } = createProvider();
