@@ -1,4 +1,5 @@
-import { ISuperSimpleQueue } from "@/service/index.js";
+import { IJobQueue } from "@/service/index.js";
+import { getQueueJobsQueryValidation } from "@/validation/queueValidation.js";
 import { Request, Response, NextFunction } from "express";
 
 const SERVICE_NAME = "JobQueueController";
@@ -12,8 +13,8 @@ export interface IJobQueueController {
 
 class JobQueueController implements IJobQueueController {
 	static SERVICE_NAME = SERVICE_NAME;
-	private jobQueue: ISuperSimpleQueue;
-	constructor(jobQueue: ISuperSimpleQueue) {
+	private jobQueue: IJobQueue;
+	constructor(jobQueue: IJobQueue) {
 		this.jobQueue = jobQueue;
 	}
 
@@ -36,11 +37,12 @@ class JobQueueController implements IJobQueueController {
 
 	getJobs = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const jobs = await this.jobQueue.getJobs();
+			const pagination = getQueueJobsQueryValidation.parse(req.query);
+			const { jobs, count } = await this.jobQueue.getJobs(pagination);
 			return res.status(200).json({
 				success: true,
 				msg: "Queue jobs fetched successfully",
-				data: jobs,
+				data: { jobs, count },
 			});
 		} catch (error) {
 			next(error);
@@ -49,12 +51,13 @@ class JobQueueController implements IJobQueueController {
 
 	getAllMetrics = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const jobs = await this.jobQueue.getJobs();
+			const pagination = getQueueJobsQueryValidation.parse(req.query);
+			const { jobs, count } = await this.jobQueue.getJobs(pagination);
 			const metrics = await this.jobQueue.getMetrics();
 			return res.status(200).json({
 				success: true,
 				msg: "Queue metrics fetched successfully",
-				data: { jobs, metrics },
+				data: { jobs, count, metrics },
 			});
 		} catch (error) {
 			next(error);

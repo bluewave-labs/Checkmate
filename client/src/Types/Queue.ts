@@ -51,5 +51,6 @@ export type QueueJobSummary = {
 
 export interface QueueData {
 	jobs: QueueJobSummary[];
+	count: number;
 	metrics: QueueMetrics;
 }
