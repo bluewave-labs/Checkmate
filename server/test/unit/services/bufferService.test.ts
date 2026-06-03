@@ -81,7 +81,7 @@ describe("BufferService", () => {
 			const { logger } = createService("development");
 			expect(logger.info).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: expect.stringContaining("0.01s"),
+					message: expect.stringContaining("1s"),
 					service: "BufferService",
 					method: "constructor",
 				})
@@ -231,7 +231,7 @@ describe("BufferService", () => {
 			service.addToBuffer(makeCheck());
 			service.addGeoCheckToBuffer(makeGeoCheck());
 
-			await jest.advanceTimersByTimeAsync(10);
+			await jest.advanceTimersByTimeAsync(1000);
 
 			expect(checkService.createChecks).toHaveBeenCalled();
 			expect(geoChecksService.createGeoChecks).toHaveBeenCalled();
@@ -242,11 +242,11 @@ describe("BufferService", () => {
 			(checkService.createChecks as jest.Mock).mockResolvedValue([]);
 
 			service.addToBuffer(makeCheck());
-			await jest.advanceTimersByTimeAsync(10);
+			await jest.advanceTimersByTimeAsync(1000);
 
 			// Add another check and advance again to confirm rescheduling
 			service.addToBuffer(makeCheck({ id: "c2" }));
-			await jest.advanceTimersByTimeAsync(10);
+			await jest.advanceTimersByTimeAsync(1000);
 
 			expect(checkService.createChecks).toHaveBeenCalledTimes(2);
 		});
@@ -256,7 +256,7 @@ describe("BufferService", () => {
 			(checkService.createChecks as jest.Mock).mockRejectedValueOnce(new Error("DB down"));
 			service.addToBuffer(makeCheck());
 
-			await jest.advanceTimersByTimeAsync(10);
+			await jest.advanceTimersByTimeAsync(1000);
 
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -268,7 +268,7 @@ describe("BufferService", () => {
 			// Should still reschedule — add another check and flush
 			(checkService.createChecks as jest.Mock).mockResolvedValue([]);
 			service.addToBuffer(makeCheck({ id: "c2" }));
-			await jest.advanceTimersByTimeAsync(10);
+			await jest.advanceTimersByTimeAsync(1000);
 
 			expect(checkService.createChecks).toHaveBeenCalledTimes(2);
 		});
@@ -278,7 +278,7 @@ describe("BufferService", () => {
 			// Override flushBuffer to throw past its own try/catch
 			service.flushBuffer = jest.fn<() => Promise<void>>().mockRejectedValueOnce(new Error("unexpected"));
 
-			await jest.advanceTimersByTimeAsync(10);
+			await jest.advanceTimersByTimeAsync(1000);
 
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -292,7 +292,7 @@ describe("BufferService", () => {
 			const { service, logger } = createService();
 			service.flushBuffer = jest.fn<() => Promise<void>>().mockRejectedValueOnce("string error");
 
-			await jest.advanceTimersByTimeAsync(10);
+			await jest.advanceTimersByTimeAsync(1000);
 
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
