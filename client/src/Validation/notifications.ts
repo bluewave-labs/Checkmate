@@ -42,7 +42,9 @@ const matrixSchema = baseSchema.extend({
 		.min(1, "Homeserver URL is required")
 		.url("Please enter a valid URL"),
 	roomId: z.string().min(1, "Room ID is required"),
-	accessToken: z.string().min(1, "Access token is required"),
+	accessToken: z
+		.union([z.string().min(1, "Access token is required"), z.literal("")])
+		.optional(),
 });
 
 const teamsSchema = baseSchema.extend({
@@ -53,19 +55,27 @@ const teamsSchema = baseSchema.extend({
 const telegramSchema = baseSchema.extend({
 	type: z.literal("telegram"),
 	address: z.string().min(1, "Chat ID is required"),
-	accessToken: z.string().min(1, "Bot token is required"),
+	accessToken: z
+		.union([z.string().min(1, "Bot token is required"), z.literal("")])
+		.optional(),
 });
 
 const pushoverSchema = baseSchema.extend({
 	type: z.literal("pushover"),
 	address: z.string().min(1, "User key is required"),
-	accessToken: z.string().min(1, "App token is required"),
+	accessToken: z
+		.union([z.string().min(1, "App token is required"), z.literal("")])
+		.optional(),
 });
 
 const twilioSchema = baseSchema.extend({
 	type: z.literal("twilio"),
-	accountSid: z.string().min(1, "Account SID is required"),
-	accessToken: z.string().min(1, "Auth token is required"),
+	accountSid: z
+		.union([z.string().min(1, "Account SID is required"), z.literal("")])
+		.optional(),
+	accessToken: z
+		.union([z.string().min(1, "Auth token is required"), z.literal("")])
+		.optional(),
 	phone: z.string().min(1, "Recipient phone number is required"),
 	twilioPhoneNumber: z.string().min(1, "Twilio phone number is required"),
 });

@@ -25,6 +25,8 @@ export interface Notification {
 	accessToken?: string;
 	accountSid?: string;
 	twilioPhoneNumber?: string;
+	accessTokenSet?: boolean;
+	accountSidSet?: boolean;
 	createdAt: string;
 	updatedAt: string;
 }
