@@ -26,6 +26,8 @@ const createScheduler = () => {
 		removeJob: jest.fn(),
 		getJob: jest.fn().mockResolvedValue(null),
 		getJobs: jest.fn().mockResolvedValue([]),
+		countJobs: jest.fn().mockResolvedValue(0),
+		getStats: jest.fn().mockResolvedValue({ jobs: 0, activeJobs: 0, failingJobs: 0, totalRuns: 0, totalFailures: 0, jobsWithFailures: [] }),
 		pauseJob: jest.fn().mockResolvedValue(true),
 		resumeJob: jest.fn().mockResolvedValue(true),
 		updateJob: jest.fn(),
@@ -80,9 +82,6 @@ const createQueue = (overrides?: Record<string, unknown>) => {
 	);
 	return { queue, ...defaults };
 };
-
-// A lockedUntil far enough ahead that it is always > Date.now() at assertion time.
-const FAR_FUTURE = 4_000_000_000_000; // year 2096
 
 const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
 	({
@@ -484,107 +483,55 @@ describe("LessSimpleQueue", () => {
 			expect(metrics).toEqual({ jobs: 0, activeJobs: 0, failingJobs: 0, jobsWithFailures: [], totalRuns: 0, totalFailures: 0, workers: [] });
 		});
 
-		it("aggregates metrics from jobs", async () => {
+		it("maps the store's aggregate counters through", async () => {
 			const { queue, scheduler } = createQueue();
-			(scheduler.getJobs as jest.Mock).mockResolvedValue([
-				{
-					id: "m1",
-					template: "monitor-job",
-					runCount: 10,
-					failCount: 2,
-					lastFailedAt: 200,
-					lastFinishedAt: 100,
-					lockedAt: null,
-					lastError: "timeout",
-					data: { url: "http://a.com", type: "http" },
-				},
-				{
-					id: "m2",
-					template: "monitor-job",
-					runCount: 5,
-					failCount: 0,
-					lastFailedAt: 0,
-					lastFinishedAt: 50,
-					// live lock held by a worker
-					lockedBy: "host-1:1234:abcd",
-					lockedUntil: FAR_FUTURE,
-					lockedAt: 999,
-					data: { url: "http://b.com", type: "ping" },
-				},
-			]);
+			(scheduler.getStats as jest.Mock).mockResolvedValue({
+				jobs: 2,
+				activeJobs: 1,
+				failingJobs: 1,
+				totalRuns: 15,
+				totalFailures: 2,
+				jobsWithFailures: [],
+			});
 			const metrics = await queue.getMetrics();
-
-			expect(metrics.jobs).toBe(2);
-			expect(metrics.totalRuns).toBe(15);
-			expect(metrics.totalFailures).toBe(2);
-			expect(metrics.activeJobs).toBe(1);
-			expect(metrics.failingJobs).toBe(1);
-			expect(metrics.jobsWithFailures).toHaveLength(1);
-			expect(metrics.jobsWithFailures[0]).toEqual(
-				expect.objectContaining({ monitorId: "m1", failCount: 2, monitorUrl: "http://a.com", failReason: "timeout" })
-			);
+			expect(metrics).toMatchObject({ jobs: 2, activeJobs: 1, failingJobs: 1, totalRuns: 15, totalFailures: 2 });
 		});
 
-		it("does not count as failing when lastFailedAt < lastFinishedAt", async () => {
+		it("derives monitor fields for failing monitor jobs from job data", async () => {
 			const { queue, scheduler } = createQueue();
-			(scheduler.getJobs as jest.Mock).mockResolvedValue([
-				{ id: "m1", template: "monitor-job", runCount: 10, failCount: 1, lastFailedAt: 50, lastFinishedAt: 100, data: { url: "a" } },
-			]);
+			(scheduler.getStats as jest.Mock).mockResolvedValue({
+				jobs: 1,
+				activeJobs: 0,
+				failingJobs: 1,
+				totalRuns: 10,
+				totalFailures: 2,
+				jobsWithFailures: [{ id: "m1", data: { url: "http://a.com", type: "http" }, failedAt: 200, failCount: 2, failReason: "timeout" }],
+			});
 			const metrics = await queue.getMetrics();
-			expect(metrics.failingJobs).toBe(0);
-			expect(metrics.jobsWithFailures).toHaveLength(1);
+			expect(metrics.jobsWithFailures).toEqual([
+				{ monitorId: "m1", monitorUrl: "http://a.com", monitorType: "http", failedAt: 200, failCount: 2, failReason: "timeout" },
+			]);
 		});
 
-		it("leaves monitor fields null for non-monitor (cleanup) jobs with failures", async () => {
+		it("leaves monitor fields null for non-monitor (cleanup) failures", async () => {
 			const { queue, scheduler } = createQueue();
-			(scheduler.getJobs as jest.Mock).mockResolvedValue([
-				{
-					id: "cleanup-orphaned",
-					template: "cleanup-orphaned",
-					runCount: 1,
-					failCount: 1,
-					lastFailedAt: 100,
-					lastFinishedAt: 50,
-					lastError: "boom",
-					data: undefined,
-				},
-			]);
+			(scheduler.getStats as jest.Mock).mockResolvedValue({
+				jobs: 1,
+				activeJobs: 0,
+				failingJobs: 1,
+				totalRuns: 1,
+				totalFailures: 1,
+				jobsWithFailures: [{ id: "cleanup-orphaned", data: undefined, failedAt: 100, failCount: 1, failReason: "boom" }],
+			});
 			const metrics = await queue.getMetrics();
-			expect(metrics.jobsWithFailures[0].monitorUrl).toBeNull();
-			expect(metrics.jobsWithFailures[0].monitorType).toBeNull();
-			expect(metrics.jobsWithFailures[0].failReason).toBe("boom");
-		});
-	});
-
-	// ── getMetrics: activeJobs (in-flight) ───────────────────────────────────────
-
-	describe("getMetrics - activeJobs", () => {
-		it("counts jobs held by a live lock as active", async () => {
-			const { queue, scheduler } = createQueue();
-			(scheduler.getJobs as jest.Mock).mockResolvedValue([
-				{ id: "m1", template: "monitor-job", lockedBy: "worker-a", lockedUntil: FAR_FUTURE, lockedAt: 100, data: { url: "a" } },
-				{ id: "m2", template: "monitor-job", lockedBy: "worker-b", lockedUntil: FAR_FUTURE, lockedAt: 250, data: { url: "b" } },
-			]);
-			const metrics = await queue.getMetrics();
-			expect(metrics.activeJobs).toBe(2);
-		});
-
-		it("does not count unlocked jobs (lockedBy null)", async () => {
-			const { queue, scheduler } = createQueue();
-			(scheduler.getJobs as jest.Mock).mockResolvedValue([
-				{ id: "m1", template: "monitor-job", lockedBy: null, lockedUntil: null, lockedAt: null, data: { url: "a" } },
-			]);
-			const metrics = await queue.getMetrics();
-			expect(metrics.activeJobs).toBe(0);
-		});
-
-		it("does not count jobs whose lock has expired (lockedUntil <= now)", async () => {
-			const { queue, scheduler } = createQueue();
-			(scheduler.getJobs as jest.Mock).mockResolvedValue([
-				{ id: "m1", template: "monitor-job", lockedBy: "worker-a", lockedUntil: 1, lockedAt: 1, data: { url: "a" } },
-			]);
-			const metrics = await queue.getMetrics();
-			expect(metrics.activeJobs).toBe(0);
+			expect(metrics.jobsWithFailures[0]).toEqual({
+				monitorId: "cleanup-orphaned",
+				monitorUrl: null,
+				monitorType: null,
+				failedAt: 100,
+				failCount: 1,
+				failReason: "boom",
+			});
 		});
 	});
 
@@ -627,7 +574,7 @@ describe("LessSimpleQueue", () => {
 					data: { url: "http://a.com", type: "http", interval: 60000, geoCheckInterval: 300000, isActive: true },
 				},
 			]);
-			const jobs = await queue.getJobs();
+			const { jobs } = await queue.getJobs({});
 
 			expect(jobs).toHaveLength(1);
 			expect(jobs[0]).toEqual({
@@ -666,19 +613,43 @@ describe("LessSimpleQueue", () => {
 					data: { url: "a", type: "http", interval: 60000 },
 				},
 			]);
-			const jobs = await queue.getJobs();
+			const { jobs } = await queue.getJobs({});
 			expect(jobs[0].lastRunTook).toBeNull();
 		});
 
 		it("leaves monitor fields null for non-monitor jobs", async () => {
 			const { queue, scheduler } = createQueue();
 			(scheduler.getJobs as jest.Mock).mockResolvedValue([{ id: "cleanup-orphaned", template: "cleanup-orphaned", active: true, data: undefined }]);
-			const jobs = await queue.getJobs();
+			const { jobs } = await queue.getJobs({});
 			expect(jobs[0].monitorUrl).toBeNull();
 			expect(jobs[0].monitorType).toBeNull();
 			expect(jobs[0].monitorInterval).toBeNull();
 			expect(jobs[0].monitorGeoInterval).toBeNull();
 			expect(jobs[0].monitorActive).toBeNull();
+		});
+
+		it("pushes pagination to the scheduler and returns its total count", async () => {
+			const { queue, scheduler } = createQueue();
+			(scheduler.getJobs as jest.Mock).mockResolvedValue([
+				{ id: "m1", template: "monitor-job", active: true, data: { url: "a", type: "http", interval: 60000 } },
+			]);
+			(scheduler.countJobs as jest.Mock).mockResolvedValue(42);
+
+			const { jobs, count } = await queue.getJobs({ page: 2, rowsPerPage: 10 });
+
+			expect(scheduler.getJobs).toHaveBeenCalledWith({ skip: 20, limit: 10 });
+			expect(count).toBe(42);
+			expect(jobs).toHaveLength(1);
+		});
+
+		it("requests all jobs when rowsPerPage is omitted", async () => {
+			const { queue, scheduler } = createQueue();
+			(scheduler.countJobs as jest.Mock).mockResolvedValue(7);
+
+			const { count } = await queue.getJobs({});
+
+			expect(scheduler.getJobs).toHaveBeenCalledWith(undefined);
+			expect(count).toBe(7);
 		});
 	});
 
