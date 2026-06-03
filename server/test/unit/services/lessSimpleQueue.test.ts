@@ -22,6 +22,7 @@ const createScheduler = () => {
 		stop: jest.fn().mockResolvedValue(true),
 		addTemplate: jest.fn(),
 		addJob: jest.fn(),
+		addJobs: jest.fn().mockResolvedValue({ inserted: 0, upserted: 0, modified: 0, failures: [] }),
 		removeJob: jest.fn(),
 		getJob: jest.fn().mockResolvedValue(null),
 		getJobs: jest.fn().mockResolvedValue([]),
@@ -125,19 +126,20 @@ describe("LessSimpleQueue", () => {
 			expect(scheduler.addJob).toHaveBeenCalledWith(expect.objectContaining({ id: "cleanup-retention" }));
 		});
 
-		it("schedules existing monitors with staggered offsets", async () => {
-			jest.useFakeTimers();
+		it("registers existing monitors in a single bulk write", async () => {
 			const monitors = [makeMonitor({ id: "m1" }), makeMonitor({ id: "m2" })];
 			const { queue, scheduler, monitorsRepository } = createQueue();
 			(monitorsRepository.findAll as jest.Mock).mockResolvedValue(monitors);
 
 			await queue.init();
-			// advance past the <100ms seed offsets
-			jest.advanceTimersByTime(100);
 
-			expect(scheduler.addJob).toHaveBeenCalledWith(expect.objectContaining({ id: "m1", template: "monitor-job" }));
-			expect(scheduler.addJob).toHaveBeenCalledWith(expect.objectContaining({ id: "m2", template: "monitor-job" }));
-			jest.useRealTimers();
+			expect(scheduler.addJobs).toHaveBeenCalledTimes(1);
+			expect(scheduler.addJobs).toHaveBeenCalledWith(
+				expect.arrayContaining([
+					expect.objectContaining({ id: "m1", template: "monitor-job", jitter: true }),
+					expect.objectContaining({ id: "m2", template: "monitor-job", jitter: true }),
+				])
+			);
 		});
 
 		it("returns true and skips system jobs when findAll returns null", async () => {
@@ -302,25 +304,29 @@ describe("LessSimpleQueue", () => {
 		it("adds monitor job to scheduler", async () => {
 			const { queue, scheduler } = createQueue();
 			await queue.addJob("mon-1", makeMonitor());
-			expect(scheduler.addJob).toHaveBeenCalledWith(expect.objectContaining({ id: "mon-1", template: "monitor-job", repeat: 60000, active: true }));
+			expect(scheduler.addJobs).toHaveBeenCalledWith(
+				expect.arrayContaining([expect.objectContaining({ id: "mon-1", template: "monitor-job", repeat: 60000, active: true })])
+			);
 		});
 
 		it("adds geo check job when geoCheckEnabled and type supports it", async () => {
 			const { queue, scheduler } = createQueue();
 			await queue.addJob("mon-1", makeMonitor({ geoCheckEnabled: true, type: "http", geoCheckInterval: 300000 }));
-			expect(scheduler.addJob).toHaveBeenCalledWith(expect.objectContaining({ id: "mon-1-geo", template: "geo-check-job", repeat: 300000 }));
+			expect(scheduler.addJobs).toHaveBeenCalledWith(
+				expect.arrayContaining([expect.objectContaining({ id: "mon-1-geo", template: "geo-check-job", repeat: 300000 })])
+			);
 		});
 
 		it("skips geo job when type does not support geo checks", async () => {
 			const { queue, scheduler } = createQueue();
 			await queue.addJob("mon-1", makeMonitor({ geoCheckEnabled: true, type: "hardware" }));
-			expect(scheduler.addJob).not.toHaveBeenCalledWith(expect.objectContaining({ id: "mon-1-geo" }));
+			expect(scheduler.addJobs).toHaveBeenCalledWith(expect.not.arrayContaining([expect.objectContaining({ id: "mon-1-geo" })]));
 		});
 
 		it("skips geo job when geoCheckEnabled is false", async () => {
 			const { queue, scheduler } = createQueue();
 			await queue.addJob("mon-1", makeMonitor({ geoCheckEnabled: false, type: "http" }));
-			expect(scheduler.addJob).not.toHaveBeenCalledWith(expect.objectContaining({ id: "mon-1-geo" }));
+			expect(scheduler.addJobs).toHaveBeenCalledWith(expect.not.arrayContaining([expect.objectContaining({ id: "mon-1-geo" })]));
 		});
 	});
 

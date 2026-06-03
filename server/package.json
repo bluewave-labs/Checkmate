@@ -53,7 +53,7 @@
 		"jmespath": "^0.16.0",
 		"jsdom": "^26.1.0",
 		"jsonwebtoken": "9.0.2",
-		"less-simple-scheduler": "2.3.0",
+		"less-simple-scheduler": "2.4.1",
 		"mailersend": "^2.2.0",
 		"mjml": "^5.0.0-alpha.4",
 		"mongoose": "^8.3.3",
