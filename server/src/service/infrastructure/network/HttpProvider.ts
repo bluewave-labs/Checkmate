@@ -5,7 +5,7 @@ import { HttpStatusPayload } from "@/types/network.js";
 import { MonitorStatusResponse } from "@/types/network.js";
 import { Agent as HttpsAgent } from "https";
 import { Monitor, MonitorType } from "@/types/monitor.js";
-import { NETWORK_ERROR } from "@/service/infrastructure/network/utils.js";
+import { NETWORK_ERROR, isStatusUp } from "@/service/infrastructure/network/utils.js";
 import CacheableLookup from "cacheable-lookup";
 
 export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
@@ -32,7 +32,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 	private handleHttpError<T>(error: unknown, monitor: Monitor): MonitorStatusResponse<T> {
 		if (error instanceof HTTPError || error instanceof RequestError) {
 			const statusCode = error.response?.statusCode;
-			const statusUp = statusCode !== undefined && monitor.customUpCodes.includes(statusCode);
+			const statusUp = isStatusUp(statusCode, monitor.customUpCodes);
 
 			return {
 				monitorId: monitor.id,
@@ -105,7 +105,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 			}
 
 			const matchResult = this.advancedMatcher.validate<T>(payload, monitor);
-			const statusUp = monitor.customUpCodes.includes(response.statusCode) || response.ok;
+			const statusUp = isStatusUp(response.statusCode, monitor.customUpCodes);
 			return {
 				monitorId: monitor.id,
 				teamId: monitor.teamId,

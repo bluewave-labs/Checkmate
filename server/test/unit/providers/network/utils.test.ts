@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { timeRequest, NETWORK_ERROR, PING_ERROR } from "../../../../src/service/infrastructure/network/utils.ts";
+import { timeRequest, NETWORK_ERROR, PING_ERROR, isStatusUp } from "../../../../src/service/infrastructure/network/utils.ts";
 
 describe("network utils", () => {
 	describe("timeRequest", () => {
@@ -39,6 +39,42 @@ describe("network utils", () => {
 
 		it("PING_ERROR is 5001", () => {
 			expect(PING_ERROR).toBe(5001);
+		});
+	});
+
+	describe("isStatusUp", () => {
+		it("returns true for 2xx status codes", () => {
+			expect(isStatusUp(200)).toBe(true);
+			expect(isStatusUp(201)).toBe(true);
+			expect(isStatusUp(204)).toBe(true);
+			expect(isStatusUp(299)).toBe(true);
+		});
+
+		it("returns false for non-2xx status codes without customUpCodes", () => {
+			expect(isStatusUp(100)).toBe(false);
+			expect(isStatusUp(301)).toBe(false);
+			expect(isStatusUp(404)).toBe(false);
+			expect(isStatusUp(500)).toBe(false);
+		});
+
+		it("returns true when status code is in customUpCodes", () => {
+			expect(isStatusUp(301, [301])).toBe(true);
+			expect(isStatusUp(404, [200, 404])).toBe(true);
+			expect(isStatusUp(401, [401, 403])).toBe(true);
+		});
+
+		it("returns false when status code is not in customUpCodes", () => {
+			expect(isStatusUp(500, [401, 403])).toBe(false);
+		});
+
+		it("returns false when statusCode is undefined", () => {
+			expect(isStatusUp(undefined)).toBe(false);
+			expect(isStatusUp(undefined, [200])).toBe(false);
+		});
+
+		it("defaults customUpCodes to empty array", () => {
+			expect(isStatusUp(200)).toBe(true);
+			expect(isStatusUp(404)).toBe(false);
 		});
 	});
 });

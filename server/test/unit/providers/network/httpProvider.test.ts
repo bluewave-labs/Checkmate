@@ -254,14 +254,13 @@ describe("HttpProvider", () => {
 			expect(result.extracted).toBe("value");
 		});
 
-		it("sets status to false when response.ok is false even if matcher passes", async () => {
+		it("sets status to false when status code is non-2xx even if matcher passes", async () => {
 			mockGot.mockResolvedValue(makeGotResponse({ ok: false, statusCode: 301 }));
 			const matcher = createMockMatcher({ ok: true, message: "Success" });
 			const { provider } = createProvider(matcher);
 
 			const result = await provider.handle(makeMonitor());
 
-			// status = response.ok && matchResult.ok
 			expect(result.status).toBe(false);
 		});
 	});
