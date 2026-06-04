@@ -107,6 +107,7 @@ import {
 	MongoTeamsRepository,
 	MongoMaintenanceWindowsRepository,
 	MongoSettingsRepository,
+	MongoQueueWorkersRepository,
 	IMonitorsRepository,
 	IChecksRepository,
 	IGeoChecksRepository,
@@ -123,7 +124,8 @@ import {
 	IMaintenanceWindowsRepository,
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
-// import { AppError } from "@/utils/AppError.js";
+import { AppError } from "@/utils/AppError.js";
+import { type QueueMode } from "@/types/settings.js";
 
 export type InitializedServices = {
 	settingsService: ISettingsService;
@@ -168,10 +170,12 @@ export const initializeServices = async ({
 	logger,
 	envSettings,
 	settingsService,
+	queueMode = "primary",
 }: {
 	logger: ILogger;
 	envSettings: EnvConfig;
 	settingsService: ISettingsService;
+	queueMode?: QueueMode;
 }): Promise<InitializedServices> => {
 	// Create DB
 
@@ -245,6 +249,7 @@ export const initializeServices = async ({
 	const incidentsRepository = new MongoIncidentsRepository();
 	const teamsRepository = new MongoTeamsRepository();
 	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
+	const queueWorkersRepository = new MongoQueueWorkersRepository();
 
 	// Inject settings repository into settings service (now that DB is connected)
 	(settingsService as SettingsService).setRepository(settingsRepository);
@@ -345,10 +350,19 @@ export const initializeServices = async ({
 		geoChecksRepository
 	);
 
+	if (queueMode === "worker" && envSettings.queueType !== "lessSimpleQueue") {
+		throw new AppError({
+			message: `Worker mode requires QUEUE_TYPE="lessSimpleQueue" got ${envSettings.queueType}`,
+			status: 500,
+			service: "config services",
+			method: "initializeServices",
+		});
+	}
+
 	let jobQueue: IJobQueue;
 	switch (envSettings.queueType) {
 		case "lessSimpleQueue":
-			jobQueue = await LessSimpleQueue.create(logger, queueHelper, monitorsRepository, envSettings);
+			jobQueue = await LessSimpleQueue.create(logger, queueHelper, monitorsRepository, queueWorkersRepository, envSettings, queueMode);
 			break;
 		default:
 			jobQueue = await SuperSimpleQueue.create(logger, queueHelper, monitorsRepository);

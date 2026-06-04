@@ -933,6 +933,8 @@
 			"logLevelSelect": {
 				"label": "Log level"
 			},
+			"workers": "Workers",
+			"workersExplainers": "Shows worker processes.  Worker IDs are truncated, hover for full ID",
 			"jobQueue": "Job queue",
 			"jobQueueExplainer": "<highlight>Highlighted rows</highlight> are jobs currently being processed by a worker.",
 			"failedJobs": "Failed jobs",
@@ -1000,6 +1002,11 @@
 			},
 			"table": {
 				"headers": {
+					"host": "Host",
+					"processId": "Process ID",
+					"workerId": "Worker ID",
+					"workerMode": "Worker mode",
+					"lastSeenAt": "Last seen at",
 					"state": "State",
 					"timestamp": "Timestamp",
 					"level": "Level",
@@ -1010,6 +1017,7 @@
 					"failCount": "Count",
 					"lastRunAt": "Last run at",
 					"lockedAt": "Locked at",
+					"lockedBy": "Locked by",
 					"lastFinishedAt": "Last finished at",
 					"lastRunTook": "Last run took",
 					"lastFailedAt": "Last failed",

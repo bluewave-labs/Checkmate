@@ -2,7 +2,7 @@ import { InitializedServices } from "./config/services.js";
 import { logger } from "./utils/logger.js";
 import type { Server } from "http";
 
-export const initShutdownListener = (server: Server, services: InitializedServices) => {
+export const initShutdownListener = (server: Server | null, services: InitializedServices) => {
 	const SERVICE_NAME = "Server";
 
 	let isShuttingDown = false;
@@ -15,7 +15,7 @@ export const initShutdownListener = (server: Server, services: InitializedServic
 		logger.info({ message: "Attempting graceful shutdown" });
 
 		try {
-			server.close();
+			server?.close();
 			await services.jobQueue.shutdown();
 			await services.db.disconnect();
 			logger.info({ message: "Graceful shutdown complete" });

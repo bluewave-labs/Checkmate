@@ -17,21 +17,30 @@ const startApp = async () => {
 	// Validate environment variables first
 	const env = validateEnv();
 
+	// Create settings service (env only — DB repository injected after connect)
+	const settingsService = new SettingsService(env);
+	const envSettings = settingsService.loadSettings();
+	// Create logger
+	logger = new Logger({ envSettings });
+
+	// Initialize services (connects DB, creates repositories, injects settingsRepository)
+	const services = await initializeServices({ logger, envSettings, settingsService, queueMode: envSettings.queueMode });
+
+	// If this is a worker instance, we're done.  No need for express
+	if (envSettings.queueMode === "worker") {
+		logger.info({
+			message: "Worker instance started. API will not be started",
+			service: SERVICE_NAME,
+		});
+		initShutdownListener(null, services);
+		return;
+	}
+
 	// FE path
 	const __filename = fileURLToPath(import.meta.url);
 	const __dirname = path.dirname(__filename);
 	const openApiSpec = JSON.parse(fs.readFileSync(path.join(__dirname, "../openapi.json"), "utf8"));
 	const frontendPath = path.join(__dirname, "..", "public");
-
-	// Create settings service (env only — DB repository injected after connect)
-	const settingsService = new SettingsService(env);
-	const envSettings = settingsService.loadSettings();
-
-	// Create logger
-	logger = new Logger({ envSettings });
-
-	// Initialize services (connects DB, creates repositories, injects settingsRepository)
-	const services = await initializeServices({ logger, envSettings, settingsService });
 
 	// Initialize controllers
 	const controllers = initializeControllers(services);

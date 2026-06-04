@@ -1,4 +1,5 @@
 import { Monitor } from "@/types/monitor.js";
+import { QueueWorker } from "@/types/settings.js";
 
 export type QueueJobFailure = {
 	monitorId: string | number;
@@ -16,6 +17,7 @@ export type QueueMetrics = {
 	jobsWithFailures: QueueJobFailure[];
 	totalRuns: number;
 	totalFailures: number;
+	workers: QueueWorker[];
 };
 
 export type QueueJobSummary = {
@@ -26,6 +28,8 @@ export type QueueJobSummary = {
 	monitorGeoInterval: number | null;
 	monitorActive: boolean | null;
 	active: boolean;
+	lockedBy: string | null;
+	lockedUntil: number | null;
 	lockedAt: number | null;
 	runCount: number;
 	failCount: number;
@@ -35,6 +39,16 @@ export type QueueJobSummary = {
 	lastRunTook: number | null;
 	lastFailedAt: number | null;
 	repeat: number | null;
+};
+
+export type QueueJobsPagination = {
+	page?: number;
+	rowsPerPage?: number;
+};
+
+export type QueueJobsPage = {
+	jobs: QueueJobSummary[];
+	count: number;
 };
 
 export interface IJobQueue {
@@ -47,6 +61,6 @@ export interface IJobQueue {
 	updateJob(monitor: Monitor): Promise<void>;
 	shutdown(): Promise<void>;
 	getMetrics(): Promise<QueueMetrics>;
-	getJobs(): Promise<QueueJobSummary[]>;
+	getJobs(pagination: QueueJobsPagination): Promise<QueueJobsPage>;
 	flushQueues(): Promise<{ success: boolean }>;
 }

@@ -486,10 +486,25 @@ describe("SuperSimpleQueue", () => {
 	// ── getMetrics ───────────────────────────────────────────────────────────
 
 	describe("getMetrics", () => {
-		it("returns empty metrics when no jobs", async () => {
+		it("returns empty job metrics plus this process as the sole worker when no jobs", async () => {
 			const { queue } = createQueue();
 			const metrics = await queue.getMetrics();
-			expect(metrics).toEqual({ jobs: 0, activeJobs: 0, failingJobs: 0, jobsWithFailures: [], totalRuns: 0, totalFailures: 0 });
+			expect(metrics).toEqual({
+				jobs: 0,
+				activeJobs: 0,
+				failingJobs: 0,
+				jobsWithFailures: [],
+				totalRuns: 0,
+				totalFailures: 0,
+				workers: [
+					{
+						// hostname:pid:uuid, matching less-simple-scheduler's workerId format
+						workerId: expect.stringMatching(/^.+:\d+:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/),
+						mode: "primary",
+						lastSeenAt: expect.any(Number),
+					},
+				],
+			});
 		});
 
 		it("aggregates metrics from jobs", async () => {
@@ -568,7 +583,7 @@ describe("SuperSimpleQueue", () => {
 					data: { url: "http://a.com", type: "http", interval: 60000, geoCheckInterval: 300000, isActive: true },
 				},
 			]);
-			const jobs = await queue.getJobs();
+			const { jobs } = await queue.getJobs({});
 
 			expect(jobs).toHaveLength(1);
 			expect(jobs[0]).toEqual({
@@ -580,6 +595,8 @@ describe("SuperSimpleQueue", () => {
 				monitorActive: true,
 				active: true,
 				repeat: 60000,
+				lockedBy: null,
+				lockedUntil: null,
 				lockedAt: null,
 				runCount: 5,
 				failCount: 1,
@@ -596,14 +613,14 @@ describe("SuperSimpleQueue", () => {
 			(scheduler.getJobs as jest.Mock).mockResolvedValue([
 				{ id: "m1", active: true, lockedAt: 999, runCount: 1, data: { url: "a", type: "http", interval: 60000 } },
 			]);
-			const jobs = await queue.getJobs();
+			const { jobs } = await queue.getJobs({});
 			expect(jobs[0].lastRunTook).toBeNull();
 		});
 
 		it("handles jobs with missing data", async () => {
 			const { queue, scheduler } = createQueue();
 			(scheduler.getJobs as jest.Mock).mockResolvedValue([{ id: "m1", active: true, data: null }]);
-			const jobs = await queue.getJobs();
+			const { jobs } = await queue.getJobs({});
 			expect(jobs[0].monitorUrl).toBeNull();
 			expect(jobs[0].monitorType).toBeNull();
 			expect(jobs[0].monitorInterval).toBeNull();
@@ -618,7 +635,7 @@ describe("SuperSimpleQueue", () => {
 				{ id: "m1", active: true, data: { url: "a", type: "http", interval: 60000, isActive: true } },
 				{ id: "m2", active: false, data: { url: "b", type: "http", interval: 60000, isActive: false } },
 			]);
-			const jobs = await queue.getJobs();
+			const { jobs } = await queue.getJobs({});
 			expect(jobs[0].monitorActive).toBe(true);
 			expect(jobs[1].monitorActive).toBe(false);
 		});
@@ -628,9 +645,32 @@ describe("SuperSimpleQueue", () => {
 			(scheduler.getJobs as jest.Mock).mockResolvedValue([
 				{ id: "m1", active: true, repeat: 120000, data: { url: "a", type: "http", interval: 60000, geoCheckInterval: 600000 } },
 			]);
-			const jobs = await queue.getJobs();
+			const { jobs } = await queue.getJobs({});
 			expect(jobs[0].repeat).toBe(120000);
 			expect(jobs[0].monitorGeoInterval).toBe(600000);
+		});
+
+		it("paginates jobs and returns the total count", async () => {
+			const { queue, scheduler } = createQueue();
+			(scheduler.getJobs as jest.Mock).mockResolvedValue(
+				Array.from({ length: 25 }, (_, i) => ({ id: `m${i}`, active: true, data: { url: `a${i}`, type: "http", interval: 60000 } }))
+			);
+
+			const { jobs, count } = await queue.getJobs({ page: 1, rowsPerPage: 10 });
+			expect(count).toBe(25);
+			expect(jobs).toHaveLength(10);
+			expect(jobs[0].monitorId).toBe("m10");
+		});
+
+		it("returns all jobs when rowsPerPage is omitted", async () => {
+			const { queue, scheduler } = createQueue();
+			(scheduler.getJobs as jest.Mock).mockResolvedValue(
+				Array.from({ length: 25 }, (_, i) => ({ id: `m${i}`, active: true, data: { url: `a${i}`, type: "http", interval: 60000 } }))
+			);
+
+			const { jobs, count } = await queue.getJobs({});
+			expect(count).toBe(25);
+			expect(jobs).toHaveLength(25);
 		});
 	});
 
