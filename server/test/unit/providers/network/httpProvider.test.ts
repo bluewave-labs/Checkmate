@@ -408,5 +408,29 @@ describe("HttpProvider", () => {
 			expect(result.status).toBe(false);
 			expect(result.message).toBe("Body mismatch");
 		});
+
+		it("does not override matcher failure on HTTPError when status code is in customUpCodes", async () => {
+			const err = new HTTPError("Unauthorized");
+			(err as any).response = {
+				statusCode: 401,
+				body: '{"status":"down"}',
+				headers: { "content-type": "application/json" },
+			};
+			(err as any).timings = { phases: { total: 30 } };
+			mockGot.mockRejectedValue(err);
+			const matcher = createMockMatcher({
+				ok: false,
+				message: "Body mismatch",
+				extracted: "down",
+			});
+			const { provider } = createProvider(matcher);
+
+			const result = await provider.handle(makeMonitor({ customUpCodes: [401], useAdvancedMatching: true }));
+
+			expect(result.status).toBe(false);
+			expect(result.message).toBe("Body mismatch");
+			expect(result.payload).toEqual({ status: "down" });
+			expect(result.extracted).toBe("down");
+		});
 	});
 });

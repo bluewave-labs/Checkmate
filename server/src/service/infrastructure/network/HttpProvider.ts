@@ -33,17 +33,65 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 		if (error instanceof HTTPError || error instanceof RequestError) {
 			const statusCode = error.response?.statusCode;
 			const statusUp = isStatusUp(statusCode, monitor.customUpCodes);
+			const responseTime = error.timings?.phases?.total ?? 0;
+
+			if (!statusUp) {
+				return {
+					monitorId: monitor.id,
+					teamId: monitor.teamId,
+					type: monitor.type,
+					status: false,
+					code: statusCode ?? NETWORK_ERROR,
+					message: error.message,
+					responseTime,
+					timings: error.timings,
+					payload: null as T,
+				};
+			}
+
+			const { jsonPath } = monitor;
+			const body = error.response?.body ?? "";
+			const contentType = error.response?.headers?.["content-type"] || "";
+			const isJson = contentType.includes("application/json");
+
+			if (jsonPath && !isJson) {
+				return {
+					monitorId: monitor.id,
+					teamId: monitor.teamId,
+					type: monitor.type,
+					status: false,
+					code: statusCode ?? NETWORK_ERROR,
+					message: "Response is not JSON",
+					responseTime,
+					timings: error.timings,
+					payload: body as unknown as T,
+				};
+			}
+
+			let payload: T;
+			if (isJson) {
+				try {
+					payload = JSON.parse(body) as T;
+				} catch {
+					payload = body as unknown as T;
+				}
+			} else {
+				payload = body as unknown as T;
+			}
+
+			const matchResult = this.advancedMatcher.validate<T>(payload, monitor);
 
 			return {
 				monitorId: monitor.id,
 				teamId: monitor.teamId,
 				type: monitor.type,
-				status: statusUp,
+				status: statusUp && matchResult.ok,
 				code: statusCode ?? NETWORK_ERROR,
-				message: error.message,
-				responseTime: error.timings?.phases?.total ?? 0,
+				message: matchResult.ok ? error.message : matchResult.message,
+				responseTime,
 				timings: error.timings,
-				payload: null as T,
+				payload,
+				extracted: matchResult.extracted,
 			};
 		}
 
