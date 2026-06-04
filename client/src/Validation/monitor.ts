@@ -128,19 +128,23 @@ const hardwareSchema = baseSchema.extend({
 	cpuAlertThreshold: z
 		.number()
 		.min(0, "CPU threshold must be at least 0")
-		.max(100, "CPU threshold must be at most 100"),
+		.max(100, "CPU threshold must be at most 100")
+		.register(monitorStepRegistry, { step: 1 }),
 	memoryAlertThreshold: z
 		.number()
 		.min(0, "Memory threshold must be at least 0")
-		.max(100, "Memory threshold must be at most 100"),
+		.max(100, "Memory threshold must be at most 100")
+		.register(monitorStepRegistry, { step: 1 }),
 	diskAlertThreshold: z
 		.number()
 		.min(0, "Disk threshold must be at least 0")
-		.max(100, "Disk threshold must be at most 100"),
+		.max(100, "Disk threshold must be at most 100")
+		.register(monitorStepRegistry, { step: 1 }),
 	tempAlertThreshold: z
 		.number()
 		.min(0, "Temperature threshold must be at least 0")
-		.max(150, "Temperature threshold must be at most 150"),
+		.max(150, "Temperature threshold must be at most 150")
+		.register(monitorStepRegistry, { step: 1 }),
 	selectedDisks: z.array(z.string()),
 });
 
