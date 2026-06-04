@@ -234,9 +234,6 @@ const CreateMonitorPage = () => {
 	}, [location.pathname]);
 
 	const showTypeSelector = pageType === "uptime" && !isEditMode;
-	// The multi-step wizard applies to every create flow; only the monitor-type
-	// radio is uptime-specific. Edit mode keeps the flat form.
-	const isWizard = !isEditMode;
 	const defaultType: MonitorType =
 		pageType === "pagespeed"
 			? "pagespeed"
@@ -267,10 +264,10 @@ const CreateMonitorPage = () => {
 		reset(defaults);
 	}, [defaults, reset]);
 
-	// Multi-step wizard, uptime create only (showTypeSelector). Other flows
-	// keep the flat form, where showStep() is always true.
+	// Multi-step wizard on every create flow; edit mode keeps the flat form
+	// where showStep() is always true.
 	const [currentStep, setCurrentStep] = useState(0);
-	const showStep = (step: number) => !isWizard || currentStep === step;
+	const showStep = (step: number) => isEditMode || currentStep === step;
 
 	const watchedType = watch("type") as MonitorType;
 	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
@@ -365,7 +362,7 @@ const CreateMonitorPage = () => {
 				refetch={refetchMonitor}
 				onDelete={handleDeleteClick}
 			/>
-			{isWizard && (
+			{!isEditMode && (
 				<StepProgress
 					steps={totalSteps}
 					current={currentStep}
@@ -1338,9 +1335,9 @@ const CreateMonitorPage = () => {
 
 			<Stack
 				direction="row"
-				justifyContent={isWizard ? "space-between" : "flex-end"}
+				justifyContent={!isEditMode ? "space-between" : "flex-end"}
 			>
-				{isWizard && (
+				{!isEditMode && (
 					<Button
 						type="button"
 						variant="outlined"
@@ -1351,7 +1348,7 @@ const CreateMonitorPage = () => {
 						{t("common.buttons.back")}
 					</Button>
 				)}
-				{isWizard && currentStep < totalSteps - 1 ? (
+				{!isEditMode && currentStep < totalSteps - 1 ? (
 					<Button
 						key="wizard-next"
 						type="button"
