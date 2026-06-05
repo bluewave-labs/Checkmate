@@ -3,6 +3,7 @@ import { keyframes } from "@mui/system";
 import type { StatusPageThemeTokens } from "../tokens";
 import { type OverallTone, toneColor, toneSoft } from "../shared/overallStatus";
 import { MONO_STACK, SANS_STACK } from "../shared/fontStacks";
+import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 
 export type ModernHeatCell = "fast" | "med" | "slow" | "down" | "empty";
 export type ModernBarKind = "up" | "down" | "empty";
@@ -320,7 +321,7 @@ export const modernStyles = (
 		heatmap: {
 			padding: "0 24px 20px",
 			display: "grid",
-			gridTemplateColumns: "repeat(25, 1fr)",
+			gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
 			gap: "3px",
 			height: 46,
 		},
@@ -335,7 +336,7 @@ export const modernStyles = (
 		histogram: {
 			padding: "0 24px",
 			display: "grid",
-			gridTemplateColumns: "repeat(25, 1fr)",
+			gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
 			gap: "3px",
 			alignItems: "flex-end",
 			height: 46,

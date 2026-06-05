@@ -9,6 +9,7 @@ import QueueController from "../controllers/queueController.js";
 import LogController from "../controllers/logController.js";
 import StatusPageController from "../controllers/statusPageController.js";
 import NotificationController from "../controllers/notificationController.js";
+import TagsController from "../controllers/tagController.js";
 import DiagnosticController from "../controllers/diagnosticController.js";
 import IncidentController from "../controllers/incidentController.js";
 import type { InitializedServices } from "@/config/services.js";
@@ -25,6 +26,7 @@ export interface InitializedControllers {
 	logController: LogController;
 	statusPageController: StatusPageController;
 	notificationController: NotificationController;
+	tagController: TagsController;
 	diagnosticController: DiagnosticController;
 	incidentController: IncidentController;
 }
@@ -41,6 +43,7 @@ export const initializeControllers = (services: InitializedServices): Initialize
 		logController: new LogController(services.logger),
 		statusPageController: new StatusPageController(services.statusPageService, services.monitorsRepository, services.settingsService),
 		notificationController: new NotificationController(services.notificationsService, services.monitorsRepository),
+		tagController: new TagsController(services.tagsService),
 		diagnosticController: new DiagnosticController(services.diagnosticService),
 		incidentController: new IncidentController(services.incidentService),
 	};

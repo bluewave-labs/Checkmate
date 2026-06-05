@@ -2,6 +2,7 @@ import type { SxProps, Theme } from "@mui/material/styles";
 import type { StatusPageThemeTokens } from "../tokens";
 import { type OverallTone, toneColor, toneSoft } from "../shared/overallStatus";
 import { BOLD_SANS_STACK, MONO_STACK } from "../shared/fontStacks";
+import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 
 export type BoldHeatCell = "fast" | "med" | "slow" | "down" | "empty";
 export type BoldBarKind = "up" | "down" | "empty";
@@ -297,7 +298,7 @@ export const boldStyles = (
 		heatmap: {
 			padding: "0 28px 22px",
 			display: "grid",
-			gridTemplateColumns: "repeat(25, 1fr)",
+			gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
 			gap: "3px",
 			height: 48,
 		},
@@ -313,7 +314,7 @@ export const boldStyles = (
 		histogram: {
 			padding: "0 28px",
 			display: "grid",
-			gridTemplateColumns: "repeat(25, 1fr)",
+			gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
 			gap: "3px",
 			alignItems: "flex-end",
 			height: 48,

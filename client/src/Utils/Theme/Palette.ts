@@ -1,3 +1,5 @@
+import { alpha } from "@mui/material/styles";
+
 const typographyBase = 13;
 
 export const typographyLevels = {
@@ -17,6 +19,9 @@ export const colors = {
 	gray850: "#1c1c21",
 	brandGreen: "#13715B",
 	brandGreenLight: "#4DAF94",
+	green200: "#ECF7F2",
+	yellow200: "#FFF4E5",
+	orange500: "#FFA500",
 };
 
 export const lightPalette = {
@@ -28,6 +33,10 @@ export const lightPalette = {
 	},
 	sidebar: {
 		accent: colors.brandGreen,
+	},
+	rowStatus: {
+		running: colors.green200,
+		paused: colors.yellow200,
 	},
 };
 
@@ -44,5 +53,9 @@ export const darkPalette = {
 	},
 	sidebar: {
 		accent: colors.brandGreenLight,
+	},
+	rowStatus: {
+		running: alpha(colors.brandGreen, 0.18),
+		paused: alpha(colors.orange500, 0.18),
 	},
 };

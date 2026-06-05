@@ -12,6 +12,7 @@ export interface Settings {
 	systemEmailHost?: string;
 	systemEmailPort?: number;
 	systemEmailAddress?: string;
+	systemEmailDisplayName?: string;
 	systemEmailUser?: string;
 	systemEmailConnectionHost?: string;
 	systemEmailTLSServername?: string;

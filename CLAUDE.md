@@ -159,13 +159,25 @@ When working on anything related to check scheduling, incident lifecycle, or not
 
 ## Code Conventions
 
-### Frontend conventions (mandatory for `client/src`)
-Read `docs/frontend-conventions.md` before touching any `.tsx` file. Five rules, all enforced in code review:
+### Coding conventions (mandatory)
+Read `docs/coding-conventions.md` before touching any `.tsx` or `.ts` file. The doc covers both frontend and backend rules, all enforced in code review.
+
+**Universal — rule 0:** look at peer files first and follow the established pattern. Don't sneak in novel shapes.
+
+**Frontend (`client/src`):**
 1. Prefer MUI native props over `sx` (e.g. `color={…}`, `bgcolor={…}`, `mt={…}` — not `sx={{ color, bgcolor, mt }}`).
 2. Use the full theme path for colors: `color={theme.palette.text.secondary}`, never `color="text.secondary"` (greppability).
 3. No hardcoded literals — use `LAYOUT.*`, `typographyLevels.*`, `theme.shape.borderRadius`, `theme.palette.*`.
 4. Use `useTheme()` inside components; don't `import { theme } from "@/Utils/Theme/Theme"`.
 5. Pair runtime tuples with derived types: `const X = [...] as const; type X = (typeof X)[number]`.
+
+**Backend (`server/src`):**
+6. Layering: Controller → Service → Repository → Mongoose. No DB calls outside repositories.
+7. Provider conventions: DI for stdlib clients, `SERVICE_NAME` + `TIMEOUT_MS` constants, `timeRequest()` helper, inline `setTimeout` race for timeout, outer try/catch into `AppError`.
+8. Mongoose schema fields with closed value sets must declare `enum` reusing the same `types/*` const tuple.
+9. Provider tests at `server/test/unit/providers/network/<name>.test.ts`, `from "@jest/globals"`, `testStatusProviderContract`, inline `setup()` per test (not `beforeEach`).
+10. Centralize validation enums in `types/*` const tuples; never inline `z.enum([…])` more than once.
+11. New entity fields must land in the validator's `*ResponseSchema` so the auto-generated OpenAPI spec sees them.
 
 ### Internationalization
 All user-facing strings must use the translation function:

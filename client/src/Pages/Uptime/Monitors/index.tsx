@@ -1,14 +1,21 @@
-import { ControlsFilter, HeaderMonitorsSummary } from "@/Components/monitors";
-import { MonitorBasePageWithStates } from "@/Components/design-elements";
-import { TextField, Dialog } from "@/Components/inputs";
+import {
+	ControlsFilter,
+	HeaderMonitorsSummary,
+	BulkActionsBar,
+} from "@/Components/monitors";
+import { MonitorBasePageWithStates, ColoredLabel } from "@/Components/design-elements";
+import { TextField, Dialog, Button } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
 import { MonitorTable } from "@/Pages/Uptime/Monitors/Components/UptimeMonitorsTable";
 import { HeaderCreate } from "@/Components/common";
+import { Play, Pause } from "lucide-react";
+import Typography from "@mui/material/Typography";
 
 import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useGet, useDelete } from "@/Hooks/UseApi";
 import type { Monitor, MonitorType, MonitorsWithChecksResponse } from "@/Types/Monitor";
+import type { Tag } from "@/Types/Tag";
 import { useState, useMemo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setRowsPerPage } from "@/Features/UI/uiSlice.js";
@@ -16,6 +23,8 @@ import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import type { RootState } from "@/Types/state";
 import { useTheme } from "@mui/material";
 import useDebounce from "@/Hooks/useDebounce";
+import { useBulkMonitorActions } from "@/Hooks/useBulkMonitorActions";
+import { SPACING } from "@/Utils/Theme/constants";
 
 const UptimeMonitorsPage = () => {
 	const { t } = useTranslation();
@@ -32,11 +41,13 @@ const UptimeMonitorsPage = () => {
 	const [selectedTypes, setSelectedTypes] = useState<MonitorType[]>([]);
 	const [selectedStatus, setSelectedStatus] = useState<string>("");
 	const [selectedState, setSelectedState] = useState<string>("");
+	const [selectedTags, setSelectedTags] = useState<string[]>([]);
 	const [page, setPage] = useState<number>(0);
 	const [search, setSearch] = useState<string>("");
 	const [sortField, setSortField] = useState<string>("");
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
+
 	const isDialogOpen = Boolean(selectedMonitor);
 
 	const debouncedSearch = useDebounce<string>(search, 300);
@@ -70,12 +81,13 @@ const UptimeMonitorsPage = () => {
 	const effectiveTypes =
 		selectedTypes.length > 0
 			? selectedTypes
-			: ["http", "ping", "docker", "port", "game", "grpc", "websocket"];
+			: ["http", "ping", "docker", "port", "game", "grpc", "websocket", "dns"];
 
 	// Build URL for monitors with checks
 	const monitorsWithChecksUrl = useMemo(() => {
 		const params = new URLSearchParams();
 		effectiveTypes.forEach((type) => params.append("type", type));
+		selectedTags.forEach((tagId) => params.append("tags", tagId));
 		params.append("limit", "25");
 		if (page !== undefined) params.append("page", String(page));
 		if (rowsPerPage) params.append("rowsPerPage", String(rowsPerPage));
@@ -83,7 +95,7 @@ const UptimeMonitorsPage = () => {
 		if (field) params.append("field", field);
 		if (sortOrder) params.append("order", sortOrder);
 		return `/monitors/team/with-checks?${params.toString()}`;
-	}, [effectiveTypes, page, rowsPerPage, filter, field, sortOrder]);
+	}, [effectiveTypes, selectedTags, page, rowsPerPage, filter, field, sortOrder]);
 
 	const {
 		data: monitorsWithChecksData,
@@ -96,11 +108,22 @@ const UptimeMonitorsPage = () => {
 		{ refreshInterval: 5000, keepPreviousData: true }
 	);
 
+	const { data: tags } = useGet<Tag[]>("/tags/team");
+
 	const {
 		monitors: monitorsWithChecks,
 		summary,
 		count,
 	} = monitorsWithChecksData ?? { monitors: null, summary: null, count: 0 };
+
+	// Bulk actions
+	const {
+		selectedRows,
+		setSelectedRows,
+		handleBulkPause,
+		handleBulkResume,
+		handleCancelSelection,
+	} = useBulkMonitorActions(refetch, page);
 
 	// Delete hook
 	const { deleteFn, loading: isDeleting } = useDelete();
@@ -110,6 +133,7 @@ const UptimeMonitorsPage = () => {
 		setSelectedTypes([]);
 		setSelectedStatus("");
 		setSelectedState("");
+		setSelectedTags([]);
 		setSearch("");
 	}, []);
 
@@ -128,7 +152,11 @@ const UptimeMonitorsPage = () => {
 
 	// Check if any filters are active
 	const hasActiveFilters = Boolean(
-		selectedTypes.length > 0 || selectedStatus || selectedState || search
+		selectedTypes.length > 0 ||
+		selectedStatus ||
+		selectedState ||
+		selectedTags.length > 0 ||
+		search
 	);
 
 	// Show empty state only when there are truly no monitors (not just filtered out)
@@ -167,6 +195,9 @@ const UptimeMonitorsPage = () => {
 					setSelectedStatus={setSelectedStatus}
 					selectedState={selectedState}
 					setSelectedState={setSelectedState}
+					tagOptions={tags ?? []}
+					selectedTags={selectedTags}
+					setSelectedTags={setSelectedTags}
 					onClearFilters={handleClearFilters}
 				/>
 				<TextField
@@ -177,8 +208,56 @@ const UptimeMonitorsPage = () => {
 					}}
 				/>
 			</Stack>
+
+			{selectedTags.length > 0 && (
+				<Stack
+					direction={isSmall ? "column" : "row"}
+					alignItems={isSmall ? "flex-start" : "center"}
+					flexWrap="wrap"
+					gap={theme.spacing(SPACING.XL)}
+				>
+					<Typography color={theme.palette.text.secondary}>
+						{t("pages.uptime.filters.activeTags")}
+					</Typography>
+					{selectedTags.map((tagId) => {
+						const tag = tags?.find((t) => t.id === tagId);
+						if (!tag) return null;
+						return (
+							<ColoredLabel
+								key={tag.id}
+								text={tag.name}
+								color={tag.color}
+							/>
+						);
+					})}
+				</Stack>
+			)}
+
+			{!isLoading && (
+				<BulkActionsBar
+					selectedCount={selectedRows.length}
+					onCancel={handleCancelSelection}
+				>
+					<Button
+						size="small"
+						startIcon={<Play size={16} />}
+						onClick={handleBulkResume}
+					>
+						{t("common.buttons.resume")}
+					</Button>
+					<Button
+						size="small"
+						startIcon={<Pause size={16} />}
+						onClick={handleBulkPause}
+					>
+						{t("common.buttons.pause")}
+					</Button>
+				</BulkActionsBar>
+			)}
+
 			<MonitorTable
 				monitors={monitorsWithChecks || []}
+				tags={tags || []}
 				refetch={refetch}
 				setSelectedMonitor={setSelectedMonitor}
 				count={count || 0}
@@ -198,6 +277,8 @@ const UptimeMonitorsPage = () => {
 					);
 					setPage(0);
 				}}
+				selectedRows={selectedRows}
+				onSelectionChange={setSelectedRows}
 			/>
 			<Dialog
 				open={isDialogOpen}

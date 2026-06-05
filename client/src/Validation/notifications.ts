@@ -70,6 +70,12 @@ const twilioSchema = baseSchema.extend({
 	twilioPhoneNumber: z.string().min(1, "Twilio phone number is required"),
 });
 
+const ntfySchema = baseSchema.extend({
+	type: z.literal("ntfy"),
+	address: z.string().min(1, "Server URL is required").url("Please enter a valid URL"),
+	topic: z.string().min(1, "Topic is required"),
+});
+
 export const notificationSchema = z.discriminatedUnion("type", [
 	emailSchema,
 	slackSchema,
@@ -81,6 +87,7 @@ export const notificationSchema = z.discriminatedUnion("type", [
 	telegramSchema,
 	pushoverSchema,
 	twilioSchema,
+	ntfySchema,
 ]);
 
 export type NotificationFormData = z.infer<typeof notificationSchema>;

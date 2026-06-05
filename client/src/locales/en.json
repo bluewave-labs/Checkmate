@@ -14,6 +14,17 @@
 			}
 		},
 		"appName": "Checkmate",
+		"statusCode": {
+			"down": "Down",
+			"networkError": {
+				"timeout": "The server didn't respond in time (request timed out).",
+				"dns": "Couldn't resolve the hostname (DNS lookup failed).",
+				"refused": "The server refused the connection (port closed or service not listening).",
+				"tls": "TLS or SSL handshake failed (certificate or encryption issue).",
+				"reset": "The connection was reset before a response was received.",
+				"unknown": "No HTTP response was received from the target."
+			}
+		},
 		"breadcrumbs": {
 			"details": "Details",
 			"home": "Home"
@@ -32,6 +43,8 @@
 			"pause": "Pause",
 			"resume": "Resume",
 			"save": "Save",
+			"next": "Next",
+			"back": "Back",
 			"sendInvite": "Send invite",
 			"test": "Test",
 			"testNotifications": "Test notifications",
@@ -70,7 +83,9 @@
 		},
 		"labels": {
 			"active": "Active",
-			"paused": "paused",
+			"running": "Running",
+			"paused": "Paused",
+			"idle": "Idle",
 			"na": "N/A",
 			"resolved": "Resolved",
 			"responseTime": "Response time"
@@ -118,7 +133,8 @@
 				"url": "Url",
 				"interval": "Interval",
 				"active": "Active",
-				"responseTime": "Response time"
+				"responseTime": "Response time",
+				"tags": "Tags"
 			}
 		}
 	},
@@ -171,6 +187,7 @@
 				"pagespeed": "Pagespeed",
 				"infrastructure": "Infrastructure",
 				"notifications": "Notifications",
+				"tags": "Tags",
 				"checks": "Checks",
 				"incidents": "Incidents",
 				"statusPages": "Status pages",
@@ -421,7 +438,22 @@
 					"inviteMember": "Invite member",
 					"openSite": "Open site",
 					"pause": "Pause",
-					"resume": "Resume"
+					"resume": "Resume",
+					"bulkSelected_one": "{{count}} monitor selected",
+					"bulkSelected_other": "{{count}} monitors selected",
+					"selectAll": "Select all monitors",
+					"selectMonitor": "Select {{name}}"
+				},
+				"bulkPause": {
+					"alreadyPaused_one": "The selected monitor is already paused",
+					"alreadyPaused_other": "All selected monitors are already paused",
+					"alreadyRunning_one": "The selected monitor is already running",
+					"alreadyRunning_other": "All selected monitors are already running",
+					"paused_one": "{{count}} monitor paused",
+					"paused_other": "{{count}} monitors paused",
+					"resumed_one": "{{count}} monitor resumed",
+					"resumed_other": "{{count}} monitors resumed",
+					"partialFailure": "{{successCount}} monitors updated, but {{failedCount}} failed to sync with the job queue"
 				},
 				"statBoxes": {
 					"activeFor": "Active for",
@@ -448,7 +480,8 @@
 					"optionPagespeed": "PageSpeed",
 					"optionHardware": "Infrastructure",
 					"optionGrpc": "gRPC",
-					"optionWebSocket": "WebSocket"
+					"optionWebSocket": "WebSocket",
+					"optionDns": "DNS"
 				}
 			}
 		},
@@ -534,6 +567,30 @@
 						"wsUrl": {
 							"label": "WebSocket URL",
 							"placeholder": "wss://example.com/socket"
+						},
+						"strategy": {
+							"label": "Strategy",
+							"desktop": "Desktop",
+							"mobile": "Mobile"
+						},
+						"captureUrl": {
+							"label": "Capture endpoint",
+							"placeholder": "http://192.168.1.10:5001/api/v1/metrics"
+						},
+						"dnsServer": {
+							"label": "DNS server",
+							"placeholder": "8.8.8.8"
+						},
+						"dnsRecordType": {
+							"label": "DNS record type",
+							"value": {
+								"A": "A",
+								"AAAA": "AAAA",
+								"CNAME": "CNAME",
+								"MX": "MX",
+								"NS": "NS",
+								"TXT": "TXT"
+							}
 						}
 					},
 					"title": "General settings",
@@ -546,7 +603,8 @@
 						"pagespeed": "Track page load performance, Core Web Vitals, and optimization scores for your website.",
 						"grpc": "Enter the hostname and port of the gRPC server, optionally specify a service name for the health check, and add a display name.",
 						"websocket": "Enter the WebSocket URL to monitor (e.g., wss://example.com/socket) and add a display name.",
-						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure."
+						"hardware": "Monitor CPU, memory, disk usage, and temperature for your infrastructure. The Capture endpoint URL must include the full path /api/v1/metrics (e.g. http://192.168.1.10:5001/api/v1/metrics). For the authorization secret, paste only the token string — don't include 'Bearer'.",
+						"dns": "Monitor if a specific DNS server is responding."
 					}
 				},
 				"ignoreTls": {
@@ -574,6 +632,10 @@
 					"description": "Select the notification channels you want to use",
 					"title": "Notifications"
 				},
+				"tags": {
+					"description": "Select the tags you want to apply to this monitor",
+					"title": "Tags"
+				},
 				"type": {
 					"description": "Select the type of check to perform",
 					"optionDockerDescription": "Use Docker to monitor if a container is running.",
@@ -583,6 +645,7 @@
 					"optionHttpDescription": "Use HTTP(S) to monitor your website or API endpoint.",
 					"optionPingDescription": "Use ICMP Ping to monitor if a server is online.",
 					"optionPortDescription": "Monitor if a specific port on a server is open.",
+					"optionDnsDescription": "Monitor if a specific DNS server is responding.",
 					"title": "Type"
 				},
 				"thresholds": {
@@ -822,6 +885,37 @@
 				"description": "Track server performance, identify bottlenecks, and ensure reliability with real-time infrastructure monitoring."
 			}
 		},
+		"tags": {
+			"header": {
+				"title": "Tags",
+				"description": "Organize your monitors with tags"
+			},
+			"fallback": {
+				"title": "No tags yet",
+				"description": "Organize your monitors with tags. Once you create a tag and assign it to a monitor, you'll be able to filter by that tag across the app and see tag details here.",
+				"actionButton": "Create a tag"
+			},
+			"table": {
+				"headers": {
+					"color": "Color",
+					"appearance": "Appearance"
+				}
+			},
+			"form": {
+				"name": {
+					"title": "Tag name",
+					"description": "Choose a name for your tag",
+					"optionName": "Tag name",
+					"placeholder": "e.g. Group 1"
+				},
+				"color": {
+					"title": "Tag color",
+					"description": "Choose a color for your tag",
+					"optionName": "Tag color",
+					"placeholder": "e.g. #13715B"
+				}
+			}
+		},
 		"logs": {
 			"fallback": {
 				"title": "No logs yet",
@@ -839,6 +933,8 @@
 			"logLevelSelect": {
 				"label": "Log level"
 			},
+			"workers": "Workers",
+			"workersExplainers": "Shows worker processes.  Worker IDs are truncated, hover for full ID",
 			"jobQueue": "Job queue",
 			"jobQueueExplainer": "<highlight>Highlighted rows</highlight> are jobs currently being processed by a worker.",
 			"failedJobs": "Failed jobs",
@@ -860,6 +956,14 @@
 					"memoryCpu": {
 						"title": "Memory & CPU",
 						"description": "How the process is using its allocated memory and host CPU."
+					},
+					"mongoDBStats": {
+						"title": "MongoDB stats",
+						"description": "Snapshot of MongoDB metrics"
+					},
+					"mongoDBCollectionStats": {
+						"title": "MongoDB collection stats",
+						"description": "Stats for MongoDB collections"
 					}
 				},
 				"stats": {
@@ -868,6 +972,21 @@
 					"usedHeapSize": "Used heap size",
 					"totalHeapSize": "Total heap size",
 					"osMemoryLimit": "OS memory limit"
+				},
+				"mongoDBStats": {
+					"readyState": "Ready state",
+					"host": "Host",
+					"port": "Port",
+					"dbName": "Database name",
+					"storageSize": "Storage size"
+				},
+				"mongoDBCollectionStats": {
+					"documents": "Documents: {{count}}",
+					"bucketCount": "Bucket count: {{count}}",
+					"storageSize": "Storage size: {{size}}",
+					"indexSize": "Index size: {{size}}",
+					"totalSize": "Total size: {{size}}",
+					"dbUsageTooltip": "{{percentage}}% of DB storage"
 				},
 				"gauges": {
 					"heapAllocation": "Heap allocation",
@@ -883,6 +1002,12 @@
 			},
 			"table": {
 				"headers": {
+					"host": "Host",
+					"processId": "Process ID",
+					"workerId": "Worker ID",
+					"workerMode": "Worker mode",
+					"lastSeenAt": "Last seen at",
+					"state": "State",
 					"timestamp": "Timestamp",
 					"level": "Level",
 					"service": "Service",
@@ -892,6 +1017,7 @@
 					"failCount": "Count",
 					"lastRunAt": "Last run at",
 					"lockedAt": "Locked at",
+					"lockedBy": "Locked by",
 					"lastFinishedAt": "Last finished at",
 					"lastRunTook": "Last run took",
 					"lastFailedAt": "Last failed",
@@ -1039,6 +1165,14 @@
 					"placeholderFromNumber": "+15551234567",
 					"optionToNumber": "To number (recipient)",
 					"placeholderToNumber": "+15559876543"
+				},
+				"ntfy": {
+					"title": "ntfy configuration",
+					"description": "Configure an ntfy server and topic for push notifications.",
+					"optionServerUrl": "Server URL",
+					"placeholderServerUrl": "https://ntfy.sh",
+					"optionTopic": "Topic",
+					"placeholderTopic": "checkmate-alerts"
 				}
 			},
 			"table": {
@@ -1052,6 +1186,10 @@
 			}
 		},
 		"pageSpeed": {
+			"strategy": {
+				"desktop": "Desktop",
+				"mobile": "Mobile"
+			},
 			"charts": {
 				"common": {
 					"cls": "Cumulative Layout Shift (CLS)",
@@ -1197,6 +1335,10 @@
 						"address": {
 							"label": "Email address - Used for authentication",
 							"placeholder": "you@example.com"
+						},
+						"displayName": {
+							"label": "Sender name (optional) - Friendly name shown in the From field",
+							"placeholder": "Checkmate notifications"
 						},
 						"user": {
 							"label": "Email user - Username for authentication, overrides email address if specified",
@@ -1460,7 +1602,8 @@
 			"filters": {
 				"search": {
 					"placeholder": "Search monitors..."
-				}
+				},
+				"activeTags": "Active tags"
 			},
 			"table": {
 				"headers": {

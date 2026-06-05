@@ -26,6 +26,7 @@ const AppSettingsSchema = new Schema<AppSettingsDocument>(
 		systemEmailHost: { type: String },
 		systemEmailPort: { type: Number },
 		systemEmailAddress: { type: String },
+		systemEmailDisplayName: { type: String },
 		systemEmailPassword: { type: String },
 		systemEmailUser: { type: String },
 		systemEmailConnectionHost: { type: String, default: "localhost" },

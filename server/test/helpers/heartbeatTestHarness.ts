@@ -1,5 +1,5 @@
 import { jest } from "@jest/globals";
-import { SuperSimpleQueueHelper } from "../../src/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.ts";
+import { QueueHelper } from "../../src/service/infrastructure/JobQueues/QueueHelper.ts";
 import { StatusService } from "../../src/service/infrastructure/statusService.ts";
 import { IncidentService } from "../../src/service/business/incidentService.ts";
 import { InMemoryMonitorsRepository } from "./InMemoryMonitorsRepository.ts";
@@ -143,7 +143,7 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 
 	const maintenanceWindowsRepo = { findByMonitorId: jest.fn().mockResolvedValue([]) };
 
-	const helper = new SuperSimpleQueueHelper(
+	const helper = new QueueHelper(
 		logger,
 		networkService as any,
 		statusService as any,

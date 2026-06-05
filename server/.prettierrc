@@ -12,5 +12,14 @@
 	"quoteProps": "as-needed",
 	"arrowParens": "always",
 	"trailingComma": "es5",
-	"htmlWhitespaceSensitivity": "css"
+	"htmlWhitespaceSensitivity": "css",
+	"plugins": ["prettier-plugin-ini"],
+	"overrides": [
+		{
+			"files": [".env", ".env.*"],
+			"options": {
+				"parser": "ini"
+			}
+		}
+	]
 }

@@ -3,6 +3,8 @@ import type { PageSpeedGroupedCheck } from "@/Types/Check";
 import type { GeoContinent } from "@/Types/GeoCheck";
 export type { GeoContinent } from "@/Types/GeoCheck";
 
+export const MAX_RECENT_CHECKS = 50;
+
 export const MonitorTypes = [
 	"http",
 	"ping",
@@ -13,9 +15,13 @@ export const MonitorTypes = [
 	"game",
 	"grpc",
 	"websocket",
+	"dns",
 	"unknown",
 ] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
+
+export const DnsRecordTypes = ["A", "AAAA", "CNAME", "MX", "TXT", "NS"] as const;
+export type DnsRecordType = (typeof DnsRecordTypes)[number];
 
 export const GeoCheckSupportedTypes: readonly MonitorType[] = ["http", "ping"] as const;
 
@@ -37,6 +43,10 @@ export const MonitorStatuses = [
 export type MonitorStatus = (typeof MonitorStatuses)[number];
 
 export type MonitorMatchMethod = "equal" | "include" | "regex" | "";
+
+export const PageSpeedStrategies = ["desktop", "mobile"] as const;
+export type PageSpeedStrategy = (typeof PageSpeedStrategies)[number];
+export const DefaultPageSpeedStrategy: PageSpeedStrategy = "desktop";
 
 export interface Monitor {
 	id: string;
@@ -60,6 +70,7 @@ export interface Monitor {
 	interval: number;
 	uptimePercentage?: number;
 	notifications: string[];
+	tags: string[];
 	secret?: string;
 	cpuAlertThreshold: number;
 	cpuAlertCounter: number;
@@ -72,10 +83,13 @@ export interface Monitor {
 	selectedDisks: string[];
 	gameId?: string;
 	grpcServiceName?: string;
+	strategy?: PageSpeedStrategy;
 	group: string | null;
 	geoCheckEnabled?: boolean;
 	geoCheckLocations?: GeoContinent[];
 	geoCheckInterval?: number;
+	dnsServer?: string;
+	dnsRecordType?: DnsRecordType;
 	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;

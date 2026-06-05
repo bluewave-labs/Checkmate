@@ -6,6 +6,7 @@ import {
 	DEFAULT_STATUS_PAGE_THEME_MODE,
 } from "@/Types/StatusPage";
 import type { Monitor } from "@/Types/Monitor";
+import { resolveTimezone } from "@/Utils/TimeUtils";
 
 interface UseStatusPageFormOptions {
 	data?: StatusPage | null;
@@ -30,7 +31,7 @@ export const useStatusPageForm = ({
 		const defaults: StatusPageFormData = {
 			companyName: data?.companyName || "",
 			url: data?.url || generateDefaultUrl(),
-			timezone: data?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+			timezone: resolveTimezone(data?.timezone),
 			type: data?.type || ["uptime"],
 			color: data?.color || "#13715B",
 			monitors: data?.monitors || [],

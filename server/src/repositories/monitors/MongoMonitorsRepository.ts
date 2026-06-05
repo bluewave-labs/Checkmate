@@ -1,6 +1,6 @@
 import { MonitorModel } from "@/db/models/index.js";
 import type { MonitorDocument, CheckSnapshotDocument } from "@/db/models/index.js";
-import type { Monitor, MonitorsSummary, CheckSnapshot } from "@/types/index.js";
+import type { Monitor, MonitorStatus, MonitorsSummary, CheckSnapshot } from "@/types/index.js";
 import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "./IMonitorsRepository.js";
 import { MongoBulkWriteError } from "mongodb";
@@ -44,7 +44,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	findByTeamId = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null> => {
-		const { page = 0, rowsPerPage = 0, filter, field = "createdAt", order = "desc", type } = config ?? {};
+		const { page = 0, rowsPerPage = 0, filter, field = "createdAt", order = "desc", type, tags } = config ?? {};
 
 		const query: Record<string, unknown> = {
 			teamId: new mongoose.Types.ObjectId(teamId),
@@ -52,6 +52,10 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 
 		if (type !== undefined) {
 			query.type = Array.isArray(type) ? { $in: type } : type;
+		}
+
+		if (tags !== undefined) {
+			query.tags = Array.isArray(tags) ? { $in: tags } : tags;
 		}
 
 		if (filter !== undefined) {
@@ -108,7 +112,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 				$lookup: {
 					from: "maintenancewindows",
 					let: { monitorId: "$_id" },
-					pipeline: [{ $match: { $expr: { $eq: ["$monitorId", "$$monitorId"] } } }],
+					pipeline: [{ $match: { $expr: { $in: ["$$monitorId", { $ifNull: ["$monitorIds", []] }] } } }],
 					as: "maintenanceWindows",
 				},
 			},
@@ -152,7 +156,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	findMonitorCountByTeamIdAndType = async (teamId: string, config?: TeamQueryConfig): Promise<number> => {
-		const { type } = config ?? {};
+		const { type, tags } = config ?? {};
 
 		const query: FilterQuery<MonitorDocument> = {
 			teamId: new mongoose.Types.ObjectId(teamId),
@@ -160,6 +164,10 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 
 		if (type !== undefined) {
 			query.type = Array.isArray(type) ? { $in: type } : type;
+		}
+
+		if (tags !== undefined) {
+			query.tags = Array.isArray(tags) ? { $in: tags } : tags;
 		}
 
 		const count = await MonitorModel.countDocuments(query);
@@ -180,6 +188,16 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			throw new AppError({ message: `Failed to update monitor with id ${monitorId}`, status: 500 });
 		}
 		return this.toEntity(updatedMonitor);
+	};
+
+	updateByIds = async (monitorIds: string[], teamId: string, updates: Partial<Monitor>, excludeStatuses?: MonitorStatus[]) => {
+		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		const filter: Record<string, unknown> = { _id: { $in: objectIds }, teamId };
+		if (excludeStatuses && excludeStatuses.length > 0) {
+			filter.status = { $nin: excludeStatuses };
+		}
+		const updated = await MonitorModel.updateMany(filter, { $set: updates }, { runValidators: true });
+		return updated.modifiedCount;
 	};
 
 	updateStatusWindowAndChecks = async (
@@ -234,6 +252,34 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return this.toEntity(monitor);
 	};
 
+	bulkTogglePause = async (monitorIds: string[], teamId: string, pause: boolean): Promise<Monitor[]> => {
+		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		const filter = {
+			_id: { $in: objectIds },
+			teamId: new mongoose.Types.ObjectId(teamId),
+			isActive: pause, // Only pause if active (true), only resume if inactive (false)
+		};
+		const nextStatus = pause ? "paused" : "initializing";
+
+		const eligible = await MonitorModel.find(filter);
+		if (eligible.length === 0) return [];
+
+		const now = new Date();
+		await MonitorModel.updateMany(
+			{ _id: { $in: eligible.map((doc) => doc._id) } },
+			{ $set: { isActive: !pause, status: nextStatus, updatedAt: now } },
+			{ timestamps: false }
+		);
+
+		eligible.forEach((doc) => {
+			doc.isActive = !pause;
+			doc.status = nextStatus;
+			doc.updatedAt = now;
+		});
+
+		return this.mapDocuments(eligible);
+	};
+
 	deleteById = async (monitorId: string, teamId: string) => {
 		const deletedMonitor = await MonitorModel.findOneAndDelete({ _id: monitorId, teamId });
 
@@ -255,6 +301,10 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		const match: FilterQuery<MonitorDocument> = { teamId: new mongoose.Types.ObjectId(teamId) };
 		if (config?.type !== undefined) {
 			match.type = Array.isArray(config.type) ? { $in: config.type } : config.type;
+		}
+		if (config?.tags !== undefined) {
+			const tagIds = (Array.isArray(config.tags) ? config.tags : [config.tags]).map((tag) => new mongoose.Types.ObjectId(tag));
+			match.tags = { $in: tagIds };
 		}
 		const pipeline = [
 			{ $match: match },
@@ -323,6 +373,10 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		await MonitorModel.updateMany({ notifications: notificationId }, { $pull: { notifications: notificationId } });
 	};
 
+	removeTagFromMonitors = async (tagId: string): Promise<void> => {
+		await MonitorModel.updateMany({ tags: tagId }, { $pull: { tags: tagId } });
+	};
+
 	updateNotifications = async (
 		teamId: string,
 		monitorIds: string[],
@@ -378,7 +432,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		};
 
 		const notificationIds = (doc.notifications ?? []).map((notification) => toStringId(notification));
-
+		const tagIds = (doc.tags ?? []).map((tag) => toStringId(tag));
 		return {
 			id: toStringId(doc._id),
 			userId: toStringId(doc.userId),
@@ -401,6 +455,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			interval: doc.interval,
 			uptimePercentage: doc.uptimePercentage ?? undefined,
 			notifications: notificationIds,
+			tags: tagIds,
 			secret: doc.secret ?? undefined,
 			cpuAlertThreshold: doc.cpuAlertThreshold,
 			cpuAlertCounter: doc.cpuAlertCounter,
@@ -413,11 +468,14 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			selectedDisks: doc.selectedDisks ?? [],
 			gameId: doc.gameId ?? undefined,
 			grpcServiceName: doc.grpcServiceName ?? undefined,
+			strategy: doc.strategy ?? undefined,
 			group: doc.group ?? null,
 			recentChecks: (doc.recentChecks ?? []).map((check: CheckSnapshotDocument) => this.toCheckSnapshot(check)),
 			geoCheckEnabled: doc.geoCheckEnabled ?? false,
 			geoCheckLocations: doc.geoCheckLocations ?? [],
 			geoCheckInterval: doc.geoCheckInterval ?? 300000,
+			dnsServer: doc.dnsServer ?? undefined,
+			dnsRecordType: doc.dnsRecordType ?? undefined,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
@@ -437,6 +495,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		};
 
 		const notificationIds = (doc.notifications ?? []).map((notification: unknown) => toStringId(notification));
+		const tagIds = (doc.tags ?? []).map((tag: unknown) => toStringId(tag));
 
 		return {
 			id: toStringId(doc._id),
@@ -460,6 +519,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			interval: doc.interval,
 			uptimePercentage: doc.uptimePercentage ?? undefined,
 			notifications: notificationIds,
+			tags: tagIds,
 			secret: doc.secret ?? undefined,
 			cpuAlertThreshold: doc.cpuAlertThreshold,
 			cpuAlertCounter: doc.cpuAlertCounter,
@@ -472,11 +532,14 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			selectedDisks: doc.selectedDisks ?? [],
 			gameId: doc.gameId ?? undefined,
 			grpcServiceName: doc.grpcServiceName ?? undefined,
+			strategy: doc.strategy ?? undefined,
 			group: doc.group ?? null,
 			recentChecks: (doc.recentChecks ?? []).map((check: CheckSnapshotDocument) => this.toCheckSnapshot(check)),
 			geoCheckEnabled: doc.geoCheckEnabled ?? false,
 			geoCheckLocations: doc.geoCheckLocations ?? [],
 			geoCheckInterval: doc.geoCheckInterval ?? 300000,
+			dnsServer: doc.dnsServer ?? undefined,
+			dnsRecordType: doc.dnsRecordType ?? undefined,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};

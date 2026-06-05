@@ -1,4 +1,4 @@
-import { BasePage, ConfigBox } from "@/Components/design-elements";
+import { BasePage, ConfigBox, StepProgress } from "@/Components/design-elements";
 import Stack from "@mui/material/Stack";
 import { logger } from "@/Utils/logger";
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
@@ -26,12 +26,14 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useStatusPageForm } from "@/Hooks/useStatusPageForm";
 import type { StatusPageFormData } from "@/Validation/statusPage";
+import { statusPageStepCount, statusPageStepFieldsFor } from "@/Validation/statusPage";
 import { useGet, usePost, usePut, useDelete } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
 import type { MonitorDisplayType, StatusPageResponse } from "@/Types/StatusPage";
 import { getMonitorTypeLabel } from "@/Types/StatusPage";
 import timezones from "@/Utils/timezones.json";
 import { useNavigate, useParams } from "react-router-dom";
+import { mutate } from "swr";
 import axios from "axios";
 import { HeaderConfigStatusControls } from "./Components/HeaderConfigStatusControls";
 import { ThemePicker } from "./Components/ThemePicker";
@@ -49,6 +51,9 @@ interface TimezoneOption {
 	name: string;
 }
 
+const buildStatusPageKey = (slug: string | null | undefined) =>
+	slug ? `/status-page/${slug}?type=uptime&type=infrastructure` : null;
+
 const CreateStatusPage = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -59,9 +64,7 @@ const CreateStatusPage = () => {
 
 	// Fetch existing status page data when configuring
 	const { data: statusPageData, isLoading: isLoadingStatusPage } =
-		useGet<StatusPageResponse>(
-			isCreate ? null : `/status-page/${url}?type=uptime&type=infrastructure`
-		);
+		useGet<StatusPageResponse>(isCreate ? null : buildStatusPageKey(url));
 
 	const { data: monitorsResponse } = useGet<Monitor[]>(monitorsUrl);
 	const monitors = monitorsResponse ?? [];
@@ -84,12 +87,26 @@ const CreateStatusPage = () => {
 		defaultValues: defaults,
 	});
 
-	const { control, reset, handleSubmit } = form;
+	const { control, reset, handleSubmit, trigger } = form;
 
 	// Reset form when defaults change (from fetched data)
 	useEffect(() => {
 		reset(defaults);
 	}, [defaults, reset]);
+
+	// Multi-step wizard, create only. The configure (edit) flow keeps the flat
+	// form, where showStep() is always true.
+	const [currentStep, setCurrentStep] = useState(0);
+	const showStep = (step: number) => !isCreate || currentStep === step;
+	const totalSteps = statusPageStepCount();
+
+	const handleNext = async () => {
+		const isValid = await trigger(statusPageStepFieldsFor(currentStep));
+		if (isValid) {
+			setCurrentStep((step) => step + 1);
+		}
+	};
+	const handleBack = () => setCurrentStep((step) => step - 1);
 
 	const watchedMonitorIds: string[] = form.watch("monitors") ?? [];
 	const computedTypes: MonitorDisplayType[] = useMemo(() => {
@@ -181,6 +198,10 @@ const CreateStatusPage = () => {
 		}
 
 		if (result) {
+			await mutate(buildStatusPageKey(data.url));
+			if (!isCreate && url !== data.url) {
+				await mutate(buildStatusPageKey(url));
+			}
 			navigate(`/status/${data.url}`);
 		}
 	};
@@ -194,315 +215,334 @@ const CreateStatusPage = () => {
 			onSubmit={handleSubmit(onSubmit, onError)}
 		>
 			{!isCreate && <HeaderConfigStatusControls onDelete={handleDeleteClick} />}
-			<ConfigBox
-				title={t("pages.statusPages.form.access.title")}
-				subtitle={t("pages.statusPages.form.access.description")}
-				rightContent={
-					<Stack
-						direction="row"
-						alignItems="center"
-						spacing={theme.spacing(SPACING.MD)}
-					>
-						<Controller
-							name="isPublished"
-							control={control}
-							render={({ field }) => (
-								<SwitchComponent
-									checked={field.value ?? false}
-									onChange={(e) => field.onChange(e.target.checked)}
-								/>
-							)}
-						/>
-						<Typography>
-							{t("pages.statusPages.form.access.option.published.name")}
-						</Typography>
-					</Stack>
-				}
-			/>
-			<ConfigBox
-				title={t("pages.statusPages.form.basicInfo.title")}
-				subtitle={t("pages.statusPages.form.basicInfo.description")}
-				rightContent={
-					<Stack spacing={theme.spacing(LAYOUT.MD)}>
-						<Controller
-							name="companyName"
-							control={control}
-							render={({ field, fieldState }) => (
-								<TextField
-									{...field}
-									fieldLabel={t("pages.statusPages.form.basicInfo.option.name.label")}
-									placeholder={t(
-										"pages.statusPages.form.basicInfo.option.name.placeholder"
-									)}
-									error={!!fieldState.error}
-									helperText={fieldState.error?.message}
-								/>
-							)}
-						/>
-						<Controller
-							name="url"
-							control={control}
-							render={({ field, fieldState }) => (
-								<TextField
-									{...field}
-									fieldLabel={t("pages.statusPages.form.basicInfo.option.url.label")}
-									placeholder={t(
-										"pages.statusPages.form.basicInfo.option.url.placeholder"
-									)}
-									error={!!fieldState.error}
-									helperText={fieldState.error?.message}
-								/>
-							)}
-						/>
-					</Stack>
-				}
-			/>
-			<ConfigBox
-				title={t("pages.statusPages.form.monitors.title")}
-				subtitle={t("pages.statusPages.form.monitors.description")}
-				rightContent={
-					<Controller
-						name="monitors"
-						control={control}
-						render={({ field, fieldState }) => {
-							const selectedMonitors = field.value
-								.map((id: string) => monitors.find((m) => m.id === id))
-								.filter((m): m is Monitor => m !== undefined);
-
-							const handleDragEnd = (result: DropResult) => {
-								if (!result.destination) return;
-								const reordered = Array.from(field.value);
-								const [removed] = reordered.splice(result.source.index, 1);
-								reordered.splice(result.destination.index, 0, removed);
-								field.onChange(reordered);
-							};
-
-							return (
-								<Stack spacing={theme.spacing(LAYOUT.MD)}>
-									<Autocomplete
-										multiple
-										options={monitors}
-										getOptionLabel={(option: Monitor) => option.name}
-										value={selectedMonitors}
-										onChange={(_, newValue) => {
-											field.onChange(newValue.map((m: Monitor) => m.id));
-										}}
-										fieldLabel={t(
-											"pages.statusPages.form.monitors.option.monitors.label"
-										)}
-										renderInput={(params) => (
-											<TextField
-												{...params}
-												placeholder={
-													selectedMonitors.length === 0
-														? t(
-																"pages.statusPages.form.monitors.option.monitors.placeholder"
-															)
-														: ""
-												}
-												error={!!fieldState.error}
-												helperText={fieldState.error?.message}
-											/>
-										)}
-									/>
-									{selectedMonitors.length > 0 && (
-										<DragDropContext onDragEnd={handleDragEnd}>
-											<Droppable droppableId="monitors-list">
-												{(provided) => (
-													<Stack
-														{...provided.droppableProps}
-														ref={provided.innerRef}
-													>
-														{selectedMonitors.map((monitor, index) => (
-															<Draggable
-																key={monitor.id}
-																draggableId={monitor.id}
-																index={index}
-															>
-																{(provided) => (
-																	<Stack
-																		ref={provided.innerRef}
-																		{...provided.draggableProps}
-																		{...provided.dragHandleProps}
-																		direction="row"
-																		alignItems="center"
-																		spacing={theme.spacing(LAYOUT.XS)}
-																		padding={theme.spacing(LAYOUT.XS)}
-																		marginTop={theme.spacing(SPACING.LG)}
-																		borderRadius={1}
-																		sx={{
-																			border: `1px solid ${theme.palette.divider}`,
-																			cursor: "grab",
-																			"&:active": { cursor: "grabbing" },
-																		}}
-																	>
-																		<GripVertical size={20} />
-																		<Typography
-																			flexGrow={1}
-																		>{`${monitor.name} (${getMonitorTypeLabel(monitor.type, t)})`}</Typography>
-																		<IconButton
-																			size="small"
-																			onClick={() => {
-																				field.onChange(
-																					field.value.filter(
-																						(id: string) => id !== monitor.id
-																					)
-																				);
-																			}}
-																			aria-label="Remove monitor"
-																		>
-																			<Trash2 size={16} />
-																		</IconButton>
-																	</Stack>
-																)}
-															</Draggable>
-														))}
-														{provided.placeholder}
-													</Stack>
-												)}
-											</Droppable>
-										</DragDropContext>
-									)}
-								</Stack>
-							);
-						}}
-					/>
-				}
-			/>
-			<ConfigBox
-				title={t("pages.statusPages.form.timezone.title")}
-				subtitle={t("pages.statusPages.form.timezone.description")}
-				rightContent={
-					<Controller
-						name="timezone"
-						control={control}
-						render={({ field }) => (
-							<Autocomplete
-								options={timezones}
-								getOptionLabel={(option: TimezoneOption) => option.name}
-								value={
-									timezones.find((tz: TimezoneOption) => tz._id === field.value) ?? null
-								}
-								onChange={(_, newValue: TimezoneOption | null) => {
-									field.onChange(newValue?._id ?? "");
-								}}
-								fieldLabel={t("pages.statusPages.form.timezone.option.timezone.label")}
-								renderInput={(params) => (
-									<TextField
-										{...params}
-										placeholder={t(
-											"pages.statusPages.form.timezone.option.timezone.placeholder"
-										)}
+			{isCreate && (
+				<StepProgress
+					steps={totalSteps}
+					current={currentStep}
+				/>
+			)}
+			{showStep(0) && (
+				<ConfigBox
+					title={t("pages.statusPages.form.access.title")}
+					subtitle={t("pages.statusPages.form.access.description")}
+					rightContent={
+						<Stack
+							direction="row"
+							alignItems="center"
+							spacing={theme.spacing(SPACING.MD)}
+						>
+							<Controller
+								name="isPublished"
+								control={control}
+								render={({ field }) => (
+									<SwitchComponent
+										checked={field.value ?? false}
+										onChange={(e) => field.onChange(e.target.checked)}
 									/>
 								)}
 							/>
-						)}
-					/>
-				}
-			/>
-			<ConfigBox
-				title={t("pages.statusPages.form.appearance.title")}
-				subtitle={t("pages.statusPages.form.appearance.description")}
-				rightContent={
-					<Stack spacing={theme.spacing(LAYOUT.MD)}>
-						<Stack alignItems={"center"}>
+							<Typography>
+								{t("pages.statusPages.form.access.option.published.name")}
+							</Typography>
+						</Stack>
+					}
+				/>
+			)}
+			{showStep(0) && (
+				<ConfigBox
+					title={t("pages.statusPages.form.basicInfo.title")}
+					subtitle={t("pages.statusPages.form.basicInfo.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(LAYOUT.MD)}>
 							<Controller
-								name="logo"
+								name="companyName"
 								control={control}
-								render={({ field }) => (
-									<ImageUpload
-										src={field.value?.data}
-										onChange={(file) => {
-											if (file) {
-												field.onChange({
-													data: file.src,
-													contentType: file.file.type,
-												});
-											} else {
-												field.onChange(null);
-											}
-										}}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										fieldLabel={t("pages.statusPages.form.basicInfo.option.name.label")}
+										placeholder={t(
+											"pages.statusPages.form.basicInfo.option.name.placeholder"
+										)}
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message}
+									/>
+								)}
+							/>
+							<Controller
+								name="url"
+								control={control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										fieldLabel={t("pages.statusPages.form.basicInfo.option.url.label")}
+										placeholder={t(
+											"pages.statusPages.form.basicInfo.option.url.placeholder"
+										)}
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message}
 									/>
 								)}
 							/>
 						</Stack>
+					}
+				/>
+			)}
+			{showStep(0) && (
+				<ConfigBox
+					title={t("pages.statusPages.form.monitors.title")}
+					subtitle={t("pages.statusPages.form.monitors.description")}
+					rightContent={
 						<Controller
-							name="color"
+							name="monitors"
 							control={control}
-							render={({ field }) => (
-								<ColorInput
-									format="hex"
-									value={field.value}
-									onChange={field.onChange}
-									fieldLabel={t("pages.statusPages.form.appearance.option.color.label")}
-								/>
-							)}
-						/>
-					</Stack>
-				}
-			/>
-			<ConfigBox
-				title={t("pages.statusPages.form.theme.title")}
-				subtitle={t("pages.statusPages.form.theme.description")}
-				rightContent={
-					<Controller
-						name="theme"
-						control={control}
-						render={({ field: themeField }) => (
-							<Controller
-								name="themeMode"
-								control={control}
-								render={({ field: modeField }) => (
-									<ThemePicker
-										theme={themeField.value ?? "refined"}
-										themeMode={modeField.value ?? "auto"}
-										onThemeChange={themeField.onChange}
-										onThemeModeChange={modeField.onChange}
-									/>
-								)}
-							/>
-						)}
-					/>
-				}
-			/>
-			<ConfigBox
-				title={t("pages.statusPages.form.features.title")}
-				subtitle={t("pages.statusPages.form.features.description")}
-				rightContent={
-					<Stack spacing={theme.spacing(LAYOUT.MD)}>
-						<Controller
-							name="showCharts"
-							control={control}
-							render={({ field }) => (
-								<FormControlLabel
-									control={
-										<Checkbox
-											checked={field.value}
-											onChange={field.onChange}
+							render={({ field, fieldState }) => {
+								const selectedMonitors = field.value
+									.map((id: string) => monitors.find((m) => m.id === id))
+									.filter((m): m is Monitor => m !== undefined);
+
+								const handleDragEnd = (result: DropResult) => {
+									if (!result.destination) return;
+									const reordered = Array.from(field.value);
+									const [removed] = reordered.splice(result.source.index, 1);
+									reordered.splice(result.destination.index, 0, removed);
+									field.onChange(reordered);
+								};
+
+								return (
+									<Stack spacing={theme.spacing(LAYOUT.MD)}>
+										<Autocomplete
+											multiple
+											options={monitors}
+											getOptionLabel={(option: Monitor) => option.name}
+											value={selectedMonitors}
+											onChange={(_, newValue) => {
+												field.onChange(newValue.map((m: Monitor) => m.id));
+											}}
+											fieldLabel={t(
+												"pages.statusPages.form.monitors.option.monitors.label"
+											)}
+											renderInput={(params) => (
+												<TextField
+													{...params}
+													placeholder={
+														selectedMonitors.length === 0
+															? t(
+																	"pages.statusPages.form.monitors.option.monitors.placeholder"
+																)
+															: ""
+													}
+													error={!!fieldState.error}
+													helperText={fieldState.error?.message}
+												/>
+											)}
 										/>
-									}
-									label={t("pages.statusPages.form.features.option.showCharts.label")}
-								/>
-							)}
+										{selectedMonitors.length > 0 && (
+											<DragDropContext onDragEnd={handleDragEnd}>
+												<Droppable droppableId="monitors-list">
+													{(provided) => (
+														<Stack
+															{...provided.droppableProps}
+															ref={provided.innerRef}
+														>
+															{selectedMonitors.map((monitor, index) => (
+																<Draggable
+																	key={monitor.id}
+																	draggableId={monitor.id}
+																	index={index}
+																>
+																	{(provided) => (
+																		<Stack
+																			ref={provided.innerRef}
+																			{...provided.draggableProps}
+																			{...provided.dragHandleProps}
+																			direction="row"
+																			alignItems="center"
+																			spacing={theme.spacing(LAYOUT.XS)}
+																			padding={theme.spacing(LAYOUT.XS)}
+																			marginTop={theme.spacing(SPACING.LG)}
+																			borderRadius={1}
+																			sx={{
+																				border: `1px solid ${theme.palette.divider}`,
+																				cursor: "grab",
+																				"&:active": { cursor: "grabbing" },
+																			}}
+																		>
+																			<GripVertical size={20} />
+																			<Typography
+																				flexGrow={1}
+																			>{`${monitor.name} (${getMonitorTypeLabel(monitor.type, t)})`}</Typography>
+																			<IconButton
+																				size="small"
+																				onClick={() => {
+																					field.onChange(
+																						field.value.filter(
+																							(id: string) => id !== monitor.id
+																						)
+																					);
+																				}}
+																				aria-label="Remove monitor"
+																			>
+																				<Trash2 size={16} />
+																			</IconButton>
+																		</Stack>
+																	)}
+																</Draggable>
+															))}
+															{provided.placeholder}
+														</Stack>
+													)}
+												</Droppable>
+											</DragDropContext>
+										)}
+									</Stack>
+								);
+							}}
 						/>
+					}
+				/>
+			)}
+			{showStep(0) && (
+				<ConfigBox
+					title={t("pages.statusPages.form.timezone.title")}
+					subtitle={t("pages.statusPages.form.timezone.description")}
+					rightContent={
 						<Controller
-							name="showInfrastructure"
+							name="timezone"
 							control={control}
 							render={({ field }) => (
-								<FormControlLabel
-									control={
-										<Checkbox
-											checked={field.value}
-											onChange={field.onChange}
-										/>
+								<Autocomplete
+									options={timezones}
+									getOptionLabel={(option: TimezoneOption) => option.name}
+									value={
+										timezones.find((tz: TimezoneOption) => tz._id === field.value) ?? null
 									}
-									label={t(
-										"pages.statusPages.form.features.option.showInfrastructure.label"
+									onChange={(_, newValue: TimezoneOption | null) => {
+										field.onChange(newValue?._id ?? "");
+									}}
+									fieldLabel={t("pages.statusPages.form.timezone.option.timezone.label")}
+									renderInput={(params) => (
+										<TextField
+											{...params}
+											placeholder={t(
+												"pages.statusPages.form.timezone.option.timezone.placeholder"
+											)}
+										/>
 									)}
 								/>
 							)}
 						/>
-						{/* <Controller
+					}
+				/>
+			)}
+			{showStep(1) && (
+				<ConfigBox
+					title={t("pages.statusPages.form.appearance.title")}
+					subtitle={t("pages.statusPages.form.appearance.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(LAYOUT.MD)}>
+							<Stack alignItems={"center"}>
+								<Controller
+									name="logo"
+									control={control}
+									render={({ field }) => (
+										<ImageUpload
+											src={field.value?.data}
+											onChange={(file) => {
+												if (file) {
+													field.onChange({
+														data: file.src,
+														contentType: file.file.type,
+													});
+												} else {
+													field.onChange(null);
+												}
+											}}
+										/>
+									)}
+								/>
+							</Stack>
+							<Controller
+								name="color"
+								control={control}
+								render={({ field }) => (
+									<ColorInput
+										format="hex"
+										value={field.value}
+										onChange={field.onChange}
+										fieldLabel={t("pages.statusPages.form.appearance.option.color.label")}
+									/>
+								)}
+							/>
+						</Stack>
+					}
+				/>
+			)}
+			{showStep(1) && (
+				<ConfigBox
+					title={t("pages.statusPages.form.theme.title")}
+					subtitle={t("pages.statusPages.form.theme.description")}
+					rightContent={
+						<Controller
+							name="theme"
+							control={control}
+							render={({ field: themeField }) => (
+								<Controller
+									name="themeMode"
+									control={control}
+									render={({ field: modeField }) => (
+										<ThemePicker
+											theme={themeField.value ?? "refined"}
+											themeMode={modeField.value ?? "auto"}
+											onThemeChange={themeField.onChange}
+											onThemeModeChange={modeField.onChange}
+										/>
+									)}
+								/>
+							)}
+						/>
+					}
+				/>
+			)}
+			{showStep(1) && (
+				<ConfigBox
+					title={t("pages.statusPages.form.features.title")}
+					subtitle={t("pages.statusPages.form.features.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(LAYOUT.MD)}>
+							<Controller
+								name="showCharts"
+								control={control}
+								render={({ field }) => (
+									<FormControlLabel
+										control={
+											<Checkbox
+												checked={field.value}
+												onChange={field.onChange}
+											/>
+										}
+										label={t("pages.statusPages.form.features.option.showCharts.label")}
+									/>
+								)}
+							/>
+							<Controller
+								name="showInfrastructure"
+								control={control}
+								render={({ field }) => (
+									<FormControlLabel
+										control={
+											<Checkbox
+												checked={field.value}
+												onChange={field.onChange}
+											/>
+										}
+										label={t(
+											"pages.statusPages.form.features.option.showInfrastructure.label"
+										)}
+									/>
+								)}
+							/>
+							{/* <Controller
 							name="showUptimePercentage"
 							control={control}
 							render={({ field }) => (
@@ -536,21 +576,46 @@ const CreateStatusPage = () => {
 								/>
 							)}
 						/> */}
-					</Stack>
-				}
-			/>
+						</Stack>
+					}
+				/>
+			)}
 			<Stack
 				direction="row"
-				justifyContent="flex-end"
+				justifyContent={isCreate ? "space-between" : "flex-end"}
 			>
-				<Button
-					loading={isSubmitting}
-					type="submit"
-					variant="contained"
-					color="primary"
-				>
-					{t("common.buttons.save")}
-				</Button>
+				{isCreate && (
+					<Button
+						type="button"
+						variant="outlined"
+						color="secondary"
+						disabled={currentStep === 0}
+						onClick={handleBack}
+					>
+						{t("common.buttons.back")}
+					</Button>
+				)}
+				{isCreate && currentStep < totalSteps - 1 ? (
+					<Button
+						key="wizard-next"
+						type="button"
+						variant="contained"
+						color="primary"
+						onClick={handleNext}
+					>
+						{t("common.buttons.next")}
+					</Button>
+				) : (
+					<Button
+						key="wizard-save"
+						loading={isSubmitting}
+						type="submit"
+						variant="contained"
+						color="primary"
+					>
+						{t("common.buttons.save")}
+					</Button>
+				)}
 			</Stack>
 			<Dialog
 				open={isDeleteDialogOpen}

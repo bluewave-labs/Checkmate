@@ -6,6 +6,7 @@ import {
 	MONO_STACK,
 	SERIF_STACK,
 } from "../shared/fontStacks";
+import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 
 export type EditorialHeatCell = "fast" | "med" | "slow" | "down" | "empty";
 export type EditorialBarKind = "up" | "down" | "empty";
@@ -50,7 +51,10 @@ export interface EditorialStyles {
 	footer: SxProps<Theme>;
 }
 
-export const editorialStyles = (tokens: StatusPageThemeTokens): EditorialStyles => {
+export const editorialStyles = (
+	tokens: StatusPageThemeTokens,
+	_isDark: boolean
+): EditorialStyles => {
 	const heatCellBg: Record<EditorialHeatCell, string> = {
 		fast: tokens.up,
 		med: `color-mix(in srgb, ${tokens.up} 60%, ${tokens.bg})`,
@@ -245,7 +249,7 @@ export const editorialStyles = (tokens: StatusPageThemeTokens): EditorialStyles 
 		heatmap: {
 			mt: "16px",
 			display: "grid",
-			gridTemplateColumns: "repeat(25, 1fr)",
+			gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
 			gap: "2px",
 			height: 40,
 		},
@@ -257,7 +261,7 @@ export const editorialStyles = (tokens: StatusPageThemeTokens): EditorialStyles 
 		histogram: {
 			mt: "16px",
 			display: "grid",
-			gridTemplateColumns: "repeat(25, 1fr)",
+			gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
 			gap: "2px",
 			alignItems: "flex-end",
 			height: 40,

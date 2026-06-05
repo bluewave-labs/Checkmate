@@ -1,6 +1,6 @@
 import { Schema, model, Types } from "mongoose";
 import type { Monitor, MonitorMatchMethod, CheckSnapshot } from "@/types/monitor.js";
-import { MonitorTypes, MonitorStatuses } from "@/types/monitor.js";
+import { DnsRecordTypes, MonitorTypes, MonitorStatuses, PageSpeedStrategies } from "@/types/monitor.js";
 import type {
 	CheckAudits,
 	CheckCaptureInfo,
@@ -18,11 +18,12 @@ type CheckSnapshotDocument = Omit<CheckSnapshot, "createdAt"> & { createdAt: Dat
 
 type MonitorDocumentBase = Omit<
 	Monitor,
-	"id" | "userId" | "teamId" | "notifications" | "selectedDisks" | "statusWindow" | "recentChecks" | "createdAt" | "updatedAt"
+	"id" | "userId" | "teamId" | "notifications" | "tags" | "selectedDisks" | "statusWindow" | "recentChecks" | "createdAt" | "updatedAt"
 > & {
 	statusWindow: boolean[];
 	recentChecks: CheckSnapshotDocument[];
 	notifications: Types.ObjectId[];
+	tags: Types.ObjectId[];
 	selectedDisks: string[];
 	matchMethod?: MonitorMatchMethod;
 };
@@ -284,6 +285,12 @@ const MonitorSchema = new Schema<MonitorDocument>(
 				ref: "Notification",
 			},
 		],
+		tags: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: "Tag",
+			},
+		],
 		secret: {
 			type: String,
 		},
@@ -330,6 +337,10 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			type: String,
 			default: "",
 		},
+		strategy: {
+			type: String,
+			enum: PageSpeedStrategies,
+		},
 		group: {
 			type: String,
 			trim: true,
@@ -350,6 +361,13 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		geoCheckInterval: {
 			type: Number,
 			default: 300000,
+		},
+		dnsServer: {
+			type: String,
+		},
+		dnsRecordType: {
+			type: String,
+			enum: DnsRecordTypes,
 		},
 		recentChecks: {
 			type: [checkSnapshotSchema],

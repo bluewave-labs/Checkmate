@@ -2,7 +2,7 @@ import type { Monitor, MonitorStatusResponse, Notification } from "@/types/index
 import type { NotificationMessage } from "@/types/notificationMessage.js";
 import { IMonitorsRepository, INotificationsRepository } from "@/repositories/index.js";
 import { INotificationProvider } from "./notificationProviders/INotificationProvider.js";
-import type { MonitorActionDecision } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+import type { MonitorActionDecision } from "@/service/infrastructure/JobQueues/QueueHelper.js";
 import type { ISettingsService } from "@/service/system/settingsService.js";
 import { ILogger } from "@/utils/logger.js";
 import type { INotificationMessageBuilder } from "@/service/infrastructure/notificationMessageBuilder.js";
@@ -36,6 +36,7 @@ export class NotificationsService implements INotificationsService {
 	private telegramProvider: INotificationProvider;
 	private pushoverProvider: INotificationProvider;
 	private twilioProvider: INotificationProvider;
+	private ntfyProvider: INotificationProvider;
 	private logger: ILogger;
 	private settingsService: ISettingsService;
 	private notificationMessageBuilder: INotificationMessageBuilder;
@@ -53,6 +54,7 @@ export class NotificationsService implements INotificationsService {
 		telegramProvider: INotificationProvider,
 		pushoverProvider: INotificationProvider,
 		twilioProvider: INotificationProvider,
+		ntfyProvider: INotificationProvider,
 		settingsService: ISettingsService,
 		logger: ILogger,
 		notificationMessageBuilder: INotificationMessageBuilder
@@ -69,6 +71,7 @@ export class NotificationsService implements INotificationsService {
 		this.telegramProvider = telegramProvider;
 		this.pushoverProvider = pushoverProvider;
 		this.twilioProvider = twilioProvider;
+		this.ntfyProvider = ntfyProvider;
 		this.settingsService = settingsService;
 		this.logger = logger;
 		this.notificationMessageBuilder = notificationMessageBuilder;
@@ -112,6 +115,8 @@ export class NotificationsService implements INotificationsService {
 				return await this.pushoverProvider.sendMessage!(notification, notificationMessage);
 			case "twilio":
 				return await this.twilioProvider.sendMessage!(notification, notificationMessage);
+			case "ntfy":
+				return await this.ntfyProvider.sendMessage!(notification, notificationMessage);
 			default:
 				this.logger.warn({
 					message: `Unknown notification type: ${notification.type}`,
@@ -178,6 +183,8 @@ export class NotificationsService implements INotificationsService {
 				return await this.pushoverProvider.sendTestAlert(notification);
 			case "twilio":
 				return await this.twilioProvider.sendTestAlert(notification);
+			case "ntfy":
+				return await this.ntfyProvider.sendTestAlert(notification);
 			default:
 				return false;
 		}

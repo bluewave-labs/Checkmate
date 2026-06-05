@@ -10,14 +10,17 @@ export * from "@/service/business/statusPageService.js";
 export * from "@/service/business/userService.js";
 
 // Infrastructure services
-export * from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
-export * from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.js";
+export * from "@/service/infrastructure/JobQueues/IJobQueue.js";
+export * from "@/service/infrastructure/JobQueues/SuperSimpleQueue.js";
+export * from "@/service/infrastructure/JobQueues/LessSimpleQueue.js";
+export * from "@/service/infrastructure/JobQueues/QueueHelper.js";
 export * from "@/service/infrastructure/notificationMessageBuilder.js";
 export * from "@/service/infrastructure/bufferService.js";
 export * from "@/service/infrastructure/emailService.js";
 export * from "@/service/infrastructure/globalPingService.js";
 export * from "@/service/infrastructure/networkService.js";
 export * from "@/service/infrastructure/notificationsService.js";
+export * from "@/service/infrastructure/tagService.js";
 export * from "@/service/infrastructure/statusService.js";
 
 // Notification providers
@@ -32,6 +35,7 @@ export * from "@/service/infrastructure/notificationProviders/webhook.js";
 export * from "@/service/infrastructure/notificationProviders/telegram.js";
 export * from "@/service/infrastructure/notificationProviders/pushover.js";
 export * from "@/service/infrastructure/notificationProviders/twilio.js";
+export * from "@/service/infrastructure/notificationProviders/ntfy.js";
 
 // System services
 export * from "@/service/system/settingsService.js";

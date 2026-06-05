@@ -1,5 +1,25 @@
 <p align=center> <a href="https://trendshift.io/repositories/12443" target="_blank"><img src="https://trendshift.io/api/badge/repositories/12443" alt="bluewave-labs%2Fcheckmate | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a></p>
-  
+
+<p align="center">
+  🇺🇸 <a href="README.md">English</a> |
+  🇸🇦 <a href="docs/translations/README.ar.md">العربية</a> |
+  🇪🇸 <a href="docs/translations/README.ca.md">Català</a> |
+  🇨🇿 <a href="docs/translations/README.cs.md">Čeština</a> |
+  🇩🇪 <a href="docs/translations/README.de.md">Deutsch</a> |
+  🇪🇸 <a href="docs/translations/README.es.md">Español</a> |
+  🇫🇮 <a href="docs/translations/README.fi.md">Suomi</a> |
+  🇫🇷 <a href="docs/translations/README.fr.md">Français</a> |
+  🇯🇵 <a href="docs/translations/README.ja.md">日本語</a> |
+  🇧🇷 <a href="docs/translations/README.pt-BR.md">Português (Brasil)</a> |
+  🇷🇺 <a href="docs/translations/README.ru.md">Русский</a> |
+  🇹🇭 <a href="docs/translations/README.th.md">ไทย</a> |
+  🇹🇷 <a href="docs/translations/README.tr.md">Türkçe</a> |
+  🇺🇦 <a href="docs/translations/README.uk.md">Українська</a> |
+  🇻🇳 <a href="docs/translations/README.vi.md">Tiếng Việt</a> |
+  🇨🇳 <a href="docs/translations/README.zh-CN.md">简体中文</a> |
+  🇹🇼 <a href="docs/translations/README.zh-TW.md">繁體中文</a>
+</p>
+
 ![](https://img.shields.io/github/license/bluewave-labs/checkmate)
 ![](https://img.shields.io/github/repo-size/bluewave-labs/checkmate)
 ![](https://img.shields.io/github/commit-activity/m/bluewave-labs/checkmate)
@@ -7,7 +27,6 @@
 ![](https://img.shields.io/github/languages/top/bluewave-labs/checkmate)
 ![](https://img.shields.io/github/issues/bluewave-labs/checkmate)
 ![](https://img.shields.io/github/issues-pr/bluewave-labs/checkmate)
-[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/9901/badge)](https://www.bestpractices.dev/projects/9901)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/bluewave-labs/checkmate)
 
 <h1 align="center"><a href="https://bluewavelabs.ca" target="_blank">Checkmate</a></h1>
@@ -16,15 +35,16 @@
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1660" alt="image" src="https://github.com/user-attachments/assets/b748f36d-a271-4965-ad0a-18bf153bbee7" />
+<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+
+<br>
+
 
 This repository contains both the frontend and the backend of Checkmate, an open-source, self-hosted monitoring tool for tracking server hardware, uptime, response times, and incidents in real-time with beautiful visualizations. Checkmate regularly checks whether a server/website is accessible and performs optimally, providing real-time alerts and reports on the monitored services' availability, downtime, and response time.
 
 Checkmate also has an agent, called [Capture](https://github.com/bluewave-labs/capture), to retrieve data from remote servers. While Capture is not required to run Checkmate, it provides additional insights about your servers' CPU, RAM, disk, and temperature status. Capture can run on Linux, Windows, Mac, Raspberry Pi, or any device that can run Go.
 
 Checkmate has been stress-tested with 1000+ active monitors without any particular issues or performance bottlenecks.
-
-**If you would like to sponsor a feature, [see this link](https://checkmate.so/sponsored-features).**
 
 ## 📚 Table of contents
 
@@ -38,15 +58,16 @@ Checkmate has been stress-tested with 1000+ active monitors without any particul
 - [🏗️ Tech stack](#tech-stack)  
 - [🔗 A few links](#a-few-links)  
 - [🤝 Contributing](#contributing)  
-- [💰 Our sponsors](#our-sponsors)
 
 
+<a id="demo"></a>
 ## Demo
 
 You can see the latest build of [Checkmate](https://demo.checkmate.so/) in action. 
 
 The username is demouser@demo.com and the password is Demouser1! (just a note that we update the demo server from time to time, so if it doesn't work for you, please ping us on the Discussions channel).
 
+<a id="users-guide"></a>
 ## User's guide
 
 Usage instructions can be found [here](https://checkmate.so/docs). 
@@ -55,6 +76,7 @@ Usage instructions can be found [here](https://checkmate.so/docs).
 - [Docker](https://www.docker.com/) installed
 - [Git](https://git-scm.com/) installed
 
+<a id="installation"></a>
 ## Installation
 
 See installation instructions in [Checkmate documentation portal](https://checkmate.so/docs). 
@@ -67,6 +89,7 @@ If you need to monitor internal HTTPS endpoints with certificates from private C
 
 For more documentation, see the [docs directory](./docs/).
 
+<a id="performance"></a>
 ## Performance
 
 Thanks to extensive optimizations, Checkmate operates with an exceptionally small memory footprint, requiring minimal memory and CPU resources. Here’s the memory usage of a Node.js instance running on a server that monitors 323 servers every minute:
@@ -77,6 +100,7 @@ You can see the memory footprint of MongoDB and Redis on the same server (398Mb 
 
 ![image](https://github.com/user-attachments/assets/3b469e85-e675-4040-a162-3f24c1afc751)
 
+<a id="questions--ideas"></a>
 ## Questions & Ideas
 
 If you have any questions, suggestions or comments, you have several options: 
@@ -86,33 +110,21 @@ If you have any questions, suggestions or comments, you have several options:
 
 Feel free to ask questions or share your ideas - we'd love to hear from you!
 
+<a id="features"></a>
 ## Features
 
 - Completely open source, deployable on your servers or home devices (e.g Raspberry Pi 4 or 5)
-- Website monitoring
+- Several monitoring options: Uptime, Docker, Ping, SSL, Port, Game server
 - Page speed monitoring
 - Infrastructure monitoring (memory, disk usage, CPU performance, network etc) - requires [Capture](https://github.com/bluewave-labs/capture) agent
   - Selective disk monitoring with mountpoint selection
-- Docker monitoring
-- Ping monitoring
-- SSL monitoring
-- Port monitoring
-- Game server monitoring (3.0)
 - Incidents at a glance
-- Status pages
-- E-mail, Webhooks, Discord and Slack notifications
+- Status pages with 4 beautiful themes
+- E-mail, Webhooks, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS) notifications
 - Scheduled maintenance
 - JSON query monitoring
-- Multi-language support for English, German, Japanese, Portuguese (Brazil), Russian, Turkish, Ukrainian, Vietnamese, Chinese (Traditional, Taiwan)
+- Multi-language support for Arabic, Chinese (Simplified), Chinese (Traditional, Taiwan), Czech, English, Finnish, French, German, Japanese, Portuguese (Brazil), Russian, Spanish, Thai, Turkish, Ukrainian, and Vietnamese
 
-**Short term roadmap:** 
-
-- Plugins that will help Checkmate get any information from a remote service (e.g database, etc)
-- Better notifications
-- Network monitoring
-- ..and a few more features
-
-If you would like to sponsor an additional feature, [see this page](https://checkmate.so/sponsored-features).
 
 ## Monitor Lifecycle
 
@@ -123,6 +135,7 @@ If you would like to sponsor an additional feature, [see this page](https://chec
 5. Upon a state change: an incident is either created or resolved, depending on the monitor's current status
 6. Notifications are triggered based on configuration
 
+<a id="screenshots"></a>
 ## Screenshots
 
 <p>
@@ -140,6 +153,7 @@ If you would like to sponsor an additional feature, [see this page](https://chec
 
 
 
+<a id="tech-stack"></a>
 ## Tech stack
 
 - [ReactJs](https://react.dev/)
@@ -149,6 +163,7 @@ If you would like to sponsor an additional feature, [see this page](https://chec
 - [Recharts](https://recharts.org)
 - Lots of other open source components!
 
+<a id="a-few-links"></a>
 ## A few links
 
 - If you would like to support us, please consider giving it a ⭐ and click on "watch".
@@ -156,6 +171,7 @@ If you would like to sponsor an additional feature, [see this page](https://chec
 - Need a ping when there's a new release? Use [Newreleases](https://newreleases.io/), a free service to track releases.
 - Watch a Checkmate [installation and usage video](https://www.youtube.com/watch?v=GfFOc0xHIwY)
 
+<a id="contributing"></a>
 ## Contributing
 
 We are [Alex](http://github.com/ajhollid) (team lead), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) and [Karen](https://github.com/karenvicent) helping individuals and businesses monitor their infra and servers.

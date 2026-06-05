@@ -8,7 +8,7 @@ const makeMaintenanceWindow = (overrides?: Partial<MaintenanceWindow>): Maintena
 	const end = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour from now
 	return {
 		id: "mw-1",
-		monitorId: "mon-1",
+		monitorIds: ["mon-1"],
 		teamId: "team-1",
 		active: true,
 		name: "Test Maintenance",
@@ -107,6 +107,23 @@ describe("Heartbeat job: maintenance windows", () => {
 		// Normal check should proceed since window is inactive
 		expect(h.networkService.requestStatus).toHaveBeenCalledTimes(1);
 		expect(h.bufferStub.addToBuffer).toHaveBeenCalledTimes(1);
+	});
+
+	it("skips checks for every monitor covered by a group window", async () => {
+		const monitorA = makeMonitor({ id: "mon-a", name: "Monitor A" });
+		const monitorB = makeMonitor({ id: "mon-b", name: "Monitor B" });
+		h.monitorsRepo.seed(monitorA);
+		h.monitorsRepo.seed(monitorB);
+
+		// A single group window covers both monitors
+		h.maintenanceWindowsRepo.findByMonitorId.mockResolvedValue([makeMaintenanceWindow({ monitorIds: ["mon-a", "mon-b"] })]);
+
+		await h.heartbeatJob(monitorA);
+		await h.heartbeatJob(monitorB);
+
+		expect((await h.monitorsRepo.findById("mon-a", "team-1")).status).toBe("maintenance");
+		expect((await h.monitorsRepo.findById("mon-b", "team-1")).status).toBe("maintenance");
+		expect(h.networkService.requestStatus).not.toHaveBeenCalled();
 	});
 
 	it("skips checks when window is in the past (expired)", async () => {

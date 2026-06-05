@@ -5,7 +5,7 @@ import { getResponseColor } from "@/Utils/DataUtils";
 import { HeatmapResponseTimeTooltip } from "@/Components/common/charts/HeatmapResponseTimeTooltip";
 import type { SxProps } from "@mui/material/styles";
 import type { ResponsiveStyleValue } from "@mui/system";
-
+import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 interface PlaceholderCheck {
 	status: "placeholder";
 	responseTime: 0;
@@ -32,11 +32,11 @@ export const HeatmapResponseTime = ({
 
 	if (!checks || checks.length === 0) return null;
 
-	const latestChecks = checks.slice(-25);
+	const latestChecks = checks.slice(-MAX_RECENT_CHECKS);
 
 	let data: Array<CheckSnapshot | PlaceholderCheck>;
-	if (latestChecks.length !== 25) {
-		const placeholders = Array(25 - latestChecks.length).fill({
+	if (latestChecks.length !== MAX_RECENT_CHECKS) {
+		const placeholders = Array(MAX_RECENT_CHECKS - latestChecks.length).fill({
 			status: "placeholder" as const,
 		});
 		data = [...latestChecks, ...placeholders];
@@ -44,13 +44,13 @@ export const HeatmapResponseTime = ({
 		data = latestChecks;
 	}
 	return (
-		<Box sx={{ width: "100%" }}>
+		<Box width={"100%"}>
 			<Box
+				width={"100%"}
+				display={"grid"}
+				gap={gap}
 				sx={{
-					width: "100%",
-					display: "grid",
-					gridTemplateColumns: "repeat(25, 1fr)",
-					gap: gap,
+					gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
 					alignItems: "stretch",
 				}}
 			>
@@ -82,50 +82,50 @@ export const HeatmapResponseTime = ({
 							check={check}
 						>
 							<Box
+								display={"grid"}
 								sx={{
-									display: "grid",
 									gridTemplateRows: "auto auto",
 								}}
 							>
 								<Box
+									display={"flex"}
+									gap={theme.spacing(2)}
 									sx={{
-										display: "flex",
 										flexDirection: "column",
-										gap: theme.spacing(2),
 									}}
 								>
 									<Box
+										width={"100%"}
 										sx={{
 											position: "relative",
-											width: "100%",
 											aspectRatio: "10",
 										}}
 									>
 										<Box
+											bgcolor={statusBg}
+											borderRadius={theme.shape.borderRadius}
 											sx={{
 												position: "absolute",
 												inset: 0,
-												bgcolor: statusBg,
-												borderRadius: theme.spacing(0.5),
 												...availabilityCellSx,
 											}}
 										/>
 										<Box
+											borderRadius={theme.shape.borderRadius}
 											sx={{
 												position: "absolute",
 												inset: 0,
 												pointerEvents: "none",
-												borderRadius: theme.spacing(0.5),
 												boxShadow: `inset 0 0 0 2px ${statusBorder}`,
 											}}
 										/>
 									</Box>
 									<Box
+										width={"100%"}
+										bgcolor={respBg}
+										borderRadius={theme.shape.borderRadius}
 										sx={{
-											width: "100%",
 											aspectRatio: "1 / 1",
-											bgcolor: respBg,
-											borderRadius: theme.spacing(0.5),
 											...responseCellSx,
 										}}
 									/>
