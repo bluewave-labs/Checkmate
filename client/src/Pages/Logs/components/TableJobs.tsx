@@ -1,4 +1,4 @@
-import { Table } from "@/Components/design-elements";
+import { Table, Pagination } from "@/Components/design-elements";
 import { Typography, useTheme } from "@mui/material";
 import prettyMilliseconds from "pretty-ms";
 import { formatTimestamp } from "@/Utils/TimeUtils";
@@ -6,14 +6,27 @@ import { formatTimestamp } from "@/Utils/TimeUtils";
 import { useTranslation } from "react-i18next";
 import type { QueueJobFailure, QueueJobSummary, QueueMetrics } from "@/Types/Queue";
 import type { Header } from "@/Components/design-elements";
+import type { TablePaginationProps } from "@mui/material/TablePagination";
 
 type QueueJobWithId = QueueJobSummary & { id: string | number };
 
 interface TableJobsProps {
 	jobs: QueueJobSummary[];
+	count: number;
+	page: number;
+	rowsPerPage: number;
+	onPageChange: TablePaginationProps["onPageChange"];
+	onRowsPerPageChange: TablePaginationProps["onRowsPerPageChange"];
 }
 
-export const TableJobs = ({ jobs }: TableJobsProps) => {
+export const TableJobs = ({
+	jobs,
+	count,
+	page,
+	rowsPerPage,
+	onPageChange,
+	onRowsPerPageChange,
+}: TableJobsProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 
@@ -31,6 +44,22 @@ export const TableJobs = ({ jobs }: TableJobsProps) => {
 
 	const headers: Header<QueueJobWithId>[] = [
 		{
+			id: "state",
+			content: t("pages.logs.table.headers.state"),
+			render: (row) => {
+				if (row.lockedAt) {
+					return t("common.labels.running");
+				}
+				if (row.monitorActive === true) {
+					return t("common.labels.active");
+				}
+				if (row.monitorActive === false) {
+					return t("common.labels.paused");
+				}
+				return t("common.labels.idle");
+			},
+		},
+		{
 			id: "id",
 			content: t("common.table.headers.monitorId"),
 			render: (row) => (
@@ -47,7 +76,10 @@ export const TableJobs = ({ jobs }: TableJobsProps) => {
 			id: "url",
 			content: t("common.table.headers.url"),
 			render: (row) => (
-				<Typography title={row.monitorUrl ?? ""} sx={cellSx}>
+				<Typography
+					title={row.monitorUrl ?? ""}
+					sx={cellSx}
+				>
 					{row.monitorUrl}
 				</Typography>
 			),
@@ -60,9 +92,15 @@ export const TableJobs = ({ jobs }: TableJobsProps) => {
 		{
 			id: "interval",
 			content: t("common.table.headers.interval"),
-			render: (row) => (
-				<Typography sx={cellSx}>{prettyMilliseconds(row.monitorInterval ?? 0)}</Typography>
-			),
+			render: (row) => {
+				let interval;
+				if (row.monitorId.toString().includes("geo")) {
+					interval = row.monitorGeoInterval ?? 0;
+				} else {
+					interval = row.repeat ?? 0;
+				}
+				return <Typography sx={cellSx}>{prettyMilliseconds(interval)}</Typography>;
+			},
 		},
 		{
 			id: "lastRun",
@@ -70,7 +108,10 @@ export const TableJobs = ({ jobs }: TableJobsProps) => {
 			render: (row) => {
 				const v = formatTimestamp(row.lastRunAt) ?? "-";
 				return (
-					<Typography title={v} sx={cellSx}>
+					<Typography
+						title={v}
+						sx={cellSx}
+					>
 						{v}
 					</Typography>
 				);
@@ -90,27 +131,62 @@ export const TableJobs = ({ jobs }: TableJobsProps) => {
 			render: (row) => {
 				const v = formatTimestamp(row.lockedAt) ?? "-";
 				return (
-					<Typography title={v} sx={cellSx}>
+					<Typography
+						title={v}
+						sx={cellSx}
+					>
 						{v}
+					</Typography>
+				);
+			},
+		},
+		{
+			id: "lockedBy",
+			content: t("pages.logs.table.headers.lockedBy"),
+			render: (row) => {
+				const lockedBy = row.lockedBy;
+				if (!lockedBy) {
+					return <Typography sx={cellSx}>-</Typography>;
+				}
+
+				const workerId = lockedBy.split(":")[2];
+				const shortWorkerId = workerId.slice(workerId.length - 8);
+				return (
+					<Typography
+						title={workerId}
+						sx={cellSx}
+					>
+						{`...${shortWorkerId}`}
 					</Typography>
 				);
 			},
 		},
 	];
 
-	const isDark = theme.palette.mode === "dark";
-	const runningBg = isDark ? "rgba(19, 113, 91, 0.18)" : "#ECF7F2";
-
 	return (
-		<Table
-			headers={headers}
-			data={jobsWithId}
-			getRowSx={(row) => ({
-				...(row.lockedAt && {
-					"& td": { backgroundColor: runningBg },
-				}),
-			})}
-		/>
+		<>
+			<Table
+				headers={headers}
+				data={jobsWithId}
+				getRowSx={(row) => ({
+					...(row.lockedAt && {
+						"& td": { backgroundColor: theme.palette.rowStatus.running },
+					}),
+					...(row.monitorActive === false && {
+						"& td": { backgroundColor: theme.palette.rowStatus.paused },
+					}),
+				})}
+			/>
+			<Pagination
+				component="div"
+				count={count}
+				page={page}
+				rowsPerPage={rowsPerPage}
+				onPageChange={onPageChange}
+				onRowsPerPageChange={onRowsPerPageChange}
+				itemsOnPage={jobs.length}
+			/>
+		</>
 	);
 };
 

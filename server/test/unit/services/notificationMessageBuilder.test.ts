@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach } from "@jest/globals";
 import { NotificationMessageBuilder } from "../../../src/service/infrastructure/notificationMessageBuilder.ts";
 import type { Monitor, MonitorStatusResponse, HardwareStatusPayload } from "../../../src/types/index.ts";
-import type { MonitorActionDecision } from "../../../src/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.ts";
+import type { MonitorActionDecision } from "../../../src/service/infrastructure/JobQueues/QueueHelper.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

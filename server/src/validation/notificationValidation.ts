@@ -88,6 +88,13 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		phone: z.string().min(1, "Recipient phone number is required"),
 		twilioPhoneNumber: z.string().min(1, "Twilio phone number is required"),
 	}),
+	// ntfy notification
+	z.object({
+		notificationName: z.string().min(1, "Notification name is required"),
+		type: z.literal("ntfy"),
+		address: z.url({ message: "Please enter a valid ntfy server URL" }),
+		topic: z.string().min(1, "Topic is required"),
+	}),
 ]);
 
 export const testNotificationBodyValidation = createNotificationBodyValidation;

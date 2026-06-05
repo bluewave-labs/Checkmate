@@ -10,7 +10,7 @@ import type { User } from "@/types/index.js";
 import { canManageRole, type UserRole } from "@/types/user.js";
 import bcrypt from "bcryptjs";
 import { AppError } from "@/utils/AppError.js";
-import { ISuperSimpleQueue } from "@/service/infrastructure/SuperSimpleQueue/SuperSimpleQueue.js";
+import { IJobQueue } from "@/service/infrastructure/JobQueues/IJobQueue.js";
 import { IEmailService } from "@/service/infrastructure/emailService.js";
 import { EnvConfig, ISettingsService } from "@/service/system/settingsService.js";
 import { ILogger } from "@/utils/logger.js";
@@ -55,7 +55,7 @@ export class UserService implements IUserService {
 	private settingsService: ISettingsService;
 	private logger: ILogger;
 	private jwt: JwtType;
-	private jobQueue: ISuperSimpleQueue;
+	private jobQueue: IJobQueue;
 	private crypto: CryptoType;
 	private monitorsRepository: IMonitorsRepository;
 	private usersRepository: IUsersRepository;
@@ -83,7 +83,7 @@ export class UserService implements IUserService {
 		settingsService: ISettingsService;
 		logger: ILogger;
 		jwt: JwtType;
-		jobQueue: ISuperSimpleQueue;
+		jobQueue: IJobQueue;
 		monitorsRepository: IMonitorsRepository;
 		usersRepository: IUsersRepository;
 		invitesRepository: IInvitesRepository;

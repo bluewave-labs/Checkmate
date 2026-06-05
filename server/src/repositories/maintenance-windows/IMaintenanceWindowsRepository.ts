@@ -5,6 +5,7 @@ export interface IMaintenanceWindowsRepository {
 	// fetch
 	findById(id: string, teamId: string): Promise<MaintenanceWindow>;
 	findByMonitorId(monitorId: string, teamId: string): Promise<MaintenanceWindow[]>;
+	findByMonitorIds(monitorIds: string[], teamId: string, excludeId?: string): Promise<MaintenanceWindow[]>;
 	findByTeamId(teamId: string, page: number, rowsPerPage: number, field?: string, order?: string, active?: boolean): Promise<MaintenanceWindow[]>;
 
 	// update

@@ -1,6 +1,7 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import { StatusService } from "../../../src/service/infrastructure/statusService.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
+import { MAX_RECENT_CHECKS } from "../../../src/types/index.ts";
 import type { Monitor, MonitorStatus, MonitorStatusResponse, Check, HardwareStatusPayload } from "../../../src/types/index.ts";
 import type { IMonitorsRepository, IMonitorStatsRepository, IChecksRepository } from "../../../src/repositories/index.ts";
 import type { IBufferService } from "../../../src/service/infrastructure/bufferService.ts";
@@ -280,13 +281,13 @@ describe("StatusService", () => {
 				false,
 				expect.any(Object),
 				5,
-				25,
+				MAX_RECENT_CHECKS,
 				expect.objectContaining({ status: expect.any(String) })
 			);
 		});
 
-		it("pushes check snapshot to recentChecks and trims to 25", async () => {
-			const existingChecks = Array.from({ length: 25 }, (_, i) => ({ id: `old-${i}` }));
+		it("pushes check snapshot to recentChecks and trims to MAX_RECENT_CHECKS", async () => {
+			const existingChecks = Array.from({ length: MAX_RECENT_CHECKS }, (_, i) => ({ id: `old-${i}` }));
 			const monitor = makeMonitor({ recentChecks: existingChecks as any, statusWindow: [], statusWindowSize: 5 });
 			const { service, monitorsRepository } = createService();
 			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
@@ -294,8 +295,8 @@ describe("StatusService", () => {
 
 			await service.updateMonitorStatus(makeStatusResponse(), makeCheck({ id: "new-check" }));
 
-			expect(monitor.recentChecks).toHaveLength(25);
-			expect(monitor.recentChecks[24]).toEqual(expect.objectContaining({ id: "new-check" }));
+			expect(monitor.recentChecks).toHaveLength(MAX_RECENT_CHECKS);
+			expect(monitor.recentChecks[MAX_RECENT_CHECKS - 1]).toEqual(expect.objectContaining({ id: "new-check" }));
 		});
 
 		it("marks status as down when failure threshold is met", async () => {

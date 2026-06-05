@@ -1,30 +1,36 @@
 import { BaseChart } from "@/Components/design-elements";
 import Stack from "@mui/material/Stack";
-import Box from "@mui/material/Box";
+import Box, { type BoxProps } from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
 import { useTheme } from "@mui/material/styles";
-import { useMemo, useState, useEffect } from "react";
+import { forwardRef, useMemo, useState, useEffect } from "react";
 import { getInfraGaugeColor } from "@/Utils/MonitorUtils";
 
 const MINIMUM_VALUE = 0;
 const MAXIMUM_VALUE = 100;
 
-export const Gauge = ({
-	isLoading = false,
-	progress = 0,
-	radius = 70,
-	strokeWidth = 15,
-	precision = 1,
-	unit = "%",
-}: {
+interface GaugeProps extends Omit<BoxProps, "color"> {
 	isLoading?: boolean;
 	progress?: number;
 	radius?: number;
 	strokeWidth?: number;
 	precision?: number;
 	unit?: string;
-}) => {
+}
+
+export const Gauge = forwardRef<HTMLDivElement, GaugeProps>(function Gauge(
+	{
+		isLoading = false,
+		progress = 0,
+		radius = 70,
+		strokeWidth = 15,
+		precision = 1,
+		unit = "%",
+		...rest
+	},
+	ref
+) {
 	const theme = useTheme();
 	const progressWithinRange = Math.max(MINIMUM_VALUE, Math.min(progress, MAXIMUM_VALUE));
 
@@ -51,17 +57,19 @@ export const Gauge = ({
 	const fillColor = getInfraGaugeColor(progressWithinRange, theme);
 
 	if (isLoading) {
-		return;
+		return null;
 	}
 
 	return (
 		<Box
+			ref={ref}
 			display={"inline-block"}
 			position={"relative"}
 			width={radius}
 			height={radius}
 			bgcolor={theme.palette.background.paper}
 			borderRadius={"50%"}
+			{...rest}
 		>
 			<svg
 				viewBox={`0 0 ${totalSize} ${totalSize}`}
@@ -105,7 +113,7 @@ export const Gauge = ({
 			</Typography>
 		</Box>
 	);
-};
+});
 
 export const DetailGauge = ({
 	title,

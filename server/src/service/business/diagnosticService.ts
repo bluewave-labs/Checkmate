@@ -1,24 +1,50 @@
 import v8 from "v8";
 import os from "os";
+import { IDb } from "@/db/IDb.js";
+import { Mongoose } from "mongoose";
+import { AppError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "diagnosticService";
 
+export interface CollectionDiagnostics {
+	name: string;
+	documentCount: number;
+	storageSize: number;
+	totalIndexSize: number;
+	totalSize: number;
+	bucketCount?: number;
+}
+
+export interface MongoDiagnostics {
+	readyState: number;
+	host: string;
+	port: number;
+	dbName: string;
+	totalSize: number;
+	collections: CollectionDiagnostics[];
+}
+
+export interface Diagnostics {
+	osStats: { totalMemoryBytes: number };
+	cpuUsage: { usagePercentage: number };
+	v8HeapStats: {
+		totalHeapSizeBytes: number;
+		usedHeapSizeBytes: number;
+		heapSizeLimitBytes: number;
+	};
+	eventLoopDelayMs: number;
+	uptimeMs: number;
+	mongoStats: MongoDiagnostics;
+}
+
 export interface IDiagnosticService {
-	getCPUUsage(): Promise<{ userUsageMs: number; systemUsageMs: number; usagePercentage: number }>;
-	getSystemStats(): Promise<{
-		osStats: { freeMemoryBytes: number; totalMemoryBytes: number };
-		memoryUsage: Record<keyof NodeJS.MemoryUsage, number>;
-		cpuUsage: { userUsageMs: number; systemUsageMs: number; usagePercentage: number };
-		v8HeapStats: { totalHeapSizeBytes: number; usedHeapSizeBytes: number; heapSizeLimitBytes: number };
-		eventLoopDelayMs: number;
-		uptimeMs: number;
-	}>;
+	getSystemStats(): Promise<Diagnostics>;
 }
 
 export class DiagnosticService implements IDiagnosticService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	constructor() {
+	constructor(private db: IDb<Mongoose>) {
 		/**
 		 * Performance Observer for monitoring system performance metrics.
 		 * Clears performance marks after each measurement to prevent memory leaks.
@@ -34,75 +60,86 @@ export class DiagnosticService implements IDiagnosticService {
 		return DiagnosticService.SERVICE_NAME;
 	}
 
-	getCPUUsage = async () => {
+	private getCPUUsagePercentage = async (): Promise<number> => {
 		const startUsage = process.cpuUsage();
 		const timingPeriod = 1000; // measured in ms
 		await new Promise((resolve) => setTimeout(resolve, timingPeriod));
 		const endUsage = process.cpuUsage(startUsage);
-		const cpuUsage = {
-			userUsageMs: endUsage.user / 1000,
-			systemUsageMs: endUsage.system / 1000,
-			usagePercentage: ((endUsage.user + endUsage.system) / 1000 / timingPeriod) * 100,
-		};
-		return cpuUsage;
+		return ((endUsage.user + endUsage.system) / 1000 / timingPeriod) * 100;
 	};
 
-	getSystemStats = async () => {
-		// Memory Usage
-		const totalMemory = os.totalmem();
-		const freeMemory = os.freemem();
+	private getMongoDBStats = async (): Promise<MongoDiagnostics> => {
+		const mongo = await this.db.getConnection();
+		const db = mongo.connection.db;
+		if (!db) {
+			throw new AppError({ message: "Database connection is not available", service: SERVICE_NAME, method: "getMongoDBStats" });
+		}
 
-		const osStats = {
-			freeMemoryBytes: freeMemory, // bytes
-			totalMemoryBytes: totalMemory, // bytes
+		const dbStats = await db.stats();
+		const rawCollections = await db.collections();
+
+		const collections: CollectionDiagnostics[] = await Promise.all(
+			rawCollections
+				.filter((collection) => !collection.collectionName.startsWith("system"))
+				.map(async (collection) => {
+					const stats = await db.command({ collStats: collection.collectionName });
+					const documentCount = await db.collection(collection.collectionName).countDocuments({});
+					const entry: CollectionDiagnostics = {
+						name: collection.collectionName,
+						documentCount,
+						storageSize: stats.storageSize,
+						totalIndexSize: stats.totalIndexSize,
+						totalSize: stats.totalSize,
+					};
+					if (stats.timeseries?.bucketCount !== undefined) {
+						entry.bucketCount = stats.timeseries.bucketCount;
+					}
+					return entry;
+				})
+		);
+
+		return {
+			readyState: mongo.connection.readyState,
+			host: mongo.connection.host,
+			port: mongo.connection.port,
+			dbName: mongo.connection.name,
+			totalSize: dbStats.totalSize,
+			collections,
 		};
+	};
 
-		const used = process.memoryUsage();
+	getSystemStats = async (): Promise<Diagnostics> => {
+		const osStats = { totalMemoryBytes: os.totalmem() };
 
-		// In MB
-		const memoryUsage: Record<keyof NodeJS.MemoryUsage, number> = {
-			rss: Math.round((used.rss / 1024 / 1024) * 100) / 100,
-			heapTotal: Math.round((used.heapTotal / 1024 / 1024) * 100) / 100,
-			heapUsed: Math.round((used.heapUsed / 1024 / 1024) * 100) / 100,
-			external: Math.round((used.external / 1024 / 1024) * 100) / 100,
-			arrayBuffers: Math.round((used.arrayBuffers / 1024 / 1024) * 100) / 100,
-		};
+		const cpuUsage = { usagePercentage: await this.getCPUUsagePercentage() };
 
-		// CPU Usage
-		const cpuMetrics = await this.getCPUUsage();
-
-		// V8 Heap Statistics
 		const heapStats = v8.getHeapStatistics();
-		const v8Metrics = {
-			totalHeapSizeBytes: heapStats.total_heap_size, // bytes
-			usedHeapSizeBytes: heapStats.used_heap_size, // bytes
-			heapSizeLimitBytes: heapStats.heap_size_limit, // bytes
+		const v8HeapStats = {
+			totalHeapSizeBytes: heapStats.total_heap_size,
+			usedHeapSizeBytes: heapStats.used_heap_size,
+			heapSizeLimitBytes: heapStats.heap_size_limit,
 		};
 
-		// Event Loop Delay
-		let eventLoopDelay = 0;
+		let eventLoopDelayMs = 0;
 		performance.mark("start");
 		await new Promise((resolve) => setTimeout(resolve, 0));
 		performance.mark("end");
 		performance.measure("eventLoopDelay", "start", "end");
 		const entries = performance.getEntriesByName("eventLoopDelay");
 		if (entries.length > 0 && entries[0] !== undefined) {
-			eventLoopDelay = entries[0].duration;
+			eventLoopDelayMs = entries[0].duration;
 		}
 
-		// Uptime
-		const uptimeMs = process.uptime() * 1000; // ms
+		const uptimeMs = process.uptime() * 1000;
+		const mongoStats = await this.getMongoDBStats();
 
-		// Combine Metrics
-		const diagnostics = {
+		return {
 			osStats,
-			memoryUsage,
-			cpuUsage: cpuMetrics,
-			v8HeapStats: v8Metrics,
-			eventLoopDelayMs: eventLoopDelay,
+			cpuUsage,
+			v8HeapStats,
+			eventLoopDelayMs,
 			uptimeMs,
+			mongoStats,
 		};
-
-		return diagnostics;
 	};
 }

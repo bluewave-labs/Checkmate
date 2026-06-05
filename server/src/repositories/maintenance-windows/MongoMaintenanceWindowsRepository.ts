@@ -29,7 +29,7 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 	private toEntity = (doc: MaintenanceWindowDocument): MaintenanceWindow => {
 		return {
 			id: this.toStringId(doc._id),
-			monitorId: this.toStringId(doc.monitorId),
+			monitorIds: doc.monitorIds.map(this.toStringId),
 			teamId: this.toStringId(doc.teamId),
 			active: doc.active,
 			name: doc.name,
@@ -65,9 +65,21 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 		return this.toEntity(maintenanceWindow);
 	};
 
+	findByMonitorIds = async (monitorIds: string[], teamId: string, excludeId?: string): Promise<MaintenanceWindow[]> => {
+		const query: Record<string, unknown> = {
+			monitorIds: { $in: monitorIds },
+			teamId,
+		};
+		if (excludeId) {
+			query._id = { $ne: new mongoose.Types.ObjectId(excludeId) };
+		}
+		const maintenanceWindows = await MaintenanceWindowModel.find(query);
+		return this.mapDocuments(maintenanceWindows);
+	};
+
 	findByMonitorId = async (monitorId: string, teamId: string): Promise<MaintenanceWindow[]> => {
 		const maintenanceWindows = await MaintenanceWindowModel.find({
-			monitorId: monitorId,
+			monitorIds: monitorId,
 			teamId: teamId,
 		});
 		return this.mapDocuments(maintenanceWindows);
@@ -113,6 +125,7 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 		if (!updated) {
 			throw new AppError({ message: "Maintenance window not found or could not be updated", status: 404 });
 		}
+
 		return this.toEntity(updated);
 	};
 
@@ -124,6 +137,7 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 		if (!deleted) {
 			throw new AppError({ message: "Maintenance window not found or could not be deleted", status: 404 });
 		}
+
 		return this.toEntity(deleted);
 	};
 	countByTeamId = async (teamId: string, active?: boolean) => {

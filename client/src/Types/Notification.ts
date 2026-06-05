@@ -9,6 +9,7 @@ export const NotificationChannels = [
 	"telegram",
 	"pushover",
 	"twilio",
+	"ntfy",
 ] as const;
 export type NotificationChannel = (typeof NotificationChannels)[number];
 
@@ -25,6 +26,7 @@ export interface Notification {
 	accessToken?: string;
 	accountSid?: string;
 	twilioPhoneNumber?: string;
+	topic?: string;
 	createdAt: string;
 	updatedAt: string;
 }

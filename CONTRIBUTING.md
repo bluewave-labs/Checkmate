@@ -151,6 +151,7 @@ LOG_LEVEL="debug"
 - `ORIGIN`: Origin for CORS purposes
 - `TOKEN_TTL`: Token time to live (in vercel/ms format)
 - `LOG_LEVEL`: Debug level (debug, info, warn, error)
+- `QUEUE_TYPE`: Job queue implementation (`superSimpleQueue` or `lessSimpleQueue`, optional, default: `superSimpleQueue`)
 
 Start the backend server:
 

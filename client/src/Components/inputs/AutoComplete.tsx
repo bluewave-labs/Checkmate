@@ -14,17 +14,19 @@ type AutoCompleteInputProps = Omit<
 	renderInput?: AutocompleteProps<any, boolean, boolean, boolean>["renderInput"];
 	fieldLabel?: string;
 	required?: boolean;
+	renderOptionContent?: (option: any) => React.ReactNode;
 };
 
 export const AutoCompleteInput = ({
 	fieldLabel,
 	required,
 	renderInput,
+	renderOptionContent,
 	...props
 }: AutoCompleteInputProps) => {
 	const theme = useTheme();
 	const multiple = props.multiple;
-
+	const { renderOption: customRenderOption, ...autocompleteProps } = props;
 	const defaultRenderInput = (params: any) => (
 		<TextField
 			{...params}
@@ -34,7 +36,7 @@ export const AutoCompleteInput = ({
 
 	const autocomplete = (
 		<Autocomplete
-			{...props}
+			{...autocompleteProps}
 			disableCloseOnSelect={!!multiple}
 			popupIcon={
 				<ChevronDown
@@ -46,24 +48,28 @@ export const AutoCompleteInput = ({
 			renderInput={renderInput || defaultRenderInput}
 			getOptionKey={(option) => option.id}
 			renderTags={() => null}
-			renderOption={(props, option, { selected }) => {
-				const { key, ...optionProps } = props;
-				return (
-					<ListItem
-						key={key}
-						{...optionProps}
-					>
-						<Stack
-							direction={"row"}
-							alignItems={"center"}
-							gap={theme.spacing(2)}
+			renderOption={
+				customRenderOption ||
+				((props, option, { selected }) => {
+					const { key, ...optionProps } = props;
+					return (
+						<ListItem
+							key={key}
+							{...optionProps}
 						>
-							{multiple && <Checkbox checked={selected} />}
-							{option.name}
-						</Stack>
-					</ListItem>
-				);
-			}}
+							<Stack
+								direction={"row"}
+								alignItems={"center"}
+								gap={theme.spacing(2)}
+								width="100%"
+							>
+								{multiple && <Checkbox checked={selected} />}
+								{renderOptionContent ? renderOptionContent(option) : option.name}
+							</Stack>
+						</ListItem>
+					);
+				})
+			}
 			sx={{
 				"&.MuiAutocomplete-root .MuiAutocomplete-input": {
 					padding: `0 ${theme.spacing(5)}`,

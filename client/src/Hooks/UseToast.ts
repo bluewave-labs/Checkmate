@@ -20,6 +20,8 @@ export const useToast = () => {
 		showToast(msg, { ...opts, type: "error" });
 	const toastInfo = (msg: string, opts?: ToastOptions) =>
 		showToast(msg, { ...opts, type: "info" });
+	const toastWarning = (msg: string, opts?: ToastOptions) =>
+		showToast(msg, { ...opts, type: "warning" });
 
-	return { showToast, toastSuccess, toastError, toastInfo };
+	return { showToast, toastSuccess, toastError, toastInfo, toastWarning };
 };

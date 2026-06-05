@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import dayjs from "dayjs";
 import {
 	maintenanceWindowSchema,
+	maintenanceWindowEditSchema,
 	repeatOptions,
 	type MaintenanceWindowFormData,
 } from "@/Validation/maintenanceWindow";
@@ -32,7 +33,7 @@ export const useMaintenanceWindowForm = ({
 				startTime: startDate.format("HH:mm"),
 				duration: data.duration ?? 0,
 				durationUnit: data.durationUnit ?? "minutes",
-				monitors: [data.monitorId],
+				monitors: data.monitorIds,
 			};
 		} else {
 			const now = dayjs();
@@ -47,6 +48,9 @@ export const useMaintenanceWindowForm = ({
 			};
 		}
 
-		return { schema: maintenanceWindowSchema, defaults };
+		return {
+			schema: data ? maintenanceWindowEditSchema : maintenanceWindowSchema,
+			defaults,
+		};
 	}, [data]);
 };

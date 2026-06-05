@@ -150,7 +150,8 @@ const NotificationsCreatePage = () => {
 			{watchedType !== "matrix" &&
 				watchedType !== "telegram" &&
 				watchedType !== "pushover" &&
-				watchedType !== "twilio" && (
+				watchedType !== "twilio" &&
+				watchedType !== "ntfy" && (
 					<ConfigBox
 						title={addressConfig.title}
 						subtitle={addressConfig.description}
@@ -174,6 +175,48 @@ const NotificationsCreatePage = () => {
 						}
 					/>
 				)}
+			{watchedType === "ntfy" && (
+				<ConfigBox
+					title={t("pages.notifications.form.ntfy.title")}
+					subtitle={t("pages.notifications.form.ntfy.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(8)}>
+							<Controller
+								name="address"
+								control={control}
+								defaultValue={"address" in defaults ? defaults.address : ""}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t("pages.notifications.form.ntfy.optionServerUrl")}
+										placeholder={t("pages.notifications.form.ntfy.placeholderServerUrl")}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+							<Controller
+								name="topic"
+								control={control}
+								defaultValue={"topic" in defaults ? defaults.topic : ""}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										type="text"
+										fieldLabel={t("pages.notifications.form.ntfy.optionTopic")}
+										placeholder={t("pages.notifications.form.ntfy.placeholderTopic")}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={fieldState.error?.message ?? ""}
+									/>
+								)}
+							/>
+						</Stack>
+					}
+				/>
+			)}
 			{watchedType === "telegram" && (
 				<ConfigBox
 					title={t("pages.notifications.form.telegram.title")}

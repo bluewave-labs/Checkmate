@@ -21,3 +21,4 @@ export * from "./statusPageValidation.js";
 export * from "./notificationValidation.js";
 export * from "./userValidation.js";
 export * from "./incidentValidation.js";
+export * from "./tagValidation.js";

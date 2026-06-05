@@ -18,8 +18,6 @@ services:
     image: mongo:6.0
     restart: always
     command: ["mongod", "--quiet", "--bind_ip_all"]
-    ports:
-      - "27017:27017"
     volumes:
       - ./mongo/data:/data/db
     healthcheck:

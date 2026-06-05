@@ -10,6 +10,7 @@ import type { RootState } from "@/Types/state";
 export const languageNames: Record<string, string> = {
 	en: "English",
 	de: "Deutsch",
+	ca: "Català",
 	es: "Español",
 	fr: "Français",
 	"pt-BR": "Português (BR)",

@@ -15,12 +15,30 @@ export const MS_PER_HOUR = 60 * MS_PER_MINUTE;
 export const MS_PER_DAY = 24 * MS_PER_HOUR;
 export const MS_PER_WEEK = MS_PER_DAY * 7;
 
-export const formatDateWithTz = (timestamp: string, format: string, timezone: string) => {
+const resolveSystemTimezone = (): string => {
+	try {
+		return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+	} catch {
+		return "UTC";
+	}
+};
+
+export const SYSTEM_TIMEZONE = resolveSystemTimezone();
+
+export const resolveTimezone = (preferred?: string | null): string =>
+	preferred?.trim() || SYSTEM_TIMEZONE;
+
+export const formatDateWithTz = (
+	timestamp: string,
+	format: string,
+	timezone?: string
+) => {
 	if (!timestamp) {
 		return "Unknown time";
 	}
+	const tz = resolveTimezone(timezone);
 	try {
-		return dayjs(timestamp).tz(timezone).format(format);
+		return dayjs(timestamp).tz(tz).format(format);
 	} catch {
 		return dayjs(timestamp).utc().format(format);
 	}

@@ -6,6 +6,7 @@ import { MONO_STACK, SANS_STACK } from "../shared/fontStacks";
 export type RefinedHeatCell = "fast" | "med" | "slow" | "down" | "empty";
 export type RefinedBarKind = "up" | "down" | "empty";
 export type RefinedGaugeFill = "ok" | "warm" | "hot";
+import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 
 export interface RefinedStyles {
 	page: SxProps<Theme>;
@@ -62,7 +63,10 @@ const pillBase = {
 	fontWeight: 600,
 };
 
-export const refinedStyles = (tokens: StatusPageThemeTokens): RefinedStyles => {
+export const refinedStyles = (
+	tokens: StatusPageThemeTokens,
+	_isDark: boolean
+): RefinedStyles => {
 	const heatCellBg: Record<RefinedHeatCell, string> = {
 		fast: tokens.up,
 		med: `color-mix(in srgb, ${tokens.up} 60%, #ffffff 40%)`,
@@ -259,7 +263,7 @@ export const refinedStyles = (tokens: StatusPageThemeTokens): RefinedStyles => {
 		heatmap: {
 			padding: "0 20px 16px",
 			display: "grid",
-			gridTemplateColumns: "repeat(25, 1fr)",
+			gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
 			gap: "3px",
 			height: 42,
 		},
@@ -274,7 +278,7 @@ export const refinedStyles = (tokens: StatusPageThemeTokens): RefinedStyles => {
 		histogram: {
 			padding: "0 20px",
 			display: "grid",
-			gridTemplateColumns: "repeat(25, 1fr)",
+			gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
 			gap: "3px",
 			alignItems: "flex-end",
 			height: 42,

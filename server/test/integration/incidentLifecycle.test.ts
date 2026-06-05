@@ -5,7 +5,7 @@ import { createMockLogger } from "../helpers/createMockLogger.ts";
 import type { IMonitorsRepository, IUsersRepository } from "../../src/repositories/index.ts";
 import type { INotificationMessageBuilder } from "../../src/service/infrastructure/notificationMessageBuilder.ts";
 import type { Monitor } from "../../src/types/monitor.ts";
-import type { MonitorActionDecision } from "../../src/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.ts";
+import type { MonitorActionDecision } from "../../src/service/infrastructure/JobQueues/QueueHelper.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

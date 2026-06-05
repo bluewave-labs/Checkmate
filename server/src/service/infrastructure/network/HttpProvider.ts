@@ -4,12 +4,18 @@ import { IStatusProvider } from "@/service/infrastructure/network/IStatusProvide
 import { HttpStatusPayload } from "@/types/network.js";
 import { MonitorStatusResponse } from "@/types/network.js";
 import { Agent as HttpsAgent } from "https";
+import { Agent as HttpAgent } from "http";
 import { Monitor, MonitorType } from "@/types/monitor.js";
 import { NETWORK_ERROR } from "@/service/infrastructure/network/utils.js";
 import CacheableLookup from "cacheable-lookup";
 
 export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 	readonly type = "http";
+
+	// Shared, pooled agents reused across every check
+	private readonly httpAgent: HttpAgent;
+	private readonly httpsAgent: HttpsAgent;
+	private readonly httpsAgentInsecure: HttpsAgent;
 
 	constructor(
 		private got: Got,
@@ -23,6 +29,11 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 			},
 			retry: { limit: 1 },
 		});
+
+		const agentOptions = { keepAlive: true, maxSockets: 256, maxFreeSockets: 256 };
+		this.httpAgent = new HttpAgent(agentOptions);
+		this.httpsAgent = new HttpsAgent({ ...agentOptions, rejectUnauthorized: true });
+		this.httpsAgentInsecure = new HttpsAgent({ ...agentOptions, rejectUnauthorized: false });
 	}
 
 	supports(type: MonitorType) {
@@ -38,7 +49,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 				status: false,
 				code: error.response?.statusCode ?? NETWORK_ERROR,
 				message: error.message,
-				responseTime: error.timings?.phases?.total ?? 0,
+				responseTime: error.timings?.phases?.firstByte ?? error.timings?.phases?.total ?? 0,
 				timings: error.timings,
 				payload: null as T,
 			};
@@ -68,7 +79,8 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 		};
 
 		options.agent = {
-			https: new HttpsAgent({ rejectUnauthorized: !ignoreTlsErrors }),
+			http: this.httpAgent,
+			https: ignoreTlsErrors ? this.httpsAgentInsecure : this.httpsAgent,
 		};
 
 		try {
@@ -84,7 +96,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 					status: false,
 					code: response.statusCode,
 					message: "Response is not JSON",
-					responseTime: response.timings.phases.total ?? 0,
+					responseTime: response.timings.phases.firstByte ?? 0,
 					timings: response.timings,
 					payload: response.body as unknown as T,
 				};
@@ -109,7 +121,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 				status: response.ok && matchResult.ok,
 				code: response.statusCode,
 				message: matchResult.ok ? (response.statusMessage ?? "OK") : matchResult.message,
-				responseTime: response.timings.phases.total ?? 0,
+				responseTime: response.timings.phases.firstByte ?? 0,
 				timings: response.timings,
 				payload,
 				extracted: matchResult.extracted,

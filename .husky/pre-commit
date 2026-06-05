@@ -1,4 +1,23 @@
 #!/bin/sh
+
+# Skip during merge/rebase/cherry-pick/revert. lint-staged's internal
+# git-stash mechanism is incompatible with these states and will silently
+# wipe MERGE_HEAD and your conflict resolutions on commit failure.
+git_dir=$(git rev-parse --git-dir)
+if [ -e "$git_dir/MERGE_HEAD" ] \
+	|| [ -e "$git_dir/CHERRY_PICK_HEAD" ] \
+	|| [ -e "$git_dir/REVERT_HEAD" ] \
+	|| [ -d "$git_dir/rebase-merge" ] \
+	|| [ -d "$git_dir/rebase-apply" ]; then
+	echo "Skipping lint-staged (mid merge/rebase/cherry-pick/revert)"
+	exit 0
+fi
+
+# Anchor to repo root so commits made from a subdirectory still work, and
+# run each package's lint-staged in a subshell so cwd is scoped (a failure
+# inside one package can't poison the cwd for the next).
+cd "$(git rev-parse --show-toplevel)" || exit 1
+
 echo "Running lint-staged..."
-cd client && npx lint-staged && cd ..
-cd server && npx lint-staged && cd ..
+(cd client && npx lint-staged) || exit 1
+(cd server && npx lint-staged) || exit 1

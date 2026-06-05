@@ -1,3 +1,4 @@
+import { Mongoose } from "mongoose";
 import MongoDB from "../db/MongoDB.js";
 import { IDb } from "@/db/IDb.js";
 import {
@@ -6,9 +7,11 @@ import {
 	EmailService,
 	BufferService,
 	GlobalPingService,
+	LessSimpleQueue,
 	SuperSimpleQueue,
-	SuperSimpleQueueHelper,
+	QueueHelper,
 	NotificationsService,
+	TagsService,
 	StatusService,
 	NotificationMessageBuilder,
 	MonitorService,
@@ -31,12 +34,14 @@ import {
 	TelegramProvider,
 	PushoverProvider,
 	TwilioProvider,
+	NtfyProvider,
 	// Interfaces
 	INetworkService,
 	IEmailService,
 	IBufferService,
-	ISuperSimpleQueue,
+	IJobQueue,
 	INotificationsService,
+	ITagsService,
 	IStatusService,
 	IMonitorService,
 	IUserService,
@@ -64,8 +69,10 @@ import { PortProvider } from "@/service/infrastructure/network/PortProvider.js";
 import { GameProvider } from "@/service/infrastructure/network/GameProvider.js";
 import { GrpcProvider } from "@/service/infrastructure/network/GrpcProvider.js";
 import { WebSocketProvider } from "@/service/infrastructure/network/WebSocketProvider.js";
+import { DNSProvider } from "@/service/infrastructure/network/DNSProvider.js";
 
 // Third-party
+import { Resolver } from "dns/promises";
 import axios from "axios";
 import got from "got";
 import ping from "ping";
@@ -96,10 +103,12 @@ import {
 	MongoInvitesRepository,
 	MongoRecoveryTokensRepository,
 	MongoNotificationsRepository,
+	MongoTagsRepository,
 	MongoIncidentsRepository,
 	MongoTeamsRepository,
 	MongoMaintenanceWindowsRepository,
 	MongoSettingsRepository,
+	MongoQueueWorkersRepository,
 	IMonitorsRepository,
 	IChecksRepository,
 	IGeoChecksRepository,
@@ -110,21 +119,23 @@ import {
 	IRecoveryTokensRepository,
 	ISettingsRepository,
 	INotificationsRepository,
+	ITagsRepository,
 	IIncidentsRepository,
 	ITeamsRepository,
 	IMaintenanceWindowsRepository,
 } from "@/repositories/index.js";
 import { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";
+import { type QueueMode } from "@/types/settings.js";
 
 export type InitializedServices = {
 	settingsService: ISettingsService;
-	db: IDb;
+	db: IDb<Mongoose>;
 	networkService: INetworkService;
 	emailService: IEmailService;
 	bufferService: IBufferService;
 	statusService: IStatusService;
-	jobQueue: ISuperSimpleQueue;
+	jobQueue: IJobQueue;
 	userService: IUserService;
 	checkService: ICheckService;
 	geoChecksService: IGeoChecksService;
@@ -135,6 +146,7 @@ export type InitializedServices = {
 	incidentService: IIncidentService;
 	logger: ILogger;
 	notificationsService: INotificationsService;
+	tagsService: ITagsService;
 	statusPageService: IStatusPageService;
 	notificationMessageBuilder: INotificationMessageBuilder;
 
@@ -149,6 +161,7 @@ export type InitializedServices = {
 	recoveryTokensRepository: IRecoveryTokensRepository;
 	settingsRepository: ISettingsRepository;
 	notificationsRepository: INotificationsRepository;
+	tagsRepository: ITagsRepository;
 	incidentsRepository: IIncidentsRepository;
 	teamsRepository: ITeamsRepository;
 	maintenanceWindowsRepository: IMaintenanceWindowsRepository;
@@ -158,60 +171,86 @@ export const initializeServices = async ({
 	logger,
 	envSettings,
 	settingsService,
+	queueMode = "primary",
 }: {
 	logger: ILogger;
 	envSettings: EnvConfig;
 	settingsService: ISettingsService;
+	queueMode?: QueueMode;
 }): Promise<InitializedServices> => {
 	// Create DB
 
-	const dbType = envSettings.dbType;
-
-	let db: IDb | null = null;
-
-	if (dbType === "mongodb") {
-		db = new MongoDB(logger, envSettings);
-	}
-
-	if (!db) {
-		throw new AppError({ message: "Unsupported database type", status: 500 });
-	}
-
+	let db: IDb<Mongoose> | null = null;
+	db = new MongoDB(logger, envSettings);
 	await db.connect();
 
-	let monitorsRepository: IMonitorsRepository;
-	let checksRepository: IChecksRepository;
-	let geoChecksRepository: IGeoChecksRepository;
-	let monitorStatsRepository: IMonitorStatsRepository;
-	let statusPagesRepository: IStatusPagesRepository;
-	let usersRepository: IUsersRepository;
-	let invitesRepository: IInvitesRepository;
-	let recoveryTokensRepository: IRecoveryTokensRepository;
-	let settingsRepository: ISettingsRepository;
-	let notificationsRepository: INotificationsRepository;
-	let incidentsRepository: IIncidentsRepository;
-	let teamsRepository: ITeamsRepository;
-	let maintenanceWindowsRepository: IMaintenanceWindowsRepository;
+	// ** NOTE **
+	// const dbType = envSettings.dbType;
+	// DB type has been fixed to MongoDB for now
+
+	// if (dbType === "mongodb") {
+	// 	db = new MongoDB(logger, envSettings);
+	// }
+
+	// if (!db) {
+	// 	throw new AppError({ message: "Unsupported database type", status: 500 });
+	// }
+
+	// await db.connect();
 
 	// Repositories
 
-	if (dbType === "mongodb") {
-		monitorsRepository = new MongoMonitorsRepository();
-		checksRepository = new MongoChecksRepository(logger);
-		geoChecksRepository = new MongoGeoChecksRepository(logger);
-		monitorStatsRepository = new MongoMonitorStatsRepository();
-		statusPagesRepository = new MongoStatusPagesRepository();
-		usersRepository = new MongoUsersRepository();
-		invitesRepository = new MongoInvitesRepository();
-		recoveryTokensRepository = new MongoRecoveryTokensRepository();
-		settingsRepository = new MongoSettingsRepository();
-		notificationsRepository = new MongoNotificationsRepository();
-		incidentsRepository = new MongoIncidentsRepository();
-		teamsRepository = new MongoTeamsRepository();
-		maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
-	} else {
-		throw new AppError({ message: "Unsupported database type", status: 500 });
-	}
+	// ** NOTE **
+	// DB Type fixed to MongoDB for now
+	// let monitorsRepository: IMonitorsRepository;
+	// let checksRepository: IChecksRepository;
+	// let geoChecksRepository: IGeoChecksRepository;
+	// let monitorStatsRepository: IMonitorStatsRepository;
+	// let statusPagesRepository: IStatusPagesRepository;
+	// let usersRepository: IUsersRepository;
+	// let invitesRepository: IInvitesRepository;
+	// let recoveryTokensRepository: IRecoveryTokensRepository;
+	// let settingsRepository: ISettingsRepository;
+	// let notificationsRepository: INotificationsRepository;
+	// let tagsRepository: ITagsRepository;
+	// let incidentsRepository: IIncidentsRepository;
+	// let teamsRepository: ITeamsRepository;
+	// let maintenanceWindowsRepository: IMaintenanceWindowsRepository;
+
+	// if (dbType === "mongodb") {
+	// 	monitorsRepository = new MongoMonitorsRepository();
+	// 	checksRepository = new MongoChecksRepository(logger);
+	// 	geoChecksRepository = new MongoGeoChecksRepository(logger);
+	// 	monitorStatsRepository = new MongoMonitorStatsRepository();
+	// 	statusPagesRepository = new MongoStatusPagesRepository();
+	// 	usersRepository = new MongoUsersRepository();
+	// 	invitesRepository = new MongoInvitesRepository();
+	// 	recoveryTokensRepository = new MongoRecoveryTokensRepository();
+	// 	settingsRepository = new MongoSettingsRepository();
+	// 	notificationsRepository = new MongoNotificationsRepository();
+	// 	tagsRepository = new MongoTagsRepository();
+	// 	incidentsRepository = new MongoIncidentsRepository();
+	// 	teamsRepository = new MongoTeamsRepository();
+	// 	maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
+	// } else {
+	// 	throw new AppError({ message: "Unsupported database type", status: 500 });
+	// }
+
+	const monitorsRepository = new MongoMonitorsRepository();
+	const checksRepository = new MongoChecksRepository(logger);
+	const geoChecksRepository = new MongoGeoChecksRepository(logger);
+	const monitorStatsRepository = new MongoMonitorStatsRepository();
+	const statusPagesRepository = new MongoStatusPagesRepository();
+	const usersRepository = new MongoUsersRepository();
+	const invitesRepository = new MongoInvitesRepository();
+	const recoveryTokensRepository = new MongoRecoveryTokensRepository();
+	const settingsRepository = new MongoSettingsRepository();
+	const notificationsRepository = new MongoNotificationsRepository();
+	const tagsRepository = new MongoTagsRepository();
+	const incidentsRepository = new MongoIncidentsRepository();
+	const teamsRepository = new MongoTeamsRepository();
+	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
+	const queueWorkersRepository = new MongoQueueWorkersRepository();
 
 	// Inject settings repository into settings service (now that DB is connected)
 	(settingsService as SettingsService).setRepository(settingsRepository);
@@ -226,6 +265,7 @@ export const initializeServices = async ({
 	const gameProvider = new GameProvider(logger, GameDig);
 	const grpcProvider = new GrpcProvider(grpc, protoLoader);
 	const webSocketProvider = new WebSocketProvider(WebSocket);
+	const dnsProvider = new DNSProvider(() => new Resolver());
 
 	const networkService = new NetworkService(axios, logger, [
 		pingProvider,
@@ -237,6 +277,7 @@ export const initializeServices = async ({
 		gameProvider,
 		grpcProvider,
 		webSocketProvider,
+		dnsProvider,
 	]);
 	const emailService = new EmailService(settingsService, fs, path, compile, mjml2html, nodemailer, logger);
 
@@ -270,6 +311,7 @@ export const initializeServices = async ({
 	const telegramProvider = new TelegramProvider(logger);
 	const pushoverProvider = new PushoverProvider(logger);
 	const twilioProvider = new TwilioProvider(logger);
+	const ntfyProvider = new NtfyProvider(logger);
 
 	const notificationsService = new NotificationsService(
 		notificationsRepository,
@@ -284,12 +326,15 @@ export const initializeServices = async ({
 		telegramProvider,
 		pushoverProvider,
 		twilioProvider,
+		ntfyProvider,
 		settingsService,
 		logger,
 		notificationMessageBuilder
 	);
 
-	const superSimpleQueueHelper = new SuperSimpleQueueHelper(
+	const tagsService = new TagsService(tagsRepository, monitorsRepository);
+
+	const queueHelper = new QueueHelper(
 		logger,
 		networkService,
 		statusService,
@@ -308,7 +353,23 @@ export const initializeServices = async ({
 		geoChecksRepository
 	);
 
-	const superSimpleQueue = await SuperSimpleQueue.create(logger, superSimpleQueueHelper, monitorsRepository);
+	if (queueMode === "worker" && envSettings.queueType !== "lessSimpleQueue") {
+		throw new AppError({
+			message: `Worker mode requires QUEUE_TYPE="lessSimpleQueue" got ${envSettings.queueType}`,
+			status: 500,
+			service: "config services",
+			method: "initializeServices",
+		});
+	}
+
+	let jobQueue: IJobQueue;
+	switch (envSettings.queueType) {
+		case "lessSimpleQueue":
+			jobQueue = await LessSimpleQueue.create(logger, queueHelper, monitorsRepository, queueWorkersRepository, envSettings, queueMode);
+			break;
+		default:
+			jobQueue = await SuperSimpleQueue.create(logger, queueHelper, monitorsRepository);
+	}
 
 	// Business services
 	const userService = new UserService({
@@ -317,7 +378,7 @@ export const initializeServices = async ({
 		settingsService,
 		logger,
 		jwt,
-		jobQueue: superSimpleQueue,
+		jobQueue,
 		monitorsRepository,
 		usersRepository,
 		invitesRepository,
@@ -326,7 +387,7 @@ export const initializeServices = async ({
 		teamsRepository,
 	});
 
-	const diagnosticService = new DiagnosticService();
+	const diagnosticService = new DiagnosticService(db);
 	const inviteService = new InviteService({
 		invitesRepository,
 		settingsService,
@@ -337,7 +398,7 @@ export const initializeServices = async ({
 		maintenanceWindowsRepository,
 	});
 	const monitorService = new MonitorService({
-		jobQueue: superSimpleQueue,
+		jobQueue,
 		logger,
 		games,
 		monitorsRepository,
@@ -357,7 +418,7 @@ export const initializeServices = async ({
 		emailService,
 		bufferService,
 		statusService,
-		jobQueue: superSimpleQueue,
+		jobQueue,
 		userService,
 		checkService,
 		geoChecksService,
@@ -368,6 +429,7 @@ export const initializeServices = async ({
 		incidentService,
 		logger,
 		notificationsService,
+		tagsService,
 		statusPageService,
 		notificationMessageBuilder,
 
@@ -382,6 +444,7 @@ export const initializeServices = async ({
 		recoveryTokensRepository,
 		settingsRepository,
 		notificationsRepository,
+		tagsRepository,
 		incidentsRepository,
 		teamsRepository,
 		maintenanceWindowsRepository,
