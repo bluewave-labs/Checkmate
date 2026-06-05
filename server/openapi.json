@@ -552,6 +552,9 @@
 					},
 					{
 						"$ref": "#/components/schemas/TwilioNotification"
+					},
+					{
+						"$ref": "#/components/schemas/NtfyNotification"
 					}
 				],
 				"discriminator": {
@@ -566,7 +569,8 @@
 						"teams": "#/components/schemas/TeamsNotification",
 						"telegram": "#/components/schemas/TelegramNotification",
 						"pushover": "#/components/schemas/PushoverNotification",
-						"twilio": "#/components/schemas/TwilioNotification"
+						"twilio": "#/components/schemas/TwilioNotification",
+						"ntfy": "#/components/schemas/NtfyNotification"
 					}
 				}
 			},
@@ -1009,6 +1013,34 @@
 					"accessToken": "your-auth-token",
 					"phone": "+15551234567",
 					"twilioPhoneNumber": "+15557654321"
+				}
+			},
+			"NtfyNotification": {
+				"type": "object",
+				"properties": {
+					"notificationName": {
+						"type": "string",
+						"minLength": 1
+					},
+					"type": {
+						"type": "string",
+						"enum": ["ntfy"]
+					},
+					"address": {
+						"type": "string",
+						"format": "uri"
+					},
+					"topic": {
+						"type": "string",
+						"minLength": 1
+					}
+				},
+				"required": ["notificationName", "type", "address", "topic"],
+				"example": {
+					"notificationName": "ntfy topic",
+					"type": "ntfy",
+					"address": "https://ntfy.sh",
+					"topic": "checkmate-alerts"
 				}
 			}
 		},

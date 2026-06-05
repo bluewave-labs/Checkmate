@@ -68,6 +68,10 @@ const notificationVariantMeta: Record<string, { component: string; example: Reco
 			twilioPhoneNumber: "+15557654321",
 		},
 	},
+	ntfy: {
+		component: "NtfyNotification",
+		example: { notificationName: "ntfy topic", type: "ntfy", address: "https://ntfy.sh", topic: "checkmate-alerts" },
+	},
 };
 
 const decoratedVariants = createNotificationBodyValidation.options.map((variant) => {

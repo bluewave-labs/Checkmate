@@ -1165,6 +1165,14 @@
 					"placeholderFromNumber": "+15551234567",
 					"optionToNumber": "To number (recipient)",
 					"placeholderToNumber": "+15559876543"
+				},
+				"ntfy": {
+					"title": "ntfy configuration",
+					"description": "Configure an ntfy server and topic for push notifications.",
+					"optionServerUrl": "Server URL",
+					"placeholderServerUrl": "https://ntfy.sh",
+					"optionTopic": "Topic",
+					"placeholderTopic": "checkmate-alerts"
 				}
 			},
 			"table": {
