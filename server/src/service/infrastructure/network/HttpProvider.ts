@@ -40,6 +40,62 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 		return type === "http";
 	}
 
+	private buildResponse<T>(
+		monitor: Monitor,
+		opts: {
+			body: string;
+			contentType: string;
+			statusCode: number;
+			statusUp: boolean;
+			message: string;
+			responseTime: number;
+			timings?: MonitorStatusResponse<T>["timings"];
+		}
+	): MonitorStatusResponse<T> {
+		const { body, contentType, statusCode, statusUp, message, responseTime, timings } = opts;
+		const isJson = contentType.includes("application/json");
+
+		if (monitor.jsonPath && !isJson) {
+			return {
+				monitorId: monitor.id,
+				teamId: monitor.teamId,
+				type: monitor.type,
+				status: false,
+				code: statusCode,
+				message: "Response is not JSON",
+				responseTime,
+				timings,
+				payload: body,
+			};
+		}
+
+		let payload: T | string;
+		if (isJson) {
+			try {
+				payload = JSON.parse(body) as T;
+			} catch {
+				payload = body;
+			}
+		} else {
+			payload = body;
+		}
+
+		const matchResult = this.advancedMatcher.validate<T | string>(payload, monitor);
+
+		return {
+			monitorId: monitor.id,
+			teamId: monitor.teamId,
+			type: monitor.type,
+			status: statusUp && matchResult.ok,
+			code: statusCode,
+			message: matchResult.ok ? message : matchResult.message,
+			responseTime,
+			timings,
+			payload,
+			extracted: matchResult.extracted,
+		};
+	}
+
 	private handleHttpError<T>(error: unknown, monitor: Monitor): MonitorStatusResponse<T> {
 		if (error instanceof HTTPError || error instanceof RequestError) {
 			const statusCode = error.response?.statusCode;
@@ -60,50 +116,15 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 				};
 			}
 
-			const { jsonPath } = monitor;
-			const body = error.response?.body ?? "";
-			const contentType = error.response?.headers?.["content-type"] || "";
-			const isJson = contentType.includes("application/json");
-
-			if (jsonPath && !isJson) {
-				return {
-					monitorId: monitor.id,
-					teamId: monitor.teamId,
-					type: monitor.type,
-					status: false,
-					code: statusCode ?? NETWORK_ERROR,
-					message: "Response is not JSON",
-					responseTime,
-					timings: error.timings,
-					payload: body as unknown as T,
-				};
-			}
-
-			let payload: T;
-			if (isJson) {
-				try {
-					payload = JSON.parse(body) as T;
-				} catch {
-					payload = body as unknown as T;
-				}
-			} else {
-				payload = body as unknown as T;
-			}
-
-			const matchResult = this.advancedMatcher.validate<T>(payload, monitor);
-
-			return {
-				monitorId: monitor.id,
-				teamId: monitor.teamId,
-				type: monitor.type,
-				status: statusUp && matchResult.ok,
-				code: statusCode ?? NETWORK_ERROR,
-				message: matchResult.ok ? error.message : matchResult.message,
+			return this.buildResponse<T>(monitor, {
+				body: (error.response?.body ?? "") as string,
+				contentType: error.response?.headers?.["content-type"] || "",
+				statusCode: statusCode ?? NETWORK_ERROR,
+				statusUp,
+				message: error.message,
 				responseTime,
 				timings: error.timings,
-				payload,
-				extracted: matchResult.extracted,
-			};
+			});
 		}
 
 		return {
@@ -119,7 +140,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 	}
 
 	async handle<T>(monitor: Monitor): Promise<MonitorStatusResponse<T>> {
-		const { url, secret, jsonPath, ignoreTlsErrors } = monitor;
+		const { url, secret, ignoreTlsErrors } = monitor;
 
 		if (!url) {
 			throw new Error("URL is required for HTTP monitor");
@@ -136,48 +157,17 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 
 		try {
 			const response = await this.got<string>(url, options);
-			const contentType = response.headers["content-type"] || "";
-			const isJson = contentType.includes("application/json");
-
-			if (jsonPath && !isJson) {
-				return {
-					monitorId: monitor.id,
-					teamId: monitor.teamId,
-					type: monitor.type,
-					status: false,
-					code: response.statusCode,
-					message: "Response is not JSON",
-					responseTime: response.timings.phases.firstByte ?? 0,
-					timings: response.timings,
-					payload: response.body as unknown as T,
-				};
-			}
-
-			let payload: T;
-			if (isJson) {
-				try {
-					payload = JSON.parse(response.body) as T;
-				} catch {
-					payload = response.body as unknown as T;
-				}
-			} else {
-				payload = response.body as unknown as T;
-			}
-
-			const matchResult = this.advancedMatcher.validate<T>(payload, monitor);
 			const statusUp = isStatusUp(response.statusCode, monitor.customUpCodes);
-			return {
-				monitorId: monitor.id,
-				teamId: monitor.teamId,
-				type: monitor.type,
-				status: statusUp && matchResult.ok,
-				code: response.statusCode,
-				message: matchResult.ok ? (response.statusMessage ?? "OK") : matchResult.message,
+
+			return this.buildResponse<T>(monitor, {
+				body: response.body,
+				contentType: response.headers["content-type"] || "",
+				statusCode: response.statusCode,
+				statusUp,
+				message: response.statusMessage ?? "OK",
 				responseTime: response.timings.phases.firstByte ?? 0,
 				timings: response.timings,
-				payload,
-				extracted: matchResult.extracted,
-			};
+			});
 		} catch (error: unknown) {
 			return this.handleHttpError(error, monitor);
 		}

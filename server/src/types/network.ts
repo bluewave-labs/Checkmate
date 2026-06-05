@@ -35,7 +35,7 @@ export interface MonitorStatusResponse<
 	code: number;
 	message: string;
 	responseTime?: number;
-	payload?: T | null;
+	payload?: T | string | null;
 	timings?: GotTimings;
 	first_byte_took?: number;
 	body_read_took?: number;

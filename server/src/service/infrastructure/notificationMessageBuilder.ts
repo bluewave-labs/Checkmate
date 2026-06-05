@@ -186,7 +186,7 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		const breaches: ThresholdBreach[] = [];
 
 		// Check if this is a hardware monitor with threshold data
-		if (monitor.type !== "hardware" || !monitorStatusResponse.payload) {
+		if (monitor.type !== "hardware" || !monitorStatusResponse.payload || typeof monitorStatusResponse.payload === "string") {
 			return breaches;
 		}
 
