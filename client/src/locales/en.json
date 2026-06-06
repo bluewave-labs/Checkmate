@@ -1607,7 +1607,8 @@
 			},
 			"table": {
 				"headers": {
-					"responseTime": "Response time"
+					"responseTime": "Response time",
+					"uptime": "Uptime %"
 				}
 			},
 			"fallback": {

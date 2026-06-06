@@ -7,6 +7,7 @@ import {
 	Pagination,
 	StatusLabel,
 	ColoredLabel,
+	ValueLabel,
 } from "@/Components/design-elements";
 import { HeatmapResponseTime, HistogramResponseTime } from "@/Components/common";
 import { ActionsMenu } from "@/Components/actions-menu";
@@ -25,6 +26,8 @@ import type { RootState } from "@/Types/state";
 import { Checkbox } from "@/Components/inputs";
 import type { Tag } from "@/Types/Tag";
 import { SPACING } from "@/Utils/Theme/constants";
+import { getUptimePercentageColor } from "@/Utils/MonitorUtils";
+import { formatPercentage } from "@/Utils/FormatUtils";
 
 interface MonitorTableProps {
 	monitors: Monitor[];
@@ -257,6 +260,24 @@ export const MonitorTable = ({
 					} else {
 						return <HeatmapResponseTime checks={row.recentChecks} />;
 					}
+				},
+			},
+			{
+				id: "uptime",
+				content: t("pages.uptime.table.headers.uptime"),
+				render: (row) => {
+					const uptimePercentage = row.uptimePercentage ?? 0;
+					const formattedPercentage = formatPercentage(uptimePercentage);
+					const paletteKey = getUptimePercentageColor(uptimePercentage);
+					const color = theme.palette[paletteKey].main;
+					return (
+						<Stack alignItems={"center"}>
+							<ColoredLabel
+								text={formattedPercentage}
+								color={color}
+							/>
+						</Stack>
+					);
 				},
 			},
 			{
