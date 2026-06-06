@@ -26,6 +26,7 @@ export interface IMonitorsRepository {
 	// collection fetch
 	findAll(): Promise<Monitor[] | null>;
 	findByTeamId(teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null>;
+	findByTeamIdWithStats(teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null>;
 	findByIds(monitorIds: string[]): Promise<Monitor[]>;
 	findByIdsWithChecks(monitorIds: string[], checksCount?: number): Promise<Monitor[]>;
 

@@ -393,7 +393,7 @@ export class MonitorService implements IMonitorService {
 	}): Promise<MonitorsWithChecksByTeamIdResult> => {
 		const summary = await this.monitorsRepository.findMonitorsSummaryByTeamId(teamId, { type, tags });
 		const count = await this.monitorsRepository.findMonitorCountByTeamIdAndType(teamId, { type, tags, filter });
-		const monitors = await this.monitorsRepository.findByTeamId(teamId, {
+		const monitors = await this.monitorsRepository.findByTeamIdWithStats(teamId, {
 			limit,
 			type,
 			tags,
