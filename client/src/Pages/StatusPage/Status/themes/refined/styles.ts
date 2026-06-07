@@ -102,9 +102,9 @@ export const refinedStyles = (
 		},
 
 		top: {
-			display: "flex",
-			alignItems: "center",
+			alignItems: { xs: "flex-start", sm: "center" },
 			justifyContent: "space-between",
+			gap: "12px",
 			mb: "28px",
 		},
 		brand: {
@@ -164,9 +164,15 @@ export const refinedStyles = (
 			alignItems: "center",
 		}),
 
-		chartSwitchWrap: { display: "flex", justifyContent: "flex-end", mb: "12px" },
+		chartSwitchWrap: {
+			display: "flex",
+			justifyContent: { xs: "center", sm: "flex-end" },
+			mb: "12px",
+		},
 		chartSwitch: {
 			display: "inline-flex",
+			width: { xs: "100%", sm: "auto" },
+			maxWidth: "100%",
 			border: `1px solid ${tokens.border}`,
 			borderRadius: "8px",
 			background: tokens.surface,
@@ -174,11 +180,15 @@ export const refinedStyles = (
 			gap: "2px",
 		},
 		chartSwitchButton: (active) => ({
+			flex: 1,
+			minWidth: 0,
+			whiteSpace: "nowrap",
+			textAlign: "center",
 			border: 0,
 			background: active ? tokens.upSoft : "transparent",
 			fontFamily: "inherit",
 			fontSize: 11,
-			padding: "5px 14px",
+			padding: { xs: "5px 6px", sm: "5px 14px" },
 			cursor: "pointer",
 			color: active ? tokens.up : tokens.textMuted,
 			borderRadius: "5px",
@@ -207,13 +217,21 @@ export const refinedStyles = (
 		},
 		cardRow: {
 			display: "grid",
-			gridTemplateColumns: "1fr auto",
-			alignItems: "center",
-			gap: "16px",
+			alignItems: { xs: "start", sm: "center" },
+			gridTemplateColumns: { xs: "minmax(0, 1fr)", sm: "1fr auto" },
+			gridTemplateAreas: {
+				xs: `"name" "status" "meta"`,
+				sm: `"name name" "meta status"`,
+			},
+			columnGap: { sm: "16px" },
+			rowGap: { xs: "10px", sm: "4px" },
 			p: "16px 20px",
 		},
-		cardLeft: { minWidth: 0 },
+		cardLeft: { minWidth: 0, flex: 1, width: { xs: "100%", sm: "auto" } },
 		monitorName: {
+			gridArea: "name",
+			minWidth: 0,
+			width: { xs: "100%", sm: "auto" },
 			fontWeight: 600,
 			fontSize: 14,
 			letterSpacing: "-0.005em",
@@ -223,10 +241,9 @@ export const refinedStyles = (
 			whiteSpace: "nowrap",
 		},
 		monitorMeta: {
-			display: "flex",
+			gridArea: "meta",
 			gap: "10px",
-			alignItems: "center",
-			mt: "4px",
+			alignItems: { xs: "flex-start", sm: "center" },
 			flexWrap: "wrap",
 		},
 		pill: {
@@ -251,6 +268,8 @@ export const refinedStyles = (
 		},
 
 		badge: (tone) => ({
+			gridArea: "status",
+			justifySelf: "start",
 			fontSize: 11,
 			fontWeight: 600,
 			padding: "4px 10px",
@@ -261,10 +280,10 @@ export const refinedStyles = (
 		}),
 
 		heatmap: {
-			padding: "0 20px 16px",
+			padding: { xs: "0 10px 14px", sm: "0 20px 16px" },
 			display: "grid",
 			gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
-			gap: "3px",
+			gap: { xs: "1px", sm: "3px" },
 			height: 42,
 		},
 		heatmapCell: (kind) => ({
@@ -276,10 +295,10 @@ export const refinedStyles = (
 		}),
 
 		histogram: {
-			padding: "0 20px",
+			padding: { xs: "0 10px", sm: "0 20px" },
 			display: "grid",
 			gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
-			gap: "3px",
+			gap: { xs: "1px", sm: "3px" },
 			alignItems: "flex-end",
 			height: 42,
 		},

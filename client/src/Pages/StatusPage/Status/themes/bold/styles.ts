@@ -99,9 +99,9 @@ export const boldStyles = (
 		},
 
 		top: {
-			display: "flex",
-			alignItems: "center",
+			alignItems: { xs: "flex-start", sm: "center" },
 			justifyContent: "space-between",
+			gap: "12px",
 			mb: "36px",
 		},
 		brand: {
@@ -171,9 +171,15 @@ export const boldStyles = (
 		}),
 		heroSub: { mt: "10px", mb: 0, color: tokens.textMuted, fontSize: 14 },
 
-		chartSwitchWrap: { display: "flex", justifyContent: "flex-end", mb: "16px" },
+		chartSwitchWrap: {
+			display: "flex",
+			justifyContent: { xs: "center", sm: "flex-end" },
+			mb: "16px",
+		},
 		chartSwitch: {
 			display: "inline-flex",
+			width: { xs: "100%", sm: "auto" },
+			maxWidth: "100%",
 			border: `1px solid ${tokens.border}`,
 			borderRadius: "999px",
 			background: tokens.surface,
@@ -181,16 +187,20 @@ export const boldStyles = (
 			gap: "2px",
 		},
 		chartSwitchButton: (active) => ({
+			flex: 1,
+			minWidth: 0,
+			whiteSpace: "nowrap",
+			textAlign: "center",
 			border: 0,
 			background: active ? tokens.upSoft : "transparent",
 			fontFamily: "inherit",
 			fontSize: 11,
-			padding: "8px 18px",
+			padding: { xs: "8px 6px", sm: "8px 18px" },
 			cursor: "pointer",
 			color: active ? tokens.up : tokens.textMuted,
 			fontWeight: 700,
 			textTransform: "uppercase",
-			letterSpacing: "0.12em",
+			letterSpacing: { xs: "0.04em", sm: "0.12em" },
 			transition: "background 0.2s, color 0.2s",
 			borderRadius: "999px",
 			"&:hover": { color: active ? tokens.up : tokens.text },
@@ -217,13 +227,21 @@ export const boldStyles = (
 		},
 		cardRow: {
 			display: "grid",
-			gridTemplateColumns: "1fr auto",
-			alignItems: "center",
-			gap: "24px",
+			alignItems: { xs: "start", sm: "center" },
+			gridTemplateColumns: { xs: "minmax(0, 1fr)", sm: "1fr auto" },
+			gridTemplateAreas: {
+				xs: `"name" "status" "meta"`,
+				sm: `"name name" "meta status"`,
+			},
+			columnGap: { sm: "24px" },
+			rowGap: { xs: "10px", sm: "6px" },
 			p: "22px 28px",
 		},
-		cardLeft: { minWidth: 0 },
+		cardLeft: { minWidth: 0, flex: 1, width: { xs: "100%", sm: "auto" } },
 		monitorName: {
+			gridArea: "name",
+			minWidth: 0,
+			width: { xs: "100%", sm: "auto" },
 			fontWeight: 700,
 			fontSize: 17,
 			letterSpacing: "-0.01em",
@@ -233,10 +251,9 @@ export const boldStyles = (
 			whiteSpace: "nowrap",
 		},
 		monitorMeta: {
-			display: "flex",
+			gridArea: "meta",
 			gap: "10px",
-			alignItems: "center",
-			mt: "6px",
+			alignItems: { xs: "flex-start", sm: "center" },
 			flexWrap: "wrap",
 		},
 		pill: {
@@ -273,6 +290,8 @@ export const boldStyles = (
 		},
 
 		badge: (tone) => ({
+			gridArea: "status",
+			justifySelf: "start",
 			fontSize: 11,
 			fontWeight: 800,
 			padding: "6px 14px",
@@ -296,10 +315,10 @@ export const boldStyles = (
 		}),
 
 		heatmap: {
-			padding: "0 28px 22px",
+			padding: { xs: "0 12px 18px", sm: "0 28px 22px" },
 			display: "grid",
 			gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
-			gap: "3px",
+			gap: { xs: "1px", sm: "3px" },
 			height: 48,
 		},
 		heatmapCell: (kind) => ({
@@ -312,10 +331,10 @@ export const boldStyles = (
 		}),
 
 		histogram: {
-			padding: "0 28px",
+			padding: { xs: "0 12px", sm: "0 28px" },
 			display: "grid",
 			gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
-			gap: "3px",
+			gap: { xs: "1px", sm: "3px" },
 			alignItems: "flex-end",
 			height: 48,
 		},
