@@ -17,7 +17,7 @@ export interface RefinedStyles {
 	company: SxProps<Theme>;
 	hero: SxProps<Theme>;
 	statusDot: (tone: OverallTone) => SxProps<Theme>;
-	statusCopy: SxProps<Theme>;
+	heroRow: SxProps<Theme>;
 	heroTitle: SxProps<Theme>;
 	heroSub: SxProps<Theme>;
 	heroIcon: (tone: OverallTone) => SxProps<Theme>;
@@ -133,10 +133,10 @@ export const refinedStyles = (
 			background: tokens.surface,
 			border: `1px solid ${tokens.border}`,
 			borderRadius: tokens.radius,
-			padding: "22px 24px",
+			padding: { xs: "18px 20px", sm: "22px 24px" },
 			display: "flex",
-			alignItems: "center",
-			gap: "16px",
+			flexDirection: "column",
+			gap: "4px",
 			boxShadow: cardShadow,
 			mb: "20px",
 		},
@@ -148,10 +148,15 @@ export const refinedStyles = (
 			boxShadow: `0 0 0 4px ${toneSoft(tone, tokens)}`,
 			flexShrink: 0,
 		}),
-		statusCopy: { flex: 1, minWidth: 0 },
+		heroRow: {
+			display: "flex",
+			alignItems: "center",
+			gap: { xs: "12px", sm: "16px" },
+		},
 		heroTitle: {
 			m: 0,
-			mb: "2px",
+			flex: 1,
+			minWidth: 0,
 			fontSize: 17,
 			fontWeight: 600,
 			letterSpacing: "-0.01em",
@@ -159,9 +164,10 @@ export const refinedStyles = (
 		},
 		heroSub: { m: 0, color: tokens.textMuted, fontSize: 13 },
 		heroIcon: (tone) => ({
+			display: { xs: "none", sm: "flex" },
 			color: toneColor(tone, tokens),
-			display: "flex",
 			alignItems: "center",
+			flexShrink: 0,
 		}),
 
 		chartSwitchWrap: {

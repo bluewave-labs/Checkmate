@@ -119,7 +119,7 @@ export const editorialStyles = (
 		},
 
 		statusLine: {
-			fontSize: 22,
+			fontSize: { xs: 18, sm: 22 },
 			fontWeight: 400,
 			m: 0,
 			mb: "8px",
@@ -144,7 +144,7 @@ export const editorialStyles = (
 			letterSpacing: "0.12em",
 			color: tokens.textMuted,
 			m: 0,
-			mb: "56px",
+			mb: { xs: "32px", sm: "56px" },
 		},
 
 		chartSwitchWrap: {

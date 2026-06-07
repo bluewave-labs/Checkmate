@@ -17,7 +17,7 @@ export interface ModernStyles {
 	logoImg: SxProps<Theme>;
 	hero: SxProps<Theme>;
 	pulse: (tone: OverallTone) => SxProps<Theme>;
-	statusCopy: SxProps<Theme>;
+	heroRow: SxProps<Theme>;
 	heroTitle: SxProps<Theme>;
 	heroSub: SxProps<Theme>;
 	heroIcon: (tone: OverallTone) => SxProps<Theme>;
@@ -148,11 +148,11 @@ export const modernStyles = (
 		hero: {
 			position: "relative",
 			borderRadius: "20px",
-			padding: "28px 32px",
+			padding: { xs: "20px", sm: "28px 32px" },
 			mb: "24px",
 			display: "flex",
-			alignItems: "center",
-			gap: "20px",
+			flexDirection: "column",
+			gap: "4px",
 			background: tokens.surface,
 			border: `1px solid ${tokens.border}`,
 			boxShadow: cardShadow,
@@ -182,20 +182,26 @@ export const modernStyles = (
 				},
 			};
 		},
-		statusCopy: { flex: 1, minWidth: 0 },
+		heroRow: {
+			display: "flex",
+			alignItems: "center",
+			gap: { xs: "14px", sm: "20px" },
+		},
 		heroTitle: {
 			m: 0,
-			mb: "4px",
-			fontSize: 22,
+			flex: 1,
+			minWidth: 0,
+			fontSize: { xs: 18, sm: 22 },
 			fontWeight: 700,
 			letterSpacing: "-0.02em",
 			color: tokens.text,
 		},
 		heroSub: { m: 0, color: tokens.textMuted, fontSize: 13 },
 		heroIcon: (tone) => ({
+			display: { xs: "none", sm: "flex" },
 			color: toneColor(tone, tokens),
-			display: "flex",
 			alignItems: "center",
+			flexShrink: 0,
 		}),
 
 		chartSwitchWrap: {

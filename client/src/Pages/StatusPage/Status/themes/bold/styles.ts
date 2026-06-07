@@ -130,7 +130,7 @@ export const boldStyles = (
 		hero: {
 			position: "relative",
 			borderRadius: "22px",
-			padding: "36px 36px 32px",
+			padding: { xs: "24px 20px", sm: "36px 36px 32px" },
 			mb: "28px",
 			background: isDark ? heroBgDark : heroBgLight,
 			border: `1px solid ${tokens.border}`,
@@ -149,13 +149,14 @@ export const boldStyles = (
 		},
 		heroTitle: {
 			m: 0,
-			fontSize: 34,
+			fontSize: { xs: 24, sm: 34 },
 			fontWeight: 800,
 			letterSpacing: "-0.02em",
 			lineHeight: 1.1,
 			color: tokens.text,
 			display: "flex",
-			alignItems: "center",
+			alignItems: { xs: "flex-start", sm: "center" },
+			flexWrap: "wrap",
 			gap: "10px",
 		},
 		heroCheck: (tone) => ({
