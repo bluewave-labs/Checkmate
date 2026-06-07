@@ -27,6 +27,7 @@ import {
 	statusBadgeKey,
 } from "@/Pages/StatusPage/Status/themes/shared/overallStatus";
 import { useStatusPageTheme } from "@/Pages/StatusPage/Status/themes/StatusPageThemeProvider";
+import { formatPercentage } from "@/Utils/FormatUtils";
 
 type StatusPageMonitor = Monitor & { checks?: Monitor["recentChecks"] };
 
@@ -161,6 +162,7 @@ export const BaseStatusPage = ({ statusPage, monitors, config }: Props) => {
 					const showInfra = isHardware && statusPage.showInfrastructure !== false;
 					const showChart = !isHardware && statusPage.showCharts !== false;
 					const badgeTone = monitorBadgeTone(monitor.status);
+					const uptimePercentage = formatPercentage(monitor.uptimePercentage ?? 0);
 
 					return (
 						<Box
@@ -177,6 +179,12 @@ export const BaseStatusPage = ({ statusPage, monitors, config }: Props) => {
 											sx={isHardware ? styles.pillHardware : styles.pill}
 										>
 											{getMonitorTypeLabel(monitor.type, t)}
+										</Box>
+										<Box
+											component="span"
+											sx={styles.pill}
+										>
+											{uptimePercentage}
 										</Box>
 										{monitor.url && (
 											<Box
