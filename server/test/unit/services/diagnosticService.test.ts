@@ -147,6 +147,42 @@ describe("DiagnosticService", () => {
 			});
 		});
 
+		it("derives mongoStats.totalSize from storageSize + indexSize when the server omits it (e.g. Atlas shared tier)", async () => {
+			const db = makeDb({
+				collections: [{ collectionName: "monitors" }],
+				dbStats: { storageSize: 376832, indexSize: 1155072 },
+			});
+			const service = new DiagnosticService(db);
+			const promise = service.getSystemStats();
+			jest.advanceTimersByTime(1000);
+			await jest.advanceTimersByTimeAsync(10);
+			const result = await promise;
+
+			expect(result.mongoStats.totalSize).toBe(376832 + 1155072);
+			expect(Number.isFinite(result.mongoStats.totalSize)).toBe(true);
+		});
+
+		it("derives collection totalSize and defaults missing size fields to 0 when collStats omits them", async () => {
+			const db = makeDb({
+				collections: [{ collectionName: "checks" }],
+				collStats: { storageSize: 200 },
+			});
+			const service = new DiagnosticService(db);
+			const promise = service.getSystemStats();
+			jest.advanceTimersByTime(1000);
+			await jest.advanceTimersByTimeAsync(10);
+			const result = await promise;
+
+			const coll = result.mongoStats.collections[0];
+			expect(coll).toMatchObject({
+				name: "checks",
+				storageSize: 200,
+				totalIndexSize: 0,
+				totalSize: 200, // storageSize (200) + totalIndexSize (0)
+			});
+			expect(Number.isFinite(coll?.totalSize)).toBe(true);
+		});
+
 		it("includes bucketCount on timeseries collections, omits it elsewhere", async () => {
 			const db = makeDb({
 				collections: [{ collectionName: "checks" }],
