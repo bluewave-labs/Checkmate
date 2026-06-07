@@ -31,6 +31,10 @@ export class InMemoryMonitorsRepository implements IMonitorsRepository {
 		return this.monitors.filter((m) => m.teamId === _teamId).map((m) => ({ ...m }));
 	}
 
+	async findByTeamIdWithStats(_teamId: string, _config: TeamQueryConfig): Promise<Monitor[]> {
+		return this.monitors.filter((m) => m.teamId === _teamId).map((m) => ({ ...m }));
+	}
+
 	async findByIds(monitorIds: string[]): Promise<Monitor[]> {
 		return this.monitors.filter((m) => monitorIds.includes(m.id)).map((m) => ({ ...m }));
 	}
