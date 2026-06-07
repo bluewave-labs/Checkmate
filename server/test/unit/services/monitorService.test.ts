@@ -16,6 +16,7 @@ const createMonitorsRepositoryMock = () =>
 		createMonitors: jest.fn(),
 		findById: jest.fn(),
 		findByTeamId: jest.fn(),
+		findByTeamIdWithStats: jest.fn(),
 		findByIds: jest.fn(),
 		findMonitorCountByTeamIdAndType: jest.fn(),
 		findMonitorsSummaryByTeamId: jest.fn(),
@@ -562,7 +563,7 @@ describe("MonitorService", () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			(monitorsRepository.findMonitorsSummaryByTeamId as jest.Mock).mockResolvedValue({ totalMonitors: 1, upMonitors: 1 });
 			(monitorsRepository.findMonitorCountByTeamIdAndType as jest.Mock).mockResolvedValue(1);
-			(monitorsRepository.findByTeamId as jest.Mock).mockResolvedValue([
+			(monitorsRepository.findByTeamIdWithStats as jest.Mock).mockResolvedValue([
 				makeMonitor({
 					recentChecks: [
 						{ responseTime: 10, status: true, message: "OK" },
@@ -583,7 +584,7 @@ describe("MonitorService", () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			(monitorsRepository.findMonitorsSummaryByTeamId as jest.Mock).mockResolvedValue(null);
 			(monitorsRepository.findMonitorCountByTeamIdAndType as jest.Mock).mockResolvedValue(0);
-			(monitorsRepository.findByTeamId as jest.Mock).mockResolvedValue(null);
+			(monitorsRepository.findByTeamIdWithStats as jest.Mock).mockResolvedValue(null);
 
 			const { service } = createService({ monitorsRepository });
 			const result = await service.getMonitorsWithChecksByTeamId({ teamId: TEAM_ID });
@@ -596,7 +597,7 @@ describe("MonitorService", () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			(monitorsRepository.findMonitorsSummaryByTeamId as jest.Mock).mockResolvedValue({ totalMonitors: 1 });
 			(monitorsRepository.findMonitorCountByTeamIdAndType as jest.Mock).mockResolvedValue(1);
-			(monitorsRepository.findByTeamId as jest.Mock).mockResolvedValue([
+			(monitorsRepository.findByTeamIdWithStats as jest.Mock).mockResolvedValue([
 				makeMonitor({
 					type: "hardware",
 					recentChecks: [
@@ -617,7 +618,7 @@ describe("MonitorService", () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			(monitorsRepository.findMonitorsSummaryByTeamId as jest.Mock).mockResolvedValue({ totalMonitors: 1 });
 			(monitorsRepository.findMonitorCountByTeamIdAndType as jest.Mock).mockResolvedValue(1);
-			(monitorsRepository.findByTeamId as jest.Mock).mockResolvedValue([
+			(monitorsRepository.findByTeamIdWithStats as jest.Mock).mockResolvedValue([
 				makeMonitor({
 					type: "hardware",
 					recentChecks: [
@@ -637,7 +638,7 @@ describe("MonitorService", () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			(monitorsRepository.findMonitorsSummaryByTeamId as jest.Mock).mockResolvedValue({ totalMonitors: 1 });
 			(monitorsRepository.findMonitorCountByTeamIdAndType as jest.Mock).mockResolvedValue(1);
-			(monitorsRepository.findByTeamId as jest.Mock).mockResolvedValue([
+			(monitorsRepository.findByTeamIdWithStats as jest.Mock).mockResolvedValue([
 				makeMonitor({
 					type: "http",
 					recentChecks: [
@@ -657,7 +658,7 @@ describe("MonitorService", () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			(monitorsRepository.findMonitorsSummaryByTeamId as jest.Mock).mockResolvedValue({ totalMonitors: 2 });
 			(monitorsRepository.findMonitorCountByTeamIdAndType as jest.Mock).mockResolvedValue(2);
-			(monitorsRepository.findByTeamId as jest.Mock).mockResolvedValue([
+			(monitorsRepository.findByTeamIdWithStats as jest.Mock).mockResolvedValue([
 				makeMonitor({
 					id: "m1",
 					type: "http",
@@ -689,7 +690,7 @@ describe("MonitorService", () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			(monitorsRepository.findMonitorsSummaryByTeamId as jest.Mock).mockResolvedValue({ totalMonitors: 1 });
 			(monitorsRepository.findMonitorCountByTeamIdAndType as jest.Mock).mockResolvedValue(1);
-			(monitorsRepository.findByTeamId as jest.Mock).mockResolvedValue([makeMonitor({ recentChecks: [] })]);
+			(monitorsRepository.findByTeamIdWithStats as jest.Mock).mockResolvedValue([makeMonitor({ recentChecks: [] })]);
 
 			const { service } = createService({ monitorsRepository });
 			const result = await service.getMonitorsWithChecksByTeamId({ teamId: TEAM_ID });
@@ -701,7 +702,7 @@ describe("MonitorService", () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			(monitorsRepository.findMonitorsSummaryByTeamId as jest.Mock).mockResolvedValue({ totalMonitors: 1 });
 			(monitorsRepository.findMonitorCountByTeamIdAndType as jest.Mock).mockResolvedValue(1);
-			(monitorsRepository.findByTeamId as jest.Mock).mockResolvedValue([makeMonitor({ recentChecks: undefined })]);
+			(monitorsRepository.findByTeamIdWithStats as jest.Mock).mockResolvedValue([makeMonitor({ recentChecks: undefined })]);
 
 			const { service } = createService({ monitorsRepository });
 			const result = await service.getMonitorsWithChecksByTeamId({ teamId: TEAM_ID });
@@ -713,7 +714,7 @@ describe("MonitorService", () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			(monitorsRepository.findMonitorsSummaryByTeamId as jest.Mock).mockResolvedValue({ totalMonitors: 0 });
 			(monitorsRepository.findMonitorCountByTeamIdAndType as jest.Mock).mockResolvedValue(0);
-			(monitorsRepository.findByTeamId as jest.Mock).mockResolvedValue([]);
+			(monitorsRepository.findByTeamIdWithStats as jest.Mock).mockResolvedValue([]);
 
 			const { service } = createService({ monitorsRepository });
 			await service.getMonitorsWithChecksByTeamId({
@@ -727,7 +728,7 @@ describe("MonitorService", () => {
 				order: "asc",
 			});
 
-			expect(monitorsRepository.findByTeamId).toHaveBeenCalledWith(TEAM_ID, {
+			expect(monitorsRepository.findByTeamIdWithStats).toHaveBeenCalledWith(TEAM_ID, {
 				limit: 10,
 				type: "http",
 				page: 1,

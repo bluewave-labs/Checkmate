@@ -85,10 +85,102 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return this.mapDocuments(documents);
 	};
 
+	findByTeamIdWithStats = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null> => {
+		const { page = 0, rowsPerPage = 0, filter, field = "createdAt", order = "desc", type, tags } = config ?? {};
+
+		const query: Record<string, unknown> = {
+			teamId: new mongoose.Types.ObjectId(teamId),
+		};
+
+		if (type !== undefined) {
+			query.type = Array.isArray(type) ? { $in: type } : type;
+		}
+
+		if (tags !== undefined) {
+			query.tags = Array.isArray(tags) ? { $in: tags } : tags;
+		}
+
+		if (filter !== undefined) {
+			switch (field) {
+				case "name":
+					query.$or = [{ name: { $regex: filter, $options: "i" } }, { url: { $regex: filter, $options: "i" } }];
+					break;
+				case "isActive":
+					query.isActive = filter === "true";
+					break;
+				case "status":
+					query.status = filter;
+					break;
+				case "type":
+					query.type = filter;
+					break;
+				default:
+					break;
+			}
+		}
+
+		const sort = { [field]: order === "asc" ? 1 : -1 } as const;
+		const skip = Math.max(page, 0) * rowsPerPage;
+
+		const pipeline: PipelineStage[] = [
+			{ $match: query },
+			{ $sort: sort },
+			...(rowsPerPage ? [{ $skip: skip }, { $limit: rowsPerPage }] : []),
+			{
+				$lookup: {
+					from: "monitorstats",
+					localField: "_id",
+					foreignField: "monitorId",
+					as: "stats",
+				},
+			},
+			{
+				$addFields: {
+					uptimePercentage: { $arrayElemAt: ["$stats.uptimePercentage", 0] },
+				},
+			},
+			{
+				$project: {
+					stats: 0,
+				},
+			},
+		];
+
+		const documents = await MonitorModel.aggregate(pipeline);
+		return documents.map((doc) => this.toEntity(doc));
+	};
+
 	findByIds = async (monitorIds: string[]): Promise<Monitor[]> => {
+		if (!monitorIds.length) {
+			return [];
+		}
+
 		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
-		const monitors = await MonitorModel.find({ _id: { $in: objectIds } });
-		return this.mapDocuments(monitors);
+
+		const pipeline: PipelineStage[] = [
+			{ $match: { _id: { $in: objectIds } } },
+			{
+				$lookup: {
+					from: "monitorstats",
+					localField: "_id",
+					foreignField: "monitorId",
+					as: "stats",
+				},
+			},
+			{
+				$addFields: {
+					uptimePercentage: { $arrayElemAt: ["$stats.uptimePercentage", 0] },
+				},
+			},
+			{
+				$project: {
+					stats: 0,
+				},
+			},
+		];
+
+		const documents = await MonitorModel.aggregate(pipeline);
+		return documents.map((doc) => this.toEntity(doc));
 	};
 
 	findByIdsWithChecks = async (monitorIds: string[], checksCount: number = 25): Promise<Monitor[]> => {

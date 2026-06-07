@@ -63,6 +63,16 @@ export const getResponseTimeColor = (responseTime: number): PaletteKey => {
 	}
 };
 
+export const getUptimePercentageColor = (uptimePercentage: number): PaletteKey => {
+	if (uptimePercentage >= 0.75) {
+		return "success";
+	} else if (uptimePercentage >= 0.5) {
+		return "warning";
+	} else {
+		return "error";
+	}
+};
+
 export const getInfraGaugeColor = (val: number, theme: any) => {
 	if (val < 50) {
 		return theme.palette.success.main;
