@@ -17,7 +17,7 @@ export interface ModernStyles {
 	logoImg: SxProps<Theme>;
 	hero: SxProps<Theme>;
 	pulse: (tone: OverallTone) => SxProps<Theme>;
-	statusCopy: SxProps<Theme>;
+	heroRow: SxProps<Theme>;
 	heroTitle: SxProps<Theme>;
 	heroSub: SxProps<Theme>;
 	heroIcon: (tone: OverallTone) => SxProps<Theme>;
@@ -117,9 +117,9 @@ export const modernStyles = (
 		},
 
 		top: {
-			display: "flex",
-			alignItems: "center",
+			alignItems: { xs: "flex-start", md: "center" },
 			justifyContent: "space-between",
+			gap: "12px",
 			mb: "32px",
 		},
 		brand: {
@@ -148,11 +148,11 @@ export const modernStyles = (
 		hero: {
 			position: "relative",
 			borderRadius: "20px",
-			padding: "28px 32px",
+			padding: { xs: "20px", md: "28px 32px" },
 			mb: "24px",
 			display: "flex",
-			alignItems: "center",
-			gap: "20px",
+			flexDirection: "column",
+			gap: "4px",
 			background: tokens.surface,
 			border: `1px solid ${tokens.border}`,
 			boxShadow: cardShadow,
@@ -182,25 +182,37 @@ export const modernStyles = (
 				},
 			};
 		},
-		statusCopy: { flex: 1, minWidth: 0 },
+		heroRow: {
+			display: "flex",
+			alignItems: "center",
+			gap: { xs: "14px", md: "20px" },
+		},
 		heroTitle: {
 			m: 0,
-			mb: "4px",
-			fontSize: 22,
+			flex: 1,
+			minWidth: 0,
+			fontSize: { xs: 18, md: 22 },
 			fontWeight: 700,
 			letterSpacing: "-0.02em",
 			color: tokens.text,
 		},
 		heroSub: { m: 0, color: tokens.textMuted, fontSize: 13 },
 		heroIcon: (tone) => ({
+			display: { xs: "none", md: "flex" },
 			color: toneColor(tone, tokens),
-			display: "flex",
 			alignItems: "center",
+			flexShrink: 0,
 		}),
 
-		chartSwitchWrap: { display: "flex", justifyContent: "flex-end", mb: "14px" },
+		chartSwitchWrap: {
+			display: "flex",
+			justifyContent: { xs: "center", md: "flex-end" },
+			mb: "14px",
+		},
 		chartSwitch: {
 			display: "inline-flex",
+			width: { xs: "100%", md: "auto" },
+			maxWidth: "100%",
 			border: `1px solid ${tokens.border}`,
 			borderRadius: "999px",
 			background: tokens.surface,
@@ -208,16 +220,20 @@ export const modernStyles = (
 			gap: "2px",
 		},
 		chartSwitchButton: (active) => ({
+			flex: 1,
+			minWidth: 0,
+			whiteSpace: "nowrap",
+			textAlign: "center",
 			border: 0,
 			background: active ? tokens.upSoft : "transparent",
 			fontFamily: "inherit",
 			fontSize: 11,
-			padding: "6px 16px",
+			padding: { xs: "6px 6px", md: "6px 16px" },
 			cursor: "pointer",
 			color: active ? tokens.up : tokens.textMuted,
 			fontWeight: 600,
 			textTransform: "uppercase",
-			letterSpacing: "0.08em",
+			letterSpacing: { xs: "0.04em", md: "0.08em" },
 			transition: "background 0.2s, color 0.2s",
 			borderRadius: "999px",
 			"&:hover": { color: active ? tokens.up : tokens.text },
@@ -256,13 +272,21 @@ export const modernStyles = (
 		},
 		cardRow: {
 			display: "grid",
-			gridTemplateColumns: "1fr auto",
-			alignItems: "center",
-			gap: "20px",
+			alignItems: { xs: "start", md: "center" },
+			gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "1fr auto" },
+			gridTemplateAreas: {
+				xs: `"name" "status" "meta"`,
+				md: `"name name" "meta status"`,
+			},
+			columnGap: { md: "20px" },
+			rowGap: { xs: "10px", md: "6px" },
 			p: "18px 24px",
 		},
-		cardLeft: { minWidth: 0 },
+		cardLeft: { minWidth: 0, flex: 1, width: { xs: "100%", md: "auto" } },
 		monitorName: {
+			gridArea: "name",
+			minWidth: 0,
+			width: { xs: "100%", md: "auto" },
 			fontWeight: 600,
 			fontSize: 15,
 			letterSpacing: "-0.005em",
@@ -272,10 +296,9 @@ export const modernStyles = (
 			whiteSpace: "nowrap",
 		},
 		monitorMeta: {
-			display: "flex",
+			gridArea: "meta",
 			gap: "10px",
-			alignItems: "center",
-			mt: "6px",
+			alignItems: { xs: "flex-start", md: "center" },
 			flexWrap: "wrap",
 		},
 		pill: {
@@ -299,6 +322,8 @@ export const modernStyles = (
 		},
 
 		badge: (tone) => ({
+			gridArea: "status",
+			justifySelf: "start",
 			fontSize: 11,
 			fontWeight: 700,
 			padding: "5px 12px",
@@ -319,10 +344,10 @@ export const modernStyles = (
 		}),
 
 		heatmap: {
-			padding: "0 24px 20px",
+			padding: { xs: "0 12px 16px", md: "0 24px 20px" },
 			display: "grid",
 			gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
-			gap: "3px",
+			gap: { xs: "1px", md: "3px" },
 			height: 46,
 		},
 		heatmapCell: (kind) => ({
@@ -334,10 +359,10 @@ export const modernStyles = (
 		}),
 
 		histogram: {
-			padding: "0 24px",
+			padding: { xs: "0 12px", md: "0 24px" },
 			display: "grid",
 			gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
-			gap: "3px",
+			gap: { xs: "1px", md: "3px" },
 			alignItems: "flex-end",
 			height: 46,
 		},
