@@ -99,7 +99,7 @@ export const boldStyles = (
 		},
 
 		top: {
-			alignItems: { xs: "flex-start", sm: "center" },
+			alignItems: { xs: "flex-start", md: "center" },
 			justifyContent: "space-between",
 			gap: "12px",
 			mb: "36px",
@@ -130,7 +130,7 @@ export const boldStyles = (
 		hero: {
 			position: "relative",
 			borderRadius: "22px",
-			padding: { xs: "24px 20px", sm: "36px 36px 32px" },
+			padding: { xs: "24px 20px", md: "36px 36px 32px" },
 			mb: "28px",
 			background: isDark ? heroBgDark : heroBgLight,
 			border: `1px solid ${tokens.border}`,
@@ -149,13 +149,13 @@ export const boldStyles = (
 		},
 		heroTitle: {
 			m: 0,
-			fontSize: { xs: 24, sm: 34 },
+			fontSize: { xs: 24, md: 34 },
 			fontWeight: 800,
 			letterSpacing: "-0.02em",
 			lineHeight: 1.1,
 			color: tokens.text,
 			display: "flex",
-			alignItems: { xs: "flex-start", sm: "center" },
+			alignItems: { xs: "flex-start", md: "center" },
 			flexWrap: "wrap",
 			gap: "10px",
 		},
@@ -174,12 +174,12 @@ export const boldStyles = (
 
 		chartSwitchWrap: {
 			display: "flex",
-			justifyContent: { xs: "center", sm: "flex-end" },
+			justifyContent: { xs: "center", md: "flex-end" },
 			mb: "16px",
 		},
 		chartSwitch: {
 			display: "inline-flex",
-			width: { xs: "100%", sm: "auto" },
+			width: { xs: "100%", md: "auto" },
 			maxWidth: "100%",
 			border: `1px solid ${tokens.border}`,
 			borderRadius: "999px",
@@ -196,12 +196,12 @@ export const boldStyles = (
 			background: active ? tokens.upSoft : "transparent",
 			fontFamily: "inherit",
 			fontSize: 11,
-			padding: { xs: "8px 6px", sm: "8px 18px" },
+			padding: { xs: "8px 6px", md: "8px 18px" },
 			cursor: "pointer",
 			color: active ? tokens.up : tokens.textMuted,
 			fontWeight: 700,
 			textTransform: "uppercase",
-			letterSpacing: { xs: "0.04em", sm: "0.12em" },
+			letterSpacing: { xs: "0.04em", md: "0.12em" },
 			transition: "background 0.2s, color 0.2s",
 			borderRadius: "999px",
 			"&:hover": { color: active ? tokens.up : tokens.text },
@@ -228,21 +228,21 @@ export const boldStyles = (
 		},
 		cardRow: {
 			display: "grid",
-			alignItems: { xs: "start", sm: "center" },
-			gridTemplateColumns: { xs: "minmax(0, 1fr)", sm: "1fr auto" },
+			alignItems: { xs: "start", md: "center" },
+			gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "1fr auto" },
 			gridTemplateAreas: {
 				xs: `"name" "status" "meta"`,
-				sm: `"name name" "meta status"`,
+				md: `"name name" "meta status"`,
 			},
-			columnGap: { sm: "24px" },
-			rowGap: { xs: "10px", sm: "6px" },
+			columnGap: { md: "24px" },
+			rowGap: { xs: "10px", md: "6px" },
 			p: "22px 28px",
 		},
-		cardLeft: { minWidth: 0, flex: 1, width: { xs: "100%", sm: "auto" } },
+		cardLeft: { minWidth: 0, flex: 1, width: { xs: "100%", md: "auto" } },
 		monitorName: {
 			gridArea: "name",
 			minWidth: 0,
-			width: { xs: "100%", sm: "auto" },
+			width: { xs: "100%", md: "auto" },
 			fontWeight: 700,
 			fontSize: 17,
 			letterSpacing: "-0.01em",
@@ -254,7 +254,7 @@ export const boldStyles = (
 		monitorMeta: {
 			gridArea: "meta",
 			gap: "10px",
-			alignItems: { xs: "flex-start", sm: "center" },
+			alignItems: { xs: "flex-start", md: "center" },
 			flexWrap: "wrap",
 		},
 		pill: {
@@ -316,10 +316,10 @@ export const boldStyles = (
 		}),
 
 		heatmap: {
-			padding: { xs: "0 12px 18px", sm: "0 28px 22px" },
+			padding: { xs: "0 12px 18px", md: "0 28px 22px" },
 			display: "grid",
 			gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
-			gap: { xs: "1px", sm: "3px" },
+			gap: { xs: "1px", md: "3px" },
 			height: 48,
 		},
 		heatmapCell: (kind) => ({
@@ -332,10 +332,10 @@ export const boldStyles = (
 		}),
 
 		histogram: {
-			padding: { xs: "0 12px", sm: "0 28px" },
+			padding: { xs: "0 12px", md: "0 28px" },
 			display: "grid",
 			gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
-			gap: { xs: "1px", sm: "3px" },
+			gap: { xs: "1px", md: "3px" },
 			alignItems: "flex-end",
 			height: 48,
 		},

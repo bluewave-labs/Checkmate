@@ -117,7 +117,7 @@ export const modernStyles = (
 		},
 
 		top: {
-			alignItems: { xs: "flex-start", sm: "center" },
+			alignItems: { xs: "flex-start", md: "center" },
 			justifyContent: "space-between",
 			gap: "12px",
 			mb: "32px",
@@ -148,7 +148,7 @@ export const modernStyles = (
 		hero: {
 			position: "relative",
 			borderRadius: "20px",
-			padding: { xs: "20px", sm: "28px 32px" },
+			padding: { xs: "20px", md: "28px 32px" },
 			mb: "24px",
 			display: "flex",
 			flexDirection: "column",
@@ -185,20 +185,20 @@ export const modernStyles = (
 		heroRow: {
 			display: "flex",
 			alignItems: "center",
-			gap: { xs: "14px", sm: "20px" },
+			gap: { xs: "14px", md: "20px" },
 		},
 		heroTitle: {
 			m: 0,
 			flex: 1,
 			minWidth: 0,
-			fontSize: { xs: 18, sm: 22 },
+			fontSize: { xs: 18, md: 22 },
 			fontWeight: 700,
 			letterSpacing: "-0.02em",
 			color: tokens.text,
 		},
 		heroSub: { m: 0, color: tokens.textMuted, fontSize: 13 },
 		heroIcon: (tone) => ({
-			display: { xs: "none", sm: "flex" },
+			display: { xs: "none", md: "flex" },
 			color: toneColor(tone, tokens),
 			alignItems: "center",
 			flexShrink: 0,
@@ -206,12 +206,12 @@ export const modernStyles = (
 
 		chartSwitchWrap: {
 			display: "flex",
-			justifyContent: { xs: "center", sm: "flex-end" },
+			justifyContent: { xs: "center", md: "flex-end" },
 			mb: "14px",
 		},
 		chartSwitch: {
 			display: "inline-flex",
-			width: { xs: "100%", sm: "auto" },
+			width: { xs: "100%", md: "auto" },
 			maxWidth: "100%",
 			border: `1px solid ${tokens.border}`,
 			borderRadius: "999px",
@@ -228,12 +228,12 @@ export const modernStyles = (
 			background: active ? tokens.upSoft : "transparent",
 			fontFamily: "inherit",
 			fontSize: 11,
-			padding: { xs: "6px 6px", sm: "6px 16px" },
+			padding: { xs: "6px 6px", md: "6px 16px" },
 			cursor: "pointer",
 			color: active ? tokens.up : tokens.textMuted,
 			fontWeight: 600,
 			textTransform: "uppercase",
-			letterSpacing: { xs: "0.04em", sm: "0.08em" },
+			letterSpacing: { xs: "0.04em", md: "0.08em" },
 			transition: "background 0.2s, color 0.2s",
 			borderRadius: "999px",
 			"&:hover": { color: active ? tokens.up : tokens.text },
@@ -272,21 +272,21 @@ export const modernStyles = (
 		},
 		cardRow: {
 			display: "grid",
-			alignItems: { xs: "start", sm: "center" },
-			gridTemplateColumns: { xs: "minmax(0, 1fr)", sm: "1fr auto" },
+			alignItems: { xs: "start", md: "center" },
+			gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "1fr auto" },
 			gridTemplateAreas: {
 				xs: `"name" "status" "meta"`,
-				sm: `"name name" "meta status"`,
+				md: `"name name" "meta status"`,
 			},
-			columnGap: { sm: "20px" },
-			rowGap: { xs: "10px", sm: "6px" },
+			columnGap: { md: "20px" },
+			rowGap: { xs: "10px", md: "6px" },
 			p: "18px 24px",
 		},
-		cardLeft: { minWidth: 0, flex: 1, width: { xs: "100%", sm: "auto" } },
+		cardLeft: { minWidth: 0, flex: 1, width: { xs: "100%", md: "auto" } },
 		monitorName: {
 			gridArea: "name",
 			minWidth: 0,
-			width: { xs: "100%", sm: "auto" },
+			width: { xs: "100%", md: "auto" },
 			fontWeight: 600,
 			fontSize: 15,
 			letterSpacing: "-0.005em",
@@ -298,7 +298,7 @@ export const modernStyles = (
 		monitorMeta: {
 			gridArea: "meta",
 			gap: "10px",
-			alignItems: { xs: "flex-start", sm: "center" },
+			alignItems: { xs: "flex-start", md: "center" },
 			flexWrap: "wrap",
 		},
 		pill: {
@@ -344,10 +344,10 @@ export const modernStyles = (
 		}),
 
 		heatmap: {
-			padding: { xs: "0 12px 16px", sm: "0 24px 20px" },
+			padding: { xs: "0 12px 16px", md: "0 24px 20px" },
 			display: "grid",
 			gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
-			gap: { xs: "1px", sm: "3px" },
+			gap: { xs: "1px", md: "3px" },
 			height: 46,
 		},
 		heatmapCell: (kind) => ({
@@ -359,10 +359,10 @@ export const modernStyles = (
 		}),
 
 		histogram: {
-			padding: { xs: "0 12px", sm: "0 24px" },
+			padding: { xs: "0 12px", md: "0 24px" },
 			display: "grid",
 			gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
-			gap: { xs: "1px", sm: "3px" },
+			gap: { xs: "1px", md: "3px" },
 			alignItems: "flex-end",
 			height: 46,
 		},

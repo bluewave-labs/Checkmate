@@ -104,7 +104,7 @@ export const BaseStatusPage = ({ statusPage, monitors, config }: Props) => {
 		<Box sx={styles.page}>
 			<Stack
 				component="header"
-				direction={{ xs: "column", sm: "row" }}
+				direction={{ xs: "column", md: "row" }}
 				sx={styles.top}
 			>
 				<HeaderSlot
@@ -180,7 +180,7 @@ export const BaseStatusPage = ({ statusPage, monitors, config }: Props) => {
 									{t(statusBadgeKey[monitor.status])}
 								</Box>
 								<Stack
-									direction={{ xs: "column", sm: "row" }}
+									direction={{ xs: "column", md: "row" }}
 									sx={styles.monitorMeta}
 								>
 									<Box
