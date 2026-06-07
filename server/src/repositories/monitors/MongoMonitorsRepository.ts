@@ -151,9 +151,36 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	findByIds = async (monitorIds: string[]): Promise<Monitor[]> => {
+		if (!monitorIds.length) {
+			return [];
+		}
+
 		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
-		const monitors = await MonitorModel.find({ _id: { $in: objectIds } });
-		return this.mapDocuments(monitors);
+
+		const pipeline: PipelineStage[] = [
+			{ $match: { _id: { $in: objectIds } } },
+			{
+				$lookup: {
+					from: "monitorstats",
+					localField: "_id",
+					foreignField: "monitorId",
+					as: "stats",
+				},
+			},
+			{
+				$addFields: {
+					uptimePercentage: { $arrayElemAt: ["$stats.uptimePercentage", 0] },
+				},
+			},
+			{
+				$project: {
+					stats: 0,
+				},
+			},
+		];
+
+		const documents = await MonitorModel.aggregate(pipeline);
+		return documents.map((doc) => this.toEntity(doc));
 	};
 
 	findByIdsWithChecks = async (monitorIds: string[], checksCount: number = 25): Promise<Monitor[]> => {
