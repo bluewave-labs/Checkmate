@@ -7,7 +7,6 @@ import {
 	Pagination,
 	StatusLabel,
 	ColoredLabel,
-	ValueLabel,
 } from "@/Components/design-elements";
 import { HeatmapResponseTime, HistogramResponseTime } from "@/Components/common";
 import { ActionsMenu } from "@/Components/actions-menu";
