@@ -3,6 +3,7 @@ import { type StatusPageDocument, StatusPageModel } from "@/db/models/StatusPage
 import type { StatusPage, StatusPageLogo, StatusPageLogoDocument } from "@/types/statusPage.js";
 import mongoose from "mongoose";
 import { AppError } from "@/utils/AppError.js";
+import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
 
 // Type for update data that can include document-level fields (Buffer for logo)
 type StatusPageUpdateData = Partial<Omit<StatusPage, "id" | "userId" | "teamId" | "logo" | "createdAt" | "updatedAt">> & {
@@ -47,6 +48,7 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 			type: doc.type,
 			companyName: doc.companyName,
 			url: doc.url,
+			customDomain: doc.customDomain ?? null,
 			timezone: doc.timezone ?? undefined,
 			color: doc.color,
 			monitors: this.mapIdArray(doc.monitors),
@@ -74,10 +76,11 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 	};
 
 	create = async (userId: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage> => {
-		const { logo, ...restData } = data;
+		const { logo, customDomain, ...restData } = data;
 		void logo;
 		const statusPage = new StatusPageModel({
 			...restData,
+			customDomain: normalizeStatusPageDomain(customDomain),
 			userId,
 			teamId,
 		});
@@ -102,6 +105,21 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 		// Get status page
 	};
 
+	findByCustomDomain = async (customDomain: string): Promise<StatusPage> => {
+		const normalizedDomain = normalizeStatusPageDomain(customDomain);
+		if (!normalizedDomain) {
+			throw new AppError({ message: "Status page not found", status: 404 });
+		}
+
+		const statusPage = await StatusPageModel.findOne({
+			customDomain: normalizedDomain,
+		});
+		if (!statusPage) {
+			throw new AppError({ message: "Status page not found", status: 404 });
+		}
+		return this.toEntity(statusPage);
+	};
+
 	findByTeamId = async (teamId: string): Promise<StatusPage[]> => {
 		const statusPages = await StatusPageModel.find({ teamId });
 		return this.mapDocuments(statusPages);
@@ -113,9 +131,12 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 		image: Express.Multer.File | undefined,
 		patch: Partial<StatusPage> & { removeLogo?: string }
 	): Promise<StatusPage> => {
-		const { logo, removeLogo, ...restPatch } = patch;
+		const { logo, removeLogo, customDomain, ...restPatch } = patch;
 		void logo;
 		const updateData: StatusPageUpdateData = { ...restPatch };
+		if (customDomain !== undefined) {
+			updateData.customDomain = normalizeStatusPageDomain(customDomain);
+		}
 		if (image) {
 			updateData.logo = {
 				data: image.buffer as Buffer,

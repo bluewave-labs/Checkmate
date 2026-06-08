@@ -26,6 +26,7 @@ export interface StatusPage {
 	type: StatusPageType[];
 	companyName: string;
 	url: string;
+	customDomain?: string | null;
 	timezone?: string;
 	color: string;
 	monitors: string[];

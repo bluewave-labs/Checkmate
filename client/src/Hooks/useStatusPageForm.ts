@@ -31,6 +31,7 @@ export const useStatusPageForm = ({
 		const defaults: StatusPageFormData = {
 			companyName: data?.companyName || "",
 			url: data?.url || generateDefaultUrl(),
+			customDomain: data?.customDomain ?? null,
 			timezone: resolveTimezone(data?.timezone),
 			type: data?.type || ["uptime"],
 			color: data?.color || "#13715B",

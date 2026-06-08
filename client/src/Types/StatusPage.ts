@@ -47,6 +47,7 @@ export interface StatusPage {
 	type: MonitorDisplayType[];
 	companyName: string;
 	url: string;
+	customDomain?: string | null;
 	timezone?: string;
 	color: string;
 	monitors: string[];

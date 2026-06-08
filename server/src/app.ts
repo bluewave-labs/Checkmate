@@ -12,6 +12,7 @@ import { setupRoutes } from "@/config/routes.js";
 import { InitializedServices } from "@/config/services.js";
 import { InitializedControllers } from "@/config/controllers.js";
 import { EnvConfig } from "@/service/system/settingsService.js";
+import { createStatusPageCorsOrigin } from "@/middleware/statusPageCorsOrigin.js";
 
 export const createApp = ({
 	services,
@@ -33,7 +34,7 @@ export const createApp = ({
 
 	app.use(
 		cors({
-			origin: allowedOrigin,
+			origin: createStatusPageCorsOrigin(allowedOrigin, services.statusPagesRepository),
 			methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
 			allowedHeaders: ["Content-Type", "Authorization", "Accept-Language"],
 			credentials: true,

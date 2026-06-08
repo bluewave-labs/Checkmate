@@ -65,6 +65,14 @@ const StatusPageSchema = new Schema<StatusPageDocument>(
 			required: true,
 			default: "",
 		},
+		customDomain: {
+			type: String,
+			default: null,
+			lowercase: true,
+			trim: true,
+			sparse: true,
+			unique: true,
+		},
 		timezone: {
 			type: String,
 		},
