@@ -1,8 +1,9 @@
 import type { GeoContinent, GeoCheckResult, GeoCheckTimings, GeoCheckLocation } from "@/types/geoCheck.js";
-import { supportsGeoCheck } from "@/types/monitor.js";
+import { supportsGeoCheck, type HttpStatusCode } from "@/types/monitor.js";
 import { MonitorType } from "@/types/index.js";
 import type { ILogger } from "@/utils/logger.js";
 import got from "got";
+import { isStatusUp } from "@/service/infrastructure/network/utils.js";
 
 const SERVICE_NAME = "GlobalPingService";
 const GLOBAL_PING_API_BASE = "https://api.globalping.io/v1";
@@ -62,7 +63,7 @@ interface GlobalPingProbeResult {
 export interface IGlobalPingService {
 	readonly serviceName: string;
 	createMeasurement(monitorType: MonitorType, url: string, locations: GeoContinent[]): Promise<string | null>;
-	pollForResults(measurementId: string, timeoutMs?: number): Promise<GeoCheckResult[]>;
+	pollForResults(measurementId: string, timeoutMs?: number, customUpCodes?: HttpStatusCode[]): Promise<GeoCheckResult[]>;
 }
 
 export class GlobalPingService implements IGlobalPingService {
@@ -119,7 +120,11 @@ export class GlobalPingService implements IGlobalPingService {
 		}
 	}
 
-	async pollForResults(measurementId: string, timeoutMs: number = MAX_POLL_TIMEOUT_MS): Promise<GeoCheckResult[]> {
+	async pollForResults(
+		measurementId: string,
+		timeoutMs: number = MAX_POLL_TIMEOUT_MS,
+		customUpCodes: HttpStatusCode[] = []
+	): Promise<GeoCheckResult[]> {
 		const startTime = Date.now();
 
 		while (Date.now() - startTime < timeoutMs) {
@@ -132,7 +137,7 @@ export class GlobalPingService implements IGlobalPingService {
 				const measurement = response.body;
 
 				if (measurement.status === "finished") {
-					const results = this.transformResults(measurement.results || []);
+					const results = this.transformResults(measurement.results || [], customUpCodes);
 					this.logger.debug({
 						message: `GlobalPing measurement completed: ${measurementId}`,
 						service: SERVICE_NAME,
@@ -174,7 +179,7 @@ export class GlobalPingService implements IGlobalPingService {
 		return [];
 	}
 
-	private transformResults(probeResults: GlobalPingProbeResult[]): GeoCheckResult[] {
+	private transformResults(probeResults: GlobalPingProbeResult[], customUpCodes: HttpStatusCode[] = []): GeoCheckResult[] {
 		const successfulResults: GeoCheckResult[] = [];
 
 		for (const probeResult of probeResults) {
@@ -205,7 +210,7 @@ export class GlobalPingService implements IGlobalPingService {
 
 				successfulResults.push({
 					location,
-					status: probeResult.result.statusCode >= 200 && probeResult.result.statusCode < 300,
+					status: isStatusUp(probeResult.result.statusCode, customUpCodes),
 					statusCode: probeResult.result.statusCode,
 					timings,
 				});

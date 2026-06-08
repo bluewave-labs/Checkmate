@@ -1,7 +1,9 @@
 import { z } from "zod";
 import { booleanCoercion, dnsHostnameRegex, dnsServerValidation } from "./shared.js";
 import { GeoContinents } from "@/types/geoCheck.js";
-import { DnsRecordTypes, MonitorMatchMethods, MonitorStatuses, MonitorTypes, PageSpeedStrategies } from "@/types/monitor.js";
+import { DnsRecordTypes, HttpStatusCodeSet, MonitorMatchMethods, MonitorStatuses, MonitorTypes, PageSpeedStrategies } from "@/types/monitor.js";
+
+const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
 export const getMonitorByIdParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
@@ -81,6 +83,7 @@ export const createMonitorBodyValidation = z
 		tempAlertThreshold: z.number().optional(),
 		notifications: z.array(z.string()).optional(),
 		tags: z.array(z.string()).optional(),
+		customUpCodes: z.array(httpStatusCode).default([]),
 		secret: z.string().optional(),
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
@@ -110,6 +113,7 @@ export const editMonitorBodyValidation = z
 		interval: z.number().optional(),
 		notifications: z.array(z.string()).optional(),
 		tags: z.array(z.string()).optional(),
+		customUpCodes: z.array(httpStatusCode).optional(),
 		secret: z.string().optional(),
 		ignoreTlsErrors: z.boolean().optional(),
 		useAdvancedMatching: z.boolean().optional(),
@@ -180,6 +184,7 @@ const importedMonitorSchema = z
 		uptimePercentage: z.number().optional(),
 		notifications: z.array(z.string()).default([]),
 		tags: z.array(z.string()).default([]),
+		customUpCodes: z.array(httpStatusCode).default([]),
 		secret: z.string().optional(),
 		cpuAlertThreshold: z.number().default(100),
 		cpuAlertCounter: z.number().default(5),
@@ -241,6 +246,7 @@ export const monitorResponseSchema = z
 		matchMethod: z.enum(MonitorMatchMethods).optional(),
 		notifications: z.array(z.string()),
 		tags: z.array(z.string()),
+		customUpCodes: z.array(httpStatusCode).optional(),
 		secret: z.string().optional(),
 		cpuAlertThreshold: z.number(),
 		memoryAlertThreshold: z.number(),

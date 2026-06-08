@@ -2,6 +2,11 @@ import type { CheckSnapshot } from "@/types/check.js";
 export type { CheckSnapshot } from "@/types/check.js";
 import type { GeoContinent, GroupedGeoCheck } from "@/types/geoCheck.js";
 export type { GeoContinent } from "@/types/geoCheck.js";
+import http from "node:http";
+
+export const HttpStatusCodes = Object.keys(http.STATUS_CODES).map(Number);
+export const HttpStatusCodeSet = new Set(HttpStatusCodes);
+export type HttpStatusCode = number;
 
 export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
@@ -60,6 +65,7 @@ export interface Monitor {
 	uptimePercentage?: number;
 	notifications: string[];
 	tags: string[];
+	customUpCodes: HttpStatusCode[];
 	secret?: string;
 	cpuAlertThreshold: number;
 	cpuAlertCounter: number;
