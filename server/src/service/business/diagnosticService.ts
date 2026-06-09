@@ -87,9 +87,9 @@ export class DiagnosticService implements IDiagnosticService {
 					const entry: CollectionDiagnostics = {
 						name: collection.collectionName,
 						documentCount,
-						storageSize: stats.storageSize,
-						totalIndexSize: stats.totalIndexSize,
-						totalSize: stats.totalSize,
+						storageSize: stats.storageSize ?? 0,
+						totalIndexSize: stats.totalIndexSize ?? 0,
+						totalSize: stats.totalSize ?? (stats.storageSize ?? 0) + (stats.totalIndexSize ?? 0),
 					};
 					if (stats.timeseries?.bucketCount !== undefined) {
 						entry.bucketCount = stats.timeseries.bucketCount;
@@ -103,7 +103,7 @@ export class DiagnosticService implements IDiagnosticService {
 			host: mongo.connection.host,
 			port: mongo.connection.port,
 			dbName: mongo.connection.name,
-			totalSize: dbStats.totalSize,
+			totalSize: dbStats.totalSize ?? (dbStats.storageSize ?? 0) + (dbStats.indexSize ?? 0),
 			collections,
 		};
 	};
