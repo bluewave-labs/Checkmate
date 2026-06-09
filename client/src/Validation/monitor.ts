@@ -64,6 +64,10 @@ const httpSchema = baseSchema.extend({
 		.register(monitorStepRegistry, { step: 2 }),
 	expectedValue: z.string().optional().register(monitorStepRegistry, { step: 2 }),
 	jsonPath: z.string().optional().register(monitorStepRegistry, { step: 2 }),
+	customUpCodes: z
+		.array(z.number().min(100).max(599))
+		.optional()
+		.register(monitorStepRegistry, { step: 2 }),
 	...geoCheckFields,
 });
 
