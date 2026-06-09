@@ -3,7 +3,7 @@
 	"info": {
 		"title": "Checkmate API",
 		"version": "1.0.0",
-		"description": "Generated from Zod validation schemas. Source of truth: server/src/validation/*.ts"
+		"description": "Generated from Zod validation schemas. Source of truth: server/src/api/validation/*.ts"
 	},
 	"servers": [
 		{
@@ -396,6 +396,12 @@
 						"type": "array",
 						"items": {
 							"type": "string"
+						}
+					},
+					"customUpCodes": {
+						"type": "array",
+						"items": {
+							"type": "number"
 						}
 					},
 					"secret": {
@@ -7016,6 +7022,13 @@
 											"type": "string"
 										}
 									},
+									"customUpCodes": {
+										"type": "array",
+										"items": {
+											"type": "number"
+										},
+										"default": []
+									},
 									"secret": {
 										"type": "string"
 									},
@@ -7685,6 +7698,13 @@
 													},
 													"default": []
 												},
+												"customUpCodes": {
+													"type": "array",
+													"items": {
+														"type": "number"
+													},
+													"default": []
+												},
 												"secret": {
 													"type": "string"
 												},
@@ -8207,6 +8227,12 @@
 										"type": "array",
 										"items": {
 											"type": "string"
+										}
+									},
+									"customUpCodes": {
+										"type": "array",
+										"items": {
+											"type": "number"
 										}
 									},
 									"secret": {
