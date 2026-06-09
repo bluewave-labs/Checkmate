@@ -45,6 +45,7 @@ export const getMonitorDefaults = (
 				matchMethod: data?.matchMethod || "",
 				expectedValue: data?.expectedValue || "",
 				jsonPath: data?.jsonPath || "",
+				customUpCodes: data?.customUpCodes || [],
 			};
 			break;
 		case "ping":
@@ -138,6 +139,7 @@ export const getMonitorDefaults = (
 				matchMethod: "",
 				expectedValue: "",
 				jsonPath: "",
+				customUpCodes: [],
 			};
 	}
 

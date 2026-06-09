@@ -505,6 +505,10 @@
 							"equal": "Equal",
 							"include": "Include",
 							"regex": "Regex"
+						},
+						"customUpCodes": {
+							"label": "Accepted status codes",
+							"removeAriaLabel": "Remove status code"
 						}
 					},
 					"title": "Advanced settings"
