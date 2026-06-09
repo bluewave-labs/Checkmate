@@ -6,7 +6,7 @@ import { testNotificationProviderContract } from "../../../helpers/notificationP
 const mockGotPost = jest.fn().mockResolvedValue({});
 jest.unstable_mockModule("got", () => ({ default: { post: mockGotPost } }));
 
-const { TwilioProvider } = await import("../../../../src/service/infrastructure/notificationProviders/twilio.ts");
+const { TwilioProvider } = await import("../../../../src/domain/notifications/providers/twilio.ts");
 
 const createProvider = () => {
 	const logger = createMockLogger();

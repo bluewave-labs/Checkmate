@@ -1,6 +1,6 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import type { Monitor } from "../../../src/types/monitor.ts";
+import type { Monitor } from "../../../src/domain/monitors/monitor.types.ts";
 
 // ── Mock Scheduler / MongoStore ──────────────────────────────────────────────
 
@@ -44,7 +44,7 @@ jest.unstable_mockModule("less-simple-scheduler", () => ({
 	MongoStore: MockMongoStore,
 }));
 
-const { LessSimpleQueue } = await import("../../../src/service/infrastructure/JobQueues/LessSimpleQueue.ts");
+const { LessSimpleQueue } = await import("../../../src/service/job-queues/job-queue.less-simple.ts");
 
 const createQueueHelper = () => ({
 	getHeartbeatJob: jest.fn().mockReturnValue(() => Promise.resolve()),

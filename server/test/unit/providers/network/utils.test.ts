@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { timeRequest, NETWORK_ERROR, PING_ERROR, isStatusUp } from "../../../../src/service/infrastructure/network/utils.ts";
+import { timeRequest, NETWORK_ERROR, PING_ERROR, isStatusUp } from "../../../../src/service/network/utils.ts";
 
 describe("network utils", () => {
 	describe("timeRequest", () => {

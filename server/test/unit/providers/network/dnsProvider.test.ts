@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
-import { NETWORK_ERROR } from "../../../../src/service/infrastructure/network/utils.ts";
-import type { Monitor } from "../../../../src/types/index.ts";
-import { DNSProvider } from "../../../../src/service/infrastructure/network/DNSProvider.ts";
+import { NETWORK_ERROR } from "../../../../src/service/network/utils.ts";
+import type { Monitor } from "../../../../src/domain/monitors/monitor.types.ts";
+import { DNSProvider } from "../../../../src/service/network/DNSProvider.ts";
 
 // ── Mocks ────────────────────────────────────────────────────────────────────
 

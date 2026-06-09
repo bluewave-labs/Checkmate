@@ -1,5 +1,5 @@
-import type { IIncidentsRepository } from "../../src/repositories/incidents/IIncidentsRepository.ts";
-import type { Incident, IncidentSummary } from "../../src/types/index.ts";
+import type { IIncidentsRepository } from "../../src/domain/incidents/incident.repository.interface.ts";
+import type { Incident, IncidentSummary } from "../../src/domain/incidents/incident.type.ts";
 import { randomUUID } from "crypto";
 
 export class InMemoryIncidentsRepository implements IIncidentsRepository {

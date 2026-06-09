@@ -1,6 +1,6 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { QueueHelper } from "../../../src/service/infrastructure/JobQueues/QueueHelper.ts";
-import type { Monitor } from "../../../src/types/monitor.ts";
+import { QueueHelper } from "../../../src/service/job-queues/job-queue.helper.ts";
+import type { Monitor } from "../../../src/domain/monitors/monitor.types.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────

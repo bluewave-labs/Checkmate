@@ -1,10 +1,14 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
-import { StatusService } from "../../../src/service/infrastructure/statusService.ts";
+import { StatusService } from "../../../src/service/statusService.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import { MAX_RECENT_CHECKS } from "../../../src/types/index.ts";
-import type { Monitor, MonitorStatus, MonitorStatusResponse, Check, HardwareStatusPayload } from "../../../src/types/index.ts";
-import type { IMonitorsRepository, IMonitorStatsRepository, IChecksRepository } from "../../../src/repositories/index.ts";
-import type { IBufferService } from "../../../src/service/infrastructure/bufferService.ts";
+import { MAX_RECENT_CHECKS } from "../../../src/domain/monitors/monitor.types.ts";
+import type { Monitor, MonitorStatus } from "../../../src/domain/monitors/monitor.types.ts";
+import type { Check } from "../../../src/domain/checks/check.type.ts";
+import type { MonitorStatusResponse, HardwareStatusPayload } from "../../../src/types/network.ts";
+import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
+import type { IMonitorStatsRepository } from "../../../src/domain/monitor-stats/monitor-stats.repository.interface.ts";
+import type { IChecksRepository } from "../../../src/domain/checks/check.repository.interface.ts";
+import type { IBufferService } from "../../../src/service/bufferService.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

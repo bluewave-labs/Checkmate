@@ -1,6 +1,6 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import type { Monitor } from "../../../src/types/monitor.ts";
+import type { Monitor } from "../../../src/domain/monitors/monitor.types.ts";
 
 // ── Mock Scheduler ───────────────────────────────────────────────────────────
 
@@ -35,7 +35,7 @@ jest.unstable_mockModule("super-simple-scheduler", () => ({
 	default: MockScheduler,
 }));
 
-const { SuperSimpleQueue } = await import("../../../src/service/infrastructure/JobQueues/SuperSimpleQueue.ts");
+const { SuperSimpleQueue } = await import("../../../src/service/job-queues/job-queue.sumper-simple.ts");
 
 const createQueueHelper = () => ({
 	getHeartbeatJob: jest.fn().mockReturnValue(() => Promise.resolve()),

@@ -1,6 +1,6 @@
 import { describe, expect, it, jest, beforeEach, afterEach } from "@jest/globals";
-import { DiagnosticService } from "../../../src/service/business/diagnosticService.ts";
-import type { IDb } from "../../../src/db/IDb.ts";
+import { DiagnosticService } from "../../../src/domain/diagnostics/diagnostic.service.ts";
+import type { IDb } from "../../../src/db/db.interface.ts";
 import type { Mongoose } from "mongoose";
 
 // ── Test helpers ─────────────────────────────────────────────────────────────
