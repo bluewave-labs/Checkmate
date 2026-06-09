@@ -8,12 +8,8 @@ import type {
 	CheckNetworkInterfaceInfo,
 	GotTimings,
 	ILighthouseAudit,
-	DnsRecordType,
-	Monitor,
-	MonitorMatchMethod,
-	MonitorType,
-	MonitorStatus,
-} from "@/types/index.js";
+} from "@/domain/checks/check.type.js";
+import type { DnsRecordType, Monitor, MonitorMatchMethod, MonitorStatus, MonitorType } from "@/domain/monitors/monitor.types.js";
 
 import type { QueryResult } from "gamedig";
 

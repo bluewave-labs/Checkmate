@@ -2,13 +2,13 @@ import { initializeServices } from "./config/services.js";
 import { initializeControllers } from "./config/controllers.js";
 import { createApp } from "./app.js";
 import { initShutdownListener } from "@/shutdown.js";
-import { validateEnv } from "@/validation/envValidation.js";
+import { validateEnv } from "@/config/envValidation.js";
 import { fileURLToPath } from "url";
 import path from "path";
 import fs from "fs";
 
 import Logger, { ILogger } from "@/utils/logger.js";
-import { SettingsService } from "@/service/index.js";
+import { SettingsService } from "@/domain/app-settings/app-settings.service.js";
 
 const SERVICE_NAME = "Server";
 let logger: ILogger;
@@ -52,7 +52,6 @@ const startApp = async () => {
 		frontendPath,
 		openApiSpec,
 	});
-
 	const server = app.listen(env.PORT, () => {
 		logger.info({ message: `Server started on port:${env.PORT}` });
 	});

@@ -2,7 +2,7 @@ import { migrateStatusWindowThreshold } from "./0001_migrateStatusWindowThreshol
 import { convertChecksToTimeSeries } from "./0002_convertChecksToTimeSeries.js";
 import { cleanupDuplicateMonitorStats } from "./0003_cleanupDuplicateMonitorStats.js";
 import { fixInfrastructureThresholds } from "./0004_fixInfrastructureThresholds.js";
-import MigrationModel from "../models/Migration.js";
+import MigrationModel from "../../domain/migrations/migration.model.js";
 import { migrateStatusPageTypeToArray } from "./0005_migrateStatusPageTypeToArray.js";
 import { cleanupDuplicateMonitorStatsForUniqueIndex } from "./0006_cleanupDuplicateMonitorStatsForUniqueIndex.js";
 import { migrateMaintenanceWindowMonitorIdToArray } from "./0007_migrateMaintenanceWindowMonitorIdToArray.js";

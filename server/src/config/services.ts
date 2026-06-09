@@ -1,75 +1,52 @@
 import { Mongoose } from "mongoose";
-import MongoDB from "../db/MongoDB.js";
-import { IDb } from "@/db/IDb.js";
-import {
-	// Service classes
-	NetworkService,
-	EmailService,
-	BufferService,
-	GlobalPingService,
-	LessSimpleQueue,
-	SuperSimpleQueue,
-	QueueHelper,
-	NotificationsService,
-	TagsService,
-	StatusService,
-	NotificationMessageBuilder,
-	MonitorService,
-	StatusPageService,
-	UserService,
-	CheckService,
-	GeoChecksService,
-	DiagnosticService,
-	InviteService,
-	MaintenanceWindowService,
-	IncidentService,
-	// Notification providers
-	WebhookProvider,
-	SlackProvider,
-	EmailProvider,
-	DiscordProvider,
-	PagerDutyProvider,
-	MatrixProvider,
-	TeamsProvider,
-	TelegramProvider,
-	PushoverProvider,
-	TwilioProvider,
-	NtfyProvider,
-	// Interfaces
-	INetworkService,
-	IEmailService,
-	IBufferService,
-	IJobQueue,
-	INotificationsService,
-	ITagsService,
-	IStatusService,
-	IMonitorService,
-	IUserService,
-	ICheckService,
-	IGeoChecksService,
-	IDiagnosticService,
-	IInviteService,
-	IMaintenanceWindowService,
-	IStatusPageService,
-	IIncidentService,
-	INotificationMessageBuilder,
-	ISettingsService,
-	SettingsService,
-	EnvConfig,
-} from "@/service/index.js";
+import MongoDB from "../db/db.mongo.js";
+import { IDb } from "@/db/db.interface.js";
+import { EnvConfig, ISettingsService, SettingsService } from "@/domain/app-settings/app-settings.service.js";
+import { CheckService, ICheckService } from "@/domain/checks/check.service.js";
+import { DiagnosticService, IDiagnosticService } from "@/domain/diagnostics/diagnostic.service.js";
+import { GeoChecksService, IGeoChecksService } from "@/domain/geo-checks/geo-check.service.js";
+import { IIncidentService, IncidentService } from "@/domain/incidents/incident.service.js";
+import { IInviteService, InviteService } from "@/domain/invites/invite.service.js";
+import { IMaintenanceWindowService, MaintenanceWindowService } from "@/domain/maintenance-windows/maintenance-window.service.js";
+import { IMonitorService, MonitorService } from "@/domain/monitors/monitor.service.js";
+import { INotificationMessageBuilder, NotificationMessageBuilder } from "@/domain/notifications/notification.message-builder.js";
+import { INotificationsService, NotificationsService } from "@/domain/notifications/notification.service.js";
+import { DiscordProvider } from "@/domain/notifications/providers/discord.js";
+import { EmailProvider } from "@/domain/notifications/providers/email.js";
+import { MatrixProvider } from "@/domain/notifications/providers/matrix.js";
+import { NtfyProvider } from "@/domain/notifications/providers/ntfy.js";
+import { PagerDutyProvider } from "@/domain/notifications/providers/pagerduty.js";
+import { PushoverProvider } from "@/domain/notifications/providers/pushover.js";
+import { SlackProvider } from "@/domain/notifications/providers/slack.js";
+import { TeamsProvider } from "@/domain/notifications/providers/teams.js";
+import { TelegramProvider } from "@/domain/notifications/providers/telegram.js";
+import { TwilioProvider } from "@/domain/notifications/providers/twilio.js";
+import { WebhookProvider } from "@/domain/notifications/providers/webhook.js";
+import { IStatusPageService, StatusPageService } from "@/domain/status-pages/status-page.service.js";
+import { ITagsService, TagsService } from "@/domain/tags/tag.service.js";
+import { IUserService, UserService } from "@/domain/users/user.service.js";
+import { BufferService, IBufferService } from "@/service/bufferService.js";
+import { EmailService, IEmailService } from "@/service/emailService.js";
+import { GlobalPingService } from "@/service/globalPingService.js";
+import { QueueHelper } from "@/service/job-queues/job-queue.helper.js";
+import { IJobQueue } from "@/service/job-queues/job-queue.interface.js";
+import { LessSimpleQueue } from "@/service/job-queues/job-queue.less-simple.js";
+import { SuperSimpleQueue } from "@/service/job-queues/job-queue.sumper-simple.js";
+import { INetworkService, NetworkService } from "@/service/networkService.js";
+import { IStatusService, StatusService } from "@/service/statusService.js";
 
 // Network providers
-import { PingProvider } from "@/service/infrastructure/network/PingProvider.js";
-import { HttpProvider } from "@/service/infrastructure/network/HttpProvider.js";
-import { AdvancedMatcher } from "@/service/infrastructure/network/AdvancedMatcher.js";
-import { PageSpeedProvider } from "@/service/infrastructure/network/PageSpeedProvider.js";
-import { HardwareProvider } from "@/service/infrastructure/network/HardwareProvider.js";
-import { DockerProvider } from "@/service/infrastructure/network/DockerProvider.js";
-import { PortProvider } from "@/service/infrastructure/network/PortProvider.js";
-import { GameProvider } from "@/service/infrastructure/network/GameProvider.js";
-import { GrpcProvider } from "@/service/infrastructure/network/GrpcProvider.js";
-import { WebSocketProvider } from "@/service/infrastructure/network/WebSocketProvider.js";
-import { DNSProvider } from "@/service/infrastructure/network/DNSProvider.js";
+import { PingProvider } from "@/service/network/PingProvider.js";
+import { HttpProvider } from "@/service/network/HttpProvider.js";
+import { AdvancedMatcher } from "@/service/network/AdvancedMatcher.js";
+import { PageSpeedProvider } from "@/service/network/PageSpeedProvider.js";
+import { HardwareProvider } from "@/service/network/HardwareProvider.js";
+import { DockerProvider } from "@/service/network/DockerProvider.js";
+import { PortProvider } from "@/service/network/PortProvider.js";
+import { GameProvider } from "@/service/network/GameProvider.js";
+import { GrpcProvider } from "@/service/network/GrpcProvider.js";
+import { WebSocketProvider } from "@/service/network/WebSocketProvider.js";
+import { DNSProvider } from "@/service/network/DNSProvider.js";
 
 // Third-party
 import { Resolver } from "dns/promises";
@@ -93,40 +70,38 @@ import * as protoLoader from "@grpc/proto-loader";
 import WebSocket from "ws";
 
 // Repositories
-import {
-	MongoMonitorsRepository,
-	MongoChecksRepository,
-	MongoGeoChecksRepository,
-	MongoMonitorStatsRepository,
-	MongoStatusPagesRepository,
-	MongoUsersRepository,
-	MongoInvitesRepository,
-	MongoRecoveryTokensRepository,
-	MongoNotificationsRepository,
-	MongoTagsRepository,
-	MongoIncidentsRepository,
-	MongoTeamsRepository,
-	MongoMaintenanceWindowsRepository,
-	MongoSettingsRepository,
-	MongoQueueWorkersRepository,
-	IMonitorsRepository,
-	IChecksRepository,
-	IGeoChecksRepository,
-	IMonitorStatsRepository,
-	IStatusPagesRepository,
-	IUsersRepository,
-	IInvitesRepository,
-	IRecoveryTokensRepository,
-	ISettingsRepository,
-	INotificationsRepository,
-	ITagsRepository,
-	IIncidentsRepository,
-	ITeamsRepository,
-	IMaintenanceWindowsRepository,
-} from "@/repositories/index.js";
+import { ISettingsRepository } from "@/domain/app-settings/app-settings-repository.interface.js";
+import MongoSettingsRepository from "@/domain/app-settings/app-settings.repository.mongo.js";
+import { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
+import MongoChecksRepository from "@/domain/checks/check.repository.mongo.js";
+import { IGeoChecksRepository } from "@/domain/geo-checks/geo-check.repository.interface.js";
+import MongoGeoChecksRepository from "@/domain/geo-checks/geo-check.repository.mongo.js";
+import { IIncidentsRepository } from "@/domain/incidents/incident.repository.interface.js";
+import MongoIncidentsRepository from "@/domain/incidents/incident.repository.mongo.js";
+import { IInvitesRepository } from "@/domain/invites/invite.repository.interface.js";
+import MongoInvitesRepository from "@/domain/invites/invite.repository.mongo.js";
+import { IMaintenanceWindowsRepository } from "@/domain/maintenance-windows/maintenance-window.repository.interface.js";
+import MongoMaintenanceWindowsRepository from "@/domain/maintenance-windows/maintenance-window.repository.mongo.js";
+import { IMonitorStatsRepository } from "@/domain/monitor-stats/monitor-stats.repository.interface.js";
+import MongoMonitorStatsRepository from "@/domain/monitor-stats/monitor-stats.repository.mongo.js";
+import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
+import MongoMonitorsRepository from "@/domain/monitors/monitor.repository.mongo.js";
+import { INotificationsRepository } from "@/domain/notifications/notification.repository.interface.js";
+import MongoNotificationsRepository from "@/domain/notifications/notification.repository.mongo.js";
+import MongoQueueWorkersRepository from "@/domain/queue-workers/queue-worker.repository.mongo.js";
+import { IRecoveryTokensRepository } from "@/domain/recovery-tokens/recovery-token.repository.interface.js";
+import MongoRecoveryTokensRepository from "@/domain/recovery-tokens/recovery-token.repository.mongo.js";
+import { IStatusPagesRepository } from "@/domain/status-pages/status-page-repository.interface.js";
+import MongoStatusPagesRepository from "@/domain/status-pages/status-page-repository.mongo.js";
+import { ITagsRepository } from "@/domain/tags/tag.repository.interface.js";
+import MongoTagsRepository from "@/domain/tags/tag.repository.mongo.js";
+import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
+import MongoTeamsRepository from "@/domain/teams/team.repository.model.js";
+import { IUsersRepository } from "@/domain/users/user.repository.interface.js";
+import MongoUsersRepository from "@/domain/users/user.repository.mongo.js";
 import { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";
-import { type QueueMode } from "@/types/settings.js";
+import { type QueueMode } from "@/domain/app-settings/app-settings.type.js";
 
 export type InitializedServices = {
 	settingsService: ISettingsService;

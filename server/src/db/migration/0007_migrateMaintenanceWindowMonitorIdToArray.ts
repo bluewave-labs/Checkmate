@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import type { AnyBulkWriteOperation, Document } from "mongodb";
 import { logger } from "@/utils/logger.js";
-import MaintenanceWindowModel from "../models/MaintenanceWindow.js";
+import MaintenanceWindowModel from "../../domain/maintenance-windows/maintenance-window.model.js";
 
 type GroupResult = {
 	_id: {

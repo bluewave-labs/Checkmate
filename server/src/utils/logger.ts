@@ -1,7 +1,7 @@
 import { createLogger, format, transports, Logger as WinstonLogger } from "winston";
 import type { Logform } from "winston";
 import dotenv from "dotenv";
-import { EnvConfig } from "@/service/system/settingsService.js";
+import { EnvConfig } from "@/domain/app-settings/app-settings.service.js";
 dotenv.config();
 
 const SERVICE_NAME = "Logger";
