@@ -1,13 +1,11 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
-import { MonitorService } from "../../../src/service/business/monitorService.ts";
-import type {
-	IChecksRepository,
-	IGeoChecksRepository,
-	IIncidentsRepository,
-	IMonitorStatsRepository,
-	IMonitorsRepository,
-	IStatusPagesRepository,
-} from "../../../src/repositories/index.ts";
+import { MonitorService } from "../../../src/domain/monitors/monitor.service.ts";
+import type { IChecksRepository } from "../../../src/domain/checks/check.repository.interface.ts";
+import type { IGeoChecksRepository } from "../../../src/domain/geo-checks/geo-check.repository.interface.ts";
+import type { IIncidentsRepository } from "../../../src/domain/incidents/incident.repository.interface.ts";
+import type { IMonitorStatsRepository } from "../../../src/domain/monitor-stats/monitor-stats.repository.interface.ts";
+import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
+import type { IStatusPagesRepository } from "../../../src/domain/status-pages/status-page-repository.interface.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 
 const createMonitorsRepositoryMock = () =>

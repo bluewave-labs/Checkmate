@@ -1,9 +1,9 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
-import { EmailProvider } from "../../../../src/service/infrastructure/notificationProviders/email.ts";
+import { EmailProvider } from "../../../../src/domain/notifications/providers/email.ts";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
 import { makeNotification, makeMessage } from "../../../helpers/notificationMessage.ts";
 import { testNotificationProviderContract } from "../../../helpers/notificationProviderContract.ts";
-import type { IEmailService } from "../../../../src/service/infrastructure/emailService.ts";
+import type { IEmailService } from "../../../../src/service/emailService.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

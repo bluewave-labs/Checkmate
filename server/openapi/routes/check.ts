@@ -7,7 +7,7 @@ import {
 	getTeamChecksQueryValidation,
 	deleteChecksParamValidation,
 	getChecksSummaryByTeamIdQueryValidation,
-} from "@/validation/checkValidation.js";
+} from "@/api/validation/checkValidation.js";
 
 const tags = ["checks"];
 

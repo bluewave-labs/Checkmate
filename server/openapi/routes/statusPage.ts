@@ -1,6 +1,6 @@
 import { registry } from "../registry.js";
 import { bearer, multipart, okJsonNoData, okUnknown, standardErrors } from "../helpers.js";
-import { createStatusPageBodyValidation, getStatusPageParamValidation, getStatusPageQueryValidation } from "@/validation/statusPageValidation.js";
+import { createStatusPageBodyValidation, getStatusPageParamValidation, getStatusPageQueryValidation } from "@/api/validation/statusPageValidation.js";
 
 const tags = ["status-page"];
 

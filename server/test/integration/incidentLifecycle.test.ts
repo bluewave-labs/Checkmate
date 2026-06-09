@@ -1,11 +1,12 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
-import { IncidentService } from "../../src/service/business/incidentService.ts";
+import { IncidentService } from "../../src/domain/incidents/incident.service.ts";
 import { InMemoryIncidentsRepository } from "../helpers/InMemoryIncidentsRepository.ts";
 import { createMockLogger } from "../helpers/createMockLogger.ts";
-import type { IMonitorsRepository, IUsersRepository } from "../../src/repositories/index.ts";
-import type { INotificationMessageBuilder } from "../../src/service/infrastructure/notificationMessageBuilder.ts";
-import type { Monitor } from "../../src/types/monitor.ts";
-import type { MonitorActionDecision } from "../../src/service/infrastructure/JobQueues/QueueHelper.ts";
+import type { IMonitorsRepository } from "../../src/domain/monitors/monitor.repository.interface.ts";
+import type { IUsersRepository } from "../../src/domain/users/user.repository.interface.ts";
+import type { INotificationMessageBuilder } from "../../src/domain/notifications/notification.message-builder.ts";
+import type { Monitor } from "../../src/domain/monitors/monitor.types.ts";
+import type { MonitorActionDecision } from "../../src/service/job-queues/job-queue.helper.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

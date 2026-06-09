@@ -1,8 +1,9 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { CheckService } from "../../../src/service/business/checkService.ts";
+import { CheckService } from "../../../src/domain/checks/check.service.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import type { IChecksRepository, IMonitorsRepository } from "../../../src/repositories/index.ts";
-import type { MonitorStatusResponse, HardwareStatusPayload, PageSpeedStatusPayload } from "../../../src/types/index.ts";
+import type { IChecksRepository } from "../../../src/domain/checks/check.repository.interface.ts";
+import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
+import type { MonitorStatusResponse, HardwareStatusPayload, PageSpeedStatusPayload } from "../../../src/types/network.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

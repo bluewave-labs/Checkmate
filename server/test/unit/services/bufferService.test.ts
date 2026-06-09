@@ -1,10 +1,11 @@
 import { describe, expect, it, jest, beforeEach, afterEach } from "@jest/globals";
-import { BufferService } from "../../../src/service/infrastructure/bufferService.ts";
+import { BufferService } from "../../../src/service/bufferService.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import type { ICheckService } from "../../../src/service/business/checkService.ts";
-import type { IGeoChecksService } from "../../../src/service/business/geoChecksService.ts";
-import type { ISettingsService } from "../../../src/service/system/settingsService.ts";
-import type { Check, GeoCheck } from "../../../src/types/index.ts";
+import type { ICheckService } from "../../../src/domain/checks/check.service.ts";
+import type { IGeoChecksService } from "../../../src/domain/geo-checks/geo-check.service.ts";
+import type { ISettingsService } from "../../../src/domain/app-settings/app-settings.service.ts";
+import type { Check } from "../../../src/domain/checks/check.type.ts";
+import type { GeoCheck } from "../../../src/domain/geo-checks/geo-check.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

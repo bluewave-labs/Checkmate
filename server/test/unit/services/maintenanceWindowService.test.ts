@@ -1,8 +1,8 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { MaintenanceWindowService } from "../../../src/service/business/maintenanceWindowService.ts";
-import type { IMaintenanceWindowsRepository } from "../../../src/repositories/maintenance-windows/IMaintenanceWindowsRepository.ts";
-import type { IMonitorsRepository } from "../../../src/repositories/monitors/IMonitorsRepository.ts";
-import type { MaintenanceWindow } from "../../../src/types/index.ts";
+import { MaintenanceWindowService } from "../../../src/domain/maintenance-windows/maintenance-window.service.ts";
+import type { IMaintenanceWindowsRepository } from "../../../src/domain/maintenance-windows/maintenance-window.repository.interface.ts";
+import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
+import type { MaintenanceWindow } from "../../../src/domain/maintenance-windows/maintenance-window.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

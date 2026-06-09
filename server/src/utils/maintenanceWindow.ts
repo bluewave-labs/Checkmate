@@ -1,4 +1,4 @@
-import type { MaintenanceWindow } from "@/types/index.js";
+import type { MaintenanceWindow } from "@/domain/maintenance-windows/maintenance-window.type.js";
 
 export const isWindowActive = (window: MaintenanceWindow, now: Date = new Date()): boolean => {
 	if (!window.active) {

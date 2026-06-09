@@ -1,5 +1,9 @@
 import { describe, expect, it } from "@jest/globals";
-import { createMonitorBodyValidation, editMonitorBodyValidation, importMonitorsBodyValidation } from "../../../src/validation/monitorValidation.ts";
+import {
+	createMonitorBodyValidation,
+	editMonitorBodyValidation,
+	importMonitorsBodyValidation,
+} from "../../../src/api/validation/monitorValidation.ts";
 
 const baseDnsBody = {
 	name: "DNS check",

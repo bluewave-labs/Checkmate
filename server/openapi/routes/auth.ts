@@ -7,7 +7,7 @@ import {
 	recoveryValidation,
 	recoveryTokenBodyValidation,
 	newPasswordValidation,
-} from "@/validation/authValidation.js";
+} from "@/api/validation/authValidation.js";
 import {
 	getUserByIdParamValidation,
 	editUserByIdParamValidation,
@@ -16,7 +16,7 @@ import {
 	createUserBodyValidation,
 	editUserBodyValidation,
 	userResponseSchema,
-} from "@/validation/userValidation.js";
+} from "@/api/validation/userValidation.js";
 
 const tags = ["auth"];
 

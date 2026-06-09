@@ -1,4 +1,4 @@
-import type { GroupedCheck, NormalizedCheck, NormalizedUptimeCheck, HasResponseTime } from "@/types/index.js";
+import type { GroupedCheck, HasResponseTime, NormalizedCheck, NormalizedUptimeCheck } from "@/domain/checks/check.type.js";
 
 export const getDateForRange = (dateRange: string): Date | undefined => {
 	const now = Date.now();

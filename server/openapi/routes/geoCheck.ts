@@ -1,6 +1,6 @@
 import { registry } from "../registry.js";
 import { bearer, okUnknown, standardErrors } from "../helpers.js";
-import { getChecksParamValidation, getChecksQueryValidation } from "@/validation/checkValidation.js";
+import { getChecksParamValidation, getChecksQueryValidation } from "@/api/validation/checkValidation.js";
 
 registry.registerPath({
 	method: "get",

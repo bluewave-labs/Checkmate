@@ -1,4 +1,4 @@
-import { MonitorModel } from "../models/Monitor.js";
+import { MonitorModel } from "../../domain/monitors/monitor.model.js";
 import { logger } from "@/utils/logger.js";
 
 /**
