@@ -1606,6 +1606,9 @@
 			"header": {
 				"title": "Status pages",
 				"description": "Publish public pages that show real-time uptime and incident history to your customers and stakeholders."
+			},
+			"preview": {
+				"title": "Status page preview"
 			}
 		},
 		"uptime": {
