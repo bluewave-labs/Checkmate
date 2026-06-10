@@ -10488,7 +10488,8 @@
 										"type": "boolean"
 									},
 									"customCSS": {
-										"type": "string"
+										"type": "string",
+										"maxLength": 100000
 									},
 									"removeLogo": {
 										"anyOf": [
@@ -10694,7 +10695,8 @@
 										"type": "boolean"
 									},
 									"customCSS": {
-										"type": "string"
+										"type": "string",
+										"maxLength": 100000
 									},
 									"removeLogo": {
 										"anyOf": [

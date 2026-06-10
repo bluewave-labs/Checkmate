@@ -32,7 +32,7 @@ export const createStatusPageBodyValidation = z
 		showUptimePercentage: booleanCoercion,
 		showAdminLoginLink: booleanCoercion.optional(),
 		showInfrastructure: booleanCoercion.optional(),
-		customCSS: z.string().optional(),
+		customCSS: z.string().max(100000, "Custom CSS must be at most 100000 characters").optional(),
 		removeLogo: z.union([z.literal("true"), z.literal("false")]).optional(),
 		theme: z.enum(StatusPageThemes).optional(),
 		themeMode: z.enum(StatusPageThemeModes).optional(),

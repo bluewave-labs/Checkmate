@@ -35,7 +35,11 @@ export const statusPageSchema = z.object({
 	showUptimePercentage: z.boolean().register(statusPageStepRegistry, { step: 1 }),
 	showAdminLoginLink: z.boolean().register(statusPageStepRegistry, { step: 1 }),
 	showInfrastructure: z.boolean().register(statusPageStepRegistry, { step: 1 }),
-	customCSS: z.string().optional().register(statusPageStepRegistry, { step: 1 }),
+	customCSS: z
+		.string()
+		.max(100000, "Custom CSS must be at most 100000 characters")
+		.optional()
+		.register(statusPageStepRegistry, { step: 1 }),
 	theme: z
 		.enum(STATUS_PAGE_THEMES)
 		.optional()
