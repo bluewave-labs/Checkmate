@@ -157,6 +157,7 @@ const CreateStatusPage = () => {
 		fd.append("showUptimePercentage", String(data.showUptimePercentage));
 		fd.append("showAdminLoginLink", String(data.showAdminLoginLink));
 		fd.append("showInfrastructure", String(data.showInfrastructure));
+		fd.append("customCSS", data.customCSS ?? "");
 		if (data.theme) fd.append("theme", data.theme);
 		if (data.themeMode) fd.append("themeMode", data.themeMode);
 
@@ -498,6 +499,33 @@ const CreateStatusPage = () => {
 											onThemeModeChange={modeField.onChange}
 										/>
 									)}
+								/>
+							)}
+						/>
+					}
+				/>
+			)}
+			{showStep(1) && (
+				<ConfigBox
+					title={t("pages.statusPages.form.customCSS.title")}
+					subtitle={t("pages.statusPages.form.customCSS.description")}
+					rightContent={
+						<Controller
+							name="customCSS"
+							control={control}
+							render={({ field, fieldState }) => (
+								<TextField
+									{...field}
+									multiline
+									rows={8}
+									fieldLabel={t(
+										"pages.statusPages.form.customCSS.option.customCSS.label"
+									)}
+									placeholder={t(
+										"pages.statusPages.form.customCSS.option.customCSS.placeholder"
+									)}
+									error={!!fieldState.error}
+									helperText={fieldState.error?.message}
 								/>
 							)}
 						/>

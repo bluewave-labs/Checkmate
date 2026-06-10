@@ -10487,6 +10487,9 @@
 									"showInfrastructure": {
 										"type": "boolean"
 									},
+									"customCSS": {
+										"type": "string"
+									},
 									"removeLogo": {
 										"anyOf": [
 											{
@@ -10689,6 +10692,9 @@
 									},
 									"showInfrastructure": {
 										"type": "boolean"
+									},
+									"customCSS": {
+										"type": "string"
 									},
 									"removeLogo": {
 										"anyOf": [

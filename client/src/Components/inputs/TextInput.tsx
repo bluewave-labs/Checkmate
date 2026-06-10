@@ -22,7 +22,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function T
 		width: "100%",
 		"& .MuiOutlinedInput-root": {
 			borderRadius: theme.shape.borderRadius,
-			height: 34,
+			height: props.multiline ? "auto" : 34,
 			fontSize: typographyLevels.base,
 			overflow: "hidden",
 		},

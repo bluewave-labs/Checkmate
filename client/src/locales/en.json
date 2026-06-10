@@ -1574,6 +1574,16 @@
 					"light": "Light only",
 					"dark": "Dark only"
 				},
+				"customCSS": {
+					"title": "Custom CSS",
+					"description": "Add custom CSS to fine-tune the look of your public status page.",
+					"option": {
+						"customCSS": {
+							"label": "Custom CSS",
+							"placeholder": "footer { display: none; }"
+						}
+					}
+				},
 				"features": {
 					"title": "Features",
 					"description": "Configure what information is displayed on your status page.",
