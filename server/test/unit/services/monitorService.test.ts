@@ -98,7 +98,7 @@ const createService = (
 	const jobQueue = overrides.jobQueue ?? createJobQueueMock();
 	const logger = overrides.logger ?? createMockLogger();
 	const service = new MonitorService({
-		jobQueue: jobQueue as any,
+		worker: jobQueue as any,
 		logger: logger as any,
 		games: (overrides.games ?? { cs2: { name: "Counter-Strike 2" } }) as any,
 		monitorsRepository: overrides.monitorsRepository ?? createMonitorsRepositoryMock(),
@@ -1535,7 +1535,7 @@ describe("MonitorService", () => {
 
 			const logger = createMockLogger();
 			const service = new MonitorService({
-				jobQueue: jobQueue as any,
+				worker: jobQueue as any,
 				logger: logger as any,
 				games: {} as any,
 				monitorsRepository,

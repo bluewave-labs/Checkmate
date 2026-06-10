@@ -44,7 +44,7 @@ jest.unstable_mockModule("less-simple-scheduler", () => ({
 	MongoStore: MockMongoStore,
 }));
 
-const { LessSimpleQueue } = await import("../../../src/service/job-queues/job-queue.less-simple.ts");
+const { LessSimpleWorker: LessSimpleQueue } = await import("../../../src/worker/worker.less-simple.ts");
 
 const createQueueHelper = () => ({
 	getHeartbeatJob: jest.fn().mockReturnValue(() => Promise.resolve()),

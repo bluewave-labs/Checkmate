@@ -35,7 +35,7 @@ jest.unstable_mockModule("super-simple-scheduler", () => ({
 	default: MockScheduler,
 }));
 
-const { SuperSimpleQueue } = await import("../../../src/service/job-queues/job-queue.sumper-simple.ts");
+const { SuperSimpleQueue } = await import("../../../src/worker/worker.super-simple.ts");
 
 const createQueueHelper = () => ({
 	getHeartbeatJob: jest.fn().mockReturnValue(() => Promise.resolve()),
