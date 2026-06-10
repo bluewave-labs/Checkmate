@@ -1,5 +1,10 @@
 import { jest } from "@jest/globals";
-import { QueueHelper } from "../../src/worker/worker.helper.ts";
+import { WorkerHelper } from "../../src/worker/worker.helper.ts";
+import { MonitorStatusPolicy } from "../../src/worker/worker.monitor-status-policy.ts";
+import { CheckPipeline, GeoChecksPipeline } from "../../src/worker/worker.check-pipeline.ts";
+import { NotificationReactor } from "../../src/worker/reactors/reactor.notification.ts";
+import { IncidentReactor } from "../../src/worker/reactors/reactor.incident.ts";
+import { ReactorDispatcher } from "../../src/worker/reactors/reactor.dispatcher.ts";
 import { StatusService } from "../../src/service/statusService.ts";
 import { IncidentService } from "../../src/domain/incidents/incident.service.ts";
 import { InMemoryMonitorsRepository } from "./InMemoryMonitorsRepository.ts";
@@ -142,24 +147,37 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 	};
 
 	const maintenanceWindowsRepo = { findByMonitorId: jest.fn().mockResolvedValue([]) };
+	const geoChecksService = { buildGeoCheck: jest.fn() };
 
-	const helper = new QueueHelper(
-		logger,
+	const checkPipeline = new CheckPipeline(
+		monitorsRepo as any,
+		maintenanceWindowsRepo as any,
+		checkService as any,
 		networkService as any,
+		bufferStub as any,
+		new MonitorStatusPolicy(),
 		statusService as any,
-		notificationsService as any,
+		logger
+	);
+	const geoCheckPipeline = new GeoChecksPipeline(maintenanceWindowsRepo as any, geoChecksService as any, bufferStub as any, logger);
+
+	const notificationReactor = new NotificationReactor(notificationsService as any);
+	const incidentReactor = new IncidentReactor(incidentService as any);
+	const reactorDispatcher = new ReactorDispatcher(logger, [notificationReactor, incidentReactor]);
+
+	const helper = new WorkerHelper(
+		logger,
 		checkService as any,
 		{ getDBSettings: jest.fn() } as any,
-		bufferStub as any,
-		incidentService as any,
-		maintenanceWindowsRepo as any,
 		monitorsRepo as any,
 		{ findAllTeamIds: jest.fn() } as any,
 		createStubMonitorStatsRepo() as any,
 		createStubChecksRepo() as any,
 		incidentsRepo as any,
-		{ buildGeoCheck: jest.fn() } as any,
-		{ deleteByMonitorIdsNotIn: jest.fn() } as any
+		{ deleteByMonitorIdsNotIn: jest.fn() } as any,
+		reactorDispatcher,
+		checkPipeline,
+		geoCheckPipeline
 	);
 
 	return {
