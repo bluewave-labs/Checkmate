@@ -1,26 +1,17 @@
 const SERVICE_NAME = "JobQueueHelper";
 import type { Monitor } from "@/domain/monitors/monitor.types.js";
-import { supportsGeoCheck } from "@/domain/monitors/monitor.types.js";
-import { AppError } from "@/utils/AppError.js";
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { ICheckService } from "@/domain/checks/check.service.js";
-import { type IGeoChecksService } from "@/domain/geo-checks/geo-check.service.js";
-import { IncidentService } from "@/domain/incidents/incident.service.js";
-import { INotificationsService } from "@/domain/notifications/notification.service.js";
-import { INetworkService } from "@/service/networkService.js";
-import { IStatusService } from "@/service/statusService.js";
 import { CHECK_TTL_SENTINEL } from "@/domain/checks/check.type.js";
-import { type StatusChangeResult } from "@/types/network.js";
-import { isWindowActive } from "@/utils/maintenanceWindow.js";
 import { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
 import { IGeoChecksRepository } from "@/domain/geo-checks/geo-check.repository.interface.js";
 import { IIncidentsRepository } from "@/domain/incidents/incident.repository.interface.js";
-import { IMaintenanceWindowsRepository } from "@/domain/maintenance-windows/maintenance-window.repository.interface.js";
 import { IMonitorStatsRepository } from "@/domain/monitor-stats/monitor-stats.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
 import { ILogger } from "@/utils/logger.js";
-import { IBufferService } from "@/service/bufferService.js";
+import { IReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
+import { ICheckPipeline } from "@/worker/worker.check-pipeline.js";
 
 export interface IWorkerHelper {
 	readonly serviceName: string;
@@ -28,7 +19,6 @@ export interface IWorkerHelper {
 	getHeartbeatGeoJob(): (monitor: Monitor) => Promise<void>;
 	getCleanupOrphanedJob(): () => Promise<void>;
 	getCleanupRetentionJob(): () => Promise<void>;
-	isInMaintenanceWindow(monitorId: string, teamId: string): Promise<boolean>;
 }
 
 export interface MonitorActionDecision {
@@ -45,138 +35,59 @@ export interface MonitorActionDecision {
 	};
 }
 
-export class QueueHelper implements IWorkerHelper {
+export class WorkerHelper implements IWorkerHelper {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: ILogger;
-	private networkService: INetworkService;
-	private statusService: IStatusService;
-	private notificationsService: INotificationsService;
 	private checkService: ICheckService;
 	private settingsService: ISettingsService;
-	private buffer: IBufferService;
-	private incidentService: IncidentService;
-	private maintenanceWindowsRepository: IMaintenanceWindowsRepository;
 	private monitorsRepository: IMonitorsRepository;
 	private teamsRepository: ITeamsRepository;
 	private monitorStatsRepository: IMonitorStatsRepository;
 	private checksRepository: IChecksRepository;
 	private incidentsRepository: IIncidentsRepository;
-	private geoChecksService: IGeoChecksService;
 	private geoChecksRepository: IGeoChecksRepository;
+	private reactorDispatcher: IReactorDispatcher;
+	private checkPipeline: ICheckPipeline;
+	private geoCheckPipeline: ICheckPipeline;
 
 	constructor(
 		logger: ILogger,
-		networkService: INetworkService,
-		statusService: IStatusService,
-		notificationsService: INotificationsService,
 		checkService: ICheckService,
 		settingsService: ISettingsService,
-		buffer: IBufferService,
-		incidentService: IncidentService,
-		maintenanceWindowsRepository: IMaintenanceWindowsRepository,
 		monitorsRepository: IMonitorsRepository,
 		teamsRepository: ITeamsRepository,
 		monitorStatsRepository: IMonitorStatsRepository,
 		checksRepository: IChecksRepository,
 		incidentsRepository: IIncidentsRepository,
-		geoChecksService: IGeoChecksService,
-		geoChecksRepository: IGeoChecksRepository
+		geoChecksRepository: IGeoChecksRepository,
+		reactorDispatcher: IReactorDispatcher,
+		checkPipeline: ICheckPipeline,
+		geoCheckPipeline: ICheckPipeline
 	) {
 		this.logger = logger;
-		this.networkService = networkService;
-		this.statusService = statusService;
 		this.checkService = checkService;
 		this.settingsService = settingsService;
-		this.buffer = buffer;
-		this.notificationsService = notificationsService;
-		this.incidentService = incidentService;
-		this.maintenanceWindowsRepository = maintenanceWindowsRepository;
 		this.monitorsRepository = monitorsRepository;
 		this.teamsRepository = teamsRepository;
 		this.monitorStatsRepository = monitorStatsRepository;
 		this.checksRepository = checksRepository;
 		this.incidentsRepository = incidentsRepository;
-		this.geoChecksService = geoChecksService;
 		this.geoChecksRepository = geoChecksRepository;
+		this.reactorDispatcher = reactorDispatcher;
+		this.checkPipeline = checkPipeline;
+		this.geoCheckPipeline = geoCheckPipeline;
 	}
 
 	get serviceName() {
-		return QueueHelper.SERVICE_NAME;
+		return WorkerHelper.SERVICE_NAME;
 	}
 
 	getHeartbeatJob = () => {
 		return async (monitor: Monitor) => {
 			try {
-				const monitorId = monitor.id;
-				const teamId = monitor.teamId;
-				if (!monitorId) {
-					throw new AppError({ message: "No monitor id", service: SERVICE_NAME, method: "getMonitorJob" });
-				}
-
-				// Step 1.  Check for maintenance window, if found, skip the check
-
-				const maintenanceWindowActive = await this.isInMaintenanceWindow(monitorId, teamId);
-				if (maintenanceWindowActive) {
-					this.logger.debug({
-						message: `Monitor ${monitorId} is in maintenance window`,
-						service: SERVICE_NAME,
-						method: "getMonitorJob",
-					});
-					if (monitor.status !== "maintenance") {
-						await this.monitorsRepository.updateById(monitorId, teamId, { status: "maintenance" });
-					}
-					return;
-				}
-
-				// Step 2.  Request monitor status
-				const status = await this.networkService.requestStatus(monitor);
-				if (!status) {
-					throw new Error("No network response");
-				}
-
-				// Step 3.  Build check
-				const check = this.checkService.buildCheck(status);
-				if (!check) {
-					this.logger.warn({
-						message: `No check could be built for monitor ${monitorId}`,
-						service: SERVICE_NAME,
-						method: "getMonitorJob",
-						details: { code: status.code, message: status.message },
-					});
-					return;
-				}
-				// Step 4 Add check to buffer
-				this.buffer.addToBuffer(check);
-				// Step 4.  Update monitor status
-				const statusChangeResult = await this.statusService.updateMonitorStatus(status, check);
-
-				// Step 5.  Get decisions
-				const decision = this.evaluateMonitorAction(statusChangeResult);
-
-				// Step 6. Handle notifications (best effort, continue even in event of failure, don't wait)
-				if (decision.shouldSendNotification) {
-					this.notificationsService.handleNotifications(statusChangeResult.monitor, status, decision).catch((error: unknown) => {
-						this.logger.error({
-							message: `Error sending notifications for job ${statusChangeResult.monitor.id}: ${error instanceof Error ? error.message : "Unknown error"}`,
-							service: SERVICE_NAME,
-							method: "getMonitorJob",
-							stack: error instanceof Error ? error.stack : undefined,
-						});
-					});
-				}
-
-				// Step 7. Handle incidents
-				try {
-					await this.incidentService.handleIncident(statusChangeResult.monitor, statusChangeResult.code, decision, status);
-				} catch (error: unknown) {
-					this.logger.warn({
-						message: `Error handling incident for job ${monitor.id}: ${error instanceof Error ? error.message : "Unknown error"}`,
-						service: SERVICE_NAME,
-						method: "getMonitorJob",
-						stack: error instanceof Error ? error.stack : undefined,
-					});
-				}
+				const evaluation = await this.checkPipeline.run(monitor);
+				if (evaluation) await this.reactorDispatcher.dispatch(evaluation);
 			} catch (error: unknown) {
 				this.logger.warn({
 					message: error instanceof Error ? error.message : "Unknown error",
@@ -185,6 +96,22 @@ export class QueueHelper implements IWorkerHelper {
 					stack: error instanceof Error ? error.stack : undefined,
 				});
 				throw error;
+			}
+		};
+	};
+
+	getHeartbeatGeoJob = () => {
+		return async (monitor: Monitor) => {
+			try {
+				await this.geoCheckPipeline.run(monitor);
+			} catch (error: unknown) {
+				this.logger.error({
+					message: error instanceof Error ? error.message : "Unknown error",
+					service: SERVICE_NAME,
+					method: "getHeartbeatGeoJob",
+					stack: error instanceof Error ? error.stack : undefined,
+				});
+				// Don't throw - geo check failures shouldn't crash the job scheduler
 			}
 		};
 	};
@@ -280,86 +207,6 @@ export class QueueHelper implements IWorkerHelper {
 		};
 	};
 
-	getHeartbeatGeoJob = () => {
-		return async (monitor: Monitor) => {
-			try {
-				const monitorId = monitor.id;
-				const teamId = monitor.teamId;
-
-				// Step 1: Validate monitor eligibility
-				if (!monitorId) {
-					throw new AppError({ message: "No monitor id", service: SERVICE_NAME, method: "getHeartbeatGeoJob" });
-				}
-
-				if (!monitor.geoCheckEnabled) {
-					return;
-				}
-				if (!supportsGeoCheck(monitor.type)) {
-					this.logger.debug({
-						message: `Monitor ${monitorId} type does not support geo checks, skipping`,
-						service: SERVICE_NAME,
-						method: "getHeartbeatGeoJob",
-					});
-					return;
-				}
-
-				if (!monitor.geoCheckLocations || monitor.geoCheckLocations.length === 0) {
-					this.logger.warn({
-						message: `No geo check locations configured for monitor ${monitorId}`,
-						service: SERVICE_NAME,
-						method: "getHeartbeatGeoJob",
-					});
-					return;
-				}
-
-				// Step 2: Check for maintenance window
-				const maintenanceWindowActive = await this.isInMaintenanceWindow(monitorId, teamId);
-				if (maintenanceWindowActive) {
-					this.logger.debug({
-						message: `Monitor ${monitorId} is in maintenance window, skipping geo check`,
-						service: SERVICE_NAME,
-						method: "getHeartbeatGeoJob",
-					});
-					return;
-				}
-
-				// Step 3: Build geo check (handles API calls and polling)
-				const geoCheck = await this.geoChecksService.buildGeoCheck(monitor);
-				if (!geoCheck) {
-					this.logger.warn({
-						message: `No geo check could be built for monitor ${monitorId}`,
-						service: SERVICE_NAME,
-						method: "getHeartbeatGeoJob",
-					});
-					return;
-				}
-
-				// Step 4: Add geo check to buffer
-				this.buffer.addGeoCheckToBuffer(geoCheck);
-
-				this.logger.debug({
-					message: `Geo check job executed for monitor ${monitorId}`,
-					service: SERVICE_NAME,
-					method: "getHeartbeatGeoJob",
-				});
-			} catch (error: unknown) {
-				this.logger.error({
-					message: error instanceof Error ? error.message : "Unknown error",
-					service: SERVICE_NAME,
-					method: "getHeartbeatGeoJob",
-					stack: error instanceof Error ? error.stack : undefined,
-				});
-				// Don't throw - geo check failures shouldn't crash the job scheduler
-			}
-		};
-	};
-
-	async isInMaintenanceWindow(monitorId: string, teamId: string) {
-		const maintenanceWindows = await this.maintenanceWindowsRepository.findByMonitorId(monitorId, teamId);
-		const now = new Date();
-		return maintenanceWindows.some((window) => isWindowActive(window, now));
-	}
-
 	getCleanupRetentionJob = () => {
 		return async () => {
 			try {
@@ -393,42 +240,4 @@ export class QueueHelper implements IWorkerHelper {
 			}
 		};
 	};
-
-	private evaluateMonitorAction(statusChangeResult: StatusChangeResult): MonitorActionDecision {
-		const { monitor, statusChanged, prevStatus } = statusChangeResult;
-
-		// Initialize result
-		const decision: MonitorActionDecision = {
-			shouldCreateIncident: false,
-			shouldResolveIncident: false,
-			shouldSendNotification: false,
-			incidentReason: null,
-			notificationReason: null,
-		};
-
-		if (!statusChanged) {
-			return decision;
-		}
-
-		if (monitor.status === "down") {
-			// Monitor went down (unreachable)
-			decision.shouldCreateIncident = true;
-			decision.shouldSendNotification = true;
-			decision.incidentReason = "status_down";
-			decision.notificationReason = "status_change";
-		} else if (monitor.status === "breached") {
-			// Hardware monitor exceeded thresholds
-			decision.shouldCreateIncident = true;
-			decision.shouldSendNotification = true;
-			decision.incidentReason = "threshold_breach";
-			decision.notificationReason = "threshold_breach";
-		} else if (monitor.status === "up" && (prevStatus === "down" || prevStatus === "breached")) {
-			// Monitor recovered from down or breached state
-			decision.shouldResolveIncident = true;
-			decision.shouldSendNotification = true;
-			decision.notificationReason = "status_change";
-		}
-
-		return decision;
-	}
 }

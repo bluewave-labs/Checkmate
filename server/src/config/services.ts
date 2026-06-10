@@ -28,12 +28,13 @@ import { IUserService, UserService } from "@/domain/users/user.service.js";
 import { BufferService, IBufferService } from "@/service/bufferService.js";
 import { EmailService, IEmailService } from "@/service/emailService.js";
 import { GlobalPingService } from "@/service/globalPingService.js";
-import { QueueHelper } from "@/worker/worker.helper.js";
+import { WorkerHelper } from "@/worker/worker.helper.js";
 import { IWorker } from "@/worker/worker.interface.js";
 import { LessSimpleWorker } from "@/worker/worker.less-simple.js";
 import { SuperSimpleQueue } from "@/worker/worker.super-simple.js";
 import { INetworkService, NetworkService } from "@/service/networkService.js";
 import { IStatusService, StatusService } from "@/service/statusService.js";
+import { MonitorStatusPolicy } from "@/worker/worker.monitor-status-policy.js";
 
 // Network providers
 import { PingProvider } from "@/service/network/PingProvider.js";
@@ -102,6 +103,10 @@ import MongoUsersRepository from "@/domain/users/user.repository.mongo.js";
 import { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";
 import { type QueueMode } from "@/domain/app-settings/app-settings.type.js";
+import { NotificationReactor } from "@/worker/reactors/reactor.notification.js";
+import { ReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
+import { IncidentReactor } from "@/worker/reactors/reactor.incident.js";
+import { CheckPipeline, GeoChecksPipeline } from "@/worker/worker.check-pipeline.js";
 
 export type InitializedServices = {
 	settingsService: ISettingsService;
@@ -309,23 +314,39 @@ export const initializeServices = async ({
 
 	const tagsService = new TagsService(tagsRepository, monitorsRepository);
 
-	const queueHelper = new QueueHelper(
-		logger,
+	const monitorStatusPolicy = new MonitorStatusPolicy();
+	// reactors and dispatcher
+	const notificationReactor = new NotificationReactor(notificationsService);
+	const incidentReactor = new IncidentReactor(incidentService);
+	const reactorDispatcher = new ReactorDispatcher(logger, [notificationReactor, incidentReactor]);
+
+	// pipelines
+	const checkPipeline = new CheckPipeline(
+		monitorsRepository,
+		maintenanceWindowsRepository,
+		checkService,
 		networkService,
+		bufferService,
+		monitorStatusPolicy,
 		statusService,
-		notificationsService,
+		logger
+	);
+
+	const geoCheckPipeline = new GeoChecksPipeline(maintenanceWindowsRepository, geoChecksService, bufferService, logger);
+
+	const workerHelper = new WorkerHelper(
+		logger,
 		checkService,
 		settingsService,
-		bufferService,
-		incidentService,
-		maintenanceWindowsRepository,
 		monitorsRepository,
 		teamsRepository,
 		monitorStatsRepository,
 		checksRepository,
 		incidentsRepository,
-		geoChecksService,
-		geoChecksRepository
+		geoChecksRepository,
+		reactorDispatcher,
+		checkPipeline,
+		geoCheckPipeline
 	);
 
 	if (queueMode === "worker" && envSettings.queueType !== "lessSimpleQueue") {
@@ -340,10 +361,10 @@ export const initializeServices = async ({
 	let worker: IWorker;
 	switch (envSettings.queueType) {
 		case "lessSimpleQueue":
-			worker = await LessSimpleWorker.create(logger, queueHelper, monitorsRepository, queueWorkersRepository, envSettings, queueMode);
+			worker = await LessSimpleWorker.create(logger, workerHelper, monitorsRepository, queueWorkersRepository, envSettings, queueMode);
 			break;
 		default:
-			worker = await SuperSimpleQueue.create(logger, queueHelper, monitorsRepository);
+			worker = await SuperSimpleQueue.create(logger, workerHelper, monitorsRepository);
 	}
 
 	// Business services
