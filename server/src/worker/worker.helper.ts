@@ -22,7 +22,7 @@ import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
 import { ILogger } from "@/utils/logger.js";
 import { IBufferService } from "@/service/bufferService.js";
 
-export interface IQueueHelper {
+export interface IWorkerHelper {
 	readonly serviceName: string;
 	getHeartbeatJob(): (monitor: Monitor) => Promise<void>;
 	getHeartbeatGeoJob(): (monitor: Monitor) => Promise<void>;
@@ -45,7 +45,7 @@ export interface MonitorActionDecision {
 	};
 }
 
-export class QueueHelper implements IQueueHelper {
+export class QueueHelper implements IWorkerHelper {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: ILogger;

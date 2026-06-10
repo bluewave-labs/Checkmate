@@ -28,10 +28,10 @@ import { IUserService, UserService } from "@/domain/users/user.service.js";
 import { BufferService, IBufferService } from "@/service/bufferService.js";
 import { EmailService, IEmailService } from "@/service/emailService.js";
 import { GlobalPingService } from "@/service/globalPingService.js";
-import { QueueHelper } from "@/service/job-queues/job-queue.helper.js";
-import { IJobQueue } from "@/service/job-queues/job-queue.interface.js";
-import { LessSimpleQueue } from "@/service/job-queues/job-queue.less-simple.js";
-import { SuperSimpleQueue } from "@/service/job-queues/job-queue.sumper-simple.js";
+import { QueueHelper } from "@/worker/worker.helper.js";
+import { IWorker } from "@/worker/worker.interface.js";
+import { LessSimpleWorker } from "@/worker/worker.less-simple.js";
+import { SuperSimpleQueue } from "@/worker/worker.super-simple.js";
 import { INetworkService, NetworkService } from "@/service/networkService.js";
 import { IStatusService, StatusService } from "@/service/statusService.js";
 
@@ -110,7 +110,7 @@ export type InitializedServices = {
 	emailService: IEmailService;
 	bufferService: IBufferService;
 	statusService: IStatusService;
-	jobQueue: IJobQueue;
+	worker: IWorker;
 	userService: IUserService;
 	checkService: ICheckService;
 	geoChecksService: IGeoChecksService;
@@ -337,13 +337,13 @@ export const initializeServices = async ({
 		});
 	}
 
-	let jobQueue: IJobQueue;
+	let worker: IWorker;
 	switch (envSettings.queueType) {
 		case "lessSimpleQueue":
-			jobQueue = await LessSimpleQueue.create(logger, queueHelper, monitorsRepository, queueWorkersRepository, envSettings, queueMode);
+			worker = await LessSimpleWorker.create(logger, queueHelper, monitorsRepository, queueWorkersRepository, envSettings, queueMode);
 			break;
 		default:
-			jobQueue = await SuperSimpleQueue.create(logger, queueHelper, monitorsRepository);
+			worker = await SuperSimpleQueue.create(logger, queueHelper, monitorsRepository);
 	}
 
 	// Business services
@@ -353,7 +353,7 @@ export const initializeServices = async ({
 		settingsService,
 		logger,
 		jwt,
-		jobQueue,
+		worker,
 		monitorsRepository,
 		usersRepository,
 		invitesRepository,
@@ -373,7 +373,7 @@ export const initializeServices = async ({
 		maintenanceWindowsRepository,
 	});
 	const monitorService = new MonitorService({
-		jobQueue,
+		worker,
 		logger,
 		games,
 		monitorsRepository,
@@ -393,7 +393,7 @@ export const initializeServices = async ({
 		emailService,
 		bufferService,
 		statusService,
-		jobQueue,
+		worker,
 		userService,
 		checkService,
 		geoChecksService,

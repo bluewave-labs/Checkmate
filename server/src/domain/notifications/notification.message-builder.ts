@@ -1,6 +1,6 @@
 import type { Monitor } from "@/domain/monitors/monitor.types.js";
 import type { HardwareStatusPayload, MonitorStatusResponse } from "@/types/network.js";
-import type { MonitorActionDecision } from "@/service/job-queues/job-queue.helper.js";
+import type { MonitorActionDecision } from "@/worker/worker.helper.js";
 import type {
 	NotificationMessage,
 	NotificationType,

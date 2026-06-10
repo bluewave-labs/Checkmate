@@ -63,7 +63,7 @@ export class EmailService implements IEmailService {
 	init = () => {
 		const loadTemplate = (templateName: string) => {
 			try {
-				const templatePath = this.path.join(__dirname, `../../templates/${templateName}.mjml`);
+				const templatePath = this.path.join(__dirname, `../templates/${templateName}.mjml`);
 				const templateContent = this.fs.readFileSync(templatePath, "utf8");
 				return this.compile(templateContent);
 			} catch (error: unknown) {

@@ -1,25 +1,25 @@
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import { ILogger } from "@/utils/logger.js";
 import Scheduler from "super-simple-scheduler";
-import { IQueueHelper } from "@/service/job-queues/job-queue.helper.js";
 import { Monitor, MonitorType, supportsGeoCheck } from "@/domain/monitors/monitor.types.js";
 import { hostname } from "node:os";
 import { randomUUID } from "node:crypto";
 import { QueueMode } from "@/domain/app-settings/app-settings.type.js";
-import { IJobQueue, type QueueJobSummary } from "@/service/job-queues/job-queue.interface.js";
+import { IWorker, WorkerJobSummary } from "@/worker/worker.interface.js";
+import { IWorkerHelper } from "@/worker/worker.helper.js";
 
 const SERVICE_NAME = "JobQueue";
 
-export class SuperSimpleQueue implements IJobQueue {
+export class SuperSimpleQueue implements IWorker {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: ILogger;
-	private helper: IQueueHelper;
+	private helper: IWorkerHelper;
 	private workerId: string;
 	private monitorsRepository: IMonitorsRepository;
 	private readonly scheduler: Scheduler;
 
-	constructor(logger: ILogger, helper: IQueueHelper, monitorsRepository: IMonitorsRepository, scheduler: Scheduler) {
+	constructor(logger: ILogger, helper: IWorkerHelper, monitorsRepository: IMonitorsRepository, scheduler: Scheduler) {
 		this.logger = logger;
 		this.helper = helper;
 		this.monitorsRepository = monitorsRepository;
@@ -100,7 +100,7 @@ export class SuperSimpleQueue implements IJobQueue {
 		});
 	};
 
-	static async create(logger: ILogger, helper: IQueueHelper, monitorsRepository: IMonitorsRepository) {
+	static async create(logger: ILogger, helper: IWorkerHelper, monitorsRepository: IMonitorsRepository) {
 		const scheduler = new Scheduler({
 			concurrency: 50,
 			// storeType: "mongo",
@@ -341,7 +341,7 @@ export class SuperSimpleQueue implements IJobQueue {
 		return metrics;
 	};
 
-	getJobs = async ({ page = 0, rowsPerPage = 0 }: { page?: number; rowsPerPage?: number }): Promise<{ jobs: QueueJobSummary[]; count: number }> => {
+	getJobs = async ({ page = 0, rowsPerPage = 0 }: { page?: number; rowsPerPage?: number }): Promise<{ jobs: WorkerJobSummary[]; count: number }> => {
 		const jobs = await this.scheduler.getJobs();
 		const mapped = jobs.map((job) => {
 			return {
