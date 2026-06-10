@@ -1,5 +1,5 @@
 import { jest } from "@jest/globals";
-import { QueueHelper } from "../../src/service/job-queues/job-queue.helper.ts";
+import { QueueHelper } from "../../src/worker/worker.helper.ts";
 import { StatusService } from "../../src/service/statusService.ts";
 import { IncidentService } from "../../src/domain/incidents/incident.service.ts";
 import { InMemoryMonitorsRepository } from "./InMemoryMonitorsRepository.ts";

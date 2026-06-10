@@ -6,7 +6,7 @@ import type { IMonitorsRepository } from "../../src/domain/monitors/monitor.repo
 import type { IUsersRepository } from "../../src/domain/users/user.repository.interface.ts";
 import type { INotificationMessageBuilder } from "../../src/domain/notifications/notification.message-builder.ts";
 import type { Monitor } from "../../src/domain/monitors/monitor.types.ts";
-import type { MonitorActionDecision } from "../../src/service/job-queues/job-queue.helper.ts";
+import type { MonitorActionDecision } from "../../src/worker/worker.helper.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

@@ -39,7 +39,7 @@ export const initializeControllers = (services: InitializedServices): Initialize
 		geoCheckController: new GeoCheckController(services.geoChecksService),
 		inviteController: new InviteController(services.inviteService),
 		maintenanceWindowController: new MaintenanceWindowController(services.maintenanceWindowService),
-		queueController: new QueueController(services.jobQueue),
+		queueController: new QueueController(services.worker),
 		logController: new LogController(services.logger),
 		statusPageController: new StatusPageController(services.statusPageService, services.monitorsRepository, services.settingsService),
 		notificationController: new NotificationController(services.notificationsService, services.monitorsRepository),

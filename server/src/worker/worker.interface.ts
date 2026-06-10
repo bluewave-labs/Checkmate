@@ -1,7 +1,7 @@
 import { Monitor } from "@/domain/monitors/monitor.types.js";
 import { QueueWorker } from "@/domain/queue-workers/queue-worker.type.js";
 
-export type QueueJobFailure = {
+export type WorkerJobFailure = {
 	monitorId: string | number;
 	monitorUrl: string | null;
 	monitorType: string | null;
@@ -10,17 +10,17 @@ export type QueueJobFailure = {
 	failReason: string | null;
 };
 
-export type QueueMetrics = {
+export type WorkerMetrics = {
 	jobs: number;
 	activeJobs: number;
 	failingJobs: number;
-	jobsWithFailures: QueueJobFailure[];
+	jobsWithFailures: WorkerJobFailure[];
 	totalRuns: number;
 	totalFailures: number;
 	workers: QueueWorker[];
 };
 
-export type QueueJobSummary = {
+export type WorkerJobSummary = {
 	monitorId: string | number;
 	monitorUrl: string | null;
 	monitorType: string | null;
@@ -41,17 +41,17 @@ export type QueueJobSummary = {
 	repeat: number | null;
 };
 
-export type QueueJobsPagination = {
+export type WorkerJobsPagination = {
 	page?: number;
 	rowsPerPage?: number;
 };
 
-export type QueueJobsPage = {
-	jobs: QueueJobSummary[];
+export type WorkerJobsPage = {
+	jobs: WorkerJobSummary[];
 	count: number;
 };
 
-export interface IJobQueue {
+export interface IWorker {
 	readonly serviceName: string;
 	init(): Promise<boolean>;
 	addJob(monitorId: string, monitor: Monitor): Promise<void>;
@@ -60,7 +60,7 @@ export interface IJobQueue {
 	resumeJob(monitor: Monitor): Promise<void>;
 	updateJob(monitor: Monitor): Promise<void>;
 	shutdown(): Promise<void>;
-	getMetrics(): Promise<QueueMetrics>;
-	getJobs(pagination: QueueJobsPagination): Promise<QueueJobsPage>;
+	getMetrics(): Promise<WorkerMetrics>;
+	getJobs(pagination: WorkerJobsPagination): Promise<WorkerJobsPage>;
 	flushQueues(): Promise<{ success: boolean }>;
 }
