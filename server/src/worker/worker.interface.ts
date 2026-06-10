@@ -1,5 +1,16 @@
 import { Monitor } from "@/domain/monitors/monitor.types.js";
 import { QueueWorker } from "@/domain/queue-workers/queue-worker.type.js";
+import { Check } from "@/domain/checks/check.type.js";
+import { MonitorPayloadMap, MonitorStatusResponse, StatusChangeResult } from "@/types/network.js";
+import { MonitorActionDecision } from "@/worker/worker.helper.js";
+
+export type MonitorEvaluation = {
+	monitor: Monitor;
+	status: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>; // raw result from networkService.requestStatus
+	check: Check;
+	statusChange: StatusChangeResult; // from statusService.updateMonitorStatus
+	decision: MonitorActionDecision; // from MonitorStatusPolicy
+};
 
 export type WorkerJobFailure = {
 	monitorId: string | number;
