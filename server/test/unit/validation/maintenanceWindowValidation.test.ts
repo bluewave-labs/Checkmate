@@ -2,7 +2,7 @@ import { describe, expect, it, jest, afterEach } from "@jest/globals";
 import {
 	createMaintenanceWindowBodyValidation,
 	editMaintenanceByIdWindowBodyValidation,
-} from "../../../src/validation/maintenanceWindowValidation.ts";
+} from "../../../src/api/validation/maintenanceWindowValidation.ts";
 
 const FROZEN_NOW = new Date("2026-05-07T12:00:00Z").getTime();
 

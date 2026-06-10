@@ -1,4 +1,4 @@
-import type { StatusPage } from "../../src/types/index.ts";
+import type { StatusPage } from "../../src/domain/status-pages/status-page.type.ts";
 
 export const makeStatusPage = (overrides?: Partial<StatusPage>): StatusPage =>
 	({

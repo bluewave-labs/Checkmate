@@ -1,5 +1,5 @@
-import type { Notification } from "../../src/types/index.ts";
-import type { NotificationMessage } from "../../src/types/notificationMessage.ts";
+import type { Notification } from "../../src/domain/notifications/notification.type.ts";
+import type { NotificationMessage } from "../../src/domain/notifications/notification.type.ts";
 
 export const makeNotification = (overrides?: Partial<Notification>): Notification =>
 	({

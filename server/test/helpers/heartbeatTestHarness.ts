@@ -1,14 +1,14 @@
 import { jest } from "@jest/globals";
-import { QueueHelper } from "../../src/service/infrastructure/JobQueues/QueueHelper.ts";
-import { StatusService } from "../../src/service/infrastructure/statusService.ts";
-import { IncidentService } from "../../src/service/business/incidentService.ts";
+import { QueueHelper } from "../../src/service/job-queues/job-queue.helper.ts";
+import { StatusService } from "../../src/service/statusService.ts";
+import { IncidentService } from "../../src/domain/incidents/incident.service.ts";
 import { InMemoryMonitorsRepository } from "./InMemoryMonitorsRepository.ts";
 import { InMemoryIncidentsRepository } from "./InMemoryIncidentsRepository.ts";
 import { createMockLogger } from "./createMockLogger.ts";
-import type { Monitor } from "../../src/types/monitor.ts";
+import type { Monitor } from "../../src/domain/monitors/monitor.types.ts";
 import type { MonitorStatusResponse } from "../../src/types/network.ts";
-import type { Check } from "../../src/types/check.ts";
-import type { MaintenanceWindow } from "../../src/types/maintenanceWindow.ts";
+import type { Check } from "../../src/domain/checks/check.type.ts";
+import type { MaintenanceWindow } from "../../src/domain/maintenance-windows/maintenance-window.type.ts";
 
 let checkCounter = 0;
 

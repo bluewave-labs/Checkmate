@@ -1,9 +1,9 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { StatusPageService } from "../../../src/service/business/statusPageService.ts";
-import type { IStatusPagesRepository } from "../../../src/repositories/status-pages/IStatusPagesRepository.ts";
-import type { ISettingsService } from "../../../src/service/system/settingsService.ts";
-import type { StatusPage } from "../../../src/types/index.ts";
-import { DEFAULT_STATUS_PAGE_THEME, DEFAULT_STATUS_PAGE_THEME_MODE } from "../../../src/types/index.ts";
+import { StatusPageService } from "../../../src/domain/status-pages/status-page.service.ts";
+import type { IStatusPagesRepository } from "../../../src/domain/status-pages/status-page-repository.interface.ts";
+import type { ISettingsService } from "../../../src/domain/app-settings/app-settings.service.ts";
+import type { StatusPage } from "../../../src/domain/status-pages/status-page.type.ts";
+import { DEFAULT_STATUS_PAGE_THEME, DEFAULT_STATUS_PAGE_THEME_MODE } from "../../../src/domain/status-pages/status-page.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

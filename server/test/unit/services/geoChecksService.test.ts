@@ -1,8 +1,8 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { GeoChecksService } from "../../../src/service/business/geoChecksService.ts";
+import { GeoChecksService } from "../../../src/domain/geo-checks/geo-check.service.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import type { Monitor } from "../../../src/types/index.ts";
-import type { GeoCheckResult } from "../../../src/types/geoCheck.ts";
+import type { Monitor } from "../../../src/domain/monitors/monitor.types.ts";
+import type { GeoCheckResult } from "../../../src/domain/geo-checks/geo-check.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

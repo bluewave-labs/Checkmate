@@ -7,7 +7,7 @@ const mockGotPut = jest.fn().mockResolvedValue({});
 jest.unstable_mockModule("got", () => ({ default: { put: mockGotPut } }));
 jest.unstable_mockModule("crypto", () => ({ randomUUID: () => "test-uuid-1234" }));
 
-const { MatrixProvider } = await import("../../../../src/service/infrastructure/notificationProviders/matrix.ts");
+const { MatrixProvider } = await import("../../../../src/domain/notifications/providers/matrix.ts");
 
 const createProvider = () => {
 	const logger = createMockLogger();

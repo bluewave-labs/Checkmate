@@ -1,8 +1,8 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { SettingsService } from "../../../src/service/system/settingsService.ts";
-import type { ISettingsRepository } from "../../../src/repositories/settings/ISettingsRepository.ts";
-import type { ValidatedEnv } from "../../../src/validation/envValidation.ts";
-import type { Settings } from "../../../src/types/index.ts";
+import { SettingsService } from "../../../src/domain/app-settings/app-settings.service.ts";
+import type { ISettingsRepository } from "../../../src/domain/app-settings/app-settings-repository.interface.ts";
+import type { ValidatedEnv } from "../../../src/config/envValidation.ts";
+import type { Settings } from "../../../src/domain/app-settings/app-settings.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

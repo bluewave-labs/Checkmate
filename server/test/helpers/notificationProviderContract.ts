@@ -1,7 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
-import type { INotificationProvider } from "../../src/service/infrastructure/notificationProviders/INotificationProvider.ts";
-import type { Notification } from "../../src/types/index.ts";
-import type { NotificationMessage } from "../../src/types/notificationMessage.ts";
+import type { INotificationProvider } from "../../src/domain/notifications/providers/INotificationProvider.ts";
+import type { Notification } from "../../src/domain/notifications/notification.type.ts";
+import type { NotificationMessage } from "../../src/domain/notifications/notification.type.ts";
 
 const makeMessage = (): NotificationMessage => ({
 	type: "monitor_down",

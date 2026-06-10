@@ -5,14 +5,14 @@ import helmet from "helmet";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import swaggerUi, { type JsonObject } from "swagger-ui-express";
-import { handleErrors } from "@/middleware/handleErrors.js";
-import { generalApiLimiter } from "@/middleware/rateLimiter.js";
-import { sanitizeBody, sanitizeQuery } from "@/middleware/sanitization.js";
+import { handleErrors } from "@/api/middleware/handleErrors.js";
+import { generalApiLimiter } from "@/api/middleware/rateLimiter.js";
+import { sanitizeBody, sanitizeQuery } from "@/api/middleware/sanitization.js";
 import { setupRoutes } from "@/config/routes.js";
 import { InitializedServices } from "@/config/services.js";
 import { InitializedControllers } from "@/config/controllers.js";
-import { EnvConfig } from "@/service/system/settingsService.js";
-import { createStatusPageCorsOrigin } from "@/middleware/statusPageCorsOrigin.js";
+import { EnvConfig } from "@/domain/app-settings/app-settings.service.js";
+import { createStatusPageCorsOrigin } from "@/api/middleware/statusPageCorsOrigin.js";
 
 export const createApp = ({
 	services,

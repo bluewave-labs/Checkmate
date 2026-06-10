@@ -5,7 +5,7 @@ import {
 	getStatusPageParamValidation,
 	getStatusPageQueryValidation,
 	resolveStatusPageQueryValidation,
-} from "@/validation/statusPageValidation.js";
+} from "@/api/validation/statusPageValidation.js";
 
 const tags = ["status-page"];
 

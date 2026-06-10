@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { UserService } from "../../../src/service/business/userService.ts";
+import { UserService } from "../../../src/domain/users/user.service.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import type { User, UserRole } from "../../../src/types/index.ts";
+import type { User, UserRole } from "../../../src/domain/users/user.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

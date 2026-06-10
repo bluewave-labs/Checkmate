@@ -1,6 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { InviteService } from "../../../src/service/business/inviteService.ts";
-import type { Invite, UserRole } from "../../../src/types/index.ts";
+import { InviteService } from "../../../src/domain/invites/invite.service.ts";
+import type { Invite } from "../../../src/domain/invites/invite.type.ts";
+import type { UserRole } from "../../../src/domain/users/user.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

@@ -1,25 +1,25 @@
 import type { Application } from "express";
-import { createVerifyJWT } from "../middleware/verifyJWT.js";
-import { createVerifyStatusPageAccess } from "../middleware/verifyStatusPageAccess.js";
-import { authApiLimiter } from "../middleware/rateLimiter.js";
+import { createVerifyJWT } from "../api/middleware/verifyJWT.js";
+import { createVerifyStatusPageAccess } from "../api/middleware/verifyStatusPageAccess.js";
+import { authApiLimiter } from "../api/middleware/rateLimiter.js";
 import type { InitializedControllers } from "./controllers.js";
 import type { InitializedServices } from "./services.js";
 
-import AuthRoutes from "../routes/authRoute.js";
-import InviteRoutes from "../routes/inviteRoute.js";
-import MonitorRoutes from "../routes/monitorRoute.js";
-import CheckRoutes from "../routes/checkRoute.js";
-import GeoCheckRoutes from "../routes/geoCheckRoutes.js";
-import SettingsRoutes from "../routes/settingsRoute.js";
-import MaintenanceWindowRoutes from "../routes/maintenanceWindowRoute.js";
-import StatusPageRoutes from "../routes/statusPageRoute.js";
-import QueueRoutes from "../routes/queueRoute.js";
-import LogRoutes from "../routes/logRoutes.js";
-import DiagnosticRoutes from "../routes/diagnosticRoute.js";
-import NotificationRoutes from "../routes/notificationRoute.js";
-import TagRoutes from "../routes/tagRoutes.js";
+import AuthRoutes from "../api/routes/authRoute.js";
+import InviteRoutes from "../api/routes/inviteRoute.js";
+import MonitorRoutes from "../api/routes/monitorRoute.js";
+import CheckRoutes from "../api/routes/checkRoute.js";
+import GeoCheckRoutes from "../api/routes/geoCheckRoutes.js";
+import SettingsRoutes from "../api/routes/settingsRoute.js";
+import MaintenanceWindowRoutes from "../api/routes/maintenanceWindowRoute.js";
+import StatusPageRoutes from "../api/routes/statusPageRoute.js";
+import QueueRoutes from "../api/routes/queueRoute.js";
+import LogRoutes from "../api/routes/logRoutes.js";
+import DiagnosticRoutes from "../api/routes/diagnosticRoute.js";
+import NotificationRoutes from "../api/routes/notificationRoute.js";
+import TagRoutes from "../api/routes/tagRoutes.js";
 
-import IncidentRoutes from "../routes/incidentRoute.js";
+import IncidentRoutes from "../api/routes/incidentRoute.js";
 
 export const setupRoutes = (app: Application, controllers: InitializedControllers, services: InitializedServices) => {
 	const verifyJWT = createVerifyJWT(services.settingsService);
