@@ -88,6 +88,7 @@ export interface Monitor {
 	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;
+	lastEvaluatedAt: number; // epoch ms
 }
 
 export interface MonitorsSummary {
