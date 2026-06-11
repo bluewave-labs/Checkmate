@@ -56,5 +56,19 @@ describe("createStatusPageCorsOrigin", () => {
 		const originFn = createStatusPageCorsOrigin("https://checkmate.example.com", repo as IStatusPagesRepository);
 
 		await expect(invokeOrigin(originFn, "https://status.example.com")).resolves.toBe(false);
+		await expect(invokeOrigin(originFn, "https://status.example.com")).resolves.toBe(false);
+
+		expect(repo.findByCustomDomain).toHaveBeenCalledTimes(1);
+	});
+
+	it("caches unknown custom domain lookups", async () => {
+		repo.findByCustomDomain.mockRejectedValue(new Error("Status page not found"));
+		const originFn = createStatusPageCorsOrigin("https://checkmate.example.com", repo as IStatusPagesRepository);
+
+		await expect(invokeOrigin(originFn, "https://unknown.example.com")).resolves.toBe(false);
+		await expect(invokeOrigin(originFn, "https://unknown.example.com")).resolves.toBe(false);
+
+		expect(repo.findByCustomDomain).toHaveBeenCalledTimes(1);
+		expect(repo.findByCustomDomain).toHaveBeenCalledWith("unknown.example.com");
 	});
 });

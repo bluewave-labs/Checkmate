@@ -2,15 +2,26 @@ import type { CorsOptions } from "cors";
 import type { IStatusPagesRepository } from "@/domain/status-pages/status-page-repository.interface.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
 
-const CUSTOM_DOMAIN_CORS_CACHE_TTL_MS = 5 * 60 * 1000;
+const CUSTOM_DOMAIN_CORS_POSITIVE_CACHE_TTL_MS = 5 * 60 * 1000;
+const CUSTOM_DOMAIN_CORS_NEGATIVE_CACHE_TTL_MS = 60 * 1000;
 
 type CustomDomainCorsCacheEntry = {
 	allowed: boolean;
 	expiresAt: number;
 };
 
+const getCustomDomainCorsCacheTtlMs = (allowed: boolean): number =>
+	allowed ? CUSTOM_DOMAIN_CORS_POSITIVE_CACHE_TTL_MS : CUSTOM_DOMAIN_CORS_NEGATIVE_CACHE_TTL_MS;
+
 export const createStatusPageCorsOrigin = (clientHost: string, statusPagesRepository: IStatusPagesRepository): CorsOptions["origin"] => {
 	const cache = new Map<string, CustomDomainCorsCacheEntry>();
+
+	const cacheOriginResult = (customDomain: string, allowed: boolean) => {
+		cache.set(customDomain, {
+			allowed,
+			expiresAt: Date.now() + getCustomDomainCorsCacheTtlMs(allowed),
+		});
+	};
 
 	return (origin, callback) => {
 		if (!origin) {
@@ -46,13 +57,11 @@ export const createStatusPageCorsOrigin = (clientHost: string, statusPagesReposi
 			.findByCustomDomain(customDomain)
 			.then((statusPage) => {
 				const allowed = statusPage.isPublished;
-				cache.set(customDomain, {
-					allowed,
-					expiresAt: Date.now() + CUSTOM_DOMAIN_CORS_CACHE_TTL_MS,
-				});
+				cacheOriginResult(customDomain, allowed);
 				callback(null, allowed ? origin : false);
 			})
 			.catch(() => {
+				cacheOriginResult(customDomain, false);
 				callback(null, false);
 			});
 	};
