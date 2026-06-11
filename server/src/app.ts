@@ -1,6 +1,6 @@
 import express from "express";
 import path from "path";
-import cors from "cors";
+import cors, { type CorsOptions } from "cors";
 import helmet from "helmet";
 import compression from "compression";
 import cookieParser from "cookie-parser";
@@ -30,12 +30,12 @@ export const createApp = ({
 }) => {
 	const allowedOrigin = envSettings.clientHost;
 	const app = express();
-	const defaultCorsOptions = {
+	const defaultCorsOptions: CorsOptions = {
 		origin: allowedOrigin,
 		methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
 		allowedHeaders: ["Content-Type", "Authorization", "Accept-Language"],
 		credentials: true,
-	} as const;
+	};
 	const publicStatusPageCorsOrigin = createStatusPageCorsOrigin(allowedOrigin, services.statusPagesRepository);
 
 	app.use(generalApiLimiter);
