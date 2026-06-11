@@ -71,7 +71,7 @@ export class CheckPipeline implements ICheckPipeline {
 		// ****************************
 
 		// Step 2a:  Create & record a check, return null if fail
-		const check = this.checkService.buildCheck(status);
+		const check = this.checkService.toCheck(status);
 		if (!check) {
 			this.logger.warn({
 				message: `No check could be built for monitor ${monitor.id}`,
