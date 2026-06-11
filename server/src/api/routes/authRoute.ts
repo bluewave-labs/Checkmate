@@ -1,9 +1,7 @@
 import { Router, RequestHandler } from "express";
-import { isAllowed } from "../middleware/isAllowed.js";
-import multer from "multer";
+import { isAllowed } from "@/api/middleware/isAllowed.js";
+import { imageUpload } from "@/api/middleware/upload.js";
 import { IAuthController } from "@/api/controllers/authController.js";
-
-const upload = multer();
 
 class AuthRoutes {
 	private router: Router;
@@ -16,7 +14,7 @@ class AuthRoutes {
 	}
 
 	initRoutes(verifyJWT: RequestHandler) {
-		this.router.post("/register", upload.single("profileImage"), this.authController.registerUser);
+		this.router.post("/register", imageUpload.single("profileImage"), this.authController.registerUser);
 		this.router.post("/login", this.authController.loginUser);
 
 		this.router.post("/recovery/request", this.authController.requestRecovery);
@@ -26,13 +24,13 @@ class AuthRoutes {
 		this.router.get("/users/superadmin", this.authController.checkSuperadminExists);
 
 		this.router.get("/users", verifyJWT, isAllowed(["admin", "superadmin"]), this.authController.getAllUsers);
-		this.router.post("/users", verifyJWT, isAllowed(["superadmin"]), upload.single("profileImage"), this.authController.createUser);
+		this.router.post("/users", verifyJWT, isAllowed(["superadmin"]), imageUpload.single("profileImage"), this.authController.createUser);
 		this.router.get("/users/:userId", verifyJWT, isAllowed(["admin", "superadmin"]), this.authController.getUserById);
 		this.router.patch("/users/:userId", verifyJWT, isAllowed(["superadmin"]), this.authController.editUserById);
 		this.router.patch("/users/:userId/password", verifyJWT, isAllowed(["superadmin"]), this.authController.editUserPasswordById);
 		this.router.delete("/users/:userId", verifyJWT, isAllowed(["admin", "superadmin"]), this.authController.deleteUserById);
 
-		this.router.patch("/user", verifyJWT, upload.single("profileImage"), isAllowed(["admin", "superadmin", "user"]), this.authController.editUser);
+		this.router.patch("/user", verifyJWT, imageUpload.single("profileImage"), isAllowed(["admin", "superadmin", "user"]), this.authController.editUser);
 		this.router.delete("/user", verifyJWT, isAllowed(["admin", "superadmin", "user"]), this.authController.deleteUser);
 	}
 

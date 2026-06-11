@@ -1,7 +1,6 @@
 import { IStatusPageController } from "@/api/controllers/statusPageController.js";
 import { RequestHandler, Router } from "express";
-import multer from "multer";
-const upload = multer();
+import { imageUpload } from "@/api/middleware/upload.js";
 
 class StatusPageRoutes {
 	private router: Router;
@@ -16,8 +15,8 @@ class StatusPageRoutes {
 	initRoutes(verifyJWT: RequestHandler, verifyStatusPageAccess: RequestHandler) {
 		this.router.get("/team", verifyJWT, this.statusPageController.getStatusPagesByTeamId);
 
-		this.router.post("/", upload.single("logo"), verifyJWT, this.statusPageController.createStatusPage);
-		this.router.put("/:id", upload.single("logo"), verifyJWT, this.statusPageController.updateStatusPage);
+		this.router.post("/", imageUpload.single("logo"), verifyJWT, this.statusPageController.createStatusPage);
+		this.router.put("/:id", imageUpload.single("logo"), verifyJWT, this.statusPageController.updateStatusPage);
 
 		this.router.get("/resolve", this.statusPageController.resolveStatusPageByDomain);
 		this.router.get("/:url", verifyStatusPageAccess, this.statusPageController.getStatusPageByUrl);

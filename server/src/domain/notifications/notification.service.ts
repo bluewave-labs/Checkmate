@@ -5,7 +5,7 @@ import type { NotificationMessage } from "@/domain/notifications/notification.ty
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import { INotificationsRepository } from "@/domain/notifications/notification.repository.interface.js";
 import { INotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
-import type { MonitorActionDecision } from "@/service/job-queues/job-queue.helper.js";
+import type { MonitorActionDecision } from "@/worker/worker.helper.js";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { ILogger } from "@/utils/logger.js";
 import type { INotificationMessageBuilder } from "@/domain/notifications/notification.message-builder.js";

@@ -8,7 +8,7 @@ import type { IMonitorsRepository } from "@/domain/monitors/monitor.repository.i
 import type { IUsersRepository } from "@/domain/users/user.repository.interface.js";
 import type { Incident, IncidentSummary } from "@/domain/incidents/incident.type.js";
 import type { User } from "@/domain/users/user.type.js";
-import type { MonitorActionDecision } from "@/service/job-queues/job-queue.helper.js";
+import type { MonitorActionDecision } from "@/worker/worker.helper.js";
 import type { INotificationMessageBuilder } from "@/domain/notifications/notification.message-builder.js";
 import type { ILogger } from "@/utils/logger.js";
 

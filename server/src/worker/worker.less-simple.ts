@@ -2,9 +2,9 @@ import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interf
 import { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.repository.interface.js";
 import { ILogger } from "@/utils/logger.js";
 import { MongoStore, Scheduler, IJob, AddJobInput } from "less-simple-scheduler";
-import { IQueueHelper } from "@/service/job-queues/job-queue.helper.js";
 import { Monitor, supportsGeoCheck } from "@/domain/monitors/monitor.types.js";
-import { type QueueMetrics, type QueueJobsPagination, type QueueJobsPage, IJobQueue } from "@/service/job-queues/job-queue.interface.js";
+import { IWorkerHelper } from "@/worker/worker.helper.js";
+import { type WorkerMetrics, type WorkerJobsPagination, type WorkerJobsPage, IWorker } from "@/worker/worker.interface.js";
 import { type QueueMode } from "@/domain/app-settings/app-settings.type.js";
 import { EnvConfig } from "@/domain/app-settings/app-settings.service.js";
 const SERVICE_NAME = "JobQueue";
@@ -17,11 +17,11 @@ type MonitorJob = Omit<IJob, "data"> & { data: Monitor };
 const MONITOR_TEMPLATES = new Set<string>(["monitor-job", "geo-check-job"]);
 const isMonitorJob = (job: IJob): job is MonitorJob => MONITOR_TEMPLATES.has(job.template);
 
-export class LessSimpleQueue implements IJobQueue {
+export class LessSimpleWorker implements IWorker {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: ILogger;
-	private helper: IQueueHelper;
+	private helper: IWorkerHelper;
 	private monitorsRepository: IMonitorsRepository;
 	private workersRepository: IQueueWorkersRepository;
 	private readonly scheduler: Scheduler;
@@ -30,7 +30,7 @@ export class LessSimpleQueue implements IJobQueue {
 
 	constructor(
 		logger: ILogger,
-		helper: IQueueHelper,
+		helper: IWorkerHelper,
 		monitorsRepository: IMonitorsRepository,
 		workersRepository: IQueueWorkersRepository,
 		scheduler: Scheduler,
@@ -46,7 +46,7 @@ export class LessSimpleQueue implements IJobQueue {
 	}
 
 	get serviceName() {
-		return LessSimpleQueue.SERVICE_NAME;
+		return LessSimpleWorker.SERVICE_NAME;
 	}
 
 	private registerListeners = () => {
@@ -126,7 +126,7 @@ export class LessSimpleQueue implements IJobQueue {
 
 	static async create(
 		logger: ILogger,
-		helper: IQueueHelper,
+		helper: IWorkerHelper,
 		monitorsRepository: IMonitorsRepository,
 		workersRepository: IQueueWorkersRepository,
 		envSettings: EnvConfig,
@@ -139,7 +139,7 @@ export class LessSimpleQueue implements IJobQueue {
 			concurrency: envSettings.queueMode === "primary" ? 0 : 50,
 			processEvery: 100,
 		});
-		const instance = new LessSimpleQueue(logger, helper, monitorsRepository, workersRepository, scheduler, queueMode);
+		const instance = new LessSimpleWorker(logger, helper, monitorsRepository, workersRepository, scheduler, queueMode);
 		await instance.init(queueMode);
 
 		return instance;
@@ -350,7 +350,7 @@ export class LessSimpleQueue implements IJobQueue {
 		this.scheduler.stop();
 	};
 
-	getMetrics = async (): Promise<QueueMetrics> => {
+	getMetrics = async (): Promise<WorkerMetrics> => {
 		const stats = await this.scheduler.getStats();
 
 		const jobsWithFailures = stats.jobsWithFailures.map((failure) => {
@@ -379,7 +379,7 @@ export class LessSimpleQueue implements IJobQueue {
 		};
 	};
 
-	getJobs = async ({ page = 0, rowsPerPage = 0 }: QueueJobsPagination): Promise<QueueJobsPage> => {
+	getJobs = async ({ page = 0, rowsPerPage = 0 }: WorkerJobsPagination): Promise<WorkerJobsPage> => {
 		const listOptions = rowsPerPage > 0 ? { skip: Math.max(page, 0) * rowsPerPage, limit: rowsPerPage } : undefined;
 		const [jobs, count] = await Promise.all([this.scheduler.getJobs(listOptions), this.scheduler.countJobs()]);
 		const mapped = jobs.map((job) => {

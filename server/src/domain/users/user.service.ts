@@ -8,12 +8,12 @@ import type { User } from "@/domain/users/user.type.js";
 import { canManageRole, type UserRole } from "@/domain/users/user.type.js";
 import bcrypt from "bcryptjs";
 import { AppError } from "@/utils/AppError.js";
-import { IJobQueue } from "@/service/job-queues/job-queue.interface.js";
 import { IEmailService } from "@/service/emailService.js";
 import { EnvConfig, ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { ILogger } from "@/utils/logger.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { IWorker } from "@/worker/worker.interface.js";
 type CryptoType = typeof crypto;
 type JwtType = typeof jwt;
 const SERVICE_NAME = "userService";
@@ -53,7 +53,7 @@ export class UserService implements IUserService {
 	private settingsService: ISettingsService;
 	private logger: ILogger;
 	private jwt: JwtType;
-	private jobQueue: IJobQueue;
+	private worker: IWorker;
 	private crypto: CryptoType;
 	private monitorsRepository: IMonitorsRepository;
 	private usersRepository: IUsersRepository;
@@ -68,7 +68,7 @@ export class UserService implements IUserService {
 		settingsService,
 		logger,
 		jwt,
-		jobQueue,
+		worker,
 		monitorsRepository,
 		usersRepository,
 		invitesRepository,
@@ -81,7 +81,7 @@ export class UserService implements IUserService {
 		settingsService: ISettingsService;
 		logger: ILogger;
 		jwt: JwtType;
-		jobQueue: IJobQueue;
+		worker: IWorker;
 		monitorsRepository: IMonitorsRepository;
 		usersRepository: IUsersRepository;
 		invitesRepository: IInvitesRepository;
@@ -93,7 +93,7 @@ export class UserService implements IUserService {
 		this.settingsService = settingsService;
 		this.logger = logger;
 		this.jwt = jwt;
-		this.jobQueue = jobQueue;
+		this.worker = worker;
 		this.crypto = crypto;
 		this.monitorsRepository = monitorsRepository;
 		this.usersRepository = usersRepository;
@@ -330,7 +330,7 @@ export class UserService implements IUserService {
 		if (roles.includes("superadmin")) {
 			const monitors = await this.monitorsRepository.findByTeamId(teamId, {});
 			if (monitors) {
-				await Promise.all(monitors.map((monitor) => this.jobQueue.deleteJob(monitor)));
+				await Promise.all(monitors.map((monitor) => this.worker.deleteJob(monitor)));
 			}
 		}
 		// 6. Delete the user by id
