@@ -131,7 +131,7 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 		}),
 	};
 	const checkService = {
-		buildCheck: jest.fn().mockImplementation((response: MonitorStatusResponse) => {
+		toCheck: jest.fn().mockImplementation((response: MonitorStatusResponse) => {
 			return makeCheck(response.status, response.code);
 		}),
 	};

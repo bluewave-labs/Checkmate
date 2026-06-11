@@ -4,6 +4,8 @@ import { createMockLogger } from "../../helpers/createMockLogger.ts";
 import type { IChecksRepository } from "../../../src/domain/checks/check.repository.interface.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
 import type { MonitorStatusResponse, HardwareStatusPayload, PageSpeedStatusPayload } from "../../../src/types/network.ts";
+import { NotificationMessageBuilder } from "../../../src/domain/notifications/notification.message-builder.ts";
+import type { Monitor } from "../../../src/domain/monitors/monitor.types.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -53,12 +55,12 @@ describe("CheckService", () => {
 		});
 	});
 
-	// ── buildCheck ───────────────────────────────────────────────────────────
+	// ── toCheck ──────────────────────────────────────────────────────────────
 
-	describe("buildCheck", () => {
+	describe("toCheck", () => {
 		it("builds a basic HTTP check with correct fields", () => {
 			const { service } = createService();
-			const check = service.buildCheck(makeStatusResponse());
+			const check = service.toCheck(makeStatusResponse());
 
 			expect(check).toBeDefined();
 			expect(check!.metadata).toEqual({ monitorId: "mon-1", teamId: "team-1", type: "http" });
@@ -72,14 +74,14 @@ describe("CheckService", () => {
 
 		it("defaults responseTime to 0 when falsy", () => {
 			const { service } = createService();
-			const check = service.buildCheck(makeStatusResponse({ responseTime: undefined }));
+			const check = service.toCheck(makeStatusResponse({ responseTime: undefined }));
 			expect(check!.responseTime).toBe(0);
 		});
 
 		it("includes timings when provided", () => {
 			const timings = { start: 0, socket: 10, lookup: 20 };
 			const { service } = createService();
-			const check = service.buildCheck(makeStatusResponse({ timings } as any));
+			const check = service.toCheck(makeStatusResponse({ timings } as any));
 			expect(check!.timings).toBe(timings);
 		});
 
@@ -106,7 +108,7 @@ describe("CheckService", () => {
 				} as any;
 
 				const { service } = createService();
-				const check = service.buildCheck(makeStatusResponse({ type: "pagespeed", payload } as any));
+				const check = service.toCheck(makeStatusResponse({ type: "pagespeed", payload } as any));
 
 				expect(check!.accessibility).toBe(90);
 				expect(check!.bestPractices).toBe(80);
@@ -119,7 +121,7 @@ describe("CheckService", () => {
 
 			it("returns undefined when pagespeed payload is missing", () => {
 				const { service, logger } = createService();
-				const check = service.buildCheck(makeStatusResponse({ type: "pagespeed", payload: undefined } as any));
+				const check = service.toCheck(makeStatusResponse({ type: "pagespeed", payload: undefined } as any));
 
 				expect(check).toBeUndefined();
 				expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to build check" }));
@@ -127,7 +129,7 @@ describe("CheckService", () => {
 
 			it("defaults categories and audits to empty when lighthouseResult is missing", () => {
 				const { service } = createService();
-				const check = service.buildCheck(makeStatusResponse({ type: "pagespeed", payload: {} } as any));
+				const check = service.toCheck(makeStatusResponse({ type: "pagespeed", payload: {} } as any));
 
 				expect(check!.accessibility).toBe(0);
 				expect(check!.bestPractices).toBe(0);
@@ -146,7 +148,7 @@ describe("CheckService", () => {
 					},
 				} as any;
 				const { service } = createService();
-				const check = service.buildCheck(makeStatusResponse({ type: "pagespeed", payload } as any));
+				const check = service.toCheck(makeStatusResponse({ type: "pagespeed", payload } as any));
 
 				expect(check!.audits!.cls!.score).toBe("informative");
 			});
@@ -161,7 +163,7 @@ describe("CheckService", () => {
 					},
 				} as any;
 				const { service } = createService();
-				const check = service.buildCheck(makeStatusResponse({ type: "pagespeed", payload } as any));
+				const check = service.toCheck(makeStatusResponse({ type: "pagespeed", payload } as any));
 
 				expect(check!.audits!.cls!.score).toBeNull();
 			});
@@ -176,7 +178,7 @@ describe("CheckService", () => {
 					},
 				} as any;
 				const { service } = createService();
-				const check = service.buildCheck(makeStatusResponse({ type: "pagespeed", payload } as any));
+				const check = service.toCheck(makeStatusResponse({ type: "pagespeed", payload } as any));
 
 				expect(check!.audits!.si!.numericValue).toBeUndefined();
 			});
@@ -192,7 +194,7 @@ describe("CheckService", () => {
 					},
 				} as any;
 				const { service } = createService();
-				const check = service.buildCheck(makeStatusResponse({ type: "pagespeed", payload } as any));
+				const check = service.toCheck(makeStatusResponse({ type: "pagespeed", payload } as any));
 
 				expect(check!.audits!.cls).toBeUndefined();
 				expect(check!.audits!.si).toBeUndefined();
@@ -214,7 +216,7 @@ describe("CheckService", () => {
 					capture: { screenshot: "base64data" },
 				} as any;
 				const { service } = createService();
-				const check = service.buildCheck(makeStatusResponse({ type: "hardware", payload } as any));
+				const check = service.toCheck(makeStatusResponse({ type: "hardware", payload } as any));
 
 				expect(check!.cpu).toEqual({ usage_percent: 0.5 });
 				expect(check!.memory).toEqual({ usage_percent: 0.6 });
@@ -230,7 +232,7 @@ describe("CheckService", () => {
 					errors: [{ message: "timeout" }],
 				} as any;
 				const { service } = createService();
-				const check = service.buildCheck(makeStatusResponse({ type: "hardware", payload } as any));
+				const check = service.toCheck(makeStatusResponse({ type: "hardware", payload } as any));
 
 				expect(check!.errors).toEqual([{ message: "timeout" }]);
 			});
@@ -241,14 +243,14 @@ describe("CheckService", () => {
 					errors: { errors: [{ message: "nested error" }] },
 				} as any;
 				const { service } = createService();
-				const check = service.buildCheck(makeStatusResponse({ type: "hardware", payload } as any));
+				const check = service.toCheck(makeStatusResponse({ type: "hardware", payload } as any));
 
 				expect(check!.errors).toEqual([{ message: "nested error" }]);
 			});
 
 			it("handles undefined payload gracefully", () => {
 				const { service } = createService();
-				const check = service.buildCheck(makeStatusResponse({ type: "hardware", payload: undefined } as any));
+				const check = service.toCheck(makeStatusResponse({ type: "hardware", payload: undefined } as any));
 
 				expect(check).toBeDefined();
 				expect(check!.cpu).toBeUndefined();
@@ -256,6 +258,84 @@ describe("CheckService", () => {
 				expect(check!.disk).toBeUndefined();
 				expect(check!.errors).toBeUndefined();
 			});
+		});
+	});
+
+	// ── toStatusResponse round-trip (Phase 2 §5 guard) ─────────────────────────
+	// The DB-queue split persists a Check, then the evaluator rebuilds the status response from it.
+	// toStatusResponse is only correct because every field a downstream consumer reads survives
+	// toCheck → toStatusResponse. These tests pin that: if a future change drops a consumed field
+	// from the round-trip, they fail instead of silently regressing the evaluator/reactors.
+
+	describe("toStatusResponse round-trip", () => {
+		const makeHardwareStatus = (overrides?: Partial<MonitorStatusResponse>): MonitorStatusResponse =>
+			makeStatusResponse({
+				type: "hardware",
+				status: true,
+				code: 200,
+				message: "OK",
+				responseTime: 42,
+				payload: {
+					data: {
+						cpu: { usage_percent: 0.92 },
+						memory: { usage_percent: 0.81 },
+						disk: [{ device: "/dev/sda", usage_percent: 0.75 }],
+						host: { os: "linux" },
+						net: [{ name: "eth0" }],
+					},
+				} as HardwareStatusPayload,
+				...overrides,
+			} as any);
+
+		it("uptime: preserves every consumed scalar field", () => {
+			const { service } = createService();
+			const status = makeStatusResponse({ type: "http", status: false, code: 503, message: "Service Unavailable", responseTime: 87 });
+
+			const rebuilt = service.toStatusResponse(service.toCheck(status)!);
+
+			expect(rebuilt.monitorId).toBe(status.monitorId);
+			expect(rebuilt.teamId).toBe(status.teamId);
+			expect(rebuilt.type).toBe(status.type);
+			expect(rebuilt.status).toBe(status.status);
+			expect(rebuilt.code).toBe(status.code);
+			expect(rebuilt.message).toBe(status.message);
+			expect(rebuilt.responseTime).toBe(status.responseTime);
+		});
+
+		it("hardware: preserves payload.data metrics verbatim, same units (usage_percent stays a 0–1 decimal)", () => {
+			const { service } = createService();
+			const status = makeHardwareStatus();
+
+			const rebuilt = service.toStatusResponse(service.toCheck(status)!);
+
+			const original = status.payload as HardwareStatusPayload;
+			const roundtripped = rebuilt.payload as HardwareStatusPayload;
+			expect(roundtripped.data).toEqual(original.data);
+			expect(roundtripped.data.cpu!.usage_percent).toBe(0.92); // not rescaled to 92
+		});
+
+		it("hardware: a real consumer (extractThresholdBreaches) behaves identically on raw vs round-tripped status", () => {
+			const { service } = createService();
+			const builder = new NotificationMessageBuilder();
+			const monitor = {
+				id: "mon-1",
+				type: "hardware",
+				cpuAlertThreshold: 90, // 0.92 → 92% breaches
+				memoryAlertThreshold: 90, // 0.81 → 81% does not
+				diskAlertThreshold: 90, // 0.75 → 75% does not
+				tempAlertThreshold: 100,
+			} as Monitor;
+			const status = makeHardwareStatus();
+
+			const rebuilt = service.toStatusResponse(service.toCheck(status)!);
+
+			const fromRaw = builder.extractThresholdBreaches(monitor, status as MonitorStatusResponse<HardwareStatusPayload>);
+			const fromRebuilt = builder.extractThresholdBreaches(monitor, rebuilt as MonitorStatusResponse<HardwareStatusPayload>);
+
+			// sanity: the fixture actually triggers a breach, so the equality below is not vacuous
+			expect(fromRaw).toHaveLength(1);
+			expect(fromRaw[0].metric).toBe("cpu");
+			expect(fromRebuilt).toEqual(fromRaw);
 		});
 	});
 

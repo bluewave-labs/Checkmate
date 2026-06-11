@@ -30,7 +30,7 @@ const createCheckPipeline = (overrides?: Record<string, any>) => {
 		statusService: {
 			updateMonitorStatus: jest.fn().mockResolvedValue({ monitor: { id: "m1", status: "up" }, statusChanged: false, prevStatus: "up", code: 200 }),
 		},
-		checkService: { buildCheck: jest.fn().mockReturnValue({ id: "check-1" }) },
+		checkService: { toCheck: jest.fn().mockReturnValue({ id: "check-1" }) },
 		buffer: { addToBuffer: jest.fn() },
 		monitorsRepository: { updateById: jest.fn().mockResolvedValue({}) },
 		maintenanceWindowsRepository: { findByMonitorId: jest.fn().mockResolvedValue([]) },
@@ -85,9 +85,9 @@ describe("CheckPipeline", () => {
 		await expect(pipeline.run(makeMonitor())).rejects.toThrow("No network response");
 	});
 
-	it("returns null and warns when buildCheck returns null", async () => {
+	it("returns null and warns when toCheck returns null", async () => {
 		const { pipeline, defaults } = createCheckPipeline({
-			checkService: { buildCheck: jest.fn().mockReturnValue(null) },
+			checkService: { toCheck: jest.fn().mockReturnValue(null) },
 		});
 
 		const result = await pipeline.run(makeMonitor());
