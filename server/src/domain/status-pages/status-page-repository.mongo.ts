@@ -78,9 +78,10 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 	create = async (userId: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage> => {
 		const { logo, customDomain, ...restData } = data;
 		void logo;
+		const normalizedCustomDomain = normalizeStatusPageDomain(customDomain);
 		const statusPage = new StatusPageModel({
 			...restData,
-			customDomain: normalizeStatusPageDomain(customDomain),
+			...(normalizedCustomDomain ? { customDomain: normalizedCustomDomain } : {}),
 			userId,
 			teamId,
 		});
@@ -133,20 +134,35 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 	): Promise<StatusPage> => {
 		const { logo, removeLogo, customDomain, ...restPatch } = patch;
 		void logo;
-		const updateData: StatusPageUpdateData = { ...restPatch };
+		const setData: StatusPageUpdateData = { ...restPatch };
+		const unsetData: Record<string, 1> = {};
+
 		if (customDomain !== undefined) {
-			updateData.customDomain = normalizeStatusPageDomain(customDomain);
+			const normalizedCustomDomain = normalizeStatusPageDomain(customDomain);
+			if (normalizedCustomDomain) {
+				setData.customDomain = normalizedCustomDomain;
+			} else {
+				unsetData.customDomain = 1;
+			}
 		}
 		if (image) {
-			updateData.logo = {
+			setData.logo = {
 				data: image.buffer as Buffer,
 				contentType: image.mimetype,
 			};
 		} else if (removeLogo === "true") {
-			updateData.logo = null;
+			setData.logo = null;
 		}
 
-		const statusPage = await StatusPageModel.findOneAndUpdate({ teamId, _id: id }, updateData, {
+		const updateQuery =
+			unsetData.customDomain !== undefined
+				? {
+						$set: setData,
+						$unset: unsetData,
+					}
+				: setData;
+
+		const statusPage = await StatusPageModel.findOneAndUpdate({ teamId, _id: id }, updateQuery, {
 			new: true,
 		});
 

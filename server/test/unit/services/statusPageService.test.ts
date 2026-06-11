@@ -134,6 +134,15 @@ describe("StatusPageService", () => {
 
 			expect(repo.create).toHaveBeenCalledWith("user-1", "team-1", undefined, expect.objectContaining({ customDomain: "status.example.com" }));
 		});
+
+		it("allows multiple status pages without a custom domain", async () => {
+			const { service, repo } = createService(true);
+
+			await service.createStatusPage("user-1", "team-1", undefined, { companyName: "First" });
+			await service.createStatusPage("user-1", "team-1", undefined, { companyName: "Second" });
+
+			expect(repo.create).toHaveBeenCalledTimes(2);
+		});
 	});
 
 	describe("getStatusPagesByTeamId", () => {
