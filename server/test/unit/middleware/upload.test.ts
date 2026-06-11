@@ -6,10 +6,9 @@ import { AppError } from "../../../src/utils/AppError.ts";
 
 // Reaches into the multer instance config to exercise the fileFilter/limits in isolation.
 // Guards against regressing GHSA-9xvg-x28f-m78m (pre-auth DoS via unbounded uploads).
-const config = (imageUpload as unknown as { fileFilter: Function; limits: { fileSize: number; files: number } });
+const config = imageUpload as unknown as { fileFilter: Function; limits: { fileSize: number; files: number } };
 
-const makeFile = (mimetype: string): Express.Multer.File =>
-	({ fieldname: "profileImage", originalname: "x", mimetype }) as Express.Multer.File;
+const makeFile = (mimetype: string): Express.Multer.File => ({ fieldname: "profileImage", originalname: "x", mimetype }) as Express.Multer.File;
 
 const runFilter = (mimetype: string): Promise<{ error: unknown; accepted: unknown }> =>
 	new Promise((resolve) => {

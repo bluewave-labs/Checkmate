@@ -1,6 +1,6 @@
 import express from "express";
 import path from "path";
-import cors from "cors";
+import cors, { type CorsOptions } from "cors";
 import helmet from "helmet";
 import compression from "compression";
 import cookieParser from "cookie-parser";
@@ -12,6 +12,8 @@ import { setupRoutes } from "@/config/routes.js";
 import { InitializedServices } from "@/config/services.js";
 import { InitializedControllers } from "@/config/controllers.js";
 import { EnvConfig } from "@/domain/app-settings/app-settings.service.js";
+import { createStatusPageCorsOrigin } from "@/api/middleware/statusPageCorsOrigin.js";
+import { isPublicStatusPageApiPath } from "@/api/middleware/statusPagePublicApiPath.js";
 
 export const createApp = ({
 	services,
@@ -28,17 +30,23 @@ export const createApp = ({
 }) => {
 	const allowedOrigin = envSettings.clientHost;
 	const app = express();
+	const defaultCorsOptions: CorsOptions = {
+		origin: allowedOrigin,
+		methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+		allowedHeaders: ["Content-Type", "Authorization", "Accept-Language"],
+		credentials: true,
+	};
+	const publicStatusPageCorsOrigin = createStatusPageCorsOrigin(allowedOrigin, services.statusPagesRepository);
 
 	app.use(generalApiLimiter);
 
-	app.use(
-		cors({
-			origin: allowedOrigin,
-			methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-			allowedHeaders: ["Content-Type", "Authorization", "Accept-Language"],
-			credentials: true,
-		})
-	);
+	app.use((req, res, next) => {
+		const corsOptions = isPublicStatusPageApiPath(req.method, req.path)
+			? { ...defaultCorsOptions, origin: publicStatusPageCorsOrigin }
+			: defaultCorsOptions;
+
+		return cors(corsOptions)(req, res, next);
+	});
 
 	app.use(express.static(frontendPath));
 

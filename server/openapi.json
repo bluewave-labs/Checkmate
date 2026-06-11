@@ -10448,6 +10448,17 @@
 										"type": "string",
 										"pattern": "^[a-zA-Z0-9_-]+$"
 									},
+									"customDomain": {
+										"anyOf": [
+											{
+												"type": "string",
+												"pattern": "^(?=.{1,253}$)([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,63}$"
+											},
+											{
+												"nullable": true
+											}
+										]
+									},
 									"timezone": {
 										"type": "string"
 									},
@@ -10650,6 +10661,17 @@
 									"url": {
 										"type": "string",
 										"pattern": "^[a-zA-Z0-9_-]+$"
+									},
+									"customDomain": {
+										"anyOf": [
+											{
+												"type": "string",
+												"pattern": "^(?=.{1,253}$)([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,63}$"
+											},
+											{
+												"nullable": true
+											}
+										]
 									},
 									"timezone": {
 										"type": "string"
@@ -10893,6 +10915,102 @@
 								}
 							}
 						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/status-page/resolve": {
+			"get": {
+				"tags": ["status-page"],
+				"summary": "Resolve a published status page by custom domain",
+				"parameters": [
+					{
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string",
+									"enum": ["uptime", "infrastructure"]
+								},
+								{
+									"type": "array",
+									"items": {
+										"type": "string",
+										"enum": ["uptime", "infrastructure"]
+									}
+								}
+							]
+						},
+						"required": true,
+						"name": "type",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "number",
+							"nullable": true
+						},
+						"required": false,
+						"name": "timeFrame",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": false,
+						"name": "domain",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Status page not found"
 					},
 					"500": {
 						"description": "Internal server error",

@@ -65,6 +65,11 @@ const StatusPageSchema = new Schema<StatusPageDocument>(
 			required: true,
 			default: "",
 		},
+		customDomain: {
+			type: String,
+			lowercase: true,
+			trim: true,
+		},
 		timezone: {
 			type: String,
 		},
@@ -126,6 +131,14 @@ const StatusPageSchema = new Schema<StatusPageDocument>(
 		},
 	},
 	{ timestamps: true }
+);
+
+StatusPageSchema.index(
+	{ customDomain: 1 },
+	{
+		unique: true,
+		partialFilterExpression: { customDomain: { $type: "string" } },
+	}
 );
 
 const StatusPageModel = model<StatusPageDocument>("StatusPage", StatusPageSchema);

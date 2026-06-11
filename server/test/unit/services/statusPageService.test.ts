@@ -26,20 +26,22 @@ const createRepo = () =>
 	({
 		create: jest.fn().mockResolvedValue(makeStatusPage()),
 		findByUrl: jest.fn().mockResolvedValue(makeStatusPage()),
+		findByCustomDomain: jest.fn().mockResolvedValue(makeStatusPage()),
 		findByTeamId: jest.fn().mockResolvedValue([makeStatusPage()]),
 		updateById: jest.fn().mockResolvedValue(makeStatusPage()),
 		deleteById: jest.fn().mockResolvedValue(makeStatusPage()),
 		removeMonitorFromStatusPages: jest.fn().mockResolvedValue(1),
 	}) as unknown as jest.Mocked<IStatusPagesRepository>;
 
-const createSettingsService = (themesEnabled: boolean) =>
+const createSettingsService = (themesEnabled: boolean, clientHost = "http://localhost:5173") =>
 	({
 		areStatusPageThemesEnabled: jest.fn().mockReturnValue(themesEnabled),
+		getSettings: jest.fn().mockReturnValue({ clientHost }),
 	}) as unknown as jest.Mocked<ISettingsService>;
 
-const createService = (themesEnabled = true) => {
+const createService = (themesEnabled = true, clientHost = "http://localhost:5173") => {
 	const repo = createRepo();
-	const settingsService = createSettingsService(themesEnabled);
+	const settingsService = createSettingsService(themesEnabled, clientHost);
 	const service = new StatusPageService(repo, settingsService);
 	return { service, repo, settingsService };
 };
@@ -96,6 +98,50 @@ describe("StatusPageService", () => {
 
 			expect(result.theme).toBe(DEFAULT_STATUS_PAGE_THEME);
 			expect(result.themeMode).toBe(DEFAULT_STATUS_PAGE_THEME_MODE);
+		});
+	});
+
+	describe("getStatusPageByCustomDomain", () => {
+		it("delegates to repository", async () => {
+			const { service, repo } = createService(true);
+
+			const result = await service.getStatusPageByCustomDomain("status.example.com");
+
+			expect(repo.findByCustomDomain).toHaveBeenCalledWith("status.example.com");
+			expect(result).toEqual(makeStatusPage());
+		});
+	});
+
+	describe("createStatusPage custom domain validation", () => {
+		it("rejects custom domains that match the Checkmate instance host", async () => {
+			const { service } = createService(true, "https://checkmate.example.com");
+
+			await expect(
+				service.createStatusPage("user-1", "team-1", undefined, {
+					customDomain: "checkmate.example.com",
+				})
+			).rejects.toMatchObject({
+				status: 400,
+			});
+		});
+
+		it("normalizes custom domains before create", async () => {
+			const { service, repo } = createService(true);
+
+			await service.createStatusPage("user-1", "team-1", undefined, {
+				customDomain: "https://Status.Example.COM",
+			});
+
+			expect(repo.create).toHaveBeenCalledWith("user-1", "team-1", undefined, expect.objectContaining({ customDomain: "status.example.com" }));
+		});
+
+		it("allows multiple status pages without a custom domain", async () => {
+			const { service, repo } = createService(true);
+
+			await service.createStatusPage("user-1", "team-1", undefined, { companyName: "First" });
+			await service.createStatusPage("user-1", "team-1", undefined, { companyName: "Second" });
+
+			expect(repo.create).toHaveBeenCalledTimes(2);
 		});
 	});
 

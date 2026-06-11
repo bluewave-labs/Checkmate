@@ -18,6 +18,7 @@ class StatusPageRoutes {
 		this.router.post("/", imageUpload.single("logo"), verifyJWT, this.statusPageController.createStatusPage);
 		this.router.put("/:id", imageUpload.single("logo"), verifyJWT, this.statusPageController.updateStatusPage);
 
+		this.router.get("/resolve", this.statusPageController.resolveStatusPageByDomain);
 		this.router.get("/:url", verifyStatusPageAccess, this.statusPageController.getStatusPageByUrl);
 		this.router.delete("/:id", verifyJWT, this.statusPageController.deleteStatusPage);
 	}

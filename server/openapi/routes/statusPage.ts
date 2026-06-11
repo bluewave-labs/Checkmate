@@ -1,6 +1,11 @@
 import { registry } from "../registry.js";
 import { bearer, multipart, okJsonNoData, okUnknown, standardErrors } from "../helpers.js";
-import { createStatusPageBodyValidation, getStatusPageParamValidation, getStatusPageQueryValidation } from "@/api/validation/statusPageValidation.js";
+import {
+	createStatusPageBodyValidation,
+	getStatusPageParamValidation,
+	getStatusPageQueryValidation,
+	resolveStatusPageQueryValidation,
+} from "@/api/validation/statusPageValidation.js";
 
 const tags = ["status-page"];
 
@@ -31,6 +36,15 @@ registry.registerPath({
 	security: bearer,
 	request: { body: { content: multipart(createStatusPageBodyValidation.shape, "logo") } },
 	responses: { "200": okUnknown, ...standardErrors },
+});
+
+registry.registerPath({
+	method: "get",
+	path: "/status-page/resolve",
+	tags,
+	summary: "Resolve a published status page by custom domain",
+	request: { query: resolveStatusPageQueryValidation },
+	responses: { "200": okUnknown, "404": { description: "Status page not found" }, "500": standardErrors["500"] },
 });
 
 registry.registerPath({

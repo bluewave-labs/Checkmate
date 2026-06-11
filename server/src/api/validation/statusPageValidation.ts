@@ -1,6 +1,7 @@
 import { z } from "zod";
-import { booleanCoercion } from "./shared.js";
+import { booleanCoercion, dnsHostnameRegex } from "./shared.js";
 import { StatusPageTypes, StatusPageThemes, StatusPageThemeModes } from "@/domain/status-pages/status-page.type.js";
+import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
 
 //****************************************
 // Status Page Validations
@@ -15,6 +16,20 @@ export const getStatusPageQueryValidation = z.object({
 	timeFrame: z.coerce.number().optional(),
 });
 
+export const resolveStatusPageQueryValidation = getStatusPageQueryValidation.extend({
+	domain: z.string().optional(),
+});
+
+const customDomainValidation = z.preprocess(
+	(val) => {
+		if (val === undefined || val === null) {
+			return undefined;
+		}
+		return normalizeStatusPageDomain(String(val));
+	},
+	z.union([z.string().regex(dnsHostnameRegex, "Enter a valid domain name (e.g. status.example.com)"), z.null()]).optional()
+);
+
 export const createStatusPageBodyValidation = z
 	.object({
 		type: z.union([z.enum(StatusPageTypes), z.array(z.enum(StatusPageTypes))]).transform((val) => (Array.isArray(val) ? val : [val])),
@@ -22,6 +37,7 @@ export const createStatusPageBodyValidation = z
 		url: z.string().regex(/^[a-zA-Z0-9_-]+$/, {
 			message: "URL can only contain letters, numbers, underscores, and hyphens",
 		}),
+		customDomain: customDomainValidation,
 		timezone: z.string().optional(),
 		color: z.string().optional(),
 		monitors: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Must be a valid monitor ID")).min(1, "At least one monitor is required"),
