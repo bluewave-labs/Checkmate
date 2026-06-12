@@ -7,7 +7,8 @@ type SSLCheckerType = typeof sslChecker;
 export const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: Monitor): Promise<SSLDetails> => {
 	const monitorUrl = new URL(monitor.url);
 	const hostname = monitorUrl.hostname;
-	const cert = await checker(hostname);
+	const port = monitorUrl.port ? parseInt(monitorUrl.port, 10) : undefined;
+	const cert = await checker(hostname, { ...(port ? { port } : {}) });
 	if (cert?.validTo === null || cert?.validTo === undefined) {
 		throw new Error("Certificate not found");
 	}
