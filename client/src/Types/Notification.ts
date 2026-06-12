@@ -13,6 +13,8 @@ export const NotificationChannels = [
 ] as const;
 export type NotificationChannel = (typeof NotificationChannels)[number];
 
+export type WebhookAuthType = "none" | "basic" | "bearer";
+
 export interface Notification {
 	id: string;
 	userId: string;
@@ -27,6 +29,10 @@ export interface Notification {
 	accountSid?: string;
 	twilioPhoneNumber?: string;
 	topic?: string;
+	webhookAuthType?: WebhookAuthType;
+	webhookUsername?: string;
+	webhookPassword?: string;
+	webhookBearerToken?: string;
 	createdAt: string;
 	updatedAt: string;
 }

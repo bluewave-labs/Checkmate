@@ -1173,6 +1173,17 @@
 					"placeholderServerUrl": "https://ntfy.sh",
 					"optionTopic": "Topic",
 					"placeholderTopic": "checkmate-alerts"
+				},
+				"webhookAuth": {
+					"title": "Webhook Authentication",
+					"description": "Add optional authentication headers to webhook requests.",
+					"optionAuthType": "Authentication Type",
+					"optionUsername": "Username",
+					"placeholderUsername": "Enter username",
+					"optionPassword": "Password",
+					"placeholderPassword": "Enter password",
+					"optionBearerToken": "Bearer Token",
+					"placeholderBearerToken": "Enter bearer token"
 				}
 			},
 			"table": {
