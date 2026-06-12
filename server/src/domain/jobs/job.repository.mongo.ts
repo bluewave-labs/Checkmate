@@ -49,6 +49,33 @@ class MongoJobsRepository implements IJobsRepository {
 		return doc ? this.toEntity(doc) : null;
 	};
 
+	claimDueBatch = async (type: JobType, limit: number, now: number) => {
+		if (limit <= 0) return [];
+		const dueAndFree = {
+			type,
+			isActive: true,
+			nextScheduledAt: { $lte: now }, // due
+			$or: [{ lockedUntil: null }, { lockedUntil: { $lt: now } }], // free or expired lock
+		};
+
+		// 1. Pick the oldest-due candidates
+		const candidates = await JobModel.find(dueAndFree).sort({ nextScheduledAt: 1 }).limit(limit).select({ _id: 1 }).lean<{ _id: string }[]>();
+		if (candidates.length === 0) return [];
+		const ids = candidates.map((d) => d._id);
+
+		// 2. lock them. Re-check free/expired so we never steal another worker's live lock
+		//    only the rows this updateMany actually flips end up with claimed
+		const lockedUntil = now + LOCK_MS;
+		await JobModel.updateMany(
+			{ _id: { $in: ids }, $or: [{ lockedUntil: null }, { lockedUntil: { $lt: now } }] },
+			{ $set: { lockedBy: this.workerId, lockedUntil } }
+		);
+
+		// 3. Read back exactly the rows we now hold from this batch, keyed by the lockedUntil time
+		const docs = await JobModel.find({ _id: { $in: ids }, lockedBy: this.workerId, lockedUntil }).lean<JobDocument[]>();
+		return docs.map(this.toEntity);
+	};
+
 	recordSuccess = async (id: string, scheduledRunAt: number, intervalMs: number, now: number) => {
 		// Fixed rate job scheduling
 

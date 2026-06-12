@@ -17,7 +17,7 @@ const SERVICE_NAME = "JobQueue";
 const POLL_MS = 250;
 const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const CONCURRENCY: Record<JobType, number> = {
-	check: 50,
+	check: 500,
 	"geo-check": 20,
 	evaluate: 20,
 	"cleanup-orphaned": 1,
@@ -205,13 +205,13 @@ export class DBQueueWorker implements IWorker {
 		const tick = async () => {
 			if (this.stopped) return;
 			try {
-				// Drain rows up to concurrency limit
-				while (this.inFlight[type] < CONCURRENCY[type]) {
-					const job = await this.jobsRepository.claimDue(type, Date.now()); // Claim a job
-					if (!job) break; // we're done, no jobs due
-					this.inFlight[type]++; // increment in flight jobs to stay within concurrency limits
+				// Claim a batch sized to the free capacity
+				const capacity = CONCURRENCY[type] - this.inFlight[type];
+				const jobs = await this.jobsRepository.claimDueBatch(type, capacity, Date.now());
+				for (const job of jobs) {
+					this.inFlight[type]++; // stay within concurrency limits
 					this.runJob(job).finally(() => {
-						this.inFlight[type]--; // job is done, decrement in flight count
+						this.inFlight[type]--; // job done, free the slot
 					});
 				}
 			} catch (error: unknown) {

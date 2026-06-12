@@ -1,6 +1,6 @@
 export const JOB_TYPES = ["check", "geo-check", "evaluate", "cleanup-orphaned", "cleanup-retention"] as const;
 export type JobType = (typeof JOB_TYPES)[number];
-export const LOCK_MS = 30_000;
+export const LOCK_MS = 60_000;
 export const BACKOFF_MS = 5_000;
 export const PARKED = Number.MAX_SAFE_INTEGER;
 

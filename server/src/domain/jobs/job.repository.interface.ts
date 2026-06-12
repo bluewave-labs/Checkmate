@@ -17,6 +17,9 @@ export interface IJobsRepository {
 	// Atomically claim a job
 	claimDue(type: JobType, now: number): Promise<Job | null>;
 
+	// locks up to `limit` due rows in one batch
+	claimDueBatch(type: JobType, limit: number, now: number): Promise<Job[]>;
+
 	// Completes a repeating job
 	recordSuccess(id: string, nextScheduledAt: number, intervalMs: number, now: number): Promise<boolean>;
 
@@ -34,7 +37,7 @@ export interface IJobsRepository {
 	// Job CRUD
 	// ********************
 
-	// Create jobs. Takes a JobSeed — the repo owns volatile lease/counter defaults on insert.
+	// Create jobs. Takes a JobSeed
 	upsertJob(job: JobSeed): Promise<boolean>;
 
 	// Pause/Resume
@@ -46,7 +49,7 @@ export interface IJobsRepository {
 	// Delete, drop all rows
 	deleteById(refId: string): Promise<boolean>;
 
-	// Delete a single typed row for a monitor (e.g. drop just the geo row, keep check/evaluate)
+	// Delete a single job of type
 	deleteByIdAndType(refId: string, type: JobType): Promise<boolean>;
 
 	// Get job
