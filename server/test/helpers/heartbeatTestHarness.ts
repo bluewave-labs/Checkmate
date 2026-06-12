@@ -2,6 +2,8 @@ import { jest } from "@jest/globals";
 import { WorkerHelper } from "../../src/worker/worker.helper.ts";
 import { MonitorStatusPolicy } from "../../src/worker/worker.monitor-status-policy.ts";
 import { CheckPipeline, GeoChecksPipeline } from "../../src/worker/worker.check-pipeline.ts";
+import { CheckProducer } from "../../src/worker/worker.check-producer.ts";
+import { CheckEvaluator } from "../../src/worker/worker.check-evaluator.ts";
 import { NotificationReactor } from "../../src/worker/reactors/reactor.notification.ts";
 import { IncidentReactor } from "../../src/worker/reactors/reactor.incident.ts";
 import { ReactorDispatcher } from "../../src/worker/reactors/reactor.dispatcher.ts";
@@ -149,16 +151,16 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 	const maintenanceWindowsRepo = { findByMonitorId: jest.fn().mockResolvedValue([]) };
 	const geoChecksService = { buildGeoCheck: jest.fn() };
 
-	const checkPipeline = new CheckPipeline(
+	const checkProducer = new CheckProducer(
 		monitorsRepo as any,
 		maintenanceWindowsRepo as any,
 		checkService as any,
 		networkService as any,
 		bufferStub as any,
-		new MonitorStatusPolicy(),
-		statusService as any,
 		logger
 	);
+	const checkEvaluator = new CheckEvaluator(statusService as any, new MonitorStatusPolicy());
+	const checkPipeline = new CheckPipeline(checkProducer, checkEvaluator);
 	const geoCheckPipeline = new GeoChecksPipeline(maintenanceWindowsRepo as any, geoChecksService as any, bufferStub as any, logger);
 
 	const notificationReactor = new NotificationReactor(notificationsService as any);

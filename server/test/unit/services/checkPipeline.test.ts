@@ -1,5 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { CheckPipeline, GeoChecksPipeline } from "../../../src/worker/worker.check-pipeline.ts";
+import { CheckProducer } from "../../../src/worker/worker.check-producer.ts";
+import { CheckEvaluator } from "../../../src/worker/worker.check-evaluator.ts";
 import { MonitorStatusPolicy } from "../../../src/worker/worker.monitor-status-policy.ts";
 import type { Monitor } from "../../../src/domain/monitors/monitor.types.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
@@ -37,16 +39,16 @@ const createCheckPipeline = (overrides?: Record<string, any>) => {
 		monitorStatusPolicy: new MonitorStatusPolicy(),
 		...overrides,
 	};
-	const pipeline = new CheckPipeline(
+	const checkProducer = new CheckProducer(
 		defaults.monitorsRepository as any,
 		defaults.maintenanceWindowsRepository as any,
 		defaults.checkService as any,
 		defaults.networkService as any,
 		defaults.buffer as any,
-		defaults.monitorStatusPolicy as any,
-		defaults.statusService as any,
 		defaults.logger as any
 	);
+	const checkEvaluator = new CheckEvaluator(defaults.statusService as any, defaults.monitorStatusPolicy as any);
+	const pipeline = new CheckPipeline(checkProducer, checkEvaluator);
 	return { pipeline, defaults };
 };
 

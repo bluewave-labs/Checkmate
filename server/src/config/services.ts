@@ -107,6 +107,8 @@ import { NotificationReactor } from "@/worker/reactors/reactor.notification.js";
 import { ReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
 import { IncidentReactor } from "@/worker/reactors/reactor.incident.js";
 import { CheckPipeline, GeoChecksPipeline } from "@/worker/worker.check-pipeline.js";
+import { CheckProducer } from "@/worker/worker.check-producer.js";
+import { CheckEvaluator } from "@/worker/worker.check-evaluator.js";
 
 export type InitializedServices = {
 	settingsService: ISettingsService;
@@ -320,17 +322,12 @@ export const initializeServices = async ({
 	const incidentReactor = new IncidentReactor(incidentService);
 	const reactorDispatcher = new ReactorDispatcher(logger, [notificationReactor, incidentReactor]);
 
+	// Check producer/evaluator
+	const checkProducer = new CheckProducer(monitorsRepository, maintenanceWindowsRepository, checkService, networkService, bufferService, logger);
+	const checkEvaluator = new CheckEvaluator(statusService, monitorStatusPolicy);
+
 	// pipelines
-	const checkPipeline = new CheckPipeline(
-		monitorsRepository,
-		maintenanceWindowsRepository,
-		checkService,
-		networkService,
-		bufferService,
-		monitorStatusPolicy,
-		statusService,
-		logger
-	);
+	const checkPipeline = new CheckPipeline(checkProducer, checkEvaluator);
 
 	const geoCheckPipeline = new GeoChecksPipeline(maintenanceWindowsRepository, geoChecksService, bufferService, logger);
 
