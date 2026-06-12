@@ -1,8 +1,7 @@
 import { IStatusPageController } from "@/api/controllers/statusPageController.js";
 import { RequestHandler, Router } from "express";
 import { isAllowed } from "@/api/middleware/isAllowed.js";
-import multer from "multer";
-const upload = multer();
+import { imageUpload } from "@/api/middleware/upload.js";
 
 class StatusPageRoutes {
 	private router: Router;
@@ -17,9 +16,10 @@ class StatusPageRoutes {
 	initRoutes(verifyJWT: RequestHandler, verifyStatusPageAccess: RequestHandler) {
 		this.router.get("/team", verifyJWT, this.statusPageController.getStatusPagesByTeamId);
 
-		this.router.post("/", upload.single("logo"), verifyJWT, isAllowed(["admin", "superadmin"]), this.statusPageController.createStatusPage);
-		this.router.put("/:id", upload.single("logo"), verifyJWT, isAllowed(["admin", "superadmin"]), this.statusPageController.updateStatusPage);
+		this.router.post("/", imageUpload.single("logo"), verifyJWT, isAllowed(["admin", "superadmin"]), this.statusPageController.createStatusPage);
+		this.router.put("/:id", imageUpload.single("logo"), verifyJWT, isAllowed(["admin", "superadmin"]), this.statusPageController.updateStatusPage);
 
+		this.router.get("/resolve", this.statusPageController.resolveStatusPageByDomain);
 		this.router.get("/:url", verifyStatusPageAccess, this.statusPageController.getStatusPageByUrl);
 		this.router.delete("/:id", verifyJWT, isAllowed(["admin", "superadmin"]), this.statusPageController.deleteStatusPage);
 	}

@@ -1509,6 +1509,11 @@
 						"url": {
 							"label": "Your status page address",
 							"placeholder": "my-status-page"
+						},
+						"customDomain": {
+							"label": "Custom domain",
+							"placeholder": "status.example.com",
+							"helper": "Optional. Point a DNS record to this Checkmate instance to serve the status page at your own domain."
 						}
 					}
 				},

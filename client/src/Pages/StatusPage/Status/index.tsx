@@ -15,6 +15,11 @@ import {
 	type StatusPageResponse,
 	type StatusPageTheme,
 } from "@/Types/StatusPage";
+import {
+	buildStatusPageApiPath,
+	getStatusPagePublicUrl,
+	isCustomDomainHost,
+} from "@/Utils/statusPageUrl";
 import { HeaderStatusPageControls } from "@/Pages/StatusPage/Status/Components/HeaderStatusPageControls";
 import { StatusPageThemeProvider } from "@/Pages/StatusPage/Status/themes/StatusPageThemeProvider";
 import {
@@ -68,9 +73,14 @@ const StatusPageView = () => {
 	const isAdmin = useIsAdmin();
 	const location = useLocation();
 
-	const isPublic = location.pathname.startsWith(PUBLIC_STATUS_PAGE_PREFIX);
+	const onCustomDomainHost = isCustomDomainHost();
+	const isPublic =
+		onCustomDomainHost || location.pathname.startsWith(PUBLIC_STATUS_PAGE_PREFIX);
 
-	const apiUrl = url ? `/status-page/${url}?type=uptime&type=infrastructure` : null;
+	const apiUrl = buildStatusPageApiPath({
+		url,
+		useCustomDomain: onCustomDomainHost,
+	});
 
 	const { data, isLoading, error } = useGet<StatusPageResponse>(
 		apiUrl,
@@ -131,7 +141,7 @@ const StatusPageView = () => {
 		);
 	}
 
-	const publicUrl = `${window.location.origin}${PUBLIC_STATUS_PAGE_PREFIX}/${statusPage.url}`;
+	const publicUrl = getStatusPagePublicUrl(statusPage);
 	return (
 		<BasePage
 			loading={isLoading}

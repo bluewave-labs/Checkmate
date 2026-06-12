@@ -9,6 +9,23 @@ import { STATUS_PAGE_THEMES, STATUS_PAGE_THEME_MODES } from "@/Types/StatusPage"
 // field definitions.
 export const statusPageStepRegistry = z.registry<{ step: number }>();
 
+const statusPageHostnameRegex =
+	/^(?=.{1,253}$)([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,63}$/;
+
+const normalizeCustomDomainInput = (raw: string | null): string | null => {
+	if (raw === null) {
+		return null;
+	}
+
+	const trimmed = raw.trim().toLowerCase();
+	if (!trimmed) {
+		return null;
+	}
+
+	const withoutScheme = trimmed.replace(/^https?:\/\//, "");
+	return withoutScheme.split("/")[0]?.split(":")[0] ?? null;
+};
+
 export const statusPageSchema = z.object({
 	companyName: z
 		.string()
@@ -22,6 +39,12 @@ export const statusPageSchema = z.object({
 			/^[a-z0-9-]+$/,
 			"URL can only contain lowercase letters, numbers, and hyphens"
 		),
+	customDomain: z
+		.union([z.string(), z.null()])
+		.transform(normalizeCustomDomainInput)
+		.refine((domain) => domain === null || statusPageHostnameRegex.test(domain), {
+			message: "Enter a valid domain name (e.g. status.example.com)",
+		}),
 	timezone: z.string().optional(),
 	type: z
 		.array(z.enum(["uptime", "infrastructure"]))

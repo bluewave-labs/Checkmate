@@ -5,6 +5,7 @@ export interface IStatusPagesRepository {
 	create(userId: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage>;
 	// single fetch
 	findByUrl(url: string): Promise<StatusPage>;
+	findByCustomDomain(customDomain: string): Promise<StatusPage>;
 	findByTeamId(teamId: string): Promise<StatusPage[]>;
 	// collection fetch
 	// update

@@ -151,6 +151,11 @@ const CreateStatusPage = () => {
 		fd.append("isPublished", String(data.isPublished));
 		if (data.companyName) fd.append("companyName", data.companyName);
 		if (data.url) fd.append("url", data.url);
+		if (data.customDomain !== undefined && data.customDomain !== null) {
+			fd.append("customDomain", data.customDomain);
+		} else {
+			fd.append("customDomain", "");
+		}
 		if (data.timezone) fd.append("timezone", data.timezone);
 		if (data.color) fd.append("color", data.color);
 		fd.append("showCharts", String(data.showCharts));
@@ -282,6 +287,27 @@ const CreateStatusPage = () => {
 										)}
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message}
+									/>
+								)}
+							/>
+							<Controller
+								name="customDomain"
+								control={control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value ?? ""}
+										fieldLabel={t(
+											"pages.statusPages.form.basicInfo.option.customDomain.label"
+										)}
+										placeholder={t(
+											"pages.statusPages.form.basicInfo.option.customDomain.placeholder"
+										)}
+										helperText={
+											fieldState.error?.message ||
+											t("pages.statusPages.form.basicInfo.option.customDomain.helper")
+										}
+										error={!!fieldState.error}
 									/>
 								)}
 							/>
