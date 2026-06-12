@@ -2,6 +2,10 @@ export const JOB_TYPES = ["check", "geo-check", "evaluate", "cleanup-orphaned", 
 export type JobType = (typeof JOB_TYPES)[number];
 export const LOCK_MS = 30_000;
 export const BACKOFF_MS = 5_000;
+export const PARKED = Number.MAX_SAFE_INTEGER;
+
+// Canonical _id scheme: monitor-bound rows are `${type}:${refId}`; global rows (refId null) are just the type.
+export const jobId = (type: JobType, refId: string | null): string => (refId === null ? type : `${type}:${refId}`);
 
 export type Job = {
 	id: string;
@@ -23,3 +27,6 @@ export type Job = {
 	lastFinishedAt: number | null;
 	lastFailReason: string | null;
 };
+
+// These are the only values to set when creating a job.  Repo owns the rest
+export type JobSeed = Pick<Job, "id" | "type" | "refId" | "isActive" | "intervalMs" | "nextScheduledAt">;

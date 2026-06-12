@@ -1,4 +1,4 @@
-import { Job, JobType } from "@/domain/jobs/job.type.js";
+import { Job, JobSeed, JobType } from "@/domain/jobs/job.type.js";
 
 export type JobPageQuery = {
 	page?: number;
@@ -23,6 +23,8 @@ export interface IJobsRepository {
 	// Record failure, release lease, bump fail count, record reason, reset nextScheduledAt for retry
 	recordFailure(id: string, error: unknown, now: number): Promise<boolean>;
 
+	recordOneShot(id: string, now: number): Promise<boolean>;
+
 	// ********************
 	// Hand off to evaluator // This is accomplished by creating an "evaluation" type job
 	// ********************
@@ -32,8 +34,8 @@ export interface IJobsRepository {
 	// Job CRUD
 	// ********************
 
-	// Create jobs
-	upsertJob(job: Job): Promise<boolean>;
+	// Create jobs. Takes a JobSeed — the repo owns volatile lease/counter defaults on insert.
+	upsertJob(job: JobSeed): Promise<boolean>;
 
 	// Pause/Resume
 	setActiveById(refId: string, isActive: boolean): Promise<boolean>;
@@ -43,6 +45,9 @@ export interface IJobsRepository {
 
 	// Delete, drop all rows
 	deleteById(refId: string): Promise<boolean>;
+
+	// Delete a single typed row for a monitor (e.g. drop just the geo row, keep check/evaluate)
+	deleteByIdAndType(refId: string, type: JobType): Promise<boolean>;
 
 	// Get job
 	findById(refId: string): Promise<Job[]>;

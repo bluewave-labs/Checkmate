@@ -11,6 +11,7 @@ const SERVICE_NAME = "checkService";
 
 export interface ICheckService {
 	createChecks(checks: Check[]): Promise<Check[]>;
+	toLastEvaluatedAt(check: Check): number;
 	toCheck(statusResponse: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>): Check | undefined;
 	toStatusResponse(check: Check): MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>;
 	getChecksByMonitor(params: {
@@ -55,6 +56,10 @@ export class CheckService implements ICheckService {
 
 	createChecks = async (checks: Check[]) => {
 		return this.checksRepository.createChecks(checks);
+	};
+
+	toLastEvaluatedAt = (check: Check) => {
+		return new Date(check.createdAt).getTime();
 	};
 
 	toCheck = (statusResponse: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>): Check | undefined => {

@@ -109,6 +109,8 @@ import { IncidentReactor } from "@/worker/reactors/reactor.incident.js";
 import { CheckPipeline, GeoChecksPipeline } from "@/worker/worker.check-pipeline.js";
 import { CheckProducer } from "@/worker/worker.check-producer.js";
 import { CheckEvaluator } from "@/worker/worker.check-evaluator.js";
+import { DBQueueWorker } from "@/worker/worker.db-queue.js";
+import MongoJobsRepository from "@/domain/jobs/job.repository.mongo.js";
 
 export type InitializedServices = {
 	settingsService: ISettingsService;
@@ -233,6 +235,7 @@ export const initializeServices = async ({
 	const teamsRepository = new MongoTeamsRepository();
 	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
 	const queueWorkersRepository = new MongoQueueWorkersRepository();
+	const jobsRepository = new MongoJobsRepository();
 
 	// Inject settings repository into settings service (now that DB is connected)
 	(settingsService as SettingsService).setRepository(settingsRepository);
@@ -360,6 +363,21 @@ export const initializeServices = async ({
 		case "lessSimpleQueue":
 			worker = await LessSimpleWorker.create(logger, workerHelper, monitorsRepository, queueWorkersRepository, envSettings, queueMode);
 			break;
+		case "dbQueue":
+			worker = await DBQueueWorker.create(
+				logger,
+				jobsRepository,
+				monitorsRepository,
+				checksRepository,
+				checkService,
+				checkProducer,
+				checkEvaluator,
+				geoCheckPipeline,
+				reactorDispatcher,
+				workerHelper
+			);
+			break;
+
 		default:
 			worker = await SuperSimpleQueue.create(logger, workerHelper, monitorsRepository);
 	}

@@ -1,6 +1,6 @@
 import { IJobsRepository, JobPageQuery } from "@/domain/jobs/job.repository.interface.js";
 import JobModel, { JobDocument } from "@/domain/jobs/job.model.js";
-import { JobType, Job, BACKOFF_MS, LOCK_MS } from "@/domain/jobs/job.type.js";
+import { JobType, Job, JobSeed, BACKOFF_MS, LOCK_MS, PARKED, jobId } from "@/domain/jobs/job.type.js";
 import { hostname } from "node:os";
 import { randomUUID } from "node:crypto";
 
@@ -98,11 +98,31 @@ class MongoJobsRepository implements IJobsRepository {
 		return res.modifiedCount === 1;
 	};
 
+	recordOneShot = async (id: string, now: number) => {
+		const res = await JobModel.updateOne(
+			{
+				_id: id,
+			},
+			{
+				$set: {
+					nextScheduledAt: PARKED,
+					lockedBy: null, // Remove lock
+					lockedUntil: null,
+					lastFinishedAt: now,
+				},
+				$inc: {
+					runCount: 1, // Increment run count
+				},
+			}
+		);
+		return res.modifiedCount === 1;
+	};
+
 	upsertEvaluate = async (monitorId: string, now: number) => {
 		const filter = { type: "evaluate", refId: monitorId };
 		const update = {
 			$setOnInsert: {
-				_id: `evaluate:${monitorId}`,
+				_id: jobId("evaluate", monitorId),
 				// refId and Type inferred from filter
 				isActive: true,
 				intervalMs: null,
@@ -130,7 +150,7 @@ class MongoJobsRepository implements IJobsRepository {
 			throw error;
 		}
 	};
-	upsertJob = async (job: Job) => {
+	upsertJob = async (job: JobSeed) => {
 		const res = await JobModel.updateOne(
 			{ _id: job.id },
 			{
@@ -169,6 +189,11 @@ class MongoJobsRepository implements IJobsRepository {
 
 	deleteById = async (refId: string) => {
 		const res = await JobModel.deleteMany({ refId }); // Delete all jobs for monitor
+		return res.deletedCount > 0;
+	};
+
+	deleteByIdAndType = async (refId: string, type: JobType) => {
+		const res = await JobModel.deleteOne({ refId, type }); // Delete a single typed row, e.g. just the geo row
 		return res.deletedCount > 0;
 	};
 
