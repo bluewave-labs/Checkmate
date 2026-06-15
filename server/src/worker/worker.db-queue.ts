@@ -1,6 +1,6 @@
 import { Monitor, supportsGeoCheck } from "@/domain/monitors/monitor.types.js";
 import { IWorker, WorkerJobsPagination, WorkerJobSummary, WorkerMetrics } from "@/worker/worker.interface.js";
-import { type Job, type JobSeed, type JobType, jobId } from "@/domain/jobs/job.type.js";
+import { type Job, type JobSeed, type JobType, jobId, LOCK_MS } from "@/domain/jobs/job.type.js";
 import { randomUUID } from "node:crypto";
 import { hostname } from "node:os";
 import { ILogger } from "@/utils/logger.js";
@@ -20,6 +20,7 @@ const SERVICE_NAME = "JobQueue";
 const POLL_MS = 250;
 const WORKER_STALE_MS = WORKER_TTL_SECONDS * 1000; // a worker counts as alive if seen within this window
 const HEARTBEAT_MS = WORKER_STALE_MS / 3; // Worker can miss two beats without being considered stale
+const LOCK_RENEW_MS = LOCK_MS / 3; // renew an in-flight job's lock at 1/3 the lease, so it survives two missed renewals
 const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const CONCURRENCY: Record<JobType, number> = {
 	check: 500,
@@ -179,7 +180,28 @@ export class DBQueueWorker implements IWorker {
 		if (monitor) await this.geoCheckPipeline.run(monitor); // returns null; no evaluate handoff
 	};
 
+	// Extend the lock while a job runs so a slow-but-alive job is never reclaimed.
+	// Returns false once we no longer hold the lock, so the renewal timer can stop.
+	private renewLock = async (job: Job): Promise<boolean> => {
+		try {
+			const held = await this.jobsRepository.renewLocks([job.id], Date.now());
+			if (held === 0) {
+				this.logger.warn({ message: `Lost lock on job ${job.id}, stopping renewal`, service: SERVICE_NAME, method: "renewLock" });
+				return false;
+			}
+			return true;
+		} catch (error: unknown) {
+			// Transient failure, keep renewing; a missed renewal is absorbed by the 1/3 margin
+			this.logger.warn({ message: error instanceof Error ? error.message : String(error), service: SERVICE_NAME, method: "renewLock" });
+			return true;
+		}
+	};
+
 	private runJob = async (job: Job) => {
+		const renewTimer = setInterval(async () => {
+			const renewLock = await this.renewLock(job);
+			if (!renewLock) clearInterval(renewTimer);
+		}, LOCK_RENEW_MS);
 		try {
 			switch (job.type) {
 				case "check":
@@ -212,6 +234,8 @@ export class DBQueueWorker implements IWorker {
 				service: SERVICE_NAME,
 				method: `runJob:${job.type}`,
 			});
+		} finally {
+			clearInterval(renewTimer);
 		}
 	};
 
@@ -314,7 +338,7 @@ export class DBQueueWorker implements IWorker {
 			clearTimeout(timer);
 		}
 		this.timers.clear(); // Clear the map out
-		// Deregister promptly so the worker drops off diagnostics before the TTL would
+		//  Remove workers from registry
 		await this.queueWorkersRepository.deleteById(this.workerId);
 	};
 	getMetrics = async (): Promise<WorkerMetrics> => {

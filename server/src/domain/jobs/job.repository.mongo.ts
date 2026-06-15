@@ -76,6 +76,15 @@ class MongoJobsRepository implements IJobsRepository {
 		return docs.map(this.toEntity);
 	};
 
+	renewLocks = async (ids: string[], now: number) => {
+		if (ids.length === 0) return 0;
+		const res = await JobModel.updateMany(
+			{ _id: { $in: ids }, lockedBy: this.workerId }, // only locks held by this worker can be renewed
+			{ $set: { lockedUntil: now + LOCK_MS } }
+		);
+		return res.modifiedCount;
+	};
+
 	recordSuccess = async (id: string, scheduledRunAt: number, intervalMs: number, now: number) => {
 		// Fixed rate job scheduling
 
@@ -89,6 +98,7 @@ class MongoJobsRepository implements IJobsRepository {
 		const res = await JobModel.updateOne(
 			{
 				_id: id,
+				lockedBy: this.workerId, // Only the worker that claimed can record success
 			},
 			{
 				$set: {
@@ -109,6 +119,7 @@ class MongoJobsRepository implements IJobsRepository {
 		const res = await JobModel.updateOne(
 			{
 				_id: id,
+				lockedBy: this.workerId, // Only the worker that claimed can record success
 			},
 			{
 				$set: {
@@ -129,6 +140,7 @@ class MongoJobsRepository implements IJobsRepository {
 		const res = await JobModel.updateOne(
 			{
 				_id: id,
+				lockedBy: this.workerId, // Only the worker that claimed can record success
 			},
 			{
 				$set: {

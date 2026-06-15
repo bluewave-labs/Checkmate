@@ -20,6 +20,9 @@ export interface IJobsRepository {
 	// locks up to `limit` due rows in one batch
 	claimDueBatch(type: JobType, limit: number, now: number): Promise<Job[]>;
 
+	// Extends the locks we still hold. Returns how many were renewed
+	renewLocks(ids: string[], now: number): Promise<number>;
+
 	// Completes a repeating job
 	recordSuccess(id: string, nextScheduledAt: number, intervalMs: number, now: number): Promise<boolean>;
 
