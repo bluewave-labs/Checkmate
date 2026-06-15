@@ -13,7 +13,7 @@ import { ICheckEvaluator } from "@/worker/worker.check-evaluator.js";
 import { ICheckPipeline } from "@/worker/worker.check-pipeline.js";
 import { IReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
 import { IWorkerHelper } from "@/worker/worker.helper.js";
-import { QueueMode, QueueModes } from "@/domain/app-settings/app-settings.type.js";
+import { QueueMode } from "@/domain/app-settings/app-settings.type.js";
 const SERVICE_NAME = "JobQueue";
 const POLL_MS = 250;
 const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
@@ -49,7 +49,8 @@ export class DBQueueWorker implements IWorker {
 		private geoCheckPipeline: ICheckPipeline,
 		private dispatcher: IReactorDispatcher,
 		private helper: IWorkerHelper,
-		private mode: QueueMode
+		private queueMode: QueueMode,
+		private queuePrimaryProcesses: boolean
 	) {}
 
 	get serviceName() {
@@ -67,7 +68,8 @@ export class DBQueueWorker implements IWorker {
 		geoCheckPipeline: ICheckPipeline,
 		dispatcher: IReactorDispatcher,
 		helper: IWorkerHelper,
-		mode: QueueMode
+		queueMode: QueueMode,
+		queuePrimaryProcesses: boolean
 	): Promise<DBQueueWorker> {
 		const instance = new DBQueueWorker(
 			logger,
@@ -80,7 +82,8 @@ export class DBQueueWorker implements IWorker {
 			geoCheckPipeline,
 			dispatcher,
 			helper,
-			mode
+			queueMode,
+			queuePrimaryProcesses
 		);
 		await instance.init();
 		return instance;
@@ -246,16 +249,19 @@ export class DBQueueWorker implements IWorker {
 
 	init = async () => {
 		this.stopped = false;
-		if (this.mode === "primary") {
+
+		if (this.queueMode === "primary") {
 			await this.reconcile();
-			return true;
-		} else {
+		}
+
+		if (this.queuePrimaryProcesses === true || this.queueMode === "worker") {
 			for (const type of Object.keys(this.inFlight) as JobType[]) {
 				this.startLoop(type);
 			}
 		}
 		return true;
 	};
+
 	addJob = async (_monitorId: string, monitor: Monitor) => {
 		const now = Date.now();
 		await this.jobsRepository.upsertJob(this.toCheckJob(monitor, now));
@@ -315,7 +321,7 @@ export class DBQueueWorker implements IWorker {
 				jobsWithFailures: [],
 				totalRuns: 0,
 				totalFailures: 0,
-				workers: [{ workerId: this.workerId, mode: this.mode, lastSeenAt: now }],
+				workers: [{ workerId: this.workerId, mode: this.queueMode, lastSeenAt: now }],
 			}
 		);
 	};

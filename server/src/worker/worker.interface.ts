@@ -1,5 +1,4 @@
 import { Monitor } from "@/domain/monitors/monitor.types.js";
-import { QueueWorker } from "@/domain/queue-workers/queue-worker.type.js";
 import { Check } from "@/domain/checks/check.type.js";
 import { MonitorPayloadMap, MonitorStatusResponse, StatusChangeResult } from "@/types/network.js";
 import { MonitorActionDecision } from "@/worker/worker.helper.js";

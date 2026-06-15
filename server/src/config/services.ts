@@ -301,7 +301,8 @@ export const initializeServices = async ({
 		geoCheckPipeline,
 		reactorDispatcher,
 		workerHelper,
-		envSettings.queueMode
+		envSettings.queueMode,
+		envSettings.queuePrimaryProcesses
 	);
 
 	// Business services
