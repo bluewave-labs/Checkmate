@@ -107,6 +107,7 @@ import { CheckProducer } from "@/worker/worker.check-producer.js";
 import { CheckEvaluator } from "@/worker/worker.check-evaluator.js";
 import { DBQueueWorker } from "@/worker/worker.db-queue.js";
 import MongoJobsRepository from "@/domain/jobs/job.repository.mongo.js";
+import MongoQueueWorkersRepository from "@/domain/queue-workers/queue-worker.repository.mongo.js";
 
 export type InitializedServices = {
 	settingsService: ISettingsService;
@@ -177,6 +178,7 @@ export const initializeServices = async ({
 	const teamsRepository = new MongoTeamsRepository();
 	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
 	const jobsRepository = new MongoJobsRepository();
+	const queueWorkersRepository = new MongoQueueWorkersRepository();
 
 	// Inject settings repository into settings service (now that DB is connected)
 	(settingsService as SettingsService).setRepository(settingsRepository);
@@ -301,6 +303,7 @@ export const initializeServices = async ({
 		geoCheckPipeline,
 		reactorDispatcher,
 		workerHelper,
+		queueWorkersRepository,
 		envSettings.queueMode,
 		envSettings.queuePrimaryProcesses
 	);

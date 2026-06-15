@@ -13,9 +13,13 @@ import { ICheckEvaluator } from "@/worker/worker.check-evaluator.js";
 import { ICheckPipeline } from "@/worker/worker.check-pipeline.js";
 import { IReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
 import { IWorkerHelper } from "@/worker/worker.helper.js";
+import { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.repository.interface.js";
+import { WORKER_TTL_SECONDS } from "@/domain/queue-workers/queue-worker.model.js";
 import { QueueMode } from "@/domain/app-settings/app-settings.type.js";
 const SERVICE_NAME = "JobQueue";
 const POLL_MS = 250;
+const WORKER_STALE_MS = WORKER_TTL_SECONDS * 1000; // a worker counts as alive if seen within this window
+const HEARTBEAT_MS = WORKER_STALE_MS / 3; // Worker can miss two beats without being considered stale
 const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const CONCURRENCY: Record<JobType, number> = {
 	check: 500,
@@ -29,7 +33,7 @@ export class DBQueueWorker implements IWorker {
 	static SERVICE_NAME = SERVICE_NAME;
 	private readonly workerId = `${hostname()}:${process.pid}:${randomUUID().slice(0, 8)}`;
 	private stopped = false;
-	private timers = new Map<JobType, NodeJS.Timeout>();
+	private timers = new Map<JobType | "heartbeat", NodeJS.Timeout>();
 	private inFlight: Record<JobType, number> = {
 		check: 0,
 		"geo-check": 0,
@@ -49,6 +53,7 @@ export class DBQueueWorker implements IWorker {
 		private geoCheckPipeline: ICheckPipeline,
 		private dispatcher: IReactorDispatcher,
 		private helper: IWorkerHelper,
+		private queueWorkersRepository: IQueueWorkersRepository,
 		private queueMode: QueueMode,
 		private queuePrimaryProcesses: boolean
 	) {}
@@ -68,6 +73,7 @@ export class DBQueueWorker implements IWorker {
 		geoCheckPipeline: ICheckPipeline,
 		dispatcher: IReactorDispatcher,
 		helper: IWorkerHelper,
+		queueWorkersRepository: IQueueWorkersRepository,
 		queueMode: QueueMode,
 		queuePrimaryProcesses: boolean
 	): Promise<DBQueueWorker> {
@@ -82,6 +88,7 @@ export class DBQueueWorker implements IWorker {
 			geoCheckPipeline,
 			dispatcher,
 			helper,
+			queueWorkersRepository,
 			queueMode,
 			queuePrimaryProcesses
 		);
@@ -247,8 +254,24 @@ export class DBQueueWorker implements IWorker {
 		await this.jobsRepository.upsertJob(this.toCleanupJob("cleanup-retention", now));
 	};
 
+	// Register worker
+	private heartbeat = async () => {
+		try {
+			await this.queueWorkersRepository.upsert(this.workerId, this.queueMode);
+		} catch (error: unknown) {
+			this.logger.warn({
+				message: error instanceof Error ? error.message : String(error),
+				service: SERVICE_NAME,
+				method: "heartbeat",
+			});
+		}
+	};
+
 	init = async () => {
 		this.stopped = false;
+
+		await this.heartbeat();
+		this.timers.set("heartbeat", setInterval(this.heartbeat, HEARTBEAT_MS));
 
 		if (this.queueMode === "primary") {
 			await this.reconcile();
@@ -291,9 +314,12 @@ export class DBQueueWorker implements IWorker {
 			clearTimeout(timer);
 		}
 		this.timers.clear(); // Clear the map out
+		// Deregister promptly so the worker drops off diagnostics before the TTL would
+		await this.queueWorkersRepository.deleteById(this.workerId);
 	};
 	getMetrics = async (): Promise<WorkerMetrics> => {
 		const rows = await this.jobsRepository.findAll();
+		const workers = await this.queueWorkersRepository.findRecent(WORKER_STALE_MS);
 		const now = Date.now();
 		return rows.reduce<WorkerMetrics>(
 			(acc, job) => {
@@ -321,7 +347,7 @@ export class DBQueueWorker implements IWorker {
 				jobsWithFailures: [],
 				totalRuns: 0,
 				totalFailures: 0,
-				workers: [{ workerId: this.workerId, mode: this.queueMode, lastSeenAt: now }],
+				workers,
 			}
 		);
 	};
