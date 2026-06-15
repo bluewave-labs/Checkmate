@@ -13,6 +13,7 @@ import { ICheckEvaluator } from "@/worker/worker.check-evaluator.js";
 import { ICheckPipeline } from "@/worker/worker.check-pipeline.js";
 import { IReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
 import { IWorkerHelper } from "@/worker/worker.helper.js";
+import { QueueMode, QueueModes } from "@/domain/app-settings/app-settings.type.js";
 const SERVICE_NAME = "JobQueue";
 const POLL_MS = 250;
 const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
@@ -47,7 +48,8 @@ export class DBQueueWorker implements IWorker {
 		private checkEvaluator: ICheckEvaluator,
 		private geoCheckPipeline: ICheckPipeline,
 		private dispatcher: IReactorDispatcher,
-		private helper: IWorkerHelper
+		private helper: IWorkerHelper,
+		private mode: QueueMode
 	) {}
 
 	get serviceName() {
@@ -64,7 +66,8 @@ export class DBQueueWorker implements IWorker {
 		checkEvaluator: ICheckEvaluator,
 		geoCheckPipeline: ICheckPipeline,
 		dispatcher: IReactorDispatcher,
-		helper: IWorkerHelper
+		helper: IWorkerHelper,
+		mode: QueueMode
 	): Promise<DBQueueWorker> {
 		const instance = new DBQueueWorker(
 			logger,
@@ -76,7 +79,8 @@ export class DBQueueWorker implements IWorker {
 			checkEvaluator,
 			geoCheckPipeline,
 			dispatcher,
-			helper
+			helper,
+			mode
 		);
 		await instance.init();
 		return instance;
@@ -242,9 +246,13 @@ export class DBQueueWorker implements IWorker {
 
 	init = async () => {
 		this.stopped = false;
-		await this.reconcile();
-		for (const type of Object.keys(this.inFlight) as JobType[]) {
-			this.startLoop(type);
+		if (this.mode === "primary") {
+			await this.reconcile();
+			return true;
+		} else {
+			for (const type of Object.keys(this.inFlight) as JobType[]) {
+				this.startLoop(type);
+			}
 		}
 		return true;
 	};
@@ -307,7 +315,7 @@ export class DBQueueWorker implements IWorker {
 				jobsWithFailures: [],
 				totalRuns: 0,
 				totalFailures: 0,
-				workers: [{ workerId: this.workerId, mode: "primary", lastSeenAt: now }],
+				workers: [{ workerId: this.workerId, mode: this.mode, lastSeenAt: now }],
 			}
 		);
 	};

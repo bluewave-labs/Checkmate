@@ -24,7 +24,7 @@ const startApp = async () => {
 	logger = new Logger({ envSettings });
 
 	// Initialize services (connects DB, creates repositories, injects settingsRepository)
-	const services = await initializeServices({ logger, envSettings, settingsService, queueMode: envSettings.queueMode });
+	const services = await initializeServices({ logger, envSettings, settingsService });
 
 	// If this is a worker instance, we're done.  No need for express
 	if (envSettings.queueMode === "worker") {
