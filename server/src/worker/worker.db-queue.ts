@@ -1,8 +1,6 @@
 import { Monitor, supportsGeoCheck } from "@/domain/monitors/monitor.types.js";
 import { IWorker, WorkerJobsPagination, WorkerJobSummary, WorkerMetrics } from "@/worker/worker.interface.js";
 import { type Job, type JobSeed, type JobType, jobId, LOCK_MS } from "@/domain/jobs/job.type.js";
-import { randomUUID } from "node:crypto";
-import { hostname } from "node:os";
 import { ILogger } from "@/utils/logger.js";
 import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
@@ -32,7 +30,6 @@ const CONCURRENCY: Record<JobType, number> = {
 
 export class DBQueueWorker implements IWorker {
 	static SERVICE_NAME = SERVICE_NAME;
-	private readonly workerId = `${hostname()}:${process.pid}:${randomUUID().slice(0, 8)}`;
 	private stopped = false;
 	private timers = new Map<JobType | "heartbeat", NodeJS.Timeout>();
 	private inFlight: Record<JobType, number> = {
@@ -56,7 +53,8 @@ export class DBQueueWorker implements IWorker {
 		private helper: IWorkerHelper,
 		private queueWorkersRepository: IQueueWorkersRepository,
 		private queueMode: QueueMode,
-		private queuePrimaryProcesses: boolean
+		private queuePrimaryProcesses: boolean,
+		private readonly workerId: string // same id MongoJobsRepository stamps into lockedBy
 	) {}
 
 	get serviceName() {
@@ -76,7 +74,8 @@ export class DBQueueWorker implements IWorker {
 		helper: IWorkerHelper,
 		queueWorkersRepository: IQueueWorkersRepository,
 		queueMode: QueueMode,
-		queuePrimaryProcesses: boolean
+		queuePrimaryProcesses: boolean,
+		workerId: string
 	): Promise<DBQueueWorker> {
 		const instance = new DBQueueWorker(
 			logger,
@@ -91,7 +90,8 @@ export class DBQueueWorker implements IWorker {
 			helper,
 			queueWorkersRepository,
 			queueMode,
-			queuePrimaryProcesses
+			queuePrimaryProcesses,
+			workerId
 		);
 		await instance.init();
 		return instance;

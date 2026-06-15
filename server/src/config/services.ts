@@ -1,4 +1,6 @@
 import { Mongoose } from "mongoose";
+import { hostname } from "node:os";
+import { randomUUID } from "node:crypto";
 import MongoDB from "../db/db.mongo.js";
 import { IDb } from "@/db/db.interface.js";
 import { EnvConfig, ISettingsService, SettingsService } from "@/domain/app-settings/app-settings.service.js";
@@ -98,7 +100,6 @@ import MongoTeamsRepository from "@/domain/teams/team.repository.model.js";
 import { IUsersRepository } from "@/domain/users/user.repository.interface.js";
 import MongoUsersRepository from "@/domain/users/user.repository.mongo.js";
 import { ILogger } from "@/utils/logger.js";
-import { type QueueMode } from "@/domain/app-settings/app-settings.type.js";
 import { NotificationReactor } from "@/worker/reactors/reactor.notification.js";
 import { ReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
 import { IncidentReactor } from "@/worker/reactors/reactor.incident.js";
@@ -177,7 +178,9 @@ export const initializeServices = async ({
 	const incidentsRepository = new MongoIncidentsRepository();
 	const teamsRepository = new MongoTeamsRepository();
 	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
-	const jobsRepository = new MongoJobsRepository();
+	// One identity per process
+	const workerId = `${hostname()}:${process.pid}:${randomUUID()}`;
+	const jobsRepository = new MongoJobsRepository(workerId);
 	const queueWorkersRepository = new MongoQueueWorkersRepository();
 
 	// Inject settings repository into settings service (now that DB is connected)
@@ -305,7 +308,8 @@ export const initializeServices = async ({
 		workerHelper,
 		queueWorkersRepository,
 		envSettings.queueMode,
-		envSettings.queuePrimaryProcesses
+		envSettings.queuePrimaryProcesses,
+		workerId
 	);
 
 	// Business services

@@ -1,11 +1,9 @@
 import { IJobsRepository, JobPageQuery } from "@/domain/jobs/job.repository.interface.js";
 import JobModel, { JobDocument } from "@/domain/jobs/job.model.js";
 import { JobType, Job, JobSeed, BACKOFF_MS, LOCK_MS, PARKED, jobId } from "@/domain/jobs/job.type.js";
-import { hostname } from "node:os";
-import { randomUUID } from "node:crypto";
 
 class MongoJobsRepository implements IJobsRepository {
-	private readonly workerId = `${hostname()}:${process.pid}:${randomUUID()}`;
+	constructor(private readonly workerId: string) {}
 
 	private toEntity(doc: JobDocument): Job {
 		return {
