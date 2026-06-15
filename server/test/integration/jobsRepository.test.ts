@@ -56,11 +56,13 @@ const readRow = (id: string) => JobModel.findById(id).lean<JobDocument>();
 // lock must be stamped with the same id the repo will check against.
 const ownedBy = (r: MongoJobsRepository) => (r as unknown as { workerId: string }).workerId;
 
+const WORKER_ID = "worker-under-test";
+
 describe("MongoJobsRepository", () => {
 	let repo: MongoJobsRepository;
 
 	beforeEach(() => {
-		repo = new MongoJobsRepository();
+		repo = new MongoJobsRepository(WORKER_ID);
 	});
 
 	// ── claimDue ───────────────────────────────────────────────────────────────
@@ -119,7 +121,7 @@ describe("MongoJobsRepository", () => {
 			await seedJob();
 
 			// Distinct repo instances = distinct workerIds = realistic competing workers.
-			const workers = Array.from({ length: 20 }, () => new MongoJobsRepository());
+			const workers = Array.from({ length: 20 }, (_, i) => new MongoJobsRepository(`worker-${i}`));
 			const results = await Promise.all(workers.map((w) => w.claimDue("check", NOW)));
 
 			const winners = results.filter((r): r is Job => r !== null);
@@ -131,7 +133,7 @@ describe("MongoJobsRepository", () => {
 			await seedJob({ _id: "check:a", refId: "a" });
 			await seedJob({ _id: "check:b", refId: "b" });
 
-			const [w1, w2] = [new MongoJobsRepository(), new MongoJobsRepository()];
+			const [w1, w2] = [new MongoJobsRepository("worker-1"), new MongoJobsRepository("worker-2")];
 			const [r1, r2] = await Promise.all([w1.claimDue("check", NOW), w2.claimDue("check", NOW)]);
 
 			expect(r1).not.toBeNull();
@@ -234,7 +236,7 @@ describe("MongoJobsRepository", () => {
 			expect(await repo.renewLocks(["check:mon-1"], renewAt)).toBe(1);
 
 			// a second worker scans PAST the original lease end — without renewal it would reclaim
-			const other = new MongoJobsRepository();
+			const other = new MongoJobsRepository("competing-worker");
 			expect(await other.claimDue("check", NOW + LOCK_MS + 1)).toBeNull();
 
 			const row = await readRow("check:mon-1");
@@ -302,7 +304,7 @@ describe("MongoJobsRepository", () => {
 		});
 
 		it("concurrent upserts for one monitor produce exactly one row", async () => {
-			const workers = Array.from({ length: 20 }, () => new MongoJobsRepository());
+			const workers = Array.from({ length: 20 }, (_, i) => new MongoJobsRepository(`worker-${i}`));
 			await Promise.all(workers.map((w) => w.upsertEvaluate("mon-1", NOW)));
 
 			const count = await JobModel.countDocuments({ type: "evaluate", refId: "mon-1" });
