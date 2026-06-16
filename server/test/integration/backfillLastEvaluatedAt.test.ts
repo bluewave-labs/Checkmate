@@ -47,4 +47,18 @@ describe("0008_backfillMonitorLastEvaluatedAt", () => {
 		const doc = await MonitorModel.collection.findOne({ name: "current" });
 		expect(doc?.lastEvaluatedAt).toBe(12345);
 	});
+
+	it("drops the legacy jobs collection left behind by the old scheduler", async () => {
+		const db = mongoose.connection.db!;
+		await db.collection("jobs").insertOne({ id: "legacy-job", template: "monitor-job" }); // old-scheduler row
+
+		await backfillMonitorLastEvaluatedAt();
+
+		const exists = await db.listCollections({ name: "jobs" }).toArray();
+		expect(exists).toHaveLength(0);
+	});
+
+	it("does not throw when there is no jobs collection to drop", async () => {
+		await expect(backfillMonitorLastEvaluatedAt()).resolves.toBeUndefined();
+	});
 });
