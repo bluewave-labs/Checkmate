@@ -88,9 +88,9 @@ class MongoJobsRepository implements IJobsRepository {
 
 		let nextScheduledAt = scheduledRunAt + intervalMs;
 
-		// If the job fell behind, skipped missed runs
+		// If the job fell behind, skip the missed runs. Spread the next run with jitter to avoid a herd
 		if (nextScheduledAt <= now) {
-			nextScheduledAt = now + intervalMs;
+			nextScheduledAt = now + intervalMs + Math.floor(Math.random() * intervalMs);
 		}
 
 		const res = await JobModel.updateOne(

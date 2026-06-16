@@ -160,7 +160,7 @@ describe("MongoJobsRepository", () => {
 			expect(row?.runCount).toBe(5);
 		});
 
-		it("skips missed ticks when the worker has fallen behind", async () => {
+		it("skips missed ticks when the worker has fallen behind, with jitter to avoid a herd", async () => {
 			await seedJob({ lockedBy: ownedBy(repo), lockedUntil: NOW + LOCK_MS });
 
 			// scheduled NOW, interval 60s, but completion is 200s late → NOW+60s is already past
@@ -168,8 +168,10 @@ describe("MongoJobsRepository", () => {
 			await repo.recordSuccess("check:mon-1", NOW, 60_000, now);
 
 			const row = await readRow("check:mon-1");
-			// no catch-up burst: jump to the next aligned tick from now, not NOW+60_000
-			expect(row?.nextScheduledAt).toBe(now + 60_000);
+			// no catch-up burst: rebased to one interval from now, plus up to one interval of jitter
+			// so behind-jobs don't re-synchronize. Never earlier than now + interval (no over-checking).
+			expect(row?.nextScheduledAt).toBeGreaterThanOrEqual(now + 60_000);
+			expect(row?.nextScheduledAt).toBeLessThan(now + 120_000);
 		});
 
 		it("returns false for an unknown id", async () => {
