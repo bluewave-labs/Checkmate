@@ -33,7 +33,6 @@
 	"dependencies": {
 		"@grpc/grpc-js": "^1.14.3",
 		"@grpc/proto-loader": "^0.8.0",
-		"@pulsecron/pulse": "1.6.8",
 		"axios": "^1.15.2",
 		"bcryptjs": "3.0.2",
 		"cacheable-lookup": "7.0.0",
@@ -48,7 +47,6 @@
 		"got": "14.4.7",
 		"handlebars": "^4.7.8",
 		"helmet": "^8.0.0",
-		"ioredis": "^5.4.2",
 		"isomorphic-dompurify": "^2.26.0",
 		"jmespath": "^0.16.0",
 		"jsdom": "^26.1.0",
