@@ -20,6 +20,7 @@ export interface INotificationsService {
 
 	sendTestNotification: (notification: Partial<Notification>) => Promise<boolean>;
 	testAllNotifications: (notificationIds: string[]) => Promise<boolean>;
+	handleCertificateExpiryNotification: (monitor: Monitor, expiryDate: Date, daysRemaining: number) => Promise<boolean>;
 }
 
 const SERVICE_NAME = "NotificationsService";
@@ -162,6 +163,75 @@ export class NotificationsService implements INotificationsService {
 
 		// Send notifications based on decision
 		return await this.sendNotifications(monitor, monitorStatusResponse, decision);
+	};
+
+	handleCertificateExpiryNotification = async (monitor: Monitor, expiryDate: Date, daysRemaining: number): Promise<boolean> => {
+		const notificationIds = monitor.notifications ?? [];
+
+		if (notificationIds.length === 0) {
+			return false;
+		}
+
+		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
+
+		if (notifications.length === 0) {
+			return false;
+		}
+
+		const settings = this.settingsService.getSettings();
+		const clientHost = settings.clientHost || "Host not defined";
+
+		const monitorName = monitor.name || monitor.url || monitor.id;
+		const monitorUrl = monitor.url || "";
+		const expiryDateText = expiryDate.toUTCString();
+
+		const title = "TLS certificate expiry warning";
+		const message = `TLS certificate for ${monitorName} will expire in ${daysRemaining} day${daysRemaining === 1 ? "" : "s"} on ${expiryDateText}.`;
+
+		const notificationMessage: NotificationMessage = {
+			type: "ssl_certificate_expiry",
+			severity: "warning",
+			monitor: {
+				id: monitor.id,
+				name: monitorName,
+				url: monitorUrl,
+				type: monitor.type,
+				status: monitor.status,
+			},
+			content: {
+				title,
+				summary: message,
+				details: [`Certificate expiry date: ${expiryDateText}`, `Days remaining: ${daysRemaining}`],
+				timestamp: new Date(),
+			},
+			clientHost,
+			metadata: {
+				teamId: monitor.teamId,
+				notificationReason: "certificate_expiry",
+			},
+		};
+
+		const monitorStatusResponse = {
+			status: "warning",
+			code: 200,
+			message,
+			responseTime: 0,
+		} as unknown as MonitorStatusResponse;
+
+		const decision = {
+			shouldCreateIncident: false,
+			shouldResolveIncident: false,
+			shouldSendNotification: true,
+			incidentReason: null,
+			notificationReason: "status_change",
+		} as MonitorActionDecision;
+
+		const tasks = notifications.map((notification) => this.send(notification, monitor, monitorStatusResponse, decision, notificationMessage));
+		const outcomes = await Promise.all(tasks);
+
+		const succeeded = outcomes.filter(Boolean).length;
+
+		return succeeded > 0;
 	};
 
 	sendTestNotification = async (notification: Partial<Notification>) => {

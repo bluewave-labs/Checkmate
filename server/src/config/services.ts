@@ -107,6 +107,7 @@ import { NotificationReactor } from "@/worker/reactors/reactor.notification.js";
 import { ReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
 import { IncidentReactor } from "@/worker/reactors/reactor.incident.js";
 import { CheckPipeline, GeoChecksPipeline } from "@/worker/worker.check-pipeline.js";
+import { SslCertificateExpiryReactor } from "@/worker/reactors/reactor.ssl-certificate-expiry.js";
 
 export type InitializedServices = {
 	settingsService: ISettingsService;
@@ -318,7 +319,9 @@ export const initializeServices = async ({
 	// reactors and dispatcher
 	const notificationReactor = new NotificationReactor(notificationsService);
 	const incidentReactor = new IncidentReactor(incidentService);
-	const reactorDispatcher = new ReactorDispatcher(logger, [notificationReactor, incidentReactor]);
+	const sslCertificateExpiryReactor = new SslCertificateExpiryReactor(notificationsService, logger);
+
+	const reactorDispatcher = new ReactorDispatcher(logger, [notificationReactor, incidentReactor, sslCertificateExpiryReactor]);
 
 	// pipelines
 	const checkPipeline = new CheckPipeline(

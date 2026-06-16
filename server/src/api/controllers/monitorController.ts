@@ -17,7 +17,8 @@ import {
 	bulkPauseMonitorBodyValidation,
 } from "@/api/validation/monitorValidation.js";
 import sslChecker from "ssl-checker";
-import { fetchMonitorCertificate, requireTeamId, requireUserId } from "@/api/controllers/controllerUtils.js";
+import { requireTeamId, requireUserId } from "@/api/controllers/controllerUtils.js";
+import { fetchMonitorCertificate } from "@/utils/ssl.js";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorService } from "@/domain/monitors/monitor.service.js";
 import { INotificationsService } from "@/domain/notifications/notification.service.js";

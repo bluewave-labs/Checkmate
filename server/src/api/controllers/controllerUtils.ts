@@ -1,18 +1,7 @@
 import { AppError } from "@/utils/AppError.js";
-import { Monitor, MonitorTypes, type MonitorType } from "@/domain/monitors/monitor.types.js";
+import { MonitorTypes, type MonitorType } from "@/domain/monitors/monitor.types.js";
 import { UserRole } from "@/domain/users/user.type.js";
-import sslChecker, { SSLDetails } from "ssl-checker";
-type SSLCheckerType = typeof sslChecker;
 
-export const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: Monitor): Promise<SSLDetails> => {
-	const monitorUrl = new URL(monitor.url);
-	const hostname = monitorUrl.hostname;
-	const cert = await checker(hostname);
-	if (cert?.validTo === null || cert?.validTo === undefined) {
-		throw new Error("Certificate not found");
-	}
-	return cert;
-};
 export const requireString = (value: unknown, fieldName: string): string => {
 	if (typeof value === "string" && value.trim().length > 0) {
 		return value;
