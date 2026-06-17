@@ -23,6 +23,11 @@ export interface V8HeapStats {
 
 export interface MongoStats {
 	readyState: number;
+	readsPerSecond: number;
+	insertsPerSecond: number;
+	updatesPerSecond: number;
+	deletesPerSecond: number;
+	writesPerSecond: number;
 	host: string;
 	port: number;
 	dbName: string;

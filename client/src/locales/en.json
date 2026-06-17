@@ -975,6 +975,11 @@
 				},
 				"mongoDBStats": {
 					"readyState": "Ready state",
+					"readsPerSecond": "Reads/s",
+					"insertsPerSecond": "Inserts/s",
+					"updatesPerSecond": "Updates/s",
+					"deletesPerSecond": "Deletes/s",
+					"writesPerSecond": "Total writes/s",
 					"host": "Host",
 					"port": "Port",
 					"dbName": "Database name",
