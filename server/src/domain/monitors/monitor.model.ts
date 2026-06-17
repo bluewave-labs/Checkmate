@@ -34,6 +34,7 @@ interface MonitorDocument extends MonitorDocumentBase {
 	teamId: Types.ObjectId;
 	createdAt: Date;
 	updatedAt: Date;
+	lastEvaluatedAt: number; // epoch ms
 }
 
 const snapshotTimingPhasesSchema = new Schema<GotTimings["phases"]>(
@@ -376,6 +377,10 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		recentChecks: {
 			type: [checkSnapshotSchema],
 			default: [],
+		},
+		lastEvaluatedAt: {
+			type: Number,
+			default: 0,
 		},
 	},
 	{

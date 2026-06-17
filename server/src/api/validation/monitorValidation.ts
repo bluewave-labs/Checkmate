@@ -272,5 +272,6 @@ export const monitorResponseSchema = z
 		userId: z.string(),
 		createdAt: z.string(),
 		updatedAt: z.string(),
+		lastEvaluatedAt: z.number(),
 	})
 	.passthrough();

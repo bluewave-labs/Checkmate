@@ -386,6 +386,16 @@ class MongoChecksRepository implements IChecksRepository {
 		};
 	};
 
+	findUnevaluatedByMonitorId = async (monitorId: string, since: number) => {
+		const docs = await CheckModel.find({
+			"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+			createdAt: { $gt: new Date(since) },
+		})
+			.sort({ createdAt: 1 })
+			.lean<CheckDocument[]>();
+		return docs.map(this.toEntity);
+	};
+
 	deleteByMonitorId = async (monitorId: string): Promise<number> => {
 		const result = await CheckModel.deleteMany({ "metadata.monitorId": new mongoose.Types.ObjectId(monitorId) });
 		return result.deletedCount;

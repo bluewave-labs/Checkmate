@@ -1,5 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { CheckPipeline, GeoChecksPipeline } from "../../../src/worker/worker.check-pipeline.ts";
+import { CheckProducer } from "../../../src/worker/worker.check-producer.ts";
+import { CheckEvaluator } from "../../../src/worker/worker.check-evaluator.ts";
 import { MonitorStatusPolicy } from "../../../src/worker/worker.monitor-status-policy.ts";
 import type { Monitor } from "../../../src/domain/monitors/monitor.types.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
@@ -30,23 +32,23 @@ const createCheckPipeline = (overrides?: Record<string, any>) => {
 		statusService: {
 			updateMonitorStatus: jest.fn().mockResolvedValue({ monitor: { id: "m1", status: "up" }, statusChanged: false, prevStatus: "up", code: 200 }),
 		},
-		checkService: { buildCheck: jest.fn().mockReturnValue({ id: "check-1" }) },
+		checkService: { toCheck: jest.fn().mockReturnValue({ id: "check-1" }) },
 		buffer: { addToBuffer: jest.fn() },
 		monitorsRepository: { updateById: jest.fn().mockResolvedValue({}) },
 		maintenanceWindowsRepository: { findByMonitorId: jest.fn().mockResolvedValue([]) },
 		monitorStatusPolicy: new MonitorStatusPolicy(),
 		...overrides,
 	};
-	const pipeline = new CheckPipeline(
+	const checkProducer = new CheckProducer(
 		defaults.monitorsRepository as any,
 		defaults.maintenanceWindowsRepository as any,
 		defaults.checkService as any,
 		defaults.networkService as any,
 		defaults.buffer as any,
-		defaults.monitorStatusPolicy as any,
-		defaults.statusService as any,
 		defaults.logger as any
 	);
+	const checkEvaluator = new CheckEvaluator(defaults.statusService as any, defaults.monitorStatusPolicy as any);
+	const pipeline = new CheckPipeline(checkProducer, checkEvaluator);
 	return { pipeline, defaults };
 };
 
@@ -85,9 +87,9 @@ describe("CheckPipeline", () => {
 		await expect(pipeline.run(makeMonitor())).rejects.toThrow("No network response");
 	});
 
-	it("returns null and warns when buildCheck returns null", async () => {
+	it("returns null and warns when toCheck returns null", async () => {
 		const { pipeline, defaults } = createCheckPipeline({
-			checkService: { buildCheck: jest.fn().mockReturnValue(null) },
+			checkService: { toCheck: jest.fn().mockReturnValue(null) },
 		});
 
 		const result = await pipeline.run(makeMonitor());

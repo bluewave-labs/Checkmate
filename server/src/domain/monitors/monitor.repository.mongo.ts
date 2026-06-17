@@ -571,6 +571,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			dnsRecordType: doc.dnsRecordType ?? undefined,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
+			lastEvaluatedAt: doc.lastEvaluatedAt,
 		};
 	};
 
@@ -636,6 +637,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			dnsRecordType: doc.dnsRecordType ?? undefined,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
+			lastEvaluatedAt: doc.lastEvaluatedAt,
 		};
 	};
 

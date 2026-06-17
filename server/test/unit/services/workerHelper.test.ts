@@ -17,6 +17,9 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		findAllMonitorIds: jest.fn().mockResolvedValue(["m1"]),
 		deleteByTeamIdsNotIn: jest.fn().mockResolvedValue(0),
 	};
+	const jobsRepository = {
+		deleteByMonitorIdsNotIn: jest.fn().mockResolvedValue(0),
+	};
 	const teamsRepository = {
 		findAllTeamIds: jest.fn().mockResolvedValue(["team"]),
 	};
@@ -48,6 +51,7 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		checkService,
 		settingsService,
 		monitorsRepository,
+		jobsRepository,
 		teamsRepository,
 		monitorStatsRepository,
 		checksRepository,
@@ -64,6 +68,7 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		defaults.checkService as any,
 		defaults.settingsService as any,
 		defaults.monitorsRepository as any,
+		defaults.jobsRepository as any,
 		defaults.teamsRepository as any,
 		defaults.monitorStatsRepository as any,
 		defaults.checksRepository as any,
@@ -170,6 +175,7 @@ describe("WorkerHelper", () => {
 			(defaults.checksRepository.deleteByMonitorIdsNotIn as jest.Mock).mockResolvedValue(4);
 			(defaults.incidentsRepository.deleteByMonitorIdsNotIn as jest.Mock).mockResolvedValue(1);
 			(defaults.geoChecksRepository.deleteByMonitorIdsNotIn as jest.Mock).mockResolvedValue(5);
+			(defaults.jobsRepository.deleteByMonitorIdsNotIn as jest.Mock).mockResolvedValue(6);
 
 			const job = helper.getCleanupOrphanedJob();
 			await job();
@@ -181,11 +187,13 @@ describe("WorkerHelper", () => {
 			expect(defaults.checksRepository.deleteByMonitorIdsNotIn).toHaveBeenCalledWith(["m1"]);
 			expect(defaults.incidentsRepository.deleteByMonitorIdsNotIn).toHaveBeenCalledWith(["m1"]);
 			expect(defaults.geoChecksRepository.deleteByMonitorIdsNotIn).toHaveBeenCalledWith(["m1"]);
+			expect(defaults.jobsRepository.deleteByMonitorIdsNotIn).toHaveBeenCalledWith(["m1"]);
 			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("2 orphaned monitors") }));
 			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("3 orphaned monitor stats") }));
 			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("4 orphaned checks") }));
 			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("1 orphaned incidents") }));
 			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("5 orphaned geo checks") }));
+			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("6 orphaned jobs") }));
 		});
 
 		it("skips info logs when no orphaned data is found", async () => {

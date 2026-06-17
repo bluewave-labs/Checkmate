@@ -1,4 +1,6 @@
 import { Mongoose } from "mongoose";
+import { hostname } from "node:os";
+import { randomUUID } from "node:crypto";
 import MongoDB from "../db/db.mongo.js";
 import { IDb } from "@/db/db.interface.js";
 import { EnvConfig, ISettingsService, SettingsService } from "@/domain/app-settings/app-settings.service.js";
@@ -30,8 +32,6 @@ import { EmailService, IEmailService } from "@/service/emailService.js";
 import { GlobalPingService } from "@/service/globalPingService.js";
 import { WorkerHelper } from "@/worker/worker.helper.js";
 import { IWorker } from "@/worker/worker.interface.js";
-import { LessSimpleWorker } from "@/worker/worker.less-simple.js";
-import { SuperSimpleQueue } from "@/worker/worker.super-simple.js";
 import { INetworkService, NetworkService } from "@/service/networkService.js";
 import { IStatusService, StatusService } from "@/service/statusService.js";
 import { MonitorStatusPolicy } from "@/worker/worker.monitor-status-policy.js";
@@ -89,7 +89,6 @@ import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interf
 import MongoMonitorsRepository from "@/domain/monitors/monitor.repository.mongo.js";
 import { INotificationsRepository } from "@/domain/notifications/notification.repository.interface.js";
 import MongoNotificationsRepository from "@/domain/notifications/notification.repository.mongo.js";
-import MongoQueueWorkersRepository from "@/domain/queue-workers/queue-worker.repository.mongo.js";
 import { IRecoveryTokensRepository } from "@/domain/recovery-tokens/recovery-token.repository.interface.js";
 import MongoRecoveryTokensRepository from "@/domain/recovery-tokens/recovery-token.repository.mongo.js";
 import { IStatusPagesRepository } from "@/domain/status-pages/status-page-repository.interface.js";
@@ -101,12 +100,15 @@ import MongoTeamsRepository from "@/domain/teams/team.repository.model.js";
 import { IUsersRepository } from "@/domain/users/user.repository.interface.js";
 import MongoUsersRepository from "@/domain/users/user.repository.mongo.js";
 import { ILogger } from "@/utils/logger.js";
-import { AppError } from "@/utils/AppError.js";
-import { type QueueMode } from "@/domain/app-settings/app-settings.type.js";
 import { NotificationReactor } from "@/worker/reactors/reactor.notification.js";
 import { ReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
 import { IncidentReactor } from "@/worker/reactors/reactor.incident.js";
 import { CheckPipeline, GeoChecksPipeline } from "@/worker/worker.check-pipeline.js";
+import { CheckProducer } from "@/worker/worker.check-producer.js";
+import { CheckEvaluator } from "@/worker/worker.check-evaluator.js";
+import { DBQueueWorker } from "@/worker/worker.db-queue.js";
+import MongoJobsRepository from "@/domain/jobs/job.repository.mongo.js";
+import MongoQueueWorkersRepository from "@/domain/queue-workers/queue-worker.repository.mongo.js";
 
 export type InitializedServices = {
 	settingsService: ISettingsService;
@@ -151,70 +153,16 @@ export const initializeServices = async ({
 	logger,
 	envSettings,
 	settingsService,
-	queueMode = "primary",
 }: {
 	logger: ILogger;
 	envSettings: EnvConfig;
 	settingsService: ISettingsService;
-	queueMode?: QueueMode;
 }): Promise<InitializedServices> => {
 	// Create DB
 
 	let db: IDb<Mongoose> | null = null;
 	db = new MongoDB(logger, envSettings);
 	await db.connect();
-
-	// ** NOTE **
-	// const dbType = envSettings.dbType;
-	// DB type has been fixed to MongoDB for now
-
-	// if (dbType === "mongodb") {
-	// 	db = new MongoDB(logger, envSettings);
-	// }
-
-	// if (!db) {
-	// 	throw new AppError({ message: "Unsupported database type", status: 500 });
-	// }
-
-	// await db.connect();
-
-	// Repositories
-
-	// ** NOTE **
-	// DB Type fixed to MongoDB for now
-	// let monitorsRepository: IMonitorsRepository;
-	// let checksRepository: IChecksRepository;
-	// let geoChecksRepository: IGeoChecksRepository;
-	// let monitorStatsRepository: IMonitorStatsRepository;
-	// let statusPagesRepository: IStatusPagesRepository;
-	// let usersRepository: IUsersRepository;
-	// let invitesRepository: IInvitesRepository;
-	// let recoveryTokensRepository: IRecoveryTokensRepository;
-	// let settingsRepository: ISettingsRepository;
-	// let notificationsRepository: INotificationsRepository;
-	// let tagsRepository: ITagsRepository;
-	// let incidentsRepository: IIncidentsRepository;
-	// let teamsRepository: ITeamsRepository;
-	// let maintenanceWindowsRepository: IMaintenanceWindowsRepository;
-
-	// if (dbType === "mongodb") {
-	// 	monitorsRepository = new MongoMonitorsRepository();
-	// 	checksRepository = new MongoChecksRepository(logger);
-	// 	geoChecksRepository = new MongoGeoChecksRepository(logger);
-	// 	monitorStatsRepository = new MongoMonitorStatsRepository();
-	// 	statusPagesRepository = new MongoStatusPagesRepository();
-	// 	usersRepository = new MongoUsersRepository();
-	// 	invitesRepository = new MongoInvitesRepository();
-	// 	recoveryTokensRepository = new MongoRecoveryTokensRepository();
-	// 	settingsRepository = new MongoSettingsRepository();
-	// 	notificationsRepository = new MongoNotificationsRepository();
-	// 	tagsRepository = new MongoTagsRepository();
-	// 	incidentsRepository = new MongoIncidentsRepository();
-	// 	teamsRepository = new MongoTeamsRepository();
-	// 	maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
-	// } else {
-	// 	throw new AppError({ message: "Unsupported database type", status: 500 });
-	// }
 
 	const monitorsRepository = new MongoMonitorsRepository();
 	const checksRepository = new MongoChecksRepository(logger);
@@ -230,6 +178,9 @@ export const initializeServices = async ({
 	const incidentsRepository = new MongoIncidentsRepository();
 	const teamsRepository = new MongoTeamsRepository();
 	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
+	// One identity per process
+	const workerId = `${hostname()}:${process.pid}:${randomUUID()}`;
+	const jobsRepository = new MongoJobsRepository(workerId);
 	const queueWorkersRepository = new MongoQueueWorkersRepository();
 
 	// Inject settings repository into settings service (now that DB is connected)
@@ -320,17 +271,12 @@ export const initializeServices = async ({
 	const incidentReactor = new IncidentReactor(incidentService);
 	const reactorDispatcher = new ReactorDispatcher(logger, [notificationReactor, incidentReactor]);
 
+	// Check producer/evaluator
+	const checkProducer = new CheckProducer(monitorsRepository, maintenanceWindowsRepository, checkService, networkService, bufferService, logger);
+	const checkEvaluator = new CheckEvaluator(statusService, monitorStatusPolicy);
+
 	// pipelines
-	const checkPipeline = new CheckPipeline(
-		monitorsRepository,
-		maintenanceWindowsRepository,
-		checkService,
-		networkService,
-		bufferService,
-		monitorStatusPolicy,
-		statusService,
-		logger
-	);
+	const checkPipeline = new CheckPipeline(checkProducer, checkEvaluator);
 
 	const geoCheckPipeline = new GeoChecksPipeline(maintenanceWindowsRepository, geoChecksService, bufferService, logger);
 
@@ -339,6 +285,7 @@ export const initializeServices = async ({
 		checkService,
 		settingsService,
 		monitorsRepository,
+		jobsRepository,
 		teamsRepository,
 		monitorStatsRepository,
 		checksRepository,
@@ -349,23 +296,22 @@ export const initializeServices = async ({
 		geoCheckPipeline
 	);
 
-	if (queueMode === "worker" && envSettings.queueType !== "lessSimpleQueue") {
-		throw new AppError({
-			message: `Worker mode requires QUEUE_TYPE="lessSimpleQueue" got ${envSettings.queueType}`,
-			status: 500,
-			service: "config services",
-			method: "initializeServices",
-		});
-	}
-
-	let worker: IWorker;
-	switch (envSettings.queueType) {
-		case "lessSimpleQueue":
-			worker = await LessSimpleWorker.create(logger, workerHelper, monitorsRepository, queueWorkersRepository, envSettings, queueMode);
-			break;
-		default:
-			worker = await SuperSimpleQueue.create(logger, workerHelper, monitorsRepository);
-	}
+	const worker = await DBQueueWorker.create(
+		logger,
+		jobsRepository,
+		monitorsRepository,
+		checksRepository,
+		checkService,
+		checkProducer,
+		checkEvaluator,
+		geoCheckPipeline,
+		reactorDispatcher,
+		workerHelper,
+		queueWorkersRepository,
+		envSettings.queueMode,
+		envSettings.queuePrimaryProcesses,
+		workerId
+	);
 
 	// Business services
 	const userService = new UserService({
