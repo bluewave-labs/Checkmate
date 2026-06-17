@@ -172,6 +172,7 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 		checkService as any,
 		{ getDBSettings: jest.fn() } as any,
 		monitorsRepo as any,
+		{ deleteByMonitorIdsNotIn: jest.fn() } as any,
 		{ findAllTeamIds: jest.fn() } as any,
 		createStubMonitorStatsRepo() as any,
 		createStubChecksRepo() as any,
