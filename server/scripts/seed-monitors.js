@@ -14,7 +14,7 @@ import { UserModel } from "../dist/domain/users/user.model.js";
 // NOTE: the running queue only schedules monitors it finds at init(), so restart
 // the server after seeding for the new monitors to actually start checking.
 
-const DEFAULT_COUNT = 5_000;
+const DEFAULT_COUNT = 500;
 const DEFAULT_BATCH = 1_000;
 const DEFAULT_INTERVAL = 60_000;
 const NAME_PREFIX = "Seed";

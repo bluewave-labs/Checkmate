@@ -6,6 +6,22 @@ import { AppError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "diagnosticService";
 
+export interface MongoStats {
+	reads: number;
+	inserts: number;
+	updates: number;
+	deletes: number;
+	timestamp: number;
+}
+
+export interface MongoOpsPerSecond {
+	readsPerSecond: number;
+	insertsPerSecond: number;
+	updatesPerSecond: number;
+	deletesPerSecond: number;
+	writesPerSecond: number;
+}
+
 export interface CollectionDiagnostics {
 	name: string;
 	documentCount: number;
@@ -17,6 +33,11 @@ export interface CollectionDiagnostics {
 
 export interface MongoDiagnostics {
 	readyState: number;
+	readsPerSecond: number;
+	insertsPerSecond: number;
+	updatesPerSecond: number;
+	deletesPerSecond: number;
+	writesPerSecond: number;
 	host: string;
 	port: number;
 	dbName: string;
@@ -44,6 +65,8 @@ export interface IDiagnosticService {
 export class DiagnosticService implements IDiagnosticService {
 	static SERVICE_NAME = SERVICE_NAME;
 
+	private lastMongoOpsPerSecond: MongoStats | null = null;
+
 	constructor(private db: IDb<Mongoose>) {
 		/**
 		 * Performance Observer for monitoring system performance metrics.
@@ -68,12 +91,56 @@ export class DiagnosticService implements IDiagnosticService {
 		return ((endUsage.user + endUsage.system) / 1000 / timingPeriod) * 100;
 	};
 
+	private getMongoOpsPerSecond = async (): Promise<MongoOpsPerSecond | null> => {
+		try {
+			const mongo = await this.db.getConnection();
+			const db = mongo.connection.db;
+			if (!db) {
+				throw new AppError({ message: "Database connection is not available", service: SERVICE_NAME, method: "getMongoDBStats" });
+			}
+			const sample = async (): Promise<MongoStats> => {
+				const res = await db.command({ serverStatus: 1 });
+				return {
+					reads: (res.opcounters?.query ?? 0) + (res.opcounters?.getmore ?? 0),
+					inserts: res.opcounters?.insert ?? 0,
+					updates: res.opcounters?.update ?? 0,
+					deletes: res.opcounters?.delete ?? 0,
+					timestamp: Date.now(),
+				};
+			};
+
+			// First call has no baseline, seed one so we always have a rate
+			if (this.lastMongoOpsPerSecond === null) {
+				this.lastMongoOpsPerSecond = await sample();
+				await new Promise((resolve) => setTimeout(resolve, 1000));
+			}
+
+			const previous = this.lastMongoOpsPerSecond;
+			const current = await sample();
+			this.lastMongoOpsPerSecond = current;
+
+			const elapsedSeconds = (current.timestamp - previous.timestamp) / 1000;
+			return {
+				readsPerSecond: (current.reads - previous.reads) / elapsedSeconds,
+				insertsPerSecond: (current.inserts - previous.inserts) / elapsedSeconds,
+				updatesPerSecond: (current.updates - previous.updates) / elapsedSeconds,
+				deletesPerSecond: (current.deletes - previous.deletes) / elapsedSeconds,
+				writesPerSecond:
+					(current.inserts - previous.inserts + current.updates - previous.updates + current.deletes - previous.deletes) / elapsedSeconds,
+			};
+		} catch {
+			return null;
+		}
+	};
+
 	private getMongoDBStats = async (): Promise<MongoDiagnostics> => {
 		const mongo = await this.db.getConnection();
 		const db = mongo.connection.db;
 		if (!db) {
 			throw new AppError({ message: "Database connection is not available", service: SERVICE_NAME, method: "getMongoDBStats" });
 		}
+
+		const opsPerSecond = await this.getMongoOpsPerSecond();
 
 		const dbStats = await db.stats();
 		const rawCollections = await db.collections();
@@ -100,6 +167,11 @@ export class DiagnosticService implements IDiagnosticService {
 
 		return {
 			readyState: mongo.connection.readyState,
+			readsPerSecond: opsPerSecond?.readsPerSecond ?? 0,
+			insertsPerSecond: opsPerSecond?.insertsPerSecond ?? 0,
+			updatesPerSecond: opsPerSecond?.updatesPerSecond ?? 0,
+			deletesPerSecond: opsPerSecond?.deletesPerSecond ?? 0,
+			writesPerSecond: opsPerSecond?.writesPerSecond ?? 0,
 			host: mongo.connection.host,
 			port: mongo.connection.port,
 			dbName: mongo.connection.name,
