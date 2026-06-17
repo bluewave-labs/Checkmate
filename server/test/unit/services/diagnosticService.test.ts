@@ -104,9 +104,8 @@ describe("DiagnosticService", () => {
 		it("returns only the slimmed diagnostic shape (no serverStatus/serverInfo/memoryUsage)", async () => {
 			const service = new DiagnosticService(makeDb());
 			const promise = service.getSystemStats();
-			// getCPUUsagePercentage waits 1s, then event loop delay waits 0ms
-			jest.advanceTimersByTime(1000);
-			await jest.advanceTimersByTimeAsync(10);
+			// getCPUUsagePercentage waits 1s, the first mongo ops sample waits another 1s, then event loop delay waits 0ms
+			await jest.advanceTimersByTimeAsync(2500);
 			const result = await promise;
 
 			expect(Object.keys(result).sort()).toEqual(["cpuUsage", "eventLoopDelayMs", "mongoStats", "osStats", "uptimeMs", "v8HeapStats"].sort());
@@ -131,11 +130,24 @@ describe("DiagnosticService", () => {
 			});
 			const service = new DiagnosticService(db);
 			const promise = service.getSystemStats();
-			jest.advanceTimersByTime(1000);
-			await jest.advanceTimersByTimeAsync(10);
+			await jest.advanceTimersByTimeAsync(2500);
 			const result = await promise;
 
-			expect(Object.keys(result.mongoStats).sort()).toEqual(["collections", "dbName", "host", "port", "readyState", "totalSize"].sort());
+			expect(Object.keys(result.mongoStats).sort()).toEqual(
+				[
+					"collections",
+					"dbName",
+					"host",
+					"port",
+					"readyState",
+					"totalSize",
+					"readsPerSecond",
+					"insertsPerSecond",
+					"updatesPerSecond",
+					"deletesPerSecond",
+					"writesPerSecond",
+				].sort()
+			);
 			expect(result.mongoStats.totalSize).toBe(9999);
 			expect(result.mongoStats.collections).toHaveLength(2);
 			expect(result.mongoStats.collections[0]).toEqual({
@@ -154,8 +166,7 @@ describe("DiagnosticService", () => {
 			});
 			const service = new DiagnosticService(db);
 			const promise = service.getSystemStats();
-			jest.advanceTimersByTime(1000);
-			await jest.advanceTimersByTimeAsync(10);
+			await jest.advanceTimersByTimeAsync(2500);
 			const result = await promise;
 
 			expect(result.mongoStats.totalSize).toBe(376832 + 1155072);
@@ -169,8 +180,7 @@ describe("DiagnosticService", () => {
 			});
 			const service = new DiagnosticService(db);
 			const promise = service.getSystemStats();
-			jest.advanceTimersByTime(1000);
-			await jest.advanceTimersByTimeAsync(10);
+			await jest.advanceTimersByTimeAsync(2500);
 			const result = await promise;
 
 			const coll = result.mongoStats.collections[0];
@@ -190,8 +200,7 @@ describe("DiagnosticService", () => {
 			});
 			const service = new DiagnosticService(db);
 			const promise = service.getSystemStats();
-			jest.advanceTimersByTime(1000);
-			await jest.advanceTimersByTimeAsync(10);
+			await jest.advanceTimersByTimeAsync(2500);
 			const result = await promise;
 
 			expect(result.mongoStats.collections[0]?.bucketCount).toBe(12);
@@ -199,8 +208,7 @@ describe("DiagnosticService", () => {
 			const db2 = makeDb({ collections: [{ collectionName: "monitors" }] });
 			const service2 = new DiagnosticService(db2);
 			const promise2 = service2.getSystemStats();
-			jest.advanceTimersByTime(1000);
-			await jest.advanceTimersByTimeAsync(10);
+			await jest.advanceTimersByTimeAsync(2500);
 			const result2 = await promise2;
 			expect(result2.mongoStats.collections[0]).not.toHaveProperty("bucketCount");
 		});
@@ -235,8 +243,7 @@ describe("DiagnosticService", () => {
 			performance.getEntriesByName = jest.fn().mockReturnValue(entries) as any;
 
 			const promise = service.getSystemStats();
-			jest.advanceTimersByTime(1000);
-			await jest.advanceTimersByTimeAsync(10);
+			await jest.advanceTimersByTimeAsync(2500);
 			const result = await promise;
 
 			expect(result.eventLoopDelayMs).toBe(0);

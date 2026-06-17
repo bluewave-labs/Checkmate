@@ -34,6 +34,26 @@ export const MongoStats = ({ diagnostics }: MongoStatsProps) => {
 				subtitle={mongoStats.readyState.toString()}
 			/>
 			<StatBox
+				title={t("pages.logs.diagnostics.mongoDBStats.readsPerSecond")}
+				subtitle={mongoStats.readsPerSecond.toFixed(0)}
+			/>
+			<StatBox
+				title={t("pages.logs.diagnostics.mongoDBStats.insertsPerSecond")}
+				subtitle={mongoStats.insertsPerSecond.toFixed(0)}
+			/>
+			<StatBox
+				title={t("pages.logs.diagnostics.mongoDBStats.updatesPerSecond")}
+				subtitle={mongoStats.updatesPerSecond.toFixed(0)}
+			/>
+			<StatBox
+				title={t("pages.logs.diagnostics.mongoDBStats.deletesPerSecond")}
+				subtitle={mongoStats.deletesPerSecond.toFixed(0)}
+			/>
+			<StatBox
+				title={t("pages.logs.diagnostics.mongoDBStats.writesPerSecond")}
+				subtitle={mongoStats.writesPerSecond.toFixed(0)}
+			/>
+			<StatBox
 				title={t("pages.logs.diagnostics.mongoDBStats.host")}
 				subtitle={mongoStats.host}
 			/>
