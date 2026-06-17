@@ -274,8 +274,9 @@ export class DBQueueWorker implements IWorker {
 				await this.jobsRepository.upsertJob(this.toGeoCheckJob(monitor, now));
 			}
 		}
-		await this.jobsRepository.upsertJob(this.toCleanupJob("cleanup-orphaned", now));
-		await this.jobsRepository.upsertJob(this.toCleanupJob("cleanup-retention", now));
+		// Both cleanup jobs run immediately on every startup, then once a day
+		await this.jobsRepository.upsertCleanupJob(this.toCleanupJob("cleanup-orphaned", now));
+		await this.jobsRepository.upsertCleanupJob(this.toCleanupJob("cleanup-retention", now));
 	};
 
 	// Register worker

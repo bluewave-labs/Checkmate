@@ -285,6 +285,7 @@ export const initializeServices = async ({
 		checkService,
 		settingsService,
 		monitorsRepository,
+		jobsRepository,
 		teamsRepository,
 		monitorStatsRepository,
 		checksRepository,

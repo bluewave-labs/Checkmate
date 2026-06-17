@@ -43,6 +43,9 @@ export interface IJobsRepository {
 	// Create jobs. Takes a JobSeed
 	upsertJob(job: JobSeed): Promise<boolean>;
 
+	// Creates cleanup jobs, these are executed immediately so need their own method
+	upsertCleanupJob(job: JobSeed): Promise<boolean>;
+
 	// Pause/Resume
 	setActiveById(refId: string, isActive: boolean): Promise<boolean>;
 
@@ -54,6 +57,9 @@ export interface IJobsRepository {
 
 	// Delete a single job of type
 	deleteByIdAndType(refId: string, type: JobType): Promise<boolean>;
+
+	// Delete jobs that reference monitors that no longer exist
+	deleteByMonitorIdsNotIn(monitorIds: string[]): Promise<number>;
 
 	// Get job
 	findById(refId: string): Promise<Job[]>;

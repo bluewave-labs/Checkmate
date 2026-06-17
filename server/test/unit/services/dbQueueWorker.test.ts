@@ -65,6 +65,7 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 	const jobsRepository = {
 		claimDueBatch: jest.fn<any>().mockResolvedValue([]),
 		upsertJob: jest.fn<any>().mockResolvedValue(true),
+		upsertCleanupJob: jest.fn<any>().mockResolvedValue(true),
 		upsertEvaluate: jest.fn<any>().mockResolvedValue(true),
 		recordSuccess: jest.fn<any>().mockResolvedValue(true),
 		recordFailure: jest.fn<any>().mockResolvedValue(true),
@@ -183,8 +184,9 @@ describe("DBQueueWorker", () => {
 
 			const seededTypes = mocks.jobsRepository.upsertJob.mock.calls.map((c: any[]) => c[0].type);
 			expect(seededTypes).toContain("check");
-			expect(seededTypes).toContain("cleanup-orphaned");
-			expect(seededTypes).toContain("cleanup-retention");
+			const cleanupTypes = mocks.jobsRepository.upsertCleanupJob.mock.calls.map((c: any[]) => c[0].type);
+			expect(cleanupTypes).toContain("cleanup-orphaned");
+			expect(cleanupTypes).toContain("cleanup-retention");
 		});
 
 		it("primary mode also seeds a geo-check row for geo-enabled monitors", async () => {
@@ -204,6 +206,7 @@ describe("DBQueueWorker", () => {
 		it("worker mode does not reconcile (never seeds jobs)", async () => {
 			const { mocks } = await start({ queueMode: "worker" });
 			expect(mocks.jobsRepository.upsertJob).not.toHaveBeenCalled();
+			expect(mocks.jobsRepository.upsertCleanupJob).not.toHaveBeenCalled();
 		});
 
 		it("starts a polling loop per job type, each claiming up to its concurrency cap", async () => {

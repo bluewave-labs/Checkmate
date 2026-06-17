@@ -214,6 +214,31 @@ class MongoJobsRepository implements IJobsRepository {
 		return res.acknowledged;
 	};
 
+	upsertCleanupJob = async (job: JobSeed) => {
+		const res = await JobModel.updateOne(
+			{ _id: job.id },
+			{
+				$set: {
+					type: job.type,
+					refId: job.refId,
+					isActive: job.isActive,
+					intervalMs: job.intervalMs,
+					nextScheduledAt: job.nextScheduledAt,
+				},
+				$setOnInsert: {
+					lockedBy: null,
+					lockedUntil: null,
+					runCount: 0,
+					failCount: 0,
+					lastFinishedAt: null,
+					lastFailReason: null,
+				},
+			},
+			{ upsert: true }
+		);
+		return res.acknowledged;
+	};
+
 	setActiveById = async (refId: string, isActive: boolean) => {
 		const res = await JobModel.updateMany({ refId }, { $set: { isActive } }); // inverts check and geo check rows together
 		return res.modifiedCount > 0;
@@ -232,6 +257,12 @@ class MongoJobsRepository implements IJobsRepository {
 	deleteByIdAndType = async (refId: string, type: JobType) => {
 		const res = await JobModel.deleteOne({ refId, type }); // Delete a single typed row, e.g. just the geo row
 		return res.deletedCount > 0;
+	};
+
+	deleteByMonitorIdsNotIn = async (monitorIds: string[]): Promise<number> => {
+		// remove jobs who'se refId is not null (cleanup jobs) and not in the list of monitor IDs (orphaned monitor jobs)
+		const res = await JobModel.deleteMany({ refId: { $ne: null, $nin: monitorIds } });
+		return res.deletedCount ?? 0;
 	};
 
 	findById = async (refId: string) => {

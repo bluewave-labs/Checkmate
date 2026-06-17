@@ -347,6 +347,34 @@ describe("MongoJobsRepository", () => {
 			expect(row?.runCount).toBe(7);
 		});
 
+		it("upsertCleanupJob resets nextScheduledAt on an existing row so it is due again on restart", async () => {
+			const job: Job = {
+				id: "cleanup-orphaned",
+				type: "cleanup-orphaned",
+				refId: null,
+				isActive: true,
+				nextScheduledAt: NOW,
+				intervalMs: 86_400_000,
+				lockedBy: null,
+				lockedUntil: null,
+				runCount: 0,
+				failCount: 0,
+				lastFinishedAt: null,
+				lastFailReason: null,
+			};
+			await repo.upsertCleanupJob(job);
+
+			// row has already advanced a day into the future after a previous run
+			await JobModel.updateOne({ _id: "cleanup-orphaned" }, { $set: { nextScheduledAt: NOW + 86_400_000, runCount: 3 } });
+
+			// a restart reconcile re-upserts and pulls it due now
+			await repo.upsertCleanupJob({ ...job, nextScheduledAt: NOW + 1_000 });
+
+			const row = await readRow("cleanup-orphaned");
+			expect(row?.nextScheduledAt).toBe(NOW + 1_000); // schedule reset ($set)
+			expect(row?.runCount).toBe(3); // run history untouched ($setOnInsert)
+		});
+
 		it("setActiveById flips check and geo rows together", async () => {
 			await seedJob({ _id: "check:mon-1", type: "check" });
 			await seedJob({ _id: "geo:mon-1", type: "geo-check" });
@@ -376,6 +404,20 @@ describe("MongoJobsRepository", () => {
 			await repo.deleteById("mon-1");
 
 			expect(await JobModel.countDocuments({ refId: "mon-1" })).toBe(0);
+		});
+
+		it("deleteByMonitorIdsNotIn drops jobs for missing monitors but keeps valid and global rows", async () => {
+			await seedJob({ _id: "check:keep", refId: "keep", type: "check" });
+			await seedJob({ _id: "geo:keep", refId: "keep", type: "geo-check" });
+			await seedJob({ _id: "check:gone", refId: "gone", type: "check" });
+			await seedJob({ _id: "cleanup-orphaned", refId: null, type: "cleanup-orphaned" });
+			await seedJob({ _id: "cleanup-retention", refId: null, type: "cleanup-retention" });
+
+			const deleted = await repo.deleteByMonitorIdsNotIn(["keep"]);
+
+			expect(deleted).toBe(1); // only check:gone
+			const remaining = (await JobModel.find().lean<JobDocument[]>()).map((d) => d._id).sort();
+			expect(remaining).toEqual(["check:keep", "cleanup-orphaned", "cleanup-retention", "geo:keep"]);
 		});
 
 		it("findById returns all of a monitor's rows", async () => {
