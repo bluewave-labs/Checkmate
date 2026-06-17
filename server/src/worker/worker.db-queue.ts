@@ -15,7 +15,8 @@ import { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.rep
 import { WORKER_TTL_SECONDS } from "@/domain/queue-workers/queue-worker.model.js";
 import { QueueMode } from "@/domain/app-settings/app-settings.type.js";
 const SERVICE_NAME = "JobQueue";
-const POLL_MS = 250;
+const POLL_MS = 250; // base poll interval while a loop is actively claiming work
+const POLL_MAX_MS = 5000; // back off poll interval to 5s if no jobs
 const WORKER_STALE_MS = WORKER_TTL_SECONDS * 1000; // a worker counts as alive if seen within this window
 const HEARTBEAT_MS = WORKER_STALE_MS / 3; // Worker can miss two beats without being considered stale
 const LOCK_RENEW_MS = LOCK_MS / 3; // renew an in-flight job's lock at 1/3 the lease, so it survives two missed renewals
@@ -240,6 +241,7 @@ export class DBQueueWorker implements IWorker {
 	};
 
 	private startLoop = (type: JobType) => {
+		let pollMs = POLL_MS;
 		const tick = async () => {
 			if (this.stopped) return;
 			try {
@@ -252,6 +254,8 @@ export class DBQueueWorker implements IWorker {
 						this.inFlight[type]--; // job done, free the slot
 					});
 				}
+				// Back off if no jobs founds, reset to base if jobs found
+				pollMs = capacity > 0 && jobs.length === 0 ? Math.min(pollMs * 2, POLL_MAX_MS) : POLL_MS;
 			} catch (error: unknown) {
 				this.logger.error({
 					message: error instanceof Error ? error.message : String(error),
@@ -259,7 +263,7 @@ export class DBQueueWorker implements IWorker {
 					method: `loop:${type}`,
 				});
 			}
-			if (!this.stopped) this.timers.set(type, setTimeout(tick, POLL_MS)); // re-arm unless shutting down
+			if (!this.stopped) this.timers.set(type, setTimeout(tick, pollMs)); // re-arm unless shutting down
 		};
 		tick();
 	};
