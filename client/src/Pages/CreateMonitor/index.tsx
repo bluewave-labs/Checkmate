@@ -1117,6 +1117,15 @@ const CreateMonitorPage = () => {
 													"pages.createMonitor.form.advanced.option.customUpCodes.label"
 												)}
 											/>
+											<Typography
+												component="span"
+												color={theme.palette.text.secondary}
+												sx={{ opacity: 0.8 }}
+											>
+												{t(
+													"pages.createMonitor.form.advanced.option.customUpCodes.description"
+												)}
+											</Typography>
 											{selectedOptions.length > 0 && (
 												<Stack
 													flex={1}

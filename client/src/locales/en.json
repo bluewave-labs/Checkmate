@@ -508,6 +508,7 @@
 						},
 						"customUpCodes": {
 							"label": "Accepted status codes",
+							"description": "Add any non-2xx codes that should also be considered successful.",
 							"removeAriaLabel": "Remove status code"
 						}
 					},

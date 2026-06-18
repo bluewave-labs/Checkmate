@@ -80,6 +80,9 @@ export interface HttpStatusCodeOption {
 	name: string;
 }
 
+/**
+ * Must stay in sync with HttpStatusCodes in server/src/domain/monitors/monitor.types.ts
+ */
 export const ALL_HTTP_STATUS_CODES: HttpStatusCodeOption[] = [
 	{ id: 100, name: "100 - Continue" },
 	{ id: 101, name: "101 - Switching Protocols" },
