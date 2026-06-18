@@ -151,7 +151,7 @@ export class DBQueueWorker implements IWorker {
 
 	private runCheck = async (job: Job) => {
 		if (!job.refId) return;
-		const [monitor] = await this.monitorsRepository.findByIds([job.refId]); // job row has no teamId
+		const monitor = await this.monitorsRepository.findByIdLean(job.refId); // job row has no teamId
 		if (!monitor) return;
 		await this.checkProducer.produce(monitor);
 	};
@@ -162,19 +162,22 @@ export class DBQueueWorker implements IWorker {
 
 	private runEvaluate = async (job: Job) => {
 		if (!job.refId) return;
-		const [monitor] = await this.monitorsRepository.findByIds([job.refId]); // job row has no teamId
+		const monitor = await this.monitorsRepository.findByIdLean(job.refId); // job row has no teamId
 		if (!monitor) return;
 		const checks = await this.checksRepository.findUnevaluatedByMonitorId(job.refId, monitor.lastEvaluatedAt);
+
+		let current = monitor;
 		for (const check of checks) {
 			const status = this.checkService.toStatusResponse(check);
-			const evaluation = await this.checkEvaluator.evaluate(status, check);
+			const evaluation = await this.checkEvaluator.evaluate(status, check, current);
 			await this.dispatcher.dispatch(evaluation); // Handle incidents and notifications
-			await this.monitorsRepository.updateById(job.refId, monitor.teamId, { lastEvaluatedAt: this.checkService.toLastEvaluatedAt(check) });
+			await this.monitorsRepository.updateById(job.refId, current.teamId, { lastEvaluatedAt: this.checkService.toLastEvaluatedAt(check) });
+			current = evaluation.statusChange.monitor; // fresh statusWindow/status/counters for the next check
 		}
 	};
 
 	private runGeoCheck = async (job: Job) => {
-		const [monitor] = await this.monitorsRepository.findByIds([job.refId!]);
+		const monitor = await this.monitorsRepository.findByIdLean(job.refId!);
 		if (monitor) await this.geoCheckPipeline.run(monitor); // returns null; no evaluate handoff
 	};
 

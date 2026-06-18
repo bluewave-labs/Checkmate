@@ -7,29 +7,11 @@ import { IBufferService } from "@/service/bufferService.js";
 import { AppError } from "@/utils/AppError.js";
 import { supportsGeoCheck } from "@/domain/monitors/monitor.types.js";
 import { IGeoChecksService } from "@/domain/geo-checks/geo-check.service.js";
-import { ICheckProducer } from "@/worker/worker.check-producer.js";
-import { ICheckEvaluator } from "@/worker/worker.check-evaluator.js";
 
 const SERVICE_NAME = "CheckPipeline";
 
 export interface ICheckPipeline {
 	run(monitor: Monitor): Promise<MonitorEvaluation | null>; // null = skipped
-}
-
-export class CheckPipeline implements ICheckPipeline {
-	constructor(
-		private checkProducer: ICheckProducer,
-		private checkEvaluator: ICheckEvaluator
-	) {}
-
-	run = async (monitor: Monitor): Promise<MonitorEvaluation | null> => {
-		const checkResult = await this.checkProducer.produce(monitor);
-		if (!checkResult) {
-			return null; // skipped due to maintenance / geo guards / other guards
-		}
-		const evaluation = await this.checkEvaluator.evaluate(checkResult.status, checkResult.check);
-		return evaluation;
-	};
 }
 
 export class GeoChecksPipeline implements ICheckPipeline {
