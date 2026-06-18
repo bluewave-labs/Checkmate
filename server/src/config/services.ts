@@ -227,7 +227,7 @@ export const initializeServices = async ({
 		monitorsRepository,
 	});
 
-	const bufferService = new BufferService(logger, checkService, geoChecksService, settingsService);
+	const bufferService = new BufferService(logger, checkService, geoChecksService, settingsService, jobsRepository);
 
 	const statusService = new StatusService(logger, bufferService, monitorsRepository, monitorStatsRepository, checksRepository);
 
