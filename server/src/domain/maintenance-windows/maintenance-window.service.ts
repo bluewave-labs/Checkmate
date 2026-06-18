@@ -1,5 +1,6 @@
 import { IMaintenanceWindowsRepository } from "@/domain/maintenance-windows/maintenance-window.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
+import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import type { DurationUnit, MaintenanceWindow } from "@/domain/maintenance-windows/maintenance-window.type.js";
 import { AppError } from "@/utils/AppError.js";
 import { isWindowActive } from "@/utils/maintenanceWindow.js";
@@ -40,16 +41,20 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 	static SERVICE_NAME = SERVICE_NAME;
 	private monitorsRepository: IMonitorsRepository;
 	private maintenanceWindowsRepository: IMaintenanceWindowsRepository;
+	private jobsRepository: IJobsRepository;
 
 	constructor({
 		monitorsRepository,
 		maintenanceWindowsRepository,
+		jobsRepository,
 	}: {
 		monitorsRepository: IMonitorsRepository;
 		maintenanceWindowsRepository: IMaintenanceWindowsRepository;
+		jobsRepository: IJobsRepository;
 	}) {
 		this.monitorsRepository = monitorsRepository;
 		this.maintenanceWindowsRepository = maintenanceWindowsRepository;
+		this.jobsRepository = jobsRepository;
 	}
 
 	get serviceName() {
@@ -71,6 +76,8 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		const toInitializing = monitorIds.filter((monitorId) => !stillCovered.has(monitorId));
 		if (toInitializing.length > 0) {
 			await this.monitorsRepository.updateByIds(toInitializing, teamId, { status: "initializing" }, ["paused"]);
+			// Rearm jobs to run soon (now + jitter to avoid herding)
+			await this.jobsRepository.markMonitorsDue(toInitializing, now.getTime());
 		}
 	};
 

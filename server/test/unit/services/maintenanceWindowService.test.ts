@@ -2,6 +2,7 @@ import { describe, expect, it, jest } from "@jest/globals";
 import { MaintenanceWindowService } from "../../../src/domain/maintenance-windows/maintenance-window.service.ts";
 import type { IMaintenanceWindowsRepository } from "../../../src/domain/maintenance-windows/maintenance-window.repository.interface.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
+import type { IJobsRepository } from "../../../src/domain/jobs/job.repository.interface.ts";
 import type { MaintenanceWindow } from "../../../src/domain/maintenance-windows/maintenance-window.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -27,14 +28,21 @@ const createMonitorsRepo = () =>
 		updateByIds: jest.fn().mockResolvedValue(0),
 	}) as unknown as jest.Mocked<IMonitorsRepository>;
 
+const createJobsRepo = () =>
+	({
+		markMonitorsDue: jest.fn().mockResolvedValue(0),
+	}) as unknown as jest.Mocked<IJobsRepository>;
+
 const createService = (overrides?: {
 	monitorsRepository?: ReturnType<typeof createMonitorsRepo>;
 	maintenanceWindowsRepository?: ReturnType<typeof createMaintenanceWindowsRepo>;
+	jobsRepository?: ReturnType<typeof createJobsRepo>;
 }) => {
 	const monitorsRepository = overrides?.monitorsRepository ?? createMonitorsRepo();
 	const maintenanceWindowsRepository = overrides?.maintenanceWindowsRepository ?? createMaintenanceWindowsRepo();
-	const service = new MaintenanceWindowService({ monitorsRepository, maintenanceWindowsRepository });
-	return { service, monitorsRepository, maintenanceWindowsRepository };
+	const jobsRepository = overrides?.jobsRepository ?? createJobsRepo();
+	const service = new MaintenanceWindowService({ monitorsRepository, maintenanceWindowsRepository, jobsRepository });
+	return { service, monitorsRepository, maintenanceWindowsRepository, jobsRepository };
 };
 
 const makeWindow = (overrides?: Partial<MaintenanceWindow>): MaintenanceWindow => ({
@@ -267,12 +275,14 @@ describe("MaintenanceWindowService", () => {
 		it("flips covered monitors to initializing when deleting an active window", async () => {
 			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
 			(maintenanceWindowsRepository.deleteById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1", "mon-2"] }));
-			const { service, monitorsRepository } = createService({ maintenanceWindowsRepository });
+			const { service, monitorsRepository, jobsRepository } = createService({ maintenanceWindowsRepository });
 
 			await service.deleteMaintenanceWindow({ id: "mw-1", teamId: "team-1" });
 
 			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
 			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], "team-1", { status: "initializing" }, ["paused"]);
+			// Monitors leaving maintenance are re-armed to run soon instead of waiting out the interval
+			expect(jobsRepository.markMonitorsDue).toHaveBeenCalledWith(["mon-1", "mon-2"], expect.any(Number));
 		});
 
 		it("excludes the deleted window from the overlap check", async () => {
