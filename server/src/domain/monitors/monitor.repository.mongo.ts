@@ -38,6 +38,11 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return this.toEntity(monitor);
 	};
 
+	findByIdLean = async (monitorId: string): Promise<Monitor | null> => {
+		const monitor = await MonitorModel.findOne({ _id: monitorId });
+		return monitor ? this.toEntity(monitor) : null;
+	};
+
 	findAll = async (): Promise<Monitor[]> => {
 		const monitors = await MonitorModel.find();
 		return this.mapDocuments(monitors);

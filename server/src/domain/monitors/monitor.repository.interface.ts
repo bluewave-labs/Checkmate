@@ -22,6 +22,8 @@ export interface IMonitorsRepository {
 	createMonitors(monitors: Monitor[]): Promise<Monitor[]>;
 	// single fetch
 	findById(monitorId: string, teamId: string): Promise<Monitor>;
+	// for workers, don't need all details
+	findByIdLean(monitorId: string): Promise<Monitor | null>;
 
 	// collection fetch
 	findAll(): Promise<Monitor[] | null>;
