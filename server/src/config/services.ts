@@ -338,6 +338,7 @@ export const initializeServices = async ({
 	const maintenanceWindowService = new MaintenanceWindowService({
 		monitorsRepository,
 		maintenanceWindowsRepository,
+		jobsRepository,
 	});
 	const monitorService = new MonitorService({
 		worker,
