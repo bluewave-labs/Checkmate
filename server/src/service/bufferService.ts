@@ -3,6 +3,7 @@ import type { GeoCheck } from "@/domain/geo-checks/geo-check.type.js";
 import type { IGeoChecksService } from "../domain/geo-checks/geo-check.service.js";
 import type { ILogger } from "@/utils/logger.js";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
+import type { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import { ICheckService } from "../domain/checks/check.service.js";
 const SERVICE_NAME = "BufferService";
 
@@ -24,12 +25,20 @@ export class BufferService implements IBufferService {
 	private bufferTimer: NodeJS.Timeout | null = null;
 	private checksService: ICheckService;
 	private geoChecksService: IGeoChecksService;
+	private jobsRepository: IJobsRepository;
 
-	constructor(logger: ILogger, checkService: ICheckService, geoChecksService: IGeoChecksService, settingsService: ISettingsService) {
+	constructor(
+		logger: ILogger,
+		checkService: ICheckService,
+		geoChecksService: IGeoChecksService,
+		settingsService: ISettingsService,
+		jobsRepository: IJobsRepository
+	) {
 		this.BUFFER_TIMEOUT = settingsService.getSettings().nodeEnv === "development" ? 1000 : 1000 * 60 * 1; // 1 minute
 		this.logger = logger;
 		this.checksService = checkService;
 		this.geoChecksService = geoChecksService;
+		this.jobsRepository = jobsRepository;
 		this.SERVICE_NAME = SERVICE_NAME;
 		this.buffer = [];
 		this.geoBuffer = [];
@@ -93,16 +102,23 @@ export class BufferService implements IBufferService {
 		}, this.BUFFER_TIMEOUT);
 	}
 	async flushBuffer() {
+		if (this.buffer.length === 0) {
+			return;
+		}
+		// Take the batch first so a write that drains it can't be appended to mid-flush
+		const batch = this.buffer;
+		this.buffer = [];
 		try {
-			if (this.buffer.length > 0) {
-				this.logger.debug({
-					message: `Flushing ${this.buffer.length} checks to database`,
-					service: this.SERVICE_NAME,
-					method: "flushBuffer",
-				});
-				await this.checksService.createChecks(this.buffer);
-				this.buffer = [];
-			}
+			this.logger.debug({
+				message: `Flushing ${batch.length} checks to database`,
+				service: this.SERVICE_NAME,
+				method: "flushBuffer",
+			});
+			await this.checksService.createChecks(batch);
+			// Need to evaluate checks when they are flushed
+			const monitorIds = [...new Set(batch.map((check) => check.metadata.monitorId))];
+			const now = Date.now();
+			await Promise.all(monitorIds.map((monitorId) => this.jobsRepository.upsertEvaluate(monitorId, now)));
 		} catch (error: unknown) {
 			this.logger.error({
 				message: error instanceof Error ? error.message : "Unknown error",
@@ -110,8 +126,7 @@ export class BufferService implements IBufferService {
 				method: "flushBuffer",
 				stack: error instanceof Error ? error.stack : undefined,
 			});
-			// Clear buffer even on error to prevent infinite retry loops
-			this.buffer = [];
+			// Batch is already cleared from the buffer; dropping it prevents infinite retry loops
 		}
 	}
 
