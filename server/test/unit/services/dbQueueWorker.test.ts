@@ -80,6 +80,7 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 	};
 	const monitorsRepository = {
 		findByIds: jest.fn<any>().mockResolvedValue([makeMonitor()]),
+		findByIdLean: jest.fn<any>().mockResolvedValue(makeMonitor()),
 		findAll: jest.fn<any>().mockResolvedValue([]),
 		updateById: jest.fn<any>().mockResolvedValue({}),
 	};
@@ -94,7 +95,7 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 		produce: jest.fn<any>().mockResolvedValue({ status: { status: "up" }, check: { id: "c1" } }),
 	};
 	const checkEvaluator = {
-		evaluate: jest.fn<any>().mockResolvedValue({ monitor: makeMonitor(), decision: {} }),
+		evaluate: jest.fn<any>().mockResolvedValue({ monitor: makeMonitor(), statusChange: { monitor: makeMonitor() }, decision: {} }),
 	};
 	const geoCheckPipeline = { run: jest.fn<any>().mockResolvedValue(null) };
 	const dispatcher = { dispatch: jest.fn<any>().mockResolvedValue(undefined) };
@@ -268,7 +269,7 @@ describe("DBQueueWorker", () => {
 			const job = makeJob({ type: "check", refId: "m1", intervalMs: 60000 });
 			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) } } });
 
-			expect(mocks.monitorsRepository.findByIds).toHaveBeenCalledWith(["m1"]);
+			expect(mocks.monitorsRepository.findByIdLean).toHaveBeenCalledWith("m1");
 			expect(mocks.checkProducer.produce).toHaveBeenCalled();
 			// The check stage only produces; the buffer arms evaluate once the check is durably stored
 			expect(mocks.jobsRepository.upsertEvaluate).not.toHaveBeenCalled();
@@ -305,6 +306,35 @@ describe("DBQueueWorker", () => {
 			expect(mocks.checkEvaluator.evaluate).toHaveBeenCalled();
 			expect(mocks.dispatcher.dispatch).toHaveBeenCalled();
 			expect(mocks.monitorsRepository.updateById).toHaveBeenCalledWith("m1", "team", { lastEvaluatedAt: 12345 });
+		});
+
+		it("evaluate job reads the monitor once and threads the post-write monitor across the backlog", async () => {
+			const job = makeJob({ id: "evaluate:m1", type: "evaluate", intervalMs: null });
+			const initialMonitor = makeMonitor();
+			const postWriteMonitor = makeMonitor({ status: "down" }); // what updateStatusWindowAndChecks would return after check c1
+			const monitorsRepository = {
+				findByIdLean: jest.fn<any>().mockResolvedValue(initialMonitor),
+				updateById: jest.fn<any>().mockResolvedValue({}),
+			};
+			const checksRepository = { findUnevaluatedByMonitorId: jest.fn<any>().mockResolvedValue([{ id: "c1" }, { id: "c2" }]) };
+			const checkEvaluator = {
+				evaluate: jest.fn<any>().mockResolvedValue({ monitor: postWriteMonitor, statusChange: { monitor: postWriteMonitor }, decision: {} }),
+			};
+			const { mocks } = await start({
+				mocks: {
+					jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) },
+					monitorsRepository,
+					checksRepository,
+					checkEvaluator,
+				},
+			});
+
+			// The monitor is read once for the whole backlog, not once per check
+			expect(mocks.monitorsRepository.findByIdLean).toHaveBeenCalledTimes(1);
+			expect(mocks.checkEvaluator.evaluate).toHaveBeenCalledTimes(2);
+			// First check evaluates against the freshly-read monitor; the second against the post-write monitor from the first
+			expect(mocks.checkEvaluator.evaluate.mock.calls[0][2]).toBe(initialMonitor);
+			expect(mocks.checkEvaluator.evaluate.mock.calls[1][2]).toBe(postWriteMonitor);
 		});
 
 		it("cleanup-orphaned job runs the helper's cleanup function", async () => {
