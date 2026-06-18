@@ -2,6 +2,9 @@ import { IJobsRepository, JobPageQuery } from "@/domain/jobs/job.repository.inte
 import JobModel, { JobDocument } from "@/domain/jobs/job.model.js";
 import { JobType, Job, JobSeed, BACKOFF_MS, LOCK_MS, PARKED, jobId } from "@/domain/jobs/job.type.js";
 
+// Cap for rearm interval, never want to wait more than 15s.
+const REARM_JITTER_MAX_MS = 15_000;
+
 class MongoJobsRepository implements IJobsRepository {
 	constructor(private readonly workerId: string) {}
 
@@ -247,6 +250,21 @@ class MongoJobsRepository implements IJobsRepository {
 	updateScheduleById = async (refId: string, type: JobType, intervalMs: number | null) => {
 		const res = await JobModel.updateOne({ refId, type }, { $set: { intervalMs } });
 		return res.modifiedCount === 1;
+	};
+
+	markMonitorsDue = async (monitorIds: string[], now: number) => {
+		if (monitorIds.length === 0) return 0;
+		const res = await JobModel.updateMany({ refId: { $in: monitorIds }, type: { $in: ["check", "geo-check"] } }, [
+			{
+				// Spread rearmed jobs, but never for more than rearm jitter max
+				$set: {
+					nextScheduledAt: {
+						$add: [now, { $floor: { $multiply: [{ $rand: {} }, { $min: ["$intervalMs", REARM_JITTER_MAX_MS] }] } }],
+					},
+				},
+			},
+		]);
+		return res.modifiedCount;
 	};
 
 	deleteById = async (refId: string) => {

@@ -396,6 +396,44 @@ describe("MongoJobsRepository", () => {
 			expect((await readRow("geo:mon-1"))?.intervalMs).toBe(60_000); // untouched
 		});
 
+		it("markMonitorsDue re-arms check and geo rows, capping the jitter for long intervals", async () => {
+			const armAt = NOW + 5_000_000; // well past the seeded nextScheduledAt so the jittered value is unambiguous
+			await seedJob({ _id: "check:mon-1", refId: "mon-1", type: "check", intervalMs: 10_000, nextScheduledAt: NOW }); // shorter than the cap
+			await seedJob({ _id: "geo:mon-1", refId: "mon-1", type: "geo-check", intervalMs: 3_600_000, nextScheduledAt: NOW }); // far longer than the cap
+
+			const modified = await repo.markMonitorsDue(["mon-1"], armAt);
+
+			expect(modified).toBe(2);
+			const check = await readRow("check:mon-1");
+			const geo = await readRow("geo:mon-1");
+			// Short interval spreads over its own interval; long interval is capped so it still runs soon
+			expect(check!.nextScheduledAt).toBeGreaterThanOrEqual(armAt);
+			expect(check!.nextScheduledAt).toBeLessThan(armAt + 10_000);
+			expect(geo!.nextScheduledAt).toBeGreaterThanOrEqual(armAt);
+			expect(geo!.nextScheduledAt).toBeLessThan(armAt + 15_000); // REARM_JITTER_MS, not the hour-long interval
+		});
+
+		it("markMonitorsDue only touches the listed monitors and ignores evaluate/cleanup rows", async () => {
+			await seedJob({ _id: "check:mon-1", refId: "mon-1", type: "check", nextScheduledAt: NOW });
+			await seedJob({ _id: "check:mon-2", refId: "mon-2", type: "check", nextScheduledAt: NOW });
+			await seedJob({ _id: "evaluate:mon-1", refId: "mon-1", type: "evaluate", nextScheduledAt: NOW });
+
+			const modified = await repo.markMonitorsDue(["mon-1"], NOW + 1_000);
+
+			expect(modified).toBe(1); // only check:mon-1
+			expect((await readRow("check:mon-2"))?.nextScheduledAt).toBe(NOW); // other monitor untouched
+			expect((await readRow("evaluate:mon-1"))?.nextScheduledAt).toBe(NOW); // evaluate row untouched
+		});
+
+		it("markMonitorsDue is a no-op for an empty monitor list", async () => {
+			await seedJob({ _id: "check:mon-1", refId: "mon-1", type: "check", nextScheduledAt: NOW });
+
+			const modified = await repo.markMonitorsDue([], NOW + 1_000);
+
+			expect(modified).toBe(0);
+			expect((await readRow("check:mon-1"))?.nextScheduledAt).toBe(NOW);
+		});
+
 		it("deleteById drops every row for the monitor", async () => {
 			await seedJob({ _id: "check:mon-1", type: "check" });
 			await seedJob({ _id: "geo:mon-1", type: "geo-check" });

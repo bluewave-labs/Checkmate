@@ -52,6 +52,9 @@ export interface IJobsRepository {
 	// Edit job schedule
 	updateScheduleById(refId: string, type: JobType, intervalMs: number | null): Promise<boolean>;
 
+	// Re-arm the check/geo-check rows.  Add jitter to prevent herd
+	markMonitorsDue(monitorIds: string[], now: number): Promise<number>;
+
 	// Delete, drop all rows
 	deleteById(refId: string): Promise<boolean>;
 
