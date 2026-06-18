@@ -98,18 +98,18 @@ export class DBQueueWorker implements IWorker {
 		return instance;
 	}
 
-	// Helpers, builds job seeds
-	private toCheckJob = (monitor: Monitor, now: number): JobSeed => ({
+	// Helpers, builds job seeds. immediate=true runs on the next tick; otherwise jitter spreads the herd.
+	private toCheckJob = (monitor: Monitor, now: number, immediate = false): JobSeed => ({
 		id: jobId("check", monitor.id),
 		type: "check",
 		refId: monitor.id,
 		isActive: monitor.isActive,
-		nextScheduledAt: now + Math.floor(Math.random() * monitor.interval), // Avoid herd
+		nextScheduledAt: immediate ? now : now + Math.floor(Math.random() * monitor.interval), // Avoid herd
 		intervalMs: monitor.interval,
 	});
 
-	private toGeoCheckJob = (monitor: Monitor, now: number): JobSeed => ({
-		...this.toCheckJob(monitor, now),
+	private toGeoCheckJob = (monitor: Monitor, now: number, immediate = false): JobSeed => ({
+		...this.toCheckJob(monitor, now, immediate),
 		id: jobId("geo-check", monitor.id),
 		type: "geo-check",
 		intervalMs: monitor.geoCheckInterval!,
@@ -153,10 +153,7 @@ export class DBQueueWorker implements IWorker {
 		if (!job.refId) return;
 		const [monitor] = await this.monitorsRepository.findByIds([job.refId]); // job row has no teamId
 		if (!monitor) return;
-		const produced = await this.checkProducer.produce(monitor);
-		if (produced) {
-			await this.jobsRepository.upsertEvaluate(monitor.id, Date.now());
-		}
+		await this.checkProducer.produce(monitor);
 	};
 
 	// ********************
@@ -182,7 +179,6 @@ export class DBQueueWorker implements IWorker {
 	};
 
 	// Extend the lock while a job runs so a slow-but-alive job is never reclaimed.
-	// Returns false once we no longer hold the lock, so the renewal timer can stop.
 	private renewLock = async (job: Job): Promise<boolean> => {
 		try {
 			const held = await this.jobsRepository.renewLocks([job.id], Date.now());
@@ -192,7 +188,6 @@ export class DBQueueWorker implements IWorker {
 			}
 			return true;
 		} catch (error: unknown) {
-			// Transient failure, keep renewing; a missed renewal is absorbed by the 1/3 margin
 			this.logger.warn({ message: error instanceof Error ? error.message : String(error), service: SERVICE_NAME, method: "renewLock" });
 			return true;
 		}
@@ -316,8 +311,8 @@ export class DBQueueWorker implements IWorker {
 
 	addJob = async (_monitorId: string, monitor: Monitor) => {
 		const now = Date.now();
-		await this.jobsRepository.upsertJob(this.toCheckJob(monitor, now));
-		if (supportsGeoCheck(monitor.type) && monitor.geoCheckEnabled) await this.jobsRepository.upsertJob(this.toGeoCheckJob(monitor, now));
+		await this.jobsRepository.upsertJob(this.toCheckJob(monitor, now, true));
+		if (supportsGeoCheck(monitor.type) && monitor.geoCheckEnabled) await this.jobsRepository.upsertJob(this.toGeoCheckJob(monitor, now, true));
 	};
 	deleteJob = async (monitor: Monitor) => {
 		await this.jobsRepository.deleteById(monitor.id);
@@ -331,7 +326,7 @@ export class DBQueueWorker implements IWorker {
 	updateJob = async (monitor: Monitor) => {
 		await this.jobsRepository.updateScheduleById(monitor.id, "check", monitor.interval);
 		if (supportsGeoCheck(monitor.type) && monitor.geoCheckEnabled) {
-			await this.jobsRepository.upsertJob(this.toGeoCheckJob(monitor, Date.now()));
+			await this.jobsRepository.upsertJob(this.toGeoCheckJob(monitor, Date.now(), true)); // a newly enabled geo check should run right away
 		} else {
 			await this.jobsRepository.deleteByIdAndType(monitor.id, "geo-check");
 		}

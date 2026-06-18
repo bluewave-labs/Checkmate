@@ -270,7 +270,8 @@ describe("DBQueueWorker", () => {
 
 			expect(mocks.monitorsRepository.findByIds).toHaveBeenCalledWith(["m1"]);
 			expect(mocks.checkProducer.produce).toHaveBeenCalled();
-			expect(mocks.jobsRepository.upsertEvaluate).toHaveBeenCalledWith("m1", expect.any(Number));
+			// The check stage only produces; the buffer arms evaluate once the check is durably stored
+			expect(mocks.jobsRepository.upsertEvaluate).not.toHaveBeenCalled();
 			expect(mocks.jobsRepository.recordSuccess).toHaveBeenCalledWith(job.id, job.nextScheduledAt, job.intervalMs, expect.any(Number));
 			expect(mocks.jobsRepository.recordFailure).not.toHaveBeenCalled();
 		});
@@ -392,6 +393,17 @@ describe("DBQueueWorker", () => {
 			const types = mocks.jobsRepository.upsertJob.mock.calls.map((c: any[]) => c[0].type);
 			expect(types).toContain("check");
 			expect(types).toContain("geo-check");
+		});
+
+		it("addJob schedules new jobs to run immediately (no startup jitter)", async () => {
+			const { worker, mocks } = createWorker();
+			active = worker;
+			const now = Date.now();
+			await worker.addJob("m1", makeMonitor({ geoCheckEnabled: true }));
+
+			for (const [seed] of mocks.jobsRepository.upsertJob.mock.calls as any[][]) {
+				expect(seed.nextScheduledAt).toBe(now);
+			}
 		});
 
 		it("addJob seeds only a check row for non-geo monitors", async () => {
