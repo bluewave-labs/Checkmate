@@ -56,7 +56,7 @@ describe("CheckProducer", () => {
 		const result = await producer.produce(makeMonitor({ status: "up" }));
 
 		expect(result).toBeNull();
-		expect(defaults.monitorsRepository.updateById).toHaveBeenCalledWith("m1", "team", { status: "maintenance" });
+		expect(defaults.monitorsRepository.updateById).toHaveBeenCalledWith("m1", "team", { status: "maintenance", statusWindow: [] });
 		expect(defaults.networkService.requestStatus).not.toHaveBeenCalled();
 		expect(defaults.buffer.addToBuffer).not.toHaveBeenCalled();
 	});

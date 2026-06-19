@@ -564,7 +564,7 @@ describe("StatusService", () => {
 			const { service, monitorsRepository } = createService();
 			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
 
-			const result = await service.updateMonitorStatus(makeStatusResponse({ status: true }), makeCheck({ status: true }));
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: true }), makeCheck({ status: true }), monitor);
 
 			expect(result.statusChanged).toBe(false);
 			expect(result.monitor.status).toBe("up");
@@ -579,7 +579,7 @@ describe("StatusService", () => {
 			const { service, monitorsRepository } = createService();
 			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
 
-			const result = await service.updateMonitorStatus(makeStatusResponse({ status: false }), makeCheck({ status: false }));
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: false }), makeCheck({ status: false }), monitor);
 
 			expect(result.statusChanged).toBe(true);
 			expect(result.monitor.status).toBe("down");
@@ -599,7 +599,7 @@ describe("StatusService", () => {
 			const { service, monitorsRepository } = createService();
 			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
 
-			const result = await service.updateMonitorStatus(makeStatusResponse({ status: true }), makeCheck({ status: true }));
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: true }), makeCheck({ status: true }), monitor);
 
 			expect(result.monitor.status).toBe("up");
 		});
