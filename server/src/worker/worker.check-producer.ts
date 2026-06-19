@@ -49,7 +49,8 @@ export class CheckProducer implements ICheckProducer {
 				method: "produce",
 			});
 			if (monitor.status !== "maintenance") {
-				await this.monitorsRepository.updateById(monitor.id, monitor.teamId, { status: "maintenance" });
+				// Clear the status window to avoid incidents being created on next check
+				await this.monitorsRepository.updateById(monitor.id, monitor.teamId, { status: "maintenance", statusWindow: [] });
 			}
 			return null;
 		}

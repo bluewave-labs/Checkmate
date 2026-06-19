@@ -221,10 +221,10 @@ export class StatusService implements IStatusService {
 			// Build the status patch — computed against the projected window
 			const patch: Partial<Monitor> = {};
 
-			// Resolve "initializing" up-front, incidents should be created on initialization && down
+			// Resolve "initializing" and "maintenance" up front, incidents should be created on initialization && down
 			let newStatus: MonitorStatus = monitor.status;
 			let statusChanged = false;
-			if (monitor.status === "initializing") {
+			if (monitor.status === "initializing" || monitor.status === "maintenance") {
 				newStatus = status === true ? "up" : "down";
 				patch.status = newStatus;
 				statusChanged = newStatus === "down";
