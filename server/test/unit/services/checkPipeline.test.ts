@@ -67,7 +67,7 @@ describe("CheckPipeline", () => {
 
 		expect(result).toBeNull();
 		expect(defaults.networkService.requestStatus).not.toHaveBeenCalled();
-		expect(defaults.monitorsRepository.updateById).toHaveBeenCalledWith("m1", "team", { status: "maintenance" });
+		expect(defaults.monitorsRepository.updateById).toHaveBeenCalledWith("m1", "team", { status: "maintenance", statusWindow: [] });
 	});
 
 	it("does not re-write status when already in maintenance", async () => {

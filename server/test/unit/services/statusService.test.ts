@@ -557,6 +557,55 @@ describe("StatusService", () => {
 			expect(result.prevStatus).toBe("initializing");
 		});
 
+		it("leaves 'maintenance' for 'up' on a passing check after the window closes (empty statusWindow)", async () => {
+			// On entry to a maintenance window the producer clears statusWindow, so the first
+			// check after the window closes sees an empty window and lands in the warmup
+			// early-return branch. A passing check must move the monitor out of 'maintenance'
+			// to 'up' without flagging a status change (no incident).
+			const monitor = makeMonitor({ statusWindow: [], statusWindowSize: 5, status: "maintenance" });
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: true }), makeCheck({ status: true }));
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.monitor.status).toBe("up");
+			expect(result.prevStatus).toBe("maintenance");
+		});
+
+		it("leaves 'maintenance' for 'down' on a failing check after the window closes (empty statusWindow)", async () => {
+			// Mirror of the recovery case: a failing first check after the window closes must
+			// flip the monitor straight to 'down' and surface statusChanged so an incident opens,
+			// rather than leave it stuck in 'maintenance'.
+			const monitor = makeMonitor({ statusWindow: [], statusWindowSize: 5, status: "maintenance" });
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: false }), makeCheck({ status: false }));
+
+			expect(result.statusChanged).toBe(true);
+			expect(result.monitor.status).toBe("down");
+			expect(result.prevStatus).toBe("maintenance");
+		});
+
+		it("unsticks from 'maintenance' to 'up' on a passing check even with a full window (regression: stuck in maintenance)", async () => {
+			// Guards the up-front override directly: even if a full window survives (e.g. the
+			// entry-clear is bypassed), computeReachability only transitions out to 'up' from
+			// 'down', so without the override the monitor would stay stuck in 'maintenance'.
+			const monitor = makeMonitor({
+				statusWindow: [true, true, true, true, true],
+				statusWindowSize: 5,
+				statusWindowThreshold: 80,
+				status: "maintenance",
+			});
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: true }), makeCheck({ status: true }));
+
+			expect(result.monitor.status).toBe("up");
+		});
+
 		it("does not flip status on subsequent checks during warmup once 'initializing' has been left (regression: down→up incident resolves once window fills)", async () => {
 			// After a 'initializing'→'down' transition on check #1, monitor.status is now 'down'
 			// and statusWindow has one false. Subsequent up checks during warmup must leave
