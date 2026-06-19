@@ -479,6 +479,80 @@ describe("DBQueueWorker", () => {
 		});
 	});
 
+	// ── poll backoff + wake() ───────────────────────────────────────────────────
+	//
+	// An idle loop grows its poll interval up to POLL_MAX_MS (5s). wake() fast-paths
+	// it back so a freshly-enqueued "run now" job doesn't wait out that backoff.
+
+	describe("poll backoff and wake", () => {
+		const POLL_MAX_MS = 5000;
+		const claims = (mocks: any, type: string) => mocks.jobsRepository.claimDueBatch.mock.calls.filter((c: any[]) => c[0] === type).length;
+
+		it("backs off the idle poll interval toward POLL_MAX_MS", async () => {
+			const { mocks } = await start({ queueMode: "worker" }); // claimDueBatch returns [] → always idle
+			await jest.advanceTimersByTimeAsync(15000); // let the check loop grow to the cap
+			const before = claims(mocks, "check");
+			await jest.advanceTimersByTimeAsync(POLL_MAX_MS * 2); // ~2 polls at a 5s cadence
+			const delta = claims(mocks, "check") - before;
+			// At the cap that's ~2 polls; at the un-backed-off 250ms cadence it would be ~40.
+			expect(delta).toBeGreaterThanOrEqual(1);
+			expect(delta).toBeLessThanOrEqual(4);
+		});
+
+		it("wake() re-fires an idle, backed-off loop immediately", async () => {
+			const { worker, mocks } = await start({ queueMode: "worker" });
+			await jest.advanceTimersByTimeAsync(15000); // back off the check loop to the cap
+			const before = claims(mocks, "check");
+
+			worker.wake("check");
+			await jest.advanceTimersByTimeAsync(1);
+
+			expect(claims(mocks, "check")).toBe(before + 1); // fired now, not 5s later
+		});
+
+		it("wake() resets the cadence so the loop polls fast again, not at the 5s cap", async () => {
+			const { worker, mocks } = await start({ queueMode: "worker" });
+			await jest.advanceTimersByTimeAsync(15000); // backed off to the cap
+			worker.wake("check");
+			await jest.advanceTimersByTimeAsync(1); // immediate tick (still idle → next poll at ~POLL_MS*2)
+			const before = claims(mocks, "check");
+
+			await jest.advanceTimersByTimeAsync(POLL_MS * 2); // 500ms
+
+			// Polled again well within the old 5s cap, proving the interval was reset.
+			expect(claims(mocks, "check")).toBe(before + 1);
+		});
+
+		it("wake() is a no-op for a loop that isn't running in this process", async () => {
+			const { worker, mocks } = await start({ queueMode: "primary", queuePrimaryProcesses: false }); // no loops
+			expect(() => worker.wake("check")).not.toThrow();
+			await jest.advanceTimersByTimeAsync(1);
+			expect(claims(mocks, "check")).toBe(0);
+		});
+
+		it("addJob wakes the check loop so a new monitor's first check runs promptly", async () => {
+			const { worker, mocks } = await start({ queueMode: "worker" });
+			await jest.advanceTimersByTimeAsync(15000); // backed off to the cap
+			const before = claims(mocks, "check");
+
+			await worker.addJob("m2", makeMonitor({ id: "m2" }));
+			await jest.advanceTimersByTimeAsync(1);
+
+			expect(claims(mocks, "check")).toBe(before + 1);
+		});
+
+		it("resumeJob wakes the check loop so a resumed monitor runs promptly", async () => {
+			const { worker, mocks } = await start({ queueMode: "worker" });
+			await jest.advanceTimersByTimeAsync(15000); // backed off to the cap
+			const before = claims(mocks, "check");
+
+			await worker.resumeJob(makeMonitor());
+			await jest.advanceTimersByTimeAsync(1);
+
+			expect(claims(mocks, "check")).toBe(before + 1);
+		});
+	});
+
 	// ── shutdown ────────────────────────────────────────────────────────────────
 
 	describe("shutdown", () => {

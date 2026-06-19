@@ -41,6 +41,17 @@ export class DBQueueWorker implements IWorker {
 		"cleanup-retention": 0,
 	};
 
+	// Per job type poll intervals.  These back off on idle and reset on work or wake()
+	private pollMs: Record<JobType, number> = {
+		check: POLL_MS,
+		"geo-check": POLL_MS,
+		evaluate: POLL_MS,
+		"cleanup-orphaned": POLL_MS,
+		"cleanup-retention": POLL_MS,
+	};
+	private ticking: Partial<Record<JobType, boolean>> = {}; // Whether a loop is mid tick
+	private tickFns = new Map<JobType, () => void>(); // Store tick fns so we can run them immediately on wake
+
 	constructor(
 		private logger: ILogger,
 		private jobsRepository: IJobsRepository,
@@ -239,9 +250,10 @@ export class DBQueueWorker implements IWorker {
 	};
 
 	private startLoop = (type: JobType) => {
-		let pollMs = POLL_MS;
+		this.pollMs[type] = POLL_MS;
 		const tick = async () => {
 			if (this.stopped) return;
+			this.ticking[type] = true;
 			try {
 				// Claim a batch sized to the free capacity
 				const capacity = CONCURRENCY[type] - this.inFlight[type];
@@ -252,8 +264,8 @@ export class DBQueueWorker implements IWorker {
 						this.inFlight[type]--; // job done, free the slot
 					});
 				}
-				// Back off if no jobs founds, reset to base if jobs found
-				pollMs = capacity > 0 && jobs.length === 0 ? Math.min(pollMs * 2, POLL_MAX_MS) : POLL_MS;
+				// Back off if no jobs found, reset to base if jobs found
+				this.pollMs[type] = capacity > 0 && jobs.length === 0 ? Math.min(this.pollMs[type] * 2, POLL_MAX_MS) : POLL_MS;
 			} catch (error: unknown) {
 				this.logger.error({
 					message: error instanceof Error ? error.message : String(error),
@@ -261,9 +273,24 @@ export class DBQueueWorker implements IWorker {
 					method: `loop:${type}`,
 				});
 			}
-			if (!this.stopped) this.timers.set(type, setTimeout(tick, pollMs)); // re-arm unless shutting down
+			// Clearing the flag and re-arming run synchronously (no await between), so wake() can never interleave here.
+			this.ticking[type] = false;
+			if (!this.stopped) this.timers.set(type, setTimeout(tick, this.pollMs[type])); // re-arm unless shutting down
 		};
+		this.tickFns.set(type, tick);
 		tick();
+	};
+
+	// Wake a worker loop after adding a job that's due immediately.
+	// Otherwise the loop could be delayed by POLL_MAX_MS if it is already fully backed off
+	wake = (type: JobType) => {
+		this.pollMs[type] = POLL_MS;
+		if (this.stopped || this.ticking[type]) return; // If it's not running or mid tick, do nothing
+		const tick = this.tickFns.get(type);
+		if (!tick) return; // Try to get a handle on the tick fn, if we can't we're done
+		const pending = this.timers.get(type);
+		if (pending) clearTimeout(pending); // Clear out scheduled tick if any
+		this.timers.set(type, setTimeout(tick, 0)); // Set immediate tick
 	};
 
 	// Seed queue
@@ -315,7 +342,11 @@ export class DBQueueWorker implements IWorker {
 	addJob = async (_monitorId: string, monitor: Monitor) => {
 		const now = Date.now();
 		await this.jobsRepository.upsertJob(this.toCheckJob(monitor, now, true));
-		if (supportsGeoCheck(monitor.type) && monitor.geoCheckEnabled) await this.jobsRepository.upsertJob(this.toGeoCheckJob(monitor, now, true));
+		this.wake("check");
+		if (supportsGeoCheck(monitor.type) && monitor.geoCheckEnabled) {
+			await this.jobsRepository.upsertJob(this.toGeoCheckJob(monitor, now, true));
+			this.wake("geo-check");
+		}
 	};
 	deleteJob = async (monitor: Monitor) => {
 		await this.jobsRepository.deleteById(monitor.id);
@@ -324,12 +355,15 @@ export class DBQueueWorker implements IWorker {
 		await this.jobsRepository.setActiveById(monitor.id, false);
 	};
 	resumeJob = async (monitor: Monitor) => {
-		await this.jobsRepository.setActiveById(monitor.id, true);
+		await this.jobsRepository.setActiveById(monitor.id, true); // a paused job's nextScheduledAt is now in the past, so it's due immediately
+		this.wake("check");
+		if (supportsGeoCheck(monitor.type) && monitor.geoCheckEnabled) this.wake("geo-check");
 	};
 	updateJob = async (monitor: Monitor) => {
 		await this.jobsRepository.updateScheduleById(monitor.id, "check", monitor.interval);
 		if (supportsGeoCheck(monitor.type) && monitor.geoCheckEnabled) {
 			await this.jobsRepository.upsertJob(this.toGeoCheckJob(monitor, Date.now(), true)); // a newly enabled geo check should run right away
+			this.wake("geo-check");
 		} else {
 			await this.jobsRepository.deleteByIdAndType(monitor.id, "geo-check");
 		}
