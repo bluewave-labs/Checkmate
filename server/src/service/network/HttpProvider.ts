@@ -53,6 +53,22 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 		}
 	): MonitorStatusResponse<T> {
 		const { body, contentType, statusCode, statusUp, message, responseTime, timings } = opts;
+
+		// Return early for HEAD requests, no body to parse
+		if (monitor.method === "HEAD") {
+			return {
+				monitorId: monitor.id,
+				teamId: monitor.teamId,
+				type: monitor.type,
+				status: statusUp,
+				code: statusCode,
+				message,
+				responseTime,
+				timings,
+				payload: body as T | string,
+			};
+		}
+
 		const isJson = contentType.includes("application/json");
 
 		if (monitor.jsonPath && !isJson) {
@@ -154,6 +170,8 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 			http: this.httpAgent,
 			https: ignoreTlsErrors ? this.httpsAgentInsecure : this.httpsAgent,
 		};
+
+		options.method = monitor.method;
 
 		try {
 			const response = await this.got<string>(url, options);
