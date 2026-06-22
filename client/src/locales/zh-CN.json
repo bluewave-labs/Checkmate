@@ -941,10 +941,7 @@
 					"monitorId": "监控 ID",
 					"runCount": "运行次数",
 					"failCount": "失败次数",
-					"lastRunAt": "上次运行于",
-					"lockedAt": "锁定于",
 					"lastFinishedAt": "上次完成于",
-					"lastRunTook": "上次运行耗时",
 					"lastFailedAt": "上次失败于",
 					"failReason": "失败原因",
 					"state": "状态"

@@ -127,6 +127,7 @@ class MongoJobsRepository implements IJobsRepository {
 					nextScheduledAt: now + BACKOFF_MS,
 					lockedBy: null, // Remove lock
 					lockedUntil: null,
+					lastFinishedAt: now, // a failed run still finished used in getMetrics for failedAt timestamp
 					lastFailReason: error instanceof Error ? error.message : String(error),
 				},
 				$inc: {

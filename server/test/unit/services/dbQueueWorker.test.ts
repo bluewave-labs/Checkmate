@@ -680,7 +680,7 @@ describe("DBQueueWorker", () => {
 
 			expect(page.count).toBe(1);
 			expect(page.jobs).toHaveLength(1);
-			expect(page.jobs[0]).toEqual(expect.objectContaining({ monitorId: "m1", monitorType: "check", monitorInterval: 60000, repeat: 60000 }));
+			expect(page.jobs[0]).toEqual(expect.objectContaining({ monitorId: "m1", monitorType: "check", monitorInterval: 60000 }));
 		});
 
 		it("falls back to the job id for monitorId when refId is null (global jobs)", async () => {

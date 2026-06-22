@@ -258,6 +258,7 @@ describe("MongoJobsRepository", () => {
 			const row = await readRow("check:mon-1");
 			expect(row?.nextScheduledAt).toBe(NOW + BACKOFF_MS);
 			expect(row?.lastFailReason).toBe("connection refused");
+			expect(row?.lastFinishedAt).toBe(NOW);
 			expect(row?.failCount).toBe(3);
 			expect(row?.lockedBy).toBeNull();
 			expect(row?.lockedUntil).toBeNull();

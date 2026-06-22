@@ -34,23 +34,16 @@ export type WorkerMetrics = {
 
 export type WorkerJobSummary = {
 	monitorId: string | number;
-	monitorUrl: string | null;
 	monitorType: string | null;
 	monitorInterval: number | null;
-	monitorGeoInterval: number | null;
 	monitorActive: boolean | null;
-	active: boolean;
 	lockedBy: string | null;
 	lockedUntil: number | null;
-	lockedAt: number | null;
+	nextScheduledAt: number;
 	runCount: number;
 	failCount: number;
 	failReason: string | null;
-	lastRunAt: number | null;
 	lastFinishedAt: number | null;
-	lastRunTook: number | null;
-	lastFailedAt: number | null;
-	repeat: number | null;
 };
 
 export type WorkerJobsPagination = {
