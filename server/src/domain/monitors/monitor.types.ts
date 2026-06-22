@@ -62,6 +62,9 @@ export type MonitorMatchMethod = (typeof MonitorMatchMethods)[number] | "";
 export const DnsRecordTypes = ["A", "AAAA", "CNAME", "MX", "TXT", "NS"] as const;
 export type DnsRecordType = (typeof DnsRecordTypes)[number];
 
+export const HttpMethods = ["GET", "HEAD"] as const;
+export type HttpMethod = (typeof HttpMethods)[number];
+
 export const MAX_RECENT_CHECKS = 50;
 
 export interface Monitor {
@@ -70,6 +73,7 @@ export interface Monitor {
 	teamId: string;
 	name: string;
 	description?: string;
+	method: HttpMethod;
 	status: MonitorStatus;
 	statusWindow: boolean[];
 	statusWindowSize: number;
