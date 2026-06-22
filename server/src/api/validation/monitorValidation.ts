@@ -187,7 +187,7 @@ const importedMonitorSchema = z
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
 		matchMethod: z.union([z.enum(MonitorMatchMethods), z.literal("")]).optional(),
-		method: z.enum(HttpMethods).optional(),
+		method: z.enum(HttpMethods).optional().default("GET"),
 		url: z.string().min(1, "URL is required"),
 		port: z.number().optional(),
 		isActive: z.boolean().default(true),
