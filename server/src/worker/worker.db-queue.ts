@@ -137,23 +137,16 @@ export class DBQueueWorker implements IWorker {
 
 	private toSummary = (job: Job): WorkerJobSummary => ({
 		monitorId: job.refId ?? job.id,
-		monitorUrl: null, // Jobs don't have URL
 		monitorType: job.type,
 		monitorInterval: job.intervalMs,
-		monitorGeoInterval: null,
 		monitorActive: job.isActive,
-		active: job.isActive,
 		lockedBy: job.lockedBy,
 		lockedUntil: job.lockedUntil,
-		lockedAt: null, // no lockedAt
+		nextScheduledAt: job.nextScheduledAt,
 		runCount: job.runCount,
 		failCount: job.failCount,
 		failReason: job.lastFailReason,
-		lastRunAt: null, // not tracked
 		lastFinishedAt: job.lastFinishedAt,
-		lastRunTook: null, // not tracked
-		lastFailedAt: null, // not tracked
-		repeat: job.intervalMs,
 	});
 
 	// ********************
