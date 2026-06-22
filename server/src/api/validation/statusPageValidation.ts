@@ -2,6 +2,7 @@ import { z } from "zod";
 import { booleanCoercion, dnsHostnameRegex } from "./shared.js";
 import { StatusPageTypes, StatusPageThemes, StatusPageThemeModes } from "@/domain/status-pages/status-page.type.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
+import { cssReferencesExternalResource } from "@/utils/customCss.js";
 
 //****************************************
 // Status Page Validations
@@ -48,7 +49,13 @@ export const createStatusPageBodyValidation = z
 		showUptimePercentage: booleanCoercion,
 		showAdminLoginLink: booleanCoercion.optional(),
 		showInfrastructure: booleanCoercion.optional(),
-		customCSS: z.string().max(100000, "Custom CSS must be at most 100000 characters").optional(),
+		customCSS: z
+			.string()
+			.max(100000, "Custom CSS must be at most 100000 characters")
+			.refine((css) => !cssReferencesExternalResource(css), {
+				message: "Custom CSS cannot reference external URLs or use @import",
+			})
+			.optional(),
 		removeLogo: z.union([z.literal("true"), z.literal("false")]).optional(),
 		theme: z.enum(StatusPageThemes).optional(),
 		themeMode: z.enum(StatusPageThemeModes).optional(),

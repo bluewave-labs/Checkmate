@@ -48,4 +48,16 @@ describe("createStatusPageBodyValidation", () => {
 		const result = createStatusPageBodyValidation.safeParse(baseCreateBody({ customCSS: 42 }));
 		expect(result.success).toBe(false);
 	});
+
+	it("rejects customCSS that references an external resource", () => {
+		const result = createStatusPageBodyValidation.safeParse(baseCreateBody({ customCSS: 'body{background:url("https://evil.example/beacon")}' }));
+		expect(result.success).toBe(false);
+		if (!result.success) {
+			expect(result.error.issues).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({ message: "Custom CSS cannot reference external URLs or use @import", path: ["customCSS"] }),
+				])
+			);
+		}
+	});
 });
