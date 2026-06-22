@@ -324,7 +324,9 @@ export const MonitorTable = ({
 					</Stack>
 				),
 				render: (row) => {
-					return row.type;
+					return row.type === "http" && row.method
+						? `${row.type} (${row.method})`
+						: row.type;
 				},
 			},
 			{

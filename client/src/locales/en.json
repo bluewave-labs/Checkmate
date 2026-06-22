@@ -490,6 +490,13 @@
 				"advanced": {
 					"description": "Optional settings for advanced use cases",
 					"option": {
+						"method": {
+							"label": "Request method",
+							"description": {
+								"GET": "GET fetches the full response including the body.  Advanced matching fully supported",
+								"HEAD": "HEAD fetches only response headers for reducing load on the target. Supports status code matching but not advanced matching as there is no body."
+							}
+						},
 						"advancedMatching": {
 							"label": "Use advanced matching"
 						},
