@@ -71,6 +71,16 @@ const refineStrategyType = (body: { type?: string; strategy?: string }, ctx: z.R
 	}
 };
 
+const refineHeadMatching = (body: { method?: string; useAdvancedMatching?: boolean; jsonPath?: string }, ctx: z.RefinementCtx) => {
+	if (body.method === "HEAD" && (body.useAdvancedMatching === true || (body.jsonPath ?? "") !== "")) {
+		ctx.addIssue({
+			code: "custom",
+			path: ["method"],
+			message: "HEAD requests have no response body, so they cannot use advanced matching or a JSON path",
+		});
+	}
+};
+
 export const createMonitorBodyValidation = z
 	.object({
 		_id: z.string().optional(),
@@ -109,7 +119,8 @@ export const createMonitorBodyValidation = z
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 	})
 	.superRefine(refineDnsHostname)
-	.superRefine(refineStrategyType);
+	.superRefine(refineStrategyType)
+	.superRefine(refineHeadMatching);
 
 export const editMonitorBodyValidation = z
 	.object({
@@ -147,7 +158,8 @@ export const editMonitorBodyValidation = z
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 	})
 	.superRefine(refineDnsHostname)
-	.superRefine(refineStrategyType);
+	.superRefine(refineStrategyType)
+	.superRefine(refineHeadMatching);
 
 export const pauseMonitorParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
@@ -219,7 +231,8 @@ const importedMonitorSchema = z
 		updatedAt: z.string().optional(),
 	})
 	.superRefine(refineDnsHostname)
-	.superRefine(refineStrategyType);
+	.superRefine(refineStrategyType)
+	.superRefine(refineHeadMatching);
 
 export const importMonitorsBodyValidation = z.object({
 	monitors: z.array(importedMonitorSchema).min(1, "At least one monitor is required"),
