@@ -941,10 +941,7 @@
 					"monitorId": "معرّف المراقب",
 					"runCount": "عدد التشغيلات",
 					"failCount": "عدد حالات الفشل",
-					"lastRunAt": "آخر تشغيل في",
-					"lockedAt": "مقفل في",
 					"lastFinishedAt": "آخر انتهاء في",
-					"lastRunTook": "مدة آخر تشغيل",
 					"lastFailedAt": "آخر فشل في",
 					"failReason": "سبب الفشل",
 					"state": "الحالة"

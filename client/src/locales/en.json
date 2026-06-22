@@ -1025,11 +1025,9 @@
 					"monitorId": "Monitor ID",
 					"runCount": "Run count",
 					"failCount": "Count",
-					"lastRunAt": "Last run at",
-					"lockedAt": "Locked at",
+					"nextScheduledAt": "Next run at",
 					"lockedBy": "Locked by",
 					"lastFinishedAt": "Last finished at",
-					"lastRunTook": "Last run took",
 					"lastFailedAt": "Last failed",
 					"failReason": "Fail reason"
 				}

@@ -941,10 +941,7 @@
 					"monitorId": "Monitör ID",
 					"runCount": "Çalışma sayısı",
 					"failCount": "Başarısızlık sayısı",
-					"lastRunAt": "Son çalışma zamanı",
-					"lockedAt": "Kilitlenme zamanı",
 					"lastFinishedAt": "Son tamamlanma zamanı",
-					"lastRunTook": "Son çalışma süresi",
 					"lastFailedAt": "Son başarısızlık zamanı",
 					"failReason": "Başarısızlık nedeni",
 					"state": "Durum"

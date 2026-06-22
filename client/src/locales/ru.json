@@ -941,10 +941,7 @@
 					"monitorId": "ID монитора",
 					"runCount": "Кол-во запусков",
 					"failCount": "Кол-во ошибок",
-					"lastRunAt": "Последний запуск",
-					"lockedAt": "Заблокировано в",
 					"lastFinishedAt": "Последнее завершение",
-					"lastRunTook": "Последний запуск занял",
 					"lastFailedAt": "Последняя ошибка",
 					"failReason": "Причина ошибки",
 					"state": "Состояние"

@@ -945,10 +945,7 @@
 					"monitorId": "ID del monitor",
 					"runCount": "Recompte d'execucions",
 					"failCount": "Recompte",
-					"lastRunAt": "Darrera execució",
-					"lockedAt": "Bloquejat el",
 					"lastFinishedAt": "Darrera finalització",
-					"lastRunTook": "Durada de la darrera execució",
 					"lastFailedAt": "Darrera fallada",
 					"failReason": "Motiu de la fallada",
 					"state": "Estat"
