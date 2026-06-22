@@ -227,6 +227,57 @@ describe("monitorValidation — strategy gating", () => {
 	});
 });
 
+describe("monitorValidation — HEAD method gating", () => {
+	const baseHead = {
+		name: "HEAD check",
+		type: "http" as const,
+		url: "https://example.com",
+		method: "HEAD" as const,
+	};
+
+	describe("createMonitorBodyValidation", () => {
+		it("accepts a HEAD monitor with no body matching", () => {
+			const parsed = createMonitorBodyValidation.parse(baseHead);
+			expect(parsed.method).toBe("HEAD");
+		});
+
+		it("accepts GET together with advanced matching", () => {
+			const parsed = createMonitorBodyValidation.parse({
+				...baseHead,
+				method: "GET",
+				useAdvancedMatching: true,
+				jsonPath: "status",
+			});
+			expect(parsed.method).toBe("GET");
+		});
+
+		it("rejects HEAD combined with advanced matching", () => {
+			expect(() => createMonitorBodyValidation.parse({ ...baseHead, useAdvancedMatching: true })).toThrow();
+		});
+
+		it("rejects HEAD combined with a non-empty jsonPath", () => {
+			expect(() => createMonitorBodyValidation.parse({ ...baseHead, jsonPath: "status" })).toThrow();
+		});
+
+		it("allows HEAD with an empty-string jsonPath", () => {
+			const parsed = createMonitorBodyValidation.parse({ ...baseHead, jsonPath: "" });
+			expect(parsed.method).toBe("HEAD");
+		});
+	});
+
+	describe("editMonitorBodyValidation", () => {
+		it("rejects HEAD combined with advanced matching", () => {
+			expect(() => editMonitorBodyValidation.parse({ method: "HEAD", useAdvancedMatching: true })).toThrow();
+		});
+	});
+
+	describe("importMonitorsBodyValidation", () => {
+		it("rejects HEAD combined with a jsonPath on imported monitors", () => {
+			expect(() => importMonitorsBodyValidation.parse({ monitors: [{ ...baseHead, jsonPath: "status" }] })).toThrow();
+		});
+	});
+});
+
 describe("monitorValidation — customUpCodes", () => {
 	const baseHttpBody = {
 		name: "HTTP check",

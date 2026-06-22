@@ -433,4 +433,65 @@ describe("HttpProvider", () => {
 			expect(result.extracted).toBe("down");
 		});
 	});
+
+	// ── HTTP method (GET / HEAD) ─────────────────────────────────────────
+
+	describe("request method", () => {
+		it("passes GET to got when method is GET", async () => {
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor({ method: "GET" }));
+
+			expect(mockGot).toHaveBeenCalledWith("https://example.com", expect.objectContaining({ method: "GET" }));
+		});
+
+		it("passes HEAD to got when method is HEAD", async () => {
+			mockGot.mockResolvedValue(makeGotResponse({ body: "" }));
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor({ method: "HEAD" }));
+
+			expect(mockGot).toHaveBeenCalledWith("https://example.com", expect.objectContaining({ method: "HEAD" }));
+		});
+
+		it("does not mark a HEAD monitor down on an empty body even with advanced matching on", async () => {
+			mockGot.mockResolvedValue(makeGotResponse({ body: "", headers: {} }));
+			// A matcher that would fail — proving HEAD never reaches it
+			const matcher = createMockMatcher({ ok: false, message: "Extracted value is falsy" });
+			const { provider, advancedMatcher } = createProvider(matcher);
+
+			const result = await provider.handle(makeMonitor({ method: "HEAD", useAdvancedMatching: true, jsonPath: "status" }));
+
+			expect(result.status).toBe(true);
+			expect(advancedMatcher.validate).not.toHaveBeenCalled();
+		});
+
+		it("bases HEAD status on the status code (down when not an up code)", async () => {
+			const err = new HTTPError("Internal Server Error");
+			(err as any).response = { statusCode: 500, body: "", headers: {} };
+			(err as any).timings = { phases: { total: 40 } };
+			mockGot.mockRejectedValue(err);
+			const { provider } = createProvider();
+
+			const result = await provider.handle(makeMonitor({ method: "HEAD" }));
+
+			expect(result.status).toBe(false);
+			expect(result.code).toBe(500);
+		});
+
+		it("respects customUpCodes for HEAD requests without consulting the matcher", async () => {
+			const err = new HTTPError("Unauthorized");
+			(err as any).response = { statusCode: 401, body: "", headers: {} };
+			(err as any).timings = { phases: { total: 30 } };
+			mockGot.mockRejectedValue(err);
+			const { provider, advancedMatcher } = createProvider();
+
+			const result = await provider.handle(makeMonitor({ method: "HEAD", customUpCodes: [401], useAdvancedMatching: true }));
+
+			expect(result.status).toBe(true);
+			expect(result.code).toBe(401);
+			expect(advancedMatcher.validate).not.toHaveBeenCalled();
+		});
+	});
 });
