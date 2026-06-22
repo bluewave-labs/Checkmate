@@ -499,6 +499,52 @@ describe("DBQueueWorker", () => {
 			expect(delta).toBeLessThanOrEqual(4);
 		});
 
+		it("resets the poll interval to POLL_MS once a tick finds work after being idle", async () => {
+			let busy = false;
+			const claimDueBatch = jest.fn<any>(async (type: string) => (busy && type === "check" ? [makeJob()] : []));
+			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch } } });
+
+			await jest.advanceTimersByTimeAsync(15000); // idle → backed off to the 5s cap
+			busy = true;
+			await jest.advanceTimersByTimeAsync(POLL_MAX_MS); // the next (backed-off) tick fires, finds work → resets pollMs to POLL_MS
+			const before = claims(mocks, "check");
+
+			await jest.advanceTimersByTimeAsync(POLL_MS * 2); // 500ms
+
+			// Polling fast again (~2 in 500ms), not once per 5s — proves the interval reset on finding work.
+			expect(claims(mocks, "check") - before).toBeGreaterThanOrEqual(1);
+		});
+
+		it("does not back off a loop that is at capacity (capacity === 0)", async () => {
+			// cleanup-orphaned has concurrency 1; hold its one job in-flight so capacity stays 0.
+			// The backoff condition is `capacity > 0 && jobs.length === 0`, so an at-capacity loop
+			// must keep polling at POLL_MS (a freed slot should be picked up promptly, not after 5s).
+			const gate = deferred<void>();
+			let handed = false;
+			const claimDueBatch = jest.fn<any>(async (type: string) => {
+				if (type === "cleanup-orphaned" && !handed) {
+					handed = true;
+					return [makeJob({ id: "cleanup-orphaned", type: "cleanup-orphaned", refId: null, intervalMs: 86400000 })];
+				}
+				return [];
+			});
+			const helper = {
+				getCleanupOrphanedJob: jest.fn<any>().mockReturnValue(jest.fn<any>(() => gate.promise)), // blocks → keeps the slot full
+				getCleanupRetentionJob: jest.fn<any>().mockReturnValue(jest.fn<any>().mockResolvedValue(undefined)),
+			};
+			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch }, helper } });
+
+			const before = claims(mocks, "cleanup-orphaned"); // the blocking job is now in-flight → capacity 0
+			await jest.advanceTimersByTimeAsync(1000);
+			const delta = claims(mocks, "cleanup-orphaned") - before;
+
+			// ~4 polls at POLL_MS; if an at-capacity loop wrongly backed off it would be ~1.
+			expect(delta).toBeGreaterThanOrEqual(3);
+
+			gate.resolve();
+			await jest.advanceTimersByTimeAsync(1); // let the held job finish for a clean shutdown
+		});
+
 		it("wake() re-fires an idle, backed-off loop immediately", async () => {
 			const { worker, mocks } = await start({ queueMode: "worker" });
 			await jest.advanceTimersByTimeAsync(15000); // back off the check loop to the cap
