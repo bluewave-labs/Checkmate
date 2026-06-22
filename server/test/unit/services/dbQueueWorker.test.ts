@@ -80,6 +80,7 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 	};
 	const monitorsRepository = {
 		findByIds: jest.fn<any>().mockResolvedValue([makeMonitor()]),
+		findByIdLean: jest.fn<any>().mockResolvedValue(makeMonitor()),
 		findAll: jest.fn<any>().mockResolvedValue([]),
 		updateById: jest.fn<any>().mockResolvedValue({}),
 	};
@@ -94,7 +95,7 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 		produce: jest.fn<any>().mockResolvedValue({ status: { status: "up" }, check: { id: "c1" } }),
 	};
 	const checkEvaluator = {
-		evaluate: jest.fn<any>().mockResolvedValue({ monitor: makeMonitor(), decision: {} }),
+		evaluate: jest.fn<any>().mockResolvedValue({ monitor: makeMonitor(), statusChange: { monitor: makeMonitor() }, decision: {} }),
 	};
 	const geoCheckPipeline = { run: jest.fn<any>().mockResolvedValue(null) };
 	const dispatcher = { dispatch: jest.fn<any>().mockResolvedValue(undefined) };
@@ -268,7 +269,7 @@ describe("DBQueueWorker", () => {
 			const job = makeJob({ type: "check", refId: "m1", intervalMs: 60000 });
 			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) } } });
 
-			expect(mocks.monitorsRepository.findByIds).toHaveBeenCalledWith(["m1"]);
+			expect(mocks.monitorsRepository.findByIdLean).toHaveBeenCalledWith("m1");
 			expect(mocks.checkProducer.produce).toHaveBeenCalled();
 			// The check stage only produces; the buffer arms evaluate once the check is durably stored
 			expect(mocks.jobsRepository.upsertEvaluate).not.toHaveBeenCalled();
@@ -305,6 +306,35 @@ describe("DBQueueWorker", () => {
 			expect(mocks.checkEvaluator.evaluate).toHaveBeenCalled();
 			expect(mocks.dispatcher.dispatch).toHaveBeenCalled();
 			expect(mocks.monitorsRepository.updateById).toHaveBeenCalledWith("m1", "team", { lastEvaluatedAt: 12345 });
+		});
+
+		it("evaluate job reads the monitor once and threads the post-write monitor across the backlog", async () => {
+			const job = makeJob({ id: "evaluate:m1", type: "evaluate", intervalMs: null });
+			const initialMonitor = makeMonitor();
+			const postWriteMonitor = makeMonitor({ status: "down" }); // what updateStatusWindowAndChecks would return after check c1
+			const monitorsRepository = {
+				findByIdLean: jest.fn<any>().mockResolvedValue(initialMonitor),
+				updateById: jest.fn<any>().mockResolvedValue({}),
+			};
+			const checksRepository = { findUnevaluatedByMonitorId: jest.fn<any>().mockResolvedValue([{ id: "c1" }, { id: "c2" }]) };
+			const checkEvaluator = {
+				evaluate: jest.fn<any>().mockResolvedValue({ monitor: postWriteMonitor, statusChange: { monitor: postWriteMonitor }, decision: {} }),
+			};
+			const { mocks } = await start({
+				mocks: {
+					jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) },
+					monitorsRepository,
+					checksRepository,
+					checkEvaluator,
+				},
+			});
+
+			// The monitor is read once for the whole backlog, not once per check
+			expect(mocks.monitorsRepository.findByIdLean).toHaveBeenCalledTimes(1);
+			expect(mocks.checkEvaluator.evaluate).toHaveBeenCalledTimes(2);
+			// First check evaluates against the freshly-read monitor; the second against the post-write monitor from the first
+			expect(mocks.checkEvaluator.evaluate.mock.calls[0][2]).toBe(initialMonitor);
+			expect(mocks.checkEvaluator.evaluate.mock.calls[1][2]).toBe(postWriteMonitor);
 		});
 
 		it("cleanup-orphaned job runs the helper's cleanup function", async () => {
@@ -446,6 +476,126 @@ describe("DBQueueWorker", () => {
 			const types = mocks.jobsRepository.upsertJob.mock.calls.map((c: any[]) => c[0].type);
 			expect(types).toContain("geo-check");
 			expect(mocks.jobsRepository.deleteByIdAndType).not.toHaveBeenCalled();
+		});
+	});
+
+	// ── poll backoff + wake() ───────────────────────────────────────────────────
+	//
+	// An idle loop grows its poll interval up to POLL_MAX_MS (5s). wake() fast-paths
+	// it back so a freshly-enqueued "run now" job doesn't wait out that backoff.
+
+	describe("poll backoff and wake", () => {
+		const POLL_MAX_MS = 5000;
+		const claims = (mocks: any, type: string) => mocks.jobsRepository.claimDueBatch.mock.calls.filter((c: any[]) => c[0] === type).length;
+
+		it("backs off the idle poll interval toward POLL_MAX_MS", async () => {
+			const { mocks } = await start({ queueMode: "worker" }); // claimDueBatch returns [] → always idle
+			await jest.advanceTimersByTimeAsync(15000); // let the check loop grow to the cap
+			const before = claims(mocks, "check");
+			await jest.advanceTimersByTimeAsync(POLL_MAX_MS * 2); // ~2 polls at a 5s cadence
+			const delta = claims(mocks, "check") - before;
+			// At the cap that's ~2 polls; at the un-backed-off 250ms cadence it would be ~40.
+			expect(delta).toBeGreaterThanOrEqual(1);
+			expect(delta).toBeLessThanOrEqual(4);
+		});
+
+		it("resets the poll interval to POLL_MS once a tick finds work after being idle", async () => {
+			let busy = false;
+			const claimDueBatch = jest.fn<any>(async (type: string) => (busy && type === "check" ? [makeJob()] : []));
+			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch } } });
+
+			await jest.advanceTimersByTimeAsync(15000); // idle → backed off to the 5s cap
+			busy = true;
+			await jest.advanceTimersByTimeAsync(POLL_MAX_MS); // the next (backed-off) tick fires, finds work → resets pollMs to POLL_MS
+			const before = claims(mocks, "check");
+
+			await jest.advanceTimersByTimeAsync(POLL_MS * 2); // 500ms
+
+			// Polling fast again (~2 in 500ms), not once per 5s — proves the interval reset on finding work.
+			expect(claims(mocks, "check") - before).toBeGreaterThanOrEqual(1);
+		});
+
+		it("does not back off a loop that is at capacity (capacity === 0)", async () => {
+			// cleanup-orphaned has concurrency 1; hold its one job in-flight so capacity stays 0.
+			// The backoff condition is `capacity > 0 && jobs.length === 0`, so an at-capacity loop
+			// must keep polling at POLL_MS (a freed slot should be picked up promptly, not after 5s).
+			const gate = deferred<void>();
+			let handed = false;
+			const claimDueBatch = jest.fn<any>(async (type: string) => {
+				if (type === "cleanup-orphaned" && !handed) {
+					handed = true;
+					return [makeJob({ id: "cleanup-orphaned", type: "cleanup-orphaned", refId: null, intervalMs: 86400000 })];
+				}
+				return [];
+			});
+			const helper = {
+				getCleanupOrphanedJob: jest.fn<any>().mockReturnValue(jest.fn<any>(() => gate.promise)), // blocks → keeps the slot full
+				getCleanupRetentionJob: jest.fn<any>().mockReturnValue(jest.fn<any>().mockResolvedValue(undefined)),
+			};
+			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch }, helper } });
+
+			const before = claims(mocks, "cleanup-orphaned"); // the blocking job is now in-flight → capacity 0
+			await jest.advanceTimersByTimeAsync(1000);
+			const delta = claims(mocks, "cleanup-orphaned") - before;
+
+			// ~4 polls at POLL_MS; if an at-capacity loop wrongly backed off it would be ~1.
+			expect(delta).toBeGreaterThanOrEqual(3);
+
+			gate.resolve();
+			await jest.advanceTimersByTimeAsync(1); // let the held job finish for a clean shutdown
+		});
+
+		it("wake() re-fires an idle, backed-off loop immediately", async () => {
+			const { worker, mocks } = await start({ queueMode: "worker" });
+			await jest.advanceTimersByTimeAsync(15000); // back off the check loop to the cap
+			const before = claims(mocks, "check");
+
+			worker.wake("check");
+			await jest.advanceTimersByTimeAsync(1);
+
+			expect(claims(mocks, "check")).toBe(before + 1); // fired now, not 5s later
+		});
+
+		it("wake() resets the cadence so the loop polls fast again, not at the 5s cap", async () => {
+			const { worker, mocks } = await start({ queueMode: "worker" });
+			await jest.advanceTimersByTimeAsync(15000); // backed off to the cap
+			worker.wake("check");
+			await jest.advanceTimersByTimeAsync(1); // immediate tick (still idle → next poll at ~POLL_MS*2)
+			const before = claims(mocks, "check");
+
+			await jest.advanceTimersByTimeAsync(POLL_MS * 2); // 500ms
+
+			// Polled again well within the old 5s cap, proving the interval was reset.
+			expect(claims(mocks, "check")).toBe(before + 1);
+		});
+
+		it("wake() is a no-op for a loop that isn't running in this process", async () => {
+			const { worker, mocks } = await start({ queueMode: "primary", queuePrimaryProcesses: false }); // no loops
+			expect(() => worker.wake("check")).not.toThrow();
+			await jest.advanceTimersByTimeAsync(1);
+			expect(claims(mocks, "check")).toBe(0);
+		});
+
+		it("addJob wakes the check loop so a new monitor's first check runs promptly", async () => {
+			const { worker, mocks } = await start({ queueMode: "worker" });
+			await jest.advanceTimersByTimeAsync(15000); // backed off to the cap
+			const before = claims(mocks, "check");
+
+			await worker.addJob("m2", makeMonitor({ id: "m2" }));
+			await jest.advanceTimersByTimeAsync(1);
+
+			expect(claims(mocks, "check")).toBe(before + 1);
+		});
+
+		it("resumeJob wakes the check loop so a resumed monitor runs promptly", async () => {
+			const { worker, mocks } = await start({ queueMode: "worker" });
+			await jest.advanceTimersByTimeAsync(15000); // backed off to the cap
+			const before = claims(mocks, "check");
+
+			await worker.resumeJob(makeMonitor());
+			await jest.advanceTimersByTimeAsync(1);
+
+			expect(claims(mocks, "check")).toBe(before + 1);
 		});
 	});
 

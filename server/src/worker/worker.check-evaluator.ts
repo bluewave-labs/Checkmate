@@ -1,11 +1,12 @@
 import { MonitorStatusResponse } from "@/types/network.js";
 import { MonitorEvaluation } from "@/worker/worker.interface.js";
 import { Check } from "@/domain/checks/check.type.js";
+import { Monitor } from "@/domain/monitors/monitor.types.js";
 import { IMonitorStatusPolicy } from "@/worker/worker.monitor-status-policy.js";
 import { IStatusService } from "@/service/statusService.js";
 
 export interface ICheckEvaluator {
-	evaluate(status: MonitorStatusResponse, check: Check): Promise<MonitorEvaluation>;
+	evaluate(status: MonitorStatusResponse, check: Check, monitor: Monitor): Promise<MonitorEvaluation>;
 }
 
 export class CheckEvaluator implements ICheckEvaluator {
@@ -13,11 +14,11 @@ export class CheckEvaluator implements ICheckEvaluator {
 		private statusService: IStatusService,
 		private monitorStatusPolicy: IMonitorStatusPolicy
 	) {}
-	evaluate = async (status: MonitorStatusResponse, check: Check) => {
+	evaluate = async (status: MonitorStatusResponse, check: Check, monitor: Monitor) => {
 		// ****************************
 		// Step 3:  Evaluate and return result to reactors
 		// ****************************
-		const statusChangeResult = await this.statusService.updateMonitorStatus(status, check);
+		const statusChangeResult = await this.statusService.updateMonitorStatus(status, check, monitor);
 
 		// Step 5.  Get decisions and create an evaluation obj
 		const decision = this.monitorStatusPolicy.evaluate(statusChangeResult);

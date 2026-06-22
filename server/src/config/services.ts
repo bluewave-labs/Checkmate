@@ -103,7 +103,7 @@ import { ILogger } from "@/utils/logger.js";
 import { NotificationReactor } from "@/worker/reactors/reactor.notification.js";
 import { ReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
 import { IncidentReactor } from "@/worker/reactors/reactor.incident.js";
-import { CheckPipeline, GeoChecksPipeline } from "@/worker/worker.check-pipeline.js";
+import { GeoChecksPipeline } from "@/worker/worker.check-pipeline.js";
 import { CheckProducer } from "@/worker/worker.check-producer.js";
 import { CheckEvaluator } from "@/worker/worker.check-evaluator.js";
 import { DBQueueWorker } from "@/worker/worker.db-queue.js";
@@ -229,7 +229,7 @@ export const initializeServices = async ({
 
 	const bufferService = new BufferService(logger, checkService, geoChecksService, settingsService, jobsRepository);
 
-	const statusService = new StatusService(logger, bufferService, monitorsRepository, monitorStatsRepository, checksRepository);
+	const statusService = new StatusService(logger, monitorsRepository, monitorStatsRepository);
 
 	// Notification providers
 	const webhookProvider = new WebhookProvider(logger);
@@ -276,8 +276,6 @@ export const initializeServices = async ({
 	const checkEvaluator = new CheckEvaluator(statusService, monitorStatusPolicy);
 
 	// pipelines
-	const checkPipeline = new CheckPipeline(checkProducer, checkEvaluator);
-
 	const geoCheckPipeline = new GeoChecksPipeline(maintenanceWindowsRepository, geoChecksService, bufferService, logger);
 
 	const workerHelper = new WorkerHelper(
@@ -290,10 +288,7 @@ export const initializeServices = async ({
 		monitorStatsRepository,
 		checksRepository,
 		incidentsRepository,
-		geoChecksRepository,
-		reactorDispatcher,
-		checkPipeline,
-		geoCheckPipeline
+		geoChecksRepository
 	);
 
 	const worker = await DBQueueWorker.create(
@@ -339,6 +334,7 @@ export const initializeServices = async ({
 		monitorsRepository,
 		maintenanceWindowsRepository,
 		jobsRepository,
+		worker,
 	});
 	const monitorService = new MonitorService({
 		worker,

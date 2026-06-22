@@ -1,5 +1,6 @@
 import { Monitor } from "@/domain/monitors/monitor.types.js";
 import { Check } from "@/domain/checks/check.type.js";
+import { JobType } from "@/domain/jobs/job.type.js";
 import { MonitorPayloadMap, MonitorStatusResponse, StatusChangeResult } from "@/types/network.js";
 import { MonitorActionDecision } from "@/worker/worker.helper.js";
 import { QueueWorker } from "@/domain/queue-workers/queue-worker.type.js";
@@ -70,6 +71,7 @@ export interface IWorker {
 	pauseJob(monitor: Monitor): Promise<void>;
 	resumeJob(monitor: Monitor): Promise<void>;
 	updateJob(monitor: Monitor): Promise<void>;
+	wake(type: JobType): void;
 	shutdown(): Promise<void>;
 	getMetrics(): Promise<WorkerMetrics>;
 	getJobs(pagination: WorkerJobsPagination): Promise<WorkerJobsPage>;

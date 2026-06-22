@@ -40,6 +40,11 @@ export class InMemoryMonitorsRepository implements IMonitorsRepository {
 		return this.monitors.filter((m) => monitorIds.includes(m.id)).map((m) => ({ ...m }));
 	}
 
+	async findByIdLean(monitorId: string): Promise<Monitor | null> {
+		const monitor = this.monitors.find((m) => m.id === monitorId);
+		return monitor ? { ...monitor } : null;
+	}
+
 	async findByIdsWithChecks(monitorIds: string[], _checksCount?: number): Promise<Monitor[]> {
 		return this.findByIds(monitorIds);
 	}

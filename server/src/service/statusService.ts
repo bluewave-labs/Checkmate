@@ -1,4 +1,3 @@
-import { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
 import { IMonitorStatsRepository } from "@/domain/monitor-stats/monitor-stats.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import type { Check, CheckDiskInfo, CheckSnapshot } from "@/domain/checks/check.type.js";
@@ -17,7 +16,6 @@ import type {
 } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import { ILogger } from "@/utils/logger.js";
-import { IBufferService } from "./bufferService.js";
 import type { HardwareStatusMetrics } from "@/types/network.js";
 import { MAX_RECENT_CHECKS } from "@/domain/monitors/monitor.types.js";
 
@@ -42,30 +40,21 @@ export interface IStatusService {
 			| GrpcStatusPayload
 			| undefined
 		>,
-		check: Check
+		check: Check,
+		monitor: Monitor
 	): Promise<StatusChangeResult>;
 }
 
 export class StatusService implements IStatusService {
 	static SERVICE_NAME = SERVICE_NAME;
 	private logger: ILogger;
-	private buffer: IBufferService;
 	private monitorsRepository: IMonitorsRepository;
 	private monitorStatsRepository: IMonitorStatsRepository;
-	private checksRepository: IChecksRepository;
 
-	constructor(
-		logger: ILogger,
-		buffer: IBufferService,
-		monitorsRepository: IMonitorsRepository,
-		monitorStatsRepository: IMonitorStatsRepository,
-		checksRepository: IChecksRepository
-	) {
+	constructor(logger: ILogger, monitorsRepository: IMonitorsRepository, monitorStatsRepository: IMonitorStatsRepository) {
 		this.logger = logger;
-		this.buffer = buffer;
 		this.monitorsRepository = monitorsRepository;
 		this.monitorStatsRepository = monitorStatsRepository;
-		this.checksRepository = checksRepository;
 	}
 
 	get serviceName() {
@@ -212,11 +201,11 @@ export class StatusService implements IStatusService {
 			| GrpcStatusPayload
 			| undefined
 		>,
-		check: Check
+		check: Check,
+		monitor: Monitor
 	): Promise<StatusChangeResult> => {
 		try {
-			const { monitorId, teamId, status, code } = statusResponse;
-			const monitor = await this.monitorsRepository.findById(monitorId, teamId);
+			const { status, code } = statusResponse;
 
 			// Update running stats
 			await this.tryUpdateRunningStats(monitor, statusResponse);
@@ -262,7 +251,7 @@ export class StatusService implements IStatusService {
 				};
 			}
 
-			// First evaluate reachability-based status changes, which apply to all monitor types
+			// First evaluate reachability status changes, which apply to all monitor types
 			// and take precedence over hardware breaches.
 			const reachabilityResult = this.computeReachability(newStatus, projectedWindow, monitor.statusWindowThreshold);
 			if (reachabilityResult.transitioned) {

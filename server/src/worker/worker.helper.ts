@@ -1,5 +1,4 @@
 const SERVICE_NAME = "JobQueueHelper";
-import type { Monitor } from "@/domain/monitors/monitor.types.js";
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { ICheckService } from "@/domain/checks/check.service.js";
 import { CHECK_TTL_SENTINEL } from "@/domain/checks/check.type.js";
@@ -11,13 +10,9 @@ import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interf
 import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
 import { ILogger } from "@/utils/logger.js";
-import { IReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
-import { ICheckPipeline } from "@/worker/worker.check-pipeline.js";
 
 export interface IWorkerHelper {
 	readonly serviceName: string;
-	getHeartbeatJob(): (monitor: Monitor) => Promise<void>;
-	getHeartbeatGeoJob(): (monitor: Monitor) => Promise<void>;
 	getCleanupOrphanedJob(): () => Promise<void>;
 	getCleanupRetentionJob(): () => Promise<void>;
 }
@@ -49,9 +44,6 @@ export class WorkerHelper implements IWorkerHelper {
 	private checksRepository: IChecksRepository;
 	private incidentsRepository: IIncidentsRepository;
 	private geoChecksRepository: IGeoChecksRepository;
-	private reactorDispatcher: IReactorDispatcher;
-	private checkPipeline: ICheckPipeline;
-	private geoCheckPipeline: ICheckPipeline;
 
 	constructor(
 		logger: ILogger,
@@ -63,10 +55,7 @@ export class WorkerHelper implements IWorkerHelper {
 		monitorStatsRepository: IMonitorStatsRepository,
 		checksRepository: IChecksRepository,
 		incidentsRepository: IIncidentsRepository,
-		geoChecksRepository: IGeoChecksRepository,
-		reactorDispatcher: IReactorDispatcher,
-		checkPipeline: ICheckPipeline,
-		geoCheckPipeline: ICheckPipeline
+		geoChecksRepository: IGeoChecksRepository
 	) {
 		this.logger = logger;
 		this.checkService = checkService;
@@ -78,47 +67,11 @@ export class WorkerHelper implements IWorkerHelper {
 		this.checksRepository = checksRepository;
 		this.incidentsRepository = incidentsRepository;
 		this.geoChecksRepository = geoChecksRepository;
-		this.reactorDispatcher = reactorDispatcher;
-		this.checkPipeline = checkPipeline;
-		this.geoCheckPipeline = geoCheckPipeline;
 	}
 
 	get serviceName() {
 		return WorkerHelper.SERVICE_NAME;
 	}
-
-	getHeartbeatJob = () => {
-		return async (monitor: Monitor) => {
-			try {
-				const evaluation = await this.checkPipeline.run(monitor);
-				if (evaluation) await this.reactorDispatcher.dispatch(evaluation);
-			} catch (error: unknown) {
-				this.logger.warn({
-					message: error instanceof Error ? error.message : "Unknown error",
-					service: SERVICE_NAME,
-					method: "getMonitorJob",
-					stack: error instanceof Error ? error.stack : undefined,
-				});
-				throw error;
-			}
-		};
-	};
-
-	getHeartbeatGeoJob = () => {
-		return async (monitor: Monitor) => {
-			try {
-				await this.geoCheckPipeline.run(monitor);
-			} catch (error: unknown) {
-				this.logger.error({
-					message: error instanceof Error ? error.message : "Unknown error",
-					service: SERVICE_NAME,
-					method: "getHeartbeatGeoJob",
-					stack: error instanceof Error ? error.stack : undefined,
-				});
-				// Don't throw - geo check failures shouldn't crash the job scheduler
-			}
-		};
-	};
 
 	getCleanupOrphanedJob = () => {
 		return async () => {
