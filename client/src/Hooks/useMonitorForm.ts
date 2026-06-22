@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { monitorSchema, type MonitorFormData } from "@/Validation/monitor";
-import { DefaultPageSpeedStrategy } from "@/Types/Monitor";
+import { DefaultHttpMethod, DefaultPageSpeedStrategy } from "@/Types/Monitor";
 import type { Monitor, MonitorType } from "@/Types/Monitor";
 
 interface UseMonitorFormOptions {
@@ -40,6 +40,7 @@ export const getMonitorDefaults = (
 				...getGeoCheckDefaults(data),
 				type: "http",
 				url: data?.url || "",
+				method: data?.method ?? DefaultHttpMethod,
 				ignoreTlsErrors: data?.ignoreTlsErrors || false,
 				useAdvancedMatching: data?.useAdvancedMatching || false,
 				matchMethod: data?.matchMethod || "",
@@ -134,6 +135,7 @@ export const getMonitorDefaults = (
 				...getGeoCheckDefaults(data),
 				type: "http",
 				url: "",
+				method: DefaultHttpMethod,
 				ignoreTlsErrors: false,
 				useAdvancedMatching: false,
 				matchMethod: "",

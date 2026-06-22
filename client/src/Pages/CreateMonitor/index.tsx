@@ -42,8 +42,11 @@ import {
 	type Monitor,
 	type MonitorType,
 	type GamesMap,
+	type HttpMethod,
 	supportsGeoCheck,
 	DefaultPageSpeedStrategy,
+	DefaultHttpMethod,
+	HttpMethods,
 } from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
 import type { Tag } from "@/Types/Tag";
@@ -259,7 +262,7 @@ const CreateMonitorPage = () => {
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
-	const { control, watch, handleSubmit, clearErrors, trigger, reset } = form;
+	const { control, watch, handleSubmit, clearErrors, trigger, reset, setValue } = form;
 
 	useEffect(() => {
 		reset(defaults);
@@ -271,6 +274,7 @@ const CreateMonitorPage = () => {
 	const showStep = (step: number) => isEditMode || currentStep === step;
 
 	const watchedType = watch("type") as MonitorType;
+	const watchedMethod = watch("method") as HttpMethod | undefined;
 	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
 	const watchGeoCheckEnabled = watch("geoCheckEnabled") as boolean;
 
@@ -1092,6 +1096,50 @@ const CreateMonitorPage = () => {
 					rightContent={
 						<Stack spacing={theme.spacing(LAYOUT.MD)}>
 							<Controller
+								name="method"
+								control={control}
+								render={({ field }) => (
+									<Stack spacing={theme.spacing(LAYOUT.MD)}>
+										<Select
+											{...field}
+											value={field.value ?? DefaultHttpMethod}
+											onChange={(e) => {
+												const value = e.target.value as HttpMethod;
+												field.onChange(value);
+												// HEAD has no response body, reset advanced matching fields if selected
+												if (value === "HEAD") {
+													setValue("useAdvancedMatching", false);
+													setValue("matchMethod", "");
+													setValue("expectedValue", "");
+													setValue("jsonPath", "");
+												}
+											}}
+											fieldLabel={t(
+												"pages.createMonitor.form.advanced.option.method.label"
+											)}
+										>
+											{HttpMethods.map((method) => (
+												<MenuItem
+													key={method}
+													value={method}
+												>
+													{method}
+												</MenuItem>
+											))}
+										</Select>
+										<Typography
+											component="span"
+											color={theme.palette.text.secondary}
+											sx={{ opacity: 0.8 }}
+										>
+											{t(
+												`pages.createMonitor.form.advanced.option.method.description.${field.value ?? DefaultHttpMethod}`
+											)}
+										</Typography>
+									</Stack>
+								)}
+							/>
+							<Controller
 								name="customUpCodes"
 								control={control}
 								render={({ field }) => {
@@ -1162,28 +1210,30 @@ const CreateMonitorPage = () => {
 									);
 								}}
 							/>
-							<Controller
-								name="useAdvancedMatching"
-								control={control}
-								render={({ field }) => (
-									<Stack
-										direction="row"
-										alignItems="center"
-										spacing={theme.spacing(SPACING.LG)}
-									>
-										<Switch
-											checked={field.value ?? false}
-											onChange={(e) => field.onChange(e.target.checked)}
-										/>
-										<Typography>
-											{t(
-												"pages.createMonitor.form.advanced.option.advancedMatching.label"
-											)}
-										</Typography>
-									</Stack>
-								)}
-							/>
-							{watchedUseAdvancedMatching && (
+							{watchedMethod !== "HEAD" && (
+								<Controller
+									name="useAdvancedMatching"
+									control={control}
+									render={({ field }) => (
+										<Stack
+											direction="row"
+											alignItems="center"
+											spacing={theme.spacing(SPACING.LG)}
+										>
+											<Switch
+												checked={field.value ?? false}
+												onChange={(e) => field.onChange(e.target.checked)}
+											/>
+											<Typography>
+												{t(
+													"pages.createMonitor.form.advanced.option.advancedMatching.label"
+												)}
+											</Typography>
+										</Stack>
+									)}
+								/>
+							)}
+							{watchedUseAdvancedMatching && watchedMethod !== "HEAD" && (
 								<Stack spacing={theme.spacing(LAYOUT.MD)}>
 									<Controller
 										name="matchMethod"
