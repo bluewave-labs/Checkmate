@@ -14,6 +14,7 @@ import { InitializedControllers } from "@/config/controllers.js";
 import { EnvConfig } from "@/domain/app-settings/app-settings.service.js";
 import { createStatusPageCorsOrigin } from "@/api/middleware/statusPageCorsOrigin.js";
 import { isPublicStatusPageApiPath } from "@/api/middleware/statusPagePublicApiPath.js";
+import { statusPageDocumentCsp } from "@/api/middleware/statusPageDocumentCsp.js";
 
 export const createApp = ({
 	services,
@@ -70,6 +71,7 @@ export const createApp = ({
 			},
 		})
 	);
+	app.use(statusPageDocumentCsp);
 	app.use(
 		compression({
 			level: 6,
