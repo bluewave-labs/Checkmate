@@ -31,7 +31,7 @@ import { BufferService, IBufferService } from "@/service/bufferService.js";
 import { EmailService, IEmailService } from "@/service/emailService.js";
 import { GlobalPingService } from "@/service/globalPingService.js";
 import { WorkerHelper } from "@/worker/worker.helper.js";
-import { IWorker } from "@/worker/worker.interface.js";
+import { IQueueWorker } from "@/worker/worker.interface.js";
 import { INetworkService, NetworkService } from "@/service/networkService.js";
 import { IStatusService, StatusService } from "@/service/statusService.js";
 import { MonitorStatusPolicy } from "@/worker/worker.monitor-status-policy.js";
@@ -117,7 +117,7 @@ export type InitializedServices = {
 	emailService: IEmailService;
 	bufferService: IBufferService;
 	statusService: IStatusService;
-	worker: IWorker;
+	worker: IQueueWorker;
 	userService: IUserService;
 	checkService: ICheckService;
 	geoChecksService: IGeoChecksService;
@@ -315,7 +315,7 @@ export const initializeServices = async ({
 		settingsService,
 		logger,
 		jwt,
-		worker,
+		scheduler: worker,
 		monitorsRepository,
 		usersRepository,
 		invitesRepository,
@@ -334,10 +334,10 @@ export const initializeServices = async ({
 		monitorsRepository,
 		maintenanceWindowsRepository,
 		jobsRepository,
-		worker,
+		scheduler: worker,
 	});
 	const monitorService = new MonitorService({
-		worker,
+		scheduler: worker,
 		logger,
 		games,
 		monitorsRepository,

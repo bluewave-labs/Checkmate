@@ -56,17 +56,21 @@ export type WorkerJobsPage = {
 	count: number;
 };
 
-export interface IWorker {
+export interface IJobScheduler {
 	readonly serviceName: string;
-	init(): Promise<boolean>;
 	addJob(monitorId: string, monitor: Monitor): Promise<void>;
 	deleteJob(monitor: Monitor): Promise<void>;
 	pauseJob(monitor: Monitor): Promise<void>;
 	resumeJob(monitor: Monitor): Promise<void>;
 	updateJob(monitor: Monitor): Promise<void>;
 	wake(type: JobType): void;
-	shutdown(): Promise<void>;
 	getMetrics(): Promise<WorkerMetrics>;
 	getJobs(pagination: WorkerJobsPagination): Promise<WorkerJobsPage>;
 	flushQueues(): Promise<{ success: boolean }>;
+	shutdown(): Promise<void>;
+}
+
+export interface IQueueWorker extends IJobScheduler {
+	readonly serviceName: string;
+	init(): Promise<boolean>;
 }

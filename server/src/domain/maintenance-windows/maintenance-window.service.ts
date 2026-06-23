@@ -1,10 +1,10 @@
 import { IMaintenanceWindowsRepository } from "@/domain/maintenance-windows/maintenance-window.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
-import { IWorker } from "@/worker/worker.interface.js";
 import type { DurationUnit, MaintenanceWindow } from "@/domain/maintenance-windows/maintenance-window.type.js";
 import { AppError } from "@/utils/AppError.js";
 import { isWindowActive } from "@/utils/maintenanceWindow.js";
+import { IJobScheduler } from "@/worker/worker.interface.js";
 
 const SERVICE_NAME = "maintenanceWindowService";
 
@@ -43,23 +43,23 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 	private monitorsRepository: IMonitorsRepository;
 	private maintenanceWindowsRepository: IMaintenanceWindowsRepository;
 	private jobsRepository: IJobsRepository;
-	private worker: IWorker;
+	private scheduler: IJobScheduler;
 
 	constructor({
 		monitorsRepository,
 		maintenanceWindowsRepository,
 		jobsRepository,
-		worker,
+		scheduler,
 	}: {
 		monitorsRepository: IMonitorsRepository;
 		maintenanceWindowsRepository: IMaintenanceWindowsRepository;
 		jobsRepository: IJobsRepository;
-		worker: IWorker;
+		scheduler: IJobScheduler;
 	}) {
 		this.monitorsRepository = monitorsRepository;
 		this.maintenanceWindowsRepository = maintenanceWindowsRepository;
 		this.jobsRepository = jobsRepository;
-		this.worker = worker;
+		this.scheduler = scheduler;
 	}
 
 	get serviceName() {
@@ -84,8 +84,8 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 			// Rearm jobs to run soon (now + jitter to avoid herding)
 			await this.jobsRepository.markMonitorsDue(toInitializing, now.getTime());
 			// Wake the (possibly idle, backed-off) loops so the rearmed jobs run promptly instead of waiting up to POLL_MAX_MS
-			this.worker.wake("check");
-			this.worker.wake("geo-check");
+			this.scheduler.wake("check");
+			this.scheduler.wake("geo-check");
 		}
 	};
 
