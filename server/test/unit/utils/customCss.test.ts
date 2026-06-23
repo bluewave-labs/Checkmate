@@ -47,12 +47,27 @@ describe("cssReferencesExternalResource", () => {
 		expect(cssReferencesExternalResource("body{background:url(http://evil.example/x) !!!}")).toBe(true);
 	});
 
-	it("flags url() obfuscated with an inline comment", () => {
-		expect(cssReferencesExternalResource('body{background:url(/*c*/ "http://evil.example/x")}')).toBe(true);
+	it("flags references obfuscated with inline comments", () => {
+		expect(cssReferencesExternalResource('body{background:/*c*/url("http://evil.example/x")}')).toBe(true);
+		expect(cssReferencesExternalResource('@import/*c*/"http://evil.example/x";')).toBe(true);
+		expect(cssReferencesExternalResource('body{background:image-set(/*c*/"http://evil.example/x" 1x)}')).toBe(true);
+	});
+
+	it("allows a comment that makes url() a bad token the browser never fetches", () => {
+		expect(cssReferencesExternalResource('body{background:url(/*c*/ "http://evil.example/x")}')).toBe(false);
 	});
 
 	it("flags url() obfuscated with CSS escapes", () => {
 		expect(cssReferencesExternalResource("body{background:\\75 rl(http://evil.example/x)}")).toBe(true);
 		expect(cssReferencesExternalResource('\\40 import "http://evil.example/x";')).toBe(true);
+	});
+
+	it("flags a scheme split by a line continuation", () => {
+		expect(cssReferencesExternalResource('body{background:url("htt\\\nps://evil.example/x")}')).toBe(true);
+		expect(cssReferencesExternalResource('body{background:url("htt\\\r\nps://evil.example/x")}')).toBe(true);
+	});
+
+	it("flags a scheme split by a hex escape", () => {
+		expect(cssReferencesExternalResource('body{background:url("\\68 ttps://evil.example/x")}')).toBe(true);
 	});
 });
