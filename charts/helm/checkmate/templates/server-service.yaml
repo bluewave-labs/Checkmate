@@ -1,9 +1,20 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: checkmate-server
+  name: {{ include "checkmate.fullname" . }}-server
+  namespace: {{ include "checkmate.namespace" . }}
+  labels:
+    {{- include "checkmate.componentLabels" (dict "root" . "component" "server") | nindent 4 }}
+  {{- with .Values.global.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
+  type: ClusterIP
   selector:
-    app: checkmate-server
+    {{- include "checkmate.componentSelectorLabels" (dict "root" . "component" "server") | nindent 4 }}
   ports:
-    - port: {{ .Values.server.port }}
+    - name: http
+      port: {{ .Values.server.port }}
+      targetPort: http
+      protocol: TCP

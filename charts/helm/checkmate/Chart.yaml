@@ -1,6 +1,16 @@
 apiVersion: v2
 name: checkmate-chart
-description: A Helm chart for Checkmate App
+description: Helm chart for Checkmate — open-source uptime and infrastructure monitoring
 type: application
-version: 0.1.0
+version: 0.2.0
 appVersion: "2.3"
+keywords:
+  - monitoring
+  - uptime
+  - infrastructure
+  - observability
+  - checkmate
+home: https://github.com/bluewave-labs/Checkmate
+maintainers:
+  - name: Bluewave Labs
+    url: https://github.com/bluewave-labs

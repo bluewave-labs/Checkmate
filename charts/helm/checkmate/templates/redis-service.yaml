@@ -2,10 +2,21 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: checkmate-redis
+  name: {{ include "checkmate.fullname" . }}-redis
+  namespace: {{ include "checkmate.namespace" . }}
+  labels:
+    {{- include "checkmate.componentLabels" (dict "root" . "component" "redis") | nindent 4 }}
+  {{- with .Values.global.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
+  type: ClusterIP
   selector:
-    app: checkmate-redis
+    {{- include "checkmate.componentSelectorLabels" (dict "root" . "component" "redis") | nindent 4 }}
   ports:
-    - port: {{ .Values.redis.port }}
+    - name: redis
+      port: {{ .Values.redis.port }}
+      targetPort: redis
+      protocol: TCP
 {{- end }}

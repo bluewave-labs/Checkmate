@@ -1,48 +1,79 @@
-{{- if eq .Values.client.ingress.host "change_me" }}
-  {{- fail "client.ingress.host must be overridden and not set to 'change_me'" }}
+{{- /*
+  prechecks.yaml — pre-flight validation run at helm install / helm upgrade.
+  Produces no Kubernetes resources; only fail() calls that abort the render early.
+*/ -}}
+
+{{- /* ── Secret validation ─────────────────────────────────────────────────── */}}
+{{- if not .Values.secrets.existingSecret }}
+  {{- if or (empty .Values.secrets.JWT_SECRET) (eq .Values.secrets.JWT_SECRET "change_me") }}
+    {{- fail "secrets.JWT_SECRET must be set to a non-default value before deploying" }}
+  {{- end }}
 {{- end }}
 
-{{- if eq .Values.server.ingress.host "change_me" }}
-  {{- fail "server.ingress.host must be overridden and not set to 'change_me'" }}
+{{- /* ── Exactly one routing mode per component ───────────────────────────── */}}
+{{- if and .Values.client.ingress.enabled .Values.client.httproute.enabled }}
+  {{- fail "client: ingress.enabled and httproute.enabled cannot both be true — choose one" }}
+{{- end }}
+{{- if and .Values.server.ingress.enabled .Values.server.httproute.enabled }}
+  {{- fail "server: ingress.enabled and httproute.enabled cannot both be true — choose one" }}
 {{- end }}
 
-{{- $serverProtocol := .Values.server.protocol }}
-{{- if not (or (eq $serverProtocol "http") (eq $serverProtocol "https")) }}
-  {{- fail "server.protocol must be either 'http' or 'https'" }}
+{{- /* ── Client Ingress validations ─────────────────────────────────────────── */}}
+{{- if .Values.client.ingress.enabled }}
+  {{- if eq .Values.client.ingress.host "change_me" }}
+    {{- fail "client.ingress.host must be set to a real hostname before deploying" }}
+  {{- end }}
+  {{- $proto := .Values.client.protocol }}
+  {{- if not (or (eq $proto "http") (eq $proto "https")) }}
+    {{- fail "client.protocol must be either 'http' or 'https'" }}
+  {{- end }}
+  {{- if and .Values.client.ingress.tls.enabled (ne $proto "https") }}
+    {{- fail "client.ingress.tls.enabled requires client.protocol: https to prevent mixed-content issues" }}
+  {{- end }}
+  {{- $ann := .Values.client.ingress.annotations | default dict }}
+  {{- if and .Values.client.ingress.tls.enabled (not (or (hasKey $ann "cert-manager.io/cluster-issuer") (hasKey $ann "cert-manager.io/issuer"))) }}
+    {{- fail "client.ingress.tls.enabled requires a cert-manager annotation: cert-manager.io/cluster-issuer or cert-manager.io/issuer" }}
+  {{- end }}
 {{- end }}
 
-{{- $clientProtocol := .Values.client.protocol }}
-{{- if not (or (eq $clientProtocol "http") (eq $clientProtocol "https")) }}
-  {{- fail "client.protocol must be either 'http' or 'https'" }}
+{{- /* ── Client HTTPRoute validations ────────────────────────────────────────── */}}
+{{- if .Values.client.httproute.enabled }}
+  {{- if not .Values.client.httproute.gatewayName }}
+    {{- fail "client.httproute.gatewayName is required when client.httproute.enabled is true" }}
+  {{- end }}
 {{- end }}
 
-{{/* Enforce protocol when TLS is enabled to avoid mixed-content */}}
-{{- if and .Values.client.ingress.tls.enabled (ne $clientProtocol "https") }}
-  {{- fail "client.ingress.tls.enabled is true but client.protocol is not 'https'. Set client.protocol: https to avoid mixed content." }}
+{{- /* ── Server Ingress validations ─────────────────────────────────────────── */}}
+{{- if .Values.server.ingress.enabled }}
+  {{- if eq .Values.server.ingress.host "change_me" }}
+    {{- fail "server.ingress.host must be set to a real hostname before deploying" }}
+  {{- end }}
+  {{- $proto := .Values.server.protocol }}
+  {{- if not (or (eq $proto "http") (eq $proto "https")) }}
+    {{- fail "server.protocol must be either 'http' or 'https'" }}
+  {{- end }}
+  {{- if and .Values.server.ingress.tls.enabled (ne $proto "https") }}
+    {{- fail "server.ingress.tls.enabled requires server.protocol: https" }}
+  {{- end }}
+  {{- $ann := .Values.server.ingress.annotations | default dict }}
+  {{- if and .Values.server.ingress.tls.enabled (not (or (hasKey $ann "cert-manager.io/cluster-issuer") (hasKey $ann "cert-manager.io/issuer"))) }}
+    {{- fail "server.ingress.tls.enabled requires a cert-manager annotation: cert-manager.io/cluster-issuer or cert-manager.io/issuer" }}
+  {{- end }}
 {{- end }}
 
-{{- if and .Values.server.ingress.tls.enabled (ne $serverProtocol "https") }}
-  {{- fail "server.ingress.tls.enabled is true but server.protocol is not 'https'. Set server.protocol: https to ensure correct API base URL." }}
+{{- /* ── Server HTTPRoute validations ────────────────────────────────────────── */}}
+{{- if .Values.server.httproute.enabled }}
+  {{- if not .Values.server.httproute.gatewayName }}
+    {{- fail "server.httproute.gatewayName is required when server.httproute.enabled is true" }}
+  {{- end }}
 {{- end }}
 
-{{/* If client runs on https, API must also be https to avoid mixed content */}}
-{{- if and (eq $clientProtocol "https") (ne $serverProtocol "https") }}
-  {{- fail "client.protocol is 'https' but server.protocol is not. Set server.protocol: https to prevent browser mixed-content issues." }}
+{{- /* ── Cross-component protocol consistency ────────────────────────────────── */}}
+{{- if and (eq .Values.client.protocol "https") (eq .Values.server.protocol "http") }}
+  {{- fail "client.protocol is 'https' but server.protocol is 'http' — browsers will block mixed-content requests. Set server.protocol: https." }}
 {{- end }}
 
-{{/* Fail early if TLS enabled without cert-manager annotations (cluster-issuer or issuer) */}}
-{{- $cAnn := .Values.client.ingress.annotations | default dict }}
-{{- $sAnn := .Values.server.ingress.annotations | default dict }}
-
-{{- $clientHasIssuer := or (hasKey $cAnn "cert-manager.io/cluster-issuer") (hasKey $cAnn "cert-manager.io/issuer") }}
-{{- $serverHasIssuer := or (hasKey $sAnn "cert-manager.io/cluster-issuer") (hasKey $sAnn "cert-manager.io/issuer") }}
-
-{{- if and .Values.client.ingress.tls.enabled (not $clientHasIssuer) }}
-  {{- fail "client.ingress.tls.enabled is true but no cert-manager issuer annotation found. Add 'cert-manager.io/cluster-issuer' or 'cert-manager.io/issuer'." }}
+{{- /* ── External MongoDB requires an explicit connection string ───────────────── */}}
+{{- if and (not .Values.mongodb.enabled) (not .Values.secrets.existingSecret) (empty .Values.secrets.DB_CONNECTION_STRING) }}
+  {{- fail "mongodb.enabled is false — set secrets.DB_CONNECTION_STRING or use secrets.existingSecret" }}
 {{- end }}
-
-{{- if and .Values.server.ingress.tls.enabled (not $serverHasIssuer) }}
-  {{- fail "server.ingress.tls.enabled is true but no cert-manager issuer annotation found. Add 'cert-manager.io/cluster-issuer' or 'cert-manager.io/issuer'." }}
-{{- end }}
-
-{{/* Secret name can be omitted; we default to <release>-client|server-tls in templates */}}

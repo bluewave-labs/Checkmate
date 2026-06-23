@@ -1,44 +1,81 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: checkmate-client
+  name: {{ include "checkmate.fullname" . }}-client
+  namespace: {{ include "checkmate.namespace" . }}
+  labels:
+    {{- include "checkmate.componentLabels" (dict "root" . "component" "client") | nindent 4 }}
+  {{- with .Values.global.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.client.replicas }}
   selector:
     matchLabels:
-      app: checkmate-client
+      {{- include "checkmate.componentSelectorLabels" (dict "root" . "component" "client") | nindent 6 }}
   template:
     metadata:
       labels:
-        app: checkmate-client
+        {{- include "checkmate.componentSelectorLabels" (dict "root" . "component" "client") | nindent 8 }}
+        {{- with .Values.client.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.client.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
-    {{- with .Values.client.affinity }}
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.client.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.client.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.client.affinity }}
       affinity:
-        {{- tpl ( . | toYaml) $ | nindent 8 }}
-    {{- end }}
-    {{- with .Values.client.tolerations }}
+        {{- include "checkmate.tplrender" (dict "value" . "context" $) | nindent 8 }}
+      {{- end }}
+      {{- with .Values.client.tolerations }}
       tolerations:
-        {{- tpl ( . | toYaml) $ | nindent 8 }}
-    {{- end }}
+        {{- include "checkmate.tplrender" (dict "value" . "context" $) | nindent 8 }}
+      {{- end }}
       containers:
         - name: client
           image: {{ .Values.client.image }}
+          imagePullPolicy: {{ .Values.client.imagePullPolicy }}
           ports:
-            - containerPort: {{ .Values.client.port }}
+            - name: http
+              containerPort: {{ .Values.client.port }}
+              protocol: TCP
           env:
+            # Runtime variables consumed by the nginx entrypoint script in the container image.
             - name: UPTIME_APP_API_BASE_URL
-              value: "{{ .Values.server.protocol }}://{{ .Values.server.ingress.host }}/api/v1"
+              value: {{ include "checkmate.serverAPIBaseURL" . | quote }}
             - name: UPTIME_APP_CLIENT_HOST
-              value: "{{ .Values.client.protocol }}://{{ .Values.client.ingress.host }}"
+              value: {{ include "checkmate.clientHost" . | quote }}
+            {{- with .Values.client.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           volumeMounts:
-            - name: config-volume
+            - name: nginx-config
               mountPath: /etc/nginx/conf.d/default.conf
               subPath: default.conf
+          {{- with .Values.client.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with .Values.client.resources }}
           resources:
-              {{- tpl ( . | toYaml) $ | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
       volumes:
-        - name: config-volume
+        - name: nginx-config
           configMap:
-            name: checkmate-server-nginx-cm
+            name: {{ include "checkmate.fullname" . }}-nginx-cm
