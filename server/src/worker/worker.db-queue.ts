@@ -15,6 +15,7 @@ import { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.rep
 import { WORKER_TTL_SECONDS } from "@/domain/queue-workers/queue-worker.model.js";
 import { QueueMode } from "@/domain/app-settings/app-settings.type.js";
 import { JobScheduler } from "@/worker/worker.job-scheduler.js";
+import { IBufferService } from "@/service/bufferService.js";
 const SERVICE_NAME = "JobQueue";
 const POLL_MS = 250; // base poll interval while a loop is actively claiming work
 const POLL_MAX_MS = 5000; // back off poll interval to 5s if no jobs
@@ -22,6 +23,9 @@ const WORKER_STALE_MS = WORKER_TTL_SECONDS * 1000; // a worker counts as alive i
 const HEARTBEAT_MS = WORKER_STALE_MS / 3; // Worker can miss two beats without being considered stale
 const LOCK_RENEW_MS = LOCK_MS / 3; // renew an in-flight job's lock at 1/3 the lease, so it survives two missed renewals
 const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
+const DRAIN_TIMEOUT_MS = 25_000;
+const DRAIN_POLL_MS = 200;
+
 const CONCURRENCY: Record<JobType, number> = {
 	check: 500,
 	"geo-check": 20,
@@ -46,6 +50,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		private monitorsRepository: IMonitorsRepository,
 		private checksRepository: IChecksRepository,
 		private checkService: ICheckService,
+		private bufferService: IBufferService,
 		private checkProducer: ICheckProducer,
 		private checkEvaluator: ICheckEvaluator,
 		private geoCheckPipeline: ICheckPipeline,
@@ -69,6 +74,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		monitorsRepository: IMonitorsRepository,
 		checksRepository: IChecksRepository,
 		checkService: ICheckService,
+		bufferService: IBufferService,
 		checkProducer: ICheckProducer,
 		checkEvaluator: ICheckEvaluator,
 		geoCheckPipeline: ICheckPipeline,
@@ -85,6 +91,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 			monitorsRepository,
 			checksRepository,
 			checkService,
+			bufferService,
 			checkProducer,
 			checkEvaluator,
 			geoCheckPipeline,
@@ -98,6 +105,8 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		await instance.init();
 		return instance;
 	}
+
+	private getInFlightCount = () => Object.values(this.inFlight).reduce((sum, n) => sum + n, 0);
 
 	private toCleanupJob = (type: "cleanup-orphaned" | "cleanup-retention", now: number): JobSeed => ({
 		id: jobId(type, null),
@@ -286,5 +295,42 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		await this.shutdown();
 		const ok = await this.init();
 		return { success: ok };
+	};
+
+	override drain = async () => {
+		this.stopped = true;
+		const cutoff = Date.now() + DRAIN_TIMEOUT_MS;
+		while (this.getInFlightCount() > 0 && Date.now() < cutoff) {
+			await new Promise((resolve) => setTimeout(resolve, DRAIN_POLL_MS)); // Wait for DRAIN_POLL_MS for jobs to finish
+		}
+
+		const remainingJobs = this.getInFlightCount();
+		if (remainingJobs > 0) {
+			this.logger.warn({
+				message: `Draining timed out with ${remainingJobs} in-flight.  Locks will expire and jobs will be reclaimed`,
+				service: SERVICE_NAME,
+				method: "drain",
+			});
+		} else {
+			this.logger.info({
+				message: `${this.workerId} drained`,
+				service: SERVICE_NAME,
+				method: "drain",
+			});
+		}
+
+		await this.bufferService.shutdown(); // Flush buffers
+	};
+
+	getHealth = () => {
+		return {
+			workerId: this.workerId,
+			mode: this.queueMode,
+			dbConnected: true, // TODO
+			initComplete: true, // TODO
+			draining: false, // TODO
+			lastTickAt: null, // TODO
+			inFlight: Number.MAX_SAFE_INTEGER, // TODO
+		};
 	};
 }
