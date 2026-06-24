@@ -136,6 +136,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		monitorsRepository,
 		checksRepository,
 		checkService,
+		bufferService,
 		checkProducer,
 		checkEvaluator,
 		geoCheckPipeline,

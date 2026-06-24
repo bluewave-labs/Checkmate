@@ -154,6 +154,10 @@ export class JobScheduler implements IJobScheduler {
 		return { success: true };
 	};
 
+	drain = async () => {
+		this.stopped = true;
+	};
+
 	shutdown = async () => {
 		this.stopped = true;
 		// Stop all timers

@@ -24,6 +24,7 @@ export const initShutdownListener = (server: Server | null, services: ShutdownTa
 
 		try {
 			server?.close();
+			await services.worker.drain();
 			await services.worker.shutdown();
 			await services.db.disconnect();
 			logger.info({ message: "Graceful shutdown complete" });
