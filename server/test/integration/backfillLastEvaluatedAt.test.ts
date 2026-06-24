@@ -3,6 +3,9 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { MonitorModel } from "../../src/domain/monitors/monitor.model.ts";
 import { backfillMonitorLastEvaluatedAt } from "../../src/db/migration/0008_backfillMonitorLastEvaluatedAt.ts";
+import { createMockLogger } from "../helpers/createMockLogger.ts";
+
+const logger = createMockLogger();
 
 // ── Real-Mongo harness ─────────────────────────────────────────────────────────
 // Legacy monitors are inserted through the raw driver, NOT MonitorModel.create — the
@@ -30,7 +33,7 @@ describe("0008_backfillMonitorLastEvaluatedAt", () => {
 		await MonitorModel.collection.insertOne({ name: "legacy" }); // pre-upgrade doc, no lastEvaluatedAt
 
 		const before = Date.now();
-		await backfillMonitorLastEvaluatedAt();
+		await backfillMonitorLastEvaluatedAt(logger);
 
 		const doc = await MonitorModel.collection.findOne({ name: "legacy" });
 		// Must be a recent timestamp — backfilling 0 would replay the whole check history on the first evaluate.
@@ -42,7 +45,7 @@ describe("0008_backfillMonitorLastEvaluatedAt", () => {
 	it("leaves monitors that already have lastEvaluatedAt untouched (idempotent)", async () => {
 		await MonitorModel.collection.insertOne({ name: "current", lastEvaluatedAt: 12345 });
 
-		await backfillMonitorLastEvaluatedAt();
+		await backfillMonitorLastEvaluatedAt(logger);
 
 		const doc = await MonitorModel.collection.findOne({ name: "current" });
 		expect(doc?.lastEvaluatedAt).toBe(12345);
@@ -52,13 +55,13 @@ describe("0008_backfillMonitorLastEvaluatedAt", () => {
 		const db = mongoose.connection.db!;
 		await db.collection("jobs").insertOne({ id: "legacy-job", template: "monitor-job" }); // old-scheduler row
 
-		await backfillMonitorLastEvaluatedAt();
+		await backfillMonitorLastEvaluatedAt(logger);
 
 		const exists = await db.listCollections({ name: "jobs" }).toArray();
 		expect(exists).toHaveLength(0);
 	});
 
 	it("does not throw when there is no jobs collection to drop", async () => {
-		await expect(backfillMonitorLastEvaluatedAt()).resolves.toBeUndefined();
+		await expect(backfillMonitorLastEvaluatedAt(logger)).resolves.toBeUndefined();
 	});
 });
