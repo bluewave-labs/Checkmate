@@ -9,20 +9,20 @@ import { handleErrors } from "@/api/middleware/handleErrors.js";
 import { generalApiLimiter } from "@/api/middleware/rateLimiter.js";
 import { sanitizeBody, sanitizeQuery } from "@/api/middleware/sanitization.js";
 import { setupRoutes } from "@/config/routes.js";
-import { InitializedServices } from "@/config/services.js";
 import { InitializedControllers } from "@/config/controllers.js";
 import { EnvConfig } from "@/domain/app-settings/app-settings.service.js";
 import { createStatusPageCorsOrigin } from "@/api/middleware/statusPageCorsOrigin.js";
 import { isPublicStatusPageApiPath } from "@/api/middleware/statusPagePublicApiPath.js";
+import { ApiServices } from "@/config/services.api.js";
 
 export const createApp = ({
-	services,
+	apiServices: services,
 	controllers,
 	envSettings,
 	frontendPath,
 	openApiSpec,
 }: {
-	services: InitializedServices;
+	apiServices: ApiServices;
 	controllers: InitializedControllers;
 	envSettings: EnvConfig;
 	frontendPath: string;
@@ -112,6 +112,6 @@ export const createApp = ({
 	app.get("*", (req, res) => {
 		res.sendFile(path.join(frontendPath, "index.html"));
 	});
-	app.use(handleErrors);
+	app.use(handleErrors(services.logger));
 	return app;
 };

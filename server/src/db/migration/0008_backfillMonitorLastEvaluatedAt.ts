@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { MonitorModel } from "../../domain/monitors/monitor.model.js";
-import { logger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger.js";
 
 const JOBS_COLLECTION = "jobs";
 
@@ -9,7 +9,7 @@ const JOBS_COLLECTION = "jobs";
  *
  * Stamp the upgrade moment, not 0. If set to 0, all checks will be replayed
  */
-export async function backfillMonitorLastEvaluatedAt(): Promise<void> {
+export async function backfillMonitorLastEvaluatedAt(logger: ILogger): Promise<void> {
 	const SERVICE_NAME = "Migration:BackfillMonitorLastEvaluatedAt";
 
 	try {

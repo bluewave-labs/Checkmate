@@ -197,7 +197,7 @@ const checkSnapshotSchema = new Schema<CheckSnapshotDocument>(
 		audits: { type: snapshotAuditsSchema },
 		createdAt: { type: Date, required: true },
 	},
-	{ _id: false }
+	{ _id: false, suppressReservedKeysWarning: true }
 );
 
 const MonitorSchema = new Schema<MonitorDocument>(

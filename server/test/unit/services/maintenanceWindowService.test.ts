@@ -3,7 +3,7 @@ import { MaintenanceWindowService } from "../../../src/domain/maintenance-window
 import type { IMaintenanceWindowsRepository } from "../../../src/domain/maintenance-windows/maintenance-window.repository.interface.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
 import type { IJobsRepository } from "../../../src/domain/jobs/job.repository.interface.ts";
-import type { IWorker } from "../../../src/worker/worker.interface.ts";
+import type { IJobScheduler } from "../../../src/worker/worker.interface.ts";
 import type { MaintenanceWindow } from "../../../src/domain/maintenance-windows/maintenance-window.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -37,7 +37,7 @@ const createJobsRepo = () =>
 const createWorker = () =>
 	({
 		wake: jest.fn(),
-	}) as unknown as jest.Mocked<IWorker>;
+	}) as unknown as jest.Mocked<IJobScheduler>;
 
 const createService = (overrides?: {
 	monitorsRepository?: ReturnType<typeof createMonitorsRepo>;
@@ -49,7 +49,7 @@ const createService = (overrides?: {
 	const maintenanceWindowsRepository = overrides?.maintenanceWindowsRepository ?? createMaintenanceWindowsRepo();
 	const jobsRepository = overrides?.jobsRepository ?? createJobsRepo();
 	const worker = overrides?.worker ?? createWorker();
-	const service = new MaintenanceWindowService({ monitorsRepository, maintenanceWindowsRepository, jobsRepository, worker });
+	const service = new MaintenanceWindowService({ monitorsRepository, maintenanceWindowsRepository, jobsRepository, scheduler: worker });
 	return { service, monitorsRepository, maintenanceWindowsRepository, jobsRepository, worker };
 };
 

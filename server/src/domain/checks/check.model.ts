@@ -241,6 +241,7 @@ const CheckSchema = new Schema<CheckDocument>(
 		},
 		errors: {
 			type: [errorSchema],
+			suppressReservedKeysWarning: true,
 			default: () => [],
 		},
 		capture: {

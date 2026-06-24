@@ -65,7 +65,7 @@ const createService = (overrides?: Record<string, unknown>) => {
 	const settingsService = {
 		getSettings: jest.fn().mockReturnValue(makeAppSettings()),
 	};
-	const worker = {
+	const scheduler = {
 		deleteJob: jest.fn().mockResolvedValue(undefined),
 	};
 	const jwtMock = {
@@ -85,7 +85,7 @@ const createService = (overrides?: Record<string, unknown>) => {
 		monitorsRepository,
 		emailService,
 		settingsService,
-		worker,
+		scheduler,
 		jwt: jwtMock,
 		crypto: cryptoMock,
 		...overrides,
@@ -475,23 +475,23 @@ describe("UserService", () => {
 
 	describe("deleteUser", () => {
 		it("deletes user and cleans up monitor jobs for superadmin", async () => {
-			const { service, usersRepository, worker, monitorsRepository } = createService();
+			const { service, usersRepository, scheduler, monitorsRepository } = createService();
 
 			await service.deleteUser({ userId: "user-1", teamId: "team-1", roles: ["superadmin"] });
 
 			expect(monitorsRepository.findByTeamId).toHaveBeenCalledWith("team-1", {});
-			expect(worker.deleteJob).toHaveBeenCalledTimes(2);
+			expect(scheduler.deleteJob).toHaveBeenCalledTimes(2);
 			expect(usersRepository.deleteById).toHaveBeenCalledWith("user-1");
 		});
 
 		it("handles null monitors for superadmin gracefully", async () => {
-			const { service, usersRepository, worker } = createService({
+			const { service, usersRepository, scheduler } = createService({
 				monitorsRepository: { findByTeamId: jest.fn().mockResolvedValue(null) },
 			});
 
 			await service.deleteUser({ userId: "user-1", teamId: "team-1", roles: ["superadmin"] });
 
-			expect(worker.deleteJob).not.toHaveBeenCalled();
+			expect(scheduler.deleteJob).not.toHaveBeenCalled();
 			expect(usersRepository.deleteById).toHaveBeenCalledWith("user-1");
 		});
 

@@ -12,7 +12,7 @@ import NotificationController from "../api/controllers/notificationController.js
 import TagsController from "../api/controllers/tagController.js";
 import DiagnosticController from "../api/controllers/diagnosticController.js";
 import IncidentController from "../api/controllers/incidentController.js";
-import type { InitializedServices } from "@/config/services.js";
+import { ApiServices } from "@/config/services.api.js";
 
 export interface InitializedControllers {
 	authController: AuthController;
@@ -30,21 +30,21 @@ export interface InitializedControllers {
 	diagnosticController: DiagnosticController;
 	incidentController: IncidentController;
 }
-export const initializeControllers = (services: InitializedServices): InitializedControllers => {
+export const initializeControllers = (apiServices: ApiServices): InitializedControllers => {
 	return {
-		authController: new AuthController(services.userService),
-		monitorController: new MonitorController(services.monitorService, services.notificationsService),
-		settingsController: new SettingsController(services.settingsService, services.emailService),
-		checkController: new CheckController(services.checkService),
-		geoCheckController: new GeoCheckController(services.geoChecksService),
-		inviteController: new InviteController(services.inviteService),
-		maintenanceWindowController: new MaintenanceWindowController(services.maintenanceWindowService),
-		queueController: new QueueController(services.worker),
-		logController: new LogController(services.logger),
-		statusPageController: new StatusPageController(services.statusPageService, services.monitorsRepository, services.settingsService),
-		notificationController: new NotificationController(services.notificationsService, services.monitorsRepository),
-		tagController: new TagsController(services.tagsService),
-		diagnosticController: new DiagnosticController(services.diagnosticService),
-		incidentController: new IncidentController(services.incidentService),
+		authController: new AuthController(apiServices.userService),
+		monitorController: new MonitorController(apiServices.monitorService, apiServices.notificationsService),
+		settingsController: new SettingsController(apiServices.settingsService, apiServices.emailService),
+		checkController: new CheckController(apiServices.checkService),
+		geoCheckController: new GeoCheckController(apiServices.geoChecksService),
+		inviteController: new InviteController(apiServices.inviteService),
+		maintenanceWindowController: new MaintenanceWindowController(apiServices.maintenanceWindowService),
+		queueController: new QueueController(apiServices.worker),
+		logController: new LogController(apiServices.logger),
+		statusPageController: new StatusPageController(apiServices.statusPageService, apiServices.monitorsRepository, apiServices.settingsService),
+		notificationController: new NotificationController(apiServices.notificationsService, apiServices.monitorsRepository),
+		tagController: new TagsController(apiServices.tagsService),
+		diagnosticController: new DiagnosticController(apiServices.diagnosticService),
+		incidentController: new IncidentController(apiServices.incidentService),
 	};
 };

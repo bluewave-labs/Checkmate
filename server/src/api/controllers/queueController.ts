@@ -1,4 +1,4 @@
-import { IWorker } from "@/worker/worker.interface.js";
+import { IJobScheduler } from "@/worker/worker.interface.js";
 import { getQueueJobsQueryValidation } from "@/api/validation/queueValidation.js";
 import { Request, Response, NextFunction } from "express";
 
@@ -13,10 +13,7 @@ export interface IJobQueueController {
 
 class JobQueueController implements IJobQueueController {
 	static SERVICE_NAME = SERVICE_NAME;
-	private worker: IWorker;
-	constructor(worker: IWorker) {
-		this.worker = worker;
-	}
+	constructor(private scheduler: IJobScheduler) {}
 
 	get serviceName() {
 		return JobQueueController.SERVICE_NAME;
@@ -24,7 +21,7 @@ class JobQueueController implements IJobQueueController {
 
 	getMetrics = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const metrics = await this.worker.getMetrics();
+			const metrics = await this.scheduler.getMetrics();
 			res.status(200).json({
 				success: true,
 				msg: "Queue metrics fetched successfully",
@@ -38,7 +35,7 @@ class JobQueueController implements IJobQueueController {
 	getJobs = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const pagination = getQueueJobsQueryValidation.parse(req.query);
-			const { jobs, count } = await this.worker.getJobs(pagination);
+			const { jobs, count } = await this.scheduler.getJobs(pagination);
 			return res.status(200).json({
 				success: true,
 				msg: "Queue jobs fetched successfully",
@@ -52,8 +49,8 @@ class JobQueueController implements IJobQueueController {
 	getAllMetrics = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const pagination = getQueueJobsQueryValidation.parse(req.query);
-			const { jobs, count } = await this.worker.getJobs(pagination);
-			const metrics = await this.worker.getMetrics();
+			const { jobs, count } = await this.scheduler.getJobs(pagination);
+			const metrics = await this.scheduler.getMetrics();
 			return res.status(200).json({
 				success: true,
 				msg: "Queue metrics fetched successfully",
@@ -66,7 +63,7 @@ class JobQueueController implements IJobQueueController {
 
 	flushQueue = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const result = await this.worker.flushQueues();
+			const result = await this.scheduler.flushQueues();
 			return res.status(200).json({
 				success: true,
 				msg: "Queue flushed successfully",
