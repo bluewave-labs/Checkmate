@@ -13,6 +13,7 @@ export interface IBufferService {
 	scheduleNextFlush(): void;
 	flushBuffer(): Promise<void>;
 	flushGeoBuffer(): Promise<void>;
+	shutdown(): Promise<void>;
 }
 
 export class BufferService implements IBufferService {
@@ -151,5 +152,14 @@ export class BufferService implements IBufferService {
 			// Clear buffer even on error to prevent infinite retry loops
 			this.geoBuffer = [];
 		}
+	}
+
+	async shutdown() {
+		if (this.bufferTimer) {
+			clearTimeout(this.bufferTimer);
+			this.bufferTimer = null;
+		}
+		await this.flushBuffer();
+		await this.flushGeoBuffer();
 	}
 }
