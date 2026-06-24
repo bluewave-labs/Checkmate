@@ -22,10 +22,11 @@ const startApp = async () => {
 	// Basic setup
 	// ***********************
 
-	const env = validateEnv();
+	logger = new Logger();
+	const env = validateEnv(logger);
+	logger.setLogLevel(env.LOG_LEVEL);
 	const settingsService = new SettingsService(env);
 	const envSettings = settingsService.loadSettings();
-	logger = new Logger({ envSettings });
 	const { queueMode, queuePrimaryProcesses } = envSettings;
 
 	logger.info({
@@ -51,7 +52,7 @@ const startApp = async () => {
 	if (queueMode === "worker") {
 		const { worker } = await buildWorker(shared, envSettings);
 		logger.info({ message: "Worker instance started. API will not be started", service: SERVICE_NAME });
-		initShutdownListener(null, { worker, db: shared.db });
+		initShutdownListener(null, { worker, db: shared.db, logger });
 		return;
 	}
 

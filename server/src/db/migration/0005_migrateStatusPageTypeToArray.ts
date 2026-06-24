@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import { logger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger.js";
 import StatusPageModel from "../../domain/status-pages/status-page.model.js";
 
-export async function migrateStatusPageTypeToArray(): Promise<void> {
+export async function migrateStatusPageTypeToArray(logger: ILogger): Promise<void> {
 	const SERVICE_NAME = "Migration:MigrateStatusPageTypeToArray";
 
 	try {
