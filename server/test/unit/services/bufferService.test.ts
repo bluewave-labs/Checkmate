@@ -482,4 +482,32 @@ describe("BufferService", () => {
 			);
 		});
 	});
+
+	// ── shutdown ─────────────────────────────────────────────────────────────
+
+	describe("shutdown", () => {
+		it("stops the flush timer and flushes both buffers", async () => {
+			const { service, checkService, geoChecksService } = createService();
+			service.addToBuffer(makeCheck());
+			service.addGeoCheckToBuffer(makeGeoCheck());
+
+			await service.shutdown();
+
+			expect(checkService.createChecks).toHaveBeenCalledTimes(1);
+			expect(geoChecksService.createGeoChecks).toHaveBeenCalledTimes(1);
+
+			// Timer is cleared: advancing past the flush interval triggers no further flush.
+			await jest.advanceTimersByTimeAsync(60 * 1000);
+			expect(checkService.createChecks).toHaveBeenCalledTimes(1);
+		});
+
+		it("is safe to call with empty buffers", async () => {
+			const { service, checkService, geoChecksService } = createService();
+
+			await service.shutdown();
+
+			expect(checkService.createChecks).not.toHaveBeenCalled();
+			expect(geoChecksService.createGeoChecks).not.toHaveBeenCalled();
+		});
+	});
 });

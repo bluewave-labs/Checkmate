@@ -20,6 +20,8 @@ import { createMockLogger } from "../../helpers/createMockLogger.ts";
 
 const POLL_MS = 250;
 const LOCK_RENEW_MS = LOCK_MS / 3;
+const DRAIN_TIMEOUT_MS = 25_000; // mirror of DBQueueWorker DRAIN_TIMEOUT_MS
+const DRAIN_POLL_MS = 200; // mirror of DBQueueWorker DRAIN_POLL_MS
 
 const deferred = <T>() => {
 	let resolve!: (value: T) => void;
@@ -91,6 +93,14 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 		toStatusResponse: jest.fn<any>().mockReturnValue({ status: "up" }),
 		toLastEvaluatedAt: jest.fn<any>().mockReturnValue(12345),
 	};
+	const bufferService = {
+		addToBuffer: jest.fn<any>(),
+		addGeoCheckToBuffer: jest.fn<any>(),
+		scheduleNextFlush: jest.fn<any>(),
+		flushBuffer: jest.fn<any>().mockResolvedValue(undefined),
+		flushGeoBuffer: jest.fn<any>().mockResolvedValue(undefined),
+		shutdown: jest.fn<any>().mockResolvedValue(undefined),
+	};
 	const checkProducer = {
 		produce: jest.fn<any>().mockResolvedValue({ status: { status: "up" }, check: { id: "c1" } }),
 	};
@@ -115,6 +125,7 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 		monitorsRepository,
 		checksRepository,
 		checkService,
+		bufferService,
 		checkProducer,
 		checkEvaluator,
 		geoCheckPipeline,
@@ -131,6 +142,7 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 		mocks.monitorsRepository as any,
 		mocks.checksRepository as any,
 		mocks.checkService as any,
+		mocks.bufferService as any,
 		mocks.checkProducer as any,
 		mocks.checkEvaluator as any,
 		mocks.geoCheckPipeline as any,
@@ -233,6 +245,7 @@ describe("DBQueueWorker", () => {
 				mocks.monitorsRepository as any,
 				mocks.checksRepository as any,
 				mocks.checkService as any,
+				mocks.bufferService as any,
 				mocks.checkProducer as any,
 				mocks.checkEvaluator as any,
 				mocks.geoCheckPipeline as any,
@@ -616,6 +629,73 @@ describe("DBQueueWorker", () => {
 			expect(mocks.jobsRepository.claimDueBatch.mock.calls.length).toBe(claimsAfterInit);
 			// already shut down; keep afterEach from double-shutting-down
 			active = null;
+		});
+	});
+
+	// ── drain ─────────────────────────────────────────────────────────────────────
+
+	describe("drain", () => {
+		// Hand the "check" loop exactly one job, then nothing.
+		const claimOnce = (job: Job) => {
+			let handed = false;
+			return jest.fn<any>(async (type: string) => {
+				if (type === job.type && !handed) {
+					handed = true;
+					return [job];
+				}
+				return [];
+			});
+		};
+
+		it("stops the loops and flushes the buffer when nothing is in flight", async () => {
+			const { worker, mocks } = await start({ queueMode: "worker" });
+			const claimsBefore = mocks.jobsRepository.claimDueBatch.mock.calls.length;
+
+			await worker.drain();
+
+			expect(mocks.bufferService.shutdown).toHaveBeenCalledTimes(1);
+			expect(mocks.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("drained") }));
+			// Loops must not claim again after draining.
+			await jest.advanceTimersByTimeAsync(POLL_MS * 4);
+			expect(mocks.jobsRepository.claimDueBatch.mock.calls.length).toBe(claimsBefore);
+		});
+
+		it("waits for an in-flight job to finish before flushing", async () => {
+			const job = makeJob({ type: "check" });
+			const gate = deferred<{ status: unknown; check: unknown }>();
+			const slowProducer = { produce: jest.fn<any>().mockReturnValue(gate.promise) };
+			const { worker, mocks } = await start({
+				mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) }, checkProducer: slowProducer },
+			});
+
+			// Job is parked on produce(); drain must not flush while it is still in flight.
+			const draining = worker.drain();
+			await jest.advanceTimersByTimeAsync(DRAIN_POLL_MS * 3);
+			expect(mocks.bufferService.shutdown).not.toHaveBeenCalled();
+
+			// Let the job finish; drain observes inFlight == 0, then flushes.
+			gate.resolve({ status: { status: "up" }, check: { id: "c1" } });
+			await jest.advanceTimersByTimeAsync(DRAIN_POLL_MS);
+			await draining;
+			expect(mocks.bufferService.shutdown).toHaveBeenCalledTimes(1);
+		});
+
+		it("times out after DRAIN_TIMEOUT_MS, warns, and still flushes", async () => {
+			const job = makeJob({ type: "check" });
+			const gate = deferred<{ status: unknown; check: unknown }>();
+			const stuckProducer = { produce: jest.fn<any>().mockReturnValue(gate.promise) };
+			const { worker, mocks } = await start({
+				mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) }, checkProducer: stuckProducer },
+			});
+
+			const draining = worker.drain();
+			await jest.advanceTimersByTimeAsync(DRAIN_TIMEOUT_MS + DRAIN_POLL_MS);
+			await draining;
+
+			expect(mocks.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("timed out") }));
+			expect(mocks.bufferService.shutdown).toHaveBeenCalledTimes(1);
+
+			gate.resolve({ status: { status: "up" }, check: { id: "c1" } }); // release the stuck job for cleanup
 		});
 	});
 
