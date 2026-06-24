@@ -70,6 +70,16 @@ export const getStatusPagePublicUrl = (
 	return `${PUBLIC_STATUS_PAGE_PREFIX}/${statusPage.url}`;
 };
 
+// Same-origin URL for the admin preview iframe; a custom domain would be cross
+// origin and blocked by the admin document's CSP frame-src.
+export const getStatusPagePreviewUrl = (statusPage: Pick<StatusPage, "url">): string => {
+	if (typeof window !== "undefined") {
+		return `${window.location.origin}${PUBLIC_STATUS_PAGE_PREFIX}/${statusPage.url}`;
+	}
+
+	return `${PUBLIC_STATUS_PAGE_PREFIX}/${statusPage.url}`;
+};
+
 export const buildStatusPageApiPath = (options: {
 	url?: string;
 	useCustomDomain?: boolean;

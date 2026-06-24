@@ -17,6 +17,7 @@ import {
 } from "@/Types/StatusPage";
 import {
 	buildStatusPageApiPath,
+	getStatusPagePreviewUrl,
 	getStatusPagePublicUrl,
 	isCustomDomainHost,
 } from "@/Utils/statusPageUrl";
@@ -142,6 +143,7 @@ const StatusPageView = () => {
 	}
 
 	const publicUrl = getStatusPagePublicUrl(statusPage);
+	const previewUrl = getStatusPagePreviewUrl(statusPage);
 	return (
 		<BasePage
 			loading={isLoading}
@@ -163,7 +165,7 @@ const StatusPageView = () => {
 				<BrowserFrame url={publicUrl}>
 					<Box
 						component="iframe"
-						src={publicUrl}
+						src={previewUrl}
 						title={t("pages.statusPages.preview.title")}
 						flex={1}
 						width="100%"
