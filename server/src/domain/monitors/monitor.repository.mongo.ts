@@ -38,6 +38,11 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return this.toEntity(monitor);
 	};
 
+	findByIdLean = async (monitorId: string): Promise<Monitor | null> => {
+		const monitor = await MonitorModel.findOne({ _id: monitorId });
+		return monitor ? this.toEntity(monitor) : null;
+	};
+
 	findAll = async (): Promise<Monitor[]> => {
 		const monitors = await MonitorModel.find();
 		return this.mapDocuments(monitors);
@@ -531,6 +536,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			teamId: toStringId(doc.teamId),
 			name: doc.name,
 			description: doc.description ?? undefined,
+			method: doc.method ?? "GET",
 			status: doc.status ?? "initializing",
 			statusWindow: doc.statusWindow ?? [],
 			statusWindowSize: doc.statusWindowSize,
@@ -571,6 +577,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			dnsRecordType: doc.dnsRecordType ?? undefined,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
+			lastEvaluatedAt: doc.lastEvaluatedAt,
 		};
 	};
 
@@ -596,6 +603,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			teamId: toStringId(doc.teamId),
 			name: doc.name,
 			description: doc.description ?? undefined,
+			method: doc.method ?? "GET",
 			status: doc.status ?? "initializing",
 			statusWindow: doc.statusWindow ?? [],
 			statusWindowSize: doc.statusWindowSize,
@@ -636,6 +644,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			dnsRecordType: doc.dnsRecordType ?? undefined,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
+			lastEvaluatedAt: doc.lastEvaluatedAt,
 		};
 	};
 

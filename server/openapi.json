@@ -386,6 +386,10 @@
 						"type": "string",
 						"enum": ["equal", "include", "regex"]
 					},
+					"method": {
+						"type": "string",
+						"enum": ["GET", "HEAD"]
+					},
 					"notifications": {
 						"type": "array",
 						"items": {
@@ -466,6 +470,9 @@
 					},
 					"updatedAt": {
 						"type": "string"
+					},
+					"lastEvaluatedAt": {
+						"type": "number"
 					}
 				},
 				"required": [
@@ -480,6 +487,7 @@
 					"statusWindowThreshold",
 					"ignoreTlsErrors",
 					"useAdvancedMatching",
+					"method",
 					"notifications",
 					"tags",
 					"cpuAlertThreshold",
@@ -493,7 +501,8 @@
 					"teamId",
 					"userId",
 					"createdAt",
-					"updatedAt"
+					"updatedAt",
+					"lastEvaluatedAt"
 				],
 				"additionalProperties": {
 					"nullable": true
@@ -7066,6 +7075,10 @@
 											}
 										]
 									},
+									"method": {
+										"type": "string",
+										"enum": ["GET", "HEAD"]
+									},
 									"gameId": {
 										"anyOf": [
 											{
@@ -7665,6 +7678,11 @@
 															"enum": [""]
 														}
 													]
+												},
+												"method": {
+													"type": "string",
+													"enum": ["GET", "HEAD"],
+													"default": "GET"
 												},
 												"url": {
 													"type": "string",
@@ -8277,6 +8295,10 @@
 												"enum": [""]
 											}
 										]
+									},
+									"method": {
+										"type": "string",
+										"enum": ["GET", "HEAD"]
 									},
 									"port": {
 										"type": "number",

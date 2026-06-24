@@ -3,7 +3,7 @@ import { createVerifyJWT } from "../api/middleware/verifyJWT.js";
 import { createVerifyStatusPageAccess } from "../api/middleware/verifyStatusPageAccess.js";
 import { authApiLimiter } from "../api/middleware/rateLimiter.js";
 import type { InitializedControllers } from "./controllers.js";
-import type { InitializedServices } from "./services.js";
+import type { ApiServices } from "@/config/services.api.js";
 
 import AuthRoutes from "../api/routes/authRoute.js";
 import InviteRoutes from "../api/routes/inviteRoute.js";
@@ -21,8 +21,8 @@ import TagRoutes from "../api/routes/tagRoutes.js";
 
 import IncidentRoutes from "../api/routes/incidentRoute.js";
 
-export const setupRoutes = (app: Application, controllers: InitializedControllers, services: InitializedServices) => {
-	const verifyJWT = createVerifyJWT(services.settingsService);
+export const setupRoutes = (app: Application, controllers: InitializedControllers, apiServices: ApiServices) => {
+	const verifyJWT = createVerifyJWT(apiServices.settingsService);
 	const authRoutes = new AuthRoutes(controllers.authController, verifyJWT);
 	const monitorRoutes = new MonitorRoutes(controllers.monitorController);
 	const settingsRoutes = new SettingsRoutes(controllers.settingsController);
@@ -32,7 +32,7 @@ export const setupRoutes = (app: Application, controllers: InitializedController
 	const maintenanceWindowRoutes = new MaintenanceWindowRoutes(controllers.maintenanceWindowController);
 	const queueRoutes = new QueueRoutes(controllers.queueController);
 	const logRoutes = new LogRoutes(controllers.logController);
-	const verifyStatusPageAccess = createVerifyStatusPageAccess(services.statusPagesRepository, verifyJWT);
+	const verifyStatusPageAccess = createVerifyStatusPageAccess(apiServices.statusPagesRepository, verifyJWT);
 	const statusPageRoutes = new StatusPageRoutes(controllers.statusPageController, verifyJWT, verifyStatusPageAccess);
 	const notificationRoutes = new NotificationRoutes(controllers.notificationController);
 	const tagRoutes = new TagRoutes(controllers.tagController);

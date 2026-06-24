@@ -3,6 +3,7 @@ import { booleanCoercion, dnsHostnameRegex, dnsServerValidation } from "./shared
 import { GeoContinents } from "@/domain/geo-checks/geo-check.type.js";
 import {
 	DnsRecordTypes,
+	HttpMethods,
 	HttpStatusCodeSet,
 	MonitorMatchMethods,
 	MonitorStatuses,
@@ -70,6 +71,16 @@ const refineStrategyType = (body: { type?: string; strategy?: string }, ctx: z.R
 	}
 };
 
+const refineHeadMatching = (body: { method?: string; useAdvancedMatching?: boolean; jsonPath?: string }, ctx: z.RefinementCtx) => {
+	if (body.method === "HEAD" && (body.useAdvancedMatching === true || (body.jsonPath ?? "") !== "")) {
+		ctx.addIssue({
+			code: "custom",
+			path: ["method"],
+			message: "HEAD requests have no response body, so they cannot use advanced matching or a JSON path",
+		});
+	}
+};
+
 export const createMonitorBodyValidation = z
 	.object({
 		_id: z.string().optional(),
@@ -95,6 +106,7 @@ export const createMonitorBodyValidation = z
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
 		matchMethod: z.union([z.enum(MonitorMatchMethods), z.literal("")]).optional(),
+		method: z.enum(HttpMethods).optional(),
 		gameId: z.union([z.string(), z.literal("")]).optional(),
 		grpcServiceName: z.union([z.string(), z.literal("")]).default(""),
 		strategy: z.enum(PageSpeedStrategies).optional(),
@@ -107,7 +119,8 @@ export const createMonitorBodyValidation = z
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 	})
 	.superRefine(refineDnsHostname)
-	.superRefine(refineStrategyType);
+	.superRefine(refineStrategyType)
+	.superRefine(refineHeadMatching);
 
 export const editMonitorBodyValidation = z
 	.object({
@@ -127,6 +140,7 @@ export const editMonitorBodyValidation = z
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
 		matchMethod: z.union([z.enum(MonitorMatchMethods), z.literal("")]).optional(),
+		method: z.enum(HttpMethods).optional(),
 		port: z.number().min(1).max(65535).optional(),
 		cpuAlertThreshold: z.number().optional(),
 		memoryAlertThreshold: z.number().optional(),
@@ -144,7 +158,8 @@ export const editMonitorBodyValidation = z
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 	})
 	.superRefine(refineDnsHostname)
-	.superRefine(refineStrategyType);
+	.superRefine(refineStrategyType)
+	.superRefine(refineHeadMatching);
 
 export const pauseMonitorParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
@@ -184,6 +199,7 @@ const importedMonitorSchema = z
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
 		matchMethod: z.union([z.enum(MonitorMatchMethods), z.literal("")]).optional(),
+		method: z.enum(HttpMethods).optional().default("GET"),
 		url: z.string().min(1, "URL is required"),
 		port: z.number().optional(),
 		isActive: z.boolean().default(true),
@@ -215,7 +231,8 @@ const importedMonitorSchema = z
 		updatedAt: z.string().optional(),
 	})
 	.superRefine(refineDnsHostname)
-	.superRefine(refineStrategyType);
+	.superRefine(refineStrategyType)
+	.superRefine(refineHeadMatching);
 
 export const importMonitorsBodyValidation = z.object({
 	monitors: z.array(importedMonitorSchema).min(1, "At least one monitor is required"),
@@ -251,6 +268,7 @@ export const monitorResponseSchema = z
 		jsonPath: z.string().optional(),
 		expectedValue: z.string().optional(),
 		matchMethod: z.enum(MonitorMatchMethods).optional(),
+		method: z.enum(HttpMethods),
 		notifications: z.array(z.string()),
 		tags: z.array(z.string()),
 		customUpCodes: z.array(httpStatusCode).optional(),
@@ -272,5 +290,6 @@ export const monitorResponseSchema = z
 		userId: z.string(),
 		createdAt: z.string(),
 		updatedAt: z.string(),
+		lastEvaluatedAt: z.number(),
 	})
 	.passthrough();

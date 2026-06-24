@@ -941,10 +941,7 @@
 					"monitorId": "ID монітора",
 					"runCount": "Кількість запусків",
 					"failCount": "Кількість помилок",
-					"lastRunAt": "Останній запуск",
-					"lockedAt": "Заблоковано о",
 					"lastFinishedAt": "Останнє завершення",
-					"lastRunTook": "Останній запуск тривав",
 					"lastFailedAt": "Остання помилка",
 					"failReason": "Причина помилки",
 					"state": "Стан"

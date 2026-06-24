@@ -11,7 +11,9 @@ const SERVICE_NAME = "checkService";
 
 export interface ICheckService {
 	createChecks(checks: Check[]): Promise<Check[]>;
-	buildCheck(statusResponse: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>): Check | undefined;
+	toLastEvaluatedAt(check: Check): number;
+	toCheck(statusResponse: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>): Check | undefined;
+	toStatusResponse(check: Check): MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>;
 	getChecksByMonitor(params: {
 		monitorId: string;
 		teamId: string;
@@ -56,7 +58,11 @@ export class CheckService implements ICheckService {
 		return this.checksRepository.createChecks(checks);
 	};
 
-	buildCheck = (statusResponse: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>): Check | undefined => {
+	toLastEvaluatedAt = (check: Check) => {
+		return new Date(check.createdAt).getTime();
+	};
+
+	toCheck = (statusResponse: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]>): Check | undefined => {
 		const { monitorId, teamId, type, status, responseTime, code, message, payload, timings } = statusResponse;
 
 		const now = new Date().toISOString();
@@ -82,7 +88,7 @@ export class CheckService implements ICheckService {
 				this.logger.warn({
 					message: "Failed to build check",
 					service: SERVICE_NAME,
-					method: "buildCheck",
+					method: "toCheck",
 				});
 				return undefined;
 			}
@@ -129,6 +135,24 @@ export class CheckService implements ICheckService {
 			check.net = net;
 		}
 		return check;
+	};
+
+	toStatusResponse = (check: Check) => {
+		const statusResponse: MonitorStatusResponse<MonitorPayloadMap[keyof MonitorPayloadMap]> = {
+			monitorId: check.metadata.monitorId,
+			teamId: check.metadata.teamId,
+			type: check.metadata.type,
+			status: check.status,
+			code: check.statusCode,
+			message: check.message,
+			responseTime: check.responseTime,
+			// re-nest hardware metrics so updateMonitorStatus / extractThresholdBreaches see payload.data
+			payload:
+				check.metadata.type === "hardware"
+					? ({ data: { cpu: check.cpu, memory: check.memory, disk: check.disk, host: check.host, net: check.net } } as HardwareStatusPayload)
+					: undefined,
+		};
+		return statusResponse;
 	};
 
 	getChecksByMonitor = async ({

@@ -48,6 +48,10 @@ export const PageSpeedStrategies = ["desktop", "mobile"] as const;
 export type PageSpeedStrategy = (typeof PageSpeedStrategies)[number];
 export const DefaultPageSpeedStrategy: PageSpeedStrategy = "desktop";
 
+export const HttpMethods = ["GET", "HEAD"] as const;
+export type HttpMethod = (typeof HttpMethods)[number];
+export const DefaultHttpMethod: HttpMethod = "GET";
+
 export interface Monitor {
 	id: string;
 	userId: string;
@@ -64,6 +68,7 @@ export interface Monitor {
 	jsonPath?: string;
 	expectedValue?: string;
 	matchMethod?: MonitorMatchMethod;
+	method?: HttpMethod;
 	url: string;
 	port?: number;
 	isActive: boolean;
@@ -71,6 +76,7 @@ export interface Monitor {
 	uptimePercentage?: number;
 	notifications: string[];
 	tags: string[];
+	customUpCodes?: number[];
 	secret?: string;
 	cpuAlertThreshold: number;
 	cpuAlertCounter: number;

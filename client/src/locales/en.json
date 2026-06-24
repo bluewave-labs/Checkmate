@@ -490,6 +490,13 @@
 				"advanced": {
 					"description": "Optional settings for advanced use cases",
 					"option": {
+						"method": {
+							"label": "Request method",
+							"description": {
+								"GET": "GET fetches the full response including the body.  Advanced matching fully supported",
+								"HEAD": "HEAD fetches only response headers for reducing load on the target. Supports status code matching but not advanced matching as there is no body."
+							}
+						},
 						"advancedMatching": {
 							"label": "Use advanced matching"
 						},
@@ -505,6 +512,11 @@
 							"equal": "Equal",
 							"include": "Include",
 							"regex": "Regex"
+						},
+						"customUpCodes": {
+							"label": "Accepted status codes",
+							"description": "Add any non-2xx codes that should also be considered successful.",
+							"removeAriaLabel": "Remove status code"
 						}
 					},
 					"title": "Advanced settings"
@@ -975,6 +987,11 @@
 				},
 				"mongoDBStats": {
 					"readyState": "Ready state",
+					"readsPerSecond": "Reads/s",
+					"insertsPerSecond": "Inserts/s",
+					"updatesPerSecond": "Updates/s",
+					"deletesPerSecond": "Deletes/s",
+					"writesPerSecond": "Total writes/s",
 					"host": "Host",
 					"port": "Port",
 					"dbName": "Database name",
@@ -1015,11 +1032,9 @@
 					"monitorId": "Monitor ID",
 					"runCount": "Run count",
 					"failCount": "Count",
-					"lastRunAt": "Last run at",
-					"lockedAt": "Locked at",
+					"nextScheduledAt": "Next run at",
 					"lockedBy": "Locked by",
 					"lastFinishedAt": "Last finished at",
-					"lastRunTook": "Last run took",
 					"lastFailedAt": "Last failed",
 					"failReason": "Fail reason"
 				}

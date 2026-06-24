@@ -941,10 +941,7 @@
 					"monitorId": "รหัสมอนิเตอร์",
 					"runCount": "จำนวนรัน",
 					"failCount": "จำนวนล้มเหลว",
-					"lastRunAt": "รันล่าสุดเมื่อ",
-					"lockedAt": "ล็อกเมื่อ",
 					"lastFinishedAt": "เสร็จสิ้นล่าสุดเมื่อ",
-					"lastRunTook": "รันล่าสุดใช้เวลา",
 					"lastFailedAt": "ล้มเหลวล่าสุดเมื่อ",
 					"failReason": "สาเหตุที่ล้มเหลว",
 					"state": "สถานะ"

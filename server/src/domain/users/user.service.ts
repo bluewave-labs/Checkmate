@@ -11,9 +11,9 @@ import { AppError } from "@/utils/AppError.js";
 import { IEmailService } from "@/service/emailService.js";
 import { EnvConfig, ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { ILogger } from "@/utils/logger.js";
+import { IJobScheduler } from "@/worker/worker.interface.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import { IWorker } from "@/worker/worker.interface.js";
 type CryptoType = typeof crypto;
 type JwtType = typeof jwt;
 const SERVICE_NAME = "userService";
@@ -53,7 +53,7 @@ export class UserService implements IUserService {
 	private settingsService: ISettingsService;
 	private logger: ILogger;
 	private jwt: JwtType;
-	private worker: IWorker;
+	private scheduler: IJobScheduler;
 	private crypto: CryptoType;
 	private monitorsRepository: IMonitorsRepository;
 	private usersRepository: IUsersRepository;
@@ -68,7 +68,7 @@ export class UserService implements IUserService {
 		settingsService,
 		logger,
 		jwt,
-		worker,
+		scheduler,
 		monitorsRepository,
 		usersRepository,
 		invitesRepository,
@@ -81,7 +81,7 @@ export class UserService implements IUserService {
 		settingsService: ISettingsService;
 		logger: ILogger;
 		jwt: JwtType;
-		worker: IWorker;
+		scheduler: IJobScheduler;
 		monitorsRepository: IMonitorsRepository;
 		usersRepository: IUsersRepository;
 		invitesRepository: IInvitesRepository;
@@ -93,7 +93,7 @@ export class UserService implements IUserService {
 		this.settingsService = settingsService;
 		this.logger = logger;
 		this.jwt = jwt;
-		this.worker = worker;
+		this.scheduler = scheduler;
 		this.crypto = crypto;
 		this.monitorsRepository = monitorsRepository;
 		this.usersRepository = usersRepository;
@@ -330,7 +330,7 @@ export class UserService implements IUserService {
 		if (roles.includes("superadmin")) {
 			const monitors = await this.monitorsRepository.findByTeamId(teamId, {});
 			if (monitors) {
-				await Promise.all(monitors.map((monitor) => this.worker.deleteJob(monitor)));
+				await Promise.all(monitors.map((monitor) => this.scheduler.deleteJob(monitor)));
 			}
 		}
 		// 6. Delete the user by id

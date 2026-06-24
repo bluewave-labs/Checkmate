@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { MonitorModel } from "../dist/db/models/Monitor.js";
-import { UserModel } from "../dist/db/models/User.js";
+import { MonitorModel } from "../dist/domain/monitors/monitor.model.js";
+import { UserModel } from "../dist/domain/users/user.model.js";
 
 // Seeds a large number of HTTP monitors against real, resolving domains so the
 // scheduler can be exercised under load. Run after `npm run build` (imports the
@@ -14,7 +14,7 @@ import { UserModel } from "../dist/db/models/User.js";
 // NOTE: the running queue only schedules monitors it finds at init(), so restart
 // the server after seeding for the new monitors to actually start checking.
 
-const DEFAULT_COUNT = 5_000;
+const DEFAULT_COUNT = 500;
 const DEFAULT_BATCH = 1_000;
 const DEFAULT_INTERVAL = 60_000;
 const NAME_PREFIX = "Seed";
@@ -241,6 +241,7 @@ async function run() {
 			url: `https://${domain}`,
 			isActive: true,
 			interval,
+			lastEvaluatedAt: 0, // evaluator watermark; without it findUnevaluatedByMonitorId gets new Date(undefined)
 		});
 
 		if (docs.length === batchSize) {

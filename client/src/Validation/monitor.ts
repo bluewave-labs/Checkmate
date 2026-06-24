@@ -1,7 +1,13 @@
 import { z } from "zod";
 import type { FieldPath } from "react-hook-form";
 import { GeoContinents } from "@/Types/GeoCheck";
-import { DnsRecordTypes, PageSpeedStrategies, type MonitorType } from "@/Types/Monitor";
+import {
+	DnsRecordTypes,
+	HttpMethods,
+	PageSpeedStrategies,
+	type MonitorType,
+} from "@/Types/Monitor";
+import { ALL_HTTP_STATUS_CODES } from "@/Utils/statusCode";
 
 // Wizard step a field is validated on. Attached inline to each field below so
 // the grouping lives next to the field definition; unannotated fields default
@@ -53,9 +59,15 @@ const geoCheckFields = {
 };
 
 // HTTP monitor schema
+const httpStatusCodeSet = new Set(ALL_HTTP_STATUS_CODES.map((c) => c.id));
+const httpStatusCode = z.number().refine((code) => httpStatusCodeSet.has(code), {
+	message: "Must be a valid HTTP status code",
+});
+
 const httpSchema = baseSchema.extend({
 	type: z.literal("http"),
 	url: urlSchema,
+	method: z.enum(HttpMethods).optional().register(monitorStepRegistry, { step: 2 }),
 	ignoreTlsErrors: z.boolean().register(monitorStepRegistry, { step: 2 }),
 	useAdvancedMatching: z.boolean().register(monitorStepRegistry, { step: 2 }),
 	matchMethod: z
@@ -64,6 +76,10 @@ const httpSchema = baseSchema.extend({
 		.register(monitorStepRegistry, { step: 2 }),
 	expectedValue: z.string().optional().register(monitorStepRegistry, { step: 2 }),
 	jsonPath: z.string().optional().register(monitorStepRegistry, { step: 2 }),
+	customUpCodes: z
+		.array(httpStatusCode)
+		.optional()
+		.register(monitorStepRegistry, { step: 2 }),
 	...geoCheckFields,
 });
 

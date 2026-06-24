@@ -4,7 +4,29 @@ import type { GeoContinent, GroupedGeoCheck } from "@/domain/geo-checks/geo-chec
 export type { GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
 import http from "node:http";
 
-export const HttpStatusCodes = Object.keys(http.STATUS_CODES).map(Number);
+export const HttpStatusCodes = [
+	...Object.keys(http.STATUS_CODES).map(Number),
+	419, // Page Expired (Laravel)
+	420, // Enhance Your Calm (Twitter)
+	440, // Login Time-out (IIS)
+	449, // Retry With (IIS)
+	460, // Client Closed Connection (AWS ELB)
+	463, // X-Forwarded-For Too Large (AWS ELB)
+	497, // HTTP Request Sent to HTTPS Port (NGINX)
+	499, // Client Closed Request (NGINX)
+	509, // Bandwidth Limit Exceeded (Apache)
+	520, // Web Server Returned an Unknown Error (Cloudflare)
+	521, // Web Server Is Down (Cloudflare)
+	522, // Connection Timed Out (Cloudflare)
+	523, // Origin Is Unreachable (Cloudflare)
+	524, // A Timeout Occurred (Cloudflare)
+	525, // SSL Handshake Failed (Cloudflare)
+	526, // Invalid SSL Certificate (Cloudflare)
+	527, // Railgun Error (Cloudflare)
+	529, // Site is overloaded
+	530, // Site is frozen (Cloudflare)
+	561, // Unauthorized (AWS ELB)
+];
 export const HttpStatusCodeSet = new Set(HttpStatusCodes);
 export type HttpStatusCode = number;
 
@@ -40,6 +62,9 @@ export type MonitorMatchMethod = (typeof MonitorMatchMethods)[number] | "";
 export const DnsRecordTypes = ["A", "AAAA", "CNAME", "MX", "TXT", "NS"] as const;
 export type DnsRecordType = (typeof DnsRecordTypes)[number];
 
+export const HttpMethods = ["GET", "HEAD"] as const;
+export type HttpMethod = (typeof HttpMethods)[number];
+
 export const MAX_RECENT_CHECKS = 50;
 
 export interface Monitor {
@@ -48,6 +73,7 @@ export interface Monitor {
 	teamId: string;
 	name: string;
 	description?: string;
+	method: HttpMethod;
 	status: MonitorStatus;
 	statusWindow: boolean[];
 	statusWindowSize: number;
@@ -88,6 +114,7 @@ export interface Monitor {
 	recentChecks: CheckSnapshot[];
 	createdAt: string;
 	updatedAt: string;
+	lastEvaluatedAt: number; // epoch ms
 }
 
 export interface MonitorsSummary {

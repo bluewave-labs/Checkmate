@@ -1,6 +1,7 @@
 import { z } from "zod";
-import { DbTypes, QueueTypes, QueueModes } from "@/domain/app-settings/app-settings.type.js";
+import { DbTypes, QueueModes } from "@/domain/app-settings/app-settings.type.js";
 import { booleanCoercion } from "@/api/validation/shared.js";
+import { ILogger } from "@/utils/logger.js";
 
 const envSchema = z.object({
 	// Server Configuration
@@ -12,8 +13,8 @@ const envSchema = z.object({
 	DB_CONNECTION_STRING: z.string().min(1, "Database connection string is required"),
 	DB_TYPE: z.enum(DbTypes).default("mongodb"),
 
-	QUEUE_TYPE: z.enum(QueueTypes).default("superSimpleQueue"),
 	QUEUE_MODE: z.enum(QueueModes).default("primary"),
+	QUEUE_PRIMARY_PROCESSES: booleanCoercion.default(true),
 
 	// JWT Authentication
 	JWT_SECRET: z.string().min(1, "JWT_SECRET is required"),
@@ -31,24 +32,39 @@ const envSchema = z.object({
 
 export type ValidatedEnv = z.infer<typeof envSchema>;
 
-export const validateEnv = (): ValidatedEnv => {
+export const validateEnv = (logger: ILogger): ValidatedEnv => {
 	const result = envSchema.safeParse(process.env);
 
 	if (!result.success) {
-		console.error("Environment validation failed:");
-		console.error("");
+		logger.error({
+			message: "Env validation failed",
+			method: "validateEnv",
+			service: "Server",
+		});
 
 		const errors = result.error.format();
 		for (const [key, value] of Object.entries(errors)) {
 			if (key !== "_errors" && value && typeof value === "object" && "_errors" in value) {
-				console.error(`  ${key}: ${value._errors.join(", ")}`);
+				logger.error({
+					message: `${key}: ${value._errors.join(", ")}`,
+					method: "validateEnv",
+					service: "Server",
+				});
 			}
 		}
 
-		console.error("Please check your .env file and ensure all required variables are set.");
+		logger.error({
+			message: "Please check your .env file and ensure all required variables are set.",
+			method: "validateEnv",
+			service: "Server",
+		});
 		process.exit(1);
 	}
 
-	console.log("Environment variables validated successfully");
+	logger.info({
+		message: "Environment variables validated successfully",
+		method: "validateEnv",
+		service: "Server",
+	});
 	return result.data;
 };

@@ -42,7 +42,7 @@ class MongoDB implements IDb<Mongoose> {
 			// the unique index on MonitorStats.monitorId is enforced, otherwise databases
 			// with stray duplicates (caused by the pre-fix race in updateRunningStats)
 			// will crash at startup when the unique index fails to build.
-			await runMigrations();
+			await runMigrations(this.logger);
 
 			// Sync indexes
 			const models = mongoose.modelNames();

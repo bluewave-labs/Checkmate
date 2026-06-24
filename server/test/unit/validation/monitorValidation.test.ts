@@ -227,6 +227,57 @@ describe("monitorValidation — strategy gating", () => {
 	});
 });
 
+describe("monitorValidation — HEAD method gating", () => {
+	const baseHead = {
+		name: "HEAD check",
+		type: "http" as const,
+		url: "https://example.com",
+		method: "HEAD" as const,
+	};
+
+	describe("createMonitorBodyValidation", () => {
+		it("accepts a HEAD monitor with no body matching", () => {
+			const parsed = createMonitorBodyValidation.parse(baseHead);
+			expect(parsed.method).toBe("HEAD");
+		});
+
+		it("accepts GET together with advanced matching", () => {
+			const parsed = createMonitorBodyValidation.parse({
+				...baseHead,
+				method: "GET",
+				useAdvancedMatching: true,
+				jsonPath: "status",
+			});
+			expect(parsed.method).toBe("GET");
+		});
+
+		it("rejects HEAD combined with advanced matching", () => {
+			expect(() => createMonitorBodyValidation.parse({ ...baseHead, useAdvancedMatching: true })).toThrow();
+		});
+
+		it("rejects HEAD combined with a non-empty jsonPath", () => {
+			expect(() => createMonitorBodyValidation.parse({ ...baseHead, jsonPath: "status" })).toThrow();
+		});
+
+		it("allows HEAD with an empty-string jsonPath", () => {
+			const parsed = createMonitorBodyValidation.parse({ ...baseHead, jsonPath: "" });
+			expect(parsed.method).toBe("HEAD");
+		});
+	});
+
+	describe("editMonitorBodyValidation", () => {
+		it("rejects HEAD combined with advanced matching", () => {
+			expect(() => editMonitorBodyValidation.parse({ method: "HEAD", useAdvancedMatching: true })).toThrow();
+		});
+	});
+
+	describe("importMonitorsBodyValidation", () => {
+		it("rejects HEAD combined with a jsonPath on imported monitors", () => {
+			expect(() => importMonitorsBodyValidation.parse({ monitors: [{ ...baseHead, jsonPath: "status" }] })).toThrow();
+		});
+	});
+});
+
 describe("monitorValidation — customUpCodes", () => {
 	const baseHttpBody = {
 		name: "HTTP check",
@@ -241,6 +292,14 @@ describe("monitorValidation — customUpCodes", () => {
 				customUpCodes: [200, 301, 404, 503],
 			});
 			expect(parsed.customUpCodes).toEqual([200, 301, 404, 503]);
+		});
+
+		it("accepts non-standard HTTP status codes (Cloudflare, AWS ELB, etc.)", () => {
+			const parsed = createMonitorBodyValidation.parse({
+				...baseHttpBody,
+				customUpCodes: [419, 420, 440, 449, 460, 463, 497, 499, 509, 520, 521, 522, 523, 524, 525, 526, 527, 529, 530, 561],
+			});
+			expect(parsed.customUpCodes).toEqual([419, 420, 440, 449, 460, 463, 497, 499, 509, 520, 521, 522, 523, 524, 525, 526, 527, 529, 530, 561]);
 		});
 
 		it("rejects invalid HTTP status codes", () => {
@@ -259,6 +318,33 @@ describe("monitorValidation — customUpCodes", () => {
 			).toThrow();
 		});
 
+		it("rejects fractional or floating-point status codes", () => {
+			expect(() =>
+				createMonitorBodyValidation.parse({
+					...baseHttpBody,
+					customUpCodes: [200.5],
+				})
+			).toThrow();
+		});
+
+		it("rejects status codes below 100", () => {
+			expect(() =>
+				createMonitorBodyValidation.parse({
+					...baseHttpBody,
+					customUpCodes: [99],
+				})
+			).toThrow();
+		});
+
+		it("rejects valid-looking but mathematically unsupported status codes (e.g. 599)", () => {
+			expect(() =>
+				createMonitorBodyValidation.parse({
+					...baseHttpBody,
+					customUpCodes: [599], // Not in Node's default list nor our expanded list
+				})
+			).toThrow();
+		});
+
 		it("defaults to an empty array when not provided", () => {
 			const parsed = createMonitorBodyValidation.parse(baseHttpBody);
 			expect(parsed.customUpCodes).toEqual([]);
@@ -271,6 +357,13 @@ describe("monitorValidation — customUpCodes", () => {
 				customUpCodes: [200, 201],
 			});
 			expect(parsed.customUpCodes).toEqual([200, 201]);
+		});
+
+		it("accepts non-standard HTTP status codes on edits", () => {
+			const parsed = editMonitorBodyValidation.parse({
+				customUpCodes: [419, 420, 440, 449, 460, 463, 497, 499, 509, 520, 521, 522, 523, 524, 525, 526, 527, 529, 530, 561],
+			});
+			expect(parsed.customUpCodes).toEqual([419, 420, 440, 449, 460, 463, 497, 499, 509, 520, 521, 522, 523, 524, 525, 526, 527, 529, 530, 561]);
 		});
 
 		it("rejects invalid HTTP status codes on edits", () => {
@@ -293,6 +386,20 @@ describe("monitorValidation — customUpCodes", () => {
 				],
 			});
 			expect(parsed.monitors[0].customUpCodes).toEqual([404]);
+		});
+
+		it("accepts non-standard HTTP status codes on imported HTTP monitors", () => {
+			const parsed = importMonitorsBodyValidation.parse({
+				monitors: [
+					{
+						...baseHttpBody,
+						customUpCodes: [419, 420, 440, 449, 460, 463, 497, 499, 509, 520, 521, 522, 523, 524, 525, 526, 527, 529, 530, 561],
+					},
+				],
+			});
+			expect(parsed.monitors[0].customUpCodes).toEqual([
+				419, 420, 440, 449, 460, 463, 497, 499, 509, 520, 521, 522, 523, 524, 525, 526, 527, 529, 530, 561,
+			]);
 		});
 
 		it("rejects invalid HTTP status codes on imported HTTP monitors", () => {

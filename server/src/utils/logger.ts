@@ -1,7 +1,6 @@
 import { createLogger, format, transports, Logger as WinstonLogger } from "winston";
 import type { Logform } from "winston";
 import dotenv from "dotenv";
-import { EnvConfig } from "@/domain/app-settings/app-settings.service.js";
 dotenv.config();
 
 const SERVICE_NAME = "Logger";
@@ -28,18 +27,17 @@ export interface ILogger {
 	cacheLog(entry: LogEntry): void;
 	getLogs(): LogEntry[];
 	buildLogEntry(level: string, config: LogConfig): LogEntry;
+	setLogLevel(level: string): void;
 }
 
 class Logger implements ILogger {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: WinstonLogger;
-	private envSettings: Partial<EnvConfig>;
 	private logCache: LogEntry[];
 	private maxCacheSize: number;
 
-	constructor({ envSettings }: { envSettings: Partial<EnvConfig> }) {
-		this.envSettings = envSettings;
+	constructor() {
 		this.logCache = [];
 		this.maxCacheSize = 1000;
 		const consoleFormat = format.printf((info: Logform.TransformableInfo) => {
@@ -84,10 +82,8 @@ class Logger implements ILogger {
 			return msg;
 		});
 
-		const logLevel = this.envSettings.logLevel || "info";
-
 		this.logger = createLogger({
-			level: logLevel,
+			level: "info",
 			format: format.combine(format.timestamp()),
 			transports: [
 				new transports.Console({
@@ -151,11 +147,10 @@ class Logger implements ILogger {
 			timestamp: new Date().toISOString(),
 		};
 	}
+
+	setLogLevel(level: string): void {
+		this.logger.level = level || "info";
+	}
 }
 
 export default Logger;
-
-// Legacy logger
-const logger = new Logger({ envSettings: { logLevel: "debug" } });
-export { logger };
-export type { LogConfig, LogEntry };

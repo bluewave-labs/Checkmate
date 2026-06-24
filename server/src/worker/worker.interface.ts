@@ -1,8 +1,9 @@
 import { Monitor } from "@/domain/monitors/monitor.types.js";
-import { QueueWorker } from "@/domain/queue-workers/queue-worker.type.js";
 import { Check } from "@/domain/checks/check.type.js";
+import { JobType } from "@/domain/jobs/job.type.js";
 import { MonitorPayloadMap, MonitorStatusResponse, StatusChangeResult } from "@/types/network.js";
 import { MonitorActionDecision } from "@/worker/worker.helper.js";
+import { QueueWorker } from "@/domain/queue-workers/queue-worker.type.js";
 
 export type MonitorEvaluation = {
 	monitor: Monitor;
@@ -33,23 +34,16 @@ export type WorkerMetrics = {
 
 export type WorkerJobSummary = {
 	monitorId: string | number;
-	monitorUrl: string | null;
 	monitorType: string | null;
 	monitorInterval: number | null;
-	monitorGeoInterval: number | null;
 	monitorActive: boolean | null;
-	active: boolean;
 	lockedBy: string | null;
 	lockedUntil: number | null;
-	lockedAt: number | null;
+	nextScheduledAt: number;
 	runCount: number;
 	failCount: number;
 	failReason: string | null;
-	lastRunAt: number | null;
 	lastFinishedAt: number | null;
-	lastRunTook: number | null;
-	lastFailedAt: number | null;
-	repeat: number | null;
 };
 
 export type WorkerJobsPagination = {
@@ -62,16 +56,21 @@ export type WorkerJobsPage = {
 	count: number;
 };
 
-export interface IWorker {
+export interface IJobScheduler {
 	readonly serviceName: string;
-	init(): Promise<boolean>;
 	addJob(monitorId: string, monitor: Monitor): Promise<void>;
 	deleteJob(monitor: Monitor): Promise<void>;
 	pauseJob(monitor: Monitor): Promise<void>;
 	resumeJob(monitor: Monitor): Promise<void>;
 	updateJob(monitor: Monitor): Promise<void>;
-	shutdown(): Promise<void>;
+	wake(type: JobType): void;
 	getMetrics(): Promise<WorkerMetrics>;
 	getJobs(pagination: WorkerJobsPagination): Promise<WorkerJobsPage>;
 	flushQueues(): Promise<{ success: boolean }>;
+	shutdown(): Promise<void>;
+}
+
+export interface IQueueWorker extends IJobScheduler {
+	readonly serviceName: string;
+	init(): Promise<boolean>;
 }

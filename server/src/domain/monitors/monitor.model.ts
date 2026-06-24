@@ -1,6 +1,6 @@
 import { Schema, model, Types } from "mongoose";
 import type { Monitor, MonitorMatchMethod, CheckSnapshot } from "@/domain/monitors/monitor.types.js";
-import { DnsRecordTypes, MonitorTypes, MonitorStatuses, PageSpeedStrategies } from "@/domain/monitors/monitor.types.js";
+import { DnsRecordTypes, MonitorTypes, MonitorStatuses, PageSpeedStrategies, HttpMethods } from "@/domain/monitors/monitor.types.js";
 import type {
 	CheckAudits,
 	CheckCaptureInfo,
@@ -34,6 +34,7 @@ interface MonitorDocument extends MonitorDocumentBase {
 	teamId: Types.ObjectId;
 	createdAt: Date;
 	updatedAt: Date;
+	lastEvaluatedAt: number; // epoch ms
 }
 
 const snapshotTimingPhasesSchema = new Schema<GotTimings["phases"]>(
@@ -196,7 +197,7 @@ const checkSnapshotSchema = new Schema<CheckSnapshotDocument>(
 		audits: { type: snapshotAuditsSchema },
 		createdAt: { type: Date, required: true },
 	},
-	{ _id: false }
+	{ _id: false, suppressReservedKeysWarning: true }
 );
 
 const MonitorSchema = new Schema<MonitorDocument>(
@@ -219,6 +220,12 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		},
 		description: {
 			type: String,
+		},
+		method: {
+			type: String,
+			enum: HttpMethods,
+			default: "GET",
+			required: true,
 		},
 		status: {
 			type: String,
@@ -376,6 +383,10 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		recentChecks: {
 			type: [checkSnapshotSchema],
 			default: [],
+		},
+		lastEvaluatedAt: {
+			type: Number,
+			default: 0,
 		},
 	},
 	{

@@ -21,8 +21,8 @@ import type { IStatusPagesRepository } from "@/domain/status-pages/status-page-r
 import demoMonitorsData from "@/utils/demoMonitors.json" with { type: "json" };
 import { AppError } from "@/utils/AppError.js";
 import type { ImportedMonitor } from "@/api/validation/monitorValidation.js";
-import { IWorker } from "@/worker/worker.interface.js";
 import { ILogger } from "@/utils/logger.js";
+import { IJobScheduler } from "@/worker/worker.interface.js";
 
 const SERVICE_NAME = "MonitorService";
 type DateRangeKey = "recent" | "day" | "week" | "month" | "all";
@@ -94,7 +94,7 @@ export interface IMonitorService {
 export class MonitorService implements IMonitorService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private worker: IWorker;
+	private scheduler: IJobScheduler;
 	private logger: ILogger;
 	private games: GamesMap;
 	private monitorsRepository: IMonitorsRepository;
@@ -105,7 +105,7 @@ export class MonitorService implements IMonitorService {
 	private incidentsRepository: IIncidentsRepository;
 
 	constructor({
-		worker,
+		scheduler,
 		logger,
 		games,
 		monitorsRepository,
@@ -115,7 +115,7 @@ export class MonitorService implements IMonitorService {
 		statusPagesRepository,
 		incidentsRepository,
 	}: {
-		worker: IWorker;
+		scheduler: IJobScheduler;
 		logger: ILogger;
 		games: GamesMap;
 		monitorsRepository: IMonitorsRepository;
@@ -125,7 +125,7 @@ export class MonitorService implements IMonitorService {
 		statusPagesRepository: IStatusPagesRepository;
 		incidentsRepository: IIncidentsRepository;
 	}) {
-		this.worker = worker;
+		this.scheduler = scheduler;
 		this.logger = logger;
 		this.games = games;
 		this.monitorsRepository = monitorsRepository;
@@ -171,7 +171,7 @@ export class MonitorService implements IMonitorService {
 			throw new AppError({ message: "Failed to create monitor", status: 500, service: SERVICE_NAME, method: "createMonitor" });
 		}
 
-		this.worker.addJob(monitor.id, monitor);
+		this.scheduler.addJob(monitor.id, monitor);
 	};
 
 	createMonitors = async (monitors: Array<Monitor>): Promise<Monitor[] | null> => {
@@ -180,7 +180,7 @@ export class MonitorService implements IMonitorService {
 			throw new AppError({ message: "Failed to create monitors", status: 500, service: SERVICE_NAME, method: "createMonitors" });
 		}
 
-		await Promise.all(createdMonitors.map((monitor) => this.worker.addJob(monitor.id, monitor)));
+		await Promise.all(createdMonitors.map((monitor) => this.scheduler.addJob(monitor.id, monitor)));
 		return createdMonitors;
 	};
 
@@ -196,7 +196,7 @@ export class MonitorService implements IMonitorService {
 		}));
 		const demoMonitors = await this.monitorsRepository.createMonitors(monitors as unknown as Monitor[]);
 
-		await Promise.all(demoMonitors.map((monitor) => this.worker.addJob(monitor.id, monitor)));
+		await Promise.all(demoMonitors.map((monitor) => this.scheduler.addJob(monitor.id, monitor)));
 		return demoMonitors;
 	};
 
@@ -428,7 +428,7 @@ export class MonitorService implements IMonitorService {
 
 	editMonitor = async ({ teamId, monitorId, body }: { teamId: string; monitorId: string; body: Partial<Monitor> }) => {
 		const editedMonitor = await this.monitorsRepository.updateById(monitorId, teamId, body);
-		await this.worker.updateJob(editedMonitor);
+		await this.scheduler.updateJob(editedMonitor);
 		return editedMonitor;
 	};
 
@@ -448,7 +448,7 @@ export class MonitorService implements IMonitorService {
 		// If notifications were updated, we should update the jobs in the queue
 		if (modifiedCount > 0) {
 			const monitors = await this.monitorsRepository.findByIds(monitorIds);
-			await Promise.all(monitors.map((monitor) => this.worker.updateJob(monitor)));
+			await Promise.all(monitors.map((monitor) => this.scheduler.updateJob(monitor)));
 		}
 
 		return modifiedCount;
@@ -457,9 +457,9 @@ export class MonitorService implements IMonitorService {
 	pauseMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
 		const monitor = await this.monitorsRepository.togglePauseById(monitorId, teamId);
 		if (monitor.isActive) {
-			await this.worker.resumeJob(monitor);
+			await this.scheduler.resumeJob(monitor);
 		} else {
-			await this.worker.pauseJob(monitor);
+			await this.scheduler.pauseJob(monitor);
 		}
 		return monitor;
 	};
@@ -478,9 +478,9 @@ export class MonitorService implements IMonitorService {
 		const results = await Promise.allSettled(
 			monitors.map(async (monitor) => {
 				if (monitor.isActive) {
-					await this.worker.resumeJob(monitor);
+					await this.scheduler.resumeJob(monitor);
 				} else {
-					await this.worker.pauseJob(monitor);
+					await this.scheduler.pauseJob(monitor);
 				}
 			})
 		);
@@ -541,7 +541,7 @@ export class MonitorService implements IMonitorService {
 			});
 		});
 
-		await this.worker.deleteJob(monitor);
+		await this.scheduler.deleteJob(monitor);
 		return monitor;
 	};
 
@@ -550,7 +550,7 @@ export class MonitorService implements IMonitorService {
 		await Promise.all(
 			monitors.map(async (monitor) => {
 				try {
-					await this.worker.deleteJob(monitor);
+					await this.scheduler.deleteJob(monitor);
 					await this.checksRepository.deleteByMonitorId(monitor.id);
 					await this.geoChecksRepository.deleteByMonitorId(monitor.id);
 					await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id);
@@ -597,6 +597,7 @@ export class MonitorService implements IMonitorService {
 			recentChecks: [],
 			createdAt: "",
 			updatedAt: "",
+			lastEvaluatedAt: 0,
 		}));
 
 		const createdMonitors = await this.createMonitors(cleanedMonitors);

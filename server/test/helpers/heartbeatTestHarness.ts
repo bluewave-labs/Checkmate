@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
-import { WorkerHelper } from "../../src/worker/worker.helper.ts";
 import { MonitorStatusPolicy } from "../../src/worker/worker.monitor-status-policy.ts";
-import { CheckPipeline, GeoChecksPipeline } from "../../src/worker/worker.check-pipeline.ts";
+import { CheckProducer } from "../../src/worker/worker.check-producer.ts";
+import { CheckEvaluator } from "../../src/worker/worker.check-evaluator.ts";
 import { NotificationReactor } from "../../src/worker/reactors/reactor.notification.ts";
 import { IncidentReactor } from "../../src/worker/reactors/reactor.incident.ts";
 import { ReactorDispatcher } from "../../src/worker/reactors/reactor.dispatcher.ts";
@@ -69,20 +69,6 @@ const createStubMonitorStatsRepo = () => ({
 	deleteByMonitorIdsNotIn: jest.fn(),
 });
 
-const createStubChecksRepo = () => ({
-	create: jest.fn(),
-	createChecks: jest.fn(),
-	findByMonitorId: jest.fn(),
-	findByTeamId: jest.fn(),
-	findLatestByMonitorIds: jest.fn(),
-	findByDateRangeAndMonitorId: jest.fn(),
-	findSummaryByTeamId: jest.fn(),
-	deleteByMonitorId: jest.fn(),
-	deleteByTeamId: jest.fn(),
-	deleteByMonitorIdsNotIn: jest.fn(),
-	deleteOlderThan: jest.fn(),
-});
-
 export interface HeartbeatTestHarness {
 	monitorsRepo: InMemoryMonitorsRepository;
 	incidentsRepo: InMemoryIncidentsRepository;
@@ -106,13 +92,7 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 	const logger = createMockLogger() as any;
 	const bufferStub = { addToBuffer: jest.fn(), addGeoCheckToBuffer: jest.fn(), scheduleNextFlush: jest.fn() };
 
-	const statusService = new StatusService(
-		logger,
-		bufferStub as any,
-		monitorsRepo as any,
-		createStubMonitorStatsRepo() as any,
-		createStubChecksRepo() as any
-	);
+	const statusService = new StatusService(logger, monitorsRepo as any, createStubMonitorStatsRepo() as any);
 
 	const messageBuilder = { extractThresholdBreaches: jest.fn().mockReturnValue([]) };
 	const incidentService = new IncidentService(logger, incidentsRepo, monitorsRepo as any, { findById: jest.fn() } as any, messageBuilder as any);
@@ -131,7 +111,7 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 		}),
 	};
 	const checkService = {
-		buildCheck: jest.fn().mockImplementation((response: MonitorStatusResponse) => {
+		toCheck: jest.fn().mockImplementation((response: MonitorStatusResponse) => {
 			return makeCheck(response.status, response.code);
 		}),
 	};
@@ -147,38 +127,31 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 	};
 
 	const maintenanceWindowsRepo = { findByMonitorId: jest.fn().mockResolvedValue([]) };
-	const geoChecksService = { buildGeoCheck: jest.fn() };
 
-	const checkPipeline = new CheckPipeline(
+	const checkProducer = new CheckProducer(
 		monitorsRepo as any,
 		maintenanceWindowsRepo as any,
 		checkService as any,
 		networkService as any,
 		bufferStub as any,
-		new MonitorStatusPolicy(),
-		statusService as any,
 		logger
 	);
-	const geoCheckPipeline = new GeoChecksPipeline(maintenanceWindowsRepo as any, geoChecksService as any, bufferStub as any, logger);
+	const checkEvaluator = new CheckEvaluator(statusService as any, new MonitorStatusPolicy());
 
 	const notificationReactor = new NotificationReactor(notificationsService as any);
 	const incidentReactor = new IncidentReactor(incidentService as any);
 	const reactorDispatcher = new ReactorDispatcher(logger, [notificationReactor, incidentReactor]);
 
-	const helper = new WorkerHelper(
-		logger,
-		checkService as any,
-		{ getDBSettings: jest.fn() } as any,
-		monitorsRepo as any,
-		{ findAllTeamIds: jest.fn() } as any,
-		createStubMonitorStatsRepo() as any,
-		createStubChecksRepo() as any,
-		incidentsRepo as any,
-		{ deleteByMonitorIdsNotIn: jest.fn() } as any,
-		reactorDispatcher,
-		checkPipeline,
-		geoCheckPipeline
-	);
+	// Mirror the production check→evaluate flow: read the monitor fresh each cycle (so the
+	// accumulated statusWindow is visible), produce a check, then evaluate against that monitor.
+	const heartbeatJob = async (seedMonitor: Monitor) => {
+		const monitor = await monitorsRepo.findByIdLean(seedMonitor.id);
+		if (!monitor) return;
+		const result = await checkProducer.produce(monitor);
+		if (!result) return; // skipped (e.g. maintenance window)
+		const evaluation = await checkEvaluator.evaluate(result.status, result.check, monitor);
+		await reactorDispatcher.dispatch(evaluation);
+	};
 
 	return {
 		monitorsRepo,
@@ -190,7 +163,7 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 		bufferStub,
 		maintenanceWindowsRepo,
 		messageBuilder,
-		heartbeatJob: helper.getHeartbeatJob(),
+		heartbeatJob,
 		setNextResponse,
 		setNextResponseFull,
 	};

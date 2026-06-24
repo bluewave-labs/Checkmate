@@ -1,4 +1,7 @@
-import { initializeServices } from "./config/services.js";
+import { buildShared } from "@/config/services.shared.js";
+import { buildApi } from "@/config/services.api.js";
+import { buildWorker } from "@/config/services.worker.js";
+
 import { initializeControllers } from "./config/controllers.js";
 import { createApp } from "./app.js";
 import { initShutdownListener } from "@/shutdown.js";
@@ -9,44 +12,84 @@ import fs from "fs";
 
 import Logger, { ILogger } from "@/utils/logger.js";
 import { SettingsService } from "@/domain/app-settings/app-settings.service.js";
-
+import { JobScheduler } from "@/worker/worker.job-scheduler.js";
+import { IJobScheduler } from "@/worker/worker.interface.js";
 const SERVICE_NAME = "Server";
 let logger: ILogger;
 
 const startApp = async () => {
-	// Validate environment variables first
-	const env = validateEnv();
+	// ***********************
+	// Basic setup
+	// ***********************
 
-	// Create settings service (env only — DB repository injected after connect)
+	logger = new Logger();
+	const env = validateEnv(logger);
+	logger.setLogLevel(env.LOG_LEVEL);
 	const settingsService = new SettingsService(env);
 	const envSettings = settingsService.loadSettings();
-	// Create logger
-	logger = new Logger({ envSettings });
+	const { queueMode, queuePrimaryProcesses } = envSettings;
 
-	// Initialize services (connects DB, creates repositories, injects settingsRepository)
-	const services = await initializeServices({ logger, envSettings, settingsService, queueMode: envSettings.queueMode });
+	logger.info({
+		message: `Queue mode: ${queueMode}`,
+		service: SERVICE_NAME,
+		method: "startApp",
+	});
 
-	// If this is a worker instance, we're done.  No need for express
-	if (envSettings.queueMode === "worker") {
-		logger.info({
-			message: "Worker instance started. API will not be started",
-			service: SERVICE_NAME,
-		});
-		initShutdownListener(null, services);
+	logger.info({
+		message: `Process: ${queuePrimaryProcesses}`,
+		service: SERVICE_NAME,
+		method: "startApp",
+	});
+
+	// ***********************
+	// Build shared services
+	// ***********************
+	const shared = await buildShared({ logger, envSettings, settingsService });
+
+	// ***********************
+	// Worker node path, don't need API
+	// ***********************
+	if (queueMode === "worker") {
+		const { worker } = await buildWorker(shared, envSettings);
+		logger.info({ message: "Worker instance started. API will not be started", service: SERVICE_NAME });
+		initShutdownListener(null, { worker, db: shared.db, logger });
 		return;
 	}
 
-	// FE path
+	// ***********************
+	// Primary node path
+	// ***********************
+	let scheduler: IJobScheduler;
+
+	// ***********************
+	//Primary node processes jobs, need full worker
+	// ***********************
+	if (queuePrimaryProcesses === true) {
+		const { worker } = await buildWorker(shared, envSettings);
+		scheduler = worker;
+	}
+	// ***********************
+	// Primary node does not process jobs, only need scheduler
+	// ***********************
+	else {
+		scheduler = new JobScheduler(shared.jobsRepository, shared.queueWorkersRepository, shared.workerId);
+	}
+
+	const services = buildApi(shared, scheduler);
+
+	// ***********************
+	// FE assets always needed for primary node
+	// ***********************
+
 	const __filename = fileURLToPath(import.meta.url);
 	const __dirname = path.dirname(__filename);
 	const openApiSpec = JSON.parse(fs.readFileSync(path.join(__dirname, "../openapi.json"), "utf8"));
 	const frontendPath = path.join(__dirname, "..", "public");
 
-	// Initialize controllers
 	const controllers = initializeControllers(services);
 
 	const app = createApp({
-		services,
+		apiServices: services,
 		controllers,
 		envSettings,
 		frontendPath,

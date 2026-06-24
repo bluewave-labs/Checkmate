@@ -1,9 +1,17 @@
-import { InitializedServices } from "./config/services.js";
-import { logger } from "./utils/logger.js";
+import { IDb } from "@/db/db.interface.js";
+import type { ILogger } from "@/utils/logger.js";
 import type { Server } from "http";
+import { Mongoose } from "mongoose";
+import { IJobScheduler } from "@/worker/worker.interface.js";
 
-export const initShutdownListener = (server: Server | null, services: InitializedServices) => {
+type ShutdownTargets = {
+	worker: IJobScheduler;
+	db: IDb<Mongoose>;
+	logger: ILogger;
+};
+export const initShutdownListener = (server: Server | null, services: ShutdownTargets) => {
 	const SERVICE_NAME = "Server";
+	const logger = services.logger;
 
 	let isShuttingDown = false;
 
