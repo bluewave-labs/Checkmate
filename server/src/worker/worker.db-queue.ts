@@ -45,8 +45,6 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		"cleanup-retention": 0,
 	};
 
-	private processesJobs: boolean = false;
-
 	constructor(
 		logger: ILogger, // forwarded to super
 		private isDbConnected: () => boolean,
