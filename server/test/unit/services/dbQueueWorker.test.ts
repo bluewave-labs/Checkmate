@@ -119,8 +119,10 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 		findRecent: jest.fn<any>().mockResolvedValue([]),
 	};
 	const logger = createMockLogger();
+	const isDbConnected = jest.fn<any>(() => true);
 
 	const mocks = {
+		isDbConnected,
 		jobsRepository,
 		monitorsRepository,
 		checksRepository,
@@ -138,6 +140,7 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 
 	const worker = new DBQueueWorker(
 		mocks.logger as any,
+		mocks.isDbConnected as any,
 		mocks.jobsRepository as any,
 		mocks.monitorsRepository as any,
 		mocks.checksRepository as any,
@@ -241,6 +244,7 @@ describe("DBQueueWorker", () => {
 			const { mocks } = createWorker(); // reuse the mock set; the un-init'd instance is discarded
 			const worker = await DBQueueWorker.create(
 				mocks.logger as any,
+				mocks.isDbConnected as any,
 				mocks.jobsRepository as any,
 				mocks.monitorsRepository as any,
 				mocks.checksRepository as any,
@@ -696,6 +700,71 @@ describe("DBQueueWorker", () => {
 			expect(mocks.bufferService.shutdown).toHaveBeenCalledTimes(1);
 
 			gate.resolve({ status: { status: "up" }, check: { id: "c1" } }); // release the stuck job for cleanup
+		});
+	});
+
+	// ── getHealth ───────────────────────────────────────────────────────────────────
+
+	describe("getHealth", () => {
+		// Hand the "check" loop exactly one job, then nothing — keeps it parked in-flight.
+		const claimOneCheck = (job: Job) => {
+			let handed = false;
+			return jest.fn<any>(async (type: string) => {
+				if (type === job.type && !handed) {
+					handed = true;
+					return [job];
+				}
+				return [];
+			});
+		};
+
+		it("reports un-init state before init(): not complete, not draining, never ticked", () => {
+			const { worker } = createWorker({ queueMode: "worker" });
+			active = worker; // afterEach shutdown() is safe on an un-init'd worker
+			expect(worker.getHealth()).toMatchObject({
+				workerId: "worker-1",
+				mode: "worker",
+				initComplete: false,
+				draining: false,
+				lastTickAt: null,
+				inFlight: 0,
+			});
+		});
+
+		it("flips initComplete and stamps lastTickAt once the loops run", async () => {
+			const { worker } = await start({ queueMode: "worker" });
+			const health = worker.getHealth();
+			expect(health.initComplete).toBe(true);
+			expect(typeof health.lastTickAt).toBe("number");
+		});
+
+		it("reflects the injected dbConnected probe", async () => {
+			const { worker, mocks } = await start({ queueMode: "worker" });
+			expect(worker.getHealth().dbConnected).toBe(true);
+			mocks.isDbConnected.mockReturnValue(false);
+			expect(worker.getHealth().dbConnected).toBe(false);
+		});
+
+		it("sets draining true after drain()", async () => {
+			const { worker } = await start({ queueMode: "worker" });
+			expect(worker.getHealth().draining).toBe(false);
+			await worker.drain();
+			expect(worker.getHealth().draining).toBe(true);
+		});
+
+		it("counts in-flight jobs while they run and releases on completion", async () => {
+			const job = makeJob({ type: "check" });
+			const gate = deferred<{ status: unknown; check: unknown }>();
+			const slowProducer = { produce: jest.fn<any>().mockReturnValue(gate.promise) };
+			const { worker } = await start({
+				mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOneCheck(job) }, checkProducer: slowProducer },
+			});
+
+			expect(worker.getHealth().inFlight).toBe(1); // parked on produce()
+
+			gate.resolve({ status: { status: "up" }, check: { id: "c1" } });
+			await jest.advanceTimersByTimeAsync(1);
+			expect(worker.getHealth().inFlight).toBe(0);
 		});
 	});
 

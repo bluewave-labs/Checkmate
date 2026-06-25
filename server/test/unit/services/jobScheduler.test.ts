@@ -22,12 +22,13 @@ const createScheduler = () => {
 
 describe("JobScheduler", () => {
 	describe("drain", () => {
-		it("sets the stop flag without tearing down (no deregister)", async () => {
+		it("sets the stop and draining flags without tearing down (no deregister)", async () => {
 			const { scheduler, mocks } = createScheduler();
 
 			await scheduler.drain();
 
 			expect((scheduler as any).stopped).toBe(true);
+			expect((scheduler as any).draining).toBe(true);
 			// drain must not do shutdown's teardown work
 			expect(mocks.queueWorkersRepository.deleteById).not.toHaveBeenCalled();
 		});
