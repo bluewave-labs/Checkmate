@@ -20,9 +20,34 @@ services:
       - server.env
     depends_on:
       - mongodb
+  worker:
+    image: uptime_server:latest
+    restart: always
+    ports:
+      - "52346:52346"
+    env_file:
+      - server.env
+    environment:
+      QUEUE_MODE: "worker"
+      HEALTH_PORT: "52346"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:52346/livez',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+    depends_on:
+      - mongodb
   mongodb:
     image: uptime_mongo:latest
     restart: always
+    ports:
+      - "27017:27017"
     command: ["mongod", "--quiet", "--bind_ip_all"]
     volumes:
       - ./mongo/data:/data/db
