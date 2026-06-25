@@ -36,6 +36,10 @@ const CONCURRENCY: Record<JobType, number> = {
 
 export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 	static SERVICE_NAME = SERVICE_NAME;
+
+	private initComplete: boolean = false;
+	private lastTickAt: number | null = null;
+
 	private inFlight: Record<JobType, number> = {
 		check: 0,
 		"geo-check": 0,
@@ -46,6 +50,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 
 	constructor(
 		private logger: ILogger,
+		private isDbConnected: () => boolean,
 		jobsRepository: IJobsRepository, // ← no modifier: forwarded to super
 		private monitorsRepository: IMonitorsRepository,
 		private checksRepository: IChecksRepository,
@@ -70,6 +75,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 
 	static async create(
 		logger: ILogger,
+		isDbConnected: () => boolean,
 		jobsRepository: IJobsRepository,
 		monitorsRepository: IMonitorsRepository,
 		checksRepository: IChecksRepository,
@@ -87,6 +93,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 	): Promise<DBQueueWorker> {
 		const instance = new DBQueueWorker(
 			logger,
+			isDbConnected,
 			jobsRepository,
 			monitorsRepository,
 			checksRepository,
@@ -213,6 +220,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 	private startLoop = (type: JobType) => {
 		this.pollMs[type] = POLL_MS;
 		const tick = async () => {
+			this.lastTickAt = Date.now();
 			if (this.stopped) return;
 			this.ticking[type] = true;
 			try {
@@ -288,6 +296,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 				this.startLoop(type);
 			}
 		}
+		this.initComplete = true;
 		return true;
 	};
 
@@ -298,6 +307,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 	};
 
 	override drain = async () => {
+		this.draining = true;
 		this.stopped = true;
 		const cutoff = Date.now() + DRAIN_TIMEOUT_MS;
 		while (this.getInFlightCount() > 0 && Date.now() < cutoff) {
@@ -326,11 +336,11 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		return {
 			workerId: this.workerId,
 			mode: this.queueMode,
-			dbConnected: true, // TODO
-			initComplete: true, // TODO
-			draining: false, // TODO
-			lastTickAt: null, // TODO
-			inFlight: Number.MAX_SAFE_INTEGER, // TODO
+			dbConnected: this.isDbConnected(),
+			initComplete: this.initComplete,
+			draining: this.draining,
+			lastTickAt: this.lastTickAt,
+			inFlight: this.getInFlightCount(),
 		};
 	};
 }

@@ -23,6 +23,7 @@ export class JobScheduler implements IJobScheduler {
 	}
 
 	protected stopped = false;
+	protected draining = false;
 	protected ticking: Partial<Record<JobType, boolean>> = {}; // Whether a loop is mid tick
 	protected tickFns = new Map<JobType, () => void>(); // Store tick fns so we can run them immediately on wake
 	protected timers = new Map<JobType | "heartbeat", NodeJS.Timeout>();
@@ -156,6 +157,7 @@ export class JobScheduler implements IJobScheduler {
 
 	drain = async () => {
 		this.stopped = true;
+		this.draining = true;
 	};
 
 	shutdown = async () => {
