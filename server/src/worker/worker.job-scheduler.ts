@@ -29,6 +29,7 @@ export class JobScheduler implements IJobScheduler {
 	get serviceName() {
 		return JobScheduler.SERVICE_NAME;
 	}
+	private heartbeatInFlight: Promise<void> = Promise.resolve();
 
 	protected processesJobs = false; // scheduler-only by default; DBQueueWorker flips this on when it runs job loops
 	protected stopped = false;
@@ -205,7 +206,15 @@ export class JobScheduler implements IJobScheduler {
 	// Register worker
 	protected heartbeat = async () => {
 		try {
-			await this.queueWorkersRepository.upsert(this.workerId, this.queueMode, this.processesJobs);
+			if (this.stopped) return; // Don't re-register if shutting down
+			this.heartbeatInFlight = this.queueWorkersRepository.upsert(this.workerId, this.queueMode, this.processesJobs).catch((error: unknown) => {
+				this.logger.warn({
+					message: error instanceof Error ? error.message : String(error),
+					service: SERVICE_NAME,
+					method: "heartbeat",
+				});
+			});
+			await this.heartbeatInFlight;
 		} catch (error: unknown) {
 			this.logger.warn({
 				message: error instanceof Error ? error.message : String(error),
@@ -227,6 +236,7 @@ export class JobScheduler implements IJobScheduler {
 			clearTimeout(timer);
 		}
 		this.timers.clear(); // Clear the map out
+		await this.heartbeatInFlight; // Wait for in flight jobs
 		//  Remove workers from registry
 		await this.queueWorkersRepository.deleteById(this.workerId);
 	};

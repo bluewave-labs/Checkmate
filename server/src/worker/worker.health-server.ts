@@ -3,6 +3,8 @@ import { IQueueWorker, WorkerHealth } from "@/worker/worker.interface.js";
 import { ILogger } from "@/utils/logger.js";
 
 const SERVICE_NAME = "HealthServer";
+const DEFAULT_HEALTH_PORT = 52346;
+const MAX_PORT_ATTEMPTS = 20;
 const LIVENESS_STALE_MS = 30_000; // 30s ~6x POLL_MAX_MS so we don't restart workers
 const CONTENT_TYPE_METRICS = "text/plain; version=0.0.4; charset=utf-8";
 const gauge = (name: string, help: string, value: number): string => `# HELP ${name} ${help}\n# TYPE ${name} gauge\n${name} ${value}\n`;
@@ -10,6 +12,7 @@ const gauge = (name: string, help: string, value: number): string => `# HELP ${n
 export interface IHealthServer {
 	listen(): Promise<void>;
 	close(): Promise<void>;
+	address(): ReturnType<http.Server["address"]>;
 }
 
 const isLive = (health: WorkerHealth): boolean => {
@@ -84,9 +87,28 @@ export class HealthServer implements IHealthServer {
 	};
 
 	listen = () => {
-		return new Promise<void>((resolve) => {
-			const port = Number(this.port) || 52346;
+		return new Promise<void>((resolve, reject) => {
+			let port = Number(this.port) || DEFAULT_HEALTH_PORT;
+			const lastPort = port + MAX_PORT_ATTEMPTS;
+
+			const onError = (error: NodeJS.ErrnoException) => {
+				if (error.code === "EADDRINUSE" && port < lastPort) {
+					this.logger.warn({
+						message: `Health port ${port} in use, retrying on ${port + 1}`,
+						service: SERVICE_NAME,
+						method: "listen",
+					});
+					port++;
+					this.server.listen(port);
+					return;
+				}
+				this.server.removeListener("error", onError);
+				reject(error);
+			};
+
+			this.server.on("error", onError);
 			this.server.listen(port, () => {
+				this.server.removeListener("error", onError);
 				this.logger.info({
 					message: `Health server listening on ${port}`,
 					service: SERVICE_NAME,
@@ -96,6 +118,8 @@ export class HealthServer implements IHealthServer {
 			});
 		});
 	};
+
+	address = () => this.server.address();
 
 	close = () => {
 		return new Promise<void>((resolve) => {

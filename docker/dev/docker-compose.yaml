@@ -30,6 +30,7 @@ services:
     environment:
       QUEUE_MODE: "worker"
       HEALTH_PORT: "52346"
+    stop_grace_period: 30s
     healthcheck:
       test:
         [

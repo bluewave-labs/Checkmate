@@ -172,4 +172,28 @@ describe("HealthServer", () => {
 			expect((await get(port, "/metrics")).status).toBe(500);
 		});
 	});
+
+	describe("listen", () => {
+		it("walks to the next port when the configured one is in use", async () => {
+			const base = await freePort();
+			// Hold the base port so the health server's first bind hits EADDRINUSE.
+			const blocker = net.createServer();
+			await new Promise<void>((resolve) => blocker.listen(base, resolve));
+
+			try {
+				const worker = { getHealth: () => makeHealth(), countDueBacklog: async () => 0, countAliveWorkers: async () => 0 } as any;
+				const server = new HealthServer(createMockLogger(), String(base), worker);
+				await server.listen();
+				active = server;
+
+				// base is still held by the blocker, so the health server retried onto a higher port and is reachable there.
+				const addr = server.address();
+				const bound = typeof addr === "object" && addr ? addr.port : 0;
+				expect(bound).toBeGreaterThan(base);
+				expect((await get(bound, "/livez")).status).toBe(200);
+			} finally {
+				await new Promise<void>((resolve) => blocker.close(() => resolve()));
+			}
+		});
+	});
 });
