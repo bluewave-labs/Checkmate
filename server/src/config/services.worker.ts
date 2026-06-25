@@ -9,6 +9,7 @@ import jmespath from "jmespath";
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 import WebSocket from "ws";
+import mongoose from "mongoose";
 
 import { EnvConfig } from "@/domain/app-settings/app-settings.service.js";
 import { SharedServices } from "@/config/services.shared.js";
@@ -132,6 +133,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 
 	const worker = await DBQueueWorker.create(
 		logger,
+		() => mongoose.connection.readyState === 1,
 		jobsRepository,
 		monitorsRepository,
 		checksRepository,

@@ -14,6 +14,7 @@ import Logger, { ILogger } from "@/utils/logger.js";
 import { SettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { JobScheduler } from "@/worker/worker.job-scheduler.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";
+import { HealthServer } from "@/worker/worker.health-server.js";
 const SERVICE_NAME = "Server";
 let logger: ILogger;
 
@@ -51,8 +52,10 @@ const startApp = async () => {
 	// ***********************
 	if (queueMode === "worker") {
 		const { worker } = await buildWorker(shared, envSettings);
+		const healthServer = new HealthServer(logger, env.HEALTH_PORT, worker);
+		await healthServer.listen();
 		logger.info({ message: "Worker instance started. API will not be started", service: SERVICE_NAME });
-		initShutdownListener(null, { worker, db: shared.db, logger });
+		initShutdownListener(null, { worker, db: shared.db, logger, healthServer });
 		return;
 	}
 
