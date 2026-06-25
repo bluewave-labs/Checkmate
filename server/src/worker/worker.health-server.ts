@@ -4,6 +4,8 @@ import { ILogger } from "@/utils/logger.js";
 
 const SERVICE_NAME = "HealthServer";
 const LIVENESS_STALE_MS = 30_000; // 30s ~6x POLL_MAX_MS so we don't restart workers
+const CONTENT_TYPE_METRICS = "text/plain; version=0.0.4; charset=utf-8";
+const gauge = (name: string, help: string, value: number): string => `# HELP ${name} ${help}\n# TYPE ${name} gauge\n${name} ${value}\n`;
 
 export interface IHealthServer {
 	listen(): Promise<void>;
@@ -37,8 +39,37 @@ export class HealthServer implements IHealthServer {
 		this.server = http.createServer(this.handle);
 	}
 
-	private handle = (req: http.IncomingMessage, res: http.ServerResponse) => {
+	private metrics = async (): Promise<string> => {
+		const health = this.worker.getHealth();
+		const [dueBacklog, aliveWorkers] = await Promise.all([this.worker.countDueBacklog(), this.worker.countAliveWorkers()]);
+		return (
+			gauge("checkmate_worker_jobs_in_flight", "Jobs currently being processed by this worker", health.inFlight) +
+			gauge("checkmate_worker_due_backlog", "Due check jobs not currently locked (cluster-wide)", dueBacklog) +
+			gauge("checkmate_worker_alive_total", "Queue members seen within the TTL window (cluster-wide)", aliveWorkers) +
+			gauge("checkmate_worker_draining", "1 if this worker is draining, else 0", health.draining ? 1 : 0)
+		);
+	};
+
+	private handle = async (req: http.IncomingMessage, res: http.ServerResponse) => {
 		const path = (req.url ?? "").split("?")[0]; // Strip query params
+
+		// Metrics
+		if (path === "/metrics") {
+			try {
+				const body = await this.metrics();
+				res.writeHead(200, { "Content-Type": CONTENT_TYPE_METRICS });
+				res.end(body);
+			} catch (error: unknown) {
+				this.logger.warn({
+					message: error instanceof Error ? error.message : String(error),
+					service: SERVICE_NAME,
+					method: "metrics",
+				});
+				res.writeHead(500).end();
+			}
+			return;
+		}
+
 		if (path !== "/livez" && path !== "/readyz") {
 			res.writeHead(404).end();
 			return;

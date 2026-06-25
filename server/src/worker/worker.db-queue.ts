@@ -332,6 +332,10 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		await this.bufferService.shutdown(); // Flush buffers
 	};
 
+	// ************************
+	// Observability
+	// ************************
+
 	getHealth = () => {
 		return {
 			workerId: this.workerId,
@@ -342,5 +346,14 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 			lastTickAt: this.lastTickAt,
 			inFlight: this.getInFlightCount(),
 		};
+	};
+
+	countDueBacklog = () => {
+		return this.jobsRepository.countDueBacklog(Date.now());
+	};
+
+	countAliveWorkers = async () => {
+		const workers = await this.queueWorkersRepository.findRecent(WORKER_STALE_MS);
+		return workers.length;
 	};
 }

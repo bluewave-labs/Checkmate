@@ -85,4 +85,6 @@ export interface IQueueWorker extends IJobScheduler {
 	readonly serviceName: string;
 	init(): Promise<boolean>;
 	getHealth(): WorkerHealth;
+	countDueBacklog(): Promise<number>;
+	countAliveWorkers(): Promise<number>;
 }
