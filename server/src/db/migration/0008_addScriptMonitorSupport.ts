@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { logger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger.js";
 import ScriptModel from "../models/Script.js";
 import ProbeServerModel from "../models/ProbeServer.js";
 import AuditLogModel from "../models/AuditLog.js";
@@ -8,7 +8,7 @@ import AuditLogModel from "../models/AuditLog.js";
 // indexes (including the TTL on AuditLog.createdAt) and backfills the
 // scriptExitCodeSuccess default for existing monitors. Idempotent.
 
-export async function addScriptMonitorSupport(): Promise<void> {
+export async function addScriptMonitorSupport(logger: ILogger): Promise<void> {
 	const SERVICE_NAME = "Migration:AddScriptMonitorSupport";
 
 	try {

@@ -5,6 +5,7 @@ const CHECKS_COLLECTION = "checks";
 const BACKUP_COLLECTION = "checks_backup";
 const FAILED_DOCS_COLLECTION = "checks_migration_failed";
 const BATCH_SIZE = 1000;
+const NAMESPACE_EXISTS_CODE = 48;
 
 interface MigrationStats {
 	totalSource: number;
@@ -41,6 +42,13 @@ const backupAndDropExistingCollection = async () => {
 	if (collections.length === 0) {
 		return false;
 	}
+
+	// The Check model declares `timeseries`, so on a fresh database Mongoose's autoCreate
+	// already creates `checks` as a time-series collection. Skip and return false
+	if (collections[0]?.type === "timeseries") {
+		return false;
+	}
+
 	const backupExists = await db.listCollections({ name: BACKUP_COLLECTION }).toArray();
 	if (backupExists.length > 0) {
 		throw new Error(`Backup collection "${BACKUP_COLLECTION}" already exists. ` + `Please remove it manually before running migration.`);
@@ -59,13 +67,21 @@ const createTimeSeriesCollection = async (backedUp: boolean) => {
 	try {
 		const existing = await db.listCollections({ name: CHECKS_COLLECTION }).toArray();
 		if (existing.length === 0) {
-			await db.createCollection(CHECKS_COLLECTION, {
-				timeseries: {
-					timeField: "createdAt",
-					metaField: "metadata",
-					granularity: "seconds",
-				},
-			});
+			try {
+				await db.createCollection(CHECKS_COLLECTION, {
+					timeseries: {
+						timeField: "createdAt",
+						metaField: "metadata",
+						granularity: "seconds",
+					},
+				});
+			} catch (error) {
+				// Mongoose's autoCreate can create `checks` concurrently with this migration,
+				// already exists as a time-series collection, this is success, otherwise throw
+				if ((error as { code?: number })?.code !== NAMESPACE_EXISTS_CODE) {
+					throw error;
+				}
+			}
 		}
 
 		await db
@@ -80,7 +96,11 @@ const createTimeSeriesCollection = async (backedUp: boolean) => {
 			]);
 	} catch (error) {
 		if (backedUp) {
-			await restoreFromBackup();
+			try {
+				await restoreFromBackup();
+			} catch (restoreError) {
+				console.error("rollback failed:", restoreError);
+			}
 		}
 		throw error;
 	}
@@ -123,8 +143,7 @@ const migrateBackupData = async (backedUp: boolean): Promise<MigrationStats> => 
 		const target = db.collection(CHECKS_COLLECTION);
 
 		stats.totalSource = await source.countDocuments();
-
-		const cursor = source.find().addCursorFlag("noCursorTimeout", true);
+		const cursor = source.find();
 		const operations: AnyBulkWriteOperation<Document>[] = [];
 		const invalidDocs: Document[] = [];
 
@@ -166,7 +185,11 @@ const migrateBackupData = async (backedUp: boolean): Promise<MigrationStats> => 
 		return stats;
 	} catch (error) {
 		if (backedUp) {
-			await restoreFromBackup();
+			try {
+				await restoreFromBackup();
+			} catch (restoreError) {
+				console.error("rollback failed:", restoreError);
+			}
 		}
 		throw error;
 	}

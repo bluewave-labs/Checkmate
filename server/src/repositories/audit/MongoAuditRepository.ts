@@ -1,4 +1,4 @@
-import { AuditLogModel } from "@/db/models/index.js";
+import { AuditLogModel } from "@/db/models/AuditLog.js";
 import type { AuditLogInput, IAuditRepository } from "@/repositories/audit/IAuditRepository.js";
 
 class MongoAuditRepository implements IAuditRepository {

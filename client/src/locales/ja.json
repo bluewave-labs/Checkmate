@@ -941,10 +941,7 @@
 					"monitorId": "モニターID",
 					"runCount": "実行回数",
 					"failCount": "失敗回数",
-					"lastRunAt": "最終実行日時",
-					"lockedAt": "ロック日時",
 					"lastFinishedAt": "最終完了日時",
-					"lastRunTook": "最終実行時間",
 					"lastFailedAt": "最終失敗日時",
 					"failReason": "失敗理由",
 					"state": "状態"

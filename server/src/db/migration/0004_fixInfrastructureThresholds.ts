@@ -1,11 +1,11 @@
-import { MonitorModel } from "../models/Monitor.js";
-import { logger } from "@/utils/logger.js";
+import { MonitorModel } from "../../domain/monitors/monitor.model.js";
+import type { ILogger } from "@/utils/logger.js";
 
 /**
  * Fix infrastructure monitors that had thresholds incorrectly set to 0 or 5
  * due to the old default value. Updates them to 100 (disabled).
  */
-export async function fixInfrastructureThresholds(): Promise<void> {
+export async function fixInfrastructureThresholds(logger: ILogger): Promise<void> {
 	const SERVICE_NAME = "Migration:FixInfrastructureThresholds";
 
 	try {

@@ -1,7 +1,7 @@
 import got, { type Got } from "got";
 import bcrypt from "bcryptjs";
 import type { Script, ScriptSummary, ScriptExecutionResult, ScriptRuntime } from "@/types/script.js";
-import type { Monitor } from "@/types/monitor.js";
+import type { Monitor } from "@/domain/monitors/monitor.types.js";
 import {
 	SCRIPT_MAX_EXECUTION_TIME_MS_DEFAULT,
 	SCRIPT_MAX_EXECUTION_TIME_MS_HARD_CAP,
@@ -22,13 +22,11 @@ import {
 	type ScriptSeverity,
 	type ParsedScriptOutput,
 } from "@/utils/scriptOutputParser.js";
-import type {
-	IScriptRepository,
-	IProbeRepository,
-	IAuditRepository,
-	ICaptureAgentRepository,
-	ICaptureAgentDeviceRepository,
-} from "@/repositories/index.js";
+import type { IScriptRepository } from "@/repositories/scripts/IScriptRepository.js";
+import type { IProbeRepository } from "@/repositories/probes/IProbeRepository.js";
+import type { IAuditRepository } from "@/repositories/audit/IAuditRepository.js";
+import type { ICaptureAgentRepository } from "@/repositories/captureAgents/ICaptureAgentRepository.js";
+import type { ICaptureAgentDeviceRepository } from "@/repositories/captureAgentDevices/ICaptureAgentDeviceRepository.js";
 
 const SERVICE_NAME = "scriptService";
 const BCRYPT_ROUNDS = 12;

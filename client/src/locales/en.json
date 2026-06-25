@@ -43,6 +43,8 @@
 			"pause": "Pause",
 			"resume": "Resume",
 			"save": "Save",
+			"next": "Next",
+			"back": "Back",
 			"sendInvite": "Send invite",
 			"test": "Test",
 			"testNotifications": "Test notifications",
@@ -501,6 +503,13 @@
 				"advanced": {
 					"description": "Optional settings for advanced use cases",
 					"option": {
+						"method": {
+							"label": "Request method",
+							"description": {
+								"GET": "GET fetches the full response including the body.  Advanced matching fully supported",
+								"HEAD": "HEAD fetches only response headers for reducing load on the target. Supports status code matching but not advanced matching as there is no body."
+							}
+						},
 						"advancedMatching": {
 							"label": "Use advanced matching"
 						},
@@ -516,6 +525,11 @@
 							"equal": "Equal",
 							"include": "Include",
 							"regex": "Regex"
+						},
+						"customUpCodes": {
+							"label": "Accepted status codes",
+							"description": "Add any non-2xx codes that should also be considered successful.",
+							"removeAriaLabel": "Remove status code"
 						}
 					},
 					"title": "Advanced settings"
@@ -985,6 +999,8 @@
 			"logLevelSelect": {
 				"label": "Log level"
 			},
+			"workers": "Workers",
+			"workersExplainers": "Shows worker processes.  Worker IDs are truncated, hover for full ID",
 			"jobQueue": "Job queue",
 			"jobQueueExplainer": "<highlight>Highlighted rows</highlight> are jobs currently being processed by a worker.",
 			"failedJobs": "Failed jobs",
@@ -1025,6 +1041,11 @@
 				},
 				"mongoDBStats": {
 					"readyState": "Ready state",
+					"readsPerSecond": "Reads/s",
+					"insertsPerSecond": "Inserts/s",
+					"updatesPerSecond": "Updates/s",
+					"deletesPerSecond": "Deletes/s",
+					"writesPerSecond": "Total writes/s",
 					"host": "Host",
 					"port": "Port",
 					"dbName": "Database name",
@@ -1052,6 +1073,11 @@
 			},
 			"table": {
 				"headers": {
+					"host": "Host",
+					"processId": "Process ID",
+					"workerId": "Worker ID",
+					"workerMode": "Worker mode",
+					"lastSeenAt": "Last seen at",
 					"state": "State",
 					"timestamp": "Timestamp",
 					"level": "Level",
@@ -1060,10 +1086,9 @@
 					"monitorId": "Monitor ID",
 					"runCount": "Run count",
 					"failCount": "Count",
-					"lastRunAt": "Last run at",
-					"lockedAt": "Locked at",
+					"nextScheduledAt": "Next run at",
+					"lockedBy": "Locked by",
 					"lastFinishedAt": "Last finished at",
-					"lastRunTook": "Last run took",
 					"lastFailedAt": "Last failed",
 					"failReason": "Fail reason"
 				}
@@ -1209,6 +1234,14 @@
 					"placeholderFromNumber": "+15551234567",
 					"optionToNumber": "To number (recipient)",
 					"placeholderToNumber": "+15559876543"
+				},
+				"ntfy": {
+					"title": "ntfy configuration",
+					"description": "Configure an ntfy server and topic for push notifications.",
+					"optionServerUrl": "Server URL",
+					"placeholderServerUrl": "https://ntfy.sh",
+					"optionTopic": "Topic",
+					"placeholderTopic": "checkmate-alerts"
 				}
 			},
 			"table": {
@@ -1545,6 +1578,11 @@
 						"url": {
 							"label": "Your status page address",
 							"placeholder": "my-status-page"
+						},
+						"customDomain": {
+							"label": "Custom domain",
+							"placeholder": "status.example.com",
+							"helper": "Optional. Point a DNS record to this Checkmate instance to serve the status page at your own domain."
 						}
 					}
 				},
@@ -1643,7 +1681,8 @@
 			},
 			"table": {
 				"headers": {
-					"responseTime": "Response time"
+					"responseTime": "Response time",
+					"uptime": "Uptime %"
 				}
 			},
 			"fallback": {

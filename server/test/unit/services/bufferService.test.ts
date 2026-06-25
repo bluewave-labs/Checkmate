@@ -1,10 +1,12 @@
 import { describe, expect, it, jest, beforeEach, afterEach } from "@jest/globals";
-import { BufferService } from "../../../src/service/infrastructure/bufferService.ts";
+import { BufferService } from "../../../src/service/bufferService.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import type { ICheckService } from "../../../src/service/business/checkService.ts";
-import type { IGeoChecksService } from "../../../src/service/business/geoChecksService.ts";
-import type { ISettingsService } from "../../../src/service/system/settingsService.ts";
-import type { Check, GeoCheck } from "../../../src/types/index.ts";
+import type { ICheckService } from "../../../src/domain/checks/check.service.ts";
+import type { IGeoChecksService } from "../../../src/domain/geo-checks/geo-check.service.ts";
+import type { ISettingsService } from "../../../src/domain/app-settings/app-settings.service.ts";
+import type { IJobsRepository } from "../../../src/domain/jobs/job.repository.interface.ts";
+import type { Check } from "../../../src/domain/checks/check.type.ts";
+import type { GeoCheck } from "../../../src/domain/geo-checks/geo-check.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -22,6 +24,11 @@ const createMockSettingsService = (nodeEnv: string = "development") =>
 	({
 		getSettings: jest.fn().mockReturnValue({ nodeEnv }),
 	}) as unknown as jest.Mocked<ISettingsService>;
+
+const createMockJobsRepository = () =>
+	({
+		upsertEvaluate: jest.fn().mockResolvedValue(true),
+	}) as unknown as jest.Mocked<IJobsRepository>;
 
 const makeCheck = (overrides?: Partial<Check>): Check =>
 	({
@@ -46,8 +53,9 @@ const createService = (nodeEnv: string = "development") => {
 	const checkService = createMockCheckService();
 	const geoChecksService = createMockGeoChecksService();
 	const settingsService = createMockSettingsService(nodeEnv);
-	const service = new BufferService(logger as any, checkService, geoChecksService, settingsService);
-	return { service, logger, checkService, geoChecksService };
+	const jobsRepository = createMockJobsRepository();
+	const service = new BufferService(logger as any, checkService, geoChecksService, settingsService, jobsRepository);
+	return { service, logger, checkService, geoChecksService, jobsRepository };
 };
 
 // ── Tests ────────────────────────────────────────────────────────────────────
@@ -81,7 +89,7 @@ describe("BufferService", () => {
 			const { logger } = createService("development");
 			expect(logger.info).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: expect.stringContaining("0.01s"),
+					message: expect.stringContaining("1s"),
 					service: "BufferService",
 					method: "constructor",
 				})
@@ -231,7 +239,7 @@ describe("BufferService", () => {
 			service.addToBuffer(makeCheck());
 			service.addGeoCheckToBuffer(makeGeoCheck());
 
-			await jest.advanceTimersByTimeAsync(10);
+			await jest.advanceTimersByTimeAsync(1000);
 
 			expect(checkService.createChecks).toHaveBeenCalled();
 			expect(geoChecksService.createGeoChecks).toHaveBeenCalled();
@@ -242,11 +250,11 @@ describe("BufferService", () => {
 			(checkService.createChecks as jest.Mock).mockResolvedValue([]);
 
 			service.addToBuffer(makeCheck());
-			await jest.advanceTimersByTimeAsync(10);
+			await jest.advanceTimersByTimeAsync(1000);
 
 			// Add another check and advance again to confirm rescheduling
 			service.addToBuffer(makeCheck({ id: "c2" }));
-			await jest.advanceTimersByTimeAsync(10);
+			await jest.advanceTimersByTimeAsync(1000);
 
 			expect(checkService.createChecks).toHaveBeenCalledTimes(2);
 		});
@@ -256,7 +264,7 @@ describe("BufferService", () => {
 			(checkService.createChecks as jest.Mock).mockRejectedValueOnce(new Error("DB down"));
 			service.addToBuffer(makeCheck());
 
-			await jest.advanceTimersByTimeAsync(10);
+			await jest.advanceTimersByTimeAsync(1000);
 
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -268,7 +276,7 @@ describe("BufferService", () => {
 			// Should still reschedule — add another check and flush
 			(checkService.createChecks as jest.Mock).mockResolvedValue([]);
 			service.addToBuffer(makeCheck({ id: "c2" }));
-			await jest.advanceTimersByTimeAsync(10);
+			await jest.advanceTimersByTimeAsync(1000);
 
 			expect(checkService.createChecks).toHaveBeenCalledTimes(2);
 		});
@@ -278,7 +286,7 @@ describe("BufferService", () => {
 			// Override flushBuffer to throw past its own try/catch
 			service.flushBuffer = jest.fn<() => Promise<void>>().mockRejectedValueOnce(new Error("unexpected"));
 
-			await jest.advanceTimersByTimeAsync(10);
+			await jest.advanceTimersByTimeAsync(1000);
 
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -292,7 +300,7 @@ describe("BufferService", () => {
 			const { service, logger } = createService();
 			service.flushBuffer = jest.fn<() => Promise<void>>().mockRejectedValueOnce("string error");
 
-			await jest.advanceTimersByTimeAsync(10);
+			await jest.advanceTimersByTimeAsync(1000);
 
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -341,6 +349,29 @@ describe("BufferService", () => {
 					method: "flushBuffer",
 				})
 			);
+		});
+
+		it("arms the evaluate stage once per distinct monitor after the checks are stored", async () => {
+			const { service, jobsRepository } = createService();
+			service.addToBuffer(makeCheck({ id: "c1", metadata: { monitorId: "mon-1", teamId: "team-1", type: "http" } }));
+			service.addToBuffer(makeCheck({ id: "c2", metadata: { monitorId: "mon-1", teamId: "team-1", type: "http" } }));
+			service.addToBuffer(makeCheck({ id: "c3", metadata: { monitorId: "mon-2", teamId: "team-1", type: "http" } }));
+
+			await service.flushBuffer();
+
+			expect(jobsRepository.upsertEvaluate).toHaveBeenCalledTimes(2);
+			expect(jobsRepository.upsertEvaluate).toHaveBeenCalledWith("mon-1", expect.any(Number));
+			expect(jobsRepository.upsertEvaluate).toHaveBeenCalledWith("mon-2", expect.any(Number));
+		});
+
+		it("does not arm the evaluate stage when the check write fails", async () => {
+			const { service, checkService, jobsRepository } = createService();
+			(checkService.createChecks as jest.Mock).mockRejectedValue(new Error("DB write failed"));
+			service.addToBuffer(makeCheck());
+
+			await service.flushBuffer();
+
+			expect(jobsRepository.upsertEvaluate).not.toHaveBeenCalled();
 		});
 
 		it("clears buffer even on error to prevent infinite retries", async () => {

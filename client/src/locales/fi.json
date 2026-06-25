@@ -941,10 +941,7 @@
 					"monitorId": "Monitorin tunnus",
 					"runCount": "Suorituskerrat",
 					"failCount": "Epäonnistumiskerrat",
-					"lastRunAt": "Viimeisin suoritus",
-					"lockedAt": "Lukittu",
 					"lastFinishedAt": "Viimeisin valmistuminen",
-					"lastRunTook": "Viimeisin suoritus kesti",
 					"lastFailedAt": "Viimeisin epäonnistuminen",
 					"failReason": "Epäonnistumisen syy",
 					"state": "Tila"

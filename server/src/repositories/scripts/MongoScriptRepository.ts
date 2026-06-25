@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { ScriptModel } from "@/db/models/index.js";
+import { ScriptModel } from "@/db/models/Script.js";
 import type { ScriptDocument } from "@/db/models/Script.js";
 import type { Script, ScriptSummary } from "@/types/script.js";
 import { AppError } from "@/utils/AppError.js";

@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
-import { NETWORK_ERROR } from "../../../../src/service/infrastructure/network/utils.ts";
-import type { Monitor } from "../../../../src/types/index.ts";
+import { NETWORK_ERROR } from "../../../../src/service/network/utils.ts";
+import type { Monitor } from "../../../../src/domain/monitors/monitor.types.ts";
 
 // ── Mocks ────────────────────────────────────────────────────────────────────
 
@@ -38,7 +38,7 @@ jest.unstable_mockModule("got", () => ({
 	},
 }));
 
-const { HttpProvider } = await import("../../../../src/service/infrastructure/network/HttpProvider.ts");
+const { HttpProvider } = await import("../../../../src/service/network/HttpProvider.ts");
 const gotModule = await import("got");
 const { HTTPError, RequestError } = gotModule;
 
@@ -56,6 +56,7 @@ const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
 		useAdvancedMatching: false,
 		matchMethod: undefined,
 		expectedValue: undefined,
+		customUpCodes: [],
 		...overrides,
 	}) as Monitor;
 
@@ -69,7 +70,7 @@ const makeGotResponse = (overrides?: Record<string, any>) => ({
 	statusMessage: "OK",
 	headers: { "content-type": "text/html" },
 	body: "<html></html>",
-	timings: { phases: { total: 100 } },
+	timings: { phases: { firstByte: 100, total: 120 } },
 	...overrides,
 });
 
@@ -181,8 +182,8 @@ describe("HttpProvider", () => {
 			);
 		});
 
-		it("defaults responseTime to 0 when timings.phases.total is undefined", async () => {
-			mockGot.mockResolvedValue(makeGotResponse({ timings: { phases: { total: undefined } } }));
+		it("defaults responseTime to 0 when timings.phases.firstByte is undefined", async () => {
+			mockGot.mockResolvedValue(makeGotResponse({ timings: { phases: { firstByte: undefined } } }));
 			const { provider } = createProvider();
 
 			const result = await provider.handle(makeMonitor());
@@ -223,11 +224,11 @@ describe("HttpProvider", () => {
 			expect(result.message).toBe("Response is not JSON");
 		});
 
-		it("defaults responseTime to 0 in non-JSON jsonPath response when total is undefined", async () => {
+		it("defaults responseTime to 0 in non-JSON jsonPath response when firstByte is undefined", async () => {
 			mockGot.mockResolvedValue(
 				makeGotResponse({
 					headers: { "content-type": "text/html" },
-					timings: { phases: { total: undefined } },
+					timings: { phases: { firstByte: undefined } },
 				})
 			);
 			const { provider } = createProvider();
@@ -253,14 +254,13 @@ describe("HttpProvider", () => {
 			expect(result.extracted).toBe("value");
 		});
 
-		it("sets status to false when response.ok is false even if matcher passes", async () => {
+		it("sets status to false when status code is non-2xx even if matcher passes", async () => {
 			mockGot.mockResolvedValue(makeGotResponse({ ok: false, statusCode: 301 }));
 			const matcher = createMockMatcher({ ok: true, message: "Success" });
 			const { provider } = createProvider(matcher);
 
 			const result = await provider.handle(makeMonitor());
 
-			// status = response.ok && matchResult.ok
 			expect(result.status).toBe(false);
 		});
 	});
@@ -343,6 +343,155 @@ describe("HttpProvider", () => {
 			const { provider } = createProvider();
 
 			await expect(provider.handle(makeMonitor({ url: "" }))).rejects.toThrow("URL is required for HTTP monitor");
+		});
+	});
+
+	// ── customUpCodes ────────────────────────────────────────────────────
+
+	describe("customUpCodes", () => {
+		it("returns status true when HTTPError status code is in customUpCodes", async () => {
+			const err = new HTTPError("Unauthorized");
+			(err as any).response = { statusCode: 401 };
+			(err as any).timings = { phases: { total: 30 } };
+			mockGot.mockRejectedValue(err);
+			const { provider } = createProvider();
+
+			const result = await provider.handle(makeMonitor({ customUpCodes: [401] }));
+
+			expect(result.status).toBe(true);
+			expect(result.code).toBe(401);
+		});
+
+		it("returns status false when HTTPError status code is not in customUpCodes", async () => {
+			const err = new HTTPError("Internal Server Error");
+			(err as any).response = { statusCode: 500 };
+			(err as any).timings = { phases: { total: 40 } };
+			mockGot.mockRejectedValue(err);
+			const { provider } = createProvider();
+
+			const result = await provider.handle(makeMonitor({ customUpCodes: [401, 403] }));
+
+			expect(result.status).toBe(false);
+			expect(result.code).toBe(500);
+		});
+
+		it("returns status false when customUpCodes is empty", async () => {
+			const err = new HTTPError("Unauthorized");
+			(err as any).response = { statusCode: 401 };
+			(err as any).timings = { phases: { total: 25 } };
+			mockGot.mockRejectedValue(err);
+			const { provider } = createProvider();
+
+			const result = await provider.handle(makeMonitor({ customUpCodes: [] }));
+
+			expect(result.status).toBe(false);
+			expect(result.code).toBe(401);
+		});
+
+		it("treats non-2xx success response as up when status code is in customUpCodes", async () => {
+			mockGot.mockResolvedValue(makeGotResponse({ ok: false, statusCode: 301, statusMessage: "Moved Permanently" }));
+			const { provider } = createProvider();
+
+			const result = await provider.handle(makeMonitor({ customUpCodes: [301] }));
+
+			expect(result.status).toBe(true);
+			expect(result.code).toBe(301);
+		});
+
+		it("does not override matcher failure even when status code is in customUpCodes", async () => {
+			mockGot.mockResolvedValue(makeGotResponse({ ok: false, statusCode: 301 }));
+			const matcher = createMockMatcher({ ok: false, message: "Body mismatch" });
+			const { provider } = createProvider(matcher);
+
+			const result = await provider.handle(makeMonitor({ customUpCodes: [301] }));
+
+			expect(result.status).toBe(false);
+			expect(result.message).toBe("Body mismatch");
+		});
+
+		it("does not override matcher failure on HTTPError when status code is in customUpCodes", async () => {
+			const err = new HTTPError("Unauthorized");
+			(err as any).response = {
+				statusCode: 401,
+				body: '{"status":"down"}',
+				headers: { "content-type": "application/json" },
+			};
+			(err as any).timings = { phases: { total: 30 } };
+			mockGot.mockRejectedValue(err);
+			const matcher = createMockMatcher({
+				ok: false,
+				message: "Body mismatch",
+				extracted: "down",
+			});
+			const { provider } = createProvider(matcher);
+
+			const result = await provider.handle(makeMonitor({ customUpCodes: [401], useAdvancedMatching: true }));
+
+			expect(result.status).toBe(false);
+			expect(result.message).toBe("Body mismatch");
+			expect(result.payload).toEqual({ status: "down" });
+			expect(result.extracted).toBe("down");
+		});
+	});
+
+	// ── HTTP method (GET / HEAD) ─────────────────────────────────────────
+
+	describe("request method", () => {
+		it("passes GET to got when method is GET", async () => {
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor({ method: "GET" }));
+
+			expect(mockGot).toHaveBeenCalledWith("https://example.com", expect.objectContaining({ method: "GET" }));
+		});
+
+		it("passes HEAD to got when method is HEAD", async () => {
+			mockGot.mockResolvedValue(makeGotResponse({ body: "" }));
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor({ method: "HEAD" }));
+
+			expect(mockGot).toHaveBeenCalledWith("https://example.com", expect.objectContaining({ method: "HEAD" }));
+		});
+
+		it("does not mark a HEAD monitor down on an empty body even with advanced matching on", async () => {
+			mockGot.mockResolvedValue(makeGotResponse({ body: "", headers: {} }));
+			// A matcher that would fail — proving HEAD never reaches it
+			const matcher = createMockMatcher({ ok: false, message: "Extracted value is falsy" });
+			const { provider, advancedMatcher } = createProvider(matcher);
+
+			const result = await provider.handle(makeMonitor({ method: "HEAD", useAdvancedMatching: true, jsonPath: "status" }));
+
+			expect(result.status).toBe(true);
+			expect(advancedMatcher.validate).not.toHaveBeenCalled();
+		});
+
+		it("bases HEAD status on the status code (down when not an up code)", async () => {
+			const err = new HTTPError("Internal Server Error");
+			(err as any).response = { statusCode: 500, body: "", headers: {} };
+			(err as any).timings = { phases: { total: 40 } };
+			mockGot.mockRejectedValue(err);
+			const { provider } = createProvider();
+
+			const result = await provider.handle(makeMonitor({ method: "HEAD" }));
+
+			expect(result.status).toBe(false);
+			expect(result.code).toBe(500);
+		});
+
+		it("respects customUpCodes for HEAD requests without consulting the matcher", async () => {
+			const err = new HTTPError("Unauthorized");
+			(err as any).response = { statusCode: 401, body: "", headers: {} };
+			(err as any).timings = { phases: { total: 30 } };
+			mockGot.mockRejectedValue(err);
+			const { provider, advancedMatcher } = createProvider();
+
+			const result = await provider.handle(makeMonitor({ method: "HEAD", customUpCodes: [401], useAdvancedMatching: true }));
+
+			expect(result.status).toBe(true);
+			expect(result.code).toBe(401);
+			expect(advancedMatcher.validate).not.toHaveBeenCalled();
 		});
 	});
 });

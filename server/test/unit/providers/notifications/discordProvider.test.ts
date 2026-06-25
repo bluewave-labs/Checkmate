@@ -6,7 +6,7 @@ import { testNotificationProviderContract } from "../../../helpers/notificationP
 const mockGotPost = jest.fn().mockResolvedValue({});
 jest.unstable_mockModule("got", () => ({ default: { post: mockGotPost } }));
 
-const { DiscordProvider } = await import("../../../../src/service/infrastructure/notificationProviders/discord.ts");
+const { DiscordProvider } = await import("../../../../src/domain/notifications/providers/discord.ts");
 
 const createProvider = () => {
 	const logger = createMockLogger();

@@ -1,8 +1,8 @@
 import ScriptModel from "../models/Script.js";
-import TeamModel from "../models/Team.js";
-import UserModel from "../models/User.js";
+import TeamModel from "@/domain/teams/team.model.js";
+import UserModel from "@/domain/users/user.model.js";
 import { encryptScriptBody, hashScriptBody } from "@/utils/scriptCrypto.js";
-import { logger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger.js";
 
 // Seed a curated library of default monitoring scripts for every existing team.
 // Idempotent: scripts are skipped when a script with the same name already exists
@@ -2036,7 +2036,7 @@ if __name__ == "__main__":
 // Migration entry point
 // ---------------------------------------------------------------------------
 
-export async function seedDefaultScripts(): Promise<void> {
+export async function seedDefaultScripts(logger: ILogger): Promise<void> {
 	// If the encryption key is not configured, skip seeding rather than crash.
 	// The admin can re-run by deleting the migration record once the key is set.
 	if (!process.env.SCRIPT_ENCRYPTION_KEY) {

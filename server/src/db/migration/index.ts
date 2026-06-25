@@ -2,10 +2,11 @@ import { migrateStatusWindowThreshold } from "./0001_migrateStatusWindowThreshol
 import { convertChecksToTimeSeries } from "./0002_convertChecksToTimeSeries.js";
 import { cleanupDuplicateMonitorStats } from "./0003_cleanupDuplicateMonitorStats.js";
 import { fixInfrastructureThresholds } from "./0004_fixInfrastructureThresholds.js";
-import MigrationModel from "../models/Migration.js";
+import MigrationModel from "../../domain/migrations/migration.model.js";
 import { migrateStatusPageTypeToArray } from "./0005_migrateStatusPageTypeToArray.js";
 import { cleanupDuplicateMonitorStatsForUniqueIndex } from "./0006_cleanupDuplicateMonitorStatsForUniqueIndex.js";
 import { migrateMaintenanceWindowMonitorIdToArray } from "./0007_migrateMaintenanceWindowMonitorIdToArray.js";
+import { backfillMonitorLastEvaluatedAt } from "./0008_backfillMonitorLastEvaluatedAt.js";
 import { addScriptMonitorSupport } from "./0008_addScriptMonitorSupport.js";
 import { migrateProbesToCaptureAgents } from "./0009_migrateProbesToCaptureAgents.js";
 import { normalizeScriptMonitorUrls } from "./0010_normalizeScriptMonitorUrls.js";
@@ -14,7 +15,7 @@ import type { ILogger } from "@/utils/logger.js";
 
 type MigrationEntry = {
 	name: string;
-	execute: () => Promise<void>;
+	execute: (logger: ILogger) => Promise<void>;
 };
 
 const migrations: MigrationEntry[] = [
@@ -25,40 +26,41 @@ const migrations: MigrationEntry[] = [
 	{ name: "0005_migrateStatusPageTypeToArray", execute: migrateStatusPageTypeToArray },
 	{ name: "0006_cleanupDuplicateMonitorStatsForUniqueIndex", execute: cleanupDuplicateMonitorStatsForUniqueIndex },
 	{ name: "0007_migrateMaintenanceWindowMonitorIdToArray", execute: migrateMaintenanceWindowMonitorIdToArray },
+	{ name: "0008_backfillMonitorLastEvaluatedAt", execute: backfillMonitorLastEvaluatedAt },
 	{ name: "0008_addScriptMonitorSupport", execute: addScriptMonitorSupport },
 	{ name: "0009_migrateProbesToCaptureAgents", execute: migrateProbesToCaptureAgents },
 	{ name: "0010_normalizeScriptMonitorUrls", execute: normalizeScriptMonitorUrls },
 	{ name: "0011_seedDefaultScripts", execute: seedDefaultScripts },
 ];
 
-const runMigrations = async (logger?: ILogger) => {
+const runMigrations = async (logger: ILogger) => {
 	try {
-		logger?.info({ message: "Running migrations", service: "Migrations" });
+		logger.info({ message: "Running migrations", service: "Migrations" });
 		for (const migration of migrations) {
 			const exists = await MigrationModel.findOne({ name: migration.name, status: "completed" });
 			if (exists) {
-				logger?.info({ message: `Skipping ${migration.name}`, service: "Migrations" });
+				logger.info({ message: `Skipping ${migration.name}`, service: "Migrations" });
 				continue;
 			}
 
 			try {
-				await migration.execute();
+				await migration.execute(logger);
 				await MigrationModel.findOneAndUpdate(
 					{ name: migration.name },
 					{ status: "completed", completedAt: new Date(), error: undefined },
 					{ upsert: true }
 				);
-				logger?.info({ message: `Completed ${migration.name}`, service: "Migrations" });
+				logger.info({ message: `Completed ${migration.name}`, service: "Migrations" });
 			} catch (error) {
 				const err = error as Error;
 				await MigrationModel.findOneAndUpdate({ name: migration.name }, { status: "failed", error: err?.message }, { upsert: true });
 				throw error;
 			}
 		}
-		logger?.info({ message: "Migrations completed", service: "Migrations" });
+		logger.info({ message: "Migrations completed", service: "Migrations" });
 	} catch (error) {
 		const err = error as Error;
-		logger?.error({ message: "Migration failed", service: "Migrations", details: { error: err?.message }, stack: err?.stack });
+		logger.error({ message: "Migration failed", service: "Migrations", details: { error: err?.message }, stack: err?.stack });
 		throw error;
 	}
 };

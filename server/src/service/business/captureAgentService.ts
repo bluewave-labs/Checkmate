@@ -12,7 +12,9 @@ import type {
 import { AppError } from "@/utils/AppError.js";
 import { ILogger } from "@/utils/logger.js";
 import { encryptScriptBody, decryptScriptBody } from "@/utils/scriptCrypto.js";
-import type { ICaptureAgentRepository, ICaptureAgentDeviceRepository, IAuditRepository } from "@/repositories/index.js";
+import type { ICaptureAgentRepository } from "@/repositories/captureAgents/ICaptureAgentRepository.js";
+import type { ICaptureAgentDeviceRepository } from "@/repositories/captureAgentDevices/ICaptureAgentDeviceRepository.js";
+import type { IAuditRepository } from "@/repositories/audit/IAuditRepository.js";
 
 const SERVICE_NAME = "captureAgentService";
 const BCRYPT_ROUNDS = 12;

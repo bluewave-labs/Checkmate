@@ -1,7 +1,7 @@
 {
 	"name": "client",
 	"private": true,
-	"version": "3.7.1",
+	"version": "3.8.1",
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
@@ -14,7 +14,7 @@
 		"format-check": "prettier --check ."
 	},
 	"lint-staged": {
-		"**/*": "prettier --write"
+		"**/*": "prettier --write --ignore-unknown"
 	},
 	"dependencies": {
 		"@emotion/react": "^11.13.3",

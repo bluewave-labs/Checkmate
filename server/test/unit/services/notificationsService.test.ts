@@ -1,8 +1,10 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
-import { NotificationsService } from "../../../src/service/infrastructure/notificationsService.ts";
+import { NotificationsService } from "../../../src/domain/notifications/notification.service.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import type { Notification, Monitor, MonitorStatusResponse } from "../../../src/types/index.ts";
-import type { MonitorActionDecision } from "../../../src/service/infrastructure/SuperSimpleQueue/SuperSimpleQueueHelper.ts";
+import type { Monitor } from "../../../src/domain/monitors/monitor.types.ts";
+import type { Notification } from "../../../src/domain/notifications/notification.type.ts";
+import type { MonitorStatusResponse } from "../../../src/types/network.ts";
+import type { MonitorActionDecision } from "../../../src/worker/worker.helper.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -47,6 +49,7 @@ const createService = (overrides?: Record<string, unknown>) => {
 	const telegramProvider = createProvider();
 	const pushoverProvider = createProvider();
 	const twilioProvider = createProvider();
+	const ntfyProvider = createProvider();
 	const settingsService = createSettingsService();
 	const notificationMessageBuilder = createMessageBuilder();
 
@@ -64,6 +67,7 @@ const createService = (overrides?: Record<string, unknown>) => {
 		telegramProvider,
 		pushoverProvider,
 		twilioProvider,
+		ntfyProvider,
 		settingsService,
 		notificationMessageBuilder,
 		...overrides,
@@ -82,6 +86,7 @@ const createService = (overrides?: Record<string, unknown>) => {
 		defaults.telegramProvider as any,
 		defaults.pushoverProvider as any,
 		defaults.twilioProvider as any,
+		defaults.ntfyProvider as any,
 		defaults.settingsService as any,
 		defaults.logger as any,
 		defaults.notificationMessageBuilder as any
@@ -147,7 +152,7 @@ describe("NotificationsService", () => {
 		});
 
 		it("routes to correct provider for each notification type", async () => {
-			const types = ["webhook", "slack", "matrix", "pager_duty", "discord", "email", "teams", "telegram", "pushover", "twilio"] as const;
+			const types = ["webhook", "slack", "matrix", "pager_duty", "discord", "email", "teams", "telegram", "pushover", "twilio", "ntfy"] as const;
 			for (const type of types) {
 				const deps = createService();
 				(deps.notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([makeNotification({ type })]);
@@ -165,6 +170,7 @@ describe("NotificationsService", () => {
 					telegram: deps.telegramProvider,
 					pushover: deps.pushoverProvider,
 					twilio: deps.twilioProvider,
+					ntfy: deps.ntfyProvider,
 				};
 				expect(providerMap[type].sendMessage).toHaveBeenCalledTimes(1);
 			}
@@ -238,30 +244,40 @@ describe("NotificationsService", () => {
 	// ── sendTestNotification ─────────────────────────────────────────────────
 
 	describe("sendTestNotification", () => {
-		it.each([["email"], ["slack"], ["discord"], ["pager_duty"], ["matrix"], ["webhook"], ["teams"], ["telegram"], ["pushover"], ["twilio"]] as const)(
-			"routes %s to the correct provider",
-			async (type) => {
-				const deps = createService();
-				const notification = makeNotification({ type: type as any });
+		it.each([
+			["email"],
+			["slack"],
+			["discord"],
+			["pager_duty"],
+			["matrix"],
+			["webhook"],
+			["teams"],
+			["telegram"],
+			["pushover"],
+			["twilio"],
+			["ntfy"],
+		] as const)("routes %s to the correct provider", async (type) => {
+			const deps = createService();
+			const notification = makeNotification({ type: type as any });
 
-				const result = await deps.service.sendTestNotification(notification);
+			const result = await deps.service.sendTestNotification(notification);
 
-				expect(result).toBe(true);
-				const providerMap: Record<string, ReturnType<typeof createProvider>> = {
-					webhook: deps.webhookProvider,
-					slack: deps.slackProvider,
-					matrix: deps.matrixProvider,
-					pager_duty: deps.pagerDutyProvider,
-					discord: deps.discordProvider,
-					email: deps.emailProvider,
-					teams: deps.teamsProvider,
-					telegram: deps.telegramProvider,
-					pushover: deps.pushoverProvider,
-					twilio: deps.twilioProvider,
-				};
-				expect(providerMap[type].sendTestAlert).toHaveBeenCalledWith(notification);
-			}
-		);
+			expect(result).toBe(true);
+			const providerMap: Record<string, ReturnType<typeof createProvider>> = {
+				webhook: deps.webhookProvider,
+				slack: deps.slackProvider,
+				matrix: deps.matrixProvider,
+				pager_duty: deps.pagerDutyProvider,
+				discord: deps.discordProvider,
+				email: deps.emailProvider,
+				teams: deps.teamsProvider,
+				telegram: deps.telegramProvider,
+				pushover: deps.pushoverProvider,
+				twilio: deps.twilioProvider,
+				ntfy: deps.ntfyProvider,
+			};
+			expect(providerMap[type].sendTestAlert).toHaveBeenCalledWith(notification);
+		});
 
 		it("returns false for unknown notification type", async () => {
 			const { service } = createService();

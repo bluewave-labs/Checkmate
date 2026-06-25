@@ -28,7 +28,7 @@ export function getOpenApiSpec(): JsonObject {
 		info: {
 			title: "Checkmate API",
 			version: "1.0.0",
-			description: "Generated from Zod validation schemas. Source of truth: server/src/validation/*.ts",
+			description: "Generated from Zod validation schemas. Source of truth: server/src/api/validation/*.ts",
 		},
 		servers: [{ url: "/api/v1", description: "Current server" }],
 		tags: [

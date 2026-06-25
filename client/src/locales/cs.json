@@ -941,10 +941,7 @@
 					"monitorId": "ID monitoru",
 					"runCount": "Počet spuštění",
 					"failCount": "Počet selhání",
-					"lastRunAt": "Poslední spuštění",
-					"lockedAt": "Uzamčeno v",
 					"lastFinishedAt": "Naposledy dokončeno",
-					"lastRunTook": "Poslední běh trval",
 					"lastFailedAt": "Poslední selhání",
 					"failReason": "Důvod selhání",
 					"state": "Stav"

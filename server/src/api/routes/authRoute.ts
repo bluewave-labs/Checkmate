@@ -1,0 +1,48 @@
+import { Router, RequestHandler } from "express";
+import { isAllowed } from "@/api/middleware/isAllowed.js";
+import { imageUpload } from "@/api/middleware/upload.js";
+import { IAuthController } from "@/api/controllers/authController.js";
+
+class AuthRoutes {
+	private router: Router;
+	private authController: IAuthController;
+
+	constructor(authController: IAuthController, verifyJWT: RequestHandler) {
+		this.router = Router();
+		this.authController = authController;
+		this.initRoutes(verifyJWT);
+	}
+
+	initRoutes(verifyJWT: RequestHandler) {
+		this.router.post("/register", imageUpload.single("profileImage"), this.authController.registerUser);
+		this.router.post("/login", this.authController.loginUser);
+
+		this.router.post("/recovery/request", this.authController.requestRecovery);
+		this.router.post("/recovery/validate", this.authController.validateRecovery);
+		this.router.post("/recovery/reset/", this.authController.resetPassword);
+
+		this.router.get("/users/superadmin", this.authController.checkSuperadminExists);
+
+		this.router.get("/users", verifyJWT, isAllowed(["admin", "superadmin"]), this.authController.getAllUsers);
+		this.router.post("/users", verifyJWT, isAllowed(["superadmin"]), imageUpload.single("profileImage"), this.authController.createUser);
+		this.router.get("/users/:userId", verifyJWT, isAllowed(["admin", "superadmin"]), this.authController.getUserById);
+		this.router.patch("/users/:userId", verifyJWT, isAllowed(["superadmin"]), this.authController.editUserById);
+		this.router.patch("/users/:userId/password", verifyJWT, isAllowed(["superadmin"]), this.authController.editUserPasswordById);
+		this.router.delete("/users/:userId", verifyJWT, isAllowed(["admin", "superadmin"]), this.authController.deleteUserById);
+
+		this.router.patch(
+			"/user",
+			verifyJWT,
+			imageUpload.single("profileImage"),
+			isAllowed(["admin", "superadmin", "user"]),
+			this.authController.editUser
+		);
+		this.router.delete("/user", verifyJWT, isAllowed(["admin", "superadmin", "user"]), this.authController.deleteUser);
+	}
+
+	getRouter() {
+		return this.router;
+	}
+}
+
+export default AuthRoutes;

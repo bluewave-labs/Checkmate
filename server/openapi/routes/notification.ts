@@ -7,7 +7,7 @@ import {
 	getNotificationByIdParamValidation,
 	editNotificationParamValidation,
 	testAllNotificationsBodyValidation,
-} from "@/validation/notificationValidation.js";
+} from "@/api/validation/notificationValidation.js";
 
 const tags = ["notifications"];
 
@@ -67,6 +67,10 @@ const notificationVariantMeta: Record<string, { component: string; example: Reco
 			phone: "+15551234567",
 			twilioPhoneNumber: "+15557654321",
 		},
+	},
+	ntfy: {
+		component: "NtfyNotification",
+		example: { notificationName: "ntfy topic", type: "ntfy", address: "https://ntfy.sh", topic: "checkmate-alerts" },
 	},
 };
 

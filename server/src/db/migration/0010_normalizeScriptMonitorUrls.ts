@@ -1,12 +1,12 @@
-import MonitorModel from "../models/Monitor.js";
-import { logger } from "@/utils/logger.js";
+import MonitorModel from "@/domain/monitors/monitor.model.js";
+import type { ILogger } from "@/utils/logger.js";
 
 // Strip path components from legacy script monitor URLs so the scriptService
 // can correctly append /api/v1/script. Monitors created before this migration
 // may have stored the full capture metrics URL (e.g. http://host:59232/api/v1/metrics)
 // instead of the capture agent base URL (http://host:59232).
 
-export async function normalizeScriptMonitorUrls(): Promise<void> {
+export async function normalizeScriptMonitorUrls(logger: ILogger): Promise<void> {
 	const SERVICE_NAME = "Migration:NormalizeScriptMonitorUrls";
 
 	const monitors = await MonitorModel.find({

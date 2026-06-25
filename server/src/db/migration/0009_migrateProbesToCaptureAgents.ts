@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import { logger } from "@/utils/logger.js";
+import type { ILogger } from "@/utils/logger.js";
 import ProbeServerModel from "../models/ProbeServer.js";
 import CaptureAgentModel from "../models/CaptureAgent.js";
-import MonitorModel from "../models/Monitor.js";
+import MonitorModel from "@/domain/monitors/monitor.model.js";
 
 // Migrate every ProbeServer document to a CaptureAgent and rewrite monitor
 // references from `probeId` to `captureAgentId`. The migration is idempotent:
@@ -10,7 +10,7 @@ import MonitorModel from "../models/Monitor.js";
 // collections short-circuit early. Original probe documents are preserved so
 // admins retain the audit trail of legacy registrations.
 
-export async function migrateProbesToCaptureAgents(): Promise<void> {
+export async function migrateProbesToCaptureAgents(logger: ILogger): Promise<void> {
 	const SERVICE_NAME = "Migration:MigrateProbesToCaptureAgents";
 
 	const db = mongoose.connection.db;

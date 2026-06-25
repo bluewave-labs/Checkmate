@@ -8,12 +8,8 @@ import type {
 	CheckNetworkInterfaceInfo,
 	GotTimings,
 	ILighthouseAudit,
-	DnsRecordType,
-	Monitor,
-	MonitorMatchMethod,
-	MonitorType,
-	MonitorStatus,
-} from "@/types/index.js";
+} from "@/domain/checks/check.type.js";
+import type { DnsRecordType, Monitor, MonitorMatchMethod, MonitorStatus, MonitorType } from "@/domain/monitors/monitor.types.js";
 
 import type { QueryResult } from "gamedig";
 
@@ -35,7 +31,7 @@ export interface MonitorStatusResponse<
 	code: number;
 	message: string;
 	responseTime?: number;
-	payload?: T | null;
+	payload?: T | string | null;
 	timings?: GotTimings;
 	first_byte_took?: number;
 	body_read_took?: number;

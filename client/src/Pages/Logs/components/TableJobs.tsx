@@ -1,4 +1,4 @@
-import { Table } from "@/Components/design-elements";
+import { Table, Pagination } from "@/Components/design-elements";
 import { Typography, useTheme } from "@mui/material";
 import prettyMilliseconds from "pretty-ms";
 import { formatTimestamp } from "@/Utils/TimeUtils";
@@ -6,14 +6,27 @@ import { formatTimestamp } from "@/Utils/TimeUtils";
 import { useTranslation } from "react-i18next";
 import type { QueueJobFailure, QueueJobSummary, QueueMetrics } from "@/Types/Queue";
 import type { Header } from "@/Components/design-elements";
+import type { TablePaginationProps } from "@mui/material/TablePagination";
 
 type QueueJobWithId = QueueJobSummary & { id: string | number };
 
 interface TableJobsProps {
 	jobs: QueueJobSummary[];
+	count: number;
+	page: number;
+	rowsPerPage: number;
+	onPageChange: TablePaginationProps["onPageChange"];
+	onRowsPerPageChange: TablePaginationProps["onRowsPerPageChange"];
 }
 
-export const TableJobs = ({ jobs }: TableJobsProps) => {
+export const TableJobs = ({
+	jobs,
+	count,
+	page,
+	rowsPerPage,
+	onPageChange,
+	onRowsPerPageChange,
+}: TableJobsProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 
@@ -29,12 +42,15 @@ export const TableJobs = ({ jobs }: TableJobsProps) => {
 		maxWidth: 220,
 	};
 
+	const isRunning = (row: QueueJobWithId) =>
+		row.lockedBy !== null && row.lockedUntil !== null && row.lockedUntil > Date.now();
+
 	const headers: Header<QueueJobWithId>[] = [
 		{
 			id: "state",
 			content: t("pages.logs.table.headers.state"),
 			render: (row) => {
-				if (row.lockedAt) {
+				if (isRunning(row)) {
 					return t("common.labels.running");
 				}
 				if (row.monitorActive === true) {
@@ -60,18 +76,6 @@ export const TableJobs = ({ jobs }: TableJobsProps) => {
 			),
 		},
 		{
-			id: "url",
-			content: t("common.table.headers.url"),
-			render: (row) => (
-				<Typography
-					title={row.monitorUrl ?? ""}
-					sx={cellSx}
-				>
-					{row.monitorUrl}
-				</Typography>
-			),
-		},
-		{
 			id: "type",
 			content: t("common.table.headers.type"),
 			render: (row) => <Typography sx={cellSx}>{row.monitorType}</Typography>,
@@ -79,50 +83,57 @@ export const TableJobs = ({ jobs }: TableJobsProps) => {
 		{
 			id: "interval",
 			content: t("common.table.headers.interval"),
-			render: (row) => {
-				let interval;
-				if (row.monitorId.toString().includes("geo")) {
-					interval = row.monitorGeoInterval ?? 0;
-				} else {
-					interval = row.repeat ?? 0;
-				}
-				return <Typography sx={cellSx}>{prettyMilliseconds(interval)}</Typography>;
-			},
+			render: (row) => (
+				<Typography sx={cellSx}>{prettyMilliseconds(row.monitorInterval ?? 0)}</Typography>
+			),
 		},
 		{
-			id: "lastRun",
-			content: t("pages.logs.table.headers.lastRunAt"),
+			id: "lastFinishedAt",
+			content: t("pages.logs.table.headers.lastFinishedAt"),
 			render: (row) => {
-				const v = formatTimestamp(row.lastRunAt) ?? "-";
+				const lastFinishedAt = formatTimestamp(row.lastFinishedAt) ?? "-";
 				return (
 					<Typography
-						title={v}
+						title={lastFinishedAt}
 						sx={cellSx}
 					>
-						{v}
+						{lastFinishedAt}
 					</Typography>
 				);
 			},
 		},
 		{
-			id: "lastRunTook",
-			content: t("pages.logs.table.headers.lastRunTook"),
+			id: "nextScheduledAt",
+			content: t("pages.logs.table.headers.nextScheduledAt"),
 			render: (row) => {
-				const value = row.lastRunTook ? prettyMilliseconds(row.lastRunTook) : "-";
-				return <Typography sx={cellSx}>{value}</Typography>;
+				const nextScheduledAt = formatTimestamp(row.nextScheduledAt) ?? "-";
+				return (
+					<Typography
+						title={nextScheduledAt}
+						sx={cellSx}
+					>
+						{nextScheduledAt}
+					</Typography>
+				);
 			},
 		},
 		{
-			id: "lockedAt",
-			content: t("pages.logs.table.headers.lockedAt"),
+			id: "lockedBy",
+			content: t("pages.logs.table.headers.lockedBy"),
 			render: (row) => {
-				const v = formatTimestamp(row.lockedAt) ?? "-";
+				const lockedBy = row.lockedBy;
+				if (!lockedBy) {
+					return <Typography sx={cellSx}>-</Typography>;
+				}
+
+				const workerId = lockedBy.split(":")[2];
+				const shortWorkerId = workerId.slice(workerId.length - 8);
 				return (
 					<Typography
-						title={v}
+						title={workerId}
 						sx={cellSx}
 					>
-						{v}
+						{`...${shortWorkerId}`}
 					</Typography>
 				);
 			},
@@ -130,18 +141,29 @@ export const TableJobs = ({ jobs }: TableJobsProps) => {
 	];
 
 	return (
-		<Table
-			headers={headers}
-			data={jobsWithId}
-			getRowSx={(row) => ({
-				...(row.lockedAt && {
-					"& td": { backgroundColor: theme.palette.rowStatus.running },
-				}),
-				...(row.monitorActive === false && {
-					"& td": { backgroundColor: theme.palette.rowStatus.paused },
-				}),
-			})}
-		/>
+		<>
+			<Table
+				headers={headers}
+				data={jobsWithId}
+				getRowSx={(row) => ({
+					...(isRunning(row) && {
+						"& td": { backgroundColor: theme.palette.rowStatus.running },
+					}),
+					...(row.monitorActive === false && {
+						"& td": { backgroundColor: theme.palette.rowStatus.paused },
+					}),
+				})}
+			/>
+			<Pagination
+				component="div"
+				count={count}
+				page={page}
+				rowsPerPage={rowsPerPage}
+				onPageChange={onPageChange}
+				onRowsPerPageChange={onRowsPerPageChange}
+				itemsOnPage={jobs.length}
+			/>
+		</>
 	);
 };
 

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { ProbeServerModel } from "@/db/models/index.js";
+import { ProbeServerModel } from "@/db/models/ProbeServer.js";
 import type { ProbeServerDocument } from "@/db/models/ProbeServer.js";
 import type { ProbeServer, ProbeServerSummary } from "@/types/script.js";
 import { AppError } from "@/utils/AppError.js";

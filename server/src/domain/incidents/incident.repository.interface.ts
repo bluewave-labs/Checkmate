@@ -1,0 +1,29 @@
+import type { Incident } from "@/domain/incidents/incident.type.js";
+import type { IncidentSummary } from "@/domain/incidents/incident.type.js";
+export interface IIncidentsRepository {
+	// create
+	create(incident: Partial<Incident>): Promise<Incident>;
+	// fetch
+	findById(incidentId: string, teamId: string): Promise<Incident>;
+	findActiveByIncidentId(incidentId: string, teamId: string): Promise<Incident | null>;
+	findActiveByMonitorId(monitorId: string, teamId: string): Promise<Incident | null>;
+	findByTeamId(
+		teamId: string,
+		startDate: Date | undefined,
+		page: number,
+		rowsPerPage: number,
+		sortOrder?: string,
+		status?: boolean,
+		monitorId?: string,
+		resolutionType?: string
+	): Promise<Incident[]>;
+	findSummaryByTeamId(teamId: string, limit?: number): Promise<IncidentSummary>;
+	countByTeamId(teamId: string, startDate: Date | undefined, status?: boolean, monitorId?: string, resolutionType?: string): Promise<number>;
+
+	// update
+	updateById(incidentId: string, teamId: string, updateData: Partial<Incident>): Promise<Incident>;
+	// delete
+	deleteByMonitorId(monitorId: string, teamId: string): Promise<number>;
+	deleteByMonitorIdsNotIn(monitorIds: string[]): Promise<number>;
+	// other
+}

@@ -6,7 +6,7 @@ import { testNotificationProviderContract } from "../../../helpers/notificationP
 const mockGotPost = jest.fn().mockResolvedValue({});
 jest.unstable_mockModule("got", () => ({ default: { post: mockGotPost } }));
 
-const { PushoverProvider } = await import("../../../../src/service/infrastructure/notificationProviders/pushover.ts");
+const { PushoverProvider } = await import("../../../../src/domain/notifications/providers/pushover.ts");
 
 const createProvider = () => {
 	const logger = createMockLogger();

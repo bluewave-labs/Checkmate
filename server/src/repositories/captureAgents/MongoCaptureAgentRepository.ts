@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { CaptureAgentModel } from "@/db/models/index.js";
+import { CaptureAgentModel } from "@/db/models/CaptureAgent.js";
 import type { CaptureAgentDocument } from "@/db/models/CaptureAgent.js";
 import type { CaptureAgent } from "@/types/captureAgent.js";
 import { AppError } from "@/utils/AppError.js";
