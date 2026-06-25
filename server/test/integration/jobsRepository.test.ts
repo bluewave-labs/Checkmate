@@ -497,4 +497,40 @@ describe("MongoJobsRepository", () => {
 			expect(await repo.findAll()).toHaveLength(2);
 		});
 	});
+
+	// ── countDueBacklog (scaling signal) ─────────────────────────────────────────
+	describe("countDueBacklog", () => {
+		it("counts a due, active, unlocked check job", async () => {
+			await seedJob();
+			expect(await repo.countDueBacklog(NOW)).toBe(1);
+		});
+
+		it("counts a check job whose lock has expired (reclaimable work)", async () => {
+			await seedJob({ lockedBy: "dead-worker", lockedUntil: NOW - 1 });
+			expect(await repo.countDueBacklog(NOW)).toBe(1);
+		});
+
+		it("excludes not-yet-due, inactive, live-locked, and non-check rows", async () => {
+			await seedJob({ _id: "check:due", refId: "due" }); // counts
+			await seedJob({ _id: "check:future", refId: "future", nextScheduledAt: NOW + 1 }); // not due
+			await seedJob({ _id: "check:paused", refId: "paused", isActive: false }); // inactive
+			await seedJob({ _id: "check:locked", refId: "locked", lockedBy: "live", lockedUntil: NOW + LOCK_MS }); // live lock
+			await seedJob({ _id: "geo:mon", refId: "mon", type: "geo-check" }); // wrong type
+			await seedJob({ _id: "evaluate:mon", refId: "mon", type: "evaluate" }); // wrong type
+
+			expect(await repo.countDueBacklog(NOW)).toBe(1); // only check:due
+		});
+
+		it("counts every qualifying check row across monitors", async () => {
+			await seedJob({ _id: "check:a", refId: "a" });
+			await seedJob({ _id: "check:b", refId: "b" });
+			await seedJob({ _id: "check:c", refId: "c", lockedBy: "live", lockedUntil: NOW + LOCK_MS }); // excluded
+			expect(await repo.countDueBacklog(NOW)).toBe(2);
+		});
+
+		it("returns 0 when nothing is due", async () => {
+			await seedJob({ nextScheduledAt: NOW + 10_000 });
+			expect(await repo.countDueBacklog(NOW)).toBe(0);
+		});
+	});
 });

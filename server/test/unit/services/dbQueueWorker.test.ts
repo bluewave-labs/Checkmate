@@ -79,6 +79,7 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 		updateScheduleById: jest.fn<any>().mockResolvedValue(true),
 		findAll: jest.fn<any>().mockResolvedValue([]),
 		findPage: jest.fn<any>().mockResolvedValue({ jobs: [], count: 0 }),
+		countDueBacklog: jest.fn<any>().mockResolvedValue(0),
 	};
 	const monitorsRepository = {
 		findByIds: jest.fn<any>().mockResolvedValue([makeMonitor()]),
@@ -186,7 +187,7 @@ describe("DBQueueWorker", () => {
 	describe("init", () => {
 		it("registers the worker in the heartbeat registry on startup", async () => {
 			const { mocks } = await start({ queueMode: "worker" });
-			expect(mocks.queueWorkersRepository.upsert).toHaveBeenCalledWith("worker-1", "worker");
+			expect(mocks.queueWorkersRepository.upsert).toHaveBeenCalledWith("worker-1", "worker", true);
 		});
 
 		it("primary mode reconciles: seeds a check row per monitor plus the two cleanup rows", async () => {
@@ -263,7 +264,7 @@ describe("DBQueueWorker", () => {
 			active = worker;
 			await jest.advanceTimersByTimeAsync(1);
 
-			expect(mocks.queueWorkersRepository.upsert).toHaveBeenCalledWith("worker-1", "worker");
+			expect(mocks.queueWorkersRepository.upsert).toHaveBeenCalledWith("worker-1", "worker", true);
 		});
 	});
 
@@ -768,6 +769,29 @@ describe("DBQueueWorker", () => {
 		});
 	});
 
+	// ── metrics accessors ───────────────────────────────────────────────────────────
+
+	describe("metrics accessors", () => {
+		it("countDueBacklog delegates to the repo with the current time", async () => {
+			const { worker, mocks } = await start({ queueMode: "worker" });
+			mocks.jobsRepository.countDueBacklog.mockResolvedValue(7);
+
+			expect(await worker.countDueBacklog()).toBe(7);
+			expect(mocks.jobsRepository.countDueBacklog).toHaveBeenCalledWith(expect.any(Number));
+		});
+
+		it("countAliveWorkers counts only recently-seen nodes that process jobs", async () => {
+			const { worker, mocks } = await start({ queueMode: "worker" });
+			mocks.queueWorkersRepository.findRecent.mockResolvedValue([
+				{ processesJobs: true },
+				{ processesJobs: true },
+				{ processesJobs: false }, // scheduler-only primary: alive but not a processor
+			]);
+
+			expect(await worker.countAliveWorkers()).toBe(2);
+		});
+	});
+
 	// ── flushQueues ───────────────────────────────────────────────────────────────
 
 	describe("flushQueues", () => {
@@ -799,7 +823,10 @@ describe("DBQueueWorker", () => {
 			const { worker, mocks } = createWorker();
 			active = worker;
 			mocks.jobsRepository.findAll.mockResolvedValue(rows);
-			mocks.queueWorkersRepository.findRecent.mockResolvedValue([{ workerId: "w" }]);
+			mocks.queueWorkersRepository.findRecent.mockResolvedValue([
+				{ workerId: "w", processesJobs: true },
+				{ workerId: "scheduler", processesJobs: false }, // scheduler-only primary excluded from metrics
+			]);
 
 			const metrics = await worker.getMetrics();
 
@@ -810,7 +837,7 @@ describe("DBQueueWorker", () => {
 			expect(metrics.failingJobs).toBe(1);
 			expect(metrics.jobsWithFailures).toHaveLength(1);
 			expect(metrics.jobsWithFailures[0]).toEqual(expect.objectContaining({ failCount: 3, failReason: "boom" }));
-			expect(metrics.workers).toEqual([{ workerId: "w" }]);
+			expect(metrics.workers).toEqual([{ workerId: "w", processesJobs: true }]);
 		});
 	});
 

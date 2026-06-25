@@ -26,13 +26,13 @@ const freePort = (): Promise<number> =>
 		});
 	});
 
-const get = (port: number, path: string): Promise<{ status: number; body: string }> =>
+const get = (port: number, path: string): Promise<{ status: number; body: string; contentType: string }> =>
 	new Promise((resolve, reject) => {
 		http
 			.get({ host: "127.0.0.1", port, path }, (res) => {
 				let body = "";
 				res.on("data", (chunk) => (body += chunk));
-				res.on("end", () => resolve({ status: res.statusCode ?? 0, body }));
+				res.on("end", () => resolve({ status: res.statusCode ?? 0, body, contentType: String(res.headers["content-type"] ?? "") }));
 			})
 			.on("error", reject);
 	});
@@ -58,9 +58,16 @@ describe("HealthServer", () => {
 		active = null;
 	});
 
-	const setup = async (health: WorkerHealth) => {
+	// The metrics endpoint also calls countDueBacklog()/countAliveWorkers(); default them
+	// to 0 and let tests override (including to a rejection, to exercise the 500 path).
+	const setup = async (health: WorkerHealth, workerOverrides: Record<string, unknown> = {}) => {
 		const port = await freePort();
-		const worker = { getHealth: () => health } as any;
+		const worker = {
+			getHealth: () => health,
+			countDueBacklog: async () => 0,
+			countAliveWorkers: async () => 0,
+			...workerOverrides,
+		} as any;
 		const server = new HealthServer(createMockLogger(), String(port), worker);
 		await server.listen();
 		active = server;
@@ -131,6 +138,38 @@ describe("HealthServer", () => {
 		it("ignores query params when matching the route", async () => {
 			const { port } = await setup(makeHealth());
 			expect((await get(port, "/livez?probe=1")).status).toBe(200);
+		});
+	});
+
+	describe("/metrics", () => {
+		it("200 with prometheus content-type and all four gauges", async () => {
+			const { port } = await setup(makeHealth({ inFlight: 3, draining: false }), {
+				countDueBacklog: async () => 5,
+				countAliveWorkers: async () => 2,
+			});
+			const res = await get(port, "/metrics");
+
+			expect(res.status).toBe(200);
+			expect(res.contentType).toMatch(/text\/plain/);
+			expect(res.body).toContain("# TYPE checkmate_worker_due_backlog gauge");
+			expect(res.body).toContain("checkmate_worker_jobs_in_flight 3");
+			expect(res.body).toContain("checkmate_worker_due_backlog 5");
+			expect(res.body).toContain("checkmate_worker_alive_total 2");
+			expect(res.body).toContain("checkmate_worker_draining 0");
+		});
+
+		it("reports draining as 1 when the worker is draining", async () => {
+			const { port } = await setup(makeHealth({ draining: true }));
+			expect((await get(port, "/metrics")).body).toContain("checkmate_worker_draining 1");
+		});
+
+		it("500 when a metrics query fails", async () => {
+			const { port } = await setup(makeHealth(), {
+				countDueBacklog: async () => {
+					throw new Error("db down");
+				},
+			});
+			expect((await get(port, "/metrics")).status).toBe(500);
 		});
 	});
 });
