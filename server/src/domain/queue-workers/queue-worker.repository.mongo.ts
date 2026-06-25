@@ -11,12 +11,13 @@ class MongoQueueWorkersRepository implements IQueueWorkersRepository {
 		return {
 			workerId: doc._id,
 			mode: doc.mode,
+			processesJobs: doc.processesJobs,
 			lastSeenAt: doc.lastSeenAt.getTime(),
 		};
 	};
 
-	upsert = async (workerId: string, mode: QueueMode): Promise<void> => {
-		await QueueWorkerModel.updateOne({ _id: workerId }, { $set: { mode, lastSeenAt: new Date() } }, { upsert: true });
+	upsert = async (workerId: string, mode: QueueMode, processesJobs: boolean): Promise<void> => {
+		await QueueWorkerModel.updateOne({ _id: workerId }, { $set: { mode, processesJobs, lastSeenAt: new Date() } }, { upsert: true });
 	};
 
 	findRecent = async (maxAgeMs: number): Promise<QueueWorker[]> => {

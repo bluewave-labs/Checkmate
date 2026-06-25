@@ -75,7 +75,8 @@ const startApp = async () => {
 	// Primary node does not process jobs, only need scheduler
 	// ***********************
 	else {
-		scheduler = new JobScheduler(shared.jobsRepository, shared.queueWorkersRepository, shared.workerId);
+		scheduler = new JobScheduler(shared.jobsRepository, shared.queueWorkersRepository, shared.monitorsRepository, queueMode, logger, shared.workerId);
+		await scheduler.init(); // register in the queue_workers registry + reconcile (seed the jobs collection)
 	}
 
 	const services = buildApi(shared, scheduler);

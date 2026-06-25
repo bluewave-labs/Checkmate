@@ -45,7 +45,7 @@ export class HealthServer implements IHealthServer {
 		return (
 			gauge("checkmate_worker_jobs_in_flight", "Jobs currently being processed by this worker", health.inFlight) +
 			gauge("checkmate_worker_due_backlog", "Due check jobs not currently locked (cluster-wide)", dueBacklog) +
-			gauge("checkmate_worker_alive_total", "Queue members seen within the TTL window (cluster-wide)", aliveWorkers) +
+			gauge("checkmate_worker_alive_total", "Job-processing nodes seen within the TTL window (cluster-wide)", aliveWorkers) +
 			gauge("checkmate_worker_draining", "1 if this worker is draining, else 0", health.draining ? 1 : 0)
 		);
 	};

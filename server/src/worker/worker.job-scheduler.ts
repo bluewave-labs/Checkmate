@@ -1,20 +1,28 @@
 import { IJobScheduler } from "@/worker/worker.interface.js";
 import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
+import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import { Monitor, supportsGeoCheck } from "@/domain/monitors/monitor.types.js";
 import { type Job, type JobSeed, type JobType, jobId } from "@/domain/jobs/job.type.js";
 import { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.repository.interface.js";
 import { WorkerJobsPagination, WorkerJobSummary, WorkerMetrics } from "@/worker/worker.interface.js";
 import { WORKER_TTL_SECONDS } from "@/domain/queue-workers/queue-worker.model.js";
+import { QueueMode } from "@/domain/app-settings/app-settings.type.js";
+import { ILogger } from "@/utils/logger.js";
 
 const POLL_MS = 250; // base poll interval while a loop is actively claiming work
 const SERVICE_NAME = "JobScheduler";
 const WORKER_STALE_MS = WORKER_TTL_SECONDS * 1000; // a worker counts as alive if seen within this window
+const HEARTBEAT_MS = WORKER_STALE_MS / 3; // Worker can miss two beats without being considered stale
+const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 
 export class JobScheduler implements IJobScheduler {
 	static SERVICE_NAME = SERVICE_NAME;
 	constructor(
 		protected jobsRepository: IJobsRepository,
 		protected queueWorkersRepository: IQueueWorkersRepository,
+		protected monitorsRepository: IMonitorsRepository,
+		protected queueMode: QueueMode,
+		protected logger: ILogger,
 		protected readonly workerId: string // same id MongoJobsRepository stamps into lockedBy
 	) {}
 
@@ -22,6 +30,7 @@ export class JobScheduler implements IJobScheduler {
 		return JobScheduler.SERVICE_NAME;
 	}
 
+	protected processesJobs = false; // scheduler-only by default; DBQueueWorker flips this on when it runs job loops
 	protected stopped = false;
 	protected draining = false;
 	protected ticking: Partial<Record<JobType, boolean>> = {}; // Whether a loop is mid tick
@@ -51,6 +60,15 @@ export class JobScheduler implements IJobScheduler {
 		id: jobId("geo-check", monitor.id),
 		type: "geo-check",
 		intervalMs: monitor.geoCheckInterval!,
+	});
+
+	protected toCleanupJob = (type: "cleanup-orphaned" | "cleanup-retention", now: number): JobSeed => ({
+		id: jobId(type, null),
+		type,
+		refId: null,
+		isActive: true,
+		nextScheduledAt: now,
+		intervalMs: CLEANUP_INTERVAL_MS,
 	});
 
 	private toSummary = (job: Job): WorkerJobSummary => ({
@@ -112,7 +130,8 @@ export class JobScheduler implements IJobScheduler {
 
 	getMetrics = async (): Promise<WorkerMetrics> => {
 		const rows = await this.jobsRepository.findAll();
-		const workers = await this.queueWorkersRepository.findRecent(WORKER_STALE_MS);
+		const recent = await this.queueWorkersRepository.findRecent(WORKER_STALE_MS);
+		const workers = recent.filter((worker) => worker.processesJobs);
 		const now = Date.now();
 		return rows.reduce<WorkerMetrics>(
 			(acc, job) => {
@@ -153,6 +172,47 @@ export class JobScheduler implements IJobScheduler {
 	flushQueues = async () => {
 		await this.shutdown();
 		return { success: true };
+	};
+
+	// init is the scheduler's startup: register in the registry + (if primary) seed the queue.
+	// Subclasses override to ALSO start processing, calling super.init() first.
+	// Declared as a prototype method (not an arrow field) so subclasses can reach it via super.init().
+	async init(): Promise<boolean> {
+		this.stopped = false;
+		await this.heartbeat();
+		this.timers.set("heartbeat", setInterval(this.heartbeat, HEARTBEAT_MS));
+		if (this.queueMode === "primary") {
+			await this.reconcile();
+		}
+		return true;
+	}
+
+	// Seed queue
+	protected reconcile = async () => {
+		const now = Date.now();
+		const monitors = (await this.monitorsRepository.findAll()) ?? [];
+		for (const monitor of monitors) {
+			await this.jobsRepository.upsertJob(this.toCheckJob(monitor, now));
+			if (supportsGeoCheck(monitor.type) && monitor.geoCheckEnabled) {
+				await this.jobsRepository.upsertJob(this.toGeoCheckJob(monitor, now));
+			}
+		}
+		// Both cleanup jobs run immediately on every startup, then once a day
+		await this.jobsRepository.upsertCleanupJob(this.toCleanupJob("cleanup-orphaned", now));
+		await this.jobsRepository.upsertCleanupJob(this.toCleanupJob("cleanup-retention", now));
+	};
+
+	// Register worker
+	protected heartbeat = async () => {
+		try {
+			await this.queueWorkersRepository.upsert(this.workerId, this.queueMode, this.processesJobs);
+		} catch (error: unknown) {
+			this.logger.warn({
+				message: error instanceof Error ? error.message : String(error),
+				service: SERVICE_NAME,
+				method: "heartbeat",
+			});
+		}
 	};
 
 	drain = async () => {

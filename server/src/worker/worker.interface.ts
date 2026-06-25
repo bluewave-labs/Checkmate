@@ -77,13 +77,13 @@ export interface IJobScheduler {
 	getMetrics(): Promise<WorkerMetrics>;
 	getJobs(pagination: WorkerJobsPagination): Promise<WorkerJobsPage>;
 	flushQueues(): Promise<{ success: boolean }>;
+	init(): Promise<boolean>;
 	drain(): Promise<void>;
 	shutdown(): Promise<void>;
 }
 
 export interface IQueueWorker extends IJobScheduler {
 	readonly serviceName: string;
-	init(): Promise<boolean>;
 	getHealth(): WorkerHealth;
 	countDueBacklog(): Promise<number>;
 	countAliveWorkers(): Promise<number>;
