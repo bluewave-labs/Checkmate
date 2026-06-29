@@ -1,11 +1,11 @@
-{{- if .Values.server.ingress.enabled }}
+{{- if .Values.api.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: checkmate-server-ingress
-  {{- if .Values.server.ingress.annotations }}
+  name: checkmate-api-ingress
+  {{- if .Values.api.ingress.annotations }}
   annotations:
-    {{- range $key, $value := .Values.server.ingress.annotations }}
+    {{- range $key, $value := .Values.api.ingress.annotations }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
   {{- end }}
@@ -17,22 +17,22 @@ metadata:
     #nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
     #nginx.ingress.kubernetes.io/cors-allow-credentials: "true"*/}}
 spec:
-  ingressClassName: {{ .Values.server.ingress.className }}
-  {{- if .Values.server.ingress.tls.enabled }}
+  ingressClassName: {{ .Values.api.ingress.className }}
+  {{- if .Values.api.ingress.tls.enabled }}
   tls:
     - hosts:
-        - {{ .Values.server.ingress.host }}
-      secretName: {{ default (printf "%s-server-tls" .Release.Name) .Values.server.ingress.tls.secretName }}
+        - {{ .Values.api.ingress.host }}
+      secretName: {{ default (printf "%s-api-tls" .Release.Name) .Values.api.ingress.tls.secretName }}
   {{- end }}
   rules:
-    - host: {{ .Values.server.ingress.host }}
+    - host: {{ .Values.api.ingress.host }}
       http:
         paths:
           - path: /api/v1
             pathType: Prefix
             backend:
               service:
-                name: checkmate-server
+                name: checkmate-api
                 port:
-                  number: {{ .Values.server.port }}
+                  number: {{ .Values.api.port }}
 {{- end }}

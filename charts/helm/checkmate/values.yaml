@@ -17,10 +17,13 @@ client:
       # a cert-manager issuer annotation (e.g. cert-manager.io/cluster-issuer: "letsencrypt-prod").
       # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation
 
-server:
+api:
   image: ghcr.io/bluewave-labs/checkmate-backend:v3.2.0
   port: 52345
   protocol: http
+  # false: API only schedules, the worker tier processes jobs (requires workers deployed).
+  # true: API also processes jobs (all-in-one; no separate worker needed).
+  queuePrimaryProcesses: false
   ingress:
     enabled: true
     host: change_me
@@ -31,8 +34,8 @@ server:
     #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
     tls:
       enabled: false
-      # secretName: {{ .Release.Name }}-server-tls  # Optional; defaults to <release>-server-tls if omitted
-      # Note: when enabling TLS, also set server.protocol: https and add
+      # secretName: {{ .Release.Name }}-api-tls  # Optional; defaults to <release>-api-tls if omitted
+      # Note: when enabling TLS, also set api.protocol: https and add
       # a cert-manager issuer annotation (e.g. cert-manager.io/cluster-issuer: "letsencrypt-prod").
       # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation
 

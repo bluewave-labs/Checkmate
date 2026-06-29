@@ -19,8 +19,8 @@ cd checkmate/charts/helm/checkmate
 
 ### 2. Customize values.yaml
 Edit `values.yaml` to update:
-- `client.ingress.host` and `server.ingress.host` with your domain names
-- `server.protocol` (usually http or https)
+- `client.ingress.host` and `api.ingress.host` with your domain names
+- `api.protocol` (usually http or https)
 - **If upgrading**: Migrate persistence settings from flat structure to nested:
   - Old: `persistence.mongodbSize` → New: `persistence.mongo.size`
   - Add: `persistence.mongo.storageClass` (leave empty for default)
@@ -31,7 +31,7 @@ Edit `values.yaml` to update:
 ```bash
 helm install checkmate ./charts/helm/checkmate
 ```
-This will deploy the client, server, and MongoDB components.
+This will deploy the client, api, and MongoDB components.
 
 ### 4. Verify the deployment
 Check pods and services:
@@ -67,7 +67,7 @@ client:
       enabled: true
       secretName: checkmate-client-tls
 
-server:
+api:
   protocol: https
   ingress:
     enabled: true
@@ -77,7 +77,7 @@ server:
       cert-manager.io/cluster-issuer: "letsencrypt-prod"
     tls:
       enabled: true
-      secretName: checkmate-server-tls
+      secretName: checkmate-api-tls
 ```
 
 ### Alternative: Using --set flags
@@ -87,13 +87,13 @@ You can also enable TLS during installation using Helm's `--set` flags:
 ```bash
 helm install checkmate ./charts/helm/checkmate \
   --set client.protocol=https \
-  --set server.protocol=https \
+  --set api.protocol=https \
   --set client.ingress.annotations."cert-manager\.io/cluster-issuer"="letsencrypt-prod" \
   --set client.ingress.tls.enabled=true \
   --set client.ingress.tls.secretName=checkmate-client-tls \
-  --set server.ingress.annotations."cert-manager\.io/cluster-issuer"="letsencrypt-prod" \
-  --set server.ingress.tls.enabled=true \
-  --set server.ingress.tls.secretName=checkmate-server-tls
+  --set api.ingress.annotations."cert-manager\.io/cluster-issuer"="letsencrypt-prod" \
+  --set api.ingress.tls.enabled=true \
+  --set api.ingress.tls.secretName=checkmate-api-tls
 ```
 
 ### Verification
@@ -106,7 +106,7 @@ kubectl get certificates
 
 # Check certificate details
 kubectl describe certificate checkmate-client-tls
-kubectl describe certificate checkmate-server-tls
+kubectl describe certificate checkmate-api-tls
 
 # Verify the secrets were created
 kubectl get secrets | grep checkmate-tls
