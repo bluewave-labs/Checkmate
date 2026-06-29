@@ -301,6 +301,15 @@ class MongoJobsRepository implements IJobsRepository {
 		const docs = await JobModel.find().lean<JobDocument[]>();
 		return docs.map(this.toEntity);
 	};
+
+	countDueBacklog = async (now: number) => {
+		return JobModel.countDocuments({
+			type: "check",
+			isActive: true,
+			nextScheduledAt: { $lte: now },
+			$or: [{ lockedUntil: null }, { lockedUntil: { $lt: now } }], // free or expired lock
+		});
+	};
 }
 
 export default MongoJobsRepository;

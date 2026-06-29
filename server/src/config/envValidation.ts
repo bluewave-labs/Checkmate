@@ -6,6 +6,8 @@ import { ILogger } from "@/utils/logger.js";
 const envSchema = z.object({
 	// Server Configuration
 	PORT: z.string().default("52345"),
+	// Port for worker health checks
+	HEALTH_PORT: z.string().default("52346"),
 	NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 	LOG_LEVEL: z.enum(["error", "warn", "info", "debug"]).default("debug"),
 

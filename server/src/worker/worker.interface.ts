@@ -4,6 +4,7 @@ import { JobType } from "@/domain/jobs/job.type.js";
 import { MonitorPayloadMap, MonitorStatusResponse, StatusChangeResult } from "@/types/network.js";
 import { MonitorActionDecision } from "@/worker/worker.helper.js";
 import { QueueWorker } from "@/domain/queue-workers/queue-worker.type.js";
+import type { QueueMode } from "@/domain/app-settings/app-settings.type.js";
 
 export type MonitorEvaluation = {
 	monitor: Monitor;
@@ -56,6 +57,15 @@ export type WorkerJobsPage = {
 	count: number;
 };
 
+export type WorkerHealth = {
+	workerId: string;
+	mode: QueueMode;
+	dbConnected: boolean; // mongoose connection readyState === 1
+	initComplete: boolean; // init() finished, loops armed
+	draining: boolean; // SIGTERM received, no longer claiming
+	lastTickAt: number | null; // newest tick across all loops (epoch ms)
+	inFlight: number; // total in-flight jobs across types
+};
 export interface IJobScheduler {
 	readonly serviceName: string;
 	addJob(monitorId: string, monitor: Monitor): Promise<void>;
@@ -67,10 +77,14 @@ export interface IJobScheduler {
 	getMetrics(): Promise<WorkerMetrics>;
 	getJobs(pagination: WorkerJobsPagination): Promise<WorkerJobsPage>;
 	flushQueues(): Promise<{ success: boolean }>;
+	init(): Promise<boolean>;
+	drain(): Promise<void>;
 	shutdown(): Promise<void>;
 }
 
 export interface IQueueWorker extends IJobScheduler {
 	readonly serviceName: string;
-	init(): Promise<boolean>;
+	getHealth(): WorkerHealth;
+	countDueBacklog(): Promise<number>;
+	countAliveWorkers(): Promise<number>;
 }

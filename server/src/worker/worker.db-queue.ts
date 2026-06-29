@@ -1,6 +1,5 @@
-import { supportsGeoCheck } from "@/domain/monitors/monitor.types.js";
 import { IQueueWorker } from "@/worker/worker.interface.js";
-import { type Job, type JobSeed, type JobType, jobId, LOCK_MS } from "@/domain/jobs/job.type.js";
+import { type Job, type JobType, LOCK_MS } from "@/domain/jobs/job.type.js";
 import { ILogger } from "@/utils/logger.js";
 import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
@@ -15,13 +14,15 @@ import { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.rep
 import { WORKER_TTL_SECONDS } from "@/domain/queue-workers/queue-worker.model.js";
 import { QueueMode } from "@/domain/app-settings/app-settings.type.js";
 import { JobScheduler } from "@/worker/worker.job-scheduler.js";
+import { IBufferService } from "@/service/bufferService.js";
 const SERVICE_NAME = "JobQueue";
 const POLL_MS = 250; // base poll interval while a loop is actively claiming work
 const POLL_MAX_MS = 5000; // back off poll interval to 5s if no jobs
 const WORKER_STALE_MS = WORKER_TTL_SECONDS * 1000; // a worker counts as alive if seen within this window
-const HEARTBEAT_MS = WORKER_STALE_MS / 3; // Worker can miss two beats without being considered stale
 const LOCK_RENEW_MS = LOCK_MS / 3; // renew an in-flight job's lock at 1/3 the lease, so it survives two missed renewals
-const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
+const DRAIN_TIMEOUT_MS = 25_000;
+const DRAIN_POLL_MS = 200;
+
 const CONCURRENCY: Record<JobType, number> = {
 	check: 500,
 	"geo-check": 20,
@@ -32,6 +33,10 @@ const CONCURRENCY: Record<JobType, number> = {
 
 export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 	static SERVICE_NAME = SERVICE_NAME;
+
+	private initComplete: boolean = false;
+	private lastTickAt: number | null = null;
+
 	private inFlight: Record<JobType, number> = {
 		check: 0,
 		"geo-check": 0,
@@ -41,22 +46,25 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 	};
 
 	constructor(
-		private logger: ILogger,
-		jobsRepository: IJobsRepository, // ← no modifier: forwarded to super
-		private monitorsRepository: IMonitorsRepository,
+		logger: ILogger, // forwarded to super
+		private isDbConnected: () => boolean,
+		jobsRepository: IJobsRepository, // forwarded
+		monitorsRepository: IMonitorsRepository, // forwarded
 		private checksRepository: IChecksRepository,
 		private checkService: ICheckService,
+		private bufferService: IBufferService,
 		private checkProducer: ICheckProducer,
 		private checkEvaluator: ICheckEvaluator,
 		private geoCheckPipeline: ICheckPipeline,
 		private dispatcher: IReactorDispatcher,
 		private helper: IWorkerHelper,
-		queueWorkersRepository: IQueueWorkersRepository, // ← no modifier: forwarded
-		private queueMode: QueueMode,
-		private queuePrimaryProcesses: boolean,
+		queueWorkersRepository: IQueueWorkersRepository, // forwarded
+		queueMode: QueueMode, // forwarded
+		queuePrimaryProcesses: boolean, // consumed immediately
 		workerId: string
 	) {
-		super(jobsRepository, queueWorkersRepository, workerId);
+		super(jobsRepository, queueWorkersRepository, monitorsRepository, queueMode, logger, workerId);
+		this.processesJobs = queuePrimaryProcesses === true || queueMode === "worker";
 	}
 
 	get serviceName() {
@@ -65,10 +73,12 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 
 	static async create(
 		logger: ILogger,
+		isDbConnected: () => boolean,
 		jobsRepository: IJobsRepository,
 		monitorsRepository: IMonitorsRepository,
 		checksRepository: IChecksRepository,
 		checkService: ICheckService,
+		bufferService: IBufferService,
 		checkProducer: ICheckProducer,
 		checkEvaluator: ICheckEvaluator,
 		geoCheckPipeline: ICheckPipeline,
@@ -81,10 +91,12 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 	): Promise<DBQueueWorker> {
 		const instance = new DBQueueWorker(
 			logger,
+			isDbConnected,
 			jobsRepository,
 			monitorsRepository,
 			checksRepository,
 			checkService,
+			bufferService,
 			checkProducer,
 			checkEvaluator,
 			geoCheckPipeline,
@@ -99,14 +111,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		return instance;
 	}
 
-	private toCleanupJob = (type: "cleanup-orphaned" | "cleanup-retention", now: number): JobSeed => ({
-		id: jobId(type, null),
-		type,
-		refId: null,
-		isActive: true,
-		nextScheduledAt: now,
-		intervalMs: CLEANUP_INTERVAL_MS,
-	});
+	private getInFlightCount = () => Object.values(this.inFlight).reduce((sum, n) => sum + n, 0);
 
 	// ********************
 	// Stage 1:  This can eventually be offloaded to a separate service
@@ -204,6 +209,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 	private startLoop = (type: JobType) => {
 		this.pollMs[type] = POLL_MS;
 		const tick = async () => {
+			this.lastTickAt = Date.now();
 			if (this.stopped) return;
 			this.ticking[type] = true;
 			try {
@@ -236,55 +242,71 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 	// Wake a worker loop after adding a job that's due immediately.
 	// Otherwise the loop could be delayed by POLL_MAX_MS if it is already fully backed off
 
-	// Seed queue
-	private reconcile = async () => {
-		const now = Date.now();
-		const monitors = (await this.monitorsRepository.findAll()) ?? [];
-		for (const monitor of monitors) {
-			await this.jobsRepository.upsertJob(this.toCheckJob(monitor, now));
-			if (supportsGeoCheck(monitor.type) && monitor.geoCheckEnabled) {
-				await this.jobsRepository.upsertJob(this.toGeoCheckJob(monitor, now));
-			}
-		}
-		// Both cleanup jobs run immediately on every startup, then once a day
-		await this.jobsRepository.upsertCleanupJob(this.toCleanupJob("cleanup-orphaned", now));
-		await this.jobsRepository.upsertCleanupJob(this.toCleanupJob("cleanup-retention", now));
-	};
-
-	// Register worker
-	private heartbeat = async () => {
-		try {
-			await this.queueWorkersRepository.upsert(this.workerId, this.queueMode);
-		} catch (error: unknown) {
-			this.logger.warn({
-				message: error instanceof Error ? error.message : String(error),
-				service: SERVICE_NAME,
-				method: "heartbeat",
-			});
-		}
-	};
-
-	init = async () => {
-		this.stopped = false;
-
-		await this.heartbeat();
-		this.timers.set("heartbeat", setInterval(this.heartbeat, HEARTBEAT_MS));
-
-		if (this.queueMode === "primary") {
-			await this.reconcile();
-		}
-
-		if (this.queuePrimaryProcesses === true || this.queueMode === "worker") {
+	override async init() {
+		await super.init(); // heartbeat + (primary?) reconcile
+		if (this.processesJobs) {
 			for (const type of Object.keys(this.inFlight) as JobType[]) {
 				this.startLoop(type);
 			}
 		}
+		this.initComplete = true;
 		return true;
-	};
+	}
 
 	override flushQueues = async () => {
 		await this.shutdown();
 		const ok = await this.init();
 		return { success: ok };
+	};
+
+	override drain = async () => {
+		this.draining = true;
+		this.stopped = true;
+		const cutoff = Date.now() + DRAIN_TIMEOUT_MS;
+		while (this.getInFlightCount() > 0 && Date.now() < cutoff) {
+			await new Promise((resolve) => setTimeout(resolve, DRAIN_POLL_MS)); // Wait for DRAIN_POLL_MS for jobs to finish
+		}
+
+		const remainingJobs = this.getInFlightCount();
+		if (remainingJobs > 0) {
+			this.logger.warn({
+				message: `Draining timed out with ${remainingJobs} in-flight.  Locks will expire and jobs will be reclaimed`,
+				service: SERVICE_NAME,
+				method: "drain",
+			});
+		} else {
+			this.logger.info({
+				message: `${this.workerId} drained`,
+				service: SERVICE_NAME,
+				method: "drain",
+			});
+		}
+
+		await this.bufferService.shutdown(); // Flush buffers
+	};
+
+	// ************************
+	// Observability
+	// ************************
+
+	getHealth = () => {
+		return {
+			workerId: this.workerId,
+			mode: this.queueMode,
+			dbConnected: this.isDbConnected(),
+			initComplete: this.initComplete,
+			draining: this.draining,
+			lastTickAt: this.lastTickAt,
+			inFlight: this.getInFlightCount(),
+		};
+	};
+
+	countDueBacklog = () => {
+		return this.jobsRepository.countDueBacklog(Date.now());
+	};
+
+	countAliveWorkers = async () => {
+		const workers = await this.queueWorkersRepository.findRecent(WORKER_STALE_MS);
+		return workers.filter((worker) => worker.processesJobs).length;
 	};
 }

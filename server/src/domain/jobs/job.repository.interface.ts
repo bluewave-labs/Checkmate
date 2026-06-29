@@ -72,4 +72,5 @@ export interface IJobsRepository {
 	// ********************
 	findPage(pagination: JobPageQuery): Promise<JobPage>;
 	findAll(): Promise<Job[]>;
+	countDueBacklog(now: number): Promise<number>; // Scaling signal
 }

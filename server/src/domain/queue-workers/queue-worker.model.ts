@@ -10,6 +10,7 @@ const QueueWorkerSchema = new Schema<QueueWorkerDocument>(
 	{
 		_id: { type: String, required: true },
 		mode: { type: String, enum: QueueModes, required: true },
+		processesJobs: { type: Boolean, required: true },
 		lastSeenAt: { type: Date, default: Date.now, expires: WORKER_TTL_SECONDS },
 	},
 	{ timestamps: true }

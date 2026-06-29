@@ -20,6 +20,8 @@ import { createMockLogger } from "../../helpers/createMockLogger.ts";
 
 const POLL_MS = 250;
 const LOCK_RENEW_MS = LOCK_MS / 3;
+const DRAIN_TIMEOUT_MS = 25_000; // mirror of DBQueueWorker DRAIN_TIMEOUT_MS
+const DRAIN_POLL_MS = 200; // mirror of DBQueueWorker DRAIN_POLL_MS
 
 const deferred = <T>() => {
 	let resolve!: (value: T) => void;
@@ -77,6 +79,7 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 		updateScheduleById: jest.fn<any>().mockResolvedValue(true),
 		findAll: jest.fn<any>().mockResolvedValue([]),
 		findPage: jest.fn<any>().mockResolvedValue({ jobs: [], count: 0 }),
+		countDueBacklog: jest.fn<any>().mockResolvedValue(0),
 	};
 	const monitorsRepository = {
 		findByIds: jest.fn<any>().mockResolvedValue([makeMonitor()]),
@@ -90,6 +93,14 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 	const checkService = {
 		toStatusResponse: jest.fn<any>().mockReturnValue({ status: "up" }),
 		toLastEvaluatedAt: jest.fn<any>().mockReturnValue(12345),
+	};
+	const bufferService = {
+		addToBuffer: jest.fn<any>(),
+		addGeoCheckToBuffer: jest.fn<any>(),
+		scheduleNextFlush: jest.fn<any>(),
+		flushBuffer: jest.fn<any>().mockResolvedValue(undefined),
+		flushGeoBuffer: jest.fn<any>().mockResolvedValue(undefined),
+		shutdown: jest.fn<any>().mockResolvedValue(undefined),
 	};
 	const checkProducer = {
 		produce: jest.fn<any>().mockResolvedValue({ status: { status: "up" }, check: { id: "c1" } }),
@@ -109,12 +120,15 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 		findRecent: jest.fn<any>().mockResolvedValue([]),
 	};
 	const logger = createMockLogger();
+	const isDbConnected = jest.fn<any>(() => true);
 
 	const mocks = {
+		isDbConnected,
 		jobsRepository,
 		monitorsRepository,
 		checksRepository,
 		checkService,
+		bufferService,
 		checkProducer,
 		checkEvaluator,
 		geoCheckPipeline,
@@ -127,10 +141,12 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 
 	const worker = new DBQueueWorker(
 		mocks.logger as any,
+		mocks.isDbConnected as any,
 		mocks.jobsRepository as any,
 		mocks.monitorsRepository as any,
 		mocks.checksRepository as any,
 		mocks.checkService as any,
+		mocks.bufferService as any,
 		mocks.checkProducer as any,
 		mocks.checkEvaluator as any,
 		mocks.geoCheckPipeline as any,
@@ -171,7 +187,7 @@ describe("DBQueueWorker", () => {
 	describe("init", () => {
 		it("registers the worker in the heartbeat registry on startup", async () => {
 			const { mocks } = await start({ queueMode: "worker" });
-			expect(mocks.queueWorkersRepository.upsert).toHaveBeenCalledWith("worker-1", "worker");
+			expect(mocks.queueWorkersRepository.upsert).toHaveBeenCalledWith("worker-1", "worker", true);
 		});
 
 		it("primary mode reconciles: seeds a check row per monitor plus the two cleanup rows", async () => {
@@ -229,10 +245,12 @@ describe("DBQueueWorker", () => {
 			const { mocks } = createWorker(); // reuse the mock set; the un-init'd instance is discarded
 			const worker = await DBQueueWorker.create(
 				mocks.logger as any,
+				mocks.isDbConnected as any,
 				mocks.jobsRepository as any,
 				mocks.monitorsRepository as any,
 				mocks.checksRepository as any,
 				mocks.checkService as any,
+				mocks.bufferService as any,
 				mocks.checkProducer as any,
 				mocks.checkEvaluator as any,
 				mocks.geoCheckPipeline as any,
@@ -246,7 +264,7 @@ describe("DBQueueWorker", () => {
 			active = worker;
 			await jest.advanceTimersByTimeAsync(1);
 
-			expect(mocks.queueWorkersRepository.upsert).toHaveBeenCalledWith("worker-1", "worker");
+			expect(mocks.queueWorkersRepository.upsert).toHaveBeenCalledWith("worker-1", "worker", true);
 		});
 	});
 
@@ -619,6 +637,161 @@ describe("DBQueueWorker", () => {
 		});
 	});
 
+	// ── drain ─────────────────────────────────────────────────────────────────────
+
+	describe("drain", () => {
+		// Hand the "check" loop exactly one job, then nothing.
+		const claimOnce = (job: Job) => {
+			let handed = false;
+			return jest.fn<any>(async (type: string) => {
+				if (type === job.type && !handed) {
+					handed = true;
+					return [job];
+				}
+				return [];
+			});
+		};
+
+		it("stops the loops and flushes the buffer when nothing is in flight", async () => {
+			const { worker, mocks } = await start({ queueMode: "worker" });
+			const claimsBefore = mocks.jobsRepository.claimDueBatch.mock.calls.length;
+
+			await worker.drain();
+
+			expect(mocks.bufferService.shutdown).toHaveBeenCalledTimes(1);
+			expect(mocks.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("drained") }));
+			// Loops must not claim again after draining.
+			await jest.advanceTimersByTimeAsync(POLL_MS * 4);
+			expect(mocks.jobsRepository.claimDueBatch.mock.calls.length).toBe(claimsBefore);
+		});
+
+		it("waits for an in-flight job to finish before flushing", async () => {
+			const job = makeJob({ type: "check" });
+			const gate = deferred<{ status: unknown; check: unknown }>();
+			const slowProducer = { produce: jest.fn<any>().mockReturnValue(gate.promise) };
+			const { worker, mocks } = await start({
+				mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) }, checkProducer: slowProducer },
+			});
+
+			// Job is parked on produce(); drain must not flush while it is still in flight.
+			const draining = worker.drain();
+			await jest.advanceTimersByTimeAsync(DRAIN_POLL_MS * 3);
+			expect(mocks.bufferService.shutdown).not.toHaveBeenCalled();
+
+			// Let the job finish; drain observes inFlight == 0, then flushes.
+			gate.resolve({ status: { status: "up" }, check: { id: "c1" } });
+			await jest.advanceTimersByTimeAsync(DRAIN_POLL_MS);
+			await draining;
+			expect(mocks.bufferService.shutdown).toHaveBeenCalledTimes(1);
+		});
+
+		it("times out after DRAIN_TIMEOUT_MS, warns, and still flushes", async () => {
+			const job = makeJob({ type: "check" });
+			const gate = deferred<{ status: unknown; check: unknown }>();
+			const stuckProducer = { produce: jest.fn<any>().mockReturnValue(gate.promise) };
+			const { worker, mocks } = await start({
+				mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) }, checkProducer: stuckProducer },
+			});
+
+			const draining = worker.drain();
+			await jest.advanceTimersByTimeAsync(DRAIN_TIMEOUT_MS + DRAIN_POLL_MS);
+			await draining;
+
+			expect(mocks.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("timed out") }));
+			expect(mocks.bufferService.shutdown).toHaveBeenCalledTimes(1);
+
+			gate.resolve({ status: { status: "up" }, check: { id: "c1" } }); // release the stuck job for cleanup
+		});
+	});
+
+	// ── getHealth ───────────────────────────────────────────────────────────────────
+
+	describe("getHealth", () => {
+		// Hand the "check" loop exactly one job, then nothing — keeps it parked in-flight.
+		const claimOneCheck = (job: Job) => {
+			let handed = false;
+			return jest.fn<any>(async (type: string) => {
+				if (type === job.type && !handed) {
+					handed = true;
+					return [job];
+				}
+				return [];
+			});
+		};
+
+		it("reports un-init state before init(): not complete, not draining, never ticked", () => {
+			const { worker } = createWorker({ queueMode: "worker" });
+			active = worker; // afterEach shutdown() is safe on an un-init'd worker
+			expect(worker.getHealth()).toMatchObject({
+				workerId: "worker-1",
+				mode: "worker",
+				initComplete: false,
+				draining: false,
+				lastTickAt: null,
+				inFlight: 0,
+			});
+		});
+
+		it("flips initComplete and stamps lastTickAt once the loops run", async () => {
+			const { worker } = await start({ queueMode: "worker" });
+			const health = worker.getHealth();
+			expect(health.initComplete).toBe(true);
+			expect(typeof health.lastTickAt).toBe("number");
+		});
+
+		it("reflects the injected dbConnected probe", async () => {
+			const { worker, mocks } = await start({ queueMode: "worker" });
+			expect(worker.getHealth().dbConnected).toBe(true);
+			mocks.isDbConnected.mockReturnValue(false);
+			expect(worker.getHealth().dbConnected).toBe(false);
+		});
+
+		it("sets draining true after drain()", async () => {
+			const { worker } = await start({ queueMode: "worker" });
+			expect(worker.getHealth().draining).toBe(false);
+			await worker.drain();
+			expect(worker.getHealth().draining).toBe(true);
+		});
+
+		it("counts in-flight jobs while they run and releases on completion", async () => {
+			const job = makeJob({ type: "check" });
+			const gate = deferred<{ status: unknown; check: unknown }>();
+			const slowProducer = { produce: jest.fn<any>().mockReturnValue(gate.promise) };
+			const { worker } = await start({
+				mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOneCheck(job) }, checkProducer: slowProducer },
+			});
+
+			expect(worker.getHealth().inFlight).toBe(1); // parked on produce()
+
+			gate.resolve({ status: { status: "up" }, check: { id: "c1" } });
+			await jest.advanceTimersByTimeAsync(1);
+			expect(worker.getHealth().inFlight).toBe(0);
+		});
+	});
+
+	// ── metrics accessors ───────────────────────────────────────────────────────────
+
+	describe("metrics accessors", () => {
+		it("countDueBacklog delegates to the repo with the current time", async () => {
+			const { worker, mocks } = await start({ queueMode: "worker" });
+			mocks.jobsRepository.countDueBacklog.mockResolvedValue(7);
+
+			expect(await worker.countDueBacklog()).toBe(7);
+			expect(mocks.jobsRepository.countDueBacklog).toHaveBeenCalledWith(expect.any(Number));
+		});
+
+		it("countAliveWorkers counts only recently-seen nodes that process jobs", async () => {
+			const { worker, mocks } = await start({ queueMode: "worker" });
+			mocks.queueWorkersRepository.findRecent.mockResolvedValue([
+				{ processesJobs: true },
+				{ processesJobs: true },
+				{ processesJobs: false }, // scheduler-only primary: alive but not a processor
+			]);
+
+			expect(await worker.countAliveWorkers()).toBe(2);
+		});
+	});
+
 	// ── flushQueues ───────────────────────────────────────────────────────────────
 
 	describe("flushQueues", () => {
@@ -650,7 +823,10 @@ describe("DBQueueWorker", () => {
 			const { worker, mocks } = createWorker();
 			active = worker;
 			mocks.jobsRepository.findAll.mockResolvedValue(rows);
-			mocks.queueWorkersRepository.findRecent.mockResolvedValue([{ workerId: "w" }]);
+			mocks.queueWorkersRepository.findRecent.mockResolvedValue([
+				{ workerId: "w", processesJobs: true },
+				{ workerId: "scheduler", processesJobs: false }, // scheduler-only primary excluded from metrics
+			]);
 
 			const metrics = await worker.getMetrics();
 
@@ -661,7 +837,7 @@ describe("DBQueueWorker", () => {
 			expect(metrics.failingJobs).toBe(1);
 			expect(metrics.jobsWithFailures).toHaveLength(1);
 			expect(metrics.jobsWithFailures[0]).toEqual(expect.objectContaining({ failCount: 3, failReason: "boom" }));
-			expect(metrics.workers).toEqual([{ workerId: "w" }]);
+			expect(metrics.workers).toEqual([{ workerId: "w", processesJobs: true }]);
 		});
 	});
 
