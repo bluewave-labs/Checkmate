@@ -42,7 +42,7 @@ mongodb:
 
 secrets:
   JWT_SECRET: change_me
-  DB_CONNECTION_STRING: mongodb://checkmate-mongodb.namespace.svc:27017/uptime_db
+  DB_CONNECTION_STRING: mongodb://checkmate-mongodb:27017/uptime_db
   CLIENT_HOST: change_me
   NODE_ENV: production
   LOG_LEVEL: info
