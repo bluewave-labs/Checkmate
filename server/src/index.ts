@@ -37,7 +37,7 @@ const startApp = async () => {
 	});
 
 	logger.info({
-		message: `Process: ${queuePrimaryProcesses}`,
+		message: `Process jobs: ${queueMode === "worker" ? true : queuePrimaryProcesses}`,
 		service: SERVICE_NAME,
 		method: "startApp",
 	});
