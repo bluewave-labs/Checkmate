@@ -42,17 +42,11 @@ mongodb:
 
 secrets:
   JWT_SECRET: change_me
-#  REFRESH_TOKEN_SECRET: change_me
-#  SYSTEM_EMAIL_ADDRESS: test@example.com
-#  SYSTEM_EMAIL_PASSWORD: change_me
-#  SYSTEM_EMAIL_HOST: smtp.example.com
-#  SYSTEM_EMAIL_PORT: "587"
-#  PAGESPEED_API_KEY: change_me
   DB_CONNECTION_STRING: mongodb://checkmate-mongodb.namespace.svc:27017/uptime_db
   CLIENT_HOST: change_me
-#  DB_TYPE: MongoDB
-#  TOKEN_TTL: 99d
-#  REFRESH_TOKEN_TTL: 99d
+  NODE_ENV: production
+  LOG_LEVEL: info
+  TOKEN_TTL: 99d
 
 persistence:
   mongo:
