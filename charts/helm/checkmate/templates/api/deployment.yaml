@@ -24,10 +24,30 @@ spec:
         - name: api
           image: {{ .Values.api.image }}
           ports:
-            - containerPort: {{ .Values.api.port }}
+            - name: http
+              containerPort: {{ .Values.api.port }}
           envFrom:
             - secretRef:
                 name: checkmate-secrets
+          # Probes hit the Express /api/v1/health endpoint — proves the HTTP server is responsive.
+          # NOTE: this does NOT detect a wedged job loop when queuePrimaryProcesses=true (the API is
+          # also a worker). Worker-aware health for that mode is a follow-up — see worker-health-checks.md §7.5.
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            initialDelaySeconds: {{ .Values.api.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.api.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.api.probes.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.api.probes.liveness.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            initialDelaySeconds: {{ .Values.api.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.api.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.api.probes.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.api.probes.readiness.failureThreshold }}
           {{- with .Values.api.resources }}
           resources:
               {{- tpl ( . | toYaml) $ | nindent 12 }}

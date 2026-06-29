@@ -24,6 +24,18 @@ api:
   # false: API only schedules, the worker tier processes jobs (requires workers deployed).
   # true: API also processes jobs (all-in-one; no separate worker needed).
   queuePrimaryProcesses: false
+  # Liveness/readiness probes hit GET /api/v1/health on the api port (proves the HTTP server is up).
+  probes:
+    liveness:
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 3
+    readiness:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 3
   ingress:
     enabled: true
     host: change_me
