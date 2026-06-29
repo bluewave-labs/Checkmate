@@ -36,11 +36,6 @@ server:
       # a cert-manager issuer annotation (e.g. cert-manager.io/cluster-issuer: "letsencrypt-prod").
       # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation
 
-redis:
-  enabled: false
-  image: redis:7.2
-  port: 6379
-
 mongodb:
   image: ghcr.io/bluewave-labs/checkmate-mongo:v3.2.0
   port: 27017
@@ -55,8 +50,6 @@ secrets:
 #  PAGESPEED_API_KEY: change_me
   DB_CONNECTION_STRING: mongodb://checkmate-mongodb.namespace.svc:27017/uptime_db
   CLIENT_HOST: change_me
-#  REDIS_HOST: redis
-#  REDIS_PORT: "6379"
 #  DB_TYPE: MongoDB
 #  TOKEN_TTL: 99d
 #  REFRESH_TOKEN_TTL: 99d
@@ -64,7 +57,4 @@ secrets:
 persistence:
   mongo:
     size: 5Gi
-    storageClass: ""
-  redis:
-    size: 1Gi
     storageClass: ""

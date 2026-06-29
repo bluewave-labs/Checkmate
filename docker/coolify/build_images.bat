@@ -12,14 +12,11 @@ set dockerfiles[0]=.\docker\coolify\client.Dockerfile
 set services[1]=bluewaveuptime/uptime_database_mongo
 set dockerfiles[1]=.\docker\coolify\mongoDB.Dockerfile
 
-set services[2]=bluewaveuptime/uptime_redis
-set dockerfiles[2]=.\docker\coolify\redis.Dockerfile
-
-set services[3]=bluewaveuptime/uptime_server
-set dockerfiles[3]=.\docker\coolify\server.Dockerfile
+set services[2]=bluewaveuptime/uptime_server
+set dockerfiles[2]=.\docker\coolify\server.Dockerfile
 
 REM Loop through each service and build the corresponding image
-for /L %%i in (0,1,2,3) do (
+for /L %%i in (0,1,2) do (
     set service=!services[%%i]!
     set dockerfile=!dockerfiles[%%i]!
 

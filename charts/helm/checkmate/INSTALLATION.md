@@ -23,8 +23,7 @@ Edit `values.yaml` to update:
 - `server.protocol` (usually http or https)
 - **If upgrading**: Migrate persistence settings from flat structure to nested:
   - Old: `persistence.mongodbSize` → New: `persistence.mongo.size`
-  - Old: `persistence.redisSize` → New: `persistence.redis.size`
-  - Add: `persistence.mongo.storageClass` and `persistence.redis.storageClass` (leave empty for default)
+  - Add: `persistence.mongo.storageClass` (leave empty for default)
 - Secrets under the `secrets` section (`JWT_SECRET`, email credentials, API keys, etc.) — replace all change_me values
 - **For TLS/HTTPS**: Configure ingress TLS settings (see section below)
 
@@ -32,7 +31,7 @@ Edit `values.yaml` to update:
 ```bash
 helm install checkmate ./charts/helm/checkmate
 ```
-This will deploy the client, server, MongoDB, and Redis components.
+This will deploy the client, server, and MongoDB components.
 
 ### 4. Verify the deployment
 Check pods and services:
