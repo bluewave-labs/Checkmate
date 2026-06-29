@@ -1,0 +1,15 @@
+dependencies:
+- name: app-template
+  repository: https://bjw-s-labs.github.io/helm-charts
+  version: 4.4.0
+- name: app-template
+  repository: https://bjw-s-labs.github.io/helm-charts
+  version: 4.4.0
+- name: mongodb
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 19.0.3
+- name: redis
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 24.1.2
+digest: sha256:a727ca956d590e2ccf9cf6b228e6bedf8fbc459129f728da0dda446c93c5605f
+generated: "2026-05-27T14:37:30.244511+01:00"

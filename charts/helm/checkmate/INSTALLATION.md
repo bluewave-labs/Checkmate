@@ -1,6 +1,6 @@
 # Kubernetes Installation Guide for Checkmate
 
-This guide walks you through deploying Checkmate on your Kubernetes cluster using Helm.
+This guide walks you through deploying Checkmate on Kubernetes using Helm.
 
 ## Prerequisites
 
@@ -8,109 +8,162 @@ This guide walks you through deploying Checkmate on your Kubernetes cluster usin
 - Helm CLI installed and configured
 - `kubectl` configured to access your cluster
 
-## Steps
+## Chart layout
 
-### 1. Clone the repo and navigate to the Helm chart
+The Checkmate chart is an umbrella chart:
+
+- `client` and `server` use the `bjw-s-labs/app-template` chart.
+- `mongodb` uses the Bitnami MongoDB chart.
+- `redis` uses the Bitnami Redis chart and is disabled by default.
+- The parent chart renders shared preflight checks and the `checkmate-secrets` Secret.
+
+This keeps the chart customizable without copying Kubernetes primitives into local templates.
+
+## Install
 
 ```bash
 git clone https://github.com/bluewave-labs/checkmate.git
 cd checkmate/charts/helm/checkmate
+helm dependency update
+helm install checkmate . -f values.yaml
 ```
 
-### 2. Customize values.yaml
-Edit `values.yaml` to update:
-- `client.ingress.host` and `server.ingress.host` with your domain names
-- `server.protocol` (usually http or https)
-- **If upgrading**: Migrate persistence settings from flat structure to nested:
-  - Old: `persistence.mongodbSize` → New: `persistence.mongo.size`
-  - Old: `persistence.redisSize` → New: `persistence.redis.size`
-  - Add: `persistence.mongo.storageClass` and `persistence.redis.storageClass` (leave empty for default)
-- Secrets under the `secrets` section (`JWT_SECRET`, email credentials, API keys, etc.) — replace all change_me values
-- **For TLS/HTTPS**: Configure ingress TLS settings (see section below)
+Before installing, replace every `change_me` value in `values.yaml`.
 
-### 3. Deploy the Helm chart
-```bash
-helm install checkmate ./charts/helm/checkmate
+At minimum, set:
+
+- `client.ingress.main.hosts[0].host`
+- `server.ingress.main.hosts[0].host`
+- `client.controllers.main.containers.main.env.UPTIME_APP_API_BASE_URL`
+- `client.controllers.main.containers.main.env.UPTIME_APP_CLIENT_HOST`
+- `server.controllers.main.containers.main.env.CLIENT_HOST`
+- `secrets.JWT_SECRET`
+
+## External MongoDB or Redis
+
+Disable bundled dependencies when you provide your own services:
+
+```yaml
+mongodb:
+  enabled: false
+
+redis:
+  enabled: false
+
+secrets:
+  DB_CONNECTION_STRING: "mongodb://external-mongodb:27017/uptime_db"
+  REDIS_HOST: "external-redis"
+  REDIS_PORT: "6379"
 ```
-This will deploy the client, server, MongoDB, and Redis components.
 
-### 4. Verify the deployment
-Check pods and services:
-```bash
-kubectl get pods
-kubectl get svc
+When bundled MongoDB is enabled, the default `DB_CONNECTION_STRING` uses the Helm release name:
+
+```yaml
+secrets:
+  DB_CONNECTION_STRING: "mongodb://{{ .Release.Name }}-mongodb:27017/uptime_db"
 ```
 
-Once all pods are `Running` and `Ready`, you can access Checkmate via the configured ingress hosts.
+When bundled Redis is enabled, use the Bitnami Redis service name:
 
-## Enabling TLS/HTTPS with cert-manager
+```yaml
+redis:
+  enabled: true
 
-If you have [cert-manager](https://cert-manager.io/) installed in your cluster, you can enable automatic TLS certificate provisioning using Let's Encrypt or other certificate issuers.
+secrets:
+  REDIS_HOST: "{{ .Release.Name }}-redis-master"
+  REDIS_PORT: "6379"
+```
 
-### Prerequisites
-- cert-manager installed in your cluster
-- A ClusterIssuer or Issuer configured (e.g., `letsencrypt-prod`)
+## Persistence
 
-### Configuration
+MongoDB persistence is controlled through the Bitnami MongoDB chart values:
 
-Edit `values.yaml` to enable TLS (and update protocols to https):
+```yaml
+mongodb:
+  persistence:
+    enabled: true
+    size: 5Gi
+    storageClass: ""
+```
+
+Redis persistence is controlled through the Bitnami Redis chart values:
+
+```yaml
+redis:
+  master:
+    persistence:
+      enabled: true
+      size: 1Gi
+      storageClass: ""
+```
+
+Set `storageClass` to an empty string to use the cluster default.
+
+## TLS/HTTPS
+
+Ingress settings now follow the app-template value shape. A cert-manager example:
 
 ```yaml
 client:
-  protocol: https
+  global:
+    nameOverride: client
+  controllers:
+    main:
+      containers:
+        main:
+          env:
+            UPTIME_APP_API_BASE_URL: "https://api.checkmate.example.com/api/v1"
+            UPTIME_APP_CLIENT_HOST: "https://checkmate.example.com"
   ingress:
-    enabled: true
-    host: checkmate.example.com
-    className: nginx
-    annotations:
-      cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    tls:
-      enabled: true
-      secretName: checkmate-client-tls
+    main:
+      className: nginx
+      annotations:
+        cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      hosts:
+        - host: checkmate.example.com
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: main
+                port: http
+      tls:
+        - secretName: checkmate-client-tls
+          hosts:
+            - checkmate.example.com
 
 server:
-  protocol: https
+  global:
+    nameOverride: server
+  controllers:
+    main:
+      containers:
+        main:
+          env:
+            CLIENT_HOST: "https://checkmate.example.com"
   ingress:
-    enabled: true
-    host: checkmate.example.com
-    className: nginx
-    annotations:
-      cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    tls:
-      enabled: true
-      secretName: checkmate-server-tls
+    main:
+      className: nginx
+      annotations:
+        cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      hosts:
+        - host: api.checkmate.example.com
+          paths:
+            - path: /api/v1
+              pathType: Prefix
+              service:
+                identifier: main
+                port: http
+      tls:
+        - secretName: checkmate-server-tls
+          hosts:
+            - api.checkmate.example.com
 ```
 
-### Alternative: Using --set flags
-
-You can also enable TLS during installation using Helm's `--set` flags:
+After deployment, verify:
 
 ```bash
-helm install checkmate ./charts/helm/checkmate \
-  --set client.protocol=https \
-  --set server.protocol=https \
-  --set client.ingress.annotations."cert-manager\.io/cluster-issuer"="letsencrypt-prod" \
-  --set client.ingress.tls.enabled=true \
-  --set client.ingress.tls.secretName=checkmate-client-tls \
-  --set server.ingress.annotations."cert-manager\.io/cluster-issuer"="letsencrypt-prod" \
-  --set server.ingress.tls.enabled=true \
-  --set server.ingress.tls.secretName=checkmate-server-tls
+kubectl get pods
+kubectl get svc
+kubectl get ingress
 ```
-
-### Verification
-
-After deployment, cert-manager will automatically create the TLS secrets. You can verify the certificate status:
-
-```bash
-# Check certificates
-kubectl get certificates
-
-# Check certificate details
-kubectl describe certificate checkmate-client-tls
-kubectl describe certificate checkmate-server-tls
-
-# Verify the secrets were created
-kubectl get secrets | grep checkmate-tls
-```
-
-The ingress will automatically use these secrets to enable HTTPS access to your Checkmate instance.
