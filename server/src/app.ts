@@ -38,7 +38,8 @@ export const createApp = ({
 	};
 	const publicStatusPageCorsOrigin = createStatusPageCorsOrigin(allowedOrigin, services.statusPagesRepository);
 
-	app.use(generalApiLimiter);
+	const devMode = envSettings.nodeEnv === "development";
+	app.use(generalApiLimiter(devMode));
 
 	app.use((req, res, next) => {
 		const corsOptions = isPublicStatusPageApiPath(req.method, req.path)
