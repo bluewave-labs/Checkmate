@@ -1,12 +1,13 @@
+{{- $api := include "checkmate.api" . | fromYaml -}}
 {{- if eq .Values.client.ingress.host "change_me" }}
   {{- fail "client.ingress.host must be overridden and not set to 'change_me'" }}
 {{- end }}
 
-{{- if eq .Values.api.ingress.host "change_me" }}
-  {{- fail "api.ingress.host must be overridden and not set to 'change_me'" }}
+{{- if eq $api.ingress.host "change_me" }}
+  {{- fail "api.ingress.host (or legacy server.ingress.host) must be overridden and not set to 'change_me'" }}
 {{- end }}
 
-{{- $apiProtocol := .Values.api.protocol }}
+{{- $apiProtocol := $api.protocol }}
 {{- if not (or (eq $apiProtocol "http") (eq $apiProtocol "https")) }}
   {{- fail "api.protocol must be either 'http' or 'https'" }}
 {{- end }}
@@ -21,7 +22,7 @@
   {{- fail "client.ingress.tls.enabled is true but client.protocol is not 'https'. Set client.protocol: https to avoid mixed content." }}
 {{- end }}
 
-{{- if and .Values.api.ingress.tls.enabled (ne $apiProtocol "https") }}
+{{- if and $api.ingress.tls.enabled (ne $apiProtocol "https") }}
   {{- fail "api.ingress.tls.enabled is true but api.protocol is not 'https'. Set api.protocol: https to ensure correct API base URL." }}
 {{- end }}
 
@@ -32,7 +33,7 @@
 
 {{/* Fail early if TLS enabled without cert-manager annotations (cluster-issuer or issuer) */}}
 {{- $cAnn := .Values.client.ingress.annotations | default dict }}
-{{- $aAnn := .Values.api.ingress.annotations | default dict }}
+{{- $aAnn := $api.ingress.annotations | default dict }}
 
 {{- $clientHasIssuer := or (hasKey $cAnn "cert-manager.io/cluster-issuer") (hasKey $cAnn "cert-manager.io/issuer") }}
 {{- $apiHasIssuer := or (hasKey $aAnn "cert-manager.io/cluster-issuer") (hasKey $aAnn "cert-manager.io/issuer") }}
@@ -41,7 +42,7 @@
   {{- fail "client.ingress.tls.enabled is true but no cert-manager issuer annotation found. Add 'cert-manager.io/cluster-issuer' or 'cert-manager.io/issuer'." }}
 {{- end }}
 
-{{- if and .Values.api.ingress.tls.enabled (not $apiHasIssuer) }}
+{{- if and $api.ingress.tls.enabled (not $apiHasIssuer) }}
   {{- fail "api.ingress.tls.enabled is true but no cert-manager issuer annotation found. Add 'cert-manager.io/cluster-issuer' or 'cert-manager.io/issuer'." }}
 {{- end }}
 

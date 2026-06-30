@@ -1,3 +1,4 @@
+{{- $api := include "checkmate.api" . | fromYaml -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -12,21 +13,21 @@ spec:
       labels:
         app: checkmate-api
     spec:
-    {{- with .Values.api.affinity }}
+    {{- with $api.affinity }}
       affinity:
         {{- tpl ( . | toYaml) $ | nindent 8 }}
     {{- end }}
-    {{- with .Values.api.tolerations }}
+    {{- with $api.tolerations }}
       tolerations:
         {{- tpl ( . | toYaml) $ | nindent 8 }}
     {{- end }}
       containers:
         - name: api
-          image: {{ .Values.api.image }}
-          imagePullPolicy: {{ .Values.api.imagePullPolicy }}
+          image: {{ $api.image }}
+          imagePullPolicy: {{ $api.imagePullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.api.port }}
+              containerPort: {{ $api.port }}
           envFrom:
             - secretRef:
                 name: checkmate-secrets
@@ -37,19 +38,19 @@ spec:
             httpGet:
               path: /api/v1/health
               port: http
-            initialDelaySeconds: {{ .Values.api.probes.liveness.initialDelaySeconds }}
-            periodSeconds: {{ .Values.api.probes.liveness.periodSeconds }}
-            timeoutSeconds: {{ .Values.api.probes.liveness.timeoutSeconds }}
-            failureThreshold: {{ .Values.api.probes.liveness.failureThreshold }}
+            initialDelaySeconds: {{ $api.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ $api.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ $api.probes.liveness.timeoutSeconds }}
+            failureThreshold: {{ $api.probes.liveness.failureThreshold }}
           readinessProbe:
             httpGet:
               path: /api/v1/health
               port: http
-            initialDelaySeconds: {{ .Values.api.probes.readiness.initialDelaySeconds }}
-            periodSeconds: {{ .Values.api.probes.readiness.periodSeconds }}
-            timeoutSeconds: {{ .Values.api.probes.readiness.timeoutSeconds }}
-            failureThreshold: {{ .Values.api.probes.readiness.failureThreshold }}
-          {{- with .Values.api.resources }}
+            initialDelaySeconds: {{ $api.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ $api.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ $api.probes.readiness.timeoutSeconds }}
+            failureThreshold: {{ $api.probes.readiness.failureThreshold }}
+          {{- with $api.resources }}
           resources:
               {{- tpl ( . | toYaml) $ | nindent 12 }}
           {{- end }}

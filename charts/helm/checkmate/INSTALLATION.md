@@ -42,6 +42,51 @@ kubectl get svc
 
 Once all pods are `Running` and `Ready`, you can access Checkmate via the configured ingress hosts.
 
+## Upgrading from a previous release
+
+This release renames the `server.*` value block to `api.*` and drops the (unused) bundled Redis.
+Read this before running `helm upgrade` on an existing install.
+
+### `server.*` → `api.*` (values rename)
+
+The value block formerly named `server` is now `api` (`server.image` → `api.image`,
+`server.ingress.host` → `api.ingress.host`, `server.protocol` → `api.protocol`, `server.resources`,
+`server.affinity`, `server.tolerations`, `server.ingress.*`, etc.).
+
+**Your existing `server.*` overrides keep working** — the chart merges any legacy `server.*` values on
+top of the `api.*` defaults (legacy wins where set), so an unchanged values file upgrades cleanly. The
+shim is transitional; migrate your overrides to `api.*` at your convenience and drop the `server:`
+block. If you set **both** `server.*` and `api.*` for the same field, the legacy `server.*` value wins —
+don't mix them.
+
+### Resource renames cause a replace, not a rename
+
+The Kubernetes objects are renamed alongside the values:
+
+| Old object | New object |
+| --- | --- |
+| Deployment/Service `checkmate-server` | `checkmate-api` |
+| Ingress `checkmate-server-ingress` | `checkmate-api-ingress` |
+| ConfigMap `checkmate-server-nginx-cm` | `checkmate-client-nginx-cm` |
+
+Helm deletes the old objects and creates the new ones on upgrade. Expect a brief API restart and a
+**new ClusterIP** for the API Service — update anything outside the chart that referenced the
+`checkmate-server` Service by name. MongoDB data (its PVC) is untouched.
+
+### Redis removed
+
+The bundled Redis StatefulSet/Service and the `redis.*` / `persistence.redis.*` values are gone — the
+scheduler runs in-process and never used them. Default installs (`redis.enabled: false`) are
+unaffected. If you had explicitly set `redis.enabled: true`, **the Redis StatefulSet and its PVC are
+deleted on upgrade** — back up anything you stored there first. Leftover `redis:` / `persistence.redis:`
+keys in your values file are harmless (ignored).
+
+### New secret defaults
+
+`NODE_ENV: production`, `LOG_LEVEL: info`, and `TOKEN_TTL: 99d` are now part of the default `secrets`
+block and merge into your install unless you override them. Set them explicitly if you relied on
+different values (e.g. a non-production `NODE_ENV`).
+
 ## Scaling: the worker tier & autoscaling
 
 By default the chart runs a single all-in-one API pod that both schedules **and** processes monitoring

@@ -1,5 +1,6 @@
+{{- $api := include "checkmate.api" . | fromYaml -}}
 apiVersion: v1
-kind: ConfigMap 
+kind: ConfigMap
 metadata:
   name: checkmate-client-nginx-cm
 data:
@@ -22,7 +23,7 @@ data:
       }
 
       # location /api/ {
-      #     proxy_pass http://{{ .Values.api.ingress.host }}:5000/api/;
+      #     proxy_pass http://{{ $api.ingress.host }}:5000/api/;
       #     proxy_http_version 1.1;
       #     proxy_set_header Host $host;
       #     proxy_set_header X-Real-IP $remote_addr;
@@ -31,7 +32,7 @@ data:
       # }
 
       location /api-docs/ {
-          proxy_pass http://{{ .Values.api.ingress.host }}:5000/api-docs/;
+          proxy_pass http://{{ $api.ingress.host }}:5000/api-docs/;
           proxy_http_version 1.1;
           proxy_set_header Host $host;
           proxy_set_header X-Real-IP $remote_addr;

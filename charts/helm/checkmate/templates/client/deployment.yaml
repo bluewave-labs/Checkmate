@@ -1,3 +1,4 @@
+{{- $api := include "checkmate.api" . | fromYaml -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -28,7 +29,7 @@ spec:
             - containerPort: {{ .Values.client.port }}
           env:
             - name: UPTIME_APP_API_BASE_URL
-              value: "{{ .Values.api.protocol }}://{{ .Values.api.ingress.host }}/api/v1"
+              value: "{{ $api.protocol }}://{{ $api.ingress.host }}/api/v1"
             - name: UPTIME_APP_CLIENT_HOST
               value: "{{ .Values.client.protocol }}://{{ .Values.client.ingress.host }}"
           volumeMounts:

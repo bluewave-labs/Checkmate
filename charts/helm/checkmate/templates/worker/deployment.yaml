@@ -1,3 +1,4 @@
+{{- $api := include "checkmate.api" . | fromYaml -}}
 {{- if .Values.worker.enabled }}
 apiVersion: apps/v1
 kind: Deployment
@@ -26,8 +27,8 @@ spec:
     {{- end }}
       containers:
         - name: worker
-          image: {{ .Values.worker.image | default .Values.api.image }}
-          imagePullPolicy: {{ .Values.worker.imagePullPolicy | default .Values.api.imagePullPolicy }}
+          image: {{ .Values.worker.image | default $api.image }}
+          imagePullPolicy: {{ .Values.worker.imagePullPolicy | default $api.imagePullPolicy }}
           ports:
             - name: health
               containerPort: {{ .Values.worker.healthPort }}
