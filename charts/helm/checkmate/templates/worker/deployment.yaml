@@ -1,0 +1,65 @@
+{{- if .Values.worker.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkmate-worker
+spec:
+  {{- if not .Values.worker.autoscaling.enabled }}
+  replicas: {{ .Values.worker.replicas }} # omitted when autoscaling owns the replica count
+  {{- end }}
+  selector:
+    matchLabels:
+      app: checkmate-worker
+  template:
+    metadata:
+      labels:
+        app: checkmate-worker
+    spec:
+      terminationGracePeriodSeconds: {{ .Values.worker.terminationGracePeriodSeconds }}
+    {{- with .Values.worker.affinity }}
+      affinity:
+        {{- tpl ( . | toYaml) $ | nindent 8 }}
+    {{- end }}
+    {{- with .Values.worker.tolerations }}
+      tolerations:
+        {{- tpl ( . | toYaml) $ | nindent 8 }}
+    {{- end }}
+      containers:
+        - name: worker
+          image: {{ .Values.worker.image | default .Values.api.image }}
+          imagePullPolicy: {{ .Values.worker.imagePullPolicy | default .Values.api.imagePullPolicy }}
+          ports:
+            - name: health
+              containerPort: {{ .Values.worker.healthPort }}
+          envFrom:
+            - secretRef:
+                name: checkmate-secrets # DB_CONNECTION_STRING (+ JWT_SECRET/CLIENT_HOST for validateEnv)
+          env:
+          # Secret default CLIENT_HOST is the non-URL "change_me"; override like the API so validateEnv passes.
+          - name: CLIENT_HOST
+            value: "{{ .Values.client.protocol }}://{{ .Values.client.ingress.host }}"
+          - name: QUEUE_MODE
+            value: "worker"
+          - name: HEALTH_PORT
+            value: {{ .Values.worker.healthPort | quote }}
+          livenessProbe:
+            httpGet:
+              path: /livez
+              port: health
+            initialDelaySeconds: {{ .Values.worker.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.worker.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.worker.probes.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.worker.probes.liveness.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: health
+            initialDelaySeconds: {{ .Values.worker.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.worker.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.worker.probes.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.worker.probes.readiness.failureThreshold }}
+          {{- with .Values.worker.resources }}
+          resources:
+              {{- tpl ( . | toYaml) $ | nindent 12 }}
+          {{- end }}
+{{- end }}

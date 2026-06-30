@@ -23,6 +23,7 @@ spec:
       containers:
         - name: api
           image: {{ .Values.api.image }}
+          imagePullPolicy: {{ .Values.api.imagePullPolicy }}
           ports:
             - name: http
               containerPort: {{ .Values.api.port }}
@@ -57,5 +58,7 @@ spec:
             value: "{{ .Values.client.protocol }}://{{ .Values.client.ingress.host }}"
           - name: QUEUE_MODE
             value: "primary"
-          - name: QUEUE_PRIMARY_PROCESSES # false: API schedules only, worker tier processes jobs
-            value: {{ .Values.api.queuePrimaryProcesses | quote }}
+          # Derived: when a worker tier is deployed the API only schedules (false); otherwise it is
+          # all-in-one and processes jobs itself (true). Keeps the two from ever competing for jobs.
+          - name: QUEUE_PRIMARY_PROCESSES
+            value: {{ not .Values.worker.enabled | quote }}

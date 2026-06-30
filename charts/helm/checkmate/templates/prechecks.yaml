@@ -45,4 +45,9 @@
   {{- fail "api.ingress.tls.enabled is true but no cert-manager issuer annotation found. Add 'cert-manager.io/cluster-issuer' or 'cert-manager.io/issuer'." }}
 {{- end }}
 
+{{/* Worker grace period must exceed the server drain timeout (25s) or workers are SIGKILLed mid-drain */}}
+{{- if and .Values.worker.enabled (le (int .Values.worker.terminationGracePeriodSeconds) 25) }}
+  {{- fail "worker.terminationGracePeriodSeconds must be greater than 25 (the server drain timeout) or workers are killed mid-drain" }}
+{{- end }}
+
 {{/* Secret name can be omitted; we default to <release>-client|api-tls in templates */}}

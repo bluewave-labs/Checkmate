@@ -42,6 +42,71 @@ kubectl get svc
 
 Once all pods are `Running` and `Ready`, you can access Checkmate via the configured ingress hosts.
 
+## Scaling: the worker tier & autoscaling
+
+By default the chart runs a single all-in-one API pod that both schedules **and** processes monitoring
+jobs (`worker.enabled: false`). For larger deployments you can split processing onto a dedicated,
+horizontally-scalable worker tier.
+
+### Topology
+
+| `worker.enabled` | API (`checkmate-api`) | Worker (`checkmate-worker`) |
+| --- | --- | --- |
+| `false` (default) | schedules **and** processes jobs (`QUEUE_PRIMARY_PROCESSES=true`) | not deployed |
+| `true` | schedules + serves the API only (`QUEUE_PRIMARY_PROCESSES=false`, derived) | processes all jobs |
+
+`QUEUE_PRIMARY_PROCESSES` is **derived** from `worker.enabled` — you never set it directly, so the API
+and worker tier can never both process (or both ignore) the queue.
+
+### Enabling the worker tier
+
+```yaml
+worker:
+  enabled: true
+  replicas: 2   # used only when autoscaling.enabled = false
+```
+
+The worker takes **no inbound traffic** (no Service): the kubelet probes pod IPs directly on
+`HEALTH_PORT` (`/livez`, `/readyz`), and graceful shutdown drains in-flight jobs before exit.
+
+> **Invariant:** `worker.terminationGracePeriodSeconds` (default `30`) **must stay greater than the
+> server drain timeout (25s)**. Lower it and Kubernetes SIGKILLs workers mid-drain, losing in-flight
+> checks.
+
+> **Caveat:** with the worker tier enabled the API no longer processes jobs, so if **all** workers are
+> down nothing processes. The `autoscaling.minReplicaCount: 1` floor plus liveness restarts mitigate
+> this; full failover to the API would need leader election (not supported).
+
+### Autoscaling with KEDA
+
+Backlog-driven autoscaling is **off by default** and requires the
+[KEDA operator](https://keda.sh/) installed in-cluster. Enable it with:
+
+```yaml
+worker:
+  enabled: true
+  autoscaling:
+    enabled: true
+    minReplicaCount: 1     # processing floor — never 0, or checks silently stall
+    maxReplicaCount: 10
+    backlogPerReplica: 50  # target due-job backlog per worker
+    mongo:
+      dbName: uptime_db    # MUST match the database in DB_CONNECTION_STRING
+```
+
+A KEDA `ScaledObject` queries MongoDB directly for the due-check backlog and scales the worker
+Deployment between `minReplicaCount` and `maxReplicaCount`. When autoscaling is on, the Deployment
+omits `replicas` so it doesn't fight the HPA KEDA creates. Make sure `autoscaling.mongo.dbName`
+matches the database name in your `DB_CONNECTION_STRING`, or the scaler counts the wrong DB (always 0
+backlog → never scales up).
+
+#### Fallback: Prometheus-adapter HPA (not shipped)
+
+If your KEDA/Mongo versions reject the `$$NOW`/`$toLong` query, or you already run Prometheus, scrape
+the worker's `/metrics` (`checkmate_worker_due_backlog`), expose it via prometheus-adapter, and target
+it with a standard `HorizontalPodAutoscaler`. The manifest is left to the operator; the app computes
+`now` in code on this path, so the query coercion is unnecessary.
+
 ## Enabling TLS/HTTPS with cert-manager
 
 If you have [cert-manager](https://cert-manager.io/) installed in your cluster, you can enable automatic TLS certificate provisioning using Let's Encrypt or other certificate issuers.

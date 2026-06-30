@@ -23,6 +23,7 @@ spec:
       containers:
         - name: mongodb
           image: {{ .Values.mongodb.image }}
+          imagePullPolicy: {{ .Values.mongodb.imagePullPolicy }}
           ports:
             - containerPort: {{ .Values.mongodb.port }}
           command: ["mongod", "--quiet", "--bind_ip_all"]
@@ -37,7 +38,9 @@ spec:
     - metadata:
         name: checkmate-mongo-persistent-storage
       spec:
-        storageClassName: {{ .Values.persistence.mongo.storageClass | quote }}
+        {{- with .Values.persistence.mongo.storageClass }}
+        storageClassName: {{ . | quote }} {{/* omitted when empty so the cluster's default StorageClass applies */}}
+        {{- end }}
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:

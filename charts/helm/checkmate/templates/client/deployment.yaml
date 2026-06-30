@@ -23,6 +23,7 @@ spec:
       containers:
         - name: client
           image: {{ .Values.client.image }}
+          imagePullPolicy: {{ .Values.client.imagePullPolicy }}
           ports:
             - containerPort: {{ .Values.client.port }}
           env:
