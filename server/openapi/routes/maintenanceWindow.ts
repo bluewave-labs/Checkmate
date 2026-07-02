@@ -8,7 +8,7 @@ import {
 	deleteMaintenanceWindowByIdParamValidation,
 	editMaintenanceWindowByIdParamValidation,
 	editMaintenanceByIdWindowBodyValidation,
-} from "@/validation/maintenanceWindowValidation.js";
+} from "@/api/validation/maintenanceWindowValidation.js";
 
 const tags = ["maintenance-window"];
 

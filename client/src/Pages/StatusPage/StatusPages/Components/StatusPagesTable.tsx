@@ -11,7 +11,9 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 
-import { PUBLIC_STATUS_PAGE_PREFIX, type StatusPage } from "@/Types/StatusPage";
+import { getStatusPagePublicPath, getStatusPagePublicUrl } from "@/Utils/statusPageUrl";
+
+import { type StatusPage } from "@/Types/StatusPage";
 
 interface StatusPagesTableProps {
 	data: StatusPage[];
@@ -53,8 +55,7 @@ export const StatusPagesTable = ({
 	const handleUrlClick = (e: React.MouseEvent, row: StatusPage) => {
 		if (row.isPublished) {
 			e.stopPropagation();
-			const url = `${PUBLIC_STATUS_PAGE_PREFIX}/${row.url}`;
-			window.open(url, "_blank", "noopener,noreferrer");
+			window.open(getStatusPagePublicUrl(row), "_blank", "noopener,noreferrer");
 		}
 	};
 
@@ -70,7 +71,9 @@ export const StatusPagesTable = ({
 				content: t("pages.statusPages.table.headers.url"),
 				render: (row) => {
 					const content = row.isPublished
-						? `/${row.url}`
+						? row.customDomain
+							? getStatusPagePublicPath(row)
+							: `/${row.url}`
 						: t("pages.statusPages.table.unpublished");
 					return (
 						<Stack

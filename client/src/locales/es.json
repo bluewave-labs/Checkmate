@@ -941,10 +941,7 @@
 					"monitorId": "ID de monitor",
 					"runCount": "Conteo de ejecuciones",
 					"failCount": "Conteo de fallas",
-					"lastRunAt": "Última ejecución",
-					"lockedAt": "Bloqueado a las",
 					"lastFinishedAt": "Última finalización",
-					"lastRunTook": "Última ejecución tomó",
 					"lastFailedAt": "Última falla",
 					"failReason": "Razón de falla",
 					"state": "Estado"

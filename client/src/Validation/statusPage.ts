@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { FieldPath } from "react-hook-form";
 import { STATUS_PAGE_THEMES, STATUS_PAGE_THEME_MODES } from "@/Types/StatusPage";
+import { cssReferencesExternalResource } from "@/Utils/customCss";
 
 // Wizard step a field is validated on. Attached inline to each field below so
 // the grouping lives next to the field definition; unannotated fields default
@@ -8,6 +9,23 @@ import { STATUS_PAGE_THEMES, STATUS_PAGE_THEME_MODES } from "@/Types/StatusPage"
 // `monitorStepRegistry` so the create-status-page wizard can't drift from the
 // field definitions.
 export const statusPageStepRegistry = z.registry<{ step: number }>();
+
+const statusPageHostnameRegex =
+	/^(?=.{1,253}$)([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,63}$/;
+
+const normalizeCustomDomainInput = (raw: string | null): string | null => {
+	if (raw === null) {
+		return null;
+	}
+
+	const trimmed = raw.trim().toLowerCase();
+	if (!trimmed) {
+		return null;
+	}
+
+	const withoutScheme = trimmed.replace(/^https?:\/\//, "");
+	return withoutScheme.split("/")[0]?.split(":")[0] ?? null;
+};
 
 export const statusPageSchema = z.object({
 	companyName: z
@@ -22,6 +40,12 @@ export const statusPageSchema = z.object({
 			/^[a-z0-9-]+$/,
 			"URL can only contain lowercase letters, numbers, and hyphens"
 		),
+	customDomain: z
+		.union([z.string(), z.null()])
+		.transform(normalizeCustomDomainInput)
+		.refine((domain) => domain === null || statusPageHostnameRegex.test(domain), {
+			message: "Enter a valid domain name (e.g. status.example.com)",
+		}),
 	timezone: z.string().optional(),
 	type: z
 		.array(z.enum(["uptime", "infrastructure"]))
@@ -35,7 +59,14 @@ export const statusPageSchema = z.object({
 	showUptimePercentage: z.boolean().register(statusPageStepRegistry, { step: 1 }),
 	showAdminLoginLink: z.boolean().register(statusPageStepRegistry, { step: 1 }),
 	showInfrastructure: z.boolean().register(statusPageStepRegistry, { step: 1 }),
-	customCSS: z.string().optional().register(statusPageStepRegistry, { step: 1 }),
+	customCSS: z
+		.string()
+		.max(100000, "Custom CSS must be at most 100000 characters")
+		.refine((css) => !cssReferencesExternalResource(css), {
+			message: "Custom CSS cannot reference external URLs or use @import",
+		})
+		.optional()
+		.register(statusPageStepRegistry, { step: 1 }),
 	theme: z
 		.enum(STATUS_PAGE_THEMES)
 		.optional()

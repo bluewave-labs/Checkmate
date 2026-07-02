@@ -1,7 +1,7 @@
 import { registry } from "../registry.js";
 import { bearer, json, okJsonNoData, okUnknown, standardErrors } from "../helpers.js";
-import { updateAppSettingsBodyValidation } from "@/validation/settingsValidation.js";
-import { sendTestEmailBodyValidation } from "@/validation/notificationValidation.js";
+import { updateAppSettingsBodyValidation } from "@/api/validation/settingsValidation.js";
+import { sendTestEmailBodyValidation } from "@/api/validation/notificationValidation.js";
 
 const tags = ["settings"];
 

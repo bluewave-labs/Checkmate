@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { registry } from "../registry.js";
 import { bearer, okJson, okJsonNoData, standardErrors } from "../helpers.js";
-import { getIncidentsByTeamQueryValidation, getIncidentSummaryQueryValidation } from "@/validation/incidentValidation.js";
+import { getIncidentsByTeamQueryValidation, getIncidentSummaryQueryValidation } from "@/api/validation/incidentValidation.js";
 
 const tags = ["incidents"];
 

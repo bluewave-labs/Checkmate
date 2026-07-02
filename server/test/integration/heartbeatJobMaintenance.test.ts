@@ -1,6 +1,6 @@
 import { describe, expect, it, beforeEach } from "@jest/globals";
 import { createHeartbeatTestHarness, makeMonitor, type HeartbeatTestHarness } from "../helpers/heartbeatTestHarness.ts";
-import type { MaintenanceWindow } from "../../src/types/maintenanceWindow.ts";
+import type { MaintenanceWindow } from "../../src/domain/maintenance-windows/maintenance-window.type.ts";
 
 const makeMaintenanceWindow = (overrides?: Partial<MaintenanceWindow>): MaintenanceWindow => {
 	const now = new Date();

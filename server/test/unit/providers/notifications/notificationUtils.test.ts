@@ -1,6 +1,6 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { buildTestEmail, getTestMessage } from "../../../../src/service/infrastructure/notificationProviders/utils.ts";
-import type { IEmailService } from "../../../../src/service/infrastructure/emailService.ts";
+import { buildTestEmail, getTestMessage } from "../../../../src/domain/notifications/providers/utils.ts";
+import type { IEmailService } from "../../../../src/service/emailService.ts";
 
 describe("notification utils", () => {
 	describe("getTestMessage", () => {

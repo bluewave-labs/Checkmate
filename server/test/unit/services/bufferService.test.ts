@@ -1,10 +1,12 @@
 import { describe, expect, it, jest, beforeEach, afterEach } from "@jest/globals";
-import { BufferService } from "../../../src/service/infrastructure/bufferService.ts";
+import { BufferService } from "../../../src/service/bufferService.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import type { ICheckService } from "../../../src/service/business/checkService.ts";
-import type { IGeoChecksService } from "../../../src/service/business/geoChecksService.ts";
-import type { ISettingsService } from "../../../src/service/system/settingsService.ts";
-import type { Check, GeoCheck } from "../../../src/types/index.ts";
+import type { ICheckService } from "../../../src/domain/checks/check.service.ts";
+import type { IGeoChecksService } from "../../../src/domain/geo-checks/geo-check.service.ts";
+import type { ISettingsService } from "../../../src/domain/app-settings/app-settings.service.ts";
+import type { IJobsRepository } from "../../../src/domain/jobs/job.repository.interface.ts";
+import type { Check } from "../../../src/domain/checks/check.type.ts";
+import type { GeoCheck } from "../../../src/domain/geo-checks/geo-check.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -22,6 +24,11 @@ const createMockSettingsService = (nodeEnv: string = "development") =>
 	({
 		getSettings: jest.fn().mockReturnValue({ nodeEnv }),
 	}) as unknown as jest.Mocked<ISettingsService>;
+
+const createMockJobsRepository = () =>
+	({
+		upsertEvaluate: jest.fn().mockResolvedValue(true),
+	}) as unknown as jest.Mocked<IJobsRepository>;
 
 const makeCheck = (overrides?: Partial<Check>): Check =>
 	({
@@ -46,8 +53,9 @@ const createService = (nodeEnv: string = "development") => {
 	const checkService = createMockCheckService();
 	const geoChecksService = createMockGeoChecksService();
 	const settingsService = createMockSettingsService(nodeEnv);
-	const service = new BufferService(logger as any, checkService, geoChecksService, settingsService);
-	return { service, logger, checkService, geoChecksService };
+	const jobsRepository = createMockJobsRepository();
+	const service = new BufferService(logger as any, checkService, geoChecksService, settingsService, jobsRepository);
+	return { service, logger, checkService, geoChecksService, jobsRepository };
 };
 
 // ── Tests ────────────────────────────────────────────────────────────────────
@@ -343,6 +351,29 @@ describe("BufferService", () => {
 			);
 		});
 
+		it("arms the evaluate stage once per distinct monitor after the checks are stored", async () => {
+			const { service, jobsRepository } = createService();
+			service.addToBuffer(makeCheck({ id: "c1", metadata: { monitorId: "mon-1", teamId: "team-1", type: "http" } }));
+			service.addToBuffer(makeCheck({ id: "c2", metadata: { monitorId: "mon-1", teamId: "team-1", type: "http" } }));
+			service.addToBuffer(makeCheck({ id: "c3", metadata: { monitorId: "mon-2", teamId: "team-1", type: "http" } }));
+
+			await service.flushBuffer();
+
+			expect(jobsRepository.upsertEvaluate).toHaveBeenCalledTimes(2);
+			expect(jobsRepository.upsertEvaluate).toHaveBeenCalledWith("mon-1", expect.any(Number));
+			expect(jobsRepository.upsertEvaluate).toHaveBeenCalledWith("mon-2", expect.any(Number));
+		});
+
+		it("does not arm the evaluate stage when the check write fails", async () => {
+			const { service, checkService, jobsRepository } = createService();
+			(checkService.createChecks as jest.Mock).mockRejectedValue(new Error("DB write failed"));
+			service.addToBuffer(makeCheck());
+
+			await service.flushBuffer();
+
+			expect(jobsRepository.upsertEvaluate).not.toHaveBeenCalled();
+		});
+
 		it("clears buffer even on error to prevent infinite retries", async () => {
 			const { service, checkService, logger } = createService();
 			(checkService.createChecks as jest.Mock).mockRejectedValue(new Error("DB write failed"));
@@ -449,6 +480,34 @@ describe("BufferService", () => {
 					stack: undefined,
 				})
 			);
+		});
+	});
+
+	// ── shutdown ─────────────────────────────────────────────────────────────
+
+	describe("shutdown", () => {
+		it("stops the flush timer and flushes both buffers", async () => {
+			const { service, checkService, geoChecksService } = createService();
+			service.addToBuffer(makeCheck());
+			service.addGeoCheckToBuffer(makeGeoCheck());
+
+			await service.shutdown();
+
+			expect(checkService.createChecks).toHaveBeenCalledTimes(1);
+			expect(geoChecksService.createGeoChecks).toHaveBeenCalledTimes(1);
+
+			// Timer is cleared: advancing past the flush interval triggers no further flush.
+			await jest.advanceTimersByTimeAsync(60 * 1000);
+			expect(checkService.createChecks).toHaveBeenCalledTimes(1);
+		});
+
+		it("is safe to call with empty buffers", async () => {
+			const { service, checkService, geoChecksService } = createService();
+
+			await service.shutdown();
+
+			expect(checkService.createChecks).not.toHaveBeenCalled();
+			expect(geoChecksService.createGeoChecks).not.toHaveBeenCalled();
 		});
 	});
 });

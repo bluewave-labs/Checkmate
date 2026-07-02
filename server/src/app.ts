@@ -1,26 +1,29 @@
 import express from "express";
 import path from "path";
-import cors from "cors";
+import cors, { type CorsOptions } from "cors";
 import helmet from "helmet";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import swaggerUi, { type JsonObject } from "swagger-ui-express";
-import { handleErrors } from "@/middleware/handleErrors.js";
-import { generalApiLimiter } from "@/middleware/rateLimiter.js";
-import { sanitizeBody, sanitizeQuery } from "@/middleware/sanitization.js";
+import { handleErrors } from "@/api/middleware/handleErrors.js";
+import { generalApiLimiter } from "@/api/middleware/rateLimiter.js";
+import { sanitizeBody, sanitizeQuery } from "@/api/middleware/sanitization.js";
 import { setupRoutes } from "@/config/routes.js";
-import { InitializedServices } from "@/config/services.js";
 import { InitializedControllers } from "@/config/controllers.js";
-import { EnvConfig } from "@/service/system/settingsService.js";
+import { EnvConfig } from "@/domain/app-settings/app-settings.service.js";
+import { createStatusPageCorsOrigin } from "@/api/middleware/statusPageCorsOrigin.js";
+import { isPublicStatusPageApiPath } from "@/api/middleware/statusPagePublicApiPath.js";
+import { createStatusPageDocumentCsp } from "@/api/middleware/statusPageDocumentCsp.js";
+import { ApiServices } from "@/config/services.api.js";
 
 export const createApp = ({
-	services,
+	apiServices: services,
 	controllers,
 	envSettings,
 	frontendPath,
 	openApiSpec,
 }: {
-	services: InitializedServices;
+	apiServices: ApiServices;
 	controllers: InitializedControllers;
 	envSettings: EnvConfig;
 	frontendPath: string;
@@ -28,17 +31,26 @@ export const createApp = ({
 }) => {
 	const allowedOrigin = envSettings.clientHost;
 	const app = express();
+	const defaultCorsOptions: CorsOptions = {
+		origin: allowedOrigin,
+		methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+		allowedHeaders: ["Content-Type", "Authorization", "Accept-Language"],
+		credentials: true,
+	};
+	const publicStatusPageCorsOrigin = createStatusPageCorsOrigin(allowedOrigin, services.statusPagesRepository);
 
-	app.use(generalApiLimiter);
+	const devMode = envSettings.nodeEnv === "development";
+	app.use(generalApiLimiter(devMode));
 
-	app.use(
-		cors({
-			origin: allowedOrigin,
-			methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-			allowedHeaders: ["Content-Type", "Authorization", "Accept-Language"],
-			credentials: true,
-		})
-	);
+	app.use((req, res, next) => {
+		const corsOptions = isPublicStatusPageApiPath(req.method, req.path)
+			? { ...defaultCorsOptions, origin: publicStatusPageCorsOrigin }
+			: defaultCorsOptions;
+
+		return cors(corsOptions)(req, res, next);
+	});
+
+	app.use(createStatusPageDocumentCsp(allowedOrigin));
 
 	app.use(express.static(frontendPath));
 
@@ -104,6 +116,6 @@ export const createApp = ({
 	app.get("*", (req, res) => {
 		res.sendFile(path.join(frontendPath, "index.html"));
 	});
-	app.use(handleErrors);
+	app.use(handleErrors(services.logger));
 	return app;
 };

@@ -54,8 +54,24 @@ import Logs from "@/Pages/Logs";
 import { ProtectedRoute, RoleProtectedRoute } from "@/Components/routing/RouteProtected";
 
 import CreateMonitor from "@/Pages/CreateMonitor";
+import { isCustomDomainHost } from "@/Utils/statusPageUrl";
 
 const Routes = () => {
+	if (isCustomDomainHost()) {
+		return (
+			<LibRoutes>
+				<Route
+					path="/"
+					element={<Status />}
+				/>
+				<Route
+					path="*"
+					element={<Status />}
+				/>
+			</LibRoutes>
+		);
+	}
+
 	return (
 		<LibRoutes>
 			<Route

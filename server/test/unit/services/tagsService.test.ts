@@ -1,6 +1,6 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { TagsService } from "../../../src/service/infrastructure/tagService.ts";
-import type { Tag } from "../../../src/types/index.ts";
+import { TagsService } from "../../../src/domain/tags/tag.service.ts";
+import type { Tag } from "../../../src/domain/tags/tag.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

@@ -1,6 +1,6 @@
 import { describe, expect, it, jest, beforeEach, afterEach } from "@jest/globals";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import type { GeoContinent } from "../../../src/types/geoCheck.ts";
+import type { GeoContinent } from "../../../src/domain/geo-checks/geo-check.type.ts";
 
 // ── got mock ─────────────────────────────────────────────────────────────────
 
@@ -15,7 +15,7 @@ jest.unstable_mockModule("got", () => ({
 }));
 
 // Dynamic import AFTER mock registration
-const { GlobalPingService } = await import("../../../src/service/infrastructure/globalPingService.ts");
+const { GlobalPingService } = await import("../../../src/service/globalPingService.ts");
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

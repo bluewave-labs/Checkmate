@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
-import { applyDefaultTheme, withoutThemeFields } from "../../../src/controllers/statusPageThemeFlag.ts";
-import { DEFAULT_STATUS_PAGE_THEME, DEFAULT_STATUS_PAGE_THEME_MODE } from "../../../src/types/statusPage.ts";
+import { applyDefaultTheme, withoutThemeFields } from "../../../src/api/controllers/statusPageThemeFlag.ts";
+import { DEFAULT_STATUS_PAGE_THEME, DEFAULT_STATUS_PAGE_THEME_MODE } from "../../../src/domain/status-pages/status-page.type.ts";
 import { makeStatusPage } from "../../helpers/makeStatusPage.ts";
 
 describe("statusPageThemeFlag", () => {

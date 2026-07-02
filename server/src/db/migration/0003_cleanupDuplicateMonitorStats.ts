@@ -1,12 +1,12 @@
-import { MonitorStatsModel } from "../models/MonitorStats.js";
-import { logger } from "@/utils/logger.js";
+import { MonitorStatsModel } from "../../domain/monitor-stats/monitor-stats.model.js";
+import type { ILogger } from "@/utils/logger.js";
 
 /**
  * Cleanup duplicate MonitorStats documents
  * Keeps the most recent document (by updatedAt) for each monitorId
  * and deletes all older duplicates
  */
-export async function cleanupDuplicateMonitorStats(): Promise<void> {
+export async function cleanupDuplicateMonitorStats(logger: ILogger): Promise<void> {
 	const SERVICE_NAME = "Migration:CleanupDuplicateMonitorStats";
 
 	try {

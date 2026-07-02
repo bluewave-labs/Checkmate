@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import type { AnyBulkWriteOperation, Document } from "mongodb";
-import { logger } from "@/utils/logger.js";
-import MaintenanceWindowModel from "../models/MaintenanceWindow.js";
+import type { ILogger } from "@/utils/logger.js";
+import MaintenanceWindowModel from "../../domain/maintenance-windows/maintenance-window.model.js";
 
 type GroupResult = {
 	_id: {
@@ -18,7 +18,7 @@ type GroupResult = {
 	monitorIds: mongoose.Types.ObjectId[];
 };
 
-export async function migrateMaintenanceWindowMonitorIdToArray(): Promise<void> {
+export async function migrateMaintenanceWindowMonitorIdToArray(logger: ILogger): Promise<void> {
 	const SERVICE_NAME = "Migration:MigrateMaintenanceWindowMonitorIdToArray";
 
 	try {

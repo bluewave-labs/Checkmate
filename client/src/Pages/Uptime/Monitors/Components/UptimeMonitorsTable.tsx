@@ -25,6 +25,8 @@ import type { RootState } from "@/Types/state";
 import { Checkbox } from "@/Components/inputs";
 import type { Tag } from "@/Types/Tag";
 import { SPACING } from "@/Utils/Theme/constants";
+import { getUptimePercentageColor } from "@/Utils/MonitorUtils";
+import { formatPercentage } from "@/Utils/FormatUtils";
 
 interface MonitorTableProps {
 	monitors: Monitor[];
@@ -260,6 +262,24 @@ export const MonitorTable = ({
 				},
 			},
 			{
+				id: "uptime",
+				content: t("pages.uptime.table.headers.uptime"),
+				render: (row) => {
+					const uptimePercentage = row.uptimePercentage ?? 0;
+					const formattedPercentage = formatPercentage(uptimePercentage);
+					const paletteKey = getUptimePercentageColor(uptimePercentage);
+					const color = theme.palette[paletteKey].main;
+					return (
+						<Stack alignItems={"center"}>
+							<ColoredLabel
+								text={formattedPercentage}
+								color={color}
+							/>
+						</Stack>
+					);
+				},
+			},
+			{
 				id: "tags",
 				content: t("common.table.headers.tags"),
 				render: (row) => {
@@ -304,7 +324,9 @@ export const MonitorTable = ({
 					</Stack>
 				),
 				render: (row) => {
-					return row.type;
+					return row.type === "http" && row.method
+						? `${row.type} (${row.method})`
+						: row.type;
 				},
 			},
 			{

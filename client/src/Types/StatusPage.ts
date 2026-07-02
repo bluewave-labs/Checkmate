@@ -21,7 +21,13 @@ export const getMonitorTypeLabel = (
 	return key ? t(key) : type;
 };
 
-export const STATUS_PAGE_THEMES = ["refined", "modern", "bold", "editorial"] as const;
+export const STATUS_PAGE_THEMES = [
+	"refined",
+	"modern",
+	"bold",
+	"editorial",
+	"minimal",
+] as const;
 export type StatusPageTheme = (typeof STATUS_PAGE_THEMES)[number];
 export const DEFAULT_STATUS_PAGE_THEME: StatusPageTheme = "refined";
 
@@ -47,6 +53,7 @@ export interface StatusPage {
 	type: MonitorDisplayType[];
 	companyName: string;
 	url: string;
+	customDomain?: string | null;
 	timezone?: string;
 	color: string;
 	monitors: string[];

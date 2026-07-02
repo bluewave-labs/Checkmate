@@ -1,8 +1,10 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
-import { NotificationsService } from "../../../src/service/infrastructure/notificationsService.ts";
+import { NotificationsService } from "../../../src/domain/notifications/notification.service.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import type { Notification, Monitor, MonitorStatusResponse } from "../../../src/types/index.ts";
-import type { MonitorActionDecision } from "../../../src/service/infrastructure/JobQueues/QueueHelper.ts";
+import type { Monitor } from "../../../src/domain/monitors/monitor.types.ts";
+import type { Notification } from "../../../src/domain/notifications/notification.type.ts";
+import type { MonitorStatusResponse } from "../../../src/types/network.ts";
+import type { MonitorActionDecision } from "../../../src/worker/worker.helper.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

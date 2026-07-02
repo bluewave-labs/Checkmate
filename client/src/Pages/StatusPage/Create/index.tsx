@@ -151,12 +151,18 @@ const CreateStatusPage = () => {
 		fd.append("isPublished", String(data.isPublished));
 		if (data.companyName) fd.append("companyName", data.companyName);
 		if (data.url) fd.append("url", data.url);
+		if (data.customDomain !== undefined && data.customDomain !== null) {
+			fd.append("customDomain", data.customDomain);
+		} else {
+			fd.append("customDomain", "");
+		}
 		if (data.timezone) fd.append("timezone", data.timezone);
 		if (data.color) fd.append("color", data.color);
 		fd.append("showCharts", String(data.showCharts));
 		fd.append("showUptimePercentage", String(data.showUptimePercentage));
 		fd.append("showAdminLoginLink", String(data.showAdminLoginLink));
 		fd.append("showInfrastructure", String(data.showInfrastructure));
+		fd.append("customCSS", data.customCSS ?? "");
 		if (data.theme) fd.append("theme", data.theme);
 		if (data.themeMode) fd.append("themeMode", data.themeMode);
 
@@ -281,6 +287,27 @@ const CreateStatusPage = () => {
 										)}
 										error={!!fieldState.error}
 										helperText={fieldState.error?.message}
+									/>
+								)}
+							/>
+							<Controller
+								name="customDomain"
+								control={control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value ?? ""}
+										fieldLabel={t(
+											"pages.statusPages.form.basicInfo.option.customDomain.label"
+										)}
+										placeholder={t(
+											"pages.statusPages.form.basicInfo.option.customDomain.placeholder"
+										)}
+										helperText={
+											fieldState.error?.message ||
+											t("pages.statusPages.form.basicInfo.option.customDomain.helper")
+										}
+										error={!!fieldState.error}
 									/>
 								)}
 							/>
@@ -498,6 +525,33 @@ const CreateStatusPage = () => {
 											onThemeModeChange={modeField.onChange}
 										/>
 									)}
+								/>
+							)}
+						/>
+					}
+				/>
+			)}
+			{showStep(1) && (
+				<ConfigBox
+					title={t("pages.statusPages.form.customCSS.title")}
+					subtitle={t("pages.statusPages.form.customCSS.description")}
+					rightContent={
+						<Controller
+							name="customCSS"
+							control={control}
+							render={({ field, fieldState }) => (
+								<TextField
+									{...field}
+									multiline
+									rows={8}
+									fieldLabel={t(
+										"pages.statusPages.form.customCSS.option.customCSS.label"
+									)}
+									placeholder={t(
+										"pages.statusPages.form.customCSS.option.customCSS.placeholder"
+									)}
+									error={!!fieldState.error}
+									helperText={fieldState.error?.message}
 								/>
 							)}
 						/>

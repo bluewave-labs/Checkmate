@@ -1,9 +1,19 @@
-import { InitializedServices } from "./config/services.js";
-import { logger } from "./utils/logger.js";
+import { IDb } from "@/db/db.interface.js";
+import type { ILogger } from "@/utils/logger.js";
 import type { Server } from "http";
+import { Mongoose } from "mongoose";
+import { IJobScheduler } from "@/worker/worker.interface.js";
+import { IHealthServer } from "@/worker/worker.health-server.js";
 
-export const initShutdownListener = (server: Server | null, services: InitializedServices) => {
+type ShutdownTargets = {
+	worker: IJobScheduler;
+	db: IDb<Mongoose>;
+	logger: ILogger;
+	healthServer?: IHealthServer;
+};
+export const initShutdownListener = (server: Server | null, shutdownTargets: ShutdownTargets) => {
 	const SERVICE_NAME = "Server";
+	const logger = shutdownTargets.logger;
 
 	let isShuttingDown = false;
 
@@ -16,8 +26,10 @@ export const initShutdownListener = (server: Server | null, services: Initialize
 
 		try {
 			server?.close();
-			await services.jobQueue.shutdown();
-			await services.db.disconnect();
+			await shutdownTargets.worker.drain();
+			await shutdownTargets.worker.shutdown();
+			await shutdownTargets.healthServer?.close();
+			await shutdownTargets.db.disconnect();
 			logger.info({ message: "Graceful shutdown complete" });
 			process.exit(0);
 		} catch (error) {

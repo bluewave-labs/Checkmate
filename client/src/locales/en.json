@@ -490,6 +490,13 @@
 				"advanced": {
 					"description": "Optional settings for advanced use cases",
 					"option": {
+						"method": {
+							"label": "Request method",
+							"description": {
+								"GET": "GET fetches the full response including the body.  Advanced matching fully supported",
+								"HEAD": "HEAD fetches only response headers for reducing load on the target. Supports status code matching but not advanced matching as there is no body."
+							}
+						},
 						"advancedMatching": {
 							"label": "Use advanced matching"
 						},
@@ -505,6 +512,11 @@
 							"equal": "Equal",
 							"include": "Include",
 							"regex": "Regex"
+						},
+						"customUpCodes": {
+							"label": "Accepted status codes",
+							"description": "Add any non-2xx codes that should also be considered successful.",
+							"removeAriaLabel": "Remove status code"
 						}
 					},
 					"title": "Advanced settings"
@@ -975,6 +987,11 @@
 				},
 				"mongoDBStats": {
 					"readyState": "Ready state",
+					"readsPerSecond": "Reads/s",
+					"insertsPerSecond": "Inserts/s",
+					"updatesPerSecond": "Updates/s",
+					"deletesPerSecond": "Deletes/s",
+					"writesPerSecond": "Total writes/s",
 					"host": "Host",
 					"port": "Port",
 					"dbName": "Database name",
@@ -1015,11 +1032,9 @@
 					"monitorId": "Monitor ID",
 					"runCount": "Run count",
 					"failCount": "Count",
-					"lastRunAt": "Last run at",
-					"lockedAt": "Locked at",
+					"nextScheduledAt": "Next run at",
 					"lockedBy": "Locked by",
 					"lastFinishedAt": "Last finished at",
-					"lastRunTook": "Last run took",
 					"lastFailedAt": "Last failed",
 					"failReason": "Fail reason"
 				}
@@ -1509,6 +1524,11 @@
 						"url": {
 							"label": "Your status page address",
 							"placeholder": "my-status-page"
+						},
+						"customDomain": {
+							"label": "Custom domain",
+							"placeholder": "status.example.com",
+							"helper": "Optional. Point a DNS record to this Checkmate instance to serve the status page at your own domain."
 						}
 					}
 				},
@@ -1565,6 +1585,10 @@
 						"editorial": {
 							"name": "Editorial",
 							"description": "Serif headings and hairline dividers. Distinctive and calm."
+						},
+						"minimal": {
+							"name": "Minimal",
+							"description": "Flat, focused, and compact with only the essentials."
 						}
 					}
 				},
@@ -1573,6 +1597,16 @@
 					"auto": "Auto (follow visitor's device)",
 					"light": "Light only",
 					"dark": "Dark only"
+				},
+				"customCSS": {
+					"title": "Custom CSS",
+					"description": "Add custom CSS to fine-tune the look of your public status page.",
+					"option": {
+						"customCSS": {
+							"label": "Custom CSS",
+							"placeholder": "footer { display: none; }"
+						}
+					}
 				},
 				"features": {
 					"title": "Features",
@@ -1596,6 +1630,9 @@
 			"header": {
 				"title": "Status pages",
 				"description": "Publish public pages that show real-time uptime and incident history to your customers and stakeholders."
+			},
+			"preview": {
+				"title": "Status page preview"
 			}
 		},
 		"uptime": {
@@ -1607,7 +1644,8 @@
 			},
 			"table": {
 				"headers": {
-					"responseTime": "Response time"
+					"responseTime": "Response time",
+					"uptime": "Uptime %"
 				}
 			},
 			"fallback": {

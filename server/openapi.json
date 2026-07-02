@@ -3,7 +3,7 @@
 	"info": {
 		"title": "Checkmate API",
 		"version": "1.0.0",
-		"description": "Generated from Zod validation schemas. Source of truth: server/src/validation/*.ts"
+		"description": "Generated from Zod validation schemas. Source of truth: server/src/api/validation/*.ts"
 	},
 	"servers": [
 		{
@@ -386,6 +386,10 @@
 						"type": "string",
 						"enum": ["equal", "include", "regex"]
 					},
+					"method": {
+						"type": "string",
+						"enum": ["GET", "HEAD"]
+					},
 					"notifications": {
 						"type": "array",
 						"items": {
@@ -396,6 +400,12 @@
 						"type": "array",
 						"items": {
 							"type": "string"
+						}
+					},
+					"customUpCodes": {
+						"type": "array",
+						"items": {
+							"type": "number"
 						}
 					},
 					"secret": {
@@ -460,6 +470,9 @@
 					},
 					"updatedAt": {
 						"type": "string"
+					},
+					"lastEvaluatedAt": {
+						"type": "number"
 					}
 				},
 				"required": [
@@ -474,6 +487,7 @@
 					"statusWindowThreshold",
 					"ignoreTlsErrors",
 					"useAdvancedMatching",
+					"method",
 					"notifications",
 					"tags",
 					"cpuAlertThreshold",
@@ -487,7 +501,8 @@
 					"teamId",
 					"userId",
 					"createdAt",
-					"updatedAt"
+					"updatedAt",
+					"lastEvaluatedAt"
 				],
 				"additionalProperties": {
 					"nullable": true
@@ -7016,6 +7031,13 @@
 											"type": "string"
 										}
 									},
+									"customUpCodes": {
+										"type": "array",
+										"items": {
+											"type": "number"
+										},
+										"default": []
+									},
 									"secret": {
 										"type": "string"
 									},
@@ -7052,6 +7074,10 @@
 												"enum": [""]
 											}
 										]
+									},
+									"method": {
+										"type": "string",
+										"enum": ["GET", "HEAD"]
 									},
 									"gameId": {
 										"anyOf": [
@@ -7653,6 +7679,11 @@
 														}
 													]
 												},
+												"method": {
+													"type": "string",
+													"enum": ["GET", "HEAD"],
+													"default": "GET"
+												},
 												"url": {
 													"type": "string",
 													"minLength": 1
@@ -7682,6 +7713,13 @@
 													"type": "array",
 													"items": {
 														"type": "string"
+													},
+													"default": []
+												},
+												"customUpCodes": {
+													"type": "array",
+													"items": {
+														"type": "number"
 													},
 													"default": []
 												},
@@ -8209,6 +8247,12 @@
 											"type": "string"
 										}
 									},
+									"customUpCodes": {
+										"type": "array",
+										"items": {
+											"type": "number"
+										}
+									},
 									"secret": {
 										"type": "string"
 									},
@@ -8251,6 +8295,10 @@
 												"enum": [""]
 											}
 										]
+									},
+									"method": {
+										"type": "string",
+										"enum": ["GET", "HEAD"]
 									},
 									"port": {
 										"type": "number",
@@ -10422,6 +10470,17 @@
 										"type": "string",
 										"pattern": "^[a-zA-Z0-9_-]+$"
 									},
+									"customDomain": {
+										"anyOf": [
+											{
+												"type": "string",
+												"pattern": "^(?=.{1,253}$)([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,63}$"
+											},
+											{
+												"nullable": true
+											}
+										]
+									},
 									"timezone": {
 										"type": "string"
 									},
@@ -10460,6 +10519,10 @@
 									},
 									"showInfrastructure": {
 										"type": "boolean"
+									},
+									"customCSS": {
+										"type": "string",
+										"maxLength": 100000
 									},
 									"removeLogo": {
 										"anyOf": [
@@ -10625,6 +10688,17 @@
 										"type": "string",
 										"pattern": "^[a-zA-Z0-9_-]+$"
 									},
+									"customDomain": {
+										"anyOf": [
+											{
+												"type": "string",
+												"pattern": "^(?=.{1,253}$)([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,63}$"
+											},
+											{
+												"nullable": true
+											}
+										]
+									},
 									"timezone": {
 										"type": "string"
 									},
@@ -10663,6 +10737,10 @@
 									},
 									"showInfrastructure": {
 										"type": "boolean"
+									},
+									"customCSS": {
+										"type": "string",
+										"maxLength": 100000
 									},
 									"removeLogo": {
 										"anyOf": [
@@ -10867,6 +10945,102 @@
 								}
 							}
 						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/status-page/resolve": {
+			"get": {
+				"tags": ["status-page"],
+				"summary": "Resolve a published status page by custom domain",
+				"parameters": [
+					{
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string",
+									"enum": ["uptime", "infrastructure"]
+								},
+								{
+									"type": "array",
+									"items": {
+										"type": "string",
+										"enum": ["uptime", "infrastructure"]
+									}
+								}
+							]
+						},
+						"required": true,
+						"name": "type",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "number",
+							"nullable": true
+						},
+						"required": false,
+						"name": "timeFrame",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": false,
+						"name": "domain",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Status page not found"
 					},
 					"500": {
 						"description": "Internal server error",
