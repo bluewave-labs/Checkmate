@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import type { AnyBulkWriteOperation, Document } from "mongodb";
 import type { ILogger } from "@/utils/logger.js";
 import MaintenanceWindowModel from "../../domain/maintenance-windows/maintenance-window.model.js";
 
@@ -65,7 +64,11 @@ export async function migrateMaintenanceWindowMonitorIdToArray(logger: ILogger):
 			return;
 		}
 
-		const bulkOps: AnyBulkWriteOperation<Document>[] = [];
+		// Derive the op type from the exact bulkWrite we call, so it always matches whichever `mongodb`
+		// copy Mongoose resolves (a fresh Docker install nests its own under mongoose/node_modules,
+		// distinct from the top-level one — importing the type from "mongodb" picks the wrong copy).
+		type BulkOp = Parameters<typeof MaintenanceWindowModel.collection.bulkWrite>[0][number];
+		const bulkOps: BulkOp[] = [];
 		let originalDocCount = 0;
 
 		for (const group of groups) {
