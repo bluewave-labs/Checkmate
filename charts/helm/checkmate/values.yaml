@@ -1,5 +1,7 @@
 client:
-  image: ghcr.io/bluewave-labs/checkmate-client:v3.2.0
+  image: ghcr.io/bluewave-labs/checkmate-client
+  tag: "" # defaults to Chart.appVersion; set a full repo:tag in `image` to pin (e.g. a :latest dev tag)
+  imagePullPolicy: IfNotPresent # IfNotPresent so kind-loaded :latest images are used (not pulled)
   port: 80
   protocol: http
   ingress:
@@ -17,10 +19,24 @@ client:
       # a cert-manager issuer annotation (e.g. cert-manager.io/cluster-issuer: "letsencrypt-prod").
       # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation
 
-server:
-  image: ghcr.io/bluewave-labs/checkmate-backend:v3.2.0
+api:
+  image: ghcr.io/bluewave-labs/checkmate-backend
+  tag: "" # defaults to Chart.appVersion; set a full repo:tag in `image` to pin (e.g. a :latest dev tag)
+  imagePullPolicy: IfNotPresent # IfNotPresent so kind-loaded :latest images are used (not pulled)
   port: 52345
   protocol: http
+  # Liveness/readiness probes hit GET /api/v1/health on the api port (proves the HTTP server is up).
+  probes:
+    liveness:
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 3
+    readiness:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 3
   ingress:
     enabled: true
     host: change_me
@@ -31,40 +47,62 @@ server:
     #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
     tls:
       enabled: false
-      # secretName: {{ .Release.Name }}-server-tls  # Optional; defaults to <release>-server-tls if omitted
-      # Note: when enabling TLS, also set server.protocol: https and add
+      # secretName: {{ .Release.Name }}-api-tls  # Optional; defaults to <release>-api-tls if omitted
+      # Note: when enabling TLS, also set api.protocol: https and add
       # a cert-manager issuer annotation (e.g. cert-manager.io/cluster-issuer: "letsencrypt-prod").
       # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation
 
-redis:
-  enabled: false
-  image: redis:7.2
-  port: 6379
-
 mongodb:
-  image: ghcr.io/bluewave-labs/checkmate-mongo:v3.2.0
+  image: ghcr.io/bluewave-labs/checkmate-mongo
+  tag: "" # defaults to Chart.appVersion; set a full repo:tag in `image` to pin
+  imagePullPolicy: IfNotPresent # IfNotPresent so kind-loaded :latest images are used (not pulled)
   port: 27017
+
+worker:
+  # Off by default; existing installs are unchanged. When true, a dedicated worker processes all
+  # jobs and the API stops processing (QUEUE_PRIMARY_PROCESSES is derived as false). When false, the
+  # API is all-in-one and processes jobs itself.
+  enabled: false
+  image: "" # defaults to api.image when empty, same as API image
+  tag: "" # defaults to api.tag (-> Chart.appVersion) when empty
+  imagePullPolicy: "" # defaults to api.imagePullPolicy when empty
+  replicas: 1 # used only when autoscaling.enabled = false
+  healthPort: 52346 # HEALTH_PORT; serves /livez /readyz /metrics
+  terminationGracePeriodSeconds: 30 # MUST stay > the server drain timeout (25s) or workers are killed mid-drain
+  resources: {}
+  affinity: {}
+  tolerations: {}
+  probes:
+    liveness: # /livez — failureThreshold>=3 so one slow tick never restarts mid-job
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 3
+    readiness: # /readyz — flips to 503 on drain
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 3
+  autoscaling:
+    enabled: false # requires the KEDA operator installed in-cluster
+    minReplicaCount: 1 # processing floor — never 0 (a cold gap silently stops checks)
+    maxReplicaCount: 10
+    backlogPerReplica: 50 # KEDA queryValue: target due-backlog per worker
+    cooldownPeriod: 300 # seconds before scaling an idle target down
+    stabilizationWindowSeconds: 300 # damp the interval-boundary herd
+    mongo:
+      dbName: uptime_db # must match DB_CONNECTION_STRING's database
+      collection: jobs
 
 secrets:
   JWT_SECRET: change_me
-#  REFRESH_TOKEN_SECRET: change_me
-#  SYSTEM_EMAIL_ADDRESS: test@example.com
-#  SYSTEM_EMAIL_PASSWORD: change_me
-#  SYSTEM_EMAIL_HOST: smtp.example.com
-#  SYSTEM_EMAIL_PORT: "587"
-#  PAGESPEED_API_KEY: change_me
-  DB_CONNECTION_STRING: mongodb://checkmate-mongodb.namespace.svc:27017/uptime_db
+  DB_CONNECTION_STRING: mongodb://checkmate-mongodb:27017/uptime_db
   CLIENT_HOST: change_me
-#  REDIS_HOST: redis
-#  REDIS_PORT: "6379"
-#  DB_TYPE: MongoDB
-#  TOKEN_TTL: 99d
-#  REFRESH_TOKEN_TTL: 99d
+  NODE_ENV: production
+  LOG_LEVEL: info
+  TOKEN_TTL: 99d
 
 persistence:
   mongo:
     size: 5Gi
-    storageClass: ""
-  redis:
-    size: 1Gi
     storageClass: ""
