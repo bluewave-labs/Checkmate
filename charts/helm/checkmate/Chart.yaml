@@ -3,4 +3,4 @@ name: checkmate-chart
 description: A Helm chart for Checkmate App
 type: application
 version: 0.2.0
-appVersion: "3.2.0"
+appVersion: "v3.8.1" # "v" prefix: published image tags are v-prefixed (ghcr.io/.../checkmate-*:v3.8.1)
