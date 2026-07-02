@@ -13,6 +13,7 @@ import { InitializedControllers } from "@/config/controllers.js";
 import { EnvConfig } from "@/domain/app-settings/app-settings.service.js";
 import { createStatusPageCorsOrigin } from "@/api/middleware/statusPageCorsOrigin.js";
 import { isPublicStatusPageApiPath } from "@/api/middleware/statusPagePublicApiPath.js";
+import { createStatusPageDocumentCsp } from "@/api/middleware/statusPageDocumentCsp.js";
 import { ApiServices } from "@/config/services.api.js";
 
 export const createApp = ({
@@ -38,7 +39,8 @@ export const createApp = ({
 	};
 	const publicStatusPageCorsOrigin = createStatusPageCorsOrigin(allowedOrigin, services.statusPagesRepository);
 
-	app.use(generalApiLimiter);
+	const devMode = envSettings.nodeEnv === "development";
+	app.use(generalApiLimiter(devMode));
 
 	app.use((req, res, next) => {
 		const corsOptions = isPublicStatusPageApiPath(req.method, req.path)
@@ -47,6 +49,8 @@ export const createApp = ({
 
 		return cors(corsOptions)(req, res, next);
 	});
+
+	app.use(createStatusPageDocumentCsp(allowedOrigin));
 
 	app.use(express.static(frontendPath));
 

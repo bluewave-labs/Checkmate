@@ -1585,6 +1585,10 @@
 						"editorial": {
 							"name": "Editorial",
 							"description": "Serif headings and hairline dividers. Distinctive and calm."
+						},
+						"minimal": {
+							"name": "Minimal",
+							"description": "Flat, focused, and compact with only the essentials."
 						}
 					}
 				},
@@ -1593,6 +1597,16 @@
 					"auto": "Auto (follow visitor's device)",
 					"light": "Light only",
 					"dark": "Dark only"
+				},
+				"customCSS": {
+					"title": "Custom CSS",
+					"description": "Add custom CSS to fine-tune the look of your public status page.",
+					"option": {
+						"customCSS": {
+							"label": "Custom CSS",
+							"placeholder": "footer { display: none; }"
+						}
+					}
 				},
 				"features": {
 					"title": "Features",
@@ -1616,6 +1630,9 @@
 			"header": {
 				"title": "Status pages",
 				"description": "Publish public pages that show real-time uptime and incident history to your customers and stakeholders."
+			},
+			"preview": {
+				"title": "Status page preview"
 			}
 		},
 		"uptime": {

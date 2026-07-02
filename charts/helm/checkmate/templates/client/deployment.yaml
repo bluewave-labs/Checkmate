@@ -1,3 +1,4 @@
+{{- $api := include "checkmate.api" . | fromYaml -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,12 +23,13 @@ spec:
     {{- end }}
       containers:
         - name: client
-          image: {{ .Values.client.image }}
+          image: {{ include "checkmate.image" (dict "image" .Values.client.image "tag" .Values.client.tag "root" $) }}
+          imagePullPolicy: {{ .Values.client.imagePullPolicy }}
           ports:
             - containerPort: {{ .Values.client.port }}
           env:
             - name: UPTIME_APP_API_BASE_URL
-              value: "{{ .Values.server.protocol }}://{{ .Values.server.ingress.host }}/api/v1"
+              value: "{{ $api.protocol }}://{{ $api.ingress.host }}/api/v1"
             - name: UPTIME_APP_CLIENT_HOST
               value: "{{ .Values.client.protocol }}://{{ .Values.client.ingress.host }}"
           volumeMounts:
@@ -41,4 +43,4 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: checkmate-server-nginx-cm
+            name: checkmate-client-nginx-cm

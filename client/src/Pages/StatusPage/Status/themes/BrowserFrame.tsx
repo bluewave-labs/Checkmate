@@ -64,7 +64,13 @@ export const BrowserFrame = ({ url, children }: Props) => {
 					{url}
 				</Box>
 			</Box>
-			<Box sx={{ flex: 1, minHeight: 0 }}>{children}</Box>
+			<Box
+				display="flex"
+				flexDirection="column"
+				sx={{ flex: 1, minHeight: 0 }}
+			>
+				{children}
+			</Box>
 		</Box>
 	);
 };
