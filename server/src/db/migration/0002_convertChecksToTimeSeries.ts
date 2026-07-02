@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import type { Document, AnyBulkWriteOperation } from "mongodb";
+import type { Document } from "mongodb";
 
 const CHECKS_COLLECTION = "checks";
 const BACKUP_COLLECTION = "checks_backup";
@@ -144,7 +144,11 @@ const migrateBackupData = async (backedUp: boolean): Promise<MigrationStats> => 
 
 		stats.totalSource = await source.countDocuments();
 		const cursor = source.find();
-		const operations: AnyBulkWriteOperation<Document>[] = [];
+		// Derive the op type from the exact bulkWrite we call so it matches whichever `mongodb` copy
+		// Mongoose resolves (a fresh Docker/multiarch install nests its own under mongoose/node_modules,
+		// distinct from the top-level one — importing AnyBulkWriteOperation from "mongodb" picks the wrong copy).
+		type BulkOp = Parameters<typeof target.bulkWrite>[0][number];
+		const operations: BulkOp[] = [];
 		const invalidDocs: Document[] = [];
 
 		while (await cursor.hasNext()) {
