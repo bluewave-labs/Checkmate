@@ -7,7 +7,7 @@ import {
 	getNotificationByIdParamValidation,
 	editNotificationParamValidation,
 	testAllNotificationsBodyValidation,
-} from "@/validation/notificationValidation.js";
+} from "@/api/validation/notificationValidation.js";
 
 const tags = ["notifications"];
 

@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { UserService } from "../../../src/service/business/userService.ts";
+import { UserService } from "../../../src/domain/users/user.service.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import type { User, UserRole } from "../../../src/types/index.ts";
+import type { User, UserRole } from "../../../src/domain/users/user.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -65,7 +65,7 @@ const createService = (overrides?: Record<string, unknown>) => {
 	const settingsService = {
 		getSettings: jest.fn().mockReturnValue(makeAppSettings()),
 	};
-	const jobQueue = {
+	const scheduler = {
 		deleteJob: jest.fn().mockResolvedValue(undefined),
 	};
 	const jwtMock = {
@@ -85,7 +85,7 @@ const createService = (overrides?: Record<string, unknown>) => {
 		monitorsRepository,
 		emailService,
 		settingsService,
-		jobQueue,
+		scheduler,
 		jwt: jwtMock,
 		crypto: cryptoMock,
 		...overrides,
@@ -475,23 +475,23 @@ describe("UserService", () => {
 
 	describe("deleteUser", () => {
 		it("deletes user and cleans up monitor jobs for superadmin", async () => {
-			const { service, usersRepository, jobQueue, monitorsRepository } = createService();
+			const { service, usersRepository, scheduler, monitorsRepository } = createService();
 
 			await service.deleteUser({ userId: "user-1", teamId: "team-1", roles: ["superadmin"] });
 
 			expect(monitorsRepository.findByTeamId).toHaveBeenCalledWith("team-1", {});
-			expect(jobQueue.deleteJob).toHaveBeenCalledTimes(2);
+			expect(scheduler.deleteJob).toHaveBeenCalledTimes(2);
 			expect(usersRepository.deleteById).toHaveBeenCalledWith("user-1");
 		});
 
 		it("handles null monitors for superadmin gracefully", async () => {
-			const { service, usersRepository, jobQueue } = createService({
+			const { service, usersRepository, scheduler } = createService({
 				monitorsRepository: { findByTeamId: jest.fn().mockResolvedValue(null) },
 			});
 
 			await service.deleteUser({ userId: "user-1", teamId: "team-1", roles: ["superadmin"] });
 
-			expect(jobQueue.deleteJob).not.toHaveBeenCalled();
+			expect(scheduler.deleteJob).not.toHaveBeenCalled();
 			expect(usersRepository.deleteById).toHaveBeenCalledWith("user-1");
 		});
 

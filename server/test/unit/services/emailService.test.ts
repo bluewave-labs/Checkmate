@@ -1,8 +1,8 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
-import { EmailService } from "../../../src/service/infrastructure/emailService.ts";
+import { EmailService } from "../../../src/service/emailService.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import type { ISettingsService } from "../../../src/service/system/settingsService.ts";
-import type { EmailTransportConfig } from "../../../src/types/index.ts";
+import type { ISettingsService } from "../../../src/domain/app-settings/app-settings.service.ts";
+import type { EmailTransportConfig } from "../../../src/domain/app-settings/app-settings.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

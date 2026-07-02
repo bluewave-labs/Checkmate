@@ -11,24 +11,24 @@ export const RefinedHero = ({
 	const { t } = useTranslation();
 	return (
 		<Box sx={styles.hero}>
-			<Box sx={styles.statusDot(overall.tone)} />
-			<Box sx={styles.statusCopy}>
+			<Box sx={styles.heroRow}>
+				<Box sx={styles.statusDot(overall.tone)} />
 				<Box
 					component="h1"
 					sx={styles.heroTitle}
 				>
 					{overall.message}
 				</Box>
-				<Box
-					component="p"
-					sx={styles.heroSub}
-				>
-					{t("pages.statusPages.statusBar.monitoringSummary", {
-						count: monitorCount,
-					})}
-				</Box>
+				<Box sx={styles.heroIcon(overall.tone)}>{overall.icon}</Box>
 			</Box>
-			<Box sx={styles.heroIcon(overall.tone)}>{overall.icon}</Box>
+			<Box
+				component="p"
+				sx={styles.heroSub}
+			>
+				{t("pages.statusPages.statusBar.monitoringSummary", {
+					count: monitorCount,
+				})}
+			</Box>
 		</Box>
 	);
 };

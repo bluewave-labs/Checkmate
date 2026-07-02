@@ -941,10 +941,7 @@
 					"monitorId": "ID trình giám sát",
 					"runCount": "Số lần chạy",
 					"failCount": "Số lần lỗi",
-					"lastRunAt": "Chạy lần cuối lúc",
-					"lockedAt": "Khóa lúc",
 					"lastFinishedAt": "Hoàn thành lần cuối lúc",
-					"lastRunTook": "Lần chạy cuối mất",
 					"lastFailedAt": "Lỗi lần cuối lúc",
 					"failReason": "Lý do lỗi",
 					"state": "Trạng thái"

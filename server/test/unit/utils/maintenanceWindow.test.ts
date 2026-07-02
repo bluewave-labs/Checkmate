@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import { isWindowActive } from "../../../src/utils/maintenanceWindow.ts";
-import type { MaintenanceWindow } from "../../../src/types/index.ts";
+import type { MaintenanceWindow } from "../../../src/domain/maintenance-windows/maintenance-window.type.ts";
 
 const makeWindow = (overrides?: Partial<MaintenanceWindow>): MaintenanceWindow => {
 	const now = Date.now();

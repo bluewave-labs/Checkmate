@@ -27,6 +27,7 @@ import {
 	statusBadgeKey,
 } from "@/Pages/StatusPage/Status/themes/shared/overallStatus";
 import { useStatusPageTheme } from "@/Pages/StatusPage/Status/themes/StatusPageThemeProvider";
+import { formatPercentage } from "@/Utils/FormatUtils";
 
 type StatusPageMonitor = Monitor & { checks?: Monitor["recentChecks"] };
 
@@ -101,8 +102,9 @@ export const BaseStatusPage = ({ statusPage, monitors, config }: Props) => {
 
 	return (
 		<Box sx={styles.page}>
-			<Box
+			<Stack
 				component="header"
+				direction={{ xs: "column", md: "row" }}
 				sx={styles.top}
 			>
 				<HeaderSlot
@@ -112,7 +114,7 @@ export const BaseStatusPage = ({ statusPage, monitors, config }: Props) => {
 					monitorCount={monitors.length}
 					styles={styles}
 				/>
-			</Box>
+			</Stack>
 
 			<HeroSlot
 				statusPage={statusPage}
@@ -161,6 +163,7 @@ export const BaseStatusPage = ({ statusPage, monitors, config }: Props) => {
 					const showInfra = isHardware && statusPage.showInfrastructure !== false;
 					const showChart = !isHardware && statusPage.showCharts !== false;
 					const badgeTone = monitorBadgeTone(monitor.status);
+					const uptimePercentage = formatPercentage(monitor.uptimePercentage ?? 0);
 
 					return (
 						<Box
@@ -169,32 +172,39 @@ export const BaseStatusPage = ({ statusPage, monitors, config }: Props) => {
 							sx={styles.card}
 						>
 							<Box sx={styles.cardRow}>
-								<Box sx={styles.cardLeft}>
-									<Box sx={styles.monitorName}>{monitor.name}</Box>
-									<Box sx={styles.monitorMeta}>
-										<Box
-											component="span"
-											sx={isHardware ? styles.pillHardware : styles.pill}
-										>
-											{getMonitorTypeLabel(monitor.type, t)}
-										</Box>
-										{monitor.url && (
-											<Box
-												component="span"
-												sx={styles.monitorUrl}
-												title={monitor.url}
-											>
-												{monitor.url}
-											</Box>
-										)}
-									</Box>
-								</Box>
+								<Box sx={styles.monitorName}>{monitor.name}</Box>
 								<Box
 									component="span"
 									sx={styles.badge(badgeTone)}
 								>
 									{t(statusBadgeKey[monitor.status])}
 								</Box>
+								<Stack
+									direction={{ xs: "column", md: "row" }}
+									sx={styles.monitorMeta}
+								>
+									<Box
+										component="span"
+										sx={isHardware ? styles.pillHardware : styles.pill}
+									>
+										{getMonitorTypeLabel(monitor.type, t)}
+									</Box>
+									<Box
+										component="span"
+										sx={{ ...styles.pill }}
+									>
+										{uptimePercentage}
+									</Box>
+									{monitor.url && (
+										<Box
+											component="span"
+											sx={styles.monitorUrl}
+											title={monitor.url}
+										>
+											{monitor.url}
+										</Box>
+									)}
+								</Stack>
 							</Box>
 
 							{showInfra && (

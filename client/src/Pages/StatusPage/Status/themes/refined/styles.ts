@@ -17,7 +17,7 @@ export interface RefinedStyles {
 	company: SxProps<Theme>;
 	hero: SxProps<Theme>;
 	statusDot: (tone: OverallTone) => SxProps<Theme>;
-	statusCopy: SxProps<Theme>;
+	heroRow: SxProps<Theme>;
 	heroTitle: SxProps<Theme>;
 	heroSub: SxProps<Theme>;
 	heroIcon: (tone: OverallTone) => SxProps<Theme>;
@@ -102,9 +102,9 @@ export const refinedStyles = (
 		},
 
 		top: {
-			display: "flex",
-			alignItems: "center",
+			alignItems: { xs: "flex-start", md: "center" },
 			justifyContent: "space-between",
+			gap: "12px",
 			mb: "28px",
 		},
 		brand: {
@@ -133,10 +133,10 @@ export const refinedStyles = (
 			background: tokens.surface,
 			border: `1px solid ${tokens.border}`,
 			borderRadius: tokens.radius,
-			padding: "22px 24px",
+			padding: { xs: "18px 20px", md: "22px 24px" },
 			display: "flex",
-			alignItems: "center",
-			gap: "16px",
+			flexDirection: "column",
+			gap: "4px",
 			boxShadow: cardShadow,
 			mb: "20px",
 		},
@@ -148,10 +148,15 @@ export const refinedStyles = (
 			boxShadow: `0 0 0 4px ${toneSoft(tone, tokens)}`,
 			flexShrink: 0,
 		}),
-		statusCopy: { flex: 1, minWidth: 0 },
+		heroRow: {
+			display: "flex",
+			alignItems: "center",
+			gap: { xs: "12px", md: "16px" },
+		},
 		heroTitle: {
 			m: 0,
-			mb: "2px",
+			flex: 1,
+			minWidth: 0,
 			fontSize: 17,
 			fontWeight: 600,
 			letterSpacing: "-0.01em",
@@ -159,14 +164,21 @@ export const refinedStyles = (
 		},
 		heroSub: { m: 0, color: tokens.textMuted, fontSize: 13 },
 		heroIcon: (tone) => ({
+			display: { xs: "none", md: "flex" },
 			color: toneColor(tone, tokens),
-			display: "flex",
 			alignItems: "center",
+			flexShrink: 0,
 		}),
 
-		chartSwitchWrap: { display: "flex", justifyContent: "flex-end", mb: "12px" },
+		chartSwitchWrap: {
+			display: "flex",
+			justifyContent: { xs: "center", md: "flex-end" },
+			mb: "12px",
+		},
 		chartSwitch: {
 			display: "inline-flex",
+			width: { xs: "100%", md: "auto" },
+			maxWidth: "100%",
 			border: `1px solid ${tokens.border}`,
 			borderRadius: "8px",
 			background: tokens.surface,
@@ -174,11 +186,15 @@ export const refinedStyles = (
 			gap: "2px",
 		},
 		chartSwitchButton: (active) => ({
+			flex: 1,
+			minWidth: 0,
+			whiteSpace: "nowrap",
+			textAlign: "center",
 			border: 0,
 			background: active ? tokens.upSoft : "transparent",
 			fontFamily: "inherit",
 			fontSize: 11,
-			padding: "5px 14px",
+			padding: { xs: "5px 6px", md: "5px 14px" },
 			cursor: "pointer",
 			color: active ? tokens.up : tokens.textMuted,
 			borderRadius: "5px",
@@ -207,13 +223,21 @@ export const refinedStyles = (
 		},
 		cardRow: {
 			display: "grid",
-			gridTemplateColumns: "1fr auto",
-			alignItems: "center",
-			gap: "16px",
+			alignItems: { xs: "start", md: "center" },
+			gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "1fr auto" },
+			gridTemplateAreas: {
+				xs: `"name" "status" "meta"`,
+				md: `"name name" "meta status"`,
+			},
+			columnGap: { md: "16px" },
+			rowGap: { xs: "10px", md: "4px" },
 			p: "16px 20px",
 		},
-		cardLeft: { minWidth: 0 },
+		cardLeft: { minWidth: 0, flex: 1, width: { xs: "100%", md: "auto" } },
 		monitorName: {
+			gridArea: "name",
+			minWidth: 0,
+			width: { xs: "100%", md: "auto" },
 			fontWeight: 600,
 			fontSize: 14,
 			letterSpacing: "-0.005em",
@@ -223,10 +247,9 @@ export const refinedStyles = (
 			whiteSpace: "nowrap",
 		},
 		monitorMeta: {
-			display: "flex",
+			gridArea: "meta",
 			gap: "10px",
-			alignItems: "center",
-			mt: "4px",
+			alignItems: { xs: "flex-start", md: "center" },
 			flexWrap: "wrap",
 		},
 		pill: {
@@ -251,6 +274,8 @@ export const refinedStyles = (
 		},
 
 		badge: (tone) => ({
+			gridArea: "status",
+			justifySelf: "start",
 			fontSize: 11,
 			fontWeight: 600,
 			padding: "4px 10px",
@@ -261,10 +286,10 @@ export const refinedStyles = (
 		}),
 
 		heatmap: {
-			padding: "0 20px 16px",
+			padding: { xs: "0 10px 14px", md: "0 20px 16px" },
 			display: "grid",
 			gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
-			gap: "3px",
+			gap: { xs: "1px", md: "3px" },
 			height: 42,
 		},
 		heatmapCell: (kind) => ({
@@ -276,10 +301,10 @@ export const refinedStyles = (
 		}),
 
 		histogram: {
-			padding: "0 20px",
+			padding: { xs: "0 10px", md: "0 20px" },
 			display: "grid",
 			gridTemplateColumns: `repeat(${MAX_RECENT_CHECKS}, 1fr)`,
-			gap: "3px",
+			gap: { xs: "1px", md: "3px" },
 			alignItems: "flex-end",
 			height: 42,
 		},

@@ -1,5 +1,5 @@
-import { MonitorStatsModel } from "../models/MonitorStats.js";
-import { logger } from "@/utils/logger.js";
+import { MonitorStatsModel } from "../../domain/monitor-stats/monitor-stats.model.js";
+import type { ILogger } from "@/utils/logger.js";
 
 /**
  * Second-pass dedupe of MonitorStats before the unique index on monitorId is enforced.
@@ -11,7 +11,7 @@ import { logger } from "@/utils/logger.js";
  * Keeps the document with the highest totalChecks for each monitorId (most data) and
  * deletes the rest. Falls back to most recent updatedAt when totalChecks tie.
  */
-export async function cleanupDuplicateMonitorStatsForUniqueIndex(): Promise<void> {
+export async function cleanupDuplicateMonitorStatsForUniqueIndex(logger: ILogger): Promise<void> {
 	const SERVICE_NAME = "Migration:CleanupDuplicateMonitorStatsForUniqueIndex";
 
 	try {

@@ -1,18 +1,18 @@
-import MonitorController from "../controllers/monitorController.js";
-import AuthController from "../controllers/authController.js";
-import SettingsController from "../controllers/settingsController.js";
-import CheckController from "../controllers/checkController.js";
-import GeoCheckController from "../controllers/geoCheckController.js";
-import InviteController from "../controllers/inviteController.js";
-import MaintenanceWindowController from "../controllers/maintenanceWindowController.js";
-import QueueController from "../controllers/queueController.js";
-import LogController from "../controllers/logController.js";
-import StatusPageController from "../controllers/statusPageController.js";
-import NotificationController from "../controllers/notificationController.js";
-import TagsController from "../controllers/tagController.js";
-import DiagnosticController from "../controllers/diagnosticController.js";
-import IncidentController from "../controllers/incidentController.js";
-import type { InitializedServices } from "@/config/services.js";
+import MonitorController from "../api/controllers/monitorController.js";
+import AuthController from "../api/controllers/authController.js";
+import SettingsController from "../api/controllers/settingsController.js";
+import CheckController from "../api/controllers/checkController.js";
+import GeoCheckController from "../api/controllers/geoCheckController.js";
+import InviteController from "../api/controllers/inviteController.js";
+import MaintenanceWindowController from "../api/controllers/maintenanceWindowController.js";
+import QueueController from "../api/controllers/queueController.js";
+import LogController from "../api/controllers/logController.js";
+import StatusPageController from "../api/controllers/statusPageController.js";
+import NotificationController from "../api/controllers/notificationController.js";
+import TagsController from "../api/controllers/tagController.js";
+import DiagnosticController from "../api/controllers/diagnosticController.js";
+import IncidentController from "../api/controllers/incidentController.js";
+import { ApiServices } from "@/config/services.api.js";
 
 export interface InitializedControllers {
 	authController: AuthController;
@@ -30,21 +30,21 @@ export interface InitializedControllers {
 	diagnosticController: DiagnosticController;
 	incidentController: IncidentController;
 }
-export const initializeControllers = (services: InitializedServices): InitializedControllers => {
+export const initializeControllers = (apiServices: ApiServices): InitializedControllers => {
 	return {
-		authController: new AuthController(services.userService),
-		monitorController: new MonitorController(services.monitorService, services.notificationsService),
-		settingsController: new SettingsController(services.settingsService, services.emailService),
-		checkController: new CheckController(services.checkService),
-		geoCheckController: new GeoCheckController(services.geoChecksService),
-		inviteController: new InviteController(services.inviteService),
-		maintenanceWindowController: new MaintenanceWindowController(services.maintenanceWindowService),
-		queueController: new QueueController(services.jobQueue),
-		logController: new LogController(services.logger),
-		statusPageController: new StatusPageController(services.statusPageService, services.monitorsRepository, services.settingsService),
-		notificationController: new NotificationController(services.notificationsService, services.monitorsRepository),
-		tagController: new TagsController(services.tagsService),
-		diagnosticController: new DiagnosticController(services.diagnosticService),
-		incidentController: new IncidentController(services.incidentService),
+		authController: new AuthController(apiServices.userService),
+		monitorController: new MonitorController(apiServices.monitorService, apiServices.notificationsService),
+		settingsController: new SettingsController(apiServices.settingsService, apiServices.emailService),
+		checkController: new CheckController(apiServices.checkService),
+		geoCheckController: new GeoCheckController(apiServices.geoChecksService),
+		inviteController: new InviteController(apiServices.inviteService),
+		maintenanceWindowController: new MaintenanceWindowController(apiServices.maintenanceWindowService),
+		queueController: new QueueController(apiServices.worker),
+		logController: new LogController(apiServices.logger),
+		statusPageController: new StatusPageController(apiServices.statusPageService, apiServices.monitorsRepository, apiServices.settingsService),
+		notificationController: new NotificationController(apiServices.notificationsService, apiServices.monitorsRepository),
+		tagController: new TagsController(apiServices.tagsService),
+		diagnosticController: new DiagnosticController(apiServices.diagnosticService),
+		incidentController: new IncidentController(apiServices.incidentService),
 	};
 };

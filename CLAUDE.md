@@ -68,19 +68,23 @@ VITE_APP_LOG_LEVEL="debug"
 ### Backend Layers
 ```
 server/src/
-├── controllers/     # Route handlers (authController, monitorController, etc.)
-├── service/         # Business logic
-│   ├── business/    # Core monitoring logic
-│   ├── infrastructure/  # Server/system utilities
-│   └── system/      # App-level settings
+├── api/             # HTTP layer
+│   ├── controllers/   # Route handlers (authController, monitorController, etc.)
+│   ├── middleware/    # verifyJWT, rateLimiter, sanitization, responseHandler
+│   ├── routes/        # API route definitions
+│   └── validation/    # Zod request-payload schemas
+├── domain/          # Business logic + data access, one folder per entity
+│   ├── monitors/      # e.g. monitor.service.ts, monitor.repository.ts, monitor.type.ts
+│   ├── checks/
+│   ├── incidents/
+│   └── …              # users, teams, status-pages, notifications, etc.
+├── service/         # Cross-cutting services (e.g. infrastructure/)
+├── config/          # App config wiring (controllers, routes, services, envValidation)
 ├── db/
-│   ├── models/      # Mongoose schemas (Monitor, Check, Incident, User, etc.)
-│   ├── migration/   # Database migrations (run on startup)
-│   └── modules/     # Database-specific modules
-├── middleware/v1/   # verifyJWT, rateLimiter, sanitization, responseHandler
-├── routes/v1/       # API route definitions
-├── validation/      # Joi input validation schemas
-└── repositories/    # Data access layer
+│   └── migration/   # Database migrations (run on startup)
+├── templates/       # Email/notification templates
+├── types/           # Shared const tuples + derived types
+└── utils/           # Shared utilities
 ```
 
 ### Frontend Structure

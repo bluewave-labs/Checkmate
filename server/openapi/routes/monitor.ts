@@ -16,8 +16,8 @@ import {
 	getHardwareDetailsByIdParamValidation,
 	getHardwareDetailsByIdQueryValidation,
 	monitorResponseSchema,
-} from "@/validation/monitorValidation.js";
-import { updateNotificationsValidation } from "@/validation/notificationValidation.js";
+} from "@/api/validation/monitorValidation.js";
+import { updateNotificationsValidation } from "@/api/validation/notificationValidation.js";
 
 const tags = ["monitors"];
 

@@ -941,10 +941,7 @@
 					"monitorId": "監控 ID",
 					"runCount": "執行次數",
 					"failCount": "失敗次數",
-					"lastRunAt": "最後執行於",
-					"lockedAt": "鎖定於",
 					"lastFinishedAt": "最後完成於",
-					"lastRunTook": "最後執行耗時",
 					"lastFailedAt": "最後失敗於",
 					"failReason": "失敗原因",
 					"state": "狀態"

@@ -1,7 +1,7 @@
 import { registry } from "../registry.js";
 import { bearer, json, okJson, okJsonNoData, standardErrors } from "../helpers.js";
 import { z } from "zod";
-import { inviteBodyValidation, inviteVerificationBodyValidation } from "@/validation/authValidation.js";
+import { inviteBodyValidation, inviteVerificationBodyValidation } from "@/api/validation/authValidation.js";
 
 const tags = ["invite"];
 

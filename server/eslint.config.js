@@ -39,7 +39,7 @@ export default [
 			},
 		},
 		rules: {
-			"@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }], // Ignore unused variables that start with '_'
+			"@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }], // Ignore unused variables that start with '_'
 			"@typescript-eslint/no-explicit-any": "warn", // Warn on 'any' types
 			"mocha/max-top-level-suites": "warn", // Warn if there are too many top-level suites instead of failing
 		},

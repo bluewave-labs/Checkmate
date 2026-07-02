@@ -1,5 +1,6 @@
-import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "../../src/repositories/monitors/IMonitorsRepository.ts";
-import type { Monitor, MonitorsSummary, CheckSnapshot } from "../../src/types/index.ts";
+import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "../../src/domain/monitors/monitor.repository.interface.ts";
+import type { CheckSnapshot } from "../../src/domain/checks/check.type.ts";
+import type { Monitor, MonitorsSummary } from "../../src/domain/monitors/monitor.types.ts";
 
 export class InMemoryMonitorsRepository implements IMonitorsRepository {
 	private monitors: Monitor[] = [];
@@ -31,8 +32,17 @@ export class InMemoryMonitorsRepository implements IMonitorsRepository {
 		return this.monitors.filter((m) => m.teamId === _teamId).map((m) => ({ ...m }));
 	}
 
+	async findByTeamIdWithStats(_teamId: string, _config: TeamQueryConfig): Promise<Monitor[]> {
+		return this.monitors.filter((m) => m.teamId === _teamId).map((m) => ({ ...m }));
+	}
+
 	async findByIds(monitorIds: string[]): Promise<Monitor[]> {
 		return this.monitors.filter((m) => monitorIds.includes(m.id)).map((m) => ({ ...m }));
+	}
+
+	async findByIdLean(monitorId: string): Promise<Monitor | null> {
+		const monitor = this.monitors.find((m) => m.id === monitorId);
+		return monitor ? { ...monitor } : null;
 	}
 
 	async findByIdsWithChecks(monitorIds: string[], _checksCount?: number): Promise<Monitor[]> {

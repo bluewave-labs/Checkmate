@@ -941,10 +941,7 @@
 					"monitorId": "ID du moniteur",
 					"runCount": "Nombre d'exécutions",
 					"failCount": "Nombre d'échecs",
-					"lastRunAt": "Dernière exécution",
-					"lockedAt": "Verrouillé le",
 					"lastFinishedAt": "Dernière fin",
-					"lastRunTook": "Durée dernière exécution",
 					"lastFailedAt": "Dernier échec",
 					"failReason": "Raison de l'échec",
 					"state": "État"

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { editUserBodyValidation } from "../../../src/validation/userValidation.ts";
+import { editUserBodyValidation } from "../../../src/api/validation/userValidation.ts";
 
 const validPassword = "OldPass1!";
 const validNewPassword = "NewPass1!";

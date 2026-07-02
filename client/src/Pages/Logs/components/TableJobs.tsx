@@ -42,12 +42,15 @@ export const TableJobs = ({
 		maxWidth: 220,
 	};
 
+	const isRunning = (row: QueueJobWithId) =>
+		row.lockedBy !== null && row.lockedUntil !== null && row.lockedUntil > Date.now();
+
 	const headers: Header<QueueJobWithId>[] = [
 		{
 			id: "state",
 			content: t("pages.logs.table.headers.state"),
 			render: (row) => {
-				if (row.lockedAt) {
+				if (isRunning(row)) {
 					return t("common.labels.running");
 				}
 				if (row.monitorActive === true) {
@@ -73,18 +76,6 @@ export const TableJobs = ({
 			),
 		},
 		{
-			id: "url",
-			content: t("common.table.headers.url"),
-			render: (row) => (
-				<Typography
-					title={row.monitorUrl ?? ""}
-					sx={cellSx}
-				>
-					{row.monitorUrl}
-				</Typography>
-			),
-		},
-		{
 			id: "type",
 			content: t("common.table.headers.type"),
 			render: (row) => <Typography sx={cellSx}>{row.monitorType}</Typography>,
@@ -92,50 +83,36 @@ export const TableJobs = ({
 		{
 			id: "interval",
 			content: t("common.table.headers.interval"),
-			render: (row) => {
-				let interval;
-				if (row.monitorId.toString().includes("geo")) {
-					interval = row.monitorGeoInterval ?? 0;
-				} else {
-					interval = row.repeat ?? 0;
-				}
-				return <Typography sx={cellSx}>{prettyMilliseconds(interval)}</Typography>;
-			},
+			render: (row) => (
+				<Typography sx={cellSx}>{prettyMilliseconds(row.monitorInterval ?? 0)}</Typography>
+			),
 		},
 		{
-			id: "lastRun",
-			content: t("pages.logs.table.headers.lastRunAt"),
+			id: "lastFinishedAt",
+			content: t("pages.logs.table.headers.lastFinishedAt"),
 			render: (row) => {
-				const v = formatTimestamp(row.lastRunAt) ?? "-";
+				const lastFinishedAt = formatTimestamp(row.lastFinishedAt) ?? "-";
 				return (
 					<Typography
-						title={v}
+						title={lastFinishedAt}
 						sx={cellSx}
 					>
-						{v}
+						{lastFinishedAt}
 					</Typography>
 				);
 			},
 		},
 		{
-			id: "lastRunTook",
-			content: t("pages.logs.table.headers.lastRunTook"),
+			id: "nextScheduledAt",
+			content: t("pages.logs.table.headers.nextScheduledAt"),
 			render: (row) => {
-				const value = row.lastRunTook ? prettyMilliseconds(row.lastRunTook) : "-";
-				return <Typography sx={cellSx}>{value}</Typography>;
-			},
-		},
-		{
-			id: "lockedAt",
-			content: t("pages.logs.table.headers.lockedAt"),
-			render: (row) => {
-				const v = formatTimestamp(row.lockedAt) ?? "-";
+				const nextScheduledAt = formatTimestamp(row.nextScheduledAt) ?? "-";
 				return (
 					<Typography
-						title={v}
+						title={nextScheduledAt}
 						sx={cellSx}
 					>
-						{v}
+						{nextScheduledAt}
 					</Typography>
 				);
 			},
@@ -169,7 +146,7 @@ export const TableJobs = ({
 				headers={headers}
 				data={jobsWithId}
 				getRowSx={(row) => ({
-					...(row.lockedAt && {
+					...(isRunning(row) && {
 						"& td": { backgroundColor: theme.palette.rowStatus.running },
 					}),
 					...(row.monitorActive === false && {

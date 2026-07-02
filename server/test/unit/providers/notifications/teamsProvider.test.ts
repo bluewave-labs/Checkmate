@@ -1,6 +1,6 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
-import type { Notification } from "../../../../src/types/notification.ts";
-import type { NotificationMessage } from "../../../../src/types/notificationMessage.ts";
+import type { Notification } from "../../../../src/domain/notifications/notification.type.ts";
+import type { NotificationMessage } from "../../../../src/domain/notifications/notification.type.ts";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
 
 const mockPost = jest.fn();
@@ -9,7 +9,7 @@ jest.unstable_mockModule("got", () => ({
 	HTTPError: class HTTPError extends Error {},
 }));
 
-const { TeamsProvider } = await import("../../../../src/service/infrastructure/notificationProviders/teams.ts");
+const { TeamsProvider } = await import("../../../../src/domain/notifications/providers/teams.ts");
 
 const createNotification = (overrides?: Partial<Notification>): Notification => ({
 	id: "notif-1",
