@@ -92,7 +92,10 @@ export async function migrateMaintenanceWindowMonitorIdToArray(logger: ILogger):
 			}
 		}
 
-		const result = await MaintenanceWindowModel.collection.bulkWrite(bulkOps, { ordered: true });
+		// Use the raw driver collection (like migration 0002) rather than Model.collection: the latter is
+		// typed with Mongoose's bundled mongodb, which clashes with the top-level `mongodb` op types under
+		// a dual-package install (fresh Docker build) and fails to compile.
+		const result = await db.collection(MaintenanceWindowModel.collection.collectionName).bulkWrite(bulkOps, { ordered: true });
 		const deletedCount = originalDocCount - groups.length;
 
 		logger.info({
