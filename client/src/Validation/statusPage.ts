@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { FieldPath } from "react-hook-form";
 import { STATUS_PAGE_THEMES, STATUS_PAGE_THEME_MODES } from "@/Types/StatusPage";
+import { cssReferencesExternalResource } from "@/Utils/customCss";
 
 // Wizard step a field is validated on. Attached inline to each field below so
 // the grouping lives next to the field definition; unannotated fields default
@@ -58,7 +59,14 @@ export const statusPageSchema = z.object({
 	showUptimePercentage: z.boolean().register(statusPageStepRegistry, { step: 1 }),
 	showAdminLoginLink: z.boolean().register(statusPageStepRegistry, { step: 1 }),
 	showInfrastructure: z.boolean().register(statusPageStepRegistry, { step: 1 }),
-	customCSS: z.string().optional().register(statusPageStepRegistry, { step: 1 }),
+	customCSS: z
+		.string()
+		.max(100000, "Custom CSS must be at most 100000 characters")
+		.refine((css) => !cssReferencesExternalResource(css), {
+			message: "Custom CSS cannot reference external URLs or use @import",
+		})
+		.optional()
+		.register(statusPageStepRegistry, { step: 1 }),
 	theme: z
 		.enum(STATUS_PAGE_THEMES)
 		.optional()
