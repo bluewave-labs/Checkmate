@@ -1,7 +1,7 @@
 export const StatusPageTypes = ["uptime", "infrastructure"] as const;
 export type StatusPageType = (typeof StatusPageTypes)[number];
 
-export const StatusPageThemes = ["refined", "modern", "bold", "editorial"] as const;
+export const StatusPageThemes = ["refined", "modern", "bold", "editorial", "minimal"] as const;
 export type StatusPageTheme = (typeof StatusPageThemes)[number];
 export const DEFAULT_STATUS_PAGE_THEME: StatusPageTheme = "refined";
 

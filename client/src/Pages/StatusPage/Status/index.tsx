@@ -38,6 +38,7 @@ import { BoldHero } from "@/Pages/StatusPage/Status/themes/bold/BoldHero";
 import { editorialStyles } from "@/Pages/StatusPage/Status/themes/editorial/styles";
 import { EditorialHeader } from "@/Pages/StatusPage/Status/themes/editorial/EditorialHeader";
 import { EditorialHero } from "@/Pages/StatusPage/Status/themes/editorial/EditorialHero";
+import { minimalStyles } from "@/Pages/StatusPage/Status/themes/minimal/styles";
 
 const THEME_CONFIGS: Record<StatusPageTheme, ThemeConfig<any>> = {
 	refined: {
@@ -62,6 +63,11 @@ const THEME_CONFIGS: Record<StatusPageTheme, ThemeConfig<any>> = {
 		HeaderSlot: EditorialHeader,
 		HeroSlot: EditorialHero,
 		overallStatusOptions: { allUpKey: "pages.statusPages.editorial.allUp" },
+	},
+	minimal: {
+		createStyles: minimalStyles,
+		HeaderSlot: RefinedHeader,
+		HeroSlot: RefinedHero,
 	},
 };
 

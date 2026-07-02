@@ -1585,6 +1585,10 @@
 						"editorial": {
 							"name": "Editorial",
 							"description": "Serif headings and hairline dividers. Distinctive and calm."
+						},
+						"minimal": {
+							"name": "Minimal",
+							"description": "Flat, focused, and compact with only the essentials."
 						}
 					}
 				},
