@@ -102,6 +102,7 @@ export const BaseStatusPage = ({ statusPage, monitors, config }: Props) => {
 
 	return (
 		<Box sx={styles.page}>
+			{statusPage.customCSS && <style>{statusPage.customCSS}</style>}
 			<Stack
 				component="header"
 				direction={{ xs: "column", md: "row" }}

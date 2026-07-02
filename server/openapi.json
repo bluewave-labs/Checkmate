@@ -10520,6 +10520,10 @@
 									"showInfrastructure": {
 										"type": "boolean"
 									},
+									"customCSS": {
+										"type": "string",
+										"maxLength": 100000
+									},
 									"removeLogo": {
 										"anyOf": [
 											{
@@ -10733,6 +10737,10 @@
 									},
 									"showInfrastructure": {
 										"type": "boolean"
+									},
+									"customCSS": {
+										"type": "string",
+										"maxLength": 100000
 									},
 									"removeLogo": {
 										"anyOf": [

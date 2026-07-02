@@ -191,9 +191,47 @@ const editorial: ThemeVariants = {
 	},
 };
 
+const minimal: ThemeVariants = {
+	light: {
+		bg: "#ffffff",
+		surface: "#ffffff",
+		border: "#dfe3e8",
+		text: "#17191c",
+		textMuted: "#667085",
+		up: "#12a174",
+		upStrong: "#087a57",
+		upSoft: "#e7f7f1",
+		degraded: "#b54708",
+		degradedSoft: "#fff1dc",
+		down: "#c4323f",
+		downSoft: "#fde8ea",
+		warn: "#c27803",
+		warnSoft: "#fff3d6",
+		radius: "6px",
+	},
+	dark: {
+		bg: "#0d0f12",
+		surface: "#111419",
+		border: "#2b3038",
+		text: "#f2f4f7",
+		textMuted: "#98a2b3",
+		up: "#32d6a0",
+		upStrong: "#1eb783",
+		upSoft: "rgba(50,214,160,0.14)",
+		degraded: "#f0a44b",
+		degradedSoft: "rgba(240,164,75,0.16)",
+		down: "#ff6675",
+		downSoft: "rgba(255,102,117,0.16)",
+		warn: "#f2b84b",
+		warnSoft: "rgba(242,184,75,0.16)",
+		radius: "6px",
+	},
+};
+
 export const themeTokens: Record<StatusPageTheme, ThemeVariants> = {
 	refined,
 	modern,
 	bold,
 	editorial,
+	minimal,
 };

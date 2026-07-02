@@ -1,0 +1,30 @@
+{{- if and .Values.worker.enabled .Values.worker.autoscaling.enabled }}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: checkmate-worker
+spec:
+  scaleTargetRef:
+    name: checkmate-worker
+  minReplicaCount: {{ .Values.worker.autoscaling.minReplicaCount }} # floor: never 0 — a cold gap stops checks
+  maxReplicaCount: {{ .Values.worker.autoscaling.maxReplicaCount }}
+  cooldownPeriod: {{ .Values.worker.autoscaling.cooldownPeriod }}
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleDown:
+          stabilizationWindowSeconds: {{ .Values.worker.autoscaling.stabilizationWindowSeconds }}
+  triggers:
+    - type: mongodb
+      metadata:
+        dbName: {{ .Values.worker.autoscaling.mongo.dbName | quote }}
+        collection: {{ .Values.worker.autoscaling.mongo.collection | quote }}
+        # The Phase 2 countDueBacklog predicate, time-relativized with $$NOW (epoch-ms via $toLong):
+        query: >-
+          { "type": "check", "isActive": true,
+            "$expr": { "$lte": ["$nextScheduledAt", { "$toLong": "$$NOW" }] },
+            "$or": [ { "lockedUntil": null },
+                     { "$expr": { "$lt": ["$lockedUntil", { "$toLong": "$$NOW" }] } } ] }
+        queryValue: {{ .Values.worker.autoscaling.backlogPerReplica | quote }}
+        connectionStringFromEnv: DB_CONNECTION_STRING # resolved from the worker's checkmate-secrets
+{{- end }}

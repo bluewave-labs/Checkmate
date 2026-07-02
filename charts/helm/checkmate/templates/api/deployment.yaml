@@ -1,0 +1,65 @@
+{{- $api := include "checkmate.api" . | fromYaml -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkmate-api
+spec:
+  replicas: 1 # single scheduler — seeds/reconciles the jobs collection
+  selector:
+    matchLabels:
+      app: checkmate-api
+  template:
+    metadata:
+      labels:
+        app: checkmate-api
+    spec:
+    {{- with $api.affinity }}
+      affinity:
+        {{- tpl ( . | toYaml) $ | nindent 8 }}
+    {{- end }}
+    {{- with $api.tolerations }}
+      tolerations:
+        {{- tpl ( . | toYaml) $ | nindent 8 }}
+    {{- end }}
+      containers:
+        - name: api
+          image: {{ include "checkmate.image" (dict "image" $api.image "tag" $api.tag "root" $) }}
+          imagePullPolicy: {{ $api.imagePullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ $api.port }}
+          envFrom:
+            - secretRef:
+                name: checkmate-secrets
+          # Probes hit the Express /api/v1/health endpoint — proves the HTTP server is responsive.
+          # NOTE: this does NOT detect a wedged job loop when queuePrimaryProcesses=true (the API is
+          # also a worker). Worker-aware health for that mode is a follow-up — see worker-health-checks.md §7.5.
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            initialDelaySeconds: {{ $api.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ $api.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ $api.probes.liveness.timeoutSeconds }}
+            failureThreshold: {{ $api.probes.liveness.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            initialDelaySeconds: {{ $api.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ $api.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ $api.probes.readiness.timeoutSeconds }}
+            failureThreshold: {{ $api.probes.readiness.failureThreshold }}
+          {{- with $api.resources }}
+          resources:
+              {{- tpl ( . | toYaml) $ | nindent 12 }}
+          {{- end }}
+          env:
+          - name: CLIENT_HOST
+            value: "{{ .Values.client.protocol }}://{{ .Values.client.ingress.host }}"
+          - name: QUEUE_MODE
+            value: "primary"
+          # Derived: when a worker tier is deployed the API only schedules (false); otherwise it is
+          # all-in-one and processes jobs itself (true). Keeps the two from ever competing for jobs.
+          - name: QUEUE_PRIMARY_PROCESSES
+            value: {{ not .Values.worker.enabled | quote }}

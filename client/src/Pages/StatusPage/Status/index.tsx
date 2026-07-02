@@ -2,6 +2,7 @@ import { BasePage, BaseFallback } from "@/Components/design-elements";
 import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
 import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
 
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -16,6 +17,7 @@ import {
 } from "@/Types/StatusPage";
 import {
 	buildStatusPageApiPath,
+	getStatusPagePreviewUrl,
 	getStatusPagePublicUrl,
 	isCustomDomainHost,
 } from "@/Utils/statusPageUrl";
@@ -38,6 +40,7 @@ import { BoldHero } from "@/Pages/StatusPage/Status/themes/bold/BoldHero";
 import { editorialStyles } from "@/Pages/StatusPage/Status/themes/editorial/styles";
 import { EditorialHeader } from "@/Pages/StatusPage/Status/themes/editorial/EditorialHeader";
 import { EditorialHero } from "@/Pages/StatusPage/Status/themes/editorial/EditorialHero";
+import { minimalStyles } from "@/Pages/StatusPage/Status/themes/minimal/styles";
 
 const THEME_CONFIGS: Record<StatusPageTheme, ThemeConfig<any>> = {
 	refined: {
@@ -62,6 +65,11 @@ const THEME_CONFIGS: Record<StatusPageTheme, ThemeConfig<any>> = {
 		HeaderSlot: EditorialHeader,
 		HeroSlot: EditorialHero,
 		overallStatusOptions: { allUpKey: "pages.statusPages.editorial.allUp" },
+	},
+	minimal: {
+		createStyles: minimalStyles,
+		HeaderSlot: RefinedHeader,
+		HeroSlot: RefinedHero,
 	},
 };
 
@@ -121,17 +129,9 @@ const StatusPageView = () => {
 		);
 	}
 
-	const themeConfig = THEME_CONFIGS[resolveStatusPageTheme(statusPage.theme)];
-	const themedRenderer = (
-		<BaseStatusPage
-			statusPage={statusPage}
-			monitors={monitors}
-			config={themeConfig}
-		/>
-	);
-
 	// Public route: render directly on the viewport, themed background covers everything.
 	if (isPublic) {
+		const themeConfig = THEME_CONFIGS[resolveStatusPageTheme(statusPage.theme)];
 		return (
 			<StatusPageThemeProvider
 				theme={statusPage.theme}
@@ -139,12 +139,17 @@ const StatusPageView = () => {
 				timezone={statusPage.timezone}
 				paintBody
 			>
-				{themedRenderer}
+				<BaseStatusPage
+					statusPage={statusPage}
+					monitors={monitors}
+					config={themeConfig}
+				/>
 			</StatusPageThemeProvider>
 		);
 	}
 
 	const publicUrl = getStatusPagePublicUrl(statusPage);
+	const previewUrl = getStatusPagePreviewUrl(statusPage);
 	return (
 		<BasePage
 			loading={isLoading}
@@ -163,7 +168,16 @@ const StatusPageView = () => {
 				timezone={statusPage.timezone}
 				transparent
 			>
-				<BrowserFrame url={publicUrl}>{themedRenderer}</BrowserFrame>
+				<BrowserFrame url={publicUrl}>
+					<Box
+						component="iframe"
+						src={previewUrl}
+						title={t("pages.statusPages.preview.title")}
+						flex={1}
+						width="100%"
+						border={0}
+					/>
+				</BrowserFrame>
 			</StatusPageThemeProvider>
 		</BasePage>
 	);

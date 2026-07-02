@@ -19,7 +19,6 @@ services:
       # Mount the certs directory (read-only for security)
       - ./certs:/certs:ro
     depends_on:
-      - redis
       - mongodb
     # Optional: Add healthcheck to ensure the server starts properly
     healthcheck:
