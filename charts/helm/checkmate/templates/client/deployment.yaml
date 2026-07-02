@@ -23,7 +23,7 @@ spec:
     {{- end }}
       containers:
         - name: client
-          image: {{ .Values.client.image }}
+          image: {{ include "checkmate.image" (dict "image" .Values.client.image "tag" .Values.client.tag "root" $) }}
           imagePullPolicy: {{ .Values.client.imagePullPolicy }}
           ports:
             - containerPort: {{ .Values.client.port }}

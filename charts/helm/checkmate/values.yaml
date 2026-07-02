@@ -1,5 +1,6 @@
 client:
-  image: ghcr.io/bluewave-labs/checkmate-client:v3.2.0
+  image: ghcr.io/bluewave-labs/checkmate-client
+  tag: "" # defaults to Chart.appVersion; set a full repo:tag in `image` to pin (e.g. a :latest dev tag)
   imagePullPolicy: IfNotPresent # IfNotPresent so kind-loaded :latest images are used (not pulled)
   port: 80
   protocol: http
@@ -19,7 +20,8 @@ client:
       # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation
 
 api:
-  image: ghcr.io/bluewave-labs/checkmate-backend:v3.2.0
+  image: ghcr.io/bluewave-labs/checkmate-backend
+  tag: "" # defaults to Chart.appVersion; set a full repo:tag in `image` to pin (e.g. a :latest dev tag)
   imagePullPolicy: IfNotPresent # IfNotPresent so kind-loaded :latest images are used (not pulled)
   port: 52345
   protocol: http
@@ -51,7 +53,8 @@ api:
       # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation
 
 mongodb:
-  image: ghcr.io/bluewave-labs/checkmate-mongo:v3.2.0
+  image: ghcr.io/bluewave-labs/checkmate-mongo
+  tag: "" # defaults to Chart.appVersion; set a full repo:tag in `image` to pin
   imagePullPolicy: IfNotPresent # IfNotPresent so kind-loaded :latest images are used (not pulled)
   port: 27017
 
@@ -61,6 +64,7 @@ worker:
   # API is all-in-one and processes jobs itself.
   enabled: false
   image: "" # defaults to api.image when empty, same as API image
+  tag: "" # defaults to api.tag (-> Chart.appVersion) when empty
   imagePullPolicy: "" # defaults to api.imagePullPolicy when empty
   replicas: 1 # used only when autoscaling.enabled = false
   healthPort: 52346 # HEALTH_PORT; serves /livez /readyz /metrics

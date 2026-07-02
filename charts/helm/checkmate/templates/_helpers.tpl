@@ -14,3 +14,22 @@ then reference `$api.*` instead of `.Values.api.*`.
 {{- end -}}
 {{- $api | toYaml -}}
 {{- end -}}
+
+{{- /*
+Resolve a full image reference from a repo + optional tag. `appVersion` is the single source of
+truth for tags: bumping Chart.appVersion moves every tier at once. Call as:
+  {{ include "checkmate.image" (dict "image" $repo "tag" $tag "root" $) }}
+
+If `image` already carries a tag (a ":" in its final path segment) it is used verbatim — this keeps
+legacy `server.image: repo:tag` overrides working and lets anyone pin a full ref (e.g. tag "latest").
+A ":" only in the registry segment (a registry port like "reg:5000/x") is ignored, so a tag is still
+appended. Otherwise the tag is `tag` if set, else the chart's appVersion.
+*/}}
+{{- define "checkmate.image" -}}
+{{- $lastSegment := .image | splitList "/" | last -}}
+{{- if contains ":" $lastSegment -}}
+{{- .image -}}
+{{- else -}}
+{{- printf "%s:%s" .image (.tag | default .root.Chart.AppVersion) -}}
+{{- end -}}
+{{- end -}}

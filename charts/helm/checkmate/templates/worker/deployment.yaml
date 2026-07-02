@@ -27,7 +27,7 @@ spec:
     {{- end }}
       containers:
         - name: worker
-          image: {{ .Values.worker.image | default $api.image }}
+          image: {{ include "checkmate.image" (dict "image" (.Values.worker.image | default $api.image) "tag" (.Values.worker.tag | default $api.tag) "root" $) }}
           imagePullPolicy: {{ .Values.worker.imagePullPolicy | default $api.imagePullPolicy }}
           ports:
             - name: health

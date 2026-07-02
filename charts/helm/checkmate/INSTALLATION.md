@@ -87,6 +87,27 @@ keys in your values file are harmless (ignored).
 block and merge into your install unless you override them. Set them explicitly if you relied on
 different values (e.g. a non-production `NODE_ENV`).
 
+### Image tags follow the chart's `appVersion`
+
+Each tier's `image` value is now the repository **without a tag**; the tag defaults to the chart's
+`appVersion`, so the client, api, worker, and mongodb images all move together when you upgrade the
+chart. You can still pin per tier:
+
+```yaml
+api:
+  image: ghcr.io/bluewave-labs/checkmate-backend   # repo only
+  tag: ""            # empty → Chart.appVersion; set e.g. "v3.1.0" to pin, or "latest" for a dev tag
+```
+
+- `<tier>.tag` overrides the version for that tier. The `worker` tier inherits `api.tag` (and
+  `api.image`) unless you set `worker.tag` / `worker.image`.
+- If you put a **full `repo:tag`** in `image` (e.g. a legacy `server.image: …:v3.2.0` override), it is
+  used verbatim and the `tag` field is ignored — so existing pinned values keep working unchanged.
+
+**Prefer a pinned tag over `latest`.** With the default `imagePullPolicy: IfNotPresent`, `latest` is
+cached per node and never refreshed, and `helm rollback` can't move a floating tag — pin a version (or
+let it default to `appVersion`) for reproducible, rollback-able deploys.
+
 ## Scaling: the worker tier & autoscaling
 
 By default the chart runs a single all-in-one API pod that both schedules **and** processes monitoring

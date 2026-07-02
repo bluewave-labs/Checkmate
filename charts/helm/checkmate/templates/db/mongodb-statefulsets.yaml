@@ -22,7 +22,7 @@ spec:
     {{- end }}
       containers:
         - name: mongodb
-          image: {{ .Values.mongodb.image }}
+          image: {{ include "checkmate.image" (dict "image" .Values.mongodb.image "tag" .Values.mongodb.tag "root" $) }}
           imagePullPolicy: {{ .Values.mongodb.imagePullPolicy }}
           ports:
             - containerPort: {{ .Values.mongodb.port }}

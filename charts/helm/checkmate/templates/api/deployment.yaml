@@ -23,7 +23,7 @@ spec:
     {{- end }}
       containers:
         - name: api
-          image: {{ $api.image }}
+          image: {{ include "checkmate.image" (dict "image" $api.image "tag" $api.tag "root" $) }}
           imagePullPolicy: {{ $api.imagePullPolicy }}
           ports:
             - name: http
