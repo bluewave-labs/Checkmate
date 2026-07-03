@@ -104,4 +104,16 @@ describe("JobScheduler.init (scheduler-only primary reconcile)", () => {
 		expect(row?.mode).toBe("primary");
 		await scheduler2.shutdown();
 	});
+
+	// Regression for the heartbeat-re-upsert leak: a graceful shutdown must remove the
+	// worker's registry row outright, not leave a ghost that lingers until the TTL reaps it.
+	it("removes the worker's queue_workers row immediately on graceful shutdown", async () => {
+		const scheduler = makeScheduler();
+		await scheduler.init();
+		expect(await QueueWorkerModel.findById(WORKER_ID).lean()).not.toBeNull(); // registered while running
+
+		await scheduler.shutdown();
+
+		expect(await QueueWorkerModel.findById(WORKER_ID).lean()).toBeNull(); // gone immediately, not merely TTL-expired
+	});
 });
