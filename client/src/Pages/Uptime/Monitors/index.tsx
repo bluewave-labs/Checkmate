@@ -9,6 +9,7 @@ import Stack from "@mui/material/Stack";
 import { MonitorTable } from "@/Pages/Uptime/Monitors/Components/UptimeMonitorsTable";
 import { HeaderCreate } from "@/Components/common";
 import { Play, Pause } from "lucide-react";
+import { BulkEditNotificationsModal } from "@/Components/monitors";
 import Typography from "@mui/material/Typography";
 
 import { useTranslation } from "react-i18next";
@@ -24,7 +25,7 @@ import type { RootState } from "@/Types/state";
 import { useTheme } from "@mui/material";
 import useDebounce from "@/Hooks/useDebounce";
 import { useBulkMonitorActions } from "@/Hooks/useBulkMonitorActions";
-import { SPACING } from "@/Utils/Theme/constants";
+import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 
 const UptimeMonitorsPage = () => {
 	const { t } = useTranslation();
@@ -47,7 +48,7 @@ const UptimeMonitorsPage = () => {
 	const [sortField, setSortField] = useState<string>("");
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 	const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
-
+	const [isBulkEditModalOpen, setIsBulkEditModalOpen] = useState(false);
 	const isDialogOpen = Boolean(selectedMonitor);
 
 	const debouncedSearch = useDebounce<string>(search, 300);
@@ -77,14 +78,14 @@ const UptimeMonitorsPage = () => {
 	const field = activeFilter?.[1] || (debouncedSearch ? "name" : sortField || undefined);
 	const filter = activeFilter?.[0] || debouncedSearch;
 
-	// Default to all types when none selected
-	const effectiveTypes =
-		selectedTypes.length > 0
-			? selectedTypes
-			: ["http", "ping", "docker", "port", "game", "grpc", "websocket", "dns"];
-
 	// Build URL for monitors with checks
 	const monitorsWithChecksUrl = useMemo(() => {
+		// Default to all types when none selected
+		const effectiveTypes =
+			selectedTypes.length > 0
+				? selectedTypes
+				: ["http", "ping", "docker", "port", "game", "grpc", "websocket", "dns"];
+
 		const params = new URLSearchParams();
 		effectiveTypes.forEach((type) => params.append("type", type));
 		selectedTags.forEach((tagId) => params.append("tags", tagId));
@@ -95,7 +96,7 @@ const UptimeMonitorsPage = () => {
 		if (field) params.append("field", field);
 		if (sortOrder) params.append("order", sortOrder);
 		return `/monitors/team/with-checks?${params.toString()}`;
-	}, [effectiveTypes, selectedTags, page, rowsPerPage, filter, field, sortOrder]);
+	}, [selectedTypes, selectedTags, page, rowsPerPage, filter, field, sortOrder]);
 
 	const {
 		data: monitorsWithChecksData,
@@ -144,6 +145,14 @@ const UptimeMonitorsPage = () => {
 		refetch();
 	};
 
+	const handleBulkEditComplete = (success: boolean) => {
+		setIsBulkEditModalOpen(false);
+		if (success) {
+			setSelectedRows([]);
+			refetch();
+		}
+	};
+
 	const handleCancel = () => {
 		setSelectedMonitor(null);
 	};
@@ -186,7 +195,7 @@ const UptimeMonitorsPage = () => {
 			<Stack
 				direction={isSmall ? "column" : "row"}
 				justifyContent={isSmall ? "flex-start" : "space-between"}
-				gap={theme.spacing(4)}
+				gap={theme.spacing(LAYOUT.XS)}
 			>
 				<ControlsFilter
 					selectedTypes={selectedTypes}
@@ -237,6 +246,7 @@ const UptimeMonitorsPage = () => {
 				<BulkActionsBar
 					selectedCount={selectedRows.length}
 					onCancel={handleCancelSelection}
+					hidden={isBulkEditModalOpen}
 				>
 					<Button
 						size="small"
@@ -252,17 +262,26 @@ const UptimeMonitorsPage = () => {
 					>
 						{t("common.buttons.pause")}
 					</Button>
+					<Button
+						size="small"
+						onClick={() => setIsBulkEditModalOpen(true)}
+					>
+						{t("pages.common.monitors.bulkEdit.editButton")}
+					</Button>
 				</BulkActionsBar>
 			)}
 
 			<MonitorTable
+				page={page}
 				monitors={monitorsWithChecks || []}
 				tags={tags || []}
 				refetch={refetch}
 				setSelectedMonitor={setSelectedMonitor}
 				count={count || 0}
-				page={page}
-				setPage={setPage}
+				setPage={(newPage) => {
+					setPage(newPage);
+					setSelectedRows([]);
+				}}
 				rowsPerPage={rowsPerPage}
 				sortField={sortField}
 				setSortField={setSortField}
@@ -276,6 +295,7 @@ const UptimeMonitorsPage = () => {
 						})
 					);
 					setPage(0);
+					setSelectedRows([]);
 				}}
 				selectedRows={selectedRows}
 				onSelectionChange={setSelectedRows}
@@ -287,6 +307,12 @@ const UptimeMonitorsPage = () => {
 				onConfirm={handleConfirm}
 				onCancel={handleCancel}
 				loading={isDeleting}
+			/>
+			<BulkEditNotificationsModal
+				open={isBulkEditModalOpen}
+				onClose={() => setIsBulkEditModalOpen(false)}
+				selectedMonitors={selectedRows}
+				onComplete={handleBulkEditComplete}
 			/>
 		</MonitorBasePageWithStates>
 	);
