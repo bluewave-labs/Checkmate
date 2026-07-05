@@ -325,6 +325,71 @@ describe("monitorValidation — regex pattern gating", () => {
 	});
 });
 
+describe("monitorValidation — headers", () => {
+	const baseHttpBody = {
+		name: "HTTP check",
+		type: "http" as const,
+		url: "https://example.com",
+	};
+
+	describe("createMonitorBodyValidation", () => {
+		it("accepts a valid headers array and retains it", () => {
+			const parsed = createMonitorBodyValidation.parse({
+				...baseHttpBody,
+				headers: [{ key: "X-Api-Key", value: "abc" }],
+			});
+			expect(parsed.headers).toEqual([{ key: "X-Api-Key", value: "abc" }]);
+		});
+
+		it("rejects a header with an empty key", () => {
+			expect(() =>
+				createMonitorBodyValidation.parse({
+					...baseHttpBody,
+					headers: [{ key: "", value: "some-value" }],
+				})
+			).toThrow();
+		});
+
+		it("accepts a header with an empty-string value", () => {
+			const parsed = createMonitorBodyValidation.parse({
+				...baseHttpBody,
+				headers: [{ key: "X-Empty", value: "" }],
+			});
+			expect(parsed.headers).toEqual([{ key: "X-Empty", value: "" }]);
+		});
+
+		it("treats headers as optional (omitting it is valid)", () => {
+			const parsed = createMonitorBodyValidation.parse(baseHttpBody);
+			expect(parsed.headers).toBeUndefined();
+		});
+	});
+
+	describe("editMonitorBodyValidation", () => {
+		it("retains a valid headers array on edits", () => {
+			const parsed = editMonitorBodyValidation.parse({
+				headers: [{ key: "X-Custom", value: "val" }],
+			});
+			expect(parsed.headers).toEqual([{ key: "X-Custom", value: "val" }]);
+		});
+	});
+
+	describe("importMonitorsBodyValidation", () => {
+		it("defaults headers to [] when omitted on import", () => {
+			const parsed = importMonitorsBodyValidation.parse({
+				monitors: [baseHttpBody],
+			});
+			expect(parsed.monitors[0].headers).toEqual([]);
+		});
+
+		it("retains headers when provided on import", () => {
+			const parsed = importMonitorsBodyValidation.parse({
+				monitors: [{ ...baseHttpBody, headers: [{ key: "X-Imported", value: "v" }] }],
+			});
+			expect(parsed.monitors[0].headers).toEqual([{ key: "X-Imported", value: "v" }]);
+		});
+	});
+});
+
 describe("monitorValidation — customUpCodes", () => {
 	const baseHttpBody = {
 		name: "HTTP check",

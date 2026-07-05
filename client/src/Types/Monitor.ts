@@ -52,6 +52,11 @@ export const HttpMethods = ["GET", "HEAD"] as const;
 export type HttpMethod = (typeof HttpMethods)[number];
 export const DefaultHttpMethod: HttpMethod = "GET";
 
+export interface MonitorHeader {
+	key: string;
+	value: string;
+}
+
 export interface Monitor {
 	id: string;
 	userId: string;
@@ -78,6 +83,7 @@ export interface Monitor {
 	tags: string[];
 	customUpCodes?: number[];
 	secret?: string;
+	headers?: MonitorHeader[];
 	cpuAlertThreshold: number;
 	cpuAlertCounter: number;
 	memoryAlertThreshold: number;

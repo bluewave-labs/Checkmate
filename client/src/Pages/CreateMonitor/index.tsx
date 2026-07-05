@@ -40,6 +40,7 @@ import { useGet, usePost, usePatch, useDelete } from "@/Hooks/UseApi";
 import { useMonitorForm, getMonitorDefaults } from "@/Hooks/useMonitorForm";
 import {
 	type Monitor,
+	type MonitorHeader,
 	type MonitorType,
 	type GamesMap,
 	type HttpMethod,
@@ -1317,6 +1318,93 @@ const CreateMonitorPage = () => {
 								</Stack>
 							)}
 						</Stack>
+					}
+				/>
+			)}
+
+			{showStep(2) && watchedType === "http" && (
+				<ConfigBox
+					title={t("pages.createMonitor.form.advanced.headers.title")}
+					subtitle={t("pages.createMonitor.form.advanced.headers.description")}
+					rightContent={
+						<Controller
+							name="headers"
+							control={control}
+							render={({ field }) => {
+								const headers = (field.value ?? []) as MonitorHeader[];
+								return (
+									<Stack spacing={theme.spacing(LAYOUT.MD)}>
+										{headers.map((header, index) => (
+											<Stack
+												key={index}
+												direction="row"
+												alignItems="flex-start"
+												spacing={theme.spacing(LAYOUT.MD)}
+											>
+												<TextField
+													value={header.key}
+													onChange={(e) => {
+														const updated = headers.map((h, i) =>
+															i === index ? { ...h, key: e.target.value } : h
+														);
+														field.onChange(updated);
+													}}
+													fieldLabel={
+														index === 0
+															? t("pages.createMonitor.form.advanced.headers.option.name.label")
+															: undefined
+													}
+													placeholder={t(
+														"pages.createMonitor.form.advanced.headers.option.name.placeholder"
+													)}
+													fullWidth
+												/>
+												<TextField
+													value={header.value}
+													onChange={(e) => {
+														const updated = headers.map((h, i) =>
+															i === index ? { ...h, value: e.target.value } : h
+														);
+														field.onChange(updated);
+													}}
+													fieldLabel={
+														index === 0
+															? t("pages.createMonitor.form.advanced.headers.option.value.label")
+															: undefined
+													}
+													placeholder={t(
+														"pages.createMonitor.form.advanced.headers.option.value.placeholder"
+													)}
+													fullWidth
+												/>
+												<IconButton
+													size="small"
+													onClick={() => {
+														field.onChange(headers.filter((_, i) => i !== index));
+													}}
+													aria-label={t(
+														"pages.createMonitor.form.advanced.headers.option.removeAriaLabel"
+													)}
+													sx={{ mt: index === 0 ? "26px" : undefined }}
+												>
+													<Trash2 size={16} />
+												</IconButton>
+											</Stack>
+										))}
+										<Button
+											type="button"
+											variant="outlined"
+											color="secondary"
+											onClick={() => {
+												field.onChange([...headers, { key: "", value: "" }]);
+											}}
+										>
+											{t("pages.createMonitor.form.advanced.headers.option.addButton")}
+										</Button>
+									</Stack>
+								);
+							}}
+						/>
 					}
 				/>
 			)}

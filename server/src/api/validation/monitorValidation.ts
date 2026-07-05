@@ -14,6 +14,11 @@ import {
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
+const monitorHeaderSchema = z.object({
+	key: z.string().min(1, "Header name is required"),
+	value: z.string(),
+});
+
 export const getMonitorByIdParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
 });
@@ -118,6 +123,7 @@ export const createMonitorBodyValidation = z
 		tags: z.array(z.string()).optional(),
 		customUpCodes: z.array(httpStatusCode).default([]),
 		secret: z.string().optional(),
+		headers: z.array(monitorHeaderSchema).optional(),
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
 		matchMethod: z.union([z.enum(MonitorMatchMethods), z.literal("")]).optional(),
@@ -151,6 +157,7 @@ export const editMonitorBodyValidation = z
 		tags: z.array(z.string()).optional(),
 		customUpCodes: z.array(httpStatusCode).optional(),
 		secret: z.string().optional(),
+		headers: z.array(monitorHeaderSchema).optional(),
 		ignoreTlsErrors: z.boolean().optional(),
 		useAdvancedMatching: z.boolean().optional(),
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
@@ -226,6 +233,7 @@ const importedMonitorSchema = z
 		tags: z.array(z.string()).default([]),
 		customUpCodes: z.array(httpStatusCode).default([]),
 		secret: z.string().optional(),
+		headers: z.array(monitorHeaderSchema).default([]),
 		cpuAlertThreshold: z.number().default(100),
 		cpuAlertCounter: z.number().default(5),
 		memoryAlertThreshold: z.number().default(100),
@@ -291,6 +299,7 @@ export const monitorResponseSchema = z
 		tags: z.array(z.string()),
 		customUpCodes: z.array(httpStatusCode).optional(),
 		secret: z.string().optional(),
+		headers: z.array(z.object({ key: z.string(), value: z.string() })).optional(),
 		cpuAlertThreshold: z.number(),
 		memoryAlertThreshold: z.number(),
 		diskAlertThreshold: z.number(),

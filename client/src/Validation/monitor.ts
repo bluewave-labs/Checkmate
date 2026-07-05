@@ -80,6 +80,10 @@ const httpSchema = baseSchema.extend({
 		.array(httpStatusCode)
 		.optional()
 		.register(monitorStepRegistry, { step: 2 }),
+	headers: z
+		.array(z.object({ key: z.string(), value: z.string() }))
+		.optional()
+		.register(monitorStepRegistry, { step: 2 }),
 	...geoCheckFields,
 });
 
