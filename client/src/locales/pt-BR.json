@@ -1,4 +1,4 @@
-{
+﻿{
 	"common": {
 		"auth": {
 			"roles": {
@@ -503,7 +503,23 @@
 							"regex": "Regex"
 						}
 					},
-					"title": "Configurações avançadas"
+					"title": "Configurações avançadas",
+					"headers": {
+						"title": "Cabeçalhos de requisição",
+						"description": "Adicione cabeçalhos de requisição personalizados enviados com cada verificação, p. ex. Authorization ou X-Api-Key.",
+						"option": {
+							"addButton": "Adicionar cabeçalho",
+							"name": {
+								"label": "Nome do cabeçalho",
+								"placeholder": "ex. Authorization"
+							},
+							"value": {
+								"label": "Valor do cabeçalho",
+								"placeholder": "ex. Bearer my-token"
+							},
+							"removeAriaLabel": "Remover cabeçalho"
+						}
+					}
 				},
 				"frequency": {
 					"description": "Com que frequência você deseja verificar o status deste monitor?",

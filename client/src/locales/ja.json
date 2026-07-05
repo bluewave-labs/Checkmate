@@ -1,4 +1,4 @@
-{
+﻿{
 	"common": {
 		"auth": {
 			"roles": {
@@ -503,7 +503,23 @@
 							"regex": "正規表現"
 						}
 					},
-					"title": "詳細設定"
+					"title": "詳細設定",
+					"headers": {
+						"title": "リクエストヘッダー",
+						"description": "各チェックに送信されるカスタムリクエストヘッダーを追加します（例：AuthorizationやX-Api-Key）。",
+						"option": {
+							"addButton": "ヘッダーを追加",
+							"name": {
+								"label": "ヘッダー名",
+								"placeholder": "例：Authorization"
+							},
+							"value": {
+								"label": "ヘッダー値",
+								"placeholder": "例：Bearer my-token"
+							},
+							"removeAriaLabel": "ヘッダーを削除"
+						}
+					}
 				},
 				"frequency": {
 					"description": "このモニターのステータスをどのくらいの頻度で確認しますか？",

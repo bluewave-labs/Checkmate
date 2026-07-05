@@ -1,4 +1,4 @@
-{
+﻿{
 	"common": {
 		"auth": {
 			"roles": {
@@ -503,7 +503,23 @@
 							"regex": "Regex"
 						}
 					},
-					"title": "Configuració avançada"
+					"title": "Configuració avançada",
+					"headers": {
+						"title": "Capçaleres de la sol·licitud",
+						"description": "Afegiu capçaleres de sol·licitud personalitzades enviades amb cada comprovació, p. ex. Authorization o X-Api-Key.",
+						"option": {
+							"addButton": "Afegir capçalera",
+							"name": {
+								"label": "Nom de la capçalera",
+								"placeholder": "p. ex. Authorization"
+							},
+							"value": {
+								"label": "Valor de la capçalera",
+								"placeholder": "p. ex. Bearer my-token"
+							},
+							"removeAriaLabel": "Eliminar capçalera"
+						}
+					}
 				},
 				"frequency": {
 					"description": "Amb quina freqüència voleu comprovar l'estat d'aquest monitor?",

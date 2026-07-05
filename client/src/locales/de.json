@@ -1,4 +1,4 @@
-{
+﻿{
 	"common": {
 		"auth": {
 			"roles": {
@@ -503,7 +503,23 @@
 							"regex": "Regex"
 						}
 					},
-					"title": "Erweiterte Einstellungen"
+					"title": "Erweiterte Einstellungen",
+					"headers": {
+						"title": "Anfrage-Header",
+						"description": "Fügen Sie benutzerdefinierte Anfrage-Header hinzu, die mit jeder Prüfung gesendet werden, z. B. Authorization oder X-Api-Key.",
+						"option": {
+							"addButton": "Header hinzufügen",
+							"name": {
+								"label": "Header-Name",
+								"placeholder": "z. B. Authorization"
+							},
+							"value": {
+								"label": "Header-Wert",
+								"placeholder": "z. B. Bearer my-token"
+							},
+							"removeAriaLabel": "Header entfernen"
+						}
+					}
 				},
 				"frequency": {
 					"description": "Wie oft möchten Sie den Status dieses Monitors überprüfen?",

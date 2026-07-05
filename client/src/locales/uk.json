@@ -1,4 +1,4 @@
-{
+﻿{
 	"common": {
 		"auth": {
 			"roles": {
@@ -503,7 +503,23 @@
 							"regex": "Regex"
 						}
 					},
-					"title": "Розширені налаштування"
+					"title": "Розширені налаштування",
+					"headers": {
+						"title": "Заголовки запиту",
+						"description": "Додайте власні заголовки запиту, що надсилаються з кожною перевіркою, наприклад Authorization або X-Api-Key.",
+						"option": {
+							"addButton": "Додати заголовок",
+							"name": {
+								"label": "Назва заголовка",
+								"placeholder": "наприклад Authorization"
+							},
+							"value": {
+								"label": "Значення заголовка",
+								"placeholder": "наприклад Bearer my-token"
+							},
+							"removeAriaLabel": "Видалити заголовок"
+						}
+					}
 				},
 				"frequency": {
 					"description": "Як часто Ви хочете перевіряти стан цього монітора?",

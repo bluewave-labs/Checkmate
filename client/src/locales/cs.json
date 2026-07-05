@@ -1,4 +1,4 @@
-{
+﻿{
 	"common": {
 		"auth": {
 			"roles": {
@@ -503,7 +503,23 @@
 							"regex": "Regulární výraz"
 						}
 					},
-					"title": "Pokročilá nastavení"
+					"title": "Pokročilá nastavení",
+					"headers": {
+						"title": "Hlavičky požadavku",
+						"description": "Přidejte vlastní hlavičky požadavku odesílané s každou kontrolou, např. Authorization nebo X-Api-Key.",
+						"option": {
+							"addButton": "Přidat hlavičku",
+							"name": {
+								"label": "Název hlavičky",
+								"placeholder": "např. Authorization"
+							},
+							"value": {
+								"label": "Hodnota hlavičky",
+								"placeholder": "např. Bearer my-token"
+							},
+							"removeAriaLabel": "Odebrat hlavičku"
+						}
+					}
 				},
 				"frequency": {
 					"description": "Jak často chcete kontrolovat stav tohoto monitoru?",

@@ -1,4 +1,4 @@
-{
+﻿{
 	"common": {
 		"auth": {
 			"roles": {
@@ -503,7 +503,23 @@
 							"regex": "Regex"
 						}
 					},
-					"title": "Paramètres avancés"
+					"title": "Paramètres avancés",
+					"headers": {
+						"title": "En-têtes de requête",
+						"description": "Ajoutez des en-têtes de requête personnalisés envoyés avec chaque vérification, par ex. Authorization ou X-Api-Key.",
+						"option": {
+							"addButton": "Ajouter un en-tête",
+							"name": {
+								"label": "Nom de l'en-tête",
+								"placeholder": "ex. Authorization"
+							},
+							"value": {
+								"label": "Valeur de l'en-tête",
+								"placeholder": "ex. Bearer my-token"
+							},
+							"removeAriaLabel": "Supprimer l'en-tête"
+						}
+					}
 				},
 				"frequency": {
 					"description": "À quelle fréquence souhaitez-vous vérifier le statut de ce moniteur ?",
