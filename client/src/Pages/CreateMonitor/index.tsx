@@ -35,6 +35,7 @@ import {
 	SliderWithLabel,
 	Dialog,
 } from "@/Components/inputs";
+import { FieldLabel } from "@/Components/inputs/FieldLabel";
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import { useGet, usePost, usePatch, useDelete } from "@/Hooks/UseApi";
 import { useMonitorForm, getMonitorDefaults } from "@/Hooks/useMonitorForm";
@@ -1334,11 +1335,40 @@ const CreateMonitorPage = () => {
 								const headers = (field.value ?? []) as MonitorHeader[];
 								return (
 									<Stack spacing={theme.spacing(LAYOUT.MD)}>
+										{headers.length > 0 && (
+											<Stack
+												direction="row"
+												alignItems="center"
+												spacing={theme.spacing(LAYOUT.MD)}
+											>
+												<Stack flex={1}>
+													<FieldLabel>
+														{t(
+															"pages.createMonitor.form.advanced.headers.option.name.label"
+														)}
+													</FieldLabel>
+												</Stack>
+												<Stack flex={1}>
+													<FieldLabel>
+														{t(
+															"pages.createMonitor.form.advanced.headers.option.value.label"
+														)}
+													</FieldLabel>
+												</Stack>
+												<IconButton
+													size="small"
+													sx={{ visibility: "hidden" }}
+													aria-hidden
+												>
+													<Trash2 size={16} />
+												</IconButton>
+											</Stack>
+										)}
 										{headers.map((header, index) => (
 											<Stack
 												key={index}
 												direction="row"
-												alignItems="flex-start"
+												alignItems="center"
 												spacing={theme.spacing(LAYOUT.MD)}
 											>
 												<TextField
@@ -1349,13 +1379,6 @@ const CreateMonitorPage = () => {
 														);
 														field.onChange(updated);
 													}}
-													fieldLabel={
-														index === 0
-															? t(
-																	"pages.createMonitor.form.advanced.headers.option.name.label"
-																)
-															: undefined
-													}
 													placeholder={t(
 														"pages.createMonitor.form.advanced.headers.option.name.placeholder"
 													)}
@@ -1369,13 +1392,6 @@ const CreateMonitorPage = () => {
 														);
 														field.onChange(updated);
 													}}
-													fieldLabel={
-														index === 0
-															? t(
-																	"pages.createMonitor.form.advanced.headers.option.value.label"
-																)
-															: undefined
-													}
 													placeholder={t(
 														"pages.createMonitor.form.advanced.headers.option.value.placeholder"
 													)}
@@ -1389,7 +1405,6 @@ const CreateMonitorPage = () => {
 													aria-label={t(
 														"pages.createMonitor.form.advanced.headers.option.removeAriaLabel"
 													)}
-													sx={{ mt: index === 0 ? "26px" : undefined }}
 												>
 													<Trash2 size={16} />
 												</IconButton>
