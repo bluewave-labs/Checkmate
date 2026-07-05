@@ -1351,7 +1351,9 @@ const CreateMonitorPage = () => {
 													}}
 													fieldLabel={
 														index === 0
-															? t("pages.createMonitor.form.advanced.headers.option.name.label")
+															? t(
+																	"pages.createMonitor.form.advanced.headers.option.name.label"
+																)
 															: undefined
 													}
 													placeholder={t(
@@ -1369,7 +1371,9 @@ const CreateMonitorPage = () => {
 													}}
 													fieldLabel={
 														index === 0
-															? t("pages.createMonitor.form.advanced.headers.option.value.label")
+															? t(
+																	"pages.createMonitor.form.advanced.headers.option.value.label"
+																)
 															: undefined
 													}
 													placeholder={t(

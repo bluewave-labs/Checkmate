@@ -469,9 +469,7 @@ describe("HttpProvider", () => {
 			mockGot.mockResolvedValue(makeGotResponse());
 			const { provider } = createProvider();
 
-			await provider.handle(
-				makeMonitor({ headers: [{ key: "Authorization", value: "Bearer user-token" }], secret: "secret-token" })
-			);
+			await provider.handle(makeMonitor({ headers: [{ key: "Authorization", value: "Bearer user-token" }], secret: "secret-token" }));
 
 			expect(mockGot).toHaveBeenCalledWith(
 				"https://example.com",
