@@ -278,6 +278,53 @@ describe("monitorValidation — HEAD method gating", () => {
 	});
 });
 
+describe("monitorValidation — regex pattern gating", () => {
+	const baseRegex = {
+		name: "regex check",
+		type: "http" as const,
+		url: "https://example.com",
+		useAdvancedMatching: true,
+		matchMethod: "regex" as const,
+	};
+
+	describe("createMonitorBodyValidation", () => {
+		it("accepts an RE2-supported regex pattern", () => {
+			const parsed = createMonitorBodyValidation.parse({ ...baseRegex, expectedValue: "^2\\d{2}$" });
+			expect(parsed.expectedValue).toBe("^2\\d{2}$");
+		});
+
+		it("rejects a pattern using a backreference", () => {
+			expect(() => createMonitorBodyValidation.parse({ ...baseRegex, expectedValue: "(a+)\\1" })).toThrow();
+		});
+
+		it("rejects a pattern using lookahead", () => {
+			expect(() => createMonitorBodyValidation.parse({ ...baseRegex, expectedValue: "foo(?=bar)" })).toThrow();
+		});
+
+		it("ignores an invalid regex when matchMethod is not 'regex'", () => {
+			const parsed = createMonitorBodyValidation.parse({ ...baseRegex, matchMethod: "include", expectedValue: "(a+)\\1" });
+			expect(parsed.expectedValue).toBe("(a+)\\1");
+		});
+
+		it("ignores an empty expectedValue", () => {
+			const parsed = createMonitorBodyValidation.parse({ ...baseRegex, expectedValue: "" });
+			expect(parsed.matchMethod).toBe("regex");
+		});
+	});
+
+	describe("editMonitorBodyValidation", () => {
+		it("rejects a pattern using a backreference", () => {
+			expect(() => editMonitorBodyValidation.parse({ matchMethod: "regex", expectedValue: "(a+)\\1" })).toThrow();
+		});
+	});
+
+	describe("importMonitorsBodyValidation", () => {
+		it("rejects a pattern using a backreference on imported monitors", () => {
+			expect(() => importMonitorsBodyValidation.parse({ monitors: [{ ...baseRegex, expectedValue: "(a+)\\1" }] })).toThrow();
+		});
+	});
+});
+
 describe("monitorValidation — customUpCodes", () => {
 	const baseHttpBody = {
 		name: "HTTP check",
