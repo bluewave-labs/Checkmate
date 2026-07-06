@@ -1344,7 +1344,7 @@ const CreateMonitorPage = () => {
 						<Stack spacing={theme.spacing(LAYOUT.MD)}>
 							{headerFields.length > 0 && (
 								<Stack
-									direction={{ xs: "none", md: "row" }}
+									direction={{ xs: "column", md: "row" }}
 									display={{ xs: "none", md: "flex" }}
 									alignItems="center"
 									spacing={theme.spacing(LAYOUT.MD)}
@@ -1420,12 +1420,16 @@ const CreateMonitorPage = () => {
 							>
 								{t("pages.createMonitor.form.advanced.headers.option.addButton")}
 							</Button>
-							{errors.headers?.root?.message && (
+							{(errors as Record<string, { root?: { message?: string } }>).headers?.root
+								?.message && (
 								<Typography
 									variant="caption"
 									color={theme.palette.error.main}
 								>
-									{errors.headers.root.message}
+									{
+										(errors as Record<string, { root?: { message?: string } }>).headers
+											?.root?.message
+									}
 								</Typography>
 							)}
 						</Stack>
