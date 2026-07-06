@@ -350,12 +350,13 @@ describe("monitorValidation — headers", () => {
 			).toThrow();
 		});
 
-		it("accepts a header with an empty-string value", () => {
-			const parsed = createMonitorBodyValidation.parse({
-				...baseHttpBody,
-				headers: [{ key: "X-Empty", value: "" }],
-			});
-			expect(parsed.headers).toEqual([{ key: "X-Empty", value: "" }]);
+		it("rejects a header with an empty-string value", () => {
+			expect(() =>
+				createMonitorBodyValidation.parse({
+					...baseHttpBody,
+					headers: [{ key: "X-Empty", value: "" }],
+				})
+			).toThrow("Header value is required");
 		});
 
 		it("treats headers as optional (omitting it is valid)", () => {

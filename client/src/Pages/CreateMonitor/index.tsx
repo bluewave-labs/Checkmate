@@ -1378,12 +1378,14 @@ const CreateMonitorPage = () => {
 									<Controller
 										name={`headers.${index}.key`}
 										control={control}
-										render={({ field: keyField }) => (
+										render={({ field: keyField, fieldState }) => (
 											<TextField
 												{...keyField}
 												placeholder={t(
 													"pages.createMonitor.form.advanced.headers.option.name.placeholder"
 												)}
+												error={!!fieldState.error}
+												helperText={fieldState.error?.message ?? ""}
 												fullWidth
 											/>
 										)}
@@ -1391,12 +1393,14 @@ const CreateMonitorPage = () => {
 									<Controller
 										name={`headers.${index}.value`}
 										control={control}
-										render={({ field: valueField }) => (
+										render={({ field: valueField, fieldState }) => (
 											<TextField
 												{...valueField}
 												placeholder={t(
 													"pages.createMonitor.form.advanced.headers.option.value.placeholder"
 												)}
+												error={!!fieldState.error}
+												helperText={fieldState.error?.message ?? ""}
 												fullWidth
 											/>
 										)}
