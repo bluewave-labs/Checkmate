@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { logger } from "@/Utils/logger";
 import { ALL_HTTP_STATUS_CODES } from "@/Utils/statusCode";
 import { useParams, useLocation, useNavigate } from "react-router";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTheme } from "@mui/material";
 import Stack from "@mui/material/Stack";
@@ -41,7 +41,6 @@ import { useGet, usePost, usePatch, useDelete } from "@/Hooks/UseApi";
 import { useMonitorForm, getMonitorDefaults } from "@/Hooks/useMonitorForm";
 import {
 	type Monitor,
-	type MonitorHeader,
 	type MonitorType,
 	type GamesMap,
 	type HttpMethod,
@@ -264,7 +263,21 @@ const CreateMonitorPage = () => {
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
-	const { control, watch, handleSubmit, clearErrors, trigger, reset, setValue } = form;
+	const {
+		control,
+		watch,
+		handleSubmit,
+		clearErrors,
+		trigger,
+		reset,
+		setValue,
+		formState: { errors },
+	} = form;
+	const {
+		fields: headerFields,
+		append: appendHeader,
+		remove: removeHeader,
+	} = useFieldArray({ control, name: "headers" });
 
 	useEffect(() => {
 		reset(defaults);
@@ -1328,102 +1341,94 @@ const CreateMonitorPage = () => {
 					title={t("pages.createMonitor.form.advanced.headers.title")}
 					subtitle={t("pages.createMonitor.form.advanced.headers.description")}
 					rightContent={
-						<Controller
-							name="headers"
-							control={control}
-							render={({ field }) => {
-								const headers = (field.value ?? []) as MonitorHeader[];
-								return (
-									<Stack spacing={theme.spacing(LAYOUT.MD)}>
-										{headers.length > 0 && (
-											<Stack
-												direction="row"
-												alignItems="center"
-												spacing={theme.spacing(LAYOUT.MD)}
-											>
-												<Stack flex={1}>
-													<FieldLabel>
-														{t(
-															"pages.createMonitor.form.advanced.headers.option.name.label"
-														)}
-													</FieldLabel>
-												</Stack>
-												<Stack flex={1}>
-													<FieldLabel>
-														{t(
-															"pages.createMonitor.form.advanced.headers.option.value.label"
-														)}
-													</FieldLabel>
-												</Stack>
-												<IconButton
-													size="small"
-													sx={{ visibility: "hidden" }}
-													aria-hidden
-												>
-													<Trash2 size={16} />
-												</IconButton>
-											</Stack>
-										)}
-										{headers.map((header, index) => (
-											<Stack
-												key={index}
-												direction="row"
-												alignItems="center"
-												spacing={theme.spacing(LAYOUT.MD)}
-											>
-												<TextField
-													value={header.key}
-													onChange={(e) => {
-														const updated = headers.map((h, i) =>
-															i === index ? { ...h, key: e.target.value } : h
-														);
-														field.onChange(updated);
-													}}
-													placeholder={t(
-														"pages.createMonitor.form.advanced.headers.option.name.placeholder"
-													)}
-													fullWidth
-												/>
-												<TextField
-													value={header.value}
-													onChange={(e) => {
-														const updated = headers.map((h, i) =>
-															i === index ? { ...h, value: e.target.value } : h
-														);
-														field.onChange(updated);
-													}}
-													placeholder={t(
-														"pages.createMonitor.form.advanced.headers.option.value.placeholder"
-													)}
-													fullWidth
-												/>
-												<IconButton
-													size="small"
-													onClick={() => {
-														field.onChange(headers.filter((_, i) => i !== index));
-													}}
-													aria-label={t(
-														"pages.createMonitor.form.advanced.headers.option.removeAriaLabel"
-													)}
-												>
-													<Trash2 size={16} />
-												</IconButton>
-											</Stack>
-										))}
-										<Button
-											type="button"
-											variant="outlined"
-											color="secondary"
-											onClick={() => {
-												field.onChange([...headers, { key: "", value: "" }]);
-											}}
-										>
-											{t("pages.createMonitor.form.advanced.headers.option.addButton")}
-										</Button>
+						<Stack spacing={theme.spacing(LAYOUT.MD)}>
+							{headerFields.length > 0 && (
+								<Stack
+									direction={{ xs: "none", md: "row" }}
+									display={{ xs: "none", md: "flex" }}
+									alignItems="center"
+									spacing={theme.spacing(LAYOUT.MD)}
+								>
+									<Stack flex={1}>
+										<FieldLabel>
+											{t("pages.createMonitor.form.advanced.headers.option.name.label")}
+										</FieldLabel>
 									</Stack>
-								);
-							}}
-						/>
+									<Stack flex={1}>
+										<FieldLabel>
+											{t("pages.createMonitor.form.advanced.headers.option.value.label")}
+										</FieldLabel>
+									</Stack>
+									<IconButton
+										size="small"
+										sx={{ visibility: "hidden" }}
+										aria-hidden
+									>
+										<Trash2 size={16} />
+									</IconButton>
+								</Stack>
+							)}
+							{headerFields.map((field, index) => (
+								<Stack
+									key={field.id}
+									direction={{ xs: "column", md: "row" }}
+									alignItems={{ xs: "stretch", md: "center" }}
+									spacing={theme.spacing(LAYOUT.MD)}
+								>
+									<Controller
+										name={`headers.${index}.key`}
+										control={control}
+										render={({ field: keyField }) => (
+											<TextField
+												{...keyField}
+												placeholder={t(
+													"pages.createMonitor.form.advanced.headers.option.name.placeholder"
+												)}
+												fullWidth
+											/>
+										)}
+									/>
+									<Controller
+										name={`headers.${index}.value`}
+										control={control}
+										render={({ field: valueField }) => (
+											<TextField
+												{...valueField}
+												placeholder={t(
+													"pages.createMonitor.form.advanced.headers.option.value.placeholder"
+												)}
+												fullWidth
+											/>
+										)}
+									/>
+									<IconButton
+										size="small"
+										onClick={() => removeHeader(index)}
+										aria-label={t(
+											"pages.createMonitor.form.advanced.headers.option.removeAriaLabel"
+										)}
+									>
+										<Trash2 size={16} />
+									</IconButton>
+								</Stack>
+							))}
+							<Button
+								type="button"
+								variant="outlined"
+								color="secondary"
+								onClick={() => appendHeader({ key: "", value: "" })}
+							>
+								{t("pages.createMonitor.form.advanced.headers.option.addButton")}
+							</Button>
+							{errors.headers?.root?.message && (
+								<Typography
+									variant="caption"
+									color={theme.palette.error.main}
+								>
+									{errors.headers.root.message}
+								</Typography>
+							)}
+						</Stack>
 					}
 				/>
 			)}
