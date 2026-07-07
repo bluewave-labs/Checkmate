@@ -19,7 +19,7 @@ RUN npm run build
 # ---------------------
 # Backend stage
 # ---------------------
-FROM node:20-slim AS backend
+FROM node:22-slim AS backend
 
 # Install ping
 RUN apt-get update \
