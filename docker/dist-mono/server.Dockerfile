@@ -1,4 +1,4 @@
-FROM node:20-slim AS frontend-build
+FROM node:22-slim AS frontend-build
 
 WORKDIR /app/client
 
@@ -8,7 +8,7 @@ RUN npm install
 COPY client ./
 RUN npm run build
 
-FROM node:20-slim AS app
+FROM node:22-slim AS app
 
 # Install ping
 RUN apt-get update \
