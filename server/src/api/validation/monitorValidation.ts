@@ -1,4 +1,5 @@
 import { z } from "zod";
+import RE2 from "re2";
 import { booleanCoercion, dnsHostnameRegex, dnsServerValidation } from "./shared.js";
 import { GeoContinents } from "@/domain/geo-checks/geo-check.type.js";
 import {
@@ -71,6 +72,20 @@ const refineStrategyType = (body: { type?: string; strategy?: string }, ctx: z.R
 	}
 };
 
+// The regex is executed at check time with RE2, reject patterns RE2 won't accept
+const refineRegexPattern = (body: { matchMethod?: string; expectedValue?: string }, ctx: z.RefinementCtx) => {
+	if (body.matchMethod !== "regex" || !body.expectedValue) return;
+	try {
+		new RE2(body.expectedValue);
+	} catch {
+		ctx.addIssue({
+			code: "custom",
+			path: ["expectedValue"],
+			message: "Invalid regex pattern. Backreferences and lookahead/lookbehind are not supported.",
+		});
+	}
+};
+
 const refineHeadMatching = (body: { method?: string; useAdvancedMatching?: boolean; jsonPath?: string }, ctx: z.RefinementCtx) => {
 	if (body.method === "HEAD" && (body.useAdvancedMatching === true || (body.jsonPath ?? "") !== "")) {
 		ctx.addIssue({
@@ -120,7 +135,8 @@ export const createMonitorBodyValidation = z
 	})
 	.superRefine(refineDnsHostname)
 	.superRefine(refineStrategyType)
-	.superRefine(refineHeadMatching);
+	.superRefine(refineHeadMatching)
+	.superRefine(refineRegexPattern);
 
 export const editMonitorBodyValidation = z
 	.object({
@@ -159,7 +175,8 @@ export const editMonitorBodyValidation = z
 	})
 	.superRefine(refineDnsHostname)
 	.superRefine(refineStrategyType)
-	.superRefine(refineHeadMatching);
+	.superRefine(refineHeadMatching)
+	.superRefine(refineRegexPattern);
 
 export const pauseMonitorParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
@@ -232,7 +249,8 @@ const importedMonitorSchema = z
 	})
 	.superRefine(refineDnsHostname)
 	.superRefine(refineStrategyType)
-	.superRefine(refineHeadMatching);
+	.superRefine(refineHeadMatching)
+	.superRefine(refineRegexPattern);
 
 export const importMonitorsBodyValidation = z.object({
 	monitors: z.array(importedMonitorSchema).min(1, "At least one monitor is required"),

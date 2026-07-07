@@ -119,6 +119,35 @@ describe("AdvancedMatcher", () => {
 				expect(result.ok).toBe(false);
 			});
 
+			it("returns a clear error when the regex pattern is rejected by RE2", () => {
+				const matcher = new AdvancedMatcher(createMockJmespath() as any);
+				const result = matcher.validate(
+					{ code: "200" },
+					// Backreferences are unsupported by RE2 and previously ReDoS-prone; RE2 throws on construction.
+					makeMonitor({ useAdvancedMatching: true, jsonPath: "code", matchMethod: "regex", expectedValue: "(a+)\\1" })
+				);
+
+				expect(result.ok).toBe(false);
+				expect(result.message).toBe("Invalid regex pattern");
+				expect(result.extracted).toBe("200");
+			});
+
+			it("returns a distinct error when the extracted value cannot be coerced to a string", () => {
+				// An object with a throwing toString/valueOf (like Object.create(null)) makes String() throw.
+				const unstringifiable = {
+					toString: () => {
+						throw new Error("nope");
+					},
+				};
+				const jmespath = { search: jest.fn().mockReturnValue(unstringifiable) };
+				const matcher = new AdvancedMatcher(jmespath as any);
+
+				const result = matcher.validate({}, makeMonitor({ useAdvancedMatching: true, jsonPath: "field", matchMethod: "equal", expectedValue: "x" }));
+
+				expect(result.ok).toBe(false);
+				expect(result.message).toBe("Error evaluating response value");
+			});
+
 			it("defaults to 'equal' comparison when matchMethod is undefined", () => {
 				const matcher = new AdvancedMatcher(createMockJmespath() as any);
 				const result = matcher.validate({ val: "exact" }, makeMonitor({ useAdvancedMatching: true, jsonPath: "val", expectedValue: "exact" }));

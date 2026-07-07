@@ -195,12 +195,18 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 				await this.jobsRepository.recordSuccess(job.id, job.nextScheduledAt, job.intervalMs, Date.now());
 			}
 		} catch (error: unknown) {
-			await this.jobsRepository.recordFailure(job.id, error, Date.now()); // Record failure and release lock
 			this.logger.warn({
 				message: error instanceof Error ? error.message : String(error),
 				service: SERVICE_NAME,
 				method: `runJob:${job.type}`,
 			});
+			await this.jobsRepository.recordFailure(job.id, error, Date.now()).catch((recordError: unknown) => {
+				this.logger.error({
+					message: `recordFailure failed for job ${job.id}: ${recordError instanceof Error ? recordError.message : String(recordError)}`,
+					service: SERVICE_NAME,
+					method: `runJob:${job.type}`,
+				});
+			}); // Record failure and release lock
 		} finally {
 			clearInterval(renewTimer);
 		}
@@ -218,9 +224,18 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 				const jobs = await this.jobsRepository.claimDueBatch(type, capacity, Date.now());
 				for (const job of jobs) {
 					this.inFlight[type]++; // stay within concurrency limits
-					this.runJob(job).finally(() => {
-						this.inFlight[type]--; // job done, free the slot
-					});
+					this.runJob(job)
+						.catch((error: unknown) => {
+							// defensive, runJob already catches
+							this.logger.error({
+								message: error instanceof Error ? error.message : String(error),
+								service: SERVICE_NAME,
+								method: `runJob:${type}`,
+							});
+						})
+						.finally(() => {
+							this.inFlight[type]--; // job done, free the slot
+						});
 				}
 				// Back off if no jobs found, reset to base if jobs found
 				this.pollMs[type] = capacity > 0 && jobs.length === 0 ? Math.min(this.pollMs[type] * 2, POLL_MAX_MS) : POLL_MS;

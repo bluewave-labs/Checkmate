@@ -142,4 +142,52 @@ describe("JobScheduler", () => {
 			expect((scheduler as any).timers.has("check")).toBe(false);
 		});
 	});
+
+	// Regression: a heartbeat upsert racing shutdown's deleteById could resurrect the
+	// registry row, leaving a ghost worker that inflates the alive count until TTL.
+	// shutdown() must await the in-flight beat and issue the delete as the LAST write.
+	describe("shutdown (registry deregistration)", () => {
+		it("awaits an in-flight heartbeat before deregistering, so the delete is the last write", async () => {
+			const order: string[] = [];
+			let resolveUpsert: () => void = () => {};
+			const upsert = jest.fn<any>().mockImplementation(
+				() =>
+					new Promise<void>((res) => {
+						resolveUpsert = () => {
+							order.push("upsert");
+							res();
+						};
+					})
+			);
+			const deleteById = jest.fn<any>().mockImplementation(async () => {
+				order.push("deleteById");
+			});
+			const { scheduler } = createScheduler({ mocks: { queueWorkersRepository: { upsert, deleteById } } });
+
+			// A beat fires and its upsert is still in flight (deferred, not yet committed).
+			const beat = (scheduler as any).heartbeat();
+			// Shutdown begins while that beat is in flight.
+			const shutdownPromise = scheduler.shutdown();
+
+			// The delete must not run until the in-flight upsert has settled.
+			expect(deleteById).not.toHaveBeenCalled();
+
+			resolveUpsert();
+			await beat;
+			await shutdownPromise;
+
+			expect(deleteById).toHaveBeenCalledWith("worker-1");
+			expect(order).toEqual(["upsert", "deleteById"]); // delete is always the last write to the row
+		});
+
+		it("heartbeat is a no-op once stopped, so no beat re-registers during drain/shutdown", async () => {
+			const { scheduler, mocks } = createScheduler();
+			await scheduler.drain(); // sets stopped = true
+			mocks.queueWorkersRepository.upsert.mockClear();
+
+			await (scheduler as any).heartbeat();
+
+			expect(mocks.queueWorkersRepository.upsert).not.toHaveBeenCalled();
+		});
+	});
 });

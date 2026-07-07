@@ -306,6 +306,83 @@ describe("DBQueueWorker", () => {
 			expect(mocks.jobsRepository.recordSuccess).not.toHaveBeenCalled();
 		});
 
+		// Regression for the "worker crashes on a Mongo blip" bug: recordFailure is the last write in a
+		// job's lifecycle. During a Mongo outage it rejects, and on master that rejection escaped runJob →
+		// unhandledRejection → the whole worker exited (bypassing graceful drain). It must be swallowed.
+		it("does not propagate when recordFailure itself rejects (transient Mongo failure)", async () => {
+			const unhandled: unknown[] = [];
+			const onUnhandled = (reason: unknown) => unhandled.push(reason);
+			process.on("unhandledRejection", onUnhandled);
+			try {
+				const job = makeJob({ type: "check" });
+				const failingProducer = { produce: jest.fn<any>().mockRejectedValue(new Error("network down")) };
+				const { mocks, worker } = await start({
+					mocks: {
+						jobsRepository: {
+							...createWorker().mocks.jobsRepository,
+							claimDueBatch: claimOnce(job),
+							recordFailure: jest.fn<any>().mockRejectedValue(new Error("mongo unavailable")),
+						},
+						checkProducer: failingProducer,
+					},
+				});
+				await jest.advanceTimersByTimeAsync(1); // let the recordFailure rejection settle
+
+				// the failing failure-write is caught and logged, not thrown
+				expect(mocks.jobsRepository.recordFailure).toHaveBeenCalledWith(job.id, expect.any(Error), expect.any(Number));
+				expect(mocks.logger.error).toHaveBeenCalledWith(
+					expect.objectContaining({ message: expect.stringContaining("recordFailure failed for job check:m1") })
+				);
+				expect(unhandled).toEqual([]); // nothing escaped to the process
+				expect(worker.getHealth().inFlight).toBe(0); // slot freed despite the double failure
+			} finally {
+				process.off("unhandledRejection", onUnhandled);
+			}
+		});
+
+		it("swallows the failure when both the success and failure writes reject", async () => {
+			const job = makeJob({ type: "check", intervalMs: 60000 }); // produce succeeds → recordSuccess path
+			const { mocks, worker } = await start({
+				mocks: {
+					jobsRepository: {
+						...createWorker().mocks.jobsRepository,
+						claimDueBatch: claimOnce(job),
+						recordSuccess: jest.fn<any>().mockRejectedValue(new Error("mongo unavailable")),
+						recordFailure: jest.fn<any>().mockRejectedValue(new Error("mongo still unavailable")),
+					},
+				},
+			});
+			await jest.advanceTimersByTimeAsync(1);
+
+			// success write is attempted, its rejection falls into the catch, and the failure write is too
+			expect(mocks.jobsRepository.recordSuccess).toHaveBeenCalled();
+			expect(mocks.jobsRepository.recordFailure).toHaveBeenCalledWith(job.id, expect.any(Error), expect.any(Number));
+			expect(mocks.logger.error).toHaveBeenCalledWith(
+				expect.objectContaining({ message: expect.stringContaining("recordFailure failed for job check:m1") })
+			);
+			expect(worker.getHealth().inFlight).toBe(0);
+		});
+
+		it("frees the concurrency slot and keeps polling after a job's completion writes fail", async () => {
+			const job = makeJob({ type: "check" });
+			const { mocks, worker } = await start({
+				mocks: {
+					jobsRepository: {
+						...createWorker().mocks.jobsRepository,
+						claimDueBatch: claimOnce(job),
+						recordFailure: jest.fn<any>().mockRejectedValue(new Error("mongo unavailable")),
+					},
+					checkProducer: { produce: jest.fn<any>().mockRejectedValue(new Error("network down")) },
+				},
+			});
+			await jest.advanceTimersByTimeAsync(1);
+			expect(worker.getHealth().inFlight).toBe(0); // slot released via .finally
+
+			const claimsBefore = mocks.jobsRepository.claimDueBatch.mock.calls.length;
+			await jest.advanceTimersByTimeAsync(POLL_MS); // the loop re-arms and keeps claiming — not wedged
+			expect(mocks.jobsRepository.claimDueBatch.mock.calls.length).toBeGreaterThan(claimsBefore);
+		});
+
 		it("parks a one-shot job (intervalMs null) via recordOneShot instead of rescheduling", async () => {
 			const job = makeJob({ id: "evaluate:m1", type: "evaluate", intervalMs: null });
 			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) } } });

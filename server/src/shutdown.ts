@@ -17,7 +17,7 @@ export const initShutdownListener = (server: Server | null, shutdownTargets: Shu
 
 	let isShuttingDown = false;
 
-	const shutdown = async () => {
+	const shutdown = async (exitCode: number = 0) => {
 		if (isShuttingDown) {
 			return;
 		}
@@ -31,7 +31,7 @@ export const initShutdownListener = (server: Server | null, shutdownTargets: Shu
 			await shutdownTargets.healthServer?.close();
 			await shutdownTargets.db.disconnect();
 			logger.info({ message: "Graceful shutdown complete" });
-			process.exit(0);
+			process.exit(exitCode);
 		} catch (error) {
 			const err = error as Error;
 			logger.error({
@@ -43,7 +43,17 @@ export const initShutdownListener = (server: Server | null, shutdownTargets: Shu
 			process.exit(1);
 		}
 	};
-	process.on("SIGUSR2", shutdown);
-	process.on("SIGINT", shutdown);
-	process.on("SIGTERM", shutdown);
+	process.on("SIGUSR2", () => shutdown(0));
+	process.on("SIGINT", () => shutdown(0));
+	process.on("SIGTERM", () => shutdown(0));
+
+	process.on("unhandledRejection", (reason: unknown) => {
+		const err = reason instanceof Error ? reason : new Error(String(reason));
+		logger.error({ message: `Unhandled promise rejection: ${err.message}`, service: SERVICE_NAME, method: "unhandledRejection", stack: err.stack });
+		shutdown(1);
+	});
+	process.on("uncaughtException", (error: Error) => {
+		logger.error({ message: `Uncaught exception: ${error.message}`, service: SERVICE_NAME, method: "uncaughtException", stack: error.stack });
+		shutdown(1);
+	});
 };

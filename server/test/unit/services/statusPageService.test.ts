@@ -2,6 +2,8 @@ import { describe, expect, it, jest } from "@jest/globals";
 import { StatusPageService } from "../../../src/domain/status-pages/status-page.service.ts";
 import type { IStatusPagesRepository } from "../../../src/domain/status-pages/status-page-repository.interface.ts";
 import type { ISettingsService } from "../../../src/domain/app-settings/app-settings.service.ts";
+import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
+import type { Monitor } from "../../../src/domain/monitors/monitor.types.ts";
 import type { StatusPage } from "../../../src/domain/status-pages/status-page.type.ts";
 import { DEFAULT_STATUS_PAGE_THEME, DEFAULT_STATUS_PAGE_THEME_MODE } from "../../../src/domain/status-pages/status-page.type.ts";
 
@@ -33,17 +35,54 @@ const createRepo = () =>
 		removeMonitorFromStatusPages: jest.fn().mockResolvedValue(1),
 	}) as unknown as jest.Mocked<IStatusPagesRepository>;
 
-const createSettingsService = (themesEnabled: boolean, clientHost = "http://localhost:5173") =>
+const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
+	({
+		id: "mon-1",
+		name: "API Health",
+		type: "http",
+		status: "up",
+		url: "http://internal.example.com/health",
+		port: 8080,
+		uptimePercentage: 99.9,
+		recentChecks: [],
+		secret: "super-secret-bearer-token",
+		userId: "user-1",
+		teamId: "team-1",
+		notifications: ["notif-1"],
+		jsonPath: "$.status",
+		expectedValue: "ok",
+		matchMethod: "equal",
+		useAdvancedMatching: true,
+		customUpCodes: ["200"],
+		dnsServer: "10.0.0.53",
+		dnsRecordType: "A",
+		ignoreTlsErrors: false,
+		cpuAlertThreshold: 90,
+		memoryAlertThreshold: 90,
+		diskAlertThreshold: 90,
+		tempAlertThreshold: 90,
+		selectedDisks: ["sda"],
+		...overrides,
+	}) as Monitor;
+
+const createSettingsService = (themesEnabled: boolean, clientHost = "http://localhost:5173", showURL = false) =>
 	({
 		areStatusPageThemesEnabled: jest.fn().mockReturnValue(themesEnabled),
 		getSettings: jest.fn().mockReturnValue({ clientHost }),
+		getDBSettings: jest.fn().mockResolvedValue({ showURL }),
 	}) as unknown as jest.Mocked<ISettingsService>;
 
-const createService = (themesEnabled = true, clientHost = "http://localhost:5173") => {
+const createMonitorsRepo = () =>
+	({
+		findByIds: jest.fn().mockResolvedValue([makeMonitor()]),
+	}) as unknown as jest.Mocked<IMonitorsRepository>;
+
+const createService = (themesEnabled = true, clientHost = "http://localhost:5173", showURL = false) => {
 	const repo = createRepo();
-	const settingsService = createSettingsService(themesEnabled, clientHost);
-	const service = new StatusPageService(repo, settingsService);
-	return { service, repo, settingsService };
+	const settingsService = createSettingsService(themesEnabled, clientHost, showURL);
+	const monitorsRepo = createMonitorsRepo();
+	const service = new StatusPageService(repo, settingsService, monitorsRepo);
+	return { service, repo, settingsService, monitorsRepo };
 };
 
 // ── Tests ────────────────────────────────────────────────────────────────────
@@ -203,6 +242,116 @@ describe("StatusPageService", () => {
 			expect(repo.updateById).toHaveBeenCalledWith("sp-1", "team-1", undefined, { companyName: "Updated Co" });
 			expect(result.theme).toBe(DEFAULT_STATUS_PAGE_THEME);
 			expect(result.themeMode).toBe(DEFAULT_STATUS_PAGE_THEME_MODE);
+		});
+	});
+
+	describe("getPublicStatusPagePayload", () => {
+		const SENSITIVE_FIELDS = [
+			"secret",
+			"userId",
+			"teamId",
+			"notifications",
+			"jsonPath",
+			"expectedValue",
+			"matchMethod",
+			"useAdvancedMatching",
+			"customUpCodes",
+			"dnsServer",
+			"dnsRecordType",
+			"ignoreTlsErrors",
+			"cpuAlertThreshold",
+			"memoryAlertThreshold",
+			"diskAlertThreshold",
+			"tempAlertThreshold",
+			"selectedDisks",
+		] as const;
+
+		const publishedPage = () => makeStatusPage({ isPublished: true });
+
+		it("never exposes secret or internal fields — even when showURL is ON (regression)", async () => {
+			const { service } = createService(true, "http://localhost:5173", true);
+
+			const { monitors } = await service.getPublicStatusPagePayload(publishedPage(), undefined);
+
+			expect(monitors).toHaveLength(1);
+			for (const field of SENSITIVE_FIELDS) {
+				expect(monitors[0]).not.toHaveProperty(field);
+			}
+		});
+
+		it("withholds the same fields when showURL is OFF", async () => {
+			const { service } = createService(true, "http://localhost:5173", false);
+
+			const { monitors } = await service.getPublicStatusPagePayload(publishedPage(), undefined);
+
+			for (const field of SENSITIVE_FIELDS) {
+				expect(monitors[0]).not.toHaveProperty(field);
+			}
+		});
+
+		it("includes url/port only when showURL is ON", async () => {
+			const withShowURL = createService(true, "http://localhost:5173", true);
+			const withoutShowURL = createService(true, "http://localhost:5173", false);
+
+			const shown = await withShowURL.service.getPublicStatusPagePayload(publishedPage(), undefined);
+			const hidden = await withoutShowURL.service.getPublicStatusPagePayload(publishedPage(), undefined);
+
+			expect(shown.monitors[0]).toHaveProperty("url", "http://internal.example.com/health");
+			expect(shown.monitors[0]).toHaveProperty("port", 8080);
+			expect(shown.monitors[0]).not.toHaveProperty("secret");
+			expect(hidden.monitors[0]).not.toHaveProperty("url");
+			expect(hidden.monitors[0]).not.toHaveProperty("port");
+		});
+
+		it("keeps the display fields the public themes consume", async () => {
+			const { service } = createService();
+
+			const { monitors } = await service.getPublicStatusPagePayload(publishedPage(), undefined);
+
+			expect(monitors[0]).toMatchObject({
+				id: "mon-1",
+				name: "API Health",
+				type: "http",
+				status: "up",
+				uptimePercentage: 99.9,
+				recentChecks: [],
+				checks: [],
+			});
+		});
+
+		it("orders monitors to match the status page's monitor list", async () => {
+			const { service, monitorsRepo } = createService();
+			(monitorsRepo.findByIds as jest.Mock).mockResolvedValue([makeMonitor({ id: "mon-1" }), makeMonitor({ id: "mon-2" })]);
+			const page = makeStatusPage({ isPublished: true, monitors: ["mon-2", "mon-1"] });
+
+			const { monitors } = await service.getPublicStatusPagePayload(page, undefined);
+
+			expect(monitors.map((monitor) => monitor.id)).toEqual(["mon-2", "mon-1"]);
+		});
+
+		it("rejects an unpublished page for a mismatched or absent requester team (403)", async () => {
+			const { service } = createService();
+			const unpublished = makeStatusPage({ isPublished: false, teamId: "team-A" });
+
+			await expect(service.getPublicStatusPagePayload(unpublished, "team-B")).rejects.toMatchObject({ status: 403 });
+			await expect(service.getPublicStatusPagePayload(unpublished, undefined)).rejects.toMatchObject({ status: 403 });
+		});
+
+		it("serves an unpublished page to its own team", async () => {
+			const { service } = createService();
+			const unpublished = makeStatusPage({ isPublished: false, teamId: "team-A" });
+
+			const { monitors } = await service.getPublicStatusPagePayload(unpublished, "team-A");
+
+			expect(monitors).toHaveLength(1);
+		});
+
+		it("serves a published page to an anonymous requester", async () => {
+			const { service } = createService();
+
+			await expect(service.getPublicStatusPagePayload(publishedPage(), undefined)).resolves.toMatchObject({
+				statusPage: expect.objectContaining({ id: "sp-1" }),
+			});
 		});
 	});
 

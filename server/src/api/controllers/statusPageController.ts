@@ -10,11 +10,7 @@ import {
 import { AppError } from "@/utils/AppError.js";
 import { requireTeamId, requireUserId } from "@/api/controllers/controllerUtils.js";
 import { IStatusPageService } from "@/domain/status-pages/status-page.service.js";
-import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
-import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
-import { NormalizeData } from "@/utils/dataUtils.js";
 import { resolveStatusPageDomainFromRequest } from "@/utils/statusPageDomain.js";
-import type { StatusPage } from "@/domain/status-pages/status-page.type.js";
 
 const SERVICE_NAME = "statusPageController";
 
@@ -31,52 +27,13 @@ export interface IStatusPageController {
 class StatusPageController implements IStatusPageController {
 	static SERVICE_NAME = SERVICE_NAME;
 	private statusPageService: IStatusPageService;
-	private monitorsRepository: IMonitorsRepository;
-	private settingsService: ISettingsService;
-	constructor(statusPageService: IStatusPageService, monitorsRepository: IMonitorsRepository, settingsService: ISettingsService) {
+	constructor(statusPageService: IStatusPageService) {
 		this.statusPageService = statusPageService;
-		this.monitorsRepository = monitorsRepository;
-		this.settingsService = settingsService;
 	}
 
 	get serviceName() {
 		return StatusPageController.SERVICE_NAME;
 	}
-
-	private buildStatusPagePayload = async (statusPage: StatusPage, req: Request) => {
-		if (!statusPage.isPublished) {
-			const teamId = requireTeamId(req?.user?.teamId);
-			if (statusPage.teamId !== teamId) {
-				throw new AppError({ message: "Forbidden", status: 403 });
-			}
-		}
-
-		const settings = await this.settingsService.getDBSettings();
-		const showURL = settings.showURL;
-
-		const monitors = await this.monitorsRepository.findByIds(statusPage.monitors);
-		const monitorOrder = new Map(statusPage.monitors.map((id, index) => [id, index]));
-		const sortedMonitors = [...monitors].sort((a, b) => {
-			const orderA = monitorOrder.get(a.id) ?? Number.MAX_SAFE_INTEGER;
-			const orderB = monitorOrder.get(b.id) ?? Number.MAX_SAFE_INTEGER;
-			return orderA - orderB;
-		});
-
-		const normalizedMonitors = sortedMonitors.map((monitor) => {
-			const normalizedChecks = NormalizeData(monitor.recentChecks, 10, 100);
-			if (!showURL) {
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				const { url, port, secret, notifications, ...rest } = monitor;
-				return { ...rest, checks: normalizedChecks };
-			}
-			return { ...monitor, checks: normalizedChecks };
-		});
-
-		return {
-			statusPage,
-			monitors: normalizedMonitors,
-		};
-	};
 
 	createStatusPage = async (req: Request, res: Response, next: NextFunction) => {
 		try {
@@ -135,7 +92,7 @@ class StatusPageController implements IStatusPageController {
 			}
 
 			const statusPage = await this.statusPageService.getStatusPageByUrl(req.params.url as string);
-			const data = await this.buildStatusPagePayload(statusPage, req);
+			const data = await this.statusPageService.getPublicStatusPagePayload(statusPage, req.user?.teamId);
 
 			return res.status(200).json({
 				success: true,
@@ -161,7 +118,7 @@ class StatusPageController implements IStatusPageController {
 				throw new AppError({ message: "Status page not found", status: 404 });
 			}
 
-			const data = await this.buildStatusPagePayload(statusPage, req);
+			const data = await this.statusPageService.getPublicStatusPagePayload(statusPage, req.user?.teamId);
 
 			return res.status(200).json({
 				success: true,
