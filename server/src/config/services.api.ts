@@ -91,7 +91,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		emailService,
 	});
 
-	const statusPageService = new StatusPageService(statusPagesRepository, settingsService);
+	const statusPageService = new StatusPageService(statusPagesRepository, settingsService, monitorsRepository);
 	const tagsService = new TagsService(tagsRepository, monitorsRepository);
 	const diagnosticService = new DiagnosticService(db);
 
