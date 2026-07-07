@@ -134,14 +134,15 @@ describe("AdvancedMatcher", () => {
 
 			it("returns a distinct error when the extracted value cannot be coerced to a string", () => {
 				// An object with a throwing toString/valueOf (like Object.create(null)) makes String() throw.
-				const unstringifiable = { toString: () => { throw new Error("nope"); } };
+				const unstringifiable = {
+					toString: () => {
+						throw new Error("nope");
+					},
+				};
 				const jmespath = { search: jest.fn().mockReturnValue(unstringifiable) };
 				const matcher = new AdvancedMatcher(jmespath as any);
 
-				const result = matcher.validate(
-					{},
-					makeMonitor({ useAdvancedMatching: true, jsonPath: "field", matchMethod: "equal", expectedValue: "x" })
-				);
+				const result = matcher.validate({}, makeMonitor({ useAdvancedMatching: true, jsonPath: "field", matchMethod: "equal", expectedValue: "x" }));
 
 				expect(result.ok).toBe(false);
 				expect(result.message).toBe("Error evaluating response value");
