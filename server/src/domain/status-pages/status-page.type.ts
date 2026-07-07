@@ -1,3 +1,5 @@
+import type { Monitor } from "@/domain/monitors/monitor.types.js";
+import type { NormalizedCheck, CheckSnapshot } from "@/domain/checks/check.type.js";
 export const StatusPageTypes = ["uptime", "infrastructure"] as const;
 export type StatusPageType = (typeof StatusPageTypes)[number];
 
@@ -43,4 +45,12 @@ export interface StatusPage {
 	themeMode: StatusPageThemeMode;
 	createdAt: string;
 	updatedAt: string;
+}
+
+export type PublicStatusPageMonitor = Pick<Monitor, "id" | "name" | "type" | "status" | "uptimePercentage" | "recentChecks"> &
+	Partial<Pick<Monitor, "url" | "port">> & { checks: NormalizedCheck<CheckSnapshot>[] };
+
+export interface PublicStatusPagePayload {
+	statusPage: StatusPage;
+	monitors: PublicStatusPageMonitor[];
 }
