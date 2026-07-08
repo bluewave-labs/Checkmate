@@ -56,7 +56,7 @@ export const InviteTeamMemberDialog = ({
 		const result = await generateToken("/invite", data);
 		if (result?.data?.token) {
 			const token = result.data.token;
-			const link = CLIENT_HOST ? `${CLIENT_HOST}/register/${token}` : token;
+			const link = `${CLIENT_HOST || window.location.origin}/register/${token}`;
 			setInviteLink(link);
 		}
 	};
