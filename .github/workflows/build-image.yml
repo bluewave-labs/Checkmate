@@ -8,6 +8,10 @@ on:
     tags: ["v*"]
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -38,8 +42,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/bluewave-labs/checkmate
-            ghcr.io/bluewave-labs/checkmate-backend-mono
+            ghcr.io/${{ github.repository_owner }}/checkmate
+            ghcr.io/${{ github.repository_owner }}/checkmate-backend-mono
           flavor: |
             latest=false
           tags: |
