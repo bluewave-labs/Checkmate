@@ -12,13 +12,16 @@ image behind a TLS reverse proxy.
 ## How deploys work
 
 `.github/workflows/build-image.yml` builds and pushes the image, then SSHes in
-and runs `docker compose pull && docker compose up -d` in this directory:
+and runs `docker compose pull <service> && docker compose up -d <service>` in
+this directory:
 
-- push to `develop` → image tagged `:develop` → `checkmate-staging` recreated
-- push to `demo` → image tagged `:demo` → `checkmate-demo` recreated
+- merge to `develop` → image tagged `:develop` → `checkmate-staging` recreated
+- merge to `master` → image tagged `:master` → `checkmate-demo` (prod) recreated
 
-The host keeps a git checkout of this repo; the deploy does `git pull` first so
-compose/gateway changes land with the code.
+The host keeps a git checkout of this repo (on `develop`); the deploy does
+`git pull` first so compose changes land with the code. Note the deploy only
+recreates the checkmate service — changes to `gateway/nginx.conf` or the mongo
+services need a manual `docker compose up -d` / gateway restart on the host.
 
 ## Host-local files (not committed)
 

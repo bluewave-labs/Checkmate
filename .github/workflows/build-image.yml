@@ -2,9 +2,7 @@ name: Build image
 
 on:
   push:
-    # chore/simplify-deployment is temporary, for pre-merge testing of this
-    # workflow itself — remove before merge
-    branches: ["develop", "master", "demo", "chore/simplify-deployment"]
+    branches: ["develop", "master"]
     tags: ["v*"]
   workflow_dispatch:
 
@@ -64,8 +62,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # The hosted demo/staging instances share one host and one compose file; a
-  # deploy recreates whichever service's image tag was just pushed.
+  # The hosted staging/prod instances share one host and one compose file; each
+  # deploy pulls and recreates only its own service.
   deploy-staging:
     needs: build-and-push
     if: github.ref == 'refs/heads/develop'
@@ -81,13 +79,13 @@ jobs:
             cd checkmate
             git pull
             cd docs/hosting/checkmate-so
-            docker compose pull
-            docker compose up -d
+            docker compose pull checkmate-staging
+            docker compose up -d checkmate-staging
             docker system prune -af
 
-  deploy-demo:
+  deploy-prod:
     needs: build-and-push
-    if: github.ref == 'refs/heads/demo'
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - name: Deploy demo.checkmate.so
@@ -100,6 +98,6 @@ jobs:
             cd checkmate
             git pull
             cd docs/hosting/checkmate-so
-            docker compose pull
-            docker compose up -d
+            docker compose pull checkmate-demo
+            docker compose up -d checkmate-demo
             docker system prune -af

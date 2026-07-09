@@ -20,9 +20,9 @@ services:
       - /etc/letsencrypt:/etc/nginx/ssl:ro
       - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
 
-  # Demo: demo.checkmate.so -----
+  # Prod: demo.checkmate.so -----
   checkmate-demo:
-    image: ghcr.io/bluewave-labs/checkmate:demo
+    image: ghcr.io/bluewave-labs/checkmate:master
     container_name: checkmate-demo
     restart: always
     env_file:
