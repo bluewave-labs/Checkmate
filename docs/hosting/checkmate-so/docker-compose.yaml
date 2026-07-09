@@ -1,0 +1,122 @@
+# BlueWave's hosted demo + staging instances: one nginx gateway terminating TLS
+# in front of two independent Checkmate stacks, both running the mono image
+# (ghcr.io/bluewave-labs/checkmate). Doubles as a worked example of putting a
+# TLS proxy in front of the image.
+#
+# Deployed by .github/workflows/build-image.yml (deploy-staging / deploy-demo
+# jobs). Env files (server-prod.env, server-staging.env, mongo-prod.env,
+# mongo-staging.env) live on the host next to this file and are not committed.
+
+services:
+  # Gateway (single entry point)
+  gateway:
+    image: nginx:1.27.1-alpine
+    container_name: checkmate-gateway
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/nginx/ssl:ro
+      - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+  # Demo: demo.checkmate.so -----
+  checkmate-demo:
+    image: ghcr.io/bluewave-labs/checkmate:demo
+    container_name: checkmate-demo
+    restart: always
+    env_file:
+      - server-prod.env
+    stop_grace_period: 60s
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:52346/livez',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 3s
+      start_period: 60s
+      start_interval: 2s
+      retries: 3
+    depends_on:
+      mongodb-prod:
+        condition: service_healthy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  mongodb-prod:
+    image: mongo:8.2
+    container_name: mongodb-prod
+    restart: always
+    command: ["mongod", "--quiet", "--bind_ip_all"]
+    volumes:
+      - ./mongo/data-prod:/data/db
+    env_file:
+      - mongo-prod.env
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
+
+  # Staging: staging.checkmate.so -----
+  checkmate-staging:
+    image: ghcr.io/bluewave-labs/checkmate:develop
+    container_name: checkmate-staging
+    restart: always
+    env_file:
+      - server-staging.env
+    stop_grace_period: 60s
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:52346/livez',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 3s
+      start_period: 60s
+      start_interval: 2s
+      retries: 3
+    depends_on:
+      mongodb-staging:
+        condition: service_healthy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  mongodb-staging:
+    image: mongo:8.2
+    container_name: mongodb-staging
+    restart: always
+    command: ["mongod", "--quiet", "--bind_ip_all"]
+    volumes:
+      - ./mongo/data-staging:/data/db
+    env_file:
+      - mongo-staging.env
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
+
+  # Shared utils
+  capture:
+    image: ghcr.io/bluewave-labs/capture:latest
+    container_name: capture
+    restart: unless-stopped
+    ports:
+      - "59232:59232"
+    environment:
+      - API_SECRET=my_secret
+      - GIN_MODE=release
+    volumes:
+      - /etc/os-release:/etc/os-release:ro
