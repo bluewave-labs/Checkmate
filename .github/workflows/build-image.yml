@@ -2,7 +2,9 @@ name: Build image
 
 on:
   push:
-    branches: ["develop", "master", "demo"]
+    # chore/simplify-deployment is temporary, for pre-merge testing of this
+    # workflow itself — remove before merge
+    branches: ["develop", "master", "demo", "chore/simplify-deployment"]
     tags: ["v*"]
   workflow_dispatch:
 
