@@ -1,5 +1,5 @@
 import { ISettingsRepository } from "@/domain/app-settings/app-settings-repository.interface.js";
-import { Settings, SettingsUpdate, type DbType, type QueueMode } from "@/domain/app-settings/app-settings.type.js";
+import { Settings, SettingsUpdate, type ClientRuntimeConfig, type DbType, type QueueMode } from "@/domain/app-settings/app-settings.type.js";
 import { AppError } from "@/utils/AppError.js";
 import { ValidatedEnv } from "@/config/envValidation.js";
 import type { StringValue } from "ms";
@@ -16,6 +16,7 @@ export type EnvConfig = {
 	queueMode: QueueMode;
 	queuePrimaryProcesses: boolean;
 	statusPageThemesEnabled: boolean;
+	clientConfig: ClientRuntimeConfig;
 };
 
 export interface ISettingsService {
@@ -44,6 +45,11 @@ export class SettingsService implements ISettingsService {
 			queueMode: env.QUEUE_MODE,
 			queuePrimaryProcesses: env.QUEUE_PRIMARY_PROCESSES,
 			statusPageThemesEnabled: env.STATUS_PAGE_THEMES_ENABLED,
+			clientConfig: {
+				...(env.CLIENT_CONFIG_API_BASE_URL && { apiBaseUrl: env.CLIENT_CONFIG_API_BASE_URL }),
+				...(env.CLIENT_CONFIG_CLIENT_HOST && { clientHost: env.CLIENT_CONFIG_CLIENT_HOST }),
+				...(env.CLIENT_CONFIG_LOG_LEVEL && { logLevel: env.CLIENT_CONFIG_LOG_LEVEL }),
+			},
 		};
 	}
 

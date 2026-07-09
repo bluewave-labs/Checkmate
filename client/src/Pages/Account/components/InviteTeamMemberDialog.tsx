@@ -10,8 +10,9 @@ import { useInviteForm } from "@/Hooks/useInviteForm";
 import type { InviteFormData } from "@/Validation/invite";
 import { usePost } from "@/Hooks/UseApi";
 import { LAYOUT } from "@/Utils/Theme/constants";
+import { runtimeConfig } from "@/Utils/runtimeConfig";
 
-const CLIENT_HOST = import.meta.env.VITE_APP_CLIENT_HOST;
+const CLIENT_HOST = runtimeConfig.clientHost || import.meta.env.VITE_APP_CLIENT_HOST;
 
 interface InviteResponse {
 	token: string;

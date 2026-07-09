@@ -1,4 +1,5 @@
 import type { LogLevel } from "@/Types/Log";
+import { runtimeConfig } from "@/Utils/runtimeConfig";
 
 interface LogContext {
 	[key: string]: any;
@@ -25,7 +26,8 @@ interface ErrorLogData {
 	userAgent: string;
 }
 
-const configuredLevel: LogLevel = import.meta.env.VITE_APP_LOG_LEVEL || "error";
+const configuredLevel: LogLevel =
+	runtimeConfig.logLevel || import.meta.env.VITE_APP_LOG_LEVEL || "error";
 const configuredPriority = LOG_LEVEL_PRIORITY[configuredLevel];
 
 const shouldLog = (level: LogLevel): boolean => {

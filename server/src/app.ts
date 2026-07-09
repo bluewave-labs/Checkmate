@@ -52,6 +52,13 @@ export const createApp = ({
 
 	app.use(createStatusPageDocumentCsp(allowedOrigin));
 
+	// Client runtime config; registered before express.static so it shadows the
+	// fallback config.js in the client build output
+	const clientConfigScript = `window.__CHECKMATE_CONFIG__ = ${JSON.stringify(envSettings.clientConfig).replace(/</g, "\\u003c")};`;
+	app.get("/config.js", (req, res) => {
+		res.set("Cache-Control", "no-cache").type("application/javascript").send(clientConfigScript);
+	});
+
 	app.use(express.static(frontendPath));
 
 	app.use(express.json());
