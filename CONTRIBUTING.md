@@ -88,34 +88,10 @@ cd Checkmate
 
 #### Step 2: Set Up Docker Containers (MongoDB)
 
-Navigate to the Docker dev directory:
-
-```bash
-cd docker/dev
-```
-
-Build the Docker images:
-
-Linux:
-```bash
-./build_images.sh
-```
-
-Windows:
-```bash
-./build_images.bat
-```
-
 Run MongoDB container:
 
 ```bash
-docker run -d -p 27017:27017 -v uptime_mongo_data:/data/db --name uptime_database_mongo mongo:6.0
-```
-
-Navigate back to the root directory:
-
-```bash
-cd ../..
+docker run -d -p 27017:27017 -v uptime_mongo_data:/data/db --name uptime_database_mongo mongo:8.0
 ```
 
 #### Step 3: Set Up the Backend (Server)

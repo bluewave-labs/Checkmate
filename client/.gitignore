@@ -28,5 +28,4 @@ dist-ssr
 
 # Scripts
 *.sh
-!env.sh
 .env.development
