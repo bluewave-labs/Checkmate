@@ -63,10 +63,20 @@ const getChartConfigs = (
 	return configs;
 };
 
-const hasAnyNetworkTraffic = (checks: HardwareCheckStats[]): boolean =>
-	checks.some((c) =>
-		c.net?.some((iface) => iface.bytesSentPerSecond > 0 || iface.deltaBytesRecv > 0)
-	);
+// Loopback / bridge names Capture sees when it can only observe the container's
+// own network namespace. When ALL reported interfaces match this set we assume
+// the "no real interfaces visible" case and surface the notice.
+const CONTAINER_ONLY_IFACE_NAMES = new Set(["lo", "lo0", "docker0"]);
+
+const onlyContainerVisibleInterfaces = (checks: HardwareCheckStats[]): boolean => {
+	const named = new Set<string>();
+	checks.forEach((c) => c.net?.forEach((iface) => named.add(iface.name)));
+	if (named.size === 0) return false;
+	for (const name of named) {
+		if (!CONTAINER_ONLY_IFACE_NAMES.has(name)) return false;
+	}
+	return true;
+};
 
 export const InfraNetworkCharts = ({
 	checks,
@@ -82,7 +92,8 @@ export const InfraNetworkCharts = ({
 		() => getChartConfigs(theme, checks, t),
 		[theme, checks, t]
 	);
-	const showNoTrafficNotice = chartConfigs.length > 0 && !hasAnyNetworkTraffic(checks);
+	const showNoTrafficNotice =
+		chartConfigs.length > 0 && onlyContainerVisibleInterfaces(checks);
 
 	return (
 		<Stack gap={theme.spacing(LAYOUT.XS)}>
