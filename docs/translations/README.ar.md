@@ -11,6 +11,7 @@
   🇪🇸 <a href="README.es.md">Español</a> |
   🇫🇮 <a href="README.fi.md">Suomi</a> |
   🇫🇷 <a href="README.fr.md">Français</a> |
+  🇮🇹 <a href="README.it.md">Italiano</a> |
   🇯🇵 <a href="README.ja.md">日本語</a> |
   🇧🇷 <a href="README.pt-BR.md">Português (Brasil)</a> |
   🇷🇺 <a href="README.ru.md">Русский</a> |

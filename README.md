@@ -9,6 +9,7 @@
   🇪🇸 <a href="docs/translations/README.es.md">Español</a> |
   🇫🇮 <a href="docs/translations/README.fi.md">Suomi</a> |
   🇫🇷 <a href="docs/translations/README.fr.md">Français</a> |
+  🇮🇹 <a href="docs/translations/README.it.md">Italiano</a> |
   🇯🇵 <a href="docs/translations/README.ja.md">日本語</a> |
   🇧🇷 <a href="docs/translations/README.pt-BR.md">Português (Brasil)</a> |
   🇷🇺 <a href="docs/translations/README.ru.md">Русский</a> |
