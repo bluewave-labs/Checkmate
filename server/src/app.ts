@@ -54,6 +54,7 @@ export const createApp = ({
 
 	app.use(express.static(frontendPath));
 
+	app.use("/api/v1/monitors/import/json", express.json({ limit: "10mb" }));
 	app.use(express.json());
 	app.use(cookieParser());
 
