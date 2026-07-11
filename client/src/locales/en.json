@@ -844,7 +844,7 @@
 					"memory": "Memory usage",
 					"netBytesRecv": "{{name}} - Bytes Received",
 					"netBytesSent": "{{name}} - Bytes Sent",
-					"netNoTraffic": "Capture is reporting zero traffic on every interface. This is normal when Capture runs inside a container that can only see loopback interfaces — run Capture directly on the host to see real network activity.",
+					"loopbackOnlyNotice": "Capture is only reporting loopback or container-bridge interfaces (lo, lo0, docker0). This is normal when Capture runs inside a container that can only see its own network namespace — run Capture directly on the host to see real network activity.",
 					"temp": "Temp"
 				}
 			},

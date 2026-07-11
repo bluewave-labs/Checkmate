@@ -92,14 +92,14 @@ export const InfraNetworkCharts = ({
 		() => getChartConfigs(theme, checks, t),
 		[theme, checks, t]
 	);
-	const showNoTrafficNotice =
+	const showLoopbackOnlyNotice =
 		chartConfigs.length > 0 && onlyContainerVisibleInterfaces(checks);
 
 	return (
 		<Stack gap={theme.spacing(LAYOUT.XS)}>
-			{showNoTrafficNotice && (
+			{showLoopbackOnlyNotice && (
 				<NoticeBanner severity="warning">
-					{t("pages.infrastructure.charts.labels.netNoTraffic")}
+					{t("pages.infrastructure.charts.labels.loopbackOnlyNotice")}
 				</NoticeBanner>
 			)}
 			<Grid
