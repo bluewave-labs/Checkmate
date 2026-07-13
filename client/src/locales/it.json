@@ -46,9 +46,9 @@
 			"next": "Avanti",
 			"back": "Indietro",
 			"sendInvite": "Invia invito",
-			"test": "Test",
-			"testNotifications": "Testa notifiche",
-			"toggleTheme": "Cambia tema chiaro e scuro",
+			"test": "Prova",
+			"testNotifications": "Prova notifiche",
+			"toggleTheme": "Alterna tema chiaro e scuro",
 			"flushQueue": "Svuota coda",
 			"notFound": "Vai alla dashboard principale",
 			"resetPassword": "Reimposta password",
@@ -78,13 +78,13 @@
 		"dialogs": {
 			"delete": {
 				"description": "Questa azione non può essere annullata.",
-				"title": "Sei sicuro di voler eliminare questo elemento?"
+				"title": "Sei sicuro di voler eliminarlo?"
 			}
 		},
 		"labels": {
 			"active": "Attivo",
 			"running": "In esecuzione",
-			"paused": "Sospeso",
+			"paused": "In pausa",
 			"idle": "Inattivo",
 			"na": "N/A",
 			"resolved": "Risolto",
@@ -120,7 +120,7 @@
 			}
 		},
 		"table": {
-			"empty": "Nessun elemento da mostrare",
+			"empty": "Non c'è ancora nulla da mostrare",
 			"headers": {
 				"actions": "Azioni",
 				"dateTime": "Data e ora",
@@ -229,7 +229,7 @@
 	"pages": {
 		"notFound": {
 			"title": "Oh no! Hai fatto cadere il tuo sushi!",
-			"subtitle": "L'URL non esiste, oppure non hai accesso ad esso."
+			"subtitle": "L'URL non esiste, oppure non hai accesso."
 		},
 		"account": {
 			"tabs": {
@@ -275,7 +275,7 @@
 			},
 			"team": {
 				"fallback": {
-					"title": "Nessun membro del team ancora",
+					"title": "Nessun membro del team",
 					"description": "Invita compagni di team via email o aggiungili direttamente. Una volta iscritti, appariranno qui con il loro ruolo."
 				},
 				"filter": {
@@ -318,7 +318,7 @@
 			"brandPanel": {
 				"eyebrow": "Monitoraggio infrastrutturale open source",
 				"tagline": "Tieni d'occhio ogni mossa dei tuoi server.",
-				"description": "Uptime in tempo reale, tempo di risposta e tracciamento degli incidenti - self-hosted e tuo per sempre."
+				"description": "Uptime in tempo reale, tempo di risposta e tracciamento degli incidenti — self-hosted e tuo per sempre."
 			},
 			"common": {
 				"passwordRules": {
@@ -381,7 +381,7 @@
 			"register": {
 				"title": "Bentornato su Checkmate!",
 				"subtitle": "Registrati per iniziare",
-				"setupNotice": "Questa pagina è disponibile solo durante la configurazione iniziale. Una volta registrato un super amministratore, altri utenti possono essere invitati dalle impostazioni del team.",
+				"setupNotice": "Questa pagina è disponibile solo durante la configurazione iniziale. Una volta registrato un super amministratore, gli altri utenti possono essere invitati dalle impostazioni del team.",
 				"submit": "Registrati"
 			},
 			"forgotPassword": {
@@ -402,8 +402,8 @@
 		},
 		"checks": {
 			"fallback": {
-				"title": "Ancora nessuna verifica",
-				"description": "Una volta creato un monitor, ogni controllo di stato e tempo di risposta apparirà qui come una verifica."
+				"title": "Nessuna verifica",
+				"description": "Una volta creato un monitor, ogni sonda di stato e tempo di risposta apparirà qui come una verifica."
 			},
 			"selects": {
 				"monitor": {
@@ -416,7 +416,7 @@
 				}
 			},
 			"table": {
-				"empty": "Nessuna verifica non attiva in questo intervallo di tempo",
+				"empty": "Nessuna verifica fallita in questo intervallo di tempo",
 				"headers": {
 					"statusCode": "Codice di stato",
 					"location": "Posizione"
@@ -424,7 +424,7 @@
 			},
 			"header": {
 				"title": "Verifiche",
-				"description": "Ogni controllo che Checkmate esegue sui tuoi monitor appare qui, con codice di stato e tempo di risposta."
+				"description": "Ogni sonda che Checkmate esegue sui tuoi monitor arriva qui, con codice di stato e tempo di risposta."
 			}
 		},
 		"common": {
@@ -445,29 +445,29 @@
 					"selectMonitor": "Seleziona {{name}}"
 				},
 				"bulkPause": {
-					"alreadyPaused_one": "Il monitor selezionato è già sospeso",
-					"alreadyPaused_other": "Tutti i monitor selezionati sono già sospesi",
+					"alreadyPaused_one": "Il monitor selezionato è già in pausa",
+					"alreadyPaused_other": "Tutti i monitor selezionati sono già in pausa",
 					"alreadyRunning_one": "Il monitor selezionato è già in esecuzione",
 					"alreadyRunning_other": "Tutti i monitor selezionati sono già in esecuzione",
-					"paused_one": "{{count}} monitor sospeso",
-					"paused_other": "{{count}} monitor sospesi",
+					"paused_one": "{{count}} monitor messo in pausa",
+					"paused_other": "{{count}} monitor messi in pausa",
 					"resumed_one": "{{count}} monitor ripreso",
 					"resumed_other": "{{count}} monitor ripresi",
-					"partialFailure": "{{successCount}} monitor aggiornati, ma {{failedCount}} non sono stati sincronizzati con la coda dei job"
+					"partialFailure": "{{successCount}} monitor aggiornati, ma {{failedCount}} non sono riusciti a sincronizzarsi con la coda dei job"
 				},
 				"statBoxes": {
 					"activeFor": "Attivo da",
 					"certificateExpiry": "Scadenza certificato",
 					"lastCheck": "Ultima verifica",
 					"lastResponseTime": "Ultimo tempo di risposta",
-					"serviceIsDown": "Il servizio è non attivo"
+					"serviceIsDown": "Servizio non attivo"
 				},
 				"status": {
 					"down": "non attivo",
 					"breached": "soglia superata",
 					"initializing": "inizializzazione",
 					"maintenance": "manutenzione",
-					"paused": "sospeso",
+					"paused": "in pausa",
 					"total": "totale",
 					"up": "attivo"
 				},
@@ -493,8 +493,8 @@
 						"method": {
 							"label": "Metodo di richiesta",
 							"description": {
-								"GET": "GET recupera la risposta completa incluso il body. Il matching avanzato è completamente supportato",
-								"HEAD": "HEAD recupera solo gli header della risposta per ridurre il carico sul target. Supporta il matching del codice di stato ma non il matching avanzato poiché non c'è un body."
+								"GET": "GET recupera la risposta completa, incluso il corpo. Il matching avanzato è completamente supportato.",
+								"HEAD": "HEAD recupera solo gli header della risposta, riducendo il carico sul target. Supporta il matching sul codice di stato ma non il matching avanzato, poiché non c'è un corpo."
 							}
 						},
 						"advancedMatching": {
@@ -611,7 +611,7 @@
 						"ping": "Inserisci l'indirizzo IP o l'hostname da pingare (es. 192.168.1.100 o example.com) e aggiungi un nome visualizzato chiaro che apparirà nella dashboard.",
 						"port": "Inserisci l'URL o l'IP del server, il numero di porta e un nome visualizzato chiaro che apparirà nella dashboard.",
 						"docker": "Inserisci il nome o l'ID del container Docker. Puoi usare il nome del container (es. my-app) o l'ID del container (ID completo di 64 caratteri o ID breve).",
-						"game": "Inserisci l'indirizzo IP o l'hostname e il numero di porta da pingare (es. 192.168.1.100 o example.com) e scegli il tipo di gioco. Alcuni giochi richiedono l'abilitazione delle query del server nel loro file di configurazione — controlla la documentazione del tuo game server. Consulta la <gamedigLink>lista dei giochi supportati</gamedigLink> per i dettagli del protocollo.",
+						"game": "Inserisci l'indirizzo IP o l'hostname e il numero di porta da pingare (es. 192.168.1.100 o example.com) e scegli il tipo di gioco. Alcuni giochi richiedono l'abilitazione delle query del server nel loro file di configurazione — consulta la documentazione del tuo server di gioco. Consulta la <gamedigLink>lista dei giochi supportati</gamedigLink> per i dettagli del protocollo.",
 						"pagespeed": "Traccia le prestazioni di caricamento della pagina, i Core Web Vitals e i punteggi di ottimizzazione per il tuo sito web.",
 						"grpc": "Inserisci l'hostname e la porta del server gRPC, specifica opzionalmente un nome di servizio per la verifica di stato e aggiungi un nome visualizzato.",
 						"websocket": "Inserisci l'URL WebSocket da monitorare (es. wss://example.com/socket) e aggiungi un nome visualizzato.",
@@ -629,7 +629,7 @@
 					"title": "Impostazioni TLS/SSL"
 				},
 				"incidents": {
-					"description": "Viene usata una finestra scorrevole per determinare quando un monitor va non attivo. Lo stato di un monitor cambierà solo quando la percentuale di verifiche nella finestra scorrevole raggiunge il valore specificato.",
+					"description": "Per determinare quando un monitor va giù viene utilizzata una finestra scorrevole. Lo stato di un monitor cambia solo quando la percentuale di verifiche nella finestra scorrevole raggiunge il valore specificato.",
 					"option": {
 						"checks": {
 							"label": "Numero di verifiche nella finestra scorrevole"
@@ -747,8 +747,8 @@
 		},
 		"incidents": {
 			"fallback": {
-				"title": "Nessun incidente — tutti i sistemi sono in salute",
-				"description": "Quando un monitor va non attivo o si riprende, l'incidente apparirà qui con tempistiche, dettagli del monitor e cronologia di risoluzione."
+				"title": "Nessun incidente — tutti i sistemi funzionano correttamente",
+				"description": "Quando un monitor va giù o si ripristina, l'incidente apparirà qui con tempistiche, dettagli del monitor e cronologia della risoluzione."
 			},
 			"dialog": {
 				"resolveIncident": {
@@ -833,7 +833,7 @@
 			},
 			"header": {
 				"title": "Incidenti",
-				"description": "Quando i monitor vanno non attivi o si riprendono, gli incidenti appaiono qui con tempistiche, dettagli del monitor e cronologia di risoluzione."
+				"description": "Quando i monitor vanno giù o si ripristinano, gli incidenti appaiono qui con tempistiche, dettagli del monitor e cronologia della risoluzione."
 			}
 		},
 		"infrastructure": {
@@ -890,7 +890,7 @@
 			"fallback": {
 				"actionButton": "Crea un monitor",
 				"description": "Traccia le prestazioni del server, identifica i colli di bottiglia e garantisci l'affidabilità con il monitoraggio infrastrutturale in tempo reale.",
-				"title": "Nessun monitor infrastrutturale ancora"
+				"title": "Nessun monitor infrastruttura"
 			},
 			"header": {
 				"title": "Monitor infrastruttura",
@@ -903,7 +903,7 @@
 				"description": "Organizza i tuoi monitor con i tag"
 			},
 			"fallback": {
-				"title": "Ancora nessun tag",
+				"title": "Nessun tag",
 				"description": "Organizza i tuoi monitor con i tag. Una volta creato un tag e assegnato a un monitor, potrai filtrare per quel tag in tutta l'app e vedere i dettagli del tag qui.",
 				"actionButton": "Crea un tag"
 			},
@@ -930,7 +930,7 @@
 		},
 		"logs": {
 			"fallback": {
-				"title": "Ancora nessun log",
+				"title": "Nessun log",
 				"description": "Attività del server, avvisi ed errori appariranno qui man mano che Checkmate viene eseguito."
 			},
 			"queueFallback": {
@@ -946,7 +946,7 @@
 				"label": "Livello di log"
 			},
 			"workers": "Worker",
-			"workersExplainers": "Mostra i processi worker. Gli ID worker sono troncati, passa il mouse sopra per l'ID completo",
+			"workersExplainers": "Mostra i processi worker. Gli ID worker sono troncati; passa il mouse sopra per vedere l'ID completo.",
 			"jobQueue": "Coda job",
 			"jobQueueExplainer": "<highlight>Le righe evidenziate</highlight> sono job attualmente in elaborazione da parte di un worker.",
 			"failedJobs": "Job falliti",
@@ -955,7 +955,7 @@
 			"metrics": {
 				"jobs": "Job",
 				"activeJobs": "Job attivi",
-				"failingJobs": "Job in errore",
+				"failingJobs": "Job non riusciti",
 				"totalRuns": "Esecuzioni totali",
 				"totalFailures": "Errori totali"
 			},
@@ -986,7 +986,7 @@
 					"osMemoryLimit": "Limite memoria OS"
 				},
 				"mongoDBStats": {
-					"readyState": "Stato di prontezza",
+					"readyState": "Stato di connessione",
 					"readsPerSecond": "Letture/s",
 					"insertsPerSecond": "Inserimenti/s",
 					"updatesPerSecond": "Aggiornamenti/s",
@@ -1010,9 +1010,9 @@
 					"heapUsage": "Utilizzo heap",
 					"heapUtilization": "Utilizzo heap",
 					"instantCpuUsage": "Utilizzo CPU istantaneo",
-					"availableMemoryPercentage": "% di memoria disponibile",
-					"allocatedPercentage": "% allocata",
-					"usedSPercentage": "% di 1s utilizzato dalla CPU",
+					"availableMemoryPercentage": "% memoria disponibile",
+					"allocatedPercentage": "% allocato",
+					"usedSPercentage": "% di 1s usato dalla CPU",
 					"total": "Totale",
 					"used": "Utilizzato"
 				}
@@ -1023,16 +1023,16 @@
 					"processId": "ID processo",
 					"workerId": "ID worker",
 					"workerMode": "Modalità worker",
-					"lastSeenAt": "Ultima visto il",
+					"lastSeenAt": "Visto l'ultima volta",
 					"state": "Stato",
 					"timestamp": "Timestamp",
 					"level": "Livello",
 					"service": "Servizio",
 					"method": "Metodo",
 					"monitorId": "ID monitor",
-					"runCount": "Conteggio esecuzioni",
-					"failCount": "Conteggio",
-					"nextScheduledAt": "Prossima esecuzione il",
+					"runCount": "Esecuzioni",
+					"failCount": "Errori",
+					"nextScheduledAt": "Prossima esecuzione",
 					"lockedBy": "Bloccato da",
 					"lastFinishedAt": "Ultimo completamento",
 					"lastFailedAt": "Ultimo errore",
@@ -1110,7 +1110,7 @@
 			"fallback": {
 				"actionButton": "Crea un canale",
 				"description": "Connetti Slack, Discord, email, webhook e altro ancora affinché le persone giuste siano informate degli incidenti nel momento in cui si verificano.",
-				"title": "Nessun canale di notifica ancora"
+				"title": "Nessun canale di notifica"
 			},
 			"form": {
 				"accessToken": {
@@ -1172,9 +1172,9 @@
 				"twilio": {
 					"title": "Configurazione SMS Twilio",
 					"description": "Configura Twilio per inviare notifiche SMS a un numero di telefono.",
-					"optionAccountSid": "Account SID",
+					"optionAccountSid": "SID account",
 					"placeholderAccountSid": "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-					"optionAuthToken": "Auth token",
+					"optionAuthToken": "Token di autenticazione",
 					"placeholderAuthToken": "your_auth_token",
 					"optionFromNumber": "Numero mittente (Twilio)",
 					"placeholderFromNumber": "+15551234567",
@@ -1229,7 +1229,7 @@
 			"fallback": {
 				"actionButton": "Crea un monitor",
 				"description": "Traccia i Core Web Vitals e i punteggi Lighthouse nel tempo per individuare le regressioni prima degli utenti.",
-				"title": "Nessun monitor PageSpeed ancora"
+				"title": "Nessun monitor PageSpeed"
 			},
 			"header": {
 				"title": "Monitor PageSpeed",
@@ -1249,7 +1249,7 @@
 				},
 				"ui": {
 					"title": "Aspetto",
-					"description": "Passa dalla modalità chiara a quella scura, cambia lingua o personalizza il tipo di visualizzazione dei grafici.",
+					"description": "Passa tra modalità chiara e scura, cambia lingua o personalizza il tipo di grafico.",
 					"option": {
 						"theme": {
 							"label": "Modalità tema",
@@ -1298,12 +1298,12 @@
 					},
 					"dialog": {
 						"title": "Cancellare tutta la cronologia di monitoraggio?",
-						"description": "Non può essere annullato"
+						"description": "Questa azione non può essere annullata."
 					}
 				},
 				"retention": {
-					"title": "Conservazione verifiche",
-					"description": "Imposta per quanto tempo i dati delle verifiche vengono conservati prima di essere puliti automaticamente.",
+					"title": "Conservazione delle verifiche",
+					"description": "Imposta per quanto tempo i dati delle verifiche vengono conservati prima di essere eliminati automaticamente.",
 					"option": {
 						"days": {
 							"label": "Periodo di conservazione (giorni)",
@@ -1313,7 +1313,7 @@
 				},
 				"thresholds": {
 					"title": "Soglie globali",
-					"description": "Imposta soglie globali di CPU, memoria, disco e temperatura per il monitoraggio infrastrutturale. Queste si applicano a tutti i monitor hardware a meno che non vengano sovrascritte.",
+					"description": "Imposta soglie globali di CPU, memoria, disco e temperatura per il monitoraggio infrastrutturale. Si applicano a tutti i monitor hardware a meno che non vengano sovrascritte.",
 					"option": {
 						"cpu": {
 							"label": "Soglia CPU (%)",
@@ -1336,8 +1336,8 @@
 				"email": {
 					"title": "Impostazioni email",
 					"description": "Configura le impostazioni email per il tuo sistema. Vengono utilizzate per inviare notifiche e avvisi.",
-					"descriptionTransport": "Questo costruisce un trasporto SMTP per NodeMailer",
-					"descriptionTransportLink": "Vedi le specifiche qui",
+					"descriptionTransport": "Costruisce un trasporto SMTP per NodeMailer",
+					"descriptionTransportLink": "Consulta le specifiche qui",
 					"option": {
 						"host": {
 							"label": "Host email - Hostname o indirizzo IP a cui connettersi",
@@ -1373,19 +1373,19 @@
 							"placeholder": "localhost"
 						},
 						"secure": {
-							"label": "Usa SSL (consigliato): Cripta la connessione usando SSL/TLS"
+							"label": "Usa SSL (consigliato): cripta la connessione con SSL/TLS"
 						},
 						"pool": {
-							"label": "Abilita pooling delle connessioni: Riutilizza le connessioni esistenti per migliorare le prestazioni"
+							"label": "Abilita il pooling delle connessioni: riutilizza le connessioni esistenti per migliorare le prestazioni"
 						},
 						"ignoreTLS": {
-							"label": "Disabilita STARTTLS: Non usare TLS anche se il server lo supporta"
+							"label": "Disabilita STARTTLS: non usare TLS anche se il server lo supporta"
 						},
 						"requireTLS": {
-							"label": "Forza STARTTLS: Richiedi l'aggiornamento TLS, fallisce se non supportato"
+							"label": "Forza STARTTLS: richiedi l'aggiornamento a TLS, fallisce se non supportato"
 						},
 						"rejectUnauthorized": {
-							"label": "Rifiuta certificati non validi: Rifiuta connessioni con certificati auto-firmati o non fidati"
+							"label": "Rifiuta certificati non validi: rifiuta connessioni con certificati auto-firmati o non fidati"
 						}
 					}
 				},
@@ -1394,12 +1394,12 @@
 					"description": "Aggiungi monitor di esempio a scopo dimostrativo."
 				},
 				"removeMonitors": {
-					"title": "Reset del sistema",
+					"title": "Reimposta il sistema",
 					"description": "Rimuovi tutti i monitor dal tuo sistema.",
 					"dialog": {
 						"title": "Rimuovere tutti i monitor?",
 						"description": "Questa operazione non può essere annullata.",
-						"paragraph": "Anche tutta la cronologia delle verifiche, gli incidenti, le finestre di manutenzione pianificate e qualsiasi pagina di stato che faccia riferimento a questi monitor verranno rimossi. Esporta prima i tuoi monitor per mantenere un backup dei loro dati."
+						"paragraph": "Verranno rimossi anche tutta la cronologia delle verifiche, gli incidenti, le finestre di manutenzione pianificate e qualsiasi pagina di stato che facesse riferimento a questi monitor. Esporta prima i tuoi monitor per conservare un backup dei loro dati."
 					}
 				},
 				"exportMonitors": {
@@ -1423,7 +1423,7 @@
 			}
 		},
 		"statusPages": {
-			"deleteSuccess": "Pagina di stato eliminata con successo",
+			"deleteSuccess": "Pagina di stato eliminata correttamente",
 			"fallback": {
 				"title": "Nessuna pagina di stato ancora",
 				"description": "Pubblica una pagina pubblica che mostra l'uptime in tempo reale e la cronologia degli incidenti ai tuoi clienti e stakeholder.",
@@ -1438,7 +1438,7 @@
 					"down": "Non attivo",
 					"breached": "Soglia superata",
 					"maintenance": "Manutenzione",
-					"paused": "Sospeso",
+					"paused": "In pausa",
 					"initializing": "Inizializzazione"
 				},
 				"chart": {
@@ -1463,20 +1463,20 @@
 				}
 			},
 			"statusBar": {
-				"monitoringSummary": "Monitoraggio di {{count}} servizio · Aggiornamenti ogni 10 secondi",
-				"monitoringSummary_other": "Monitoraggio di {{count}} servizi · Aggiornamenti ogni 10 secondi",
+				"monitoringSummary": "Monitoraggio di {{count}} servizio · aggiornamenti ogni 10 secondi",
+				"monitoringSummary_other": "Monitoraggio di {{count}} servizi · aggiornamenti ogni 10 secondi",
 				"allUp": "Tutti i sistemi operativi",
 				"allBreached": "Tutti i sistemi hanno superato le soglie",
 				"allMaintenance": "Tutti i sistemi sono in manutenzione",
 				"allDown": "Tutti i sistemi sono non attivi",
-				"allPaused": "Tutti i sistemi sono sospesi",
+				"allPaused": "Tutti i sistemi sono in pausa",
 				"allInitializing": "Tutti i sistemi sono in inizializzazione",
 				"breachedAndDown": "Alcuni sistemi hanno superato le soglie e sono non attivi",
 				"breached": "Alcuni sistemi hanno superato le soglie",
 				"degraded": "Alcuni sistemi stanno riscontrando problemi",
 				"maintenanceAndDown": "Alcuni sistemi sono non attivi durante la manutenzione",
 				"maintenance": "Alcuni sistemi sono in manutenzione",
-				"partiallyPaused": "Alcuni sistemi sono sospesi",
+				"partiallyPaused": "Alcuni sistemi sono in pausa",
 				"initializing": "Alcuni sistemi sono in inizializzazione",
 				"noMonitors": "Nessun monitor è stato configurato",
 				"unknown": "Impossibile determinare lo stato del sistema"
@@ -1500,7 +1500,7 @@
 				"poweredBy": "Powered by"
 			},
 			"editorial": {
-				"reportTitle": "Report di servizio",
+				"reportTitle": "Rapporto di servizio",
 				"allUp": "Tutti i sistemi funzionano normalmente."
 			},
 			"form": {
@@ -1528,7 +1528,7 @@
 						"customDomain": {
 							"label": "Dominio personalizzato",
 							"placeholder": "status.example.com",
-							"helper": "Opzionale. Punta un record DNS a questa istanza Checkmate per servire la pagina di stato sul tuo dominio."
+							"helper": "Opzionale. Punta un record DNS a questa istanza di Checkmate per servire la pagina di stato sul tuo dominio."
 						}
 					}
 				},
@@ -1579,7 +1579,7 @@
 							"description": "Livello SaaS con un punto di stato pulsante e schede in dissolvenza morbida."
 						},
 						"bold": {
-							"name": "Bold",
+							"name": "Deciso",
 							"description": "Caratteri grandi e spaziatura decisa. Ottimo per pagine focalizzate sul brand."
 						},
 						"editorial": {
@@ -1650,12 +1650,12 @@
 			},
 			"fallback": {
 				"actionButton": "Crea un monitor",
-				"description": "Controlla endpoint HTTP, ping, container e porte — e ricevi avvisi nel momento in cui qualcosa va non attivo.",
-				"title": "Nessun monitor uptime ancora"
+				"description": "Controlla endpoint HTTP, ping, container e porte — e ricevi un avviso nel momento in cui qualcosa va giù.",
+				"title": "Nessun monitor uptime"
 			},
 			"header": {
 				"title": "Monitor uptime",
-				"description": "Controlla endpoint HTTP, ping, container e porte — e ricevi avvisi nel momento in cui qualcosa va non attivo."
+				"description": "Controlla endpoint HTTP, ping, container e porte — e ricevi un avviso nel momento in cui qualcosa va giù."
 			}
 		}
 	}
