@@ -14,7 +14,7 @@ import Logger, { ILogger } from "@/utils/logger.js";
 import { SettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { JobScheduler } from "@/worker/worker.job-scheduler.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";
-import { HealthServer } from "@/worker/worker.health-server.js";
+import { HealthServer, IHealthServer } from "@/worker/worker.health-server.js";
 const SERVICE_NAME = "Server";
 let logger: ILogger;
 
@@ -63,12 +63,15 @@ const startApp = async () => {
 	// Primary node path
 	// ***********************
 	let scheduler: IJobScheduler;
+	let healthServer: IHealthServer | undefined;
 
 	// ***********************
 	//Primary node processes jobs, need full worker
 	// ***********************
 	if (queuePrimaryProcesses === true) {
 		const { worker } = await buildWorker(shared, envSettings);
+		healthServer = new HealthServer(logger, env.HEALTH_PORT, worker);
+		await healthServer.listen();
 		scheduler = worker;
 	}
 	// ***********************
@@ -103,7 +106,7 @@ const startApp = async () => {
 		logger.info({ message: `Server started on port:${env.PORT}` });
 	});
 
-	initShutdownListener(server, services);
+	initShutdownListener(server, { ...services, healthServer });
 };
 
 startApp().catch((error) => {

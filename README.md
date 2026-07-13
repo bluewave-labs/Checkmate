@@ -80,7 +80,37 @@ Usage instructions can be found [here](https://checkmate.so/docs).
 <a id="installation"></a>
 ## Installation
 
-See installation instructions in [Checkmate documentation portal](https://checkmate.so/docs). 
+The quickest way to run Checkmate is the reference Docker Compose file, which runs the all-in-one image (`ghcr.io/bluewave-labs/checkmate`) plus MongoDB:
+
+```bash
+curl -O https://raw.githubusercontent.com/bluewave-labs/checkmate/master/docker/docker-compose.yaml
+JWT_SECRET="$(openssl rand -hex 32)" docker compose up -d
+```
+
+Then open http://localhost:52345. If the app is reached at another origin (domain or LAN IP), set `CLIENT_HOST` accordingly. To build the image yourself, run `docker build -f docker/Dockerfile -t checkmate .` from a checkout. For TLS, put any reverse proxy (Caddy, Traefik, nginx) in front of port 52345.
+
+### Configuration
+
+The image is configured entirely through environment variables on the server container:
+
+| Variable | Required | Description |
+|---|---|---|
+| `DB_CONNECTION_STRING` | Yes | MongoDB connection string, e.g. `mongodb://mongodb:27017/uptime_db` |
+| `JWT_SECRET` | Yes | Secret used to sign auth tokens; generate one with `openssl rand -hex 32` |
+| `CLIENT_HOST` | Yes | The URL users reach the app at, e.g. `https://checkmate.example.com`; used for CORS and for links in notifications and emails |
+| `LOG_LEVEL` | No | Server log level: `error`, `warn`, `info`, or `debug` (default `debug`) |
+
+The web client needs no configuration by default: it calls the API on the same origin it was served from (`/api/v1`). For setups where the defaults don't apply — for example, the API is reached through a different origin than the page — the server renders overrides into the client at runtime via these optional variables:
+
+| Variable | Description |
+|---|---|
+| `CLIENT_CONFIG_API_BASE_URL` | Full base URL the client calls the API at, e.g. `https://api.example.com/api/v1`; defaults to same-origin `/api/v1` |
+| `CLIENT_CONFIG_CLIENT_HOST` | Origin used when the client builds absolute links (invites, status pages); defaults to the browser's current origin |
+| `CLIENT_CONFIG_LOG_LEVEL` | Browser console log level: `error`, `warn`, `info`, or `debug` (default `error`) |
+
+> **Upgrading from an older image?** The `UPTIME_APP_*` variables (`UPTIME_APP_API_BASE_URL`, `UPTIME_APP_CLIENT_HOST`, `UPTIME_APP_LOG_LEVEL`) are no longer read. In most setups no replacement is needed — the same-origin defaults cover them; if you pointed the client at a different origin, use the `CLIENT_CONFIG_*` equivalents above. The `checkmate-client`, `checkmate-backend`, `checkmate-mongo`, and `checkmate-backend-mono-multiarch` images are no longer updated — switch to `ghcr.io/bluewave-labs/checkmate`, keeping your existing MongoDB service and data volume.
+
+See full installation instructions in the [Checkmate documentation portal](https://checkmate.so/docs). 
 
 Alternatively, you can also use [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (South Africa), [Cloudzy](https://cloudzy.com/marketplace/checkmate) or [Pikapods](https://www.pikapods.com/) to quickly spin off a Checkmate instance. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
 

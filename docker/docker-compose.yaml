@@ -1,29 +1,15 @@
 services:
   checkmate:
-    build:
-      context: ../..
-      dockerfile: docker/Dockerfile
+    image: ghcr.io/bluewave-labs/checkmate:latest
+    pull_policy: always
     restart: always
     ports:
       - "52345:52345"
-    env_file:
-      - server.env
-    depends_on:
-      mongodb:
-        condition: service_healthy
-  worker:
-    build:
-      context: ../..
-      dockerfile: docker/Dockerfile
-    restart: always
-    ports:
-      - "52346:52346"
-    env_file:
-      - server.env
     environment:
-      QUEUE_MODE: "worker"
-      HEALTH_PORT: "52346"
-    stop_grace_period: 30s
+      - DB_CONNECTION_STRING=mongodb://mongodb:27017/uptime_db
+      - CLIENT_HOST=${CLIENT_HOST:-http://localhost:52345}
+      - JWT_SECRET=${JWT_SECRET:?set JWT_SECRET in your environment}
+    stop_grace_period: 60s
     healthcheck:
       test:
         [
@@ -34,18 +20,19 @@ services:
         ]
       interval: 15s
       timeout: 3s
+      start_period: 60s
+      start_interval: 2s
       retries: 3
     depends_on:
       mongodb:
         condition: service_healthy
+
   mongodb:
     image: mongo:8.0
     restart: always
-    ports:
-      - "27017:27017"
     command: ["mongod", "--quiet", "--bind_ip_all"]
     volumes:
-      - ./mongo/data:/data/db
+      - mongo-data:/data/db
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--quiet"]
       interval: 5s
@@ -53,3 +40,6 @@ services:
       start_period: 0s
       start_interval: 1s
       retries: 30
+
+volumes:
+  mongo-data:

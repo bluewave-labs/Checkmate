@@ -83,6 +83,19 @@ describe("SettingsService", () => {
 				dbConnectionString: "mongodb://localhost:27017/test_db",
 				dbType: "mongodb",
 				statusPageThemesEnabled: false,
+				clientConfig: {},
+			});
+		});
+
+		it("maps only set CLIENT_CONFIG_* env vars into clientConfig", () => {
+			const { service } = createService({
+				CLIENT_CONFIG_API_BASE_URL: "https://api.example.com/api/v1",
+				CLIENT_CONFIG_LOG_LEVEL: "warn",
+			});
+
+			expect(service.loadSettings().clientConfig).toEqual({
+				apiBaseUrl: "https://api.example.com/api/v1",
+				logLevel: "warn",
 			});
 		});
 

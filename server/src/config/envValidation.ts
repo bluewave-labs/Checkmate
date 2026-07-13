@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DbTypes, QueueModes } from "@/domain/app-settings/app-settings.type.js";
+import { DbTypes, LogLevels, QueueModes } from "@/domain/app-settings/app-settings.type.js";
 import { booleanCoercion } from "@/api/validation/shared.js";
 import { ILogger } from "@/utils/logger.js";
 
@@ -9,7 +9,7 @@ const envSchema = z.object({
 	// Port for worker health checks
 	HEALTH_PORT: z.string().default("52346"),
 	NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-	LOG_LEVEL: z.enum(["error", "warn", "info", "debug"]).default("debug"),
+	LOG_LEVEL: z.enum(LogLevels).default("debug"),
 
 	// Database
 	DB_CONNECTION_STRING: z.string().min(1, "Database connection string is required"),
@@ -24,6 +24,12 @@ const envSchema = z.object({
 
 	// Client Configuration
 	CLIENT_HOST: z.string().url("CLIENT_HOST must be a valid URL"),
+
+	// Client runtime config overrides, rendered into GET /config.js; unset keys are
+	// omitted and the client uses its same-origin defaults
+	CLIENT_CONFIG_API_BASE_URL: z.string().optional(),
+	CLIENT_CONFIG_CLIENT_HOST: z.string().url("CLIENT_CONFIG_CLIENT_HOST must be a valid URL").optional(),
+	CLIENT_CONFIG_LOG_LEVEL: z.enum(LogLevels).optional(),
 
 	// Optional
 	ORIGIN: z.string().optional(),
@@ -61,6 +67,15 @@ export const validateEnv = (logger: ILogger): ValidatedEnv => {
 			service: "Server",
 		});
 		process.exit(1);
+	}
+
+	const legacyClientVars = Object.keys(process.env).filter((key) => key.startsWith("UPTIME_APP_"));
+	if (legacyClientVars.length > 0) {
+		logger.warn({
+			message: `${legacyClientVars.join(", ")} no longer configure the client and will be ignored. The client defaults to the origin it is served from; to override, use CLIENT_CONFIG_API_BASE_URL, CLIENT_CONFIG_CLIENT_HOST, or CLIENT_CONFIG_LOG_LEVEL.`,
+			method: "validateEnv",
+			service: "Server",
+		});
 	}
 
 	logger.info({
