@@ -13,6 +13,7 @@ export const languageNames: Record<string, string> = {
 	ca: "Català",
 	es: "Español",
 	fr: "Français",
+	it: "Italiano",
 	"pt-BR": "Português (BR)",
 	cs: "Čeština",
 	fi: "Suomi",
