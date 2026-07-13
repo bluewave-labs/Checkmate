@@ -69,6 +69,15 @@ export const validateEnv = (logger: ILogger): ValidatedEnv => {
 		process.exit(1);
 	}
 
+	const legacyClientVars = Object.keys(process.env).filter((key) => key.startsWith("UPTIME_APP_"));
+	if (legacyClientVars.length > 0) {
+		logger.warn({
+			message: `${legacyClientVars.join(", ")} no longer configure the client and will be ignored. The client defaults to the origin it is served from; to override, use CLIENT_CONFIG_API_BASE_URL, CLIENT_CONFIG_CLIENT_HOST, or CLIENT_CONFIG_LOG_LEVEL.`,
+			method: "validateEnv",
+			service: "Server",
+		});
+	}
+
 	logger.info({
 		message: "Environment variables validated successfully",
 		method: "validateEnv",
