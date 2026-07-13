@@ -3,4 +3,8 @@ name: checkmate-chart
 description: A Helm chart for Checkmate App
 type: application
 version: 0.2.0
+# DO NOT bump appVersion past v3.8.1 until this chart is migrated to the all-in-one
+# image (ghcr.io/bluewave-labs/checkmate). The checkmate-client / checkmate-backend /
+# checkmate-mongo images this chart references are frozen at v3.8.1 — later versions
+# are never published, so a bumped chart will fail to pull.
 appVersion: "v3.8.1" # "v" prefix: published image tags are v-prefixed (ghcr.io/.../checkmate-*:v3.8.1)
