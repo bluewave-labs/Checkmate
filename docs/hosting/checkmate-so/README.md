@@ -29,7 +29,9 @@ Kept next to this compose file on the host:
 
 - `server-prod.env` / `server-staging.env` — Checkmate server env
   (`DB_CONNECTION_STRING`, `JWT_SECRET`, `CLIENT_HOST=https://demo.checkmate.so`
-  etc.). The old `UPTIME_APP_*` client vars are no-ops now and can be removed.
+  etc.). The old `UPTIME_APP_*` client vars are no-ops now and can be removed;
+  if a client override is ever needed, use the `CLIENT_CONFIG_*` vars (see the
+  Configuration section of the root README).
 - `mongo-prod.env` / `mongo-staging.env` — Mongo credentials.
 - `mongo/data-prod` / `mongo/data-staging` — Mongo data directories.
 
