@@ -142,6 +142,7 @@ const StatusPageView = () => {
 				theme={statusPage.theme}
 				themeMode={statusPage.themeMode}
 				timezone={statusPage.timezone}
+				brandColor={statusPage.color}
 				paintBody
 			>
 				{customCss && <style>{customCss}</style>}
