@@ -519,7 +519,23 @@
 							"removeAriaLabel": "Remove status code"
 						}
 					},
-					"title": "Advanced settings"
+					"title": "Advanced settings",
+					"headers": {
+						"title": "Request headers",
+						"description": "Add custom request headers sent with each check, e.g. Authorization or X-Api-Key.",
+						"option": {
+							"addButton": "Add header",
+							"name": {
+								"label": "Header name",
+								"placeholder": "e.g. Authorization"
+							},
+							"value": {
+								"label": "Header value",
+								"placeholder": "e.g. Bearer my-token"
+							},
+							"removeAriaLabel": "Remove header"
+						}
+					}
 				},
 				"frequency": {
 					"description": "How often do you want to check the status of this monitor?",

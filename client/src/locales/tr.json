@@ -1,4 +1,4 @@
-{
+﻿{
 	"common": {
 		"auth": {
 			"roles": {
@@ -503,7 +503,23 @@
 							"regex": "Regex"
 						}
 					},
-					"title": "Gelişmiş ayarlar"
+					"title": "Gelişmiş ayarlar",
+					"headers": {
+						"title": "İstek başlıkları",
+						"description": "Her kontrol ile gönderilen özel istek başlıkları ekleyin, örn. Authorization veya X-Api-Key.",
+						"option": {
+							"addButton": "Başlık ekle",
+							"name": {
+								"label": "Başlık adı",
+								"placeholder": "örn. Authorization"
+							},
+							"value": {
+								"label": "Başlık değeri",
+								"placeholder": "örn. Bearer my-token"
+							},
+							"removeAriaLabel": "Başlığı kaldır"
+						}
+					}
 				},
 				"frequency": {
 					"description": "Bu monitörün durumunu ne sıklıkla kontrol etmek istiyorsunuz?",

@@ -1,4 +1,4 @@
-{
+﻿{
 	"common": {
 		"auth": {
 			"roles": {
@@ -503,7 +503,23 @@
 							"regex": "Regex"
 						}
 					},
-					"title": "ตั้งค่าขั้นสูง"
+					"title": "ตั้งค่าขั้นสูง",
+					"headers": {
+						"title": "ส่วนหัวของคำขอ",
+						"description": "เพิ่มส่วนหัวคำขอที่กำหนดเองซึ่งส่งพร้อมกับการตรวจสอบแต่ละครั้ง เช่น Authorization หรือ X-Api-Key",
+						"option": {
+							"addButton": "เพิ่มส่วนหัว",
+							"name": {
+								"label": "ชื่อส่วนหัว",
+								"placeholder": "เช่น Authorization"
+							},
+							"value": {
+								"label": "ค่าส่วนหัว",
+								"placeholder": "เช่น Bearer my-token"
+							},
+							"removeAriaLabel": "ลบส่วนหัว"
+						}
+					}
 				},
 				"frequency": {
 					"description": "คุณต้องการตรวจสอบสถานะของมอนิเตอร์นี้บ่อยแค่ไหน?",

@@ -1,4 +1,4 @@
-{
+﻿{
 	"common": {
 		"auth": {
 			"roles": {
@@ -503,7 +503,23 @@
 							"regex": "Regex"
 						}
 					},
-					"title": "Cài đặt nâng cao"
+					"title": "Cài đặt nâng cao",
+					"headers": {
+						"title": "Tiêu đề yêu cầu",
+						"description": "Thêm tiêu đề yêu cầu tùy chỉnh được gửi với mỗi lần kiểm tra, ví dụ: Authorization hoặc X-Api-Key.",
+						"option": {
+							"addButton": "Thêm tiêu đề",
+							"name": {
+								"label": "Tên tiêu đề",
+								"placeholder": "ví dụ: Authorization"
+							},
+							"value": {
+								"label": "Giá trị tiêu đề",
+								"placeholder": "ví dụ: Bearer my-token"
+							},
+							"removeAriaLabel": "Xóa tiêu đề"
+						}
+					}
 				},
 				"frequency": {
 					"description": "Bạn muốn kiểm tra trạng thái trình giám sát này bao lâu một lần?",

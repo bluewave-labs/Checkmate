@@ -80,6 +80,22 @@ const httpSchema = baseSchema.extend({
 		.array(httpStatusCode)
 		.optional()
 		.register(monitorStepRegistry, { step: 2 }),
+	headers: z
+		.array(
+			z.object({
+				key: z.string().min(1, "Header name is required"),
+				value: z.string().min(1, "Header value is required"),
+			})
+		)
+		.refine(
+			(headers) => {
+				const keys = headers.map((h) => h.key.toLowerCase());
+				return new Set(keys).size === keys.length;
+			},
+			{ message: "Duplicate header names are not allowed" }
+		)
+		.optional()
+		.register(monitorStepRegistry, { step: 2 }),
 	...geoCheckFields,
 });
 

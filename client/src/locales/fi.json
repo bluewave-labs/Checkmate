@@ -1,4 +1,4 @@
-{
+﻿{
 	"common": {
 		"auth": {
 			"roles": {
@@ -503,7 +503,23 @@
 							"regex": "Säännöllinen lauseke"
 						}
 					},
-					"title": "Lisäasetukset"
+					"title": "Lisäasetukset",
+					"headers": {
+						"title": "Pyyntöotsikot",
+						"description": "Lisää mukautettuja pyyntöotsikoita, jotka lähetetään jokaisen tarkistuksen yhteydessä, esim. Authorization tai X-Api-Key.",
+						"option": {
+							"addButton": "Lisää otsikko",
+							"name": {
+								"label": "Otsikon nimi",
+								"placeholder": "esim. Authorization"
+							},
+							"value": {
+								"label": "Otsikon arvo",
+								"placeholder": "esim. Bearer my-token"
+							},
+							"removeAriaLabel": "Poista otsikko"
+						}
+					}
 				},
 				"frequency": {
 					"description": "Kuinka usein haluat tarkistaa tämän monitorin tilan?",

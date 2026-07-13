@@ -1,4 +1,4 @@
-{
+﻿{
 	"common": {
 		"auth": {
 			"roles": {
@@ -503,7 +503,23 @@
 							"regex": "正規表達式"
 						}
 					},
-					"title": "進階設定"
+					"title": "進階設定",
+					"headers": {
+						"title": "請求標頭",
+						"description": "新增隨每次檢查發送的自訂請求標頭，例如 Authorization 或 X-Api-Key。",
+						"option": {
+							"addButton": "新增標頭",
+							"name": {
+								"label": "標頭名稱",
+								"placeholder": "例如 Authorization"
+							},
+							"value": {
+								"label": "標頭值",
+								"placeholder": "例如 Bearer my-token"
+							},
+							"removeAriaLabel": "移除標頭"
+						}
+					}
 				},
 				"frequency": {
 					"description": "您希望多久檢查一次此監控的狀態？",

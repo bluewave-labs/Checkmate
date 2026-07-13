@@ -1,5 +1,5 @@
 import { Schema, model, Types } from "mongoose";
-import type { Monitor, MonitorMatchMethod, CheckSnapshot } from "@/domain/monitors/monitor.types.js";
+import type { Monitor, MonitorHeader, MonitorMatchMethod, CheckSnapshot } from "@/domain/monitors/monitor.types.js";
 import { DnsRecordTypes, MonitorTypes, MonitorStatuses, PageSpeedStrategies, HttpMethods } from "@/domain/monitors/monitor.types.js";
 import type {
 	CheckAudits,
@@ -200,6 +200,14 @@ const checkSnapshotSchema = new Schema<CheckSnapshotDocument>(
 	{ _id: false, suppressReservedKeysWarning: true }
 );
 
+const headerSchema = new Schema<MonitorHeader>(
+	{
+		key: { type: String, required: true },
+		value: { type: String, required: true },
+	},
+	{ _id: false }
+);
+
 const MonitorSchema = new Schema<MonitorDocument>(
 	{
 		userId: {
@@ -304,6 +312,10 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		},
 		secret: {
 			type: String,
+		},
+		headers: {
+			type: [headerSchema],
+			default: [],
 		},
 		cpuAlertThreshold: {
 			type: Number,

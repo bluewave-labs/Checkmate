@@ -1,4 +1,4 @@
-{
+﻿{
 	"common": {
 		"auth": {
 			"roles": {
@@ -503,7 +503,23 @@
 							"regex": "تعبير عادي"
 						}
 					},
-					"title": "إعدادات متقدمة"
+					"title": "إعدادات متقدمة",
+					"headers": {
+						"title": "رؤوس الطلب",
+						"description": "أضف رؤوس طلب مخصصة ترسل مع كل فحص، مثل Authorization أو X-Api-Key.",
+						"option": {
+							"addButton": "إضافة رأس",
+							"name": {
+								"label": "اسم الرأس",
+								"placeholder": "مثال: Authorization"
+							},
+							"value": {
+								"label": "قيمة الرأس",
+								"placeholder": "مثال: Bearer my-token"
+							},
+							"removeAriaLabel": "إزالة الرأس"
+						}
+					}
 				},
 				"frequency": {
 					"description": "كم مرة تريد التحقق من حالة هذا المراقب؟",

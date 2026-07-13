@@ -1,4 +1,4 @@
-{
+﻿{
 	"common": {
 		"auth": {
 			"roles": {
@@ -503,7 +503,23 @@
 							"regex": "Regex"
 						}
 					},
-					"title": "Configuración avanzada"
+					"title": "Configuración avanzada",
+					"headers": {
+						"title": "Cabeceras de solicitud",
+						"description": "Agrega cabeceras de solicitud personalizadas enviadas con cada verificación, p. ej. Authorization o X-Api-Key.",
+						"option": {
+							"addButton": "Agregar cabecera",
+							"name": {
+								"label": "Nombre de cabecera",
+								"placeholder": "p. ej. Authorization"
+							},
+							"value": {
+								"label": "Valor de cabecera",
+								"placeholder": "p. ej. Bearer my-token"
+							},
+							"removeAriaLabel": "Eliminar cabecera"
+						}
+					}
 				},
 				"frequency": {
 					"description": "¿Con qué frecuencia desea verificar el estado de este monitor?",
