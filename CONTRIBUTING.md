@@ -256,6 +256,35 @@ docker rm uptime_database_mongo
 
 Start with [good first issues](https://github.com/bluewave-labs/checkmate/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 
+### Improve the documentation?
+
+Documentation contributions are very welcome — fixing a typo, clarifying a step, or adding a missing example is a valuable PR.
+
+- Small edits (typos, wording, formatting): open a PR directly against `develop`.
+- Larger changes (restructuring a section, adding a new guide): open an issue first so we can align on scope, then a PR.
+- Screenshots are helpful when documenting UI behaviour.
+- README translations live in `docs/translations/`. If you're adding a new language, please also add a flag + link to the language bar in the root `README.md` and every existing translated README so they stay in sync.
+
+### Help with translations?
+
+The application uses `i18next` with one JSON file per language under `client/src/locales/` (`en.json` is the source of truth). English source strings are the definitive copy; other languages are generated as one-time machine translations that anyone is welcome to refine.
+
+**To improve an existing language:**
+
+1. Edit the relevant `client/src/locales/<code>.json` file directly.
+2. Keep the JSON key structure identical to `en.json` — only translate the string values.
+3. Open a PR against `develop`. No language-selector code changes are needed.
+
+**To add a new language:**
+
+1. Add `client/src/locales/<code>.json` with the same key structure as `en.json`, translated. If you can't translate every key, leave unfamiliar strings in English rather than removing keys — i18next falls back to the key path when a value is missing.
+2. Add the display name to `languageNames` in `client/src/Components/inputs/LanguageSelector.tsx` (e.g. `it: "Italiano"`). The selector picks up any language present in `resources` automatically.
+3. Open a PR against `develop`.
+
+If translating a whole file is more than you want to take on, open an issue asking us to add the language and we'll generate an initial machine-translated file that you (or others) can refine over time.
+
+**Note:** an older workflow that synced translations with PoEditor is still in the repo but no longer authoritative. Please treat the `.json` files in `client/src/locales/` as the source of truth.
+
 ### Submit a pull request?
 
 Follow the [pull request checklist](#pull-request-checklist). Your PR should:
