@@ -249,7 +249,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		];
 
 		const documents = await MonitorModel.aggregate(pipeline);
-		return documents.map((doc) => this.toEntityWithChecks(doc));
+		return documents.map((doc) => this.toEntity(doc));
 	};
 
 	findMonitorCountByTeamIdAndType = async (teamId: string, config?: TeamQueryConfig): Promise<number> => {
@@ -525,78 +525,12 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		};
 
 		const toDateString = (value: Date | string): string => {
+			if (!value) return "";
 			return value instanceof Date ? value.toISOString() : value;
 		};
 
 		const notificationIds = (doc.notifications ?? []).map((notification) => toStringId(notification));
 		const tagIds = (doc.tags ?? []).map((tag) => toStringId(tag));
-		return {
-			id: toStringId(doc._id),
-			userId: toStringId(doc.userId),
-			teamId: toStringId(doc.teamId),
-			name: doc.name,
-			description: doc.description ?? undefined,
-			method: doc.method ?? "GET",
-			status: doc.status ?? "initializing",
-			statusWindow: doc.statusWindow ?? [],
-			statusWindowSize: doc.statusWindowSize,
-			statusWindowThreshold: doc.statusWindowThreshold,
-			type: doc.type,
-			ignoreTlsErrors: doc.ignoreTlsErrors,
-			useAdvancedMatching: doc.useAdvancedMatching ?? false,
-			jsonPath: doc.jsonPath ?? undefined,
-			expectedValue: doc.expectedValue ?? undefined,
-			matchMethod: doc.matchMethod ?? undefined,
-			url: doc.url,
-			port: doc.port ?? undefined,
-			isActive: doc.isActive,
-			interval: doc.interval,
-			uptimePercentage: doc.uptimePercentage ?? undefined,
-			notifications: notificationIds,
-			tags: tagIds,
-			customUpCodes: doc.customUpCodes ?? [],
-			secret: doc.secret ?? undefined,
-			cpuAlertThreshold: doc.cpuAlertThreshold,
-			cpuAlertCounter: doc.cpuAlertCounter,
-			memoryAlertThreshold: doc.memoryAlertThreshold,
-			memoryAlertCounter: doc.memoryAlertCounter,
-			diskAlertThreshold: doc.diskAlertThreshold,
-			diskAlertCounter: doc.diskAlertCounter,
-			tempAlertThreshold: doc.tempAlertThreshold,
-			tempAlertCounter: doc.tempAlertCounter,
-			selectedDisks: doc.selectedDisks ?? [],
-			gameId: doc.gameId ?? undefined,
-			grpcServiceName: doc.grpcServiceName ?? undefined,
-			strategy: doc.strategy ?? undefined,
-			group: doc.group ?? null,
-			recentChecks: (doc.recentChecks ?? []).map((check: CheckSnapshotDocument) => this.toCheckSnapshot(check)),
-			geoCheckEnabled: doc.geoCheckEnabled ?? false,
-			geoCheckLocations: doc.geoCheckLocations ?? [],
-			geoCheckInterval: doc.geoCheckInterval ?? 300000,
-			dnsServer: doc.dnsServer ?? undefined,
-			dnsRecordType: doc.dnsRecordType ?? undefined,
-			createdAt: toDateString(doc.createdAt),
-			updatedAt: toDateString(doc.updatedAt),
-			lastEvaluatedAt: doc.lastEvaluatedAt,
-		};
-	};
-
-	private toEntityWithChecks = (doc: MonitorDocument): Monitor => {
-		const toStringId = (value: unknown): string => {
-			if (value instanceof mongoose.Types.ObjectId) {
-				return value.toString();
-			}
-			return value?.toString() ?? "";
-		};
-
-		const toDateString = (value: Date | string): string => {
-			if (!value) return "";
-			return value instanceof Date ? value.toISOString() : value;
-		};
-
-		const notificationIds = (doc.notifications ?? []).map((notification: unknown) => toStringId(notification));
-		const tagIds = (doc.tags ?? []).map((tag: unknown) => toStringId(tag));
-
 		return {
 			id: toStringId(doc._id),
 			userId: toStringId(doc.userId),
