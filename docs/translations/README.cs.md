@@ -85,7 +85,7 @@ Pokyny k použití najdete [zde](https://checkmate.so/docs).
 
 Pokyny k instalaci najdete v [dokumentačním portálu Checkmate](https://checkmate.so/docs).
 
-Případně můžete použít [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Jižní Afrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) nebo [Pikapods](https://www.pikapods.com/) pro rychlé spuštění instance Checkmate. Pokud chcete monitorovat infrastrukturu serverů, budete potřebovat [agenta Capture](https://github.com/bluewave-labs/capture). Repozitář Capture obsahuje také pokyny k instalaci.
+Případně můžete použít [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Jižní Afrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) nebo [Pikapods](https://www.pikapods.com/) pro rychlé spuštění instance Checkmate. Pokud chcete monitorovat infrastrukturu serverů, budete potřebovat [agenta Capture](https://github.com/bluewave-labs/capture). Repozitář Capture obsahuje také pokyny k instalaci.
 
 ### Použití vlastní CA
 

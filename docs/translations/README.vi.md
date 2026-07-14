@@ -85,7 +85,7 @@ Có thể tìm thấy hướng dẫn sử dụng [tại đây](https://checkmate
 
 Xem hướng dẫn cài đặt trong [cổng tài liệu của Checkmate](https://checkmate.so/docs).
 
-Hoặc bạn có thể dùng [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Nam Phi), [Cloudzy](https://cloudzy.com/marketplace/checkmate) hoặc [Pikapods](https://www.pikapods.com/) để dựng nhanh một instance Checkmate. Nếu muốn giám sát hạ tầng máy chủ, bạn sẽ cần [agent Capture](https://github.com/bluewave-labs/capture). Kho Capture cũng chứa hướng dẫn cài đặt.
+Hoặc bạn có thể dùng [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Nam Phi), [Cloudzy](https://cloudzy.com/marketplace/checkmate) hoặc [Pikapods](https://www.pikapods.com/) để dựng nhanh một instance Checkmate. Nếu muốn giám sát hạ tầng máy chủ, bạn sẽ cần [agent Capture](https://github.com/bluewave-labs/capture). Kho Capture cũng chứa hướng dẫn cài đặt.
 
 ### Sử dụng CA tuỳ chỉnh
 

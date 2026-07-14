@@ -82,7 +82,7 @@ Kullanım talimatlarını [burada](https://checkmate.so/docs) bulabilirsiniz.
 
 Kurulum talimatları için [Checkmate dokümantasyon portalına](https://checkmate.so/docs) bakın.
 
-Alternatif olarak hızlıca bir Checkmate örneği çalıştırmak için [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Güney Afrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) veya [Pikapods](https://www.pikapods.com/)'u kullanabilirsiniz. Sunucu altyapınızı izlemek isterseniz [Capture ajanına](https://github.com/bluewave-labs/capture) ihtiyacınız olacak. Capture deposu da kurulum talimatlarını içerir.
+Alternatif olarak hızlıca bir Checkmate örneği çalıştırmak için [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Güney Afrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) veya [Pikapods](https://www.pikapods.com/)'u kullanabilirsiniz. Sunucu altyapınızı izlemek isterseniz [Capture ajanına](https://github.com/bluewave-labs/capture) ihtiyacınız olacak. Capture deposu da kurulum talimatlarını içerir.
 
 ### Özel CA Kullanımı
 

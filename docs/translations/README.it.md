@@ -82,7 +82,7 @@ Le istruzioni per l'uso sono disponibili [qui](https://checkmate.so/docs).
 
 Consulta le istruzioni di installazione nel [portale della documentazione di Checkmate](https://checkmate.so/docs). 
 
-In alternativa, puoi usare [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Sudafrica), [Cloudzy](https://cloudzy.com/marketplace/checkmate) o [Pikapods](https://www.pikapods.com/) per creare rapidamente un'istanza di Checkmate. Se desideri monitorare l'infrastruttura dei tuoi server, ti servirà l'[agente Capture](https://github.com/bluewave-labs/capture). Anche il repository di Capture contiene le istruzioni di installazione.
+In alternativa, puoi usare [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Sudafrica), [Cloudzy](https://cloudzy.com/marketplace/checkmate) o [Pikapods](https://www.pikapods.com/) per creare rapidamente un'istanza di Checkmate. Se desideri monitorare l'infrastruttura dei tuoi server, ti servirà l'[agente Capture](https://github.com/bluewave-labs/capture). Anche il repository di Capture contiene le istruzioni di installazione.
 
 ### Usare una CA personalizzata
 
