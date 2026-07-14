@@ -85,7 +85,7 @@ Pots trobar les instruccions d'ús [aquí](https://checkmate.so/docs).
 
 Consulta les instruccions d'instal·lació al [portal de documentació de Checkmate](https://checkmate.so/docs).
 
-Alternativament, també pots utilitzar [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Sud-àfrica), [Cloudzy](https://cloudzy.com/marketplace/checkmate) o [Pikapods](https://www.pikapods.com/) per posar en marxa ràpidament una instància de Checkmate. Si vols monitoritzar la infraestructura de servidors, necessitaràs l'[agent Capture](https://github.com/bluewave-labs/capture). El repositori de Capture també conté les instruccions d'instal·lació.
+Alternativament, també pots utilitzar [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Sud-àfrica), [Cloudzy](https://cloudzy.com/marketplace/checkmate) o [Pikapods](https://www.pikapods.com/) per posar en marxa ràpidament una instància de Checkmate. Si vols monitoritzar la infraestructura de servidors, necessitaràs l'[agent Capture](https://github.com/bluewave-labs/capture). El repositori de Capture també conté les instruccions d'instal·lació.
 
 ### Utilitzar una CA personalitzada
 

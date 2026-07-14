@@ -87,7 +87,7 @@
 
 اطّلع على تعليمات التثبيت في [بوابة وثائق Checkmate](https://checkmate.so/docs).
 
-بدلاً من ذلك، يمكنك استخدام [Coolify](https://coolify.io/)، أو [Elestio](https://elest.io/open-source/checkmate)، أو [K8s](./charts/helm/checkmate/INSTALLATION.md)، أو [Sive Host](https://sive.host) (جنوب أفريقيا)، أو [Cloudzy](https://cloudzy.com/marketplace/checkmate)، أو [Pikapods](https://www.pikapods.com/) لتشغيل نسخة من Checkmate بسرعة. إن أردت مراقبة البنية التحتية لخوادمك، ستحتاج إلى [وكيل Capture](https://github.com/bluewave-labs/capture). يحتوي مستودع Capture أيضًا على تعليمات التثبيت.
+بدلاً من ذلك، يمكنك استخدام [Coolify](https://coolify.io/)، أو [Elestio](https://elest.io/open-source/checkmate)، أو [K8s](../../charts/helm/checkmate/INSTALLATION.md)، أو [Sive Host](https://sive.host) (جنوب أفريقيا)، أو [Cloudzy](https://cloudzy.com/marketplace/checkmate)، أو [Pikapods](https://www.pikapods.com/) لتشغيل نسخة من Checkmate بسرعة. إن أردت مراقبة البنية التحتية لخوادمك، ستحتاج إلى [وكيل Capture](https://github.com/bluewave-labs/capture). يحتوي مستودع Capture أيضًا على تعليمات التثبيت.
 
 ### استخدام شهادة CA مخصصة
 
