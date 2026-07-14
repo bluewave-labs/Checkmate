@@ -555,6 +555,7 @@ export class MonitorService implements IMonitorService {
 					await this.geoChecksRepository.deleteByMonitorId(monitor.id);
 					await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id);
 					await this.monitorStatsRepository.deleteByMonitorId(monitor.id);
+					await this.incidentsRepository.deleteByMonitorId(monitor.id, teamId);
 				} catch (error: unknown) {
 					this.logger.warn({
 						message: `Error deleting associated records for monitor ${monitor.id} with name ${monitor.name}`,
