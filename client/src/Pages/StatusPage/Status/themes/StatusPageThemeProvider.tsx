@@ -6,6 +6,7 @@ import {
 	useState,
 	type ReactNode,
 } from "react";
+import { alpha, darken } from "@mui/material/styles";
 import {
 	DEFAULT_STATUS_PAGE_THEME,
 	resolveStatusPageTheme,
@@ -37,6 +38,15 @@ interface Props {
 	themeMode?: StatusPageThemeMode;
 	timezone?: string;
 	/**
+	 * Brand color picked in the status-page appearance settings. When
+	 * provided, it feeds `tokens.brand` / `brandStrong` / `brandSoft`,
+	 * which theme styles use for accent surfaces (hero, active tabs,
+	 * links). It does NOT recolor the semantic `up`/OK status color, so
+	 * a red or orange brand cannot make the "all operational" indicator
+	 * signal downtime.
+	 */
+	brandColor?: string;
+	/**
 	 * When true, paint the document body with the theme background so it
 	 * covers beyond the provider's wrapper (useful on the public route
 	 * where no admin shell sits behind). Defaults to false for admin
@@ -54,10 +64,32 @@ interface Props {
 	children: ReactNode;
 }
 
+const HEX_COLOR = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
+
+// Resolve the brand triple that theme styles read from. A customer's
+// picked color (when valid) overrides the theme's default; otherwise
+// the theme's own `brand*` values win, and finally we fall back to the
+// `up*` triple so unmigrated theme styles have something to consume.
+const resolveBrandTokens = (
+	tokens: StatusPageThemeTokens,
+	brandColor: string | undefined
+): StatusPageThemeTokens => {
+	const validOverride = brandColor && HEX_COLOR.test(brandColor) ? brandColor : undefined;
+	const brand = validOverride ?? tokens.brand ?? tokens.up;
+	const brandStrong = validOverride
+		? darken(validOverride, 0.2)
+		: (tokens.brandStrong ?? tokens.upStrong);
+	const brandSoft = validOverride
+		? alpha(validOverride, 0.15)
+		: (tokens.brandSoft ?? tokens.upSoft);
+	return { ...tokens, brand, brandStrong, brandSoft };
+};
+
 export const StatusPageThemeProvider = ({
 	theme,
 	themeMode,
 	timezone,
+	brandColor,
 	paintBody = false,
 	transparent = false,
 	children,
@@ -109,7 +141,11 @@ export const StatusPageThemeProvider = ({
 
 	const resolvedMode: ResolvedMode =
 		resolvedThemeMode === "auto" ? systemMode : resolvedThemeMode;
-	const tokens = themeTokens[resolvedTheme][resolvedMode];
+	const baseTokens = themeTokens[resolvedTheme][resolvedMode];
+	const tokens = useMemo(
+		() => resolveBrandTokens(baseTokens, brandColor),
+		[baseTokens, brandColor]
+	);
 
 	const value = useMemo(
 		() => ({

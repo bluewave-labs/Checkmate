@@ -9,6 +9,14 @@ export interface StatusPageThemeTokens {
 	up: string;
 	upStrong: string;
 	upSoft: string;
+	// Accent used for brand-tinted surfaces (hero background, active tab
+	// underline, "view all" links). Distinct from `up` so a red/orange
+	// brand color cannot recolor the semantic OK/up status indicators.
+	// Themes leave these undefined by default; the provider falls back
+	// to `up`/`upStrong`/`upSoft` so styles have a value to consume.
+	brand?: string;
+	brandStrong?: string;
+	brandSoft?: string;
 	degraded: string;
 	degradedSoft: string;
 	down: string;
