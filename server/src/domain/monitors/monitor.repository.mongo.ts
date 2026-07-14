@@ -48,19 +48,19 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return this.mapDocuments(monitors);
 	};
 
-	findByTeamId = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null> => {
-		const { page = 0, rowsPerPage = 0, filter, field = "createdAt", order = "desc", type, tags } = config ?? {};
+	private queryBuilder = (config: TeamQueryConfig, teamId: string): FilterQuery<MonitorDocument> => {
+		const { filter, field = "createdAt", type, tags } = config ?? {};
 
-		const query: Record<string, unknown> = {
-			teamId: new mongoose.Types.ObjectId(teamId),
-		};
+		const query: FilterQuery<MonitorDocument> = { teamId: new mongoose.Types.ObjectId(teamId) };
 
 		if (type !== undefined) {
 			query.type = Array.isArray(type) ? { $in: type } : type;
 		}
 
 		if (tags !== undefined) {
-			query.tags = Array.isArray(tags) ? { $in: tags } : tags;
+			// Convert to ObjectIds: aggregation $match does no schema casting, so raw strings never match the ObjectId refs
+			const tagIds = (Array.isArray(tags) ? tags : [tags]).map((tag) => new mongoose.Types.ObjectId(tag));
+			query.tags = { $in: tagIds };
 		}
 
 		if (filter !== undefined) {
@@ -81,48 +81,28 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 					break;
 			}
 		}
+		return query;
+	};
 
+	private uptimeStatsLookupStages: PipelineStage[] = [
+		{ $lookup: { from: "monitorstats", localField: "_id", foreignField: "monitorId", as: "stats" } },
+		{ $addFields: { uptimePercentage: { $arrayElemAt: ["$stats.uptimePercentage", 0] } } },
+		{ $project: { stats: 0 } },
+	];
+
+	findByTeamId = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null> => {
+		const { page = 0, rowsPerPage = 0, field = "createdAt", order = "desc" } = config ?? {};
+		const query = this.queryBuilder(config, teamId);
 		const sort = { [field]: order === "asc" ? 1 : -1 } as const;
 		const skip = Math.max(page, 0) * rowsPerPage;
-
 		const documents = await MonitorModel.find(query).sort(sort).skip(skip).limit(rowsPerPage);
-
 		return this.mapDocuments(documents);
 	};
 
 	findByTeamIdWithStats = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null> => {
-		const { page = 0, rowsPerPage = 0, filter, field = "createdAt", order = "desc", type, tags } = config ?? {};
+		const { page = 0, rowsPerPage = 0, field = "createdAt", order = "desc" } = config ?? {};
 
-		const query: Record<string, unknown> = {
-			teamId: new mongoose.Types.ObjectId(teamId),
-		};
-
-		if (type !== undefined) {
-			query.type = Array.isArray(type) ? { $in: type } : type;
-		}
-
-		if (tags !== undefined) {
-			query.tags = Array.isArray(tags) ? { $in: tags } : tags;
-		}
-
-		if (filter !== undefined) {
-			switch (field) {
-				case "name":
-					query.$or = [{ name: { $regex: filter, $options: "i" } }, { url: { $regex: filter, $options: "i" } }];
-					break;
-				case "isActive":
-					query.isActive = filter === "true";
-					break;
-				case "status":
-					query.status = filter;
-					break;
-				case "type":
-					query.type = filter;
-					break;
-				default:
-					break;
-			}
-		}
+		const query = this.queryBuilder(config, teamId);
 
 		const sort = { [field]: order === "asc" ? 1 : -1 } as const;
 		const skip = Math.max(page, 0) * rowsPerPage;
@@ -131,24 +111,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			{ $match: query },
 			{ $sort: sort },
 			...(rowsPerPage ? [{ $skip: skip }, { $limit: rowsPerPage }] : []),
-			{
-				$lookup: {
-					from: "monitorstats",
-					localField: "_id",
-					foreignField: "monitorId",
-					as: "stats",
-				},
-			},
-			{
-				$addFields: {
-					uptimePercentage: { $arrayElemAt: ["$stats.uptimePercentage", 0] },
-				},
-			},
-			{
-				$project: {
-					stats: 0,
-				},
-			},
+			...this.uptimeStatsLookupStages,
 		];
 
 		const documents = await MonitorModel.aggregate(pipeline);
@@ -162,27 +125,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 
 		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
 
-		const pipeline: PipelineStage[] = [
-			{ $match: { _id: { $in: objectIds } } },
-			{
-				$lookup: {
-					from: "monitorstats",
-					localField: "_id",
-					foreignField: "monitorId",
-					as: "stats",
-				},
-			},
-			{
-				$addFields: {
-					uptimePercentage: { $arrayElemAt: ["$stats.uptimePercentage", 0] },
-				},
-			},
-			{
-				$project: {
-					stats: 0,
-				},
-			},
-		];
+		const pipeline: PipelineStage[] = [{ $match: { _id: { $in: objectIds } } }, ...this.uptimeStatsLookupStages];
 
 		const documents = await MonitorModel.aggregate(pipeline);
 		return documents.map((doc) => this.toEntity(doc));
@@ -252,21 +195,8 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return documents.map((doc) => this.toEntity(doc));
 	};
 
-	findMonitorCountByTeamIdAndType = async (teamId: string, config?: TeamQueryConfig): Promise<number> => {
-		const { type, tags } = config ?? {};
-
-		const query: FilterQuery<MonitorDocument> = {
-			teamId: new mongoose.Types.ObjectId(teamId),
-		};
-
-		if (type !== undefined) {
-			query.type = Array.isArray(type) ? { $in: type } : type;
-		}
-
-		if (tags !== undefined) {
-			query.tags = Array.isArray(tags) ? { $in: tags } : tags;
-		}
-
+	findMonitorCountByTeamIdAndType = async (teamId: string, config: TeamQueryConfig): Promise<number> => {
+		const query = this.queryBuilder(config, teamId);
 		const count = await MonitorModel.countDocuments(query);
 		return count;
 	};
@@ -394,15 +324,8 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return { monitors: this.mapDocuments(monitors), deletedCount };
 	};
 
-	findMonitorsSummaryByTeamId = async (teamId: string, config?: SummaryConfig): Promise<MonitorsSummary> => {
-		const match: FilterQuery<MonitorDocument> = { teamId: new mongoose.Types.ObjectId(teamId) };
-		if (config?.type !== undefined) {
-			match.type = Array.isArray(config.type) ? { $in: config.type } : config.type;
-		}
-		if (config?.tags !== undefined) {
-			const tagIds = (Array.isArray(config.tags) ? config.tags : [config.tags]).map((tag) => new mongoose.Types.ObjectId(tag));
-			match.tags = { $in: tagIds };
-		}
+	findMonitorsSummaryByTeamId = async (teamId: string, config: SummaryConfig): Promise<MonitorsSummary> => {
+		const match = this.queryBuilder(config, teamId);
 		const pipeline = [
 			{ $match: match },
 			{
