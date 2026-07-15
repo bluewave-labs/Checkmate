@@ -18,7 +18,7 @@ import mongoose from "mongoose";
 import { getDateForRange } from "@/utils/dataUtils.js";
 import { ILogger } from "@/utils/logger.js";
 
-import { getHardwareUpChecks, getHardwareStats, getHardwareTotalChecks } from "@/domain/checks/check.hardware.aggregation.js";
+import { getHardwareUpChecks, getHardwareStats, getHardwareTotalChecks } from "@/domain/checks/check.hardware.aggregations.js";
 
 const SERVICE_NAME = "StatusService";
 
