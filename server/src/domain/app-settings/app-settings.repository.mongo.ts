@@ -1,26 +1,13 @@
-import mongoose, { type UpdateQuery } from "mongoose";
+import { type UpdateQuery } from "mongoose";
 import { ISettingsRepository } from "@/domain/app-settings/app-settings-repository.interface.js";
 import type { Settings, SettingsUpdate } from "@/domain/app-settings/app-settings.type.js";
 import { AppSettingsModel, type AppSettingsDocument } from "@/domain/app-settings/app-settings.model.js";
+import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
 class MongoSettingsRepository implements ISettingsRepository {
-	private toStringId = (value?: mongoose.Types.ObjectId | string | null): string => {
-		if (!value) {
-			return "";
-		}
-		return value instanceof mongoose.Types.ObjectId ? value.toString() : String(value);
-	};
-
-	private toDateString = (value?: Date | string | null): string => {
-		if (!value) {
-			return new Date(0).toISOString();
-		}
-		return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
-	};
-
 	protected toEntity = (doc: AppSettingsDocument): Settings => {
 		return {
-			id: this.toStringId(doc._id),
+			id: toStringId(doc._id),
 			checkTTL: doc.checkTTL,
 			language: doc.language,
 			jwtSecret: doc.jwtSecret ?? undefined,
@@ -41,8 +28,8 @@ class MongoSettingsRepository implements ISettingsRepository {
 			singleton: doc.singleton,
 			version: doc.version ?? 1,
 			globalThresholds: doc.globalThresholds ?? undefined,
-			createdAt: this.toDateString(doc.createdAt),
-			updatedAt: this.toDateString(doc.updatedAt),
+			createdAt: toDateString(doc.createdAt),
+			updatedAt: toDateString(doc.updatedAt),
 		};
 	};
 

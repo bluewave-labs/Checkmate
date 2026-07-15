@@ -17,6 +17,7 @@ import { CheckModel, type CheckDocument } from "@/domain/checks/check.model.js";
 import mongoose from "mongoose";
 import { getDateForRange } from "@/utils/dataUtils.js";
 import { ILogger } from "@/utils/logger.js";
+import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
 import { getHardwareUpChecks, getHardwareStats, getHardwareTotalChecks } from "@/domain/checks/check.hardware.aggregations.js";
 
@@ -33,20 +34,6 @@ class MongoChecksRepository implements IChecksRepository {
 	}
 
 	private toEntity = (doc: CheckDocument): Check => {
-		const toStringId = (value: mongoose.Types.ObjectId | string | undefined | null): string => {
-			if (!value) {
-				return "";
-			}
-			return value instanceof mongoose.Types.ObjectId ? value.toString() : String(value);
-		};
-
-		const toDateString = (value?: Date | string | null): string => {
-			if (!value) {
-				return new Date(0).toISOString();
-			}
-			return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
-		};
-
 		const mapTimings = (timings?: GotTimings): GotTimings => {
 			const phases = timings?.phases ?? {
 				wait: 0,

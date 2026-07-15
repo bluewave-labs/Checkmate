@@ -1,29 +1,14 @@
 import { Team } from "@/domain/teams/team.type.js";
 import { TeamDocument, TeamModel } from "@/domain/teams/team.model.js";
 import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
-import mongoose from "mongoose";
-
+import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 class MongoTeamsRepository implements ITeamsRepository {
-	private toStringId = (value?: mongoose.Types.ObjectId | string | null): string => {
-		if (!value) {
-			return "";
-		}
-		return value instanceof mongoose.Types.ObjectId ? value.toString() : String(value);
-	};
-
-	private toDateString = (value?: Date | string | null): string => {
-		if (!value) {
-			return new Date(0).toISOString();
-		}
-		return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
-	};
-
 	private toEntity = (doc: TeamDocument): Team => {
 		return {
-			id: this.toStringId(doc._id),
+			id: toStringId(doc._id),
 			email: doc.email,
-			createdAt: this.toDateString(doc.createdAt),
-			updatedAt: this.toDateString(doc.updatedAt),
+			createdAt: toDateString(doc.createdAt),
+			updatedAt: toDateString(doc.updatedAt),
 		};
 	};
 
@@ -34,7 +19,7 @@ class MongoTeamsRepository implements ITeamsRepository {
 
 	findAllTeamIds = async (): Promise<string[]> => {
 		const teams = await TeamModel.find({}, { _id: 1 }).lean();
-		return teams.map((team) => this.toStringId(team._id));
+		return teams.map((team) => toStringId(team._id));
 	};
 }
 

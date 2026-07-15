@@ -2,35 +2,22 @@ import type { RecoveryToken } from "@/domain/recovery-tokens/recovery-token.type
 import type { IRecoveryTokensRepository } from "./recovery-token.repository.interface.js";
 import type { RecoveryTokenDocument } from "@/domain/recovery-tokens/recovery-token.model.js";
 import { RecoveryTokenModel } from "@/domain/recovery-tokens/recovery-token.model.js";
-import mongoose from "mongoose";
 import crypto from "crypto";
 import { AppError } from "@/utils/AppError.js";
+import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 const SERVICE_NAME = "MongoRecoveryTokensRepository";
 
 class MongoRecoveryTokensRepository implements IRecoveryTokensRepository {
 	static SERVICE_NAME = SERVICE_NAME;
-	private toStringId = (value?: mongoose.Types.ObjectId | string | null): string => {
-		if (!value) {
-			return "";
-		}
-		return value instanceof mongoose.Types.ObjectId ? value.toString() : String(value);
-	};
-
-	private toDateString = (value?: Date | string | null): string => {
-		if (!value) {
-			return new Date(0).toISOString();
-		}
-		return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
-	};
 
 	protected toEntity = (doc: RecoveryTokenDocument): RecoveryToken => {
 		return {
-			id: this.toStringId(doc._id),
+			id: toStringId(doc._id),
 			email: doc.email,
 			token: doc.token,
-			expiry: this.toDateString(doc.expiry),
-			createdAt: this.toDateString(doc.createdAt),
-			updatedAt: this.toDateString(doc.updatedAt),
+			expiry: toDateString(doc.expiry),
+			createdAt: toDateString(doc.createdAt),
+			updatedAt: toDateString(doc.updatedAt),
 		};
 	};
 

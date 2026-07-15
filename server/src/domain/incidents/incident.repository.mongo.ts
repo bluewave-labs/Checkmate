@@ -4,22 +4,9 @@ import type { Incident, IncidentSummary } from "@/domain/incidents/incident.type
 import type { IIncidentsRepository } from "@/domain/incidents/incident.repository.interface.js";
 import mongoose from "mongoose";
 import { AppError } from "@/utils/AppError.js";
+import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
 class MongoIncidentsRepository implements IIncidentsRepository {
-	private toStringId = (value?: mongoose.Types.ObjectId | string | null): string => {
-		if (!value) {
-			return "";
-		}
-		return value instanceof mongoose.Types.ObjectId ? value.toString() : String(value);
-	};
-
-	private toDateString = (value?: Date | string | null): string => {
-		if (!value) {
-			return new Date(0).toISOString();
-		}
-		return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
-	};
-
 	private buildMatchStage({
 		teamId,
 		startDate,
@@ -48,20 +35,20 @@ class MongoIncidentsRepository implements IIncidentsRepository {
 
 	protected toEntity = (doc: IncidentDocument): Incident => {
 		return {
-			id: this.toStringId(doc._id),
-			monitorId: this.toStringId(doc.monitorId),
-			teamId: this.toStringId(doc.teamId),
-			startTime: this.toDateString(doc.startTime),
-			endTime: doc.endTime ? this.toDateString(doc.endTime) : null,
+			id: toStringId(doc._id),
+			monitorId: toStringId(doc.monitorId),
+			teamId: toStringId(doc.teamId),
+			startTime: toDateString(doc.startTime),
+			endTime: doc.endTime ? toDateString(doc.endTime) : null,
 			status: doc.status,
 			message: doc.message ?? null,
 			statusCode: doc.statusCode ?? null,
 			resolutionType: doc.resolutionType ?? null,
-			resolvedBy: doc.resolvedBy ? this.toStringId(doc.resolvedBy) : null,
+			resolvedBy: doc.resolvedBy ? toStringId(doc.resolvedBy) : null,
 			resolvedByEmail: doc.resolvedByEmail ?? null,
 			comment: doc.comment ?? null,
-			createdAt: this.toDateString(doc.createdAt),
-			updatedAt: this.toDateString(doc.updatedAt),
+			createdAt: toDateString(doc.createdAt),
+			updatedAt: toDateString(doc.updatedAt),
 		};
 	};
 
@@ -254,22 +241,22 @@ class MongoIncidentsRepository implements IIncidentsRepository {
 			avgResolutionTimeHours,
 			topMonitor: monitorResult[0]
 				? {
-						monitorId: this.toStringId(monitorResult[0].monitorId),
+						monitorId: toStringId(monitorResult[0].monitorId),
 						monitorName: monitorResult[0].monitorName ?? null,
 						incidentCount: monitorResult[0].count,
 					}
 				: null,
 			latestIncidents: latestIncidents.map((incident) => ({
-				id: this.toStringId(incident._id),
-				monitorId: this.toStringId(incident.monitorId),
+				id: toStringId(incident._id),
+				monitorId: toStringId(incident.monitorId),
 				monitorName: incident.monitorName ?? null,
 				status: incident.status,
-				startTime: this.toDateString(incident.startTime),
-				endTime: incident.endTime ? this.toDateString(incident.endTime) : null,
+				startTime: toDateString(incident.startTime),
+				endTime: incident.endTime ? toDateString(incident.endTime) : null,
 				resolutionType: incident.resolutionType ?? null,
 				message: incident.message ?? null,
 				statusCode: incident.statusCode ?? null,
-				createdAt: this.toDateString(incident.createdAt),
+				createdAt: toDateString(incident.createdAt),
 			})),
 		};
 	};

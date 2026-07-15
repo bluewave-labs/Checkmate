@@ -2,34 +2,20 @@ import { IInvitesRepository } from "@/domain/invites/invite.repository.interface
 import type { Invite } from "@/domain/invites/invite.type.js";
 import { type InviteDocument, InviteModel } from "@/domain/invites/invite.model.js";
 import { AppError } from "@/utils/AppError.js";
-import mongoose from "mongoose";
 import crypto from "crypto";
+import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
 class MongoInvitesRepository implements IInvitesRepository {
-	private toStringId = (value?: mongoose.Types.ObjectId | string | null): string => {
-		if (!value) {
-			return "";
-		}
-		return value instanceof mongoose.Types.ObjectId ? value.toString() : String(value);
-	};
-
-	private toDateString = (value?: Date | string | null): string => {
-		if (!value) {
-			return new Date(0).toISOString();
-		}
-		return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
-	};
-
 	protected toEntity = (doc: InviteDocument): Invite => {
 		return {
-			id: this.toStringId(doc._id),
+			id: toStringId(doc._id),
 			email: doc.email,
-			teamId: this.toStringId(doc.teamId),
+			teamId: toStringId(doc.teamId),
 			role: doc.role ?? [],
 			token: doc.token,
-			expiry: this.toDateString(doc.expiry),
-			createdAt: this.toDateString(doc.createdAt),
-			updatedAt: this.toDateString(doc.updatedAt),
+			expiry: toDateString(doc.expiry),
+			createdAt: toDateString(doc.createdAt),
+			updatedAt: toDateString(doc.updatedAt),
 		};
 	};
 
