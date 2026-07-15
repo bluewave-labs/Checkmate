@@ -1,14 +1,15 @@
 import { IJobScheduler } from "@/worker/worker.interface.js";
 import { getQueueJobsQueryValidation } from "@/api/validation/queueValidation.js";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, RequestHandler } from "express";
+import { catchAsync } from "@/utils/catchAsync.js";
 
 const SERVICE_NAME = "JobQueueController";
 
 export interface IJobQueueController {
-	getMetrics(req: Request, res: Response, next: NextFunction): Promise<void>;
-	getJobs(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-	getAllMetrics(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-	flushQueue(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	getMetrics: RequestHandler;
+	getJobs: RequestHandler;
+	getAllMetrics: RequestHandler;
+	flushQueue: RequestHandler;
 }
 
 class JobQueueController implements IJobQueueController {
@@ -19,59 +20,43 @@ class JobQueueController implements IJobQueueController {
 		return JobQueueController.SERVICE_NAME;
 	}
 
-	getMetrics = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const metrics = await this.scheduler.getMetrics();
-			res.status(200).json({
-				success: true,
-				msg: "Queue metrics fetched successfully",
-				data: metrics,
-			});
-		} catch (error) {
-			next(error);
-		}
-	};
+	getMetrics = catchAsync(async (req: Request, res: Response) => {
+		const metrics = await this.scheduler.getMetrics();
+		res.status(200).json({
+			success: true,
+			msg: "Queue metrics fetched successfully",
+			data: metrics,
+		});
+	});
 
-	getJobs = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const pagination = getQueueJobsQueryValidation.parse(req.query);
-			const { jobs, count } = await this.scheduler.getJobs(pagination);
-			return res.status(200).json({
-				success: true,
-				msg: "Queue jobs fetched successfully",
-				data: { jobs, count },
-			});
-		} catch (error) {
-			next(error);
-		}
-	};
+	getJobs = catchAsync(async (req: Request, res: Response) => {
+		const pagination = getQueueJobsQueryValidation.parse(req.query);
+		const { jobs, count } = await this.scheduler.getJobs(pagination);
+		return res.status(200).json({
+			success: true,
+			msg: "Queue jobs fetched successfully",
+			data: { jobs, count },
+		});
+	});
 
-	getAllMetrics = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const pagination = getQueueJobsQueryValidation.parse(req.query);
-			const { jobs, count } = await this.scheduler.getJobs(pagination);
-			const metrics = await this.scheduler.getMetrics();
-			return res.status(200).json({
-				success: true,
-				msg: "Queue metrics fetched successfully",
-				data: { jobs, count, metrics },
-			});
-		} catch (error) {
-			next(error);
-		}
-	};
+	getAllMetrics = catchAsync(async (req: Request, res: Response) => {
+		const pagination = getQueueJobsQueryValidation.parse(req.query);
+		const { jobs, count } = await this.scheduler.getJobs(pagination);
+		const metrics = await this.scheduler.getMetrics();
+		return res.status(200).json({
+			success: true,
+			msg: "Queue metrics fetched successfully",
+			data: { jobs, count, metrics },
+		});
+	});
 
-	flushQueue = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const result = await this.scheduler.flushQueues();
-			return res.status(200).json({
-				success: true,
-				msg: "Queue flushed successfully",
-				data: result,
-			});
-		} catch (error) {
-			next(error);
-		}
-	};
+	flushQueue = catchAsync(async (req: Request, res: Response) => {
+		const result = await this.scheduler.flushQueues();
+		return res.status(200).json({
+			success: true,
+			msg: "Queue flushed successfully",
+			data: result,
+		});
+	});
 }
 export default JobQueueController;

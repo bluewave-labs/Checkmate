@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, RequestHandler } from "express";
+import { catchAsync } from "@/utils/catchAsync.js";
 import { updateAppSettingsBodyValidation } from "@/api/validation/settingsValidation.js";
 import { sendTestEmailBodyValidation } from "@/api/validation/notificationValidation.js";
 import { AppError } from "@/utils/AppError.js";
@@ -10,9 +11,9 @@ const SERVICE_NAME = "SettingsController";
 
 export interface ISettingsController {
 	serviceName: string;
-	getAppSettings(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-	updateAppSettings(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-	sendTestEmail(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+	getAppSettings: RequestHandler;
+	updateAppSettings: RequestHandler;
+	sendTestEmail: RequestHandler;
 }
 
 class SettingsController implements ISettingsController {
@@ -50,94 +51,82 @@ class SettingsController implements ISettingsController {
 		return returnSettings;
 	};
 
-	getAppSettings = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const dbSettings = await this.settingsService.getDBSettings();
+	getAppSettings = catchAsync(async (req: Request, res: Response) => {
+		const dbSettings = await this.settingsService.getDBSettings();
 
-			const returnSettings = this.buildAppSettings(dbSettings);
-			return res.status(200).json({
-				success: true,
-				msg: "App settings fetched successfully",
-				data: returnSettings,
-			});
-		} catch (error) {
-			next(error);
+		const returnSettings = this.buildAppSettings(dbSettings);
+		return res.status(200).json({
+			success: true,
+			msg: "App settings fetched successfully",
+			data: returnSettings,
+		});
+	});
+
+	updateAppSettings = catchAsync(async (req: Request, res: Response) => {
+		const validatedBody = updateAppSettingsBodyValidation.parse(req.body);
+
+		const updatedSettings = await this.settingsService.updateDbSettings(validatedBody);
+		const returnSettings = this.buildAppSettings(updatedSettings);
+		return res.status(200).json({
+			success: true,
+			msg: "App settings updated successfully",
+			data: returnSettings,
+		});
+	});
+
+	sendTestEmail = catchAsync(async (req: Request, res: Response) => {
+		sendTestEmailBodyValidation.parse(req.body);
+
+		const {
+			to,
+			systemEmailHost,
+			systemEmailPort,
+			systemEmailAddress,
+			systemEmailDisplayName,
+			systemEmailPassword,
+			systemEmailUser,
+			systemEmailConnectionHost,
+			systemEmailSecure,
+			systemEmailPool,
+			systemEmailIgnoreTLS,
+			systemEmailRequireTLS,
+			systemEmailRejectUnauthorized,
+			systemEmailTLSServername,
+		} = req.body;
+
+		const subject = "This is a test email from Checkmate";
+		const context = { testName: "Monitoring System" };
+
+		const html = await this.emailService.buildEmail("testEmailTemplate", context);
+		if (!html) {
+			throw new AppError({ message: "Failed to build email template.", status: 500 });
 		}
-	};
+		const messageId = await this.emailService.sendEmail(to, subject, html, {
+			systemEmailHost,
+			systemEmailPort,
+			systemEmailUser,
+			systemEmailAddress,
+			systemEmailDisplayName,
+			systemEmailPassword,
+			systemEmailConnectionHost,
+			systemEmailSecure,
+			systemEmailPool,
+			systemEmailIgnoreTLS,
+			systemEmailRequireTLS,
+			systemEmailRejectUnauthorized,
+			systemEmailTLSServername,
+		});
 
-	updateAppSettings = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const validatedBody = updateAppSettingsBodyValidation.parse(req.body);
-
-			const updatedSettings = await this.settingsService.updateDbSettings(validatedBody);
-			const returnSettings = this.buildAppSettings(updatedSettings);
-			return res.status(200).json({
-				success: true,
-				msg: "App settings updated successfully",
-				data: returnSettings,
-			});
-		} catch (error) {
-			next(error);
+		if (!messageId) {
+			throw new AppError({ message: "Failed to send test email.", status: 500 });
 		}
-	};
 
-	sendTestEmail = async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			sendTestEmailBodyValidation.parse(req.body);
-
-			const {
-				to,
-				systemEmailHost,
-				systemEmailPort,
-				systemEmailAddress,
-				systemEmailDisplayName,
-				systemEmailPassword,
-				systemEmailUser,
-				systemEmailConnectionHost,
-				systemEmailSecure,
-				systemEmailPool,
-				systemEmailIgnoreTLS,
-				systemEmailRequireTLS,
-				systemEmailRejectUnauthorized,
-				systemEmailTLSServername,
-			} = req.body;
-
-			const subject = "This is a test email from Checkmate";
-			const context = { testName: "Monitoring System" };
-
-			const html = await this.emailService.buildEmail("testEmailTemplate", context);
-			if (!html) {
-				throw new AppError({ message: "Failed to build email template.", status: 500 });
-			}
-			const messageId = await this.emailService.sendEmail(to, subject, html, {
-				systemEmailHost,
-				systemEmailPort,
-				systemEmailUser,
-				systemEmailAddress,
-				systemEmailDisplayName,
-				systemEmailPassword,
-				systemEmailConnectionHost,
-				systemEmailSecure,
-				systemEmailPool,
-				systemEmailIgnoreTLS,
-				systemEmailRequireTLS,
-				systemEmailRejectUnauthorized,
-				systemEmailTLSServername,
-			});
-
-			if (!messageId) {
-				throw new AppError({ message: "Failed to send test email.", status: 500 });
-			}
-
-			return res.status(200).json({
-				success: true,
-				msg: "Test email sent successfully",
-				data: { messageId },
-			});
-		} catch (error) {
-			next(error);
-		}
-	};
+		return res.status(200).json({
+			success: true,
+			msg: "Test email sent successfully",
+			data: { messageId },
+		});
+	});
 }
 
 export default SettingsController;
