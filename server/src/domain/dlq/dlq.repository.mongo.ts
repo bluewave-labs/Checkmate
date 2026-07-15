@@ -4,36 +4,22 @@ import type { DLQItem } from "@/domain/dlq/dlq.type.js";
 import type { IDLQRepository, DLQQueryFilters, DLQStatusCount } from "@/domain/dlq/dlq.repository.interface.js";
 import mongoose from "mongoose";
 import { AppError } from "@/utils/AppError.js";
-
+import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 class MongoDLQRepository implements IDLQRepository {
-	private toStringId = (value?: mongoose.Types.ObjectId | string | null): string => {
-		if (!value) {
-			return "";
-		}
-		return value instanceof mongoose.Types.ObjectId ? value.toString() : String(value);
-	};
-
-	private toDateString = (value?: Date | string | null): string => {
-		if (!value) {
-			return new Date(0).toISOString();
-		}
-		return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
-	};
-
 	protected toEntity = (doc: DLQItemDocument): DLQItem => {
 		return {
-			id: this.toStringId(doc._id),
+			id: toStringId(doc._id),
 			type: doc.type,
 			status: doc.status,
 			payload: doc.payload,
-			monitorId: this.toStringId(doc.monitorId),
-			teamId: this.toStringId(doc.teamId),
+			monitorId: toStringId(doc.monitorId),
+			teamId: toStringId(doc.teamId),
 			retryCount: doc.retryCount,
 			maxRetries: doc.maxRetries,
 			lastError: doc.lastError,
-			nextRetryAt: this.toDateString(doc.nextRetryAt),
-			createdAt: this.toDateString(doc.createdAt),
-			updatedAt: this.toDateString(doc.updatedAt),
+			nextRetryAt: toDateString(doc.nextRetryAt),
+			createdAt: toDateString(doc.createdAt),
+			updatedAt: toDateString(doc.updatedAt),
 		};
 	};
 

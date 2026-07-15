@@ -5,6 +5,7 @@ import { GeoCheckMetadataDocument, GeoCheckModel, type GeoCheckDocument } from "
 import mongoose, { PipelineStage } from "mongoose";
 import { getDateForRange } from "@/utils/dataUtils.js";
 import { ILogger } from "@/utils/logger.js";
+import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
 const SERVICE_NAME = "GeoChecksRepository";
 
@@ -17,20 +18,6 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 	}
 
 	private toEntity = (doc: GeoCheckDocument): GeoCheck => {
-		const toStringId = (value: mongoose.Types.ObjectId | string | undefined | null): string => {
-			if (!value) {
-				return "";
-			}
-			return value instanceof mongoose.Types.ObjectId ? value.toString() : String(value);
-		};
-
-		const toDateString = (value?: Date | string | null): string => {
-			if (!value) {
-				return new Date(0).toISOString();
-			}
-			return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
-		};
-
 		const mapMetadata = (metadata: GeoCheckMetadataDocument): GeoCheckMetadata => ({
 			monitorId: toStringId(metadata.monitorId),
 			teamId: toStringId(metadata.teamId),

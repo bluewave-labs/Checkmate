@@ -1,36 +1,22 @@
 import { ITagsRepository } from "@/domain/tags/tag.repository.interface.js";
 import { Tag } from "@/domain/tags/tag.type.js";
 import { TagDocument, TagModel } from "@/domain/tags/tag.model.js";
-import mongoose from "mongoose";
 import { AppError } from "@/utils/AppError.js";
+import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
 const SERVICE_NAME = "TagsRepository";
 
 class MongoTagsRepository implements ITagsRepository {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private toStringId = (value?: mongoose.Types.ObjectId | string | null): string => {
-		if (!value) {
-			return "";
-		}
-		return value instanceof mongoose.Types.ObjectId ? value.toString() : String(value);
-	};
-
-	private toDateString = (value?: Date | string | null): string => {
-		if (!value) {
-			return new Date(0).toISOString();
-		}
-		return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
-	};
-
 	protected toEntity = (doc: TagDocument): Tag => {
 		return {
-			id: this.toStringId(doc._id),
-			teamId: this.toStringId(doc.teamId),
+			id: toStringId(doc._id),
+			teamId: toStringId(doc.teamId),
 			name: doc.name,
 			color: doc.color,
-			createdAt: this.toDateString(doc.createdAt),
-			updatedAt: this.toDateString(doc.updatedAt),
+			createdAt: toDateString(doc.createdAt),
+			updatedAt: toDateString(doc.updatedAt),
 		};
 	};
 

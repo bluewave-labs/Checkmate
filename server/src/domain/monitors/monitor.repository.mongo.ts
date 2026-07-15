@@ -6,6 +6,7 @@ import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import { MongoBulkWriteError } from "mongodb";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "@/domain/monitors/monitor.repository.interface.js";
+import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 class MongoMonitorsRepository implements IMonitorsRepository {
 	create = async (monitor: Monitor, teamId: string, userId: string) => {
 		const monitorModel = new MonitorModel({ ...monitor, teamId, userId });
@@ -440,18 +441,6 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	private toEntity = (doc: MonitorDocument): Monitor => {
-		const toStringId = (value: unknown): string => {
-			if (value instanceof mongoose.Types.ObjectId) {
-				return value.toString();
-			}
-			return value?.toString() ?? "";
-		};
-
-		const toDateString = (value: Date | string): string => {
-			if (!value) return "";
-			return value instanceof Date ? value.toISOString() : value;
-		};
-
 		const notificationIds = (doc.notifications ?? []).map((notification) => toStringId(notification));
 		const tagIds = (doc.tags ?? []).map((tag) => toStringId(tag));
 		return {
@@ -506,10 +495,6 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	private toCheckSnapshot = (doc: CheckSnapshotDocument): CheckSnapshot => {
-		const toDateString = (value: Date | string): string => {
-			return value instanceof Date ? value.toISOString() : value;
-		};
-
 		return {
 			id: doc.id,
 			status: doc.status,
