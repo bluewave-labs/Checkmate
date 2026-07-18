@@ -275,7 +275,7 @@
       },
       "team": {
         "addMember": {
-          "description": "Utwórz nowe konto użytkownika. Po utworzeniu bezpiecznie udostępnij dane logowania.",
+          "description": "Utwórz nowe konto użytkownika. Następnie przekaż dane logowania w bezpieczny sposób.",
           "title": "Zarejestruj nowego członka zespołu"
         },
         "fallback": {
@@ -285,7 +285,7 @@
         "filter": {
           "admin": "Administrator",
           "all": "Wszystkie role",
-          "member": "Członek",
+          "member": "Użytkownik",
           "placeholder": "Filtruj według roli"
         },
         "invite": {
@@ -339,7 +339,7 @@
           },
           "lowercase": {
             "beginning": "Musi zawierać co najmniej",
-            "highlighted": "jedna mała litera"
+            "highlighted": "jedną małą literę"
           },
           "match": {
             "beginning": "Hasła",
@@ -347,7 +347,7 @@
           },
           "number": {
             "beginning": "Musi zawierać co najmniej",
-            "highlighted": "jedna cyfra"
+            "highlighted": "jedną cyfrę"
           },
           "special": {
             "beginning": "Musi zawierać co najmniej",
@@ -355,7 +355,7 @@
           },
           "uppercase": {
             "beginning": "Musi zawierać co najmniej",
-            "highlighted": "jedna wielka litera"
+            "highlighted": "jedną wielką literę"
           }
         }
       },
@@ -366,7 +366,7 @@
             "text": "Wróć do"
           }
         },
-        "submit": "Wyślij prośbę o odzyskanie",
+        "submit": "Wyślij prośbę o odzyskanie hasła",
         "subtitle": "Nie martw się, wyślemy Ci instrukcje resetowania.",
         "title": "Zapomniałeś hasła?"
       },
@@ -386,7 +386,7 @@
         "title": "Witamy ponownie w Checkmate!"
       },
       "register": {
-        "setupNotice": "Ta strona jest dostępna tylko podczas początkowej konfiguracji. Po zarejestrowaniu superadministratora można zapraszać dodatkowych użytkowników z poziomu ustawień zespołu.",
+        "setupNotice": "Ta strona jest dostępna tylko podczas początkowej konfiguracji. Po zarejestrowaniu super administratora można zapraszać dodatkowych użytkowników z poziomu ustawień zespołu.",
         "submit": "Zarejestruj się",
         "subtitle": "Zarejestruj się, aby rozpocząć",
         "title": "Witamy ponownie w Checkmate!"
@@ -398,12 +398,12 @@
     },
     "checks": {
       "fallback": {
-        "description": "Po utworzeniu monitora wszystkie sondy statusu i czasy odpowiedzi będą wyświetlane tutaj jako sprawdzenia.",
-        "title": "Brak jeszcze kontroli"
+        "description": "Po utworzeniu monitora wszystkie statusy i czasy odpowiedzi będą wyświetlane tutaj jako checki.",
+        "title": "Brak checków"
       },
       "header": {
         "description": "Każde sprawdzenie wykonywane przez Checkmate na Twoich monitorach pojawia się tutaj wraz z kodem statusu i czasem odpowiedzi.",
-        "title": "Kontrole"
+        "title": "Checki"
       },
       "selects": {
         "monitor": {
@@ -412,7 +412,7 @@
         "status": {
           "all": "Wszystkie",
           "down": "Niedostępny",
-          "up": "Działa"
+          "up": "Dostępny"
         }
       },
       "table": {
@@ -427,8 +427,8 @@
       "monitors": {
         "actions": {
           "bulkSelected_one": "Wybrano {{count}} monitor",
-          "bulkSelected_other": "Wybrano {{count}} monitorów",
-          "configure": "Konfiguruj",
+          "bulkSelected_other": "Wybrano {{count}} monitor(ów)",
+          "configure": "Skonfiguruj",
           "delete": "Usuń",
           "details": "Szczegóły",
           "generateToken": "Wygeneruj token",
@@ -445,11 +445,11 @@
           "alreadyPaused_other": "Wszystkie wybrane monitory są już wstrzymane",
           "alreadyRunning_one": "Wybrany monitor jest już uruchomiony",
           "alreadyRunning_other": "Wszystkie wybrane monitory są już uruchomione",
-          "partialFailure": "Zaktualizowano {{successCount}} monitorów, ale {{failedCount}} nie udało się zsynchronizować z kolejką zadań",
-          "paused_one": "{{count}} monitor wstrzymany",
-          "paused_other": "Wstrzymano {{count}} monitorów",
-          "resumed_one": "{{count}} monitor wznowiony",
-          "resumed_other": "Wznowiono {{count}} monitorów"
+          "partialFailure": "Zaktualizowano {{successCount}} monitor(ów), ale {{failedCount}} nie udało się zsynchronizować z kolejką zadań",
+          "paused_one": "{{count}} monitor(ów) wstrzymany",
+          "paused_other": "Wstrzymano {{count}} monitor(ów)",
+          "resumed_one": "{{count}} monitor(ów) wznowiony",
+          "resumed_other": "Wznowiono {{count}} monitor(ów)"
         },
         "monitorTypes": {
           "optionDns": "DNS",
@@ -510,7 +510,7 @@
             "method": {
               "description": {
                 "GET": "GET pobiera pełną odpowiedź, łącznie z treścią. Zaawansowane dopasowywanie jest w pełni obsługiwane",
-                "HEAD": "HEAD pobiera tylko nagłówki odpowiedzi, aby zmniejszyć obciążenie docelowego serwera. Obsługuje dopasowywanie kodu statusu, ale nie zaawansowane dopasowywanie, ponieważ nie ma treści odpowiedzi."
+                "HEAD": "HEAD pobiera tylko nagłówki odpowiedzi, aby zmniejszyć obciążenie testowanego serwera. Wspiera dopasowywanie status kodu. Nie obsługuje zaawansowanych dopasowywań, ponieważ nie ma treści odpowiedzi."
               },
               "label": "Metoda żądania"
             }
@@ -543,12 +543,12 @@
             "dns": "Monitoruj, czy określony serwer DNS odpowiada.",
             "docker": "Wprowadź nazwę lub identyfikator kontenera Docker. Możesz użyć nazwy kontenera (np. my-app) lub identyfikatora kontenera (pełny 64-znakowy identyfikator lub skrócony identyfikator).",
             "game": "Wprowadź adres IP lub nazwę hosta oraz numer portu do pingowania (np. 192.168.1.100 lub example.com) i wybierz typ gry. Niektóre gry wymagają włączenia zapytań serwera w pliku konfiguracyjnym — sprawdź dokumentację swojego serwera gry. Zobacz <gamedigLink>listę obsługiwanych gier</gamedigLink>, aby uzyskać szczegóły dotyczące protokołu.",
-            "grpc": "Wprowadź nazwę hosta i port serwera gRPC, opcjonalnie określ nazwę usługi do sprawdzania stanu oraz dodaj nazwę wyświetlaną.",
+            "grpc": "Wprowadź nazwę hosta i port serwera gRPC, opcjonalnie określ nazwę usługi do sprawdzania stanu oraz dodaj nazwę.",
             "hardware": "Monitoruj użycie procesora, pamięci, dysku oraz temperaturę w swojej infrastrukturze. Adres URL punktu końcowego Capture musi zawierać pełną ścieżkę /api/v1/metrics (np. http://192.168.1.10:5001/api/v1/metrics). Dla klucza autoryzacyjnego wklej tylko token — nie dodawaj 'Bearer'.",
-            "http": "Wprowadź adres URL lub IP do monitorowania (np. https://example.com/ lub 192.168.1.100) oraz dodaj czytelną nazwę wyświetlaną na pulpicie.",
+            "http": "Wprowadź adres URL lub IP do monitorowania (np. https://example.com/ lub 192.168.1.100) oraz dodaj nazwę, która pojawi się na dashboardzie.",
             "pagespeed": "Monitoruj wydajność ładowania strony, Core Web Vitals oraz wyniki optymalizacji swojej witryny.",
-            "ping": "Wprowadź adres IP lub nazwę hosta do pingowania (np. 192.168.1.100 lub example.com) oraz dodaj czytelną nazwę wyświetlaną na pulpicie.",
-            "port": "Wprowadź adres URL lub IP serwera, numer portu oraz czytelną nazwę wyświetlaną na pulpicie.",
+            "ping": "Wprowadź adres IP lub nazwę hosta do pingowania (np. 192.168.1.100 lub example.com) oraz dodaj nazwę na dashboardzie.",
+            "port": "Wprowadź adres URL lub IP serwera, numer portu oraz nazwę na dashboardzie.",
             "websocket": "Wprowadź adres URL WebSocket do monitorowania (np. wss://example.com/socket) i dodaj nazwę."
           },
           "option": {
@@ -588,7 +588,7 @@
               "placeholder": "192.168.1.100 lub example.com"
             },
             "name": {
-              "label": "Wyświetlana nazwa",
+              "label": "Nazwa",
               "placeholder": "np. Moja strona internetowa"
             },
             "port": {
@@ -596,20 +596,20 @@
               "placeholder": "80"
             },
             "secret": {
-              "label": "Tajny klucz autoryzacji",
-              "placeholder": "Wprowadź swój klucz sekretu"
+              "label": "Klucz autoryzacyjny",
+              "placeholder": "Wprowadź swój klucz"
             },
             "strategy": {
-              "desktop": "Komputer stacjonarny",
+              "desktop": "Desktop",
               "label": "Strategia",
-              "mobile": "Mobilny"
+              "mobile": "Mobile"
             },
             "url": {
               "label": "URL",
               "placeholder": "https://www.google.com"
             },
             "wsUrl": {
-              "label": "Adres URL WebSocket",
+              "label": "WebSocket URL",
               "placeholder": "wss://example.com/socket"
             }
           },
@@ -619,7 +619,7 @@
           "description": "Przeprowadzaj sprawdzenia z różnych lokalizacji geograficznych, aby monitorować globalną dostępność i wydajność.",
           "option": {
             "enabled": {
-              "label": "Włącz kontrole geograficznie rozproszone"
+              "label": "Włącz kontrole rozproszone geograficznie"
             },
             "interval": {
               "label": "Interwał sprawdzania",
@@ -643,7 +643,7 @@
               "placeholder": "Wybierz lokalizacje"
             }
           },
-          "title": "Kontrole geograficznie rozproszone"
+          "title": "Kontrole rozproszone geograficznie"
         },
         "ignoreTls": {
           "description": "Skonfiguruj weryfikację certyfikatu TLS/SSL dla połączeń HTTPS.",
@@ -655,13 +655,13 @@
           "title": "Ustawienia TLS/SSL"
         },
         "incidents": {
-          "description": "Do określenia, kiedy monitor przestaje działać, używane jest okno przesuwne. Status monitora zmieni się tylko wtedy, gdy procent sprawdzeń w oknie przesuwnym osiągnie określoną wartość.",
+          "description": "Do określenia, kiedy monitor przestaje działać, używane jest okno przesuwne. Status monitora zmieni się tylko wtedy, gdy procent sprawdzeń w oknie czasowym osiągnie określoną wartość.",
           "option": {
             "checks": {
-              "label": "Liczba sprawdzeń w oknie przesuwnym"
+              "label": "Liczba sprawdzeń w oknie czasowym"
             },
             "percentage": {
-              "label": "Jaki procent sprawdzeń w ruchomym oknie zakończy się niepowodzeniem/powodzeniem, zanim zmieni się status monitora?"
+              "label": "Jaki procent sprawdzeń w oknie czasowym zakończy się niepowodzeniem/powodzeniem, zanim zmieni się status monitora?"
             }
           },
           "title": "Incydenty"
@@ -868,7 +868,7 @@
         }
       },
       "header": {
-        "description": "Śledź wydajność serwera, identyfikuj wąskie gardła i zapewnij niezawodność dzięki monitorowaniu infrastruktury w czasie rzeczywistym.",
+        "description": "Kontroluj wydajność serwera, identyfikuj wąskie gardła i zapewnij niezawodność dzięki monitorowaniu infrastruktury w czasie rzeczywistym.",
         "title": "Monitory infrastruktury"
       },
       "statBoxes": {
@@ -1012,17 +1012,17 @@
     },
     "maintenanceWindow": {
       "fallback": {
-        "actionButton": "Utwórz okno konserwacji",
+        "actionButton": "Utwórz przerwę techniczną",
         "description": "Zaplanuj planowaną przerwę, aby powiadomienia były wyciszone, a Twój zespół i użytkownicy wiedzieli, czego się spodziewać.",
-        "title": "Brak zaplanowanych okien konserwacyjnych"
+        "title": "Brak zaplanowanych okien serwisowych"
       },
       "form": {
         "general": {
-          "description": "Ustaw nazwę i opcję powtarzania dla okna konserwacji.",
+          "description": "Ustaw nazwę i opcję powtarzania dla przerwy technicznej.",
           "option": {
             "name": {
               "label": "Nazwa",
-              "placeholder": "np. Cotygodniowa konserwacja"
+              "placeholder": "np. Cotygodniowa przerwa techniczna"
             },
             "repeat": {
               "label": "Powtarzaj"
@@ -1031,7 +1031,7 @@
           "title": "Ustawienia ogólne"
         },
         "startDate": {
-          "description": "Wybierz datę rozpoczęcia okna konserwacji.",
+          "description": "Wybierz datę rozpoczęcia przerwy technicznej.",
           "option": {
             "startDate": {
               "label": "Data rozpoczęcia"
@@ -1040,12 +1040,12 @@
           "title": "Data rozpoczęcia"
         },
         "startTime": {
-          "description": "Ustaw czas rozpoczęcia i czas trwania okna konserwacyjnego. Wszystkie wartości są w UTC",
+          "description": "Ustaw czas rozpoczęcia i czas trwania przerwy technicznej. Wszystkie wartości są w UTC",
           "monitors": {
-            "description": "Monitory, do których należy zastosować okno konserwacji",
+            "description": "Monitory, do których należy zastosować przerwę techniczną",
             "option": {
               "addMonitors": {
-                "label": "Dodaj monitry"
+                "label": "Dodaj monitory"
               }
             },
             "title": "Monitory"
@@ -1063,18 +1063,18 @@
       },
       "header": {
         "description": "Zaplanuj planowaną przerwę, aby powiadomienia były wyciszone, a Twój zespół i użytkownicy wiedzieli, czego się spodziewać.",
-        "title": "Okna konserwacji"
+        "title": "Przerwy techniczne"
       },
       "table": {
         "headers": {
-          "nextWindow": "Następne okno",
+          "nextWindow": "Następna przerwa",
           "repeat": "Powtórz"
         }
       }
     },
     "notFound": {
       "subtitle": "Adres URL nie istnieje lub nie masz do niego dostępu.",
-      "title": "O nie!  Upuściłeś swoje sushi!"
+      "title": "Coś się popsuło i nie było mnie słychać..."
     },
     "notifications": {
       "fallback": {
@@ -1189,16 +1189,16 @@
       },
       "fallback": {
         "actionButton": "Utwórz monitor",
-        "description": "Śledź wskaźniki Core Web Vitals i wyniki Lighthouse w czasie, aby wykryć regresje zanim zrobią to użytkownicy.",
+        "description": "Monitoruj wskaźniki Core Web Vitals i wyniki Lighthouse w czasie, aby wykryć regresje zanim zrobią to użytkownicy.",
         "title": "Brak monitorów PageSpeed"
       },
       "header": {
-        "description": "Śledź Core Web Vitals i wyniki Lighthouse w czasie, aby wykryć regresje, zanim zauważą je użytkownicy.",
+        "description": "Monitoruj Core Web Vitals i wyniki Lighthouse w czasie, aby wykryć regresje, zanim zauważą je użytkownicy.",
         "title": "Monitory PageSpeed"
       },
       "strategy": {
-        "desktop": "Komputer stacjonarny",
-        "mobile": "Mobilne"
+        "desktop": "Desktop",
+        "mobile": "Mobile"
       },
       "table": {
         "headers": {
@@ -1410,7 +1410,7 @@
         "title": "Brak stron statusu"
       },
       "footer": {
-        "poweredBy": "Zasilane przez"
+        "poweredBy": "Powered by"
       },
       "form": {
         "access": {
@@ -1482,7 +1482,7 @@
           "title": "Funkcje"
         },
         "monitors": {
-          "description": "Wybierz monitry do wyświetlenia na swojej stronie statusu.",
+          "description": "Wybierz monitory do wyświetlenia na swojej stronie statusu.",
           "noMonitors": "Nie wybrano monitorów",
           "option": {
             "monitors": {
@@ -1505,11 +1505,11 @@
               "name": "Redakcyjny"
             },
             "minimal": {
-              "description": "Płaski, skoncentrowany i kompaktowy, zawierający tylko najważniejsze elementy.",
+              "description": "Prosty i kompaktowy, zawierający tylko najważniejsze elementy.",
               "name": "Minimalistyczny"
             },
             "modern": {
-              "description": "Klasa SaaS z pulsującą kropką statusu i delikatnie zanikającymi kartami.",
+              "description": "SaaS'owy z pulsującą kropką statusu i delikatnie zanikającymi kartami.",
               "name": "Nowoczesny"
             },
             "refined": {
@@ -1544,10 +1544,10 @@
         "chart": {
           "avg": "śr. {{value}}ms",
           "downTooltip": "Niedostępny",
-          "heatmapAria": "Mapa cieplna czasu odpowiedzi",
+          "heatmapAria": "Heatmapa czasu odpowiedzi",
           "max": "maks. {{value}}ms"
         },
-        "chartTypeHeatmap": "Mapa ciepła",
+        "chartTypeHeatmap": "Heatmapa",
         "chartTypeHistogram": "Histogram",
         "infrastructure": {
           "cpu": "CPU",
