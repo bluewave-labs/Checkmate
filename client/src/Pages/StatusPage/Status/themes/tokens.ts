@@ -9,6 +9,13 @@ export interface StatusPageThemeTokens {
 	up: string;
 	upStrong: string;
 	upSoft: string;
+	/**
+	 * Brand accent color. When undefined, surfaces fall back to the
+	 * theme's `up*`` values so nothing regresses until a theme opts in.
+	 */
+	brand?: string;
+	brandStrong?: string;
+	brandSoft?: string;
 	degraded: string;
 	degradedSoft: string;
 	down: string;

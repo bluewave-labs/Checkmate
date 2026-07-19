@@ -87,6 +87,10 @@ export const refinedStyles = (
 		hot: tokens.down,
 	};
 
+	const brand = tokens.brand ?? tokens.up;
+	const brandStrong = tokens.brandStrong ?? tokens.upStrong;
+	const brandSoft = tokens.brandSoft ?? tokens.upSoft;
+
 	return {
 		page: {
 			flex: "1 0 auto",
@@ -119,7 +123,7 @@ export const refinedStyles = (
 			width: 28,
 			height: 28,
 			borderRadius: "8px",
-			background: tokens.up,
+			background: brand,
 			display: "grid",
 			placeItems: "center",
 			color: "#fff",
@@ -191,16 +195,16 @@ export const refinedStyles = (
 			whiteSpace: "nowrap",
 			textAlign: "center",
 			border: 0,
-			background: active ? tokens.upSoft : "transparent",
+			background: active ? brandSoft : "transparent",
 			fontFamily: "inherit",
 			fontSize: 11,
 			padding: { xs: "5px 6px", md: "5px 14px" },
 			cursor: "pointer",
-			color: active ? tokens.up : tokens.textMuted,
+			color: active ? brand : tokens.textMuted,
 			borderRadius: "5px",
 			transition: "background 0.15s ease, color 0.15s ease",
 			fontWeight: active ? 600 : 500,
-			"&:hover": { color: active ? tokens.up : tokens.text },
+			"&:hover": { color: active ? brand : tokens.text },
 		}),
 
 		monitorList: {
@@ -259,9 +263,9 @@ export const refinedStyles = (
 		},
 		pillHardware: {
 			...pillBase,
-			color: tokens.up,
+			color: brand,
 			border: `1px solid ${tokens.border}`,
-			background: tokens.upSoft,
+			background: brandSoft,
 		},
 		monitorUrl: {
 			fontSize: 12,
@@ -382,11 +386,11 @@ export const refinedStyles = (
 			fontSize: 12,
 			mt: "40px",
 			"& a": {
-				color: tokens.up,
+				color: brand,
 				textDecoration: "underline",
 				textUnderlineOffset: "3px",
 				fontWeight: 600,
-				"&:hover": { color: tokens.upStrong || tokens.up },
+				"&:hover": { color: brandStrong || brand },
 			},
 		},
 	};

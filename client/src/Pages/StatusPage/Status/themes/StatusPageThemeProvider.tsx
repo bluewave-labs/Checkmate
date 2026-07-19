@@ -13,8 +13,31 @@ import {
 	type StatusPageTheme,
 	type StatusPageThemeMode,
 } from "@/Types/StatusPage";
+import { alpha, darken } from "@mui/material/styles";
 import { resolveTimezone } from "@/Utils/TimeUtils";
 import { themeTokens, type StatusPageThemeTokens } from "./tokens";
+
+const HEX_COLOR = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+
+/**
+ * Derive the `brand` / `brandStrong` / `brandSoft` token triple from a
+ * customer-picked hex color. Returns undefined brand fields when the input
+ * is missing or not a valid hex, so callers fall back to the theme's `up*`
+ * values. `brandStrong` darkens by 20% and `brandSoft` is a 15% alpha wash.
+ */
+const resolveBrandTokens = (
+	brandColor: string | undefined,
+	fallback: { up: string; upStrong: string; upSoft: string }
+): Pick<StatusPageThemeTokens, "brand" | "brandStrong" | "brandSoft"> => {
+	if (!brandColor || !HEX_COLOR.test(brandColor)) {
+		return { brand: undefined, brandStrong: undefined, brandSoft: undefined };
+	}
+	return {
+		brand: brandColor,
+		brandStrong: darken(brandColor, 0.2),
+		brandSoft: alpha(brandColor, 0.15),
+	};
+};
 
 type ResolvedMode = "light" | "dark";
 
@@ -51,6 +74,14 @@ interface Props {
 	 * container's rounded corners.
 	 */
 	transparent?: boolean;
+	/**
+	 * Customer-picked brand color (a hex string) applied to accent
+	 * surfaces via a dedicated brand token triple. Empty or invalid
+	 * values fall through to the theme's `up*`` values. Only pass this on
+	 * the public route — the admin preview provider wraps an iframe whose
+	 * document renders itself, so the prop has no effect there.
+	 */
+	brandColor?: string;
 	children: ReactNode;
 }
 
@@ -60,6 +91,7 @@ export const StatusPageThemeProvider = ({
 	timezone,
 	paintBody = false,
 	transparent = false,
+	brandColor,
 	children,
 }: Props) => {
 	const resolvedTheme = resolveStatusPageTheme(theme);
@@ -109,7 +141,18 @@ export const StatusPageThemeProvider = ({
 
 	const resolvedMode: ResolvedMode =
 		resolvedThemeMode === "auto" ? systemMode : resolvedThemeMode;
-	const tokens = themeTokens[resolvedTheme][resolvedMode];
+	const baseTokens = themeTokens[resolvedTheme][resolvedMode];
+	const tokens = useMemo<StatusPageThemeTokens>(
+		() => ({
+			...baseTokens,
+			...resolveBrandTokens(brandColor, {
+				up: baseTokens.up,
+				upStrong: baseTokens.upStrong,
+				upSoft: baseTokens.upSoft,
+			}),
+		}),
+		[baseTokens, brandColor]
+	);
 
 	const value = useMemo(
 		() => ({

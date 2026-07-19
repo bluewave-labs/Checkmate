@@ -138,6 +138,7 @@ const StatusPageView = () => {
 				themeMode={statusPage.themeMode}
 				timezone={statusPage.timezone}
 				paintBody
+				brandColor={statusPage.color}
 			>
 				<BaseStatusPage
 					statusPage={statusPage}
