@@ -52,7 +52,7 @@ class MongoIncidentsRepository implements IIncidentsRepository {
 		};
 	};
 
-	private mapDocuments = (documents: IncidentDocument[] | IncidentDocument | null): Incident[] => {
+	private mapDocuments = (documents: IncidentDocument[]): Incident[] => {
 		if (!documents) {
 			return [];
 		}

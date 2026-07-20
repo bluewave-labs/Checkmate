@@ -23,7 +23,7 @@ class MongoDLQRepository implements IDLQRepository {
 		};
 	};
 
-	private mapDocuments = (documents: DLQItemDocument[] | DLQItemDocument | null): DLQItem[] => {
+	private mapDocuments = (documents: DLQItemDocument[]) => {
 		if (!documents) {
 			return [];
 		}
