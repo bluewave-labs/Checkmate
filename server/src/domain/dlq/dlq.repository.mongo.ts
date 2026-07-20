@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 import { AppError } from "@/utils/AppError.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 class MongoDLQRepository implements IDLQRepository {
-	protected toEntity = (doc: DLQItemDocument): DLQItem => {
+	private toEntity = (doc: DLQItemDocument): DLQItem => {
 		return {
 			id: toStringId(doc._id),
 			type: doc.type,
@@ -23,7 +23,7 @@ class MongoDLQRepository implements IDLQRepository {
 		};
 	};
 
-	protected mapDocuments = (documents: DLQItemDocument[] | DLQItemDocument | null): DLQItem[] => {
+	private mapDocuments = (documents: DLQItemDocument[]) => {
 		if (!documents) {
 			return [];
 		}

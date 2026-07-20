@@ -10,7 +10,7 @@ const SERVICE_NAME = "MongoRecoveryTokensRepository";
 class MongoRecoveryTokensRepository implements IRecoveryTokensRepository {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	protected toEntity = (doc: RecoveryTokenDocument): RecoveryToken => {
+	private toEntity = (doc: RecoveryTokenDocument): RecoveryToken => {
 		return {
 			id: toStringId(doc._id),
 			email: doc.email,

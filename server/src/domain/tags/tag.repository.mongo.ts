@@ -9,7 +9,7 @@ const SERVICE_NAME = "TagsRepository";
 class MongoTagsRepository implements ITagsRepository {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	protected toEntity = (doc: TagDocument): Tag => {
+	private toEntity = (doc: TagDocument): Tag => {
 		return {
 			id: toStringId(doc._id),
 			teamId: toStringId(doc.teamId),

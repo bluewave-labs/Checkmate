@@ -6,7 +6,7 @@ import crypto from "crypto";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
 class MongoInvitesRepository implements IInvitesRepository {
-	protected toEntity = (doc: InviteDocument): Invite => {
+	private toEntity = (doc: InviteDocument): Invite => {
 		return {
 			id: toStringId(doc._id),
 			email: doc.email,

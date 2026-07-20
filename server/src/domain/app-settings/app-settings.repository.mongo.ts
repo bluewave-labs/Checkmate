@@ -5,7 +5,7 @@ import { AppSettingsModel, type AppSettingsDocument } from "@/domain/app-setting
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
 class MongoSettingsRepository implements ISettingsRepository {
-	protected toEntity = (doc: AppSettingsDocument): Settings => {
+	private toEntity = (doc: AppSettingsDocument): Settings => {
 		return {
 			id: toStringId(doc._id),
 			checkTTL: doc.checkTTL,
