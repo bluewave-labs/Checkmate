@@ -18,7 +18,6 @@ const createMonitorsRepositoryMock = () =>
 		findByIds: jest.fn(),
 		findMonitorCountByTeamIdAndType: jest.fn(),
 		findMonitorsSummaryByTeamId: jest.fn(),
-		findGroupsByTeamId: jest.fn(),
 		updateById: jest.fn(),
 		updateNotifications: jest.fn(),
 		togglePauseById: jest.fn(),
@@ -743,18 +742,6 @@ describe("MonitorService", () => {
 			const games = { cs2: { name: "Counter-Strike 2" } };
 			const { service } = createService({ games });
 			expect(service.getAllGames()).toEqual(games);
-		});
-	});
-
-	describe("getGroupsByTeamId", () => {
-		it("delegates to repository", async () => {
-			const monitorsRepository = createMonitorsRepositoryMock();
-			(monitorsRepository.findGroupsByTeamId as jest.Mock).mockResolvedValue(["group1", "group2"]);
-			const { service } = createService({ monitorsRepository });
-
-			const result = await service.getGroupsByTeamId({ teamId: TEAM_ID });
-			expect(result).toEqual(["group1", "group2"]);
-			expect(monitorsRepository.findGroupsByTeamId).toHaveBeenCalledWith(TEAM_ID);
 		});
 	});
 

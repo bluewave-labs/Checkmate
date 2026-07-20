@@ -44,7 +44,6 @@ export interface IMonitorController {
 	getMonitorsWithChecksByTeamId: RequestHandler;
 	exportMonitorsToJSON: RequestHandler;
 	getAllGames: RequestHandler;
-	getGroupsByTeamId: RequestHandler;
 	updateNotifications: RequestHandler;
 }
 class MonitorController implements IMonitorController {
@@ -362,16 +361,6 @@ class MonitorController implements IMonitorController {
 			success: true,
 			msg: "Supported games retrieved successfully",
 			data: games,
-		});
-	});
-
-	getGroupsByTeamId = catchAsync(async (req: Request, res: Response) => {
-		const teamId = requireTeamId(req.user?.teamId);
-		const groups = await this.monitorService.getGroupsByTeamId({ teamId });
-
-		return res.status(200).json({
-			msg: "Groups retrieved successfully",
-			data: groups,
 		});
 	});
 

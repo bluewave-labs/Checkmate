@@ -72,7 +72,6 @@ export interface IMonitorService {
 		order?: "asc" | "desc";
 	}): Promise<MonitorsWithChecksByTeamIdResult>;
 	getAllGames(): GamesMap;
-	getGroupsByTeamId(args: { teamId: string }): Promise<string[]>;
 
 	// update
 	editMonitor(args: { teamId: string; monitorId: string; body: Partial<Monitor> }): Promise<Monitor>;
@@ -420,10 +419,6 @@ export class MonitorService implements IMonitorService {
 
 	getAllGames = (): GamesMap => {
 		return this.games;
-	};
-
-	getGroupsByTeamId = async ({ teamId }: { teamId: string }): Promise<string[]> => {
-		return await this.monitorsRepository.findGroupsByTeamId(teamId);
 	};
 
 	editMonitor = async ({ teamId, monitorId, body }: { teamId: string; monitorId: string; body: Partial<Monitor> }) => {
