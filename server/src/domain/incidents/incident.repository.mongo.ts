@@ -33,7 +33,7 @@ class MongoIncidentsRepository implements IIncidentsRepository {
 		return matchStage;
 	}
 
-	protected toEntity = (doc: IncidentDocument): Incident => {
+	private toEntity = (doc: IncidentDocument): Incident => {
 		return {
 			id: toStringId(doc._id),
 			monitorId: toStringId(doc.monitorId),
@@ -52,7 +52,7 @@ class MongoIncidentsRepository implements IIncidentsRepository {
 		};
 	};
 
-	protected mapDocuments = (documents: IncidentDocument[] | IncidentDocument | null): Incident[] => {
+	private mapDocuments = (documents: IncidentDocument[] | IncidentDocument | null): Incident[] => {
 		if (!documents) {
 			return [];
 		}

@@ -20,7 +20,7 @@ class MongoUsersRepository implements IUsersRepository {
 		};
 	};
 
-	protected toEntity = (doc: UserDocument): User => {
+	private toEntity = (doc: UserDocument): User => {
 		return {
 			id: toStringId(doc._id),
 			firstName: doc.firstName,
