@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { booleanCoercion } from "./shared.js";
 import { DurationUnits } from "@/domain/maintenance-windows/maintenance-window.type.js";
+import { SortOrders } from "@/types/query.js";
 
 const dateToString = z.coerce.date().transform((d) => d.toISOString());
 
@@ -49,7 +50,7 @@ export const getMaintenanceWindowsByTeamIdQueryValidation = z.object({
 	page: z.coerce.number().optional(),
 	rowsPerPage: z.coerce.number().optional(),
 	field: z.string().optional(),
-	order: z.enum(["asc", "desc"]).optional(),
+	order: z.enum(SortOrders).optional(),
 });
 
 export const getMaintenanceWindowsByMonitorIdParamValidation = z.object({

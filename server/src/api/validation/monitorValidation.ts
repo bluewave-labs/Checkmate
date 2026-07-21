@@ -11,6 +11,7 @@ import {
 	MonitorTypes,
 	PageSpeedStrategies,
 } from "@/domain/monitors/monitor.types.js";
+import { DateRanges, SortOrders } from "@/types/query.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
@@ -20,9 +21,9 @@ export const getMonitorByIdParamValidation = z.object({
 
 export const getMonitorByIdQueryValidation = z.object({
 	status: booleanCoercion.optional(),
-	sortOrder: z.enum(["asc", "desc"]).optional(),
+	sortOrder: z.enum(SortOrders).optional(),
 	limit: z.coerce.number().optional(),
-	dateRange: z.enum(["recent", "hour", "day", "week", "month", "all"]).optional(),
+	dateRange: z.enum(DateRanges).optional(),
 	numToDisplay: z.coerce.number().optional(),
 	normalize: booleanCoercion.optional(),
 	continent: z.union([z.enum(GeoContinents), z.array(z.enum(GeoContinents))]).optional(),
@@ -42,7 +43,7 @@ export const getMonitorsWithChecksQueryValidation = z.object({
 	rowsPerPage: z.coerce.number().int().min(1).max(100).optional(),
 	filter: z.union([z.string(), z.literal("")]).optional(),
 	field: z.string().optional(),
-	order: z.enum(["asc", "desc"]).optional(),
+	order: z.enum(SortOrders).optional(),
 	type: z.union([z.enum(MonitorTypes), z.array(z.enum(MonitorTypes))]).optional(),
 	tags: z.union([z.string(), z.array(z.string())]).optional(),
 	explain: booleanCoercion.optional(),
@@ -195,7 +196,7 @@ export const getUptimeDetailsByIdParamValidation = z.object({
 });
 
 export const getUptimeDetailsByIdQueryValidation = z.object({
-	dateRange: z.enum(["recent", "hour", "day", "week", "month", "all"]),
+	dateRange: z.enum(DateRanges),
 	normalize: booleanCoercion.optional(),
 });
 
@@ -206,7 +207,7 @@ const importedMonitorSchema = z
 		teamId: z.string().optional(),
 		name: z.string().min(1, "Name is required"),
 		description: z.union([z.string(), z.literal("")]).optional(),
-		status: z.enum(["up", "down", "paused", "initializing", "maintenance", "breached"]).default("initializing"),
+		status: z.enum(MonitorStatuses).default("initializing"),
 		statusWindow: z.array(z.boolean()).default([]),
 		statusWindowSize: z.number().min(1).max(20).default(5),
 		statusWindowThreshold: z.number().min(1).max(100).default(60),
@@ -263,7 +264,7 @@ export const getHardwareDetailsByIdParamValidation = z.object({
 });
 
 export const getHardwareDetailsByIdQueryValidation = z.object({
-	dateRange: z.enum(["recent", "hour", "day", "week", "month", "all"]).optional(),
+	dateRange: z.enum(DateRanges).optional(),
 });
 
 // Canonical monitor shape returned by /monitors endpoints. Keep aligned with
