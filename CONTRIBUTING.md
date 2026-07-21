@@ -124,10 +124,12 @@ LOG_LEVEL="debug"
 - `CLIENT_HOST`: Frontend URL (default: http://localhost:5173)
 - `JWT_SECRET`: Secret key for JWT tokens (change to something secure)
 - `DB_CONNECTION_STRING`: MongoDB connection URL
-- `ORIGIN`: Origin for CORS purposes
-- `TOKEN_TTL`: Token time to live (in vercel/ms format)
-- `LOG_LEVEL`: Debug level (debug, info, warn, error)
-- `QUEUE_TYPE`: Job queue implementation (`superSimpleQueue` or `lessSimpleQueue`, optional, default: `superSimpleQueue`)
+- `ORIGIN`: Origin for CORS purposes (optional)
+- `TOKEN_TTL`: Token time to live in vercel/ms format (optional, default: `99d`)
+- `LOG_LEVEL`: Debug level: debug, info, warn, error (optional, default: `debug`)
+- `QUEUE_MODE`: Queue mode, `primary` or `worker` (optional, default: `primary`)
+
+Only `CLIENT_HOST`, `JWT_SECRET`, and `DB_CONNECTION_STRING` are strictly required. Note that `CLIENT_HOST` must be a full URL.
 
 Start the backend server:
 
@@ -203,7 +205,7 @@ docker rm uptime_database_mongo
 
 **Port already in use:**
 
-- Check if another service is using ports 5173, 52345, 27017, or 6379
+- Check if another service is using ports 5173, 52345, or 27017
 - Stop the conflicting service or change the port in `.env` files
 
 **MongoDB connection issues:**

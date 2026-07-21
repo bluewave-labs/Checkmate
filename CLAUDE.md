@@ -51,6 +51,7 @@ TOKEN_TTL="99d"
 ORIGIN="localhost"
 LOG_LEVEL="debug"
 ```
+Only `CLIENT_HOST` (must be a full URL), `JWT_SECRET`, and `DB_CONNECTION_STRING` are strictly required; the rest have defaults (see `server/src/config/envValidation.ts`). Setup source of truth: CONTRIBUTING.md.
 
 ### Client `.env`
 ```env
