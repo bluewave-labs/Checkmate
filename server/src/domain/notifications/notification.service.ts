@@ -10,7 +10,6 @@ import type { ISettingsService } from "@/domain/app-settings/app-settings.servic
 import { ILogger } from "@/utils/logger.js";
 import type { INotificationMessageBuilder } from "@/domain/notifications/notification.message-builder.js";
 import type { NotificationChannel } from "@/domain/notifications/notification.type.js";
-import { no } from "zod/v4/locales";
 
 export type NotificationProviderRegistry = Record<NotificationChannel, INotificationProvider>;
 
