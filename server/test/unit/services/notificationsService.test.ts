@@ -73,24 +73,26 @@ const createService = (overrides?: Record<string, unknown>) => {
 		...overrides,
 	};
 
-	const service = new NotificationsService(
-		defaults.notificationsRepository as any,
-		defaults.monitorsRepository as any,
-		defaults.webhookProvider as any,
-		defaults.emailProvider as any,
-		defaults.slackProvider as any,
-		defaults.discordProvider as any,
-		defaults.pagerDutyProvider as any,
-		defaults.matrixProvider as any,
-		defaults.teamsProvider as any,
-		defaults.telegramProvider as any,
-		defaults.pushoverProvider as any,
-		defaults.twilioProvider as any,
-		defaults.ntfyProvider as any,
-		defaults.settingsService as any,
-		defaults.logger as any,
-		defaults.notificationMessageBuilder as any
-	);
+	const service = new NotificationsService({
+		notificationsRepository: defaults.notificationsRepository,
+		monitorsRepository: defaults.monitorsRepository,
+		providers: {
+			webhook: defaults.webhookProvider,
+			email: defaults.emailProvider,
+			slack: defaults.slackProvider,
+			discord: defaults.discordProvider,
+			pager_duty: defaults.pagerDutyProvider,
+			matrix: defaults.matrixProvider,
+			teams: defaults.teamsProvider,
+			telegram: defaults.telegramProvider,
+			pushover: defaults.pushoverProvider,
+			twilio: defaults.twilioProvider,
+			ntfy: defaults.ntfyProvider,
+		},
+		settingsService: defaults.settingsService,
+		logger: defaults.logger,
+		notificationMessageBuilder: defaults.notificationMessageBuilder,
+	} as any);
 
 	return { service, ...defaults };
 };

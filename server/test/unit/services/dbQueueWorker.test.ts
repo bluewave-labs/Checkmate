@@ -139,24 +139,12 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 		...overrides?.mocks,
 	};
 
-	const worker = new DBQueueWorker(
-		mocks.logger as any,
-		mocks.isDbConnected as any,
-		mocks.jobsRepository as any,
-		mocks.monitorsRepository as any,
-		mocks.checksRepository as any,
-		mocks.checkService as any,
-		mocks.bufferService as any,
-		mocks.checkProducer as any,
-		mocks.checkEvaluator as any,
-		mocks.geoCheckPipeline as any,
-		mocks.dispatcher as any,
-		mocks.helper as any,
-		mocks.queueWorkersRepository as any,
-		overrides?.queueMode ?? "worker",
-		overrides?.queuePrimaryProcesses ?? true,
-		"worker-1"
-	);
+	const worker = new DBQueueWorker({
+		...mocks,
+		queueMode: overrides?.queueMode ?? "worker",
+		queuePrimaryProcesses: overrides?.queuePrimaryProcesses ?? true,
+		workerId: "worker-1",
+	} as any);
 	return { worker, mocks };
 };
 
@@ -243,24 +231,12 @@ describe("DBQueueWorker", () => {
 
 		it("create() constructs the worker and runs init", async () => {
 			const { mocks } = createWorker(); // reuse the mock set; the un-init'd instance is discarded
-			const worker = await DBQueueWorker.create(
-				mocks.logger as any,
-				mocks.isDbConnected as any,
-				mocks.jobsRepository as any,
-				mocks.monitorsRepository as any,
-				mocks.checksRepository as any,
-				mocks.checkService as any,
-				mocks.bufferService as any,
-				mocks.checkProducer as any,
-				mocks.checkEvaluator as any,
-				mocks.geoCheckPipeline as any,
-				mocks.dispatcher as any,
-				mocks.helper as any,
-				mocks.queueWorkersRepository as any,
-				"worker",
-				true,
-				"worker-1"
-			);
+			const worker = await DBQueueWorker.create({
+				...mocks,
+				queueMode: "worker",
+				queuePrimaryProcesses: true,
+				workerId: "worker-1",
+			} as any);
 			active = worker;
 			await jest.advanceTimersByTimeAsync(1);
 

@@ -31,6 +31,25 @@ const CONCURRENCY: Record<JobType, number> = {
 	"cleanup-retention": 1,
 };
 
+export interface DBQueueWorkerDependencies {
+	logger: ILogger; // forwarded to super
+	isDbConnected: () => boolean;
+	jobsRepository: IJobsRepository; // forwarded
+	monitorsRepository: IMonitorsRepository; // forwarded
+	checksRepository: IChecksRepository;
+	checkService: ICheckService;
+	bufferService: IBufferService;
+	checkProducer: ICheckProducer;
+	checkEvaluator: ICheckEvaluator;
+	geoCheckPipeline: ICheckPipeline;
+	dispatcher: IReactorDispatcher;
+	helper: IWorkerHelper;
+	queueWorkersRepository: IQueueWorkersRepository; // forwarded
+	queueMode: QueueMode; // forwarded
+	queuePrimaryProcesses: boolean; // consumed immediately
+	workerId: string;
+}
+
 export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 	static SERVICE_NAME = SERVICE_NAME;
 
@@ -45,68 +64,43 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		"cleanup-retention": 0,
 	};
 
-	constructor(
-		logger: ILogger, // forwarded to super
-		private isDbConnected: () => boolean,
-		jobsRepository: IJobsRepository, // forwarded
-		monitorsRepository: IMonitorsRepository, // forwarded
-		private checksRepository: IChecksRepository,
-		private checkService: ICheckService,
-		private bufferService: IBufferService,
-		private checkProducer: ICheckProducer,
-		private checkEvaluator: ICheckEvaluator,
-		private geoCheckPipeline: ICheckPipeline,
-		private dispatcher: IReactorDispatcher,
-		private helper: IWorkerHelper,
-		queueWorkersRepository: IQueueWorkersRepository, // forwarded
-		queueMode: QueueMode, // forwarded
-		queuePrimaryProcesses: boolean, // consumed immediately
-		workerId: string
-	) {
-		super(jobsRepository, queueWorkersRepository, monitorsRepository, queueMode, logger, workerId);
-		this.processesJobs = queuePrimaryProcesses === true || queueMode === "worker";
+	private checksRepository: IChecksRepository;
+	private checkProducer: ICheckProducer;
+	private checkService: ICheckService;
+	private checkEvaluator: ICheckEvaluator;
+	private dispatcher: IReactorDispatcher;
+	private geoCheckPipeline: ICheckPipeline;
+	private helper: IWorkerHelper;
+	private bufferService: IBufferService;
+	private isDbConnected: () => boolean;
+
+	constructor(dependencies: DBQueueWorkerDependencies) {
+		super(
+			dependencies.jobsRepository,
+			dependencies.queueWorkersRepository,
+			dependencies.monitorsRepository,
+			dependencies.queueMode,
+			dependencies.logger,
+			dependencies.workerId
+		);
+		this.processesJobs = dependencies.queuePrimaryProcesses === true || dependencies.queueMode === "worker";
+		this.checksRepository = dependencies.checksRepository;
+		this.checkProducer = dependencies.checkProducer;
+		this.checkService = dependencies.checkService;
+		this.checkEvaluator = dependencies.checkEvaluator;
+		this.dispatcher = dependencies.dispatcher;
+		this.geoCheckPipeline = dependencies.geoCheckPipeline;
+		this.helper = dependencies.helper;
+		this.bufferService = dependencies.bufferService;
+		this.isDbConnected = dependencies.isDbConnected;
 	}
 
 	get serviceName() {
 		return DBQueueWorker.SERVICE_NAME;
 	}
 
-	static async create(
-		logger: ILogger,
-		isDbConnected: () => boolean,
-		jobsRepository: IJobsRepository,
-		monitorsRepository: IMonitorsRepository,
-		checksRepository: IChecksRepository,
-		checkService: ICheckService,
-		bufferService: IBufferService,
-		checkProducer: ICheckProducer,
-		checkEvaluator: ICheckEvaluator,
-		geoCheckPipeline: ICheckPipeline,
-		dispatcher: IReactorDispatcher,
-		helper: IWorkerHelper,
-		queueWorkersRepository: IQueueWorkersRepository,
-		queueMode: QueueMode,
-		queuePrimaryProcesses: boolean,
-		workerId: string
-	): Promise<DBQueueWorker> {
-		const instance = new DBQueueWorker(
-			logger,
-			isDbConnected,
-			jobsRepository,
-			monitorsRepository,
-			checksRepository,
-			checkService,
-			bufferService,
-			checkProducer,
-			checkEvaluator,
-			geoCheckPipeline,
-			dispatcher,
-			helper,
-			queueWorkersRepository,
-			queueMode,
-			queuePrimaryProcesses,
-			workerId
-		);
+	static async create(dependencies: DBQueueWorkerDependencies): Promise<DBQueueWorker> {
+		const instance = new DBQueueWorker(dependencies);
 		await instance.init();
 		return instance;
 	}

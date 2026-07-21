@@ -9,6 +9,9 @@ import type { MonitorActionDecision } from "@/worker/worker.helper.js";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { ILogger } from "@/utils/logger.js";
 import type { INotificationMessageBuilder } from "@/domain/notifications/notification.message-builder.js";
+import type { NotificationChannel } from "@/domain/notifications/notification.type.js";
+
+export type NotificationProviderRegistry = Record<NotificationChannel, INotificationProvider>;
 
 export interface INotificationsService {
 	createNotification: (notificationData: Partial<Notification>, userId: string, teamId: string) => Promise<Notification>;
@@ -29,52 +32,29 @@ export class NotificationsService implements INotificationsService {
 
 	private notificationsRepository: INotificationsRepository;
 	private monitorsRepository: IMonitorsRepository;
-	private webhookProvider: INotificationProvider;
-	private emailProvider: INotificationProvider;
-	private slackProvider: INotificationProvider;
-	private discordProvider: INotificationProvider;
-	private pagerDutyProvider: INotificationProvider;
-	private matrixProvider: INotificationProvider;
-	private teamsProvider: INotificationProvider;
-	private telegramProvider: INotificationProvider;
-	private pushoverProvider: INotificationProvider;
-	private twilioProvider: INotificationProvider;
-	private ntfyProvider: INotificationProvider;
-	private logger: ILogger;
+	private providers: NotificationProviderRegistry;
 	private settingsService: ISettingsService;
+	private logger: ILogger;
 	private notificationMessageBuilder: INotificationMessageBuilder;
 
-	constructor(
-		notificationsRepository: INotificationsRepository,
-		monitorsRepository: IMonitorsRepository,
-		webhookProvider: INotificationProvider,
-		emailProvider: INotificationProvider,
-		slackProvider: INotificationProvider,
-		discordProvider: INotificationProvider,
-		pagerDutyProvider: INotificationProvider,
-		matrixProvider: INotificationProvider,
-		teamsProvider: INotificationProvider,
-		telegramProvider: INotificationProvider,
-		pushoverProvider: INotificationProvider,
-		twilioProvider: INotificationProvider,
-		ntfyProvider: INotificationProvider,
-		settingsService: ISettingsService,
-		logger: ILogger,
-		notificationMessageBuilder: INotificationMessageBuilder
-	) {
+	constructor({
+		notificationsRepository,
+		monitorsRepository,
+		providers,
+		settingsService,
+		logger,
+		notificationMessageBuilder,
+	}: {
+		notificationsRepository: INotificationsRepository;
+		monitorsRepository: IMonitorsRepository;
+		providers: NotificationProviderRegistry;
+		settingsService: ISettingsService;
+		logger: ILogger;
+		notificationMessageBuilder: INotificationMessageBuilder;
+	}) {
 		this.notificationsRepository = notificationsRepository;
 		this.monitorsRepository = monitorsRepository;
-		this.webhookProvider = webhookProvider;
-		this.emailProvider = emailProvider;
-		this.slackProvider = slackProvider;
-		this.discordProvider = discordProvider;
-		this.pagerDutyProvider = pagerDutyProvider;
-		this.matrixProvider = matrixProvider;
-		this.teamsProvider = teamsProvider;
-		this.telegramProvider = telegramProvider;
-		this.pushoverProvider = pushoverProvider;
-		this.twilioProvider = twilioProvider;
-		this.ntfyProvider = ntfyProvider;
+		this.providers = providers;
 		this.settingsService = settingsService;
 		this.logger = logger;
 		this.notificationMessageBuilder = notificationMessageBuilder;
@@ -97,37 +77,16 @@ export class NotificationsService implements INotificationsService {
 		}
 
 		// Route to provider based on notification type
-		switch (notification.type) {
-			case "webhook":
-				return await this.webhookProvider.sendMessage!(notification, notificationMessage);
-			case "slack":
-				return await this.slackProvider.sendMessage!(notification, notificationMessage);
-			case "matrix":
-				return await this.matrixProvider.sendMessage!(notification, notificationMessage);
-			case "pager_duty":
-				return await this.pagerDutyProvider.sendMessage!(notification, notificationMessage);
-			case "discord":
-				return await this.discordProvider.sendMessage!(notification, notificationMessage);
-			case "email":
-				return await this.emailProvider.sendMessage!(notification, notificationMessage);
-			case "teams":
-				return await this.teamsProvider.sendMessage!(notification, notificationMessage);
-			case "telegram":
-				return await this.telegramProvider.sendMessage!(notification, notificationMessage);
-			case "pushover":
-				return await this.pushoverProvider.sendMessage!(notification, notificationMessage);
-			case "twilio":
-				return await this.twilioProvider.sendMessage!(notification, notificationMessage);
-			case "ntfy":
-				return await this.ntfyProvider.sendMessage!(notification, notificationMessage);
-			default:
-				this.logger.warn({
-					message: `Unknown notification type: ${notification.type}`,
-					service: SERVICE_NAME,
-					method: "send",
-				});
-				return false;
+		const provider = this.providers[notification.type];
+		if (!provider) {
+			this.logger.warn({
+				message: `Unknown notification type: ${notification.type}`,
+				service: SERVICE_NAME,
+				method: "send",
+			});
+			return false;
 		}
+		return await provider.sendMessage(notification, notificationMessage);
 	};
 
 	private sendNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {
@@ -165,32 +124,26 @@ export class NotificationsService implements INotificationsService {
 	};
 
 	sendTestNotification = async (notification: Partial<Notification>) => {
-		switch (notification.type) {
-			case "email":
-				return await this.emailProvider.sendTestAlert(notification);
-			case "slack":
-				return await this.slackProvider.sendTestAlert(notification);
-			case "discord":
-				return await this.discordProvider.sendTestAlert(notification);
-			case "pager_duty":
-				return await this.pagerDutyProvider.sendTestAlert(notification);
-			case "matrix":
-				return await this.matrixProvider.sendTestAlert(notification);
-			case "webhook":
-				return await this.webhookProvider.sendTestAlert(notification);
-			case "teams":
-				return await this.teamsProvider.sendTestAlert(notification);
-			case "telegram":
-				return await this.telegramProvider.sendTestAlert(notification);
-			case "pushover":
-				return await this.pushoverProvider.sendTestAlert(notification);
-			case "twilio":
-				return await this.twilioProvider.sendTestAlert(notification);
-			case "ntfy":
-				return await this.ntfyProvider.sendTestAlert(notification);
-			default:
-				return false;
+		const type = notification.type;
+		if (!type) {
+			this.logger.warn({
+				message: "Notification type not provided",
+				service: SERVICE_NAME,
+				method: "sendTestNotification",
+			});
+			return false;
 		}
+
+		const provider = this.providers[type];
+		if (!provider) {
+			this.logger.warn({
+				message: `Unknown notification type: ${notification.type}`,
+				service: SERVICE_NAME,
+				method: "sendTestNotification",
+			});
+			return false;
+		}
+		return await provider.sendTestAlert(notification);
 	};
 
 	testAllNotifications = async (notificationIds: string[]) => {

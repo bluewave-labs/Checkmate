@@ -21,6 +21,7 @@ import { GlobalPingService } from "@/service/globalPingService.js";
 import { ILogger } from "@/utils/logger.js";
 
 // Notification providers
+import type { NotificationProviderRegistry } from "@/domain/notifications/notification.service.js";
 import { WebhookProvider } from "@/domain/notifications/providers/webhook.js";
 import { SlackProvider } from "@/domain/notifications/providers/slack.js";
 import { EmailProvider } from "@/domain/notifications/providers/email.js";
@@ -167,24 +168,28 @@ export const buildShared = async ({
 	const twilioProvider = new TwilioProvider(logger);
 	const ntfyProvider = new NtfyProvider(logger);
 
-	const notificationsService = new NotificationsService(
+	const notificationProviders: NotificationProviderRegistry = {
+		webhook: webhookProvider,
+		email: emailProvider,
+		slack: slackProvider,
+		discord: discordProvider,
+		pager_duty: pagerDutyProvider,
+		matrix: matrixProvider,
+		teams: teamsProvider,
+		telegram: telegramProvider,
+		pushover: pushoverProvider,
+		twilio: twilioProvider,
+		ntfy: ntfyProvider,
+	};
+
+	const notificationsService = new NotificationsService({
 		notificationsRepository,
 		monitorsRepository,
-		webhookProvider,
-		emailProvider,
-		slackProvider,
-		discordProvider,
-		pagerDutyProvider,
-		matrixProvider,
-		teamsProvider,
-		telegramProvider,
-		pushoverProvider,
-		twilioProvider,
-		ntfyProvider,
+		providers: notificationProviders,
 		settingsService,
 		logger,
-		notificationMessageBuilder
-	);
+		notificationMessageBuilder,
+	});
 
 	const sharedServices: SharedServices = {
 		logger,

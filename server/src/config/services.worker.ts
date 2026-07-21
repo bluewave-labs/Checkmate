@@ -131,9 +131,9 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		geoChecksRepository
 	);
 
-	const worker = await DBQueueWorker.create(
+	const worker = await DBQueueWorker.create({
 		logger,
-		() => mongoose.connection.readyState === 1,
+		isDbConnected: () => mongoose.connection.readyState === 1,
 		jobsRepository,
 		monitorsRepository,
 		checksRepository,
@@ -142,13 +142,13 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		checkProducer,
 		checkEvaluator,
 		geoCheckPipeline,
-		reactorDispatcher,
-		workerHelper,
+		dispatcher: reactorDispatcher,
+		helper: workerHelper,
 		queueWorkersRepository,
-		envSettings.queueMode,
-		envSettings.queuePrimaryProcesses,
-		workerId
-	);
+		queueMode: envSettings.queueMode,
+		queuePrimaryProcesses: envSettings.queuePrimaryProcesses,
+		workerId,
+	});
 
 	return { worker, networkService, bufferService, statusService };
 };
