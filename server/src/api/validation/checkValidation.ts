@@ -2,6 +2,7 @@ import { z } from "zod";
 import { booleanCoercion } from "./shared.js";
 import { GeoContinents } from "@/domain/geo-checks/geo-check.type.js";
 import { MonitorTypes } from "@/domain/monitors/monitor.types.js";
+import { CheckFilters, DateRanges, SortOrders } from "@/types/query.js";
 
 //****************************************
 // Check Validations
@@ -13,10 +14,10 @@ export const getChecksParamValidation = z.object({
 
 export const getChecksQueryValidation = z.object({
 	type: z.enum(MonitorTypes).optional(),
-	sortOrder: z.enum(["asc", "desc"]),
+	sortOrder: z.enum(SortOrders),
 	limit: z.coerce.number().optional(),
-	dateRange: z.enum(["recent", "hour", "day", "week", "month", "all"]),
-	filter: z.enum(["all", "up", "down", "resolve"]).optional(),
+	dateRange: z.enum(DateRanges),
+	filter: z.enum(CheckFilters).optional(),
 	ack: booleanCoercion.optional(),
 	page: z.coerce.number(),
 	rowsPerPage: z.coerce.number(),
@@ -25,10 +26,10 @@ export const getChecksQueryValidation = z.object({
 });
 
 export const getTeamChecksQueryValidation = z.object({
-	sortOrder: z.enum(["asc", "desc"]),
+	sortOrder: z.enum(SortOrders),
 	limit: z.coerce.number().optional(),
-	dateRange: z.enum(["recent", "hour", "day", "week", "month", "all"]),
-	filter: z.enum(["all", "up", "down", "resolve"]).optional(),
+	dateRange: z.enum(DateRanges),
+	filter: z.enum(CheckFilters).optional(),
 	ack: booleanCoercion.optional(),
 	page: z.coerce.number(),
 	rowsPerPage: z.coerce.number(),
@@ -39,5 +40,5 @@ export const deleteChecksParamValidation = z.object({
 });
 
 export const getChecksSummaryByTeamIdQueryValidation = z.object({
-	dateRange: z.enum(["recent", "hour", "day", "week", "month", "all"]).optional(),
+	dateRange: z.enum(DateRanges).optional(),
 });

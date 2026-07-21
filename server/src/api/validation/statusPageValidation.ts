@@ -3,6 +3,7 @@ import { booleanCoercion, dnsHostnameRegex } from "./shared.js";
 import { StatusPageTypes, StatusPageThemes, StatusPageThemeModes } from "@/domain/status-pages/status-page.type.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
 import { cssReferencesExternalResource } from "@/utils/customCss.js";
+import { ImageMimeTypes } from "@/types/upload.js";
 
 //****************************************
 // Status Page Validations
@@ -67,7 +68,7 @@ export const imageValidation = z
 		fieldname: z.string().min(1, "Field name is required"),
 		originalname: z.string().min(1, "Original name is required"),
 		encoding: z.string().min(1, "Encoding is required"),
-		mimetype: z.enum(["image/jpeg", "image/png", "image/jpg"], {
+		mimetype: z.enum(ImageMimeTypes, {
 			message: "File must be a valid image (jpeg, jpg, or png)",
 		}),
 		size: z.number().max(3145728, "File size must be less than 3MB"),
