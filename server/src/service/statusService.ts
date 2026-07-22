@@ -1,7 +1,7 @@
 import { IMonitorStatsRepository } from "@/domain/monitor-stats/monitor-stats.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import type { Check, CheckDiskInfo, CheckSnapshot } from "@/domain/checks/check.type.js";
-import type { Monitor, MonitorStatus } from "@/domain/monitors/monitor.types.js";
+import { MonitorStatuses, type Monitor, type MonitorStatus } from "@/domain/monitors/monitor.types.js";
 import type {
 	DockerStatusPayload,
 	GameStatusPayload,
@@ -222,9 +222,12 @@ export class StatusService implements IStatusService {
 			const patch: Partial<Monitor> = {};
 
 			// Resolve "initializing" and "maintenance" up front, incidents should be created on initialization && down
+			// Unknown values (e.g. legacy boolean statuses from old versions) are resolved the same way,
+			// otherwise computeReachability can never transition them and they stay stuck forever.
+			const isKnownStatus = (MonitorStatuses as readonly string[]).includes(monitor.status);
 			let newStatus: MonitorStatus = monitor.status;
 			let statusChanged = false;
-			if (monitor.status === "initializing" || monitor.status === "maintenance") {
+			if (monitor.status === "initializing" || monitor.status === "maintenance" || !isKnownStatus) {
 				newStatus = status === true ? "up" : "down";
 				patch.status = newStatus;
 				statusChanged = newStatus === "down";

@@ -505,6 +505,45 @@ describe("StatusService", () => {
 			expect(result.monitor.status).toBe("down");
 		});
 
+		it("resolves a legacy boolean status ('true') to 'up' on a passing check (regression: pre-upgrade monitors stuck forever)", async () => {
+			// Old Checkmate versions stored monitor.status as a boolean. Pre-fix, a monitor
+			// carrying status='true' never matched the initializing override and
+			// computeReachability only transitions to 'up' from 'down', so the legacy value
+			// was written back unchanged on every evaluation — stuck forever while the UI
+			// rendered it as 'initializing'.
+			const monitor = makeMonitor({
+				statusWindow: [true, true, true, true, true],
+				statusWindowSize: 5,
+				statusWindowThreshold: 80,
+				status: "true" as MonitorStatus,
+			});
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
+
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: true }), makeCheck({ status: true }), monitor);
+
+			expect(result.monitor.status).toBe("up");
+			expect(result.statusChanged).toBe(false); // was effectively up already — no notification storm
+		});
+
+		it("resolves a legacy boolean status ('false') to 'down' on a failing check (regression mirror)", async () => {
+			const monitor = makeMonitor({
+				statusWindow: [false, false, false, false, false],
+				statusWindowSize: 5,
+				statusWindowThreshold: 80,
+				status: "false" as MonitorStatus,
+			});
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
+
+			const result = await service.updateMonitorStatus(makeStatusResponse({ status: false }), makeCheck({ status: false }), monitor);
+
+			expect(result.monitor.status).toBe("down");
+			expect(result.statusChanged).toBe(true); // down must surface so an incident is opened
+		});
+
 		it("during warmup, sub-threshold raw checks no longer flip stored status (regression: down-during-init incident not resolving)", async () => {
 			// Once the monitor has left 'initializing', the warmup branch must NOT silently
 			// flip status from raw checks. Otherwise a down check during warmup writes
