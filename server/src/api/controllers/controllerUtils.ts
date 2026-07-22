@@ -54,24 +54,6 @@ export const optionalNumber = (value: unknown, fieldName: string): number | unde
 	throw new AppError({ message: `${fieldName} must be a number`, status: 400 });
 };
 
-export const optionalBoolean = (value: unknown, fieldName: string): boolean | undefined => {
-	if (value === undefined) {
-		return undefined;
-	}
-	if (typeof value === "boolean") {
-		return value;
-	}
-	if (typeof value === "string") {
-		if (value === "true") {
-			return true;
-		}
-		if (value === "false") {
-			return false;
-		}
-	}
-	throw new AppError({ message: `${fieldName} must be a boolean`, status: 400 });
-};
-
 export const parseMonitorTypeFilter = (value: unknown): MonitorType | MonitorType[] | undefined => {
 	const parseSingle = (input: unknown): MonitorType => {
 		if (typeof input !== "string") {
