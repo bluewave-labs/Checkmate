@@ -143,13 +143,6 @@ const makeExistingStats = (overrides?: Record<string, unknown>) => ({
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("StatusService", () => {
-	describe("serviceName", () => {
-		it("returns StatusService", () => {
-			const { service } = createService();
-			expect(service.serviceName).toBe("StatusService");
-		});
-	});
-
 	// ── updateRunningStats ───────────────────────────────────────────────────
 
 	describe("updateRunningStats", () => {

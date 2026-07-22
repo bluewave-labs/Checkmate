@@ -14,7 +14,6 @@ import { requireTeamId } from "@/api/controllers/controllerUtils.js";
 const SERVICE_NAME = "checkController";
 
 export interface ICheckController {
-	serviceName: string;
 	getChecksByMonitor: RequestHandler;
 	getChecksByTeam: RequestHandler;
 	getChecksSummaryByTeamId: RequestHandler;
@@ -28,10 +27,6 @@ class CheckController implements ICheckController {
 	private checkService: ICheckService;
 	constructor(checkService: ICheckService) {
 		this.checkService = checkService;
-	}
-
-	get serviceName() {
-		return CheckController.SERVICE_NAME;
 	}
 
 	getChecksByMonitor = catchAsync(async (req: Request, res: Response) => {

@@ -48,13 +48,6 @@ const makeStatusResponse = (overrides?: Partial<MonitorStatusResponse>): Monitor
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("CheckService", () => {
-	describe("serviceName", () => {
-		it("returns checkService", () => {
-			const { service } = createService();
-			expect(service.serviceName).toBe("checkService");
-		});
-	});
-
 	// ── toCheck ──────────────────────────────────────────────────────────────
 
 	describe("toCheck", () => {

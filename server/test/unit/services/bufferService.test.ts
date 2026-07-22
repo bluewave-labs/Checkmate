@@ -71,17 +71,6 @@ describe("BufferService", () => {
 
 	// ── Static / instance properties ─────────────────────────────────────
 
-	describe("serviceName", () => {
-		it("returns BufferService from static property", () => {
-			expect(BufferService.SERVICE_NAME).toBe("BufferService");
-		});
-
-		it("returns BufferService from instance getter", () => {
-			const { service } = createService();
-			expect(service.serviceName).toBe("BufferService");
-		});
-	});
-
 	// ── constructor ──────────────────────────────────────────────────────
 
 	describe("constructor", () => {

@@ -56,10 +56,6 @@ export class EmailService implements IEmailService {
 		this.init();
 	}
 
-	get serviceName() {
-		return EmailService.SERVICE_NAME;
-	}
-
 	init = () => {
 		const loadTemplate = (templateName: string) => {
 			try {

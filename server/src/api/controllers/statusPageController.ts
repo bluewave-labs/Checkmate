@@ -16,7 +16,6 @@ import { resolveStatusPageDomainFromRequest } from "@/utils/statusPageDomain.js"
 const SERVICE_NAME = "statusPageController";
 
 export interface IStatusPageController {
-	readonly serviceName: string;
 	createStatusPage: RequestHandler;
 	updateStatusPage: RequestHandler;
 	getStatusPageByUrl: RequestHandler;
@@ -30,10 +29,6 @@ class StatusPageController implements IStatusPageController {
 	private statusPageService: IStatusPageService;
 	constructor(statusPageService: IStatusPageService) {
 		this.statusPageService = statusPageService;
-	}
-
-	get serviceName() {
-		return StatusPageController.SERVICE_NAME;
 	}
 
 	createStatusPage = catchAsync(async (req: Request, res: Response) => {

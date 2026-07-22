@@ -10,7 +10,6 @@ import { Settings } from "@/domain/app-settings/app-settings.type.js";
 const SERVICE_NAME = "SettingsController";
 
 export interface ISettingsController {
-	serviceName: string;
 	getAppSettings: RequestHandler;
 	updateAppSettings: RequestHandler;
 	sendTestEmail: RequestHandler;
@@ -23,10 +22,6 @@ class SettingsController implements ISettingsController {
 	constructor(settingsService: ISettingsService, emailService: IEmailService) {
 		this.settingsService = settingsService;
 		this.emailService = emailService;
-	}
-
-	get serviceName() {
-		return SettingsController.SERVICE_NAME;
 	}
 
 	buildAppSettings = (dbSettings: Settings) => {

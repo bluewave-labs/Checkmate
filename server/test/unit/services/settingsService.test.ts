@@ -56,17 +56,6 @@ const createService = (envOverrides?: Partial<ValidatedEnv>) => {
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("SettingsService", () => {
-	describe("serviceName", () => {
-		it("returns SettingsService from static property", () => {
-			expect(SettingsService.SERVICE_NAME).toBe("SettingsService");
-		});
-
-		it("returns SettingsService from instance getter", () => {
-			const { service } = createService();
-			expect(service.serviceName).toBe("SettingsService");
-		});
-	});
-
 	// ── loadSettings ────────────────────────────────────────────────────────
 
 	describe("loadSettings", () => {

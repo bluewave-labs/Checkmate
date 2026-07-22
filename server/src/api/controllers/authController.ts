@@ -50,10 +50,6 @@ class AuthController implements IAuthController {
 		this.userService = userService;
 	}
 
-	get serviceName() {
-		return AuthController.SERVICE_NAME;
-	}
-
 	registerUser = catchAsync(async (req: Request, res: Response) => {
 		const newUser = req.body.user;
 		const newUserToken = req.body.token;

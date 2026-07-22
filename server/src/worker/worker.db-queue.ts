@@ -95,10 +95,6 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		this.isDbConnected = dependencies.isDbConnected;
 	}
 
-	get serviceName() {
-		return DBQueueWorker.SERVICE_NAME;
-	}
-
 	static async create(dependencies: DBQueueWorkerDependencies): Promise<DBQueueWorker> {
 		const instance = new DBQueueWorker(dependencies);
 		await instance.init();

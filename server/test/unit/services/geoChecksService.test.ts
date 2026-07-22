@@ -48,17 +48,6 @@ const createService = (overrides?: Record<string, unknown>) => {
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("GeoChecksService", () => {
-	describe("serviceName", () => {
-		it("returns GeoChecksService from static property", () => {
-			expect(GeoChecksService.SERVICE_NAME).toBe("GeoChecksService");
-		});
-
-		it("returns GeoChecksService from instance getter", () => {
-			const { service } = createService();
-			expect(service.serviceName).toBe("GeoChecksService");
-		});
-	});
-
 	// ── buildGeoCheck ───────────────────────────────────────────────────────
 
 	describe("buildGeoCheck", () => {

@@ -57,10 +57,6 @@ class MonitorController implements IMonitorController {
 		this.notificationsService = notificationsService;
 	}
 
-	get serviceName() {
-		return MonitorController.SERVICE_NAME;
-	}
-
 	getMonitorCertificate = catchAsync(async (req: Request, res: Response) => {
 		const validatedParams = getCertificateParamValidation.parse(req.params);
 		const teamId = requireTeamId(req.user?.teamId);

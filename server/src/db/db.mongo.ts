@@ -21,10 +21,6 @@ class MongoDB implements IDb<Mongoose> {
 		this.db = null;
 	}
 
-	get serviceName() {
-		return MongoDB.SERVICE_NAME;
-	}
-
 	connect = async () => {
 		try {
 			const connectionString = this.envSettings.dbConnectionString || "mongodb://localhost:27017/uptime_db";

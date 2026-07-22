@@ -43,17 +43,6 @@ const createService = (providers: IStatusProvider<unknown>[] = []) => {
 describe("NetworkService", () => {
 	// ── Static / instance properties ─────────────────────────────────────────
 
-	describe("serviceName", () => {
-		it("returns NetworkService from static property", () => {
-			expect(NetworkService.SERVICE_NAME).toBe("NetworkService");
-		});
-
-		it("returns NetworkService from instance getter", () => {
-			const { service } = createService();
-			expect(service.serviceName).toBe("NetworkService");
-		});
-	});
-
 	// ── requestStatus ────────────────────────────────────────────────────────
 
 	describe("requestStatus", () => {

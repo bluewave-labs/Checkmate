@@ -11,7 +11,6 @@ import { AppError } from "@/utils/AppError.js";
 const SERVICE_NAME = "GeoChecksService";
 
 export interface IGeoChecksService {
-	readonly serviceName: string;
 	buildGeoCheck(monitor: Monitor): Promise<GeoCheck | null>;
 	createGeoChecks(geoChecks: GeoCheck[]): Promise<GeoCheck[]>;
 	getGeoChecksByMonitor(args: {
@@ -48,10 +47,6 @@ export class GeoChecksService implements IGeoChecksService {
 		this.geoChecksRepository = geoChecksRepository;
 		this.globalPingService = globalPingService;
 		this.monitorsRepository = monitorsRepository;
-	}
-
-	get serviceName() {
-		return GeoChecksService.SERVICE_NAME;
 	}
 
 	async buildGeoCheck(monitor: Monitor): Promise<GeoCheck | null> {

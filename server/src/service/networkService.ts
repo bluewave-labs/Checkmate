@@ -8,7 +8,6 @@ import { IStatusProvider } from "./network/IStatusProvider.js";
 const SERVICE_NAME = "NetworkService";
 
 export interface INetworkService {
-	readonly serviceName: string;
 	requestStatus<T extends MonitorType>(monitor: Monitor & { type: T }): Promise<MonitorStatusResponse<MonitorPayloadMap[T]>>;
 	requestWebhook(
 		type: string,
@@ -37,10 +36,6 @@ export class NetworkService implements INetworkService {
 	) {
 		this.axios = axios;
 		this.logger = logger;
-	}
-
-	get serviceName(): string {
-		return NetworkService.SERVICE_NAME;
 	}
 
 	// Main entry point

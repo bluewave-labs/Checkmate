@@ -26,9 +26,6 @@ export class JobScheduler implements IJobScheduler {
 		protected readonly workerId: string // same id MongoJobsRepository stamps into lockedBy
 	) {}
 
-	get serviceName() {
-		return JobScheduler.SERVICE_NAME;
-	}
 	private heartbeatInFlight: Promise<void> = Promise.resolve();
 
 	protected processesJobs = false; // scheduler-only by default; DBQueueWorker flips this on when it runs job loops

@@ -12,7 +12,6 @@ import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
 import { ILogger } from "@/utils/logger.js";
 
 export interface IWorkerHelper {
-	readonly serviceName: string;
 	getCleanupOrphanedJob(): () => Promise<void>;
 	getCleanupRetentionJob(): () => Promise<void>;
 }
@@ -67,10 +66,6 @@ export class WorkerHelper implements IWorkerHelper {
 		this.checksRepository = checksRepository;
 		this.incidentsRepository = incidentsRepository;
 		this.geoChecksRepository = geoChecksRepository;
-	}
-
-	get serviceName() {
-		return WorkerHelper.SERVICE_NAME;
 	}
 
 	getCleanupOrphanedJob = () => {

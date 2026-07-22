@@ -16,10 +16,6 @@ class JobQueueController implements IJobQueueController {
 	static SERVICE_NAME = SERVICE_NAME;
 	constructor(private scheduler: IJobScheduler) {}
 
-	get serviceName() {
-		return JobQueueController.SERVICE_NAME;
-	}
-
 	getMetrics = catchAsync(async (req: Request, res: Response) => {
 		const metrics = await this.scheduler.getMetrics();
 		res.status(200).json({

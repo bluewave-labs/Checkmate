@@ -17,10 +17,6 @@ class DiagnosticController implements IDiagnosticController {
 		this.diagnosticService = diagnosticService;
 	}
 
-	get serviceName() {
-		return DiagnosticController.SERVICE_NAME;
-	}
-
 	getSystemStats = catchAsync(async (req: Request, res: Response) => {
 		const diagnostics = await this.diagnosticService.getSystemStats();
 		return res.status(200).json({

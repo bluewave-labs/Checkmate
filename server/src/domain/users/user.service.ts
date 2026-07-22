@@ -103,10 +103,6 @@ export class UserService implements IUserService {
 		this.teamsRepository = teamsRepository;
 	}
 
-	get serviceName() {
-		return UserService.SERVICE_NAME;
-	}
-
 	issueToken = (payload: Partial<User>, appSettings: EnvConfig) => {
 		return this.jwt.sign(payload, appSettings.jwtSecret, { expiresIn: appSettings.jwtTTL });
 	};

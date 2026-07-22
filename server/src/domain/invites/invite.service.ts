@@ -35,10 +35,6 @@ export class InviteService implements IInviteService {
 		this.emailService = emailService;
 	}
 
-	get serviceName() {
-		return InviteService.SERVICE_NAME;
-	}
-
 	getInviteToken = async ({ invite, teamId, userRoles }: { invite: Partial<Invite>; teamId: string; userRoles: UserRole[] }) => {
 		invite.teamId = teamId;
 

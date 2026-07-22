@@ -18,10 +18,6 @@ class InviteController implements IInviteController {
 		this.inviteService = inviteService;
 	}
 
-	get serviceName() {
-		return InviteController.SERVICE_NAME;
-	}
-
 	getInviteToken = catchAsync(async (req: Request, res: Response) => {
 		const teamId = requireTeamId(req.user?.teamId);
 		const userRoles = requireUserRoles(req.user?.role);

@@ -17,10 +17,6 @@ class GeoCheckController implements IGeoCheckController {
 		this.geoChecksService = geoChecksService;
 	}
 
-	get serviceName() {
-		return GeoCheckController.SERVICE_NAME;
-	}
-
 	getGeoChecksByMonitor = catchAsync(async (req: Request, res: Response) => {
 		const validatedParams = getChecksParamValidation.parse(req.params);
 		const validatedQuery = getChecksQueryValidation.parse(req.query);

@@ -82,11 +82,6 @@ describe("EmailService", () => {
 		it("returns EmailService from static property", () => {
 			expect(EmailService.SERVICE_NAME).toBe("EmailService");
 		});
-
-		it("returns EmailService from instance getter", () => {
-			const { service } = createService();
-			expect(service.serviceName).toBe("EmailService");
-		});
 	});
 
 	// ── init / loadTemplate ──────────────────────────────────────────────

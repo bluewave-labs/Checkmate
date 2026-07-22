@@ -14,9 +14,6 @@ class LogController {
 	constructor(logger: ILogger) {
 		this.logger = logger;
 	}
-	get serviceName() {
-		return LogController.SERVICE_NAME;
-	}
 
 	getLogs = catchAsync(async (req: Request, res: Response) => {
 		const logs = this.logger.getLogs();
