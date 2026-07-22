@@ -40,6 +40,7 @@ export const BaseChart = ({
 				<Typography
 					variant="eyebrow"
 					color="text.secondary"
+					sx={{ overflowWrap: "anywhere" }}
 				>
 					{title}
 				</Typography>
