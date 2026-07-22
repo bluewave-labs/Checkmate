@@ -91,13 +91,6 @@ const makeDecision = (overrides?: Partial<MonitorActionDecision>): MonitorAction
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("IncidentService", () => {
-	describe("serviceName", () => {
-		it("returns incidentService", () => {
-			const { service } = createService();
-			expect(service.serviceName).toBe("incidentService");
-		});
-	});
-
 	// ── handleIncident ───────────────────────────────────────────────────────
 
 	describe("handleIncident", () => {

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { UserRoles } from "@/domain/users/user.type.js";
-import { nameValidation, lowercaseEmailValidation, passwordValidation } from "./shared.js";
+import { nameValidation, lowercaseEmailValidation, passwordValidation, booleanCoercion } from "@/api/validation/shared.js";
 
 //****************************************
 // User Validations
@@ -46,6 +46,7 @@ export const editUserBodyValidation = z
 		profilePicture: z.string().optional(),
 		password: passwordValidation.optional(),
 		newPassword: passwordValidation.optional(),
+		deleteProfileImage: booleanCoercion.optional(),
 	})
 	// Changing a password requires both the current password and the new one.
 	// The service only runs the change-password flow when both are present, so

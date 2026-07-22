@@ -31,8 +31,6 @@ const isUptimeChecksResult = (result: UptimeChecksResult | HardwareChecksResult 
 	supportsUptimeDetails(result.monitorType);
 
 export interface IMonitorService {
-	readonly serviceName: string;
-
 	// create
 	createMonitor(teamId: string, userId: string, body: Partial<Monitor>): Promise<void>;
 	createMonitors(monitors: Array<Monitor>): Promise<Monitor[] | null>;
@@ -133,10 +131,6 @@ export class MonitorService implements IMonitorService {
 		this.monitorStatsRepository = monitorStatsRepository;
 		this.statusPagesRepository = statusPagesRepository;
 		this.incidentsRepository = incidentsRepository;
-	}
-
-	get serviceName(): string {
-		return MonitorService.SERVICE_NAME;
 	}
 
 	private getDateRange = (dateRange: DateRangeKey) => {

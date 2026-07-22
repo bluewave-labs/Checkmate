@@ -67,7 +67,6 @@ export type WorkerHealth = {
 	inFlight: number; // total in-flight jobs across types
 };
 export interface IJobScheduler {
-	readonly serviceName: string;
 	addJob(monitorId: string, monitor: Monitor): Promise<void>;
 	deleteJob(monitor: Monitor): Promise<void>;
 	pauseJob(monitor: Monitor): Promise<void>;
@@ -83,7 +82,6 @@ export interface IJobScheduler {
 }
 
 export interface IQueueWorker extends IJobScheduler {
-	readonly serviceName: string;
 	getHealth(): WorkerHealth;
 	countDueBacklog(): Promise<number>;
 	countAliveWorkers(): Promise<number>;

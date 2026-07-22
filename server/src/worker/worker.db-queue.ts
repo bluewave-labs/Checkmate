@@ -11,14 +11,13 @@ import { ICheckPipeline } from "@/worker/worker.check-pipeline.js";
 import { IReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
 import { IWorkerHelper } from "@/worker/worker.helper.js";
 import { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.repository.interface.js";
-import { WORKER_TTL_SECONDS } from "@/domain/queue-workers/queue-worker.model.js";
+import { WORKER_STALE_MS } from "@/domain/queue-workers/queue-worker.model.js";
 import { QueueMode } from "@/domain/app-settings/app-settings.type.js";
 import { JobScheduler } from "@/worker/worker.job-scheduler.js";
 import { IBufferService } from "@/service/bufferService.js";
+import { POLL_MS } from "@/worker/worker.job-scheduler.js";
 const SERVICE_NAME = "JobQueue";
-const POLL_MS = 250; // base poll interval while a loop is actively claiming work
 const POLL_MAX_MS = 5000; // back off poll interval to 5s if no jobs
-const WORKER_STALE_MS = WORKER_TTL_SECONDS * 1000; // a worker counts as alive if seen within this window
 const LOCK_RENEW_MS = LOCK_MS / 3; // renew an in-flight job's lock at 1/3 the lease, so it survives two missed renewals
 const DRAIN_TIMEOUT_MS = 25_000;
 const DRAIN_POLL_MS = 200;
@@ -93,10 +92,6 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		this.helper = dependencies.helper;
 		this.bufferService = dependencies.bufferService;
 		this.isDbConnected = dependencies.isDbConnected;
-	}
-
-	get serviceName() {
-		return DBQueueWorker.SERVICE_NAME;
 	}
 
 	static async create(dependencies: DBQueueWorkerDependencies): Promise<DBQueueWorker> {

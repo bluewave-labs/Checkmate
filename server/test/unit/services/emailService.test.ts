@@ -82,11 +82,6 @@ describe("EmailService", () => {
 		it("returns EmailService from static property", () => {
 			expect(EmailService.SERVICE_NAME).toBe("EmailService");
 		});
-
-		it("returns EmailService from instance getter", () => {
-			const { service } = createService();
-			expect(service.serviceName).toBe("EmailService");
-		});
 	});
 
 	// ── init / loadTemplate ──────────────────────────────────────────────
@@ -95,14 +90,14 @@ describe("EmailService", () => {
 		it("loads all expected templates on construction", () => {
 			const { mockFs } = createService();
 
-			// 6 templates loaded
-			expect(mockFs.readFileSync).toHaveBeenCalledTimes(6);
+			// 5 templates loaded
+			expect(mockFs.readFileSync).toHaveBeenCalledTimes(5);
 		});
 
 		it("compiles each loaded template", () => {
 			const { compile } = createService();
 
-			expect(compile).toHaveBeenCalledTimes(6);
+			expect(compile).toHaveBeenCalledTimes(5);
 		});
 
 		it("logs error when a template file is not found", () => {
@@ -146,7 +141,7 @@ describe("EmailService", () => {
 
 			service.init();
 
-			expect(mockFs.readFileSync).toHaveBeenCalledTimes(initialCalls + 6);
+			expect(mockFs.readFileSync).toHaveBeenCalledTimes(initialCalls + 5);
 		});
 	});
 

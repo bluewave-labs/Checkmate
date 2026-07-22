@@ -57,10 +57,6 @@ export class IncidentService implements IIncidentService {
 		this.notificationMessageBuilder = notificationMessageBuilder;
 	}
 
-	get serviceName() {
-		return IncidentService.SERVICE_NAME;
-	}
-
 	handleIncident = async (
 		monitor: Monitor,
 		code: number,

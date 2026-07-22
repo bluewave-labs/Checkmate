@@ -61,7 +61,6 @@ interface GlobalPingProbeResult {
 }
 
 export interface IGlobalPingService {
-	readonly serviceName: string;
 	createMeasurement(monitorType: MonitorType, url: string, locations: GeoContinent[]): Promise<string | null>;
 	pollForResults(measurementId: string, timeoutMs?: number, customUpCodes?: HttpStatusCode[]): Promise<GeoCheckResult[]>;
 }
@@ -73,10 +72,6 @@ export class GlobalPingService implements IGlobalPingService {
 
 	constructor(logger: ILogger) {
 		this.logger = logger;
-	}
-
-	get serviceName() {
-		return GlobalPingService.SERVICE_NAME;
 	}
 
 	async createMeasurement(monitorType: MonitorType, url: string, locations: GeoContinent[]): Promise<string | null> {

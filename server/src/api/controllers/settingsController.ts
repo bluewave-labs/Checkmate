@@ -7,26 +7,18 @@ import { ISettingsService } from "@/domain/app-settings/app-settings.service.js"
 import { IEmailService } from "@/service/emailService.js";
 import { Settings } from "@/domain/app-settings/app-settings.type.js";
 
-const SERVICE_NAME = "SettingsController";
-
 export interface ISettingsController {
-	serviceName: string;
 	getAppSettings: RequestHandler;
 	updateAppSettings: RequestHandler;
 	sendTestEmail: RequestHandler;
 }
 
 class SettingsController implements ISettingsController {
-	static SERVICE_NAME = SERVICE_NAME;
 	private settingsService: ISettingsService;
 	private emailService: IEmailService;
 	constructor(settingsService: ISettingsService, emailService: IEmailService) {
 		this.settingsService = settingsService;
 		this.emailService = emailService;
-	}
-
-	get serviceName() {
-		return SettingsController.SERVICE_NAME;
 	}
 
 	buildAppSettings = (dbSettings: Settings) => {

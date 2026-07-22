@@ -50,10 +50,6 @@ export class CheckService implements ICheckService {
 		this.checksRepository = checksRepository;
 	}
 
-	get serviceName() {
-		return CheckService.SERVICE_NAME;
-	}
-
 	createChecks = async (checks: Check[]) => {
 		return this.checksRepository.createChecks(checks);
 	};

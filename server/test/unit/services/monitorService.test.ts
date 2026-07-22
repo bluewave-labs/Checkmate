@@ -111,13 +111,6 @@ const createService = (
 };
 
 describe("MonitorService", () => {
-	describe("serviceName", () => {
-		it("returns 'MonitorService'", () => {
-			const { service } = createService();
-			expect(service.serviceName).toBe("MonitorService");
-		});
-	});
-
 	describe("createMonitor", () => {
 		it("creates a monitor and adds a job", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();

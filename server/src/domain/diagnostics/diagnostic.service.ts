@@ -79,10 +79,6 @@ export class DiagnosticService implements IDiagnosticService {
 		obs.observe({ entryTypes: ["measure"] });
 	}
 
-	get serviceName() {
-		return DiagnosticService.SERVICE_NAME;
-	}
-
 	private getCPUUsagePercentage = async (): Promise<number> => {
 		const startUsage = process.cpuUsage();
 		const timingPeriod = 1000; // measured in ms

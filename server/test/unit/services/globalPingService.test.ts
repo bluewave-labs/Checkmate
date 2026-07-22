@@ -66,17 +66,6 @@ describe("GlobalPingService", () => {
 
 	// ── Static / instance properties ─────────────────────────────────────
 
-	describe("serviceName", () => {
-		it("returns GlobalPingService from static property", () => {
-			expect(GlobalPingService.SERVICE_NAME).toBe("GlobalPingService");
-		});
-
-		it("returns GlobalPingService from instance getter", () => {
-			const { service } = createService();
-			expect(service.serviceName).toBe("GlobalPingService");
-		});
-	});
-
 	// ── createMeasurement ────────────────────────────────────────────────
 
 	describe("createMeasurement", () => {

@@ -3,7 +3,6 @@ import { catchAsync } from "@/utils/catchAsync.js";
 import { inviteBodyValidation, inviteVerificationBodyValidation } from "@/api/validation/authValidation.js";
 import { requireFirstName, requireTeamId, requireUserRoles } from "@/api/controllers/controllerUtils.js";
 import { IInviteService } from "@/domain/invites/invite.service.js";
-const SERVICE_NAME = "inviteController";
 
 export interface IInviteController {
 	getInviteToken: RequestHandler;
@@ -12,14 +11,9 @@ export interface IInviteController {
 }
 
 class InviteController implements IInviteController {
-	static SERVICE_NAME = SERVICE_NAME;
 	private inviteService: IInviteService;
 	constructor(inviteService: IInviteService) {
 		this.inviteService = inviteService;
-	}
-
-	get serviceName() {
-		return InviteController.SERVICE_NAME;
 	}
 
 	getInviteToken = catchAsync(async (req: Request, res: Response) => {

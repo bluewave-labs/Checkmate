@@ -57,10 +57,6 @@ export class StatusService implements IStatusService {
 		this.monitorStatsRepository = monitorStatsRepository;
 	}
 
-	get serviceName() {
-		return StatusService.SERVICE_NAME;
-	}
-
 	async updateRunningStats(monitor: Monitor, networkResponse: MonitorStatusResponse) {
 		try {
 			await this.monitorStatsRepository.updateByMonitorId(monitor.id, {

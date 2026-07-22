@@ -98,13 +98,6 @@ const createService = (overrides?: Record<string, unknown>) => {
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("UserService", () => {
-	describe("serviceName", () => {
-		it("returns userService", () => {
-			const { service } = createService();
-			expect(service.serviceName).toBe("userService");
-		});
-	});
-
 	// ── issueToken ──────────────────────────────────────────────────────────
 
 	describe("issueToken", () => {

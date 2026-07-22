@@ -22,8 +22,6 @@ import {
 } from "@/api/validation/userValidation.js";
 import { IUserService } from "@/domain/users/user.service.js";
 
-const SERVICE_NAME = "authController";
-
 export interface IAuthController {
 	registerUser: RequestHandler;
 	createUser: RequestHandler;
@@ -42,16 +40,10 @@ export interface IAuthController {
 }
 
 class AuthController implements IAuthController {
-	static SERVICE_NAME = SERVICE_NAME;
-
 	private userService: IUserService;
 
 	constructor(userService: IUserService) {
 		this.userService = userService;
-	}
-
-	get serviceName() {
-		return AuthController.SERVICE_NAME;
 	}
 
 	registerUser = catchAsync(async (req: Request, res: Response) => {

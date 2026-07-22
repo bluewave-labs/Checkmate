@@ -62,10 +62,6 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		this.scheduler = scheduler;
 	}
 
-	get serviceName() {
-		return MaintenanceWindowService.SERVICE_NAME;
-	}
-
 	private flipMonitorsLeavingMaintenance = async (monitorIds: string[], teamId: string, excludeWindowId: string, now: Date): Promise<void> => {
 		if (monitorIds.length === 0) return;
 

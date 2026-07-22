@@ -2,7 +2,6 @@ import { IUsersRepository } from "@/domain/users/user.repository.interface.js";
 import { UserModel, type UserDocument } from "@/domain/users/user.model.js";
 import type { User, UserProfileImage } from "@/domain/users/user.type.js";
 import { GenerateAvatarImage } from "@/utils/imageProcessing.js";
-import { ParseBoolean } from "@/utils/utils.js";
 import { AppError } from "@/utils/AppError.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 const SERVICE_NAME = "MongoUsersRepository";
@@ -87,9 +86,8 @@ class MongoUsersRepository implements IUsersRepository {
 		const candidateUser = { ...patch };
 		let unsetFields: Record<string, 1> | undefined;
 
-		if (ParseBoolean(candidateUser.deleteProfileImage) === true) {
+		if (candidateUser.deleteProfileImage === true) {
 			unsetFields = { profileImage: 1, avatarImage: 1 };
-			delete candidateUser.deleteProfileImage;
 		} else if (file) {
 			// 1.  Save the full size image
 			candidateUser.profileImage = {

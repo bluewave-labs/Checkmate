@@ -94,17 +94,6 @@ const defaultCreateParams = {
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("MaintenanceWindowService", () => {
-	describe("serviceName", () => {
-		it("returns maintenanceWindowService from static property", () => {
-			expect(MaintenanceWindowService.SERVICE_NAME).toBe("maintenanceWindowService");
-		});
-
-		it("returns maintenanceWindowService from instance getter", () => {
-			const { service } = createService();
-			expect(service.serviceName).toBe("maintenanceWindowService");
-		});
-	});
-
 	// ── createMaintenanceWindow ──────────────────────────────────────────────
 
 	describe("createMaintenanceWindow", () => {
