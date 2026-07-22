@@ -11,8 +11,6 @@ import {
 import { ICheckService } from "@/domain/checks/check.service.js";
 import { requireTeamId } from "@/api/controllers/controllerUtils.js";
 
-const SERVICE_NAME = "checkController";
-
 export interface ICheckController {
 	getChecksByMonitor: RequestHandler;
 	getChecksByTeam: RequestHandler;
@@ -22,8 +20,6 @@ export interface ICheckController {
 }
 
 class CheckController implements ICheckController {
-	static SERVICE_NAME = SERVICE_NAME;
-
 	private checkService: ICheckService;
 	constructor(checkService: ICheckService) {
 		this.checkService = checkService;

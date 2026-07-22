@@ -23,8 +23,6 @@ import { AppError } from "@/utils/AppError.js";
 import { IMonitorService } from "@/domain/monitors/monitor.service.js";
 import { INotificationsService } from "@/domain/notifications/notification.service.js";
 
-const SERVICE_NAME = "monitorController";
-
 export interface IMonitorController {
 	getMonitorCertificate: RequestHandler;
 	getUptimeDetailsById: RequestHandler;
@@ -47,8 +45,6 @@ export interface IMonitorController {
 	updateNotifications: RequestHandler;
 }
 class MonitorController implements IMonitorController {
-	static SERVICE_NAME = SERVICE_NAME;
-
 	private monitorService: IMonitorService;
 	private notificationsService: INotificationsService;
 

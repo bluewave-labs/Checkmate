@@ -2,14 +2,11 @@ import { ILogger } from "@/utils/logger.js";
 import { Request, Response, RequestHandler } from "express";
 import { catchAsync } from "@/utils/catchAsync.js";
 
-const SERVICE_NAME = "LogController";
-
 export interface ILogController {
 	getLogs: RequestHandler;
 }
 
 class LogController {
-	static SERVICE_NAME = SERVICE_NAME;
 	private logger: ILogger;
 	constructor(logger: ILogger) {
 		this.logger = logger;

@@ -56,12 +56,12 @@ const createService = (envOverrides?: Partial<ValidatedEnv>) => {
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("SettingsService", () => {
-	// ── loadSettings ────────────────────────────────────────────────────────
+	// ── getSettings ─────────────────────────────────────────────────────────
 
-	describe("loadSettings", () => {
+	describe("getSettings", () => {
 		it("returns env config mapped from constructor", () => {
 			const { service } = createService();
-			const settings = service.loadSettings();
+			const settings = service.getSettings();
 
 			expect(settings).toEqual({
 				jwtSecret: "test-secret",
@@ -82,7 +82,7 @@ describe("SettingsService", () => {
 				CLIENT_CONFIG_LOG_LEVEL: "warn",
 			});
 
-			expect(service.loadSettings().clientConfig).toEqual({
+			expect(service.getSettings().clientConfig).toEqual({
 				apiBaseUrl: "https://api.example.com/api/v1",
 				logLevel: "warn",
 			});
@@ -90,20 +90,10 @@ describe("SettingsService", () => {
 
 		it("reflects custom env values", () => {
 			const { service } = createService({ NODE_ENV: "production", LOG_LEVEL: "error" });
-			const settings = service.loadSettings();
+			const settings = service.getSettings();
 
 			expect(settings.nodeEnv).toBe("production");
 			expect(settings.logLevel).toBe("error");
-		});
-	});
-
-	// ── getSettings ─────────────────────────────────────────────────────────
-
-	describe("getSettings", () => {
-		it("returns the same config as loadSettings", () => {
-			const { service } = createService();
-
-			expect(service.getSettings()).toEqual(service.loadSettings());
 		});
 	});
 

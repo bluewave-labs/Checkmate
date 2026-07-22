@@ -2,15 +2,11 @@ import { IDiagnosticService } from "@/domain/diagnostics/diagnostic.service.js";
 import { Request, Response, RequestHandler } from "express";
 import { catchAsync } from "@/utils/catchAsync.js";
 
-const SERVICE_NAME = "diagnosticController";
-
 export interface IDiagnosticController {
 	getSystemStats: RequestHandler;
 }
 
 class DiagnosticController implements IDiagnosticController {
-	static SERVICE_NAME = SERVICE_NAME;
-
 	private diagnosticService: IDiagnosticService;
 
 	constructor(diagnosticService: IDiagnosticService) {

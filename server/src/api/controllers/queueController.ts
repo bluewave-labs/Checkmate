@@ -3,8 +3,6 @@ import { getQueueJobsQueryValidation } from "@/api/validation/queueValidation.js
 import { Request, Response, RequestHandler } from "express";
 import { catchAsync } from "@/utils/catchAsync.js";
 
-const SERVICE_NAME = "JobQueueController";
-
 export interface IJobQueueController {
 	getMetrics: RequestHandler;
 	getJobs: RequestHandler;
@@ -13,7 +11,6 @@ export interface IJobQueueController {
 }
 
 class JobQueueController implements IJobQueueController {
-	static SERVICE_NAME = SERVICE_NAME;
 	constructor(private scheduler: IJobScheduler) {}
 
 	getMetrics = catchAsync(async (req: Request, res: Response) => {

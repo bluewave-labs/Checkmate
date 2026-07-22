@@ -13,8 +13,6 @@ import { requireTeamId, requireUserId } from "@/api/controllers/controllerUtils.
 import { IStatusPageService } from "@/domain/status-pages/status-page.service.js";
 import { resolveStatusPageDomainFromRequest } from "@/utils/statusPageDomain.js";
 
-const SERVICE_NAME = "statusPageController";
-
 export interface IStatusPageController {
 	createStatusPage: RequestHandler;
 	updateStatusPage: RequestHandler;
@@ -25,7 +23,6 @@ export interface IStatusPageController {
 }
 
 class StatusPageController implements IStatusPageController {
-	static SERVICE_NAME = SERVICE_NAME;
 	private statusPageService: IStatusPageService;
 	constructor(statusPageService: IStatusPageService) {
 		this.statusPageService = statusPageService;

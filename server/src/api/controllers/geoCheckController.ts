@@ -4,14 +4,10 @@ import { getChecksParamValidation, getChecksQueryValidation } from "@/api/valida
 import type { IGeoChecksService } from "@/domain/geo-checks/geo-check.service.js";
 import { requireTeamId } from "./controllerUtils.js";
 
-const SERVICE_NAME = "geoCheckController";
-
 export interface IGeoCheckController {
 	getGeoChecksByMonitor: RequestHandler;
 }
 class GeoCheckController implements IGeoCheckController {
-	static SERVICE_NAME = SERVICE_NAME;
-
 	private geoChecksService: IGeoChecksService;
 	constructor(geoChecksService: IGeoChecksService) {
 		this.geoChecksService = geoChecksService;
