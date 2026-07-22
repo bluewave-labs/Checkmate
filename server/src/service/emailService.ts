@@ -75,7 +75,6 @@ export class EmailService implements IEmailService {
 		this.templateLookup = {
 			welcomeEmailTemplate: loadTemplate("welcomeEmail"),
 			employeeActivationTemplate: loadTemplate("employeeActivation"),
-			noIncidentsThisWeekTemplate: loadTemplate("noIncidentsThisWeek"),
 			passwordResetTemplate: loadTemplate("passwordReset"),
 			testEmailTemplate: loadTemplate("testEmailTemplate"),
 			unifiedNotificationTemplate: loadTemplate("unifiedNotification"),

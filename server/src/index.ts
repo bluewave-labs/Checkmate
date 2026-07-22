@@ -27,7 +27,7 @@ const startApp = async () => {
 	const env = validateEnv(logger);
 	logger.setLogLevel(env.LOG_LEVEL);
 	const settingsService = new SettingsService(env);
-	const envSettings = settingsService.loadSettings();
+	const envSettings = settingsService.getSettings();
 	const { queueMode, queuePrimaryProcesses } = envSettings;
 
 	logger.info({

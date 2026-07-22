@@ -5,13 +5,12 @@ import { Monitor, supportsGeoCheck } from "@/domain/monitors/monitor.types.js";
 import { type Job, type JobSeed, type JobType, jobId } from "@/domain/jobs/job.type.js";
 import { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.repository.interface.js";
 import { WorkerJobsPagination, WorkerJobSummary, WorkerMetrics } from "@/worker/worker.interface.js";
-import { WORKER_TTL_SECONDS } from "@/domain/queue-workers/queue-worker.model.js";
+import { WORKER_STALE_MS } from "@/domain/queue-workers/queue-worker.model.js";
 import { QueueMode } from "@/domain/app-settings/app-settings.type.js";
 import { ILogger } from "@/utils/logger.js";
 
-const POLL_MS = 250; // base poll interval while a loop is actively claiming work
+export const POLL_MS = 250; // base poll interval while a loop is actively claiming work
 const SERVICE_NAME = "JobScheduler";
-const WORKER_STALE_MS = WORKER_TTL_SECONDS * 1000; // a worker counts as alive if seen within this window
 const HEARTBEAT_MS = WORKER_STALE_MS / 3; // Worker can miss two beats without being considered stale
 const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 

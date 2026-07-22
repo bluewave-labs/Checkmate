@@ -20,7 +20,6 @@ export type EnvConfig = {
 };
 
 export interface ISettingsService {
-	loadSettings(): EnvConfig;
 	getSettings(): EnvConfig;
 	areStatusPageThemesEnabled(): boolean;
 	getDBSettings(): Promise<Settings>;
@@ -54,10 +53,6 @@ export class SettingsService implements ISettingsService {
 
 	setRepository(settingsRepository: ISettingsRepository) {
 		this.settingsRepository = settingsRepository;
-	}
-
-	loadSettings() {
-		return this.settings;
 	}
 
 	getSettings() {
