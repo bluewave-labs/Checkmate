@@ -451,15 +451,7 @@ export class MonitorService implements IMonitorService {
 		return { monitors, failedCount };
 	};
 
-	deleteMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
-		const monitor = await this.monitorsRepository.deleteById(monitorId, teamId);
-		await this.monitorStatsRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
-			this.logger.warn({
-				message: `Error deleting monitor stats for monitor ${monitor.id} with name ${monitor.name}`,
-				service: SERVICE_NAME,
-				stack: err instanceof Error ? err.stack : undefined,
-			});
-		});
+	private deleteMonitorChildren = async (monitor: Monitor, teamId: string) => {
 		await this.checksRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
 			this.logger.warn({
 				message: `Error deleting checks for monitor ${monitor.id} with name ${monitor.name}`,
@@ -491,6 +483,19 @@ export class MonitorService implements IMonitorService {
 			});
 		});
 
+		await this.monitorStatsRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
+			this.logger.warn({
+				message: `Error deleting monitor stats for monitor ${monitor.id} with name ${monitor.name}`,
+				service: SERVICE_NAME,
+				stack: err instanceof Error ? err.stack : undefined,
+			});
+		});
+	};
+
+	deleteMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
+		const monitor = await this.monitorsRepository.deleteById(monitorId, teamId);
+
+		await this.deleteMonitorChildren(monitor, teamId);
 		await this.scheduler.deleteJob(monitor);
 		return monitor;
 	};
@@ -500,12 +505,8 @@ export class MonitorService implements IMonitorService {
 		await Promise.all(
 			monitors.map(async (monitor) => {
 				try {
+					await this.deleteMonitorChildren(monitor, teamId);
 					await this.scheduler.deleteJob(monitor);
-					await this.checksRepository.deleteByMonitorId(monitor.id);
-					await this.geoChecksRepository.deleteByMonitorId(monitor.id);
-					await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id);
-					await this.monitorStatsRepository.deleteByMonitorId(monitor.id);
-					await this.incidentsRepository.deleteByMonitorId(monitor.id, teamId);
 				} catch (error: unknown) {
 					this.logger.warn({
 						message: `Error deleting associated records for monitor ${monitor.id} with name ${monitor.name}`,
