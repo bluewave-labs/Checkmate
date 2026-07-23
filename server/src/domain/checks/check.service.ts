@@ -6,6 +6,7 @@ import type { MonitorPayloadMap, MonitorStatusResponse } from "@/types/network.j
 import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import { ILogger } from "@/utils/logger.js";
+import { DateRange } from "@/types/query.js";
 
 const SERVICE_NAME = "checkService";
 
@@ -18,7 +19,7 @@ export interface ICheckService {
 		monitorId: string;
 		teamId: string;
 		sortOrder: string;
-		dateRange: string;
+		dateRange: DateRange;
 		page: number;
 		rowsPerPage: number;
 		filter?: string;
@@ -27,12 +28,12 @@ export interface ICheckService {
 	getChecksByTeam(params: {
 		teamId: string;
 		sortOrder: string;
-		dateRange: string;
+		dateRange: DateRange;
 		page: number;
 		rowsPerPage: number;
 		filter?: string;
 	}): Promise<ChecksQueryResult>;
-	getChecksSummaryByTeamId(params: { teamId: string; dateRange: string }): Promise<ChecksSummary>;
+	getChecksSummaryByTeamId(params: { teamId: string; dateRange: DateRange }): Promise<ChecksSummary>;
 	deleteChecks(params: { monitorId: string; teamId: string }): Promise<number>;
 	deleteChecksByTeamId(params: { teamId: string }): Promise<number>;
 	deleteOlderThan(date: Date): Promise<number>;
@@ -164,7 +165,7 @@ export class CheckService implements ICheckService {
 		monitorId: string;
 		teamId: string;
 		sortOrder: string;
-		dateRange: string;
+		dateRange: DateRange;
 		page: number;
 		rowsPerPage: number;
 		status?: boolean;
@@ -198,7 +199,7 @@ export class CheckService implements ICheckService {
 	}: {
 		teamId: string;
 		sortOrder: string;
-		dateRange: string;
+		dateRange: DateRange;
 		page: number;
 		rowsPerPage: number;
 		filter?: string;
@@ -210,7 +211,7 @@ export class CheckService implements ICheckService {
 		return checkData;
 	};
 
-	getChecksSummaryByTeamId = async ({ teamId, dateRange }: { teamId: string; dateRange: string }) => {
+	getChecksSummaryByTeamId = async ({ teamId, dateRange }: { teamId: string; dateRange: DateRange }) => {
 		const summary = await this.checksRepository.findSummaryByTeamId(teamId, dateRange);
 		return summary;
 	};

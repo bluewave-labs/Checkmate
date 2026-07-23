@@ -1,6 +1,7 @@
 import type { GroupedCheck, HasResponseTime, NormalizedCheck, NormalizedUptimeCheck } from "@/domain/checks/check.type.js";
+import { type DateRange } from "@/types/query.js";
 
-export const getDateForRange = (dateRange: string): Date | undefined => {
+export const getDateForRange = (dateRange: DateRange): Date => {
 	const now = Date.now();
 	switch (dateRange) {
 		case "recent":
@@ -14,10 +15,22 @@ export const getDateForRange = (dateRange: string): Date | undefined => {
 		case "month":
 			return new Date(now - 30 * 24 * 60 * 60 * 1000); // 30 days
 		case "all":
-			return undefined;
+			return new Date(0);
 		default:
-			return undefined;
+			return new Date(0);
 	}
+};
+
+export const getDateFormat = (dateRange: DateRange): string => {
+	const formatLookup = {
+		hour: "%Y-%m-%dT%H:%M:00Z",
+		recent: "%Y-%m-%dT%H:%M:00Z",
+		day: "%Y-%m-%dT%H:00:00Z",
+		week: "%Y-%m-%dT00:00:00Z",
+		month: "%Y-%m-%dT00:00:00Z",
+		all: "%Y-%m-%dT00:00:00Z",
+	};
+	return formatLookup[dateRange];
 };
 
 const percentileBy = <T>(arr: T[], percentile: number, value: (item: T) => number): number => {

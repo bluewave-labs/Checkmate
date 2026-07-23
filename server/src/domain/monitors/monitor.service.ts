@@ -23,9 +23,9 @@ import { AppError } from "@/utils/AppError.js";
 import type { ImportedMonitor } from "@/api/validation/monitorValidation.js";
 import { ILogger } from "@/utils/logger.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";
+import { DateRange } from "@/types/query.js";
 
 const SERVICE_NAME = "MonitorService";
-type DateRangeKey = "recent" | "day" | "week" | "month" | "all";
 
 const isUptimeChecksResult = (result: UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult): result is UptimeChecksResult =>
 	supportsUptimeDetails(result.monitorType);
@@ -37,13 +37,13 @@ export interface IMonitorService {
 	addDemoMonitors(args: { userId: string; teamId: string }): Promise<Monitor[]>;
 
 	// read
-	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<UptimeDetailsResult>;
-	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<HardwareDetailsResult>;
-	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<PageSpeedDetailsResult>;
+	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<UptimeDetailsResult>;
+	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<HardwareDetailsResult>;
+	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<PageSpeedDetailsResult>;
 	getGeoChecksByMonitorId(args: {
 		teamId: string;
 		monitorId: string;
-		dateRange: string;
+		dateRange: DateRange;
 		continents?: GeoContinent[];
 	}): Promise<GroupedGeoCheckResult>;
 	getMonitorById(args: { teamId: string; monitorId: string }): Promise<Monitor>;
@@ -133,31 +133,6 @@ export class MonitorService implements IMonitorService {
 		this.incidentsRepository = incidentsRepository;
 	}
 
-	private getDateRange = (dateRange: DateRangeKey) => {
-		const startDates = {
-			recent: new Date(new Date().setHours(new Date().getHours() - 2)),
-			day: new Date(new Date().setDate(new Date().getDate() - 1)),
-			week: new Date(new Date().setDate(new Date().getDate() - 7)),
-			month: new Date(new Date().setMonth(new Date().getMonth() - 1)),
-			all: new Date(0),
-		};
-		return {
-			start: startDates[dateRange],
-			end: new Date(),
-		};
-	};
-
-	private getDateFormat = (dateRange: DateRangeKey): string => {
-		const formatLookup = {
-			recent: "%Y-%m-%dT%H:%M:00Z",
-			day: "%Y-%m-%dT%H:00:00Z",
-			week: "%Y-%m-%dT00:00:00Z",
-			month: "%Y-%m-%dT00:00:00Z",
-			all: "%Y-%m-%dT00:00:00Z",
-		};
-		return formatLookup[dateRange];
-	};
-
 	createMonitor = async (teamId: string, userId: string, body: Monitor): Promise<void> => {
 		const monitor = await this.monitorsRepository.create(body, teamId, userId);
 		if (!monitor) {
@@ -200,15 +175,13 @@ export class MonitorService implements IMonitorService {
 	}: {
 		teamId: string;
 		monitorId: string;
-		dateRange: string;
+		dateRange: DateRange;
 	}): Promise<UptimeDetailsResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
 			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
 		}
-		const rangeKey = dateRange as DateRangeKey;
-		const { start, end } = this.getDateRange(rangeKey);
-		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, start, end, this.getDateFormat(rangeKey), {
+		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, dateRange, {
 			type: monitor.type,
 		});
 		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
@@ -237,7 +210,7 @@ export class MonitorService implements IMonitorService {
 	}: {
 		teamId: string;
 		monitorId: string;
-		dateRange: string;
+		dateRange: DateRange;
 	}): Promise<HardwareDetailsResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
@@ -247,9 +220,7 @@ export class MonitorService implements IMonitorService {
 			throw new AppError({ message: `${monitor.type} monitors are not supported for hardware details`, status: 400 });
 		}
 
-		const rangeKey = dateRange as DateRangeKey;
-		const { start, end } = this.getDateRange(rangeKey);
-		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, start, end, this.getDateFormat(rangeKey), {
+		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, dateRange, {
 			type: monitor.type,
 		});
 
@@ -279,7 +250,7 @@ export class MonitorService implements IMonitorService {
 	}: {
 		teamId: string;
 		monitorId: string;
-		dateRange: string;
+		dateRange: DateRange;
 	}): Promise<PageSpeedDetailsResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
@@ -289,9 +260,7 @@ export class MonitorService implements IMonitorService {
 			throw new AppError({ message: `${monitor.type} monitors are not supported for pagespeed details`, status: 400 });
 		}
 
-		const rangeKey = dateRange as DateRangeKey;
-		const { start, end } = this.getDateRange(rangeKey);
-		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, start, end, this.getDateFormat(rangeKey), {
+		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, dateRange, {
 			type: monitor.type,
 		});
 
@@ -318,7 +287,7 @@ export class MonitorService implements IMonitorService {
 	}: {
 		teamId: string;
 		monitorId: string;
-		dateRange: string;
+		dateRange: DateRange;
 		continents?: GeoContinent[];
 	}): Promise<GroupedGeoCheckResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
@@ -330,15 +299,7 @@ export class MonitorService implements IMonitorService {
 			return { groupedGeoChecks: [] };
 		}
 
-		const rangeKey = dateRange as DateRangeKey;
-		const { start, end } = this.getDateRange(rangeKey);
-		const groupedGeoChecks = await this.geoChecksRepository.findGroupedByMonitorIdAndDateRange(
-			monitor.id,
-			start,
-			end,
-			this.getDateFormat(rangeKey),
-			continents
-		);
+		const groupedGeoChecks = await this.geoChecksRepository.findGroupedByMonitorIdAndDateRange(monitor.id, dateRange, continents);
 
 		return { groupedGeoChecks };
 	};

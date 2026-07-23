@@ -7,6 +7,7 @@ import type { IMonitorsRepository } from "@/domain/monitors/monitor.repository.i
 import type { IGlobalPingService } from "@/service/globalPingService.js";
 import type { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";
+import { DateRange } from "@/types/query.js";
 
 const SERVICE_NAME = "GeoChecksService";
 
@@ -17,7 +18,7 @@ export interface IGeoChecksService {
 		monitorId: string;
 		teamId: string;
 		sortOrder: string;
-		dateRange: string;
+		dateRange: DateRange;
 		page?: number;
 		rowsPerPage?: number;
 		continent?: GeoContinent | GeoContinent[];
@@ -155,7 +156,7 @@ export class GeoChecksService implements IGeoChecksService {
 		monitorId: string;
 		teamId: string;
 		sortOrder: string;
-		dateRange: string;
+		dateRange: DateRange;
 		page?: number;
 		rowsPerPage?: number;
 		continent: GeoContinent | GeoContinent[];
