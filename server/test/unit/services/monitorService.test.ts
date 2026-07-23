@@ -1443,12 +1443,15 @@ describe("MonitorService", () => {
 			const statusPagesRepository = createStatusPagesRepositoryMock();
 			const geoChecksRepository = createGeoChecksRepositoryMock();
 
+			const incidentsRepository = createIncidentsRepositoryMock();
+
 			const monitors = [makeMonitor({ id: "m1" }), makeMonitor({ id: "m2" })];
 			(monitorsRepository.deleteByTeamId as jest.Mock).mockResolvedValue({ monitors, deletedCount: 2 });
 			(checksRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
 			(geoChecksRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
 			(statusPagesRepository.removeMonitorFromStatusPages as jest.Mock).mockResolvedValue(0);
 			(monitorStatsRepository.deleteByMonitorId as jest.Mock).mockResolvedValue({});
+			(incidentsRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
 
 			const { service, jobQueue } = createService({
 				monitorsRepository,
@@ -1456,6 +1459,7 @@ describe("MonitorService", () => {
 				monitorStatsRepository,
 				statusPagesRepository,
 				geoChecksRepository,
+				incidentsRepository,
 			});
 
 			const result = await service.deleteAllMonitors({ teamId: TEAM_ID });
@@ -1466,26 +1470,33 @@ describe("MonitorService", () => {
 			expect(geoChecksRepository.deleteByMonitorId).toHaveBeenCalledTimes(2);
 			expect(statusPagesRepository.removeMonitorFromStatusPages).toHaveBeenCalledTimes(2);
 			expect(monitorStatsRepository.deleteByMonitorId).toHaveBeenCalledTimes(2);
+			expect(incidentsRepository.deleteByMonitorId).toHaveBeenCalledTimes(2);
 		});
 
-		it("logs warning when associated record deletion fails with Error", async () => {
+		it("logs a per-child warning and continues when a child deletion fails with Error", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			const checksRepository = createChecksRepositoryMock();
 			const monitorStatsRepository = createMonitorStatsRepositoryMock();
 			const statusPagesRepository = createStatusPagesRepositoryMock();
 			const geoChecksRepository = createGeoChecksRepositoryMock();
+			const incidentsRepository = createIncidentsRepositoryMock();
 
 			const monitors = [makeMonitor({ id: "m1" })];
 			(monitorsRepository.deleteByTeamId as jest.Mock).mockResolvedValue({ monitors, deletedCount: 1 });
 			(checksRepository.deleteByMonitorId as jest.Mock).mockRejectedValue(new Error("fail"));
+			(geoChecksRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
+			(statusPagesRepository.removeMonitorFromStatusPages as jest.Mock).mockResolvedValue(0);
+			(monitorStatsRepository.deleteByMonitorId as jest.Mock).mockResolvedValue({});
+			(incidentsRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
 
 			const logger = createMockLogger();
-			const { service } = createService({
+			const { service, jobQueue } = createService({
 				monitorsRepository,
 				checksRepository,
 				monitorStatsRepository,
 				statusPagesRepository,
 				geoChecksRepository,
+				incidentsRepository,
 				logger,
 			});
 
@@ -1494,21 +1505,28 @@ describe("MonitorService", () => {
 			expect(result).toBe(1);
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: expect.stringContaining("Error deleting associated records"),
+					message: expect.stringContaining("Error deleting checks"),
 					stack: expect.any(String),
 				})
 			);
+			expect(jobQueue.deleteJob).toHaveBeenCalledTimes(1);
 		});
 
-		it("logs warning when associated record deletion fails with non-Error", async () => {
+		it("logs warning when scheduler job deletion fails with non-Error", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			const checksRepository = createChecksRepositoryMock();
 			const monitorStatsRepository = createMonitorStatsRepositoryMock();
 			const statusPagesRepository = createStatusPagesRepositoryMock();
 			const geoChecksRepository = createGeoChecksRepositoryMock();
+			const incidentsRepository = createIncidentsRepositoryMock();
 
 			const monitors = [makeMonitor({ id: "m1" })];
 			(monitorsRepository.deleteByTeamId as jest.Mock).mockResolvedValue({ monitors, deletedCount: 1 });
+			(checksRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
+			(geoChecksRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
+			(statusPagesRepository.removeMonitorFromStatusPages as jest.Mock).mockResolvedValue(0);
+			(monitorStatsRepository.deleteByMonitorId as jest.Mock).mockResolvedValue({});
+			(incidentsRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
 			// deleteJob throws non-Error
 			const jobQueue = createJobQueueMock();
 			(jobQueue.deleteJob as jest.Mock).mockRejectedValue("string error");
@@ -1523,7 +1541,7 @@ describe("MonitorService", () => {
 				geoChecksRepository,
 				monitorStatsRepository,
 				statusPagesRepository,
-				incidentsRepository: createIncidentsRepositoryMock(),
+				incidentsRepository,
 			});
 
 			const result = await service.deleteAllMonitors({ teamId: TEAM_ID });
