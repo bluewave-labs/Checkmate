@@ -15,11 +15,12 @@ import type {
 import type { MonitorType } from "@/domain/monitors/monitor.types.js";
 import { CheckModel, type CheckDocument } from "@/domain/checks/check.model.js";
 import mongoose from "mongoose";
-import { getDateForRange } from "@/utils/dataUtils.js";
+import { getDateFormat, getDateForRange } from "@/utils/dataUtils.js";
 import { ILogger } from "@/utils/logger.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
 import { getHardwareUpChecks, getHardwareStats, getHardwareTotalChecks } from "@/domain/checks/check.hardware.aggregations.js";
+import { DateRange } from "@/types/query.js";
 
 const SERVICE_NAME = "StatusService";
 
@@ -207,7 +208,7 @@ class MongoChecksRepository implements IChecksRepository {
 	findByMonitorId = async (
 		monitorId: string,
 		sortOrder: string,
-		dateRange: string,
+		dateRange: DateRange,
 		filter: string | undefined,
 		page: number,
 		rowsPerPage: number,
@@ -217,11 +218,7 @@ class MongoChecksRepository implements IChecksRepository {
 		const matchStage: Record<string, unknown> = {
 			"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 			...(typeof status !== "undefined" && { status }),
-			...(getDateForRange(dateRange) && {
-				createdAt: {
-					$gte: getDateForRange(dateRange),
-				},
-			}),
+			createdAt: { $gte: getDateForRange(dateRange) },
 		};
 
 		if (filter !== undefined) {
@@ -265,14 +262,10 @@ class MongoChecksRepository implements IChecksRepository {
 		return { checksCount, checks: this.mapDocuments(checks) };
 	};
 
-	findByTeamId = async (sortOrder: string, dateRange: string, filter: string, page: number, rowsPerPage: number, teamId: string) => {
+	findByTeamId = async (sortOrder: string, dateRange: DateRange, filter: string, page: number, rowsPerPage: number, teamId: string) => {
 		const matchStage: Record<string, unknown> = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
-			...(getDateForRange(dateRange) && {
-				createdAt: {
-					$gte: getDateForRange(dateRange),
-				},
-			}),
+			createdAt: { $gte: getDateForRange(dateRange) },
 		};
 		// Add filter to match stage
 		if (filter !== undefined) {
@@ -341,25 +334,25 @@ class MongoChecksRepository implements IChecksRepository {
 		return mapped;
 	};
 
-	findByDateRangeAndMonitorId = async (monitorId: string, startDate: Date, endDate: Date, dateString: string, options?: { type?: MonitorType }) => {
+	findByDateRangeAndMonitorId = async (monitorId: string, dateRange: DateRange, options?: { type?: MonitorType }) => {
 		const monitorObjectId = new mongoose.Types.ObjectId(monitorId);
+		const start = getDateForRange(dateRange);
+		const dateString = getDateFormat(dateRange);
+
+		const end = new Date();
 		if (options?.type === "hardware") {
-			return this.findHardwareDateRangeChecks(monitorObjectId, startDate, endDate, dateString);
+			return this.findHardwareDateRangeChecks(monitorObjectId, start, end, dateString);
 		}
 		if (options?.type === "pagespeed") {
-			return this.findPageSpeedDateRangeChecks(monitorObjectId, startDate, endDate, dateString);
+			return this.findPageSpeedDateRangeChecks(monitorObjectId, start, end, dateString);
 		}
-		return this.findUptimeDateRangeChecks(options?.type ?? "http", monitorObjectId, startDate, endDate, dateString);
+		return this.findUptimeDateRangeChecks(options?.type ?? "http", monitorObjectId, start, end, dateString);
 	};
 
-	findSummaryByTeamId = async (teamId: string, dateRange: string) => {
+	findSummaryByTeamId = async (teamId: string, dateRange: DateRange) => {
 		const baseMatch = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
-			...(getDateForRange(dateRange) && {
-				createdAt: {
-					$gte: getDateForRange(dateRange),
-				},
-			}),
+			createdAt: { $gte: getDateForRange(dateRange) },
 		};
 
 		const [totalResult, downResult] = await Promise.all([

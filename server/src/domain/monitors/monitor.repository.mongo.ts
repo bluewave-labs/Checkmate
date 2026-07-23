@@ -91,27 +91,26 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		{ $project: { stats: 0 } },
 	];
 
-	findByTeamId = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null> => {
+	private pageOptions = (config: TeamQueryConfig) => {
 		const { page = 0, rowsPerPage = 0, field = "createdAt", order = "desc" } = config ?? {};
+		return { sort: { [field]: order === "asc" ? 1 : -1 } as const, skip: Math.max(page, 0) * rowsPerPage, limit: rowsPerPage };
+	};
+
+	findByTeamId = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null> => {
 		const query = this.queryBuilder(config, teamId);
-		const sort = { [field]: order === "asc" ? 1 : -1 } as const;
-		const skip = Math.max(page, 0) * rowsPerPage;
-		const documents = await MonitorModel.find(query).sort(sort).skip(skip).limit(rowsPerPage);
+		const { sort, skip, limit } = this.pageOptions(config);
+		const documents = await MonitorModel.find(query).sort(sort).skip(skip).limit(limit);
 		return this.mapDocuments(documents);
 	};
 
 	findByTeamIdWithStats = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null> => {
-		const { page = 0, rowsPerPage = 0, field = "createdAt", order = "desc" } = config ?? {};
-
+		const { sort, skip, limit } = this.pageOptions(config);
 		const query = this.queryBuilder(config, teamId);
-
-		const sort = { [field]: order === "asc" ? 1 : -1 } as const;
-		const skip = Math.max(page, 0) * rowsPerPage;
 
 		const pipeline: PipelineStage[] = [
 			{ $match: query },
 			{ $sort: sort },
-			...(rowsPerPage ? [{ $skip: skip }, { $limit: rowsPerPage }] : []),
+			...(limit ? [{ $skip: skip }, { $limit: limit }] : []),
 			...this.uptimeStatsLookupStages,
 		];
 

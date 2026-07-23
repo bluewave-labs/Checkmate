@@ -8,6 +8,7 @@ import type {
 } from "@/domain/checks/check.type.js";
 import type { MonitorType } from "@/domain/monitors/monitor.types.js";
 import type { LatestChecksMap } from "@/domain/checks/check.repository.mongo.js";
+import { DateRange } from "@/types/query.js";
 
 export interface IChecksRepository {
 	// create
@@ -19,7 +20,7 @@ export interface IChecksRepository {
 	findByMonitorId(
 		monitorId: string,
 		sortOrder: string,
-		dateRange: string,
+		dateRange: DateRange,
 		filter: string | undefined,
 		page: number,
 		rowsPerPage: number,
@@ -27,7 +28,7 @@ export interface IChecksRepository {
 	): Promise<ChecksQueryResult>;
 	findByTeamId(
 		sortOrder: string,
-		dateRange: string,
+		dateRange: DateRange,
 		filter: string | undefined,
 		page: number,
 		rowsPerPage: number,
@@ -36,12 +37,10 @@ export interface IChecksRepository {
 	findLatestByMonitorIds(monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap>;
 	findByDateRangeAndMonitorId(
 		monitorId: string,
-		startDate: Date,
-		endDate: Date,
-		dateString: string,
+		dateRange: DateRange,
 		options?: { type?: MonitorType }
 	): Promise<UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult>;
-	findSummaryByTeamId(teamId: string, dateRange: string): Promise<ChecksSummary>;
+	findSummaryByTeamId(teamId: string, dateRange: DateRange): Promise<ChecksSummary>;
 	findUnevaluatedByMonitorId(monitorId: string, since: number): Promise<Check[]>;
 	// update
 	//delete

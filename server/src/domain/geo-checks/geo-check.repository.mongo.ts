@@ -3,9 +3,10 @@ import type { GeoCheck, GeoCheckMetadata, GeoCheckResult, GroupedGeoCheck, GeoCo
 import type { FlatGeoChecksQueryResult } from "./geo-check.repository.interface.js";
 import { GeoCheckMetadataDocument, GeoCheckModel, type GeoCheckDocument } from "@/domain/geo-checks/geo-check.model.js";
 import mongoose, { PipelineStage } from "mongoose";
-import { getDateForRange } from "@/utils/dataUtils.js";
+import { getDateForRange, getDateFormat } from "@/utils/dataUtils.js";
 import { ILogger } from "@/utils/logger.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
+import { DateRange } from "@/types/query.js";
 
 const SERVICE_NAME = "GeoChecksRepository";
 
@@ -90,7 +91,7 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 	findByMonitorId = async (
 		monitorId: string,
 		sortOrder: string,
-		dateRange: string,
+		dateRange: DateRange,
 		page: number,
 		rowsPerPage: number,
 		continents?: GeoContinent[]
@@ -98,11 +99,7 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 		try {
 			const matchStage: Record<string, unknown> = {
 				"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
-				...(getDateForRange(dateRange) && {
-					createdAt: {
-						$gte: getDateForRange(dateRange),
-					},
-				}),
+				createdAt: { $gte: getDateForRange(dateRange) },
 			};
 
 			const convertedSortOrder = sortOrder === "asc" ? 1 : -1;
@@ -214,13 +211,11 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 		}
 	};
 
-	findGroupedByMonitorIdAndDateRange = async (
-		monitorId: string,
-		startDate: Date,
-		endDate: Date,
-		dateFormat: string,
-		continents?: GeoContinent[]
-	): Promise<GroupedGeoCheck[]> => {
+	findGroupedByMonitorIdAndDateRange = async (monitorId: string, dateRange: DateRange, continents?: GeoContinent[]): Promise<GroupedGeoCheck[]> => {
+		const start = getDateForRange(dateRange);
+		const dateString = getDateFormat(dateRange);
+
+		const end = new Date();
 		try {
 			const pipeline: PipelineStage[] = [
 				// Match geo checks for this monitor in date range
@@ -228,8 +223,8 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 					$match: {
 						"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 						createdAt: {
-							$gte: startDate,
-							$lte: endDate,
+							$gte: start,
+							$lte: end,
 						},
 					},
 				},
@@ -253,7 +248,7 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 						_id: {
 							bucketDate: {
 								$dateToString: {
-									format: dateFormat,
+									format: dateString,
 									date: "$createdAt",
 								},
 							},

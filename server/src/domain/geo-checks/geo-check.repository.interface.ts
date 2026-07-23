@@ -1,5 +1,6 @@
 import type { GeoCheck, GroupedGeoCheck } from "@/domain/geo-checks/geo-check.type.js";
 import type { GeoContinent, FlatGeoCheck } from "@/domain/geo-checks/geo-check.type.js";
+import { DateRange } from "@/types/query.js";
 
 export interface GeoChecksQueryResult {
 	geoChecksCount: number;
@@ -16,19 +17,13 @@ export interface IGeoChecksRepository {
 	findByMonitorId(
 		monitorId: string,
 		sortOrder: string,
-		dateRange: string,
+		dateRange: DateRange,
 		page: number,
 		rowsPerPage: number,
 		continents?: GeoContinent[]
 	): Promise<FlatGeoChecksQueryResult>;
 	findByMonitorIdAndDateRange(monitorId: string, startDate: Date, endDate: Date): Promise<GeoCheck[]>;
-	findGroupedByMonitorIdAndDateRange(
-		monitorId: string,
-		startDate: Date,
-		endDate: Date,
-		dateFormat: string,
-		continents?: GeoContinent[]
-	): Promise<GroupedGeoCheck[]>;
+	findGroupedByMonitorIdAndDateRange(monitorId: string, DateRange: DateRange, continents?: GeoContinent[]): Promise<GroupedGeoCheck[]>;
 	deleteByMonitorId(monitorId: string): Promise<number>;
 	deleteByTeamId(teamId: string): Promise<number>;
 	deleteByMonitorIdsNotIn(monitorIds: string[]): Promise<number>;
