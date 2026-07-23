@@ -321,7 +321,7 @@ describe("UserService", () => {
 			const hashed = bcrypt.hashSync("correct-password", 10);
 			(usersRepository.findByEmail as jest.Mock).mockResolvedValue(makeUser({ password: hashed }));
 
-			await expect(service.loginUser("test@example.com", "wrong-password")).rejects.toThrow("Incorrect password");
+			await expect(service.loginUser("test@example.com", "wrong-password")).rejects.toThrow("Incorrect email or password");
 		});
 	});
 

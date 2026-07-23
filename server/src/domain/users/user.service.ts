@@ -216,12 +216,17 @@ export class UserService implements IUserService {
 
 	loginUser = async (email: string, password: string) => {
 		// Check if user exists
-		const user = await this.usersRepository.findByEmail(email);
+		let user;
+		try {
+			user = await this.usersRepository.findByEmail(email);
+		} catch {
+			throw new AppError({ message: "Incorrect email or password", service: SERVICE_NAME, status: 401 });
+		}
 		// Compare password
 		const match = await bcrypt.compare(password, user.password);
 
 		if (match !== true) {
-			throw new AppError({ message: "Incorrect password", service: SERVICE_NAME, status: 401 });
+			throw new AppError({ message: "Incorrect email or password", service: SERVICE_NAME, status: 401 });
 		}
 
 		// Remove password from user object.  Should this be abstracted to DB layer?
