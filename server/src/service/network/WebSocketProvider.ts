@@ -2,7 +2,8 @@ import { IStatusProvider } from "@/service/network/IStatusProvider.js";
 import { WebSocketStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 import { Monitor, MonitorType } from "@/domain/monitors/monitor.types.js";
 import { AppError } from "@/utils/AppError.js";
-import { NETWORK_ERROR, timeRequest } from "@/service/network/utils.js";
+import { timeRequest } from "@/service/network/utils.js";
+import { NETWORK_ERROR } from "@/types/network.js";
 import type WebSocket from "ws";
 
 type WebSocketConstructor = typeof WebSocket;

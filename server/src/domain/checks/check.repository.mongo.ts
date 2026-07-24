@@ -20,8 +20,9 @@ import { ILogger } from "@/utils/logger.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
 import { getHardwareUpChecks, getHardwareStats, getHardwareTotalChecks } from "@/domain/checks/check.hardware.aggregations.js";
-import { DateRange } from "@/types/query.js";
+import { CheckFilter, DateRange } from "@/types/query.js";
 import { AppError } from "@/utils/AppError.js";
+import { NETWORK_ERROR } from "@/types/network.js";
 
 const SERVICE_NAME = "StatusService";
 
@@ -211,45 +212,40 @@ class MongoChecksRepository implements IChecksRepository {
 		return this.mapDocuments(inserted as unknown as CheckDocument[]);
 	};
 
+	private filterToMatch = (filter: CheckFilter | undefined): Record<string, unknown> => {
+		switch (filter) {
+			case "up":
+				return { status: true };
+			case "down":
+				return { status: false };
+			case "resolve":
+				return { status: false, statusCode: NETWORK_ERROR };
+			default:
+				this.logger.warn({
+					message: "invalid filter",
+					service: SERVICE_NAME,
+					method: "filterToMatch",
+				});
+				return {};
+		}
+	};
+
 	findByMonitorId = async (
 		monitorId: string,
 		sortOrder: string,
 		dateRange: DateRange,
-		filter: string | undefined,
 		page: number,
 		rowsPerPage: number,
-		status: boolean | undefined
+		status: boolean | undefined,
+		filter?: CheckFilter
 	) => {
 		// Match
 		const matchStage: Record<string, unknown> = {
 			"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 			...(typeof status !== "undefined" && { status }),
 			createdAt: { $gte: getDateForRange(dateRange) },
+			...this.filterToMatch(filter),
 		};
-
-		if (filter !== undefined) {
-			switch (filter) {
-				case "all":
-					break;
-				case "up":
-					matchStage.status = true;
-					break;
-				case "down":
-					matchStage.status = false;
-					break;
-				case "resolve":
-					matchStage.status = false;
-					matchStage.statusCode = 5000;
-					break;
-				default:
-					this.logger.warn({
-						message: "invalid filter",
-						service: SERVICE_NAME,
-						method: "getChecks",
-					});
-					break;
-			}
-		}
 
 		//Sort
 		const convertedSortOrder = sortOrder === "asc" ? 1 : -1;
@@ -268,35 +264,12 @@ class MongoChecksRepository implements IChecksRepository {
 		return { checksCount, checks: this.mapDocuments(checks) };
 	};
 
-	findByTeamId = async (sortOrder: string, dateRange: DateRange, filter: string, page: number, rowsPerPage: number, teamId: string) => {
+	findByTeamId = async (sortOrder: string, dateRange: DateRange, page: number, rowsPerPage: number, teamId: string, filter?: CheckFilter) => {
 		const matchStage: Record<string, unknown> = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
 			createdAt: { $gte: getDateForRange(dateRange) },
+			...this.filterToMatch(filter),
 		};
-		// Add filter to match stage
-		if (filter !== undefined) {
-			switch (filter) {
-				case "all":
-					break;
-				case "up":
-					matchStage.status = true;
-					break;
-				case "down":
-					matchStage.status = false;
-					break;
-				case "resolve":
-					matchStage.status = false;
-					matchStage.statusCode = 5000;
-					break;
-				default:
-					this.logger.warn({
-						message: "invalid filter",
-						service: SERVICE_NAME,
-						method: "getChecksByTeam",
-					});
-					break;
-			}
-		}
 
 		const parsedSortOrder = sortOrder === "asc" ? 1 : -1;
 

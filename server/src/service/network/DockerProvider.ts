@@ -4,8 +4,8 @@ import { Monitor, MonitorType } from "@/domain/monitors/monitor.types.js";
 import { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";
 import Dockerode from "dockerode";
-import { NETWORK_ERROR, timeRequest } from "@/service/network/utils.js";
-
+import { timeRequest } from "@/service/network/utils.js";
+import { NETWORK_ERROR } from "@/types/network.js";
 type DockerodeType = typeof Dockerode;
 
 const SERVICE_NAME = "DockerProvider";

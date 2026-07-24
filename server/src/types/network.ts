@@ -13,6 +13,8 @@ import type { DnsRecordType, Monitor, MonitorMatchMethod, MonitorStatus, Monitor
 
 import type { QueryResult } from "gamedig";
 
+export const NETWORK_ERROR = 5000;
+
 export interface MonitorStatusResponse<
 	T =
 		| HttpStatusPayload
