@@ -5,7 +5,7 @@ import type { IIncidentsRepository } from "../../../src/domain/incidents/inciden
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
 import type { IUsersRepository } from "../../../src/domain/users/user.repository.interface.ts";
 import type { INotificationMessageBuilder } from "../../../src/domain/notifications/notification.message-builder.ts";
-import type { Monitor } from "../../../src/domain/monitors/monitor.types.ts";
+import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { Incident } from "../../../src/domain/incidents/incident.type.ts";
 import type { MonitorActionDecision } from "../../../src/worker/worker.helper.ts";
 

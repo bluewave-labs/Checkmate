@@ -5,7 +5,7 @@ import type { IChecksRepository } from "../../../src/domain/checks/check.reposit
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
 import type { MonitorStatusResponse, HardwareStatusPayload, PageSpeedStatusPayload } from "../../../src/types/network.ts";
 import { NotificationMessageBuilder } from "../../../src/domain/notifications/notification.message-builder.ts";
-import type { Monitor } from "../../../src/domain/monitors/monitor.types.ts";
+import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

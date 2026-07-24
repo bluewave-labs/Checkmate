@@ -1,5 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
-import { timeRequest, NETWORK_ERROR, PING_ERROR, isStatusUp } from "../../../../src/service/network/utils.ts";
+import { timeRequest, isStatusUp } from "../../../../src/service/network/utils.ts";
+import { NETWORK_ERROR } from "../../../../src/types/network.ts";
 
 describe("network utils", () => {
 	describe("timeRequest", () => {
@@ -35,10 +36,6 @@ describe("network utils", () => {
 	describe("constants", () => {
 		it("NETWORK_ERROR is 5000", () => {
 			expect(NETWORK_ERROR).toBe(5000);
-		});
-
-		it("PING_ERROR is 5001", () => {
-			expect(PING_ERROR).toBe(5001);
 		});
 	});
 

@@ -4,7 +4,7 @@ import { testStatusProviderContract } from "../../../helpers/statusProviderContr
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
 import type { HttpProvider } from "../../../../src/service/network/HttpProvider.ts";
 import type { ISettingsService } from "../../../../src/domain/app-settings/app-settings.service.ts";
-import type { Monitor } from "../../../../src/domain/monitors/monitor.types.ts";
+import type { Monitor } from "../../../../src/domain/monitors/monitor.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
