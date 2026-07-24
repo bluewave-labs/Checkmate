@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { booleanCoercion } from "./shared.js";
 import { GeoContinents } from "@/domain/geo-checks/geo-check.type.js";
-import { MonitorTypes } from "@/domain/monitors/monitor.types.js";
+import { MonitorTypes } from "@/domain/monitors/monitor.type.js";
 import { CheckFilters, DateRanges, SortOrders } from "@/types/query.js";
 
 //****************************************

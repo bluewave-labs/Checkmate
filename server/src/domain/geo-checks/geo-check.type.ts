@@ -1,4 +1,4 @@
-import type { MonitorType } from "@/domain/monitors/monitor.types.js";
+import type { MonitorType } from "@/domain/monitors/monitor.type.js";
 
 export const GeoContinents = ["EU", "NA", "AS", "SA", "AF", "OC"] as const;
 export type GeoContinent = (typeof GeoContinents)[number];

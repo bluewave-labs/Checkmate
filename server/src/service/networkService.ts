@@ -1,4 +1,4 @@
-import type { Monitor, MonitorType } from "@/domain/monitors/monitor.types.js";
+import type { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import type { MonitorPayloadMap, MonitorStatusResponse } from "@/types/network.js";
 import type { AxiosStatic } from "axios";
 import { AppError } from "@/utils/AppError.js";

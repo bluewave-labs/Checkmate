@@ -10,7 +10,7 @@ import {
 	MonitorStatuses,
 	MonitorTypes,
 	PageSpeedStrategies,
-} from "@/domain/monitors/monitor.types.js";
+} from "@/domain/monitors/monitor.type.js";
 import { DateRanges, SortOrders } from "@/types/query.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });

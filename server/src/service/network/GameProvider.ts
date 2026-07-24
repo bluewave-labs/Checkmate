@@ -1,6 +1,6 @@
 import { IStatusProvider } from "@/service/network/IStatusProvider.js";
 import { GameStatusPayload, MonitorStatusResponse } from "@/types/network.js";
-import { Monitor, MonitorType } from "@/domain/monitors/monitor.types.js";
+import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { GameDig } from "gamedig";
 import { AppError } from "@/utils/AppError.js";
 import { NETWORK_ERROR } from "@/types/network.js";

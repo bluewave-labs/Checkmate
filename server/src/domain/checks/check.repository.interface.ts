@@ -6,7 +6,7 @@ import type {
 	PageSpeedChecksResult,
 	UptimeChecksResult,
 } from "@/domain/checks/check.type.js";
-import type { MonitorType } from "@/domain/monitors/monitor.types.js";
+import type { MonitorType } from "@/domain/monitors/monitor.type.js";
 import type { LatestChecksMap } from "@/domain/checks/check.repository.mongo.js";
 import { CheckFilter, DateRange } from "@/types/query.js";
 

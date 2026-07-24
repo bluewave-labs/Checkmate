@@ -3,6 +3,7 @@ export type { CheckSnapshot } from "@/domain/checks/check.type.js";
 import type { GeoContinent, GroupedGeoCheck } from "@/domain/geo-checks/geo-check.type.js";
 export type { GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
 import http from "node:http";
+import { HardwareStats } from "@/domain/checks/check.type.js";
 
 export const HttpStatusCodes = [
 	...Object.keys(http.STATUS_CODES).map(Number),
@@ -147,48 +148,6 @@ export interface UptimeDetailsResult {
 		groupedUptimePercentage: number;
 	};
 	monitorStats: import("../monitor-stats/monitor-stats.type.js").MonitorStats | null;
-}
-
-export interface HardwareDiskStats {
-	name: string;
-	readSpeed: number;
-	writeSpeed: number;
-	totalBytes: number;
-	freeBytes: number;
-	usagePercent: number;
-}
-
-export interface HardwareNetStats {
-	name: string;
-	bytesSentPerSecond: number;
-	deltaBytesRecv: number;
-	deltaPacketsSent: number;
-	deltaPacketsRecv: number;
-	deltaErrIn: number;
-	deltaErrOut: number;
-	deltaDropIn: number;
-	deltaDropOut: number;
-	deltaFifoIn: number;
-	deltaFifoOut: number;
-}
-
-export interface HardwareCheckStats {
-	bucketDate: string;
-	avgCpuUsage: number;
-	avgMemoryUsage: number;
-	avgTemperature: number[];
-	disks: HardwareDiskStats[];
-	net: HardwareNetStats[];
-}
-
-export interface HardwareStats {
-	aggregateData: {
-		totalChecks: number;
-	};
-	upChecks: {
-		totalChecks: number;
-	};
-	checks: HardwareCheckStats[];
 }
 
 export interface HardwareDetailsResult {

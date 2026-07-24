@@ -1,4 +1,4 @@
-import type { HttpStatusCode } from "@/domain/monitors/monitor.types.js";
+import type { HttpStatusCode } from "@/domain/monitors/monitor.type.js";
 
 export const timeRequest = async <T>(operation: () => Promise<T>): Promise<{ response: T | null; responseTime: number; error: unknown }> => {
 	const start = process.hrtime.bigint();

@@ -1,7 +1,7 @@
 import { IMonitorStatsRepository } from "@/domain/monitor-stats/monitor-stats.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import type { Check, CheckDiskInfo, CheckSnapshot } from "@/domain/checks/check.type.js";
-import type { Monitor, MonitorStatus } from "@/domain/monitors/monitor.types.js";
+import type { Monitor, MonitorStatus } from "@/domain/monitors/monitor.type.js";
 import type {
 	DockerStatusPayload,
 	GameStatusPayload,
@@ -17,7 +17,7 @@ import type {
 import { AppError } from "@/utils/AppError.js";
 import { ILogger } from "@/utils/logger.js";
 import type { HardwareStatusMetrics } from "@/types/network.js";
-import { MAX_RECENT_CHECKS } from "@/domain/monitors/monitor.types.js";
+import { MAX_RECENT_CHECKS } from "@/domain/monitors/monitor.type.js";
 
 const SERVICE_NAME = "StatusService";
 const HARDWARE_ALERT_COUNTER_START = 5;

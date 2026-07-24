@@ -1,6 +1,6 @@
 import { IStatusProvider } from "@/service/network/IStatusProvider.js";
 import { MonitorStatusResponse, PageSpeedStatusPayload } from "@/types/network.js";
-import { Monitor, MonitorType, DefaultPageSpeedStrategy } from "@/domain/monitors/monitor.types.js";
+import { Monitor, MonitorType, DefaultPageSpeedStrategy } from "@/domain/monitors/monitor.type.js";
 import { HttpProvider } from "@/service/network/HttpProvider.js";
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { ILogger } from "@/utils/logger.js";

@@ -1,7 +1,7 @@
 import { MonitorModel } from "@/domain/monitors/monitor.model.js";
 import type { MonitorDocument, CheckSnapshotDocument } from "@/domain/monitors/monitor.model.js";
 import type { CheckSnapshot } from "@/domain/checks/check.type.js";
-import type { Monitor, MonitorStatus, MonitorsSummary } from "@/domain/monitors/monitor.types.js";
+import type { Monitor, MonitorStatus, MonitorsSummary } from "@/domain/monitors/monitor.type.js";
 import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import { MongoBulkWriteError } from "mongodb";
 import { AppError } from "@/utils/AppError.js";
@@ -96,14 +96,14 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return { sort: { [field]: order === "asc" ? 1 : -1 } as const, skip: Math.max(page, 0) * rowsPerPage, limit: rowsPerPage };
 	};
 
-	findByTeamId = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null> => {
+	findByTeamId = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[]> => {
 		const query = this.queryBuilder(config, teamId);
 		const { sort, skip, limit } = this.pageOptions(config);
 		const documents = await MonitorModel.find(query).sort(sort).skip(skip).limit(limit);
 		return this.mapDocuments(documents);
 	};
 
-	findByTeamIdWithStats = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null> => {
+	findByTeamIdWithStats = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[]> => {
 		const { sort, skip, limit } = this.pageOptions(config);
 		const query = this.queryBuilder(config, teamId);
 

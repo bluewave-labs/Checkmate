@@ -1,6 +1,6 @@
 import { Schema, model, Types } from "mongoose";
-import type { Monitor, MonitorMatchMethod, CheckSnapshot } from "@/domain/monitors/monitor.types.js";
-import { DnsRecordTypes, MonitorTypes, MonitorStatuses, PageSpeedStrategies, HttpMethods } from "@/domain/monitors/monitor.types.js";
+import type { Monitor, MonitorMatchMethod, CheckSnapshot } from "@/domain/monitors/monitor.type.js";
+import { DnsRecordTypes, MonitorTypes, MonitorStatuses, PageSpeedStrategies, HttpMethods } from "@/domain/monitors/monitor.type.js";
 import type {
 	CheckAudits,
 	CheckCaptureInfo,

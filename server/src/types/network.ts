@@ -9,7 +9,7 @@ import type {
 	GotTimings,
 	ILighthouseAudit,
 } from "@/domain/checks/check.type.js";
-import type { DnsRecordType, Monitor, MonitorMatchMethod, MonitorStatus, MonitorType } from "@/domain/monitors/monitor.types.js";
+import type { DnsRecordType, Monitor, MonitorMatchMethod, MonitorStatus, MonitorType } from "@/domain/monitors/monitor.type.js";
 
 import type { QueryResult } from "gamedig";
 

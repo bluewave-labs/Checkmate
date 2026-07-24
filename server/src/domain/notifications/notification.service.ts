@@ -1,4 +1,4 @@
-import type { Monitor } from "@/domain/monitors/monitor.types.js";
+import type { Monitor } from "@/domain/monitors/monitor.type.js";
 import type { Notification } from "@/domain/notifications/notification.type.js";
 import type { MonitorStatusResponse } from "@/types/network.js";
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";

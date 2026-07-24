@@ -1,4 +1,4 @@
-import type { Monitor } from "@/domain/monitors/monitor.types.js";
+import type { Monitor } from "@/domain/monitors/monitor.type.js";
 import type { HardwareStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 import type { MonitorActionDecision } from "@/worker/worker.helper.js";
 import type {

@@ -1,8 +1,21 @@
 import { CheckModel } from "@/domain/checks/check.model.js";
 import mongoose from "mongoose";
+import type { HardwareDiskStats, HardwareNetStats } from "@/domain/checks/check.type.js";
 
 type DateRange = { start: Date; end: Date };
 type HardwareUpChecks = { totalChecks: number };
+
+// $avg yields null when no values are present, so metrics are nullable until the repository applies fallbacks
+type NullableValues<T> = { [K in keyof T]: T[K] | null };
+
+export type HardwareStatsBucket = {
+	_id: string;
+	avgCpuUsage: number | null;
+	avgMemoryUsage: number | null;
+	avgTemperature: number[];
+	disks: NullableValues<HardwareDiskStats>[];
+	net: NullableValues<HardwareNetStats>[];
+};
 
 const NET_RATE_FIELDS = [
 	["bytesSentPerSecond", "bytes_sent"],
@@ -70,13 +83,13 @@ export const getHardwareUpChecks = async (monitorId: string, dates: DateRange): 
 	return { totalChecks: count };
 };
 
-export const getHardwareStats = async (monitorId: string, dates: DateRange, dateString: string) => {
+export const getHardwareStats = async (monitorId: string, dates: DateRange, dateString: string): Promise<HardwareStatsBucket[]> => {
 	const netProjection = {
 		name: { $arrayElemAt: ["$sampleDoc.net.name", "$$nIdx"] },
 		...Object.fromEntries(NET_RATE_FIELDS.map(([outputKey, sourceField]) => [outputKey, netRatePerSecond(sourceField)])),
 	};
 
-	return await CheckModel.aggregate([
+	return await CheckModel.aggregate<HardwareStatsBucket>([
 		{
 			$match: {
 				"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),

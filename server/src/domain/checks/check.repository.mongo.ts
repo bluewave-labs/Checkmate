@@ -11,8 +11,9 @@ import type {
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
 	GotTimings,
+	HardwareCheckStats,
 } from "@/domain/checks/check.type.js";
-import type { MonitorType } from "@/domain/monitors/monitor.types.js";
+import type { MonitorType } from "@/domain/monitors/monitor.type.js";
 import { CheckModel, type CheckDocument } from "@/domain/checks/check.model.js";
 import mongoose from "mongoose";
 import { getDateFormat, getDateForRange } from "@/utils/dataUtils.js";
@@ -512,33 +513,35 @@ class MongoChecksRepository implements IChecksRepository {
 			totalChecks: upChecksDoc?.totalChecks ?? 0,
 		};
 
-		const checks = (hardwareMetrics ?? []).map((metric) => ({
-			bucketDate: metric._id,
-			avgCpuUsage: metric.avgCpuUsage ?? 0,
-			avgMemoryUsage: metric.avgMemoryUsage ?? 0,
-			avgTemperature: metric.avgTemperature ?? [],
-			disks: (metric.disks ?? []).map((disk: { [key: string]: number | string | undefined }) => ({
-				name: disk?.name ?? "",
-				readSpeed: disk?.readSpeed ?? 0,
-				writeSpeed: disk?.writeSpeed ?? 0,
-				totalBytes: disk?.totalBytes ?? 0,
-				freeBytes: disk?.freeBytes ?? 0,
-				usagePercent: disk?.usagePercent ?? 0,
-			})),
-			net: (metric.net ?? []).map((iface: { [key: string]: number | string | undefined }) => ({
-				name: iface?.name ?? "",
-				bytesSentPerSecond: iface?.bytesSentPerSecond ?? 0,
-				deltaBytesRecv: iface?.deltaBytesRecv ?? 0,
-				deltaPacketsSent: iface?.deltaPacketsSent ?? 0,
-				deltaPacketsRecv: iface?.deltaPacketsRecv ?? 0,
-				deltaErrIn: iface?.deltaErrIn ?? 0,
-				deltaErrOut: iface?.deltaErrOut ?? 0,
-				deltaDropIn: iface?.deltaDropIn ?? 0,
-				deltaDropOut: iface?.deltaDropOut ?? 0,
-				deltaFifoIn: iface?.deltaFifoIn ?? 0,
-				deltaFifoOut: iface?.deltaFifoOut ?? 0,
-			})),
-		}));
+		const checks = (hardwareMetrics ?? []).map(
+			(metric): HardwareCheckStats => ({
+				bucketDate: metric._id,
+				avgCpuUsage: metric.avgCpuUsage ?? 0,
+				avgMemoryUsage: metric.avgMemoryUsage ?? 0,
+				avgTemperature: metric.avgTemperature ?? [],
+				disks: (metric.disks ?? []).map((disk) => ({
+					name: disk?.name ?? "",
+					readSpeed: disk?.readSpeed ?? 0,
+					writeSpeed: disk?.writeSpeed ?? 0,
+					totalBytes: disk?.totalBytes ?? 0,
+					freeBytes: disk?.freeBytes ?? 0,
+					usagePercent: disk?.usagePercent ?? 0,
+				})),
+				net: (metric.net ?? []).map((iface) => ({
+					name: iface?.name ?? "",
+					bytesSentPerSecond: iface?.bytesSentPerSecond ?? 0,
+					deltaBytesRecv: iface?.deltaBytesRecv ?? 0,
+					deltaPacketsSent: iface?.deltaPacketsSent ?? 0,
+					deltaPacketsRecv: iface?.deltaPacketsRecv ?? 0,
+					deltaErrIn: iface?.deltaErrIn ?? 0,
+					deltaErrOut: iface?.deltaErrOut ?? 0,
+					deltaDropIn: iface?.deltaDropIn ?? 0,
+					deltaDropOut: iface?.deltaDropOut ?? 0,
+					deltaFifoIn: iface?.deltaFifoIn ?? 0,
+					deltaFifoOut: iface?.deltaFifoOut ?? 0,
+				})),
+			})
+		);
 
 		return {
 			monitorType: "hardware" as const,

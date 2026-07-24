@@ -1,5 +1,5 @@
 const SERVICE_NAME = "incidentService";
-import type { Monitor } from "@/domain/monitors/monitor.types.js";
+import type { Monitor } from "@/domain/monitors/monitor.type.js";
 import type { MonitorStatusResponse } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import { getDateForRange } from "@/utils/dataUtils.js";

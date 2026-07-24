@@ -1,6 +1,6 @@
 import { IStatusProvider } from "@/service/network/IStatusProvider.js";
 import { WebSocketStatusPayload, MonitorStatusResponse } from "@/types/network.js";
-import { Monitor, MonitorType } from "@/domain/monitors/monitor.types.js";
+import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { AppError } from "@/utils/AppError.js";
 import { timeRequest } from "@/service/network/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
