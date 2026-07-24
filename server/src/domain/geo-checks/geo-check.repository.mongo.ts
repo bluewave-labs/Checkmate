@@ -4,7 +4,6 @@ import type { FlatGeoChecksQueryResult } from "./geo-check.repository.interface.
 import { GeoCheckMetadataDocument, GeoCheckModel, type GeoCheckDocument } from "@/domain/geo-checks/geo-check.model.js";
 import mongoose, { PipelineStage } from "mongoose";
 import { getDateForRange, getDateFormat } from "@/utils/dataUtils.js";
-import { ILogger } from "@/utils/logger.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 import { DateRange } from "@/types/query.js";
 
@@ -12,11 +11,6 @@ const SERVICE_NAME = "GeoChecksRepository";
 
 class MongoGeoChecksRepository implements IGeoChecksRepository {
 	static SERVICE_NAME = SERVICE_NAME;
-
-	private logger: ILogger;
-	constructor(logger: ILogger) {
-		this.logger = logger;
-	}
 
 	private toEntity = (doc: GeoCheckDocument): GeoCheck => {
 		const mapMetadata = (metadata: GeoCheckMetadataDocument): GeoCheckMetadata => ({
