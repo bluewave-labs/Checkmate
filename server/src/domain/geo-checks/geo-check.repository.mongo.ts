@@ -187,30 +187,6 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 		}
 	};
 
-	findByMonitorIdAndDateRange = async (monitorId: string, startDate: Date, endDate: Date): Promise<GeoCheck[]> => {
-		try {
-			const docs = await GeoCheckModel.find({
-				"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
-				createdAt: {
-					$gte: startDate,
-					$lte: endDate,
-				},
-			}).sort({ createdAt: -1 });
-			return docs.map(this.toEntity);
-		} catch (error: unknown) {
-			this.logger.error({
-				message:
-					error instanceof Error
-						? `Error finding geo checks by monitor ID and date range: ${error.message}`
-						: "Error finding geo checks by monitor ID and date range",
-				service: SERVICE_NAME,
-				method: "findByMonitorIdAndDateRange",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-			throw error;
-		}
-	};
-
 	findGroupedByMonitorIdAndDateRange = async (monitorId: string, dateRange: DateRange, continents?: GeoContinent[]): Promise<GroupedGeoCheck[]> => {
 		const start = getDateForRange(dateRange);
 		const dateString = getDateFormat(dateRange);
