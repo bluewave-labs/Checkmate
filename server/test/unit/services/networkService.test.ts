@@ -1,9 +1,9 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { NetworkService } from "../../../src/service/networkService.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import { NETWORK_ERROR } from "../../../src/service/network/utils.ts";
+import { NETWORK_ERROR } from "../../../src/types/network.ts";
 import type { IStatusProvider } from "../../../src/service/network/IStatusProvider.ts";
-import type { Monitor, MonitorType } from "../../../src/domain/monitors/monitor.types.ts";
+import type { Monitor, MonitorType } from "../../../src/domain/monitors/monitor.type.ts";
 import type { AxiosStatic } from "axios";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────

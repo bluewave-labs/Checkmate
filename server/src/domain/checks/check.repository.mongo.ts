@@ -11,8 +11,9 @@ import type {
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
 	GotTimings,
+	HardwareCheckStats,
 } from "@/domain/checks/check.type.js";
-import type { MonitorType } from "@/domain/monitors/monitor.types.js";
+import type { MonitorType } from "@/domain/monitors/monitor.type.js";
 import { CheckModel, type CheckDocument } from "@/domain/checks/check.model.js";
 import mongoose from "mongoose";
 import { getDateFormat, getDateForRange } from "@/utils/dataUtils.js";
@@ -20,7 +21,9 @@ import { ILogger } from "@/utils/logger.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
 import { getHardwareUpChecks, getHardwareStats, getHardwareTotalChecks } from "@/domain/checks/check.hardware.aggregations.js";
-import { DateRange } from "@/types/query.js";
+import { CheckFilter, DateRange } from "@/types/query.js";
+import { AppError } from "@/utils/AppError.js";
+import { NETWORK_ERROR } from "@/types/network.js";
 
 const SERVICE_NAME = "StatusService";
 
@@ -181,7 +184,12 @@ class MongoChecksRepository implements IChecksRepository {
 		// Map id to _id for MongoDB storage
 		const { id, metadata, ...rest } = check;
 		if (!metadata || !metadata.monitorId || !metadata.teamId) {
-			throw new Error(`Check must have valid metadata with monitorId and teamId. Got: ${JSON.stringify({ id, metadata })}`);
+			throw new AppError({
+				message: `Check must have valid metadata with monitorId and teamId. Got: ${JSON.stringify({ id, metadata })}`,
+				status: 500,
+				service: SERVICE_NAME,
+				method: "toDocument",
+			});
 		}
 		return {
 			_id: id ? new mongoose.Types.ObjectId(id) : new mongoose.Types.ObjectId(),
@@ -205,45 +213,40 @@ class MongoChecksRepository implements IChecksRepository {
 		return this.mapDocuments(inserted as unknown as CheckDocument[]);
 	};
 
+	private filterToMatch = (filter: CheckFilter | undefined): Record<string, unknown> => {
+		switch (filter) {
+			case "up":
+				return { status: true };
+			case "down":
+				return { status: false };
+			case "resolve":
+				return { status: false, statusCode: NETWORK_ERROR };
+			default:
+				this.logger.warn({
+					message: "invalid filter",
+					service: SERVICE_NAME,
+					method: "filterToMatch",
+				});
+				return {};
+		}
+	};
+
 	findByMonitorId = async (
 		monitorId: string,
 		sortOrder: string,
 		dateRange: DateRange,
-		filter: string | undefined,
 		page: number,
 		rowsPerPage: number,
-		status: boolean | undefined
+		status: boolean | undefined,
+		filter?: CheckFilter
 	) => {
 		// Match
 		const matchStage: Record<string, unknown> = {
 			"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 			...(typeof status !== "undefined" && { status }),
 			createdAt: { $gte: getDateForRange(dateRange) },
+			...this.filterToMatch(filter),
 		};
-
-		if (filter !== undefined) {
-			switch (filter) {
-				case "all":
-					break;
-				case "up":
-					matchStage.status = true;
-					break;
-				case "down":
-					matchStage.status = false;
-					break;
-				case "resolve":
-					matchStage.status = false;
-					matchStage.statusCode = 5000;
-					break;
-				default:
-					this.logger.warn({
-						message: "invalid filter",
-						service: SERVICE_NAME,
-						method: "getChecks",
-					});
-					break;
-			}
-		}
 
 		//Sort
 		const convertedSortOrder = sortOrder === "asc" ? 1 : -1;
@@ -262,35 +265,12 @@ class MongoChecksRepository implements IChecksRepository {
 		return { checksCount, checks: this.mapDocuments(checks) };
 	};
 
-	findByTeamId = async (sortOrder: string, dateRange: DateRange, filter: string, page: number, rowsPerPage: number, teamId: string) => {
+	findByTeamId = async (sortOrder: string, dateRange: DateRange, page: number, rowsPerPage: number, teamId: string, filter?: CheckFilter) => {
 		const matchStage: Record<string, unknown> = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
 			createdAt: { $gte: getDateForRange(dateRange) },
+			...this.filterToMatch(filter),
 		};
-		// Add filter to match stage
-		if (filter !== undefined) {
-			switch (filter) {
-				case "all":
-					break;
-				case "up":
-					matchStage.status = true;
-					break;
-				case "down":
-					matchStage.status = false;
-					break;
-				case "resolve":
-					matchStage.status = false;
-					matchStage.statusCode = 5000;
-					break;
-				default:
-					this.logger.warn({
-						message: "invalid filter",
-						service: SERVICE_NAME,
-						method: "getChecksByTeam",
-					});
-					break;
-			}
-		}
 
 		const parsedSortOrder = sortOrder === "asc" ? 1 : -1;
 
@@ -533,33 +513,35 @@ class MongoChecksRepository implements IChecksRepository {
 			totalChecks: upChecksDoc?.totalChecks ?? 0,
 		};
 
-		const checks = (hardwareMetrics ?? []).map((metric) => ({
-			bucketDate: metric._id,
-			avgCpuUsage: metric.avgCpuUsage ?? 0,
-			avgMemoryUsage: metric.avgMemoryUsage ?? 0,
-			avgTemperature: metric.avgTemperature ?? [],
-			disks: (metric.disks ?? []).map((disk: { [key: string]: number | string | undefined }) => ({
-				name: disk?.name ?? "",
-				readSpeed: disk?.readSpeed ?? 0,
-				writeSpeed: disk?.writeSpeed ?? 0,
-				totalBytes: disk?.totalBytes ?? 0,
-				freeBytes: disk?.freeBytes ?? 0,
-				usagePercent: disk?.usagePercent ?? 0,
-			})),
-			net: (metric.net ?? []).map((iface: { [key: string]: number | string | undefined }) => ({
-				name: iface?.name ?? "",
-				bytesSentPerSecond: iface?.bytesSentPerSecond ?? 0,
-				deltaBytesRecv: iface?.deltaBytesRecv ?? 0,
-				deltaPacketsSent: iface?.deltaPacketsSent ?? 0,
-				deltaPacketsRecv: iface?.deltaPacketsRecv ?? 0,
-				deltaErrIn: iface?.deltaErrIn ?? 0,
-				deltaErrOut: iface?.deltaErrOut ?? 0,
-				deltaDropIn: iface?.deltaDropIn ?? 0,
-				deltaDropOut: iface?.deltaDropOut ?? 0,
-				deltaFifoIn: iface?.deltaFifoIn ?? 0,
-				deltaFifoOut: iface?.deltaFifoOut ?? 0,
-			})),
-		}));
+		const checks = (hardwareMetrics ?? []).map(
+			(metric): HardwareCheckStats => ({
+				bucketDate: metric._id,
+				avgCpuUsage: metric.avgCpuUsage ?? 0,
+				avgMemoryUsage: metric.avgMemoryUsage ?? 0,
+				avgTemperature: metric.avgTemperature ?? [],
+				disks: (metric.disks ?? []).map((disk) => ({
+					name: disk?.name ?? "",
+					readSpeed: disk?.readSpeed ?? 0,
+					writeSpeed: disk?.writeSpeed ?? 0,
+					totalBytes: disk?.totalBytes ?? 0,
+					freeBytes: disk?.freeBytes ?? 0,
+					usagePercent: disk?.usagePercent ?? 0,
+				})),
+				net: (metric.net ?? []).map((iface) => ({
+					name: iface?.name ?? "",
+					bytesSentPerSecond: iface?.bytesSentPerSecond ?? 0,
+					deltaBytesRecv: iface?.deltaBytesRecv ?? 0,
+					deltaPacketsSent: iface?.deltaPacketsSent ?? 0,
+					deltaPacketsRecv: iface?.deltaPacketsRecv ?? 0,
+					deltaErrIn: iface?.deltaErrIn ?? 0,
+					deltaErrOut: iface?.deltaErrOut ?? 0,
+					deltaDropIn: iface?.deltaDropIn ?? 0,
+					deltaDropOut: iface?.deltaDropOut ?? 0,
+					deltaFifoIn: iface?.deltaFifoIn ?? 0,
+					deltaFifoOut: iface?.deltaFifoOut ?? 0,
+				})),
+			})
+		);
 
 		return {
 			monitorType: "hardware" as const,

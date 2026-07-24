@@ -4,7 +4,6 @@ import type { FlatGeoChecksQueryResult } from "./geo-check.repository.interface.
 import { GeoCheckMetadataDocument, GeoCheckModel, type GeoCheckDocument } from "@/domain/geo-checks/geo-check.model.js";
 import mongoose, { PipelineStage } from "mongoose";
 import { getDateForRange, getDateFormat } from "@/utils/dataUtils.js";
-import { ILogger } from "@/utils/logger.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 import { DateRange } from "@/types/query.js";
 
@@ -12,11 +11,6 @@ const SERVICE_NAME = "GeoChecksRepository";
 
 class MongoGeoChecksRepository implements IGeoChecksRepository {
 	static SERVICE_NAME = SERVICE_NAME;
-
-	private logger: ILogger;
-	constructor(logger: ILogger) {
-		this.logger = logger;
-	}
 
 	private toEntity = (doc: GeoCheckDocument): GeoCheck => {
 		const mapMetadata = (metadata: GeoCheckMetadataDocument): GeoCheckMetadata => ({
@@ -64,28 +58,18 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 	};
 
 	createGeoChecks = async (geoChecks: Omit<GeoCheck, "id" | "__v" | "createdAt" | "updatedAt">[]): Promise<GeoCheck[]> => {
-		try {
-			const docs = await GeoCheckModel.insertMany(
-				geoChecks.map((geoCheck) => ({
-					metadata: {
-						monitorId: new mongoose.Types.ObjectId(geoCheck.metadata.monitorId),
-						teamId: new mongoose.Types.ObjectId(geoCheck.metadata.teamId),
-						type: geoCheck.metadata.type,
-					},
-					results: geoCheck.results,
-					expiry: new Date(geoCheck.expiry),
-				}))
-			);
-			return docs.map((doc) => this.toEntity(doc));
-		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? `Failed to createGeoChecks: ${error.message}` : "Failed to createGeoChecks",
-				service: SERVICE_NAME,
-				method: "createGeoChecks",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-			throw error;
-		}
+		const docs = await GeoCheckModel.insertMany(
+			geoChecks.map((geoCheck) => ({
+				metadata: {
+					monitorId: new mongoose.Types.ObjectId(geoCheck.metadata.monitorId),
+					teamId: new mongoose.Types.ObjectId(geoCheck.metadata.teamId),
+					type: geoCheck.metadata.type,
+				},
+				results: geoCheck.results,
+				expiry: new Date(geoCheck.expiry),
+			}))
+		);
+		return docs.map((doc) => this.toEntity(doc));
 	};
 
 	findByMonitorId = async (
@@ -96,119 +80,85 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 		rowsPerPage: number,
 		continents?: GeoContinent[]
 	): Promise<FlatGeoChecksQueryResult> => {
-		try {
-			const matchStage: Record<string, unknown> = {
-				"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
-				createdAt: { $gte: getDateForRange(dateRange) },
-			};
+		const matchStage: Record<string, unknown> = {
+			"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+			createdAt: { $gte: getDateForRange(dateRange) },
+		};
 
-			const convertedSortOrder = sortOrder === "asc" ? 1 : -1;
+		const convertedSortOrder = sortOrder === "asc" ? 1 : -1;
 
-			let skip = 0;
-			if (page && rowsPerPage) {
-				skip = page * rowsPerPage;
-			}
-
-			// Common pipeline stages for both paths
-			const pipeline: PipelineStage[] = [
-				{ $match: matchStage },
-				{ $unwind: "$results" },
-				// Filter by continent if specified
-				...(continents && continents.length > 0
-					? [
-							{
-								$match: {
-									"results.location.continent": { $in: continents },
-								},
-							},
-						]
-					: []),
-				// Project to flat structure
-				{
-					$project: {
-						_id: 0,
-						monitorId: "$metadata.monitorId",
-						teamId: "$metadata.teamId",
-						type: "$metadata.type",
-						location: "$results.location",
-						status: "$results.status",
-						statusCode: "$results.statusCode",
-						timings: "$results.timings",
-						createdAt: 1,
-						updatedAt: 1,
-					},
-				},
-				{ $sort: { createdAt: convertedSortOrder } },
-				{ $skip: skip },
-				{ $limit: rowsPerPage },
-			];
-
-			// Count pipeline
-			const countPipeline: PipelineStage[] = [
-				{ $match: matchStage },
-				{ $unwind: "$results" },
-				...(continents && continents.length > 0
-					? [
-							{
-								$match: {
-									"results.location.continent": { $in: continents },
-								},
-							},
-						]
-					: []),
-				{ $count: "count" },
-			];
-
-			const [countResult, dataResults] = await Promise.all([GeoCheckModel.aggregate(countPipeline), GeoCheckModel.aggregate(pipeline)]);
-
-			const geoChecksCount = countResult[0]?.count || 0;
-			const geoChecks: FlatGeoCheck[] = dataResults.map((doc) => ({
-				id: `${doc.monitorId.toString()}-${new Date(doc.createdAt).getTime()}-${doc.location.continent}-${doc.location.city}-${Math.random().toString(36).substring(2, 15)}`,
-				monitorId: doc.monitorId.toString(),
-				teamId: doc.teamId.toString(),
-				type: doc.type,
-				location: doc.location,
-				status: doc.status,
-				statusCode: doc.statusCode,
-				timings: doc.timings,
-				createdAt: new Date(doc.createdAt).toISOString(),
-				updatedAt: new Date(doc.updatedAt).toISOString(),
-			}));
-
-			return { geoChecksCount, geoChecks };
-		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? `Error finding geo checks by monitor ID: ${error.message}` : "Error finding geo checks by monitor ID",
-				service: SERVICE_NAME,
-				method: "findByMonitorId",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-			throw error;
+		let skip = 0;
+		if (page && rowsPerPage) {
+			skip = page * rowsPerPage;
 		}
-	};
 
-	findByMonitorIdAndDateRange = async (monitorId: string, startDate: Date, endDate: Date): Promise<GeoCheck[]> => {
-		try {
-			const docs = await GeoCheckModel.find({
-				"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
-				createdAt: {
-					$gte: startDate,
-					$lte: endDate,
+		// Common pipeline stages for both paths
+		const pipeline: PipelineStage[] = [
+			{ $match: matchStage },
+			{ $unwind: "$results" },
+			// Filter by continent if specified
+			...(continents && continents.length > 0
+				? [
+						{
+							$match: {
+								"results.location.continent": { $in: continents },
+							},
+						},
+					]
+				: []),
+			// Project to flat structure
+			{
+				$project: {
+					_id: 0,
+					monitorId: "$metadata.monitorId",
+					teamId: "$metadata.teamId",
+					type: "$metadata.type",
+					location: "$results.location",
+					status: "$results.status",
+					statusCode: "$results.statusCode",
+					timings: "$results.timings",
+					createdAt: 1,
+					updatedAt: 1,
 				},
-			}).sort({ createdAt: -1 });
-			return docs.map(this.toEntity);
-		} catch (error: unknown) {
-			this.logger.error({
-				message:
-					error instanceof Error
-						? `Error finding geo checks by monitor ID and date range: ${error.message}`
-						: "Error finding geo checks by monitor ID and date range",
-				service: SERVICE_NAME,
-				method: "findByMonitorIdAndDateRange",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-			throw error;
-		}
+			},
+			{ $sort: { createdAt: convertedSortOrder } },
+			{ $skip: skip },
+			{ $limit: rowsPerPage },
+		];
+
+		// Count pipeline
+		const countPipeline: PipelineStage[] = [
+			{ $match: matchStage },
+			{ $unwind: "$results" },
+			...(continents && continents.length > 0
+				? [
+						{
+							$match: {
+								"results.location.continent": { $in: continents },
+							},
+						},
+					]
+				: []),
+			{ $count: "count" },
+		];
+
+		const [countResult, dataResults] = await Promise.all([GeoCheckModel.aggregate(countPipeline), GeoCheckModel.aggregate(pipeline)]);
+
+		const geoChecksCount = countResult[0]?.count || 0;
+		const geoChecks: FlatGeoCheck[] = dataResults.map((doc) => ({
+			id: `${doc.monitorId.toString()}-${new Date(doc.createdAt).getTime()}-${doc.location.continent}-${doc.location.city}-${Math.random().toString(36).substring(2, 15)}`,
+			monitorId: doc.monitorId.toString(),
+			teamId: doc.teamId.toString(),
+			type: doc.type,
+			location: doc.location,
+			status: doc.status,
+			statusCode: doc.statusCode,
+			timings: doc.timings,
+			createdAt: new Date(doc.createdAt).toISOString(),
+			updatedAt: new Date(doc.updatedAt).toISOString(),
+		}));
+
+		return { geoChecksCount, geoChecks };
 	};
 
 	findGroupedByMonitorIdAndDateRange = async (monitorId: string, dateRange: DateRange, continents?: GeoContinent[]): Promise<GroupedGeoCheck[]> => {
@@ -216,146 +166,106 @@ class MongoGeoChecksRepository implements IGeoChecksRepository {
 		const dateString = getDateFormat(dateRange);
 
 		const end = new Date();
-		try {
-			const pipeline: PipelineStage[] = [
-				// Match geo checks for this monitor in date range
-				{
-					$match: {
-						"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
-						createdAt: {
-							$gte: start,
-							$lte: end,
+		const pipeline: PipelineStage[] = [
+			// Match geo checks for this monitor in date range
+			{
+				$match: {
+					"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+					createdAt: {
+						$gte: start,
+						$lte: end,
+					},
+				},
+			},
+			// Unwind the results array to process each location separately
+			{
+				$unwind: "$results",
+			},
+			// Filter by continent if specified
+			...(continents && continents.length > 0
+				? [
+						{
+							$match: {
+								"results.location.continent": { $in: continents },
+							},
+						},
+					]
+				: []),
+			// Group by date bucket and continent
+			{
+				$group: {
+					_id: {
+						bucketDate: {
+							$dateToString: {
+								format: dateString,
+								date: "$createdAt",
+							},
+						},
+						continent: "$results.location.continent",
+					},
+					avgResponseTime: { $avg: "$results.timings.total" },
+					totalChecks: { $sum: 1 },
+					upChecks: {
+						$sum: {
+							$cond: ["$results.status", 1, 0],
 						},
 					},
 				},
-				// Unwind the results array to process each location separately
-				{
-					$unwind: "$results",
-				},
-				// Filter by continent if specified
-				...(continents && continents.length > 0
-					? [
+			},
+			// Calculate uptime percentage
+			{
+				$project: {
+					_id: 0,
+					bucketDate: "$_id.bucketDate",
+					continent: "$_id.continent",
+					avgResponseTime: { $round: ["$avgResponseTime", 2] },
+					totalChecks: 1,
+					uptimePercentage: {
+						$round: [
 							{
-								$match: {
-									"results.location.continent": { $in: continents },
-								},
+								$multiply: [
+									{
+										$divide: ["$upChecks", "$totalChecks"],
+									},
+									100,
+								],
 							},
-						]
-					: []),
-				// Group by date bucket and continent
-				{
-					$group: {
-						_id: {
-							bucketDate: {
-								$dateToString: {
-									format: dateString,
-									date: "$createdAt",
-								},
-							},
-							continent: "$results.location.continent",
-						},
-						avgResponseTime: { $avg: "$results.timings.total" },
-						totalChecks: { $sum: 1 },
-						upChecks: {
-							$sum: {
-								$cond: ["$results.status", 1, 0],
-							},
-						},
+							2,
+						],
 					},
 				},
-				// Calculate uptime percentage
-				{
-					$project: {
-						_id: 0,
-						bucketDate: "$_id.bucketDate",
-						continent: "$_id.continent",
-						avgResponseTime: { $round: ["$avgResponseTime", 2] },
-						totalChecks: 1,
-						uptimePercentage: {
-							$round: [
-								{
-									$multiply: [
-										{
-											$divide: ["$upChecks", "$totalChecks"],
-										},
-										100,
-									],
-								},
-								2,
-							],
-						},
-					},
+			},
+			// Sort by date and continent
+			{
+				$sort: {
+					bucketDate: 1,
+					continent: 1,
 				},
-				// Sort by date and continent
-				{
-					$sort: {
-						bucketDate: 1,
-						continent: 1,
-					},
-				},
-			];
+			},
+		];
 
-			const results = await GeoCheckModel.aggregate(pipeline);
-			return results as GroupedGeoCheck[];
-		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? `Error finding grouped geo checks: ${error.message}` : "Error finding grouped geo checks",
-				service: SERVICE_NAME,
-				method: "findGroupedByMonitorIdAndDateRange",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-			throw error;
-		}
+		const results = await GeoCheckModel.aggregate(pipeline);
+		return results as GroupedGeoCheck[];
 	};
 
 	deleteByMonitorId = async (monitorId: string): Promise<number> => {
-		try {
-			const result = await GeoCheckModel.deleteMany({
-				"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
-			});
-			return result.deletedCount || 0;
-		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? `Error deleting geo checks by monitor ID: ${error.message}` : "Error deleting geo checks by monitor ID",
-				service: SERVICE_NAME,
-				method: "deleteByMonitorId",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-			throw error;
-		}
+		const result = await GeoCheckModel.deleteMany({
+			"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+		});
+		return result.deletedCount || 0;
 	};
 
 	deleteByTeamId = async (teamId: string): Promise<number> => {
-		try {
-			const result = await GeoCheckModel.deleteMany({
-				"metadata.teamId": new mongoose.Types.ObjectId(teamId),
-			});
-			return result.deletedCount || 0;
-		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? `Error deleting geo checks by team ID: ${error.message}` : "Error deleting geo checks by team ID",
-				service: SERVICE_NAME,
-				method: "deleteByTeamId",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-			throw error;
-		}
+		const result = await GeoCheckModel.deleteMany({
+			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
+		});
+		return result.deletedCount || 0;
 	};
 
 	deleteByMonitorIdsNotIn = async (monitorIds: string[]): Promise<number> => {
-		try {
-			const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
-			const result = await GeoCheckModel.deleteMany({ "metadata.monitorId": { $nin: objectIds } });
-			return result.deletedCount || 0;
-		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? `Error deleting orphaned geo checks: ${error.message}` : "Error deleting orphaned geo checks",
-				service: SERVICE_NAME,
-				method: "deleteByMonitorIdsNotIn",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-			throw error;
-		}
+		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		const result = await GeoCheckModel.deleteMany({ "metadata.monitorId": { $nin: objectIds } });
+		return result.deletedCount || 0;
 	};
 }
 

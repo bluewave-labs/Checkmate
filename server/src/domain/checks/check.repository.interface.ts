@@ -6,9 +6,9 @@ import type {
 	PageSpeedChecksResult,
 	UptimeChecksResult,
 } from "@/domain/checks/check.type.js";
-import type { MonitorType } from "@/domain/monitors/monitor.types.js";
+import type { MonitorType } from "@/domain/monitors/monitor.type.js";
 import type { LatestChecksMap } from "@/domain/checks/check.repository.mongo.js";
-import { DateRange } from "@/types/query.js";
+import { CheckFilter, DateRange } from "@/types/query.js";
 
 export interface IChecksRepository {
 	// create
@@ -21,18 +21,18 @@ export interface IChecksRepository {
 		monitorId: string,
 		sortOrder: string,
 		dateRange: DateRange,
-		filter: string | undefined,
 		page: number,
 		rowsPerPage: number,
-		status: boolean | undefined
+		status: boolean | undefined,
+		filter?: CheckFilter
 	): Promise<ChecksQueryResult>;
 	findByTeamId(
 		sortOrder: string,
 		dateRange: DateRange,
-		filter: string | undefined,
 		page: number,
 		rowsPerPage: number,
-		teamId: string
+		teamId: string,
+		filter?: CheckFilter
 	): Promise<ChecksQueryResult>;
 	findLatestByMonitorIds(monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap>;
 	findByDateRangeAndMonitorId(

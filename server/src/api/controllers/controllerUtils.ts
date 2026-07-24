@@ -1,5 +1,5 @@
 import { AppError } from "@/utils/AppError.js";
-import { Monitor, MonitorTypes, type MonitorType } from "@/domain/monitors/monitor.types.js";
+import { Monitor, MonitorTypes, type MonitorType } from "@/domain/monitors/monitor.type.js";
 import { UserRole } from "@/domain/users/user.type.js";
 import sslChecker, { SSLDetails } from "ssl-checker";
 type SSLCheckerType = typeof sslChecker;

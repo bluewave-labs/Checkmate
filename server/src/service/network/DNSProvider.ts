@@ -1,9 +1,10 @@
 import { DNSStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 import { IStatusProvider } from "@/service/network/IStatusProvider.js";
 import type { Resolver } from "dns/promises";
-import { Monitor, MonitorType } from "@/domain/monitors/monitor.types.js";
+import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { AppError } from "@/utils/AppError.js";
-import { NETWORK_ERROR, timeRequest } from "@/service/network/utils.js";
+import { timeRequest } from "@/service/network/utils.js";
+import { NETWORK_ERROR } from "@/types/network.js";
 
 const SERVICE_NAME = "DNSProvider";
 

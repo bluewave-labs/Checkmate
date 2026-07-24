@@ -1,6 +1,6 @@
 import { describe, expect, it, beforeEach } from "@jest/globals";
 import { NotificationMessageBuilder } from "../../../src/domain/notifications/notification.message-builder.ts";
-import type { Monitor } from "../../../src/domain/monitors/monitor.types.ts";
+import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { MonitorStatusResponse, HardwareStatusPayload } from "../../../src/types/network.ts";
 import type { MonitorActionDecision } from "../../../src/worker/worker.helper.ts";
 

@@ -1,4 +1,4 @@
-import { Monitor } from "@/domain/monitors/monitor.types.js";
+import { Monitor } from "@/domain/monitors/monitor.type.js";
 import { Check } from "@/domain/checks/check.type.js";
 import { JobType } from "@/domain/jobs/job.type.js";
 import { MonitorPayloadMap, MonitorStatusResponse, StatusChangeResult } from "@/types/network.js";

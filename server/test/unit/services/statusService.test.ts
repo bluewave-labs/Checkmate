@@ -1,8 +1,8 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import { StatusService } from "../../../src/service/statusService.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import { MAX_RECENT_CHECKS } from "../../../src/domain/monitors/monitor.types.ts";
-import type { Monitor, MonitorStatus } from "../../../src/domain/monitors/monitor.types.ts";
+import { MAX_RECENT_CHECKS } from "../../../src/domain/monitors/monitor.type.ts";
+import type { Monitor, MonitorStatus } from "../../../src/domain/monitors/monitor.type.ts";
 import type { Check } from "../../../src/domain/checks/check.type.ts";
 import type { MonitorStatusResponse, HardwareStatusPayload } from "../../../src/types/network.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";

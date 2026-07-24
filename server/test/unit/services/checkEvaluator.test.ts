@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { CheckEvaluator } from "../../../src/worker/worker.check-evaluator.ts";
 import { MonitorStatusPolicy } from "../../../src/worker/worker.monitor-status-policy.ts";
-import type { Monitor } from "../../../src/domain/monitors/monitor.types.ts";
+import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 
 const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
 	({

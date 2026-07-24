@@ -9,7 +9,7 @@ import {
 } from "@/domain/status-pages/status-page.type.js";
 import { AppError } from "@/utils/AppError.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
-import { Monitor } from "@/domain/monitors/monitor.types.js";
+import { Monitor } from "@/domain/monitors/monitor.type.js";
 import { NormalizeData } from "@/utils/dataUtils.js";
 
 export interface IStatusPageService {

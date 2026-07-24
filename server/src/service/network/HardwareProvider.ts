@@ -1,6 +1,6 @@
 import { IStatusProvider } from "@/service/network/IStatusProvider.js";
 import { HardwareStatusPayload, MonitorStatusResponse } from "@/types/network.js";
-import { Monitor, MonitorType } from "@/domain/monitors/monitor.types.js";
+import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { HttpProvider } from "@/service/network/HttpProvider.js";
 import { AppError } from "@/utils/AppError.js";
 

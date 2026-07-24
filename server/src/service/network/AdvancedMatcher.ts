@@ -1,4 +1,4 @@
-import { Monitor } from "@/domain/monitors/monitor.types.js";
+import { Monitor } from "@/domain/monitors/monitor.type.js";
 import jmespath from "jmespath";
 import RE2 from "re2";
 type JmesPath = typeof jmespath;

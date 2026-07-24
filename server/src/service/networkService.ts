@@ -1,8 +1,8 @@
-import type { Monitor, MonitorType } from "@/domain/monitors/monitor.types.js";
+import type { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import type { MonitorPayloadMap, MonitorStatusResponse } from "@/types/network.js";
 import type { AxiosStatic } from "axios";
 import { AppError } from "@/utils/AppError.js";
-import { NETWORK_ERROR } from "@/service/network/utils.js";
+import { NETWORK_ERROR } from "@/types/network.js";
 import { ILogger } from "@/utils/logger.js";
 import { IStatusProvider } from "./network/IStatusProvider.js";
 const SERVICE_NAME = "NetworkService";

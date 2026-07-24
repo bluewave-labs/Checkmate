@@ -71,7 +71,7 @@ class MongoUsersRepository implements IUsersRepository {
 	findById = async (id: string) => {
 		const user = await UserModel.findById(id).select("-password").select("-profileImage");
 		if (!user) {
-			throw new Error("User not found");
+			throw new AppError({ message: "User not found", service: SERVICE_NAME, status: 404 });
 		}
 
 		return this.toEntity(user);

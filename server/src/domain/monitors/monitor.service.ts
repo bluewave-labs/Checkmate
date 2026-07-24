@@ -1,5 +1,5 @@
 import { NormalizeData, NormalizeDataUptimeDetails } from "@/utils/dataUtils.js";
-import { type Monitor } from "@/domain/monitors/monitor.types.js";
+import { type Monitor } from "@/domain/monitors/monitor.type.js";
 import type {
 	MonitorType,
 	MonitorsWithChecksByTeamIdResult,
@@ -8,8 +8,8 @@ import type {
 	PageSpeedDetailsResult,
 	GamesMap,
 	GroupedGeoCheckResult,
-} from "@/domain/monitors/monitor.types.js";
-import { supportsGeoCheck, supportsUptimeDetails } from "@/domain/monitors/monitor.types.js";
+} from "@/domain/monitors/monitor.type.js";
+import { supportsGeoCheck, supportsUptimeDetails } from "@/domain/monitors/monitor.type.js";
 import type { UptimeChecksResult, HardwareChecksResult, PageSpeedChecksResult } from "@/domain/checks/check.type.js";
 import type { GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
 import type { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
@@ -318,7 +318,7 @@ export class MonitorService implements IMonitorService {
 		type?: MonitorType | MonitorType[];
 		tags?: string | string[];
 		filter?: string;
-	}): Promise<Monitor[] | null> => {
+	}): Promise<Monitor[]> => {
 		return await this.monitorsRepository.findByTeamId(teamId, { type, tags, filter });
 	};
 
@@ -356,13 +356,12 @@ export class MonitorService implements IMonitorService {
 			order,
 		});
 
-		const monitorsList = (monitors ?? []) as Monitor[];
 		const snapshotTypes: MonitorType[] = ["hardware"];
 		const requestedTypes = Array.isArray(type) ? type : type ? [type] : [];
 		const snapshotOnlyRequest =
 			requestedTypes.length > 0 && requestedTypes.every((requestedType) => snapshotTypes.includes(requestedType as MonitorType));
 
-		const monitorsWithChecks = monitorsList.map((monitor: Monitor) => {
+		const monitorsWithChecks = monitors.map((monitor: Monitor) => {
 			const rawChecks = monitor.recentChecks ?? [];
 			const isSnapshotType = snapshotOnlyRequest || snapshotTypes.includes(monitor.type);
 			const checks = isSnapshotType ? rawChecks.slice(0, 1) : NormalizeData(rawChecks, 10, 100);
@@ -523,7 +522,7 @@ export class MonitorService implements IMonitorService {
 	exportMonitorsToJSON = async ({ teamId }: { teamId: string }): Promise<Monitor[]> => {
 		const monitors = await this.monitorsRepository.findByTeamId(teamId, {});
 
-		if (!monitors || monitors.length === 0) {
+		if (monitors.length === 0) {
 			throw new AppError({ message: "No monitors found to export.", service: SERVICE_NAME, method: "exportMonitorsToJSON", status: 400 });
 		}
 

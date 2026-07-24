@@ -1,4 +1,4 @@
-import { Monitor, MonitorType } from "@/domain/monitors/monitor.types.js";
+import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { MonitorStatusResponse } from "@/types/network.js";
 
 export interface IStatusProvider<T> {

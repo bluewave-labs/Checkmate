@@ -574,7 +574,7 @@ describe("MonitorService", () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			(monitorsRepository.findMonitorsSummaryByTeamId as jest.Mock).mockResolvedValue(null);
 			(monitorsRepository.findMonitorCountByTeamIdAndType as jest.Mock).mockResolvedValue(0);
-			(monitorsRepository.findByTeamIdWithStats as jest.Mock).mockResolvedValue(null);
+			(monitorsRepository.findByTeamIdWithStats as jest.Mock).mockResolvedValue([]);
 
 			const { service } = createService({ monitorsRepository });
 			const result = await service.getMonitorsWithChecksByTeamId({ teamId: TEAM_ID });
@@ -1574,14 +1574,6 @@ describe("MonitorService", () => {
 
 			const result = await service.exportMonitorsToJSON({ teamId: TEAM_ID });
 			expect(result).toEqual(monitors);
-		});
-
-		it("throws when no monitors found (null)", async () => {
-			const monitorsRepository = createMonitorsRepositoryMock();
-			(monitorsRepository.findByTeamId as jest.Mock).mockResolvedValue(null);
-			const { service } = createService({ monitorsRepository });
-
-			await expect(service.exportMonitorsToJSON({ teamId: TEAM_ID })).rejects.toThrow("No monitors found to export.");
 		});
 
 		it("throws when monitors array is empty", async () => {

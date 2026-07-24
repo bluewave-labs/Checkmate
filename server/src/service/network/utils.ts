@@ -1,4 +1,4 @@
-import type { HttpStatusCode } from "@/domain/monitors/monitor.types.js";
+import type { HttpStatusCode } from "@/domain/monitors/monitor.type.js";
 
 export const timeRequest = async <T>(operation: () => Promise<T>): Promise<{ response: T | null; responseTime: number; error: unknown }> => {
 	const start = process.hrtime.bigint();
@@ -11,9 +11,6 @@ export const timeRequest = async <T>(operation: () => Promise<T>): Promise<{ res
 		return { response: null, responseTime: elapsedMs, error };
 	}
 };
-
-export const NETWORK_ERROR = 5000;
-export const PING_ERROR = 5001;
 
 export const isStatusUp = (statusCode: number | undefined, customUpCodes: HttpStatusCode[] = []): boolean => {
 	if (statusCode === undefined) return false;

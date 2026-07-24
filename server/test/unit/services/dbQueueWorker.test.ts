@@ -2,7 +2,7 @@ import { describe, expect, it, jest, beforeEach, afterEach } from "@jest/globals
 import { DBQueueWorker } from "../../../src/worker/worker.db-queue.ts";
 import { LOCK_MS } from "../../../src/domain/jobs/job.type.ts";
 import type { Job } from "../../../src/domain/jobs/job.type.ts";
-import type { Monitor } from "../../../src/domain/monitors/monitor.types.ts";
+import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { QueueMode } from "../../../src/domain/app-settings/app-settings.type.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 

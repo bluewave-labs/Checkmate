@@ -1,4 +1,4 @@
-import type { MonitorType, Monitor, MonitorStatus, MonitorsSummary, CheckSnapshot } from "@/domain/monitors/monitor.types.js";
+import type { MonitorType, Monitor, MonitorStatus, MonitorsSummary, CheckSnapshot } from "@/domain/monitors/monitor.type.js";
 
 export interface TeamQueryConfig {
 	limit?: number;
@@ -26,9 +26,9 @@ export interface IMonitorsRepository {
 	findByIdLean(monitorId: string): Promise<Monitor | null>;
 
 	// collection fetch
-	findAll(): Promise<Monitor[] | null>;
-	findByTeamId(teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null>;
-	findByTeamIdWithStats(teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null>;
+	findAll(): Promise<Monitor[]>;
+	findByTeamId(teamId: string, config: TeamQueryConfig): Promise<Monitor[]>;
+	findByTeamIdWithStats(teamId: string, config: TeamQueryConfig): Promise<Monitor[]>;
 	findByIds(monitorIds: string[]): Promise<Monitor[]>;
 	findByIdsWithChecks(monitorIds: string[], checksCount?: number): Promise<Monitor[]>;
 

@@ -1,7 +1,7 @@
 import { MonitorStatusResponse } from "@/types/network.js";
 import { MonitorEvaluation } from "@/worker/worker.interface.js";
 import { Check } from "@/domain/checks/check.type.js";
-import { Monitor } from "@/domain/monitors/monitor.types.js";
+import { Monitor } from "@/domain/monitors/monitor.type.js";
 import { IMonitorStatusPolicy } from "@/worker/worker.monitor-status-policy.js";
 import { IStatusService } from "@/service/statusService.js";
 

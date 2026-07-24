@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
-import { NETWORK_ERROR } from "../../../../src/service/network/utils.ts";
-import type { Monitor } from "../../../../src/domain/monitors/monitor.types.ts";
+import { NETWORK_ERROR } from "../../../../src/types/network.ts";
+import type { Monitor } from "../../../../src/domain/monitors/monitor.type.ts";
 
 // ── Mocks ────────────────────────────────────────────────────────────────────
 
