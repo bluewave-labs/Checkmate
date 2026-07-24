@@ -22,7 +22,6 @@ export interface IGeoChecksRepository {
 		rowsPerPage: number,
 		continents?: GeoContinent[]
 	): Promise<FlatGeoChecksQueryResult>;
-	findByMonitorIdAndDateRange(monitorId: string, startDate: Date, endDate: Date): Promise<GeoCheck[]>;
 	findGroupedByMonitorIdAndDateRange(monitorId: string, DateRange: DateRange, continents?: GeoContinent[]): Promise<GroupedGeoCheck[]>;
 	deleteByMonitorId(monitorId: string): Promise<number>;
 	deleteByTeamId(teamId: string): Promise<number>;

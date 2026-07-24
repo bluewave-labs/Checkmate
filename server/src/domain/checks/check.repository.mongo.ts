@@ -21,6 +21,7 @@ import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
 import { getHardwareUpChecks, getHardwareStats, getHardwareTotalChecks } from "@/domain/checks/check.hardware.aggregations.js";
 import { DateRange } from "@/types/query.js";
+import { AppError } from "@/utils/AppError.js";
 
 const SERVICE_NAME = "StatusService";
 
@@ -181,7 +182,12 @@ class MongoChecksRepository implements IChecksRepository {
 		// Map id to _id for MongoDB storage
 		const { id, metadata, ...rest } = check;
 		if (!metadata || !metadata.monitorId || !metadata.teamId) {
-			throw new Error(`Check must have valid metadata with monitorId and teamId. Got: ${JSON.stringify({ id, metadata })}`);
+			throw new AppError({
+				message: `Check must have valid metadata with monitorId and teamId. Got: ${JSON.stringify({ id, metadata })}`,
+				status: 500,
+				service: SERVICE_NAME,
+				method: "toDocument",
+			});
 		}
 		return {
 			_id: id ? new mongoose.Types.ObjectId(id) : new mongoose.Types.ObjectId(),
