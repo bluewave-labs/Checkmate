@@ -360,6 +360,147 @@ describe("NotificationsService", () => {
 		});
 	});
 
+	// ── credentials on the send path ──────────────────────────────────────────
+
+	describe("credentials reaching the providers", () => {
+		it("still hands the provider the stored credential when an alert fires", async () => {
+			const { service, notificationsRepository, telegramProvider } = createService();
+			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([
+				makeNotification({ type: "telegram", accessToken: "stored-token" }),
+			]);
+
+			await service.handleNotifications(makeMonitor(), makeStatusResponse(), makeDecision());
+
+			expect(telegramProvider.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ accessToken: "stored-token" }), expect.anything());
+		});
+
+		it("still hands the provider the stored credential when testing every channel of a monitor", async () => {
+			const { service, notificationsRepository, telegramProvider } = createService();
+			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([
+				makeNotification({ type: "telegram", accessToken: "stored-token" }),
+			]);
+
+			await service.testAllNotifications(["notif-1"]);
+
+			expect(telegramProvider.sendTestAlert).toHaveBeenCalledWith(expect.objectContaining({ accessToken: "stored-token" }));
+		});
+	});
+
+	// ── sendTestNotificationById ──────────────────────────────────────────────
+
+	describe("sendTestNotificationById", () => {
+		const storedMatrix = makeNotification({
+			type: "matrix",
+			homeserverUrl: "https://matrix.example.com",
+			roomId: "!room:example.com",
+			accessToken: "stored-token",
+		});
+
+		it("fills in a credential the caller left out from the stored notification", async () => {
+			const { service, notificationsRepository, matrixProvider } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(storedMatrix);
+
+			const result = await service.sendTestNotificationById("notif-1", "team-1", {
+				type: "matrix",
+				homeserverUrl: "https://matrix.example.com",
+				roomId: "!other:example.com",
+			});
+
+			expect(result).toBe(true);
+			expect(matrixProvider.sendTestAlert).toHaveBeenCalledWith(
+				expect.objectContaining({ accessToken: "stored-token", roomId: "!other:example.com" })
+			);
+		});
+
+		it("uses the credential the caller supplied instead of the stored one", async () => {
+			const { service, notificationsRepository, matrixProvider } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(storedMatrix);
+
+			await service.sendTestNotificationById("notif-1", "team-1", {
+				type: "matrix",
+				homeserverUrl: "https://evil.example.com",
+				roomId: "!room:example.com",
+				accessToken: "typed-token",
+			});
+
+			expect(matrixProvider.sendTestAlert).toHaveBeenCalledWith(expect.objectContaining({ accessToken: "typed-token" }));
+		});
+
+		it("refuses to send a stored credential to a destination the caller changed", async () => {
+			const { service, notificationsRepository, matrixProvider } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(storedMatrix);
+
+			await expect(
+				service.sendTestNotificationById("notif-1", "team-1", {
+					type: "matrix",
+					homeserverUrl: "https://evil.example.com",
+					roomId: "!room:example.com",
+				})
+			).rejects.toMatchObject({ status: 400 });
+
+			expect(matrixProvider.sendTestAlert).not.toHaveBeenCalled();
+		});
+
+		it("allows any change for a channel whose provider posts to a fixed host", async () => {
+			const { service, notificationsRepository, telegramProvider } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(
+				makeNotification({ type: "telegram", address: "-100111", accessToken: "stored-token" })
+			);
+
+			await service.sendTestNotificationById("notif-1", "team-1", { type: "telegram", address: "-100999" });
+
+			expect(telegramProvider.sendTestAlert).toHaveBeenCalledWith(expect.objectContaining({ address: "-100999", accessToken: "stored-token" }));
+		});
+
+		it("refuses to test a saved channel as a different type", async () => {
+			const { service, notificationsRepository, telegramProvider } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(storedMatrix);
+
+			await expect(service.sendTestNotificationById("notif-1", "team-1", { type: "telegram", address: "-100999" })).rejects.toMatchObject({
+				status: 400,
+			});
+
+			expect(telegramProvider.sendTestAlert).not.toHaveBeenCalled();
+		});
+
+		it("does not apply the destination check when there is no stored credential to fill in", async () => {
+			const { service, notificationsRepository, webhookProvider } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(
+				makeNotification({ type: "webhook", address: "https://example.com/hook", accessToken: undefined })
+			);
+
+			await service.sendTestNotificationById("notif-1", "team-1", { type: "webhook", address: "https://elsewhere.example.com/hook" });
+
+			expect(webhookProvider.sendTestAlert).toHaveBeenCalledWith(expect.objectContaining({ address: "https://elsewhere.example.com/hook" }));
+		});
+
+		it("treats a stored empty credential as no credential to fill in", async () => {
+			const { service, notificationsRepository, matrixProvider } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(makeNotification({ ...storedMatrix, accessToken: "" }));
+
+			await service.sendTestNotificationById("notif-1", "team-1", {
+				type: "matrix",
+				homeserverUrl: "https://elsewhere.example.com",
+				roomId: "!room:example.com",
+			});
+
+			expect(matrixProvider.sendTestAlert).toHaveBeenCalledWith(expect.not.objectContaining({ accessToken: expect.anything() }));
+		});
+
+		it("looks the notification up scoped to the caller's team", async () => {
+			const { service, notificationsRepository } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(storedMatrix);
+
+			await service.sendTestNotificationById("notif-1", "team-1", {
+				type: "matrix",
+				homeserverUrl: "https://matrix.example.com",
+				roomId: "!room:example.com",
+			});
+
+			expect(notificationsRepository.findById).toHaveBeenCalledWith("notif-1", "team-1");
+		});
+	});
+
 	describe("deleteById", () => {
 		it("deletes notification and removes from monitors", async () => {
 			const deleted = makeNotification();
