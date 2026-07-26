@@ -1,5 +1,7 @@
 import type { Monitor } from "@/domain/monitors/monitor.type.js";
 import type { Notification } from "@/domain/notifications/notification.type.js";
+import { NotificationDestinationFields, NotificationSecretFields } from "@/domain/notifications/notification.type.js";
+import { AppError } from "@/utils/AppError.js";
 import type { MonitorStatusResponse } from "@/types/network.js";
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
@@ -22,6 +24,7 @@ export interface INotificationsService {
 	handleNotifications: (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => Promise<boolean>;
 
 	sendTestNotification: (notification: Partial<Notification>) => Promise<boolean>;
+	sendTestNotificationById: (id: string, teamId: string, notification: Partial<Notification>) => Promise<boolean>;
 	testAllNotifications: (notificationIds: string[]) => Promise<boolean>;
 }
 
@@ -144,6 +147,47 @@ export class NotificationsService implements INotificationsService {
 			return false;
 		}
 		return await provider.sendTestAlert(notification);
+	};
+
+	// Tests a saved channel. Credentials the client left out are filled in from the stored record so
+	// that a channel can be tested without the client ever holding its secret. A backfilled secret is
+	// only ever allowed to travel to the destination it is already stored against: if the caller
+	// changed where the notification is delivered, the credential has to be supplied explicitly.
+	sendTestNotificationById = async (id: string, teamId: string, notification: Partial<Notification>): Promise<boolean> => {
+		const storedNotification = await this.notificationsRepository.findById(id, teamId);
+
+		if (notification.type !== storedNotification.type) {
+			throw new AppError({
+				message: "Notification type does not match the saved channel",
+				status: 400,
+				service: SERVICE_NAME,
+				method: "sendTestNotificationById",
+			});
+		}
+
+		// A stored empty credential counts as no credential, the same way the API reports it.
+		const backfilledFields = NotificationSecretFields.filter((field) => notification[field] === undefined && Boolean(storedNotification[field]));
+
+		if (backfilledFields.length > 0) {
+			const destinationFields: readonly (keyof Notification)[] = NotificationDestinationFields[storedNotification.type];
+			const destinationChanged = destinationFields.some((field) => notification[field] !== storedNotification[field]);
+
+			if (destinationChanged) {
+				throw new AppError({
+					message: "Enter the credentials again to test this channel with a different destination",
+					status: 400,
+					service: SERVICE_NAME,
+					method: "sendTestNotificationById",
+				});
+			}
+		}
+
+		const testNotification: Partial<Notification> = { ...notification };
+		for (const field of backfilledFields) {
+			testNotification[field] = storedNotification[field];
+		}
+
+		return await this.sendTestNotification(testNotification);
 	};
 
 	testAllNotifications = async (notificationIds: string[]) => {

@@ -4,13 +4,17 @@ import { catchAsync } from "@/utils/catchAsync.js";
 import {
 	createNotificationBodyValidation,
 	deleteNotificationParamValidation,
+	editNotificationBodyValidation,
 	getNotificationByIdParamValidation,
 	testNotificationBodyValidation,
 	editNotificationParamValidation,
 	testAllNotificationsBodyValidation,
+	testSavedNotificationBodyValidation,
+	testSavedNotificationParamValidation,
 } from "@/api/validation/notificationValidation.js";
 import { AppError } from "@/utils/AppError.js";
 import { INotificationsService } from "@/domain/notifications/notification.service.js";
+import type { Notification, PublicNotification } from "@/domain/notifications/notification.type.js";
 import { requireTeamId, requireUserId } from "./controllerUtils.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 
@@ -18,6 +22,7 @@ const SERVICE_NAME = "NotificationController";
 
 export interface INotificationController {
 	testNotification: RequestHandler;
+	testSavedNotification: RequestHandler;
 	createNotification: RequestHandler;
 	getNotificationsByTeamId: RequestHandler;
 	deleteNotification: RequestHandler;
@@ -33,9 +38,44 @@ class NotificationController implements INotificationController {
 		this.monitorsRepository = monitorsRepository;
 	}
 
+	// Builds the client-facing shape of a notification. Credentials are never part of it: each one
+	// is reported as a boolean saying whether a value is stored, the same way settingsController
+	// reports pagespeedKeySet and emailPasswordSet.
+	toPublicNotification = (notification: Notification): PublicNotification => ({
+		id: notification.id,
+		userId: notification.userId,
+		teamId: notification.teamId,
+		type: notification.type,
+		notificationName: notification.notificationName,
+		address: notification.address,
+		phone: notification.phone,
+		homeserverUrl: notification.homeserverUrl,
+		roomId: notification.roomId,
+		accountSid: notification.accountSid,
+		twilioPhoneNumber: notification.twilioPhoneNumber,
+		topic: notification.topic,
+		createdAt: notification.createdAt,
+		updatedAt: notification.updatedAt,
+		accessTokenSet: Boolean(notification.accessToken),
+	});
+
 	testNotification = catchAsync(async (req: Request, res: Response) => {
 		const notification = testNotificationBodyValidation.parse(req.body);
 		const success = await this.notificationsService.sendTestNotification(notification);
+
+		return res.status(200).json({
+			success,
+			msg: success ? "Notification sent successfully" : "Notification could not be sent — check the destination details.",
+			details: { service: SERVICE_NAME },
+		});
+	});
+
+	testSavedNotification = catchAsync(async (req: Request, res: Response) => {
+		const teamId = requireTeamId(req.user?.teamId);
+		const validatedParams = testSavedNotificationParamValidation.parse(req.params);
+		const validatedBody = testSavedNotificationBodyValidation.parse(req.body);
+
+		const success = await this.notificationsService.sendTestNotificationById(validatedParams.id, teamId, validatedBody);
 
 		return res.status(200).json({
 			success,
@@ -54,7 +94,7 @@ class NotificationController implements INotificationController {
 		return res.status(200).json({
 			success: true,
 			msg: "Notification created successfully",
-			data: notification,
+			data: this.toPublicNotification(notification),
 		});
 	});
 
@@ -65,7 +105,7 @@ class NotificationController implements INotificationController {
 		return res.status(200).json({
 			success: true,
 			msg: "Notifications fetched successfully",
-			data: notifications,
+			data: notifications.map(this.toPublicNotification),
 		});
 	});
 
@@ -89,12 +129,14 @@ class NotificationController implements INotificationController {
 		return res.status(200).json({
 			success: true,
 			msg: "Notification fetched successfully",
-			data: notification,
+			data: this.toPublicNotification(notification),
 		});
 	});
 
 	editNotification = catchAsync(async (req: Request, res: Response) => {
-		const validatedBody = createNotificationBodyValidation.parse(req.body);
+		// Credentials are not returned, so the client cannot send back the ones it never received.
+		// The edit schema lets them be omitted, which leaves the stored value untouched.
+		const validatedBody = editNotificationBodyValidation.parse(req.body);
 		const validatedParams = editNotificationParamValidation.parse(req.params);
 
 		const teamId = requireTeamId(req.user?.teamId);
@@ -104,7 +146,7 @@ class NotificationController implements INotificationController {
 		return res.status(200).json({
 			success: true,
 			msg: "Notification updated successfully",
-			data: editedNotification,
+			data: this.toPublicNotification(editedNotification),
 		});
 	});
 

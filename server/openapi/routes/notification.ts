@@ -4,9 +4,12 @@ import { bearer, json, okJson, okJsonNoData, okUnknown, standardErrors } from ".
 import {
 	createNotificationBodyValidation,
 	deleteNotificationParamValidation,
+	editNotificationBodyValidation,
 	getNotificationByIdParamValidation,
 	editNotificationParamValidation,
+	notificationResponseSchema,
 	testAllNotificationsBodyValidation,
+	testSavedNotificationParamValidation,
 } from "@/api/validation/notificationValidation.js";
 
 const tags = ["notifications"];
@@ -96,15 +99,21 @@ const notificationBody = z
 	.discriminatedUnion("type", decoratedVariants as typeof createNotificationBodyValidation.options)
 	.openapi("NotificationChannelBody");
 
+// Same channels, but every credential may be omitted to keep the stored value.
+const notificationEditBody = editNotificationBodyValidation.openapi("NotificationChannelEditBody");
+
+const notificationObject = notificationResponseSchema.openapi("Notification");
+
 registry.registerPath({
 	method: "post",
 	path: "/notifications",
 	tags,
 	summary: "Create a notification channel",
-	description: "Create a notification channel of any supported type. The `type` field discriminates the body shape.",
+	description:
+		"Create a notification channel of any supported type. The `type` field discriminates the body shape. Credentials are stored but never returned; the response reports `accessTokenSet` instead.",
 	security: bearer,
 	request: { body: { content: json(notificationBody) } },
-	responses: { "200": okUnknown, ...standardErrors },
+	responses: { "200": okJson(notificationObject), ...standardErrors },
 });
 
 registry.registerPath({
@@ -128,12 +137,24 @@ registry.registerPath({
 });
 
 registry.registerPath({
+	method: "post",
+	path: "/notifications/{id}/test",
+	tags,
+	summary: "Send a test alert through a saved notification channel",
+	description:
+		"Credentials omitted from the body are taken from the saved channel, so a channel can be tested without the client holding its secret. Omitting a credential while changing where the notification is delivered is rejected.",
+	security: bearer,
+	request: { params: testSavedNotificationParamValidation, body: { content: json(notificationEditBody) } },
+	responses: { "200": okJson(z.object({ success: z.boolean() }).passthrough()), ...standardErrors },
+});
+
+registry.registerPath({
 	method: "get",
 	path: "/notifications/team",
 	tags,
 	summary: "List notification channels for the caller's team",
 	security: bearer,
-	responses: { "200": okUnknown, ...standardErrors },
+	responses: { "200": okJson(z.array(notificationObject)), ...standardErrors },
 });
 
 registry.registerPath({
@@ -143,7 +164,7 @@ registry.registerPath({
 	summary: "Get a notification channel by id",
 	security: bearer,
 	request: { params: getNotificationByIdParamValidation },
-	responses: { "200": okUnknown, ...standardErrors },
+	responses: { "200": okJson(notificationObject), ...standardErrors },
 });
 
 registry.registerPath({
@@ -161,7 +182,8 @@ registry.registerPath({
 	path: "/notifications/{id}",
 	tags,
 	summary: "Edit a notification channel",
+	description: "Credentials may be omitted, which leaves the stored value unchanged. Sending an empty credential is rejected.",
 	security: bearer,
-	request: { params: editNotificationParamValidation, body: { content: json(notificationBody) } },
-	responses: { "200": okUnknown, ...standardErrors },
+	request: { params: editNotificationParamValidation, body: { content: json(notificationEditBody) } },
+	responses: { "200": okJson(notificationObject), ...standardErrors },
 });
