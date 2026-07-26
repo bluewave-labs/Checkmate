@@ -1122,6 +1122,9 @@
 					"optionAccessToken": "Access token",
 					"placeholder": "syt_YWxleF9ob2xsaWRheQ_VmtScmV0U2VjcmV0S2V5_abc123"
 				},
+				"credential": {
+					"labelSet": "Credential is set. Click Reset to change it."
+				},
 				"address": {
 					"description": "The address where notifications will be sent.",
 					"optionAddress": "Address",

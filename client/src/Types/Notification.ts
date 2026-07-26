@@ -24,10 +24,11 @@ export interface Notification {
 	phone?: string;
 	homeserverUrl?: string;
 	roomId?: string;
-	accessToken?: string;
 	accountSid?: string;
 	twilioPhoneNumber?: string;
 	topic?: string;
 	createdAt: string;
 	updatedAt: string;
+	/** The API never returns the stored access token, only whether one is stored. */
+	accessTokenSet: boolean;
 }

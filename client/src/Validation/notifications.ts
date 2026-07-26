@@ -99,4 +99,39 @@ export const notificationSchema = z.discriminatedUnion("type", [
 	ntfySchema,
 ]);
 
+// Used while an existing credential is being kept. Its field is hidden, so it holds an empty string
+// that has to pass validation; the empty value is then stripped from the payload and the server
+// keeps the stored credential. Once the user asks to replace a credential the field is shown again
+// and notificationSchema applies, so an empty value is reported inline as usual.
+const keptCredential = z.string();
+
+export const notificationEditSchema = z.discriminatedUnion("type", [
+	emailSchema,
+	slackSchema,
+	discordSchema,
+	webhookSchema,
+	rocketChatSchema,
+	pagerDutySchema,
+	matrixSchema.extend({ accessToken: keptCredential }),
+	teamsSchema,
+	telegramSchema.extend({ accessToken: keptCredential }),
+	pushoverSchema.extend({ accessToken: keptCredential }),
+	twilioSchema.extend({ accessToken: keptCredential }),
+	ntfySchema,
+]);
+
+// Build-time drift detection, mirroring the server's EditUnionCoversEveryChannel: a channel added to
+// notificationSchema must also reach notificationEditSchema. Missing it makes that channel
+// impossible to edit, and zod reports the cause only as "Invalid input" on the type field.
+type Assert<T extends true> = T;
+type ChannelMissingFromEditSchema = Exclude<
+	z.infer<typeof notificationSchema>["type"],
+	z.infer<typeof notificationEditSchema>["type"]
+>;
+export type EditSchemaCoversEveryChannel = Assert<
+	[ChannelMissingFromEditSchema] extends [never]
+		? true
+		: { addToNotificationEditSchema: ChannelMissingFromEditSchema }
+>;
+
 export type NotificationFormData = z.infer<typeof notificationSchema>;
