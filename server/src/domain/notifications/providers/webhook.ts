@@ -1,5 +1,5 @@
 const SERVICE_NAME = "WebhookProvider";
-import type { Notification } from "@/domain/notifications/notification.type.js";
+import type { Notification, WebhookAuthType } from "@/domain/notifications/notification.type.js";
 import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
 import { getTestMessage } from "@/domain/notifications/providers/utils.js";
@@ -19,6 +19,7 @@ export class WebhookProvider extends NotificationProvider {
 				json: payload,
 				headers: {
 					"Content-Type": "application/json",
+					...this.getAuthHeaders(notification),
 				},
 				...this.gotRequestOptions(),
 			});
@@ -37,6 +38,35 @@ export class WebhookProvider extends NotificationProvider {
 				stack: err?.stack,
 			});
 			return false;
+		}
+	};
+
+	/**
+	 * Builds authorization headers based on the notification's webhookAuthType.
+	 * Supports Basic Auth (base64-encoded username:password) and Bearer tokens.
+	 */
+	private getAuthHeaders = (notification: Notification): Record<string, string> => {
+		const authType: WebhookAuthType = notification.webhookAuthType || "none";
+
+		switch (authType) {
+			case "basic": {
+				if (notification.webhookAuthUsername && notification.webhookAuthPassword) {
+					const encoded = Buffer.from(
+						`${notification.webhookAuthUsername}:${notification.webhookAuthPassword}`
+					).toString("base64");
+					return { Authorization: `Basic ${encoded}` };
+				}
+				return {};
+			}
+			case "bearer": {
+				if (notification.webhookAuthToken) {
+					return { Authorization: `Bearer ${notification.webhookAuthToken}` };
+				}
+				return {};
+			}
+			case "none":
+			default:
+				return {};
 		}
 	};
 
@@ -101,6 +131,7 @@ export class WebhookProvider extends NotificationProvider {
 				json: { text: getTestMessage() },
 				headers: {
 					"Content-Type": "application/json",
+					...this.getAuthHeaders(notification as Notification),
 				},
 				...this.gotRequestOptions(),
 			});
