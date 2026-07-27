@@ -220,7 +220,7 @@ export class StatusService implements IStatusService {
 			// Resolve "initializing" and "maintenance" up front, incidents should be created on initialization && down
 			// Unknown values (e.g. legacy boolean statuses from old versions) are resolved the same way,
 			// otherwise computeReachability can never transition them and they stay stuck forever.
-			  const isUnknownStatus = !MonitorStatuses.includes(monitor.status);
+			const isUnknownStatus = !MonitorStatuses.includes(monitor.status);
 			let newStatus: MonitorStatus = monitor.status;
 			let statusChanged = false;
 			if (monitor.status === "initializing" || monitor.status === "maintenance" || isUnknownStatus) {
