@@ -51,9 +51,7 @@ export class WebhookProvider extends NotificationProvider {
 		switch (authType) {
 			case "basic": {
 				if (notification.webhookAuthUsername && notification.webhookAuthPassword) {
-					const encoded = Buffer.from(
-						`${notification.webhookAuthUsername}:${notification.webhookAuthPassword}`
-					).toString("base64");
+					const encoded = Buffer.from(`${notification.webhookAuthUsername}:${notification.webhookAuthPassword}`).toString("base64");
 					return { Authorization: `Basic ${encoded}` };
 				}
 				return {};
