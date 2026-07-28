@@ -12,6 +12,7 @@ import {
 import type { TooltipProps } from "recharts";
 import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 import Typography from "@mui/material/Typography";
+import prettyMilliseconds from "pretty-ms";
 
 import { useSelector } from "react-redux";
 import {
@@ -68,12 +69,14 @@ const ResponseTimeToolTip = ({
 	if (!active) return null;
 
 	const format = tooltipDateFormatLookup(range);
-	console.log(payload);
 	const responseTime = Math.floor(payload[0]?.payload?.originalAvgResponseTime || 0);
 	return (
 		<BaseBox sx={{ py: theme.spacing(2), px: theme.spacing(4) }}>
 			<Typography>{formatDateWithTz(String(label), format, uiTimezone)}</Typography>
-			<Typography>Response time: {responseTime} ms</Typography>
+			<Typography>
+				Response time:{" "}
+				{prettyMilliseconds(responseTime, { formatSubMilliseconds: true, compact: true })}
+			</Typography>
 		</BaseBox>
 	);
 };
@@ -95,7 +98,7 @@ export const HistogramDetails = ({
 					strokeWidth={1.5}
 				/>
 			}
-			title="Response times"
+			title="Average response time (First byte)"
 		>
 			<ResponsiveContainer
 				width="100%"
