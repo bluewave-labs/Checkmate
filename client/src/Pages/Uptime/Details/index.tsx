@@ -31,6 +31,7 @@ import type { RootState } from "@/Types/state";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { t } from "i18next";
 import { Typography } from "@mui/material";
+import { HistogramDetailsStacked } from "@/Components/monitors/charts/HistogramDetailsStacked";
 
 const certificateDateFormat = "MMM D, YYYY h A";
 
@@ -72,6 +73,7 @@ const UptimeDetailsPage = () => {
 	);
 
 	const monitorData = monitorDetailsData?.monitorData;
+
 	const monitor = monitorData?.monitor;
 	const monitorStats = monitorDetailsData?.monitorStats ?? null;
 
@@ -165,10 +167,18 @@ const UptimeDetailsPage = () => {
 		{ keepPreviousData: true, revalidateOnFocus: false }
 	);
 
+	if (!monitorData) {
+		return null;
+	}
+
+	if (!monitor) {
+		return null;
+	}
+
 	const geoChecksForTable = geoChecksTableData?.geoChecks ?? [];
 	const geoChecksCount = geoChecksTableData?.geoChecksCount ?? 0;
 
-	const geoLocations = monitor?.geoCheckLocations;
+	const geoLocations = monitor.geoCheckLocations;
 
 	const checks = checksData?.checks ?? [];
 	const checksCount = checksData?.checksCount ?? 0;
@@ -216,6 +226,10 @@ const UptimeDetailsPage = () => {
 			</Stack>
 			<HistogramDetails
 				checks={monitorData?.groupedChecks || []}
+				range={dateRange}
+			/>
+			<HistogramDetailsStacked
+				checks={monitorData.groupedChecks}
 				range={dateRange}
 			/>
 			<ChecksTable

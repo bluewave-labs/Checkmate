@@ -149,6 +149,15 @@ export interface GroupedCheck {
 	totalChecks: number;
 }
 
+export interface GroupedUptimeCheck extends GroupedCheck {
+	avgDns: number;
+	avgTcp: number;
+	avgTls: number;
+	avgRequest: number;
+	avgFirstByte: number;
+	avgDownload: number;
+}
+
 export interface PageSpeedGroupedCheck {
 	bucketDate: string;
 	performance: number;

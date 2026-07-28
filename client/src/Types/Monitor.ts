@@ -1,4 +1,4 @@
-import type { GroupedCheck, CheckSnapshot } from "@/Types/Check";
+import type { GroupedCheck, CheckSnapshot, GroupedUptimeCheck } from "@/Types/Check";
 import type { PageSpeedGroupedCheck } from "@/Types/Check";
 import type { GeoContinent } from "@/Types/GeoCheck";
 export type { GeoContinent } from "@/Types/GeoCheck";
@@ -137,7 +137,7 @@ export interface MonitorStats {
 
 export interface MonitorData {
 	monitor: Monitor;
-	groupedChecks: GroupedCheck[];
+	groupedChecks: GroupedUptimeCheck[];
 	groupedUpChecks: GroupedCheck[];
 	groupedDownChecks: GroupedCheck[];
 	groupedAvgResponseTime: number;
