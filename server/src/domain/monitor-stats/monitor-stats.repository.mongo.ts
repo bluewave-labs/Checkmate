@@ -3,19 +3,9 @@ import type { CheckResultInput, MonitorStats } from "@/domain/monitor-stats/moni
 import { IMonitorStatsRepository } from "@/domain/monitor-stats/monitor-stats.repository.interface.js";
 import mongoose from "mongoose";
 import { AppError } from "@/utils/AppError.js";
+import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 class MongoMonitorStatsRepository implements IMonitorStatsRepository {
 	private toEntity = (doc: MonitorStatsDocument): MonitorStats => {
-		const toStringId = (value: unknown): string => {
-			if (value instanceof mongoose.Types.ObjectId) {
-				return value.toString();
-			}
-			return value?.toString() ?? "";
-		};
-
-		const toDateString = (value: Date | string): string => {
-			return value instanceof Date ? value.toISOString() : value;
-		};
-
 		return {
 			id: toStringId(doc._id),
 			monitorId: toStringId(doc.monitorId),

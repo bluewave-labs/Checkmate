@@ -20,7 +20,7 @@ export const RadialAvgResponse = ({ avg, max }: { avg: number; max: number }) =>
 	const msg: Record<string, string> = {
 		success: "Excellent",
 		warning: "Average",
-		danger: "Poor",
+		error: "Poor",
 	};
 
 	return (

@@ -3,6 +3,7 @@ import { NotificationModel, type NotificationDocument } from "@/domain/notificat
 import { INotificationsRepository } from "@/domain/notifications/notification.repository.interface.js";
 import type { Notification } from "@/domain/notifications/notification.type.js";
 import { AppError } from "@/utils/AppError.js";
+import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
 class MongoNotificationsRepository implements INotificationsRepository {
 	private mapDocuments = (documents: NotificationDocument[]): Notification[] => {
@@ -13,14 +14,6 @@ class MongoNotificationsRepository implements INotificationsRepository {
 	};
 
 	private toEntity = (doc: NotificationDocument): Notification => {
-		const toStringId = (value: mongoose.Types.ObjectId | string): string => {
-			return value instanceof mongoose.Types.ObjectId ? value.toString() : value;
-		};
-
-		const toDateString = (value: Date | string): string => {
-			return value instanceof Date ? value.toISOString() : value;
-		};
-
 		return {
 			id: toStringId(doc._id),
 			userId: toStringId(doc.userId),

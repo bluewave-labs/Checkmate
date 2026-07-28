@@ -9,6 +9,7 @@
   🇪🇸 <a href="README.es.md">Español</a> |
   🇫🇮 <a href="README.fi.md">Suomi</a> |
   🇫🇷 <a href="README.fr.md">Français</a> |
+  🇮🇹 <a href="README.it.md">Italiano</a> |
   🇯🇵 <a href="README.ja.md">日本語</a> |
   🇧🇷 <a href="README.pt-BR.md">Português (Brasil)</a> |
   🇷🇺 <a href="README.ru.md">Русский</a> |
@@ -84,7 +85,7 @@ Käyttöohjeet löytyvät [täältä](https://checkmate.so/docs).
 
 Asennusohjeet löytyvät [Checkmaten dokumentaatioportaalista](https://checkmate.so/docs).
 
-Vaihtoehtoisesti voit käyttää [Coolifya](https://coolify.io/), [Elestiota](https://elest.io/open-source/checkmate), [K8s:ää](./charts/helm/checkmate/INSTALLATION.md), [Sive Hostia](https://sive.host) (Etelä-Afrikka), [Cloudzya](https://cloudzy.com/marketplace/checkmate) tai [Pikapodsia](https://www.pikapods.com/) Checkmate-instanssin nopeaan käynnistämiseen. Jos haluat valvoa palvelininfrastruktuuriasi, tarvitset [Capture-agentin](https://github.com/bluewave-labs/capture). Capturen repositorio sisältää myös sen asennusohjeet.
+Vaihtoehtoisesti voit käyttää [Coolifya](https://coolify.io/), [Elestiota](https://elest.io/open-source/checkmate), [K8s:ää](../../charts/helm/checkmate/INSTALLATION.md), [Sive Hostia](https://sive.host) (Etelä-Afrikka), [Cloudzya](https://cloudzy.com/marketplace/checkmate) tai [Pikapodsia](https://www.pikapods.com/) Checkmate-instanssin nopeaan käynnistämiseen. Jos haluat valvoa palvelininfrastruktuuriasi, tarvitset [Capture-agentin](https://github.com/bluewave-labs/capture). Capturen repositorio sisältää myös sen asennusohjeet.
 
 ### Mukautetun CA:n käyttö
 

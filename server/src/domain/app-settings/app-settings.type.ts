@@ -4,6 +4,17 @@ export type DbType = (typeof DbTypes)[number];
 export const QueueModes = ["primary", "worker"] as const;
 export type QueueMode = (typeof QueueModes)[number];
 
+export const LogLevels = ["error", "warn", "info", "debug"] as const;
+export type LogLevel = (typeof LogLevels)[number];
+
+// Rendered into GET /config.js as window.__CHECKMATE_CONFIG__; keys left unset
+// fall back to the client's same-origin defaults.
+export type ClientRuntimeConfig = {
+	apiBaseUrl?: string;
+	clientHost?: string;
+	logLevel?: LogLevel;
+};
+
 export interface SettingsThresholds {
 	cpu?: number;
 	memory?: number;

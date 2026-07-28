@@ -1,5 +1,5 @@
 import { NormalizeData, NormalizeDataUptimeDetails } from "@/utils/dataUtils.js";
-import { type Monitor } from "@/domain/monitors/monitor.types.js";
+import { type Monitor } from "@/domain/monitors/monitor.type.js";
 import type {
 	MonitorType,
 	MonitorsWithChecksByTeamIdResult,
@@ -8,8 +8,8 @@ import type {
 	PageSpeedDetailsResult,
 	GamesMap,
 	GroupedGeoCheckResult,
-} from "@/domain/monitors/monitor.types.js";
-import { supportsGeoCheck, supportsUptimeDetails } from "@/domain/monitors/monitor.types.js";
+} from "@/domain/monitors/monitor.type.js";
+import { supportsGeoCheck, supportsUptimeDetails } from "@/domain/monitors/monitor.type.js";
 import type { UptimeChecksResult, HardwareChecksResult, PageSpeedChecksResult } from "@/domain/checks/check.type.js";
 import type { GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
 import type { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
@@ -23,29 +23,27 @@ import { AppError } from "@/utils/AppError.js";
 import type { ImportedMonitor } from "@/api/validation/monitorValidation.js";
 import { ILogger } from "@/utils/logger.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";
+import { DateRange } from "@/types/query.js";
 
 const SERVICE_NAME = "MonitorService";
-type DateRangeKey = "recent" | "day" | "week" | "month" | "all";
 
 const isUptimeChecksResult = (result: UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult): result is UptimeChecksResult =>
 	supportsUptimeDetails(result.monitorType);
 
 export interface IMonitorService {
-	readonly serviceName: string;
-
 	// create
 	createMonitor(teamId: string, userId: string, body: Partial<Monitor>): Promise<void>;
 	createMonitors(monitors: Array<Monitor>): Promise<Monitor[] | null>;
 	addDemoMonitors(args: { userId: string; teamId: string }): Promise<Monitor[]>;
 
 	// read
-	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<UptimeDetailsResult>;
-	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<HardwareDetailsResult>;
-	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: string }): Promise<PageSpeedDetailsResult>;
+	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<UptimeDetailsResult>;
+	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<HardwareDetailsResult>;
+	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<PageSpeedDetailsResult>;
 	getGeoChecksByMonitorId(args: {
 		teamId: string;
 		monitorId: string;
-		dateRange: string;
+		dateRange: DateRange;
 		continents?: GeoContinent[];
 	}): Promise<GroupedGeoCheckResult>;
 	getMonitorById(args: { teamId: string; monitorId: string }): Promise<Monitor>;
@@ -72,7 +70,6 @@ export interface IMonitorService {
 		order?: "asc" | "desc";
 	}): Promise<MonitorsWithChecksByTeamIdResult>;
 	getAllGames(): GamesMap;
-	getGroupsByTeamId(args: { teamId: string }): Promise<string[]>;
 
 	// update
 	editMonitor(args: { teamId: string; monitorId: string; body: Partial<Monitor> }): Promise<Monitor>;
@@ -136,35 +133,6 @@ export class MonitorService implements IMonitorService {
 		this.incidentsRepository = incidentsRepository;
 	}
 
-	get serviceName(): string {
-		return MonitorService.SERVICE_NAME;
-	}
-
-	private getDateRange = (dateRange: DateRangeKey) => {
-		const startDates = {
-			recent: new Date(new Date().setHours(new Date().getHours() - 2)),
-			day: new Date(new Date().setDate(new Date().getDate() - 1)),
-			week: new Date(new Date().setDate(new Date().getDate() - 7)),
-			month: new Date(new Date().setMonth(new Date().getMonth() - 1)),
-			all: new Date(0),
-		};
-		return {
-			start: startDates[dateRange],
-			end: new Date(),
-		};
-	};
-
-	private getDateFormat = (dateRange: DateRangeKey): string => {
-		const formatLookup = {
-			recent: "%Y-%m-%dT%H:%M:00Z",
-			day: "%Y-%m-%dT%H:00:00Z",
-			week: "%Y-%m-%dT00:00:00Z",
-			month: "%Y-%m-%dT00:00:00Z",
-			all: "%Y-%m-%dT00:00:00Z",
-		};
-		return formatLookup[dateRange];
-	};
-
 	createMonitor = async (teamId: string, userId: string, body: Monitor): Promise<void> => {
 		const monitor = await this.monitorsRepository.create(body, teamId, userId);
 		if (!monitor) {
@@ -207,15 +175,13 @@ export class MonitorService implements IMonitorService {
 	}: {
 		teamId: string;
 		monitorId: string;
-		dateRange: string;
+		dateRange: DateRange;
 	}): Promise<UptimeDetailsResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
 			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
 		}
-		const rangeKey = dateRange as DateRangeKey;
-		const { start, end } = this.getDateRange(rangeKey);
-		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, start, end, this.getDateFormat(rangeKey), {
+		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, dateRange, {
 			type: monitor.type,
 		});
 		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
@@ -244,7 +210,7 @@ export class MonitorService implements IMonitorService {
 	}: {
 		teamId: string;
 		monitorId: string;
-		dateRange: string;
+		dateRange: DateRange;
 	}): Promise<HardwareDetailsResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
@@ -254,9 +220,7 @@ export class MonitorService implements IMonitorService {
 			throw new AppError({ message: `${monitor.type} monitors are not supported for hardware details`, status: 400 });
 		}
 
-		const rangeKey = dateRange as DateRangeKey;
-		const { start, end } = this.getDateRange(rangeKey);
-		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, start, end, this.getDateFormat(rangeKey), {
+		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, dateRange, {
 			type: monitor.type,
 		});
 
@@ -286,7 +250,7 @@ export class MonitorService implements IMonitorService {
 	}: {
 		teamId: string;
 		monitorId: string;
-		dateRange: string;
+		dateRange: DateRange;
 	}): Promise<PageSpeedDetailsResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
 		if (!monitor) {
@@ -296,9 +260,7 @@ export class MonitorService implements IMonitorService {
 			throw new AppError({ message: `${monitor.type} monitors are not supported for pagespeed details`, status: 400 });
 		}
 
-		const rangeKey = dateRange as DateRangeKey;
-		const { start, end } = this.getDateRange(rangeKey);
-		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, start, end, this.getDateFormat(rangeKey), {
+		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, dateRange, {
 			type: monitor.type,
 		});
 
@@ -325,7 +287,7 @@ export class MonitorService implements IMonitorService {
 	}: {
 		teamId: string;
 		monitorId: string;
-		dateRange: string;
+		dateRange: DateRange;
 		continents?: GeoContinent[];
 	}): Promise<GroupedGeoCheckResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
@@ -337,15 +299,7 @@ export class MonitorService implements IMonitorService {
 			return { groupedGeoChecks: [] };
 		}
 
-		const rangeKey = dateRange as DateRangeKey;
-		const { start, end } = this.getDateRange(rangeKey);
-		const groupedGeoChecks = await this.geoChecksRepository.findGroupedByMonitorIdAndDateRange(
-			monitor.id,
-			start,
-			end,
-			this.getDateFormat(rangeKey),
-			continents
-		);
+		const groupedGeoChecks = await this.geoChecksRepository.findGroupedByMonitorIdAndDateRange(monitor.id, dateRange, continents);
 
 		return { groupedGeoChecks };
 	};
@@ -364,7 +318,7 @@ export class MonitorService implements IMonitorService {
 		type?: MonitorType | MonitorType[];
 		tags?: string | string[];
 		filter?: string;
-	}): Promise<Monitor[] | null> => {
+	}): Promise<Monitor[]> => {
 		return await this.monitorsRepository.findByTeamId(teamId, { type, tags, filter });
 	};
 
@@ -402,13 +356,12 @@ export class MonitorService implements IMonitorService {
 			order,
 		});
 
-		const monitorsList = (monitors ?? []) as Monitor[];
 		const snapshotTypes: MonitorType[] = ["hardware"];
 		const requestedTypes = Array.isArray(type) ? type : type ? [type] : [];
 		const snapshotOnlyRequest =
 			requestedTypes.length > 0 && requestedTypes.every((requestedType) => snapshotTypes.includes(requestedType as MonitorType));
 
-		const monitorsWithChecks = monitorsList.map((monitor: Monitor) => {
+		const monitorsWithChecks = monitors.map((monitor: Monitor) => {
 			const rawChecks = monitor.recentChecks ?? [];
 			const isSnapshotType = snapshotOnlyRequest || snapshotTypes.includes(monitor.type);
 			const checks = isSnapshotType ? rawChecks.slice(0, 1) : NormalizeData(rawChecks, 10, 100);
@@ -420,10 +373,6 @@ export class MonitorService implements IMonitorService {
 
 	getAllGames = (): GamesMap => {
 		return this.games;
-	};
-
-	getGroupsByTeamId = async ({ teamId }: { teamId: string }): Promise<string[]> => {
-		return await this.monitorsRepository.findGroupsByTeamId(teamId);
 	};
 
 	editMonitor = async ({ teamId, monitorId, body }: { teamId: string; monitorId: string; body: Partial<Monitor> }) => {
@@ -501,15 +450,7 @@ export class MonitorService implements IMonitorService {
 		return { monitors, failedCount };
 	};
 
-	deleteMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
-		const monitor = await this.monitorsRepository.deleteById(monitorId, teamId);
-		await this.monitorStatsRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
-			this.logger.warn({
-				message: `Error deleting monitor stats for monitor ${monitor.id} with name ${monitor.name}`,
-				service: SERVICE_NAME,
-				stack: err instanceof Error ? err.stack : undefined,
-			});
-		});
+	private deleteMonitorChildren = async (monitor: Monitor, teamId: string) => {
 		await this.checksRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
 			this.logger.warn({
 				message: `Error deleting checks for monitor ${monitor.id} with name ${monitor.name}`,
@@ -541,6 +482,19 @@ export class MonitorService implements IMonitorService {
 			});
 		});
 
+		await this.monitorStatsRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
+			this.logger.warn({
+				message: `Error deleting monitor stats for monitor ${monitor.id} with name ${monitor.name}`,
+				service: SERVICE_NAME,
+				stack: err instanceof Error ? err.stack : undefined,
+			});
+		});
+	};
+
+	deleteMonitor = async ({ teamId, monitorId }: { teamId: string; monitorId: string }): Promise<Monitor> => {
+		const monitor = await this.monitorsRepository.deleteById(monitorId, teamId);
+
+		await this.deleteMonitorChildren(monitor, teamId);
 		await this.scheduler.deleteJob(monitor);
 		return monitor;
 	};
@@ -550,11 +504,8 @@ export class MonitorService implements IMonitorService {
 		await Promise.all(
 			monitors.map(async (monitor) => {
 				try {
+					await this.deleteMonitorChildren(monitor, teamId);
 					await this.scheduler.deleteJob(monitor);
-					await this.checksRepository.deleteByMonitorId(monitor.id);
-					await this.geoChecksRepository.deleteByMonitorId(monitor.id);
-					await this.statusPagesRepository.removeMonitorFromStatusPages(monitor.id);
-					await this.monitorStatsRepository.deleteByMonitorId(monitor.id);
 				} catch (error: unknown) {
 					this.logger.warn({
 						message: `Error deleting associated records for monitor ${monitor.id} with name ${monitor.name}`,
@@ -571,7 +522,7 @@ export class MonitorService implements IMonitorService {
 	exportMonitorsToJSON = async ({ teamId }: { teamId: string }): Promise<Monitor[]> => {
 		const monitors = await this.monitorsRepository.findByTeamId(teamId, {});
 
-		if (!monitors || monitors.length === 0) {
+		if (monitors.length === 0) {
 			throw new AppError({ message: "No monitors found to export.", service: SERVICE_NAME, method: "exportMonitorsToJSON", status: 400 });
 		}
 

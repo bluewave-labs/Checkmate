@@ -1,4 +1,4 @@
-import { Monitor } from "@/domain/monitors/monitor.types.js";
+import { Monitor } from "@/domain/monitors/monitor.type.js";
 import { Check } from "@/domain/checks/check.type.js";
 import { JobType } from "@/domain/jobs/job.type.js";
 import { MonitorPayloadMap, MonitorStatusResponse, StatusChangeResult } from "@/types/network.js";
@@ -67,7 +67,6 @@ export type WorkerHealth = {
 	inFlight: number; // total in-flight jobs across types
 };
 export interface IJobScheduler {
-	readonly serviceName: string;
 	addJob(monitorId: string, monitor: Monitor): Promise<void>;
 	deleteJob(monitor: Monitor): Promise<void>;
 	pauseJob(monitor: Monitor): Promise<void>;
@@ -83,7 +82,6 @@ export interface IJobScheduler {
 }
 
 export interface IQueueWorker extends IJobScheduler {
-	readonly serviceName: string;
 	getHealth(): WorkerHealth;
 	countDueBacklog(): Promise<number>;
 	countAliveWorkers(): Promise<number>;

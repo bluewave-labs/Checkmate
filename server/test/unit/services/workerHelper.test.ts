@@ -71,13 +71,6 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("WorkerHelper", () => {
-	describe("serviceName", () => {
-		it("returns JobQueueHelper", () => {
-			const { helper } = createHelper();
-			expect(helper.serviceName).toBe("JobQueueHelper");
-		});
-	});
-
 	// ── getCleanupOrphanedJob ────────────────────────────────────────────────
 
 	describe("getCleanupOrphanedJob", () => {

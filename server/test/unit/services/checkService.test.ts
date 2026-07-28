@@ -5,7 +5,7 @@ import type { IChecksRepository } from "../../../src/domain/checks/check.reposit
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
 import type { MonitorStatusResponse, HardwareStatusPayload, PageSpeedStatusPayload } from "../../../src/types/network.ts";
 import { NotificationMessageBuilder } from "../../../src/domain/notifications/notification.message-builder.ts";
-import type { Monitor } from "../../../src/domain/monitors/monitor.types.ts";
+import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -48,13 +48,6 @@ const makeStatusResponse = (overrides?: Partial<MonitorStatusResponse>): Monitor
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("CheckService", () => {
-	describe("serviceName", () => {
-		it("returns checkService", () => {
-			const { service } = createService();
-			expect(service.serviceName).toBe("checkService");
-		});
-	});
-
 	// ── toCheck ──────────────────────────────────────────────────────────────
 
 	describe("toCheck", () => {
@@ -382,7 +375,7 @@ describe("CheckService", () => {
 				rowsPerPage: null as any,
 			});
 
-			expect(checksRepository.findByMonitorId).toHaveBeenCalledWith("mon-1", "desc", "day", undefined, 0, 5, undefined);
+			expect(checksRepository.findByMonitorId).toHaveBeenCalledWith("mon-1", "desc", "day", 0, 5, undefined, undefined);
 		});
 
 		it("passes filter and status parameters", async () => {
@@ -395,11 +388,11 @@ describe("CheckService", () => {
 				dateRange: "week",
 				page: 2,
 				rowsPerPage: 20,
-				filter: "error",
+				filter: "resolve",
 				status: false,
 			});
 
-			expect(checksRepository.findByMonitorId).toHaveBeenCalledWith("mon-1", "asc", "week", "error", 2, 20, false);
+			expect(checksRepository.findByMonitorId).toHaveBeenCalledWith("mon-1", "asc", "week", 2, 20, false, "resolve");
 		});
 
 		it("throws when monitorId is missing", async () => {
@@ -450,7 +443,7 @@ describe("CheckService", () => {
 
 			await service.getChecksByTeam({ teamId: "team-1", sortOrder: "desc", dateRange: "day", page: null as any, rowsPerPage: null as any });
 
-			expect(checksRepository.findByTeamId).toHaveBeenCalledWith("desc", "day", undefined, 0, 5, "team-1");
+			expect(checksRepository.findByTeamId).toHaveBeenCalledWith("desc", "day", 0, 5, "team-1", undefined);
 		});
 	});
 

@@ -1,4 +1,4 @@
-import type { Monitor } from "@/domain/monitors/monitor.types.js";
+import type { Monitor } from "@/domain/monitors/monitor.type.js";
 import type { NormalizedCheck, CheckSnapshot } from "@/domain/checks/check.type.js";
 export const StatusPageTypes = ["uptime", "infrastructure"] as const;
 export type StatusPageType = (typeof StatusPageTypes)[number];

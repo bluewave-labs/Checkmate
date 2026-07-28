@@ -24,7 +24,7 @@ export interface IUserService {
 	createUser(userData: Partial<User>, teamId: string, actorRoles: UserRole[], file: Express.Multer.File | null): Promise<User>;
 	loginUser(email: string, password: string): Promise<{ user: User; token: string }>;
 	editUser(
-		updates: Partial<User & { newPassword?: string }>,
+		updates: Partial<User & { newPassword?: string; deleteProfileImage?: boolean }>,
 		file: Express.Multer.File | null,
 		currentUserId: string,
 		currentUserEmail: string
@@ -101,10 +101,6 @@ export class UserService implements IUserService {
 		this.recoveryTokensRepository = recoveryTokensRepository;
 		this.settingsRepository = settingsRepository;
 		this.teamsRepository = teamsRepository;
-	}
-
-	get serviceName() {
-		return UserService.SERVICE_NAME;
 	}
 
 	issueToken = (payload: Partial<User>, appSettings: EnvConfig) => {
@@ -242,7 +238,7 @@ export class UserService implements IUserService {
 	};
 
 	editUser = async (
-		updates: Partial<User & { newPassword?: string }>,
+		updates: Partial<User & { newPassword?: string; deleteProfileImage?: boolean }>,
 		file: Express.Multer.File | null,
 		currentUserId: string,
 		currentUserEmail: string

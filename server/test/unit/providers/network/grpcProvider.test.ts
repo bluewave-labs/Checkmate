@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { GrpcProvider } from "../../../../src/service/network/GrpcProvider.ts";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
-import type { Monitor } from "../../../../src/domain/monitors/monitor.types.ts";
+import type { Monitor } from "../../../../src/domain/monitors/monitor.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

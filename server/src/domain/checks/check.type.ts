@@ -1,4 +1,4 @@
-import type { MonitorType } from "@/domain/monitors/monitor.types.js";
+import type { MonitorType } from "@/domain/monitors/monitor.type.js";
 import type { Response } from "got";
 
 export const CHECK_TTL_SENTINEL = 366;
@@ -126,43 +126,6 @@ export interface PageSpeedChecksResult {
 	groupedChecks: PageSpeedGroupedCheck[];
 }
 
-export interface HardwareChecksResult {
-	monitorType: "hardware";
-	aggregateData: {
-		totalChecks: number;
-	};
-	upChecks: {
-		totalChecks: number;
-	};
-	checks: Array<{
-		bucketDate: string;
-		avgCpuUsage: number;
-		avgMemoryUsage: number;
-		avgTemperature: number[];
-		disks: Array<{
-			name: string;
-			readSpeed: number;
-			writeSpeed: number;
-			totalBytes: number;
-			freeBytes: number;
-			usagePercent: number;
-		}>;
-		net: Array<{
-			name: string;
-			bytesSentPerSecond: number;
-			deltaBytesRecv: number;
-			deltaPacketsSent: number;
-			deltaPacketsRecv: number;
-			deltaErrIn: number;
-			deltaErrOut: number;
-			deltaDropIn: number;
-			deltaDropOut: number;
-			deltaFifoIn: number;
-			deltaFifoOut: number;
-		}>;
-	}>;
-}
-
 export interface GroupedCheck {
 	bucketDate: string;
 	avgResponseTime: number;
@@ -205,3 +168,49 @@ export type NormalizedUptimeCheck<T extends GroupedCheck = GroupedCheck> = T & {
 };
 
 export type CheckSnapshot = Omit<Check, "metadata" | "updatedAt">;
+
+export interface HardwareDiskStats {
+	name: string;
+	readSpeed: number;
+	writeSpeed: number;
+	totalBytes: number;
+	freeBytes: number;
+	usagePercent: number;
+}
+
+export interface HardwareNetStats {
+	name: string;
+	bytesSentPerSecond: number;
+	deltaBytesRecv: number;
+	deltaPacketsSent: number;
+	deltaPacketsRecv: number;
+	deltaErrIn: number;
+	deltaErrOut: number;
+	deltaDropIn: number;
+	deltaDropOut: number;
+	deltaFifoIn: number;
+	deltaFifoOut: number;
+}
+
+export interface HardwareCheckStats {
+	bucketDate: string;
+	avgCpuUsage: number;
+	avgMemoryUsage: number;
+	avgTemperature: number[];
+	disks: HardwareDiskStats[];
+	net: HardwareNetStats[];
+}
+
+export interface HardwareStats {
+	aggregateData: {
+		totalChecks: number;
+	};
+	upChecks: {
+		totalChecks: number;
+	};
+	checks: HardwareCheckStats[];
+}
+
+export interface HardwareChecksResult extends HardwareStats {
+	monitorType: "hardware";
+}

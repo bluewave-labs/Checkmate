@@ -25,10 +25,11 @@ export const InfraDetailsGauges = ({
 		<Stack
 			direction={isSmall ? "column" : "row"}
 			spacing={theme.spacing(8)}
-			alignItems={"center"}
+			alignItems={"stretch"}
 		>
 			<DetailGauge
 				title={t("pages.infrastructure.gauges.memory.title")}
+				maxWidth={260}
 				progress={(snapshot?.memory?.usage_percent || 0) * 100}
 				upperLabel={t("pages.infrastructure.gauges.memory.upperLabel")}
 				upperValue={prettyBytes(snapshot?.memory?.used_bytes || 0)}
@@ -37,6 +38,7 @@ export const InfraDetailsGauges = ({
 			/>
 			<DetailGauge
 				title={t("pages.infrastructure.gauges.cpu.title")}
+				maxWidth={260}
 				progress={(snapshot?.cpu?.usage_percent || 0) * 100}
 				upperLabel={t("pages.infrastructure.gauges.cpu.upperLabel")}
 				upperValue={getFrequency(snapshot?.cpu?.current_frequency || 0)}
@@ -49,6 +51,7 @@ export const InfraDetailsGauges = ({
 						key={disk?.device || 0 + idx}
 						// title={`Disk ${idx} usage`}
 						title={t("pages.infrastructure.gauges.disk.title", { idx })}
+						maxWidth={260}
 						progress={(disk.usage_percent || 0) * 100}
 						upperLabel={t("pages.infrastructure.gauges.disk.upperLabel")}
 						upperValue={prettyBytes(disk?.used_bytes || 0)}

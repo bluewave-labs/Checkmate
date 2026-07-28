@@ -9,6 +9,7 @@
   🇪🇸 <a href="README.es.md">Español</a> |
   🇫🇮 <a href="README.fi.md">Suomi</a> |
   🇫🇷 <a href="README.fr.md">Français</a> |
+  🇮🇹 <a href="README.it.md">Italiano</a> |
   🇯🇵 <a href="README.ja.md">日本語</a> |
   🇧🇷 <a href="README.pt-BR.md">Português (Brasil)</a> |
   🇷🇺 <a href="README.ru.md">Русский</a> |
@@ -81,7 +82,7 @@ Kullanım talimatlarını [burada](https://checkmate.so/docs) bulabilirsiniz.
 
 Kurulum talimatları için [Checkmate dokümantasyon portalına](https://checkmate.so/docs) bakın.
 
-Alternatif olarak hızlıca bir Checkmate örneği çalıştırmak için [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Güney Afrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) veya [Pikapods](https://www.pikapods.com/)'u kullanabilirsiniz. Sunucu altyapınızı izlemek isterseniz [Capture ajanına](https://github.com/bluewave-labs/capture) ihtiyacınız olacak. Capture deposu da kurulum talimatlarını içerir.
+Alternatif olarak hızlıca bir Checkmate örneği çalıştırmak için [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Güney Afrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) veya [Pikapods](https://www.pikapods.com/)'u kullanabilirsiniz. Sunucu altyapınızı izlemek isterseniz [Capture ajanına](https://github.com/bluewave-labs/capture) ihtiyacınız olacak. Capture deposu da kurulum talimatlarını içerir.
 
 ### Özel CA Kullanımı
 
