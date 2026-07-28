@@ -271,6 +271,11 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			type: String,
 			required: true,
 		},
+		linkUrl: {
+			type: String,
+			trim: true,
+			maxLength: 2048,
+		},
 		port: {
 			type: Number,
 		},

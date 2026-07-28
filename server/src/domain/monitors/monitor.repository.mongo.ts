@@ -452,6 +452,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			expectedValue: doc.expectedValue ?? undefined,
 			matchMethod: doc.matchMethod ?? undefined,
 			url: doc.url,
+			linkUrl: doc.linkUrl || undefined,
 			port: doc.port ?? undefined,
 			isActive: doc.isActive,
 			interval: doc.interval,

@@ -470,3 +470,52 @@ describe("monitorValidation — customUpCodes", () => {
 		});
 	});
 });
+
+describe("monitorValidation — application link URLs", () => {
+	const baseMonitor = {
+		name: "Linked monitor",
+		type: "http" as const,
+		url: "https://example.com/health",
+	};
+
+	it("accepts HTTP and HTTPS links, including local addresses with ports and paths", () => {
+		for (const linkUrl of ["https://app.example.com/login", "http://192.168.1.10:8080/admin"]) {
+			const parsed = createMonitorBodyValidation.parse({ ...baseMonitor, linkUrl });
+			expect(parsed.linkUrl).toBe(linkUrl);
+		}
+	});
+
+	it("allows the optional link to be omitted or cleared", () => {
+		expect(createMonitorBodyValidation.parse(baseMonitor).linkUrl).toBeUndefined();
+		expect(editMonitorBodyValidation.parse({ linkUrl: "" }).linkUrl).toBe("");
+	});
+
+	it("rejects unsafe protocols and malformed links on create and edit", () => {
+		for (const linkUrl of ["javascript:alert(1)", "file:///etc/passwd", "ftp://example.com", "not-a-url"]) {
+			expect(() => createMonitorBodyValidation.parse({ ...baseMonitor, linkUrl })).toThrow();
+			expect(() => editMonitorBodyValidation.parse({ linkUrl })).toThrow();
+		}
+	});
+
+	it("rejects application links longer than 2048 characters", () => {
+		const linkUrl = `https://example.com/${"a".repeat(2049)}`;
+		expect(() => createMonitorBodyValidation.parse({ ...baseMonitor, linkUrl })).toThrow();
+	});
+
+	it("preserves a valid application link when importing monitors", () => {
+		const linkUrl = "https://app.example.com";
+		const parsed = importMonitorsBodyValidation.parse({
+			monitors: [{ ...baseMonitor, linkUrl }],
+		});
+
+		expect(parsed.monitors[0].linkUrl).toBe(linkUrl);
+	});
+
+	it("rejects unsafe application links when importing monitors", () => {
+		expect(() =>
+			importMonitorsBodyValidation.parse({
+				monitors: [{ ...baseMonitor, linkUrl: "javascript:alert(1)" }],
+			})
+		).toThrow();
+	});
+});

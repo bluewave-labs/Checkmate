@@ -14,6 +14,20 @@ import {
 import { DateRanges, SortOrders } from "@/types/query.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
+const MAX_LINK_URL_LENGTH = 2048;
+const isHttpUrl = (value: string): boolean => {
+	try {
+		const protocol = new URL(value).protocol;
+		return protocol === "http:" || protocol === "https:";
+	} catch {
+		return false;
+	}
+};
+const httpLinkUrl = z
+	.url({ message: "Application link must be a valid URL" })
+	.max(MAX_LINK_URL_LENGTH, { message: "Application link must be at most 2048 characters" })
+	.refine(isHttpUrl, { message: "Application link must use HTTP or HTTPS" });
+const optionalLinkUrl = z.union([httpLinkUrl, z.literal("")]).optional();
 
 export const getMonitorByIdParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
@@ -106,6 +120,7 @@ export const createMonitorBodyValidation = z
 		statusWindowSize: z.number().min(1).max(20).default(5),
 		statusWindowThreshold: z.number().min(1).max(100).default(60),
 		url: z.string().min(1, "URL is required"),
+		linkUrl: optionalLinkUrl,
 		ignoreTlsErrors: z.boolean().default(false),
 		useAdvancedMatching: z.boolean().default(false),
 		port: z.number().optional(),
@@ -144,6 +159,7 @@ export const editMonitorBodyValidation = z
 		name: z.string().optional(),
 		type: z.enum(MonitorTypes).optional(),
 		url: z.string().optional(),
+		linkUrl: optionalLinkUrl,
 		statusWindowSize: z.number().min(1).max(20).default(5),
 		statusWindowThreshold: z.number().min(1).max(100).default(60),
 		description: z.union([z.string(), z.literal("")]).optional(),
@@ -219,6 +235,7 @@ const importedMonitorSchema = z
 		matchMethod: z.union([z.enum(MonitorMatchMethods), z.literal("")]).optional(),
 		method: z.enum(HttpMethods).optional().default("GET"),
 		url: z.string().min(1, "URL is required"),
+		linkUrl: optionalLinkUrl,
 		port: z.number().optional(),
 		isActive: z.boolean().default(true),
 		interval: z.number().default(60000),
@@ -276,6 +293,7 @@ export const monitorResponseSchema = z
 		description: z.string().optional(),
 		type: z.enum(MonitorTypes),
 		url: z.string(),
+		linkUrl: z.string().optional(),
 		port: z.number().optional(),
 		isActive: z.boolean(),
 		interval: z.number(),

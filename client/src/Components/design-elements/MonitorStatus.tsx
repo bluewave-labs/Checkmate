@@ -1,16 +1,23 @@
 import type { Monitor } from "@/Types/Monitor";
+import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { PulseDot, Dot, StrategyBadge } from "@/Components/design-elements";
+import { PulseDot, Dot, StrategyBadge, Tooltip } from "@/Components/design-elements";
 import { getStatusColor, formatUrl } from "@/Utils/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
 import prettyMilliseconds from "pretty-ms";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { LAYOUT } from "@/Utils/Theme/constants";
+import { useTranslation } from "react-i18next";
+import { isHttpUrl } from "@/Utils/UrlUtils";
+
 export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
+	const linkUrl =
+		monitor.linkUrl && isHttpUrl(monitor.linkUrl) ? monitor.linkUrl : undefined;
 
 	if (!monitor) {
 		return null;
@@ -32,16 +39,40 @@ export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 				gap={theme.spacing(LAYOUT.XS)}
 			>
 				<PulseDot color={getStatusColor(monitor.status, theme)} />
-				<Typography
-					fontSize={typographyLevels.l}
-					fontWeight={"bolder"}
-					fontFamily={theme.typography.fontFamilyMonospace}
-					overflow={"hidden"}
-					textOverflow={"ellipsis"}
-					whiteSpace={"nowrap"}
-				>
-					{formatUrl(monitor?.url)}
-				</Typography>
+				{linkUrl ? (
+					<Tooltip
+						title={t("pages.createMonitor.form.general.option.linkUrl.openLinkTooltip")}
+					>
+						<Link
+							href={linkUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							color="inherit"
+							underline="hover"
+							fontSize={typographyLevels.l}
+							fontWeight="bolder"
+							sx={{
+								fontFamily: theme.typography.fontFamilyMonospace,
+								overflow: "hidden",
+								textOverflow: "ellipsis",
+								whiteSpace: "nowrap",
+							}}
+						>
+							{formatUrl(linkUrl)}
+						</Link>
+					</Tooltip>
+				) : (
+					<Typography
+						fontSize={typographyLevels.l}
+						fontWeight={"bolder"}
+						fontFamily={theme.typography.fontFamilyMonospace}
+						overflow={"hidden"}
+						textOverflow={"ellipsis"}
+						whiteSpace={"nowrap"}
+					>
+						{formatUrl(monitor?.url)}
+					</Typography>
+				)}
 				{monitor.type === "pagespeed" && monitor.strategy && (
 					<>
 						<Dot />

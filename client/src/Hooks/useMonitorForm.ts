@@ -11,6 +11,7 @@ interface UseMonitorFormOptions {
 const getBaseDefaults = (data?: Monitor | null) => ({
 	name: data?.name || "",
 	description: data?.description || "",
+	linkUrl: data?.linkUrl || "",
 	interval: data?.interval || 60000,
 	notifications: data?.notifications || [],
 	tags: data?.tags || [],

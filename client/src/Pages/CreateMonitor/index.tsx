@@ -620,6 +620,29 @@ const CreateMonitorPage = () => {
 									)}
 								/>
 							)}
+							<Controller
+								name="linkUrl"
+								control={control}
+								render={({ field, fieldState }) => (
+									<TextField
+										{...field}
+										value={field.value ?? ""}
+										type="url"
+										fieldLabel={t(
+											"pages.createMonitor.form.general.option.linkUrl.label"
+										)}
+										placeholder={t(
+											"pages.createMonitor.form.general.option.linkUrl.placeholder"
+										)}
+										fullWidth
+										error={!!fieldState.error}
+										helperText={
+											fieldState.error?.message ??
+											t("pages.createMonitor.form.general.option.linkUrl.helperText")
+										}
+									/>
+								)}
+							/>
 							{generalSettingsConfig.showDnsServer && (
 								<Controller
 									name="dnsServer"
