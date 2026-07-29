@@ -44,6 +44,7 @@ const percentileBy = <T>(arr: T[], percentile: number, value: (item: T) => numbe
 };
 
 const rescale = (raw: number, min: number, max: number, rangeMin: number, rangeMax: number): number => {
+	if (min === max) return rangeMin;
 	const scaled = rangeMin + ((raw - min) * (rangeMax - rangeMin)) / (max - min);
 	return Math.max(rangeMin, Math.min(rangeMax, scaled));
 };
