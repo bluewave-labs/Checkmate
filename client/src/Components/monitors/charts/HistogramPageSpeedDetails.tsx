@@ -1,6 +1,6 @@
 import { BaseChart } from "@/Components/design-elements";
 import { TrendingUp } from "lucide-react";
-import { XTick } from "@/Components/monitors";
+import { XTick } from "@/Components/monitors/charts/XTick";
 import {
 	XAxis,
 	AreaChart,

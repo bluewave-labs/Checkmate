@@ -14,17 +14,13 @@ import {
 	ResponsiveContainer,
 	YAxis,
 	XAxis,
-	Text,
 	Tooltip,
 } from "recharts";
 import { BaseBox, BaseChart, Dot } from "@/Components/design-elements";
 import Typography from "@mui/material/Typography";
+import { XTick } from "@/Components/monitors/charts/XTick";
 
-import {
-	formatDateWithTz,
-	tickDateFormatLookup,
-	tooltipDateFormatLookup,
-} from "@/Utils/TimeUtils";
+import { formatDateWithTz, tooltipDateFormatLookup } from "@/Utils/TimeUtils";
 import { useSelector } from "react-redux";
 import { useMemo } from "react";
 import { useTheme } from "@mui/material";
@@ -64,13 +60,6 @@ type TimingPhaseToolTipProps = TooltipProps<ValueType, NameType> & {
 	uiTimezone: string;
 };
 
-type XTickProps = {
-	x: number;
-	y: number;
-	payload: { value: string };
-	range: string;
-};
-
 const TimingPhasesToolTip = ({
 	active,
 	payload,
@@ -107,24 +96,6 @@ const TimingPhasesToolTip = ({
 				</Stack>
 			))}
 		</BaseBox>
-	);
-};
-
-export const XTick = ({ x, y, payload, range }: XTickProps) => {
-	const format = tickDateFormatLookup(range);
-	const theme = useTheme();
-	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
-	return (
-		<Text
-			x={x}
-			y={y + 10}
-			textAnchor="middle"
-			fill={theme.palette.text.secondary}
-			fontSize={11}
-			fontWeight={400}
-		>
-			{formatDateWithTz(payload?.value, format, uiTimezone)}
-		</Text>
 	);
 };
 

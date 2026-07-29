@@ -8,50 +8,20 @@ import {
 	Tooltip,
 	CartesianGrid,
 	ResponsiveContainer,
-	Text,
 } from "recharts";
 import type { TooltipProps } from "recharts";
 import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 import Typography from "@mui/material/Typography";
 import prettyMilliseconds from "pretty-ms";
-
+import { XTick } from "@/Components/monitors/charts/XTick";
 import { useSelector } from "react-redux";
-import {
-	formatDateWithTz,
-	tickDateFormatLookup,
-	tooltipDateFormatLookup,
-} from "@/Utils/TimeUtils";
+import { formatDateWithTz, tooltipDateFormatLookup } from "@/Utils/TimeUtils";
 import { useTheme } from "@mui/material/styles";
 import type { Theme } from "@mui/material/styles";
 import type { GroupedCheck } from "@/Types/Check";
 import type { RootState } from "@/Types/state";
 import { useMemo } from "react";
 import { computeYAxisCap } from "@/Components/monitors/charts/ChartUtils";
-
-type XTickProps = {
-	x: number;
-	y: number;
-	payload: { value: string };
-	range: string;
-};
-
-export const XTick = ({ x, y, payload, range }: XTickProps) => {
-	const format = tickDateFormatLookup(range);
-	const theme = useTheme();
-	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
-	return (
-		<Text
-			x={x}
-			y={y + 10}
-			textAnchor="middle"
-			fill={theme.palette.text.secondary}
-			fontSize={11}
-			fontWeight={400}
-		>
-			{formatDateWithTz(payload?.value, format, uiTimezone)}
-		</Text>
-	);
-};
 
 type ResponseTimeToolTipProps = TooltipProps<ValueType, NameType> & {
 	range: string;
