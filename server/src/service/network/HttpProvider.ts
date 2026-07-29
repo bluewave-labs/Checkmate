@@ -117,7 +117,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 		if (error instanceof HTTPError || error instanceof RequestError) {
 			const statusCode = error.response?.statusCode;
 			const statusUp = isStatusUp(statusCode, monitor.customUpCodes);
-			const responseTime = error.timings?.phases?.firstByte ?? error.timings?.phases?.total ?? 0;
+			const responseTime = error.timings?.phases?.total ?? 0;
 
 			if (!statusUp) {
 				return {
@@ -184,7 +184,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 				statusCode: response.statusCode,
 				statusUp,
 				message: response.statusMessage ?? "OK",
-				responseTime: response.timings.phases.firstByte ?? 0,
+				responseTime: response.timings.phases.total ?? 0,
 				timings: response.timings,
 			});
 		} catch (error: unknown) {

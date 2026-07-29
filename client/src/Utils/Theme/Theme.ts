@@ -16,10 +16,30 @@ declare module "@mui/material/styles" {
 	interface Palette {
 		sidebar: { accent: string };
 		rowStatus: { running: string; paused: string };
+		chart: {
+			phases: {
+				dns: string;
+				tcp: string;
+				tls: string;
+				request: string;
+				firstByte: string;
+				download: string;
+			};
+		};
 	}
 	interface PaletteOptions {
 		sidebar?: { accent: string };
 		rowStatus?: { running: string; paused: string };
+		chart?: {
+			phases: {
+				dns: string;
+				tcp: string;
+				tls: string;
+				request: string;
+				firstByte: string;
+				download: string;
+			};
+		};
 	}
 }
 
