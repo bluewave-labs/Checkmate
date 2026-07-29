@@ -1,5 +1,7 @@
+import Stack from "@mui/material/Stack";
 import { BaseChart, BaseBox } from "@/Components/design-elements";
 import { Clock } from "lucide-react";
+import { Dot } from "@/Components/design-elements";
 import {
 	AreaChart,
 	Area,
@@ -18,10 +20,20 @@ import { useSelector } from "react-redux";
 import { formatDateWithTz, tooltipDateFormatLookup } from "@/Utils/TimeUtils";
 import { useTheme } from "@mui/material/styles";
 import type { Theme } from "@mui/material/styles";
-import type { GroupedCheck } from "@/Types/Check";
+import type { GroupedCheck, GroupedUptimeCheck } from "@/Types/Check";
 import type { RootState } from "@/Types/state";
-import { useMemo } from "react";
 import { computeYAxisCap } from "@/Components/monitors/charts/ChartUtils";
+
+import { useMemo, useState } from "react";
+import { SPACING } from "@/Utils/Theme/constants";
+import {
+	PHASE_COLOR_KEYS,
+	PHASE_KEYS,
+	PHASE_LABELS,
+} from "@/Components/monitors/charts/ChartUtils";
+
+type DetailsCheck = GroupedCheck &
+	Partial<Pick<GroupedUptimeCheck, (typeof PHASE_KEYS)[number]>>;
 
 type ResponseTimeToolTipProps = TooltipProps<ValueType, NameType> & {
 	range: string;
@@ -54,19 +66,71 @@ const ResponseTimeToolTip = ({
 	);
 };
 
+type TimingPhaseToolTipProps = TooltipProps<ValueType, NameType> & {
+	range: string;
+	theme: Theme;
+	uiTimezone: string;
+};
+
+const TimingPhasesToolTip = ({
+	active,
+	payload,
+	range,
+	theme,
+	uiTimezone,
+}: TimingPhaseToolTipProps) => {
+	if (!active || !payload?.length) return null;
+	const bucket = payload[0].payload as GroupedUptimeCheck;
+	const total = PHASE_KEYS.reduce((sum, key) => sum + bucket[key], 0);
+	const format = tooltipDateFormatLookup(range);
+	return (
+		<BaseBox sx={{ py: theme.spacing(2), px: theme.spacing(4) }}>
+			<Typography>{formatDateWithTz(bucket.bucketDate, format, uiTimezone)}</Typography>
+			<Typography>Total: {prettyMilliseconds(total)}</Typography>
+			{PHASE_KEYS.map((key) => (
+				<Stack
+					alignItems={"center"}
+					direction="row"
+					key={key}
+					gap={SPACING.LG}
+				>
+					<Dot
+						size={"12px"}
+						color={theme.palette.chart.phases[PHASE_COLOR_KEYS[key]]}
+					/>
+					<Typography>
+						{PHASE_LABELS[key]}:{" "}
+						{prettyMilliseconds(bucket[key], {
+							formatSubMilliseconds: true,
+							compact: true,
+						})}
+					</Typography>
+				</Stack>
+			))}
+		</BaseBox>
+	);
+};
+
 export const HistogramDetails = ({
 	checks,
 	range,
 }: {
-	checks: GroupedCheck[];
+	checks: DetailsCheck[];
 	range: string;
 }) => {
+	const [showTimingPhases, setShowTimingPhases] = useState(false);
 	const theme = useTheme();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 	const yMax = useMemo(() => {
 		const totals = checks.map((check) => check.avgResponseTime || 0);
 		return computeYAxisCap(totals);
 	}, [checks]);
+
+	const hasTimingPhases = useMemo(
+		() => (checks ?? []).some((check) => PHASE_KEYS.some((key) => (check[key] ?? 0) > 0)),
+		[checks]
+	);
+
 	return (
 		<BaseChart
 			icon={
@@ -75,7 +139,11 @@ export const HistogramDetails = ({
 					strokeWidth={1.5}
 				/>
 			}
-			title="Average response time (First byte)"
+			title={showTimingPhases ? "Timing Phases" : "Response Time"}
+			onClick={() => {
+				if (!hasTimingPhases) return;
+				setShowTimingPhases((prev) => !prev);
+			}}
 		>
 			<ResponsiveContainer
 				width="100%"
@@ -108,6 +176,27 @@ export const HistogramDetails = ({
 								stopOpacity={0}
 							/>
 						</linearGradient>
+						{PHASE_KEYS.map((key) => (
+							<linearGradient
+								key={key}
+								id={`phaseGradient-${key}`}
+								x1="0"
+								y1="0"
+								x2="0"
+								y2="1"
+							>
+								<stop
+									offset="0%"
+									stopColor={theme.palette.chart.phases[PHASE_COLOR_KEYS[key]]}
+									stopOpacity={0.8}
+								/>
+								<stop
+									offset="100%"
+									stopColor={theme.palette.chart.phases[PHASE_COLOR_KEYS[key]]}
+									stopOpacity={0.2}
+								/>
+							</linearGradient>
+						))}
 					</defs>
 					<YAxis
 						hide
@@ -127,22 +216,51 @@ export const HistogramDetails = ({
 						)}
 					/>
 
-					<Tooltip
-						content={(props) => (
-							<ResponseTimeToolTip
-								{...props}
-								range={range}
-								theme={theme}
-								uiTimezone={uiTimezone}
-							/>
-						)}
-					/>
-					<Area
-						type="monotone"
-						dataKey="avgResponseTime"
-						stroke={theme.palette.primary.main}
-						fill="url(#colorUv)"
-					/>
+					{showTimingPhases ? (
+						<Tooltip
+							content={(props) => (
+								<TimingPhasesToolTip
+									{...props}
+									range={range}
+									theme={theme}
+									uiTimezone={uiTimezone}
+								/>
+							)}
+						/>
+					) : (
+						<Tooltip
+							content={(props) => (
+								<ResponseTimeToolTip
+									{...props}
+									range={range}
+									theme={theme}
+									uiTimezone={uiTimezone}
+								/>
+							)}
+						/>
+					)}
+					{!showTimingPhases && (
+						<Area
+							type="monotone"
+							dataKey="avgResponseTime"
+							stroke={theme.palette.primary.main}
+							fill="url(#colorUv)"
+						/>
+					)}
+					{hasTimingPhases &&
+						showTimingPhases &&
+						PHASE_KEYS.map((key) => {
+							return (
+								<Area
+									key={key}
+									type="monotone"
+									stackId={1}
+									dataKey={key}
+									stroke={theme.palette.chart.phases[PHASE_COLOR_KEYS[key]]}
+									fill={`url(#phaseGradient-${key})`}
+								/>
+							);
+						})}
 				</AreaChart>
 			</ResponsiveContainer>
 		</BaseChart>

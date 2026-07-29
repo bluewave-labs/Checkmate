@@ -31,10 +31,6 @@ import type { RootState } from "@/Types/state";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { t } from "i18next";
 import { Typography } from "@mui/material";
-import {
-	HistogramDetailsStacked,
-	PHASE_KEYS,
-} from "@/Components/monitors/charts/HistogramDetailsStacked";
 
 const certificateDateFormat = "MMM D, YYYY h A";
 
@@ -78,14 +74,6 @@ const UptimeDetailsPage = () => {
 
 	const monitor = monitorData?.monitor;
 	const monitorStats = monitorDetailsData?.monitorStats ?? null;
-
-	const hasTimingPhases = useMemo(
-		() =>
-			(monitorData?.groupedChecks ?? []).some((check) =>
-				PHASE_KEYS.some((key) => check[key] > 0)
-			),
-		[monitorData]
-	);
 
 	// Certificate fetch - only for HTTP monitors
 	const certificateUrl = useMemo(() => {
@@ -238,12 +226,6 @@ const UptimeDetailsPage = () => {
 				checks={monitorData.groupedChecks}
 				range={dateRange}
 			/>
-			{hasTimingPhases && (
-				<HistogramDetailsStacked
-					checks={monitorData.groupedChecks}
-					range={dateRange}
-				/>
-			)}
 			<ChecksTable
 				checks={checks}
 				count={checksCount}
