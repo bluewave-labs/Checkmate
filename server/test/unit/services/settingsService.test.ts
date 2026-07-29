@@ -72,11 +72,13 @@ describe("SettingsService", () => {
 				dbConnectionString: "mongodb://localhost:27017/test_db",
 				dbType: "mongodb",
 				statusPageThemesEnabled: false,
-				clientConfig: {},
+				clientConfig: {
+					clientHost: "http://localhost:5173",
+				},
 			});
 		});
 
-		it("maps only set CLIENT_CONFIG_* env vars into clientConfig", () => {
+		it("maps CLIENT_CONFIG_* env vars and falls back to CLIENT_HOST", () => {
 			const { service } = createService({
 				CLIENT_CONFIG_API_BASE_URL: "https://api.example.com/api/v1",
 				CLIENT_CONFIG_LOG_LEVEL: "warn",
@@ -84,8 +86,18 @@ describe("SettingsService", () => {
 
 			expect(service.getSettings().clientConfig).toEqual({
 				apiBaseUrl: "https://api.example.com/api/v1",
+				clientHost: "http://localhost:5173",
 				logLevel: "warn",
 			});
+		});
+
+		it("uses CLIENT_CONFIG_CLIENT_HOST instead of CLIENT_HOST when set", () => {
+			const { service } = createService({
+				CLIENT_HOST: "https://checkmate.internal.example.com",
+				CLIENT_CONFIG_CLIENT_HOST: "https://checkmate.example.com",
+			});
+
+			expect(service.getSettings().clientConfig.clientHost).toBe("https://checkmate.example.com");
 		});
 
 		it("reflects custom env values", () => {

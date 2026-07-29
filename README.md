@@ -105,10 +105,10 @@ The web client needs no configuration by default: it calls the API on the same o
 | Variable | Description |
 |---|---|
 | `CLIENT_CONFIG_API_BASE_URL` | Full base URL the client calls the API at, e.g. `https://api.example.com/api/v1`; defaults to same-origin `/api/v1` |
-| `CLIENT_CONFIG_CLIENT_HOST` | Origin used when the client builds absolute links (invites, status pages); defaults to the browser's current origin |
+| `CLIENT_CONFIG_CLIENT_HOST` | Overrides the canonical origin used for absolute links and custom-domain detection; defaults to `CLIENT_HOST` |
 | `CLIENT_CONFIG_LOG_LEVEL` | Browser console log level: `error`, `warn`, `info`, or `debug` (default `error`) |
 
-> **Upgrading from an older image?** The `UPTIME_APP_*` variables (`UPTIME_APP_API_BASE_URL`, `UPTIME_APP_CLIENT_HOST`, `UPTIME_APP_LOG_LEVEL`) are no longer read. In most setups no replacement is needed — the same-origin defaults cover them; if you pointed the client at a different origin, use the `CLIENT_CONFIG_*` equivalents above. The `checkmate-client`, `checkmate-backend`, `checkmate-mongo`, and `checkmate-backend-mono-multiarch` images are no longer updated — switch to `ghcr.io/bluewave-labs/checkmate`, keeping your existing MongoDB service and data volume.
+> **Upgrading from an older image?** The `UPTIME_APP_*` variables (`UPTIME_APP_API_BASE_URL`, `UPTIME_APP_CLIENT_HOST`, `UPTIME_APP_LOG_LEVEL`) are no longer read. In most setups no replacement is needed — the API stays same-origin and the canonical client origin inherits `CLIENT_HOST`; if you need different client runtime values, use the `CLIENT_CONFIG_*` equivalents above. The `checkmate-client`, `checkmate-backend`, `checkmate-mongo`, and `checkmate-backend-mono-multiarch` images are no longer updated — switch to `ghcr.io/bluewave-labs/checkmate`, keeping your existing MongoDB service and data volume.
 
 See full installation instructions in the [Checkmate documentation portal](https://checkmate.so/docs). 
 
