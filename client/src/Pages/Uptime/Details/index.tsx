@@ -61,7 +61,6 @@ const UptimeDetailsPage = () => {
 		}
 		const params = new URLSearchParams();
 		params.append("dateRange", dateRange);
-		params.append("normalize", "true");
 		return `/monitors/uptime/details/${monitorId}?${params.toString()}`;
 	}, [monitorId, dateRange]);
 

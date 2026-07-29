@@ -1,6 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { getDateForRange, getDateFormat, NormalizeData, NormalizeDataUptimeDetails } from "../../../src/utils/dataUtils.ts";
-import type { GroupedCheck } from "../../../src/domain/checks/check.type.ts";
+import { getDateForRange, getDateFormat, NormalizeData } from "../../../src/utils/dataUtils.ts";
 import { DateRanges, type DateRange } from "../../../src/types/query.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -9,13 +8,6 @@ const makeCheck = (responseTime: number, overrides?: Record<string, unknown>) =>
 	id: `check-${responseTime}`,
 	status: true,
 	responseTime,
-	...overrides,
-});
-
-const makeGrouped = (avgResponseTime: number, overrides?: Partial<GroupedCheck>): GroupedCheck => ({
-	bucketDate: `bucket-${avgResponseTime}`,
-	avgResponseTime,
-	totalChecks: 5,
 	...overrides,
 });
 
@@ -123,53 +115,6 @@ describe("NormalizeData", () => {
 		result.forEach((check) => {
 			expect(check.responseTime).toBeNaN();
 			expect(check.originalResponseTime).toBe(50);
-		});
-	});
-});
-
-describe("NormalizeDataUptimeDetails", () => {
-	it("rescales avgResponseTime into [rangeMin, rangeMax] anchored to the p0–p95 window", () => {
-		const checks = [100, 200, 300, 400, 500].map((avg) => makeGrouped(avg));
-
-		const result = NormalizeDataUptimeDetails(checks, 10, 100);
-
-		expect(result[0]!.avgResponseTime).toBe(10);
-		expect(result[1]!.avgResponseTime).toBeCloseTo(33.6842, 4);
-		expect(result[4]!.avgResponseTime).toBe(100);
-	});
-
-	it("preserves the raw value in originalAvgResponseTime and spreads other fields", () => {
-		const checks = [makeGrouped(100), makeGrouped(500)];
-
-		const result = NormalizeDataUptimeDetails(checks, 10, 100);
-
-		expect(result[0]!.originalAvgResponseTime).toBe(100);
-		expect(result[1]!.originalAvgResponseTime).toBe(500);
-		expect(result[0]).toMatchObject({ bucketDate: "bucket-100", totalChecks: 5 });
-	});
-
-	it("passes a single bucket through, only adding originalAvgResponseTime", () => {
-		const result = NormalizeDataUptimeDetails([makeGrouped(250)], 10, 100);
-
-		expect(result).toEqual([{ bucketDate: "bucket-250", avgResponseTime: 250, totalChecks: 5, originalAvgResponseTime: 250 }]);
-	});
-
-	it("returns an empty array for empty input", () => {
-		expect(NormalizeDataUptimeDetails([], 10, 100)).toEqual([]);
-	});
-
-	it("records originalAvgResponseTime as 0 for a null avgResponseTime ($avg over an empty bucket)", () => {
-		const result = NormalizeDataUptimeDetails([makeGrouped(null as unknown as number)], 10, 100);
-
-		expect(result[0]!.originalAvgResponseTime).toBe(0);
-	});
-
-	it("produces NaN when all values are equal (division by zero — known edge case)", () => {
-		const result = NormalizeDataUptimeDetails([makeGrouped(50), makeGrouped(50)], 10, 100);
-
-		result.forEach((check) => {
-			expect(check.avgResponseTime).toBeNaN();
-			expect(check.originalAvgResponseTime).toBe(50);
 		});
 	});
 });

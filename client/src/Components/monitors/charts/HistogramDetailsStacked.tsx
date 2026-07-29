@@ -29,6 +29,7 @@ import { useSelector } from "react-redux";
 import { useMemo } from "react";
 import { useTheme } from "@mui/material";
 import { SPACING } from "@/Utils/Theme/constants";
+import { computeYAxisCap } from "@/Components/monitors/charts/ChartUtils";
 
 export const PHASE_KEYS = [
 	"avgDns",
@@ -140,12 +141,10 @@ export const HistogramDetailsStacked = ({
 	// Cap the y domain at 2x the p95 of bucket totals, so typical stacks sit
 	// around mid-height with headroom above
 	const yMax = useMemo(() => {
-		const totals = checks
-			.map((check) => PHASE_KEYS.reduce((sum, key) => sum + check[key], 0))
-			.sort((a, b) => a - b);
-		if (totals.length < 2) return undefined;
-		const p95 = totals[Math.min(totals.length - 1, Math.floor(totals.length * 0.95))];
-		return p95 > 0 ? Math.ceil(p95 * 2) : undefined;
+		const totals = checks.map((check) =>
+			PHASE_KEYS.reduce((sum, key) => sum + check[key], 0)
+		);
+		return computeYAxisCap(totals);
 	}, [checks]);
 
 	return (

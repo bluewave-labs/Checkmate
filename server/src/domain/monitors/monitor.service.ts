@@ -1,4 +1,4 @@
-import { NormalizeData, NormalizeDataUptimeDetails } from "@/utils/dataUtils.js";
+import { NormalizeData } from "@/utils/dataUtils.js";
 import { type Monitor } from "@/domain/monitors/monitor.type.js";
 import type {
 	MonitorType,
@@ -193,9 +193,9 @@ export class MonitorService implements IMonitorService {
 		return {
 			monitorData: {
 				monitor,
-				groupedChecks: NormalizeDataUptimeDetails(checksData.groupedChecks, 10, 100),
-				groupedUpChecks: NormalizeDataUptimeDetails(checksData.groupedUpChecks, 10, 100),
-				groupedDownChecks: NormalizeDataUptimeDetails(checksData.groupedDownChecks, 10, 100),
+				groupedChecks: checksData.groupedChecks,
+				groupedUpChecks: checksData.groupedUpChecks,
+				groupedDownChecks: checksData.groupedDownChecks,
 				groupedAvgResponseTime: checksData.avgResponseTime,
 				groupedUptimePercentage: checksData.uptimePercentage,
 			},

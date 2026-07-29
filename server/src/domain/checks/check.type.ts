@@ -172,10 +172,6 @@ export type NormalizedCheck<T extends HasResponseTime = Check> = T & {
 	originalResponseTime: number;
 };
 
-export type NormalizedUptimeCheck<T extends GroupedCheck = GroupedCheck> = T & {
-	originalAvgResponseTime: number;
-};
-
 export type CheckSnapshot = Omit<Check, "metadata" | "updatedAt">;
 
 export interface HardwareDiskStats {

@@ -261,7 +261,3 @@ export interface HasResponseTime {
 export type NormalizedCheck<T extends HasResponseTime = Check> = T & {
 	originalResponseTime: number;
 };
-
-export type NormalizedUptimeCheck<T extends GroupedCheck = GroupedCheck> = T & {
-	originalAvgResponseTime: number;
-};

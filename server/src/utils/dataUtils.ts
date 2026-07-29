@@ -1,4 +1,4 @@
-import type { GroupedCheck, HasResponseTime, NormalizedCheck, NormalizedUptimeCheck } from "@/domain/checks/check.type.js";
+import type { HasResponseTime, NormalizedCheck } from "@/domain/checks/check.type.js";
 import { type DateRange } from "@/types/query.js";
 
 export const getDateForRange = (dateRange: DateRange): Date => {
@@ -59,19 +59,5 @@ export const NormalizeData = <T extends HasResponseTime>(checks: T[], rangeMin: 
 		...check,
 		responseTime: rescale(check.responseTime, min, max, rangeMin, rangeMax),
 		originalResponseTime: original(check),
-	}));
-};
-
-export const NormalizeDataUptimeDetails = <T extends GroupedCheck>(checks: T[], rangeMin: number, rangeMax: number): NormalizedUptimeCheck<T>[] => {
-	const original = (check: T) => (typeof check.avgResponseTime === "number" ? check.avgResponseTime : 0);
-	if (checks.length <= 1) {
-		return checks.map((check) => ({ ...check, originalAvgResponseTime: original(check) }));
-	}
-	const min = percentileBy(checks, 0, (c) => c.avgResponseTime);
-	const max = percentileBy(checks, 95, (c) => c.avgResponseTime);
-	return checks.map((check) => ({
-		...check,
-		avgResponseTime: rescale(check.avgResponseTime, min, max, rangeMin, rangeMax),
-		originalAvgResponseTime: original(check),
 	}));
 };

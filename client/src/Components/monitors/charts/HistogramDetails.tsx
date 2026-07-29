@@ -4,6 +4,7 @@ import {
 	AreaChart,
 	Area,
 	XAxis,
+	YAxis,
 	Tooltip,
 	CartesianGrid,
 	ResponsiveContainer,
@@ -24,6 +25,8 @@ import { useTheme } from "@mui/material/styles";
 import type { Theme } from "@mui/material/styles";
 import type { GroupedCheck } from "@/Types/Check";
 import type { RootState } from "@/Types/state";
+import { useMemo } from "react";
+import { computeYAxisCap } from "@/Components/monitors/charts/ChartUtils";
 
 type XTickProps = {
 	x: number;
@@ -69,7 +72,7 @@ const ResponseTimeToolTip = ({
 	if (!active) return null;
 
 	const format = tooltipDateFormatLookup(range);
-	const responseTime = Math.floor(payload[0]?.payload?.originalAvgResponseTime || 0);
+	const responseTime = Math.floor(payload[0]?.payload?.avgResponseTime || 0);
 	return (
 		<BaseBox sx={{ py: theme.spacing(2), px: theme.spacing(4) }}>
 			<Typography>{formatDateWithTz(String(label), format, uiTimezone)}</Typography>
@@ -90,6 +93,10 @@ export const HistogramDetails = ({
 }) => {
 	const theme = useTheme();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
+	const yMax = useMemo(() => {
+		const totals = checks.map((check) => check.avgResponseTime || 0);
+		return computeYAxisCap(totals);
+	}, [checks]);
 	return (
 		<BaseChart
 			icon={
@@ -132,6 +139,12 @@ export const HistogramDetails = ({
 							/>
 						</linearGradient>
 					</defs>
+					<YAxis
+						hide
+						// scale="sqrt"
+						domain={[0, yMax ?? "auto"]}
+						allowDataOverflow
+					/>
 					<XAxis
 						axisLine={false}
 						tickLine={false}

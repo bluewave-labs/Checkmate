@@ -197,7 +197,6 @@ export const getUptimeDetailsByIdParamValidation = z.object({
 
 export const getUptimeDetailsByIdQueryValidation = z.object({
 	dateRange: z.enum(DateRanges),
-	normalize: booleanCoercion.optional(),
 });
 
 const importedMonitorSchema = z
