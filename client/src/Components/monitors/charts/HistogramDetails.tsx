@@ -122,7 +122,10 @@ export const HistogramDetails = ({
 	const theme = useTheme();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 	const yMax = useMemo(() => {
-		const totals = checks.map((check) => check.avgResponseTime || 0);
+		const totals = checks.map((check) => {
+			const phaseSum = PHASE_KEYS.reduce((sum, key) => sum + (check[key] ?? 0), 0);
+			return Math.max(check.avgResponseTime ?? 0, phaseSum);
+		});
 		return computeYAxisCap(totals);
 	}, [checks]);
 
