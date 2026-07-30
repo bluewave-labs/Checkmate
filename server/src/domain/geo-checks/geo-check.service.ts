@@ -1,5 +1,5 @@
 import type { GeoCheck } from "@/domain/geo-checks/geo-check.type.js";
-import type { Monitor } from "@/domain/monitors/monitor.types.js";
+import type { Monitor } from "@/domain/monitors/monitor.type.js";
 import type { GeoCheckResult, GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
 import { Types } from "mongoose";
 import type { FlatGeoChecksQueryResult, IGeoChecksRepository } from "@/domain/geo-checks/geo-check.repository.interface.js";
@@ -7,18 +7,18 @@ import type { IMonitorsRepository } from "@/domain/monitors/monitor.repository.i
 import type { IGlobalPingService } from "@/service/globalPingService.js";
 import type { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";
+import { DateRange } from "@/types/query.js";
 
 const SERVICE_NAME = "GeoChecksService";
 
 export interface IGeoChecksService {
-	readonly serviceName: string;
 	buildGeoCheck(monitor: Monitor): Promise<GeoCheck | null>;
 	createGeoChecks(geoChecks: GeoCheck[]): Promise<GeoCheck[]>;
 	getGeoChecksByMonitor(args: {
 		monitorId: string;
 		teamId: string;
 		sortOrder: string;
-		dateRange: string;
+		dateRange: DateRange;
 		page?: number;
 		rowsPerPage?: number;
 		continent?: GeoContinent | GeoContinent[];
@@ -48,10 +48,6 @@ export class GeoChecksService implements IGeoChecksService {
 		this.geoChecksRepository = geoChecksRepository;
 		this.globalPingService = globalPingService;
 		this.monitorsRepository = monitorsRepository;
-	}
-
-	get serviceName() {
-		return GeoChecksService.SERVICE_NAME;
 	}
 
 	async buildGeoCheck(monitor: Monitor): Promise<GeoCheck | null> {
@@ -160,7 +156,7 @@ export class GeoChecksService implements IGeoChecksService {
 		monitorId: string;
 		teamId: string;
 		sortOrder: string;
-		dateRange: string;
+		dateRange: DateRange;
 		page?: number;
 		rowsPerPage?: number;
 		continent: GeoContinent | GeoContinent[];

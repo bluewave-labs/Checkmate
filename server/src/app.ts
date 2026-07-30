@@ -52,8 +52,16 @@ export const createApp = ({
 
 	app.use(createStatusPageDocumentCsp(allowedOrigin));
 
+	// Client runtime config; registered before express.static so it shadows the
+	// fallback config.js in the client build output
+	const clientConfigScript = `window.__CHECKMATE_CONFIG__ = ${JSON.stringify(envSettings.clientConfig).replace(/</g, "\\u003c")};`;
+	app.get("/config.js", (req, res) => {
+		res.set("Cache-Control", "no-cache").type("application/javascript").send(clientConfigScript);
+	});
+
 	app.use(express.static(frontendPath));
 
+	app.use("/api/v1/monitors/import/json", express.json({ limit: "10mb" }));
 	app.use(express.json());
 	app.use(cookieParser());
 
@@ -68,6 +76,7 @@ export const createApp = ({
 				directives: {
 					upgradeInsecureRequests: null,
 					"script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+					"img-src": ["'self'", "data:", "https://img.shields.io"],
 					"object-src": ["'none'"],
 					"base-uri": ["'self'"],
 				},

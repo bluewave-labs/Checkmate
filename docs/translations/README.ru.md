@@ -9,6 +9,7 @@
   🇪🇸 <a href="README.es.md">Español</a> |
   🇫🇮 <a href="README.fi.md">Suomi</a> |
   🇫🇷 <a href="README.fr.md">Français</a> |
+  🇮🇹 <a href="README.it.md">Italiano</a> |
   🇯🇵 <a href="README.ja.md">日本語</a> |
   🇧🇷 <a href="README.pt-BR.md">Português (Brasil)</a> |
   🇷🇺 <a href="README.ru.md">Русский</a> |
@@ -81,7 +82,7 @@ Checkmate прошёл нагрузочное тестирование с 1000+ 
 
 Инструкции по установке смотрите на [портале документации Checkmate](https://checkmate.so/docs).
 
-В качестве альтернативы вы можете использовать [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (ЮАР), [Cloudzy](https://cloudzy.com/marketplace/checkmate) или [Pikapods](https://www.pikapods.com/), чтобы быстро поднять инстанс Checkmate. Если вы хотите мониторить серверную инфраструктуру, потребуется агент [Capture](https://github.com/bluewave-labs/capture). В репозитории Capture также есть инструкции по установке.
+В качестве альтернативы вы можете использовать [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (ЮАР), [Cloudzy](https://cloudzy.com/marketplace/checkmate) или [Pikapods](https://www.pikapods.com/), чтобы быстро поднять инстанс Checkmate. Если вы хотите мониторить серверную инфраструктуру, потребуется агент [Capture](https://github.com/bluewave-labs/capture). В репозитории Capture также есть инструкции по установке.
 
 ### Использование собственного УЦ
 

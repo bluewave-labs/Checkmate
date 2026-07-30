@@ -4,7 +4,8 @@ import { QueueWorkerDocument } from "@/domain/queue-workers/queue-worker.type.js
 
 // Single source of truth for worker liveness: the TTL that GCs stale records and
 // the window readers use to count a worker as alive. Heartbeat cadence must stay well below it.
-export const WORKER_TTL_SECONDS = 180;
+const WORKER_TTL_SECONDS = 180;
+export const WORKER_STALE_MS = WORKER_TTL_SECONDS * 1000;
 
 const QueueWorkerSchema = new Schema<QueueWorkerDocument>(
 	{

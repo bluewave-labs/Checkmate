@@ -1,6 +1,9 @@
 import { PUBLIC_STATUS_PAGE_PREFIX, type StatusPage } from "@/Types/StatusPage";
+import { runtimeConfig } from "@/Utils/runtimeConfig";
 
-const CLIENT_HOST = import.meta.env.VITE_APP_CLIENT_HOST as string | undefined;
+const CLIENT_HOST =
+	runtimeConfig.clientHost ||
+	(import.meta.env.VITE_APP_CLIENT_HOST as string | undefined);
 
 const getClientOriginProtocol = (): string => {
 	const source =

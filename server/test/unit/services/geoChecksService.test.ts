@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { GeoChecksService } from "../../../src/domain/geo-checks/geo-check.service.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import type { Monitor } from "../../../src/domain/monitors/monitor.types.ts";
+import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { GeoCheckResult } from "../../../src/domain/geo-checks/geo-check.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -48,17 +48,6 @@ const createService = (overrides?: Record<string, unknown>) => {
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("GeoChecksService", () => {
-	describe("serviceName", () => {
-		it("returns GeoChecksService from static property", () => {
-			expect(GeoChecksService.SERVICE_NAME).toBe("GeoChecksService");
-		});
-
-		it("returns GeoChecksService from instance getter", () => {
-			const { service } = createService();
-			expect(service.serviceName).toBe("GeoChecksService");
-		});
-	});
-
 	// ── buildGeoCheck ───────────────────────────────────────────────────────
 
 	describe("buildGeoCheck", () => {

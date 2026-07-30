@@ -1,6 +1,6 @@
 import { PingStatusPayload } from "@/types/network.js";
 import { IStatusProvider } from "./IStatusProvider.js";
-import { MonitorType, Monitor } from "@/domain/monitors/monitor.types.js";
+import { MonitorType, Monitor } from "@/domain/monitors/monitor.type.js";
 import { MonitorStatusResponse } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import ping from "ping";

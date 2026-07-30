@@ -39,17 +39,6 @@ const createService = (overrides?: Record<string, unknown>) => {
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("InviteService", () => {
-	describe("serviceName", () => {
-		it("returns inviteService from static property", () => {
-			expect(InviteService.SERVICE_NAME).toBe("inviteService");
-		});
-
-		it("returns inviteService from instance getter", () => {
-			const { service } = createService();
-			expect(service.serviceName).toBe("inviteService");
-		});
-	});
-
 	// ── getInviteToken ──────────────────────────────────────────────────────
 
 	describe("getInviteToken", () => {

@@ -3,22 +3,8 @@ import { type MaintenanceWindowDocument, MaintenanceWindowModel } from "@/domain
 import { IMaintenanceWindowsRepository } from "./maintenance-window.repository.interface.js";
 import mongoose, { SortOrder } from "mongoose";
 import { AppError } from "@/utils/AppError.js";
-
+import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository {
-	private toStringId = (value?: mongoose.Types.ObjectId | string | null): string => {
-		if (!value) {
-			return "";
-		}
-		return value instanceof mongoose.Types.ObjectId ? value.toString() : String(value);
-	};
-
-	private toDateString = (value?: Date | string | null): string => {
-		if (!value) {
-			return new Date(0).toISOString();
-		}
-		return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
-	};
-
 	private mapDocuments = (documents: MaintenanceWindowDocument[]): MaintenanceWindow[] => {
 		if (!documents?.length) {
 			return [];
@@ -28,18 +14,18 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 
 	private toEntity = (doc: MaintenanceWindowDocument): MaintenanceWindow => {
 		return {
-			id: this.toStringId(doc._id),
-			monitorIds: doc.monitorIds.map(this.toStringId),
-			teamId: this.toStringId(doc.teamId),
+			id: toStringId(doc._id),
+			monitorIds: doc.monitorIds.map(toStringId),
+			teamId: toStringId(doc.teamId),
 			active: doc.active,
 			name: doc.name,
 			duration: doc.duration,
 			durationUnit: doc.durationUnit,
 			repeat: doc.repeat,
-			start: this.toDateString(doc.start),
-			end: this.toDateString(doc.end),
-			createdAt: this.toDateString(doc.createdAt),
-			updatedAt: this.toDateString(doc.updatedAt),
+			start: toDateString(doc.start),
+			end: toDateString(doc.end),
+			createdAt: toDateString(doc.createdAt),
+			updatedAt: toDateString(doc.updatedAt),
 		};
 	};
 

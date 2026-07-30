@@ -1,11 +1,12 @@
 import { MonitorModel } from "@/domain/monitors/monitor.model.js";
 import type { MonitorDocument, CheckSnapshotDocument } from "@/domain/monitors/monitor.model.js";
 import type { CheckSnapshot } from "@/domain/checks/check.type.js";
-import type { Monitor, MonitorStatus, MonitorsSummary } from "@/domain/monitors/monitor.types.js";
+import type { Monitor, MonitorStatus, MonitorsSummary } from "@/domain/monitors/monitor.type.js";
 import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import { MongoBulkWriteError } from "mongodb";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "@/domain/monitors/monitor.repository.interface.js";
+import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 class MongoMonitorsRepository implements IMonitorsRepository {
 	create = async (monitor: Monitor, teamId: string, userId: string) => {
 		const monitorModel = new MonitorModel({ ...monitor, teamId, userId });
@@ -48,19 +49,19 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return this.mapDocuments(monitors);
 	};
 
-	findByTeamId = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null> => {
-		const { page = 0, rowsPerPage = 0, filter, field = "createdAt", order = "desc", type, tags } = config ?? {};
+	private queryBuilder = (config: TeamQueryConfig, teamId: string): FilterQuery<MonitorDocument> => {
+		const { filter, field = "createdAt", type, tags } = config ?? {};
 
-		const query: Record<string, unknown> = {
-			teamId: new mongoose.Types.ObjectId(teamId),
-		};
+		const query: FilterQuery<MonitorDocument> = { teamId: new mongoose.Types.ObjectId(teamId) };
 
 		if (type !== undefined) {
 			query.type = Array.isArray(type) ? { $in: type } : type;
 		}
 
 		if (tags !== undefined) {
-			query.tags = Array.isArray(tags) ? { $in: tags } : tags;
+			// Convert to ObjectIds: aggregation $match does no schema casting, so raw strings never match the ObjectId refs
+			const tagIds = (Array.isArray(tags) ? tags : [tags]).map((tag) => new mongoose.Types.ObjectId(tag));
+			query.tags = { $in: tagIds };
 		}
 
 		if (filter !== undefined) {
@@ -81,74 +82,36 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 					break;
 			}
 		}
+		return query;
+	};
 
-		const sort = { [field]: order === "asc" ? 1 : -1 } as const;
-		const skip = Math.max(page, 0) * rowsPerPage;
+	private uptimeStatsLookupStages: PipelineStage[] = [
+		{ $lookup: { from: "monitorstats", localField: "_id", foreignField: "monitorId", as: "stats" } },
+		{ $addFields: { uptimePercentage: { $arrayElemAt: ["$stats.uptimePercentage", 0] } } },
+		{ $project: { stats: 0 } },
+	];
 
-		const documents = await MonitorModel.find(query).sort(sort).skip(skip).limit(rowsPerPage);
+	private pageOptions = (config: TeamQueryConfig) => {
+		const { page = 0, rowsPerPage = 0, field = "createdAt", order = "desc" } = config ?? {};
+		return { sort: { [field]: order === "asc" ? 1 : -1 } as const, skip: Math.max(page, 0) * rowsPerPage, limit: rowsPerPage };
+	};
 
+	findByTeamId = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[]> => {
+		const query = this.queryBuilder(config, teamId);
+		const { sort, skip, limit } = this.pageOptions(config);
+		const documents = await MonitorModel.find(query).sort(sort).skip(skip).limit(limit);
 		return this.mapDocuments(documents);
 	};
 
-	findByTeamIdWithStats = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[] | null> => {
-		const { page = 0, rowsPerPage = 0, filter, field = "createdAt", order = "desc", type, tags } = config ?? {};
-
-		const query: Record<string, unknown> = {
-			teamId: new mongoose.Types.ObjectId(teamId),
-		};
-
-		if (type !== undefined) {
-			query.type = Array.isArray(type) ? { $in: type } : type;
-		}
-
-		if (tags !== undefined) {
-			query.tags = Array.isArray(tags) ? { $in: tags } : tags;
-		}
-
-		if (filter !== undefined) {
-			switch (field) {
-				case "name":
-					query.$or = [{ name: { $regex: filter, $options: "i" } }, { url: { $regex: filter, $options: "i" } }];
-					break;
-				case "isActive":
-					query.isActive = filter === "true";
-					break;
-				case "status":
-					query.status = filter;
-					break;
-				case "type":
-					query.type = filter;
-					break;
-				default:
-					break;
-			}
-		}
-
-		const sort = { [field]: order === "asc" ? 1 : -1 } as const;
-		const skip = Math.max(page, 0) * rowsPerPage;
+	findByTeamIdWithStats = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[]> => {
+		const { sort, skip, limit } = this.pageOptions(config);
+		const query = this.queryBuilder(config, teamId);
 
 		const pipeline: PipelineStage[] = [
 			{ $match: query },
 			{ $sort: sort },
-			...(rowsPerPage ? [{ $skip: skip }, { $limit: rowsPerPage }] : []),
-			{
-				$lookup: {
-					from: "monitorstats",
-					localField: "_id",
-					foreignField: "monitorId",
-					as: "stats",
-				},
-			},
-			{
-				$addFields: {
-					uptimePercentage: { $arrayElemAt: ["$stats.uptimePercentage", 0] },
-				},
-			},
-			{
-				$project: {
-					stats: 0,
-				},
-			},
+			...(limit ? [{ $skip: skip }, { $limit: limit }] : []),
+			...this.uptimeStatsLookupStages,
 		];
 
 		const documents = await MonitorModel.aggregate(pipeline);
@@ -162,27 +125,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 
 		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
 
-		const pipeline: PipelineStage[] = [
-			{ $match: { _id: { $in: objectIds } } },
-			{
-				$lookup: {
-					from: "monitorstats",
-					localField: "_id",
-					foreignField: "monitorId",
-					as: "stats",
-				},
-			},
-			{
-				$addFields: {
-					uptimePercentage: { $arrayElemAt: ["$stats.uptimePercentage", 0] },
-				},
-			},
-			{
-				$project: {
-					stats: 0,
-				},
-			},
-		];
+		const pipeline: PipelineStage[] = [{ $match: { _id: { $in: objectIds } } }, ...this.uptimeStatsLookupStages];
 
 		const documents = await MonitorModel.aggregate(pipeline);
 		return documents.map((doc) => this.toEntity(doc));
@@ -249,24 +192,11 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		];
 
 		const documents = await MonitorModel.aggregate(pipeline);
-		return documents.map((doc) => this.toEntityWithChecks(doc));
+		return documents.map((doc) => this.toEntity(doc));
 	};
 
-	findMonitorCountByTeamIdAndType = async (teamId: string, config?: TeamQueryConfig): Promise<number> => {
-		const { type, tags } = config ?? {};
-
-		const query: FilterQuery<MonitorDocument> = {
-			teamId: new mongoose.Types.ObjectId(teamId),
-		};
-
-		if (type !== undefined) {
-			query.type = Array.isArray(type) ? { $in: type } : type;
-		}
-
-		if (tags !== undefined) {
-			query.tags = Array.isArray(tags) ? { $in: tags } : tags;
-		}
-
+	findMonitorCountByTeamIdAndType = async (teamId: string, config: TeamQueryConfig): Promise<number> => {
+		const query = this.queryBuilder(config, teamId);
 		const count = await MonitorModel.countDocuments(query);
 		return count;
 	};
@@ -394,15 +324,8 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return { monitors: this.mapDocuments(monitors), deletedCount };
 	};
 
-	findMonitorsSummaryByTeamId = async (teamId: string, config?: SummaryConfig): Promise<MonitorsSummary> => {
-		const match: FilterQuery<MonitorDocument> = { teamId: new mongoose.Types.ObjectId(teamId) };
-		if (config?.type !== undefined) {
-			match.type = Array.isArray(config.type) ? { $in: config.type } : config.type;
-		}
-		if (config?.tags !== undefined) {
-			const tagIds = (Array.isArray(config.tags) ? config.tags : [config.tags]).map((tag) => new mongoose.Types.ObjectId(tag));
-			match.tags = { $in: tagIds };
-		}
+	findMonitorsSummaryByTeamId = async (teamId: string, config: SummaryConfig): Promise<MonitorsSummary> => {
+		const match = this.queryBuilder(config, teamId);
 		const pipeline = [
 			{ $match: match },
 			{
@@ -458,14 +381,6 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		);
 	};
 
-	findGroupsByTeamId = async (teamId: string): Promise<string[]> => {
-		const groups = await MonitorModel.distinct("group", {
-			teamId: new mongoose.Types.ObjectId(teamId),
-			group: { $nin: [null, ""] },
-		});
-		return groups.sort();
-	};
-
 	removeNotificationFromMonitors = async (notificationId: string): Promise<void> => {
 		await MonitorModel.updateMany({ notifications: notificationId }, { $pull: { notifications: notificationId } });
 	};
@@ -517,17 +432,6 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	private toEntity = (doc: MonitorDocument): Monitor => {
-		const toStringId = (value: unknown): string => {
-			if (value instanceof mongoose.Types.ObjectId) {
-				return value.toString();
-			}
-			return value?.toString() ?? "";
-		};
-
-		const toDateString = (value: Date | string): string => {
-			return value instanceof Date ? value.toISOString() : value;
-		};
-
 		const notificationIds = (doc.notifications ?? []).map((notification) => toStringId(notification));
 		const tagIds = (doc.tags ?? []).map((tag) => toStringId(tag));
 		return {
@@ -581,78 +485,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		};
 	};
 
-	private toEntityWithChecks = (doc: MonitorDocument): Monitor => {
-		const toStringId = (value: unknown): string => {
-			if (value instanceof mongoose.Types.ObjectId) {
-				return value.toString();
-			}
-			return value?.toString() ?? "";
-		};
-
-		const toDateString = (value: Date | string): string => {
-			if (!value) return "";
-			return value instanceof Date ? value.toISOString() : value;
-		};
-
-		const notificationIds = (doc.notifications ?? []).map((notification: unknown) => toStringId(notification));
-		const tagIds = (doc.tags ?? []).map((tag: unknown) => toStringId(tag));
-
-		return {
-			id: toStringId(doc._id),
-			userId: toStringId(doc.userId),
-			teamId: toStringId(doc.teamId),
-			name: doc.name,
-			description: doc.description ?? undefined,
-			method: doc.method ?? "GET",
-			status: doc.status ?? "initializing",
-			statusWindow: doc.statusWindow ?? [],
-			statusWindowSize: doc.statusWindowSize,
-			statusWindowThreshold: doc.statusWindowThreshold,
-			type: doc.type,
-			ignoreTlsErrors: doc.ignoreTlsErrors,
-			useAdvancedMatching: doc.useAdvancedMatching ?? false,
-			jsonPath: doc.jsonPath ?? undefined,
-			expectedValue: doc.expectedValue ?? undefined,
-			matchMethod: doc.matchMethod ?? undefined,
-			url: doc.url,
-			port: doc.port ?? undefined,
-			isActive: doc.isActive,
-			interval: doc.interval,
-			uptimePercentage: doc.uptimePercentage ?? undefined,
-			notifications: notificationIds,
-			tags: tagIds,
-			customUpCodes: doc.customUpCodes ?? [],
-			secret: doc.secret ?? undefined,
-			cpuAlertThreshold: doc.cpuAlertThreshold,
-			cpuAlertCounter: doc.cpuAlertCounter,
-			memoryAlertThreshold: doc.memoryAlertThreshold,
-			memoryAlertCounter: doc.memoryAlertCounter,
-			diskAlertThreshold: doc.diskAlertThreshold,
-			diskAlertCounter: doc.diskAlertCounter,
-			tempAlertThreshold: doc.tempAlertThreshold,
-			tempAlertCounter: doc.tempAlertCounter,
-			selectedDisks: doc.selectedDisks ?? [],
-			gameId: doc.gameId ?? undefined,
-			grpcServiceName: doc.grpcServiceName ?? undefined,
-			strategy: doc.strategy ?? undefined,
-			group: doc.group ?? null,
-			recentChecks: (doc.recentChecks ?? []).map((check: CheckSnapshotDocument) => this.toCheckSnapshot(check)),
-			geoCheckEnabled: doc.geoCheckEnabled ?? false,
-			geoCheckLocations: doc.geoCheckLocations ?? [],
-			geoCheckInterval: doc.geoCheckInterval ?? 300000,
-			dnsServer: doc.dnsServer ?? undefined,
-			dnsRecordType: doc.dnsRecordType ?? undefined,
-			createdAt: toDateString(doc.createdAt),
-			updatedAt: toDateString(doc.updatedAt),
-			lastEvaluatedAt: doc.lastEvaluatedAt,
-		};
-	};
-
 	private toCheckSnapshot = (doc: CheckSnapshotDocument): CheckSnapshot => {
-		const toDateString = (value: Date | string): string => {
-			return value instanceof Date ? value.toISOString() : value;
-		};
-
 		return {
 			id: doc.id,
 			status: doc.status,

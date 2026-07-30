@@ -18,7 +18,6 @@ const createMonitorsRepositoryMock = () =>
 		findByIds: jest.fn(),
 		findMonitorCountByTeamIdAndType: jest.fn(),
 		findMonitorsSummaryByTeamId: jest.fn(),
-		findGroupsByTeamId: jest.fn(),
 		updateById: jest.fn(),
 		updateNotifications: jest.fn(),
 		togglePauseById: jest.fn(),
@@ -112,13 +111,6 @@ const createService = (
 };
 
 describe("MonitorService", () => {
-	describe("serviceName", () => {
-		it("returns 'MonitorService'", () => {
-			const { service } = createService();
-			expect(service.serviceName).toBe("MonitorService");
-		});
-	});
-
 	describe("createMonitor", () => {
 		it("creates a monitor and adds a job", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
@@ -582,7 +574,7 @@ describe("MonitorService", () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			(monitorsRepository.findMonitorsSummaryByTeamId as jest.Mock).mockResolvedValue(null);
 			(monitorsRepository.findMonitorCountByTeamIdAndType as jest.Mock).mockResolvedValue(0);
-			(monitorsRepository.findByTeamIdWithStats as jest.Mock).mockResolvedValue(null);
+			(monitorsRepository.findByTeamIdWithStats as jest.Mock).mockResolvedValue([]);
 
 			const { service } = createService({ monitorsRepository });
 			const result = await service.getMonitorsWithChecksByTeamId({ teamId: TEAM_ID });
@@ -743,18 +735,6 @@ describe("MonitorService", () => {
 			const games = { cs2: { name: "Counter-Strike 2" } };
 			const { service } = createService({ games });
 			expect(service.getAllGames()).toEqual(games);
-		});
-	});
-
-	describe("getGroupsByTeamId", () => {
-		it("delegates to repository", async () => {
-			const monitorsRepository = createMonitorsRepositoryMock();
-			(monitorsRepository.findGroupsByTeamId as jest.Mock).mockResolvedValue(["group1", "group2"]);
-			const { service } = createService({ monitorsRepository });
-
-			const result = await service.getGroupsByTeamId({ teamId: TEAM_ID });
-			expect(result).toEqual(["group1", "group2"]);
-			expect(monitorsRepository.findGroupsByTeamId).toHaveBeenCalledWith(TEAM_ID);
 		});
 	});
 
@@ -1463,12 +1443,15 @@ describe("MonitorService", () => {
 			const statusPagesRepository = createStatusPagesRepositoryMock();
 			const geoChecksRepository = createGeoChecksRepositoryMock();
 
+			const incidentsRepository = createIncidentsRepositoryMock();
+
 			const monitors = [makeMonitor({ id: "m1" }), makeMonitor({ id: "m2" })];
 			(monitorsRepository.deleteByTeamId as jest.Mock).mockResolvedValue({ monitors, deletedCount: 2 });
 			(checksRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
 			(geoChecksRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
 			(statusPagesRepository.removeMonitorFromStatusPages as jest.Mock).mockResolvedValue(0);
 			(monitorStatsRepository.deleteByMonitorId as jest.Mock).mockResolvedValue({});
+			(incidentsRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
 
 			const { service, jobQueue } = createService({
 				monitorsRepository,
@@ -1476,6 +1459,7 @@ describe("MonitorService", () => {
 				monitorStatsRepository,
 				statusPagesRepository,
 				geoChecksRepository,
+				incidentsRepository,
 			});
 
 			const result = await service.deleteAllMonitors({ teamId: TEAM_ID });
@@ -1486,26 +1470,33 @@ describe("MonitorService", () => {
 			expect(geoChecksRepository.deleteByMonitorId).toHaveBeenCalledTimes(2);
 			expect(statusPagesRepository.removeMonitorFromStatusPages).toHaveBeenCalledTimes(2);
 			expect(monitorStatsRepository.deleteByMonitorId).toHaveBeenCalledTimes(2);
+			expect(incidentsRepository.deleteByMonitorId).toHaveBeenCalledTimes(2);
 		});
 
-		it("logs warning when associated record deletion fails with Error", async () => {
+		it("logs a per-child warning and continues when a child deletion fails with Error", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			const checksRepository = createChecksRepositoryMock();
 			const monitorStatsRepository = createMonitorStatsRepositoryMock();
 			const statusPagesRepository = createStatusPagesRepositoryMock();
 			const geoChecksRepository = createGeoChecksRepositoryMock();
+			const incidentsRepository = createIncidentsRepositoryMock();
 
 			const monitors = [makeMonitor({ id: "m1" })];
 			(monitorsRepository.deleteByTeamId as jest.Mock).mockResolvedValue({ monitors, deletedCount: 1 });
 			(checksRepository.deleteByMonitorId as jest.Mock).mockRejectedValue(new Error("fail"));
+			(geoChecksRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
+			(statusPagesRepository.removeMonitorFromStatusPages as jest.Mock).mockResolvedValue(0);
+			(monitorStatsRepository.deleteByMonitorId as jest.Mock).mockResolvedValue({});
+			(incidentsRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
 
 			const logger = createMockLogger();
-			const { service } = createService({
+			const { service, jobQueue } = createService({
 				monitorsRepository,
 				checksRepository,
 				monitorStatsRepository,
 				statusPagesRepository,
 				geoChecksRepository,
+				incidentsRepository,
 				logger,
 			});
 
@@ -1514,21 +1505,28 @@ describe("MonitorService", () => {
 			expect(result).toBe(1);
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: expect.stringContaining("Error deleting associated records"),
+					message: expect.stringContaining("Error deleting checks"),
 					stack: expect.any(String),
 				})
 			);
+			expect(jobQueue.deleteJob).toHaveBeenCalledTimes(1);
 		});
 
-		it("logs warning when associated record deletion fails with non-Error", async () => {
+		it("logs warning when scheduler job deletion fails with non-Error", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			const checksRepository = createChecksRepositoryMock();
 			const monitorStatsRepository = createMonitorStatsRepositoryMock();
 			const statusPagesRepository = createStatusPagesRepositoryMock();
 			const geoChecksRepository = createGeoChecksRepositoryMock();
+			const incidentsRepository = createIncidentsRepositoryMock();
 
 			const monitors = [makeMonitor({ id: "m1" })];
 			(monitorsRepository.deleteByTeamId as jest.Mock).mockResolvedValue({ monitors, deletedCount: 1 });
+			(checksRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
+			(geoChecksRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
+			(statusPagesRepository.removeMonitorFromStatusPages as jest.Mock).mockResolvedValue(0);
+			(monitorStatsRepository.deleteByMonitorId as jest.Mock).mockResolvedValue({});
+			(incidentsRepository.deleteByMonitorId as jest.Mock).mockResolvedValue(0);
 			// deleteJob throws non-Error
 			const jobQueue = createJobQueueMock();
 			(jobQueue.deleteJob as jest.Mock).mockRejectedValue("string error");
@@ -1543,7 +1541,7 @@ describe("MonitorService", () => {
 				geoChecksRepository,
 				monitorStatsRepository,
 				statusPagesRepository,
-				incidentsRepository: createIncidentsRepositoryMock(),
+				incidentsRepository,
 			});
 
 			const result = await service.deleteAllMonitors({ teamId: TEAM_ID });
@@ -1576,14 +1574,6 @@ describe("MonitorService", () => {
 
 			const result = await service.exportMonitorsToJSON({ teamId: TEAM_ID });
 			expect(result).toEqual(monitors);
-		});
-
-		it("throws when no monitors found (null)", async () => {
-			const monitorsRepository = createMonitorsRepositoryMock();
-			(monitorsRepository.findByTeamId as jest.Mock).mockResolvedValue(null);
-			const { service } = createService({ monitorsRepository });
-
-			await expect(service.exportMonitorsToJSON({ teamId: TEAM_ID })).rejects.toThrow("No monitors found to export.");
 		});
 
 		it("throws when monitors array is empty", async () => {

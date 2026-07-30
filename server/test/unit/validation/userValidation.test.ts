@@ -43,4 +43,25 @@ describe("editUserBodyValidation", () => {
 		});
 		expect(result.success).toBe(false);
 	});
+
+	// Regression: `deleteProfileImage` was missing from this schema, so z.object()
+	// stripped it before it reached the repository and the remove-profile-image
+	// flow was silently a no-op. The flag arrives as the multipart form-data
+	// string "true", so it must both survive parsing and coerce to a boolean.
+	it("retains deleteProfileImage and coerces the multipart string 'true' to boolean true", () => {
+		const result = editUserBodyValidation.safeParse({ deleteProfileImage: "true" });
+		expect(result.success).toBe(true);
+		expect(result.data).toEqual({ deleteProfileImage: true });
+	});
+
+	it("coerces the multipart string 'false' to boolean false", () => {
+		const result = editUserBodyValidation.safeParse({ deleteProfileImage: "false" });
+		expect(result.success).toBe(true);
+		expect(result.data).toEqual({ deleteProfileImage: false });
+	});
+
+	it("rejects a non-boolean deleteProfileImage value", () => {
+		const result = editUserBodyValidation.safeParse({ deleteProfileImage: "banana" });
+		expect(result.success).toBe(false);
+	});
 });

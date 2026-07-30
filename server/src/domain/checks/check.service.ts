@@ -6,6 +6,7 @@ import type { MonitorPayloadMap, MonitorStatusResponse } from "@/types/network.j
 import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import { ILogger } from "@/utils/logger.js";
+import { CheckFilter, DateRange } from "@/types/query.js";
 
 const SERVICE_NAME = "checkService";
 
@@ -18,21 +19,21 @@ export interface ICheckService {
 		monitorId: string;
 		teamId: string;
 		sortOrder: string;
-		dateRange: string;
+		dateRange: DateRange;
 		page: number;
 		rowsPerPage: number;
-		filter?: string;
+		filter?: CheckFilter;
 		status?: boolean;
 	}): Promise<ChecksQueryResult>;
 	getChecksByTeam(params: {
 		teamId: string;
 		sortOrder: string;
-		dateRange: string;
+		dateRange: DateRange;
 		page: number;
 		rowsPerPage: number;
-		filter?: string;
+		filter?: CheckFilter;
 	}): Promise<ChecksQueryResult>;
-	getChecksSummaryByTeamId(params: { teamId: string; dateRange: string }): Promise<ChecksSummary>;
+	getChecksSummaryByTeamId(params: { teamId: string; dateRange: DateRange }): Promise<ChecksSummary>;
 	deleteChecks(params: { monitorId: string; teamId: string }): Promise<number>;
 	deleteChecksByTeamId(params: { teamId: string }): Promise<number>;
 	deleteOlderThan(date: Date): Promise<number>;
@@ -48,10 +49,6 @@ export class CheckService implements ICheckService {
 		this.monitorsRepository = monitorsRepository;
 		this.logger = logger;
 		this.checksRepository = checksRepository;
-	}
-
-	get serviceName() {
-		return CheckService.SERVICE_NAME;
 	}
 
 	createChecks = async (checks: Check[]) => {
@@ -168,11 +165,11 @@ export class CheckService implements ICheckService {
 		monitorId: string;
 		teamId: string;
 		sortOrder: string;
-		dateRange: string;
+		dateRange: DateRange;
 		page: number;
 		rowsPerPage: number;
 		status?: boolean;
-		filter?: string;
+		filter: CheckFilter;
 	}) => {
 		if (!monitorId) {
 			throw new AppError({ message: "No monitor ID in request", service: SERVICE_NAME, method: "getChecksByMonitor", status: 400 });
@@ -187,7 +184,7 @@ export class CheckService implements ICheckService {
 		const parsedPage = page ?? 0;
 		const parsedRowsPerPage = rowsPerPage ?? 5;
 
-		const result = await this.checksRepository.findByMonitorId(monitorId, sortOrder, dateRange, filter, parsedPage, parsedRowsPerPage, status);
+		const result = await this.checksRepository.findByMonitorId(monitorId, sortOrder, dateRange, parsedPage, parsedRowsPerPage, status, filter);
 
 		return result;
 	};
@@ -196,25 +193,25 @@ export class CheckService implements ICheckService {
 		teamId,
 		sortOrder,
 		dateRange,
-		filter,
 		page,
 		rowsPerPage,
+		filter,
 	}: {
 		teamId: string;
 		sortOrder: string;
-		dateRange: string;
+		dateRange: DateRange;
 		page: number;
 		rowsPerPage: number;
-		filter?: string;
+		filter?: CheckFilter;
 	}) => {
 		const parsedPage = page ?? 0;
 		const parsedRowsPerPage = rowsPerPage ?? 5;
 
-		const checkData = await this.checksRepository.findByTeamId(sortOrder, dateRange, filter, parsedPage, parsedRowsPerPage, teamId);
+		const checkData = await this.checksRepository.findByTeamId(sortOrder, dateRange, parsedPage, parsedRowsPerPage, teamId, filter);
 		return checkData;
 	};
 
-	getChecksSummaryByTeamId = async ({ teamId, dateRange }: { teamId: string; dateRange: string }) => {
+	getChecksSummaryByTeamId = async ({ teamId, dateRange }: { teamId: string; dateRange: DateRange }) => {
 		const summary = await this.checksRepository.findSummaryByTeamId(teamId, dateRange);
 		return summary;
 	};

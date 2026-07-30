@@ -9,6 +9,7 @@
   🇪🇸 <a href="README.es.md">Español</a> |
   🇫🇮 <a href="README.fi.md">Suomi</a> |
   🇫🇷 <a href="README.fr.md">Français</a> |
+  🇮🇹 <a href="README.it.md">Italiano</a> |
   🇯🇵 <a href="README.ja.md">日本語</a> |
   🇧🇷 <a href="README.pt-BR.md">Português (Brasil)</a> |
   🇷🇺 <a href="README.ru.md">Русский</a> |
@@ -81,7 +82,7 @@ As instruções de uso podem ser encontradas [aqui](https://checkmate.so/docs).
 
 Veja as instruções de instalação no [portal de documentação do Checkmate](https://checkmate.so/docs).
 
-Alternativamente, você pode usar [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (África do Sul), [Cloudzy](https://cloudzy.com/marketplace/checkmate) ou [Pikapods](https://www.pikapods.com/) para subir rapidamente uma instância do Checkmate. Se quiser monitorar sua infraestrutura de servidores, você precisará do [agente Capture](https://github.com/bluewave-labs/capture). O repositório do Capture também contém as instruções de instalação.
+Alternativamente, você pode usar [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (África do Sul), [Cloudzy](https://cloudzy.com/marketplace/checkmate) ou [Pikapods](https://www.pikapods.com/) para subir rapidamente uma instância do Checkmate. Se quiser monitorar sua infraestrutura de servidores, você precisará do [agente Capture](https://github.com/bluewave-labs/capture). O repositório do Capture também contém as instruções de instalação.
 
 ### Usando uma CA personalizada
 

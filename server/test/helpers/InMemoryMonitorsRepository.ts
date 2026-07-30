@@ -1,6 +1,6 @@
 import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "../../src/domain/monitors/monitor.repository.interface.ts";
 import type { CheckSnapshot } from "../../src/domain/checks/check.type.ts";
-import type { Monitor, MonitorsSummary } from "../../src/domain/monitors/monitor.types.ts";
+import type { Monitor, MonitorsSummary } from "../../src/domain/monitors/monitor.type.ts";
 
 export class InMemoryMonitorsRepository implements IMonitorsRepository {
 	private monitors: Monitor[] = [];
@@ -116,10 +116,6 @@ export class InMemoryMonitorsRepository implements IMonitorsRepository {
 	}
 
 	async findMonitorsSummaryByTeamId(_teamId: string, _config?: SummaryConfig): Promise<MonitorsSummary> {
-		throw new Error("Not implemented");
-	}
-
-	async findGroupsByTeamId(_teamId: string): Promise<string[]> {
 		throw new Error("Not implemented");
 	}
 

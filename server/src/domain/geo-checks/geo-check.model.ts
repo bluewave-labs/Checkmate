@@ -1,5 +1,5 @@
 import { Schema, model, Types } from "mongoose";
-import { MonitorTypes, type MonitorType } from "@/domain/monitors/monitor.types.js";
+import { MonitorTypes, type MonitorType } from "@/domain/monitors/monitor.type.js";
 import type { GeoCheck, GeoCheckLocation, GeoCheckMetadata, GeoCheckResult, GeoCheckTimings } from "@/domain/geo-checks/geo-check.type.js";
 
 type GeoCheckMetadataDocument = Omit<GeoCheckMetadata, "monitorId" | "teamId"> & {
