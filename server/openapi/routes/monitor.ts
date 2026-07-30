@@ -16,6 +16,7 @@ import {
 	getHardwareDetailsByIdParamValidation,
 	getHardwareDetailsByIdQueryValidation,
 	monitorResponseSchema,
+	uptimeDetailsResponseSchema,
 } from "@/api/validation/monitorValidation.js";
 import { updateNotificationsValidation } from "@/api/validation/notificationValidation.js";
 
@@ -81,6 +82,8 @@ registry.registerPath({
 	responses: { "200": okJson(z.array(z.string())), ...standardErrors },
 });
 
+const uptimeDetailsObject = uptimeDetailsResponseSchema.openapi("UptimeDetails");
+
 registry.registerPath({
 	method: "get",
 	path: "/monitors/uptime/details/{monitorId}",
@@ -88,7 +91,7 @@ registry.registerPath({
 	summary: "Get uptime details for a monitor",
 	security: bearer,
 	request: { params: getUptimeDetailsByIdParamValidation, query: getUptimeDetailsByIdQueryValidation },
-	responses: { "200": okUnknown, ...standardErrors },
+	responses: { "200": okJson(uptimeDetailsObject), ...standardErrors },
 });
 
 registry.registerPath({
