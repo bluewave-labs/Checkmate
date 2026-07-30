@@ -8,6 +8,7 @@ import {
 	type MonitorType,
 } from "@/Types/Monitor";
 import { ALL_HTTP_STATUS_CODES } from "@/Utils/statusCode";
+import { isHttpUrl } from "@/Utils/UrlUtils";
 
 // Wizard step a field is validated on. Attached inline to each field below so
 // the grouping lives next to the field definition; unannotated fields default
@@ -16,6 +17,13 @@ export const monitorStepRegistry = z.registry<{ step: number }>();
 
 // URL schema with custom error message
 const urlSchema = z.url({ message: "Please enter a valid URL" });
+const MAX_LINK_URL_LENGTH = 2048;
+const httpLinkUrlSchema = z
+	.url({ message: "Please enter a valid application URL" })
+	.max(MAX_LINK_URL_LENGTH, {
+		message: "Application URL must be at most 2048 characters",
+	})
+	.refine(isHttpUrl, { message: "Application URL must use HTTP or HTTPS" });
 
 // Common base schema for all monitor types
 const baseSchema = z.object({
@@ -24,6 +32,7 @@ const baseSchema = z.object({
 		.min(1, "Monitor name is required")
 		.max(50, "Monitor name must be at most 50 characters"),
 	description: z.string().optional(),
+	linkUrl: z.union([httpLinkUrlSchema, z.literal("")]).optional(),
 	interval: z
 		.number()
 		.min(15000, "Interval must be at least 15 seconds")

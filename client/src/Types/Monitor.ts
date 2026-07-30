@@ -70,6 +70,7 @@ export interface Monitor {
 	matchMethod?: MonitorMatchMethod;
 	method?: HttpMethod;
 	url: string;
+	linkUrl?: string;
 	port?: number;
 	isActive: boolean;
 	interval: number;

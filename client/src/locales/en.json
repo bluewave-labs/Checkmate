@@ -564,6 +564,12 @@
 							"label": "URL",
 							"placeholder": "https://www.google.com"
 						},
+						"linkUrl": {
+							"label": "Application URL (optional)",
+							"placeholder": "https://app.example.com",
+							"helperText": "Opens the monitored application from its details page. Only HTTP and HTTPS URLs are allowed.",
+							"openLinkTooltip": "Open application in a new tab"
+						},
 						"game": {
 							"label": "Choose game",
 							"placeholder": "Select a game"

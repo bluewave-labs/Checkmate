@@ -86,6 +86,7 @@ export interface Monitor {
 	expectedValue?: string;
 	matchMethod?: MonitorMatchMethod;
 	url: string;
+	linkUrl?: string;
 	port?: number;
 	isActive: boolean;
 	interval: number;
