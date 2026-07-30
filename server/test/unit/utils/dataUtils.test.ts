@@ -105,15 +105,11 @@ describe("NormalizeData", () => {
 		expect(result[0]!.originalResponseTime).toBe(0);
 	});
 
-	// Characterization, not endorsement: when every value is equal the p0–p95 window
-	// has zero width and the rescale divides by zero. Fixing this is a planned
-	// follow-up (docs/planning/dataUtils-generic-normalization-refactor.md); this
-	// test pins the current behavior so the fix is a deliberate, visible change.
-	it("produces NaN when all values are equal (division by zero — known edge case)", () => {
+	it("maps equal values to rangeMin instead of NaN (division by zero edge case)", () => {
 		const result = NormalizeData([makeCheck(50), makeCheck(50), makeCheck(50)], 10, 100);
 
 		result.forEach((check) => {
-			expect(check.responseTime).toBeNaN();
+			expect(check.responseTime).toBe(10);
 			expect(check.originalResponseTime).toBe(50);
 		});
 	});
