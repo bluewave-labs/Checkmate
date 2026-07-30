@@ -20,7 +20,7 @@ type TemplateCompiler = (template: string) => (context: Record<string, unknown>)
 export interface IEmailService {
 	init(): void;
 	buildEmail(template: string, context: Record<string, unknown>): Promise<string | undefined>;
-	sendEmail(to: string, subject: string, html: string, transportConfig?: EmailTransportConfig): Promise<string | false | undefined>;
+	sendEmail(to: string, subject: string, html: string, transportConfig?: EmailTransportConfig): Promise<string>;
 }
 
 export class EmailService implements IEmailService {
@@ -99,7 +99,7 @@ export class EmailService implements IEmailService {
 		}
 	};
 
-	sendEmail = async (to: string, subject: string, html: string, transportConfig?: EmailTransportConfig) => {
+	sendEmail = async (to: string, subject: string, html: string, transportConfig?: EmailTransportConfig): Promise<string> => {
 		let config: EmailTransportConfig;
 		if (typeof transportConfig !== "undefined") {
 			config = transportConfig;
@@ -145,13 +145,13 @@ export class EmailService implements IEmailService {
 		try {
 			await this.transporter.verify();
 		} catch (error: unknown) {
-			this.logger.warn({
-				message: "Email transporter verification failed",
+			this.logger.error({
+				message: error instanceof Error ? error.message : "Email transporter verification failed",
 				service: SERVICE_NAME,
 				method: "verifyTransporter",
 				stack: error instanceof Error ? error.stack : undefined,
 			});
-			return false;
+			throw error;
 		}
 
 		const trimmedDisplayName = systemEmailDisplayName?.trim();
@@ -172,6 +172,7 @@ export class EmailService implements IEmailService {
 				method: "sendEmail",
 				stack: error instanceof Error ? error.stack : undefined,
 			});
+			throw error;
 		}
 	};
 }
