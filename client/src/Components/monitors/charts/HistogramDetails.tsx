@@ -278,8 +278,8 @@ export const HistogramDetails = ({
 									dataKey={key}
 									stroke={theme.palette.chart.phases[PHASE_COLOR_KEYS[key]]}
 									fill={`url(#phaseGradient-${key})`}
-									fillOpacity={dimmed ? 0.05 : undefined}
-									strokeOpacity={dimmed ? 0.05 : undefined}
+									fillOpacity={dimmed ? 0.2 : undefined}
+									strokeOpacity={dimmed ? 0.2 : undefined}
 								/>
 							);
 						})}
