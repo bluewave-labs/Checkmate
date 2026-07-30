@@ -70,6 +70,7 @@
 				"low": "Low",
 				"responseTime": "Response time",
 				"timingPhases": "Timing phases",
+				"totalResponseTime": "Total response time",
 				"uptime": "Uptime"
 			},
 			"histogram": {

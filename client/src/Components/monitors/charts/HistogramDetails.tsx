@@ -26,7 +26,7 @@ import type { RootState } from "@/Types/state";
 import { computeYAxisCap } from "@/Components/monitors/charts/ChartUtils";
 
 import { useMemo, useState } from "react";
-import { SPACING } from "@/Utils/Theme/constants";
+import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 import {
 	PHASE_COLOR_KEYS,
 	PHASE_KEYS,
@@ -104,7 +104,7 @@ const TimingPhasesToolTip = ({
 					gap={SPACING.LG}
 				>
 					<Dot
-						size={"12px"}
+						size="lg"
 						color={theme.palette.chart.phases[PHASE_COLOR_KEYS[key]]}
 					/>
 					<Typography>
@@ -128,6 +128,8 @@ export const HistogramDetails = ({
 	range: string;
 }) => {
 	const [showTimingPhases, setShowTimingPhases] = useState(false);
+	const [hoveredPhase, setHoveredPhase] = useState<string | null>(null);
+
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
@@ -267,6 +269,7 @@ export const HistogramDetails = ({
 					{hasTimingPhases &&
 						showTimingPhases &&
 						PHASE_KEYS.map((key) => {
+							const dimmed = hoveredPhase !== null && hoveredPhase !== key;
 							return (
 								<Area
 									key={key}
@@ -275,11 +278,56 @@ export const HistogramDetails = ({
 									dataKey={key}
 									stroke={theme.palette.chart.phases[PHASE_COLOR_KEYS[key]]}
 									fill={`url(#phaseGradient-${key})`}
+									fillOpacity={dimmed ? 0.05 : undefined}
+									strokeOpacity={dimmed ? 0.05 : undefined}
 								/>
 							);
 						})}
 				</AreaChart>
 			</ResponsiveContainer>
+			<Stack
+				justifyContent={"center"}
+				gap={LAYOUT.XS}
+				direction={"row"}
+				flexWrap={"wrap"}
+			>
+				{showTimingPhases ? (
+					PHASE_KEYS.map((key) => {
+						return (
+							<Stack
+								direction="row"
+								alignItems="center"
+								gap={SPACING.LG}
+								key={key}
+								onMouseEnter={() => setHoveredPhase(key)}
+								onMouseLeave={() => setHoveredPhase(null)}
+							>
+								<Dot
+									color={theme.palette.chart.phases[PHASE_COLOR_KEYS[key]]}
+									size="lg"
+								/>
+								<Typography lineHeight={1}>{t(PHASE_LABEL_KEYS[key])}</Typography>
+							</Stack>
+						);
+					})
+				) : (
+					<Stack
+						direction="row"
+						alignItems="center"
+						gap={SPACING.LG}
+						onMouseEnter={() => setHoveredPhase("avgResponseTime")}
+						onMouseLeave={() => setHoveredPhase(null)}
+					>
+						<Dot
+							color={theme.palette.primary.main}
+							size="lg"
+						/>
+						<Typography lineHeight={1}>
+							{t("common.charts.labels.totalResponseTime")}
+						</Typography>
+					</Stack>
+				)}
+			</Stack>
 		</BaseChart>
 	);
 };
