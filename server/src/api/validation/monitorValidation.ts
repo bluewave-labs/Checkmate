@@ -311,3 +311,52 @@ export const monitorResponseSchema = z
 		lastEvaluatedAt: z.number(),
 	})
 	.passthrough();
+
+// Grouped-check buckets returned by GET /monitors/uptime/details/{monitorId}. Keep
+// aligned with GroupedCheck / GroupedUptimeCheck in domain/checks/check.type.ts.
+export const groupedCheckResponseSchema = z.object({
+	bucketDate: z.string(),
+	avgResponseTime: z.number(),
+	totalChecks: z.number(),
+});
+
+export const groupedUptimeCheckResponseSchema = groupedCheckResponseSchema.extend({
+	avgDns: z.number(),
+	avgTcp: z.number(),
+	avgTls: z.number(),
+	avgRequest: z.number(),
+	avgFirstByte: z.number(),
+	avgDownload: z.number(),
+});
+
+// Keep aligned with MonitorStats in domain/monitor-stats/monitor-stats.type.ts.
+export const monitorStatsResponseSchema = z.object({
+	id: z.string(),
+	monitorId: z.string(),
+	avgResponseTime: z.number(),
+	maxResponseTime: z.number(),
+	totalChecks: z.number(),
+	totalUpChecks: z.number(),
+	totalDownChecks: z.number(),
+	uptimePercentage: z.number(),
+	lastCheckTimestamp: z.number(),
+	lastResponseTime: z.number(),
+	timeOfLastFailure: z.number().optional(),
+	createdAt: z.string(),
+	updatedAt: z.string(),
+});
+
+// Response of GET /monitors/uptime/details/{monitorId}. Keep aligned with
+// UptimeDetailsResult in domain/monitors/monitor.type.ts; the monitor here is the
+// repository's domain entity, which serializes `id` rather than `_id`.
+export const uptimeDetailsResponseSchema = z.object({
+	monitorData: z.object({
+		monitor: monitorResponseSchema.omit({ _id: true }).extend({ id: z.string() }),
+		groupedChecks: z.array(groupedUptimeCheckResponseSchema),
+		groupedUpChecks: z.array(groupedCheckResponseSchema),
+		groupedDownChecks: z.array(groupedCheckResponseSchema),
+		groupedAvgResponseTime: z.number(),
+		groupedUptimePercentage: z.number(),
+	}),
+	monitorStats: monitorStatsResponseSchema.nullable(),
+});
