@@ -68,11 +68,23 @@
 				"downtime": "Downtime",
 				"high": "High",
 				"low": "Low",
+				"responseTime": "Response time",
+				"timingPhases": "Timing phases",
 				"uptime": "Uptime"
 			},
 			"histogram": {
 				"avg": "Avg: {{value}} ms",
-				"max": "Max: {{value}} ms"
+				"max": "Max: {{value}} ms",
+				"responseTime": "Response time: {{value}}",
+				"total": "Total: {{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "Request",
+				"firstByte": "First byte",
+				"download": "Download"
 			}
 		},
 		"dialogs": {
