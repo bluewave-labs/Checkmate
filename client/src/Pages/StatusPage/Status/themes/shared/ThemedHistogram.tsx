@@ -11,6 +11,7 @@ import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 import { useStatusPageTheme } from "../StatusPageThemeProvider";
 import { computeBarHeights } from "@/Utils/DataUtils";
 import prettyMilliseconds from "pretty-ms";
+import { ThemedChartTooltip } from "@/Pages/StatusPage/Status/themes/shared/ThemedChartTooltip";
 const CELLS = MAX_RECENT_CHECKS;
 const MIN_HEIGHT_PCT = 6;
 
@@ -65,28 +66,7 @@ export const ThemedHistogram = ({
 						);
 					}
 					const height = heights[i] ?? MIN_HEIGHT_PCT;
-					const tooltipContent = (
-						<Stack gap={0.25}>
-							<Typography
-								variant="caption"
-								fontWeight={600}
-							>
-								{check.status
-									? `${prettyMilliseconds(check.responseTime, { compact: true })}`
-									: t("pages.statusPages.monitorsList.chart.downTooltip")}
-							</Typography>
-							<Typography
-								variant="caption"
-								sx={{ opacity: 0.8 }}
-							>
-								{formatDateWithTz(
-									check.createdAt,
-									"ddd, MMMM D, YYYY, HH:mm A",
-									timezone
-								)}
-							</Typography>
-						</Stack>
-					);
+					const tooltipContent = <ThemedChartTooltip check={check} />;
 					return (
 						<Tooltip
 							key={check.id ?? i}

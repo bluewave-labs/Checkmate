@@ -9,6 +9,7 @@ import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 import { useStatusPageTheme } from "../StatusPageThemeProvider";
 import prettyMilliseconds from "pretty-ms";
+import { ThemedChartTooltip } from "@/Pages/StatusPage/Status/themes/shared/ThemedChartTooltip";
 
 const CELLS = MAX_RECENT_CHECKS;
 
@@ -54,24 +55,7 @@ export const ThemedHeatmap = ({ checks, containerSx, cellSx }: Props) => {
 					);
 				}
 				const kind = classify(check);
-				const tooltipContent = (
-					<Stack gap={0.25}>
-						<Typography
-							variant="caption"
-							fontWeight={600}
-						>
-							{check.status
-								? `${prettyMilliseconds(check.responseTime, { compact: true })}`
-								: t("pages.statusPages.monitorsList.chart.downTooltip")}
-						</Typography>
-						<Typography
-							variant="caption"
-							sx={{ opacity: 0.8 }}
-						>
-							{formatDateWithTz(check.createdAt, "ddd, MMMM D, YYYY, HH:mm A", timezone)}
-						</Typography>
-					</Stack>
-				);
+				const tooltipContent = <ThemedChartTooltip check={check} />;
 				return (
 					<Tooltip
 						key={check.id ?? i}
