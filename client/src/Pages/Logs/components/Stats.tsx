@@ -33,10 +33,10 @@ export const Stats = ({ diagnostics }: StatsProps) => {
 
 	return (
 		<Box
+			display="grid"
+			gap={theme.spacing(8)}
 			sx={{
-				display: "grid",
 				gridTemplateColumns: { xs: "1fr", md: "repeat(5, 1fr)" },
-				gap: theme.spacing(8),
 				"& > *": { width: "100% !important" },
 			}}
 		>
