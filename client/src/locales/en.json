@@ -74,8 +74,8 @@
 				"uptime": "Uptime"
 			},
 			"histogram": {
-				"avg": "Avg: {{value}} ms",
-				"max": "Max: {{value}} ms",
+				"avg": "Avg: {{value}}",
+				"max": "Max: {{value}}",
 				"responseTime": "Response time: {{value}}",
 				"total": "Total: {{value}}"
 			},
@@ -1455,8 +1455,8 @@
 					"initializing": "Initializing"
 				},
 				"chart": {
-					"avg": "avg {{value}}ms",
-					"max": "max {{value}}ms",
+					"avg": "avg {{value}}",
+					"max": "max {{value}}",
 					"downTooltip": "Down",
 					"heatmapAria": "Response time heatmap"
 				},

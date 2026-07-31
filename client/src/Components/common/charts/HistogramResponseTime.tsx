@@ -9,6 +9,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 import { computeBarHeights } from "@/Utils/DataUtils";
+import { formatMs } from "@/Utils/TimeUtils";
 
 interface HistogramResponseTimeProps {
 	checks: CheckSnapshot[];
@@ -19,25 +20,25 @@ interface HistogramResponseTimeProps {
 }
 
 interface ResponseTimeStats {
-	max: number | string;
-	avg: number | string;
+	max: string | null;
+	avg: string | null;
 }
 
 const DEFAULT_HEIGHT = 50;
 
 const calculateResponseTimeStats = (checks: CheckSnapshot[]): ResponseTimeStats => {
 	if (!Array.isArray(checks) || checks.length === 0) {
-		return { max: "-", avg: "-" };
+		return { max: null, avg: null };
 	}
 
 	const validChecks = checks.filter((check) => check.responseTime != null);
 	if (validChecks.length === 0) {
-		return { max: "-", avg: "-" };
+		return { max: null, avg: null };
 	}
 
 	const responseTimes = validChecks.map((check) => check.responseTime);
-	const max = Math.round(Math.max(...responseTimes));
-	const avg = Math.round(
+	const max = formatMs(Math.max(...responseTimes));
+	const avg = formatMs(
 		responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length
 	);
 
@@ -69,29 +70,28 @@ export const HistogramResponseTime = ({
 	const chartHeight = typeof height === "number" ? `${height}px` : height;
 	const gridGap = gap ?? theme.spacing(0.5);
 
-	const statsContent = showStats &&
-		(typeof stats.max === "number" || typeof stats.avg === "number") && (
-			<Stack
-				justifyContent="center"
-				alignItems={statsPosition === "left" ? "flex-end" : "flex-start"}
-				width={110}
-				pr={statsPosition === "left" ? theme.spacing(8) : 0}
-				pl={statsPosition === "right" ? theme.spacing(8) : 0}
+	const statsContent = showStats && (stats.max !== null || stats.avg !== null) && (
+		<Stack
+			justifyContent="center"
+			alignItems={statsPosition === "left" ? "flex-end" : "flex-start"}
+			width={110}
+			pr={statsPosition === "left" ? theme.spacing(8) : 0}
+			pl={statsPosition === "right" ? theme.spacing(8) : 0}
+		>
+			<Typography
+				variant="body2"
+				noWrap
 			>
-				<Typography
-					variant="body2"
-					noWrap
-				>
-					{t("common.charts.histogram.avg", { value: stats.avg })}
-				</Typography>
-				<Typography
-					variant="body2"
-					noWrap
-				>
-					{t("common.charts.histogram.max", { value: stats.max })}
-				</Typography>
-			</Stack>
-		);
+				{t("common.charts.histogram.avg", { value: stats.avg })}
+			</Typography>
+			<Typography
+				variant="body2"
+				noWrap
+			>
+				{t("common.charts.histogram.max", { value: stats.max })}
+			</Typography>
+		</Stack>
+	);
 
 	return (
 		<Stack

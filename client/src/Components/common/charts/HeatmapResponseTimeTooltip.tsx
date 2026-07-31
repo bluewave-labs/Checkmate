@@ -1,13 +1,12 @@
 import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { formatDateWithTz } from "@/Utils/TimeUtils";
+import { formatDateWithTz, formatMs } from "@/Utils/TimeUtils";
 import type { CheckSnapshot } from "@/Types/Check";
 import { useTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/Types/state";
 import { useTranslation } from "react-i18next";
-import prettyMilliseconds from "pretty-ms";
 
 type HeatmapCheck =
 	| CheckSnapshot
@@ -59,9 +58,7 @@ export const HeatmapResponseTimeTooltip = ({
 					</Typography>
 					<Typography>
 						{t("common.labels.responseTime")}:{" "}
-						{check?.responseTime
-							? prettyMilliseconds(check.responseTime, { compact: true })
-							: "N/A"}
+						{check?.responseTime ? formatMs(check.responseTime) : "N/A"}
 					</Typography>
 					<Typography textTransform={"capitalize"}>
 						Status:{" "}

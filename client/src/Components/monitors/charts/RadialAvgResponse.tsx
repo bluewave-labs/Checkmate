@@ -7,6 +7,7 @@ import { Cell, RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
 import { useTranslation } from "react-i18next";
 import { getResponseTimeColor } from "@/Utils/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
+import { formatMs } from "@/Utils/TimeUtils";
 
 export const RadialAvgResponse = ({ avg, max }: { avg: number; max: number }) => {
 	const { t } = useTranslation();
@@ -84,7 +85,9 @@ export const RadialAvgResponse = ({ avg, max }: { avg: number; max: number }) =>
 					<Typography
 						variant="h1"
 						textAlign={"center"}
-					>{`${avg?.toFixed()}ms`}</Typography>
+					>
+						{formatMs(avg)}
+					</Typography>
 				</Stack>
 			</Stack>
 		</BaseChart>

@@ -14,11 +14,10 @@ import {
 import type { TooltipProps } from "recharts";
 import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 import Typography from "@mui/material/Typography";
-import prettyMilliseconds from "pretty-ms";
 import { XTick } from "@/Components/monitors/charts/XTick";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
-import { formatDateWithTz, tooltipDateFormatLookup } from "@/Utils/TimeUtils";
+import { formatDateWithTz, formatMs, tooltipDateFormatLookup } from "@/Utils/TimeUtils";
 import { useTheme } from "@mui/material/styles";
 import type { Theme } from "@mui/material/styles";
 import type { GroupedCheck, GroupedUptimeCheck } from "@/Types/Check";
@@ -56,16 +55,13 @@ const ResponseTimeToolTip = ({
 	if (!active) return null;
 
 	const format = tooltipDateFormatLookup(range);
-	const responseTime = Math.floor(payload[0]?.payload?.avgResponseTime || 0);
+	const responseTime = payload[0]?.payload?.avgResponseTime ?? 0;
 	return (
 		<BaseBox sx={{ py: theme.spacing(2), px: theme.spacing(4) }}>
 			<Typography>{formatDateWithTz(String(label), format, uiTimezone)}</Typography>
 			<Typography>
 				{t("common.charts.histogram.responseTime", {
-					value: prettyMilliseconds(responseTime, {
-						formatSubMilliseconds: true,
-						compact: true,
-					}),
+					value: formatMs(responseTime),
 				})}
 			</Typography>
 		</BaseBox>
@@ -94,7 +90,7 @@ const TimingPhasesToolTip = ({
 		<BaseBox sx={{ py: theme.spacing(2), px: theme.spacing(4) }}>
 			<Typography>{formatDateWithTz(bucket.bucketDate, format, uiTimezone)}</Typography>
 			<Typography>
-				{t("common.charts.histogram.total", { value: prettyMilliseconds(total) })}
+				{t("common.charts.histogram.total", { value: formatMs(total) })}
 			</Typography>
 			{PHASE_KEYS.map((key) => (
 				<Stack
@@ -108,11 +104,7 @@ const TimingPhasesToolTip = ({
 						color={theme.palette.chart.phases[PHASE_COLOR_KEYS[key]]}
 					/>
 					<Typography>
-						{t(PHASE_LABEL_KEYS[key])}:{" "}
-						{prettyMilliseconds(bucket[key], {
-							formatSubMilliseconds: true,
-							compact: true,
-						})}
+						{t(PHASE_LABEL_KEYS[key])}: {formatMs(bucket[key])}
 					</Typography>
 				</Stack>
 			))}

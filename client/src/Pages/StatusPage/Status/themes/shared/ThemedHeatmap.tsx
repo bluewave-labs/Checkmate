@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import type { CheckSnapshot } from "@/Types/Check";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 import { ThemedChartTooltip } from "@/Pages/StatusPage/Status/themes/shared/ThemedChartTooltip";
+import { formatMs } from "@/Utils/TimeUtils";
 
 const CELLS = MAX_RECENT_CHECKS;
 
@@ -59,7 +60,7 @@ export const ThemedHeatmap = ({ checks, containerSx, cellSx }: Props) => {
 					>
 						<Box
 							sx={cellSx(kind)}
-							aria-label={`${check.responseTime} ms, ${check.status ? "up" : "down"}`}
+							aria-label={`${formatMs(check.responseTime)}, ${check.status ? "up" : "down"}`}
 						/>
 					</Tooltip>
 				);

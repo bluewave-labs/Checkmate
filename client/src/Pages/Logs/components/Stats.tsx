@@ -2,10 +2,10 @@ import Box from "@mui/material/Box";
 import { StatBox } from "@/Components/design-elements";
 
 import prettyBytes from "pretty-bytes";
-import prettyMilliseconds from "pretty-ms";
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import type { Diagnostics } from "@/Types/Diagnostics";
+import { formatDuration, formatMs } from "@/Utils/TimeUtils";
 
 interface StatsProps {
 	diagnostics: Diagnostics | null;
@@ -18,13 +18,9 @@ export const Stats = ({ diagnostics }: StatsProps) => {
 	const theme = useTheme();
 
 	const eventLoopDelay = diagnostics
-		? prettyMilliseconds(diagnostics.eventLoopDelayMs ?? 0, {
-				millisecondsDecimalDigits: 2,
-			})
+		? formatMs(diagnostics.eventLoopDelayMs ?? 0)
 		: PLACEHOLDER;
-	const uptime = diagnostics
-		? prettyMilliseconds(diagnostics.uptimeMs ?? 0, { hideSeconds: true })
-		: PLACEHOLDER;
+	const uptime = diagnostics ? formatDuration(diagnostics.uptimeMs ?? 0) : PLACEHOLDER;
 	const usedHeap = diagnostics
 		? prettyBytes(diagnostics.v8HeapStats?.usedHeapSizeBytes ?? 0)
 		: PLACEHOLDER;
@@ -37,10 +33,10 @@ export const Stats = ({ diagnostics }: StatsProps) => {
 
 	return (
 		<Box
+			display="grid"
+			gap={theme.spacing(8)}
 			sx={{
-				display: "grid",
 				gridTemplateColumns: { xs: "1fr", md: "repeat(5, 1fr)" },
-				gap: theme.spacing(8),
 				"& > *": { width: "100% !important" },
 			}}
 		>
