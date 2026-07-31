@@ -51,7 +51,9 @@ export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 				{!isSmall && (
 					<>
 						<Dot />
-						<Typography>Checking every {formatDuration(monitor?.interval)}</Typography>
+						<Typography>
+							Checking every {formatDuration(monitor?.interval, true)}
+						</Typography>
 					</>
 				)}
 			</Stack>
