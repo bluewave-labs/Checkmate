@@ -6,6 +6,7 @@ import { useTheme } from "@mui/material/styles";
 import type { MonitorStats, Monitor } from "@/Types/Monitor";
 import { getStatusPalette } from "@/Utils/MonitorUtils";
 import { useTranslation } from "react-i18next";
+import { formatMs } from "@/Utils/TimeUtils";
 
 interface MonitorStatBoxesProps {
 	monitor?: Monitor;
@@ -67,7 +68,7 @@ export const MonitorStatBoxes = ({
 			/>
 			<StatBox
 				title={t("pages.common.monitors.statBoxes.lastResponseTime")}
-				subtitle={prettyMilliseconds(monitorStats?.lastResponseTime ?? 0)}
+				subtitle={formatMs(monitorStats?.lastResponseTime ?? 0)}
 			/>
 
 			{monitor?.type === "http" && (

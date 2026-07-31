@@ -58,8 +58,8 @@
 				"uptime": "Verfügbarkeit"
 			},
 			"histogram": {
-				"avg": "Durchschn.: {{value}} ms",
-				"max": "Max.: {{value}} ms"
+				"avg": "Durchschn.: {{value}}",
+				"max": "Max.: {{value}}"
 			}
 		},
 		"dialogs": {
@@ -1352,10 +1352,10 @@
 					"responseTime": "Antwortzeit"
 				},
 				"chart": {
-					"avg": "Ø {{value}}ms",
+					"avg": "Ø {{value}}",
 					"downTooltip": "Ausgefallen",
 					"heatmapAria": "Heatmap der Antwortzeit",
-					"max": "max. {{value}}ms"
+					"max": "max. {{value}}"
 				},
 				"status": {
 					"breached": "Schwellenwert überschritten",

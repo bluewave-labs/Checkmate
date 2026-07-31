@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import type { CheckSnapshot } from "@/Types/Check";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 import { computeBarHeights } from "@/Utils/DataUtils";
+import { formatMs } from "@/Utils/TimeUtils";
 import { ThemedChartTooltip } from "@/Pages/StatusPage/Status/themes/shared/ThemedChartTooltip";
 const CELLS = MAX_RECENT_CHECKS;
 const MIN_HEIGHT_PCT = 6;
@@ -41,11 +42,11 @@ export const ThemedHistogram = ({
 		];
 		const heights = computeBarHeights(source);
 		const valid = out.filter((c): c is CheckSnapshot => c !== null && c.responseTime > 0);
-		const maxRt = valid.length ? Math.max(...valid.map((c) => c.responseTime)) : 1;
+		const maxRt = valid.length ? Math.max(...valid.map((c) => c.responseTime)) : 0;
 		const avgRt = valid.length
-			? Math.round(valid.reduce((s, c) => s + c.responseTime, 0) / valid.length)
+			? valid.reduce((s, c) => s + c.responseTime, 0) / valid.length
 			: 0;
-		return { padded: out, heights, avg: avgRt, peak: maxRt };
+		return { padded: out, heights, avg: formatMs(avgRt), peak: formatMs(maxRt) };
 	}, [checks]);
 
 	return (
@@ -71,7 +72,7 @@ export const ThemedHistogram = ({
 						>
 							<Box
 								sx={barSx(tone(check), height)}
-								aria-label={`${check.responseTime} ms`}
+								aria-label={formatMs(check.responseTime)}
 							/>
 						</Tooltip>
 					);

@@ -6,6 +6,7 @@ import type { FlatGeoCheck } from "@/Types/GeoCheck";
 import { useTranslation } from "react-i18next";
 import { formatStatusCode } from "@/Utils/statusCode";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { formatMs } from "@/Utils/TimeUtils";
 
 interface GeoChecksMapProps {
 	geoChecks: FlatGeoCheck[];
@@ -81,10 +82,6 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 
 	const getMarkerColor = (status: boolean): string => {
 		return status ? theme.palette.success.main : theme.palette.error.main;
-	};
-
-	const formatResponseTime = (timing: number): string => {
-		return `${timing.toFixed(0)}ms`;
 	};
 
 	return (
@@ -186,7 +183,7 @@ export const GeoChecksMap = ({ geoChecks }: GeoChecksMapProps) => {
 										>
 											Response Time:
 										</Typography>{" "}
-										{formatResponseTime(selectedCheck.timings.total)}
+										{formatMs(selectedCheck.timings.total)}
 									</Typography>
 									<Typography
 										variant="caption"

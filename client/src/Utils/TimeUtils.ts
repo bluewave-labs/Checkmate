@@ -79,10 +79,27 @@ export const formatTimestamp = (timestamp: string | number | null): string => {
 	return date.toLocaleString();
 };
 
-export const formatMs = (ms: number): string => {
-	return prettyMilliseconds(ms, {
+const DISPLAY_UNITS = [MS_PER_DAY, MS_PER_HOUR, MS_PER_MINUTE, MS_PER_SECOND];
+
+// pretty-ms floors seconds-and-above and truncates fractional ms, so values
+// must be rounded to their display unit first to land on the nearest whole
+// unit (53.6 → "54 ms", 1937 → "2 s", 59500 → "1 m").
+const roundToDisplayUnit = (ms: number): number => {
+	for (const unit of DISPLAY_UNITS) {
+		if (ms >= unit) return Math.round(ms / unit) * unit;
+	}
+	return ms >= 1 ? Math.round(ms) : ms;
+};
+
+export const formatMs = (ms: number, hasSpace: boolean = true): string => {
+	const formatted = prettyMilliseconds(roundToDisplayUnit(ms), {
 		compact: true,
 		formatSubMilliseconds: true,
 		secondsDecimalDigits: 0,
 	});
+
+	if (hasSpace) {
+		return formatted.replace(/^(\d+)(\D+)$/, "$1 $2");
+	}
+	return formatted;
 };

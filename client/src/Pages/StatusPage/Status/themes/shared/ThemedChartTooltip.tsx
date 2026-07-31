@@ -1,8 +1,7 @@
 import type { CheckSnapshot } from "@/Types/Check";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import prettyMilliseconds from "pretty-ms";
-import { formatDateWithTz } from "@/Utils/TimeUtils";
+import { formatDateWithTz, formatMs } from "@/Utils/TimeUtils";
 import { useStatusPageTheme } from "@/Pages/StatusPage/Status/themes/StatusPageThemeProvider";
 import { useTranslation } from "react-i18next";
 
@@ -16,7 +15,7 @@ export const ThemedChartTooltip = ({ check }: { check: CheckSnapshot }) => {
 				fontWeight={600}
 			>
 				{check.status
-					? `${prettyMilliseconds(check.responseTime, { compact: true })}`
+					? formatMs(check.responseTime)
 					: t("pages.statusPages.monitorsList.chart.downTooltip")}
 			</Typography>
 			<Typography

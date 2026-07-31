@@ -58,8 +58,8 @@
 				"uptime": "Tiempo de actividad"
 			},
 			"histogram": {
-				"avg": "Prom: {{value}} ms",
-				"max": "Máx: {{value}} ms"
+				"avg": "Prom: {{value}}",
+				"max": "Máx: {{value}}"
 			}
 		},
 		"dialogs": {
@@ -1352,10 +1352,10 @@
 					"responseTime": "Tiempo de respuesta"
 				},
 				"chart": {
-					"avg": "prom {{value}}ms",
+					"avg": "prom {{value}}",
 					"downTooltip": "Caído",
 					"heatmapAria": "Mapa de calor del tiempo de respuesta",
-					"max": "máx {{value}}ms"
+					"max": "máx {{value}}"
 				},
 				"status": {
 					"breached": "Umbral superado",

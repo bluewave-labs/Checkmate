@@ -58,8 +58,8 @@
 				"uptime": "อัปไทม์"
 			},
 			"histogram": {
-				"avg": "เฉลี่ย: {{value}} ms",
-				"max": "สูงสุด: {{value}} ms"
+				"avg": "เฉลี่ย: {{value}}",
+				"max": "สูงสุด: {{value}}"
 			}
 		},
 		"dialogs": {
@@ -1352,10 +1352,10 @@
 					"responseTime": "เวลาตอบสนอง"
 				},
 				"chart": {
-					"avg": "เฉลี่ย {{value}}ms",
+					"avg": "เฉลี่ย {{value}}",
 					"downTooltip": "ไม่พร้อมใช้งาน",
 					"heatmapAria": "แผนที่ความร้อนของเวลาตอบสนอง",
-					"max": "สูงสุด {{value}}ms"
+					"max": "สูงสุด {{value}}"
 				},
 				"status": {
 					"breached": "เกินขีดจำกัด",
