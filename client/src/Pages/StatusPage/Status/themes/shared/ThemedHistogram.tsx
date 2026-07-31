@@ -9,6 +9,8 @@ import type { CheckSnapshot } from "@/Types/Check";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 import { useStatusPageTheme } from "../StatusPageThemeProvider";
+import { computeBarHeights } from "@/Utils/DataUtils";
+import prettyMilliseconds from "pretty-ms";
 const CELLS = MAX_RECENT_CHECKS;
 const MIN_HEIGHT_PCT = 6;
 
@@ -35,18 +37,19 @@ export const ThemedHistogram = ({
 	const { t } = useTranslation();
 	const { timezone } = useStatusPageTheme();
 
-	const { padded, max, avg, peak } = useMemo(() => {
+	const { padded, heights, avg, peak } = useMemo(() => {
 		const source = checks.slice(-CELLS);
 		const out: (CheckSnapshot | null)[] = [
 			...source,
 			...Array.from({ length: Math.max(0, CELLS - source.length) }, () => null),
 		];
+		const heights = computeBarHeights(source);
 		const valid = out.filter((c): c is CheckSnapshot => c !== null && c.responseTime > 0);
 		const maxRt = valid.length ? Math.max(...valid.map((c) => c.responseTime)) : 1;
 		const avgRt = valid.length
 			? Math.round(valid.reduce((s, c) => s + c.responseTime, 0) / valid.length)
 			: 0;
-		return { padded: out, max: maxRt, avg: avgRt, peak: valid.length ? maxRt : 0 };
+		return { padded: out, heights, avg: avgRt, peak: maxRt };
 	}, [checks]);
 
 	return (
@@ -61,10 +64,7 @@ export const ThemedHistogram = ({
 							/>
 						);
 					}
-					const height = Math.max(
-						MIN_HEIGHT_PCT,
-						Math.round((check.responseTime / max) * 100)
-					);
+					const height = heights[i] ?? MIN_HEIGHT_PCT;
 					const tooltipContent = (
 						<Stack gap={0.25}>
 							<Typography
@@ -72,7 +72,7 @@ export const ThemedHistogram = ({
 								fontWeight={600}
 							>
 								{check.status
-									? `${check.responseTime} ms`
+									? `${prettyMilliseconds(check.responseTime, { compact: true })}`
 									: t("pages.statusPages.monitorsList.chart.downTooltip")}
 							</Typography>
 							<Typography

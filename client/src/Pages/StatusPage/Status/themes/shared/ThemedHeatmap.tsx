@@ -8,6 +8,7 @@ import type { CheckSnapshot } from "@/Types/Check";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 import { useStatusPageTheme } from "../StatusPageThemeProvider";
+import prettyMilliseconds from "pretty-ms";
 
 const CELLS = MAX_RECENT_CHECKS;
 
@@ -60,7 +61,7 @@ export const ThemedHeatmap = ({ checks, containerSx, cellSx }: Props) => {
 							fontWeight={600}
 						>
 							{check.status
-								? `${check.responseTime} ms`
+								? `${prettyMilliseconds(check.responseTime, { compact: true })}`
 								: t("pages.statusPages.monitorsList.chart.downTooltip")}
 						</Typography>
 						<Typography

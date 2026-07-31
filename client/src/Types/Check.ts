@@ -250,14 +250,7 @@ export interface ChecksSummary {
 	downChecks: number;
 }
 
-export type CheckSnapshot = Omit<Check, "metadata" | "__v" | "updatedAt"> & {
-	originalResponseTime: number;
-};
-
+export type CheckSnapshot = Omit<Check, "metadata" | "__v" | "updatedAt">;
 export interface HasResponseTime {
 	responseTime: number;
 }
-
-export type NormalizedCheck<T extends HasResponseTime = Check> = T & {
-	originalResponseTime: number;
-};
