@@ -4,7 +4,6 @@ import { Pagination } from "@/Components/design-elements/Table";
 import { ActionsMenu } from "@/Components/actions-menu";
 import { DialogInput } from "@/Components/inputs/Dialog";
 
-import prettyMilliseconds from "pretty-ms";
 import { useTheme } from "@mui/material";
 import type { Header } from "@/Components/design-elements/Table";
 import type { ActionMenuItem } from "@/Components/actions-menu";
@@ -18,6 +17,7 @@ import { setRowsPerPage } from "@/Features/UI/uiSlice";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { useDelete, usePatch } from "@/Hooks/UseApi";
+import { formatDuration } from "@/Utils/TimeUtils";
 
 interface MaintenanceWindowTableProps {
 	maintenanceWindows: MaintenanceWindow[];
@@ -51,7 +51,7 @@ const getTimeToNextWindow = (
 
 	// Window is in the future
 	if (start.isAfter(now)) {
-		return prettyMilliseconds(start.diff(now), { unitCount: 2, hideSeconds: true });
+		return formatDuration(start.diff(now));
 	}
 
 	return "N/A";
@@ -152,9 +152,7 @@ export const MaintenanceWindowTable = ({
 			id: "repeat",
 			content: t("pages.maintenanceWindow.table.headers.repeat"),
 			render: (row) =>
-				row.repeat === 0
-					? t("common.labels.na")
-					: prettyMilliseconds(row.repeat, { verbose: true }),
+				row.repeat === 0 ? t("common.labels.na") : formatDuration(row.repeat),
 		},
 		{
 			id: "actions",

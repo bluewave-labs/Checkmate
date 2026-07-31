@@ -1,12 +1,11 @@
 import Stack from "@mui/material/Stack";
 import { StatBox } from "@/Components/design-elements";
 
-import prettyMilliseconds from "pretty-ms";
 import { useTheme } from "@mui/material/styles";
 import type { MonitorStats, Monitor } from "@/Types/Monitor";
 import { getStatusPalette } from "@/Utils/MonitorUtils";
 import { useTranslation } from "react-i18next";
-import { formatMs } from "@/Utils/TimeUtils";
+import { formatMs, formatDuration } from "@/Utils/TimeUtils";
 
 interface MonitorStatBoxesProps {
 	monitor?: Monitor;
@@ -32,14 +31,9 @@ export const MonitorStatBoxes = ({
 	const timeOfLastCheck = monitorStats?.lastCheckTimestamp || 0;
 	const timeSinceLastCheck = Date.now() - timeOfLastCheck || 0;
 
-	const options = {
-		secondsDecimalDigits: 0,
-		millisecondsDecimalDigits: 0,
-	};
+	const streakTime = formatDuration(timeSinceLastFailure);
 
-	const streakTime = prettyMilliseconds(timeSinceLastFailure, options);
-
-	const lastCheckTime = prettyMilliseconds(timeSinceLastCheck, options);
+	const lastCheckTime = formatDuration(timeSinceLastCheck);
 	const isActive =
 		monitor?.status === "up" ||
 		monitor?.status === "paused" ||

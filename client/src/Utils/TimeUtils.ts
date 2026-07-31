@@ -103,3 +103,20 @@ export const formatMs = (ms: number, hasSpace: boolean = true): string => {
 	}
 	return formatted;
 };
+
+export const formatDuration = (ms: number, verbose: boolean = false, hasSpace = true) => {
+	if (verbose) {
+		return prettyMilliseconds(ms, { verbose: true });
+	}
+
+	const formatted = prettyMilliseconds(ms, {
+		unitCount: 2,
+		secondsDecimalDigits: 0,
+		millisecondsDecimalDigits: 0,
+	});
+
+	if (hasSpace) {
+		return formatted.replace(/^(\d+)(\D+)$/, "$1 $2");
+	}
+	return formatted;
+};

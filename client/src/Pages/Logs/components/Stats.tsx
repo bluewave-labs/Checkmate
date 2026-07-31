@@ -6,7 +6,7 @@ import prettyMilliseconds from "pretty-ms";
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import type { Diagnostics } from "@/Types/Diagnostics";
-import { formatMs } from "@/Utils/TimeUtils";
+import { formatDuration, formatMs } from "@/Utils/TimeUtils";
 
 interface StatsProps {
 	diagnostics: Diagnostics | null;
@@ -21,9 +21,7 @@ export const Stats = ({ diagnostics }: StatsProps) => {
 	const eventLoopDelay = diagnostics
 		? formatMs(diagnostics.eventLoopDelayMs ?? 0)
 		: PLACEHOLDER;
-	const uptime = diagnostics
-		? prettyMilliseconds(diagnostics.uptimeMs ?? 0, { hideSeconds: true })
-		: PLACEHOLDER;
+	const uptime = diagnostics ? formatDuration(diagnostics.uptimeMs ?? 0) : PLACEHOLDER;
 	const usedHeap = diagnostics
 		? prettyBytes(diagnostics.v8HeapStats?.usedHeapSizeBytes ?? 0)
 		: PLACEHOLDER;
