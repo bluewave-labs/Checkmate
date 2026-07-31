@@ -6,7 +6,6 @@ import type { SxProps, Theme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import type { CheckSnapshot } from "@/Types/Check";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
-import { useStatusPageTheme } from "../StatusPageThemeProvider";
 import { computeBarHeights } from "@/Utils/DataUtils";
 import { ThemedChartTooltip } from "@/Pages/StatusPage/Status/themes/shared/ThemedChartTooltip";
 const CELLS = MAX_RECENT_CHECKS;
