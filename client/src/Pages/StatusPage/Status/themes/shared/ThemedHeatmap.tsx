@@ -1,14 +1,9 @@
 import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 import type { SxProps, Theme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import type { CheckSnapshot } from "@/Types/Check";
-import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
-import { useStatusPageTheme } from "../StatusPageThemeProvider";
-import prettyMilliseconds from "pretty-ms";
 import { ThemedChartTooltip } from "@/Pages/StatusPage/Status/themes/shared/ThemedChartTooltip";
 
 const CELLS = MAX_RECENT_CHECKS;
@@ -31,7 +26,6 @@ const classify = (check: CheckSnapshot): Exclude<HeatCellKind, "empty"> => {
 
 export const ThemedHeatmap = ({ checks, containerSx, cellSx }: Props) => {
 	const { t } = useTranslation();
-	const { timezone } = useStatusPageTheme();
 
 	const source = checks.slice(-CELLS);
 	const padded: (CheckSnapshot | null)[] = [

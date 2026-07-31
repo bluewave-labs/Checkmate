@@ -4,8 +4,10 @@ import Typography from "@mui/material/Typography";
 import prettyMilliseconds from "pretty-ms";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { useStatusPageTheme } from "@/Pages/StatusPage/Status/themes/StatusPageThemeProvider";
+import { useTranslation } from "react-i18next";
 
 export const ThemedChartTooltip = ({ check }: { check: CheckSnapshot }) => {
+	const { t } = useTranslation();
 	const { timezone } = useStatusPageTheme();
 	return (
 		<Stack gap={0.25}>
