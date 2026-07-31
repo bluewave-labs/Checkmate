@@ -4,10 +4,10 @@ import Typography from "@mui/material/Typography";
 import { PulseDot, Dot, StrategyBadge } from "@/Components/design-elements";
 import { getStatusColor, formatUrl } from "@/Utils/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
-import prettyMilliseconds from "pretty-ms";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { LAYOUT } from "@/Utils/Theme/constants";
+import { formatDuration } from "@/Utils/TimeUtils";
 export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -51,9 +51,7 @@ export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 				{!isSmall && (
 					<>
 						<Dot />
-						<Typography>
-							Checking every {prettyMilliseconds(monitor?.interval, { verbose: true })}
-						</Typography>
+						<Typography>Checking every {formatDuration(monitor?.interval)}</Typography>
 					</>
 				)}
 			</Stack>

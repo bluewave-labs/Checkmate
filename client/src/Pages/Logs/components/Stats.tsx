@@ -2,7 +2,6 @@ import Box from "@mui/material/Box";
 import { StatBox } from "@/Components/design-elements";
 
 import prettyBytes from "pretty-bytes";
-import prettyMilliseconds from "pretty-ms";
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import type { Diagnostics } from "@/Types/Diagnostics";
