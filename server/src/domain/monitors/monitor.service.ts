@@ -1,4 +1,3 @@
-import { NormalizeData } from "@/utils/dataUtils.js";
 import { type Monitor } from "@/domain/monitors/monitor.type.js";
 import type {
 	MonitorType,
@@ -364,7 +363,7 @@ export class MonitorService implements IMonitorService {
 		const monitorsWithChecks = monitors.map((monitor: Monitor) => {
 			const rawChecks = monitor.recentChecks ?? [];
 			const isSnapshotType = snapshotOnlyRequest || snapshotTypes.includes(monitor.type);
-			const checks = isSnapshotType ? rawChecks.slice(0, 1) : NormalizeData(rawChecks, 10, 100);
+			const checks = isSnapshotType ? rawChecks.slice(0, 1) : rawChecks;
 			monitor.recentChecks = checks;
 			return monitor;
 		});

@@ -29,7 +29,7 @@ import {
 import { useStatusPageTheme } from "@/Pages/StatusPage/Status/themes/StatusPageThemeProvider";
 import { formatPercentage } from "@/Utils/FormatUtils";
 
-type StatusPageMonitor = Monitor & { checks?: Monitor["recentChecks"] };
+type StatusPageMonitor = Monitor;
 
 export interface BaseStyles {
 	page: SxProps<Theme>;

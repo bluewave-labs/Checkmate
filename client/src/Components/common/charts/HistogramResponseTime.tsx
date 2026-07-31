@@ -8,6 +8,7 @@ import { HeatmapResponseTimeTooltip } from "./HeatmapResponseTimeTooltip";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
+import { computeBarHeights } from "@/Utils/DataUtils";
 
 interface HistogramResponseTimeProps {
 	checks: CheckSnapshot[];
@@ -29,12 +30,12 @@ const calculateResponseTimeStats = (checks: CheckSnapshot[]): ResponseTimeStats 
 		return { max: "-", avg: "-" };
 	}
 
-	const validChecks = checks.filter((check) => check.originalResponseTime != null);
+	const validChecks = checks.filter((check) => check.responseTime != null);
 	if (validChecks.length === 0) {
 		return { max: "-", avg: "-" };
 	}
 
-	const responseTimes = validChecks.map((check) => check.originalResponseTime);
+	const responseTimes = validChecks.map((check) => check.responseTime);
 	const max = Math.round(Math.max(...responseTimes));
 	const avg = Math.round(
 		responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length
@@ -54,7 +55,7 @@ export const HistogramResponseTime = ({
 	const { t } = useTranslation();
 
 	const stats = useMemo(() => calculateResponseTimeStats(checks), [checks]);
-
+	const barHeights = useMemo(() => computeBarHeights(checks), [checks]);
 	if (!Array.isArray(checks) || checks.length === 0) return null;
 
 	const data =
@@ -111,7 +112,7 @@ export const HistogramResponseTime = ({
 				>
 					{data.map((check, index) => {
 						const isPlaceholder = (check as any).status === "placeholder";
-						const heightPct = `${Math.max(0, Math.min(100, (check as any).responseTime ?? 0))}%`;
+						const heightPct = `${barHeights[index] ?? 0}%`;
 						const barColor =
 							check.status === true
 								? theme.palette.success.light

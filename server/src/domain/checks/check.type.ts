@@ -168,10 +168,6 @@ export interface HasResponseTime {
 	responseTime: number;
 }
 
-export type NormalizedCheck<T extends HasResponseTime = Check> = T & {
-	originalResponseTime: number;
-};
-
 export type CheckSnapshot = Omit<Check, "metadata" | "updatedAt">;
 
 export interface HardwareDiskStats {
