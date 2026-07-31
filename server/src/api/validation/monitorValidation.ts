@@ -25,7 +25,6 @@ export const getMonitorByIdQueryValidation = z.object({
 	limit: z.coerce.number().optional(),
 	dateRange: z.enum(DateRanges).optional(),
 	numToDisplay: z.coerce.number().optional(),
-	normalize: booleanCoercion.optional(),
 	continent: z.union([z.enum(GeoContinents), z.array(z.enum(GeoContinents))]).optional(),
 });
 
