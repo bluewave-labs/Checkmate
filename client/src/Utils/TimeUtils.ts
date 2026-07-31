@@ -3,6 +3,7 @@ import duration from "dayjs/plugin/duration";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import prettyMilliseconds from "pretty-ms";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -76,4 +77,12 @@ export const formatTimestamp = (timestamp: string | number | null): string => {
 	if (!timestamp) return "-";
 	const date = new Date(timestamp);
 	return date.toLocaleString();
+};
+
+export const formatMs = (ms: number): string => {
+	return prettyMilliseconds(ms, {
+		compact: true,
+		formatSubMilliseconds: true,
+		secondsDecimalDigits: 0,
+	});
 };
