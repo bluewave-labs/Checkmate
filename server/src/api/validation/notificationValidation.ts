@@ -23,6 +23,14 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		roomId: z.union([z.string(), z.literal("")]).optional(),
 		accessToken: z.union([z.string(), z.literal("")]).optional(),
 	}),
+	// Rocket.Chat notification
+	z.object({
+		notificationName: z.string().min(1, "Notification name is required"),
+		type: z.literal("rocket_chat"),
+		address: z
+			.url({ message: "Please enter a valid Rocket.Chat webhook URL" })
+			.refine((url) => /^https?:\/\//i.test(url), { message: "Rocket.Chat webhook URL must use HTTP or HTTPS" }),
+	}),
 	// Slack notification
 	z.object({
 		notificationName: z.string().min(1, "Notification name is required"),
