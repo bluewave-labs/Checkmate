@@ -139,7 +139,11 @@ const NotificationsCreatePage = () => {
 										key={type}
 										value={type}
 									>
-										<Typography textTransform="capitalize">{type}</Typography>
+										<Typography textTransform="capitalize">
+											{type === "rocket_chat"
+												? t("pages.notifications.form.type.rocketChat")
+												: type}
+										</Typography>
 									</MenuItem>
 								))}
 							</Select>

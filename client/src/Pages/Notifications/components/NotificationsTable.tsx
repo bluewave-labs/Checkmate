@@ -65,7 +65,13 @@ export const NotificationsTable = ({
 				id: "type",
 				content: t("common.table.headers.type"),
 				render: (row) => {
-					return <Typography textTransform={"capitalize"}>{row?.type}</Typography>;
+					return (
+						<Typography textTransform={"capitalize"}>
+							{row?.type === "rocket_chat"
+								? t("pages.notifications.form.type.rocketChat")
+								: row?.type}
+						</Typography>
+					);
 				},
 			},
 			{

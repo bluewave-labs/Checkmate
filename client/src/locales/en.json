@@ -1164,6 +1164,7 @@
 				"type": {
 					"description": "Select the type of notification channel to create.",
 					"optionType": "Type",
+					"rocketChat": "Rocket.Chat",
 					"title": "Channel type"
 				},
 				"telegram": {
