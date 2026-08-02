@@ -151,7 +151,7 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
   - Selective disk monitoring with mountpoint selection
 - Incidents at a glance
 - Status pages with 4 beautiful themes
-- E-mail, Webhooks, Discord, Slack, PagerDuty, Matrix, Microsoft Teams, Telegram, Pushover, Twilio (SMS) notifications
+- E-mail, Webhooks, Discord, Slack, PagerDuty, Matrix, Rocket.Chat, Microsoft Teams, Telegram, Pushover, Twilio (SMS) notifications
 - Scheduled maintenance
 - JSON query monitoring
 - Multi-language support for Arabic, Chinese (Simplified), Chinese (Traditional, Taiwan), Czech, English, Finnish, French, German, Japanese, Portuguese (Brazil), Russian, Spanish, Thai, Turkish, Ukrainian, and Vietnamese
