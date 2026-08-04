@@ -1,27 +1,20 @@
 services:
-  client:
-    image: uptime_client:latest
-    restart: always
-    ports:
-      - "80:80"
-    environment:
-      UPTIME_APP_API_BASE_URL: "http://localhost:52345/api/v1"
-      UPTIME_APP_CLIENT_HOST: "http://localhost"
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d/
-    depends_on:
-      - server
-  server:
-    image: uptime_server:latest
+  checkmate:
+    build:
+      context: ../..
+      dockerfile: docker/Dockerfile
     restart: always
     ports:
       - "52345:52345"
     env_file:
       - server.env
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
   worker:
-    image: uptime_server:latest
+    build:
+      context: ../..
+      dockerfile: docker/Dockerfile
     restart: always
     ports:
       - "52346:52346"
@@ -43,9 +36,10 @@ services:
       timeout: 3s
       retries: 3
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
   mongodb:
-    image: uptime_mongo:latest
+    image: mongo:8.0
     restart: always
     ports:
       - "27017:27017"

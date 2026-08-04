@@ -9,6 +9,7 @@
   🇪🇸 <a href="README.es.md">Español</a> |
   🇫🇮 <a href="README.fi.md">Suomi</a> |
   🇫🇷 <a href="README.fr.md">Français</a> |
+  🇮🇹 <a href="README.it.md">Italiano</a> |
   🇯🇵 <a href="README.ja.md">日本語</a> |
   🇧🇷 <a href="README.pt-BR.md">Português (Brasil)</a> |
   🇷🇺 <a href="README.ru.md">Русский</a> |
@@ -81,7 +82,7 @@ Checkmate 已在 1000+ 個活躍監控項目下進行過壓力測試,未發生�
 
 安裝說明請參閱 [Checkmate 文件入口](https://checkmate.so/docs)。
 
-你也可以使用 [Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](./charts/helm/checkmate/INSTALLATION.md)、[Sive Host](https://sive.host)(南非)、[Cloudzy](https://cloudzy.com/marketplace/checkmate) 或 [Pikapods](https://www.pikapods.com/) 來快速啟動一個 Checkmate 實例。若要監控伺服器基礎架構,需要 [Capture 代理程式](https://github.com/bluewave-labs/capture),Capture 儲存庫中也提供了安裝說明。
+你也可以使用 [Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](../../charts/helm/checkmate/INSTALLATION.md)、[Sive Host](https://sive.host)(南非)、[Cloudzy](https://cloudzy.com/marketplace/checkmate) 或 [Pikapods](https://www.pikapods.com/) 來快速啟動一個 Checkmate 實例。若要監控伺服器基礎架構,需要 [Capture 代理程式](https://github.com/bluewave-labs/capture),Capture 儲存庫中也提供了安裝說明。
 
 ### 使用自訂 CA
 

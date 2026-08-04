@@ -7,7 +7,7 @@ const SERVICE_NAME = "MongoQueueWorkersRepository";
 class MongoQueueWorkersRepository implements IQueueWorkersRepository {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	protected toEntity = (doc: QueueWorkerDocument): QueueWorker => {
+	private toEntity = (doc: QueueWorkerDocument): QueueWorker => {
 		return {
 			workerId: doc._id,
 			mode: doc.mode,

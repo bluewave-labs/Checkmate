@@ -1,5 +1,5 @@
 import { AppError } from "@/utils/AppError.js";
-import { Monitor, MonitorTypes, type MonitorType } from "@/domain/monitors/monitor.types.js";
+import { Monitor, MonitorTypes, type MonitorType } from "@/domain/monitors/monitor.type.js";
 import { UserRole } from "@/domain/users/user.type.js";
 import sslChecker, { SSLDetails } from "ssl-checker";
 type SSLCheckerType = typeof sslChecker;
@@ -52,24 +52,6 @@ export const optionalNumber = (value: unknown, fieldName: string): number | unde
 		}
 	}
 	throw new AppError({ message: `${fieldName} must be a number`, status: 400 });
-};
-
-export const optionalBoolean = (value: unknown, fieldName: string): boolean | undefined => {
-	if (value === undefined) {
-		return undefined;
-	}
-	if (typeof value === "boolean") {
-		return value;
-	}
-	if (typeof value === "string") {
-		if (value === "true") {
-			return true;
-		}
-		if (value === "false") {
-			return false;
-		}
-	}
-	throw new AppError({ message: `${fieldName} must be a boolean`, status: 400 });
 };
 
 export const parseMonitorTypeFilter = (value: unknown): MonitorType | MonitorType[] | undefined => {

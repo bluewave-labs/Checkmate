@@ -9,6 +9,7 @@
   🇪🇸 <a href="README.es.md">Español</a> |
   🇫🇮 <a href="README.fi.md">Suomi</a> |
   🇫🇷 <a href="README.fr.md">Français</a> |
+  🇮🇹 <a href="README.it.md">Italiano</a> |
   🇯🇵 <a href="README.ja.md">日本語</a> |
   🇧🇷 <a href="README.pt-BR.md">Português (Brasil)</a> |
   🇷🇺 <a href="README.ru.md">Русский</a> |
@@ -81,7 +82,7 @@ Checkmate は 1000 以上のアクティブなモニターでストレステス�
 
 インストール手順は [Checkmate ドキュメントポータル](https://checkmate.so/docs) を参照してください。
 
-代わりに、[Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](./charts/helm/checkmate/INSTALLATION.md)、[Sive Host](https://sive.host)（南アフリカ）、[Cloudzy](https://cloudzy.com/marketplace/checkmate)、[Pikapods](https://www.pikapods.com/) を使って Checkmate インスタンスをすばやく立ち上げることもできます。サーバーインフラを監視したい場合は、[Capture エージェント](https://github.com/bluewave-labs/capture) が必要です。Capture リポジトリにもインストール手順が記載されています。
+代わりに、[Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](../../charts/helm/checkmate/INSTALLATION.md)、[Sive Host](https://sive.host)（南アフリカ）、[Cloudzy](https://cloudzy.com/marketplace/checkmate)、[Pikapods](https://www.pikapods.com/) を使って Checkmate インスタンスをすばやく立ち上げることもできます。サーバーインフラを監視したい場合は、[Capture エージェント](https://github.com/bluewave-labs/capture) が必要です。Capture リポジトリにもインストール手順が記載されています。
 
 ### カスタム CA の利用
 

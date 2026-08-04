@@ -19,8 +19,6 @@ If you need to monitor internal HTTPS endpoints with certificates from private C
 ### Example Configurations
 The `docker/dev/` directory contains example configurations:
 - `docker-compose.custom-ca-example.yaml` - Example Docker Compose with custom CA
-- `server-custom-ca.Dockerfile` - Example Dockerfile for OS-level CA trust
-- `export-smallstep-ca.sh` - Helper script for Smallstep CA export
 
 ## Contributing to Documentation
 

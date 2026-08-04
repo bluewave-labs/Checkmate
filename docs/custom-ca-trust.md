@@ -18,8 +18,8 @@ Add a volume mount for your CA certificate and set the environment variable:
 
 ```yaml
 services:
-  server:
-    image: uptime_server:latest
+  checkmate:
+    image: ghcr.io/bluewave-labs/checkmate:latest
     restart: always
     ports:
       - "52345:52345"
@@ -30,7 +30,6 @@ services:
     volumes:
       - ./certs:/certs:ro
     depends_on:
-      - redis
       - mongodb
 ```
 
@@ -52,67 +51,53 @@ For more comprehensive trust configuration, you can create a derived Dockerfile 
 
 ### Custom Dockerfile
 
-Create `docker/dev/server-custom-ca.Dockerfile`:
+Create `checkmate-custom-ca.Dockerfile`:
 
 ```dockerfile
-FROM node:20-alpine
+FROM ghcr.io/bluewave-labs/checkmate:latest
 
-# Install ca-certificates for Alpine
-RUN apk add --no-cache ca-certificates
+USER root
 
-WORKDIR /app
+RUN apt-get update \
+    && apt-get install -y ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
-COPY ./server/package*.json ./
-
-RUN npm install
-
-COPY ./server/ ./
-
-# Copy your custom CA certificate
+# Copy your custom CA certificate (must have a .crt extension)
 COPY ./certs/custom-ca.crt /usr/local/share/ca-certificates/
 
 # Update CA certificates
 RUN update-ca-certificates
 
-EXPOSE 52345
+USER node
 
-CMD ["node", "src/index.js"]
+# Node uses its bundled CA store by default; make it read the system store
+ENV NODE_OPTIONS="--use-system-ca"
 ```
 
 ### Docker Compose Override
 
-Create `docker/dev/docker-compose.custom-ca.yaml`:
+Create `docker-compose.custom-ca.yaml`:
 
 ```yaml
 services:
-  server:
+  checkmate:
     build:
       context: .
-      dockerfile: server-custom-ca.Dockerfile
+      dockerfile: checkmate-custom-ca.Dockerfile
     restart: always
     ports:
       - "52345:52345"
     env_file:
       - server.env
     depends_on:
-      - redis
       - mongodb
 ```
 
-Run with: `docker-compose -f docker-compose.yaml -f docker-compose.custom-ca.yaml up`
+Run with: `docker compose -f docker-compose.yaml -f docker-compose.custom-ca.yaml up`
 
-## Alpine Linux Considerations
+## Base Image Considerations
 
-Since Checkmate uses Alpine Linux as the base image, you need to install the `ca-certificates` package:
-
-```dockerfile
-# Install ca-certificates for Alpine
-RUN apk add --no-cache ca-certificates
-
-# Copy and update CA certificates
-COPY ./certs/custom-ca.crt /usr/local/share/ca-certificates/
-RUN update-ca-certificates
-```
+The Checkmate image is Debian-based (`node:22-slim`), which does not ship the `ca-certificates` package — install it before running `update-ca-certificates` (see the Dockerfile above). Certificates dropped into `/usr/local/share/ca-certificates/` must have a `.crt` extension, and Node only consults the system store when started with `--use-system-ca`. For most setups the `NODE_EXTRA_CA_CERTS` compose approach is simpler.
 
 ## Smallstep CA Configuration
 

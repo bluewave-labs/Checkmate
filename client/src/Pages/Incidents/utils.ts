@@ -1,5 +1,5 @@
 import type { Incident, IncidentSummaryItem } from "@/Types/Incident";
-import prettyMilliseconds from "pretty-ms";
+import { formatDuration } from "@/Utils/TimeUtils";
 
 type IncidentLike = Pick<Incident, "startTime" | "endTime" | "status">;
 
@@ -24,8 +24,5 @@ export const getIncidentsDuration = (incident: IncidentLike | IncidentSummaryIte
 		return "-";
 	}
 
-	return prettyMilliseconds(durationMs, {
-		secondsDecimalDigits: 0,
-		millisecondsDecimalDigits: 0,
-	});
+	return formatDuration(durationMs);
 };

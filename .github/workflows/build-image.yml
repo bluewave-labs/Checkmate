@@ -1,0 +1,103 @@
+name: Build image
+
+on:
+  push:
+    branches: ["develop", "master"]
+    tags: ["v*"]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # checkmate-backend-mono is a transitional alias so existing deployments
+      # keep receiving updates; drop it after one release cycle.
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ghcr.io/${{ github.repository_owner }}/checkmate
+            ghcr.io/${{ github.repository_owner }}/checkmate-backend-mono
+          flavor: |
+            latest=false
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=semver,pattern={{version}}
+            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') }}
+
+      - name: Build and push multi-arch image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # The hosted staging/prod instances share one host and one compose file; each
+  # deploy pulls and recreates only its own service.
+  deploy-staging:
+    needs: build-and-push
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy staging.checkmate.so
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.DEMO_SERVER_HOST }}
+          username: ${{ secrets.DEMO_SERVER_USER }}
+          key: ${{ secrets.DEMO_SERVER_SSH_KEY }}
+          script: |
+            cd checkmate
+            git pull
+            cd docs/hosting/checkmate-so
+            docker compose pull checkmate-staging
+            docker compose up -d checkmate-staging
+            docker system prune -af
+
+  deploy-prod:
+    needs: build-and-push
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy demo.checkmate.so
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.DEMO_SERVER_HOST }}
+          username: ${{ secrets.DEMO_SERVER_USER }}
+          key: ${{ secrets.DEMO_SERVER_SSH_KEY }}
+          script: |
+            cd checkmate
+            git pull
+            cd docs/hosting/checkmate-so
+            docker compose pull checkmate-demo
+            docker compose up -d checkmate-demo
+            docker system prune -af

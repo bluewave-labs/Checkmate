@@ -1,27 +1,13 @@
-import mongoose from "mongoose";
 import { IUsersRepository } from "@/domain/users/user.repository.interface.js";
 import { UserModel, type UserDocument } from "@/domain/users/user.model.js";
 import type { User, UserProfileImage } from "@/domain/users/user.type.js";
 import { GenerateAvatarImage } from "@/utils/imageProcessing.js";
-import { ParseBoolean } from "@/utils/utils.js";
 import { AppError } from "@/utils/AppError.js";
+import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 const SERVICE_NAME = "MongoUsersRepository";
 
 class MongoUsersRepository implements IUsersRepository {
 	static SERVICE_NAME = SERVICE_NAME;
-	private toStringId = (value?: mongoose.Types.ObjectId | string | null): string => {
-		if (!value) {
-			return "";
-		}
-		return value instanceof mongoose.Types.ObjectId ? value.toString() : String(value);
-	};
-
-	private toDateString = (value?: Date | string | null): string => {
-		if (!value) {
-			return new Date(0).toISOString();
-		}
-		return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
-	};
 
 	private mapProfileImage = (image?: (UserProfileImage & { data?: Buffer }) | null) => {
 		if (!image) {
@@ -33,9 +19,9 @@ class MongoUsersRepository implements IUsersRepository {
 		};
 	};
 
-	protected toEntity = (doc: UserDocument): User => {
+	private toEntity = (doc: UserDocument): User => {
 		return {
-			id: this.toStringId(doc._id),
+			id: toStringId(doc._id),
 			firstName: doc.firstName,
 			lastName: doc.lastName,
 			email: doc.email,
@@ -45,10 +31,10 @@ class MongoUsersRepository implements IUsersRepository {
 			isActive: doc.isActive ?? false,
 			isVerified: doc.isVerified ?? false,
 			role: doc.role ?? [],
-			teamId: this.toStringId(doc.teamId),
+			teamId: toStringId(doc.teamId),
 			checkTTL: doc.checkTTL ?? undefined,
-			createdAt: this.toDateString(doc.createdAt),
-			updatedAt: this.toDateString(doc.updatedAt),
+			createdAt: toDateString(doc.createdAt),
+			updatedAt: toDateString(doc.updatedAt),
 		};
 	};
 
@@ -85,7 +71,7 @@ class MongoUsersRepository implements IUsersRepository {
 	findById = async (id: string) => {
 		const user = await UserModel.findById(id).select("-password").select("-profileImage");
 		if (!user) {
-			throw new Error("User not found");
+			throw new AppError({ message: "User not found", service: SERVICE_NAME, status: 404 });
 		}
 
 		return this.toEntity(user);
@@ -100,9 +86,8 @@ class MongoUsersRepository implements IUsersRepository {
 		const candidateUser = { ...patch };
 		let unsetFields: Record<string, 1> | undefined;
 
-		if (ParseBoolean(candidateUser.deleteProfileImage) === true) {
+		if (candidateUser.deleteProfileImage === true) {
 			unsetFields = { profileImage: 1, avatarImage: 1 };
-			delete candidateUser.deleteProfileImage;
 		} else if (file) {
 			// 1.  Save the full size image
 			candidateUser.profileImage = {

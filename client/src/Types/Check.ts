@@ -149,6 +149,15 @@ export interface GroupedCheck {
 	totalChecks: number;
 }
 
+export interface GroupedUptimeCheck extends GroupedCheck {
+	avgDns: number;
+	avgTcp: number;
+	avgTls: number;
+	avgRequest: number;
+	avgFirstByte: number;
+	avgDownload: number;
+}
+
 export interface PageSpeedGroupedCheck {
 	bucketDate: string;
 	performance: number;
@@ -241,18 +250,7 @@ export interface ChecksSummary {
 	downChecks: number;
 }
 
-export type CheckSnapshot = Omit<Check, "metadata" | "__v" | "updatedAt"> & {
-	originalResponseTime: number;
-};
-
+export type CheckSnapshot = Omit<Check, "metadata" | "__v" | "updatedAt">;
 export interface HasResponseTime {
 	responseTime: number;
 }
-
-export type NormalizedCheck<T extends HasResponseTime = Check> = T & {
-	originalResponseTime: number;
-};
-
-export type NormalizedUptimeCheck<T extends GroupedCheck = GroupedCheck> = T & {
-	originalAvgResponseTime: number;
-};

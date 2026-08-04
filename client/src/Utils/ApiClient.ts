@@ -1,8 +1,10 @@
 import axios from "axios";
 import type { AxiosError } from "axios";
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
+import { runtimeConfig } from "@/Utils/runtimeConfig";
 
-const BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
+const BASE_URL =
+	runtimeConfig.apiBaseUrl || import.meta.env.VITE_APP_API_BASE_URL || "/api/v1";
 
 const api = axios.create({
 	baseURL: BASE_URL,

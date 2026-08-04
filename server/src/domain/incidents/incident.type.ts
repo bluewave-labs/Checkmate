@@ -1,7 +1,7 @@
 // export type IncidentResolutionType = "automatic" | "manual" | null;
 
-export const IncidentResolutionTypes = ["automatic", "manual", null] as const;
-export type IncidentResolutionType = (typeof IncidentResolutionTypes)[number];
+export const IncidentResolutionTypes = ["automatic", "manual"] as const;
+export type IncidentResolutionType = (typeof IncidentResolutionTypes)[number] | null;
 
 export interface Incident {
 	id: string;

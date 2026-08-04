@@ -56,23 +56,12 @@ const createService = (envOverrides?: Partial<ValidatedEnv>) => {
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("SettingsService", () => {
-	describe("serviceName", () => {
-		it("returns SettingsService from static property", () => {
-			expect(SettingsService.SERVICE_NAME).toBe("SettingsService");
-		});
+	// ── getSettings ─────────────────────────────────────────────────────────
 
-		it("returns SettingsService from instance getter", () => {
-			const { service } = createService();
-			expect(service.serviceName).toBe("SettingsService");
-		});
-	});
-
-	// ── loadSettings ────────────────────────────────────────────────────────
-
-	describe("loadSettings", () => {
+	describe("getSettings", () => {
 		it("returns env config mapped from constructor", () => {
 			const { service } = createService();
-			const settings = service.loadSettings();
+			const settings = service.getSettings();
 
 			expect(settings).toEqual({
 				jwtSecret: "test-secret",
@@ -83,25 +72,28 @@ describe("SettingsService", () => {
 				dbConnectionString: "mongodb://localhost:27017/test_db",
 				dbType: "mongodb",
 				statusPageThemesEnabled: false,
+				clientConfig: {},
+			});
+		});
+
+		it("maps only set CLIENT_CONFIG_* env vars into clientConfig", () => {
+			const { service } = createService({
+				CLIENT_CONFIG_API_BASE_URL: "https://api.example.com/api/v1",
+				CLIENT_CONFIG_LOG_LEVEL: "warn",
+			});
+
+			expect(service.getSettings().clientConfig).toEqual({
+				apiBaseUrl: "https://api.example.com/api/v1",
+				logLevel: "warn",
 			});
 		});
 
 		it("reflects custom env values", () => {
 			const { service } = createService({ NODE_ENV: "production", LOG_LEVEL: "error" });
-			const settings = service.loadSettings();
+			const settings = service.getSettings();
 
 			expect(settings.nodeEnv).toBe("production");
 			expect(settings.logLevel).toBe("error");
-		});
-	});
-
-	// ── getSettings ─────────────────────────────────────────────────────────
-
-	describe("getSettings", () => {
-		it("returns the same config as loadSettings", () => {
-			const { service } = createService();
-
-			expect(service.getSettings()).toEqual(service.loadSettings());
 		});
 	});
 

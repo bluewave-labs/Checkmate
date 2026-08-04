@@ -51,10 +51,6 @@ export class BufferService implements IBufferService {
 		});
 	}
 
-	get serviceName() {
-		return BufferService.SERVICE_NAME;
-	}
-
 	addToBuffer(check: Check) {
 		try {
 			this.buffer.push(check);

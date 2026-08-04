@@ -56,17 +56,6 @@ describe("DiagnosticService", () => {
 		jest.useRealTimers();
 	});
 
-	describe("serviceName", () => {
-		it("returns diagnosticService from static property", () => {
-			expect(DiagnosticService.SERVICE_NAME).toBe("diagnosticService");
-		});
-
-		it("returns diagnosticService from instance getter", () => {
-			const service = new DiagnosticService(makeDb());
-			expect(service.serviceName).toBe("diagnosticService");
-		});
-	});
-
 	// ── constructor ─────────────────────────────────────────────────────────
 
 	describe("constructor", () => {

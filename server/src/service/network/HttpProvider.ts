@@ -5,8 +5,9 @@ import { HttpStatusPayload } from "@/types/network.js";
 import { MonitorStatusResponse } from "@/types/network.js";
 import { Agent as HttpsAgent } from "https";
 import { Agent as HttpAgent } from "http";
-import { Monitor, MonitorType } from "@/domain/monitors/monitor.types.js";
-import { NETWORK_ERROR, isStatusUp } from "@/service/network/utils.js";
+import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
+import { isStatusUp } from "@/service/network/utils.js";
+import { NETWORK_ERROR } from "@/types/network.js";
 import CacheableLookup from "cacheable-lookup";
 
 export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
@@ -116,7 +117,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 		if (error instanceof HTTPError || error instanceof RequestError) {
 			const statusCode = error.response?.statusCode;
 			const statusUp = isStatusUp(statusCode, monitor.customUpCodes);
-			const responseTime = error.timings?.phases?.firstByte ?? error.timings?.phases?.total ?? 0;
+			const responseTime = error.timings?.phases?.total ?? 0;
 
 			if (!statusUp) {
 				return {
@@ -183,7 +184,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 				statusCode: response.statusCode,
 				statusUp,
 				message: response.statusMessage ?? "OK",
-				responseTime: response.timings.phases.firstByte ?? 0,
+				responseTime: response.timings.phases.total ?? 0,
 				timings: response.timings,
 			});
 		} catch (error: unknown) {

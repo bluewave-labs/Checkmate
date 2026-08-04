@@ -58,8 +58,8 @@
 				"uptime": "Thời gian hoạt động"
 			},
 			"histogram": {
-				"avg": "TB: {{value}} ms",
-				"max": "Tối đa: {{value}} ms"
+				"avg": "TB: {{value}}",
+				"max": "Tối đa: {{value}}"
 			}
 		},
 		"dialogs": {
@@ -1352,10 +1352,10 @@
 					"responseTime": "Thời gian phản hồi"
 				},
 				"chart": {
-					"avg": "TB {{value}}ms",
+					"avg": "TB {{value}}",
 					"downTooltip": "Ngừng hoạt động",
 					"heatmapAria": "Bản đồ nhiệt thời gian phản hồi",
-					"max": "tối đa {{value}}ms"
+					"max": "tối đa {{value}}"
 				},
 				"status": {
 					"breached": "Vượt ngưỡng",

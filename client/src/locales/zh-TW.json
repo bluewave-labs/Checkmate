@@ -58,8 +58,8 @@
 				"uptime": "正常運行時間"
 			},
 			"histogram": {
-				"avg": "平均：{{value}} ms",
-				"max": "最大：{{value}} ms"
+				"avg": "平均：{{value}}",
+				"max": "最大：{{value}}"
 			}
 		},
 		"dialogs": {
@@ -1352,10 +1352,10 @@
 					"responseTime": "回應時間"
 				},
 				"chart": {
-					"avg": "平均 {{value}}ms",
+					"avg": "平均 {{value}}",
 					"downTooltip": "停機",
 					"heatmapAria": "回應時間熱圖",
-					"max": "最大 {{value}}ms"
+					"max": "最大 {{value}}"
 				},
 				"status": {
 					"breached": "超過閾值",

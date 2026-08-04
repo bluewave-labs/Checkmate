@@ -4,28 +4,15 @@ import type { StatusPage, StatusPageLogo, StatusPageLogoDocument } from "@/domai
 import mongoose from "mongoose";
 import { AppError } from "@/utils/AppError.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
-
+import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 // Type for update data that can include document-level fields (Buffer for logo)
 type StatusPageUpdateData = Partial<Omit<StatusPage, "id" | "userId" | "teamId" | "logo" | "createdAt" | "updatedAt">> & {
 	logo?: StatusPageLogoDocument | null;
 };
+
 class MongoStatusPagesRepository implements IStatusPagesRepository {
-	private toStringId = (value?: mongoose.Types.ObjectId | string | null): string => {
-		if (!value) {
-			return "";
-		}
-		return value instanceof mongoose.Types.ObjectId ? value.toString() : String(value);
-	};
-
-	private toDateString = (value?: Date | string | null): string => {
-		if (!value) {
-			return new Date(0).toISOString();
-		}
-		return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
-	};
-
 	private mapIdArray = (values?: Array<mongoose.Types.ObjectId | string>): string[] => {
-		return values?.map((value) => this.toStringId(value)) ?? [];
+		return values?.map((value) => toStringId(value)) ?? [];
 	};
 
 	private mapLogo = (logo?: StatusPageLogoDocument | null): StatusPageLogo | undefined => {
@@ -42,9 +29,9 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 
 	private toEntity = (doc: StatusPageDocument): StatusPage => {
 		return {
-			id: this.toStringId(doc._id),
-			userId: this.toStringId(doc.userId),
-			teamId: this.toStringId(doc.teamId),
+			id: toStringId(doc._id),
+			userId: toStringId(doc.userId),
+			teamId: toStringId(doc.teamId),
 			type: doc.type,
 			companyName: doc.companyName,
 			url: doc.url,
@@ -63,8 +50,8 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 			customCSS: doc.customCSS,
 			theme: doc.theme,
 			themeMode: doc.themeMode,
-			createdAt: this.toDateString(doc.createdAt),
-			updatedAt: this.toDateString(doc.updatedAt),
+			createdAt: toDateString(doc.createdAt),
+			updatedAt: toDateString(doc.updatedAt),
 		};
 	};
 

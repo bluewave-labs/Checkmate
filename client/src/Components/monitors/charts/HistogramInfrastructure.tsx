@@ -8,7 +8,7 @@ import {
 	ResponsiveContainer,
 } from "recharts";
 import { Fragment, useId } from "react";
-import { XTick } from "@/Components/monitors";
+import { XTick } from "@/Components/monitors/charts/XTick";
 
 import { useTheme } from "@mui/material/styles";
 import type { HardwareCheckStats } from "@/Types/Monitor";

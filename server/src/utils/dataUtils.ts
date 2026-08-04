@@ -1,6 +1,6 @@
-import type { GroupedCheck, HasResponseTime, NormalizedCheck, NormalizedUptimeCheck } from "@/domain/checks/check.type.js";
+import { type DateRange } from "@/types/query.js";
 
-export const getDateForRange = (dateRange: string): Date | undefined => {
+export const getDateForRange = (dateRange: DateRange): Date => {
 	const now = Date.now();
 	switch (dateRange) {
 		case "recent":
@@ -14,78 +14,20 @@ export const getDateForRange = (dateRange: string): Date | undefined => {
 		case "month":
 			return new Date(now - 30 * 24 * 60 * 60 * 1000); // 30 days
 		case "all":
-			return undefined;
+			return new Date(0);
 		default:
-			return undefined;
+			return new Date(0);
 	}
 };
 
-const calculatePercentile = <T extends HasResponseTime>(arr: T[], percentile: number): number => {
-	const sorted = arr.slice().sort((a, b) => a.responseTime - b.responseTime);
-	const index = (percentile / 100) * (sorted.length - 1);
-	const lower = Math.floor(index);
-	const upper = lower + 1;
-	const weight = index % 1;
-	if (upper >= sorted.length) return sorted[lower]!.responseTime;
-	return sorted[lower]!.responseTime * (1 - weight) + sorted[upper]!.responseTime * weight;
-};
-
-const calculatePercentileUptimeDetails = (arr: GroupedCheck[], percentile: number): number => {
-	const sorted = arr.slice().sort((a, b) => a.avgResponseTime - b.avgResponseTime);
-	const index = (percentile / 100) * (sorted.length - 1);
-	const lower = Math.floor(index);
-	const upper = lower + 1;
-	const weight = index % 1;
-	if (upper >= sorted.length) return sorted[lower]!.avgResponseTime;
-	return sorted[lower]!.avgResponseTime * (1 - weight) + sorted[upper]!.avgResponseTime * weight;
-};
-
-export const NormalizeData = <T extends HasResponseTime>(checks: T[], rangeMin: number, rangeMax: number): NormalizedCheck<T>[] => {
-	if (checks.length > 1) {
-		const min = calculatePercentile(checks, 0);
-		const max = calculatePercentile(checks, 95);
-		const normalizedChecks = checks.map((check) => {
-			const originalResponseTime = typeof check.responseTime === "number" ? check.responseTime : 0;
-			let normalizedResponseTime = rangeMin + ((check.responseTime - min) * (rangeMax - rangeMin)) / (max - min);
-
-			normalizedResponseTime = Math.max(rangeMin, Math.min(rangeMax, normalizedResponseTime));
-			return {
-				...check,
-				responseTime: normalizedResponseTime,
-				originalResponseTime: originalResponseTime,
-			};
-		});
-
-		return normalizedChecks;
-	} else {
-		return checks.map((check) => {
-			const originalResponseTime = typeof check.responseTime === "number" ? check.responseTime : 0;
-			return { ...check, originalResponseTime: originalResponseTime };
-		});
-	}
-};
-
-export const NormalizeDataUptimeDetails = <T extends GroupedCheck>(checks: T[], rangeMin: number, rangeMax: number): NormalizedUptimeCheck<T>[] => {
-	if (checks.length > 1) {
-		const min = calculatePercentileUptimeDetails(checks, 0);
-		const max = calculatePercentileUptimeDetails(checks, 95);
-
-		const normalizedChecks = checks.map((check) => {
-			const originalResponseTime = check.avgResponseTime;
-			let normalizedResponseTime = rangeMin + ((check.avgResponseTime - min) * (rangeMax - rangeMin)) / (max - min);
-
-			normalizedResponseTime = Math.max(rangeMin, Math.min(rangeMax, normalizedResponseTime));
-			return {
-				...check,
-				avgResponseTime: normalizedResponseTime,
-				originalAvgResponseTime: originalResponseTime,
-			};
-		});
-
-		return normalizedChecks;
-	} else {
-		return checks.map((check) => {
-			return { ...check, originalAvgResponseTime: check.avgResponseTime };
-		});
-	}
+export const getDateFormat = (dateRange: DateRange): string => {
+	const formatLookup = {
+		hour: "%Y-%m-%dT%H:%M:00Z",
+		recent: "%Y-%m-%dT%H:%M:00Z",
+		day: "%Y-%m-%dT%H:00:00Z",
+		week: "%Y-%m-%dT00:00:00Z",
+		month: "%Y-%m-%dT00:00:00Z",
+		all: "%Y-%m-%dT00:00:00Z",
+	};
+	return formatLookup[dateRange];
 };

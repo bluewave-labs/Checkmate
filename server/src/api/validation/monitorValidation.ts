@@ -10,7 +10,8 @@ import {
 	MonitorStatuses,
 	MonitorTypes,
 	PageSpeedStrategies,
-} from "@/domain/monitors/monitor.types.js";
+} from "@/domain/monitors/monitor.type.js";
+import { DateRanges, SortOrders } from "@/types/query.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
@@ -20,11 +21,10 @@ export const getMonitorByIdParamValidation = z.object({
 
 export const getMonitorByIdQueryValidation = z.object({
 	status: booleanCoercion.optional(),
-	sortOrder: z.enum(["asc", "desc"]).optional(),
+	sortOrder: z.enum(SortOrders).optional(),
 	limit: z.coerce.number().optional(),
-	dateRange: z.enum(["recent", "hour", "day", "week", "month", "all"]).optional(),
+	dateRange: z.enum(DateRanges).optional(),
 	numToDisplay: z.coerce.number().optional(),
-	normalize: booleanCoercion.optional(),
 	continent: z.union([z.enum(GeoContinents), z.array(z.enum(GeoContinents))]).optional(),
 });
 
@@ -42,7 +42,7 @@ export const getMonitorsWithChecksQueryValidation = z.object({
 	rowsPerPage: z.coerce.number().int().min(1).max(100).optional(),
 	filter: z.union([z.string(), z.literal("")]).optional(),
 	field: z.string().optional(),
-	order: z.enum(["asc", "desc"]).optional(),
+	order: z.enum(SortOrders).optional(),
 	type: z.union([z.enum(MonitorTypes), z.array(z.enum(MonitorTypes))]).optional(),
 	tags: z.union([z.string(), z.array(z.string())]).optional(),
 	explain: booleanCoercion.optional(),
@@ -195,8 +195,7 @@ export const getUptimeDetailsByIdParamValidation = z.object({
 });
 
 export const getUptimeDetailsByIdQueryValidation = z.object({
-	dateRange: z.enum(["recent", "hour", "day", "week", "month", "all"]),
-	normalize: booleanCoercion.optional(),
+	dateRange: z.enum(DateRanges),
 });
 
 const importedMonitorSchema = z
@@ -206,7 +205,7 @@ const importedMonitorSchema = z
 		teamId: z.string().optional(),
 		name: z.string().min(1, "Name is required"),
 		description: z.union([z.string(), z.literal("")]).optional(),
-		status: z.enum(["up", "down", "paused", "initializing", "maintenance", "breached"]).default("initializing"),
+		status: z.enum(MonitorStatuses).default("initializing"),
 		statusWindow: z.array(z.boolean()).default([]),
 		statusWindowSize: z.number().min(1).max(20).default(5),
 		statusWindowThreshold: z.number().min(1).max(100).default(60),
@@ -263,7 +262,7 @@ export const getHardwareDetailsByIdParamValidation = z.object({
 });
 
 export const getHardwareDetailsByIdQueryValidation = z.object({
-	dateRange: z.enum(["recent", "hour", "day", "week", "month", "all"]).optional(),
+	dateRange: z.enum(DateRanges).optional(),
 });
 
 // Canonical monitor shape returned by /monitors endpoints. Keep aligned with
@@ -311,3 +310,52 @@ export const monitorResponseSchema = z
 		lastEvaluatedAt: z.number(),
 	})
 	.passthrough();
+
+// Grouped-check buckets returned by GET /monitors/uptime/details/{monitorId}. Keep
+// aligned with GroupedCheck / GroupedUptimeCheck in domain/checks/check.type.ts.
+export const groupedCheckResponseSchema = z.object({
+	bucketDate: z.string(),
+	avgResponseTime: z.number(),
+	totalChecks: z.number(),
+});
+
+export const groupedUptimeCheckResponseSchema = groupedCheckResponseSchema.extend({
+	avgDns: z.number(),
+	avgTcp: z.number(),
+	avgTls: z.number(),
+	avgRequest: z.number(),
+	avgFirstByte: z.number(),
+	avgDownload: z.number(),
+});
+
+// Keep aligned with MonitorStats in domain/monitor-stats/monitor-stats.type.ts.
+export const monitorStatsResponseSchema = z.object({
+	id: z.string(),
+	monitorId: z.string(),
+	avgResponseTime: z.number(),
+	maxResponseTime: z.number(),
+	totalChecks: z.number(),
+	totalUpChecks: z.number(),
+	totalDownChecks: z.number(),
+	uptimePercentage: z.number(),
+	lastCheckTimestamp: z.number(),
+	lastResponseTime: z.number(),
+	timeOfLastFailure: z.number().optional(),
+	createdAt: z.string(),
+	updatedAt: z.string(),
+});
+
+// Response of GET /monitors/uptime/details/{monitorId}. Keep aligned with
+// UptimeDetailsResult in domain/monitors/monitor.type.ts; the monitor here is the
+// repository's domain entity, which serializes `id` rather than `_id`.
+export const uptimeDetailsResponseSchema = z.object({
+	monitorData: z.object({
+		monitor: monitorResponseSchema.omit({ _id: true }).extend({ id: z.string() }),
+		groupedChecks: z.array(groupedUptimeCheckResponseSchema),
+		groupedUpChecks: z.array(groupedCheckResponseSchema),
+		groupedDownChecks: z.array(groupedCheckResponseSchema),
+		groupedAvgResponseTime: z.number(),
+		groupedUptimePercentage: z.number(),
+	}),
+	monitorStats: monitorStatsResponseSchema.nullable(),
+});

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import type { IStatusProvider } from "../../src/service/network/IStatusProvider.ts";
-import type { Monitor } from "../../src/domain/monitors/monitor.types.ts";
+import type { Monitor } from "../../src/domain/monitors/monitor.type.ts";
 
 /**
  * Shared contract tests for all IStatusProvider implementations.

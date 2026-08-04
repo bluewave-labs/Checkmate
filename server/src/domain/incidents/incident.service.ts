@@ -1,5 +1,5 @@
 const SERVICE_NAME = "incidentService";
-import type { Monitor } from "@/domain/monitors/monitor.types.js";
+import type { Monitor } from "@/domain/monitors/monitor.type.js";
 import type { MonitorStatusResponse } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import { getDateForRange } from "@/utils/dataUtils.js";
@@ -11,6 +11,7 @@ import type { User } from "@/domain/users/user.type.js";
 import type { MonitorActionDecision } from "@/worker/worker.helper.js";
 import type { INotificationMessageBuilder } from "@/domain/notifications/notification.message-builder.js";
 import type { ILogger } from "@/utils/logger.js";
+import { DateRange } from "@/types/query.js";
 
 export interface IIncidentService {
 	handleIncident(
@@ -23,7 +24,7 @@ export interface IIncidentService {
 	getIncidentsByTeam(
 		teamId: string,
 		sortOrder: string,
-		dateRange: string,
+		dateRange: DateRange,
 		page: number,
 		rowsPerPage: number,
 		status: boolean | undefined,
@@ -55,10 +56,6 @@ export class IncidentService implements IIncidentService {
 		this.monitorsRepository = monitorsRepository;
 		this.usersRepository = usersRepository;
 		this.notificationMessageBuilder = notificationMessageBuilder;
-	}
-
-	get serviceName() {
-		return IncidentService.SERVICE_NAME;
 	}
 
 	handleIncident = async (
@@ -178,7 +175,7 @@ export class IncidentService implements IIncidentService {
 	getIncidentsByTeam = async (
 		teamId: string,
 		sortOrder: string,
-		dateRange: string,
+		dateRange: DateRange,
 		page: number,
 		rowsPerPage: number,
 		status: boolean | undefined,

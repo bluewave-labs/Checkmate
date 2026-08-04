@@ -68,11 +68,24 @@
 				"downtime": "Downtime",
 				"high": "High",
 				"low": "Low",
+				"responseTime": "Response time",
+				"timingPhases": "Timing phases",
+				"totalResponseTime": "Total response time",
 				"uptime": "Uptime"
 			},
 			"histogram": {
-				"avg": "Avg: {{value}} ms",
-				"max": "Max: {{value}} ms"
+				"avg": "Avg: {{value}}",
+				"max": "Max: {{value}}",
+				"responseTime": "Response time: {{value}}",
+				"total": "Total: {{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "Request",
+				"firstByte": "First byte",
+				"download": "Download"
 			}
 		},
 		"dialogs": {
@@ -844,8 +857,8 @@
 					"memory": "Memory usage",
 					"netBytesRecv": "{{name}} - Bytes Received",
 					"netBytesSent": "{{name}} - Bytes Sent",
-					"netNoTraffic": "Capture is reporting zero traffic on every interface. This is normal when Capture runs inside a container that can only see loopback interfaces — run Capture directly on the host to see real network activity.",
-					"temp": "Temp"
+					"loopbackOnlyNotice": "Capture is only reporting loopback or container-bridge interfaces (lo, lo0, docker0). This is normal when Capture runs inside a container that can only see its own network namespace — run Capture directly on the host to see real network activity.",
+					"temp": "CPU temperature"
 				}
 			},
 			"gauges": {
@@ -1442,8 +1455,8 @@
 					"initializing": "Initializing"
 				},
 				"chart": {
-					"avg": "avg {{value}}ms",
-					"max": "max {{value}}ms",
+					"avg": "avg {{value}}",
+					"max": "max {{value}}",
 					"downTooltip": "Down",
 					"heatmapAria": "Response time heatmap"
 				},

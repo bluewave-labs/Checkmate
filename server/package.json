@@ -15,6 +15,7 @@
 		"worker:dev": "QUEUE_MODE=worker nodemon --exec tsx src/index.js",
 		"clean": "rm -rf dist",
 		"build": "npm run clean && npm run build:openapi && tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json && cp -r src/templates dist/templates",
+		"typeCheck": "tsc --noEmit",
 		"build:openapi": "tsc --noEmit && tsx scripts/buildOpenApi.ts",
 		"lint": "eslint .",
 		"lint-fix": "eslint --fix .",

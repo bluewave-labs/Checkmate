@@ -1,14 +1,13 @@
-import type { Monitor, MonitorType } from "@/domain/monitors/monitor.types.js";
+import type { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import type { MonitorPayloadMap, MonitorStatusResponse } from "@/types/network.js";
 import type { AxiosStatic } from "axios";
 import { AppError } from "@/utils/AppError.js";
-import { NETWORK_ERROR } from "@/service/network/utils.js";
+import { NETWORK_ERROR } from "@/types/network.js";
 import { ILogger } from "@/utils/logger.js";
 import { IStatusProvider } from "./network/IStatusProvider.js";
 const SERVICE_NAME = "NetworkService";
 
 export interface INetworkService {
-	readonly serviceName: string;
 	requestStatus<T extends MonitorType>(monitor: Monitor & { type: T }): Promise<MonitorStatusResponse<MonitorPayloadMap[T]>>;
 	requestWebhook(
 		type: string,
@@ -37,10 +36,6 @@ export class NetworkService implements INetworkService {
 	) {
 		this.axios = axios;
 		this.logger = logger;
-	}
-
-	get serviceName(): string {
-		return NetworkService.SERVICE_NAME;
 	}
 
 	// Main entry point

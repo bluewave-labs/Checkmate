@@ -19,7 +19,6 @@ interface LogEntry extends LogConfig {
 }
 
 export interface ILogger {
-	readonly serviceName: string;
 	info(config: LogConfig): void;
 	warn(config: LogConfig): void;
 	error(config: LogConfig): void;
@@ -95,10 +94,6 @@ class Logger implements ILogger {
 				}),
 			],
 		});
-	}
-
-	get serviceName() {
-		return Logger.SERVICE_NAME;
 	}
 
 	info(config: LogConfig) {

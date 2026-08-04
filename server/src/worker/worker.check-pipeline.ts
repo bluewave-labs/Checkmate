@@ -1,11 +1,11 @@
-import { Monitor } from "@/domain/monitors/monitor.types.js";
+import { Monitor } from "@/domain/monitors/monitor.type.js";
 import { MonitorEvaluation } from "@/worker/worker.interface.js";
 import { IMaintenanceWindowsRepository } from "@/domain/maintenance-windows/maintenance-window.repository.interface.js";
 import { isWindowActive } from "@/utils/maintenanceWindow.js";
 import { ILogger } from "@/utils/logger.js";
 import { IBufferService } from "@/service/bufferService.js";
 import { AppError } from "@/utils/AppError.js";
-import { supportsGeoCheck } from "@/domain/monitors/monitor.types.js";
+import { supportsGeoCheck } from "@/domain/monitors/monitor.type.js";
 import { IGeoChecksService } from "@/domain/geo-checks/geo-check.service.js";
 
 const SERVICE_NAME = "CheckPipeline";

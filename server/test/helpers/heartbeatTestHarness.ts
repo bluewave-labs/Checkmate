@@ -10,7 +10,7 @@ import { IncidentService } from "../../src/domain/incidents/incident.service.ts"
 import { InMemoryMonitorsRepository } from "./InMemoryMonitorsRepository.ts";
 import { InMemoryIncidentsRepository } from "./InMemoryIncidentsRepository.ts";
 import { createMockLogger } from "./createMockLogger.ts";
-import type { Monitor } from "../../src/domain/monitors/monitor.types.ts";
+import type { Monitor } from "../../src/domain/monitors/monitor.type.ts";
 import type { MonitorStatusResponse } from "../../src/types/network.ts";
 import type { Check } from "../../src/domain/checks/check.type.ts";
 import type { MaintenanceWindow } from "../../src/domain/maintenance-windows/maintenance-window.type.ts";

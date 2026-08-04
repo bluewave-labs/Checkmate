@@ -21,6 +21,7 @@ import {
 	getStatusPagePublicUrl,
 	isCustomDomainHost,
 } from "@/Utils/statusPageUrl";
+import { cssReferencesExternalResource } from "@/Utils/customCss";
 import { HeaderStatusPageControls } from "@/Pages/StatusPage/Status/Components/HeaderStatusPageControls";
 import { StatusPageThemeProvider } from "@/Pages/StatusPage/Status/themes/StatusPageThemeProvider";
 import {
@@ -132,13 +133,19 @@ const StatusPageView = () => {
 	// Public route: render directly on the viewport, themed background covers everything.
 	if (isPublic) {
 		const themeConfig = THEME_CONFIGS[resolveStatusPageTheme(statusPage.theme)];
+		const customCss =
+			statusPage.customCSS && !cssReferencesExternalResource(statusPage.customCSS)
+				? statusPage.customCSS
+				: "";
 		return (
 			<StatusPageThemeProvider
 				theme={statusPage.theme}
 				themeMode={statusPage.themeMode}
 				timezone={statusPage.timezone}
+				brandColor={statusPage.color}
 				paintBody
 			>
+				{customCss && <style>{customCss}</style>}
 				<BaseStatusPage
 					statusPage={statusPage}
 					monitors={monitors}

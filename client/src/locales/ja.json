@@ -58,8 +58,8 @@
 				"uptime": "稼働時間"
 			},
 			"histogram": {
-				"avg": "平均: {{value}} ms",
-				"max": "最大: {{value}} ms"
+				"avg": "平均: {{value}}",
+				"max": "最大: {{value}}"
 			}
 		},
 		"dialogs": {
@@ -1352,10 +1352,10 @@
 					"responseTime": "応答時間"
 				},
 				"chart": {
-					"avg": "平均 {{value}}ms",
+					"avg": "平均 {{value}}",
 					"downTooltip": "ダウン",
 					"heatmapAria": "応答時間のヒートマップ",
-					"max": "最大 {{value}}ms"
+					"max": "最大 {{value}}"
 				},
 				"status": {
 					"breached": "しきい値超過",
