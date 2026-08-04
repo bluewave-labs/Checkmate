@@ -81,6 +81,7 @@ class MongoChecksRepository implements IChecksRepository {
 			os: host?.os ?? "",
 			platform: host?.platform ?? "",
 			kernel_version: host?.kernel_version ?? "",
+			pretty_name: host?.pretty_name ?? "",
 		});
 
 		const mapCapture = (capture?: CheckCaptureInfo): CheckCaptureInfo => ({

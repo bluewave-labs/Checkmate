@@ -45,6 +45,8 @@ const PageSpeedDetails = () => {
 	const monitor = monitorData?.monitorData?.monitor;
 	const groupedChecks = monitorData?.monitorData?.groupedChecks || [];
 	const monitorStats = monitorData?.monitorStats || null;
+	const recentChecks = monitor?.recentChecks ?? [];
+	const latestCheck = recentChecks[recentChecks.length - 1];
 
 	return (
 		<BasePage
@@ -75,8 +77,8 @@ const PageSpeedDetails = () => {
 				direction={{ xs: "column", md: "row" }}
 				gap={theme.spacing(10)}
 			>
-				<PiePageSpeed latestCheck={monitor?.recentChecks?.[0]} />
-				<PiePageSpeedLegend latestCheck={monitor?.recentChecks?.[0]} />
+				<PiePageSpeed latestCheck={latestCheck} />
+				<PiePageSpeedLegend latestCheck={latestCheck} />
 			</Stack>
 		</BasePage>
 	);
