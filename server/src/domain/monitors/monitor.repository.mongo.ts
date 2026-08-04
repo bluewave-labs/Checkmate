@@ -104,10 +104,15 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return { sort: { [field]: order === "asc" ? 1 : -1 } as const, skip: Math.max(page, 0) * rowsPerPage, limit: rowsPerPage };
 	};
 
-	findByTeamId = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[]> => {
+	findByTeamId = async (teamId: string, config: TeamQueryConfig, options?: { includeRecentChecks?: boolean }): Promise<Monitor[]> => {
 		const query = this.queryBuilder(config, teamId);
 		const { sort, skip, limit } = this.pageOptions(config);
-		const documents = await MonitorModel.find(query).sort(sort).skip(skip).limit(limit);
+
+		const cursor = MonitorModel.find(query).sort(sort).skip(skip).limit(limit);
+		if (options?.includeRecentChecks === false) {
+			cursor.select({ recentChecks: 0 });
+		}
+		const documents = await cursor;
 		return this.mapDocuments(documents);
 	};
 
@@ -126,15 +131,18 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return documents.map((doc) => this.toEntity(doc));
 	};
 
-	findByIds = async (monitorIds: string[]): Promise<Monitor[]> => {
+	findByIds = async (monitorIds: string[], options?: { includeRecentChecks?: boolean }): Promise<Monitor[]> => {
 		if (!monitorIds.length) {
 			return [];
 		}
 
 		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
 
-		const pipeline: PipelineStage[] = [{ $match: { _id: { $in: objectIds } } }, ...this.uptimeStatsLookupStages];
-
+		const pipeline: PipelineStage[] = [
+			{ $match: { _id: { $in: objectIds } } },
+			...(options?.includeRecentChecks === false ? [{ $project: { recentChecks: 0 } } as PipelineStage] : []),
+			...this.uptimeStatsLookupStages,
+		];
 		const documents = await MonitorModel.aggregate(pipeline);
 		return documents.map((doc) => this.toEntity(doc));
 	};

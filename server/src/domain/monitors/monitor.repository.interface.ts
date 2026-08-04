@@ -27,9 +27,9 @@ export interface IMonitorsRepository {
 
 	// collection fetch
 	findAllForScheduling(): Promise<MonitorScheduleFields[]>;
-	findByTeamId(teamId: string, config: TeamQueryConfig): Promise<Monitor[]>;
+	findByTeamId(teamId: string, config: TeamQueryConfig, options?: { includeRecentChecks?: boolean }): Promise<Monitor[]>;
 	findByTeamIdWithStats(teamId: string, config: TeamQueryConfig): Promise<Monitor[]>;
-	findByIds(monitorIds: string[]): Promise<Monitor[]>;
+	findByIds(monitorIds: string[], options?: { includeRecentChecks?: boolean }): Promise<Monitor[]>;
 
 	// update
 	updateById(monitorId: string, teamId: string, updates: Partial<Monitor>): Promise<Monitor>;

@@ -519,7 +519,7 @@ export class MonitorService implements IMonitorService {
 	};
 
 	exportMonitorsToJSON = async ({ teamId }: { teamId: string }): Promise<Monitor[]> => {
-		const monitors = await this.monitorsRepository.findByTeamId(teamId, {});
+		const monitors = await this.monitorsRepository.findByTeamId(teamId, {}, { includeRecentChecks: false });
 
 		if (monitors.length === 0) {
 			throw new AppError({ message: "No monitors found to export.", service: SERVICE_NAME, method: "exportMonitorsToJSON", status: 400 });
