@@ -7,6 +7,7 @@ import { MongoBulkWriteError } from "mongodb";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "@/domain/monitors/monitor.repository.interface.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
+import { toCheckSnapshot } from "@/domain/checks/check.snapshot.js";
 class MongoMonitorsRepository implements IMonitorsRepository {
 	create = async (monitor: Monitor, teamId: string, userId: string) => {
 		const monitorModel = new MonitorModel({ ...monitor, teamId, userId });
@@ -126,70 +127,6 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
 
 		const pipeline: PipelineStage[] = [{ $match: { _id: { $in: objectIds } } }, ...this.uptimeStatsLookupStages];
-
-		const documents = await MonitorModel.aggregate(pipeline);
-		return documents.map((doc) => this.toEntity(doc));
-	};
-
-	findByIdsWithChecks = async (monitorIds: string[], checksCount: number = 25): Promise<Monitor[]> => {
-		if (!monitorIds.length) {
-			return [];
-		}
-
-		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
-
-		const pipeline: PipelineStage[] = [
-			{ $match: { _id: { $in: objectIds } } },
-			{
-				$lookup: {
-					from: "checks",
-					let: { monitorId: "$_id" },
-					pipeline: [{ $match: { $expr: { $eq: ["$metadata.monitorId", "$$monitorId"] } } }, { $sort: { createdAt: -1 } }, { $limit: checksCount }],
-					as: "checks",
-				},
-			},
-			{
-				$lookup: {
-					from: "maintenancewindows",
-					let: { monitorId: "$_id" },
-					pipeline: [{ $match: { $expr: { $in: ["$$monitorId", { $ifNull: ["$monitorIds", []] }] } } }],
-					as: "maintenanceWindows",
-				},
-			},
-			{
-				$lookup: {
-					from: "monitorstats",
-					localField: "_id",
-					foreignField: "monitorId",
-					as: "stats",
-				},
-			},
-			{
-				$addFields: {
-					isMaintenance: {
-						$reduce: {
-							input: "$maintenanceWindows",
-							initialValue: false,
-							in: {
-								$or: [
-									"$$value",
-									{
-										$and: [{ $eq: ["$$this.active", true] }, { $lte: ["$$this.start", "$$NOW"] }, { $gte: ["$$this.end", "$$NOW"] }],
-									},
-								],
-							},
-						},
-					},
-					uptimePercentage: { $arrayElemAt: ["$stats.uptimePercentage", 0] },
-				},
-			},
-			{
-				$project: {
-					maintenanceWindows: 0,
-					stats: 0,
-				},
-			},
-		];
 
 		const documents = await MonitorModel.aggregate(pipeline);
 		return documents.map((doc) => this.toEntity(doc));
@@ -473,7 +410,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			grpcServiceName: doc.grpcServiceName ?? undefined,
 			strategy: doc.strategy ?? undefined,
 			group: doc.group ?? null,
-			recentChecks: (doc.recentChecks ?? []).map((check: CheckSnapshotDocument) => this.toCheckSnapshot(check)),
+			recentChecks: (doc.recentChecks ?? []).map((check: CheckSnapshotDocument) => toCheckSnapshot(check)),
 			geoCheckEnabled: doc.geoCheckEnabled ?? false,
 			geoCheckLocations: doc.geoCheckLocations ?? [],
 			geoCheckInterval: doc.geoCheckInterval ?? 300000,
@@ -482,30 +419,6 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 			lastEvaluatedAt: doc.lastEvaluatedAt,
-		};
-	};
-
-	private toCheckSnapshot = (doc: CheckSnapshotDocument): CheckSnapshot => {
-		return {
-			id: doc.id,
-			status: doc.status,
-			responseTime: doc.responseTime,
-			timings: doc.timings,
-			statusCode: doc.statusCode,
-			message: doc.message,
-			cpu: doc.cpu,
-			memory: doc.memory,
-			disk: doc.disk,
-			host: doc.host,
-			errors: doc.errors,
-			capture: doc.capture,
-			net: doc.net,
-			accessibility: doc.accessibility,
-			bestPractices: doc.bestPractices,
-			seo: doc.seo,
-			performance: doc.performance,
-			audits: doc.audits,
-			createdAt: toDateString(doc.createdAt),
 		};
 	};
 

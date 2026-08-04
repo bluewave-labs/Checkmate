@@ -45,10 +45,6 @@ export class InMemoryMonitorsRepository implements IMonitorsRepository {
 		return monitor ? { ...monitor } : null;
 	}
 
-	async findByIdsWithChecks(monitorIds: string[], _checksCount?: number): Promise<Monitor[]> {
-		return this.findByIds(monitorIds);
-	}
-
 	async updateById(monitorId: string, teamId: string, updates: Partial<Monitor>): Promise<Monitor> {
 		const index = this.monitors.findIndex((m) => m.id === monitorId && m.teamId === teamId);
 		if (index === -1) {

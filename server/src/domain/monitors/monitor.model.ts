@@ -3,15 +3,11 @@ import type { Monitor, MonitorMatchMethod, CheckSnapshot } from "@/domain/monito
 import { DnsRecordTypes, MonitorTypes, MonitorStatuses, PageSpeedStrategies, HttpMethods } from "@/domain/monitors/monitor.type.js";
 import type {
 	CheckAudits,
-	CheckCaptureInfo,
-	CheckCpuInfo,
-	CheckDiskInfo,
-	CheckErrorInfo,
-	CheckHostInfo,
-	CheckMemoryInfo,
-	CheckNetworkInterfaceInfo,
-	GotTimings,
 	ILighthouseAudit,
+	SnapshotCpuInfo,
+	SnapshotDiskInfo,
+	SnapshotHostInfo,
+	SnapshotMemoryInfo,
 } from "@/domain/checks/check.type.js";
 
 type CheckSnapshotDocument = Omit<CheckSnapshot, "createdAt"> & { createdAt: Date };
@@ -37,117 +33,42 @@ interface MonitorDocument extends MonitorDocumentBase {
 	lastEvaluatedAt: number; // epoch ms
 }
 
-const snapshotTimingPhasesSchema = new Schema<GotTimings["phases"]>(
-	{
-		wait: { type: Number },
-		dns: { type: Number },
-		tcp: { type: Number },
-		tls: { type: Number },
-		request: { type: Number },
-		firstByte: { type: Number },
-		download: { type: Number },
-		total: { type: Number },
-	},
-	{ _id: false }
-);
-
-const snapshotTimingsSchema = new Schema<GotTimings>(
-	{
-		start: { type: Number },
-		socket: { type: Number },
-		lookup: { type: Number },
-		connect: { type: Number },
-		secureConnect: { type: Number },
-		upload: { type: Number },
-		response: { type: Number },
-		end: { type: Number },
-		phases: { type: snapshotTimingPhasesSchema },
-	},
-	{ _id: false }
-);
-
-const snapshotCpuSchema = new Schema<CheckCpuInfo>(
+const snapshotCpuSchema = new Schema<SnapshotCpuInfo>(
 	{
 		physical_core: { type: Number },
 		logical_core: { type: Number },
 		frequency: { type: Number },
 		current_frequency: { type: Number },
 		temperature: { type: [Number] },
-		free_percent: { type: Number },
 		usage_percent: { type: Number },
 	},
 	{ _id: false }
 );
 
-const snapshotMemorySchema = new Schema<CheckMemoryInfo>(
+const snapshotMemorySchema = new Schema<SnapshotMemoryInfo>(
 	{
 		total_bytes: { type: Number },
-		available_bytes: { type: Number },
 		used_bytes: { type: Number },
 		usage_percent: { type: Number },
 	},
 	{ _id: false }
 );
 
-const snapshotDiskSchema = new Schema<CheckDiskInfo>(
+const snapshotDiskSchema = new Schema<SnapshotDiskInfo>(
 	{
 		device: { type: String },
-		mountpoint: { type: String },
 		total_bytes: { type: Number },
-		free_bytes: { type: Number },
 		used_bytes: { type: Number },
 		usage_percent: { type: Number },
-		total_inodes: { type: Number },
-		free_inodes: { type: Number },
-		used_inodes: { type: Number },
-		inodes_usage_percent: { type: Number },
-		read_bytes: { type: Number },
-		write_bytes: { type: Number },
-		read_time: { type: Number },
-		write_time: { type: Number },
 	},
 	{ _id: false }
 );
 
-const snapshotHostSchema = new Schema<CheckHostInfo>(
+const snapshotHostSchema = new Schema<SnapshotHostInfo>(
 	{
 		os: { type: String },
 		platform: { type: String },
-		kernel_version: { type: String },
 		pretty_name: { type: String },
-	},
-	{ _id: false }
-);
-
-const snapshotErrorSchema = new Schema<CheckErrorInfo>(
-	{
-		metric: { type: [String] },
-		err: { type: String },
-	},
-	{ _id: false }
-);
-
-const snapshotCaptureSchema = new Schema<CheckCaptureInfo>(
-	{
-		version: { type: String },
-		mode: { type: String },
-	},
-	{ _id: false }
-);
-
-const snapshotNetworkInterfaceSchema = new Schema<CheckNetworkInterfaceInfo>(
-	{
-		name: { type: String },
-		bytes_sent: { type: Number },
-		bytes_recv: { type: Number },
-		packets_sent: { type: Number },
-		packets_recv: { type: Number },
-		err_in: { type: Number },
-		err_out: { type: Number },
-		drop_in: { type: Number },
-		drop_out: { type: Number },
-		fifo_in: { type: Number },
-		fifo_out: { type: Number },
 	},
 	{ _id: false }
 );
@@ -180,16 +101,12 @@ const checkSnapshotSchema = new Schema<CheckSnapshotDocument>(
 		id: { type: String, required: true },
 		status: { type: Boolean, required: true },
 		responseTime: { type: Number },
-		timings: { type: snapshotTimingsSchema },
 		statusCode: { type: Number },
 		message: { type: String },
 		cpu: { type: snapshotCpuSchema },
 		memory: { type: snapshotMemorySchema },
 		disk: { type: [snapshotDiskSchema] },
 		host: { type: snapshotHostSchema },
-		errors: { type: [snapshotErrorSchema] },
-		capture: { type: snapshotCaptureSchema },
-		net: { type: [snapshotNetworkInterfaceSchema] },
 		accessibility: { type: Number },
 		bestPractices: { type: Number },
 		seo: { type: Number },

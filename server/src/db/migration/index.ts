@@ -8,6 +8,7 @@ import { cleanupDuplicateMonitorStatsForUniqueIndex } from "./0006_cleanupDuplic
 import { migrateMaintenanceWindowMonitorIdToArray } from "./0007_migrateMaintenanceWindowMonitorIdToArray.js";
 import { backfillMonitorLastEvaluatedAt } from "./0008_backfillMonitorLastEvaluatedAt.js";
 import { recomputeResponseTimeFromTimings } from "./0009_recomputeResponseTimeFromTimings.js";
+import { slimRecentChecks } from "./0010_slimRecentChecks.js";
 import type { ILogger } from "@/utils/logger.js";
 
 type MigrationEntry = {
@@ -25,6 +26,7 @@ const migrations: MigrationEntry[] = [
 	{ name: "0007_migrateMaintenanceWindowMonitorIdToArray", execute: migrateMaintenanceWindowMonitorIdToArray },
 	{ name: "0008_backfillMonitorLastEvaluatedAt", execute: backfillMonitorLastEvaluatedAt },
 	{ name: "0009_recomputeResponseTimeFromTimings", execute: recomputeResponseTimeFromTimings },
+	{ name: "0010_slimRecentChecks", execute: slimRecentChecks },
 ];
 
 const runMigrations = async (logger: ILogger) => {

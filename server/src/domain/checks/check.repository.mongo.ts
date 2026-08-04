@@ -27,8 +27,6 @@ import { NETWORK_ERROR } from "@/types/network.js";
 
 const SERVICE_NAME = "StatusService";
 
-export type LatestChecksMap = Record<string, Check[]>;
-
 class MongoChecksRepository implements IChecksRepository {
 	static SERVICE_NAME = SERVICE_NAME;
 
@@ -286,32 +284,6 @@ class MongoChecksRepository implements IChecksRepository {
 		]);
 
 		return { checksCount, checks: this.mapDocuments(checks) };
-	};
-
-	findLatestByMonitorIds = async (monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap> => {
-		if (monitorIds.length === 0) {
-			return {};
-		}
-		const limitPerMonitor = options?.limitPerMonitor ?? 25;
-		const dateFilter = new Date(Date.now() - 24 * 60 * 60 * 1000);
-		const results = await Promise.all(
-			monitorIds.map(async (monitorId) => {
-				const docs = await CheckModel.find({
-					"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
-					createdAt: { $gte: dateFilter },
-				})
-					.sort({ createdAt: -1 })
-					.limit(limitPerMonitor)
-					.lean();
-				return { monitorId, docs };
-			})
-		);
-
-		const mapped = results.reduce<LatestChecksMap>((acc, { monitorId, docs }) => {
-			acc[monitorId] = docs.map((doc: CheckDocument) => this.toEntity(doc));
-			return acc;
-		}, {});
-		return mapped;
 	};
 
 	findByDateRangeAndMonitorId = async (monitorId: string, dateRange: DateRange, options?: { type?: MonitorType }) => {
