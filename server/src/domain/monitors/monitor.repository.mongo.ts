@@ -1,7 +1,7 @@
 import { MonitorModel } from "@/domain/monitors/monitor.model.js";
 import type { MonitorDocument, CheckSnapshotDocument } from "@/domain/monitors/monitor.model.js";
 import type { CheckSnapshot } from "@/domain/checks/check.type.js";
-import type { Monitor, MonitorStatus, MonitorsSummary } from "@/domain/monitors/monitor.type.js";
+import type { Monitor, MonitorScheduleFields, MonitorStatus, MonitorsSummary } from "@/domain/monitors/monitor.type.js";
 import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import { MongoBulkWriteError } from "mongodb";
 import { AppError } from "@/utils/AppError.js";
@@ -41,13 +41,20 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	findByIdLean = async (monitorId: string): Promise<Monitor | null> => {
-		const monitor = await MonitorModel.findOne({ _id: monitorId });
+		const monitor = await MonitorModel.findOne({ _id: monitorId }).select({ recentChecks: 0 });
 		return monitor ? this.toEntity(monitor) : null;
 	};
 
-	findAll = async (): Promise<Monitor[]> => {
-		const monitors = await MonitorModel.find();
-		return this.mapDocuments(monitors);
+	findAllForScheduling = async (): Promise<MonitorScheduleFields[]> => {
+		const docs = await MonitorModel.find({}, { type: 1, isActive: 1, interval: 1, geoCheckEnabled: 1, geoCheckInterval: 1 }).lean();
+		return docs.map((doc) => ({
+			id: doc._id.toString(),
+			type: doc.type,
+			isActive: doc.isActive,
+			interval: doc.interval,
+			geoCheckEnabled: doc.geoCheckEnabled ?? false,
+			geoCheckInterval: doc.geoCheckInterval ?? 300000,
+		}));
 	};
 
 	private queryBuilder = (config: TeamQueryConfig, teamId: string): FilterQuery<MonitorDocument> => {
@@ -182,7 +189,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 				},
 				...(statusPatch && { $set: statusPatch }),
 			},
-			{ returnDocument: "after" }
+			{ returnDocument: "after", projection: { recentChecks: 0 } }
 		);
 
 		if (!updatedMonitor) {

@@ -84,7 +84,7 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 	const monitorsRepository = {
 		findByIds: jest.fn<any>().mockResolvedValue([makeMonitor()]),
 		findByIdLean: jest.fn<any>().mockResolvedValue(makeMonitor()),
-		findAll: jest.fn<any>().mockResolvedValue([]),
+		findAllForScheduling: jest.fn<any>().mockResolvedValue([]),
 		updateById: jest.fn<any>().mockResolvedValue({}),
 	};
 	const checksRepository = {
@@ -183,7 +183,11 @@ describe("DBQueueWorker", () => {
 				queueMode: "primary",
 				queuePrimaryProcesses: false, // isolate reconcile from the polling loops
 				mocks: {
-					monitorsRepository: { findByIds: jest.fn<any>(), findAll: jest.fn<any>().mockResolvedValue([makeMonitor()]), updateById: jest.fn<any>() },
+					monitorsRepository: {
+						findByIds: jest.fn<any>(),
+						findAllForScheduling: jest.fn<any>().mockResolvedValue([makeMonitor()]),
+						updateById: jest.fn<any>(),
+					},
 				},
 			});
 
@@ -200,7 +204,11 @@ describe("DBQueueWorker", () => {
 				queueMode: "primary",
 				queuePrimaryProcesses: false,
 				mocks: {
-					monitorsRepository: { findByIds: jest.fn<any>(), findAll: jest.fn<any>().mockResolvedValue([geoMonitor]), updateById: jest.fn<any>() },
+					monitorsRepository: {
+						findByIds: jest.fn<any>(),
+						findAllForScheduling: jest.fn<any>().mockResolvedValue([geoMonitor]),
+						updateById: jest.fn<any>(),
+					},
 				},
 			});
 
