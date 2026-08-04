@@ -2,6 +2,7 @@
 
 <p align="center">
   🇺🇸 <a href="README.md">English</a> |
+  🇮🇳 <a href="docs/translations/README.hi.md">हिन्दी</a> |
   🇸🇦 <a href="docs/translations/README.ar.md">العربية</a> |
   🇪🇸 <a href="docs/translations/README.ca.md">Català</a> |
   🇨🇿 <a href="docs/translations/README.cs.md">Čeština</a> |
