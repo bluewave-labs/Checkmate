@@ -46,6 +46,13 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 			address: data.address || "",
 		};
 	}
+	if (data?.type === "rocket_chat") {
+		return {
+			type: "rocket_chat",
+			notificationName: data.notificationName || "",
+			address: data.address || "",
+		};
+	}
 	if (data?.type === "pager_duty") {
 		return {
 			type: "pager_duty",

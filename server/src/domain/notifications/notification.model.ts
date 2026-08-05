@@ -30,6 +30,7 @@ const NotificationSchema = new Schema<NotificationDocument>(
 				"slack",
 				"discord",
 				"webhook",
+				"rocket_chat",
 				"pager_duty",
 				"matrix",
 				"teams",

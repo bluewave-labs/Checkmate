@@ -34,7 +34,7 @@
 		},
 		{
 			"name": "notifications",
-			"description": "Notification channels (email, webhook, Slack, Discord, PagerDuty, Matrix, Teams, Telegram, Pushover, Twilio) and test alerts."
+			"description": "Notification channels (email, webhook, Slack, Discord, PagerDuty, Matrix, Rocket.Chat, Teams, Telegram, Pushover, Twilio) and test alerts."
 		},
 		{
 			"name": "maintenance-window",
@@ -880,6 +880,9 @@
 						"$ref": "#/components/schemas/WebhookNotification"
 					},
 					{
+						"$ref": "#/components/schemas/RocketChatNotification"
+					},
+					{
 						"$ref": "#/components/schemas/SlackNotification"
 					},
 					{
@@ -912,6 +915,7 @@
 					"mapping": {
 						"email": "#/components/schemas/EmailNotification",
 						"webhook": "#/components/schemas/WebhookNotification",
+						"rocket_chat": "#/components/schemas/RocketChatNotification",
 						"slack": "#/components/schemas/SlackNotification",
 						"discord": "#/components/schemas/DiscordNotification",
 						"pager_duty": "#/components/schemas/PagerDutyNotification",
@@ -1034,6 +1038,29 @@
 					"notificationName": "Custom webhook",
 					"type": "webhook",
 					"address": "https://example.com/hooks/checkmate"
+				}
+			},
+			"RocketChatNotification": {
+				"type": "object",
+				"properties": {
+					"notificationName": {
+						"type": "string",
+						"minLength": 1
+					},
+					"type": {
+						"type": "string",
+						"enum": ["rocket_chat"]
+					},
+					"address": {
+						"type": "string",
+						"format": "uri"
+					}
+				},
+				"required": ["notificationName", "type", "address"],
+				"example": {
+					"notificationName": "Rocket.Chat alerts",
+					"type": "rocket_chat",
+					"address": "https://chat.example.com/hooks/integration-id/token"
 				}
 			},
 			"SlackNotification": {
