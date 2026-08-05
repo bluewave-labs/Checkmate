@@ -15,6 +15,9 @@ type AutoCompleteInputProps = Omit<
 	fieldLabel?: string;
 	required?: boolean;
 	renderOptionContent?: (option: any) => React.ReactNode;
+	placeholder?: string;
+	error?: boolean;
+	helperText?: string;
 };
 
 export const AutoCompleteInput = ({
@@ -22,6 +25,9 @@ export const AutoCompleteInput = ({
 	required,
 	renderInput,
 	renderOptionContent,
+	placeholder,
+	error,
+	helperText,
 	...props
 }: AutoCompleteInputProps) => {
 	const theme = useTheme();
@@ -30,7 +36,9 @@ export const AutoCompleteInput = ({
 	const defaultRenderInput = (params: any) => (
 		<TextField
 			{...params}
-			placeholder="Type to search"
+			placeholder={placeholder ?? "Type to search"}
+			error={error}
+			helperText={helperText}
 		/>
 	);
 
