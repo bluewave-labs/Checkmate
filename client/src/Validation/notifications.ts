@@ -35,11 +35,7 @@ const rocketChatSchema = baseSchema.extend({
 	address: z
 		.string()
 		.min(1, "Webhook URL is required")
-		.url("Please enter a valid URL")
-		.refine(
-			(url) => /^https?:\/\//i.test(url),
-			"Rocket.Chat webhook URL must use HTTP or HTTPS"
-		),
+		.url({ protocol: /^https?$/, message: "Please enter a valid URL" }),
 });
 
 const pagerDutySchema = baseSchema.extend({
