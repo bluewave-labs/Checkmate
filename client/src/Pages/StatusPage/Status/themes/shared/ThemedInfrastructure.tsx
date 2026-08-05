@@ -36,7 +36,8 @@ const heatLevel = (value: number): GaugeFillLevel =>
 
 export const ThemedInfrastructure = ({ monitor, sxApi }: Props) => {
 	const { t } = useTranslation();
-	const latest = monitor.recentChecks?.[0];
+	const recentChecks = monitor.recentChecks ?? [];
+	const latest = recentChecks[recentChecks.length - 1];
 
 	const renderEmpty = () => (
 		<Box sx={sxApi.emptySx}>{t("pages.statusPages.monitorsList.noData")}</Box>

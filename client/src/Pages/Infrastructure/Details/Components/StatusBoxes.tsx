@@ -11,7 +11,8 @@ export const StatusBoxes = ({ monitor }: { monitor: Monitor }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 
-	const latestCheck = monitor?.recentChecks?.[0];
+	const recentChecks = monitor?.recentChecks ?? [];
+	const latestCheck = recentChecks[recentChecks.length - 1];
 	// Get data from latest check
 	const physicalCores = getCores(latestCheck?.cpu?.physical_core);
 	const logicalCores = getCores(latestCheck?.cpu?.logical_core);
@@ -21,13 +22,7 @@ export const StatusBoxes = ({ monitor }: { monitor: Monitor }) => {
 	const memoryTotalBytes = latestCheck?.memory?.total_bytes ?? 0;
 	const diskTotalBytes =
 		latestCheck?.disk?.reduce((acc, disk) => acc + (disk.total_bytes || 0), 0) || 0;
-	const os = getOsAndPlatform(latestCheck?.host);
-
-	const platform = latestCheck?.host?.platform ?? undefined;
-	const osPlatform =
-		typeof os === "undefined" && typeof platform === "undefined"
-			? undefined
-			: `${os} ${platform}`;
+	const osPlatform = getOsAndPlatform(latestCheck?.host);
 
 	return (
 		<Stack

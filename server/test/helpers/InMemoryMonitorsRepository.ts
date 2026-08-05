@@ -1,6 +1,6 @@
 import type { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "../../src/domain/monitors/monitor.repository.interface.ts";
 import type { CheckSnapshot } from "../../src/domain/checks/check.type.ts";
-import type { Monitor, MonitorsSummary } from "../../src/domain/monitors/monitor.type.ts";
+import type { Monitor, MonitorScheduleFields, MonitorsSummary } from "../../src/domain/monitors/monitor.type.ts";
 
 export class InMemoryMonitorsRepository implements IMonitorsRepository {
 	private monitors: Monitor[] = [];
@@ -24,8 +24,15 @@ export class InMemoryMonitorsRepository implements IMonitorsRepository {
 		return { ...monitor };
 	}
 
-	async findAll(): Promise<Monitor[]> {
-		return this.monitors.map((m) => ({ ...m }));
+	async findAllForScheduling(): Promise<MonitorScheduleFields[]> {
+		return this.monitors.map((m) => ({
+			id: m.id,
+			type: m.type,
+			isActive: m.isActive,
+			interval: m.interval,
+			geoCheckEnabled: m.geoCheckEnabled ?? false,
+			geoCheckInterval: m.geoCheckInterval ?? 300000,
+		}));
 	}
 
 	async findByTeamId(_teamId: string, _config: TeamQueryConfig): Promise<Monitor[]> {
@@ -43,10 +50,6 @@ export class InMemoryMonitorsRepository implements IMonitorsRepository {
 	async findByIdLean(monitorId: string): Promise<Monitor | null> {
 		const monitor = this.monitors.find((m) => m.id === monitorId);
 		return monitor ? { ...monitor } : null;
-	}
-
-	async findByIdsWithChecks(monitorIds: string[], _checksCount?: number): Promise<Monitor[]> {
-		return this.findByIds(monitorIds);
 	}
 
 	async updateById(monitorId: string, teamId: string, updates: Partial<Monitor>): Promise<Monitor> {

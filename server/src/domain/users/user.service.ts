@@ -324,7 +324,7 @@ export class UserService implements IUserService {
 		}
 
 		if (roles.includes("superadmin")) {
-			const monitors = await this.monitorsRepository.findByTeamId(teamId, {});
+			const monitors = await this.monitorsRepository.findByTeamId(teamId, {}, { includeRecentChecks: false });
 			if (monitors) {
 				await Promise.all(monitors.map((monitor) => this.scheduler.deleteJob(monitor)));
 			}

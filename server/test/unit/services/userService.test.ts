@@ -472,7 +472,7 @@ describe("UserService", () => {
 
 			await service.deleteUser({ userId: "user-1", teamId: "team-1", roles: ["superadmin"] });
 
-			expect(monitorsRepository.findByTeamId).toHaveBeenCalledWith("team-1", {});
+			expect(monitorsRepository.findByTeamId).toHaveBeenCalledWith("team-1", {}, { includeRecentChecks: false });
 			expect(scheduler.deleteJob).toHaveBeenCalledTimes(2);
 			expect(usersRepository.deleteById).toHaveBeenCalledWith("user-1");
 		});

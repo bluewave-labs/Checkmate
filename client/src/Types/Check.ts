@@ -250,7 +250,44 @@ export interface ChecksSummary {
 	downChecks: number;
 }
 
-export type CheckSnapshot = Omit<Check, "metadata" | "__v" | "updatedAt">;
+export type SnapshotCpuInfo = Pick<
+	CheckCpuInfo,
+	| "physical_core"
+	| "logical_core"
+	| "frequency"
+	| "current_frequency"
+	| "temperature"
+	| "usage_percent"
+>;
+export type SnapshotMemoryInfo = Pick<
+	CheckMemoryInfo,
+	"total_bytes" | "used_bytes" | "usage_percent"
+>;
+export type SnapshotDiskInfo = Pick<
+	CheckDiskInfo,
+	"device" | "total_bytes" | "used_bytes" | "usage_percent"
+>;
+export type SnapshotHostInfo = Pick<CheckHostInfo, "os" | "platform" | "pretty_name">;
+
+export type CheckSnapshot = Pick<
+	Check,
+	| "id"
+	| "status"
+	| "responseTime"
+	| "statusCode"
+	| "message"
+	| "createdAt"
+	| "accessibility"
+	| "bestPractices"
+	| "seo"
+	| "performance"
+	| "audits"
+> & {
+	cpu?: SnapshotCpuInfo;
+	memory?: SnapshotMemoryInfo;
+	disk?: SnapshotDiskInfo[];
+	host?: SnapshotHostInfo;
+};
 export interface HasResponseTime {
 	responseTime: number;
 }

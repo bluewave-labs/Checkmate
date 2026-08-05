@@ -1,12 +1,13 @@
 import { MonitorModel } from "@/domain/monitors/monitor.model.js";
 import type { MonitorDocument, CheckSnapshotDocument } from "@/domain/monitors/monitor.model.js";
 import type { CheckSnapshot } from "@/domain/checks/check.type.js";
-import type { Monitor, MonitorStatus, MonitorsSummary } from "@/domain/monitors/monitor.type.js";
+import type { Monitor, MonitorScheduleFields, MonitorStatus, MonitorsSummary } from "@/domain/monitors/monitor.type.js";
 import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import { MongoBulkWriteError } from "mongodb";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "@/domain/monitors/monitor.repository.interface.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
+import { toCheckSnapshot } from "@/domain/checks/check.snapshot.js";
 class MongoMonitorsRepository implements IMonitorsRepository {
 	create = async (monitor: Monitor, teamId: string, userId: string) => {
 		const monitorModel = new MonitorModel({ ...monitor, teamId, userId });
@@ -40,13 +41,20 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 	};
 
 	findByIdLean = async (monitorId: string): Promise<Monitor | null> => {
-		const monitor = await MonitorModel.findOne({ _id: monitorId });
+		const monitor = await MonitorModel.findOne({ _id: monitorId }).select({ recentChecks: 0 });
 		return monitor ? this.toEntity(monitor) : null;
 	};
 
-	findAll = async (): Promise<Monitor[]> => {
-		const monitors = await MonitorModel.find();
-		return this.mapDocuments(monitors);
+	findAllForScheduling = async (): Promise<MonitorScheduleFields[]> => {
+		const docs = await MonitorModel.find({}, { type: 1, isActive: 1, interval: 1, geoCheckEnabled: 1, geoCheckInterval: 1 }).lean();
+		return docs.map((doc) => ({
+			id: doc._id.toString(),
+			type: doc.type,
+			isActive: doc.isActive,
+			interval: doc.interval,
+			geoCheckEnabled: doc.geoCheckEnabled ?? false,
+			geoCheckInterval: doc.geoCheckInterval ?? 300000,
+		}));
 	};
 
 	private queryBuilder = (config: TeamQueryConfig, teamId: string): FilterQuery<MonitorDocument> => {
@@ -96,10 +104,15 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return { sort: { [field]: order === "asc" ? 1 : -1 } as const, skip: Math.max(page, 0) * rowsPerPage, limit: rowsPerPage };
 	};
 
-	findByTeamId = async (teamId: string, config: TeamQueryConfig): Promise<Monitor[]> => {
+	findByTeamId = async (teamId: string, config: TeamQueryConfig, options?: { includeRecentChecks?: boolean }): Promise<Monitor[]> => {
 		const query = this.queryBuilder(config, teamId);
 		const { sort, skip, limit } = this.pageOptions(config);
-		const documents = await MonitorModel.find(query).sort(sort).skip(skip).limit(limit);
+
+		const cursor = MonitorModel.find(query).sort(sort).skip(skip).limit(limit);
+		if (options?.includeRecentChecks === false) {
+			cursor.select({ recentChecks: 0 });
+		}
+		const documents = await cursor;
 		return this.mapDocuments(documents);
 	};
 
@@ -118,20 +131,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return documents.map((doc) => this.toEntity(doc));
 	};
 
-	findByIds = async (monitorIds: string[]): Promise<Monitor[]> => {
-		if (!monitorIds.length) {
-			return [];
-		}
-
-		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
-
-		const pipeline: PipelineStage[] = [{ $match: { _id: { $in: objectIds } } }, ...this.uptimeStatsLookupStages];
-
-		const documents = await MonitorModel.aggregate(pipeline);
-		return documents.map((doc) => this.toEntity(doc));
-	};
-
-	findByIdsWithChecks = async (monitorIds: string[], checksCount: number = 25): Promise<Monitor[]> => {
+	findByIds = async (monitorIds: string[], options?: { includeRecentChecks?: boolean }): Promise<Monitor[]> => {
 		if (!monitorIds.length) {
 			return [];
 		}
@@ -140,57 +140,9 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 
 		const pipeline: PipelineStage[] = [
 			{ $match: { _id: { $in: objectIds } } },
-			{
-				$lookup: {
-					from: "checks",
-					let: { monitorId: "$_id" },
-					pipeline: [{ $match: { $expr: { $eq: ["$metadata.monitorId", "$$monitorId"] } } }, { $sort: { createdAt: -1 } }, { $limit: checksCount }],
-					as: "checks",
-				},
-			},
-			{
-				$lookup: {
-					from: "maintenancewindows",
-					let: { monitorId: "$_id" },
-					pipeline: [{ $match: { $expr: { $in: ["$$monitorId", { $ifNull: ["$monitorIds", []] }] } } }],
-					as: "maintenanceWindows",
-				},
-			},
-			{
-				$lookup: {
-					from: "monitorstats",
-					localField: "_id",
-					foreignField: "monitorId",
-					as: "stats",
-				},
-			},
-			{
-				$addFields: {
-					isMaintenance: {
-						$reduce: {
-							input: "$maintenanceWindows",
-							initialValue: false,
-							in: {
-								$or: [
-									"$$value",
-									{
-										$and: [{ $eq: ["$$this.active", true] }, { $lte: ["$$this.start", "$$NOW"] }, { $gte: ["$$this.end", "$$NOW"] }],
-									},
-								],
-							},
-						},
-					},
-					uptimePercentage: { $arrayElemAt: ["$stats.uptimePercentage", 0] },
-				},
-			},
-			{
-				$project: {
-					maintenanceWindows: 0,
-					stats: 0,
-				},
-			},
+			...(options?.includeRecentChecks === false ? [{ $project: { recentChecks: 0 } } as PipelineStage] : []),
+			...this.uptimeStatsLookupStages,
 		];
-
 		const documents = await MonitorModel.aggregate(pipeline);
 		return documents.map((doc) => this.toEntity(doc));
 	};
@@ -245,7 +197,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 				},
 				...(statusPatch && { $set: statusPatch }),
 			},
-			{ returnDocument: "after" }
+			{ returnDocument: "after", projection: { recentChecks: 0 } }
 		);
 
 		if (!updatedMonitor) {
@@ -473,7 +425,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			grpcServiceName: doc.grpcServiceName ?? undefined,
 			strategy: doc.strategy ?? undefined,
 			group: doc.group ?? null,
-			recentChecks: (doc.recentChecks ?? []).map((check: CheckSnapshotDocument) => this.toCheckSnapshot(check)),
+			recentChecks: (doc.recentChecks ?? []).map((check: CheckSnapshotDocument) => toCheckSnapshot(check)),
 			geoCheckEnabled: doc.geoCheckEnabled ?? false,
 			geoCheckLocations: doc.geoCheckLocations ?? [],
 			geoCheckInterval: doc.geoCheckInterval ?? 300000,
@@ -482,30 +434,6 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 			lastEvaluatedAt: doc.lastEvaluatedAt,
-		};
-	};
-
-	private toCheckSnapshot = (doc: CheckSnapshotDocument): CheckSnapshot => {
-		return {
-			id: doc.id,
-			status: doc.status,
-			responseTime: doc.responseTime,
-			timings: doc.timings,
-			statusCode: doc.statusCode,
-			message: doc.message,
-			cpu: doc.cpu,
-			memory: doc.memory,
-			disk: doc.disk,
-			host: doc.host,
-			errors: doc.errors,
-			capture: doc.capture,
-			net: doc.net,
-			accessibility: doc.accessibility,
-			bestPractices: doc.bestPractices,
-			seo: doc.seo,
-			performance: doc.performance,
-			audits: doc.audits,
-			createdAt: toDateString(doc.createdAt),
 		};
 	};
 

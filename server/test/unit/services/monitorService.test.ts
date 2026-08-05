@@ -583,7 +583,7 @@ describe("MonitorService", () => {
 			expect(result.monitors).toEqual([]);
 		});
 
-		it("uses snapshot (first check only) for hardware type monitors", async () => {
+		it("uses snapshot (latest check only) for hardware type monitors", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			(monitorsRepository.findMonitorsSummaryByTeamId as jest.Mock).mockResolvedValue({ totalMonitors: 1 });
 			(monitorsRepository.findMonitorCountByTeamIdAndType as jest.Mock).mockResolvedValue(1);
@@ -602,6 +602,7 @@ describe("MonitorService", () => {
 			const result = await service.getMonitorsWithChecksByTeamId({ teamId: TEAM_ID, type: "hardware" });
 
 			expect(result.monitors[0].recentChecks).toHaveLength(1);
+			expect(result.monitors[0].recentChecks[0].responseTime).toBe(30);
 		});
 
 		it("uses snapshot for hardware type when type is array with hardware", async () => {
@@ -622,6 +623,7 @@ describe("MonitorService", () => {
 			const result = await service.getMonitorsWithChecksByTeamId({ teamId: TEAM_ID, type: ["hardware"] });
 
 			expect(result.monitors[0].recentChecks).toHaveLength(1);
+			expect(result.monitors[0].recentChecks[0].responseTime).toBe(20);
 		});
 
 		it("normalizes checks for non-snapshot types when type is an array", async () => {

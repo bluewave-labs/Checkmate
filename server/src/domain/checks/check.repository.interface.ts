@@ -7,7 +7,6 @@ import type {
 	UptimeChecksResult,
 } from "@/domain/checks/check.type.js";
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
-import type { LatestChecksMap } from "@/domain/checks/check.repository.mongo.js";
 import { CheckFilter, DateRange } from "@/types/query.js";
 
 export interface IChecksRepository {
@@ -34,7 +33,6 @@ export interface IChecksRepository {
 		teamId: string,
 		filter?: CheckFilter
 	): Promise<ChecksQueryResult>;
-	findLatestByMonitorIds(monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap>;
 	findByDateRangeAndMonitorId(
 		monitorId: string,
 		dateRange: DateRange,
