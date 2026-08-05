@@ -1,6 +1,6 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
-import { makeMessage, makeMessageWithThresholds, makeNotification } from "../../../helpers/notificationMessage.ts";
+import { makeMessage, makeMessageWithIncident, makeMessageWithThresholds, makeNotification } from "../../../helpers/notificationMessage.ts";
 import { testNotificationProviderContract } from "../../../helpers/notificationProviderContract.ts";
 
 const mockGotPost = jest.fn().mockResolvedValue({});
@@ -90,8 +90,6 @@ describe("RocketChatProvider", () => {
 						"Details:",
 						"- URL: https://example.com",
 						"- Status: Down",
-						"",
-						"Incident: https://app.example.com/infrastructure/mon-1",
 					].join("\n"),
 				},
 			})
@@ -116,13 +114,29 @@ describe("RocketChatProvider", () => {
 		expect(payload.text).toContain("Thresholds:\n- CPU: 90.0% (threshold: 80%)\n- MEMORY: 85.0% (threshold: 70%)");
 	});
 
-	it("includes a monitor-scoped incident link without synthetic incident data", async () => {
+	it("includes a monitor-scoped link when incident data is present", async () => {
 		const { provider } = createProvider();
 
-		await provider.sendMessage(makeNotification({ type: "rocket_chat" }), makeMessage());
+		await provider.sendMessage(makeNotification({ type: "rocket_chat" }), makeMessageWithIncident());
 
 		const payload = mockGotPost.mock.calls[0][1].json;
 		expect(payload.text).toContain("Incident: https://app.example.com/infrastructure/mon-1");
+	});
+
+	it("omits the incident link when incident data is absent", async () => {
+		const { provider } = createProvider();
+
+		await provider.sendMessage(
+			makeNotification({ type: "rocket_chat" }),
+			makeMessage({
+				type: "monitor_up",
+				severity: "success",
+				monitor: { id: "mon-1", name: "Test Monitor", url: "https://example.com", type: "http", status: "up" },
+			})
+		);
+
+		const payload = mockGotPost.mock.calls[0][1].json;
+		expect(payload.text).not.toContain("Incident:");
 	});
 
 	it("returns false and logs when message delivery fails", async () => {

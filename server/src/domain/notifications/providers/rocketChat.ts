@@ -81,7 +81,9 @@ export class RocketChatProvider extends NotificationProvider {
 			);
 		}
 
-		lines.push("", `Incident: ${message.clientHost}/infrastructure/${message.monitor.id}`);
+		if (message.content.incident) {
+			lines.push("", `Incident: ${message.clientHost}/infrastructure/${message.monitor.id}`);
+		}
 
 		return lines.join("\n");
 	}
