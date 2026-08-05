@@ -23,6 +23,7 @@ interface FormMultiSelectFieldProps<T extends FieldValues, O extends MultiSelect
 	name: FieldPath<T>;
 	options: O[];
 	fieldLabel?: string;
+	description?: string;
 	renderRow?: (option: O) => React.ReactNode;
 	renderOptionContent?: (option: O) => React.ReactNode;
 }
@@ -31,6 +32,7 @@ export const FormMultiSelectField = <T extends FieldValues, O extends MultiSelec
 	name,
 	options,
 	fieldLabel,
+	description,
 	renderRow,
 	renderOptionContent,
 }: FormMultiSelectFieldProps<T, O>) => {
@@ -47,6 +49,7 @@ export const FormMultiSelectField = <T extends FieldValues, O extends MultiSelec
 					<Stack spacing={theme.spacing(LAYOUT.MD)}>
 						<Autocomplete
 							multiple
+							autoHighlight
 							options={options}
 							value={selected}
 							getOptionLabel={(option) => option.name}
@@ -59,6 +62,15 @@ export const FormMultiSelectField = <T extends FieldValues, O extends MultiSelec
 							error={!!fieldState.error}
 							helperText={fieldState.error?.message ?? ""}
 						/>
+						{description && (
+							<Typography
+								component="span"
+								color={theme.palette.text.secondary}
+								sx={{ opacity: 0.8 }}
+							>
+								{description}
+							</Typography>
+						)}
 						{selected.map((option, index) => (
 							<Stack
 								direction="row"

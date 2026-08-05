@@ -929,6 +929,12 @@ const CreateMonitorPage = () => {
 								<FormMultiSelectField
 									name="customUpCodes"
 									options={ALL_HTTP_STATUS_CODES}
+									fieldLabel={t(
+										"pages.createMonitor.form.advanced.option.customUpCodes.label"
+									)}
+									description={t(
+										"pages.createMonitor.form.advanced.option.customUpCodes.description"
+									)}
 								/>
 
 								{watchedMethod !== "HEAD" && (
