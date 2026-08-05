@@ -60,7 +60,8 @@
 			"exportToJSON": "Export to JSON",
 			"importFromJSON": "Import from JSON",
 			"clearFilters": "Clear filters",
-			"removeUser": "Remove user"
+			"removeUser": "Remove user",
+			"remove": "Remove"
 		},
 		"charts": {
 			"labels": {
