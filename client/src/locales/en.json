@@ -583,7 +583,7 @@
 						},
 						"port": {
 							"label": "Port to monitor",
-							"placeholder": 80
+							"placeholder": "80"
 						},
 						"grpcServiceName": {
 							"label": "Service name",

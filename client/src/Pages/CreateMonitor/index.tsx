@@ -3,12 +3,10 @@ import { useEffect } from "react";
 import { logger } from "@/Utils/logger";
 import { ALL_HTTP_STATUS_CODES } from "@/Utils/statusCode";
 import { useParams, useLocation, useNavigate } from "react-router";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTheme } from "@mui/material";
 import Stack from "@mui/material/Stack";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControl from "@mui/material/FormControl";
 import { Trans, useTranslation } from "react-i18next";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
@@ -28,7 +26,6 @@ import {
 import {
 	RadioWithDescription,
 	Button,
-	TextField,
 	Select,
 	Autocomplete,
 	SwitchComponent as Switch,
@@ -47,6 +44,8 @@ import {
 	DefaultPageSpeedStrategy,
 	DefaultHttpMethod,
 	HttpMethods,
+	SelectableMonitorTypes,
+	monitorTypeLabelKey,
 } from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
 import type { Tag } from "@/Types/Tag";
@@ -55,6 +54,9 @@ import {
 	monitorStepCount,
 	type MonitorFormData,
 } from "@/Validation/monitor";
+import { FormNumberField } from "@/Components/inputs/forms/FormNumberField";
+import { FormTextField } from "@/Components/inputs/forms/FormTextField";
+import { FormRadioGroup } from "@/Components/inputs/forms/FormRadioGroup";
 
 interface GeneralSettingsConfig {
 	urlLabel: string;
@@ -357,851 +359,494 @@ const CreateMonitorPage = () => {
 	};
 
 	return (
-		<BasePage
-			component="form"
-			onSubmit={handleSubmit(onSubmit, onError)}
-		>
-			<HeaderDeleteControls
-				monitor={existingMonitor}
-				isAdmin={true}
-				refetch={refetchMonitor}
-				onDelete={handleDeleteClick}
-			/>
-			{!isEditMode && (
-				<StepProgress
-					steps={totalSteps}
-					current={currentStep}
+		<FormProvider {...form}>
+			<BasePage
+				component="form"
+				onSubmit={handleSubmit(onSubmit, onError)}
+			>
+				<HeaderDeleteControls
+					monitor={existingMonitor}
+					isAdmin={true}
+					refetch={refetchMonitor}
+					onDelete={handleDeleteClick}
 				/>
-			)}
-			{/* Monitor Type Selection - only shown for uptime monitors */}
-			{showTypeSelector && showStep(0) && (
-				<ConfigBox
-					title={t("pages.createMonitor.form.type.title")}
-					subtitle={t("pages.createMonitor.form.type.description")}
-					rightContent={
-						<Controller
-							name="type"
-							control={control}
-							render={({ field, fieldState }) => (
-								<FormControl error={!!fieldState.error}>
-									<RadioGroup
-										{...field}
-										sx={{ gap: theme.spacing(LAYOUT.MD) }}
-									>
-										<RadioWithDescription
-											value="http"
-											label={t("pages.common.monitors.monitorTypes.optionHttp")}
-											description={t(
-												"pages.createMonitor.form.type.optionHttpDescription"
-											)}
-										/>
-										<RadioWithDescription
-											value="ping"
-											label={t("pages.common.monitors.monitorTypes.optionPing")}
-											description={t(
-												"pages.createMonitor.form.type.optionPingDescription"
-											)}
-										/>
-										<RadioWithDescription
-											value="docker"
-											label={t("pages.common.monitors.monitorTypes.optionDocker")}
-											description={t(
-												"pages.createMonitor.form.type.optionDockerDescription"
-											)}
-										/>
-										<RadioWithDescription
-											value="port"
-											label={t("pages.common.monitors.monitorTypes.optionPort")}
-											description={t(
-												"pages.createMonitor.form.type.optionPortDescription"
-											)}
-										/>
-										<RadioWithDescription
-											value="game"
-											label={t("pages.common.monitors.monitorTypes.optionGame")}
-											description={t(
-												"pages.createMonitor.form.type.optionGameDescription"
-											)}
-										/>
-										<RadioWithDescription
-											value="grpc"
-											label={t("pages.common.monitors.monitorTypes.optionGrpc")}
-											description={t(
-												"pages.createMonitor.form.type.optionGrpcDescription"
-											)}
-										/>
-										<RadioWithDescription
-											value="websocket"
-											label={t("pages.common.monitors.monitorTypes.optionWebSocket")}
-											description={t(
-												"pages.createMonitor.form.type.optionWebSocketDescription"
-											)}
-										/>
-										<RadioWithDescription
-											value="dns"
-											label={t("pages.common.monitors.monitorTypes.optionDns")}
-											description={t(
-												"pages.createMonitor.form.type.optionDnsDescription"
-											)}
-										/>
-									</RadioGroup>
-								</FormControl>
-							)}
-						/>
-					}
-				/>
-			)}
-
-			{showStep(0) && (
-				<ConfigBox
-					title={t("pages.createMonitor.form.general.title")}
-					subtitle={
-						<Trans
-							i18nKey={`pages.createMonitor.form.general.description.${watchedType}`}
-							components={{
-								gamedigLink: (
-									<Link
-										href="https://github.com/gamedig/node-gamedig/blob/master/GAMES_LIST.md"
-										target="_blank"
-										rel="noopener noreferrer"
-									/>
-								),
-							}}
-						/>
-					}
-					rightContent={
-						<Stack spacing={theme.spacing(LAYOUT.MD)}>
-							{/* URL/Host/Container field - not shown for hardware */}
-							{generalSettingsConfig.showUrl && (
-								<Controller
-									name="url"
-									control={control}
-									render={({ field, fieldState }) => (
-										<TextField
-											{...field}
-											type="text"
-											fieldLabel={generalSettingsConfig.urlLabel}
-											placeholder={generalSettingsConfig.urlPlaceholder}
-											fullWidth
-											disabled={isEditMode}
-											error={!!fieldState.error}
-											helperText={fieldState.error?.message ?? ""}
-										/>
-									)}
-								/>
-							)}
-
-							{/* Strategy field - only for pagespeed type */}
-							{generalSettingsConfig.showStrategy && (
-								<Controller
-									name="strategy"
-									control={control}
-									render={({ field, fieldState }) => (
-										<Select
-											{...field}
-											value={field.value ?? DefaultPageSpeedStrategy}
-											fieldLabel={t(
-												"pages.createMonitor.form.general.option.strategy.label"
-											)}
-											error={!!fieldState.error}
-										>
-											<MenuItem value="desktop">
-												{t("pages.createMonitor.form.general.option.strategy.desktop")}
-											</MenuItem>
-											<MenuItem value="mobile">
-												{t("pages.createMonitor.form.general.option.strategy.mobile")}
-											</MenuItem>
-										</Select>
-									)}
-								/>
-							)}
-
-							{/* Port field - only for port and game types */}
-							{generalSettingsConfig.showPort && (
-								<Controller
-									name="port"
-									control={control}
-									render={({ field, fieldState }) => (
-										<TextField
-											{...field}
-											value={field.value === 0 ? "" : field.value}
-											onChange={(e) => {
-												const val = e.target.value;
-												field.onChange(val === "" ? 0 : Number(val));
-											}}
-											type="number"
-											fieldLabel={t("pages.createMonitor.form.general.option.port.label")}
-											placeholder={t(
-												"pages.createMonitor.form.general.option.port.placeholder"
-											)}
-											fullWidth
-											error={!!fieldState.error}
-											helperText={fieldState.error?.message ?? ""}
-										/>
-									)}
-								/>
-							)}
-
-							{/* Game select - only for game type */}
-							{generalSettingsConfig.showGameSelect && (
-								<Controller
-									name="gameId"
-									control={control}
-									render={({ field, fieldState }) => (
-										<Select
-											{...field}
-											value={field.value ?? ""}
-											fieldLabel={t("pages.createMonitor.form.general.option.game.label")}
-											error={!!fieldState.error}
-										>
-											<MenuItem value="">
-												{t(
-													"pages.createMonitor.form.general.option.game.placeholder"
-												)}{" "}
-											</MenuItem>
-											{games &&
-												Object.entries(games).map(([key, game]) => (
-													<MenuItem
-														key={key}
-														value={key}
-													>
-														{game.name}
-													</MenuItem>
-												))}
-										</Select>
-									)}
-								/>
-							)}
-
-							{/* gRPC Service Name field - only for grpc type */}
-							{generalSettingsConfig.showGrpcServiceName && (
-								<Controller
-									name="grpcServiceName"
-									control={control}
-									render={({ field, fieldState }) => (
-										<TextField
-											{...field}
-											value={field.value ?? ""}
-											type="text"
-											fieldLabel={t(
-												"pages.createMonitor.form.general.option.grpcServiceName.label"
-											)}
-											placeholder={t(
-												"pages.createMonitor.form.general.option.grpcServiceName.placeholder"
-											)}
-											fullWidth
-											error={!!fieldState.error}
-											helperText={fieldState.error?.message ?? ""}
-										/>
-									)}
-								/>
-							)}
-
-							{/* Secret field - only for hardware type */}
-							{generalSettingsConfig.showSecret && (
-								<Controller
-									name="secret"
-									control={control}
-									render={({ field, fieldState }) => (
-										<TextField
-											{...field}
-											value={field.value ?? ""}
-											type="text"
-											fieldLabel={t(
-												"pages.createMonitor.form.general.option.secret.label"
-											)}
-											placeholder={t(
-												"pages.createMonitor.form.general.option.secret.placeholder"
-											)}
-											fullWidth
-											error={!!fieldState.error}
-											helperText={fieldState.error?.message ?? ""}
-										/>
-									)}
-								/>
-							)}
-							{generalSettingsConfig.showDnsServer && (
-								<Controller
-									name="dnsServer"
-									control={control}
-									render={({ field, fieldState }) => (
-										<TextField
-											{...field}
-											value={field.value ?? ""}
-											type="text"
-											fieldLabel={t(
-												"pages.createMonitor.form.general.option.dnsServer.label"
-											)}
-											placeholder={t(
-												"pages.createMonitor.form.general.option.dnsServer.placeholder"
-											)}
-											fullWidth
-											error={!!fieldState.error}
-											helperText={fieldState.error?.message ?? ""}
-										/>
-									)}
-								/>
-							)}
-							{generalSettingsConfig.showDnsRecordType && (
-								<Controller
-									name="dnsRecordType"
-									control={control}
-									defaultValue="A"
-									render={({ field, fieldState }) => (
-										<Select
-											{...field}
-											value={field.value ?? "A"}
-											fieldLabel={t(
-												"pages.createMonitor.form.general.option.dnsRecordType.label"
-											)}
-											error={!!fieldState.error}
-										>
-											<MenuItem value={"A"}>
-												{t(
-													"pages.createMonitor.form.general.option.dnsRecordType.value.A"
-												)}
-											</MenuItem>
-											<MenuItem value={"AAAA"}>
-												{t(
-													"pages.createMonitor.form.general.option.dnsRecordType.value.AAAA"
-												)}
-											</MenuItem>
-											<MenuItem value={"CNAME"}>
-												{t(
-													"pages.createMonitor.form.general.option.dnsRecordType.value.CNAME"
-												)}
-											</MenuItem>
-											<MenuItem value={"MX"}>
-												{t(
-													"pages.createMonitor.form.general.option.dnsRecordType.value.MX"
-												)}
-											</MenuItem>
-											<MenuItem value={"NS"}>
-												{t(
-													"pages.createMonitor.form.general.option.dnsRecordType.value.NS"
-												)}
-											</MenuItem>
-											<MenuItem value={"TXT"}>
-												{t(
-													"pages.createMonitor.form.general.option.dnsRecordType.value.TXT"
-												)}
-											</MenuItem>
-										</Select>
-									)}
-								/>
-							)}
-
-							<Controller
-								name="name"
-								control={control}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t("pages.createMonitor.form.general.option.name.label")}
-										placeholder={generalSettingsConfig.namePlaceholder}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
-								)}
-							/>
-						</Stack>
-					}
-				/>
-			)}
-
-			{showStep(1) && (
-				<ConfigBox
-					title={t("pages.createMonitor.form.frequency.title")}
-					subtitle={t("pages.createMonitor.form.frequency.description")}
-					rightContent={
-						<Controller
-							name="interval"
-							control={control}
-							render={({ field, fieldState }) => (
-								<Select
-									{...field}
-									value={field.value ?? 60000}
-									fieldLabel={t(
-										"pages.createMonitor.form.frequency.option.frequency.label"
-									)}
-									error={!!fieldState.error}
-								>
-									<MenuItem value={15000}>
-										{t(
-											"pages.createMonitor.form.frequency.option.frequency.value.fifteenSeconds"
-										)}
-									</MenuItem>
-									<MenuItem value={30000}>
-										{t(
-											"pages.createMonitor.form.frequency.option.frequency.value.thirtySeconds"
-										)}
-									</MenuItem>
-									<MenuItem value={60000}>
-										{t(
-											"pages.createMonitor.form.frequency.option.frequency.value.oneMinute"
-										)}
-									</MenuItem>
-									<MenuItem value={120000}>
-										{t(
-											"pages.createMonitor.form.frequency.option.frequency.value.twoMinutes"
-										)}
-									</MenuItem>
-									<MenuItem value={180000}>
-										{t(
-											"pages.createMonitor.form.frequency.option.frequency.value.threeMinutes"
-										)}
-									</MenuItem>
-									<MenuItem value={240000}>
-										{t(
-											"pages.createMonitor.form.frequency.option.frequency.value.fourMinutes"
-										)}
-									</MenuItem>
-									<MenuItem value={300000}>
-										{t(
-											"pages.createMonitor.form.frequency.option.frequency.value.fiveMinutes"
-										)}
-									</MenuItem>
-									<MenuItem value={600000}>
-										{t(
-											"pages.createMonitor.form.frequency.option.frequency.value.tenMinutes"
-										)}
-									</MenuItem>
-									<MenuItem value={900000}>
-										{t(
-											"pages.createMonitor.form.frequency.option.frequency.value.fifteenMinutes"
-										)}
-									</MenuItem>
-									<MenuItem value={1800000}>
-										{t(
-											"pages.createMonitor.form.frequency.option.frequency.value.thirtyMinutes"
-										)}
-									</MenuItem>
-								</Select>
-							)}
-						/>
-					}
-				/>
-			)}
-
-			{/* Alert Thresholds - only for hardware type */}
-			{generalSettingsConfig.showSecret && showStep(1) && (
-				<ConfigBox
-					title={t("pages.createMonitor.form.thresholds.title")}
-					subtitle={t("pages.createMonitor.form.thresholds.description")}
-					rightContent={
-						<Stack spacing={theme.spacing(LAYOUT.MD)}>
-							<Controller
-								name="cpuAlertThreshold"
-								control={control}
-								render={({ field }) => (
-									<SliderWithLabel
-										{...field}
-										sliderMaxWidth={{ xs: "100%", md: "50%" }}
-										fieldLabel={t(
-											"pages.createMonitor.form.thresholds.option.cpuThreshold.label"
-										)}
-										min={0}
-										max={100}
-										step={1}
-										valueLabelDisplay="auto"
-										valueLabelFormat={(value) => `${value}%`}
-									/>
-								)}
-							/>
-							<Controller
-								name="memoryAlertThreshold"
-								control={control}
-								render={({ field }) => (
-									<SliderWithLabel
-										{...field}
-										sliderMaxWidth={{ xs: "100%", md: "50%" }}
-										fieldLabel={t(
-											"pages.createMonitor.form.thresholds.option.memoryThreshold.label"
-										)}
-										min={0}
-										max={100}
-										step={1}
-										valueLabelDisplay="auto"
-										valueLabelFormat={(value) => `${value}%`}
-									/>
-								)}
-							/>
-							<Controller
-								name="diskAlertThreshold"
-								control={control}
-								render={({ field }) => (
-									<SliderWithLabel
-										{...field}
-										sliderMaxWidth={{ xs: "100%", md: "50%" }}
-										fieldLabel={t(
-											"pages.createMonitor.form.thresholds.option.diskThreshold.label"
-										)}
-										min={0}
-										max={100}
-										step={1}
-										valueLabelDisplay="auto"
-										valueLabelFormat={(value) => `${value}%`}
-									/>
-								)}
-							/>
-							<Controller
-								name="tempAlertThreshold"
-								control={control}
-								render={({ field }) => (
-									<SliderWithLabel
-										{...field}
-										sliderMaxWidth={{ xs: "100%", md: "50%" }}
-										fieldLabel={t(
-											"pages.createMonitor.form.thresholds.option.tempThreshold.label"
-										)}
-										min={0}
-										max={100}
-										step={1}
-										valueLabelDisplay="auto"
-										valueLabelFormat={(value) => `${value}°C`}
-									/>
-								)}
-							/>
-						</Stack>
-					}
-				/>
-			)}
-
-			{showStep(1) && (
-				<ConfigBox
-					title={t("pages.createMonitor.form.incidents.title")}
-					subtitle={t("pages.createMonitor.form.incidents.description")}
-					rightContent={
-						<Stack spacing={theme.spacing(LAYOUT.MD)}>
-							<Controller
-								name="statusWindowSize"
-								control={control}
-								render={({ field }) => (
-									<SliderWithLabel
-										{...field}
-										sliderMaxWidth={{ xs: "100%", md: "50%" }}
-										fieldLabel={t(
-											"pages.createMonitor.form.incidents.option.checks.label"
-										)}
-										min={1}
-										max={25}
-										valueLabelDisplay="auto"
-									/>
-								)}
-							/>
-							<Controller
-								name="statusWindowThreshold"
-								control={control}
-								render={({ field }) => (
-									<SliderWithLabel
-										{...field}
-										sliderMaxWidth={{ xs: "100%", md: "50%" }}
-										fieldLabel={t(
-											"pages.createMonitor.form.incidents.option.percentage.label"
-										)}
-										min={1}
-										max={100}
-										valueLabelDisplay="auto"
-									/>
-								)}
-							/>
-						</Stack>
-					}
-				/>
-			)}
-
-			{showStep(1) && (
-				<ConfigBox
-					title={t("pages.createMonitor.form.notifications.title")}
-					subtitle={t("pages.createMonitor.form.notifications.description")}
-					rightContent={
-						<Controller
-							name="notifications"
-							control={control}
-							render={({ field }) => {
-								// Map notifications to have 'name' property for Autocomplete
-								const notificationOptions = (notifications ?? []).map((n) => ({
-									...n,
-									name: n.notificationName,
-								}));
-								const selectedNotifications = notificationOptions.filter((n) =>
-									(field.value ?? []).includes(n.id)
-								);
-								return (
-									<Stack spacing={theme.spacing(LAYOUT.MD)}>
-										<Autocomplete
-											multiple
-											options={notificationOptions}
-											value={selectedNotifications}
-											getOptionLabel={(option) => option.name}
-											onChange={(_: unknown, newValue: typeof notificationOptions) => {
-												field.onChange(newValue.map((n) => n.id));
-											}}
-											isOptionEqualToValue={(option, value) => option.id === value.id}
-										/>
-										{selectedNotifications.length > 0 && (
-											<Stack
-												flex={1}
-												width="100%"
-											>
-												{selectedNotifications.map((notification, index) => (
-													<Stack
-														direction="row"
-														alignItems="center"
-														key={notification.id}
-														width="100%"
-													>
-														<Typography flexGrow={1}>
-															{notification.notificationName}
-														</Typography>
-														<IconButton
-															size="small"
-															onClick={() => {
-																field.onChange(
-																	(field.value ?? []).filter(
-																		(id: string) => id !== notification.id
-																	)
-																);
-															}}
-															aria-label="Remove notification"
-														>
-															<Trash2 size={16} />
-														</IconButton>
-														{index < selectedNotifications.length - 1 && <Divider />}
-													</Stack>
-												))}
-											</Stack>
-										)}
-									</Stack>
-								);
-							}}
-						/>
-					}
-				/>
-			)}
-
-			{showStep(1) && (
-				<ConfigBox
-					title={t("pages.createMonitor.form.tags.title")}
-					subtitle={t("pages.createMonitor.form.tags.description")}
-					rightContent={
-						<Controller
-							name="tags"
-							control={control}
-							render={({ field }) => {
-								const tagOptions = tags ?? [];
-								const selectedTags = tagOptions.filter((tag) =>
-									(field.value ?? []).includes(tag.id)
-								);
-								return (
-									<Stack spacing={theme.spacing(LAYOUT.MD)}>
-										<Autocomplete
-											multiple
-											options={tagOptions}
-											value={selectedTags}
-											getOptionLabel={(option) => option.name}
-											onChange={(_: unknown, newValue: typeof tagOptions) => {
-												field.onChange(newValue.map((tag) => tag.id));
-											}}
-											isOptionEqualToValue={(option, value) => option.id === value.id}
-											renderOptionContent={(option) => (
-												<ColoredLabel
-													text={option.name}
-													color={option.color}
-												/>
-											)}
-										/>
-										{selectedTags.length > 0 && (
-											<Stack
-												flex={1}
-												gap={theme.spacing(SPACING.XL)}
-												width="100%"
-											>
-												{selectedTags.map((tag, index) => (
-													<Stack
-														direction="row"
-														justifyContent={"space-between"}
-														alignItems="center"
-														key={tag.id}
-														width="100%"
-													>
-														<ColoredLabel
-															text={tag.name}
-															color={tag.color}
-														/>
-														<div style={{ flexGrow: 1 }} />
-														<IconButton
-															size="small"
-															onClick={() => {
-																field.onChange(
-																	(field.value ?? []).filter(
-																		(id: string) => id !== tag.id
-																	)
-																);
-															}}
-															aria-label="Remove tag"
-														>
-															<Trash2 size={16} />
-														</IconButton>
-														{index < selectedTags.length - 1 && <Divider />}
-													</Stack>
-												))}
-											</Stack>
-										)}
-									</Stack>
-								);
-							}}
-						/>
-					}
-				/>
-			)}
-
-			{showStep(2) &&
-				(watchedType === "http" ||
-					watchedType === "grpc" ||
-					watchedType === "websocket") && (
+				{!isEditMode && (
+					<StepProgress
+						steps={totalSteps}
+						current={currentStep}
+					/>
+				)}
+				{/* Monitor Type Selection - only shown for uptime monitors */}
+				{showTypeSelector && showStep(0) && (
 					<ConfigBox
-						title={t("pages.createMonitor.form.ignoreTls.title")}
-						subtitle={t("pages.createMonitor.form.ignoreTls.description")}
+						title={t("pages.createMonitor.form.type.title")}
+						subtitle={t("pages.createMonitor.form.type.description")}
+						rightContent={
+							<FormRadioGroup
+								name={"type"}
+								options={SelectableMonitorTypes.map((type) => ({
+									value: type,
+									label: t(
+										`pages.common.monitors.monitorTypes.${monitorTypeLabelKey[type]}`
+									),
+									description: t(
+										`pages.createMonitor.form.type.${monitorTypeLabelKey[type]}Description`
+									),
+								}))}
+							/>
+						}
+					/>
+				)}
+
+				{showStep(0) && (
+					<ConfigBox
+						title={t("pages.createMonitor.form.general.title")}
+						subtitle={
+							<Trans
+								i18nKey={`pages.createMonitor.form.general.description.${watchedType}`}
+								components={{
+									gamedigLink: (
+										<Link
+											href="https://github.com/gamedig/node-gamedig/blob/master/GAMES_LIST.md"
+											target="_blank"
+											rel="noopener noreferrer"
+										/>
+									),
+								}}
+							/>
+						}
+						rightContent={
+							<Stack spacing={theme.spacing(LAYOUT.MD)}>
+								{/* URL/Host/Container field - not shown for hardware */}
+								{generalSettingsConfig.showUrl && (
+									<FormTextField
+										name="url"
+										fieldLabel={generalSettingsConfig.urlLabel}
+										placeholder={generalSettingsConfig.urlPlaceholder}
+										disabled={isEditMode}
+									/>
+								)}
+
+								{/* Strategy field - only for pagespeed type */}
+								{generalSettingsConfig.showStrategy && (
+									<Controller
+										name="strategy"
+										control={control}
+										render={({ field, fieldState }) => (
+											<Select
+												{...field}
+												value={field.value ?? DefaultPageSpeedStrategy}
+												fieldLabel={t(
+													"pages.createMonitor.form.general.option.strategy.label"
+												)}
+												error={!!fieldState.error}
+											>
+												<MenuItem value="desktop">
+													{t("pages.createMonitor.form.general.option.strategy.desktop")}
+												</MenuItem>
+												<MenuItem value="mobile">
+													{t("pages.createMonitor.form.general.option.strategy.mobile")}
+												</MenuItem>
+											</Select>
+										)}
+									/>
+								)}
+
+								{/* Port field - only for port and game types */}
+								{generalSettingsConfig.showPort && (
+									<FormNumberField
+										name={"port"}
+										fieldLabel={t("pages.createMonitor.form.general.option.port.label")}
+										placeholder={t(
+											"pages.createMonitor.form.general.option.port.placeholder"
+										)}
+									/>
+								)}
+
+								{/* Game select - only for game type */}
+								{generalSettingsConfig.showGameSelect && (
+									<Controller
+										name="gameId"
+										control={control}
+										render={({ field, fieldState }) => (
+											<Select
+												{...field}
+												value={field.value ?? ""}
+												fieldLabel={t(
+													"pages.createMonitor.form.general.option.game.label"
+												)}
+												error={!!fieldState.error}
+											>
+												<MenuItem value="">
+													{t(
+														"pages.createMonitor.form.general.option.game.placeholder"
+													)}{" "}
+												</MenuItem>
+												{games &&
+													Object.entries(games).map(([key, game]) => (
+														<MenuItem
+															key={key}
+															value={key}
+														>
+															{game.name}
+														</MenuItem>
+													))}
+											</Select>
+										)}
+									/>
+								)}
+
+								{/* gRPC Service Name field - only for grpc type */}
+								{generalSettingsConfig.showGrpcServiceName && (
+									<FormTextField
+										name="grpcServiceName"
+										fieldLabel={t(
+											"pages.createMonitor.form.general.option.grpcServiceName.label"
+										)}
+										placeholder={t(
+											"pages.createMonitor.form.general.option.grpcServiceName.placeholder"
+										)}
+									/>
+								)}
+
+								{/* Secret field - only for hardware type */}
+								{generalSettingsConfig.showSecret && (
+									<FormTextField
+										name="secret"
+										fieldLabel={t("pages.createMonitor.form.general.option.secret.label")}
+										placeholder={t(
+											"pages.createMonitor.form.general.option.secret.placeholder"
+										)}
+									/>
+								)}
+								{generalSettingsConfig.showDnsServer && (
+									<FormTextField
+										name="dnsServer"
+										fieldLabel={t(
+											"pages.createMonitor.form.general.option.dnsServer.label"
+										)}
+										placeholder={t(
+											"pages.createMonitor.form.general.option.dnsServer.placeholder"
+										)}
+									/>
+								)}
+								{generalSettingsConfig.showDnsRecordType && (
+									<Controller
+										name="dnsRecordType"
+										control={control}
+										defaultValue="A"
+										render={({ field, fieldState }) => (
+											<Select
+												{...field}
+												value={field.value ?? "A"}
+												fieldLabel={t(
+													"pages.createMonitor.form.general.option.dnsRecordType.label"
+												)}
+												error={!!fieldState.error}
+											>
+												<MenuItem value={"A"}>
+													{t(
+														"pages.createMonitor.form.general.option.dnsRecordType.value.A"
+													)}
+												</MenuItem>
+												<MenuItem value={"AAAA"}>
+													{t(
+														"pages.createMonitor.form.general.option.dnsRecordType.value.AAAA"
+													)}
+												</MenuItem>
+												<MenuItem value={"CNAME"}>
+													{t(
+														"pages.createMonitor.form.general.option.dnsRecordType.value.CNAME"
+													)}
+												</MenuItem>
+												<MenuItem value={"MX"}>
+													{t(
+														"pages.createMonitor.form.general.option.dnsRecordType.value.MX"
+													)}
+												</MenuItem>
+												<MenuItem value={"NS"}>
+													{t(
+														"pages.createMonitor.form.general.option.dnsRecordType.value.NS"
+													)}
+												</MenuItem>
+												<MenuItem value={"TXT"}>
+													{t(
+														"pages.createMonitor.form.general.option.dnsRecordType.value.TXT"
+													)}
+												</MenuItem>
+											</Select>
+										)}
+									/>
+								)}
+								<FormTextField
+									name="name"
+									fieldLabel={t("pages.createMonitor.form.general.option.name.label")}
+									placeholder={generalSettingsConfig.namePlaceholder}
+								/>
+							</Stack>
+						}
+					/>
+				)}
+
+				{showStep(1) && (
+					<ConfigBox
+						title={t("pages.createMonitor.form.frequency.title")}
+						subtitle={t("pages.createMonitor.form.frequency.description")}
 						rightContent={
 							<Controller
-								name="ignoreTlsErrors"
+								name="interval"
 								control={control}
-								render={({ field }) => (
-									<Stack
-										direction="row"
-										alignItems="center"
-										spacing={theme.spacing(SPACING.LG)}
+								render={({ field, fieldState }) => (
+									<Select
+										{...field}
+										value={field.value ?? 60000}
+										fieldLabel={t(
+											"pages.createMonitor.form.frequency.option.frequency.label"
+										)}
+										error={!!fieldState.error}
 									>
-										<Switch
-											checked={field.value ?? false}
-											onChange={(e) => field.onChange(e.target.checked)}
-										/>
-										<Typography>
-											{t("pages.createMonitor.form.ignoreTls.option.tls.label")}
-										</Typography>
-									</Stack>
+										<MenuItem value={15000}>
+											{t(
+												"pages.createMonitor.form.frequency.option.frequency.value.fifteenSeconds"
+											)}
+										</MenuItem>
+										<MenuItem value={30000}>
+											{t(
+												"pages.createMonitor.form.frequency.option.frequency.value.thirtySeconds"
+											)}
+										</MenuItem>
+										<MenuItem value={60000}>
+											{t(
+												"pages.createMonitor.form.frequency.option.frequency.value.oneMinute"
+											)}
+										</MenuItem>
+										<MenuItem value={120000}>
+											{t(
+												"pages.createMonitor.form.frequency.option.frequency.value.twoMinutes"
+											)}
+										</MenuItem>
+										<MenuItem value={180000}>
+											{t(
+												"pages.createMonitor.form.frequency.option.frequency.value.threeMinutes"
+											)}
+										</MenuItem>
+										<MenuItem value={240000}>
+											{t(
+												"pages.createMonitor.form.frequency.option.frequency.value.fourMinutes"
+											)}
+										</MenuItem>
+										<MenuItem value={300000}>
+											{t(
+												"pages.createMonitor.form.frequency.option.frequency.value.fiveMinutes"
+											)}
+										</MenuItem>
+										<MenuItem value={600000}>
+											{t(
+												"pages.createMonitor.form.frequency.option.frequency.value.tenMinutes"
+											)}
+										</MenuItem>
+										<MenuItem value={900000}>
+											{t(
+												"pages.createMonitor.form.frequency.option.frequency.value.fifteenMinutes"
+											)}
+										</MenuItem>
+										<MenuItem value={1800000}>
+											{t(
+												"pages.createMonitor.form.frequency.option.frequency.value.thirtyMinutes"
+											)}
+										</MenuItem>
+									</Select>
 								)}
 							/>
 						}
 					/>
 				)}
 
-			{showStep(2) && watchedType === "http" && (
-				<ConfigBox
-					title={t("pages.createMonitor.form.advanced.title")}
-					subtitle={t("pages.createMonitor.form.advanced.description")}
-					rightContent={
-						<Stack spacing={theme.spacing(LAYOUT.MD)}>
-							<Controller
-								name="method"
-								control={control}
-								render={({ field }) => (
-									<Stack spacing={theme.spacing(LAYOUT.MD)}>
-										<Select
+				{/* Alert Thresholds - only for hardware type */}
+				{generalSettingsConfig.showSecret && showStep(1) && (
+					<ConfigBox
+						title={t("pages.createMonitor.form.thresholds.title")}
+						subtitle={t("pages.createMonitor.form.thresholds.description")}
+						rightContent={
+							<Stack spacing={theme.spacing(LAYOUT.MD)}>
+								<Controller
+									name="cpuAlertThreshold"
+									control={control}
+									render={({ field }) => (
+										<SliderWithLabel
 											{...field}
-											value={field.value ?? DefaultHttpMethod}
-											onChange={(e) => {
-												const value = e.target.value as HttpMethod;
-												field.onChange(value);
-												// HEAD has no response body, reset advanced matching fields if selected
-												if (value === "HEAD") {
-													setValue("useAdvancedMatching", false);
-													setValue("matchMethod", "");
-													setValue("expectedValue", "");
-													setValue("jsonPath", "");
-												}
-											}}
+											sliderMaxWidth={{ xs: "100%", md: "50%" }}
 											fieldLabel={t(
-												"pages.createMonitor.form.advanced.option.method.label"
+												"pages.createMonitor.form.thresholds.option.cpuThreshold.label"
 											)}
-										>
-											{HttpMethods.map((method) => (
-												<MenuItem
-													key={method}
-													value={method}
-												>
-													{method}
-												</MenuItem>
-											))}
-										</Select>
-										<Typography
-											component="span"
-											color={theme.palette.text.secondary}
-											sx={{ opacity: 0.8 }}
-										>
-											{t(
-												`pages.createMonitor.form.advanced.option.method.description.${field.value ?? DefaultHttpMethod}`
+											min={0}
+											max={100}
+											step={1}
+											valueLabelDisplay="auto"
+											valueLabelFormat={(value) => `${value}%`}
+										/>
+									)}
+								/>
+								<Controller
+									name="memoryAlertThreshold"
+									control={control}
+									render={({ field }) => (
+										<SliderWithLabel
+											{...field}
+											sliderMaxWidth={{ xs: "100%", md: "50%" }}
+											fieldLabel={t(
+												"pages.createMonitor.form.thresholds.option.memoryThreshold.label"
 											)}
-										</Typography>
-									</Stack>
-								)}
-							/>
+											min={0}
+											max={100}
+											step={1}
+											valueLabelDisplay="auto"
+											valueLabelFormat={(value) => `${value}%`}
+										/>
+									)}
+								/>
+								<Controller
+									name="diskAlertThreshold"
+									control={control}
+									render={({ field }) => (
+										<SliderWithLabel
+											{...field}
+											sliderMaxWidth={{ xs: "100%", md: "50%" }}
+											fieldLabel={t(
+												"pages.createMonitor.form.thresholds.option.diskThreshold.label"
+											)}
+											min={0}
+											max={100}
+											step={1}
+											valueLabelDisplay="auto"
+											valueLabelFormat={(value) => `${value}%`}
+										/>
+									)}
+								/>
+								<Controller
+									name="tempAlertThreshold"
+									control={control}
+									render={({ field }) => (
+										<SliderWithLabel
+											{...field}
+											sliderMaxWidth={{ xs: "100%", md: "50%" }}
+											fieldLabel={t(
+												"pages.createMonitor.form.thresholds.option.tempThreshold.label"
+											)}
+											min={0}
+											max={100}
+											step={1}
+											valueLabelDisplay="auto"
+											valueLabelFormat={(value) => `${value}°C`}
+										/>
+									)}
+								/>
+							</Stack>
+						}
+					/>
+				)}
+
+				{showStep(1) && (
+					<ConfigBox
+						title={t("pages.createMonitor.form.incidents.title")}
+						subtitle={t("pages.createMonitor.form.incidents.description")}
+						rightContent={
+							<Stack spacing={theme.spacing(LAYOUT.MD)}>
+								<Controller
+									name="statusWindowSize"
+									control={control}
+									render={({ field }) => (
+										<SliderWithLabel
+											{...field}
+											sliderMaxWidth={{ xs: "100%", md: "50%" }}
+											fieldLabel={t(
+												"pages.createMonitor.form.incidents.option.checks.label"
+											)}
+											min={1}
+											max={25}
+											valueLabelDisplay="auto"
+										/>
+									)}
+								/>
+								<Controller
+									name="statusWindowThreshold"
+									control={control}
+									render={({ field }) => (
+										<SliderWithLabel
+											{...field}
+											sliderMaxWidth={{ xs: "100%", md: "50%" }}
+											fieldLabel={t(
+												"pages.createMonitor.form.incidents.option.percentage.label"
+											)}
+											min={1}
+											max={100}
+											valueLabelDisplay="auto"
+										/>
+									)}
+								/>
+							</Stack>
+						}
+					/>
+				)}
+
+				{showStep(1) && (
+					<ConfigBox
+						title={t("pages.createMonitor.form.notifications.title")}
+						subtitle={t("pages.createMonitor.form.notifications.description")}
+						rightContent={
 							<Controller
-								name="customUpCodes"
+								name="notifications"
 								control={control}
 								render={({ field }) => {
-									const selectedOptions = ALL_HTTP_STATUS_CODES.filter((option) =>
-										field.value?.includes(option.id)
+									// Map notifications to have 'name' property for Autocomplete
+									const notificationOptions = (notifications ?? []).map((n) => ({
+										...n,
+										name: n.notificationName,
+									}));
+									const selectedNotifications = notificationOptions.filter((n) =>
+										(field.value ?? []).includes(n.id)
 									);
 									return (
 										<Stack spacing={theme.spacing(LAYOUT.MD)}>
 											<Autocomplete
 												multiple
-												autoHighlight
-												options={ALL_HTTP_STATUS_CODES}
-												value={selectedOptions}
+												options={notificationOptions}
+												value={selectedNotifications}
 												getOptionLabel={(option) => option.name}
-												isOptionEqualToValue={(option, value) => option.id === value.id}
-												onChange={(
-													_: unknown,
-													newValue: typeof ALL_HTTP_STATUS_CODES
-												) => {
-													field.onChange(newValue?.map((v) => v.id) || []);
+												onChange={(_: unknown, newValue: typeof notificationOptions) => {
+													field.onChange(newValue.map((n) => n.id));
 												}}
-												fieldLabel={t(
-													"pages.createMonitor.form.advanced.option.customUpCodes.label"
-												)}
+												isOptionEqualToValue={(option, value) => option.id === value.id}
 											/>
-											<Typography
-												component="span"
-												color={theme.palette.text.secondary}
-												sx={{ opacity: 0.8 }}
-											>
-												{t(
-													"pages.createMonitor.form.advanced.option.customUpCodes.description"
-												)}
-											</Typography>
-											{selectedOptions.length > 0 && (
+											{selectedNotifications.length > 0 && (
 												<Stack
 													flex={1}
-													gap={theme.spacing(SPACING.MD)}
 													width="100%"
 												>
-													{selectedOptions.map((option, index) => (
+													{selectedNotifications.map((notification, index) => (
 														<Stack
 															direction="row"
 															alignItems="center"
-															key={option.id}
+															key={notification.id}
 															width="100%"
 														>
-															<Typography flexGrow={1}>{option.name}</Typography>
+															<Typography flexGrow={1}>
+																{notification.notificationName}
+															</Typography>
 															<IconButton
 																size="small"
 																onClick={() => {
 																	field.onChange(
-																		field.value?.filter((id) => id !== option.id)
+																		(field.value ?? []).filter(
+																			(id: string) => id !== notification.id
+																		)
 																	);
 																}}
-																aria-label={t(
-																	"pages.createMonitor.form.advanced.option.customUpCodes.removeAriaLabel"
-																)}
+																aria-label="Remove notification"
 															>
 																<Trash2 size={16} />
 															</IconButton>
-															{index < selectedOptions.length - 1 && <Divider />}
+															{index < selectedNotifications.length - 1 && <Divider />}
 														</Stack>
 													))}
 												</Stack>
@@ -1210,9 +855,96 @@ const CreateMonitorPage = () => {
 									);
 								}}
 							/>
-							{watchedMethod !== "HEAD" && (
+						}
+					/>
+				)}
+
+				{showStep(1) && (
+					<ConfigBox
+						title={t("pages.createMonitor.form.tags.title")}
+						subtitle={t("pages.createMonitor.form.tags.description")}
+						rightContent={
+							<Controller
+								name="tags"
+								control={control}
+								render={({ field }) => {
+									const tagOptions = tags ?? [];
+									const selectedTags = tagOptions.filter((tag) =>
+										(field.value ?? []).includes(tag.id)
+									);
+									return (
+										<Stack spacing={theme.spacing(LAYOUT.MD)}>
+											<Autocomplete
+												multiple
+												options={tagOptions}
+												value={selectedTags}
+												getOptionLabel={(option) => option.name}
+												onChange={(_: unknown, newValue: typeof tagOptions) => {
+													field.onChange(newValue.map((tag) => tag.id));
+												}}
+												isOptionEqualToValue={(option, value) => option.id === value.id}
+												renderOptionContent={(option) => (
+													<ColoredLabel
+														text={option.name}
+														color={option.color}
+													/>
+												)}
+											/>
+											{selectedTags.length > 0 && (
+												<Stack
+													flex={1}
+													gap={theme.spacing(SPACING.XL)}
+													width="100%"
+												>
+													{selectedTags.map((tag, index) => (
+														<Stack
+															direction="row"
+															justifyContent={"space-between"}
+															alignItems="center"
+															key={tag.id}
+															width="100%"
+														>
+															<ColoredLabel
+																text={tag.name}
+																color={tag.color}
+															/>
+															<div style={{ flexGrow: 1 }} />
+															<IconButton
+																size="small"
+																onClick={() => {
+																	field.onChange(
+																		(field.value ?? []).filter(
+																			(id: string) => id !== tag.id
+																		)
+																	);
+																}}
+																aria-label="Remove tag"
+															>
+																<Trash2 size={16} />
+															</IconButton>
+															{index < selectedTags.length - 1 && <Divider />}
+														</Stack>
+													))}
+												</Stack>
+											)}
+										</Stack>
+									);
+								}}
+							/>
+						}
+					/>
+				)}
+
+				{showStep(2) &&
+					(watchedType === "http" ||
+						watchedType === "grpc" ||
+						watchedType === "websocket") && (
+						<ConfigBox
+							title={t("pages.createMonitor.form.ignoreTls.title")}
+							subtitle={t("pages.createMonitor.form.ignoreTls.description")}
+							rightContent={
 								<Controller
-									name="useAdvancedMatching"
+									name="ignoreTlsErrors"
 									control={control}
 									render={({ field }) => (
 										<Stack
@@ -1225,282 +957,414 @@ const CreateMonitorPage = () => {
 												onChange={(e) => field.onChange(e.target.checked)}
 											/>
 											<Typography>
+												{t("pages.createMonitor.form.ignoreTls.option.tls.label")}
+											</Typography>
+										</Stack>
+									)}
+								/>
+							}
+						/>
+					)}
+
+				{showStep(2) && watchedType === "http" && (
+					<ConfigBox
+						title={t("pages.createMonitor.form.advanced.title")}
+						subtitle={t("pages.createMonitor.form.advanced.description")}
+						rightContent={
+							<Stack spacing={theme.spacing(LAYOUT.MD)}>
+								<Controller
+									name="method"
+									control={control}
+									render={({ field }) => (
+										<Stack spacing={theme.spacing(LAYOUT.MD)}>
+											<Select
+												{...field}
+												value={field.value ?? DefaultHttpMethod}
+												onChange={(e) => {
+													const value = e.target.value as HttpMethod;
+													field.onChange(value);
+													// HEAD has no response body, reset advanced matching fields if selected
+													if (value === "HEAD") {
+														setValue("useAdvancedMatching", false);
+														setValue("matchMethod", "");
+														setValue("expectedValue", "");
+														setValue("jsonPath", "");
+													}
+												}}
+												fieldLabel={t(
+													"pages.createMonitor.form.advanced.option.method.label"
+												)}
+											>
+												{HttpMethods.map((method) => (
+													<MenuItem
+														key={method}
+														value={method}
+													>
+														{method}
+													</MenuItem>
+												))}
+											</Select>
+											<Typography
+												component="span"
+												color={theme.palette.text.secondary}
+												sx={{ opacity: 0.8 }}
+											>
 												{t(
-													"pages.createMonitor.form.advanced.option.advancedMatching.label"
+													`pages.createMonitor.form.advanced.option.method.description.${field.value ?? DefaultHttpMethod}`
 												)}
 											</Typography>
 										</Stack>
 									)}
 								/>
-							)}
-							{watchedUseAdvancedMatching && watchedMethod !== "HEAD" && (
-								<Stack spacing={theme.spacing(LAYOUT.MD)}>
+								<Controller
+									name="customUpCodes"
+									control={control}
+									render={({ field }) => {
+										const selectedOptions = ALL_HTTP_STATUS_CODES.filter((option) =>
+											field.value?.includes(option.id)
+										);
+										return (
+											<Stack spacing={theme.spacing(LAYOUT.MD)}>
+												<Autocomplete
+													multiple
+													autoHighlight
+													options={ALL_HTTP_STATUS_CODES}
+													value={selectedOptions}
+													getOptionLabel={(option) => option.name}
+													isOptionEqualToValue={(option, value) => option.id === value.id}
+													onChange={(
+														_: unknown,
+														newValue: typeof ALL_HTTP_STATUS_CODES
+													) => {
+														field.onChange(newValue?.map((v) => v.id) || []);
+													}}
+													fieldLabel={t(
+														"pages.createMonitor.form.advanced.option.customUpCodes.label"
+													)}
+												/>
+												<Typography
+													component="span"
+													color={theme.palette.text.secondary}
+													sx={{ opacity: 0.8 }}
+												>
+													{t(
+														"pages.createMonitor.form.advanced.option.customUpCodes.description"
+													)}
+												</Typography>
+												{selectedOptions.length > 0 && (
+													<Stack
+														flex={1}
+														gap={theme.spacing(SPACING.MD)}
+														width="100%"
+													>
+														{selectedOptions.map((option, index) => (
+															<Stack
+																direction="row"
+																alignItems="center"
+																key={option.id}
+																width="100%"
+															>
+																<Typography flexGrow={1}>{option.name}</Typography>
+																<IconButton
+																	size="small"
+																	onClick={() => {
+																		field.onChange(
+																			field.value?.filter((id) => id !== option.id)
+																		);
+																	}}
+																	aria-label={t(
+																		"pages.createMonitor.form.advanced.option.customUpCodes.removeAriaLabel"
+																	)}
+																>
+																	<Trash2 size={16} />
+																</IconButton>
+																{index < selectedOptions.length - 1 && <Divider />}
+															</Stack>
+														))}
+													</Stack>
+												)}
+											</Stack>
+										);
+									}}
+								/>
+								{watchedMethod !== "HEAD" && (
 									<Controller
-										name="matchMethod"
+										name="useAdvancedMatching"
 										control={control}
 										render={({ field }) => (
-											<Select
-												{...field}
-												value={field.value ?? "equal"}
-												fieldLabel={t(
-													"pages.createMonitor.form.advanced.option.matchMethod.label"
-												)}
+											<Stack
+												direction="row"
+												alignItems="center"
+												spacing={theme.spacing(SPACING.LG)}
 											>
-												<MenuItem value="equal">
+												<Switch
+													checked={field.value ?? false}
+													onChange={(e) => field.onChange(e.target.checked)}
+												/>
+												<Typography>
 													{t(
-														"pages.createMonitor.form.advanced.option.matchMethod.equal"
+														"pages.createMonitor.form.advanced.option.advancedMatching.label"
 													)}
-												</MenuItem>
-												<MenuItem value="include">
-													{t(
-														"pages.createMonitor.form.advanced.option.matchMethod.include"
-													)}
-												</MenuItem>
-												<MenuItem value="regex">
-													{t(
-														"pages.createMonitor.form.advanced.option.matchMethod.regex"
-													)}
-												</MenuItem>
-											</Select>
+												</Typography>
+											</Stack>
 										)}
 									/>
-									<Controller
-										name="expectedValue"
-										control={control}
-										render={({ field, fieldState }) => (
-											<TextField
-												{...field}
-												value={field.value ?? ""}
-												fieldLabel={t(
-													"pages.createMonitor.form.advanced.option.expectedValue.label"
-												)}
-												fullWidth
-												error={!!fieldState.error}
-												helperText={fieldState.error?.message ?? ""}
-											/>
-										)}
-									/>
-									<Controller
-										name="jsonPath"
-										control={control}
-										render={({ field, fieldState }) => (
-											<TextField
-												{...field}
-												value={field.value ?? ""}
-												fieldLabel={t(
-													"pages.createMonitor.form.advanced.option.jsonPath.label"
-												)}
-												fullWidth
-												error={!!fieldState.error}
-												helperText={fieldState.error?.message ?? ""}
-											/>
-										)}
-									/>
-									<Typography
-										component="span"
-										color={theme.palette.text.secondary}
-										sx={{ opacity: 0.8 }}
-									>
-										<Trans
-											i18nKey="pages.createMonitor.form.advanced.option.jsonPath.description"
-											components={{
-												jmesLink: (
-													<Link
-														href="https://jmespath.org/"
-														target="_blank"
-														rel="noopener noreferrer"
-													/>
-												),
-											}}
+								)}
+								{watchedUseAdvancedMatching && watchedMethod !== "HEAD" && (
+									<Stack spacing={theme.spacing(LAYOUT.MD)}>
+										<Controller
+											name="matchMethod"
+											control={control}
+											render={({ field }) => (
+												<Select
+													{...field}
+													value={field.value ?? "equal"}
+													fieldLabel={t(
+														"pages.createMonitor.form.advanced.option.matchMethod.label"
+													)}
+												>
+													<MenuItem value="equal">
+														{t(
+															"pages.createMonitor.form.advanced.option.matchMethod.equal"
+														)}
+													</MenuItem>
+													<MenuItem value="include">
+														{t(
+															"pages.createMonitor.form.advanced.option.matchMethod.include"
+														)}
+													</MenuItem>
+													<MenuItem value="regex">
+														{t(
+															"pages.createMonitor.form.advanced.option.matchMethod.regex"
+														)}
+													</MenuItem>
+												</Select>
+											)}
 										/>
-									</Typography>
-								</Stack>
-							)}
-						</Stack>
-					}
-				/>
-			)}
 
-			{showStep(2) && supportsGeoCheck(watchedType) && (
-				<ConfigBox
-					title={t("pages.createMonitor.form.geoChecks.title")}
-					subtitle={t("pages.createMonitor.form.geoChecks.description")}
-					rightContent={
-						<Stack spacing={theme.spacing(LAYOUT.MD)}>
-							<Controller
-								name="geoCheckEnabled"
-								control={control}
-								render={({ field }) => (
-									<Stack
-										direction="row"
-										alignItems="center"
-										spacing={theme.spacing(SPACING.LG)}
-									>
-										<Switch
-											checked={field.value ?? false}
-											onChange={(e) => field.onChange(e.target.checked)}
+										<FormTextField
+											name="expectedValue"
+											fieldLabel={t(
+												"pages.createMonitor.form.advanced.option.expectedValue.label"
+											)}
 										/>
-										<Typography>
-											{t("pages.createMonitor.form.geoChecks.option.enabled.label")}
+
+										<FormTextField
+											name="jsonPath"
+											fieldLabel={t(
+												"pages.createMonitor.form.advanced.option.jsonPath.label"
+											)}
+										/>
+
+										<Typography
+											component="span"
+											color={theme.palette.text.secondary}
+											sx={{ opacity: 0.8 }}
+										>
+											<Trans
+												i18nKey="pages.createMonitor.form.advanced.option.jsonPath.description"
+												components={{
+													jmesLink: (
+														<Link
+															href="https://jmespath.org/"
+															target="_blank"
+															rel="noopener noreferrer"
+														/>
+													),
+												}}
+											/>
 										</Typography>
 									</Stack>
 								)}
-							/>
-							{watchGeoCheckEnabled && (
-								<Stack spacing={theme.spacing(LAYOUT.MD)}>
-									<Controller
-										name="geoCheckLocations"
-										control={control}
-										render={({ field }) => {
-											// Map continents to have 'name' property for Autocomplete
-											const locationOptions = GeoContinents.map((continent) => ({
-												id: continent,
-												name: t(
-													`pages.createMonitor.form.geoChecks.option.locations.options.${continent}`
-												),
-											}));
-											const selectedLocations = locationOptions.filter((loc) =>
-												(field.value ?? []).includes(loc.id)
-											);
-											return (
-												<Stack spacing={theme.spacing(LAYOUT.MD)}>
-													<Autocomplete
-														multiple
-														options={locationOptions}
-														value={selectedLocations}
-														getOptionLabel={(option) => option.name}
-														onChange={(_: unknown, newValue: typeof locationOptions) => {
-															field.onChange(newValue.map((loc) => loc.id));
-														}}
-														isOptionEqualToValue={(option, value) =>
-															option.id === value.id
-														}
-														fieldLabel={t(
-															"pages.createMonitor.form.geoChecks.option.locations.label"
-														)}
-													/>
-													{selectedLocations.length > 0 && (
-														<Stack
-															flex={1}
-															width="100%"
-														>
-															{selectedLocations.map((location, index) => (
-																<Stack
-																	direction="row"
-																	alignItems="center"
-																	key={location.id}
-																	width="100%"
-																>
-																	<Typography flexGrow={1}>{location.name}</Typography>
-																	<IconButton
-																		size="small"
-																		onClick={() => {
-																			field.onChange(
-																				(field.value ?? []).filter(
-																					(id: string) => id !== location.id
-																				)
-																			);
-																		}}
-																		aria-label="Remove location"
-																	>
-																		<Trash2 size={16} />
-																	</IconButton>
-																	{index < selectedLocations.length - 1 && <Divider />}
-																</Stack>
-															))}
-														</Stack>
-													)}
-												</Stack>
-											);
-										}}
-									/>
-									<Controller
-										name="geoCheckInterval"
-										control={control}
-										render={({ field }) => (
-											<Select
-												{...field}
-												value={field.value ?? 300000}
-												fieldLabel={t(
-													"pages.createMonitor.form.geoChecks.option.interval.label"
-												)}
-											>
-												<MenuItem value={300000}>
-													{t(
-														"pages.createMonitor.form.geoChecks.option.interval.value.fiveMinutes"
-													)}
-												</MenuItem>
-												<MenuItem value={600000}>
-													{t(
-														"pages.createMonitor.form.geoChecks.option.interval.value.tenMinutes"
-													)}
-												</MenuItem>
-												<MenuItem value={900000}>
-													{t(
-														"pages.createMonitor.form.geoChecks.option.interval.value.fifteenMinutes"
-													)}
-												</MenuItem>
-												<MenuItem value={1800000}>
-													{t(
-														"pages.createMonitor.form.geoChecks.option.interval.value.thirtyMinutes"
-													)}
-												</MenuItem>
-											</Select>
-										)}
-									/>
-								</Stack>
-							)}
-						</Stack>
-					}
-				/>
-			)}
+							</Stack>
+						}
+					/>
+				)}
 
-			<Stack
-				direction="row"
-				justifyContent={!isEditMode ? "space-between" : "flex-end"}
-			>
-				{!isEditMode && (
-					<Button
-						type="button"
-						variant="outlined"
-						color="secondary"
-						disabled={currentStep === 0}
-						onClick={handleBack}
-					>
-						{t("common.buttons.back")}
-					</Button>
+				{showStep(2) && supportsGeoCheck(watchedType) && (
+					<ConfigBox
+						title={t("pages.createMonitor.form.geoChecks.title")}
+						subtitle={t("pages.createMonitor.form.geoChecks.description")}
+						rightContent={
+							<Stack spacing={theme.spacing(LAYOUT.MD)}>
+								<Controller
+									name="geoCheckEnabled"
+									control={control}
+									render={({ field }) => (
+										<Stack
+											direction="row"
+											alignItems="center"
+											spacing={theme.spacing(SPACING.LG)}
+										>
+											<Switch
+												checked={field.value ?? false}
+												onChange={(e) => field.onChange(e.target.checked)}
+											/>
+											<Typography>
+												{t("pages.createMonitor.form.geoChecks.option.enabled.label")}
+											</Typography>
+										</Stack>
+									)}
+								/>
+								{watchGeoCheckEnabled && (
+									<Stack spacing={theme.spacing(LAYOUT.MD)}>
+										<Controller
+											name="geoCheckLocations"
+											control={control}
+											render={({ field }) => {
+												// Map continents to have 'name' property for Autocomplete
+												const locationOptions = GeoContinents.map((continent) => ({
+													id: continent,
+													name: t(
+														`pages.createMonitor.form.geoChecks.option.locations.options.${continent}`
+													),
+												}));
+												const selectedLocations = locationOptions.filter((loc) =>
+													(field.value ?? []).includes(loc.id)
+												);
+												return (
+													<Stack spacing={theme.spacing(LAYOUT.MD)}>
+														<Autocomplete
+															multiple
+															options={locationOptions}
+															value={selectedLocations}
+															getOptionLabel={(option) => option.name}
+															onChange={(
+																_: unknown,
+																newValue: typeof locationOptions
+															) => {
+																field.onChange(newValue.map((loc) => loc.id));
+															}}
+															isOptionEqualToValue={(option, value) =>
+																option.id === value.id
+															}
+															fieldLabel={t(
+																"pages.createMonitor.form.geoChecks.option.locations.label"
+															)}
+														/>
+														{selectedLocations.length > 0 && (
+															<Stack
+																flex={1}
+																width="100%"
+															>
+																{selectedLocations.map((location, index) => (
+																	<Stack
+																		direction="row"
+																		alignItems="center"
+																		key={location.id}
+																		width="100%"
+																	>
+																		<Typography flexGrow={1}>{location.name}</Typography>
+																		<IconButton
+																			size="small"
+																			onClick={() => {
+																				field.onChange(
+																					(field.value ?? []).filter(
+																						(id: string) => id !== location.id
+																					)
+																				);
+																			}}
+																			aria-label="Remove location"
+																		>
+																			<Trash2 size={16} />
+																		</IconButton>
+																		{index < selectedLocations.length - 1 && <Divider />}
+																	</Stack>
+																))}
+															</Stack>
+														)}
+													</Stack>
+												);
+											}}
+										/>
+										<Controller
+											name="geoCheckInterval"
+											control={control}
+											render={({ field }) => (
+												<Select
+													{...field}
+													value={field.value ?? 300000}
+													fieldLabel={t(
+														"pages.createMonitor.form.geoChecks.option.interval.label"
+													)}
+												>
+													<MenuItem value={300000}>
+														{t(
+															"pages.createMonitor.form.geoChecks.option.interval.value.fiveMinutes"
+														)}
+													</MenuItem>
+													<MenuItem value={600000}>
+														{t(
+															"pages.createMonitor.form.geoChecks.option.interval.value.tenMinutes"
+														)}
+													</MenuItem>
+													<MenuItem value={900000}>
+														{t(
+															"pages.createMonitor.form.geoChecks.option.interval.value.fifteenMinutes"
+														)}
+													</MenuItem>
+													<MenuItem value={1800000}>
+														{t(
+															"pages.createMonitor.form.geoChecks.option.interval.value.thirtyMinutes"
+														)}
+													</MenuItem>
+												</Select>
+											)}
+										/>
+									</Stack>
+								)}
+							</Stack>
+						}
+					/>
 				)}
-				{!isEditMode && currentStep < totalSteps - 1 ? (
-					<Button
-						key="wizard-next"
-						type="button"
-						variant="contained"
-						color="primary"
-						onClick={handleNext}
-					>
-						{t("common.buttons.next")}
-					</Button>
-				) : (
-					<Button
-						key="wizard-save"
-						loading={isSubmitting}
-						type="submit"
-						variant="contained"
-						color="primary"
-					>
-						{t("common.buttons.save")}
-					</Button>
-				)}
-			</Stack>
-			<Dialog
-				open={isDeleteDialogOpen}
-				title={t("common.dialogs.delete.title")}
-				content={t("common.dialogs.delete.description")}
-				onConfirm={handleDeleteConfirm}
-				onCancel={handleDeleteCancel}
-				loading={isDeleting}
-			/>
-		</BasePage>
+
+				<Stack
+					direction="row"
+					justifyContent={!isEditMode ? "space-between" : "flex-end"}
+				>
+					{!isEditMode && (
+						<Button
+							type="button"
+							variant="outlined"
+							color="secondary"
+							disabled={currentStep === 0}
+							onClick={handleBack}
+						>
+							{t("common.buttons.back")}
+						</Button>
+					)}
+					{!isEditMode && currentStep < totalSteps - 1 ? (
+						<Button
+							key="wizard-next"
+							type="button"
+							variant="contained"
+							color="primary"
+							onClick={handleNext}
+						>
+							{t("common.buttons.next")}
+						</Button>
+					) : (
+						<Button
+							key="wizard-save"
+							loading={isSubmitting}
+							type="submit"
+							variant="contained"
+							color="primary"
+						>
+							{t("common.buttons.save")}
+						</Button>
+					)}
+				</Stack>
+				<Dialog
+					open={isDeleteDialogOpen}
+					title={t("common.dialogs.delete.title")}
+					content={t("common.dialogs.delete.description")}
+					onConfirm={handleDeleteConfirm}
+					onCancel={handleDeleteCancel}
+					loading={isDeleting}
+				/>
+			</BasePage>
+		</FormProvider>
 	);
 };
 

@@ -20,6 +20,34 @@ export const MonitorTypes = [
 ] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
+// The subset offered by the CreateMonitor type selector, in display order.
+// pagespeed/hardware are set by their own pages; unknown is never selectable.
+export const SelectableMonitorTypes = [
+	"http",
+	"ping",
+	"docker",
+	"port",
+	"game",
+	"grpc",
+	"websocket",
+	"dns",
+] as const;
+export type SelectableMonitorType = (typeof SelectableMonitorTypes)[number];
+
+// Irregular i18n key fragments shared by the type selector's label
+// (pages.common.monitors.monitorTypes.<fragment>) and description
+// (pages.createMonitor.form.type.<fragment>Description) keys.
+export const monitorTypeLabelKey: Record<SelectableMonitorType, string> = {
+	http: "optionHttp",
+	ping: "optionPing",
+	docker: "optionDocker",
+	port: "optionPort",
+	game: "optionGame",
+	grpc: "optionGrpc",
+	websocket: "optionWebSocket",
+	dns: "optionDns",
+};
+
 export const DnsRecordTypes = ["A", "AAAA", "CNAME", "MX", "TXT", "NS"] as const;
 export type DnsRecordType = (typeof DnsRecordTypes)[number];
 
