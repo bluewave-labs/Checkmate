@@ -18,7 +18,10 @@ interface FormAutocompleteProps<T extends FieldValues, O extends AutocompleteOpt
 	placeholder?: string;
 }
 
-export const FormAutocomplete = <T extends FieldValues, O extends AutocompleteOption>({
+export const FormAutocompleteField = <
+	T extends FieldValues,
+	O extends AutocompleteOption,
+>({
 	name,
 	options,
 	fieldLabel,
