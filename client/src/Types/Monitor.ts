@@ -48,6 +48,23 @@ export const monitorTypeLabelKey: Record<SelectableMonitorType, string> = {
 	dns: "optionDns",
 };
 
+export const MonitorIntervalOptions = [
+	{ value: 15000, labelKey: "fifteenSeconds" },
+	{ value: 30000, labelKey: "thirtySeconds" },
+	{ value: 60000, labelKey: "oneMinute" },
+	{ value: 120000, labelKey: "twoMinutes" },
+	{ value: 180000, labelKey: "threeMinutes" },
+	{ value: 240000, labelKey: "fourMinutes" },
+	{ value: 300000, labelKey: "fiveMinutes" },
+	{ value: 600000, labelKey: "tenMinutes" },
+	{ value: 900000, labelKey: "fifteenMinutes" },
+	{ value: 1800000, labelKey: "thirtyMinutes" },
+] as const;
+
+export const GeoCheckIntervalOptions = MonitorIntervalOptions.filter(
+	({ value }) => value >= 300000
+);
+
 export const DnsRecordTypes = ["A", "AAAA", "CNAME", "MX", "TXT", "NS"] as const;
 export type DnsRecordType = (typeof DnsRecordTypes)[number];
 
@@ -70,7 +87,9 @@ export const MonitorStatuses = [
 ] as const;
 export type MonitorStatus = (typeof MonitorStatuses)[number];
 
-export type MonitorMatchMethod = "equal" | "include" | "regex" | "";
+export const MonitorMatchMethods = ["equal", "include", "regex"] as const;
+export type MonitorMatchMethod = (typeof MonitorMatchMethods)[number] | "";
+export const DefaultMonitorMatchMethod: MonitorMatchMethod = "equal";
 
 export const PageSpeedStrategies = ["desktop", "mobile"] as const;
 export type PageSpeedStrategy = (typeof PageSpeedStrategies)[number];

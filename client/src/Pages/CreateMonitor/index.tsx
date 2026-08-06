@@ -8,7 +8,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTheme } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import { Trans, useTranslation } from "react-i18next";
-import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import { HeaderDeleteControls } from "@/Components/monitors";
@@ -23,7 +22,6 @@ import {
 } from "@/Components/design-elements";
 import {
 	Button,
-	Select,
 	SwitchComponent as Switch,
 	SliderWithLabel,
 	Dialog,
@@ -42,6 +40,12 @@ import {
 	HttpMethods,
 	SelectableMonitorTypes,
 	monitorTypeLabelKey,
+	PageSpeedStrategies,
+	DnsRecordTypes,
+	MonitorIntervalOptions,
+	DefaultMonitorMatchMethod,
+	MonitorMatchMethods,
+	GeoCheckIntervalOptions,
 } from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
 import type { Tag } from "@/Types/Tag";
@@ -54,6 +58,7 @@ import { FormNumberField } from "@/Components/inputs/forms/FormNumberField";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 import { FormRadioGroup } from "@/Components/inputs/forms/FormRadioGroupField";
 import { FormMultiSelectField } from "@/Components/inputs/forms/FormMultiSelectField";
+import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
 
 interface GeneralSettingsConfig {
 	urlLabel: string;
@@ -444,26 +449,18 @@ const CreateMonitorPage = () => {
 
 								{/* Strategy field - only for pagespeed type */}
 								{generalSettingsConfig.showStrategy && (
-									<Controller
+									<FormSelectField
 										name="strategy"
-										control={control}
-										render={({ field, fieldState }) => (
-											<Select
-												{...field}
-												value={field.value ?? DefaultPageSpeedStrategy}
-												fieldLabel={t(
-													"pages.createMonitor.form.general.option.strategy.label"
-												)}
-												error={!!fieldState.error}
-											>
-												<MenuItem value="desktop">
-													{t("pages.createMonitor.form.general.option.strategy.desktop")}
-												</MenuItem>
-												<MenuItem value="mobile">
-													{t("pages.createMonitor.form.general.option.strategy.mobile")}
-												</MenuItem>
-											</Select>
+										fieldLabel={t(
+											"pages.createMonitor.form.general.option.strategy.label"
 										)}
+										options={PageSpeedStrategies.map((strategy) => ({
+											value: strategy,
+											label: t(
+												`pages.createMonitor.form.general.option.strategy.${strategy}`
+											),
+										}))}
+										fallbackValue={DefaultPageSpeedStrategy}
 									/>
 								)}
 
@@ -480,34 +477,21 @@ const CreateMonitorPage = () => {
 
 								{/* Game select - only for game type */}
 								{generalSettingsConfig.showGameSelect && (
-									<Controller
+									<FormSelectField
 										name="gameId"
-										control={control}
-										render={({ field, fieldState }) => (
-											<Select
-												{...field}
-												value={field.value ?? ""}
-												fieldLabel={t(
-													"pages.createMonitor.form.general.option.game.label"
-												)}
-												error={!!fieldState.error}
-											>
-												<MenuItem value="">
-													{t(
-														"pages.createMonitor.form.general.option.game.placeholder"
-													)}{" "}
-												</MenuItem>
-												{games &&
-													Object.entries(games).map(([key, game]) => (
-														<MenuItem
-															key={key}
-															value={key}
-														>
-															{game.name}
-														</MenuItem>
-													))}
-											</Select>
-										)}
+										fieldLabel={t("pages.createMonitor.form.general.option.game.label")}
+										options={[
+											{
+												value: "",
+												label: t(
+													"pages.createMonitor.form.general.option.game.placeholder"
+												),
+											},
+											...Object.entries(games ?? {}).map(([key, game]) => ({
+												value: key,
+												label: game.name,
+											})),
+										]}
 									/>
 								)}
 
@@ -546,51 +530,17 @@ const CreateMonitorPage = () => {
 									/>
 								)}
 								{generalSettingsConfig.showDnsRecordType && (
-									<Controller
+									<FormSelectField
 										name="dnsRecordType"
-										control={control}
-										defaultValue="A"
-										render={({ field, fieldState }) => (
-											<Select
-												{...field}
-												value={field.value ?? "A"}
-												fieldLabel={t(
-													"pages.createMonitor.form.general.option.dnsRecordType.label"
-												)}
-												error={!!fieldState.error}
-											>
-												<MenuItem value={"A"}>
-													{t(
-														"pages.createMonitor.form.general.option.dnsRecordType.value.A"
-													)}
-												</MenuItem>
-												<MenuItem value={"AAAA"}>
-													{t(
-														"pages.createMonitor.form.general.option.dnsRecordType.value.AAAA"
-													)}
-												</MenuItem>
-												<MenuItem value={"CNAME"}>
-													{t(
-														"pages.createMonitor.form.general.option.dnsRecordType.value.CNAME"
-													)}
-												</MenuItem>
-												<MenuItem value={"MX"}>
-													{t(
-														"pages.createMonitor.form.general.option.dnsRecordType.value.MX"
-													)}
-												</MenuItem>
-												<MenuItem value={"NS"}>
-													{t(
-														"pages.createMonitor.form.general.option.dnsRecordType.value.NS"
-													)}
-												</MenuItem>
-												<MenuItem value={"TXT"}>
-													{t(
-														"pages.createMonitor.form.general.option.dnsRecordType.value.TXT"
-													)}
-												</MenuItem>
-											</Select>
+										fieldLabel={t(
+											"pages.createMonitor.form.general.option.dnsRecordType.label"
 										)}
+										options={DnsRecordTypes.map((recordType) => ({
+											value: recordType,
+											label: t(
+												`pages.createMonitor.form.general.option.dnsRecordType.value.${recordType}`
+											),
+										}))}
 									/>
 								)}
 								<FormTextField
@@ -608,70 +558,17 @@ const CreateMonitorPage = () => {
 						title={t("pages.createMonitor.form.frequency.title")}
 						subtitle={t("pages.createMonitor.form.frequency.description")}
 						rightContent={
-							<Controller
+							<FormSelectField
 								name="interval"
-								control={control}
-								render={({ field, fieldState }) => (
-									<Select
-										{...field}
-										value={field.value ?? 60000}
-										fieldLabel={t(
-											"pages.createMonitor.form.frequency.option.frequency.label"
-										)}
-										error={!!fieldState.error}
-									>
-										<MenuItem value={15000}>
-											{t(
-												"pages.createMonitor.form.frequency.option.frequency.value.fifteenSeconds"
-											)}
-										</MenuItem>
-										<MenuItem value={30000}>
-											{t(
-												"pages.createMonitor.form.frequency.option.frequency.value.thirtySeconds"
-											)}
-										</MenuItem>
-										<MenuItem value={60000}>
-											{t(
-												"pages.createMonitor.form.frequency.option.frequency.value.oneMinute"
-											)}
-										</MenuItem>
-										<MenuItem value={120000}>
-											{t(
-												"pages.createMonitor.form.frequency.option.frequency.value.twoMinutes"
-											)}
-										</MenuItem>
-										<MenuItem value={180000}>
-											{t(
-												"pages.createMonitor.form.frequency.option.frequency.value.threeMinutes"
-											)}
-										</MenuItem>
-										<MenuItem value={240000}>
-											{t(
-												"pages.createMonitor.form.frequency.option.frequency.value.fourMinutes"
-											)}
-										</MenuItem>
-										<MenuItem value={300000}>
-											{t(
-												"pages.createMonitor.form.frequency.option.frequency.value.fiveMinutes"
-											)}
-										</MenuItem>
-										<MenuItem value={600000}>
-											{t(
-												"pages.createMonitor.form.frequency.option.frequency.value.tenMinutes"
-											)}
-										</MenuItem>
-										<MenuItem value={900000}>
-											{t(
-												"pages.createMonitor.form.frequency.option.frequency.value.fifteenMinutes"
-											)}
-										</MenuItem>
-										<MenuItem value={1800000}>
-											{t(
-												"pages.createMonitor.form.frequency.option.frequency.value.thirtyMinutes"
-											)}
-										</MenuItem>
-									</Select>
+								fieldLabel={t(
+									"pages.createMonitor.form.frequency.option.frequency.label"
 								)}
+								options={MonitorIntervalOptions.map((option) => ({
+									value: option.value,
+									label: t(
+										`pages.createMonitor.form.frequency.option.frequency.value.${option.labelKey}`
+									),
+								}))}
 							/>
 						}
 					/>
@@ -881,50 +778,33 @@ const CreateMonitorPage = () => {
 						subtitle={t("pages.createMonitor.form.advanced.description")}
 						rightContent={
 							<Stack spacing={theme.spacing(LAYOUT.MD)}>
-								<Controller
+								<FormSelectField
 									name="method"
-									control={control}
-									render={({ field }) => (
-										<Stack spacing={theme.spacing(LAYOUT.MD)}>
-											<Select
-												{...field}
-												value={field.value ?? DefaultHttpMethod}
-												onChange={(e) => {
-													const value = e.target.value as HttpMethod;
-													field.onChange(value);
-													// HEAD has no response body, reset advanced matching fields if selected
-													if (value === "HEAD") {
-														setValue("useAdvancedMatching", false);
-														setValue("matchMethod", "");
-														setValue("expectedValue", "");
-														setValue("jsonPath", "");
-													}
-												}}
-												fieldLabel={t(
-													"pages.createMonitor.form.advanced.option.method.label"
-												)}
-											>
-												{HttpMethods.map((method) => (
-													<MenuItem
-														key={method}
-														value={method}
-													>
-														{method}
-													</MenuItem>
-												))}
-											</Select>
-											<Typography
-												component="span"
-												color={theme.palette.text.secondary}
-												sx={{ opacity: 0.8 }}
-											>
-												{t(
-													`pages.createMonitor.form.advanced.option.method.description.${field.value ?? DefaultHttpMethod}`
-												)}
-											</Typography>
-										</Stack>
-									)}
+									fieldLabel={t("pages.createMonitor.form.advanced.option.method.label")}
+									fallbackValue={DefaultHttpMethod}
+									onValueChange={(value) => {
+										// HEAD has no response body, reset advanced matching fields if selected
+										if (value === "HEAD") {
+											setValue("useAdvancedMatching", false);
+											setValue("matchMethod", DefaultMonitorMatchMethod);
+											setValue("expectedValue", "");
+											setValue("jsonPath", "");
+										}
+									}}
+									options={HttpMethods.map((method) => ({
+										value: method,
+										label: method,
+									}))}
 								/>
+								<Typography
+									component="span"
+									color={theme.palette.text.secondary}
+									sx={{ opacity: 0.8 }}
+								>
+									{t(
+										`pages.createMonitor.form.advanced.option.method.description.${watchedMethod}`
+									)}
+								</Typography>
 
 								<FormMultiSelectField
 									name="customUpCodes"
@@ -962,34 +842,18 @@ const CreateMonitorPage = () => {
 								)}
 								{watchedUseAdvancedMatching && watchedMethod !== "HEAD" && (
 									<Stack spacing={theme.spacing(LAYOUT.MD)}>
-										<Controller
+										<FormSelectField
 											name="matchMethod"
-											control={control}
-											render={({ field }) => (
-												<Select
-													{...field}
-													value={field.value ?? "equal"}
-													fieldLabel={t(
-														"pages.createMonitor.form.advanced.option.matchMethod.label"
-													)}
-												>
-													<MenuItem value="equal">
-														{t(
-															"pages.createMonitor.form.advanced.option.matchMethod.equal"
-														)}
-													</MenuItem>
-													<MenuItem value="include">
-														{t(
-															"pages.createMonitor.form.advanced.option.matchMethod.include"
-														)}
-													</MenuItem>
-													<MenuItem value="regex">
-														{t(
-															"pages.createMonitor.form.advanced.option.matchMethod.regex"
-														)}
-													</MenuItem>
-												</Select>
+											fieldLabel={t(
+												"pages.createMonitor.form.advanced.option.matchMethod.label"
 											)}
+											fallbackValue={DefaultMonitorMatchMethod}
+											options={MonitorMatchMethods.map((method) => ({
+												value: method,
+												label: t(
+													`pages.createMonitor.form.advanced.option.matchMethod.${method}`
+												),
+											}))}
 										/>
 
 										<FormTextField
@@ -1065,39 +929,17 @@ const CreateMonitorPage = () => {
 												"pages.createMonitor.form.geoChecks.option.locations.label"
 											)}
 										/>
-										<Controller
+										<FormSelectField
 											name="geoCheckInterval"
-											control={control}
-											render={({ field }) => (
-												<Select
-													{...field}
-													value={field.value ?? 300000}
-													fieldLabel={t(
-														"pages.createMonitor.form.geoChecks.option.interval.label"
-													)}
-												>
-													<MenuItem value={300000}>
-														{t(
-															"pages.createMonitor.form.geoChecks.option.interval.value.fiveMinutes"
-														)}
-													</MenuItem>
-													<MenuItem value={600000}>
-														{t(
-															"pages.createMonitor.form.geoChecks.option.interval.value.tenMinutes"
-														)}
-													</MenuItem>
-													<MenuItem value={900000}>
-														{t(
-															"pages.createMonitor.form.geoChecks.option.interval.value.fifteenMinutes"
-														)}
-													</MenuItem>
-													<MenuItem value={1800000}>
-														{t(
-															"pages.createMonitor.form.geoChecks.option.interval.value.thirtyMinutes"
-														)}
-													</MenuItem>
-												</Select>
+											fieldLabel={t(
+												"pages.createMonitor.form.geoChecks.option.interval.label"
 											)}
+											options={GeoCheckIntervalOptions.map((option) => ({
+												value: option.value,
+												label: t(
+													`pages.createMonitor.form.geoChecks.option.interval.value.${option.labelKey}`
+												),
+											}))}
 										/>
 									</Stack>
 								)}
