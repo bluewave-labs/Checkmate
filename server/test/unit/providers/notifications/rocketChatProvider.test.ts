@@ -25,7 +25,7 @@ testNotificationProviderContract("RocketChatProvider", {
 describe("RocketChatProvider", () => {
 	beforeEach(() => mockGotPost.mockReset().mockResolvedValue({}));
 
-	it("sends a text-only test alert", async () => {
+	it("sends a rich test alert without webhook overrides", async () => {
 		const { provider } = createProvider();
 
 		const result = await provider.sendTestAlert(makeNotification({ type: "rocket_chat" }));
@@ -34,11 +34,29 @@ describe("RocketChatProvider", () => {
 		expect(mockGotPost).toHaveBeenCalledWith(
 			"https://hooks.example.com/webhook",
 			expect.objectContaining({
-				json: { text: "This is a test notification from Checkmate" },
+				json: {
+					text: "This is a test notification from Checkmate",
+					attachments: [
+						{
+							color: "#0000FF",
+							title: "Checkmate test notification",
+							fields: [
+								{ title: "Channel", value: "Rocket.Chat", short: true },
+								{ title: "Status", value: "Test notification", short: true },
+							],
+						},
+					],
+				},
 				timeout: { request: 30000 },
 				retry: { limit: 0 },
 			})
 		);
+
+		const payload = mockGotPost.mock.calls[0][1].json;
+		expect(payload).not.toHaveProperty("alias");
+		expect(payload).not.toHaveProperty("avatar");
+		expect(payload).not.toHaveProperty("emoji");
+		expect(payload).not.toHaveProperty("channel");
 	});
 
 	it("returns false when the test webhook URL is missing", async () => {

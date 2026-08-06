@@ -4,6 +4,16 @@ import { NotificationProvider } from "@/domain/notifications/providers/INotifica
 import { getTestMessage } from "@/domain/notifications/providers/utils.js";
 import got from "got";
 
+type RocketChatField = { title: string; value: string; short: boolean };
+type RocketChatAttachment = {
+	color: string;
+	title: string;
+	title_link?: string;
+	fields?: RocketChatField[];
+	ts?: string;
+};
+type RocketChatPayload = { text: string; attachments: [RocketChatAttachment] };
+
 export class RocketChatProvider extends NotificationProvider {
 	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
 		if (!notification.address) {
@@ -12,7 +22,7 @@ export class RocketChatProvider extends NotificationProvider {
 
 		try {
 			await got.post(notification.address, {
-				json: { text: getTestMessage() },
+				json: this.buildTestPayload(),
 				headers: {
 					"Content-Type": "application/json",
 				},
@@ -29,6 +39,22 @@ export class RocketChatProvider extends NotificationProvider {
 			});
 			return false;
 		}
+	}
+
+	private buildTestPayload(): RocketChatPayload {
+		return {
+			text: getTestMessage(),
+			attachments: [
+				{
+					color: "#0000FF",
+					title: "Checkmate test notification",
+					fields: [
+						{ title: "Channel", value: "Rocket.Chat", short: true },
+						{ title: "Status", value: "Test notification", short: true },
+					],
+				},
+			],
+		};
 	}
 
 	async sendMessage(notification: Notification, message: NotificationMessage): Promise<boolean> {
