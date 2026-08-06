@@ -80,7 +80,9 @@ Usage instructions can be found [here](https://checkmate.so/docs).
 <a id="installation"></a>
 ## Installation
 
-The quickest way to run Checkmate is the reference Docker Compose file, which runs the all-in-one image (`ghcr.io/bluewave-labs/checkmate`) plus MongoDB:
+The quickest way to run Checkmate is the reference Docker Compose file. It starts two services: the all-in-one Checkmate application image (`ghcr.io/bluewave-labs/checkmate`) and a separate MongoDB service.
+
+> **What “all-in-one” means:** the Checkmate application is packaged in a single image; MongoDB is not embedded in that image and remains required. The reference Compose file starts MongoDB for you. For custom deployments, configure `DB_CONNECTION_STRING` to use an external MongoDB instance.
 
 ```bash
 curl -O https://raw.githubusercontent.com/bluewave-labs/checkmate/master/docker/docker-compose.yaml
