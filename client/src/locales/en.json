@@ -721,17 +721,6 @@
 						}
 					}
 				},
-				"url": {
-					"title": "Monitor IP/URL on Status Page",
-					"description": "Display the IP address or URL of monitor on the public Status page. If it's disabled, only the monitor name will be shown to protect sensitive information.",
-					"option": {
-						"showURL": {
-							"label": "Display IP/URL on status page",
-							"enabled": "Enabled",
-							"disabled": "Disabled"
-						}
-					}
-				},
 				"stats": {
 					"title": "Monitor history",
 					"description": "Clear all monitoring history and statistics for your team. This action is irreversible.",
@@ -1308,9 +1297,7 @@
 					"description": "Display the IP address or URL of monitor on the public Status page. If it's disabled, only the monitor name will be shown to protect sensitive information.",
 					"option": {
 						"showURL": {
-							"label": "Display IP/URL on status page",
-							"enabled": "Enabled",
-							"disabled": "Disabled"
+							"label": "Display IP/URL on status page"
 						}
 					}
 				},
