@@ -39,7 +39,7 @@ const NotificationsCreatePage = () => {
 		defaultValues: defaults,
 	});
 
-	const { control, watch, reset, handleSubmit, clearErrors, trigger, getValues } = form;
+	const { watch, reset, handleSubmit, clearErrors, trigger, getValues } = form;
 
 	useEffect(() => {
 		reset(defaults);
