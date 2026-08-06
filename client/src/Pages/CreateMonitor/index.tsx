@@ -20,12 +20,7 @@ import {
 	ConfigBox,
 	StepProgress,
 } from "@/Components/design-elements";
-import {
-	Button,
-	SwitchComponent as Switch,
-	SliderWithLabel,
-	Dialog,
-} from "@/Components/inputs";
+import { Button, SwitchComponent as Switch, Dialog } from "@/Components/inputs";
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import { useGet, usePost, usePatch, useDelete } from "@/Hooks/UseApi";
 import { useMonitorForm, getMonitorDefaults } from "@/Hooks/useMonitorForm";
@@ -59,6 +54,7 @@ import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 import { FormRadioGroup } from "@/Components/inputs/forms/FormRadioGroupField";
 import { FormMultiSelectField } from "@/Components/inputs/forms/FormMultiSelectField";
 import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
+import { FormSliderField } from "@/Components/inputs/forms/FormSliderField";
 
 interface GeneralSettingsConfig {
 	urlLabel: string;
@@ -581,77 +577,49 @@ const CreateMonitorPage = () => {
 						subtitle={t("pages.createMonitor.form.thresholds.description")}
 						rightContent={
 							<Stack spacing={theme.spacing(LAYOUT.MD)}>
-								<Controller
+								<FormSliderField
 									name="cpuAlertThreshold"
-									control={control}
-									render={({ field }) => (
-										<SliderWithLabel
-											{...field}
-											sliderMaxWidth={{ xs: "100%", md: "50%" }}
-											fieldLabel={t(
-												"pages.createMonitor.form.thresholds.option.cpuThreshold.label"
-											)}
-											min={0}
-											max={100}
-											step={1}
-											valueLabelDisplay="auto"
-											valueLabelFormat={(value) => `${value}%`}
-										/>
+									fieldLabel={t(
+										"pages.createMonitor.form.thresholds.option.cpuThreshold.label"
 									)}
+									min={0}
+									max={100}
+									step={1}
+									valueLabelDisplay="auto"
+									valueLabelFormat={(value) => `${value}%`}
 								/>
-								<Controller
+								<FormSliderField
 									name="memoryAlertThreshold"
-									control={control}
-									render={({ field }) => (
-										<SliderWithLabel
-											{...field}
-											sliderMaxWidth={{ xs: "100%", md: "50%" }}
-											fieldLabel={t(
-												"pages.createMonitor.form.thresholds.option.memoryThreshold.label"
-											)}
-											min={0}
-											max={100}
-											step={1}
-											valueLabelDisplay="auto"
-											valueLabelFormat={(value) => `${value}%`}
-										/>
+									fieldLabel={t(
+										"pages.createMonitor.form.thresholds.option.memoryThreshold.label"
 									)}
+									min={0}
+									max={100}
+									step={1}
+									valueLabelDisplay="auto"
+									valueLabelFormat={(value) => `${value}%`}
 								/>
-								<Controller
+								<FormSliderField
 									name="diskAlertThreshold"
-									control={control}
-									render={({ field }) => (
-										<SliderWithLabel
-											{...field}
-											sliderMaxWidth={{ xs: "100%", md: "50%" }}
-											fieldLabel={t(
-												"pages.createMonitor.form.thresholds.option.diskThreshold.label"
-											)}
-											min={0}
-											max={100}
-											step={1}
-											valueLabelDisplay="auto"
-											valueLabelFormat={(value) => `${value}%`}
-										/>
+									fieldLabel={t(
+										"pages.createMonitor.form.thresholds.option.diskThreshold.label"
 									)}
+									min={0}
+									max={100}
+									step={1}
+									valueLabelDisplay="auto"
+									valueLabelFormat={(value) => `${value}%`}
 								/>
-								<Controller
+								<FormSliderField
 									name="tempAlertThreshold"
-									control={control}
-									render={({ field }) => (
-										<SliderWithLabel
-											{...field}
-											sliderMaxWidth={{ xs: "100%", md: "50%" }}
-											fieldLabel={t(
-												"pages.createMonitor.form.thresholds.option.tempThreshold.label"
-											)}
-											min={0}
-											max={100}
-											step={1}
-											valueLabelDisplay="auto"
-											valueLabelFormat={(value) => `${value}°C`}
-										/>
+									fieldLabel={t(
+										"pages.createMonitor.form.thresholds.option.tempThreshold.label"
 									)}
+									min={0}
+									max={100}
+									step={1}
+									valueLabelDisplay="auto"
+									valueLabelFormat={(value) => `${value}°C`}
 								/>
 							</Stack>
 						}
@@ -664,37 +632,21 @@ const CreateMonitorPage = () => {
 						subtitle={t("pages.createMonitor.form.incidents.description")}
 						rightContent={
 							<Stack spacing={theme.spacing(LAYOUT.MD)}>
-								<Controller
+								<FormSliderField
 									name="statusWindowSize"
-									control={control}
-									render={({ field }) => (
-										<SliderWithLabel
-											{...field}
-											sliderMaxWidth={{ xs: "100%", md: "50%" }}
-											fieldLabel={t(
-												"pages.createMonitor.form.incidents.option.checks.label"
-											)}
-											min={1}
-											max={25}
-											valueLabelDisplay="auto"
-										/>
-									)}
+									fieldLabel={t("pages.createMonitor.form.incidents.option.checks.label")}
+									min={1}
+									max={25}
+									valueLabelDisplay="auto"
 								/>
-								<Controller
+								<FormSliderField
 									name="statusWindowThreshold"
-									control={control}
-									render={({ field }) => (
-										<SliderWithLabel
-											{...field}
-											sliderMaxWidth={{ xs: "100%", md: "50%" }}
-											fieldLabel={t(
-												"pages.createMonitor.form.incidents.option.percentage.label"
-											)}
-											min={1}
-											max={100}
-											valueLabelDisplay="auto"
-										/>
+									fieldLabel={t(
+										"pages.createMonitor.form.incidents.option.percentage.label"
 									)}
+									min={1}
+									max={100}
+									valueLabelDisplay="auto"
 								/>
 							</Stack>
 						}
