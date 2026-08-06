@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { logger } from "@/Utils/logger";
 import { ALL_HTTP_STATUS_CODES } from "@/Utils/statusCode";
 import { useParams, useLocation, useNavigate } from "react-router";
-import { useForm, Controller, FormProvider } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTheme } from "@mui/material";
 import Stack from "@mui/material/Stack";
@@ -20,8 +20,8 @@ import {
 	ConfigBox,
 	StepProgress,
 } from "@/Components/design-elements";
-import { Button, SwitchComponent as Switch, Dialog } from "@/Components/inputs";
-import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
+import { Button, Dialog } from "@/Components/inputs";
+import { LAYOUT } from "@/Utils/Theme/constants";
 import { useGet, usePost, usePatch, useDelete } from "@/Hooks/UseApi";
 import { useMonitorForm, getMonitorDefaults } from "@/Hooks/useMonitorForm";
 import {
@@ -55,6 +55,7 @@ import { FormRadioGroup } from "@/Components/inputs/forms/FormRadioGroupField";
 import { FormMultiSelectField } from "@/Components/inputs/forms/FormMultiSelectField";
 import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
 import { FormSliderField } from "@/Components/inputs/forms/FormSliderField";
+import { FormSwitchField } from "@/Components/inputs/forms/FormSwitchField";
 
 interface GeneralSettingsConfig {
 	urlLabel: string;
@@ -262,7 +263,7 @@ const CreateMonitorPage = () => {
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
-	const { control, watch, handleSubmit, clearErrors, trigger, reset, setValue } = form;
+	const { watch, handleSubmit, clearErrors, trigger, reset, setValue } = form;
 
 	useEffect(() => {
 		reset(defaults);
@@ -701,24 +702,9 @@ const CreateMonitorPage = () => {
 							title={t("pages.createMonitor.form.ignoreTls.title")}
 							subtitle={t("pages.createMonitor.form.ignoreTls.description")}
 							rightContent={
-								<Controller
+								<FormSwitchField
 									name="ignoreTlsErrors"
-									control={control}
-									render={({ field }) => (
-										<Stack
-											direction="row"
-											alignItems="center"
-											spacing={theme.spacing(SPACING.LG)}
-										>
-											<Switch
-												checked={field.value ?? false}
-												onChange={(e) => field.onChange(e.target.checked)}
-											/>
-											<Typography>
-												{t("pages.createMonitor.form.ignoreTls.option.tls.label")}
-											</Typography>
-										</Stack>
-									)}
+									label={t("pages.createMonitor.form.ignoreTls.option.tls.label")}
 								/>
 							}
 						/>
@@ -770,25 +756,10 @@ const CreateMonitorPage = () => {
 								/>
 
 								{watchedMethod !== "HEAD" && (
-									<Controller
+									<FormSwitchField
 										name="useAdvancedMatching"
-										control={control}
-										render={({ field }) => (
-											<Stack
-												direction="row"
-												alignItems="center"
-												spacing={theme.spacing(SPACING.LG)}
-											>
-												<Switch
-													checked={field.value ?? false}
-													onChange={(e) => field.onChange(e.target.checked)}
-												/>
-												<Typography>
-													{t(
-														"pages.createMonitor.form.advanced.option.advancedMatching.label"
-													)}
-												</Typography>
-											</Stack>
+										label={t(
+											"pages.createMonitor.form.advanced.option.advancedMatching.label"
 										)}
 									/>
 								)}
@@ -853,24 +824,9 @@ const CreateMonitorPage = () => {
 						subtitle={t("pages.createMonitor.form.geoChecks.description")}
 						rightContent={
 							<Stack spacing={theme.spacing(LAYOUT.MD)}>
-								<Controller
+								<FormSwitchField
 									name="geoCheckEnabled"
-									control={control}
-									render={({ field }) => (
-										<Stack
-											direction="row"
-											alignItems="center"
-											spacing={theme.spacing(SPACING.LG)}
-										>
-											<Switch
-												checked={field.value ?? false}
-												onChange={(e) => field.onChange(e.target.checked)}
-											/>
-											<Typography>
-												{t("pages.createMonitor.form.geoChecks.option.enabled.label")}
-											</Typography>
-										</Stack>
-									)}
+									label={t("pages.createMonitor.form.geoChecks.option.enabled.label")}
 								/>
 								{watchGeoCheckEnabled && (
 									<Stack spacing={theme.spacing(LAYOUT.MD)}>
