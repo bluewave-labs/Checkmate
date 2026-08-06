@@ -8,10 +8,23 @@ interface UseNotificationFormOptions {
 }
 
 function buildDefaults(data: Notification | null): NotificationFormData {
+	// Every channel field defaults to "" (not undefined) so untouched required
+	// fields fail zod with their custom messages instead of a type error.
+	const base = {
+		notificationName: data?.notificationName || "",
+		address: "",
+		accessToken: "",
+		accountSid: "",
+		phone: "",
+		twilioPhoneNumber: "",
+		homeserverUrl: "",
+		roomId: "",
+		topic: "",
+	};
 	if (data?.type === "matrix") {
 		return {
+			...base,
 			type: "matrix",
-			notificationName: data.notificationName || "",
 			homeserverUrl: data.homeserverUrl || "",
 			roomId: data.roomId || "",
 			accessToken: data.accessToken || "",
@@ -19,51 +32,51 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 	}
 	if (data?.type === "telegram") {
 		return {
+			...base,
 			type: "telegram",
-			notificationName: data.notificationName || "",
 			address: data.address || "",
 			accessToken: data.accessToken || "",
 		};
 	}
 	if (data?.type === "slack") {
 		return {
+			...base,
 			type: "slack",
-			notificationName: data.notificationName || "",
 			address: data.address || "",
 		};
 	}
 	if (data?.type === "discord") {
 		return {
+			...base,
 			type: "discord",
-			notificationName: data.notificationName || "",
 			address: data.address || "",
 		};
 	}
 	if (data?.type === "webhook") {
 		return {
+			...base,
 			type: "webhook",
-			notificationName: data.notificationName || "",
 			address: data.address || "",
 		};
 	}
 	if (data?.type === "pager_duty") {
 		return {
+			...base,
 			type: "pager_duty",
-			notificationName: data.notificationName || "",
 			address: data.address || "",
 		};
 	}
 	if (data?.type === "teams") {
 		return {
+			...base,
 			type: "teams",
-			notificationName: data.notificationName || "",
 			address: data.address || "",
 		};
 	}
 	if (data?.type === "twilio") {
 		return {
+			...base,
 			type: "twilio",
-			notificationName: data.notificationName || "",
 			accountSid: data.accountSid || "",
 			accessToken: data.accessToken || "",
 			phone: data.phone || "",
@@ -72,24 +85,24 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 	}
 	if (data?.type === "pushover") {
 		return {
+			...base,
 			type: "pushover",
-			notificationName: data.notificationName || "",
 			address: data.address || "",
 			accessToken: data.accessToken || "",
 		};
 	}
 	if (data?.type === "ntfy") {
 		return {
+			...base,
 			type: "ntfy",
-			notificationName: data.notificationName || "",
 			address: data.address || "",
 			topic: data.topic || "",
 		};
 	}
 	// Default: email (covers both data === null and data.type === "email")
 	return {
+		...base,
 		type: "email",
-		notificationName: data?.notificationName || "",
 		address: data?.address || "",
 	};
 }

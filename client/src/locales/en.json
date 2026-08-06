@@ -1164,7 +1164,20 @@
 				"type": {
 					"description": "Select the type of notification channel to create.",
 					"optionType": "Type",
-					"title": "Channel type"
+					"title": "Channel type",
+					"value": {
+						"email": "Email",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				},
 				"telegram": {
 					"title": "Telegram configuration",
