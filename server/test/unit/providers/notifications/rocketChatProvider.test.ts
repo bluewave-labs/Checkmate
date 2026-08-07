@@ -201,6 +201,24 @@ describe("RocketChatProvider", () => {
 		]);
 	});
 
+	it("omits the incident field when its URL is empty", async () => {
+		const { provider } = createProvider();
+		const message = makeMessageWithIncident();
+
+		await provider.sendMessage(
+			makeNotification({ type: "rocket_chat" }),
+			makeMessage({
+				content: {
+					...message.content,
+					incident: { ...message.content.incident!, url: "" },
+				},
+			})
+		);
+
+		const fields = mockGotPost.mock.calls[0][1].json.attachments[0].fields;
+		expect(fields).not.toContainEqual(expect.objectContaining({ title: "Incident" }));
+	});
+
 	it("returns false when the message webhook URL is missing", async () => {
 		const { provider } = createProvider();
 

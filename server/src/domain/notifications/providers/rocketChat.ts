@@ -109,7 +109,7 @@ export class RocketChatProvider extends NotificationProvider {
 			});
 		}
 
-		if (message.content.incident) {
+		if (message.content.incident?.url.trim()) {
 			fields.push({
 				title: "Incident",
 				value: message.content.incident.url,
