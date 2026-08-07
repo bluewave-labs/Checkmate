@@ -133,7 +133,6 @@ const CreateMaintenanceWindowPage = () => {
 									value: option.id,
 									label: option.name,
 								}))}
-								defaultValue={defaults.repeat}
 							/>
 						</Stack>
 					}
@@ -180,7 +179,6 @@ const CreateMaintenanceWindowPage = () => {
 								<FormSelectField
 									name="durationUnit"
 									fieldLabel={" "}
-									defaultValue={defaults.durationUnit}
 									options={durationUnitOptions.map((option) => ({
 										value: option.id,
 										label: option.name,
