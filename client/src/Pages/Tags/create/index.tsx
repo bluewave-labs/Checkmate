@@ -1,5 +1,5 @@
 import { BasePage, ConfigBox } from "@/Components/design-elements";
-import { TextField, Button, ColorInput } from "@/Components/inputs";
+import { Button } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
 
@@ -36,7 +36,7 @@ const TagsCreatePage = () => {
 		defaultValues: defaults,
 	});
 
-	const { control, reset, handleSubmit } = form;
+	const { reset, handleSubmit } = form;
 
 	useEffect(() => {
 		reset(defaults);
