@@ -1,6 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
+import type { NotificationSeverity } from "../../../../src/domain/notifications/notification.type.ts";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
-import { makeMessage, makeMessageWithIncident, makeMessageWithThresholds, makeNotification } from "../../../helpers/notificationMessage.ts";
+import { makeMessage, makeNotification } from "../../../helpers/notificationMessage.ts";
 import { testNotificationProviderContract } from "../../../helpers/notificationProviderContract.ts";
 
 const mockGotPost = jest.fn().mockResolvedValue({});
@@ -84,7 +85,7 @@ describe("RocketChatProvider", () => {
 		);
 	});
 
-	it("sends monitor details as a text-only message", async () => {
+	it("sends a rich monitor attachment without webhook overrides", async () => {
 		const { provider } = createProvider();
 
 		const result = await provider.sendMessage(makeNotification({ type: "rocket_chat" }), makeMessage());
@@ -96,22 +97,45 @@ describe("RocketChatProvider", () => {
 				timeout: { request: 30000 },
 				retry: { limit: 0 },
 				json: {
-					text: [
-						"Monitor Down: Test Monitor",
-						'Monitor "Test Monitor" is currently down.',
-						"",
-						"Monitor: Test Monitor",
-						"Type: http",
-						"Status: down",
-						"URL: https://example.com",
-						"",
-						"Details:",
-						"- URL: https://example.com",
-						"- Status: Down",
-					].join("\n"),
+					text: 'Monitor "Test Monitor" is currently down.',
+					attachments: [
+						{
+							color: "#FF0000",
+							title: "Monitor Down: Test Monitor",
+							title_link: "https://app.example.com/infrastructure/mon-1",
+							fields: [
+								{ title: "Monitor", value: "Test Monitor", short: true },
+								{ title: "Type", value: "http", short: true },
+								{ title: "Status", value: "down", short: true },
+								{ title: "URL", value: "https://example.com", short: false },
+							],
+							ts: "2025-01-01T00:00:00.000Z",
+						},
+					],
 				},
 			})
 		);
+
+		const payload = mockGotPost.mock.calls[0][1].json;
+		expect(payload).not.toHaveProperty("alias");
+		expect(payload).not.toHaveProperty("avatar");
+		expect(payload).not.toHaveProperty("emoji");
+		expect(payload).not.toHaveProperty("channel");
+	});
+
+	it.each([
+		["critical", "#FF0000"],
+		["warning", "#FFA500"],
+		["success", "#00FF00"],
+		["info", "#0000FF"],
+		["unknown", "#808080"],
+	])("maps %s severity to %s", async (severity, color) => {
+		const { provider } = createProvider();
+
+		await provider.sendMessage(makeNotification({ type: "rocket_chat" }), makeMessage({ severity: severity as NotificationSeverity }));
+
+		const payload = mockGotPost.mock.calls[0][1].json;
+		expect(payload.attachments[0].color).toBe(color);
 	});
 
 	it("returns false when the message webhook URL is missing", async () => {
@@ -121,40 +145,6 @@ describe("RocketChatProvider", () => {
 
 		expect(result).toBe(false);
 		expect(mockGotPost).not.toHaveBeenCalled();
-	});
-
-	it("includes threshold breaches in the text", async () => {
-		const { provider } = createProvider();
-
-		await provider.sendMessage(makeNotification({ type: "rocket_chat" }), makeMessageWithThresholds());
-
-		const payload = mockGotPost.mock.calls[0][1].json;
-		expect(payload.text).toContain("Thresholds:\n- CPU: 90.0% (threshold: 80%)\n- MEMORY: 85.0% (threshold: 70%)");
-	});
-
-	it("includes a monitor-scoped link when incident data is present", async () => {
-		const { provider } = createProvider();
-
-		await provider.sendMessage(makeNotification({ type: "rocket_chat" }), makeMessageWithIncident());
-
-		const payload = mockGotPost.mock.calls[0][1].json;
-		expect(payload.text).toContain("Incident: https://app.example.com/infrastructure/mon-1");
-	});
-
-	it("omits the incident link when incident data is absent", async () => {
-		const { provider } = createProvider();
-
-		await provider.sendMessage(
-			makeNotification({ type: "rocket_chat" }),
-			makeMessage({
-				type: "monitor_up",
-				severity: "success",
-				monitor: { id: "mon-1", name: "Test Monitor", url: "https://example.com", type: "http", status: "up" },
-			})
-		);
-
-		const payload = mockGotPost.mock.calls[0][1].json;
-		expect(payload.text).not.toContain("Incident:");
 	});
 
 	it("returns false and logs when message delivery fails", async () => {
