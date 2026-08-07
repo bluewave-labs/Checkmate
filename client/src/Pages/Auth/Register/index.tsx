@@ -1,7 +1,7 @@
 import { BaseAuthPage } from "@/Components/design-elements";
-import { Button, TextField } from "@/Components/inputs";
+import { Button } from "@/Components/inputs";
 import Alert from "@mui/material/Alert";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { useRegisterForm } from "@/Hooks/useRegisterForm";
 import type { RegisterFormData } from "@/Validation/register";
@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import type { AuthResponse } from "@/Types/User";
 import { useEffect, useRef, useState } from "react";
+import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 
 interface RegisterPayload {
 	user: Omit<RegisterFormData, "confirm">;
@@ -45,10 +46,11 @@ const RegisterPage = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	const { control, handleSubmit, setError, reset } = useForm<RegisterFormData>({
+	const form = useForm<RegisterFormData>({
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
+	const { handleSubmit, setError, reset } = form;
 
 	useEffect(() => {
 		if (!token || hasVerified.current) return;
@@ -64,14 +66,14 @@ const RegisterPage = () => {
 				navigate("/register", { replace: true });
 			}
 		});
-	}, [token]);
+	}, [token, defaults, navigate, reset, verifyToken]);
 
 	if (isCheckingAdmin) return null;
 
 	const onSubmit = async (data: RegisterFormData) => {
 		if (loading) return;
 
-		const { confirm, ...userData } = data;
+		const { confirm: _confirm, ...userData } = data;
 		const payload: RegisterPayload = { user: userData };
 		if (token) {
 			payload.token = token;
@@ -89,105 +91,71 @@ const RegisterPage = () => {
 	};
 
 	return (
-		<BaseAuthPage
-			component="form"
-			onSubmit={handleSubmit(onSubmit)}
-			title={t("pages.auth.register.title")}
-			subtitle={t("pages.auth.register.subtitle")}
-		>
-			{!token && (
-				<Alert
-					severity="info"
-					icon={false}
-					sx={(theme) => ({
-						fontSize: 13,
-						lineHeight: 1.55,
-						color: theme.palette.text.secondary,
-						backgroundColor: theme.palette.action.hover,
-						border: `1px solid ${theme.palette.divider}`,
-						borderRadius: 1,
-						"& .MuiAlert-message": { padding: 0 },
-					})}
-				>
-					{t("pages.auth.register.setupNotice")}
-				</Alert>
-			)}
-			<Controller
-				name="firstName"
-				control={control}
-				render={({ field, fieldState }) => (
-					<TextField
-						{...field}
-						fieldLabel={t("common.form.name.option.firstName.label")}
-						placeholder={t("common.form.name.option.firstName.placeholder")}
-						error={!!fieldState.error}
-						helperText={fieldState.error?.message ?? ""}
-					/>
-				)}
-			/>
-			<Controller
-				name="lastName"
-				control={control}
-				render={({ field, fieldState }) => (
-					<TextField
-						{...field}
-						fieldLabel={t("common.form.name.option.lastName.label")}
-						placeholder={t("common.form.name.option.lastName.placeholder")}
-						error={!!fieldState.error}
-						helperText={fieldState.error?.message ?? ""}
-					/>
-				)}
-			/>
-			<Controller
-				name="email"
-				control={control}
-				render={({ field, fieldState }) => (
-					<TextField
-						{...field}
-						disabled={!!token}
-						fieldLabel={t("common.form.email.option.email.label")}
-						placeholder={t("common.form.email.option.email.placeholder")}
-						error={!!fieldState.error}
-						helperText={fieldState.error?.message ?? ""}
-					/>
-				)}
-			/>
-			<Controller
-				name="password"
-				control={control}
-				render={({ field, fieldState }) => (
-					<TextField
-						{...field}
-						type="password"
-						fieldLabel={t("pages.auth.common.form.option.password.label")}
-						placeholder={t("pages.auth.common.form.option.password.placeholder")}
-						error={!!fieldState.error}
-						helperText={fieldState.error?.message ?? ""}
-					/>
-				)}
-			/>
-			<Controller
-				name="confirm"
-				control={control}
-				render={({ field, fieldState }) => (
-					<TextField
-						{...field}
-						type="password"
-						fieldLabel={t("pages.auth.common.form.option.confirmPassword.label")}
-						placeholder={t("pages.auth.common.form.option.password.placeholder")}
-						error={!!fieldState.error}
-						helperText={fieldState.error?.message ?? ""}
-					/>
-				)}
-			/>
-			<Button
-				variant="contained"
-				type="submit"
-				loading={loading}
+		<FormProvider {...form}>
+			<BaseAuthPage
+				component="form"
+				onSubmit={handleSubmit(onSubmit)}
+				title={t("pages.auth.register.title")}
+				subtitle={t("pages.auth.register.subtitle")}
 			>
-				{t("pages.auth.register.submit")}
-			</Button>
-		</BaseAuthPage>
+				{!token && (
+					<Alert
+						severity="info"
+						icon={false}
+						sx={(theme) => ({
+							fontSize: 13,
+							lineHeight: 1.55,
+							color: theme.palette.text.secondary,
+							backgroundColor: theme.palette.action.hover,
+							border: `1px solid ${theme.palette.divider}`,
+							borderRadius: 1,
+							"& .MuiAlert-message": { padding: 0 },
+						})}
+					>
+						{t("pages.auth.register.setupNotice")}
+					</Alert>
+				)}
+				<FormTextField
+					name="firstName"
+					fieldLabel={t("common.form.name.option.firstName.label")}
+					placeholder={t("common.form.name.option.firstName.placeholder")}
+				/>
+				<FormTextField
+					name="lastName"
+					fieldLabel={t("common.form.name.option.lastName.label")}
+					placeholder={t("common.form.name.option.lastName.placeholder")}
+				/>
+				<FormTextField
+					name="email"
+					type="email"
+					disabled={!!token}
+					fieldLabel={t("common.form.email.option.email.label")}
+					placeholder={t("common.form.email.option.email.placeholder")}
+				/>
+
+				<FormTextField
+					name="password"
+					type="password"
+					fieldLabel={t("pages.auth.common.form.option.password.label")}
+					placeholder={t("pages.auth.common.form.option.password.placeholder")}
+				/>
+
+				<FormTextField
+					name="confirm"
+					type="password"
+					fieldLabel={t("pages.auth.common.form.option.confirmPassword.label")}
+					placeholder={t("pages.auth.common.form.option.password.placeholder")}
+				/>
+
+				<Button
+					variant="contained"
+					type="submit"
+					loading={loading}
+				>
+					{t("pages.auth.register.submit")}
+				</Button>
+			</BaseAuthPage>
+		</FormProvider>
 	);
 };
 
