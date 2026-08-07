@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import type { NotificationSeverity } from "../../../../src/domain/notifications/notification.type.ts";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
-import { makeMessage, makeNotification } from "../../../helpers/notificationMessage.ts";
+import { makeMessage, makeMessageWithIncident, makeMessageWithThresholds, makeNotification } from "../../../helpers/notificationMessage.ts";
 import { testNotificationProviderContract } from "../../../helpers/notificationProviderContract.ts";
 
 const mockGotPost = jest.fn().mockResolvedValue({});
@@ -108,6 +108,11 @@ describe("RocketChatProvider", () => {
 								{ title: "Type", value: "http", short: true },
 								{ title: "Status", value: "down", short: true },
 								{ title: "URL", value: "https://example.com", short: false },
+								{
+									title: "Details",
+									value: "- URL: https://example.com\n- Status: Down",
+									short: false,
+								},
 							],
 							ts: "2025-01-01T00:00:00.000Z",
 						},
@@ -136,6 +141,64 @@ describe("RocketChatProvider", () => {
 
 		const payload = mockGotPost.mock.calls[0][1].json;
 		expect(payload.attachments[0].color).toBe(color);
+	});
+
+	it("appends threshold fields before details", async () => {
+		const { provider } = createProvider();
+
+		await provider.sendMessage(makeNotification({ type: "rocket_chat" }), makeMessageWithThresholds());
+
+		const fields = mockGotPost.mock.calls[0][1].json.attachments[0].fields;
+		expect(fields).toEqual([
+			{ title: "Monitor", value: "Infra Server", short: true },
+			{ title: "Type", value: "hardware", short: true },
+			{ title: "Status", value: "up", short: true },
+			{ title: "URL", value: "https://infra.example.com", short: false },
+			{ title: "CPU", value: "90.0% (threshold: 80%)", short: true },
+			{ title: "MEMORY", value: "85.0% (threshold: 70%)", short: true },
+			{ title: "Details", value: "- URL: https://infra.example.com", short: false },
+		]);
+	});
+
+	it("appends the incident URL after details", async () => {
+		const { provider } = createProvider();
+
+		await provider.sendMessage(makeNotification({ type: "rocket_chat" }), makeMessageWithIncident());
+
+		const fields = mockGotPost.mock.calls[0][1].json.attachments[0].fields;
+		expect(fields).toEqual([
+			{ title: "Monitor", value: "Test Monitor", short: true },
+			{ title: "Type", value: "http", short: true },
+			{ title: "Status", value: "down", short: true },
+			{ title: "URL", value: "https://example.com", short: false },
+			{ title: "Details", value: "- URL: https://example.com\n- Status: Down", short: false },
+			{ title: "Incident", value: "https://app.example.com/incidents/inc-1", short: false },
+		]);
+	});
+
+	it("omits empty optional fields", async () => {
+		const { provider } = createProvider();
+		const message = makeMessage();
+
+		await provider.sendMessage(
+			makeNotification({ type: "rocket_chat" }),
+			makeMessage({
+				content: {
+					...message.content,
+					details: [],
+					thresholds: [],
+					incident: undefined,
+				},
+			})
+		);
+
+		const fields = mockGotPost.mock.calls[0][1].json.attachments[0].fields;
+		expect(fields).toEqual([
+			{ title: "Monitor", value: "Test Monitor", short: true },
+			{ title: "Type", value: "http", short: true },
+			{ title: "Status", value: "down", short: true },
+			{ title: "URL", value: "https://example.com", short: false },
+		]);
 	});
 
 	it("returns false when the message webhook URL is missing", async () => {

@@ -84,6 +84,39 @@ export class RocketChatProvider extends NotificationProvider {
 	}
 
 	private buildPayload(message: NotificationMessage): RocketChatPayload {
+		const fields: RocketChatField[] = [
+			{ title: "Monitor", value: message.monitor.name, short: true },
+			{ title: "Type", value: message.monitor.type, short: true },
+			{ title: "Status", value: message.monitor.status, short: true },
+			{ title: "URL", value: message.monitor.url, short: false },
+		];
+
+		if (message.content.thresholds?.length) {
+			fields.push(
+				...message.content.thresholds.map((breach) => ({
+					title: breach.metric.toUpperCase(),
+					value: `${breach.formattedValue} (threshold: ${breach.threshold}${breach.unit})`,
+					short: true,
+				}))
+			);
+		}
+
+		if (message.content.details?.length) {
+			fields.push({
+				title: "Details",
+				value: message.content.details.map((detail) => `- ${detail}`).join("\n"),
+				short: false,
+			});
+		}
+
+		if (message.content.incident) {
+			fields.push({
+				title: "Incident",
+				value: message.content.incident.url,
+				short: false,
+			});
+		}
+
 		return {
 			text: message.content.summary,
 			attachments: [
@@ -91,12 +124,7 @@ export class RocketChatProvider extends NotificationProvider {
 					color: this.severityColor(message.severity),
 					title: message.content.title,
 					title_link: `${message.clientHost}/infrastructure/${message.monitor.id}`,
-					fields: [
-						{ title: "Monitor", value: message.monitor.name, short: true },
-						{ title: "Type", value: message.monitor.type, short: true },
-						{ title: "Status", value: message.monitor.status, short: true },
-						{ title: "URL", value: message.monitor.url, short: false },
-					],
+					fields,
 					ts: message.content.timestamp.toISOString(),
 				},
 			],
