@@ -361,7 +361,7 @@ export class MonitorService implements IMonitorService {
 			requestedTypes.length > 0 && requestedTypes.every((requestedType) => snapshotTypes.includes(requestedType as MonitorType));
 		const isPageSpeedOverview = requestedTypes.length > 0 && requestedTypes.every((requestedType) => requestedType === "pagespeed");
 		const pageSpeedChecksByMonitorId = isPageSpeedOverview
-			? await this.checksRepository.findSnapshotsByMonitorIdsAndDateRange(
+			? await this.checksRepository.findDailyPageSpeedSnapshotsByMonitorIdsAndDateRange(
 					monitors.map((monitor) => monitor.id),
 					"month"
 				)

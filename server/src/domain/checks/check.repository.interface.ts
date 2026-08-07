@@ -39,7 +39,7 @@ export interface IChecksRepository {
 		dateRange: DateRange,
 		options?: { type?: MonitorType }
 	): Promise<UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult>;
-	findSnapshotsByMonitorIdsAndDateRange(monitorIds: string[], dateRange: DateRange): Promise<Record<string, CheckSnapshot[]>>;
+	findDailyPageSpeedSnapshotsByMonitorIdsAndDateRange(monitorIds: string[], dateRange: DateRange): Promise<Record<string, CheckSnapshot[]>>;
 	findSummaryByTeamId(teamId: string, dateRange: DateRange): Promise<ChecksSummary>;
 	findUnevaluatedByMonitorId(monitorId: string, since: number): Promise<Check[]>;
 	// update

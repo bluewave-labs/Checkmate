@@ -303,7 +303,10 @@ class MongoChecksRepository implements IChecksRepository {
 		return this.findUptimeDateRangeChecks(options?.type ?? "http", monitorObjectId, start, end, dateString);
 	};
 
-	findSnapshotsByMonitorIdsAndDateRange = async (monitorIds: string[], dateRange: DateRange): Promise<Record<string, CheckSnapshot[]>> => {
+	findDailyPageSpeedSnapshotsByMonitorIdsAndDateRange = async (
+		monitorIds: string[],
+		dateRange: DateRange
+	): Promise<Record<string, CheckSnapshot[]>> => {
 		if (monitorIds.length === 0) {
 			return {};
 		}
@@ -330,10 +333,10 @@ class MongoChecksRepository implements IChecksRepository {
 						monitorId: "$metadata.monitorId",
 						bucketDate: { $dateToString: { format: dateString, date: "$createdAt" } },
 					},
-					performance: { $avg: { $ifNull: ["$performance", 0] } },
-					accessibility: { $avg: { $ifNull: ["$accessibility", 0] } },
-					bestPractices: { $avg: { $ifNull: ["$bestPractices", 0] } },
-					seo: { $avg: { $ifNull: ["$seo", 0] } },
+					performance: { $avg: "$performance" },
+					accessibility: { $avg: "$accessibility" },
+					bestPractices: { $avg: "$bestPractices" },
+					seo: { $avg: "$seo" },
 				},
 			},
 			{ $sort: { "_id.monitorId": 1, "_id.bucketDate": 1 } },

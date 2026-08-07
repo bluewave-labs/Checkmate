@@ -134,6 +134,12 @@ describe("MongoChecksRepository groupedChecks facet", () => {
 				metadata: { monitorId: pageSpeedMonitorId, teamId: TEAM_ID, type: "pagespeed" },
 				status: true,
 				responseTime: 100,
+				createdAt: new Date(earlyDay.getTime() + 2 * 60 * 60 * 1000),
+			},
+			{
+				metadata: { monitorId: pageSpeedMonitorId, teamId: TEAM_ID, type: "pagespeed" },
+				status: true,
+				responseTime: 100,
 				createdAt: laterDay,
 				performance: 90,
 				accessibility: 90,
@@ -152,7 +158,7 @@ describe("MongoChecksRepository groupedChecks facet", () => {
 			},
 		]);
 
-		const snapshots = await repo.findSnapshotsByMonitorIdsAndDateRange([pageSpeedMonitorId.toString()], "month");
+		const snapshots = await repo.findDailyPageSpeedSnapshotsByMonitorIdsAndDateRange([pageSpeedMonitorId.toString()], "month");
 		const toBucketDate = (date: Date) => `${date.toISOString().slice(0, 10)}T00:00:00Z`;
 
 		expect(snapshots).toEqual({

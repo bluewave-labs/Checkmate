@@ -29,7 +29,7 @@ const createMonitorsRepositoryMock = () =>
 const createChecksRepositoryMock = () =>
 	({
 		findByDateRangeAndMonitorId: jest.fn(),
-		findSnapshotsByMonitorIdsAndDateRange: jest.fn(),
+		findDailyPageSpeedSnapshotsByMonitorIdsAndDateRange: jest.fn(),
 		deleteByMonitorId: jest.fn(),
 	}) as unknown as IChecksRepository;
 
@@ -597,14 +597,14 @@ describe("MonitorService", () => {
 					recentChecks: [],
 				}),
 			]);
-			(checksRepository.findSnapshotsByMonitorIdsAndDateRange as jest.Mock).mockResolvedValue({
+			(checksRepository.findDailyPageSpeedSnapshotsByMonitorIdsAndDateRange as jest.Mock).mockResolvedValue({
 				[MONITOR_ID]: monthHistory,
 			});
 
 			const { service } = createService({ monitorsRepository, checksRepository });
 			const result = await service.getMonitorsWithChecksByTeamId({ teamId: TEAM_ID, type: "pagespeed" });
 
-			expect(checksRepository.findSnapshotsByMonitorIdsAndDateRange).toHaveBeenCalledWith([MONITOR_ID], "month");
+			expect(checksRepository.findDailyPageSpeedSnapshotsByMonitorIdsAndDateRange).toHaveBeenCalledWith([MONITOR_ID], "month");
 			expect(result.monitors[0].recentChecks).toEqual(monthHistory);
 		});
 
