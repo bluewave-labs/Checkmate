@@ -6,6 +6,7 @@ import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
 import { FieldLabel } from "./FieldLabel";
 import { ChevronDown } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type AutoCompleteInputProps = Omit<
 	AutocompleteProps<any, boolean, boolean, boolean>,
@@ -31,12 +32,13 @@ export const AutoCompleteInput = ({
 	...props
 }: AutoCompleteInputProps) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 	const multiple = props.multiple;
 	const { renderOption: customRenderOption, ...autocompleteProps } = props;
 	const defaultRenderInput = (params: any) => (
 		<TextField
 			{...params}
-			placeholder={placeholder ?? "Type to search"}
+			placeholder={placeholder ?? t("common.form.autocomplete.placeholder")}
 			error={error}
 			helperText={helperText}
 		/>

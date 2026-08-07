@@ -127,7 +127,6 @@ const RegisterPage = () => {
 				/>
 				<FormTextField
 					name="email"
-					type="email"
 					disabled={!!token}
 					fieldLabel={t("common.form.email.option.email.label")}
 					placeholder={t("common.form.email.option.email.placeholder")}

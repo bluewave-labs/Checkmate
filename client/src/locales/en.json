@@ -61,7 +61,7 @@
 			"importFromJSON": "Import from JSON",
 			"clearFilters": "Clear filters",
 			"removeUser": "Remove user",
-			"remove": "Remove"
+			"removeItem": "Remove {{item}}"
 		},
 		"charts": {
 			"labels": {
@@ -105,6 +105,9 @@
 			"responseTime": "Response time"
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "Type to search"
+			},
 			"role": {
 				"option": {
 					"role": {

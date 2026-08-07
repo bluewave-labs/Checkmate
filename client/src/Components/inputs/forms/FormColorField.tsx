@@ -20,12 +20,14 @@ export const FormColorField = <T extends FieldValues>({
 		<Controller
 			name={name}
 			control={control}
-			render={({ field }) => (
+			render={({ field, fieldState }) => (
 				<ColorInput
 					format="hex"
 					value={field.value}
 					onChange={field.onChange}
 					fieldLabel={fieldLabel}
+					error={!!fieldState.error}
+					helperText={fieldState.error?.message ?? ""}
 				/>
 			)}
 		/>

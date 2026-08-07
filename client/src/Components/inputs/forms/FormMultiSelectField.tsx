@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
 	Controller,
 	useFormContext,
@@ -25,6 +26,7 @@ interface FormMultiSelectFieldProps<T extends FieldValues, O extends MultiSelect
 	name: FieldPath<T>;
 	options: O[];
 	fieldLabel?: string;
+	placeholder?: string;
 	description?: string;
 	renderRow?: (option: O) => React.ReactNode;
 	renderOptionContent?: (option: O) => React.ReactNode;
@@ -35,6 +37,7 @@ export const FormMultiSelectField = <T extends FieldValues, O extends MultiSelec
 	name,
 	options,
 	fieldLabel,
+	placeholder,
 	description,
 	renderRow,
 	renderOptionContent,
@@ -43,6 +46,10 @@ export const FormMultiSelectField = <T extends FieldValues, O extends MultiSelec
 	const { control } = useFormContext<T>();
 	const theme = useTheme();
 	const { t } = useTranslation();
+	const optionsById = useMemo(
+		() => new Map<O["id"], O>(options.map((o) => [o.id, o])),
+		[options]
+	);
 	return (
 		<Controller
 			name={name}
@@ -50,15 +57,19 @@ export const FormMultiSelectField = <T extends FieldValues, O extends MultiSelec
 			render={({ field, fieldState }) => {
 				const selectedIds: O["id"][] = field.value ?? [];
 				const selected = selectedIds
-					.map((id) => options.find((o) => o.id === id))
+					.map((id) => optionsById.get(id))
 					.filter((o): o is O => o !== undefined);
 
+				// Drag indexes refer to the rendered (resolved) list, not the raw id
+				// array — ids missing from options are filtered out above, so reorder
+				// the rendered ids and re-append unresolved ids at the end.
 				const handleDragEnd = (result: DropResult) => {
 					if (!result.destination) return;
-					const reordered = Array.from(selectedIds);
-					const [removed] = reordered.splice(result.source.index, 1);
-					reordered.splice(result.destination.index, 0, removed);
-					field.onChange(reordered);
+					const reordered = selected.map((o) => o.id);
+					const [moved] = reordered.splice(result.source.index, 1);
+					reordered.splice(result.destination.index, 0, moved);
+					const unresolved = selectedIds.filter((id) => !optionsById.has(id));
+					field.onChange([...reordered, ...unresolved]);
 				};
 
 				const rowContent = (option: O) =>
@@ -74,7 +85,7 @@ export const FormMultiSelectField = <T extends FieldValues, O extends MultiSelec
 						onClick={() => {
 							field.onChange(selectedIds.filter((id) => id !== option.id));
 						}}
-						aria-label={t("common.buttons.remove")}
+						aria-label={t("common.buttons.removeItem", { item: option.name })}
 					>
 						<Trash2 size={16} />
 					</IconButton>
@@ -93,6 +104,7 @@ export const FormMultiSelectField = <T extends FieldValues, O extends MultiSelec
 								field.onChange(newValue.map((o) => o.id));
 							}}
 							fieldLabel={fieldLabel}
+							placeholder={placeholder}
 							renderOptionContent={renderOptionContent}
 							error={!!fieldState.error}
 							helperText={fieldState.error?.message ?? ""}

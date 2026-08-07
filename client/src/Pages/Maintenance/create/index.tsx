@@ -20,8 +20,10 @@ import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
-import { FormDatePickerField } from "@/Components/inputs/forms/FormDatePickerField";
-import { FormTimePickerField } from "@/Components/inputs/forms/FormTimePickerField";
+import {
+	FormDatePickerField,
+	FormTimePickerField,
+} from "@/Components/inputs/forms/FormDateTimePickerField";
 import { FormMultiSelectField } from "@/Components/inputs/forms/FormMultiSelectField";
 import { FormNumberField } from "@/Components/inputs/forms/FormNumberField";
 

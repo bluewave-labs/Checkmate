@@ -572,7 +572,7 @@ const CreateMonitorPage = () => {
 				)}
 
 				{/* Alert Thresholds - only for hardware type */}
-				{generalSettingsConfig.showSecret && showStep(1) && (
+				{watchedType === "hardware" && showStep(1) && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.thresholds.title")}
 						subtitle={t("pages.createMonitor.form.thresholds.description")}

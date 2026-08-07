@@ -41,6 +41,7 @@ import { CHECK_TTL_SENTINEL } from "@/Types/Check";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 import { FormSliderField } from "@/Components/inputs/forms/FormSliderField";
 import { FormSwitchField } from "@/Components/inputs/forms/FormSwitchField";
+import { FormNumberField } from "@/Components/inputs/forms/FormNumberField";
 
 interface Timezone {
 	id: string;
@@ -596,7 +597,7 @@ export const SettingsPage = () => {
 								/>
 
 								{/* Email Port */}
-								<FormTextField
+								<FormNumberField
 									name="systemEmailPort"
 									fieldLabel={t("pages.settings.form.email.option.port.label")}
 									placeholder={t("pages.settings.form.email.option.port.placeholder")}

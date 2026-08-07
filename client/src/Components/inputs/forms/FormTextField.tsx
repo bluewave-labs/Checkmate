@@ -9,9 +9,10 @@ import { TextField } from "@/Components/inputs";
 
 interface FormTextFieldProps<T extends FieldValues> extends Omit<
 	React.ComponentProps<typeof TextField>,
-	"name" | "error"
+	"name" | "error" | "helperText"
 > {
 	name: FieldPath<T>;
+	helperText?: string;
 }
 
 export const FormTextField = <T extends FieldValues>({
@@ -27,11 +28,11 @@ export const FormTextField = <T extends FieldValues>({
 				<TextField
 					{...field}
 					type="text"
+					{...rest}
 					value={field.value ?? ""}
 					error={!!fieldState.error}
 					helperText={fieldState.error?.message ?? rest.helperText ?? ""}
 					fullWidth
-					{...rest}
 				/>
 			)}
 		/>

@@ -62,7 +62,6 @@ const LoginPage = () => {
 			>
 				<FormTextField
 					name="email"
-					type="email"
 					fieldLabel={t("pages.auth.common.form.option.email.label")}
 					placeholder={t("pages.auth.common.form.option.email.placeholder")}
 				/>

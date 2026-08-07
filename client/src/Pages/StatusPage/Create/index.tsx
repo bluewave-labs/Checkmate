@@ -311,6 +311,9 @@ const CreateStatusPage = () => {
 								sortable
 								name="monitors"
 								fieldLabel={t("pages.statusPages.form.monitors.option.monitors.label")}
+								placeholder={t(
+									"pages.statusPages.form.monitors.option.monitors.placeholder"
+								)}
 								options={monitors}
 								renderRow={(monitor) => (
 									<Typography flexGrow={1}>
