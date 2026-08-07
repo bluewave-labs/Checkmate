@@ -6,7 +6,7 @@ import { useTheme } from "@mui/material/styles";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { Controller, useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { mutate } from "swr";
 import { useGet, usePost, usePatch } from "@/Hooks/UseApi";
@@ -14,6 +14,8 @@ import type { TagFormData } from "@/Validation/tag";
 import type { Tag } from "@/Types/Tag";
 import { useTranslation } from "react-i18next";
 import { useTagsForm } from "@/Hooks/useTagsForm";
+import { FormTextField } from "@/Components/inputs/forms/FormTextField";
+import { FormColorField } from "@/Components/inputs/forms/FormColorField";
 
 const TagsCreatePage = () => {
 	const { t } = useTranslation();
@@ -51,67 +53,49 @@ const TagsCreatePage = () => {
 	};
 
 	return (
-		<BasePage
-			component="form"
-			onSubmit={handleSubmit(onSubmit)}
-		>
-			<ConfigBox
-				title={t("pages.tags.form.name.title")}
-				subtitle={t("pages.tags.form.name.description")}
-				rightContent={
-					<Controller
-						name="name"
-						control={control}
-						defaultValue={defaults.name}
-						render={({ field, fieldState }) => (
-							<TextField
-								{...field}
-								type="text"
-								fieldLabel={t("pages.tags.form.name.optionName")}
-								placeholder={t("pages.tags.form.name.placeholder")}
-								fullWidth
-								error={!!fieldState.error}
-								helperText={fieldState.error?.message ?? ""}
-							/>
-						)}
-					/>
-				}
-			/>
-			<ConfigBox
-				title={t("pages.tags.form.color.title")}
-				subtitle={t("pages.tags.form.color.description")}
-				rightContent={
-					<Controller
-						name="color"
-						control={control}
-						defaultValue={defaults.color}
-						render={({ field }) => (
-							<ColorInput
-								format="hex"
-								value={field.value}
-								onChange={field.onChange}
-								fieldLabel={t("pages.tags.form.color.optionName")}
-							/>
-						)}
-					/>
-				}
-			/>
-
-			<Stack
-				direction="row"
-				justifyContent="flex-end"
-				spacing={theme.spacing(2)}
+		<FormProvider {...form}>
+			<BasePage
+				component="form"
+				onSubmit={handleSubmit(onSubmit)}
 			>
-				<Button
-					loading={isSubmitting || isPatching}
-					type="submit"
-					variant="contained"
-					color="primary"
+				<ConfigBox
+					title={t("pages.tags.form.name.title")}
+					subtitle={t("pages.tags.form.name.description")}
+					rightContent={
+						<FormTextField
+							name="name"
+							fieldLabel={t("pages.tags.form.name.optionName")}
+							placeholder={t("pages.tags.form.name.placeholder")}
+						/>
+					}
+				/>
+				<ConfigBox
+					title={t("pages.tags.form.color.title")}
+					subtitle={t("pages.tags.form.color.description")}
+					rightContent={
+						<FormColorField
+							name="color"
+							fieldLabel={t("pages.tags.form.color.optionName")}
+						/>
+					}
+				/>
+
+				<Stack
+					direction="row"
+					justifyContent="flex-end"
+					spacing={theme.spacing(2)}
 				>
-					{t("common.buttons.save")}
-				</Button>
-			</Stack>
-		</BasePage>
+					<Button
+						loading={isSubmitting || isPatching}
+						type="submit"
+						variant="contained"
+						color="primary"
+					>
+						{t("common.buttons.save")}
+					</Button>
+				</Stack>
+			</BasePage>
+		</FormProvider>
 	);
 };
 
