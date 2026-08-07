@@ -1,16 +1,16 @@
 import { Stack } from "@mui/material";
-import MenuItem from "@mui/material/MenuItem";
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useForm, FormProvider, useController } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
-import { Dialog, Select } from "@/Components/inputs";
+import { Dialog } from "@/Components/inputs";
 import { useAddTeamMemberForm } from "@/Hooks/useAddTeamMemberForm";
 import type { AddTeamMemberFormData } from "@/Validation/addTeamMember";
-import type { UserRole, User } from "@/Types/User";
+import type { User } from "@/Types/User";
 import { usePost } from "@/Hooks/UseApi";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
+import { RoleSelectField } from "./RoleSelectField";
 
 interface AddTeamMemberDialogProps {
 	open: boolean;
@@ -25,36 +25,6 @@ interface RegisterPayload {
 	password: string;
 	role: string[];
 }
-
-const RoleSelectField = () => {
-	const { t } = useTranslation();
-	const { field } = useController<AddTeamMemberFormData, "role">({ name: "role" });
-
-	const roleOptions: { value: UserRole; label: string }[] = [
-		{ value: "admin", label: t("common.auth.roles.admin") },
-		{ value: "user", label: t("common.auth.roles.user") },
-		{ value: "demo", label: t("common.auth.roles.demo") },
-	];
-
-	return (
-		<Select
-			{...field}
-			value={field.value[0] ?? "user"}
-			onChange={(e) => field.onChange([e.target.value])}
-			fieldLabel={t("common.form.role.option.role.label")}
-			fullWidth
-		>
-			{roleOptions.map((option) => (
-				<MenuItem
-					key={option.value}
-					value={option.value}
-				>
-					{option.label}
-				</MenuItem>
-			))}
-		</Select>
-	);
-};
 
 export const AddTeamMemberDialog = ({
 	open,
@@ -82,7 +52,7 @@ export const AddTeamMemberDialog = ({
 	const onSubmit = async (data: AddTeamMemberFormData) => {
 		if (loading) return;
 
-		const { confirm, ...userData } = data;
+		const { confirm: _confirm, ...userData } = data;
 		const payload: RegisterPayload = userData;
 
 		const result = await post("/auth/users", payload);
