@@ -29,6 +29,7 @@ const createMonitorsRepositoryMock = () =>
 const createChecksRepositoryMock = () =>
 	({
 		findByDateRangeAndMonitorId: jest.fn(),
+		findSnapshotsByMonitorIdsAndDateRange: jest.fn(),
 		deleteByMonitorId: jest.fn(),
 	}) as unknown as IChecksRepository;
 
@@ -568,6 +569,43 @@ describe("MonitorService", () => {
 			expect(result.summary).toMatchObject({ totalMonitors: 1 });
 			expect(result.count).toBe(1);
 			expect(result.monitors).toHaveLength(1);
+		});
+
+		it("loads a month of history for pagespeed overview monitors", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			const monthHistory = [
+				{
+					id: "check-from-last-month",
+					status: true,
+					responseTime: 100,
+					statusCode: 200,
+					message: "OK",
+					createdAt: "2026-07-10T12:00:00.000Z",
+					accessibility: 90,
+					bestPractices: 80,
+					performance: 70,
+					seo: 95,
+				},
+			];
+
+			(monitorsRepository.findMonitorsSummaryByTeamId as jest.Mock).mockResolvedValue({ totalMonitors: 1 });
+			(monitorsRepository.findMonitorCountByTeamIdAndType as jest.Mock).mockResolvedValue(1);
+			(monitorsRepository.findByTeamIdWithStats as jest.Mock).mockResolvedValue([
+				makeMonitor({
+					type: "pagespeed",
+					recentChecks: [],
+				}),
+			]);
+			(checksRepository.findSnapshotsByMonitorIdsAndDateRange as jest.Mock).mockResolvedValue({
+				[MONITOR_ID]: monthHistory,
+			});
+
+			const { service } = createService({ monitorsRepository, checksRepository });
+			const result = await service.getMonitorsWithChecksByTeamId({ teamId: TEAM_ID, type: "pagespeed" });
+
+			expect(checksRepository.findSnapshotsByMonitorIdsAndDateRange).toHaveBeenCalledWith([MONITOR_ID], "month");
+			expect(result.monitors[0].recentChecks).toEqual(monthHistory);
 		});
 
 		it("returns null summary when repository returns null", async () => {

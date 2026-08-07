@@ -359,11 +359,23 @@ export class MonitorService implements IMonitorService {
 		const requestedTypes = Array.isArray(type) ? type : type ? [type] : [];
 		const snapshotOnlyRequest =
 			requestedTypes.length > 0 && requestedTypes.every((requestedType) => snapshotTypes.includes(requestedType as MonitorType));
+		const isPageSpeedOverview = requestedTypes.length > 0 && requestedTypes.every((requestedType) => requestedType === "pagespeed");
+		const pageSpeedChecksByMonitorId = isPageSpeedOverview
+			? await this.checksRepository.findSnapshotsByMonitorIdsAndDateRange(
+					monitors.map((monitor) => monitor.id),
+					"month"
+				)
+			: {};
 
 		const monitorsWithChecks = monitors.map((monitor: Monitor) => {
 			const rawChecks = monitor.recentChecks ?? [];
 			const isSnapshotType = snapshotOnlyRequest || snapshotTypes.includes(monitor.type);
-			const checks = isSnapshotType ? rawChecks.slice(-1) : rawChecks;
+			const checks =
+				isPageSpeedOverview && monitor.type === "pagespeed"
+					? (pageSpeedChecksByMonitorId[monitor.id] ?? [])
+					: isSnapshotType
+						? rawChecks.slice(-1)
+						: rawChecks;
 			monitor.recentChecks = checks;
 			return monitor;
 		});

@@ -100,4 +100,75 @@ describe("MongoChecksRepository groupedChecks facet", () => {
 			avgDownload: 0,
 		});
 	});
+
+	it("returns ordered daily Pagespeed snapshots for the requested monitors", async () => {
+		const pageSpeedMonitorId = new mongoose.Types.ObjectId();
+		const otherMonitorId = new mongoose.Types.ObjectId();
+		const earlyDay = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
+		earlyDay.setUTCHours(10, 0, 0, 0);
+		const laterDay = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
+		laterDay.setUTCHours(10, 0, 0, 0);
+
+		await CheckModel.create([
+			{
+				metadata: { monitorId: pageSpeedMonitorId, teamId: TEAM_ID, type: "pagespeed" },
+				status: true,
+				responseTime: 100,
+				createdAt: earlyDay,
+				performance: 40,
+				accessibility: 60,
+				bestPractices: 80,
+				seo: 100,
+			},
+			{
+				metadata: { monitorId: pageSpeedMonitorId, teamId: TEAM_ID, type: "pagespeed" },
+				status: true,
+				responseTime: 100,
+				createdAt: new Date(earlyDay.getTime() + 60 * 60 * 1000),
+				performance: 60,
+				accessibility: 80,
+				bestPractices: 100,
+				seo: 80,
+			},
+			{
+				metadata: { monitorId: pageSpeedMonitorId, teamId: TEAM_ID, type: "pagespeed" },
+				status: true,
+				responseTime: 100,
+				createdAt: laterDay,
+				performance: 90,
+				accessibility: 90,
+				bestPractices: 90,
+				seo: 90,
+			},
+			{
+				metadata: { monitorId: otherMonitorId, teamId: TEAM_ID, type: "pagespeed" },
+				status: true,
+				responseTime: 100,
+				createdAt: laterDay,
+				performance: 10,
+				accessibility: 10,
+				bestPractices: 10,
+				seo: 10,
+			},
+		]);
+
+		const snapshots = await repo.findSnapshotsByMonitorIdsAndDateRange([pageSpeedMonitorId.toString()], "month");
+		const toBucketDate = (date: Date) => `${date.toISOString().slice(0, 10)}T00:00:00Z`;
+
+		expect(snapshots).toEqual({
+			[pageSpeedMonitorId.toString()]: [
+				expect.objectContaining({
+					createdAt: toBucketDate(earlyDay),
+					performance: 50,
+					accessibility: 70,
+					bestPractices: 90,
+					seo: 90,
+				}),
+				expect.objectContaining({
+					createdAt: toBucketDate(laterDay),
+					performance: 90,
+				}),
+			],
+		});
+	});
 });

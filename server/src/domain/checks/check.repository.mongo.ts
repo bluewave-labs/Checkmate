@@ -10,6 +10,7 @@ import type {
 	CheckMemoryInfo,
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
+	CheckSnapshot,
 	GotTimings,
 	HardwareCheckStats,
 } from "@/domain/checks/check.type.js";
@@ -300,6 +301,72 @@ class MongoChecksRepository implements IChecksRepository {
 			return this.findPageSpeedDateRangeChecks(monitorObjectId, start, end, dateString);
 		}
 		return this.findUptimeDateRangeChecks(options?.type ?? "http", monitorObjectId, start, end, dateString);
+	};
+
+	findSnapshotsByMonitorIdsAndDateRange = async (monitorIds: string[], dateRange: DateRange): Promise<Record<string, CheckSnapshot[]>> => {
+		if (monitorIds.length === 0) {
+			return {};
+		}
+
+		const dateString = getDateFormat(dateRange);
+		const rows = await CheckModel.aggregate<{
+			monitorId: mongoose.Types.ObjectId;
+			bucketDate: string;
+			performance: number;
+			accessibility: number;
+			bestPractices: number;
+			seo: number;
+		}>([
+			{
+				$match: {
+					"metadata.monitorId": { $in: monitorIds.map((monitorId) => new mongoose.Types.ObjectId(monitorId)) },
+					"metadata.type": "pagespeed",
+					createdAt: { $gte: getDateForRange(dateRange) },
+				},
+			},
+			{
+				$group: {
+					_id: {
+						monitorId: "$metadata.monitorId",
+						bucketDate: { $dateToString: { format: dateString, date: "$createdAt" } },
+					},
+					performance: { $avg: { $ifNull: ["$performance", 0] } },
+					accessibility: { $avg: { $ifNull: ["$accessibility", 0] } },
+					bestPractices: { $avg: { $ifNull: ["$bestPractices", 0] } },
+					seo: { $avg: { $ifNull: ["$seo", 0] } },
+				},
+			},
+			{ $sort: { "_id.monitorId": 1, "_id.bucketDate": 1 } },
+			{
+				$project: {
+					_id: 0,
+					monitorId: "$_id.monitorId",
+					bucketDate: "$_id.bucketDate",
+					performance: 1,
+					accessibility: 1,
+					bestPractices: 1,
+					seo: 1,
+				},
+			},
+		]);
+
+		return rows.reduce<Record<string, CheckSnapshot[]>>((snapshotsByMonitorId, row) => {
+			const monitorId = toStringId(row.monitorId);
+			const snapshot: CheckSnapshot = {
+				id: row.bucketDate,
+				status: true,
+				responseTime: 0,
+				statusCode: 200,
+				message: "",
+				createdAt: row.bucketDate,
+				performance: row.performance,
+				accessibility: row.accessibility,
+				bestPractices: row.bestPractices,
+				seo: row.seo,
+			};
+			(snapshotsByMonitorId[monitorId] ??= []).push(snapshot);
+			return snapshotsByMonitorId;
+		}, {});
 	};
 
 	findSummaryByTeamId = async (teamId: string, dateRange: DateRange) => {
