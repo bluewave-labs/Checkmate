@@ -19,6 +19,7 @@ services:
       interval: 15s
       timeout: 3s
       start_period: 60s
+      start_interval: 2s
       retries: 3
     depends_on:
       mongodb:
@@ -35,6 +36,7 @@ services:
       interval: 5s
       timeout: 30s
       start_period: 0s
+      start_interval: 1s
       retries: 30
 
   caddy:
