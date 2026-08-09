@@ -1,7 +1,9 @@
 import { type IStatusPagesRepository } from "@/domain/status-pages/status-page-repository.interface.js";
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
+import { type IMaintenanceWindowsRepository } from "@/domain/maintenance-windows/maintenance-window.repository.interface.js";
 import {
+	ActiveMaintenanceInfo,
 	DEFAULT_STATUS_PAGE_THEME,
 	DEFAULT_STATUS_PAGE_THEME_MODE,
 	PublicStatusPagePayload,
@@ -9,6 +11,7 @@ import {
 } from "@/domain/status-pages/status-page.type.js";
 import { AppError } from "@/utils/AppError.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
+import { isWindowActive, getActiveWindowEnd } from "@/utils/maintenanceWindow.js";
 import { Monitor } from "@/domain/monitors/monitor.type.js";
 
 export interface IStatusPageService {
@@ -26,7 +29,8 @@ export class StatusPageService implements IStatusPageService {
 	constructor(
 		private statusPagesRepository: IStatusPagesRepository,
 		private settingsService: ISettingsService,
-		private monitorsRepository: IMonitorsRepository
+		private monitorsRepository: IMonitorsRepository,
+		private maintenanceWindowsRepository?: IMaintenanceWindowsRepository
 	) {}
 
 	private assertCustomDomainAllowed = (customDomain: string | null | undefined) => {
@@ -128,7 +132,35 @@ export class StatusPageService implements IStatusPageService {
 		const order = new Map(statusPage.monitors.map((id, i) => [id, i]));
 		const sorted = [...monitors].sort((a, b) => (order.get(a.id) ?? Number.MAX_SAFE_INTEGER) - (order.get(b.id) ?? Number.MAX_SAFE_INTEGER));
 
-		return { statusPage, monitors: sorted.map((monitor) => this.toPublicMonitor(monitor, showURL)) };
+		let activeMaintenances: ActiveMaintenanceInfo[] | undefined;
+		if (this.maintenanceWindowsRepository && statusPage.monitors.length > 0) {
+			const windows = await this.maintenanceWindowsRepository.findByMonitorIds(statusPage.monitors, statusPage.teamId);
+			const now = new Date();
+			const activeList = windows
+				.filter((win) => isWindowActive(win, now))
+				.map((win) => {
+					const activeEnd = getActiveWindowEnd(win, now) ?? new Date(win.end);
+					const affectedMonitorIds = win.monitorIds.filter((id) => statusPage.monitors.includes(id));
+					return {
+						id: win.id,
+						name: win.name,
+						start: win.start,
+						end: activeEnd.toISOString(),
+						monitorIds: affectedMonitorIds,
+					};
+				})
+				.filter((m) => m.monitorIds.length > 0);
+
+			if (activeList.length > 0) {
+				activeMaintenances = activeList;
+			}
+		}
+
+		return {
+			statusPage,
+			monitors: sorted.map((monitor) => this.toPublicMonitor(monitor, showURL)),
+			...(activeMaintenances ? { activeMaintenances } : {}),
+		};
 	};
 
 	updateStatusPage = async (id: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage> => {

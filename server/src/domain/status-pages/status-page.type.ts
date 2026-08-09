@@ -49,7 +49,16 @@ export interface StatusPage {
 export type PublicStatusPageMonitor = Pick<Monitor, "id" | "name" | "type" | "status" | "uptimePercentage" | "recentChecks"> &
 	Partial<Pick<Monitor, "url" | "port">>;
 
+export interface ActiveMaintenanceInfo {
+	id: string;
+	name: string;
+	start: string;
+	end: string;
+	monitorIds: string[];
+}
+
 export interface PublicStatusPagePayload {
 	statusPage: StatusPage;
 	monitors: PublicStatusPageMonitor[];
+	activeMaintenances?: ActiveMaintenanceInfo[];
 }

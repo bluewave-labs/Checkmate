@@ -1,10 +1,14 @@
+import type { Express } from "express";
+import "multer";
 import { describe, expect, it, jest } from "@jest/globals";
 import { StatusPageService } from "../../../src/domain/status-pages/status-page.service.ts";
 import type { IStatusPagesRepository } from "../../../src/domain/status-pages/status-page-repository.interface.ts";
 import type { ISettingsService } from "../../../src/domain/app-settings/app-settings.service.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
+import type { IMaintenanceWindowsRepository } from "../../../src/domain/maintenance-windows/maintenance-window.repository.interface.ts";
+import type { MaintenanceWindow } from "../../../src/domain/maintenance-windows/maintenance-window.type.ts";
 import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
-import type { StatusPage } from "../../../src/domain/status-pages/status-page.type.ts";
+import type { StatusPage, PublicStatusPageMonitor } from "../../../src/domain/status-pages/status-page.type.ts";
 import { DEFAULT_STATUS_PAGE_THEME, DEFAULT_STATUS_PAGE_THEME_MODE } from "../../../src/domain/status-pages/status-page.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -26,13 +30,13 @@ const makeStatusPage = (overrides?: Partial<StatusPage>): StatusPage =>
 
 const createRepo = () =>
 	({
-		create: jest.fn().mockResolvedValue(makeStatusPage()),
-		findByUrl: jest.fn().mockResolvedValue(makeStatusPage()),
-		findByCustomDomain: jest.fn().mockResolvedValue(makeStatusPage()),
-		findByTeamId: jest.fn().mockResolvedValue([makeStatusPage()]),
-		updateById: jest.fn().mockResolvedValue(makeStatusPage()),
-		deleteById: jest.fn().mockResolvedValue(makeStatusPage()),
-		removeMonitorFromStatusPages: jest.fn().mockResolvedValue(1),
+		create: jest.fn(async () => makeStatusPage()),
+		findByUrl: jest.fn(async () => makeStatusPage()),
+		findByCustomDomain: jest.fn(async () => makeStatusPage()),
+		findByTeamId: jest.fn(async () => [makeStatusPage()]),
+		updateById: jest.fn(async () => makeStatusPage()),
+		deleteById: jest.fn(async () => makeStatusPage()),
+		removeMonitorFromStatusPages: jest.fn(async () => 1),
 	}) as unknown as jest.Mocked<IStatusPagesRepository>;
 
 const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
@@ -69,20 +73,26 @@ const createSettingsService = (themesEnabled: boolean, clientHost = "http://loca
 	({
 		areStatusPageThemesEnabled: jest.fn().mockReturnValue(themesEnabled),
 		getSettings: jest.fn().mockReturnValue({ clientHost }),
-		getDBSettings: jest.fn().mockResolvedValue({ showURL }),
+		getDBSettings: jest.fn(async () => ({ showURL })),
 	}) as unknown as jest.Mocked<ISettingsService>;
+
+const createMaintenanceWindowsRepo = () =>
+	({
+		findByMonitorIds: jest.fn(async () => []),
+	}) as unknown as jest.Mocked<IMaintenanceWindowsRepository>;
 
 const createMonitorsRepo = () =>
 	({
-		findByIds: jest.fn().mockResolvedValue([makeMonitor()]),
+		findByIds: jest.fn(async () => [makeMonitor()]),
 	}) as unknown as jest.Mocked<IMonitorsRepository>;
 
 const createService = (themesEnabled = true, clientHost = "http://localhost:5173", showURL = false) => {
 	const repo = createRepo();
 	const settingsService = createSettingsService(themesEnabled, clientHost, showURL);
 	const monitorsRepo = createMonitorsRepo();
-	const service = new StatusPageService(repo, settingsService, monitorsRepo);
-	return { service, repo, settingsService, monitorsRepo };
+	const maintenanceWindowsRepo = createMaintenanceWindowsRepo();
+	const service = new StatusPageService(repo, settingsService, monitorsRepo, maintenanceWindowsRepo);
+	return { service, repo, settingsService, monitorsRepo, maintenanceWindowsRepo };
 };
 
 // ── Tests ────────────────────────────────────────────────────────────────────
@@ -196,10 +206,7 @@ describe("StatusPageService", () => {
 
 		it("applies default theme to every result when themes disabled", async () => {
 			const { service, repo } = createService(false);
-			(repo.findByTeamId as jest.Mock).mockResolvedValue([
-				makeStatusPage({ id: "sp-1", theme: "bold" }),
-				makeStatusPage({ id: "sp-2", theme: "editorial" }),
-			]);
+			repo.findByTeamId.mockResolvedValue([makeStatusPage({ id: "sp-1", theme: "bold" }), makeStatusPage({ id: "sp-2", theme: "editorial" })]);
 
 			const result = await service.getStatusPagesByTeamId("team-1");
 
@@ -215,7 +222,7 @@ describe("StatusPageService", () => {
 		it("delegates to repository with all parameters", async () => {
 			const { service, repo } = createService(true);
 			const updated = makeStatusPage({ companyName: "Updated Co" });
-			(repo.updateById as jest.Mock).mockResolvedValue(updated);
+			repo.updateById.mockResolvedValue(updated);
 			const file = { originalname: "new-logo.png" } as Express.Multer.File;
 
 			const result = await service.updateStatusPage("sp-1", "team-1", file, { companyName: "Updated Co" });
@@ -321,12 +328,12 @@ describe("StatusPageService", () => {
 
 		it("orders monitors to match the status page's monitor list", async () => {
 			const { service, monitorsRepo } = createService();
-			(monitorsRepo.findByIds as jest.Mock).mockResolvedValue([makeMonitor({ id: "mon-1" }), makeMonitor({ id: "mon-2" })]);
+			monitorsRepo.findByIds.mockResolvedValue([makeMonitor({ id: "mon-1" }), makeMonitor({ id: "mon-2" })]);
 			const page = makeStatusPage({ isPublished: true, monitors: ["mon-2", "mon-1"] });
 
 			const { monitors } = await service.getPublicStatusPagePayload(page, undefined);
 
-			expect(monitors.map((monitor) => monitor.id)).toEqual(["mon-2", "mon-1"]);
+			expect(monitors.map((monitor: PublicStatusPageMonitor) => monitor.id)).toEqual(["mon-2", "mon-1"]);
 		});
 
 		it("rejects an unpublished page for a mismatched or absent requester team (403)", async () => {
@@ -352,6 +359,60 @@ describe("StatusPageService", () => {
 			await expect(service.getPublicStatusPagePayload(publishedPage(), undefined)).resolves.toMatchObject({
 				statusPage: expect.objectContaining({ id: "sp-1" }),
 			});
+		});
+
+		it("includes activeMaintenances when active maintenance windows cover status page monitors", async () => {
+			const { service, maintenanceWindowsRepo } = createService();
+			const now = Date.now();
+			const activeWindow: MaintenanceWindow = {
+				id: "mw-1",
+				name: "Scheduled DB Migration",
+				teamId: "team-1",
+				monitorIds: ["mon-1", "mon-99"],
+				active: true,
+				duration: 60,
+				durationUnit: "minutes",
+				repeat: 0,
+				start: new Date(now - 60_000).toISOString(),
+				end: new Date(now + 60_000).toISOString(),
+				createdAt: "2026-01-01T00:00:00Z",
+				updatedAt: "2026-01-01T00:00:00Z",
+			};
+			maintenanceWindowsRepo.findByMonitorIds.mockResolvedValue([activeWindow]);
+
+			const result = await service.getPublicStatusPagePayload(publishedPage(), undefined);
+
+			expect(result.activeMaintenances).toBeDefined();
+			expect(result.activeMaintenances).toHaveLength(1);
+			expect(result.activeMaintenances![0]).toMatchObject({
+				id: "mw-1",
+				name: "Scheduled DB Migration",
+				monitorIds: ["mon-1"], // only includes mon-1 since mon-99 is not on this status page
+			});
+		});
+
+		it("does not include activeMaintenances when maintenance windows are inactive", async () => {
+			const { service, maintenanceWindowsRepo } = createService();
+			const now = Date.now();
+			const inactiveWindow: MaintenanceWindow = {
+				id: "mw-1",
+				name: "Past Maintenance",
+				teamId: "team-1",
+				monitorIds: ["mon-1"],
+				active: true,
+				duration: 60,
+				durationUnit: "minutes",
+				repeat: 0,
+				start: new Date(now - 120_000).toISOString(),
+				end: new Date(now - 60_000).toISOString(),
+				createdAt: "2026-01-01T00:00:00Z",
+				updatedAt: "2026-01-01T00:00:00Z",
+			};
+			maintenanceWindowsRepo.findByMonitorIds.mockResolvedValue([inactiveWindow]);
+
+			const result = await service.getPublicStatusPagePayload(publishedPage(), undefined);
+
+			expect(result.activeMaintenances).toBeUndefined();
 		});
 	});
 

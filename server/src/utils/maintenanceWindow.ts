@@ -26,3 +26,27 @@ export const isWindowActive = (window: MaintenanceWindow, now: Date = new Date()
 
 	return false;
 };
+
+export const getActiveWindowEnd = (window: MaintenanceWindow, now: Date = new Date()): Date | null => {
+	if (!window.active) {
+		return null;
+	}
+
+	const start = new Date(window.start);
+	const end = new Date(window.end);
+	const repeatInterval = window.repeat || 0;
+
+	if (start <= now && end >= now) {
+		return new Date(end);
+	}
+
+	while (start < now && repeatInterval !== 0) {
+		start.setTime(start.getTime() + repeatInterval);
+		end.setTime(end.getTime() + repeatInterval);
+		if (start <= now && end >= now) {
+			return new Date(end);
+		}
+	}
+
+	return null;
+};
