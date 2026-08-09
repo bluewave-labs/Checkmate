@@ -89,7 +89,7 @@ curl -O https://raw.githubusercontent.com/bluewave-labs/checkmate/master/docker/
 JWT_SECRET="$(openssl rand -hex 32)" docker compose up -d
 ```
 
-Then open http://localhost:52345. This is the only current Compose file for a direct HTTP installation; the retired `docker/dist-mono/`, `docker/dist/`, and `docker/dist-arm/` directories must not be used. If the app is reached at another origin (domain or LAN IP), set `CLIENT_HOST` accordingly. To build the image yourself, run `docker build -f docker/Dockerfile -t checkmate .` from a checkout.
+Then open http://localhost:52345. If the app is reached at another origin (domain or LAN IP), set `CLIENT_HOST` accordingly. To build the image yourself, run `docker build -f docker/Dockerfile -t checkmate .` from a checkout.
 
 ### VPS deployment with HTTPS (Caddy)
 
