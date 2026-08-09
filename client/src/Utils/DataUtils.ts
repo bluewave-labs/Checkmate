@@ -109,7 +109,9 @@ export const computeBarHeights = (
 
 	const sorted = values.slice().sort((a, b) => a - b);
 	const cap = percentile(sorted, CAP_PERCENTILE);
-	if (cap <= 0) return values.map(() => MIN_HEIGHT_PCT);
+	if (cap <= 0 || (sorted.length > 0 && sorted[0] === sorted[sorted.length - 1])) {
+		return values.map(() => MIN_HEIGHT_PCT);
+	}
 	return values.map((value) => {
 		return Math.max(MIN_HEIGHT_PCT, Math.min(100, (value / cap) * 100));
 	});
