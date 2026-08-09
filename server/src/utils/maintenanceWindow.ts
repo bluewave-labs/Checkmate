@@ -34,19 +34,27 @@ export const getActiveWindowEnd = (window: MaintenanceWindow, now: Date = new Da
 
 	const start = new Date(window.start);
 	const end = new Date(window.end);
-	const repeatInterval = window.repeat || 0;
+	if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+		return null;
+	}
 
 	if (start <= now && end >= now) {
 		return new Date(end);
 	}
 
-	while (start < now && repeatInterval !== 0) {
-		start.setTime(start.getTime() + repeatInterval);
-		end.setTime(end.getTime() + repeatInterval);
-		if (start <= now && end >= now) {
-			return new Date(end);
-		}
+	const repeatInterval = window.repeat ?? 0;
+	if (repeatInterval <= 0 || now < start) {
+		return null;
 	}
 
-	return null;
+	const durationMs = end.getTime() - start.getTime();
+	if (durationMs < 0) {
+		return null;
+	}
+
+	const occurrencesPassed = Math.floor((now.getTime() - start.getTime()) / repeatInterval);
+	const occurrenceStart = start.getTime() + occurrencesPassed * repeatInterval;
+	const occurrenceEnd = occurrenceStart + durationMs;
+
+	return occurrenceStart <= now.getTime() && occurrenceEnd >= now.getTime() ? new Date(occurrenceEnd) : null;
 };
