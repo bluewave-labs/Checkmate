@@ -2,7 +2,9 @@ import { AppError } from "@/utils/AppError.js";
 import { Monitor, MonitorTypes, type MonitorType } from "@/domain/monitors/monitor.type.js";
 import { UserRole } from "@/domain/users/user.type.js";
 import sslChecker, { SSLDetails } from "ssl-checker";
+import * as whoiser from "whoiser";
 type SSLCheckerType = typeof sslChecker;
+type WhoisModule = typeof whoiser;
 
 export const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: Monitor): Promise<SSLDetails> => {
 	const monitorUrl = new URL(monitor.url);
@@ -13,6 +15,65 @@ export const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: 
 	}
 	return cert;
 };
+
+const WHOIS_TIMEOUT_MS = 10_000;
+const EXPIRY_DATE_KEY_PATTERN = /(expiry date|expiration|paid-?till|registration expiration)/i;
+
+export const extractDomainExpiryDate = (whoisData: object): string | null => {
+	const matchingKey = Object.keys(whoisData).find((key) => EXPIRY_DATE_KEY_PATTERN.test(key));
+	if (!matchingKey) {
+		return null;
+	}
+	const raw = extractString((whoisData as Record<string, unknown>)[matchingKey] ?? null);
+	if (!raw) {
+		return null;
+	}
+
+	const parsed = parseDomainExpiryValue(raw);
+	return parsed === null ? null : parsed.toISOString();
+};
+
+const parseDomainExpiryValue = (raw: string): Date | null => {
+	// Some registries (e.g. Nominet for .uk) return "14-Feb-2027" style values.
+	const monthMatch = /^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/.exec(raw.trim());
+	if (monthMatch) {
+		const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+		const monthIndex = months.indexOf((monthMatch[2] ?? "").toLowerCase());
+		if (monthIndex !== -1) {
+			const parsed = new Date(Date.UTC(Number(monthMatch[3]), monthIndex, Number(monthMatch[1])));
+			if (!Number.isNaN(parsed.getTime())) {
+				return parsed;
+			}
+		}
+	}
+
+	const date = new Date(raw);
+	if (!Number.isNaN(date.getTime())) {
+		return date;
+	}
+	return null;
+};
+
+export const fetchMonitorDomain = async (client: WhoisModule, monitor: Monitor): Promise<{ domain: string; expiryDate: string }> => {
+	const monitorUrl = new URL(monitor.url);
+	const labels = monitorUrl.hostname.split(".");
+
+	// WHOIS registries only answer for the registrable domain, so try the full
+	// hostname first and walk up to the parent domain (www.example.com -> example.com).
+	for (let index = 0; index < labels.length - 1; index++) {
+		const candidate = labels.slice(index).join(".");
+		const result = await client.domain(candidate, { timeout: WHOIS_TIMEOUT_MS });
+		const firstServerData = Object.values(result)[0];
+		const expiryDate = extractDomainExpiryDate(
+			typeof firstServerData === "object" && firstServerData !== null && !Array.isArray(firstServerData) ? firstServerData : {}
+		);
+		if (expiryDate) {
+			return { domain: candidate, expiryDate };
+		}
+	}
+	throw new Error("Domain expiry not found");
+};
+
 export const requireString = (value: unknown, fieldName: string): string => {
 	if (typeof value === "string" && value.trim().length > 0) {
 		return value;

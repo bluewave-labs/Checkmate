@@ -11,12 +11,14 @@ interface MonitorStatBoxesProps {
 	monitor?: Monitor;
 	monitorStats: MonitorStats | null;
 	certificateExpiry?: string;
+	domainExpiry?: string;
 }
 
 export const MonitorStatBoxes = ({
 	monitor,
 	monitorStats,
 	certificateExpiry,
+	domainExpiry,
 }: MonitorStatBoxesProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -66,10 +68,16 @@ export const MonitorStatBoxes = ({
 			/>
 
 			{monitor?.type === "http" && (
-				<StatBox
-					title={t("pages.common.monitors.statBoxes.certificateExpiry")}
-					subtitle={certificateExpiry || "N/A"}
-				/>
+				<>
+					<StatBox
+						title={t("pages.common.monitors.statBoxes.certificateExpiry")}
+						subtitle={certificateExpiry || "N/A"}
+					/>
+					<StatBox
+						title={t("pages.common.monitors.statBoxes.domainExpiry")}
+						subtitle={domainExpiry || "N/A"}
+					/>
+				</>
 			)}
 		</Stack>
 	);

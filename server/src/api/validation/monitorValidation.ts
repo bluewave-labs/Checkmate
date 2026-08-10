@@ -52,6 +52,10 @@ export const getCertificateParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
 });
 
+export const getDomainParamValidation = z.object({
+	monitorId: z.string().min(1, "Monitor ID is required"),
+});
+
 const refineDnsHostname = (body: { type?: string; url?: string }, ctx: z.RefinementCtx) => {
 	if (body.type === "dns" && body.url && !dnsHostnameRegex.test(body.url)) {
 		ctx.addIssue({

@@ -7,6 +7,7 @@ import {
 	getMonitorsByTeamIdQueryValidation,
 	getMonitorsWithChecksQueryValidation,
 	getCertificateParamValidation,
+	getDomainParamValidation,
 	createMonitorBodyValidation,
 	editMonitorBodyValidation,
 	pauseMonitorParamValidation,
@@ -142,6 +143,16 @@ registry.registerPath({
 	security: bearer,
 	request: { params: getCertificateParamValidation },
 	responses: { "200": okJson(z.object({ certificateDate: z.string() })), ...standardErrors },
+});
+
+registry.registerPath({
+	method: "get",
+	path: "/monitors/domain/{monitorId}",
+	tags,
+	summary: "Get domain registration expiry for a monitor",
+	security: bearer,
+	request: { params: getDomainParamValidation },
+	responses: { "200": okJson(z.object({ domain: z.string(), expiryDate: z.string() })), ...standardErrors },
 });
 
 registry.registerPath({
