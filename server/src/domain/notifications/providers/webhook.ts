@@ -6,6 +6,25 @@ import { getTestMessage } from "@/domain/notifications/providers/utils.js";
 import got from "got";
 
 export class WebhookProvider extends NotificationProvider {
+	/**
+	 * Build authorization header based on webhook auth configuration
+	 */
+	private buildAuthHeaders = (notification: Notification): Record<string, string> => {
+		const headers: Record<string, string> = {};
+
+		if (notification.webhookAuthType === "basic") {
+			const username = notification.webhookUsername || "";
+			const password = notification.webhookPassword || "";
+			const encoded = Buffer.from(username + ":" + password).toString("base64");
+			headers["Authorization"] = "Basic " + encoded;
+		} else if (notification.webhookAuthType === "bearer") {
+			const token = notification.webhookToken || "";
+			headers["Authorization"] = "Bearer " + token;
+		}
+
+		return headers;
+	};
+
 	sendMessage = async (notification: Notification, message: NotificationMessage): Promise<boolean> => {
 		if (!notification.address) {
 			return false;
@@ -19,6 +38,7 @@ export class WebhookProvider extends NotificationProvider {
 				json: payload,
 				headers: {
 					"Content-Type": "application/json",
+					...this.buildAuthHeaders(notification),
 				},
 				...this.gotRequestOptions(),
 			});
@@ -101,6 +121,7 @@ export class WebhookProvider extends NotificationProvider {
 				json: { text: getTestMessage() },
 				headers: {
 					"Content-Type": "application/json",
+					...this.buildAuthHeaders(notification as Notification),
 				},
 				...this.gotRequestOptions(),
 			});
