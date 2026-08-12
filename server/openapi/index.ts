@@ -39,7 +39,8 @@ export function getOpenApiSpec(): JsonObject {
 			{ name: "incidents", description: "Downtime incidents derived from monitor state changes, including filtering and CSV export." },
 			{
 				name: "notifications",
-				description: "Notification channels (email, webhook, Slack, Discord, PagerDuty, Matrix, Teams, Telegram, Pushover, Twilio) and test alerts.",
+				description:
+					"Notification channels (email, webhook, Slack, Discord, PagerDuty, Matrix, Rocket.Chat, Teams, Telegram, Pushover, Twilio) and test alerts.",
 			},
 			{ name: "maintenance-window", description: "Scheduled maintenance windows during which monitors do not generate incidents or alerts." },
 			{ name: "status-page", description: "Public status pages, their configuration, and the monitors they expose." },

@@ -8,8 +8,6 @@ interface UseNotificationFormOptions {
 }
 
 function buildDefaults(data: Notification | null): NotificationFormData {
-	// Every channel field defaults to "" (not undefined) so untouched required
-	// fields fail zod with their custom messages instead of a type error.
 	return {
 		type: data?.type ?? "email",
 		notificationName: data?.notificationName || "",
