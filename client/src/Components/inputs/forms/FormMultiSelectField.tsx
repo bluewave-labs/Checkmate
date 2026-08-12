@@ -8,7 +8,6 @@ import {
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
-import Divider from "@mui/material/Divider";
 import { useTheme } from "@mui/material/styles";
 import { Trash2, GripVertical } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
@@ -164,16 +163,20 @@ export const FormMultiSelectField = <T extends FieldValues, O extends MultiSelec
 										</Droppable>
 									</DragDropContext>
 								)
-							: selected.map((option, index) => (
+							: selected.map((option) => (
 									<Stack
+										key={option.id}
 										direction="row"
 										alignItems="center"
-										key={option.id}
+										spacing={theme.spacing(LAYOUT.XS)}
+										padding={theme.spacing(LAYOUT.XS)}
+										marginTop={theme.spacing(SPACING.LG)}
+										borderRadius={1}
+										border={`1px solid ${theme.palette.divider}`}
 										width="100%"
 									>
 										{rowContent(option)}
 										{removeButton(option)}
-										{index < selected.length - 1 && <Divider />}
 									</Stack>
 								))}
 					</Stack>
