@@ -1162,6 +1162,7 @@
 						"slack": "Slack",
 						"discord": "Discord",
 						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
 						"pager_duty": "PagerDuty",
 						"matrix": "Matrix",
 						"teams": "Teams",
