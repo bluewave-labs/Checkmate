@@ -35,18 +35,14 @@ import {
 	type ThemeMode,
 	type ChartType,
 } from "@/Features/UI/uiSlice.js";
-import timezones from "@/Utils/timezones.json";
+import { timezoneOptions } from "@/Utils/timezoneOptions";
+import type { TimezoneOption } from "@/Utils/timezoneOptions";
 import type { RootState } from "@/Types/state";
 import { CHECK_TTL_SENTINEL } from "@/Types/Check";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 import { FormSliderField } from "@/Components/inputs/forms/FormSliderField";
 import { FormSwitchField } from "@/Components/inputs/forms/FormSwitchField";
 import { FormNumberField } from "@/Components/inputs/forms/FormNumberField";
-
-interface Timezone {
-	id: string;
-	name: string;
-}
 
 interface SettingsResponse {
 	settings: any;
@@ -141,16 +137,10 @@ export const SettingsPage = () => {
 
 	const user = useSelector((state: RootState) => state.auth.user);
 
-	// Convert timezones to match AutoComplete format (id instead of _id)
-	const timezoneOptions: Timezone[] = timezones.map((tz) => ({
-		id: tz._id,
-		name: tz.name,
-	}));
-
 	const selectedTimezone =
 		timezoneOptions.find((tz) => tz.id === selectedTimezoneId) ?? null;
 
-	const handleTimezoneChange = (newValue: Timezone | null) => {
+	const handleTimezoneChange = (newValue: TimezoneOption | null) => {
 		if (!newValue?.id) return;
 		dispatch(setTimezone({ timezone: newValue.id }));
 	};
@@ -317,12 +307,12 @@ export const SettingsPage = () => {
 							<Autocomplete
 								value={selectedTimezone}
 								options={timezoneOptions}
-								getOptionLabel={(option: Timezone) => option.name}
-								isOptionEqualToValue={(option: Timezone, value: Timezone) =>
+								getOptionLabel={(option: TimezoneOption) => option.name}
+								isOptionEqualToValue={(option: TimezoneOption, value: TimezoneOption) =>
 									option.id === value.id
 								}
-								onChange={(_, newValue) => {
-									handleTimezoneChange(newValue as Timezone | null);
+								onChange={(_, newValue: TimezoneOption | null) => {
+									handleTimezoneChange(newValue);
 								}}
 								fieldLabel={t("pages.settings.form.timezone.option.timezone.label")}
 							/>

@@ -57,6 +57,11 @@ import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
 import { FormSliderField } from "@/Components/inputs/forms/FormSliderField";
 import { FormSwitchField } from "@/Components/inputs/forms/FormSwitchField";
 
+const httpMethodOptions = HttpMethods.map((method) => ({
+	value: method,
+	label: method,
+}));
+
 interface GeneralSettingsConfig {
 	urlLabel: string;
 	urlPlaceholder: string;
@@ -375,6 +380,83 @@ const CreateMonitorPage = () => {
 		[t]
 	);
 
+	const typeOptions = useMemo(
+		() =>
+			SelectableMonitorTypes.map((type) => ({
+				value: type,
+				label: t(`pages.common.monitors.monitorTypes.${monitorTypeLabelKey[type]}`),
+				description: t(
+					`pages.createMonitor.form.type.${monitorTypeLabelKey[type]}Description`
+				),
+			})),
+		[t]
+	);
+
+	const strategyOptions = useMemo(
+		() =>
+			PageSpeedStrategies.map((strategy) => ({
+				value: strategy,
+				label: t(`pages.createMonitor.form.general.option.strategy.${strategy}`),
+			})),
+		[t]
+	);
+
+	const gameOptions = useMemo(
+		() => [
+			{
+				value: "",
+				label: t("pages.createMonitor.form.general.option.game.placeholder"),
+			},
+			...Object.entries(games ?? {}).map(([key, game]) => ({
+				value: key,
+				label: game.name,
+			})),
+		],
+		[games, t]
+	);
+
+	const dnsRecordTypeOptions = useMemo(
+		() =>
+			DnsRecordTypes.map((recordType) => ({
+				value: recordType,
+				label: t(
+					`pages.createMonitor.form.general.option.dnsRecordType.value.${recordType}`
+				),
+			})),
+		[t]
+	);
+
+	const intervalOptions = useMemo(
+		() =>
+			MonitorIntervalOptions.map((option) => ({
+				value: option.value,
+				label: t(
+					`pages.createMonitor.form.frequency.option.frequency.value.${option.labelKey}`
+				),
+			})),
+		[t]
+	);
+
+	const matchMethodOptions = useMemo(
+		() =>
+			MonitorMatchMethods.map((method) => ({
+				value: method,
+				label: t(`pages.createMonitor.form.advanced.option.matchMethod.${method}`),
+			})),
+		[t]
+	);
+
+	const geoCheckIntervalOptions = useMemo(
+		() =>
+			GeoCheckIntervalOptions.map((option) => ({
+				value: option.value,
+				label: t(
+					`pages.createMonitor.form.geoChecks.option.interval.value.${option.labelKey}`
+				),
+			})),
+		[t]
+	);
+
 	return (
 		<FormProvider {...form}>
 			<BasePage
@@ -401,15 +483,7 @@ const CreateMonitorPage = () => {
 						rightContent={
 							<FormRadioGroup
 								name={"type"}
-								options={SelectableMonitorTypes.map((type) => ({
-									value: type,
-									label: t(
-										`pages.common.monitors.monitorTypes.${monitorTypeLabelKey[type]}`
-									),
-									description: t(
-										`pages.createMonitor.form.type.${monitorTypeLabelKey[type]}Description`
-									),
-								}))}
+								options={typeOptions}
 							/>
 						}
 					/>
@@ -451,12 +525,7 @@ const CreateMonitorPage = () => {
 										fieldLabel={t(
 											"pages.createMonitor.form.general.option.strategy.label"
 										)}
-										options={PageSpeedStrategies.map((strategy) => ({
-											value: strategy,
-											label: t(
-												`pages.createMonitor.form.general.option.strategy.${strategy}`
-											),
-										}))}
+										options={strategyOptions}
 										fallbackValue={DefaultPageSpeedStrategy}
 									/>
 								)}
@@ -477,18 +546,7 @@ const CreateMonitorPage = () => {
 									<FormSelectField
 										name="gameId"
 										fieldLabel={t("pages.createMonitor.form.general.option.game.label")}
-										options={[
-											{
-												value: "",
-												label: t(
-													"pages.createMonitor.form.general.option.game.placeholder"
-												),
-											},
-											...Object.entries(games ?? {}).map(([key, game]) => ({
-												value: key,
-												label: game.name,
-											})),
-										]}
+										options={gameOptions}
 									/>
 								)}
 
@@ -532,12 +590,7 @@ const CreateMonitorPage = () => {
 										fieldLabel={t(
 											"pages.createMonitor.form.general.option.dnsRecordType.label"
 										)}
-										options={DnsRecordTypes.map((recordType) => ({
-											value: recordType,
-											label: t(
-												`pages.createMonitor.form.general.option.dnsRecordType.value.${recordType}`
-											),
-										}))}
+										options={dnsRecordTypeOptions}
 									/>
 								)}
 								<FormTextField
@@ -560,12 +613,7 @@ const CreateMonitorPage = () => {
 								fieldLabel={t(
 									"pages.createMonitor.form.frequency.option.frequency.label"
 								)}
-								options={MonitorIntervalOptions.map((option) => ({
-									value: option.value,
-									label: t(
-										`pages.createMonitor.form.frequency.option.frequency.value.${option.labelKey}`
-									),
-								}))}
+								options={intervalOptions}
 							/>
 						}
 					/>
@@ -729,10 +777,7 @@ const CreateMonitorPage = () => {
 											setValue("jsonPath", "");
 										}
 									}}
-									options={HttpMethods.map((method) => ({
-										value: method,
-										label: method,
-									}))}
+									options={httpMethodOptions}
 								/>
 								<Typography
 									component="span"
@@ -771,12 +816,7 @@ const CreateMonitorPage = () => {
 												"pages.createMonitor.form.advanced.option.matchMethod.label"
 											)}
 											fallbackValue={DefaultMonitorMatchMethod}
-											options={MonitorMatchMethods.map((method) => ({
-												value: method,
-												label: t(
-													`pages.createMonitor.form.advanced.option.matchMethod.${method}`
-												),
-											}))}
+											options={matchMethodOptions}
 										/>
 
 										<FormTextField
@@ -842,12 +882,7 @@ const CreateMonitorPage = () => {
 											fieldLabel={t(
 												"pages.createMonitor.form.geoChecks.option.interval.label"
 											)}
-											options={GeoCheckIntervalOptions.map((option) => ({
-												value: option.value,
-												label: t(
-													`pages.createMonitor.form.geoChecks.option.interval.value.${option.labelKey}`
-												),
-											}))}
+											options={geoCheckIntervalOptions}
 										/>
 									</Stack>
 								)}

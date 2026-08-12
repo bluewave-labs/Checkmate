@@ -17,7 +17,7 @@ import { useGet, usePost, usePut, useDelete } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
 import type { MonitorDisplayType, StatusPageResponse } from "@/Types/StatusPage";
 import { getMonitorTypeLabel } from "@/Types/StatusPage";
-import timezones from "@/Utils/timezones.json";
+import { timezoneOptions } from "@/Utils/timezoneOptions";
 import { useNavigate, useParams } from "react-router-dom";
 import { mutate } from "swr";
 import axios from "axios";
@@ -65,16 +65,6 @@ const monitorsUrl = (() => {
 	);
 	return `/monitors/team?${params.toString()}`;
 })();
-
-interface TimezoneOption {
-	_id: string;
-	name: string;
-}
-
-const timezoneOptions = timezones.map((tz: TimezoneOption) => ({
-	id: tz._id,
-	name: tz.name,
-}));
 
 const buildStatusPageKey = (slug: string | null | undefined) =>
 	slug ? `/status-page/${slug}?type=uptime&type=infrastructure` : null;
