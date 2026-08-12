@@ -31,6 +31,7 @@ export const createApp = ({
 }) => {
 	const allowedOrigin = envSettings.clientHost;
 	const app = express();
+	app.set("trust proxy", 1);
 	const defaultCorsOptions: CorsOptions = {
 		origin: allowedOrigin,
 		methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",

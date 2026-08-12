@@ -7,6 +7,7 @@ services:
       - DB_CONNECTION_STRING=mongodb://mongodb:27017/uptime_db
       - CLIENT_HOST=${CLIENT_HOST:?set CLIENT_HOST in your environment}
       - JWT_SECRET=${JWT_SECRET:?set JWT_SECRET in your environment}
+      - NODE_ENV=production
     stop_grace_period: 60s
     healthcheck:
       test:
