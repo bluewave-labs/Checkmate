@@ -60,9 +60,6 @@ export const FormMultiSelectField = <T extends FieldValues, O extends MultiSelec
 					.map((id) => optionsById.get(id))
 					.filter((o): o is O => o !== undefined);
 
-				// Drag indexes refer to the rendered (resolved) list, not the raw id
-				// array — ids missing from options are filtered out above, so reorder
-				// the rendered ids and re-append unresolved ids at the end.
 				const handleDragEnd = (result: DropResult) => {
 					if (!result.destination) return;
 					const reordered = selected.map((o) => o.id);
@@ -101,7 +98,11 @@ export const FormMultiSelectField = <T extends FieldValues, O extends MultiSelec
 							getOptionLabel={(option) => option.name}
 							isOptionEqualToValue={(option, value) => option.id === value.id}
 							onChange={(_: unknown, newValue: O[]) => {
-								field.onChange(newValue.map((o) => o.id));
+								// The Autocomplete only sees resolved options, so ids missing
+								// from options must be re-appended or they'd be silently
+								// dropped (e.g. a role excluded from the selectable list).
+								const unresolved = selectedIds.filter((id) => !optionsById.has(id));
+								field.onChange([...newValue.map((o) => o.id), ...unresolved]);
 							}}
 							fieldLabel={fieldLabel}
 							placeholder={placeholder}
