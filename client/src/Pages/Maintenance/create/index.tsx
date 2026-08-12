@@ -199,6 +199,9 @@ const CreateMaintenanceWindowPage = () => {
 							fieldLabel={t(
 								"pages.maintenanceWindow.form.startTime.monitors.option.addMonitors.label"
 							)}
+							placeholder={t(
+								"pages.maintenanceWindow.form.startTime.monitors.option.addMonitors.label"
+							)}
 							options={monitors ?? []}
 						/>
 					}

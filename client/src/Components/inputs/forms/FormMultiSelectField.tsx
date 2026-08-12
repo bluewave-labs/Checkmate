@@ -105,7 +105,7 @@ export const FormMultiSelectField = <T extends FieldValues, O extends MultiSelec
 								field.onChange([...newValue.map((o) => o.id), ...unresolved]);
 							}}
 							fieldLabel={fieldLabel}
-							placeholder={placeholder}
+							placeholder={selected.length > 0 ? "" : placeholder}
 							renderOptionContent={renderOptionContent}
 							error={!!fieldState.error}
 							helperText={fieldState.error?.message ?? ""}
