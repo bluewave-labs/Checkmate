@@ -35,9 +35,12 @@ export const SelectableMonitorTypes = [
 export type SelectableMonitorType = (typeof SelectableMonitorTypes)[number];
 
 // Irregular i18n key fragments shared by the type selector's label
-// (pages.common.monitors.monitorTypes.<fragment>) and description
-// (pages.createMonitor.form.type.<fragment>Description) keys.
-export const monitorTypeLabelKey: Record<SelectableMonitorType, string> = {
+// (pages.common.monitors.monitorTypes.<fragment>), its description
+// (pages.createMonitor.form.type.<fragment>Description), and status page
+// type labels (via getMonitorTypeLabel). Covers every type with a label;
+// only selectable types have description keys.
+export const monitorTypeLabelKey: Record<SelectableMonitorType, string> &
+	Partial<Record<MonitorType, string>> = {
 	http: "optionHttp",
 	ping: "optionPing",
 	docker: "optionDocker",
@@ -46,6 +49,8 @@ export const monitorTypeLabelKey: Record<SelectableMonitorType, string> = {
 	grpc: "optionGrpc",
 	websocket: "optionWebSocket",
 	dns: "optionDns",
+	hardware: "optionHardware",
+	pagespeed: "optionPagespeed",
 };
 
 export const MonitorIntervalOptions = [
