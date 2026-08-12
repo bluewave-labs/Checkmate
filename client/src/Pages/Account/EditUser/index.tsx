@@ -1,11 +1,6 @@
-import { Trash2 } from "lucide-react";
-import { TextField, Button, Autocomplete } from "@/Components/inputs";
+import { TextField, Button } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import Divider from "@mui/material/Divider";
-import FormHelperText from "@mui/material/FormHelperText";
-import { useForm, Controller } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { ConfigBox, BasePage } from "@/Components/design-elements";
 
 import { UserRoles } from "@/Types/User";
@@ -22,6 +17,8 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/Types/state";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { useIsAdmin, useIsSuperAdmin } from "@/Hooks/useIsAdmin";
+import { FormTextField } from "@/Components/inputs/forms/FormTextField";
+import { FormMultiSelectField } from "@/Components/inputs/forms/FormMultiSelectField";
 
 interface RoleOption {
 	id: UserRole;
@@ -43,10 +40,11 @@ const EditUserPage = () => {
 
 	const { data: user, isLoading } = useGet<User>(`/auth/users/${userId}`);
 
-	const { control, handleSubmit, reset, watch, setValue } = useForm<EditUserFormData>({
+	const form = useForm<EditUserFormData>({
 		resolver,
 		defaultValues: defaults,
 	});
+	const { handleSubmit, reset } = form;
 
 	useEffect(() => {
 		if (user) {
@@ -63,13 +61,6 @@ const EditUserPage = () => {
 		id: role,
 		name: t(`common.auth.roles.${role}`),
 	}));
-
-	const watchedRoles = watch("role");
-	const selectedRoles = roleOptions.filter((r) => watchedRoles?.includes(r.id));
-	const handleRemoveRole = (roleToRemove: UserRole) => {
-		const newRoles = watchedRoles.filter((role) => role !== roleToRemove);
-		setValue("role", newRoles, { shouldValidate: true });
-	};
 
 	const canDeleteUser =
 		isAdmin &&
@@ -90,42 +81,31 @@ const EditUserPage = () => {
 	};
 
 	return (
-		<BasePage loading={isLoading}>
-			<form onSubmit={handleSubmit(onSubmit)}>
+		<FormProvider {...form}>
+			<BasePage
+				loading={isLoading}
+				component={"form"}
+				onSubmit={handleSubmit(onSubmit)}
+			>
 				<Stack gap={theme.spacing(8)}>
 					<ConfigBox
 						title={t("pages.account.form.name.title")}
 						subtitle={t("pages.account.form.name.description")}
 						rightContent={
 							<Stack gap={theme.spacing(8)}>
-								<Controller
+								<FormTextField
 									name="firstName"
-									control={control}
-									render={({ field, fieldState }) => (
-										<TextField
-											{...field}
-											fieldLabel={t("common.form.name.option.firstName.label")}
-											placeholder={t("common.form.name.option.firstName.placeholder")}
-											error={!!fieldState.error}
-											helperText={fieldState.error?.message}
-											autoComplete="given-name"
-										/>
-									)}
+									autoComplete="given-name"
+									fieldLabel={t("common.form.name.option.firstName.label")}
+									placeholder={t("common.form.name.option.firstName.placeholder")}
 								/>
-								<Controller
+								<FormTextField
 									name="lastName"
-									control={control}
-									render={({ field, fieldState }) => (
-										<TextField
-											{...field}
-											fieldLabel={t("common.form.name.option.lastName.label")}
-											placeholder={t("common.form.name.option.lastName.placeholder")}
-											error={!!fieldState.error}
-											helperText={fieldState.error?.message}
-											autoComplete="family-name"
-										/>
-									)}
+									autoComplete="family-name"
+									fieldLabel={t("common.form.name.option.lastName.label")}
+									placeholder={t("common.form.name.option.lastName.placeholder")}
 								/>
+
 								<TextField
 									fieldLabel={t("common.form.email.option.email.label")}
 									placeholder={t("common.form.email.option.email.placeholder")}
@@ -139,55 +119,11 @@ const EditUserPage = () => {
 						title={t("pages.editUser.form.roles.title")}
 						subtitle={t("pages.editUser.form.roles.description")}
 						rightContent={
-							<Stack spacing={theme.spacing(4)}>
-								<Controller
-									name="role"
-									control={control}
-									render={({ field, fieldState }) => (
-										<>
-											<Autocomplete
-												fieldLabel={t("common.form.role.option.role.label")}
-												multiple
-												options={roleOptions}
-												value={selectedRoles}
-												getOptionLabel={(option) => option.name}
-												onChange={(_: unknown, newValue: RoleOption[]) => {
-													field.onChange(newValue.map((r) => r.id));
-												}}
-												isOptionEqualToValue={(option, value) => option.id === value.id}
-											/>
-											{fieldState.error && (
-												<FormHelperText error>{fieldState.error.message}</FormHelperText>
-											)}
-										</>
-									)}
-								/>
-								{selectedRoles.length > 0 && (
-									<Stack
-										flex={1}
-										width="100%"
-									>
-										{selectedRoles.map((role, index) => (
-											<Stack
-												direction="row"
-												alignItems="center"
-												key={role.id}
-												width="100%"
-											>
-												<Typography flexGrow={1}>{role.name}</Typography>
-												<IconButton
-													size="small"
-													onClick={() => handleRemoveRole(role.id)}
-													aria-label="Remove role"
-												>
-													<Trash2 size={16} />
-												</IconButton>
-												{index < selectedRoles.length - 1 && <Divider />}
-											</Stack>
-										))}
-									</Stack>
-								)}
-							</Stack>
+							<FormMultiSelectField
+								name="role"
+								fieldLabel={t("common.form.role.option.role.label")}
+								options={roleOptions}
+							/>
 						}
 					/>
 					<Stack
@@ -217,19 +153,19 @@ const EditUserPage = () => {
 						</Button>
 					</Stack>
 				</Stack>
-			</form>
-			<DialogInput
-				open={showDeleteDialog}
-				title={t("pages.editUser.dialog.removeUser.title")}
-				content={t("pages.editUser.dialog.removeUser.content", {
-					name: `${user?.firstName} ${user?.lastName}`,
-				})}
-				onCancel={() => setShowDeleteDialog(false)}
-				onConfirm={handleDeleteUser}
-				confirmText={t("common.buttons.removeUser")}
-				loading={isDeleting}
-			/>
-		</BasePage>
+				<DialogInput
+					open={showDeleteDialog}
+					title={t("pages.editUser.dialog.removeUser.title")}
+					content={t("pages.editUser.dialog.removeUser.content", {
+						name: `${user?.firstName} ${user?.lastName}`,
+					})}
+					onCancel={() => setShowDeleteDialog(false)}
+					onConfirm={handleDeleteUser}
+					confirmText={t("common.buttons.removeUser")}
+					loading={isDeleting}
+				/>
+			</BasePage>
+		</FormProvider>
 	);
 };
 

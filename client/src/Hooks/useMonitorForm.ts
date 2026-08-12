@@ -1,6 +1,10 @@
 import { useMemo } from "react";
 import { monitorSchema, type MonitorFormData } from "@/Validation/monitor";
-import { DefaultHttpMethod, DefaultPageSpeedStrategy } from "@/Types/Monitor";
+import {
+	DefaultHttpMethod,
+	DefaultMonitorMatchMethod,
+	DefaultPageSpeedStrategy,
+} from "@/Types/Monitor";
 import type { Monitor, MonitorType } from "@/Types/Monitor";
 
 interface UseMonitorFormOptions {
@@ -43,7 +47,7 @@ export const getMonitorDefaults = (
 				method: data?.method ?? DefaultHttpMethod,
 				ignoreTlsErrors: data?.ignoreTlsErrors || false,
 				useAdvancedMatching: data?.useAdvancedMatching || false,
-				matchMethod: data?.matchMethod || "",
+				matchMethod: data?.matchMethod || DefaultMonitorMatchMethod,
 				expectedValue: data?.expectedValue || "",
 				jsonPath: data?.jsonPath || "",
 				customUpCodes: data?.customUpCodes || [],
@@ -138,7 +142,7 @@ export const getMonitorDefaults = (
 				method: DefaultHttpMethod,
 				ignoreTlsErrors: false,
 				useAdvancedMatching: false,
-				matchMethod: "",
+				matchMethod: DefaultMonitorMatchMethod,
 				expectedValue: "",
 				jsonPath: "",
 				customUpCodes: [],

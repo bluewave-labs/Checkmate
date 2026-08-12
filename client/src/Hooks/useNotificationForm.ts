@@ -8,96 +8,17 @@ interface UseNotificationFormOptions {
 }
 
 function buildDefaults(data: Notification | null): NotificationFormData {
-	if (data?.type === "matrix") {
-		return {
-			type: "matrix",
-			notificationName: data.notificationName || "",
-			homeserverUrl: data.homeserverUrl || "",
-			roomId: data.roomId || "",
-			accessToken: data.accessToken || "",
-		};
-	}
-	if (data?.type === "telegram") {
-		return {
-			type: "telegram",
-			notificationName: data.notificationName || "",
-			address: data.address || "",
-			accessToken: data.accessToken || "",
-		};
-	}
-	if (data?.type === "slack") {
-		return {
-			type: "slack",
-			notificationName: data.notificationName || "",
-			address: data.address || "",
-		};
-	}
-	if (data?.type === "discord") {
-		return {
-			type: "discord",
-			notificationName: data.notificationName || "",
-			address: data.address || "",
-		};
-	}
-	if (data?.type === "webhook") {
-		return {
-			type: "webhook",
-			notificationName: data.notificationName || "",
-			address: data.address || "",
-		};
-	}
-	if (data?.type === "rocket_chat") {
-		return {
-			type: "rocket_chat",
-			notificationName: data.notificationName || "",
-			address: data.address || "",
-		};
-	}
-	if (data?.type === "pager_duty") {
-		return {
-			type: "pager_duty",
-			notificationName: data.notificationName || "",
-			address: data.address || "",
-		};
-	}
-	if (data?.type === "teams") {
-		return {
-			type: "teams",
-			notificationName: data.notificationName || "",
-			address: data.address || "",
-		};
-	}
-	if (data?.type === "twilio") {
-		return {
-			type: "twilio",
-			notificationName: data.notificationName || "",
-			accountSid: data.accountSid || "",
-			accessToken: data.accessToken || "",
-			phone: data.phone || "",
-			twilioPhoneNumber: data.twilioPhoneNumber || "",
-		};
-	}
-	if (data?.type === "pushover") {
-		return {
-			type: "pushover",
-			notificationName: data.notificationName || "",
-			address: data.address || "",
-			accessToken: data.accessToken || "",
-		};
-	}
-	if (data?.type === "ntfy") {
-		return {
-			type: "ntfy",
-			notificationName: data.notificationName || "",
-			address: data.address || "",
-			topic: data.topic || "",
-		};
-	}
-	// Default: email (covers both data === null and data.type === "email")
 	return {
-		type: "email",
+		type: data?.type ?? "email",
 		notificationName: data?.notificationName || "",
 		address: data?.address || "",
+		accessToken: data?.accessToken || "",
+		accountSid: data?.accountSid || "",
+		phone: data?.phone || "",
+		twilioPhoneNumber: data?.twilioPhoneNumber || "",
+		homeserverUrl: data?.homeserverUrl || "",
+		roomId: data?.roomId || "",
+		topic: data?.topic || "",
 	};
 }
 
