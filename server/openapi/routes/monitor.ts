@@ -152,7 +152,10 @@ registry.registerPath({
 	summary: "Get domain registration expiry for a monitor",
 	security: bearer,
 	request: { params: getDomainParamValidation },
-	responses: { "200": okJson(z.object({ domain: z.string(), expiryDate: z.string() })), ...standardErrors },
+	responses: {
+		"200": okJson(z.object({ domain: z.string().nullable(), expiryDate: z.string().nullable() })),
+		...standardErrors,
+	},
 });
 
 registry.registerPath({

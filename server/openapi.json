@@ -7191,10 +7191,12 @@
 											"type": "object",
 											"properties": {
 												"domain": {
-													"type": "string"
+													"type": "string",
+													"nullable": true
 												},
 												"expiryDate": {
-													"type": "string"
+													"type": "string",
+													"nullable": true
 												}
 											},
 											"required": ["domain", "expiryDate"]

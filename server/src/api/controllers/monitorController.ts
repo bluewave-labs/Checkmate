@@ -82,7 +82,7 @@ class MonitorController implements IMonitorController {
 			msg: "Domain expiry retrieved successfully",
 			data: {
 				domain: domainExpiry.domain,
-				expiryDate: new Date(domainExpiry.expiryDate),
+				expiryDate: domainExpiry.expiryDate === null ? null : new Date(domainExpiry.expiryDate),
 			},
 		});
 	});

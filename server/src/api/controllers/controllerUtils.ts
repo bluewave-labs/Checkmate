@@ -3,6 +3,7 @@ import { Monitor, MonitorTypes, type MonitorType } from "@/domain/monitors/monit
 import { UserRole } from "@/domain/users/user.type.js";
 import sslChecker, { SSLDetails } from "ssl-checker";
 import * as whoiser from "whoiser";
+import { parse as parseDomain } from "tldts";
 type SSLCheckerType = typeof sslChecker;
 type WhoisModule = typeof whoiser;
 
@@ -17,7 +18,49 @@ export const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: 
 };
 
 const WHOIS_TIMEOUT_MS = 10_000;
+const DOMAIN_EXPIRY_CACHE_POSITIVE_TTL_MS = 60 * 60 * 1000; // 1 hour
+const DOMAIN_EXPIRY_CACHE_NEGATIVE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 const EXPIRY_DATE_KEY_PATTERN = /(expiry date|expiration|paid-?till|registration expiration)/i;
+
+export interface DomainExpiryResult {
+	domain: string | null;
+	expiryDate: string | null;
+}
+
+interface DomainExpiryCacheEntry extends DomainExpiryResult {
+	expiresAt: number;
+}
+
+interface DomainExpiryCache {
+	get(domain: string): DomainExpiryResult | undefined;
+	set(domain: string, result: DomainExpiryResult): void;
+}
+
+export const createDomainExpiryCache = (positiveTtlMs: number, negativeTtlMs: number): DomainExpiryCache => {
+	const entries = new Map<string, DomainExpiryCacheEntry>();
+
+	return {
+		get(domain: string): DomainExpiryResult | undefined {
+			const entry = entries.get(domain);
+			if (entry === undefined) {
+				return undefined;
+			}
+			if (entry.expiresAt <= Date.now()) {
+				entries.delete(domain);
+				return undefined;
+			}
+			return { domain: entry.domain, expiryDate: entry.expiryDate };
+		},
+		set(domain: string, result: DomainExpiryResult): void {
+			entries.set(domain, {
+				...result,
+				expiresAt: Date.now() + (result.expiryDate === null ? negativeTtlMs : positiveTtlMs),
+			});
+		},
+	};
+};
+
+const domainExpiryCache = createDomainExpiryCache(DOMAIN_EXPIRY_CACHE_POSITIVE_TTL_MS, DOMAIN_EXPIRY_CACHE_NEGATIVE_TTL_MS);
 
 export const extractDomainExpiryDate = (whoisData: object): string | null => {
 	const matchingKey = Object.keys(whoisData).find((key) => EXPIRY_DATE_KEY_PATTERN.test(key));
@@ -54,24 +97,31 @@ const parseDomainExpiryValue = (raw: string): Date | null => {
 	return null;
 };
 
-export const fetchMonitorDomain = async (client: WhoisModule, monitor: Monitor): Promise<{ domain: string; expiryDate: string }> => {
+export const fetchMonitorDomain = async (
+	client: WhoisModule,
+	monitor: Monitor,
+	cache: DomainExpiryCache = domainExpiryCache
+): Promise<DomainExpiryResult> => {
 	const monitorUrl = new URL(monitor.url);
-	const labels = monitorUrl.hostname.split(".");
-
-	// WHOIS registries only answer for the registrable domain, so try the full
-	// hostname first and walk up to the parent domain (www.example.com -> example.com).
-	for (let index = 0; index < labels.length - 1; index++) {
-		const candidate = labels.slice(index).join(".");
-		const result = await client.domain(candidate, { timeout: WHOIS_TIMEOUT_MS });
-		const firstServerData = Object.values(result)[0];
-		const expiryDate = extractDomainExpiryDate(
-			typeof firstServerData === "object" && firstServerData !== null && !Array.isArray(firstServerData) ? firstServerData : {}
-		);
-		if (expiryDate) {
-			return { domain: candidate, expiryDate };
-		}
+	const registrableDomain = parseDomain(monitorUrl.hostname).domain;
+	if (registrableDomain === null) {
+		// Bare IP addresses, localhost, and other non-domain hosts have no WHOIS expiry.
+		return { domain: null, expiryDate: null };
 	}
-	throw new Error("Domain expiry not found");
+
+	const cached = cache.get(registrableDomain);
+	if (cached !== undefined) {
+		return cached;
+	}
+
+	const result = await client.domain(registrableDomain, { timeout: WHOIS_TIMEOUT_MS });
+	const firstServerData = Object.values(result)[0];
+	const expiryDate = extractDomainExpiryDate(
+		typeof firstServerData === "object" && firstServerData !== null && !Array.isArray(firstServerData) ? firstServerData : {}
+	);
+	const domainExpiry: DomainExpiryResult = { domain: registrableDomain, expiryDate };
+	cache.set(registrableDomain, domainExpiry);
+	return domainExpiry;
 };
 
 export const requireString = (value: unknown, fieldName: string): string => {
