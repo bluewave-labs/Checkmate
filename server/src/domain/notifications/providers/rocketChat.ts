@@ -1,4 +1,5 @@
 const SERVICE_NAME = "RocketChatProvider";
+import { supportsUptimeDetails, type MonitorType } from "@/domain/monitors/monitor.type.js";
 import type { Notification, NotificationMessage } from "@/domain/notifications/notification.type.js";
 import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
 import { getTestMessage } from "@/domain/notifications/providers/utils.js";
@@ -84,6 +85,7 @@ export class RocketChatProvider extends NotificationProvider {
 	}
 
 	private buildPayload(message: NotificationMessage): RocketChatPayload {
+		const monitorUrl = this.monitorUrl(message);
 		const fields: RocketChatField[] = [
 			{ title: "Monitor", value: message.monitor.name, short: true },
 			{ title: "Type", value: message.monitor.type, short: true },
@@ -123,12 +125,33 @@ export class RocketChatProvider extends NotificationProvider {
 				{
 					color: this.severityColor(message.severity),
 					title: message.content.title,
-					title_link: `${message.clientHost}/infrastructure/${message.monitor.id}`,
+					...(monitorUrl ? { title_link: monitorUrl } : {}),
 					fields,
 					ts: message.content.timestamp.toISOString(),
 				},
 			],
 		};
+	}
+
+	private monitorUrl(message: NotificationMessage): string | undefined {
+		const clientHost = message.clientHost?.trim();
+		if (!clientHost || clientHost === "Host not defined") {
+			return undefined;
+		}
+
+		if (message.monitor.type === "hardware") {
+			return `${clientHost}/infrastructure/${message.monitor.id}`;
+		}
+
+		if (message.monitor.type === "pagespeed") {
+			return `${clientHost}/pagespeed/${message.monitor.id}`;
+		}
+
+		if (supportsUptimeDetails(message.monitor.type as MonitorType)) {
+			return `${clientHost}/uptime/${message.monitor.id}`;
+		}
+
+		return undefined;
 	}
 
 	private severityColor(severity: NotificationMessage["severity"]): string {

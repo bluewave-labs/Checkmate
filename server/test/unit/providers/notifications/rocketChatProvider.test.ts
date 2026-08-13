@@ -1,4 +1,5 @@
 import { describe, expect, it, jest } from "@jest/globals";
+import type { MonitorType } from "../../../../src/domain/monitors/monitor.type.ts";
 import type { NotificationSeverity } from "../../../../src/domain/notifications/notification.type.ts";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
 import { makeMessage, makeMessageWithIncident, makeMessageWithThresholds, makeNotification } from "../../../helpers/notificationMessage.ts";
@@ -102,7 +103,7 @@ describe("RocketChatProvider", () => {
 						{
 							color: "#FF0000",
 							title: "Monitor Down: Test Monitor",
-							title_link: "https://app.example.com/infrastructure/mon-1",
+							title_link: "https://app.example.com/uptime/mon-1",
 							fields: [
 								{ title: "Monitor", value: "Test Monitor", short: true },
 								{ title: "Type", value: "http", short: true },
@@ -126,6 +127,32 @@ describe("RocketChatProvider", () => {
 		expect(payload).not.toHaveProperty("avatar");
 		expect(payload).not.toHaveProperty("emoji");
 		expect(payload).not.toHaveProperty("channel");
+	});
+
+	it.each([
+		["http", "https://app.example.com/uptime/mon-1"],
+		["ping", "https://app.example.com/uptime/mon-1"],
+		["pagespeed", "https://app.example.com/pagespeed/mon-1"],
+		["hardware", "https://app.example.com/infrastructure/mon-1"],
+	])("links %s monitors to %s", async (type, expectedLink) => {
+		const { provider } = createProvider();
+
+		await provider.sendMessage(
+			makeNotification({ type: "rocket_chat" }),
+			makeMessage({ monitor: { id: "mon-1", name: "Test Monitor", url: "https://example.com", type: type as MonitorType, status: "down" } })
+		);
+
+		const payload = mockGotPost.mock.calls[0][1].json;
+		expect(payload.attachments[0].title_link).toBe(expectedLink);
+	});
+
+	it.each([["Host not defined"], [""], ["   "]])("omits title_link when clientHost is %j", async (clientHost) => {
+		const { provider } = createProvider();
+
+		await provider.sendMessage(makeNotification({ type: "rocket_chat" }), makeMessage({ clientHost }));
+
+		const payload = mockGotPost.mock.calls[0][1].json;
+		expect(payload.attachments[0]).not.toHaveProperty("title_link");
 	});
 
 	it.each([
