@@ -4,7 +4,8 @@ import { makeNotification, makeMessage, makeMessageWithThresholds, makeMessageWi
 import { testNotificationProviderContract } from "../../../helpers/notificationProviderContract.ts";
 
 const mockGotPut = jest.fn().mockResolvedValue({});
-jest.unstable_mockModule("got", () => ({ default: { put: mockGotPut } }));
+const mockGotGet = jest.fn().mockResolvedValue({ body: { room_id: "!resolved:example.com" } });
+jest.unstable_mockModule("got", () => ({ default: { put: mockGotPut, get: mockGotGet } }));
 jest.unstable_mockModule("crypto", () => ({ randomUUID: () => "test-uuid-1234" }));
 
 const { MatrixProvider } = await import("../../../../src/domain/notifications/providers/matrix.ts");
@@ -23,13 +24,16 @@ testNotificationProviderContract("MatrixProvider", {
 });
 
 describe("MatrixProvider", () => {
-	beforeEach(() => mockGotPut.mockReset().mockResolvedValue({}));
+	beforeEach(() => {
+		mockGotPut.mockReset().mockResolvedValue({});
+		mockGotGet.mockReset().mockResolvedValue({ body: { room_id: "!resolved:example.com" } });
+	});
 
 	describe("sendTestAlert", () => {
 		it("sends to Matrix API and returns true", async () => {
 			expect(await createProvider().provider.sendTestAlert(makeNotification())).toBe(true);
 			expect(mockGotPut).toHaveBeenCalledWith(
-				expect.stringContaining("matrix.example.com/_matrix/client/v3/rooms/!room:example.com/send/m.room.message/test-uuid-1234"),
+				expect.stringContaining("matrix.example.com/_matrix/client/v3/rooms/!room%3Aexample.com/send/m.room.message/test-uuid-1234"),
 				expect.objectContaining({
 					headers: expect.objectContaining({ Authorization: "Bearer token-abc" }),
 				})
@@ -139,6 +143,71 @@ describe("MatrixProvider", () => {
 			await provider.sendMessage(makeNotification() as any, makeMessage({ severity: "unknown" as any }));
 			const html = mockGotPut.mock.calls[0][1].json.formatted_body;
 			expect(html).toContain("#808080");
+		});
+	});
+
+	describe("room identifiers", () => {
+		const putUrl = () => mockGotPut.mock.calls[0][0] as string;
+
+		it("percent-encodes the room ID in the send path", async () => {
+			const { provider } = createProvider();
+			await provider.sendTestAlert(makeNotification({ roomId: "!abc123:example.com" }));
+			expect(putUrl()).toContain("/rooms/!abc123%3Aexample.com/send/");
+		});
+
+		it("does not resolve a room ID through the directory", async () => {
+			const { provider } = createProvider();
+			await provider.sendTestAlert(makeNotification({ roomId: "!abc123:example.com" }));
+			expect(mockGotGet).not.toHaveBeenCalled();
+		});
+
+		// An unresolved alias breaks the request outright: the "#" opens a URI fragment, so
+		// the PUT lands on /rooms/ instead of the send endpoint.
+		it("resolves a room alias through the directory before sending", async () => {
+			const { provider } = createProvider();
+			expect(await provider.sendTestAlert(makeNotification({ roomId: "#alerts:example.com" }))).toBe(true);
+			expect(mockGotGet).toHaveBeenCalledWith(
+				"https://matrix.example.com/_matrix/client/v3/directory/room/%23alerts%3Aexample.com",
+				expect.objectContaining({ headers: expect.objectContaining({ Authorization: "Bearer token-abc" }) })
+			);
+			expect(putUrl()).toContain("/rooms/!resolved%3Aexample.com/send/");
+		});
+
+		it("never leaves an unencoded # in the request URL", async () => {
+			const { provider } = createProvider();
+			await provider.sendTestAlert(makeNotification({ roomId: "#alerts:example.com" }));
+			expect(putUrl()).not.toContain("#");
+			expect(new URL(putUrl()).hash).toBe("");
+		});
+
+		it("returns false and logs when the alias cannot be resolved", async () => {
+			mockGotGet.mockRejectedValue(new Error("M_NOT_FOUND"));
+			const { provider, logger } = createProvider();
+			expect(await provider.sendTestAlert(makeNotification({ roomId: "#missing:example.com" }))).toBe(false);
+			expect(mockGotPut).not.toHaveBeenCalled();
+			expect(logger.warn).toHaveBeenCalled();
+		});
+
+		it("returns false when the directory response carries no room_id", async () => {
+			mockGotGet.mockResolvedValue({ body: {} });
+			const { provider, logger } = createProvider();
+			expect(await provider.sendTestAlert(makeNotification({ roomId: "#alerts:example.com" }))).toBe(false);
+			expect(mockGotPut).not.toHaveBeenCalled();
+			expect(logger.warn).toHaveBeenCalled();
+		});
+
+		it("strips a trailing slash from the homeserver URL", async () => {
+			const { provider } = createProvider();
+			await provider.sendTestAlert(makeNotification({ homeserverUrl: "https://matrix.example.com/" }));
+			expect(putUrl()).toContain("https://matrix.example.com/_matrix/");
+			expect(putUrl()).not.toContain("com//_matrix");
+		});
+
+		it("resolves aliases for real alerts, not just test alerts", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(makeNotification({ roomId: "#alerts:example.com" }) as any, makeMessage());
+			expect(mockGotGet).toHaveBeenCalled();
+			expect(putUrl()).toContain("/rooms/!resolved%3Aexample.com/send/");
 		});
 	});
 });
