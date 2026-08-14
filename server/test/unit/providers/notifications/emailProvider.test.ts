@@ -50,9 +50,9 @@ describe("EmailProvider", () => {
 			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to build test email content" }));
 		});
 
-		it("returns false when sendEmail returns falsy", async () => {
+		it("returns false when sendEmail rejects", async () => {
 			const { provider, emailService, logger } = createProvider();
-			(emailService.sendEmail as jest.Mock).mockResolvedValue(false);
+			(emailService.sendEmail as jest.Mock).mockRejectedValue(new Error("SMTP auth failed"));
 			expect(await provider.sendTestAlert(makeNotification())).toBe(false);
 			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Email test alert failed" }));
 		});
@@ -82,9 +82,11 @@ describe("EmailProvider", () => {
 			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to build email content" }));
 		});
 
-		it("returns false when sendEmail returns falsy", async () => {
+		// NotificationsService fans providers out through Promise.all, so a failed email must
+		// resolve to false rather than reject and take the other channels down with it.
+		it("returns false when sendEmail rejects", async () => {
 			const { provider, emailService, logger } = createProvider();
-			(emailService.sendEmail as jest.Mock).mockResolvedValue(undefined);
+			(emailService.sendEmail as jest.Mock).mockRejectedValue(new Error("SMTP auth failed"));
 			expect(await provider.sendMessage(makeNotification() as any, makeMessage())).toBe(false);
 			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Email notification failed" }));
 		});

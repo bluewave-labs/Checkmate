@@ -30,7 +30,7 @@ export interface IUserService {
 		currentUserEmail: string
 	): Promise<User>;
 	checkSuperadminExists(): Promise<boolean>;
-	requestRecovery(email: string): Promise<string | false | undefined>;
+	requestRecovery(email: string): Promise<string>;
 	validateRecovery(recoveryToken: string): Promise<void>;
 	resetPassword(password: string, recoveryToken: string): Promise<{ user: User; token: string }>;
 	deleteUser(params: { userId: string; teamId: string; roles: UserRole[] }): Promise<void>;
