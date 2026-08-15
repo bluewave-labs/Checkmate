@@ -52,6 +52,14 @@ const NotificationSchema = new Schema<NotificationDocument>(
 		accountSid: { type: String },
 		twilioPhoneNumber: { type: String },
 		topic: { type: String },
+		webhookAuthType: {
+			type: String,
+			enum: ["none", "basic", "bearer"],
+			default: "none",
+		},
+		webhookAuthUsername: { type: String },
+		webhookAuthPassword: { type: String },
+		webhookAuthToken: { type: String },
 	},
 	{
 		timestamps: true,

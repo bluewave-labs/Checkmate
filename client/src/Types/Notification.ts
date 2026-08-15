@@ -27,6 +27,10 @@ export interface Notification {
 	accountSid?: string;
 	twilioPhoneNumber?: string;
 	topic?: string;
+	webhookAuthType?: "none" | "basic" | "bearer";
+	webhookAuthUsername?: string;
+	webhookAuthPassword?: string;
+	webhookAuthToken?: string;
 	createdAt: string;
 	updatedAt: string;
 }
