@@ -10,7 +10,6 @@ import {
 import { AppError } from "@/utils/AppError.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
 import { Monitor } from "@/domain/monitors/monitor.type.js";
-import { NormalizeData } from "@/utils/dataUtils.js";
 
 export interface IStatusPageService {
 	createStatusPage(userId: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage>;
@@ -79,7 +78,6 @@ export class StatusPageService implements IStatusPageService {
 			status: monitor.status,
 			uptimePercentage: monitor.uptimePercentage,
 			recentChecks: monitor.recentChecks,
-			checks: NormalizeData(monitor.recentChecks, 10, 100),
 		};
 
 		if (showURL) {

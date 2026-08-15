@@ -58,8 +58,8 @@
 				"uptime": "Disponibilité"
 			},
 			"histogram": {
-				"avg": "Moy : {{value}} ms",
-				"max": "Max : {{value}} ms"
+				"avg": "Moy : {{value}}",
+				"max": "Max : {{value}}"
 			}
 		},
 		"dialogs": {
@@ -1352,10 +1352,10 @@
 					"responseTime": "Temps de réponse"
 				},
 				"chart": {
-					"avg": "moy {{value}}ms",
+					"avg": "moy {{value}}",
 					"downTooltip": "Hors service",
 					"heatmapAria": "Carte thermique des temps de réponse",
-					"max": "max {{value}}ms"
+					"max": "max {{value}}"
 				},
 				"status": {
 					"breached": "Seuil dépassé",

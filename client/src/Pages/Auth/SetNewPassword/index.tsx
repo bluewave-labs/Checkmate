@@ -1,9 +1,9 @@
 import { BaseAuthPage, BulletPointCheck, TextLink } from "@/Components/design-elements";
-import { Button, TextField } from "@/Components/inputs";
+import { Button } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { useSetNewPasswordForm } from "@/Hooks/useSetNewPasswordForm";
 import type { SetNewPasswordFormData } from "@/Validation/setNewPassword";
@@ -12,6 +12,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { usePost } from "@/Hooks/UseApi";
 import { useDispatch } from "react-redux";
 import { setAuthState } from "@/Features/Auth/authSlice";
+import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 
 const SetNewPasswordPage = () => {
 	const theme = useTheme();
@@ -23,11 +24,11 @@ const SetNewPasswordPage = () => {
 
 	const { schema, defaults } = useSetNewPasswordForm();
 
-	const { control, handleSubmit, watch } = useForm<SetNewPasswordFormData>({
+	const form = useForm<SetNewPasswordFormData>({
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
-
+	const { handleSubmit, watch } = form;
 	const password = watch("password");
 	const confirm = watch("confirm");
 
@@ -57,81 +58,68 @@ const SetNewPasswordPage = () => {
 	};
 
 	return (
-		<BaseAuthPage
-			component="form"
-			onSubmit={handleSubmit(onSubmit)}
-			title={t("pages.auth.setNewPassword.title")}
-			subtitle={t("pages.auth.setNewPassword.subtitle")}
-		>
-			<Controller
-				name="password"
-				control={control}
-				render={({ field, fieldState }) => (
-					<TextField
-						{...field}
-						type="password"
-						fieldLabel={t("pages.auth.common.form.option.password.label")}
-						placeholder={t("pages.auth.common.form.option.password.placeholder")}
-						error={!!fieldState.error}
-						helperText={fieldState.error?.message ?? ""}
-					/>
-				)}
-			/>
-			<Controller
-				name="confirm"
-				control={control}
-				render={({ field, fieldState }) => (
-					<TextField
-						{...field}
-						type="password"
-						fieldLabel={t("pages.auth.common.form.option.confirmPassword.label")}
-						placeholder={t("pages.auth.common.form.option.password.placeholder")}
-						error={!!fieldState.error}
-						helperText={fieldState.error?.message ?? ""}
-					/>
-				)}
-			/>
-			<Stack gap={theme.spacing(4)}>
-				<BulletPointCheck
-					text={t("pages.auth.common.passwordRules.length")}
-					variant={getVariant(hasLength)}
-				/>
-				<BulletPointCheck
-					text={t("pages.auth.common.passwordRules.special")}
-					variant={getVariant(hasSpecial)}
-				/>
-				<BulletPointCheck
-					text={t("pages.auth.common.passwordRules.number")}
-					variant={getVariant(hasNumber)}
-				/>
-				<BulletPointCheck
-					text={t("pages.auth.common.passwordRules.uppercase")}
-					variant={getVariant(hasUppercase)}
-				/>
-				<BulletPointCheck
-					text={t("pages.auth.common.passwordRules.lowercase")}
-					variant={getVariant(hasLowercase)}
-				/>
-				<BulletPointCheck
-					text={t("pages.auth.common.passwordRules.match")}
-					variant={getVariant(passwordsMatch)}
-				/>
-			</Stack>
-			<Button
-				variant="contained"
-				type="submit"
-				fullWidth
-				loading={loading}
+		<FormProvider {...form}>
+			<BaseAuthPage
+				component="form"
+				onSubmit={handleSubmit(onSubmit)}
+				title={t("pages.auth.setNewPassword.title")}
+				subtitle={t("pages.auth.setNewPassword.subtitle")}
 			>
-				{t("common.buttons.resetPassword")}
-			</Button>
-			<TextLink
-				alignSelf="center"
-				text={t("pages.auth.forgotPassword.links.login.text")}
-				linkText={t("pages.auth.forgotPassword.links.login.linkText")}
-				href="/login"
-			/>
-		</BaseAuthPage>
+				<FormTextField
+					name="password"
+					type="password"
+					fieldLabel={t("pages.auth.common.form.option.password.label")}
+					placeholder={t("pages.auth.common.form.option.password.placeholder")}
+				/>
+				<FormTextField
+					name="confirm"
+					type="password"
+					fieldLabel={t("pages.auth.common.form.option.confirmPassword.label")}
+					placeholder={t("pages.auth.common.form.option.password.placeholder")}
+				/>
+
+				<Stack gap={theme.spacing(4)}>
+					<BulletPointCheck
+						text={t("pages.auth.common.passwordRules.length")}
+						variant={getVariant(hasLength)}
+					/>
+					<BulletPointCheck
+						text={t("pages.auth.common.passwordRules.special")}
+						variant={getVariant(hasSpecial)}
+					/>
+					<BulletPointCheck
+						text={t("pages.auth.common.passwordRules.number")}
+						variant={getVariant(hasNumber)}
+					/>
+					<BulletPointCheck
+						text={t("pages.auth.common.passwordRules.uppercase")}
+						variant={getVariant(hasUppercase)}
+					/>
+					<BulletPointCheck
+						text={t("pages.auth.common.passwordRules.lowercase")}
+						variant={getVariant(hasLowercase)}
+					/>
+					<BulletPointCheck
+						text={t("pages.auth.common.passwordRules.match")}
+						variant={getVariant(passwordsMatch)}
+					/>
+				</Stack>
+				<Button
+					variant="contained"
+					type="submit"
+					fullWidth
+					loading={loading}
+				>
+					{t("common.buttons.resetPassword")}
+				</Button>
+				<TextLink
+					alignSelf="center"
+					text={t("pages.auth.forgotPassword.links.login.text")}
+					linkText={t("pages.auth.forgotPassword.links.login.linkText")}
+					href="/login"
+				/>
+			</BaseAuthPage>
+		</FormProvider>
 	);
 };
 

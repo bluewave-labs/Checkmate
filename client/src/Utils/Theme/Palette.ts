@@ -20,8 +20,19 @@ export const colors = {
 	brandGreen: "#13715B",
 	brandGreenLight: "#4DAF94",
 	green200: "#ECF7F2",
+	green700: "#008300",
 	yellow200: "#FFF4E5",
+	yellow500: "#EDA100",
+	yellow600: "#C98500",
 	orange500: "#FFA500",
+	orange600: "#EB6834",
+	orange700: "#D95926",
+	blue400: "#3987E5",
+	blue500: "#2A78D6",
+	aqua500: "#1BAF7A",
+	aqua600: "#199E70",
+	magenta300: "#E87BA4",
+	magenta400: "#D55181",
 };
 
 export const lightPalette = {
@@ -37,6 +48,16 @@ export const lightPalette = {
 	rowStatus: {
 		running: colors.green200,
 		paused: colors.yellow200,
+	},
+	chart: {
+		phases: {
+			dns: colors.magenta300,
+			tcp: colors.orange600,
+			tls: colors.aqua500,
+			request: colors.yellow500,
+			firstByte: colors.blue500,
+			download: colors.green700,
+		},
 	},
 };
 
@@ -57,5 +78,15 @@ export const darkPalette = {
 	rowStatus: {
 		running: alpha(colors.brandGreen, 0.18),
 		paused: alpha(colors.orange500, 0.18),
+	},
+	chart: {
+		phases: {
+			dns: colors.magenta400,
+			tcp: colors.orange700,
+			tls: colors.aqua600,
+			request: colors.yellow600,
+			firstByte: colors.blue500,
+			download: colors.green700,
+		},
 	},
 };

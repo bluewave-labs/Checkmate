@@ -178,3 +178,5 @@ export interface Game {
 }
 
 export type GamesMap = Record<string, Game>;
+
+export type MonitorScheduleFields = Pick<Monitor, "id" | "type" | "isActive" | "interval" | "geoCheckEnabled" | "geoCheckInterval">;

@@ -13,6 +13,7 @@ type BaseChartProps = React.PropsWithChildren<{
 	width?: number | string;
 	maxWidth?: number | string;
 	padding?: number | string | ResponsiveStyleValue<number | string>;
+	onClick?: () => void;
 }>;
 
 export const BaseChart = ({
@@ -21,16 +22,22 @@ export const BaseChart = ({
 	width = "100%",
 	maxWidth = "100%",
 	padding,
+	onClick,
 }: BaseChartProps) => {
 	const theme = useTheme();
 	return (
 		<BaseBox
+			onClick={onClick}
 			sx={{
 				padding: padding ?? theme.spacing(LAYOUT.MD),
 				display: "flex",
 				flex: 1,
 				width: width,
 				maxWidth: maxWidth,
+				...(onClick && {
+					cursor: "pointer",
+					"& .recharts-wrapper": { cursor: "pointer !important" },
+				}),
 			}}
 		>
 			<Stack

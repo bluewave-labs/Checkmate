@@ -149,6 +149,15 @@ export interface GroupedCheck {
 	totalChecks: number;
 }
 
+export interface GroupedUptimeCheck extends GroupedCheck {
+	avgDns: number;
+	avgTcp: number;
+	avgTls: number;
+	avgRequest: number;
+	avgFirstByte: number;
+	avgDownload: number;
+}
+
 export interface PageSpeedGroupedCheck {
 	bucketDate: string;
 	performance: number;
@@ -241,18 +250,44 @@ export interface ChecksSummary {
 	downChecks: number;
 }
 
-export type CheckSnapshot = Omit<Check, "metadata" | "__v" | "updatedAt"> & {
-	originalResponseTime: number;
-};
+export type SnapshotCpuInfo = Pick<
+	CheckCpuInfo,
+	| "physical_core"
+	| "logical_core"
+	| "frequency"
+	| "current_frequency"
+	| "temperature"
+	| "usage_percent"
+>;
+export type SnapshotMemoryInfo = Pick<
+	CheckMemoryInfo,
+	"total_bytes" | "used_bytes" | "usage_percent"
+>;
+export type SnapshotDiskInfo = Pick<
+	CheckDiskInfo,
+	"device" | "total_bytes" | "used_bytes" | "usage_percent"
+>;
+export type SnapshotHostInfo = Pick<CheckHostInfo, "os" | "platform" | "pretty_name">;
 
+export type CheckSnapshot = Pick<
+	Check,
+	| "id"
+	| "status"
+	| "responseTime"
+	| "statusCode"
+	| "message"
+	| "createdAt"
+	| "accessibility"
+	| "bestPractices"
+	| "seo"
+	| "performance"
+	| "audits"
+> & {
+	cpu?: SnapshotCpuInfo;
+	memory?: SnapshotMemoryInfo;
+	disk?: SnapshotDiskInfo[];
+	host?: SnapshotHostInfo;
+};
 export interface HasResponseTime {
 	responseTime: number;
 }
-
-export type NormalizedCheck<T extends HasResponseTime = Check> = T & {
-	originalResponseTime: number;
-};
-
-export type NormalizedUptimeCheck<T extends GroupedCheck = GroupedCheck> = T & {
-	originalAvgResponseTime: number;
-};

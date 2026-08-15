@@ -315,8 +315,8 @@ describe("StatusPageService", () => {
 				status: "up",
 				uptimePercentage: 99.9,
 				recentChecks: [],
-				checks: [],
 			});
+			expect(monitors[0]).not.toHaveProperty("checks");
 		});
 
 		it("orders monitors to match the status page's monitor list", async () => {

@@ -58,8 +58,8 @@
 				"uptime": "Аптайм"
 			},
 			"histogram": {
-				"avg": "Сред: {{value}} мс",
-				"max": "Макс: {{value}} мс"
+				"avg": "Сред: {{value}}",
+				"max": "Макс: {{value}}"
 			}
 		},
 		"dialogs": {
@@ -1352,10 +1352,10 @@
 					"responseTime": "Время ответа"
 				},
 				"chart": {
-					"avg": "ср {{value}}мс",
+					"avg": "ср {{value}}",
 					"downTooltip": "Не работает",
 					"heatmapAria": "Тепловая карта времени отклика",
-					"max": "макс {{value}}мс"
+					"max": "макс {{value}}"
 				},
 				"status": {
 					"breached": "Превышен порог",

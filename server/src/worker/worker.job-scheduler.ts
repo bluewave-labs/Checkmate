@@ -1,7 +1,7 @@
 import { IJobScheduler } from "@/worker/worker.interface.js";
 import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
-import { Monitor, supportsGeoCheck } from "@/domain/monitors/monitor.type.js";
+import { Monitor, MonitorScheduleFields, supportsGeoCheck } from "@/domain/monitors/monitor.type.js";
 import { type Job, type JobSeed, type JobType, jobId } from "@/domain/jobs/job.type.js";
 import { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.repository.interface.js";
 import { WorkerJobsPagination, WorkerJobSummary, WorkerMetrics } from "@/worker/worker.interface.js";
@@ -43,7 +43,7 @@ export class JobScheduler implements IJobScheduler {
 		"cleanup-retention": POLL_MS,
 	};
 	// Helpers, builds job seeds. immediate=true runs on the next tick; otherwise jitter spreads the herd.
-	protected toCheckJob = (monitor: Monitor, now: number, immediate = false): JobSeed => ({
+	protected toCheckJob = (monitor: MonitorScheduleFields, now: number, immediate = false): JobSeed => ({
 		id: jobId("check", monitor.id),
 		type: "check",
 		refId: monitor.id,
@@ -52,7 +52,7 @@ export class JobScheduler implements IJobScheduler {
 		intervalMs: monitor.interval,
 	});
 
-	protected toGeoCheckJob = (monitor: Monitor, now: number, immediate = false): JobSeed => ({
+	protected toGeoCheckJob = (monitor: MonitorScheduleFields, now: number, immediate = false): JobSeed => ({
 		...this.toCheckJob(monitor, now, immediate),
 		id: jobId("geo-check", monitor.id),
 		type: "geo-check",
@@ -187,7 +187,7 @@ export class JobScheduler implements IJobScheduler {
 	// Seed queue
 	protected reconcile = async () => {
 		const now = Date.now();
-		const monitors = await this.monitorsRepository.findAll();
+		const monitors = await this.monitorsRepository.findAllForScheduling();
 		for (const monitor of monitors) {
 			await this.jobsRepository.upsertJob(this.toCheckJob(monitor, now));
 			if (supportsGeoCheck(monitor.type) && monitor.geoCheckEnabled) {

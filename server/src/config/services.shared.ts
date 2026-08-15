@@ -23,6 +23,7 @@ import { ILogger } from "@/utils/logger.js";
 // Notification providers
 import type { NotificationProviderRegistry } from "@/domain/notifications/notification.service.js";
 import { WebhookProvider } from "@/domain/notifications/providers/webhook.js";
+import { RocketChatProvider } from "@/domain/notifications/providers/rocketChat.js";
 import { SlackProvider } from "@/domain/notifications/providers/slack.js";
 import { EmailProvider } from "@/domain/notifications/providers/email.js";
 import { DiscordProvider } from "@/domain/notifications/providers/discord.js";
@@ -157,6 +158,7 @@ export const buildShared = async ({
 	});
 
 	const webhookProvider = new WebhookProvider(logger);
+	const rocketChatProvider = new RocketChatProvider(logger);
 	const slackProvider = new SlackProvider(logger);
 	const emailProvider = new EmailProvider(emailService, logger);
 	const discordProvider = new DiscordProvider(logger);
@@ -170,6 +172,7 @@ export const buildShared = async ({
 
 	const notificationProviders: NotificationProviderRegistry = {
 		webhook: webhookProvider,
+		rocket_chat: rocketChatProvider,
 		email: emailProvider,
 		slack: slackProvider,
 		discord: discordProvider,

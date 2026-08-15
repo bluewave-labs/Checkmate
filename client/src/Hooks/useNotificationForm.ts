@@ -92,9 +92,16 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 	}
 	// Default: email (covers both data === null and data.type === "email")
 	return {
-		type: "email",
+		type: data?.type ?? "email",
 		notificationName: data?.notificationName || "",
 		address: data?.address || "",
+		accessToken: data?.accessToken || "",
+		accountSid: data?.accountSid || "",
+		phone: data?.phone || "",
+		twilioPhoneNumber: data?.twilioPhoneNumber || "",
+		homeserverUrl: data?.homeserverUrl || "",
+		roomId: data?.roomId || "",
+		topic: data?.topic || "",
 	};
 }
 

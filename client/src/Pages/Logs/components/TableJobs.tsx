@@ -1,7 +1,6 @@
 import { Table, Pagination } from "@/Components/design-elements";
 import { Typography, useTheme } from "@mui/material";
-import prettyMilliseconds from "pretty-ms";
-import { formatTimestamp } from "@/Utils/TimeUtils";
+import { formatDuration, formatTimestamp } from "@/Utils/TimeUtils";
 
 import { useTranslation } from "react-i18next";
 import type { QueueJobFailure, QueueJobSummary, QueueMetrics } from "@/Types/Queue";
@@ -84,7 +83,7 @@ export const TableJobs = ({
 			id: "interval",
 			content: t("common.table.headers.interval"),
 			render: (row) => (
-				<Typography sx={cellSx}>{prettyMilliseconds(row.monitorInterval ?? 0)}</Typography>
+				<Typography sx={cellSx}>{formatDuration(row.monitorInterval ?? 0)}</Typography>
 			),
 		},
 		{

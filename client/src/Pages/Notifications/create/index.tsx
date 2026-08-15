@@ -1,14 +1,12 @@
 import { BasePage, ConfigBox } from "@/Components/design-elements";
-import { TextField, Select, Button } from "@/Components/inputs";
-import MenuItem from "@mui/material/MenuItem";
-import Typography from "@mui/material/Typography";
+import { Button } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
 
 import { useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { Controller, useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useGet, usePost, usePatch } from "@/Hooks/UseApi";
 import { useNotificationForm } from "@/Hooks/useNotificationForm";
@@ -16,6 +14,8 @@ import type { NotificationFormData } from "@/Validation/notifications";
 import type { Notification } from "@/Types/Notification";
 import { useTranslation } from "react-i18next";
 import { NotificationChannels } from "@/Types/Notification";
+import { FormTextField } from "@/Components/inputs/forms/FormTextField";
+import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
 
 const NotificationsCreatePage = () => {
 	const { t } = useTranslation();
@@ -39,7 +39,7 @@ const NotificationsCreatePage = () => {
 		defaultValues: defaults,
 	});
 
-	const { control, watch, reset, handleSubmit, clearErrors, trigger, getValues } = form;
+	const { watch, reset, handleSubmit, clearErrors, trigger, getValues } = form;
 
 	useEffect(() => {
 		reset(defaults);
@@ -93,470 +93,237 @@ const NotificationsCreatePage = () => {
 	};
 
 	return (
-		<BasePage
-			component="form"
-			onSubmit={handleSubmit(onSubmit)}
-		>
-			<ConfigBox
-				title={t("pages.notifications.form.notificationName.title")}
-				subtitle={t("pages.notifications.form.notificationName.description")}
-				rightContent={
-					<Controller
-						name="notificationName"
-						control={control}
-						defaultValue={defaults.notificationName}
-						render={({ field, fieldState }) => (
-							<TextField
-								{...field}
-								type="text"
-								fieldLabel={t("pages.notifications.form.notificationName.optionName")}
-								placeholder={t("pages.notifications.form.notificationName.placeholder")}
-								fullWidth
-								error={!!fieldState.error}
-								helperText={fieldState.error?.message ?? ""}
-							/>
-						)}
-					/>
-				}
-			/>
-			<ConfigBox
-				title={t("pages.notifications.form.type.title")}
-				subtitle={t("pages.notifications.form.type.description")}
-				rightContent={
-					<Controller
-						name="type"
-						control={control}
-						defaultValue={defaults.type}
-						render={({ field, fieldState }) => (
-							<Select
-								value={field.value}
-								fieldLabel={t("pages.notifications.form.type.optionType")}
-								error={!!fieldState.error}
-								onChange={field.onChange}
-							>
-								{NotificationChannels.map((type: string) => (
-									<MenuItem
-										key={type}
-										value={type}
-									>
-										<Typography textTransform="capitalize">{type}</Typography>
-									</MenuItem>
-								))}
-							</Select>
-						)}
-					/>
-				}
-			/>
-			{watchedType !== "matrix" &&
-				watchedType !== "telegram" &&
-				watchedType !== "pushover" &&
-				watchedType !== "twilio" &&
-				watchedType !== "ntfy" && (
+		<FormProvider {...form}>
+			<BasePage
+				component="form"
+				onSubmit={handleSubmit(onSubmit)}
+			>
+				<ConfigBox
+					title={t("pages.notifications.form.notificationName.title")}
+					subtitle={t("pages.notifications.form.notificationName.description")}
+					rightContent={
+						<FormTextField
+							name="notificationName"
+							fieldLabel={t("pages.notifications.form.notificationName.optionName")}
+							placeholder={t("pages.notifications.form.notificationName.placeholder")}
+						/>
+					}
+				/>
+				<ConfigBox
+					title={t("pages.notifications.form.type.title")}
+					subtitle={t("pages.notifications.form.type.description")}
+					rightContent={
+						<FormSelectField
+							name="type"
+							fieldLabel={t("pages.notifications.form.type.optionType")}
+							options={NotificationChannels.map((channel) => ({
+								value: channel,
+								label: t(`pages.notifications.form.type.value.${channel}`),
+							}))}
+						/>
+					}
+				/>
+				{watchedType !== "matrix" &&
+					watchedType !== "telegram" &&
+					watchedType !== "pushover" &&
+					watchedType !== "twilio" &&
+					watchedType !== "ntfy" && (
+						<ConfigBox
+							title={addressConfig.title}
+							subtitle={addressConfig.description}
+							rightContent={
+								<FormTextField
+									name="address"
+									fieldLabel={addressConfig.fieldLabel}
+									placeholder={addressConfig.placeholder}
+								/>
+							}
+						/>
+					)}
+				{watchedType === "ntfy" && (
 					<ConfigBox
-						title={addressConfig.title}
-						subtitle={addressConfig.description}
+						title={t("pages.notifications.form.ntfy.title")}
+						subtitle={t("pages.notifications.form.ntfy.description")}
 						rightContent={
-							<Controller
-								name="address"
-								control={control}
-								defaultValue={"address" in defaults ? defaults.address : ""}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={addressConfig.fieldLabel}
-										placeholder={addressConfig.placeholder}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
-								)}
-							/>
+							<Stack spacing={theme.spacing(8)}>
+								<FormTextField
+									name="address"
+									fieldLabel={t("pages.notifications.form.ntfy.optionServerUrl")}
+									placeholder={t("pages.notifications.form.ntfy.placeholderServerUrl")}
+								/>
+								<FormTextField
+									name="topic"
+									fieldLabel={t("pages.notifications.form.ntfy.optionTopic")}
+									placeholder={t("pages.notifications.form.ntfy.placeholderTopic")}
+								/>
+							</Stack>
 						}
 					/>
 				)}
-			{watchedType === "ntfy" && (
-				<ConfigBox
-					title={t("pages.notifications.form.ntfy.title")}
-					subtitle={t("pages.notifications.form.ntfy.description")}
-					rightContent={
-						<Stack spacing={theme.spacing(8)}>
-							<Controller
-								name="address"
-								control={control}
-								defaultValue={"address" in defaults ? defaults.address : ""}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t("pages.notifications.form.ntfy.optionServerUrl")}
-										placeholder={t("pages.notifications.form.ntfy.placeholderServerUrl")}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
-								)}
-							/>
-							<Controller
-								name="topic"
-								control={control}
-								defaultValue={"topic" in defaults ? defaults.topic : ""}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t("pages.notifications.form.ntfy.optionTopic")}
-										placeholder={t("pages.notifications.form.ntfy.placeholderTopic")}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
-								)}
-							/>
-						</Stack>
-					}
-				/>
-			)}
-			{watchedType === "telegram" && (
-				<ConfigBox
-					title={t("pages.notifications.form.telegram.title")}
-					subtitle={t("pages.notifications.form.telegram.description")}
-					rightContent={
-						<Stack spacing={theme.spacing(8)}>
-							<Controller
-								name="accessToken"
-								control={control}
-								defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t("pages.notifications.form.telegram.optionBotToken")}
-										placeholder={t(
-											"pages.notifications.form.telegram.placeholderBotToken"
-										)}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
-								)}
-							/>
-							<Controller
-								name="address"
-								control={control}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t("pages.notifications.form.telegram.optionChatId")}
-										placeholder={t("pages.notifications.form.telegram.placeholderChatId")}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
-								)}
-							/>
-						</Stack>
-					}
-				/>
-			)}
-			{watchedType === "pushover" && (
-				<ConfigBox
-					title={t("pages.notifications.form.pushover.title")}
-					subtitle={t("pages.notifications.form.pushover.description")}
-					rightContent={
-						<Stack spacing={theme.spacing(8)}>
-							<Controller
-								name="accessToken"
-								control={control}
-								defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t("pages.notifications.form.pushover.optionAppToken")}
-										placeholder={t(
-											"pages.notifications.form.pushover.placeholderAppToken"
-										)}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
-								)}
-							/>
-							<Controller
-								name="address"
-								control={control}
-								defaultValue={"address" in defaults ? defaults.address : ""}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t("pages.notifications.form.pushover.optionUserKey")}
-										placeholder={t(
-											"pages.notifications.form.pushover.placeholderUserKey"
-										)}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
-								)}
-							/>
-						</Stack>
-					}
-				/>
-			)}
-			{watchedType === "twilio" && (
-				<ConfigBox
-					title={t("pages.notifications.form.twilio.title")}
-					subtitle={t("pages.notifications.form.twilio.description")}
-					rightContent={
-						<Stack spacing={theme.spacing(8)}>
-							<Controller
-								name="accountSid"
-								control={control}
-								defaultValue={"accountSid" in defaults ? defaults.accountSid : ""}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t("pages.notifications.form.twilio.optionAccountSid")}
-										placeholder={t(
-											"pages.notifications.form.twilio.placeholderAccountSid"
-										)}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
-								)}
-							/>
-							<Controller
-								name="accessToken"
-								control={control}
-								defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t("pages.notifications.form.twilio.optionAuthToken")}
-										placeholder={t(
-											"pages.notifications.form.twilio.placeholderAuthToken"
-										)}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
-								)}
-							/>
-							<Controller
-								name="twilioPhoneNumber"
-								control={control}
-								defaultValue={
-									"twilioPhoneNumber" in defaults ? defaults.twilioPhoneNumber : ""
-								}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t("pages.notifications.form.twilio.optionFromNumber")}
-										placeholder={t(
-											"pages.notifications.form.twilio.placeholderFromNumber"
-										)}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
-								)}
-							/>
-							<Controller
-								name="phone"
-								control={control}
-								defaultValue={"phone" in defaults ? defaults.phone : ""}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t("pages.notifications.form.twilio.optionToNumber")}
-										placeholder={t("pages.notifications.form.twilio.placeholderToNumber")}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
-								)}
-							/>
-						</Stack>
-					}
-				/>
-			)}
-			{watchedType === "webhook" && (
-				<ConfigBox
-					title={t("pages.notifications.form.webhookAuth.title")}
-					subtitle={t("pages.notifications.form.webhookAuth.description")}
-					rightContent={
-						<Stack spacing={theme.spacing(8)}>
-							<Controller
-								name="webhookAuthType"
-								control={control}
-								defaultValue={"webhookAuthType" in defaults ? defaults.webhookAuthType : "none"}
-								render={({ field }) => (
-									<Select
-										value={field.value}
-										fieldLabel={t("pages.notifications.form.webhookAuth.optionAuthType")}
-										onChange={field.onChange}
-									>
-										<MenuItem value="none">
-											{t("pages.notifications.form.webhookAuth.typeNone")}
-										</MenuItem>
-										<MenuItem value="basic">
-											{t("pages.notifications.form.webhookAuth.typeBasic")}
-										</MenuItem>
-										<MenuItem value="bearer">
-											{t("pages.notifications.form.webhookAuth.typeBearer")}
-										</MenuItem>
-									</Select>
-								)}
-							/>
-							{watch("webhookAuthType") === "basic" && (
-								<>
-									<Controller
-										name="webhookAuthUsername"
-										control={control}
-										defaultValue={"webhookAuthUsername" in defaults ? defaults.webhookAuthUsername : ""}
-										render={({ field, fieldState }) => (
-											<TextField
-												{...field}
-												type="text"
-												fieldLabel={t("pages.notifications.form.webhookAuth.optionUsername")}
-												placeholder={t("pages.notifications.form.webhookAuth.placeholderUsername")}
-												fullWidth
-												error={!!fieldState.error}
-												helperText={fieldState.error?.message ?? ""}
-											/>
-										)}
-									/>
-									<Controller
-										name="webhookAuthPassword"
-										control={control}
-										defaultValue={"webhookAuthPassword" in defaults ? defaults.webhookAuthPassword : ""}
-										render={({ field, fieldState }) => (
-											<TextField
-												{...field}
-												type="password"
-												fieldLabel={t("pages.notifications.form.webhookAuth.optionPassword")}
-												placeholder={t("pages.notifications.form.webhookAuth.placeholderPassword")}
-												fullWidth
-												error={!!fieldState.error}
-												helperText={fieldState.error?.message ?? ""}
-											/>
-										)}
-									/>
-								</>
-							)}
-							{watch("webhookAuthType") === "bearer" && (
-								<Controller
-									name="webhookAuthToken"
-									control={control}
-									defaultValue={"webhookAuthToken" in defaults ? defaults.webhookAuthToken : ""}
-									render={({ field, fieldState }) => (
-										<TextField
-											{...field}
-											type="password"
-											fieldLabel={t("pages.notifications.form.webhookAuth.optionToken")}
-											placeholder={t("pages.notifications.form.webhookAuth.placeholderToken")}
-											fullWidth
-											error={!!fieldState.error}
-											helperText={fieldState.error?.message ?? ""}
-										/>
-									)}
+				{watchedType === "telegram" && (
+					<ConfigBox
+						title={t("pages.notifications.form.telegram.title")}
+						subtitle={t("pages.notifications.form.telegram.description")}
+						rightContent={
+							<Stack spacing={theme.spacing(8)}>
+								<FormTextField
+									name="accessToken"
+									fieldLabel={t("pages.notifications.form.telegram.optionBotToken")}
+									placeholder={t("pages.notifications.form.telegram.placeholderBotToken")}
 								/>
-							)}
-						</Stack>
-					}
-				/>
-			)}
-			{watchedType === "matrix" && (
-				<ConfigBox
-					title={t("pages.notifications.form.matrix.title")}
-					subtitle={t("pages.notifications.form.matrix.description")}
-					rightContent={
-						<Stack spacing={theme.spacing(8)}>
-							<Controller
-								name="homeserverUrl"
-								control={control}
-								defaultValue={"homeserverUrl" in defaults ? defaults.homeserverUrl : ""}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t("pages.notifications.form.homeServer.optionHomeServer")}
-										placeholder={t("pages.notifications.form.homeServer.placeholder")}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
+								<FormTextField
+									name="address"
+									fieldLabel={t("pages.notifications.form.telegram.optionChatId")}
+									placeholder={t("pages.notifications.form.telegram.placeholderChatId")}
+								/>
+							</Stack>
+						}
+					/>
+				)}
+				{watchedType === "pushover" && (
+					<ConfigBox
+						title={t("pages.notifications.form.pushover.title")}
+						subtitle={t("pages.notifications.form.pushover.description")}
+						rightContent={
+							<Stack spacing={theme.spacing(8)}>
+								<FormTextField
+									name="accessToken"
+									fieldLabel={t("pages.notifications.form.pushover.optionAppToken")}
+									placeholder={t("pages.notifications.form.pushover.placeholderAppToken")}
+								/>
+
+								<FormTextField
+									name="address"
+									fieldLabel={t("pages.notifications.form.pushover.optionUserKey")}
+									placeholder={t("pages.notifications.form.pushover.placeholderUserKey")}
+								/>
+							</Stack>
+						}
+					/>
+				)}
+				{watchedType === "twilio" && (
+					<ConfigBox
+						title={t("pages.notifications.form.twilio.title")}
+						subtitle={t("pages.notifications.form.twilio.description")}
+						rightContent={
+							<Stack spacing={theme.spacing(8)}>
+								<FormTextField
+									name="accountSid"
+									fieldLabel={t("pages.notifications.form.twilio.optionAccountSid")}
+									placeholder={t("pages.notifications.form.twilio.placeholderAccountSid")}
+								/>
+								<FormTextField
+									name="accessToken"
+									fieldLabel={t("pages.notifications.form.twilio.optionAuthToken")}
+									placeholder={t("pages.notifications.form.twilio.placeholderAuthToken")}
+								/>
+
+								<FormTextField
+									name="twilioPhoneNumber"
+									fieldLabel={t("pages.notifications.form.twilio.optionFromNumber")}
+									placeholder={t("pages.notifications.form.twilio.placeholderFromNumber")}
+								/>
+
+								<FormTextField
+									name="phone"
+									fieldLabel={t("pages.notifications.form.twilio.optionToNumber")}
+									placeholder={t("pages.notifications.form.twilio.placeholderToNumber")}
+								/>
+							</Stack>
+						}
+					/>
+				)}
+				{watchedType === "matrix" && (
+					<ConfigBox
+						title={t("pages.notifications.form.matrix.title")}
+						subtitle={t("pages.notifications.form.matrix.description")}
+						rightContent={
+							<Stack spacing={theme.spacing(8)}>
+								<FormTextField
+									name="homeserverUrl"
+									fieldLabel={t("pages.notifications.form.homeServer.optionHomeServer")}
+									placeholder={t("pages.notifications.form.homeServer.placeholder")}
+								/>
+								<FormTextField
+									name="roomId"
+									fieldLabel={t("pages.notifications.form.roomId.optionRoomId")}
+									placeholder={t("pages.notifications.form.roomId.placeholder")}
+								/>
+								<FormTextField
+									name="accessToken"
+									fieldLabel={t("pages.notifications.form.accessToken.optionAccessToken")}
+									placeholder={t("pages.notifications.form.accessToken.placeholder")}
+								/>
+							</Stack>
+						}
+					/>
+				)}
+				{watchedType === "webhook" && (
+					<ConfigBox
+						title={t("pages.notifications.form.webhookAuth.title")}
+						subtitle={t("pages.notifications.form.webhookAuth.description")}
+						rightContent={
+							<Stack spacing={theme.spacing(8)}>
+								<FormSelectField
+									name="webhookAuthType"
+									fieldLabel={t("pages.notifications.form.webhookAuth.optionAuthType")}
+									options={[
+										{ value: "none", label: t("pages.notifications.form.webhookAuth.typeNone") },
+										{ value: "basic", label: t("pages.notifications.form.webhookAuth.typeBasic") },
+										{ value: "bearer", label: t("pages.notifications.form.webhookAuth.typeBearer") },
+									]}
+								/>
+								{watch("webhookAuthType") === "basic" && (
+									<>
+										<FormTextField
+											name="webhookAuthUsername"
+											fieldLabel={t("pages.notifications.form.webhookAuth.optionUsername")}
+											placeholder={t("pages.notifications.form.webhookAuth.placeholderUsername")}
+										/>
+										<FormTextField
+											name="webhookAuthPassword"
+											type="password"
+											fieldLabel={t("pages.notifications.form.webhookAuth.optionPassword")}
+											placeholder={t("pages.notifications.form.webhookAuth.placeholderPassword")}
+										/>
+									</>
+								)}
+								{watch("webhookAuthType") === "bearer" && (
+									<FormTextField
+										name="webhookAuthToken"
+										type="password"
+										fieldLabel={t("pages.notifications.form.webhookAuth.optionToken")}
+										placeholder={t("pages.notifications.form.webhookAuth.placeholderToken")}
 									/>
 								)}
-							/>
-							<Controller
-								name="roomId"
-								control={control}
-								defaultValue={"roomId" in defaults ? defaults.roomId : ""}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t("pages.notifications.form.roomId.optionRoomId")}
-										placeholder={t("pages.notifications.form.roomId.placeholder")}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
-								)}
-							/>
-							<Controller
-								name="accessToken"
-								control={control}
-								defaultValue={"accessToken" in defaults ? defaults.accessToken : ""}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="text"
-										fieldLabel={t(
-											"pages.notifications.form.accessToken.optionAccessToken"
-										)}
-										placeholder={t("pages.notifications.form.accessToken.placeholder")}
-										fullWidth
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-									/>
-								)}
-							/>
-						</Stack>
-					}
-				/>
-			)}
-			<Stack
-				direction="row"
-				justifyContent="flex-end"
-				spacing={theme.spacing(2)}
-			>
-				<Button
-					variant="contained"
-					color="primary"
-					onClick={handleTest}
-					loading={isTesting}
+							</Stack>
+						}
+					/>
+				)}
+				<Stack
+					direction="row"
+					justifyContent="flex-end"
+					spacing={theme.spacing(2)}
 				>
-					{t("common.buttons.test")}
-				</Button>
-				<Button
-					loading={isSubmitting || isPatching}
-					type="submit"
-					variant="contained"
-					color="primary"
-				>
-					{t("common.buttons.save")}
-				</Button>
-			</Stack>
-		</BasePage>
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={handleTest}
+						loading={isTesting}
+					>
+						{t("common.buttons.test")}
+					</Button>
+					<Button
+						loading={isSubmitting || isPatching}
+						type="submit"
+						variant="contained"
+						color="primary"
+					>
+						{t("common.buttons.save")}
+					</Button>
+				</Stack>
+			</BasePage>
+		</FormProvider>
 	);
 };
 

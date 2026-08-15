@@ -60,7 +60,8 @@
 			"exportToJSON": "Export to JSON",
 			"importFromJSON": "Import from JSON",
 			"clearFilters": "Clear filters",
-			"removeUser": "Remove user"
+			"removeUser": "Remove user",
+			"removeItem": "Remove {{item}}"
 		},
 		"charts": {
 			"labels": {
@@ -68,11 +69,24 @@
 				"downtime": "Downtime",
 				"high": "High",
 				"low": "Low",
+				"responseTime": "Response time",
+				"timingPhases": "Timing phases",
+				"totalResponseTime": "Total response time",
 				"uptime": "Uptime"
 			},
 			"histogram": {
-				"avg": "Avg: {{value}} ms",
-				"max": "Max: {{value}} ms"
+				"avg": "Avg: {{value}}",
+				"max": "Max: {{value}}",
+				"responseTime": "Response time: {{value}}",
+				"total": "Total: {{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "Request",
+				"firstByte": "First byte",
+				"download": "Download"
 			}
 		},
 		"dialogs": {
@@ -91,6 +105,9 @@
 			"responseTime": "Response time"
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "Type to search"
+			},
 			"role": {
 				"option": {
 					"role": {
@@ -515,8 +532,7 @@
 						},
 						"customUpCodes": {
 							"label": "Accepted status codes",
-							"description": "Add any non-2xx codes that should also be considered successful.",
-							"removeAriaLabel": "Remove status code"
+							"description": "Add any non-2xx codes that should also be considered successful."
 						}
 					},
 					"title": "Advanced settings"
@@ -570,7 +586,7 @@
 						},
 						"port": {
 							"label": "Port to monitor",
-							"placeholder": 80
+							"placeholder": "80"
 						},
 						"grpcServiceName": {
 							"label": "Service name",
@@ -705,17 +721,6 @@
 								"fifteenMinutes": "15 minutes",
 								"thirtyMinutes": "30 minutes"
 							}
-						}
-					}
-				},
-				"url": {
-					"title": "Monitor IP/URL on Status Page",
-					"description": "Display the IP address or URL of monitor on the public Status page. If it's disabled, only the monitor name will be shown to protect sensitive information.",
-					"option": {
-						"showURL": {
-							"label": "Display IP/URL on status page",
-							"enabled": "Enabled",
-							"disabled": "Disabled"
 						}
 					}
 				},
@@ -1151,7 +1156,21 @@
 				"type": {
 					"description": "Select the type of notification channel to create.",
 					"optionType": "Type",
-					"title": "Channel type"
+					"title": "Channel type",
+					"value": {
+						"email": "Email",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				},
 				"telegram": {
 					"title": "Telegram configuration",
@@ -1296,9 +1315,7 @@
 					"description": "Display the IP address or URL of monitor on the public Status page. If it's disabled, only the monitor name will be shown to protect sensitive information.",
 					"option": {
 						"showURL": {
-							"label": "Display IP/URL on status page",
-							"enabled": "Enabled",
-							"disabled": "Disabled"
+							"label": "Display IP/URL on status page"
 						}
 					}
 				},
@@ -1456,8 +1473,8 @@
 					"initializing": "Initializing"
 				},
 				"chart": {
-					"avg": "avg {{value}}ms",
-					"max": "max {{value}}ms",
+					"avg": "avg {{value}}",
+					"max": "max {{value}}",
 					"downTooltip": "Down",
 					"heatmapAria": "Response time heatmap"
 				},

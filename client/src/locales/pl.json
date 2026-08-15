@@ -53,8 +53,8 @@
 		},
 		"charts": {
 			"histogram": {
-				"avg": "Średnia: {{value}} ms",
-				"max": "Maks: {{value}} ms"
+				"avg": "Średnia: {{value}}",
+				"max": "Maks: {{value}}"
 			},
 			"labels": {
 				"averageResponseTime": "Średni czas odpowiedzi",
@@ -1542,10 +1542,10 @@
 			},
 			"monitorsList": {
 				"chart": {
-					"avg": "śr. {{value}}ms",
+					"avg": "śr. {{value}}",
 					"downTooltip": "Niedostępny",
 					"heatmapAria": "Heatmapa czasu odpowiedzi",
-					"max": "maks. {{value}}ms"
+					"max": "maks. {{value}}"
 				},
 				"chartTypeHeatmap": "Heatmapa",
 				"chartTypeHistogram": "Histogram",

@@ -3,6 +3,7 @@ import type { MobileTimePickerProps } from "@mui/x-date-pickers/MobileTimePicker
 import type { Dayjs } from "dayjs";
 import { useTheme } from "@mui/material/styles";
 import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import { FieldLabel } from "./FieldLabel";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -10,11 +11,15 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 interface TimePickerComponentProps extends Omit<MobileTimePickerProps<Dayjs>, "label"> {
 	fieldLabel?: string;
 	required?: boolean;
+	error?: boolean;
+	helperText?: string;
 }
 
 export const TimePickerComponent = ({
 	fieldLabel,
 	required,
+	error,
+	helperText,
 	...props
 }: TimePickerComponentProps) => {
 	const theme = useTheme();
@@ -33,12 +38,12 @@ export const TimePickerComponent = ({
 								px: theme.spacing(5),
 							},
 							"& fieldset": {
-								borderColor: theme.palette.divider,
+								borderColor: error ? theme.palette.error.main : theme.palette.divider,
 								borderRadius: theme.shape.borderRadius,
 							},
 							"&:not(:has(.Mui-disabled)):not(:has(.Mui-error)) .MuiOutlinedInput-root:not(:has(input:focus)):hover fieldset":
 								{
-									borderColor: theme.palette.divider,
+									borderColor: error ? theme.palette.error.main : theme.palette.divider,
 								},
 						},
 					},
@@ -48,14 +53,18 @@ export const TimePickerComponent = ({
 		</LocalizationProvider>
 	);
 
-	if (fieldLabel) {
-		return (
-			<Stack spacing={theme.spacing(2)}>
-				<FieldLabel required={required}>{fieldLabel}</FieldLabel>
-				{picker}
-			</Stack>
-		);
-	}
-
-	return picker;
+	return (
+		<Stack spacing={theme.spacing(2)}>
+			{fieldLabel && <FieldLabel required={required}>{fieldLabel}</FieldLabel>}
+			{picker}
+			{helperText && (
+				<Typography
+					variant="caption"
+					color={error ? "error" : "text.secondary"}
+				>
+					{helperText}
+				</Typography>
+			)}
+		</Stack>
+	);
 };

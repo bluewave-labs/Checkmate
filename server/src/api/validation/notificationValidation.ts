@@ -53,6 +53,15 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 			}
 		}
 	}),
+	// Rocket.Chat notification
+	z.object({
+		notificationName: z.string().min(1, "Notification name is required"),
+		type: z.literal("rocket_chat"),
+		address: z.url({
+			protocol: /^https?$/,
+			message: "Please enter a valid Rocket.Chat webhook URL",
+		}),
+	}),
 	// Slack notification
 	z.object({
 		notificationName: z.string().min(1, "Notification name is required"),

@@ -27,8 +27,6 @@ import { NETWORK_ERROR } from "@/types/network.js";
 
 const SERVICE_NAME = "StatusService";
 
-export type LatestChecksMap = Record<string, Check[]>;
-
 class MongoChecksRepository implements IChecksRepository {
 	static SERVICE_NAME = SERVICE_NAME;
 
@@ -83,6 +81,7 @@ class MongoChecksRepository implements IChecksRepository {
 			os: host?.os ?? "",
 			platform: host?.platform ?? "",
 			kernel_version: host?.kernel_version ?? "",
+			pretty_name: host?.pretty_name ?? "",
 		});
 
 		const mapCapture = (capture?: CheckCaptureInfo): CheckCaptureInfo => ({
@@ -288,32 +287,6 @@ class MongoChecksRepository implements IChecksRepository {
 		return { checksCount, checks: this.mapDocuments(checks) };
 	};
 
-	findLatestByMonitorIds = async (monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap> => {
-		if (monitorIds.length === 0) {
-			return {};
-		}
-		const limitPerMonitor = options?.limitPerMonitor ?? 25;
-		const dateFilter = new Date(Date.now() - 24 * 60 * 60 * 1000);
-		const results = await Promise.all(
-			monitorIds.map(async (monitorId) => {
-				const docs = await CheckModel.find({
-					"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
-					createdAt: { $gte: dateFilter },
-				})
-					.sort({ createdAt: -1 })
-					.limit(limitPerMonitor)
-					.lean();
-				return { monitorId, docs };
-			})
-		);
-
-		const mapped = results.reduce<LatestChecksMap>((acc, { monitorId, docs }) => {
-			acc[monitorId] = docs.map((doc: CheckDocument) => this.toEntity(doc));
-			return acc;
-		}, {});
-		return mapped;
-	};
-
 	findByDateRangeAndMonitorId = async (monitorId: string, dateRange: DateRange, options?: { type?: MonitorType }) => {
 		const monitorObjectId = new mongoose.Types.ObjectId(monitorId);
 		const start = getDateForRange(dateRange);
@@ -445,11 +418,30 @@ class MongoChecksRepository implements IChecksRepository {
 									$dateToString: { format: dateString, date: "$createdAt" },
 								},
 								avgResponseTime: { $avg: "$responseTime" },
+								avgDns: { $avg: { $ifNull: ["$timings.phases.dns", 0] } },
+								avgTcp: { $avg: { $ifNull: ["$timings.phases.tcp", 0] } },
+								avgTls: { $avg: { $ifNull: ["$timings.phases.tls", 0] } },
+								avgRequest: { $avg: { $ifNull: ["$timings.phases.request", 0] } },
+								avgFirstByte: { $avg: { $ifNull: ["$timings.phases.firstByte", 0] } },
+								avgDownload: { $avg: { $ifNull: ["$timings.phases.download", 0] } },
 								totalChecks: { $sum: 1 },
 							},
 						},
 						{ $sort: { _id: 1 } },
-						{ $project: { bucketDate: "$_id", avgResponseTime: 1, totalChecks: 1, _id: 0 } },
+						{
+							$project: {
+								bucketDate: "$_id",
+								avgResponseTime: 1,
+								totalChecks: 1,
+								avgDns: 1,
+								avgTcp: 1,
+								avgTls: 1,
+								avgRequest: 1,
+								avgFirstByte: 1,
+								avgDownload: 1,
+								_id: 0,
+							},
+						},
 					],
 					groupedUpChecks: [
 						{ $match: { status: true } },

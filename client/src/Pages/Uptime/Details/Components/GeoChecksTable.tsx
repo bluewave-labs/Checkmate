@@ -8,10 +8,9 @@ import Box from "@mui/material/Box";
 import type { Header } from "@/Components/design-elements";
 import type { FlatGeoCheck } from "@/Types/GeoCheck";
 import { useTranslation } from "react-i18next";
-import { formatDateWithTz } from "@/Utils/TimeUtils";
+import { formatDateWithTz, formatMs } from "@/Utils/TimeUtils";
 import type { RootState } from "@/Types/state";
 import { useSelector } from "react-redux";
-import prettyMilliseconds from "pretty-ms";
 
 export const GeoChecksTable = ({
 	geoChecks,
@@ -69,7 +68,7 @@ export const GeoChecksTable = ({
 			content: t("common.table.headers.responseTime"),
 			render: (row) => {
 				if (!row.timings?.total) return "N/A";
-				return prettyMilliseconds(row.timings.total, { compact: true });
+				return formatMs(row.timings.total);
 			},
 		},
 	];

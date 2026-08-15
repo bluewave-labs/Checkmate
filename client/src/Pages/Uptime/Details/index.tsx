@@ -57,7 +57,6 @@ const UptimeDetailsPage = () => {
 		}
 		const params = new URLSearchParams();
 		params.append("dateRange", dateRange);
-		params.append("normalize", "true");
 		return `/monitors/uptime/details/${monitorId}?${params.toString()}`;
 	}, [monitorId, dateRange]);
 
@@ -72,6 +71,7 @@ const UptimeDetailsPage = () => {
 	);
 
 	const monitorData = monitorDetailsData?.monitorData;
+
 	const monitor = monitorData?.monitor;
 	const monitorStats = monitorDetailsData?.monitorStats ?? null;
 
@@ -165,10 +165,18 @@ const UptimeDetailsPage = () => {
 		{ keepPreviousData: true, revalidateOnFocus: false }
 	);
 
+	if (!monitorData) {
+		return null;
+	}
+
+	if (!monitor) {
+		return null;
+	}
+
 	const geoChecksForTable = geoChecksTableData?.geoChecks ?? [];
 	const geoChecksCount = geoChecksTableData?.geoChecksCount ?? 0;
 
-	const geoLocations = monitor?.geoCheckLocations;
+	const geoLocations = monitor.geoCheckLocations;
 
 	const checks = checksData?.checks ?? [];
 	const checksCount = checksData?.checksCount ?? 0;
@@ -215,7 +223,7 @@ const UptimeDetailsPage = () => {
 				/>
 			</Stack>
 			<HistogramDetails
-				checks={monitorData?.groupedChecks || []}
+				checks={monitorData.groupedChecks}
 				range={dateRange}
 			/>
 			<ChecksTable

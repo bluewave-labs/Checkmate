@@ -71,8 +71,8 @@
 				"uptime": "Uptime"
 			},
 			"histogram": {
-				"avg": "Media: {{value}} ms",
-				"max": "Max: {{value}} ms"
+				"avg": "Media: {{value}}",
+				"max": "Max: {{value}}"
 			}
 		},
 		"dialogs": {
@@ -1442,8 +1442,8 @@
 					"initializing": "Inizializzazione"
 				},
 				"chart": {
-					"avg": "media {{value}}ms",
-					"max": "max {{value}}ms",
+					"avg": "media {{value}}",
+					"max": "max {{value}}",
 					"downTooltip": "Non attivo",
 					"heatmapAria": "Heatmap del tempo di risposta"
 				},
