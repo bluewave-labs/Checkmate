@@ -195,5 +195,5 @@ Ecco come puoi contribuire:
   <img src="https://contrib.rocks/image?repo=bluewave-labs/checkmate" />
 </a>
 
-[![Star History Chart](https://api.star-history.com/svg?repos=bluewave-labs/checkmate&type=Date)](https://star-history.com/#bluewave-labs/Checkmate&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=bluewave-labs/checkmate&type=Date)](https://star-history.dera.page/#bluewave-labs/Checkmate&Date)
 
