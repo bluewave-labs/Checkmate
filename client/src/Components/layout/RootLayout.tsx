@@ -1,10 +1,8 @@
 import { Sidebar } from "@/Components/sidebar";
 import { Outlet } from "react-router";
 import Stack from "@mui/material/Stack";
-import { useMediaQuery } from "@mui/material";
+import { useMediaQuery, useTheme } from "@mui/material";
 import { useSidebar } from "@/Hooks/useSidebar";
-
-import { useTheme } from "@mui/material";
 
 const RootLayout = () => {
 	const theme = useTheme();
@@ -25,6 +23,9 @@ const RootLayout = () => {
 							: "rgba(0, 0, 0, 0.01)",
 					display: "flex",
 					alignItems: "center",
+					// TODO: confirm this matches the sidebar's actual expanded width.
+					// Currently hardcoded to theme.spacing(12); should likely use
+					// a value from useSidebar() the same way collapsedWidth is used above.
 					paddingLeft: isSmall ? `${collapsedWidth + 12}px` : 12,
 				}}
 			>
