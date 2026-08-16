@@ -268,23 +268,40 @@ const NotificationsCreatePage = () => {
 									name="webhookAuthType"
 									fieldLabel={t("pages.notifications.form.webhookAuth.optionAuthType")}
 									options={[
-										{ value: "none", label: t("pages.notifications.form.webhookAuth.typeNone") },
-										{ value: "basic", label: t("pages.notifications.form.webhookAuth.typeBasic") },
-										{ value: "bearer", label: t("pages.notifications.form.webhookAuth.typeBearer") },
+										{
+											value: "none",
+											label: t("pages.notifications.form.webhookAuth.typeNone"),
+										},
+										{
+											value: "basic",
+											label: t("pages.notifications.form.webhookAuth.typeBasic"),
+										},
+										{
+											value: "bearer",
+											label: t("pages.notifications.form.webhookAuth.typeBearer"),
+										},
 									]}
 								/>
 								{watch("webhookAuthType") === "basic" && (
 									<>
 										<FormTextField
 											name="webhookAuthUsername"
-											fieldLabel={t("pages.notifications.form.webhookAuth.optionUsername")}
-											placeholder={t("pages.notifications.form.webhookAuth.placeholderUsername")}
+											fieldLabel={t(
+												"pages.notifications.form.webhookAuth.optionUsername"
+											)}
+											placeholder={t(
+												"pages.notifications.form.webhookAuth.placeholderUsername"
+											)}
 										/>
 										<FormTextField
 											name="webhookAuthPassword"
 											type="password"
-											fieldLabel={t("pages.notifications.form.webhookAuth.optionPassword")}
-											placeholder={t("pages.notifications.form.webhookAuth.placeholderPassword")}
+											fieldLabel={t(
+												"pages.notifications.form.webhookAuth.optionPassword"
+											)}
+											placeholder={t(
+												"pages.notifications.form.webhookAuth.placeholderPassword"
+											)}
 										/>
 									</>
 								)}
@@ -293,7 +310,9 @@ const NotificationsCreatePage = () => {
 										name="webhookAuthToken"
 										type="password"
 										fieldLabel={t("pages.notifications.form.webhookAuth.optionToken")}
-										placeholder={t("pages.notifications.form.webhookAuth.placeholderToken")}
+										placeholder={t(
+											"pages.notifications.form.webhookAuth.placeholderToken"
+										)}
 									/>
 								)}
 							</Stack>
