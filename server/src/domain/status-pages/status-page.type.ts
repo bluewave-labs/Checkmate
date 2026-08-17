@@ -63,4 +63,7 @@ export type PublicStatusPageMonitor = Pick<Monitor, "id" | "name" | "type" | "st
 export interface PublicStatusPagePayload {
 	statusPage: StatusPage;
 	monitors: PublicStatusPageMonitor[];
+	range?: StatusPageRange;
+	bucketTimezone?: string;
+	checkTTLDays?: number;
 }

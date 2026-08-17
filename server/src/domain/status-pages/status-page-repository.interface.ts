@@ -1,4 +1,3 @@
-import { DailyCheckBucket } from "@/domain/checks/check.type.js";
 import type { StatusPage } from "@/domain/status-pages/status-page.type.js";
 
 export interface IStatusPagesRepository {
@@ -9,7 +8,6 @@ export interface IStatusPagesRepository {
 	findByCustomDomain(customDomain: string): Promise<StatusPage>;
 	findByTeamId(teamId: string): Promise<StatusPage[]>;
 	// collection fetch
-	getDailyStatusBuckets(monitorIds: string[], days: number, timezone: string | undefined): Promise<DailyCheckBucket[]>;
 	// update
 	updateById(id: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage>;
 	// delete
