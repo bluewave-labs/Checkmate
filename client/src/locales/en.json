@@ -1463,7 +1463,9 @@
 					"avg": "avg {{value}}",
 					"max": "max {{value}}",
 					"downTooltip": "Down",
-					"heatmapAria": "Response time heatmap"
+					"heatmapAria": "Response time heatmap",
+					"dayUptime": "Uptime: {{uptime}} ({{upChecks}}/{{totalChecks}} checks)",
+					"dayAvgResponse": "Avg response: {{value}}"
 				},
 				"infrastructure": {
 					"title": "Infrastructure",
