@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { booleanCoercion, dnsHostnameRegex } from "./shared.js";
-import { StatusPageTypes, StatusPageThemes, StatusPageThemeModes } from "@/domain/status-pages/status-page.type.js";
+import { StatusPageTypes, StatusPageThemes, StatusPageThemeModes, StatusPageRanges } from "@/domain/status-pages/status-page.type.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
 import { cssReferencesExternalResource } from "@/utils/customCss.js";
 import { ImageMimeTypes } from "@/types/upload.js";
@@ -15,7 +15,7 @@ export const getStatusPageParamValidation = z.object({
 
 export const getStatusPageQueryValidation = z.object({
 	type: z.union([z.enum(StatusPageTypes), z.array(z.enum(StatusPageTypes))]).transform((val) => (Array.isArray(val) ? val : [val])),
-	timeFrame: z.coerce.number().optional(),
+	range: z.enum(StatusPageRanges).optional().default("latest"),
 });
 
 export const resolveStatusPageQueryValidation = getStatusPageQueryValidation.extend({

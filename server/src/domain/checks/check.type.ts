@@ -243,3 +243,12 @@ export interface HardwareStats {
 export interface HardwareChecksResult extends HardwareStats {
 	monitorType: "hardware";
 }
+
+export type DailyCheckBucket = {
+	monitorId: string;
+	date: string;
+	totalChecks: number;
+	upChecks: number;
+	downChecks: number;
+	avgResponseTime: number;
+};

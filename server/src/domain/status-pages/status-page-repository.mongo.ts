@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { AppError } from "@/utils/AppError.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
+import CheckModel from "@/domain/checks/check.model.js";
 // Type for update data that can include document-level fields (Buffer for logo)
 type StatusPageUpdateData = Partial<Omit<StatusPage, "id" | "userId" | "teamId" | "logo" | "createdAt" | "updatedAt">> & {
 	logo?: StatusPageLogoDocument | null;
@@ -111,6 +112,43 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 	findByTeamId = async (teamId: string): Promise<StatusPage[]> => {
 		const statusPages = await StatusPageModel.find({ teamId });
 		return this.mapDocuments(statusPages);
+	};
+
+	getDailyStatusBuckets = async (monitorIds: string[], days: number, timezone: string | undefined) => {
+		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		const windowStart = new Date(Date.now() - (days - 1) * 24 * 60 * 60 * 1000);
+		const results = await CheckModel.aggregate([
+			{
+				$match: {
+					"metadata.monitorId": { $in: objectIds },
+					createdAt: { $gte: windowStart },
+				},
+			},
+			{
+				$group: {
+					_id: {
+						monitorId: "$metadata.monitorId",
+						day: { $dateTrunc: { date: "$createdAt", unit: "day", timezone } },
+					},
+					totalChecks: { $sum: 1 },
+					upChecks: { $sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] } },
+					avgResponseTime: { $avg: { $ifNull: ["$responseTime", 0] } },
+				},
+			},
+			{ $sort: { "_id.day": 1 } },
+			{
+				$project: {
+					_id: 0,
+					monitorId: { $toString: "$_id.monitorId" },
+					date: { $dateToString: { date: "$_id.day", format: "%Y-%m-%d", timezone } },
+					totalChecks: 1,
+					upChecks: 1,
+					downChecks: { $subtract: ["$totalChecks", "$upChecks"] },
+					avgResponseTime: { $round: ["$avgResponseTime", 0] },
+				},
+			},
+		]);
+		return results;
 	};
 
 	updateById = async (
