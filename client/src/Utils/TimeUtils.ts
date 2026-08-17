@@ -120,3 +120,18 @@ export const formatDuration = (ms: number, verbose: boolean = false, hasSpace = 
 	}
 	return formatted;
 };
+
+export const enumerateDays = (days: number, timeZone: string): string[] => {
+	const formatter = new Intl.DateTimeFormat("en-CA", {
+		timeZone,
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
+	});
+	const [year, month, day] = formatter.format(new Date()).split("-").map(Number);
+	const todayUtc = Date.UTC(year, month - 1, day);
+	const DAY_MS = 24 * 60 * 60 * 1000;
+	return Array.from({ length: days }, (_, i) =>
+		new Date(todayUtc - (days - 1 - i) * DAY_MS).toISOString().slice(0, 10)
+	);
+};
