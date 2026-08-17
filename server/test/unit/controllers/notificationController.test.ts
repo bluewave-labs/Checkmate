@@ -201,3 +201,70 @@ describe("notificationController — editing without the credential", () => {
 		expect(patch).toHaveProperty("accessToken", "new-token");
 	});
 });
+
+describe("notificationController: testing a saved channel", () => {
+	const body = { notificationName: "Telegram alerts", type: "telegram", address: "-1001234567890" };
+
+	it("passes the id from the path and the team from the caller's token", async () => {
+		const sendTestNotificationById = jest.fn<INotificationsService["sendTestNotificationById"]>().mockResolvedValue(true);
+		const { controller, next } = setup({ sendTestNotificationById });
+		const { res, json } = makeResponse();
+
+		await controller.testSavedNotification(makeRequest({ params: { id: "notif-1" }, body }), res, next);
+
+		expect(sendTestNotificationById).toHaveBeenCalledWith("notif-1", "team-1", expect.objectContaining({ type: "telegram" }));
+		expect(next).not.toHaveBeenCalled();
+		expect((json.mock.calls[0][0] as { success: boolean }).success).toBe(true);
+	});
+
+	it("ignores a teamId supplied in the body", async () => {
+		// Otherwise this endpoint would hand any team's stored credential to a caller-named destination.
+		const sendTestNotificationById = jest.fn<INotificationsService["sendTestNotificationById"]>().mockResolvedValue(true);
+		const { controller, next } = setup({ sendTestNotificationById });
+		const { res } = makeResponse();
+
+		await controller.testSavedNotification(makeRequest({ params: { id: "notif-1" }, body: { ...body, teamId: "team-victim" } }), res, next);
+
+		expect(sendTestNotificationById).toHaveBeenCalledWith("notif-1", "team-1", expect.anything());
+	});
+
+	it("validates the body with the edit schema, so an empty credential is refused", async () => {
+		const sendTestNotificationById = jest.fn<INotificationsService["sendTestNotificationById"]>().mockResolvedValue(true);
+		const { controller, next } = setup({ sendTestNotificationById });
+		const { res } = makeResponse();
+
+		await controller.testSavedNotification(makeRequest({ params: { id: "notif-1" }, body: { ...body, accessToken: "" } }), res, next);
+
+		expect(sendTestNotificationById).not.toHaveBeenCalled();
+		expect(next).toHaveBeenCalled();
+	});
+
+	it("reports a failed send without claiming success", async () => {
+		const sendTestNotificationById = jest.fn<INotificationsService["sendTestNotificationById"]>().mockResolvedValue(false);
+		const { controller, next } = setup({ sendTestNotificationById });
+		const { res, json } = makeResponse();
+
+		await controller.testSavedNotification(makeRequest({ params: { id: "notif-1" }, body }), res, next);
+
+		expect((json.mock.calls[0][0] as { success: boolean }).success).toBe(false);
+	});
+});
+
+describe("notificationResponseSchema", () => {
+	it("refuses to document a credential, so the redaction cannot be undone by widening the schema", () => {
+		const valid = {
+			id: "notif-1",
+			userId: "user-1",
+			teamId: "team-1",
+			type: "telegram",
+			notificationName: "Telegram alerts",
+			address: "-1001234567890",
+			createdAt: "2026-01-01T00:00:00Z",
+			updatedAt: "2026-01-01T00:00:00Z",
+			accessTokenSet: true,
+		};
+
+		expect(notificationResponseSchema.strict().safeParse(valid).success).toBe(true);
+		expect(notificationResponseSchema.strict().safeParse({ ...valid, accessToken: "leaked" }).success).toBe(false);
+	});
+});

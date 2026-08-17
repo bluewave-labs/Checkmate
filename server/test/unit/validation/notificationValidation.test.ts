@@ -124,3 +124,37 @@ describe("notificationValidation — credentials on edit", () => {
 		expect(parsed.type).toBe("webhook");
 	});
 });
+
+// Every channel that authenticates with a credential, so a new one cannot be added un-asserted.
+const credentialledChannels = [
+	{ type: "matrix" as const, body: { notificationName: "Matrix room", homeserverUrl: "https://matrix.example.com", roomId: "!abc:example.com" } },
+	{ type: "telegram" as const, body: { notificationName: "Telegram alerts", address: "-1001234567890" } },
+	{ type: "pushover" as const, body: { notificationName: "Pushover", address: "u1234567890abcdef" } },
+	{
+		type: "twilio" as const,
+		body: {
+			notificationName: "Twilio SMS",
+			accountSid: "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+			phone: "+15551234567",
+			twilioPhoneNumber: "+15557654321",
+		},
+	},
+];
+
+describe("notificationValidation: every credentialled channel, not just the sampled ones", () => {
+	it.each(credentialledChannels)("requires the credential on create for $type", ({ type, body }) => {
+		expect(createNotificationBodyValidation.safeParse({ ...body, type }).success).toBe(false);
+		expect(createNotificationBodyValidation.safeParse({ ...body, type, accessToken: "a-credential" }).success).toBe(true);
+	});
+
+	it.each(credentialledChannels)("rejects an empty credential on edit for $type", ({ type, body }) => {
+		expect(editNotificationBodyValidation.safeParse({ ...body, type, accessToken: "" }).success).toBe(false);
+	});
+
+	it.each(credentialledChannels)("accepts an omitted credential on edit for $type, which keeps the stored one", ({ type, body }) => {
+		const result = editNotificationBodyValidation.safeParse({ ...body, type });
+
+		expect(result.success).toBe(true);
+		expect(result.success && "accessToken" in result.data).toBe(false);
+	});
+});
