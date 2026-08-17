@@ -66,6 +66,13 @@ const createTimeSeriesCollection = async (backedUp: boolean) => {
 	const db = getDb();
 	try {
 		const existing = await db.listCollections({ name: CHECKS_COLLECTION }).toArray();
+		// Mongoose may auto-create the time-series collection and its indexes while
+		// migrations are starting. In that case there is nothing left to create,
+		// and recreating the indexes can fail when Mongoose used different options
+		// (for example, `background: true`). `syncIndexes()` runs after migrations.
+		if (existing[0]?.type === "timeseries") {
+			return;
+		}
 		if (existing.length === 0) {
 			try {
 				await db.createCollection(CHECKS_COLLECTION, {
