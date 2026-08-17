@@ -32,6 +32,9 @@ export const STATUS_PAGE_RANGE_DAYS: Record<
 	number
 > = { "30d": 30, "60d": 60, "90d": 90 };
 
+export const isStatusPageRange = (value: string | null): value is StatusPageRange =>
+	STATUS_PAGE_RANGES.some((range) => range === value);
+
 export const resolveStatusPageTheme = (
 	value: string | null | undefined
 ): StatusPageTheme =>
