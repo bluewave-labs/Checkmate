@@ -182,7 +182,8 @@ registry.registerPath({
 	path: "/notifications/{id}",
 	tags,
 	summary: "Edit a notification channel",
-	description: "Credentials may be omitted, which leaves the stored value unchanged. Sending an empty credential is rejected.",
+	description:
+		"Credentials may be omitted, which leaves the stored value unchanged. An empty credential is rejected, so a required one cannot be blanked out by mistake. Changing where the channel delivers, or which provider it uses, requires supplying the credential rather than relying on the stored one.",
 	security: bearer,
 	request: { params: editNotificationParamValidation, body: { content: json(notificationEditBody) } },
 	responses: { "200": okJson(notificationObject), ...standardErrors },
