@@ -329,7 +329,7 @@ class MongoChecksRepository implements IChecksRepository {
 		return docs.map(this.toEntity);
 	};
 
-	getDailyStatusBuckets = async (monitorIds: string[], days: number, timezone: string | undefined) => {
+	getDailyStatusBuckets = async (monitorIds: string[], days: number, timezone: string) => {
 		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
 		// One extra day so the oldest rendered day is complete; the client enumerates exactly `days` days and ignores the partial extra bucket
 		const windowStart = new Date(Date.now() - days * 24 * 60 * 60 * 1000);

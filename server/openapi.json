@@ -1648,7 +1648,7 @@
 					},
 					"range": {
 						"type": "string",
-						"enum": ["latest", "30d", "60d", "90d"]
+						"enum": ["30d", "60d", "90d"]
 					},
 					"bucketTimezone": {
 						"type": "string"

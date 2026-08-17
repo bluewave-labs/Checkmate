@@ -69,7 +69,6 @@ class StatusPageController implements IStatusPageController {
 
 	getStatusPageByUrl = catchAsync(async (req: Request, res: Response) => {
 		getStatusPageParamValidation.parse(req.params);
-		getStatusPageQueryValidation.parse(req.query);
 		const { range } = getStatusPageQueryValidation.parse(req.query);
 
 		if (!req.params.url) {

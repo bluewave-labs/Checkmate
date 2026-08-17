@@ -1,6 +1,12 @@
 import { z } from "zod";
 import { booleanCoercion, dnsHostnameRegex, timezoneValidation } from "./shared.js";
-import { StatusPageTypes, StatusPageThemes, StatusPageThemeModes, StatusPageRanges } from "@/domain/status-pages/status-page.type.js";
+import {
+	StatusPageTypes,
+	StatusPageThemes,
+	StatusPageThemeModes,
+	StatusPageRanges,
+	StatusPageDayRanges,
+} from "@/domain/status-pages/status-page.type.js";
 import { MonitorTypes, MonitorStatuses } from "@/domain/monitors/monitor.type.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
 import { cssReferencesExternalResource } from "@/utils/customCss.js";
@@ -156,7 +162,7 @@ export const publicStatusPageMonitorResponseSchema = z.object({
 export const publicStatusPagePayloadResponseSchema = z.object({
 	statusPage: statusPageResponseSchema,
 	monitors: z.array(publicStatusPageMonitorResponseSchema),
-	range: z.enum(StatusPageRanges).optional(),
+	range: z.enum(StatusPageDayRanges).optional(),
 	bucketTimezone: z.string().optional(),
 	checkTTLDays: z.number().optional(),
 });

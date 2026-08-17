@@ -11,9 +11,11 @@ export const StatusPageThemeModes = ["auto", "light", "dark"] as const;
 export type StatusPageThemeMode = (typeof StatusPageThemeModes)[number];
 export const DEFAULT_STATUS_PAGE_THEME_MODE: StatusPageThemeMode = "auto";
 
-export const StatusPageRanges = ["latest", "30d", "60d", "90d"] as const;
+export const StatusPageDayRanges = ["30d", "60d", "90d"] as const;
+export type StatusPageDayRange = (typeof StatusPageDayRanges)[number];
+export const StatusPageRanges = ["latest", ...StatusPageDayRanges] as const;
 export type StatusPageRange = (typeof StatusPageRanges)[number];
-export const STATUS_PAGE_RANGE_DAYS: Record<Exclude<StatusPageRange, "latest">, number> = {
+export const STATUS_PAGE_RANGE_DAYS: Record<StatusPageDayRange, number> = {
 	"30d": 30,
 	"60d": 60,
 	"90d": 90,
@@ -63,7 +65,7 @@ export type PublicStatusPageMonitor = Pick<Monitor, "id" | "name" | "type" | "st
 export interface PublicStatusPagePayload {
 	statusPage: StatusPage;
 	monitors: PublicStatusPageMonitor[];
-	range?: StatusPageRange;
+	range?: StatusPageDayRange;
 	bucketTimezone?: string;
 	checkTTLDays?: number;
 }

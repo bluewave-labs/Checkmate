@@ -364,7 +364,7 @@ describe("StatusPageService", () => {
 
 		describe("range", () => {
 			it("omits range-mode fields and never queries buckets for the default (latest) range", async () => {
-				const { service, checksRepo } = createService();
+				const { service, checksRepo, monitorsRepo } = createService();
 
 				const implicitLatest = await service.getPublicStatusPagePayload(publishedPage(), undefined);
 				const explicitLatest = await service.getPublicStatusPagePayload(publishedPage(), undefined, "latest");
@@ -376,6 +376,7 @@ describe("StatusPageService", () => {
 					expect(payload.monitors[0]).not.toHaveProperty("dailyChecks");
 				}
 				expect(checksRepo.getDailyStatusBuckets).not.toHaveBeenCalled();
+				expect(monitorsRepo.findByIds).toHaveBeenCalledWith(["mon-1"], { includeRecentChecks: true });
 			});
 
 			it("attaches dailyChecks, empties recentChecks, and echoes range metadata for a day range", async () => {
@@ -388,6 +389,7 @@ describe("StatusPageService", () => {
 				const payload = await service.getPublicStatusPagePayload(page, undefined, "30d");
 
 				expect(checksRepo.getDailyStatusBuckets).toHaveBeenCalledWith(["mon-1"], 30, "America/Toronto");
+				expect(monitorsRepo.findByIds).toHaveBeenCalledWith(["mon-1"], { includeRecentChecks: false });
 				expect(payload).toMatchObject({ range: "30d", bucketTimezone: "America/Toronto", checkTTLDays: 30 });
 				expect(payload.monitors[0].recentChecks).toEqual([]);
 				expect(payload.monitors[0].dailyChecks).toEqual([bucket]);
