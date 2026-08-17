@@ -29,10 +29,22 @@ describe("MatrixProvider", () => {
 		it("sends to Matrix API and returns true", async () => {
 			expect(await createProvider().provider.sendTestAlert(makeNotification())).toBe(true);
 			expect(mockGotPut).toHaveBeenCalledWith(
-				expect.stringContaining("matrix.example.com/_matrix/client/v3/rooms/!room:example.com/send/m.room.message/test-uuid-1234"),
+				expect.stringContaining("matrix.example.com/_matrix/client/v3/rooms/!room%3Aexample.com/send/m.room.message/test-uuid-1234"),
 				expect.objectContaining({
 					headers: expect.objectContaining({ Authorization: "Bearer token-abc" }),
 				})
+			);
+		});
+
+		it("encodes the room id so it cannot redirect the authenticated request", async () => {
+			// An unencoded room id containing escaped slashes would move this PUT, and its Authorization
+			// header, to another endpoint on the same homeserver.
+			await createProvider().provider.sendTestAlert(makeNotification({ roomId: "..%2f..%2faccount_data/m.attacker" }));
+
+			const [url] = mockGotPut.mock.calls[0] as [string];
+			// The escaped slashes are themselves escaped, so nothing decodes back to a path separator.
+			expect(url).toBe(
+				"https://matrix.example.com/_matrix/client/v3/rooms/..%252f..%252faccount_data%2Fm.attacker/send/m.room.message/test-uuid-1234"
 			);
 		});
 
