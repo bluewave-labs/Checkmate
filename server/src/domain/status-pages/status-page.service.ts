@@ -13,6 +13,7 @@ import { AppError } from "@/utils/AppError.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
 import { Monitor } from "@/domain/monitors/monitor.type.js";
 import { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
+import type { DailyCheckBucket } from "@/domain/checks/check.type.js";
 
 export interface IStatusPageService {
 	createStatusPage(userId: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage>;
@@ -143,7 +144,15 @@ export class StatusPageService implements IStatusPageService {
 		const days = STATUS_PAGE_RANGE_DAYS[range];
 		const bucketTimezone = statusPage.timezone ?? "Etc/UTC";
 		const buckets = await this.checksRepository.getDailyStatusBuckets(statusPage.monitors, days, bucketTimezone);
-		const bucketsByMonitor = Map.groupBy(buckets, (bucket) => bucket.monitorId);
+		const bucketsByMonitor = buckets.reduce((grouped, bucket) => {
+			const monitorBuckets = grouped.get(bucket.monitorId);
+			if (monitorBuckets) {
+				monitorBuckets.push(bucket);
+			} else {
+				grouped.set(bucket.monitorId, [bucket]);
+			}
+			return grouped;
+		}, new Map<string, DailyCheckBucket[]>());
 
 		return {
 			statusPage,
