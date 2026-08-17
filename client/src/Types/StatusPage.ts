@@ -24,6 +24,14 @@ export const STATUS_PAGE_THEME_MODES = ["auto", "light", "dark"] as const;
 export type StatusPageThemeMode = (typeof STATUS_PAGE_THEME_MODES)[number];
 export const DEFAULT_STATUS_PAGE_THEME_MODE: StatusPageThemeMode = "auto";
 
+export const STATUS_PAGE_RANGES = ["latest", "30d", "60d", "90d"] as const;
+export type StatusPageRange = (typeof STATUS_PAGE_RANGES)[number];
+
+export const STATUS_PAGE_RANGE_DAYS: Record<
+	Exclude<StatusPageRange, "latest">,
+	number
+> = { "30d": 30, "60d": 60, "90d": 90 };
+
 export const resolveStatusPageTheme = (
 	value: string | null | undefined
 ): StatusPageTheme =>
