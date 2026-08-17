@@ -1419,6 +1419,293 @@
 					"address": "https://ntfy.sh",
 					"topic": "checkmate-alerts"
 				}
+			},
+			"PublicStatusPagePayload": {
+				"type": "object",
+				"properties": {
+					"statusPage": {
+						"type": "object",
+						"properties": {
+							"id": {
+								"type": "string"
+							},
+							"userId": {
+								"type": "string"
+							},
+							"teamId": {
+								"type": "string"
+							},
+							"type": {
+								"type": "array",
+								"items": {
+									"type": "string",
+									"enum": ["uptime", "infrastructure"]
+								}
+							},
+							"companyName": {
+								"type": "string"
+							},
+							"url": {
+								"type": "string"
+							},
+							"customDomain": {
+								"type": "string",
+								"nullable": true
+							},
+							"timezone": {
+								"type": "string"
+							},
+							"color": {
+								"type": "string"
+							},
+							"monitors": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							},
+							"subMonitors": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							},
+							"originalMonitors": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							},
+							"logo": {
+								"type": "object",
+								"nullable": true,
+								"properties": {
+									"data": {
+										"type": "string"
+									},
+									"contentType": {
+										"type": "string"
+									}
+								},
+								"required": ["data", "contentType"]
+							},
+							"isPublished": {
+								"type": "boolean"
+							},
+							"showCharts": {
+								"type": "boolean"
+							},
+							"showUptimePercentage": {
+								"type": "boolean"
+							},
+							"showAdminLoginLink": {
+								"type": "boolean"
+							},
+							"showInfrastructure": {
+								"type": "boolean"
+							},
+							"customCSS": {
+								"type": "string"
+							},
+							"theme": {
+								"type": "string",
+								"enum": ["refined", "modern", "bold", "editorial", "minimal"]
+							},
+							"themeMode": {
+								"type": "string",
+								"enum": ["auto", "light", "dark"]
+							},
+							"createdAt": {
+								"type": "string"
+							},
+							"updatedAt": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"id",
+							"userId",
+							"teamId",
+							"type",
+							"companyName",
+							"url",
+							"color",
+							"monitors",
+							"subMonitors",
+							"isPublished",
+							"showCharts",
+							"showUptimePercentage",
+							"showAdminLoginLink",
+							"showInfrastructure",
+							"customCSS",
+							"theme",
+							"themeMode",
+							"createdAt",
+							"updatedAt"
+						]
+					},
+					"monitors": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"id": {
+									"type": "string"
+								},
+								"name": {
+									"type": "string"
+								},
+								"type": {
+									"type": "string",
+									"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+								},
+								"status": {
+									"type": "string",
+									"enum": ["up", "down", "paused", "initializing", "maintenance", "breached"]
+								},
+								"uptimePercentage": {
+									"type": "number"
+								},
+								"recentChecks": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"id": {
+												"type": "string"
+											},
+											"status": {
+												"type": "boolean"
+											},
+											"responseTime": {
+												"type": "number"
+											},
+											"statusCode": {
+												"type": "number"
+											},
+											"message": {
+												"type": "string"
+											},
+											"createdAt": {
+												"type": "string"
+											},
+											"accessibility": {
+												"type": "number"
+											},
+											"bestPractices": {
+												"type": "number"
+											},
+											"seo": {
+												"type": "number"
+											},
+											"performance": {
+												"type": "number"
+											}
+										},
+										"required": ["id", "status", "responseTime", "statusCode", "message", "createdAt"],
+										"additionalProperties": {
+											"nullable": true
+										}
+									}
+								},
+								"url": {
+									"type": "string"
+								},
+								"port": {
+									"type": "number"
+								},
+								"dailyChecks": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"monitorId": {
+												"type": "string"
+											},
+											"date": {
+												"type": "string"
+											},
+											"totalChecks": {
+												"type": "number"
+											},
+											"upChecks": {
+												"type": "number"
+											},
+											"downChecks": {
+												"type": "number"
+											},
+											"avgResponseTime": {
+												"type": "number",
+												"nullable": true
+											}
+										},
+										"required": ["monitorId", "date", "totalChecks", "upChecks", "downChecks", "avgResponseTime"]
+									}
+								}
+							},
+							"required": ["id", "name", "type", "status", "recentChecks"]
+						}
+					},
+					"range": {
+						"type": "string",
+						"enum": ["30d", "60d", "90d"]
+					},
+					"bucketTimezone": {
+						"type": "string"
+					},
+					"checkTTLDays": {
+						"type": "number"
+					}
+				},
+				"required": ["statusPage", "monitors"],
+				"example": {
+					"statusPage": {
+						"id": "65f1c2a4d8b9e0123456789c",
+						"userId": "65f1c2a4d8b9e01234567891",
+						"teamId": "65f1c2a4d8b9e01234567890",
+						"type": ["uptime"],
+						"companyName": "Acme",
+						"url": "acme-status",
+						"customDomain": null,
+						"timezone": "America/Toronto",
+						"color": "#4169E1",
+						"monitors": ["65f1c2a4d8b9e0123456789a"],
+						"subMonitors": [],
+						"isPublished": true,
+						"showCharts": true,
+						"showUptimePercentage": true,
+						"showAdminLoginLink": false,
+						"showInfrastructure": false,
+						"customCSS": "",
+						"theme": "refined",
+						"themeMode": "auto",
+						"createdAt": "2026-04-01T10:00:00.000Z",
+						"updatedAt": "2026-04-15T14:30:00.000Z"
+					},
+					"range": "90d",
+					"bucketTimezone": "America/Toronto",
+					"checkTTLDays": 30,
+					"monitors": [
+						{
+							"id": "65f1c2a4d8b9e0123456789a",
+							"name": "API",
+							"type": "http",
+							"status": "up",
+							"uptimePercentage": 0.9987,
+							"recentChecks": [],
+							"dailyChecks": [
+								{
+									"monitorId": "65f1c2a4d8b9e0123456789a",
+									"date": "2026-07-19",
+									"totalChecks": 2880,
+									"upChecks": 2877,
+									"downChecks": 3,
+									"avgResponseTime": 142
+								}
+							]
+						}
+					]
+				}
 			}
 		},
 		"parameters": {}
@@ -6791,14 +7078,6 @@
 					},
 					{
 						"schema": {
-							"type": "boolean"
-						},
-						"required": false,
-						"name": "normalize",
-						"in": "query"
-					},
-					{
-						"schema": {
 							"anyOf": [
 								{
 									"type": "string",
@@ -11483,11 +11762,12 @@
 					},
 					{
 						"schema": {
-							"type": "number",
-							"nullable": true
+							"type": "string",
+							"enum": ["latest", "30d", "60d", "90d"],
+							"default": "latest"
 						},
 						"required": false,
-						"name": "timeFrame",
+						"name": "range",
 						"in": "query"
 					},
 					{
@@ -11515,10 +11795,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/PublicStatusPagePayload"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -11588,11 +11868,12 @@
 					},
 					{
 						"schema": {
-							"type": "number",
-							"nullable": true
+							"type": "string",
+							"enum": ["latest", "30d", "60d", "90d"],
+							"default": "latest"
 						},
 						"required": false,
-						"name": "timeFrame",
+						"name": "range",
 						"in": "query"
 					}
 				],
@@ -11612,10 +11893,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/PublicStatusPagePayload"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}

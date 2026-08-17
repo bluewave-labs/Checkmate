@@ -25,6 +25,21 @@ export const dnsServerValidation = z
 	.min(1, "DNS server is required")
 	.refine((v) => z.ipv4().safeParse(v).success || z.ipv6().safeParse(v).success, "Enter a valid IPv4 or IPv6 address (e.g. 8.8.8.8)");
 
+// Canonical casing matters: MongoDB's date operators reject non-canonical zone names (e.g. "america/toronto") that Intl accepts,
+// so the resolved canonical form is what gets stored.
+export const resolveTimezone = (value: string): string | undefined => {
+	try {
+		return new Intl.DateTimeFormat("en-US", { timeZone: value }).resolvedOptions().timeZone;
+	} catch {
+		return undefined;
+	}
+};
+
+export const timezoneValidation = z
+	.string()
+	.refine((v) => resolveTimezone(v) !== undefined, "Enter a valid IANA timezone (e.g. America/Toronto)")
+	.transform((v) => resolveTimezone(v) as string);
+
 // Hostname (FQDN) — labels of 1-63 alphanumerics/hyphens separated by dots,
 // optionally prefixed with `_` for service labels (e.g. _dmarc, _imaps._tcp).
 // No scheme, port, path, or whitespace. Total length ≤ 253. Kept in sync with

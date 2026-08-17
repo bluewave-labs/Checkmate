@@ -329,6 +329,44 @@ class MongoChecksRepository implements IChecksRepository {
 		return docs.map(this.toEntity);
 	};
 
+	getDailyStatusBuckets = async (monitorIds: string[], days: number, timezone: string) => {
+		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		// One extra day so the oldest rendered day is complete; the client enumerates exactly `days` days and ignores the partial extra bucket
+		const windowStart = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+		const results = await CheckModel.aggregate([
+			{
+				$match: {
+					"metadata.monitorId": { $in: objectIds },
+					createdAt: { $gte: windowStart },
+				},
+			},
+			{
+				$group: {
+					_id: {
+						monitorId: "$metadata.monitorId",
+						day: { $dateTrunc: { date: "$createdAt", unit: "day", timezone } },
+					},
+					totalChecks: { $sum: 1 },
+					upChecks: { $sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] } },
+					avgResponseTime: { $avg: "$responseTime" },
+				},
+			},
+			{ $sort: { "_id.day": 1 } },
+			{
+				$project: {
+					_id: 0,
+					monitorId: { $toString: "$_id.monitorId" },
+					date: { $dateToString: { date: "$_id.day", format: "%Y-%m-%d", timezone } },
+					totalChecks: 1,
+					upChecks: 1,
+					downChecks: { $subtract: ["$totalChecks", "$upChecks"] },
+					avgResponseTime: { $round: ["$avgResponseTime", 0] },
+				},
+			},
+		]);
+		return results;
+	};
+
 	deleteByMonitorId = async (monitorId: string): Promise<number> => {
 		const result = await CheckModel.deleteMany({ "metadata.monitorId": new mongoose.Types.ObjectId(monitorId) });
 		return result.deletedCount;
