@@ -86,7 +86,6 @@ class StatusPageController implements IStatusPageController {
 	});
 
 	resolveStatusPageByDomain = catchAsync(async (req: Request, res: Response) => {
-		resolveStatusPageQueryValidation.parse(req.query);
 		const { range } = resolveStatusPageQueryValidation.parse(req.query);
 		const domain = resolveStatusPageDomainFromRequest(req.hostname, req.query.domain as string | undefined);
 		if (!domain) {
