@@ -3,11 +3,10 @@ import { Button } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { FormProvider, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useGet, usePost, usePatch } from "@/Hooks/UseApi";
 import { useNotificationForm } from "@/Hooks/useNotificationForm";
 import type { NotificationFormData } from "@/Validation/notifications";
@@ -16,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { NotificationChannels } from "@/Types/Notification";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
+import { CredentialField } from "./CredentialField";
 
 const NotificationsCreatePage = () => {
 	const { t } = useTranslation();
@@ -32,24 +32,39 @@ const NotificationsCreatePage = () => {
 	const { patch, loading: isPatching } = usePatch<NotificationFormData, Notification>();
 	const { post: testPost, loading: isTesting } = usePost<NotificationFormData, void>();
 
-	const { schema, defaults } = useNotificationForm({ data: existingNotification });
+	const [credentialHasBeenReset, setCredentialHasBeenReset] = useState(false);
+
+	const { resolver, defaults, isCredentialKept } = useNotificationForm({
+		data: existingNotification,
+		isCredentialReset: credentialHasBeenReset,
+	});
 
 	const form = useForm<NotificationFormData>({
-		resolver: zodResolver(schema),
+		resolver,
 		defaultValues: defaults,
 	});
 
-	const { watch, reset, handleSubmit, clearErrors, trigger, getValues } = form;
+	const { watch, reset, handleSubmit, clearErrors, trigger, getValues, setValue } = form;
 
 	useEffect(() => {
 		reset(defaults);
 	}, [defaults, reset]);
 
 	const watchedType = watch("type");
+	const previousType = useRef(watchedType);
 
 	useEffect(() => {
 		clearErrors();
-	}, [watchedType, clearErrors]);
+
+		if (previousType.current === watchedType) return;
+		previousType.current = watchedType;
+
+		// A credential belongs to the provider it was issued by. The field is shared across providers,
+		// and react-hook-form keeps a value when its input unmounts, so without this the credential
+		// typed for one provider silently becomes the next one's, hidden behind a masked field.
+		setValue("accessToken", "");
+		setCredentialHasBeenReset(false);
+	}, [watchedType, clearErrors, setValue]);
 
 	const addressConfig = useMemo(() => {
 		if (watchedType === "pager_duty") {
@@ -76,10 +91,22 @@ const NotificationsCreatePage = () => {
 		};
 	}, [watchedType, t]);
 
+	// A credential the user has not chosen to replace is left out of the payload entirely, which the
+	// server reads as "keep the stored value".
+	const buildPayload = (data: NotificationFormData): NotificationFormData => {
+		if (!isCredentialKept(data.type)) {
+			return data;
+		}
+		const payload = { ...data };
+		Reflect.deleteProperty(payload, "accessToken");
+		return payload;
+	};
+
 	const onSubmit = async (data: NotificationFormData) => {
+		const payload = buildPayload(data);
 		const result = isEditMode
-			? await patch(`/notifications/${notificationId}`, data)
-			: await post("/notifications", data);
+			? await patch(`/notifications/${notificationId}`, payload)
+			: await post("/notifications", payload);
 		if (result) {
 			navigate("/notifications");
 		}
@@ -88,8 +115,19 @@ const NotificationsCreatePage = () => {
 	const handleTest = async () => {
 		const isValid = await trigger();
 		if (!isValid) return;
-		const data = getValues();
-		await testPost("/notifications/test", data);
+		const payload = buildPayload(getValues());
+		// Testing a saved channel goes through its own endpoint so the server can supply the stored
+		// credential. Anything else — an unsaved channel, or one being switched to another provider,
+		// whose stored credential no longer applies — carries what it needs in the body.
+		const isSavedChannel = isEditMode && watchedType === existingNotification?.type;
+		const endpoint = isSavedChannel
+			? `/notifications/${notificationId}/test`
+			: "/notifications/test";
+		await testPost(endpoint, payload);
+	};
+
+	const handleCredentialReset = () => {
+		setCredentialHasBeenReset(true);
 	};
 
 	return (
@@ -166,10 +204,13 @@ const NotificationsCreatePage = () => {
 						subtitle={t("pages.notifications.form.telegram.description")}
 						rightContent={
 							<Stack spacing={theme.spacing(8)}>
-								<FormTextField
-									name="accessToken"
+								<CredentialField
 									fieldLabel={t("pages.notifications.form.telegram.optionBotToken")}
 									placeholder={t("pages.notifications.form.telegram.placeholderBotToken")}
+									storedLabel={t("pages.notifications.form.credential.labelSet")}
+									resetLabel={t("common.buttons.reset")}
+									isEditable={!isCredentialKept(watchedType)}
+									onReset={handleCredentialReset}
 								/>
 								<FormTextField
 									name="address"
@@ -186,10 +227,13 @@ const NotificationsCreatePage = () => {
 						subtitle={t("pages.notifications.form.pushover.description")}
 						rightContent={
 							<Stack spacing={theme.spacing(8)}>
-								<FormTextField
-									name="accessToken"
+								<CredentialField
 									fieldLabel={t("pages.notifications.form.pushover.optionAppToken")}
 									placeholder={t("pages.notifications.form.pushover.placeholderAppToken")}
+									storedLabel={t("pages.notifications.form.credential.labelSet")}
+									resetLabel={t("common.buttons.reset")}
+									isEditable={!isCredentialKept(watchedType)}
+									onReset={handleCredentialReset}
 								/>
 
 								<FormTextField
@@ -212,10 +256,13 @@ const NotificationsCreatePage = () => {
 									fieldLabel={t("pages.notifications.form.twilio.optionAccountSid")}
 									placeholder={t("pages.notifications.form.twilio.placeholderAccountSid")}
 								/>
-								<FormTextField
-									name="accessToken"
+								<CredentialField
 									fieldLabel={t("pages.notifications.form.twilio.optionAuthToken")}
 									placeholder={t("pages.notifications.form.twilio.placeholderAuthToken")}
+									storedLabel={t("pages.notifications.form.credential.labelSet")}
+									resetLabel={t("common.buttons.reset")}
+									isEditable={!isCredentialKept(watchedType)}
+									onReset={handleCredentialReset}
 								/>
 
 								<FormTextField
@@ -249,10 +296,13 @@ const NotificationsCreatePage = () => {
 									fieldLabel={t("pages.notifications.form.roomId.optionRoomId")}
 									placeholder={t("pages.notifications.form.roomId.placeholder")}
 								/>
-								<FormTextField
-									name="accessToken"
+								<CredentialField
 									fieldLabel={t("pages.notifications.form.accessToken.optionAccessToken")}
 									placeholder={t("pages.notifications.form.accessToken.placeholder")}
+									storedLabel={t("pages.notifications.form.credential.labelSet")}
+									resetLabel={t("common.buttons.reset")}
+									isEditable={!isCredentialKept(watchedType)}
+									onReset={handleCredentialReset}
 								/>
 							</Stack>
 						}

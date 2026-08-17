@@ -39,7 +39,10 @@ export class MatrixProvider extends NotificationProvider {
 	private sendMessageWithBody = async (notification: Partial<Notification>, body: unknown): Promise<boolean> => {
 		const { homeserverUrl, accessToken, roomId } = notification;
 		const txnId = randomUUID();
-		const url = `${homeserverUrl}/_matrix/client/v3/rooms/${roomId}/send/m.room.message/${txnId}`;
+		// roomId is encoded because it is a caller-supplied path segment, the same way ntfy encodes its
+		// topic. Unencoded, a room id containing escaped slashes redirects this authenticated request to
+		// another endpoint on the same homeserver.
+		const url = `${homeserverUrl}/_matrix/client/v3/rooms/${encodeURIComponent(roomId ?? "")}/send/m.room.message/${txnId}`;
 
 		try {
 			await got.put(url, {

@@ -350,13 +350,375 @@ describe("NotificationsService", () => {
 	});
 
 	describe("updateById", () => {
+		const storedMatrixChannel = makeNotification({
+			type: "matrix",
+			homeserverUrl: "https://matrix.example.com",
+			roomId: "!room:example.com",
+			accessToken: "stored-token",
+		});
+
 		it("delegates to repository", async () => {
 			const updated = makeNotification({ address: "new@example.com" });
 			const { service, notificationsRepository } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(makeNotification());
 			(notificationsRepository.updateById as jest.Mock).mockResolvedValue(updated);
 
 			const result = await service.updateById("notif-1", "team-1", { address: "new@example.com" });
 			expect(result).toBe(updated);
+		});
+
+		it("refuses to keep a stored credential while repointing the channel", async () => {
+			const { service, notificationsRepository } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(storedMatrixChannel);
+
+			await expect(
+				service.updateById("notif-1", "team-1", {
+					type: "matrix",
+					homeserverUrl: "https://evil.example.com",
+					roomId: "!room:example.com",
+				})
+			).rejects.toMatchObject({
+				status: 400,
+				message: "Enter the credentials again to use this channel with a different destination",
+			});
+
+			expect(notificationsRepository.updateById).not.toHaveBeenCalled();
+		});
+
+		it("refuses a conversion that would leave the channel unable to send", async () => {
+			const { service, notificationsRepository } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(
+				makeNotification({ type: "telegram", address: "-100111", accessToken: "stored-token" })
+			);
+
+			// The stored Telegram bot token must not follow the channel to Matrix, where it would be
+			// presented to whatever homeserver the caller named. But Matrix cannot send without one, so
+			// silently dropping it would leave a channel that looks configured and never alerts.
+			await expect(
+				service.updateById("notif-1", "team-1", {
+					type: "matrix",
+					homeserverUrl: "https://evil.example.com",
+					roomId: "!room:example.com",
+				})
+			).rejects.toMatchObject({
+				status: 400,
+				message: "Enter the credentials for the channel type you are switching to",
+			});
+
+			expect(notificationsRepository.updateById).not.toHaveBeenCalled();
+		});
+
+		it("drops a stale credential when converting to a channel that cannot use one", async () => {
+			const updated = makeNotification({ type: "ntfy" });
+			const { service, notificationsRepository } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(
+				makeNotification({ type: "telegram", address: "-100111", accessToken: "stored-token" })
+			);
+			(notificationsRepository.updateById as jest.Mock).mockResolvedValue(updated);
+
+			await service.updateById("notif-1", "team-1", { type: "ntfy", address: "https://ntfy.sh", topic: "alerts" });
+
+			expect(notificationsRepository.updateById).toHaveBeenCalledWith("notif-1", "team-1", expect.objectContaining({ accessToken: "" }));
+		});
+
+		it("converts a credentialed channel to one whose schema has no credential field", async () => {
+			// teams and ntfy do not declare accessToken, so it is stripped before the service sees it.
+			// Refusing the edit here would be unsatisfiable: there is no way to send the field back.
+			const updated = makeNotification({ type: "teams" });
+			const { service, notificationsRepository } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(storedMatrixChannel);
+			(notificationsRepository.updateById as jest.Mock).mockResolvedValue(updated);
+
+			const result = await service.updateById("notif-1", "team-1", {
+				type: "teams",
+				address: "https://teams.example.com/webhook",
+			});
+
+			expect(result).toBe(updated);
+			expect(notificationsRepository.updateById).toHaveBeenCalledWith("notif-1", "team-1", expect.objectContaining({ accessToken: "" }));
+		});
+
+		it("keeps a credential the caller supplied while changing the provider", async () => {
+			const updated = makeNotification({ type: "matrix" });
+			const { service, notificationsRepository } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(
+				makeNotification({ type: "telegram", address: "-100111", accessToken: "stored-token" })
+			);
+			(notificationsRepository.updateById as jest.Mock).mockResolvedValue(updated);
+
+			await service.updateById("notif-1", "team-1", {
+				type: "matrix",
+				homeserverUrl: "https://matrix.example.com",
+				roomId: "!room:example.com",
+				accessToken: "typed-token",
+			});
+
+			expect(notificationsRepository.updateById).toHaveBeenCalledWith("notif-1", "team-1", expect.objectContaining({ accessToken: "typed-token" }));
+		});
+
+		it("allows a repointing edit that supplies the credential explicitly", async () => {
+			const updated = makeNotification({ type: "matrix", homeserverUrl: "https://other.example.com" });
+			const { service, notificationsRepository } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(storedMatrixChannel);
+			(notificationsRepository.updateById as jest.Mock).mockResolvedValue(updated);
+
+			const result = await service.updateById("notif-1", "team-1", {
+				type: "matrix",
+				homeserverUrl: "https://other.example.com",
+				roomId: "!room:example.com",
+				accessToken: "typed-token",
+			});
+
+			expect(result).toBe(updated);
+		});
+
+		it("allows an edit that leaves the destination alone", async () => {
+			const updated = makeNotification({ type: "matrix", roomId: "!other:example.com" });
+			const { service, notificationsRepository } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(storedMatrixChannel);
+			(notificationsRepository.updateById as jest.Mock).mockResolvedValue(updated);
+
+			const result = await service.updateById("notif-1", "team-1", {
+				type: "matrix",
+				homeserverUrl: "https://matrix.example.com",
+				roomId: "!other:example.com",
+			});
+
+			expect(result).toBe(updated);
+		});
+
+		it.each([["webhook"], ["slack"], ["discord"], ["teams"], ["rocket_chat"], ["ntfy"]] as const)(
+			"lets %s change its address even with a leftover credential it cannot use",
+			async (type) => {
+				// These providers never read accessToken, so a credential left behind by an earlier type
+				// change is inert. Treating it as live made the address unchangeable, and for teams,
+				// rocket_chat and ntfy the field could not even be cleared, so the record was stuck.
+				const updated = makeNotification({ type, address: "https://elsewhere.example.com/hook" });
+				const { service, notificationsRepository } = createService();
+				(notificationsRepository.findById as jest.Mock).mockResolvedValue(
+					makeNotification({ type, address: "https://example.com/hook", accessToken: "leftover-token" })
+				);
+				(notificationsRepository.updateById as jest.Mock).mockResolvedValue(updated);
+
+				const result = await service.updateById("notif-1", "team-1", { type, address: "https://elsewhere.example.com/hook" });
+
+				expect(result).toBe(updated);
+			}
+		);
+
+		it("keeps a credential on a patch that touches neither the type nor a destination", async () => {
+			const updated = makeNotification({ type: "telegram", notificationName: "Renamed" });
+			const { service, notificationsRepository } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(
+				makeNotification({ type: "telegram", address: "-100111", accessToken: "stored-token" })
+			);
+			(notificationsRepository.updateById as jest.Mock).mockResolvedValue(updated);
+
+			await service.updateById("notif-1", "team-1", { type: "telegram", address: "-100111", notificationName: "Renamed" });
+
+			// The stored credential is kept by absence: the patch must not carry the field at all, and
+			// must not blank it either.
+			expect(notificationsRepository.updateById).toHaveBeenCalledWith(
+				"notif-1",
+				"team-1",
+				expect.not.objectContaining({ accessToken: expect.anything() })
+			);
+		});
+
+		it("does not restrict a channel that has no stored credential", async () => {
+			const updated = makeNotification({ type: "webhook", address: "https://elsewhere.example.com/hook" });
+			const { service, notificationsRepository } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(
+				makeNotification({ type: "webhook", address: "https://example.com/hook", accessToken: undefined })
+			);
+			(notificationsRepository.updateById as jest.Mock).mockResolvedValue(updated);
+
+			const result = await service.updateById("notif-1", "team-1", {
+				type: "webhook",
+				address: "https://elsewhere.example.com/hook",
+			});
+
+			expect(result).toBe(updated);
+		});
+
+		it("looks the stored notification up scoped to the caller's team", async () => {
+			const { service, notificationsRepository } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(makeNotification());
+			(notificationsRepository.updateById as jest.Mock).mockResolvedValue(makeNotification());
+
+			await service.updateById("notif-1", "team-1", { notificationName: "Renamed" });
+
+			expect(notificationsRepository.findById).toHaveBeenCalledWith("notif-1", "team-1");
+		});
+	});
+
+	// ── credentials on the send path ──────────────────────────────────────────
+
+	describe("credentials reaching the providers", () => {
+		it("still hands the provider the stored credential when an alert fires", async () => {
+			const { service, notificationsRepository, telegramProvider } = createService();
+			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([
+				makeNotification({ type: "telegram", accessToken: "stored-token" }),
+			]);
+
+			await service.handleNotifications(makeMonitor(), makeStatusResponse(), makeDecision());
+
+			expect(telegramProvider.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ accessToken: "stored-token" }), expect.anything());
+		});
+
+		it("still hands the provider the stored credential when testing every channel of a monitor", async () => {
+			const { service, notificationsRepository, telegramProvider } = createService();
+			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([
+				makeNotification({ type: "telegram", accessToken: "stored-token" }),
+			]);
+
+			await service.testAllNotifications(["notif-1"]);
+
+			expect(telegramProvider.sendTestAlert).toHaveBeenCalledWith(expect.objectContaining({ accessToken: "stored-token" }));
+		});
+	});
+
+	// ── sendTestNotificationById ──────────────────────────────────────────────
+
+	describe("sendTestNotificationById", () => {
+		const storedMatrix = makeNotification({
+			type: "matrix",
+			homeserverUrl: "https://matrix.example.com",
+			roomId: "!room:example.com",
+			accessToken: "stored-token",
+		});
+
+		it("fills in a credential the caller left out from the stored notification", async () => {
+			const { service, notificationsRepository, matrixProvider } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(storedMatrix);
+
+			const result = await service.sendTestNotificationById("notif-1", "team-1", {
+				type: "matrix",
+				homeserverUrl: "https://matrix.example.com",
+				roomId: "!other:example.com",
+			});
+
+			expect(result).toBe(true);
+			expect(matrixProvider.sendTestAlert).toHaveBeenCalledWith(
+				expect.objectContaining({ accessToken: "stored-token", roomId: "!other:example.com" })
+			);
+		});
+
+		it("uses the credential the caller supplied instead of the stored one", async () => {
+			const { service, notificationsRepository, matrixProvider } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(storedMatrix);
+
+			await service.sendTestNotificationById("notif-1", "team-1", {
+				type: "matrix",
+				homeserverUrl: "https://evil.example.com",
+				roomId: "!room:example.com",
+				accessToken: "typed-token",
+			});
+
+			expect(matrixProvider.sendTestAlert).toHaveBeenCalledWith(expect.objectContaining({ accessToken: "typed-token" }));
+		});
+
+		it("refuses to send a stored credential to a destination the caller changed", async () => {
+			const { service, notificationsRepository, matrixProvider } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(storedMatrix);
+
+			await expect(
+				service.sendTestNotificationById("notif-1", "team-1", {
+					type: "matrix",
+					homeserverUrl: "https://evil.example.com",
+					roomId: "!room:example.com",
+				})
+			).rejects.toMatchObject({
+				status: 400,
+				message: "Enter the credentials again to use this channel with a different destination",
+			});
+
+			expect(matrixProvider.sendTestAlert).not.toHaveBeenCalled();
+		});
+
+		it("allows any change for a channel whose provider posts to a fixed host", async () => {
+			const { service, notificationsRepository, telegramProvider } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(
+				makeNotification({ type: "telegram", address: "-100111", accessToken: "stored-token" })
+			);
+
+			await service.sendTestNotificationById("notif-1", "team-1", { type: "telegram", address: "-100999" });
+
+			expect(telegramProvider.sendTestAlert).toHaveBeenCalledWith(expect.objectContaining({ address: "-100999", accessToken: "stored-token" }));
+		});
+
+		it("refuses to test a saved channel as a different type", async () => {
+			const { service, notificationsRepository, telegramProvider } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(storedMatrix);
+
+			// The message matters: without it this passes even with the type check deleted, because the
+			// destination guard happens to throw its own 400 for this fixture.
+			await expect(service.sendTestNotificationById("notif-1", "team-1", { type: "telegram", address: "-100999" })).rejects.toMatchObject({
+				status: 400,
+				message: "Notification type does not match the saved channel",
+			});
+
+			expect(telegramProvider.sendTestAlert).not.toHaveBeenCalled();
+		});
+
+		it("refuses to test a fixed-host channel as a host-addressed one", async () => {
+			// The reverse direction, and the reason the type check is load-bearing rather than tidiness:
+			// telegram has no destination fields, so the destination guard structurally cannot fire, and
+			// only the type check stands between the stored bot token and a caller-named homeserver.
+			const { service, notificationsRepository, matrixProvider } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(
+				makeNotification({ type: "telegram", address: "-100111", accessToken: "stored-token" })
+			);
+
+			await expect(
+				service.sendTestNotificationById("notif-1", "team-1", {
+					type: "matrix",
+					homeserverUrl: "https://evil.example.com",
+					roomId: "!room:example.com",
+				})
+			).rejects.toMatchObject({
+				status: 400,
+				message: "Notification type does not match the saved channel",
+			});
+
+			expect(matrixProvider.sendTestAlert).not.toHaveBeenCalled();
+		});
+
+		it("does not apply the destination check when there is no stored credential to fill in", async () => {
+			const { service, notificationsRepository, webhookProvider } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(
+				makeNotification({ type: "webhook", address: "https://example.com/hook", accessToken: undefined })
+			);
+
+			await service.sendTestNotificationById("notif-1", "team-1", { type: "webhook", address: "https://elsewhere.example.com/hook" });
+
+			expect(webhookProvider.sendTestAlert).toHaveBeenCalledWith(expect.objectContaining({ address: "https://elsewhere.example.com/hook" }));
+		});
+
+		it("treats a stored empty credential as no credential to fill in", async () => {
+			const { service, notificationsRepository, matrixProvider } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(makeNotification({ ...storedMatrix, accessToken: "" }));
+
+			await service.sendTestNotificationById("notif-1", "team-1", {
+				type: "matrix",
+				homeserverUrl: "https://elsewhere.example.com",
+				roomId: "!room:example.com",
+			});
+
+			expect(matrixProvider.sendTestAlert).toHaveBeenCalledWith(expect.not.objectContaining({ accessToken: expect.anything() }));
+		});
+
+		it("looks the notification up scoped to the caller's team", async () => {
+			const { service, notificationsRepository } = createService();
+			(notificationsRepository.findById as jest.Mock).mockResolvedValue(storedMatrix);
+
+			await service.sendTestNotificationById("notif-1", "team-1", {
+				type: "matrix",
+				homeserverUrl: "https://matrix.example.com",
+				roomId: "!room:example.com",
+			});
+
+			expect(notificationsRepository.findById).toHaveBeenCalledWith("notif-1", "team-1");
 		});
 	});
 

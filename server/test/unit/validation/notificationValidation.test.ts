@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { createNotificationBodyValidation } from "@/api/validation/notificationValidation.js";
+import { createNotificationBodyValidation, editNotificationBodyValidation } from "../../../src/api/validation/notificationValidation.ts";
 
 describe("notification validation", () => {
 	it("accepts a Rocket.Chat incoming webhook", () => {
@@ -44,4 +44,117 @@ describe("notification validation", () => {
 			expect(result.success).toBe(false);
 		}
 	);
+});
+
+const telegramBody = {
+	notificationName: "Telegram alerts",
+	type: "telegram" as const,
+	address: "-1001234567890",
+};
+
+const twilioBody = {
+	notificationName: "Twilio SMS",
+	type: "twilio" as const,
+	accountSid: "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	phone: "+15551234567",
+	twilioPhoneNumber: "+15557654321",
+};
+
+describe("notificationValidation — credentials on create", () => {
+	it("requires a credential on every channel that authenticates with one", () => {
+		expect(() => createNotificationBodyValidation.parse(telegramBody)).toThrow();
+		expect(() => createNotificationBodyValidation.parse(twilioBody)).toThrow();
+		expect(() =>
+			createNotificationBodyValidation.parse({
+				notificationName: "Matrix room",
+				type: "matrix",
+				homeserverUrl: "https://matrix.example.com",
+				roomId: "!abc:example.com",
+			})
+		).toThrow();
+	});
+
+	it("accepts a body that carries the credential", () => {
+		const parsed = createNotificationBodyValidation.parse({ ...telegramBody, accessToken: "bot-token" });
+
+		expect(parsed.accessToken).toBe("bot-token");
+	});
+});
+
+describe("notificationValidation — credentials on edit", () => {
+	it("accepts a body that omits the credential, which keeps the stored one", () => {
+		const parsed = editNotificationBodyValidation.parse(telegramBody);
+
+		expect(parsed).not.toHaveProperty("accessToken");
+	});
+
+	it("accepts a replacement credential", () => {
+		const parsed = editNotificationBodyValidation.parse({ ...telegramBody, accessToken: "new-token" });
+
+		expect(parsed.accessToken).toBe("new-token");
+	});
+
+	it("rejects an empty credential, so a required one cannot be blanked out", () => {
+		expect(() => editNotificationBodyValidation.parse({ ...telegramBody, accessToken: "" })).toThrow();
+		expect(() => editNotificationBodyValidation.parse({ ...twilioBody, accessToken: "" })).toThrow();
+	});
+
+	it("still requires the fields that are not credentials", () => {
+		// accountSid is a Twilio identifier, not a credential: it is returned to the client, so the
+		// client can always send it back.
+		expect(() =>
+			editNotificationBodyValidation.parse({
+				notificationName: "Twilio SMS",
+				type: "twilio",
+				phone: "+15551234567",
+				twilioPhoneNumber: "+15557654321",
+			})
+		).toThrow();
+
+		expect(() => editNotificationBodyValidation.parse({ ...telegramBody, address: "" })).toThrow();
+	});
+
+	it("leaves channels without a credential unchanged", () => {
+		const parsed = editNotificationBodyValidation.parse({
+			notificationName: "Ops webhook",
+			type: "webhook",
+			address: "https://example.com/hooks/checkmate",
+		});
+
+		expect(parsed.type).toBe("webhook");
+	});
+});
+
+// Every channel that authenticates with a credential, so a new one cannot be added un-asserted.
+const credentialledChannels = [
+	{ type: "matrix" as const, body: { notificationName: "Matrix room", homeserverUrl: "https://matrix.example.com", roomId: "!abc:example.com" } },
+	{ type: "telegram" as const, body: { notificationName: "Telegram alerts", address: "-1001234567890" } },
+	{ type: "pushover" as const, body: { notificationName: "Pushover", address: "u1234567890abcdef" } },
+	{
+		type: "twilio" as const,
+		body: {
+			notificationName: "Twilio SMS",
+			accountSid: "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+			phone: "+15551234567",
+			twilioPhoneNumber: "+15557654321",
+		},
+	},
+];
+
+describe("notificationValidation: every credentialled channel, not just the sampled ones", () => {
+	it.each(credentialledChannels)("requires the credential on create for $type", ({ type, body }) => {
+		expect(createNotificationBodyValidation.safeParse({ ...body, type }).success).toBe(false);
+		expect(createNotificationBodyValidation.safeParse({ ...body, type, accessToken: "a-credential" }).success).toBe(true);
+	});
+
+	it.each(credentialledChannels)("rejects an empty credential on edit for $type", ({ type, body }) => {
+		expect(editNotificationBodyValidation.safeParse({ ...body, type, accessToken: "" }).success).toBe(false);
+	});
+
+	it.each(credentialledChannels)("accepts an omitted credential on edit for $type, which keeps the stored one", ({ type, body }) => {
+		const result = editNotificationBodyValidation.safeParse({ ...body, type });
+
+		expect(result.success).toBe(true);
+		expect(result.success && "accessToken" in result.data).toBe(false);
+	});
 });

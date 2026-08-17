@@ -1,112 +1,160 @@
 import { z } from "zod";
+import { NotificationChannels } from "@/domain/notifications/notification.type.js";
 
 //****************************************
 // Notification Validations
 //****************************************
 
+const notificationName = z.string().min(1, "Notification name is required");
+
+// Matrix fields that the simpler channels also accept but never use. Declared once and shared so
+// bodies posted by the existing form keep validating.
+const unusedMatrixFields = {
+	homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
+	roomId: z.union([z.string(), z.literal("")]).optional(),
+	accessToken: z.union([z.string(), z.literal("")]).optional(),
+};
+
+const emailSchema = z.object({
+	notificationName,
+	type: z.literal("email"),
+	address: z.email("Please enter a valid e-mail address"),
+	...unusedMatrixFields,
+});
+
+const webhookSchema = z.object({
+	notificationName,
+	type: z.literal("webhook"),
+	address: z.url({ message: "Please enter a valid Webhook URL" }),
+	...unusedMatrixFields,
+});
+
+// No unusedMatrixFields spread, unlike its webhook-shaped siblings: develop declared this channel
+// without them, and widening it here would let a credential be stored on a channel that has no field
+// to reset it from.
+const rocketChatSchema = z.object({
+	notificationName,
+	type: z.literal("rocket_chat"),
+	address: z.url({ protocol: /^https?$/, message: "Please enter a valid Rocket.Chat webhook URL" }),
+});
+
+const slackSchema = z.object({
+	notificationName,
+	type: z.literal("slack"),
+	address: z.url({ message: "Please enter a valid Webhook URL" }),
+	...unusedMatrixFields,
+});
+
+const discordSchema = z.object({
+	notificationName,
+	type: z.literal("discord"),
+	address: z.url({ message: "Please enter a valid Webhook URL" }),
+	...unusedMatrixFields,
+});
+
+const pagerDutySchema = z.object({
+	notificationName,
+	type: z.literal("pager_duty"),
+	address: z.string().min(1, "PagerDuty integration key is required"),
+	...unusedMatrixFields,
+});
+
+const matrixSchema = z.object({
+	notificationName,
+	type: z.literal("matrix"),
+	address: z.union([z.string(), z.literal("")]).optional(),
+	homeserverUrl: z.url({ message: "Please enter a valid Homeserver URL" }),
+	roomId: z.string().min(1, "Room ID is required"),
+	accessToken: z.string().min(1, "Access Token is required"),
+});
+
+const teamsSchema = z.object({
+	notificationName,
+	type: z.literal("teams"),
+	address: z.url({ message: "Please enter a valid Webhook URL" }),
+});
+
+const telegramSchema = z.object({
+	notificationName,
+	type: z.literal("telegram"),
+	address: z.string().min(1, "Chat ID is required"),
+	accessToken: z.string().min(1, "Bot token is required"),
+});
+
+const pushoverSchema = z.object({
+	notificationName,
+	type: z.literal("pushover"),
+	address: z.string().min(1, "User key is required"),
+	accessToken: z.string().min(1, "App token is required"),
+});
+
+const twilioSchema = z.object({
+	notificationName,
+	type: z.literal("twilio"),
+	accountSid: z.string().min(1, "Account SID is required"),
+	accessToken: z.string().min(1, "Auth token is required"),
+	phone: z.string().min(1, "Recipient phone number is required"),
+	twilioPhoneNumber: z.string().min(1, "Twilio phone number is required"),
+});
+
+const ntfySchema = z.object({
+	notificationName,
+	type: z.literal("ntfy"),
+	address: z.url({ message: "Please enter a valid ntfy server URL" }),
+	topic: z.string().min(1, "Topic is required"),
+});
+
 export const createNotificationBodyValidation = z.discriminatedUnion("type", [
-	// Email notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("email"),
-		address: z.email("Please enter a valid e-mail address"),
-		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
-		roomId: z.union([z.string(), z.literal("")]).optional(),
-		accessToken: z.union([z.string(), z.literal("")]).optional(),
-	}),
-	// Webhook notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("webhook"),
-		address: z.url({ message: "Please enter a valid Webhook URL" }),
-		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
-		roomId: z.union([z.string(), z.literal("")]).optional(),
-		accessToken: z.union([z.string(), z.literal("")]).optional(),
-	}),
-	// Rocket.Chat notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("rocket_chat"),
-		address: z.url({
-			protocol: /^https?$/,
-			message: "Please enter a valid Rocket.Chat webhook URL",
-		}),
-	}),
-	// Slack notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("slack"),
-		address: z.url({ message: "Please enter a valid Webhook URL" }),
-		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
-		roomId: z.union([z.string(), z.literal("")]).optional(),
-		accessToken: z.union([z.string(), z.literal("")]).optional(),
-	}),
-	// Discord notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("discord"),
-		address: z.url({ message: "Please enter a valid Webhook URL" }),
-		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
-		roomId: z.union([z.string(), z.literal("")]).optional(),
-		accessToken: z.union([z.string(), z.literal("")]).optional(),
-	}),
-	// PagerDuty notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("pager_duty"),
-		address: z.string().min(1, "PagerDuty integration key is required"),
-		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
-		roomId: z.union([z.string(), z.literal("")]).optional(),
-		accessToken: z.union([z.string(), z.literal("")]).optional(),
-	}),
-	// Matrix notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("matrix"),
-		address: z.union([z.string(), z.literal("")]).optional(),
-		homeserverUrl: z.url({ message: "Please enter a valid Homeserver URL" }),
-		roomId: z.string().min(1, "Room ID is required"),
-		accessToken: z.string().min(1, "Access Token is required"),
-	}),
-	// Teams notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("teams"),
-		address: z.url({ message: "Please enter a valid Webhook URL" }),
-	}),
-	// Telegram notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("telegram"),
-		address: z.string().min(1, "Chat ID is required"),
-		accessToken: z.string().min(1, "Bot token is required"),
-	}),
-	// Pushover notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("pushover"),
-		address: z.string().min(1, "User key is required"),
-		accessToken: z.string().min(1, "App token is required"),
-	}),
-	// Twilio SMS notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("twilio"),
-		accountSid: z.string().min(1, "Account SID is required"),
-		accessToken: z.string().min(1, "Auth token is required"),
-		phone: z.string().min(1, "Recipient phone number is required"),
-		twilioPhoneNumber: z.string().min(1, "Twilio phone number is required"),
-	}),
-	// ntfy notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("ntfy"),
-		address: z.url({ message: "Please enter a valid ntfy server URL" }),
-		topic: z.string().min(1, "Topic is required"),
-	}),
+	emailSchema,
+	webhookSchema,
+	rocketChatSchema,
+	slackSchema,
+	discordSchema,
+	pagerDutySchema,
+	matrixSchema,
+	teamsSchema,
+	telegramSchema,
+	pushoverSchema,
+	twilioSchema,
+	ntfySchema,
 ]);
 
+// Editing an existing channel may omit its stored credential, which means "keep the stored value".
+// Derived from the create schemas so each channel stays declared once: only the credential becomes
+// optional, so an empty string is still rejected and a required credential cannot be blanked out.
+export const editNotificationBodyValidation = z.discriminatedUnion("type", [
+	emailSchema,
+	webhookSchema,
+	rocketChatSchema,
+	slackSchema,
+	discordSchema,
+	pagerDutySchema,
+	matrixSchema.partial({ accessToken: true }),
+	teamsSchema,
+	telegramSchema.partial({ accessToken: true }),
+	pushoverSchema.partial({ accessToken: true }),
+	twilioSchema.partial({ accessToken: true }),
+	ntfySchema,
+]);
+
+// Build-time drift detection, mirroring NotificationFieldsAreClassified in notification.type.ts: a
+// channel added to the create union must also reach the edit union. Missing it leaves that channel
+// impossible to edit, and a discriminated union reports the cause only as "Invalid input" on the
+// type field, which is a hard failure to trace back to this list.
+type Assert<T extends true> = T;
+type ChannelMissingFromEditUnion = Exclude<
+	z.infer<typeof createNotificationBodyValidation>["type"],
+	z.infer<typeof editNotificationBodyValidation>["type"]
+>;
+export type EditUnionCoversEveryChannel = Assert<
+	[ChannelMissingFromEditUnion] extends [never] ? true : { addToEditNotificationBodyValidation: ChannelMissingFromEditUnion }
+>;
+
+// Testing an unsaved channel carries every credential in the body, so it stays strict.
 export const testNotificationBodyValidation = createNotificationBodyValidation;
+
+// Testing a saved channel may omit credentials; the server fills them in from the stored record.
+export const testSavedNotificationBodyValidation = editNotificationBodyValidation;
 
 export const deleteNotificationParamValidation = z.object({
 	id: z.string().min(1, "Notification ID is required"),
@@ -116,6 +164,30 @@ export const getNotificationByIdParamValidation = z.object({
 });
 export const editNotificationParamValidation = z.object({
 	id: z.string().min(1, "Notification ID is required"),
+});
+export const testSavedNotificationParamValidation = z.object({
+	id: z.string().min(1, "Notification ID is required"),
+});
+
+// Canonical notification shape returned by /notifications endpoints. Credentials are absent by
+// design: each one is reported as a boolean "<field>Set" so a client can tell that a value is
+// stored without receiving it.
+export const notificationResponseSchema = z.object({
+	id: z.string(),
+	userId: z.string(),
+	teamId: z.string(),
+	type: z.enum(NotificationChannels),
+	notificationName: z.string(),
+	address: z.string().optional(),
+	phone: z.string().optional(),
+	homeserverUrl: z.string().optional(),
+	roomId: z.string().optional(),
+	accountSid: z.string().optional(),
+	twilioPhoneNumber: z.string().optional(),
+	topic: z.string().optional(),
+	createdAt: z.string(),
+	updatedAt: z.string(),
+	accessTokenSet: z.boolean(),
 });
 
 export const testAllNotificationsBodyValidation = z.object({
