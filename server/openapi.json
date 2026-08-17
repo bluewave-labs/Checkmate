@@ -871,6 +871,58 @@
 				},
 				"required": ["monitorData", "monitorStats"]
 			},
+			"Notification": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"userId": {
+						"type": "string"
+					},
+					"teamId": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string",
+						"enum": ["email", "slack", "discord", "webhook", "rocket_chat", "pager_duty", "matrix", "teams", "telegram", "pushover", "twilio", "ntfy"]
+					},
+					"notificationName": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"homeserverUrl": {
+						"type": "string"
+					},
+					"roomId": {
+						"type": "string"
+					},
+					"accountSid": {
+						"type": "string"
+					},
+					"twilioPhoneNumber": {
+						"type": "string"
+					},
+					"topic": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					},
+					"accessTokenSet": {
+						"type": "boolean"
+					}
+				},
+				"required": ["id", "userId", "teamId", "type", "notificationName", "createdAt", "updatedAt", "accessTokenSet"]
+			},
 			"NotificationChannelBody": {
 				"oneOf": [
 					{
@@ -1419,6 +1471,434 @@
 					"address": "https://ntfy.sh",
 					"topic": "checkmate-alerts"
 				}
+			},
+			"NotificationChannelEditBody": {
+				"oneOf": [
+					{
+						"type": "object",
+						"properties": {
+							"notificationName": {
+								"type": "string",
+								"minLength": 1
+							},
+							"type": {
+								"type": "string",
+								"enum": ["email"]
+							},
+							"address": {
+								"type": "string",
+								"format": "email"
+							},
+							"homeserverUrl": {
+								"anyOf": [
+									{
+										"type": "string"
+									},
+									{
+										"type": "string",
+										"enum": [""]
+									}
+								]
+							},
+							"roomId": {
+								"anyOf": [
+									{
+										"type": "string"
+									},
+									{
+										"type": "string",
+										"enum": [""]
+									}
+								]
+							},
+							"accessToken": {
+								"anyOf": [
+									{
+										"type": "string"
+									},
+									{
+										"type": "string",
+										"enum": [""]
+									}
+								]
+							}
+						},
+						"required": ["notificationName", "type", "address"]
+					},
+					{
+						"type": "object",
+						"properties": {
+							"notificationName": {
+								"type": "string",
+								"minLength": 1
+							},
+							"type": {
+								"type": "string",
+								"enum": ["webhook"]
+							},
+							"address": {
+								"type": "string",
+								"format": "uri"
+							},
+							"homeserverUrl": {
+								"anyOf": [
+									{
+										"type": "string"
+									},
+									{
+										"type": "string",
+										"enum": [""]
+									}
+								]
+							},
+							"roomId": {
+								"anyOf": [
+									{
+										"type": "string"
+									},
+									{
+										"type": "string",
+										"enum": [""]
+									}
+								]
+							},
+							"accessToken": {
+								"anyOf": [
+									{
+										"type": "string"
+									},
+									{
+										"type": "string",
+										"enum": [""]
+									}
+								]
+							}
+						},
+						"required": ["notificationName", "type", "address"]
+					},
+					{
+						"type": "object",
+						"properties": {
+							"notificationName": {
+								"type": "string",
+								"minLength": 1
+							},
+							"type": {
+								"type": "string",
+								"enum": ["rocket_chat"]
+							},
+							"address": {
+								"type": "string",
+								"format": "uri"
+							}
+						},
+						"required": ["notificationName", "type", "address"]
+					},
+					{
+						"type": "object",
+						"properties": {
+							"notificationName": {
+								"type": "string",
+								"minLength": 1
+							},
+							"type": {
+								"type": "string",
+								"enum": ["slack"]
+							},
+							"address": {
+								"type": "string",
+								"format": "uri"
+							},
+							"homeserverUrl": {
+								"anyOf": [
+									{
+										"type": "string"
+									},
+									{
+										"type": "string",
+										"enum": [""]
+									}
+								]
+							},
+							"roomId": {
+								"anyOf": [
+									{
+										"type": "string"
+									},
+									{
+										"type": "string",
+										"enum": [""]
+									}
+								]
+							},
+							"accessToken": {
+								"anyOf": [
+									{
+										"type": "string"
+									},
+									{
+										"type": "string",
+										"enum": [""]
+									}
+								]
+							}
+						},
+						"required": ["notificationName", "type", "address"]
+					},
+					{
+						"type": "object",
+						"properties": {
+							"notificationName": {
+								"type": "string",
+								"minLength": 1
+							},
+							"type": {
+								"type": "string",
+								"enum": ["discord"]
+							},
+							"address": {
+								"type": "string",
+								"format": "uri"
+							},
+							"homeserverUrl": {
+								"anyOf": [
+									{
+										"type": "string"
+									},
+									{
+										"type": "string",
+										"enum": [""]
+									}
+								]
+							},
+							"roomId": {
+								"anyOf": [
+									{
+										"type": "string"
+									},
+									{
+										"type": "string",
+										"enum": [""]
+									}
+								]
+							},
+							"accessToken": {
+								"anyOf": [
+									{
+										"type": "string"
+									},
+									{
+										"type": "string",
+										"enum": [""]
+									}
+								]
+							}
+						},
+						"required": ["notificationName", "type", "address"]
+					},
+					{
+						"type": "object",
+						"properties": {
+							"notificationName": {
+								"type": "string",
+								"minLength": 1
+							},
+							"type": {
+								"type": "string",
+								"enum": ["pager_duty"]
+							},
+							"address": {
+								"type": "string",
+								"minLength": 1
+							},
+							"homeserverUrl": {
+								"anyOf": [
+									{
+										"type": "string"
+									},
+									{
+										"type": "string",
+										"enum": [""]
+									}
+								]
+							},
+							"roomId": {
+								"anyOf": [
+									{
+										"type": "string"
+									},
+									{
+										"type": "string",
+										"enum": [""]
+									}
+								]
+							},
+							"accessToken": {
+								"anyOf": [
+									{
+										"type": "string"
+									},
+									{
+										"type": "string",
+										"enum": [""]
+									}
+								]
+							}
+						},
+						"required": ["notificationName", "type", "address"]
+					},
+					{
+						"type": "object",
+						"properties": {
+							"notificationName": {
+								"type": "string",
+								"minLength": 1
+							},
+							"type": {
+								"type": "string",
+								"enum": ["matrix"]
+							},
+							"address": {
+								"anyOf": [
+									{
+										"type": "string"
+									},
+									{
+										"type": "string",
+										"enum": [""]
+									}
+								]
+							},
+							"homeserverUrl": {
+								"type": "string",
+								"format": "uri"
+							},
+							"roomId": {
+								"type": "string",
+								"minLength": 1
+							},
+							"accessToken": {
+								"type": "string",
+								"minLength": 1
+							}
+						},
+						"required": ["notificationName", "type", "homeserverUrl", "roomId"]
+					},
+					{
+						"type": "object",
+						"properties": {
+							"notificationName": {
+								"type": "string",
+								"minLength": 1
+							},
+							"type": {
+								"type": "string",
+								"enum": ["teams"]
+							},
+							"address": {
+								"type": "string",
+								"format": "uri"
+							}
+						},
+						"required": ["notificationName", "type", "address"]
+					},
+					{
+						"type": "object",
+						"properties": {
+							"notificationName": {
+								"type": "string",
+								"minLength": 1
+							},
+							"type": {
+								"type": "string",
+								"enum": ["telegram"]
+							},
+							"address": {
+								"type": "string",
+								"minLength": 1
+							},
+							"accessToken": {
+								"type": "string",
+								"minLength": 1
+							}
+						},
+						"required": ["notificationName", "type", "address"]
+					},
+					{
+						"type": "object",
+						"properties": {
+							"notificationName": {
+								"type": "string",
+								"minLength": 1
+							},
+							"type": {
+								"type": "string",
+								"enum": ["pushover"]
+							},
+							"address": {
+								"type": "string",
+								"minLength": 1
+							},
+							"accessToken": {
+								"type": "string",
+								"minLength": 1
+							}
+						},
+						"required": ["notificationName", "type", "address"]
+					},
+					{
+						"type": "object",
+						"properties": {
+							"notificationName": {
+								"type": "string",
+								"minLength": 1
+							},
+							"type": {
+								"type": "string",
+								"enum": ["twilio"]
+							},
+							"accountSid": {
+								"type": "string",
+								"minLength": 1
+							},
+							"accessToken": {
+								"type": "string",
+								"minLength": 1
+							},
+							"phone": {
+								"type": "string",
+								"minLength": 1
+							},
+							"twilioPhoneNumber": {
+								"type": "string",
+								"minLength": 1
+							}
+						},
+						"required": ["notificationName", "type", "accountSid", "phone", "twilioPhoneNumber"]
+					},
+					{
+						"type": "object",
+						"properties": {
+							"notificationName": {
+								"type": "string",
+								"minLength": 1
+							},
+							"type": {
+								"type": "string",
+								"enum": ["ntfy"]
+							},
+							"address": {
+								"type": "string",
+								"format": "uri"
+							},
+							"topic": {
+								"type": "string",
+								"minLength": 1
+							}
+						},
+						"required": ["notificationName", "type", "address", "topic"]
+					}
+				]
 			}
 		},
 		"parameters": {}
@@ -6791,14 +7271,6 @@
 					},
 					{
 						"schema": {
-							"type": "boolean"
-						},
-						"required": false,
-						"name": "normalize",
-						"in": "query"
-					},
-					{
-						"schema": {
 							"anyOf": [
 								{
 									"type": "string",
@@ -8962,7 +9434,7 @@
 			"post": {
 				"tags": ["notifications"],
 				"summary": "Create a notification channel",
-				"description": "Create a notification channel of any supported type. The `type` field discriminates the body shape.",
+				"description": "Create a notification channel of any supported type. The `type` field discriminates the body shape. Credentials are stored but never returned; the response reports `accessTokenSet` instead.",
 				"security": [
 					{
 						"bearerAuth": []
@@ -8993,10 +9465,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/Notification"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -9317,6 +9789,141 @@
 				}
 			}
 		},
+		"/notifications/{id}/test": {
+			"post": {
+				"tags": ["notifications"],
+				"summary": "Send a test alert through a saved notification channel",
+				"description": "Credentials omitted from the body are taken from the saved channel, so a channel can be tested without the client holding its secret. Omitting a credential while changing where the notification is delivered is rejected.",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "id",
+						"in": "path"
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/NotificationChannelEditBody"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": ["success"],
+											"additionalProperties": {
+												"nullable": true
+											}
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/notifications/team": {
 			"get": {
 				"tags": ["notifications"],
@@ -9342,10 +9949,13 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/Notification"
+											}
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -9458,10 +10068,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/Notification"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -9655,6 +10265,7 @@
 			"patch": {
 				"tags": ["notifications"],
 				"summary": "Edit a notification channel",
+				"description": "Credentials may be omitted, which leaves the stored value unchanged. An empty credential is rejected, so a required one cannot be blanked out by mistake. Changing where the channel delivers, or which provider it uses, requires supplying the credential rather than relying on the stored one.",
 				"security": [
 					{
 						"bearerAuth": []
@@ -9675,7 +10286,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/NotificationChannelBody"
+								"$ref": "#/components/schemas/NotificationChannelEditBody"
 							}
 						}
 					}
@@ -9696,10 +10307,10 @@
 											"type": "string"
 										},
 										"data": {
-											"nullable": true
+											"$ref": "#/components/schemas/Notification"
 										}
 									},
-									"required": ["success", "msg"]
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
