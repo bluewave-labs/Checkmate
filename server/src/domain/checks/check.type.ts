@@ -250,5 +250,5 @@ export type DailyCheckBucket = {
 	totalChecks: number;
 	upChecks: number;
 	downChecks: number;
-	avgResponseTime: number;
+	avgResponseTime: number | null;
 };

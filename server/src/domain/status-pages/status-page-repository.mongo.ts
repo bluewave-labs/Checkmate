@@ -5,7 +5,6 @@ import mongoose from "mongoose";
 import { AppError } from "@/utils/AppError.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
-import CheckModel from "@/domain/checks/check.model.js";
 // Type for update data that can include document-level fields (Buffer for logo)
 type StatusPageUpdateData = Partial<Omit<StatusPage, "id" | "userId" | "teamId" | "logo" | "createdAt" | "updatedAt">> & {
 	logo?: StatusPageLogoDocument | null;
