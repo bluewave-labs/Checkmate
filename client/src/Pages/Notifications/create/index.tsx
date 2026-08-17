@@ -3,7 +3,7 @@ import { Button } from "@/Components/inputs";
 import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { FormProvider, useForm } from "react-hook-form";
@@ -44,17 +44,27 @@ const NotificationsCreatePage = () => {
 		defaultValues: defaults,
 	});
 
-	const { watch, reset, handleSubmit, clearErrors, trigger, getValues } = form;
+	const { watch, reset, handleSubmit, clearErrors, trigger, getValues, setValue } = form;
 
 	useEffect(() => {
 		reset(defaults);
 	}, [defaults, reset]);
 
 	const watchedType = watch("type");
+	const previousType = useRef(watchedType);
 
 	useEffect(() => {
 		clearErrors();
-	}, [watchedType, clearErrors]);
+
+		if (previousType.current === watchedType) return;
+		previousType.current = watchedType;
+
+		// A credential belongs to the provider it was issued by. The field is shared across providers,
+		// and react-hook-form keeps a value when its input unmounts, so without this the credential
+		// typed for one provider silently becomes the next one's, hidden behind a masked field.
+		setValue("accessToken", "");
+		setCredentialHasBeenReset(false);
+	}, [watchedType, clearErrors, setValue]);
 
 	const addressConfig = useMemo(() => {
 		if (watchedType === "pager_duty") {
