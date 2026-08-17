@@ -5,17 +5,14 @@ import Stack from "@mui/material/Stack";
 import type { SxProps, Theme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import type { CheckSnapshot } from "@/Types/Check";
-import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
-import { computeBarHeights } from "@/Utils/DataUtils";
 import { formatMs } from "@/Utils/TimeUtils";
-import { ThemedChartTooltip } from "@/Pages/StatusPage/Status/themes/shared/ThemedChartTooltip";
-const CELLS = MAX_RECENT_CHECKS;
-const MIN_HEIGHT_PCT = 6;
-
-export type BarKind = "up" | "down" | "empty";
+import type {
+	BarKind,
+	ChartCell,
+} from "@/Pages/StatusPage/Status/themes/shared/ChartCells";
 
 interface Props {
-	checks: CheckSnapshot[];
+	cells: ChartCell[];
 	containerSx: SxProps<Theme>;
 	barSx: (kind: BarKind, heightPct: number) => SxProps<Theme>;
 	statsSx: SxProps<Theme>;
@@ -26,7 +23,7 @@ const tone = (check: CheckSnapshot): Exclude<BarKind, "empty"> =>
 	check.status ? "up" : "down";
 
 export const ThemedHistogram = ({
-	checks,
+	cells,
 	containerSx,
 	barSx,
 	statsSx,
@@ -34,45 +31,42 @@ export const ThemedHistogram = ({
 }: Props) => {
 	const { t } = useTranslation();
 
-	const { padded, heights, avg, peak } = useMemo(() => {
-		const source = checks.slice(-CELLS);
-		const out: (CheckSnapshot | null)[] = [
-			...source,
-			...Array.from({ length: Math.max(0, CELLS - source.length) }, () => null),
-		];
-		const heights = computeBarHeights(source);
-		const valid = out.filter((c): c is CheckSnapshot => c !== null && c.responseTime > 0);
-		const maxRt = valid.length ? Math.max(...valid.map((c) => c.responseTime)) : 0;
+	const { avg, peak } = useMemo(() => {
+		const valid = cells.filter((cell) => cell.responseTime > 0);
+		const maxRt = valid.length ? Math.max(...valid.map((cell) => cell.responseTime)) : 0;
 		const avgRt = valid.length
-			? valid.reduce((s, c) => s + c.responseTime, 0) / valid.length
+			? valid.reduce((sum, cell) => sum + cell.responseTime, 0) / valid.length
 			: 0;
-		return { padded: out, heights, avg: formatMs(avgRt), peak: formatMs(maxRt) };
-	}, [checks]);
+		return { avg: formatMs(avgRt), peak: formatMs(maxRt) };
+	}, [cells]);
 
 	return (
 		<Stack gap={statsGap}>
-			<Box sx={containerSx}>
-				{padded.map((check, i) => {
-					if (!check) {
+			<Box
+				sx={[
+					...(Array.isArray(containerSx) ? containerSx : [containerSx]),
+					{ gridTemplateColumns: `repeat(${cells.length}, 1fr)` },
+				]}
+			>
+				{cells.map((cell) => {
+					if (cell.barKind === "empty") {
 						return (
 							<Box
-								key={`empty-${i}`}
-								sx={barSx("empty", MIN_HEIGHT_PCT)}
+								key={cell.key}
+								sx={barSx("empty", cell.heightPct)}
 							/>
 						);
 					}
-					const height = heights[i] ?? MIN_HEIGHT_PCT;
-					const tooltipContent = <ThemedChartTooltip check={check} />;
 					return (
 						<Tooltip
-							key={check.id ?? i}
-							title={tooltipContent}
+							key={cell.key}
+							title={cell.tooltip}
 							arrow
 							placement="top"
 						>
 							<Box
-								sx={barSx(tone(check), height)}
-								aria-label={formatMs(check.responseTime)}
+								sx={barSx(cell.barKind, cell.heightPct)}
+								aria-label={cell.ariaLabel}
 							/>
 						</Tooltip>
 					);

@@ -1442,6 +1442,13 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "Status page deleted successfully",
+			"rangeSelectorAria": "History range",
+			"range": {
+				"latest": "Latest",
+				"30d": "30 days",
+				"60d": "60 days",
+				"90d": "90 days"
+			},
 			"fallback": {
 				"title": "No status pages yet",
 				"description": "Publish a public page that shows real-time uptime and incident history to your customers and stakeholders.",

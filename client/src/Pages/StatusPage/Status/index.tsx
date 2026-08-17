@@ -87,6 +87,16 @@ const StatusPageView = () => {
 	const location = useLocation();
 	const [searchParams, setSearchParams] = useSearchParams();
 
+	const onRangeChange = (next: StatusPageRange) => {
+		const updated = new URLSearchParams(searchParams);
+		if (next === "latest") {
+			updated.delete("range");
+		} else {
+			updated.set("range", next);
+		}
+		setSearchParams(updated, { replace: true });
+	};
+
 	const onCustomDomainHost = isCustomDomainHost();
 	const isPublic =
 		onCustomDomainHost || location.pathname.startsWith(PUBLIC_STATUS_PAGE_PREFIX);
@@ -160,6 +170,9 @@ const StatusPageView = () => {
 					statusPage={statusPage}
 					monitors={monitors}
 					config={themeConfig}
+					range={range}
+					onRangeChange={onRangeChange}
+					bucketTimezone={data.bucketTimezone ?? "Etc/UTC"}
 				/>
 			</StatusPageThemeProvider>
 		);

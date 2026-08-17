@@ -1,4 +1,9 @@
-import type { GroupedCheck, CheckSnapshot, GroupedUptimeCheck } from "@/Types/Check";
+import type {
+	GroupedCheck,
+	CheckSnapshot,
+	GroupedUptimeCheck,
+	DailyCheckBucket,
+} from "@/Types/Check";
 import type { PageSpeedGroupedCheck } from "@/Types/Check";
 import type { GeoContinent } from "@/Types/GeoCheck";
 export type { GeoContinent } from "@/Types/GeoCheck";
@@ -149,6 +154,7 @@ export interface Monitor {
 	dnsServer?: string;
 	dnsRecordType?: DnsRecordType;
 	recentChecks: CheckSnapshot[];
+	dailyChecks?: DailyCheckBucket[];
 	createdAt: string;
 	updatedAt: string;
 }
