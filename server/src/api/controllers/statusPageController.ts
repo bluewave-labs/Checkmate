@@ -70,13 +70,14 @@ class StatusPageController implements IStatusPageController {
 	getStatusPageByUrl = catchAsync(async (req: Request, res: Response) => {
 		getStatusPageParamValidation.parse(req.params);
 		getStatusPageQueryValidation.parse(req.query);
+		const { range } = getStatusPageQueryValidation.parse(req.query);
 
 		if (!req.params.url) {
 			throw new AppError({ message: "Status page URL is required", status: 400 });
 		}
 
 		const statusPage = await this.statusPageService.getStatusPageByUrl(req.params.url as string);
-		const data = await this.statusPageService.getPublicStatusPagePayload(statusPage, req.user?.teamId);
+		const data = await this.statusPageService.getPublicStatusPagePayload(statusPage, req.user?.teamId, range);
 
 		return res.status(200).json({
 			success: true,
@@ -87,7 +88,7 @@ class StatusPageController implements IStatusPageController {
 
 	resolveStatusPageByDomain = catchAsync(async (req: Request, res: Response) => {
 		resolveStatusPageQueryValidation.parse(req.query);
-
+		const { range } = resolveStatusPageQueryValidation.parse(req.query);
 		const domain = resolveStatusPageDomainFromRequest(req.hostname, req.query.domain as string | undefined);
 		if (!domain) {
 			throw new AppError({ message: "Domain is required", status: 400 });
@@ -98,7 +99,7 @@ class StatusPageController implements IStatusPageController {
 			throw new AppError({ message: "Status page not found", status: 404 });
 		}
 
-		const data = await this.statusPageService.getPublicStatusPagePayload(statusPage, req.user?.teamId);
+		const data = await this.statusPageService.getPublicStatusPagePayload(statusPage, req.user?.teamId, range);
 
 		return res.status(200).json({
 			success: true,

@@ -19,7 +19,7 @@ export interface IStatusPageService {
 	getStatusPageByUrl(url: string): Promise<StatusPage>;
 	getStatusPageByCustomDomain(customDomain: string): Promise<StatusPage>;
 	getStatusPagesByTeamId(teamId: string): Promise<StatusPage[]>;
-	getPublicStatusPagePayload(statusPage: StatusPage, requesterTeamId: string | undefined): Promise<PublicStatusPagePayload>;
+	getPublicStatusPagePayload(statusPage: StatusPage, requesterTeamId: string | undefined, range: StatusPageRange): Promise<PublicStatusPagePayload>;
 	updateStatusPage(id: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage>;
 
 	deleteStatusPage(statusPageId: string, teamId: string): Promise<StatusPage>;
