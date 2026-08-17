@@ -1,4 +1,8 @@
-import { PUBLIC_STATUS_PAGE_PREFIX, type StatusPage } from "@/Types/StatusPage";
+import {
+	PUBLIC_STATUS_PAGE_PREFIX,
+	type StatusPage,
+	type StatusPageRange,
+} from "@/Types/StatusPage";
 import { runtimeConfig } from "@/Utils/runtimeConfig";
 
 const CLIENT_HOST =
@@ -86,8 +90,12 @@ export const getStatusPagePreviewUrl = (statusPage: Pick<StatusPage, "url">): st
 export const buildStatusPageApiPath = (options: {
 	url?: string;
 	useCustomDomain?: boolean;
+	range?: StatusPageRange;
 }): string | null => {
-	const query = "type=uptime&type=infrastructure";
+	let query = "type=uptime&type=infrastructure";
+	if (options.range && options.range !== "latest") {
+		query += `&range=${options.range}`;
+	}
 
 	if (options.useCustomDomain && typeof window !== "undefined") {
 		const domain = encodeURIComponent(window.location.hostname);
