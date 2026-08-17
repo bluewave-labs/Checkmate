@@ -116,7 +116,8 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 
 	getDailyStatusBuckets = async (monitorIds: string[], days: number, timezone: string | undefined) => {
 		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
-		const windowStart = new Date(Date.now() - (days - 1) * 24 * 60 * 60 * 1000);
+		// One extra day so the oldest rendered day is complete; the client enumerates exactly `days` days and ignores the partial extra bucket
+		const windowStart = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 		const results = await CheckModel.aggregate([
 			{
 				$match: {
@@ -132,7 +133,7 @@ class MongoStatusPagesRepository implements IStatusPagesRepository {
 					},
 					totalChecks: { $sum: 1 },
 					upChecks: { $sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] } },
-					avgResponseTime: { $avg: { $ifNull: ["$responseTime", 0] } },
+					avgResponseTime: { $avg: "$responseTime" },
 				},
 			},
 			{ $sort: { "_id.day": 1 } },

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { booleanCoercion, dnsHostnameRegex } from "./shared.js";
+import { booleanCoercion, dnsHostnameRegex, timezoneValidation } from "./shared.js";
 import { StatusPageTypes, StatusPageThemes, StatusPageThemeModes, StatusPageRanges } from "@/domain/status-pages/status-page.type.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
 import { cssReferencesExternalResource } from "@/utils/customCss.js";
@@ -40,7 +40,7 @@ export const createStatusPageBodyValidation = z
 			message: "URL can only contain letters, numbers, underscores, and hyphens",
 		}),
 		customDomain: customDomainValidation,
-		timezone: z.string().optional(),
+		timezone: timezoneValidation.optional(),
 		color: z.string().optional(),
 		monitors: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Must be a valid monitor ID")).min(1, "At least one monitor is required"),
 		subMonitors: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/)).optional(),
