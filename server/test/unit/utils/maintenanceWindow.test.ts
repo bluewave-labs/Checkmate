@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { isWindowActive } from "../../../src/utils/maintenanceWindow.ts";
+import { isWindowActive, getActiveWindowEnd } from "../../../src/utils/maintenanceWindow.ts";
 import type { MaintenanceWindow } from "../../../src/domain/maintenance-windows/maintenance-window.type.ts";
 
 const makeWindow = (overrides?: Partial<MaintenanceWindow>): MaintenanceWindow => {
@@ -91,5 +91,39 @@ describe("isWindowActive", () => {
 		expect(isWindowActive(win, new Date("2026-01-15T12:00:00Z"))).toBe(true);
 		expect(isWindowActive(win, new Date("2026-01-15T14:00:00Z"))).toBe(false);
 		expect(isWindowActive(win, new Date("2026-01-15T10:00:00Z"))).toBe(false);
+	});
+});
+
+describe("getActiveWindowEnd", () => {
+	it("returns null when window is not active", () => {
+		expect(getActiveWindowEnd(makeWindow({ active: false }))).toBeNull();
+	});
+
+	it("returns correct end date for one-time active window", () => {
+		const win = makeWindow({
+			start: "2026-01-15T11:00:00Z",
+			end: "2026-01-15T13:00:00Z",
+		});
+		const result = getActiveWindowEnd(win, new Date("2026-01-15T12:00:00Z"));
+		expect(result?.toISOString()).toBe("2026-01-15T13:00:00.000Z");
+	});
+
+	it("returns advanced end date for recurring active window", () => {
+		const win = makeWindow({
+			start: "2026-01-15T10:00:00Z",
+			end: "2026-01-15T10:30:00Z",
+			repeat: 3_600_000, // 1 hour repeat
+		});
+		// at 12:15, current occurrence is 12:00 -> 12:30
+		const result = getActiveWindowEnd(win, new Date("2026-01-15T12:15:00Z"));
+		expect(result?.toISOString()).toBe("2026-01-15T12:30:00.000Z");
+	});
+
+	it("returns null when window is outside active time", () => {
+		const win = makeWindow({
+			start: "2026-01-15T11:00:00Z",
+			end: "2026-01-15T13:00:00Z",
+		});
+		expect(getActiveWindowEnd(win, new Date("2026-01-15T14:00:00Z"))).toBeNull();
 	});
 });

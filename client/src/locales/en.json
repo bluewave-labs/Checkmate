@@ -1442,6 +1442,11 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "Status page deleted successfully",
+			"maintenanceBanner": {
+				"title": "Scheduled Maintenance in Progress",
+				"eta": "Expected completion: {{time}}",
+				"affectedServices": "Affected services:"
+			},
 			"fallback": {
 				"title": "No status pages yet",
 				"description": "Publish a public page that shows real-time uptime and incident history to your customers and stakeholders.",
@@ -1674,6 +1679,9 @@
 			"header": {
 				"title": "Uptime monitors",
 				"description": "Watch HTTP endpoints, pings, containers, and ports — and get alerted the moment something goes down."
+			},
+			"details": {
+				"maintenanceAlert": "This monitor is currently under scheduled maintenance. Incident detection and alert notifications are temporarily paused."
 			}
 		}
 	}

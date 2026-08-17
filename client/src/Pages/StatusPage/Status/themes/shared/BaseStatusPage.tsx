@@ -4,9 +4,10 @@ import Stack from "@mui/material/Stack";
 import { useTranslation } from "react-i18next";
 import type { SxProps, Theme } from "@mui/material/styles";
 import type { Monitor } from "@/Types/Monitor";
-import type { StatusPage } from "@/Types/StatusPage";
+import type { StatusPage, ActiveMaintenanceInfo } from "@/Types/StatusPage";
 import { getMonitorTypeLabel } from "@/Types/StatusPage";
 import type { StatusPageThemeTokens } from "@/Pages/StatusPage/Status/themes/tokens";
+import { MaintenanceBanner } from "@/Pages/StatusPage/Status/themes/shared/MaintenanceBanner";
 import {
 	ThemedHeatmap,
 	type HeatCellKind,
@@ -81,10 +82,16 @@ export interface ThemeConfig<S extends BaseStyles = BaseStyles> {
 interface Props {
 	statusPage: StatusPage;
 	monitors: StatusPageMonitor[];
+	activeMaintenances?: ActiveMaintenanceInfo[];
 	config: ThemeConfig<any>;
 }
 
-export const BaseStatusPage = ({ statusPage, monitors, config }: Props) => {
+export const BaseStatusPage = ({
+	statusPage,
+	monitors,
+	activeMaintenances,
+	config,
+}: Props) => {
 	const { t } = useTranslation();
 	const { tokens, mode } = useStatusPageTheme();
 	const styles = useMemo(
@@ -123,6 +130,12 @@ export const BaseStatusPage = ({ statusPage, monitors, config }: Props) => {
 				overall={overall}
 				monitorCount={monitors.length}
 				styles={styles}
+			/>
+
+			<MaintenanceBanner
+				activeMaintenances={activeMaintenances}
+				monitors={monitors}
+				timezone={statusPage.timezone}
 			/>
 
 			{statusPage.showCharts && (

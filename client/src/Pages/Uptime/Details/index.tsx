@@ -9,7 +9,8 @@ import {
 	HeaderGeoTabs,
 	GeoChecksMap,
 } from "@/Components/monitors";
-import { TrendingUp, AlertTriangle } from "lucide-react";
+import { TrendingUp, AlertTriangle, Wrench } from "lucide-react";
+import Alert from "@mui/material/Alert";
 import { ChecksTable } from "@/Pages/Uptime/Details/Components/ChecksTable";
 import { GeoChecksTable } from "@/Pages/Uptime/Details/Components/GeoChecksTable";
 import { MonitorStatBoxes } from "@/Components/monitors";
@@ -217,6 +218,18 @@ const UptimeDetailsPage = () => {
 				isAdmin={isAdmin}
 				refetch={refetchMonitor}
 			/>
+			{monitor.status === "maintenance" && (
+				<Alert
+					severity="warning"
+					icon={<Wrench size={20} />}
+					sx={{
+						borderRadius: "8px",
+						fontWeight: 500,
+					}}
+				>
+					{t("pages.uptime.details.maintenanceAlert")}
+				</Alert>
+			)}
 			<MonitorStatBoxes
 				monitor={monitor}
 				monitorStats={monitorStats}

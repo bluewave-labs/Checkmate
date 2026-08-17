@@ -149,6 +149,7 @@ const StatusPageView = () => {
 				<BaseStatusPage
 					statusPage={statusPage}
 					monitors={monitors}
+					activeMaintenances={data?.activeMaintenances}
 					config={themeConfig}
 				/>
 			</StatusPageThemeProvider>

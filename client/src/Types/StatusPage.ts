@@ -64,7 +64,16 @@ export interface StatusPage {
 	updatedAt: string;
 }
 
+export interface ActiveMaintenanceInfo {
+	id: string;
+	name: string;
+	start: string;
+	end: string;
+	monitorIds: string[];
+}
+
 export interface StatusPageResponse {
 	statusPage: StatusPage;
 	monitors: Monitor[];
+	activeMaintenances?: ActiveMaintenanceInfo[];
 }
