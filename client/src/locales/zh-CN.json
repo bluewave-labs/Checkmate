@@ -443,6 +443,7 @@
 				"statBoxes": {
 					"activeFor": "已活跃",
 					"certificateExpiry": "证书到期",
+					"domainExpiry": "域名到期",
 					"lastCheck": "上次检查",
 					"lastResponseTime": "上次响应时间",
 					"serviceIsDown": "服务已停止"

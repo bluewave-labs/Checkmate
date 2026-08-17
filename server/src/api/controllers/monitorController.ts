@@ -10,6 +10,7 @@ import {
 	editMonitorBodyValidation,
 	pauseMonitorParamValidation,
 	getCertificateParamValidation,
+	getDomainParamValidation,
 	getHardwareDetailsByIdParamValidation,
 	getHardwareDetailsByIdQueryValidation,
 	getUptimeDetailsByIdParamValidation,
@@ -18,13 +19,15 @@ import {
 	bulkPauseMonitorBodyValidation,
 } from "@/api/validation/monitorValidation.js";
 import sslChecker from "ssl-checker";
-import { fetchMonitorCertificate, requireTeamId, requireUserId } from "@/api/controllers/controllerUtils.js";
+import * as whoiser from "whoiser";
+import { fetchMonitorCertificate, fetchMonitorDomain, requireTeamId, requireUserId } from "@/api/controllers/controllerUtils.js";
 import { AppError } from "@/utils/AppError.js";
 import { IMonitorService } from "@/domain/monitors/monitor.service.js";
 import { INotificationsService } from "@/domain/notifications/notification.service.js";
 
 export interface IMonitorController {
 	getMonitorCertificate: RequestHandler;
+	getMonitorDomain: RequestHandler;
 	getUptimeDetailsById: RequestHandler;
 	getHardwareDetailsById: RequestHandler;
 	getPageSpeedDetailsById: RequestHandler;
@@ -64,6 +67,22 @@ class MonitorController implements IMonitorController {
 			msg: "SSL certificate retrieved successfully",
 			data: {
 				certificateDate: new Date(certificate.validTo),
+			},
+		});
+	});
+
+	getMonitorDomain = catchAsync(async (req: Request, res: Response) => {
+		const validatedParams = getDomainParamValidation.parse(req.params);
+		const teamId = requireTeamId(req.user?.teamId);
+		const monitor = await this.monitorService.getMonitorById({ teamId, monitorId: validatedParams.monitorId });
+		const domainExpiry = await fetchMonitorDomain(whoiser, monitor);
+
+		return res.status(200).json({
+			success: true,
+			msg: "Domain expiry retrieved successfully",
+			data: {
+				domain: domainExpiry.domain,
+				expiryDate: domainExpiry.expiryDate === null ? null : new Date(domainExpiry.expiryDate),
 			},
 		});
 	});

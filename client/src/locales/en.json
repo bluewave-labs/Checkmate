@@ -475,6 +475,7 @@
 				"statBoxes": {
 					"activeFor": "Active for",
 					"certificateExpiry": "Certificate expiry",
+					"domainExpiry": "Domain expiry",
 					"lastCheck": "Last check",
 					"lastResponseTime": "Last response time",
 					"serviceIsDown": "Service is down"

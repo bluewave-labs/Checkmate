@@ -2,7 +2,10 @@ import { AppError } from "@/utils/AppError.js";
 import { Monitor, MonitorTypes, type MonitorType } from "@/domain/monitors/monitor.type.js";
 import { UserRole } from "@/domain/users/user.type.js";
 import sslChecker, { SSLDetails } from "ssl-checker";
+import * as whoiser from "whoiser";
+import { parse as parseDomain } from "tldts";
 type SSLCheckerType = typeof sslChecker;
+type WhoisModule = typeof whoiser;
 
 export const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: Monitor): Promise<SSLDetails> => {
 	const monitorUrl = new URL(monitor.url);
@@ -13,6 +16,114 @@ export const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: 
 	}
 	return cert;
 };
+
+const WHOIS_TIMEOUT_MS = 10_000;
+const DOMAIN_EXPIRY_CACHE_POSITIVE_TTL_MS = 60 * 60 * 1000; // 1 hour
+const DOMAIN_EXPIRY_CACHE_NEGATIVE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+const EXPIRY_DATE_KEY_PATTERN = /(expiry date|expiration|paid-?till|registration expiration)/i;
+
+export interface DomainExpiryResult {
+	domain: string | null;
+	expiryDate: string | null;
+}
+
+interface DomainExpiryCacheEntry extends DomainExpiryResult {
+	expiresAt: number;
+}
+
+interface DomainExpiryCache {
+	get(domain: string): DomainExpiryResult | undefined;
+	set(domain: string, result: DomainExpiryResult): void;
+}
+
+export const createDomainExpiryCache = (positiveTtlMs: number, negativeTtlMs: number): DomainExpiryCache => {
+	const entries = new Map<string, DomainExpiryCacheEntry>();
+
+	return {
+		get(domain: string): DomainExpiryResult | undefined {
+			const entry = entries.get(domain);
+			if (entry === undefined) {
+				return undefined;
+			}
+			if (entry.expiresAt <= Date.now()) {
+				entries.delete(domain);
+				return undefined;
+			}
+			return { domain: entry.domain, expiryDate: entry.expiryDate };
+		},
+		set(domain: string, result: DomainExpiryResult): void {
+			entries.set(domain, {
+				...result,
+				expiresAt: Date.now() + (result.expiryDate === null ? negativeTtlMs : positiveTtlMs),
+			});
+		},
+	};
+};
+
+const domainExpiryCache = createDomainExpiryCache(DOMAIN_EXPIRY_CACHE_POSITIVE_TTL_MS, DOMAIN_EXPIRY_CACHE_NEGATIVE_TTL_MS);
+
+export const extractDomainExpiryDate = (whoisData: object): string | null => {
+	const matchingKey = Object.keys(whoisData).find((key) => EXPIRY_DATE_KEY_PATTERN.test(key));
+	if (!matchingKey) {
+		return null;
+	}
+	const raw = extractString((whoisData as Record<string, unknown>)[matchingKey] ?? null);
+	if (!raw) {
+		return null;
+	}
+
+	const parsed = parseDomainExpiryValue(raw);
+	return parsed === null ? null : parsed.toISOString();
+};
+
+const parseDomainExpiryValue = (raw: string): Date | null => {
+	// Some registries (e.g. Nominet for .uk) return "14-Feb-2027" style values.
+	const monthMatch = /^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/.exec(raw.trim());
+	if (monthMatch) {
+		const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+		const monthIndex = months.indexOf((monthMatch[2] ?? "").toLowerCase());
+		if (monthIndex !== -1) {
+			const parsed = new Date(Date.UTC(Number(monthMatch[3]), monthIndex, Number(monthMatch[1])));
+			if (!Number.isNaN(parsed.getTime())) {
+				return parsed;
+			}
+		}
+	}
+
+	const date = new Date(raw);
+	if (!Number.isNaN(date.getTime())) {
+		return date;
+	}
+	return null;
+};
+
+export const fetchMonitorDomain = async (
+	client: WhoisModule,
+	monitor: Monitor,
+	cache: DomainExpiryCache = domainExpiryCache
+): Promise<DomainExpiryResult> => {
+	const monitorUrl = new URL(monitor.url);
+	const registrableDomain = parseDomain(monitorUrl.hostname).domain;
+	if (registrableDomain === null) {
+		// Bare IP addresses, localhost, and other non-domain hosts have no WHOIS expiry.
+		return { domain: null, expiryDate: null };
+	}
+
+	const cached = cache.get(registrableDomain);
+	if (cached !== undefined) {
+		return cached;
+	}
+
+	const result = await client.domain(registrableDomain, { timeout: WHOIS_TIMEOUT_MS });
+	const firstServerData = Object.values(result)[0];
+	const expiryDate = extractDomainExpiryDate(
+		typeof firstServerData === "object" && firstServerData !== null && !Array.isArray(firstServerData) ? firstServerData : {}
+	);
+	const domainExpiry: DomainExpiryResult = { domain: registrableDomain, expiryDate };
+	cache.set(registrableDomain, domainExpiry);
+	return domainExpiry;
+};
+
 export const requireString = (value: unknown, fieldName: string): string => {
 	if (typeof value === "string" && value.trim().length > 0) {
 		return value;
