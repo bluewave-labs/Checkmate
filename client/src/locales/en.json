@@ -1442,6 +1442,14 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "Status page deleted successfully",
+			"rangeSelectorAria": "History range",
+			"rangeExceedsRetention": "Check history retention is set to {{days}} days. Increase retention for more data.",
+			"range": {
+				"latest": "Latest",
+				"30d": "30 days",
+				"60d": "60 days",
+				"90d": "90 days"
+			},
 			"fallback": {
 				"title": "No status pages yet",
 				"description": "Publish a public page that shows real-time uptime and incident history to your customers and stakeholders.",
@@ -1463,7 +1471,10 @@
 					"avg": "avg {{value}}",
 					"max": "max {{value}}",
 					"downTooltip": "Down",
-					"heatmapAria": "Response time heatmap"
+					"heatmapAria": "Response time heatmap",
+					"dayAria": "{{date}}, {{uptime}} uptime",
+					"dayUptime": "Uptime: {{uptime}} ({{upChecks}}/{{totalChecks}} checks)",
+					"dayAvgResponse": "Avg response: {{value}}"
 				},
 				"infrastructure": {
 					"title": "Infrastructure",

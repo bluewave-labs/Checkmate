@@ -24,6 +24,20 @@ export const STATUS_PAGE_THEME_MODES = ["auto", "light", "dark"] as const;
 export type StatusPageThemeMode = (typeof STATUS_PAGE_THEME_MODES)[number];
 export const DEFAULT_STATUS_PAGE_THEME_MODE: StatusPageThemeMode = "auto";
 
+export const STATUS_PAGE_DAY_RANGES = ["30d", "60d", "90d"] as const;
+export type StatusPageDayRange = (typeof STATUS_PAGE_DAY_RANGES)[number];
+export const STATUS_PAGE_RANGES = ["latest", ...STATUS_PAGE_DAY_RANGES] as const;
+export type StatusPageRange = (typeof STATUS_PAGE_RANGES)[number];
+
+export const STATUS_PAGE_RANGE_DAYS: Record<StatusPageDayRange, number> = {
+	"30d": 30,
+	"60d": 60,
+	"90d": 90,
+};
+
+export const isStatusPageRange = (value: string | null): value is StatusPageRange =>
+	STATUS_PAGE_RANGES.some((range) => range === value);
+
 export const resolveStatusPageTheme = (
 	value: string | null | undefined
 ): StatusPageTheme =>
@@ -67,4 +81,7 @@ export interface StatusPage {
 export interface StatusPageResponse {
 	statusPage: StatusPage;
 	monitors: Monitor[];
+	range?: StatusPageDayRange; // present only when range !== "latest"
+	bucketTimezone?: string;
+	checkTTLDays?: number;
 }

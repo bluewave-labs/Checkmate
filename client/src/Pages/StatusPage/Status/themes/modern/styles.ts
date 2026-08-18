@@ -5,8 +5,10 @@ import { type OverallTone, toneColor, toneSoft } from "../shared/overallStatus";
 import { MONO_STACK, SANS_STACK } from "../shared/fontStacks";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 
-export type ModernHeatCell = "fast" | "med" | "slow" | "down" | "empty";
-export type ModernBarKind = "up" | "down" | "empty";
+import type { BarKind, HeatCellKind } from "../shared/ChartCells";
+
+export type ModernHeatCell = HeatCellKind;
+export type ModernBarKind = BarKind;
 export type ModernGaugeFill = "ok" | "warm" | "hot";
 
 export interface ModernStyles {
@@ -86,12 +88,14 @@ export const modernStyles = (
 		fast: `linear-gradient(180deg, ${tokens.up}, ${tokens.upStrong})`,
 		med: `linear-gradient(180deg, color-mix(in srgb, ${tokens.up} 70%, #ffffff 30%), ${tokens.up})`,
 		slow: `linear-gradient(180deg, ${tokens.warn}, ${tokens.degraded})`,
+		degraded: `linear-gradient(180deg, ${tokens.degraded}, color-mix(in srgb, ${tokens.degraded} 70%, #000000 30%))`,
 		down: `linear-gradient(180deg, ${tokens.down}, color-mix(in srgb, ${tokens.down} 70%, #000000 30%))`,
 		empty: tokens.border,
 	};
 
 	const barBg: Record<ModernBarKind, string> = {
 		up: tokens.up,
+		degraded: tokens.degraded,
 		down: tokens.down,
 		empty: tokens.border,
 	};
