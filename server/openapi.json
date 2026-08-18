@@ -1410,6 +1410,32 @@
 					"topic": {
 						"type": "string",
 						"minLength": 1
+					},
+					"ntfyAuthType": {
+						"type": "string",
+						"enum": ["none", "token", "basic"]
+					},
+					"ntfyUsername": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "string",
+								"enum": [""]
+							}
+						]
+					},
+					"accessToken": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "string",
+								"enum": [""]
+							}
+						]
 					}
 				},
 				"required": ["notificationName", "type", "address", "topic"],
@@ -1417,7 +1443,9 @@
 					"notificationName": "ntfy topic",
 					"type": "ntfy",
 					"address": "https://ntfy.sh",
-					"topic": "checkmate-alerts"
+					"topic": "checkmate-alerts",
+					"ntfyAuthType": "token",
+					"accessToken": "tk_your-ntfy-access-token"
 				}
 			},
 			"PublicStatusPagePayload": {
