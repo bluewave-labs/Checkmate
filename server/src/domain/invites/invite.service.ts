@@ -96,13 +96,15 @@ export class InviteService implements IInviteService {
 			});
 		}
 
-		const result = await this.emailService.sendEmail(invite.email, "Welcome to Uptime Monitor", html);
-		if (!result) {
+		try {
+			await this.emailService.sendEmail(invite.email, "Welcome to Uptime Monitor", html);
+		} catch (error: unknown) {
 			throw new AppError({
 				message: "Failed to send invite e-mail... Please verify your settings.",
 				service: SERVICE_NAME,
 				method: "sendInviteEmail",
 				status: 500,
+				details: { cause: error instanceof Error ? error.message : "Unknown error" },
 			});
 		}
 	};
