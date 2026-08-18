@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
-import { useTranslation } from "react-i18next";
+import Typography from "@mui/material/Typography";
+import { TriangleAlert } from "lucide-react";
+
 import type { SxProps, Theme } from "@mui/material/styles";
 import type { Monitor } from "@/Types/Monitor";
 import type { StatusPage, StatusPageRange } from "@/Types/StatusPage";
@@ -24,7 +25,6 @@ import {
 	resolveOverallStatus,
 	statusBadgeKey,
 } from "@/Pages/StatusPage/Status/themes/shared/overallStatus";
-import { useStatusPageTheme } from "@/Pages/StatusPage/Status/themes/StatusPageThemeProvider";
 import { formatPercentage } from "@/Utils/FormatUtils";
 import {
 	checksToCells,
@@ -32,6 +32,13 @@ import {
 	type BarKind,
 	type HeatCellKind,
 } from "@/Pages/StatusPage/Status/themes/shared/ChartCells";
+import { LAYOUT } from "@/Utils/Theme/constants";
+import { Icon } from "@/Components/design-elements";
+
+import { useStatusPageTheme } from "@/Pages/StatusPage/Status/themes/StatusPageThemeProvider";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useTheme } from "@mui/material";
 
 type StatusPageMonitor = Monitor;
 
@@ -89,6 +96,7 @@ interface Props {
 	range: StatusPageRange;
 	onRangeChange: (range: StatusPageRange) => void;
 	bucketTimezone: string;
+	checkTTLDays?: number;
 }
 
 export const BaseStatusPage = ({
@@ -98,7 +106,9 @@ export const BaseStatusPage = ({
 	range,
 	onRangeChange,
 	bucketTimezone,
+	checkTTLDays,
 }: Props) => {
+	const theme = useTheme();
 	const { t } = useTranslation();
 	const { tokens, mode } = useStatusPageTheme();
 	const styles = useMemo(
@@ -189,6 +199,25 @@ export const BaseStatusPage = ({
 							))}
 						</Box>
 					</Box>
+					{range !== "latest" &&
+						checkTTLDays &&
+						STATUS_PAGE_RANGE_DAYS[range] > checkTTLDays && (
+							<Stack
+								mb={LAYOUT.XS}
+								alignSelf="flex-end"
+								direction="row"
+								alignItems="center"
+								gap={LAYOUT.XXS}
+							>
+								<Icon
+									icon={TriangleAlert}
+									color={theme.palette.warning.main}
+								/>
+								<Typography>
+									{t("pages.statusPages.rangeExceedsRetention", { days: checkTTLDays })}
+								</Typography>
+							</Stack>
+						)}
 				</Stack>
 			)}
 
