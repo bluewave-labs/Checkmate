@@ -8,6 +8,7 @@ services:
       - CLIENT_HOST=${CLIENT_HOST:?set CLIENT_HOST in your environment}
       - JWT_SECRET=${JWT_SECRET:?set JWT_SECRET in your environment}
       - NODE_ENV=production
+      - TRUST_PROXY=true
     stop_grace_period: 60s
     healthcheck:
       test:

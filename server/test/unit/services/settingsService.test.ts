@@ -15,7 +15,10 @@ const makeEnv = (overrides?: Partial<ValidatedEnv>): ValidatedEnv =>
 		CLIENT_HOST: "http://localhost:5173",
 		DB_CONNECTION_STRING: "mongodb://localhost:27017/test_db",
 		DB_TYPE: "mongodb",
+		QUEUE_MODE: "primary",
+		QUEUE_PRIMARY_PROCESSES: true,
 		STATUS_PAGE_THEMES_ENABLED: false,
+		TRUST_PROXY: false,
 		...overrides,
 	}) as ValidatedEnv;
 
@@ -71,7 +74,10 @@ describe("SettingsService", () => {
 				clientHost: "http://localhost:5173",
 				dbConnectionString: "mongodb://localhost:27017/test_db",
 				dbType: "mongodb",
+				queueMode: "primary",
+				queuePrimaryProcesses: true,
 				statusPageThemesEnabled: false,
+				trustProxy: false,
 				clientConfig: {},
 			});
 		});
@@ -89,11 +95,12 @@ describe("SettingsService", () => {
 		});
 
 		it("reflects custom env values", () => {
-			const { service } = createService({ NODE_ENV: "production", LOG_LEVEL: "error" });
+			const { service } = createService({ NODE_ENV: "production", LOG_LEVEL: "error", TRUST_PROXY: true });
 			const settings = service.getSettings();
 
 			expect(settings.nodeEnv).toBe("production");
 			expect(settings.logLevel).toBe("error");
+			expect(settings.trustProxy).toBe(true);
 		});
 	});
 

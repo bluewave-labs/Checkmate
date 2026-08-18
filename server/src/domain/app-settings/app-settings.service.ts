@@ -16,6 +16,7 @@ export type EnvConfig = {
 	queueMode: QueueMode;
 	queuePrimaryProcesses: boolean;
 	statusPageThemesEnabled: boolean;
+	trustProxy: boolean;
 	clientConfig: ClientRuntimeConfig;
 };
 
@@ -43,6 +44,7 @@ export class SettingsService implements ISettingsService {
 			queueMode: env.QUEUE_MODE,
 			queuePrimaryProcesses: env.QUEUE_PRIMARY_PROCESSES,
 			statusPageThemesEnabled: env.STATUS_PAGE_THEMES_ENABLED,
+			trustProxy: env.TRUST_PROXY,
 			clientConfig: {
 				...(env.CLIENT_CONFIG_API_BASE_URL && { apiBaseUrl: env.CLIENT_CONFIG_API_BASE_URL }),
 				...(env.CLIENT_CONFIG_CLIENT_HOST && { clientHost: env.CLIENT_CONFIG_CLIENT_HOST }),
