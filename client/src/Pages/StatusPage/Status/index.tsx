@@ -12,7 +12,6 @@ import { useGet } from "@/Hooks/UseApi";
 import {
 	isStatusPageRange,
 	resolveStatusPageTheme,
-	STATUS_PAGE_RANGES,
 	type StatusPageRange,
 } from "@/Types/StatusPage";
 import {

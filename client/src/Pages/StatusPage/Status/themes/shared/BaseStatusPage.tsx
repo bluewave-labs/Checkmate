@@ -205,7 +205,7 @@ export const BaseStatusPage = ({
 
 					const cells =
 						range === "latest"
-							? checksToCells(monitor.recentChecks ?? [], t)
+							? checksToCells(monitor.recentChecks ?? [])
 							: dailyBucketsToCells(
 									monitor.dailyChecks ?? [],
 									STATUS_PAGE_RANGE_DAYS[range],

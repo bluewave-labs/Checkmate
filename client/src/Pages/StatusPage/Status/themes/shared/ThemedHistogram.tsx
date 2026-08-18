@@ -4,7 +4,6 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import type { SxProps, Theme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import type { CheckSnapshot } from "@/Types/Check";
 import { formatMs } from "@/Utils/TimeUtils";
 import type {
 	BarKind,
@@ -18,9 +17,6 @@ interface Props {
 	statsSx: SxProps<Theme>;
 	statsGap?: number;
 }
-
-const tone = (check: CheckSnapshot): Exclude<BarKind, "empty"> =>
-	check.status ? "up" : "down";
 
 export const ThemedHistogram = ({
 	cells,

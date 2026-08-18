@@ -64,7 +64,7 @@ const padCells = (cells: ChartCell[], length: number): ChartCell[] => [
 	),
 ];
 
-export const checksToCells = (checks: CheckSnapshot[], t: TFunction): ChartCell[] => {
+export const checksToCells = (checks: CheckSnapshot[]): ChartCell[] => {
 	const source = checks.slice(-MAX_RECENT_CHECKS);
 	const heights = computeBarHeights(source);
 	const cells = source.map(
@@ -100,9 +100,9 @@ export const dailyBucketsToCells = (
 			heatKind:
 				barKind === "up"
 					? classifyResponseTime(true, bucket.avgResponseTime ?? 0)
-					: barKind, // degraded/down days keep their outcome color in the heatmap too
+					: barKind,
 			heightPct: heights.get(date) ?? MIN_HEIGHT_PCT,
-			responseTime: bucket.avgResponseTime ?? 0, // null (no RT data that day) → 0, excluded from footer stats like empty cells
+			responseTime: bucket.avgResponseTime ?? 0,
 			tooltip: <ThemedDailyTooltip bucket={bucket} />,
 			ariaLabel: t("pages.statusPages.monitorsList.chart.dayAria", {
 				date,
