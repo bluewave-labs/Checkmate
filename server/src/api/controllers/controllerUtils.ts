@@ -11,9 +11,14 @@ const DEFAULT_HTTPS_PORT = 443;
 
 export const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: Monitor): Promise<SSLDetails> => {
 	const monitorUrl = new URL(monitor.url);
+	// A plain-HTTP monitor serves no certificate. Reject before dialing, so the
+	// caller gets this instead of a raw OpenSSL handshake error from the socket.
+	if (monitorUrl.protocol !== "https:") {
+		throw new AppError({ message: "Certificate is only available for HTTPS monitors", status: 400 });
+	}
 	const hostname = monitorUrl.hostname;
-	// URL.port is "" for default ports, so fall back to 443; without this the
-	// certificate of a monitor on a non-standard port was probed on 443.
+	// URL.port is "" for the scheme's default port, so fall back to 443; without
+	// this the certificate of a monitor on a non-standard port was probed on 443.
 	const port = monitorUrl.port === "" ? DEFAULT_HTTPS_PORT : Number(monitorUrl.port);
 	const cert = await checker(hostname, { port });
 	if (cert?.validTo === null || cert?.validTo === undefined) {

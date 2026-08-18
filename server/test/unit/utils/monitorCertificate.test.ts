@@ -62,6 +62,25 @@ describe("fetchMonitorCertificate", () => {
 		expect(Number.isNaN(calls[0].options?.port)).toBe(false);
 	});
 
+	it("rejects a plain-HTTP monitor without opening a TLS connection", async () => {
+		const { checker, calls } = spyChecker();
+
+		// Probing a non-TLS port would surface a raw OpenSSL handshake error.
+		await expect(fetchMonitorCertificate(checker, monitorWithUrl("http://example.com:8080"))).rejects.toThrow(
+			"Certificate is only available for HTTPS monitors"
+		);
+		expect(calls).toHaveLength(0);
+	});
+
+	it("rejects a plain-HTTP monitor on the default port", async () => {
+		const { checker, calls } = spyChecker();
+
+		await expect(fetchMonitorCertificate(checker, monitorWithUrl("http://example.com"))).rejects.toThrow(
+			"Certificate is only available for HTTPS monitors"
+		);
+		expect(calls).toHaveLength(0);
+	});
+
 	it("returns the certificate details it received", async () => {
 		const { checker } = spyChecker();
 
