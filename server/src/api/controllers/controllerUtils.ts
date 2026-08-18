@@ -7,10 +7,15 @@ import { parse as parseDomain } from "tldts";
 type SSLCheckerType = typeof sslChecker;
 type WhoisModule = typeof whoiser;
 
+const DEFAULT_HTTPS_PORT = 443;
+
 export const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: Monitor): Promise<SSLDetails> => {
 	const monitorUrl = new URL(monitor.url);
 	const hostname = monitorUrl.hostname;
-	const cert = await checker(hostname);
+	// URL.port is "" for default ports, so fall back to 443; without this the
+	// certificate of a monitor on a non-standard port was probed on 443.
+	const port = monitorUrl.port === "" ? DEFAULT_HTTPS_PORT : Number(monitorUrl.port);
+	const cert = await checker(hostname, { port });
 	if (cert?.validTo === null || cert?.validTo === undefined) {
 		throw new Error("Certificate not found");
 	}
