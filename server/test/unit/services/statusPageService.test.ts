@@ -376,23 +376,29 @@ describe("StatusPageService", () => {
 					expect(payload.monitors[0]).not.toHaveProperty("dailyChecks");
 				}
 				expect(checksRepo.getDailyStatusBuckets).not.toHaveBeenCalled();
-				expect(monitorsRepo.findByIds).toHaveBeenCalledWith(["mon-1"], { includeRecentChecks: true });
+				expect(monitorsRepo.findByIds).toHaveBeenCalledWith(["mon-1"], { recentChecks: "all" });
 			});
 
-			it("attaches dailyChecks, empties recentChecks, and echoes range metadata for a day range", async () => {
+			it("attaches dailyChecks, passes the repo-trimmed recentChecks through, and echoes range metadata for a day range", async () => {
 				const { service, checksRepo, monitorsRepo } = createService();
 				const bucket = { monitorId: "mon-1", date: "2026-08-01", totalChecks: 10, upChecks: 9, downChecks: 1, avgResponseTime: 120 };
+				const hardwareSnapshot = { id: "chk-1" } as CheckSnapshot;
 				(checksRepo.getDailyStatusBuckets as jest.Mock).mockResolvedValue([bucket]);
-				(monitorsRepo.findByIds as jest.Mock).mockResolvedValue([makeMonitor({ recentChecks: [{ id: "chk-1" } as CheckSnapshot] })]);
-				const page = makeStatusPage({ isPublished: true, timezone: "America/Toronto" });
+				(monitorsRepo.findByIds as jest.Mock).mockResolvedValue([
+					makeMonitor({ id: "mon-1", type: "hardware", recentChecks: [hardwareSnapshot] }),
+					makeMonitor({ id: "mon-2", recentChecks: [] }),
+				]);
+				const page = makeStatusPage({ isPublished: true, timezone: "America/Toronto", monitors: ["mon-1", "mon-2"] });
 
 				const payload = await service.getPublicStatusPagePayload(page, undefined, "30d");
 
-				expect(checksRepo.getDailyStatusBuckets).toHaveBeenCalledWith(["mon-1"], 30, "America/Toronto");
-				expect(monitorsRepo.findByIds).toHaveBeenCalledWith(["mon-1"], { includeRecentChecks: false });
+				expect(checksRepo.getDailyStatusBuckets).toHaveBeenCalledWith(["mon-1", "mon-2"], 30, "America/Toronto");
+				expect(monitorsRepo.findByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], { recentChecks: "latestHardware" });
 				expect(payload).toMatchObject({ range: "30d", bucketTimezone: "America/Toronto", checkTTLDays: 30 });
-				expect(payload.monitors[0].recentChecks).toEqual([]);
+				expect(payload.monitors[0].recentChecks).toEqual([hardwareSnapshot]);
 				expect(payload.monitors[0].dailyChecks).toEqual([bucket]);
+				expect(payload.monitors[1].recentChecks).toEqual([]);
+				expect(payload.monitors[1].dailyChecks).toEqual([]);
 				for (const field of SENSITIVE_FIELDS) {
 					expect(payload.monitors[0]).not.toHaveProperty(field);
 				}
