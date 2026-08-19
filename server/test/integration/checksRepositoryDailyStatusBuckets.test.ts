@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import MongoChecksRepository from "../../src/domain/checks/check.repository.mongo.ts";
 import { CheckModel } from "../../src/domain/checks/check.model.ts";
+import { DailyCheckBucketModel } from "../../src/domain/checks/daily-check-bucket.model.ts";
+import type { Check, DailyCheckBucket } from "../../src/domain/checks/check.type.ts";
 import type { ILogger } from "../../src/utils/logger.ts";
 import { createMockLogger } from "../helpers/createMockLogger.ts";
 
@@ -26,7 +28,7 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
-	await CheckModel.deleteMany({});
+	await Promise.all([CheckModel.deleteMany({}), DailyCheckBucketModel.deleteMany({})]);
 });
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -63,6 +65,39 @@ const seedCheck = (monitorId: mongoose.Types.ObjectId, createdAt: Date, override
 		...overrides,
 	});
 
+const getLegacyDailyStatusBuckets = async (monitorIds: mongoose.Types.ObjectId[], days: number, timezone: string): Promise<DailyCheckBucket[]> => {
+	const windowStart = new Date(Date.now() - days * DAY_MS);
+	return CheckModel.aggregate<DailyCheckBucket>([
+		{ $match: { "metadata.monitorId": { $in: monitorIds }, createdAt: { $gte: windowStart } } },
+		{
+			$group: {
+				_id: {
+					monitorId: "$metadata.monitorId",
+					day: { $dateTrunc: { date: "$createdAt", unit: "day", timezone } },
+				},
+				totalChecks: { $sum: 1 },
+				upChecks: { $sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] } },
+				avgResponseTime: { $avg: "$responseTime" },
+			},
+		},
+		{ $sort: { "_id.day": 1 } },
+		{
+			$project: {
+				_id: 0,
+				monitorId: { $toString: "$_id.monitorId" },
+				date: { $dateToString: { date: "$_id.day", format: "%Y-%m-%d", timezone } },
+				totalChecks: 1,
+				upChecks: 1,
+				downChecks: { $subtract: ["$totalChecks", "$upChecks"] },
+				avgResponseTime: { $round: ["$avgResponseTime", 0] },
+			},
+		},
+	]);
+};
+
+const sortBuckets = (buckets: DailyCheckBucket[]) =>
+	buckets.slice().sort((left, right) => left.date.localeCompare(right.date) || left.monitorId.localeCompare(right.monitorId));
+
 describe("MongoChecksRepository getDailyStatusBuckets", () => {
 	let repo: MongoChecksRepository;
 
@@ -96,6 +131,18 @@ describe("MongoChecksRepository getDailyStatusBuckets", () => {
 		]);
 	});
 
+	it("returns exactly the same bucket contract as the legacy raw-check aggregation", async () => {
+		await seedCheck(MONITOR_A, TODAY, { responseTime: 101 });
+		await seedCheck(MONITOR_A, TODAY, { status: false, responseTime: 300 });
+		await seedCheck(MONITOR_A, ONE_DAY_AGO, { responseTime: undefined });
+		await seedCheck(MONITOR_B, TODAY, { status: false, responseTime: 50 });
+
+		const legacy = await getLegacyDailyStatusBuckets([MONITOR_A, MONITOR_B], 30, "America/Toronto");
+		const materialized = await repo.getDailyStatusBuckets([MONITOR_A.toString(), MONITOR_B.toString()], 30, "America/Toronto");
+
+		expect(sortBuckets(materialized)).toEqual(sortBuckets(legacy));
+	});
+
 	it("cuts day boundaries in the requested timezone", async () => {
 		const lateEveningLocal = yesterdayAtUtc(3, 30);
 		await seedCheck(MONITOR_A, lateEveningLocal);
@@ -120,5 +167,60 @@ describe("MongoChecksRepository getDailyStatusBuckets", () => {
 
 		expect(buckets).toHaveLength(1);
 		expect(buckets[0]).toMatchObject({ date: utcDate(TODAY), totalChecks: 1 });
+	});
+
+	it("materializes full local days and preserves the rolling cutoff on the oldest partial day", async () => {
+		const windowStart = new Date(Date.now() - 7 * DAY_MS);
+		const midnight = Date.UTC(windowStart.getUTCFullYear(), windowStart.getUTCMonth(), windowStart.getUTCDate());
+		const elapsedInDay = windowStart.getTime() - midnight;
+		const outsideWindow = new Date(windowStart.getTime() - Math.max(1, Math.floor(elapsedInDay / 2)));
+		const insideWindow = new Date(windowStart.getTime() + 1_000);
+		await seedCheck(MONITOR_A, outsideWindow, { responseTime: 900 });
+		await seedCheck(MONITOR_A, insideWindow, { responseTime: 100 });
+
+		const buckets = await repo.getDailyStatusBuckets([MONITOR_A.toString()], 7, "UTC");
+		const oldestBucket = buckets.find((bucket) => bucket.date === utcDate(windowStart));
+		const materialized = await DailyCheckBucketModel.findOne({ monitorId: MONITOR_A, timezone: "UTC", date: utcDate(windowStart) }).lean();
+
+		expect(oldestBucket).toMatchObject({ totalChecks: 1, avgResponseTime: 100 });
+		expect(materialized).toMatchObject({ totalChecks: 2, avgResponseTime: 500 });
+	});
+
+	it("updates an already materialized timezone when new checks are inserted", async () => {
+		await seedCheck(MONITOR_A, TODAY, { responseTime: 100 });
+		await repo.getDailyStatusBuckets([MONITOR_A.toString()], 7, "UTC");
+		const createdAt = new Date().toISOString();
+		const check: Check = {
+			id: new mongoose.Types.ObjectId().toString(),
+			metadata: { monitorId: MONITOR_A.toString(), teamId: TEAM_ID.toString(), type: "http" },
+			status: false,
+			responseTime: 300,
+			statusCode: 500,
+			message: "down",
+			createdAt,
+			updatedAt: createdAt,
+		};
+
+		await repo.createChecks([check]);
+		const buckets = await repo.getDailyStatusBuckets([MONITOR_A.toString()], 7, "UTC");
+		const todayBucket = buckets.find((bucket) => bucket.date === utcDate(new Date()));
+
+		expect(todayBucket).toEqual({
+			monitorId: MONITOR_A.toString(),
+			date: utcDate(new Date()),
+			totalChecks: 2,
+			upChecks: 1,
+			downChecks: 1,
+			avgResponseTime: 200,
+		});
+	});
+
+	it("deletes materialized buckets with their monitor checks", async () => {
+		await seedCheck(MONITOR_A, TODAY);
+		await repo.getDailyStatusBuckets([MONITOR_A.toString()], 7, "UTC");
+
+		await repo.deleteByMonitorId(MONITOR_A.toString());
+
+		expect(await DailyCheckBucketModel.countDocuments({ monitorId: MONITOR_A })).toBe(0);
 	});
 });

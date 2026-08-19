@@ -15,6 +15,7 @@ import type {
 } from "@/domain/checks/check.type.js";
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
 import { CheckModel, type CheckDocument } from "@/domain/checks/check.model.js";
+import { DailyCheckBucketModel, type DailyCheckBucketDocument } from "@/domain/checks/daily-check-bucket.model.js";
 import mongoose from "mongoose";
 import { getDateFormat, getDateForRange } from "@/utils/dataUtils.js";
 import { ILogger } from "@/utils/logger.js";
@@ -26,11 +27,37 @@ import { AppError } from "@/utils/AppError.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 
 const SERVICE_NAME = "StatusService";
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+type RawDailyBucket = {
+	monitorId: mongoose.Types.ObjectId;
+	teamId?: mongoose.Types.ObjectId;
+	date: string;
+	totalChecks: number;
+	upChecks: number;
+	downChecks: number;
+	avgResponseTime: number | null;
+	responseTimeSum: number;
+	responseTimeCount: number;
+};
+
+type DailyBucketIncrement = {
+	monitorId: mongoose.Types.ObjectId;
+	teamId: mongoose.Types.ObjectId;
+	timezone: string;
+	date: string;
+	totalChecks: number;
+	upChecks: number;
+	downChecks: number;
+	responseTimeSum: number;
+	responseTimeCount: number;
+};
 
 class MongoChecksRepository implements IChecksRepository {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: ILogger;
+	private dateFormatters = new Map<string, Intl.DateTimeFormat>();
 	constructor(logger: ILogger) {
 		this.logger = logger;
 	}
@@ -179,6 +206,244 @@ class MongoChecksRepository implements IChecksRepository {
 		return documents.map((doc) => this.toEntity(doc));
 	};
 
+	private formatDateInTimezone = (date: Date, timezone: string): string => {
+		let formatter = this.dateFormatters.get(timezone);
+		if (!formatter) {
+			formatter = new Intl.DateTimeFormat("en-US", {
+				timeZone: timezone,
+				year: "numeric",
+				month: "2-digit",
+				day: "2-digit",
+			});
+			this.dateFormatters.set(timezone, formatter);
+		}
+		const parts = formatter.formatToParts(date);
+		const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+		return `${values.year}-${values.month}-${values.day}`;
+	};
+
+	private enumerateDates = (start: Date, end: Date, timezone: string): string[] => {
+		const first = Date.parse(`${this.formatDateInTimezone(start, timezone)}T00:00:00.000Z`);
+		const last = Date.parse(`${this.formatDateInTimezone(end, timezone)}T00:00:00.000Z`);
+		const dates: string[] = [];
+		for (let current = first; current <= last; current += DAY_MS) {
+			dates.push(new Date(current).toISOString().slice(0, 10));
+		}
+		return dates;
+	};
+
+	private aggregateRawDailyBuckets = async (
+		monitorIds: mongoose.Types.ObjectId[],
+		start: Date,
+		end: Date,
+		timezone: string,
+		dates: string[]
+	): Promise<RawDailyBucket[]> => {
+		if (monitorIds.length === 0 || dates.length === 0) {
+			return [];
+		}
+		return CheckModel.aggregate<RawDailyBucket>([
+			{
+				$match: {
+					"metadata.monitorId": { $in: monitorIds },
+					createdAt: { $gte: start, $lt: end },
+				},
+			},
+			{
+				$group: {
+					_id: {
+						monitorId: "$metadata.monitorId",
+						day: { $dateTrunc: { date: "$createdAt", unit: "day", timezone } },
+					},
+					teamId: { $first: "$metadata.teamId" },
+					totalChecks: { $sum: 1 },
+					upChecks: { $sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] } },
+					avgResponseTime: { $avg: "$responseTime" },
+					responseTimeSum: { $sum: { $cond: [{ $isNumber: "$responseTime" }, "$responseTime", 0] } },
+					responseTimeCount: { $sum: { $cond: [{ $isNumber: "$responseTime" }, 1, 0] } },
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					monitorId: "$_id.monitorId",
+					teamId: 1,
+					date: { $dateToString: { date: "$_id.day", format: "%Y-%m-%d", timezone } },
+					totalChecks: 1,
+					upChecks: 1,
+					downChecks: { $subtract: ["$totalChecks", "$upChecks"] },
+					avgResponseTime: { $round: ["$avgResponseTime", 0] },
+					responseTimeSum: 1,
+					responseTimeCount: 1,
+				},
+			},
+			{ $match: { date: { $in: dates } } },
+		]);
+	};
+
+	private ensureDailyBuckets = async (monitorIds: mongoose.Types.ObjectId[], dates: string[], timezone: string): Promise<void> => {
+		const existing = await DailyCheckBucketModel.find({ monitorId: { $in: monitorIds }, timezone, date: { $in: dates } })
+			.select({ monitorId: 1, date: 1 })
+			.lean<Array<Pick<DailyCheckBucketDocument, "monitorId" | "date">>>();
+		const existingKeys = new Set(existing.map((bucket) => `${bucket.monitorId.toString()}:${bucket.date}`));
+		const missingKeys = new Set<string>();
+		const missingMonitorIds = new Map<string, mongoose.Types.ObjectId>();
+		const missingDates = new Set<string>();
+		for (const monitorId of monitorIds) {
+			for (const date of dates) {
+				const key = `${monitorId.toString()}:${date}`;
+				if (!existingKeys.has(key)) {
+					missingKeys.add(key);
+					missingMonitorIds.set(monitorId.toString(), monitorId);
+					missingDates.add(date);
+				}
+			}
+		}
+		if (missingKeys.size === 0) {
+			return;
+		}
+
+		const orderedMissingDates = [...missingDates].sort();
+		const firstDate = orderedMissingDates[0];
+		const lastDate = orderedMissingDates[orderedMissingDates.length - 1];
+		if (!firstDate || !lastDate) {
+			return;
+		}
+		// Every IANA offset is inside this padding. The final date filter below restores exact local-day membership.
+		const start = new Date(Date.parse(`${firstDate}T00:00:00.000Z`) - DAY_MS);
+		const end = new Date(Date.parse(`${lastDate}T00:00:00.000Z`) + 2 * DAY_MS);
+		const rawBuckets = await this.aggregateRawDailyBuckets([...missingMonitorIds.values()], start, end, timezone, orderedMissingDates);
+		const rawByKey = new Map(rawBuckets.map((bucket) => [`${bucket.monitorId.toString()}:${bucket.date}`, bucket]));
+		const operations = [...missingKeys].map((key) => {
+			const separator = key.indexOf(":");
+			const monitorId = new mongoose.Types.ObjectId(key.slice(0, separator));
+			const date = key.slice(separator + 1);
+			const raw = rawByKey.get(key);
+			return {
+				updateOne: {
+					filter: { monitorId, timezone, date },
+					update: {
+						$setOnInsert: {
+							monitorId,
+							...(raw?.teamId && { teamId: raw.teamId }),
+							timezone,
+							date,
+							totalChecks: raw?.totalChecks ?? 0,
+							upChecks: raw?.upChecks ?? 0,
+							downChecks: raw?.downChecks ?? 0,
+							avgResponseTime: raw?.avgResponseTime ?? null,
+							responseTimeSum: raw?.responseTimeSum ?? 0,
+							responseTimeCount: raw?.responseTimeCount ?? 0,
+						},
+					},
+					upsert: true,
+				},
+			};
+		});
+		await DailyCheckBucketModel.bulkWrite(operations, { ordered: false });
+	};
+
+	private incrementDailyBuckets = async (checks: CheckDocument[]): Promise<void> => {
+		if (checks.length === 0) {
+			return;
+		}
+		const monitorIds = [...new Map(checks.map((check) => [check.metadata.monitorId.toString(), check.metadata.monitorId])).values()];
+		const materializedPairs = await DailyCheckBucketModel.aggregate<{
+			_id: { monitorId: mongoose.Types.ObjectId; timezone: string };
+		}>([{ $match: { monitorId: { $in: monitorIds } } }, { $group: { _id: { monitorId: "$monitorId", timezone: "$timezone" } } }]);
+		if (materializedPairs.length === 0) {
+			return;
+		}
+		const timezonesByMonitor = materializedPairs.reduce((map, pair) => {
+			const monitorId = pair._id.monitorId.toString();
+			const timezones = map.get(monitorId) ?? [];
+			timezones.push(pair._id.timezone);
+			map.set(monitorId, timezones);
+			return map;
+		}, new Map<string, string[]>());
+
+		const increments = new Map<string, DailyBucketIncrement>();
+		for (const check of checks) {
+			const monitorId = check.metadata.monitorId.toString();
+			for (const timezone of timezonesByMonitor.get(monitorId) ?? []) {
+				const date = this.formatDateInTimezone(new Date(check.createdAt), timezone);
+				const key = `${monitorId}:${timezone}:${date}`;
+				const increment = increments.get(key) ?? {
+					monitorId: check.metadata.monitorId,
+					teamId: check.metadata.teamId,
+					timezone,
+					date,
+					totalChecks: 0,
+					upChecks: 0,
+					downChecks: 0,
+					responseTimeSum: 0,
+					responseTimeCount: 0,
+				};
+				increment.totalChecks += 1;
+				if (check.status === true) {
+					increment.upChecks += 1;
+				} else {
+					increment.downChecks += 1;
+				}
+				if (typeof check.responseTime === "number") {
+					increment.responseTimeSum += check.responseTime;
+					increment.responseTimeCount += 1;
+				}
+				increments.set(key, increment);
+			}
+		}
+
+		const now = new Date();
+		const operations = [...increments.values()].map((increment) => ({
+			updateOne: {
+				filter: { monitorId: increment.monitorId, timezone: increment.timezone, date: increment.date },
+				update: [
+					{
+						$set: {
+							monitorId: increment.monitorId,
+							teamId: increment.teamId,
+							timezone: increment.timezone,
+							date: increment.date,
+							totalChecks: { $add: [{ $ifNull: ["$totalChecks", 0] }, increment.totalChecks] },
+							upChecks: { $add: [{ $ifNull: ["$upChecks", 0] }, increment.upChecks] },
+							downChecks: { $add: [{ $ifNull: ["$downChecks", 0] }, increment.downChecks] },
+							responseTimeSum: { $add: [{ $ifNull: ["$responseTimeSum", 0] }, increment.responseTimeSum] },
+							responseTimeCount: { $add: [{ $ifNull: ["$responseTimeCount", 0] }, increment.responseTimeCount] },
+							createdAt: { $ifNull: ["$createdAt", now] },
+							updatedAt: now,
+						},
+					},
+					{
+						$set: {
+							avgResponseTime: {
+								$cond: [{ $eq: ["$responseTimeCount", 0] }, null, { $round: [{ $divide: ["$responseTimeSum", "$responseTimeCount"] }, 0] }],
+							},
+						},
+					},
+				],
+				upsert: true,
+			},
+		}));
+		if (operations.length > 0) {
+			await DailyCheckBucketModel.bulkWrite(operations, { ordered: false });
+		}
+	};
+
+	private updateDailyBucketsAfterInsert = async (checks: CheckDocument[]): Promise<void> => {
+		try {
+			await this.incrementDailyBuckets(checks);
+		} catch (error) {
+			const monitorIds = [...new Map(checks.map((check) => [check.metadata.monitorId.toString(), check.metadata.monitorId])).values()];
+			this.logger.error({
+				message: "Failed to update daily check buckets; invalidating them for lazy rebuild",
+				service: SERVICE_NAME,
+				method: "updateDailyBucketsAfterInsert",
+				details: { error: error instanceof Error ? error.message : String(error) },
+			});
+			await DailyCheckBucketModel.deleteMany({ monitorId: { $in: monitorIds } });
+		}
+	};
+
 	private toDocument = (check: Partial<Check>): CheckDocument => {
 		// Map id to _id for MongoDB storage
 		const { id, metadata, ...rest } = check;
@@ -203,12 +468,14 @@ class MongoChecksRepository implements IChecksRepository {
 
 	create = async (check: Check) => {
 		const savedCheck = await CheckModel.create(check);
+		await this.updateDailyBucketsAfterInsert([savedCheck]);
 		return this.toEntity(savedCheck);
 	};
 
 	createChecks = async (checks: Check[]) => {
 		const docs = checks.map((check) => this.toDocument(check));
 		const inserted = await CheckModel.insertMany(docs);
+		await this.updateDailyBucketsAfterInsert(inserted as unknown as CheckDocument[]);
 		return this.mapDocuments(inserted as unknown as CheckDocument[]);
 	};
 
@@ -330,56 +597,70 @@ class MongoChecksRepository implements IChecksRepository {
 	};
 
 	getDailyStatusBuckets = async (monitorIds: string[], days: number, timezone: string) => {
+		if (monitorIds.length === 0) {
+			return [];
+		}
 		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
-		// One extra day so the oldest rendered day is complete; the client enumerates exactly `days` days and ignores the partial extra bucket
-		const windowStart = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-		const results = await CheckModel.aggregate([
-			{
-				$match: {
-					"metadata.monitorId": { $in: objectIds },
-					createdAt: { $gte: windowStart },
-				},
-			},
-			{
-				$group: {
-					_id: {
-						monitorId: "$metadata.monitorId",
-						day: { $dateTrunc: { date: "$createdAt", unit: "day", timezone } },
-					},
-					totalChecks: { $sum: 1 },
-					upChecks: { $sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] } },
-					avgResponseTime: { $avg: "$responseTime" },
-				},
-			},
-			{ $sort: { "_id.day": 1 } },
-			{
-				$project: {
-					_id: 0,
-					monitorId: { $toString: "$_id.monitorId" },
-					date: { $dateToString: { date: "$_id.day", format: "%Y-%m-%d", timezone } },
-					totalChecks: 1,
-					upChecks: 1,
-					downChecks: { $subtract: ["$totalChecks", "$upChecks"] },
-					avgResponseTime: { $round: ["$avgResponseTime", 0] },
-				},
-			},
-		]);
-		return results;
+		// Preserve the legacy extra partial date; the client enumerates exactly `days` complete dates and ignores this oldest edge.
+		const now = new Date();
+		const windowStart = new Date(now.getTime() - days * DAY_MS);
+		const dates = this.enumerateDates(windowStart, now, timezone);
+		await this.ensureDailyBuckets(objectIds, dates, timezone);
+
+		const cached = await DailyCheckBucketModel.find({
+			monitorId: { $in: objectIds },
+			timezone,
+			date: { $in: dates },
+			totalChecks: { $gt: 0 },
+		})
+			.sort({ date: 1 })
+			.lean<DailyCheckBucketDocument[]>();
+
+		// The historical query starts at an exact rolling timestamp, so its oldest local day is partial.
+		// Re-read only that edge from raw checks; all complete days come from one materialized document each.
+		const oldestDate = dates[0];
+		const oldestEnd = oldestDate ? new Date(Date.parse(`${oldestDate}T00:00:00.000Z`) + 2 * DAY_MS) : now;
+		const partialOldest = oldestDate ? await this.aggregateRawDailyBuckets(objectIds, windowStart, oldestEnd, timezone, [oldestDate]) : [];
+		return [
+			...partialOldest.map((bucket) => ({
+				monitorId: bucket.monitorId.toString(),
+				date: bucket.date,
+				totalChecks: bucket.totalChecks,
+				upChecks: bucket.upChecks,
+				downChecks: bucket.downChecks,
+				avgResponseTime: bucket.avgResponseTime,
+			})),
+			...cached
+				.filter((bucket) => bucket.date !== oldestDate)
+				.map((bucket) => ({
+					monitorId: bucket.monitorId.toString(),
+					date: bucket.date,
+					totalChecks: bucket.totalChecks,
+					upChecks: bucket.upChecks,
+					downChecks: bucket.downChecks,
+					avgResponseTime: bucket.avgResponseTime,
+				})),
+		].sort((a, b) => a.date.localeCompare(b.date));
 	};
 
 	deleteByMonitorId = async (monitorId: string): Promise<number> => {
-		const result = await CheckModel.deleteMany({ "metadata.monitorId": new mongoose.Types.ObjectId(monitorId) });
+		const objectId = new mongoose.Types.ObjectId(monitorId);
+		const result = await CheckModel.deleteMany({ "metadata.monitorId": objectId });
+		await DailyCheckBucketModel.deleteMany({ monitorId: objectId });
 		return result.deletedCount;
 	};
 
 	deleteByTeamId = async (teamId: string) => {
-		const deleteResult = await CheckModel.deleteMany({ "metadata.teamId": teamId });
+		const objectId = new mongoose.Types.ObjectId(teamId);
+		const deleteResult = await CheckModel.deleteMany({ "metadata.teamId": objectId });
+		await DailyCheckBucketModel.deleteMany({ teamId: objectId });
 		return deleteResult.deletedCount;
 	};
 
 	deleteByMonitorIdsNotIn = async (monitorIds: string[]): Promise<number> => {
 		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
 		const result = await CheckModel.deleteMany({ "metadata.monitorId": { $nin: objectIds } });
+		await DailyCheckBucketModel.deleteMany({ monitorId: { $nin: objectIds } });
 		return result.deletedCount ?? 0;
 	};
 
@@ -404,6 +685,13 @@ class MongoChecksRepository implements IChecksRepository {
 			});
 			totalDeleted += result.deletedCount ?? 0;
 			batchStart = batchEnd;
+		}
+
+		const timezones = await DailyCheckBucketModel.distinct("timezone");
+		if (timezones.length > 0) {
+			await DailyCheckBucketModel.deleteMany({
+				$or: timezones.map((timezone) => ({ timezone, date: { $lte: this.formatDateInTimezone(cutoffDate, timezone) } })),
+			});
 		}
 
 		return totalDeleted;
