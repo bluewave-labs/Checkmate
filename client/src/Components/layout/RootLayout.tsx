@@ -18,15 +18,13 @@ const RootLayout = () => {
 				flex={1}
 				padding={6}
 				overflow={"hidden"}
-				sx={{
-					backgroundColor:
-						theme.palette.mode === "dark"
-							? "rgba(255, 255, 255, 0.01)"
-							: "rgba(0, 0, 0, 0.01)",
-					display: "flex",
-					alignItems: "center",
-					paddingLeft: isSmall ? `${collapsedWidth + 12}px` : 12,
-				}}
+				bgcolor={
+					theme.palette.mode === "dark"
+						? "rgba(255, 255, 255, 0.01)"
+						: "rgba(124, 116, 116, 0.01)"
+				}
+				alignItems="center"
+				paddingLeft={isSmall ? `${collapsedWidth + 12}px` : 12}
 			>
 				<Stack
 					maxWidth={1280}
