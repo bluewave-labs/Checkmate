@@ -293,6 +293,9 @@ const CreateMonitorPage = () => {
 			setCurrentStep((step) => step + 1);
 		}
 	};
+
+	const isWizardStep = !isEditMode && currentStep < totalSteps - 1;
+
 	const handleBack = () => setCurrentStep((step) => step - 1);
 
 	// Reset the form when the monitor type changes so stale type-specific fields
@@ -361,6 +364,13 @@ const CreateMonitorPage = () => {
 	const onError = (errors: unknown) => {
 		logger.debug("Monitor creation validation errors", errors);
 	};
+
+	const handleFormSubmit = isWizardStep
+		? (event: React.FormEvent) => {
+				event.preventDefault();
+				void handleNext();
+			}
+		: handleSubmit(onSubmit, onError);
 
 	const notificationOptions = useMemo(() => {
 		return (notifications ?? []).map((n) => ({
@@ -461,7 +471,7 @@ const CreateMonitorPage = () => {
 		<FormProvider {...form}>
 			<BasePage
 				component="form"
-				onSubmit={handleSubmit(onSubmit, onError)}
+				onSubmit={handleFormSubmit}
 			>
 				<HeaderDeleteControls
 					monitor={existingMonitor}
@@ -909,10 +919,9 @@ const CreateMonitorPage = () => {
 					{!isEditMode && currentStep < totalSteps - 1 ? (
 						<Button
 							key="wizard-next"
-							type="button"
+							type="submit"
 							variant="contained"
 							color="primary"
-							onClick={handleNext}
 						>
 							{t("common.buttons.next")}
 						</Button>
