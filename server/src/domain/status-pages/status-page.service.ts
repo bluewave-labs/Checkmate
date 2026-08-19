@@ -134,7 +134,7 @@ export class StatusPageService implements IStatusPageService {
 
 		const dbSettings = await this.settingsService.getDBSettings();
 		const showURL = dbSettings.showURL;
-		const monitors = await this.monitorsRepository.findByIds(statusPage.monitors, { includeRecentChecks: range === "latest" });
+		const monitors = await this.monitorsRepository.findByIds(statusPage.monitors, { recentChecks: range === "latest" ? "all" : "latestHardware" });
 		const order = new Map(statusPage.monitors.map((id, i) => [id, i]));
 		const sorted = [...monitors].sort((a, b) => (order.get(a.id) ?? Number.MAX_SAFE_INTEGER) - (order.get(b.id) ?? Number.MAX_SAFE_INTEGER));
 
@@ -162,7 +162,6 @@ export class StatusPageService implements IStatusPageService {
 			checkTTLDays: dbSettings.checkTTL,
 			monitors: sorted.map((monitor) => ({
 				...this.toPublicMonitor(monitor, showURL),
-				recentChecks: [],
 				dailyChecks: bucketsByMonitor.get(monitor.id) ?? [],
 			})),
 		};
