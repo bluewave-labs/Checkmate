@@ -16,6 +16,8 @@ export interface SummaryConfig {
 	tags?: string | string[];
 }
 
+export type RecentChecksMode = "all" | "latestHardware" | "none";
+
 export interface IMonitorsRepository {
 	// create
 	create(monitor: Monitor, teamId: string, userId: string): Promise<Monitor | null>;
@@ -29,7 +31,7 @@ export interface IMonitorsRepository {
 	findAllForScheduling(): Promise<MonitorScheduleFields[]>;
 	findByTeamId(teamId: string, config: TeamQueryConfig, options?: { includeRecentChecks?: boolean }): Promise<Monitor[]>;
 	findByTeamIdWithStats(teamId: string, config: TeamQueryConfig): Promise<Monitor[]>;
-	findByIds(monitorIds: string[], options?: { includeRecentChecks?: boolean }): Promise<Monitor[]>;
+	findByIds(monitorIds: string[], options?: { recentChecks?: RecentChecksMode }): Promise<Monitor[]>;
 
 	// update
 	updateById(monitorId: string, teamId: string, updates: Partial<Monitor>): Promise<Monitor>;

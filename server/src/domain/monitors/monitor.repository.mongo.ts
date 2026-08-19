@@ -5,7 +5,7 @@ import type { Monitor, MonitorScheduleFields, MonitorStatus, MonitorsSummary } f
 import mongoose, { type FilterQuery, type PipelineStage } from "mongoose";
 import { MongoBulkWriteError } from "mongodb";
 import { AppError } from "@/utils/AppError.js";
-import { IMonitorsRepository, TeamQueryConfig, SummaryConfig } from "@/domain/monitors/monitor.repository.interface.js";
+import { IMonitorsRepository, TeamQueryConfig, SummaryConfig, RecentChecksMode } from "@/domain/monitors/monitor.repository.interface.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 import { toCheckSnapshot } from "@/domain/checks/check.snapshot.js";
 class MongoMonitorsRepository implements IMonitorsRepository {
@@ -131,7 +131,26 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return documents.map((doc) => this.toEntity(doc));
 	};
 
-	findByIds = async (monitorIds: string[], options?: { includeRecentChecks?: boolean }): Promise<Monitor[]> => {
+	private recentChecksStages = (mode: RecentChecksMode = "all"): PipelineStage[] => {
+		switch (mode) {
+			case "none":
+				return [{ $project: { recentChecks: 0 } }];
+			case "latestHardware":
+				return [
+					{
+						$set: {
+							recentChecks: {
+								$cond: [{ $eq: ["$type", "hardware"] }, { $slice: [{ $ifNull: ["$recentChecks", []] }, -1] }, []],
+							},
+						},
+					},
+				];
+			case "all":
+				return [];
+		}
+	};
+
+	findByIds = async (monitorIds: string[], options?: { recentChecks?: "all" | "latestHardware" | "none" }): Promise<Monitor[]> => {
 		if (!monitorIds.length) {
 			return [];
 		}
@@ -140,7 +159,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 
 		const pipeline: PipelineStage[] = [
 			{ $match: { _id: { $in: objectIds } } },
-			...(options?.includeRecentChecks === false ? [{ $project: { recentChecks: 0 } } as PipelineStage] : []),
+			...this.recentChecksStages(options?.recentChecks),
 			...this.uptimeStatsLookupStages,
 		];
 		const documents = await MonitorModel.aggregate(pipeline);

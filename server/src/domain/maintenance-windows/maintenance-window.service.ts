@@ -106,7 +106,7 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		start: string;
 		end: string;
 	}) => {
-		const monitors = await this.monitorsRepository.findByIds(monitorIDs, { includeRecentChecks: false });
+		const monitors = await this.monitorsRepository.findByIds(monitorIDs, { recentChecks: "none" });
 
 		const unauthorizedMonitors = monitors.filter((monitor) => monitor.teamId !== teamId);
 
@@ -193,7 +193,7 @@ export class MaintenanceWindowService implements IMaintenanceWindowService {
 		const update: Partial<MaintenanceWindow> = rest;
 
 		if (monitors !== undefined) {
-			const monitorDocs = await this.monitorsRepository.findByIds(monitors, { includeRecentChecks: false });
+			const monitorDocs = await this.monitorsRepository.findByIds(monitors, { recentChecks: "none" });
 			const unauthorizedMonitors = monitorDocs.filter((monitor) => monitor.teamId !== teamId);
 			if (unauthorizedMonitors.length > 0) {
 				throw new AppError({
