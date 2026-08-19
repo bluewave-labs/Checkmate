@@ -1,5 +1,6 @@
 import { Schema, model, type Types } from "mongoose";
 import type { Notification, NotificationChannel } from "@/domain/notifications/notification.type.js";
+import { NtfyAuthTypes } from "@/domain/notifications/notification.type.js";
 
 interface NotificationDocument extends Omit<Notification, "id" | "userId" | "teamId" | "createdAt" | "updatedAt"> {
 	_id: Types.ObjectId;
@@ -61,6 +62,8 @@ const NotificationSchema = new Schema<NotificationDocument>(
 		webhookAuthUsername: { type: String },
 		webhookAuthPassword: { type: String },
 		webhookAuthToken: { type: String },
+		ntfyAuthType: { type: String, enum: NtfyAuthTypes },
+		ntfyUsername: { type: String },
 	},
 	{
 		timestamps: true,

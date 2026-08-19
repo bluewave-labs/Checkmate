@@ -1,6 +1,6 @@
 import { BasePage, BaseFallback } from "@/Components/design-elements";
 import Typography from "@mui/material/Typography";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 
@@ -9,7 +9,11 @@ import { useTranslation } from "react-i18next";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import { useLocation, useParams } from "react-router-dom";
 import { useGet } from "@/Hooks/UseApi";
-import { resolveStatusPageTheme } from "@/Types/StatusPage";
+import {
+	isStatusPageRange,
+	resolveStatusPageTheme,
+	type StatusPageRange,
+} from "@/Types/StatusPage";
 import {
 	PUBLIC_STATUS_PAGE_PREFIX,
 	type StatusPageResponse,
@@ -80,21 +84,36 @@ const StatusPageView = () => {
 	const { url } = useParams();
 	const isAdmin = useIsAdmin();
 	const location = useLocation();
+	const [searchParams, setSearchParams] = useSearchParams();
+
+	const onRangeChange = (next: StatusPageRange) => {
+		const updated = new URLSearchParams(searchParams);
+		if (next === "latest") {
+			updated.delete("range");
+		} else {
+			updated.set("range", next);
+		}
+		setSearchParams(updated, { replace: true });
+	};
 
 	const onCustomDomainHost = isCustomDomainHost();
 	const isPublic =
 		onCustomDomainHost || location.pathname.startsWith(PUBLIC_STATUS_PAGE_PREFIX);
 
+	const rawRange = searchParams.get("range");
+	const range = isStatusPageRange(rawRange) ? rawRange : "latest";
+
 	const apiUrl = buildStatusPageApiPath({
 		url,
 		useCustomDomain: onCustomDomainHost,
+		range,
 	});
 
 	const { data, isLoading, error } = useGet<StatusPageResponse>(
 		apiUrl,
 		{},
 		{
-			refreshInterval: 10000,
+			refreshInterval: range === "latest" ? 10000 : 60000,
 		}
 	);
 
@@ -150,6 +169,10 @@ const StatusPageView = () => {
 					statusPage={statusPage}
 					monitors={monitors}
 					config={themeConfig}
+					range={range}
+					onRangeChange={onRangeChange}
+					bucketTimezone={data.bucketTimezone ?? "Etc/UTC"}
+					checkTTLDays={data.checkTTLDays}
 				/>
 			</StatusPageThemeProvider>
 		);

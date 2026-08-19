@@ -1,8 +1,19 @@
 const SERVICE_NAME = "RocketChatProvider";
+import { supportsUptimeDetails, type MonitorType } from "@/domain/monitors/monitor.type.js";
 import type { Notification, NotificationMessage } from "@/domain/notifications/notification.type.js";
 import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
 import { getTestMessage } from "@/domain/notifications/providers/utils.js";
 import got from "got";
+
+type RocketChatField = { title: string; value: string; short: boolean };
+type RocketChatAttachment = {
+	color: string;
+	title: string;
+	title_link?: string;
+	fields?: RocketChatField[];
+	ts?: string;
+};
+type RocketChatPayload = { text: string; attachments: [RocketChatAttachment] };
 
 export class RocketChatProvider extends NotificationProvider {
 	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
@@ -12,7 +23,7 @@ export class RocketChatProvider extends NotificationProvider {
 
 		try {
 			await got.post(notification.address, {
-				json: { text: getTestMessage() },
+				json: this.buildTestPayload(),
 				headers: {
 					"Content-Type": "application/json",
 				},
@@ -31,6 +42,22 @@ export class RocketChatProvider extends NotificationProvider {
 		}
 	}
 
+	private buildTestPayload(): RocketChatPayload {
+		return {
+			text: getTestMessage(),
+			attachments: [
+				{
+					color: "#0000FF",
+					title: "Checkmate test notification",
+					fields: [
+						{ title: "Channel", value: "Rocket.Chat", short: true },
+						{ title: "Status", value: "Test notification", short: true },
+					],
+				},
+			],
+		};
+	}
+
 	async sendMessage(notification: Notification, message: NotificationMessage): Promise<boolean> {
 		if (!notification.address) {
 			return false;
@@ -38,7 +65,7 @@ export class RocketChatProvider extends NotificationProvider {
 
 		try {
 			await got.post(notification.address, {
-				json: { text: this.buildText(message) },
+				json: this.buildPayload(message),
 				headers: {
 					"Content-Type": "application/json",
 				},
@@ -57,34 +84,88 @@ export class RocketChatProvider extends NotificationProvider {
 		}
 	}
 
-	private buildText(message: NotificationMessage): string {
-		const lines = [
-			message.content.title,
-			message.content.summary,
-			"",
-			`Monitor: ${message.monitor.name}`,
-			`Type: ${message.monitor.type}`,
-			`Status: ${message.monitor.status}`,
-			`URL: ${message.monitor.url}`,
+	private buildPayload(message: NotificationMessage): RocketChatPayload {
+		const monitorUrl = this.monitorUrl(message);
+		const fields: RocketChatField[] = [
+			{ title: "Monitor", value: message.monitor.name, short: true },
+			{ title: "Type", value: message.monitor.type, short: true },
+			{ title: "Status", value: message.monitor.status, short: true },
+			{ title: "URL", value: message.monitor.url, short: false },
 		];
 
-		if (message.content.details?.length) {
-			lines.push("", "Details:", ...message.content.details.map((detail) => `- ${detail}`));
-		}
 		if (message.content.thresholds?.length) {
-			lines.push(
-				"",
-				"Thresholds:",
-				...message.content.thresholds.map(
-					(threshold) => `- ${threshold.metric.toUpperCase()}: ${threshold.formattedValue} (threshold: ${threshold.threshold}${threshold.unit})`
-				)
+			fields.push(
+				...message.content.thresholds.map((breach) => ({
+					title: breach.metric.toUpperCase(),
+					value: `${breach.formattedValue} (threshold: ${breach.threshold}${breach.unit})`,
+					short: true,
+				}))
 			);
 		}
 
-		if (message.content.incident) {
-			lines.push("", `Incident: ${message.clientHost}/infrastructure/${message.monitor.id}`);
+		if (message.content.details?.length) {
+			fields.push({
+				title: "Details",
+				value: message.content.details.map((detail) => `- ${detail}`).join("\n"),
+				short: false,
+			});
 		}
 
-		return lines.join("\n");
+		if (message.content.incident?.url.trim()) {
+			fields.push({
+				title: "Incident",
+				value: message.content.incident.url,
+				short: false,
+			});
+		}
+
+		return {
+			text: message.content.summary,
+			attachments: [
+				{
+					color: this.severityColor(message.severity),
+					title: message.content.title,
+					...(monitorUrl ? { title_link: monitorUrl } : {}),
+					fields,
+					ts: message.content.timestamp.toISOString(),
+				},
+			],
+		};
+	}
+
+	private monitorUrl(message: NotificationMessage): string | undefined {
+		const clientHost = message.clientHost?.trim();
+		if (!clientHost || clientHost === "Host not defined") {
+			return undefined;
+		}
+
+		if (message.monitor.type === "hardware") {
+			return `${clientHost}/infrastructure/${message.monitor.id}`;
+		}
+
+		if (message.monitor.type === "pagespeed") {
+			return `${clientHost}/pagespeed/${message.monitor.id}`;
+		}
+
+		if (supportsUptimeDetails(message.monitor.type as MonitorType)) {
+			return `${clientHost}/uptime/${message.monitor.id}`;
+		}
+
+		return undefined;
+	}
+
+	private severityColor(severity: NotificationMessage["severity"]): string {
+		switch (severity) {
+			case "critical":
+				return "#FF0000";
+			case "warning":
+				return "#FFA500";
+			case "success":
+				return "#00FF00";
+			case "info":
+				return "#0000FF";
+			default:
+				return "#808080";
+		}
 	}
 }

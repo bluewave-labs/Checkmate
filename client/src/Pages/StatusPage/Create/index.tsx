@@ -15,6 +15,7 @@ import type { StatusPageFormData } from "@/Validation/statusPage";
 import { statusPageStepCount, statusPageStepFieldsFor } from "@/Validation/statusPage";
 import { useGet, usePost, usePut, useDelete } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
+import { SelectableMonitorTypes } from "@/Types/Monitor";
 import type { MonitorDisplayType, StatusPageResponse } from "@/Types/StatusPage";
 import { getMonitorTypeLabel } from "@/Types/StatusPage";
 import { timezoneOptions } from "@/Utils/timezoneOptions";
@@ -58,11 +59,13 @@ const LogoUploadField = () => {
 	);
 };
 
+// Derived from SelectableMonitorTypes so a newly supported monitor type is
+// offered here automatically; the previous hardcoded list silently omitted DNS.
+// "hardware" is appended because infrastructure monitors are created on their
+// own page and so are absent from the selectable set.
 const monitorsUrl = (() => {
 	const params = new URLSearchParams();
-	["http", "ping", "port", "docker", "game", "grpc", "websocket", "hardware"].forEach(
-		(type) => params.append("type", type)
-	);
+	[...SelectableMonitorTypes, "hardware"].forEach((type) => params.append("type", type));
 	return `/monitors/team?${params.toString()}`;
 })();
 

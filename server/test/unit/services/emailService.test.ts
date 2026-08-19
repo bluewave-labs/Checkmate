@@ -326,15 +326,17 @@ describe("EmailService", () => {
 			expect(nodemailer.createTransport).toHaveBeenCalledWith(expect.objectContaining({ name: "localhost" }));
 		});
 
-		it("returns false when transporter verification fails", async () => {
+		// Callers wrap sendEmail in .catch()/try-catch to react to delivery failures, so a
+		// transport error has to reject rather than resolve to a falsy value.
+		it("throws when transporter verification fails", async () => {
 			const transporter = createMockTransporter();
 			(transporter.verify as jest.Mock).mockRejectedValue(new Error("SMTP auth failed"));
 			const nodemailer = createMockNodemailer(transporter);
 			const { service, logger } = createService({ nodemailer });
 
-			const result = await service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig());
-
-			expect(result).toBe(false);
+			await expect(service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig())).rejects.toThrow(
+				"Email transporter verification failed"
+			);
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
 					message: "Email transporter verification failed",
@@ -344,27 +346,38 @@ describe("EmailService", () => {
 			);
 		});
 
+		it("reports the underlying cause when verification fails", async () => {
+			const transporter = createMockTransporter();
+			(transporter.verify as jest.Mock).mockRejectedValue(new Error("SMTP auth failed"));
+			const nodemailer = createMockNodemailer(transporter);
+			const { service } = createService({ nodemailer });
+
+			await expect(service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig())).rejects.toMatchObject({
+				status: 500,
+				details: { cause: "SMTP auth failed" },
+			});
+		});
+
 		it("logs stack as undefined when verification fails with non-Error", async () => {
 			const transporter = createMockTransporter();
 			(transporter.verify as jest.Mock).mockRejectedValue("connection refused");
 			const nodemailer = createMockNodemailer(transporter);
 			const { service, logger } = createService({ nodemailer });
 
-			const result = await service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig());
-
-			expect(result).toBe(false);
+			await expect(service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig())).rejects.toThrow();
 			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ stack: undefined }));
 		});
 
-		it("returns undefined and logs error when sendMail throws", async () => {
+		it("throws and logs error when sendMail throws", async () => {
 			const transporter = createMockTransporter();
 			(transporter.sendMail as jest.Mock).mockRejectedValue(new Error("Recipient rejected"));
 			const nodemailer = createMockNodemailer(transporter);
 			const { service, logger } = createService({ nodemailer });
 
-			const result = await service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig());
-
-			expect(result).toBeUndefined();
+			await expect(service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig())).rejects.toMatchObject({
+				message: "Failed to send email",
+				details: { cause: "Recipient rejected" },
+			});
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
 					message: "Recipient rejected",
@@ -380,9 +393,9 @@ describe("EmailService", () => {
 			const nodemailer = createMockNodemailer(transporter);
 			const { service, logger } = createService({ nodemailer });
 
-			const result = await service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig());
-
-			expect(result).toBeUndefined();
+			await expect(service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig())).rejects.toMatchObject({
+				details: { cause: "Unknown error" },
+			});
 			expect(logger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
 					message: "Unknown error",

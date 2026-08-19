@@ -2,6 +2,7 @@ import { fileURLToPath } from "url";
 import { EmailTransportConfig } from "@/domain/app-settings/app-settings.type.js";
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { ILogger } from "@/utils/logger.js";
+import { AppError } from "@/utils/AppError.js";
 import fs from "node:fs";
 import path from "node:path";
 import nodemailer from "nodemailer";
@@ -20,7 +21,7 @@ type TemplateCompiler = (template: string) => (context: Record<string, unknown>)
 export interface IEmailService {
 	init(): void;
 	buildEmail(template: string, context: Record<string, unknown>): Promise<string | undefined>;
-	sendEmail(to: string, subject: string, html: string, transportConfig?: EmailTransportConfig): Promise<string | false | undefined>;
+	sendEmail(to: string, subject: string, html: string, transportConfig?: EmailTransportConfig): Promise<string>;
 }
 
 export class EmailService implements IEmailService {
@@ -151,7 +152,12 @@ export class EmailService implements IEmailService {
 				method: "verifyTransporter",
 				stack: error instanceof Error ? error.stack : undefined,
 			});
-			return false;
+			throw new AppError({
+				message: "Email transporter verification failed",
+				service: SERVICE_NAME,
+				method: "sendEmail",
+				details: { cause: error instanceof Error ? error.message : "Unknown error" },
+			});
 		}
 
 		const trimmedDisplayName = systemEmailDisplayName?.trim();
@@ -171,6 +177,12 @@ export class EmailService implements IEmailService {
 				service: SERVICE_NAME,
 				method: "sendEmail",
 				stack: error instanceof Error ? error.stack : undefined,
+			});
+			throw new AppError({
+				message: "Failed to send email",
+				service: SERVICE_NAME,
+				method: "sendEmail",
+				details: { cause: error instanceof Error ? error.message : "Unknown error" },
 			});
 		}
 	};

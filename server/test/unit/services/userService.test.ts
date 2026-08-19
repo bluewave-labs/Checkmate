@@ -196,6 +196,22 @@ describe("UserService", () => {
 			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ method: "registerUser" }));
 		});
 
+		// The welcome email is fire-and-forget, but its .catch() only runs if sendEmail
+		// actually rejects; swallowing the transport error made that handler dead code.
+		it("logs a warning when the welcome email fails to send", async () => {
+			const { service, logger } = createService({
+				emailService: {
+					buildEmail: jest.fn().mockResolvedValue("<html>Welcome</html>"),
+					sendEmail: jest.fn().mockRejectedValue(new Error("SMTP auth failed")),
+				},
+			});
+
+			const result = await service.registerUser({ password: "pass" }, "invite-token", null);
+
+			expect(result.user).toBeDefined();
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ method: "registerUser", message: "SMTP auth failed" }));
+		});
+
 		it("uses default role when invite has no role", async () => {
 			const { service, usersRepository } = createService({
 				invitesRepository: {
@@ -422,6 +438,19 @@ describe("UserService", () => {
 			});
 
 			await expect(service.requestRecovery("test@example.com")).rejects.toThrow("Failed to build password reset email HTML");
+		});
+
+		// Previously the send failure was swallowed and the endpoint still reported
+		// "Password recovery email sent successfully" while the user got nothing.
+		it("propagates the failure when the recovery email cannot be sent", async () => {
+			const { service } = createService({
+				emailService: {
+					buildEmail: jest.fn().mockResolvedValue("<html>Reset</html>"),
+					sendEmail: jest.fn().mockRejectedValue(new Error("SMTP auth failed")),
+				},
+			});
+
+			await expect(service.requestRecovery("test@example.com")).rejects.toThrow("SMTP auth failed");
 		});
 	});
 

@@ -14,6 +14,11 @@ export const NotificationChannels = [
 ] as const;
 export type NotificationChannel = (typeof NotificationChannels)[number];
 
+// ntfy servers accept either a bearer access token or HTTP basic credentials.
+// Both store their secret in `accessToken`; basic auth pairs it with `ntfyUsername`.
+export const NtfyAuthTypes = ["none", "token", "basic"] as const;
+export type NtfyAuthType = (typeof NtfyAuthTypes)[number];
+
 export interface Notification {
 	id: string;
 	userId: string;
@@ -33,6 +38,8 @@ export interface Notification {
 	webhookAuthUsername?: string;
 	webhookAuthPassword?: string;
 	webhookAuthToken?: string;
+	ntfyAuthType?: NtfyAuthType;
+	ntfyUsername?: string;
 	createdAt: string;
 	updatedAt: string;
 }

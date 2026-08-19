@@ -291,3 +291,12 @@ export type CheckSnapshot = Pick<
 export interface HasResponseTime {
 	responseTime: number;
 }
+
+export interface DailyCheckBucket {
+	monitorId: string;
+	date: string;
+	totalChecks: number;
+	upChecks: number;
+	downChecks: number;
+	avgResponseTime: number | null; // null when no check that day recorded a response time
+}

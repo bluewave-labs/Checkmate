@@ -1,8 +1,43 @@
 import { z } from "zod";
+import { NtfyAuthTypes } from "@/domain/notifications/notification.type.js";
 
 //****************************************
 // Notification Validations
 //****************************************
+
+// ntfy stores its secret in accessToken for both auth types: the bearer token for
+// "token", the password for "basic". Reject partially filled credentials so a channel
+// can't be saved looking authenticated while posting anonymously.
+const refineNtfyAuth = (body: { ntfyAuthType?: string; ntfyUsername?: string; accessToken?: string }, ctx: z.RefinementCtx) => {
+	const authType = body.ntfyAuthType ?? "none";
+
+	if (authType === "none") {
+		if (body.accessToken) {
+			ctx.addIssue({ code: "custom", path: ["accessToken"], message: "Select an authentication type to use an access token" });
+		}
+		if (body.ntfyUsername) {
+			ctx.addIssue({ code: "custom", path: ["ntfyUsername"], message: "Select an authentication type to use a username" });
+		}
+		return;
+	}
+
+	if (authType === "token") {
+		if (!body.accessToken) {
+			ctx.addIssue({ code: "custom", path: ["accessToken"], message: "Access token is required for token authentication" });
+		}
+		if (body.ntfyUsername) {
+			ctx.addIssue({ code: "custom", path: ["ntfyUsername"], message: "Username is only used with basic authentication" });
+		}
+		return;
+	}
+
+	if (!body.ntfyUsername) {
+		ctx.addIssue({ code: "custom", path: ["ntfyUsername"], message: "Username is required for basic authentication" });
+	}
+	if (!body.accessToken) {
+		ctx.addIssue({ code: "custom", path: ["accessToken"], message: "Password is required for basic authentication" });
+	}
+};
 
 export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 	// Email notification
@@ -130,12 +165,17 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		twilioPhoneNumber: z.string().min(1, "Twilio phone number is required"),
 	}),
 	// ntfy notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("ntfy"),
-		address: z.url({ message: "Please enter a valid ntfy server URL" }),
-		topic: z.string().min(1, "Topic is required"),
-	}),
+	z
+		.object({
+			notificationName: z.string().min(1, "Notification name is required"),
+			type: z.literal("ntfy"),
+			address: z.url({ message: "Please enter a valid ntfy server URL" }),
+			topic: z.string().min(1, "Topic is required"),
+			ntfyAuthType: z.enum(NtfyAuthTypes).optional(),
+			ntfyUsername: z.union([z.string(), z.literal("")]).optional(),
+			accessToken: z.union([z.string(), z.literal("")]).optional(),
+		})
+		.superRefine(refineNtfyAuth),
 ]);
 
 export const testNotificationBodyValidation = createNotificationBodyValidation;

@@ -11,12 +11,18 @@ export class NtfyProvider extends NotificationProvider {
 			return false;
 		}
 
+		const authHeaders = this.buildAuthHeaders(notification, "sendTestAlert");
+		if (authHeaders === null) {
+			return false;
+		}
+
 		try {
 			await got.post(this.buildTopicUrl(notification.address, notification.topic), {
 				body: getTestMessage(),
 				headers: {
 					Title: "Checkmate test notification",
 					Priority: "default",
+					...authHeaders,
 				},
 				...this.gotRequestOptions(),
 			});
@@ -38,6 +44,11 @@ export class NtfyProvider extends NotificationProvider {
 			return false;
 		}
 
+		const authHeaders = this.buildAuthHeaders(notification, "sendMessage");
+		if (authHeaders === null) {
+			return false;
+		}
+
 		try {
 			await got.post(this.buildTopicUrl(notification.address, notification.topic), {
 				body: this.buildNtfyText(message),
@@ -45,6 +56,7 @@ export class NtfyProvider extends NotificationProvider {
 					Title: message.content.title,
 					Priority: this.mapPriority(message.severity),
 					Tags: this.mapTags(message.severity),
+					...authHeaders,
 				},
 				...this.gotRequestOptions(),
 			});
@@ -68,6 +80,42 @@ export class NtfyProvider extends NotificationProvider {
 
 	private buildTopicUrl(address: string, topic: string): string {
 		return `${address.replace(/\/+$/, "")}/${encodeURIComponent(topic)}`;
+	}
+
+	/**
+	 * Returns the Authorization header for the configured auth type, or null when the
+	 * credentials are incomplete. Null is treated as a send failure rather than falling
+	 * back to an anonymous post, so a misconfigured channel surfaces instead of quietly
+	 * publishing to a topic the server may leave world-readable.
+	 */
+	private buildAuthHeaders(notification: Partial<Notification>, method: string): Record<string, string> | null {
+		const { ntfyAuthType, accessToken, ntfyUsername } = notification;
+
+		if (!ntfyAuthType || ntfyAuthType === "none") {
+			return {};
+		}
+
+		if (ntfyAuthType === "token") {
+			if (!accessToken) {
+				this.logMissingCredentials("access token", method);
+				return null;
+			}
+			return { Authorization: `Bearer ${accessToken}` };
+		}
+
+		if (!ntfyUsername || !accessToken) {
+			this.logMissingCredentials("username and password", method);
+			return null;
+		}
+		return { Authorization: `Basic ${Buffer.from(`${ntfyUsername}:${accessToken}`).toString("base64")}` };
+	}
+
+	private logMissingCredentials(missing: string, method: string): void {
+		this.logger.warn({
+			message: `ntfy notification is configured for authentication but is missing its ${missing}`,
+			service: SERVICE_NAME,
+			method,
+		});
 	}
 
 	private buildNtfyText(message: NotificationMessage): string {

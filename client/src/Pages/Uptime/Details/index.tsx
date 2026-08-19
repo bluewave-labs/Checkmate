@@ -38,6 +38,11 @@ interface CertificateResponse {
 	certificateDate: string;
 }
 
+interface DomainResponse {
+	domain: string;
+	expiryDate: string;
+}
+
 const UptimeDetailsPage = () => {
 	const theme = useTheme();
 	const isAdmin = useIsAdmin();
@@ -101,6 +106,29 @@ const UptimeDetailsPage = () => {
 			) ?? "N/A"
 		);
 	}, [certificateData, uiTimezone]);
+
+	// Domain expiry fetch - only for HTTP monitors
+	const domainUrl = useMemo(() => {
+		if (!monitorId || monitor?.type !== "http") {
+			return null;
+		}
+		return `/monitors/domain/${monitorId}`;
+	}, [monitorId, monitor?.type]);
+
+	const { data: domainData } = useGet<DomainResponse>(
+		domainUrl,
+		{},
+		{ revalidateOnFocus: false }
+	);
+
+	const domainExpiry = useMemo(() => {
+		if (!domainData?.expiryDate) {
+			return undefined;
+		}
+		return (
+			formatDateWithTz(domainData.expiryDate, certificateDateFormat, uiTimezone) ?? "N/A"
+		);
+	}, [domainData, uiTimezone]);
 
 	const checksUrl = useMemo(() => {
 		if (!monitorId || !monitor?.type) {
@@ -193,6 +221,7 @@ const UptimeDetailsPage = () => {
 				monitor={monitor}
 				monitorStats={monitorStats}
 				certificateExpiry={certificateExpiry}
+				domainExpiry={domainExpiry}
 			/>
 			<HeaderTimeRange
 				isLoading={monitorIsLoading || checksIsLoading}

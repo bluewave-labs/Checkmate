@@ -1,20 +1,19 @@
-import { useMemo, useState } from "react";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
-import { useTranslation } from "react-i18next";
+import Typography from "@mui/material/Typography";
+import { TriangleAlert } from "lucide-react";
+
 import type { SxProps, Theme } from "@mui/material/styles";
 import type { Monitor } from "@/Types/Monitor";
-import type { StatusPage } from "@/Types/StatusPage";
-import { getMonitorTypeLabel } from "@/Types/StatusPage";
+import type { StatusPage, StatusPageRange } from "@/Types/StatusPage";
+import {
+	getMonitorTypeLabel,
+	STATUS_PAGE_RANGE_DAYS,
+	STATUS_PAGE_RANGES,
+} from "@/Types/StatusPage";
 import type { StatusPageThemeTokens } from "@/Pages/StatusPage/Status/themes/tokens";
-import {
-	ThemedHeatmap,
-	type HeatCellKind,
-} from "@/Pages/StatusPage/Status/themes/shared/ThemedHeatmap";
-import {
-	ThemedHistogram,
-	type BarKind,
-} from "@/Pages/StatusPage/Status/themes/shared/ThemedHistogram";
+import { ThemedHeatmap } from "@/Pages/StatusPage/Status/themes/shared/ThemedHeatmap";
+import { ThemedHistogram } from "@/Pages/StatusPage/Status/themes/shared/ThemedHistogram";
 import {
 	ThemedInfrastructure,
 	type GaugeFillLevel,
@@ -26,8 +25,20 @@ import {
 	resolveOverallStatus,
 	statusBadgeKey,
 } from "@/Pages/StatusPage/Status/themes/shared/overallStatus";
-import { useStatusPageTheme } from "@/Pages/StatusPage/Status/themes/StatusPageThemeProvider";
 import { formatPercentage } from "@/Utils/FormatUtils";
+import {
+	checksToCells,
+	dailyBucketsToCells,
+	type BarKind,
+	type HeatCellKind,
+} from "@/Pages/StatusPage/Status/themes/shared/ChartCells";
+import { LAYOUT } from "@/Utils/Theme/constants";
+import { Icon } from "@/Components/design-elements";
+
+import { useStatusPageTheme } from "@/Pages/StatusPage/Status/themes/StatusPageThemeProvider";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useTheme } from "@mui/material";
 
 type StatusPageMonitor = Monitor;
 
@@ -82,9 +93,22 @@ interface Props {
 	statusPage: StatusPage;
 	monitors: StatusPageMonitor[];
 	config: ThemeConfig<any>;
+	range: StatusPageRange;
+	onRangeChange: (range: StatusPageRange) => void;
+	bucketTimezone: string;
+	checkTTLDays?: number;
 }
 
-export const BaseStatusPage = ({ statusPage, monitors, config }: Props) => {
+export const BaseStatusPage = ({
+	statusPage,
+	monitors,
+	config,
+	range,
+	onRangeChange,
+	bucketTimezone,
+	checkTTLDays,
+}: Props) => {
+	const theme = useTheme();
 	const { t } = useTranslation();
 	const { tokens, mode } = useStatusPageTheme();
 	const styles = useMemo(
@@ -126,33 +150,75 @@ export const BaseStatusPage = ({ statusPage, monitors, config }: Props) => {
 			/>
 
 			{statusPage.showCharts && (
-				<Box sx={styles.chartSwitchWrap}>
-					<Box
-						sx={styles.chartSwitch}
-						role="radiogroup"
-					>
+				<Stack>
+					<Box sx={styles.chartSwitchWrap}>
 						<Box
-							component="button"
-							type="button"
-							role="radio"
-							aria-checked={chartMode === "heatmap"}
-							onClick={() => setChartMode("heatmap")}
-							sx={styles.chartSwitchButton(chartMode === "heatmap")}
+							sx={styles.chartSwitch}
+							role="radiogroup"
 						>
-							{t("pages.statusPages.monitorsList.chartTypeHeatmap")}
-						</Box>
-						<Box
-							component="button"
-							type="button"
-							role="radio"
-							aria-checked={chartMode === "histogram"}
-							onClick={() => setChartMode("histogram")}
-							sx={styles.chartSwitchButton(chartMode === "histogram")}
-						>
-							{t("pages.statusPages.monitorsList.chartTypeHistogram")}
+							<Box
+								component="button"
+								type="button"
+								role="radio"
+								aria-checked={chartMode === "heatmap"}
+								onClick={() => setChartMode("heatmap")}
+								sx={styles.chartSwitchButton(chartMode === "heatmap")}
+							>
+								{t("pages.statusPages.monitorsList.chartTypeHeatmap")}
+							</Box>
+							<Box
+								component="button"
+								type="button"
+								role="radio"
+								aria-checked={chartMode === "histogram"}
+								onClick={() => setChartMode("histogram")}
+								sx={styles.chartSwitchButton(chartMode === "histogram")}
+							>
+								{t("pages.statusPages.monitorsList.chartTypeHistogram")}
+							</Box>
 						</Box>
 					</Box>
-				</Box>
+					<Box sx={styles.chartSwitchWrap}>
+						<Box
+							sx={styles.chartSwitch}
+							role="radiogroup"
+							aria-label={t("pages.statusPages.rangeSelectorAria")}
+						>
+							{STATUS_PAGE_RANGES.map((value) => (
+								<Box
+									component="button"
+									type="button"
+									role="radio"
+									key={value}
+									aria-checked={range === value}
+									onClick={() => onRangeChange(value)}
+									sx={styles.chartSwitchButton(range === value)}
+								>
+									{t(`pages.statusPages.range.${value}`)}
+								</Box>
+							))}
+						</Box>
+					</Box>
+					{range !== "latest" &&
+						checkTTLDays &&
+						STATUS_PAGE_RANGE_DAYS[range] > checkTTLDays && (
+							<Stack
+								mb={LAYOUT.XS}
+								alignSelf="flex-end"
+								direction="row"
+								alignItems="center"
+								gap={LAYOUT.XXS}
+							>
+								<Icon
+									icon={TriangleAlert}
+									color={theme.palette.warning.main}
+								/>
+								<Typography>
+									{t("pages.statusPages.rangeExceedsRetention", { days: checkTTLDays })}
+								</Typography>
+							</Stack>
+						)}
+				</Stack>
 			)}
 
 			<Stack
@@ -165,6 +231,16 @@ export const BaseStatusPage = ({ statusPage, monitors, config }: Props) => {
 					const showChart = !isHardware && statusPage.showCharts !== false;
 					const badgeTone = monitorBadgeTone(monitor.status);
 					const uptimePercentage = formatPercentage(monitor.uptimePercentage ?? 0);
+
+					const cells =
+						range === "latest"
+							? checksToCells(monitor.recentChecks ?? [])
+							: dailyBucketsToCells(
+									monitor.dailyChecks ?? [],
+									STATUS_PAGE_RANGE_DAYS[range],
+									bucketTimezone,
+									t
+								);
 
 					return (
 						<Box
@@ -226,13 +302,13 @@ export const BaseStatusPage = ({ statusPage, monitors, config }: Props) => {
 							{showChart &&
 								(chartMode === "heatmap" ? (
 									<ThemedHeatmap
-										checks={monitor.recentChecks ?? []}
+										cells={cells}
 										containerSx={styles.heatmap}
 										cellSx={styles.heatmapCell}
 									/>
 								) : (
 									<ThemedHistogram
-										checks={monitor.recentChecks ?? []}
+										cells={cells}
 										containerSx={styles.histogram}
 										barSx={styles.bar}
 										statsSx={styles.chartStats}

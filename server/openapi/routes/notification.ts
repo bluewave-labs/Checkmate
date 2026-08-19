@@ -78,7 +78,14 @@ const notificationVariantMeta: Record<string, { component: string; example: Reco
 	},
 	ntfy: {
 		component: "NtfyNotification",
-		example: { notificationName: "ntfy topic", type: "ntfy", address: "https://ntfy.sh", topic: "checkmate-alerts" },
+		example: {
+			notificationName: "ntfy topic",
+			type: "ntfy",
+			address: "https://ntfy.sh",
+			topic: "checkmate-alerts",
+			ntfyAuthType: "token",
+			accessToken: "tk_your-ntfy-access-token",
+		},
 	},
 };
 

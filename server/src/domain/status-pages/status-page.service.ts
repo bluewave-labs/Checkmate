@@ -5,18 +5,22 @@ import {
 	DEFAULT_STATUS_PAGE_THEME,
 	DEFAULT_STATUS_PAGE_THEME_MODE,
 	PublicStatusPagePayload,
+	STATUS_PAGE_RANGE_DAYS,
 	StatusPage,
+	StatusPageRange,
 } from "@/domain/status-pages/status-page.type.js";
 import { AppError } from "@/utils/AppError.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
 import { Monitor } from "@/domain/monitors/monitor.type.js";
+import { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
+import type { DailyCheckBucket } from "@/domain/checks/check.type.js";
 
 export interface IStatusPageService {
 	createStatusPage(userId: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage>;
 	getStatusPageByUrl(url: string): Promise<StatusPage>;
 	getStatusPageByCustomDomain(customDomain: string): Promise<StatusPage>;
 	getStatusPagesByTeamId(teamId: string): Promise<StatusPage[]>;
-	getPublicStatusPagePayload(statusPage: StatusPage, requesterTeamId: string | undefined): Promise<PublicStatusPagePayload>;
+	getPublicStatusPagePayload(statusPage: StatusPage, requesterTeamId: string | undefined, range: StatusPageRange): Promise<PublicStatusPagePayload>;
 	updateStatusPage(id: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage>;
 
 	deleteStatusPage(statusPageId: string, teamId: string): Promise<StatusPage>;
@@ -26,7 +30,8 @@ export class StatusPageService implements IStatusPageService {
 	constructor(
 		private statusPagesRepository: IStatusPagesRepository,
 		private settingsService: ISettingsService,
-		private monitorsRepository: IMonitorsRepository
+		private monitorsRepository: IMonitorsRepository,
+		private checksRepository: IChecksRepository
 	) {}
 
 	private assertCustomDomainAllowed = (customDomain: string | null | undefined) => {
@@ -116,19 +121,51 @@ export class StatusPageService implements IStatusPageService {
 		return statusPages.map((sp) => this.normalizeTheme(sp));
 	};
 
-	getPublicStatusPagePayload = async (statusPage: StatusPage, requesterTeamId: string | undefined): Promise<PublicStatusPagePayload> => {
+	getPublicStatusPagePayload = async (
+		statusPage: StatusPage,
+		requesterTeamId: string | undefined,
+		range: StatusPageRange = "latest"
+	): Promise<PublicStatusPagePayload> => {
 		if (!statusPage.isPublished) {
 			if (!requesterTeamId || statusPage.teamId !== requesterTeamId) {
 				throw new AppError({ message: "Forbidden", status: 403 });
 			}
 		}
 
-		const showURL = (await this.settingsService.getDBSettings()).showURL;
-		const monitors = await this.monitorsRepository.findByIds(statusPage.monitors);
+		const dbSettings = await this.settingsService.getDBSettings();
+		const showURL = dbSettings.showURL;
+		const monitors = await this.monitorsRepository.findByIds(statusPage.monitors, { includeRecentChecks: range === "latest" });
 		const order = new Map(statusPage.monitors.map((id, i) => [id, i]));
 		const sorted = [...monitors].sort((a, b) => (order.get(a.id) ?? Number.MAX_SAFE_INTEGER) - (order.get(b.id) ?? Number.MAX_SAFE_INTEGER));
 
-		return { statusPage, monitors: sorted.map((monitor) => this.toPublicMonitor(monitor, showURL)) };
+		if (range === "latest") {
+			return { statusPage, monitors: sorted.map((monitor) => this.toPublicMonitor(monitor, showURL)) };
+		}
+
+		const days = STATUS_PAGE_RANGE_DAYS[range];
+		const bucketTimezone = statusPage.timezone ?? "Etc/UTC";
+		const buckets = await this.checksRepository.getDailyStatusBuckets(statusPage.monitors, days, bucketTimezone);
+		const bucketsByMonitor = buckets.reduce((grouped, bucket) => {
+			const monitorBuckets = grouped.get(bucket.monitorId);
+			if (monitorBuckets) {
+				monitorBuckets.push(bucket);
+			} else {
+				grouped.set(bucket.monitorId, [bucket]);
+			}
+			return grouped;
+		}, new Map<string, DailyCheckBucket[]>());
+
+		return {
+			statusPage,
+			range,
+			bucketTimezone,
+			checkTTLDays: dbSettings.checkTTL,
+			monitors: sorted.map((monitor) => ({
+				...this.toPublicMonitor(monitor, showURL),
+				recentChecks: [],
+				dailyChecks: bucketsByMonitor.get(monitor.id) ?? [],
+			})),
+		};
 	};
 
 	updateStatusPage = async (id: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage> => {

@@ -86,7 +86,7 @@ export const getResponseColor = (
 	return normalizeToHex(safe.end);
 };
 
-const MIN_HEIGHT_PCT = 8;
+export const MIN_HEIGHT_PCT = 8;
 const CAP_PERCENTILE = 95;
 
 const percentile = (sortedValues: number[], p: number): number => {
@@ -113,4 +113,25 @@ export const computeBarHeights = (
 	return values.map((value) => {
 		return Math.max(MIN_HEIGHT_PCT, Math.min(100, (value / cap) * 100));
 	});
+};
+
+export const computeDayBarHeights = (
+	buckets: { date: string; avgResponseTime: number | null }[]
+): Map<string, number> => {
+	const values = buckets.map((bucket) =>
+		typeof bucket.avgResponseTime === "number" && Number.isFinite(bucket.avgResponseTime)
+			? Math.max(0, bucket.avgResponseTime)
+			: 0
+	);
+
+	const sorted = values.slice().sort((a, b) => a - b);
+	const cap = percentile(sorted, CAP_PERCENTILE);
+	return new Map(
+		buckets.map((bucket, i) => [
+			bucket.date,
+			cap <= 0
+				? MIN_HEIGHT_PCT
+				: Math.max(MIN_HEIGHT_PCT, Math.min(100, (values[i] / cap) * 100)),
+		])
+	);
 };
