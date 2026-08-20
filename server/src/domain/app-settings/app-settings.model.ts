@@ -40,6 +40,8 @@ const AppSettingsSchema = new Schema<AppSettingsDocument>(
 		singleton: { type: Boolean, required: true, unique: true, default: true },
 		version: { type: Number, default: 1 },
 		globalThresholds: { type: thresholdsSchema },
+		globalProxyEnabled: { type: Boolean, default: false },
+		globalProxyId: { type: String, default: null },
 	},
 	{ timestamps: true }
 );
