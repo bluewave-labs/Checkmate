@@ -14,7 +14,10 @@ export const createProxyBodyValidation = z.object({
 	password: z.string().optional(),
 });
 
-export const editProxyBodyValidation = createProxyBodyValidation;
+// Empty/absent password keeps doesn't delete, only clearPassword: true does.
+export const editProxyBodyValidation = createProxyBodyValidation.extend({
+	clearPassword: z.boolean().optional(),
+});
 
 export const getProxyByIdParamValidation = z.object({
 	id: z.string().min(1, "Proxy ID is required"),
@@ -26,8 +29,6 @@ export const deleteProxyParamValidation = z.object({
 	id: z.string().min(1, "Proxy ID is required"),
 });
 
-// Canonical proxy shape returned by /proxies endpoints. Keep aligned with what
-// the controllers actually serialize (password is intentionally omitted; hasPassword tells the client one is stored).
 export const proxyResponseSchema = z
 	.object({
 		id: z.string(),

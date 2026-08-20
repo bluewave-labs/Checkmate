@@ -13,3 +13,5 @@ export interface Proxy {
 	createdAt: string;
 	updatedAt: string;
 }
+
+export type ProxyResponse = Omit<Proxy, "password"> & { hasPassword: boolean };

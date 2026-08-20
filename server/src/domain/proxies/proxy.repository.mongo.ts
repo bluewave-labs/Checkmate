@@ -3,6 +3,7 @@ import { Proxy } from "@/domain/proxies/proxy.type.js";
 import { ProxyDocument, ProxyModel } from "@/domain/proxies/proxy.model.js";
 import { AppError } from "@/utils/AppError.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
+import { UpdateQuery } from "mongoose";
 
 const SERVICE_NAME = "ProxiesRepository";
 
@@ -49,17 +50,18 @@ class MongoProxiesRepository implements IProxiesRepository {
 		return proxies.map(this.toEntity);
 	}
 
-	async updateById(proxyId: string, teamId: string, patch: Partial<Proxy>): Promise<Proxy> {
+	async updateById(proxyId: string, teamId: string, patch: Partial<Proxy>, options?: { unsetPassword?: boolean }): Promise<Proxy> {
 		try {
-			const updatedProxy = await ProxyModel.findOneAndUpdate(
-				{ _id: proxyId, teamId },
-				{
-					$set: {
-						...patch,
-					},
+			const update: UpdateQuery<ProxyDocument> = {
+				$set: {
+					...patch,
 				},
-				{ new: true, runValidators: true }
-			);
+			};
+			if (options?.unsetPassword) {
+				delete update.$set?.password;
+				update.$unset = { password: 1 };
+			}
+			const updatedProxy = await ProxyModel.findOneAndUpdate({ _id: proxyId, teamId }, update, { new: true, runValidators: true });
 			if (!updatedProxy) {
 				throw new AppError({ message: "Proxy not found or could not be updated", service: SERVICE_NAME, status: 404 });
 			}

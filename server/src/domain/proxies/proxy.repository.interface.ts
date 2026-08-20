@@ -7,7 +7,7 @@ export interface IProxiesRepository {
 	findById(proxyId: string, teamId: string): Promise<Proxy>;
 	findByTeamId(teamId: string): Promise<Proxy[]>;
 	// update
-	updateById(proxyId: string, teamId: string, patch: Partial<Proxy>): Promise<Proxy>;
+	updateById(proxyId: string, teamId: string, patch: Partial<Proxy>, options?: { unsetPassword?: boolean }): Promise<Proxy>;
 	// delete
 	deleteById(proxyId: string, teamId: string): Promise<Proxy>;
 }
