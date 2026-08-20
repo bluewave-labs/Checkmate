@@ -418,6 +418,8 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			statusWindowThreshold: doc.statusWindowThreshold,
 			type: doc.type,
 			ignoreTlsErrors: doc.ignoreTlsErrors,
+			proxyMode: doc.proxyMode ?? "inherit",
+			proxyId: doc.proxyId ? toStringId(doc.proxyId) : undefined,
 			useAdvancedMatching: doc.useAdvancedMatching ?? false,
 			jsonPath: doc.jsonPath ?? undefined,
 			expectedValue: doc.expectedValue ?? undefined,

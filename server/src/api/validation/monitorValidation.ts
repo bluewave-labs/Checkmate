@@ -10,6 +10,7 @@ import {
 	MonitorStatuses,
 	MonitorTypes,
 	PageSpeedStrategies,
+	ProxyModes,
 } from "@/domain/monitors/monitor.type.js";
 import { DateRanges, SortOrders } from "@/types/query.js";
 
@@ -215,6 +216,8 @@ const importedMonitorSchema = z
 		statusWindowThreshold: z.number().min(1).max(100).default(60),
 		type: z.enum(MonitorTypes, "Invalid monitor type"),
 		ignoreTlsErrors: z.boolean().default(false),
+		proxyMode: z.enum(ProxyModes).default("inherit"),
+		proxyId: z.string().optional(),
 		useAdvancedMatching: z.boolean().default(false),
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),

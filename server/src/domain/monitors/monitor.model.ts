@@ -1,6 +1,6 @@
 import { Schema, model, Types } from "mongoose";
 import type { Monitor, MonitorMatchMethod, CheckSnapshot } from "@/domain/monitors/monitor.type.js";
-import { DnsRecordTypes, MonitorTypes, MonitorStatuses, PageSpeedStrategies, HttpMethods } from "@/domain/monitors/monitor.type.js";
+import { DnsRecordTypes, MonitorTypes, MonitorStatuses, PageSpeedStrategies, HttpMethods, ProxyModes } from "@/domain/monitors/monitor.type.js";
 import type {
 	CheckAudits,
 	ILighthouseAudit,
@@ -14,7 +14,7 @@ type CheckSnapshotDocument = Omit<CheckSnapshot, "createdAt"> & { createdAt: Dat
 
 type MonitorDocumentBase = Omit<
 	Monitor,
-	"id" | "userId" | "teamId" | "notifications" | "tags" | "selectedDisks" | "statusWindow" | "recentChecks" | "createdAt" | "updatedAt"
+	"id" | "userId" | "teamId" | "notifications" | "tags" | "selectedDisks" | "statusWindow" | "recentChecks" | "proxyId" | "createdAt" | "updatedAt"
 > & {
 	statusWindow: boolean[];
 	recentChecks: CheckSnapshotDocument[];
@@ -22,6 +22,7 @@ type MonitorDocumentBase = Omit<
 	tags: Types.ObjectId[];
 	selectedDisks: string[];
 	matchMethod?: MonitorMatchMethod;
+	proxyId?: Types.ObjectId;
 };
 
 interface MonitorDocument extends MonitorDocumentBase {
@@ -170,6 +171,16 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			type: Boolean,
 			default: false,
 		},
+		proxyMode: {
+			type: String,
+			enum: ProxyModes,
+			default: "inherit",
+		},
+		proxyId: {
+			type: Schema.Types.ObjectId,
+			ref: "Proxy",
+		},
+
 		useAdvancedMatching: {
 			type: Boolean,
 			default: false,

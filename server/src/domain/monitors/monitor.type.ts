@@ -84,6 +84,8 @@ export interface Monitor {
 	statusWindowThreshold: number;
 	type: MonitorType;
 	ignoreTlsErrors: boolean;
+	proxyMode: ProxyMode;
+	proxyId?: string;
 	useAdvancedMatching: boolean;
 	jsonPath?: string;
 	expectedValue?: string;
