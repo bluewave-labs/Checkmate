@@ -25,8 +25,6 @@ const HTTP_BACKED_MONITOR_TYPES = ["http", "pagespeed", "hardware"] as const;
 export interface ProxyResolution {
 	/** Proxy URL to dial through, or null to connect directly. */
 	proxyUrl: string | null;
-	/** Set when the configured type list contained unusable entries. */
-	warning?: string;
 }
 
 /**
@@ -48,8 +46,9 @@ export const parseProxyMonitorTypes = (raw: string | undefined): { types: Set<st
 		.filter((entry) => entry !== "");
 
 	// Explicit opt-out, so proxying can be disabled without unsetting the proxy
-	// environment variables the rest of the container may rely on.
-	if (requested.length === 1 && requested[0] === "none") {
+	// environment variables the rest of the container may rely on. Honoured
+	// wherever it appears, so "none,http" disables rather than half-enabling.
+	if (requested.includes("none")) {
 		return { types: new Set<string>() };
 	}
 
@@ -58,7 +57,8 @@ export const parseProxyMonitorTypes = (raw: string | undefined): { types: Set<st
 	const unproxyable: string[] = [];
 
 	for (const entry of requested) {
-		if (!(MonitorTypes as readonly string[]).includes(entry)) {
+		// "unknown" is a real MonitorType but never a deliberate choice here.
+		if (entry === "unknown" || !(MonitorTypes as readonly string[]).includes(entry)) {
 			unknown.push(entry);
 		} else if (!(HTTP_BACKED_MONITOR_TYPES as readonly string[]).includes(entry)) {
 			unproxyable.push(entry);
@@ -75,9 +75,19 @@ export const parseProxyMonitorTypes = (raw: string | undefined): { types: Set<st
 		problems.push(`monitor type(s) that do not use HTTP and cannot be proxied: ${unproxyable.join(", ")}`);
 	}
 
+	// Every entry was rejected. Disabling all proxying here would take every HTTP
+	// monitor down in a restricted-egress deployment, so fall back to the defaults
+	// and make the misconfiguration loud instead.
+	if (types.size === 0) {
+		return {
+			types: new Set<string>(PROXYABLE_MONITOR_TYPES),
+			warning: `PROXY_MONITOR_TYPES ("${raw}") matched no proxyable monitor type — ${problems.join("; ")}. Falling back to: ${PROXYABLE_MONITOR_TYPES.join(", ")}. Use "none" to disable proxying.`,
+		};
+	}
+
 	return {
 		types,
-		warning: problems.length > 0 ? `PROXY_MONITOR_TYPES ignored ${problems.join("; ")}. Proxying: ${[...types].join(", ") || "(none)"}` : undefined,
+		warning: problems.length > 0 ? `PROXY_MONITOR_TYPES ignored ${problems.join("; ")}. Proxying: ${[...types].join(", ")}` : undefined,
 	};
 };
 

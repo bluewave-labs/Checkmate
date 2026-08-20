@@ -55,6 +55,26 @@ describe("parseProxyMonitorTypes", () => {
 		expect(warning).toBeUndefined();
 	});
 
+	it("honours the none sentinel wherever it appears", () => {
+		expect(parseProxyMonitorTypes("none,http").types.size).toBe(0);
+	});
+
+	it("falls back to defaults when every entry is invalid, rather than disabling proxying", () => {
+		// Silently proxying nothing would take every HTTP monitor down in a
+		// restricted-egress deployment, which is worse than ignoring the typo.
+		const { types, warning } = parseProxyMonitorTypes("htpp");
+
+		expect([...types].sort()).toEqual([...PROXYABLE_MONITOR_TYPES].sort());
+		expect(warning).toContain("Falling back to");
+	});
+
+	it("treats the internal unknown type as a typo", () => {
+		const { types, warning } = parseProxyMonitorTypes("unknown");
+
+		expect([...types].sort()).toEqual([...PROXYABLE_MONITOR_TYPES].sort());
+		expect(warning).toContain("unknown monitor type");
+	});
+
 	it("drops socket-based types that a proxy cannot carry, and says so", () => {
 		const { types, warning } = parseProxyMonitorTypes("http,ping,port,dns");
 

@@ -74,9 +74,9 @@ const makeGotResponse = (overrides?: Record<string, any>) => ({
 	...overrides,
 });
 
-const createProvider = (matcher?: any) => {
+const createProvider = (matcher?: any, proxyMonitorTypes?: string) => {
 	const advancedMatcher = matcher ?? createMockMatcher();
-	const provider = new HttpProvider(mockGot as any, advancedMatcher);
+	const provider = new HttpProvider(mockGot as any, advancedMatcher, proxyMonitorTypes);
 	return { provider, advancedMatcher };
 };
 
@@ -492,6 +492,106 @@ describe("HttpProvider", () => {
 			expect(result.status).toBe(true);
 			expect(result.code).toBe(401);
 			expect(advancedMatcher.validate).not.toHaveBeenCalled();
+		});
+	});
+
+	// ── Outbound proxy ───────────────────────────────────────────────────
+
+	describe("outbound proxy routing", () => {
+		const PROXY_KEYS = ["HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY", "http_proxy", "https_proxy", "no_proxy"];
+		const clearProxyEnv = () => {
+			for (const key of PROXY_KEYS) delete process.env[key];
+		};
+
+		const agentOf = () => (mockGot.mock.calls[0]?.[1] as any)?.agent;
+		const httpsOptionOf = () => (mockGot.mock.calls[0]?.[1] as any)?.https;
+		const isProxyAgent = (agent: any) => Boolean(agent?.https?.constructor?.name?.includes("Proxy"));
+
+		it("routes an http monitor through the configured proxy", async () => {
+			clearProxyEnv();
+			process.env.HTTPS_PROXY = "http://corp:3128";
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor({ url: "https://example.com" }));
+
+			expect(isProxyAgent(agentOf())).toBe(true);
+			clearProxyEnv();
+		});
+
+		it("leaves infrastructure monitors direct by default", async () => {
+			clearProxyEnv();
+			process.env.HTTPS_PROXY = "http://corp:3128";
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			// Capture agents live on the internal network; proxying them breaks them.
+			await provider.handle(makeMonitor({ type: "hardware", url: "https://10.0.0.5:59232" }));
+
+			expect(isProxyAgent(agentOf())).toBe(false);
+			clearProxyEnv();
+		});
+
+		it("routes infrastructure monitors once opted in", async () => {
+			clearProxyEnv();
+			process.env.HTTPS_PROXY = "http://corp:3128";
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider(undefined, "http,hardware");
+
+			await provider.handle(makeMonitor({ type: "hardware", url: "https://10.0.0.5:59232" }));
+
+			expect(isProxyAgent(agentOf())).toBe(true);
+			clearProxyEnv();
+		});
+
+		it("keeps ignoreTlsErrors effective for proxied monitors", async () => {
+			clearProxyEnv();
+			process.env.HTTPS_PROXY = "http://corp:3128";
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			// The proxy agent's rejectUnauthorized applies to the socket to the proxy,
+			// not the tunnelled handshake, so this must be stated per request or a
+			// self-signed target would start failing the moment a proxy is configured.
+			await provider.handle(makeMonitor({ url: "https://self-signed.example.com", ignoreTlsErrors: true }));
+
+			expect(httpsOptionOf()).toEqual({ rejectUnauthorized: false });
+			clearProxyEnv();
+		});
+
+		it("keeps TLS strict for proxied monitors that did not opt out", async () => {
+			clearProxyEnv();
+			process.env.HTTPS_PROXY = "http://corp:3128";
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor({ url: "https://example.com", ignoreTlsErrors: false }));
+
+			expect(httpsOptionOf()).toEqual({ rejectUnauthorized: true });
+			clearProxyEnv();
+		});
+
+		it("does not set a proxy agent when no proxy is configured", async () => {
+			clearProxyEnv();
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor({ url: "https://example.com" }));
+
+			expect(isProxyAgent(agentOf())).toBe(false);
+		});
+
+		it("honours NO_PROXY", async () => {
+			clearProxyEnv();
+			process.env.HTTPS_PROXY = "http://corp:3128";
+			process.env.NO_PROXY = "example.com";
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor({ url: "https://example.com" }));
+
+			expect(isProxyAgent(agentOf())).toBe(false);
+			clearProxyEnv();
 		});
 	});
 });

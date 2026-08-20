@@ -186,6 +186,10 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 		if (proxyUrl) {
 			const proxyAgent = this.proxyAgents.get(proxyUrl, !ignoreTlsErrors);
 			options.agent = { http: proxyAgent, https: proxyAgent };
+			// The agent's rejectUnauthorized governs the socket to the proxy, not the
+			// tunnelled handshake with the target, so ignoreTlsErrors has to be stated
+			// per request or it would be silently dropped for proxied monitors.
+			options.https = { rejectUnauthorized: !ignoreTlsErrors };
 		} else {
 			options.agent = {
 				http: this.httpAgent,
