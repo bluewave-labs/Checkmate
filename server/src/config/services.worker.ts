@@ -70,7 +70,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	// Network providers
 	// ***********************
 	const pingProvider = new PingProvider(ping);
-	const httpProvider = new HttpProvider(got, new AdvancedMatcher(jmespath));
+	const httpProvider = new HttpProvider(got, new AdvancedMatcher(jmespath), envSettings.proxyMonitorTypes, logger);
 	const pageSpeedProvider = new PageSpeedProvider(httpProvider, settingsService, logger);
 	const hardwareProvider = new HardwareProvider(httpProvider);
 	const dockerProvider = new DockerProvider(logger, Docker);

@@ -34,6 +34,17 @@ const envSchema = z.object({
 	// Optional
 	ORIGIN: z.string().optional(),
 
+	// Outbound proxy for monitor checks. HTTP_PROXY/HTTPS_PROXY/NO_PROXY follow
+	// the conventional semantics (NO_PROXY supports wildcards and host lists) and
+	// are read by proxy-from-env directly from the environment.
+	HTTP_PROXY: z.string().optional(),
+	HTTPS_PROXY: z.string().optional(),
+	NO_PROXY: z.string().optional(),
+	// Comma-separated monitor types to route through the proxy. Defaults to
+	// "http,pagespeed"; "hardware" is excluded because Capture agents normally
+	// live on the internal network. Set explicitly to override.
+	PROXY_MONITOR_TYPES: z.string().optional(),
+
 	// Feature flags
 	STATUS_PAGE_THEMES_ENABLED: booleanCoercion.default(true),
 });

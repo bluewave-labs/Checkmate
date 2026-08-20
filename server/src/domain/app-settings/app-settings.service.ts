@@ -16,6 +16,8 @@ export type EnvConfig = {
 	queueMode: QueueMode;
 	queuePrimaryProcesses: boolean;
 	statusPageThemesEnabled: boolean;
+	/** Comma-separated monitor types routed through the outbound proxy, if set. */
+	proxyMonitorTypes?: string;
 	clientConfig: ClientRuntimeConfig;
 };
 
@@ -43,6 +45,7 @@ export class SettingsService implements ISettingsService {
 			queueMode: env.QUEUE_MODE,
 			queuePrimaryProcesses: env.QUEUE_PRIMARY_PROCESSES,
 			statusPageThemesEnabled: env.STATUS_PAGE_THEMES_ENABLED,
+			proxyMonitorTypes: env.PROXY_MONITOR_TYPES,
 			clientConfig: {
 				...(env.CLIENT_CONFIG_API_BASE_URL && { apiBaseUrl: env.CLIENT_CONFIG_API_BASE_URL }),
 				...(env.CLIENT_CONFIG_CLIENT_HOST && { clientHost: env.CLIENT_CONFIG_CLIENT_HOST }),

@@ -9,6 +9,7 @@ import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { isStatusUp } from "@/service/network/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 import CacheableLookup from "cacheable-lookup";
+import { ProxyAgentCache, parseProxyMonitorTypes, resolveProxyForCheck } from "@/service/network/proxyPolicy.js";
 
 export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 	readonly type = "http";
@@ -18,9 +19,15 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 	private readonly httpsAgent: HttpsAgent;
 	private readonly httpsAgentInsecure: HttpsAgent;
 
+	// Outbound proxy, resolved once at startup from the environment
+	private readonly proxyableTypes: Set<string>;
+	private readonly proxyAgents = new ProxyAgentCache();
+
 	constructor(
 		private got: Got,
-		private advancedMatcher: IAdvancedMatcher
+		private advancedMatcher: IAdvancedMatcher,
+		proxyMonitorTypes?: string,
+		logger?: { warn: (payload: { message: string; service: string; method: string }) => void }
 	) {
 		const cacheable = new CacheableLookup({ maxTtl: 300, errorTtl: 30 });
 		this.got = got.extend({
@@ -35,6 +42,12 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 		this.httpAgent = new HttpAgent(agentOptions);
 		this.httpsAgent = new HttpsAgent({ ...agentOptions, rejectUnauthorized: true });
 		this.httpsAgentInsecure = new HttpsAgent({ ...agentOptions, rejectUnauthorized: false });
+
+		const { types, warning } = parseProxyMonitorTypes(proxyMonitorTypes);
+		this.proxyableTypes = types;
+		if (warning) {
+			logger?.warn({ message: warning, service: "HttpProvider", method: "constructor" });
+		}
 	}
 
 	supports(type: MonitorType) {
@@ -167,10 +180,18 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 			headers: monitor.secret ? { Authorization: `Bearer ${secret}` } : undefined,
 		};
 
-		options.agent = {
-			http: this.httpAgent,
-			https: ignoreTlsErrors ? this.httpsAgentInsecure : this.httpsAgent,
-		};
+		// Route through an outbound proxy when the environment configures one and
+		// this monitor type is eligible; otherwise use the shared direct agents.
+		const { proxyUrl } = resolveProxyForCheck(monitor.type, url, this.proxyableTypes);
+		if (proxyUrl) {
+			const proxyAgent = this.proxyAgents.get(proxyUrl, !ignoreTlsErrors);
+			options.agent = { http: proxyAgent, https: proxyAgent };
+		} else {
+			options.agent = {
+				http: this.httpAgent,
+				https: ignoreTlsErrors ? this.httpsAgentInsecure : this.httpsAgent,
+			};
+		}
 
 		options.method = monitor.method;
 
