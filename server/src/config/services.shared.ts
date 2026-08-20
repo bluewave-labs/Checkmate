@@ -52,6 +52,7 @@ import { IStatusPagesRepository } from "@/domain/status-pages/status-page-reposi
 import { ITagsRepository } from "@/domain/tags/tag.repository.interface.js";
 import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
 import { IUsersRepository } from "@/domain/users/user.repository.interface.js";
+import { IProxiesRepository } from "@/domain/proxies/proxy.repository.interface.js";
 
 // Mongo repository implementations
 import MongoSettingsRepository from "@/domain/app-settings/app-settings.repository.mongo.js";
@@ -70,6 +71,7 @@ import MongoStatusPagesRepository from "@/domain/status-pages/status-page-reposi
 import MongoTagsRepository from "@/domain/tags/tag.repository.mongo.js";
 import MongoTeamsRepository from "@/domain/teams/team.repository.model.js";
 import MongoUsersRepository from "@/domain/users/user.repository.mongo.js";
+import MongoProxiesRepository from "@/domain/proxies/proxy.repository.mongo.js";
 
 // Shared infrastructure + business services that both the API and the worker process construct.
 export interface SharedServices {
@@ -103,6 +105,7 @@ export interface SharedServices {
 	incidentsRepository: IIncidentsRepository;
 	teamsRepository: ITeamsRepository;
 	maintenanceWindowsRepository: IMaintenanceWindowsRepository;
+	proxiesRepository: IProxiesRepository;
 }
 
 export const buildShared = async ({
@@ -139,6 +142,7 @@ export const buildShared = async ({
 	const tagsRepository = new MongoTagsRepository();
 	const teamsRepository = new MongoTeamsRepository();
 	const maintenanceWindowsRepository = new MongoMaintenanceWindowsRepository();
+	const proxiesRepository = new MongoProxiesRepository();
 
 	// Inject settings repository into settings service (now that DB is connected)
 	(settingsService as SettingsService).setRepository(settingsRepository);
@@ -221,6 +225,7 @@ export const buildShared = async ({
 		incidentsRepository,
 		teamsRepository,
 		maintenanceWindowsRepository,
+		proxiesRepository,
 	};
 	return sharedServices;
 };

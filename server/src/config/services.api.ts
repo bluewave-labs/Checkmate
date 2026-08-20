@@ -6,13 +6,13 @@ import { IStatusPageService, StatusPageService } from "@/domain/status-pages/sta
 import { ITagsService, TagsService } from "@/domain/tags/tag.service.js";
 import { IUserService, UserService } from "@/domain/users/user.service.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";
+import { ProxiesService, IProxiesService } from "@/domain/proxies/proxy.service.js";
+import { SharedServices } from "@/config/services.shared.js";
 
 // Third-party
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { games } from "gamedig";
-
-import { SharedServices } from "@/config/services.shared.js";
 
 export interface ApiServices extends SharedServices {
 	worker: IJobScheduler; // control-plane handle only (DBQueueWorker in all-in-one, bare JobScheduler in API-only)
@@ -23,6 +23,7 @@ export interface ApiServices extends SharedServices {
 	statusPageService: IStatusPageService;
 	tagsService: ITagsService;
 	diagnosticService: IDiagnosticService;
+	proxiesService: IProxiesService;
 }
 
 export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): ApiServices => {
@@ -45,6 +46,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		teamsRepository,
 		maintenanceWindowsRepository,
 		jobsRepository,
+		proxiesRepository,
 	} = shared;
 
 	const userService = new UserService({
@@ -94,7 +96,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 	const statusPageService = new StatusPageService(statusPagesRepository, settingsService, monitorsRepository, checksRepository);
 	const tagsService = new TagsService(tagsRepository, monitorsRepository);
 	const diagnosticService = new DiagnosticService(db);
-
+	const proxiesService = new ProxiesService(proxiesRepository, monitorsRepository, settingsService);
 	return {
 		...shared,
 		worker: jobScheduler,
@@ -105,5 +107,6 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		statusPageService,
 		tagsService,
 		diagnosticService,
+		proxiesService,
 	};
 };

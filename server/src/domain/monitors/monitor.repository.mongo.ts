@@ -172,6 +172,11 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return count;
 	};
 
+	findMonitorCountByProxyId = async (proxyId: string): Promise<number> => {
+		const count = await MonitorModel.countDocuments({ proxyId });
+		return count;
+	};
+
 	updateById = async (monitorId: string, teamId: string, patch: Partial<Monitor>) => {
 		const updatedMonitor = await MonitorModel.findOneAndUpdate(
 			{ _id: monitorId, teamId },
