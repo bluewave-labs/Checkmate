@@ -470,3 +470,72 @@ describe("monitorValidation — customUpCodes", () => {
 		});
 	});
 });
+
+describe("monitorValidation — proxy fields", () => {
+	const baseHttpBody = {
+		name: "HTTP check",
+		type: "http" as const,
+		url: "https://example.com",
+	};
+
+	describe("createMonitorBodyValidation", () => {
+		it("defaults proxyMode to inherit", () => {
+			const parsed = createMonitorBodyValidation.parse(baseHttpBody);
+
+			expect(parsed.proxyMode).toBe("inherit");
+			expect(parsed.proxyId).toBeUndefined();
+		});
+
+		it("accepts custom mode with a proxyId", () => {
+			const parsed = createMonitorBodyValidation.parse({ ...baseHttpBody, proxyMode: "custom", proxyId: "proxy-1" });
+
+			expect(parsed.proxyMode).toBe("custom");
+			expect(parsed.proxyId).toBe("proxy-1");
+		});
+
+		it("rejects custom mode without a proxyId", () => {
+			expect(() => createMonitorBodyValidation.parse({ ...baseHttpBody, proxyMode: "custom" })).toThrow();
+		});
+
+		it("rejects an unknown proxyMode", () => {
+			expect(() => createMonitorBodyValidation.parse({ ...baseHttpBody, proxyMode: "global" })).toThrow();
+		});
+
+		it("allows a stray proxyId on non-custom modes", () => {
+			for (const proxyMode of ["inherit", "none"] as const) {
+				const parsed = createMonitorBodyValidation.parse({ ...baseHttpBody, proxyMode, proxyId: "proxy-1" });
+				expect(parsed.proxyMode).toBe(proxyMode);
+			}
+		});
+	});
+
+	describe("editMonitorBodyValidation", () => {
+		it("leaves proxyMode unset when omitted (no default injected on PATCH)", () => {
+			const parsed = editMonitorBodyValidation.parse({ name: "Renamed" });
+
+			expect(parsed.proxyMode).toBeUndefined();
+		});
+
+		it("rejects custom mode without a proxyId", () => {
+			expect(() => editMonitorBodyValidation.parse({ proxyMode: "custom" })).toThrow();
+		});
+
+		it("accepts custom mode with a proxyId", () => {
+			const parsed = editMonitorBodyValidation.parse({ proxyMode: "custom", proxyId: "proxy-1" });
+
+			expect(parsed.proxyId).toBe("proxy-1");
+		});
+	});
+
+	describe("importMonitorsBodyValidation", () => {
+		it("defaults proxyMode to inherit on import", () => {
+			const parsed = importMonitorsBodyValidation.parse({ monitors: [baseHttpBody] });
+
+			expect(parsed.monitors[0].proxyMode).toBe("inherit");
+		});
+
+		it("rejects an imported monitor with custom mode and no proxyId", () => {
+			expect(() => importMonitorsBodyValidation.parse({ monitors: [{ ...baseHttpBody, proxyMode: "custom" }] })).toThrow();
+		});
+	});
+});
