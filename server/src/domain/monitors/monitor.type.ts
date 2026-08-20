@@ -41,6 +41,9 @@ export const DefaultPageSpeedStrategy: PageSpeedStrategy = "desktop";
 export const GeoCheckSupportedTypes: readonly MonitorType[] = ["http", "ping"] as const;
 export const supportsGeoCheck = (type: MonitorType): boolean => GeoCheckSupportedTypes.includes(type);
 
+export const ProxyModes = ["inherit", "none", "custom"] as const;
+export type ProxyMode = (typeof ProxyModes)[number];
+
 export const UptimeDetailsSupportedTypes = [
 	"http",
 	"ping",
