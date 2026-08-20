@@ -581,6 +581,30 @@ describe("HttpProvider", () => {
 			expect(isProxyAgent(agentOf())).toBe(false);
 		});
 
+		it("reports a refused proxy tunnel as a network error, not the target's status", async () => {
+			clearProxyEnv();
+			process.env.HTTPS_PROXY = "http://corp:3128";
+			const { provider } = createProvider();
+			// The agent replays a refused CONNECT onto the socket, so the proxy's own
+			// status would otherwise be parsed as the target's.
+			const agent: any = (provider as any).proxyAgents.get("http://corp:3128", "https://example.com");
+			const err = new HTTPError("Response code 403 (Forbidden)");
+			(err as any).response = { statusCode: 403, body: "", headers: {} };
+			(err as any).timings = { phases: { total: 5 } };
+			mockGot.mockImplementation(() => {
+				agent.emit("proxyConnect", { statusCode: 403 });
+				return Promise.reject(err);
+			});
+
+			const result = await provider.handle(makeMonitor({ url: "https://example.com", customUpCodes: [403] }));
+
+			// customUpCodes must not mark the monitor up on the proxy's status.
+			expect(result.status).toBe(false);
+			expect(result.code).toBe(NETWORK_ERROR);
+			expect(result.message).toContain("Proxy refused");
+			clearProxyEnv();
+		});
+
 		it("honours NO_PROXY", async () => {
 			clearProxyEnv();
 			process.env.HTTPS_PROXY = "http://corp:3128";

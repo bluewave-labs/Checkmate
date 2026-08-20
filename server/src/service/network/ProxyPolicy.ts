@@ -1,3 +1,4 @@
+import { HttpProxyAgent } from "http-proxy-agent";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import { getProxyForUrl } from "proxy-from-env";
 import type { Agent as HttpAgent } from "http";
@@ -75,13 +76,17 @@ export const parseProxyMonitorTypes = (raw: string | undefined): { types: Set<st
 		problems.push(`monitor type(s) that do not use HTTP and cannot be proxied: ${unproxyable.join(", ")}`);
 	}
 
-	// Every entry was rejected. Disabling all proxying here would take every HTTP
+	// Every entry was a typo. Disabling all proxying here would take every HTTP
 	// monitor down in a restricted-egress deployment, so fall back to the defaults
 	// and make the misconfiguration loud instead.
-	if (types.size === 0) {
+	//
+	// An all-unproxyable list (e.g. "ping,port") is left empty on purpose: those
+	// are deliberate choices, and silently proxying http instead would route
+	// traffic the operator never nominated.
+	if (types.size === 0 && unproxyable.length === 0) {
 		return {
 			types: new Set<string>(PROXYABLE_MONITOR_TYPES),
-			warning: `PROXY_MONITOR_TYPES ("${raw}") matched no proxyable monitor type — ${problems.join("; ")}. Falling back to: ${PROXYABLE_MONITOR_TYPES.join(", ")}. Use "none" to disable proxying.`,
+			warning: `PROXY_MONITOR_TYPES matched no proxyable monitor type — ${problems.join("; ")}. Falling back to: ${PROXYABLE_MONITOR_TYPES.join(", ")}. Use "none" to disable proxying.`,
 		};
 	}
 
@@ -114,25 +119,28 @@ export const resolveProxyForCheck = (monitorType: MonitorType, url: string, prox
 /**
  * Builds proxy agents on demand and reuses them.
  *
- * Keyed by proxy URL *and* TLS mode: a monitor with ignoreTlsErrors must not
- * share an agent with a strict one, or the relaxed setting would leak across
- * monitors. Caching also preserves connection pooling — without it every check
- * would open a fresh tunnel to the proxy.
+ * The agent must match the *target* scheme, not the proxy's. HttpsProxyAgent
+ * always issues CONNECT, which hardened proxies (Squid's stock ACL among them)
+ * permit only to 443 — so a plain-http target needs HttpProxyAgent, which sends
+ * an absolute-URI request instead.
+ *
+ * Caching preserves connection pooling: without it every check would open a
+ * fresh connection to the proxy. Node keys its own socket pools on the TLS
+ * options it receives per request, so agents are shared across monitors
+ * regardless of ignoreTlsErrors — that setting is applied per request in
+ * HttpProvider, not baked into the agent.
  */
 export class ProxyAgentCache {
 	private readonly agents = new Map<string, HttpAgent | HttpsAgent>();
 
-	get(proxyUrl: string, rejectUnauthorized: boolean): HttpAgent | HttpsAgent {
-		const key = `${proxyUrl}::${rejectUnauthorized ? "strict" : "insecure"}`;
+	get(proxyUrl: string, targetUrl: string): HttpAgent | HttpsAgent {
+		const targetIsSecure = safeProtocol(targetUrl) !== "http:";
+		const key = `${proxyUrl}::${targetIsSecure ? "https" : "http"}`;
 		const existing = this.agents.get(key);
 		if (existing) return existing;
 
-		const agent = new HttpsProxyAgent(proxyUrl, {
-			keepAlive: true,
-			maxSockets: 256,
-			maxFreeSockets: 256,
-			rejectUnauthorized,
-		}) as unknown as HttpsAgent;
+		const options = { keepAlive: true, maxSockets: 256, maxFreeSockets: 256 };
+		const agent = (targetIsSecure ? new HttpsProxyAgent(proxyUrl, options) : new HttpProxyAgent(proxyUrl, options)) as unknown as HttpsAgent;
 
 		this.agents.set(key, agent);
 		return agent;
@@ -143,3 +151,12 @@ export class ProxyAgentCache {
 		return this.agents.size;
 	}
 }
+
+/** Target URLs are validated upstream; fall back to https on anything odd. */
+const safeProtocol = (url: string): string => {
+	try {
+		return new URL(url).protocol;
+	} catch {
+		return "https:";
+	}
+};

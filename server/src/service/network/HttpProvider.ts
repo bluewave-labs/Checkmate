@@ -9,7 +9,7 @@ import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { isStatusUp } from "@/service/network/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 import CacheableLookup from "cacheable-lookup";
-import { ProxyAgentCache, parseProxyMonitorTypes, resolveProxyForCheck } from "@/service/network/proxyPolicy.js";
+import { ProxyAgentCache, parseProxyMonitorTypes, resolveProxyForCheck } from "@/service/network/ProxyPolicy.js";
 
 export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 	readonly type = "http";
@@ -179,17 +179,31 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 		const options: Record<string, unknown> = {
 			headers: monitor.secret ? { Authorization: `Bearer ${secret}` } : undefined,
 		};
+		let cleanupProxyListener: (() => void) | undefined;
 
 		// Route through an outbound proxy when the environment configures one and
 		// this monitor type is eligible; otherwise use the shared direct agents.
 		const { proxyUrl } = resolveProxyForCheck(monitor.type, url, this.proxyableTypes);
+		// Set when the proxy itself refuses the tunnel, so a proxy ACL denial is not
+		// reported as the target's own status code.
+		let tunnelFailure: { statusCode: number } | null = null;
 		if (proxyUrl) {
-			const proxyAgent = this.proxyAgents.get(proxyUrl, !ignoreTlsErrors);
+			const proxyAgent = this.proxyAgents.get(proxyUrl, url);
 			options.agent = { http: proxyAgent, https: proxyAgent };
 			// The agent's rejectUnauthorized governs the socket to the proxy, not the
 			// tunnelled handshake with the target, so ignoreTlsErrors has to be stated
 			// per request or it would be silently dropped for proxied monitors.
 			options.https = { rejectUnauthorized: !ignoreTlsErrors };
+
+			const emitter = proxyAgent as unknown as {
+				once?: (event: string, cb: (connect: { statusCode: number }) => void) => void;
+				off?: (event: string, cb: (connect: { statusCode: number }) => void) => void;
+			};
+			const onProxyConnect = (connect: { statusCode: number }) => {
+				if (connect.statusCode >= 400) tunnelFailure = { statusCode: connect.statusCode };
+			};
+			emitter.once?.("proxyConnect", onProxyConnect);
+			cleanupProxyListener = () => emitter.off?.("proxyConnect", onProxyConnect);
 		} else {
 			options.agent = {
 				http: this.httpAgent,
@@ -213,7 +227,24 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 				timings: response.timings,
 			});
 		} catch (error: unknown) {
+			if (tunnelFailure) {
+				// The proxy rejected the tunnel, so the target was never reached and
+				// its status is unknown. Reporting NETWORK_ERROR keeps customUpCodes
+				// from marking the monitor up on the proxy's 403/407.
+				return {
+					monitorId: monitor.id,
+					teamId: monitor.teamId,
+					type: monitor.type,
+					status: false,
+					code: NETWORK_ERROR,
+					message: `Proxy refused the connection (HTTP ${(tunnelFailure as { statusCode: number }).statusCode})`,
+					responseTime: 0,
+					payload: null as T,
+				};
+			}
 			return this.handleHttpError(error, monitor);
+		} finally {
+			cleanupProxyListener?.();
 		}
 	}
 }

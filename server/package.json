@@ -49,6 +49,7 @@
 		"got": "14.4.7",
 		"handlebars": "^4.7.8",
 		"helmet": "^8.0.0",
+		"http-proxy-agent": "^9.1.0",
 		"https-proxy-agent": "^9.1.0",
 		"isomorphic-dompurify": "^2.26.0",
 		"jmespath": "^0.16.0",

@@ -4,7 +4,7 @@ import {
 	ProxyAgentCache,
 	parseProxyMonitorTypes,
 	resolveProxyForCheck,
-} from "../../../../src/service/network/proxyPolicy.ts";
+} from "../../../../src/service/network/ProxyPolicy.ts";
 
 // proxy-from-env reads process.env directly, so these tests set and restore it.
 const PROXY_KEYS = ["HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY", "http_proxy", "https_proxy", "no_proxy"];
@@ -57,6 +57,15 @@ describe("parseProxyMonitorTypes", () => {
 
 	it("honours the none sentinel wherever it appears", () => {
 		expect(parseProxyMonitorTypes("none,http").types.size).toBe(0);
+	});
+
+	it("leaves an all-unproxyable list empty rather than proxying types nobody named", () => {
+		// "ping,port" is a misunderstanding, but a deliberate one — silently
+		// proxying http instead would route traffic the operator never nominated.
+		const { types, warning } = parseProxyMonitorTypes("ping,port");
+
+		expect(types.size).toBe(0);
+		expect(warning).toContain("cannot be proxied");
 	});
 
 	it("falls back to defaults when every entry is invalid, rather than disabling proxying", () => {
@@ -158,30 +167,52 @@ describe("ProxyAgentCache", () => {
 	it("reuses one agent per proxy so connections stay pooled", () => {
 		const cache = new ProxyAgentCache();
 
-		const first = cache.get("http://corp:3128", true);
-		const second = cache.get("http://corp:3128", true);
+		const first = cache.get("http://corp:3128", "https://example.com");
+		const second = cache.get("http://corp:3128", "https://other.example.com");
 
 		expect(second).toBe(first);
 		expect(cache.size).toBe(1);
 	});
 
-	it("keeps strict and TLS-ignoring agents separate", () => {
+	it("uses a CONNECT-based agent for https targets", () => {
 		const cache = new ProxyAgentCache();
 
-		const strict = cache.get("http://corp:3128", true);
-		const insecure = cache.get("http://corp:3128", false);
+		const agent = cache.get("http://corp:3128", "https://example.com");
 
-		// Sharing one agent would leak ignoreTlsErrors across monitors.
-		expect(insecure).not.toBe(strict);
+		expect(agent.constructor.name).toBe("HttpsProxyAgent");
+	});
+
+	it("uses an absolute-URI agent for plain http targets", () => {
+		const cache = new ProxyAgentCache();
+
+		// HttpsProxyAgent would issue CONNECT, which hardened proxies allow only
+		// to 443, breaking every http:// monitor.
+		const agent = cache.get("http://corp:3128", "http://example.com");
+
+		expect(agent.constructor.name).toBe("HttpProxyAgent");
+	});
+
+	it("keeps http and https target agents separate", () => {
+		const cache = new ProxyAgentCache();
+
+		cache.get("http://corp:3128", "https://example.com");
+		cache.get("http://corp:3128", "http://example.com");
+
 		expect(cache.size).toBe(2);
 	});
 
 	it("keeps a separate agent per proxy URL", () => {
 		const cache = new ProxyAgentCache();
 
-		cache.get("http://a:3128", true);
-		cache.get("http://b:3128", true);
+		cache.get("http://a:3128", "https://example.com");
+		cache.get("http://b:3128", "https://example.com");
 
 		expect(cache.size).toBe(2);
+	});
+
+	it("falls back to a CONNECT agent for an unparseable target", () => {
+		const cache = new ProxyAgentCache();
+
+		expect(cache.get("http://corp:3128", "not-a-url").constructor.name).toBe("HttpsProxyAgent");
 	});
 });
