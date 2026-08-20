@@ -12,6 +12,9 @@ declare module "ssl-checker" {
 	export interface SSLOptions {
 		method?: "GET" | "HEAD";
 		port?: number;
+		// Inherited from https.RequestOptions; ssl-checker rejects with "Timed Out"
+		// when the socket exceeds it.
+		timeout?: number;
 		agent?: Agent;
 		rejectUnauthorized?: boolean;
 		validateSubjectAltName?: boolean;

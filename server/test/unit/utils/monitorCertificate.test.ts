@@ -3,10 +3,6 @@ import { fetchMonitorCertificate } from "../../../src/api/controllers/controller
 import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { SSLDetails, SSLOptions } from "ssl-checker";
 
-// Regression cover for #3646: the certificate probe parsed the monitor URL but
-// dropped its port, so a monitor on a non-standard port had its certificate
-// checked on 443 and surfaced as "N/A" in the UI.
-
 const VALID_CERT: SSLDetails = {
 	daysRemaining: 30,
 	valid: true,
@@ -52,6 +48,14 @@ describe("fetchMonitorCertificate", () => {
 		await fetchMonitorCertificate(checker, monitorWithUrl("https://example.com:443"));
 
 		expect(calls[0].options?.port).toBe(443);
+	});
+
+	it("bounds the probe with a timeout so a user-defined port cannot hang it", async () => {
+		const { checker, calls } = spyChecker();
+
+		await fetchMonitorCertificate(checker, monitorWithUrl("https://example.com:54321"));
+
+		expect(calls[0].options?.timeout).toBe(10_000);
 	});
 
 	it("never passes NaN as the port", async () => {

@@ -8,6 +8,9 @@ type SSLCheckerType = typeof sslChecker;
 type WhoisModule = typeof whoiser;
 
 const DEFAULT_HTTPS_PORT = 443;
+// Ports are user-defined, so a probe can dial something that accepts the
+// connection and never completes the handshake. Bound the wait explicitly.
+const CERTIFICATE_TIMEOUT_MS = 10_000;
 
 export const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: Monitor): Promise<SSLDetails> => {
 	const monitorUrl = new URL(monitor.url);
@@ -20,7 +23,7 @@ export const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: 
 	// URL.port is "" for the scheme's default port, so fall back to 443; without
 	// this the certificate of a monitor on a non-standard port was probed on 443.
 	const port = monitorUrl.port === "" ? DEFAULT_HTTPS_PORT : Number(monitorUrl.port);
-	const cert = await checker(hostname, { port });
+	const cert = await checker(hostname, { port, timeout: CERTIFICATE_TIMEOUT_MS });
 	if (cert?.validTo === null || cert?.validTo === undefined) {
 		throw new Error("Certificate not found");
 	}
