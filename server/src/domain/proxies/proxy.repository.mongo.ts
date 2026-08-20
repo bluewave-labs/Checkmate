@@ -50,7 +50,12 @@ class MongoProxiesRepository implements IProxiesRepository {
 		return proxies.map(this.toEntity);
 	}
 
-	async updateById(proxyId: string, teamId: string, patch: Partial<Proxy>, options?: { unsetPassword?: boolean }): Promise<Proxy> {
+	async updateById(
+		proxyId: string,
+		teamId: string,
+		patch: Partial<Proxy>,
+		options?: { unsetPassword?: boolean; unsetUsername?: boolean }
+	): Promise<Proxy> {
 		try {
 			const update: UpdateQuery<ProxyDocument> = {
 				$set: {
@@ -59,7 +64,11 @@ class MongoProxiesRepository implements IProxiesRepository {
 			};
 			if (options?.unsetPassword) {
 				delete update.$set?.password;
-				update.$unset = { password: 1 };
+				update.$unset = { ...update.$unset, password: 1 };
+			}
+			if (options?.unsetUsername) {
+				delete update.$set?.username;
+				update.$unset = { ...update.$unset, username: 1 };
 			}
 			const updatedProxy = await ProxyModel.findOneAndUpdate({ _id: proxyId, teamId }, update, { new: true, runValidators: true });
 			if (!updatedProxy) {

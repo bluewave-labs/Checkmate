@@ -8,7 +8,7 @@ export interface IProxiesService {
 	createProxy(proxy: Partial<Proxy>, teamId: string): Promise<ProxyResponse>;
 	getProxy(proxyId: string, teamId: string): Promise<ProxyResponse>;
 	getProxiesByTeamId(teamId: string): Promise<ProxyResponse[]>;
-	updateProxy(proxyId: string, teamId: string, patch: Partial<Proxy> & { clearPassword?: boolean }): Promise<ProxyResponse>;
+	updateProxy(proxyId: string, teamId: string, patch: Partial<Proxy> & { clearPassword?: boolean; clearUsername?: boolean }): Promise<ProxyResponse>;
 	deleteProxy(proxyId: string, teamId: string): Promise<ProxyResponse>;
 }
 
@@ -47,16 +47,23 @@ export class ProxiesService implements IProxiesService {
 		return clean;
 	};
 
-	updateProxy = async (proxyId: string, teamId: string, patch: Partial<Proxy> & { clearPassword?: boolean }): Promise<ProxyResponse> => {
-		// Empty/absent password keeps the stored one; clearPassword removes it
-		const { clearPassword, ...proxyPatch } = patch;
+	updateProxy = async (
+		proxyId: string,
+		teamId: string,
+		patch: Partial<Proxy> & { clearPassword?: boolean; clearUsername?: boolean }
+	): Promise<ProxyResponse> => {
+		// Empty/absent password and username don't delete, clearPassword / clearUsername does
+		const { clearPassword, clearUsername, ...proxyPatch } = patch;
 		if (!proxyPatch.password) {
 			delete proxyPatch.password;
 		}
 		if (!proxyPatch.username) {
 			delete proxyPatch.username;
 		}
-		const raw = await this.proxiesRepository.updateById(proxyId, teamId, proxyPatch, { unsetPassword: clearPassword === true });
+		const raw = await this.proxiesRepository.updateById(proxyId, teamId, proxyPatch, {
+			unsetPassword: clearPassword === true,
+			unsetUsername: clearUsername === true,
+		});
 		return this.toResponse(raw);
 	};
 	deleteProxy = async (proxyId: string, teamId: string): Promise<ProxyResponse> => {
