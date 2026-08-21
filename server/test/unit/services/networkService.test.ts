@@ -54,7 +54,7 @@ describe("NetworkService", () => {
 			const result = await service.requestStatus(monitor);
 
 			expect(provider.supports).toHaveBeenCalledWith("http");
-			expect(provider.handle).toHaveBeenCalledWith(monitor);
+			expect(provider.handle).toHaveBeenCalledWith(monitor, undefined);
 			expect(result).toEqual(
 				expect.objectContaining({
 					monitorId: "mon-1",
@@ -73,7 +73,18 @@ describe("NetworkService", () => {
 			await service.requestStatus(monitor);
 
 			expect(httpProvider.handle).not.toHaveBeenCalled();
-			expect(pingProvider.handle).toHaveBeenCalledWith(monitor);
+			expect(pingProvider.handle).toHaveBeenCalledWith(monitor, undefined);
+		});
+
+		it("forwards the check context to the provider", async () => {
+			const provider = createMockProvider("http");
+			const { service } = createService([provider]);
+			const monitor = { type: "http", _id: "mon-1" } as unknown as Monitor & { type: "http" };
+			const ctx = { proxyUrl: "http://proxy.example.com:8080" };
+
+			await service.requestStatus(monitor, ctx);
+
+			expect(provider.handle).toHaveBeenCalledWith(monitor, ctx);
 		});
 
 		it("returns unsupported-type response when no provider matches", async () => {

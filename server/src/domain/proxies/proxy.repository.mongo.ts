@@ -3,7 +3,7 @@ import { Proxy } from "@/domain/proxies/proxy.type.js";
 import { ProxyDocument, ProxyModel } from "@/domain/proxies/proxy.model.js";
 import { AppError } from "@/utils/AppError.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
-import { UpdateQuery } from "mongoose";
+import { Error as MongooseError, UpdateQuery } from "mongoose";
 
 const SERVICE_NAME = "ProxiesRepository";
 
@@ -43,6 +43,18 @@ class MongoProxiesRepository implements IProxiesRepository {
 			throw new AppError({ message: "Proxy not found", service: SERVICE_NAME, status: 404 });
 		}
 		return this.toEntity(proxy);
+	}
+
+	async findByIdOrNull(proxyId: string, teamId?: string): Promise<Proxy | null> {
+		try {
+			const proxy = await ProxyModel.findOne(teamId ? { _id: proxyId, teamId } : { _id: proxyId });
+			return proxy ? this.toEntity(proxy) : null;
+		} catch (error) {
+			if (error instanceof MongooseError.CastError) {
+				return null;
+			}
+			throw error;
+		}
 	}
 
 	async findByTeamId(teamId: string): Promise<Proxy[]> {
