@@ -28,15 +28,18 @@ export class ProxyResolver implements IProxyResolver {
 		private ttlMs = 60_000
 	) {}
 
-	private cache = new Map<string, { value: unknown; expiresAt: number }>();
+	private cache = new Map<string, { value: Promise<unknown>; expiresAt: number }>();
 
-	private async getCached<T>(key: string, fetch: () => Promise<T>): Promise<T> {
+	private getCached<T>(key: string, fetch: () => Promise<T>): Promise<T> {
 		const hit = this.cache.get(key);
 		if (hit && hit.expiresAt > Date.now()) {
-			return hit.value as T;
+			return hit.value as Promise<T>;
 		}
-		const value = await fetch();
+		// Cache the in flight promise so concurrent misses share one fetch
+		const value = fetch();
 		this.cache.set(key, { value, expiresAt: Date.now() + this.ttlMs });
+		// Don't negative cache rejections, evict so the next resolve retries
+		value.catch(() => this.cache.delete(key));
 		return value;
 	}
 
