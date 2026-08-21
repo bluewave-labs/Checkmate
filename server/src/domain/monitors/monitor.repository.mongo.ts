@@ -172,6 +172,11 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return count;
 	};
 
+	findMonitorCountByProxyId = async (proxyId: string): Promise<number> => {
+		const count = await MonitorModel.countDocuments({ proxyId });
+		return count;
+	};
+
 	updateById = async (monitorId: string, teamId: string, patch: Partial<Monitor>) => {
 		const updatedMonitor = await MonitorModel.findOneAndUpdate(
 			{ _id: monitorId, teamId },
@@ -418,6 +423,8 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			statusWindowThreshold: doc.statusWindowThreshold,
 			type: doc.type,
 			ignoreTlsErrors: doc.ignoreTlsErrors,
+			proxyMode: doc.proxyMode ?? "inherit",
+			proxyId: doc.proxyId ? toStringId(doc.proxyId) : undefined,
 			useAdvancedMatching: doc.useAdvancedMatching ?? false,
 			jsonPath: doc.jsonPath ?? undefined,
 			expectedValue: doc.expectedValue ?? undefined,

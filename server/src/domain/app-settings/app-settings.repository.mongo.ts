@@ -28,6 +28,8 @@ class MongoSettingsRepository implements ISettingsRepository {
 			singleton: doc.singleton,
 			version: doc.version ?? 1,
 			globalThresholds: doc.globalThresholds ?? undefined,
+			globalProxyEnabled: doc.globalProxyEnabled ?? false,
+			globalProxyId: doc.globalProxyId ?? undefined,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};

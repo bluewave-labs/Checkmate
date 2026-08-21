@@ -49,6 +49,8 @@ export interface Settings {
 	singleton: boolean;
 	version: number;
 	globalThresholds?: SettingsThresholds;
+	globalProxyEnabled: boolean;
+	globalProxyId?: string | null;
 	createdAt: string;
 	updatedAt: string;
 }

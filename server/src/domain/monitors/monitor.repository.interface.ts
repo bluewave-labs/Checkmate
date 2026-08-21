@@ -53,6 +53,7 @@ export interface IMonitorsRepository {
 
 	// counts
 	findMonitorCountByTeamIdAndType(teamId: string, config: TeamQueryConfig): Promise<number>;
+	findMonitorCountByProxyId(proxyId: string): Promise<number>;
 
 	// other
 	findMonitorsSummaryByTeamId(teamId: string, config?: SummaryConfig): Promise<MonitorsSummary>;

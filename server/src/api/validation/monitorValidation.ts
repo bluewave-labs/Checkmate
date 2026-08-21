@@ -10,6 +10,7 @@ import {
 	MonitorStatuses,
 	MonitorTypes,
 	PageSpeedStrategies,
+	ProxyModes,
 } from "@/domain/monitors/monitor.type.js";
 import { DateRanges, SortOrders } from "@/types/query.js";
 
@@ -100,6 +101,16 @@ const refineHeadMatching = (body: { method?: string; useAdvancedMatching?: boole
 	}
 };
 
+const refineProxySelection = (body: { proxyMode?: string; proxyId?: string }, ctx: z.RefinementCtx) => {
+	if (body.proxyMode === "custom" && !body.proxyId) {
+		ctx.addIssue({
+			code: "custom",
+			path: ["proxyId"],
+			message: "A proxy must be selected when proxy mode is custom",
+		});
+	}
+};
+
 export const createMonitorBodyValidation = z
 	.object({
 		_id: z.string().optional(),
@@ -110,6 +121,8 @@ export const createMonitorBodyValidation = z
 		statusWindowThreshold: z.number().min(1).max(100).default(60),
 		url: z.string().min(1, "URL is required"),
 		ignoreTlsErrors: z.boolean().default(false),
+		proxyMode: z.enum(ProxyModes).default("inherit"),
+		proxyId: z.string().optional(),
 		useAdvancedMatching: z.boolean().default(false),
 		port: z.number().optional(),
 		isActive: z.boolean().optional(),
@@ -140,7 +153,8 @@ export const createMonitorBodyValidation = z
 	.superRefine(refineDnsHostname)
 	.superRefine(refineStrategyType)
 	.superRefine(refineHeadMatching)
-	.superRefine(refineRegexPattern);
+	.superRefine(refineRegexPattern)
+	.superRefine(refineProxySelection);
 
 export const editMonitorBodyValidation = z
 	.object({
@@ -156,6 +170,8 @@ export const editMonitorBodyValidation = z
 		customUpCodes: z.array(httpStatusCode).optional(),
 		secret: z.string().optional(),
 		ignoreTlsErrors: z.boolean().optional(),
+		proxyMode: z.enum(ProxyModes).optional(),
+		proxyId: z.string().optional(),
 		useAdvancedMatching: z.boolean().optional(),
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
@@ -180,7 +196,8 @@ export const editMonitorBodyValidation = z
 	.superRefine(refineDnsHostname)
 	.superRefine(refineStrategyType)
 	.superRefine(refineHeadMatching)
-	.superRefine(refineRegexPattern);
+	.superRefine(refineRegexPattern)
+	.superRefine(refineProxySelection);
 
 export const pauseMonitorParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
@@ -215,6 +232,8 @@ const importedMonitorSchema = z
 		statusWindowThreshold: z.number().min(1).max(100).default(60),
 		type: z.enum(MonitorTypes, "Invalid monitor type"),
 		ignoreTlsErrors: z.boolean().default(false),
+		proxyMode: z.enum(ProxyModes).default("inherit"),
+		proxyId: z.string().optional(),
 		useAdvancedMatching: z.boolean().default(false),
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
@@ -253,7 +272,8 @@ const importedMonitorSchema = z
 	.superRefine(refineDnsHostname)
 	.superRefine(refineStrategyType)
 	.superRefine(refineHeadMatching)
-	.superRefine(refineRegexPattern);
+	.superRefine(refineRegexPattern)
+	.superRefine(refineProxySelection);
 
 export const importMonitorsBodyValidation = z.object({
 	monitors: z.array(importedMonitorSchema).min(1, "At least one monitor is required"),
@@ -285,6 +305,8 @@ export const monitorResponseSchema = z
 		statusWindowSize: z.number(),
 		statusWindowThreshold: z.number(),
 		ignoreTlsErrors: z.boolean(),
+		proxyMode: z.enum(ProxyModes),
+		proxyId: z.string().optional(),
 		useAdvancedMatching: z.boolean(),
 		jsonPath: z.string().optional(),
 		expectedValue: z.string().optional(),
