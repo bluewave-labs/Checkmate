@@ -41,6 +41,8 @@ import {
 	DefaultMonitorMatchMethod,
 	MonitorMatchMethods,
 	GeoCheckIntervalOptions,
+	ProxyModes,
+	type ProxyMode,
 } from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
 import type { Tag } from "@/Types/Tag";
@@ -56,6 +58,7 @@ import { FormMultiSelectField } from "@/Components/inputs/forms/FormMultiSelectF
 import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
 import { FormSliderField } from "@/Components/inputs/forms/FormSliderField";
 import { FormSwitchField } from "@/Components/inputs/forms/FormSwitchField";
+import type { ProxyResponse } from "@/Types/Proxy";
 
 const httpMethodOptions = HttpMethods.map((method) => ({
 	value: method,
@@ -67,6 +70,7 @@ interface GeneralSettingsConfig {
 	urlPlaceholder: string;
 	namePlaceholder: string;
 	showUrl: boolean;
+	showProxy: boolean;
 	showPort: boolean;
 	showGameSelect: boolean;
 	showSecret: boolean;
@@ -87,6 +91,7 @@ const getGeneralSettingsConfig = (
 			urlPlaceholder: t("pages.createMonitor.form.general.option.url.placeholder"),
 			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
 			showUrl: true,
+			showProxy: true,
 			showPort: false,
 			showGameSelect: false,
 			showSecret: false,
@@ -101,6 +106,7 @@ const getGeneralSettingsConfig = (
 			urlPlaceholder: t("pages.createMonitor.form.general.option.host.placeholder"),
 			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
 			showUrl: true,
+			showProxy: false,
 			showPort: false,
 			showGameSelect: false,
 			showSecret: false,
@@ -115,6 +121,7 @@ const getGeneralSettingsConfig = (
 			urlPlaceholder: t("pages.createMonitor.form.general.option.container.placeholder"),
 			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
 			showUrl: true,
+			showProxy: false,
 			showPort: false,
 			showGameSelect: false,
 			showSecret: false,
@@ -129,6 +136,7 @@ const getGeneralSettingsConfig = (
 			urlPlaceholder: t("pages.createMonitor.form.general.option.url.placeholder"),
 			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
 			showUrl: true,
+			showProxy: false,
 			showPort: true,
 			showGameSelect: false,
 			showSecret: false,
@@ -143,6 +151,7 @@ const getGeneralSettingsConfig = (
 			urlPlaceholder: t("pages.createMonitor.form.general.option.url.placeholder"),
 			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
 			showUrl: true,
+			showProxy: false,
 			showPort: true,
 			showGameSelect: true,
 			showSecret: false,
@@ -157,6 +166,7 @@ const getGeneralSettingsConfig = (
 			urlPlaceholder: t("pages.createMonitor.form.general.option.host.placeholder"),
 			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
 			showUrl: true,
+			showProxy: false,
 			showPort: true,
 			showGameSelect: false,
 			showSecret: false,
@@ -171,6 +181,7 @@ const getGeneralSettingsConfig = (
 			urlPlaceholder: t("pages.createMonitor.form.general.option.url.placeholder"),
 			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
 			showUrl: true,
+			showProxy: false,
 			showPort: false,
 			showGameSelect: false,
 			showSecret: false,
@@ -185,6 +196,7 @@ const getGeneralSettingsConfig = (
 			urlPlaceholder: t("pages.createMonitor.form.general.option.captureUrl.placeholder"),
 			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
 			showUrl: true,
+			showProxy: false,
 			showPort: false,
 			showGameSelect: false,
 			showSecret: true,
@@ -199,6 +211,7 @@ const getGeneralSettingsConfig = (
 			urlPlaceholder: t("pages.createMonitor.form.general.option.wsUrl.placeholder"),
 			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
 			showUrl: true,
+			showProxy: false,
 			showPort: false,
 			showGameSelect: false,
 			showSecret: false,
@@ -213,6 +226,7 @@ const getGeneralSettingsConfig = (
 			urlPlaceholder: t("pages.createMonitor.form.general.option.url.placeholder"),
 			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
 			showUrl: true,
+			showProxy: false,
 			showPort: false,
 			showGameSelect: false,
 			showSecret: false,
@@ -258,6 +272,11 @@ const CreateMonitorPage = () => {
 	const { data: notifications } = useGet<Notification[]>("/notifications/team");
 	const { data: games } = useGet<GamesMap>("/monitors/games");
 	const { data: tags } = useGet<Tag[]>("/tags/team");
+	const { data: proxies } = useGet<ProxyResponse[]>("/proxies/team");
+	const { data: appSettings } = useGet<{
+		globalProxyEnabled?: boolean;
+		globalProxyId?: string | null;
+	}>("/settings");
 
 	const { schema, defaults } = useMonitorForm({
 		data: existingMonitor ?? null,
@@ -281,6 +300,7 @@ const CreateMonitorPage = () => {
 
 	const watchedType = watch("type") as MonitorType;
 	const watchedMethod = watch("method") as HttpMethod | undefined;
+	const watchedProxyMode = watch("proxyMode") as ProxyMode | undefined;
 	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
 	const watchGeoCheckEnabled = watch("geoCheckEnabled") as boolean;
 
@@ -466,6 +486,28 @@ const CreateMonitorPage = () => {
 			})),
 		[t]
 	);
+	const proxyModeOptions = useMemo(
+		() =>
+			ProxyModes.map((mode) => ({
+				value: mode,
+				label: t(`pages.createMonitor.form.general.option.proxyMode.value.${mode}`),
+			})),
+		[t]
+	);
+
+	const proxyOptions = useMemo(
+		() =>
+			(proxies ?? []).map((proxy) => ({
+				value: proxy.id,
+				label: `${proxy.name} (${proxy.host}:${proxy.port})`,
+			})),
+		[proxies]
+	);
+
+	const globalProxyName =
+		appSettings?.globalProxyEnabled === true
+			? proxies?.find((proxy) => proxy.id === appSettings?.globalProxyId)?.name
+			: undefined;
 
 	return (
 		<FormProvider {...form}>
@@ -518,6 +560,11 @@ const CreateMonitorPage = () => {
 						}
 						rightContent={
 							<Stack spacing={theme.spacing(LAYOUT.MD)}>
+								<FormTextField
+									name="name"
+									fieldLabel={t("pages.createMonitor.form.general.option.name.label")}
+									placeholder={generalSettingsConfig.namePlaceholder}
+								/>
 								{/* URL/Host/Container field - not shown for hardware */}
 								{generalSettingsConfig.showUrl && (
 									<FormTextField
@@ -526,6 +573,47 @@ const CreateMonitorPage = () => {
 										placeholder={generalSettingsConfig.urlPlaceholder}
 										disabled={isEditMode}
 									/>
+								)}
+								{/* Proxy fields - only shown for HTTP */}
+								{generalSettingsConfig.showProxy && (
+									<>
+										<FormSelectField
+											name="proxyMode"
+											fieldLabel={t(
+												"pages.createMonitor.form.general.option.proxyMode.label"
+											)}
+											options={proxyModeOptions}
+										/>
+										{watchedProxyMode === "inherit" && (
+											<Typography
+												component="span"
+												color={
+													globalProxyName
+														? theme.palette.text.secondary
+														: theme.palette.warning.main
+												}
+												sx={{ opacity: 0.8 }}
+											>
+												{globalProxyName
+													? t(
+															"pages.createMonitor.form.general.option.proxyMode.effect.global",
+															{ name: globalProxyName }
+														)
+													: t(
+															"pages.createMonitor.form.general.option.proxyMode.effect.direct"
+														)}
+											</Typography>
+										)}
+										{watchedProxyMode === "custom" && (
+											<FormSelectField
+												name="proxyId"
+												fieldLabel={t(
+													"pages.createMonitor.form.general.option.proxy.label"
+												)}
+												options={proxyOptions}
+											/>
+										)}
+									</>
 								)}
 
 								{/* Strategy field - only for pagespeed type */}
@@ -603,11 +691,6 @@ const CreateMonitorPage = () => {
 										options={dnsRecordTypeOptions}
 									/>
 								)}
-								<FormTextField
-									name="name"
-									fieldLabel={t("pages.createMonitor.form.general.option.name.label")}
-									placeholder={generalSettingsConfig.namePlaceholder}
-								/>
 							</Stack>
 						}
 					/>

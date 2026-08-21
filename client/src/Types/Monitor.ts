@@ -109,6 +109,10 @@ export const HttpMethods = ["GET", "HEAD"] as const;
 export type HttpMethod = (typeof HttpMethods)[number];
 export const DefaultHttpMethod: HttpMethod = "GET";
 
+export const ProxyModes = ["inherit", "none", "custom"] as const;
+export type ProxyMode = (typeof ProxyModes)[number];
+export const DefaultProxyMode: ProxyMode = "inherit";
+
 export interface Monitor {
 	id: string;
 	userId: string;
@@ -121,6 +125,8 @@ export interface Monitor {
 	statusWindowThreshold: number;
 	type: MonitorType;
 	ignoreTlsErrors: boolean;
+	proxyMode: ProxyMode;
+	proxyId?: string;
 	useAdvancedMatching: boolean;
 	jsonPath?: string;
 	expectedValue?: string;

@@ -32,7 +32,7 @@ const ProxiesPage = () => {
 		setSelectedProxy(null);
 		refetch();
 	};
-	``;
+
 	const handleCancel = () => {
 		setSelectedProxy(null);
 	};

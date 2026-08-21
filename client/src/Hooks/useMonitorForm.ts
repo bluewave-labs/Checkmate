@@ -4,6 +4,7 @@ import {
 	DefaultHttpMethod,
 	DefaultMonitorMatchMethod,
 	DefaultPageSpeedStrategy,
+	DefaultProxyMode,
 } from "@/Types/Monitor";
 import type { Monitor, MonitorType } from "@/Types/Monitor";
 
@@ -46,6 +47,8 @@ export const getMonitorDefaults = (
 				url: data?.url || "",
 				method: data?.method ?? DefaultHttpMethod,
 				ignoreTlsErrors: data?.ignoreTlsErrors || false,
+				proxyMode: data?.proxyMode ?? DefaultProxyMode,
+				proxyId: data?.proxyId || "",
 				useAdvancedMatching: data?.useAdvancedMatching || false,
 				matchMethod: data?.matchMethod || DefaultMonitorMatchMethod,
 				expectedValue: data?.expectedValue || "",
@@ -141,6 +144,8 @@ export const getMonitorDefaults = (
 				url: "",
 				method: DefaultHttpMethod,
 				ignoreTlsErrors: false,
+				proxyMode: DefaultProxyMode,
+				proxyId: "",
 				useAdvancedMatching: false,
 				matchMethod: DefaultMonitorMatchMethod,
 				expectedValue: "",
