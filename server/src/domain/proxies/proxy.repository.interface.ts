@@ -5,6 +5,7 @@ export interface IProxiesRepository {
 	create(proxyData: Partial<Proxy>): Promise<Proxy>;
 	// read
 	findById(proxyId: string, teamId: string): Promise<Proxy>;
+	findByIdOrNull(proxyId: string, teamId?: string): Promise<Proxy | null>;
 	findByTeamId(teamId: string): Promise<Proxy[]>;
 	// update
 	updateById(proxyId: string, teamId: string, patch: Partial<Proxy>, options?: { unsetPassword?: boolean; unsetUsername?: boolean }): Promise<Proxy>;
