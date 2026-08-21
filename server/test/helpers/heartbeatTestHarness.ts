@@ -127,12 +127,14 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 	};
 
 	const maintenanceWindowsRepo = { findByMonitorId: jest.fn().mockResolvedValue([]) };
+	const proxyResolver = { resolve: jest.fn().mockResolvedValue(undefined) };
 
 	const checkProducer = new CheckProducer(
 		monitorsRepo as any,
 		maintenanceWindowsRepo as any,
 		checkService as any,
 		networkService as any,
+		proxyResolver as any,
 		bufferStub as any,
 		logger
 	);

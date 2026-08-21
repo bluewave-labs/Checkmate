@@ -26,6 +26,7 @@ const createProducer = (overrides?: Record<string, any>) => {
 		maintenanceWindowsRepository: { findByMonitorId: jest.fn().mockResolvedValue([]) },
 		checkService: { toCheck: jest.fn().mockReturnValue({ id: "check-1" }) },
 		networkService: { requestStatus: jest.fn().mockResolvedValue({ monitorId: "m1", status: true, code: 200, message: "OK" }) },
+		proxyResolver: { resolve: jest.fn().mockResolvedValue(undefined) },
 		buffer: { addToBuffer: jest.fn() },
 		...overrides,
 	};
@@ -34,6 +35,7 @@ const createProducer = (overrides?: Record<string, any>) => {
 		defaults.maintenanceWindowsRepository as any,
 		defaults.checkService as any,
 		defaults.networkService as any,
+		defaults.proxyResolver as any,
 		defaults.buffer as any,
 		defaults.logger as any
 	);
@@ -80,6 +82,29 @@ describe("CheckProducer", () => {
 		await producer.produce(makeMonitor());
 
 		expect(defaults.networkService.requestStatus).toHaveBeenCalled();
+	});
+
+	// ── proxy resolution ──────────────────────────────────────────────────────
+
+	it("passes the resolved proxy url into requestStatus", async () => {
+		const { producer, defaults } = createProducer({
+			proxyResolver: { resolve: jest.fn().mockResolvedValue("http://proxy.example.com:8080") },
+		});
+		const monitor = makeMonitor();
+
+		await producer.produce(monitor);
+
+		expect(defaults.networkService.requestStatus).toHaveBeenCalledWith(monitor, { proxyUrl: "http://proxy.example.com:8080" });
+	});
+
+	it("still produces a check when the resolver returns undefined", async () => {
+		const { producer, defaults } = createProducer();
+		const monitor = makeMonitor();
+
+		const result = await producer.produce(monitor);
+
+		expect(defaults.networkService.requestStatus).toHaveBeenCalledWith(monitor, { proxyUrl: undefined });
+		expect(result).toEqual({ status: expect.objectContaining({ monitorId: "m1" }), check: { id: "check-1" } });
 	});
 
 	// ── acquire / record ──────────────────────────────────────────────────────
