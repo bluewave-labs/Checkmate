@@ -14,6 +14,7 @@ import { EnvConfig } from "@/domain/app-settings/app-settings.service.js";
 import { createStatusPageCorsOrigin } from "@/api/middleware/statusPageCorsOrigin.js";
 import { isPublicStatusPageApiPath } from "@/api/middleware/statusPagePublicApiPath.js";
 import { createStatusPageDocumentCsp } from "@/api/middleware/statusPageDocumentCsp.js";
+import { APP_CSP_DIRECTIVES } from "@/api/middleware/appCsp.js";
 import { ApiServices } from "@/config/services.api.js";
 
 export const createApp = ({
@@ -74,11 +75,7 @@ export const createApp = ({
 			contentSecurityPolicy: {
 				useDefaults: true,
 				directives: {
-					upgradeInsecureRequests: null,
-					"script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-					"img-src": ["'self'", "data:", "https://img.shields.io"],
-					"object-src": ["'none'"],
-					"base-uri": ["'self'"],
+					...APP_CSP_DIRECTIVES,
 				},
 			},
 		})
