@@ -51,6 +51,21 @@ export const createApp = ({
 		return cors(corsOptions)(req, res, next);
 	});
 
+	// Registered before express.static and the /config.js handler: express.static
+	// ends the request without calling next(), so a header set after it never
+	// reaches index.html or any built asset.
+	app.use(
+		helmet({
+			hsts: false,
+			contentSecurityPolicy: {
+				useDefaults: true,
+				directives: {
+					...APP_CSP_DIRECTIVES,
+				},
+			},
+		})
+	);
+
 	app.use(createStatusPageDocumentCsp(allowedOrigin));
 
 	// Client runtime config; registered before express.static so it shadows the
@@ -69,17 +84,6 @@ export const createApp = ({
 	app.use(sanitizeBody());
 	app.use(sanitizeQuery());
 
-	app.use(
-		helmet({
-			hsts: false,
-			contentSecurityPolicy: {
-				useDefaults: true,
-				directives: {
-					...APP_CSP_DIRECTIVES,
-				},
-			},
-		})
-	);
 	app.use(
 		compression({
 			level: 6,
