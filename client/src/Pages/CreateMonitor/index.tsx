@@ -484,10 +484,7 @@ const CreateMonitorPage = () => {
 			})),
 		[t]
 	);
-	const globalProxyName =
-		appSettings?.settings?.globalProxyEnabled === true
-			? proxies?.find((proxy) => proxy.id === appSettings?.settings?.globalProxyId)?.name
-			: undefined;
+	const globalProxyName = appSettings?.globalProxy?.name;
 
 	const proxyModeOptions = useMemo(
 		() =>

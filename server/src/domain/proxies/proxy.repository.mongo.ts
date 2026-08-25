@@ -37,6 +37,11 @@ class MongoProxiesRepository implements IProxiesRepository {
 		}
 	}
 
+	async findAll(): Promise<Proxy[]> {
+		const proxies = await ProxyModel.find();
+		return proxies.map(this.toEntity);
+	}
+
 	async findById(proxyId: string, teamId: string): Promise<Proxy> {
 		const proxy = await ProxyModel.findOne({ _id: proxyId, teamId });
 		if (!proxy) {

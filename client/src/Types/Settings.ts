@@ -33,5 +33,11 @@ export interface Settings {
 export interface AppSettingsResponse {
 	pagespeedKeySet: boolean;
 	emailPasswordSet: boolean;
+	globalProxy: {
+		id: string;
+		name: string;
+		host: string;
+		port: number;
+	} | null;
 	settings: Settings;
 }

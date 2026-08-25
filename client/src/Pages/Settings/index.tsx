@@ -45,12 +45,7 @@ import { FormSwitchField } from "@/Components/inputs/forms/FormSwitchField";
 import { FormNumberField } from "@/Components/inputs/forms/FormNumberField";
 import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
 import type { ProxyResponse } from "@/Types/Proxy";
-
-interface SettingsResponse {
-	settings: any;
-	pagespeedKeySet: boolean;
-	emailPasswordSet: boolean;
-}
+import type { AppSettingsResponse } from "@/Types/Settings";
 
 export const SettingsPage = () => {
 	const theme = useTheme();
@@ -66,9 +61,9 @@ export const SettingsPage = () => {
 	const { post: importMonitors, loading: isImportingMonitors } = usePost();
 
 	// Fetch settings data from API
-	const { data: fetchedSettings } = useGet<SettingsResponse>("/settings");
+	const { data: fetchedSettings } = useGet<AppSettingsResponse>("/settings");
 	// Get proxies
-	const { data: proxies } = useGet<ProxyResponse[]>("/proxies/team");
+	const { data: proxies } = useGet<ProxyResponse[]>("/proxies");
 	const proxyOptions = useMemo(
 		() =>
 			(proxies ?? []).map((proxy) => ({
@@ -79,7 +74,7 @@ export const SettingsPage = () => {
 	);
 
 	// Form submission
-	const { patch, loading: isSaving } = usePatch<SettingsFormData, SettingsResponse>();
+	const { patch, loading: isSaving } = usePatch<SettingsFormData, AppSettingsResponse>();
 
 	// Local state for API key reset
 	const [isApiKeySet, setIsApiKeySet] = useState(

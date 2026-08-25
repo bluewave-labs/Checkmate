@@ -25,7 +25,7 @@ import { CheckFilter, DateRange } from "@/types/query.js";
 import { AppError } from "@/utils/AppError.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 
-const SERVICE_NAME = "StatusService";
+const SERVICE_NAME = "ChecksRepository";
 
 class MongoChecksRepository implements IChecksRepository {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -213,6 +213,9 @@ class MongoChecksRepository implements IChecksRepository {
 	};
 
 	private filterToMatch = (filter: CheckFilter | undefined): Record<string, unknown> => {
+		if (filter === undefined) {
+			return {};
+		}
 		switch (filter) {
 			case "up":
 				return { status: true };

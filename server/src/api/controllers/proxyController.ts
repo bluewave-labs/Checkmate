@@ -13,6 +13,7 @@ import {
 export interface IProxiesController {
 	createProxy: RequestHandler;
 	getProxyById: RequestHandler;
+	getAllProxies: RequestHandler;
 	getProxiesByTeamId: RequestHandler;
 	editProxy: RequestHandler;
 	deleteProxy: RequestHandler;
@@ -40,6 +41,15 @@ class ProxyController implements IProxiesController {
 			success: true,
 			msg: "Proxy retrieved successfully",
 			data: proxy,
+		});
+	});
+
+	getAllProxies = catchAsync(async (req: Request, res: Response) => {
+		const proxies = await this.proxiesService.getProxies();
+		return res.status(200).json({
+			success: true,
+			msg: "Proxies retrieved successfully",
+			data: proxies,
 		});
 	});
 

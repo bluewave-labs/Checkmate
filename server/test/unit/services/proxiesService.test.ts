@@ -6,7 +6,9 @@ import type { Proxy } from "../../../src/domain/proxies/proxy.type.ts";
 
 const createProxiesRepo = () => ({
 	create: jest.fn(),
+	findAll: jest.fn(),
 	findById: jest.fn(),
+	findByIdOrNull: jest.fn(),
 	findByTeamId: jest.fn(),
 	updateById: jest.fn(),
 	deleteById: jest.fn(),
@@ -102,6 +104,44 @@ describe("ProxiesService", () => {
 			const result = await service.getProxy("proxy-1", "team-1");
 
 			expect(result.hasPassword).toBe(false);
+		});
+	});
+
+	describe("getProxies", () => {
+		it("lists every proxy on the instance and masks passwords", async () => {
+			const { service, proxiesRepository } = createService();
+			(proxiesRepository.findAll as jest.Mock).mockResolvedValue([makeProxy(), makeProxy({ id: "proxy-2", teamId: "team-2", password: undefined })]);
+
+			const result = await service.getProxies();
+
+			expect(proxiesRepository.findAll).toHaveBeenCalledWith();
+			expect(result).toHaveLength(2);
+			for (const proxy of result) {
+				expect(proxy).not.toHaveProperty("password");
+			}
+			expect(result[0].hasPassword).toBe(true);
+			expect(result[1].hasPassword).toBe(false);
+		});
+	});
+
+	describe("getProxySummary", () => {
+		it("looks up without a team filter and returns only display fields", async () => {
+			const { service, proxiesRepository } = createService();
+			(proxiesRepository.findByIdOrNull as jest.Mock).mockResolvedValue(makeProxy());
+
+			const result = await service.getProxySummary("proxy-1");
+
+			expect(proxiesRepository.findByIdOrNull).toHaveBeenCalledWith("proxy-1");
+			expect(result).toEqual({ id: "proxy-1", name: "Egress proxy", host: "proxy.internal", port: 3128 });
+		});
+
+		it("returns null when the proxy does not exist", async () => {
+			const { service, proxiesRepository } = createService();
+			(proxiesRepository.findByIdOrNull as jest.Mock).mockResolvedValue(null);
+
+			const result = await service.getProxySummary("missing");
+
+			expect(result).toBeNull();
 		});
 	});
 

@@ -15,3 +15,5 @@ export interface Proxy {
 }
 
 export type ProxyResponse = Omit<Proxy, "password"> & { hasPassword: boolean };
+
+export type ProxySummary = Pick<Proxy, "id" | "name" | "host" | "port">;
