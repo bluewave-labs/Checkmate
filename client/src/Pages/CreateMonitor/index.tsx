@@ -46,6 +46,7 @@ import {
 } from "@/Types/Monitor";
 import type { Notification } from "@/Types/Notification";
 import type { Tag } from "@/Types/Tag";
+import type { AppSettingsResponse } from "@/Types/Settings";
 import {
 	stepFieldsFor,
 	monitorStepCount,
@@ -273,10 +274,7 @@ const CreateMonitorPage = () => {
 	const { data: games } = useGet<GamesMap>("/monitors/games");
 	const { data: tags } = useGet<Tag[]>("/tags/team");
 	const { data: proxies } = useGet<ProxyResponse[]>("/proxies/team");
-	const { data: appSettings } = useGet<{
-		globalProxyEnabled?: boolean;
-		globalProxyId?: string | null;
-	}>("/settings");
+	const { data: appSettings } = useGet<AppSettingsResponse>("/settings");
 
 	const { schema, defaults } = useMonitorForm({
 		data: existingMonitor ?? null,
@@ -505,9 +503,11 @@ const CreateMonitorPage = () => {
 	);
 
 	const globalProxyName =
-		appSettings?.globalProxyEnabled === true
-			? proxies?.find((proxy) => proxy.id === appSettings?.globalProxyId)?.name
+		appSettings?.settings?.globalProxyEnabled === true
+			? proxies?.find((proxy) => proxy.id === appSettings?.settings?.globalProxyId)?.name
 			: undefined;
+
+	console.log({ appSettings });
 
 	return (
 		<FormProvider {...form}>
