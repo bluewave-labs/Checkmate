@@ -39,11 +39,14 @@ import CreateNotifications from "@/Pages/Notifications/create";
 import Tags from "@/Pages/Tags";
 import CreateTags from "@/Pages/Tags/create";
 
+// Proxies
+import Proxies from "@/Pages/Proxies";
+import CreateProxies from "@/Pages/Proxies/create";
+
 // Settings
 import Account from "@/Pages/Account";
 import EditUser from "@/Pages/Account/EditUser";
 import Settings from "@/Pages/Settings";
-
 import Maintenance from "@/Pages/Maintenance";
 import CreateNewMaintenanceWindow from "@/Pages/Maintenance/create";
 
@@ -52,10 +55,8 @@ import Logs from "@/Pages/Logs";
 
 // Routing
 import { ProtectedRoute, RoleProtectedRoute } from "@/Components/routing/RouteProtected";
-
 import CreateMonitor from "@/Pages/CreateMonitor";
 import { isCustomDomainHost } from "@/Utils/statusPageUrl";
-
 const Routes = () => {
 	if (isCustomDomainHost()) {
 		return (
@@ -188,10 +189,22 @@ const Routes = () => {
 					path="tags/create"
 					element={<CreateTags />}
 				/>
-
 				<Route
 					path="tags/configure/:tagId"
 					element={<CreateTags />}
+				/>
+
+				<Route
+					path="proxies"
+					element={<Proxies />}
+				/>
+				<Route
+					path="proxies/create"
+					element={<CreateProxies />}
+				/>
+				<Route
+					path="proxies/configure/:proxyId"
+					element={<CreateProxies />}
 				/>
 
 				<Route

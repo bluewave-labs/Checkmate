@@ -205,6 +205,7 @@
 				"infrastructure": "Infrastructure",
 				"notifications": "Notifications",
 				"tags": "Tags",
+				"proxies": "Proxies",
 				"checks": "Checks",
 				"incidents": "Incidents",
 				"statusPages": "Status pages",
@@ -244,6 +245,63 @@
 		}
 	},
 	"pages": {
+		"proxies": {
+			"header": {
+				"title": "Proxies",
+				"description": "Manage your proxy servers for routing HTTP monitoring traffic."
+			},
+			"fallback": {
+				"title": "No proxies yet",
+				"description": "Route HTTP monitor checks through a proxy server. Once you create a proxy, you can select it on individual monitors or set it as the global default in Settings.",
+				"actionButton": "Create a proxy"
+			},
+			"form": {
+				"name": {
+					"title": "Proxy name",
+					"description": "A friendly name to identify this proxy",
+					"optionName": "Proxy name",
+					"placeholder": "My proxy"
+				},
+				"server": {
+					"title": "Proxy server",
+					"description": "Where the proxy server is reachable. Set the protocol Checkmate uses to connect to it, its hostname or IP address, and the port it listens on.",
+					"option": {
+						"protocol": {
+							"label": "Protocol"
+						},
+						"host": {
+							"label": "Hostname / IP Address",
+							"placeholder": "proxy.example.com"
+						},
+						"port": {
+							"label": "Port"
+						}
+					}
+				},
+				"auth": {
+					"title": "Authentication",
+					"description": "Optional. Only needed if the proxy server requires basic authentication.",
+					"option": {
+						"username": {
+							"label": "Username",
+							"placeholder": "Proxy username",
+							"labelSet": "Username is set. Click Reset to change it."
+						},
+						"password": {
+							"label": "Password",
+							"labelSet": "Password is set. Click Reset to change it."
+						}
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"protocol": "Protocol",
+					"host": "Host",
+					"port": "Port"
+				}
+			}
+		},
 		"notFound": {
 			"title": "Oh no!  You dropped your sushi!",
 			"subtitle": "Either the URL doesn’t exist, or you don’t have access to it."
@@ -581,6 +639,24 @@
 							"label": "URL",
 							"placeholder": "https://www.google.com"
 						},
+						"proxyMode": {
+							"label": "Proxy",
+							"value": {
+								"inheritDirect": "Default (direct connection)",
+								"inheritGlobal": "Default (global proxy: {{name}})",
+								"none": "Never use a proxy",
+								"custom": "Custom proxy"
+							},
+							"description": {
+								"inheritDirect": "No global proxy is configured, connect directly. If a global proxy is later configured, this monitor will use it.",
+								"inheritGlobal": "Follows the global proxy setting — changing it in Settings also changes this monitor's connection.",
+								"none": "Always connects directly even if a global proxy is enabled later.",
+								"custom": "Route this monitor's checks through a specific proxy. Overrides global proxy"
+							}
+						},
+						"proxy": {
+							"label": "Proxy server"
+						},
 						"game": {
 							"label": "Choose game",
 							"placeholder": "Select a game"
@@ -624,7 +700,7 @@
 					},
 					"title": "General settings",
 					"description": {
-						"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
+						"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.  Set an optional proxy server to connect through.",
 						"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
 						"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
 						"docker": "Enter the Docker container name or ID. You can use either the container name (e.g., my-app) or the container ID (full 64-char ID or short ID).",

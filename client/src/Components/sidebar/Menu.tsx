@@ -18,8 +18,8 @@ import {
 	Lock,
 	Users,
 	Tag,
+	Waypoints,
 } from "lucide-react";
-
 export const getMenu = (t: Function) => {
 	return [
 		{
@@ -46,6 +46,11 @@ export const getMenu = (t: Function) => {
 			name: t("components.sidebar.menu.tags"),
 			path: "tags",
 			icon: <Icon icon={Tag} />,
+		},
+		{
+			name: t("components.sidebar.menu.proxies"),
+			path: "proxies",
+			icon: <Icon icon={Waypoints} />,
 		},
 		{
 			name: t("components.sidebar.menu.checks"),

@@ -44,6 +44,7 @@ export const FormSelectField = <T extends FieldValues>({
 					}}
 					error={!!fieldState.error}
 					{...rest}
+					helperText={fieldState.error?.message ?? rest.helperText}
 				>
 					{options.map((option) => (
 						<MenuItem
