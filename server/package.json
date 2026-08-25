@@ -5,6 +5,7 @@
 	"main": "index.js",
 	"type": "module",
 	"scripts": {
+		"lockfile": "docker run --rm -v \"$PWD\":/w -w /w $(grep -m1 -o 'node:[^ ]*' ../docker/Dockerfile) npm install --package-lock-only",
 		"test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
 		"test:unit": "NODE_OPTIONS=--experimental-vm-modules jest --coverage --collectCoverageFrom='src/**/*.ts' test/unit",
 		"test:unit:services": "NODE_OPTIONS=--experimental-vm-modules jest --coverage --collectCoverageFrom='src/service/**/*.ts' test/unit/services test/unit/providers/network test/unit/providers/notifications",

@@ -4,6 +4,7 @@
 	"version": "3.11.0",
 	"type": "module",
 	"scripts": {
+		"lockfile": "docker run --rm -v \"$PWD\":/w -w /w $(grep -m1 -o 'node:[^ ]*' ../docker/Dockerfile) npm install --package-lock-only",
 		"dev": "vite",
 		"build": "tsc -b && vite build",
 		"build-dev": "tsc -b && vite build --mode development",
