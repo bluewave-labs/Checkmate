@@ -27,7 +27,6 @@ import { getMonitorTypeLabel } from "@/Types/StatusPage";
 import { timezoneOptions } from "@/Utils/timezoneOptions";
 import { useNavigate, useParams } from "react-router-dom";
 import { mutate } from "swr";
-import axios from "axios";
 import { HeaderConfigStatusControls } from "./Components/HeaderConfigStatusControls";
 import { ThemePicker } from "./Components/ThemePicker";
 import { FormSwitchField } from "@/Components/inputs/forms/FormSwitchField";
@@ -59,7 +58,9 @@ const LogoUploadField = () => {
 		<ImageUpload
 			src={field.value?.data}
 			onChange={(file) => {
-				field.onChange(file ? { data: file.src, contentType: file.file.type } : null);
+				field.onChange(
+					file ? { data: file.src, contentType: file.file.type, file: file.file } : null
+				);
 			}}
 		/>
 	);
@@ -204,18 +205,8 @@ const CreateStatusPage = () => {
 		if (data.logo === null) {
 			// Signal to remove the logo
 			fd.append("removeLogo", "true");
-		} else if (data.logo?.data && data.logo.data !== "") {
-			if (data.logo.data.startsWith("blob:")) {
-				try {
-					const imageResult = await axios.get(data.logo.data, {
-						responseType: "blob",
-					});
-					fd.append("logo", imageResult.data);
-					URL.revokeObjectURL(data.logo.data);
-				} catch (e) {
-					logger.error("Failed to fetch logo blob", e instanceof Error ? e : undefined);
-				}
-			}
+		} else if (data.logo?.file) {
+			fd.append("logo", data.logo.file);
 		}
 
 		let result;
