@@ -7,7 +7,7 @@ const PUBLIC_STATUS_PAGE_DOCUMENT_PREFIX = "/status/public";
 // the status page on top of the global helmet policy, blocking external images,
 // fonts, and stylesheets from custom CSS while keeping the app's Google Fonts.
 const STATUS_PAGE_CSP = [
-	"img-src 'self' data:",
+	"img-src 'self' data: blob:",
 	"font-src 'self' data: https://fonts.gstatic.com",
 	"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
 ].join("; ");
