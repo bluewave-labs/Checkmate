@@ -546,35 +546,33 @@ class MongoChecksRepository implements IChecksRepository {
 			totalChecks: upChecksDoc?.totalChecks ?? 0,
 		};
 
-		const checks = (hardwareMetrics ?? []).map(
-			(metric): HardwareCheckStats => ({
-				bucketDate: metric._id,
-				avgCpuUsage: metric.avgCpuUsage ?? 0,
-				avgMemoryUsage: metric.avgMemoryUsage ?? 0,
-				avgTemperature: metric.avgTemperature ?? [],
-				disks: (metric.disks ?? []).map((disk) => ({
-					name: disk?.name ?? "",
-					readSpeed: disk?.readSpeed ?? 0,
-					writeSpeed: disk?.writeSpeed ?? 0,
-					totalBytes: disk?.totalBytes ?? 0,
-					freeBytes: disk?.freeBytes ?? 0,
-					usagePercent: disk?.usagePercent ?? 0,
-				})),
-				net: (metric.net ?? []).map((iface) => ({
-					name: iface?.name ?? "",
-					bytesSentPerSecond: iface?.bytesSentPerSecond ?? 0,
-					deltaBytesRecv: iface?.deltaBytesRecv ?? 0,
-					deltaPacketsSent: iface?.deltaPacketsSent ?? 0,
-					deltaPacketsRecv: iface?.deltaPacketsRecv ?? 0,
-					deltaErrIn: iface?.deltaErrIn ?? 0,
-					deltaErrOut: iface?.deltaErrOut ?? 0,
-					deltaDropIn: iface?.deltaDropIn ?? 0,
-					deltaDropOut: iface?.deltaDropOut ?? 0,
-					deltaFifoIn: iface?.deltaFifoIn ?? 0,
-					deltaFifoOut: iface?.deltaFifoOut ?? 0,
-				})),
-			})
-		);
+		const checks = (hardwareMetrics ?? []).map((metric): HardwareCheckStats => ({
+			bucketDate: metric._id,
+			avgCpuUsage: metric.avgCpuUsage ?? 0,
+			avgMemoryUsage: metric.avgMemoryUsage ?? 0,
+			avgTemperature: metric.avgTemperature ?? [],
+			disks: (metric.disks ?? []).map((disk) => ({
+				name: disk?.name ?? "",
+				readSpeed: disk?.readSpeed ?? 0,
+				writeSpeed: disk?.writeSpeed ?? 0,
+				totalBytes: disk?.totalBytes ?? 0,
+				freeBytes: disk?.freeBytes ?? 0,
+				usagePercent: disk?.usagePercent ?? 0,
+			})),
+			net: (metric.net ?? []).map((iface) => ({
+				name: iface?.name ?? "",
+				bytesSentPerSecond: iface?.bytesSentPerSecond ?? 0,
+				deltaBytesRecv: iface?.deltaBytesRecv ?? 0,
+				deltaPacketsSent: iface?.deltaPacketsSent ?? 0,
+				deltaPacketsRecv: iface?.deltaPacketsRecv ?? 0,
+				deltaErrIn: iface?.deltaErrIn ?? 0,
+				deltaErrOut: iface?.deltaErrOut ?? 0,
+				deltaDropIn: iface?.deltaDropIn ?? 0,
+				deltaDropOut: iface?.deltaDropOut ?? 0,
+				deltaFifoIn: iface?.deltaFifoIn ?? 0,
+				deltaFifoOut: iface?.deltaFifoOut ?? 0,
+			})),
+		}));
 
 		return {
 			monitorType: "hardware" as const,
