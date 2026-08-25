@@ -9,6 +9,7 @@ import "./routes/log.js";
 import "./routes/maintenanceWindow.js";
 import "./routes/monitor.js";
 import "./routes/notification.js";
+import "./routes/proxies.js";
 import "./routes/queue.js";
 import "./routes/settings.js";
 import "./routes/statusPage.js";
@@ -45,6 +46,7 @@ export function getOpenApiSpec(): JsonObject {
 			{ name: "maintenance-window", description: "Scheduled maintenance windows during which monitors do not generate incidents or alerts." },
 			{ name: "status-page", description: "Public status pages, their configuration, and the monitors they expose." },
 			{ name: "settings", description: "Global application settings (admin/superadmin)." },
+			{ name: "proxies", description: "Outbound proxy servers for routing HTTP monitor checks, team-scoped with an instance-wide admin listing." },
 			{ name: "invite", description: "Team invitations and accepting them." },
 			{ name: "queue", description: "Background job queue introspection and admin actions (admin/superadmin)." },
 			{ name: "diagnostic", description: "System diagnostics for the running server (admin/superadmin)." },
