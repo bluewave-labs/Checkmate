@@ -643,13 +643,13 @@
 							"label": "Proxy",
 							"value": {
 								"inheritDirect": "Default (direct connection)",
-								"inheritGlobal": "Default (global proxy: {{name}})",
+								"inheritGlobal": "Default ({{name}})",
 								"none": "Never use a proxy",
 								"custom": "Custom proxy"
 							},
 							"description": {
 								"inheritDirect": "No global proxy is configured, connect directly. If a global proxy is later configured, this monitor will use it.",
-								"inheritGlobal": "Follows the global proxy setting — changing it in Settings also changes this monitor's connection.",
+								"inheritGlobal": "Use the global proxy setting",
 								"none": "Always connects directly even if a global proxy is enabled later.",
 								"custom": "Route this monitor's checks through a specific proxy. Overrides global proxy"
 							}
@@ -1359,6 +1359,22 @@
 							"label": "Chart type",
 							"histogram": "Histogram",
 							"heatmap": "Heatmap"
+						}
+					}
+				},
+				"globalProxy": {
+					"title": "Global proxy",
+					"description": "Route monitoring checks through a proxy by default. Applies to all HTTP monitors whose proxy setting is \"Default\"; monitors set to \"Never use a proxy\" or a custom proxy are unaffected.",
+					"option": {
+						"enabled": {
+							"label": "Use global proxy"
+						},
+						"proxy": {
+							"label": "Choose a global proxy"
+						},
+						"empty": {
+							"text": "No proxies configured yet.",
+							"link": "Create one first"
 						}
 					}
 				},
