@@ -10,7 +10,7 @@ import {
 	Alert,
 	type SelectChangeEvent,
 } from "@mui/material";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { FormProvider, useForm, type FieldPath } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
@@ -43,6 +43,8 @@ import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 import { FormSliderField } from "@/Components/inputs/forms/FormSliderField";
 import { FormSwitchField } from "@/Components/inputs/forms/FormSwitchField";
 import { FormNumberField } from "@/Components/inputs/forms/FormNumberField";
+import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
+import type { ProxyResponse } from "@/Types/Proxy";
 
 interface SettingsResponse {
 	settings: any;
@@ -65,6 +67,17 @@ export const SettingsPage = () => {
 
 	// Fetch settings data from API
 	const { data: fetchedSettings } = useGet<SettingsResponse>("/settings");
+	// Get proxies
+	const { data: proxies } = useGet<ProxyResponse[]>("/proxies/team");
+	const proxyOptions = useMemo(
+		() =>
+			(proxies ?? []).map((proxy) => ({
+				value: proxy.id,
+				label: `${proxy.name} (${proxy.host}:${proxy.port})`,
+			})),
+		[proxies]
+	);
+
 	// Form submission
 	const { patch, loading: isSaving } = usePatch<SettingsFormData, SettingsResponse>();
 
@@ -114,6 +127,8 @@ export const SettingsPage = () => {
 		defaultValues: defaults,
 		mode: "onChange",
 	});
+
+	const { watch } = form;
 
 	// Reset form when defaults change
 	useEffect(() => {
@@ -292,6 +307,21 @@ export const SettingsPage = () => {
 
 	const languages = Object.keys(i18n.options.resources || {});
 
+	const globalProxyEnabled = watch("globalProxyEnabled");
+
+	// Enabling the proxy with nothing selected preselects the first proxy
+	useEffect(() => {
+		if (
+			globalProxyEnabled &&
+			!form.getValues("globalProxyId") &&
+			proxyOptions.length > 0
+		) {
+			form.setValue("globalProxyId", proxyOptions[0].value, {
+				shouldValidate: true,
+			});
+		}
+	}, [globalProxyEnabled, proxyOptions, form]);
+
 	return (
 		<FormProvider {...form}>
 			<BasePage
@@ -365,6 +395,38 @@ export const SettingsPage = () => {
 							</Stack>
 						}
 					/>
+					{isAdmin && (
+						<ConfigBox
+							title={t("pages.settings.form.globalProxy.title")}
+							subtitle={t("pages.settings.form.globalProxy.description")}
+							rightContent={
+								proxyOptions.length > 0 ? (
+									<Stack>
+										<FormSwitchField
+											name="globalProxyEnabled"
+											labelPlacement="start"
+											label={t("pages.settings.form.globalProxy.option.enabled.label")}
+										/>
+										{globalProxyEnabled && (
+											<FormSelectField
+												fieldLabel={t(
+													"pages.settings.form.globalProxy.option.proxy.label"
+												)}
+												name="globalProxyId"
+												options={proxyOptions}
+											/>
+										)}
+									</Stack>
+								) : (
+									<TextLink
+										text={t("pages.settings.form.globalProxy.option.empty.text")}
+										linkText={t("pages.settings.form.globalProxy.option.empty.link")}
+										href="/proxies"
+									/>
+								)
+							}
+						/>
+					)}
 					{isAdmin && (
 						<ConfigBox
 							title={t("pages.settings.form.pagespeed.title")}
