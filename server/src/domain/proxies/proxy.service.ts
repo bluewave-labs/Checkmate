@@ -7,6 +7,7 @@ import { ISettingsService } from "@/domain/app-settings/app-settings.service.js"
 export interface IProxiesService {
 	createProxy(proxy: Partial<Proxy>, teamId: string): Promise<ProxyResponse>;
 	getProxy(proxyId: string, teamId: string): Promise<ProxyResponse>;
+	getProxies(): Promise<ProxyResponse[]>;
 	getProxiesByTeamId(teamId: string): Promise<ProxyResponse[]>;
 	updateProxy(proxyId: string, teamId: string, patch: Partial<Proxy> & { clearPassword?: boolean; clearUsername?: boolean }): Promise<ProxyResponse>;
 	deleteProxy(proxyId: string, teamId: string): Promise<ProxyResponse>;
@@ -39,6 +40,13 @@ export class ProxiesService implements IProxiesService {
 		return this.toResponse(raw);
 	};
 
+	getProxies = async (): Promise<ProxyResponse[]> => {
+		const raw = await this.proxiesRepository.findAll();
+		const clean = raw.map((r) => {
+			return this.toResponse(r);
+		});
+		return clean;
+	};
 	getProxiesByTeamId = async (teamId: string): Promise<ProxyResponse[]> => {
 		const raw = await this.proxiesRepository.findByTeamId(teamId);
 		const clean = raw.map((r) => {
