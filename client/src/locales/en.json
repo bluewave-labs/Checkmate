@@ -640,15 +640,18 @@
 							"placeholder": "https://www.google.com"
 						},
 						"proxyMode": {
-							"label": "Proxy mode",
+							"label": "Proxy",
 							"value": {
-								"inherit": "Use global proxy setting",
-								"none": "No proxy (direct connection)",
-								"custom": "Custom"
+								"inheritDirect": "Default (direct connection)",
+								"inheritGlobal": "Default (global proxy: {{name}})",
+								"none": "Never use a proxy",
+								"custom": "Custom proxy"
 							},
-							"effect": {
-								"global": "Checks currently go through the global proxy: {{name}}",
-								"direct": "Global proxy not enabled, will use direct connection"
+							"description": {
+								"inheritDirect": "No global proxy is configured, connect directly. If a global proxy is later configured, this monitor will use it.",
+								"inheritGlobal": "Follows the global proxy setting — changing it in Settings also changes this monitor's connection.",
+								"none": "Always connects directly even if a global proxy is enabled later.",
+								"custom": "Route this monitor's checks through a specific proxy. Overrides global proxy"
 							}
 						},
 						"proxy": {

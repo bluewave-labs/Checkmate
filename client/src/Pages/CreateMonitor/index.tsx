@@ -484,13 +484,31 @@ const CreateMonitorPage = () => {
 			})),
 		[t]
 	);
+	const globalProxyName =
+		appSettings?.settings?.globalProxyEnabled === true
+			? proxies?.find((proxy) => proxy.id === appSettings?.settings?.globalProxyId)?.name
+			: undefined;
+
 	const proxyModeOptions = useMemo(
 		() =>
-			ProxyModes.map((mode) => ({
-				value: mode,
-				label: t(`pages.createMonitor.form.general.option.proxyMode.value.${mode}`),
-			})),
-		[t]
+			ProxyModes.map((mode) => {
+				const key =
+					mode === "inherit"
+						? globalProxyName
+							? "inheritGlobal"
+							: "inheritDirect"
+						: mode;
+				return {
+					value: mode,
+					label: t(`pages.createMonitor.form.general.option.proxyMode.value.${key}`, {
+						name: globalProxyName,
+					}),
+					description: t(
+						`pages.createMonitor.form.general.option.proxyMode.description.${key}`
+					),
+				};
+			}),
+		[t, globalProxyName]
 	);
 
 	const proxyOptions = useMemo(
@@ -501,13 +519,6 @@ const CreateMonitorPage = () => {
 			})),
 		[proxies]
 	);
-
-	const globalProxyName =
-		appSettings?.settings?.globalProxyEnabled === true
-			? proxies?.find((proxy) => proxy.id === appSettings?.settings?.globalProxyId)?.name
-			: undefined;
-
-	console.log({ appSettings });
 
 	return (
 		<FormProvider {...form}>
@@ -577,33 +588,13 @@ const CreateMonitorPage = () => {
 								{/* Proxy fields - only shown for HTTP */}
 								{generalSettingsConfig.showProxy && (
 									<>
-										<FormSelectField
+										<FormRadioGroup
 											name="proxyMode"
+											options={proxyModeOptions}
 											fieldLabel={t(
 												"pages.createMonitor.form.general.option.proxyMode.label"
 											)}
-											options={proxyModeOptions}
 										/>
-										{watchedProxyMode === "inherit" && (
-											<Typography
-												component="span"
-												color={
-													globalProxyName
-														? theme.palette.text.secondary
-														: theme.palette.warning.main
-												}
-												sx={{ opacity: 0.8 }}
-											>
-												{globalProxyName
-													? t(
-															"pages.createMonitor.form.general.option.proxyMode.effect.global",
-															{ name: globalProxyName }
-														)
-													: t(
-															"pages.createMonitor.form.general.option.proxyMode.effect.direct"
-														)}
-											</Typography>
-										)}
 										{watchedProxyMode === "custom" && (
 											<FormSelectField
 												name="proxyId"
