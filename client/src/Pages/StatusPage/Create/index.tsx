@@ -1,4 +1,9 @@
-import { BasePage, ConfigBox, StepProgress } from "@/Components/design-elements";
+import {
+	BasePage,
+	ColoredLabel,
+	ConfigBox,
+	StepProgress,
+} from "@/Components/design-elements";
 import Stack from "@mui/material/Stack";
 import { logger } from "@/Utils/logger";
 import { LAYOUT } from "@/Utils/Theme/constants";
@@ -16,6 +21,7 @@ import { statusPageStepCount, statusPageStepFieldsFor } from "@/Validation/statu
 import { useGet, usePost, usePut, useDelete } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
 import { SelectableMonitorTypes } from "@/Types/Monitor";
+import type { Tag } from "@/Types/Tag";
 import type { MonitorDisplayType, StatusPageResponse } from "@/Types/StatusPage";
 import { getMonitorTypeLabel } from "@/Types/StatusPage";
 import { timezoneOptions } from "@/Utils/timezoneOptions";
@@ -86,6 +92,8 @@ const CreateStatusPage = () => {
 
 	const { data: monitorsResponse } = useGet<Monitor[]>(monitorsUrl);
 	const monitors = useMemo(() => monitorsResponse ?? [], [monitorsResponse]);
+	const { data: tagsResponse } = useGet<Tag[]>("/tags/team");
+	const tags = useMemo(() => tagsResponse ?? [], [tagsResponse]);
 
 	const { post, loading: isSubmittingPost } = usePost();
 	const { put, loading: isSubmittingPut } = usePut();
@@ -308,6 +316,28 @@ const CreateStatusPage = () => {
 									"pages.statusPages.form.monitors.option.monitors.placeholder"
 								)}
 								options={monitors}
+								renderOptionContent={(monitor) => (
+									<Stack
+										direction="row"
+										alignItems="center"
+										gap={theme.spacing(2)}
+										flexWrap="wrap"
+									>
+										<Typography>
+											{`${monitor.name} (${getMonitorTypeLabel(monitor.type, t)})`}
+										</Typography>
+										{monitor.tags.map((tagId) => {
+											const tag = tags.find(({ id }) => id === tagId);
+											return tag ? (
+												<ColoredLabel
+													key={tag.id}
+													text={tag.name}
+													color={tag.color}
+												/>
+											) : null;
+										})}
+									</Stack>
+								)}
 								renderRow={(monitor) => (
 									<Typography flexGrow={1}>
 										{`${monitor.name} (${getMonitorTypeLabel(monitor.type, t)})`}
