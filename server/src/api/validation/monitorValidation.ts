@@ -16,6 +16,13 @@ import { DateRanges, SortOrders } from "@/types/query.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
+// The client form submits proxyId: "" when no proxy is selected, set it to undefined
+const proxyIdValidation = z
+	.string()
+	.optional()
+	.transform((value) => (value === "" ? undefined : value))
+	.refine((value) => value === undefined || /^[0-9a-f]{24}$/i.test(value), { message: "Invalid proxy ID" });
+
 export const getMonitorByIdParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
 });
@@ -122,7 +129,7 @@ export const createMonitorBodyValidation = z
 		url: z.string().min(1, "URL is required"),
 		ignoreTlsErrors: z.boolean().default(false),
 		proxyMode: z.enum(ProxyModes).default("inherit"),
-		proxyId: z.string().optional(),
+		proxyId: proxyIdValidation,
 		useAdvancedMatching: z.boolean().default(false),
 		port: z.number().optional(),
 		isActive: z.boolean().optional(),
@@ -171,7 +178,7 @@ export const editMonitorBodyValidation = z
 		secret: z.string().optional(),
 		ignoreTlsErrors: z.boolean().optional(),
 		proxyMode: z.enum(ProxyModes).optional(),
-		proxyId: z.string().optional(),
+		proxyId: proxyIdValidation,
 		useAdvancedMatching: z.boolean().optional(),
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
@@ -233,7 +240,7 @@ const importedMonitorSchema = z
 		type: z.enum(MonitorTypes, "Invalid monitor type"),
 		ignoreTlsErrors: z.boolean().default(false),
 		proxyMode: z.enum(ProxyModes).default("inherit"),
-		proxyId: z.string().optional(),
+		proxyId: proxyIdValidation,
 		useAdvancedMatching: z.boolean().default(false),
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
@@ -306,7 +313,7 @@ export const monitorResponseSchema = z
 		statusWindowThreshold: z.number(),
 		ignoreTlsErrors: z.boolean(),
 		proxyMode: z.enum(ProxyModes),
-		proxyId: z.string().optional(),
+		proxyId: proxyIdValidation,
 		useAdvancedMatching: z.boolean(),
 		jsonPath: z.string().optional(),
 		expectedValue: z.string().optional(),
