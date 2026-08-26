@@ -1,5 +1,5 @@
 import type { SxProps, Theme } from "@mui/material/styles";
-import type { StatusPageThemeTokens } from "../tokens";
+import { mixSeverityColor, type StatusPageThemeTokens } from "../tokens";
 import { type OverallTone, toneColor, toneSoft } from "../shared/overallStatus";
 import { MONO_STACK, SANS_STACK } from "../shared/fontStacks";
 
@@ -37,9 +37,9 @@ export interface RefinedStyles {
 	monitorUrl: SxProps<Theme>;
 	badge: (tone: OverallTone) => SxProps<Theme>;
 	heatmap: SxProps<Theme>;
-	heatmapCell: (kind: RefinedHeatCell) => SxProps<Theme>;
+	heatmapCell: (kind: RefinedHeatCell, severity?: number) => SxProps<Theme>;
 	histogram: SxProps<Theme>;
-	bar: (kind: RefinedBarKind, heightPct: number) => SxProps<Theme>;
+	bar: (kind: RefinedBarKind, heightPct: number, severity?: number) => SxProps<Theme>;
 	chartStats: SxProps<Theme>;
 	infra: SxProps<Theme>;
 	infraEmpty: SxProps<Theme>;
@@ -296,9 +296,12 @@ export const refinedStyles = (
 			gap: { xs: "1px", md: "3px" },
 			height: 42,
 		},
-		heatmapCell: (kind) => ({
+		heatmapCell: (kind, severity = 1) => ({
 			borderRadius: "2px",
-			background: heatCellBg[kind],
+			background:
+				kind === "degraded"
+					? mixSeverityColor(tokens.up, tokens.degraded, severity)
+					: heatCellBg[kind],
 			opacity: kind === "empty" ? 0.4 : 1,
 			transition: "transform 0.15s",
 			"&:hover": { transform: "scaleY(1.15)" },
@@ -312,8 +315,11 @@ export const refinedStyles = (
 			alignItems: "flex-end",
 			height: 42,
 		},
-		bar: (kind, heightPct) => ({
-			background: barBg[kind],
+		bar: (kind, heightPct, severity = 1) => ({
+			background:
+				kind === "degraded"
+					? mixSeverityColor(tokens.up, tokens.degraded, severity)
+					: barBg[kind],
 			borderRadius: "2px",
 			minHeight: 3,
 			opacity: kind === "empty" ? 0.4 : 1,

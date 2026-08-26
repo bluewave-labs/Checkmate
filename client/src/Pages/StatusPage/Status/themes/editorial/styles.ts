@@ -1,5 +1,5 @@
 import type { SxProps, Theme } from "@mui/material/styles";
-import type { StatusPageThemeTokens } from "../tokens";
+import { mixSeverityColor, type StatusPageThemeTokens } from "../tokens";
 import { type OverallTone, toneColor, toneSoft } from "../shared/overallStatus";
 import {
 	EDITORIAL_SECONDARY_SANS_STACK,
@@ -38,9 +38,9 @@ export interface EditorialStyles {
 	monitorUrl: SxProps<Theme>;
 	badge: (tone: OverallTone) => SxProps<Theme>;
 	heatmap: SxProps<Theme>;
-	heatmapCell: (kind: EditorialHeatCell) => SxProps<Theme>;
+	heatmapCell: (kind: EditorialHeatCell, severity?: number) => SxProps<Theme>;
 	histogram: SxProps<Theme>;
-	bar: (kind: EditorialBarKind, heightPct: number) => SxProps<Theme>;
+	bar: (kind: EditorialBarKind, heightPct: number, severity?: number) => SxProps<Theme>;
 	chartStats: SxProps<Theme>;
 	infra: SxProps<Theme>;
 	infraEmpty: SxProps<Theme>;
@@ -272,8 +272,11 @@ export const editorialStyles = (
 			gap: { xs: "1px", md: "2px" },
 			height: 40,
 		},
-		heatmapCell: (kind) => ({
-			background: heatCellBg[kind],
+		heatmapCell: (kind, severity = 1) => ({
+			background:
+				kind === "degraded"
+					? mixSeverityColor(tokens.up, tokens.degraded, severity)
+					: heatCellBg[kind],
 			opacity: kind === "empty" ? 0.5 : 1,
 		}),
 
@@ -285,8 +288,11 @@ export const editorialStyles = (
 			alignItems: "flex-end",
 			height: 40,
 		},
-		bar: (kind, heightPct) => ({
-			background: barBg[kind],
+		bar: (kind, heightPct, severity = 1) => ({
+			background:
+				kind === "degraded"
+					? mixSeverityColor(tokens.up, tokens.degraded, severity)
+					: barBg[kind],
 			minHeight: 3,
 			opacity: kind === "empty" ? 0.5 : 1,
 			height: `${heightPct}%`,

@@ -1,6 +1,6 @@
 import type { SxProps, Theme } from "@mui/material/styles";
 import { keyframes } from "@mui/system";
-import type { StatusPageThemeTokens } from "../tokens";
+import { mixSeverityColor, type StatusPageThemeTokens } from "../tokens";
 import { type OverallTone, toneColor, toneSoft } from "../shared/overallStatus";
 import { MONO_STACK, SANS_STACK } from "../shared/fontStacks";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
@@ -37,9 +37,9 @@ export interface ModernStyles {
 	monitorUrl: SxProps<Theme>;
 	badge: (tone: OverallTone) => SxProps<Theme>;
 	heatmap: SxProps<Theme>;
-	heatmapCell: (kind: ModernHeatCell) => SxProps<Theme>;
+	heatmapCell: (kind: ModernHeatCell, severity?: number) => SxProps<Theme>;
 	histogram: SxProps<Theme>;
-	bar: (kind: ModernBarKind, heightPct: number) => SxProps<Theme>;
+	bar: (kind: ModernBarKind, heightPct: number, severity?: number) => SxProps<Theme>;
 	chartStats: SxProps<Theme>;
 	infra: SxProps<Theme>;
 	infraEmpty: SxProps<Theme>;
@@ -83,13 +83,14 @@ export const modernStyles = (
 ): ModernStyles => {
 	const cardShadow = isDark ? darkShadow : lightShadow;
 	const cardHoverShadow = isDark ? darkShadowHover : lightShadowHover;
+	const darken = (color: string) => `color-mix(in srgb, ${color} 70%, #000000 30%)`;
 
 	const heatCellBg: Record<ModernHeatCell, string> = {
 		fast: `linear-gradient(180deg, ${tokens.up}, ${tokens.upStrong})`,
 		med: `linear-gradient(180deg, color-mix(in srgb, ${tokens.up} 70%, #ffffff 30%), ${tokens.up})`,
 		slow: `linear-gradient(180deg, ${tokens.warn}, ${tokens.degraded})`,
-		degraded: `linear-gradient(180deg, ${tokens.degraded}, color-mix(in srgb, ${tokens.degraded} 70%, #000000 30%))`,
-		down: `linear-gradient(180deg, ${tokens.down}, color-mix(in srgb, ${tokens.down} 70%, #000000 30%))`,
+		degraded: `linear-gradient(180deg, ${tokens.degraded}, ${darken(tokens.degraded)})`,
+		down: `linear-gradient(180deg, ${tokens.down}, ${darken(tokens.down)})`,
 		empty: tokens.border,
 	};
 
@@ -103,7 +104,7 @@ export const modernStyles = (
 	const gaugeFillBg: Record<ModernGaugeFill, string> = {
 		ok: `linear-gradient(90deg, ${tokens.up}, ${tokens.upStrong})`,
 		warm: `linear-gradient(90deg, ${tokens.warn}, ${tokens.degraded})`,
-		hot: `linear-gradient(90deg, ${tokens.down}, color-mix(in srgb, ${tokens.down} 70%, #000000 30%))`,
+		hot: `linear-gradient(90deg, ${tokens.down}, color-mix(in srgb, ${tokens.down}, ${darken(tokens.down)})`,
 	};
 
 	return {
@@ -354,13 +355,19 @@ export const modernStyles = (
 			gap: { xs: "1px", md: "3px" },
 			height: 46,
 		},
-		heatmapCell: (kind) => ({
-			borderRadius: "3px",
-			background: heatCellBg[kind],
-			opacity: kind === "empty" ? 0.4 : 1,
-			transition: "transform 0.15s",
-			"&:hover": { transform: "scaleY(1.2)" },
-		}),
+		heatmapCell: (kind, severity = 1) => {
+			const mixed = mixSeverityColor(tokens.up, tokens.degraded, severity);
+			return {
+				borderRadius: "3px",
+				background:
+					kind === "degraded"
+						? `linear-gradient(180deg, ${mixed}, ${darken(mixed)})`
+						: heatCellBg[kind],
+				opacity: kind === "empty" ? 0.4 : 1,
+				transition: "transform 0.15s",
+				"&:hover": { transform: "scaleY(1.2)" },
+			};
+		},
 
 		histogram: {
 			padding: { xs: "0 12px", md: "0 24px" },
@@ -370,8 +377,11 @@ export const modernStyles = (
 			alignItems: "flex-end",
 			height: 46,
 		},
-		bar: (kind, heightPct) => ({
-			background: barBg[kind],
+		bar: (kind, heightPct, severity = 1) => ({
+			background:
+				kind === "degraded"
+					? mixSeverityColor(tokens.up, tokens.degraded, severity)
+					: barBg[kind],
 			borderRadius: "3px",
 			minHeight: 4,
 			opacity: kind === "empty" ? 0.4 : 1,

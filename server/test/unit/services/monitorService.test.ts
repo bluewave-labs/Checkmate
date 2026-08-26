@@ -124,6 +124,38 @@ describe("MonitorService", () => {
 			expect(jobQueue.addJob).toHaveBeenCalledWith(MONITOR_ID, monitor);
 		});
 
+		it("strips a stray proxyId when proxyMode is not custom", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const monitor = makeMonitor();
+			(monitorsRepository.create as jest.Mock).mockResolvedValue(monitor);
+			const { service } = createService({ monitorsRepository });
+
+			await service.createMonitor(TEAM_ID, USER_ID, {
+				...monitor,
+				proxyMode: "inherit",
+				proxyId: "64b7a1f2c9e77a001a2b3c4d",
+			} as any);
+
+			const createdBody = (monitorsRepository.create as jest.Mock).mock.calls[0][0] as Record<string, unknown>;
+			expect(createdBody.proxyId).toBeUndefined();
+		});
+
+		it("keeps proxyId when proxyMode is custom", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const monitor = makeMonitor();
+			(monitorsRepository.create as jest.Mock).mockResolvedValue(monitor);
+			const { service } = createService({ monitorsRepository });
+
+			await service.createMonitor(TEAM_ID, USER_ID, {
+				...monitor,
+				proxyMode: "custom",
+				proxyId: "64b7a1f2c9e77a001a2b3c4d",
+			} as any);
+
+			const createdBody = (monitorsRepository.create as jest.Mock).mock.calls[0][0] as Record<string, unknown>;
+			expect(createdBody.proxyId).toBe("64b7a1f2c9e77a001a2b3c4d");
+		});
+
 		it("throws when repository returns null", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			(monitorsRepository.create as jest.Mock).mockResolvedValue(null);
@@ -750,8 +782,41 @@ describe("MonitorService", () => {
 			const result = await service.editMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID, body: { name: "Updated" } });
 
 			expect(result).toMatchObject({ name: "Updated" });
-			expect(monitorsRepository.updateById).toHaveBeenCalledWith(MONITOR_ID, TEAM_ID, { name: "Updated" });
+			expect(monitorsRepository.updateById).toHaveBeenCalledWith(MONITOR_ID, TEAM_ID, { name: "Updated" }, { unsetProxyId: false });
 			expect(jobQueue.updateJob).toHaveBeenCalledWith(updatedMonitor);
+		});
+
+		it("keeps proxyId and does not unset it when proxyMode is custom", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.updateById as jest.Mock).mockResolvedValue(makeMonitor());
+			const { service } = createService({ monitorsRepository });
+
+			await service.editMonitor({
+				teamId: TEAM_ID,
+				monitorId: MONITOR_ID,
+				body: { proxyMode: "custom", proxyId: "64b7a1f2c9e77a001a2b3c4d" } as any,
+			});
+
+			expect(monitorsRepository.updateById).toHaveBeenCalledWith(
+				MONITOR_ID,
+				TEAM_ID,
+				{ proxyMode: "custom", proxyId: "64b7a1f2c9e77a001a2b3c4d" },
+				{ unsetProxyId: false }
+			);
+		});
+
+		it("strips proxyId and unsets it when proxyMode moves off custom", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.updateById as jest.Mock).mockResolvedValue(makeMonitor());
+			const { service } = createService({ monitorsRepository });
+
+			await service.editMonitor({
+				teamId: TEAM_ID,
+				monitorId: MONITOR_ID,
+				body: { proxyMode: "inherit", proxyId: "64b7a1f2c9e77a001a2b3c4d" } as any,
+			});
+
+			expect(monitorsRepository.updateById).toHaveBeenCalledWith(MONITOR_ID, TEAM_ID, { proxyMode: "inherit" }, { unsetProxyId: true });
 		});
 	});
 

@@ -69,7 +69,12 @@ const httpSchema = baseSchema.extend({
 	type: z.literal("http"),
 	url: urlSchema,
 	proxyMode: z.enum(ProxyModes),
-	proxyId: z.string().optional(),
+	// The form uses "" for "no proxy selected". drop it from the payload so the
+	// server never receives an empty ObjectId
+	proxyId: z
+		.string()
+		.transform((value) => (value === "" ? undefined : value))
+		.optional(),
 	method: z.enum(HttpMethods).optional().register(monitorStepRegistry, { step: 2 }),
 	ignoreTlsErrors: z.boolean().register(monitorStepRegistry, { step: 2 }),
 	useAdvancedMatching: z.boolean().register(monitorStepRegistry, { step: 2 }),

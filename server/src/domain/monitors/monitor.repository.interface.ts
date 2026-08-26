@@ -34,7 +34,7 @@ export interface IMonitorsRepository {
 	findByIds(monitorIds: string[], options?: { recentChecks?: RecentChecksMode }): Promise<Monitor[]>;
 
 	// update
-	updateById(monitorId: string, teamId: string, updates: Partial<Monitor>): Promise<Monitor>;
+	updateById(monitorId: string, teamId: string, updates: Partial<Monitor>, options?: { unsetProxyId?: boolean }): Promise<Monitor>;
 	updateByIds(monitorIds: string[], teamId: string, updates: Partial<Monitor>, excludeStatuses?: MonitorStatus[]): Promise<number>;
 	updateStatusWindowAndChecks(
 		monitorId: string,
