@@ -186,8 +186,7 @@ export const SettingsPage = () => {
 		if (
 			!formValues.systemEmailHost ||
 			!formValues.systemEmailPort ||
-			!formValues.systemEmailAddress ||
-			!formValues.systemEmailPassword
+			!formValues.systemEmailAddress
 		) {
 			alert("Please fill in all required email fields before testing.");
 			return;
@@ -749,8 +748,7 @@ export const SettingsPage = () => {
 										disabled={
 											!form.watch("systemEmailHost") ||
 											!form.watch("systemEmailPort") ||
-											!form.watch("systemEmailAddress") ||
-											!form.watch("systemEmailPassword")
+											!form.watch("systemEmailAddress")
 										}
 									>
 										{t("common.buttons.sendTestEmail")}
