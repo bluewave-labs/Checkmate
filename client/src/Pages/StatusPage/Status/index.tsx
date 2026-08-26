@@ -113,6 +113,7 @@ const StatusPageView = () => {
 		apiUrl,
 		{},
 		{
+			keepPreviousData: true,
 			refreshInterval: range === "latest" ? 10000 : 60000,
 		}
 	);
