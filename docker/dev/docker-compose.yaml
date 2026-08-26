@@ -47,9 +47,9 @@ services:
     volumes:
       - ./mongo/data:/data/db
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--quiet"]
-      interval: 30s
-      timeout: 5s
-      start_period: 30s
-      start_interval: 2s
-      retries: 5
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/27017'"]
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
