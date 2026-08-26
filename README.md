@@ -92,6 +92,10 @@ JWT_SECRET="$(openssl rand -hex 32)" docker compose up -d
 
 Then open http://localhost:52345. If the app is reached at another origin (domain or LAN IP), set `CLIENT_HOST` accordingly. To build the image yourself, run `docker build -f docker/Dockerfile -t checkmate .` from a checkout. For TLS, put any reverse proxy (Caddy, Traefik, nginx) in front of port 52345.
 
+There are also 1-click installation options like [Repocloud](https://repocloud.io/details/Checkmate),
+[Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) or [Cloudzy](https://cloudzy.com/marketplace/checkmate).
+
+
 ### Configuration
 
 The image is configured entirely through environment variables on the server container:
