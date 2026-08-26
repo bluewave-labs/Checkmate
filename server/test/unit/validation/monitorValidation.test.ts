@@ -477,6 +477,7 @@ describe("monitorValidation — proxy fields", () => {
 		type: "http" as const,
 		url: "https://example.com",
 	};
+	const PROXY_ID = "64b7a1f2c9e77a001a2b3c4d";
 
 	describe("createMonitorBodyValidation", () => {
 		it("defaults proxyMode to inherit", () => {
@@ -487,14 +488,29 @@ describe("monitorValidation — proxy fields", () => {
 		});
 
 		it("accepts custom mode with a proxyId", () => {
-			const parsed = createMonitorBodyValidation.parse({ ...baseHttpBody, proxyMode: "custom", proxyId: "proxy-1" });
+			const parsed = createMonitorBodyValidation.parse({ ...baseHttpBody, proxyMode: "custom", proxyId: PROXY_ID });
 
 			expect(parsed.proxyMode).toBe("custom");
-			expect(parsed.proxyId).toBe("proxy-1");
+			expect(parsed.proxyId).toBe(PROXY_ID);
 		});
 
 		it("rejects custom mode without a proxyId", () => {
 			expect(() => createMonitorBodyValidation.parse({ ...baseHttpBody, proxyMode: "custom" })).toThrow();
+		});
+
+		it("rejects custom mode with an empty-string proxyId", () => {
+			expect(() => createMonitorBodyValidation.parse({ ...baseHttpBody, proxyMode: "custom", proxyId: "" })).toThrow();
+		});
+
+		it("normalizes an empty-string proxyId to undefined on non-custom modes", () => {
+			for (const proxyMode of ["inherit", "none"] as const) {
+				const parsed = createMonitorBodyValidation.parse({ ...baseHttpBody, proxyMode, proxyId: "" });
+				expect(parsed.proxyId).toBeUndefined();
+			}
+		});
+
+		it("rejects a proxyId that is not a valid ObjectId", () => {
+			expect(() => createMonitorBodyValidation.parse({ ...baseHttpBody, proxyMode: "custom", proxyId: "proxy-1" })).toThrow();
 		});
 
 		it("rejects an unknown proxyMode", () => {
@@ -503,7 +519,7 @@ describe("monitorValidation — proxy fields", () => {
 
 		it("allows a stray proxyId on non-custom modes", () => {
 			for (const proxyMode of ["inherit", "none"] as const) {
-				const parsed = createMonitorBodyValidation.parse({ ...baseHttpBody, proxyMode, proxyId: "proxy-1" });
+				const parsed = createMonitorBodyValidation.parse({ ...baseHttpBody, proxyMode, proxyId: PROXY_ID });
 				expect(parsed.proxyMode).toBe(proxyMode);
 			}
 		});
@@ -521,9 +537,19 @@ describe("monitorValidation — proxy fields", () => {
 		});
 
 		it("accepts custom mode with a proxyId", () => {
-			const parsed = editMonitorBodyValidation.parse({ proxyMode: "custom", proxyId: "proxy-1" });
+			const parsed = editMonitorBodyValidation.parse({ proxyMode: "custom", proxyId: PROXY_ID });
 
-			expect(parsed.proxyId).toBe("proxy-1");
+			expect(parsed.proxyId).toBe(PROXY_ID);
+		});
+
+		it("normalizes an empty-string proxyId to undefined", () => {
+			const parsed = editMonitorBodyValidation.parse({ proxyMode: "inherit", proxyId: "" });
+
+			expect(parsed.proxyId).toBeUndefined();
+		});
+
+		it("rejects a proxyId that is not a valid ObjectId", () => {
+			expect(() => editMonitorBodyValidation.parse({ proxyMode: "custom", proxyId: "not-an-object-id" })).toThrow();
 		});
 	});
 

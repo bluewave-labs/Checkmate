@@ -133,6 +133,10 @@ export class MonitorService implements IMonitorService {
 	}
 
 	createMonitor = async (teamId: string, userId: string, body: Monitor): Promise<void> => {
+		// proxyId is only needed in custom mode
+		if (body.proxyMode !== "custom") {
+			delete body.proxyId;
+		}
 		const monitor = await this.monitorsRepository.create(body, teamId, userId);
 		if (!monitor) {
 			throw new AppError({ message: "Failed to create monitor", status: 500, service: SERVICE_NAME, method: "createMonitor" });
@@ -375,7 +379,12 @@ export class MonitorService implements IMonitorService {
 	};
 
 	editMonitor = async ({ teamId, monitorId, body }: { teamId: string; monitorId: string; body: Partial<Monitor> }) => {
-		const editedMonitor = await this.monitorsRepository.updateById(monitorId, teamId, body);
+		// Moving off custom mode orphans the stored proxyId. Unset it so the stale reference doesn't block deleting that proxy
+		const unsetProxyId = body.proxyMode !== undefined && body.proxyMode !== "custom";
+		if (unsetProxyId) {
+			delete body.proxyId;
+		}
+		const editedMonitor = await this.monitorsRepository.updateById(monitorId, teamId, body, { unsetProxyId });
 		await this.scheduler.updateJob(editedMonitor);
 		return editedMonitor;
 	};
