@@ -243,3 +243,10 @@ export const themeTokens: Record<StatusPageTheme, ThemeVariants> = {
 	editorial,
 	minimal,
 };
+
+// Interpolate between a theme's up and degraded colors by severity (0..1).
+export const mixSeverityColor = (
+	up: string,
+	degraded: string,
+	severity: number
+): string => `color-mix(in oklch, ${degraded} ${Math.round(severity * 100)}%, ${up})`;

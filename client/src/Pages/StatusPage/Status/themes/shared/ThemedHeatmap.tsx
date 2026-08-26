@@ -10,7 +10,7 @@ import type {
 interface Props {
 	cells: ChartCell[];
 	containerSx: SxProps<Theme>;
-	cellSx: (kind: HeatCellKind) => SxProps<Theme>;
+	cellSx: (kind: HeatCellKind, severity?: number) => SxProps<Theme>;
 }
 
 export const ThemedHeatmap = ({ cells, containerSx, cellSx }: Props) => {
@@ -42,7 +42,7 @@ export const ThemedHeatmap = ({ cells, containerSx, cellSx }: Props) => {
 						placement="top"
 					>
 						<Box
-							sx={cellSx(cell.heatKind)}
+							sx={cellSx(cell.heatKind, cell.severity)}
 							aria-label={cell.ariaLabel}
 						/>
 					</Tooltip>
