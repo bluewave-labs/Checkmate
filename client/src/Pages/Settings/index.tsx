@@ -197,12 +197,14 @@ export const SettingsPage = () => {
 			systemEmailHost: formValues.systemEmailHost,
 			systemEmailPort: formValues.systemEmailPort,
 			systemEmailAddress: formValues.systemEmailAddress,
-			systemEmailPassword: formValues.systemEmailPassword,
 			systemEmailSecure: formValues.systemEmailSecure,
 			systemEmailPool: formValues.systemEmailPool,
 			systemEmailIgnoreTLS: formValues.systemEmailIgnoreTLS,
 			systemEmailRequireTLS: formValues.systemEmailRequireTLS,
 			systemEmailRejectUnauthorized: formValues.systemEmailRejectUnauthorized,
+			...(formValues.systemEmailPassword && {
+				systemEmailPassword: formValues.systemEmailPassword,
+			}),
 			...(formValues.systemEmailUser && { systemEmailUser: formValues.systemEmailUser }),
 			...(formValues.systemEmailDisplayName && {
 				systemEmailDisplayName: formValues.systemEmailDisplayName,
