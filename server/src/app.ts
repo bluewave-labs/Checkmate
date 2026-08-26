@@ -76,7 +76,7 @@ export const createApp = ({
 				directives: {
 					upgradeInsecureRequests: null,
 					"script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-					"img-src": ["'self'", "data:", "https://img.shields.io"],
+					"img-src": ["'self'", "data:", "blob:", "https://img.shields.io"],
 					"object-src": ["'none'"],
 					"base-uri": ["'self'"],
 				},

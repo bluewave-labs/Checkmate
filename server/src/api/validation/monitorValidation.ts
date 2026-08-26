@@ -10,6 +10,7 @@ import {
 	MonitorStatuses,
 	MonitorTypes,
 	PageSpeedStrategies,
+	ProxyModes,
 } from "@/domain/monitors/monitor.type.js";
 import { DateRanges, SortOrders } from "@/types/query.js";
 
@@ -25,7 +26,6 @@ export const getMonitorByIdQueryValidation = z.object({
 	limit: z.coerce.number().optional(),
 	dateRange: z.enum(DateRanges).optional(),
 	numToDisplay: z.coerce.number().optional(),
-	normalize: booleanCoercion.optional(),
 	continent: z.union([z.enum(GeoContinents), z.array(z.enum(GeoContinents))]).optional(),
 });
 
@@ -50,6 +50,10 @@ export const getMonitorsWithChecksQueryValidation = z.object({
 });
 
 export const getCertificateParamValidation = z.object({
+	monitorId: z.string().min(1, "Monitor ID is required"),
+});
+
+export const getDomainParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
 });
 
@@ -97,6 +101,16 @@ const refineHeadMatching = (body: { method?: string; useAdvancedMatching?: boole
 	}
 };
 
+const refineProxySelection = (body: { proxyMode?: string; proxyId?: string }, ctx: z.RefinementCtx) => {
+	if (body.proxyMode === "custom" && !body.proxyId) {
+		ctx.addIssue({
+			code: "custom",
+			path: ["proxyId"],
+			message: "A proxy must be selected when proxy mode is custom",
+		});
+	}
+};
+
 export const createMonitorBodyValidation = z
 	.object({
 		_id: z.string().optional(),
@@ -107,6 +121,8 @@ export const createMonitorBodyValidation = z
 		statusWindowThreshold: z.number().min(1).max(100).default(60),
 		url: z.string().min(1, "URL is required"),
 		ignoreTlsErrors: z.boolean().default(false),
+		proxyMode: z.enum(ProxyModes).default("inherit"),
+		proxyId: z.string().optional(),
 		useAdvancedMatching: z.boolean().default(false),
 		port: z.number().optional(),
 		isActive: z.boolean().optional(),
@@ -137,7 +153,8 @@ export const createMonitorBodyValidation = z
 	.superRefine(refineDnsHostname)
 	.superRefine(refineStrategyType)
 	.superRefine(refineHeadMatching)
-	.superRefine(refineRegexPattern);
+	.superRefine(refineRegexPattern)
+	.superRefine(refineProxySelection);
 
 export const editMonitorBodyValidation = z
 	.object({
@@ -153,6 +170,8 @@ export const editMonitorBodyValidation = z
 		customUpCodes: z.array(httpStatusCode).optional(),
 		secret: z.string().optional(),
 		ignoreTlsErrors: z.boolean().optional(),
+		proxyMode: z.enum(ProxyModes).optional(),
+		proxyId: z.string().optional(),
 		useAdvancedMatching: z.boolean().optional(),
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
@@ -177,7 +196,8 @@ export const editMonitorBodyValidation = z
 	.superRefine(refineDnsHostname)
 	.superRefine(refineStrategyType)
 	.superRefine(refineHeadMatching)
-	.superRefine(refineRegexPattern);
+	.superRefine(refineRegexPattern)
+	.superRefine(refineProxySelection);
 
 export const pauseMonitorParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
@@ -197,7 +217,6 @@ export const getUptimeDetailsByIdParamValidation = z.object({
 
 export const getUptimeDetailsByIdQueryValidation = z.object({
 	dateRange: z.enum(DateRanges),
-	normalize: booleanCoercion.optional(),
 });
 
 const importedMonitorSchema = z
@@ -213,6 +232,8 @@ const importedMonitorSchema = z
 		statusWindowThreshold: z.number().min(1).max(100).default(60),
 		type: z.enum(MonitorTypes, "Invalid monitor type"),
 		ignoreTlsErrors: z.boolean().default(false),
+		proxyMode: z.enum(ProxyModes).default("inherit"),
+		proxyId: z.string().optional(),
 		useAdvancedMatching: z.boolean().default(false),
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
@@ -251,7 +272,8 @@ const importedMonitorSchema = z
 	.superRefine(refineDnsHostname)
 	.superRefine(refineStrategyType)
 	.superRefine(refineHeadMatching)
-	.superRefine(refineRegexPattern);
+	.superRefine(refineRegexPattern)
+	.superRefine(refineProxySelection);
 
 export const importMonitorsBodyValidation = z.object({
 	monitors: z.array(importedMonitorSchema).min(1, "At least one monitor is required"),
@@ -283,6 +305,8 @@ export const monitorResponseSchema = z
 		statusWindowSize: z.number(),
 		statusWindowThreshold: z.number(),
 		ignoreTlsErrors: z.boolean(),
+		proxyMode: z.enum(ProxyModes),
+		proxyId: z.string().optional(),
 		useAdvancedMatching: z.boolean(),
 		jsonPath: z.string().optional(),
 		expectedValue: z.string().optional(),
@@ -312,3 +336,52 @@ export const monitorResponseSchema = z
 		lastEvaluatedAt: z.number(),
 	})
 	.passthrough();
+
+// Grouped-check buckets returned by GET /monitors/uptime/details/{monitorId}. Keep
+// aligned with GroupedCheck / GroupedUptimeCheck in domain/checks/check.type.ts.
+export const groupedCheckResponseSchema = z.object({
+	bucketDate: z.string(),
+	avgResponseTime: z.number(),
+	totalChecks: z.number(),
+});
+
+export const groupedUptimeCheckResponseSchema = groupedCheckResponseSchema.extend({
+	avgDns: z.number(),
+	avgTcp: z.number(),
+	avgTls: z.number(),
+	avgRequest: z.number(),
+	avgFirstByte: z.number(),
+	avgDownload: z.number(),
+});
+
+// Keep aligned with MonitorStats in domain/monitor-stats/monitor-stats.type.ts.
+export const monitorStatsResponseSchema = z.object({
+	id: z.string(),
+	monitorId: z.string(),
+	avgResponseTime: z.number(),
+	maxResponseTime: z.number(),
+	totalChecks: z.number(),
+	totalUpChecks: z.number(),
+	totalDownChecks: z.number(),
+	uptimePercentage: z.number(),
+	lastCheckTimestamp: z.number(),
+	lastResponseTime: z.number(),
+	timeOfLastFailure: z.number().optional(),
+	createdAt: z.string(),
+	updatedAt: z.string(),
+});
+
+// Response of GET /monitors/uptime/details/{monitorId}. Keep aligned with
+// UptimeDetailsResult in domain/monitors/monitor.type.ts; the monitor here is the
+// repository's domain entity, which serializes `id` rather than `_id`.
+export const uptimeDetailsResponseSchema = z.object({
+	monitorData: z.object({
+		monitor: monitorResponseSchema.omit({ _id: true }).extend({ id: z.string() }),
+		groupedChecks: z.array(groupedUptimeCheckResponseSchema),
+		groupedUpChecks: z.array(groupedCheckResponseSchema),
+		groupedDownChecks: z.array(groupedCheckResponseSchema),
+		groupedAvgResponseTime: z.number(),
+		groupedUptimePercentage: z.number(),
+	}),
+	monitorStats: monitorStatsResponseSchema.nullable(),
+});

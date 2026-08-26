@@ -38,7 +38,7 @@ const createScheduler = (overrides?: { queueMode?: QueueMode; mocks?: Record<str
 		deleteById: jest.fn<any>().mockResolvedValue(undefined),
 	};
 	const monitorsRepository = {
-		findAll: jest.fn<any>().mockResolvedValue([]),
+		findAllForScheduling: jest.fn<any>().mockResolvedValue([]),
 	};
 	const logger = createMockLogger();
 	const mocks = { jobsRepository, queueWorkersRepository, monitorsRepository, logger, ...overrides?.mocks };
@@ -73,7 +73,7 @@ describe("JobScheduler", () => {
 		it("primary mode reconciles: seeds a check row per monitor plus the two cleanup rows", async () => {
 			const { scheduler, mocks } = createScheduler({
 				queueMode: "primary",
-				mocks: { monitorsRepository: { findAll: jest.fn<any>().mockResolvedValue([makeMonitor()]) } },
+				mocks: { monitorsRepository: { findAllForScheduling: jest.fn<any>().mockResolvedValue([makeMonitor()]) } },
 			});
 			await scheduler.init();
 
@@ -87,7 +87,7 @@ describe("JobScheduler", () => {
 		it("primary mode also seeds a geo-check row for geo-enabled monitors", async () => {
 			const { scheduler, mocks } = createScheduler({
 				queueMode: "primary",
-				mocks: { monitorsRepository: { findAll: jest.fn<any>().mockResolvedValue([makeMonitor({ geoCheckEnabled: true })]) } },
+				mocks: { monitorsRepository: { findAllForScheduling: jest.fn<any>().mockResolvedValue([makeMonitor({ geoCheckEnabled: true })]) } },
 			});
 			await scheduler.init();
 
@@ -98,12 +98,12 @@ describe("JobScheduler", () => {
 		it("worker mode heartbeats but does not reconcile (no monitor reads, no seeds)", async () => {
 			const { scheduler, mocks } = createScheduler({
 				queueMode: "worker",
-				mocks: { monitorsRepository: { findAll: jest.fn<any>().mockResolvedValue([makeMonitor()]) } },
+				mocks: { monitorsRepository: { findAllForScheduling: jest.fn<any>().mockResolvedValue([makeMonitor()]) } },
 			});
 			await scheduler.init();
 
 			expect(mocks.queueWorkersRepository.upsert).toHaveBeenCalledWith("worker-1", "worker", false);
-			expect(mocks.monitorsRepository.findAll).not.toHaveBeenCalled();
+			expect(mocks.monitorsRepository.findAllForScheduling).not.toHaveBeenCalled();
 			expect(mocks.jobsRepository.upsertJob).not.toHaveBeenCalled();
 			expect(mocks.jobsRepository.upsertCleanupJob).not.toHaveBeenCalled();
 		});

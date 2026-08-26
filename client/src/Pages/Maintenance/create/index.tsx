@@ -1,18 +1,8 @@
 import Stack from "@mui/material/Stack";
-import MenuItem from "@mui/material/MenuItem";
 import { logger } from "@/Utils/logger";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
 import { BasePage, ConfigBox } from "@/Components/design-elements";
-import {
-	TextField,
-	Select,
-	DatePicker,
-	TimePicker,
-	Button,
-	Autocomplete,
-} from "@/Components/inputs";
+import { Button } from "@/Components/inputs";
 
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -25,10 +15,17 @@ import { useGet, usePost, usePatch } from "@/Hooks/UseApi";
 import { mutate } from "swr";
 import { useParams, useNavigate } from "react-router-dom";
 import type { Monitor } from "@/Types/Monitor";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
-import { Trash2 } from "lucide-react";
+import { FormTextField } from "@/Components/inputs/forms/FormTextField";
+import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
+import {
+	FormDatePickerField,
+	FormTimePickerField,
+} from "@/Components/inputs/forms/FormDateTimePickerField";
+import { FormMultiSelectField } from "@/Components/inputs/forms/FormMultiSelectField";
+import { FormNumberField } from "@/Components/inputs/forms/FormNumberField";
 
 const CreateMaintenanceWindowPage = () => {
 	const theme = useTheme();
@@ -57,7 +54,7 @@ const CreateMaintenanceWindowPage = () => {
 		defaultValues: defaults,
 	});
 
-	const { control, handleSubmit, trigger } = form;
+	const { handleSubmit, trigger } = form;
 	useEffect(() => {
 		if (existingMaintenanceWindow) {
 			form.reset(defaults);
@@ -114,255 +111,117 @@ const CreateMaintenanceWindowPage = () => {
 	};
 
 	return (
-		<BasePage
-			component={"form"}
-			onSubmit={handleSubmit(onSubmit, onError)}
-		>
-			<ConfigBox
-				title={t("pages.maintenanceWindow.form.general.title")}
-				subtitle={t("pages.maintenanceWindow.form.general.description")}
-				rightContent={
-					<Stack spacing={theme.spacing(LAYOUT.MD)}>
-						<Controller
-							name="name"
-							control={control}
-							defaultValue={defaults.name}
-							render={({ field, fieldState }) => (
-								<TextField
-									{...field}
-									type="text"
-									fieldLabel={t("pages.maintenanceWindow.form.general.option.name.label")}
-									placeholder={t(
-										"pages.maintenanceWindow.form.general.option.name.placeholder"
-									)}
-									fullWidth
-									error={!!fieldState.error}
-									helperText={fieldState.error?.message ?? ""}
-								/>
-							)}
-						/>
-						<Controller
-							name="repeat"
-							control={control}
-							defaultValue={defaults.repeat}
-							render={({ field, fieldState }) => (
-								<Select
-									value={field.value}
-									fieldLabel={t(
-										"pages.maintenanceWindow.form.general.option.repeat.label"
-									)}
-									error={!!fieldState.error}
-									onChange={field.onChange}
-								>
-									{repeatOptions.map((option) => (
-										<MenuItem
-											key={option.id}
-											value={option.id}
-										>
-											<Typography>{option.name}</Typography>
-										</MenuItem>
-									))}
-								</Select>
-							)}
-						/>
-					</Stack>
-				}
-			/>
-			<ConfigBox
-				title={t("pages.maintenanceWindow.form.startDate.title")}
-				subtitle={t("pages.maintenanceWindow.form.startDate.description")}
-				rightContent={
-					<Stack spacing={theme.spacing(LAYOUT.MD)}>
-						<Controller
-							name="startDate"
-							control={control}
-							defaultValue={defaults.startDate}
-							render={({ field, fieldState }) => (
-								<DatePicker
-									fieldLabel={t(
-										"pages.maintenanceWindow.form.startDate.option.startDate.label"
-									)}
-									value={field.value ? dayjs(field.value, "YYYY-MM-DD") : null}
-									onChange={(date) => {
-										field.onChange(date ? date.format("YYYY-MM-DD") : "");
-										trigger("startDate");
-									}}
-									error={!!fieldState.error}
-									helperText={fieldState.error?.message}
-								/>
-							)}
-						/>
-					</Stack>
-				}
-			/>
-			<ConfigBox
-				title={t("pages.maintenanceWindow.form.startTime.title")}
-				subtitle={t("pages.maintenanceWindow.form.startTime.description")}
-				rightContent={
-					<Stack spacing={theme.spacing(LAYOUT.MD)}>
-						<Controller
-							name="startTime"
-							control={control}
-							defaultValue={defaults.startTime}
-							render={({ field }) => (
-								<TimePicker
-									fieldLabel={t(
-										"pages.maintenanceWindow.form.startTime.option.startTime.label"
-									)}
-									value={field.value ? dayjs(field.value, "HH:mm") : null}
-									onChange={(time) => {
-										field.onChange(time ? time.format("HH:mm") : "");
-										trigger("startDate");
-									}}
-								/>
-							)}
-						/>
-						<Stack
-							direction="row"
-							alignItems="flex-start"
-							spacing={theme.spacing(LAYOUT.MD)}
-						>
-							<Controller
-								name="duration"
-								control={control}
-								defaultValue={defaults.duration}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										type="number"
-										fieldLabel={t(
-											"pages.maintenanceWindow.form.startTime.option.duration.label"
-										)}
-										value={field.value === 0 ? "" : field.value}
-										onChange={(e) => {
-											const val = e.target.value;
-											field.onChange(val === "" ? 0 : Number(val));
-										}}
-										error={!!fieldState.error}
-										helperText={fieldState.error?.message ?? ""}
-										sx={{ width: 120 }}
-									/>
+		<FormProvider {...form}>
+			<BasePage
+				component={"form"}
+				onSubmit={handleSubmit(onSubmit, onError)}
+			>
+				<ConfigBox
+					title={t("pages.maintenanceWindow.form.general.title")}
+					subtitle={t("pages.maintenanceWindow.form.general.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(LAYOUT.MD)}>
+							<FormTextField
+								name="name"
+								fieldLabel={t("pages.maintenanceWindow.form.general.option.name.label")}
+								placeholder={t(
+									"pages.maintenanceWindow.form.general.option.name.placeholder"
 								)}
 							/>
-							<Controller
-								name="durationUnit"
-								control={control}
-								defaultValue={defaults.durationUnit}
-								render={({ field }) => (
-									<Select
-										fieldLabel=" "
-										value={field.value}
-										onChange={field.onChange}
-										sx={{ minWidth: 120 }}
-									>
-										{durationUnitOptions.map((option) => (
-											<MenuItem
-												key={option.id}
-												value={option.id}
-											>
-												<Typography>{option.name}</Typography>
-											</MenuItem>
-										))}
-									</Select>
-								)}
+							<FormSelectField
+								name="repeat"
+								fieldLabel={t("pages.maintenanceWindow.form.general.option.repeat.label")}
+								options={repeatOptions.map((option) => ({
+									value: option.id,
+									label: option.name,
+								}))}
 							/>
 						</Stack>
-					</Stack>
-				}
-			/>
-			<ConfigBox
-				title={t("pages.maintenanceWindow.form.startTime.monitors.title")}
-				subtitle={t("pages.maintenanceWindow.form.startTime.monitors.description")}
-				rightContent={
-					<Controller
-						name="monitors"
-						control={control}
-						defaultValue={defaults.monitors}
-						render={({ field, fieldState }) => {
-							const monitorsList = monitors ?? [];
-							const selectedMonitors = field.value
-								.map((id: string) => monitorsList.find((m) => m.id === id))
-								.filter((m): m is Monitor => m !== undefined);
-
-							return (
-								<Stack spacing={theme.spacing(LAYOUT.MD)}>
-									<Autocomplete
-										multiple
-										options={monitorsList}
-										getOptionLabel={(option: Monitor) => option.name}
-										value={selectedMonitors}
-										onChange={(_, newValue) => {
-											field.onChange(newValue.map((m: Monitor) => m.id));
-										}}
-										fieldLabel={t(
-											"pages.maintenanceWindow.form.startTime.monitors.option.addMonitors.label"
-										)}
-										renderInput={(params) => (
-											<TextField
-												{...params}
-												placeholder={
-													selectedMonitors.length === 0
-														? t(
-																"pages.maintenanceWindow.form.startTime.monitors.option.addMonitors.label"
-															)
-														: ""
-												}
-												error={!!fieldState.error}
-												helperText={fieldState.error?.message}
-											/>
-										)}
-									/>
-									{selectedMonitors.length > 0 && (
-										<Stack>
-											{selectedMonitors.map((monitor) => (
-												<Stack
-													key={monitor.id}
-													direction="row"
-													alignItems="center"
-													padding={theme.spacing(LAYOUT.XS)}
-													marginTop={theme.spacing(SPACING.LG)}
-													borderRadius={1}
-													sx={{
-														border: `1px solid ${theme.palette.divider}`,
-													}}
-												>
-													<Typography flexGrow={1}>{monitor.name}</Typography>
-													<IconButton
-														size="small"
-														onClick={() => {
-															field.onChange(
-																field.value.filter((id: string) => id !== monitor.id)
-															);
-														}}
-														aria-label="Remove monitor"
-													>
-														<Trash2 size={16} />
-													</IconButton>
-												</Stack>
-											))}
-										</Stack>
+					}
+				/>
+				<ConfigBox
+					title={t("pages.maintenanceWindow.form.startDate.title")}
+					subtitle={t("pages.maintenanceWindow.form.startDate.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(LAYOUT.MD)}>
+							<FormDatePickerField
+								name="startDate"
+								fieldLabel={t(
+									"pages.maintenanceWindow.form.startDate.option.startDate.label"
+								)}
+								onValueChange={() => trigger("startDate")}
+							/>
+						</Stack>
+					}
+				/>
+				<ConfigBox
+					title={t("pages.maintenanceWindow.form.startTime.title")}
+					subtitle={t("pages.maintenanceWindow.form.startTime.description")}
+					rightContent={
+						<Stack spacing={theme.spacing(LAYOUT.MD)}>
+							<FormTimePickerField
+								name="startTime"
+								fieldLabel={t(
+									"pages.maintenanceWindow.form.startTime.option.startTime.label"
+								)}
+								onValueChange={() => trigger("startDate")}
+							/>
+							<Stack
+								direction="row"
+								alignItems="flex-start"
+								spacing={theme.spacing(LAYOUT.MD)}
+							>
+								<FormNumberField
+									name="duration"
+									fieldLabel={t(
+										"pages.maintenanceWindow.form.startTime.option.duration.label"
 									)}
-								</Stack>
-							);
-						}}
-					/>
-				}
-			/>
-			<Stack
-				direction="row"
-				justifyContent="flex-end"
-				spacing={theme.spacing(SPACING.LG)}
-			>
-				<Button
-					loading={isLoading}
-					type="submit"
-					variant="contained"
-					color="primary"
+									sx={{ width: 120 }}
+								/>
+								<FormSelectField
+									name="durationUnit"
+									fieldLabel={" "}
+									options={durationUnitOptions.map((option) => ({
+										value: option.id,
+										label: option.name,
+									}))}
+								/>
+							</Stack>
+						</Stack>
+					}
+				/>
+				<ConfigBox
+					title={t("pages.maintenanceWindow.form.startTime.monitors.title")}
+					subtitle={t("pages.maintenanceWindow.form.startTime.monitors.description")}
+					rightContent={
+						<FormMultiSelectField
+							name="monitors"
+							fieldLabel={t(
+								"pages.maintenanceWindow.form.startTime.monitors.option.addMonitors.label"
+							)}
+							placeholder={t(
+								"pages.maintenanceWindow.form.startTime.monitors.option.addMonitors.label"
+							)}
+							options={monitors ?? []}
+						/>
+					}
+				/>
+				<Stack
+					direction="row"
+					justifyContent="flex-end"
+					spacing={theme.spacing(SPACING.LG)}
 				>
-					{t("common.buttons.save")}
-				</Button>
-			</Stack>
-		</BasePage>
+					<Button
+						loading={isLoading}
+						type="submit"
+						variant="contained"
+						color="primary"
+					>
+						{t("common.buttons.save")}
+					</Button>
+				</Stack>
+			</BasePage>
+		</FormProvider>
 	);
 };
 

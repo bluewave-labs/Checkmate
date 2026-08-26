@@ -3,7 +3,7 @@ import Typography from "@mui/material/Typography";
 import { BaseChart } from "@/Components/design-elements";
 import { useTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
-import { formatDateWithTz } from "@/Utils/TimeUtils";
+import { formatDateWithTz, formatMs } from "@/Utils/TimeUtils";
 import { useTranslation } from "react-i18next";
 import { ResponsiveContainer, BarChart, XAxis, Bar, Cell, Tooltip } from "recharts";
 import { getResponseTimeColor } from "@/Utils/MonitorUtils";
@@ -100,7 +100,7 @@ export const HistogramStatus = ({
 					</Typography>
 				) : null}
 				<Typography variant="caption">{titleText}</Typography>
-				<Typography variant="body2">{Math.floor(avg)} ms</Typography>
+				<Typography variant="body2">{formatMs(avg)}</Typography>
 			</Stack>
 		);
 	};

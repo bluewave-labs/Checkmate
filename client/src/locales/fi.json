@@ -58,8 +58,8 @@
 				"uptime": "Käytettävyys"
 			},
 			"histogram": {
-				"avg": "Keskim.: {{value}} ms",
-				"max": "Maks.: {{value}} ms"
+				"avg": "Keskim.: {{value}}",
+				"max": "Maks.: {{value}}"
 			}
 		},
 		"dialogs": {
@@ -1352,10 +1352,10 @@
 					"responseTime": "Vasteaika"
 				},
 				"chart": {
-					"avg": "ka {{value}}ms",
+					"avg": "ka {{value}}",
 					"downTooltip": "Alhaalla",
 					"heatmapAria": "Vasteajan lämpökartta",
-					"max": "max {{value}}ms"
+					"max": "max {{value}}"
 				},
 				"status": {
 					"breached": "Kynnys ylittyi",

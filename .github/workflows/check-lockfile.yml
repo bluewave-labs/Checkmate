@@ -1,0 +1,22 @@
+name: Lockfile Check (Client & Server)
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check-lockfiles:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Validate with the same node image the production build uses, so a lock
+      # that passes here cannot fail the image build's npm ci.
+      - name: Resolve node image from Dockerfile
+        id: node-image
+        run: echo "image=$(grep -m1 -o 'node:[^ ]*' docker/Dockerfile)" >> "$GITHUB_OUTPUT"
+
+      - name: Check server lockfile
+        run: docker run --rm -v "$PWD/server":/w -w /w ${{ steps.node-image.outputs.image }} npm ci --dry-run
+
+      - name: Check client lockfile
+        run: docker run --rm -v "$PWD/client":/w -w /w ${{ steps.node-image.outputs.image }} npm ci --dry-run

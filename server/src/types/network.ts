@@ -152,3 +152,7 @@ export type StatusChangeResult = {
 };
 
 export type MonitorStatusResponseOverrides<T> = Partial<Omit<MonitorStatusResponse<T>, "monitorId" | "teamId" | "type">>;
+
+export type CheckContext = {
+	proxyUrl?: string;
+};

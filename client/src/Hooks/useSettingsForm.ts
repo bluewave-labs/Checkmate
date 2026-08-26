@@ -43,6 +43,8 @@ export const useSettingsForm = ({ data = null }: UseSettingsFormOptions = {}) =>
 			checkTTL: data?.checkTTL ?? 30,
 			pagespeedApiKey: "",
 			systemEmailPassword: "",
+			globalProxyEnabled: data?.globalProxyEnabled ?? false,
+			globalProxyId: data?.globalProxyId ?? null,
 		};
 
 		return { schema: settingsSchema, defaults };

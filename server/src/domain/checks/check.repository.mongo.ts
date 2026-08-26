@@ -25,9 +25,7 @@ import { CheckFilter, DateRange } from "@/types/query.js";
 import { AppError } from "@/utils/AppError.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 
-const SERVICE_NAME = "StatusService";
-
-export type LatestChecksMap = Record<string, Check[]>;
+const SERVICE_NAME = "ChecksRepository";
 
 class MongoChecksRepository implements IChecksRepository {
 	static SERVICE_NAME = SERVICE_NAME;
@@ -83,6 +81,7 @@ class MongoChecksRepository implements IChecksRepository {
 			os: host?.os ?? "",
 			platform: host?.platform ?? "",
 			kernel_version: host?.kernel_version ?? "",
+			pretty_name: host?.pretty_name ?? "",
 		});
 
 		const mapCapture = (capture?: CheckCaptureInfo): CheckCaptureInfo => ({
@@ -214,6 +213,9 @@ class MongoChecksRepository implements IChecksRepository {
 	};
 
 	private filterToMatch = (filter: CheckFilter | undefined): Record<string, unknown> => {
+		if (filter === undefined) {
+			return {};
+		}
 		switch (filter) {
 			case "up":
 				return { status: true };
@@ -288,32 +290,6 @@ class MongoChecksRepository implements IChecksRepository {
 		return { checksCount, checks: this.mapDocuments(checks) };
 	};
 
-	findLatestByMonitorIds = async (monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap> => {
-		if (monitorIds.length === 0) {
-			return {};
-		}
-		const limitPerMonitor = options?.limitPerMonitor ?? 25;
-		const dateFilter = new Date(Date.now() - 24 * 60 * 60 * 1000);
-		const results = await Promise.all(
-			monitorIds.map(async (monitorId) => {
-				const docs = await CheckModel.find({
-					"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
-					createdAt: { $gte: dateFilter },
-				})
-					.sort({ createdAt: -1 })
-					.limit(limitPerMonitor)
-					.lean();
-				return { monitorId, docs };
-			})
-		);
-
-		const mapped = results.reduce<LatestChecksMap>((acc, { monitorId, docs }) => {
-			acc[monitorId] = docs.map((doc: CheckDocument) => this.toEntity(doc));
-			return acc;
-		}, {});
-		return mapped;
-	};
-
 	findByDateRangeAndMonitorId = async (monitorId: string, dateRange: DateRange, options?: { type?: MonitorType }) => {
 		const monitorObjectId = new mongoose.Types.ObjectId(monitorId);
 		const start = getDateForRange(dateRange);
@@ -354,6 +330,44 @@ class MongoChecksRepository implements IChecksRepository {
 			.sort({ createdAt: 1 })
 			.lean<CheckDocument[]>();
 		return docs.map(this.toEntity);
+	};
+
+	getDailyStatusBuckets = async (monitorIds: string[], days: number, timezone: string) => {
+		const objectIds = monitorIds.map((id) => new mongoose.Types.ObjectId(id));
+		// One extra day so the oldest rendered day is complete; the client enumerates exactly `days` days and ignores the partial extra bucket
+		const windowStart = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+		const results = await CheckModel.aggregate([
+			{
+				$match: {
+					"metadata.monitorId": { $in: objectIds },
+					createdAt: { $gte: windowStart },
+				},
+			},
+			{
+				$group: {
+					_id: {
+						monitorId: "$metadata.monitorId",
+						day: { $dateTrunc: { date: "$createdAt", unit: "day", timezone } },
+					},
+					totalChecks: { $sum: 1 },
+					upChecks: { $sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] } },
+					avgResponseTime: { $avg: "$responseTime" },
+				},
+			},
+			{ $sort: { "_id.day": 1 } },
+			{
+				$project: {
+					_id: 0,
+					monitorId: { $toString: "$_id.monitorId" },
+					date: { $dateToString: { date: "$_id.day", format: "%Y-%m-%d", timezone } },
+					totalChecks: 1,
+					upChecks: 1,
+					downChecks: { $subtract: ["$totalChecks", "$upChecks"] },
+					avgResponseTime: { $round: ["$avgResponseTime", 0] },
+				},
+			},
+		]);
+		return results;
 	};
 
 	deleteByMonitorId = async (monitorId: string): Promise<number> => {
@@ -445,11 +459,30 @@ class MongoChecksRepository implements IChecksRepository {
 									$dateToString: { format: dateString, date: "$createdAt" },
 								},
 								avgResponseTime: { $avg: "$responseTime" },
+								avgDns: { $avg: { $ifNull: ["$timings.phases.dns", 0] } },
+								avgTcp: { $avg: { $ifNull: ["$timings.phases.tcp", 0] } },
+								avgTls: { $avg: { $ifNull: ["$timings.phases.tls", 0] } },
+								avgRequest: { $avg: { $ifNull: ["$timings.phases.request", 0] } },
+								avgFirstByte: { $avg: { $ifNull: ["$timings.phases.firstByte", 0] } },
+								avgDownload: { $avg: { $ifNull: ["$timings.phases.download", 0] } },
 								totalChecks: { $sum: 1 },
 							},
 						},
 						{ $sort: { _id: 1 } },
-						{ $project: { bucketDate: "$_id", avgResponseTime: 1, totalChecks: 1, _id: 0 } },
+						{
+							$project: {
+								bucketDate: "$_id",
+								avgResponseTime: 1,
+								totalChecks: 1,
+								avgDns: 1,
+								avgTcp: 1,
+								avgTls: 1,
+								avgRequest: 1,
+								avgFirstByte: 1,
+								avgDownload: 1,
+								_id: 0,
+							},
+						},
 					],
 					groupedUpChecks: [
 						{ $match: { status: true } },
@@ -513,35 +546,33 @@ class MongoChecksRepository implements IChecksRepository {
 			totalChecks: upChecksDoc?.totalChecks ?? 0,
 		};
 
-		const checks = (hardwareMetrics ?? []).map(
-			(metric): HardwareCheckStats => ({
-				bucketDate: metric._id,
-				avgCpuUsage: metric.avgCpuUsage ?? 0,
-				avgMemoryUsage: metric.avgMemoryUsage ?? 0,
-				avgTemperature: metric.avgTemperature ?? [],
-				disks: (metric.disks ?? []).map((disk) => ({
-					name: disk?.name ?? "",
-					readSpeed: disk?.readSpeed ?? 0,
-					writeSpeed: disk?.writeSpeed ?? 0,
-					totalBytes: disk?.totalBytes ?? 0,
-					freeBytes: disk?.freeBytes ?? 0,
-					usagePercent: disk?.usagePercent ?? 0,
-				})),
-				net: (metric.net ?? []).map((iface) => ({
-					name: iface?.name ?? "",
-					bytesSentPerSecond: iface?.bytesSentPerSecond ?? 0,
-					deltaBytesRecv: iface?.deltaBytesRecv ?? 0,
-					deltaPacketsSent: iface?.deltaPacketsSent ?? 0,
-					deltaPacketsRecv: iface?.deltaPacketsRecv ?? 0,
-					deltaErrIn: iface?.deltaErrIn ?? 0,
-					deltaErrOut: iface?.deltaErrOut ?? 0,
-					deltaDropIn: iface?.deltaDropIn ?? 0,
-					deltaDropOut: iface?.deltaDropOut ?? 0,
-					deltaFifoIn: iface?.deltaFifoIn ?? 0,
-					deltaFifoOut: iface?.deltaFifoOut ?? 0,
-				})),
-			})
-		);
+		const checks = (hardwareMetrics ?? []).map((metric): HardwareCheckStats => ({
+			bucketDate: metric._id,
+			avgCpuUsage: metric.avgCpuUsage ?? 0,
+			avgMemoryUsage: metric.avgMemoryUsage ?? 0,
+			avgTemperature: metric.avgTemperature ?? [],
+			disks: (metric.disks ?? []).map((disk) => ({
+				name: disk?.name ?? "",
+				readSpeed: disk?.readSpeed ?? 0,
+				writeSpeed: disk?.writeSpeed ?? 0,
+				totalBytes: disk?.totalBytes ?? 0,
+				freeBytes: disk?.freeBytes ?? 0,
+				usagePercent: disk?.usagePercent ?? 0,
+			})),
+			net: (metric.net ?? []).map((iface) => ({
+				name: iface?.name ?? "",
+				bytesSentPerSecond: iface?.bytesSentPerSecond ?? 0,
+				deltaBytesRecv: iface?.deltaBytesRecv ?? 0,
+				deltaPacketsSent: iface?.deltaPacketsSent ?? 0,
+				deltaPacketsRecv: iface?.deltaPacketsRecv ?? 0,
+				deltaErrIn: iface?.deltaErrIn ?? 0,
+				deltaErrOut: iface?.deltaErrOut ?? 0,
+				deltaDropIn: iface?.deltaDropIn ?? 0,
+				deltaDropOut: iface?.deltaDropOut ?? 0,
+				deltaFifoIn: iface?.deltaFifoIn ?? 0,
+				deltaFifoOut: iface?.deltaFifoOut ?? 0,
+			})),
+		}));
 
 		return {
 			monitorType: "hardware" as const,

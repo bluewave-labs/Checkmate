@@ -132,6 +132,15 @@ export interface GroupedCheck {
 	totalChecks: number;
 }
 
+export interface GroupedUptimeCheck extends GroupedCheck {
+	avgDns: number;
+	avgTcp: number;
+	avgTls: number;
+	avgRequest: number;
+	avgFirstByte: number;
+	avgDownload: number;
+}
+
 export interface PageSpeedGroupedCheck {
 	bucketDate: string;
 	performance: number;
@@ -143,7 +152,7 @@ export interface PageSpeedGroupedCheck {
 
 export interface UptimeChecksResult {
 	monitorType: Exclude<MonitorType, "hardware" | "pagespeed">;
-	groupedChecks: GroupedCheck[];
+	groupedChecks: GroupedUptimeCheck[];
 	groupedUpChecks: GroupedCheck[];
 	groupedDownChecks: GroupedCheck[];
 	uptimePercentage: number;
@@ -159,16 +168,36 @@ export interface HasResponseTime {
 	responseTime: number;
 }
 
-export type NormalizedCheck<T extends HasResponseTime = Check> = T & {
-	originalResponseTime: number;
+export type SnapshotCpuInfo = Pick<
+	CheckCpuInfo,
+	"physical_core" | "logical_core" | "frequency" | "current_frequency" | "temperature" | "usage_percent"
+>;
+export type SnapshotMemoryInfo = Pick<CheckMemoryInfo, "total_bytes" | "used_bytes" | "usage_percent">;
+export type SnapshotDiskInfo = Pick<CheckDiskInfo, "device" | "total_bytes" | "used_bytes" | "usage_percent">;
+export type SnapshotHostInfo = Pick<CheckHostInfo, "os" | "platform" | "pretty_name">;
+
+export type CheckSnapshot = Pick<
+	Check,
+	// uptime charts and down check tooltips
+	| "id"
+	| "status"
+	| "responseTime"
+	| "statusCode"
+	| "message"
+	| "createdAt"
+	// pagespeed
+	| "accessibility"
+	| "bestPractices"
+	| "seo"
+	| "performance"
+	| "audits"
+> & {
+	// hardware monitors only
+	cpu?: SnapshotCpuInfo;
+	memory?: SnapshotMemoryInfo;
+	disk?: SnapshotDiskInfo[];
+	host?: SnapshotHostInfo;
 };
-
-export type NormalizedUptimeCheck<T extends GroupedCheck = GroupedCheck> = T & {
-	originalAvgResponseTime: number;
-};
-
-export type CheckSnapshot = Omit<Check, "metadata" | "updatedAt">;
-
 export interface HardwareDiskStats {
 	name: string;
 	readSpeed: number;
@@ -214,3 +243,12 @@ export interface HardwareStats {
 export interface HardwareChecksResult extends HardwareStats {
 	monitorType: "hardware";
 }
+
+export type DailyCheckBucket = {
+	monitorId: string;
+	date: string;
+	totalChecks: number;
+	upChecks: number;
+	downChecks: number;
+	avgResponseTime: number | null;
+};

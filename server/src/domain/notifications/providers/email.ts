@@ -35,16 +35,18 @@ export class EmailProvider extends NotificationProvider {
 			return false;
 		}
 
-		const messageId = await this.emailService.sendEmail(notification.address, subject, html);
-		if (!messageId) {
+		try {
+			await this.emailService.sendEmail(notification.address, subject, html);
+			return true;
+		} catch (error: unknown) {
 			this.logger.warn({
 				message: "Email test alert failed",
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 			return false;
 		}
-		return true;
 	}
 
 	async sendMessage(notification: Notification, message: NotificationMessage): Promise<boolean> {
@@ -64,16 +66,20 @@ export class EmailProvider extends NotificationProvider {
 			return false;
 		}
 
-		const messageId = await this.emailService.sendEmail(notification.address, subject, html);
-		if (!messageId) {
+		// Providers must resolve to a boolean: NotificationsService fans these out through
+		// Promise.all, so a rejection here would abort the other channels' alerts too.
+		try {
+			await this.emailService.sendEmail(notification.address, subject, html);
+			return true;
+		} catch (error: unknown) {
 			this.logger.warn({
 				message: "Email notification failed",
 				service: SERVICE_NAME,
 				method: "sendMessage",
+				stack: error instanceof Error ? error.stack : undefined,
 			});
 			return false;
 		}
-		return true;
 	}
 
 	private buildSubject(message: NotificationMessage): string {

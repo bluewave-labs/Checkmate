@@ -7,6 +7,7 @@ import {
 	getMonitorsByTeamIdQueryValidation,
 	getMonitorsWithChecksQueryValidation,
 	getCertificateParamValidation,
+	getDomainParamValidation,
 	createMonitorBodyValidation,
 	editMonitorBodyValidation,
 	pauseMonitorParamValidation,
@@ -16,6 +17,7 @@ import {
 	getHardwareDetailsByIdParamValidation,
 	getHardwareDetailsByIdQueryValidation,
 	monitorResponseSchema,
+	uptimeDetailsResponseSchema,
 } from "@/api/validation/monitorValidation.js";
 import { updateNotificationsValidation } from "@/api/validation/notificationValidation.js";
 
@@ -81,6 +83,8 @@ registry.registerPath({
 	responses: { "200": okJson(z.array(z.string())), ...standardErrors },
 });
 
+const uptimeDetailsObject = uptimeDetailsResponseSchema.openapi("UptimeDetails");
+
 registry.registerPath({
 	method: "get",
 	path: "/monitors/uptime/details/{monitorId}",
@@ -88,7 +92,7 @@ registry.registerPath({
 	summary: "Get uptime details for a monitor",
 	security: bearer,
 	request: { params: getUptimeDetailsByIdParamValidation, query: getUptimeDetailsByIdQueryValidation },
-	responses: { "200": okUnknown, ...standardErrors },
+	responses: { "200": okJson(uptimeDetailsObject), ...standardErrors },
 });
 
 registry.registerPath({
@@ -139,6 +143,19 @@ registry.registerPath({
 	security: bearer,
 	request: { params: getCertificateParamValidation },
 	responses: { "200": okJson(z.object({ certificateDate: z.string() })), ...standardErrors },
+});
+
+registry.registerPath({
+	method: "get",
+	path: "/monitors/domain/{monitorId}",
+	tags,
+	summary: "Get domain registration expiry for a monitor",
+	security: bearer,
+	request: { params: getDomainParamValidation },
+	responses: {
+		"200": okJson(z.object({ domain: z.string().nullable(), expiryDate: z.string().nullable() })),
+		...standardErrors,
+	},
 });
 
 registry.registerPath({

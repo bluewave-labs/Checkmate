@@ -58,8 +58,8 @@
 				"uptime": "Temps en línia"
 			},
 			"histogram": {
-				"avg": "Mitjana: {{value}} ms",
-				"max": "Màx: {{value}} ms"
+				"avg": "Mitjana: {{value}}",
+				"max": "Màx: {{value}}"
 			}
 		},
 		"dialogs": {
@@ -1346,8 +1346,8 @@
 					"initializing": "Inicialitzant"
 				},
 				"chart": {
-					"avg": "mitj {{value}}ms",
-					"max": "màx {{value}}ms",
+					"avg": "mitj {{value}}",
+					"max": "màx {{value}}",
 					"downTooltip": "Caigut",
 					"heatmapAria": "Mapa de calor del temps de resposta"
 				},

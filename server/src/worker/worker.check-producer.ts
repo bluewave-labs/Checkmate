@@ -9,6 +9,7 @@ import { ICheckService } from "@/domain/checks/check.service.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import { IMaintenanceWindowsRepository } from "@/domain/maintenance-windows/maintenance-window.repository.interface.js";
 import { isWindowActive } from "@/utils/maintenanceWindow.js";
+import { IProxyResolver } from "@/service/network/ProxyResolver.js";
 
 export interface ICheckProducer {
 	produce(monitor: Monitor): Promise<{ status: MonitorStatusResponse; check: Check } | null>;
@@ -22,6 +23,7 @@ export class CheckProducer implements ICheckProducer {
 		private maintenanceWindowsRepository: IMaintenanceWindowsRepository,
 		private checkService: ICheckService,
 		private networkService: INetworkService,
+		private proxyResolver: IProxyResolver,
 		private bufferService: IBufferService,
 		private logger: ILogger
 	) {}
@@ -56,7 +58,8 @@ export class CheckProducer implements ICheckProducer {
 		}
 
 		// Step 1b: Acquire status
-		const status = await this.networkService.requestStatus(monitor);
+		const proxyUrl = await this.proxyResolver.resolve(monitor);
+		const status = await this.networkService.requestStatus(monitor, { proxyUrl });
 		if (!status) {
 			throw new Error("No network response");
 		}

@@ -58,8 +58,8 @@
 				"uptime": "Uptime"
 			},
 			"histogram": {
-				"avg": "Média: {{value}} ms",
-				"max": "Máx: {{value}} ms"
+				"avg": "Média: {{value}}",
+				"max": "Máx: {{value}}"
 			}
 		},
 		"dialogs": {
@@ -1352,10 +1352,10 @@
 					"responseTime": "Tempo de resposta"
 				},
 				"chart": {
-					"avg": "méd {{value}}ms",
+					"avg": "méd {{value}}",
 					"downTooltip": "Fora do ar",
 					"heatmapAria": "Mapa de calor do tempo de resposta",
-					"max": "máx {{value}}ms"
+					"max": "máx {{value}}"
 				},
 				"status": {
 					"breached": "Limite excedido",

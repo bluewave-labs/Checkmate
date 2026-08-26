@@ -58,8 +58,8 @@
 				"uptime": "Çalışma süresi"
 			},
 			"histogram": {
-				"avg": "Ort: {{value}} ms",
-				"max": "Maks: {{value}} ms"
+				"avg": "Ort: {{value}}",
+				"max": "Maks: {{value}}"
 			}
 		},
 		"dialogs": {
@@ -1352,10 +1352,10 @@
 					"responseTime": "Yanıt süresi"
 				},
 				"chart": {
-					"avg": "ort {{value}}ms",
+					"avg": "ort {{value}}",
 					"downTooltip": "Çalışmıyor",
 					"heatmapAria": "Yanıt süresi ısı haritası",
-					"max": "maks {{value}}ms"
+					"max": "maks {{value}}"
 				},
 				"status": {
 					"breached": "Eşik aşıldı",

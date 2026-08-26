@@ -58,8 +58,8 @@
 				"uptime": "正常运行时间"
 			},
 			"histogram": {
-				"avg": "平均: {{value}} ms",
-				"max": "最大: {{value}} ms"
+				"avg": "平均: {{value}}",
+				"max": "最大: {{value}}"
 			}
 		},
 		"dialogs": {
@@ -443,6 +443,7 @@
 				"statBoxes": {
 					"activeFor": "已活跃",
 					"certificateExpiry": "证书到期",
+					"domainExpiry": "域名到期",
 					"lastCheck": "上次检查",
 					"lastResponseTime": "上次响应时间",
 					"serviceIsDown": "服务已停止"
@@ -1352,10 +1353,10 @@
 					"responseTime": "响应时间"
 				},
 				"chart": {
-					"avg": "平均 {{value}}ms",
+					"avg": "平均 {{value}}",
 					"downTooltip": "宕机",
 					"heatmapAria": "响应时间热图",
-					"max": "最大 {{value}}ms"
+					"max": "最大 {{value}}"
 				},
 				"status": {
 					"breached": "超出阈值",

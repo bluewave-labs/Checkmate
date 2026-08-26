@@ -19,6 +19,7 @@ import { createDiagnosticRoutes } from "@/api/routes/diagnosticRoutes.js";
 import { createNotificationRoutes } from "@/api/routes/notificationRoutes.js";
 import { createTagRoutes } from "@/api/routes/tagRoutes.js";
 import { createIncidentRoutes } from "@/api/routes/incidentRoutes.js";
+import { createProxyRoutes } from "@/api/routes/proxyRoutes.js";
 
 export const setupRoutes = (app: Application, controllers: InitializedControllers, apiServices: ApiServices) => {
 	const verifyJWT = createVerifyJWT(apiServices.settingsService);
@@ -37,6 +38,7 @@ export const setupRoutes = (app: Application, controllers: InitializedController
 	const tagRoutes = createTagRoutes(controllers.tagController);
 	const diagnosticRoutes = createDiagnosticRoutes(controllers.diagnosticController, verifyJWT);
 	const incidentRoutes = createIncidentRoutes(controllers.incidentController);
+	const proxyRoutes = createProxyRoutes(controllers.proxyController);
 
 	app.use("/api/v1/auth", authApiLimiter, authRoutes);
 	app.use("/api/v1/monitors", verifyJWT, monitorRoutes);
@@ -52,4 +54,5 @@ export const setupRoutes = (app: Application, controllers: InitializedController
 	app.use("/api/v1/tags", verifyJWT, tagRoutes);
 	app.use("/api/v1/diagnostic", verifyJWT, diagnosticRoutes);
 	app.use("/api/v1/incidents", verifyJWT, incidentRoutes);
+	app.use("/api/v1/proxies", verifyJWT, proxyRoutes);
 };

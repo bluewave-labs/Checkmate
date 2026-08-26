@@ -127,11 +127,11 @@ describe("InviteService", () => {
 			).rejects.toThrow("Failed to build invite e-mail");
 		});
 
-		it("throws 500 when sendEmail returns falsy", async () => {
+		it("throws 500 when sendEmail rejects", async () => {
 			const { service } = createService({
 				emailService: {
 					buildEmail: jest.fn().mockResolvedValue("<html>ok</html>"),
-					sendEmail: jest.fn().mockResolvedValue(false),
+					sendEmail: jest.fn().mockRejectedValue(new Error("SMTP auth failed")),
 				},
 			});
 

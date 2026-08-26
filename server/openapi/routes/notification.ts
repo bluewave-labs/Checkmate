@@ -23,6 +23,14 @@ const notificationVariantMeta: Record<string, { component: string; example: Reco
 		component: "WebhookNotification",
 		example: { notificationName: "Custom webhook", type: "webhook", address: "https://example.com/hooks/checkmate" },
 	},
+	rocket_chat: {
+		component: "RocketChatNotification",
+		example: {
+			notificationName: "Rocket.Chat alerts",
+			type: "rocket_chat",
+			address: "https://chat.example.com/hooks/integration-id/token",
+		},
+	},
 	slack: {
 		component: "SlackNotification",
 		example: { notificationName: "#alerts", type: "slack", address: "https://hooks.slack.com/services/T000/B000/XXXX" },
@@ -70,7 +78,14 @@ const notificationVariantMeta: Record<string, { component: string; example: Reco
 	},
 	ntfy: {
 		component: "NtfyNotification",
-		example: { notificationName: "ntfy topic", type: "ntfy", address: "https://ntfy.sh", topic: "checkmate-alerts" },
+		example: {
+			notificationName: "ntfy topic",
+			type: "ntfy",
+			address: "https://ntfy.sh",
+			topic: "checkmate-alerts",
+			ntfyAuthType: "token",
+			accessToken: "tk_your-ntfy-access-token",
+		},
 	},
 };
 

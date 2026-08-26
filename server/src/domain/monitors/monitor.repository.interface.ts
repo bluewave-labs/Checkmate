@@ -1,4 +1,4 @@
-import type { MonitorType, Monitor, MonitorStatus, MonitorsSummary, CheckSnapshot } from "@/domain/monitors/monitor.type.js";
+import type { MonitorType, Monitor, MonitorStatus, MonitorsSummary, CheckSnapshot, MonitorScheduleFields } from "@/domain/monitors/monitor.type.js";
 
 export interface TeamQueryConfig {
 	limit?: number;
@@ -16,6 +16,8 @@ export interface SummaryConfig {
 	tags?: string | string[];
 }
 
+export type RecentChecksMode = "all" | "latestHardware" | "none";
+
 export interface IMonitorsRepository {
 	// create
 	create(monitor: Monitor, teamId: string, userId: string): Promise<Monitor | null>;
@@ -26,11 +28,10 @@ export interface IMonitorsRepository {
 	findByIdLean(monitorId: string): Promise<Monitor | null>;
 
 	// collection fetch
-	findAll(): Promise<Monitor[]>;
-	findByTeamId(teamId: string, config: TeamQueryConfig): Promise<Monitor[]>;
+	findAllForScheduling(): Promise<MonitorScheduleFields[]>;
+	findByTeamId(teamId: string, config: TeamQueryConfig, options?: { includeRecentChecks?: boolean }): Promise<Monitor[]>;
 	findByTeamIdWithStats(teamId: string, config: TeamQueryConfig): Promise<Monitor[]>;
-	findByIds(monitorIds: string[]): Promise<Monitor[]>;
-	findByIdsWithChecks(monitorIds: string[], checksCount?: number): Promise<Monitor[]>;
+	findByIds(monitorIds: string[], options?: { recentChecks?: RecentChecksMode }): Promise<Monitor[]>;
 
 	// update
 	updateById(monitorId: string, teamId: string, updates: Partial<Monitor>): Promise<Monitor>;
@@ -52,6 +53,7 @@ export interface IMonitorsRepository {
 
 	// counts
 	findMonitorCountByTeamIdAndType(teamId: string, config: TeamQueryConfig): Promise<number>;
+	findMonitorCountByProxyId(proxyId: string): Promise<number>;
 
 	// other
 	findMonitorsSummaryByTeamId(teamId: string, config?: SummaryConfig): Promise<MonitorsSummary>;

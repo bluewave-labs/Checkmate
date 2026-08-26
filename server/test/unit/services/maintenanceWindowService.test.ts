@@ -123,7 +123,7 @@ describe("MaintenanceWindowService", () => {
 
 			await service.createMaintenanceWindow(defaultCreateParams);
 
-			expect(monitorsRepository.findByIds).toHaveBeenCalledWith(["mon-1", "mon-2"]);
+			expect(monitorsRepository.findByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], { recentChecks: "none" });
 		});
 
 		it("throws 403 when a monitor belongs to a different team", async () => {
@@ -404,7 +404,7 @@ describe("MaintenanceWindowService", () => {
 				body: { monitors: ["mon-1", "mon-2"] },
 			});
 
-			expect(monitorsRepository.findByIds).toHaveBeenCalledWith(["mon-1", "mon-2"]);
+			expect(monitorsRepository.findByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], { recentChecks: "none" });
 		});
 
 		it("throws 403 when a new monitor belongs to a different team", async () => {

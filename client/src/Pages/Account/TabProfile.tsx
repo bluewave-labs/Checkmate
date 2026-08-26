@@ -1,11 +1,11 @@
 import { Stack } from "@mui/material";
 import { ConfigBox } from "@/Components/design-elements";
-import { TextField, Button } from "@/Components/inputs";
+import { Button } from "@/Components/inputs";
 import { ImageUpload } from "@/Components/inputs";
 
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { useProfileForm } from "@/Hooks/useProfileForm";
 import { usePatch } from "@/Hooks/UseApi";
@@ -13,6 +13,8 @@ import { setUser } from "@/Features/Auth/authSlice";
 import type { ProfileFormData } from "@/Validation/profile";
 import type { RootState } from "@/Types/state";
 import type { User } from "@/Types/User";
+import { FormTextField } from "@/Components/inputs/forms/FormTextField";
+import { LAYOUT } from "@/Utils/Theme/constants";
 
 export const TabProfile = () => {
 	const theme = useTheme();
@@ -22,7 +24,7 @@ export const TabProfile = () => {
 	const { resolver, defaults } = useProfileForm();
 	const { patch, loading: patchLoading } = usePatch<FormData, User>();
 
-	const { control, handleSubmit, setValue, watch } = useForm<ProfileFormData>({
+	const form = useForm<ProfileFormData>({
 		resolver,
 		defaultValues: {
 			firstName: user?.firstName ?? defaults.firstName,
@@ -31,7 +33,7 @@ export const TabProfile = () => {
 			deleteProfileImage: defaults.deleteProfileImage,
 		},
 	});
-
+	const { handleSubmit, setValue, watch } = form;
 	const currentImage = watch("profileImage");
 	const deleteImage = watch("deleteProfileImage");
 
@@ -74,66 +76,52 @@ export const TabProfile = () => {
 	};
 
 	return (
-		<Stack
-			gap={theme.spacing(8)}
-			component="form"
-			onSubmit={handleSubmit(onSubmit)}
-		>
-			<ConfigBox
-				title={t("pages.account.form.name.title")}
-				subtitle={t("pages.account.form.name.description")}
-				rightContent={
-					<Stack gap={theme.spacing(8)}>
-						<Controller
-							name="firstName"
-							control={control}
-							render={({ field, fieldState }) => (
-								<TextField
-									{...field}
-									fieldLabel={t("common.form.name.option.firstName.label")}
-									placeholder={t("common.form.name.option.firstName.placeholder")}
-									autoComplete="given-name"
-									error={!!fieldState.error}
-									helperText={fieldState.error?.message ?? ""}
-								/>
-							)}
-						/>
-						<Controller
-							name="lastName"
-							control={control}
-							render={({ field, fieldState }) => (
-								<TextField
-									{...field}
-									fieldLabel={t("common.form.name.option.lastName.label")}
-									placeholder={t("common.form.name.option.lastName.placeholder")}
-									autoComplete="family-name"
-									error={!!fieldState.error}
-									helperText={fieldState.error?.message ?? ""}
-								/>
-							)}
-						/>
-					</Stack>
-				}
-			/>
-			<ConfigBox
-				title={t("pages.account.form.photo.title")}
-				subtitle={t("pages.account.form.photo.description")}
-				rightContent={
-					<ImageUpload
-						src={getCurrentImageSrc()}
-						onChange={handleImageChange}
-					/>
-				}
-			/>
-			<Button
-				type="submit"
-				variant="contained"
-				color="primary"
-				loading={patchLoading}
-				sx={{ alignSelf: "flex-end", minWidth: 100 }}
+		<FormProvider {...form}>
+			<Stack
+				gap={theme.spacing(LAYOUT.MD)}
+				component="form"
+				onSubmit={handleSubmit(onSubmit)}
 			>
-				{t("common.buttons.save")}
-			</Button>
-		</Stack>
+				<ConfigBox
+					title={t("pages.account.form.name.title")}
+					subtitle={t("pages.account.form.name.description")}
+					rightContent={
+						<Stack gap={theme.spacing(LAYOUT.MD)}>
+							<FormTextField
+								name="firstName"
+								autoComplete="given-name"
+								fieldLabel={t("common.form.name.option.firstName.label")}
+								placeholder={t("common.form.name.option.firstName.placeholder")}
+							/>
+							<FormTextField
+								name="lastName"
+								autoComplete="family-name"
+								fieldLabel={t("common.form.name.option.lastName.label")}
+								placeholder={t("common.form.name.option.lastName.placeholder")}
+							/>
+						</Stack>
+					}
+				/>
+				<ConfigBox
+					title={t("pages.account.form.photo.title")}
+					subtitle={t("pages.account.form.photo.description")}
+					rightContent={
+						<ImageUpload
+							src={getCurrentImageSrc()}
+							onChange={handleImageChange}
+						/>
+					}
+				/>
+				<Button
+					type="submit"
+					variant="contained"
+					color="primary"
+					loading={patchLoading}
+					sx={{ alignSelf: "flex-end", minWidth: 100 }}
+				>
+					{t("common.buttons.save")}
+				</Button>
+			</Stack>
+		</FormProvider>
 	);
 };

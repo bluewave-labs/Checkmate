@@ -38,10 +38,13 @@ export class MatrixProvider extends NotificationProvider {
 
 	private sendMessageWithBody = async (notification: Partial<Notification>, body: unknown): Promise<boolean> => {
 		const { homeserverUrl, accessToken, roomId } = notification;
-		const txnId = randomUUID();
-		const url = `${homeserverUrl}/_matrix/client/v3/rooms/${roomId}/send/m.room.message/${txnId}`;
+		const baseUrl = this.normalizeHomeserverUrl(homeserverUrl as string);
 
 		try {
+			const resolvedRoomId = await this.resolveRoomId(baseUrl, accessToken as string, roomId as string);
+			const txnId = randomUUID();
+			const url = `${baseUrl}/_matrix/client/v3/rooms/${encodeURIComponent(resolvedRoomId)}/send/m.room.message/${txnId}`;
+
 			await got.put(url, {
 				json: body,
 				headers: {
@@ -61,6 +64,35 @@ export class MatrixProvider extends NotificationProvider {
 			});
 			return false;
 		}
+	};
+
+	private normalizeHomeserverUrl(homeserverUrl: string): string {
+		return homeserverUrl.replace(/\/+$/, "");
+	}
+
+	/**
+	 * The send endpoint only accepts a room ID (`!id:server`). Element shows users the room
+	 * alias (`#name:server`) instead, and an unresolved alias breaks the request outright:
+	 * the `#` opens a URI fragment, so the PUT lands on /rooms/ rather than the send
+	 * endpoint. Resolve aliases through the directory first, per the client-server spec.
+	 */
+	private resolveRoomId = async (baseUrl: string, accessToken: string, roomIdOrAlias: string): Promise<string> => {
+		if (!roomIdOrAlias.startsWith("#")) {
+			return roomIdOrAlias;
+		}
+
+		const url = `${baseUrl}/_matrix/client/v3/directory/room/${encodeURIComponent(roomIdOrAlias)}`;
+		const response = await got.get(url, {
+			headers: { Authorization: `Bearer ${accessToken}` },
+			responseType: "json",
+			...this.gotRequestOptions(),
+		});
+
+		const roomId = (response.body as { room_id?: string })?.room_id;
+		if (!roomId) {
+			throw new Error(`Matrix directory returned no room_id for alias ${roomIdOrAlias}`);
+		}
+		return roomId;
 	};
 
 	/**

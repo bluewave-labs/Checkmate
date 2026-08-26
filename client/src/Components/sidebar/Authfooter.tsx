@@ -10,10 +10,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { MoreVertical, LogOut } from "lucide-react";
+import { MoreVertical, LogOut, Moon, Sun } from "lucide-react";
 import { Avatar, Icon } from "@/Components/design-elements";
 import { clearAuthState } from "@/Features/Auth/authSlice.js";
 import type { RootState } from "@/Types/state.js";
+import { setMode } from "@/Features/UI/uiSlice.js";
 
 interface AuthFooterProps {
 	collapsed: boolean;
@@ -27,6 +28,7 @@ interface AuthFooterProps {
 export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
+	const mode = useSelector((state: RootState) => state.ui.mode);
 	const user = useSelector((state: RootState) => state.auth.user);
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
@@ -105,13 +107,14 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 						<Typography
 							fontWeight={500}
 							noWrap
-							sx={{ color: theme.palette.text.primary }}
+							color={theme.palette.text.primary}
 						>
 							{user?.firstName} {user?.lastName}
 						</Typography>
 						<Typography
 							noWrap
-							sx={{ textTransform: "capitalize", color: theme.palette.text.secondary }}
+							textTransform={"capitalize"}
+							color={theme.palette.text.secondary}
 						>
 							{getRoleText()}
 						</Typography>
@@ -154,15 +157,12 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 						pb={2}
 						sx={{ pointerEvents: "none" }}
 					>
-						<Typography
-							fontWeight={500}
-							fontSize={13}
-						>
+						<Typography fontWeight={500}>
 							{user?.firstName} {user?.lastName}
 						</Typography>
 						<Typography
-							fontSize={12}
-							sx={{ textTransform: "capitalize" }}
+							variant="body2"
+							textTransform={"capitalize"}
 						>
 							{getRoleText()}
 						</Typography>
@@ -178,6 +178,18 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 						{item.name}
 					</MenuItem>
 				))}
+				<MenuItem
+					onClick={() => {
+						dispatch(setMode(mode === "light" ? "dark" : "light"));
+						handleMenuClose();
+					}}
+					sx={menuItemSx}
+				>
+					<Icon icon={mode === "light" ? Moon : Sun} />
+					{mode === "light"
+						? t("pages.settings.form.ui.option.theme.dark")
+						: t("pages.settings.form.ui.option.theme.light")}
+				</MenuItem>
 				<MenuItem
 					onClick={handleLogout}
 					sx={menuItemSx}

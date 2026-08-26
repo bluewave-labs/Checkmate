@@ -38,6 +38,11 @@ interface CertificateResponse {
 	certificateDate: string;
 }
 
+interface DomainResponse {
+	domain: string;
+	expiryDate: string;
+}
+
 const UptimeDetailsPage = () => {
 	const theme = useTheme();
 	const isAdmin = useIsAdmin();
@@ -57,7 +62,6 @@ const UptimeDetailsPage = () => {
 		}
 		const params = new URLSearchParams();
 		params.append("dateRange", dateRange);
-		params.append("normalize", "true");
 		return `/monitors/uptime/details/${monitorId}?${params.toString()}`;
 	}, [monitorId, dateRange]);
 
@@ -72,6 +76,7 @@ const UptimeDetailsPage = () => {
 	);
 
 	const monitorData = monitorDetailsData?.monitorData;
+
 	const monitor = monitorData?.monitor;
 	const monitorStats = monitorDetailsData?.monitorStats ?? null;
 
@@ -101,6 +106,29 @@ const UptimeDetailsPage = () => {
 			) ?? "N/A"
 		);
 	}, [certificateData, uiTimezone]);
+
+	// Domain expiry fetch - only for HTTP monitors
+	const domainUrl = useMemo(() => {
+		if (!monitorId || monitor?.type !== "http") {
+			return null;
+		}
+		return `/monitors/domain/${monitorId}`;
+	}, [monitorId, monitor?.type]);
+
+	const { data: domainData } = useGet<DomainResponse>(
+		domainUrl,
+		{},
+		{ revalidateOnFocus: false }
+	);
+
+	const domainExpiry = useMemo(() => {
+		if (!domainData?.expiryDate) {
+			return undefined;
+		}
+		return (
+			formatDateWithTz(domainData.expiryDate, certificateDateFormat, uiTimezone) ?? "N/A"
+		);
+	}, [domainData, uiTimezone]);
 
 	const checksUrl = useMemo(() => {
 		if (!monitorId || !monitor?.type) {
@@ -165,10 +193,18 @@ const UptimeDetailsPage = () => {
 		{ keepPreviousData: true, revalidateOnFocus: false }
 	);
 
+	if (!monitorData) {
+		return null;
+	}
+
+	if (!monitor) {
+		return null;
+	}
+
 	const geoChecksForTable = geoChecksTableData?.geoChecks ?? [];
 	const geoChecksCount = geoChecksTableData?.geoChecksCount ?? 0;
 
-	const geoLocations = monitor?.geoCheckLocations;
+	const geoLocations = monitor.geoCheckLocations;
 
 	const checks = checksData?.checks ?? [];
 	const checksCount = checksData?.checksCount ?? 0;
@@ -185,6 +221,7 @@ const UptimeDetailsPage = () => {
 				monitor={monitor}
 				monitorStats={monitorStats}
 				certificateExpiry={certificateExpiry}
+				domainExpiry={domainExpiry}
 			/>
 			<HeaderTimeRange
 				isLoading={monitorIsLoading || checksIsLoading}
@@ -215,7 +252,7 @@ const UptimeDetailsPage = () => {
 				/>
 			</Stack>
 			<HistogramDetails
-				checks={monitorData?.groupedChecks || []}
+				checks={monitorData.groupedChecks}
 				range={dateRange}
 			/>
 			<ChecksTable

@@ -16,10 +16,30 @@ declare module "@mui/material/styles" {
 	interface Palette {
 		sidebar: { accent: string };
 		rowStatus: { running: string; paused: string };
+		chart: {
+			phases: {
+				dns: string;
+				tcp: string;
+				tls: string;
+				request: string;
+				firstByte: string;
+				download: string;
+			};
+		};
 	}
 	interface PaletteOptions {
 		sidebar?: { accent: string };
 		rowStatus?: { running: string; paused: string };
+		chart?: {
+			phases: {
+				dns: string;
+				tcp: string;
+				tls: string;
+				request: string;
+				firstByte: string;
+				download: string;
+			};
+		};
 	}
 }
 
@@ -103,6 +123,14 @@ export const theme = (mode: string, palette: any) =>
 					disableRipple: true,
 					disableTouchRipple: true,
 					disableFocusRipple: true,
+				},
+				styleOverrides: {
+					root: ({ theme }) => ({
+						"&.Mui-focusVisible": {
+							outline: `1px solid ${theme.palette.primary.main}`,
+							outlineOffset: 2,
+						},
+					}),
 				},
 			},
 			MuiIconButton: {

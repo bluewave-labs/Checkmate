@@ -1,24 +1,13 @@
+import { monitorTypeLabelKey } from "@/Types/Monitor";
 import type { Monitor, MonitorType } from "@/Types/Monitor";
 export type MonitorDisplayType = "uptime" | "infrastructure";
-
-export const MONITOR_TYPE_KEYS: Partial<Record<MonitorType, string>> = {
-	http: "pages.common.monitors.monitorTypes.optionHttp",
-	ping: "pages.common.monitors.monitorTypes.optionPing",
-	docker: "pages.common.monitors.monitorTypes.optionDocker",
-	port: "pages.common.monitors.monitorTypes.optionPort",
-	game: "pages.common.monitors.monitorTypes.optionGame",
-	grpc: "pages.common.monitors.monitorTypes.optionGrpc",
-	websocket: "pages.common.monitors.monitorTypes.optionWebSocket",
-	hardware: "pages.common.monitors.monitorTypes.optionHardware",
-	pagespeed: "pages.common.monitors.monitorTypes.optionPagespeed",
-};
 
 export const getMonitorTypeLabel = (
 	type: MonitorType,
 	t: (key: string) => string
 ): string => {
-	const key = MONITOR_TYPE_KEYS[type];
-	return key ? t(key) : type;
+	const fragment = monitorTypeLabelKey[type];
+	return fragment ? t(`pages.common.monitors.monitorTypes.${fragment}`) : type;
 };
 
 export const STATUS_PAGE_THEMES = [
@@ -34,6 +23,20 @@ export const DEFAULT_STATUS_PAGE_THEME: StatusPageTheme = "refined";
 export const STATUS_PAGE_THEME_MODES = ["auto", "light", "dark"] as const;
 export type StatusPageThemeMode = (typeof STATUS_PAGE_THEME_MODES)[number];
 export const DEFAULT_STATUS_PAGE_THEME_MODE: StatusPageThemeMode = "auto";
+
+export const STATUS_PAGE_DAY_RANGES = ["30d", "60d", "90d"] as const;
+export type StatusPageDayRange = (typeof STATUS_PAGE_DAY_RANGES)[number];
+export const STATUS_PAGE_RANGES = ["latest", ...STATUS_PAGE_DAY_RANGES] as const;
+export type StatusPageRange = (typeof STATUS_PAGE_RANGES)[number];
+
+export const STATUS_PAGE_RANGE_DAYS: Record<StatusPageDayRange, number> = {
+	"30d": 30,
+	"60d": 60,
+	"90d": 90,
+};
+
+export const isStatusPageRange = (value: string | null): value is StatusPageRange =>
+	STATUS_PAGE_RANGES.some((range) => range === value);
 
 export const resolveStatusPageTheme = (
 	value: string | null | undefined
@@ -78,4 +81,7 @@ export interface StatusPage {
 export interface StatusPageResponse {
 	statusPage: StatusPage;
 	monitors: Monitor[];
+	range?: StatusPageDayRange; // present only when range !== "latest"
+	bucketTimezone?: string;
+	checkTTLDays?: number;
 }

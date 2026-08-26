@@ -30,7 +30,7 @@ export interface IUserService {
 		currentUserEmail: string
 	): Promise<User>;
 	checkSuperadminExists(): Promise<boolean>;
-	requestRecovery(email: string): Promise<string | false | undefined>;
+	requestRecovery(email: string): Promise<string>;
 	validateRecovery(recoveryToken: string): Promise<void>;
 	resetPassword(password: string, recoveryToken: string): Promise<{ user: User; token: string }>;
 	deleteUser(params: { userId: string; teamId: string; roles: UserRole[] }): Promise<void>;
@@ -324,7 +324,7 @@ export class UserService implements IUserService {
 		}
 
 		if (roles.includes("superadmin")) {
-			const monitors = await this.monitorsRepository.findByTeamId(teamId, {});
+			const monitors = await this.monitorsRepository.findByTeamId(teamId, {}, { includeRecentChecks: false });
 			if (monitors) {
 				await Promise.all(monitors.map((monitor) => this.scheduler.deleteJob(monitor)));
 			}

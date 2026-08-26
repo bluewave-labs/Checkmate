@@ -29,6 +29,9 @@ export const createMonitorRoutes = (monitorController: IMonitorController): Rout
 	router.get("/certificate/:monitorId", (req, res, next) => {
 		monitorController.getMonitorCertificate(req, res, next);
 	});
+	router.get("/domain/:monitorId", (req, res, next) => {
+		monitorController.getMonitorDomain(req, res, next);
+	});
 
 	// General monitor CRUD routes
 	router.patch("/notifications", isAllowed(["admin", "superadmin"]), monitorController.updateNotifications);

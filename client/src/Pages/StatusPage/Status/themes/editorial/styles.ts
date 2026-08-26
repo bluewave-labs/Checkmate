@@ -8,8 +8,10 @@ import {
 } from "../shared/fontStacks";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 
-export type EditorialHeatCell = "fast" | "med" | "slow" | "down" | "empty";
-export type EditorialBarKind = "up" | "down" | "empty";
+import type { BarKind, HeatCellKind } from "../shared/ChartCells";
+
+export type EditorialHeatCell = HeatCellKind;
+export type EditorialBarKind = BarKind;
 export type EditorialGaugeFill = "ok" | "warm" | "hot";
 
 export interface EditorialStyles {
@@ -59,12 +61,14 @@ export const editorialStyles = (
 		fast: tokens.up,
 		med: `color-mix(in srgb, ${tokens.up} 60%, ${tokens.bg})`,
 		slow: tokens.warn,
+		degraded: tokens.degraded,
 		down: tokens.down,
 		empty: tokens.border,
 	};
 
 	const barBg: Record<EditorialBarKind, string> = {
 		up: tokens.up,
+		degraded: tokens.degraded,
 		down: tokens.down,
 		empty: tokens.border,
 	};

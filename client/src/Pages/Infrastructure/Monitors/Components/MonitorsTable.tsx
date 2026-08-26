@@ -248,7 +248,8 @@ export const InfraMonitorsTable = ({
 				id: "cpu",
 				content: t("pages.infrastructure.table.headers.cpu"),
 				render: (row) => {
-					const check = row.recentChecks?.[0];
+					const recentChecks = row.recentChecks ?? [];
+					const check = recentChecks[recentChecks.length - 1];
 					const cpuUsage = (check?.cpu?.usage_percent || 0) * 100;
 					return <Gauge progress={cpuUsage} />;
 				},
@@ -257,7 +258,8 @@ export const InfraMonitorsTable = ({
 				id: "memory",
 				content: t("pages.infrastructure.table.headers.memory"),
 				render: (row) => {
-					const check = row.recentChecks?.[0];
+					const recentChecks = row.recentChecks ?? [];
+					const check = recentChecks[recentChecks.length - 1];
 					const memoryUsage = (check?.memory?.usage_percent || 0) * 100;
 					return <Gauge progress={memoryUsage} />;
 				},
@@ -266,7 +268,8 @@ export const InfraMonitorsTable = ({
 				id: "disk",
 				content: t("pages.infrastructure.table.headers.disk"),
 				render: (row) => {
-					const check = row.recentChecks?.[0];
+					const recentChecks = row.recentChecks ?? [];
+					const check = recentChecks[recentChecks.length - 1];
 
 					const totalDiskUsage = check?.disk?.reduce(
 						(acc, disk) => acc + (disk?.usage_percent || 0),
