@@ -1,5 +1,5 @@
 import type { SxProps, Theme } from "@mui/material/styles";
-import type { StatusPageThemeTokens } from "../tokens";
+import { mixSeverityColor, type StatusPageThemeTokens } from "../tokens";
 import { type OverallTone, toneColor, toneSoft } from "../shared/overallStatus";
 import { BOLD_SANS_STACK, MONO_STACK } from "../shared/fontStacks";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
@@ -34,9 +34,9 @@ export interface BoldStyles {
 	monitorUrl: SxProps<Theme>;
 	badge: (tone: OverallTone) => SxProps<Theme>;
 	heatmap: SxProps<Theme>;
-	heatmapCell: (kind: BoldHeatCell) => SxProps<Theme>;
+	heatmapCell: (kind: BoldHeatCell, severity?: number) => SxProps<Theme>;
 	histogram: SxProps<Theme>;
-	bar: (kind: BoldBarKind, heightPct: number) => SxProps<Theme>;
+	bar: (kind: BoldBarKind, heightPct: number, severity?: number) => SxProps<Theme>;
 	chartStats: SxProps<Theme>;
 	infra: SxProps<Theme>;
 	infraEmpty: SxProps<Theme>;
@@ -327,9 +327,12 @@ export const boldStyles = (
 			gap: { xs: "1px", md: "3px" },
 			height: 48,
 		},
-		heatmapCell: (kind) => ({
+		heatmapCell: (kind, severity = 1) => ({
 			borderRadius: "3px",
-			background: heatCellBg[kind],
+			background:
+				kind === "degraded"
+					? mixSeverityColor(tokens.up, tokens.degraded, severity)
+					: heatCellBg[kind],
 			boxShadow: heatCellShadow[kind],
 			opacity: kind === "empty" ? 0.4 : 1,
 			transition: "transform 0.15s",
@@ -344,8 +347,11 @@ export const boldStyles = (
 			alignItems: "flex-end",
 			height: 48,
 		},
-		bar: (kind, heightPct) => ({
-			background: barBg[kind],
+		bar: (kind, heightPct, severity = 1) => ({
+			background:
+				kind === "degraded"
+					? mixSeverityColor(tokens.up, tokens.degraded, severity)
+					: barBg[kind],
 			borderRadius: "3px",
 			minHeight: 4,
 			opacity: kind === "empty" ? 0.4 : 1,

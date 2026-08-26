@@ -13,7 +13,7 @@ import type {
 interface Props {
 	cells: ChartCell[];
 	containerSx: SxProps<Theme>;
-	barSx: (kind: BarKind, heightPct: number) => SxProps<Theme>;
+	barSx: (kind: BarKind, heightPct: number, severity?: number) => SxProps<Theme>;
 	statsSx: SxProps<Theme>;
 	statsGap?: number;
 }
@@ -61,7 +61,7 @@ export const ThemedHistogram = ({
 							placement="top"
 						>
 							<Box
-								sx={barSx(cell.barKind, cell.heightPct)}
+								sx={barSx(cell.barKind, cell.heightPct, cell.severity)}
 								aria-label={cell.ariaLabel}
 							/>
 						</Tooltip>

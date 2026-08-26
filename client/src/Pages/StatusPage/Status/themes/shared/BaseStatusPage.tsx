@@ -59,9 +59,9 @@ export interface BaseStyles {
 	monitorUrl: SxProps<Theme>;
 	badge: (tone: OverallTone) => SxProps<Theme>;
 	heatmap: SxProps<Theme>;
-	heatmapCell: (kind: HeatCellKind) => SxProps<Theme>;
+	heatmapCell: (kind: HeatCellKind, severity?: number) => SxProps<Theme>;
 	histogram: SxProps<Theme>;
-	bar: (kind: BarKind, heightPct: number) => SxProps<Theme>;
+	bar: (kind: BarKind, heightPct: number, severity?: number) => SxProps<Theme>;
 	chartStats: SxProps<Theme>;
 	infra: SxProps<Theme>;
 	infraEmpty: SxProps<Theme>;
