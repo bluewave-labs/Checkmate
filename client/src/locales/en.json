@@ -60,7 +60,8 @@
 			"exportToJSON": "Export to JSON",
 			"importFromJSON": "Import from JSON",
 			"clearFilters": "Clear filters",
-			"removeUser": "Remove user"
+			"removeUser": "Remove user",
+			"removeItem": "Remove {{item}}"
 		},
 		"charts": {
 			"labels": {
@@ -68,11 +69,24 @@
 				"downtime": "Downtime",
 				"high": "High",
 				"low": "Low",
+				"responseTime": "Response time",
+				"timingPhases": "Timing phases",
+				"totalResponseTime": "Total response time",
 				"uptime": "Uptime"
 			},
 			"histogram": {
-				"avg": "Avg: {{value}} ms",
-				"max": "Max: {{value}} ms"
+				"avg": "Avg: {{value}}",
+				"max": "Max: {{value}}",
+				"responseTime": "Response time: {{value}}",
+				"total": "Total: {{value}}"
+			},
+			"phases": {
+				"dns": "DNS",
+				"tcp": "TCP",
+				"tls": "TLS",
+				"request": "Request",
+				"firstByte": "First byte",
+				"download": "Download"
 			}
 		},
 		"dialogs": {
@@ -91,6 +105,9 @@
 			"responseTime": "Response time"
 		},
 		"form": {
+			"autocomplete": {
+				"placeholder": "Type to search"
+			},
 			"role": {
 				"option": {
 					"role": {
@@ -188,6 +205,7 @@
 				"infrastructure": "Infrastructure",
 				"notifications": "Notifications",
 				"tags": "Tags",
+				"proxies": "Proxies",
 				"checks": "Checks",
 				"incidents": "Incidents",
 				"statusPages": "Status pages",
@@ -227,6 +245,63 @@
 		}
 	},
 	"pages": {
+		"proxies": {
+			"header": {
+				"title": "Proxies",
+				"description": "Manage your proxy servers for routing HTTP monitoring traffic."
+			},
+			"fallback": {
+				"title": "No proxies yet",
+				"description": "Route HTTP monitor checks through a proxy server. Once you create a proxy, you can select it on individual monitors or set it as the global default in Settings.",
+				"actionButton": "Create a proxy"
+			},
+			"form": {
+				"name": {
+					"title": "Proxy name",
+					"description": "A friendly name to identify this proxy",
+					"optionName": "Proxy name",
+					"placeholder": "My proxy"
+				},
+				"server": {
+					"title": "Proxy server",
+					"description": "Where the proxy server is reachable. Set the protocol Checkmate uses to connect to it, its hostname or IP address, and the port it listens on.",
+					"option": {
+						"protocol": {
+							"label": "Protocol"
+						},
+						"host": {
+							"label": "Hostname / IP Address",
+							"placeholder": "proxy.example.com"
+						},
+						"port": {
+							"label": "Port"
+						}
+					}
+				},
+				"auth": {
+					"title": "Authentication",
+					"description": "Optional. Only needed if the proxy server requires basic authentication.",
+					"option": {
+						"username": {
+							"label": "Username",
+							"placeholder": "Proxy username",
+							"labelSet": "Username is set. Click Reset to change it."
+						},
+						"password": {
+							"label": "Password",
+							"labelSet": "Password is set. Click Reset to change it."
+						}
+					}
+				}
+			},
+			"table": {
+				"headers": {
+					"protocol": "Protocol",
+					"host": "Host",
+					"port": "Port"
+				}
+			}
+		},
 		"notFound": {
 			"title": "Oh no!  You dropped your sushi!",
 			"subtitle": "Either the URL doesn’t exist, or you don’t have access to it."
@@ -458,6 +533,7 @@
 				"statBoxes": {
 					"activeFor": "Active for",
 					"certificateExpiry": "Certificate expiry",
+					"domainExpiry": "Domain expiry",
 					"lastCheck": "Last check",
 					"lastResponseTime": "Last response time",
 					"serviceIsDown": "Service is down"
@@ -515,8 +591,7 @@
 						},
 						"customUpCodes": {
 							"label": "Accepted status codes",
-							"description": "Add any non-2xx codes that should also be considered successful.",
-							"removeAriaLabel": "Remove status code"
+							"description": "Add any non-2xx codes that should also be considered successful."
 						}
 					},
 					"title": "Advanced settings"
@@ -564,13 +639,31 @@
 							"label": "URL",
 							"placeholder": "https://www.google.com"
 						},
+						"proxyMode": {
+							"label": "Proxy",
+							"value": {
+								"inheritDirect": "Default (direct connection)",
+								"inheritGlobal": "Default ({{name}})",
+								"none": "Never use a proxy",
+								"custom": "Custom proxy"
+							},
+							"description": {
+								"inheritDirect": "No global proxy is configured, connect directly. If a global proxy is later configured, this monitor will use it.",
+								"inheritGlobal": "Use the global proxy setting",
+								"none": "Always connects directly even if a global proxy is enabled later.",
+								"custom": "Route this monitor's checks through a specific proxy. Overrides global proxy"
+							}
+						},
+						"proxy": {
+							"label": "Proxy server"
+						},
 						"game": {
 							"label": "Choose game",
 							"placeholder": "Select a game"
 						},
 						"port": {
 							"label": "Port to monitor",
-							"placeholder": 80
+							"placeholder": "80"
 						},
 						"grpcServiceName": {
 							"label": "Service name",
@@ -607,7 +700,7 @@
 					},
 					"title": "General settings",
 					"description": {
-						"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.",
+						"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.  Set an optional proxy server to connect through.",
 						"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
 						"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
 						"docker": "Enter the Docker container name or ID. You can use either the container name (e.g., my-app) or the container ID (full 64-char ID or short ID).",
@@ -705,17 +798,6 @@
 								"fifteenMinutes": "15 minutes",
 								"thirtyMinutes": "30 minutes"
 							}
-						}
-					}
-				},
-				"url": {
-					"title": "Monitor IP/URL on Status Page",
-					"description": "Display the IP address or URL of monitor on the public Status page. If it's disabled, only the monitor name will be shown to protect sensitive information.",
-					"option": {
-						"showURL": {
-							"label": "Display IP/URL on status page",
-							"enabled": "Enabled",
-							"disabled": "Disabled"
 						}
 					}
 				},
@@ -1151,7 +1233,21 @@
 				"type": {
 					"description": "Select the type of notification channel to create.",
 					"optionType": "Type",
-					"title": "Channel type"
+					"title": "Channel type",
+					"value": {
+						"email": "Email",
+						"slack": "Slack",
+						"discord": "Discord",
+						"webhook": "Webhook",
+						"rocket_chat": "Rocket.Chat",
+						"pager_duty": "PagerDuty",
+						"matrix": "Matrix",
+						"teams": "Teams",
+						"telegram": "Telegram",
+						"pushover": "Pushover",
+						"twilio": "Twilio",
+						"ntfy": "ntfy"
+					}
 				},
 				"telegram": {
 					"title": "Telegram configuration",
@@ -1266,6 +1362,22 @@
 						}
 					}
 				},
+				"globalProxy": {
+					"title": "Global proxy",
+					"description": "Route monitoring checks through a proxy by default. Applies to all HTTP monitors whose proxy setting is \"Default\"; monitors set to \"Never use a proxy\" or a custom proxy are unaffected.",
+					"option": {
+						"enabled": {
+							"label": "Use global proxy"
+						},
+						"proxy": {
+							"label": "Choose a global proxy"
+						},
+						"empty": {
+							"text": "No proxies configured yet.",
+							"link": "Create one first"
+						}
+					}
+				},
 				"pagespeed": {
 					"title": "Google PageSpeed API key",
 					"description": "Enter your Google PageSpeed API key to enable Google PageSpeed monitoring. Click Reset to update the key.",
@@ -1282,9 +1394,7 @@
 					"description": "Display the IP address or URL of monitor on the public Status page. If it's disabled, only the monitor name will be shown to protect sensitive information.",
 					"option": {
 						"showURL": {
-							"label": "Display IP/URL on status page",
-							"enabled": "Enabled",
-							"disabled": "Disabled"
+							"label": "Display IP/URL on status page"
 						}
 					}
 				},
@@ -1424,6 +1534,14 @@
 		},
 		"statusPages": {
 			"deleteSuccess": "Status page deleted successfully",
+			"rangeSelectorAria": "History range",
+			"rangeExceedsRetention": "Check history retention is set to {{days}} days. Increase retention for more data.",
+			"range": {
+				"latest": "Latest",
+				"30d": "30 days",
+				"60d": "60 days",
+				"90d": "90 days"
+			},
 			"fallback": {
 				"title": "No status pages yet",
 				"description": "Publish a public page that shows real-time uptime and incident history to your customers and stakeholders.",
@@ -1442,10 +1560,13 @@
 					"initializing": "Initializing"
 				},
 				"chart": {
-					"avg": "avg {{value}}ms",
-					"max": "max {{value}}ms",
+					"avg": "avg {{value}}",
+					"max": "max {{value}}",
 					"downTooltip": "Down",
-					"heatmapAria": "Response time heatmap"
+					"heatmapAria": "Response time heatmap",
+					"dayAria": "{{date}}, {{uptime}} uptime",
+					"dayUptime": "Uptime: {{uptime}} ({{upChecks}}/{{totalChecks}} checks)",
+					"dayAvgResponse": "Avg response: {{value}}"
 				},
 				"infrastructure": {
 					"title": "Infrastructure",

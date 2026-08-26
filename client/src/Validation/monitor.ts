@@ -5,6 +5,7 @@ import {
 	DnsRecordTypes,
 	HttpMethods,
 	PageSpeedStrategies,
+	ProxyModes,
 	type MonitorType,
 } from "@/Types/Monitor";
 import { ALL_HTTP_STATUS_CODES } from "@/Utils/statusCode";
@@ -67,6 +68,8 @@ const httpStatusCode = z.number().refine((code) => httpStatusCodeSet.has(code), 
 const httpSchema = baseSchema.extend({
 	type: z.literal("http"),
 	url: urlSchema,
+	proxyMode: z.enum(ProxyModes),
+	proxyId: z.string().optional(),
 	method: z.enum(HttpMethods).optional().register(monitorStepRegistry, { step: 2 }),
 	ignoreTlsErrors: z.boolean().register(monitorStepRegistry, { step: 2 }),
 	useAdvancedMatching: z.boolean().register(monitorStepRegistry, { step: 2 }),
@@ -195,7 +198,7 @@ const dnsSchema = baseSchema.extend({
 });
 
 // Discriminated union of all monitor types
-export const monitorSchema = z.discriminatedUnion("type", [
+const monitorSchemaUnion = z.discriminatedUnion("type", [
 	httpSchema,
 	pingSchema,
 	portSchema,
@@ -208,10 +211,21 @@ export const monitorSchema = z.discriminatedUnion("type", [
 	dnsSchema,
 ]);
 
+// Mirrors the server's refineProxySelection (monitorValidation.ts)
+export const monitorSchema = monitorSchemaUnion.superRefine((data, ctx) => {
+	if (data.type === "http" && data.proxyMode === "custom" && !data.proxyId) {
+		ctx.addIssue({
+			code: "custom",
+			path: ["proxyId"],
+			message: "A proxy must be selected when proxy mode is custom",
+		});
+	}
+});
+
 export type MonitorFormData = z.infer<typeof monitorSchema>;
 
 const optionForType = (type: MonitorType) =>
-	monitorSchema.options.find((o) => o.shape.type.value === type);
+	monitorSchemaUnion.options.find((o) => o.shape.type.value === type);
 
 // The step each field of a type is validated on, from the per-field
 // `monitorStepRegistry` metadata (unannotated fields default to step 0).

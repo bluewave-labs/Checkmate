@@ -4,8 +4,10 @@ import { type OverallTone, toneColor, toneSoft } from "../shared/overallStatus";
 import { BOLD_SANS_STACK, MONO_STACK } from "../shared/fontStacks";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 
-export type BoldHeatCell = "fast" | "med" | "slow" | "down" | "empty";
-export type BoldBarKind = "up" | "down" | "empty";
+import type { BarKind, HeatCellKind } from "../shared/ChartCells";
+
+export type BoldHeatCell = HeatCellKind;
+export type BoldBarKind = BarKind;
 export type BoldGaugeFill = "ok" | "warm" | "hot";
 
 export interface BoldStyles {
@@ -55,6 +57,7 @@ export const boldStyles = (
 		fast: tokens.up,
 		med: `color-mix(in srgb, ${tokens.up} 70%, #ffffff 30%)`,
 		slow: tokens.warn,
+		degraded: tokens.degraded,
 		down: tokens.down,
 		empty: tokens.border,
 	};
@@ -62,12 +65,14 @@ export const boldStyles = (
 		fast: `0 0 6px color-mix(in srgb, ${tokens.up} 18%, transparent)`,
 		med: `0 0 6px color-mix(in srgb, ${tokens.up} 18%, transparent)`,
 		slow: `0 0 6px color-mix(in srgb, ${tokens.warn} 20%, transparent)`,
+		degraded: `0 0 6px color-mix(in srgb, ${tokens.degraded} 20%, transparent)`,
 		down: `0 0 6px color-mix(in srgb, ${tokens.down} 20%, transparent)`,
 		empty: "none",
 	};
 
 	const barBg: Record<BoldBarKind, string> = {
 		up: tokens.up,
+		degraded: tokens.degraded,
 		down: tokens.down,
 		empty: tokens.border,
 	};

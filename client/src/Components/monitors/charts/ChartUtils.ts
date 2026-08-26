@@ -23,11 +23,12 @@ export const PHASE_COLOR_KEYS = {
 	avgDownload: "download",
 } as const;
 
-export const PHASE_LABELS: Record<(typeof PHASE_KEYS)[number], string> = {
-	avgDns: "DNS",
-	avgTcp: "TCP",
-	avgTls: "TLS",
-	avgRequest: "Request",
-	avgFirstByte: "First byte",
-	avgDownload: "Download",
+// i18n keys, resolved with t() at render
+export const PHASE_LABEL_KEYS: Record<(typeof PHASE_KEYS)[number], string> = {
+	avgDns: "common.charts.phases.dns",
+	avgTcp: "common.charts.phases.tcp",
+	avgTls: "common.charts.phases.tls",
+	avgRequest: "common.charts.phases.request",
+	avgFirstByte: "common.charts.phases.firstByte",
+	avgDownload: "common.charts.phases.download",
 };

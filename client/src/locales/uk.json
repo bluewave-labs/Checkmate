@@ -58,8 +58,8 @@
 				"uptime": "Час роботи"
 			},
 			"histogram": {
-				"avg": "Сер: {{value}} мс",
-				"max": "Макс: {{value}} мс"
+				"avg": "Сер: {{value}}",
+				"max": "Макс: {{value}}"
 			}
 		},
 		"dialogs": {
@@ -1352,10 +1352,10 @@
 					"responseTime": "Час відповіді"
 				},
 				"chart": {
-					"avg": "сер {{value}}мс",
+					"avg": "сер {{value}}",
 					"downTooltip": "Не працює",
 					"heatmapAria": "Теплова карта часу відгуку",
-					"max": "макс {{value}}мс"
+					"max": "макс {{value}}"
 				},
 				"status": {
 					"breached": "Перевищено поріг",

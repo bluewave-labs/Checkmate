@@ -21,10 +21,11 @@ export const TabOverview = ({
 	}
 
 	const checks = stats?.checks || [];
+	const recentChecks = monitor.recentChecks ?? [];
 	return (
 		<Stack gap={theme.spacing(8)}>
 			<StatusBoxes monitor={monitor} />
-			<InfraDetailsGauges snapshot={monitor.recentChecks?.[0]} />
+			<InfraDetailsGauges snapshot={recentChecks[recentChecks.length - 1]} />
 			<InfraDetailsCharts
 				checks={checks}
 				dateRange={dateRange}

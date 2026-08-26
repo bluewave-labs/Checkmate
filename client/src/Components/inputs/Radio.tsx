@@ -42,6 +42,9 @@ export const RadioWithDescription = ({
 				"& .MuiButtonBase-root": {
 					mr: theme.spacing(6),
 				},
+				"&:has(.Mui-focusVisible)": {
+					backgroundColor: theme.palette.action.hover,
+				},
 			}}
 		/>
 	);

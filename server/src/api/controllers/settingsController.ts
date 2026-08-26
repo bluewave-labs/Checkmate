@@ -5,6 +5,7 @@ import { sendTestEmailBodyValidation } from "@/api/validation/notificationValida
 import { AppError } from "@/utils/AppError.js";
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { IEmailService } from "@/service/emailService.js";
+import { IProxiesService } from "@/domain/proxies/proxy.service.js";
 import { Settings } from "@/domain/app-settings/app-settings.type.js";
 
 export interface ISettingsController {
@@ -16,18 +17,23 @@ export interface ISettingsController {
 class SettingsController implements ISettingsController {
 	private settingsService: ISettingsService;
 	private emailService: IEmailService;
-	constructor(settingsService: ISettingsService, emailService: IEmailService) {
+	private proxiesService: IProxiesService;
+	constructor(settingsService: ISettingsService, emailService: IEmailService, proxiesService: IProxiesService) {
 		this.settingsService = settingsService;
 		this.emailService = emailService;
+		this.proxiesService = proxiesService;
 	}
 
-	buildAppSettings = (dbSettings: Settings) => {
+	buildAppSettings = async (dbSettings: Settings) => {
 		const sanitizedSettings: Record<string, unknown> = { ...dbSettings };
 		delete sanitizedSettings.version;
 		delete sanitizedSettings.jwtSecret;
+		const globalProxy =
+			dbSettings.globalProxyEnabled && dbSettings.globalProxyId ? await this.proxiesService.getProxySummary(dbSettings.globalProxyId) : null;
 		const returnSettings: Record<string, unknown | null> = {
 			pagespeedKeySet: false,
 			emailPasswordSet: false,
+			globalProxy,
 			settings: null,
 		};
 
@@ -46,7 +52,7 @@ class SettingsController implements ISettingsController {
 	getAppSettings = catchAsync(async (req: Request, res: Response) => {
 		const dbSettings = await this.settingsService.getDBSettings();
 
-		const returnSettings = this.buildAppSettings(dbSettings);
+		const returnSettings = await this.buildAppSettings(dbSettings);
 		return res.status(200).json({
 			success: true,
 			msg: "App settings fetched successfully",
@@ -57,8 +63,15 @@ class SettingsController implements ISettingsController {
 	updateAppSettings = catchAsync(async (req: Request, res: Response) => {
 		const validatedBody = updateAppSettingsBodyValidation.parse(req.body);
 
+		if (validatedBody.globalProxyId) {
+			const proxy = await this.proxiesService.getProxySummary(validatedBody.globalProxyId);
+			if (!proxy) {
+				throw new AppError({ message: "Referenced proxy does not exist", status: 422 });
+			}
+		}
+
 		const updatedSettings = await this.settingsService.updateDbSettings(validatedBody);
-		const returnSettings = this.buildAppSettings(updatedSettings);
+		const returnSettings = await this.buildAppSettings(updatedSettings);
 		return res.status(200).json({
 			success: true,
 			msg: "App settings updated successfully",
@@ -93,24 +106,30 @@ class SettingsController implements ISettingsController {
 		if (!html) {
 			throw new AppError({ message: "Failed to build email template.", status: 500 });
 		}
-		const messageId = await this.emailService.sendEmail(to, subject, html, {
-			systemEmailHost,
-			systemEmailPort,
-			systemEmailUser,
-			systemEmailAddress,
-			systemEmailDisplayName,
-			systemEmailPassword,
-			systemEmailConnectionHost,
-			systemEmailSecure,
-			systemEmailPool,
-			systemEmailIgnoreTLS,
-			systemEmailRequireTLS,
-			systemEmailRejectUnauthorized,
-			systemEmailTLSServername,
-		});
-
-		if (!messageId) {
-			throw new AppError({ message: "Failed to send test email.", status: 500 });
+		let messageId: string;
+		try {
+			messageId = await this.emailService.sendEmail(to, subject, html, {
+				systemEmailHost,
+				systemEmailPort,
+				systemEmailUser,
+				systemEmailAddress,
+				systemEmailDisplayName,
+				systemEmailPassword,
+				systemEmailConnectionHost,
+				systemEmailSecure,
+				systemEmailPool,
+				systemEmailIgnoreTLS,
+				systemEmailRequireTLS,
+				systemEmailRejectUnauthorized,
+				systemEmailTLSServername,
+			});
+		} catch (error: unknown) {
+			// Surface the underlying SMTP failure: diagnosing the settings is the whole
+			// point of the test email endpoint.
+			throw new AppError({
+				message: error instanceof Error ? `Failed to send test email. ${error.message}` : "Failed to send test email.",
+				status: 500,
+			});
 		}
 
 		return res.status(200).json({

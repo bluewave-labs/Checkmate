@@ -26,7 +26,7 @@ import { NotificationReactor } from "@/worker/reactors/reactor.notification.js";
 import { IncidentReactor } from "@/worker/reactors/reactor.incident.js";
 import { ReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
 import { DBQueueWorker } from "@/worker/worker.db-queue.js";
-
+import { ProxyResolver } from "@/service/network/ProxyResolver.js";
 // Network providers
 import { PingProvider } from "@/service/network/PingProvider.js";
 import { HttpProvider } from "@/service/network/HttpProvider.js";
@@ -64,6 +64,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		incidentsRepository,
 		teamsRepository,
 		maintenanceWindowsRepository,
+		proxiesRepository,
 	} = shared;
 
 	// ***********************
@@ -93,6 +94,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		dnsProvider,
 	]);
 
+	const proxyResolver = new ProxyResolver(proxiesRepository, settingsService, logger);
 	const bufferService = new BufferService(logger, checkService, geoChecksService, settingsService, jobsRepository);
 	const statusService = new StatusService(logger, monitorsRepository, monitorStatsRepository);
 	const monitorStatusPolicy = new MonitorStatusPolicy();
@@ -110,7 +112,15 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	// Check producer/evaluator
 	// Handles creating and evaluatiog checks
 	// ***********************
-	const checkProducer = new CheckProducer(monitorsRepository, maintenanceWindowsRepository, checkService, networkService, bufferService, logger);
+	const checkProducer = new CheckProducer(
+		monitorsRepository,
+		maintenanceWindowsRepository,
+		checkService,
+		networkService,
+		proxyResolver,
+		bufferService,
+		logger
+	);
 	const checkEvaluator = new CheckEvaluator(statusService, monitorStatusPolicy);
 	const geoCheckPipeline = new GeoChecksPipeline(maintenanceWindowsRepository, geoChecksService, bufferService, logger);
 

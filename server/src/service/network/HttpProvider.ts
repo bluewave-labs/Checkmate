@@ -9,11 +9,17 @@ import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { isStatusUp } from "@/service/network/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 import CacheableLookup from "cacheable-lookup";
+import { HttpProxyAgent, HttpsProxyAgent } from "hpagent";
+import { CheckContext } from "@/types/network.js";
+
+export const PROXY_CONNECT_ERROR_CODES = new Set(["ECONNREFUSED", "ECONNRESET", "EHOSTUNREACH", "ENETUNREACH", "ENOTFOUND", "EAI_AGAIN", "EPIPE"]);
 
 export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 	readonly type = "http";
 
 	// Shared, pooled agents reused across every check
+	private static readonly PROXY_AGENT_CACHE_MAX = 50;
+	private readonly proxyAgents = new Map<string, { http: HttpProxyAgent; https: HttpsProxyAgent }>();
 	private readonly httpAgent: HttpAgent;
 	private readonly httpsAgent: HttpsAgent;
 	private readonly httpsAgentInsecure: HttpsAgent;
@@ -39,6 +45,44 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 
 	supports(type: MonitorType) {
 		return type === "http";
+	}
+
+	private proxyFailureMessage = (error: RequestError, proxyUrl: string): string | undefined => {
+		if (error.response || !error.code || !PROXY_CONNECT_ERROR_CODES.has(error.code)) {
+			return undefined;
+		}
+		const { hostname, port } = new URL(proxyUrl);
+		return `Proxy connection failed (${hostname}:${port}): ${error.message}`;
+	};
+
+	private getProxyAgents(proxyUrl: string, ignoreTlsErrors: boolean) {
+		const key = `${proxyUrl}|${ignoreTlsErrors}`;
+		const hit = this.proxyAgents.get(key);
+		// Agent already exists, refresh
+		if (hit) {
+			this.proxyAgents.delete(key); // Refresh
+			this.proxyAgents.set(key, hit);
+			return hit;
+		}
+
+		// Create new agents
+		const agentOptions = { keepAlive: true, maxSockets: 256, maxFreeSockets: 256, proxy: proxyUrl };
+		const pair = {
+			http: new HttpProxyAgent(agentOptions),
+			https: new HttpsProxyAgent({ ...agentOptions, rejectUnauthorized: !ignoreTlsErrors }),
+		};
+
+		// Cache agents
+		this.proxyAgents.set(key, pair);
+		if (this.proxyAgents.size > HttpProvider.PROXY_AGENT_CACHE_MAX) {
+			const [oldestKey] = this.proxyAgents.keys(); // Destructuring gets the first inserted, ie oldest, item
+			if (oldestKey === undefined) return pair;
+			const oldest = this.proxyAgents.get(oldestKey);
+			oldest?.http.destroy();
+			oldest?.https.destroy();
+			this.proxyAgents.delete(oldestKey);
+		}
+		return pair;
 	}
 
 	private buildResponse<T>(
@@ -113,20 +157,22 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 		};
 	}
 
-	private handleHttpError<T>(error: unknown, monitor: Monitor): MonitorStatusResponse<T> {
+	private handleHttpError<T>(error: unknown, monitor: Monitor, ctx?: CheckContext): MonitorStatusResponse<T> {
 		if (error instanceof HTTPError || error instanceof RequestError) {
 			const statusCode = error.response?.statusCode;
 			const statusUp = isStatusUp(statusCode, monitor.customUpCodes);
 			const responseTime = error.timings?.phases?.total ?? 0;
 
 			if (!statusUp) {
+				const message = (ctx?.proxyUrl && error instanceof RequestError && this.proxyFailureMessage(error, ctx.proxyUrl)) || error.message;
+
 				return {
 					monitorId: monitor.id,
 					teamId: monitor.teamId,
 					type: monitor.type,
 					status: false,
 					code: statusCode ?? NETWORK_ERROR,
-					message: error.message,
+					message: message,
 					responseTime,
 					timings: error.timings,
 					payload: null as T,
@@ -156,7 +202,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 		};
 	}
 
-	async handle<T>(monitor: Monitor): Promise<MonitorStatusResponse<T>> {
+	async handle<T>(monitor: Monitor, ctx?: CheckContext): Promise<MonitorStatusResponse<T>> {
 		const { url, secret, ignoreTlsErrors } = monitor;
 
 		if (!url) {
@@ -167,10 +213,12 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 			headers: monitor.secret ? { Authorization: `Bearer ${secret}` } : undefined,
 		};
 
-		options.agent = {
-			http: this.httpAgent,
-			https: ignoreTlsErrors ? this.httpsAgentInsecure : this.httpsAgent,
-		};
+		options.agent = ctx?.proxyUrl
+			? this.getProxyAgents(ctx.proxyUrl, Boolean(ignoreTlsErrors))
+			: {
+					http: this.httpAgent,
+					https: ignoreTlsErrors ? this.httpsAgentInsecure : this.httpsAgent,
+				};
 
 		options.method = monitor.method;
 
@@ -188,7 +236,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 				timings: response.timings,
 			});
 		} catch (error: unknown) {
-			return this.handleHttpError(error, monitor);
+			return this.handleHttpError(error, monitor, ctx);
 		}
 	}
 }

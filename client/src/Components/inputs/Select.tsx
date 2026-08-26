@@ -11,10 +11,11 @@ interface SelectInputProps<T> extends Omit<SelectProps<T>, "label"> {
 	fieldLabel?: string;
 	required?: boolean;
 	placeholder?: string;
+	helperText?: string;
 }
 
 const SelectInputInner = <T,>(
-	{ fieldLabel, required, placeholder, ...props }: SelectInputProps<T>,
+	{ fieldLabel, required, placeholder, helperText, ...props }: SelectInputProps<T>,
 	ref: React.ForwardedRef<HTMLDivElement>
 ) => {
 	const theme = useTheme();
@@ -27,7 +28,7 @@ const SelectInputInner = <T,>(
 			: selected === undefined || selected === null || selected === "";
 
 		if (isEmpty && placeholder) {
-			return <Typography sx={{ color: emptyPlaceholderColor }}>{placeholder}</Typography>;
+			return <Typography color={emptyPlaceholderColor}>{placeholder}</Typography>;
 		}
 
 		if (isMultiple) {
@@ -92,11 +93,21 @@ const SelectInputInner = <T,>(
 		/>
 	);
 
-	if (fieldLabel) {
+	const helper = helperText ? (
+		<Typography
+			variant="caption"
+			color={props.error ? theme.palette.error.main : theme.palette.text.secondary}
+		>
+			{helperText}
+		</Typography>
+	) : null;
+
+	if (fieldLabel || helper) {
 		return (
 			<Stack spacing={theme.spacing(2)}>
-				<FieldLabel required={required}>{fieldLabel}</FieldLabel>
+				{fieldLabel && <FieldLabel required={required}>{fieldLabel}</FieldLabel>}
 				{select}
+				{helper}
 			</Stack>
 		);
 	}

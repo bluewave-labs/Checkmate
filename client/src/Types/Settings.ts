@@ -24,6 +24,8 @@ export interface Settings {
 	showURL: boolean;
 	singleton: boolean;
 	globalThresholds?: SettingsThresholds;
+	globalProxyEnabled: boolean;
+	globalProxyId?: string | null;
 	createdAt: string;
 	updatedAt: string;
 }
@@ -31,5 +33,11 @@ export interface Settings {
 export interface AppSettingsResponse {
 	pagespeedKeySet: boolean;
 	emailPasswordSet: boolean;
+	globalProxy: {
+		id: string;
+		name: string;
+		host: string;
+		port: number;
+	} | null;
 	settings: Settings;
 }

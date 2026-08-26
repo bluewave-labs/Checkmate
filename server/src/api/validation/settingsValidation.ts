@@ -40,5 +40,16 @@ export const updateAppSettingsBodyValidation = z
 				temperature: z.number().min(1).max(150).optional(),
 			})
 			.optional(),
+		globalProxyEnabled: z.boolean().optional(),
+		globalProxyId: z.string().nullable().optional(),
 	})
-	.strip();
+	.strip()
+	.superRefine((body, ctx) => {
+		if (body.globalProxyEnabled === true && !body.globalProxyId) {
+			ctx.addIssue({
+				code: "custom",
+				path: ["globalProxyId"],
+				message: "A proxy must be selected to enable the global proxy",
+			});
+		}
+	});

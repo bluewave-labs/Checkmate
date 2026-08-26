@@ -1,22 +1,24 @@
 import Stack from "@mui/material/Stack";
 import { StatBox } from "@/Components/design-elements";
 
-import prettyMilliseconds from "pretty-ms";
 import { useTheme } from "@mui/material/styles";
 import type { MonitorStats, Monitor } from "@/Types/Monitor";
 import { getStatusPalette } from "@/Utils/MonitorUtils";
 import { useTranslation } from "react-i18next";
+import { formatMs, formatDuration } from "@/Utils/TimeUtils";
 
 interface MonitorStatBoxesProps {
 	monitor?: Monitor;
 	monitorStats: MonitorStats | null;
 	certificateExpiry?: string;
+	domainExpiry?: string;
 }
 
 export const MonitorStatBoxes = ({
 	monitor,
 	monitorStats,
 	certificateExpiry,
+	domainExpiry,
 }: MonitorStatBoxesProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -31,14 +33,9 @@ export const MonitorStatBoxes = ({
 	const timeOfLastCheck = monitorStats?.lastCheckTimestamp || 0;
 	const timeSinceLastCheck = Date.now() - timeOfLastCheck || 0;
 
-	const options = {
-		secondsDecimalDigits: 0,
-		millisecondsDecimalDigits: 0,
-	};
+	const streakTime = formatDuration(timeSinceLastFailure);
 
-	const streakTime = prettyMilliseconds(timeSinceLastFailure, options);
-
-	const lastCheckTime = prettyMilliseconds(timeSinceLastCheck, options);
+	const lastCheckTime = formatDuration(timeSinceLastCheck);
 	const isActive =
 		monitor?.status === "up" ||
 		monitor?.status === "paused" ||
@@ -67,14 +64,20 @@ export const MonitorStatBoxes = ({
 			/>
 			<StatBox
 				title={t("pages.common.monitors.statBoxes.lastResponseTime")}
-				subtitle={prettyMilliseconds(monitorStats?.lastResponseTime ?? 0)}
+				subtitle={formatMs(monitorStats?.lastResponseTime ?? 0)}
 			/>
 
 			{monitor?.type === "http" && (
-				<StatBox
-					title={t("pages.common.monitors.statBoxes.certificateExpiry")}
-					subtitle={certificateExpiry || "N/A"}
-				/>
+				<>
+					<StatBox
+						title={t("pages.common.monitors.statBoxes.certificateExpiry")}
+						subtitle={certificateExpiry || "N/A"}
+					/>
+					<StatBox
+						title={t("pages.common.monitors.statBoxes.domainExpiry")}
+						subtitle={domainExpiry || "N/A"}
+					/>
+				</>
 			)}
 		</Stack>
 	);

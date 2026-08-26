@@ -79,6 +79,7 @@ export const statusPageSchema = z.object({
 		.object({
 			data: z.string(),
 			contentType: z.string(),
+			file: z.instanceof(File).optional(),
 		})
 		.nullable()
 		.optional()

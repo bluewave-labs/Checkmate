@@ -102,6 +102,7 @@ export const Sidebar = () => {
 					})}
 				</List>
 				<StarPrompt />
+
 				<Divider sx={{ borderColor: theme.palette.divider }} />
 
 				<AuthFooter

@@ -12,6 +12,7 @@ import NotificationController from "../api/controllers/notificationController.js
 import TagsController from "../api/controllers/tagController.js";
 import DiagnosticController from "../api/controllers/diagnosticController.js";
 import IncidentController from "../api/controllers/incidentController.js";
+import ProxyController from "@/api/controllers/proxyController.js";
 import { ApiServices } from "@/config/services.api.js";
 
 export interface InitializedControllers {
@@ -29,12 +30,13 @@ export interface InitializedControllers {
 	tagController: TagsController;
 	diagnosticController: DiagnosticController;
 	incidentController: IncidentController;
+	proxyController: ProxyController;
 }
 export const initializeControllers = (apiServices: ApiServices): InitializedControllers => {
 	return {
 		authController: new AuthController(apiServices.userService),
 		monitorController: new MonitorController(apiServices.monitorService, apiServices.notificationsService),
-		settingsController: new SettingsController(apiServices.settingsService, apiServices.emailService),
+		settingsController: new SettingsController(apiServices.settingsService, apiServices.emailService, apiServices.proxiesService),
 		checkController: new CheckController(apiServices.checkService),
 		geoCheckController: new GeoCheckController(apiServices.geoChecksService),
 		inviteController: new InviteController(apiServices.inviteService),
@@ -46,5 +48,6 @@ export const initializeControllers = (apiServices: ApiServices): InitializedCont
 		tagController: new TagsController(apiServices.tagsService),
 		diagnosticController: new DiagnosticController(apiServices.diagnosticService),
 		incidentController: new IncidentController(apiServices.incidentService),
+		proxyController: new ProxyController(apiServices.proxiesService),
 	};
 };

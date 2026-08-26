@@ -1,4 +1,5 @@
 import { describe, expect, it, jest } from "@jest/globals";
+import { HttpProxyAgent, HttpsProxyAgent } from "hpagent";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
 import { NETWORK_ERROR } from "../../../../src/types/network.ts";
 import type { Monitor } from "../../../../src/domain/monitors/monitor.type.ts";
@@ -492,6 +493,154 @@ describe("HttpProvider", () => {
 			expect(result.status).toBe(true);
 			expect(result.code).toBe(401);
 			expect(advancedMatcher.validate).not.toHaveBeenCalled();
+		});
+	});
+
+	// ── Proxy support ────────────────────────────────────────────────────
+
+	describe("proxy support", () => {
+		const PROXY_URL = "http://proxy.example.com:8080";
+
+		const gotOptions = (callIndex = 0) => mockGot.mock.calls[callIndex]?.[1] as any;
+
+		const makeConnectionError = (code: string, message = `connect ${code} 10.0.0.1:8080`) => {
+			const err = new RequestError(message);
+			(err as any).code = code;
+			return err;
+		};
+
+		it("uses hpagent proxy agents when ctx.proxyUrl is set", async () => {
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor(), { proxyUrl: PROXY_URL });
+
+			expect(gotOptions().agent.http).toBeInstanceOf(HttpProxyAgent);
+			expect(gotOptions().agent.https).toBeInstanceOf(HttpsProxyAgent);
+		});
+
+		it("uses the shared agents when ctx has no proxyUrl", async () => {
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor());
+			await provider.handle(makeMonitor(), {});
+
+			expect(gotOptions(0).agent.http).not.toBeInstanceOf(HttpProxyAgent);
+			expect(gotOptions(1).agent.http).toBe(gotOptions(0).agent.http);
+			expect(gotOptions(1).agent.https).toBe(gotOptions(0).agent.https);
+		});
+
+		it("reuses the cached agent pair across checks with the same proxyUrl", async () => {
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor(), { proxyUrl: PROXY_URL });
+			await provider.handle(makeMonitor(), { proxyUrl: PROXY_URL });
+
+			expect(gotOptions(1).agent.http).toBe(gotOptions(0).agent.http);
+			expect(gotOptions(1).agent.https).toBe(gotOptions(0).agent.https);
+		});
+
+		it("builds distinct agent pairs for distinct proxyUrls", async () => {
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor(), { proxyUrl: PROXY_URL });
+			await provider.handle(makeMonitor(), { proxyUrl: "http://other.example.com:3128" });
+
+			expect(gotOptions(1).agent.http).not.toBe(gotOptions(0).agent.http);
+		});
+
+		it("builds distinct pairs per ignoreTlsErrors and sets rejectUnauthorized accordingly", async () => {
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor({ ignoreTlsErrors: false }), { proxyUrl: PROXY_URL });
+			await provider.handle(makeMonitor({ ignoreTlsErrors: true }), { proxyUrl: PROXY_URL });
+
+			expect(gotOptions(1).agent.https).not.toBe(gotOptions(0).agent.https);
+			expect(gotOptions(0).agent.https.options.rejectUnauthorized).toBe(true);
+			expect(gotOptions(1).agent.https.options.rejectUnauthorized).toBe(false);
+		});
+
+		it("evicts and destroys the least-recently-used pair past the cache cap", async () => {
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor(), { proxyUrl: "http://proxy0.example.com:8080" });
+			const first = gotOptions(0).agent;
+			const httpDestroy = jest.spyOn(first.http, "destroy");
+			const httpsDestroy = jest.spyOn(first.https, "destroy");
+
+			for (let i = 1; i <= 49; i++) {
+				await provider.handle(makeMonitor(), { proxyUrl: `http://proxy${i}.example.com:8080` });
+			}
+			expect(httpDestroy).not.toHaveBeenCalled();
+
+			await provider.handle(makeMonitor(), { proxyUrl: "http://proxy50.example.com:8080" });
+
+			expect(httpDestroy).toHaveBeenCalled();
+			expect(httpsDestroy).toHaveBeenCalled();
+			// The evicted pair is gone — the same proxyUrl now gets a fresh pair
+			await provider.handle(makeMonitor(), { proxyUrl: "http://proxy0.example.com:8080" });
+			expect(gotOptions(51).agent.http).not.toBe(first.http);
+		});
+
+		it("names the proxy in the message when the proxy connection fails", async () => {
+			mockGot.mockRejectedValue(makeConnectionError("ECONNREFUSED"));
+			const { provider } = createProvider();
+
+			const result = await provider.handle(makeMonitor(), { proxyUrl: PROXY_URL });
+
+			expect(result.status).toBe(false);
+			expect(result.code).toBe(NETWORK_ERROR);
+			expect(result.message).toBe("Proxy connection failed (proxy.example.com:8080): connect ECONNREFUSED 10.0.0.1:8080");
+		});
+
+		it("does not attribute timeouts to the proxy", async () => {
+			mockGot.mockRejectedValue(makeConnectionError("ETIMEDOUT", "Timeout awaiting 'request' for 30000ms"));
+			const { provider } = createProvider();
+
+			const result = await provider.handle(makeMonitor(), { proxyUrl: PROXY_URL });
+
+			expect(result.status).toBe(false);
+			expect(result.message).toBe("Timeout awaiting 'request' for 30000ms");
+		});
+
+		it("leaves connection-error messages unprefixed for direct checks", async () => {
+			mockGot.mockRejectedValue(makeConnectionError("ECONNREFUSED"));
+			const { provider } = createProvider();
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.message).toBe("connect ECONNREFUSED 10.0.0.1:8080");
+		});
+
+		it("never leaks proxy credentials into the message", async () => {
+			mockGot.mockRejectedValue(makeConnectionError("ECONNREFUSED"));
+			const { provider } = createProvider();
+
+			const result = await provider.handle(makeMonitor(), { proxyUrl: "http://bob:sekret@proxy.example.com:8080" });
+
+			expect(result.message).toContain("proxy.example.com:8080");
+			expect(result.message).not.toContain("bob");
+			expect(result.message).not.toContain("sekret");
+		});
+
+		it("does not prefix errors that carry a response (target failure through a healthy proxy)", async () => {
+			const err = new RequestError("Response code 500 (Internal Server Error)");
+			(err as any).code = "ECONNRESET";
+			(err as any).response = { statusCode: 500, body: "", headers: {} };
+			(err as any).timings = { phases: { total: 25 } };
+			mockGot.mockRejectedValue(err);
+			const { provider } = createProvider();
+
+			const result = await provider.handle(makeMonitor(), { proxyUrl: PROXY_URL });
+
+			expect(result.status).toBe(false);
+			expect(result.code).toBe(500);
+			expect(result.message).toBe("Response code 500 (Internal Server Error)");
 		});
 	});
 });

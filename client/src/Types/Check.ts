@@ -250,14 +250,53 @@ export interface ChecksSummary {
 	downChecks: number;
 }
 
-export type CheckSnapshot = Omit<Check, "metadata" | "__v" | "updatedAt"> & {
-	originalResponseTime: number;
-};
+export type SnapshotCpuInfo = Pick<
+	CheckCpuInfo,
+	| "physical_core"
+	| "logical_core"
+	| "frequency"
+	| "current_frequency"
+	| "temperature"
+	| "usage_percent"
+>;
+export type SnapshotMemoryInfo = Pick<
+	CheckMemoryInfo,
+	"total_bytes" | "used_bytes" | "usage_percent"
+>;
+export type SnapshotDiskInfo = Pick<
+	CheckDiskInfo,
+	"device" | "total_bytes" | "used_bytes" | "usage_percent"
+>;
+export type SnapshotHostInfo = Pick<CheckHostInfo, "os" | "platform" | "pretty_name">;
 
+export type CheckSnapshot = Pick<
+	Check,
+	| "id"
+	| "status"
+	| "responseTime"
+	| "statusCode"
+	| "message"
+	| "createdAt"
+	| "accessibility"
+	| "bestPractices"
+	| "seo"
+	| "performance"
+	| "audits"
+> & {
+	cpu?: SnapshotCpuInfo;
+	memory?: SnapshotMemoryInfo;
+	disk?: SnapshotDiskInfo[];
+	host?: SnapshotHostInfo;
+};
 export interface HasResponseTime {
 	responseTime: number;
 }
 
-export type NormalizedCheck<T extends HasResponseTime = Check> = T & {
-	originalResponseTime: number;
-};
+export interface DailyCheckBucket {
+	monitorId: string;
+	date: string;
+	totalChecks: number;
+	upChecks: number;
+	downChecks: number;
+	avgResponseTime: number | null; // null when no check that day recorded a response time
+}

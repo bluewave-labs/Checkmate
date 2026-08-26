@@ -13,13 +13,12 @@ const generateDummyChecks = (): CheckSnapshot[] => {
 	const checks: CheckSnapshot[] = [];
 	for (let i = 0; i < MAX_RECENT_CHECKS; i++) {
 		const isUp = Math.random() > 0.1;
-		const responseTime = Math.floor(Math.random() * 80) + 20;
+		const responseTime = Math.floor(Math.random() * 800) + 20;
 		checks.push({
 			id: `dummy-${i}`,
 			status: isUp,
 			statusCode: isUp ? 200 : 500,
 			responseTime: responseTime,
-			originalResponseTime: responseTime,
 			message: "",
 			createdAt: new Date(Date.now() - i * 60000).toISOString(),
 		});

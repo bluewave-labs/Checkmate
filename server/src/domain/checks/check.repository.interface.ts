@@ -2,12 +2,12 @@ import type {
 	Check,
 	ChecksQueryResult,
 	ChecksSummary,
+	DailyCheckBucket,
 	HardwareChecksResult,
 	PageSpeedChecksResult,
 	UptimeChecksResult,
 } from "@/domain/checks/check.type.js";
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
-import type { LatestChecksMap } from "@/domain/checks/check.repository.mongo.js";
 import { CheckFilter, DateRange } from "@/types/query.js";
 
 export interface IChecksRepository {
@@ -34,7 +34,6 @@ export interface IChecksRepository {
 		teamId: string,
 		filter?: CheckFilter
 	): Promise<ChecksQueryResult>;
-	findLatestByMonitorIds(monitorIds: string[], options?: { limitPerMonitor?: number }): Promise<LatestChecksMap>;
 	findByDateRangeAndMonitorId(
 		monitorId: string,
 		dateRange: DateRange,
@@ -42,6 +41,8 @@ export interface IChecksRepository {
 	): Promise<UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult>;
 	findSummaryByTeamId(teamId: string, dateRange: DateRange): Promise<ChecksSummary>;
 	findUnevaluatedByMonitorId(monitorId: string, since: number): Promise<Check[]>;
+	getDailyStatusBuckets(monitorIds: string[], days: number, timezone: string): Promise<DailyCheckBucket[]>;
+
 	// update
 	//delete
 	deleteByMonitorId(monitorId: string): Promise<number>;

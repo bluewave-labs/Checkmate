@@ -3,8 +3,10 @@ import type { StatusPageThemeTokens } from "../tokens";
 import { type OverallTone, toneColor, toneSoft } from "../shared/overallStatus";
 import { MONO_STACK, SANS_STACK } from "../shared/fontStacks";
 
-export type RefinedHeatCell = "fast" | "med" | "slow" | "down" | "empty";
-export type RefinedBarKind = "up" | "down" | "empty";
+import type { BarKind, HeatCellKind } from "../shared/ChartCells";
+
+export type RefinedHeatCell = HeatCellKind;
+export type RefinedBarKind = BarKind;
 export type RefinedGaugeFill = "ok" | "warm" | "hot";
 import { MAX_RECENT_CHECKS } from "@/Types/Monitor";
 
@@ -71,12 +73,14 @@ export const refinedStyles = (
 		fast: tokens.up,
 		med: `color-mix(in srgb, ${tokens.up} 60%, #ffffff 40%)`,
 		slow: tokens.warn,
+		degraded: tokens.degraded,
 		down: tokens.down,
 		empty: tokens.border,
 	};
 
 	const barBg: Record<RefinedBarKind, string> = {
 		up: tokens.up,
+		degraded: tokens.degraded,
 		down: tokens.down,
 		empty: tokens.border,
 	};

@@ -1,47 +1,3 @@
-const MIN_OUT = 10;
-const MAX_OUT = 100;
-
-export const normalizeResponseTimes = <T, K extends keyof T>(
-	checks: T[],
-	key: K
-): (T & { normalResponseTime: number })[] => {
-	if (!Array.isArray(checks) || checks.length === 0)
-		return checks as (T & {
-			normalResponseTime: number;
-		})[];
-
-	if (checks.length === 1) {
-		return [
-			{
-				...checks[0],
-				normalResponseTime: 50,
-			},
-		];
-	}
-
-	const getVal = (check: T): number => {
-		const v = check[key] as unknown;
-		return typeof v === "number" && Number.isFinite(v) ? v : 0;
-	};
-
-	const { min, max } = checks.reduce(
-		(acc, check) => {
-			const v = getVal(check);
-			if (v > acc.max) acc.max = v;
-			if (v < acc.min) acc.min = v;
-			return acc;
-		},
-		{ max: -Infinity, min: Infinity }
-	);
-
-	const range = max - min || 1;
-
-	return checks.map((check) => ({
-		...check,
-		normalResponseTime: MIN_OUT + ((getVal(check) - min) * (MAX_OUT - MIN_OUT)) / range,
-	}));
-};
-
 // Interpolate color between three theme colors over 0-100 range.
 // 0-50 => start (success.light), 50-75 => mid (warning.light), 75-100 => end (error.light)
 export const getResponseColor = (
@@ -128,4 +84,54 @@ export const getResponseColor = (
 		return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 	}
 	return normalizeToHex(safe.end);
+};
+
+export const MIN_HEIGHT_PCT = 8;
+const CAP_PERCENTILE = 95;
+
+const percentile = (sortedValues: number[], p: number): number => {
+	const index = (p / 100) * (sortedValues.length - 1);
+	const lower = Math.floor(index);
+	const upper = lower + 1;
+	const weight = index % 1;
+	if (upper >= sortedValues.length) return sortedValues[lower];
+	return sortedValues[lower] * (1 - weight) + sortedValues[upper] * weight;
+};
+
+export const computeBarHeights = (
+	checks: { responseTime?: number | null }[]
+): number[] => {
+	const values = checks.map((check) => {
+		return typeof check.responseTime === "number" && Number.isFinite(check.responseTime)
+			? Math.max(0, check.responseTime)
+			: 0;
+	});
+
+	const sorted = values.slice().sort((a, b) => a - b);
+	const cap = percentile(sorted, CAP_PERCENTILE);
+	if (cap <= 0) return values.map(() => MIN_HEIGHT_PCT);
+	return values.map((value) => {
+		return Math.max(MIN_HEIGHT_PCT, Math.min(100, (value / cap) * 100));
+	});
+};
+
+export const computeDayBarHeights = (
+	buckets: { date: string; avgResponseTime: number | null }[]
+): Map<string, number> => {
+	const values = buckets.map((bucket) =>
+		typeof bucket.avgResponseTime === "number" && Number.isFinite(bucket.avgResponseTime)
+			? Math.max(0, bucket.avgResponseTime)
+			: 0
+	);
+
+	const sorted = values.slice().sort((a, b) => a - b);
+	const cap = percentile(sorted, CAP_PERCENTILE);
+	return new Map(
+		buckets.map((bucket, i) => [
+			bucket.date,
+			cap <= 0
+				? MIN_HEIGHT_PCT
+				: Math.max(MIN_HEIGHT_PCT, Math.min(100, (values[i] / cap) * 100)),
+		])
+	);
 };

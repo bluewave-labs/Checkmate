@@ -1,5 +1,5 @@
+import { DailyCheckBucket } from "@/domain/checks/check.type.js";
 import type { Monitor } from "@/domain/monitors/monitor.type.js";
-import type { NormalizedCheck, CheckSnapshot } from "@/domain/checks/check.type.js";
 export const StatusPageTypes = ["uptime", "infrastructure"] as const;
 export type StatusPageType = (typeof StatusPageTypes)[number];
 
@@ -11,6 +11,15 @@ export const StatusPageThemeModes = ["auto", "light", "dark"] as const;
 export type StatusPageThemeMode = (typeof StatusPageThemeModes)[number];
 export const DEFAULT_STATUS_PAGE_THEME_MODE: StatusPageThemeMode = "auto";
 
+export const StatusPageDayRanges = ["30d", "60d", "90d"] as const;
+export type StatusPageDayRange = (typeof StatusPageDayRanges)[number];
+export const StatusPageRanges = ["latest", ...StatusPageDayRanges] as const;
+export type StatusPageRange = (typeof StatusPageRanges)[number];
+export const STATUS_PAGE_RANGE_DAYS: Record<StatusPageDayRange, number> = {
+	"30d": 30,
+	"60d": 60,
+	"90d": 90,
+};
 export interface StatusPageLogo {
 	data: string;
 	contentType: string;
@@ -47,10 +56,16 @@ export interface StatusPage {
 	updatedAt: string;
 }
 
-export type PublicStatusPageMonitor = Pick<Monitor, "id" | "name" | "type" | "status" | "uptimePercentage" | "recentChecks"> &
-	Partial<Pick<Monitor, "url" | "port">> & { checks: NormalizedCheck<CheckSnapshot>[] };
+export type PublicStatusPageMonitor = Pick<Monitor, "id" | "name" | "type" | "status" | "uptimePercentage" | "recentChecks"> & {
+	url?: string;
+	port?: number;
+	dailyChecks?: DailyCheckBucket[]; // Only present when range !== "latest"
+};
 
 export interface PublicStatusPagePayload {
 	statusPage: StatusPage;
 	monitors: PublicStatusPageMonitor[];
+	range?: StatusPageDayRange;
+	bucketTimezone?: string;
+	checkTTLDays?: number;
 }

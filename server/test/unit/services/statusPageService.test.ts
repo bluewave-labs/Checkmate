@@ -3,6 +3,8 @@ import { StatusPageService } from "../../../src/domain/status-pages/status-page.
 import type { IStatusPagesRepository } from "../../../src/domain/status-pages/status-page-repository.interface.ts";
 import type { ISettingsService } from "../../../src/domain/app-settings/app-settings.service.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
+import type { IChecksRepository } from "../../../src/domain/checks/check.repository.interface.ts";
+import type { CheckSnapshot } from "../../../src/domain/checks/check.type.ts";
 import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { StatusPage } from "../../../src/domain/status-pages/status-page.type.ts";
 import { DEFAULT_STATUS_PAGE_THEME, DEFAULT_STATUS_PAGE_THEME_MODE } from "../../../src/domain/status-pages/status-page.type.ts";
@@ -69,7 +71,7 @@ const createSettingsService = (themesEnabled: boolean, clientHost = "http://loca
 	({
 		areStatusPageThemesEnabled: jest.fn().mockReturnValue(themesEnabled),
 		getSettings: jest.fn().mockReturnValue({ clientHost }),
-		getDBSettings: jest.fn().mockResolvedValue({ showURL }),
+		getDBSettings: jest.fn().mockResolvedValue({ showURL, checkTTL: 30 }),
 	}) as unknown as jest.Mocked<ISettingsService>;
 
 const createMonitorsRepo = () =>
@@ -77,12 +79,18 @@ const createMonitorsRepo = () =>
 		findByIds: jest.fn().mockResolvedValue([makeMonitor()]),
 	}) as unknown as jest.Mocked<IMonitorsRepository>;
 
+const createChecksRepo = () =>
+	({
+		getDailyStatusBuckets: jest.fn().mockResolvedValue([]),
+	}) as unknown as jest.Mocked<IChecksRepository>;
+
 const createService = (themesEnabled = true, clientHost = "http://localhost:5173", showURL = false) => {
 	const repo = createRepo();
 	const settingsService = createSettingsService(themesEnabled, clientHost, showURL);
 	const monitorsRepo = createMonitorsRepo();
-	const service = new StatusPageService(repo, settingsService, monitorsRepo);
-	return { service, repo, settingsService, monitorsRepo };
+	const checksRepo = createChecksRepo();
+	const service = new StatusPageService(repo, settingsService, monitorsRepo, checksRepo);
+	return { service, repo, settingsService, monitorsRepo, checksRepo };
 };
 
 // ── Tests ────────────────────────────────────────────────────────────────────
@@ -315,8 +323,8 @@ describe("StatusPageService", () => {
 				status: "up",
 				uptimePercentage: 99.9,
 				recentChecks: [],
-				checks: [],
 			});
+			expect(monitors[0]).not.toHaveProperty("checks");
 		});
 
 		it("orders monitors to match the status page's monitor list", async () => {
@@ -351,6 +359,67 @@ describe("StatusPageService", () => {
 
 			await expect(service.getPublicStatusPagePayload(publishedPage(), undefined)).resolves.toMatchObject({
 				statusPage: expect.objectContaining({ id: "sp-1" }),
+			});
+		});
+
+		describe("range", () => {
+			it("omits range-mode fields and never queries buckets for the default (latest) range", async () => {
+				const { service, checksRepo, monitorsRepo } = createService();
+
+				const implicitLatest = await service.getPublicStatusPagePayload(publishedPage(), undefined);
+				const explicitLatest = await service.getPublicStatusPagePayload(publishedPage(), undefined, "latest");
+
+				for (const payload of [implicitLatest, explicitLatest]) {
+					expect(payload).not.toHaveProperty("range");
+					expect(payload).not.toHaveProperty("bucketTimezone");
+					expect(payload).not.toHaveProperty("checkTTLDays");
+					expect(payload.monitors[0]).not.toHaveProperty("dailyChecks");
+				}
+				expect(checksRepo.getDailyStatusBuckets).not.toHaveBeenCalled();
+				expect(monitorsRepo.findByIds).toHaveBeenCalledWith(["mon-1"], { recentChecks: "all" });
+			});
+
+			it("attaches dailyChecks, passes the repo-trimmed recentChecks through, and echoes range metadata for a day range", async () => {
+				const { service, checksRepo, monitorsRepo } = createService();
+				const bucket = { monitorId: "mon-1", date: "2026-08-01", totalChecks: 10, upChecks: 9, downChecks: 1, avgResponseTime: 120 };
+				const hardwareSnapshot = { id: "chk-1" } as CheckSnapshot;
+				(checksRepo.getDailyStatusBuckets as jest.Mock).mockResolvedValue([bucket]);
+				(monitorsRepo.findByIds as jest.Mock).mockResolvedValue([
+					makeMonitor({ id: "mon-1", type: "hardware", recentChecks: [hardwareSnapshot] }),
+					makeMonitor({ id: "mon-2", recentChecks: [] }),
+				]);
+				const page = makeStatusPage({ isPublished: true, timezone: "America/Toronto", monitors: ["mon-1", "mon-2"] });
+
+				const payload = await service.getPublicStatusPagePayload(page, undefined, "30d");
+
+				expect(checksRepo.getDailyStatusBuckets).toHaveBeenCalledWith(["mon-1", "mon-2"], 30, "America/Toronto");
+				expect(monitorsRepo.findByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], { recentChecks: "latestHardware" });
+				expect(payload).toMatchObject({ range: "30d", bucketTimezone: "America/Toronto", checkTTLDays: 30 });
+				expect(payload.monitors[0].recentChecks).toEqual([hardwareSnapshot]);
+				expect(payload.monitors[0].dailyChecks).toEqual([bucket]);
+				expect(payload.monitors[1].recentChecks).toEqual([]);
+				expect(payload.monitors[1].dailyChecks).toEqual([]);
+				for (const field of SENSITIVE_FIELDS) {
+					expect(payload.monitors[0]).not.toHaveProperty(field);
+				}
+			});
+
+			it("falls back to Etc/UTC when the page has no timezone and defaults dailyChecks to empty", async () => {
+				const { service, checksRepo } = createService();
+
+				const payload = await service.getPublicStatusPagePayload(publishedPage(), undefined, "60d");
+
+				expect(checksRepo.getDailyStatusBuckets).toHaveBeenCalledWith(["mon-1"], 60, "Etc/UTC");
+				expect(payload.bucketTimezone).toBe("Etc/UTC");
+				expect(payload.monitors[0].dailyChecks).toEqual([]);
+			});
+
+			it("does not bypass the unpublished-page 403", async () => {
+				const { service, checksRepo } = createService();
+				const unpublished = makeStatusPage({ isPublished: false, teamId: "team-A" });
+
+				await expect(service.getPublicStatusPagePayload(unpublished, undefined, "90d")).rejects.toMatchObject({ status: 403 });
+				expect(checksRepo.getDailyStatusBuckets).not.toHaveBeenCalled();
 			});
 		});
 	});

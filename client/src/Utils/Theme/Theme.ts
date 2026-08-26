@@ -124,6 +124,14 @@ export const theme = (mode: string, palette: any) =>
 					disableTouchRipple: true,
 					disableFocusRipple: true,
 				},
+				styleOverrides: {
+					root: ({ theme }) => ({
+						"&.Mui-focusVisible": {
+							outline: `1px solid ${theme.palette.primary.main}`,
+							outlineOffset: 2,
+						},
+					}),
+				},
 			},
 			MuiIconButton: {
 				defaultProps: {

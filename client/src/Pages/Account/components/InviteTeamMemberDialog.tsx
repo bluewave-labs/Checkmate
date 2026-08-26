@@ -1,16 +1,16 @@
 import { Stack } from "@mui/material";
-import MenuItem from "@mui/material/MenuItem";
-import { useTheme, FormHelperText, Typography } from "@mui/material";
+import { useTheme, Typography } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useForm, Controller } from "react-hook-form";
-import { Dialog, TextField, Select, Button } from "@/Components/inputs";
-import type { UserRole } from "@/Types/User";
+import { useForm, FormProvider } from "react-hook-form";
+import { Dialog, TextField, Button } from "@/Components/inputs";
 import { useInviteForm } from "@/Hooks/useInviteForm";
 import type { InviteFormData } from "@/Validation/invite";
 import { usePost } from "@/Hooks/UseApi";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { runtimeConfig } from "@/Utils/runtimeConfig";
+import { FormTextField } from "@/Components/inputs/forms/FormTextField";
+import { RoleSelectField } from "./RoleSelectField";
 
 const CLIENT_HOST = runtimeConfig.clientHost || import.meta.env.VITE_APP_CLIENT_HOST;
 
@@ -31,11 +31,12 @@ export const InviteTeamMemberDialog = ({
 	const { t } = useTranslation();
 	const { resolver, defaults } = useInviteForm();
 
-	const { control, handleSubmit, reset } = useForm<InviteFormData>({
+	const form = useForm<InviteFormData>({
 		resolver,
 		defaultValues: defaults,
 		values: defaults,
 	});
+	const { handleSubmit, reset } = form;
 
 	const { post: generateToken, loading: generateLoading } = usePost<
 		InviteFormData,
@@ -46,12 +47,6 @@ export const InviteTeamMemberDialog = ({
 		InviteResponse
 	>();
 	const [inviteLink, setInviteLink] = useState<string | null>(null);
-
-	const roleOptions: { value: UserRole; label: string }[] = [
-		{ value: "admin", label: t("common.auth.roles.admin") },
-		{ value: "user", label: t("common.auth.roles.user") },
-		{ value: "demo", label: t("common.auth.roles.demo") },
-	];
 
 	const handleGenerateToken = async (data: InviteFormData) => {
 		const result = await generateToken("/invite", data);
@@ -76,88 +71,55 @@ export const InviteTeamMemberDialog = ({
 	};
 
 	return (
-		<Dialog
-			open={open}
-			title={t("pages.account.team.invite.title")}
-			content={t("pages.account.team.invite.description")}
-			onCancel={handleClose}
-			onConfirm={handleSubmit(handleSendInvite)}
-			confirmText={t("common.buttons.sendInvite")}
-			loading={sendLoading || generateLoading}
-			maxWidth="sm"
-			fullWidth
-			additionalButtons={
-				<Button
-					variant="contained"
-					color="primary"
-					onClick={handleSubmit(handleGenerateToken)}
-					loading={generateLoading || sendLoading}
-				>
-					{t("common.buttons.generateToken")}
-				</Button>
-			}
-		>
-			<Stack gap={theme.spacing(LAYOUT.XS)}>
-				<Controller
-					name="email"
-					control={control}
-					render={({ field, fieldState }) => (
-						<TextField
-							{...field}
-							fieldLabel={t("common.form.email.option.email.label")}
-							placeholder={t("common.form.email.option.email.placeholder")}
-							type="email"
-							fullWidth
-							error={!!fieldState.error}
-							helperText={fieldState.error?.message ?? ""}
-						/>
-					)}
-				/>
-				<Controller
-					name="role"
-					control={control}
-					render={({ field: { value, onChange, ...field }, fieldState }) => (
+		<FormProvider {...form}>
+			<Dialog
+				open={open}
+				title={t("pages.account.team.invite.title")}
+				content={t("pages.account.team.invite.description")}
+				onCancel={handleClose}
+				onConfirm={handleSubmit(handleSendInvite)}
+				confirmText={t("common.buttons.sendInvite")}
+				loading={sendLoading || generateLoading}
+				maxWidth="sm"
+				fullWidth
+				additionalButtons={
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={handleSubmit(handleGenerateToken)}
+						loading={generateLoading || sendLoading}
+					>
+						{t("common.buttons.generateToken")}
+					</Button>
+				}
+			>
+				<Stack gap={theme.spacing(LAYOUT.XS)}>
+					<FormTextField
+						name="email"
+						type="email"
+						fieldLabel={t("common.form.email.option.email.label")}
+						placeholder={t("common.form.email.option.email.placeholder")}
+					/>
+
+					<RoleSelectField />
+					{inviteLink && (
 						<>
-							<Select
-								{...field}
-								value={Array.isArray(value) ? (value[0] ?? "") : ""}
-								onChange={(e) => onChange([e.target.value as UserRole])}
-								fieldLabel={t("common.form.role.option.role.label")}
+							<Typography variant="body2">
+								{t("pages.account.team.invite.linkLabel")}
+							</Typography>
+							<TextField
+								value={inviteLink}
 								fullWidth
-								error={!!fieldState.error}
-							>
-								{roleOptions.map((option) => (
-									<MenuItem
-										key={option.value}
-										value={option.value}
-									>
-										{option.label}
-									</MenuItem>
-								))}
-							</Select>
-							{fieldState.error && (
-								<FormHelperText error>{fieldState.error.message}</FormHelperText>
-							)}
+								slotProps={{
+									input: {
+										readOnly: true,
+									},
+								}}
+							/>
 						</>
 					)}
-				/>
-				{inviteLink && (
-					<>
-						<Typography variant="body2">
-							{t("pages.account.team.invite.linkLabel")}
-						</Typography>
-						<TextField
-							value={inviteLink}
-							fullWidth
-							slotProps={{
-								input: {
-									readOnly: true,
-								},
-							}}
-						/>
-					</>
-				)}
-			</Stack>
-		</Dialog>
+				</Stack>
+			</Dialog>
+		</FormProvider>
 	);
 };

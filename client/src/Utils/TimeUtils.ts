@@ -3,6 +3,7 @@ import duration from "dayjs/plugin/duration";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import prettyMilliseconds from "pretty-ms";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -76,4 +77,61 @@ export const formatTimestamp = (timestamp: string | number | null): string => {
 	if (!timestamp) return "-";
 	const date = new Date(timestamp);
 	return date.toLocaleString();
+};
+
+const DISPLAY_UNITS = [MS_PER_DAY, MS_PER_HOUR, MS_PER_MINUTE, MS_PER_SECOND];
+
+// pretty-ms floors seconds-and-above and truncates fractional ms, so values
+// must be rounded to their display unit first to land on the nearest whole
+// unit (53.6 → "54 ms", 1937 → "2 s", 59500 → "1 m").
+const roundToDisplayUnit = (ms: number): number => {
+	for (const unit of DISPLAY_UNITS) {
+		if (ms >= unit) return Math.round(ms / unit) * unit;
+	}
+	return ms >= 1 ? Math.round(ms) : ms;
+};
+
+export const formatMs = (ms: number, hasSpace: boolean = true): string => {
+	const formatted = prettyMilliseconds(roundToDisplayUnit(ms), {
+		compact: true,
+		formatSubMilliseconds: true,
+		secondsDecimalDigits: 0,
+	});
+
+	if (hasSpace) {
+		return formatted.replace(/^(\d+)(\D+)$/, "$1 $2");
+	}
+	return formatted;
+};
+
+export const formatDuration = (ms: number, verbose: boolean = false, hasSpace = true) => {
+	if (verbose) {
+		return prettyMilliseconds(ms, { verbose: true });
+	}
+
+	const formatted = prettyMilliseconds(ms, {
+		unitCount: 2,
+		secondsDecimalDigits: 0,
+		millisecondsDecimalDigits: 0,
+	});
+
+	if (hasSpace) {
+		return formatted.replace(/^(\d+)(\D+)$/, "$1 $2");
+	}
+	return formatted;
+};
+
+export const enumerateDays = (days: number, timeZone: string): string[] => {
+	const formatter = new Intl.DateTimeFormat("en-CA", {
+		timeZone,
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
+	});
+	const [year, month, day] = formatter.format(new Date()).split("-").map(Number);
+	const todayUtc = Date.UTC(year, month - 1, day);
+	const DAY_MS = 24 * 60 * 60 * 1000;
+	return Array.from({ length: days }, (_, i) =>
+		new Date(todayUtc - (days - 1 - i) * DAY_MS).toISOString().slice(0, 10)
+	);
 };

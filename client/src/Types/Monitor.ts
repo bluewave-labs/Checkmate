@@ -1,4 +1,9 @@
-import type { GroupedCheck, CheckSnapshot, GroupedUptimeCheck } from "@/Types/Check";
+import type {
+	GroupedCheck,
+	CheckSnapshot,
+	GroupedUptimeCheck,
+	DailyCheckBucket,
+} from "@/Types/Check";
 import type { PageSpeedGroupedCheck } from "@/Types/Check";
 import type { GeoContinent } from "@/Types/GeoCheck";
 export type { GeoContinent } from "@/Types/GeoCheck";
@@ -19,6 +24,56 @@ export const MonitorTypes = [
 	"unknown",
 ] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
+
+// The subset offered by the CreateMonitor type selector, in display order.
+// pagespeed/hardware are set by their own pages; unknown is never selectable.
+export const SelectableMonitorTypes = [
+	"http",
+	"ping",
+	"docker",
+	"port",
+	"game",
+	"grpc",
+	"websocket",
+	"dns",
+] as const;
+export type SelectableMonitorType = (typeof SelectableMonitorTypes)[number];
+
+// Irregular i18n key fragments shared by the type selector's label
+// (pages.common.monitors.monitorTypes.<fragment>), its description
+// (pages.createMonitor.form.type.<fragment>Description), and status page
+// type labels (via getMonitorTypeLabel). Covers every type with a label;
+// only selectable types have description keys.
+export const monitorTypeLabelKey: Record<SelectableMonitorType, string> &
+	Partial<Record<MonitorType, string>> = {
+	http: "optionHttp",
+	ping: "optionPing",
+	docker: "optionDocker",
+	port: "optionPort",
+	game: "optionGame",
+	grpc: "optionGrpc",
+	websocket: "optionWebSocket",
+	dns: "optionDns",
+	hardware: "optionHardware",
+	pagespeed: "optionPagespeed",
+};
+
+export const MonitorIntervalOptions = [
+	{ value: 15000, labelKey: "fifteenSeconds" },
+	{ value: 30000, labelKey: "thirtySeconds" },
+	{ value: 60000, labelKey: "oneMinute" },
+	{ value: 120000, labelKey: "twoMinutes" },
+	{ value: 180000, labelKey: "threeMinutes" },
+	{ value: 240000, labelKey: "fourMinutes" },
+	{ value: 300000, labelKey: "fiveMinutes" },
+	{ value: 600000, labelKey: "tenMinutes" },
+	{ value: 900000, labelKey: "fifteenMinutes" },
+	{ value: 1800000, labelKey: "thirtyMinutes" },
+] as const;
+
+export const GeoCheckIntervalOptions = MonitorIntervalOptions.filter(
+	({ value }) => value >= 300000
+);
 
 export const DnsRecordTypes = ["A", "AAAA", "CNAME", "MX", "TXT", "NS"] as const;
 export type DnsRecordType = (typeof DnsRecordTypes)[number];
@@ -42,7 +97,9 @@ export const MonitorStatuses = [
 ] as const;
 export type MonitorStatus = (typeof MonitorStatuses)[number];
 
-export type MonitorMatchMethod = "equal" | "include" | "regex" | "";
+export const MonitorMatchMethods = ["equal", "include", "regex"] as const;
+export type MonitorMatchMethod = (typeof MonitorMatchMethods)[number] | "";
+export const DefaultMonitorMatchMethod: MonitorMatchMethod = "equal";
 
 export const PageSpeedStrategies = ["desktop", "mobile"] as const;
 export type PageSpeedStrategy = (typeof PageSpeedStrategies)[number];
@@ -51,6 +108,10 @@ export const DefaultPageSpeedStrategy: PageSpeedStrategy = "desktop";
 export const HttpMethods = ["GET", "HEAD"] as const;
 export type HttpMethod = (typeof HttpMethods)[number];
 export const DefaultHttpMethod: HttpMethod = "GET";
+
+export const ProxyModes = ["inherit", "none", "custom"] as const;
+export type ProxyMode = (typeof ProxyModes)[number];
+export const DefaultProxyMode: ProxyMode = "inherit";
 
 export interface Monitor {
 	id: string;
@@ -64,6 +125,8 @@ export interface Monitor {
 	statusWindowThreshold: number;
 	type: MonitorType;
 	ignoreTlsErrors: boolean;
+	proxyMode: ProxyMode;
+	proxyId?: string;
 	useAdvancedMatching: boolean;
 	jsonPath?: string;
 	expectedValue?: string;
@@ -97,6 +160,7 @@ export interface Monitor {
 	dnsServer?: string;
 	dnsRecordType?: DnsRecordType;
 	recentChecks: CheckSnapshot[];
+	dailyChecks?: DailyCheckBucket[];
 	createdAt: string;
 	updatedAt: string;
 }

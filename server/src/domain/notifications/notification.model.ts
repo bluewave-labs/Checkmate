@@ -1,5 +1,6 @@
 import { Schema, model, type Types } from "mongoose";
 import type { Notification, NotificationChannel } from "@/domain/notifications/notification.type.js";
+import { NtfyAuthTypes } from "@/domain/notifications/notification.type.js";
 
 interface NotificationDocument extends Omit<Notification, "id" | "userId" | "teamId" | "createdAt" | "updatedAt"> {
 	_id: Types.ObjectId;
@@ -30,6 +31,7 @@ const NotificationSchema = new Schema<NotificationDocument>(
 				"slack",
 				"discord",
 				"webhook",
+				"rocket_chat",
 				"pager_duty",
 				"matrix",
 				"teams",
@@ -52,6 +54,8 @@ const NotificationSchema = new Schema<NotificationDocument>(
 		accountSid: { type: String },
 		twilioPhoneNumber: { type: String },
 		topic: { type: String },
+		ntfyAuthType: { type: String, enum: NtfyAuthTypes },
+		ntfyUsername: { type: String },
 	},
 	{
 		timestamps: true,

@@ -58,8 +58,8 @@
 				"uptime": "Dostupnost"
 			},
 			"histogram": {
-				"avg": "Prům.: {{value}} ms",
-				"max": "Max: {{value}} ms"
+				"avg": "Prům.: {{value}}",
+				"max": "Max: {{value}}"
 			}
 		},
 		"dialogs": {
@@ -1352,10 +1352,10 @@
 					"responseTime": "Doba odezvy"
 				},
 				"chart": {
-					"avg": "průměr {{value}}ms",
+					"avg": "průměr {{value}}",
 					"downTooltip": "Mimo provoz",
 					"heatmapAria": "Tepelná mapa doby odezvy",
-					"max": "max {{value}}ms"
+					"max": "max {{value}}"
 				},
 				"status": {
 					"breached": "Překročen limit",
