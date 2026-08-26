@@ -177,16 +177,14 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return count;
 	};
 
-	updateById = async (monitorId: string, teamId: string, patch: Partial<Monitor>) => {
-		const updatedMonitor = await MonitorModel.findOneAndUpdate(
-			{ _id: monitorId, teamId },
-			{
-				$set: {
-					...patch,
-				},
-			},
-			{ new: true, runValidators: true }
-		);
+	updateById = async (monitorId: string, teamId: string, patch: Partial<Monitor>, options?: { unsetProxyId?: boolean }) => {
+		const fields: Partial<Monitor> = { ...patch };
+		const update: Record<string, unknown> = { $set: fields };
+		if (options?.unsetProxyId) {
+			delete fields.proxyId;
+			update.$unset = { proxyId: "" };
+		}
+		const updatedMonitor = await MonitorModel.findOneAndUpdate({ _id: monitorId, teamId }, update, { new: true, runValidators: true });
 		if (!updatedMonitor) {
 			throw new AppError({ message: `Failed to update monitor with id ${monitorId}`, status: 500 });
 		}
