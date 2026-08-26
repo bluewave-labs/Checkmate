@@ -5,9 +5,10 @@ import {
 	type FieldValues,
 } from "react-hook-form";
 import { Autocomplete } from "@/Components/inputs";
+import type { AutocompleteProps } from "@mui/material/Autocomplete";
 
 export interface AutocompleteOption {
-	id: string;
+	id: string | number;
 	name: string;
 }
 
@@ -16,6 +17,8 @@ interface FormAutocompleteProps<T extends FieldValues, O extends AutocompleteOpt
 	options: O[];
 	fieldLabel?: string;
 	placeholder?: string;
+	filterOptions?: AutocompleteProps<O, false, false, false>["filterOptions"];
+	getOptionDisabled?: AutocompleteProps<O, false, false, false>["getOptionDisabled"];
 }
 
 export const FormAutocompleteField = <
@@ -26,6 +29,8 @@ export const FormAutocompleteField = <
 	options,
 	fieldLabel,
 	placeholder,
+	filterOptions,
+	getOptionDisabled,
 }: FormAutocompleteProps<T, O>) => {
 	const { control } = useFormContext<T>();
 	return (
@@ -43,6 +48,8 @@ export const FormAutocompleteField = <
 					}}
 					fieldLabel={fieldLabel}
 					placeholder={placeholder}
+					filterOptions={filterOptions}
+					getOptionDisabled={getOptionDisabled}
 					error={!!fieldState.error}
 					helperText={fieldState.error?.message ?? ""}
 				/>
