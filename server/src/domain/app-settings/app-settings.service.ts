@@ -44,8 +44,8 @@ export class SettingsService implements ISettingsService {
 			queuePrimaryProcesses: env.QUEUE_PRIMARY_PROCESSES,
 			statusPageThemesEnabled: env.STATUS_PAGE_THEMES_ENABLED,
 			clientConfig: {
+				clientHost: env.CLIENT_CONFIG_CLIENT_HOST ?? env.CLIENT_HOST,
 				...(env.CLIENT_CONFIG_API_BASE_URL && { apiBaseUrl: env.CLIENT_CONFIG_API_BASE_URL }),
-				...(env.CLIENT_CONFIG_CLIENT_HOST && { clientHost: env.CLIENT_CONFIG_CLIENT_HOST }),
 				...(env.CLIENT_CONFIG_LOG_LEVEL && { logLevel: env.CLIENT_CONFIG_LOG_LEVEL }),
 			},
 		};
