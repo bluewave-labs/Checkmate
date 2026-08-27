@@ -5,6 +5,7 @@ Welcome to the Checkmate documentation. This directory contains guides and refer
 ## Available Documentation
 
 ### Deployment & Configuration
+- **[Source Installation Guide](./source-installation.md)** - Run Checkmate without Docker
 - **[Custom CA Trust Guide](./custom-ca-trust.md)** - Configure Checkmate to trust custom Certificate Authorities
 - **[Custom CA Quick Reference](./custom-ca-quick-reference.md)** - Quick setup guide for custom CA trust
 
