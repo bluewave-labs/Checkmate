@@ -736,6 +736,7 @@ const CreateMonitorPage = () => {
 									filterIntervalOptions(options, inputValue)
 								}
 								getOptionDisabled={(option) => option.id < MIN_MONITOR_INTERVAL_MS}
+								disableClearable
 							/>
 						}
 					/>
