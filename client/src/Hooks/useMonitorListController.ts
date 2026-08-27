@@ -205,3 +205,5 @@ export const useMonitorListController = (config: MonitorListConfig) => {
 		...bulk,
 	};
 };
+
+export type MonitorListController = ReturnType<typeof useMonitorListController>;
