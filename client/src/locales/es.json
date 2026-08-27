@@ -603,6 +603,20 @@
 						"dns": "Monitorea si un servidor DNS específico responde."
 					}
 				},
+				"headers": {
+					"title": "Cabeceras de la solicitud",
+					"description": "Cabeceras personalizadas que se envían con cada solicitud de este monitor.",
+					"option": {
+						"name": {
+							"placeholder": "Nombre de la cabecera"
+						},
+						"value": {
+							"placeholder": "Valor de la cabecera"
+						},
+						"addButton": "Añadir cabecera",
+						"removeAriaLabel": "Eliminar cabecera"
+					}
+				},
 				"ignoreTls": {
 					"description": "Configure la validación de certificados TLS/SSL para conexiones HTTPS.",
 					"option": {

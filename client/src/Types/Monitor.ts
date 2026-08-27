@@ -113,6 +113,11 @@ export const ProxyModes = ["inherit", "none", "custom"] as const;
 export type ProxyMode = (typeof ProxyModes)[number];
 export const DefaultProxyMode: ProxyMode = "inherit";
 
+export interface MonitorHeader {
+	key: string;
+	value: string;
+}
+
 export interface Monitor {
 	id: string;
 	userId: string;
@@ -141,6 +146,7 @@ export interface Monitor {
 	tags: string[];
 	customUpCodes?: number[];
 	secret?: string;
+	headers?: MonitorHeader[];
 	cpuAlertThreshold: number;
 	cpuAlertCounter: number;
 	memoryAlertThreshold: number;

@@ -603,6 +603,20 @@
 						"dns": "特定のDNSサーバーが応答しているかを監視します。"
 					}
 				},
+				"headers": {
+					"title": "リクエストヘッダー",
+					"description": "このモニターのすべてのリクエストとともに送信されるカスタムヘッダー。",
+					"option": {
+						"name": {
+							"placeholder": "ヘッダー名"
+						},
+						"value": {
+							"placeholder": "ヘッダーの値"
+						},
+						"addButton": "ヘッダーを追加",
+						"removeAriaLabel": "ヘッダーを削除"
+					}
+				},
 				"ignoreTls": {
 					"description": "HTTPS接続のTLS/SSL証明書検証を設定します。",
 					"option": {

@@ -645,6 +645,20 @@
 					},
 					"title": "Kontrole rozproszone geograficznie"
 				},
+				"headers": {
+					"title": "Nagłówki żądania",
+					"description": "Niestandardowe nagłówki wysyłane z każdym żądaniem tego monitora.",
+					"option": {
+						"name": {
+							"placeholder": "Nazwa nagłówka"
+						},
+						"value": {
+							"placeholder": "Wartość nagłówka"
+						},
+						"addButton": "Dodaj nagłówek",
+						"removeAriaLabel": "Usuń nagłówek"
+					}
+				},
 				"ignoreTls": {
 					"description": "Skonfiguruj weryfikację certyfikatu TLS/SSL dla połączeń HTTPS.",
 					"option": {

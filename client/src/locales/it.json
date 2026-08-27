@@ -619,6 +619,20 @@
 						"dns": "Monitora se uno specifico server DNS sta rispondendo."
 					}
 				},
+				"headers": {
+					"title": "Intestazioni della richiesta",
+					"description": "Intestazioni personalizzate inviate con ogni richiesta di questo monitor.",
+					"option": {
+						"name": {
+							"placeholder": "Nome dell'intestazione"
+						},
+						"value": {
+							"placeholder": "Valore dell'intestazione"
+						},
+						"addButton": "Aggiungi intestazione",
+						"removeAriaLabel": "Rimuovi intestazione"
+					}
+				},
 				"ignoreTls": {
 					"description": "Configura la validazione del certificato TLS/SSL per le connessioni HTTPS.",
 					"option": {

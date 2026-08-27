@@ -3,13 +3,15 @@ import { useEffect } from "react";
 import { logger } from "@/Utils/logger";
 import { ALL_HTTP_STATUS_CODES } from "@/Utils/statusCode";
 import { useParams, useLocation, useNavigate } from "react-router";
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm, useFieldArray, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTheme } from "@mui/material";
 import Stack from "@mui/material/Stack";
+import IconButton from "@mui/material/IconButton";
 import { Trans, useTranslation } from "react-i18next";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
+import { Trash2 } from "lucide-react";
 import { HeaderDeleteControls } from "@/Components/monitors";
 import { GeoContinents } from "@/Types/GeoCheck";
 
@@ -286,6 +288,14 @@ const CreateMonitorPage = () => {
 		defaultValues: defaults,
 	});
 	const { watch, handleSubmit, clearErrors, trigger, reset, setValue } = form;
+	const {
+		fields: headerFields,
+		append: appendHeader,
+		remove: removeHeader,
+	} = useFieldArray({ control: form.control, name: "headers" });
+	// Cross-field errors (duplicate names) live on the array root, which
+	// getFieldState surfaces without reaching into the union-typed error object.
+	const headersError = form.getFieldState("headers", form.formState).error?.root?.message;
 
 	useEffect(() => {
 		reset(defaults);
@@ -933,6 +943,64 @@ const CreateMonitorPage = () => {
 											/>
 										</Typography>
 									</Stack>
+								)}
+							</Stack>
+						}
+					/>
+				)}
+
+				{showStep(2) && watchedType === "http" && (
+					<ConfigBox
+						title={t("pages.createMonitor.form.headers.title")}
+						subtitle={t("pages.createMonitor.form.headers.description")}
+						rightContent={
+							<Stack spacing={theme.spacing(LAYOUT.MD)}>
+								{headerFields.map((field, index) => (
+									<Stack
+										key={field.id}
+										direction={{ xs: "column", md: "row" }}
+										alignItems={{ xs: "stretch", md: "flex-start" }}
+										spacing={theme.spacing(LAYOUT.SM)}
+									>
+										<FormTextField
+											name={`headers.${index}.key`}
+											placeholder={t(
+												"pages.createMonitor.form.headers.option.name.placeholder"
+											)}
+										/>
+										<FormTextField
+											name={`headers.${index}.value`}
+											placeholder={t(
+												"pages.createMonitor.form.headers.option.value.placeholder"
+											)}
+										/>
+										<IconButton
+											size="small"
+											onClick={() => removeHeader(index)}
+											aria-label={t(
+												"pages.createMonitor.form.headers.option.removeAriaLabel"
+											)}
+										>
+											<Trash2 size={16} />
+										</IconButton>
+									</Stack>
+								))}
+								<Button
+									type="button"
+									variant="outlined"
+									color="secondary"
+									onClick={() => appendHeader({ key: "", value: "" })}
+									sx={{ alignSelf: "flex-start" }}
+								>
+									{t("pages.createMonitor.form.headers.option.addButton")}
+								</Button>
+								{headersError && (
+									<Typography
+										variant="caption"
+										color={theme.palette.error.main}
+									>
+										{headersError}
+									</Typography>
 								)}
 							</Stack>
 						}

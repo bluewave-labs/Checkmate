@@ -603,6 +603,20 @@
 						"dns": "Giám sát xem một máy chủ DNS cụ thể có phản hồi hay không."
 					}
 				},
+				"headers": {
+					"title": "Tiêu đề yêu cầu",
+					"description": "Tiêu đề tùy chỉnh được gửi kèm mọi yêu cầu của trình giám sát này.",
+					"option": {
+						"name": {
+							"placeholder": "Tên tiêu đề"
+						},
+						"value": {
+							"placeholder": "Giá trị tiêu đề"
+						},
+						"addButton": "Thêm tiêu đề",
+						"removeAriaLabel": "Xóa tiêu đề"
+					}
+				},
 				"ignoreTls": {
 					"description": "Cấu hình xác thực chứng chỉ TLS/SSL cho kết nối HTTPS.",
 					"option": {

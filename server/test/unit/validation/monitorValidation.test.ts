@@ -565,3 +565,74 @@ describe("monitorValidation — proxy fields", () => {
 		});
 	});
 });
+
+describe("monitorValidation — headers", () => {
+	const baseHttpBody = {
+		name: "HTTP check",
+		type: "http" as const,
+		url: "https://example.com",
+	};
+
+	describe("createMonitorBodyValidation", () => {
+		it("retains a valid headers array", () => {
+			const parsed = createMonitorBodyValidation.parse({ ...baseHttpBody, headers: [{ key: "X-Api-Key", value: "abc" }] });
+			expect(parsed.headers).toEqual([{ key: "X-Api-Key", value: "abc" }]);
+		});
+
+		it("treats headers as optional", () => {
+			expect(createMonitorBodyValidation.parse(baseHttpBody).headers).toBeUndefined();
+		});
+
+		it("rejects an empty header name", () => {
+			expect(() => createMonitorBodyValidation.parse({ ...baseHttpBody, headers: [{ key: "", value: "abc" }] })).toThrow("Header name is required");
+		});
+
+		it("rejects an empty header value", () => {
+			expect(() => createMonitorBodyValidation.parse({ ...baseHttpBody, headers: [{ key: "X-Api-Key", value: "" }] })).toThrow(
+				"Header value is required"
+			);
+		});
+
+		it.each([["X Api Key"], ["X-Api-Key:"], ["X-Api-Key\n"], ["Ünicode"]])("rejects the invalid header name %j", (key) => {
+			expect(() => createMonitorBodyValidation.parse({ ...baseHttpBody, headers: [{ key, value: "abc" }] })).toThrow();
+		});
+
+		it.each([["abc\r\nX-Injected: 1"], [" abc"], ["abc "], ["café"]])("rejects the invalid header value %j", (value) => {
+			expect(() => createMonitorBodyValidation.parse({ ...baseHttpBody, headers: [{ key: "X-Api-Key", value }] })).toThrow();
+		});
+
+		it("rejects a header the HTTP client manages itself", () => {
+			expect(() => createMonitorBodyValidation.parse({ ...baseHttpBody, headers: [{ key: "Content-Length", value: "10" }] })).toThrow(
+				"This header is set automatically and cannot be overridden"
+			);
+		});
+
+		it("rejects duplicate header names regardless of case", () => {
+			expect(() =>
+				createMonitorBodyValidation.parse({
+					...baseHttpBody,
+					headers: [
+						{ key: "X-Api-Key", value: "a" },
+						{ key: "x-api-key", value: "b" },
+					],
+				})
+			).toThrow("Duplicate header names are not allowed");
+		});
+	});
+
+	describe("editMonitorBodyValidation", () => {
+		it("retains a valid headers array on edit", () => {
+			expect(editMonitorBodyValidation.parse({ headers: [{ key: "X-Custom", value: "val" }] }).headers).toEqual([{ key: "X-Custom", value: "val" }]);
+		});
+	});
+
+	describe("importMonitorsBodyValidation", () => {
+		it("defaults headers to an empty array when omitted", () => {
+			expect(importMonitorsBodyValidation.parse({ monitors: [baseHttpBody] }).monitors[0].headers).toEqual([]);
+		});
+
+		it("rejects an imported monitor with an invalid header", () => {
+			expect(() => importMonitorsBodyValidation.parse({ monitors: [{ ...baseHttpBody, headers: [{ key: "Bad Header", value: "v" }] }] })).toThrow();
+		});
+	});
+});

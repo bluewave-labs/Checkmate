@@ -603,6 +603,20 @@
 						"dns": "監控特定DNS伺服器是否回應。"
 					}
 				},
+				"headers": {
+					"title": "請求標頭",
+					"description": "隨此監控的每次請求一併傳送的自訂標頭。",
+					"option": {
+						"name": {
+							"placeholder": "標頭名稱"
+						},
+						"value": {
+							"placeholder": "標頭值"
+						},
+						"addButton": "新增標頭",
+						"removeAriaLabel": "移除標頭"
+					}
+				},
 				"ignoreTls": {
 					"description": "設定 HTTPS 連線的 TLS/SSL 憑證驗證。",
 					"option": {

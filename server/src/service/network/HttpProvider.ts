@@ -209,8 +209,18 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 			throw new Error("URL is required for HTTP monitor");
 		}
 
+		// User-defined headers first; `secret` owns Authorization, so it is applied
+		// last and wins if a header of that name was also configured.
+		const headers: Record<string, string> = {};
+		for (const { key, value } of monitor.headers ?? []) {
+			headers[key] = value;
+		}
+		if (secret) {
+			headers["Authorization"] = `Bearer ${secret}`;
+		}
+
 		const options: Record<string, unknown> = {
-			headers: monitor.secret ? { Authorization: `Bearer ${secret}` } : undefined,
+			headers: Object.keys(headers).length > 0 ? headers : undefined,
 		};
 
 		options.agent = ctx?.proxyUrl

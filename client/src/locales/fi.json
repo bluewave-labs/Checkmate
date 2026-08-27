@@ -603,6 +603,20 @@
 						"dns": "Tarkkaile, vastaako tietty DNS-palvelin."
 					}
 				},
+				"headers": {
+					"title": "Pyynnön otsakkeet",
+					"description": "Mukautetut otsakkeet, jotka lähetetään tämän monitorin jokaisen pyynnön mukana.",
+					"option": {
+						"name": {
+							"placeholder": "Otsakkeen nimi"
+						},
+						"value": {
+							"placeholder": "Otsakkeen arvo"
+						},
+						"addButton": "Lisää otsake",
+						"removeAriaLabel": "Poista otsake"
+					}
+				},
 				"ignoreTls": {
 					"description": "Määritä TLS/SSL-varmenteen vahvistus HTTPS-yhteyksiä varten.",
 					"option": {

@@ -603,6 +603,20 @@
 						"dns": "Monitore se um servidor DNS específico está respondendo."
 					}
 				},
+				"headers": {
+					"title": "Cabeçalhos da requisição",
+					"description": "Cabeçalhos personalizados enviados em cada requisição deste monitor.",
+					"option": {
+						"name": {
+							"placeholder": "Nome do cabeçalho"
+						},
+						"value": {
+							"placeholder": "Valor do cabeçalho"
+						},
+						"addButton": "Adicionar cabeçalho",
+						"removeAriaLabel": "Remover cabeçalho"
+					}
+				},
 				"ignoreTls": {
 					"description": "Configure a validação de certificados TLS/SSL para conexões HTTPS.",
 					"option": {
