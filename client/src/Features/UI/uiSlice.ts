@@ -2,7 +2,13 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 type ThemeMode = "light" | "dark";
 type ChartType = "histogram" | "line";
-type TableName = "monitors" | "team" | "maintenance" | "infrastructure" | "logs";
+type TableName =
+	| "monitors"
+	| "team"
+	| "maintenance"
+	| "infrastructure"
+	| "logs"
+	| "pagespeed";
 
 interface TableState {
 	rowsPerPage: number;
@@ -14,6 +20,7 @@ interface SidebarState {
 
 interface UIState {
 	monitors: TableState;
+	pagespeed: TableState;
 	team: TableState;
 	maintenance: TableState;
 	infrastructure: TableState;
@@ -35,6 +42,9 @@ const initialMode: ThemeMode = window?.matchMedia?.("(prefers-color-scheme: dark
 
 const initialState: UIState = {
 	monitors: {
+		rowsPerPage: 10,
+	},
+	pagespeed: {
 		rowsPerPage: 10,
 	},
 	team: {
