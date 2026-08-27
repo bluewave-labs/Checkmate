@@ -1,6 +1,7 @@
 import { HeaderCreate } from "@/Components/common";
 import { ColoredLabel, MonitorBasePageWithStates } from "@/Components/design-elements";
-import { BulkActionsBar, ControlsFilter } from "@/Components/monitors";
+import { BulkActionsBar } from "@/Components/monitors/BulkActionsBar";
+import { ControlsFilter } from "@/Components/monitors/ControlsFilter";
 import { HeaderMonitorsSummary } from "@/Components/monitors/HeaderMonitorsSummary";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import type { MonitorListController } from "@/Hooks/useMonitorListController";
