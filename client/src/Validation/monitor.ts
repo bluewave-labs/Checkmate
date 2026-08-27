@@ -65,6 +65,52 @@ const httpStatusCode = z.number().refine((code) => httpStatusCodeSet.has(code), 
 	message: "Must be a valid HTTP status code",
 });
 
+// Request headers sent with every check. Names are RFC 9110 tokens and values
+// are printable ASCII, so a malformed header is caught in the form instead of
+// failing at request time and reporting the monitor as down. Connection-level
+// headers are managed by the HTTP client and would break the request if
+// overridden. Kept in sync with server/src/api/validation/monitorValidation.ts.
+const headerNameRegex = /^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$/;
+const headerValueRegex = /^[\x21-\x7e](?:[\x20-\x7e\t]*[\x21-\x7e])?$/;
+const reservedHeaderNames = new Set([
+	"host",
+	"content-length",
+	"transfer-encoding",
+	"connection",
+	"upgrade",
+	"keep-alive",
+]);
+
+const headersSchema = z
+	.array(
+		z.object({
+			key: z
+				.string()
+				.min(1, "Header name is required")
+				.regex(
+					headerNameRegex,
+					"Header name may only contain letters, digits and !#$%&'*+-.^_`|~"
+				)
+				.refine((key) => !reservedHeaderNames.has(key.toLowerCase()), {
+					message: "This header is set automatically and cannot be overridden",
+				}),
+			value: z
+				.string()
+				.min(1, "Header value is required")
+				.regex(
+					headerValueRegex,
+					"Header value must be printable ASCII without leading or trailing whitespace"
+				),
+		})
+	)
+	.refine(
+		(headers) => {
+			const keys = headers.map((h) => h.key.toLowerCase());
+			return new Set(keys).size === keys.length;
+		},
+		{ message: "Duplicate header names are not allowed" }
+	);
+
 const httpSchema = baseSchema.extend({
 	type: z.literal("http"),
 	url: urlSchema,
@@ -88,6 +134,7 @@ const httpSchema = baseSchema.extend({
 		.array(httpStatusCode)
 		.optional()
 		.register(monitorStepRegistry, { step: 2 }),
+	headers: headersSchema.optional().register(monitorStepRegistry, { step: 2 }),
 	...geoCheckFields,
 });
 

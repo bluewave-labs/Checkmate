@@ -71,6 +71,11 @@ export type HttpMethod = (typeof HttpMethods)[number];
 
 export const MAX_RECENT_CHECKS = 50;
 
+export interface MonitorHeader {
+	key: string;
+	value: string;
+}
+
 export interface Monitor {
 	id: string;
 	userId: string;
@@ -99,6 +104,7 @@ export interface Monitor {
 	tags: string[];
 	customUpCodes: HttpStatusCode[];
 	secret?: string;
+	headers?: MonitorHeader[];
 	cpuAlertThreshold: number;
 	cpuAlertCounter: number;
 	memoryAlertThreshold: number;

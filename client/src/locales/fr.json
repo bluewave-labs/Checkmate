@@ -603,6 +603,20 @@
 						"dns": "Surveillez si un serveur DNS spécifique répond."
 					}
 				},
+				"headers": {
+					"title": "En-têtes de requête",
+					"description": "En-têtes personnalisés envoyés avec chaque requête de ce moniteur.",
+					"option": {
+						"name": {
+							"placeholder": "Nom de l'en-tête"
+						},
+						"value": {
+							"placeholder": "Valeur de l'en-tête"
+						},
+						"addButton": "Ajouter un en-tête",
+						"removeAriaLabel": "Supprimer l'en-tête"
+					}
+				},
 				"ignoreTls": {
 					"description": "Configurez la validation des certificats TLS/SSL pour les connexions HTTPS.",
 					"option": {

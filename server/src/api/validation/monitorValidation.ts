@@ -16,6 +16,35 @@ import { DateRanges, SortOrders } from "@/types/query.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
+// Request headers for HTTP monitors. Names are RFC 9110 tokens and values are
+// printable ASCII, so a malformed header is rejected here instead of failing at
+// request time and reporting the monitor as down. Connection-level headers are
+// managed by the HTTP client and would break the request if overridden.
+// Kept in sync with the client-side schema in client/src/Validation/monitor.ts.
+const headerNameRegex = /^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$/;
+const headerValueRegex = /^[\x21-\x7e](?:[\x20-\x7e\t]*[\x21-\x7e])?$/;
+const reservedHeaderNames = new Set(["host", "content-length", "transfer-encoding", "connection", "upgrade", "keep-alive"]);
+
+const monitorHeaderSchema = z.object({
+	key: z
+		.string()
+		.min(1, "Header name is required")
+		.regex(headerNameRegex, "Header name may only contain letters, digits and !#$%&'*+-.^_`|~")
+		.refine((key) => !reservedHeaderNames.has(key.toLowerCase()), { message: "This header is set automatically and cannot be overridden" }),
+	value: z
+		.string()
+		.min(1, "Header value is required")
+		.regex(headerValueRegex, "Header value must be printable ASCII without leading or trailing whitespace"),
+});
+
+const headersArraySchema = z.array(monitorHeaderSchema).refine(
+	(headers) => {
+		const keys = headers.map((h) => h.key.toLowerCase());
+		return new Set(keys).size === keys.length;
+	},
+	{ message: "Duplicate header names are not allowed" }
+);
+
 // The client form submits proxyId: "" when no proxy is selected, set it to undefined
 const proxyIdValidation = z
 	.string()
@@ -142,6 +171,7 @@ export const createMonitorBodyValidation = z
 		tags: z.array(z.string()).optional(),
 		customUpCodes: z.array(httpStatusCode).default([]),
 		secret: z.string().optional(),
+		headers: headersArraySchema.optional(),
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
 		matchMethod: z.union([z.enum(MonitorMatchMethods), z.literal("")]).optional(),
@@ -176,6 +206,7 @@ export const editMonitorBodyValidation = z
 		tags: z.array(z.string()).optional(),
 		customUpCodes: z.array(httpStatusCode).optional(),
 		secret: z.string().optional(),
+		headers: headersArraySchema.optional(),
 		ignoreTlsErrors: z.boolean().optional(),
 		proxyMode: z.enum(ProxyModes).optional(),
 		proxyId: proxyIdValidation,
@@ -255,6 +286,7 @@ const importedMonitorSchema = z
 		tags: z.array(z.string()).default([]),
 		customUpCodes: z.array(httpStatusCode).default([]),
 		secret: z.string().optional(),
+		headers: headersArraySchema.default([]),
 		cpuAlertThreshold: z.number().default(100),
 		cpuAlertCounter: z.number().default(5),
 		memoryAlertThreshold: z.number().default(100),
@@ -323,6 +355,7 @@ export const monitorResponseSchema = z
 		tags: z.array(z.string()),
 		customUpCodes: z.array(httpStatusCode).optional(),
 		secret: z.string().optional(),
+		headers: z.array(z.object({ key: z.string(), value: z.string() })).optional(),
 		cpuAlertThreshold: z.number(),
 		memoryAlertThreshold: z.number(),
 		diskAlertThreshold: z.number(),

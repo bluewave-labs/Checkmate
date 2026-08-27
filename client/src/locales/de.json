@@ -603,6 +603,20 @@
 						"dns": "Überwachen Sie, ob ein bestimmter DNS-Server antwortet."
 					}
 				},
+				"headers": {
+					"title": "Anfrage-Header",
+					"description": "Benutzerdefinierte Header, die mit jeder Anfrage dieses Monitors gesendet werden.",
+					"option": {
+						"name": {
+							"placeholder": "Header-Name"
+						},
+						"value": {
+							"placeholder": "Header-Wert"
+						},
+						"addButton": "Header hinzufügen",
+						"removeAriaLabel": "Header entfernen"
+					}
+				},
 				"ignoreTls": {
 					"description": "Konfigurieren Sie die TLS/SSL-Zertifikatsvalidierung für HTTPS-Verbindungen.",
 					"option": {

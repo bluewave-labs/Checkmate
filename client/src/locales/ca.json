@@ -603,6 +603,20 @@
 						"dns": "Monitoritza si un servidor DNS específic respon."
 					}
 				},
+				"headers": {
+					"title": "Capçaleres de la sol·licitud",
+					"description": "Capçaleres personalitzades que s'envien amb cada sol·licitud d'aquest monitor.",
+					"option": {
+						"name": {
+							"placeholder": "Nom de la capçalera"
+						},
+						"value": {
+							"placeholder": "Valor de la capçalera"
+						},
+						"addButton": "Afegeix una capçalera",
+						"removeAriaLabel": "Elimina la capçalera"
+					}
+				},
 				"ignoreTls": {
 					"description": "Configura la validació del certificat TLS/SSL per a connexions HTTPS.",
 					"option": {

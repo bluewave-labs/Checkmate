@@ -712,6 +712,20 @@
 						"dns": "Monitor if a specific DNS server is responding."
 					}
 				},
+				"headers": {
+					"title": "Request headers",
+					"description": "Custom headers sent with every request for this monitor.",
+					"option": {
+						"name": {
+							"placeholder": "Header name"
+						},
+						"value": {
+							"placeholder": "Header value"
+						},
+						"addButton": "Add header",
+						"removeAriaLabel": "Remove header"
+					}
+				},
 				"ignoreTls": {
 					"description": "Configure TLS/SSL certificate validation for HTTPS connections.",
 					"option": {

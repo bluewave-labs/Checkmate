@@ -436,6 +436,8 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			tags: tagIds,
 			customUpCodes: doc.customUpCodes ?? [],
 			secret: doc.secret ?? undefined,
+			// Subdocuments carry mongoose internals, so map to plain header pairs
+			headers: (doc.headers ?? []).map(({ key, value }) => ({ key, value })),
 			cpuAlertThreshold: doc.cpuAlertThreshold,
 			cpuAlertCounter: doc.cpuAlertCounter,
 			memoryAlertThreshold: doc.memoryAlertThreshold,

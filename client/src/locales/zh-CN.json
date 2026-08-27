@@ -604,6 +604,20 @@
 						"dns": "监控特定DNS服务器是否响应。"
 					}
 				},
+				"headers": {
+					"title": "请求标头",
+					"description": "随该监控的每次请求一起发送的自定义标头。",
+					"option": {
+						"name": {
+							"placeholder": "标头名称"
+						},
+						"value": {
+							"placeholder": "标头值"
+						},
+						"addButton": "添加标头",
+						"removeAriaLabel": "删除标头"
+					}
+				},
 				"ignoreTls": {
 					"description": "配置 HTTPS 连接的 TLS/SSL 证书验证。",
 					"option": {

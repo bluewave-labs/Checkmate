@@ -603,6 +603,20 @@
 						"dns": "Sledujte, zda konkrétní DNS server odpovídá."
 					}
 				},
+				"headers": {
+					"title": "Hlavičky požadavku",
+					"description": "Vlastní hlavičky odesílané s každým požadavkem tohoto monitoru.",
+					"option": {
+						"name": {
+							"placeholder": "Název hlavičky"
+						},
+						"value": {
+							"placeholder": "Hodnota hlavičky"
+						},
+						"addButton": "Přidat hlavičku",
+						"removeAriaLabel": "Odebrat hlavičku"
+					}
+				},
 				"ignoreTls": {
 					"description": "Nastavte ověřování TLS/SSL certifikátů pro HTTPS připojení.",
 					"option": {

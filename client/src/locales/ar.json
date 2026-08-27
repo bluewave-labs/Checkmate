@@ -603,6 +603,20 @@
 						"dns": "راقب ما إذا كان خادم DNS محدد يستجيب."
 					}
 				},
+				"headers": {
+					"title": "ترويسات الطلب",
+					"description": "ترويسات مخصصة تُرسل مع كل طلب لهذا المراقب.",
+					"option": {
+						"name": {
+							"placeholder": "اسم الترويسة"
+						},
+						"value": {
+							"placeholder": "قيمة الترويسة"
+						},
+						"addButton": "إضافة ترويسة",
+						"removeAriaLabel": "إزالة الترويسة"
+					}
+				},
 				"ignoreTls": {
 					"description": "تهيئة التحقق من شهادة TLS/SSL لاتصالات HTTPS.",
 					"option": {

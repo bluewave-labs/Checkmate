@@ -54,6 +54,7 @@ export const getMonitorDefaults = (
 				expectedValue: data?.expectedValue || "",
 				jsonPath: data?.jsonPath || "",
 				customUpCodes: data?.customUpCodes || [],
+				headers: data?.headers || [],
 			};
 			break;
 		case "ping":
@@ -151,6 +152,7 @@ export const getMonitorDefaults = (
 				expectedValue: "",
 				jsonPath: "",
 				customUpCodes: [],
+				headers: [],
 			};
 	}
 

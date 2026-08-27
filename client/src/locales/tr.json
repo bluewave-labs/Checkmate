@@ -603,6 +603,20 @@
 						"dns": "Belirli bir DNS sunucusunun yanıt verip vermediğini izleyin."
 					}
 				},
+				"headers": {
+					"title": "İstek başlıkları",
+					"description": "Bu monitörün her isteğiyle birlikte gönderilen özel başlıklar.",
+					"option": {
+						"name": {
+							"placeholder": "Başlık adı"
+						},
+						"value": {
+							"placeholder": "Başlık değeri"
+						},
+						"addButton": "Başlık ekle",
+						"removeAriaLabel": "Başlığı kaldır"
+					}
+				},
 				"ignoreTls": {
 					"description": "HTTPS bağlantıları için TLS/SSL sertifika doğrulamasını yapılandırın.",
 					"option": {
