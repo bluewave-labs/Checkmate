@@ -63,19 +63,51 @@ const getChartConfigs = (
 	return configs;
 };
 
-// Loopback / bridge names Capture sees when it can only observe the container's
-// own network namespace. When ALL reported interfaces match this set we assume
-// the "no real interfaces visible" case and surface the notice.
+// Loopback / bridge names Capture reports when it can only observe the
+// container's own network namespace.
 const CONTAINER_ONLY_IFACE_NAMES = new Set(["lo", "lo0", "docker0"]);
 
+// Below this, an interface is carrying no traffic worth charting. Real host
+// NICs sit orders of magnitude above it; a container's veth sits at or near
+// zero.
+const IDLE_INTERFACE_BYTES_PER_SECOND = 1024;
+
+const interfaceIsIdle = (checks: HardwareCheckStats[], name: string): boolean =>
+	checks.every((check) => {
+		const iface = check.net?.find((candidate) => candidate.name === name);
+		if (!iface) {
+			return true;
+		}
+		return (
+			(iface.bytesSentPerSecond || 0) < IDLE_INTERFACE_BYTES_PER_SECOND &&
+			(iface.deltaBytesRecv || 0) < IDLE_INTERFACE_BYTES_PER_SECOND
+		);
+	});
+
+// Capture running inside a container sees only that container's network
+// namespace. It reports the loopback and bridge names above, and usually also
+// the container's own veth under a host-looking name (eth0, ens3, ...) - so
+// requiring EVERY interface to be container-only missed the common case, and
+// those users saw plausible-but-meaningless traffic with no explanation.
+//
+// Interface names alone cannot separate the two cases: a host-level agent on a
+// machine running Docker legitimately reports docker0 too. What distinguishes
+// them is that in the container case nothing carries real traffic. So the
+// notice fires when a container-only interface is present AND every interface
+// is idle, which leaves a genuine host reporting docker0 alongside a busy NIC
+// untouched.
 const onlyContainerVisibleInterfaces = (checks: HardwareCheckStats[]): boolean => {
 	const named = new Set<string>();
 	checks.forEach((c) => c.net?.forEach((iface) => named.add(iface.name)));
-	if (named.size === 0) return false;
-	for (const name of named) {
-		if (!CONTAINER_ONLY_IFACE_NAMES.has(name)) return false;
+	if (named.size === 0) {
+		return false;
 	}
-	return true;
+
+	const names = [...named];
+	if (!names.some((name) => CONTAINER_ONLY_IFACE_NAMES.has(name))) {
+		return false;
+	}
+	return names.every((name) => interfaceIsIdle(checks, name));
 };
 
 export const InfraNetworkCharts = ({
