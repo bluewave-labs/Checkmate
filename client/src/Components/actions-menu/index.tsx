@@ -33,7 +33,7 @@ export const ActionsMenu = ({ items }: { items: ActionMenuItem[] }) => {
 				onClick={handleClick}
 				sx={{
 					"&:hover": {
-						backgroundColor: theme.palette.action.rowHover,
+						backgroundColor: theme.palette.action.controlHover,
 					},
 				}}
 			>

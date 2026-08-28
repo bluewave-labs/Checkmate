@@ -79,6 +79,7 @@ export function DataTable<
 	};
 
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
+	const isInteractive = Boolean(onRowClick) || expandableRows;
 
 	if (data.length === 0 || headers.length === 0) {
 		return (
@@ -107,8 +108,8 @@ export function DataTable<
 								borderColor: theme.palette.divider,
 								borderRadius: theme.shape.borderRadius,
 								padding: theme.spacing(LAYOUT.XS),
-								cursor: onRowClick ? "pointer" : "default",
-								...(onRowClick && {
+								cursor: isInteractive ? "pointer" : "default",
+								...(isInteractive && {
 									"&:hover": {
 										backgroundColor: theme.palette.action.rowHover,
 									},
@@ -240,9 +241,9 @@ export function DataTable<
 						return (
 							<Fragment key={key}>
 								<TableRow
-									className={onRowClick || expandableRows ? "is-clickable" : undefined}
+									className={isInteractive ? "is-clickable" : undefined}
 									sx={{
-										cursor: onRowClick || expandableRows ? "pointer" : "default",
+										cursor: isInteractive ? "pointer" : "default",
 										...(getRowSx?.(row) as object),
 									}}
 									onClick={() => {
@@ -328,7 +329,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 				flexShrink: 0,
 				ml: { xs: 0, md: 2.5 },
 				"& .MuiIconButton-root:not(.Mui-disabled):hover": {
-					backgroundColor: theme.palette.action.rowHover,
+					backgroundColor: theme.palette.action.controlHover,
 				},
 			}}
 			className="table-pagination-actions"
@@ -432,7 +433,7 @@ function HasMoreTablePaginationActions(props: HasMoreTablePaginationActionsProps
 				flexShrink: 0,
 				ml: { xs: 0, md: 2.5 },
 				"& .MuiIconButton-root:not(.Mui-disabled):hover": {
-					backgroundColor: theme.palette.action.rowHover,
+					backgroundColor: theme.palette.action.controlHover,
 				},
 			}}
 			className="table-pagination-actions"

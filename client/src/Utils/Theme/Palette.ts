@@ -42,6 +42,7 @@ export const lightPalette = {
 	},
 	action: {
 		rowHover: alpha(colors.gray900, HOVER.ROW),
+		controlHover: alpha(colors.gray900, HOVER.CONTROL),
 	},
 	secondary: {
 		main: colors.gray200,
@@ -71,6 +72,7 @@ export const darkPalette = {
 	},
 	action: {
 		rowHover: alpha("#FFFFFF", HOVER.ROW),
+		controlHover: alpha("#FFFFFF", HOVER.CONTROL),
 	},
 	secondary: {
 		main: colors.gray700,
