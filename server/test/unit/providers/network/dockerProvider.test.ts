@@ -3,51 +3,75 @@ import { DockerProvider } from "../../../../src/service/network/DockerProvider.t
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
 import { NETWORK_ERROR } from "../../../../src/types/network.ts";
+import { AppError } from "../../../../src/utils/AppError.ts";
 import type { Monitor } from "../../../../src/domain/monitors/monitor.type.ts";
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// ── Fixtures ─────────────────────────────────────────────────────────────────
+
+const PRIVATE_KEY = "-----BEGIN OPENSSH PRIVATE KEY-----\nfake\n-----END OPENSSH PRIVATE KEY-----";
 
 const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
 	({
 		id: "mon-1",
 		teamId: "team-1",
 		type: "docker",
-		url: "my-container",
+		url: "unix:///var/run/docker.sock",
 		...overrides,
 	}) as Monitor;
 
 const makeContainer = (overrides?: Record<string, any>) => ({
 	Id: "abc123def456abc123def456abc123def456abc123def456abc123def456abcd",
 	Names: ["/my-container"],
+	Image: "nginx:latest",
 	State: "running",
+	Status: "Up 3 hours (healthy)",
 	...overrides,
 });
 
-const createMockDocker = (containers: any[] = [makeContainer()], inspectResult?: any) => {
-	const inspect = jest.fn().mockResolvedValue(inspectResult ?? { State: { Status: "running" } });
-	const getContainer = jest.fn().mockReturnValue({ inspect });
+const makeInspect = (overrides?: Record<string, any>) => ({
+	RestartCount: 2,
+	State: { StartedAt: "2026-08-28T10:00:00.000Z", Health: { Status: "healthy" } },
+	...overrides,
+});
 
+// cpuDelta 200M over systemDelta 1000M on 4 cpus → 80%; memory 300MiB raw - 100MiB page cache = 200MiB of 1GiB → 19.53125%
+const makeStats = (overrides?: Record<string, any>) => ({
+	cpu_stats: {
+		cpu_usage: { total_usage: 400_000_000 },
+		system_cpu_usage: 2_000_000_000,
+		online_cpus: 4,
+	},
+	precpu_stats: {
+		cpu_usage: { total_usage: 200_000_000 },
+		system_cpu_usage: 1_000_000_000,
+	},
+	memory_stats: {
+		usage: 300 * 1024 * 1024,
+		limit: 1024 * 1024 * 1024,
+		stats: { inactive_file: 100 * 1024 * 1024 },
+	},
+	...overrides,
+});
+
+const setup = (overrides: Partial<{ ping: any; listContainers: any; getContainer: any; inspect: any; stats: any }> = {}) => {
+	const inspect = overrides.inspect ?? jest.fn().mockResolvedValue(makeInspect());
+	const stats = overrides.stats ?? jest.fn().mockResolvedValue(makeStats());
+	const getContainer = overrides.getContainer ?? jest.fn().mockReturnValue({ inspect, stats });
 	const instance = {
-		listContainers: jest.fn().mockResolvedValue(containers),
+		ping: overrides.ping ?? jest.fn().mockResolvedValue("OK"),
+		listContainers: overrides.listContainers ?? jest.fn().mockResolvedValue([makeContainer()]),
 		getContainer,
 	};
-
 	const DockerLib = jest.fn().mockReturnValue(instance) as any;
-
-	return { DockerLib, instance, inspect, getContainer };
-};
-
-const createProvider = (opts?: { containers?: any[]; inspectResult?: any }) => {
 	const logger = createMockLogger();
-	const { DockerLib, instance, inspect, getContainer } = createMockDocker(opts?.containers, opts?.inspectResult);
 	const provider = new DockerProvider(logger as any, DockerLib);
-	return { provider, logger, docker: instance, inspect, getContainer };
+	return { provider, logger, DockerLib, ping: instance.ping, listContainers: instance.listContainers, getContainer, inspect, stats };
 };
 
 // ── Contract ─────────────────────────────────────────────────────────────────
 
 testStatusProviderContract("DockerProvider", {
-	create: () => createProvider().provider,
+	create: () => setup().provider,
 	supportedType: "docker",
 	unsupportedType: "http",
 	makeMonitor: () => makeMonitor(),
@@ -56,286 +80,312 @@ testStatusProviderContract("DockerProvider", {
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("DockerProvider", () => {
-	// ── Container matching ───────────────────────────────────────────────
+	// ── Host url parsing ─────────────────────────────────────────────────
 
-	describe("container matching", () => {
-		it("matches by exact container name", async () => {
-			const { provider } = createProvider();
+	describe("host url parsing", () => {
+		it("parses unix:// urls into socketPath", async () => {
+			const { provider, DockerLib } = setup();
 
-			const result = await provider.handle(makeMonitor({ url: "my-container" }));
+			await provider.handle(makeMonitor({ url: "unix:///run/docker.sock" }));
+
+			expect(DockerLib).toHaveBeenCalledWith({ socketPath: "/run/docker.sock" });
+		});
+
+		it("parses bare absolute paths into socketPath", async () => {
+			const { provider, DockerLib } = setup();
+
+			await provider.handle(makeMonitor({ url: "/var/run/docker.sock" }));
+
+			expect(DockerLib).toHaveBeenCalledWith({ socketPath: "/var/run/docker.sock" });
+		});
+
+		it("trims surrounding whitespace", async () => {
+			const { provider, DockerLib } = setup();
+
+			await provider.handle(makeMonitor({ url: "  /var/run/docker.sock  " }));
+
+			expect(DockerLib).toHaveBeenCalledWith({ socketPath: "/var/run/docker.sock" });
+		});
+
+		it("parses ssh urls with a private key, defaulting to port 22", async () => {
+			const { provider, DockerLib } = setup();
+
+			await provider.handle(makeMonitor({ url: "ssh://deploy@prod-swarm-01.internal", sshPrivateKey: PRIVATE_KEY }));
+
+			expect(DockerLib).toHaveBeenCalledWith({
+				protocol: "ssh",
+				host: "prod-swarm-01.internal",
+				port: 22,
+				username: "deploy",
+				sshOptions: { privateKey: PRIVATE_KEY },
+			});
+		});
+
+		it("parses an explicit ssh port", async () => {
+			const { provider, DockerLib } = setup();
+
+			await provider.handle(makeMonitor({ url: "ssh://deploy@host:2222", sshPrivateKey: PRIVATE_KEY }));
+
+			expect(DockerLib).toHaveBeenCalledWith(expect.objectContaining({ port: 2222 }));
+		});
+	});
+
+	// ── Fail-loudly url validation ───────────────────────────────────────
+
+	describe("invalid host urls", () => {
+		const invalidUrls: [label: string, url: string, message: string][] = [
+			["empty url", "", "Docker host URL is required"],
+			["unix:// with an empty path", "unix://", "Invalid Docker host URL"],
+			["unix:// with a relative path", "unix://run/docker.sock", "Invalid Docker host URL"],
+			["garbage", "not-a-url", "Invalid Docker host URL"],
+			["a container name (old semantics)", "my-container", "Invalid Docker host URL"],
+			["tcp engine urls (unsupported)", "tcp://host:2375", "Invalid Docker host URL"],
+			["https engine urls (unsupported)", "https://host", "Invalid Docker host URL"],
+			["ssh without a user", "ssh://host", "SSH Docker host URL requires a user: ssh://user@host"],
+		];
+
+		it.each(invalidUrls)("throws AppError for %s and never constructs a client", async (_label, url, message) => {
+			const { provider, DockerLib } = setup();
+
+			await expect(provider.handle(makeMonitor({ url }))).rejects.toThrow(message);
+			expect(DockerLib).not.toHaveBeenCalled();
+		});
+
+		it("throws AppError for an ssh url with no private key", async () => {
+			const { provider, DockerLib } = setup();
+
+			await expect(provider.handle(makeMonitor({ url: "ssh://deploy@host", sshPrivateKey: undefined }))).rejects.toThrow(
+				"SSH Docker host requires a private key"
+			);
+			expect(DockerLib).not.toHaveBeenCalled();
+		});
+
+		it("preserves the toDockerOptions AppError through handle's catch", async () => {
+			const { provider } = setup();
+
+			await expect(provider.handle(makeMonitor({ url: "not-a-url" }))).rejects.toMatchObject({
+				service: "DockerProvider",
+				method: "toDockerOptions",
+				status: 422,
+			});
+			await expect(provider.handle(makeMonitor({ url: "not-a-url" }))).rejects.toBeInstanceOf(AppError);
+		});
+	});
+
+	// ── Host reachability ────────────────────────────────────────────────
+
+	describe("host reachability", () => {
+		it("returns a down check with NETWORK_ERROR when ping rejects with a plain Error", async () => {
+			const { provider, listContainers } = setup({ ping: jest.fn().mockRejectedValue(new Error("ECONNREFUSED")) });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.status).toBe(false);
+			expect(result.code).toBe(NETWORK_ERROR);
+			expect(result.message).toBe("ECONNREFUSED");
+			expect(result.payload).toBeNull();
+			expect(listContainers).not.toHaveBeenCalled();
+		});
+
+		it("uses the DockerError statusCode and json message when ping rejects with one", async () => {
+			const dockerErr = Object.assign(new Error("base"), { statusCode: 500, json: { message: "engine exploded" } });
+			const { provider } = setup({ ping: jest.fn().mockRejectedValue(dockerErr) });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.code).toBe(500);
+			expect(result.message).toBe("engine exploded");
+		});
+
+		it("falls back to the DockerError reason when json has no message", async () => {
+			const dockerErr = Object.assign(new Error("base"), { statusCode: 500, reason: "server error", json: {} });
+			const { provider } = setup({ ping: jest.fn().mockRejectedValue(dockerErr) });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.message).toBe("server error");
+		});
+
+		it("uses the default message when ping rejects with a non-Error", async () => {
+			const { provider } = setup({ ping: jest.fn().mockRejectedValue("nope") });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.status).toBe(false);
+			expect(result.message).toBe("Docker host is unreachable");
+		});
+	});
+
+	// ── Happy path ───────────────────────────────────────────────────────
+
+	describe("container payload", () => {
+		it("returns an up check with enriched containers and summary counts", async () => {
+			const { provider } = setup();
+
+			const result = await provider.handle(makeMonitor());
 
 			expect(result.status).toBe(true);
 			expect(result.code).toBe(200);
-		});
-
-		it("matches by exact full ID (64 chars)", async () => {
-			const fullId = "abc123def456abc123def456abc123def456abc123def456abc123def456abcd";
-			const { provider } = createProvider();
-
-			const result = await provider.handle(makeMonitor({ url: fullId }));
-
-			expect(result.status).toBe(true);
-		});
-
-		it("matches by partial ID prefix", async () => {
-			const { provider } = createProvider();
-
-			const result = await provider.handle(makeMonitor({ url: "abc123" }));
-
-			expect(result.status).toBe(true);
-		});
-
-		it("strips leading slashes from input", async () => {
-			const { provider } = createProvider();
-
-			const result = await provider.handle(makeMonitor({ url: "///my-container" }));
-
-			expect(result.status).toBe(true);
-		});
-
-		it("matches case-insensitively", async () => {
-			const { provider } = createProvider();
-
-			const result = await provider.handle(makeMonitor({ url: "MY-CONTAINER" }));
-
-			expect(result.status).toBe(true);
-		});
-
-		it("returns 404 when no container matches", async () => {
-			const { provider, logger } = createProvider();
-
-			const result = await provider.handle(makeMonitor({ url: "nonexistent" }));
-
-			expect(result.status).toBe(false);
-			expect(result.code).toBe(404);
-			expect(result.message).toBe("Docker container not found");
-			expect(logger.warn).toHaveBeenCalledWith(
+			expect(result.message).toBe("Docker host is reachable");
+			expect(result.payload?.summary).toEqual({ total: 1, running: 1, stopped: 0, unhealthy: 0 });
+			expect(result.payload?.containers[0]).toEqual(
 				expect.objectContaining({
-					message: expect.stringContaining("No container found"),
-				})
-			);
-		});
-	});
-
-	// ── Ambiguity detection ──────────────────────────────────────────────
-
-	describe("ambiguity detection", () => {
-		it("returns error when input matches both exact name and partial ID", async () => {
-			// Container whose name matches the input AND whose ID starts with the input
-			const container = makeContainer({
-				Id: "my-containerabc123def456abc123def456abc123def456abc123def456abcd",
-				Names: ["/my-container"],
-			});
-			const { provider, logger } = createProvider({ containers: [container] });
-
-			const result = await provider.handle(makeMonitor({ url: "my-container" }));
-
-			expect(result.status).toBe(false);
-			expect(result.code).toBe(NETWORK_ERROR);
-			expect(result.message).toContain("Ambiguous");
-			expect(logger.warn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					message: expect.stringContaining("Ambiguous"),
+					id: makeContainer().Id,
+					name: "my-container",
+					image: "nginx:latest",
+					state: "running",
+					status: "Up 3 hours (healthy)",
+					health: "healthy",
+					restartCount: 2,
+					startedAt: "2026-08-28T10:00:00.000Z",
 				})
 			);
 		});
 
-		it("reports 'exact ID' in ambiguity message when exact ID and name both match", async () => {
-			const fullId = "abc123def456abc123def456abc123def456abc123def456abc123def456abcd";
-			const container = makeContainer({
-				Id: fullId,
-				Names: ["/" + fullId],
-			});
-			const { provider } = createProvider({ containers: [container] });
+		it("counts running, stopped, and unhealthy states in the summary", async () => {
+			const containers = [
+				makeContainer({ Id: "a".repeat(64) }),
+				makeContainer({ Id: "b".repeat(64), State: "exited" }),
+				makeContainer({ Id: "c".repeat(64), State: "dead" }),
+				makeContainer({ Id: "d".repeat(64), State: "paused" }),
+			];
+			const inspect = jest.fn().mockResolvedValue(makeInspect({ State: { Health: { Status: "unhealthy" } } }));
+			const { provider } = setup({ listContainers: jest.fn().mockResolvedValue(containers), inspect });
 
-			const result = await provider.handle(makeMonitor({ url: fullId }));
+			const result = await provider.handle(makeMonitor());
 
-			expect(result.message).toContain("Using exact ID");
+			expect(result.payload?.summary).toEqual({ total: 4, running: 1, stopped: 2, unhealthy: 4 });
 		});
 
-		it("reports 'exact name' in ambiguity message when name and partial ID match", async () => {
-			const container = makeContainer({
-				Id: "my-containerabc123def456abc123def456abc123def456abc123def456abcd",
-				Names: ["/my-container"],
-			});
-			const { provider } = createProvider({ containers: [container] });
+		it("falls back to a truncated id when a container has no name", async () => {
+			const container = makeContainer({ Names: [] });
+			const { provider } = setup({ listContainers: jest.fn().mockResolvedValue([container]) });
 
-			const result = await provider.handle(makeMonitor({ url: "my-container" }));
+			const result = await provider.handle(makeMonitor());
 
-			expect(result.message).toContain("Using exact name");
+			expect(result.payload?.containers[0]?.name).toBe(container.Id.slice(0, 12));
+		});
+
+		it("clamps unknown container states and health statuses", async () => {
+			const container = makeContainer({ State: "warp-speed" });
+			const inspect = jest.fn().mockResolvedValue(makeInspect({ State: { Health: { Status: "confused" } } }));
+			const { provider } = setup({ listContainers: jest.fn().mockResolvedValue([container]), inspect });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]?.state).toBe("created");
+			expect(result.payload?.containers[0]?.health).toBe("none");
 		});
 	});
 
-	// ── Container inspection ─────────────────────────────────────────────
+	// ── Enrichment fault isolation ───────────────────────────────────────
 
-	describe("container inspection", () => {
-		it("returns running status for running container", async () => {
-			const { provider } = createProvider({ inspectResult: { State: { Status: "running" } } });
+	describe("enrichment fault isolation", () => {
+		it("keeps the container and the up status when inspect rejects", async () => {
+			const inspect = jest.fn().mockRejectedValue(new Error("inspect failed"));
+			const { provider, logger } = setup({ inspect });
 
 			const result = await provider.handle(makeMonitor());
 
 			expect(result.status).toBe(true);
-			expect(result.message).toBe("Docker container status fetched successfully");
+			expect(result.payload?.containers).toHaveLength(1);
+			expect(result.payload?.containers[0]).toEqual(expect.objectContaining({ health: "none" }));
+			expect(result.payload?.containers[0]?.restartCount).toBeUndefined();
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Failed to inspect") }));
 		});
 
-		it("returns not-running status for stopped container", async () => {
-			const { provider } = createProvider({ inspectResult: { State: { Status: "exited" } } });
+		it("keeps the container without metrics when stats rejects", async () => {
+			const stats = jest.fn().mockRejectedValue(new Error("stats failed"));
+			const { provider } = setup({ stats });
 
 			const result = await provider.handle(makeMonitor());
 
-			expect(result.status).toBe(false);
+			expect(result.status).toBe(true);
+			expect(result.payload?.containers[0]?.cpuPct).toBeUndefined();
+			expect(result.payload?.containers[0]?.memoryUsedBytes).toBeUndefined();
 		});
 
-		it("returns NETWORK_ERROR when inspect response is null", async () => {
-			const logger = createMockLogger();
-			const inspect = jest.fn().mockResolvedValue(null);
-			const getContainer = jest.fn().mockReturnValue({ inspect });
-			const instance = { listContainers: jest.fn().mockResolvedValue([makeContainer()]), getContainer };
-			const DockerLib = jest.fn().mockReturnValue(instance) as any;
-			const provider = new DockerProvider(logger as any, DockerLib);
+		it("only requests stats for running containers", async () => {
+			const containers = [makeContainer({ Id: "a".repeat(64) }), makeContainer({ Id: "b".repeat(64), State: "exited" })];
+			const { provider, stats } = setup({ listContainers: jest.fn().mockResolvedValue(containers) });
 
-			const result = await provider.handle(makeMonitor());
+			await provider.handle(makeMonitor());
 
-			expect(result.status).toBe(false);
-			expect(result.code).toBe(NETWORK_ERROR);
-			expect(result.message).toBe("No response from Docker container inspect");
-		});
-
-		it("returns false status when inspect response has no State", async () => {
-			const { provider } = createProvider({ inspectResult: {} });
-
-			const result = await provider.handle(makeMonitor());
-
-			expect(result.status).toBe(false);
-		});
-
-		it("returns false status when inspect response has State but no Status", async () => {
-			const { provider } = createProvider({ inspectResult: { State: {} } });
-
-			const result = await provider.handle(makeMonitor());
-
-			expect(result.status).toBe(false);
-		});
-
-		it("handles inspect error with Docker-specific error", async () => {
-			const { provider } = createProvider();
-			// Make inspect throw a Docker error
-			const dockerErr = Object.assign(new Error("container not found"), {
-				statusCode: 404,
-				reason: "no such container",
-				json: { message: "Container not found" },
-			});
-			provider["docker"] = {
-				listContainers: jest.fn().mockResolvedValue([makeContainer()]),
-				getContainer: jest.fn().mockReturnValue({
-					inspect: jest.fn().mockRejectedValue(dockerErr),
-				}),
-			} as any;
-
-			// Need to re-assign; simpler to use the createProvider mock
-			const { provider: p2 } = createProvider();
-			// Override getContainer to return failing inspect
-			p2["docker"].getContainer = jest.fn().mockReturnValue({
-				inspect: jest.fn().mockRejectedValue(dockerErr),
-			});
-
-			const result = await p2.handle(makeMonitor());
-
-			expect(result.status).toBe(false);
-			expect(result.code).toBe(404);
-			expect(result.message).toBe("Container not found");
-		});
-
-		it("handles inspect error with Docker error using reason fallback", async () => {
-			const { provider } = createProvider();
-			const dockerErr = Object.assign(new Error("error"), {
-				statusCode: 500,
-				reason: "internal error",
-				json: {},
-			});
-			provider["docker"].getContainer = jest.fn().mockReturnValue({
-				inspect: jest.fn().mockRejectedValue(dockerErr),
-			});
-
-			const result = await provider.handle(makeMonitor());
-
-			expect(result.message).toBe("internal error");
-		});
-
-		it("handles inspect error with Docker error using Error message fallback", async () => {
-			const { provider } = createProvider();
-			const dockerErr = Object.assign(new Error("base error"), {
-				statusCode: 503,
-				reason: undefined,
-				json: undefined,
-			});
-			provider["docker"].getContainer = jest.fn().mockReturnValue({
-				inspect: jest.fn().mockRejectedValue(dockerErr),
-			});
-
-			const result = await provider.handle(makeMonitor());
-
-			expect(result.message).toBe("base error");
-		});
-
-		it("handles inspect error with NETWORK_ERROR when no statusCode", async () => {
-			const { provider } = createProvider();
-			const dockerErr = Object.assign(new Error("unknown"), {
-				statusCode: undefined,
-			});
-			provider["docker"].getContainer = jest.fn().mockReturnValue({
-				inspect: jest.fn().mockRejectedValue(dockerErr),
-			});
-
-			const result = await provider.handle(makeMonitor());
-
-			expect(result.code).toBe(NETWORK_ERROR);
-		});
-
-		it("handles inspect error with standard Error (not Docker error)", async () => {
-			const { provider } = createProvider();
-			provider["docker"].getContainer = jest.fn().mockReturnValue({
-				inspect: jest.fn().mockRejectedValue(new Error("ECONNREFUSED")),
-			});
-
-			const result = await provider.handle(makeMonitor());
-
-			expect(result.status).toBe(false);
-			expect(result.message).toBe("ECONNREFUSED");
-		});
-
-		it("handles inspect error with non-Error non-Docker thrown value", async () => {
-			const { provider } = createProvider();
-			provider["docker"].getContainer = jest.fn().mockReturnValue({
-				inspect: jest.fn().mockRejectedValue("string error"),
-			});
-
-			const result = await provider.handle(makeMonitor());
-
-			expect(result.status).toBe(false);
-			expect(result.message).toBe("Failed to fetch Docker container information");
+			expect(stats).toHaveBeenCalledTimes(1);
 		});
 	});
 
-	// ── Outer catch ──────────────────────────────────────────────────────
+	// ── Metric math ──────────────────────────────────────────────────────
+
+	describe("metric math", () => {
+		it("computes cpu and memory percentages from cgroup v2 stats", async () => {
+			const { provider } = setup();
+
+			const result = await provider.handle(makeMonitor());
+			const container = result.payload?.containers[0];
+
+			expect(container?.cpuPct).toBeCloseTo(80);
+			expect(container?.memoryUsedBytes).toBe(200 * 1024 * 1024);
+			expect(container?.memoryLimitBytes).toBe(1024 * 1024 * 1024);
+			expect(container?.memoryPct).toBeCloseTo(19.53125);
+		});
+
+		it("falls back to the cgroup v1 cache field for page cache", async () => {
+			const stats = jest
+				.fn()
+				.mockResolvedValue(makeStats({ memory_stats: { usage: 300 * 1024 * 1024, limit: 1024 * 1024 * 1024, stats: { cache: 50 * 1024 * 1024 } } }));
+			const { provider } = setup({ stats });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]?.memoryUsedBytes).toBe(250 * 1024 * 1024);
+		});
+
+		it("derives cpu count from percpu_usage when online_cpus is absent", async () => {
+			const stats = jest.fn().mockResolvedValue(
+				makeStats({
+					cpu_stats: { cpu_usage: { total_usage: 400_000_000, percpu_usage: [1, 2] }, system_cpu_usage: 2_000_000_000 },
+				})
+			);
+			const { provider } = setup({ stats });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]?.cpuPct).toBeCloseTo(40);
+		});
+
+		it("returns 0 cpu when the system delta is not positive", async () => {
+			const stats = jest
+				.fn()
+				.mockResolvedValue(makeStats({ precpu_stats: { cpu_usage: { total_usage: 200_000_000 }, system_cpu_usage: 2_000_000_000 } }));
+			const { provider } = setup({ stats });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]?.cpuPct).toBe(0);
+		});
+
+		it("returns 0 memory percent when there is no limit", async () => {
+			const stats = jest.fn().mockResolvedValue(makeStats({ memory_stats: { usage: 300 * 1024 * 1024, limit: 0, stats: {} } }));
+			const { provider } = setup({ stats });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]?.memoryPct).toBe(0);
+		});
+	});
+
+	// ── Outer error handling ─────────────────────────────────────────────
 
 	describe("outer error handling", () => {
-		it("throws AppError when containerInput is missing", async () => {
-			const { provider } = createProvider();
-
-			await expect(provider.handle(makeMonitor({ url: "" }))).rejects.toThrow("Container name or ID is required for Docker monitor");
-		});
-
-		it("throws AppError when listContainers throws", async () => {
-			const { provider } = createProvider();
-			provider["docker"].listContainers = jest.fn().mockRejectedValue(new Error("Docker daemon unavailable"));
+		it("throws AppError when listContainers rejects after a successful ping", async () => {
+			const { provider } = setup({ listContainers: jest.fn().mockRejectedValue(new Error("Docker daemon unavailable")) });
 
 			await expect(provider.handle(makeMonitor())).rejects.toThrow("Docker daemon unavailable");
 		});
 
-		it("throws AppError with default message for non-Error thrown values", async () => {
-			const { provider } = createProvider();
-			provider["docker"].listContainers = jest.fn().mockRejectedValue(null);
+		it("throws AppError with the default message for non-Error thrown values", async () => {
+			const { provider } = setup({ listContainers: jest.fn().mockRejectedValue(null) });
 
 			await expect(provider.handle(makeMonitor())).rejects.toThrow("Error performing Docker request");
 		});
