@@ -565,3 +565,78 @@ describe("monitorValidation — proxy fields", () => {
 		});
 	});
 });
+
+describe("monitorValidation — Docker host url", () => {
+	const baseDockerBody = {
+		name: "Docker host check",
+		type: "docker" as const,
+		url: "unix:///var/run/docker.sock",
+	};
+	const PRIVATE_KEY = "-----BEGIN OPENSSH PRIVATE KEY-----\nfake\n-----END OPENSSH PRIVATE KEY-----";
+
+	describe("createMonitorBodyValidation", () => {
+		it("accepts the default unix socket url", () => {
+			const parsed = createMonitorBodyValidation.parse(baseDockerBody);
+			expect(parsed.url).toBe("unix:///var/run/docker.sock");
+		});
+
+		it("accepts a bare absolute socket path", () => {
+			const parsed = createMonitorBodyValidation.parse({ ...baseDockerBody, url: "/run/docker.sock" });
+			expect(parsed.url).toBe("/run/docker.sock");
+		});
+
+		it("accepts an ssh url with a private key and retains the key", () => {
+			for (const url of ["ssh://deploy@host", "ssh://deploy@host:2222"]) {
+				const parsed = createMonitorBodyValidation.parse({ ...baseDockerBody, url, sshPrivateKey: PRIVATE_KEY });
+				expect(parsed.sshPrivateKey).toBe(PRIVATE_KEY);
+			}
+		});
+
+		it("rejects container names and unsupported engine urls", () => {
+			for (const badUrl of ["my-container", "tcp://host:2375", "https://host", "unix://relative/path", ""]) {
+				expect(() => createMonitorBodyValidation.parse({ ...baseDockerBody, url: badUrl })).toThrow();
+			}
+		});
+
+		it("rejects an ssh url without a user", () => {
+			expect(() => createMonitorBodyValidation.parse({ ...baseDockerBody, url: "ssh://host", sshPrivateKey: PRIVATE_KEY })).toThrow();
+		});
+
+		it("rejects an ssh url without a private key, attributing the issue to sshPrivateKey", () => {
+			const result = createMonitorBodyValidation.safeParse({ ...baseDockerBody, url: "ssh://deploy@host" });
+			expect(result.success).toBe(false);
+			expect(result.error?.issues.some((issue) => issue.path.includes("sshPrivateKey"))).toBe(true);
+		});
+
+		it("does not apply docker url rules to other monitor types", () => {
+			const parsed = createMonitorBodyValidation.parse({ name: "HTTP check", type: "http", url: "https://example.com" });
+			expect(parsed.sshPrivateKey).toBeUndefined();
+		});
+	});
+
+	describe("editMonitorBodyValidation", () => {
+		it("allows a docker edit without a url (partial edit)", () => {
+			const parsed = editMonitorBodyValidation.parse({ type: "docker", name: "renamed" });
+			expect(parsed.url).toBeUndefined();
+		});
+
+		it("rejects a docker edit with an invalid url", () => {
+			expect(() => editMonitorBodyValidation.parse({ type: "docker", url: "my-container" })).toThrow();
+		});
+
+		it("rejects a docker edit switching to ssh without a key", () => {
+			expect(() => editMonitorBodyValidation.parse({ type: "docker", url: "ssh://deploy@host" })).toThrow();
+		});
+	});
+
+	describe("importMonitorsBodyValidation", () => {
+		it("accepts an imported docker monitor with a socket url", () => {
+			const parsed = importMonitorsBodyValidation.parse({ monitors: [baseDockerBody] });
+			expect(parsed.monitors[0].url).toBe("unix:///var/run/docker.sock");
+		});
+
+		it("rejects an imported docker monitor with a container-name url", () => {
+			expect(() => importMonitorsBodyValidation.parse({ monitors: [{ ...baseDockerBody, url: "my-container" }] })).toThrow();
+		});
+	});
+});
