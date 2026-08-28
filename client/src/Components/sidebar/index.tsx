@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import Backdrop from "@mui/material/Backdrop";
 import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import { LAYOUT } from "@/Utils/Theme/constants";
@@ -89,17 +91,46 @@ export const Sidebar = () => {
 						pt={theme.spacing(LAYOUT.MD)}
 						pb={theme.spacing(LAYOUT.MD)}
 					/>
-					{menu.map((item) => {
-						const selected = location.pathname.startsWith(`/${item.path}`);
-						return (
-							<NavItem
-								key={item.path}
-								item={item}
-								selected={selected}
-								onClick={() => handleNavClick(item.path)}
-							/>
-						);
-					})}
+					{menu.map((group, groupIndex) => (
+						<Box
+							component="li"
+							key={group.group}
+							sx={{ listStyle: "none" }}
+						>
+							{collapsed ? (
+								groupIndex > 0 && (
+									<Divider
+										sx={{
+											borderColor: theme.palette.divider,
+											marginY: theme.spacing(LAYOUT.XS),
+										}}
+									/>
+								)
+							) : (
+								<Typography
+									variant="eyebrow"
+									component="div"
+									color={theme.palette.text.disabled}
+									paddingLeft={theme.spacing(LAYOUT.LG)}
+									paddingTop={theme.spacing(LAYOUT.XS)}
+									paddingBottom={theme.spacing(LAYOUT.XXS)}
+								>
+									{group.group}
+								</Typography>
+							)}
+							{group.items.map((item) => {
+								const selected = location.pathname.startsWith(`/${item.path}`);
+								return (
+									<NavItem
+										key={item.path}
+										item={item}
+										selected={selected}
+										onClick={() => handleNavClick(item.path)}
+									/>
+								);
+							})}
+						</Box>
+					))}
 				</List>
 				<StarPrompt />
 

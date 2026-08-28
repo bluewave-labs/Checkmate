@@ -181,7 +181,13 @@
 				"statusPages": "Страницы статуса",
 				"maintenance": "Обслуживание",
 				"logs": "Логи",
-				"settings": "Настройки"
+				"settings": "Настройки",
+				"groups": {
+					"monitoring": "Мониторинг",
+					"alerting": "Оповещения",
+					"reporting": "Отчёты",
+					"configuration": "Конфигурация"
+				}
 			},
 			"bottomMenu": {
 				"support": "Поддержка",

@@ -181,7 +181,13 @@
 				"statusPages": "Pages de statut",
 				"maintenance": "Maintenance",
 				"logs": "Journaux",
-				"settings": "Paramètres"
+				"settings": "Paramètres",
+				"groups": {
+					"monitoring": "Surveillance",
+					"alerting": "Alertes",
+					"reporting": "Rapports",
+					"configuration": "Configuration"
+				}
 			},
 			"bottomMenu": {
 				"support": "Support",

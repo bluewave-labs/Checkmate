@@ -211,7 +211,13 @@
 				"statusPages": "Status pages",
 				"maintenance": "Maintenance",
 				"logs": "Logs",
-				"settings": "Settings"
+				"settings": "Settings",
+				"groups": {
+					"monitoring": "Monitoring",
+					"alerting": "Alerting",
+					"reporting": "Reporting",
+					"configuration": "Configuration"
+				}
 			},
 			"bottomMenu": {
 				"support": "Support",

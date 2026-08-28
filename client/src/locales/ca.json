@@ -189,7 +189,13 @@
 				"statusPages": "Pàgines d'estat",
 				"maintenance": "Manteniment",
 				"logs": "Registres",
-				"settings": "Configuració"
+				"settings": "Configuració",
+				"groups": {
+					"monitoring": "Monitoratge",
+					"alerting": "Alertes",
+					"reporting": "Informes",
+					"configuration": "Configuració"
+				}
 			},
 			"bottomMenu": {
 				"support": "Suport",

@@ -181,7 +181,13 @@
 				"statusPages": "Durum sayfaları",
 				"maintenance": "Bakım",
 				"logs": "Günlükler",
-				"settings": "Ayarlar"
+				"settings": "Ayarlar",
+				"groups": {
+					"monitoring": "İzleme",
+					"alerting": "Uyarılar",
+					"reporting": "Raporlama",
+					"configuration": "Yapılandırma"
+				}
 			},
 			"bottomMenu": {
 				"support": "Destek",

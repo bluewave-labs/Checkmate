@@ -181,7 +181,13 @@
 				"statusPages": "Сторінки статусу",
 				"maintenance": "Обслуговування",
 				"logs": "Журнали",
-				"settings": "Налаштування"
+				"settings": "Налаштування",
+				"groups": {
+					"monitoring": "Моніторинг",
+					"alerting": "Сповіщення",
+					"reporting": "Звіти",
+					"configuration": "Конфігурація"
+				}
 			},
 			"bottomMenu": {
 				"support": "Підтримка",
