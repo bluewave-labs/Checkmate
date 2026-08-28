@@ -436,6 +436,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			tags: tagIds,
 			customUpCodes: doc.customUpCodes ?? [],
 			secret: doc.secret ?? undefined,
+			sshPrivateKey: doc.sshPrivateKey ?? undefined,
 			cpuAlertThreshold: doc.cpuAlertThreshold,
 			cpuAlertCounter: doc.cpuAlertCounter,
 			memoryAlertThreshold: doc.memoryAlertThreshold,

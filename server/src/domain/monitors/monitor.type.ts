@@ -99,6 +99,7 @@ export interface Monitor {
 	tags: string[];
 	customUpCodes: HttpStatusCode[];
 	secret?: string;
+	sshPrivateKey?: string;
 	cpuAlertThreshold: number;
 	cpuAlertCounter: number;
 	memoryAlertThreshold: number;

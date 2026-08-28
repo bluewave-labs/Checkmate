@@ -233,6 +233,9 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		secret: {
 			type: String,
 		},
+		sshPrivateKey: {
+			type: String,
+		},
 		cpuAlertThreshold: {
 			type: Number,
 			default: 100,
