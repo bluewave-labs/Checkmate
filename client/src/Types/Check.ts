@@ -119,6 +119,14 @@ export interface CheckTimings {
 	};
 }
 
+// Mirrors DockerContainerSummary in server/src/types/network.ts.
+export interface DockerContainerSummary {
+	total: number;
+	running: number;
+	stopped: number;
+	unhealthy: number;
+}
+
 export interface Check {
 	id: string;
 	metadata: CheckMetadata;
@@ -133,6 +141,7 @@ export interface Check {
 	host?: CheckHostInfo;
 	errors?: CheckErrorInfo[];
 	capture?: CheckCaptureInfo;
+	containerSummary?: DockerContainerSummary;
 	net?: CheckNetworkInterfaceInfo[];
 	accessibility?: number;
 	bestPractices?: number;
@@ -287,6 +296,7 @@ export type CheckSnapshot = Pick<
 	memory?: SnapshotMemoryInfo;
 	disk?: SnapshotDiskInfo[];
 	host?: SnapshotHostInfo;
+	containerSummary?: DockerContainerSummary;
 };
 export interface HasResponseTime {
 	responseTime: number;

@@ -12,7 +12,7 @@ export const getMonitorPath = (type: MonitorType): string => {
 		websocket: "uptime",
 		dns: "uptime",
 		unknown: "uptime",
-		docker: "uptime",
+		docker: "docker",
 		hardware: "infrastructure",
 		pagespeed: "pagespeed",
 	};

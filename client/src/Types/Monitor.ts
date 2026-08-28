@@ -30,7 +30,6 @@ export type MonitorType = (typeof MonitorTypes)[number];
 export const SelectableMonitorTypes = [
 	"http",
 	"ping",
-	"docker",
 	"port",
 	"game",
 	"grpc",

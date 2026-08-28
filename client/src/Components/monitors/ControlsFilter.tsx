@@ -9,12 +9,11 @@ import type { Tag } from "@/Types/Tag";
 import { Typography, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-const types = ["http", "ping", "port", "docker", "game", "grpc", "websocket"];
+const types = ["http", "ping", "port", "game", "grpc", "websocket"];
 const typeDisplayNames: Record<string, string> = {
 	http: "HTTP",
 	ping: "Ping",
 	port: "Port",
-	docker: "Docker",
 	game: "Game",
 	grpc: "gRPC",
 	websocket: "WebSocket",
