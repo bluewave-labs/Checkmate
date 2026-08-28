@@ -97,7 +97,7 @@ export interface HardwareStatusPayload {
 }
 
 // Docker host monitoring
-export const DockerContainerStates = ["created", "running", "paused", "restarting", "removing", "exited", "dead"];
+export const DockerContainerStates = ["created", "running", "paused", "restarting", "removing", "exited", "dead"] as const;
 export type DockerContainerState = (typeof DockerContainerStates)[number];
 
 export const DockerHealthStatuses = ["healthy", "unhealthy", "starting", "none"] as const;

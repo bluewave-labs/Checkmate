@@ -47,19 +47,28 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 		if (!url) throw new AppError({ message: "Docker host URL is required", status: 422, service: SERVICE_NAME, method: "toDockerOptions" });
 		if (url.startsWith("unix://")) {
 			const socketPath = url.slice("unix://".length);
-			if (!socketPath.startsWith("/")) throw new Error(`Invalid Docker host URL: ${url}`);
+			if (!socketPath.startsWith("/"))
+				throw new AppError({ message: `Invalid Docker host URL: ${url}`, status: 422, service: SERVICE_NAME, method: "toDockerOptions" });
 			return { socketPath };
 		}
 		if (url.startsWith("/")) return { socketPath: url };
 		const match = url.match(/^ssh:\/\/(?:([^@\s]+)@)?([^\s/:@]+)(?::(\d{1,5}))?\/?$/);
-		if (!match) throw new AppError({ message: "Invalid Docker host URL", status: 422, service: SERVICE_NAME, method: "toDockerOptions" });
+		if (!match) throw new AppError({ message: `Invalid Docker host URL: ${url}`, status: 422, service: SERVICE_NAME, method: "toDockerOptions" });
 		const [, username, host, port] = match;
 		if (!username)
 			throw new AppError({
 				message: "SSH Docker host URL requires a user: ssh://user@host",
 				status: 422,
 				service: SERVICE_NAME,
-				method: "ToDockerOptions",
+				method: "toDockerOptions",
+			});
+
+		if (!monitor.sshPrivateKey)
+			throw new AppError({
+				message: "SSH Docker host requires a private key",
+				status: 422,
+				service: SERVICE_NAME,
+				method: "toDockerOptions",
 			});
 		return {
 			protocol: "ssh",
