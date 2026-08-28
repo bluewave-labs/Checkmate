@@ -92,11 +92,7 @@ export const Sidebar = () => {
 						pb={theme.spacing(LAYOUT.MD)}
 					/>
 					{menu.map((group, groupIndex) => (
-						<Box
-							component="li"
-							key={group.group}
-							sx={{ listStyle: "none" }}
-						>
+						<Box key={group.group}>
 							{collapsed ? (
 								groupIndex > 0 && (
 									<Divider
