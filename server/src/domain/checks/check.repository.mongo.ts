@@ -167,6 +167,8 @@ class MongoChecksRepository implements IChecksRepository {
 			seo: doc.seo,
 			performance: doc.performance,
 			audits: mapAudits(doc.audits),
+			containers: doc.containers,
+			containerSummary: doc.containerSummary,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};

@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 import { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import type { Check, CheckErrorInfo, ChecksQueryResult, ChecksSummary, ILighthouseAudit } from "@/domain/checks/check.type.js";
-import type { MonitorPayloadMap, MonitorStatusResponse } from "@/types/network.js";
+import type { DockerStatusPayload, MonitorPayloadMap, MonitorStatusResponse } from "@/types/network.js";
 import type { HardwareStatusPayload, PageSpeedStatusPayload } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import { ILogger } from "@/utils/logger.js";
@@ -130,6 +130,12 @@ export class CheckService implements ICheckService {
 			check.errors = errorsSource;
 			check.capture = hardwarePayload?.capture;
 			check.net = net;
+		}
+
+		if (type === "docker") {
+			const dockerPayload = payload as DockerStatusPayload | undefined;
+			check.containers = dockerPayload?.containers;
+			check.containerSummary = dockerPayload?.summary;
 		}
 		return check;
 	};

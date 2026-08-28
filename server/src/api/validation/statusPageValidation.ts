@@ -112,6 +112,7 @@ export const checkSnapshotResponseSchema = z
 		bestPractices: z.number().optional(),
 		seo: z.number().optional(),
 		performance: z.number().optional(),
+		containerSummary: z.object({ total: z.number(), running: z.number(), stopped: z.number(), unhealthy: z.number() }).optional(),
 	})
 	.passthrough();
 
