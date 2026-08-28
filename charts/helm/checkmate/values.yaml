@@ -1,31 +1,17 @@
-client:
-  image: ghcr.io/bluewave-labs/checkmate-client
-  tag: "" # defaults to Chart.appVersion; set a full repo:tag in `image` to pin (e.g. a :latest dev tag)
-  imagePullPolicy: IfNotPresent # IfNotPresent so kind-loaded :latest images are used (not pulled)
-  port: 80
-  protocol: http
-  ingress:
-    enabled: true
-    host: change_me
-    className: nginx
-    annotations: {}
-    # Example annotations for cert-manager:
-    # annotations:
-    #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    tls:
-      enabled: false
-      # secretName: {{ .Release.Name }}-client-tls  # Optional; defaults to <release>-client-tls if omitted
-      # Note: when enabling TLS, also set client.protocol: https and add
-      # a cert-manager issuer annotation (e.g. cert-manager.io/cluster-issuer: "letsencrypt-prod").
-      # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation
-
-api:
-  image: ghcr.io/bluewave-labs/checkmate-backend
+# Checkmate is published as a single all-in-one application image: the API server
+# also serves the React client, so one deployment and one ingress cover both.
+# The `client:` and `api:` blocks from chart 0.2.x are still read for back-compat
+# (see templates/_helpers.tpl) — `app.*` is the block to set on new installs.
+app:
+  image: ghcr.io/bluewave-labs/checkmate
   tag: "" # defaults to Chart.appVersion; set a full repo:tag in `image` to pin (e.g. a :latest dev tag)
   imagePullPolicy: IfNotPresent # IfNotPresent so kind-loaded :latest images are used (not pulled)
   port: 52345
   protocol: http
-  # Liveness/readiness probes hit GET /api/v1/health on the api port (proves the HTTP server is up).
+  resources: {}
+  affinity: {}
+  tolerations: {}
+  # Liveness/readiness probes hit GET /api/v1/health on the app port (proves the HTTP server is up).
   probes:
     liveness:
       initialDelaySeconds: 10
@@ -47,25 +33,27 @@ api:
     #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
     tls:
       enabled: false
-      # secretName: {{ .Release.Name }}-api-tls  # Optional; defaults to <release>-api-tls if omitted
-      # Note: when enabling TLS, also set api.protocol: https and add
+      # secretName: {{ .Release.Name }}-tls  # Optional; defaults to <release>-tls if omitted
+      # Note: when enabling TLS, also set app.protocol: https and add
       # a cert-manager issuer annotation (e.g. cert-manager.io/cluster-issuer: "letsencrypt-prod").
       # The secret will be automatically created by cert-manager when using the cert-manager.io/cluster-issuer annotation
 
+# Upstream MongoDB. The former ghcr.io/bluewave-labs/checkmate-mongo image is no
+# longer published; this matches the mongo version in docker/docker-compose.yaml.
 mongodb:
-  image: ghcr.io/bluewave-labs/checkmate-mongo
-  tag: "" # defaults to Chart.appVersion; set a full repo:tag in `image` to pin
-  imagePullPolicy: IfNotPresent # IfNotPresent so kind-loaded :latest images are used (not pulled)
+  image: mongo
+  tag: "8.0"
+  imagePullPolicy: IfNotPresent
   port: 27017
 
 worker:
   # Off by default; existing installs are unchanged. When true, a dedicated worker processes all
-  # jobs and the API stops processing (QUEUE_PRIMARY_PROCESSES is derived as false). When false, the
-  # API is all-in-one and processes jobs itself.
+  # jobs and the app stops processing (QUEUE_PRIMARY_PROCESSES is derived as false). When false, the
+  # app is all-in-one and processes jobs itself.
   enabled: false
-  image: "" # defaults to api.image when empty, same as API image
-  tag: "" # defaults to api.tag (-> Chart.appVersion) when empty
-  imagePullPolicy: "" # defaults to api.imagePullPolicy when empty
+  image: "" # defaults to app.image when empty, same as the application image
+  tag: "" # defaults to app.tag (-> Chart.appVersion) when empty
+  imagePullPolicy: "" # defaults to app.imagePullPolicy when empty
   replicas: 1 # used only when autoscaling.enabled = false
   healthPort: 52346 # HEALTH_PORT; serves /livez /readyz /metrics
   terminationGracePeriodSeconds: 30 # MUST stay > the server drain timeout (25s) or workers are killed mid-drain
@@ -97,7 +85,8 @@ worker:
 secrets:
   JWT_SECRET: change_me
   DB_CONNECTION_STRING: mongodb://checkmate-mongodb:27017/uptime_db
-  CLIENT_HOST: change_me
+  # CLIENT_HOST is derived from app.protocol + app.ingress.host by the deployment;
+  # set it here only to override that (e.g. when fronting the app with another proxy).
   NODE_ENV: production
   LOG_LEVEL: info
   TOKEN_TTL: 99d

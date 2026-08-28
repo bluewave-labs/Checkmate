@@ -1,4 +1,4 @@
-{{- $api := include "checkmate.api" . | fromYaml -}}
+{{- $app := include "checkmate.app" . | fromYaml -}}
 {{- if .Values.worker.enabled }}
 apiVersion: apps/v1
 kind: Deployment
@@ -27,8 +27,8 @@ spec:
     {{- end }}
       containers:
         - name: worker
-          image: {{ include "checkmate.image" (dict "image" (.Values.worker.image | default $api.image) "tag" (.Values.worker.tag | default $api.tag) "root" $) }}
-          imagePullPolicy: {{ .Values.worker.imagePullPolicy | default $api.imagePullPolicy }}
+          image: {{ include "checkmate.image" (dict "image" (.Values.worker.image | default $app.image) "tag" (.Values.worker.tag | default $app.tag) "root" $) }}
+          imagePullPolicy: {{ .Values.worker.imagePullPolicy | default $app.imagePullPolicy }}
           ports:
             - name: health
               containerPort: {{ .Values.worker.healthPort }}
@@ -36,9 +36,13 @@ spec:
             - secretRef:
                 name: checkmate-secrets # DB_CONNECTION_STRING (+ JWT_SECRET/CLIENT_HOST for validateEnv)
           env:
-          # Secret default CLIENT_HOST is the non-URL "change_me"; override like the API so validateEnv passes.
+          # validateEnv requires a URL-shaped CLIENT_HOST, so mirror the app's default
+          # here. Omitted when secrets.CLIENT_HOST is set, since `env` would otherwise
+          # take precedence over the envFrom value and silently discard the override.
+          {{- if not (hasKey .Values.secrets "CLIENT_HOST") }}
           - name: CLIENT_HOST
-            value: "{{ .Values.client.protocol }}://{{ .Values.client.ingress.host }}"
+            value: "{{ $app.protocol }}://{{ $app.ingress.host }}"
+          {{- end }}
           - name: QUEUE_MODE
             value: "worker"
           - name: HEALTH_PORT

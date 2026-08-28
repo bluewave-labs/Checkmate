@@ -1,0 +1,35 @@
+{{- $app := include "checkmate.app" . | fromYaml -}}
+{{- if $app.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: checkmate-ingress
+  {{- if $app.ingress.annotations }}
+  annotations:
+    {{- range $key, $value := $app.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
+spec:
+  ingressClassName: {{ $app.ingress.className }}
+  {{- if $app.ingress.tls.enabled }}
+  tls:
+    - hosts:
+        - {{ $app.ingress.host }}
+      secretName: {{ default (printf "%s-tls" .Release.Name) $app.ingress.tls.secretName }}
+  {{- end }}
+  rules:
+    - host: {{ $app.ingress.host }}
+      http:
+        paths:
+          # The application serves both the client and /api/v1 from one origin, so
+          # a single root rule replaces the separate client and API ingresses. No
+          # CORS annotations are needed now that the browser is same-origin.
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: checkmate
+                port:
+                  number: {{ $app.port }}
+{{- end }}

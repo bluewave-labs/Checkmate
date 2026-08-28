@@ -1,18 +1,41 @@
 {{- /*
-Back-compat shim: the `server.*` value block was renamed to `api.*`. Existing installs that
-still pass a legacy `server:` block keep working — this returns the effective API values with any
-legacy `server.*` overrides merged on top of the `api.*` defaults (legacy wins where set).
+Back-compat shim for the all-in-one image migration.
 
-New installs have no `server:` key, so this is a no-op deepCopy of `.Values.api`. Consume it as:
-  {{- $api := include "checkmate.api" . | fromYaml -}}
-then reference `$api.*` instead of `.Values.api.*`.
+Chart 0.2.x deployed a separate client and API, configured through `client.*` and
+`api.*` (and, before that, `server.*`). Checkmate now ships one image that serves
+both, so those collapse into a single `app.*` block.
+
+Existing installs keep working: any legacy block is merged over the `app.*`
+defaults, in the order client -> api -> server, so a value set in an older block
+still wins. Only `image`/`tag` are deliberately NOT inherited from `client.*` —
+that repo (checkmate-client) is no longer published, so honouring it would pin an
+install to an image that cannot be pulled.
+
+New installs have no legacy keys and this is a no-op deepCopy of `.Values.app`.
+Consume it as:
+  {{- $app := include "checkmate.app" . | fromYaml -}}
+*/}}
+{{- define "checkmate.app" -}}
+{{- $app := deepCopy .Values.app -}}
+{{- with .Values.client -}}
+{{- $legacy := omit (deepCopy .) "image" "tag" "port" -}}
+{{- $app = mergeOverwrite $app $legacy -}}
+{{- end -}}
+{{- with .Values.api -}}
+{{- $app = mergeOverwrite $app (deepCopy .) -}}
+{{- end -}}
+{{- with .Values.server -}}
+{{- $app = mergeOverwrite $app (deepCopy .) -}}
+{{- end -}}
+{{- $app | toYaml -}}
+{{- end -}}
+
+{{- /*
+Deprecated alias kept so any out-of-tree template referencing `checkmate.api`
+still resolves. Prefer `checkmate.app`.
 */}}
 {{- define "checkmate.api" -}}
-{{- $api := deepCopy .Values.api -}}
-{{- with .Values.server -}}
-{{- $api = mergeOverwrite $api (deepCopy .) -}}
-{{- end -}}
-{{- $api | toYaml -}}
+{{- include "checkmate.app" . -}}
 {{- end -}}
 
 {{- /*

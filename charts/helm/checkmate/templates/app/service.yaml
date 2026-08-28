@@ -1,0 +1,10 @@
+{{- $app := include "checkmate.app" . | fromYaml -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: checkmate
+spec:
+  selector:
+    app: checkmate
+  ports:
+    - port: {{ $app.port }}

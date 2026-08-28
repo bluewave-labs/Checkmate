@@ -1,49 +1,45 @@
-{{- $api := include "checkmate.api" . | fromYaml -}}
-{{- if eq .Values.client.ingress.host "change_me" }}
-  {{- fail "client.ingress.host must be overridden and not set to 'change_me'" }}
+{{- $app := include "checkmate.app" . | fromYaml -}}
+{{- if eq $app.ingress.host "change_me" }}
+  {{- fail "app.ingress.host must be overridden and not set to 'change_me'" }}
 {{- end }}
 
-{{- if eq $api.ingress.host "change_me" }}
-  {{- fail "api.ingress.host (or legacy server.ingress.host) must be overridden and not set to 'change_me'" }}
-{{- end }}
-
-{{- $apiProtocol := $api.protocol }}
-{{- if not (or (eq $apiProtocol "http") (eq $apiProtocol "https")) }}
-  {{- fail "api.protocol must be either 'http' or 'https'" }}
-{{- end }}
-
-{{- $clientProtocol := .Values.client.protocol }}
-{{- if not (or (eq $clientProtocol "http") (eq $clientProtocol "https")) }}
-  {{- fail "client.protocol must be either 'http' or 'https'" }}
+{{- $protocol := $app.protocol }}
+{{- if not (or (eq $protocol "http") (eq $protocol "https")) }}
+  {{- fail "app.protocol must be either 'http' or 'https'" }}
 {{- end }}
 
 {{/* Enforce protocol when TLS is enabled to avoid mixed-content */}}
-{{- if and .Values.client.ingress.tls.enabled (ne $clientProtocol "https") }}
-  {{- fail "client.ingress.tls.enabled is true but client.protocol is not 'https'. Set client.protocol: https to avoid mixed content." }}
-{{- end }}
-
-{{- if and $api.ingress.tls.enabled (ne $apiProtocol "https") }}
-  {{- fail "api.ingress.tls.enabled is true but api.protocol is not 'https'. Set api.protocol: https to ensure correct API base URL." }}
-{{- end }}
-
-{{/* If client runs on https, API must also be https to avoid mixed content */}}
-{{- if and (eq $clientProtocol "https") (ne $apiProtocol "https") }}
-  {{- fail "client.protocol is 'https' but api.protocol is not. Set api.protocol: https to prevent browser mixed-content issues." }}
+{{- if and $app.ingress.tls.enabled (ne $protocol "https") }}
+  {{- fail "app.ingress.tls.enabled is true but app.protocol is not 'https'. Set app.protocol: https to avoid mixed content." }}
 {{- end }}
 
 {{/* Fail early if TLS enabled without cert-manager annotations (cluster-issuer or issuer) */}}
-{{- $cAnn := .Values.client.ingress.annotations | default dict }}
-{{- $aAnn := $api.ingress.annotations | default dict }}
+{{- $ann := $app.ingress.annotations | default dict }}
+{{- $hasIssuer := or (hasKey $ann "cert-manager.io/cluster-issuer") (hasKey $ann "cert-manager.io/issuer") }}
 
-{{- $clientHasIssuer := or (hasKey $cAnn "cert-manager.io/cluster-issuer") (hasKey $cAnn "cert-manager.io/issuer") }}
-{{- $apiHasIssuer := or (hasKey $aAnn "cert-manager.io/cluster-issuer") (hasKey $aAnn "cert-manager.io/issuer") }}
-
-{{- if and .Values.client.ingress.tls.enabled (not $clientHasIssuer) }}
-  {{- fail "client.ingress.tls.enabled is true but no cert-manager issuer annotation found. Add 'cert-manager.io/cluster-issuer' or 'cert-manager.io/issuer'." }}
+{{- if and $app.ingress.tls.enabled (not $hasIssuer) }}
+  {{- fail "app.ingress.tls.enabled is true but no cert-manager issuer annotation found. Add 'cert-manager.io/cluster-issuer' or 'cert-manager.io/issuer'." }}
 {{- end }}
 
-{{- if and $api.ingress.tls.enabled (not $apiHasIssuer) }}
-  {{- fail "api.ingress.tls.enabled is true but no cert-manager issuer annotation found. Add 'cert-manager.io/cluster-issuer' or 'cert-manager.io/issuer'." }}
+{{/*
+  Upgrade guard. The client and API are one service now, so a values file that still
+  points the two at different hosts cannot be honoured — fail loudly rather than
+  silently dropping one of them.
+*/}}
+{{- if and .Values.client .Values.api }}
+{{- $clientHost := (.Values.client.ingress | default dict).host }}
+{{- $apiHost := (.Values.api.ingress | default dict).host }}
+{{- if and $clientHost $apiHost (ne $clientHost $apiHost) }}
+  {{- fail (printf "client.ingress.host (%s) and api.ingress.host (%s) differ, but Checkmate now serves the client and the API from one origin. Set a single app.ingress.host instead." $clientHost $apiHost) }}
+{{- end }}
+{{- end }}
+
+{{/*
+  The client image is no longer published. Point this out rather than letting the
+  install fail later on an ImagePullBackOff nobody can action.
+*/}}
+{{- if and .Values.client .Values.client.image }}
+  {{- fail "client.image is set, but the separate client image is no longer published. Remove the client block; the application image in app.image now serves the client." }}
 {{- end }}
 
 {{/* Worker grace period must exceed the server drain timeout (25s) or workers are SIGKILLed mid-drain */}}
@@ -51,4 +47,4 @@
   {{- fail "worker.terminationGracePeriodSeconds must be greater than 25 (the server drain timeout) or workers are killed mid-drain" }}
 {{- end }}
 
-{{/* Secret name can be omitted; we default to <release>-client|api-tls in templates */}}
+{{/* Secret name can be omitted; we default to <release>-tls in templates */}}

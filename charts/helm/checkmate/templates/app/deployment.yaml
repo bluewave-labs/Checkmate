@@ -1,0 +1,71 @@
+{{- $app := include "checkmate.app" . | fromYaml -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkmate
+spec:
+  replicas: 1 # single scheduler — seeds/reconciles the jobs collection
+  selector:
+    matchLabels:
+      app: checkmate
+  template:
+    metadata:
+      labels:
+        app: checkmate
+    spec:
+    {{- with $app.affinity }}
+      affinity:
+        {{- tpl ( . | toYaml) $ | nindent 8 }}
+    {{- end }}
+    {{- with $app.tolerations }}
+      tolerations:
+        {{- tpl ( . | toYaml) $ | nindent 8 }}
+    {{- end }}
+      containers:
+        - name: checkmate
+          image: {{ include "checkmate.image" (dict "image" $app.image "tag" $app.tag "root" $) }}
+          imagePullPolicy: {{ $app.imagePullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ $app.port }}
+          envFrom:
+            - secretRef:
+                name: checkmate-secrets
+          # Probes hit the Express /api/v1/health endpoint — proves the HTTP server is responsive.
+          # NOTE: this does NOT detect a wedged job loop when queuePrimaryProcesses=true (the app is
+          # also a worker). Worker-aware health for that mode is a follow-up — see worker-health-checks.md §7.5.
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            initialDelaySeconds: {{ $app.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ $app.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ $app.probes.liveness.timeoutSeconds }}
+            failureThreshold: {{ $app.probes.liveness.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            initialDelaySeconds: {{ $app.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ $app.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ $app.probes.readiness.timeoutSeconds }}
+            failureThreshold: {{ $app.probes.readiness.failureThreshold }}
+          {{- with $app.resources }}
+          resources:
+              {{- tpl ( . | toYaml) $ | nindent 12 }}
+          {{- end }}
+          env:
+          # The client is served from this same origin, so CLIENT_HOST defaults to
+          # the app's own ingress URL. `env` takes precedence over `envFrom`, so an
+          # explicit secrets.CLIENT_HOST is honoured by omitting this entry rather
+          # than emitting a value that would silently win over it.
+          {{- if not (hasKey .Values.secrets "CLIENT_HOST") }}
+          - name: CLIENT_HOST
+            value: "{{ $app.protocol }}://{{ $app.ingress.host }}"
+          {{- end }}
+          - name: QUEUE_MODE
+            value: "primary"
+          # Derived: when a worker tier is deployed the app only schedules (false); otherwise it is
+          # all-in-one and processes jobs itself (true). Keeps the two from ever competing for jobs.
+          - name: QUEUE_PRIMARY_PROCESSES
+            value: {{ not .Values.worker.enabled | quote }}

@@ -19,8 +19,8 @@ cd checkmate/charts/helm/checkmate
 
 ### 2. Customize values.yaml
 Edit `values.yaml` to update:
-- `client.ingress.host` and `api.ingress.host` with your domain names
-- `api.protocol` (usually http or https)
+- `app.ingress.host` with your domain name
+- `app.protocol` (usually http or https)
 - **If upgrading**: Migrate persistence settings from flat structure to nested:
   - Old: `persistence.mongodbSize` → New: `persistence.mongo.size`
   - Add: `persistence.mongo.storageClass` (leave empty for default)
@@ -95,7 +95,7 @@ chart. You can still pin per tier:
 
 ```yaml
 api:
-  image: ghcr.io/bluewave-labs/checkmate-backend   # repo only
+  image: ghcr.io/bluewave-labs/checkmate   # repo only
   tag: ""            # empty → Chart.appVersion; set e.g. "v3.1.0" to pin, or "latest" for a dev tag
 ```
 
@@ -244,3 +244,41 @@ kubectl get secrets | grep checkmate-tls
 ```
 
 The ingress will automatically use these secrets to enable HTTPS access to your Checkmate instance.
+
+## Upgrading to chart 0.3.0 (all-in-one image)
+
+Checkmate now ships as a single image that serves both the client and the API, so
+the chart deploys one workload and one ingress instead of two.
+
+**What changed**
+
+| 0.2.x | 0.3.0 |
+|---|---|
+| `client.*` + `api.*` value blocks | one `app.*` block |
+| `checkmate-client` + `checkmate-backend` images | `ghcr.io/bluewave-labs/checkmate` |
+| `ghcr.io/bluewave-labs/checkmate-mongo` | upstream `mongo:8.0` |
+| Deployment `checkmate-api` + `checkmate-client` | Deployment `checkmate` |
+| Ingress `checkmate-api-ingress` (`/api/v1`) + client ingress (`/`) | Ingress `checkmate-ingress` (`/`) |
+| `UPTIME_APP_API_BASE_URL`, `UPTIME_APP_CLIENT_HOST` | not set — the client is same-origin |
+
+`appVersion` is no longer frozen at v3.8.1; the chart tracks the published image again.
+
+**Upgrading an existing install**
+
+Existing `client.*`, `api.*` and `server.*` overrides are still read and merged over
+the `app.*` defaults, so most values files upgrade without edits. Two cases fail
+deliberately rather than deploying something wrong:
+
+- `client.image` set — that image is no longer published, so the chart stops instead
+  of leaving you with an ImagePullBackOff. Remove the `client:` block.
+- `client.ingress.host` and `api.ingress.host` set to *different* hosts — one origin
+  now serves both, so the chart cannot honour a split. Set a single `app.ingress.host`.
+
+Migrate overrides to `app.*` when convenient; the legacy blocks are transitional.
+
+**One ingress, one host**
+
+If you previously served the client and API on separate hostnames, external clients
+now use the single `app.ingress.host`. Update any bookmarks, uptime checks, or DNS
+records that pointed at the old API hostname.
+
