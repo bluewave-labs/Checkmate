@@ -41,7 +41,7 @@ export interface IMonitorService {
 	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<UptimeDetailsResult>;
 	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<HardwareDetailsResult>;
 	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<PageSpeedDetailsResult>;
-	getDockerDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<PageSpeedDetailsResult>;
+	getDockerDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<DockerDetailsResult>;
 	getGeoChecksByMonitorId(args: {
 		teamId: string;
 		monitorId: string;
