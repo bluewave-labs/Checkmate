@@ -9,7 +9,7 @@ import type {
 	GroupedGeoCheckResult,
 } from "@/domain/monitors/monitor.type.js";
 import { supportsGeoCheck, supportsUptimeDetails } from "@/domain/monitors/monitor.type.js";
-import type { UptimeChecksResult, HardwareChecksResult, PageSpeedChecksResult } from "@/domain/checks/check.type.js";
+import type { UptimeChecksResult, HardwareChecksResult, PageSpeedChecksResult, DockerChecksResult } from "@/domain/checks/check.type.js";
 import type { GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
 import type { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
 import type { IGeoChecksRepository } from "@/domain/geo-checks/geo-check.repository.interface.js";
@@ -26,8 +26,9 @@ import { DateRange } from "@/types/query.js";
 
 const SERVICE_NAME = "MonitorService";
 
-const isUptimeChecksResult = (result: UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult): result is UptimeChecksResult =>
-	supportsUptimeDetails(result.monitorType);
+const isUptimeChecksResult = (
+	result: UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult | DockerChecksResult
+): result is UptimeChecksResult => supportsUptimeDetails(result.monitorType);
 
 export interface IMonitorService {
 	// create
