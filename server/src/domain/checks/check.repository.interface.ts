@@ -3,6 +3,7 @@ import type {
 	ChecksQueryResult,
 	ChecksSummary,
 	DailyCheckBucket,
+	DockerChecksResult,
 	HardwareChecksResult,
 	PageSpeedChecksResult,
 	UptimeChecksResult,
@@ -38,7 +39,7 @@ export interface IChecksRepository {
 		monitorId: string,
 		dateRange: DateRange,
 		options?: { type?: MonitorType }
-	): Promise<UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult>;
+	): Promise<UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult | DockerChecksResult>;
 	findSummaryByTeamId(teamId: string, dateRange: DateRange): Promise<ChecksSummary>;
 	findUnevaluatedByMonitorId(monitorId: string, since: number): Promise<Check[]>;
 	getDailyStatusBuckets(monitorIds: string[], days: number, timezone: string): Promise<DailyCheckBucket[]>;
