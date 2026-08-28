@@ -1,7 +1,6 @@
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
 import { DockerContainerInfo, DockerContainerSummary } from "@/types/network.js";
 import type { Response } from "got";
-import { number } from "zod";
 
 export const CHECK_TTL_SENTINEL = 366;
 
@@ -151,11 +150,10 @@ export interface PageSpeedGroupedCheck {
 	accessibility: number;
 	bestPractices: number;
 	seo: number;
-	totalChecks: number;
 }
 
 export interface UptimeChecksResult {
-	monitorType: Exclude<MonitorType, "hardware" | "pagespeed">;
+	monitorType: Exclude<MonitorType, "hardware" | "pagespeed" | "docker">;
 	groupedChecks: GroupedUptimeCheck[];
 	groupedUpChecks: GroupedCheck[];
 	groupedDownChecks: GroupedCheck[];

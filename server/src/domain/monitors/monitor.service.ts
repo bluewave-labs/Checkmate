@@ -7,6 +7,7 @@ import type {
 	PageSpeedDetailsResult,
 	GamesMap,
 	GroupedGeoCheckResult,
+	DockerDetailsResult,
 } from "@/domain/monitors/monitor.type.js";
 import { supportsGeoCheck, supportsUptimeDetails } from "@/domain/monitors/monitor.type.js";
 import type { UptimeChecksResult, HardwareChecksResult, PageSpeedChecksResult, DockerChecksResult } from "@/domain/checks/check.type.js";
@@ -40,6 +41,7 @@ export interface IMonitorService {
 	getUptimeDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<UptimeDetailsResult>;
 	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<HardwareDetailsResult>;
 	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<PageSpeedDetailsResult>;
+	getDockerDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<PageSpeedDetailsResult>;
 	getGeoChecksByMonitorId(args: {
 		teamId: string;
 		monitorId: string;
@@ -278,6 +280,44 @@ export class MonitorService implements IMonitorService {
 			monitorData: {
 				monitor,
 				groupedChecks: checksData.groupedChecks,
+			},
+			monitorStats,
+		};
+	};
+	getDockerDetailsById = async ({
+		teamId,
+		monitorId,
+		dateRange,
+	}: {
+		teamId: string;
+		monitorId: string;
+		dateRange: DateRange;
+	}): Promise<DockerDetailsResult> => {
+		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
+		if (!monitor) {
+			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
+		}
+		if (monitor.type !== "docker") {
+			throw new AppError({ message: `${monitor.type} monitors are not supported for docker details`, status: 400 });
+		}
+
+		const checksData = await this.checksRepository.findByDateRangeAndMonitorId(monitor.id, dateRange, {
+			type: monitor.type,
+		});
+
+		if (checksData.monitorType !== "docker") {
+			throw new AppError({ message: "Unable to load docker stats for this monitor", status: 500 });
+		}
+
+		const monitorStats = await this.monitorStatsRepository.findByMonitorId(monitor.id);
+
+		return {
+			monitor,
+			stats: {
+				aggregateData: checksData.aggregateData,
+				upChecks: checksData.upChecks,
+				aggregate: checksData.aggregate,
+				latest: checksData.latest,
 			},
 			monitorStats,
 		};
