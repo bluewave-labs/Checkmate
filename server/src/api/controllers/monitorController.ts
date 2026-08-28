@@ -17,6 +17,8 @@ import {
 	getUptimeDetailsByIdQueryValidation,
 	importMonitorsBodyValidation,
 	bulkPauseMonitorBodyValidation,
+	getDockerDetailsByIdParamValidation,
+	getDockerDetailsByIdQueryValidation,
 } from "@/api/validation/monitorValidation.js";
 import sslChecker from "ssl-checker";
 import * as whoiser from "whoiser";
@@ -31,6 +33,7 @@ export interface IMonitorController {
 	getUptimeDetailsById: RequestHandler;
 	getHardwareDetailsById: RequestHandler;
 	getPageSpeedDetailsById: RequestHandler;
+	getDockerDetailsById: RequestHandler;
 	getGeoChecksByMonitorId: RequestHandler;
 	getMonitorById: RequestHandler;
 	createMonitor: RequestHandler;
@@ -146,6 +149,27 @@ class MonitorController implements IMonitorController {
 			success: true,
 			msg: "Page speed details retrieved successfully",
 			data,
+		});
+	});
+
+	getDockerDetailsById = catchAsync(async (req: Request, res: Response) => {
+		const validatedParams = getDockerDetailsByIdParamValidation.parse(req.params);
+		const validatedQuery = getDockerDetailsByIdQueryValidation.parse(req.query);
+
+		const monitorId = validatedParams.monitorId;
+		const dateRange = validatedQuery.dateRange || "recent";
+		const teamId = requireTeamId(req.user?.teamId);
+
+		const data = await this.monitorService.getDockerDetailsById({
+			teamId,
+			monitorId,
+			dateRange,
+		});
+
+		return res.status(200).json({
+			success: true,
+			msg: "Docker details retrieved successfully",
+			data: data,
 		});
 	});
 
