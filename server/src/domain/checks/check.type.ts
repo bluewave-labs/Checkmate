@@ -1,4 +1,5 @@
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
+import { DockerContainerInfo, DockerContainerSummary } from "@/types/network.js";
 import type { Response } from "got";
 
 export const CHECK_TTL_SENTINEL = 366;
@@ -107,6 +108,8 @@ export interface Check {
 	host?: CheckHostInfo;
 	errors?: CheckErrorInfo[];
 	capture?: CheckCaptureInfo;
+	containers?: DockerContainerInfo[];
+	containerSummary?: DockerContainerSummary;
 	net?: CheckNetworkInterfaceInfo[];
 	accessibility?: number;
 	bestPractices?: number;
@@ -147,11 +150,10 @@ export interface PageSpeedGroupedCheck {
 	accessibility: number;
 	bestPractices: number;
 	seo: number;
-	totalChecks: number;
 }
 
 export interface UptimeChecksResult {
-	monitorType: Exclude<MonitorType, "hardware" | "pagespeed">;
+	monitorType: Exclude<MonitorType, "hardware" | "pagespeed" | "docker">;
 	groupedChecks: GroupedUptimeCheck[];
 	groupedUpChecks: GroupedCheck[];
 	groupedDownChecks: GroupedCheck[];
@@ -197,6 +199,8 @@ export type CheckSnapshot = Pick<
 	memory?: SnapshotMemoryInfo;
 	disk?: SnapshotDiskInfo[];
 	host?: SnapshotHostInfo;
+	// Docker Only
+	containerSummary?: DockerContainerSummary;
 };
 export interface HardwareDiskStats {
 	name: string;
@@ -252,3 +256,28 @@ export type DailyCheckBucket = {
 	downChecks: number;
 	avgResponseTime: number | null;
 };
+
+export type DockerStatsBucket = {
+	_id: string;
+	avgResponseTime: number | null;
+	upCount: number;
+	totalCount: number;
+	avgRunning: number | null;
+	avgTotal: number | null;
+	avgUnhealthy: number | null;
+};
+
+export interface DockerStats {
+	aggregateData: { totalChecks: number };
+	upChecks: { totalChecks: number };
+	aggregate: DockerStatsBucket[];
+	latest: {
+		containers: DockerContainerInfo[];
+		summary?: DockerContainerSummary;
+		checkedAt: string;
+	} | null;
+}
+
+export interface DockerChecksResult extends DockerStats {
+	monitorType: "docker";
+}

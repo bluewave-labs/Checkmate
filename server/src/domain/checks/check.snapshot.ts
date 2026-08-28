@@ -11,6 +11,7 @@ import type {
 	SnapshotHostInfo,
 	SnapshotMemoryInfo,
 } from "@/domain/checks/check.type.js";
+import { DockerContainerSummary } from "@/types/network.js";
 import { toDateString } from "@/utils/mongoMappers.js";
 
 export type CheckSnapshotSource = Pick<
@@ -23,6 +24,7 @@ export type CheckSnapshotSource = Pick<
 	disk?: CheckDiskInfo[];
 	host?: CheckHostInfo;
 	audits?: CheckAudits;
+	containerSummary?: DockerContainerSummary;
 };
 
 const mapCpu = (cpu?: CheckCpuInfo): SnapshotCpuInfo | undefined =>
@@ -66,6 +68,9 @@ const mapAudits = (audits?: CheckAudits): CheckAudits | undefined =>
 		tbt: audits.tbt,
 	};
 
+const mapContainerSummary = (summary?: DockerContainerSummary): DockerContainerSummary | undefined =>
+	summary && { total: summary.total, running: summary.running, stopped: summary.stopped, unhealthy: summary.unhealthy };
+
 export const toCheckSnapshot = (source: CheckSnapshotSource): CheckSnapshot => ({
 	id: source.id,
 	status: source.status,
@@ -82,4 +87,5 @@ export const toCheckSnapshot = (source: CheckSnapshotSource): CheckSnapshot => (
 	seo: source.seo,
 	performance: source.performance,
 	audits: mapAudits(source.audits),
+	containerSummary: mapContainerSummary(source.containerSummary),
 });

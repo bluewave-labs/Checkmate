@@ -13,6 +13,7 @@ import {
 	ProxyModes,
 } from "@/domain/monitors/monitor.type.js";
 import { DateRanges, SortOrders } from "@/types/query.js";
+import { DockerContainerStates, DockerHealthStatuses } from "@/types/network.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
@@ -118,6 +119,26 @@ const refineProxySelection = (body: { proxyMode?: string; proxyId?: string }, ct
 	}
 };
 
+const dockerUrlRegex = /^(?:ssh:\/\/[^@\s]+@[^\s/:@]+(?::\d{1,5})?\/?|unix:\/\/\/\S+|\/\S+)$/;
+
+const refineDockerUrl = (data: { type?: string; url?: string; sshPrivateKey?: string }, ctx: z.RefinementCtx) => {
+	if (data.type !== "docker" || data.url === undefined) return;
+	if (!dockerUrlRegex.test(data.url)) {
+		ctx.addIssue({
+			code: "custom",
+			path: ["url"],
+			message: "Docker host must be ssh://user@host[:port], unix:///path, or an absolute socket path",
+		});
+	}
+	if (data.url.startsWith("ssh://") && !data.sshPrivateKey) {
+		ctx.addIssue({
+			code: "custom",
+			path: ["sshPrivateKey"],
+			message: "SSH Docker hosts require a private key",
+		});
+	}
+};
+
 export const createMonitorBodyValidation = z
 	.object({
 		_id: z.string().optional(),
@@ -142,6 +163,7 @@ export const createMonitorBodyValidation = z
 		tags: z.array(z.string()).optional(),
 		customUpCodes: z.array(httpStatusCode).default([]),
 		secret: z.string().optional(),
+		sshPrivateKey: z.string().optional(),
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
 		matchMethod: z.union([z.enum(MonitorMatchMethods), z.literal("")]).optional(),
@@ -161,7 +183,8 @@ export const createMonitorBodyValidation = z
 	.superRefine(refineStrategyType)
 	.superRefine(refineHeadMatching)
 	.superRefine(refineRegexPattern)
-	.superRefine(refineProxySelection);
+	.superRefine(refineProxySelection)
+	.superRefine(refineDockerUrl);
 
 export const editMonitorBodyValidation = z
 	.object({
@@ -176,6 +199,7 @@ export const editMonitorBodyValidation = z
 		tags: z.array(z.string()).optional(),
 		customUpCodes: z.array(httpStatusCode).optional(),
 		secret: z.string().optional(),
+		sshPrivateKey: z.string().optional(),
 		ignoreTlsErrors: z.boolean().optional(),
 		proxyMode: z.enum(ProxyModes).optional(),
 		proxyId: proxyIdValidation,
@@ -204,7 +228,8 @@ export const editMonitorBodyValidation = z
 	.superRefine(refineStrategyType)
 	.superRefine(refineHeadMatching)
 	.superRefine(refineRegexPattern)
-	.superRefine(refineProxySelection);
+	.superRefine(refineProxySelection)
+	.superRefine(refineDockerUrl);
 
 export const pauseMonitorParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
@@ -255,6 +280,7 @@ const importedMonitorSchema = z
 		tags: z.array(z.string()).default([]),
 		customUpCodes: z.array(httpStatusCode).default([]),
 		secret: z.string().optional(),
+		sshPrivateKey: z.string().optional(),
 		cpuAlertThreshold: z.number().default(100),
 		cpuAlertCounter: z.number().default(5),
 		memoryAlertThreshold: z.number().default(100),
@@ -280,7 +306,8 @@ const importedMonitorSchema = z
 	.superRefine(refineStrategyType)
 	.superRefine(refineHeadMatching)
 	.superRefine(refineRegexPattern)
-	.superRefine(refineProxySelection);
+	.superRefine(refineProxySelection)
+	.superRefine(refineDockerUrl);
 
 export const importMonitorsBodyValidation = z.object({
 	monitors: z.array(importedMonitorSchema).min(1, "At least one monitor is required"),
@@ -295,6 +322,9 @@ export const getHardwareDetailsByIdParamValidation = z.object({
 export const getHardwareDetailsByIdQueryValidation = z.object({
 	dateRange: z.enum(DateRanges).optional(),
 });
+
+export const getDockerDetailsByIdParamValidation = z.object({ monitorId: z.string().min(1, "Monitor ID is required") });
+export const getDockerDetailsByIdQueryValidation = z.object({ dateRange: z.enum(DateRanges).optional() });
 
 // Canonical monitor shape returned by /monitors endpoints. Keep aligned with
 // what the controllers actually serialize.
@@ -323,6 +353,7 @@ export const monitorResponseSchema = z
 		tags: z.array(z.string()),
 		customUpCodes: z.array(httpStatusCode).optional(),
 		secret: z.string().optional(),
+		sshPrivateKey: z.string().optional(),
 		cpuAlertThreshold: z.number(),
 		memoryAlertThreshold: z.number(),
 		diskAlertThreshold: z.number(),
@@ -389,6 +420,61 @@ export const uptimeDetailsResponseSchema = z.object({
 		groupedDownChecks: z.array(groupedCheckResponseSchema),
 		groupedAvgResponseTime: z.number(),
 		groupedUptimePercentage: z.number(),
+	}),
+	monitorStats: monitorStatsResponseSchema.nullable(),
+});
+
+// Keep aligned with DockerContainerInfo / DockerContainerSummary in types/network.ts.
+export const dockerContainerResponseSchema = z.object({
+	id: z.string(),
+	name: z.string(),
+	image: z.string(),
+	state: z.enum(DockerContainerStates),
+	status: z.string(),
+	health: z.enum(DockerHealthStatuses),
+	cpuPct: z.number().optional(),
+	memoryUsedBytes: z.number().optional(),
+	memoryLimitBytes: z.number().optional(),
+	memoryPct: z.number().optional(),
+	restartCount: z.number().optional(),
+	startedAt: z.string().optional(),
+});
+
+export const containerSummaryResponseSchema = z.object({
+	total: z.number(),
+	running: z.number(),
+	stopped: z.number(),
+	unhealthy: z.number(),
+});
+
+// Keep aligned with DockerStatsBucket in domain/checks/check.type.ts. The avg fields are
+// null for buckets with no values ($avg skips missing; down checks store no containerSummary).
+export const dockerStatsBucketResponseSchema = z.object({
+	_id: z.string(),
+	avgResponseTime: z.number().nullable(),
+	upCount: z.number(),
+	totalCount: z.number(),
+	avgRunning: z.number().nullable(),
+	avgTotal: z.number().nullable(),
+	avgUnhealthy: z.number().nullable(),
+});
+
+// Response of GET /monitors/docker/details/{monitorId}. Keep aligned with
+// DockerDetailsResult in domain/monitors/monitor.type.ts; the monitor here is the
+// repository's domain entity, which serializes `id` rather than `_id`.
+export const dockerDetailsResponseSchema = z.object({
+	monitor: monitorResponseSchema.omit({ _id: true }).extend({ id: z.string() }),
+	stats: z.object({
+		aggregateData: z.object({ totalChecks: z.number() }),
+		upChecks: z.object({ totalChecks: z.number() }),
+		aggregate: z.array(dockerStatsBucketResponseSchema),
+		latest: z
+			.object({
+				containers: z.array(dockerContainerResponseSchema),
+				summary: containerSummaryResponseSchema.optional(),
+				checkedAt: z.string(),
+			})
+			.nullable(),
 	}),
 	monitorStats: monitorStatsResponseSchema.nullable(),
 });

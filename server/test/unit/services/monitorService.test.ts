@@ -237,8 +237,8 @@ describe("MonitorService", () => {
 			expect(result.monitorData.monitor).toMatchObject({ id: MONITOR_ID });
 		});
 
-		it("supports all uptime monitor types: ping, docker, port, game, grpc, websocket", async () => {
-			for (const monitorType of ["ping", "docker", "port", "game", "grpc", "websocket"] as const) {
+		it("supports all uptime monitor types: ping, port, game, grpc, websocket, dns", async () => {
+			for (const monitorType of ["ping", "port", "game", "grpc", "websocket", "dns"] as const) {
 				const monitorsRepository = createMonitorsRepositoryMock();
 				const checksRepository = createChecksRepositoryMock();
 				const monitorStatsRepository = createMonitorStatsRepositoryMock();
@@ -310,6 +310,27 @@ describe("MonitorService", () => {
 
 			const { service } = createService({ monitorsRepository, checksRepository, monitorStatsRepository });
 			await expect(service.getUptimeDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "week" })).rejects.toThrow(
+				"monitors are not supported for uptime details"
+			);
+		});
+
+		it("throws 400 for unsupported monitor type (docker)", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			const monitorStatsRepository = createMonitorStatsRepositoryMock();
+			const monitor = makeMonitor({ type: "docker" });
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(checksRepository.findByDateRangeAndMonitorId as jest.Mock).mockResolvedValue({
+				monitorType: "docker",
+				aggregateData: { totalChecks: 0 },
+				upChecks: { totalChecks: 0 },
+				aggregate: [],
+				latest: null,
+			});
+			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(null);
+
+			const { service } = createService({ monitorsRepository, checksRepository, monitorStatsRepository });
+			await expect(service.getUptimeDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "recent" })).rejects.toThrow(
 				"monitors are not supported for uptime details"
 			);
 		});
@@ -394,6 +415,73 @@ describe("MonitorService", () => {
 
 			await expect(service.getHardwareDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "recent" })).rejects.toThrow(
 				"Unable to load hardware stats for this monitor"
+			);
+		});
+	});
+
+	describe("getDockerDetailsById", () => {
+		it("returns docker details for a docker monitor", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			const monitorStatsRepository = createMonitorStatsRepositoryMock();
+			const monitor = makeMonitor({ type: "docker" });
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(checksRepository.findByDateRangeAndMonitorId as jest.Mock).mockResolvedValue({
+				monitorType: "docker",
+				aggregateData: { totalChecks: 10 },
+				upChecks: { totalChecks: 9 },
+				aggregate: [{ _id: "2024-01-01T00:00:00Z", avgResponseTime: 12, upCount: 9, totalCount: 10, avgRunning: 3, avgTotal: 4, avgUnhealthy: 0 }],
+				latest: {
+					containers: [],
+					summary: { total: 4, running: 3, stopped: 1, unhealthy: 0 },
+					checkedAt: "2024-01-01T00:00:00Z",
+				},
+			});
+			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue({ monitorId: MONITOR_ID });
+
+			const { service } = createService({ monitorsRepository, checksRepository, monitorStatsRepository });
+			const result = await service.getDockerDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "recent" });
+
+			expect(result.monitor).toMatchObject({ id: MONITOR_ID });
+			expect(result.stats).toHaveProperty("aggregateData");
+			expect(result.stats).toHaveProperty("upChecks");
+			expect(result.stats).toHaveProperty("aggregate");
+			expect(result.stats).toHaveProperty("latest");
+			expect(result.stats.latest?.summary).toMatchObject({ total: 4, running: 3, stopped: 1, unhealthy: 0 });
+			expect(result.monitorStats).toMatchObject({ monitorId: MONITOR_ID });
+		});
+
+		it("throws 404 when monitor not found", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(null);
+			const { service } = createService({ monitorsRepository });
+
+			await expect(service.getDockerDetailsById({ teamId: TEAM_ID, monitorId: "missing", dateRange: "recent" })).rejects.toThrow(
+				"Monitor with ID missing not found."
+			);
+		});
+
+		it("throws 400 when monitor type is not docker", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const monitor = makeMonitor({ type: "http" });
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			const { service } = createService({ monitorsRepository });
+
+			await expect(service.getDockerDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "recent" })).rejects.toThrow(
+				"monitors are not supported for docker details"
+			);
+		});
+
+		it("throws 500 when checksData monitorType is not docker", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			const monitor = makeMonitor({ type: "docker" });
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(checksRepository.findByDateRangeAndMonitorId as jest.Mock).mockResolvedValue({ monitorType: "http" });
+			const { service } = createService({ monitorsRepository, checksRepository });
+
+			await expect(service.getDockerDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "recent" })).rejects.toThrow(
+				"Unable to load docker stats for this monitor"
 			);
 		});
 	});

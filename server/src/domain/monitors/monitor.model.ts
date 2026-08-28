@@ -9,6 +9,7 @@ import type {
 	SnapshotHostInfo,
 	SnapshotMemoryInfo,
 } from "@/domain/checks/check.type.js";
+import { containerSummarySchema } from "@/domain/checks/check.model.js";
 
 type CheckSnapshotDocument = Omit<CheckSnapshot, "createdAt"> & { createdAt: Date };
 
@@ -113,6 +114,7 @@ const checkSnapshotSchema = new Schema<CheckSnapshotDocument>(
 		seo: { type: Number },
 		performance: { type: Number },
 		audits: { type: snapshotAuditsSchema },
+		containerSummary: { type: containerSummarySchema },
 		createdAt: { type: Date, required: true },
 	},
 	{ _id: false, suppressReservedKeysWarning: true }
@@ -231,6 +233,9 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			default: [],
 		},
 		secret: {
+			type: String,
+		},
+		sshPrivateKey: {
 			type: String,
 		},
 		cpuAlertThreshold: {

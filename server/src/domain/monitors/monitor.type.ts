@@ -1,9 +1,10 @@
-import type { CheckSnapshot } from "@/domain/checks/check.type.js";
+import type { CheckSnapshot, DockerStats } from "@/domain/checks/check.type.js";
 export type { CheckSnapshot } from "@/domain/checks/check.type.js";
 import type { GeoContinent, GroupedGeoCheck } from "@/domain/geo-checks/geo-check.type.js";
 export type { GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
 import http from "node:http";
 import { HardwareStats } from "@/domain/checks/check.type.js";
+import { MonitorStats } from "@/domain/monitor-stats/monitor-stats.type.js";
 
 export const HttpStatusCodes = [
 	...Object.keys(http.STATUS_CODES).map(Number),
@@ -44,16 +45,7 @@ export const supportsGeoCheck = (type: MonitorType): boolean => GeoCheckSupporte
 export const ProxyModes = ["inherit", "none", "custom"] as const;
 export type ProxyMode = (typeof ProxyModes)[number];
 
-export const UptimeDetailsSupportedTypes = [
-	"http",
-	"ping",
-	"docker",
-	"port",
-	"game",
-	"grpc",
-	"websocket",
-	"dns",
-] as const satisfies readonly MonitorType[];
+export const UptimeDetailsSupportedTypes = ["http", "ping", "port", "game", "grpc", "websocket", "dns"] as const satisfies readonly MonitorType[];
 export type UptimeDetailsSupportedType = (typeof UptimeDetailsSupportedTypes)[number];
 export const supportsUptimeDetails = (type: MonitorType): type is UptimeDetailsSupportedType => UptimeDetailsSupportedTypes.some((t) => t === type);
 
@@ -99,6 +91,7 @@ export interface Monitor {
 	tags: string[];
 	customUpCodes: HttpStatusCode[];
 	secret?: string;
+	sshPrivateKey?: string;
 	cpuAlertThreshold: number;
 	cpuAlertCounter: number;
 	memoryAlertThreshold: number;
@@ -159,6 +152,12 @@ export interface HardwareDetailsResult {
 	monitor: Monitor;
 	stats: HardwareStats;
 	monitorStats: import("../monitor-stats/monitor-stats.type.js").MonitorStats | null;
+}
+
+export interface DockerDetailsResult {
+	monitor: Monitor;
+	stats: DockerStats;
+	monitorStats: MonitorStats | null;
 }
 
 export interface PageSpeedDetailsResult {
