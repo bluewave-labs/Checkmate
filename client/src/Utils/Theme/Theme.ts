@@ -13,6 +13,12 @@ declare module "@mui/material/styles" {
 		eyebrow?: React.CSSProperties;
 		fontFamilyMonospace?: string;
 	}
+	interface TypeAction {
+		rowHover: string;
+	}
+	interface TypeActionOptions {
+		rowHover?: string;
+	}
 	interface Palette {
 		sidebar: { accent: string };
 		rowStatus: { running: string; paused: string };

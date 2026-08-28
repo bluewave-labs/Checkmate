@@ -64,7 +64,12 @@ export const StatBox = ({
 			palette={palette}
 			sx={{
 				...(sx as object),
-				...(onClick ? { cursor: "pointer", "&:hover": { opacity: 0.95 } } : {}),
+				...(onClick
+					? {
+							cursor: "pointer",
+							"&:hover": { backgroundColor: theme.palette.action.rowHover },
+						}
+					: {}),
 			}}
 		>
 			<Stack onClick={onClick}>

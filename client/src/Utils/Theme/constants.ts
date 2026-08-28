@@ -20,4 +20,5 @@ export const LAYOUT = {
 
 export const HOVER = {
 	DARKEN: 0.06, // This is a coefficient for darkening function
+	ROW: 0.025, // Overlay alpha for hoverable rows, cards and icon buttons
 } as const;

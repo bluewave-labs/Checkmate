@@ -108,6 +108,11 @@ export function DataTable<
 								borderRadius: theme.shape.borderRadius,
 								padding: theme.spacing(LAYOUT.XS),
 								cursor: onRowClick ? "pointer" : "default",
+								...(onRowClick && {
+									"&:hover": {
+										backgroundColor: theme.palette.action.rowHover,
+									},
+								}),
 							}}
 							key={key}
 						>
@@ -207,6 +212,10 @@ export function DataTable<
 					"& .MuiTableBody-root .MuiTableRow-root:last-child .MuiTableCell-root": {
 						borderBottom: "none",
 					},
+					"& .MuiTableBody-root .MuiTableRow-root.is-clickable:hover .MuiTableCell-root":
+						{
+							backgroundColor: theme.palette.action.rowHover,
+						},
 				}}
 			>
 				<TableHead>
@@ -231,8 +240,9 @@ export function DataTable<
 						return (
 							<Fragment key={key}>
 								<TableRow
+									className={onRowClick || expandableRows ? "is-clickable" : undefined}
 									sx={{
-										cursor: onRowClick ? "pointer" : "default",
+										cursor: onRowClick || expandableRows ? "pointer" : "default",
 										...(getRowSx?.(row) as object),
 									}}
 									onClick={() => {
@@ -314,7 +324,13 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 
 	return (
 		<Box
-			sx={{ flexShrink: 0, ml: { xs: 0, md: 2.5 } }}
+			sx={{
+				flexShrink: 0,
+				ml: { xs: 0, md: 2.5 },
+				"& .MuiIconButton-root:not(.Mui-disabled):hover": {
+					backgroundColor: theme.palette.action.rowHover,
+				},
+			}}
 			className="table-pagination-actions"
 		>
 			<IconButton
@@ -412,7 +428,13 @@ function HasMoreTablePaginationActions(props: HasMoreTablePaginationActionsProps
 
 	return (
 		<Box
-			sx={{ flexShrink: 0, ml: { xs: 0, md: 2.5 } }}
+			sx={{
+				flexShrink: 0,
+				ml: { xs: 0, md: 2.5 },
+				"& .MuiIconButton-root:not(.Mui-disabled):hover": {
+					backgroundColor: theme.palette.action.rowHover,
+				},
+			}}
 			className="table-pagination-actions"
 		>
 			<IconButton

@@ -3,6 +3,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
 import { Settings } from "lucide-react";
+import { useTheme } from "@mui/material/styles";
 
 export type ActionMenuItem = {
 	id: number | string;
@@ -12,6 +13,7 @@ export type ActionMenuItem = {
 };
 
 export const ActionsMenu = ({ items }: { items: ActionMenuItem[] }) => {
+	const theme = useTheme();
 	const [anchorEl, setAnchorEl] = useState<null | any>(null);
 	const open = Boolean(anchorEl);
 
@@ -27,7 +29,14 @@ export const ActionsMenu = ({ items }: { items: ActionMenuItem[] }) => {
 
 	return (
 		<div>
-			<IconButton onClick={handleClick}>
+			<IconButton
+				onClick={handleClick}
+				sx={{
+					"&:hover": {
+						backgroundColor: theme.palette.action.rowHover,
+					},
+				}}
+			>
 				<Settings
 					size={20}
 					strokeWidth={1.5}
