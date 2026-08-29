@@ -10,6 +10,8 @@ import { formatDuration } from "@/Utils/TimeUtils";
 import { DashboardCard } from "../DashboardCard";
 import { CardBar } from "../CardPrimitives";
 
+import { REFRESH_INTERVAL_MS } from "../../cards";
+
 import type { Diagnostics } from "@/Types/Diagnostics";
 
 const BYTES_PER_MB = 1024 * 1024;
@@ -63,7 +65,7 @@ export const CheckmateServerCard = () => {
 	const { data, isLoading, isValidating, error } = useGet<Diagnostics>(
 		"/diagnostic/system",
 		{},
-		{ refreshInterval: 30000 }
+		{ refreshInterval: REFRESH_INTERVAL_MS }
 	);
 
 	const usedHeap = data?.v8HeapStats.usedHeapSizeBytes ?? 0;

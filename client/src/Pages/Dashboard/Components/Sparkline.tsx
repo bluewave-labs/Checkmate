@@ -4,7 +4,10 @@ import { useMemo } from "react";
 import type { CheckSnapshot } from "@/Types/Check";
 
 const VIEWBOX_WIDTH = 100;
+// The svg renders at its viewBox height, so one constant serves both.
 const VIEWBOX_HEIGHT = 24;
+// Matches the 1.5 stroke the shared Icon component uses.
+const STROKE_WIDTH = 1.5;
 
 /**
  * Response times as a bare polyline. Deliberately axis-free and label-free —
@@ -52,14 +55,14 @@ export const Sparkline = ({
 			preserveAspectRatio="none"
 			aria-hidden="true"
 			width="100%"
-			height={24}
+			height={VIEWBOX_HEIGHT}
 			display="block"
 		>
 			<polyline
 				points={points}
 				fill="none"
 				stroke={color}
-				strokeWidth={1.5}
+				strokeWidth={STROKE_WIDTH}
 				strokeLinejoin="round"
 				strokeLinecap="round"
 				vectorEffect="non-scaling-stroke"

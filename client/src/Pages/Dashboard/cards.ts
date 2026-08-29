@@ -71,3 +71,10 @@ export const DEFAULT_CARD_IDS: CardId[] = [
 ];
 
 export const DASHBOARD_CARDS_STORAGE_KEY = "checkmate-dashboard-cards";
+
+/**
+ * Poll rates, in ms. Monitor and server figures move continuously; the log ring
+ * buffer rotates fast but is expensive to re-read, so it is polled slowly.
+ */
+export const REFRESH_INTERVAL_MS = 30000;
+export const SLOW_REFRESH_INTERVAL_MS = 60000;

@@ -5,7 +5,7 @@ import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
 
-import { Dialog, Checkbox } from "@/Components/inputs";
+import { Dialog, Checkbox, Button } from "@/Components/inputs";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import { CardGroups, type CardDefinition, type CardGroup, type CardId } from "../cards";
@@ -52,10 +52,21 @@ export const CardPicker = ({
 			maxWidth="sm"
 			fullWidth
 			title={t("pages.dashboard.picker.title")}
+			// Every change applies immediately, so there is nothing to confirm and
+			// no `onConfirm` — which also keeps the prominent contained button out
+			// of the dialog entirely. Reset is destructive and stays quiet beside
+			// the close action rather than being the loudest thing on screen.
 			onCancel={onClose}
-			onConfirm={onReset}
 			cancelText={t("pages.dashboard.picker.done")}
-			confirmText={t("pages.dashboard.picker.reset")}
+			additionalButtons={
+				<Button
+					variant="outlined"
+					color="secondary"
+					onClick={onReset}
+				>
+					{t("pages.dashboard.picker.reset")}
+				</Button>
+			}
 		>
 			<Stack
 				gap={theme.spacing(LAYOUT.MD)}

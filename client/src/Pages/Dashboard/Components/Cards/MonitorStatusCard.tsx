@@ -13,6 +13,9 @@ import { useMonitors } from "../../useDashboardData";
 
 import type { MonitorStatus, MonitorsSummary } from "@/Types/Monitor";
 
+// Wide enough for a three-digit count beside its label before the tiles wrap.
+const TILE_MIN_WIDTH = 96;
+
 // Every state the summary reports, in the order they read: healthy first, then
 // what is wrong, then what is not being checked. All six are listed so the
 // tiles always sum to totalMonitors — omitting one leaves an unexplained gap.
@@ -57,7 +60,7 @@ export const MonitorStatusCard = () => {
 							to="/uptime"
 							gap={theme.spacing(LAYOUT.XXS)}
 							flex="1 1 0"
-							minWidth={96}
+							minWidth={TILE_MIN_WIDTH}
 							px={theme.spacing(LAYOUT.SM)}
 							py={theme.spacing(LAYOUT.XS)}
 							borderRadius={theme.shape.borderRadius}

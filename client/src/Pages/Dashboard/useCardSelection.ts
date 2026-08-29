@@ -88,5 +88,47 @@ export const useCardSelection = () => {
 
 	const resetCards = useCallback(() => setSelected(DEFAULT_CARD_IDS), []);
 
-	return { cards, available, selected, addCard, removeCard, resetCards };
+	/**
+	 * Swaps a card with its neighbour. `delta` is -1 for up, +1 for down.
+	 *
+	 * Positions are resolved against the *visible* order, not the stored array:
+	 * a non-admin never sees the admin cards, so moving a card past one of them
+	 * would otherwise appear to do nothing.
+	 */
+	const moveCard = useCallback(
+		(id: CardId, delta: -1 | 1) => {
+			setSelected((current) => {
+				const visible = current.filter((cardId) => {
+					const card = getCard(cardId);
+					return card !== undefined && isVisible(card);
+				});
+				const from = visible.indexOf(id);
+				const to = from + delta;
+				if (from === -1 || to < 0 || to >= visible.length) {
+					return current;
+				}
+				// Swap in the visible order, then write that order back over the
+				// stored positions the visible cards occupy, leaving hidden cards
+				// exactly where they were.
+				const reordered = [...visible];
+				[reordered[from], reordered[to]] = [reordered[to], reordered[from]];
+
+				let next = 0;
+				return current.map((cardId) =>
+					visible.includes(cardId) ? reordered[next++] : cardId
+				);
+			});
+		},
+		[isVisible]
+	);
+
+	return {
+		cards,
+		available,
+		selected,
+		addCard,
+		removeCard,
+		moveCard,
+		resetCards,
+	};
 };

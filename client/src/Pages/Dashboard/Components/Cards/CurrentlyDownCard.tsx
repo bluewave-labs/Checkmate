@@ -24,6 +24,12 @@ import type { Monitor, MonitorStatus } from "@/Types/Monitor";
 // `initializing` is deliberately excluded: on a fresh install every new monitor
 // starts there, and counting it would open the card red claiming a fleet-wide
 // outage that does not exist. It is "not checked yet", not "broken".
+// Fixed column widths keep the right-hand figures aligned down the list
+// instead of jittering with each row's content.
+const DURATION_COLUMN_WIDTH = 64;
+const STATUS_CODE_COLUMN_WIDTH = 32;
+const SPARKLINE_WIDTH = 80;
+
 const STATUS_RANK: Partial<Record<MonitorStatus, number>> = {
 	down: 1,
 	breached: 2,
@@ -125,14 +131,14 @@ export const CurrentlyDownCard = () => {
 									fontSize={typographyLevels.s}
 									color={theme.palette.error.main}
 									flexShrink={0}
-									minWidth={64}
+									minWidth={DURATION_COLUMN_WIDTH}
 									textAlign="right"
 								>
 									{formatDuration(Date.now() - new Date(since).getTime())}
 								</Typography>
 							)}
 							<Box
-								width={80}
+								width={SPARKLINE_WIDTH}
 								flexShrink={0}
 								display={{ xs: "none", md: "block" }}
 							>
@@ -151,7 +157,7 @@ export const CurrentlyDownCard = () => {
 								fontSize={typographyLevels.s}
 								color={theme.palette.text.secondary}
 								flexShrink={0}
-								minWidth={32}
+								minWidth={STATUS_CODE_COLUMN_WIDTH}
 								textAlign="right"
 							>
 								{formatStatusCode(latestCheck(monitor)?.statusCode, t)}

@@ -1,8 +1,7 @@
 import { createContext, useContext } from "react";
 import { useGet } from "@/Hooks/UseApi";
 import { MonitorTypes, type MonitorsWithChecksResponse } from "@/Types/Monitor";
-
-const REFRESH_INTERVAL = 30000;
+import { REFRESH_INTERVAL_MS } from "./cards";
 
 // One request feeds every monitor-derived card. Cards read it from context so
 // adding a monitor card costs no extra call.
@@ -22,7 +21,7 @@ export const useMonitorsRequest = () =>
 	useGet<MonitorsWithChecksResponse>(
 		buildMonitorsUrl(),
 		{},
-		{ refreshInterval: REFRESH_INTERVAL, keepPreviousData: true }
+		{ refreshInterval: REFRESH_INTERVAL_MS, keepPreviousData: true }
 	);
 
 export type MonitorsRequest = ReturnType<typeof useMonitorsRequest>;

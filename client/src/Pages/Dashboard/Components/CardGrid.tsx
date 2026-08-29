@@ -3,10 +3,18 @@ import { useTheme } from "@mui/material/styles";
 import { useMemo } from "react";
 
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { GRID_COLUMNS, type CardDefinition } from "../cards";
+import { GRID_COLUMNS, type CardDefinition, type CardId } from "../cards";
 import { layoutCards } from "../layout";
+import { CardReorderControls } from "./CardReorderControls";
+import { CardSlotContext } from "./CardSlotContext";
 
-export const CardGrid = ({ cards }: { cards: CardDefinition[] }) => {
+export const CardGrid = ({
+	cards,
+	onMove,
+}: {
+	cards: CardDefinition[];
+	onMove: (id: CardId, delta: -1 | 1) => void;
+}) => {
 	const theme = useTheme();
 	const placed = useMemo(() => layoutCards(cards), [cards]);
 
@@ -22,7 +30,7 @@ export const CardGrid = ({ cards }: { cards: CardDefinition[] }) => {
 				alignItems: "stretch",
 			}}
 		>
-			{placed.map(({ card, renderedWidth }) => {
+			{placed.map(({ card, renderedWidth }, index) => {
 				const Component = card.component;
 				return (
 					<Box
@@ -30,7 +38,22 @@ export const CardGrid = ({ cards }: { cards: CardDefinition[] }) => {
 						minWidth={0}
 						gridColumn={{ xs: "auto", md: `span ${renderedWidth}` }}
 					>
-						<Component />
+						{/*
+						 * The controls go through context rather than a prop so the 17
+						 * card components stay unaware of their own position.
+						 */}
+						<CardSlotContext.Provider
+							value={
+								<CardReorderControls
+									canMoveUp={index > 0}
+									canMoveDown={index < placed.length - 1}
+									onMoveUp={() => onMove(card.id, -1)}
+									onMoveDown={() => onMove(card.id, 1)}
+								/>
+							}
+						>
+							<Component />
+						</CardSlotContext.Provider>
 					</Box>
 				);
 			})}

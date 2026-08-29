@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { LayoutGrid } from "lucide-react";
 
-import { BasePage, EmptyState } from "@/Components/design-elements";
+import { BasePage, EmptyState, Icon } from "@/Components/design-elements";
 import { Button } from "@/Components/inputs";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { CardGrid } from "./Components/CardGrid";
@@ -20,7 +20,7 @@ const Dashboard = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const monitorsRequest = useMonitorsRequest();
-	const { cards, available, selected, addCard, removeCard, resetCards } =
+	const { cards, available, selected, addCard, removeCard, moveCard, resetCards } =
 		useCardSelection();
 	const [isPickerOpen, setIsPickerOpen] = useState(false);
 
@@ -37,9 +37,9 @@ const Dashboard = () => {
 							color="secondary"
 							onClick={() => setIsPickerOpen(true)}
 							startIcon={
-								<LayoutGrid
-									size={14}
-									strokeWidth={1.6}
+								<Icon
+									icon={LayoutGrid}
+									size={16}
 								/>
 							}
 						>
@@ -54,7 +54,10 @@ const Dashboard = () => {
 							onAction={() => setIsPickerOpen(true)}
 						/>
 					) : (
-						<CardGrid cards={cards} />
+						<CardGrid
+							cards={cards}
+							onMove={moveCard}
+						/>
 					)}
 				</Stack>
 				<CardPicker

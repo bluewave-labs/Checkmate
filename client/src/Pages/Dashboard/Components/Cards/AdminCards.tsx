@@ -11,6 +11,8 @@ import { formatTimestamp } from "@/Utils/TimeUtils";
 import { DashboardCard, CardMessage } from "../DashboardCard";
 import { CardFigure, CardRow, CardRowLabel } from "../CardPrimitives";
 
+import { REFRESH_INTERVAL_MS, SLOW_REFRESH_INTERVAL_MS } from "../../cards";
+
 import type { QueueMetrics } from "@/Types/Queue";
 import type { Log } from "@/Types/Log";
 import type { User } from "@/Types/User";
@@ -57,7 +59,7 @@ export const ChecksOnScheduleCard = () => {
 	const { data, isLoading, isValidating, error } = useGet<QueueMetrics>(
 		"/queue/metrics",
 		{},
-		{ refreshInterval: 30000 }
+		{ refreshInterval: REFRESH_INTERVAL_MS }
 	);
 
 	const healthy = data?.failingJobs === 0;
@@ -130,7 +132,7 @@ export const RecentErrorsCard = () => {
 	const { data, isLoading, isValidating, error } = useGet<Log[]>(
 		"/logs",
 		{},
-		{ refreshInterval: 60000 }
+		{ refreshInterval: SLOW_REFRESH_INTERVAL_MS }
 	);
 
 	const { errors, warnings, newest } = useMemo(() => {

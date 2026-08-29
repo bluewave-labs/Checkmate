@@ -9,6 +9,9 @@ import { typographyLevels } from "@/Utils/Theme/Palette";
 
 import type { ReactNode } from "react";
 
+/** Thin enough to read as a proportion indicator, not a progress bar. */
+const BAR_HEIGHT = 4;
+
 /**
  * A proportional bar. `value` and `max` share whatever unit the caller uses;
  * percentages come in as 0-100, not as the API's 0-1 fractions.
@@ -28,7 +31,7 @@ export const CardBar = ({
 	return (
 		<Box
 			width="100%"
-			height={4}
+			height={BAR_HEIGHT}
 			borderRadius={theme.shape.borderRadius}
 			bgcolor={theme.palette.action.hover}
 			sx={{ overflow: "hidden" }}

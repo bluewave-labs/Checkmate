@@ -10,8 +10,14 @@ import { useTranslation } from "react-i18next";
 import { BaseBox } from "@/Components/design-elements";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
+import { useCardSlot } from "./CardSlotContext";
 
 import type { ReactNode } from "react";
+
+// Matches the 34px control height plus the header's vertical padding, so a card
+// with no action still lines up with one that has a button in its header.
+const HEADER_MIN_HEIGHT = 44;
+const SKELETON_ROW_HEIGHT = 20;
 
 interface DashboardCardProps {
 	title: string;
@@ -37,6 +43,7 @@ export const DashboardCard = ({
 }: DashboardCardProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
+	const slot = useCardSlot();
 
 	return (
 		<BaseBox
@@ -45,6 +52,12 @@ export const DashboardCard = ({
 				flexDirection: "column",
 				height: "100%",
 				overflow: "hidden",
+				// The header controls stay invisible until the card is hovered or
+				// something inside it takes focus, so a settled dashboard is quiet.
+				"&:hover .dashboard-card-slot, &:focus-within .dashboard-card-slot": {
+					opacity: 1,
+					pointerEvents: "auto",
+				},
 			}}
 		>
 			<Stack
@@ -55,7 +68,7 @@ export const DashboardCard = ({
 				px={theme.spacing(LAYOUT.MD)}
 				py={theme.spacing(LAYOUT.SM)}
 				borderBottom={`1px solid ${theme.palette.divider}`}
-				minHeight={44}
+				minHeight={HEADER_MIN_HEIGHT}
 			>
 				<Typography
 					{...(to ? { component: RouterLink, to } : {})}
@@ -75,15 +88,27 @@ export const DashboardCard = ({
 					direction="row"
 					alignItems="center"
 					gap={theme.spacing(LAYOUT.SM)}
-					sx={{ flexShrink: 0 }}
+					flexShrink={0}
 				>
 					{isStale && (
 						<CircularProgress
-							size={12}
+							size={16}
 							color="primary"
 						/>
 					)}
 					{action}
+					{slot && (
+						<Box
+							className="dashboard-card-slot"
+							sx={{
+								opacity: 0,
+								pointerEvents: "none",
+								transition: "opacity 0.15s ease",
+							}}
+						>
+							{slot}
+						</Box>
+					)}
 				</Stack>
 			</Stack>
 			<Box
@@ -114,7 +139,7 @@ export const CardSkeleton = ({ rows = 3 }: { rows?: number }) => {
 				<Skeleton
 					key={index}
 					variant="rounded"
-					height={20}
+					height={SKELETON_ROW_HEIGHT}
 					width={index === rows - 1 ? "60%" : "100%"}
 				/>
 			))}

@@ -363,6 +363,10 @@
 			"empty": {
 				"title": "No cards on your dashboard",
 				"description": "Choose the cards you want to see. Your selection is remembered in this browser."
+			},
+			"reorder": {
+				"moveUp": "Move up",
+				"moveDown": "Move down"
 			}
 		},
 		"proxies": {
