@@ -74,6 +74,60 @@ const tabForField = (field: string): SettingsTabKey =>
 		? "email"
 		: (FIELD_TAB[field.split(".")[0]] ?? "general");
 
+// Error rows named the raw schema key ("systemEmailRejectUnauthorized"). Each
+// field already owns a translated label, so reuse those rather than adding
+// strings. Labels that append an explanation after a dash are trimmed to the
+// name itself.
+const FIELD_LABEL_KEY: Record<string, string> = {
+	checkTTL: "pages.settings.form.retention.option.days.label",
+	"globalThresholds.cpu": "pages.settings.form.thresholds.option.cpu.label",
+	"globalThresholds.memory": "pages.settings.form.thresholds.option.memory.label",
+	"globalThresholds.disk": "pages.settings.form.thresholds.option.disk.label",
+	"globalThresholds.temperature":
+		"pages.settings.form.thresholds.option.temperature.label",
+	pagespeedApiKey: "pages.settings.form.pagespeed.option.apiKey.label",
+	globalProxyEnabled: "pages.settings.form.globalProxy.option.enabled.label",
+	showURL: "pages.settings.form.url.option.showURL.label",
+	systemEmailHost: "pages.settings.form.email.option.host.label",
+	systemEmailPort: "pages.settings.form.email.option.port.label",
+	systemEmailAddress: "pages.settings.form.email.option.address.label",
+	systemEmailDisplayName: "pages.settings.form.email.option.displayName.label",
+	systemEmailUser: "pages.settings.form.email.option.user.label",
+	systemEmailPassword: "pages.settings.form.email.option.password.label",
+	systemEmailTLSServername: "pages.settings.form.email.option.tlsServername.label",
+	systemEmailConnectionHost: "pages.settings.form.email.option.connectionHost.label",
+	systemEmailSecure: "pages.settings.form.email.option.secure.label",
+	systemEmailPool: "pages.settings.form.email.option.pool.label",
+	systemEmailIgnoreTLS: "pages.settings.form.email.option.ignoreTLS.label",
+	systemEmailRequireTLS: "pages.settings.form.email.option.requireTLS.label",
+	systemEmailRejectUnauthorized:
+		"pages.settings.form.email.option.rejectUnauthorized.label",
+};
+
+// react-hook-form nests errors by path, so a grouped field arrives as
+// { globalThresholds: { cpu: { message } } }. Iterating the top level alone
+// yields an entry whose own message is undefined, which renders as a bare
+// "globalThresholds" naming none of the four sliders. Walk to the leaves.
+type FieldErrorLeaf = { path: string; message?: string };
+
+const flattenFieldErrors = (errors: unknown, prefix = ""): FieldErrorLeaf[] => {
+	if (typeof errors !== "object" || errors === null) {
+		return [];
+	}
+	return Object.entries(errors).flatMap(([key, value]) => {
+		const path = prefix ? `${prefix}.${key}` : key;
+		if (typeof value !== "object" || value === null) {
+			return [];
+		}
+		const message = (value as { message?: unknown }).message;
+		if (typeof message === "string") {
+			return [{ path, message }];
+		}
+		const nested = flattenFieldErrors(value, path);
+		return nested.length > 0 ? nested : [{ path }];
+	});
+};
+
 export const SettingsPage = () => {
 	const theme = useTheme();
 	const { t, i18n } = useTranslation();
@@ -90,18 +144,33 @@ export const SettingsPage = () => {
 	// An unknown tab, or an admin tab requested by a non-admin, falls back to the
 	// first tab the current user can actually see.
 	const requestedTab = searchParams.get("tab");
+	// visibleTabs always contains "general" today; the constant fallback keeps a
+	// future gating change from throwing on an empty list.
+	const firstVisibleTab: SettingsTabKey = visibleTabs[0]?.key ?? SETTINGS_TABS[0].key;
 	const activeTab: SettingsTabKey =
-		visibleTabs.find((tab) => tab.key === requestedTab)?.key ?? visibleTabs[0].key;
+		visibleTabs.find((tab) => tab.key === requestedTab)?.key ?? firstVisibleTab;
 
 	const handleTabChange = (tab: SettingsTabKey) => {
 		const updated = new URLSearchParams(searchParams);
-		if (tab === visibleTabs[0].key) {
+		if (tab === firstVisibleTab) {
 			updated.delete("tab");
 		} else {
 			updated.set("tab", tab);
 		}
 		setSearchParams(updated, { replace: true });
 	};
+
+	// A "tab" that does not resolve -- an unknown key, or an admin tab followed by
+	// a non-admin -- leaves the URL claiming a tab the page is not showing. Drop it
+	// so the address bar matches what is rendered.
+	useEffect(() => {
+		if (requestedTab !== null && requestedTab !== activeTab) {
+			const updated = new URLSearchParams(searchParams);
+			updated.delete("tab");
+			setSearchParams(updated, { replace: true });
+		}
+	}, [requestedTab, activeTab, searchParams, setSearchParams]);
+
 	// Local state for demo monitors dialog
 	const [isDemoMonitorsDialogOpen, setIsDemoMonitorsDialogOpen] = useState(false);
 	const { post: postDemoMonitors, loading: isPostingDemoMonitors } = usePost();
@@ -1027,24 +1096,23 @@ export const SettingsPage = () => {
 								component="ul"
 								sx={{ m: 0, pl: 2 }}
 							>
-								{Object.entries(form.formState.errors).map(([field, error]) => {
-									const message =
-										typeof error === "object" && error?.message
-											? error.message
-											: "Invalid value";
+								{flattenFieldErrors(form.formState.errors).map(({ path, message }) => {
+									const labelKey = FIELD_LABEL_KEY[path];
+									// Labels read "Name - explanation"; keep the name.
+									const label = labelKey ? t(labelKey).split(" - ")[0] : path;
 									return (
-										<li key={field}>
+										<li key={path}>
 											<Typography variant="body2">
 												<Link
 													component="button"
 													type="button"
 													variant="body2"
 													color={theme.palette.error.main}
-													onClick={() => revealField(field)}
+													onClick={() => revealField(path)}
 												>
-													<strong>{field}</strong>
+													<strong>{label}</strong>
 												</Link>
-												: {message}
+												{message ? `: ${message}` : ""}
 											</Typography>
 										</li>
 									);
