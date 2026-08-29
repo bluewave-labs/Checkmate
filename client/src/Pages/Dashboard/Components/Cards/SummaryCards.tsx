@@ -10,7 +10,13 @@ import { LAYOUT } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import { formatTimestamp } from "@/Utils/TimeUtils";
 import { DashboardCard, CardMessage } from "../DashboardCard";
-import { CardFigure, CardRow, CardRowLabel, CardStatLine } from "../CardPrimitives";
+import {
+	CardFigure,
+	CardRow,
+	CardRowLabel,
+	CardSegmentedBar,
+	CardStatLine,
+} from "../CardPrimitives";
 
 import type { IncidentSummary } from "@/Types/Incident";
 import type { Notification } from "@/Types/Notification";
@@ -34,26 +40,71 @@ export const IncidentStatsCard = () => {
 			isStale={isValidating && Boolean(data)}
 		>
 			{data && (
-				<Stack gap={theme.spacing(LAYOUT.SM)}>
-					<CardFigure
-						value={String(data.totalActive)}
-						caption={t("pages.dashboard.cards.incidentStats.openNow")}
-						color={
-							data.totalActive > 0 ? theme.palette.error.main : theme.palette.text.primary
-						}
-					/>
-					<CardStatLine
-						label={t("pages.dashboard.cards.incidentStats.avgResolution")}
-						value={t("pages.dashboard.cards.incidentStats.hours", {
-							hours: data.avgResolutionTimeHours.toFixed(1),
-						})}
-					/>
-					{data.topMonitor?.monitorName && (
-						<CardStatLine
-							label={t("pages.dashboard.cards.incidentStats.mostIncidents")}
-							value={`${data.topMonitor.monitorName} (${data.topMonitor.incidentCount})`}
+				<Stack gap={theme.spacing(LAYOUT.MD)}>
+					{/* Open now leads, paired with the all-time total for context: two
+					    open means something different against 12 incidents than 183. */}
+					<Stack
+						direction="row"
+						gap={theme.spacing(LAYOUT.XXL)}
+					>
+						<CardFigure
+							value={String(data.totalActive)}
+							caption={t("pages.dashboard.cards.incidentStats.openNow")}
+							color={
+								data.totalActive > 0
+									? theme.palette.error.main
+									: theme.palette.success.main
+							}
 						/>
+						<CardFigure
+							value={data.total.toLocaleString()}
+							caption={t("pages.dashboard.cards.incidentStats.total")}
+						/>
+					</Stack>
+					{/* How much of the fleet heals itself — the automatic/manual split
+					    is already computed server-side and said nothing on the card
+					    before. A high manual share means people are doing the work. */}
+					{data.totalAutomaticResolutions + data.totalManualResolutions > 0 && (
+						<Stack gap={theme.spacing(LAYOUT.XS)}>
+							<CardSegmentedBar
+								segments={[
+									{
+										key: "automatic",
+										value: data.totalAutomaticResolutions,
+										color: theme.palette.success.main,
+										label: `${t("pages.dashboard.cards.incidentStats.automatic")} — ${data.totalAutomaticResolutions}`,
+									},
+									{
+										key: "manual",
+										value: data.totalManualResolutions,
+										color: theme.palette.warning.main,
+										label: `${t("pages.dashboard.cards.incidentStats.manual")} — ${data.totalManualResolutions}`,
+									},
+								]}
+							/>
+							<CardStatLine
+								label={t("pages.dashboard.cards.incidentStats.resolved")}
+								value={t("pages.dashboard.cards.incidentStats.autoManual", {
+									automatic: data.totalAutomaticResolutions,
+									manual: data.totalManualResolutions,
+								})}
+							/>
+						</Stack>
 					)}
+					<Stack gap={theme.spacing(LAYOUT.XS)}>
+						<CardStatLine
+							label={t("pages.dashboard.cards.incidentStats.avgResolution")}
+							value={t("pages.dashboard.cards.incidentStats.hours", {
+								hours: data.avgResolutionTimeHours.toFixed(1),
+							})}
+						/>
+						{data.topMonitor?.monitorName && (
+							<CardStatLine
+								label={t("pages.dashboard.cards.incidentStats.mostIncidents")}
+								value={`${data.topMonitor.monitorName} (${data.topMonitor.incidentCount})`}
+							/>
+						)}
+					</Stack>
 				</Stack>
 			)}
 		</DashboardCard>

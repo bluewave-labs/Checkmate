@@ -257,7 +257,8 @@
 			"cards": {
 				"monitorStatus": {
 					"title": "Monitor status",
-					"empty": "No monitors yet."
+					"empty": "No monitors yet.",
+					"upOfTotal": "of {{total}} up"
 				},
 				"currentlyDown": {
 					"title": "Currently down",
@@ -316,7 +317,12 @@
 					"openNow": "Open now",
 					"avgResolution": "Average time to resolve",
 					"hours": "{{hours}} h",
-					"mostIncidents": "Most incidents"
+					"mostIncidents": "Most incidents",
+					"total": "total",
+					"resolved": "Resolved",
+					"automatic": "Automatic",
+					"manual": "Manual",
+					"autoManual": "{{automatic}} automatic · {{manual}} manual"
 				},
 				"notificationChannels": {
 					"title": "Notification channels",

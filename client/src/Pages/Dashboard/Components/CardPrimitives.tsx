@@ -4,6 +4,7 @@ import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { Link as RouterLink } from "react-router-dom";
 
+import { Tooltip } from "@/Components/design-elements";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 
@@ -11,6 +12,16 @@ import type { ReactNode } from "react";
 
 /** Thin enough to read as a proportion indicator, not a progress bar. */
 const BAR_HEIGHT = 4;
+/** The segmented bar carries more meaning, so it gets a little more presence. */
+const SEGMENTED_BAR_HEIGHT = 8;
+
+export interface BarSegment {
+	key: string;
+	value: number;
+	color: string;
+	/** Tooltip text, since the segments themselves carry no labels. */
+	label: string;
+}
 
 /**
  * A proportional bar. `value` and `max` share whatever unit the caller uses;
@@ -43,6 +54,46 @@ export const CardBar = ({
 				sx={{ transition: "width 0.3s ease" }}
 			/>
 		</Box>
+	);
+};
+
+/**
+ * One bar divided into proportional segments — the shape of a whole split into
+ * parts, where the relative sizes are the point rather than any single value.
+ *
+ * Zero-value segments are dropped so they cannot appear as hairlines, and each
+ * segment carries a tooltip because the bar itself has no room for labels.
+ */
+export const CardSegmentedBar = ({ segments }: { segments: BarSegment[] }) => {
+	const theme = useTheme();
+	const visible = segments.filter((segment) => segment.value > 0);
+	const total = visible.reduce((sum, segment) => sum + segment.value, 0);
+
+	return (
+		<Stack
+			direction="row"
+			width="100%"
+			height={SEGMENTED_BAR_HEIGHT}
+			borderRadius={theme.shape.borderRadius}
+			bgcolor={theme.palette.action.hover}
+			gap="1px"
+			sx={{ overflow: "hidden" }}
+		>
+			{total > 0 &&
+				visible.map((segment) => (
+					<Tooltip
+						key={segment.key}
+						title={segment.label}
+					>
+						<Box
+							width={`${(segment.value / total) * 100}%`}
+							height="100%"
+							bgcolor={segment.color}
+							sx={{ transition: "width 0.3s ease" }}
+						/>
+					</Tooltip>
+				))}
+		</Stack>
 	);
 };
 
