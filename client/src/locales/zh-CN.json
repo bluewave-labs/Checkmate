@@ -181,7 +181,8 @@
 				"statusPages": "状态页",
 				"maintenance": "维护",
 				"logs": "日志",
-				"settings": "设置"
+				"settings": "设置",
+				"dashboard": "仪表板"
 			},
 			"bottomMenu": {
 				"support": "支持",
@@ -223,6 +224,146 @@
 		}
 	},
 	"pages": {
+		"dashboard": {
+			"header": {
+				"title": "仪表板",
+				"description": "在一个页面中查看运行时间、基础设施、事件和检查，无需逐页打开即可发现需要关注的问题。"
+			},
+			"card": {
+				"error": "无法加载此卡片。"
+			},
+			"cards": {
+				"monitorStatus": {
+					"title": "监控状态",
+					"empty": "暂无监控器。",
+					"upOfTotal": "/ {{total}} 正常"
+				},
+				"currentlyDown": {
+					"title": "当前离线",
+					"empty": "所有监控器均正常。没有未处理的事件。",
+					"count": "{{count}} 项需要关注"
+				},
+				"monitorsByType": {
+					"title": "按类型分组的监控器",
+					"empty": "暂无监控器。",
+					"down": "{{count}} 个离线"
+				},
+				"recentIncidents": {
+					"title": "最近事件",
+					"empty": "没有事件 — 所有系统正常。",
+					"active": "{{count}} 个未处理",
+					"ongoing": "进行中",
+					"manual": "手动",
+					"unknownMonitor": "未知监控器"
+				},
+				"failedChecks": {
+					"title": "失败的检查",
+					"empty": "暂无检查。",
+					"ratio": "最近一天 {{total}} 次中的 {{failed}} 次"
+				},
+				"checkmateServer": {
+					"title": "Checkmate 服务器",
+					"memory": "内存",
+					"eventLoop": "事件循环延迟",
+					"uptime": "运行时间",
+					"database": "数据库",
+					"readsWrites": "{{reads}} 读/秒 · {{writes}} 写/秒"
+				},
+				"ranking": {
+					"topOf": "{{total}} 个中的前 {{shown}} 个",
+					"notEnough": "监控器数量不足，无法排名。"
+				},
+				"slowestMonitors": {
+					"title": "最慢的监控器"
+				},
+				"lowestUptime": {
+					"title": "运行时间最低"
+				},
+				"monitorsByGroup": {
+					"title": "按分组的监控器",
+					"empty": "暂无分组。分组在每个监控器上设置。"
+				},
+				"busiestServers": {
+					"title": "最繁忙的服务器",
+					"empty": "暂无基础设施监控器。",
+					"cpu": "CPU",
+					"memory": "内存",
+					"disk": "磁盘"
+				},
+				"incidentStats": {
+					"title": "事件统计",
+					"openNow": "当前未处理",
+					"avgResolution": "平均解决时间",
+					"hours": "{{hours}} 小时",
+					"mostIncidents": "事件最多",
+					"total": "总计",
+					"resolved": "已解决",
+					"automatic": "自动",
+					"manual": "手动",
+					"autoManual": "{{automatic}} 个自动 · {{manual}} 个手动"
+				},
+				"notificationChannels": {
+					"title": "通知渠道",
+					"empty": "暂无渠道。"
+				},
+				"maintenance": {
+					"title": "维护窗口",
+					"empty": "没有计划的维护。",
+					"runningNow": "正在进行",
+					"next": "下一个窗口"
+				},
+				"statusPages": {
+					"title": "状态页面",
+					"empty": "暂无状态页面。",
+					"monitorCount": "{{count}} 个监控器",
+					"published": "已发布",
+					"draft": "草稿"
+				},
+				"checksOnSchedule": {
+					"title": "检查队列",
+					"healthy": "{{workers}} 个工作进程上的 {{jobs}} 个任务均按计划运行。",
+					"failing": "失败的任务",
+					"scheduled": "计划任务",
+					"runningNow": "正在进行"
+				},
+				"recentErrors": {
+					"title": "最近错误",
+					"empty": "没有记录到错误。",
+					"count": "{{count}} 个错误",
+					"warnings": "警告"
+				},
+				"team": {
+					"title": "团队成员",
+					"members": "{{count}} 名成员",
+					"unverified": "未验证"
+				}
+			},
+			"picker": {
+				"trigger": "编辑卡片",
+				"title": "仪表板卡片",
+				"done": "完成",
+				"reset": "恢复默认",
+				"groups": {
+					"uptime": "运行时间",
+					"infrastructure": "基础设施",
+					"incidents": "事件",
+					"notifications": "通知",
+					"maintenance": "维护",
+					"statusPages": "状态页面",
+					"checks": "检查",
+					"logs": "系统",
+					"settings": "设置"
+				}
+			},
+			"empty": {
+				"title": "您的仪表板上没有卡片",
+				"description": "选择您想查看的卡片。您的选择会记录在此浏览器中。"
+			},
+			"reorder": {
+				"moveUp": "上移",
+				"moveDown": "下移"
+			}
+		},
 		"notFound": {
 			"title": "哦不！你的寿司掉了！",
 			"subtitle": "该 URL 不存在，或者您没有访问权限。"

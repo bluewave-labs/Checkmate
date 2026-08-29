@@ -4,7 +4,6 @@ import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
 import { DashboardCard, CardMessage } from "../DashboardCard";
 import { CardMeterRow, CardRow } from "../CardPrimitives";
 
@@ -79,19 +78,13 @@ export const BreakdownCard = ({
 										flexShrink={0}
 									>
 										{bucket.down > 0 && (
-											<Typography
-												fontSize={typographyLevels.m}
-												color={theme.palette.error.main}
-											>
+											<Typography color={theme.palette.error.main}>
 												{t("pages.dashboard.cards.monitorsByType.down", {
 													count: bucket.down,
 												})}
 											</Typography>
 										)}
-										<Typography
-											fontSize={typographyLevels.m}
-											color={theme.palette.text.secondary}
-										>
+										<Typography color={theme.palette.text.secondary}>
 											{bucket.total}
 										</Typography>
 									</Stack>

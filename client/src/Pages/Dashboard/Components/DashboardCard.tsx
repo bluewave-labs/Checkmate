@@ -9,7 +9,6 @@ import { useTranslation } from "react-i18next";
 
 import { BaseBox } from "@/Components/design-elements";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
 import { useCardSlot } from "./CardSlotContext";
 
 import type { ReactNode } from "react";
@@ -83,7 +82,6 @@ export const DashboardCard = ({
 			>
 				<Typography
 					{...(to ? { component: RouterLink, to } : {})}
-					fontSize={typographyLevels.m}
 					fontWeight={500}
 					color={theme.palette.text.primary}
 					sx={{
@@ -182,12 +180,7 @@ export const CardMessage = ({ text, action }: { text: string; action?: ReactNode
 			justifyContent="space-between"
 			gap={theme.spacing(LAYOUT.SM)}
 		>
-			<Typography
-				fontSize={typographyLevels.m}
-				color={theme.palette.text.secondary}
-			>
-				{text}
-			</Typography>
+			<Typography color={theme.palette.text.secondary}>{text}</Typography>
 			{action}
 		</Stack>
 	);

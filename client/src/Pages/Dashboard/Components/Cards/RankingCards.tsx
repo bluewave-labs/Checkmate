@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
 
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
 import { getMonitorPath, getUptimePercentageColor } from "@/Utils/MonitorUtils";
 import { DashboardCard, CardMessage } from "../DashboardCard";
 import { CardMeterRow, CardRow, CardRowLabel } from "../CardPrimitives";
@@ -32,10 +31,7 @@ const RankingCount = ({ shown, total }: { shown: number; total: number }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	return (
-		<Typography
-			fontSize={typographyLevels.m}
-			color={theme.palette.text.secondary}
-		>
+		<Typography color={theme.palette.text.secondary}>
 			{t("pages.dashboard.cards.ranking.topOf", { shown, total })}
 		</Typography>
 	);
@@ -90,7 +86,6 @@ export const SlowestMonitorsCard = () => {
 								color={theme.palette.primary.main}
 								trailing={
 									<Typography
-										fontSize={typographyLevels.m}
 										color={theme.palette.text.secondary}
 										flexShrink={0}
 									>
@@ -161,7 +156,6 @@ export const LowestUptimeCard = () => {
 									color={theme.palette[palette].main}
 									trailing={
 										<Typography
-											fontSize={typographyLevels.m}
 											color={theme.palette[palette].main}
 											flexShrink={0}
 										>

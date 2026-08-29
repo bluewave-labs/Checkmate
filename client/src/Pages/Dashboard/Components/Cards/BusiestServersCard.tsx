@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
 
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
 import { DashboardCard, CardMessage } from "../DashboardCard";
 import { CardBar, CardRow, CardRowLabel } from "../CardPrimitives";
 import { useMonitors } from "../../useDashboardData";
@@ -47,16 +46,8 @@ const Metric = ({ label, value }: { label: string; value: number | null }) => {
 				justifyContent="space-between"
 				gap={theme.spacing(LAYOUT.XS)}
 			>
-				<Typography
-					fontSize={typographyLevels.m}
-					color={theme.palette.text.secondary}
-				>
-					{label}
-				</Typography>
-				<Typography
-					fontSize={typographyLevels.m}
-					color={color}
-				>
+				<Typography color={theme.palette.text.secondary}>{label}</Typography>
+				<Typography color={color}>
 					{/* A down server reports nothing — show a dash, never 0%. */}
 					{value === null ? "—" : `${value.toFixed(1)}%`}
 				</Typography>

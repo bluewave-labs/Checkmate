@@ -193,7 +193,8 @@
 				"statusPages": "Pagine di stato",
 				"maintenance": "Manutenzione",
 				"logs": "Log",
-				"settings": "Impostazioni"
+				"settings": "Impostazioni",
+				"dashboard": "Dashboard"
 			},
 			"bottomMenu": {
 				"support": "Supporto",
@@ -227,6 +228,146 @@
 		}
 	},
 	"pages": {
+		"dashboard": {
+			"header": {
+				"title": "Dashboard",
+				"description": "Vedi uptime, infrastruttura, incidenti e verifiche in un unico posto, per individuare ciò che richiede attenzione senza aprire ogni pagina."
+			},
+			"card": {
+				"error": "Impossibile caricare questa scheda."
+			},
+			"cards": {
+				"monitorStatus": {
+					"title": "Stato dei monitor",
+					"empty": "Nessun monitor ancora.",
+					"upOfTotal": "su {{total}} attivi"
+				},
+				"currentlyDown": {
+					"title": "Attualmente offline",
+					"empty": "Tutti i monitor sono attivi. Nessun incidente aperto.",
+					"count": "{{count}} richiedono attenzione"
+				},
+				"monitorsByType": {
+					"title": "Monitor per tipo",
+					"empty": "Nessun monitor ancora.",
+					"down": "{{count}} offline"
+				},
+				"recentIncidents": {
+					"title": "Incidenti recenti",
+					"empty": "Nessun incidente — tutti i sistemi sono sani.",
+					"active": "{{count}} aperti",
+					"ongoing": "In corso",
+					"manual": "Manuale",
+					"unknownMonitor": "Monitor sconosciuto"
+				},
+				"failedChecks": {
+					"title": "Verifiche fallite",
+					"empty": "Nessuna verifica ancora.",
+					"ratio": "{{failed}} su {{total}} nell'ultimo giorno"
+				},
+				"checkmateServer": {
+					"title": "Server Checkmate",
+					"memory": "Memoria",
+					"eventLoop": "Ritardo dell'event loop",
+					"uptime": "Tempo di attività",
+					"database": "Database",
+					"readsWrites": "{{reads}} letture/s · {{writes}} scritture/s"
+				},
+				"ranking": {
+					"topOf": "Top {{shown}} su {{total}}",
+					"notEnough": "Non ci sono abbastanza monitor per una classifica."
+				},
+				"slowestMonitors": {
+					"title": "Monitor più lenti"
+				},
+				"lowestUptime": {
+					"title": "Uptime più basso"
+				},
+				"monitorsByGroup": {
+					"title": "Monitor per gruppo",
+					"empty": "Nessun gruppo ancora. I gruppi si impostano per monitor."
+				},
+				"busiestServers": {
+					"title": "Server più carichi",
+					"empty": "Nessun monitor infrastruttura ancora.",
+					"cpu": "CPU",
+					"memory": "Memoria",
+					"disk": "Disco"
+				},
+				"incidentStats": {
+					"title": "Statistiche incidenti",
+					"openNow": "Aperti ora",
+					"avgResolution": "Tempo medio di risoluzione",
+					"hours": "{{hours}} h",
+					"mostIncidents": "Più incidenti",
+					"total": "totale",
+					"resolved": "Risolti",
+					"automatic": "Automatica",
+					"manual": "Manuale",
+					"autoManual": "{{automatic}} automatiche · {{manual}} manuali"
+				},
+				"notificationChannels": {
+					"title": "Canali di notifica",
+					"empty": "Nessun canale ancora."
+				},
+				"maintenance": {
+					"title": "Finestre di manutenzione",
+					"empty": "Nessuna manutenzione pianificata.",
+					"runningNow": "In esecuzione",
+					"next": "Prossima finestra"
+				},
+				"statusPages": {
+					"title": "Pagine di stato",
+					"empty": "Nessuna pagina di stato ancora.",
+					"monitorCount": "{{count}} monitor",
+					"published": "Pubblicata",
+					"draft": "Bozza"
+				},
+				"checksOnSchedule": {
+					"title": "Coda delle verifiche",
+					"healthy": "Tutti i {{jobs}} job sono in orario su {{workers}} worker.",
+					"failing": "Job falliti",
+					"scheduled": "Job pianificati",
+					"runningNow": "In esecuzione"
+				},
+				"recentErrors": {
+					"title": "Errori recenti",
+					"empty": "Nessun errore registrato.",
+					"count": "{{count}} errori",
+					"warnings": "Avvisi"
+				},
+				"team": {
+					"title": "Membri del team",
+					"members": "{{count}} membri",
+					"unverified": "Non verificati"
+				}
+			},
+			"picker": {
+				"trigger": "Modifica schede",
+				"title": "Schede della dashboard",
+				"done": "Fatto",
+				"reset": "Ripristina predefiniti",
+				"groups": {
+					"uptime": "Uptime",
+					"infrastructure": "Infrastruttura",
+					"incidents": "Incidenti",
+					"notifications": "Notifiche",
+					"maintenance": "Manutenzione",
+					"statusPages": "Pagine di stato",
+					"checks": "Verifiche",
+					"logs": "Sistema",
+					"settings": "Impostazioni"
+				}
+			},
+			"empty": {
+				"title": "Nessuna scheda nella tua dashboard",
+				"description": "Scegli le schede da mostrare. La tua selezione viene ricordata in questo browser."
+			},
+			"reorder": {
+				"moveUp": "Sposta su",
+				"moveDown": "Sposta giù"
+			}
+		},
 		"notFound": {
 			"title": "Oh no! Hai fatto cadere il tuo sushi!",
 			"subtitle": "L'URL non esiste, oppure non hai accesso."

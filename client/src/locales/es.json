@@ -181,7 +181,8 @@
 				"statusPages": "Páginas de estado",
 				"maintenance": "Mantenimiento",
 				"logs": "Registros",
-				"settings": "Configuración"
+				"settings": "Configuración",
+				"dashboard": "Panel"
 			},
 			"bottomMenu": {
 				"support": "Soporte",
@@ -223,6 +224,146 @@
 		}
 	},
 	"pages": {
+		"dashboard": {
+			"header": {
+				"title": "Panel",
+				"description": "Vea uptime, infraestructura, incidentes y comprobaciones en un solo lugar, para detectar lo que necesita atención sin abrir cada página."
+			},
+			"card": {
+				"error": "No se pudo cargar esta tarjeta."
+			},
+			"cards": {
+				"monitorStatus": {
+					"title": "Estado de los monitores",
+					"empty": "Aún no hay monitores.",
+					"upOfTotal": "de {{total}} activos"
+				},
+				"currentlyDown": {
+					"title": "Caídos ahora",
+					"empty": "Todos los monitores están activos. Sin incidentes abiertos.",
+					"count": "{{count}} requieren atención"
+				},
+				"monitorsByType": {
+					"title": "Monitores por tipo",
+					"empty": "Aún no hay monitores.",
+					"down": "{{count}} caídos"
+				},
+				"recentIncidents": {
+					"title": "Incidentes recientes",
+					"empty": "Sin incidentes: todos los sistemas están sanos.",
+					"active": "{{count}} abiertos",
+					"ongoing": "En curso",
+					"manual": "Manual",
+					"unknownMonitor": "Monitor desconocido"
+				},
+				"failedChecks": {
+					"title": "Comprobaciones fallidas",
+					"empty": "Aún no hay comprobaciones.",
+					"ratio": "{{failed}} de {{total}} en el último día"
+				},
+				"checkmateServer": {
+					"title": "Servidor de Checkmate",
+					"memory": "Memoria",
+					"eventLoop": "Retardo del bucle de eventos",
+					"uptime": "Tiempo activo",
+					"database": "Base de datos",
+					"readsWrites": "{{reads}} lecturas/s · {{writes}} escrituras/s"
+				},
+				"ranking": {
+					"topOf": "Top {{shown}} de {{total}}",
+					"notEnough": "No hay suficientes monitores para clasificar."
+				},
+				"slowestMonitors": {
+					"title": "Monitores más lentos"
+				},
+				"lowestUptime": {
+					"title": "Menor uptime"
+				},
+				"monitorsByGroup": {
+					"title": "Monitores por grupo",
+					"empty": "Aún no hay grupos. Los grupos se definen por monitor."
+				},
+				"busiestServers": {
+					"title": "Servidores más cargados",
+					"empty": "Aún no hay monitores de infraestructura.",
+					"cpu": "CPU",
+					"memory": "Memoria",
+					"disk": "Disco"
+				},
+				"incidentStats": {
+					"title": "Estadísticas de incidentes",
+					"openNow": "Abiertos ahora",
+					"avgResolution": "Tiempo medio de resolución",
+					"hours": "{{hours}} h",
+					"mostIncidents": "Más incidentes",
+					"total": "total",
+					"resolved": "Resueltos",
+					"automatic": "Automática",
+					"manual": "Manual",
+					"autoManual": "{{automatic}} automáticas · {{manual}} manuales"
+				},
+				"notificationChannels": {
+					"title": "Canales de notificación",
+					"empty": "Aún no hay canales."
+				},
+				"maintenance": {
+					"title": "Ventanas de mantenimiento",
+					"empty": "Sin mantenimiento programado.",
+					"runningNow": "En ejecución",
+					"next": "Próxima ventana"
+				},
+				"statusPages": {
+					"title": "Páginas de estado",
+					"empty": "Aún no hay páginas de estado.",
+					"monitorCount": "{{count}} monitores",
+					"published": "Publicada",
+					"draft": "Borrador"
+				},
+				"checksOnSchedule": {
+					"title": "Cola de comprobaciones",
+					"healthy": "Los {{jobs}} trabajos van según lo previsto en {{workers}} worker(s).",
+					"failing": "Trabajos fallidos",
+					"scheduled": "Trabajos programados",
+					"runningNow": "En ejecución"
+				},
+				"recentErrors": {
+					"title": "Errores recientes",
+					"empty": "No se registraron errores.",
+					"count": "{{count}} errores",
+					"warnings": "Advertencias"
+				},
+				"team": {
+					"title": "Miembros del equipo",
+					"members": "{{count}} miembros",
+					"unverified": "Sin verificar"
+				}
+			},
+			"picker": {
+				"trigger": "Editar tarjetas",
+				"title": "Tarjetas del panel",
+				"done": "Listo",
+				"reset": "Restablecer valores predeterminados",
+				"groups": {
+					"uptime": "Uptime",
+					"infrastructure": "Infraestructura",
+					"incidents": "Incidentes",
+					"notifications": "Notificaciones",
+					"maintenance": "Mantenimiento",
+					"statusPages": "Páginas de estado",
+					"checks": "Comprobaciones",
+					"logs": "Sistema",
+					"settings": "Configuración"
+				}
+			},
+			"empty": {
+				"title": "No hay tarjetas en tu panel",
+				"description": "Elige las tarjetas que quieres ver. Tu selección se recuerda en este navegador."
+			},
+			"reorder": {
+				"moveUp": "Mover arriba",
+				"moveDown": "Mover abajo"
+			}
+		},
 		"notFound": {
 			"title": "¡Oh no! ¡Se le cayó el sushi!",
 			"subtitle": "La URL no existe o no tiene acceso a ella."

@@ -249,7 +249,7 @@
 		"dashboard": {
 			"header": {
 				"title": "Dashboard",
-				"description": "What is wrong right now, across every monitor type."
+				"description": "See uptime, infrastructure, incidents and checks together in one place, so you can spot what needs attention without opening every page."
 			},
 			"card": {
 				"error": "Could not load this card."

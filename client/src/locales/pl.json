@@ -214,7 +214,8 @@
 				"settings": "Ustawienia",
 				"statusPages": "Strony statusu",
 				"tags": "Tagi",
-				"uptime": "Czas działania"
+				"uptime": "Czas działania",
+				"dashboard": "Pulpit"
 			},
 			"starPrompt": {
 				"description": "Zobacz najnowsze wydania i pomóż rozwijać społeczność na GitHub",
@@ -227,6 +228,146 @@
 		}
 	},
 	"pages": {
+		"dashboard": {
+			"header": {
+				"title": "Pulpit",
+				"description": "Zobacz dostępność, infrastrukturę, incydenty i checki w jednym miejscu, aby dostrzec, co wymaga uwagi, bez otwierania każdej strony."
+			},
+			"card": {
+				"error": "Nie udało się załadować tej karty."
+			},
+			"cards": {
+				"monitorStatus": {
+					"title": "Stan monitorów",
+					"empty": "Brak monitorów.",
+					"upOfTotal": "z {{total}} działa"
+				},
+				"currentlyDown": {
+					"title": "Obecnie niedostępne",
+					"empty": "Wszystkie monitory działają. Brak otwartych incydentów.",
+					"count": "{{count}} wymaga uwagi"
+				},
+				"monitorsByType": {
+					"title": "Monitory według typu",
+					"empty": "Brak monitorów.",
+					"down": "{{count}} niedostępnych"
+				},
+				"recentIncidents": {
+					"title": "Ostatnie incydenty",
+					"empty": "Brak incydentów — wszystkie systemy sprawne.",
+					"active": "{{count}} otwartych",
+					"ongoing": "Trwa",
+					"manual": "Ręcznie",
+					"unknownMonitor": "Nieznany monitor"
+				},
+				"failedChecks": {
+					"title": "Nieudane checki",
+					"empty": "Brak checków.",
+					"ratio": "{{failed}} z {{total}} w ostatnim dniu"
+				},
+				"checkmateServer": {
+					"title": "Serwer Checkmate",
+					"memory": "Pamięć",
+					"eventLoop": "Opóźnienie pętli zdarzeń",
+					"uptime": "Czas działania",
+					"database": "Baza danych",
+					"readsWrites": "{{reads}} odczytów/s · {{writes}} zapisów/s"
+				},
+				"ranking": {
+					"topOf": "Top {{shown}} z {{total}}",
+					"notEnough": "Za mało monitorów, aby utworzyć ranking."
+				},
+				"slowestMonitors": {
+					"title": "Najwolniejsze monitory"
+				},
+				"lowestUptime": {
+					"title": "Najniższa dostępność"
+				},
+				"monitorsByGroup": {
+					"title": "Monitory według grupy",
+					"empty": "Brak grup. Grupy ustawia się przy monitorze."
+				},
+				"busiestServers": {
+					"title": "Najbardziej obciążone serwery",
+					"empty": "Brak monitorów infrastruktury.",
+					"cpu": "CPU",
+					"memory": "Pamięć",
+					"disk": "Dysk"
+				},
+				"incidentStats": {
+					"title": "Statystyki incydentów",
+					"openNow": "Otwarte teraz",
+					"avgResolution": "Średni czas rozwiązania",
+					"hours": "{{hours}} godz.",
+					"mostIncidents": "Najwięcej incydentów",
+					"total": "łącznie",
+					"resolved": "Rozwiązane",
+					"automatic": "Automatycznie",
+					"manual": "Ręcznie",
+					"autoManual": "{{automatic}} automatycznie · {{manual}} ręcznie"
+				},
+				"notificationChannels": {
+					"title": "Kanały powiadomień",
+					"empty": "Brak kanałów."
+				},
+				"maintenance": {
+					"title": "Przerwy techniczne",
+					"empty": "Brak zaplanowanych przerw.",
+					"runningNow": "Trwa teraz",
+					"next": "Następna przerwa"
+				},
+				"statusPages": {
+					"title": "Strony statusu",
+					"empty": "Brak stron statusu.",
+					"monitorCount": "{{count}} monitorów",
+					"published": "Opublikowana",
+					"draft": "Wersja robocza"
+				},
+				"checksOnSchedule": {
+					"title": "Kolejka checków",
+					"healthy": "Wszystkie {{jobs}} zadania zgodnie z planem na {{workers}} workerach.",
+					"failing": "Nieudane zadania",
+					"scheduled": "Zaplanowane zadania",
+					"runningNow": "Trwa teraz"
+				},
+				"recentErrors": {
+					"title": "Ostatnie błędy",
+					"empty": "Nie zarejestrowano błędów.",
+					"count": "{{count}} błędów",
+					"warnings": "Ostrzeżenia"
+				},
+				"team": {
+					"title": "Członkowie zespołu",
+					"members": "{{count}} członków",
+					"unverified": "Niezweryfikowani"
+				}
+			},
+			"picker": {
+				"trigger": "Edytuj karty",
+				"title": "Karty pulpitu",
+				"done": "Gotowe",
+				"reset": "Przywróć domyślne",
+				"groups": {
+					"uptime": "Dostępność",
+					"infrastructure": "Infrastruktura",
+					"incidents": "Incydenty",
+					"notifications": "Powiadomienia",
+					"maintenance": "Przerwy techniczne",
+					"statusPages": "Strony statusu",
+					"checks": "Checki",
+					"logs": "System",
+					"settings": "Ustawienia"
+				}
+			},
+			"empty": {
+				"title": "Brak kart na pulpicie",
+				"description": "Wybierz karty, które chcesz widzieć. Twój wybór zostanie zapamiętany w tej przeglądarce."
+			},
+			"reorder": {
+				"moveUp": "Przenieś w górę",
+				"moveDown": "Przenieś w dół"
+			}
+		},
 		"account": {
 			"form": {
 				"currentPassword": {

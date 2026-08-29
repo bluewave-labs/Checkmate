@@ -181,7 +181,8 @@
 				"statusPages": "Trang trạng thái",
 				"maintenance": "Bảo trì",
 				"logs": "Nhật ký",
-				"settings": "Cài đặt"
+				"settings": "Cài đặt",
+				"dashboard": "Bảng điều khiển"
 			},
 			"bottomMenu": {
 				"support": "Hỗ trợ",
@@ -223,6 +224,146 @@
 		}
 	},
 	"pages": {
+		"dashboard": {
+			"header": {
+				"title": "Bảng điều khiển",
+				"description": "Xem uptime, hạ tầng, sự cố và kiểm tra ở cùng một nơi, để nhận ra điều cần chú ý mà không phải mở từng trang."
+			},
+			"card": {
+				"error": "Không thể tải thẻ này."
+			},
+			"cards": {
+				"monitorStatus": {
+					"title": "Trạng thái giám sát",
+					"empty": "Chưa có trình giám sát nào.",
+					"upOfTotal": "trên {{total}} đang hoạt động"
+				},
+				"currentlyDown": {
+					"title": "Hiện đang ngừng",
+					"empty": "Tất cả trình giám sát đang hoạt động. Không có sự cố nào đang mở.",
+					"count": "{{count}} cần chú ý"
+				},
+				"monitorsByType": {
+					"title": "Trình giám sát theo loại",
+					"empty": "Chưa có trình giám sát nào.",
+					"down": "{{count}} đang ngừng"
+				},
+				"recentIncidents": {
+					"title": "Sự cố gần đây",
+					"empty": "Không có sự cố — mọi hệ thống đều ổn.",
+					"active": "{{count}} đang mở",
+					"ongoing": "Đang diễn ra",
+					"manual": "Thủ công",
+					"unknownMonitor": "Trình giám sát không xác định"
+				},
+				"failedChecks": {
+					"title": "Kiểm tra thất bại",
+					"empty": "Chưa có lần kiểm tra nào.",
+					"ratio": "{{failed}} trên {{total}} trong ngày qua"
+				},
+				"checkmateServer": {
+					"title": "Máy chủ Checkmate",
+					"memory": "Bộ nhớ",
+					"eventLoop": "Độ trễ vòng lặp sự kiện",
+					"uptime": "Thời gian hoạt động",
+					"database": "Cơ sở dữ liệu",
+					"readsWrites": "{{reads}} lượt đọc/giây · {{writes}} lượt ghi/giây"
+				},
+				"ranking": {
+					"topOf": "Top {{shown}} trên {{total}}",
+					"notEnough": "Chưa đủ trình giám sát để xếp hạng."
+				},
+				"slowestMonitors": {
+					"title": "Trình giám sát chậm nhất"
+				},
+				"lowestUptime": {
+					"title": "Uptime thấp nhất"
+				},
+				"monitorsByGroup": {
+					"title": "Trình giám sát theo nhóm",
+					"empty": "Chưa có nhóm nào. Nhóm được đặt cho từng trình giám sát."
+				},
+				"busiestServers": {
+					"title": "Máy chủ bận nhất",
+					"empty": "Chưa có trình giám sát hạ tầng nào.",
+					"cpu": "CPU",
+					"memory": "Bộ nhớ",
+					"disk": "Ổ đĩa"
+				},
+				"incidentStats": {
+					"title": "Thống kê sự cố",
+					"openNow": "Đang mở",
+					"avgResolution": "Thời gian xử lý trung bình",
+					"hours": "{{hours}} giờ",
+					"mostIncidents": "Nhiều sự cố nhất",
+					"total": "tổng cộng",
+					"resolved": "Đã xử lý",
+					"automatic": "Tự động",
+					"manual": "Thủ công",
+					"autoManual": "{{automatic}} tự động · {{manual}} thủ công"
+				},
+				"notificationChannels": {
+					"title": "Kênh thông báo",
+					"empty": "Chưa có kênh nào."
+				},
+				"maintenance": {
+					"title": "Cửa sổ bảo trì",
+					"empty": "Không có bảo trì nào được lên lịch.",
+					"runningNow": "Đang chạy",
+					"next": "Cửa sổ tiếp theo"
+				},
+				"statusPages": {
+					"title": "Trang trạng thái",
+					"empty": "Chưa có trang trạng thái nào.",
+					"monitorCount": "{{count}} trình giám sát",
+					"published": "Đã xuất bản",
+					"draft": "Bản nháp"
+				},
+				"checksOnSchedule": {
+					"title": "Hàng đợi kiểm tra",
+					"healthy": "Tất cả {{jobs}} tác vụ đúng lịch trên {{workers}} worker.",
+					"failing": "Tác vụ thất bại",
+					"scheduled": "Tác vụ đã lên lịch",
+					"runningNow": "Đang chạy"
+				},
+				"recentErrors": {
+					"title": "Lỗi gần đây",
+					"empty": "Không có lỗi nào được ghi.",
+					"count": "{{count}} lỗi",
+					"warnings": "Cảnh báo"
+				},
+				"team": {
+					"title": "Thành viên nhóm",
+					"members": "{{count}} thành viên",
+					"unverified": "Chưa xác minh"
+				}
+			},
+			"picker": {
+				"trigger": "Chỉnh sửa thẻ",
+				"title": "Thẻ bảng điều khiển",
+				"done": "Xong",
+				"reset": "Đặt lại mặc định",
+				"groups": {
+					"uptime": "Uptime",
+					"infrastructure": "Hạ tầng",
+					"incidents": "Sự cố",
+					"notifications": "Thông báo",
+					"maintenance": "Bảo trì",
+					"statusPages": "Trang trạng thái",
+					"checks": "Kiểm tra",
+					"logs": "Hệ thống",
+					"settings": "Cài đặt"
+				}
+			},
+			"empty": {
+				"title": "Không có thẻ nào trên bảng điều khiển",
+				"description": "Chọn các thẻ bạn muốn xem. Lựa chọn của bạn được ghi nhớ trong trình duyệt này."
+			},
+			"reorder": {
+				"moveUp": "Di chuyển lên",
+				"moveDown": "Di chuyển xuống"
+			}
+		},
 		"notFound": {
 			"title": "Ôi không! Bạn đã làm rơi sushi!",
 			"subtitle": "Either the URL doesn’t exist, or you don’t have access to it."

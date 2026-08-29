@@ -189,7 +189,8 @@
 				"statusPages": "Pàgines d'estat",
 				"maintenance": "Manteniment",
 				"logs": "Registres",
-				"settings": "Configuració"
+				"settings": "Configuració",
+				"dashboard": "Tauler"
 			},
 			"bottomMenu": {
 				"support": "Suport",
@@ -223,6 +224,146 @@
 		}
 	},
 	"pages": {
+		"dashboard": {
+			"header": {
+				"title": "Tauler",
+				"description": "Consulteu temps en línia, infraestructura, incidents i comprovacions en un sol lloc, per detectar què necessita atenció sense obrir cada pàgina."
+			},
+			"card": {
+				"error": "No s'ha pogut carregar aquesta targeta."
+			},
+			"cards": {
+				"monitorStatus": {
+					"title": "Estat dels monitors",
+					"empty": "Encara no hi ha monitors.",
+					"upOfTotal": "de {{total}} actius"
+				},
+				"currentlyDown": {
+					"title": "Actualment caiguts",
+					"empty": "Tots els monitors estan actius. Cap incident obert.",
+					"count": "{{count}} requereixen atenció"
+				},
+				"monitorsByType": {
+					"title": "Monitors per tipus",
+					"empty": "Encara no hi ha monitors.",
+					"down": "{{count}} caiguts"
+				},
+				"recentIncidents": {
+					"title": "Incidents recents",
+					"empty": "Cap incident — tots els sistemes sans.",
+					"active": "{{count}} oberts",
+					"ongoing": "En curs",
+					"manual": "Manual",
+					"unknownMonitor": "Monitor desconegut"
+				},
+				"failedChecks": {
+					"title": "Comprovacions fallides",
+					"empty": "Encara no hi ha comprovacions.",
+					"ratio": "{{failed}} de {{total}} el darrer dia"
+				},
+				"checkmateServer": {
+					"title": "Servidor de Checkmate",
+					"memory": "Memòria",
+					"eventLoop": "Retard del bucle d'esdeveniments",
+					"uptime": "Temps actiu",
+					"database": "Base de dades",
+					"readsWrites": "{{reads}} lectures/s · {{writes}} escriptures/s"
+				},
+				"ranking": {
+					"topOf": "Top {{shown}} de {{total}}",
+					"notEnough": "No hi ha prou monitors per fer una classificació."
+				},
+				"slowestMonitors": {
+					"title": "Monitors més lents"
+				},
+				"lowestUptime": {
+					"title": "Temps en línia més baix"
+				},
+				"monitorsByGroup": {
+					"title": "Monitors per grup",
+					"empty": "Encara no hi ha grups. Els grups es defineixen per monitor."
+				},
+				"busiestServers": {
+					"title": "Servidors més carregats",
+					"empty": "Encara no hi ha monitors d'infraestructura.",
+					"cpu": "CPU",
+					"memory": "Memòria",
+					"disk": "Disc"
+				},
+				"incidentStats": {
+					"title": "Estadístiques d'incidents",
+					"openNow": "Oberts ara",
+					"avgResolution": "Temps mitjà de resolució",
+					"hours": "{{hours}} h",
+					"mostIncidents": "Més incidents",
+					"total": "total",
+					"resolved": "Resolts",
+					"automatic": "Automàtica",
+					"manual": "Manual",
+					"autoManual": "{{automatic}} automàtiques · {{manual}} manuals"
+				},
+				"notificationChannels": {
+					"title": "Canals de notificació",
+					"empty": "Encara no hi ha canals."
+				},
+				"maintenance": {
+					"title": "Finestres de manteniment",
+					"empty": "Cap manteniment programat.",
+					"runningNow": "En execució",
+					"next": "Propera finestra"
+				},
+				"statusPages": {
+					"title": "Pàgines d'estat",
+					"empty": "Encara no hi ha pàgines d'estat.",
+					"monitorCount": "{{count}} monitors",
+					"published": "Publicada",
+					"draft": "Esborrany"
+				},
+				"checksOnSchedule": {
+					"title": "Cua de comprovacions",
+					"healthy": "Les {{jobs}} tasques van segons el previst en {{workers}} worker(s).",
+					"failing": "Tasques fallides",
+					"scheduled": "Tasques programades",
+					"runningNow": "En execució"
+				},
+				"recentErrors": {
+					"title": "Errors recents",
+					"empty": "Cap error registrat.",
+					"count": "{{count}} errors",
+					"warnings": "Advertiments"
+				},
+				"team": {
+					"title": "Membres de l'equip",
+					"members": "{{count}} membres",
+					"unverified": "Sense verificar"
+				}
+			},
+			"picker": {
+				"trigger": "Edita les targetes",
+				"title": "Targetes del tauler",
+				"done": "Fet",
+				"reset": "Restableix els valors predeterminats",
+				"groups": {
+					"uptime": "Temps en línia",
+					"infrastructure": "Infraestructura",
+					"incidents": "Incidents",
+					"notifications": "Notificacions",
+					"maintenance": "Manteniment",
+					"statusPages": "Pàgines d'estat",
+					"checks": "Comprovacions",
+					"logs": "Sistema",
+					"settings": "Configuració"
+				}
+			},
+			"empty": {
+				"title": "No hi ha targetes al vostre tauler",
+				"description": "Trieu les targetes que voleu veure. La vostra selecció es recorda en aquest navegador."
+			},
+			"reorder": {
+				"moveUp": "Mou amunt",
+				"moveDown": "Mou avall"
+			}
+		},
 		"notFound": {
 			"title": "Oh no! Has deixat caure el teu sushi!",
 			"subtitle": "O bé la URL no existeix, o bé no tens accés."

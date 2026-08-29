@@ -181,7 +181,8 @@
 				"statusPages": "Pagina de status",
 				"maintenance": "Manutenção",
 				"logs": "Registros",
-				"settings": "Configurações"
+				"settings": "Configurações",
+				"dashboard": "Painel"
 			},
 			"bottomMenu": {
 				"support": "Suporte",
@@ -223,6 +224,146 @@
 		}
 	},
 	"pages": {
+		"dashboard": {
+			"header": {
+				"title": "Painel",
+				"description": "Veja uptime, infraestrutura, incidentes e verificações em um só lugar, para identificar o que precisa de atenção sem abrir cada página."
+			},
+			"card": {
+				"error": "Não foi possível carregar este cartão."
+			},
+			"cards": {
+				"monitorStatus": {
+					"title": "Status dos monitores",
+					"empty": "Ainda não há monitores.",
+					"upOfTotal": "de {{total}} no ar"
+				},
+				"currentlyDown": {
+					"title": "Fora do ar agora",
+					"empty": "Todos os monitores estão no ar. Nenhum incidente aberto.",
+					"count": "{{count}} precisam de atenção"
+				},
+				"monitorsByType": {
+					"title": "Monitores por tipo",
+					"empty": "Ainda não há monitores.",
+					"down": "{{count}} fora do ar"
+				},
+				"recentIncidents": {
+					"title": "Incidentes recentes",
+					"empty": "Nenhum incidente — todos os sistemas saudáveis.",
+					"active": "{{count}} abertos",
+					"ongoing": "Em andamento",
+					"manual": "Manual",
+					"unknownMonitor": "Monitor desconhecido"
+				},
+				"failedChecks": {
+					"title": "Verificações com falha",
+					"empty": "Ainda não há verificações.",
+					"ratio": "{{failed}} de {{total}} no último dia"
+				},
+				"checkmateServer": {
+					"title": "Servidor Checkmate",
+					"memory": "Memória",
+					"eventLoop": "Atraso do event loop",
+					"uptime": "Tempo no ar",
+					"database": "Banco de dados",
+					"readsWrites": "{{reads}} leituras/s · {{writes}} gravações/s"
+				},
+				"ranking": {
+					"topOf": "Top {{shown}} de {{total}}",
+					"notEnough": "Não há monitores suficientes para classificar."
+				},
+				"slowestMonitors": {
+					"title": "Monitores mais lentos"
+				},
+				"lowestUptime": {
+					"title": "Menor uptime"
+				},
+				"monitorsByGroup": {
+					"title": "Monitores por grupo",
+					"empty": "Ainda não há grupos. Grupos são definidos por monitor."
+				},
+				"busiestServers": {
+					"title": "Servidores mais ocupados",
+					"empty": "Ainda não há monitores de infraestrutura.",
+					"cpu": "CPU",
+					"memory": "Memória",
+					"disk": "Disco"
+				},
+				"incidentStats": {
+					"title": "Estatísticas de incidentes",
+					"openNow": "Abertos agora",
+					"avgResolution": "Tempo médio de resolução",
+					"hours": "{{hours}} h",
+					"mostIncidents": "Mais incidentes",
+					"total": "total",
+					"resolved": "Resolvidos",
+					"automatic": "Automática",
+					"manual": "Manual",
+					"autoManual": "{{automatic}} automáticas · {{manual}} manuais"
+				},
+				"notificationChannels": {
+					"title": "Canais de notificação",
+					"empty": "Ainda não há canais."
+				},
+				"maintenance": {
+					"title": "Janelas de manutenção",
+					"empty": "Nenhuma manutenção agendada.",
+					"runningNow": "Em execução",
+					"next": "Próxima janela"
+				},
+				"statusPages": {
+					"title": "Páginas de status",
+					"empty": "Ainda não há páginas de status.",
+					"monitorCount": "{{count}} monitores",
+					"published": "Publicada",
+					"draft": "Rascunho"
+				},
+				"checksOnSchedule": {
+					"title": "Fila de verificações",
+					"healthy": "Todos os {{jobs}} jobs em dia em {{workers}} worker(s).",
+					"failing": "Jobs com falha",
+					"scheduled": "Jobs agendados",
+					"runningNow": "Em execução"
+				},
+				"recentErrors": {
+					"title": "Erros recentes",
+					"empty": "Nenhum erro registrado.",
+					"count": "{{count}} erros",
+					"warnings": "Avisos"
+				},
+				"team": {
+					"title": "Membros da equipe",
+					"members": "{{count}} membros",
+					"unverified": "Não verificados"
+				}
+			},
+			"picker": {
+				"trigger": "Editar cartões",
+				"title": "Cartões do painel",
+				"done": "Concluído",
+				"reset": "Restaurar padrões",
+				"groups": {
+					"uptime": "Uptime",
+					"infrastructure": "Infraestrutura",
+					"incidents": "Incidentes",
+					"notifications": "Notificações",
+					"maintenance": "Manutenção",
+					"statusPages": "Páginas de status",
+					"checks": "Verificações",
+					"logs": "Sistema",
+					"settings": "Configurações"
+				}
+			},
+			"empty": {
+				"title": "Nenhum cartão no seu painel",
+				"description": "Escolha os cartões que deseja ver. Sua seleção é lembrada neste navegador."
+			},
+			"reorder": {
+				"moveUp": "Mover para cima",
+				"moveDown": "Mover para baixo"
+			}
+		},
 		"notFound": {
 			"title": "Oh não! Você derrubou seu sushi!",
 			"subtitle": "A URL não existe ou você não tem acesso a ela."

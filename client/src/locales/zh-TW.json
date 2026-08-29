@@ -181,7 +181,8 @@
 				"statusPages": "狀態頁面",
 				"maintenance": "維護",
 				"logs": "日誌",
-				"settings": "設定"
+				"settings": "設定",
+				"dashboard": "儀表板"
 			},
 			"bottomMenu": {
 				"support": "支援",
@@ -223,6 +224,146 @@
 		}
 	},
 	"pages": {
+		"dashboard": {
+			"header": {
+				"title": "儀表板",
+				"description": "在同一個頁面檢視運行時間、基礎設施、事件與檢查，不必逐頁開啟即可發現需要留意的問題。"
+			},
+			"card": {
+				"error": "無法載入此卡片。"
+			},
+			"cards": {
+				"monitorStatus": {
+					"title": "監視狀態",
+					"empty": "尚無監視器。",
+					"upOfTotal": "/ {{total}} 正常"
+				},
+				"currentlyDown": {
+					"title": "目前離線",
+					"empty": "所有監視器均正常。沒有未處理的事件。",
+					"count": "{{count}} 項需要留意"
+				},
+				"monitorsByType": {
+					"title": "依類型分類的監視器",
+					"empty": "尚無監視器。",
+					"down": "{{count}} 個離線"
+				},
+				"recentIncidents": {
+					"title": "最近事件",
+					"empty": "沒有事件 — 所有系統正常。",
+					"active": "{{count}} 個未處理",
+					"ongoing": "進行中",
+					"manual": "手動",
+					"unknownMonitor": "未知監視器"
+				},
+				"failedChecks": {
+					"title": "失敗的檢查",
+					"empty": "尚無檢查。",
+					"ratio": "最近一天 {{total}} 次中的 {{failed}} 次"
+				},
+				"checkmateServer": {
+					"title": "Checkmate 伺服器",
+					"memory": "記憶體",
+					"eventLoop": "事件迴圈延遲",
+					"uptime": "運行時間",
+					"database": "資料庫",
+					"readsWrites": "{{reads}} 讀取/秒 · {{writes}} 寫入/秒"
+				},
+				"ranking": {
+					"topOf": "{{total}} 個中的前 {{shown}} 個",
+					"notEnough": "監視器數量不足，無法排名。"
+				},
+				"slowestMonitors": {
+					"title": "最慢的監視器"
+				},
+				"lowestUptime": {
+					"title": "運行時間最低"
+				},
+				"monitorsByGroup": {
+					"title": "依群組分類的監視器",
+					"empty": "尚無群組。群組在每個監視器上設定。"
+				},
+				"busiestServers": {
+					"title": "最繁忙的伺服器",
+					"empty": "尚無基礎設施監視器。",
+					"cpu": "CPU",
+					"memory": "記憶體",
+					"disk": "磁碟"
+				},
+				"incidentStats": {
+					"title": "事件統計",
+					"openNow": "目前未處理",
+					"avgResolution": "平均解決時間",
+					"hours": "{{hours}} 小時",
+					"mostIncidents": "事件最多",
+					"total": "總計",
+					"resolved": "已解決",
+					"automatic": "自動",
+					"manual": "手動",
+					"autoManual": "{{automatic}} 個自動 · {{manual}} 個手動"
+				},
+				"notificationChannels": {
+					"title": "通知管道",
+					"empty": "尚無管道。"
+				},
+				"maintenance": {
+					"title": "維護時段",
+					"empty": "沒有排定的維護。",
+					"runningNow": "進行中",
+					"next": "下一個時段"
+				},
+				"statusPages": {
+					"title": "狀態頁面",
+					"empty": "尚無狀態頁面。",
+					"monitorCount": "{{count}} 個監視器",
+					"published": "已發布",
+					"draft": "草稿"
+				},
+				"checksOnSchedule": {
+					"title": "檢查佇列",
+					"healthy": "{{workers}} 個工作處理程序上的 {{jobs}} 個工作均按計畫執行。",
+					"failing": "失敗的工作",
+					"scheduled": "排定的工作",
+					"runningNow": "進行中"
+				},
+				"recentErrors": {
+					"title": "最近錯誤",
+					"empty": "沒有記錄到錯誤。",
+					"count": "{{count}} 個錯誤",
+					"warnings": "警告"
+				},
+				"team": {
+					"title": "團隊成員",
+					"members": "{{count}} 位成員",
+					"unverified": "未驗證"
+				}
+			},
+			"picker": {
+				"trigger": "編輯卡片",
+				"title": "儀表板卡片",
+				"done": "完成",
+				"reset": "還原預設值",
+				"groups": {
+					"uptime": "運行時間",
+					"infrastructure": "基礎設施",
+					"incidents": "事件",
+					"notifications": "通知",
+					"maintenance": "維護",
+					"statusPages": "狀態頁面",
+					"checks": "檢查",
+					"logs": "系統",
+					"settings": "設定"
+				}
+			},
+			"empty": {
+				"title": "您的儀表板上沒有卡片",
+				"description": "選擇您想檢視的卡片。您的選擇會記錄在此瀏覽器中。"
+			},
+			"reorder": {
+				"moveUp": "上移",
+				"moveDown": "下移"
+			}
+		},
 		"notFound": {
 			"title": "哎呀！您的壽司掉了！",
 			"subtitle": "該 URL 不存在，或您沒有存取權限。"

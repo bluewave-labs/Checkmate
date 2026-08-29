@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import { useGet } from "@/Hooks/UseApi";
 import { Dot } from "@/Components/design-elements";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
 import { formatDuration, formatTimestamp } from "@/Utils/TimeUtils";
 import { DashboardCard, CardMessage } from "../DashboardCard";
 import { CardRow, CardRowLabel } from "../CardPrimitives";
@@ -43,10 +42,7 @@ export const RecentIncidentsCard = () => {
 			isStale={isValidating && Boolean(data)}
 			action={
 				data && data.totalActive > 0 ? (
-					<Typography
-						fontSize={typographyLevels.m}
-						color={theme.palette.error.main}
-					>
+					<Typography color={theme.palette.error.main}>
 						{t("pages.dashboard.cards.recentIncidents.active", {
 							count: data.totalActive,
 						})}
@@ -78,7 +74,6 @@ export const RecentIncidentsCard = () => {
 									secondary={formatTimestamp(incident.startTime)}
 								/>
 								<Typography
-									fontSize={typographyLevels.m}
 									color={theme.palette.text.secondary}
 									sx={{ flexShrink: 0 }}
 								>
@@ -88,7 +83,6 @@ export const RecentIncidentsCard = () => {
 								</Typography>
 								{incident.resolutionType === "manual" && (
 									<Typography
-										fontSize={typographyLevels.m}
 										color={theme.palette.warning.main}
 										sx={{ flexShrink: 0 }}
 									>

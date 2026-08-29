@@ -181,7 +181,8 @@
 				"statusPages": "Durum sayfaları",
 				"maintenance": "Bakım",
 				"logs": "Günlükler",
-				"settings": "Ayarlar"
+				"settings": "Ayarlar",
+				"dashboard": "Panel"
 			},
 			"bottomMenu": {
 				"support": "Destek",
@@ -223,6 +224,146 @@
 		}
 	},
 	"pages": {
+		"dashboard": {
+			"header": {
+				"title": "Panel",
+				"description": "Çalışma süresi, altyapı, olaylar ve kontrolleri tek bir yerde görün; her sayfayı açmadan neyin ilgi gerektirdiğini fark edin."
+			},
+			"card": {
+				"error": "Bu kart yüklenemedi."
+			},
+			"cards": {
+				"monitorStatus": {
+					"title": "İzleyici durumu",
+					"empty": "Henüz izleyici yok.",
+					"upOfTotal": "/ {{total}} çalışıyor"
+				},
+				"currentlyDown": {
+					"title": "Şu anda kapalı",
+					"empty": "Tüm izleyiciler çalışıyor. Açık olay yok.",
+					"count": "{{count}} ilgi bekliyor"
+				},
+				"monitorsByType": {
+					"title": "Türe göre izleyiciler",
+					"empty": "Henüz izleyici yok.",
+					"down": "{{count}} kapalı"
+				},
+				"recentIncidents": {
+					"title": "Son olaylar",
+					"empty": "Olay yok — tüm sistemler sağlıklı.",
+					"active": "{{count}} açık",
+					"ongoing": "Devam ediyor",
+					"manual": "Manuel",
+					"unknownMonitor": "Bilinmeyen izleyici"
+				},
+				"failedChecks": {
+					"title": "Başarısız kontroller",
+					"empty": "Henüz kontrol yok.",
+					"ratio": "son günde {{total}} kontrolün {{failed}} tanesi"
+				},
+				"checkmateServer": {
+					"title": "Checkmate sunucusu",
+					"memory": "Bellek",
+					"eventLoop": "Olay döngüsü gecikmesi",
+					"uptime": "Çalışma süresi",
+					"database": "Veritabanı",
+					"readsWrites": "{{reads}} okuma/sn · {{writes}} yazma/sn"
+				},
+				"ranking": {
+					"topOf": "{{total}} içinden ilk {{shown}}",
+					"notEnough": "Sıralama için yeterli izleyici yok."
+				},
+				"slowestMonitors": {
+					"title": "En yavaş izleyiciler"
+				},
+				"lowestUptime": {
+					"title": "En düşük çalışma süresi"
+				},
+				"monitorsByGroup": {
+					"title": "Gruba göre izleyiciler",
+					"empty": "Henüz grup yok. Gruplar izleyici başına ayarlanır."
+				},
+				"busiestServers": {
+					"title": "En yoğun sunucular",
+					"empty": "Henüz altyapı izleyicisi yok.",
+					"cpu": "CPU",
+					"memory": "Bellek",
+					"disk": "Disk"
+				},
+				"incidentStats": {
+					"title": "Olay istatistikleri",
+					"openNow": "Şu anda açık",
+					"avgResolution": "Ortalama çözüm süresi",
+					"hours": "{{hours}} sa",
+					"mostIncidents": "En çok olay",
+					"total": "toplam",
+					"resolved": "Çözüldü",
+					"automatic": "Otomatik",
+					"manual": "Manuel",
+					"autoManual": "{{automatic}} otomatik · {{manual}} manuel"
+				},
+				"notificationChannels": {
+					"title": "Bildirim kanalları",
+					"empty": "Henüz kanal yok."
+				},
+				"maintenance": {
+					"title": "Bakım pencereleri",
+					"empty": "Planlanmış bakım yok.",
+					"runningNow": "Şu anda çalışıyor",
+					"next": "Sonraki pencere"
+				},
+				"statusPages": {
+					"title": "Durum sayfaları",
+					"empty": "Henüz durum sayfası yok.",
+					"monitorCount": "{{count}} izleyici",
+					"published": "Yayında",
+					"draft": "Taslak"
+				},
+				"checksOnSchedule": {
+					"title": "Kontrol kuyruğu",
+					"healthy": "{{workers}} işçide {{jobs}} işin tümü planlandığı gibi.",
+					"failing": "Başarısız işler",
+					"scheduled": "Planlanmış işler",
+					"runningNow": "Şu anda çalışıyor"
+				},
+				"recentErrors": {
+					"title": "Son hatalar",
+					"empty": "Kaydedilmiş hata yok.",
+					"count": "{{count}} hata",
+					"warnings": "Uyarılar"
+				},
+				"team": {
+					"title": "Ekip üyeleri",
+					"members": "{{count}} üye",
+					"unverified": "Doğrulanmamış"
+				}
+			},
+			"picker": {
+				"trigger": "Kartları düzenle",
+				"title": "Panel kartları",
+				"done": "Tamam",
+				"reset": "Varsayılanlara sıfırla",
+				"groups": {
+					"uptime": "Çalışma süresi",
+					"infrastructure": "Altyapı",
+					"incidents": "Olaylar",
+					"notifications": "Bildirimler",
+					"maintenance": "Bakım",
+					"statusPages": "Durum sayfaları",
+					"checks": "Kontroller",
+					"logs": "Sistem",
+					"settings": "Ayarlar"
+				}
+			},
+			"empty": {
+				"title": "Panelinizde kart yok",
+				"description": "Görmek istediğiniz kartları seçin. Seçiminiz bu tarayıcıda hatırlanır."
+			},
+			"reorder": {
+				"moveUp": "Yukarı taşı",
+				"moveDown": "Aşağı taşı"
+			}
+		},
 		"notFound": {
 			"title": "Eyvah! Sushini düşürdün!",
 			"subtitle": "URL mevcut değil veya erişim yetkiniz yok."

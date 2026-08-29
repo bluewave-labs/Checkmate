@@ -7,7 +7,6 @@ import { useMemo } from "react";
 import { useGet } from "@/Hooks/UseApi";
 import { Dot } from "@/Components/design-elements";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
 import { formatTimestamp } from "@/Utils/TimeUtils";
 import { DashboardCard, CardMessage } from "../DashboardCard";
 import {
@@ -243,7 +242,6 @@ export const StatusPagesCard = () => {
 								})}
 							/>
 							<Typography
-								fontSize={typographyLevels.m}
 								color={theme.palette.text.secondary}
 								flexShrink={0}
 							>

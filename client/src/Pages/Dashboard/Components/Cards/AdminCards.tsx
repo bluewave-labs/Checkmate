@@ -6,7 +6,6 @@ import { useMemo } from "react";
 
 import { useGet } from "@/Hooks/UseApi";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
 import { formatTimestamp } from "@/Utils/TimeUtils";
 import { DashboardCard, CardMessage } from "../DashboardCard";
 import { CardFigure, CardRow, CardRowLabel, CardStatLine } from "../CardPrimitives";
@@ -63,7 +62,6 @@ export const ChecksOnScheduleCard = () => {
 											secondary={job.failReason}
 										/>
 										<Typography
-											fontSize={typographyLevels.m}
 											color={theme.palette.error.main}
 											flexShrink={0}
 										>
@@ -125,10 +123,7 @@ export const RecentErrorsCard = () => {
 			isStale={isValidating && Boolean(data)}
 			action={
 				errors > 0 ? (
-					<Typography
-						fontSize={typographyLevels.m}
-						color={theme.palette.error.main}
-					>
+					<Typography color={theme.palette.error.main}>
 						{t("pages.dashboard.cards.recentErrors.count", { count: errors })}
 					</Typography>
 				) : null
@@ -150,7 +145,6 @@ export const RecentErrorsCard = () => {
 									secondary={[entry.service, entry.method].filter(Boolean).join(" · ")}
 								/>
 								<Typography
-									fontSize={typographyLevels.m}
 									color={
 										entry.level === "error"
 											? theme.palette.error.main

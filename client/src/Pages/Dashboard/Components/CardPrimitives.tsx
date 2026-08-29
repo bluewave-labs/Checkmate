@@ -142,7 +142,6 @@ export const CardRowLabel = ({
 			flex={1}
 		>
 			<Typography
-				fontSize={typographyLevels.m}
 				color={theme.palette.text.primary}
 				noWrap
 			>
@@ -150,7 +149,6 @@ export const CardRowLabel = ({
 			</Typography>
 			{secondary && (
 				<Typography
-					fontSize={typographyLevels.m}
 					color={theme.palette.text.secondary}
 					noWrap
 				>
@@ -183,14 +181,7 @@ export const CardFigure = ({
 			>
 				{value}
 			</Typography>
-			{caption && (
-				<Typography
-					fontSize={typographyLevels.m}
-					color={theme.palette.text.secondary}
-				>
-					{caption}
-				</Typography>
-			)}
+			{caption && <Typography color={theme.palette.text.secondary}>{caption}</Typography>}
 		</Stack>
 	);
 };
@@ -217,14 +208,8 @@ export const CardStatLine = ({
 			justifyContent="space-between"
 			gap={theme.spacing(LAYOUT.SM)}
 		>
+			<Typography color={theme.palette.text.secondary}>{label}</Typography>
 			<Typography
-				fontSize={typographyLevels.m}
-				color={theme.palette.text.secondary}
-			>
-				{label}
-			</Typography>
-			<Typography
-				fontSize={typographyLevels.m}
 				color={color ?? theme.palette.text.primary}
 				noWrap
 			>
@@ -270,7 +255,6 @@ export const CardMeterRow = ({
 			>
 				{typeof label === "string" ? (
 					<Typography
-						fontSize={typographyLevels.m}
 						color={theme.palette.text.primary}
 						noWrap
 					>

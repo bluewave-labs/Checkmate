@@ -83,10 +83,7 @@ export const MonitorStatusCard = () => {
 							>
 								{summary.upMonitors}
 							</Typography>
-							<Typography
-								fontSize={typographyLevels.m}
-								color={theme.palette.text.secondary}
-							>
+							<Typography color={theme.palette.text.secondary}>
 								{t("pages.dashboard.cards.monitorStatus.upOfTotal", {
 									total: summary.totalMonitors,
 								})}
@@ -124,16 +121,10 @@ export const MonitorStatusCard = () => {
 										color={getStatusColor(state.status, theme)}
 										size="md"
 									/>
-									<Typography
-										fontSize={typographyLevels.m}
-										color={theme.palette.text.secondary}
-									>
+									<Typography color={theme.palette.text.secondary}>
 										{t(`pages.common.monitors.status.${state.key}`)}
 									</Typography>
-									<Typography
-										fontSize={typographyLevels.m}
-										color={theme.palette.text.primary}
-									>
+									<Typography color={theme.palette.text.primary}>
 										{state.count}
 									</Typography>
 								</Stack>

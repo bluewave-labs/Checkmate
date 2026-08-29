@@ -181,7 +181,8 @@
 				"statusPages": "Pages de statut",
 				"maintenance": "Maintenance",
 				"logs": "Journaux",
-				"settings": "Paramètres"
+				"settings": "Paramètres",
+				"dashboard": "Tableau de bord"
 			},
 			"bottomMenu": {
 				"support": "Support",
@@ -223,6 +224,146 @@
 		}
 	},
 	"pages": {
+		"dashboard": {
+			"header": {
+				"title": "Tableau de bord",
+				"description": "Visualisez la disponibilité, l'infrastructure, les incidents et les vérifications au même endroit, pour repérer ce qui demande votre attention sans ouvrir chaque page."
+			},
+			"card": {
+				"error": "Impossible de charger cette carte."
+			},
+			"cards": {
+				"monitorStatus": {
+					"title": "État des moniteurs",
+					"empty": "Aucun moniteur pour l'instant.",
+					"upOfTotal": "sur {{total}} en ligne"
+				},
+				"currentlyDown": {
+					"title": "Actuellement hors ligne",
+					"empty": "Tous les moniteurs sont en ligne. Aucun incident ouvert.",
+					"count": "{{count}} à surveiller"
+				},
+				"monitorsByType": {
+					"title": "Moniteurs par type",
+					"empty": "Aucun moniteur pour l'instant.",
+					"down": "{{count}} hors ligne"
+				},
+				"recentIncidents": {
+					"title": "Incidents récents",
+					"empty": "Aucun incident — tous les systèmes sont sains.",
+					"active": "{{count}} ouverts",
+					"ongoing": "En cours",
+					"manual": "Manuel",
+					"unknownMonitor": "Moniteur inconnu"
+				},
+				"failedChecks": {
+					"title": "Vérifications échouées",
+					"empty": "Aucune vérification pour l'instant.",
+					"ratio": "{{failed}} sur {{total}} le dernier jour"
+				},
+				"checkmateServer": {
+					"title": "Serveur Checkmate",
+					"memory": "Mémoire",
+					"eventLoop": "Latence de la boucle d'événements",
+					"uptime": "Durée de fonctionnement",
+					"database": "Base de données",
+					"readsWrites": "{{reads}} lectures/s · {{writes}} écritures/s"
+				},
+				"ranking": {
+					"topOf": "Top {{shown}} sur {{total}}",
+					"notEnough": "Pas assez de moniteurs pour établir un classement."
+				},
+				"slowestMonitors": {
+					"title": "Moniteurs les plus lents"
+				},
+				"lowestUptime": {
+					"title": "Disponibilité la plus faible"
+				},
+				"monitorsByGroup": {
+					"title": "Moniteurs par groupe",
+					"empty": "Aucun groupe pour l'instant. Les groupes se définissent par moniteur."
+				},
+				"busiestServers": {
+					"title": "Serveurs les plus chargés",
+					"empty": "Aucun moniteur d'infrastructure pour l'instant.",
+					"cpu": "Processeur",
+					"memory": "Mémoire",
+					"disk": "Disque"
+				},
+				"incidentStats": {
+					"title": "Statistiques d'incidents",
+					"openNow": "Ouverts maintenant",
+					"avgResolution": "Temps moyen de résolution",
+					"hours": "{{hours}} h",
+					"mostIncidents": "Le plus d'incidents",
+					"total": "total",
+					"resolved": "Résolus",
+					"automatic": "Automatique",
+					"manual": "Manuel",
+					"autoManual": "{{automatic}} automatiques · {{manual}} manuels"
+				},
+				"notificationChannels": {
+					"title": "Canaux de notification",
+					"empty": "Aucun canal pour l'instant."
+				},
+				"maintenance": {
+					"title": "Fenêtres de maintenance",
+					"empty": "Aucune maintenance planifiée.",
+					"runningNow": "En cours",
+					"next": "Prochaine fenêtre"
+				},
+				"statusPages": {
+					"title": "Pages de statut",
+					"empty": "Aucune page de statut pour l'instant.",
+					"monitorCount": "{{count}} moniteurs",
+					"published": "Publiée",
+					"draft": "Brouillon"
+				},
+				"checksOnSchedule": {
+					"title": "File de vérifications",
+					"healthy": "Les {{jobs}} tâches sont à l'heure sur {{workers}} worker(s).",
+					"failing": "Tâches en échec",
+					"scheduled": "Tâches planifiées",
+					"runningNow": "En cours"
+				},
+				"recentErrors": {
+					"title": "Erreurs récentes",
+					"empty": "Aucune erreur enregistrée.",
+					"count": "{{count}} erreurs",
+					"warnings": "Avertissements"
+				},
+				"team": {
+					"title": "Membres de l'équipe",
+					"members": "{{count}} membres",
+					"unverified": "Non vérifiés"
+				}
+			},
+			"picker": {
+				"trigger": "Modifier les cartes",
+				"title": "Cartes du tableau de bord",
+				"done": "Terminé",
+				"reset": "Réinitialiser par défaut",
+				"groups": {
+					"uptime": "Disponibilité",
+					"infrastructure": "Infrastructure",
+					"incidents": "Incidents",
+					"notifications": "Notifications",
+					"maintenance": "Maintenance",
+					"statusPages": "Pages de statut",
+					"checks": "Vérifications",
+					"logs": "Système",
+					"settings": "Paramètres"
+				}
+			},
+			"empty": {
+				"title": "Aucune carte sur votre tableau de bord",
+				"description": "Choisissez les cartes à afficher. Votre sélection est mémorisée dans ce navigateur."
+			},
+			"reorder": {
+				"moveUp": "Monter",
+				"moveDown": "Descendre"
+			}
+		},
 		"notFound": {
 			"title": "Oh non ! Vous avez fait tomber vos sushis !",
 			"subtitle": "Soit l'URL n'existe pas, soit vous n'y avez pas accès."

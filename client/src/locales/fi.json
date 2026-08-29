@@ -181,7 +181,8 @@
 				"statusPages": "Tilasivut",
 				"maintenance": "Huolto",
 				"logs": "Lokit",
-				"settings": "Asetukset"
+				"settings": "Asetukset",
+				"dashboard": "Kojelauta"
 			},
 			"bottomMenu": {
 				"support": "Tuki",
@@ -223,6 +224,146 @@
 		}
 	},
 	"pages": {
+		"dashboard": {
+			"header": {
+				"title": "Kojelauta",
+				"description": "Näe käytettävyys, infrastruktuuri, tapaukset ja tarkistukset yhdessä paikassa, jotta huomaat huomiota vaativat asiat avaamatta jokaista sivua."
+			},
+			"card": {
+				"error": "Tätä korttia ei voitu ladata."
+			},
+			"cards": {
+				"monitorStatus": {
+					"title": "Monitorien tila",
+					"empty": "Ei vielä monitoreja.",
+					"upOfTotal": "/ {{total}} käynnissä"
+				},
+				"currentlyDown": {
+					"title": "Tällä hetkellä alhaalla",
+					"empty": "Kaikki monitorit ovat käynnissä. Ei avoimia tapauksia.",
+					"count": "{{count}} vaatii huomiota"
+				},
+				"monitorsByType": {
+					"title": "Monitorit tyypeittäin",
+					"empty": "Ei vielä monitoreja.",
+					"down": "{{count}} alhaalla"
+				},
+				"recentIncidents": {
+					"title": "Viimeisimmät tapaukset",
+					"empty": "Ei tapauksia — kaikki järjestelmät kunnossa.",
+					"active": "{{count}} avoinna",
+					"ongoing": "Käynnissä",
+					"manual": "Manuaalinen",
+					"unknownMonitor": "Tuntematon monitori"
+				},
+				"failedChecks": {
+					"title": "Epäonnistuneet tarkistukset",
+					"empty": "Ei vielä tarkistuksia.",
+					"ratio": "{{failed}} / {{total}} viimeisen vuorokauden aikana"
+				},
+				"checkmateServer": {
+					"title": "Checkmate-palvelin",
+					"memory": "Muisti",
+					"eventLoop": "Tapahtumasilmukan viive",
+					"uptime": "Käyntiaika",
+					"database": "Tietokanta",
+					"readsWrites": "{{reads}} lukua/s · {{writes}} kirjoitusta/s"
+				},
+				"ranking": {
+					"topOf": "Top {{shown}} / {{total}}",
+					"notEnough": "Ei tarpeeksi monitoreja järjestykseen."
+				},
+				"slowestMonitors": {
+					"title": "Hitaimmat monitorit"
+				},
+				"lowestUptime": {
+					"title": "Alhaisin käytettävyys"
+				},
+				"monitorsByGroup": {
+					"title": "Monitorit ryhmittäin",
+					"empty": "Ei vielä ryhmiä. Ryhmät asetetaan monitorikohtaisesti."
+				},
+				"busiestServers": {
+					"title": "Kuormitetuimmat palvelimet",
+					"empty": "Ei vielä infrastruktuurimonitoreja.",
+					"cpu": "Suoritin",
+					"memory": "Muisti",
+					"disk": "Levy"
+				},
+				"incidentStats": {
+					"title": "Tapaustilastot",
+					"openNow": "Avoinna nyt",
+					"avgResolution": "Keskimääräinen ratkaisuaika",
+					"hours": "{{hours}} t",
+					"mostIncidents": "Eniten tapauksia",
+					"total": "yhteensä",
+					"resolved": "Ratkaistu",
+					"automatic": "Automaattinen",
+					"manual": "Manuaalinen",
+					"autoManual": "{{automatic}} automaattista · {{manual}} manuaalista"
+				},
+				"notificationChannels": {
+					"title": "Ilmoituskanavat",
+					"empty": "Ei vielä kanavia."
+				},
+				"maintenance": {
+					"title": "Huoltoikkunat",
+					"empty": "Ei suunniteltua huoltoa.",
+					"runningNow": "Käynnissä nyt",
+					"next": "Seuraava ikkuna"
+				},
+				"statusPages": {
+					"title": "Tilasivut",
+					"empty": "Ei vielä tilasivuja.",
+					"monitorCount": "{{count}} monitoria",
+					"published": "Julkaistu",
+					"draft": "Luonnos"
+				},
+				"checksOnSchedule": {
+					"title": "Tarkistusjono",
+					"healthy": "Kaikki {{jobs}} työtä aikataulussa {{workers}} työntekijällä.",
+					"failing": "Epäonnistuvat työt",
+					"scheduled": "Ajastetut työt",
+					"runningNow": "Käynnissä nyt"
+				},
+				"recentErrors": {
+					"title": "Viimeisimmät virheet",
+					"empty": "Ei kirjattuja virheitä.",
+					"count": "{{count}} virhettä",
+					"warnings": "Varoitukset"
+				},
+				"team": {
+					"title": "Tiimin jäsenet",
+					"members": "{{count}} jäsentä",
+					"unverified": "Vahvistamattomat"
+				}
+			},
+			"picker": {
+				"trigger": "Muokkaa kortteja",
+				"title": "Kojelaudan kortit",
+				"done": "Valmis",
+				"reset": "Palauta oletukset",
+				"groups": {
+					"uptime": "Käytettävyys",
+					"infrastructure": "Infrastruktuuri",
+					"incidents": "Tapaukset",
+					"notifications": "Ilmoitukset",
+					"maintenance": "Huolto",
+					"statusPages": "Tilasivut",
+					"checks": "Tarkistukset",
+					"logs": "Järjestelmä",
+					"settings": "Asetukset"
+				}
+			},
+			"empty": {
+				"title": "Kojelaudallasi ei ole kortteja",
+				"description": "Valitse näytettävät kortit. Valintasi muistetaan tässä selaimessa."
+			},
+			"reorder": {
+				"moveUp": "Siirrä ylös",
+				"moveDown": "Siirrä alas"
+			}
+		},
 		"notFound": {
 			"title": "Voi ei! Sushisi putosi!",
 			"subtitle": "Joko URL-osoitetta ei ole olemassa tai sinulla ei ole pääsyä siihen."

@@ -8,7 +8,6 @@ import { useMemo } from "react";
 
 import { Dialog, Checkbox } from "@/Components/inputs";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
 import { CardGroups, type CardDefinition, type CardGroup, type CardId } from "../cards";
 
 interface CardPickerProps {
@@ -91,7 +90,6 @@ export const CardPicker = ({
 					>
 						<Typography
 							variant="eyebrow"
-							fontSize={typographyLevels.m}
 							color={theme.palette.text.disabled}
 						>
 							{/*
@@ -107,10 +105,7 @@ export const CardPicker = ({
 							<FormControlLabel
 								key={card.id}
 								label={
-									<Typography
-										fontSize={typographyLevels.m}
-										color={theme.palette.text.primary}
-									>
+									<Typography color={theme.palette.text.primary}>
 										{t(`pages.dashboard.cards.${card.key}.title`)}
 									</Typography>
 								}

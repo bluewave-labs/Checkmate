@@ -181,7 +181,8 @@
 				"statusPages": "صفحات الحالة",
 				"maintenance": "الصيانة",
 				"logs": "السجلات",
-				"settings": "الإعدادات"
+				"settings": "الإعدادات",
+				"dashboard": "لوحة المعلومات"
 			},
 			"bottomMenu": {
 				"support": "الدعم",
@@ -223,6 +224,146 @@
 		}
 	},
 	"pages": {
+		"dashboard": {
+			"header": {
+				"title": "لوحة المعلومات",
+				"description": "اطّلع على وقت التشغيل والبنية التحتية والحوادث والفحوصات في مكان واحد، لتلاحظ ما يحتاج إلى انتباه دون فتح كل صفحة."
+			},
+			"card": {
+				"error": "تعذّر تحميل هذه البطاقة."
+			},
+			"cards": {
+				"monitorStatus": {
+					"title": "حالة المراقبات",
+					"empty": "لا توجد مراقبات بعد.",
+					"upOfTotal": "من {{total}} تعمل"
+				},
+				"currentlyDown": {
+					"title": "متوقفة حاليًا",
+					"empty": "جميع المراقبات تعمل. لا توجد حوادث مفتوحة.",
+					"count": "{{count}} تحتاج إلى انتباه"
+				},
+				"monitorsByType": {
+					"title": "المراقبات حسب النوع",
+					"empty": "لا توجد مراقبات بعد.",
+					"down": "{{count}} متوقفة"
+				},
+				"recentIncidents": {
+					"title": "الحوادث الأخيرة",
+					"empty": "لا توجد حوادث — جميع الأنظمة سليمة.",
+					"active": "{{count}} مفتوحة",
+					"ongoing": "جارية",
+					"manual": "يدوي",
+					"unknownMonitor": "مراقبة غير معروفة"
+				},
+				"failedChecks": {
+					"title": "الفحوصات الفاشلة",
+					"empty": "لا توجد فحوصات بعد.",
+					"ratio": "{{failed}} من {{total}} في آخر يوم"
+				},
+				"checkmateServer": {
+					"title": "خادم Checkmate",
+					"memory": "الذاكرة",
+					"eventLoop": "تأخير حلقة الأحداث",
+					"uptime": "مدة التشغيل",
+					"database": "قاعدة البيانات",
+					"readsWrites": "{{reads}} قراءة/ث · {{writes}} كتابة/ث"
+				},
+				"ranking": {
+					"topOf": "أعلى {{shown}} من {{total}}",
+					"notEnough": "لا توجد مراقبات كافية للترتيب."
+				},
+				"slowestMonitors": {
+					"title": "أبطأ المراقبات"
+				},
+				"lowestUptime": {
+					"title": "أدنى وقت تشغيل"
+				},
+				"monitorsByGroup": {
+					"title": "المراقبات حسب المجموعة",
+					"empty": "لا توجد مجموعات بعد. تُحدَّد المجموعات لكل مراقبة."
+				},
+				"busiestServers": {
+					"title": "أكثر الخوادم انشغالًا",
+					"empty": "لا توجد مراقبات بنية تحتية بعد.",
+					"cpu": "المعالج",
+					"memory": "الذاكرة",
+					"disk": "القرص"
+				},
+				"incidentStats": {
+					"title": "إحصائيات الحوادث",
+					"openNow": "مفتوحة الآن",
+					"avgResolution": "متوسط وقت الحل",
+					"hours": "{{hours}} س",
+					"mostIncidents": "الأكثر حوادث",
+					"total": "الإجمالي",
+					"resolved": "تم حلها",
+					"automatic": "تلقائي",
+					"manual": "يدوي",
+					"autoManual": "{{automatic}} تلقائي · {{manual}} يدوي"
+				},
+				"notificationChannels": {
+					"title": "قنوات الإشعارات",
+					"empty": "لا توجد قنوات بعد."
+				},
+				"maintenance": {
+					"title": "نوافذ الصيانة",
+					"empty": "لا توجد صيانة مجدولة.",
+					"runningNow": "قيد التشغيل",
+					"next": "النافذة التالية"
+				},
+				"statusPages": {
+					"title": "صفحات الحالة",
+					"empty": "لا توجد صفحات حالة بعد.",
+					"monitorCount": "{{count}} مراقبة",
+					"published": "منشورة",
+					"draft": "مسودة"
+				},
+				"checksOnSchedule": {
+					"title": "طابور الفحوصات",
+					"healthy": "جميع المهام البالغ عددها {{jobs}} تسير وفق الجدول على {{workers}} عامل.",
+					"failing": "المهام الفاشلة",
+					"scheduled": "المهام المجدولة",
+					"runningNow": "قيد التشغيل"
+				},
+				"recentErrors": {
+					"title": "الأخطاء الأخيرة",
+					"empty": "لم تُسجَّل أخطاء.",
+					"count": "{{count}} أخطاء",
+					"warnings": "التحذيرات"
+				},
+				"team": {
+					"title": "أعضاء الفريق",
+					"members": "{{count}} عضو",
+					"unverified": "غير مُوثَّقين"
+				}
+			},
+			"picker": {
+				"trigger": "تحرير البطاقات",
+				"title": "بطاقات لوحة المعلومات",
+				"done": "تم",
+				"reset": "إعادة التعيين إلى الافتراضي",
+				"groups": {
+					"uptime": "وقت التشغيل",
+					"infrastructure": "البنية التحتية",
+					"incidents": "الحوادث",
+					"notifications": "الإشعارات",
+					"maintenance": "الصيانة",
+					"statusPages": "صفحات الحالة",
+					"checks": "الفحوصات",
+					"logs": "النظام",
+					"settings": "الإعدادات"
+				}
+			},
+			"empty": {
+				"title": "لا توجد بطاقات في لوحة المعلومات",
+				"description": "اختر البطاقات التي تريد رؤيتها. يُحفظ اختيارك في هذا المتصفح."
+			},
+			"reorder": {
+				"moveUp": "نقل لأعلى",
+				"moveDown": "نقل لأسفل"
+			}
+		},
 		"notFound": {
 			"title": "يا إلهي! لقد أسقطت السوشي!",
 			"subtitle": "إما أن الرابط غير موجود، أو ليس لديك صلاحية الوصول إليه."

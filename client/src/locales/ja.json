@@ -181,7 +181,8 @@
 				"statusPages": "ステータスページ",
 				"maintenance": "メンテナンス",
 				"logs": "ログ",
-				"settings": "設定"
+				"settings": "設定",
+				"dashboard": "ダッシュボード"
 			},
 			"bottomMenu": {
 				"support": "サポート",
@@ -223,6 +224,146 @@
 		}
 	},
 	"pages": {
+		"dashboard": {
+			"header": {
+				"title": "ダッシュボード",
+				"description": "稼働状況、インフラ、インシデント、チェックを一か所で確認し、各ページを開かずに対応が必要な箇所を把握できます。"
+			},
+			"card": {
+				"error": "このカードを読み込めませんでした。"
+			},
+			"cards": {
+				"monitorStatus": {
+					"title": "監視の状態",
+					"empty": "監視はまだありません。",
+					"upOfTotal": "/ {{total}} が稼働中"
+				},
+				"currentlyDown": {
+					"title": "現在ダウン中",
+					"empty": "すべての監視が稼働中です。未解決のインシデントはありません。",
+					"count": "{{count}} 件が要対応"
+				},
+				"monitorsByType": {
+					"title": "種類別の監視",
+					"empty": "監視はまだありません。",
+					"down": "{{count}} 件ダウン"
+				},
+				"recentIncidents": {
+					"title": "最近のインシデント",
+					"empty": "インシデントなし — すべて正常です。",
+					"active": "{{count}} 件未解決",
+					"ongoing": "進行中",
+					"manual": "手動",
+					"unknownMonitor": "不明な監視"
+				},
+				"failedChecks": {
+					"title": "失敗したチェック",
+					"empty": "チェックはまだありません。",
+					"ratio": "直近1日で {{total}} 件中 {{failed}} 件"
+				},
+				"checkmateServer": {
+					"title": "Checkmate サーバー",
+					"memory": "メモリ",
+					"eventLoop": "イベントループ遅延",
+					"uptime": "稼働時間",
+					"database": "データベース",
+					"readsWrites": "{{reads}} 読み取り/秒 · {{writes}} 書き込み/秒"
+				},
+				"ranking": {
+					"topOf": "{{total}} 件中の上位 {{shown}} 件",
+					"notEnough": "ランキングに十分な監視がありません。"
+				},
+				"slowestMonitors": {
+					"title": "最も遅い監視"
+				},
+				"lowestUptime": {
+					"title": "稼働率が最も低い監視"
+				},
+				"monitorsByGroup": {
+					"title": "グループ別の監視",
+					"empty": "グループはまだありません。グループは監視ごとに設定します。"
+				},
+				"busiestServers": {
+					"title": "最も負荷の高いサーバー",
+					"empty": "インフラ監視はまだありません。",
+					"cpu": "CPU",
+					"memory": "メモリ",
+					"disk": "ディスク"
+				},
+				"incidentStats": {
+					"title": "インシデント統計",
+					"openNow": "現在未解決",
+					"avgResolution": "平均解決時間",
+					"hours": "{{hours}} 時間",
+					"mostIncidents": "インシデント最多",
+					"total": "合計",
+					"resolved": "解決済み",
+					"automatic": "自動",
+					"manual": "手動",
+					"autoManual": "自動 {{automatic}} 件 · 手動 {{manual}} 件"
+				},
+				"notificationChannels": {
+					"title": "通知チャンネル",
+					"empty": "チャンネルはまだありません。"
+				},
+				"maintenance": {
+					"title": "メンテナンスウィンドウ",
+					"empty": "予定されたメンテナンスはありません。",
+					"runningNow": "実行中",
+					"next": "次のウィンドウ"
+				},
+				"statusPages": {
+					"title": "ステータスページ",
+					"empty": "ステータスページはまだありません。",
+					"monitorCount": "{{count}} 件の監視",
+					"published": "公開中",
+					"draft": "下書き"
+				},
+				"checksOnSchedule": {
+					"title": "チェックキュー",
+					"healthy": "{{workers}} 個のワーカーで {{jobs}} 件のジョブがすべて予定どおりです。",
+					"failing": "失敗中のジョブ",
+					"scheduled": "予定されたジョブ",
+					"runningNow": "実行中"
+				},
+				"recentErrors": {
+					"title": "最近のエラー",
+					"empty": "エラーは記録されていません。",
+					"count": "{{count}} 件のエラー",
+					"warnings": "警告"
+				},
+				"team": {
+					"title": "チームメンバー",
+					"members": "{{count}} 人のメンバー",
+					"unverified": "未確認"
+				}
+			},
+			"picker": {
+				"trigger": "カードを編集",
+				"title": "ダッシュボードのカード",
+				"done": "完了",
+				"reset": "既定に戻す",
+				"groups": {
+					"uptime": "稼働監視",
+					"infrastructure": "インフラ",
+					"incidents": "インシデント",
+					"notifications": "通知",
+					"maintenance": "メンテナンス",
+					"statusPages": "ステータスページ",
+					"checks": "チェック",
+					"logs": "システム",
+					"settings": "設定"
+				}
+			},
+			"empty": {
+				"title": "ダッシュボードにカードがありません",
+				"description": "表示したいカードを選択してください。選択内容はこのブラウザーに保存されます。"
+			},
+			"reorder": {
+				"moveUp": "上へ移動",
+				"moveDown": "下へ移動"
+			}
+		},
 		"notFound": {
 			"title": "おっと！お寿司を落としてしまいました！",
 			"subtitle": "URLが存在しないか、アクセス権限がありません。"

@@ -181,7 +181,8 @@
 				"statusPages": "Statusseite",
 				"maintenance": "Wartung",
 				"logs": "Protokolle",
-				"settings": "Einstellungen"
+				"settings": "Einstellungen",
+				"dashboard": "Dashboard"
 			},
 			"bottomMenu": {
 				"support": "Support",
@@ -223,6 +224,146 @@
 		}
 	},
 	"pages": {
+		"dashboard": {
+			"header": {
+				"title": "Dashboard",
+				"description": "Sehen Sie Uptime, Infrastruktur, Vorfälle und Prüfungen an einem Ort und erkennen Sie, was Aufmerksamkeit braucht, ohne jede Seite zu öffnen."
+			},
+			"card": {
+				"error": "Diese Karte konnte nicht geladen werden."
+			},
+			"cards": {
+				"monitorStatus": {
+					"title": "Monitor-Status",
+					"empty": "Noch keine Monitore.",
+					"upOfTotal": "von {{total}} online"
+				},
+				"currentlyDown": {
+					"title": "Derzeit offline",
+					"empty": "Alle Monitore sind online. Keine offenen Vorfälle.",
+					"count": "{{count}} benötigen Aufmerksamkeit"
+				},
+				"monitorsByType": {
+					"title": "Monitore nach Typ",
+					"empty": "Noch keine Monitore.",
+					"down": "{{count}} offline"
+				},
+				"recentIncidents": {
+					"title": "Letzte Vorfälle",
+					"empty": "Keine Vorfälle — alle Systeme gesund.",
+					"active": "{{count}} offen",
+					"ongoing": "Laufend",
+					"manual": "Manuell",
+					"unknownMonitor": "Unbekannter Monitor"
+				},
+				"failedChecks": {
+					"title": "Fehlgeschlagene Prüfungen",
+					"empty": "Noch keine Prüfungen.",
+					"ratio": "{{failed}} von {{total}} am letzten Tag"
+				},
+				"checkmateServer": {
+					"title": "Checkmate-Server",
+					"memory": "Arbeitsspeicher",
+					"eventLoop": "Event-Loop-Verzögerung",
+					"uptime": "Laufzeit",
+					"database": "Datenbank",
+					"readsWrites": "{{reads}} Lesevorgänge/s · {{writes}} Schreibvorgänge/s"
+				},
+				"ranking": {
+					"topOf": "Top {{shown}} von {{total}}",
+					"notEnough": "Noch nicht genug Monitore für ein Ranking."
+				},
+				"slowestMonitors": {
+					"title": "Langsamste Monitore"
+				},
+				"lowestUptime": {
+					"title": "Niedrigste Uptime"
+				},
+				"monitorsByGroup": {
+					"title": "Monitore nach Gruppe",
+					"empty": "Noch keine Gruppen. Gruppen werden pro Monitor gesetzt."
+				},
+				"busiestServers": {
+					"title": "Ausgelastetste Server",
+					"empty": "Noch keine Infrastruktur-Monitore.",
+					"cpu": "CPU",
+					"memory": "Arbeitsspeicher",
+					"disk": "Festplatte"
+				},
+				"incidentStats": {
+					"title": "Vorfallstatistik",
+					"openNow": "Jetzt offen",
+					"avgResolution": "Durchschnittliche Lösungszeit",
+					"hours": "{{hours}} Std.",
+					"mostIncidents": "Meiste Vorfälle",
+					"total": "gesamt",
+					"resolved": "Gelöst",
+					"automatic": "Automatisch",
+					"manual": "Manuell",
+					"autoManual": "{{automatic}} automatisch · {{manual}} manuell"
+				},
+				"notificationChannels": {
+					"title": "Benachrichtigungskanäle",
+					"empty": "Noch keine Kanäle."
+				},
+				"maintenance": {
+					"title": "Wartungsfenster",
+					"empty": "Keine Wartung geplant.",
+					"runningNow": "Läuft gerade",
+					"next": "Nächstes Fenster"
+				},
+				"statusPages": {
+					"title": "Statusseiten",
+					"empty": "Noch keine Statusseiten.",
+					"monitorCount": "{{count}} Monitore",
+					"published": "Veröffentlicht",
+					"draft": "Entwurf"
+				},
+				"checksOnSchedule": {
+					"title": "Prüfungs-Warteschlange",
+					"healthy": "Alle {{jobs}} Jobs planmäßig auf {{workers}} Worker(n).",
+					"failing": "Fehlgeschlagene Jobs",
+					"scheduled": "Geplante Jobs",
+					"runningNow": "Läuft gerade"
+				},
+				"recentErrors": {
+					"title": "Letzte Fehler",
+					"empty": "Keine Fehler protokolliert.",
+					"count": "{{count}} Fehler",
+					"warnings": "Warnungen"
+				},
+				"team": {
+					"title": "Teammitglieder",
+					"members": "{{count}} Mitglieder",
+					"unverified": "Nicht verifiziert"
+				}
+			},
+			"picker": {
+				"trigger": "Karten bearbeiten",
+				"title": "Dashboard-Karten",
+				"done": "Fertig",
+				"reset": "Auf Standard zurücksetzen",
+				"groups": {
+					"uptime": "Uptime",
+					"infrastructure": "Infrastruktur",
+					"incidents": "Vorfälle",
+					"notifications": "Benachrichtigungen",
+					"maintenance": "Wartung",
+					"statusPages": "Statusseiten",
+					"checks": "Prüfungen",
+					"logs": "System",
+					"settings": "Einstellungen"
+				}
+			},
+			"empty": {
+				"title": "Keine Karten auf Ihrem Dashboard",
+				"description": "Wählen Sie die Karten, die Sie sehen möchten. Ihre Auswahl wird in diesem Browser gespeichert."
+			},
+			"reorder": {
+				"moveUp": "Nach oben",
+				"moveDown": "Nach unten"
+			}
+		},
 		"notFound": {
 			"title": "Oh nein! Sie haben Ihr Sushi fallen lassen!",
 			"subtitle": "Entweder existiert die URL nicht oder Sie haben keinen Zugriff darauf."

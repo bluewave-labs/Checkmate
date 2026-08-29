@@ -181,7 +181,8 @@
 				"statusPages": "Stavové stránky",
 				"maintenance": "Údržba",
 				"logs": "Záznamy",
-				"settings": "Nastavení"
+				"settings": "Nastavení",
+				"dashboard": "Přehled"
 			},
 			"bottomMenu": {
 				"support": "Podpora",
@@ -223,6 +224,146 @@
 		}
 	},
 	"pages": {
+		"dashboard": {
+			"header": {
+				"title": "Přehled",
+				"description": "Zobrazte dostupnost, infrastrukturu, incidenty a kontroly na jednom místě, abyste poznali, co vyžaduje pozornost, bez otevírání každé stránky."
+			},
+			"card": {
+				"error": "Tuto kartu se nepodařilo načíst."
+			},
+			"cards": {
+				"monitorStatus": {
+					"title": "Stav monitorů",
+					"empty": "Zatím žádné monitory.",
+					"upOfTotal": "z {{total}} běží"
+				},
+				"currentlyDown": {
+					"title": "Aktuálně nedostupné",
+					"empty": "Všechny monitory běží. Žádné otevřené incidenty.",
+					"count": "{{count}} vyžaduje pozornost"
+				},
+				"monitorsByType": {
+					"title": "Monitory podle typu",
+					"empty": "Zatím žádné monitory.",
+					"down": "{{count}} nedostupných"
+				},
+				"recentIncidents": {
+					"title": "Nedávné incidenty",
+					"empty": "Žádné incidenty — všechny systémy v pořádku.",
+					"active": "{{count}} otevřených",
+					"ongoing": "Probíhá",
+					"manual": "Ručně",
+					"unknownMonitor": "Neznámý monitor"
+				},
+				"failedChecks": {
+					"title": "Neúspěšné kontroly",
+					"empty": "Zatím žádné kontroly.",
+					"ratio": "{{failed}} z {{total}} za poslední den"
+				},
+				"checkmateServer": {
+					"title": "Server Checkmate",
+					"memory": "Paměť",
+					"eventLoop": "Zpoždění event loop",
+					"uptime": "Doba běhu",
+					"database": "Databáze",
+					"readsWrites": "{{reads}} čtení/s · {{writes}} zápisů/s"
+				},
+				"ranking": {
+					"topOf": "Top {{shown}} z {{total}}",
+					"notEnough": "Zatím není dost monitorů pro žebříček."
+				},
+				"slowestMonitors": {
+					"title": "Nejpomalejší monitory"
+				},
+				"lowestUptime": {
+					"title": "Nejnižší dostupnost"
+				},
+				"monitorsByGroup": {
+					"title": "Monitory podle skupiny",
+					"empty": "Zatím žádné skupiny. Skupiny se nastavují u monitoru."
+				},
+				"busiestServers": {
+					"title": "Nejvytíženější servery",
+					"empty": "Zatím žádné monitory infrastruktury.",
+					"cpu": "CPU",
+					"memory": "Paměť",
+					"disk": "Disk"
+				},
+				"incidentStats": {
+					"title": "Statistiky incidentů",
+					"openNow": "Nyní otevřené",
+					"avgResolution": "Průměrná doba vyřešení",
+					"hours": "{{hours}} h",
+					"mostIncidents": "Nejvíce incidentů",
+					"total": "celkem",
+					"resolved": "Vyřešeno",
+					"automatic": "Automaticky",
+					"manual": "Ručně",
+					"autoManual": "{{automatic}} automaticky · {{manual}} ručně"
+				},
+				"notificationChannels": {
+					"title": "Kanály oznámení",
+					"empty": "Zatím žádné kanály."
+				},
+				"maintenance": {
+					"title": "Okna údržby",
+					"empty": "Žádná naplánovaná údržba.",
+					"runningNow": "Právě probíhá",
+					"next": "Další okno"
+				},
+				"statusPages": {
+					"title": "Stavové stránky",
+					"empty": "Zatím žádné stavové stránky.",
+					"monitorCount": "{{count}} monitorů",
+					"published": "Publikováno",
+					"draft": "Koncept"
+				},
+				"checksOnSchedule": {
+					"title": "Fronta kontrol",
+					"healthy": "Všech {{jobs}} úloh běží podle plánu na {{workers}} workerech.",
+					"failing": "Selhávající úlohy",
+					"scheduled": "Naplánované úlohy",
+					"runningNow": "Právě probíhá"
+				},
+				"recentErrors": {
+					"title": "Nedávné chyby",
+					"empty": "Žádné zaznamenané chyby.",
+					"count": "{{count}} chyb",
+					"warnings": "Varování"
+				},
+				"team": {
+					"title": "Členové týmu",
+					"members": "{{count}} členů",
+					"unverified": "Neověření"
+				}
+			},
+			"picker": {
+				"trigger": "Upravit karty",
+				"title": "Karty přehledu",
+				"done": "Hotovo",
+				"reset": "Obnovit výchozí",
+				"groups": {
+					"uptime": "Dostupnost",
+					"infrastructure": "Infrastruktura",
+					"incidents": "Incidenty",
+					"notifications": "Notifikace",
+					"maintenance": "Údržba",
+					"statusPages": "Stavové stránky",
+					"checks": "Kontroly",
+					"logs": "Systém",
+					"settings": "Nastavení"
+				}
+			},
+			"empty": {
+				"title": "Ve vašem přehledu nejsou žádné karty",
+				"description": "Vyberte karty, které chcete zobrazit. Váš výběr se uchová v tomto prohlížeči."
+			},
+			"reorder": {
+				"moveUp": "Posunout nahoru",
+				"moveDown": "Posunout dolů"
+			}
+		},
 		"notFound": {
 			"title": "Ale ne! Upustili jste své sushi!",
 			"subtitle": "Buď tato URL neexistuje, nebo k ní nemáte přístup."

@@ -7,7 +7,6 @@ import { useMemo } from "react";
 
 import { Dot } from "@/Components/design-elements";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { typographyLevels } from "@/Utils/Theme/Palette";
 import { getStatusColor, getMonitorPath } from "@/Utils/MonitorUtils";
 import { formatStatusCode } from "@/Utils/statusCode";
 import { formatDuration } from "@/Utils/TimeUtils";
@@ -87,10 +86,7 @@ export const CurrentlyDownCard = () => {
 			isStale={isValidating && Boolean(data)}
 			action={
 				problems.length > 0 ? (
-					<Typography
-						fontSize={typographyLevels.m}
-						color={theme.palette.error.main}
-					>
+					<Typography color={theme.palette.error.main}>
 						{t("pages.dashboard.cards.currentlyDown.count", {
 							count: problems.length,
 						})}
@@ -129,7 +125,6 @@ export const CurrentlyDownCard = () => {
 									gap={theme.spacing(LAYOUT.SM)}
 								>
 									<Typography
-										fontSize={typographyLevels.m}
 										color={theme.palette.text.primary}
 										noWrap
 									>
@@ -137,7 +132,6 @@ export const CurrentlyDownCard = () => {
 									</Typography>
 									{since && (
 										<Typography
-											fontSize={typographyLevels.m}
 											color={theme.palette.error.main}
 											flexShrink={0}
 										>
@@ -157,7 +151,6 @@ export const CurrentlyDownCard = () => {
 									 * inside the row's link is unreachable by keyboard.
 									 */}
 									<Typography
-										fontSize={typographyLevels.m}
 										color={theme.palette.text.secondary}
 										noWrap
 									>
