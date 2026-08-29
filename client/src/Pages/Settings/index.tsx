@@ -347,14 +347,16 @@ export const SettingsPage = () => {
 
 	const onError = (errors: unknown) => {
 		logger.debug("Form validation errors", errors);
-		// The save bar lists errors by field name, so reveal the tab owning the
-		// first one rather than naming a field the user cannot see.
-		const firstField = Object.keys(errors ?? {})[0];
-		if (firstField) {
-			const target = tabForField(firstField);
-			if (visibleTabs.some((tab) => tab.key === target)) {
-				handleTabChange(target);
-			}
+	};
+
+	// The save bar lists errors by field name, and the offending field may sit on
+	// a tab that is not open. Submitting cannot reveal it -- the button is
+	// disabled while the form is invalid -- so each listed field switches to its
+	// own tab instead.
+	const revealField = (field: string) => {
+		const target = tabForField(field);
+		if (visibleTabs.some((tab) => tab.key === target)) {
+			handleTabChange(target);
 		}
 	};
 
@@ -398,272 +400,229 @@ export const SettingsPage = () => {
 				)}
 
 				{/* general tab */}
-				<Stack
-					gap={theme.spacing(LAYOUT.MD)}
-					hidden={activeTab !== "general"}
-				>
-					<ConfigBox
-						title={t("pages.settings.form.timezone.title")}
-						subtitle={t("pages.settings.form.timezone.description")}
-						rightContent={
-							<Autocomplete
-								value={selectedTimezone}
-								options={timezoneOptions}
-								getOptionLabel={(option: TimezoneOption) => option.name}
-								isOptionEqualToValue={(option: TimezoneOption, value: TimezoneOption) =>
-									option.id === value.id
-								}
-								onChange={(_, newValue: TimezoneOption | null) => {
-									handleTimezoneChange(newValue);
-								}}
-								fieldLabel={t("pages.settings.form.timezone.option.timezone.label")}
-							/>
-						}
-					/>
-					<ConfigBox
-						title={t("pages.settings.form.ui.title")}
-						subtitle={t("pages.settings.form.ui.description")}
-						rightContent={
-							<Stack gap={theme.spacing(LAYOUT.MD)}>
-								<Select
-									value={mode}
-									onChange={handleModeChange}
-									fieldLabel={t("pages.settings.form.ui.option.theme.label")}
-								>
-									<MenuItem value="light">
-										{t("pages.settings.form.ui.option.theme.light")}
-									</MenuItem>
-									<MenuItem value="dark">
-										{t("pages.settings.form.ui.option.theme.dark")}
-									</MenuItem>
-								</Select>
-								<Select
-									value={language}
-									onChange={handleLanguageChange}
-									fieldLabel={t("pages.settings.form.ui.option.language.label")}
-								>
-									{languages.map((lang) => (
-										<MenuItem
-											key={lang}
-											value={lang}
-										>
-											{languageNames[lang] ?? lang}
-										</MenuItem>
-									))}
-								</Select>
-								<Select
-									value={chartType}
-									onChange={handleChartTypeChange}
-									fieldLabel={t("pages.settings.form.ui.option.chartType.label")}
-								>
-									<MenuItem value="histogram">
-										{t("pages.settings.form.ui.option.chartType.histogram")}
-									</MenuItem>
-									<MenuItem value="heatmap">
-										{t("pages.settings.form.ui.option.chartType.heatmap")}
-									</MenuItem>
-								</Select>
-								<DummyChart chartType={chartType} />
-							</Stack>
-						}
-					/>
-					{/* URL Settings */}
-					<ConfigBox
-						title={t("pages.settings.form.url.title")}
-						subtitle={t("pages.settings.form.url.description")}
-						rightContent={
-							<FormSwitchField
-								name="showURL"
-								label={t("pages.settings.form.url.option.showURL.label")}
-								labelPlacement="start"
-							/>
-						}
-					/>
-					{/* About */}
-					<ConfigBox
-						title={t("pages.settings.form.about.title")}
-						subtitle=""
-						rightContent={
-							<Stack spacing={2}>
-								<Typography variant="body1">
-									{t("common.appName")} {__APP_VERSION__}
-								</Typography>
-								<Typography
-									variant="body2"
-									sx={{ opacity: 0.6 }}
-								>
-									{t("pages.settings.form.about.developedBy")}
-								</Typography>
-								<Link
-									href="https://github.com/bluewave-labs/checkmate"
-									target="_blank"
-									rel="noopener noreferrer"
-								>
-									https://github.com/bluewave-labs/checkmate
-								</Link>
-							</Stack>
-						}
-					/>
-				</Stack>
-
-				{/* monitoring tab */}
-				<Stack
-					gap={theme.spacing(LAYOUT.MD)}
-					hidden={activeTab !== "monitoring"}
-				>
-					{/* Global Thresholds */}
-					{isAdmin && (
+				{activeTab === "general" && (
+					<Stack gap={theme.spacing(LAYOUT.MD)}>
 						<ConfigBox
-							title={t("pages.settings.form.thresholds.title")}
-							subtitle={t("pages.settings.form.thresholds.description")}
+							title={t("pages.settings.form.timezone.title")}
+							subtitle={t("pages.settings.form.timezone.description")}
 							rightContent={
-								<Stack spacing={2}>
-									<FormSliderField
-										name="globalThresholds.cpu"
-										fieldLabel={t("pages.settings.form.thresholds.option.cpu.label")}
-										valueLabelDisplay="auto"
-										min={1}
-										max={100}
-									/>
-									<FormSliderField
-										name="globalThresholds.memory"
-										fieldLabel={t("pages.settings.form.thresholds.option.memory.label")}
-										valueLabelDisplay="auto"
-										min={1}
-										max={100}
-									/>
-									<FormSliderField
-										name="globalThresholds.disk"
-										fieldLabel={t("pages.settings.form.thresholds.option.disk.label")}
-										valueLabelDisplay="auto"
-										min={1}
-										max={100}
-									/>
-
-									<FormSliderField
-										name="globalThresholds.temperature"
-										fieldLabel={t(
-											"pages.settings.form.thresholds.option.temperature.label"
-										)}
-										valueLabelDisplay="auto"
-										min={1}
-										max={150}
-									/>
-								</Stack>
-							}
-						/>
-					)}
-					{/* Check Retention */}
-					{isAdmin && (
-						<ConfigBox
-							title={t("pages.settings.form.retention.title")}
-							subtitle={t("pages.settings.form.retention.description")}
-							rightContent={
-								<FormSliderField
-									name="checkTTL"
-									fieldLabel={t("pages.settings.form.retention.option.days.label")}
-									min={1}
-									max={CHECK_TTL_SENTINEL}
-									valueLabelDisplay="auto"
-									valueLabelFormat={(value: number) =>
-										value >= CHECK_TTL_SENTINEL
-											? t("pages.settings.form.retention.option.days.unlimited")
-											: `${value}`
+								<Autocomplete
+									value={selectedTimezone}
+									options={timezoneOptions}
+									getOptionLabel={(option: TimezoneOption) => option.name}
+									isOptionEqualToValue={(option: TimezoneOption, value: TimezoneOption) =>
+										option.id === value.id
 									}
-									formatDisplayValue={(value: number) =>
-										value >= CHECK_TTL_SENTINEL
-											? t("pages.settings.form.retention.option.days.unlimited")
-											: `${value}`
-									}
+									onChange={(_, newValue: TimezoneOption | null) => {
+										handleTimezoneChange(newValue);
+									}}
+									fieldLabel={t("pages.settings.form.timezone.option.timezone.label")}
 								/>
 							}
 						/>
-					)}
-
-					{/* Demo Monitors - Admin Only */}
-					{isAdmin && (
 						<ConfigBox
-							title={t("pages.settings.form.demoMonitors.title")}
-							subtitle={t("pages.settings.form.demoMonitors.description")}
+							title={t("pages.settings.form.ui.title")}
+							subtitle={t("pages.settings.form.ui.description")}
 							rightContent={
-								<Box>
-									<Button
-										variant="contained"
-										loading={isPostingDemoMonitors}
-										onClick={async () => {
-											await postDemoMonitors("/monitors/demo", {});
-										}}
+								<Stack gap={theme.spacing(LAYOUT.MD)}>
+									<Select
+										value={mode}
+										onChange={handleModeChange}
+										fieldLabel={t("pages.settings.form.ui.option.theme.label")}
 									>
-										{t("common.buttons.addDemo")}
-									</Button>
-								</Box>
+										<MenuItem value="light">
+											{t("pages.settings.form.ui.option.theme.light")}
+										</MenuItem>
+										<MenuItem value="dark">
+											{t("pages.settings.form.ui.option.theme.dark")}
+										</MenuItem>
+									</Select>
+									<Select
+										value={language}
+										onChange={handleLanguageChange}
+										fieldLabel={t("pages.settings.form.ui.option.language.label")}
+									>
+										{languages.map((lang) => (
+											<MenuItem
+												key={lang}
+												value={lang}
+											>
+												{languageNames[lang] ?? lang}
+											</MenuItem>
+										))}
+									</Select>
+									<Select
+										value={chartType}
+										onChange={handleChartTypeChange}
+										fieldLabel={t("pages.settings.form.ui.option.chartType.label")}
+									>
+										<MenuItem value="histogram">
+											{t("pages.settings.form.ui.option.chartType.histogram")}
+										</MenuItem>
+										<MenuItem value="heatmap">
+											{t("pages.settings.form.ui.option.chartType.heatmap")}
+										</MenuItem>
+									</Select>
+									<DummyChart chartType={chartType} />
+								</Stack>
 							}
 						/>
-					)}
-				</Stack>
+						{/* URL Settings */}
+						<ConfigBox
+							title={t("pages.settings.form.url.title")}
+							subtitle={t("pages.settings.form.url.description")}
+							rightContent={
+								<FormSwitchField
+									name="showURL"
+									label={t("pages.settings.form.url.option.showURL.label")}
+									labelPlacement="start"
+								/>
+							}
+						/>
+						{/* About */}
+						<ConfigBox
+							title={t("pages.settings.form.about.title")}
+							subtitle=""
+							rightContent={
+								<Stack spacing={2}>
+									<Typography variant="body1">
+										{t("common.appName")} {__APP_VERSION__}
+									</Typography>
+									<Typography
+										variant="body2"
+										sx={{ opacity: 0.6 }}
+									>
+										{t("pages.settings.form.about.developedBy")}
+									</Typography>
+									<Link
+										href="https://github.com/bluewave-labs/checkmate"
+										target="_blank"
+										rel="noopener noreferrer"
+									>
+										https://github.com/bluewave-labs/checkmate
+									</Link>
+								</Stack>
+							}
+						/>
+					</Stack>
+				)}
+
+				{/* monitoring tab */}
+				{activeTab === "monitoring" && (
+					<Stack gap={theme.spacing(LAYOUT.MD)}>
+						{/* Global Thresholds */}
+						{isAdmin && (
+							<ConfigBox
+								title={t("pages.settings.form.thresholds.title")}
+								subtitle={t("pages.settings.form.thresholds.description")}
+								rightContent={
+									<Stack spacing={2}>
+										<FormSliderField
+											name="globalThresholds.cpu"
+											fieldLabel={t("pages.settings.form.thresholds.option.cpu.label")}
+											valueLabelDisplay="auto"
+											min={1}
+											max={100}
+										/>
+										<FormSliderField
+											name="globalThresholds.memory"
+											fieldLabel={t("pages.settings.form.thresholds.option.memory.label")}
+											valueLabelDisplay="auto"
+											min={1}
+											max={100}
+										/>
+										<FormSliderField
+											name="globalThresholds.disk"
+											fieldLabel={t("pages.settings.form.thresholds.option.disk.label")}
+											valueLabelDisplay="auto"
+											min={1}
+											max={100}
+										/>
+
+										<FormSliderField
+											name="globalThresholds.temperature"
+											fieldLabel={t(
+												"pages.settings.form.thresholds.option.temperature.label"
+											)}
+											valueLabelDisplay="auto"
+											min={1}
+											max={150}
+										/>
+									</Stack>
+								}
+							/>
+						)}
+						{/* Check Retention */}
+						{isAdmin && (
+							<ConfigBox
+								title={t("pages.settings.form.retention.title")}
+								subtitle={t("pages.settings.form.retention.description")}
+								rightContent={
+									<FormSliderField
+										name="checkTTL"
+										fieldLabel={t("pages.settings.form.retention.option.days.label")}
+										min={1}
+										max={CHECK_TTL_SENTINEL}
+										valueLabelDisplay="auto"
+										valueLabelFormat={(value: number) =>
+											value >= CHECK_TTL_SENTINEL
+												? t("pages.settings.form.retention.option.days.unlimited")
+												: `${value}`
+										}
+										formatDisplayValue={(value: number) =>
+											value >= CHECK_TTL_SENTINEL
+												? t("pages.settings.form.retention.option.days.unlimited")
+												: `${value}`
+										}
+									/>
+								}
+							/>
+						)}
+
+						{/* Demo Monitors - Admin Only */}
+						{isAdmin && (
+							<ConfigBox
+								title={t("pages.settings.form.demoMonitors.title")}
+								subtitle={t("pages.settings.form.demoMonitors.description")}
+								rightContent={
+									<Box>
+										<Button
+											variant="contained"
+											loading={isPostingDemoMonitors}
+											onClick={async () => {
+												await postDemoMonitors("/monitors/demo", {});
+											}}
+										>
+											{t("common.buttons.addDemo")}
+										</Button>
+									</Box>
+								}
+							/>
+						)}
+					</Stack>
+				)}
 
 				{/* email tab */}
-				<Stack
-					gap={theme.spacing(LAYOUT.MD)}
-					hidden={activeTab !== "email"}
-				>
-					{/* Email Settings - Admin Only */}
-					{isAdmin && (
-						<ConfigBox
-							title={t("pages.settings.form.email.title")}
-							subtitle={t("pages.settings.form.email.description")}
-							leftContent={
-								<Stack gap={theme.spacing(LAYOUT.MD)}>
-									<TextLink
-										text={t("pages.settings.form.email.descriptionTransport")}
-										linkText={t("pages.settings.form.email.descriptionTransportLink")}
-										href="https://nodemailer.com/smtp/"
-										target="_blank"
-									/>
-									{(() => {
-										const address = form.watch("systemEmailAddress") || "";
-										const displayName = form.watch("systemEmailDisplayName")?.trim();
-										return (
-											<>
-												<Box
-													component="pre"
-													p={2}
-													borderRadius={theme.shape.borderRadius}
-													bgcolor={theme.palette.action.hover}
-													sx={{
-														fontFamily: theme.typography.fontFamilyMonospace,
-														overflow: "auto",
-													}}
-												>
-													<code>
-														{JSON.stringify(
-															{
-																host: form.watch("systemEmailHost") || "",
-																port: form.watch("systemEmailPort") || "",
-																secure: form.watch("systemEmailSecure") ?? false,
-																auth: {
-																	user: form.watch("systemEmailUser") || address,
-																	pass: "<your_password>",
-																},
-																name:
-																	form.watch("systemEmailConnectionHost") || "localhost",
-																pool: form.watch("systemEmailPool") ?? false,
-																tls: {
-																	rejectUnauthorized:
-																		form.watch("systemEmailRejectUnauthorized") ?? true,
-																	ignoreTLS: form.watch("systemEmailIgnoreTLS") ?? false,
-																	requireTLS:
-																		form.watch("systemEmailRequireTLS") ?? false,
-																	servername:
-																		form.watch("systemEmailTLSServername") || "",
-																},
-															},
-															null,
-															2
-														)}
-													</code>
-												</Box>
-												{address && (
+				{activeTab === "email" && (
+					<Stack gap={theme.spacing(LAYOUT.MD)}>
+						{/* Email Settings - Admin Only */}
+						{isAdmin && (
+							<ConfigBox
+								title={t("pages.settings.form.email.title")}
+								subtitle={t("pages.settings.form.email.description")}
+								leftContent={
+									<Stack gap={theme.spacing(LAYOUT.MD)}>
+										<TextLink
+											text={t("pages.settings.form.email.descriptionTransport")}
+											linkText={t("pages.settings.form.email.descriptionTransportLink")}
+											href="https://nodemailer.com/smtp/"
+											target="_blank"
+										/>
+										{(() => {
+											const address = form.watch("systemEmailAddress") || "";
+											const displayName = form.watch("systemEmailDisplayName")?.trim();
+											return (
+												<>
 													<Box
 														component="pre"
 														p={2}
@@ -675,299 +634,343 @@ export const SettingsPage = () => {
 														}}
 													>
 														<code>
-															{`From: ${displayName ? `"${displayName}" <${address}>` : address}`}
+															{JSON.stringify(
+																{
+																	host: form.watch("systemEmailHost") || "",
+																	port: form.watch("systemEmailPort") || "",
+																	secure: form.watch("systemEmailSecure") ?? false,
+																	auth: {
+																		user: form.watch("systemEmailUser") || address,
+																		pass: "<your_password>",
+																	},
+																	name:
+																		form.watch("systemEmailConnectionHost") ||
+																		"localhost",
+																	pool: form.watch("systemEmailPool") ?? false,
+																	tls: {
+																		rejectUnauthorized:
+																			form.watch("systemEmailRejectUnauthorized") ?? true,
+																		ignoreTLS:
+																			form.watch("systemEmailIgnoreTLS") ?? false,
+																		requireTLS:
+																			form.watch("systemEmailRequireTLS") ?? false,
+																		servername:
+																			form.watch("systemEmailTLSServername") || "",
+																	},
+																},
+																null,
+																2
+															)}
 														</code>
 													</Box>
+													{address && (
+														<Box
+															component="pre"
+															p={2}
+															borderRadius={theme.shape.borderRadius}
+															bgcolor={theme.palette.action.hover}
+															sx={{
+																fontFamily: theme.typography.fontFamilyMonospace,
+																overflow: "auto",
+															}}
+														>
+															<code>
+																{`From: ${displayName ? `"${displayName}" <${address}>` : address}`}
+															</code>
+														</Box>
+													)}
+												</>
+											);
+										})()}
+									</Stack>
+								}
+								rightContent={
+									<Stack gap={theme.spacing(LAYOUT.MD)}>
+										{/* Email Host */}
+										<FormTextField
+											name="systemEmailHost"
+											fieldLabel={t("pages.settings.form.email.option.host.label")}
+											placeholder={t("pages.settings.form.email.option.host.placeholder")}
+										/>
+
+										{/* Email Port */}
+										<FormNumberField
+											name="systemEmailPort"
+											fieldLabel={t("pages.settings.form.email.option.port.label")}
+											placeholder={t("pages.settings.form.email.option.port.placeholder")}
+										/>
+
+										{/* Email Address */}
+										<FormTextField
+											name="systemEmailAddress"
+											type="email"
+											fieldLabel={t("pages.settings.form.email.option.address.label")}
+											placeholder={t(
+												"pages.settings.form.email.option.address.placeholder"
+											)}
+										/>
+
+										{/* Email Display Name (Optional) */}
+										<FormTextField
+											name="systemEmailDisplayName"
+											fieldLabel={t("pages.settings.form.email.option.displayName.label")}
+											placeholder={t(
+												"pages.settings.form.email.option.displayName.placeholder"
+											)}
+										/>
+
+										{/* Email User (Optional) */}
+										<FormTextField
+											name="systemEmailUser"
+											fieldLabel={t("pages.settings.form.email.option.user.label")}
+											placeholder={t("pages.settings.form.email.option.user.placeholder")}
+										/>
+
+										{/* Email Password with Reset Pattern */}
+										{isEmailPasswordSet && !emailPasswordHasBeenReset ? (
+											<Box>
+												<FieldLabel>
+													{t("pages.settings.form.email.option.password.labelSet")}
+												</FieldLabel>
+												<Stack
+													direction="row"
+													alignItems="center"
+													gap={theme.spacing(LAYOUT.XS)}
+												>
+													<Button
+														variant="contained"
+														color="error"
+														size="small"
+														onClick={handleResetEmailPassword}
+													>
+														{t("common.buttons.reset")}
+													</Button>
+												</Stack>
+											</Box>
+										) : (
+											<FormTextField
+												name="systemEmailPassword"
+												type="password"
+												fieldLabel={t("pages.settings.form.email.option.password.label")}
+												placeholder={t(
+													"pages.settings.form.email.option.password.placeholder"
 												)}
-											</>
-										);
-									})()}
-								</Stack>
-							}
-							rightContent={
-								<Stack gap={theme.spacing(LAYOUT.MD)}>
-									{/* Email Host */}
-									<FormTextField
-										name="systemEmailHost"
-										fieldLabel={t("pages.settings.form.email.option.host.label")}
-										placeholder={t("pages.settings.form.email.option.host.placeholder")}
-									/>
-
-									{/* Email Port */}
-									<FormNumberField
-										name="systemEmailPort"
-										fieldLabel={t("pages.settings.form.email.option.port.label")}
-										placeholder={t("pages.settings.form.email.option.port.placeholder")}
-									/>
-
-									{/* Email Address */}
-									<FormTextField
-										name="systemEmailAddress"
-										type="email"
-										fieldLabel={t("pages.settings.form.email.option.address.label")}
-										placeholder={t(
-											"pages.settings.form.email.option.address.placeholder"
+											/>
 										)}
-									/>
 
-									{/* Email Display Name (Optional) */}
-									<FormTextField
-										name="systemEmailDisplayName"
-										fieldLabel={t("pages.settings.form.email.option.displayName.label")}
-										placeholder={t(
-											"pages.settings.form.email.option.displayName.placeholder"
-										)}
-									/>
+										{/* TLS Servername (Optional) */}
+										<FormTextField
+											name="systemEmailTLSServername"
+											fieldLabel={t(
+												"pages.settings.form.email.option.tlsServername.label"
+											)}
+											placeholder={t(
+												"pages.settings.form.email.option.tlsServername.placeholder"
+											)}
+										/>
 
-									{/* Email User (Optional) */}
-									<FormTextField
-										name="systemEmailUser"
-										fieldLabel={t("pages.settings.form.email.option.user.label")}
-										placeholder={t("pages.settings.form.email.option.user.placeholder")}
-									/>
+										{/* Connection Host (Optional) */}
+										<FormTextField
+											name="systemEmailConnectionHost"
+											fieldLabel={t(
+												"pages.settings.form.email.option.connectionHost.label"
+											)}
+											placeholder={t(
+												"pages.settings.form.email.option.connectionHost.placeholder"
+											)}
+										/>
 
-									{/* Email Password with Reset Pattern */}
-									{isEmailPasswordSet && !emailPasswordHasBeenReset ? (
+										{/* Boolean Switches */}
+										<Box
+											display={"flex"}
+											flexDirection={"column"}
+											gap={theme.spacing(LAYOUT.XS)}
+										>
+											{emailSwitches.map(({ name, label }) => (
+												<FormSwitchField
+													key={name}
+													name={name}
+													label={label}
+													labelPlacement="start"
+												/>
+											))}
+										</Box>
+
+										{/* Test Email Button */}
 										<Box>
-											<FieldLabel>
-												{t("pages.settings.form.email.option.password.labelSet")}
-											</FieldLabel>
-											<Stack
-												direction="row"
-												alignItems="center"
-												gap={theme.spacing(LAYOUT.XS)}
+											<Button
+												variant="contained"
+												loading={isSendingTestEmail}
+												onClick={handleSendTestEmail}
+												disabled={
+													!form.watch("systemEmailHost") ||
+													!form.watch("systemEmailPort") ||
+													!form.watch("systemEmailAddress") ||
+													!form.watch("systemEmailPassword")
+												}
 											>
+												{t("common.buttons.sendTestEmail")}
+											</Button>
+										</Box>
+									</Stack>
+								}
+							/>
+						)}
+					</Stack>
+				)}
+
+				{/* integrations tab */}
+				{activeTab === "integrations" && (
+					<Stack gap={theme.spacing(LAYOUT.MD)}>
+						{isAdmin && (
+							<ConfigBox
+								title={t("pages.settings.form.globalProxy.title")}
+								subtitle={t("pages.settings.form.globalProxy.description")}
+								rightContent={
+									proxyOptions.length > 0 ? (
+										<Stack>
+											<FormSwitchField
+												name="globalProxyEnabled"
+												labelPlacement="start"
+												label={t("pages.settings.form.globalProxy.option.enabled.label")}
+											/>
+											{globalProxyEnabled && (
+												<FormSelectField
+													fieldLabel={t(
+														"pages.settings.form.globalProxy.option.proxy.label"
+													)}
+													name="globalProxyId"
+													options={proxyOptions}
+												/>
+											)}
+										</Stack>
+									) : (
+										<TextLink
+											text={t("pages.settings.form.globalProxy.option.empty.text")}
+											linkText={t("pages.settings.form.globalProxy.option.empty.link")}
+											href="/proxies"
+										/>
+									)
+								}
+							/>
+						)}
+						{isAdmin && (
+							<ConfigBox
+								title={t("pages.settings.form.pagespeed.title")}
+								subtitle={t("pages.settings.form.pagespeed.description")}
+								rightContent={
+									<>
+										{(isApiKeySet === false || apiKeyHasBeenReset === true) && (
+											<FormTextField
+												name="pagespeedApiKey"
+												type="password"
+												fieldLabel={t(
+													"pages.settings.form.pagespeed.option.apiKey.label"
+												)}
+												placeholder={t(
+													"pages.settings.form.pagespeed.option.apiKey.placeholder"
+												)}
+											/>
+										)}
+
+										{isApiKeySet === true && apiKeyHasBeenReset === false && (
+											<Box>
+												<FieldLabel>
+													{t("pages.settings.form.pagespeed.option.apiKey.labelSet")}
+												</FieldLabel>
 												<Button
+													onClick={handleResetApiKey}
 													variant="contained"
 													color="error"
-													size="small"
-													onClick={handleResetEmailPassword}
 												>
 													{t("common.buttons.reset")}
 												</Button>
-											</Stack>
-										</Box>
-									) : (
-										<FormTextField
-											name="systemEmailPassword"
-											type="password"
-											fieldLabel={t("pages.settings.form.email.option.password.label")}
-											placeholder={t(
-												"pages.settings.form.email.option.password.placeholder"
-											)}
-										/>
-									)}
-
-									{/* TLS Servername (Optional) */}
-									<FormTextField
-										name="systemEmailTLSServername"
-										fieldLabel={t("pages.settings.form.email.option.tlsServername.label")}
-										placeholder={t(
-											"pages.settings.form.email.option.tlsServername.placeholder"
+											</Box>
 										)}
-									/>
-
-									{/* Connection Host (Optional) */}
-									<FormTextField
-										name="systemEmailConnectionHost"
-										fieldLabel={t(
-											"pages.settings.form.email.option.connectionHost.label"
-										)}
-										placeholder={t(
-											"pages.settings.form.email.option.connectionHost.placeholder"
-										)}
-									/>
-
-									{/* Boolean Switches */}
-									<Box
-										display={"flex"}
-										flexDirection={"column"}
-										gap={theme.spacing(LAYOUT.XS)}
-									>
-										{emailSwitches.map(({ name, label }) => (
-											<FormSwitchField
-												key={name}
-												name={name}
-												label={label}
-												labelPlacement="start"
-											/>
-										))}
-									</Box>
-
-									{/* Test Email Button */}
-									<Box>
-										<Button
-											variant="contained"
-											loading={isSendingTestEmail}
-											onClick={handleSendTestEmail}
-											disabled={
-												!form.watch("systemEmailHost") ||
-												!form.watch("systemEmailPort") ||
-												!form.watch("systemEmailAddress") ||
-												!form.watch("systemEmailPassword")
-											}
-										>
-											{t("common.buttons.sendTestEmail")}
-										</Button>
-									</Box>
-								</Stack>
-							}
-						/>
-					)}
-				</Stack>
-
-				{/* integrations tab */}
-				<Stack
-					gap={theme.spacing(LAYOUT.MD)}
-					hidden={activeTab !== "integrations"}
-				>
-					{isAdmin && (
-						<ConfigBox
-							title={t("pages.settings.form.globalProxy.title")}
-							subtitle={t("pages.settings.form.globalProxy.description")}
-							rightContent={
-								proxyOptions.length > 0 ? (
-									<Stack>
-										<FormSwitchField
-											name="globalProxyEnabled"
-											labelPlacement="start"
-											label={t("pages.settings.form.globalProxy.option.enabled.label")}
-										/>
-										{globalProxyEnabled && (
-											<FormSelectField
-												fieldLabel={t(
-													"pages.settings.form.globalProxy.option.proxy.label"
-												)}
-												name="globalProxyId"
-												options={proxyOptions}
-											/>
-										)}
-									</Stack>
-								) : (
-									<TextLink
-										text={t("pages.settings.form.globalProxy.option.empty.text")}
-										linkText={t("pages.settings.form.globalProxy.option.empty.link")}
-										href="/proxies"
-									/>
-								)
-							}
-						/>
-					)}
-					{isAdmin && (
-						<ConfigBox
-							title={t("pages.settings.form.pagespeed.title")}
-							subtitle={t("pages.settings.form.pagespeed.description")}
-							rightContent={
-								<>
-									{(isApiKeySet === false || apiKeyHasBeenReset === true) && (
-										<FormTextField
-											name="pagespeedApiKey"
-											type="password"
-											fieldLabel={t("pages.settings.form.pagespeed.option.apiKey.label")}
-											placeholder={t(
-												"pages.settings.form.pagespeed.option.apiKey.placeholder"
-											)}
-										/>
-									)}
-
-									{isApiKeySet === true && apiKeyHasBeenReset === false && (
-										<Box>
-											<FieldLabel>
-												{t("pages.settings.form.pagespeed.option.apiKey.labelSet")}
-											</FieldLabel>
-											<Button
-												onClick={handleResetApiKey}
-												variant="contained"
-												color="error"
-											>
-												{t("common.buttons.reset")}
-											</Button>
-										</Box>
-									)}
-								</>
-							}
-						/>
-					)}
-				</Stack>
+									</>
+								}
+							/>
+						)}
+					</Stack>
+				)}
 
 				{/* data tab */}
-				<Stack
-					gap={theme.spacing(LAYOUT.MD)}
-					hidden={activeTab !== "data"}
-				>
-					{/* Export Monitors - Admin Only */}
-					{isAdmin && (
-						<ConfigBox
-							title={t("pages.settings.form.importExportMonitors.title")}
-							subtitle={t("pages.settings.form.importExportMonitors.description")}
-							rightContent={
-								<Stack
-									gap={theme.spacing(LAYOUT.MD)}
-									direction={"row"}
-								>
-									<input
-										id="monitor-import-input"
-										type="file"
-										accept=".json"
-										style={{ display: "none" }}
-										onChange={handleFileSelect}
-									/>
-									<Button
-										variant="contained"
-										onClick={() =>
-											document.getElementById("monitor-import-input")?.click()
-										}
-										disabled={isImportingMonitors}
+				{activeTab === "data" && (
+					<Stack gap={theme.spacing(LAYOUT.MD)}>
+						{/* Export Monitors - Admin Only */}
+						{isAdmin && (
+							<ConfigBox
+								title={t("pages.settings.form.importExportMonitors.title")}
+								subtitle={t("pages.settings.form.importExportMonitors.description")}
+								rightContent={
+									<Stack
+										gap={theme.spacing(LAYOUT.MD)}
+										direction={"row"}
 									>
-										{t("common.buttons.importFromJSON")}
-									</Button>
-									<Button
-										variant="contained"
-										onClick={handleExportMonitors}
-									>
-										{t("common.buttons.exportToJSON")}
-									</Button>
-								</Stack>
-							}
-						/>
-					)}
-					{/* Clear All Stats */}
-					{isAdmin && (
-						<ConfigBox
-							title={t("pages.settings.form.stats.title")}
-							subtitle={t("pages.settings.form.stats.description")}
-							rightContent={
-								<Button
-									variant="contained"
-									color="error"
-									onClick={() => setIsStatsDialogOpen(true)}
-								>
-									{t("common.buttons.clear")}
-								</Button>
-							}
-						/>
-					)}
-
-					{/* Remove All Monitors - Admin Only */}
-					{isAdmin && (
-						<ConfigBox
-							title={t("pages.settings.form.removeMonitors.title")}
-							subtitle={t("pages.settings.form.removeMonitors.description")}
-							rightContent={
-								<Box>
+										<input
+											id="monitor-import-input"
+											type="file"
+											accept=".json"
+											style={{ display: "none" }}
+											onChange={handleFileSelect}
+										/>
+										<Button
+											variant="contained"
+											onClick={() =>
+												document.getElementById("monitor-import-input")?.click()
+											}
+											disabled={isImportingMonitors}
+										>
+											{t("common.buttons.importFromJSON")}
+										</Button>
+										<Button
+											variant="contained"
+											onClick={handleExportMonitors}
+										>
+											{t("common.buttons.exportToJSON")}
+										</Button>
+									</Stack>
+								}
+							/>
+						)}
+						{/* Clear All Stats */}
+						{isAdmin && (
+							<ConfigBox
+								title={t("pages.settings.form.stats.title")}
+								subtitle={t("pages.settings.form.stats.description")}
+								rightContent={
 									<Button
 										variant="contained"
 										color="error"
-										loading={isDeletingAllMonitors}
-										onClick={() => setIsDemoMonitorsDialogOpen(true)}
+										onClick={() => setIsStatsDialogOpen(true)}
 									>
-										{t("common.buttons.removeMonitors")}
+										{t("common.buttons.clear")}
 									</Button>
-								</Box>
-							}
-						/>
-					)}
-				</Stack>
+								}
+							/>
+						)}
+
+						{/* Remove All Monitors - Admin Only */}
+						{isAdmin && (
+							<ConfigBox
+								title={t("pages.settings.form.removeMonitors.title")}
+								subtitle={t("pages.settings.form.removeMonitors.description")}
+								rightContent={
+									<Box>
+										<Button
+											variant="contained"
+											color="error"
+											loading={isDeletingAllMonitors}
+											onClick={() => setIsDemoMonitorsDialogOpen(true)}
+										>
+											{t("common.buttons.removeMonitors")}
+										</Button>
+									</Box>
+								}
+							/>
+						)}
+					</Stack>
+				)}
 
 				{/* Clear Stats Confirmation Dialog */}
 				<Dialog
@@ -1032,7 +1035,16 @@ export const SettingsPage = () => {
 									return (
 										<li key={field}>
 											<Typography variant="body2">
-												<strong>{field}:</strong> {message}
+												<Link
+													component="button"
+													type="button"
+													variant="body2"
+													color={theme.palette.error.main}
+													onClick={() => revealField(field)}
+												>
+													<strong>{field}</strong>
+												</Link>
+												: {message}
 											</Typography>
 										</li>
 									);
