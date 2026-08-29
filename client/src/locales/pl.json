@@ -231,7 +231,7 @@
 		"dashboard": {
 			"header": {
 				"title": "Pulpit",
-				"description": "Zobacz dostępność, infrastrukturę, incydenty i checki w jednym miejscu, aby dostrzec, co wymaga uwagi, bez otwierania każdej strony."
+				"description": "Zobacz każdy typ monitora w jednym miejscu i dostrzeż, co wymaga uwagi."
 			},
 			"card": {
 				"error": "Nie udało się załadować tej karty."

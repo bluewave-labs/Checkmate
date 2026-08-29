@@ -227,7 +227,7 @@
 		"dashboard": {
 			"header": {
 				"title": "Tauler",
-				"description": "Consulteu temps en línia, infraestructura, incidents i comprovacions en un sol lloc, per detectar què necessita atenció sense obrir cada pàgina."
+				"description": "Vegeu cada tipus de monitor en un sol lloc i detecteu què necessita atenció."
 			},
 			"card": {
 				"error": "No s'ha pogut carregar aquesta targeta."

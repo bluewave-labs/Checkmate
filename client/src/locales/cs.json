@@ -227,7 +227,7 @@
 		"dashboard": {
 			"header": {
 				"title": "Přehled",
-				"description": "Zobrazte dostupnost, infrastrukturu, incidenty a kontroly na jednom místě, abyste poznali, co vyžaduje pozornost, bez otevírání každé stránky."
+				"description": "Zobrazte každý typ monitoru na jednom místě a poznejte, co vyžaduje pozornost."
 			},
 			"card": {
 				"error": "Tuto kartu se nepodařilo načíst."

@@ -227,7 +227,7 @@
 		"dashboard": {
 			"header": {
 				"title": "Bảng điều khiển",
-				"description": "Xem uptime, hạ tầng, sự cố và kiểm tra ở cùng một nơi, để nhận ra điều cần chú ý mà không phải mở từng trang."
+				"description": "Xem mọi loại trình giám sát ở cùng một nơi và nhận ra điều cần chú ý."
 			},
 			"card": {
 				"error": "Không thể tải thẻ này."

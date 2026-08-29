@@ -227,7 +227,7 @@
 		"dashboard": {
 			"header": {
 				"title": "Tableau de bord",
-				"description": "Visualisez la disponibilité, l'infrastructure, les incidents et les vérifications au même endroit, pour repérer ce qui demande votre attention sans ouvrir chaque page."
+				"description": "Voyez chaque type de moniteur au même endroit et repérez ce qui demande votre attention."
 			},
 			"card": {
 				"error": "Impossible de charger cette carte."

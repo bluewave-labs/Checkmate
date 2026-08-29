@@ -227,7 +227,7 @@
 		"dashboard": {
 			"header": {
 				"title": "Dashboard",
-				"description": "Sehen Sie Uptime, Infrastruktur, Vorfälle und Prüfungen an einem Ort und erkennen Sie, was Aufmerksamkeit braucht, ohne jede Seite zu öffnen."
+				"description": "Sehen Sie jeden Monitortyp an einem Ort und erkennen Sie, was Aufmerksamkeit braucht."
 			},
 			"card": {
 				"error": "Diese Karte konnte nicht geladen werden."

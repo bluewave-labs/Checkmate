@@ -227,7 +227,7 @@
 		"dashboard": {
 			"header": {
 				"title": "Panel",
-				"description": "Vea uptime, infraestructura, incidentes y comprobaciones en un solo lugar, para detectar lo que necesita atención sin abrir cada página."
+				"description": "Vea cada tipo de monitor en un solo lugar y detecte lo que necesita atención."
 			},
 			"card": {
 				"error": "No se pudo cargar esta tarjeta."

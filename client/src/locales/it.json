@@ -231,7 +231,7 @@
 		"dashboard": {
 			"header": {
 				"title": "Dashboard",
-				"description": "Vedi uptime, infrastruttura, incidenti e verifiche in un unico posto, per individuare ciò che richiede attenzione senza aprire ogni pagina."
+				"description": "Vedi ogni tipo di monitor in un unico posto e individua ciò che richiede attenzione."
 			},
 			"card": {
 				"error": "Impossibile caricare questa scheda."

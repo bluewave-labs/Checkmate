@@ -227,7 +227,7 @@
 		"dashboard": {
 			"header": {
 				"title": "Panel",
-				"description": "Çalışma süresi, altyapı, olaylar ve kontrolleri tek bir yerde görün; her sayfayı açmadan neyin ilgi gerektirdiğini fark edin."
+				"description": "Her izleyici türünü tek yerde görün ve neyin ilgi gerektirdiğini fark edin."
 			},
 			"card": {
 				"error": "Bu kart yüklenemedi."

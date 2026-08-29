@@ -227,7 +227,7 @@
 		"dashboard": {
 			"header": {
 				"title": "Kojelauta",
-				"description": "Näe käytettävyys, infrastruktuuri, tapaukset ja tarkistukset yhdessä paikassa, jotta huomaat huomiota vaativat asiat avaamatta jokaista sivua."
+				"description": "Näe kaikki monitorityypit yhdessä paikassa ja huomaa huomiota vaativat asiat."
 			},
 			"card": {
 				"error": "Tätä korttia ei voitu ladata."
