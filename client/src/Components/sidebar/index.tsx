@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import { LAYOUT } from "@/Utils/Theme/constants";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 import { useSidebar } from "@/Hooks/useSidebar.js";
 import { Logo } from "@/Components/sidebar/Logo";
 import { getMenu, getAccountMenu } from "@/Components/sidebar/Menu";
@@ -107,8 +108,9 @@ export const Sidebar = () => {
 									variant="eyebrow"
 									component="div"
 									color={theme.palette.text.disabled}
-									paddingLeft={theme.spacing(LAYOUT.LG)}
-									paddingTop={theme.spacing(LAYOUT.XS)}
+									fontSize={typographyLevels.s}
+									paddingLeft={theme.spacing(5)}
+									paddingTop={theme.spacing(LAYOUT.SM)}
 									paddingBottom={theme.spacing(LAYOUT.XXS)}
 								>
 									{group.group}
