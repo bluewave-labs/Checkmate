@@ -28,7 +28,9 @@ const incidentDuration = (incident: IncidentSummaryItem): string | null => {
 export const RecentIncidentsCard = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const { data, isLoading, error } = useGet<IncidentSummary>("/incidents/team/summary");
+	const { data, isLoading, isValidating, error } = useGet<IncidentSummary>(
+		"/incidents/team/summary"
+	);
 
 	const incidents = (data?.latestIncidents ?? []).slice(0, MAX_ROWS);
 
@@ -38,6 +40,7 @@ export const RecentIncidentsCard = () => {
 			to="/incidents"
 			isLoading={isLoading && !data}
 			error={error}
+			isStale={isValidating && Boolean(data)}
 			action={
 				data && data.totalActive > 0 ? (
 					<Typography

@@ -16,7 +16,7 @@ const SUMMARY_URL = "/checks/team/summary?dateRange=day";
 export const FailedChecksCard = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const { data, isLoading, error } = useGet<ChecksSummary>(SUMMARY_URL);
+	const { data, isLoading, isValidating, error } = useGet<ChecksSummary>(SUMMARY_URL);
 
 	const total = data?.totalChecks ?? 0;
 	const failed = data?.downChecks ?? 0;
@@ -29,6 +29,7 @@ export const FailedChecksCard = () => {
 			to="/checks"
 			isLoading={isLoading && !data}
 			error={error}
+			isStale={isValidating && Boolean(data)}
 		>
 			{total === 0 ? (
 				<CardMessage text={t("pages.dashboard.cards.failedChecks.empty")} />

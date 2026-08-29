@@ -10,7 +10,7 @@ const VIEWBOX_HEIGHT = 24;
  * Response times as a bare polyline. Deliberately axis-free and label-free —
  * at this size the shape is the only readable signal.
  *
- * `checks` arrives newest-first, so it is reversed to read left-to-right.
+ * `checks` arrives oldest-first, which is already left-to-right reading order.
  */
 export const Sparkline = ({
 	checks,
@@ -22,8 +22,7 @@ export const Sparkline = ({
 	const points = useMemo(() => {
 		const values = checks
 			.map((check) => check.responseTime)
-			.filter((value): value is number => typeof value === "number")
-			.reverse();
+			.filter((value): value is number => typeof value === "number");
 
 		if (values.length < 2) {
 			return null;

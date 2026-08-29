@@ -26,8 +26,11 @@ const readStored = (): CardId[] | null => {
 		if (!Array.isArray(parsed)) {
 			return null;
 		}
-		const valid = parsed.filter(isCardId);
-		return valid.length > 0 ? valid : null;
+		// An empty array is a real choice — a dashboard the user emptied — and
+		// must not fall back to the defaults. Only an absent or malformed key
+		// returns null. Unknown ids are dropped so a card removed in a later
+		// release cannot break the page.
+		return parsed.filter(isCardId);
 	} catch (error) {
 		logger.error(
 			"Could not read dashboard card selection",

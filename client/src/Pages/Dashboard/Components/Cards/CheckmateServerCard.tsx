@@ -60,7 +60,7 @@ const MetricLine = ({
 export const CheckmateServerCard = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const { data, isLoading, error } = useGet<Diagnostics>(
+	const { data, isLoading, isValidating, error } = useGet<Diagnostics>(
 		"/diagnostic/system",
 		{},
 		{ refreshInterval: 30000 }
@@ -86,6 +86,7 @@ export const CheckmateServerCard = () => {
 			to="/logs"
 			isLoading={isLoading && !data}
 			error={error}
+			isStale={isValidating && Boolean(data)}
 		>
 			{data && (
 				<Stack gap={theme.spacing(LAYOUT.SM)}>

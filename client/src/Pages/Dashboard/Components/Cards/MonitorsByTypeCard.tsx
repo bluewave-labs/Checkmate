@@ -23,7 +23,7 @@ interface TypeBucket {
 export const MonitorsByTypeCard = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const { data, isLoading, error } = useMonitors();
+	const { data, isLoading, isValidating, error } = useMonitors();
 
 	const buckets = useMemo<TypeBucket[]>(() => {
 		const byType = new Map<MonitorType, TypeBucket>();
@@ -50,6 +50,7 @@ export const MonitorsByTypeCard = () => {
 			to="/uptime"
 			isLoading={isLoading && !data}
 			error={error}
+			isStale={isValidating && Boolean(data)}
 		>
 			{buckets.length === 0 ? (
 				<CardMessage text={t("pages.dashboard.cards.monitorsByType.empty")} />

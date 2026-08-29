@@ -5,10 +5,11 @@ import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
 
-import { Dot, StatusCodeLabel } from "@/Components/design-elements";
+import { Dot } from "@/Components/design-elements";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import { getStatusColor, getMonitorPath } from "@/Utils/MonitorUtils";
+import { formatStatusCode } from "@/Utils/statusCode";
 import { formatDuration } from "@/Utils/TimeUtils";
 import { DashboardCard, CardMessage } from "../DashboardCard";
 import { CardRow, CardRowLabel } from "../CardPrimitives";
@@ -19,34 +20,45 @@ import type { Monitor, MonitorStatus } from "@/Types/Monitor";
 
 // Ordering, not a severity scale — Checkmate has none. Every input already
 // exists in the API response.
+//
+// `initializing` is deliberately excluded: on a fresh install every new monitor
+// starts there, and counting it would open the card red claiming a fleet-wide
+// outage that does not exist. It is "not checked yet", not "broken".
 const STATUS_RANK: Partial<Record<MonitorStatus, number>> = {
 	down: 1,
 	breached: 2,
-	initializing: 3,
 };
 
 const isProblem = (monitor: Monitor) => STATUS_RANK[monitor.status] !== undefined;
 
 /**
  * How long the monitor has been in its current state, inferred from the oldest
- * consecutive failing check. recentChecks is newest-first.
+ * consecutive failing check.
+ *
+ * recentChecks is oldest-first — the server appends each snapshot with
+ * `$push … $slice: -N` — so the run of current failures is walked backwards
+ * from the end.
  */
 const downSince = (monitor: Monitor): string | null => {
 	const checks = monitor.recentChecks ?? [];
 	let oldestFailing: string | null = null;
-	for (const check of checks) {
-		if (check.status === true) {
+	for (let index = checks.length - 1; index >= 0; index -= 1) {
+		if (checks[index].status === true) {
 			break;
 		}
-		oldestFailing = check.createdAt;
+		oldestFailing = checks[index].createdAt;
 	}
 	return oldestFailing;
 };
 
+/** The newest retained check — recentChecks is oldest-first. */
+const latestCheck = (monitor: Monitor) =>
+	monitor.recentChecks?.[monitor.recentChecks.length - 1];
+
 export const CurrentlyDownCard = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const { data, isLoading, error } = useMonitors();
+	const { data, isLoading, isValidating, error } = useMonitors();
 
 	const problems = useMemo(() => {
 		const monitors = data?.monitors ?? [];
@@ -70,6 +82,7 @@ export const CurrentlyDownCard = () => {
 			to="/incidents"
 			isLoading={isLoading && !data}
 			error={error}
+			isStale={isValidating && Boolean(data)}
 			action={
 				problems.length > 0 ? (
 					<Typography
@@ -128,9 +141,21 @@ export const CurrentlyDownCard = () => {
 									color={theme.palette.error.main}
 								/>
 							</Box>
-							<Box flexShrink={0}>
-								<StatusCodeLabel statusCode={monitor.recentChecks?.[0]?.statusCode} />
-							</Box>
+							{/*
+							 * Plain text rather than StatusCodeLabel: that component wraps
+							 * its body in a Tooltip, and a focusable element nested inside
+							 * the row's link is unreachable by keyboard — tabbing lands on
+							 * the link and activating it navigates away.
+							 */}
+							<Typography
+								fontSize={typographyLevels.s}
+								color={theme.palette.text.secondary}
+								flexShrink={0}
+								minWidth={32}
+								textAlign="right"
+							>
+								{formatStatusCode(latestCheck(monitor)?.statusCode, t)}
+							</Typography>
 						</CardRow>
 					))}
 				</Stack>

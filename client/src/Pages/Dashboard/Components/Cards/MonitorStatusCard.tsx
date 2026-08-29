@@ -13,12 +13,14 @@ import { useMonitors } from "../../useDashboardData";
 
 import type { MonitorStatus, MonitorsSummary } from "@/Types/Monitor";
 
-// The five counts, in the order they read: healthy first, then what is wrong,
-// then what is not being checked.
+// Every state the summary reports, in the order they read: healthy first, then
+// what is wrong, then what is not being checked. All six are listed so the
+// tiles always sum to totalMonitors — omitting one leaves an unexplained gap.
 const COUNTS: { key: string; status: MonitorStatus; field: keyof MonitorsSummary }[] = [
 	{ key: "up", status: "up", field: "upMonitors" },
 	{ key: "down", status: "down", field: "downMonitors" },
 	{ key: "breached", status: "breached", field: "breachedMonitors" },
+	{ key: "maintenance", status: "maintenance", field: "maintenanceMonitors" },
 	{ key: "paused", status: "paused", field: "pausedMonitors" },
 	{ key: "initializing", status: "initializing", field: "initializingMonitors" },
 ];
@@ -26,7 +28,7 @@ const COUNTS: { key: string; status: MonitorStatus; field: keyof MonitorsSummary
 export const MonitorStatusCard = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
-	const { data, isLoading, error } = useMonitors();
+	const { data, isLoading, isValidating, error } = useMonitors();
 	const summary = data?.summary ?? null;
 
 	return (
@@ -35,6 +37,7 @@ export const MonitorStatusCard = () => {
 			to="/uptime"
 			isLoading={isLoading && !summary}
 			error={error}
+			isStale={isValidating && Boolean(data)}
 		>
 			{!summary || summary.totalMonitors === 0 ? (
 				<CardMessage text={t("pages.dashboard.cards.monitorStatus.empty")} />
@@ -48,7 +51,10 @@ export const MonitorStatusCard = () => {
 						<Stack
 							key={key}
 							component={RouterLink}
-							to={`/uptime?status=${key}`}
+							// Plain /uptime: the monitors list does not read query
+							// params, so a ?status= filter would be silently dropped and
+							// the link would lie about where it goes.
+							to="/uptime"
 							gap={theme.spacing(LAYOUT.XXS)}
 							flex="1 1 0"
 							minWidth={96}

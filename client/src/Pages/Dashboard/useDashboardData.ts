@@ -1,21 +1,20 @@
 import { createContext, useContext } from "react";
 import { useGet } from "@/Hooks/UseApi";
-import {
-	MAX_RECENT_CHECKS,
-	MonitorTypes,
-	type MonitorsWithChecksResponse,
-} from "@/Types/Monitor";
+import { MonitorTypes, type MonitorsWithChecksResponse } from "@/Types/Monitor";
 
 const REFRESH_INTERVAL = 30000;
 
 // One request feeds every monitor-derived card. Cards read it from context so
 // adding a monitor card costs no extra call.
+//
+// No rowsPerPage: the repository treats 0 as "no limit", so every monitor comes
+// back. The dashboard summarises the whole fleet, it never pages. `limit` is
+// deliberately not sent — findByTeamIdWithStats derives its page size from
+// rowsPerPage alone and never reads it, so passing it would only imply a
+// recent-check truncation that is not actually in effect.
 const buildMonitorsUrl = () => {
 	const params = new URLSearchParams();
 	MonitorTypes.forEach((type) => params.append("type", type));
-	// No rowsPerPage: the repository treats 0 as "no limit", so every monitor
-	// comes back. The dashboard summarises the whole fleet, it never pages.
-	params.append("limit", String(MAX_RECENT_CHECKS));
 	return `/monitors/team/with-checks?${params.toString()}`;
 };
 
