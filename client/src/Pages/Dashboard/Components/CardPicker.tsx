@@ -1,4 +1,5 @@
 import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { useTheme } from "@mui/material/styles";
@@ -59,19 +60,34 @@ export const CardPicker = ({
 			onCancel={onReset}
 			cancelText={t("pages.dashboard.picker.reset")}
 			cancelSx={{ marginRight: "auto" }}
+			// Escape must dismiss, not reset. The dialog sends Escape to onCancel by
+			// default, and this one's cancel slot resets the selection — so without
+			// this, Escape would wipe the user's cards instead of closing.
+			onEscape={onClose}
 			// Changes apply immediately, so Done only dismisses; it is the primary
 			// action here and carries the usual contained styling.
 			onConfirm={onClose}
 			confirmText={t("pages.dashboard.picker.done")}
 		>
-			<Stack
-				gap={theme.spacing(LAYOUT.MD)}
+			{/*
+			 * Two columns: seventeen cards in one list makes the dialog scroll,
+			 * which hides most of the catalogue behind a scrollbar. Groups flow
+			 * down the columns and are kept whole, so a group is never split
+			 * across the gap.
+			 */}
+			<Box
 				pt={theme.spacing(LAYOUT.SM)}
+				sx={{
+					columnCount: { xs: 1, sm: 2 },
+					columnGap: theme.spacing(LAYOUT.XL),
+				}}
 			>
 				{grouped.map(({ group, cards }) => (
 					<Stack
 						key={group}
 						gap={theme.spacing(LAYOUT.XXS)}
+						pb={theme.spacing(LAYOUT.MD)}
+						sx={{ breakInside: "avoid" }}
 					>
 						<Typography
 							variant="eyebrow"
@@ -110,7 +126,7 @@ export const CardPicker = ({
 						))}
 					</Stack>
 				))}
-			</Stack>
+			</Box>
 		</Dialog>
 	);
 };

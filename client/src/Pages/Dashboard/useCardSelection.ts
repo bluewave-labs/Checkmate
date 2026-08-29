@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { logger } from "@/Utils/logger";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
@@ -50,7 +50,17 @@ export const useCardSelection = () => {
 		() => readStored() ?? DEFAULT_CARD_IDS
 	);
 
+	// Skip the write on mount. The value has just been read from storage, so
+	// rewriting it achieves nothing — but if the read failed for any reason and
+	// fell back to the defaults, that write would overwrite the user's real
+	// selection and make the loss permanent.
+	const hasMounted = useRef(false);
+
 	useEffect(() => {
+		if (!hasMounted.current) {
+			hasMounted.current = true;
+			return;
+		}
 		try {
 			window.localStorage.setItem(DASHBOARD_CARDS_STORAGE_KEY, JSON.stringify(selected));
 		} catch (error) {

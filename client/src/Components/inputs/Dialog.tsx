@@ -27,6 +27,7 @@ export const DialogInput = ({
 	fullWidth = false,
 	additionalButtons,
 	cancelSx,
+	onEscape,
 }: {
 	open: boolean;
 	title?: string;
@@ -43,6 +44,12 @@ export const DialogInput = ({
 	additionalButtons?: ReactNode;
 	/** Styles the cancel button — e.g. an auto margin to push it left. */
 	cancelSx?: SxProps;
+	/**
+	 * Called when Escape is pressed. Defaults to `onCancel`, which is right when
+	 * cancel simply dismisses — but not when it does something else, so a dialog
+	 * whose cancel slot carries another action passes its own dismiss here.
+	 */
+	onEscape?(): void;
 }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
@@ -52,7 +59,12 @@ export const DialogInput = ({
 			maxWidth={maxWidth}
 			fullWidth={fullWidth}
 			onClose={(_event, reason) => {
-				if (reason !== "backdropClick" && onCancel) onCancel(undefined);
+				if (reason === "backdropClick") return;
+				if (onEscape) {
+					onEscape();
+					return;
+				}
+				if (onCancel) onCancel(undefined);
 			}}
 		>
 			{title && (
