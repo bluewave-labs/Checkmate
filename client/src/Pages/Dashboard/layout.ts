@@ -1,57 +1,40 @@
-import { GRID_COLUMNS, STRETCH_MAX_WIDTH, type CardDefinition } from "./cards";
+import { GRID_COLUMNS, HALF_WIDTH, type CardDefinition } from "./cards";
 
 export interface PlacedCard {
 	card: CardDefinition;
-	/** Columns actually rendered — the declared width, or more if stretched. */
+	/** Columns rendered. Equal to the declared width except for a lone half. */
 	renderedWidth: number;
 }
 
 /**
- * Packs cards into rows of GRID_COLUMNS. Declared width is a minimum; when a
- * row ends short, its last card absorbs the remainder.
+ * Packs cards into rows of GRID_COLUMNS.
  *
- * A row in the middle of the page always fills completely — leaving a hole
- * there reads as a rendering fault. Only the final row may end short, and only
- * when a single card sits in it: stretching a lone trailing card to full width
- * makes a 4-column card look like a banner. There, STRETCH_MAX_WIDTH caps the
- * growth instead.
+ * With only two widths this is nearly trivial: two halves fill a row exactly
+ * and a full-width card fills its own, so no card is ever stretched to close a
+ * gap. The one case needing a decision is a half-width card left alone at the
+ * end of the page — it is promoted to full width so the page does not end on a
+ * ragged half.
  *
- * `grid-auto-flow: dense` was tried instead and does not help: no later card is
- * small enough to backfill the gaps that occur in practice.
+ * `grid-auto-flow: dense` was tried and does not help: with a single body width
+ * there is never a smaller card available to backfill.
  */
 export const layoutCards = (cards: CardDefinition[]): PlacedCard[] => {
-	const placed: PlacedCard[] = [];
-	let row: PlacedCard[] = [];
-	let used = 0;
+	const placed: PlacedCard[] = cards.map((card) => ({
+		card,
+		renderedWidth: card.width,
+	}));
 
-	const flush = (isFinalRow: boolean) => {
-		if (row.length === 0) {
-			return;
-		}
-		const remainder = GRID_COLUMNS - used;
-		if (remainder > 0) {
-			const last = row[row.length - 1];
-			// A lone card ending the page grows only to the cap; every other short
-			// row is filled completely so no gap is left mid-page.
-			const ceiling = isFinalRow && row.length === 1 ? STRETCH_MAX_WIDTH : GRID_COLUMNS;
-			last.renderedWidth = Math.min(last.renderedWidth + remainder, ceiling);
-		}
-		placed.push(...row);
-		row = [];
-		used = 0;
-	};
+	// Columns occupied in the row still open once every card is placed. A
+	// trailing half-width card leaves exactly HALF_WIDTH here.
+	const trailing = placed.reduce(
+		(used, entry) => (used + entry.renderedWidth) % GRID_COLUMNS,
+		0
+	);
 
-	for (const card of cards) {
-		if (used + card.width > GRID_COLUMNS) {
-			flush(false);
-		}
-		row.push({ card, renderedWidth: card.width });
-		used += card.width;
-		if (used === GRID_COLUMNS) {
-			flush(false);
-		}
+	const last = placed[placed.length - 1];
+	if (last && trailing === HALF_WIDTH) {
+		last.renderedWidth = GRID_COLUMNS;
 	}
-	flush(true);
 
 	return placed;
 };

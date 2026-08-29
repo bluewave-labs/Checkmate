@@ -1,13 +1,17 @@
 import type { ComponentType } from "react";
 
-// The 12-column grid the dashboard lays cards out on. A card declares the
-// minimum number of columns it needs; the grid may stretch the last card in a
-// short row up to STRETCH_MAX_WIDTH. Declared width is never a user setting.
-export const CardWidths = [4, 6, 8, 12] as const;
+// The 12-column grid the dashboard lays cards out on.
+//
+// Only two widths exist. Cards are half-width by default and pair up down the
+// page; a card is full-width only when its content genuinely needs the room,
+// which makes the wide cards read as a deliberate signal rather than as an
+// inconsistent grid. Width is declared per card type in code and is never a
+// user setting.
+export const CardWidths = [6, 12] as const;
 export type CardWidth = (typeof CardWidths)[number];
 
 export const GRID_COLUMNS = 12;
-export const STRETCH_MAX_WIDTH = 8;
+export const HALF_WIDTH: CardWidth = 6;
 
 // Picker groups mirror the sidebar sections: you look for a card where you
 // look for the feature it belongs to.

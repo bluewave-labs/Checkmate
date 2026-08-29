@@ -323,7 +323,7 @@
 					"empty": "No channels yet."
 				},
 				"maintenance": {
-					"title": "Maintenance",
+					"title": "Maintenance windows",
 					"empty": "No maintenance scheduled.",
 					"runningNow": "Running now",
 					"next": "Next window"
@@ -336,7 +336,7 @@
 					"draft": "Draft"
 				},
 				"checksOnSchedule": {
-					"title": "Checks on schedule",
+					"title": "Check queue",
 					"healthy": "All {{jobs}} jobs on schedule across {{workers}} worker(s).",
 					"failing": "Failing jobs",
 					"scheduled": "Scheduled jobs",
@@ -349,7 +349,7 @@
 					"warnings": "Warnings"
 				},
 				"team": {
-					"title": "Team",
+					"title": "Team members",
 					"members": "{{count}} members",
 					"unverified": "Unverified"
 				}
@@ -358,7 +358,18 @@
 				"trigger": "Edit cards",
 				"title": "Dashboard cards",
 				"done": "Done",
-				"reset": "Reset to defaults"
+				"reset": "Reset to defaults",
+				"groups": {
+					"uptime": "Uptime",
+					"infrastructure": "Infrastructure",
+					"incidents": "Incidents",
+					"notifications": "Notifications",
+					"maintenance": "Maintenance",
+					"statusPages": "Status pages",
+					"checks": "Checks",
+					"logs": "System",
+					"settings": "Settings"
+				}
 			},
 			"empty": {
 				"title": "No cards on your dashboard",

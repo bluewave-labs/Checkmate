@@ -5,7 +5,7 @@ import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
 
-import { Dialog, Checkbox, Button } from "@/Components/inputs";
+import { Dialog, Checkbox } from "@/Components/inputs";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import { CardGroups, type CardDefinition, type CardGroup, type CardId } from "../cards";
@@ -52,21 +52,17 @@ export const CardPicker = ({
 			maxWidth="sm"
 			fullWidth
 			title={t("pages.dashboard.picker.title")}
-			// Every change applies immediately, so there is nothing to confirm and
-			// no `onConfirm` — which also keeps the prominent contained button out
-			// of the dialog entirely. Reset is destructive and stays quiet beside
-			// the close action rather than being the loudest thing on screen.
-			onCancel={onClose}
-			cancelText={t("pages.dashboard.picker.done")}
-			additionalButtons={
-				<Button
-					variant="outlined"
-					color="secondary"
-					onClick={onReset}
-				>
-					{t("pages.dashboard.picker.reset")}
-				</Button>
-			}
+			// The dialog lays its actions out as cancel → additional → confirm, all
+			// right-aligned. Reset takes the cancel slot with an auto right margin
+			// so it sits alone on the left, away from Done — a destructive action
+			// should not be adjacent to the one people reach for by reflex.
+			onCancel={onReset}
+			cancelText={t("pages.dashboard.picker.reset")}
+			cancelSx={{ marginRight: "auto" }}
+			// Changes apply immediately, so Done only dismisses; it is the primary
+			// action here and carries the usual contained styling.
+			onConfirm={onClose}
+			confirmText={t("pages.dashboard.picker.done")}
 		>
 			<Stack
 				gap={theme.spacing(LAYOUT.MD)}
@@ -82,7 +78,14 @@ export const CardPicker = ({
 							fontSize={typographyLevels.m}
 							color={theme.palette.text.disabled}
 						>
-							{t(`components.sidebar.menu.${group}`, { defaultValue: group })}
+							{/*
+							 * The picker has its own group labels rather than reusing the
+							 * sidebar's: the Logs page hosts logs, queue and diagnostics
+							 * tabs, so "Logs" would misdescribe the three cards under it.
+							 */}
+							{t(`pages.dashboard.picker.groups.${group}`, {
+								defaultValue: group,
+							})}
 						</Typography>
 						{cards.map((card) => (
 							<FormControlLabel

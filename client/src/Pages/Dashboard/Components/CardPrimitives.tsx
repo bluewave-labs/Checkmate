@@ -141,3 +141,98 @@ export const CardFigure = ({
 		</Stack>
 	);
 };
+
+/**
+ * A label with its value on the right — the shape almost every stat card
+ * repeats. `color` highlights the value alone, leaving the label quiet.
+ */
+export const CardStatLine = ({
+	label,
+	value,
+	color,
+}: {
+	label: string;
+	value: string;
+	color?: string;
+}) => {
+	const theme = useTheme();
+
+	return (
+		<Stack
+			direction="row"
+			alignItems="baseline"
+			justifyContent="space-between"
+			gap={theme.spacing(LAYOUT.SM)}
+		>
+			<Typography
+				fontSize={typographyLevels.m}
+				color={theme.palette.text.secondary}
+			>
+				{label}
+			</Typography>
+			<Typography
+				fontSize={typographyLevels.m}
+				color={color ?? theme.palette.text.primary}
+				noWrap
+			>
+				{value}
+			</Typography>
+		</Stack>
+	);
+};
+
+/**
+ * A CardStatLine with a proportional bar beneath it — the ranking and
+ * breakdown row. `max` defaults to a percentage scale; pass the largest value
+ * in the set to make bars relative to each other instead.
+ *
+ * `label` may be a node so callers can put a "N down" flag beside the name.
+ */
+export const CardMeterRow = ({
+	label,
+	value,
+	max,
+	color,
+	trailing,
+}: {
+	label: ReactNode;
+	value: number;
+	max?: number;
+	color: string;
+	trailing?: ReactNode;
+}) => {
+	const theme = useTheme();
+
+	return (
+		<Stack
+			flex={1}
+			minWidth={0}
+			gap={theme.spacing(LAYOUT.XXS)}
+		>
+			<Stack
+				direction="row"
+				alignItems="center"
+				justifyContent="space-between"
+				gap={theme.spacing(LAYOUT.SM)}
+			>
+				{typeof label === "string" ? (
+					<Typography
+						fontSize={typographyLevels.m}
+						color={theme.palette.text.primary}
+						noWrap
+					>
+						{label}
+					</Typography>
+				) : (
+					label
+				)}
+				{trailing}
+			</Stack>
+			<CardBar
+				value={value}
+				max={max}
+				color={color}
+			/>
+		</Stack>
+	);
+};

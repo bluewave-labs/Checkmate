@@ -10,38 +10,12 @@ import { LAYOUT } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import { formatTimestamp } from "@/Utils/TimeUtils";
 import { DashboardCard, CardMessage } from "../DashboardCard";
-import { CardFigure, CardRow, CardRowLabel } from "../CardPrimitives";
+import { CardFigure, CardRow, CardRowLabel, CardStatLine } from "../CardPrimitives";
 
 import type { IncidentSummary } from "@/Types/Incident";
 import type { Notification } from "@/Types/Notification";
 import type { MaintenanceWindow } from "@/Types/MaintenanceWindow";
 import type { StatusPage } from "@/Types/StatusPage";
-
-const StatLine = ({ label, value }: { label: string; value: string }) => {
-	const theme = useTheme();
-	return (
-		<Stack
-			direction="row"
-			alignItems="baseline"
-			justifyContent="space-between"
-			gap={theme.spacing(LAYOUT.SM)}
-		>
-			<Typography
-				fontSize={typographyLevels.m}
-				color={theme.palette.text.secondary}
-			>
-				{label}
-			</Typography>
-			<Typography
-				fontSize={typographyLevels.m}
-				color={theme.palette.text.primary}
-				noWrap
-			>
-				{value}
-			</Typography>
-		</Stack>
-	);
-};
 
 /** Free when Recent incidents is present — same summary call, shared by SWR. */
 export const IncidentStatsCard = () => {
@@ -68,14 +42,14 @@ export const IncidentStatsCard = () => {
 							data.totalActive > 0 ? theme.palette.error.main : theme.palette.text.primary
 						}
 					/>
-					<StatLine
+					<CardStatLine
 						label={t("pages.dashboard.cards.incidentStats.avgResolution")}
 						value={t("pages.dashboard.cards.incidentStats.hours", {
 							hours: data.avgResolutionTimeHours.toFixed(1),
 						})}
 					/>
 					{data.topMonitor?.monitorName && (
-						<StatLine
+						<CardStatLine
 							label={t("pages.dashboard.cards.incidentStats.mostIncidents")}
 							value={`${data.topMonitor.monitorName} (${data.topMonitor.incidentCount})`}
 						/>
@@ -115,7 +89,7 @@ export const NotificationChannelsCard = () => {
 			) : (
 				<Stack gap={theme.spacing(LAYOUT.XS)}>
 					{byType.map(([type, count]) => (
-						<StatLine
+						<CardStatLine
 							key={type}
 							label={type}
 							value={String(count)}
@@ -169,7 +143,7 @@ export const MaintenanceCard = () => {
 						caption={t("pages.dashboard.cards.maintenance.runningNow")}
 					/>
 					{next && (
-						<StatLine
+						<CardStatLine
 							label={t("pages.dashboard.cards.maintenance.next")}
 							value={formatTimestamp(next.start)}
 						/>

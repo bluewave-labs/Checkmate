@@ -9,7 +9,7 @@ import { LAYOUT } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import { formatTimestamp } from "@/Utils/TimeUtils";
 import { DashboardCard, CardMessage } from "../DashboardCard";
-import { CardFigure, CardRow, CardRowLabel } from "../CardPrimitives";
+import { CardFigure, CardRow, CardRowLabel, CardStatLine } from "../CardPrimitives";
 
 import { REFRESH_INTERVAL_MS, SLOW_REFRESH_INTERVAL_MS } from "../../cards";
 
@@ -18,39 +18,6 @@ import type { Log } from "@/Types/Log";
 import type { User } from "@/Types/User";
 
 const MAX_ERROR_ROWS = 5;
-
-const StatLine = ({
-	label,
-	value,
-	color,
-}: {
-	label: string;
-	value: string;
-	color?: string;
-}) => {
-	const theme = useTheme();
-	return (
-		<Stack
-			direction="row"
-			alignItems="baseline"
-			justifyContent="space-between"
-			gap={theme.spacing(LAYOUT.SM)}
-		>
-			<Typography
-				fontSize={typographyLevels.m}
-				color={theme.palette.text.secondary}
-			>
-				{label}
-			</Typography>
-			<Typography
-				fontSize={typographyLevels.m}
-				color={color ?? theme.palette.text.primary}
-			>
-				{value}
-			</Typography>
-		</Stack>
-	);
-};
 
 /** Reads as a single reassurance line while nothing is failing. */
 export const ChecksOnScheduleCard = () => {
@@ -107,11 +74,11 @@ export const ChecksOnScheduleCard = () => {
 							</Stack>
 						</>
 					)}
-					<StatLine
+					<CardStatLine
 						label={t("pages.dashboard.cards.checksOnSchedule.scheduled")}
 						value={String(data.jobs)}
 					/>
-					<StatLine
+					<CardStatLine
 						label={t("pages.dashboard.cards.checksOnSchedule.runningNow")}
 						value={String(data.activeJobs)}
 					/>
@@ -171,7 +138,7 @@ export const RecentErrorsCard = () => {
 				<CardMessage text={t("pages.dashboard.cards.recentErrors.empty")} />
 			) : (
 				<Stack gap={theme.spacing(LAYOUT.SM)}>
-					<StatLine
+					<CardStatLine
 						label={t("pages.dashboard.cards.recentErrors.warnings")}
 						value={String(warnings)}
 					/>
@@ -238,14 +205,14 @@ export const TeamCard = () => {
 						caption={t("pages.dashboard.cards.team.members", { count: total })}
 					/>
 					{byRole.map(([role, count]) => (
-						<StatLine
+						<CardStatLine
 							key={role}
 							label={t(`common.auth.roles.${role}`, { defaultValue: role })}
 							value={String(count)}
 						/>
 					))}
 					{unverified > 0 && (
-						<StatLine
+						<CardStatLine
 							label={t("pages.dashboard.cards.team.unverified")}
 							value={String(unverified)}
 							color={theme.palette.warning.main}

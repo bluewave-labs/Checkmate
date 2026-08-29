@@ -12,7 +12,7 @@ import { getStatusColor, getMonitorPath } from "@/Utils/MonitorUtils";
 import { formatStatusCode } from "@/Utils/statusCode";
 import { formatDuration } from "@/Utils/TimeUtils";
 import { DashboardCard, CardMessage } from "../DashboardCard";
-import { CardRow, CardRowLabel } from "../CardPrimitives";
+import { CardRow } from "../CardPrimitives";
 import { Sparkline } from "../Sparkline";
 import { useMonitors } from "../../useDashboardData";
 
@@ -24,10 +24,6 @@ import type { Monitor, MonitorStatus } from "@/Types/Monitor";
 // `initializing` is deliberately excluded: on a fresh install every new monitor
 // starts there, and counting it would open the card red claiming a fleet-wide
 // outage that does not exist. It is "not checked yet", not "broken".
-// Fixed column widths keep the right-hand figures aligned down the list
-// instead of jittering with each row's content.
-const DURATION_COLUMN_WIDTH = 64;
-const STATUS_CODE_COLUMN_WIDTH = 32;
 const SPARKLINE_WIDTH = 80;
 
 const STATUS_RANK: Partial<Record<MonitorStatus, number>> = {
@@ -115,53 +111,70 @@ export const CurrentlyDownCard = () => {
 								color={getStatusColor(monitor.status, theme)}
 								size="md"
 							/>
-							<CardRowLabel
-								primary={monitor.name}
-								secondary={monitor.url}
-							/>
-							<Typography
-								fontSize={typographyLevels.m}
-								color={theme.palette.text.secondary}
-								flexShrink={0}
-							>
-								{monitor.type}
-							</Typography>
-							{since && (
-								<Typography
-									fontSize={typographyLevels.m}
-									color={theme.palette.error.main}
-									flexShrink={0}
-									minWidth={DURATION_COLUMN_WIDTH}
-									textAlign="right"
-								>
-									{formatDuration(Date.now() - new Date(since).getTime())}
-								</Typography>
-							)}
-							<Box
-								width={SPARKLINE_WIDTH}
-								flexShrink={0}
-								display={{ xs: "none", md: "block" }}
-							>
-								<Sparkline
-									checks={monitor.recentChecks ?? []}
-									color={theme.palette.error.main}
-								/>
-							</Box>
 							{/*
-							 * Plain text rather than StatusCodeLabel: that component wraps
-							 * its body in a Tooltip, and a focusable element nested inside
-							 * the row's link is unreachable by keyboard — tabbing lands on
-							 * the link and activating it navigates away.
+							 * Two lines rather than one wide row: at half width seven
+							 * columns would crush the monitor name, so the name and how long
+							 * it has been down lead, and the supporting detail sits beneath
+							 * in a quieter line.
 							 */}
-							<Typography
-								fontSize={typographyLevels.m}
-								color={theme.palette.text.secondary}
-								flexShrink={0}
-								minWidth={STATUS_CODE_COLUMN_WIDTH}
-								textAlign="right"
+							<Stack
+								flex={1}
+								minWidth={0}
+								gap={theme.spacing(LAYOUT.XXS)}
 							>
-								{formatStatusCode(latestCheck(monitor)?.statusCode, t)}
-							</Typography>
+								<Stack
+									direction="row"
+									alignItems="baseline"
+									justifyContent="space-between"
+									gap={theme.spacing(LAYOUT.SM)}
+								>
+									<Typography
+										fontSize={typographyLevels.m}
+										color={theme.palette.text.primary}
+										noWrap
+									>
+										{monitor.name}
+									</Typography>
+									{since && (
+										<Typography
+											fontSize={typographyLevels.m}
+											color={theme.palette.error.main}
+											flexShrink={0}
+										>
+											{formatDuration(Date.now() - new Date(since).getTime())}
+										</Typography>
+									)}
+								</Stack>
+								<Stack
+									direction="row"
+									alignItems="center"
+									justifyContent="space-between"
+									gap={theme.spacing(LAYOUT.SM)}
+								>
+									{/*
+									 * Plain text rather than StatusCodeLabel: that component
+									 * wraps its body in a Tooltip, and a focusable element
+									 * inside the row's link is unreachable by keyboard.
+									 */}
+									<Typography
+										fontSize={typographyLevels.m}
+										color={theme.palette.text.secondary}
+										noWrap
+									>
+										{monitor.type} ·{" "}
+										{formatStatusCode(latestCheck(monitor)?.statusCode, t)}
+									</Typography>
+									<Box
+										width={SPARKLINE_WIDTH}
+										flexShrink={0}
+									>
+										<Sparkline
+											checks={monitor.recentChecks ?? []}
+											color={theme.palette.error.main}
+										/>
+									</Box>
+								</Stack>
+							</Stack>
 						</CardRow>
 					))}
 				</Stack>

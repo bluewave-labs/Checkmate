@@ -8,7 +8,7 @@ import { LAYOUT } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import { getMonitorPath, getUptimePercentageColor } from "@/Utils/MonitorUtils";
 import { DashboardCard, CardMessage } from "../DashboardCard";
-import { CardBar, CardRow, CardRowLabel } from "../CardPrimitives";
+import { CardMeterRow, CardRow, CardRowLabel } from "../CardPrimitives";
 import { useMonitors } from "../../useDashboardData";
 
 import type { Monitor } from "@/Types/Monitor";
@@ -83,18 +83,12 @@ export const SlowestMonitorsCard = () => {
 							key={monitor.id}
 							to={`/${getMonitorPath(monitor.type)}/${monitor.id}`}
 						>
-							<Stack
-								flex={1}
-								minWidth={0}
-								gap={theme.spacing(LAYOUT.XXS)}
-							>
-								<Stack
-									direction="row"
-									alignItems="center"
-									justifyContent="space-between"
-									gap={theme.spacing(LAYOUT.SM)}
-								>
-									<CardRowLabel primary={monitor.name} />
+							<CardMeterRow
+								label={<CardRowLabel primary={monitor.name} />}
+								value={average}
+								max={slowest}
+								color={theme.palette.primary.main}
+								trailing={
 									<Typography
 										fontSize={typographyLevels.m}
 										color={theme.palette.text.secondary}
@@ -102,13 +96,8 @@ export const SlowestMonitorsCard = () => {
 									>
 										{Math.round(average)} ms
 									</Typography>
-								</Stack>
-								<CardBar
-									value={average}
-									max={slowest}
-									color={theme.palette.primary.main}
-								/>
-							</Stack>
+								}
+							/>
 						</CardRow>
 					))}
 				</Stack>
@@ -166,18 +155,11 @@ export const LowestUptimeCard = () => {
 								key={monitor.id}
 								to={`/${getMonitorPath(monitor.type)}/${monitor.id}`}
 							>
-								<Stack
-									flex={1}
-									minWidth={0}
-									gap={theme.spacing(LAYOUT.XXS)}
-								>
-									<Stack
-										direction="row"
-										alignItems="center"
-										justifyContent="space-between"
-										gap={theme.spacing(LAYOUT.SM)}
-									>
-										<CardRowLabel primary={monitor.name} />
+								<CardMeterRow
+									label={<CardRowLabel primary={monitor.name} />}
+									value={percentage}
+									color={theme.palette[palette].main}
+									trailing={
 										<Typography
 											fontSize={typographyLevels.m}
 											color={theme.palette[palette].main}
@@ -185,12 +167,8 @@ export const LowestUptimeCard = () => {
 										>
 											{percentage.toFixed(1)}%
 										</Typography>
-									</Stack>
-									<CardBar
-										value={percentage}
-										color={theme.palette[palette].main}
-									/>
-								</Stack>
+									}
+								/>
 							</CardRow>
 						);
 					})}

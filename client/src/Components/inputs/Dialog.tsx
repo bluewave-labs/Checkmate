@@ -9,6 +9,7 @@ import { Button } from "@/Components/inputs";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
+import type { SxProps } from "@mui/material/styles";
 import type { ReactNode } from "react";
 
 export const DialogInput = ({
@@ -25,6 +26,7 @@ export const DialogInput = ({
 	maxWidth,
 	fullWidth = false,
 	additionalButtons,
+	cancelSx,
 }: {
 	open: boolean;
 	title?: string;
@@ -39,6 +41,8 @@ export const DialogInput = ({
 	maxWidth?: DialogProps["maxWidth"];
 	fullWidth?: boolean;
 	additionalButtons?: ReactNode;
+	/** Styles the cancel button — e.g. an auto margin to push it left. */
+	cancelSx?: SxProps;
 }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
@@ -94,6 +98,7 @@ export const DialogInput = ({
 					loading={loading}
 					variant="outlined"
 					onClick={onCancel}
+					sx={cancelSx}
 				>
 					{cancelText ?? t("common.buttons.cancel")}
 				</Button>

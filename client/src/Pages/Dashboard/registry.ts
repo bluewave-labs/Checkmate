@@ -24,10 +24,10 @@ import type { CardDefinition, CardId } from "./cards";
 // Declared width is the minimum number of columns a card needs. The grid may
 // stretch the last card of a short row; nothing here is a user setting.
 //
-// Order is the render order, and the order the picker lists them in. Cards are
-// sequenced so their declared widths pair into full rows: a card left alone in
-// a row gets stretched to fill it, so an 8-wide card is kept next to a 4-wide
-// one rather than being widened back to 12.
+// Order is the render order, and the order the picker lists them in.
+//
+// Full width is reserved for Monitor status alone, which lays six counts across
+// a single row. Every other card is half-width and pairs up down the page.
 export const CARD_REGISTRY: CardDefinition[] = [
 	{
 		id: "monitorStatus",
@@ -40,16 +40,14 @@ export const CARD_REGISTRY: CardDefinition[] = [
 		id: "currentlyDown",
 		key: "currentlyDown",
 		group: "uptime",
-		// Six columns per row — the densest card — but it does not need the
-		// full width, and 8 leaves room for a 4-wide card beside it.
-		width: 8,
+		width: 6,
 		component: CurrentlyDownCard,
 	},
 	{
 		id: "failedChecks",
 		key: "failedChecks",
 		group: "checks",
-		width: 4,
+		width: 6,
 		component: FailedChecksCard,
 	},
 	{
@@ -91,42 +89,42 @@ export const CARD_REGISTRY: CardDefinition[] = [
 		id: "recentIncidents",
 		key: "recentIncidents",
 		group: "incidents",
-		width: 4,
+		width: 6,
 		component: RecentIncidentsCard,
 	},
 	{
 		id: "incidentStats",
 		key: "incidentStats",
 		group: "incidents",
-		width: 4,
+		width: 6,
 		component: IncidentStatsCard,
 	},
 	{
 		id: "notificationChannels",
 		key: "notificationChannels",
 		group: "notifications",
-		width: 4,
+		width: 6,
 		component: NotificationChannelsCard,
 	},
 	{
 		id: "maintenance",
 		key: "maintenance",
 		group: "maintenance",
-		width: 4,
+		width: 6,
 		component: MaintenanceCard,
 	},
 	{
 		id: "statusPages",
 		key: "statusPages",
 		group: "statusPages",
-		width: 4,
+		width: 6,
 		component: StatusPagesCard,
 	},
 	{
 		id: "checkmateServer",
 		key: "checkmateServer",
 		group: "logs",
-		width: 4,
+		width: 6,
 		adminOnly: true,
 		component: CheckmateServerCard,
 	},
@@ -134,7 +132,7 @@ export const CARD_REGISTRY: CardDefinition[] = [
 		id: "checksOnSchedule",
 		key: "checksOnSchedule",
 		group: "logs",
-		width: 4,
+		width: 6,
 		adminOnly: true,
 		component: ChecksOnScheduleCard,
 	},
@@ -142,7 +140,7 @@ export const CARD_REGISTRY: CardDefinition[] = [
 		id: "recentErrors",
 		key: "recentErrors",
 		group: "logs",
-		width: 4,
+		width: 6,
 		adminOnly: true,
 		component: RecentErrorsCard,
 	},
@@ -150,7 +148,7 @@ export const CARD_REGISTRY: CardDefinition[] = [
 		id: "team",
 		key: "team",
 		group: "settings",
-		width: 4,
+		width: 6,
 		adminOnly: true,
 		component: TeamCard,
 	},
