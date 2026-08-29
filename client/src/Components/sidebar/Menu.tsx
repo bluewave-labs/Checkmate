@@ -1,6 +1,7 @@
 import { Icon } from "@/Components/design-elements";
 
 import {
+	LayoutDashboard,
 	Globe,
 	Gauge,
 	Link,
@@ -22,6 +23,11 @@ import {
 } from "lucide-react";
 export const getMenu = (t: Function) => {
 	return [
+		{
+			name: t("components.sidebar.menu.dashboard"),
+			path: "dashboard",
+			icon: <Icon icon={LayoutDashboard} />,
+		},
 		{
 			name: t("components.sidebar.menu.uptime"),
 			path: "uptime",

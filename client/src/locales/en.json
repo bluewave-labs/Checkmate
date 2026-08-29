@@ -211,7 +211,8 @@
 				"statusPages": "Status pages",
 				"maintenance": "Maintenance",
 				"logs": "Logs",
-				"settings": "Settings"
+				"settings": "Settings",
+				"dashboard": "Dashboard"
 			},
 			"bottomMenu": {
 				"support": "Support",
@@ -245,6 +246,52 @@
 		}
 	},
 	"pages": {
+		"dashboard": {
+			"header": {
+				"title": "Dashboard",
+				"description": "What is wrong right now, across every monitor type."
+			},
+			"card": {
+				"error": "Could not load this card."
+			},
+			"cards": {
+				"monitorStatus": {
+					"title": "Monitor status",
+					"empty": "No monitors yet."
+				},
+				"currentlyDown": {
+					"title": "Currently down",
+					"empty": "All monitors are up. No incidents open.",
+					"count": "{{count}} needing attention"
+				},
+				"monitorsByType": {
+					"title": "Monitors by type",
+					"empty": "No monitors yet.",
+					"down": "{{count}} down"
+				},
+				"recentIncidents": {
+					"title": "Recent incidents",
+					"empty": "No incidents — all systems healthy.",
+					"active": "{{count}} open",
+					"ongoing": "Ongoing",
+					"manual": "Manual",
+					"unknownMonitor": "Unknown monitor"
+				},
+				"failedChecks": {
+					"title": "Failed checks",
+					"empty": "No checks yet.",
+					"ratio": "{{failed}} of {{total}} in the last day"
+				},
+				"checkmateServer": {
+					"title": "Checkmate server",
+					"memory": "Memory",
+					"eventLoop": "Event loop delay",
+					"uptime": "Uptime",
+					"database": "Database",
+					"readsWrites": "{{reads}} reads/s · {{writes}} writes/s"
+				}
+			}
+		},
 		"proxies": {
 			"header": {
 				"title": "Proxies",
