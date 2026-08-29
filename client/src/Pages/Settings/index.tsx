@@ -1073,6 +1073,8 @@ export const SettingsPage = () => {
 				<Stack
 					direction="row"
 					justifyContent="flex-end"
+					alignItems="center"
+					gap={theme.spacing(LAYOUT.MD)}
 					sx={{
 						position: "sticky",
 						bottom: 0,
@@ -1082,10 +1084,7 @@ export const SettingsPage = () => {
 				>
 					{/* Validation Error Display */}
 					{Object.keys(form.formState.errors).length > 0 && (
-						<Alert
-							severity="error"
-							sx={{ mb: 2, flexGrow: 1, mr: 2 }}
-						>
+						<Alert severity="error">
 							<Typography
 								variant="body2"
 								sx={{ fontWeight: 600, mb: 1 }}
