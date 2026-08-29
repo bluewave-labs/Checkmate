@@ -64,6 +64,11 @@ export const DashboardCard = ({
 					opacity: 1,
 					pointerEvents: "auto",
 				},
+				// The controls are overlaid on the action, so the action fades out as
+				// they fade in rather than the two rendering on top of each other.
+				"&:hover .dashboard-card-action, &:has(:focus-visible) .dashboard-card-action": {
+					opacity: 0,
+				},
 			}}
 		>
 			<Stack
@@ -95,6 +100,7 @@ export const DashboardCard = ({
 					alignItems="center"
 					gap={theme.spacing(LAYOUT.SM)}
 					flexShrink={0}
+					position="relative"
 				>
 					{isStale && (
 						<CircularProgress
@@ -102,10 +108,23 @@ export const DashboardCard = ({
 							color="primary"
 						/>
 					)}
-					{action}
+					{action && (
+						<Box
+							className="dashboard-card-action"
+							sx={{ transition: "opacity 0.15s ease" }}
+						>
+							{action}
+						</Box>
+					)}
 					{slot && (
 						<Box
 							className="dashboard-card-slot"
+							// Taken out of flow and overlaid on the right: while hidden it
+							// would otherwise reserve its own width and push `action` away
+							// from the card's right edge, leaving it visibly un-aligned
+							// with the values in the rows beneath.
+							position="absolute"
+							right={0}
 							sx={{
 								opacity: 0,
 								pointerEvents: "none",
