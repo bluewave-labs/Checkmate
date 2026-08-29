@@ -26,14 +26,14 @@ import type { CardDefinition, CardId } from "./cards";
 //
 // Order is the render order, and the order the picker lists them in.
 //
-// Full width is reserved for Monitor status alone, which lays six counts across
-// a single row. Every other card is half-width and pairs up down the page.
+// Every card is half-width and pairs up down the page. The grid promotes a
+// lone trailing card to full width so the page does not end on a ragged half.
 export const CARD_REGISTRY: CardDefinition[] = [
 	{
 		id: "monitorStatus",
 		key: "monitorStatus",
 		group: "uptime",
-		width: 12,
+		width: 6,
 		component: MonitorStatusCard,
 	},
 	{

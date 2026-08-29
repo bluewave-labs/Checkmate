@@ -10,10 +10,12 @@ import { typographyLevels } from "@/Utils/Theme/Palette";
 
 import type { ReactNode } from "react";
 
-/** Thin enough to read as a proportion indicator, not a progress bar. */
-const BAR_HEIGHT = 4;
-/** The segmented bar carries more meaning, so it gets a little more presence. */
-const SEGMENTED_BAR_HEIGHT = 8;
+/**
+ * One thickness for every bar on the dashboard. Plain and segmented bars sit
+ * side by side across cards, so differing weights read as an inconsistency
+ * rather than as emphasis.
+ */
+const BAR_HEIGHT = 8;
 
 export interface BarSegment {
 	key: string;
@@ -73,7 +75,7 @@ export const CardSegmentedBar = ({ segments }: { segments: BarSegment[] }) => {
 		<Stack
 			direction="row"
 			width="100%"
-			height={SEGMENTED_BAR_HEIGHT}
+			height={BAR_HEIGHT}
 			borderRadius={theme.shape.borderRadius}
 			bgcolor={theme.palette.action.hover}
 			gap="1px"
