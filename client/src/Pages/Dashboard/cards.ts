@@ -61,12 +61,14 @@ export interface CardDefinition {
 
 // The cards a fresh dashboard starts with. Chosen so a brand new install still
 // shows something real: Checkmate server works with zero monitors.
+// Ordered so the declared widths pair into full rows: a card left alone in a
+// row is stretched to fill it, so 8- and 4-wide cards are kept adjacent.
 export const DEFAULT_CARD_IDS: CardId[] = [
 	"monitorStatus",
 	"currentlyDown",
 	"failedChecks",
-	"recentIncidents",
 	"monitorsByType",
+	"recentIncidents",
 	"checkmateServer",
 ];
 

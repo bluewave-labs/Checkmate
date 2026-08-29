@@ -44,7 +44,7 @@ export const RecentIncidentsCard = () => {
 			action={
 				data && data.totalActive > 0 ? (
 					<Typography
-						fontSize={typographyLevels.s}
+						fontSize={typographyLevels.m}
 						color={theme.palette.error.main}
 					>
 						{t("pages.dashboard.cards.recentIncidents.active", {
@@ -78,7 +78,7 @@ export const RecentIncidentsCard = () => {
 									secondary={formatTimestamp(incident.startTime)}
 								/>
 								<Typography
-									fontSize={typographyLevels.s}
+									fontSize={typographyLevels.m}
 									color={theme.palette.text.secondary}
 									sx={{ flexShrink: 0 }}
 								>
@@ -88,7 +88,7 @@ export const RecentIncidentsCard = () => {
 								</Typography>
 								{incident.resolutionType === "manual" && (
 									<Typography
-										fontSize={typographyLevels.s}
+										fontSize={typographyLevels.m}
 										color={theme.palette.warning.main}
 										sx={{ flexShrink: 0 }}
 									>

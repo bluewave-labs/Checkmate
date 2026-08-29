@@ -92,7 +92,7 @@ export const CurrentlyDownCard = () => {
 			action={
 				problems.length > 0 ? (
 					<Typography
-						fontSize={typographyLevels.s}
+						fontSize={typographyLevels.m}
 						color={theme.palette.error.main}
 					>
 						{t("pages.dashboard.cards.currentlyDown.count", {
@@ -120,7 +120,7 @@ export const CurrentlyDownCard = () => {
 								secondary={monitor.url}
 							/>
 							<Typography
-								fontSize={typographyLevels.s}
+								fontSize={typographyLevels.m}
 								color={theme.palette.text.secondary}
 								flexShrink={0}
 							>
@@ -128,7 +128,7 @@ export const CurrentlyDownCard = () => {
 							</Typography>
 							{since && (
 								<Typography
-									fontSize={typographyLevels.s}
+									fontSize={typographyLevels.m}
 									color={theme.palette.error.main}
 									flexShrink={0}
 									minWidth={DURATION_COLUMN_WIDTH}
@@ -154,7 +154,7 @@ export const CurrentlyDownCard = () => {
 							 * the link and activating it navigates away.
 							 */}
 							<Typography
-								fontSize={typographyLevels.s}
+								fontSize={typographyLevels.m}
 								color={theme.palette.text.secondary}
 								flexShrink={0}
 								minWidth={STATUS_CODE_COLUMN_WIDTH}

@@ -97,7 +97,7 @@ export const CardRowLabel = ({
 			</Typography>
 			{secondary && (
 				<Typography
-					fontSize={typographyLevels.s}
+					fontSize={typographyLevels.m}
 					color={theme.palette.text.secondary}
 					noWrap
 				>
@@ -132,7 +132,7 @@ export const CardFigure = ({
 			</Typography>
 			{caption && (
 				<Typography
-					fontSize={typographyLevels.s}
+					fontSize={typographyLevels.m}
 					color={theme.palette.text.secondary}
 				>
 					{caption}

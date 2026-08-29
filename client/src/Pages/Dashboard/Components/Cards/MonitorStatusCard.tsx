@@ -79,7 +79,7 @@ export const MonitorStatusCard = () => {
 									size="md"
 								/>
 								<Typography
-									fontSize={typographyLevels.s}
+									fontSize={typographyLevels.m}
 									color={theme.palette.text.secondary}
 								>
 									{t(`pages.common.monitors.status.${key}`)}

@@ -85,7 +85,7 @@ export const MonitorsByGroupCard = () => {
 									>
 										{bucket.down > 0 && (
 											<Typography
-												fontSize={typographyLevels.s}
+												fontSize={typographyLevels.m}
 												color={theme.palette.error.main}
 											>
 												{t("pages.dashboard.cards.monitorsByType.down", {

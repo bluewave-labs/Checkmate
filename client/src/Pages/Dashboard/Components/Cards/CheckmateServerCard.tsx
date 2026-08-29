@@ -40,7 +40,7 @@ const MetricLine = ({
 			gap={theme.spacing(LAYOUT.SM)}
 		>
 			<Typography
-				fontSize={typographyLevels.s}
+				fontSize={typographyLevels.m}
 				color={theme.palette.text.secondary}
 			>
 				{label}

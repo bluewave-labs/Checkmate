@@ -52,9 +52,15 @@ export const DashboardCard = ({
 				flexDirection: "column",
 				height: "100%",
 				overflow: "hidden",
-				// The header controls stay invisible until the card is hovered or
-				// something inside it takes focus, so a settled dashboard is quiet.
-				"&:hover .dashboard-card-slot, &:focus-within .dashboard-card-slot": {
+				// The header controls stay invisible until the card is hovered, so a
+				// settled dashboard is quiet.
+				//
+				// `:has(:focus-visible)` rather than `:focus-within`: a mouse click
+				// leaves the button focused, and :focus-within would then pin that
+				// card's controls open long after the pointer had left. focus-visible
+				// only matches keyboard focus, which is the case that actually needs
+				// the controls revealed.
+				"&:hover .dashboard-card-slot, &:has(:focus-visible) .dashboard-card-slot": {
 					opacity: 1,
 					pointerEvents: "auto",
 				},
@@ -158,7 +164,7 @@ export const CardMessage = ({ text, action }: { text: string; action?: ReactNode
 			gap={theme.spacing(LAYOUT.SM)}
 		>
 			<Typography
-				fontSize={typographyLevels.s}
+				fontSize={typographyLevels.m}
 				color={theme.palette.text.secondary}
 			>
 				{text}

@@ -37,7 +37,7 @@ const StatLine = ({
 			gap={theme.spacing(LAYOUT.SM)}
 		>
 			<Typography
-				fontSize={typographyLevels.s}
+				fontSize={typographyLevels.m}
 				color={theme.palette.text.secondary}
 			>
 				{label}
@@ -96,7 +96,7 @@ export const ChecksOnScheduleCard = () => {
 											secondary={job.failReason}
 										/>
 										<Typography
-											fontSize={typographyLevels.s}
+											fontSize={typographyLevels.m}
 											color={theme.palette.error.main}
 											flexShrink={0}
 										>
@@ -159,7 +159,7 @@ export const RecentErrorsCard = () => {
 			action={
 				errors > 0 ? (
 					<Typography
-						fontSize={typographyLevels.s}
+						fontSize={typographyLevels.m}
 						color={theme.palette.error.main}
 					>
 						{t("pages.dashboard.cards.recentErrors.count", { count: errors })}
@@ -183,7 +183,7 @@ export const RecentErrorsCard = () => {
 									secondary={[entry.service, entry.method].filter(Boolean).join(" · ")}
 								/>
 								<Typography
-									fontSize={typographyLevels.s}
+									fontSize={typographyLevels.m}
 									color={
 										entry.level === "error"
 											? theme.palette.error.main

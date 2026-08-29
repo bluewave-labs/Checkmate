@@ -27,7 +27,7 @@ const StatLine = ({ label, value }: { label: string; value: string }) => {
 			gap={theme.spacing(LAYOUT.SM)}
 		>
 			<Typography
-				fontSize={typographyLevels.s}
+				fontSize={typographyLevels.m}
 				color={theme.palette.text.secondary}
 			>
 				{label}
@@ -218,7 +218,7 @@ export const StatusPagesCard = () => {
 								})}
 							/>
 							<Typography
-								fontSize={typographyLevels.s}
+								fontSize={typographyLevels.m}
 								color={theme.palette.text.secondary}
 								flexShrink={0}
 							>

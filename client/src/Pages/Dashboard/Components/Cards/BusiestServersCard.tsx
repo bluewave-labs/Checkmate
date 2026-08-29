@@ -48,13 +48,13 @@ const Metric = ({ label, value }: { label: string; value: number | null }) => {
 				gap={theme.spacing(LAYOUT.XS)}
 			>
 				<Typography
-					fontSize={typographyLevels.s}
+					fontSize={typographyLevels.m}
 					color={theme.palette.text.secondary}
 				>
 					{label}
 				</Typography>
 				<Typography
-					fontSize={typographyLevels.s}
+					fontSize={typographyLevels.m}
 					color={color}
 				>
 					{/* A down server reports nothing — show a dash, never 0%. */}

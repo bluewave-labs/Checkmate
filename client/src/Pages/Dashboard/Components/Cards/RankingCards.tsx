@@ -33,7 +33,7 @@ const RankingCount = ({ shown, total }: { shown: number; total: number }) => {
 	const { t } = useTranslation();
 	return (
 		<Typography
-			fontSize={typographyLevels.s}
+			fontSize={typographyLevels.m}
 			color={theme.palette.text.secondary}
 		>
 			{t("pages.dashboard.cards.ranking.topOf", { shown, total })}

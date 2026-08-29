@@ -24,7 +24,10 @@ import type { CardDefinition, CardId } from "./cards";
 // Declared width is the minimum number of columns a card needs. The grid may
 // stretch the last card of a short row; nothing here is a user setting.
 //
-// Order is the order the picker lists them in, grouped by sidebar section.
+// Order is the render order, and the order the picker lists them in. Cards are
+// sequenced so their declared widths pair into full rows: a card left alone in
+// a row gets stretched to fill it, so an 8-wide card is kept next to a 4-wide
+// one rather than being widened back to 12.
 export const CARD_REGISTRY: CardDefinition[] = [
 	{
 		id: "monitorStatus",
@@ -37,8 +40,17 @@ export const CARD_REGISTRY: CardDefinition[] = [
 		id: "currentlyDown",
 		key: "currentlyDown",
 		group: "uptime",
-		width: 12,
+		// Six columns per row — the densest card — but it does not need the
+		// full width, and 8 leaves room for a 4-wide card beside it.
+		width: 8,
 		component: CurrentlyDownCard,
+	},
+	{
+		id: "failedChecks",
+		key: "failedChecks",
+		group: "checks",
+		width: 4,
+		component: FailedChecksCard,
 	},
 	{
 		id: "slowestMonitors",
@@ -79,7 +91,7 @@ export const CARD_REGISTRY: CardDefinition[] = [
 		id: "recentIncidents",
 		key: "recentIncidents",
 		group: "incidents",
-		width: 8,
+		width: 4,
 		component: RecentIncidentsCard,
 	},
 	{
@@ -111,13 +123,6 @@ export const CARD_REGISTRY: CardDefinition[] = [
 		component: StatusPagesCard,
 	},
 	{
-		id: "failedChecks",
-		key: "failedChecks",
-		group: "checks",
-		width: 4,
-		component: FailedChecksCard,
-	},
-	{
 		id: "checkmateServer",
 		key: "checkmateServer",
 		group: "logs",
@@ -137,7 +142,7 @@ export const CARD_REGISTRY: CardDefinition[] = [
 		id: "recentErrors",
 		key: "recentErrors",
 		group: "logs",
-		width: 6,
+		width: 4,
 		adminOnly: true,
 		component: RecentErrorsCard,
 	},

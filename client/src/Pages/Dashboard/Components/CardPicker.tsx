@@ -79,7 +79,7 @@ export const CardPicker = ({
 					>
 						<Typography
 							variant="eyebrow"
-							fontSize={typographyLevels.s}
+							fontSize={typographyLevels.m}
 							color={theme.palette.text.disabled}
 						>
 							{t(`components.sidebar.menu.${group}`, { defaultValue: group })}
