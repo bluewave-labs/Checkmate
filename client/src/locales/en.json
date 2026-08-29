@@ -289,7 +289,80 @@
 					"uptime": "Uptime",
 					"database": "Database",
 					"readsWrites": "{{reads}} reads/s · {{writes}} writes/s"
+				},
+				"ranking": {
+					"topOf": "Top {{shown}} of {{total}}",
+					"notEnough": "Not enough monitors to rank yet."
+				},
+				"slowestMonitors": {
+					"title": "Slowest monitors"
+				},
+				"lowestUptime": {
+					"title": "Lowest uptime"
+				},
+				"monitorsByGroup": {
+					"title": "Monitors by group",
+					"empty": "No groups yet. Groups are set per monitor."
+				},
+				"busiestServers": {
+					"title": "Busiest servers",
+					"empty": "No infrastructure monitors yet.",
+					"cpu": "CPU",
+					"memory": "Memory",
+					"disk": "Disk"
+				},
+				"incidentStats": {
+					"title": "Incident stats",
+					"openNow": "Open now",
+					"avgResolution": "Average time to resolve",
+					"hours": "{{hours}} h",
+					"mostIncidents": "Most incidents"
+				},
+				"notificationChannels": {
+					"title": "Notification channels",
+					"empty": "No channels yet."
+				},
+				"maintenance": {
+					"title": "Maintenance",
+					"empty": "No maintenance scheduled.",
+					"runningNow": "Running now",
+					"next": "Next window"
+				},
+				"statusPages": {
+					"title": "Status pages",
+					"empty": "No status pages yet.",
+					"monitorCount": "{{count}} monitors",
+					"published": "Published",
+					"draft": "Draft"
+				},
+				"checksOnSchedule": {
+					"title": "Checks on schedule",
+					"healthy": "All {{jobs}} jobs on schedule across {{workers}} worker(s).",
+					"failing": "Failing jobs",
+					"scheduled": "Scheduled jobs",
+					"runningNow": "Running now"
+				},
+				"recentErrors": {
+					"title": "Recent errors",
+					"empty": "No errors logged.",
+					"count": "{{count}} errors",
+					"warnings": "Warnings"
+				},
+				"team": {
+					"title": "Team",
+					"members": "{{count}} members",
+					"unverified": "Unverified"
 				}
+			},
+			"picker": {
+				"trigger": "Edit cards",
+				"title": "Dashboard cards",
+				"done": "Done",
+				"reset": "Reset to defaults"
+			},
+			"empty": {
+				"title": "No cards on your dashboard",
+				"description": "Choose the cards you want to see. Your selection is remembered in this browser."
 			}
 		},
 		"proxies": {

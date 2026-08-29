@@ -8,8 +8,13 @@ export interface PlacedCard {
 
 /**
  * Packs cards into rows of GRID_COLUMNS. Declared width is a minimum; when a
- * row ends short, its last card absorbs the remainder, capped at
- * STRETCH_MAX_WIDTH so one card never balloons across a near-empty row.
+ * row ends short, its last card absorbs the remainder.
+ *
+ * A row in the middle of the page always fills completely — leaving a hole
+ * there reads as a rendering fault. Only the final row may end short, and only
+ * when a single card sits in it: stretching a lone trailing card to full width
+ * makes a 4-column card look like a banner. There, STRETCH_MAX_WIDTH caps the
+ * growth instead.
  *
  * `grid-auto-flow: dense` was tried instead and does not help: no later card is
  * small enough to backfill the gaps that occur in practice.
@@ -26,12 +31,10 @@ export const layoutCards = (cards: CardDefinition[]): PlacedCard[] => {
 		const remainder = GRID_COLUMNS - used;
 		if (remainder > 0) {
 			const last = row[row.length - 1];
-			// A full-width card already spans the row; only grow a short one, and
-			// never past the cap.
-			const grown = Math.min(last.renderedWidth + remainder, STRETCH_MAX_WIDTH);
-			if (grown > last.renderedWidth && !(isFinalRow && row.length === 1)) {
-				last.renderedWidth = grown;
-			}
+			// A lone card ending the page grows only to the cap; every other short
+			// row is filled completely so no gap is left mid-page.
+			const ceiling = isFinalRow && row.length === 1 ? STRETCH_MAX_WIDTH : GRID_COLUMNS;
+			last.renderedWidth = Math.min(last.renderedWidth + remainder, ceiling);
 		}
 		placed.push(...row);
 		row = [];

@@ -3,12 +3,28 @@ import { CurrentlyDownCard } from "./Components/Cards/CurrentlyDownCard";
 import { FailedChecksCard } from "./Components/Cards/FailedChecksCard";
 import { RecentIncidentsCard } from "./Components/Cards/RecentIncidentsCard";
 import { MonitorsByTypeCard } from "./Components/Cards/MonitorsByTypeCard";
+import { MonitorsByGroupCard } from "./Components/Cards/MonitorsByGroupCard";
 import { CheckmateServerCard } from "./Components/Cards/CheckmateServerCard";
+import { BusiestServersCard } from "./Components/Cards/BusiestServersCard";
+import { SlowestMonitorsCard, LowestUptimeCard } from "./Components/Cards/RankingCards";
+import {
+	IncidentStatsCard,
+	NotificationChannelsCard,
+	MaintenanceCard,
+	StatusPagesCard,
+} from "./Components/Cards/SummaryCards";
+import {
+	ChecksOnScheduleCard,
+	RecentErrorsCard,
+	TeamCard,
+} from "./Components/Cards/AdminCards";
 
 import type { CardDefinition, CardId } from "./cards";
 
 // Declared width is the minimum number of columns a card needs. The grid may
 // stretch the last card of a short row; nothing here is a user setting.
+//
+// Order is the order the picker lists them in, grouped by sidebar section.
 export const CARD_REGISTRY: CardDefinition[] = [
 	{
 		id: "monitorStatus",
@@ -25,6 +41,20 @@ export const CARD_REGISTRY: CardDefinition[] = [
 		component: CurrentlyDownCard,
 	},
 	{
+		id: "slowestMonitors",
+		key: "slowestMonitors",
+		group: "uptime",
+		width: 6,
+		component: SlowestMonitorsCard,
+	},
+	{
+		id: "lowestUptime",
+		key: "lowestUptime",
+		group: "uptime",
+		width: 6,
+		component: LowestUptimeCard,
+	},
+	{
 		id: "monitorsByType",
 		key: "monitorsByType",
 		group: "uptime",
@@ -32,11 +62,53 @@ export const CARD_REGISTRY: CardDefinition[] = [
 		component: MonitorsByTypeCard,
 	},
 	{
+		id: "monitorsByGroup",
+		key: "monitorsByGroup",
+		group: "uptime",
+		width: 6,
+		component: MonitorsByGroupCard,
+	},
+	{
+		id: "busiestServers",
+		key: "busiestServers",
+		group: "infrastructure",
+		width: 6,
+		component: BusiestServersCard,
+	},
+	{
 		id: "recentIncidents",
 		key: "recentIncidents",
 		group: "incidents",
 		width: 8,
 		component: RecentIncidentsCard,
+	},
+	{
+		id: "incidentStats",
+		key: "incidentStats",
+		group: "incidents",
+		width: 4,
+		component: IncidentStatsCard,
+	},
+	{
+		id: "notificationChannels",
+		key: "notificationChannels",
+		group: "notifications",
+		width: 4,
+		component: NotificationChannelsCard,
+	},
+	{
+		id: "maintenance",
+		key: "maintenance",
+		group: "maintenance",
+		width: 4,
+		component: MaintenanceCard,
+	},
+	{
+		id: "statusPages",
+		key: "statusPages",
+		group: "statusPages",
+		width: 4,
+		component: StatusPagesCard,
 	},
 	{
 		id: "failedChecks",
@@ -52,6 +124,30 @@ export const CARD_REGISTRY: CardDefinition[] = [
 		width: 4,
 		adminOnly: true,
 		component: CheckmateServerCard,
+	},
+	{
+		id: "checksOnSchedule",
+		key: "checksOnSchedule",
+		group: "logs",
+		width: 4,
+		adminOnly: true,
+		component: ChecksOnScheduleCard,
+	},
+	{
+		id: "recentErrors",
+		key: "recentErrors",
+		group: "logs",
+		width: 6,
+		adminOnly: true,
+		component: RecentErrorsCard,
+	},
+	{
+		id: "team",
+		key: "team",
+		group: "settings",
+		width: 4,
+		adminOnly: true,
+		component: TeamCard,
 	},
 ];
 
