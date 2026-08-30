@@ -186,8 +186,7 @@ export const SettingsPage = () => {
 		if (
 			!formValues.systemEmailHost ||
 			!formValues.systemEmailPort ||
-			!formValues.systemEmailAddress ||
-			!formValues.systemEmailPassword
+			!formValues.systemEmailAddress
 		) {
 			alert("Please fill in all required email fields before testing.");
 			return;
@@ -198,12 +197,14 @@ export const SettingsPage = () => {
 			systemEmailHost: formValues.systemEmailHost,
 			systemEmailPort: formValues.systemEmailPort,
 			systemEmailAddress: formValues.systemEmailAddress,
-			systemEmailPassword: formValues.systemEmailPassword,
 			systemEmailSecure: formValues.systemEmailSecure,
 			systemEmailPool: formValues.systemEmailPool,
 			systemEmailIgnoreTLS: formValues.systemEmailIgnoreTLS,
 			systemEmailRequireTLS: formValues.systemEmailRequireTLS,
 			systemEmailRejectUnauthorized: formValues.systemEmailRejectUnauthorized,
+			...(formValues.systemEmailPassword && {
+				systemEmailPassword: formValues.systemEmailPassword,
+			}),
 			...(formValues.systemEmailUser && { systemEmailUser: formValues.systemEmailUser }),
 			...(formValues.systemEmailDisplayName && {
 				systemEmailDisplayName: formValues.systemEmailDisplayName,
@@ -749,8 +750,7 @@ export const SettingsPage = () => {
 										disabled={
 											!form.watch("systemEmailHost") ||
 											!form.watch("systemEmailPort") ||
-											!form.watch("systemEmailAddress") ||
-											!form.watch("systemEmailPassword")
+											!form.watch("systemEmailAddress")
 										}
 									>
 										{t("common.buttons.sendTestEmail")}

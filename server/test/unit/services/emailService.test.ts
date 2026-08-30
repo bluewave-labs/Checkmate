@@ -315,6 +315,33 @@ describe("EmailService", () => {
 			);
 		});
 
+		it("omits auth from the transport config when no password is configured", async () => {
+			const transporter = createMockTransporter();
+			const nodemailer = createMockNodemailer(transporter);
+			const { service } = createService({ nodemailer });
+			const config = makeTransportConfig({ systemEmailPassword: undefined });
+
+			await service.sendEmail("to@example.com", "Subject", "<p>body</p>", config);
+
+			const transportArg = (nodemailer.createTransport as jest.Mock).mock.calls[0]?.[0] as Record<string, unknown>;
+			expect(transportArg).not.toHaveProperty("auth");
+		});
+
+		it("includes auth in the transport config when a password is configured", async () => {
+			const transporter = createMockTransporter();
+			const nodemailer = createMockNodemailer(transporter);
+			const { service } = createService({ nodemailer });
+			const config = makeTransportConfig({ systemEmailPassword: "password123" });
+
+			await service.sendEmail("to@example.com", "Subject", "<p>body</p>", config);
+
+			expect(nodemailer.createTransport).toHaveBeenCalledWith(
+				expect.objectContaining({
+					auth: { user: "user@example.com", pass: "password123" },
+				})
+			);
+		});
+
 		it("uses 'localhost' as name when systemEmailConnectionHost is falsy", async () => {
 			const transporter = createMockTransporter();
 			const nodemailer = createMockNodemailer(transporter);
