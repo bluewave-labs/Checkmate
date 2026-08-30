@@ -127,10 +127,12 @@ export class EmailService implements IEmailService {
 			host: systemEmailHost,
 			port: Number(systemEmailPort),
 			secure: systemEmailSecure,
-			auth: {
-				user: systemEmailUser || systemEmailAddress,
-				pass: systemEmailPassword,
-			},
+			...(systemEmailPassword && {
+				auth: {
+					user: systemEmailUser || systemEmailAddress,
+					pass: systemEmailPassword,
+				},
+			}),
 			name: systemEmailConnectionHost || "localhost",
 			connectionTimeout: 5000,
 			pool: systemEmailPool,
