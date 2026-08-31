@@ -123,6 +123,7 @@ export const DetailGauge = ({
 	lowerLabel,
 	lowerValue,
 	maxWidth = 225,
+	flexBasis = "0%",
 }: {
 	title: string;
 	progress: number;
@@ -131,6 +132,7 @@ export const DetailGauge = ({
 	lowerLabel?: string;
 	lowerValue?: string | number;
 	maxWidth?: number;
+	flexBasis?: number | string;
 }) => {
 	const theme = useTheme();
 	return (
@@ -138,6 +140,7 @@ export const DetailGauge = ({
 			icon={null}
 			title={title}
 			maxWidth={maxWidth}
+			flexBasis={flexBasis}
 		>
 			<Stack
 				alignItems={"center"}

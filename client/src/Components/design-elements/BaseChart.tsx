@@ -12,6 +12,7 @@ type BaseChartProps = React.PropsWithChildren<{
 	title: string;
 	width?: number | string;
 	maxWidth?: number | string;
+	flexBasis?: number | string;
 	padding?: number | string | ResponsiveStyleValue<number | string>;
 	onClick?: () => void;
 }>;
@@ -21,6 +22,7 @@ export const BaseChart = ({
 	title,
 	width = "100%",
 	maxWidth = "100%",
+	flexBasis = "0%",
 	padding,
 	onClick,
 }: BaseChartProps) => {
@@ -32,6 +34,7 @@ export const BaseChart = ({
 				padding: padding ?? theme.spacing(LAYOUT.MD),
 				display: "flex",
 				flex: 1,
+				flexBasis,
 				width: width,
 				maxWidth: maxWidth,
 				...(onClick && {
