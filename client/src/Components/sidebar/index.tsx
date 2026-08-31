@@ -32,7 +32,7 @@ export const Sidebar = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const { t } = useTranslation();
-	const { width, transition, collapsed } = useSidebar();
+	const { width, transition, transitionTiming, collapsed } = useSidebar();
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const menu = getMenu(t);
@@ -94,16 +94,10 @@ export const Sidebar = () => {
 					/>
 					{menu.map((group, groupIndex) => (
 						<Box key={group.group}>
-							{collapsed ? (
-								groupIndex > 0 && (
-									<Divider
-										sx={{
-											borderColor: theme.palette.divider,
-											marginY: theme.spacing(LAYOUT.XS),
-										}}
-									/>
-								)
-							) : (
+							<Box
+								position="relative"
+								overflow="hidden"
+							>
 								<Typography
 									variant="eyebrow"
 									component="div"
@@ -112,10 +106,27 @@ export const Sidebar = () => {
 									paddingLeft={theme.spacing(5)}
 									paddingTop={theme.spacing(LAYOUT.SM)}
 									paddingBottom={theme.spacing(LAYOUT.XXS)}
+									whiteSpace="nowrap"
+									sx={{
+										opacity: collapsed ? 0 : 1,
+										transition: `opacity ${transitionTiming}`,
+									}}
 								>
 									{group.group}
 								</Typography>
-							)}
+								{groupIndex > 0 && (
+									<Divider
+										sx={{
+											position: "absolute",
+											top: "50%",
+											left: 0,
+											right: 0,
+											opacity: collapsed ? 1 : 0,
+											transition: `opacity ${transitionTiming}`,
+										}}
+									/>
+								)}
+							</Box>
 							{group.items.map((item) => {
 								const selected = location.pathname.startsWith(`/${item.path}`);
 								return (
