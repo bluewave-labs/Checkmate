@@ -941,6 +941,23 @@
 					"containers": "Containers"
 				},
 				"containersRunning": "{{running}} of {{total}} running"
+			},
+			"host": {
+				"statBoxes": {
+					"containers": "Containers",
+					"running": "Running",
+					"stopped": "Stopped",
+					"unhealthy": "Unhealthy"
+				},
+				"table": {
+					"headers": {
+						"container": "Containers",
+						"health": "Health",
+						"cpu": "CPU",
+						"memory": "Memory",
+						"restarts": "Restarts"
+					}
+				}
 			}
 		},
 		"infrastructure": {

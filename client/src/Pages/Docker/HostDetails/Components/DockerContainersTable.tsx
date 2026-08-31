@@ -44,7 +44,7 @@ export const DockerContainersTable = ({ containers }: DockerContainersTableProps
 		const headers: Header<DockerContainerInfo>[] = [
 			{
 				id: "container",
-				content: "Containers",
+				content: t("pages.docker.host.table.headers.container"),
 				render: (row) => {
 					return (
 						<DockerStateLabel
@@ -57,35 +57,35 @@ export const DockerContainersTable = ({ containers }: DockerContainersTableProps
 			},
 			{
 				id: "status",
-				content: "Status",
+				content: t("common.table.headers.status"),
 				render: (row) => {
 					return <Typography>{row.state}</Typography>;
 				},
 			},
 			{
 				id: "health",
-				content: "Health",
+				content: t("pages.docker.host.table.headers.health"),
 				render: (row) => {
 					return <Typography>{row.health}</Typography>;
 				},
 			},
 			{
 				id: "cpu",
-				content: "CPU",
+				content: t("pages.docker.host.table.headers.cpu"),
 				render: (row) => {
 					return <Typography>{formatPercentage(row.cpuPct ?? 0)}</Typography>;
 				},
 			},
 			{
 				id: "memory",
-				content: "Memory",
+				content: t("pages.docker.host.table.headers.memory"),
 				render: (row) => {
 					return <Typography>{formatPercentage(row.memoryPct ?? 0)}</Typography>;
 				},
 			},
 			{
 				id: "restarts",
-				content: "Restarts",
+				content: t("pages.docker.host.table.headers.restarts"),
 				render: (row) => {
 					return <Typography>{row.restartCount}</Typography>;
 				},

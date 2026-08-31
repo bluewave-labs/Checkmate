@@ -9,7 +9,6 @@ import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
 // Utils
-import prettyBytes from "pretty-bytes";
 
 export const DockerStatusBoxes = ({ stats }: { stats: DockerStats | undefined }) => {
 	const { t } = useTranslation();
@@ -26,21 +25,21 @@ export const DockerStatusBoxes = ({ stats }: { stats: DockerStats | undefined })
 			flexWrap={"wrap"}
 		>
 			<StatBox
-				title={"Containers"}
+				title={t("pages.docker.host.statBoxes.containers")}
 				subtitle={String(total)}
 			/>
 			<StatBox
-				title={"Running"}
+				title={t("pages.docker.host.statBoxes.running")}
 				subtitle={String(running)}
 			/>
 
 			<StatBox
-				title={"Stopped"}
+				title={t("pages.docker.host.statBoxes.stopped")}
 				subtitle={String(stopped)}
 			/>
 
 			<StatBox
-				title={"Unhealthy"}
+				title={t("pages.docker.host.statBoxes.unhealthy")}
 				subtitle={String(unhealthy)}
 			/>
 		</Stack>
