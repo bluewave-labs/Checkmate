@@ -108,8 +108,8 @@ export function DataTable<
 								borderColor: theme.palette.divider,
 								borderRadius: theme.shape.borderRadius,
 								padding: theme.spacing(LAYOUT.XS),
-								cursor: isInteractive ? "pointer" : "default",
-								...(isInteractive && {
+								cursor: onRowClick ? "pointer" : "default",
+								...(onRowClick && {
 									"&:hover": {
 										backgroundColor: theme.palette.action.rowHover,
 									},

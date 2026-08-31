@@ -17,10 +17,6 @@ declare module "@mui/material/styles" {
 		rowHover: string;
 		controlHover: string;
 	}
-	interface TypeActionOptions {
-		rowHover?: string;
-		controlHover?: string;
-	}
 	interface Palette {
 		sidebar: { accent: string };
 		rowStatus: { running: string; paused: string };
