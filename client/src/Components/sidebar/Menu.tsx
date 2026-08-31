@@ -24,69 +24,89 @@ import {
 export const getMenu = (t: Function) => {
 	return [
 		{
-			name: t("components.sidebar.menu.uptime"),
-			path: "uptime",
-			icon: <Icon icon={Globe} />,
+			group: t("components.sidebar.menu.groups.monitoring"),
+			items: [
+				{
+					name: t("components.sidebar.menu.uptime"),
+					path: "uptime",
+					icon: <Icon icon={Globe} />,
+				},
+				{
+					name: t("components.sidebar.menu.pagespeed"),
+					path: "pagespeed",
+					icon: <Icon icon={Gauge} />,
+				},
+				{
+					name: t("components.sidebar.menu.infrastructure"),
+					path: "infrastructure",
+					icon: <Icon icon={Link} />,
+				},
+				{
+					name: t("components.sidebar.menu.docker"),
+					path: "docker",
+					icon: <Icon icon={Container} />,
+				},
+			],
 		},
 		{
-			name: t("components.sidebar.menu.pagespeed"),
-			path: "pagespeed",
-			icon: <Icon icon={Gauge} />,
+			group: t("components.sidebar.menu.groups.alerting"),
+			items: [
+				{
+					name: t("components.sidebar.menu.incidents"),
+					path: "incidents",
+					icon: <Icon icon={AlertTriangle} />,
+				},
+				{
+					name: t("components.sidebar.menu.notifications"),
+					path: "notifications",
+					icon: <Icon icon={Bell} />,
+				},
+				{
+					name: t("components.sidebar.menu.maintenance"),
+					path: "maintenance",
+					icon: <Icon icon={Wrench} />,
+				},
+			],
 		},
 		{
-			name: t("components.sidebar.menu.infrastructure"),
-			path: "infrastructure",
-			icon: <Icon icon={Link} />,
+			group: t("components.sidebar.menu.groups.reporting"),
+			items: [
+				{
+					name: t("components.sidebar.menu.statusPages"),
+					path: "status",
+					icon: <Icon icon={Wifi} />,
+				},
+				{
+					name: t("components.sidebar.menu.checks"),
+					path: "checks",
+					icon: <Icon icon={FileText} />,
+				},
+				{
+					name: t("components.sidebar.menu.logs"),
+					path: "logs",
+					icon: <Icon icon={ScrollText} />,
+				},
+			],
 		},
 		{
-			name: t("components.sidebar.menu.docker"),
-			path: "docker",
-			icon: <Icon icon={Container} />,
-		},
-		{
-			name: t("components.sidebar.menu.notifications"),
-			path: "notifications",
-			icon: <Icon icon={Bell} />,
-		},
-		{
-			name: t("components.sidebar.menu.tags"),
-			path: "tags",
-			icon: <Icon icon={Tag} />,
-		},
-		{
-			name: t("components.sidebar.menu.proxies"),
-			path: "proxies",
-			icon: <Icon icon={Waypoints} />,
-		},
-		{
-			name: t("components.sidebar.menu.checks"),
-			path: "checks",
-			icon: <Icon icon={FileText} />,
-		},
-		{
-			name: t("components.sidebar.menu.incidents"),
-			path: "incidents",
-			icon: <Icon icon={AlertTriangle} />,
-		},
-		{
-			name: t("components.sidebar.menu.statusPages"),
-			path: "status",
-			icon: <Icon icon={Wifi} />,
-		},
-		{
-			name: t("components.sidebar.menu.maintenance"),
-			path: "maintenance",
-			icon: <Icon icon={Wrench} />,
-		},
-		{
-			name: t("components.sidebar.menu.logs"),
-			path: "logs",
-			icon: <Icon icon={ScrollText} />,
-		},
-		{
-			name: t("components.sidebar.menu.settings"),
-			icon: <Icon icon={Settings} />,
-			path: "settings",
+			group: t("components.sidebar.menu.groups.configuration"),
+			items: [
+				{
+					name: t("components.sidebar.menu.tags"),
+					path: "tags",
+					icon: <Icon icon={Tag} />,
+				},
+				{
+					name: t("components.sidebar.menu.proxies"),
+					path: "proxies",
+					icon: <Icon icon={Waypoints} />,
+				},
+				{
+					name: t("components.sidebar.menu.settings"),
+					path: "settings",
+					icon: <Icon icon={Settings} />,
+				},
+			],
 		},
 	];
 };

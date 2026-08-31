@@ -181,7 +181,13 @@
 				"statusPages": "狀態頁面",
 				"maintenance": "維護",
 				"logs": "日誌",
-				"settings": "設定"
+				"settings": "設定",
+				"groups": {
+					"monitoring": "監控",
+					"alerting": "警示",
+					"reporting": "報表",
+					"configuration": "設定"
+				}
 			},
 			"bottomMenu": {
 				"support": "支援",
@@ -1141,6 +1147,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "一般",
+				"monitoring": "監控",
+				"email": "郵件",
+				"integrations": "整合",
+				"data": "資料"
+			},
 			"form": {
 				"timezone": {
 					"title": "顯示時區",

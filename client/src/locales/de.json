@@ -181,7 +181,13 @@
 				"statusPages": "Statusseite",
 				"maintenance": "Wartung",
 				"logs": "Protokolle",
-				"settings": "Einstellungen"
+				"settings": "Einstellungen",
+				"groups": {
+					"monitoring": "Überwachung",
+					"alerting": "Benachrichtigungen",
+					"reporting": "Berichte",
+					"configuration": "Konfiguration"
+				}
 			},
 			"bottomMenu": {
 				"support": "Support",
@@ -1141,6 +1147,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Allgemein",
+				"monitoring": "Überwachung",
+				"email": "E-Mail",
+				"integrations": "Integrationen",
+				"data": "Daten"
+			},
 			"form": {
 				"timezone": {
 					"title": "Anzeigesprache Zeitzone",

@@ -181,7 +181,13 @@
 				"statusPages": "Stavové stránky",
 				"maintenance": "Údržba",
 				"logs": "Záznamy",
-				"settings": "Nastavení"
+				"settings": "Nastavení",
+				"groups": {
+					"monitoring": "Monitorování",
+					"alerting": "Upozornění",
+					"reporting": "Přehledy",
+					"configuration": "Konfigurace"
+				}
 			},
 			"bottomMenu": {
 				"support": "Podpora",
@@ -1141,6 +1147,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Obecné",
+				"monitoring": "Monitorování",
+				"email": "E-mail",
+				"integrations": "Integrace",
+				"data": "Data"
+			},
 			"form": {
 				"timezone": {
 					"title": "Zobrazované časové pásmo",

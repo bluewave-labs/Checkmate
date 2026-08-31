@@ -212,7 +212,13 @@
 				"statusPages": "Status pages",
 				"maintenance": "Maintenance",
 				"logs": "Logs",
-				"settings": "Settings"
+				"settings": "Settings",
+				"groups": {
+					"monitoring": "Monitoring",
+					"alerting": "Alerting",
+					"reporting": "Reporting",
+					"configuration": "Configuration"
+				}
 			},
 			"bottomMenu": {
 				"support": "Support",
@@ -945,7 +951,7 @@
 					"memory": "Memory usage",
 					"netBytesRecv": "{{name}} - Bytes Received",
 					"netBytesSent": "{{name}} - Bytes Sent",
-					"loopbackOnlyNotice": "Capture is only reporting loopback or container-bridge interfaces (lo, lo0, docker0). This is normal when Capture runs inside a container that can only see its own network namespace — run Capture directly on the host to see real network activity.",
+					"loopbackOnlyNotice": "Capture is only seeing container network interfaces, and none of them are carrying real traffic. This is normal when Capture runs inside a container that can only observe its own network namespace — interfaces with host-like names (eth0, ens3) are the container's virtual interfaces, not the host's. Run Capture directly on the host to see real network activity.",
 					"temp": "CPU temperature"
 				}
 			},
@@ -1352,6 +1358,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "General",
+				"monitoring": "Monitoring",
+				"email": "Email",
+				"integrations": "Integrations",
+				"data": "Data"
+			},
 			"form": {
 				"timezone": {
 					"title": "Display timezone",
@@ -1409,7 +1422,7 @@
 					}
 				},
 				"url": {
-					"title": "Monitor IP/URL on Status Page",
+					"title": "Monitor IP/URL on status page",
 					"description": "Display the IP address or URL of monitor on the public Status page. If it's disabled, only the monitor name will be shown to protect sensitive information.",
 					"option": {
 						"showURL": {
@@ -1441,7 +1454,7 @@
 					}
 				},
 				"thresholds": {
-					"title": "Global Thresholds",
+					"title": "Global thresholds",
 					"description": "Set global CPU, Memory, Disk, and Temperature thresholds for infrastructure monitoring. These apply to all hardware monitors unless overridden.",
 					"option": {
 						"cpu": {

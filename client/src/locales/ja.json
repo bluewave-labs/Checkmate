@@ -181,7 +181,13 @@
 				"statusPages": "ステータスページ",
 				"maintenance": "メンテナンス",
 				"logs": "ログ",
-				"settings": "設定"
+				"settings": "設定",
+				"groups": {
+					"monitoring": "監視",
+					"alerting": "アラート",
+					"reporting": "レポート",
+					"configuration": "設定"
+				}
 			},
 			"bottomMenu": {
 				"support": "サポート",
@@ -1141,6 +1147,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "一般",
+				"monitoring": "監視",
+				"email": "メール",
+				"integrations": "連携",
+				"data": "データ"
+			},
 			"form": {
 				"timezone": {
 					"title": "表示タイムゾーン",

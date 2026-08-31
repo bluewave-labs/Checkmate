@@ -1,9 +1,12 @@
 import { useEffect } from "react";
 import Backdrop from "@mui/material/Backdrop";
 import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import { LAYOUT } from "@/Utils/Theme/constants";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 import { useSidebar } from "@/Hooks/useSidebar.js";
 import { Logo } from "@/Components/sidebar/Logo";
 import { getMenu, getAccountMenu } from "@/Components/sidebar/Menu";
@@ -29,7 +32,7 @@ export const Sidebar = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const { t } = useTranslation();
-	const { width, transition, collapsed } = useSidebar();
+	const { width, transition, transitionTiming, collapsed } = useSidebar();
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const menu = getMenu(t);
@@ -89,17 +92,52 @@ export const Sidebar = () => {
 						pt={theme.spacing(LAYOUT.MD)}
 						pb={theme.spacing(LAYOUT.MD)}
 					/>
-					{menu.map((item) => {
-						const selected = location.pathname.startsWith(`/${item.path}`);
-						return (
-							<NavItem
-								key={item.path}
-								item={item}
-								selected={selected}
-								onClick={() => handleNavClick(item.path)}
-							/>
-						);
-					})}
+					{menu.map((group) => (
+						<Box key={group.group}>
+							<Box
+								position="relative"
+								overflow="hidden"
+							>
+								<Typography
+									variant="eyebrow"
+									component="div"
+									color={theme.palette.text.disabled}
+									fontSize={typographyLevels.s}
+									paddingLeft={theme.spacing(5)}
+									paddingTop={theme.spacing(LAYOUT.SM)}
+									paddingBottom={theme.spacing(LAYOUT.XXS)}
+									whiteSpace="nowrap"
+									sx={{
+										opacity: collapsed ? 0 : 1,
+										transition: `opacity ${transitionTiming}`,
+									}}
+								>
+									{group.group}
+								</Typography>
+								<Divider
+									sx={{
+										position: "absolute",
+										top: "50%",
+										left: 0,
+										right: 0,
+										opacity: collapsed ? 1 : 0,
+										transition: `opacity ${transitionTiming}`,
+									}}
+								/>
+							</Box>
+							{group.items.map((item) => {
+								const selected = location.pathname.startsWith(`/${item.path}`);
+								return (
+									<NavItem
+										key={item.path}
+										item={item}
+										selected={selected}
+										onClick={() => handleNavClick(item.path)}
+									/>
+								);
+							})}
+						</Box>
+					))}
 				</List>
 				<StarPrompt />
 
