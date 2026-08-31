@@ -8,8 +8,11 @@ import { typographyLevels } from "@/Utils/Theme/Palette";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { formatDuration } from "@/Utils/TimeUtils";
+import { useTranslation } from "react-i18next";
+
 export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 	const theme = useTheme();
+	const { t, i18n } = useTranslation();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 
 	if (!monitor) {
@@ -52,7 +55,12 @@ export const MonitorStatus = ({ monitor }: { monitor: Monitor }) => {
 					<>
 						<Dot />
 						<Typography>
-							Checking every {formatDuration(monitor?.interval, true)}
+							{t("pages.common.monitors.statBoxes.checkingEvery", {
+								interval: formatDuration(monitor.interval, {
+									long: true,
+									locale: i18n.resolvedLanguage,
+								}),
+							})}
 						</Typography>
 					</>
 				)}
