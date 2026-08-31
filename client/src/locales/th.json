@@ -181,7 +181,13 @@
 				"statusPages": "หน้าสถานะ",
 				"maintenance": "การบำรุงรักษา",
 				"logs": "บันทึก",
-				"settings": "การตั้งค่า"
+				"settings": "การตั้งค่า",
+				"groups": {
+					"monitoring": "การตรวจสอบ",
+					"alerting": "การแจ้งเตือน",
+					"reporting": "รายงาน",
+					"configuration": "การกำหนดค่า"
+				}
 			},
 			"bottomMenu": {
 				"support": "การสนับสนุน",

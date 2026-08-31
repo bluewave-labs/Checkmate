@@ -193,7 +193,13 @@
 				"statusPages": "Pagine di stato",
 				"maintenance": "Manutenzione",
 				"logs": "Log",
-				"settings": "Impostazioni"
+				"settings": "Impostazioni",
+				"groups": {
+					"monitoring": "Monitoraggio",
+					"alerting": "Avvisi",
+					"reporting": "Report",
+					"configuration": "Configurazione"
+				}
 			},
 			"bottomMenu": {
 				"support": "Supporto",
