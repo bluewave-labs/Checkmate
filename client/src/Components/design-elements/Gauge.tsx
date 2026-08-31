@@ -39,9 +39,6 @@ export const Gauge = forwardRef<HTMLDivElement, GaugeProps>(function Gauge(
 		() => ({
 			circumference: 2 * Math.PI * radius,
 			totalSize: radius * 2 + strokeWidth * 2,
-			// Uses the clamped value, like the label and the fill color: an
-			// out-of-range reading would otherwise sweep the arc past a full circle
-			// while the label read 100%.
 			strokeLength: (progressWithinRange / 100) * (2 * Math.PI * radius),
 		}),
 		[radius, strokeWidth, progressWithinRange]
