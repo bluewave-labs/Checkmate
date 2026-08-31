@@ -57,7 +57,7 @@ services:
     env_file:
       - mongo-prod.env
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--quiet"]
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/27017"]
       interval: 5s
       timeout: 30s
       start_period: 0s
@@ -101,7 +101,7 @@ services:
     env_file:
       - mongo-staging.env
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--quiet"]
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/27017"]
       interval: 5s
       timeout: 30s
       start_period: 0s
