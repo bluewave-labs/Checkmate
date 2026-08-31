@@ -1148,6 +1148,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "常规",
+				"monitoring": "监控",
+				"email": "邮件",
+				"integrations": "集成",
+				"data": "数据"
+			},
 			"form": {
 				"timezone": {
 					"title": "显示时区",

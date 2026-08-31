@@ -1147,6 +1147,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Général",
+				"monitoring": "Surveillance",
+				"email": "E-mail",
+				"integrations": "Intégrations",
+				"data": "Données"
+			},
 			"form": {
 				"timezone": {
 					"title": "Fuseau horaire d'affichage",

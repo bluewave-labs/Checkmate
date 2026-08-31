@@ -1147,6 +1147,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Chung",
+				"monitoring": "Giám sát",
+				"email": "Email",
+				"integrations": "Tích hợp",
+				"data": "Dữ liệu"
+			},
 			"form": {
 				"timezone": {
 					"title": "Múi giờ hiển thị",

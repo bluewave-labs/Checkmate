@@ -1243,6 +1243,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Generale",
+				"monitoring": "Monitoraggio",
+				"email": "Email",
+				"integrations": "Integrazioni",
+				"data": "Dati"
+			},
 			"form": {
 				"timezone": {
 					"title": "Fuso orario di visualizzazione",

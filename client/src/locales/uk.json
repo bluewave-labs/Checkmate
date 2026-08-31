@@ -1147,6 +1147,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Загальні",
+				"monitoring": "Моніторинг",
+				"email": "Електронна пошта",
+				"integrations": "Інтеграції",
+				"data": "Дані"
+			},
 			"form": {
 				"timezone": {
 					"title": "Часовий пояс відображення",

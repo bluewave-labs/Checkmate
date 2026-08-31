@@ -1147,6 +1147,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Общие",
+				"monitoring": "Мониторинг",
+				"email": "Электронная почта",
+				"integrations": "Интеграции",
+				"data": "Данные"
+			},
 			"form": {
 				"timezone": {
 					"title": "Часовой пояс отображения",

@@ -1213,6 +1213,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Ogólne",
+				"monitoring": "Monitorowanie",
+				"email": "E-mail",
+				"integrations": "Integracje",
+				"data": "Dane"
+			},
 			"form": {
 				"about": {
 					"developedBy": "Opracowane przez Bluewave Labs",

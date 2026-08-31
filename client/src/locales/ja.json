@@ -1147,6 +1147,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "一般",
+				"monitoring": "監視",
+				"email": "メール",
+				"integrations": "連携",
+				"data": "データ"
+			},
 			"form": {
 				"timezone": {
 					"title": "表示タイムゾーン",
