@@ -203,6 +203,7 @@
 				"uptime": "Uptime",
 				"pagespeed": "Pagespeed",
 				"infrastructure": "Infrastructure",
+				"docker": "Docker",
 				"notifications": "Notifications",
 				"tags": "Tags",
 				"proxies": "Proxies",
@@ -922,6 +923,41 @@
 			"header": {
 				"title": "Incidents",
 				"description": "When monitors go down or recover, incidents appear here with timing, monitor details and resolution history."
+			}
+		},
+		"docker": {
+			"header": {
+				"title": "Docker monitors",
+				"description": "Monitor your Docker hosts and every container running on them."
+			},
+			"fallback": {
+				"title": "No Docker monitors yet",
+				"description": "Add a Docker host to monitor its containers.",
+				"actionButton": "Create a monitor"
+			},
+			"table": {
+				"headers": {
+					"host": "Host",
+					"containers": "Containers"
+				},
+				"containersRunning": "{{running}} of {{total}} running"
+			},
+			"host": {
+				"statBoxes": {
+					"containers": "Containers",
+					"running": "Running",
+					"stopped": "Stopped",
+					"unhealthy": "Unhealthy"
+				},
+				"table": {
+					"headers": {
+						"container": "Containers",
+						"health": "Health",
+						"cpu": "CPU",
+						"memory": "Memory",
+						"restarts": "Restarts"
+					}
+				}
 			}
 		},
 		"infrastructure": {

@@ -119,6 +119,46 @@ export interface CheckTimings {
 	};
 }
 
+// Mirrors DockerContainerSummary in server/src/types/network.ts.
+export interface DockerContainerSummary {
+	total: number;
+	running: number;
+	stopped: number;
+	unhealthy: number;
+}
+
+// Mirrors DockerContainerStates in server/src/types/network.ts.
+export const DockerContainerStates = [
+	"created",
+	"running",
+	"paused",
+	"restarting",
+	"removing",
+	"exited",
+	"dead",
+] as const;
+export type DockerContainerState = (typeof DockerContainerStates)[number];
+
+// Mirrors DockerHealthStatuses in server/src/types/network.ts.
+export const DockerHealthStatuses = ["healthy", "unhealthy", "starting", "none"] as const;
+export type DockerHealthStatus = (typeof DockerHealthStatuses)[number];
+
+// Mirrors DockerContainerInfo in server/src/types/network.ts.
+export interface DockerContainerInfo {
+	id: string;
+	name: string;
+	image: string;
+	state: DockerContainerState;
+	status: string;
+	health: DockerHealthStatus;
+	cpuPct?: number; // fraction of one core; exceeds 1 when using multiple cores
+	memoryUsedBytes?: number;
+	memoryLimitBytes?: number;
+	memoryPct?: number; // 0-1 fraction of the memory limit
+	restartCount?: number;
+	startedAt?: string;
+}
+
 export interface Check {
 	id: string;
 	metadata: CheckMetadata;
@@ -133,6 +173,7 @@ export interface Check {
 	host?: CheckHostInfo;
 	errors?: CheckErrorInfo[];
 	capture?: CheckCaptureInfo;
+	containerSummary?: DockerContainerSummary;
 	net?: CheckNetworkInterfaceInfo[];
 	accessibility?: number;
 	bestPractices?: number;
@@ -287,6 +328,7 @@ export type CheckSnapshot = Pick<
 	memory?: SnapshotMemoryInfo;
 	disk?: SnapshotDiskInfo[];
 	host?: SnapshotHostInfo;
+	containerSummary?: DockerContainerSummary;
 };
 export interface HasResponseTime {
 	responseTime: number;

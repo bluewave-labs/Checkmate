@@ -20,6 +20,11 @@ import PageSpeedDetails from "@/Pages/PageSpeed/Details/";
 import Infrastructure from "@/Pages/Infrastructure/Monitors";
 import InfrastructureDetails from "@/Pages/Infrastructure/Details";
 
+// Docker
+import Docker from "@/Pages/Docker/Monitors";
+import DockerHostDetails from "@/Pages/Docker/HostDetails";
+import DockerDetails from "@/Pages/Docker/Details";
+
 // Checks
 import Checks from "@/Pages/Checks";
 
@@ -138,6 +143,26 @@ const Routes = () => {
 				<Route
 					path="infrastructure/:monitorId"
 					element={<InfrastructureDetails />}
+				/>
+				<Route
+					path="docker"
+					element={<Docker />}
+				/>
+				<Route
+					path="docker/create"
+					element={<CreateMonitor />}
+				/>
+				<Route
+					path="/docker/configure/:monitorId"
+					element={<CreateMonitor />}
+				/>
+				<Route
+					path="docker/:monitorId"
+					element={<DockerDetails />}
+				/>
+				<Route
+					path="docker/host/:monitorId"
+					element={<DockerHostDetails />}
 				/>
 				<Route
 					path="checks/:monitorId?"

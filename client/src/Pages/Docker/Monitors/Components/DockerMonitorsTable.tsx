@@ -1,0 +1,347 @@
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import {
+	Table,
+	Pagination,
+	StatusLabel,
+	ColoredLabel,
+} from "@/Components/design-elements";
+import { SPACING } from "@/Utils/Theme/constants";
+import type { Header } from "@/Components/design-elements/Table";
+import { ActionsMenu, type ActionMenuItem } from "@/Components/actions-menu";
+import { ArrowUp, ArrowDown } from "lucide-react";
+
+import { useTranslation } from "react-i18next";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
+import { usePost } from "@/Hooks/UseApi";
+
+import type { Monitor } from "@/Types/Monitor";
+import type { Tag } from "@/Types/Tag";
+import type { DockerContainerSummary } from "@/Types/Check";
+import { Checkbox } from "@/Components/inputs";
+
+const summaryOf = (monitor: Monitor): DockerContainerSummary | undefined => {
+	const recentChecks = monitor.recentChecks ?? [];
+	return recentChecks[recentChecks.length - 1]?.containerSummary;
+};
+
+interface DockerMonitorsTableProps {
+	monitors: Monitor[];
+	tags: Tag[];
+	refetch: () => void;
+	setSelectedMonitor: (monitor: Monitor | null) => void;
+	sortField: string;
+	setSortField: (field: string) => void;
+	sortOrder: "asc" | "desc";
+	setSortOrder: (order: "asc" | "desc") => void;
+	count: number;
+	page: number;
+	setPage: (page: number) => void;
+	rowsPerPage: number;
+	setRowsPerPage: (rowsPerPage: number) => void;
+	selectedRows?: string[];
+	onSelectionChange?: (selected: string[]) => void;
+}
+
+export const DockerMonitorsTable = ({
+	monitors,
+	tags,
+	refetch,
+	setSelectedMonitor,
+	sortField,
+	setSortField,
+	sortOrder,
+	setSortOrder,
+	count,
+	page,
+	setPage,
+	rowsPerPage,
+	setRowsPerPage,
+	selectedRows = [],
+	onSelectionChange,
+}: DockerMonitorsTableProps) => {
+	const { t } = useTranslation();
+	const theme = useTheme();
+	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
+	const navigate = useNavigate();
+	const { post } = usePost<Record<string, never>, Monitor>();
+
+	const selectedSet = new Set(selectedRows);
+	const isAllSelected =
+		monitors.length > 0 && monitors.every((m) => selectedSet.has(m.id));
+	const isSomeSelected = selectedRows.length > 0 && !isAllSelected;
+
+	const handleSelectAll = (checked: boolean) => {
+		onSelectionChange?.(checked ? monitors.map((m) => m.id) : []);
+	};
+
+	const handleSelectRow = (id: string, checked: boolean) => {
+		if (!onSelectionChange) return;
+		onSelectionChange(
+			checked ? [...selectedRows, id] : selectedRows.filter((rowId) => rowId !== id)
+		);
+	};
+
+	const isRowSelected = (id: string) => selectedSet.has(id);
+
+	const handlePageChange = (
+		_e: React.MouseEvent<HTMLButtonElement> | null,
+		newPage: number
+	) => {
+		setPage(newPage);
+	};
+
+	const handleRowsPerPageChange = (
+		e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+	) => {
+		const value = Number(e.target.value);
+		setPage(0);
+		setRowsPerPage(value);
+	};
+
+	const handleSort = (e: React.MouseEvent, field: string) => {
+		e.preventDefault();
+		e.stopPropagation();
+		if (sortField === field) {
+			const newOrder = sortOrder === "asc" ? "desc" : "asc";
+			setSortOrder(newOrder);
+		} else {
+			setSortField(field);
+			setSortOrder("asc");
+		}
+		refetch();
+	};
+
+	const getActions = (monitor: Monitor): ActionMenuItem[] => {
+		return [
+			{
+				id: 2,
+				label: t("pages.common.monitors.actions.details"),
+				action: () => {
+					navigate(`${monitor.id}`);
+				},
+			},
+			{
+				id: 3,
+				label: t("pages.common.monitors.actions.incidents"),
+				action: () => {
+					navigate(`/incidents?monitorId=${monitor.id}`);
+				},
+			},
+			{
+				id: 4,
+				label: t("pages.common.monitors.actions.configure"),
+				action: () => {
+					navigate(`/docker/configure/${monitor.id}`);
+				},
+			},
+			{
+				id: 6,
+				label:
+					monitor.isActive === false
+						? t("common.buttons.resume")
+						: t("common.buttons.pause"),
+				action: async () => {
+					await post(`/monitors/pause/${monitor.id}`, {});
+					refetch();
+				},
+				closeMenu: true,
+			},
+			{
+				id: 7,
+				label: (
+					<Typography color={theme.palette.error.main}>
+						{t("common.buttons.delete")}
+					</Typography>
+				),
+				action: () => {
+					setSelectedMonitor(monitor);
+				},
+				closeMenu: true,
+			},
+		];
+	};
+
+	const getHeaders = () => {
+		const renderSortIcon = (isActive: boolean) => (
+			<Box
+				width={16}
+				display="inline-flex"
+				justifyContent="center"
+			>
+				{isActive ? (
+					sortOrder === "asc" ? (
+						<ArrowUp size={16} />
+					) : (
+						<ArrowDown size={16} />
+					)
+				) : null}
+			</Box>
+		);
+		const headers: Header<Monitor>[] = [
+			{
+				id: "selection",
+				content: (
+					<Checkbox
+						aria-label={t("pages.common.monitors.actions.selectAll")}
+						indeterminate={isSomeSelected}
+						checked={isAllSelected}
+						onChange={(e) => handleSelectAll(e.target.checked)}
+					/>
+				),
+				hideMobileLabel: true,
+				render: (row) => (
+					<Checkbox
+						aria-label={t("pages.common.monitors.actions.selectMonitor", {
+							name: row.name,
+						})}
+						checked={isRowSelected(row.id)}
+						onChange={(e) => {
+							handleSelectRow(row.id, e.target.checked);
+						}}
+						onClick={(e) => e.stopPropagation()}
+					/>
+				),
+				onClick: (e) => e?.stopPropagation(),
+			},
+			{
+				id: "name",
+				align: "left",
+				mobileLabel: t("pages.docker.table.headers.host"),
+				content: (
+					<Typography
+						component="div"
+						display="inline-flex"
+						alignItems="center"
+						gap={theme.spacing(4)}
+						onClick={(e) => handleSort(e, "name")}
+						sx={{ cursor: "pointer" }}
+					>
+						{t("pages.docker.table.headers.host")}
+						{renderSortIcon(sortField === "name")}
+					</Typography>
+				),
+				render: (row) => {
+					return (
+						<Stack>
+							<Typography variant="body2">{row.name}</Typography>
+							<Typography
+								variant="caption"
+								color={theme.palette.text.secondary}
+							>
+								{row.url}
+							</Typography>
+						</Stack>
+					);
+				},
+			},
+			{
+				id: "status",
+				mobileLabel: t("common.table.headers.status"),
+				content: (
+					<Stack
+						gap={theme.spacing(4)}
+						direction={"row"}
+						justifyContent={"center"}
+						alignItems={"center"}
+						onClick={(e) => handleSort(e, "status")}
+						sx={{ cursor: "pointer" }}
+					>
+						<Box width={theme.spacing(8)} />
+						{t("common.table.headers.status")}
+						{renderSortIcon(sortField === "status")}
+					</Stack>
+				),
+				render: (row) => {
+					return <StatusLabel status={row.status} />;
+				},
+			},
+			{
+				id: "containers",
+				content: t("pages.docker.table.headers.containers"),
+				render: (row) => {
+					const summary = summaryOf(row);
+					return (
+						<Typography variant="body2">
+							{summary
+								? t("pages.docker.table.containersRunning", {
+										running: summary.running,
+										total: summary.total,
+									})
+								: "—"}
+						</Typography>
+					);
+				},
+			},
+			{
+				id: "tags",
+				content: t("common.table.headers.tags"),
+				render: (row) => {
+					if (row.tags.length === 0) return "-";
+					return (
+						<Stack
+							justifyContent={"center"}
+							direction={isSmall ? "column" : "row"}
+							gap={theme.spacing(SPACING.LG)}
+						>
+							{row.tags.map((tagId) => {
+								const fullTag = tags.find((t) => t.id === tagId);
+								if (!fullTag) return null;
+								return (
+									<ColoredLabel
+										key={fullTag.id}
+										text={fullTag.name}
+										color={fullTag.color}
+									/>
+								);
+							})}
+						</Stack>
+					);
+				},
+			},
+
+			{
+				id: "actions",
+				content: t("common.table.headers.actions"),
+				render: (row) => {
+					return <ActionsMenu items={getActions(row)} />;
+				},
+			},
+		];
+		return headers;
+	};
+
+	let headers = getHeaders();
+
+	if (isSmall) {
+		headers = headers.filter((h) => h.id !== "histogram");
+	}
+	return (
+		<Box>
+			<Table
+				headers={headers}
+				data={monitors}
+				onRowClick={(row) => {
+					navigate(`/docker/host/${row.id}`);
+				}}
+				getRowSx={(row) => ({
+					backgroundColor: isRowSelected(row.id)
+						? theme.palette.action.selected
+						: "inherit",
+				})}
+			/>
+			<Pagination
+				component="div"
+				count={count}
+				page={page}
+				rowsPerPage={rowsPerPage}
+				onPageChange={handlePageChange}
+				onRowsPerPageChange={handleRowsPerPageChange}
+				itemsOnPage={monitors.length}
+			/>
+		</Box>
+	);
+};

@@ -3,6 +3,8 @@ import type {
 	CheckSnapshot,
 	GroupedUptimeCheck,
 	DailyCheckBucket,
+	DockerContainerInfo,
+	DockerContainerSummary,
 } from "@/Types/Check";
 import type { PageSpeedGroupedCheck } from "@/Types/Check";
 import type { GeoContinent } from "@/Types/GeoCheck";
@@ -30,7 +32,6 @@ export type MonitorType = (typeof MonitorTypes)[number];
 export const SelectableMonitorTypes = [
 	"http",
 	"ping",
-	"docker",
 	"port",
 	"game",
 	"grpc",
@@ -266,6 +267,41 @@ export interface HardwareStats {
 export interface HardwareDetailsResponse {
 	monitor: Monitor;
 	stats: HardwareStats;
+	monitorStats: MonitorStats | null;
+}
+
+// Mirrors DockerStatsBucket in server/src/domain/checks/check.type.ts.
+export interface DockerStatsBucket {
+	_id: string;
+	avgResponseTime: number | null;
+	upCount: number;
+	totalCount: number;
+	avgRunning: number | null;
+	avgTotal: number | null;
+	avgUnhealthy: number | null;
+}
+
+// Mirrors DockerStats in server/src/domain/checks/check.type.ts.
+export interface DockerStats {
+	aggregateData: {
+		totalChecks: number;
+	};
+	upChecks: {
+		totalChecks: number;
+	};
+	aggregate: DockerStatsBucket[];
+	latest: {
+		containers: DockerContainerInfo[];
+		summary?: DockerContainerSummary;
+		checkedAt: string;
+	} | null;
+}
+
+// Response of GET /monitors/docker/details/{monitorId}; mirrors
+// dockerDetailsResponseSchema in server/src/api/validation/monitorValidation.ts.
+export interface DockerDetailsResponse {
+	monitor: Monitor;
+	stats: DockerStats;
 	monitorStats: MonitorStats | null;
 }
 

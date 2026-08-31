@@ -1,6 +1,7 @@
 import type { MonitorStatus, MonitorType } from "@/Types/Monitor";
 import type { PaletteKey } from "@/Utils/Theme/Theme";
 import type { ValueType } from "@/Components/design-elements/StatusLabel";
+import type { DockerContainerState } from "@/Types/Check";
 
 export const getMonitorPath = (type: MonitorType): string => {
 	const pathMap: Record<MonitorType, string> = {
@@ -12,7 +13,7 @@ export const getMonitorPath = (type: MonitorType): string => {
 		websocket: "uptime",
 		dns: "uptime",
 		unknown: "uptime",
-		docker: "uptime",
+		docker: "docker",
 		hardware: "infrastructure",
 		pagespeed: "pagespeed",
 	};
@@ -39,6 +40,19 @@ export const getValuePalette = (value: ValueType): PaletteKey => {
 		neutral: "warning",
 	};
 	return paletteMap[value];
+};
+
+export const getDockerStatePalette = (state: DockerContainerState): PaletteKey => {
+	const paletteMap: Record<DockerContainerState, PaletteKey> = {
+		paused: "warning",
+		created: "warning",
+		running: "success",
+		restarting: "warning",
+		removing: "warning",
+		exited: "error",
+		dead: "error",
+	};
+	return paletteMap[state];
 };
 
 export const getStatusColor = (status: MonitorStatus, theme: any): string => {
