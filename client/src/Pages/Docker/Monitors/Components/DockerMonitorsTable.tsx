@@ -325,7 +325,7 @@ export const DockerMonitorsTable = ({
 				headers={headers}
 				data={monitors}
 				onRowClick={(row) => {
-					navigate(`/docker/${row.id}`);
+					navigate(`/docker/host/${row.id}`);
 				}}
 				getRowSx={(row) => ({
 					backgroundColor: isRowSelected(row.id)

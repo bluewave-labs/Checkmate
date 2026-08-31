@@ -324,10 +324,10 @@ describe("DockerProvider", () => {
 			const result = await provider.handle(makeMonitor());
 			const container = result.payload?.containers[0];
 
-			expect(container?.cpuPct).toBeCloseTo(80);
+			expect(container?.cpuPct).toBeCloseTo(0.8);
 			expect(container?.memoryUsedBytes).toBe(200 * 1024 * 1024);
 			expect(container?.memoryLimitBytes).toBe(1024 * 1024 * 1024);
-			expect(container?.memoryPct).toBeCloseTo(19.53125);
+			expect(container?.memoryPct).toBeCloseTo(0.1953125);
 		});
 
 		it("falls back to the cgroup v1 cache field for page cache", async () => {
@@ -351,7 +351,7 @@ describe("DockerProvider", () => {
 
 			const result = await provider.handle(makeMonitor());
 
-			expect(result.payload?.containers[0]?.cpuPct).toBeCloseTo(40);
+			expect(result.payload?.containers[0]?.cpuPct).toBeCloseTo(0.4);
 		});
 
 		it("returns 0 cpu when the system delta is not positive", async () => {

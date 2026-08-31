@@ -117,10 +117,10 @@ export interface DockerContainerInfo {
 	state: DockerContainerState;
 	status: string;
 	health: DockerHealthStatus;
-	cpuPct?: number;
+	cpuPct?: number; // fraction of one core (docker stats convention / 100); exceeds 1 when using multiple cores
 	memoryUsedBytes?: number;
 	memoryLimitBytes?: number;
-	memoryPct?: number;
+	memoryPct?: number; // 0-1 fraction of the memory limit
 	restartCount?: number;
 	startedAt?: string; // ISO date
 }

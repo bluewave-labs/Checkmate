@@ -100,7 +100,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 		const systemDelta = stats.cpu_stats.system_cpu_usage - (stats.precpu_stats.system_cpu_usage ?? 0);
 		const onlineCpus = stats.cpu_stats.online_cpus ?? stats.cpu_stats.cpu_usage.percpu_usage?.length ?? 1;
 		if (!(systemDelta > 0) || cpuDelta < 0) return 0;
-		return (cpuDelta / systemDelta) * onlineCpus * 100;
+		return (cpuDelta / systemDelta) * onlineCpus;
 	}
 
 	private computeMemory(stats: Dockerode.ContainerStats): Pick<DockerContainerInfo, "memoryUsedBytes" | "memoryLimitBytes" | "memoryPct"> {
@@ -111,7 +111,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 		return {
 			memoryUsedBytes,
 			memoryLimitBytes,
-			memoryPct: memoryLimitBytes > 0 ? (memoryUsedBytes / memoryLimitBytes) * 100 : 0,
+			memoryPct: memoryLimitBytes > 0 ? memoryUsedBytes / memoryLimitBytes : 0,
 		};
 	}
 
