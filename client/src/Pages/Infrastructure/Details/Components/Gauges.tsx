@@ -8,7 +8,6 @@ import { useTheme } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import type { CheckSnapshot } from "@/Types/Check";
 
-// Width each gauge card aims for, and the basis the wrapping row breaks on.
 const GAUGE_MAX_WIDTH = 260;
 
 export const InfraDetailsGauges = ({
@@ -31,13 +30,6 @@ export const InfraDetailsGauges = ({
 			alignItems={"stretch"}
 			flexWrap={"wrap"}
 			useFlexGap
-			sx={{
-				// The gauge cards are flex: 1 1 0, so a wrapping row would never
-				// overflow and they would squash to min-content instead of breaking
-				// the line. Give each one its own width as the basis so the row wraps
-				// at the intended card size.
-				"& > *": { flexBasis: GAUGE_MAX_WIDTH },
-			}}
 		>
 			<DetailGauge
 				title={t("pages.infrastructure.gauges.memory.title")}
@@ -47,6 +39,7 @@ export const InfraDetailsGauges = ({
 				upperValue={prettyBytes(snapshot?.memory?.used_bytes || 0)}
 				lowerLabel={t("pages.infrastructure.gauges.memory.lowerLabel")}
 				lowerValue={prettyBytes(snapshot?.memory?.total_bytes || 0)}
+				flexBasis={isSmall ? "auto" : GAUGE_MAX_WIDTH}
 			/>
 			<DetailGauge
 				title={t("pages.infrastructure.gauges.cpu.title")}
