@@ -92,7 +92,7 @@ export const Sidebar = () => {
 						pt={theme.spacing(LAYOUT.MD)}
 						pb={theme.spacing(LAYOUT.MD)}
 					/>
-					{menu.map((group, groupIndex) => (
+					{menu.map((group) => (
 						<Box key={group.group}>
 							<Box
 								position="relative"
@@ -114,18 +114,16 @@ export const Sidebar = () => {
 								>
 									{group.group}
 								</Typography>
-								{groupIndex > 0 && (
-									<Divider
-										sx={{
-											position: "absolute",
-											top: "50%",
-											left: 0,
-											right: 0,
-											opacity: collapsed ? 1 : 0,
-											transition: `opacity ${transitionTiming}`,
-										}}
-									/>
-								)}
+								<Divider
+									sx={{
+										position: "absolute",
+										top: "50%",
+										left: 0,
+										right: 0,
+										opacity: collapsed ? 1 : 0,
+										transition: `opacity ${transitionTiming}`,
+									}}
+								/>
 							</Box>
 							{group.items.map((item) => {
 								const selected = location.pathname.startsWith(`/${item.path}`);
