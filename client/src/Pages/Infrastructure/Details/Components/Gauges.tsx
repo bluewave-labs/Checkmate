@@ -49,6 +49,7 @@ export const InfraDetailsGauges = ({
 				upperValue={getFrequency(snapshot?.cpu?.current_frequency || 0)}
 				lowerLabel={t("pages.infrastructure.gauges.cpu.lowerLabel")}
 				lowerValue={getFrequency(snapshot?.cpu?.frequency || 0)}
+				flexBasis={isSmall ? "auto" : GAUGE_MAX_WIDTH}
 			/>
 			{snapshot?.disk?.map((disk, idx) => {
 				return (
@@ -62,6 +63,7 @@ export const InfraDetailsGauges = ({
 						upperValue={prettyBytes(disk?.used_bytes || 0)}
 						lowerLabel={t("pages.infrastructure.gauges.disk.lowerLabel")}
 						lowerValue={prettyBytes(disk?.total_bytes || 0)}
+						flexBasis={isSmall ? "auto" : GAUGE_MAX_WIDTH}
 					/>
 				);
 			})}
