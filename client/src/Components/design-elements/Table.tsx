@@ -303,6 +303,12 @@ interface TablePaginationActionsProps {
 	onPageChange: (event: React.MouseEvent<HTMLButtonElement>, newPage: number) => void;
 }
 
+const controlHoverSx = (theme: Theme): SxProps<Theme> => ({
+	"&:hover": {
+		backgroundColor: theme.palette.action.controlHover,
+	},
+});
+
 function TablePaginationActions(props: TablePaginationActionsProps) {
 	const theme = useTheme();
 	const { count, page, rowsPerPage, onPageChange } = props;
@@ -325,19 +331,14 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 
 	return (
 		<Box
-			sx={{
-				flexShrink: 0,
-				ml: { xs: 0, md: 2.5 },
-				"& .MuiIconButton-root:not(.Mui-disabled):hover": {
-					backgroundColor: theme.palette.action.controlHover,
-				},
-			}}
+			sx={{ flexShrink: 0, ml: { xs: 0, md: 2.5 } }}
 			className="table-pagination-actions"
 		>
 			<IconButton
 				onClick={handleFirstPageButtonClick}
 				disabled={page === 0}
 				aria-label="first page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronsRight
@@ -355,6 +356,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 				onClick={handleBackButtonClick}
 				disabled={page === 0}
 				aria-label="previous page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronRight
@@ -372,6 +374,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 				onClick={handleNextButtonClick}
 				disabled={page >= Math.ceil(count / rowsPerPage) - 1}
 				aria-label="next page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronLeft
@@ -389,6 +392,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 				onClick={handleLastPageButtonClick}
 				disabled={page >= Math.ceil(count / rowsPerPage) - 1}
 				aria-label="last page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronsLeft
@@ -429,19 +433,14 @@ function HasMoreTablePaginationActions(props: HasMoreTablePaginationActionsProps
 
 	return (
 		<Box
-			sx={{
-				flexShrink: 0,
-				ml: { xs: 0, md: 2.5 },
-				"& .MuiIconButton-root:not(.Mui-disabled):hover": {
-					backgroundColor: theme.palette.action.controlHover,
-				},
-			}}
+			sx={{ flexShrink: 0, ml: { xs: 0, md: 2.5 } }}
 			className="table-pagination-actions"
 		>
 			<IconButton
 				onClick={handleFirstPageButtonClick}
 				disabled={page === 0}
 				aria-label="first page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronsRight
@@ -459,6 +458,7 @@ function HasMoreTablePaginationActions(props: HasMoreTablePaginationActionsProps
 				onClick={handleBackButtonClick}
 				disabled={page === 0}
 				aria-label="previous page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronRight
@@ -476,6 +476,7 @@ function HasMoreTablePaginationActions(props: HasMoreTablePaginationActionsProps
 				onClick={handleNextButtonClick}
 				disabled={hasMore === false}
 				aria-label="next page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronLeft
@@ -493,6 +494,7 @@ function HasMoreTablePaginationActions(props: HasMoreTablePaginationActionsProps
 				<IconButton
 					disabled={hasMore === false}
 					aria-label="next page"
+					sx={controlHoverSx(theme)}
 				>
 					<Ellipsis
 						size={20}
