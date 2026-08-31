@@ -39,9 +39,9 @@ export const Gauge = forwardRef<HTMLDivElement, GaugeProps>(function Gauge(
 		() => ({
 			circumference: 2 * Math.PI * radius,
 			totalSize: radius * 2 + strokeWidth * 2,
-			strokeLength: (progress / 100) * (2 * Math.PI * radius),
+			strokeLength: (progressWithinRange / 100) * (2 * Math.PI * radius),
 		}),
-		[radius, strokeWidth, progress]
+		[radius, strokeWidth, progressWithinRange]
 	);
 
 	const [offset, setOffset] = useState(circumference);
@@ -52,7 +52,7 @@ export const Gauge = forwardRef<HTMLDivElement, GaugeProps>(function Gauge(
 		}, 100);
 
 		return () => clearTimeout(timer);
-	}, [progress, circumference, strokeLength]);
+	}, [circumference, strokeLength]);
 
 	const fillColor = getInfraGaugeColor(progressWithinRange, theme);
 

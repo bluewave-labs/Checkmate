@@ -54,7 +54,7 @@ export const InfraDetailsGauges = ({
 			{snapshot?.disk?.map((disk, idx) => {
 				return (
 					<DetailGauge
-						key={disk?.device || 0 + idx}
+						key={disk?.device || `disk-${idx}`}
 						// title={`Disk ${idx} usage`}
 						title={t("pages.infrastructure.gauges.disk.title", { idx })}
 						maxWidth={GAUGE_MAX_WIDTH}
