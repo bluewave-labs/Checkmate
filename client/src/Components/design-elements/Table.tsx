@@ -79,6 +79,7 @@ export function DataTable<
 	};
 
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
+	const isInteractive = Boolean(onRowClick) || expandableRows;
 
 	if (data.length === 0 || headers.length === 0) {
 		return (
@@ -108,6 +109,11 @@ export function DataTable<
 								borderRadius: theme.shape.borderRadius,
 								padding: theme.spacing(LAYOUT.XS),
 								cursor: onRowClick ? "pointer" : "default",
+								...(onRowClick && {
+									"&:hover": {
+										backgroundColor: theme.palette.action.rowHover,
+									},
+								}),
 							}}
 							key={key}
 						>
@@ -207,6 +213,10 @@ export function DataTable<
 					"& .MuiTableBody-root .MuiTableRow-root:last-child .MuiTableCell-root": {
 						borderBottom: "none",
 					},
+					"& .MuiTableBody-root .MuiTableRow-root.is-clickable:hover .MuiTableCell-root":
+						{
+							backgroundColor: theme.palette.action.rowHover,
+						},
 				}}
 			>
 				<TableHead>
@@ -231,8 +241,9 @@ export function DataTable<
 						return (
 							<Fragment key={key}>
 								<TableRow
+									className={isInteractive ? "is-clickable" : undefined}
 									sx={{
-										cursor: onRowClick ? "pointer" : "default",
+										cursor: isInteractive ? "pointer" : "default",
 										...(getRowSx?.(row) as object),
 									}}
 									onClick={() => {
@@ -292,6 +303,12 @@ interface TablePaginationActionsProps {
 	onPageChange: (event: React.MouseEvent<HTMLButtonElement>, newPage: number) => void;
 }
 
+const controlHoverSx = (theme: Theme): SxProps<Theme> => ({
+	"&:hover": {
+		backgroundColor: theme.palette.action.controlHover,
+	},
+});
+
 function TablePaginationActions(props: TablePaginationActionsProps) {
 	const theme = useTheme();
 	const { count, page, rowsPerPage, onPageChange } = props;
@@ -321,6 +338,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 				onClick={handleFirstPageButtonClick}
 				disabled={page === 0}
 				aria-label="first page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronsRight
@@ -338,6 +356,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 				onClick={handleBackButtonClick}
 				disabled={page === 0}
 				aria-label="previous page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronRight
@@ -355,6 +374,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 				onClick={handleNextButtonClick}
 				disabled={page >= Math.ceil(count / rowsPerPage) - 1}
 				aria-label="next page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronLeft
@@ -372,6 +392,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 				onClick={handleLastPageButtonClick}
 				disabled={page >= Math.ceil(count / rowsPerPage) - 1}
 				aria-label="last page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronsLeft
@@ -419,6 +440,7 @@ function HasMoreTablePaginationActions(props: HasMoreTablePaginationActionsProps
 				onClick={handleFirstPageButtonClick}
 				disabled={page === 0}
 				aria-label="first page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronsRight
@@ -436,6 +458,7 @@ function HasMoreTablePaginationActions(props: HasMoreTablePaginationActionsProps
 				onClick={handleBackButtonClick}
 				disabled={page === 0}
 				aria-label="previous page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronRight
@@ -453,6 +476,7 @@ function HasMoreTablePaginationActions(props: HasMoreTablePaginationActionsProps
 				onClick={handleNextButtonClick}
 				disabled={hasMore === false}
 				aria-label="next page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronLeft
@@ -470,6 +494,7 @@ function HasMoreTablePaginationActions(props: HasMoreTablePaginationActionsProps
 				<IconButton
 					disabled={hasMore === false}
 					aria-label="next page"
+					sx={controlHoverSx(theme)}
 				>
 					<Ellipsis
 						size={20}

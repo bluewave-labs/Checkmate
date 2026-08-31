@@ -1,4 +1,5 @@
 import { alpha } from "@mui/material/styles";
+import { HOVER } from "@/Utils/Theme/constants";
 
 const typographyBase = 13;
 
@@ -39,6 +40,10 @@ export const lightPalette = {
 	primary: {
 		main: colors.brandGreen,
 	},
+	action: {
+		rowHover: alpha(colors.gray900, HOVER.ROW),
+		controlHover: alpha(colors.gray900, HOVER.CONTROL),
+	},
 	secondary: {
 		main: colors.gray200,
 	},
@@ -64,6 +69,10 @@ export const lightPalette = {
 export const darkPalette = {
 	primary: {
 		main: colors.brandGreen,
+	},
+	action: {
+		rowHover: alpha("#FFFFFF", HOVER.ROW),
+		controlHover: alpha("#FFFFFF", HOVER.CONTROL),
 	},
 	secondary: {
 		main: colors.gray700,

@@ -11,9 +11,10 @@ import type { SxProps } from "@mui/material";
 type GradientBox = React.PropsWithChildren<{
 	palette?: PaletteKey;
 	sx?: SxProps;
+	interactive?: boolean;
 }>;
 
-export const GradientBox = ({ children, palette, sx }: GradientBox) => {
+export const GradientBox = ({ children, palette, sx, interactive }: GradientBox) => {
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const isLight = theme.palette.mode === "light";
@@ -30,6 +31,12 @@ export const GradientBox = ({ children, palette, sx }: GradientBox) => {
 				padding: `${theme.spacing(4)} ${theme.spacing(8)}`,
 				width: isSmall ? `100%` : `calc(25% - (3 * ${theme.spacing(8)} / 4))`,
 				background: bg,
+				...(interactive && {
+					cursor: "pointer",
+					"&:hover": {
+						backgroundImage: `linear-gradient(${theme.palette.action.rowHover}, ${theme.palette.action.rowHover}), ${bg}`,
+					},
+				}),
 				...sx,
 			}}
 		>
@@ -62,10 +69,8 @@ export const StatBox = ({
 	return (
 		<GradientBox
 			palette={palette}
-			sx={{
-				...(sx as object),
-				...(onClick ? { cursor: "pointer", "&:hover": { opacity: 0.95 } } : {}),
-			}}
+			interactive={Boolean(onClick)}
+			sx={{ ...(sx as object) }}
 		>
 			<Stack onClick={onClick}>
 				<Box sx={{ display: "flex", alignItems: "center", gap: theme.spacing(2) }}>
