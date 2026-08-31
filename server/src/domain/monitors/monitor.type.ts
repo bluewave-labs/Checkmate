@@ -32,7 +32,20 @@ export const HttpStatusCodes = [
 export const HttpStatusCodeSet = new Set(HttpStatusCodes);
 export type HttpStatusCode = number;
 
-export const MonitorTypes = ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"] as const;
+export const MonitorTypes = [
+	"http",
+	"ping",
+	"pagespeed",
+	"hardware",
+	"docker",
+	"port",
+	"game",
+	"grpc",
+	"websocket",
+	"dns",
+	"mysql",
+	"unknown",
+] as const;
 export type MonitorType = (typeof MonitorTypes)[number];
 
 export const PageSpeedStrategies = ["desktop", "mobile"] as const;
@@ -103,6 +116,11 @@ export interface Monitor {
 	selectedDisks: string[];
 	gameId?: string;
 	grpcServiceName?: string;
+	// mysql monitors: the password reuses the existing `secret` field, matching how
+	// HttpProvider uses it for bearer auth.
+	dbUser?: string;
+	dbName?: string;
+	dbQuery?: string;
 	strategy?: PageSpeedStrategy;
 	group: string | null;
 	geoCheckEnabled?: boolean;
