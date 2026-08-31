@@ -84,18 +84,6 @@ const interfaceIsIdle = (checks: HardwareCheckStats[], name: string): boolean =>
 		);
 	});
 
-// Capture running inside a container sees only that container's network
-// namespace. It reports the loopback and bridge names above, and usually also
-// the container's own veth under a host-looking name (eth0, ens3, ...) - so
-// requiring EVERY interface to be container-only missed the common case, and
-// those users saw plausible-but-meaningless traffic with no explanation.
-//
-// Interface names alone cannot separate the two cases: a host-level agent on a
-// machine running Docker legitimately reports docker0 too. What distinguishes
-// them is that in the container case nothing carries real traffic. So the
-// notice fires when a container-only interface is present AND every interface
-// is idle, which leaves a genuine host reporting docker0 alongside a busy NIC
-// untouched.
 const onlyContainerVisibleInterfaces = (checks: HardwareCheckStats[]): boolean => {
 	const named = new Set<string>();
 	checks.forEach((c) => c.net?.forEach((iface) => named.add(iface.name)));
@@ -104,6 +92,9 @@ const onlyContainerVisibleInterfaces = (checks: HardwareCheckStats[]): boolean =
 	}
 
 	const names = [...named];
+	if (names.every((name) => CONTAINER_ONLY_IFACE_NAMES.has(name))) {
+		return true;
+	}
 	if (!names.some((name) => CONTAINER_ONLY_IFACE_NAMES.has(name))) {
 		return false;
 	}
