@@ -1141,6 +1141,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "ทั่วไป",
+				"monitoring": "การตรวจสอบ",
+				"email": "อีเมล",
+				"integrations": "การเชื่อมต่อ",
+				"data": "ข้อมูล"
+			},
 			"form": {
 				"timezone": {
 					"title": "เขตเวลาที่แสดง",

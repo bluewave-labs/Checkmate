@@ -1141,6 +1141,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Obecné",
+				"monitoring": "Monitorování",
+				"email": "E-mail",
+				"integrations": "Integrace",
+				"data": "Data"
+			},
 			"form": {
 				"timezone": {
 					"title": "Zobrazované časové pásmo",

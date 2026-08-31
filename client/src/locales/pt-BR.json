@@ -1141,6 +1141,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Geral",
+				"monitoring": "Monitoramento",
+				"email": "E-mail",
+				"integrations": "Integrações",
+				"data": "Dados"
+			},
 			"form": {
 				"timezone": {
 					"title": "Fuso horário de exibição",

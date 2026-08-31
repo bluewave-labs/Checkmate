@@ -1141,6 +1141,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "一般",
+				"monitoring": "監控",
+				"email": "郵件",
+				"integrations": "整合",
+				"data": "資料"
+			},
 			"form": {
 				"timezone": {
 					"title": "顯示時區",

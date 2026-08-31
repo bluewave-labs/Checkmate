@@ -1141,6 +1141,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "عام",
+				"monitoring": "المراقبة",
+				"email": "البريد الإلكتروني",
+				"integrations": "التكاملات",
+				"data": "البيانات"
+			},
 			"form": {
 				"timezone": {
 					"title": "المنطقة الزمنية للعرض",

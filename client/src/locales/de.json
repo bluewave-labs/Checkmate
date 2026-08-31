@@ -1141,6 +1141,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Allgemein",
+				"monitoring": "Überwachung",
+				"email": "E-Mail",
+				"integrations": "Integrationen",
+				"data": "Daten"
+			},
 			"form": {
 				"timezone": {
 					"title": "Anzeigesprache Zeitzone",

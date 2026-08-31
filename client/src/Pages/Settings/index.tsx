@@ -58,8 +58,6 @@ const SETTINGS_TABS = [
 
 type SettingsTabKey = (typeof SETTINGS_TABS)[number]["key"];
 
-// Maps a validation error back to the tab holding it, so a failed save can
-// reveal the offending field instead of naming one on a hidden tab.
 const FIELD_TAB: Record<string, SettingsTabKey> = {
 	checkTTL: "monitoring",
 	globalThresholds: "monitoring",
@@ -74,10 +72,6 @@ const tabForField = (field: string): SettingsTabKey =>
 		? "email"
 		: (FIELD_TAB[field.split(".")[0]] ?? "general");
 
-// Error rows named the raw schema key ("systemEmailRejectUnauthorized"). Each
-// field already owns a translated label, so reuse those rather than adding
-// strings. Labels that append an explanation after a dash are trimmed to the
-// name itself.
 const FIELD_LABEL_KEY: Record<string, string> = {
 	checkTTL: "pages.settings.form.retention.option.days.label",
 	"globalThresholds.cpu": "pages.settings.form.thresholds.option.cpu.label",
@@ -104,10 +98,6 @@ const FIELD_LABEL_KEY: Record<string, string> = {
 		"pages.settings.form.email.option.rejectUnauthorized.label",
 };
 
-// react-hook-form nests errors by path, so a grouped field arrives as
-// { globalThresholds: { cpu: { message } } }. Iterating the top level alone
-// yields an entry whose own message is undefined, which renders as a bare
-// "globalThresholds" naming none of the four sliders. Walk to the leaves.
 type FieldErrorLeaf = { path: string; message?: string };
 
 const flattenFieldErrors = (errors: unknown, prefix = ""): FieldErrorLeaf[] => {
@@ -115,6 +105,9 @@ const flattenFieldErrors = (errors: unknown, prefix = ""): FieldErrorLeaf[] => {
 		return [];
 	}
 	return Object.entries(errors).flatMap(([key, value]) => {
+		if (key === "ref") {
+			return [];
+		}
 		const path = prefix ? `${prefix}.${key}` : key;
 		if (typeof value !== "object" || value === null) {
 			return [];
@@ -141,11 +134,7 @@ export const SettingsPage = () => {
 		[isAdmin]
 	);
 
-	// An unknown tab, or an admin tab requested by a non-admin, falls back to the
-	// first tab the current user can actually see.
 	const requestedTab = searchParams.get("tab");
-	// visibleTabs always contains "general" today; the constant fallback keeps a
-	// future gating change from throwing on an empty list.
 	const firstVisibleTab: SettingsTabKey = visibleTabs[0]?.key ?? SETTINGS_TABS[0].key;
 	const activeTab: SettingsTabKey =
 		visibleTabs.find((tab) => tab.key === requestedTab)?.key ?? firstVisibleTab;
@@ -160,16 +149,19 @@ export const SettingsPage = () => {
 		setSearchParams(updated, { replace: true });
 	};
 
-	// A "tab" that does not resolve -- an unknown key, or an admin tab followed by
-	// a non-admin -- leaves the URL claiming a tab the page is not showing. Drop it
-	// so the address bar matches what is rendered.
+	// Drop a "tab" param that does not resolve to a rendered tab, or that names
+	// the first tab, which is addressed with no param at all.
 	useEffect(() => {
-		if (requestedTab !== null && requestedTab !== activeTab) {
-			const updated = new URLSearchParams(searchParams);
-			updated.delete("tab");
-			setSearchParams(updated, { replace: true });
+		if (requestedTab === null) {
+			return;
 		}
-	}, [requestedTab, activeTab, searchParams, setSearchParams]);
+		if (requestedTab === activeTab && activeTab !== firstVisibleTab) {
+			return;
+		}
+		const updated = new URLSearchParams(searchParams);
+		updated.delete("tab");
+		setSearchParams(updated, { replace: true });
+	}, [requestedTab, activeTab, firstVisibleTab, searchParams, setSearchParams]);
 
 	// Local state for demo monitors dialog
 	const [isDemoMonitorsDialogOpen, setIsDemoMonitorsDialogOpen] = useState(false);
@@ -418,10 +410,6 @@ export const SettingsPage = () => {
 		logger.debug("Form validation errors", errors);
 	};
 
-	// The save bar lists errors by field name, and the offending field may sit on
-	// a tab that is not open. Submitting cannot reveal it -- the button is
-	// disabled while the form is invalid -- so each listed field switches to its
-	// own tab instead.
 	const revealField = (field: string) => {
 		const target = tabForField(field);
 		if (visibleTabs.some((tab) => tab.key === target)) {

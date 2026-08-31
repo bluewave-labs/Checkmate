@@ -1141,6 +1141,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "General",
+				"monitoring": "Monitoratge",
+				"email": "Correu electrònic",
+				"integrations": "Integracions",
+				"data": "Dades"
+			},
 			"form": {
 				"timezone": {
 					"title": "Zona horària de visualització",

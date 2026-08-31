@@ -1141,6 +1141,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Genel",
+				"monitoring": "İzleme",
+				"email": "E-posta",
+				"integrations": "Entegrasyonlar",
+				"data": "Veri"
+			},
 			"form": {
 				"timezone": {
 					"title": "Görüntüleme saat dilimi",
