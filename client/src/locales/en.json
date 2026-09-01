@@ -66,9 +66,11 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Average response time",
+				"cpuUsage": "CPU usage",
 				"downtime": "Downtime",
 				"high": "High",
 				"low": "Low",
+				"memoryUsage": "Memory usage",
 				"responseTime": "Response time",
 				"timingPhases": "Timing phases",
 				"totalResponseTime": "Total response time",
@@ -102,7 +104,11 @@
 			"idle": "Idle",
 			"na": "N/A",
 			"resolved": "Resolved",
-			"responseTime": "Response time"
+			"responseTime": "Response time",
+			"state": "State",
+			"uptime": "Uptime",
+			"health": "Health",
+			"restarts": "Restarts"
 		},
 		"form": {
 			"autocomplete": {
@@ -942,6 +948,16 @@
 				},
 				"containersRunning": "{{running}} of {{total}} running"
 			},
+			"container": {
+				"header": {
+					"title": "Container details",
+					"description": "State, resource usage, and logs for this container."
+				},
+				"tabs": {
+					"overview": "Overview",
+					"logs": "Logs"
+				}
+			},
 			"host": {
 				"statBoxes": {
 					"containers": "Containers",
@@ -952,10 +968,8 @@
 				"table": {
 					"headers": {
 						"container": "Containers",
-						"health": "Health",
 						"cpu": "CPU",
-						"memory": "Memory",
-						"restarts": "Restarts"
+						"memory": "Memory"
 					}
 				}
 			}
@@ -963,9 +977,7 @@
 		"infrastructure": {
 			"charts": {
 				"labels": {
-					"cpu": "CPU usage",
 					"disk": "Disk usage",
-					"memory": "Memory usage",
 					"netBytesRecv": "{{name}} - Bytes Received",
 					"netBytesSent": "{{name}} - Bytes Sent",
 					"loopbackOnlyNotice": "Capture is only seeing container network interfaces, and none of them are carrying real traffic. This is normal when Capture runs inside a container that can only observe its own network namespace — interfaces with host-like names (eth0, ens3) are the container's virtual interfaces, not the host's. Run Capture directly on the host to see real network activity.",

@@ -157,7 +157,7 @@ const Routes = () => {
 					element={<CreateMonitor />}
 				/>
 				<Route
-					path="docker/:monitorId"
+					path="docker/host/:monitorId/container/:containerName"
 					element={<DockerDetails />}
 				/>
 				<Route

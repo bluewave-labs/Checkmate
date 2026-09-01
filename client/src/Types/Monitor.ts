@@ -270,7 +270,6 @@ export interface HardwareDetailsResponse {
 	monitorStats: MonitorStats | null;
 }
 
-// Mirrors DockerStatsBucket in server/src/domain/checks/check.type.ts.
 export interface DockerStatsBucket {
 	_id: string;
 	avgResponseTime: number | null;
@@ -281,7 +280,6 @@ export interface DockerStatsBucket {
 	avgUnhealthy: number | null;
 }
 
-// Mirrors DockerStats in server/src/domain/checks/check.type.ts.
 export interface DockerStats {
 	aggregateData: {
 		totalChecks: number;
@@ -297,12 +295,31 @@ export interface DockerStats {
 	} | null;
 }
 
-// Response of GET /monitors/docker/details/{monitorId}; mirrors
-// dockerDetailsResponseSchema in server/src/api/validation/monitorValidation.ts.
 export interface DockerDetailsResponse {
 	monitor: Monitor;
 	stats: DockerStats;
 	monitorStats: MonitorStats | null;
+}
+export interface DockerContainerStatsBucket {
+	_id: string;
+	avgCpuPct: number | null;
+	avgMemoryUsedBytes: number | null;
+	avgMemoryPct: number | null;
+	minRestartCount: number | null;
+	maxRestartCount: number | null;
+}
+
+export interface DockerContainerStats {
+	aggregate: DockerContainerStatsBucket[];
+	restartsInRange: number;
+	latest: {
+		container: DockerContainerInfo;
+		checkedAt: string;
+	} | null;
+}
+export interface DockerContainerResponse {
+	monitor: Monitor;
+	stats: DockerContainerStats;
 }
 
 export interface Game {

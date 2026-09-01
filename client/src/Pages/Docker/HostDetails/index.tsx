@@ -44,7 +44,10 @@ const DockerHostDetailsPage = () => {
 				monitorStats={monitorStats}
 			/>
 			<DockerStatusBoxes stats={stats} />
-			<DockerContainersTable containers={containers} />
+			<DockerContainersTable
+				monitorId={monitorId}
+				containers={containers}
+			/>
 		</BasePage>
 	);
 };
