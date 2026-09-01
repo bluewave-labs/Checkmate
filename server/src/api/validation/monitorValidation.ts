@@ -484,3 +484,29 @@ export const dockerDetailsResponseSchema = z.object({
 	}),
 	monitorStats: monitorStatsResponseSchema.nullable(),
 });
+
+// Keep aligned with DockerContainerStatsBucket in domain/checks/check.type.ts.
+export const dockerContainerStatsBucketResponseSchema = z.object({
+	_id: z.string(),
+	avgCpuPct: z.number().nullable(),
+	avgMemoryUsedBytes: z.number().nullable(),
+	avgMemoryPct: z.number().nullable(),
+	minRestartCount: z.number().nullable(),
+	maxRestartCount: z.number().nullable(),
+});
+
+// Response of GET /monitors/docker/details/{monitorId}/containers/{containerName}. Keep
+// aligned with DockerContainerDetailsResult in domain/monitors/monitor.type.ts.
+export const dockerContainerDetailsResponseSchema = z.object({
+	monitor: monitorResponseSchema.omit({ _id: true }).extend({ id: z.string() }),
+	stats: z.object({
+		aggregate: z.array(dockerContainerStatsBucketResponseSchema),
+		restartsInRange: z.number(),
+		latest: z
+			.object({
+				container: dockerContainerResponseSchema,
+				checkedAt: z.string(),
+			})
+			.nullable(),
+	}),
+});
