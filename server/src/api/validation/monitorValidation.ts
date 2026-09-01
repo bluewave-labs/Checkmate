@@ -326,6 +326,12 @@ export const getHardwareDetailsByIdQueryValidation = z.object({
 export const getDockerDetailsByIdParamValidation = z.object({ monitorId: z.string().min(1, "Monitor ID is required") });
 export const getDockerDetailsByIdQueryValidation = z.object({ dateRange: z.enum(DateRanges).optional() });
 
+export const getDockerContainerNameParamValidation = z.object({
+	monitorId: z.string().min(1, "Monitor ID is required"),
+	containerName: z.string().min(1, "Container name is required"),
+});
+export const getDockerContainerByNameQueryValidation = z.object({ dateRange: z.enum(DateRanges).optional() });
+
 // Canonical monitor shape returned by /monitors endpoints. Keep aligned with
 // what the controllers actually serialize.
 export const monitorResponseSchema = z

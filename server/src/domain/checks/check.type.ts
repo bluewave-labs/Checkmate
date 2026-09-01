@@ -281,3 +281,21 @@ export interface DockerStats {
 export interface DockerChecksResult extends DockerStats {
 	monitorType: "docker";
 }
+
+export type DockerContainerStatsBucket = {
+	_id: string;
+	avgCpuPct: number | null;
+	avgMemoryUsedBytes: number | null;
+	avgMemoryPct: number | null;
+	minRestartCount: number | null;
+	maxRestartCount: number | null;
+};
+
+export interface DockerContainerStats {
+	aggregate: DockerContainerStatsBucket[];
+	restartsInRange: number;
+	latest: {
+		container: DockerContainerInfo;
+		checkedAt: string;
+	} | null;
+}
