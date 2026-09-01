@@ -1287,6 +1287,7 @@
 						"teams": "Teams",
 						"telegram": "Telegram",
 						"pushover": "Pushover",
+						"signalgrid": "Signalgrid",
 						"twilio": "Twilio",
 						"ntfy": "ntfy"
 					}
@@ -1306,6 +1307,14 @@
 					"placeholderAppToken": "azGDORePK8gMaC0QOYAMyEEuzJnyUi",
 					"optionUserKey": "User key",
 					"placeholderUserKey": "uQiRzpo4DXghDmr9QzzfQu27cmVRsG"
+				},
+				"signalgrid": {
+					"title": "Signalgrid configuration",
+					"description": "Configure Signalgrid to receive push notifications on your devices.",
+					"optionClientKey": "Client key",
+					"placeholderClientKey": "Your Signalgrid client key",
+					"optionChannel": "Channel",
+					"placeholderChannel": "Your Signalgrid channel"
 				},
 				"twilio": {
 					"title": "Twilio SMS configuration",
