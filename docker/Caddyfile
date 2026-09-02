@@ -1,0 +1,3 @@
+{$CHECKMATE_DOMAIN} {
+    reverse_proxy checkmate:52345
+}

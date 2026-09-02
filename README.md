@@ -90,7 +90,38 @@ curl -O https://raw.githubusercontent.com/bluewave-labs/checkmate/master/docker/
 JWT_SECRET="$(openssl rand -hex 32)" docker compose up -d
 ```
 
-Then open http://localhost:52345. If the app is reached at another origin (domain or LAN IP), set `CLIENT_HOST` accordingly. To build the image yourself, run `docker build -f docker/Dockerfile -t checkmate .` from a checkout. For TLS, put any reverse proxy (Caddy, Traefik, nginx) in front of port 52345.
+Then open http://localhost:52345. If the app is reached at another origin (domain or LAN IP), set `CLIENT_HOST` accordingly. To build the image yourself, run `docker build -f docker/Dockerfile -t checkmate .` from a checkout.
+
+### VPS deployment with HTTPS (Caddy)
+
+For a public VPS, use the dedicated Compose file below. It runs the same all-in-one Checkmate image and MongoDB, adds Caddy for automatic HTTPS, and deliberately does **not** publish Checkmate's internal port `52345` to the host.
+
+Before starting, point an A/AAAA record for your domain at the VPS and allow inbound TCP ports `80` and `443`. Then download the two VPS deployment files into an empty directory:
+
+```bash
+mkdir checkmate && cd checkmate
+curl -O https://raw.githubusercontent.com/bluewave-labs/checkmate/master/docker/docker-compose.vps.yaml
+curl -O https://raw.githubusercontent.com/bluewave-labs/checkmate/master/docker/Caddyfile
+```
+
+Create `.env`, replacing `checkmate.example.com` with your domain:
+
+```bash
+export CHECKMATE_DOMAIN=checkmate.example.com
+export CLIENT_HOST="https://${CHECKMATE_DOMAIN}"
+export JWT_SECRET="$(openssl rand -hex 32)"
+printf 'CHECKMATE_DOMAIN=%s\nCLIENT_HOST=%s\nJWT_SECRET=%s\n' \
+  "$CHECKMATE_DOMAIN" "$CLIENT_HOST" "$JWT_SECRET" > .env
+```
+
+Start the stack and check its status:
+
+```bash
+docker compose -f docker-compose.vps.yaml up -d
+docker compose -f docker-compose.vps.yaml ps
+```
+
+Open `https://checkmate.example.com`, replacing the example domain with yours. Caddy obtains and renews the TLS certificate automatically. Keep the generated `.env` private: `JWT_SECRET` signs login tokens and must not be committed or shared.
 
 There are also 1-click installation options like [Repocloud](https://repocloud.io/details/Checkmate),
 [Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) or [Cloudzy](https://cloudzy.com/marketplace/checkmate).
@@ -115,7 +146,7 @@ The web client needs no configuration by default: it calls the API on the same o
 | `CLIENT_CONFIG_CLIENT_HOST` | Origin used when the client builds absolute links (invites, status pages); defaults to the browser's current origin |
 | `CLIENT_CONFIG_LOG_LEVEL` | Browser console log level: `error`, `warn`, `info`, or `debug` (default `error`) |
 
-> **Upgrading from an older image?** The `UPTIME_APP_*` variables (`UPTIME_APP_API_BASE_URL`, `UPTIME_APP_CLIENT_HOST`, `UPTIME_APP_LOG_LEVEL`) are no longer read. In most setups no replacement is needed — the same-origin defaults cover them; if you pointed the client at a different origin, use the `CLIENT_CONFIG_*` equivalents above. The `checkmate-client`, `checkmate-backend`, `checkmate-mongo`, and `checkmate-backend-mono-multiarch` images are no longer updated — switch to `ghcr.io/bluewave-labs/checkmate`, keeping your existing MongoDB service and data volume.
+> **Upgrading from an older image?** The `UPTIME_APP_*` variables (`UPTIME_APP_API_BASE_URL`, `UPTIME_APP_CLIENT_HOST`, `UPTIME_APP_LOG_LEVEL`) are no longer read. In most deployments no replacement is needed — the same-origin defaults cover them, including the Caddy example above. If you intentionally serve the API from another origin, use the `CLIENT_CONFIG_*` equivalents. The `checkmate-client`, `checkmate-backend`, `checkmate-mongo`, and `checkmate-backend-mono-multiarch` images are no longer updated — switch to `ghcr.io/bluewave-labs/checkmate`, keeping your existing MongoDB service and data volume.
 
 See full installation instructions in the [Checkmate documentation portal](https://checkmate.so/docs). 
 
@@ -233,4 +264,3 @@ Here's how you can contribute:
 </a>
 
 [![Star History Chart](https://api.star-history.com/svg?repos=bluewave-labs/checkmate&type=Date)](https://star-history.com/#bluewave-labs/Checkmate&Date)
-
