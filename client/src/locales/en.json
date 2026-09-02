@@ -1217,7 +1217,7 @@
 				},
 				"startTime": {
 					"title": "Start time",
-					"description": "Set the start time and duration for your maintenance window. All values are in UTC",
+					"description": "Set the start time and duration for your maintenance window. All values are in your local time zone.",
 					"option": {
 						"duration": {
 							"label": "Duration"
