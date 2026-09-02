@@ -3,8 +3,12 @@ import {
 	Pagination,
 	StatusLabel,
 	StatusCodeLabel,
+	CopyButton,
 } from "@/Components/design-elements";
 import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import { useTheme } from "@mui/material/styles";
+import { LAYOUT } from "@/Utils/Theme/constants";
 import type { Header } from "@/Components/design-elements";
 import type { Check } from "@/Types/Check";
 
@@ -31,6 +35,7 @@ export const ChecksTable = ({
 }) => {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
+	const theme = useTheme();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 
 	const headers: Header<Check>[] = [
@@ -52,7 +57,21 @@ export const ChecksTable = ({
 			id: "message",
 			content: t("common.table.headers.message"),
 			render: (row) => {
-				return row.message || "N/A";
+				if (!row.message) return "N/A";
+				return (
+					<Stack
+						direction="row"
+						alignItems="center"
+						justifyContent="center"
+						gap={theme.spacing(LAYOUT.XS)}
+					>
+						<span>{row.message}</span>
+						<CopyButton
+							value={row.message}
+							label={t("common.copyMessage")}
+						/>
+					</Stack>
+				);
 			},
 		},
 		{

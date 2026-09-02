@@ -79,6 +79,14 @@ export function DataTable<
 	};
 
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
+
+	// Selecting text inside a row ends in a mouseup on that row, which would
+	// otherwise navigate away and take the text with it. Ignore the click when
+	// the user has actually selected something.
+	const hasTextSelection = () => {
+		const selection = window.getSelection();
+		return Boolean(selection && !selection.isCollapsed && selection.toString().trim());
+	};
 	const isInteractive = Boolean(onRowClick) || expandableRows;
 
 	if (data.length === 0 || headers.length === 0) {
@@ -100,7 +108,10 @@ export function DataTable<
 					keys.push(key);
 					return (
 						<Stack
-							onClick={() => (onRowClick ? onRowClick(row) : null)}
+							onClick={() => {
+								if (hasTextSelection()) return;
+								if (onRowClick) onRowClick(row);
+							}}
 							spacing={theme.spacing(LAYOUT.XS)}
 							sx={{
 								borderStyle: "solid",
@@ -247,6 +258,7 @@ export function DataTable<
 										...(getRowSx?.(row) as object),
 									}}
 									onClick={() => {
+										if (hasTextSelection()) return;
 										if (expandableRows) handleExpand(row);
 										else if (onRowClick) onRowClick(row);
 									}}
