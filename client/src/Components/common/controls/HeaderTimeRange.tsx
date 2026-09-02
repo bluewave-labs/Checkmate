@@ -6,12 +6,13 @@ import { useTheme } from "@mui/material/styles";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useTranslation } from "react-i18next";
 import { useMediaQuery } from "@mui/material";
+import type { DateRange } from "@/Types/Query";
 
 interface MonitorTimeFrameHeaderProps {
 	isLoading?: boolean;
 	hasDateRange?: boolean;
-	dateRange: string;
-	setDateRange: (dateRange: string) => void;
+	dateRange: DateRange;
+	setDateRange: (dateRange: DateRange) => void;
 }
 
 export const HeaderTimeRange = ({
@@ -25,7 +26,7 @@ export const HeaderTimeRange = ({
 	const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 	const handleChange = (
 		_event: React.MouseEvent<HTMLElement>,
-		newValue: string | null
+		newValue: DateRange | null
 	) => {
 		if (newValue !== null) {
 			setDateRange(newValue);

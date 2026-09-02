@@ -12,7 +12,7 @@ const formatTemp = (value: number) => `${value.toFixed(0)}°C`;
 const getChartConfigs = (theme: any, checks: HardwareCheckStats[], t: any) => {
 	return [
 		{
-			title: t("pages.infrastructure.charts.labels.memory"),
+			title: t("common.charts.labels.memoryUsage"),
 			type: "memory",
 			dataKeys: ["avgMemoryUsage"],
 			strokeColor: theme.palette.primary.main,
@@ -22,7 +22,7 @@ const getChartConfigs = (theme: any, checks: HardwareCheckStats[], t: any) => {
 			idx: null,
 		},
 		{
-			title: t("pages.infrastructure.charts.labels.cpu"),
+			title: t("common.charts.labels.cpuUsage"),
 			type: "cpu",
 			dataKeys: ["avgCpuUsage"],
 			strokeColor: theme.palette.success.main,

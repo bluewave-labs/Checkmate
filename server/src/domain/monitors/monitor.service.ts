@@ -8,9 +8,16 @@ import type {
 	GamesMap,
 	GroupedGeoCheckResult,
 	DockerDetailsResult,
+	DockerContainerDetailsResult,
 } from "@/domain/monitors/monitor.type.js";
 import { supportsGeoCheck, supportsUptimeDetails } from "@/domain/monitors/monitor.type.js";
-import type { UptimeChecksResult, HardwareChecksResult, PageSpeedChecksResult, DockerChecksResult } from "@/domain/checks/check.type.js";
+import type {
+	UptimeChecksResult,
+	HardwareChecksResult,
+	PageSpeedChecksResult,
+	DockerChecksResult,
+	DockerContainerStatsBucket,
+} from "@/domain/checks/check.type.js";
 import type { GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
 import type { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
 import type { IGeoChecksRepository } from "@/domain/geo-checks/geo-check.repository.interface.js";
@@ -31,6 +38,24 @@ const isUptimeChecksResult = (
 	result: UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult | DockerChecksResult
 ): result is UptimeChecksResult => supportsUptimeDetails(result.monitorType);
 
+// Docker's RestartCount is cumulative and resets to 0 when a container is recreated, so restarts in the
+// date range are recovered from bucket min/max deltas; a drop between buckets means a recreate.
+const computeRestartsInRange = (aggregate: DockerContainerStatsBucket[]): number => {
+	let restarts = 0;
+	let prevMax: number | null = null;
+	for (const bucket of aggregate) {
+		const { minRestartCount: min, maxRestartCount: max } = bucket;
+		if (min === null || max === null) continue;
+		restarts += Math.max(0, max - min);
+		if (prevMax !== null) {
+			const delta = min - prevMax;
+			restarts += delta >= 0 ? delta : min + 1;
+		}
+		prevMax = max;
+	}
+	return restarts;
+};
+
 export interface IMonitorService {
 	// create
 	createMonitor(teamId: string, userId: string, body: Partial<Monitor>): Promise<void>;
@@ -42,6 +67,12 @@ export interface IMonitorService {
 	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<HardwareDetailsResult>;
 	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<PageSpeedDetailsResult>;
 	getDockerDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<DockerDetailsResult>;
+	getDockerContainerByName(args: {
+		teamId: string;
+		monitorId: string;
+		containerName: string;
+		dateRange: DateRange;
+	}): Promise<DockerContainerDetailsResult>;
 	getGeoChecksByMonitorId(args: {
 		teamId: string;
 		monitorId: string;
@@ -320,6 +351,37 @@ export class MonitorService implements IMonitorService {
 				latest: checksData.latest,
 			},
 			monitorStats,
+		};
+	};
+
+	getDockerContainerByName = async ({
+		teamId,
+		monitorId,
+		containerName,
+		dateRange,
+	}: {
+		teamId: string;
+		monitorId: string;
+		containerName: string;
+		dateRange: DateRange;
+	}): Promise<DockerContainerDetailsResult> => {
+		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
+		if (!monitor) {
+			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
+		}
+		if (monitor.type !== "docker") {
+			throw new AppError({ message: `${monitor.type} monitors are not supported for docker container details`, status: 400 });
+		}
+
+		const { aggregate, latest } = await this.checksRepository.findDockerContainerChecks(monitor.id, containerName, dateRange);
+
+		return {
+			monitor,
+			stats: {
+				aggregate,
+				latest,
+				restartsInRange: computeRestartsInRange(aggregate),
+			},
 		};
 	};
 

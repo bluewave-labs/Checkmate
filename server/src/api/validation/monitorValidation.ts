@@ -13,7 +13,7 @@ import {
 	ProxyModes,
 } from "@/domain/monitors/monitor.type.js";
 import { DateRanges, SortOrders } from "@/types/query.js";
-import { DockerContainerStates, DockerHealthStatuses } from "@/types/network.js";
+import { DockerContainerStates, DockerHealthStatuses, DockerPortProtocols } from "@/types/network.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
@@ -326,6 +326,12 @@ export const getHardwareDetailsByIdQueryValidation = z.object({
 export const getDockerDetailsByIdParamValidation = z.object({ monitorId: z.string().min(1, "Monitor ID is required") });
 export const getDockerDetailsByIdQueryValidation = z.object({ dateRange: z.enum(DateRanges).optional() });
 
+export const getDockerContainerNameParamValidation = z.object({
+	monitorId: z.string().min(1, "Monitor ID is required"),
+	containerName: z.string().min(1, "Container name is required"),
+});
+export const getDockerContainerByNameQueryValidation = z.object({ dateRange: z.enum(DateRanges).optional() });
+
 // Canonical monitor shape returned by /monitors endpoints. Keep aligned with
 // what the controllers actually serialize.
 export const monitorResponseSchema = z
@@ -424,6 +430,23 @@ export const uptimeDetailsResponseSchema = z.object({
 	monitorStats: monitorStatsResponseSchema.nullable(),
 });
 
+// Keep aligned with DockerContainerPort / DockerContainerMount in types/network.ts.
+export const dockerContainerPortResponseSchema = z.object({
+	privatePort: z.number(),
+	protocol: z.enum(DockerPortProtocols),
+	publicPort: z.number().optional(),
+	hostIp: z.string().optional(),
+});
+
+export const dockerContainerMountResponseSchema = z.object({
+	type: z.string(),
+	name: z.string().optional(),
+	source: z.string(),
+	destination: z.string(),
+	mode: z.string(),
+	rw: z.boolean(),
+});
+
 // Keep aligned with DockerContainerInfo / DockerContainerSummary in types/network.ts.
 export const dockerContainerResponseSchema = z.object({
 	id: z.string(),
@@ -438,6 +461,8 @@ export const dockerContainerResponseSchema = z.object({
 	memoryPct: z.number().optional(),
 	restartCount: z.number().optional(),
 	startedAt: z.string().optional(),
+	ports: z.array(dockerContainerPortResponseSchema).optional(),
+	mounts: z.array(dockerContainerMountResponseSchema).optional(),
 });
 
 export const containerSummaryResponseSchema = z.object({
@@ -477,4 +502,30 @@ export const dockerDetailsResponseSchema = z.object({
 			.nullable(),
 	}),
 	monitorStats: monitorStatsResponseSchema.nullable(),
+});
+
+// Keep aligned with DockerContainerStatsBucket in domain/checks/check.type.ts.
+export const dockerContainerStatsBucketResponseSchema = z.object({
+	_id: z.string(),
+	avgCpuPct: z.number().nullable(),
+	avgMemoryUsedBytes: z.number().nullable(),
+	avgMemoryPct: z.number().nullable(),
+	minRestartCount: z.number().nullable(),
+	maxRestartCount: z.number().nullable(),
+});
+
+// Response of GET /monitors/docker/details/{monitorId}/containers/{containerName}. Keep
+// aligned with DockerContainerDetailsResult in domain/monitors/monitor.type.ts.
+export const dockerContainerDetailsResponseSchema = z.object({
+	monitor: monitorResponseSchema.omit({ _id: true }).extend({ id: z.string() }),
+	stats: z.object({
+		aggregate: z.array(dockerContainerStatsBucketResponseSchema),
+		restartsInRange: z.number(),
+		latest: z
+			.object({
+				container: dockerContainerResponseSchema,
+				checkedAt: z.string(),
+			})
+			.nullable(),
+	}),
 });

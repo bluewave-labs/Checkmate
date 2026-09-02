@@ -18,7 +18,10 @@ import {
 	getHardwareDetailsByIdQueryValidation,
 	getDockerDetailsByIdParamValidation,
 	getDockerDetailsByIdQueryValidation,
+	getDockerContainerNameParamValidation,
+	getDockerContainerByNameQueryValidation,
 	dockerDetailsResponseSchema,
+	dockerContainerDetailsResponseSchema,
 	monitorResponseSchema,
 	uptimeDetailsResponseSchema,
 } from "@/api/validation/monitorValidation.js";
@@ -116,6 +119,16 @@ registry.registerPath({
 	security: bearer,
 	request: { params: getDockerDetailsByIdParamValidation, query: getDockerDetailsByIdQueryValidation },
 	responses: { "200": okJson(dockerDetailsResponseSchema), ...standardErrors },
+});
+
+registry.registerPath({
+	method: "get",
+	path: "/monitors/docker/details/{monitorId}/containers/{containerName}",
+	tags,
+	summary: "Get details for one container on a Docker host monitor",
+	security: bearer,
+	request: { params: getDockerContainerNameParamValidation, query: getDockerContainerByNameQueryValidation },
+	responses: { "200": okJson(dockerContainerDetailsResponseSchema), ...standardErrors },
 });
 
 registry.registerPath({

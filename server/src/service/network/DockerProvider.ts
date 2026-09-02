@@ -1,11 +1,15 @@
 import { IStatusProvider } from "@/service/network/IStatusProvider.js";
 import {
 	DockerContainerInfo,
+	DockerContainerMount,
+	DockerContainerPort,
 	DockerContainerState,
 	DockerContainerStates,
 	DockerContainerSummary,
 	DockerHealthStatus,
 	DockerHealthStatuses,
+	DockerPortProtocol,
+	DockerPortProtocols,
 	DockerStatusPayload,
 	MonitorStatusResponse,
 } from "@/types/network.js";
@@ -135,6 +139,8 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 			info.restartCount = inspectResult.value.RestartCount;
 			info.startedAt = inspectResult.value.State?.StartedAt;
 			info.health = this.toHealthStatus(inspectResult.value.State?.Health?.Status);
+			info.ports = this.toPorts(inspectResult.value.NetworkSettings?.Ports);
+			info.mounts = this.toMounts(inspectResult.value.Mounts);
 		} else {
 			this.logger.warn({
 				message: `Failed to inspect container ${info.name}`,
@@ -150,6 +156,46 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 		}
 
 		return info;
+	}
+
+	private toPortProtocol(protocol: string): DockerPortProtocol {
+		return (DockerPortProtocols as readonly string[]).includes(protocol) ? (protocol as DockerPortProtocol) : "tcp";
+	}
+
+	private toPorts(ports: Dockerode.ContainerInspectInfo["NetworkSettings"]["Ports"] | undefined): DockerContainerPort[] {
+		const result: DockerContainerPort[] = [];
+		for (const [portAndProtocol, bindings] of Object.entries(ports ?? {})) {
+			const [portString, protocolString = ""] = portAndProtocol.split("/");
+			const privatePort = Number(portString);
+			if (!Number.isInteger(privatePort)) continue;
+			const protocol = this.toPortProtocol(protocolString);
+			// Exposed but unpublished ports have no bindings
+			if (!bindings || bindings.length === 0) {
+				result.push({ privatePort, protocol });
+				continue;
+			}
+			for (const binding of bindings) {
+				const publicPort = Number(binding.HostPort);
+				result.push({
+					privatePort,
+					protocol,
+					publicPort: Number.isInteger(publicPort) ? publicPort : undefined,
+					hostIp: binding.HostIp || undefined,
+				});
+			}
+		}
+		return result;
+	}
+
+	private toMounts(mounts: Dockerode.ContainerInspectInfo["Mounts"] | undefined): DockerContainerMount[] {
+		return (mounts ?? []).map((mount) => ({
+			type: mount.Type ?? "",
+			name: mount.Name,
+			source: mount.Source ?? "",
+			destination: mount.Destination ?? "",
+			mode: mount.Mode ?? "",
+			rw: mount.RW ?? true,
+		}));
 	}
 
 	handle = async (monitor: Monitor): Promise<MonitorStatusResponse<DockerStatusPayload>> => {

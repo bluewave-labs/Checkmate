@@ -15,11 +15,15 @@ import type { DockerContainerInfo } from "@/Types/Check";
 import { formatPercentage } from "@/Utils/FormatUtils";
 
 interface DockerContainersTableProps {
+	monitorId: string | undefined;
 	containers: DockerContainerInfo[];
 	onRowClick?: (container: DockerContainerInfo) => void;
 }
 
-export const DockerContainersTable = ({ containers }: DockerContainersTableProps) => {
+export const DockerContainersTable = ({
+	monitorId,
+	containers,
+}: DockerContainersTableProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
@@ -64,7 +68,7 @@ export const DockerContainersTable = ({ containers }: DockerContainersTableProps
 			},
 			{
 				id: "health",
-				content: t("pages.docker.host.table.headers.health"),
+				content: t("common.labels.health"),
 				render: (row) => {
 					return <Typography>{row.health}</Typography>;
 				},
@@ -85,7 +89,7 @@ export const DockerContainersTable = ({ containers }: DockerContainersTableProps
 			},
 			{
 				id: "restarts",
-				content: t("pages.docker.host.table.headers.restarts"),
+				content: t("common.labels.restarts"),
 				render: (row) => {
 					return <Typography>{row.restartCount}</Typography>;
 				},
@@ -100,14 +104,13 @@ export const DockerContainersTable = ({ containers }: DockerContainersTableProps
 		headers = headers.filter((h) => h.id !== "histogram");
 	}
 
-	console.log(JSON.stringify(containers, null, 2));
 	return (
 		<Box>
 			<Table
 				headers={headers}
 				data={containers}
 				onRowClick={(row) => {
-					navigate(`/docker/container/${row.id}`);
+					navigate(`/docker/host/${monitorId}/container/${row.name}`);
 				}}
 				// getRowSx={(row) => ({
 				// 	backgroundColor: isRowSelected(row.id)

@@ -1,4 +1,4 @@
-import type { CheckSnapshot, DockerStats } from "@/domain/checks/check.type.js";
+import type { CheckSnapshot, DockerContainerStats, DockerStats } from "@/domain/checks/check.type.js";
 export type { CheckSnapshot } from "@/domain/checks/check.type.js";
 import type { GeoContinent, GroupedGeoCheck } from "@/domain/geo-checks/geo-check.type.js";
 export type { GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
@@ -158,6 +158,11 @@ export interface DockerDetailsResult {
 	monitor: Monitor;
 	stats: DockerStats;
 	monitorStats: MonitorStats | null;
+}
+
+export interface DockerContainerDetailsResult {
+	monitor: Monitor;
+	stats: DockerContainerStats;
 }
 
 export interface PageSpeedDetailsResult {

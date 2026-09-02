@@ -23,7 +23,7 @@ import InfrastructureDetails from "@/Pages/Infrastructure/Details";
 // Docker
 import Docker from "@/Pages/Docker/Monitors";
 import DockerHostDetails from "@/Pages/Docker/HostDetails";
-import DockerDetails from "@/Pages/Docker/Details";
+import DockerDetails from "@/Pages/Docker/ContainerDetails";
 
 // Checks
 import Checks from "@/Pages/Checks";
@@ -157,7 +157,7 @@ const Routes = () => {
 					element={<CreateMonitor />}
 				/>
 				<Route
-					path="docker/:monitorId"
+					path="docker/host/:monitorId/container/:containerName"
 					element={<DockerDetails />}
 				/>
 				<Route

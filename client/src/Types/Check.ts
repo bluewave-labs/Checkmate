@@ -139,11 +139,28 @@ export const DockerContainerStates = [
 ] as const;
 export type DockerContainerState = (typeof DockerContainerStates)[number];
 
-// Mirrors DockerHealthStatuses in server/src/types/network.ts.
 export const DockerHealthStatuses = ["healthy", "unhealthy", "starting", "none"] as const;
 export type DockerHealthStatus = (typeof DockerHealthStatuses)[number];
 
-// Mirrors DockerContainerInfo in server/src/types/network.ts.
+export const DockerPortProtocols = ["tcp", "udp", "sctp"] as const;
+export type DockerPortProtocol = (typeof DockerPortProtocols)[number];
+
+export interface DockerContainerPort {
+	privatePort: number;
+	protocol: DockerPortProtocol;
+	publicPort?: number;
+	hostIp?: string;
+}
+
+export interface DockerContainerMount {
+	type: string;
+	name?: string;
+	source: string;
+	destination: string;
+	mode: string;
+	rw: boolean;
+}
+
 export interface DockerContainerInfo {
 	id: string;
 	name: string;
@@ -151,12 +168,14 @@ export interface DockerContainerInfo {
 	state: DockerContainerState;
 	status: string;
 	health: DockerHealthStatus;
-	cpuPct?: number; // fraction of one core; exceeds 1 when using multiple cores
+	cpuPct?: number;
 	memoryUsedBytes?: number;
 	memoryLimitBytes?: number;
-	memoryPct?: number; // 0-1 fraction of the memory limit
+	memoryPct?: number;
 	restartCount?: number;
 	startedAt?: string;
+	ports?: DockerContainerPort[];
+	mounts?: DockerContainerMount[];
 }
 
 export interface Check {

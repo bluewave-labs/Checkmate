@@ -123,6 +123,27 @@ export interface DockerContainerInfo {
 	memoryPct?: number; // 0-1 fraction of the memory limit
 	restartCount?: number;
 	startedAt?: string; // ISO date
+	ports?: DockerContainerPort[];
+	mounts?: DockerContainerMount[];
+}
+
+export const DockerPortProtocols = ["tcp", "udp", "sctp"] as const;
+export type DockerPortProtocol = (typeof DockerPortProtocols)[number];
+
+export interface DockerContainerPort {
+	privatePort: number;
+	protocol: DockerPortProtocol;
+	publicPort?: number;
+	hostIp?: string;
+}
+
+export interface DockerContainerMount {
+	type: string; // open set: bind, volume, tmpfs, image, npipe, cluster, …
+	name?: string;
+	source: string;
+	destination: string;
+	mode: string;
+	rw: boolean;
 }
 
 export interface DockerStatusPayload {
