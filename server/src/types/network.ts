@@ -103,6 +103,20 @@ export type DockerContainerState = (typeof DockerContainerStates)[number];
 export const DockerHealthStatuses = ["healthy", "unhealthy", "starting", "none"] as const;
 export type DockerHealthStatus = (typeof DockerHealthStatuses)[number];
 
+export const DockerLogStreams = ["stdout", "stderr"] as const;
+export type DockerLogStream = (typeof DockerLogStreams)[number];
+export interface DockerLogLine {
+	ts: string;
+	stream: DockerLogStream;
+	text: string;
+}
+
+export interface DockerContainerLogs {
+	containerId: string;
+	containerName: string;
+	lines: DockerLogLine[];
+}
+
 export interface DockerContainerSummary {
 	total: number;
 	running: number;
@@ -149,6 +163,7 @@ export interface DockerContainerMount {
 export interface DockerStatusPayload {
 	containers: DockerContainerInfo[];
 	summary: DockerContainerSummary;
+	logs?: DockerContainerLogs[];
 }
 
 export interface PortStatusPayload {
