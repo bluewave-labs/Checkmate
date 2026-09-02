@@ -1,4 +1,6 @@
 import { IStatusProvider } from "@/service/network/IStatusProvider.js";
+import { DockerStatusPayload, MonitorStatusResponse } from "@/types/network.js";
+
 import {
 	DockerContainerInfo,
 	DockerContainerMount,
@@ -10,9 +12,7 @@ import {
 	DockerHealthStatuses,
 	DockerPortProtocol,
 	DockerPortProtocols,
-	DockerStatusPayload,
-	MonitorStatusResponse,
-} from "@/types/network.js";
+} from "@/domain/docker/docker.type.js";
 import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";

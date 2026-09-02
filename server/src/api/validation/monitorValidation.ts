@@ -13,7 +13,7 @@ import {
 	ProxyModes,
 } from "@/domain/monitors/monitor.type.js";
 import { DateRanges, SortOrders } from "@/types/query.js";
-import { DockerContainerStates, DockerHealthStatuses, DockerPortProtocols } from "@/types/network.js";
+import { DockerContainerStates, DockerHealthStatuses, DockerPortProtocols } from "@/domain/docker/docker.type.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 

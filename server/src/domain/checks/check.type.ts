@@ -1,5 +1,5 @@
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
-import { DockerContainerInfo, DockerContainerSummary } from "@/types/network.js";
+import { DockerContainerInfo, DockerContainerSummary } from "@/domain/docker/docker.type.js";
 import type { Response } from "got";
 
 export const CHECK_TTL_SENTINEL = 366;
