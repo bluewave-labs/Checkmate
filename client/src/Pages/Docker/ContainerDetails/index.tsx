@@ -57,10 +57,7 @@ const DockerDetailsPage = ({ open = "overview" }: DockerContainerDetailsProps) =
 				name={name}
 				image={image}
 			/>
-			<DockerContainerStatusBoxes
-				container={container}
-				monitor={monitor}
-			/>
+			<DockerContainerStatusBoxes container={container} />
 			<HeaderTimeRange
 				dateRange={dateRange}
 				setDateRange={setDateRange}
