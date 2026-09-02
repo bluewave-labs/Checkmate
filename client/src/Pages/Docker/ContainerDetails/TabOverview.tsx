@@ -1,9 +1,10 @@
 // Components
 import Grid from "@mui/material/Grid";
+import Stack from "@mui/material/Stack";
 import { HistogramDockerContainer } from "@/Components/monitors/charts/HistogramDockerContainer";
 
 // Hooks
-import { useTheme } from "@mui/material";
+import { Typography, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
@@ -11,9 +12,11 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import type { Theme } from "@mui/material";
 import type { TFunction } from "i18next";
 import type { DockerContainerStats } from "@/Types/Monitor";
-import { LAYOUT } from "@/Utils/Theme/constants";
+import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 import { formatPercentage } from "@/Utils/FormatUtils";
 import prettyBytes from "pretty-bytes";
+import { BaseBox } from "@/Components/design-elements";
+import { dedupeDockerPorts, getDockerMountLabel } from "@/Utils/MonitorUtils";
 
 const getChartConfigs = (theme: Theme, t: TFunction, stats: DockerContainerStats) => [
 	{
@@ -35,6 +38,8 @@ export const TabOverview = ({ stats }: { stats: DockerContainerStats }) => {
 	const { t } = useTranslation();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 
+	const { ports, mounts } = stats?.latest?.container ?? {};
+	const dedupedPorts = dedupeDockerPorts(ports ?? []);
 	return (
 		<Grid
 			container
@@ -57,6 +62,52 @@ export const TabOverview = ({ stats }: { stats: DockerContainerStats }) => {
 					</Grid>
 				);
 			})}
+			<Grid size={isSmall ? 12 : 6}>
+				<BaseBox
+					padding={LAYOUT.MD}
+					minHeight={200}
+				>
+					<Typography
+						variant="eyebrow"
+						color={theme.palette.text.secondary}
+						textTransform={"uppercase"}
+					>
+						Ports
+					</Typography>
+					<Stack>
+						{dedupedPorts?.map((port) => {
+							return (
+								<Typography
+									key={`${port.publicPort}/${port.privatePort}`}
+								>{`${port.hostIp}:${port.publicPort} -> ${port.privatePort}/${port.protocol}`}</Typography>
+							);
+						})}
+					</Stack>
+				</BaseBox>
+			</Grid>
+			<Grid size={isSmall ? 12 : 6}>
+				<BaseBox
+					padding={LAYOUT.MD}
+					minHeight={200}
+				>
+					<Typography
+						variant="eyebrow"
+						color={theme.palette.text.secondary}
+						textTransform={"uppercase"}
+					>
+						Volumes
+					</Typography>
+					<Stack>
+						{mounts?.map((mount) => {
+							return (
+								<Typography key={`${mount.source}/${mount.destination}`}>
+									{`${getDockerMountLabel(mount)} -> ${mount.destination}`}
+								</Typography>
+							);
+						})}
+					</Stack>
+				</BaseBox>
+			</Grid>
 		</Grid>
 	);
 };

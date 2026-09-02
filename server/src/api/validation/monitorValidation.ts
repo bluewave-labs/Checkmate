@@ -13,7 +13,7 @@ import {
 	ProxyModes,
 } from "@/domain/monitors/monitor.type.js";
 import { DateRanges, SortOrders } from "@/types/query.js";
-import { DockerContainerStates, DockerHealthStatuses } from "@/types/network.js";
+import { DockerContainerStates, DockerHealthStatuses, DockerPortProtocols } from "@/types/network.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
@@ -430,6 +430,23 @@ export const uptimeDetailsResponseSchema = z.object({
 	monitorStats: monitorStatsResponseSchema.nullable(),
 });
 
+// Keep aligned with DockerContainerPort / DockerContainerMount in types/network.ts.
+export const dockerContainerPortResponseSchema = z.object({
+	privatePort: z.number(),
+	protocol: z.enum(DockerPortProtocols),
+	publicPort: z.number().optional(),
+	hostIp: z.string().optional(),
+});
+
+export const dockerContainerMountResponseSchema = z.object({
+	type: z.string(),
+	name: z.string().optional(),
+	source: z.string(),
+	destination: z.string(),
+	mode: z.string(),
+	rw: z.boolean(),
+});
+
 // Keep aligned with DockerContainerInfo / DockerContainerSummary in types/network.ts.
 export const dockerContainerResponseSchema = z.object({
 	id: z.string(),
@@ -444,6 +461,8 @@ export const dockerContainerResponseSchema = z.object({
 	memoryPct: z.number().optional(),
 	restartCount: z.number().optional(),
 	startedAt: z.string().optional(),
+	ports: z.array(dockerContainerPortResponseSchema).optional(),
+	mounts: z.array(dockerContainerMountResponseSchema).optional(),
 });
 
 export const containerSummaryResponseSchema = z.object({

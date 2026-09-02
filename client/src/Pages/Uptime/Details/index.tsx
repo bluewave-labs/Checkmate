@@ -31,6 +31,7 @@ import type { RootState } from "@/Types/state";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import { t } from "i18next";
 import { Typography } from "@mui/material";
+import type { DateRange } from "@/Types/Query";
 
 const certificateDateFormat = "MMM D, YYYY h A";
 
@@ -53,7 +54,7 @@ const UptimeDetailsPage = () => {
 	const [rowsPerPage, setRowsPerPage] = useState<number>(5);
 	const [geoPage, setGeoPage] = useState<number>(0);
 	const [geoRowsPerPage, setGeoRowsPerPage] = useState<number>(5);
-	const [dateRange, setDateRange] = useState<string>("recent");
+	const [dateRange, setDateRange] = useState<DateRange>("recent");
 	const [selectedLocation, setSelectedLocation] = useState<GeoContinent>("NA");
 
 	const monitorDetailsUrl = useMemo(() => {

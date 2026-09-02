@@ -375,6 +375,89 @@ describe("DockerProvider", () => {
 		});
 	});
 
+	// ── Ports and mounts ─────────────────────────────────────────────────
+
+	describe("ports and mounts", () => {
+		it("maps published and unpublished ports and mounts from inspect", async () => {
+			const inspect = jest.fn().mockResolvedValue(
+				makeInspect({
+					NetworkSettings: {
+						Ports: {
+							"80/tcp": [{ HostIp: "0.0.0.0", HostPort: "8080" }],
+							"443/tcp": null,
+						},
+					},
+					Mounts: [
+						{
+							Type: "volume",
+							Name: "mongo_data",
+							Source: "/var/lib/docker/volumes/mongo_data/_data",
+							Destination: "/data/db",
+							Mode: "z",
+							RW: true,
+						},
+						{ Type: "bind", Source: "/srv/config", Destination: "/etc/app", Mode: "ro", RW: false },
+					],
+				})
+			);
+			const { provider } = setup({ inspect });
+
+			const result = await provider.handle(makeMonitor());
+
+			const container = result.payload?.containers[0];
+			expect(container?.ports).toEqual([
+				{ privatePort: 80, protocol: "tcp", publicPort: 8080, hostIp: "0.0.0.0" },
+				{ privatePort: 443, protocol: "tcp" },
+			]);
+			expect(container?.mounts).toEqual([
+				{ type: "volume", name: "mongo_data", source: "/var/lib/docker/volumes/mongo_data/_data", destination: "/data/db", mode: "z", rw: true },
+				{ type: "bind", name: undefined, source: "/srv/config", destination: "/etc/app", mode: "ro", rw: false },
+			]);
+		});
+
+		it("emits one port entry per host binding", async () => {
+			const inspect = jest.fn().mockResolvedValue(
+				makeInspect({
+					NetworkSettings: {
+						Ports: {
+							"80/tcp": [
+								{ HostIp: "0.0.0.0", HostPort: "8080" },
+								{ HostIp: "::", HostPort: "8080" },
+							],
+						},
+					},
+				})
+			);
+			const { provider } = setup({ inspect });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]?.ports).toEqual([
+				{ privatePort: 80, protocol: "tcp", publicPort: 8080, hostIp: "0.0.0.0" },
+				{ privatePort: 80, protocol: "tcp", publicPort: 8080, hostIp: "::" },
+			]);
+		});
+
+		it("maps missing ports and mounts to empty arrays", async () => {
+			const { provider } = setup();
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]?.ports).toEqual([]);
+			expect(result.payload?.containers[0]?.mounts).toEqual([]);
+		});
+
+		it("leaves ports and mounts undefined when inspect fails", async () => {
+			const inspect = jest.fn().mockRejectedValue(new Error("inspect failed"));
+			const { provider } = setup({ inspect });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]?.ports).toBeUndefined();
+			expect(result.payload?.containers[0]?.mounts).toBeUndefined();
+		});
+	});
+
 	// ── Outer error handling ─────────────────────────────────────────────
 
 	describe("outer error handling", () => {

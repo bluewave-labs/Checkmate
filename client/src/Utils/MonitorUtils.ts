@@ -1,7 +1,11 @@
 import type { MonitorStatus, MonitorType } from "@/Types/Monitor";
 import type { PaletteKey } from "@/Utils/Theme/Theme";
 import type { ValueType } from "@/Components/design-elements/StatusLabel";
-import type { DockerContainerState } from "@/Types/Check";
+import type {
+	DockerContainerMount,
+	DockerContainerPort,
+	DockerContainerState,
+} from "@/Types/Check";
 
 export const getMonitorPath = (type: MonitorType): string => {
 	const pathMap: Record<MonitorType, string> = {
@@ -110,4 +114,33 @@ export const formatUrl = (url: string, maxLength: number = 55) => {
 	return strippedUrl.length > maxLength
 		? `${strippedUrl.slice(0, maxLength)}…`
 		: strippedUrl;
+};
+
+export const dedupeDockerPorts = (
+	ports: DockerContainerPort[]
+): DockerContainerPort[] => {
+	return ports.filter((port) => {
+		// Discard ipv6 wildcards
+		if (port.hostIp !== "::") return port;
+
+		const isDuplicate = ports.some((otherPort) => {
+			if (otherPort.hostIp !== "0.0.0.0") return false;
+
+			return (
+				otherPort.privatePort === port.privatePort &&
+				otherPort.protocol === port.protocol &&
+				otherPort.publicPort === port.publicPort
+			);
+		});
+		return !isDuplicate;
+	});
+};
+
+const isAnonymousVolumeName = (name: string): boolean => /^[0-9a-f]{64}$/.test(name);
+
+export const getDockerMountLabel = (mount: DockerContainerMount) => {
+	if (mount.type === "volume" && mount.name)
+		return isAnonymousVolumeName(mount.name) ? mount.name.slice(0, 12) : mount.name;
+	if (mount.source) return mount.source;
+	return mount.type;
 };

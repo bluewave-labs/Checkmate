@@ -7295,6 +7295,55 @@
 																			},
 																			"startedAt": {
 																				"type": "string"
+																			},
+																			"ports": {
+																				"type": "array",
+																				"items": {
+																					"type": "object",
+																					"properties": {
+																						"privatePort": {
+																							"type": "number"
+																						},
+																						"protocol": {
+																							"type": "string",
+																							"enum": ["tcp", "udp", "sctp"]
+																						},
+																						"publicPort": {
+																							"type": "number"
+																						},
+																						"hostIp": {
+																							"type": "string"
+																						}
+																					},
+																					"required": ["privatePort", "protocol"]
+																				}
+																			},
+																			"mounts": {
+																				"type": "array",
+																				"items": {
+																					"type": "object",
+																					"properties": {
+																						"type": {
+																							"type": "string"
+																						},
+																						"name": {
+																							"type": "string"
+																						},
+																						"source": {
+																							"type": "string"
+																						},
+																						"destination": {
+																							"type": "string"
+																						},
+																						"mode": {
+																							"type": "string"
+																						},
+																						"rw": {
+																							"type": "boolean"
+																						}
+																					},
+																					"required": ["type", "source", "destination", "mode", "rw"]
+																				}
 																			}
 																		},
 																		"required": ["id", "name", "image", "state", "status", "health"]
@@ -7792,6 +7841,55 @@
 																		},
 																		"startedAt": {
 																			"type": "string"
+																		},
+																		"ports": {
+																			"type": "array",
+																			"items": {
+																				"type": "object",
+																				"properties": {
+																					"privatePort": {
+																						"type": "number"
+																					},
+																					"protocol": {
+																						"type": "string",
+																						"enum": ["tcp", "udp", "sctp"]
+																					},
+																					"publicPort": {
+																						"type": "number"
+																					},
+																					"hostIp": {
+																						"type": "string"
+																					}
+																				},
+																				"required": ["privatePort", "protocol"]
+																			}
+																		},
+																		"mounts": {
+																			"type": "array",
+																			"items": {
+																				"type": "object",
+																				"properties": {
+																					"type": {
+																						"type": "string"
+																					},
+																					"name": {
+																						"type": "string"
+																					},
+																					"source": {
+																						"type": "string"
+																					},
+																					"destination": {
+																						"type": "string"
+																					},
+																					"mode": {
+																						"type": "string"
+																					},
+																					"rw": {
+																						"type": "boolean"
+																					}
+																				},
+																				"required": ["type", "source", "destination", "mode", "rw"]
+																			}
 																		}
 																	},
 																	"required": ["id", "name", "image", "state", "status", "health"]

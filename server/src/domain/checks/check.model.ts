@@ -14,7 +14,15 @@ import type {
 	GotTimings,
 	ILighthouseAudit,
 } from "@/domain/checks/check.type.js";
-import { DockerContainerInfo, DockerContainerStates, DockerContainerSummary, DockerHealthStatuses } from "@/types/network.js";
+import {
+	DockerContainerInfo,
+	DockerContainerMount,
+	DockerContainerPort,
+	DockerContainerStates,
+	DockerContainerSummary,
+	DockerHealthStatuses,
+	DockerPortProtocols,
+} from "@/types/network.js";
 
 type CheckMetadataDocument = Omit<CheckMetadata, "monitorId" | "teamId"> & {
 	monitorId: Types.ObjectId;
@@ -173,6 +181,28 @@ const auditsSchema = new Schema<CheckAudits>(
 	{ _id: false }
 );
 
+const dockerContainerPortSchema = new Schema<DockerContainerPort>(
+	{
+		privatePort: { type: Number, required: true },
+		protocol: { type: String, enum: DockerPortProtocols, default: "tcp" },
+		publicPort: { type: Number },
+		hostIp: { type: String },
+	},
+	{ _id: false }
+);
+
+const dockerContainerMountSchema = new Schema<DockerContainerMount>(
+	{
+		type: { type: String, default: "" },
+		name: { type: String },
+		source: { type: String, default: "" },
+		destination: { type: String, default: "" },
+		mode: { type: String, default: "" },
+		rw: { type: Boolean, default: true },
+	},
+	{ _id: false }
+);
+
 const dockerContainerSchema = new Schema<DockerContainerInfo>(
 	{
 		id: { type: String, required: true },
@@ -187,6 +217,8 @@ const dockerContainerSchema = new Schema<DockerContainerInfo>(
 		memoryPct: { type: Number },
 		restartCount: { type: Number },
 		startedAt: { type: String },
+		ports: { type: [dockerContainerPortSchema], default: undefined },
+		mounts: { type: [dockerContainerMountSchema], default: undefined },
 	},
 	{ _id: false }
 );
