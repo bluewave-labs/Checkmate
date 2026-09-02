@@ -3,7 +3,6 @@ import {
 	Pagination,
 	StatusLabel,
 	StatusCodeLabel,
-	CopyableText,
 } from "@/Components/design-elements";
 import Box from "@mui/material/Box";
 import type { Header } from "@/Components/design-elements";
@@ -53,7 +52,7 @@ export const ChecksTable = ({
 			id: "message",
 			content: t("common.table.headers.message"),
 			render: (row) => {
-				return <CopyableText value={row.message} />;
+				return row.message || "N/A";
 			},
 		},
 		{

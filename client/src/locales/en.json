@@ -14,10 +14,6 @@
 			}
 		},
 		"appName": "Checkmate",
-		"copy": "Copy",
-		"copied": "Copied",
-		"copyMessage": "Copy message",
-		"copyFailed": "Could not copy to clipboard",
 		"statusCode": {
 			"down": "Down",
 			"networkError": {
