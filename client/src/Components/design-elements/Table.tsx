@@ -82,10 +82,21 @@ export function DataTable<
 
 	// Selecting text inside a row ends in a mouseup on that row, which would
 	// otherwise navigate away and take the text with it. Ignore the click when
-	// the user has actually selected something.
-	const hasTextSelection = () => {
+	// the selection is inside the row that was clicked - a leftover selection
+	// elsewhere on the page must not swallow a legitimate click.
+	const hasTextSelectionWithin = (element: Element) => {
 		const selection = window.getSelection();
-		return Boolean(selection && !selection.isCollapsed && selection.toString().trim());
+		if (!selection || selection.isCollapsed || !selection.toString().trim()) {
+			return false;
+		}
+		return (
+			selection.anchorNode !== null &&
+			element.contains(
+				selection.anchorNode.nodeType === Node.TEXT_NODE
+					? selection.anchorNode.parentNode
+					: selection.anchorNode
+			)
+		);
 	};
 	const isInteractive = Boolean(onRowClick) || expandableRows;
 
@@ -108,8 +119,8 @@ export function DataTable<
 					keys.push(key);
 					return (
 						<Stack
-							onClick={() => {
-								if (hasTextSelection()) return;
+							onClick={(e) => {
+								if (hasTextSelectionWithin(e.currentTarget)) return;
 								if (onRowClick) onRowClick(row);
 							}}
 							spacing={theme.spacing(LAYOUT.XS)}
@@ -257,8 +268,8 @@ export function DataTable<
 										cursor: isInteractive ? "pointer" : "default",
 										...(getRowSx?.(row) as object),
 									}}
-									onClick={() => {
-										if (hasTextSelection()) return;
+									onClick={(e) => {
+										if (hasTextSelectionWithin(e.currentTarget)) return;
 										if (expandableRows) handleExpand(row);
 										else if (onRowClick) onRowClick(row);
 									}}
