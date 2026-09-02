@@ -12,7 +12,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import type { Theme } from "@mui/material";
 import type { TFunction } from "i18next";
 import type { DockerContainerStats } from "@/Types/Monitor";
-import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
+import { LAYOUT } from "@/Utils/Theme/constants";
 import { formatPercentage } from "@/Utils/FormatUtils";
 import prettyBytes from "pretty-bytes";
 import { BaseBox } from "@/Components/design-elements";

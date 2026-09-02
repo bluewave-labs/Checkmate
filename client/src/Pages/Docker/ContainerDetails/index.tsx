@@ -34,12 +34,11 @@ const DockerDetailsPage = ({ open = "overview" }: DockerContainerDetailsProps) =
 		? `/monitors/docker/details/${monitorId}/containers/${containerName}?dateRange=${dateRange}`
 		: null;
 
-	const { data: containerData, refetch: refetchContainer } =
-		useGet<DockerContainerResponse>(
-			containerDetailsUrl,
-			{},
-			{ refreshInterval: 10000, keepPreviousData: true }
-		);
+	const { data: containerData } = useGet<DockerContainerResponse>(
+		containerDetailsUrl,
+		{},
+		{ refreshInterval: 10000, keepPreviousData: true }
+	);
 
 	const monitor = containerData?.monitor;
 	if (!monitor) return null;

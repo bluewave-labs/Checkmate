@@ -2,7 +2,6 @@ import Stack from "@mui/material/Stack";
 import { StatBox } from "@/Components/design-elements";
 
 // Types
-import type { Monitor } from "@/Types/Monitor";
 
 // Hooks
 import { useTheme } from "@mui/material";
@@ -13,10 +12,8 @@ import type { DockerContainerInfo } from "@/Types/Check";
 import { formatDuration } from "@/Utils/TimeUtils";
 
 export const DockerContainerStatusBoxes = ({
-	monitor,
 	container,
 }: {
-	monitor: Monitor | undefined;
 	container: DockerContainerInfo | undefined;
 }) => {
 	const { t } = useTranslation();
