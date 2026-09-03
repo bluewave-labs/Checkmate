@@ -4,6 +4,7 @@ import type { ToggleButtonProps } from "@mui/material/ToggleButton";
 import type { ToggleButtonGroupProps } from "@mui/material/ToggleButtonGroup";
 import { useTheme } from "@mui/material/styles";
 import { alpha } from "@mui/material/styles";
+import { CONTROL_HEIGHT } from "@/Utils/Theme/constants";
 
 export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 	const theme = useTheme();
@@ -20,7 +21,7 @@ export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 			sx={{
 				px: 8,
 				textTransform: "none",
-				height: 34,
+				height: CONTROL_HEIGHT,
 				fontWeight: 400,
 				whiteSpace: "nowrap",
 				textOverflow: "ellipsis",

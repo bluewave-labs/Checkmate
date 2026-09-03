@@ -202,7 +202,24 @@ export const theme = (mode: string, palette: any) =>
 			// jumping to near-black. Focus: the brand, at 2px.
 			MuiOutlinedInput: {
 				styleOverrides: {
+					// MUI pads the inner input 8.5px top and bottom, which with an
+					// 18.7px line-height needs 35.7px - taller than the control
+					// itself, so the text was being clipped by overflow:hidden.
+					input: {
+						paddingTop: 0,
+						paddingBottom: 0,
+						height: "100%",
+					},
 					root: ({ theme }) => ({
+						// The Select renders a div rather than an input, so it needs
+						// the same treatment to sit inside the control height.
+						"& .MuiSelect-select": {
+							paddingTop: 0,
+							paddingBottom: 0,
+							display: "flex",
+							alignItems: "center",
+							minHeight: "unset",
+						},
 						"& .MuiOutlinedInput-notchedOutline": {
 							borderColor: theme.palette.divider,
 							transition: "border-color 0.15s ease",

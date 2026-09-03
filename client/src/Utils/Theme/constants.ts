@@ -18,6 +18,13 @@ export const LAYOUT = {
 	XXL: 16,
 } as const;
 
+/**
+ * Shared height for anything that can sit in a row with something else -
+ * buttons, inputs, selects, pickers, toggles, tabs, icon buttons. One number so
+ * they share a baseline instead of drifting 2px apart.
+ */
+export const CONTROL_HEIGHT = 32;
+
 export const HOVER = {
 	DARKEN: 0.06, // This is a coefficient for darkening function
 	ROW: 0.025, // Overlay alpha for hoverable rows and cards

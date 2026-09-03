@@ -5,7 +5,7 @@ import { typographyLevels } from "@/Utils/Theme/Palette";
 import { useTheme } from "@mui/material/styles";
 import Stack from "@mui/material/Stack";
 import { FieldLabel } from "./FieldLabel";
-import { LAYOUT } from "@/Utils/Theme/constants";
+import { CONTROL_HEIGHT, LAYOUT } from "@/Utils/Theme/constants";
 
 interface TextInputProps extends Omit<TextFieldProps, "label"> {
 	fieldLabel?: string;
@@ -22,7 +22,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function T
 		width: "100%",
 		"& .MuiOutlinedInput-root": {
 			borderRadius: theme.shape.borderRadius,
-			height: props.multiline ? "auto" : 34,
+			height: props.multiline ? "auto" : CONTROL_HEIGHT,
 			fontSize: typographyLevels.base,
 			overflow: "hidden",
 		},

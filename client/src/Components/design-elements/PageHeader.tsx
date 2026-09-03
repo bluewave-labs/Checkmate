@@ -6,6 +6,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { ChevronLeft, HelpCircle, FileText, Code } from "lucide-react";
+import { CONTROL_HEIGHT } from "@/Utils/Theme/constants";
 
 import type { ReactNode } from "react";
 
@@ -145,7 +146,7 @@ export const PageHeader = ({
 								alignItems: "center",
 								justifyContent: "center",
 								width: 36,
-								height: 32,
+								height: CONTROL_HEIGHT,
 								color: theme.palette.text.secondary,
 								borderRight:
 									idx < linkItems.length - 1
