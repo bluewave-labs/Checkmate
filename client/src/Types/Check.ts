@@ -1,17 +1,11 @@
+import type { MonitorType } from "@/Types/Monitor";
+
 export const CHECK_TTL_SENTINEL = 366;
 
 export interface CheckMetadata {
 	monitorId: string;
 	teamId: string;
-	type:
-		| "http"
-		| "ping"
-		| "pagespeed"
-		| "hardware"
-		| "docker"
-		| "port"
-		| "game"
-		| "unknown";
+	type: MonitorType;
 }
 
 export interface CheckCpuInfo {
@@ -238,16 +232,6 @@ export interface ChecksResponse {
 	checks: Check[];
 	checksCount: number;
 }
-
-export type MonitorType =
-	| "http"
-	| "ping"
-	| "pagespeed"
-	| "hardware"
-	| "docker"
-	| "port"
-	| "game"
-	| "unknown";
 
 export interface ChecksQueryResult {
 	checksCount: number;

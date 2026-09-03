@@ -6,6 +6,7 @@ import {
 } from "@/Components/design-elements";
 import Box from "@mui/material/Box";
 import type { Header } from "@/Components/design-elements";
+import { MonitorStatus } from "@/Types/Monitor";
 import type { FlatGeoCheck } from "@/Types/GeoCheck";
 import { useTranslation } from "react-i18next";
 import { formatDateWithTz, formatMs } from "@/Utils/TimeUtils";
@@ -35,7 +36,7 @@ export const GeoChecksTable = ({
 			id: "status",
 			content: t("common.table.headers.status"),
 			render: (row) => {
-				const status = row.status ? "up" : "down";
+				const status = row.status ? MonitorStatus.Up : MonitorStatus.Down;
 				return <StatusLabel status={status} />;
 			},
 		},

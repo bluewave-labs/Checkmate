@@ -2,6 +2,7 @@ import Stack from "@mui/material/Stack";
 import { StatBox } from "@/Components/design-elements";
 
 import { useTheme } from "@mui/material/styles";
+import { MonitorStatus } from "@/Types/Monitor";
 import type { MonitorStats, Monitor } from "@/Types/Monitor";
 import { getStatusPalette } from "@/Utils/MonitorUtils";
 import { useTranslation } from "react-i18next";
@@ -37,11 +38,11 @@ export const MonitorStatBoxes = ({
 
 	const lastCheckTime = formatDuration(timeSinceLastCheck);
 	const isActive =
-		monitor?.status === "up" ||
-		monitor?.status === "paused" ||
-		monitor?.status === "maintenance" ||
-		monitor?.status === "initializing" ||
-		monitor?.status === "breached";
+		monitor?.status === MonitorStatus.Up ||
+		monitor?.status === MonitorStatus.Paused ||
+		monitor?.status === MonitorStatus.Maintenance ||
+		monitor?.status === MonitorStatus.Initializing ||
+		monitor?.status === MonitorStatus.Breached;
 	const palette = getStatusPalette(monitor?.status);
 
 	return (

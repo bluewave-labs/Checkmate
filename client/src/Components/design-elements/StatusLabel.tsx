@@ -3,7 +3,7 @@ import { BaseBox } from "@/Components/design-elements";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 
-import type { MonitorStatus } from "@/Types/Monitor";
+import { MonitorStatus } from "@/Types/Monitor";
 import type { SxProps } from "@mui/material/styles";
 import {
 	getDockerStatePalette,
@@ -24,17 +24,17 @@ export const StatusLabel = ({ status, sx }: { status: MonitorStatus; sx?: SxProp
 	const palette = getStatusPalette(status);
 
 	const determineStatus = (status: MonitorStatus): string => {
-		if (status === "up") {
+		if (status === MonitorStatus.Up) {
 			return t("pages.common.monitors.status.up");
-		} else if (status === "down") {
+		} else if (status === MonitorStatus.Down) {
 			return t("pages.common.monitors.status.down");
-		} else if (status === "breached") {
+		} else if (status === MonitorStatus.Breached) {
 			return t("pages.common.monitors.status.breached");
-		} else if (status === "maintenance") {
+		} else if (status === MonitorStatus.Maintenance) {
 			return t("pages.common.monitors.status.maintenance");
-		} else if (status === "paused") {
+		} else if (status === MonitorStatus.Paused) {
 			return t("pages.common.monitors.status.paused");
-		} else if (status === "initializing") {
+		} else if (status === MonitorStatus.Initializing) {
 			return t("pages.common.monitors.status.initializing");
 		}
 

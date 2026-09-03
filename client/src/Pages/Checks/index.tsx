@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useGet } from "@/Hooks/UseApi";
+import { MonitorStatus } from "@/Types/Monitor";
 import type { Monitor } from "@/Types/Monitor";
 import type { ChecksSummary, ChecksResponse } from "@/Types/Check";
 import type { DateRange } from "@/Types/Query";
@@ -25,7 +26,9 @@ const Checks = () => {
 
 	const [selectedMonitor, setSelectedMonitor] = useState<string>(monitorId || "0");
 	const [dateRange, setDateRange] = useState<DateRange>("recent");
-	const [statusFilter, setStatusFilter] = useState<string>("down");
+	const [statusFilter, setStatusFilter] = useState<MonitorStatus | "all">(
+		MonitorStatus.Down
+	);
 	const [page, setPage] = useState<number>(0);
 	const [rowsPerPage, setRowsPerPage] = useState<number>(10);
 
@@ -162,8 +165,12 @@ const Checks = () => {
 						}}
 					>
 						<MenuItem value="all">{t("pages.checks.selects.status.all")}</MenuItem>
-						<MenuItem value="up">{t("pages.checks.selects.status.up")}</MenuItem>
-						<MenuItem value="down">{t("pages.checks.selects.status.down")}</MenuItem>
+						<MenuItem value={MonitorStatus.Up}>
+							{t("pages.checks.selects.status.up")}
+						</MenuItem>
+						<MenuItem value={MonitorStatus.Down}>
+							{t("pages.checks.selects.status.down")}
+						</MenuItem>
 					</Select>
 				</Stack>
 				<HeaderTimeRange

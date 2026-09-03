@@ -8,7 +8,8 @@ import {
 	ShieldAlert,
 	Wrench,
 } from "lucide-react";
-import type { Monitor, MonitorStatus } from "@/Types/Monitor";
+import { MonitorStatus } from "@/Types/Monitor";
+import type { Monitor } from "@/Types/Monitor";
 import type { StatusPageThemeTokens } from "../tokens";
 
 export type OverallTone = "up" | "warn" | "down";
@@ -57,87 +58,87 @@ export const resolveOverallStatus = (
 	const noneOf = (...statuses: MonitorStatus[]) =>
 		monitors.every((m) => !statuses.includes(m.status));
 
-	if (allOf("up")) {
+	if (allOf(MonitorStatus.Up)) {
 		return { tone: "up", message: allUpMessage, icon: <CircleCheck size={size} /> };
 	}
-	if (allOf("breached")) {
+	if (allOf(MonitorStatus.Breached)) {
 		return {
 			tone: "down",
 			message: t("pages.statusPages.statusBar.allBreached"),
 			icon: <ShieldAlert size={size} />,
 		};
 	}
-	if (allOf("maintenance")) {
+	if (allOf(MonitorStatus.Maintenance)) {
 		return {
 			tone: "warn",
 			message: t("pages.statusPages.statusBar.allMaintenance"),
 			icon: <Wrench size={size} />,
 		};
 	}
-	if (allOf("down")) {
+	if (allOf(MonitorStatus.Down)) {
 		return {
 			tone: "down",
 			message: t("pages.statusPages.statusBar.allDown"),
 			icon: <CircleX size={size} />,
 		};
 	}
-	if (allOf("paused")) {
+	if (allOf(MonitorStatus.Paused)) {
 		return {
 			tone: "warn",
 			message: t("pages.statusPages.statusBar.allPaused"),
 			icon: <PauseCircle size={size} />,
 		};
 	}
-	if (allOf("initializing")) {
+	if (allOf(MonitorStatus.Initializing)) {
 		return {
 			tone: "warn",
 			message: t("pages.statusPages.statusBar.allInitializing"),
 			icon: <Loader size={size} />,
 		};
 	}
-	if (someOf("breached") && someOf("down")) {
+	if (someOf(MonitorStatus.Breached) && someOf(MonitorStatus.Down)) {
 		return {
 			tone: "down",
 			message: t("pages.statusPages.statusBar.breachedAndDown"),
 			icon: <ShieldAlert size={size} />,
 		};
 	}
-	if (someOf("breached")) {
+	if (someOf(MonitorStatus.Breached)) {
 		return {
 			tone: "down",
 			message: t("pages.statusPages.statusBar.breached"),
 			icon: <ShieldAlert size={size} />,
 		};
 	}
-	if (someOf("maintenance") && someOf("down")) {
+	if (someOf(MonitorStatus.Maintenance) && someOf(MonitorStatus.Down)) {
 		return {
 			tone: "down",
 			message: t("pages.statusPages.statusBar.maintenanceAndDown"),
 			icon: <Wrench size={size} />,
 		};
 	}
-	if (someOf("maintenance") && noneOf("down")) {
+	if (someOf(MonitorStatus.Maintenance) && noneOf(MonitorStatus.Down)) {
 		return {
 			tone: "warn",
 			message: t("pages.statusPages.statusBar.maintenance"),
 			icon: <Wrench size={size} />,
 		};
 	}
-	if (someOf("down")) {
+	if (someOf(MonitorStatus.Down)) {
 		return {
 			tone: "warn",
 			message: t("pages.statusPages.statusBar.degraded"),
 			icon: <AlertTriangle size={size} />,
 		};
 	}
-	if (someOf("paused")) {
+	if (someOf(MonitorStatus.Paused)) {
 		return {
 			tone: "warn",
 			message: t("pages.statusPages.statusBar.partiallyPaused"),
 			icon: <PauseCircle size={size} />,
 		};
 	}
-	if (someOf("initializing")) {
+	if (someOf(MonitorStatus.Initializing)) {
 		return {
 			tone: "up",
 			message: t("pages.statusPages.statusBar.initializing"),
@@ -152,16 +153,20 @@ export const resolveOverallStatus = (
 };
 
 export const statusBadgeKey: Record<MonitorStatus, string> = {
-	up: "pages.statusPages.monitorsList.status.up",
-	down: "pages.statusPages.monitorsList.status.down",
-	breached: "pages.statusPages.monitorsList.status.breached",
-	maintenance: "pages.statusPages.monitorsList.status.maintenance",
-	paused: "pages.statusPages.monitorsList.status.paused",
-	initializing: "pages.statusPages.monitorsList.status.initializing",
+	[MonitorStatus.Up]: "pages.statusPages.monitorsList.status.up",
+	[MonitorStatus.Down]: "pages.statusPages.monitorsList.status.down",
+	[MonitorStatus.Breached]: "pages.statusPages.monitorsList.status.breached",
+	[MonitorStatus.Maintenance]: "pages.statusPages.monitorsList.status.maintenance",
+	[MonitorStatus.Paused]: "pages.statusPages.monitorsList.status.paused",
+	[MonitorStatus.Initializing]: "pages.statusPages.monitorsList.status.initializing",
 };
 
 export const monoFirstChar = (s?: string): string =>
 	(s?.trim().charAt(0) || "?").toUpperCase();
 
 export const monitorBadgeTone = (status: MonitorStatus): OverallTone =>
-	status === "up" ? "up" : status === "down" || status === "breached" ? "down" : "warn";
+	status === MonitorStatus.Up
+		? MonitorStatus.Up
+		: status === MonitorStatus.Down || status === MonitorStatus.Breached
+			? MonitorStatus.Down
+			: "warn";

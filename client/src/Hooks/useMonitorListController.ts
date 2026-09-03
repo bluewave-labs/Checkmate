@@ -4,6 +4,7 @@ import { useBulkMonitorActions } from "@/Hooks/useBulkMonitorActions";
 import useDebounce from "@/Hooks/useDebounce";
 import type { RootState } from "@/store";
 import {
+	MonitorStatus,
 	type MonitorsWithChecksResponse,
 	SelectableMonitorTypes,
 	type Monitor,
@@ -45,14 +46,14 @@ export const useMonitorListController = (config: MonitorListConfig) => {
 	// Status: pass "up"/"down" directly to the API
 	// State: "active" -> true, "paused" -> false
 	const toFilterStatus = useMemo(() => {
-		if (selectedStatus === "up") return "up";
-		if (selectedStatus === "down") return "down";
+		if (selectedStatus === MonitorStatus.Up) return MonitorStatus.Up;
+		if (selectedStatus === MonitorStatus.Down) return MonitorStatus.Down;
 		return undefined;
 	}, [selectedStatus]);
 
 	const toFilterActive = useMemo(() => {
 		if (selectedState === "active") return "true";
-		if (selectedState === "paused") return "false";
+		if (selectedState === MonitorStatus.Paused) return "false";
 		return undefined;
 	}, [selectedState]);
 

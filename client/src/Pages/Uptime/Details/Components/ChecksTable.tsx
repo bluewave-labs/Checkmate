@@ -6,6 +6,7 @@ import {
 } from "@/Components/design-elements";
 import Box from "@mui/material/Box";
 import type { Header } from "@/Components/design-elements";
+import { MonitorStatus } from "@/Types/Monitor";
 import type { Check } from "@/Types/Check";
 
 import { useNavigate } from "react-router";
@@ -38,7 +39,11 @@ export const ChecksTable = ({
 			id: "status",
 			content: t("common.table.headers.status"),
 			render: (row) => {
-				return <StatusLabel status={row.status === true ? "up" : "down"} />;
+				return (
+					<StatusLabel
+						status={row.status === true ? MonitorStatus.Up : MonitorStatus.Down}
+					/>
+				);
 			},
 		},
 		{

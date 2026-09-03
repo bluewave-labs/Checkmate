@@ -1,4 +1,5 @@
-import type { MonitorStatus, MonitorType } from "@/Types/Monitor";
+import { MonitorStatus } from "@/Types/Monitor";
+import type { MonitorType } from "@/Types/Monitor";
 import type { PaletteKey } from "@/Utils/Theme/Theme";
 import type { ValueType } from "@/Components/design-elements/StatusLabel";
 import type {
@@ -25,13 +26,13 @@ export const getMonitorPath = (type: MonitorType): string => {
 };
 
 export const getStatusPalette = (status: MonitorStatus): PaletteKey => {
-	if (status === "up") {
+	if (status === MonitorStatus.Up) {
 		return "success";
 	}
-	if (status === "down") {
+	if (status === MonitorStatus.Down) {
 		return "error";
 	}
-	if (status === "breached") {
+	if (status === MonitorStatus.Breached) {
 		return "error";
 	}
 	return "warning";
@@ -60,11 +61,11 @@ export const getDockerStatePalette = (state: DockerContainerState): PaletteKey =
 };
 
 export const getStatusColor = (status: MonitorStatus, theme: any): string => {
-	if (status === "up") {
+	if (status === MonitorStatus.Up) {
 		return theme.palette.success.light;
 	}
 
-	if (status === "down") {
+	if (status === MonitorStatus.Down) {
 		return theme.palette.error.light;
 	}
 

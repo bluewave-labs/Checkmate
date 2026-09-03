@@ -4,6 +4,7 @@ import { ColoredLabel } from "@/Components/design-elements";
 import MenuItem from "@mui/material/MenuItem";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
+import { MonitorStatus } from "@/Types/Monitor";
 import type { MonitorType } from "@/Types/Monitor";
 import type { Tag } from "@/Types/Tag";
 import { Typography, useTheme } from "@mui/material";
@@ -18,8 +19,8 @@ const typeDisplayNames: Record<string, string> = {
 	grpc: "gRPC",
 	websocket: "WebSocket",
 };
-const statuses = ["up", "down"];
-const states = ["active", "paused"];
+const statuses = [MonitorStatus.Up, MonitorStatus.Down];
+const states = ["active", MonitorStatus.Paused];
 
 export const ControlsFilter = ({
 	showTypes = true,

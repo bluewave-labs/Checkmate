@@ -6,6 +6,7 @@ import {
 } from "@/Components/design-elements";
 import Box from "@mui/material/Box";
 import type { Header } from "@/Components/design-elements/Table";
+import { MonitorStatus } from "@/Types/Monitor";
 import type { Monitor } from "@/Types/Monitor";
 import { useTranslation } from "react-i18next";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
@@ -49,7 +50,11 @@ export const ChecksTable = ({
 				id: "status",
 				content: "Status",
 				render: (row) => {
-					return <StatusLabel status={row.status === true ? "up" : "down"} />;
+					return (
+						<StatusLabel
+							status={row.status === true ? MonitorStatus.Up : MonitorStatus.Down}
+						/>
+					);
 				},
 			},
 			{
