@@ -211,6 +211,7 @@ export const BaseStatusPage = ({
 							>
 								<Icon
 									icon={TriangleAlert}
+									size={20}
 									color={theme.palette.warning.main}
 								/>
 								<Typography>

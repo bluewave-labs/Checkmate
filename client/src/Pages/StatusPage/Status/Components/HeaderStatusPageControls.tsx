@@ -77,7 +77,12 @@ export const HeaderStatusPageControls = ({
 				<Button
 					variant="contained"
 					color="secondary"
-					startIcon={<Icon icon={Settings} />}
+					startIcon={
+						<Icon
+							icon={Settings}
+							size={16}
+						/>
+					}
 					onClick={() => navigate(`/status/configure/${statusPage.url}`)}
 				>
 					{t("common.buttons.configure")}

@@ -185,7 +185,10 @@ export const AuthFooter = ({ collapsed, accountMenuItems }: AuthFooterProps) => 
 					}}
 					sx={menuItemSx}
 				>
-					<Icon icon={mode === "light" ? Moon : Sun} />
+					<Icon
+						icon={mode === "light" ? Moon : Sun}
+						size={16}
+					/>
 					{mode === "light"
 						? t("pages.settings.form.ui.option.theme.dark")
 						: t("pages.settings.form.ui.option.theme.light")}
