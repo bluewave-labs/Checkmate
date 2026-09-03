@@ -64,7 +64,12 @@ export const HeaderMonitorControls = ({
 					variant="contained"
 					color="secondary"
 					loading={isPosting}
-					startIcon={<Icon icon={Mail} />}
+					startIcon={
+						<Icon
+							icon={Mail}
+							size={16}
+						/>
+					}
 					onClick={async () => {
 						await post(`/notifications/test/all`, { monitorId: monitor.id });
 					}}
@@ -77,7 +82,12 @@ export const HeaderMonitorControls = ({
 				<Button
 					variant="contained"
 					color="secondary"
-					startIcon={<Icon icon={Bug} />}
+					startIcon={
+						<Icon
+							icon={Bug}
+							size={16}
+						/>
+					}
 					onClick={() => {
 						navigate(`/incidents/${monitor?.id}`);
 					}}
@@ -89,7 +99,19 @@ export const HeaderMonitorControls = ({
 						variant="contained"
 						color="secondary"
 						loading={isPosting}
-						startIcon={monitor?.isActive ? <Icon icon={Pause} /> : <Icon icon={Play} />}
+						startIcon={
+							monitor?.isActive ? (
+								<Icon
+									icon={Pause}
+									size={16}
+								/>
+							) : (
+								<Icon
+									icon={Play}
+									size={16}
+								/>
+							)
+						}
 						onClick={async () => {
 							await post(`/monitors/pause/${monitor.id}`, {});
 							await refetch();
@@ -102,7 +124,12 @@ export const HeaderMonitorControls = ({
 					<Button
 						variant="contained"
 						color="secondary"
-						startIcon={<Icon icon={Settings} />}
+						startIcon={
+							<Icon
+								icon={Settings}
+								size={16}
+							/>
+						}
 						onClick={() => navigate(`/${path}/configure/${monitor.id}`)}
 					>
 						{t("common.buttons.configure")}
@@ -149,7 +176,19 @@ export const HeaderDeleteControls = ({
 						variant="contained"
 						color="secondary"
 						loading={isPosting}
-						startIcon={monitor?.isActive ? <Icon icon={Pause} /> : <Icon icon={Play} />}
+						startIcon={
+							monitor?.isActive ? (
+								<Icon
+									icon={Pause}
+									size={16}
+								/>
+							) : (
+								<Icon
+									icon={Play}
+									size={16}
+								/>
+							)
+						}
 						onClick={async () => {
 							await post(`/monitors/pause/${monitor.id}`, {});
 							await refetch();
@@ -162,7 +201,12 @@ export const HeaderDeleteControls = ({
 					<Button
 						variant="contained"
 						color="error"
-						startIcon={<Icon icon={Trash} />}
+						startIcon={
+							<Icon
+								icon={Trash}
+								size={16}
+							/>
+						}
 						onClick={() => {
 							onDelete?.();
 						}}

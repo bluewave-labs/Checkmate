@@ -33,8 +33,11 @@ export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 				},
 				"&.Mui-selected": {
 					backgroundColor: selectedBg,
+					// Weight stays at 400 so the group sits level with Button,
+					// which it is routinely placed beside. The fill and the
+					// darker ink carry the selected state instead - a weight
+					// change also reflows the label width as you switch.
 					color: theme.palette.text.primary,
-					fontWeight: 500,
 					"&:hover": {
 						backgroundColor: selectedHoverBg,
 					},
