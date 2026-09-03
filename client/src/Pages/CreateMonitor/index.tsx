@@ -38,6 +38,7 @@ import {
 	PageSpeedStrategies,
 	DnsRecordTypes,
 	MonitorIntervalOptions,
+	MIN_MONITOR_INTERVAL_MS,
 	DefaultMonitorMatchMethod,
 	MonitorMatchMethods,
 	GeoCheckIntervalOptions,
@@ -57,14 +58,49 @@ import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 import { FormRadioGroup } from "@/Components/inputs/forms/FormRadioGroupField";
 import { FormMultiSelectField } from "@/Components/inputs/forms/FormMultiSelectField";
 import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
+import {
+	FormAutocompleteField,
+	type AutocompleteOption,
+} from "@/Components/inputs/forms/FormAutoCompleteField";
 import { FormSliderField } from "@/Components/inputs/forms/FormSliderField";
 import { FormSwitchField } from "@/Components/inputs/forms/FormSwitchField";
 import type { ProxyResponse } from "@/Types/Proxy";
+import { formatDuration } from "@/Utils/TimeUtils";
 
 const httpMethodOptions = HttpMethods.map((method) => ({
 	value: method,
 	label: method,
 }));
+
+interface IntervalOption extends AutocompleteOption {
+	id: number;
+}
+
+const INTERVAL_UNIT_MULTIPLIERS = [1000, 60000, 3600000, 86400000] as const;
+
+const toIntervalOption = (intervalMs: number): IntervalOption => ({
+	id: intervalMs,
+	name: formatDuration(intervalMs, true),
+});
+
+const filterIntervalOptions = (
+	options: IntervalOption[],
+	inputValue: string
+): IntervalOption[] => {
+	const input = inputValue.trim();
+	if (input === "" || options.some((option) => option.name === input)) {
+		return options;
+	}
+
+	const amount = Number(input);
+	if (!Number.isFinite(amount) || amount <= 0) {
+		return [];
+	}
+
+	return INTERVAL_UNIT_MULTIPLIERS.map((multiplier) => amount * multiplier)
+		.filter(Number.isSafeInteger)
+		.map(toIntervalOption);
+};
 
 interface GeneralSettingsConfig {
 	urlLabel: string;
@@ -301,6 +337,7 @@ const CreateMonitorPage = () => {
 	const watchedProxyMode = watch("proxyMode") as ProxyMode | undefined;
 	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
 	const watchGeoCheckEnabled = watch("geoCheckEnabled") as boolean;
+	const watchedInterval = watch("interval");
 
 	// Steps without an advanced section drop it, so the last step is the form's.
 	const totalSteps = monitorStepCount(watchedType);
@@ -454,16 +491,16 @@ const CreateMonitorPage = () => {
 		[t]
 	);
 
-	const intervalOptions = useMemo(
-		() =>
-			MonitorIntervalOptions.map((option) => ({
-				value: option.value,
-				label: t(
-					`pages.createMonitor.form.frequency.option.frequency.value.${option.labelKey}`
-				),
-			})),
-		[t]
-	);
+	const intervalOptions = useMemo(() => {
+		const options = MonitorIntervalOptions.map(({ value }) => toIntervalOption(value));
+		if (
+			typeof watchedInterval === "number" &&
+			!options.some((option) => option.id === watchedInterval)
+		) {
+			options.push(toIntervalOption(watchedInterval));
+		}
+		return options;
+	}, [watchedInterval]);
 
 	const matchMethodOptions = useMemo(
 		() =>
@@ -689,12 +726,17 @@ const CreateMonitorPage = () => {
 						title={t("pages.createMonitor.form.frequency.title")}
 						subtitle={t("pages.createMonitor.form.frequency.description")}
 						rightContent={
-							<FormSelectField
+							<FormAutocompleteField
 								name="interval"
 								fieldLabel={t(
 									"pages.createMonitor.form.frequency.option.frequency.label"
 								)}
 								options={intervalOptions}
+								filterOptions={(options, { inputValue }) =>
+									filterIntervalOptions(options, inputValue)
+								}
+								getOptionDisabled={(option) => option.id < MIN_MONITOR_INTERVAL_MS}
+								disableClearable
 							/>
 						}
 					/>

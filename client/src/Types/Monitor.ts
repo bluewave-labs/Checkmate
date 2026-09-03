@@ -59,6 +59,8 @@ export const monitorTypeLabelKey: Record<SelectableMonitorType, string> &
 	pagespeed: "optionPagespeed",
 };
 
+export const MIN_MONITOR_INTERVAL_MS = 10000;
+
 export const MonitorIntervalOptions = [
 	{ value: 15000, labelKey: "fifteenSeconds" },
 	{ value: 30000, labelKey: "thirtySeconds" },
