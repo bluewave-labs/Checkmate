@@ -60,6 +60,10 @@ export const lightPalette = {
 	action: {
 		rowHover: alpha(colors.gray900, HOVER.ROW),
 		controlHover: alpha(colors.gray900, HOVER.CONTROL),
+		// Tinted with the brand so a selected row reads as chosen rather than
+		// merely dirty, and the hover step stays clearly above the resting one.
+		selected: alpha(colors.brandGreen, 0.06),
+		selectedHover: alpha(colors.brandGreen, 0.1),
 	},
 	secondary: {
 		main: colors.gray200,
@@ -112,6 +116,8 @@ export const darkPalette = {
 	action: {
 		rowHover: alpha("#FFFFFF", HOVER.ROW),
 		controlHover: alpha("#FFFFFF", HOVER.CONTROL),
+		selected: alpha(colors.brandGreenLight, 0.07),
+		selectedHover: alpha(colors.brandGreenLight, 0.11),
 	},
 	secondary: {
 		main: colors.gray700,

@@ -48,8 +48,11 @@ export const Tab = (props: CustomTabProps) => {
 				alignItems: "flex-start",
 				color: theme.palette.text.secondary,
 				"&.Mui-selected": {
+					// Weight stays put, as on ToggleButton: bolding the active tab
+					// widens it, shifting every tab to its right and dragging the
+					// indicator to a moving target. Colour and the indicator are
+					// already carrying the state.
 					color: theme.palette.primary.main,
-					fontWeight: 600,
 				},
 				"&:hover": {
 					color: theme.palette.text.secondary,

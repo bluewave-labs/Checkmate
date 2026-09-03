@@ -327,11 +327,7 @@ export const DockerMonitorsTable = ({
 				onRowClick={(row) => {
 					navigate(`/docker/host/${row.id}`);
 				}}
-				getRowSx={(row) => ({
-					backgroundColor: isRowSelected(row.id)
-						? theme.palette.action.selected
-						: "inherit",
-				})}
+				isRowSelected={(row) => isRowSelected(row.id)}
 			/>
 			<Pagination
 				component="div"

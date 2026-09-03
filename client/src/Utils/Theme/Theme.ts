@@ -16,6 +16,7 @@ declare module "@mui/material/styles" {
 	interface TypeAction {
 		rowHover: string;
 		controlHover: string;
+		selectedHover: string;
 	}
 	interface Palette {
 		sidebar: { accent: string };

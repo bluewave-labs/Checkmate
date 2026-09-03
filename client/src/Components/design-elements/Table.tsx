@@ -52,6 +52,8 @@ type DataTableProps<T extends { id?: string | number; _id?: string | number }> =
 	emptyViewText?: string;
 	emptyViewPositive?: boolean;
 	getRowSx?: (row: T) => SxProps<Theme>;
+	/** Marks a row selected so it gets the shared selected + hover treatment. */
+	isRowSelected?: (row: T) => boolean;
 };
 
 export function DataTable<
@@ -70,6 +72,7 @@ export function DataTable<
 	emptyViewText,
 	emptyViewPositive,
 	getRowSx,
+	isRowSelected,
 }: DataTableProps<T>) {
 	const theme = useTheme();
 	const [expanded, setExpanded] = useState<(string | number) | null>(null);
@@ -213,9 +216,20 @@ export function DataTable<
 					"& .MuiTableBody-root .MuiTableRow-root:last-child .MuiTableCell-root": {
 						borderBottom: "none",
 					},
+					// Cells paint `background.paper`, so a background set on the row
+					// never shows. Selection and hover both have to be applied at
+					// cell level, and selection has to come first so hover layers
+					// on top of it rather than replacing it.
+					"& .MuiTableBody-root .MuiTableRow-root.is-selected .MuiTableCell-root": {
+						backgroundColor: theme.palette.action.selected,
+					},
 					"& .MuiTableBody-root .MuiTableRow-root.is-clickable:hover .MuiTableCell-root":
 						{
 							backgroundColor: theme.palette.action.rowHover,
+						},
+					"& .MuiTableBody-root .MuiTableRow-root.is-selected.is-clickable:hover .MuiTableCell-root":
+						{
+							backgroundColor: theme.palette.action.selectedHover,
 						},
 				}}
 			>
@@ -241,7 +255,12 @@ export function DataTable<
 						return (
 							<Fragment key={key}>
 								<TableRow
-									className={isInteractive ? "is-clickable" : undefined}
+									className={[
+										isInteractive ? "is-clickable" : "",
+										isRowSelected?.(row) ? "is-selected" : "",
+									]
+										.filter(Boolean)
+										.join(" ")}
 									sx={{
 										cursor: isInteractive ? "pointer" : "default",
 										...(getRowSx?.(row) as object),
