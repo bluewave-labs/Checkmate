@@ -109,7 +109,10 @@ export const PageHeader = ({
 							fontSize: 14,
 							color: theme.palette.text.secondary,
 							lineHeight: 1.55,
-							maxWidth: 640,
+							// Wide enough to hold a one-line page description at this
+							// size; still a cap, so it wraps rather than running the
+							// full width of a large monitor.
+							maxWidth: "108ch",
 						}}
 					>
 						{description}
