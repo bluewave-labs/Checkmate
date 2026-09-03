@@ -3,7 +3,22 @@ import {
 	createMonitorBodyValidation,
 	editMonitorBodyValidation,
 	importMonitorsBodyValidation,
+	getDockerContainerLogsQueryValidation,
 } from "../../../src/api/validation/monitorValidation.ts";
+
+describe("getDockerContainerLogsQueryValidation", () => {
+	it("defaults limit to 20", () => {
+		expect(getDockerContainerLogsQueryValidation.parse({})).toEqual({ limit: 20 });
+	});
+
+	it("rejects a limit above 50", () => {
+		expect(() => getDockerContainerLogsQueryValidation.parse({ limit: 51 })).toThrow();
+	});
+
+	it("rejects a non-ISO before cursor", () => {
+		expect(() => getDockerContainerLogsQueryValidation.parse({ before: "yesterday" })).toThrow();
+	});
+});
 
 const baseDnsBody = {
 	name: "DNS check",

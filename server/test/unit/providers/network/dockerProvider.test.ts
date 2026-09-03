@@ -5,6 +5,7 @@ import { createMockLogger } from "../../../helpers/createMockLogger.ts";
 import { NETWORK_ERROR } from "../../../../src/types/network.ts";
 import { AppError } from "../../../../src/utils/AppError.ts";
 import type { Monitor } from "../../../../src/domain/monitors/monitor.type.ts";
+import { DOCKER_LOG_TAIL_LINES } from "../../../../src/domain/docker/docker.type.ts";
 
 // ── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -53,10 +54,19 @@ const makeStats = (overrides?: Record<string, any>) => ({
 	...overrides,
 });
 
-const setup = (overrides: Partial<{ ping: any; listContainers: any; getContainer: any; inspect: any; stats: any }> = {}) => {
+const makeLogFrame = (streamType: number, text: string): Buffer => {
+	const payload = Buffer.from(text);
+	const header = Buffer.alloc(8);
+	header.writeUInt8(streamType, 0);
+	header.writeUInt32BE(payload.length, 4);
+	return Buffer.concat([header, payload]);
+};
+
+const setup = (overrides: Partial<{ ping: any; listContainers: any; getContainer: any; inspect: any; stats: any; logs: any }> = {}) => {
 	const inspect = overrides.inspect ?? jest.fn().mockResolvedValue(makeInspect());
 	const stats = overrides.stats ?? jest.fn().mockResolvedValue(makeStats());
-	const getContainer = overrides.getContainer ?? jest.fn().mockReturnValue({ inspect, stats });
+	const logs = overrides.logs ?? jest.fn().mockResolvedValue(Buffer.alloc(0));
+	const getContainer = overrides.getContainer ?? jest.fn().mockReturnValue({ inspect, stats, logs });
 	const instance = {
 		ping: overrides.ping ?? jest.fn().mockResolvedValue("OK"),
 		listContainers: overrides.listContainers ?? jest.fn().mockResolvedValue([makeContainer()]),
@@ -65,7 +75,7 @@ const setup = (overrides: Partial<{ ping: any; listContainers: any; getContainer
 	const DockerLib = jest.fn().mockReturnValue(instance) as any;
 	const logger = createMockLogger();
 	const provider = new DockerProvider(logger as any, DockerLib);
-	return { provider, logger, DockerLib, ping: instance.ping, listContainers: instance.listContainers, getContainer, inspect, stats };
+	return { provider, logger, DockerLib, ping: instance.ping, listContainers: instance.listContainers, getContainer, inspect, stats, logs };
 };
 
 // ── Contract ─────────────────────────────────────────────────────────────────
@@ -275,6 +285,65 @@ describe("DockerProvider", () => {
 
 			expect(result.payload?.containers[0]?.state).toBe("created");
 			expect(result.payload?.containers[0]?.health).toBe("none");
+		});
+	});
+
+	describe("container logs", () => {
+		it("parses multiplexed stdout and stderr with normalized timestamps", async () => {
+			const logs = jest
+				.fn()
+				.mockResolvedValue(
+					Buffer.concat([makeLogFrame(1, "2026-01-01T00:00:37.1Z ready\n"), makeLogFrame(2, "2026-01-01T00:00:38.123Z failed\r\n")])
+				);
+			const { provider } = setup({ logs });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.logs?.[0]?.lines).toEqual([
+				{ ts: "2026-01-01T00:00:37.100000000Z", stream: "stdout", text: "ready" },
+				{ ts: "2026-01-01T00:00:38.123000000Z", stream: "stderr", text: "failed" },
+			]);
+		});
+
+		it("treats raw TTY output as stdout and drops lines without timestamps", async () => {
+			const logs = jest.fn().mockResolvedValue(Buffer.from("noise\n2026-01-01T00:00:00Z first\n2026-01-01T00:00:01.12Z second\n"));
+			const { provider } = setup({ logs });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.logs?.[0]?.lines).toEqual([
+				{ ts: "2026-01-01T00:00:00.000000000Z", stream: "stdout", text: "first" },
+				{ ts: "2026-01-01T00:00:01.120000000Z", stream: "stdout", text: "second" },
+			]);
+		});
+
+		it("truncates oversized UTF-8 lines and appends the marker", async () => {
+			const logs = jest.fn().mockResolvedValue(Buffer.from(`2026-01-01T00:00:00Z ${"x".repeat(5000)}\n`));
+			const { provider } = setup({ logs });
+
+			const result = await provider.handle(makeMonitor());
+			const text = result.payload?.logs?.[0]?.lines[0]?.text;
+			expect(text).toEqual(expect.stringMatching(/ …\[truncated\]$/));
+			expect(Buffer.byteLength(text?.replace(" …[truncated]", "") ?? "", "utf8")).toBeLessThanOrEqual(4096);
+		});
+
+		it("isolates a logs failure and warns", async () => {
+			const { provider, logger } = setup({ logs: jest.fn().mockRejectedValue(new Error("logs failed")) });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.logs).toEqual([]);
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to read logs for container my-container" }));
+		});
+
+		it("requests a bounded timestamped tail for every container state", async () => {
+			const containers = [makeContainer({ Id: "a".repeat(64) }), makeContainer({ Id: "b".repeat(64), State: "exited" })];
+			const { provider, logs } = setup({ listContainers: jest.fn().mockResolvedValue(containers) });
+
+			await provider.handle(makeMonitor());
+
+			expect(logs).toHaveBeenCalledTimes(2);
+			expect(logs).toHaveBeenCalledWith({ follow: false, stdout: true, stderr: true, timestamps: true, tail: DOCKER_LOG_TAIL_LINES });
 		});
 	});
 
