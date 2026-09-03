@@ -1,6 +1,7 @@
 import MuiTabs from "@mui/material/Tabs";
 import type { TabsProps } from "@mui/material/Tabs";
 import { useTheme } from "@mui/material/styles";
+import { typographyLevels } from "@/Utils/Theme/Palette";
 interface CustomTabsProps extends TabsProps {}
 
 export const Tabs = (props: CustomTabsProps) => {
@@ -38,7 +39,7 @@ export const Tab = (props: CustomTabProps) => {
 			iconPosition="start"
 			sx={{
 				textTransform: "none",
-				fontSize: 14,
+				fontSize: typographyLevels.m,
 				fontWeight: 500,
 				minHeight: 34,
 				padding: theme.spacing(1, 0),
