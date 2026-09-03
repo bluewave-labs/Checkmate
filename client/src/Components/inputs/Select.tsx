@@ -83,10 +83,6 @@ const SelectInputInner = <T,>(
 				},
 				"& .MuiOutlinedInput-notchedOutline": {
 					borderRadius: theme.shape.borderRadius,
-					borderColor: theme.palette.divider,
-				},
-				"&:hover .MuiOutlinedInput-notchedOutline": {
-					borderColor: theme.palette.divider,
 				},
 				...props.sx,
 			}}

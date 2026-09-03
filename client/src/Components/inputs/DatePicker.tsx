@@ -66,7 +66,9 @@ export const DatePickerComponent = ({
 							},
 							"&:not(:has(.Mui-disabled)):not(:has(.Mui-error)) .MuiOutlinedInput-root:not(:has(input:focus)):hover fieldset":
 								{
-									borderColor: error ? theme.palette.error.main : theme.palette.divider,
+									borderColor: error
+										? theme.palette.error.main
+										: theme.palette.text.disabled,
 								},
 						},
 					},

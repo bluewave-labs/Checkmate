@@ -112,6 +112,11 @@ export const lightPalette = {
 export const darkPalette = {
 	primary: {
 		main: colors.brandGreen,
+		// The dark ground needs a lighter green for anything drawn as a line
+		// rather than a fill - focus rings especially, which were dimmer than
+		// their own hover state. Leaving `main` alone keeps contained buttons
+		// white-on-green instead of flipping them to dark text.
+		light: colors.brandGreenLight,
 	},
 	action: {
 		rowHover: alpha("#FFFFFF", HOVER.ROW),

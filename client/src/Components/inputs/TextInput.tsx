@@ -26,12 +26,6 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function T
 			fontSize: typographyLevels.base,
 			overflow: "hidden",
 		},
-		"& .MuiOutlinedInput-notchedOutline": {
-			borderColor: theme.palette.divider,
-		},
-		"&:hover .MuiOutlinedInput-notchedOutline": {
-			borderColor: theme.palette.divider,
-		},
 		"& .MuiFormHelperText-root": {
 			marginLeft: 0,
 			marginRight: 0,

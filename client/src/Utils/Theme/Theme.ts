@@ -189,17 +189,30 @@ export const theme = (mode: string, palette: any) =>
 				},
 			},
 
+			// One border story for every outlined input - text fields, selects,
+			// autocompletes, date and colour pickers all route through this.
+			// Resting: divider. Hover: a step darker, so there is a cue without
+			// jumping to near-black. Focus: the brand, at 2px.
 			MuiOutlinedInput: {
 				styleOverrides: {
 					root: ({ theme }) => ({
-						"&:hover .MuiOutlinedInput-notchedOutline": {
+						"& .MuiOutlinedInput-notchedOutline": {
+							borderColor: theme.palette.divider,
+							transition: "border-color 0.15s ease",
+						},
+						"&:hover:not(.Mui-focused):not(.Mui-disabled) .MuiOutlinedInput-notchedOutline":
+							{
+								borderColor: theme.palette.text.disabled,
+							},
+						"&.Mui-focused .MuiOutlinedInput-notchedOutline": {
 							borderColor:
 								theme.palette.mode === "dark"
-									? "rgba(255, 255, 255, 0.23)"
-									: theme.palette.text.primary,
+									? theme.palette.primary.light
+									: theme.palette.primary.main,
+							borderWidth: 2,
 						},
-						"&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-							borderColor: palette.primary.main,
+						"&.Mui-error .MuiOutlinedInput-notchedOutline": {
+							borderColor: theme.palette.error.main,
 						},
 					}),
 				},
