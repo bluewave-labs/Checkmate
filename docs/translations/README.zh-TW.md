@@ -32,12 +32,13 @@
 
 <h1 align="center"><a href="https://bluewavelabs.ca" target="_blank">Checkmate</a></h1>
 
-<p align="center"><strong>開源的可用性與基礎架構監控應用程式</strong></p>
+<p align="center"><strong>開源的可用性與基礎架構監控應用程式</strong>
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
 
+<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+</p>
 <br>
 
 
@@ -82,13 +83,15 @@ Checkmate 已在 1000+ 個活躍監控項目下進行過壓力測試,未發生�
 
 安裝說明請參閱 [Checkmate 文件入口](https://checkmate.so/docs)。
 
+還有一些一鍵安裝選項,例如 [Repocloud](https://repocloud.io/details/Checkmate)、[Pikapods](https://www.pikapods.com/)、[Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](../../charts/helm/checkmate/INSTALLATION.md)、[Sive Host](https://sive.host) 或 [Cloudzy](https://cloudzy.com/marketplace/checkmate)。
+
 你也可以使用 [Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](../../charts/helm/checkmate/INSTALLATION.md)、[Sive Host](https://sive.host)(南非)、[Cloudzy](https://cloudzy.com/marketplace/checkmate) 或 [Pikapods](https://www.pikapods.com/) 來快速啟動一個 Checkmate 實例。若要監控伺服器基礎架構,需要 [Capture 代理程式](https://github.com/bluewave-labs/capture),Capture 儲存庫中也提供了安裝說明。
 
 ### 使用自訂 CA
 
-如果你需要使用私有 CA(例如 Smallstep)發行的憑證來監控內部 HTTPS 端點,請參考我們的 [自訂 CA 信任指南](../custom-ca-trust.md),其中介紹了 Docker 的設定選項。
+如果你需要使用私有 CA(例如 Smallstep)發行的憑證來監控內部 HTTPS 端點,請參考我們的 [自訂 CA 信任指南](https://checkmate.so/docs/settings/custom-ca-trust),其中介紹了 Docker 的設定選項。
 
-更多文件請參閱 [docs 目錄](../)。
+更多文件請參閱 [Checkmate 文件](https://checkmate.so/docs)。
 
 <a id="performance"></a>
 ## 效能
@@ -175,9 +178,9 @@ Checkmate 已在 1000+ 個活躍監控項目下進行過壓力測試,未發生�
 <a id="contributing"></a>
 ## 參與貢獻
 
-我們是 [Alex](http://github.com/ajhollid)(團隊負責人)、[Gorkem](http://github.com/gorkem-bwl/)、[Aryaman](https://github.com/Br0wnHammer)、[Mert](https://github.com/mertssmnoglu) 和 [Karen](https://github.com/karenvicent),致力於協助個人與企業監控其基礎架構與伺服器。
+我們是 [Alex](http://github.com/ajhollid)(團隊負責人)、[Gorkem](http://github.com/gorkem-bwl/)、[Aryaman](https://github.com/Br0wnHammer) 和 [Mert](https://github.com/mertssmnoglu),致力於協助個人與企業監控其基礎架構與伺服器。
 
-我們以與各層級貢獻者建立穩固關係為榮。儘管 Checkmate 還是一個年輕的專案,但已獲得超過 7000 顆星,並吸引了來自全球的 90+ 位貢獻者。
+我們以與各層級貢獻者建立穩固關係為榮。儘管 Checkmate 還是一個年輕的專案,但已獲得近 11,000 顆星,並吸引了來自全球的 150+ 位貢獻者。
 
 我們的儲存庫已被來自 **Google、Microsoft、Intel、Cisco、Tencent、Electronic Arts、ByteDance、JP Morgan Chase、Deloitte、Accenture、Foxconn、Broadcom、China Telecom、Barclays、Capgemini、Wipro、Cloudflare、Dassault Systèmes 與 NEC** 的員工點亮 — 所以請不要猶豫,加入我們,一起貢獻、一起學習吧!
 

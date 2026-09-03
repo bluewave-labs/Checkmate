@@ -35,12 +35,13 @@
 
 <h1 align="center"><a href="https://bluewavelabs.ca" target="_blank">Checkmate</a></h1>
 
-<p align="center"><strong>Open source aplikace pro monitorování dostupnosti a infrastruktury</strong></p>
+<p align="center"><strong>Open source aplikace pro monitorování dostupnosti a infrastruktury</strong>
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
 
+<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+</p>
 <br>
 
 
@@ -85,13 +86,15 @@ Pokyny k použití najdete [zde](https://checkmate.so/docs).
 
 Pokyny k instalaci najdete v [dokumentačním portálu Checkmate](https://checkmate.so/docs).
 
+K dispozici jsou také možnosti instalace jedním kliknutím, jako [Repocloud](https://repocloud.io/details/Checkmate), [Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) nebo [Cloudzy](https://cloudzy.com/marketplace/checkmate).
+
 Případně můžete použít [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Jižní Afrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) nebo [Pikapods](https://www.pikapods.com/) pro rychlé spuštění instance Checkmate. Pokud chcete monitorovat infrastrukturu serverů, budete potřebovat [agenta Capture](https://github.com/bluewave-labs/capture). Repozitář Capture obsahuje také pokyny k instalaci.
 
 ### Použití vlastní CA
 
-Pokud potřebujete monitorovat interní HTTPS endpointy s certifikáty od soukromých certifikačních autorit (jako je Smallstep), přečtěte si naši [příručku pro důvěřování vlastním CA](../custom-ca-trust.md) pro možnosti konfigurace Dockeru.
+Pokud potřebujete monitorovat interní HTTPS endpointy s certifikáty od soukromých certifikačních autorit (jako je Smallstep), přečtěte si naši [příručku pro důvěřování vlastním CA](https://checkmate.so/docs/settings/custom-ca-trust) pro možnosti konfigurace Dockeru.
 
-Další dokumentaci najdete v [adresáři docs](../).
+Další dokumentaci najdete v [dokumentaci Checkmate](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Výkon
@@ -178,9 +181,9 @@ Neváhejte se ptát nebo sdílet své nápady — moc rádi vás slyšíme!
 <a id="contributing"></a>
 ## Přispívání
 
-Jsme [Alex](http://github.com/ajhollid) (vedoucí týmu), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) a [Karen](https://github.com/karenvicent) a pomáháme jednotlivcům a firmám monitorovat jejich infrastrukturu a servery.
+Jsme [Alex](http://github.com/ajhollid) (vedoucí týmu), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer) a [Mert](https://github.com/mertssmnoglu) a pomáháme jednotlivcům a firmám monitorovat jejich infrastrukturu a servery.
 
-Jsme hrdí na to, že budujeme silné vztahy s přispěvateli na všech úrovních. Přestože jsme mladý projekt, Checkmate už získal přes 7000 hvězdiček a přilákal více než 90 přispěvatelů z celého světa.
+Jsme hrdí na to, že budujeme silné vztahy s přispěvateli na všech úrovních. Přestože jsme mladý projekt, Checkmate už získal téměř 11 tisíc hvězdiček a přilákal více než 150 přispěvatelů z celého světa.
 
 Náš repozitář mají označený zaměstnanci společností **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes a NEC** — takže neváhejte, zapojte se, přispějte a učte se s námi!
 

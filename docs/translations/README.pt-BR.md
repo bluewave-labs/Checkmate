@@ -32,12 +32,13 @@
 
 <h1 align="center"><a href="https://bluewavelabs.ca" target="_blank">Checkmate</a></h1>
 
-<p align="center"><strong>Uma aplicação de código aberto para monitoramento de disponibilidade e infraestrutura</strong></p>
+<p align="center"><strong>Uma aplicação de código aberto para monitoramento de disponibilidade e infraestrutura</strong>
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
 
+<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+</p>
 <br>
 
 
@@ -82,13 +83,15 @@ As instruções de uso podem ser encontradas [aqui](https://checkmate.so/docs).
 
 Veja as instruções de instalação no [portal de documentação do Checkmate](https://checkmate.so/docs).
 
+Também há opções de instalação com 1 clique, como [Repocloud](https://repocloud.io/details/Checkmate), [Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) ou [Cloudzy](https://cloudzy.com/marketplace/checkmate).
+
 Alternativamente, você pode usar [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (África do Sul), [Cloudzy](https://cloudzy.com/marketplace/checkmate) ou [Pikapods](https://www.pikapods.com/) para subir rapidamente uma instância do Checkmate. Se quiser monitorar sua infraestrutura de servidores, você precisará do [agente Capture](https://github.com/bluewave-labs/capture). O repositório do Capture também contém as instruções de instalação.
 
 ### Usando uma CA personalizada
 
-Se você precisa monitorar endpoints HTTPS internos com certificados emitidos por autoridades certificadoras privadas (como Smallstep), veja nosso [Guia de confiança em CA personalizada](../custom-ca-trust.md) para opções de configuração do Docker.
+Se você precisa monitorar endpoints HTTPS internos com certificados emitidos por autoridades certificadoras privadas (como Smallstep), veja nosso [Guia de confiança em CA personalizada](https://checkmate.so/docs/settings/custom-ca-trust) para opções de configuração do Docker.
 
-Para mais documentação, veja o [diretório docs](../).
+Para mais documentação, veja a [documentação do Checkmate](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Desempenho
@@ -175,9 +178,9 @@ Sinta-se à vontade para perguntar ou compartilhar suas ideias — adoramos ouvi
 <a id="contributing"></a>
 ## Contribuindo
 
-Somos o [Alex](http://github.com/ajhollid) (líder de equipe), o [Gorkem](http://github.com/gorkem-bwl/), o [Aryaman](https://github.com/Br0wnHammer), o [Mert](https://github.com/mertssmnoglu) e a [Karen](https://github.com/karenvicent) — ajudamos indivíduos e empresas a monitorar suas infraestruturas e servidores.
+Somos o [Alex](http://github.com/ajhollid) (líder de equipe), o [Gorkem](http://github.com/gorkem-bwl/), o [Aryaman](https://github.com/Br0wnHammer) e o [Mert](https://github.com/mertssmnoglu) — ajudamos indivíduos e empresas a monitorar suas infraestruturas e servidores.
 
-Nos orgulhamos de construir conexões fortes com contribuidores de todos os níveis. Apesar de ser um projeto jovem, o Checkmate já conquistou mais de 7000 estrelas e atraiu mais de 90 contribuidores no mundo todo.
+Nos orgulhamos de construir conexões fortes com contribuidores de todos os níveis. Apesar de ser um projeto jovem, o Checkmate já conquistou quase 11 mil estrelas e atraiu mais de 150 contribuidores no mundo todo.
 
 Nosso repositório recebeu estrelas de funcionários do **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes e NEC** — então não se segure: entre, contribua e aprenda com a gente!
 

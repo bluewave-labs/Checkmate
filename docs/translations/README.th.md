@@ -35,12 +35,13 @@
 
 <h1 align="center"><a href="https://bluewavelabs.ca" target="_blank">Checkmate</a></h1>
 
-<p align="center"><strong>แอปพลิเคชันโอเพนซอร์สสำหรับตรวจสอบสถานะการทำงานและโครงสร้างพื้นฐาน</strong></p>
+<p align="center"><strong>แอปพลิเคชันโอเพนซอร์สสำหรับตรวจสอบสถานะการทำงานและโครงสร้างพื้นฐาน</strong>
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
 
+<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+</p>
 <br>
 
 
@@ -85,13 +86,15 @@ Checkmate ผ่านการทดสอบโหลดสำหรับม�
 
 ดูวิธีการติดตั้งใน [พอร์ทัลเอกสารของ Checkmate](https://checkmate.so/docs)
 
+นอกจากนี้ยังมีตัวเลือกการติดตั้งแบบคลิกเดียว เช่น [Repocloud](https://repocloud.io/details/Checkmate), [Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) หรือ [Cloudzy](https://cloudzy.com/marketplace/checkmate)
+
 อีกทางเลือกหนึ่ง คุณสามารถใช้ [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (แอฟริกาใต้), [Cloudzy](https://cloudzy.com/marketplace/checkmate) หรือ [Pikapods](https://www.pikapods.com/) เพื่อเปิดอินสแตนซ์ Checkmate ได้อย่างรวดเร็ว หากต้องการมอนิเตอร์โครงสร้างพื้นฐานเซิร์ฟเวอร์ คุณจะต้องใช้ [เอเจนต์ Capture](https://github.com/bluewave-labs/capture) รีโพ Capture ยังมีวิธีการติดตั้งด้วย
 
 ### การใช้ Custom CA
 
-หากคุณต้องการมอนิเตอร์ HTTPS เอนด์พอยต์ภายในที่ใช้ใบรับรองจาก CA ส่วนตัว (เช่น Smallstep) โปรดดู [คู่มือการเชื่อถือ CA แบบกำหนดเอง](../custom-ca-trust.md) สำหรับตัวเลือกการตั้งค่า Docker
+หากคุณต้องการมอนิเตอร์ HTTPS เอนด์พอยต์ภายในที่ใช้ใบรับรองจาก CA ส่วนตัว (เช่น Smallstep) โปรดดู [คู่มือการเชื่อถือ CA แบบกำหนดเอง](https://checkmate.so/docs/settings/custom-ca-trust) สำหรับตัวเลือกการตั้งค่า Docker
 
-สำหรับเอกสารเพิ่มเติม ดูที่ [โฟลเดอร์ docs](../)
+สำหรับเอกสารเพิ่มเติม ดูที่ [เอกสารของ Checkmate](https://checkmate.so/docs)
 
 <a id="performance"></a>
 ## ประสิทธิภาพ
@@ -178,9 +181,9 @@ Checkmate ผ่านการทดสอบโหลดสำหรับม�
 <a id="contributing"></a>
 ## การมีส่วนร่วม
 
-พวกเราคือ [Alex](http://github.com/ajhollid) (หัวหน้าทีม), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) และ [Karen](https://github.com/karenvicent) ที่ช่วยให้บุคคลและธุรกิจสามารถมอนิเตอร์โครงสร้างพื้นฐานและเซิร์ฟเวอร์ได้
+พวกเราคือ [Alex](http://github.com/ajhollid) (หัวหน้าทีม), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer) และ [Mert](https://github.com/mertssmnoglu) ที่ช่วยให้บุคคลและธุรกิจสามารถมอนิเตอร์โครงสร้างพื้นฐานและเซิร์ฟเวอร์ได้
 
-เราภูมิใจกับการสร้างความสัมพันธ์ที่แข็งแกร่งกับผู้ร่วมพัฒนาในทุกระดับ แม้จะเป็นโครงการที่ยังใหม่ แต่ Checkmate ได้รับมากกว่า 7000 ดาว และมีผู้ร่วมพัฒนามากกว่า 90 คนจากทั่วโลก
+เราภูมิใจกับการสร้างความสัมพันธ์ที่แข็งแกร่งกับผู้ร่วมพัฒนาในทุกระดับ แม้จะเป็นโครงการที่ยังใหม่ แต่ Checkmate ได้รับเกือบ 11,000 ดาว และมีผู้ร่วมพัฒนามากกว่า 150 คนจากทั่วโลก
 
 รีโพของเราได้รับดาวจากพนักงานของ **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes และ NEC** — เพราะฉะนั้นอย่าลังเล ร่วมพัฒนา เรียนรู้ และเติบโตไปกับเรา!
 

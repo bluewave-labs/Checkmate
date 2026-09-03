@@ -32,12 +32,13 @@
 
 <h1 align="center"><a href="https://bluewavelabs.ca" target="_blank">Checkmate</a></h1>
 
-<p align="center"><strong>オープンソースの稼働状況とインフラ監視アプリケーション</strong></p>
+<p align="center"><strong>オープンソースの稼働状況とインフラ監視アプリケーション</strong>
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
 
+<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+</p>
 <br>
 
 
@@ -82,13 +83,15 @@ Checkmate は 1000 以上のアクティブなモニターでストレステス�
 
 インストール手順は [Checkmate ドキュメントポータル](https://checkmate.so/docs) を参照してください。
 
+[Repocloud](https://repocloud.io/details/Checkmate)、[Pikapods](https://www.pikapods.com/)、[Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](../../charts/helm/checkmate/INSTALLATION.md)、[Sive Host](https://sive.host)、[Cloudzy](https://cloudzy.com/marketplace/checkmate) などのワンクリックインストールオプションもあります。
+
 代わりに、[Coolify](https://coolify.io/)、[Elestio](https://elest.io/open-source/checkmate)、[K8s](../../charts/helm/checkmate/INSTALLATION.md)、[Sive Host](https://sive.host)（南アフリカ）、[Cloudzy](https://cloudzy.com/marketplace/checkmate)、[Pikapods](https://www.pikapods.com/) を使って Checkmate インスタンスをすばやく立ち上げることもできます。サーバーインフラを監視したい場合は、[Capture エージェント](https://github.com/bluewave-labs/capture) が必要です。Capture リポジトリにもインストール手順が記載されています。
 
 ### カスタム CA の利用
 
-プライベート認証局（Smallstep など）が発行した証明書で内部 HTTPS エンドポイントを監視する必要がある場合は、Docker 設定のオプションを記載した [カスタム CA 信頼ガイド](../custom-ca-trust.md) をご覧ください。
+プライベート認証局（Smallstep など）が発行した証明書で内部 HTTPS エンドポイントを監視する必要がある場合は、Docker 設定のオプションを記載した [カスタム CA 信頼ガイド](https://checkmate.so/docs/settings/custom-ca-trust) をご覧ください。
 
-その他のドキュメントは [docs ディレクトリ](../) を参照してください。
+その他のドキュメントは [Checkmate ドキュメント](https://checkmate.so/docs) を参照してください。
 
 <a id="performance"></a>
 ## パフォーマンス
@@ -175,9 +178,9 @@ Checkmate は 1000 以上のアクティブなモニターでストレステス�
 <a id="contributing"></a>
 ## コントリビューション
 
-私たちは [Alex](http://github.com/ajhollid)（チームリード）、[Gorkem](http://github.com/gorkem-bwl/)、[Aryaman](https://github.com/Br0wnHammer)、[Mert](https://github.com/mertssmnoglu)、[Karen](https://github.com/karenvicent) で、個人や企業がインフラとサーバーを監視するお手伝いをしています。
+私たちは [Alex](http://github.com/ajhollid)（チームリード）、[Gorkem](http://github.com/gorkem-bwl/)、[Aryaman](https://github.com/Br0wnHammer)、[Mert](https://github.com/mertssmnoglu) で、個人や企業がインフラとサーバーを監視するお手伝いをしています。
 
-あらゆるレベルのコントリビューターとの強いつながりを築くことを誇りにしています。若いプロジェクトでありながら、Checkmate はすでに 7000 を超えるスターと、世界中から 90 名以上のコントリビューターを集めています。
+あらゆるレベルのコントリビューターとの強いつながりを築くことを誇りにしています。若いプロジェクトでありながら、Checkmate はすでに 11,000 近くのスターと、世界中から 150 名以上のコントリビューターを集めています。
 
 このリポジトリには **Google、Microsoft、Intel、Cisco、Tencent、Electronic Arts、ByteDance、JP Morgan Chase、Deloitte、Accenture、Foxconn、Broadcom、China Telecom、Barclays、Capgemini、Wipro、Cloudflare、Dassault Systèmes、NEC** の社員からスターが付いています — ぜひ気軽に参加し、貢献し、私たちと一緒に学びましょう！
 

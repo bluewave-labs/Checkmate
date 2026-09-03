@@ -35,12 +35,13 @@
 
 <h1 align="center"><a href="https://bluewavelabs.ca" target="_blank">Checkmate</a></h1>
 
-<p align="center"><strong>Una aplicació de codi obert per a la monitorització de disponibilitat i infraestructura</strong></p>
+<p align="center"><strong>Una aplicació de codi obert per a la monitorització de disponibilitat i infraestructura</strong>
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
 
+<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+</p>
 <br>
 
 
@@ -85,13 +86,15 @@ Pots trobar les instruccions d'ús [aquí](https://checkmate.so/docs).
 
 Consulta les instruccions d'instal·lació al [portal de documentació de Checkmate](https://checkmate.so/docs).
 
+També hi ha opcions d'instal·lació amb un sol clic com ara [Repocloud](https://repocloud.io/details/Checkmate), [Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) o [Cloudzy](https://cloudzy.com/marketplace/checkmate).
+
 Alternativament, també pots utilitzar [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Sud-àfrica), [Cloudzy](https://cloudzy.com/marketplace/checkmate) o [Pikapods](https://www.pikapods.com/) per posar en marxa ràpidament una instància de Checkmate. Si vols monitoritzar la infraestructura de servidors, necessitaràs l'[agent Capture](https://github.com/bluewave-labs/capture). El repositori de Capture també conté les instruccions d'instal·lació.
 
 ### Utilitzar una CA personalitzada
 
-Si necessites monitoritzar punts HTTPS interns amb certificats d'autoritats certificadores privades (com Smallstep), consulta la nostra [Guia de confiança per a CA personalitzades](../custom-ca-trust.md) per a les opcions de configuració de Docker.
+Si necessites monitoritzar punts HTTPS interns amb certificats d'autoritats certificadores privades (com Smallstep), consulta la nostra [Guia de confiança per a CA personalitzades](https://checkmate.so/docs/settings/custom-ca-trust) per a les opcions de configuració de Docker.
 
-Per a més documentació, consulta el [directori docs](../).
+Per a més documentació, consulta la [documentació de Checkmate](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Rendiment
@@ -178,9 +181,9 @@ No dubtis a preguntar o compartir les teves idees — ens encantarà tenir notí
 <a id="contributing"></a>
 ## Contribuir
 
-Som l'[Alex](http://github.com/ajhollid) (líder d'equip), en [Gorkem](http://github.com/gorkem-bwl/), l'[Aryaman](https://github.com/Br0wnHammer), en [Mert](https://github.com/mertssmnoglu) i la [Karen](https://github.com/karenvicent), i ajudem persones i empreses a monitoritzar la seva infraestructura i els seus servidors.
+Som l'[Alex](http://github.com/ajhollid) (líder d'equip), en [Gorkem](http://github.com/gorkem-bwl/), l'[Aryaman](https://github.com/Br0wnHammer) i en [Mert](https://github.com/mertssmnoglu), i ajudem persones i empreses a monitoritzar la seva infraestructura i els seus servidors.
 
-Ens enorgullim de construir vincles forts amb els col·laboradors a tots els nivells. Tot i ser un projecte jove, Checkmate ja ha aconseguit més de 7.000 estrelles i ha atret més de 90 col·laboradors d'arreu del món.
+Ens enorgullim de construir vincles forts amb els col·laboradors a tots els nivells. Tot i ser un projecte jove, Checkmate ja ha aconseguit gairebé 11.000 estrelles i ha atret més de 150 col·laboradors d'arreu del món.
 
 El nostre repositori té estrelles d'empleats de **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes i NEC** — no t'estiguis de res: uneix-te, contribueix i aprèn amb nosaltres!
 

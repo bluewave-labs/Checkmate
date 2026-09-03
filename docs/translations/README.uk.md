@@ -35,12 +35,13 @@
 
 <h1 align="center"><a href="https://bluewavelabs.ca" target="_blank">Checkmate</a></h1>
 
-<p align="center"><strong>Open source застосунок для моніторингу доступності та інфраструктури</strong></p>
+<p align="center"><strong>Open source застосунок для моніторингу доступності та інфраструктури</strong>
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
 
+<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+</p>
 <br>
 
 
@@ -85,13 +86,15 @@ Checkmate пройшов навантажувальне тестування з 
 
 Інструкції зі встановлення дивіться у [порталі документації Checkmate](https://checkmate.so/docs).
 
+Також доступні варіанти встановлення в один клік, як-от [Repocloud](https://repocloud.io/details/Checkmate), [Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) або [Cloudzy](https://cloudzy.com/marketplace/checkmate).
+
 Альтернативно, для швидкого розгортання Checkmate можна скористатися [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Південна Африка), [Cloudzy](https://cloudzy.com/marketplace/checkmate) або [Pikapods](https://www.pikapods.com/). Якщо хочете моніторити серверну інфраструктуру, знадобиться агент [Capture](https://github.com/bluewave-labs/capture). У репозиторії Capture також є інструкції зі встановлення.
 
 ### Використання власного УЦ
 
-Якщо потрібно моніторити внутрішні HTTPS-ендпоїнти з сертифікатами від приватних центрів сертифікації (як-от Smallstep), див. наш [посібник з довіри власному УЦ](../custom-ca-trust.md) для опцій конфігурації Docker.
+Якщо потрібно моніторити внутрішні HTTPS-ендпоїнти з сертифікатами від приватних центрів сертифікації (як-от Smallstep), див. наш [посібник з довіри власному УЦ](https://checkmate.so/docs/settings/custom-ca-trust) для опцій конфігурації Docker.
 
-Додаткову документацію шукайте у [каталозі docs](../).
+Додаткову документацію шукайте в [документації Checkmate](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Продуктивність
@@ -178,9 +181,9 @@ Checkmate пройшов навантажувальне тестування з 
 <a id="contributing"></a>
 ## Внески
 
-Ми — [Alex](http://github.com/ajhollid) (тімлід), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) і [Karen](https://github.com/karenvicent) — допомагаємо приватним особам і компаніям моніторити їх інфраструктуру та сервери.
+Ми — [Alex](http://github.com/ajhollid) (тімлід), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer) і [Mert](https://github.com/mertssmnoglu) — допомагаємо приватним особам і компаніям моніторити їх інфраструктуру та сервери.
 
-Ми пишаємося тим, що будуємо міцні зв'язки з контриб'юторами на всіх рівнях. Попри молодий вік, Checkmate уже зібрав понад 7000 зірок і понад 90 контриб'юторів з усього світу.
+Ми пишаємося тим, що будуємо міцні зв'язки з контриб'юторами на всіх рівнях. Попри молодий вік, Checkmate уже зібрав майже 11 тисяч зірок і понад 150 контриб'юторів з усього світу.
 
 Наш репозиторій позначений співробітниками **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes і NEC** — тож не соромтеся, приєднуйтесь, робіть внесок і вчіться разом з нами!
 

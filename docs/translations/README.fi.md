@@ -35,12 +35,13 @@
 
 <h1 align="center"><a href="https://bluewavelabs.ca" target="_blank">Checkmate</a></h1>
 
-<p align="center"><strong>Avoimen lähdekoodin sovellus saatavuuden ja infrastruktuurin valvontaan</strong></p>
+<p align="center"><strong>Avoimen lähdekoodin sovellus saatavuuden ja infrastruktuurin valvontaan</strong>
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
 
+<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+</p>
 <br>
 
 
@@ -85,13 +86,15 @@ Käyttöohjeet löytyvät [täältä](https://checkmate.so/docs).
 
 Asennusohjeet löytyvät [Checkmaten dokumentaatioportaalista](https://checkmate.so/docs).
 
+Tarjolla on myös yhden klikkauksen asennusvaihtoehtoja, kuten [Repocloud](https://repocloud.io/details/Checkmate), [Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) tai [Cloudzy](https://cloudzy.com/marketplace/checkmate).
+
 Vaihtoehtoisesti voit käyttää [Coolifya](https://coolify.io/), [Elestiota](https://elest.io/open-source/checkmate), [K8s:ää](../../charts/helm/checkmate/INSTALLATION.md), [Sive Hostia](https://sive.host) (Etelä-Afrikka), [Cloudzya](https://cloudzy.com/marketplace/checkmate) tai [Pikapodsia](https://www.pikapods.com/) Checkmate-instanssin nopeaan käynnistämiseen. Jos haluat valvoa palvelininfrastruktuuriasi, tarvitset [Capture-agentin](https://github.com/bluewave-labs/capture). Capturen repositorio sisältää myös sen asennusohjeet.
 
 ### Mukautetun CA:n käyttö
 
-Jos haluat valvoa sisäisiä HTTPS-päätepisteitä yksityisten varmenneauktoriteettien (kuten Smallstepin) varmenteilla, lue [mukautetun CA:n luottamusopas](../custom-ca-trust.md) Dockerin konfigurointivaihtoehdoista.
+Jos haluat valvoa sisäisiä HTTPS-päätepisteitä yksityisten varmenneauktoriteettien (kuten Smallstepin) varmenteilla, lue [mukautetun CA:n luottamusopas](https://checkmate.so/docs/settings/custom-ca-trust) Dockerin konfigurointivaihtoehdoista.
 
-Lisää dokumentaatiota löydät [docs-hakemistosta](../).
+Lisää dokumentaatiota löydät [Checkmaten dokumentaatiosta](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Suorituskyky
@@ -178,9 +181,9 @@ Kysy rohkeasti tai jaa ideoitasi — kuulemme sinusta mielellämme!
 <a id="contributing"></a>
 ## Osallistuminen
 
-Olemme [Alex](http://github.com/ajhollid) (tiiminvetäjä), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) ja [Karen](https://github.com/karenvicent) — autamme yksityishenkilöitä ja yrityksiä valvomaan infrastruktuuriaan ja palvelimiaan.
+Olemme [Alex](http://github.com/ajhollid) (tiiminvetäjä), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer) ja [Mert](https://github.com/mertssmnoglu) — autamme yksityishenkilöitä ja yrityksiä valvomaan infrastruktuuriaan ja palvelimiaan.
 
-Olemme ylpeitä siitä, että rakennamme vahvoja suhteita osallistujiin kaikilla tasoilla. Vaikka projekti on nuori, Checkmate on jo saanut yli 7000 tähteä ja yli 90 osallistujaa eri puolilta maailmaa.
+Olemme ylpeitä siitä, että rakennamme vahvoja suhteita osallistujiin kaikilla tasoilla. Vaikka projekti on nuori, Checkmate on jo saanut lähes 11 000 tähteä ja yli 150 osallistujaa eri puolilta maailmaa.
 
 Repoamme tähdittävät työntekijät yhtiöistä **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes ja NEC** — älä siis epäröi, hyppää mukaan, osallistu ja opi kanssamme!
 

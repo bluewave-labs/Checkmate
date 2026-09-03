@@ -35,12 +35,13 @@
 
 <h1 align="center"><a href="https://bluewavelabs.ca" target="_blank">Checkmate</a></h1>
 
-<p align="center"><strong>Ứng dụng mã nguồn mở giám sát tình trạng hoạt động và hạ tầng</strong></p>
+<p align="center"><strong>Ứng dụng mã nguồn mở giám sát tình trạng hoạt động và hạ tầng</strong>
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
 
+<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+</p>
 <br>
 
 
@@ -85,13 +86,15 @@ Có thể tìm thấy hướng dẫn sử dụng [tại đây](https://checkmate
 
 Xem hướng dẫn cài đặt trong [cổng tài liệu của Checkmate](https://checkmate.so/docs).
 
+Ngoài ra còn có các tùy chọn cài đặt chỉ với 1 cú nhấp như [Repocloud](https://repocloud.io/details/Checkmate), [Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) hoặc [Cloudzy](https://cloudzy.com/marketplace/checkmate).
+
 Hoặc bạn có thể dùng [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Nam Phi), [Cloudzy](https://cloudzy.com/marketplace/checkmate) hoặc [Pikapods](https://www.pikapods.com/) để dựng nhanh một instance Checkmate. Nếu muốn giám sát hạ tầng máy chủ, bạn sẽ cần [agent Capture](https://github.com/bluewave-labs/capture). Kho Capture cũng chứa hướng dẫn cài đặt.
 
 ### Sử dụng CA tuỳ chỉnh
 
-Nếu bạn cần giám sát các endpoint HTTPS nội bộ với chứng chỉ từ các tổ chức phát hành riêng (ví dụ Smallstep), hãy xem [Hướng dẫn tin cậy CA tuỳ chỉnh](../custom-ca-trust.md) với các tuỳ chọn cấu hình Docker.
+Nếu bạn cần giám sát các endpoint HTTPS nội bộ với chứng chỉ từ các tổ chức phát hành riêng (ví dụ Smallstep), hãy xem [Hướng dẫn tin cậy CA tuỳ chỉnh](https://checkmate.so/docs/settings/custom-ca-trust) với các tuỳ chọn cấu hình Docker.
 
-Để biết thêm tài liệu, xem [thư mục docs](../).
+Để biết thêm tài liệu, xem [tài liệu của Checkmate](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Hiệu năng
@@ -178,9 +181,9 @@ Nếu bạn có câu hỏi, góp ý hoặc bình luận, có một vài tuỳ ch
 <a id="contributing"></a>
 ## Đóng góp
 
-Chúng tôi là [Alex](http://github.com/ajhollid) (trưởng nhóm), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) và [Karen](https://github.com/karenvicent), hỗ trợ cá nhân và doanh nghiệp giám sát hạ tầng và máy chủ.
+Chúng tôi là [Alex](http://github.com/ajhollid) (trưởng nhóm), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer) và [Mert](https://github.com/mertssmnoglu), hỗ trợ cá nhân và doanh nghiệp giám sát hạ tầng và máy chủ.
 
-Chúng tôi tự hào xây dựng những mối liên kết bền chặt với người đóng góp ở mọi cấp độ. Dù còn trẻ, Checkmate đã có hơn 7000 sao và thu hút hơn 90 người đóng góp trên khắp thế giới.
+Chúng tôi tự hào xây dựng những mối liên kết bền chặt với người đóng góp ở mọi cấp độ. Dù còn trẻ, Checkmate đã có gần 11.000 sao và thu hút hơn 150 người đóng góp trên khắp thế giới.
 
 Kho của chúng tôi đã được nhân viên của **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes và NEC** đánh sao — đừng ngần ngại, hãy tham gia, đóng góp và học hỏi cùng chúng tôi!
 

@@ -32,12 +32,13 @@
 
 <h1 align="center"><a href="https://bluewavelabs.ca" target="_blank">Checkmate</a></h1>
 
-<p align="center"><strong>Una aplicación de código abierto para monitorización de disponibilidad e infraestructura</strong></p>
+<p align="center"><strong>Una aplicación de código abierto para monitorización de disponibilidad e infraestructura</strong>
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
 
+<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+</p>
 <br>
 
 
@@ -82,13 +83,15 @@ Las instrucciones de uso están disponibles [aquí](https://checkmate.so/docs).
 
 Consulta las instrucciones de instalación en el [portal de documentación de Checkmate](https://checkmate.so/docs).
 
+También existen opciones de instalación con un clic como [Repocloud](https://repocloud.io/details/Checkmate), [Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) o [Cloudzy](https://cloudzy.com/marketplace/checkmate).
+
 También puedes utilizar [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Sudáfrica), [Cloudzy](https://cloudzy.com/marketplace/checkmate) o [Pikapods](https://www.pikapods.com/) para levantar rápidamente una instancia de Checkmate. Si quieres monitorizar la infraestructura de tus servidores, necesitarás el [agente Capture](https://github.com/bluewave-labs/capture). El repositorio de Capture también incluye las instrucciones de instalación.
 
 ### Uso de una CA personalizada
 
-Si necesitas monitorizar endpoints HTTPS internos con certificados emitidos por autoridades certificadoras privadas (como Smallstep), consulta nuestra [guía de confianza para CAs personalizadas](../custom-ca-trust.md) con las opciones de configuración para Docker.
+Si necesitas monitorizar endpoints HTTPS internos con certificados emitidos por autoridades certificadoras privadas (como Smallstep), consulta nuestra [guía de confianza para CAs personalizadas](https://checkmate.so/docs/settings/custom-ca-trust) con las opciones de configuración para Docker.
 
-Para más documentación, consulta el [directorio docs](../).
+Para más documentación, consulta la [documentación de Checkmate](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Rendimiento
@@ -175,9 +178,9 @@ No dudes en preguntar o compartir tus ideas — ¡nos encantará saber de ti!
 <a id="contributing"></a>
 ## Contribuir
 
-Somos [Alex](http://github.com/ajhollid) (team lead), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) y [Karen](https://github.com/karenvicent), y ayudamos a personas y empresas a monitorizar su infraestructura y sus servidores.
+Somos [Alex](http://github.com/ajhollid) (team lead), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer) y [Mert](https://github.com/mertssmnoglu), y ayudamos a personas y empresas a monitorizar su infraestructura y sus servidores.
 
-Nos enorgullecemos de construir relaciones sólidas con la comunidad de contribuidores de cualquier nivel. A pesar de ser un proyecto joven, Checkmate ya ha conseguido más de 7000 estrellas y reúne a 90+ contribuidores de todo el mundo.
+Nos enorgullecemos de construir relaciones sólidas con la comunidad de contribuidores de cualquier nivel. A pesar de ser un proyecto joven, Checkmate ya ha conseguido casi 11.000 estrellas y reúne a 150+ contribuidores de todo el mundo.
 
 Nuestro repositorio cuenta con estrellas de empleados de **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes y NEC** — así que no te cortes: únete, contribuye y aprende con nosotros.
 

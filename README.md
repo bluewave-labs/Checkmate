@@ -123,9 +123,9 @@ Alternatively, you can also use [Coolify](https://coolify.io/), [Elestio](https:
 
 ### Using a Custom CA
 
-If you need to monitor internal HTTPS endpoints with certificates from private Certificate Authorities (like Smallstep), see our [Custom CA Trust Guide](./docs/custom-ca-trust.md) for Docker configuration options.
+If you need to monitor internal HTTPS endpoints with certificates from private Certificate Authorities (like Smallstep), see our [Custom CA Trust Guide](https://checkmate.so/docs/settings/custom-ca-trust) for Docker configuration options.
 
-For more documentation, see the [docs directory](./docs/).
+For more documentation, see the [Checkmate documentation](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Performance

@@ -32,12 +32,13 @@
 
 <h1 align="center"><a href="https://bluewavelabs.ca" target="_blank">Checkmate</a></h1>
 
-<p align="center"><strong>Açık kaynaklı çalışma süresi ve altyapı izleme uygulaması</strong></p>
+<p align="center"><strong>Açık kaynaklı çalışma süresi ve altyapı izleme uygulaması</strong>
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
 
+<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+</p>
 <br>
 
 
@@ -82,13 +83,15 @@ Kullanım talimatlarını [burada](https://checkmate.so/docs) bulabilirsiniz.
 
 Kurulum talimatları için [Checkmate dokümantasyon portalına](https://checkmate.so/docs) bakın.
 
+Ayrıca [Repocloud](https://repocloud.io/details/Checkmate), [Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) veya [Cloudzy](https://cloudzy.com/marketplace/checkmate) gibi tek tıkla kurulum seçenekleri de vardır.
+
 Alternatif olarak hızlıca bir Checkmate örneği çalıştırmak için [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Güney Afrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) veya [Pikapods](https://www.pikapods.com/)'u kullanabilirsiniz. Sunucu altyapınızı izlemek isterseniz [Capture ajanına](https://github.com/bluewave-labs/capture) ihtiyacınız olacak. Capture deposu da kurulum talimatlarını içerir.
 
 ### Özel CA Kullanımı
 
-Özel sertifika otoritelerinden (örneğin Smallstep) gelen sertifikalarla iç HTTPS uç noktalarını izlemeniz gerekiyorsa, Docker yapılandırma seçenekleri için [Özel CA Güven Kılavuzumuza](../custom-ca-trust.md) bakın.
+Özel sertifika otoritelerinden (örneğin Smallstep) gelen sertifikalarla iç HTTPS uç noktalarını izlemeniz gerekiyorsa, Docker yapılandırma seçenekleri için [Özel CA Güven Kılavuzumuza](https://checkmate.so/docs/settings/custom-ca-trust) bakın.
 
-Daha fazla dokümantasyon için [docs dizinine](../) göz atın.
+Daha fazla dokümantasyon için [Checkmate dokümantasyonuna](https://checkmate.so/docs) göz atın.
 
 <a id="performance"></a>
 ## Performans
@@ -175,9 +178,9 @@ Soru sormaktan ya da fikirlerinizi paylaşmaktan çekinmeyin — sizi dinlemekte
 <a id="contributing"></a>
 ## Katkıda bulunma
 
-Biz; [Alex](http://github.com/ajhollid) (takım lideri), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) ve [Karen](https://github.com/karenvicent) olarak bireylerin ve işletmelerin altyapı ile sunucularını izlemelerine yardımcı oluyoruz.
+Biz; [Alex](http://github.com/ajhollid) (takım lideri), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer) ve [Mert](https://github.com/mertssmnoglu) olarak bireylerin ve işletmelerin altyapı ile sunucularını izlemelerine yardımcı oluyoruz.
 
-Her seviyedeki katkıda bulunanlarla güçlü bağlar kurmaktan gurur duyuyoruz. Genç bir proje olmasına rağmen Checkmate şimdiden 7000'den fazla yıldız ve dünya genelinde 90'dan fazla katkıda bulunan kazanmıştır.
+Her seviyedeki katkıda bulunanlarla güçlü bağlar kurmaktan gurur duyuyoruz. Genç bir proje olmasına rağmen Checkmate şimdiden 11 bine yakın yıldız ve dünya genelinde 150'den fazla katkıda bulunan kazanmıştır.
 
 Reponuz **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes ve NEC** çalışanları tarafından yıldızlanmıştır — siz de çekinmeyin, katılın, katkıda bulunun ve bizimle birlikte öğrenin!
 

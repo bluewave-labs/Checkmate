@@ -32,12 +32,13 @@
 
 <h1 align="center"><a href="https://bluewavelabs.ca" target="_blank">Checkmate</a></h1>
 
-<p align="center"><strong>Eine Open-Source-Anwendung zur Überwachung von Verfügbarkeit und Infrastruktur</strong></p>
+<p align="center"><strong>Eine Open-Source-Anwendung zur Überwachung von Verfügbarkeit und Infrastruktur</strong>
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
 
+<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+</p>
 <br>
 
 
@@ -82,13 +83,15 @@ Die Nutzungsanleitung findest du [hier](https://checkmate.so/docs).
 
 Die Installationsanleitung findest du im [Dokumentationsportal von Checkmate](https://checkmate.so/docs).
 
+Es gibt auch 1-Klick-Installationsoptionen wie [Repocloud](https://repocloud.io/details/Checkmate), [Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) oder [Cloudzy](https://cloudzy.com/marketplace/checkmate).
+
 Alternativ kannst du [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Südafrika), [Cloudzy](https://cloudzy.com/marketplace/checkmate) oder [Pikapods](https://www.pikapods.com/) nutzen, um schnell eine Checkmate-Instanz hochzuziehen. Für das Monitoring deiner Server-Infrastruktur brauchst du den [Capture-Agenten](https://github.com/bluewave-labs/capture); dessen Repository enthält ebenfalls eine Installationsanleitung.
 
 ### Eigene CA verwenden
 
-Wenn du interne HTTPS-Endpunkte mit Zertifikaten privater Zertifizierungsstellen (z. B. Smallstep) überwachen möchtest, schau in unseren [Leitfaden für eigene CAs](../custom-ca-trust.md) — dort stehen die passenden Docker-Konfigurationen.
+Wenn du interne HTTPS-Endpunkte mit Zertifikaten privater Zertifizierungsstellen (z. B. Smallstep) überwachen möchtest, schau in unseren [Leitfaden für eigene CAs](https://checkmate.so/docs/settings/custom-ca-trust) — dort stehen die passenden Docker-Konfigurationen.
 
-Weitere Dokumentation liegt im [docs-Verzeichnis](../).
+Weitere Dokumentation findest du in der [Checkmate-Dokumentation](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Leistung
@@ -175,9 +178,9 @@ Frag einfach drauflos oder teile deine Ideen — wir freuen uns auf dein Feedbac
 <a id="contributing"></a>
 ## Mitwirken
 
-Wir sind [Alex](http://github.com/ajhollid) (Team-Lead), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) und [Karen](https://github.com/karenvicent) und helfen Einzelpersonen und Unternehmen dabei, ihre Infrastruktur und Server zu überwachen.
+Wir sind [Alex](http://github.com/ajhollid) (Team-Lead), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer) und [Mert](https://github.com/mertssmnoglu) und helfen Einzelpersonen und Unternehmen dabei, ihre Infrastruktur und Server zu überwachen.
 
-Wir sind stolz darauf, auf jeder Ebene starke Beziehungen zu unseren Beitragenden zu pflegen. Obwohl Checkmate ein junges Projekt ist, hat es bereits über 7.000 Sterne und mehr als 90 Beitragende aus aller Welt angezogen.
+Wir sind stolz darauf, auf jeder Ebene starke Beziehungen zu unseren Beitragenden zu pflegen. Obwohl Checkmate ein junges Projekt ist, hat es bereits fast 11.000 Sterne und mehr als 150 Beitragende aus aller Welt angezogen.
 
 Mitarbeiterinnen und Mitarbeiter von **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes und NEC** haben unser Repository bereits gesternt — also keine falsche Zurückhaltung: mitmachen, beitragen und mit uns lernen!
 

@@ -32,12 +32,13 @@
 
 <h1 align="center"><a href="https://bluewavelabs.ca" target="_blank">Checkmate</a></h1>
 
-<p align="center"><strong>Une application open source de surveillance de la disponibilité et de l'infrastructure</strong></p>
+<p align="center"><strong>Une application open source de surveillance de la disponibilité et de l'infrastructure</strong>
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
 
+<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+</p>
 <br>
 
 
@@ -82,13 +83,15 @@ Les instructions d'utilisation sont disponibles [ici](https://checkmate.so/docs)
 
 Consultez les instructions d'installation dans le [portail de documentation Checkmate](https://checkmate.so/docs).
 
+Il existe également des options d'installation en un clic comme [Repocloud](https://repocloud.io/details/Checkmate), [Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) ou [Cloudzy](https://cloudzy.com/marketplace/checkmate).
+
 Vous pouvez également utiliser [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (Afrique du Sud), [Cloudzy](https://cloudzy.com/marketplace/checkmate) ou [Pikapods](https://www.pikapods.com/) pour démarrer rapidement une instance Checkmate. Pour surveiller votre infrastructure serveur, vous aurez besoin de l'[agent Capture](https://github.com/bluewave-labs/capture). Le dépôt Capture contient également les instructions d'installation.
 
 ### Utiliser une autorité de certification personnalisée
 
-Si vous devez surveiller des points d'accès HTTPS internes avec des certificats issus d'autorités de certification privées (comme Smallstep), consultez notre [guide de confiance d'autorité de certification personnalisée](../custom-ca-trust.md) pour les options de configuration Docker.
+Si vous devez surveiller des points d'accès HTTPS internes avec des certificats issus d'autorités de certification privées (comme Smallstep), consultez notre [guide de confiance d'autorité de certification personnalisée](https://checkmate.so/docs/settings/custom-ca-trust) pour les options de configuration Docker.
 
-Pour plus de documentation, consultez le [répertoire docs](../).
+Pour plus de documentation, consultez la [documentation Checkmate](https://checkmate.so/docs).
 
 <a id="performance"></a>
 ## Performance
@@ -175,9 +178,9 @@ N'hésitez pas à poser vos questions ou partager vos idées — nous adorerions
 <a id="contributing"></a>
 ## Contribuer
 
-Nous sommes [Alex](http://github.com/ajhollid) (chef d'équipe), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Mert](https://github.com/mertssmnoglu) et [Karen](https://github.com/karenvicent), et nous aidons les particuliers et les entreprises à surveiller leur infrastructure et leurs serveurs.
+Nous sommes [Alex](http://github.com/ajhollid) (chef d'équipe), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer) et [Mert](https://github.com/mertssmnoglu), et nous aidons les particuliers et les entreprises à surveiller leur infrastructure et leurs serveurs.
 
-Nous sommes fiers de construire des liens solides avec les contributeurs à tous les niveaux. Bien que jeune, Checkmate a déjà obtenu plus de 7 000 étoiles et attiré plus de 90 contributeurs du monde entier.
+Nous sommes fiers de construire des liens solides avec les contributeurs à tous les niveaux. Bien que jeune, Checkmate a déjà obtenu près de 11 000 étoiles et attiré plus de 150 contributeurs du monde entier.
 
 Notre dépôt a été suivi par des employés de **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes et NEC** — alors n'hésitez pas, rejoignez-nous, contribuez et apprenez avec nous !
 
