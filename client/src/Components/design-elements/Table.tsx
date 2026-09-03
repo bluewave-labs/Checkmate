@@ -197,7 +197,7 @@ export function DataTable<
 					"& :is(th)": {
 						backgroundColor: theme.palette.background.paper,
 						color: theme.palette.text.secondary,
-						fontWeight: 500,
+						fontWeight: 600,
 						textTransform: "uppercase",
 						letterSpacing: "0.08em",
 						padding: `${theme.spacing(SPACING.LG)} ${theme.spacing(LAYOUT.MD)}`,

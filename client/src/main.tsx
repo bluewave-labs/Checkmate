@@ -1,5 +1,7 @@
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
+// Self-hosted so the app keeps its typeface on air-gapped installs
+import "@fontsource-variable/geist";
 import "./index.css";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Provider } from "react-redux";

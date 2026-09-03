@@ -57,7 +57,7 @@ export type PaletteKey = {
 	[K in keyof Theme["palette"]]: Theme["palette"][K] extends { main: any } ? K : never;
 }[keyof Theme["palette"]];
 
-const fontFamilyPrimary = "system-ui, sans-serif";
+const fontFamilyPrimary = '"Geist Variable", system-ui, sans-serif';
 const fontFamilyMonospace =
 	'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace';
 const shadow =
@@ -85,11 +85,13 @@ export const theme = (mode: string, palette: any) =>
 			fontSize: typographyLevels.base,
 			h1: {
 				fontSize: typographyLevels.xxl,
-				fontWeight: 500,
+				fontWeight: 700,
+				letterSpacing: "-0.015em",
 			},
 			h2: {
 				fontSize: typographyLevels.l,
-				fontWeight: 400,
+				fontWeight: 600,
+				letterSpacing: "-0.01em",
 			},
 			body1: {
 				fontSize: typographyLevels.m,
