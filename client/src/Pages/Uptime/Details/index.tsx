@@ -35,6 +35,17 @@ import type { DateRange } from "@/Types/Query";
 
 const certificateDateFormat = "MMM D, YYYY h A";
 
+const isHttpsUrl = (url?: string): boolean => {
+	if (!url) {
+		return false;
+	}
+	try {
+		return new URL(url).protocol === "https:";
+	} catch {
+		return false;
+	}
+};
+
 interface CertificateResponse {
 	certificateDate: string;
 }
@@ -81,13 +92,15 @@ const UptimeDetailsPage = () => {
 	const monitor = monitorData?.monitor;
 	const monitorStats = monitorDetailsData?.monitorStats ?? null;
 
-	// Certificate fetch - only for HTTP monitors
+	// Certificate fetch - only for monitors served over HTTPS. A "http" type
+	// monitor may still have an http:// URL, which serves no certificate, so the
+	// scheme is gated here to match the server rather than requesting a 400.
 	const certificateUrl = useMemo(() => {
-		if (!monitorId || monitor?.type !== "http") {
+		if (!monitorId || monitor?.type !== "http" || !isHttpsUrl(monitor?.url)) {
 			return null;
 		}
 		return `/monitors/certificate/${monitorId}`;
-	}, [monitorId, monitor?.type]);
+	}, [monitorId, monitor?.type, monitor?.url]);
 
 	const { data: certificateData } = useGet<CertificateResponse>(
 		certificateUrl,
