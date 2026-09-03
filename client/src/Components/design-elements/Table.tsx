@@ -79,6 +79,25 @@ export function DataTable<
 	};
 
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
+
+	// Selecting text inside a row ends in a mouseup on that row, which would
+	// otherwise navigate away and take the text with it. Ignore the click when
+	// the selection is inside the row that was clicked - a leftover selection
+	// elsewhere on the page must not swallow a legitimate click.
+	const hasTextSelectionWithin = (element: Element) => {
+		const selection = window.getSelection();
+		if (!selection || selection.isCollapsed || !selection.toString().trim()) {
+			return false;
+		}
+		return (
+			selection.anchorNode !== null &&
+			element.contains(
+				selection.anchorNode.nodeType === Node.TEXT_NODE
+					? selection.anchorNode.parentNode
+					: selection.anchorNode
+			)
+		);
+	};
 	const isInteractive = Boolean(onRowClick) || expandableRows;
 
 	if (data.length === 0 || headers.length === 0) {
@@ -100,7 +119,10 @@ export function DataTable<
 					keys.push(key);
 					return (
 						<Stack
-							onClick={() => (onRowClick ? onRowClick(row) : null)}
+							onClick={(e) => {
+								if (hasTextSelectionWithin(e.currentTarget)) return;
+								if (onRowClick) onRowClick(row);
+							}}
 							spacing={theme.spacing(LAYOUT.XS)}
 							sx={{
 								borderStyle: "solid",
@@ -246,7 +268,8 @@ export function DataTable<
 										cursor: isInteractive ? "pointer" : "default",
 										...(getRowSx?.(row) as object),
 									}}
-									onClick={() => {
+									onClick={(e) => {
+										if (hasTextSelectionWithin(e.currentTarget)) return;
 										if (expandableRows) handleExpand(row);
 										else if (onRowClick) onRowClick(row);
 									}}
