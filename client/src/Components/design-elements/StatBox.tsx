@@ -19,15 +19,8 @@ export const GradientBox = ({ children, palette, sx, interactive }: GradientBox)
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const isLight = theme.palette.mode === "light";
 	const paper = theme.palette.background.paper;
-	// In light mode `paper` is white, and lightening white is a no-op - the
-	// gradient collapses flat. Darken slightly towards the page ground instead.
 	const paperStart = isLight ? darken(paper, 0.02) : lighten(paper, 0.08);
 	const paperEnd = paper;
-	// Both ends stay close to `main` so MUI's derived `contrastText` still
-	// applies - that is white on the dark light-mode fills and near-black on
-	// the lighter dark-mode ones, so a bigger lift would break one or other.
-	// `light` is a mid-tone used for status dots and chart marks, too pale to
-	// use here, so the lift comes off `main` instead.
 	const bg = palette
 		? `linear-gradient(135deg, ${lighten(theme.palette[palette].main, 0.12)} 0%, ${theme.palette[palette].main} 100%)`
 		: `linear-gradient(135deg, ${paperStart} 0%, ${paperEnd} 100%)`;

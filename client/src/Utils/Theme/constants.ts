@@ -25,6 +25,13 @@ export const LAYOUT = {
  */
 export const CONTROL_HEIGHT = 32;
 
+/**
+ * Width of a square-ish icon-only control that sits in a header strip - wider
+ * than CONTROL_HEIGHT so the icon has breathing room either side of the
+ * dividers between them.
+ */
+export const ICON_CONTROL_WIDTH = 36;
+
 export const HOVER = {
 	DARKEN: 0.06, // This is a coefficient for darkening function
 	ROW: 0.025, // Overlay alpha for hoverable rows and cards

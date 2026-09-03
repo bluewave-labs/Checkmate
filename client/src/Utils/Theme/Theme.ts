@@ -134,9 +134,6 @@ export const theme = (mode: string, palette: any) =>
 				styleOverrides: {
 					root: ({ theme }) => ({
 						"&.Mui-focusVisible": {
-							// Same green as the input focus ring - `main` is only
-							// 2.86:1 on the dark ground, so keyboard focus was
-							// barely visible there.
 							outline: `1px solid ${
 								theme.palette.mode === "dark"
 									? theme.palette.primary.light
@@ -196,23 +193,14 @@ export const theme = (mode: string, palette: any) =>
 				},
 			},
 
-			// One border story for every outlined input - text fields, selects,
-			// autocompletes, date and colour pickers all route through this.
-			// Resting: divider. Hover: a step darker, so there is a cue without
-			// jumping to near-black. Focus: the brand, at 2px.
 			MuiOutlinedInput: {
 				styleOverrides: {
-					// MUI pads the inner input 8.5px top and bottom, which with an
-					// 18.7px line-height needs 35.7px - taller than the control
-					// itself, so the text was being clipped by overflow:hidden.
 					input: {
 						paddingTop: 0,
 						paddingBottom: 0,
 						height: "100%",
 					},
 					root: ({ theme }) => ({
-						// The Select renders a div rather than an input, so it needs
-						// the same treatment to sit inside the control height.
 						"& .MuiSelect-select": {
 							paddingTop: 0,
 							paddingBottom: 0,

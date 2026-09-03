@@ -220,10 +220,6 @@ export function DataTable<
 					"& .MuiTableBody-root .MuiTableRow-root:last-child .MuiTableCell-root": {
 						borderBottom: "none",
 					},
-					// Cells paint `background.paper`, so a background set on the row
-					// never shows. Selection and hover both have to be applied at
-					// cell level, and selection has to come first so hover layers
-					// on top of it rather than replacing it.
 					"& .MuiTableBody-root .MuiTableRow-root.is-selected .MuiTableCell-root": {
 						backgroundColor: theme.palette.action.selected,
 					},

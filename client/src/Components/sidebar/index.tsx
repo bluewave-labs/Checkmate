@@ -73,9 +73,6 @@ export const Sidebar = () => {
 				gap={theme.spacing(LAYOUT.SM)}
 				borderRight={`1px solid ${theme.palette.divider}`}
 				width={width}
-				// On `paper` rather than inheriting the page ground, so the nav
-				// reads as a surface and the content area stays the darker
-				// `default`. Opaque, so the blur it used to carry is gone.
 				bgcolor={theme.palette.background.paper}
 				sx={{
 					touchAction: "none",

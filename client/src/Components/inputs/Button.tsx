@@ -44,9 +44,6 @@ export const ButtonInput = ({ sx, ...props }: ButtonProps) => {
 			sx={{
 				textTransform: "none",
 				height: CONTROL_HEIGHT,
-				// MUI's button line-height is 1.75 (22.75px at 13px), which with the
-				// 6px padding needs 34.75px - already over its own box at 34, and
-				// clipping at 32. 1.2 leaves room for tall scripts too.
 				lineHeight: 1.2,
 				fontWeight: 400,
 				borderRadius: 2,
