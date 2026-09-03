@@ -52,7 +52,11 @@ type DataTableProps<T extends { id?: string | number; _id?: string | number }> =
 	emptyViewText?: string;
 	emptyViewPositive?: boolean;
 	getRowSx?: (row: T) => SxProps<Theme>;
-	/** Marks a row selected so it gets the shared selected + hover treatment. */
+	/**
+	 * Marks a row selected so it gets the shared selected + hover treatment.
+	 * Desktop table only - the small-screen card branch does not style
+	 * selection yet, same as `getRowSx`.
+	 */
 	isRowSelected?: (row: T) => boolean;
 };
 

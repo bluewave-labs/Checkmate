@@ -134,7 +134,14 @@ export const theme = (mode: string, palette: any) =>
 				styleOverrides: {
 					root: ({ theme }) => ({
 						"&.Mui-focusVisible": {
-							outline: `1px solid ${theme.palette.primary.main}`,
+							// Same green as the input focus ring - `main` is only
+							// 2.86:1 on the dark ground, so keyboard focus was
+							// barely visible there.
+							outline: `1px solid ${
+								theme.palette.mode === "dark"
+									? theme.palette.primary.light
+									: theme.palette.primary.main
+							}`,
 							outlineOffset: 2,
 						},
 					}),

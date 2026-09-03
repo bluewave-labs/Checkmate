@@ -149,7 +149,6 @@ const SummaryIncidentItem = ({ incident }: { incident: IncidentSummaryItem }) =>
 			>
 				<Icon
 					icon={Globe}
-					size={16}
 					color={theme.palette.text.secondary}
 				/>
 				<Typography
@@ -221,32 +220,17 @@ export const SummaryCardStats = ({ summary }: SummaryCardStatsProps) => {
 	return (
 		<SummaryCard title={t("pages.incidents.summaryCard.incidentStats.title")}>
 			<SummaryItem
-				icon={
-					<Icon
-						icon={Bell}
-						size={16}
-					/>
-				}
+				icon={<Icon icon={Bell} />}
 				label={t("pages.incidents.summaryCard.incidentStats.totalIncidents")}
 				value={summary?.total || 0}
 			/>
 			<SummaryItem
-				icon={
-					<Icon
-						icon={TriangleAlert}
-						size={16}
-					/>
-				}
+				icon={<Icon icon={TriangleAlert} />}
 				label={t("pages.incidents.summaryCard.incidentStats.mostAffectedMonitor")}
 				value={mostAffected}
 			/>
 			<SummaryItem
-				icon={
-					<Icon
-						icon={Wrench}
-						size={16}
-					/>
-				}
+				icon={<Icon icon={Wrench} />}
 				label={t("pages.incidents.summaryCard.incidentStats.avgResolutionTime")}
 				value={
 					summary.total > 0

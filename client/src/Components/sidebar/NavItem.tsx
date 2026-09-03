@@ -26,10 +26,13 @@ export const NavItem = ({
 		? theme.palette.sidebar.accent
 		: theme.palette.text.secondary;
 
+	// Both states come from the same family so selected always reads stronger
+	// than a hovered neighbour. MUI's default action.hover is lighter than
+	// action.selected on a dark ground, which inverted the two.
 	const buttonBgColor = selected ? theme.palette.action.selected : "transparent";
 	const buttonBgHoverColor = selected
-		? theme.palette.action.selected
-		: theme.palette.action.hover;
+		? theme.palette.action.selectedHover
+		: theme.palette.action.rowHover;
 	const fontWeight = selected ? 600 : 400;
 	return (
 		<Tooltip
