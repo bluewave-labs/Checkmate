@@ -1,10 +1,13 @@
 import type { MonitorStatus, MonitorType } from "@/Types/Monitor";
 import type { PaletteKey } from "@/Utils/Theme/Theme";
 import type { ValueType } from "@/Components/design-elements/StatusLabel";
-import type {
-	DockerContainerMount,
-	DockerContainerPort,
-	DockerContainerState,
+import {
+	DockerLogStreams,
+	type DockerContainerMount,
+	type DockerContainerPort,
+	type DockerContainerState,
+	type DockerLog,
+	type DockerLogLine,
 } from "@/Types/Check";
 
 export const getMonitorPath = (type: MonitorType): string => {
@@ -143,4 +146,36 @@ export const getDockerMountLabel = (mount: DockerContainerMount) => {
 		return isAnonymousVolumeName(mount.name) ? mount.name.slice(0, 12) : mount.name;
 	if (mount.source) return mount.source;
 	return mount.type;
+};
+
+export const DockerLogStreamFilters = ["all", ...DockerLogStreams] as const;
+export type DockerLogStreamFilter = (typeof DockerLogStreamFilters)[number];
+
+export interface DockerLogRow extends DockerLogLine {
+	key: string;
+	gapBefore: boolean; // This signifies lines skipped
+}
+
+export const flattenDockerLogs = (logs: DockerLog[]): DockerLogRow[] => {
+	const rows: DockerLogRow[] = [];
+	for (const log of [...logs].reverse()) {
+		log.lines.forEach((line: DockerLogLine, idx: number) => {
+			rows.push({ ...line, key: `${log.id}:${idx}`, gapBefore: idx === 0 && log.gap });
+		});
+	}
+	return rows;
+};
+
+export const filterDockerLogRows = (
+	rows: DockerLogRow[],
+	stream: DockerLogStreamFilter,
+	query: string
+): DockerLogRow[] => {
+	const normalizedQuery = query.trim().toLowerCase();
+	return rows.filter((row) => {
+		return (
+			(stream === "all" || row.stream === stream) &&
+			(normalizedQuery === "" || row.text.toLowerCase().includes(normalizedQuery))
+		);
+	});
 };

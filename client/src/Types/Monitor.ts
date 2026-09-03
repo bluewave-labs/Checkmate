@@ -5,6 +5,7 @@ import type {
 	DailyCheckBucket,
 	DockerContainerInfo,
 	DockerContainerSummary,
+	DockerLog,
 } from "@/Types/Check";
 import type { PageSpeedGroupedCheck } from "@/Types/Check";
 import type { GeoContinent } from "@/Types/GeoCheck";
@@ -322,6 +323,10 @@ export interface DockerContainerResponse {
 	stats: DockerContainerStats;
 }
 
+export interface DockerContainerLogsResponse {
+	logs: DockerLog[];
+	nextCursor: string | null;
+}
 export interface Game {
 	name: string;
 	options?: {

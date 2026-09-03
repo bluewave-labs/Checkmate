@@ -70,7 +70,12 @@ const DockerDetailsPage = ({ open = "overview" }: DockerContainerDetailsProps) =
 				<Tab label={t("pages.docker.container.tabs.logs")} />
 			</Tabs>
 			{activeTab === 0 && <TabOverview stats={stats} />}
-			{activeTab === 1 && <TabLogs />}
+			{activeTab === 1 && (
+				<TabLogs
+					monitorId={monitorId}
+					containerName={containerName}
+				/>
+			)}
 		</BasePage>
 	);
 };
