@@ -78,6 +78,10 @@ export const Sidebar = () => {
 					transition: transition,
 					zIndex: 1000,
 					backdropFilter: "blur(8px)",
+					// Sits on `paper` rather than inheriting the page ground, so
+					// the nav reads as a surface and the content area behind it
+					// stays the slightly darker `default`.
+					backgroundColor: theme.palette.background.paper,
 				}}
 			>
 				<List
