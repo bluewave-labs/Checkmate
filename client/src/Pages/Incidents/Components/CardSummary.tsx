@@ -30,6 +30,10 @@ const SummaryItem = ({ icon, label, value }: SummaryItemProps) => {
 				direction="row"
 				alignItems="center"
 				gap={theme.spacing(2)}
+				// The icons are supporting marks beside the label, not content,
+				// so they take secondary ink rather than lucide's currentColor
+				// default, which renders them heavier than the text.
+				sx={{ "& svg": { color: theme.palette.text.secondary } }}
 			>
 				{icon}
 				<Typography variant="body1">{label}</Typography>
@@ -143,7 +147,11 @@ const SummaryIncidentItem = ({ incident }: { incident: IncidentSummaryItem }) =>
 					gap: theme.spacing(2),
 				}}
 			>
-				<Icon icon={Globe} />
+				<Icon
+					icon={Globe}
+					size={16}
+					color={theme.palette.text.secondary}
+				/>
 				<Typography
 					variant="body1"
 					fontWeight={500}
@@ -213,17 +221,32 @@ export const SummaryCardStats = ({ summary }: SummaryCardStatsProps) => {
 	return (
 		<SummaryCard title={t("pages.incidents.summaryCard.incidentStats.title")}>
 			<SummaryItem
-				icon={<Icon icon={Bell} />}
+				icon={
+					<Icon
+						icon={Bell}
+						size={16}
+					/>
+				}
 				label={t("pages.incidents.summaryCard.incidentStats.totalIncidents")}
 				value={summary?.total || 0}
 			/>
 			<SummaryItem
-				icon={<Icon icon={TriangleAlert} />}
+				icon={
+					<Icon
+						icon={TriangleAlert}
+						size={16}
+					/>
+				}
 				label={t("pages.incidents.summaryCard.incidentStats.mostAffectedMonitor")}
 				value={mostAffected}
 			/>
 			<SummaryItem
-				icon={<Icon icon={Wrench} />}
+				icon={
+					<Icon
+						icon={Wrench}
+						size={16}
+					/>
+				}
 				label={t("pages.incidents.summaryCard.incidentStats.avgResolutionTime")}
 				value={
 					summary.total > 0

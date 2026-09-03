@@ -37,8 +37,14 @@ export const OfflineBanner = ({ visible }: OfflineBannerProps) => {
 				left: 0,
 				right: 0,
 				zIndex: theme.zIndex.snackbar,
-				backgroundColor: theme.palette.error.main,
-				color: theme.palette.error.contrastText,
+				// `error.dark` rather than `main`: in dark mode `main` is light
+				// enough that MUI derives near-black contrastText, which reads as
+				// a warning rather than an outage on the one surface where
+				// urgency matters. `dark` keeps a solid red bar with white text
+				// in both modes, and leaves `main` alone for the ~30 places that
+				// use it as text or a chart mark on a dark ground.
+				backgroundColor: theme.palette.error.dark,
+				color: "#FFFFFF",
 				px: theme.spacing(8),
 				py: theme.spacing(4),
 				transition: "top 1s ease-in-out",
