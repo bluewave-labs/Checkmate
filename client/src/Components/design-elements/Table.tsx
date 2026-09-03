@@ -52,6 +52,7 @@ type DataTableProps<T extends { id?: string | number; _id?: string | number }> =
 	emptyViewText?: string;
 	emptyViewPositive?: boolean;
 	getRowSx?: (row: T) => SxProps<Theme>;
+	isRowSelected?: (row: T) => boolean;
 };
 
 export function DataTable<
@@ -70,6 +71,7 @@ export function DataTable<
 	emptyViewText,
 	emptyViewPositive,
 	getRowSx,
+	isRowSelected,
 }: DataTableProps<T>) {
 	const theme = useTheme();
 	const [expanded, setExpanded] = useState<(string | number) | null>(null);
@@ -197,7 +199,7 @@ export function DataTable<
 					"& :is(th)": {
 						backgroundColor: theme.palette.background.paper,
 						color: theme.palette.text.secondary,
-						fontWeight: 500,
+						fontWeight: 600,
 						textTransform: "uppercase",
 						letterSpacing: "0.08em",
 						padding: `${theme.spacing(SPACING.LG)} ${theme.spacing(LAYOUT.MD)}`,
@@ -213,10 +215,6 @@ export function DataTable<
 					"& .MuiTableBody-root .MuiTableRow-root:last-child .MuiTableCell-root": {
 						borderBottom: "none",
 					},
-					"& .MuiTableBody-root .MuiTableRow-root.is-clickable:hover .MuiTableCell-root":
-						{
-							backgroundColor: theme.palette.action.rowHover,
-						},
 				}}
 			>
 				<TableHead>
@@ -237,13 +235,25 @@ export function DataTable<
 					{data.map((row) => {
 						const key = row.id || row._id || Math.random();
 						const isExpanded = expanded === key;
+						const selected = isRowSelected?.(row);
 
 						return (
 							<Fragment key={key}>
 								<TableRow
-									className={isInteractive ? "is-clickable" : undefined}
 									sx={{
 										cursor: isInteractive ? "pointer" : "default",
+										...(isInteractive && {
+											"&:hover .MuiTableCell-root": {
+												backgroundColor: selected
+													? theme.palette.action.selectedHover
+													: theme.palette.action.rowHover,
+											},
+										}),
+										...(selected && {
+											"& .MuiTableCell-root": {
+												backgroundColor: theme.palette.action.selected,
+											},
+										}),
 										...(getRowSx?.(row) as object),
 									}}
 									onClick={() => {

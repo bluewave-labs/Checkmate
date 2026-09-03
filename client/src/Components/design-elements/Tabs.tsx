@@ -1,6 +1,8 @@
 import MuiTabs from "@mui/material/Tabs";
 import type { TabsProps } from "@mui/material/Tabs";
 import { useTheme } from "@mui/material/styles";
+import { typographyLevels } from "@/Utils/Theme/Palette";
+import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
 interface CustomTabsProps extends TabsProps {}
 
 export const Tabs = (props: CustomTabsProps) => {
@@ -8,7 +10,7 @@ export const Tabs = (props: CustomTabsProps) => {
 	return (
 		<MuiTabs
 			sx={{
-				minHeight: 34,
+				minHeight: INPUT_BASE_HEIGHT,
 				borderBottom: `1px solid ${theme.palette.divider}`,
 				"& .MuiTabs-indicator": {
 					backgroundColor: theme.palette.primary.main,
@@ -38,9 +40,9 @@ export const Tab = (props: CustomTabProps) => {
 			iconPosition="start"
 			sx={{
 				textTransform: "none",
-				fontSize: 14,
+				fontSize: typographyLevels.m,
 				fontWeight: 500,
-				minHeight: 34,
+				minHeight: INPUT_BASE_HEIGHT,
 				padding: theme.spacing(1, 0),
 				paddingBottom: 0,
 				minWidth: "auto",
@@ -48,7 +50,6 @@ export const Tab = (props: CustomTabProps) => {
 				color: theme.palette.text.secondary,
 				"&.Mui-selected": {
 					color: theme.palette.primary.main,
-					fontWeight: 600,
 				},
 				"&:hover": {
 					color: theme.palette.text.secondary,

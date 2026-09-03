@@ -5,7 +5,7 @@ import { typographyLevels } from "@/Utils/Theme/Palette";
 import { useTheme } from "@mui/material/styles";
 import Stack from "@mui/material/Stack";
 import { FieldLabel } from "./FieldLabel";
-import { LAYOUT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT, LAYOUT } from "@/Utils/Theme/constants";
 
 interface TextInputProps extends Omit<TextFieldProps, "label"> {
 	fieldLabel?: string;
@@ -22,15 +22,9 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function T
 		width: "100%",
 		"& .MuiOutlinedInput-root": {
 			borderRadius: theme.shape.borderRadius,
-			height: props.multiline ? "auto" : 34,
+			height: props.multiline ? "auto" : INPUT_BASE_HEIGHT,
 			fontSize: typographyLevels.base,
 			overflow: "hidden",
-		},
-		"& .MuiOutlinedInput-notchedOutline": {
-			borderColor: theme.palette.divider,
-		},
-		"&:hover .MuiOutlinedInput-notchedOutline": {
-			borderColor: theme.palette.divider,
 		},
 		"& .MuiFormHelperText-root": {
 			marginLeft: 0,
@@ -39,7 +33,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function T
 		},
 		"& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus, & input:-webkit-autofill:active":
 			{
-				WebkitBoxShadow: `0 0 0 100px ${theme.palette.background.default} inset !important`,
+				WebkitBoxShadow: `0 0 0 100px ${theme.palette.background.paper} inset !important`,
 				WebkitTextFillColor: `${theme.palette.text.primary} !important`,
 				caretColor: theme.palette.text.primary,
 				transition: "background-color 5000s ease-in-out 0s",

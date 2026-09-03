@@ -25,11 +25,10 @@ export const NavItem = ({
 	const iconStroke = selected
 		? theme.palette.sidebar.accent
 		: theme.palette.text.secondary;
-
 	const buttonBgColor = selected ? theme.palette.action.selected : "transparent";
 	const buttonBgHoverColor = selected
-		? theme.palette.action.selected
-		: theme.palette.action.hover;
+		? theme.palette.action.selectedHover
+		: theme.palette.action.rowHover;
 	const fontWeight = selected ? 600 : 400;
 	return (
 		<Tooltip

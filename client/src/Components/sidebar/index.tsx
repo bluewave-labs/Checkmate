@@ -73,11 +73,11 @@ export const Sidebar = () => {
 				gap={theme.spacing(LAYOUT.SM)}
 				borderRight={`1px solid ${theme.palette.divider}`}
 				width={width}
+				bgcolor={theme.palette.background.paper}
 				sx={{
 					touchAction: "none",
 					transition: transition,
 					zIndex: 1000,
-					backdropFilter: "blur(8px)",
 				}}
 			>
 				<List

@@ -16,6 +16,7 @@ declare module "@mui/material/styles" {
 	interface TypeAction {
 		rowHover: string;
 		controlHover: string;
+		selectedHover: string;
 	}
 	interface Palette {
 		sidebar: { accent: string };
@@ -57,7 +58,7 @@ export type PaletteKey = {
 	[K in keyof Theme["palette"]]: Theme["palette"][K] extends { main: any } ? K : never;
 }[keyof Theme["palette"]];
 
-const fontFamilyPrimary = "system-ui, sans-serif";
+const fontFamilyPrimary = '"Geist Variable", system-ui, sans-serif';
 const fontFamilyMonospace =
 	'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace';
 const shadow =
@@ -85,11 +86,13 @@ export const theme = (mode: string, palette: any) =>
 			fontSize: typographyLevels.base,
 			h1: {
 				fontSize: typographyLevels.xxl,
-				fontWeight: 500,
+				fontWeight: 700,
+				letterSpacing: "-0.015em",
 			},
 			h2: {
 				fontSize: typographyLevels.l,
-				fontWeight: 400,
+				fontWeight: 600,
+				letterSpacing: "-0.01em",
 			},
 			body1: {
 				fontSize: typographyLevels.m,
@@ -131,7 +134,11 @@ export const theme = (mode: string, palette: any) =>
 				styleOverrides: {
 					root: ({ theme }) => ({
 						"&.Mui-focusVisible": {
-							outline: `1px solid ${theme.palette.primary.main}`,
+							outline: `1px solid ${
+								theme.palette.mode === "dark"
+									? theme.palette.primary.light
+									: theme.palette.primary.main
+							}`,
 							outlineOffset: 2,
 						},
 					}),
@@ -185,18 +192,38 @@ export const theme = (mode: string, palette: any) =>
 					}),
 				},
 			},
-
 			MuiOutlinedInput: {
 				styleOverrides: {
+					input: {
+						paddingTop: 0,
+						paddingBottom: 0,
+						height: "100%",
+					},
 					root: ({ theme }) => ({
-						"&:hover .MuiOutlinedInput-notchedOutline": {
+						"& .MuiSelect-select": {
+							paddingTop: 0,
+							paddingBottom: 0,
+							display: "flex",
+							alignItems: "center",
+							minHeight: "unset",
+						},
+						"& .MuiOutlinedInput-notchedOutline": {
+							borderColor: theme.palette.divider,
+							transition: "border-color 0.15s ease",
+						},
+						"&:hover:not(.Mui-focused):not(.Mui-disabled) .MuiOutlinedInput-notchedOutline":
+							{
+								borderColor: theme.palette.text.disabled,
+							},
+						"&.Mui-focused .MuiOutlinedInput-notchedOutline": {
 							borderColor:
 								theme.palette.mode === "dark"
-									? "rgba(255, 255, 255, 0.23)"
-									: theme.palette.text.primary,
+									? theme.palette.primary.light
+									: theme.palette.primary.main,
+							borderWidth: 2,
 						},
-						"&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-							borderColor: palette.primary.main,
+						"&.Mui-error .MuiOutlinedInput-notchedOutline": {
+							borderColor: theme.palette.error.main,
 						},
 					}),
 				},

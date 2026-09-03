@@ -1,5 +1,5 @@
 export const SANS_STACK =
-	'-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif';
+	'-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 
 export const BOLD_SANS_STACK = `ui-sans-serif, ${SANS_STACK}`;
 

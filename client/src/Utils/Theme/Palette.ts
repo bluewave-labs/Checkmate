@@ -18,6 +18,20 @@ export const colors = {
 	gray700: "#313131",
 	gray900: "#151518",
 	gray850: "#1c1c21",
+	ink900: "#101917",
+	ink600: "#55635C",
+	ink400: "#7C8983",
+	surface50: "#F6F8F7",
+	rule200: "#C7D2CC",
+	successMain: "#0D6049",
+	errorMain: "#A02B24",
+	warningMain: "#8C5806",
+	inkDark900: "#ECEFED",
+	inkDark600: "#A3ADA8",
+	ruleDark: "#3A4642",
+	successDark: "#4BC49E",
+	errorDark: "#E8837A",
+	warningDark: "#E0A458",
 	brandGreen: "#13715B",
 	brandGreenLight: "#4DAF94",
 	green200: "#ECF7F2",
@@ -43,9 +57,30 @@ export const lightPalette = {
 	action: {
 		rowHover: alpha(colors.gray900, HOVER.ROW),
 		controlHover: alpha(colors.gray900, HOVER.CONTROL),
+		selected: alpha(colors.brandGreen, 0.06),
+		selectedHover: alpha(colors.brandGreen, 0.1),
 	},
 	secondary: {
 		main: colors.gray200,
+	},
+	background: {
+		default: colors.surface50,
+		paper: "#FFFFFF",
+	},
+	text: {
+		primary: colors.ink900,
+		secondary: colors.ink600,
+		disabled: colors.ink400,
+	},
+	divider: colors.rule200,
+	success: {
+		main: colors.successMain,
+	},
+	error: {
+		main: colors.errorMain,
+	},
+	warning: {
+		main: colors.warningMain,
 	},
 	sidebar: {
 		accent: colors.brandGreen,
@@ -69,10 +104,13 @@ export const lightPalette = {
 export const darkPalette = {
 	primary: {
 		main: colors.brandGreen,
+		light: colors.brandGreenLight,
 	},
 	action: {
 		rowHover: alpha("#FFFFFF", HOVER.ROW),
 		controlHover: alpha("#FFFFFF", HOVER.CONTROL),
+		selected: alpha(colors.brandGreenLight, 0.07),
+		selectedHover: alpha(colors.brandGreenLight, 0.11),
 	},
 	secondary: {
 		main: colors.gray700,
@@ -80,6 +118,21 @@ export const darkPalette = {
 	background: {
 		default: colors.gray900,
 		paper: colors.gray850,
+	},
+	text: {
+		primary: colors.inkDark900,
+		secondary: colors.inkDark600,
+		disabled: colors.ink400,
+	},
+	divider: colors.ruleDark,
+	success: {
+		main: colors.successDark,
+	},
+	error: {
+		main: colors.errorDark,
+	},
+	warning: {
+		main: colors.warningDark,
 	},
 	sidebar: {
 		accent: colors.brandGreenLight,
