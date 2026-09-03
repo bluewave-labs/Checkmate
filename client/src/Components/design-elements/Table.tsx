@@ -52,11 +52,6 @@ type DataTableProps<T extends { id?: string | number; _id?: string | number }> =
 	emptyViewText?: string;
 	emptyViewPositive?: boolean;
 	getRowSx?: (row: T) => SxProps<Theme>;
-	/**
-	 * Marks a row selected so it gets the shared selected + hover treatment.
-	 * Desktop table only - the small-screen card branch does not style
-	 * selection yet, same as `getRowSx`.
-	 */
 	isRowSelected?: (row: T) => boolean;
 };
 
@@ -220,21 +215,6 @@ export function DataTable<
 					"& .MuiTableBody-root .MuiTableRow-root:last-child .MuiTableCell-root": {
 						borderBottom: "none",
 					},
-					// Cells paint `background.paper`, so a background set on the row
-					// never shows. Selection and hover both have to be applied at
-					// cell level, and selection has to come first so hover layers
-					// on top of it rather than replacing it.
-					"& .MuiTableBody-root .MuiTableRow-root.is-selected .MuiTableCell-root": {
-						backgroundColor: theme.palette.action.selected,
-					},
-					"& .MuiTableBody-root .MuiTableRow-root.is-clickable:hover .MuiTableCell-root":
-						{
-							backgroundColor: theme.palette.action.rowHover,
-						},
-					"& .MuiTableBody-root .MuiTableRow-root.is-selected.is-clickable:hover .MuiTableCell-root":
-						{
-							backgroundColor: theme.palette.action.selectedHover,
-						},
 				}}
 			>
 				<TableHead>
@@ -255,18 +235,25 @@ export function DataTable<
 					{data.map((row) => {
 						const key = row.id || row._id || Math.random();
 						const isExpanded = expanded === key;
+						const selected = isRowSelected?.(row);
 
 						return (
 							<Fragment key={key}>
 								<TableRow
-									className={[
-										isInteractive ? "is-clickable" : "",
-										isRowSelected?.(row) ? "is-selected" : "",
-									]
-										.filter(Boolean)
-										.join(" ")}
 									sx={{
 										cursor: isInteractive ? "pointer" : "default",
+										...(isInteractive && {
+											"&:hover .MuiTableCell-root": {
+												backgroundColor: selected
+													? theme.palette.action.selectedHover
+													: theme.palette.action.rowHover,
+											},
+										}),
+										...(selected && {
+											"& .MuiTableCell-root": {
+												backgroundColor: theme.palette.action.selected,
+											},
+										}),
 										...(getRowSx?.(row) as object),
 									}}
 									onClick={() => {
