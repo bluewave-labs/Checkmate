@@ -4,7 +4,7 @@ import type { ToggleButtonProps } from "@mui/material/ToggleButton";
 import type { ToggleButtonGroupProps } from "@mui/material/ToggleButtonGroup";
 import { useTheme } from "@mui/material/styles";
 import { alpha } from "@mui/material/styles";
-import { CONTROL_HEIGHT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
 
 export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 	const theme = useTheme();
@@ -21,7 +21,7 @@ export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 			sx={{
 				px: 8,
 				textTransform: "none",
-				height: CONTROL_HEIGHT,
+				height: INPUT_BASE_HEIGHT,
 				fontWeight: 400,
 				whiteSpace: "nowrap",
 				textOverflow: "ellipsis",
@@ -34,10 +34,6 @@ export const ToggleButtonInput = ({ sx, ...props }: ToggleButtonProps) => {
 				},
 				"&.Mui-selected": {
 					backgroundColor: selectedBg,
-					// Weight stays at 400 so the group sits level with Button,
-					// which it is routinely placed beside. The fill and the
-					// darker ink carry the selected state instead - a weight
-					// change also reflows the label width as you switch.
 					color: theme.palette.text.primary,
 					"&:hover": {
 						backgroundColor: selectedHoverBg,

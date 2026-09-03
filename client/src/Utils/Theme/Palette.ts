@@ -18,14 +18,11 @@ export const colors = {
 	gray700: "#313131",
 	gray900: "#151518",
 	gray850: "#1c1c21",
-	// Neutral ramp, biased slightly green so it sits with the brand rather than
-	// against it. Opaque values - alpha-black over white reads washed out.
 	ink900: "#101917",
 	ink600: "#55635C",
 	ink400: "#7C8983",
 	surface50: "#F6F8F7",
 	rule200: "#C7D2CC",
-	// Semantic colours derived from the brand rather than Material's defaults
 	successMain: "#0D6049",
 	errorMain: "#A02B24",
 	warningMain: "#8C5806",
@@ -60,8 +57,6 @@ export const lightPalette = {
 	action: {
 		rowHover: alpha(colors.gray900, HOVER.ROW),
 		controlHover: alpha(colors.gray900, HOVER.CONTROL),
-		// Tinted with the brand so a selected row reads as chosen rather than
-		// merely dirty, and the hover step stays clearly above the resting one.
 		selected: alpha(colors.brandGreen, 0.06),
 		selectedHover: alpha(colors.brandGreen, 0.1),
 	},
@@ -78,9 +73,6 @@ export const lightPalette = {
 		disabled: colors.ink400,
 	},
 	divider: colors.rule200,
-	// Only `main` is set. MUI derives `light`/`dark` from it, and `light` is
-	// consumed as a saturated colour - status dots, histogram bars, heatmap
-	// cells - so it must not be overridden with a pale tint.
 	success: {
 		main: colors.successMain,
 	},
@@ -112,10 +104,6 @@ export const lightPalette = {
 export const darkPalette = {
 	primary: {
 		main: colors.brandGreen,
-		// The dark ground needs a lighter green for anything drawn as a line
-		// rather than a fill - focus rings especially, which were dimmer than
-		// their own hover state. Leaving `main` alone keeps contained buttons
-		// white-on-green instead of flipping them to dark text.
 		light: colors.brandGreenLight,
 	},
 	action: {

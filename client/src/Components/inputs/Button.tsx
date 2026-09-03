@@ -1,7 +1,7 @@
 import Button from "@mui/material/Button";
 import type { ButtonProps } from "@mui/material/Button";
 import { useTheme, darken } from "@mui/material/styles";
-import { CONTROL_HEIGHT, HOVER } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT, HOVER } from "@/Utils/Theme/constants";
 
 const PALETTE_COLORS = [
 	"primary",
@@ -43,10 +43,7 @@ export const ButtonInput = ({ sx, ...props }: ButtonProps) => {
 			{...props}
 			sx={{
 				textTransform: "none",
-				height: CONTROL_HEIGHT,
-				// MUI's button line-height is 1.75 (22.75px at 13px), which with the
-				// 6px padding needs 34.75px - already over its own box at 34, and
-				// clipping at 32. 1.2 leaves room for tall scripts too.
+				height: INPUT_BASE_HEIGHT,
 				lineHeight: 1.2,
 				fontWeight: 400,
 				borderRadius: 2,

@@ -33,12 +33,6 @@ export const BGBox = ({ children, sx }: StatusBoxProps) => {
 				bottom={0}
 				sx={{
 					pointerEvents: "none",
-					// Deliberately far fainter than `divider` - this is texture
-					// behind the number, not a rule, and it must never compete
-					// with the box's own border. Note alpha() *replaces* the
-					// alpha channel, so this relies on `divider` being an opaque
-					// hex; if it ever goes translucent this gets stronger, not
-					// weaker.
 					backgroundImage: `
 						linear-gradient(${alpha(theme.palette.divider, 0.4)} 1px, transparent 1px),
 						linear-gradient(90deg, ${alpha(theme.palette.divider, 0.4)} 1px, transparent 1px)

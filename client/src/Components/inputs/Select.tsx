@@ -6,7 +6,7 @@ import Stack from "@mui/material/Stack";
 import { FieldLabel } from "./FieldLabel";
 import { ChevronDown } from "lucide-react";
 import Typography from "@mui/material/Typography";
-import { CONTROL_HEIGHT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
 
 interface SelectInputProps<T> extends Omit<SelectProps<T>, "label"> {
 	fieldLabel?: string;
@@ -72,7 +72,7 @@ const SelectInputInner = <T,>(
 				/>
 			)}
 			sx={{
-				height: `${CONTROL_HEIGHT}px`,
+				height: `${INPUT_BASE_HEIGHT}px`,
 				"& .MuiSelect-select": {
 					display: "flex",
 					alignItems: "center",

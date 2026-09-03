@@ -1,6 +1,3 @@
-// No "Inter" here: its webfont was never self-hosted, so once the Google Fonts
-// import went it resolved to a fallback anyway. Listing it only made the stack
-// look intentional on machines that happen to have Inter installed.
 export const SANS_STACK =
 	'-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 

@@ -8,7 +8,7 @@ import { FieldLabel } from "./FieldLabel";
 import { Calendar } from "lucide-react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
-import { CONTROL_HEIGHT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
 
 interface DatePickerComponentProps extends Omit<DatePickerProps<Dayjs>, "label"> {
 	fieldLabel?: string;
@@ -56,7 +56,7 @@ export const DatePickerComponent = ({
 								flexDirection: "row-reverse",
 							},
 							"& input": {
-								minHeight: CONTROL_HEIGHT,
+								minHeight: INPUT_BASE_HEIGHT,
 								p: 0,
 								pl: theme.spacing(3),
 								pr: theme.spacing(5),

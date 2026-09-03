@@ -30,9 +30,6 @@ const SummaryItem = ({ icon, label, value }: SummaryItemProps) => {
 				direction="row"
 				alignItems="center"
 				gap={theme.spacing(2)}
-				// The icons are supporting marks beside the label, not content,
-				// so they take secondary ink rather than lucide's currentColor
-				// default, which renders them heavier than the text.
 				sx={{ "& svg": { color: theme.palette.text.secondary } }}
 			>
 				{icon}

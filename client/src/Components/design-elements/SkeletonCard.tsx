@@ -1,5 +1,5 @@
 import { Box, Stack, useTheme } from "@mui/material";
-import { CONTROL_HEIGHT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
 
 interface SkeletonCardProps {
 	width?: number | string | { xs?: number | string; md?: number | string };
@@ -45,7 +45,7 @@ export const SkeletonCard = ({
 
 	const blockStyle = {
 		width: 55,
-		height: CONTROL_HEIGHT,
+		height: INPUT_BASE_HEIGHT,
 		borderRadius: theme.shape.borderRadius,
 		background: theme.palette.secondary.main,
 		border: `1px solid ${theme.palette.divider}`,

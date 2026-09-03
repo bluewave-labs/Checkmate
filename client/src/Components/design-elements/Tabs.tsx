@@ -2,7 +2,7 @@ import MuiTabs from "@mui/material/Tabs";
 import type { TabsProps } from "@mui/material/Tabs";
 import { useTheme } from "@mui/material/styles";
 import { typographyLevels } from "@/Utils/Theme/Palette";
-import { CONTROL_HEIGHT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
 interface CustomTabsProps extends TabsProps {}
 
 export const Tabs = (props: CustomTabsProps) => {
@@ -10,7 +10,7 @@ export const Tabs = (props: CustomTabsProps) => {
 	return (
 		<MuiTabs
 			sx={{
-				minHeight: CONTROL_HEIGHT,
+				minHeight: INPUT_BASE_HEIGHT,
 				borderBottom: `1px solid ${theme.palette.divider}`,
 				"& .MuiTabs-indicator": {
 					backgroundColor: theme.palette.primary.main,
@@ -42,17 +42,13 @@ export const Tab = (props: CustomTabProps) => {
 				textTransform: "none",
 				fontSize: typographyLevels.m,
 				fontWeight: 500,
-				minHeight: CONTROL_HEIGHT,
+				minHeight: INPUT_BASE_HEIGHT,
 				padding: theme.spacing(1, 0),
 				paddingBottom: 0,
 				minWidth: "auto",
 				alignItems: "flex-start",
 				color: theme.palette.text.secondary,
 				"&.Mui-selected": {
-					// Weight stays put, as on ToggleButton: bolding the active tab
-					// widens it, shifting every tab to its right and dragging the
-					// indicator to a moving target. Colour and the indicator are
-					// already carrying the state.
 					color: theme.palette.primary.main,
 				},
 				"&:hover": {

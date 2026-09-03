@@ -6,7 +6,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { ChevronLeft, HelpCircle, FileText, Code } from "lucide-react";
-import { CONTROL_HEIGHT } from "@/Utils/Theme/constants";
+import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
 
 import type { ReactNode } from "react";
 
@@ -110,9 +110,6 @@ export const PageHeader = ({
 							fontSize: 14,
 							color: theme.palette.text.secondary,
 							lineHeight: 1.55,
-							// Wide enough to hold a one-line page description at this
-							// size; still a cap, so it wraps rather than running the
-							// full width of a large monitor.
 							maxWidth: "108ch",
 						}}
 					>
@@ -146,7 +143,7 @@ export const PageHeader = ({
 								alignItems: "center",
 								justifyContent: "center",
 								width: 36,
-								height: CONTROL_HEIGHT,
+								height: INPUT_BASE_HEIGHT,
 								color: theme.palette.text.secondary,
 								borderRight:
 									idx < linkItems.length - 1
