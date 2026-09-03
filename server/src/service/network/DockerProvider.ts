@@ -252,7 +252,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 		const demuxedBuffer = this.demuxLogBuffer(buffer);
 		for (const byteStream of demuxedBuffer) {
 			const { stream, chunk } = byteStream;
-			for (const raw of chunk.split("/n")) {
+			for (const raw of chunk.split("\n")) {
 				if (raw.length === 0) continue;
 				const line = this.toLogLine(stream, raw);
 				if (line) lines.push(line);

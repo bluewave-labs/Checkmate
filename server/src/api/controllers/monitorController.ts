@@ -21,6 +21,7 @@ import {
 	getDockerDetailsByIdQueryValidation,
 	getDockerContainerNameParamValidation,
 	getDockerContainerByNameQueryValidation,
+	getDockerContainerLogsQueryValidation,
 } from "@/api/validation/monitorValidation.js";
 import sslChecker from "ssl-checker";
 import * as whoiser from "whoiser";
@@ -37,6 +38,7 @@ export interface IMonitorController {
 	getPageSpeedDetailsById: RequestHandler;
 	getDockerDetailsById: RequestHandler;
 	getDockerContainerByName: RequestHandler;
+	getDockerContainerLogs: RequestHandler;
 	getGeoChecksByMonitorId: RequestHandler;
 	getMonitorById: RequestHandler;
 	createMonitor: RequestHandler;
@@ -194,6 +196,29 @@ class MonitorController implements IMonitorController {
 		return res.status(200).json({
 			success: true,
 			msg: "Docker container retrieved successfully",
+			data,
+		});
+	});
+
+	getDockerContainerLogs = catchAsync(async (req: Request, res: Response) => {
+		const validatedParams = getDockerContainerNameParamValidation.parse(req.params);
+		const validatedQuery = getDockerContainerLogsQueryValidation.parse(req.query);
+
+		const { monitorId, containerName } = validatedParams;
+		const { before, limit } = validatedQuery;
+		const teamId = requireTeamId(req.user?.teamId);
+
+		const data = await this.monitorService.getDockerContainerLogs({
+			teamId,
+			monitorId,
+			containerName,
+			before: before ? new Date(before) : undefined,
+			limit,
+		});
+
+		return res.status(200).json({
+			success: true,
+			msg: "Docker container logs retrieved successfully",
 			data,
 		});
 	});

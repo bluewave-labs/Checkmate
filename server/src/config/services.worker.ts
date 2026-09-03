@@ -52,6 +52,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		settingsService,
 		checkService,
 		geoChecksService,
+		dockerLogsService,
 		notificationsService,
 		incidentService,
 		workerId,
@@ -60,6 +61,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		monitorsRepository,
 		checksRepository,
 		geoChecksRepository,
+		dockerLogsRepository,
 		monitorStatsRepository,
 		incidentsRepository,
 		teamsRepository,
@@ -95,7 +97,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	]);
 
 	const proxyResolver = new ProxyResolver(proxiesRepository, settingsService, logger);
-	const bufferService = new BufferService(logger, checkService, geoChecksService, settingsService, jobsRepository);
+	const bufferService = new BufferService(logger, checkService, geoChecksService, dockerLogsService, settingsService, jobsRepository);
 	const statusService = new StatusService(logger, monitorsRepository, monitorStatsRepository);
 	const monitorStatusPolicy = new MonitorStatusPolicy();
 
@@ -119,6 +121,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		networkService,
 		proxyResolver,
 		bufferService,
+		dockerLogsService,
 		logger
 	);
 	const checkEvaluator = new CheckEvaluator(statusService, monitorStatusPolicy);
@@ -138,7 +141,8 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		monitorStatsRepository,
 		checksRepository,
 		incidentsRepository,
-		geoChecksRepository
+		geoChecksRepository,
+		dockerLogsRepository
 	);
 
 	const worker = await DBQueueWorker.create({

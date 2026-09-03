@@ -91,3 +91,5 @@ class MongoDockerLogsRepository implements IDockerLogsRepository {
 	deleteByMonitorIdsNotIn = async (monitorIds: string[]) =>
 		(await DockerLogModel.deleteMany({ "metadata.monitorId": { $nin: monitorIds.map((id) => new mongoose.Types.ObjectId(id)) } })).deletedCount ?? 0;
 }
+
+export default MongoDockerLogsRepository;

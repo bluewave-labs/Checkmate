@@ -13,7 +13,8 @@ import {
 	ProxyModes,
 } from "@/domain/monitors/monitor.type.js";
 import { DateRanges, SortOrders } from "@/types/query.js";
-import { DockerContainerStates, DockerHealthStatuses, DockerPortProtocols } from "@/domain/docker/docker.type.js";
+import { DockerContainerStates, DockerHealthStatuses, DockerLogStreams, DockerPortProtocols } from "@/domain/docker/docker.type.js";
+import { DOCKER_LOG_PAGE_DEFAULT, DOCKER_LOG_PAGE_MAX } from "@/domain/docker/docker-log.type.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
@@ -332,6 +333,11 @@ export const getDockerContainerNameParamValidation = z.object({
 });
 export const getDockerContainerByNameQueryValidation = z.object({ dateRange: z.enum(DateRanges).optional() });
 
+export const getDockerContainerLogsQueryValidation = z.object({
+	before: z.iso.datetime().optional(),
+	limit: z.coerce.number().int().min(1).max(DOCKER_LOG_PAGE_MAX).default(DOCKER_LOG_PAGE_DEFAULT),
+});
+
 // Canonical monitor shape returned by /monitors endpoints. Keep aligned with
 // what the controllers actually serialize.
 export const monitorResponseSchema = z
@@ -528,4 +534,27 @@ export const dockerContainerDetailsResponseSchema = z.object({
 			})
 			.nullable(),
 	}),
+});
+
+export const dockerLogLineResponseSchema = z.object({
+	ts: z.string(),
+	stream: z.enum(DockerLogStreams),
+	text: z.string(),
+});
+
+export const dockerLogResponseSchema = z.object({
+	id: z.string(),
+	metadata: z.object({ monitorId: z.string(), teamId: z.string(), containerId: z.string(), containerName: z.string() }),
+	lines: z.array(dockerLogLineResponseSchema),
+	gap: z.boolean(),
+	checkedAt: z.string(),
+	expiry: z.string(),
+	createdAt: z.string(),
+	updatedAt: z.string(),
+});
+
+// Response of GET /monitors/docker/details/{monitorId}/containers/{containerName}/logs.
+export const dockerContainerLogsResponseSchema = z.object({
+	logs: z.array(dockerLogResponseSchema),
+	nextCursor: z.string().nullable(),
 });

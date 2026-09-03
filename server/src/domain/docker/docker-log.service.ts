@@ -13,7 +13,7 @@ export interface IDockerLogsService {
 	createDockerLogs(logs: DockerLog[]): Promise<number>;
 }
 
-export class DockerLogsSerivce implements IDockerLogsService {
+export class DockerLogsService implements IDockerLogsService {
 	static SERVICE_NAME = SERVICE_NAME;
 
 	private logger: ILogger;
