@@ -5,7 +5,7 @@ import { BaseBox } from "@/Components/design-elements";
 import { useTranslation } from "react-i18next";
 import type { SxProps } from "@mui/material";
 
-import { useTheme } from "@mui/material/styles";
+import { alpha, useTheme } from "@mui/material/styles";
 
 type StatusBoxProps = React.PropsWithChildren<{
 	children: React.ReactNode;
@@ -33,9 +33,12 @@ export const BGBox = ({ children, sx }: StatusBoxProps) => {
 				bottom={0}
 				sx={{
 					pointerEvents: "none",
+					// Deliberately far fainter than `divider` - this is texture
+					// behind the number, not a rule, and it must never compete
+					// with the box's own border.
 					backgroundImage: `
-						linear-gradient(${theme.palette.divider} 1px, transparent 1px),
-						linear-gradient(90deg, ${theme.palette.divider} 1px, transparent 1px)
+						linear-gradient(${alpha(theme.palette.divider, 0.4)} 1px, transparent 1px),
+						linear-gradient(90deg, ${alpha(theme.palette.divider, 0.4)} 1px, transparent 1px)
 					`,
 					backgroundSize: "24px 24px",
 					maskImage:

@@ -2,7 +2,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
-import { lighten } from "@mui/material/styles";
+import { darken, lighten } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import type { PaletteKey } from "@/Utils/Theme/Theme";
 import { BaseBox, TooltipWithInfo } from "@/Components/design-elements";
@@ -19,7 +19,9 @@ export const GradientBox = ({ children, palette, sx, interactive }: GradientBox)
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const isLight = theme.palette.mode === "light";
 	const paper = theme.palette.background.paper;
-	const paperStart = lighten(paper, isLight ? 0.06 : 0.08);
+	// In light mode `paper` is white, and lightening white is a no-op - the
+	// gradient collapses flat. Darken slightly towards the page ground instead.
+	const paperStart = isLight ? darken(paper, 0.02) : lighten(paper, 0.08);
 	const paperEnd = paper;
 	const bg = palette
 		? `linear-gradient(135deg, ${theme.palette[palette].light} 0%, ${theme.palette[palette].main} 100%)`
