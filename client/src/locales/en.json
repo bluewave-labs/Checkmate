@@ -632,9 +632,9 @@
 				},
 				"general": {
 					"option": {
-						"container": {
-							"label": "Container name/ID",
-							"placeholder": "my-app or abcd1234"
+						"dockerHost": {
+							"label": "Docker host",
+							"placeholder": "unix:///var/run/docker.sock or ssh://user@host"
 						},
 						"host": {
 							"label": "Host",
@@ -716,7 +716,7 @@
 						"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.  Set an optional proxy server to connect through.",
 						"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
 						"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
-						"docker": "Enter the Docker container name or ID. You can use either the container name (e.g., my-app) or the container ID (full 64-char ID or short ID).",
+						"docker": "Enter the Docker host to monitor: a local socket (unix:///var/run/docker.sock or /var/run/docker.sock) or a remote host over SSH (ssh://user@host, with an optional :port). Every container on the host is monitored.",
 						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type. Some games require enabling server queries in their config file — check your game server's documentation. See the <gamedigLink>supported games list</gamedigLink> for protocol details.",
 						"pagespeed": "Track page load performance, Core Web Vitals, and optimization scores for your website.",
 						"grpc": "Enter the hostname and port of the gRPC server, optionally specify a service name for the health check, and add a display name.",
@@ -756,7 +756,7 @@
 				},
 				"type": {
 					"description": "Select the type of check to perform",
-					"optionDockerDescription": "Use Docker to monitor if a container is running.",
+					"optionDockerDescription": "Monitor a Docker host and every container running on it.",
 					"optionGameDescription": "Monitor if a specific game server is online.",
 					"optionGrpcDescription": "Monitor gRPC services using the standard Health Checking Protocol.",
 					"optionWebSocketDescription": "Monitor WebSocket endpoints for connection health and response time.",

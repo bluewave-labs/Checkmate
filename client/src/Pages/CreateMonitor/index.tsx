@@ -118,8 +118,8 @@ const getGeneralSettingsConfig = (
 			showDnsRecordType: false,
 		},
 		docker: {
-			urlLabel: t("pages.createMonitor.form.general.option.container.label"),
-			urlPlaceholder: t("pages.createMonitor.form.general.option.container.placeholder"),
+			urlLabel: t("pages.createMonitor.form.general.option.dockerHost.label"),
+			urlPlaceholder: t("pages.createMonitor.form.general.option.dockerHost.placeholder"),
 			namePlaceholder: t("pages.createMonitor.form.general.option.name.placeholder"),
 			showUrl: true,
 			showProxy: false,
