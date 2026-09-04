@@ -255,6 +255,7 @@ const CreateMonitorPage = () => {
 		const firstSegment = pathSegments[0];
 		if (firstSegment === "pagespeed") return "pagespeed";
 		if (firstSegment === "infrastructure") return "hardware";
+		if (firstSegment === "docker") return "docker";
 		return "uptime";
 	}, [location.pathname]);
 
@@ -264,7 +265,9 @@ const CreateMonitorPage = () => {
 			? "pagespeed"
 			: pageType === "hardware"
 				? "hardware"
-				: "http";
+				: pageType === "docker"
+					? "docker"
+					: "http";
 
 	const { data: existingMonitor, refetch: refetchMonitor } = useGet<Monitor>(
 		isEditMode ? `/monitors/${monitorId}` : null
@@ -818,6 +821,19 @@ const CreateMonitorPage = () => {
 										color={option.color}
 									/>
 								)}
+							/>
+						}
+					/>
+				)}
+
+				{showStep(1) && watchedType === "docker" && (
+					<ConfigBox
+						title={t("pages.createMonitor.form.dockerLogs.title")}
+						subtitle={t("pages.createMonitor.form.dockerLogs.description")}
+						rightContent={
+							<FormSwitchField
+								name="dockerLogsEnabled"
+								label={t("pages.createMonitor.form.dockerLogs.option.enabled.label")}
 							/>
 						}
 					/>

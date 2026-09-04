@@ -814,6 +814,15 @@
 						}
 					}
 				},
+				"dockerLogs": {
+					"title": "Container logs",
+					"description": "Collect the most recent log lines from every container on this host on each check. Logs are kept for 7 days. Leave this off for hosts with chatty containers to save database space.",
+					"option": {
+						"enabled": {
+							"label": "Collect container logs"
+						}
+					}
+				},
 				"stats": {
 					"title": "Monitor history",
 					"description": "Clear all monitoring history and statistics for your team. This action is irreversible.",
