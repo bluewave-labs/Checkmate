@@ -88,6 +88,16 @@ export const supportsGeoCheck = (type: MonitorType | undefined): boolean => {
 	return GeoCheckSupportedTypes.includes(type);
 };
 
+export const MonitorStatuses = [
+	"up",
+	"down",
+	"paused",
+	"initializing",
+	"maintenance",
+	"breached",
+] as const;
+export type MonitorStatus = (typeof MonitorStatuses)[number];
+
 export const MonitorStatus = {
 	Up: "up",
 	Down: "down",
@@ -95,8 +105,7 @@ export const MonitorStatus = {
 	Initializing: "initializing",
 	Maintenance: "maintenance",
 	Breached: "breached",
-} as const;
-export type MonitorStatus = (typeof MonitorStatus)[keyof typeof MonitorStatus];
+} as const satisfies Record<string, MonitorStatus>;
 
 export const MonitorMatchMethods = ["equal", "include", "regex"] as const;
 export type MonitorMatchMethod = (typeof MonitorMatchMethods)[number] | "";
