@@ -76,6 +76,9 @@ export class DockerLogsService implements IDockerLogsService {
 					},
 					lines: fresh,
 					gap: fresh.length === DOCKER_LOG_TAIL_LINES,
+					// We only fetch DOCKER_LOG_TAIL_LINES worth of logs.
+					// If we have 200 fresh logs, there _could_ be more than 200 lines, so set gap = true
+					// Client can display that some logs may be missing
 					checkedAt,
 					expiry,
 					createdAt: checkedAt,
