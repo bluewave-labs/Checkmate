@@ -1,30 +1,41 @@
 // Components
 import Stack from "@mui/material/Stack";
 import { BaseBox } from "@/Components/design-elements";
-import Typography from "@mui/material/Typography";
+import { HeaderLogs } from "@/Pages/Docker/ContainerDetails/Components/HeaderLogs";
 
 // Types
 import type { DockerContainerLogsResponse } from "@/Types/Monitor";
 
 // Hooks
 import { useGet } from "@/Hooks/UseApi";
-import { useState, useEffect, useMemo } from "react";
+import {
+	useState,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	Fragment,
+	useRef,
+	useCallback,
+} from "react";
 import type { DockerLog } from "@/Types/Check";
-import { useSelector } from "react-redux";
-
+import { useTheme } from "@mui/material";
 // Util
 import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 import { flattenDockerLogs } from "@/Utils/MonitorUtils";
-import { Box } from "@mui/material";
-import { formatDateWithTz } from "@/Utils/TimeUtils";
-import type { RootState } from "@/store";
+import { RowLog } from "@/Pages/Docker/ContainerDetails/Components/RowLog";
 
 interface TabLogsProps {
 	monitorId?: string;
 	containerName?: string;
 }
 
+const SCROLL_PIN_THRESHOLD_PX = 8;
+const isScrolledToBottom = (el: HTMLElement) =>
+	el.scrollHeight - el.scrollTop - el.clientHeight <= SCROLL_PIN_THRESHOLD_PX;
+
 export const TabLogs = ({ monitorId, containerName }: TabLogsProps) => {
+	const theme = useTheme();
+
 	// State
 	const [olderLogs, setOlderLogs] = useState<DockerLog[]>([]);
 	const [olderCursor, setOlderCursor] = useState<string | null | undefined>(undefined); // undefined -> no older requested, string -> cursor, null -> no more data
@@ -53,76 +64,46 @@ export const TabLogs = ({ monitorId, containerName }: TabLogsProps) => {
 	);
 
 	const rows = useMemo(() => flattenDockerLogs(head?.logs ?? []), [head?.logs]);
-	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
+
+	const logBoxRef = useRef<HTMLDivElement>(null);
+	const pinnedToBottom = useRef(true);
+
+	// Always pin to bottom when container/monitor changes
+	useLayoutEffect(() => {
+		pinnedToBottom.current = true;
+	}, [monitorId, containerName]);
+
+	// New log rows
+	useLayoutEffect(() => {
+		const el = logBoxRef.current;
+		if (!el || !pinnedToBottom.current) return;
+		el.scrollTop = el.scrollHeight;
+	}, [rows]);
+
+	const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
+		pinnedToBottom.current = isScrolledToBottom(event.currentTarget);
+	}, []);
+
 	return (
 		<Stack gap={LAYOUT.MD}>
-			<Stack direction="row">
-				<Typography>{`${rows.length} recent lines`}</Typography>
-				{isValidating && "Refreshing..."}
-			</Stack>
+			<HeaderLogs
+				lines={rows.length}
+				isValidating={isValidating}
+			/>
 			<BaseBox
+				ref={logBoxRef}
+				onScroll={handleScroll}
 				minHeight={240}
-				maxHeight="60vh"
+				maxHeight="50vh"
 				overflow={"auto"}
 				padding={LAYOUT.MD}
 			>
-				{[...rows].reverse().map((row) => {
+				{rows.map((row) => {
 					return (
-						<Box key={row.key}>
-							<Box
-								display="grid"
-								gridTemplateColumns={{
-									xs: "1fr",
-									sm: "150px 56px minmax(0, 1fr)",
-								}}
-							>
-								<Typography
-									component="span"
-									color="text.secondary"
-								>
-									{formatDateWithTz(row.ts, "MMM D HH:mm:ss", uiTimezone)}
-								</Typography>
-
-								<Typography
-									component="span"
-									color={row.stream === "stderr" ? "error.main" : "text.secondary"}
-								>
-									{row.stream}
-								</Typography>
-
-								<Typography
-									component="span"
-									color="text.primary"
-									whiteSpace="pre-wrap"
-								>
-									{row.text}
-								</Typography>
-							</Box>
-							{row.gapBefore && (
-								<Stack
-									role="separator"
-									direction="row"
-									alignItems="center"
-								>
-									<Box
-										flex={1}
-										borderTop={1}
-										borderColor="divider"
-									/>
-									<Typography
-										variant="caption"
-										color="warning.main"
-									>
-										{"Some lines were skipped between checks"}
-									</Typography>
-									<Box
-										flex={1}
-										borderTop={1}
-										borderColor="divider"
-									/>
-								</Stack>
-							)}
-						</Box>
+						<RowLog
+							key={row.key}
+							row={row}
+						/>
 					);
 				})}
 			</BaseBox>
