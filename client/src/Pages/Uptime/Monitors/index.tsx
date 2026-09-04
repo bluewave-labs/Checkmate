@@ -1,9 +1,12 @@
-import { MonitorListPage } from "@/Components/monitors";
-import { MonitorTable } from "@/Pages/Uptime/Monitors/Components/UptimeMonitorsTable";
-
 import { useMonitorListController } from "@/Hooks/useMonitorListController";
+import { MonitorListPage, BulkEditNotificationsModal } from "@/Components/monitors";
+import { MonitorTable } from "./Components/UptimeMonitorsTable";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Button } from "@/Components/inputs";
 
 const UptimeMonitorsPage = () => {
+	const { t } = useTranslation();
 	const monitorListController = useMonitorListController({
 		types: "selectable",
 		checksLimit: 25,
@@ -12,6 +15,16 @@ const UptimeMonitorsPage = () => {
 		rowsPerPageDefault: 10,
 	});
 
+	const [isBulkEditModalOpen, setIsBulkEditModalOpen] = useState(false);
+
+	const handleBulkEditComplete = (success: boolean) => {
+		setIsBulkEditModalOpen(false);
+		if (success) {
+			monitorListController.setSelectedRows([]);
+			monitorListController.refetch();
+		}
+	};
+
 	return (
 		<MonitorListPage
 			headerKey="uptime"
@@ -19,6 +32,15 @@ const UptimeMonitorsPage = () => {
 			actionLink="/uptime/create"
 			controller={monitorListController}
 			bulkActions
+			bulkActionsHidden={isBulkEditModalOpen}
+			bulkActionsExtra={
+				<Button
+					size="small"
+					onClick={() => setIsBulkEditModalOpen(true)}
+				>
+					{t("pages.common.monitors.bulkEdit.editButton")}
+				</Button>
+			}
 		>
 			<MonitorTable
 				monitors={monitorListController.monitors || []}
@@ -36,6 +58,12 @@ const UptimeMonitorsPage = () => {
 				setRowsPerPage={monitorListController.handleSetRowsPerPage}
 				selectedRows={monitorListController.selectedRows}
 				onSelectionChange={monitorListController.setSelectedRows}
+			/>
+			<BulkEditNotificationsModal
+				open={isBulkEditModalOpen}
+				onClose={() => setIsBulkEditModalOpen(false)}
+				selectedMonitors={monitorListController.selectedRows}
+				onComplete={handleBulkEditComplete}
 			/>
 		</MonitorListPage>
 	);
