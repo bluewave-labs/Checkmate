@@ -24,6 +24,8 @@ services:
   checkmate-demo:
     image: ghcr.io/bluewave-labs/checkmate:master
     container_name: checkmate-demo
+    group_add:
+      - "989"
     restart: always
     env_file:
       - server-prod.env
@@ -68,6 +70,8 @@ services:
   checkmate-staging:
     image: ghcr.io/bluewave-labs/checkmate:develop
     container_name: checkmate-staging
+    group_add:
+      - "989"
     restart: always
     env_file:
       - server-staging.env
