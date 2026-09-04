@@ -632,9 +632,9 @@
 				},
 				"general": {
 					"option": {
-						"container": {
-							"label": "Container name/ID",
-							"placeholder": "my-app or abcd1234"
+						"dockerHost": {
+							"label": "Docker host",
+							"placeholder": "unix:///var/run/docker.sock"
 						},
 						"host": {
 							"label": "Host",
@@ -716,7 +716,7 @@
 						"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.  Set an optional proxy server to connect through.",
 						"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
 						"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
-						"docker": "Enter the Docker container name or ID. You can use either the container name (e.g., my-app) or the container ID (full 64-char ID or short ID).",
+						"docker": "Enter the Docker socket to monitor, as unix:///var/run/docker.sock or an absolute path such as /var/run/docker.sock. Every container on the host is monitored.",
 						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type. Some games require enabling server queries in their config file — check your game server's documentation. See the <gamedigLink>supported games list</gamedigLink> for protocol details.",
 						"pagespeed": "Track page load performance, Core Web Vitals, and optimization scores for your website.",
 						"grpc": "Enter the hostname and port of the gRPC server, optionally specify a service name for the health check, and add a display name.",
@@ -756,7 +756,7 @@
 				},
 				"type": {
 					"description": "Select the type of check to perform",
-					"optionDockerDescription": "Use Docker to monitor if a container is running.",
+					"optionDockerDescription": "Monitor a Docker host and every container running on it.",
 					"optionGameDescription": "Monitor if a specific game server is online.",
 					"optionGrpcDescription": "Monitor gRPC services using the standard Health Checking Protocol.",
 					"optionWebSocketDescription": "Monitor WebSocket endpoints for connection health and response time.",
@@ -811,6 +811,15 @@
 								"fifteenMinutes": "15 minutes",
 								"thirtyMinutes": "30 minutes"
 							}
+						}
+					}
+				},
+				"dockerLogs": {
+					"title": "Container logs",
+					"description": "Collect the most recent log lines from every container on this host on each check. Logs are kept for 7 days. Leave this off for hosts with chatty containers to save database space.",
+					"option": {
+						"enabled": {
+							"label": "Collect container logs"
 						}
 					}
 				},
@@ -956,6 +965,27 @@
 				"tabs": {
 					"overview": "Overview",
 					"logs": "Logs"
+				},
+				"logs": {
+					"recentLines": "{{count}} recent lines",
+					"loading": "Loading...",
+					"updatedSecondsAgo": "Updated {{count}}s ago",
+					"updatedMinutesAgo": "Updated {{count}}m ago",
+					"skipped": "Some log entries were skipped",
+					"loadOlder": "Load older logs",
+					"loadingOlder": "Loading...",
+					"noOlder": "Beginning of retained logs",
+					"loadError": "Could not load logs",
+					"loadOlderError": "Could not load older logs",
+					"empty": {
+						"title": "No logs collected yet",
+						"description": "Lines will appear here after the next check. Only output written since collection was turned on is stored."
+					},
+					"disabled": {
+						"title": "Log collection is off for this host",
+						"description": "Turn on container logs in the monitor settings to start collecting.",
+						"action": "Configure monitor"
+					}
 				}
 			},
 			"host": {

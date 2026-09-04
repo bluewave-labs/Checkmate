@@ -22,7 +22,7 @@ import {
 	DockerContainerSummary,
 	DockerHealthStatuses,
 	DockerPortProtocols,
-} from "@/types/network.js";
+} from "@/domain/docker/docker.type.js";
 
 type CheckMetadataDocument = Omit<CheckMetadata, "monitorId" | "teamId"> & {
 	monitorId: Types.ObjectId;

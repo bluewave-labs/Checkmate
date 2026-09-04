@@ -13,7 +13,8 @@ import {
 	ProxyModes,
 } from "@/domain/monitors/monitor.type.js";
 import { DateRanges, SortOrders } from "@/types/query.js";
-import { DockerContainerStates, DockerHealthStatuses, DockerPortProtocols } from "@/types/network.js";
+import { DockerContainerStates, DockerHealthStatuses, DockerLogStreams, DockerPortProtocols } from "@/domain/docker/docker.type.js";
+import { DOCKER_LOG_PAGE_DEFAULT, DOCKER_LOG_PAGE_MAX } from "@/domain/docker/docker-log.type.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
@@ -119,22 +120,15 @@ const refineProxySelection = (body: { proxyMode?: string; proxyId?: string }, ct
 	}
 };
 
-const dockerUrlRegex = /^(?:ssh:\/\/[^@\s]+@[^\s/:@]+(?::\d{1,5})?\/?|unix:\/\/\/\S+|\/\S+)$/;
+const dockerUrlRegex = /^(?:unix:\/\/\/\S+|\/\S+)$/;
 
-const refineDockerUrl = (data: { type?: string; url?: string; sshPrivateKey?: string }, ctx: z.RefinementCtx) => {
+const refineDockerUrl = (data: { type?: string; url?: string }, ctx: z.RefinementCtx) => {
 	if (data.type !== "docker" || data.url === undefined) return;
 	if (!dockerUrlRegex.test(data.url)) {
 		ctx.addIssue({
 			code: "custom",
 			path: ["url"],
-			message: "Docker host must be ssh://user@host[:port], unix:///path, or an absolute socket path",
-		});
-	}
-	if (data.url.startsWith("ssh://") && !data.sshPrivateKey) {
-		ctx.addIssue({
-			code: "custom",
-			path: ["sshPrivateKey"],
-			message: "SSH Docker hosts require a private key",
+			message: "Docker host must be unix:///path or an absolute socket path",
 		});
 	}
 };
@@ -163,7 +157,6 @@ export const createMonitorBodyValidation = z
 		tags: z.array(z.string()).optional(),
 		customUpCodes: z.array(httpStatusCode).default([]),
 		secret: z.string().optional(),
-		sshPrivateKey: z.string().optional(),
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
 		matchMethod: z.union([z.enum(MonitorMatchMethods), z.literal("")]).optional(),
@@ -176,6 +169,7 @@ export const createMonitorBodyValidation = z
 		geoCheckEnabled: z.boolean().optional(),
 		geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 		geoCheckInterval: z.number().min(300000).optional(),
+		dockerLogsEnabled: z.boolean().optional(),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 	})
@@ -199,7 +193,6 @@ export const editMonitorBodyValidation = z
 		tags: z.array(z.string()).optional(),
 		customUpCodes: z.array(httpStatusCode).optional(),
 		secret: z.string().optional(),
-		sshPrivateKey: z.string().optional(),
 		ignoreTlsErrors: z.boolean().optional(),
 		proxyMode: z.enum(ProxyModes).optional(),
 		proxyId: proxyIdValidation,
@@ -221,6 +214,7 @@ export const editMonitorBodyValidation = z
 		geoCheckEnabled: z.boolean().optional(),
 		geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 		geoCheckInterval: z.number().min(300000).optional(),
+		dockerLogsEnabled: z.boolean().optional(),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 	})
@@ -280,7 +274,6 @@ const importedMonitorSchema = z
 		tags: z.array(z.string()).default([]),
 		customUpCodes: z.array(httpStatusCode).default([]),
 		secret: z.string().optional(),
-		sshPrivateKey: z.string().optional(),
 		cpuAlertThreshold: z.number().default(100),
 		cpuAlertCounter: z.number().default(5),
 		memoryAlertThreshold: z.number().default(100),
@@ -297,6 +290,8 @@ const importedMonitorSchema = z
 		geoCheckEnabled: z.boolean().default(false),
 		geoCheckLocations: z.array(z.enum(GeoContinents)).default([]),
 		geoCheckInterval: z.number().min(300000).default(300000),
+		dockerLogsEnabled: z.boolean().default(false),
+
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 		createdAt: z.string().optional(),
@@ -332,6 +327,21 @@ export const getDockerContainerNameParamValidation = z.object({
 });
 export const getDockerContainerByNameQueryValidation = z.object({ dateRange: z.enum(DateRanges).optional() });
 
+export const getDockerContainerLogsQueryValidation = z
+	.object({
+		before: z.iso.datetime().optional(),
+		after: z.iso.datetime().optional(),
+		limit: z.coerce.number().int().min(1).max(DOCKER_LOG_PAGE_MAX).default(DOCKER_LOG_PAGE_DEFAULT),
+	})
+	.superRefine((query, ctx) => {
+		if (query.before && query.after) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Specify either before or after, not both",
+				path: ["after"],
+			});
+		}
+	});
 // Canonical monitor shape returned by /monitors endpoints. Keep aligned with
 // what the controllers actually serialize.
 export const monitorResponseSchema = z
@@ -359,7 +369,6 @@ export const monitorResponseSchema = z
 		tags: z.array(z.string()),
 		customUpCodes: z.array(httpStatusCode).optional(),
 		secret: z.string().optional(),
-		sshPrivateKey: z.string().optional(),
 		cpuAlertThreshold: z.number(),
 		memoryAlertThreshold: z.number(),
 		diskAlertThreshold: z.number(),
@@ -371,6 +380,7 @@ export const monitorResponseSchema = z
 		geoCheckEnabled: z.boolean(),
 		geoCheckLocations: z.array(z.enum(GeoContinents)),
 		geoCheckInterval: z.number(),
+		dockerLogsEnabled: z.boolean(),
 		dnsServer: z.string().optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 		teamId: z.string(),
@@ -528,4 +538,27 @@ export const dockerContainerDetailsResponseSchema = z.object({
 			})
 			.nullable(),
 	}),
+});
+
+export const dockerLogLineResponseSchema = z.object({
+	ts: z.string(),
+	stream: z.enum(DockerLogStreams),
+	text: z.string(),
+});
+
+export const dockerLogResponseSchema = z.object({
+	id: z.string(),
+	metadata: z.object({ monitorId: z.string(), teamId: z.string(), containerId: z.string(), containerName: z.string() }),
+	lines: z.array(dockerLogLineResponseSchema),
+	gap: z.boolean(),
+	checkedAt: z.string(),
+	expiry: z.string(),
+	createdAt: z.string(),
+	updatedAt: z.string(),
+});
+
+// Response of GET /monitors/docker/details/{monitorId}/containers/{containerName}/logs.
+export const dockerContainerLogsResponseSchema = z.object({
+	logs: z.array(dockerLogResponseSchema),
+	nextCursor: z.string().nullable(),
 });

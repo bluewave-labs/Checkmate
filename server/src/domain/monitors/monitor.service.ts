@@ -9,6 +9,7 @@ import type {
 	GroupedGeoCheckResult,
 	DockerDetailsResult,
 	DockerContainerDetailsResult,
+	DockerContainerLogsResult,
 } from "@/domain/monitors/monitor.type.js";
 import { supportsGeoCheck, supportsUptimeDetails } from "@/domain/monitors/monitor.type.js";
 import type {
@@ -31,6 +32,7 @@ import type { ImportedMonitor } from "@/api/validation/monitorValidation.js";
 import { ILogger } from "@/utils/logger.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";
 import { DateRange } from "@/types/query.js";
+import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
 
 const SERVICE_NAME = "MonitorService";
 
@@ -73,6 +75,14 @@ export interface IMonitorService {
 		containerName: string;
 		dateRange: DateRange;
 	}): Promise<DockerContainerDetailsResult>;
+	getDockerContainerLogs(args: {
+		teamId: string;
+		monitorId: string;
+		containerName: string;
+		before?: Date;
+		after?: Date;
+		limit: number;
+	}): Promise<DockerContainerLogsResult>;
 	getGeoChecksByMonitorId(args: {
 		teamId: string;
 		monitorId: string;
@@ -130,6 +140,7 @@ export class MonitorService implements IMonitorService {
 	private monitorsRepository: IMonitorsRepository;
 	private checksRepository: IChecksRepository;
 	private geoChecksRepository: IGeoChecksRepository;
+	private dockerLogsRepository: IDockerLogsRepository;
 	private monitorStatsRepository: IMonitorStatsRepository;
 	private statusPagesRepository: IStatusPagesRepository;
 	private incidentsRepository: IIncidentsRepository;
@@ -141,6 +152,7 @@ export class MonitorService implements IMonitorService {
 		monitorsRepository,
 		checksRepository,
 		geoChecksRepository,
+		dockerLogsRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
 		incidentsRepository,
@@ -151,6 +163,7 @@ export class MonitorService implements IMonitorService {
 		monitorsRepository: IMonitorsRepository;
 		checksRepository: IChecksRepository;
 		geoChecksRepository: IGeoChecksRepository;
+		dockerLogsRepository: IDockerLogsRepository;
 		monitorStatsRepository: IMonitorStatsRepository;
 		statusPagesRepository: IStatusPagesRepository;
 		incidentsRepository: IIncidentsRepository;
@@ -161,6 +174,7 @@ export class MonitorService implements IMonitorService {
 		this.monitorsRepository = monitorsRepository;
 		this.checksRepository = checksRepository;
 		this.geoChecksRepository = geoChecksRepository;
+		this.dockerLogsRepository = dockerLogsRepository;
 		this.monitorStatsRepository = monitorStatsRepository;
 		this.statusPagesRepository = statusPagesRepository;
 		this.incidentsRepository = incidentsRepository;
@@ -385,6 +399,41 @@ export class MonitorService implements IMonitorService {
 		};
 	};
 
+	getDockerContainerLogs = async ({
+		teamId,
+		monitorId,
+		containerName,
+		before,
+		after,
+		limit,
+	}: {
+		teamId: string;
+		monitorId: string;
+		containerName: string;
+		before?: Date;
+		after?: Date;
+		limit: number;
+	}): Promise<DockerContainerLogsResult> => {
+		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
+		if (!monitor) {
+			throw new AppError({
+				message: `Monitor with ID ${monitorId} not found`,
+				status: 404,
+			});
+		}
+
+		if (monitor.type !== "docker") {
+			throw new AppError({
+				message: `${monitor.type} monitors are not supported for docker container logs`,
+				status: 400,
+			});
+		}
+
+		const logs = await this.dockerLogsRepository.findByContainerName({ monitorId, containerName, before, after, limit });
+		const nextCursor = !after && logs.length === limit ? (logs[logs.length - 1]?.checkedAt ?? null) : null;
+		return { logs, nextCursor };
+	};
+
 	getGeoChecksByMonitorId = async ({
 		teamId,
 		monitorId,
@@ -588,6 +637,14 @@ export class MonitorService implements IMonitorService {
 		await this.geoChecksRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
 			this.logger.warn({
 				message: `Error deleting geo checks for monitor ${monitor.id} with name ${monitor.name}`,
+				service: SERVICE_NAME,
+				stack: err instanceof Error ? err.stack : undefined,
+			});
+		});
+
+		await this.dockerLogsRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
+			this.logger.warn({
+				message: `Error deleting docker logs for monitor ${monitor.id} with name ${monitor.name}`,
 				service: SERVICE_NAME,
 				stack: err instanceof Error ? err.stack : undefined,
 			});

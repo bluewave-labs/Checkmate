@@ -111,7 +111,8 @@ const portSchema = baseSchema.extend({
 // Docker monitor schema
 const dockerSchema = baseSchema.extend({
 	type: z.literal("docker"),
-	url: z.string().min(1, "Container ID is required"),
+	url: z.string().min(1, "Docker host URL is required"),
+	dockerLogsEnabled: z.boolean().register(monitorStepRegistry, { step: 1 }),
 });
 
 // Game server monitor schema
