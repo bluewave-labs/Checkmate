@@ -297,7 +297,7 @@ describe("DockerProvider", () => {
 				);
 			const { provider } = setup({ logs });
 
-			const result = await provider.handle(makeMonitor());
+			const result = await provider.handle(makeMonitor({ dockerLogsEnabled: true }));
 
 			expect(result.payload?.logs?.[0]?.lines).toEqual([
 				{ ts: "2026-01-01T00:00:37.100000000Z", stream: "stdout", text: "ready" },
@@ -309,7 +309,7 @@ describe("DockerProvider", () => {
 			const logs = jest.fn().mockResolvedValue(Buffer.from("noise\n2026-01-01T00:00:00Z first\n2026-01-01T00:00:01.12Z second\n"));
 			const { provider } = setup({ logs });
 
-			const result = await provider.handle(makeMonitor());
+			const result = await provider.handle(makeMonitor({ dockerLogsEnabled: true }));
 
 			expect(result.payload?.logs?.[0]?.lines).toEqual([
 				{ ts: "2026-01-01T00:00:00.000000000Z", stream: "stdout", text: "first" },
@@ -321,7 +321,7 @@ describe("DockerProvider", () => {
 			const logs = jest.fn().mockResolvedValue(Buffer.from(`2026-01-01T00:00:00Z ${"x".repeat(5000)}\n`));
 			const { provider } = setup({ logs });
 
-			const result = await provider.handle(makeMonitor());
+			const result = await provider.handle(makeMonitor({ dockerLogsEnabled: true }));
 			const text = result.payload?.logs?.[0]?.lines[0]?.text;
 			expect(text).toEqual(expect.stringMatching(/ …\[truncated\]$/));
 			expect(Buffer.byteLength(text?.replace(" …[truncated]", "") ?? "", "utf8")).toBeLessThanOrEqual(4096);
@@ -330,7 +330,7 @@ describe("DockerProvider", () => {
 		it("isolates a logs failure and warns", async () => {
 			const { provider, logger } = setup({ logs: jest.fn().mockRejectedValue(new Error("logs failed")) });
 
-			const result = await provider.handle(makeMonitor());
+			const result = await provider.handle(makeMonitor({ dockerLogsEnabled: true }));
 
 			expect(result.payload?.logs).toEqual([]);
 			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to read logs for container my-container" }));
@@ -340,10 +340,28 @@ describe("DockerProvider", () => {
 			const containers = [makeContainer({ Id: "a".repeat(64) }), makeContainer({ Id: "b".repeat(64), State: "exited" })];
 			const { provider, logs } = setup({ listContainers: jest.fn().mockResolvedValue(containers) });
 
-			await provider.handle(makeMonitor());
+			await provider.handle(makeMonitor({ dockerLogsEnabled: true }));
 
 			expect(logs).toHaveBeenCalledTimes(2);
 			expect(logs).toHaveBeenCalledWith({ follow: false, stdout: true, stderr: true, timestamps: true, tail: DOCKER_LOG_TAIL_LINES });
+		});
+
+		it("does not read logs when dockerLogsEnabled is false", async () => {
+			const { provider, logs } = setup();
+
+			const result = await provider.handle(makeMonitor({ dockerLogsEnabled: false }));
+
+			expect(logs).not.toHaveBeenCalled();
+			expect(result.payload?.logs).toBeUndefined();
+		});
+
+		it("does not read logs when dockerLogsEnabled is unset", async () => {
+			const { provider, logs } = setup();
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(logs).not.toHaveBeenCalled();
+			expect(result.payload?.logs).toBeUndefined();
 		});
 	});
 

@@ -279,6 +279,11 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 		}
 	};
 
+	private collectLogs = async (docker: Dockerode, summaries: Dockerode.ContainerInfo[]): Promise<DockerContainerLogs[]> => {
+		const rawLogs = await this.mapWithConcurrency(summaries, STATS_CONCURRENCY, (s) => this.toContainerLogs(docker, s));
+		return rawLogs.filter((log) => log !== null);
+	};
+
 	handle = async (monitor: Monitor): Promise<MonitorStatusResponse<DockerStatusPayload>> => {
 		try {
 			const docker = new this.DockerLib(this.toDockerOptions(monitor));
@@ -307,8 +312,8 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 
 			const summaries = await docker.listContainers({ all: true });
 			const containers = await this.mapWithConcurrency(summaries, STATS_CONCURRENCY, (s) => this.toContainerInfo(docker, s));
-			const rawLogs = await this.mapWithConcurrency(summaries, STATS_CONCURRENCY, (s) => this.toContainerLogs(docker, s));
-			const logs = rawLogs.filter((log) => log !== null);
+			const logs = monitor.dockerLogsEnabled ? await this.collectLogs(docker, summaries) : undefined;
+
 			const summary: DockerContainerSummary = {
 				total: containers.length,
 				running: containers.filter((c) => c.state === "running").length,

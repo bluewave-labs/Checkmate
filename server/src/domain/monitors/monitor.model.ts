@@ -306,6 +306,10 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			type: Number,
 			default: 300000,
 		},
+		dockerLogsEnabled: {
+			type: Boolean,
+			default: false,
+		},
 		dnsServer: {
 			type: String,
 		},

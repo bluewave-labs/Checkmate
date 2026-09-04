@@ -233,6 +233,19 @@ describe("monitorValidation — strategy gating", () => {
 			expect(parsed.monitors[0].strategy).toBeUndefined();
 		});
 
+		it("defaults dockerLogsEnabled to false on imported docker monitors", () => {
+			const parsed = importMonitorsBodyValidation.parse({
+				monitors: [
+					{
+						name: "Imported Docker",
+						type: "docker",
+						url: "unix:///var/run/docker.sock",
+					},
+				],
+			});
+			expect(parsed.monitors[0].dockerLogsEnabled).toBe(false);
+		});
+
 		it("rejects strategy on imported non-pagespeed monitors", () => {
 			expect(() =>
 				importMonitorsBodyValidation.parse({
