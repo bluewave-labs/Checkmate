@@ -179,6 +179,15 @@ export const TabLogs = ({ monitorId, containerName, enabled }: TabLogsProps) => 
 		);
 	}
 
+	if (lastUpdatedAt !== null && rows.length === 0) {
+		return (
+			<EmptyState
+				title={t("pages.docker.container.logs.empty.title")}
+				description={t("pages.docker.container.logs.empty.description")}
+			/>
+		);
+	}
+
 	return (
 		<Stack gap={LAYOUT.MD}>
 			<HeaderLogs

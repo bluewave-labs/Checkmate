@@ -977,6 +977,10 @@
 					"noOlder": "Beginning of retained logs",
 					"loadError": "Could not load logs",
 					"loadOlderError": "Could not load older logs",
+					"empty": {
+						"title": "No logs collected yet",
+						"description": "Lines will appear here after the next check. Only output written since collection was turned on is stored."
+					},
 					"disabled": {
 						"title": "Log collection is off for this host",
 						"description": "Turn on container logs in the monitor settings to start collecting.",
