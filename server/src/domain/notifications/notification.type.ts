@@ -33,11 +33,18 @@ export interface Notification {
 	accountSid?: string;
 	twilioPhoneNumber?: string;
 	topic?: string;
+	// Webhook authentication fields
+	webhookAuthType?: WebhookAuthType;
+	webhookAuthUsername?: string;
+	webhookAuthPassword?: string;
+	webhookAuthToken?: string;
 	ntfyAuthType?: NtfyAuthType;
 	ntfyUsername?: string;
 	createdAt: string;
 	updatedAt: string;
 }
+
+export type WebhookAuthType = "none" | "basic" | "bearer";
 
 export interface AlertPagerDutyPayload {
 	routing_key?: string;
@@ -65,11 +72,6 @@ export interface AlertDiscordPayload {
 	timestamp: string;
 }
 
-/**
- * Unified notification message types for cross-provider consistency
- * Part of notification system unification effort
- */
-
 export type NotificationType = "monitor_down" | "monitor_up" | "threshold_breach" | "threshold_resolved" | "test";
 
 export type NotificationSeverity = "critical" | "warning" | "info" | "success";
@@ -87,7 +89,7 @@ export interface ThresholdBreach {
 	currentValue: number;
 	threshold: number;
 	unit: string;
-	formattedValue: string; // e.g., "85%" or "72°C"
+	formattedValue: string;
 }
 
 export interface IncidentInfo {

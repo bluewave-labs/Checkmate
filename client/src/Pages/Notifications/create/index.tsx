@@ -258,6 +258,67 @@ const NotificationsCreatePage = () => {
 						}
 					/>
 				)}
+				{watchedType === "webhook" && (
+					<ConfigBox
+						title={t("pages.notifications.form.webhookAuth.title")}
+						subtitle={t("pages.notifications.form.webhookAuth.description")}
+						rightContent={
+							<Stack spacing={theme.spacing(8)}>
+								<FormSelectField
+									name="webhookAuthType"
+									fieldLabel={t("pages.notifications.form.webhookAuth.optionAuthType")}
+									options={[
+										{
+											value: "none",
+											label: t("pages.notifications.form.webhookAuth.typeNone"),
+										},
+										{
+											value: "basic",
+											label: t("pages.notifications.form.webhookAuth.typeBasic"),
+										},
+										{
+											value: "bearer",
+											label: t("pages.notifications.form.webhookAuth.typeBearer"),
+										},
+									]}
+								/>
+								{watch("webhookAuthType") === "basic" && (
+									<>
+										<FormTextField
+											name="webhookAuthUsername"
+											fieldLabel={t(
+												"pages.notifications.form.webhookAuth.optionUsername"
+											)}
+											placeholder={t(
+												"pages.notifications.form.webhookAuth.placeholderUsername"
+											)}
+										/>
+										<FormTextField
+											name="webhookAuthPassword"
+											type="password"
+											fieldLabel={t(
+												"pages.notifications.form.webhookAuth.optionPassword"
+											)}
+											placeholder={t(
+												"pages.notifications.form.webhookAuth.placeholderPassword"
+											)}
+										/>
+									</>
+								)}
+								{watch("webhookAuthType") === "bearer" && (
+									<FormTextField
+										name="webhookAuthToken"
+										type="password"
+										fieldLabel={t("pages.notifications.form.webhookAuth.optionToken")}
+										placeholder={t(
+											"pages.notifications.form.webhookAuth.placeholderToken"
+										)}
+									/>
+								)}
+							</Stack>
+						}
+					/>
+				)}
 				<Stack
 					direction="row"
 					justifyContent="flex-end"
