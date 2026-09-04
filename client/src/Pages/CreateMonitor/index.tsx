@@ -376,6 +376,8 @@ const CreateMonitorPage = () => {
 				navigate("/pagespeed");
 			} else if (pageType === "hardware") {
 				navigate("/infrastructure");
+			} else if (pageType === "docker") {
+				navigate("/docker");
 			} else {
 				navigate("/uptime");
 			}
