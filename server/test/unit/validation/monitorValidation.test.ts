@@ -18,6 +18,14 @@ describe("getDockerContainerLogsQueryValidation", () => {
 	it("rejects a non-ISO before cursor", () => {
 		expect(() => getDockerContainerLogsQueryValidation.parse({ before: "yesterday" })).toThrow();
 	});
+
+	it("rejects a non-ISO after cursor", () => {
+		expect(() => getDockerContainerLogsQueryValidation.parse({ after: "yesterday" })).toThrow();
+	});
+
+	it("rejects before and after together", () => {
+		expect(() => getDockerContainerLogsQueryValidation.parse({ before: "2026-01-02T00:00:00.000Z", after: "2026-01-01T00:00:00.000Z" })).toThrow();
+	});
 });
 
 const baseDnsBody = {

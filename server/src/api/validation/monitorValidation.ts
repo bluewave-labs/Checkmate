@@ -333,11 +333,21 @@ export const getDockerContainerNameParamValidation = z.object({
 });
 export const getDockerContainerByNameQueryValidation = z.object({ dateRange: z.enum(DateRanges).optional() });
 
-export const getDockerContainerLogsQueryValidation = z.object({
-	before: z.iso.datetime().optional(),
-	limit: z.coerce.number().int().min(1).max(DOCKER_LOG_PAGE_MAX).default(DOCKER_LOG_PAGE_DEFAULT),
-});
-
+export const getDockerContainerLogsQueryValidation = z
+	.object({
+		before: z.iso.datetime().optional(),
+		after: z.iso.datetime().optional(),
+		limit: z.coerce.number().int().min(1).max(DOCKER_LOG_PAGE_MAX).default(DOCKER_LOG_PAGE_DEFAULT),
+	})
+	.superRefine((query, ctx) => {
+		if (query.before && query.after) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Specify either before or after, not both",
+				path: ["after"],
+			});
+		}
+	});
 // Canonical monitor shape returned by /monitors endpoints. Keep aligned with
 // what the controllers actually serialize.
 export const monitorResponseSchema = z

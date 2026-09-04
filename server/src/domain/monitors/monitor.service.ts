@@ -80,6 +80,7 @@ export interface IMonitorService {
 		monitorId: string;
 		containerName: string;
 		before?: Date;
+		after?: Date;
 		limit: number;
 	}): Promise<DockerContainerLogsResult>;
 	getGeoChecksByMonitorId(args: {
@@ -403,12 +404,14 @@ export class MonitorService implements IMonitorService {
 		monitorId,
 		containerName,
 		before,
+		after,
 		limit,
 	}: {
 		teamId: string;
 		monitorId: string;
 		containerName: string;
 		before?: Date;
+		after?: Date;
 		limit: number;
 	}): Promise<DockerContainerLogsResult> => {
 		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
@@ -426,8 +429,9 @@ export class MonitorService implements IMonitorService {
 			});
 		}
 
-		const logs = await this.dockerLogsRepository.findByContainerName({ monitorId, containerName, before, limit });
-		return { logs, nextCursor: logs.length === limit ? (logs[logs.length - 1]?.checkedAt ?? null) : null };
+		const logs = await this.dockerLogsRepository.findByContainerName({ monitorId, containerName, before, after, limit });
+		const nextCursor = !after && logs.length === limit ? (logs[logs.length - 1]?.checkedAt ?? null) : null;
+		return { logs, nextCursor };
 	};
 
 	getGeoChecksByMonitorId = async ({

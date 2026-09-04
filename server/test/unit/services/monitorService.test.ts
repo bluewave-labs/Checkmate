@@ -656,6 +656,28 @@ describe("MonitorService", () => {
 
 			expect(result.nextCursor).toBeNull();
 		});
+
+		it("passes after through and returns a null cursor even for a full page", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const dockerLogsRepository = createDockerLogsRepositoryMock();
+			const after = new Date("2026-01-01T00:00:00.000Z");
+			const logs = [{ checkedAt: "2026-01-01T02:00:00.000Z" }, { checkedAt: "2026-01-01T01:00:00.000Z" }];
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			(dockerLogsRepository.findByContainerName as jest.Mock).mockResolvedValue(logs);
+			const { service } = createService({ monitorsRepository, dockerLogsRepository });
+
+			const result = await service.getDockerContainerLogs({
+				teamId: TEAM_ID,
+				monitorId: MONITOR_ID,
+				containerName: "web",
+				after,
+				limit: 2,
+			});
+
+			expect(dockerLogsRepository.findByContainerName).toHaveBeenCalledWith({ monitorId: MONITOR_ID, containerName: "web", after, limit: 2 });
+			expect(result.logs).toBe(logs);
+			expect(result.nextCursor).toBeNull();
+		});
 	});
 
 	describe("getPageSpeedDetailsById", () => {

@@ -64,22 +64,26 @@ class MongoDockerLogsRepository implements IDockerLogsRepository {
 		monitorId,
 		containerName,
 		before,
+		after,
 		limit,
 	}: {
 		monitorId: string;
 		containerName: string;
 		before?: Date;
+		after?: Date;
 		limit: number;
 	}): Promise<DockerLog[]> => {
 		const docs = await DockerLogModel.find({
 			"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 			"metadata.containerName": containerName,
 			...(before ? { checkedAt: { $lt: before } } : {}),
+			...(after ? { checkedAt: { $gt: after } } : {}),
 		})
-			.sort({ checkedAt: -1 })
+			.sort({ checkedAt: after ? 1 : -1 })
 			.limit(limit)
 			.lean<DockerLogDocument[]>();
-		return docs.map(this.toEntity);
+		const entities = docs.map(this.toEntity);
+		return after ? entities.reverse() : entities;
 	};
 
 	deleteByMonitorId = async (monitorId: string) =>

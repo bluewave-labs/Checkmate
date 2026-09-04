@@ -205,7 +205,7 @@ class MonitorController implements IMonitorController {
 		const validatedQuery = getDockerContainerLogsQueryValidation.parse(req.query);
 
 		const { monitorId, containerName } = validatedParams;
-		const { before, limit } = validatedQuery;
+		const { before, after, limit } = validatedQuery;
 		const teamId = requireTeamId(req.user?.teamId);
 
 		const data = await this.monitorService.getDockerContainerLogs({
@@ -213,6 +213,7 @@ class MonitorController implements IMonitorController {
 			monitorId,
 			containerName,
 			before: before ? new Date(before) : undefined,
+			after: after ? new Date(after) : undefined,
 			limit,
 		});
 
