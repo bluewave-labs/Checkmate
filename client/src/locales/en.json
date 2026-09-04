@@ -956,6 +956,18 @@
 				"tabs": {
 					"overview": "Overview",
 					"logs": "Logs"
+				},
+				"logs": {
+					"recentLines": "{{count}} recent lines",
+					"loading": "Loading...",
+					"updatedSecondsAgo": "Updated {{count}}s ago",
+					"updatedMinutesAgo": "Updated {{count}}m ago",
+					"skipped": "Some log entries were skipped",
+					"loadOlder": "Load older logs",
+					"loadingOlder": "Loading...",
+					"noOlder": "Beginning of retained logs",
+					"loadError": "Could not load logs",
+					"loadOlderError": "Could not load older logs"
 				}
 			},
 			"host": {

@@ -8,6 +8,7 @@ import { Fragment } from "react";
 // Hooks
 import { useTheme } from "@mui/material";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 // Utils
 import type { DockerLogRow } from "@/Utils/MonitorUtils";
@@ -18,6 +19,7 @@ import type { RootState } from "@/store";
 export const RowLog = ({ row }: { row: DockerLogRow }) => {
 	const theme = useTheme();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
+	const { t } = useTranslation();
 
 	return (
 		<Fragment>
@@ -63,7 +65,9 @@ export const RowLog = ({ row }: { row: DockerLogRow }) => {
 					alignItems={"center"}
 					py={SPACING.MD}
 				>
-					<Typography pr={SPACING.MD}>Some log entries were skipped</Typography>
+					<Typography pr={SPACING.MD}>
+						{t("pages.docker.container.logs.skipped")}
+					</Typography>
 					<Divider sx={{ flex: 1 }} />
 				</Stack>
 			) : (
