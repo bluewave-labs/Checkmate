@@ -63,31 +63,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 			return { socketPath };
 		}
 		if (url.startsWith("/")) return { socketPath: url };
-		const match = url.match(/^ssh:\/\/(?:([^@\s]+)@)?([^\s/:@]+)(?::(\d{1,5}))?\/?$/);
-		if (!match) throw new AppError({ message: `Invalid Docker host URL: ${url}`, status: 422, service: SERVICE_NAME, method: "toDockerOptions" });
-		const [, username, host, port] = match;
-		if (!username)
-			throw new AppError({
-				message: "SSH Docker host URL requires a user: ssh://user@host",
-				status: 422,
-				service: SERVICE_NAME,
-				method: "toDockerOptions",
-			});
-
-		if (!monitor.sshPrivateKey)
-			throw new AppError({
-				message: "SSH Docker host requires a private key",
-				status: 422,
-				service: SERVICE_NAME,
-				method: "toDockerOptions",
-			});
-		return {
-			protocol: "ssh",
-			host,
-			port: port ? Number(port) : 22,
-			username,
-			sshOptions: { privateKey: monitor.sshPrivateKey },
-		};
+		throw new AppError({ message: `Invalid Docker host URL: ${url}`, status: 422, service: SERVICE_NAME, method: "toDockerOptions" });
 	};
 
 	private async mapWithConcurrency<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {

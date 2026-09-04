@@ -120,22 +120,15 @@ const refineProxySelection = (body: { proxyMode?: string; proxyId?: string }, ct
 	}
 };
 
-const dockerUrlRegex = /^(?:ssh:\/\/[^@\s]+@[^\s/:@]+(?::\d{1,5})?\/?|unix:\/\/\/\S+|\/\S+)$/;
+const dockerUrlRegex = /^(?:unix:\/\/\/\S+|\/\S+)$/;
 
-const refineDockerUrl = (data: { type?: string; url?: string; sshPrivateKey?: string }, ctx: z.RefinementCtx) => {
+const refineDockerUrl = (data: { type?: string; url?: string }, ctx: z.RefinementCtx) => {
 	if (data.type !== "docker" || data.url === undefined) return;
 	if (!dockerUrlRegex.test(data.url)) {
 		ctx.addIssue({
 			code: "custom",
 			path: ["url"],
-			message: "Docker host must be ssh://user@host[:port], unix:///path, or an absolute socket path",
-		});
-	}
-	if (data.url.startsWith("ssh://") && !data.sshPrivateKey) {
-		ctx.addIssue({
-			code: "custom",
-			path: ["sshPrivateKey"],
-			message: "SSH Docker hosts require a private key",
+			message: "Docker host must be unix:///path or an absolute socket path",
 		});
 	}
 };
@@ -164,7 +157,6 @@ export const createMonitorBodyValidation = z
 		tags: z.array(z.string()).optional(),
 		customUpCodes: z.array(httpStatusCode).default([]),
 		secret: z.string().optional(),
-		sshPrivateKey: z.string().optional(),
 		jsonPath: z.union([z.string(), z.literal("")]).optional(),
 		expectedValue: z.union([z.string(), z.literal("")]).optional(),
 		matchMethod: z.union([z.enum(MonitorMatchMethods), z.literal("")]).optional(),
@@ -201,7 +193,6 @@ export const editMonitorBodyValidation = z
 		tags: z.array(z.string()).optional(),
 		customUpCodes: z.array(httpStatusCode).optional(),
 		secret: z.string().optional(),
-		sshPrivateKey: z.string().optional(),
 		ignoreTlsErrors: z.boolean().optional(),
 		proxyMode: z.enum(ProxyModes).optional(),
 		proxyId: proxyIdValidation,
@@ -283,7 +274,6 @@ const importedMonitorSchema = z
 		tags: z.array(z.string()).default([]),
 		customUpCodes: z.array(httpStatusCode).default([]),
 		secret: z.string().optional(),
-		sshPrivateKey: z.string().optional(),
 		cpuAlertThreshold: z.number().default(100),
 		cpuAlertCounter: z.number().default(5),
 		memoryAlertThreshold: z.number().default(100),
@@ -379,7 +369,6 @@ export const monitorResponseSchema = z
 		tags: z.array(z.string()),
 		customUpCodes: z.array(httpStatusCode).optional(),
 		secret: z.string().optional(),
-		sshPrivateKey: z.string().optional(),
 		cpuAlertThreshold: z.number(),
 		memoryAlertThreshold: z.number(),
 		diskAlertThreshold: z.number(),

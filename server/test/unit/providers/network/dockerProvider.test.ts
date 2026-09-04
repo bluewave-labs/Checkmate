@@ -9,8 +9,6 @@ import { DOCKER_LOG_TAIL_LINES } from "../../../../src/domain/docker/docker.type
 
 // ── Fixtures ─────────────────────────────────────────────────────────────────
 
-const PRIVATE_KEY = "-----BEGIN OPENSSH PRIVATE KEY-----\nfake\n-----END OPENSSH PRIVATE KEY-----";
-
 const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
 	({
 		id: "mon-1",
@@ -116,28 +114,6 @@ describe("DockerProvider", () => {
 
 			expect(DockerLib).toHaveBeenCalledWith({ socketPath: "/var/run/docker.sock" });
 		});
-
-		it("parses ssh urls with a private key, defaulting to port 22", async () => {
-			const { provider, DockerLib } = setup();
-
-			await provider.handle(makeMonitor({ url: "ssh://deploy@prod-swarm-01.internal", sshPrivateKey: PRIVATE_KEY }));
-
-			expect(DockerLib).toHaveBeenCalledWith({
-				protocol: "ssh",
-				host: "prod-swarm-01.internal",
-				port: 22,
-				username: "deploy",
-				sshOptions: { privateKey: PRIVATE_KEY },
-			});
-		});
-
-		it("parses an explicit ssh port", async () => {
-			const { provider, DockerLib } = setup();
-
-			await provider.handle(makeMonitor({ url: "ssh://deploy@host:2222", sshPrivateKey: PRIVATE_KEY }));
-
-			expect(DockerLib).toHaveBeenCalledWith(expect.objectContaining({ port: 2222 }));
-		});
 	});
 
 	// ── Fail-loudly url validation ───────────────────────────────────────
@@ -151,22 +127,13 @@ describe("DockerProvider", () => {
 			["a container name (old semantics)", "my-container", "Invalid Docker host URL"],
 			["tcp engine urls (unsupported)", "tcp://host:2375", "Invalid Docker host URL"],
 			["https engine urls (unsupported)", "https://host", "Invalid Docker host URL"],
-			["ssh without a user", "ssh://host", "SSH Docker host URL requires a user: ssh://user@host"],
+			["ssh engine urls (unsupported)", "ssh://deploy@host", "Invalid Docker host URL"],
 		];
 
 		it.each(invalidUrls)("throws AppError for %s and never constructs a client", async (_label, url, message) => {
 			const { provider, DockerLib } = setup();
 
 			await expect(provider.handle(makeMonitor({ url }))).rejects.toThrow(message);
-			expect(DockerLib).not.toHaveBeenCalled();
-		});
-
-		it("throws AppError for an ssh url with no private key", async () => {
-			const { provider, DockerLib } = setup();
-
-			await expect(provider.handle(makeMonitor({ url: "ssh://deploy@host", sshPrivateKey: undefined }))).rejects.toThrow(
-				"SSH Docker host requires a private key"
-			);
 			expect(DockerLib).not.toHaveBeenCalled();
 		});
 

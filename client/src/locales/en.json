@@ -634,7 +634,7 @@
 					"option": {
 						"dockerHost": {
 							"label": "Docker host",
-							"placeholder": "unix:///var/run/docker.sock or ssh://user@host"
+							"placeholder": "unix:///var/run/docker.sock"
 						},
 						"host": {
 							"label": "Host",
@@ -716,7 +716,7 @@
 						"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.  Set an optional proxy server to connect through.",
 						"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
 						"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
-						"docker": "Enter the Docker host to monitor: a local socket (unix:///var/run/docker.sock or /var/run/docker.sock) or a remote host over SSH (ssh://user@host, with an optional :port). Every container on the host is monitored.",
+						"docker": "Enter the Docker socket to monitor, as unix:///var/run/docker.sock or an absolute path such as /var/run/docker.sock. Every container on the host is monitored.",
 						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type. Some games require enabling server queries in their config file — check your game server's documentation. See the <gamedigLink>supported games list</gamedigLink> for protocol details.",
 						"pagespeed": "Track page load performance, Core Web Vitals, and optimization scores for your website.",
 						"grpc": "Enter the hostname and port of the gRPC server, optionally specify a service name for the health check, and add a display name.",
