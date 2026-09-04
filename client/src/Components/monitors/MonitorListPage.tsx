@@ -21,6 +21,8 @@ interface MonitorListPageProps {
 	actionLink: string;
 	controller: MonitorListController;
 	bulkActions?: boolean;
+	bulkActionsExtra?: ReactNode;
+	bulkActionsHidden?: boolean;
 	showTypeFilter?: boolean;
 	summaryProps?: { showBreached?: boolean };
 	priorityFallback?: ReactNode;
@@ -37,6 +39,8 @@ export const MonitorListPage = ({
 	actionLink,
 	controller,
 	bulkActions,
+	bulkActionsExtra,
+	bulkActionsHidden,
 	showTypeFilter,
 	summaryProps,
 	priorityFallback,
@@ -125,6 +129,7 @@ export const MonitorListPage = ({
 				<BulkActionsBar
 					selectedCount={controller.selectedRows.length}
 					onCancel={controller.handleCancelSelection}
+					hidden={bulkActionsHidden}
 				>
 					<Button
 						size="small"
@@ -140,6 +145,7 @@ export const MonitorListPage = ({
 					>
 						{t("common.buttons.pause")}
 					</Button>
+					{bulkActionsExtra}
 				</BulkActionsBar>
 			)}
 			{children}
