@@ -545,6 +545,7 @@
 				},
 				"statBoxes": {
 					"activeFor": "Active for",
+					"checkingEvery": "Checking every {{interval}}",
 					"certificateExpiry": "Certificate expiry",
 					"domainExpiry": "Domain expiry",
 					"lastCheck": "Last check",

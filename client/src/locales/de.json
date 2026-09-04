@@ -448,6 +448,7 @@
 				},
 				"statBoxes": {
 					"activeFor": "Aktiv seit",
+					"checkingEvery": "Check alle {{interval}}",
 					"certificateExpiry": "Zertifikatablauf",
 					"lastCheck": "Letzter Check",
 					"lastResponseTime": "Letzte Antwortzeit",
