@@ -976,7 +976,12 @@
 					"loadingOlder": "Loading...",
 					"noOlder": "Beginning of retained logs",
 					"loadError": "Could not load logs",
-					"loadOlderError": "Could not load older logs"
+					"loadOlderError": "Could not load older logs",
+					"disabled": {
+						"title": "Log collection is off for this host",
+						"description": "Turn on container logs in the monitor settings to start collecting.",
+						"action": "Configure monitor"
+					}
 				}
 			},
 			"host": {

@@ -1,7 +1,7 @@
 // Components
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { BaseBox } from "@/Components/design-elements";
+import { BaseBox, EmptyState } from "@/Components/design-elements";
 import { Button } from "@/Components/inputs";
 import { HeaderLogs } from "@/Pages/Docker/ContainerDetails/Components/HeaderLogs";
 import { RowLog } from "@/Pages/Docker/ContainerDetails/Components/RowLog";
@@ -32,6 +32,7 @@ import { flattenDockerLogs } from "@/Utils/MonitorUtils";
 interface TabLogsProps {
 	monitorId?: string;
 	containerName?: string;
+	enabled: boolean;
 }
 
 const SCROLL_PIN_THRESHOLD_PX = 8;
@@ -45,7 +46,7 @@ const fetchLogs = async (url: string, params: { before?: string; after?: string 
 	return res.data.data;
 };
 
-export const TabLogs = ({ monitorId, containerName }: TabLogsProps) => {
+export const TabLogs = ({ monitorId, containerName, enabled }: TabLogsProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const { toastError } = useToast();
@@ -58,7 +59,7 @@ export const TabLogs = ({ monitorId, containerName }: TabLogsProps) => {
 	const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(null);
 
 	const logsUrl =
-		monitorId && containerName
+		enabled && monitorId && containerName
 			? `/monitors/docker/details/${encodeURIComponent(monitorId)}/containers/${encodeURIComponent(containerName)}/logs`
 			: null;
 
@@ -166,6 +167,17 @@ export const TabLogs = ({ monitorId, containerName }: TabLogsProps) => {
 			setLoadingOlder(false);
 		}
 	}, [logsUrl, oldestCursor, loadingOlder, t, toastError]);
+
+	if (!enabled) {
+		return (
+			<EmptyState
+				title={t("pages.docker.container.logs.disabled.title")}
+				description={t("pages.docker.container.logs.disabled.description")}
+				actionText={t("pages.docker.container.logs.disabled.action")}
+				actionTo={`/docker/configure/${monitorId}`}
+			/>
+		);
+	}
 
 	return (
 		<Stack gap={LAYOUT.MD}>

@@ -74,6 +74,7 @@ const DockerDetailsPage = ({ open = "logs" }: DockerContainerDetailsProps) => {
 				<TabLogs
 					monitorId={monitorId}
 					containerName={containerName}
+					enabled={monitor.dockerLogsEnabled ?? false}
 				/>
 			)}
 		</BasePage>
