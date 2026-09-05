@@ -123,6 +123,13 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		address: z.string().min(1, "User key is required"),
 		accessToken: z.string().min(1, "App token is required"),
 	}),
+	// Signalgrid notification
+	z.object({
+		notificationName: z.string().min(1, "Notification name is required"),
+		type: z.literal("signalgrid"),
+		address: z.string().min(1, "Channel is required"),
+		accessToken: z.string().min(1, "Client key is required"),
+	}),
 	// Twilio SMS notification
 	z.object({
 		notificationName: z.string().min(1, "Notification name is required"),

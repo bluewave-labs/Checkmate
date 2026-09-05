@@ -33,6 +33,7 @@ import { MatrixProvider } from "@/domain/notifications/providers/matrix.js";
 import { TeamsProvider } from "@/domain/notifications/providers/teams.js";
 import { TelegramProvider } from "@/domain/notifications/providers/telegram.js";
 import { PushoverProvider } from "@/domain/notifications/providers/pushover.js";
+import { SignalgridProvider } from "@/domain/notifications/providers/signalgrid.js";
 import { TwilioProvider } from "@/domain/notifications/providers/twilio.js";
 import { NtfyProvider } from "@/domain/notifications/providers/ntfy.js";
 
@@ -178,6 +179,7 @@ export const buildShared = async ({
 	const teamsProvider = new TeamsProvider(logger);
 	const telegramProvider = new TelegramProvider(logger);
 	const pushoverProvider = new PushoverProvider(logger);
+	const signalgridProvider = new SignalgridProvider(logger);
 	const twilioProvider = new TwilioProvider(logger);
 	const ntfyProvider = new NtfyProvider(logger);
 
@@ -192,6 +194,7 @@ export const buildShared = async ({
 		teams: teamsProvider,
 		telegram: telegramProvider,
 		pushover: pushoverProvider,
+		signalgrid: signalgridProvider,
 		twilio: twilioProvider,
 		ntfy: ntfyProvider,
 	};
