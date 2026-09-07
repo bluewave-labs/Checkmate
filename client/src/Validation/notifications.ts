@@ -84,6 +84,23 @@ const ntfySchema = baseSchema.extend({
 	topic: z.string().min(1, "Topic is required"),
 });
 
+const appriseSchema = baseSchema
+	.extend({
+		type: z.literal("apprise"),
+		address: z.string().min(1, "Server URL is required").url("Please enter a valid URL"),
+		topic: z.string().optional(),
+		appriseUrls: z.string().optional(),
+	})
+	.superRefine((data, ctx) => {
+		if (!data.topic?.trim() && !data.appriseUrls?.trim()) {
+			ctx.addIssue({
+				code: "custom",
+				path: ["topic"],
+				message: "A configuration key or at least one Apprise URL is required",
+			});
+		}
+	});
+
 export const notificationSchema = z.discriminatedUnion("type", [
 	emailSchema,
 	slackSchema,
@@ -97,6 +114,7 @@ export const notificationSchema = z.discriminatedUnion("type", [
 	pushoverSchema,
 	twilioSchema,
 	ntfySchema,
+	appriseSchema,
 ]);
 
 export type NotificationFormData = z.infer<typeof notificationSchema>;

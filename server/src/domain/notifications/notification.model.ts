@@ -39,6 +39,7 @@ const NotificationSchema = new Schema<NotificationDocument>(
 				"pushover",
 				"twilio",
 				"ntfy",
+				"apprise",
 			] as NotificationChannel[],
 			required: true,
 		},
@@ -56,6 +57,7 @@ const NotificationSchema = new Schema<NotificationDocument>(
 		topic: { type: String },
 		ntfyAuthType: { type: String, enum: NtfyAuthTypes },
 		ntfyUsername: { type: String },
+		appriseUrls: { type: String },
 	},
 	{
 		timestamps: true,

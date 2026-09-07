@@ -19,6 +19,7 @@ function buildDefaults(data: Notification | null): NotificationFormData {
 		homeserverUrl: data?.homeserverUrl || "",
 		roomId: data?.roomId || "",
 		topic: data?.topic || "",
+		appriseUrls: data?.appriseUrls || "",
 	};
 }
 

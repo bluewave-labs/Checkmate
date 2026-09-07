@@ -35,6 +35,7 @@ import { TelegramProvider } from "@/domain/notifications/providers/telegram.js";
 import { PushoverProvider } from "@/domain/notifications/providers/pushover.js";
 import { TwilioProvider } from "@/domain/notifications/providers/twilio.js";
 import { NtfyProvider } from "@/domain/notifications/providers/ntfy.js";
+import { AppriseProvider } from "@/domain/notifications/providers/apprise.js";
 
 // Repository interfaces
 import { ISettingsRepository } from "@/domain/app-settings/app-settings-repository.interface.js";
@@ -180,6 +181,7 @@ export const buildShared = async ({
 	const pushoverProvider = new PushoverProvider(logger);
 	const twilioProvider = new TwilioProvider(logger);
 	const ntfyProvider = new NtfyProvider(logger);
+	const appriseProvider = new AppriseProvider(logger);
 
 	const notificationProviders: NotificationProviderRegistry = {
 		webhook: webhookProvider,
@@ -194,6 +196,7 @@ export const buildShared = async ({
 		pushover: pushoverProvider,
 		twilio: twilioProvider,
 		ntfy: ntfyProvider,
+		apprise: appriseProvider,
 	};
 
 	const notificationsService = new NotificationsService({

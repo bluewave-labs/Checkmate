@@ -1330,7 +1330,8 @@
 						"telegram": "Telegram",
 						"pushover": "Pushover",
 						"twilio": "Twilio",
-						"ntfy": "ntfy"
+						"ntfy": "ntfy",
+						"apprise": "Apprise"
 					}
 				},
 				"telegram": {
@@ -1368,6 +1369,16 @@
 					"placeholderServerUrl": "https://ntfy.sh",
 					"optionTopic": "Topic",
 					"placeholderTopic": "checkmate-alerts"
+				},
+				"apprise": {
+					"title": "Apprise configuration",
+					"description": "Send alerts through an Apprise API server to any service Apprise supports. Use a configuration key saved on the server, or list Apprise URLs directly.",
+					"optionServerUrl": "Apprise API server URL",
+					"placeholderServerUrl": "https://apprise.example.com",
+					"optionConfigKey": "Configuration key (optional)",
+					"placeholderConfigKey": "checkmate",
+					"optionUrls": "Apprise URLs (optional, comma-separated)",
+					"placeholderUrls": "tgram://bot-token/chat-id, mailto://user:pass@example.com"
 				}
 			},
 			"table": {

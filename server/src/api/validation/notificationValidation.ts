@@ -39,6 +39,14 @@ const refineNtfyAuth = (body: { ntfyAuthType?: string; ntfyUsername?: string; ac
 	}
 };
 
+// Apprise posts to a server-side configuration key when one is set, otherwise to
+// the Apprise URLs given inline. Saving neither would create a channel with nowhere to send.
+const refineAppriseTarget = (body: { topic?: string; appriseUrls?: string }, ctx: z.RefinementCtx) => {
+	if (!body.topic?.trim() && !body.appriseUrls?.trim()) {
+		ctx.addIssue({ code: "custom", path: ["topic"], message: "A configuration key or at least one Apprise URL is required" });
+	}
+};
+
 export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 	// Email notification
 	z.object({
@@ -144,6 +152,16 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 			accessToken: z.union([z.string(), z.literal("")]).optional(),
 		})
 		.superRefine(refineNtfyAuth),
+	// Apprise notification
+	z
+		.object({
+			notificationName: z.string().min(1, "Notification name is required"),
+			type: z.literal("apprise"),
+			address: z.url({ message: "Please enter a valid Apprise API server URL" }),
+			topic: z.union([z.string(), z.literal("")]).optional(),
+			appriseUrls: z.union([z.string(), z.literal("")]).optional(),
+		})
+		.superRefine(refineAppriseTarget),
 ]);
 
 export const testNotificationBodyValidation = createNotificationBodyValidation;
