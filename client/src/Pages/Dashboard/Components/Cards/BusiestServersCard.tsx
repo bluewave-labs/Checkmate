@@ -9,6 +9,8 @@ import { DashboardCard, CardMessage } from "../DashboardCard";
 import { CardBar, CardRow, CardRowLabel } from "../CardPrimitives";
 import { useMonitors } from "../../useDashboardData";
 
+import { latestCheck } from "../../checks";
+
 import type { Monitor } from "@/Types/Monitor";
 
 // <60% fine, 60-85% warm, above that hot.
@@ -69,11 +71,9 @@ export const BusiestServersCard = () => {
 		return (data?.monitors ?? [])
 			.filter((monitor) => monitor.type === "hardware")
 			.map((monitor) => {
-				const checks = monitor.recentChecks ?? [];
-				// recentChecks is oldest-first: the newest snapshot is last.
-				const latest = checks[checks.length - 1];
-				// Note snake_case here, unlike camelCase in HardwareCheckStats.
-				// These are 0-1 fractions, so scale to percent.
+				const latest = latestCheck(monitor);
+				// snake_case here, unlike camelCase in HardwareCheckStats, and
+				// these are 0-1 fractions, so scale to percent.
 				const toPercent = (value: number | undefined) =>
 					typeof value === "number" ? value * 100 : null;
 				const cpu = toPercent(latest?.cpu?.usage_percent);

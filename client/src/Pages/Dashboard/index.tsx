@@ -12,10 +12,6 @@ import { CardPicker } from "./Components/CardPicker";
 import { MonitorsContext, useMonitorsRequest } from "./useDashboardData";
 import { useCardSelection } from "./useCardSelection";
 
-/**
- * Answers "is anything wrong, and where" across every monitor type at once —
- * the question no single-type page can answer. Problems first and biggest.
- */
 const Dashboard = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();

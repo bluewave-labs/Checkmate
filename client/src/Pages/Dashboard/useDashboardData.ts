@@ -3,14 +3,9 @@ import { useGet } from "@/Hooks/UseApi";
 import { MonitorTypes, type MonitorsWithChecksResponse } from "@/Types/Monitor";
 import { REFRESH_INTERVAL_MS } from "./cards";
 
-// One request feeds every monitor-derived card. Cards read it from context so
-// adding a monitor card costs no extra call.
-//
-// No rowsPerPage: the repository treats 0 as "no limit", so every monitor comes
-// back. The dashboard summarises the whole fleet, it never pages. `limit` is
-// deliberately not sent — findByTeamIdWithStats derives its page size from
-// rowsPerPage alone and never reads it, so passing it would only imply a
-// recent-check truncation that is not actually in effect.
+// One request feeds every monitor-derived card, read from context so adding a
+// card costs no extra call. No rowsPerPage: the dashboard summarises the whole
+// fleet, and the repository treats its absence as "no limit".
 const buildMonitorsUrl = () => {
 	const params = new URLSearchParams();
 	MonitorTypes.forEach((type) => params.append("type", type));

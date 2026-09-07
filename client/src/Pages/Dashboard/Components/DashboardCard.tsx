@@ -13,8 +13,8 @@ import { useCardSlot } from "./CardSlotContext";
 
 import type { ReactNode } from "react";
 
-// Matches the 34px control height plus the header's vertical padding, so a card
-// with no action still lines up with one that has a button in its header.
+// Control height plus the header's vertical padding, so a card with no action
+// still lines up with one that has a button in its header.
 const HEADER_MIN_HEIGHT = 44;
 const SKELETON_ROW_HEIGHT = 20;
 
@@ -46,25 +46,15 @@ export const DashboardCard = ({
 
 	return (
 		<BaseBox
+			display="flex"
+			flexDirection="column"
+			height="100%"
 			sx={{
-				display: "flex",
-				flexDirection: "column",
-				height: "100%",
 				overflow: "hidden",
-				// The header controls stay invisible until the card is hovered, so a
-				// settled dashboard is quiet.
-				//
-				// `:has(:focus-visible)` rather than `:focus-within`: a mouse click
-				// leaves the button focused, and :focus-within would then pin that
-				// card's controls open long after the pointer had left. focus-visible
-				// only matches keyboard focus, which is the case that actually needs
-				// the controls revealed.
 				"&:hover .dashboard-card-slot, &:has(:focus-visible) .dashboard-card-slot": {
 					opacity: 1,
 					pointerEvents: "auto",
 				},
-				// The controls are overlaid on the action, so the action fades out as
-				// they fade in rather than the two rendering on top of each other.
 				"&:hover .dashboard-card-action, &:has(:focus-visible) .dashboard-card-action": {
 					opacity: 0,
 				},
@@ -117,10 +107,6 @@ export const DashboardCard = ({
 					{slot && (
 						<Box
 							className="dashboard-card-slot"
-							// Taken out of flow and overlaid on the right: while hidden it
-							// would otherwise reserve its own width and push `action` away
-							// from the card's right edge, leaving it visibly un-aligned
-							// with the values in the rows beneath.
 							position="absolute"
 							right={0}
 							sx={{

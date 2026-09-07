@@ -15,14 +15,10 @@ import { CardRow } from "../CardPrimitives";
 import { Sparkline } from "../Sparkline";
 import { useMonitors } from "../../useDashboardData";
 
+import { latestCheck } from "../../checks";
+
 import type { Monitor, MonitorStatus } from "@/Types/Monitor";
 
-// Ordering, not a severity scale — Checkmate has none. Every input already
-// exists in the API response.
-//
-// `initializing` is deliberately excluded: on a fresh install every new monitor
-// starts there, and counting it would open the card red claiming a fleet-wide
-// outage that does not exist. It is "not checked yet", not "broken".
 const SPARKLINE_WIDTH = 80;
 
 const STATUS_RANK: Partial<Record<MonitorStatus, number>> = {
@@ -33,28 +29,20 @@ const STATUS_RANK: Partial<Record<MonitorStatus, number>> = {
 const isProblem = (monitor: Monitor) => STATUS_RANK[monitor.status] !== undefined;
 
 /**
- * How long the monitor has been in its current state, inferred from the oldest
- * consecutive failing check.
- *
- * recentChecks is oldest-first — the server appends each snapshot with
- * `$push … $slice: -N` — so the run of current failures is walked backwards
- * from the end.
+ * How long the monitor has been down, from the oldest consecutive failing
+ * check. recentChecks is oldest-first, so the run is walked back from the end.
  */
 const downSince = (monitor: Monitor): string | null => {
 	const checks = monitor.recentChecks ?? [];
 	let oldestFailing: string | null = null;
 	for (let index = checks.length - 1; index >= 0; index -= 1) {
-		if (checks[index].status === true) {
+		if (checks[index].status !== false) {
 			break;
 		}
 		oldestFailing = checks[index].createdAt;
 	}
 	return oldestFailing;
 };
-
-/** The newest retained check — recentChecks is oldest-first. */
-const latestCheck = (monitor: Monitor) =>
-	monitor.recentChecks?.[monitor.recentChecks.length - 1];
 
 export const CurrentlyDownCard = () => {
 	const theme = useTheme();
@@ -107,12 +95,6 @@ export const CurrentlyDownCard = () => {
 								color={getStatusColor(monitor.status, theme)}
 								size="md"
 							/>
-							{/*
-							 * Two lines rather than one wide row: at half width seven
-							 * columns would crush the monitor name, so the name and how long
-							 * it has been down lead, and the supporting detail sits beneath
-							 * in a quieter line.
-							 */}
 							<Stack
 								flex={1}
 								minWidth={0}
@@ -145,11 +127,9 @@ export const CurrentlyDownCard = () => {
 									justifyContent="space-between"
 									gap={theme.spacing(LAYOUT.SM)}
 								>
-									{/*
-									 * Plain text rather than StatusCodeLabel: that component
-									 * wraps its body in a Tooltip, and a focusable element
-									 * inside the row's link is unreachable by keyboard.
-									 */}
+									{/* Not StatusCodeLabel: its Tooltip is focusable, and a
+									    focusable element inside the row's link is unreachable
+									    by keyboard. */}
 									<Typography
 										color={theme.palette.text.secondary}
 										noWrap

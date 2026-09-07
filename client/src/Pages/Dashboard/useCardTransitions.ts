@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useRef } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 
 import type { CardId } from "./cards";
 
@@ -7,18 +7,6 @@ const DURATION_MS = 260;
 /** Decelerating: quick to leave, gentle to settle. */
 const EASING = "cubic-bezier(0.2, 0.8, 0.2, 1)";
 
-/**
- * Animates cards between layout positions using FLIP — First, Last, Invert,
- * Play. The grid re-renders in its new order immediately; each card is then
- * offset back to where it used to be and released, so it appears to travel
- * from the old position to the new one.
- *
- * This animates the real layout rather than faking movement, so cards that
- * shift because *another* card moved animate too, and the effect stays correct
- * however the grid reflows.
- *
- * Honours prefers-reduced-motion by skipping the animation entirely.
- */
 export const useCardTransitions = () => {
 	const nodes = useRef(new Map<CardId, HTMLElement>());
 	const positions = useRef(new Map<CardId, DOMRect>());
@@ -26,6 +14,18 @@ export const useCardTransitions = () => {
 	const isAnimating = useRef(false);
 	/** The card the user moved, lifted above the rest while it travels. */
 	const movedCard = useRef<CardId | null>(null);
+	/** Pending frame and settle handles, cancelled on unmount and on a new move. */
+	const frames = useRef<number[]>([]);
+	const timers = useRef<number[]>([]);
+
+	const cancelPending = useCallback(() => {
+		frames.current.forEach(cancelAnimationFrame);
+		timers.current.forEach(clearTimeout);
+		frames.current = [];
+		timers.current = [];
+	}, []);
+
+	useEffect(() => cancelPending, [cancelPending]);
 
 	const registerCard = useCallback((id: CardId, node: HTMLElement | null) => {
 		if (node) {
@@ -40,14 +40,20 @@ export const useCardTransitions = () => {
 	 * `movedId` is the card the user acted on; it rides above the others so the
 	 * swap reads as one card moving rather than two sliding through each other.
 	 */
-	const capturePositions = useCallback((movedId: CardId) => {
-		positions.current.clear();
-		for (const [id, node] of nodes.current) {
-			positions.current.set(id, node.getBoundingClientRect());
-		}
-		movedCard.current = movedId;
-		isAnimating.current = true;
-	}, []);
+	const capturePositions = useCallback(
+		(movedId: CardId) => {
+			// A move while a previous one is still settling would otherwise have
+			// its inversion wiped by the earlier timeout, and the card would jump.
+			cancelPending();
+			positions.current.clear();
+			for (const [id, node] of nodes.current) {
+				positions.current.set(id, node.getBoundingClientRect());
+			}
+			movedCard.current = movedId;
+			isAnimating.current = true;
+		},
+		[cancelPending]
+	);
 
 	useLayoutEffect(() => {
 		if (!isAnimating.current) {
@@ -84,16 +90,20 @@ export const useCardTransitions = () => {
 			}
 
 			// ...then play: on the next frame, release to the new one.
-			requestAnimationFrame(() => {
-				node.style.transition = `transform ${DURATION_MS}ms ${EASING}`;
-				node.style.transform = "";
-				// Clear the inline styles once settled. Left in place they would
-				// animate the card again on any later reflow it did not ask for.
-				window.setTimeout(() => {
-					node.style.transition = "";
-					node.style.zIndex = "";
-				}, DURATION_MS);
-			});
+			frames.current.push(
+				requestAnimationFrame(() => {
+					node.style.transition = `transform ${DURATION_MS}ms ${EASING}`;
+					node.style.transform = "";
+					// Clear the inline styles once settled. Left in place they would
+					// animate the card again on any later reflow it did not ask for.
+					timers.current.push(
+						window.setTimeout(() => {
+							node.style.transition = "";
+							node.style.zIndex = "";
+						}, DURATION_MS)
+					);
+				})
+			);
 		}
 		positions.current.clear();
 		movedCard.current = null;

@@ -152,7 +152,9 @@ export const LowestUptimeCard = () => {
 							>
 								<CardMeterRow
 									label={<CardRowLabel primary={monitor.name} />}
-									value={percentage}
+									// The card ranks worst uptime first, so the bar shows the
+									// shortfall - the worst monitor gets the longest bar.
+									value={100 - percentage}
 									color={theme.palette[palette].main}
 									trailing={
 										<Typography

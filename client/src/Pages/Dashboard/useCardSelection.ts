@@ -26,10 +26,9 @@ const readStored = (): CardId[] | null => {
 		if (!Array.isArray(parsed)) {
 			return null;
 		}
-		// An empty array is a real choice — a dashboard the user emptied — and
-		// must not fall back to the defaults. Only an absent or malformed key
-		// returns null. Unknown ids are dropped so a card removed in a later
-		// release cannot break the page.
+		// An empty array is a real choice and must not fall back to the defaults;
+		// only an absent or malformed key returns null. Unknown ids are dropped
+		// so a card removed in a later release cannot break the page.
 		return parsed.filter(isCardId);
 	} catch (error) {
 		logger.error(
@@ -47,13 +46,11 @@ const readStored = (): CardId[] | null => {
 export const useCardSelection = () => {
 	const isAdmin = useIsAdmin();
 	const [selected, setSelected] = useState<CardId[]>(
-		() => readStored() ?? DEFAULT_CARD_IDS
+		() => readStored() ?? [...DEFAULT_CARD_IDS]
 	);
 
-	// Skip the write on mount. The value has just been read from storage, so
-	// rewriting it achieves nothing — but if the read failed for any reason and
-	// fell back to the defaults, that write would overwrite the user's real
-	// selection and make the loss permanent.
+	// Skip the write on mount: if the read failed and fell back to the defaults,
+	// writing would overwrite the user's real selection permanently.
 	const hasMounted = useRef(false);
 
 	useEffect(() => {
@@ -96,14 +93,12 @@ export const useCardSelection = () => {
 		setSelected((current) => current.filter((cardId) => cardId !== id));
 	}, []);
 
-	const resetCards = useCallback(() => setSelected(DEFAULT_CARD_IDS), []);
+	const resetCards = useCallback(() => setSelected([...DEFAULT_CARD_IDS]), []);
 
 	/**
-	 * Swaps a card with its neighbour. `delta` is -1 for up, +1 for down.
-	 *
-	 * Positions are resolved against the *visible* order, not the stored array:
-	 * a non-admin never sees the admin cards, so moving a card past one of them
-	 * would otherwise appear to do nothing.
+	 * Swaps a card with its neighbour; `delta` is -1 for up, +1 for down.
+	 * Resolved against the visible order, so moving past a card hidden from a
+	 * non-admin does not appear to do nothing.
 	 */
 	const moveCard = useCallback(
 		(id: CardId, delta: -1 | 1) => {

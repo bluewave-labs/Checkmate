@@ -65,7 +65,7 @@ export interface CardDefinition {
 // shows something real: Checkmate server works with zero monitors.
 // Ordered so the declared widths pair into full rows: a card left alone in a
 // row is stretched to fill it, so 8- and 4-wide cards are kept adjacent.
-export const DEFAULT_CARD_IDS: CardId[] = [
+export const DEFAULT_CARD_IDS: readonly CardId[] = [
 	"monitorStatus",
 	"currentlyDown",
 	"failedChecks",

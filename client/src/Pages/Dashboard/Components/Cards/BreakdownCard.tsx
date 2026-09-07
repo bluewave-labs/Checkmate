@@ -42,9 +42,7 @@ export const BreakdownCard = ({
 	const theme = useTheme();
 	const { t } = useTranslation();
 
-	// Bars are relative to the largest bucket, not to the total, so a fleet of
-	// one dominant type still shows readable proportions.
-	const max = buckets[0]?.total ?? 0;
+	const max = Math.max(0, ...buckets.map((bucket) => bucket.total));
 
 	return (
 		<DashboardCard
