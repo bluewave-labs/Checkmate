@@ -15,6 +15,7 @@ class MongoSettingsRepository implements ISettingsRepository {
 			systemEmailHost: doc.systemEmailHost ?? undefined,
 			systemEmailPort: doc.systemEmailPort ?? undefined,
 			systemEmailAddress: doc.systemEmailAddress ?? undefined,
+			systemEmailDisplayName: doc.systemEmailDisplayName ?? undefined,
 			systemEmailPassword: doc.systemEmailPassword ?? undefined,
 			systemEmailUser: doc.systemEmailUser ?? undefined,
 			systemEmailConnectionHost: doc.systemEmailConnectionHost ?? undefined,
