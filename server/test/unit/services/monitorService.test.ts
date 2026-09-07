@@ -122,16 +122,17 @@ const createService = (
 
 describe("MonitorService", () => {
 	describe("createMonitor", () => {
-		it("creates a monitor and adds a job", async () => {
+		it("creates a monitor, adds a job and returns the created document", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			const monitor = makeMonitor();
 			(monitorsRepository.create as jest.Mock).mockResolvedValue(monitor);
 			const { service, jobQueue } = createService({ monitorsRepository });
 
-			await service.createMonitor(TEAM_ID, USER_ID, monitor as any);
+			const result = await service.createMonitor(TEAM_ID, USER_ID, monitor as any);
 
 			expect(monitorsRepository.create).toHaveBeenCalledWith(monitor, TEAM_ID, USER_ID);
 			expect(jobQueue.addJob).toHaveBeenCalledWith(MONITOR_ID, monitor);
+			expect(result).toBe(monitor);
 		});
 
 		it("strips a stray proxyId when proxyMode is not custom", async () => {
