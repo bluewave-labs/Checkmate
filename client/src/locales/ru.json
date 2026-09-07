@@ -182,7 +182,13 @@
 				"maintenance": "Обслуживание",
 				"logs": "Логи",
 				"settings": "Настройки",
-				"dashboard": "Панель"
+				"dashboard": "Панель",
+				"groups": {
+					"monitoring": "Мониторинг",
+					"alerting": "Оповещения",
+					"reporting": "Отчёты",
+					"configuration": "Конфигурация"
+				}
 			},
 			"bottomMenu": {
 				"support": "Поддержка",
@@ -1282,6 +1288,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Общие",
+				"monitoring": "Мониторинг",
+				"email": "Электронная почта",
+				"integrations": "Интеграции",
+				"data": "Данные"
+			},
 			"form": {
 				"timezone": {
 					"title": "Часовой пояс отображения",

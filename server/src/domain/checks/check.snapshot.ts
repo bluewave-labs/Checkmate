@@ -11,7 +11,7 @@ import type {
 	SnapshotHostInfo,
 	SnapshotMemoryInfo,
 } from "@/domain/checks/check.type.js";
-import { DockerContainerSummary } from "@/types/network.js";
+import { DockerContainerSummary } from "@/domain/docker/docker.type.js";
 import { toDateString } from "@/utils/mongoMappers.js";
 
 export type CheckSnapshotSource = Pick<

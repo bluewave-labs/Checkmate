@@ -1,10 +1,11 @@
-import type { CheckSnapshot, DockerStats } from "@/domain/checks/check.type.js";
+import type { CheckSnapshot, DockerContainerStats, DockerStats } from "@/domain/checks/check.type.js";
 export type { CheckSnapshot } from "@/domain/checks/check.type.js";
 import type { GeoContinent, GroupedGeoCheck } from "@/domain/geo-checks/geo-check.type.js";
 export type { GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
 import http from "node:http";
 import { HardwareStats } from "@/domain/checks/check.type.js";
 import { MonitorStats } from "@/domain/monitor-stats/monitor-stats.type.js";
+import { DockerLogPage } from "@/domain/docker/docker-log.type.js";
 
 export const HttpStatusCodes = [
 	...Object.keys(http.STATUS_CODES).map(Number),
@@ -91,7 +92,6 @@ export interface Monitor {
 	tags: string[];
 	customUpCodes: HttpStatusCode[];
 	secret?: string;
-	sshPrivateKey?: string;
 	cpuAlertThreshold: number;
 	cpuAlertCounter: number;
 	memoryAlertThreshold: number;
@@ -108,6 +108,7 @@ export interface Monitor {
 	geoCheckEnabled?: boolean;
 	geoCheckLocations?: GeoContinent[];
 	geoCheckInterval?: number;
+	dockerLogsEnabled?: boolean;
 	dnsServer?: string;
 	dnsRecordType?: DnsRecordType;
 	recentChecks: CheckSnapshot[];
@@ -160,6 +161,11 @@ export interface DockerDetailsResult {
 	monitorStats: MonitorStats | null;
 }
 
+export interface DockerContainerDetailsResult {
+	monitor: Monitor;
+	stats: DockerContainerStats;
+}
+
 export interface PageSpeedDetailsResult {
 	monitorData: {
 		monitor: Monitor;
@@ -184,3 +190,5 @@ export interface Game {
 export type GamesMap = Record<string, Game>;
 
 export type MonitorScheduleFields = Pick<Monitor, "id" | "type" | "isActive" | "interval" | "geoCheckEnabled" | "geoCheckInterval">;
+
+export type DockerContainerLogsResult = DockerLogPage;

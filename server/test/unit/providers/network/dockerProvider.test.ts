@@ -5,10 +5,9 @@ import { createMockLogger } from "../../../helpers/createMockLogger.ts";
 import { NETWORK_ERROR } from "../../../../src/types/network.ts";
 import { AppError } from "../../../../src/utils/AppError.ts";
 import type { Monitor } from "../../../../src/domain/monitors/monitor.type.ts";
+import { DOCKER_LOG_TAIL_LINES } from "../../../../src/domain/docker/docker.type.ts";
 
 // ── Fixtures ─────────────────────────────────────────────────────────────────
-
-const PRIVATE_KEY = "-----BEGIN OPENSSH PRIVATE KEY-----\nfake\n-----END OPENSSH PRIVATE KEY-----";
 
 const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
 	({
@@ -53,10 +52,19 @@ const makeStats = (overrides?: Record<string, any>) => ({
 	...overrides,
 });
 
-const setup = (overrides: Partial<{ ping: any; listContainers: any; getContainer: any; inspect: any; stats: any }> = {}) => {
+const makeLogFrame = (streamType: number, text: string): Buffer => {
+	const payload = Buffer.from(text);
+	const header = Buffer.alloc(8);
+	header.writeUInt8(streamType, 0);
+	header.writeUInt32BE(payload.length, 4);
+	return Buffer.concat([header, payload]);
+};
+
+const setup = (overrides: Partial<{ ping: any; listContainers: any; getContainer: any; inspect: any; stats: any; logs: any }> = {}) => {
 	const inspect = overrides.inspect ?? jest.fn().mockResolvedValue(makeInspect());
 	const stats = overrides.stats ?? jest.fn().mockResolvedValue(makeStats());
-	const getContainer = overrides.getContainer ?? jest.fn().mockReturnValue({ inspect, stats });
+	const logs = overrides.logs ?? jest.fn().mockResolvedValue(Buffer.alloc(0));
+	const getContainer = overrides.getContainer ?? jest.fn().mockReturnValue({ inspect, stats, logs });
 	const instance = {
 		ping: overrides.ping ?? jest.fn().mockResolvedValue("OK"),
 		listContainers: overrides.listContainers ?? jest.fn().mockResolvedValue([makeContainer()]),
@@ -65,7 +73,7 @@ const setup = (overrides: Partial<{ ping: any; listContainers: any; getContainer
 	const DockerLib = jest.fn().mockReturnValue(instance) as any;
 	const logger = createMockLogger();
 	const provider = new DockerProvider(logger as any, DockerLib);
-	return { provider, logger, DockerLib, ping: instance.ping, listContainers: instance.listContainers, getContainer, inspect, stats };
+	return { provider, logger, DockerLib, ping: instance.ping, listContainers: instance.listContainers, getContainer, inspect, stats, logs };
 };
 
 // ── Contract ─────────────────────────────────────────────────────────────────
@@ -106,28 +114,6 @@ describe("DockerProvider", () => {
 
 			expect(DockerLib).toHaveBeenCalledWith({ socketPath: "/var/run/docker.sock" });
 		});
-
-		it("parses ssh urls with a private key, defaulting to port 22", async () => {
-			const { provider, DockerLib } = setup();
-
-			await provider.handle(makeMonitor({ url: "ssh://deploy@prod-swarm-01.internal", sshPrivateKey: PRIVATE_KEY }));
-
-			expect(DockerLib).toHaveBeenCalledWith({
-				protocol: "ssh",
-				host: "prod-swarm-01.internal",
-				port: 22,
-				username: "deploy",
-				sshOptions: { privateKey: PRIVATE_KEY },
-			});
-		});
-
-		it("parses an explicit ssh port", async () => {
-			const { provider, DockerLib } = setup();
-
-			await provider.handle(makeMonitor({ url: "ssh://deploy@host:2222", sshPrivateKey: PRIVATE_KEY }));
-
-			expect(DockerLib).toHaveBeenCalledWith(expect.objectContaining({ port: 2222 }));
-		});
 	});
 
 	// ── Fail-loudly url validation ───────────────────────────────────────
@@ -141,22 +127,13 @@ describe("DockerProvider", () => {
 			["a container name (old semantics)", "my-container", "Invalid Docker host URL"],
 			["tcp engine urls (unsupported)", "tcp://host:2375", "Invalid Docker host URL"],
 			["https engine urls (unsupported)", "https://host", "Invalid Docker host URL"],
-			["ssh without a user", "ssh://host", "SSH Docker host URL requires a user: ssh://user@host"],
+			["ssh engine urls (unsupported)", "ssh://deploy@host", "Invalid Docker host URL"],
 		];
 
 		it.each(invalidUrls)("throws AppError for %s and never constructs a client", async (_label, url, message) => {
 			const { provider, DockerLib } = setup();
 
 			await expect(provider.handle(makeMonitor({ url }))).rejects.toThrow(message);
-			expect(DockerLib).not.toHaveBeenCalled();
-		});
-
-		it("throws AppError for an ssh url with no private key", async () => {
-			const { provider, DockerLib } = setup();
-
-			await expect(provider.handle(makeMonitor({ url: "ssh://deploy@host", sshPrivateKey: undefined }))).rejects.toThrow(
-				"SSH Docker host requires a private key"
-			);
 			expect(DockerLib).not.toHaveBeenCalled();
 		});
 
@@ -278,6 +255,83 @@ describe("DockerProvider", () => {
 		});
 	});
 
+	describe("container logs", () => {
+		it("parses multiplexed stdout and stderr with normalized timestamps", async () => {
+			const logs = jest
+				.fn()
+				.mockResolvedValue(
+					Buffer.concat([makeLogFrame(1, "2026-01-01T00:00:37.1Z ready\n"), makeLogFrame(2, "2026-01-01T00:00:38.123Z failed\r\n")])
+				);
+			const { provider } = setup({ logs });
+
+			const result = await provider.handle(makeMonitor({ dockerLogsEnabled: true }));
+
+			expect(result.payload?.logs?.[0]?.lines).toEqual([
+				{ ts: "2026-01-01T00:00:37.100000000Z", stream: "stdout", text: "ready" },
+				{ ts: "2026-01-01T00:00:38.123000000Z", stream: "stderr", text: "failed" },
+			]);
+		});
+
+		it("treats raw TTY output as stdout and drops lines without timestamps", async () => {
+			const logs = jest.fn().mockResolvedValue(Buffer.from("noise\n2026-01-01T00:00:00Z first\n2026-01-01T00:00:01.12Z second\n"));
+			const { provider } = setup({ logs });
+
+			const result = await provider.handle(makeMonitor({ dockerLogsEnabled: true }));
+
+			expect(result.payload?.logs?.[0]?.lines).toEqual([
+				{ ts: "2026-01-01T00:00:00.000000000Z", stream: "stdout", text: "first" },
+				{ ts: "2026-01-01T00:00:01.120000000Z", stream: "stdout", text: "second" },
+			]);
+		});
+
+		it("truncates oversized UTF-8 lines and appends the marker", async () => {
+			const logs = jest.fn().mockResolvedValue(Buffer.from(`2026-01-01T00:00:00Z ${"x".repeat(5000)}\n`));
+			const { provider } = setup({ logs });
+
+			const result = await provider.handle(makeMonitor({ dockerLogsEnabled: true }));
+			const text = result.payload?.logs?.[0]?.lines[0]?.text;
+			expect(text).toEqual(expect.stringMatching(/ …\[truncated\]$/));
+			expect(Buffer.byteLength(text?.replace(" …[truncated]", "") ?? "", "utf8")).toBeLessThanOrEqual(4096);
+		});
+
+		it("isolates a logs failure and warns", async () => {
+			const { provider, logger } = setup({ logs: jest.fn().mockRejectedValue(new Error("logs failed")) });
+
+			const result = await provider.handle(makeMonitor({ dockerLogsEnabled: true }));
+
+			expect(result.payload?.logs).toEqual([]);
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: "Failed to read logs for container my-container" }));
+		});
+
+		it("requests a bounded timestamped tail for every container state", async () => {
+			const containers = [makeContainer({ Id: "a".repeat(64) }), makeContainer({ Id: "b".repeat(64), State: "exited" })];
+			const { provider, logs } = setup({ listContainers: jest.fn().mockResolvedValue(containers) });
+
+			await provider.handle(makeMonitor({ dockerLogsEnabled: true }));
+
+			expect(logs).toHaveBeenCalledTimes(2);
+			expect(logs).toHaveBeenCalledWith({ follow: false, stdout: true, stderr: true, timestamps: true, tail: DOCKER_LOG_TAIL_LINES });
+		});
+
+		it("does not read logs when dockerLogsEnabled is false", async () => {
+			const { provider, logs } = setup();
+
+			const result = await provider.handle(makeMonitor({ dockerLogsEnabled: false }));
+
+			expect(logs).not.toHaveBeenCalled();
+			expect(result.payload?.logs).toBeUndefined();
+		});
+
+		it("does not read logs when dockerLogsEnabled is unset", async () => {
+			const { provider, logs } = setup();
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(logs).not.toHaveBeenCalled();
+			expect(result.payload?.logs).toBeUndefined();
+		});
+	});
+
 	// ── Enrichment fault isolation ───────────────────────────────────────
 
 	describe("enrichment fault isolation", () => {
@@ -324,10 +378,10 @@ describe("DockerProvider", () => {
 			const result = await provider.handle(makeMonitor());
 			const container = result.payload?.containers[0];
 
-			expect(container?.cpuPct).toBeCloseTo(80);
+			expect(container?.cpuPct).toBeCloseTo(0.8);
 			expect(container?.memoryUsedBytes).toBe(200 * 1024 * 1024);
 			expect(container?.memoryLimitBytes).toBe(1024 * 1024 * 1024);
-			expect(container?.memoryPct).toBeCloseTo(19.53125);
+			expect(container?.memoryPct).toBeCloseTo(0.1953125);
 		});
 
 		it("falls back to the cgroup v1 cache field for page cache", async () => {
@@ -351,7 +405,7 @@ describe("DockerProvider", () => {
 
 			const result = await provider.handle(makeMonitor());
 
-			expect(result.payload?.containers[0]?.cpuPct).toBeCloseTo(40);
+			expect(result.payload?.containers[0]?.cpuPct).toBeCloseTo(0.4);
 		});
 
 		it("returns 0 cpu when the system delta is not positive", async () => {
@@ -372,6 +426,89 @@ describe("DockerProvider", () => {
 			const result = await provider.handle(makeMonitor());
 
 			expect(result.payload?.containers[0]?.memoryPct).toBe(0);
+		});
+	});
+
+	// ── Ports and mounts ─────────────────────────────────────────────────
+
+	describe("ports and mounts", () => {
+		it("maps published and unpublished ports and mounts from inspect", async () => {
+			const inspect = jest.fn().mockResolvedValue(
+				makeInspect({
+					NetworkSettings: {
+						Ports: {
+							"80/tcp": [{ HostIp: "0.0.0.0", HostPort: "8080" }],
+							"443/tcp": null,
+						},
+					},
+					Mounts: [
+						{
+							Type: "volume",
+							Name: "mongo_data",
+							Source: "/var/lib/docker/volumes/mongo_data/_data",
+							Destination: "/data/db",
+							Mode: "z",
+							RW: true,
+						},
+						{ Type: "bind", Source: "/srv/config", Destination: "/etc/app", Mode: "ro", RW: false },
+					],
+				})
+			);
+			const { provider } = setup({ inspect });
+
+			const result = await provider.handle(makeMonitor());
+
+			const container = result.payload?.containers[0];
+			expect(container?.ports).toEqual([
+				{ privatePort: 80, protocol: "tcp", publicPort: 8080, hostIp: "0.0.0.0" },
+				{ privatePort: 443, protocol: "tcp" },
+			]);
+			expect(container?.mounts).toEqual([
+				{ type: "volume", name: "mongo_data", source: "/var/lib/docker/volumes/mongo_data/_data", destination: "/data/db", mode: "z", rw: true },
+				{ type: "bind", name: undefined, source: "/srv/config", destination: "/etc/app", mode: "ro", rw: false },
+			]);
+		});
+
+		it("emits one port entry per host binding", async () => {
+			const inspect = jest.fn().mockResolvedValue(
+				makeInspect({
+					NetworkSettings: {
+						Ports: {
+							"80/tcp": [
+								{ HostIp: "0.0.0.0", HostPort: "8080" },
+								{ HostIp: "::", HostPort: "8080" },
+							],
+						},
+					},
+				})
+			);
+			const { provider } = setup({ inspect });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]?.ports).toEqual([
+				{ privatePort: 80, protocol: "tcp", publicPort: 8080, hostIp: "0.0.0.0" },
+				{ privatePort: 80, protocol: "tcp", publicPort: 8080, hostIp: "::" },
+			]);
+		});
+
+		it("maps missing ports and mounts to empty arrays", async () => {
+			const { provider } = setup();
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]?.ports).toEqual([]);
+			expect(result.payload?.containers[0]?.mounts).toEqual([]);
+		});
+
+		it("leaves ports and mounts undefined when inspect fails", async () => {
+			const inspect = jest.fn().mockRejectedValue(new Error("inspect failed"));
+			const { provider } = setup({ inspect });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]?.ports).toBeUndefined();
+			expect(result.payload?.containers[0]?.mounts).toBeUndefined();
 		});
 	});
 

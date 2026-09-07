@@ -8,7 +8,8 @@ type TableName =
 	| "maintenance"
 	| "infrastructure"
 	| "logs"
-	| "pagespeed";
+	| "pagespeed"
+	| "docker";
 
 interface TableState {
 	rowsPerPage: number;
@@ -24,6 +25,7 @@ interface UIState {
 	team: TableState;
 	maintenance: TableState;
 	infrastructure: TableState;
+	docker: TableState;
 	logs: TableState;
 	sidebar: SidebarState;
 	mode: ThemeMode;
@@ -54,6 +56,9 @@ const initialState: UIState = {
 		rowsPerPage: 5,
 	},
 	infrastructure: {
+		rowsPerPage: 5,
+	},
+	docker: {
 		rowsPerPage: 5,
 	},
 	logs: {

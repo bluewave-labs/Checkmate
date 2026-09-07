@@ -66,9 +66,11 @@
 		"charts": {
 			"labels": {
 				"averageResponseTime": "Average response time",
+				"cpuUsage": "CPU usage",
 				"downtime": "Downtime",
 				"high": "High",
 				"low": "Low",
+				"memoryUsage": "Memory usage",
 				"responseTime": "Response time",
 				"timingPhases": "Timing phases",
 				"totalResponseTime": "Total response time",
@@ -102,7 +104,11 @@
 			"idle": "Idle",
 			"na": "N/A",
 			"resolved": "Resolved",
-			"responseTime": "Response time"
+			"responseTime": "Response time",
+			"state": "State",
+			"uptime": "Uptime",
+			"health": "Health",
+			"restarts": "Restarts"
 		},
 		"form": {
 			"autocomplete": {
@@ -203,6 +209,7 @@
 				"uptime": "Uptime",
 				"pagespeed": "Pagespeed",
 				"infrastructure": "Infrastructure",
+				"docker": "Docker",
 				"notifications": "Notifications",
 				"tags": "Tags",
 				"proxies": "Proxies",
@@ -212,7 +219,13 @@
 				"maintenance": "Maintenance",
 				"logs": "Logs",
 				"settings": "Settings",
-				"dashboard": "Dashboard"
+				"dashboard": "Dashboard",
+				"groups": {
+					"monitoring": "Monitoring",
+					"alerting": "Alerting",
+					"reporting": "Reporting",
+					"configuration": "Configuration"
+				}
 			},
 			"bottomMenu": {
 				"support": "Support",
@@ -760,9 +773,9 @@
 				},
 				"general": {
 					"option": {
-						"container": {
-							"label": "Container name/ID",
-							"placeholder": "my-app or abcd1234"
+						"dockerHost": {
+							"label": "Docker host",
+							"placeholder": "unix:///var/run/docker.sock"
 						},
 						"host": {
 							"label": "Host",
@@ -844,7 +857,7 @@
 						"http": "Enter the URL or IP to monitor (e.g., https://example.com/ or 192.168.1.100) and add a clear display name that appears on the dashboard.  Set an optional proxy server to connect through.",
 						"ping": "Enter the IP address or hostname to ping (e.g., 192.168.1.100 or example.com) and add a clear display name that appears on the dashboard.",
 						"port": "Enter the URL or IP of the server, the port number and a clear display name that appears on the dashboard.",
-						"docker": "Enter the Docker container name or ID. You can use either the container name (e.g., my-app) or the container ID (full 64-char ID or short ID).",
+						"docker": "Enter the Docker socket to monitor, as unix:///var/run/docker.sock or an absolute path such as /var/run/docker.sock. Every container on the host is monitored.",
 						"game": "Enter the IP address or hostname and the port number to ping (e.g., 192.168.1.100 or example.com) and choose game type. Some games require enabling server queries in their config file — check your game server's documentation. See the <gamedigLink>supported games list</gamedigLink> for protocol details.",
 						"pagespeed": "Track page load performance, Core Web Vitals, and optimization scores for your website.",
 						"grpc": "Enter the hostname and port of the gRPC server, optionally specify a service name for the health check, and add a display name.",
@@ -884,7 +897,7 @@
 				},
 				"type": {
 					"description": "Select the type of check to perform",
-					"optionDockerDescription": "Use Docker to monitor if a container is running.",
+					"optionDockerDescription": "Monitor a Docker host and every container running on it.",
 					"optionGameDescription": "Monitor if a specific game server is online.",
 					"optionGrpcDescription": "Monitor gRPC services using the standard Health Checking Protocol.",
 					"optionWebSocketDescription": "Monitor WebSocket endpoints for connection health and response time.",
@@ -939,6 +952,15 @@
 								"fifteenMinutes": "15 minutes",
 								"thirtyMinutes": "30 minutes"
 							}
+						}
+					}
+				},
+				"dockerLogs": {
+					"title": "Container logs",
+					"description": "Collect the most recent log lines from every container on this host on each check. Logs are kept for 7 days. Leave this off for hosts with chatty containers to save database space.",
+					"option": {
+						"enabled": {
+							"label": "Collect container logs"
 						}
 					}
 				},
@@ -1059,15 +1081,77 @@
 				"description": "When monitors go down or recover, incidents appear here with timing, monitor details and resolution history."
 			}
 		},
+		"docker": {
+			"header": {
+				"title": "Docker monitors",
+				"description": "Monitor your Docker hosts and every container running on them."
+			},
+			"fallback": {
+				"title": "No Docker monitors yet",
+				"description": "Add a Docker host to monitor its containers.",
+				"actionButton": "Create a monitor"
+			},
+			"table": {
+				"headers": {
+					"host": "Host",
+					"containers": "Containers"
+				},
+				"containersRunning": "{{running}} of {{total}} running"
+			},
+			"container": {
+				"header": {
+					"title": "Container details",
+					"description": "State, resource usage, and logs for this container."
+				},
+				"tabs": {
+					"overview": "Overview",
+					"logs": "Logs"
+				},
+				"logs": {
+					"recentLines": "{{count}} recent lines",
+					"loading": "Loading...",
+					"updatedSecondsAgo": "Updated {{count}}s ago",
+					"updatedMinutesAgo": "Updated {{count}}m ago",
+					"skipped": "Some log entries were skipped",
+					"loadOlder": "Load older logs",
+					"loadingOlder": "Loading...",
+					"noOlder": "Beginning of retained logs",
+					"loadError": "Could not load logs",
+					"loadOlderError": "Could not load older logs",
+					"empty": {
+						"title": "No logs collected yet",
+						"description": "Lines will appear here after the next check. Only output written since collection was turned on is stored."
+					},
+					"disabled": {
+						"title": "Log collection is off for this host",
+						"description": "Turn on container logs in the monitor settings to start collecting.",
+						"action": "Configure monitor"
+					}
+				}
+			},
+			"host": {
+				"statBoxes": {
+					"containers": "Containers",
+					"running": "Running",
+					"stopped": "Stopped",
+					"unhealthy": "Unhealthy"
+				},
+				"table": {
+					"headers": {
+						"container": "Containers",
+						"cpu": "CPU",
+						"memory": "Memory"
+					}
+				}
+			}
+		},
 		"infrastructure": {
 			"charts": {
 				"labels": {
-					"cpu": "CPU usage",
 					"disk": "Disk usage",
-					"memory": "Memory usage",
 					"netBytesRecv": "{{name}} - Bytes Received",
 					"netBytesSent": "{{name}} - Bytes Sent",
-					"loopbackOnlyNotice": "Capture is only reporting loopback or container-bridge interfaces (lo, lo0, docker0). This is normal when Capture runs inside a container that can only see its own network namespace — run Capture directly on the host to see real network activity.",
+					"loopbackOnlyNotice": "Capture is only seeing container network interfaces, and none of them are carrying real traffic. This is normal when Capture runs inside a container that can only observe its own network namespace — interfaces with host-like names (eth0, ens3) are the container's virtual interfaces, not the host's. Run Capture directly on the host to see real network activity.",
 					"temp": "CPU temperature"
 				}
 			},
@@ -1474,6 +1558,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "General",
+				"monitoring": "Monitoring",
+				"email": "Email",
+				"integrations": "Integrations",
+				"data": "Data"
+			},
 			"form": {
 				"timezone": {
 					"title": "Display timezone",
@@ -1531,7 +1622,7 @@
 					}
 				},
 				"url": {
-					"title": "Monitor IP/URL on Status Page",
+					"title": "Monitor IP/URL on status page",
 					"description": "Display the IP address or URL of monitor on the public Status page. If it's disabled, only the monitor name will be shown to protect sensitive information.",
 					"option": {
 						"showURL": {
@@ -1563,7 +1654,7 @@
 					}
 				},
 				"thresholds": {
-					"title": "Global Thresholds",
+					"title": "Global thresholds",
 					"description": "Set global CPU, Memory, Disk, and Temperature thresholds for infrastructure monitoring. These apply to all hardware monitors unless overridden.",
 					"option": {
 						"cpu": {

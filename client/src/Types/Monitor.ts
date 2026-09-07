@@ -3,6 +3,9 @@ import type {
 	CheckSnapshot,
 	GroupedUptimeCheck,
 	DailyCheckBucket,
+	DockerContainerInfo,
+	DockerContainerSummary,
+	DockerLog,
 } from "@/Types/Check";
 import type { PageSpeedGroupedCheck } from "@/Types/Check";
 import type { GeoContinent } from "@/Types/GeoCheck";
@@ -30,7 +33,6 @@ export type MonitorType = (typeof MonitorTypes)[number];
 export const SelectableMonitorTypes = [
 	"http",
 	"ping",
-	"docker",
 	"port",
 	"game",
 	"grpc",
@@ -157,6 +159,7 @@ export interface Monitor {
 	geoCheckEnabled?: boolean;
 	geoCheckLocations?: GeoContinent[];
 	geoCheckInterval?: number;
+	dockerLogsEnabled?: boolean;
 	dnsServer?: string;
 	dnsRecordType?: DnsRecordType;
 	recentChecks: CheckSnapshot[];
@@ -269,6 +272,62 @@ export interface HardwareDetailsResponse {
 	monitorStats: MonitorStats | null;
 }
 
+export interface DockerStatsBucket {
+	_id: string;
+	avgResponseTime: number | null;
+	upCount: number;
+	totalCount: number;
+	avgRunning: number | null;
+	avgTotal: number | null;
+	avgUnhealthy: number | null;
+}
+
+export interface DockerStats {
+	aggregateData: {
+		totalChecks: number;
+	};
+	upChecks: {
+		totalChecks: number;
+	};
+	aggregate: DockerStatsBucket[];
+	latest: {
+		containers: DockerContainerInfo[];
+		summary?: DockerContainerSummary;
+		checkedAt: string;
+	} | null;
+}
+
+export interface DockerDetailsResponse {
+	monitor: Monitor;
+	stats: DockerStats;
+	monitorStats: MonitorStats | null;
+}
+export interface DockerContainerStatsBucket {
+	_id: string;
+	avgCpuPct: number | null;
+	avgMemoryUsedBytes: number | null;
+	avgMemoryPct: number | null;
+	minRestartCount: number | null;
+	maxRestartCount: number | null;
+}
+
+export interface DockerContainerStats {
+	aggregate: DockerContainerStatsBucket[];
+	restartsInRange: number;
+	latest: {
+		container: DockerContainerInfo;
+		checkedAt: string;
+	} | null;
+}
+export interface DockerContainerResponse {
+	monitor: Monitor;
+	stats: DockerContainerStats;
+}
+
+export interface DockerContainerLogsResponse {
+	logs: DockerLog[];
+	nextCursor: string | null;
+}
 export interface Game {
 	name: string;
 	options?: {

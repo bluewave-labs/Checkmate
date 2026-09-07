@@ -1,7 +1,8 @@
 import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import { logger } from "@/Utils/logger";
 import { SPACING, LAYOUT } from "@/Utils/Theme/constants";
-import { BasePage, ConfigBox } from "@/Components/design-elements";
+import { BasePage, ColoredLabel, ConfigBox } from "@/Components/design-elements";
 import { Button } from "@/Components/inputs";
 
 import { useTheme } from "@mui/material";
@@ -15,6 +16,7 @@ import { useGet, usePost, usePatch } from "@/Hooks/UseApi";
 import { mutate } from "swr";
 import { useParams, useNavigate } from "react-router-dom";
 import type { Monitor } from "@/Types/Monitor";
+import type { Tag } from "@/Types/Tag";
 import { useForm, FormProvider } from "react-hook-form";
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
@@ -41,6 +43,7 @@ const CreateMaintenanceWindowPage = () => {
 	);
 
 	const { data: monitors } = useGet<Monitor[]>("/monitors/team");
+	const { data: tags } = useGet<Tag[]>("/tags/team");
 
 	const { post, loading: isPosting } = usePost();
 	const { patch, loading: isPatching } = usePatch();
@@ -203,6 +206,26 @@ const CreateMaintenanceWindowPage = () => {
 								"pages.maintenanceWindow.form.startTime.monitors.option.addMonitors.label"
 							)}
 							options={monitors ?? []}
+							renderOptionContent={(monitor) => (
+								<Stack
+									direction="row"
+									alignItems="center"
+									gap={theme.spacing(2)}
+									flexWrap="wrap"
+								>
+									<Typography>{monitor.name}</Typography>
+									{monitor.tags.map((tagId) => {
+										const tag = tags?.find(({ id }) => id === tagId);
+										return tag ? (
+											<ColoredLabel
+												key={tag.id}
+												text={tag.name}
+												color={tag.color}
+											/>
+										) : null;
+									})}
+								</Stack>
+							)}
 						/>
 					}
 				/>

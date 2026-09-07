@@ -13,6 +13,7 @@ import { IDb } from "@/db/db.interface.js";
 import { ISettingsService, EnvConfig, SettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { ICheckService, CheckService } from "@/domain/checks/check.service.js";
 import { IGeoChecksService, GeoChecksService } from "@/domain/geo-checks/geo-check.service.js";
+import { IDockerLogsService, DockerLogsService } from "@/domain/docker/docker-log.service.js";
 import { IIncidentService, IncidentService } from "@/domain/incidents/incident.service.js";
 import { INotificationMessageBuilder, NotificationMessageBuilder } from "@/domain/notifications/notification.message-builder.js";
 import { INotificationsService, NotificationsService } from "@/domain/notifications/notification.service.js";
@@ -58,6 +59,7 @@ import { IProxiesRepository } from "@/domain/proxies/proxy.repository.interface.
 import MongoSettingsRepository from "@/domain/app-settings/app-settings.repository.mongo.js";
 import MongoChecksRepository from "@/domain/checks/check.repository.mongo.js";
 import MongoGeoChecksRepository from "@/domain/geo-checks/geo-check.repository.mongo.js";
+import MongoDockerLogsRepository from "@/domain/docker/docker-log.repository.mongo.js";
 import MongoIncidentsRepository from "@/domain/incidents/incident.repository.mongo.js";
 import MongoInvitesRepository from "@/domain/invites/invite.repository.mongo.js";
 import MongoJobsRepository from "@/domain/jobs/job.repository.mongo.js";
@@ -72,6 +74,7 @@ import MongoTagsRepository from "@/domain/tags/tag.repository.mongo.js";
 import MongoTeamsRepository from "@/domain/teams/team.repository.model.js";
 import MongoUsersRepository from "@/domain/users/user.repository.mongo.js";
 import MongoProxiesRepository from "@/domain/proxies/proxy.repository.mongo.js";
+import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
 
 // Shared infrastructure + business services that both the API and the worker process construct.
 export interface SharedServices {
@@ -83,6 +86,7 @@ export interface SharedServices {
 	incidentService: IIncidentService;
 	checkService: ICheckService;
 	geoChecksService: IGeoChecksService;
+	dockerLogsService: IDockerLogsService;
 	notificationsService: INotificationsService;
 
 	// Queue identity (one per process; the worker reuses these)
@@ -94,6 +98,7 @@ export interface SharedServices {
 	monitorsRepository: IMonitorsRepository;
 	checksRepository: IChecksRepository;
 	geoChecksRepository: IGeoChecksRepository;
+	dockerLogsRepository: IDockerLogsRepository;
 	monitorStatsRepository: IMonitorStatsRepository;
 	statusPagesRepository: IStatusPagesRepository;
 	usersRepository: IUsersRepository;
@@ -131,6 +136,7 @@ export const buildShared = async ({
 	const incidentsRepository = new MongoIncidentsRepository();
 	const usersRepository = new MongoUsersRepository();
 	const geoChecksRepository = new MongoGeoChecksRepository();
+	const dockerLogsRepository = new MongoDockerLogsRepository();
 	const notificationsRepository = new MongoNotificationsRepository();
 	const jobsRepository = new MongoJobsRepository(workerId);
 	const queueWorkersRepository = new MongoQueueWorkersRepository();
@@ -161,6 +167,7 @@ export const buildShared = async ({
 		monitorsRepository,
 	});
 
+	const dockerLogsService = new DockerLogsService({ logger, dockerLogsRepository });
 	const webhookProvider = new WebhookProvider(logger);
 	const rocketChatProvider = new RocketChatProvider(logger);
 	const slackProvider = new SlackProvider(logger);
@@ -207,6 +214,7 @@ export const buildShared = async ({
 		incidentService,
 		checkService,
 		geoChecksService,
+		dockerLogsService,
 		notificationsService,
 		workerId,
 		jobsRepository,
@@ -214,6 +222,7 @@ export const buildShared = async ({
 		queueWorkersRepository,
 		checksRepository,
 		geoChecksRepository,
+		dockerLogsRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
 		usersRepository,

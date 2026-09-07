@@ -35,7 +35,7 @@ export const MonitorListPage = ({
 	headerKey,
 	page,
 	actionLink,
-	controller: c,
+	controller,
 	bulkActions,
 	showTypeFilter,
 	summaryProps,
@@ -48,14 +48,14 @@ export const MonitorListPage = ({
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const isAdmin = useIsAdmin();
-	const isLoading = c.isLoading || Boolean(extraLoading);
+	const isLoading = controller.isLoading || Boolean(extraLoading);
 
 	return (
 		<MonitorBasePageWithStates
 			headerKey={headerKey}
 			loading={isLoading}
-			error={c.error || extraError}
-			totalCount={c.effectiveTotalCount}
+			error={controller.error || extraError}
+			totalCount={controller.effectiveTotalCount}
 			page={page}
 			actionLink={actionLink}
 			priorityFallback={priorityFallback}
@@ -66,7 +66,7 @@ export const MonitorListPage = ({
 				isAdmin={isAdmin}
 			/>
 			<HeaderMonitorsSummary
-				summary={c.summary}
+				summary={controller.summary}
 				{...summaryProps}
 			/>
 			<Stack
@@ -78,27 +78,27 @@ export const MonitorListPage = ({
 					{...(showTypeFilter === false
 						? { showTypes: false }
 						: {
-								selectedTypes: c.selectedTypes,
-								setSelectedTypes: c.setSelectedTypes,
+								selectedTypes: controller.selectedTypes,
+								setSelectedTypes: controller.setSelectedTypes,
 							})}
-					selectedStatus={c.selectedStatus}
-					setSelectedStatus={c.setSelectedStatus}
-					selectedState={c.selectedState}
-					setSelectedState={c.setSelectedState}
-					tagOptions={c.tags ?? []}
-					selectedTags={c.selectedTags}
-					setSelectedTags={c.setSelectedTags}
-					onClearFilters={c.handleClearFilters}
+					selectedStatus={controller.selectedStatus}
+					setSelectedStatus={controller.setSelectedStatus}
+					selectedState={controller.selectedState}
+					setSelectedState={controller.setSelectedState}
+					tagOptions={controller.tags ?? []}
+					selectedTags={controller.selectedTags}
+					setSelectedTags={controller.setSelectedTags}
+					onClearFilters={controller.handleClearFilters}
 				/>
 				<TextField
 					placeholder={t("pages.uptime.filters.search.placeholder")}
-					value={c.search}
+					value={controller.search}
 					onChange={(event) => {
-						c.setSearch(event.target.value);
+						controller.setSearch(event.target.value);
 					}}
 				/>
 			</Stack>
-			{c.selectedTags.length > 0 && (
+			{controller.selectedTags.length > 0 && (
 				<Stack
 					direction={isSmall ? "column" : "row"}
 					alignItems={isSmall ? "flex-start" : "center"}
@@ -108,8 +108,8 @@ export const MonitorListPage = ({
 					<Typography color={theme.palette.text.secondary}>
 						{t("pages.uptime.filters.activeTags")}
 					</Typography>
-					{c.selectedTags.map((tagId) => {
-						const tag = c.tags?.find((t) => t.id === tagId);
+					{controller.selectedTags.map((tagId) => {
+						const tag = controller.tags?.find((t) => t.id === tagId);
 						if (!tag) return null;
 						return (
 							<ColoredLabel
@@ -123,20 +123,20 @@ export const MonitorListPage = ({
 			)}
 			{bulkActions && !isLoading && (
 				<BulkActionsBar
-					selectedCount={c.selectedRows.length}
-					onCancel={c.handleCancelSelection}
+					selectedCount={controller.selectedRows.length}
+					onCancel={controller.handleCancelSelection}
 				>
 					<Button
 						size="small"
 						startIcon={<Play size={16} />}
-						onClick={c.handleBulkResume}
+						onClick={controller.handleBulkResume}
 					>
 						{t("common.buttons.resume")}
 					</Button>
 					<Button
 						size="small"
 						startIcon={<Pause size={16} />}
-						onClick={c.handleBulkPause}
+						onClick={controller.handleBulkPause}
 					>
 						{t("common.buttons.pause")}
 					</Button>
@@ -144,12 +144,12 @@ export const MonitorListPage = ({
 			)}
 			{children}
 			<Dialog
-				open={c.isDialogOpen}
+				open={controller.isDialogOpen}
 				title={t("common.dialogs.delete.title")}
 				content={t("common.dialogs.delete.description")}
-				onConfirm={c.handleConfirmDelete}
-				onCancel={c.handleCancelDelete}
-				loading={c.isDeleting}
+				onConfirm={controller.handleConfirmDelete}
+				onCancel={controller.handleCancelDelete}
+				loading={controller.isDeleting}
 			/>
 		</MonitorBasePageWithStates>
 	);

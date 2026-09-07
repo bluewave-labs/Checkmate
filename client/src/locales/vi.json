@@ -182,7 +182,13 @@
 				"maintenance": "Bảo trì",
 				"logs": "Nhật ký",
 				"settings": "Cài đặt",
-				"dashboard": "Bảng điều khiển"
+				"dashboard": "Bảng điều khiển",
+				"groups": {
+					"monitoring": "Giám sát",
+					"alerting": "Cảnh báo",
+					"reporting": "Báo cáo",
+					"configuration": "Cấu hình"
+				}
 			},
 			"bottomMenu": {
 				"support": "Hỗ trợ",
@@ -1282,6 +1288,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Chung",
+				"monitoring": "Giám sát",
+				"email": "Email",
+				"integrations": "Tích hợp",
+				"data": "Dữ liệu"
+			},
 			"form": {
 				"timezone": {
 					"title": "Múi giờ hiển thị",

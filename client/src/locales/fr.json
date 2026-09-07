@@ -182,7 +182,13 @@
 				"maintenance": "Maintenance",
 				"logs": "Journaux",
 				"settings": "Paramètres",
-				"dashboard": "Tableau de bord"
+				"dashboard": "Tableau de bord",
+				"groups": {
+					"monitoring": "Surveillance",
+					"alerting": "Alertes",
+					"reporting": "Rapports",
+					"configuration": "Configuration"
+				}
 			},
 			"bottomMenu": {
 				"support": "Support",
@@ -1282,6 +1288,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Général",
+				"monitoring": "Surveillance",
+				"email": "E-mail",
+				"integrations": "Intégrations",
+				"data": "Données"
+			},
 			"form": {
 				"timezone": {
 					"title": "Fuseau horaire d'affichage",

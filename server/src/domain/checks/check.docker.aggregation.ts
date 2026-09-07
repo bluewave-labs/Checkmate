@@ -1,5 +1,5 @@
 import CheckModel from "@/domain/checks/check.model.js";
-import { DockerStatsBucket } from "@/domain/checks/check.type.js";
+import { DockerContainerStatsBucket, DockerStatsBucket } from "@/domain/checks/check.type.js";
 import mongoose from "mongoose";
 
 type DateRange = { start: Date; end: Date };
@@ -51,4 +51,44 @@ export const getDockerLatestCheck = async (monitorId: string) =>
 	})
 		.sort({ createdAt: -1 })
 		.select("containers containerSummary createdAt")
+		.lean();
+
+export const getDockerContainerStats = async (
+	monitorId: string,
+	containerName: string,
+	dates: DateRange,
+	dateString: string
+): Promise<DockerContainerStatsBucket[]> =>
+	CheckModel.aggregate<DockerContainerStatsBucket>([
+		{
+			$match: {
+				"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+				"metadata.type": "docker",
+				createdAt: { $gte: dates.start, $lte: dates.end },
+				"containers.name": containerName,
+			},
+		},
+		{ $unwind: "$containers" },
+		{ $match: { "containers.name": containerName } },
+		{
+			$group: {
+				_id: { $dateToString: { format: dateString, date: "$createdAt" } },
+				avgCpuPct: { $avg: "$containers.cpuPct" },
+				avgMemoryUsedBytes: { $avg: "$containers.memoryUsedBytes" },
+				avgMemoryPct: { $avg: "$containers.memoryPct" },
+				minRestartCount: { $min: "$containers.restartCount" },
+				maxRestartCount: { $max: "$containers.restartCount" },
+			},
+		},
+		{ $sort: { _id: 1 } },
+	]);
+
+export const getDockerContainerLatestCheck = async (monitorId: string, containerName: string) =>
+	CheckModel.findOne({
+		"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
+		"metadata.type": "docker",
+		"containers.name": containerName,
+	})
+		.sort({ createdAt: -1 })
+		.select("containers createdAt")
 		.lean();

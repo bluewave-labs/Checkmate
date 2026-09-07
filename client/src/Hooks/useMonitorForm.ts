@@ -77,6 +77,7 @@ export const getMonitorDefaults = (
 				...base,
 				type: "docker",
 				url: data?.url || "",
+				dockerLogsEnabled: data?.dockerLogsEnabled ?? false,
 			};
 			break;
 		case "game":

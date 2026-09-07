@@ -52,6 +52,7 @@ type DataTableProps<T extends { id?: string | number; _id?: string | number }> =
 	emptyViewText?: string;
 	emptyViewPositive?: boolean;
 	getRowSx?: (row: T) => SxProps<Theme>;
+	isRowSelected?: (row: T) => boolean;
 };
 
 export function DataTable<
@@ -70,6 +71,7 @@ export function DataTable<
 	emptyViewText,
 	emptyViewPositive,
 	getRowSx,
+	isRowSelected,
 }: DataTableProps<T>) {
 	const theme = useTheme();
 	const [expanded, setExpanded] = useState<(string | number) | null>(null);
@@ -79,6 +81,7 @@ export function DataTable<
 	};
 
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
+	const isInteractive = Boolean(onRowClick) || expandableRows;
 
 	if (data.length === 0 || headers.length === 0) {
 		return (
@@ -108,6 +111,11 @@ export function DataTable<
 								borderRadius: theme.shape.borderRadius,
 								padding: theme.spacing(LAYOUT.XS),
 								cursor: onRowClick ? "pointer" : "default",
+								...(onRowClick && {
+									"&:hover": {
+										backgroundColor: theme.palette.action.rowHover,
+									},
+								}),
 							}}
 							key={key}
 						>
@@ -191,7 +199,7 @@ export function DataTable<
 					"& :is(th)": {
 						backgroundColor: theme.palette.background.paper,
 						color: theme.palette.text.secondary,
-						fontWeight: 500,
+						fontWeight: 600,
 						textTransform: "uppercase",
 						letterSpacing: "0.08em",
 						padding: `${theme.spacing(SPACING.LG)} ${theme.spacing(LAYOUT.MD)}`,
@@ -227,12 +235,25 @@ export function DataTable<
 					{data.map((row) => {
 						const key = row.id || row._id || Math.random();
 						const isExpanded = expanded === key;
+						const selected = isRowSelected?.(row);
 
 						return (
 							<Fragment key={key}>
 								<TableRow
 									sx={{
-										cursor: onRowClick ? "pointer" : "default",
+										cursor: isInteractive ? "pointer" : "default",
+										...(isInteractive && {
+											"&:hover .MuiTableCell-root": {
+												backgroundColor: selected
+													? theme.palette.action.selectedHover
+													: theme.palette.action.rowHover,
+											},
+										}),
+										...(selected && {
+											"& .MuiTableCell-root": {
+												backgroundColor: theme.palette.action.selected,
+											},
+										}),
 										...(getRowSx?.(row) as object),
 									}}
 									onClick={() => {
@@ -292,6 +313,12 @@ interface TablePaginationActionsProps {
 	onPageChange: (event: React.MouseEvent<HTMLButtonElement>, newPage: number) => void;
 }
 
+const controlHoverSx = (theme: Theme): SxProps<Theme> => ({
+	"&:hover": {
+		backgroundColor: theme.palette.action.controlHover,
+	},
+});
+
 function TablePaginationActions(props: TablePaginationActionsProps) {
 	const theme = useTheme();
 	const { count, page, rowsPerPage, onPageChange } = props;
@@ -321,6 +348,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 				onClick={handleFirstPageButtonClick}
 				disabled={page === 0}
 				aria-label="first page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronsRight
@@ -338,6 +366,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 				onClick={handleBackButtonClick}
 				disabled={page === 0}
 				aria-label="previous page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronRight
@@ -355,6 +384,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 				onClick={handleNextButtonClick}
 				disabled={page >= Math.ceil(count / rowsPerPage) - 1}
 				aria-label="next page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronLeft
@@ -372,6 +402,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 				onClick={handleLastPageButtonClick}
 				disabled={page >= Math.ceil(count / rowsPerPage) - 1}
 				aria-label="last page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronsLeft
@@ -419,6 +450,7 @@ function HasMoreTablePaginationActions(props: HasMoreTablePaginationActionsProps
 				onClick={handleFirstPageButtonClick}
 				disabled={page === 0}
 				aria-label="first page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronsRight
@@ -436,6 +468,7 @@ function HasMoreTablePaginationActions(props: HasMoreTablePaginationActionsProps
 				onClick={handleBackButtonClick}
 				disabled={page === 0}
 				aria-label="previous page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronRight
@@ -453,6 +486,7 @@ function HasMoreTablePaginationActions(props: HasMoreTablePaginationActionsProps
 				onClick={handleNextButtonClick}
 				disabled={hasMore === false}
 				aria-label="next page"
+				sx={controlHoverSx(theme)}
 			>
 				{theme.direction === "rtl" ? (
 					<ChevronLeft
@@ -470,6 +504,7 @@ function HasMoreTablePaginationActions(props: HasMoreTablePaginationActionsProps
 				<IconButton
 					disabled={hasMore === false}
 					aria-label="next page"
+					sx={controlHoverSx(theme)}
 				>
 					<Ellipsis
 						size={20}

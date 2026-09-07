@@ -1,5 +1,5 @@
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
-import { DockerContainerInfo, DockerContainerSummary } from "@/types/network.js";
+import { DockerContainerInfo, DockerContainerSummary } from "@/domain/docker/docker.type.js";
 import type { Response } from "got";
 
 export const CHECK_TTL_SENTINEL = 366;
@@ -280,4 +280,22 @@ export interface DockerStats {
 
 export interface DockerChecksResult extends DockerStats {
 	monitorType: "docker";
+}
+
+export type DockerContainerStatsBucket = {
+	_id: string;
+	avgCpuPct: number | null;
+	avgMemoryUsedBytes: number | null;
+	avgMemoryPct: number | null;
+	minRestartCount: number | null;
+	maxRestartCount: number | null;
+};
+
+export interface DockerContainerStats {
+	aggregate: DockerContainerStatsBucket[];
+	restartsInRange: number;
+	latest: {
+		container: DockerContainerInfo;
+		checkedAt: string;
+	} | null;
 }

@@ -8,9 +8,17 @@ import type {
 	GamesMap,
 	GroupedGeoCheckResult,
 	DockerDetailsResult,
+	DockerContainerDetailsResult,
+	DockerContainerLogsResult,
 } from "@/domain/monitors/monitor.type.js";
 import { supportsGeoCheck, supportsUptimeDetails } from "@/domain/monitors/monitor.type.js";
-import type { UptimeChecksResult, HardwareChecksResult, PageSpeedChecksResult, DockerChecksResult } from "@/domain/checks/check.type.js";
+import type {
+	UptimeChecksResult,
+	HardwareChecksResult,
+	PageSpeedChecksResult,
+	DockerChecksResult,
+	DockerContainerStatsBucket,
+} from "@/domain/checks/check.type.js";
 import type { GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
 import type { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
 import type { IGeoChecksRepository } from "@/domain/geo-checks/geo-check.repository.interface.js";
@@ -24,12 +32,31 @@ import type { ImportedMonitor } from "@/api/validation/monitorValidation.js";
 import { ILogger } from "@/utils/logger.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";
 import { DateRange } from "@/types/query.js";
+import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
 
 const SERVICE_NAME = "MonitorService";
 
 const isUptimeChecksResult = (
 	result: UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult | DockerChecksResult
 ): result is UptimeChecksResult => supportsUptimeDetails(result.monitorType);
+
+// Docker's RestartCount is cumulative and resets to 0 when a container is recreated, so restarts in the
+// date range are recovered from bucket min/max deltas; a drop between buckets means a recreate.
+const computeRestartsInRange = (aggregate: DockerContainerStatsBucket[]): number => {
+	let restarts = 0;
+	let prevMax: number | null = null;
+	for (const bucket of aggregate) {
+		const { minRestartCount: min, maxRestartCount: max } = bucket;
+		if (min === null || max === null) continue;
+		restarts += Math.max(0, max - min);
+		if (prevMax !== null) {
+			const delta = min - prevMax;
+			restarts += delta >= 0 ? delta : min + 1;
+		}
+		prevMax = max;
+	}
+	return restarts;
+};
 
 export interface IMonitorService {
 	// create
@@ -42,6 +69,20 @@ export interface IMonitorService {
 	getHardwareDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<HardwareDetailsResult>;
 	getPageSpeedDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<PageSpeedDetailsResult>;
 	getDockerDetailsById(args: { teamId: string; monitorId: string; dateRange: DateRange }): Promise<DockerDetailsResult>;
+	getDockerContainerByName(args: {
+		teamId: string;
+		monitorId: string;
+		containerName: string;
+		dateRange: DateRange;
+	}): Promise<DockerContainerDetailsResult>;
+	getDockerContainerLogs(args: {
+		teamId: string;
+		monitorId: string;
+		containerName: string;
+		before?: Date;
+		after?: Date;
+		limit: number;
+	}): Promise<DockerContainerLogsResult>;
 	getGeoChecksByMonitorId(args: {
 		teamId: string;
 		monitorId: string;
@@ -99,6 +140,7 @@ export class MonitorService implements IMonitorService {
 	private monitorsRepository: IMonitorsRepository;
 	private checksRepository: IChecksRepository;
 	private geoChecksRepository: IGeoChecksRepository;
+	private dockerLogsRepository: IDockerLogsRepository;
 	private monitorStatsRepository: IMonitorStatsRepository;
 	private statusPagesRepository: IStatusPagesRepository;
 	private incidentsRepository: IIncidentsRepository;
@@ -110,6 +152,7 @@ export class MonitorService implements IMonitorService {
 		monitorsRepository,
 		checksRepository,
 		geoChecksRepository,
+		dockerLogsRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
 		incidentsRepository,
@@ -120,6 +163,7 @@ export class MonitorService implements IMonitorService {
 		monitorsRepository: IMonitorsRepository;
 		checksRepository: IChecksRepository;
 		geoChecksRepository: IGeoChecksRepository;
+		dockerLogsRepository: IDockerLogsRepository;
 		monitorStatsRepository: IMonitorStatsRepository;
 		statusPagesRepository: IStatusPagesRepository;
 		incidentsRepository: IIncidentsRepository;
@@ -130,6 +174,7 @@ export class MonitorService implements IMonitorService {
 		this.monitorsRepository = monitorsRepository;
 		this.checksRepository = checksRepository;
 		this.geoChecksRepository = geoChecksRepository;
+		this.dockerLogsRepository = dockerLogsRepository;
 		this.monitorStatsRepository = monitorStatsRepository;
 		this.statusPagesRepository = statusPagesRepository;
 		this.incidentsRepository = incidentsRepository;
@@ -321,6 +366,72 @@ export class MonitorService implements IMonitorService {
 			},
 			monitorStats,
 		};
+	};
+
+	getDockerContainerByName = async ({
+		teamId,
+		monitorId,
+		containerName,
+		dateRange,
+	}: {
+		teamId: string;
+		monitorId: string;
+		containerName: string;
+		dateRange: DateRange;
+	}): Promise<DockerContainerDetailsResult> => {
+		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
+		if (!monitor) {
+			throw new AppError({ message: `Monitor with ID ${monitorId} not found.`, status: 404 });
+		}
+		if (monitor.type !== "docker") {
+			throw new AppError({ message: `${monitor.type} monitors are not supported for docker container details`, status: 400 });
+		}
+
+		const { aggregate, latest } = await this.checksRepository.findDockerContainerChecks(monitor.id, containerName, dateRange);
+
+		return {
+			monitor,
+			stats: {
+				aggregate,
+				latest,
+				restartsInRange: computeRestartsInRange(aggregate),
+			},
+		};
+	};
+
+	getDockerContainerLogs = async ({
+		teamId,
+		monitorId,
+		containerName,
+		before,
+		after,
+		limit,
+	}: {
+		teamId: string;
+		monitorId: string;
+		containerName: string;
+		before?: Date;
+		after?: Date;
+		limit: number;
+	}): Promise<DockerContainerLogsResult> => {
+		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
+		if (!monitor) {
+			throw new AppError({
+				message: `Monitor with ID ${monitorId} not found`,
+				status: 404,
+			});
+		}
+
+		if (monitor.type !== "docker") {
+			throw new AppError({
+				message: `${monitor.type} monitors are not supported for docker container logs`,
+				status: 400,
+			});
+		}
+
+		const logs = await this.dockerLogsRepository.findByContainerName({ monitorId, containerName, before, after, limit });
+		const nextCursor = !after && logs.length === limit ? (logs[logs.length - 1]?.checkedAt ?? null) : null;
+		return { logs, nextCursor };
 	};
 
 	getGeoChecksByMonitorId = async ({
@@ -526,6 +637,14 @@ export class MonitorService implements IMonitorService {
 		await this.geoChecksRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
 			this.logger.warn({
 				message: `Error deleting geo checks for monitor ${monitor.id} with name ${monitor.name}`,
+				service: SERVICE_NAME,
+				stack: err instanceof Error ? err.stack : undefined,
+			});
+		});
+
+		await this.dockerLogsRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
+			this.logger.warn({
+				message: `Error deleting docker logs for monitor ${monitor.id} with name ${monitor.name}`,
 				service: SERVICE_NAME,
 				stack: err instanceof Error ? err.stack : undefined,
 			});

@@ -9,6 +9,7 @@ import type {
 	GotTimings,
 	ILighthouseAudit,
 } from "@/domain/checks/check.type.js";
+import { DockerContainerInfo, DockerContainerLogs, DockerContainerSummary } from "@/domain/docker/docker.type.js";
 import type { DnsRecordType, Monitor, MonitorMatchMethod, MonitorStatus, MonitorType } from "@/domain/monitors/monitor.type.js";
 
 import type { QueryResult } from "gamedig";
@@ -97,37 +98,11 @@ export interface HardwareStatusPayload {
 }
 
 // Docker host monitoring
-export const DockerContainerStates = ["created", "running", "paused", "restarting", "removing", "exited", "dead"] as const;
-export type DockerContainerState = (typeof DockerContainerStates)[number];
-
-export const DockerHealthStatuses = ["healthy", "unhealthy", "starting", "none"] as const;
-export type DockerHealthStatus = (typeof DockerHealthStatuses)[number];
-
-export interface DockerContainerSummary {
-	total: number;
-	running: number;
-	stopped: number;
-	unhealthy: number;
-}
-
-export interface DockerContainerInfo {
-	id: string;
-	name: string;
-	image: string;
-	state: DockerContainerState;
-	status: string;
-	health: DockerHealthStatus;
-	cpuPct?: number;
-	memoryUsedBytes?: number;
-	memoryLimitBytes?: number;
-	memoryPct?: number;
-	restartCount?: number;
-	startedAt?: string; // ISO date
-}
 
 export interface DockerStatusPayload {
 	containers: DockerContainerInfo[];
 	summary: DockerContainerSummary;
+	logs?: DockerContainerLogs[];
 }
 
 export interface PortStatusPayload {

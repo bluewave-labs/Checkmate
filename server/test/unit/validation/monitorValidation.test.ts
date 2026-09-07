@@ -3,7 +3,30 @@ import {
 	createMonitorBodyValidation,
 	editMonitorBodyValidation,
 	importMonitorsBodyValidation,
+	getDockerContainerLogsQueryValidation,
 } from "../../../src/api/validation/monitorValidation.ts";
+
+describe("getDockerContainerLogsQueryValidation", () => {
+	it("defaults limit to 20", () => {
+		expect(getDockerContainerLogsQueryValidation.parse({})).toEqual({ limit: 20 });
+	});
+
+	it("rejects a limit above 50", () => {
+		expect(() => getDockerContainerLogsQueryValidation.parse({ limit: 51 })).toThrow();
+	});
+
+	it("rejects a non-ISO before cursor", () => {
+		expect(() => getDockerContainerLogsQueryValidation.parse({ before: "yesterday" })).toThrow();
+	});
+
+	it("rejects a non-ISO after cursor", () => {
+		expect(() => getDockerContainerLogsQueryValidation.parse({ after: "yesterday" })).toThrow();
+	});
+
+	it("rejects before and after together", () => {
+		expect(() => getDockerContainerLogsQueryValidation.parse({ before: "2026-01-02T00:00:00.000Z", after: "2026-01-01T00:00:00.000Z" })).toThrow();
+	});
+});
 
 const baseDnsBody = {
 	name: "DNS check",
@@ -208,6 +231,19 @@ describe("monitorValidation — strategy gating", () => {
 				],
 			});
 			expect(parsed.monitors[0].strategy).toBeUndefined();
+		});
+
+		it("defaults dockerLogsEnabled to false on imported docker monitors", () => {
+			const parsed = importMonitorsBodyValidation.parse({
+				monitors: [
+					{
+						name: "Imported Docker",
+						type: "docker",
+						url: "unix:///var/run/docker.sock",
+					},
+				],
+			});
+			expect(parsed.monitors[0].dockerLogsEnabled).toBe(false);
 		});
 
 		it("rejects strategy on imported non-pagespeed monitors", () => {
@@ -572,7 +608,6 @@ describe("monitorValidation — Docker host url", () => {
 		type: "docker" as const,
 		url: "unix:///var/run/docker.sock",
 	};
-	const PRIVATE_KEY = "-----BEGIN OPENSSH PRIVATE KEY-----\nfake\n-----END OPENSSH PRIVATE KEY-----";
 
 	describe("createMonitorBodyValidation", () => {
 		it("accepts the default unix socket url", () => {
@@ -585,32 +620,15 @@ describe("monitorValidation — Docker host url", () => {
 			expect(parsed.url).toBe("/run/docker.sock");
 		});
 
-		it("accepts an ssh url with a private key and retains the key", () => {
-			for (const url of ["ssh://deploy@host", "ssh://deploy@host:2222"]) {
-				const parsed = createMonitorBodyValidation.parse({ ...baseDockerBody, url, sshPrivateKey: PRIVATE_KEY });
-				expect(parsed.sshPrivateKey).toBe(PRIVATE_KEY);
-			}
-		});
-
 		it("rejects container names and unsupported engine urls", () => {
-			for (const badUrl of ["my-container", "tcp://host:2375", "https://host", "unix://relative/path", ""]) {
+			for (const badUrl of ["my-container", "tcp://host:2375", "https://host", "ssh://deploy@host", "unix://relative/path", ""]) {
 				expect(() => createMonitorBodyValidation.parse({ ...baseDockerBody, url: badUrl })).toThrow();
 			}
 		});
 
-		it("rejects an ssh url without a user", () => {
-			expect(() => createMonitorBodyValidation.parse({ ...baseDockerBody, url: "ssh://host", sshPrivateKey: PRIVATE_KEY })).toThrow();
-		});
-
-		it("rejects an ssh url without a private key, attributing the issue to sshPrivateKey", () => {
-			const result = createMonitorBodyValidation.safeParse({ ...baseDockerBody, url: "ssh://deploy@host" });
-			expect(result.success).toBe(false);
-			expect(result.error?.issues.some((issue) => issue.path.includes("sshPrivateKey"))).toBe(true);
-		});
-
 		it("does not apply docker url rules to other monitor types", () => {
 			const parsed = createMonitorBodyValidation.parse({ name: "HTTP check", type: "http", url: "https://example.com" });
-			expect(parsed.sshPrivateKey).toBeUndefined();
+			expect(parsed.url).toBe("https://example.com");
 		});
 	});
 
@@ -624,7 +642,7 @@ describe("monitorValidation — Docker host url", () => {
 			expect(() => editMonitorBodyValidation.parse({ type: "docker", url: "my-container" })).toThrow();
 		});
 
-		it("rejects a docker edit switching to ssh without a key", () => {
+		it("rejects a docker edit with an ssh url", () => {
 			expect(() => editMonitorBodyValidation.parse({ type: "docker", url: "ssh://deploy@host" })).toThrow();
 		});
 	});

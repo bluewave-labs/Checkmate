@@ -182,7 +182,13 @@
 				"maintenance": "الصيانة",
 				"logs": "السجلات",
 				"settings": "الإعدادات",
-				"dashboard": "لوحة المعلومات"
+				"dashboard": "لوحة المعلومات",
+				"groups": {
+					"monitoring": "المراقبة",
+					"alerting": "التنبيهات",
+					"reporting": "التقارير",
+					"configuration": "الإعدادات العامة"
+				}
 			},
 			"bottomMenu": {
 				"support": "الدعم",
@@ -1282,6 +1288,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "عام",
+				"monitoring": "المراقبة",
+				"email": "البريد الإلكتروني",
+				"integrations": "التكاملات",
+				"data": "البيانات"
+			},
 			"form": {
 				"timezone": {
 					"title": "المنطقة الزمنية للعرض",

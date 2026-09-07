@@ -18,9 +18,14 @@ import {
 	getHardwareDetailsByIdQueryValidation,
 	getDockerDetailsByIdParamValidation,
 	getDockerDetailsByIdQueryValidation,
+	getDockerContainerNameParamValidation,
+	getDockerContainerByNameQueryValidation,
 	dockerDetailsResponseSchema,
+	dockerContainerDetailsResponseSchema,
 	monitorResponseSchema,
 	uptimeDetailsResponseSchema,
+	getDockerContainerLogsQueryValidation,
+	dockerContainerLogsResponseSchema,
 } from "@/api/validation/monitorValidation.js";
 import { updateNotificationsValidation } from "@/api/validation/notificationValidation.js";
 
@@ -116,6 +121,26 @@ registry.registerPath({
 	security: bearer,
 	request: { params: getDockerDetailsByIdParamValidation, query: getDockerDetailsByIdQueryValidation },
 	responses: { "200": okJson(dockerDetailsResponseSchema), ...standardErrors },
+});
+
+registry.registerPath({
+	method: "get",
+	path: "/monitors/docker/details/{monitorId}/containers/{containerName}",
+	tags,
+	summary: "Get details for one container on a Docker host monitor",
+	security: bearer,
+	request: { params: getDockerContainerNameParamValidation, query: getDockerContainerByNameQueryValidation },
+	responses: { "200": okJson(dockerContainerDetailsResponseSchema), ...standardErrors },
+});
+
+registry.registerPath({
+	method: "get",
+	path: "/monitors/docker/details/{monitorId}/containers/{containerName}/logs",
+	tags,
+	summary: "Get stored log lines for one container on a Docker host monitor, newest first",
+	security: bearer,
+	request: { params: getDockerContainerNameParamValidation, query: getDockerContainerLogsQueryValidation },
+	responses: { "200": okJson(dockerContainerLogsResponseSchema), ...standardErrors },
 });
 
 registry.registerPath({

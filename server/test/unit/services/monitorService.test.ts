@@ -2,6 +2,7 @@ import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import { MonitorService } from "../../../src/domain/monitors/monitor.service.ts";
 import type { IChecksRepository } from "../../../src/domain/checks/check.repository.interface.ts";
 import type { IGeoChecksRepository } from "../../../src/domain/geo-checks/geo-check.repository.interface.ts";
+import type { IDockerLogsRepository } from "../../../src/domain/docker/docker-log.repository.interface.ts";
 import type { IIncidentsRepository } from "../../../src/domain/incidents/incident.repository.interface.ts";
 import type { IMonitorStatsRepository } from "../../../src/domain/monitor-stats/monitor-stats.repository.interface.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
@@ -29,6 +30,7 @@ const createMonitorsRepositoryMock = () =>
 const createChecksRepositoryMock = () =>
 	({
 		findByDateRangeAndMonitorId: jest.fn(),
+		findDockerContainerChecks: jest.fn(),
 		deleteByMonitorId: jest.fn(),
 	}) as unknown as IChecksRepository;
 
@@ -48,6 +50,12 @@ const createGeoChecksRepositoryMock = () =>
 		findGroupedByMonitorIdAndDateRange: jest.fn(),
 		deleteByMonitorId: jest.fn(),
 	}) as unknown as IGeoChecksRepository;
+
+const createDockerLogsRepositoryMock = () =>
+	({
+		findByContainerName: jest.fn(),
+		deleteByMonitorId: jest.fn().mockResolvedValue(0),
+	}) as unknown as IDockerLogsRepository;
 
 const createIncidentsRepositoryMock = () =>
 	({
@@ -88,6 +96,7 @@ const createService = (
 		monitorStatsRepository?: IMonitorStatsRepository;
 		statusPagesRepository?: IStatusPagesRepository;
 		geoChecksRepository?: IGeoChecksRepository;
+		dockerLogsRepository?: IDockerLogsRepository;
 		incidentsRepository?: IIncidentsRepository;
 		jobQueue?: ReturnType<typeof createJobQueueMock>;
 		logger?: ReturnType<typeof createMockLogger>;
@@ -103,6 +112,7 @@ const createService = (
 		monitorsRepository: overrides.monitorsRepository ?? createMonitorsRepositoryMock(),
 		checksRepository: overrides.checksRepository ?? createChecksRepositoryMock(),
 		geoChecksRepository: overrides.geoChecksRepository ?? createGeoChecksRepositoryMock(),
+		dockerLogsRepository: overrides.dockerLogsRepository ?? createDockerLogsRepositoryMock(),
 		monitorStatsRepository: overrides.monitorStatsRepository ?? createMonitorStatsRepositoryMock(),
 		statusPagesRepository: overrides.statusPagesRepository ?? createStatusPagesRepositoryMock(),
 		incidentsRepository: overrides.incidentsRepository ?? createIncidentsRepositoryMock(),
@@ -483,6 +493,190 @@ describe("MonitorService", () => {
 			await expect(service.getDockerDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "recent" })).rejects.toThrow(
 				"Unable to load docker stats for this monitor"
 			);
+		});
+	});
+
+	describe("getDockerContainerByName", () => {
+		const makeBucket = (overrides: Partial<Record<string, number | string | null>> = {}) => ({
+			_id: "2024-01-01T00:00:00Z",
+			avgCpuPct: 12.5,
+			avgMemoryUsedBytes: 1024,
+			avgMemoryPct: 50,
+			minRestartCount: 0,
+			maxRestartCount: 0,
+			...overrides,
+		});
+
+		it("returns container details for a docker monitor", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			const monitor = makeMonitor({ type: "docker" });
+			const container = { id: "abc", name: "checkmate-mongo", image: "mongo:8.0", state: "running", status: "Up 3 hours", health: "healthy" };
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(checksRepository.findDockerContainerChecks as jest.Mock).mockResolvedValue({
+				aggregate: [makeBucket()],
+				latest: { container, checkedAt: "2024-01-01T00:00:00Z" },
+			});
+
+			const { service } = createService({ monitorsRepository, checksRepository });
+			const result = await service.getDockerContainerByName({
+				teamId: TEAM_ID,
+				monitorId: MONITOR_ID,
+				containerName: "checkmate-mongo",
+				dateRange: "recent",
+			});
+
+			expect(checksRepository.findDockerContainerChecks).toHaveBeenCalledWith(MONITOR_ID, "checkmate-mongo", "recent");
+			expect(result.monitor).toMatchObject({ id: MONITOR_ID });
+			expect(result.stats.latest?.container).toMatchObject({ name: "checkmate-mongo" });
+			expect(result.stats.restartsInRange).toBe(0);
+		});
+
+		it("sums restarts within and between buckets", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			(checksRepository.findDockerContainerChecks as jest.Mock).mockResolvedValue({
+				aggregate: [
+					makeBucket({ _id: "01", minRestartCount: 0, maxRestartCount: 2 }),
+					makeBucket({ _id: "02", minRestartCount: 3, maxRestartCount: 3 }),
+					makeBucket({ _id: "03", minRestartCount: null, maxRestartCount: null }),
+					makeBucket({ _id: "04", minRestartCount: 3, maxRestartCount: 4 }),
+				],
+				latest: null,
+			});
+
+			const { service } = createService({ monitorsRepository, checksRepository });
+			const result = await service.getDockerContainerByName({
+				teamId: TEAM_ID,
+				monitorId: MONITOR_ID,
+				containerName: "checkmate-mongo",
+				dateRange: "day",
+			});
+
+			// 2 within bucket 01, +1 between 01 and 02, +1 within 04 (null bucket skipped)
+			expect(result.stats.restartsInRange).toBe(4);
+		});
+
+		it("counts a restart-count drop as a recreate", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			(checksRepository.findDockerContainerChecks as jest.Mock).mockResolvedValue({
+				aggregate: [
+					makeBucket({ _id: "01", minRestartCount: 5, maxRestartCount: 5 }),
+					makeBucket({ _id: "02", minRestartCount: 1, maxRestartCount: 1 }),
+				],
+				latest: null,
+			});
+
+			const { service } = createService({ monitorsRepository, checksRepository });
+			const result = await service.getDockerContainerByName({
+				teamId: TEAM_ID,
+				monitorId: MONITOR_ID,
+				containerName: "checkmate-mongo",
+				dateRange: "day",
+			});
+
+			// counter dropped 5 -> 1: the recreate itself plus the 1 restart the new counter shows
+			expect(result.stats.restartsInRange).toBe(2);
+		});
+
+		it("throws 404 when monitor not found", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(null);
+			const { service } = createService({ monitorsRepository });
+
+			await expect(
+				service.getDockerContainerByName({ teamId: TEAM_ID, monitorId: "missing", containerName: "checkmate-mongo", dateRange: "recent" })
+			).rejects.toThrow("Monitor with ID missing not found.");
+		});
+
+		it("throws 400 when monitor type is not docker", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "http" }));
+			const { service } = createService({ monitorsRepository });
+
+			await expect(
+				service.getDockerContainerByName({ teamId: TEAM_ID, monitorId: MONITOR_ID, containerName: "checkmate-mongo", dateRange: "recent" })
+			).rejects.toThrow("monitors are not supported for docker container details");
+		});
+	});
+
+	describe("getDockerContainerLogs", () => {
+		it("throws 404 when the monitor is not found", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(null);
+			const { service } = createService({ monitorsRepository });
+
+			await expect(service.getDockerContainerLogs({ teamId: TEAM_ID, monitorId: "missing", containerName: "web", limit: 20 })).rejects.toThrow(
+				"Monitor with ID missing not found"
+			);
+		});
+
+		it("throws 400 for a non-docker monitor", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "http" }));
+			const { service } = createService({ monitorsRepository });
+
+			await expect(service.getDockerContainerLogs({ teamId: TEAM_ID, monitorId: MONITOR_ID, containerName: "web", limit: 20 })).rejects.toThrow(
+				"monitors are not supported for docker container logs"
+			);
+		});
+
+		it("passes pagination through and returns the last checkedAt as a full-page cursor", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const dockerLogsRepository = createDockerLogsRepositoryMock();
+			const before = new Date("2026-01-02T00:00:00.000Z");
+			const logs = [{ checkedAt: "2026-01-01T02:00:00.000Z" }, { checkedAt: "2026-01-01T01:00:00.000Z" }];
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			(dockerLogsRepository.findByContainerName as jest.Mock).mockResolvedValue(logs);
+			const { service } = createService({ monitorsRepository, dockerLogsRepository });
+
+			const result = await service.getDockerContainerLogs({
+				teamId: TEAM_ID,
+				monitorId: MONITOR_ID,
+				containerName: "web",
+				before,
+				limit: 2,
+			});
+
+			expect(dockerLogsRepository.findByContainerName).toHaveBeenCalledWith({ monitorId: MONITOR_ID, containerName: "web", before, limit: 2 });
+			expect(result.nextCursor).toBe("2026-01-01T01:00:00.000Z");
+		});
+
+		it("returns a null cursor for a short page", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const dockerLogsRepository = createDockerLogsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			(dockerLogsRepository.findByContainerName as jest.Mock).mockResolvedValue([{ checkedAt: "2026-01-01T01:00:00.000Z" }]);
+			const { service } = createService({ monitorsRepository, dockerLogsRepository });
+
+			const result = await service.getDockerContainerLogs({ teamId: TEAM_ID, monitorId: MONITOR_ID, containerName: "web", limit: 2 });
+
+			expect(result.nextCursor).toBeNull();
+		});
+
+		it("passes after through and returns a null cursor even for a full page", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const dockerLogsRepository = createDockerLogsRepositoryMock();
+			const after = new Date("2026-01-01T00:00:00.000Z");
+			const logs = [{ checkedAt: "2026-01-01T02:00:00.000Z" }, { checkedAt: "2026-01-01T01:00:00.000Z" }];
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			(dockerLogsRepository.findByContainerName as jest.Mock).mockResolvedValue(logs);
+			const { service } = createService({ monitorsRepository, dockerLogsRepository });
+
+			const result = await service.getDockerContainerLogs({
+				teamId: TEAM_ID,
+				monitorId: MONITOR_ID,
+				containerName: "web",
+				after,
+				limit: 2,
+			});
+
+			expect(dockerLogsRepository.findByContainerName).toHaveBeenCalledWith({ monitorId: MONITOR_ID, containerName: "web", after, limit: 2 });
+			expect(result.logs).toBe(logs);
+			expect(result.nextCursor).toBeNull();
 		});
 	});
 
@@ -1694,6 +1888,7 @@ describe("MonitorService", () => {
 				monitorsRepository,
 				checksRepository,
 				geoChecksRepository,
+				dockerLogsRepository: createDockerLogsRepositoryMock(),
 				monitorStatsRepository,
 				statusPagesRepository,
 				incidentsRepository,

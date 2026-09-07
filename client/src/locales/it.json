@@ -194,7 +194,13 @@
 				"maintenance": "Manutenzione",
 				"logs": "Log",
 				"settings": "Impostazioni",
-				"dashboard": "Dashboard"
+				"dashboard": "Dashboard",
+				"groups": {
+					"monitoring": "Monitoraggio",
+					"alerting": "Avvisi",
+					"reporting": "Report",
+					"configuration": "Configurazione"
+				}
 			},
 			"bottomMenu": {
 				"support": "Supporto",
@@ -1378,6 +1384,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Generale",
+				"monitoring": "Monitoraggio",
+				"email": "Email",
+				"integrations": "Integrazioni",
+				"data": "Dati"
+			},
 			"form": {
 				"timezone": {
 					"title": "Fuso orario di visualizzazione",

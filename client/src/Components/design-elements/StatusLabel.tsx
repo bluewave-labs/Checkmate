@@ -1,12 +1,19 @@
 import Box from "@mui/material/Box";
 import { BaseBox } from "@/Components/design-elements";
 import Typography from "@mui/material/Typography";
+import Stack from "@mui/material/Stack";
 
 import type { MonitorStatus } from "@/Types/Monitor";
 import type { SxProps } from "@mui/material/styles";
-import { getStatusPalette, getValuePalette } from "@/Utils/MonitorUtils";
+import {
+	getDockerStatePalette,
+	getStatusPalette,
+	getValuePalette,
+} from "@/Utils/MonitorUtils";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
+import type { DockerContainerState } from "@/Types/Check";
+import { SPACING } from "@/Utils/Theme/constants";
 
 export const ValueTypes = ["positive", "negative", "neutral"] as const;
 export type ValueType = (typeof ValueTypes)[number];
@@ -108,5 +115,38 @@ export const ColoredLabel = ({ text, color }: { text: string; color: string }) =
 		>
 			<Typography>{text}</Typography>
 		</BaseBox>
+	);
+};
+
+export const DockerStateLabel = ({
+	state,
+	name,
+	image,
+}: {
+	state: DockerContainerState;
+	name: string;
+	image: string;
+}) => {
+	const palette = getDockerStatePalette(state);
+	const theme = useTheme();
+
+	return (
+		<Stack
+			direction="row"
+			gap={SPACING.LG}
+			alignItems={"center"}
+		>
+			<Box
+				width={7}
+				height={7}
+				bgcolor={theme.palette[palette].light}
+				borderRadius="50%"
+				marginRight="5px"
+			/>
+			<Stack>
+				<Typography>{name}</Typography>
+				<Typography variant="body2">{image}</Typography>
+			</Stack>
+		</Stack>
 	);
 };

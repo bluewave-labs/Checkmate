@@ -36,8 +36,7 @@
 
 [![Run on PikaPods](https://www.pikapods.com/static/run-button.svg)](https://www.pikapods.com/pods?run=checkmate)
 
-
-<img width="1703" height="1041" alt="image" src="https://github.com/user-attachments/assets/0f4dcf38-9b42-4b84-8633-ff34778df1a8" />
+<img width="1461" height="853" alt="image" src="https://github.com/user-attachments/assets/d5ee1a4e-9db9-47cc-ad47-e1ba88a9d796" />
 </p>
 <br>
 
@@ -212,7 +211,7 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 <a id="contributing"></a>
 ## Contributing
 
-We are [Alex](http://github.com/ajhollid) (team lead), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer) and [Mert](https://github.com/mertssmnoglu) helping individuals and businesses monitor their infra and servers.
+We are [Alex](http://github.com/ajhollid) (team lead), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Malena](https://github.com/malenacaroline) and [Mert](https://github.com/mertssmnoglu) helping individuals and businesses monitor their infra and servers.
 
 We pride ourselves on building strong connections with contributors at every level. Despite being a young project, Checkmate has already earned almost 11K+ stars and attracted 150+ contributors from around the globe.
 

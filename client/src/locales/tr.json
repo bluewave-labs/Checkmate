@@ -182,7 +182,13 @@
 				"maintenance": "Bakım",
 				"logs": "Günlükler",
 				"settings": "Ayarlar",
-				"dashboard": "Panel"
+				"dashboard": "Panel",
+				"groups": {
+					"monitoring": "İzleme",
+					"alerting": "Uyarılar",
+					"reporting": "Raporlama",
+					"configuration": "Yapılandırma"
+				}
 			},
 			"bottomMenu": {
 				"support": "Destek",
@@ -1282,6 +1288,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Genel",
+				"monitoring": "İzleme",
+				"email": "E-posta",
+				"integrations": "Entegrasyonlar",
+				"data": "Veri"
+			},
 			"form": {
 				"timezone": {
 					"title": "Görüntüleme saat dilimi",

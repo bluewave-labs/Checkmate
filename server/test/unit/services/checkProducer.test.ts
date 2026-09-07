@@ -28,6 +28,7 @@ const createProducer = (overrides?: Record<string, any>) => {
 		networkService: { requestStatus: jest.fn().mockResolvedValue({ monitorId: "m1", status: true, code: 200, message: "OK" }) },
 		proxyResolver: { resolve: jest.fn().mockResolvedValue(undefined) },
 		buffer: { addToBuffer: jest.fn() },
+		dockerLogsService: { buildDockerLogs: jest.fn().mockResolvedValue([]) },
 		...overrides,
 	};
 	const producer = new CheckProducer(
@@ -37,6 +38,7 @@ const createProducer = (overrides?: Record<string, any>) => {
 		defaults.networkService as any,
 		defaults.proxyResolver as any,
 		defaults.buffer as any,
+		defaults.dockerLogsService as any,
 		defaults.logger as any
 	);
 	return { producer, defaults };
@@ -141,5 +143,29 @@ describe("CheckProducer", () => {
 
 		expect(defaults.buffer.addToBuffer).toHaveBeenCalledWith(check);
 		expect(result).toEqual({ status, check });
+	});
+
+	it("builds and buffers docker logs for a docker status", async () => {
+		const status = { type: "docker", monitorId: "m1", teamId: "team", status: true, code: 200, message: "OK", payload: {} };
+		const dockerLogs = [{ id: "docker-log-1" }, { id: "docker-log-2" }];
+		const { producer, defaults } = createProducer({
+			networkService: { requestStatus: jest.fn().mockResolvedValue(status) },
+			buffer: { addToBuffer: jest.fn(), addDockerLogToBuffer: jest.fn() },
+			dockerLogsService: { buildDockerLogs: jest.fn().mockResolvedValue(dockerLogs) },
+		});
+
+		await producer.produce(makeMonitor({ type: "docker" }));
+
+		expect(defaults.dockerLogsService.buildDockerLogs).toHaveBeenCalledWith(status);
+		expect(defaults.buffer.addDockerLogToBuffer).toHaveBeenNthCalledWith(1, dockerLogs[0]);
+		expect(defaults.buffer.addDockerLogToBuffer).toHaveBeenNthCalledWith(2, dockerLogs[1]);
+	});
+
+	it("does not build docker logs for a non-docker status", async () => {
+		const { producer, defaults } = createProducer();
+
+		await producer.produce(makeMonitor());
+
+		expect(defaults.dockerLogsService.buildDockerLogs).not.toHaveBeenCalled();
 	});
 });

@@ -10,6 +10,7 @@ import type {
 	CheckMemoryInfo,
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
+	DockerContainerStats,
 	GotTimings,
 	HardwareCheckStats,
 } from "@/domain/checks/check.type.js";
@@ -24,7 +25,14 @@ import { getHardwareUpChecks, getHardwareStats, getHardwareTotalChecks } from "@
 import { CheckFilter, DateRange } from "@/types/query.js";
 import { AppError } from "@/utils/AppError.js";
 import { NETWORK_ERROR } from "@/types/network.js";
-import { getDockerLatestCheck, getDockerStats, getDockerTotalChecks, getDockerUpChecks } from "@/domain/checks/check.docker.aggregation.js";
+import {
+	getDockerContainerLatestCheck,
+	getDockerContainerStats,
+	getDockerLatestCheck,
+	getDockerStats,
+	getDockerTotalChecks,
+	getDockerUpChecks,
+} from "@/domain/checks/check.docker.aggregation.js";
 
 const SERVICE_NAME = "ChecksRepository";
 
@@ -309,6 +317,30 @@ class MongoChecksRepository implements IChecksRepository {
 			return this.findDockerDateRangeChecks(monitorObjectId, start, end, dateString);
 		}
 		return this.findUptimeDateRangeChecks(options?.type ?? "http", monitorObjectId, start, end, dateString);
+	};
+
+	findDockerContainerChecks = async (
+		monitorId: string,
+		containerName: string,
+		dateRange: DateRange
+	): Promise<Omit<DockerContainerStats, "restartsInRange">> => {
+		const dates = { start: getDateForRange(dateRange), end: new Date() };
+		const dateString = getDateFormat(dateRange);
+		const [aggregate, latestDoc] = await Promise.all([
+			getDockerContainerStats(monitorId, containerName, dates, dateString),
+			getDockerContainerLatestCheck(monitorId, containerName),
+		]);
+		const latestContainer = latestDoc?.containers?.find((c) => c.name === containerName);
+		return {
+			aggregate,
+			latest:
+				latestDoc && latestContainer
+					? {
+							container: latestContainer,
+							checkedAt: toDateString(latestDoc.createdAt),
+						}
+					: null,
+		};
 	};
 
 	findSummaryByTeamId = async (teamId: string, dateRange: DateRange) => {

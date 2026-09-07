@@ -182,7 +182,13 @@
 				"maintenance": "การบำรุงรักษา",
 				"logs": "บันทึก",
 				"settings": "การตั้งค่า",
-				"dashboard": "แดชบอร์ด"
+				"dashboard": "แดชบอร์ด",
+				"groups": {
+					"monitoring": "การตรวจสอบ",
+					"alerting": "การแจ้งเตือน",
+					"reporting": "รายงาน",
+					"configuration": "การกำหนดค่า"
+				}
 			},
 			"bottomMenu": {
 				"support": "การสนับสนุน",
@@ -1282,6 +1288,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "ทั่วไป",
+				"monitoring": "การตรวจสอบ",
+				"email": "อีเมล",
+				"integrations": "การเชื่อมต่อ",
+				"data": "ข้อมูล"
+			},
 			"form": {
 				"timezone": {
 					"title": "เขตเวลาที่แสดง",
