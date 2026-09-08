@@ -21,7 +21,11 @@ export const createMonitorRoutes = (monitorController: IMonitorController): Rout
 	// Docker routes
 	router.get("/docker/details/:monitorId", monitorController.getDockerDetailsById);
 	router.get("/docker/details/:monitorId/containers/:containerName", monitorController.getDockerContainerByName);
-	router.get("/docker/details/:monitorId/containers/:containerName/logs", monitorController.getDockerContainerLogs);
+	router.get(
+		"/docker/details/:monitorId/containers/:containerName/logs",
+		isAllowed(["admin", "superadmin"]),
+		monitorController.getDockerContainerLogs
+	);
 
 	// Geo checks routes
 	router.get("/:monitorId/geo-checks", monitorController.getGeoChecksByMonitorId);

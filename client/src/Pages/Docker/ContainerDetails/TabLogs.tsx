@@ -23,6 +23,7 @@ import {
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/Hooks/UseToast";
+import { useIsAdmin } from "@/Hooks/useIsAdmin";
 
 // Utils
 import { get } from "@/Utils/ApiClient";
@@ -50,6 +51,7 @@ export const TabLogs = ({ monitorId, containerName, enabled }: TabLogsProps) => 
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const { toastError } = useToast();
+	const isAdmin = useIsAdmin();
 
 	// logs is newest-first, matching the API and what flattenDockerLogs expects.
 	const [logs, setLogs] = useState<DockerLog[]>([]);
@@ -59,7 +61,7 @@ export const TabLogs = ({ monitorId, containerName, enabled }: TabLogsProps) => 
 	const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(null);
 
 	const logsUrl =
-		enabled && monitorId && containerName
+		isAdmin && enabled && monitorId && containerName
 			? `/monitors/docker/details/${encodeURIComponent(monitorId)}/containers/${encodeURIComponent(containerName)}/logs`
 			: null;
 
@@ -167,6 +169,15 @@ export const TabLogs = ({ monitorId, containerName, enabled }: TabLogsProps) => 
 			setLoadingOlder(false);
 		}
 	}, [logsUrl, oldestCursor, loadingOlder, t, toastError]);
+
+	if (!isAdmin) {
+		return (
+			<EmptyState
+				title={t("pages.docker.container.logs.forbidden.title")}
+				description={t("pages.docker.container.logs.forbidden.description")}
+			/>
+		);
+	}
 
 	if (!enabled) {
 		return (
