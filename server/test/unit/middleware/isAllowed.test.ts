@@ -8,7 +8,7 @@ describe("isAllowed middleware", () => {
 		const middleware = isAllowed(["admin", "superadmin"]);
 		const req = {
 			user: {
-				userId: "user-1",
+				id: "user-1",
 				teamId: "team-1",
 				email: "admin@example.com",
 				role: ["admin"],
@@ -26,7 +26,7 @@ describe("isAllowed middleware", () => {
 		const middleware = isAllowed(["admin", "superadmin"]);
 		const req = {
 			user: {
-				userId: "user-2",
+				id: "user-2",
 				teamId: "team-1",
 				email: "user@example.com",
 				role: ["user"],
@@ -63,7 +63,7 @@ describe("isAllowed middleware", () => {
 		const middleware = isAllowed(["admin", "superadmin"]);
 		const req = {
 			user: {
-				userId: "user-3",
+				id: "user-3",
 				teamId: "team-1",
 				email: "multi@example.com",
 				role: ["user", "admin"],
