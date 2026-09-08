@@ -985,6 +985,10 @@
 						"title": "Log collection is off for this host",
 						"description": "Turn on container logs in the monitor settings to start collecting.",
 						"action": "Configure monitor"
+					},
+					"forbidden": {
+						"title": "You don't have access to container logs",
+						"description": "Only administrators can view logs. Ask an administrator for access if you need to see them."
 					}
 				}
 			},
