@@ -61,7 +61,7 @@ export const TabLogs = ({ monitorId, containerName, enabled }: TabLogsProps) => 
 	const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(null);
 
 	const logsUrl =
-		enabled && monitorId && containerName
+		isAdmin && enabled && monitorId && containerName
 			? `/monitors/docker/details/${encodeURIComponent(monitorId)}/containers/${encodeURIComponent(containerName)}/logs`
 			: null;
 
