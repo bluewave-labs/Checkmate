@@ -37,6 +37,7 @@ const NotificationSchema = new Schema<NotificationDocument>(
 				"teams",
 				"telegram",
 				"pushover",
+				"signalgrid",
 				"twilio",
 				"ntfy",
 			] as NotificationChannel[],
