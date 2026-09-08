@@ -213,7 +213,18 @@ export const TabLogs = ({ monitorId, containerName, enabled }: TabLogsProps) => 
 				maxHeight="50vh"
 				overflow="auto"
 				padding={LAYOUT.MD}
-				sx={{ overflowAnchor: "none" }}
+				sx={{
+					overflowAnchor: "none",
+					scrollbarWidth: "thin",
+					scrollbarColor: `${theme.palette.divider} transparent`,
+					"&::-webkit-scrollbar": { width: 6, height: 6 },
+					"&::-webkit-scrollbar-track": { background: "transparent" },
+					"&::-webkit-scrollbar-thumb": {
+						background: theme.palette.divider,
+						borderRadius: 3,
+					},
+					"&::-webkit-scrollbar-button": { display: "none" },
+				}}
 			>
 				{rows.length > 0 && (
 					<Stack
