@@ -7,8 +7,8 @@ export type QueueMode = (typeof QueueModes)[number];
 export const LogLevels = ["error", "warn", "info", "debug"] as const;
 export type LogLevel = (typeof LogLevels)[number];
 
-// Rendered into GET /config.js as window.__CHECKMATE_CONFIG__; keys left unset
-// fall back to the client's same-origin defaults.
+// Rendered into GET /config.js as window.__CHECKMATE_CONFIG__. API and logging
+// keys may be omitted; clientHost is populated from the canonical CLIENT_HOST.
 export type ClientRuntimeConfig = {
 	apiBaseUrl?: string;
 	clientHost?: string;

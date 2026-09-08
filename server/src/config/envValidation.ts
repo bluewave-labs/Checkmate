@@ -25,8 +25,8 @@ const envSchema = z.object({
 	// Client Configuration
 	CLIENT_HOST: z.string().url("CLIENT_HOST must be a valid URL"),
 
-	// Client runtime config overrides, rendered into GET /config.js; unset keys are
-	// omitted and the client uses its same-origin defaults
+	// Client runtime config overrides rendered into GET /config.js. The canonical
+	// client host falls back to CLIENT_HOST so custom domains can identify the app.
 	CLIENT_CONFIG_API_BASE_URL: z.string().optional(),
 	CLIENT_CONFIG_CLIENT_HOST: z.string().url("CLIENT_CONFIG_CLIENT_HOST must be a valid URL").optional(),
 	CLIENT_CONFIG_LOG_LEVEL: z.enum(LogLevels).optional(),
@@ -72,7 +72,7 @@ export const validateEnv = (logger: ILogger): ValidatedEnv => {
 	const legacyClientVars = Object.keys(process.env).filter((key) => key.startsWith("UPTIME_APP_"));
 	if (legacyClientVars.length > 0) {
 		logger.warn({
-			message: `${legacyClientVars.join(", ")} no longer configure the client and will be ignored. The client defaults to the origin it is served from; to override, use CLIENT_CONFIG_API_BASE_URL, CLIENT_CONFIG_CLIENT_HOST, or CLIENT_CONFIG_LOG_LEVEL.`,
+			message: `${legacyClientVars.join(", ")} no longer configure the client and will be ignored. The client uses a same-origin API by default and CLIENT_HOST as its canonical origin; to override, use CLIENT_CONFIG_API_BASE_URL, CLIENT_CONFIG_CLIENT_HOST, or CLIENT_CONFIG_LOG_LEVEL.`,
 			method: "validateEnv",
 			service: "Server",
 		});
