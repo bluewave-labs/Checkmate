@@ -60,7 +60,7 @@ const computeRestartsInRange = (aggregate: DockerContainerStatsBucket[]): number
 
 export interface IMonitorService {
 	// create
-	createMonitor(teamId: string, userId: string, body: Partial<Monitor>): Promise<void>;
+	createMonitor(teamId: string, userId: string, body: Partial<Monitor>): Promise<Monitor>;
 	createMonitors(monitors: Array<Monitor>): Promise<Monitor[] | null>;
 	addDemoMonitors(args: { userId: string; teamId: string }): Promise<Monitor[]>;
 
@@ -180,7 +180,7 @@ export class MonitorService implements IMonitorService {
 		this.incidentsRepository = incidentsRepository;
 	}
 
-	createMonitor = async (teamId: string, userId: string, body: Monitor): Promise<void> => {
+	createMonitor = async (teamId: string, userId: string, body: Monitor): Promise<Monitor> => {
 		// proxyId is only needed in custom mode
 		if (body.proxyMode !== "custom") {
 			delete body.proxyId;
@@ -191,6 +191,7 @@ export class MonitorService implements IMonitorService {
 		}
 
 		this.scheduler.addJob(monitor.id, monitor);
+		return monitor;
 	};
 
 	createMonitors = async (monitors: Array<Monitor>): Promise<Monitor[] | null> => {
