@@ -80,10 +80,6 @@ export function DataTable<
 
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 
-	// Selecting text inside a row ends in a mouseup on that row, which would
-	// otherwise navigate away and take the text with it. Ignore the click when
-	// the selection is inside the row that was clicked - a leftover selection
-	// elsewhere on the page must not swallow a legitimate click.
 	const hasTextSelectionWithin = (element: Element) => {
 		const selection = window.getSelection();
 		if (!selection || selection.isCollapsed || !selection.toString().trim()) {
