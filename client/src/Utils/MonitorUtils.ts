@@ -40,6 +40,14 @@ export const getStatusPalette = (status: MonitorStatus): PaletteKey => {
 	return "warning";
 };
 
+export const getDockerPalette = (dockerState: DockerContainerState): PaletteKey => {
+	if (dockerState === "created") return "success";
+	if (dockerState === "running") return "success";
+	if (dockerState === "dead") return "error";
+	if (dockerState === "exited") return "error";
+	return "warning";
+};
+
 export const getValuePalette = (value: ValueType): PaletteKey => {
 	const paletteMap: Record<ValueType, PaletteKey> = {
 		positive: "success",
