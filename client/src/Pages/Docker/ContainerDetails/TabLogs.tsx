@@ -38,7 +38,7 @@ interface TabLogsProps {
 
 const SCROLL_PIN_THRESHOLD_PX = 8;
 const TAIL_POLL_MS = 10_000;
-const SCROLLBAR_SIZE = 10;
+const SCROLLBAR_SIZE = 16;
 
 const isScrolledToBottom = (el: HTMLElement) =>
 	el.scrollHeight - el.scrollTop - el.clientHeight <= SCROLL_PIN_THRESHOLD_PX;
