@@ -216,14 +216,18 @@ export const TabLogs = ({ monitorId, containerName, enabled }: TabLogsProps) => 
 				sx={{
 					overflowAnchor: "none",
 					scrollbarWidth: "thin",
-					scrollbarColor: `${theme.palette.divider} transparent`,
-					"&::-webkit-scrollbar": { width: 6, height: 6 },
+					scrollbarColor: "#11715b transparent",
+					"&::-webkit-scrollbar": { width: 8, height: 8 },
 					"&::-webkit-scrollbar-track": { background: "transparent" },
 					"&::-webkit-scrollbar-thumb": {
-						background: theme.palette.divider,
+						background: "#11715b",
 						borderRadius: 3,
 					},
-					"&::-webkit-scrollbar-button": { display: "none" },
+					"&::-webkit-scrollbar-button": {
+						backgroundColor: "#11715b",
+						width: 8,
+						height: 8,
+					},
 				}}
 			>
 				{rows.length > 0 && (
