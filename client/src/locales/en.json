@@ -80,7 +80,9 @@
 				"avg": "Avg: {{value}}",
 				"max": "Max: {{value}}",
 				"responseTime": "Response time: {{value}}",
-				"total": "Total: {{value}}"
+				"total": "Total: {{value}}",
+				"avgCpuUsage": "Average CPU usage: {{value}}",
+				"avgMemoryUsage": "Average memory usage: {{value}}"
 			},
 			"phases": {
 				"dns": "DNS",
