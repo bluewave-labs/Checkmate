@@ -21,7 +21,7 @@ const TAB_MAP = {
 	logs: 1,
 } as const;
 
-const DockerDetailsPage = ({ open = "logs" }: DockerContainerDetailsProps) => {
+const DockerDetailsPage = ({ open = "overview" }: DockerContainerDetailsProps) => {
 	const [activeTab, setActiveTab] = useState<number>(TAB_MAP[open]);
 	const [dateRange, setDateRange] = useState<DateRange>("recent");
 	const { monitorId, containerName } = useParams<{
@@ -69,7 +69,12 @@ const DockerDetailsPage = ({ open = "logs" }: DockerContainerDetailsProps) => {
 				<Tab label={t("pages.docker.container.tabs.overview")} />
 				<Tab label={t("pages.docker.container.tabs.logs")} />
 			</Tabs>
-			{activeTab === 0 && <TabOverview stats={stats} />}
+			{activeTab === 0 && (
+				<TabOverview
+					stats={stats}
+					range={dateRange}
+				/>
+			)}
 			{activeTab === 1 && (
 				<TabLogs
 					monitorId={monitorId}
