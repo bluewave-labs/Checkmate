@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { CardId } from "@/Pages/Dashboard/cards";
 
 type ThemeMode = "light" | "dark";
 type ChartType = "histogram" | "line";
@@ -35,6 +36,7 @@ interface UIState {
 	language: string;
 	starPromptOpen: boolean;
 	chartType: ChartType;
+	dashboardCards: CardId[] | null;
 }
 
 const initialMode: ThemeMode = window?.matchMedia?.("(prefers-color-scheme: dark)")
@@ -74,6 +76,7 @@ const initialState: UIState = {
 	language: "en",
 	starPromptOpen: true,
 	chartType: "histogram",
+	dashboardCards: null,
 };
 
 const uiSlice = createSlice({
@@ -117,6 +120,9 @@ const uiSlice = createSlice({
 		setChartType: (state, action: PayloadAction<ChartType>) => {
 			state.chartType = action.payload;
 		},
+		setDashboardCards: (state, action: PayloadAction<CardId[] | null>) => {
+			state.dashboardCards = action.payload;
+		},
 	},
 });
 
@@ -133,4 +139,5 @@ export const {
 	setLanguage,
 	setStarPromptOpen,
 	setChartType,
+	setDashboardCards,
 } = uiSlice.actions;
