@@ -10,8 +10,8 @@ import { IEmailService } from "@/service/emailService.js";
 const SERVICE_NAME = "inviteService";
 
 export interface IInviteService {
-	getInviteToken(params: { invite: Partial<Invite>; teamId: string; userRoles: UserRole[] }): Promise<Invite>;
-	sendInviteEmail(params: { invite: Partial<Invite>; firstName: string; userRoles: UserRole[] }): Promise<void>;
+	getInviteToken(params: { invite: Partial<Invite>; teamId: string; userRoles: UserRole[]; expiresInHours?: number }): Promise<Invite>;
+	sendInviteEmail(params: { invite: Partial<Invite>; firstName: string; userRoles: UserRole[]; expiresInHours?: number }): Promise<void>;
 	verifyInviteToken(params: { inviteToken: string }): Promise<Invite>;
 	getInvites(params: { teamId: string }): Promise<InviteSummary[]>;
 	updateInviteExpiry(params: { id: string; teamId: string; expiresInHours: number; userRoles: UserRole[] }): Promise<InviteSummary>;
@@ -38,7 +38,17 @@ export class InviteService implements IInviteService {
 		this.emailService = emailService;
 	}
 
-	getInviteToken = async ({ invite, teamId, userRoles }: { invite: Partial<Invite>; teamId: string; userRoles: UserRole[] }) => {
+	getInviteToken = async ({
+		invite,
+		teamId,
+		userRoles,
+		expiresInHours,
+	}: {
+		invite: Partial<Invite>;
+		teamId: string;
+		userRoles: UserRole[];
+		expiresInHours?: number;
+	}) => {
 		invite.teamId = teamId;
 
 		const inviteRoles = invite.role ?? [];
@@ -55,11 +65,21 @@ export class InviteService implements IInviteService {
 			}
 		}
 
-		const inviteToken = await this.invitesRepository.create(invite);
+		const inviteToken = await this.invitesRepository.create(invite, expiresInHours);
 		return inviteToken;
 	};
 
-	sendInviteEmail = async ({ invite, firstName, userRoles }: { invite: Partial<Invite>; firstName: string; userRoles: UserRole[] }) => {
+	sendInviteEmail = async ({
+		invite,
+		firstName,
+		userRoles,
+		expiresInHours,
+	}: {
+		invite: Partial<Invite>;
+		firstName: string;
+		userRoles: UserRole[];
+		expiresInHours?: number;
+	}) => {
 		const inviteRoles = invite.role ?? [];
 		if (!invite.email) {
 			throw new AppError({
@@ -82,7 +102,7 @@ export class InviteService implements IInviteService {
 			}
 		}
 
-		const inviteToken = await this.invitesRepository.create(invite);
+		const inviteToken = await this.invitesRepository.create(invite, expiresInHours);
 		const { clientHost } = this.settingsService.getSettings();
 
 		const html = await this.emailService.buildEmail("employeeActivationTemplate", {

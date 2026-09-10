@@ -50,6 +50,18 @@ describe("MongoInvitesRepository", () => {
 
 			expect(expiryIndex?.expireAfterSeconds).toBe(0);
 		});
+
+		it("honors a custom expiresInHours instead of the default", async () => {
+			const repo = new MongoInvitesRepository();
+			const teamId = makeId();
+			const before = Date.now();
+
+			const invite = await repo.create({ email: "new@example.com", role: ["user"], teamId }, 72);
+
+			const expiryMs = new Date(invite.expiry).getTime();
+			expect(expiryMs).toBeGreaterThanOrEqual(before + 72 * HOUR_IN_MS);
+			expect(expiryMs).toBeLessThan(before + 72 * HOUR_IN_MS + 5000);
+		});
 	});
 
 	describe("findByTeamId", () => {

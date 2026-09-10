@@ -20,10 +20,11 @@ class MongoInvitesRepository implements IInvitesRepository {
 		};
 	};
 
-	create = async (invite: Partial<Invite>) => {
+	create = async (invite: Partial<Invite>, expiresInHours?: number) => {
 		await InviteModel.deleteMany({ email: invite.email });
 		invite.token = crypto.randomBytes(32).toString("hex");
-		invite.expiry = new Date(Date.now() + DEFAULT_INVITE_EXPIRY_HOURS * HOUR_IN_MS).toISOString();
+		const hours = expiresInHours ?? DEFAULT_INVITE_EXPIRY_HOURS;
+		invite.expiry = new Date(Date.now() + hours * HOUR_IN_MS).toISOString();
 		const inviteToken = await InviteModel.create(invite);
 		return this.toEntity(inviteToken);
 	};

@@ -51,8 +51,17 @@ describe("InviteService", () => {
 
 			const result = await service.getInviteToken({ invite, teamId: "team-1", userRoles: ["superadmin"] });
 
-			expect(invitesRepository.create).toHaveBeenCalledWith(expect.objectContaining({ email: "new@example.com", teamId: "team-1" }));
+			expect(invitesRepository.create).toHaveBeenCalledWith(expect.objectContaining({ email: "new@example.com", teamId: "team-1" }), undefined);
 			expect(result).toEqual(makeInvite());
+		});
+
+		it("forwards a custom expiresInHours to the repository", async () => {
+			const { service, invitesRepository } = createService();
+			const invite: Partial<Invite> = { email: "new@example.com", role: ["user"] };
+
+			await service.getInviteToken({ invite, teamId: "team-1", userRoles: ["superadmin"], expiresInHours: 72 });
+
+			expect(invitesRepository.create).toHaveBeenCalledWith(expect.objectContaining({ email: "new@example.com" }), 72);
 		});
 
 		it("allows creation when role is undefined (defaults to empty)", async () => {
@@ -84,7 +93,7 @@ describe("InviteService", () => {
 				userRoles: ["superadmin"],
 			});
 
-			expect(invitesRepository.create).toHaveBeenCalledWith(expect.objectContaining({ email: "new@example.com" }));
+			expect(invitesRepository.create).toHaveBeenCalledWith(expect.objectContaining({ email: "new@example.com" }), undefined);
 			expect(settingsService.getSettings).toHaveBeenCalled();
 			expect(emailService.buildEmail).toHaveBeenCalledWith("employeeActivationTemplate", {
 				name: "Test",
@@ -115,6 +124,19 @@ describe("InviteService", () => {
 			await service.sendInviteEmail({ invite: { email: "new@example.com" }, firstName: "Test", userRoles: ["user"] });
 
 			expect(emailService.sendEmail).toHaveBeenCalled();
+		});
+
+		it("forwards a custom expiresInHours to the repository", async () => {
+			const { service, invitesRepository } = createService();
+
+			await service.sendInviteEmail({
+				invite: { email: "new@example.com", role: ["user"] },
+				firstName: "Test",
+				userRoles: ["superadmin"],
+				expiresInHours: 168,
+			});
+
+			expect(invitesRepository.create).toHaveBeenCalledWith(expect.objectContaining({ email: "new@example.com" }), 168);
 		});
 
 		it("throws 500 when buildEmail returns falsy", async () => {

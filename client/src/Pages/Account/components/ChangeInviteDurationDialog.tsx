@@ -4,14 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Dialog, Select } from "@/Components/inputs";
 import { usePatch } from "@/Hooks/UseApi";
 import type { Invite } from "@/Types/Invite";
-
-const DURATION_OPTIONS: { hours: number; labelKey: string }[] = [
-	{ hours: 1, labelKey: "oneHour" },
-	{ hours: 24, labelKey: "oneDay" },
-	{ hours: 24 * 3, labelKey: "threeDays" },
-	{ hours: 24 * 7, labelKey: "oneWeek" },
-	{ hours: 24 * 30, labelKey: "thirtyDays" },
-];
+import { INVITE_DURATION_OPTIONS } from "@/Utils/inviteDurationOptions";
 
 interface ChangeInviteDurationDialogProps {
 	invite: Invite | null;
@@ -25,12 +18,12 @@ export const ChangeInviteDurationDialog = ({
 	onSuccess,
 }: ChangeInviteDurationDialogProps) => {
 	const { t } = useTranslation();
-	const [expiresInHours, setExpiresInHours] = useState<number>(DURATION_OPTIONS[0].hours);
+	const [expiresInHours, setExpiresInHours] = useState<number>(INVITE_DURATION_OPTIONS[0].hours);
 	const { patch, loading } = usePatch<{ expiresInHours: number }, Invite>();
 
 	useEffect(() => {
 		if (invite) {
-			setExpiresInHours(DURATION_OPTIONS[0].hours);
+			setExpiresInHours(INVITE_DURATION_OPTIONS[0].hours);
 		}
 	}, [invite]);
 
@@ -64,15 +57,15 @@ export const ChangeInviteDurationDialog = ({
 			<Select
 				value={expiresInHours}
 				onChange={(e) => setExpiresInHours(Number(e.target.value))}
-				fieldLabel={t("pages.account.team.invites.changeDuration.durationLabel")}
+				fieldLabel={t("pages.account.team.invites.durationLabel")}
 				fullWidth
 			>
-				{DURATION_OPTIONS.map((option) => (
+				{INVITE_DURATION_OPTIONS.map((option) => (
 					<MenuItem
 						key={option.hours}
 						value={option.hours}
 					>
-						{t(`pages.account.team.invites.changeDuration.durations.${option.labelKey}`)}
+						{t(`pages.account.team.invites.durations.${option.labelKey}`)}
 					</MenuItem>
 				))}
 			</Select>

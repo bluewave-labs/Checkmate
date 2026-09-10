@@ -2,7 +2,7 @@ import type { Invite } from "@/domain/invites/invite.type.js";
 
 export interface IInvitesRepository {
 	// create
-	create(invite: Partial<Invite>): Promise<Invite>;
+	create(invite: Partial<Invite>, expiresInHours?: number): Promise<Invite>;
 	// fetch
 	findByToken(token: string): Promise<Invite>;
 	findByTokenAndDelete(token: string): Promise<Invite>;

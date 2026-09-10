@@ -41,10 +41,19 @@ export const newPasswordValidation = z.object({
 	confirm: z.string().optional(),
 });
 
+// Shared by invite creation (optional — falls back to DEFAULT_INVITE_EXPIRY_HOURS) and
+// the "change duration" update (required), so the bounds only live in one place.
+const expiresInHoursValidation = z
+	.number()
+	.int("Expiry duration must be a whole number of hours")
+	.min(MIN_INVITE_EXPIRY_HOURS, `Expiry duration must be at least ${MIN_INVITE_EXPIRY_HOURS} hour`)
+	.max(MAX_INVITE_EXPIRY_HOURS, `Expiry duration must be at most ${MAX_INVITE_EXPIRY_HOURS} hours`);
+
 export const inviteBodyValidation = z.object({
 	email: z.email("Must be a valid email address"),
 	role: z.array(z.enum(UserRoles)).min(1, "At least one role is required"),
 	teamId: z.string().min(1, "Team ID is required"),
+	expiresInHours: expiresInHoursValidation.optional(),
 });
 
 export const inviteVerificationBodyValidation = z.object({
@@ -56,9 +65,5 @@ export const inviteIdParamValidation = z.object({
 });
 
 export const updateInviteExpiryBodyValidation = z.object({
-	expiresInHours: z
-		.number()
-		.int("Expiry duration must be a whole number of hours")
-		.min(MIN_INVITE_EXPIRY_HOURS, `Expiry duration must be at least ${MIN_INVITE_EXPIRY_HOURS} hour`)
-		.max(MAX_INVITE_EXPIRY_HOURS, `Expiry duration must be at most ${MAX_INVITE_EXPIRY_HOURS} hours`),
+	expiresInHours: expiresInHoursValidation,
 });

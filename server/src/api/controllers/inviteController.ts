@@ -29,7 +29,8 @@ class InviteController implements IInviteController {
 		const invite = req.body;
 		invite.teamId = teamId;
 		inviteBodyValidation.parse(invite);
-		const inviteToken = await this.inviteService.getInviteToken({ invite, teamId, userRoles });
+		const { expiresInHours, ...inviteData } = invite;
+		const inviteToken = await this.inviteService.getInviteToken({ invite: inviteData, teamId, userRoles, expiresInHours });
 		return res.status(200).json({
 			success: true,
 			msg: "Invite token generated successfully",
@@ -45,11 +46,13 @@ class InviteController implements IInviteController {
 		const inviteRequest = req.body;
 		inviteRequest.teamId = teamId;
 		inviteBodyValidation.parse(inviteRequest);
+		const { expiresInHours, ...inviteData } = inviteRequest;
 
 		const inviteToken = await this.inviteService.sendInviteEmail({
-			invite: inviteRequest,
+			invite: inviteData,
 			firstName,
 			userRoles,
+			expiresInHours,
 		});
 		return res.status(200).json({
 			success: true,
