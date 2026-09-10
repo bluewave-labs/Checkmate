@@ -26,6 +26,8 @@ import Dockerode from "dockerode";
 import { timeRequest } from "@/service/network/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 import { IEncryptionService } from "@/service/encryptionService.js";
+import { DOCKER_TLS_URL, isDockerTlsUrl } from "@/utils/dockerHost.js";
+import { splitCertificateBundle } from "@/utils/pem.js";
 
 type DockerodeType = typeof Dockerode;
 type DockerOptions = Dockerode.DockerOptions & { agent?: https.Agent };
@@ -37,8 +39,6 @@ const DOCKER_LOG_MAX_LINE_BYTES = 4096;
 const DOCKER_LOG_TRUNCATION_MARKER = " …[truncated]";
 const DOCKER_LOG_TS_REGEX = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{1,9}))?Z /;
 const DOCKER_TLS_DEFAULT_PORT = 2376;
-const DOCKER_TLS_URL = /^(tcp|https):\/\/([^/\s:]+)(?::(\d+))?\/?$/;
-const PEM_CERT_BLOCK = /-----BEGIN CERTIFICATE-----[\s\S]*?-----END CERTIFICATE-----/g;
 
 export interface DockerError extends Error {
 	statusCode?: number;
@@ -60,8 +60,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 	}
 
 	private resolveTlsCredentials = (monitor: Monitor, ctx?: CheckContext): TlsCredentials | undefined => {
-		const url = monitor.url?.trim() ?? "";
-		if (!DOCKER_TLS_URL.test(url)) return undefined;
+		if (!isDockerTlsUrl(monitor.url)) return undefined;
 		if (!ctx?.dockerTlsKey) return { ok: false, message: "Docker TLS key is missing" };
 		try {
 			return { ok: true, key: this.encryptionService.decrypt(ctx.dockerTlsKey) };
@@ -79,9 +78,8 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 	}
 
 	private splitCaBundle = (pem: string | undefined): string[] | undefined => {
-		if (!pem) return undefined;
-		const blocks = pem.match(PEM_CERT_BLOCK);
-		return blocks && blocks.length > 0 ? blocks : undefined;
+		const blocks = pem ? splitCertificateBundle(pem) : [];
+		return blocks.length > 0 ? blocks : undefined;
 	};
 
 	private invalidUrl = (message: string) => new AppError({ message, status: 422, service: SERVICE_NAME, method: "toDockerOptions" });

@@ -620,8 +620,23 @@ describe("monitorValidation — Docker host url", () => {
 			expect(parsed.url).toBe("/run/docker.sock");
 		});
 
+		it("accepts tcp:// and https:// engine urls with an optional port and trailing slash", () => {
+			for (const url of ["tcp://host", "tcp://host:2376", "https://host:2377", "tcp://host/"]) {
+				expect(createMonitorBodyValidation.parse({ ...baseDockerBody, url }).url).toBe(url);
+			}
+		});
+
 		it("rejects container names and unsupported engine urls", () => {
-			for (const badUrl of ["my-container", "tcp://host:2375", "https://host", "ssh://deploy@host", "unix://relative/path", ""]) {
+			for (const badUrl of [
+				"my-container",
+				"http://host",
+				"host:2376",
+				"tcp://host/x",
+				"tcp://host:abc",
+				"ssh://deploy@host",
+				"unix://relative/path",
+				"",
+			]) {
 				expect(() => createMonitorBodyValidation.parse({ ...baseDockerBody, url: badUrl })).toThrow();
 			}
 		});
