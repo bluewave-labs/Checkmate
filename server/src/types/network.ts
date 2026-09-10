@@ -162,4 +162,5 @@ export type MonitorStatusResponseOverrides<T> = Partial<Omit<MonitorStatusRespon
 
 export type CheckContext = {
 	proxyUrl?: string;
+	dockerTlsKey?: string;
 };
