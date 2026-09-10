@@ -217,19 +217,19 @@ export const TabLogs = ({ monitorId, containerName, enabled }: TabLogsProps) => 
 				sx={{
 					overflowAnchor: "none",
 					scrollbarWidth: "auto",
-					scrollbarColor: "#11715b rgba(0,0,0,0.1)",
+					scrollbarColor: "#11715b rgba(0,0,0,0.15)",
 					"&::-webkit-scrollbar": {
 						display: "block",
-						width: SCROLLBAR_SIZE,
-						height: SCROLLBAR_SIZE,
+						width: `${SCROLLBAR_SIZE}px`,
+						height: `${SCROLLBAR_SIZE}px`,
 					},
 					"&::-webkit-scrollbar-track": {
-						background: "rgba(0,0,0,0.1)",
-						borderRadius: 2,
+						background: "rgba(0,0,0,0.15)",
+						borderRadius: "2px",
 					},
 					"&::-webkit-scrollbar-thumb": {
 						background: "#11715b",
-						borderRadius: 2,
+						borderRadius: "2px",
 					},
 					"&::-webkit-scrollbar-button": { display: "none" },
 				}}
