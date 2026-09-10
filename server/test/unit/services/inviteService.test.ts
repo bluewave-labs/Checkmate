@@ -21,6 +21,9 @@ const createService = (overrides?: Record<string, unknown>) => {
 	const invitesRepository = {
 		create: jest.fn().mockResolvedValue(makeInvite()),
 		findByToken: jest.fn().mockResolvedValue(makeInvite()),
+		findById: jest.fn().mockResolvedValue(makeInvite()),
+		findByTeamId: jest.fn().mockResolvedValue([makeInvite()]),
+		updateExpiryById: jest.fn().mockResolvedValue(makeInvite()),
 	};
 	const settingsService = {
 		getSettings: jest.fn().mockReturnValue({ clientHost: "http://localhost:5173" }),
@@ -151,6 +154,68 @@ describe("InviteService", () => {
 
 			expect(invitesRepository.findByToken).toHaveBeenCalledWith("invite-token-123");
 			expect(result).toEqual(makeInvite());
+		});
+	});
+
+	// ── getInvites ──────────────────────────────────────────────────────────
+
+	describe("getInvites", () => {
+		it("delegates to repository, scoped by team", async () => {
+			const { service, invitesRepository } = createService();
+
+			const result = await service.getInvites({ teamId: "team-1" });
+
+			expect(invitesRepository.findByTeamId).toHaveBeenCalledWith("team-1");
+			const { token: _token, ...expectedSummary } = makeInvite();
+			expect(result).toEqual([expectedSummary]);
+		});
+
+		it("never returns the invite token (it's a bearer credential for accepting the invite)", async () => {
+			const { service } = createService();
+
+			const [invite] = await service.getInvites({ teamId: "team-1" });
+
+			expect(invite).not.toHaveProperty("token");
+		});
+	});
+
+	// ── updateInviteExpiry ──────────────────────────────────────────────────
+
+	describe("updateInviteExpiry", () => {
+		it("looks up the invite and updates its expiry to now + the requested hours", async () => {
+			const { service, invitesRepository } = createService();
+			const now = new Date("2026-01-01T00:00:00Z").getTime();
+			jest.spyOn(Date, "now").mockReturnValue(now);
+
+			await service.updateInviteExpiry({ id: "inv-1", teamId: "team-1", expiresInHours: 24, userRoles: ["superadmin"] });
+
+			expect(invitesRepository.findById).toHaveBeenCalledWith({ id: "inv-1", teamId: "team-1" });
+			expect(invitesRepository.updateExpiryById).toHaveBeenCalledWith({
+				id: "inv-1",
+				teamId: "team-1",
+				expiry: new Date(now + 24 * 60 * 60 * 1000),
+			});
+
+			jest.restoreAllMocks();
+		});
+
+		it("does not return the invite token", async () => {
+			const { service } = createService();
+
+			const result = await service.updateInviteExpiry({ id: "inv-1", teamId: "team-1", expiresInHours: 24, userRoles: ["superadmin"] });
+
+			expect(result).not.toHaveProperty("token");
+		});
+
+		it("throws 403 when actor cannot manage the invite's role", async () => {
+			const { service, invitesRepository } = createService();
+			invitesRepository.findById.mockResolvedValue(makeInvite({ role: ["superadmin"] }));
+
+			await expect(
+				service.updateInviteExpiry({ id: "inv-1", teamId: "team-1", expiresInHours: 24, userRoles: ["admin"] })
+			).rejects.toThrow("You do not have permission to modify this invite");
+
+			expect(invitesRepository.updateExpiryById).not.toHaveBeenCalled();
 		});
 	});
 });

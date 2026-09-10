@@ -18,7 +18,11 @@ const InviteSchema = new Schema<InviteDocument>(
 		teamId: { type: Schema.Types.ObjectId, ref: "Team", immutable: true, required: true },
 		role: { type: [String], required: true, default: ["user"] },
 		token: { type: String, required: true },
-		expiry: { type: Date, default: Date.now, expires: 3600 },
+		// TTL: Mongo deletes the doc once `expiry` passes (same pattern as docker-log.model.ts).
+		// Previously this used a fixed `expires: 3600` window anchored to creation time, so
+		// every invite expired exactly 1 hour after creation no matter what. Storing the
+		// actual expiry timestamp instead lets each invite carry its own duration.
+		expiry: { type: Date, required: true, index: { expires: 0 } },
 	},
 	{ timestamps: true }
 );

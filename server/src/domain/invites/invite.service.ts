@@ -1,7 +1,8 @@
-import type { Invite } from "@/domain/invites/invite.type.js";
+import type { Invite, InviteSummary } from "@/domain/invites/invite.type.js";
 import type { UserRole } from "@/domain/users/user.type.js";
 import { canManageRole } from "@/domain/users/user.type.js";
 import type { IInvitesRepository } from "@/domain/invites/invite.repository.interface.js";
+import { HOUR_IN_MS } from "@/domain/invites/invite.constants.js";
 import { AppError } from "@/utils/AppError.js";
 import { ISettingsService } from "../app-settings/app-settings.service.js";
 import { IEmailService } from "@/service/emailService.js";
@@ -12,6 +13,8 @@ export interface IInviteService {
 	getInviteToken(params: { invite: Partial<Invite>; teamId: string; userRoles: UserRole[] }): Promise<Invite>;
 	sendInviteEmail(params: { invite: Partial<Invite>; firstName: string; userRoles: UserRole[] }): Promise<void>;
 	verifyInviteToken(params: { inviteToken: string }): Promise<Invite>;
+	getInvites(params: { teamId: string }): Promise<InviteSummary[]>;
+	updateInviteExpiry(params: { id: string; teamId: string; expiresInHours: number; userRoles: UserRole[] }): Promise<InviteSummary>;
 }
 
 export class InviteService implements IInviteService {
@@ -112,4 +115,46 @@ export class InviteService implements IInviteService {
 	verifyInviteToken = async ({ inviteToken }: { inviteToken: string }) => {
 		return await this.invitesRepository.findByToken(inviteToken);
 	};
+
+	// The invite token must never leave this endpoint (see InviteSummary) since it's a
+	// bearer credential for accepting the invite; strip it before returning.
+	getInvites = async ({ teamId }: { teamId: string }): Promise<InviteSummary[]> => {
+		const invites = await this.invitesRepository.findByTeamId(teamId);
+		return invites.map(stripToken);
+	};
+
+	updateInviteExpiry = async ({
+		id,
+		teamId,
+		expiresInHours,
+		userRoles,
+	}: {
+		id: string;
+		teamId: string;
+		expiresInHours: number;
+		userRoles: UserRole[];
+	}) => {
+		const invite = await this.invitesRepository.findById({ id, teamId });
+
+		for (const targetRole of invite.role) {
+			const canManage = userRoles.some((actorRole) => canManageRole(actorRole, targetRole));
+			if (!canManage) {
+				throw new AppError({
+					message: "You do not have permission to modify this invite",
+					service: SERVICE_NAME,
+					method: "updateInviteExpiry",
+					status: 403,
+				});
+			}
+		}
+
+		const expiry = new Date(Date.now() + expiresInHours * HOUR_IN_MS);
+		const updated = await this.invitesRepository.updateExpiryById({ id, teamId, expiry });
+		return stripToken(updated);
+	};
 }
+
+const stripToken = (invite: Invite): InviteSummary => {
+	const { token: _token, ...summary } = invite;
+	return summary;
+};

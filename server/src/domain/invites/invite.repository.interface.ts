@@ -6,8 +6,10 @@ export interface IInvitesRepository {
 	// fetch
 	findByToken(token: string): Promise<Invite>;
 	findByTokenAndDelete(token: string): Promise<Invite>;
+	findById(params: { id: string; teamId: string }): Promise<Invite>;
+	findByTeamId(teamId: string): Promise<Invite[]>;
 	// update
-
+	updateExpiryById(params: { id: string; teamId: string; expiry: Date }): Promise<Invite>;
 	// delete
 	// other
 }

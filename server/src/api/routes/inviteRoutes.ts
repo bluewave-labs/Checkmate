@@ -6,6 +6,8 @@ export const createInviteRoutes = (inviteController: IInviteController, verifyJW
 	const router = Router();
 	router.post("/send", verifyJWT, isAllowed(["admin", "superadmin"]), inviteController.sendInviteEmail);
 	router.post("/verify", inviteController.verifyInviteToken);
+	router.get("/", verifyJWT, isAllowed(["admin", "superadmin"]), inviteController.getInvites);
 	router.post("/", verifyJWT, isAllowed(["admin", "superadmin"]), inviteController.getInviteToken);
+	router.patch("/:id/expiry", verifyJWT, isAllowed(["admin", "superadmin"]), inviteController.updateInviteExpiry);
 	return router;
 };

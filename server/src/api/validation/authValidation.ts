@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { passwordPattern, nameValidation, lowercaseEmailValidation } from "./shared.js";
 import { UserRoles } from "@/domain/users/user.type.js";
+import { MIN_INVITE_EXPIRY_HOURS, MAX_INVITE_EXPIRY_HOURS } from "@/domain/invites/invite.constants.js";
 
 //****************************************
 // Auth Validations
@@ -48,4 +49,16 @@ export const inviteBodyValidation = z.object({
 
 export const inviteVerificationBodyValidation = z.object({
 	token: z.string().min(1, "Token is required"),
+});
+
+export const inviteIdParamValidation = z.object({
+	id: z.string().min(1, "Invite ID is required"),
+});
+
+export const updateInviteExpiryBodyValidation = z.object({
+	expiresInHours: z
+		.number()
+		.int("Expiry duration must be a whole number of hours")
+		.min(MIN_INVITE_EXPIRY_HOURS, `Expiry duration must be at least ${MIN_INVITE_EXPIRY_HOURS} hour`)
+		.max(MAX_INVITE_EXPIRY_HOURS, `Expiry duration must be at most ${MAX_INVITE_EXPIRY_HOURS} hours`),
 });

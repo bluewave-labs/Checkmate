@@ -1,6 +1,11 @@
 import { Request, Response, RequestHandler } from "express";
 import { catchAsync } from "@/utils/catchAsync.js";
-import { inviteBodyValidation, inviteVerificationBodyValidation } from "@/api/validation/authValidation.js";
+import {
+	inviteBodyValidation,
+	inviteVerificationBodyValidation,
+	inviteIdParamValidation,
+	updateInviteExpiryBodyValidation,
+} from "@/api/validation/authValidation.js";
 import { requireFirstName, requireTeamId, requireUserRoles } from "@/api/controllers/controllerUtils.js";
 import { IInviteService } from "@/domain/invites/invite.service.js";
 
@@ -8,6 +13,8 @@ export interface IInviteController {
 	getInviteToken: RequestHandler;
 	sendInviteEmail: RequestHandler;
 	verifyInviteToken: RequestHandler;
+	getInvites: RequestHandler;
+	updateInviteExpiry: RequestHandler;
 }
 
 class InviteController implements IInviteController {
@@ -57,6 +64,30 @@ class InviteController implements IInviteController {
 		return res.status(200).json({
 			success: true,
 			msg: "Invite verified successfully",
+			data: invite,
+		});
+	});
+
+	getInvites = catchAsync(async (req: Request, res: Response) => {
+		const teamId = requireTeamId(req.user?.teamId);
+		const invites = await this.inviteService.getInvites({ teamId });
+		return res.status(200).json({
+			success: true,
+			msg: "Invites retrieved successfully",
+			data: invites,
+		});
+	});
+
+	updateInviteExpiry = catchAsync(async (req: Request, res: Response) => {
+		const teamId = requireTeamId(req.user?.teamId);
+		const userRoles = requireUserRoles(req.user?.role);
+		const { id } = inviteIdParamValidation.parse(req.params);
+		const { expiresInHours } = updateInviteExpiryBodyValidation.parse(req.body);
+
+		const invite = await this.inviteService.updateInviteExpiry({ id, teamId, expiresInHours, userRoles });
+		return res.status(200).json({
+			success: true,
+			msg: "Invite duration updated successfully",
 			data: invite,
 		});
 	});

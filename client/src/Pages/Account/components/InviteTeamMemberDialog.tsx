@@ -21,11 +21,13 @@ interface InviteResponse {
 interface InviteTeamMemberDialogProps {
 	open: boolean;
 	onClose: () => void;
+	onSuccess?: () => void;
 }
 
 export const InviteTeamMemberDialog = ({
 	open,
 	onClose,
+	onSuccess,
 }: InviteTeamMemberDialogProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -54,12 +56,14 @@ export const InviteTeamMemberDialog = ({
 			const token = result.data.token;
 			const link = `${CLIENT_HOST || window.location.origin}/register/${token}`;
 			setInviteLink(link);
+			onSuccess?.();
 		}
 	};
 
 	const handleSendInvite = async (data: InviteFormData) => {
 		const result = await sendInvite("/invite/send", data);
 		if (result?.success) {
+			onSuccess?.();
 			handleClose();
 		}
 	};
