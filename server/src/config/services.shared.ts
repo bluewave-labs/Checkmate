@@ -1,6 +1,6 @@
 import { Mongoose } from "mongoose";
 import { hostname } from "node:os";
-import { randomUUID } from "node:crypto";
+import * as nodeCrypto from "node:crypto";
 import fs from "fs";
 import path from "path";
 import nodemailer from "nodemailer";
@@ -20,6 +20,7 @@ import { INotificationsService, NotificationsService } from "@/domain/notificati
 import { IEmailService, EmailService } from "@/service/emailService.js";
 import { GlobalPingService } from "@/service/globalPingService.js";
 import { ILogger } from "@/utils/logger.js";
+import { IEncryptionService, EncryptionService } from "@/service/encryptionService.js";
 
 // Notification providers
 import type { NotificationProviderRegistry } from "@/domain/notifications/notification.service.js";
@@ -83,6 +84,7 @@ export interface SharedServices {
 	db: IDb<Mongoose>;
 	settingsService: ISettingsService;
 	emailService: IEmailService;
+	encryptionService: IEncryptionService;
 	notificationMessageBuilder: INotificationMessageBuilder;
 	incidentService: IIncidentService;
 	checkService: ICheckService;
@@ -118,13 +120,18 @@ export const buildShared = async ({
 	logger,
 	envSettings,
 	settingsService,
+	encryptionKeys,
 }: {
 	logger: ILogger;
 	envSettings: EnvConfig;
 	settingsService: ISettingsService;
+	encryptionKeys: Buffer[];
 }): Promise<SharedServices> => {
 	// Shared worker ID
-	const workerId = `${hostname()}:${process.pid}:${randomUUID()}`;
+	const workerId = `${hostname()}:${process.pid}:${nodeCrypto.randomUUID()}`;
+
+	// Create the encryption service
+	const encryptionService = new EncryptionService(encryptionKeys, logger, nodeCrypto);
 
 	// Create DB
 	let db: IDb<Mongoose> | null = null;
@@ -213,6 +220,7 @@ export const buildShared = async ({
 		db,
 		settingsService,
 		emailService,
+		encryptionService,
 		notificationMessageBuilder,
 		incidentService,
 		checkService,
