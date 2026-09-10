@@ -22,7 +22,7 @@ const activeWindow = () => {
 const createProducer = (overrides?: Record<string, any>) => {
 	const defaults = {
 		logger: createMockLogger(),
-		monitorsRepository: { updateById: jest.fn().mockResolvedValue({}) },
+		monitorsRepository: { updateById: jest.fn().mockResolvedValue({}), findDockerTlsKeyById: jest.fn().mockResolvedValue(null) },
 		maintenanceWindowsRepository: { findByMonitorId: jest.fn().mockResolvedValue([]) },
 		checkService: { toCheck: jest.fn().mockReturnValue({ id: "check-1" }) },
 		networkService: { requestStatus: jest.fn().mockResolvedValue({ monitorId: "m1", status: true, code: 200, message: "OK" }) },
@@ -110,6 +110,48 @@ describe("CheckProducer", () => {
 	});
 
 	// ── acquire / record ──────────────────────────────────────────────────────
+
+	// ── docker tls key resolution ─────────────────────────────────────────────
+
+	it("fetches the stored key for a docker monitor with a key set and passes it in the context", async () => {
+		const { producer, defaults } = createProducer({
+			monitorsRepository: { updateById: jest.fn(), findDockerTlsKeyById: jest.fn().mockResolvedValue("v1.abc123.iv.tag.data") },
+		});
+		const monitor = makeMonitor({ type: "docker", url: "tcp://host", dockerTlsKeySet: true });
+
+		await producer.produce(monitor);
+
+		expect(defaults.monitorsRepository.findDockerTlsKeyById).toHaveBeenCalledWith("m1");
+		expect(defaults.networkService.requestStatus).toHaveBeenCalledWith(monitor, { proxyUrl: undefined, dockerTlsKey: "v1.abc123.iv.tag.data" });
+	});
+
+	it("does not fetch a key for a docker monitor without one set", async () => {
+		const { producer, defaults } = createProducer();
+		const monitor = makeMonitor({ type: "docker", url: "unix:///var/run/docker.sock", dockerTlsKeySet: false });
+
+		await producer.produce(monitor);
+
+		expect(defaults.monitorsRepository.findDockerTlsKeyById).not.toHaveBeenCalled();
+		expect(defaults.networkService.requestStatus).toHaveBeenCalledWith(monitor, { proxyUrl: undefined, dockerTlsKey: undefined });
+	});
+
+	it("does not fetch a key for non-docker monitors even if the flag is set", async () => {
+		const { producer, defaults } = createProducer();
+
+		await producer.produce(makeMonitor({ type: "http", dockerTlsKeySet: true }));
+
+		expect(defaults.monitorsRepository.findDockerTlsKeyById).not.toHaveBeenCalled();
+	});
+
+	it("passes undefined when the flag is set but the repository has no key", async () => {
+		const { producer, defaults } = createProducer();
+		const monitor = makeMonitor({ type: "docker", url: "tcp://host", dockerTlsKeySet: true });
+
+		await producer.produce(monitor);
+
+		expect(defaults.monitorsRepository.findDockerTlsKeyById).toHaveBeenCalledWith("m1");
+		expect(defaults.networkService.requestStatus).toHaveBeenCalledWith(monitor, { proxyUrl: undefined, dockerTlsKey: undefined });
+	});
 
 	it("throws when the network response is null", async () => {
 		const { producer } = createProducer({
