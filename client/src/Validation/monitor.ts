@@ -6,6 +6,7 @@ import {
 	HttpMethods,
 	PageSpeedStrategies,
 	ProxyModes,
+	MIN_MONITOR_INTERVAL_MS,
 	type MonitorType,
 } from "@/Types/Monitor";
 import { ALL_HTTP_STATUS_CODES } from "@/Utils/statusCode";
@@ -27,7 +28,8 @@ const baseSchema = z.object({
 	description: z.string().optional(),
 	interval: z
 		.number()
-		.min(15000, "Interval must be at least 15 seconds")
+		.int("Interval must be a whole number of milliseconds")
+		.min(MIN_MONITOR_INTERVAL_MS, "Interval must be at least 10 seconds")
 		.register(monitorStepRegistry, { step: 1 }),
 	notifications: z.array(z.string()).register(monitorStepRegistry, { step: 1 }),
 	tags: z.array(z.string()).register(monitorStepRegistry, { step: 1 }),

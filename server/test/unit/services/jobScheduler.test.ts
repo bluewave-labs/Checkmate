@@ -143,6 +143,21 @@ describe("JobScheduler", () => {
 		});
 	});
 
+	describe("addJob", () => {
+		it("preserves an arbitrary monitor interval in the scheduled job", async () => {
+			const { scheduler, mocks } = createScheduler();
+
+			await scheduler.addJob("m1", makeMonitor({ interval: 75000 }));
+
+			expect(mocks.jobsRepository.upsertJob).toHaveBeenCalledWith(
+				expect.objectContaining({
+					id: "check:m1",
+					intervalMs: 75000,
+				})
+			);
+		});
+	});
+
 	// Regression: a heartbeat upsert racing shutdown's deleteById could resurrect the
 	// registry row, leaving a ghost worker that inflates the alive count until TTL.
 	// shutdown() must await the in-flight beat and issue the delete as the LAST write.
