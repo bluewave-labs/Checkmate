@@ -85,6 +85,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 	const maintenanceWindowService = new MaintenanceWindowService({
 		monitorsRepository,
 		maintenanceWindowsRepository,
+		tagsRepository,
 		jobsRepository,
 		scheduler: jobScheduler,
 	});
@@ -96,7 +97,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 	});
 
 	const statusPageService = new StatusPageService(statusPagesRepository, settingsService, monitorsRepository, checksRepository);
-	const tagsService = new TagsService(tagsRepository, monitorsRepository);
+	const tagsService = new TagsService(tagsRepository, monitorsRepository, maintenanceWindowsRepository);
 	const diagnosticService = new DiagnosticService(db);
 	const proxiesService = new ProxiesService(proxiesRepository, monitorsRepository, settingsService);
 	return {

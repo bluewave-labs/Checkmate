@@ -1,3 +1,4 @@
+import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { logger } from "@/Utils/logger";
@@ -81,6 +82,7 @@ const CreateMaintenanceWindowPage = () => {
 			duration: data.duration,
 			durationUnit: data.durationUnit,
 			monitors: data.monitors,
+			tags: data.tags,
 			start: startDateTime.toISOString(),
 			end: endDateTime.toISOString(),
 			repeat,
@@ -225,6 +227,36 @@ const CreateMaintenanceWindowPage = () => {
 										) : null;
 									})}
 								</Stack>
+							)}
+						/>
+					}
+				/>
+				<ConfigBox
+					title={t("pages.maintenanceWindow.form.startTime.tags.title")}
+					subtitle={t("pages.maintenanceWindow.form.startTime.tags.description")}
+					rightContent={
+						<FormMultiSelectField
+							name="tags"
+							fieldLabel={t(
+								"pages.maintenanceWindow.form.startTime.tags.option.addTags.label"
+							)}
+							placeholder={t(
+								"pages.maintenanceWindow.form.startTime.tags.option.addTags.label"
+							)}
+							options={tags ?? []}
+							renderRow={(tag) => (
+								<Box flexGrow={1}>
+									<ColoredLabel
+										text={tag.name}
+										color={tag.color}
+									/>
+								</Box>
+							)}
+							renderOptionContent={(option) => (
+								<ColoredLabel
+									text={option.name}
+									color={option.color}
+								/>
 							)}
 						/>
 					}

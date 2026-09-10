@@ -1270,6 +1270,15 @@
 								"label": "Add monitors"
 							}
 						}
+					},
+					"tags": {
+						"title": "Tags",
+						"description": "Every monitor carrying one of these tags is also covered, in addition to the monitors selected above",
+						"option": {
+							"addTags": {
+								"label": "Add tags"
+							}
+						}
 					}
 				}
 			},
