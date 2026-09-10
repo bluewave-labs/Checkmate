@@ -298,6 +298,20 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return { monitors: this.mapDocuments(monitors), deletedCount };
 	};
 
+	findDockerTlsKeyById = async (monitorId: string): Promise<string | null> => {
+		const doc = await MonitorModel.findOne({ _id: monitorId }, { dockerTlsKey: 1 }).lean();
+		return doc?.dockerTlsKey ?? null;
+	};
+
+	findAllDockerTlsKeys = async (): Promise<{ id: string; dockerTlsKey: string }[]> => {
+		const docs = await MonitorModel.find({ dockerTlsKeySet: true }, { dockerTlsKey: 1 }).lean();
+		return docs.flatMap((doc) => (doc.dockerTlsKey ? [{ id: doc._id.toString(), dockerTlsKey: doc.dockerTlsKey }] : []));
+	};
+
+	updateDockerTlsKey = async (monitorId: string, dockerTlsKey: string): Promise<void> => {
+		await MonitorModel.updateOne({ _id: monitorId }, { $set: { dockerTlsKey } });
+	};
+
 	findMonitorsSummaryByTeamId = async (teamId: string, config: SummaryConfig): Promise<MonitorsSummary> => {
 		const match = this.queryBuilder(config, teamId);
 		const pipeline = [
