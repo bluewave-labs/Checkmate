@@ -37,7 +37,7 @@ const DOCKER_LOG_MAX_LINE_BYTES = 4096;
 const DOCKER_LOG_TRUNCATION_MARKER = " …[truncated]";
 const DOCKER_LOG_TS_REGEX = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{1,9}))?Z /;
 const DOCKER_TLS_DEFAULT_PORT = 2376;
-const DOCKER_TLS_URL = /^(tcp|https):\/\/([^\/\s:]+)(?::(\d+))?\/?$/;
+const DOCKER_TLS_URL = /^(tcp|https):\/\/([^/\s:]+)(?::(\d+))?\/?$/;
 const PEM_CERT_BLOCK = /-----BEGIN CERTIFICATE-----[\s\S]*?-----END CERTIFICATE-----/g;
 
 export interface DockerError extends Error {
@@ -70,7 +70,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 				const keyId = typeof error.details?.keyId === "string" ? ` (key id ${error.details.keyId})` : "";
 				return { ok: false, message: `${error.message}${keyId}` };
 			}
-			return { ok: false, message: "Docker TLS client key could not be decrypted" };
+			return { ok: false, message: "Docker TLS key could not be decrypted" };
 		}
 	};
 
@@ -93,8 +93,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 		// Unix socket
 		if (url.startsWith("unix://")) {
 			const socketPath = url.slice("unix://".length);
-			if (!socketPath.startsWith("/"))
-				throw new AppError({ message: `Invalid Docker host URL: ${url}`, status: 422, service: SERVICE_NAME, method: "toDockerOptions" });
+			if (!socketPath.startsWith("/")) throw this.invalidUrl(`Invalid Docker host URL: ${url}`);
 			return { socketPath };
 		}
 		if (url.startsWith("/")) return { socketPath: url };
