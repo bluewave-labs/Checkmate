@@ -59,6 +59,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		jobsRepository,
 		queueWorkersRepository,
 		monitorsRepository,
+		encryptionService,
 		checksRepository,
 		geoChecksRepository,
 		dockerLogsRepository,
@@ -76,7 +77,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	const httpProvider = new HttpProvider(got, new AdvancedMatcher(jmespath));
 	const pageSpeedProvider = new PageSpeedProvider(httpProvider, settingsService, logger);
 	const hardwareProvider = new HardwareProvider(httpProvider);
-	const dockerProvider = new DockerProvider(logger, Docker);
+	const dockerProvider = new DockerProvider(logger, Docker, encryptionService);
 	const portProvider = new PortProvider(net);
 	const gameProvider = new GameProvider(logger, GameDig);
 	const grpcProvider = new GrpcProvider(grpc, protoLoader);
