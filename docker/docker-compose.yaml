@@ -9,6 +9,7 @@ services:
       - DB_CONNECTION_STRING=mongodb://mongodb:27017/uptime_db
       - CLIENT_HOST=${CLIENT_HOST:-http://localhost:52345}
       - JWT_SECRET=${JWT_SECRET:?set JWT_SECRET in your environment}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-}
     stop_grace_period: 60s
     healthcheck:
       test:

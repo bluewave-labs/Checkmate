@@ -16,6 +16,7 @@ const makeEnv = (overrides?: Partial<ValidatedEnv>): ValidatedEnv =>
 		DB_CONNECTION_STRING: "mongodb://localhost:27017/test_db",
 		DB_TYPE: "mongodb",
 		STATUS_PAGE_THEMES_ENABLED: false,
+		ENCRYPTION_KEY: [],
 		...overrides,
 	}) as ValidatedEnv;
 
