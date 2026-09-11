@@ -17,7 +17,11 @@ import { useForm, FormProvider, useController } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useStatusPageForm } from "@/Hooks/useStatusPageForm";
 import type { StatusPageFormData } from "@/Validation/statusPage";
-import { statusPageStepCount, statusPageStepFieldsFor } from "@/Validation/statusPage";
+import {
+	splitEmbedAllowedOrigins,
+	statusPageStepCount,
+	statusPageStepFieldsFor,
+} from "@/Validation/statusPage";
 import { useGet, usePost, usePut, useDelete } from "@/Hooks/UseApi";
 import type { Monitor } from "@/Types/Monitor";
 import { SelectableMonitorTypes } from "@/Types/Monitor";
@@ -183,6 +187,14 @@ const CreateStatusPage = () => {
 		} else {
 			fd.append("customDomain", "");
 		}
+		const embedAllowedOrigins = splitEmbedAllowedOrigins(data.embedAllowedOrigins);
+		if (embedAllowedOrigins.length === 0) {
+			// Absent field leaves the stored list alone; an empty entry clears it.
+			fd.append("embedAllowedOrigins[]", "");
+		}
+		embedAllowedOrigins.forEach((origin) => {
+			fd.append("embedAllowedOrigins[]", origin);
+		});
 		if (data.timezone) fd.append("timezone", data.timezone);
 		if (data.color) fd.append("color", data.color);
 		fd.append("showCharts", String(data.showCharts));
@@ -288,6 +300,20 @@ const CreateStatusPage = () => {
 									)}
 									helperText={t(
 										"pages.statusPages.form.basicInfo.option.customDomain.helper"
+									)}
+								/>
+								<FormTextField
+									name="embedAllowedOrigins"
+									multiline
+									rows={3}
+									fieldLabel={t(
+										"pages.statusPages.form.basicInfo.option.embedAllowedOrigins.label"
+									)}
+									placeholder={t(
+										"pages.statusPages.form.basicInfo.option.embedAllowedOrigins.placeholder"
+									)}
+									helperText={t(
+										"pages.statusPages.form.basicInfo.option.embedAllowedOrigins.helper"
 									)}
 								/>
 							</Stack>

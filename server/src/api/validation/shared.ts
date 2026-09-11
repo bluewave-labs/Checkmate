@@ -44,7 +44,12 @@ export const timezoneValidation = z
 // optionally prefixed with `_` for service labels (e.g. _dmarc, _imaps._tcp).
 // No scheme, port, path, or whitespace. Total length ≤ 253. Kept in sync with
 // the client-side regex in client/src/Validation/monitor.ts.
-export const dnsHostnameRegex = /^(?=.{1,253}$)([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,63}$/;
+const dnsHostnamePattern = "([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,63}";
+export const dnsHostnameRegex = new RegExp(`^(?=.{1,253}$)${dnsHostnamePattern}$`);
+
+// Web origin for CSP frame-ancestors: http(s) scheme, a hostname (or localhost),
+// an optional port, and nothing else — no path, query, or trailing slash.
+export const embedOriginRegex = new RegExp(`^https?://(?:localhost|${dnsHostnamePattern})(?::\\d{1,5})?$`);
 
 export const booleanCoercion = z.preprocess((val) => {
 	if (val === "true" || val === true) return true;

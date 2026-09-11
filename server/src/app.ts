@@ -50,7 +50,29 @@ export const createApp = ({
 		return cors(corsOptions)(req, res, next);
 	});
 
-	app.use(createStatusPageDocumentCsp(allowedOrigin));
+	// helmet sets the Content-Security-Policy header, replacing any value already
+	// present, so it must run before express.static (so documents served from the
+	// client build get a policy at all) and before statusPageDocumentCsp, which
+	// appends a second header that the browser intersects with this one.
+	app.use(
+		helmet({
+			hsts: false,
+			contentSecurityPolicy: {
+				useDefaults: true,
+				directives: {
+					upgradeInsecureRequests: null,
+					"script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+					"img-src": ["'self'", "data:", "blob:", "https://img.shields.io"],
+					"object-src": ["'none'"],
+					"base-uri": ["'self'"],
+					// Emitted per request by statusPageDocumentCsp so status pages can allow configured embedding origins.
+					"frame-ancestors": null,
+				},
+			},
+		})
+	);
+
+	app.use(createStatusPageDocumentCsp(allowedOrigin, services.statusPagesRepository));
 
 	// Client runtime config; registered before express.static so it shadows the
 	// fallback config.js in the client build output
@@ -68,21 +90,6 @@ export const createApp = ({
 	app.use(sanitizeBody());
 	app.use(sanitizeQuery());
 
-	app.use(
-		helmet({
-			hsts: false,
-			contentSecurityPolicy: {
-				useDefaults: true,
-				directives: {
-					upgradeInsecureRequests: null,
-					"script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-					"img-src": ["'self'", "data:", "blob:", "https://img.shields.io"],
-					"object-src": ["'none'"],
-					"base-uri": ["'self'"],
-				},
-			},
-		})
-	);
 	app.use(
 		compression({
 			level: 6,

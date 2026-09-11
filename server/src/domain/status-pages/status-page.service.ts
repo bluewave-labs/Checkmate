@@ -11,6 +11,7 @@ import {
 } from "@/domain/status-pages/status-page.type.js";
 import { AppError } from "@/utils/AppError.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
+import { normalizeEmbedAllowedOrigins } from "@/utils/embedOrigins.js";
 import { Monitor } from "@/domain/monitors/monitor.type.js";
 import { IChecksRepository } from "@/domain/checks/check.repository.interface.js";
 import type { DailyCheckBucket } from "@/domain/checks/check.type.js";
@@ -58,6 +59,16 @@ export class StatusPageService implements IStatusPageService {
 		return { ...data, customDomain };
 	};
 
+	// The controller validates the raw body but passes it through unchanged, so the
+	// same normalisation the validator applies has to be repeated before persisting.
+	private normalizeEmbedAllowedOriginsInput = (data: Partial<StatusPage>): Partial<StatusPage> => {
+		if (!("embedAllowedOrigins" in data)) {
+			return data;
+		}
+
+		return { ...data, embedAllowedOrigins: normalizeEmbedAllowedOrigins(data.embedAllowedOrigins) ?? [] };
+	};
+
 	private withoutThemeFields = (data: Partial<StatusPage>): Partial<StatusPage> => {
 		const { theme: _theme, themeMode: _themeMode, ...rest } = data;
 		return rest;
@@ -101,7 +112,7 @@ export class StatusPageService implements IStatusPageService {
 		image: Express.Multer.File | undefined,
 		data: Partial<StatusPage>
 	): Promise<StatusPage> => {
-		const normalizedData = this.normalizeCustomDomainInput(this.normalizeInput(data));
+		const normalizedData = this.normalizeEmbedAllowedOriginsInput(this.normalizeCustomDomainInput(this.normalizeInput(data)));
 		const created = await this.statusPagesRepository.create(userId, teamId, image, normalizedData);
 		return this.normalizeTheme(created);
 	};
@@ -168,7 +179,7 @@ export class StatusPageService implements IStatusPageService {
 	};
 
 	updateStatusPage = async (id: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage> => {
-		const normalizedData = this.normalizeCustomDomainInput(this.normalizeInput(data));
+		const normalizedData = this.normalizeEmbedAllowedOriginsInput(this.normalizeCustomDomainInput(this.normalizeInput(data)));
 		const updated = await this.statusPagesRepository.updateById(id, teamId, image, normalizedData);
 		return this.normalizeTheme(updated);
 	};

@@ -1756,6 +1756,11 @@
 							"label": "Custom domain",
 							"placeholder": "status.example.com",
 							"helper": "Optional. Point a DNS record to this Checkmate instance to serve the status page at your own domain."
+						},
+						"embedAllowedOrigins": {
+							"label": "Allowed embedding origins",
+							"placeholder": "https://dashboard.example.com",
+							"helper": "Optional. One origin per line. Pages on these origins may embed this status page in an iframe."
 						}
 					}
 				},

@@ -10,8 +10,25 @@ import { cssReferencesExternalResource } from "@/Utils/customCss";
 // field definitions.
 export const statusPageStepRegistry = z.registry<{ step: number }>();
 
-const statusPageHostnameRegex =
-	/^(?=.{1,253}$)([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,63}$/;
+const statusPageHostnamePattern =
+	"([a-zA-Z0-9_](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,63}";
+
+const statusPageHostnameRegex = new RegExp(`^(?=.{1,253}$)${statusPageHostnamePattern}$`);
+
+// An embedding origin: scheme + hostname (or localhost) + optional port, no path.
+// Kept in sync with embedOriginRegex in server/src/api/validation/shared.ts.
+const statusPageOriginRegex = new RegExp(
+	`^https?:\\/\\/(?:localhost|${statusPageHostnamePattern})(:\\d{1,5})?$`
+);
+
+const MAX_EMBED_ALLOWED_ORIGINS = 20;
+
+// One origin per line (or comma-separated); blanks are dropped.
+export const splitEmbedAllowedOrigins = (raw: string | undefined): string[] =>
+	(raw ?? "")
+		.split(/[\n,]/)
+		.map((origin) => origin.trim())
+		.filter((origin) => origin.length > 0);
 
 const normalizeCustomDomainInput = (raw: string | null): string | null => {
 	if (raw === null) {
@@ -46,6 +63,22 @@ export const statusPageSchema = z.object({
 		.refine((domain) => domain === null || statusPageHostnameRegex.test(domain), {
 			message: "Enter a valid domain name (e.g. status.example.com)",
 		}),
+	embedAllowedOrigins: z
+		.string()
+		.optional()
+		.refine((raw) => splitEmbedAllowedOrigins(raw).length <= MAX_EMBED_ALLOWED_ORIGINS, {
+			message: `At most ${MAX_EMBED_ALLOWED_ORIGINS} embedding origins are allowed`,
+		})
+		.refine(
+			(raw) =>
+				splitEmbedAllowedOrigins(raw).every((origin) =>
+					statusPageOriginRegex.test(origin)
+				),
+			{
+				message:
+					"Each origin must be a scheme and host with no path (e.g. https://dashboard.example.com)",
+			}
+		),
 	timezone: z.string().optional(),
 	type: z
 		.array(z.enum(["uptime", "infrastructure"]))
