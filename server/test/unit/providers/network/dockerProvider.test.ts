@@ -27,6 +27,9 @@ const makeEncryptionService = (overrides?: Partial<IEncryptionService>): IEncryp
 	...overrides,
 });
 
+const TIMEOUT_MS = 10000;
+const TIMEOUTS = { timeout: TIMEOUT_MS, connectionTimeout: TIMEOUT_MS };
+
 const makeTlsMonitor = (overrides?: Partial<Monitor>): Monitor =>
 	makeMonitor({ url: "tcp://host", dockerTlsCa: CA_PEM, dockerTlsCert: CERT_PEM, dockerTlsKeySet: true, ...overrides });
 
@@ -139,7 +142,7 @@ describe("DockerProvider", () => {
 
 			await provider.handle(makeMonitor({ url: "unix:///run/docker.sock" }));
 
-			expect(DockerLib).toHaveBeenCalledWith({ socketPath: "/run/docker.sock" });
+			expect(DockerLib).toHaveBeenCalledWith({ socketPath: "/run/docker.sock", ...TIMEOUTS });
 		});
 
 		it("parses bare absolute paths into socketPath", async () => {
@@ -147,7 +150,7 @@ describe("DockerProvider", () => {
 
 			await provider.handle(makeMonitor({ url: "/var/run/docker.sock" }));
 
-			expect(DockerLib).toHaveBeenCalledWith({ socketPath: "/var/run/docker.sock" });
+			expect(DockerLib).toHaveBeenCalledWith({ socketPath: "/var/run/docker.sock", ...TIMEOUTS });
 		});
 
 		it("trims surrounding whitespace", async () => {
@@ -155,7 +158,7 @@ describe("DockerProvider", () => {
 
 			await provider.handle(makeMonitor({ url: "  /var/run/docker.sock  " }));
 
-			expect(DockerLib).toHaveBeenCalledWith({ socketPath: "/var/run/docker.sock" });
+			expect(DockerLib).toHaveBeenCalledWith({ socketPath: "/var/run/docker.sock", ...TIMEOUTS });
 		});
 	});
 
@@ -220,9 +223,17 @@ describe("DockerProvider", () => {
 			await provider.handle(makeTlsMonitor(), ctx);
 
 			const options = optionsPassedTo(DockerLib);
-			for (const field of ["socketPath", "username", "sshOptions", "timeout"]) {
+			for (const field of ["socketPath", "username", "sshOptions"]) {
 				expect(options).toHaveProperty(field, undefined);
 			}
+		});
+
+		it("bounds every request with the provider timeout so a filtered port fails fast", async () => {
+			const { provider, DockerLib } = setup();
+
+			await provider.handle(makeTlsMonitor(), ctx);
+
+			expect(optionsPassedTo(DockerLib)).toMatchObject(TIMEOUTS);
 		});
 
 		it("returns a down check and never constructs a client when the key is missing from the context", async () => {
