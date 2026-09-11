@@ -50,6 +50,7 @@ import type { AppSettingsResponse } from "@/Types/Settings";
 import {
 	stepFieldsFor,
 	monitorStepCount,
+	isDockerTlsUrl,
 	type MonitorFormData,
 } from "@/Validation/monitor";
 import { FormNumberField } from "@/Components/inputs/forms/FormNumberField";
@@ -65,6 +66,14 @@ const httpMethodOptions = HttpMethods.map((method) => ({
 	value: method,
 	label: method,
 }));
+
+const PEM_FIELD_ROWS = 6;
+
+// Hides the pasted key while the field is not focused. Ignored by browsers
+// without -webkit-text-security, which then show the key as plain text.
+const maskedInputSx = {
+	"&:not(.Mui-focused) textarea": { WebkitTextSecurity: "disc" },
+};
 
 interface GeneralSettingsConfig {
 	urlLabel: string;
@@ -300,6 +309,7 @@ const CreateMonitorPage = () => {
 	const showStep = (step: number) => isEditMode || currentStep === step;
 
 	const watchedType = watch("type") as MonitorType;
+	const watchedUrl = watch("url") as string;
 	const watchedMethod = watch("method") as HttpMethod | undefined;
 	const watchedProxyMode = watch("proxyMode") as ProxyMode | undefined;
 	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
@@ -333,6 +343,8 @@ const CreateMonitorPage = () => {
 		() => getGeneralSettingsConfig(watchedType, t),
 		[watchedType, t]
 	);
+
+	const pemInputSx = { fontFamily: theme.typography.fontFamilyMonospace };
 
 	const { post, loading: isCreating } = usePost<MonitorFormData, Monitor>();
 	const { patch, loading: isUpdating } = usePatch<MonitorFormData, Monitor>();
@@ -684,6 +696,64 @@ const CreateMonitorPage = () => {
 										options={dnsRecordTypeOptions}
 									/>
 								)}
+							</Stack>
+						}
+					/>
+				)}
+
+				{showStep(0) && watchedType === "docker" && isDockerTlsUrl(watchedUrl) && (
+					<ConfigBox
+						title={t("pages.createMonitor.form.dockerTls.title")}
+						subtitle={t("pages.createMonitor.form.dockerTls.description")}
+						rightContent={
+							<Stack spacing={theme.spacing(LAYOUT.MD)}>
+								<FormTextField
+									name="dockerTlsCa"
+									multiline
+									rows={PEM_FIELD_ROWS}
+									fieldLabel={t("pages.createMonitor.form.dockerTls.option.ca.label")}
+									placeholder={t(
+										"pages.createMonitor.form.dockerTls.option.ca.placeholder"
+									)}
+									slotProps={{ input: { sx: pemInputSx } }}
+								/>
+								<FormTextField
+									name="dockerTlsCert"
+									multiline
+									rows={PEM_FIELD_ROWS}
+									fieldLabel={t("pages.createMonitor.form.dockerTls.option.cert.label")}
+									placeholder={t(
+										"pages.createMonitor.form.dockerTls.option.cert.placeholder"
+									)}
+									slotProps={{ input: { sx: pemInputSx } }}
+								/>
+								<FormTextField
+									name="dockerTlsKey"
+									multiline
+									rows={PEM_FIELD_ROWS}
+									fieldLabel={t("pages.createMonitor.form.dockerTls.option.key.label")}
+									placeholder={t(
+										"pages.createMonitor.form.dockerTls.option.key.placeholder"
+									)}
+									helperText={
+										existingMonitor?.dockerTlsKeySet
+											? t("pages.createMonitor.form.dockerTls.option.key.stored")
+											: undefined
+									}
+									autoComplete="off"
+									slotProps={{ input: { sx: { ...pemInputSx, ...maskedInputSx } } }}
+								/>
+								<FormSwitchField
+									name="ignoreTlsErrors"
+									label={t("pages.createMonitor.form.dockerTls.option.ignoreTls.label")}
+								/>
+								<Typography
+									component="span"
+									color={theme.palette.text.secondary}
+									sx={{ opacity: 0.8 }}
+								>
+									{t("pages.createMonitor.form.dockerTls.option.ignoreTls.description")}
+								</Typography>
 							</Stack>
 						}
 					/>
