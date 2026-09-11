@@ -13,6 +13,8 @@ import TagsController from "../api/controllers/tagController.js";
 import DiagnosticController from "../api/controllers/diagnosticController.js";
 import IncidentController from "../api/controllers/incidentController.js";
 import ProxyController from "@/api/controllers/proxyController.js";
+import DashboardController from "@/api/controllers/dashboardController.js";
+import type { IDashboardController } from "@/api/controllers/dashboardController.js";
 import { ApiServices } from "@/config/services.api.js";
 
 export interface InitializedControllers {
@@ -31,6 +33,7 @@ export interface InitializedControllers {
 	diagnosticController: DiagnosticController;
 	incidentController: IncidentController;
 	proxyController: ProxyController;
+	dashboardController: IDashboardController;
 }
 export const initializeControllers = (apiServices: ApiServices): InitializedControllers => {
 	return {
@@ -49,5 +52,6 @@ export const initializeControllers = (apiServices: ApiServices): InitializedCont
 		diagnosticController: new DiagnosticController(apiServices.diagnosticService),
 		incidentController: new IncidentController(apiServices.incidentService),
 		proxyController: new ProxyController(apiServices.proxiesService),
+		dashboardController: new DashboardController(apiServices.dashboardService),
 	};
 };

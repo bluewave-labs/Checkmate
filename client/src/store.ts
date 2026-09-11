@@ -7,9 +7,14 @@ import {
 	persistReducer,
 	persistStore,
 	createTransform,
+	createMigrate,
 	PERSIST,
 	REHYDRATE,
 } from "redux-persist";
+import {
+	defaultVisibleCards,
+	DASHBOARD_CARD_IDS,
+} from "@/Pages/Dashboard/dashboardCards";
 
 const authTransform = createTransform(
 	(inboundState: Record<string, unknown>) => {
@@ -20,13 +25,44 @@ const authTransform = createTransform(
 	{ whitelist: ["auth"] }
 );
 
+const migrations = {
+	0: (state: any) => ({
+		...state,
+		ui: {
+			...state?.ui,
+			dashboardCards: state?.ui?.dashboardCards ?? { ...defaultVisibleCards },
+		},
+	}),
+	1: (state: any) => {
+		const cards = state?.ui?.dashboardCards;
+		const hasAnyVisible = cards && Object.values(cards).some((v) => v);
+		return {
+			...state,
+			ui: {
+				...state?.ui,
+				dashboardCards: hasAnyVisible ? cards : { ...defaultVisibleCards },
+			},
+		};
+	},
+	2: (state: any) => {
+		const cards = state?.ui?.dashboardCards ?? { ...defaultVisibleCards };
+		const stubCards = DASHBOARD_CARD_IDS.filter((id) => !defaultVisibleCards[id]);
+		const resetCards = { ...cards };
+		stubCards.forEach((id) => {
+			resetCards[id] = false;
+		});
+		return { ...state, ui: { ...state?.ui, dashboardCards: resetCards } };
+	},
+};
+
 const persistConfig = {
 	key: "root",
+	version: 2,
 	storage,
 	whitelist: ["auth", "ui"],
 	transforms: [authTransform],
-	// Merge two levels deep on rehydrate so a slice key added in a new release keeps initial value
 	stateReconciler: autoMergeLevel2,
+	migrate: createMigrate(migrations, { debug: false }),
 };
 
 const rootReducer = combineReducers({

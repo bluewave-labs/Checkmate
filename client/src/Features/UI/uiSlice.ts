@@ -1,4 +1,9 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import {
+	DASHBOARD_CARD_IDS,
+	defaultVisibleCards,
+	type DashboardCardId,
+} from "@/Pages/Dashboard/dashboardCards";
 
 type ThemeMode = "light" | "dark";
 type ChartType = "histogram" | "line";
@@ -35,6 +40,8 @@ interface UIState {
 	language: string;
 	starPromptOpen: boolean;
 	chartType: ChartType;
+	dashboardCards: Record<DashboardCardId, boolean>;
+	dashboardCardOrder: DashboardCardId[];
 }
 
 const initialMode: ThemeMode = window?.matchMedia?.("(prefers-color-scheme: dark)")
@@ -74,6 +81,8 @@ const initialState: UIState = {
 	language: "en",
 	starPromptOpen: true,
 	chartType: "histogram",
+	dashboardCards: { ...defaultVisibleCards },
+	dashboardCardOrder: [...DASHBOARD_CARD_IDS],
 };
 
 const uiSlice = createSlice({
@@ -117,6 +126,27 @@ const uiSlice = createSlice({
 		setChartType: (state, action: PayloadAction<ChartType>) => {
 			state.chartType = action.payload;
 		},
+		setDashboardCards: (
+			state,
+			action: PayloadAction<Record<DashboardCardId, boolean>>
+		) => {
+			state.dashboardCards = action.payload;
+		},
+		setDashboardCardsVisibility: (
+			state,
+			action: PayloadAction<{ id: DashboardCardId; visible: boolean }>
+		) => {
+			state.dashboardCards[action.payload.id] = action.payload.visible;
+		},
+		toggleDashboardCard: (state, action: PayloadAction<DashboardCardId>) => {
+			state.dashboardCards[action.payload] = !state.dashboardCards[action.payload];
+		},
+		resetDashboardCards: (state) => {
+			state.dashboardCards = { ...defaultVisibleCards };
+		},
+		setDashboardCardOrder: (state, action: PayloadAction<DashboardCardId[]>) => {
+			state.dashboardCardOrder = action.payload;
+		},
 	},
 });
 
@@ -133,4 +163,9 @@ export const {
 	setLanguage,
 	setStarPromptOpen,
 	setChartType,
+	setDashboardCards,
+	setDashboardCardsVisibility,
+	toggleDashboardCard,
+	resetDashboardCards,
+	setDashboardCardOrder,
 } = uiSlice.actions;

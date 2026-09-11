@@ -226,7 +226,8 @@
 					"alerting": "Alerting",
 					"reporting": "Reporting",
 					"configuration": "Configuration"
-				}
+				},
+				"dashboard": "Dashboard"
 			},
 			"bottomMenu": {
 				"support": "Support",
@@ -1883,6 +1884,60 @@
 			"header": {
 				"title": "Uptime monitors",
 				"description": "Watch HTTP endpoints, pings, containers, and ports — and get alerted the moment something goes down."
+			}
+		},
+		"dashboard": {
+			"editCards": "Edit cards",
+			"error": "Failed to load data",
+			"monitorStatus": {
+				"ofUp": "of {{total}} up"
+			},
+			"emptyStates": {
+				"allMonitorsUp": "All monitors are up. No incidents open.",
+				"noGroups": "No groups yet. Groups are set per monitor.",
+				"topOf": "Top {{count}} of {{total}}"
+			},
+			"cards": {
+				"monitorStatus": "Monitor status",
+				"currentlyDown": "Currently down",
+				"slowestMonitors": "Slowest monitors",
+				"lowestUptime": "Lowest uptime",
+				"monitorsByType": "Monitors by type",
+				"monitorsByGroup": "Monitors by group",
+				"busiestServers": "Busiest servers",
+				"recentIncidents": "Recent incidents",
+				"incidentStats": "Incident statistics",
+				"notificationChannels": "Notification channels",
+				"maintenanceWindows": "Maintenance windows",
+				"statusPages": "Status pages",
+				"failedChecks": "Failed checks",
+				"checkmateServer": "Checkmate server",
+				"checkQueue": "Check queue",
+				"recentErrors": "Recent errors",
+				"teamMembers": "Team members"
+			},
+			"modal": {
+				"title": "Edit dashboard cards",
+				"description": "Choose which cards to display on your dashboard.",
+				"categories": {
+					"uptime": "Uptime",
+					"infrastructure": "Infrastructure",
+					"incidents": "Incidents",
+					"notifications": "Notifications",
+					"maintenance": "Maintenance",
+					"statusPages": "Status pages",
+					"checks": "Checks",
+					"system": "System",
+					"settings": "Settings"
+				},
+				"resetToDefaults": "Reset to defaults",
+				"selectAll": "Select all",
+				"done": "Done"
+			},
+			"comingSoon": "Coming soon",
+			"header": {
+				"title": "Dashboard",
+				"description": "See every monitor type in one place and spot what needs attention."
 			}
 		}
 	}
