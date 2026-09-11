@@ -30,10 +30,12 @@ import { DOCKER_TLS_URL, isDockerTlsUrl } from "@/utils/dockerHost.js";
 import { splitCertificateBundle } from "@/utils/pem.js";
 
 type DockerodeType = typeof Dockerode;
-type DockerOptions = Dockerode.DockerOptions & { agent?: https.Agent };
+// @types/dockerode omits agent and connectionTimeout; docker-modem forwards both
+type DockerOptions = Dockerode.DockerOptions & { agent?: https.Agent; connectionTimeout?: number };
 type TlsCredentials = { ok: true; key: string } | { ok: false; message: string };
 
 const SERVICE_NAME = "DockerProvider";
+const TIMEOUT_MS = 10000;
 const STATS_CONCURRENCY = 5;
 const DOCKER_LOG_MAX_LINE_BYTES = 4096;
 const DOCKER_LOG_TRUNCATION_MARKER = " …[truncated]";
@@ -92,9 +94,9 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 		if (url.startsWith("unix://")) {
 			const socketPath = url.slice("unix://".length);
 			if (!socketPath.startsWith("/")) throw this.invalidUrl(`Invalid Docker host URL: ${url}`);
-			return { socketPath };
+			return { socketPath, timeout: TIMEOUT_MS, connectionTimeout: TIMEOUT_MS };
 		}
-		if (url.startsWith("/")) return { socketPath: url };
+		if (url.startsWith("/")) return { socketPath: url, timeout: TIMEOUT_MS, connectionTimeout: TIMEOUT_MS };
 
 		// Docker TLS
 		const match = DOCKER_TLS_URL.exec(url);
@@ -115,7 +117,8 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 			socketPath: undefined,
 			username: undefined,
 			sshOptions: undefined,
-			timeout: undefined,
+			timeout: TIMEOUT_MS,
+			connectionTimeout: TIMEOUT_MS,
 		};
 	};
 
