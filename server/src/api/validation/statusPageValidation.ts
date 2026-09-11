@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { booleanCoercion, dnsHostnameRegex, embedOriginRegex, timezoneValidation } from "./shared.js";
+import { booleanCoercion, dnsHostnameRegex, isEmbedOrigin, timezoneValidation } from "./shared.js";
 import {
 	StatusPageTypes,
 	StatusPageThemes,
@@ -45,7 +45,7 @@ const MAX_EMBED_ALLOWED_ORIGINS = 20;
 const embedAllowedOriginsValidation = z.preprocess(
 	(val) => normalizeEmbedAllowedOrigins(val),
 	z
-		.array(z.string().regex(embedOriginRegex, "Enter a valid origin with scheme and host only (e.g. https://www.example.com)"))
+		.array(z.string().refine(isEmbedOrigin, "Enter a valid origin with scheme and host only (e.g. https://www.example.com)"))
 		.max(MAX_EMBED_ALLOWED_ORIGINS, `At most ${MAX_EMBED_ALLOWED_ORIGINS} embedding origins are allowed`)
 		.optional()
 );

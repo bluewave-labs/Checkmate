@@ -74,6 +74,14 @@ describe("createStatusPageBodyValidation embedAllowedOrigins", () => {
 		}
 	});
 
+	it("accepts IPv4 and bracketed IPv6 origins", () => {
+		const result = parseOrigins(["http://192.168.1.10:8080", "https://10.0.0.1", "http://[::1]:3000", "https://[2001:db8::1]"]);
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.data.embedAllowedOrigins).toEqual(["http://192.168.1.10:8080", "https://10.0.0.1", "http://[::1]:3000", "https://[2001:db8::1]"]);
+		}
+	});
+
 	it("trims, lowercases, and dedupes origins", () => {
 		const result = parseOrigins([" HTTPS://A.example ", "https://a.example", "", "https://b.example"]);
 		expect(result.success).toBe(true);
@@ -98,7 +106,16 @@ describe("createStatusPageBodyValidation embedAllowedOrigins", () => {
 		}
 	});
 
-	it.each([["https://a.example/path"], ["a.example"], ["javascript:alert(1)"], ["https://a.example/"]])("rejects %s", (origin) => {
+	it.each([
+		["https://a.example/path"],
+		["a.example"],
+		["javascript:alert(1)"],
+		["https://a.example/"],
+		["http://999.1.1.1"],
+		["http://[not-an-address]"],
+		["http://::1"],
+		["https://a.example:99999999"],
+	])("rejects %s", (origin) => {
 		const result = parseOrigins([origin]);
 		expect(result.success).toBe(false);
 		if (!result.success) {

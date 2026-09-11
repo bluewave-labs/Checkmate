@@ -15,11 +15,22 @@ const statusPageHostnamePattern =
 
 const statusPageHostnameRegex = new RegExp(`^(?=.{1,253}$)${statusPageHostnamePattern}$`);
 
-// An embedding origin: scheme + hostname (or localhost) + optional port, no path.
-// Kept in sync with embedOriginRegex in server/src/api/validation/shared.ts.
-const statusPageOriginRegex = new RegExp(
-	`^https?:\\/\\/(?:localhost|${statusPageHostnamePattern})(:\\d{1,5})?$`
-);
+// An embedding origin: scheme + host + optional port, no path. The host may be
+// a hostname, localhost, an IPv4 address, or a bracketed IPv6 address. Kept in
+// sync with isEmbedOrigin in server/src/api/validation/shared.ts.
+const statusPageOriginShapeRegex =
+	/^https?:\/\/([^\s/?#:[\]]+|\[[^\s/?#[\]]+\])(?::\d{1,5})?$/;
+
+const isStatusPageOrigin = (value: string): boolean => {
+	const host = statusPageOriginShapeRegex.exec(value)?.[1];
+	if (host === undefined) return false;
+	if (host.startsWith("[")) return z.ipv6().safeParse(host.slice(1, -1)).success;
+	return (
+		host === "localhost" ||
+		z.ipv4().safeParse(host).success ||
+		statusPageHostnameRegex.test(host)
+	);
+};
 
 const MAX_EMBED_ALLOWED_ORIGINS = 20;
 
@@ -69,16 +80,10 @@ export const statusPageSchema = z.object({
 		.refine((raw) => splitEmbedAllowedOrigins(raw).length <= MAX_EMBED_ALLOWED_ORIGINS, {
 			message: `At most ${MAX_EMBED_ALLOWED_ORIGINS} embedding origins are allowed`,
 		})
-		.refine(
-			(raw) =>
-				splitEmbedAllowedOrigins(raw).every((origin) =>
-					statusPageOriginRegex.test(origin)
-				),
-			{
-				message:
-					"Each origin must be a scheme and host with no path (e.g. https://dashboard.example.com)",
-			}
-		),
+		.refine((raw) => splitEmbedAllowedOrigins(raw).every(isStatusPageOrigin), {
+			message:
+				"Each origin must be a scheme and host with no path (e.g. https://dashboard.example.com)",
+		}),
 	timezone: z.string().optional(),
 	type: z
 		.array(z.enum(["uptime", "infrastructure"]))
