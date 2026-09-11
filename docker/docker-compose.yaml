@@ -29,7 +29,7 @@ services:
         condition: service_healthy
 
   mongodb:
-    image: mongo:8.0
+    image: mongo:8.2
     restart: always
     command: ["mongod", "--quiet", "--bind_ip_all"]
     volumes:

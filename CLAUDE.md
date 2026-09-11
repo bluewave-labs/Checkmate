@@ -37,7 +37,7 @@ npm run format           # Prettier formatting
 ```bash
 docker build -f docker/Dockerfile -t checkmate .          # build the mono image (server + built client)
 docker compose -f docker/dev/docker-compose.yaml up       # local full stack (builds image, runs mongo + worker)
-docker run -d -p 27017:27017 -v uptime_mongo_data:/data/db --name uptime_database_mongo mongo:8.0   # just a dev database
+docker run -d -p 27017:27017 -v uptime_mongo_data:/data/db --name uptime_database_mongo mongo:8.2   # just a dev database
 ```
 
 ## Environment Setup

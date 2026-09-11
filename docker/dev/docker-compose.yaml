@@ -39,7 +39,7 @@ services:
       mongodb:
         condition: service_healthy
   mongodb:
-    image: mongo:8.0
+    image: mongo:8.2
     restart: always
     ports:
       - "27017:27017"

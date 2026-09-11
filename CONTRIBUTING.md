@@ -91,7 +91,7 @@ cd Checkmate
 Run MongoDB container:
 
 ```bash
-docker run -d -p 27017:27017 -v uptime_mongo_data:/data/db --name uptime_database_mongo mongo:8.0
+docker run -d -p 27017:27017 -v uptime_mongo_data:/data/db --name uptime_database_mongo mongo:8.2
 ```
 
 #### Step 3: Set Up the Backend (Server)
