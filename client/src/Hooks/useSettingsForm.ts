@@ -45,6 +45,10 @@ export const useSettingsForm = ({ data = null }: UseSettingsFormOptions = {}) =>
 			systemEmailPassword: "",
 			globalProxyEnabled: data?.globalProxyEnabled ?? false,
 			globalProxyId: data?.globalProxyId ?? null,
+			egressCheckEnabled: data?.egressCheckEnabled ?? false,
+			egressCheckTargets: (data?.egressCheckTargets ?? []).join("\n"),
+			egressPollIntervalSeconds: data?.egressPollIntervalSeconds ?? 30,
+			egressNotifications: data?.egressNotifications ?? [],
 		};
 
 		return { schema: settingsSchema, defaults };

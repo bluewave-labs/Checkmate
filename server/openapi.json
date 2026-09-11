@@ -53,6 +53,10 @@
 			"description": "Outbound proxy servers for routing HTTP monitor checks, team-scoped with an instance-wide admin listing."
 		},
 		{
+			"name": "egress",
+			"description": "Instance egress self-check state: whether the server's own outbound connectivity is currently degraded."
+		},
+		{
 			"name": "invite",
 			"description": "Team invitations and accepting them."
 		},
@@ -422,9 +426,6 @@
 					"secret": {
 						"type": "string"
 					},
-					"sshPrivateKey": {
-						"type": "string"
-					},
 					"cpuAlertThreshold": {
 						"type": "number"
 					},
@@ -465,6 +466,9 @@
 					},
 					"geoCheckInterval": {
 						"type": "number"
+					},
+					"dockerLogsEnabled": {
+						"type": "boolean"
 					},
 					"dnsServer": {
 						"type": "string"
@@ -513,6 +517,7 @@
 					"geoCheckEnabled",
 					"geoCheckLocations",
 					"geoCheckInterval",
+					"dockerLogsEnabled",
 					"teamId",
 					"userId",
 					"createdAt",
@@ -640,9 +645,6 @@
 									"secret": {
 										"type": "string"
 									},
-									"sshPrivateKey": {
-										"type": "string"
-									},
 									"cpuAlertThreshold": {
 										"type": "number"
 									},
@@ -683,6 +685,9 @@
 									},
 									"geoCheckInterval": {
 										"type": "number"
+									},
+									"dockerLogsEnabled": {
+										"type": "boolean"
 									},
 									"dnsServer": {
 										"type": "string"
@@ -733,6 +738,7 @@
 									"geoCheckEnabled",
 									"geoCheckLocations",
 									"geoCheckInterval",
+									"dockerLogsEnabled",
 									"teamId",
 									"userId",
 									"createdAt",
@@ -930,6 +936,9 @@
 						"$ref": "#/components/schemas/PushoverNotification"
 					},
 					{
+						"$ref": "#/components/schemas/SignalgridNotification"
+					},
+					{
 						"$ref": "#/components/schemas/TwilioNotification"
 					},
 					{
@@ -949,6 +958,7 @@
 						"teams": "#/components/schemas/TeamsNotification",
 						"telegram": "#/components/schemas/TelegramNotification",
 						"pushover": "#/components/schemas/PushoverNotification",
+						"signalgrid": "#/components/schemas/SignalgridNotification",
 						"twilio": "#/components/schemas/TwilioNotification",
 						"ntfy": "#/components/schemas/NtfyNotification"
 					}
@@ -1378,6 +1388,34 @@
 					"type": "pushover",
 					"address": "u1234567890abcdef",
 					"accessToken": "a1234567890abcdef"
+				}
+			},
+			"SignalgridNotification": {
+				"type": "object",
+				"properties": {
+					"notificationName": {
+						"type": "string",
+						"minLength": 1
+					},
+					"type": {
+						"type": "string",
+						"enum": ["signalgrid"]
+					},
+					"address": {
+						"type": "string",
+						"minLength": 1
+					},
+					"accessToken": {
+						"type": "string",
+						"minLength": 1
+					}
+				},
+				"required": ["notificationName", "type", "address", "accessToken"],
+				"example": {
+					"notificationName": "Signalgrid",
+					"type": "signalgrid",
+					"address": "your-channel",
+					"accessToken": "your-client-key"
 				}
 			},
 			"TwilioNotification": {
@@ -4113,6 +4151,160 @@
 										}
 									},
 									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/egress": {
+			"get": {
+				"tags": ["egress"],
+				"summary": "Get the instance's current egress self-check state",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "string"
+												},
+												"status": {
+													"type": "string",
+													"enum": ["ok", "degraded"]
+												},
+												"degradedSince": {
+													"type": "string",
+													"nullable": true
+												},
+												"lastRecoveredAt": {
+													"type": "string",
+													"nullable": true
+												},
+												"lastProbeAt": {
+													"type": "string",
+													"nullable": true
+												},
+												"lastProbeResults": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"target": {
+																"type": "string"
+															},
+															"reachable": {
+																"type": "boolean"
+															},
+															"responseTime": {
+																"type": "number"
+															},
+															"message": {
+																"type": "string"
+															}
+														},
+														"required": ["target", "reachable", "responseTime"]
+													}
+												},
+												"createdAt": {
+													"type": "string"
+												},
+												"updatedAt": {
+													"type": "string"
+												}
+											},
+											"required": ["id", "status", "degradedSince", "lastRecoveredAt", "lastProbeAt", "lastProbeResults", "createdAt", "updatedAt"]
+										}
+									},
+									"required": ["success", "msg", "data"]
 								}
 							}
 						}
@@ -7090,9 +7282,6 @@
 														"secret": {
 															"type": "string"
 														},
-														"sshPrivateKey": {
-															"type": "string"
-														},
 														"cpuAlertThreshold": {
 															"type": "number"
 														},
@@ -7133,6 +7322,9 @@
 														},
 														"geoCheckInterval": {
 															"type": "number"
+														},
+														"dockerLogsEnabled": {
+															"type": "boolean"
 														},
 														"dnsServer": {
 															"type": "string"
@@ -7183,6 +7375,7 @@
 														"geoCheckEnabled",
 														"geoCheckLocations",
 														"geoCheckInterval",
+														"dockerLogsEnabled",
 														"teamId",
 														"userId",
 														"createdAt",
@@ -7655,9 +7848,6 @@
 														"secret": {
 															"type": "string"
 														},
-														"sshPrivateKey": {
-															"type": "string"
-														},
 														"cpuAlertThreshold": {
 															"type": "number"
 														},
@@ -7698,6 +7888,9 @@
 														},
 														"geoCheckInterval": {
 															"type": "number"
+														},
+														"dockerLogsEnabled": {
+															"type": "boolean"
 														},
 														"dnsServer": {
 															"type": "string"
@@ -7748,6 +7941,7 @@
 														"geoCheckEnabled",
 														"geoCheckLocations",
 														"geoCheckInterval",
+														"dockerLogsEnabled",
 														"teamId",
 														"userId",
 														"createdAt",
@@ -7905,6 +8099,231 @@
 												}
 											},
 											"required": ["monitor", "stats"]
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/monitors/docker/details/{monitorId}/containers/{containerName}/logs": {
+			"get": {
+				"tags": ["monitors"],
+				"summary": "Get stored log lines for one container on a Docker host monitor, newest first",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "monitorId",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "containerName",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"format": "date-time"
+						},
+						"required": false,
+						"name": "before",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"format": "date-time"
+						},
+						"required": false,
+						"name": "after",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"minimum": 1,
+							"maximum": 50,
+							"default": 20
+						},
+						"required": false,
+						"name": "limit",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"logs": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"id": {
+																"type": "string"
+															},
+															"metadata": {
+																"type": "object",
+																"properties": {
+																	"monitorId": {
+																		"type": "string"
+																	},
+																	"teamId": {
+																		"type": "string"
+																	},
+																	"containerId": {
+																		"type": "string"
+																	},
+																	"containerName": {
+																		"type": "string"
+																	}
+																},
+																"required": ["monitorId", "teamId", "containerId", "containerName"]
+															},
+															"lines": {
+																"type": "array",
+																"items": {
+																	"type": "object",
+																	"properties": {
+																		"ts": {
+																			"type": "string"
+																		},
+																		"stream": {
+																			"type": "string",
+																			"enum": ["stdout", "stderr"]
+																		},
+																		"text": {
+																			"type": "string"
+																		}
+																	},
+																	"required": ["ts", "stream", "text"]
+																}
+															},
+															"gap": {
+																"type": "boolean"
+															},
+															"checkedAt": {
+																"type": "string"
+															},
+															"expiry": {
+																"type": "string"
+															},
+															"createdAt": {
+																"type": "string"
+															},
+															"updatedAt": {
+																"type": "string"
+															}
+														},
+														"required": ["id", "metadata", "lines", "gap", "checkedAt", "expiry", "createdAt", "updatedAt"]
+													}
+												},
+												"nextCursor": {
+													"type": "string",
+													"nullable": true
+												}
+											},
+											"required": ["logs", "nextCursor"]
 										}
 									},
 									"required": ["success", "msg", "data"]
@@ -8908,9 +9327,6 @@
 									"secret": {
 										"type": "string"
 									},
-									"sshPrivateKey": {
-										"type": "string"
-									},
 									"jsonPath": {
 										"anyOf": [
 											{
@@ -9010,6 +9426,9 @@
 									"geoCheckInterval": {
 										"type": "number",
 										"minimum": 300000
+									},
+									"dockerLogsEnabled": {
+										"type": "boolean"
 									},
 									"dnsServer": {
 										"type": "string",
@@ -9604,9 +10023,6 @@
 												"secret": {
 													"type": "string"
 												},
-												"sshPrivateKey": {
-													"type": "string"
-												},
 												"cpuAlertThreshold": {
 													"type": "number",
 													"default": 100
@@ -9701,6 +10117,10 @@
 													"type": "number",
 													"minimum": 300000,
 													"default": 300000
+												},
+												"dockerLogsEnabled": {
+													"type": "boolean",
+													"default": false
 												},
 												"dnsServer": {
 													"type": "string",
@@ -10137,9 +10557,6 @@
 									"secret": {
 										"type": "string"
 									},
-									"sshPrivateKey": {
-										"type": "string"
-									},
 									"ignoreTlsErrors": {
 										"type": "boolean"
 									},
@@ -10268,6 +10685,9 @@
 									"geoCheckInterval": {
 										"type": "number",
 										"minimum": 300000
+									},
+									"dockerLogsEnabled": {
+										"type": "boolean"
 									},
 									"dnsServer": {
 										"type": "string",
@@ -12930,6 +13350,32 @@
 									"globalProxyId": {
 										"type": "string",
 										"nullable": true
+									},
+									"egressCheckEnabled": {
+										"type": "boolean"
+									},
+									"egressCheckTargets": {
+										"type": "array",
+										"items": {
+											"type": "string",
+											"minLength": 1,
+											"maxLength": 253,
+											"pattern": "^(https?:\\/\\/\\S+|[A-Za-z0-9.\\-:[\\]]+)$"
+										},
+										"minItems": 1,
+										"maxItems": 10
+									},
+									"egressPollIntervalSeconds": {
+										"type": "integer",
+										"minimum": 5,
+										"maximum": 600
+									},
+									"egressNotifications": {
+										"type": "array",
+										"items": {
+											"type": "string",
+											"pattern": "^[a-f\\d]{24}$/i"
+										}
 									}
 								}
 							}

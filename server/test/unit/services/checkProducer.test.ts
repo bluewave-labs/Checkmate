@@ -29,6 +29,7 @@ const createProducer = (overrides?: Record<string, any>) => {
 		proxyResolver: { resolve: jest.fn().mockResolvedValue(undefined) },
 		buffer: { addToBuffer: jest.fn() },
 		dockerLogsService: { buildDockerLogs: jest.fn().mockResolvedValue([]) },
+		egressService: { assessAfterFailure: jest.fn().mockResolvedValue(null) },
 		...overrides,
 	};
 	const producer = new CheckProducer(
@@ -39,6 +40,7 @@ const createProducer = (overrides?: Record<string, any>) => {
 		defaults.proxyResolver as any,
 		defaults.buffer as any,
 		defaults.dockerLogsService as any,
+		defaults.egressService as any,
 		defaults.logger as any
 	);
 	return { producer, defaults };
@@ -167,5 +169,63 @@ describe("CheckProducer", () => {
 		await producer.produce(makeMonitor());
 
 		expect(defaults.dockerLogsService.buildDockerLogs).not.toHaveBeenCalled();
+	});
+
+	// ── egress self-check ─────────────────────────────────────────────────────
+
+	const failingStatus = { monitorId: "m1", status: false, code: 500, message: "Error" };
+
+	it("does not consult the egress service for a successful check and leaves the field unset", async () => {
+		const check: Record<string, unknown> = { id: "check-1" };
+		const { producer, defaults } = createProducer({
+			checkService: { toCheck: jest.fn().mockReturnValue(check) },
+		});
+
+		await producer.produce(makeMonitor());
+
+		expect(defaults.egressService.assessAfterFailure).not.toHaveBeenCalled();
+		expect(check).not.toHaveProperty("egressStatus");
+	});
+
+	it("flags a failing check as degraded when the egress service reports degraded egress", async () => {
+		const check: Record<string, unknown> = { id: "check-1" };
+		const { producer, defaults } = createProducer({
+			networkService: { requestStatus: jest.fn().mockResolvedValue(failingStatus) },
+			checkService: { toCheck: jest.fn().mockReturnValue(check) },
+			egressService: { assessAfterFailure: jest.fn().mockResolvedValue("degraded") },
+		});
+
+		const result = await producer.produce(makeMonitor());
+
+		expect(defaults.egressService.assessAfterFailure).toHaveBeenCalledTimes(1);
+		expect(check.egressStatus).toBe("degraded");
+		expect(defaults.buffer.addToBuffer).toHaveBeenCalledWith(expect.objectContaining({ egressStatus: "degraded" }));
+		expect(result?.check.egressStatus).toBe("degraded");
+	});
+
+	it("flags a failing check as ok when the probe found egress fine", async () => {
+		const check: Record<string, unknown> = { id: "check-1" };
+		const { producer } = createProducer({
+			networkService: { requestStatus: jest.fn().mockResolvedValue(failingStatus) },
+			checkService: { toCheck: jest.fn().mockReturnValue(check) },
+			egressService: { assessAfterFailure: jest.fn().mockResolvedValue("ok") },
+		});
+
+		await producer.produce(makeMonitor());
+
+		expect(check.egressStatus).toBe("ok");
+	});
+
+	it("leaves the field unset on a failing check when the egress check is disabled", async () => {
+		const check: Record<string, unknown> = { id: "check-1" };
+		const { producer, defaults } = createProducer({
+			networkService: { requestStatus: jest.fn().mockResolvedValue(failingStatus) },
+			checkService: { toCheck: jest.fn().mockReturnValue(check) },
+		});
+
+		await producer.produce(makeMonitor());
+
+		expect(defaults.egressService.assessAfterFailure).toHaveBeenCalledTimes(1);
+		expect(check).not.toHaveProperty("egressStatus");
 	});
 });

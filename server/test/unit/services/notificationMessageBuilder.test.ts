@@ -3,6 +3,7 @@ import { NotificationMessageBuilder } from "../../../src/domain/notifications/no
 import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { MonitorStatusResponse, HardwareStatusPayload } from "../../../src/types/network.ts";
 import type { MonitorActionDecision } from "../../../src/worker/worker.helper.ts";
+import type { EgressState } from "../../../src/domain/egress/egress.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -50,6 +51,21 @@ const makeHardwarePayload = (overrides?: Partial<HardwareStatusPayload["data"]>)
 			...overrides,
 		},
 	}) as HardwareStatusPayload;
+
+const makeEgressState = (overrides?: Partial<EgressState>): EgressState => ({
+	id: "egress-1",
+	status: "ok",
+	degradedSince: "2026-01-01T10:00:00.000Z",
+	lastRecoveredAt: "2026-01-01T10:05:30.000Z",
+	lastProbeAt: "2026-01-01T10:05:30.000Z",
+	lastProbeResults: [
+		{ target: "1.1.1.1", reachable: true, responseTime: 12 },
+		{ target: "8.8.8.8", reachable: false, responseTime: 5000, message: "timed out" },
+	],
+	createdAt: "2026-01-01T00:00:00.000Z",
+	updatedAt: "2026-01-01T10:05:30.000Z",
+	...overrides,
+});
 
 // ── Tests ────────────────────────────────────────────────────────────────────
 
@@ -757,6 +773,50 @@ describe("NotificationMessageBuilder", () => {
 				expect(metrics).toContain("disk");
 				expect(metrics).toContain("temp");
 			});
+		});
+	});
+
+	// ── buildEgressRecoveredMessage ──────────────────────────────────────
+
+	describe("buildEgressRecoveredMessage", () => {
+		it("builds a success message describing the instance rather than a monitor", () => {
+			const message = builder.buildEgressRecoveredMessage(makeEgressState(), "https://app.example.com");
+
+			expect(message.type).toBe("egress_recovered");
+			expect(message.severity).toBe("success");
+			expect(message.monitor).toEqual({
+				id: "egress",
+				name: "Checkmate instance egress",
+				url: "https://app.example.com",
+				type: "system",
+				status: "up",
+			});
+			expect(message.clientHost).toBe("https://app.example.com");
+			expect(message.metadata).toEqual({ teamId: "", notificationReason: "egress_recovered" });
+		});
+
+		it("reports degraded-since, recovered-at, duration and the probed targets", () => {
+			const message = builder.buildEgressRecoveredMessage(makeEgressState(), "https://app.example.com");
+
+			expect(message.content.title).toBe("Outbound connectivity restored");
+			expect(message.content.summary).toContain("2026-01-01T10:00:00.000Z");
+			expect(message.content.summary).toContain("2026-01-01T10:05:30.000Z");
+			expect(message.content.summary).toContain("5m 30s");
+			expect(message.content.details).toEqual([
+				"Degraded since: 2026-01-01T10:00:00.000Z",
+				"Recovered at: 2026-01-01T10:05:30.000Z",
+				"Duration: 5m 30s",
+				"Targets probed: 1.1.1.1, 8.8.8.8",
+			]);
+			expect(message.content.timestamp).toEqual(new Date("2026-01-01T10:05:30.000Z"));
+		});
+
+		it("copes with a state that has no degradedSince or probe results", () => {
+			const message = builder.buildEgressRecoveredMessage(makeEgressState({ degradedSince: null, lastProbeResults: [] }), "https://app.example.com");
+
+			expect(message.content.summary).toContain("an unknown time");
+			expect(message.content.details).not.toEqual(expect.arrayContaining([expect.stringContaining("Duration")]));
+			expect(message.content.details).toContain("Targets probed: none");
 		});
 	});
 });

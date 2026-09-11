@@ -1,5 +1,6 @@
 import { Schema, model, Types } from "mongoose";
 import { MonitorTypes, type MonitorType } from "@/domain/monitors/monitor.type.js";
+import { EgressStatuses, type EgressStatus } from "@/domain/egress/egress.type.js";
 import type {
 	Check,
 	CheckAudits,
@@ -337,6 +338,11 @@ const CheckSchema = new Schema<CheckDocument>(
 			type: containerSummarySchema,
 			default: undefined,
 		},
+		egressStatus: {
+			type: String,
+			enum: EgressStatuses,
+			default: undefined,
+		},
 	},
 	{
 		timestamps: true,
@@ -359,6 +365,10 @@ CheckSchema.index({ "metadata.teamId": 1, status: 1, createdAt: -1 });
 
 const CheckModel = model<CheckDocument>("Check", CheckSchema);
 
+// Checks recorded while the instance's own egress was down cannot be attributed to the target, so they
+// are left out of every uptime percentage and down-count. Spread this into the $match / filter of any such query.
+const EXCLUDE_DEGRADED_EGRESS_MATCH = { egressStatus: { $ne: "degraded" satisfies EgressStatus } } as const;
+
 export type { CheckDocument, CheckMetadataDocument };
-export { CheckModel, containerSummarySchema };
+export { CheckModel, containerSummarySchema, EXCLUDE_DEGRADED_EGRESS_MATCH };
 export default CheckModel;

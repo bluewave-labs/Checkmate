@@ -13,6 +13,7 @@ import TagsController from "../api/controllers/tagController.js";
 import DiagnosticController from "../api/controllers/diagnosticController.js";
 import IncidentController from "../api/controllers/incidentController.js";
 import ProxyController from "@/api/controllers/proxyController.js";
+import EgressController from "@/api/controllers/egressController.js";
 import { ApiServices } from "@/config/services.api.js";
 
 export interface InitializedControllers {
@@ -31,12 +32,18 @@ export interface InitializedControllers {
 	diagnosticController: DiagnosticController;
 	incidentController: IncidentController;
 	proxyController: ProxyController;
+	egressController: EgressController;
 }
 export const initializeControllers = (apiServices: ApiServices): InitializedControllers => {
 	return {
 		authController: new AuthController(apiServices.userService),
 		monitorController: new MonitorController(apiServices.monitorService, apiServices.notificationsService),
-		settingsController: new SettingsController(apiServices.settingsService, apiServices.emailService, apiServices.proxiesService),
+		settingsController: new SettingsController(
+			apiServices.settingsService,
+			apiServices.emailService,
+			apiServices.proxiesService,
+			apiServices.notificationsRepository
+		),
 		checkController: new CheckController(apiServices.checkService),
 		geoCheckController: new GeoCheckController(apiServices.geoChecksService),
 		inviteController: new InviteController(apiServices.inviteService),
@@ -49,5 +56,6 @@ export const initializeControllers = (apiServices: ApiServices): InitializedCont
 		diagnosticController: new DiagnosticController(apiServices.diagnosticService),
 		incidentController: new IncidentController(apiServices.incidentService),
 		proxyController: new ProxyController(apiServices.proxiesService),
+		egressController: new EgressController(apiServices.egressStateService),
 	};
 };

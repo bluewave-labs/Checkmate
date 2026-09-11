@@ -1,4 +1,4 @@
-import CheckModel from "@/domain/checks/check.model.js";
+import { CheckModel, EXCLUDE_DEGRADED_EGRESS_MATCH } from "@/domain/checks/check.model.js";
 import { DockerContainerStatsBucket, DockerStatsBucket } from "@/domain/checks/check.type.js";
 import mongoose from "mongoose";
 
@@ -9,6 +9,7 @@ export const getDockerTotalChecks = async (monitorId: string, dates: DateRange):
 		"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 		"metadata.type": "docker",
 		createdAt: { $gte: dates.start, $lte: dates.end },
+		...EXCLUDE_DEGRADED_EGRESS_MATCH,
 	});
 
 export const getDockerUpChecks = async (monitorId: string, dates: DateRange): Promise<{ totalChecks: number }> => {

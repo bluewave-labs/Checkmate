@@ -1,6 +1,24 @@
 import { CHECK_TTL_SENTINEL } from "@/Types/Check";
 import { z } from "zod";
 
+export const EGRESS_TARGETS_MIN = 1;
+export const EGRESS_TARGETS_MAX = 10;
+export const EGRESS_POLL_INTERVAL_MIN = 5;
+export const EGRESS_POLL_INTERVAL_MAX = 600;
+
+// Mirrors the server-side target format: bare host/IP, host:port, or http(s) URL.
+const EGRESS_TARGET_REGEX = /^(https?:\/\/\S+|[A-Za-z0-9.\-:[\]]+)$/;
+
+const splitEgressTargets = (raw: string): string[] =>
+	Array.from(
+		new Set(
+			raw
+				.split(/[\s,]+/)
+				.map((entry) => entry.trim())
+				.filter((entry) => entry !== "")
+		)
+	);
+
 export const settingsSchema = z
 	.object({
 		systemEmailIgnoreTLS: z.boolean(),
@@ -58,8 +76,40 @@ export const settingsSchema = z
 		}),
 		globalProxyEnabled: z.boolean(),
 		globalProxyId: z.string().nullable().optional(),
+		egressCheckEnabled: z.boolean(),
+		egressCheckTargets: z
+			.string()
+			.transform(splitEgressTargets)
+			.pipe(
+				z
+					.array(
+						z
+							.string()
+							.regex(
+								EGRESS_TARGET_REGEX,
+								"Each target must be a host, IP, host:port, or http(s) URL"
+							)
+					)
+					.max(EGRESS_TARGETS_MAX, `Maximum ${EGRESS_TARGETS_MAX} targets`)
+			),
+		egressPollIntervalSeconds: z
+			.number()
+			.int()
+			.min(EGRESS_POLL_INTERVAL_MIN, `Minimum ${EGRESS_POLL_INTERVAL_MIN} seconds`)
+			.max(EGRESS_POLL_INTERVAL_MAX, `Maximum ${EGRESS_POLL_INTERVAL_MAX} seconds`),
+		egressNotifications: z.array(z.string()),
 	})
 	.superRefine((body, ctx) => {
+		if (
+			body.egressCheckEnabled === true &&
+			body.egressCheckTargets.length < EGRESS_TARGETS_MIN
+		) {
+			ctx.addIssue({
+				code: "custom",
+				path: ["egressCheckTargets"],
+				message: "Enter at least one target to enable the egress self-check",
+			});
+		}
 		if (body.globalProxyEnabled === true && !body.globalProxyId) {
 			ctx.addIssue({
 				code: "custom",

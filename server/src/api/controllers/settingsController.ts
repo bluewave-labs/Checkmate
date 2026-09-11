@@ -7,6 +7,7 @@ import { ISettingsService } from "@/domain/app-settings/app-settings.service.js"
 import { IEmailService } from "@/service/emailService.js";
 import { IProxiesService } from "@/domain/proxies/proxy.service.js";
 import { Settings } from "@/domain/app-settings/app-settings.type.js";
+import { INotificationsRepository } from "@/domain/notifications/notification.repository.interface.js";
 
 export interface ISettingsController {
 	getAppSettings: RequestHandler;
@@ -18,10 +19,17 @@ class SettingsController implements ISettingsController {
 	private settingsService: ISettingsService;
 	private emailService: IEmailService;
 	private proxiesService: IProxiesService;
-	constructor(settingsService: ISettingsService, emailService: IEmailService, proxiesService: IProxiesService) {
+	private notificationsRepository: INotificationsRepository;
+	constructor(
+		settingsService: ISettingsService,
+		emailService: IEmailService,
+		proxiesService: IProxiesService,
+		notificationsRepository: INotificationsRepository
+	) {
 		this.settingsService = settingsService;
 		this.emailService = emailService;
 		this.proxiesService = proxiesService;
+		this.notificationsRepository = notificationsRepository;
 	}
 
 	buildAppSettings = async (dbSettings: Settings) => {
@@ -67,6 +75,16 @@ class SettingsController implements ISettingsController {
 			const proxy = await this.proxiesService.getProxySummary(validatedBody.globalProxyId);
 			if (!proxy) {
 				throw new AppError({ message: "Referenced proxy does not exist", status: 422 });
+			}
+		}
+
+		if (validatedBody.egressNotifications && validatedBody.egressNotifications.length > 0) {
+			const requestedIds = [...new Set(validatedBody.egressNotifications)];
+			const notifications = await this.notificationsRepository.findNotificationsByIds(requestedIds);
+			const foundIds = new Set(notifications.map((notification) => notification.id));
+			const missing = requestedIds.filter((id) => !foundIds.has(id));
+			if (missing.length > 0) {
+				throw new AppError({ message: `Referenced notification does not exist: ${missing.join(", ")}`, status: 422 });
 			}
 		}
 
