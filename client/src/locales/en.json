@@ -206,6 +206,10 @@
 			"retrying": "Retrying...",
 			"reconnected": "Connection restored"
 		},
+		"egressBanner": {
+			"degraded": "Checkmate cannot reach its reliability targets. Outbound connectivity appears to be down since {{time}}; monitor failures are not being reported as incidents until it recovers.",
+			"degradedNoTime": "Checkmate cannot reach its reliability targets. Outbound connectivity appears to be down; monitor failures are not being reported as incidents until it recovers."
+		},
 		"sidebar": {
 			"menu": {
 				"uptime": "Uptime",
@@ -507,6 +511,7 @@
 			},
 			"table": {
 				"empty": "No down checks in this time range",
+				"egressDegraded": "Egress degraded",
 				"headers": {
 					"statusCode": "Status code",
 					"location": "Location"
@@ -1602,6 +1607,29 @@
 						},
 						"rejectUnauthorized": {
 							"label": "Reject invalid certificates: Reject connections with self-signed or untrusted certificates"
+						}
+					}
+				},
+				"egress": {
+					"title": "Egress self-check",
+					"description": "Periodically probe a set of reliability targets from this instance. While none of them can be reached, outbound connectivity is treated as down and monitor failures are not recorded as incidents.",
+					"option": {
+						"enabled": {
+							"label": "Enable egress self-check"
+						},
+						"targets": {
+							"label": "Reliability targets",
+							"placeholder": "1.1.1.1\ndns.google:53\nhttps://example.com",
+							"helper": "One per line or comma-separated, up to {{max}}. A bare host or IP is pinged (ICMP), host:port opens a TCP connection, and an http:// or https:// URL is requested over HTTP."
+						},
+						"pollInterval": {
+							"label": "Poll interval (seconds)",
+							"placeholder": "30"
+						},
+						"notifications": {
+							"label": "Notify on change",
+							"placeholder": "Select notification channels",
+							"description": "Channels alerted when egress becomes degraded and when it recovers."
 						}
 					}
 				},

@@ -53,7 +53,7 @@ export const updateAppSettingsBodyValidation = z
 		globalProxyId: z.string().nullable().optional(),
 
 		egressCheckEnabled: z.boolean().optional(),
-		egressCheckTargets: z.array(egressTargetValidation).min(1).max(MAX_EGRESS_TARGETS).optional(),
+		egressCheckTargets: z.array(egressTargetValidation).max(MAX_EGRESS_TARGETS).optional(), // empty list falls back to DEFAULT_EGRESS_TARGETS
 		egressPollIntervalSeconds: z.number().int().min(MIN_EGRESS_POLL_INTERVAL_SECONDS).max(MAX_EGRESS_POLL_INTERVAL_SECONDS).optional(),
 		egressNotifications: z.array(z.string().regex(/^[a-f\d]{24}$/i, "Invalid notification id")).optional(),
 	})

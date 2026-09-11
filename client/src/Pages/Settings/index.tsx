@@ -39,12 +39,19 @@ import { timezoneOptions } from "@/Utils/timezoneOptions";
 import type { TimezoneOption } from "@/Utils/timezoneOptions";
 import type { RootState } from "@/Types/state";
 import { CHECK_TTL_SENTINEL } from "@/Types/Check";
+import {
+	EGRESS_POLL_INTERVAL_MAX,
+	EGRESS_POLL_INTERVAL_MIN,
+	EGRESS_TARGETS_MAX,
+} from "@/Validation/settings";
 import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 import { FormSliderField } from "@/Components/inputs/forms/FormSliderField";
 import { FormSwitchField } from "@/Components/inputs/forms/FormSwitchField";
 import { FormNumberField } from "@/Components/inputs/forms/FormNumberField";
 import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
+import { FormMultiSelectField } from "@/Components/inputs/forms/FormMultiSelectField";
 import type { ProxyResponse } from "@/Types/Proxy";
+import type { Notification } from "@/Types/Notification";
 import type { AppSettingsResponse } from "@/Types/Settings";
 import { useSearchParams } from "react-router-dom";
 
@@ -61,6 +68,10 @@ type SettingsTabKey = (typeof SETTINGS_TABS)[number]["key"];
 const FIELD_TAB: Record<string, SettingsTabKey> = {
 	checkTTL: "monitoring",
 	globalThresholds: "monitoring",
+	egressCheckEnabled: "monitoring",
+	egressCheckTargets: "monitoring",
+	egressPollIntervalSeconds: "monitoring",
+	egressNotifications: "monitoring",
 	pagespeedApiKey: "integrations",
 	globalProxyEnabled: "integrations",
 	globalProxyId: "integrations",
@@ -81,6 +92,10 @@ const FIELD_LABEL_KEY: Record<string, string> = {
 		"pages.settings.form.thresholds.option.temperature.label",
 	pagespeedApiKey: "pages.settings.form.pagespeed.option.apiKey.label",
 	globalProxyEnabled: "pages.settings.form.globalProxy.option.enabled.label",
+	egressCheckEnabled: "pages.settings.form.egress.option.enabled.label",
+	egressCheckTargets: "pages.settings.form.egress.option.targets.label",
+	egressPollIntervalSeconds: "pages.settings.form.egress.option.pollInterval.label",
+	egressNotifications: "pages.settings.form.egress.option.notifications.label",
 	showURL: "pages.settings.form.url.option.showURL.label",
 	systemEmailHost: "pages.settings.form.email.option.host.label",
 	systemEmailPort: "pages.settings.form.email.option.port.label",
@@ -181,6 +196,15 @@ export const SettingsPage = () => {
 				label: `${proxy.name} (${proxy.host}:${proxy.port})`,
 			})),
 		[proxies]
+	);
+
+	// Notification channels for the egress self-check picker
+	const { data: notifications } = useGet<Notification[]>(
+		isAdmin ? "/notifications/team" : null
+	);
+	const notificationOptions = useMemo(
+		() => (notifications ?? []).map((n) => ({ ...n, name: n.notificationName })),
+		[notifications]
 	);
 
 	// Form submission
@@ -420,6 +444,7 @@ export const SettingsPage = () => {
 	const languages = Object.keys(i18n.options.resources || {});
 
 	const globalProxyEnabled = watch("globalProxyEnabled");
+	const egressCheckEnabled = watch("egressCheckEnabled");
 
 	// Enabling the proxy with nothing selected preselects the first proxy
 	useEffect(() => {
@@ -632,6 +657,65 @@ export const SettingsPage = () => {
 												: `${value}`
 										}
 									/>
+								}
+							/>
+						)}
+
+						{/* Egress self-check */}
+						{isAdmin && (
+							<ConfigBox
+								title={t("pages.settings.form.egress.title")}
+								subtitle={t("pages.settings.form.egress.description")}
+								rightContent={
+									<Stack gap={theme.spacing(LAYOUT.MD)}>
+										<FormSwitchField
+											name="egressCheckEnabled"
+											labelPlacement="start"
+											label={t("pages.settings.form.egress.option.enabled.label")}
+										/>
+										<FormTextField
+											name="egressCheckTargets"
+											multiline
+											minRows={3}
+											fieldLabel={t("pages.settings.form.egress.option.targets.label")}
+											placeholder={t(
+												"pages.settings.form.egress.option.targets.placeholder"
+											)}
+											helperText={t("pages.settings.form.egress.option.targets.helper", {
+												max: EGRESS_TARGETS_MAX,
+											})}
+										/>
+										{egressCheckEnabled && (
+											<FormNumberField
+												name="egressPollIntervalSeconds"
+												fieldLabel={t(
+													"pages.settings.form.egress.option.pollInterval.label"
+												)}
+												placeholder={t(
+													"pages.settings.form.egress.option.pollInterval.placeholder"
+												)}
+												slotProps={{
+													htmlInput: {
+														min: EGRESS_POLL_INTERVAL_MIN,
+														max: EGRESS_POLL_INTERVAL_MAX,
+													},
+												}}
+											/>
+										)}
+										<FormMultiSelectField
+											name="egressNotifications"
+											options={notificationOptions}
+											fieldLabel={t(
+												"pages.settings.form.egress.option.notifications.label"
+											)}
+											placeholder={t(
+												"pages.settings.form.egress.option.notifications.placeholder"
+											)}
+											description={t(
+												"pages.settings.form.egress.option.notifications.description"
+											)}
+										/>
+									</Stack>
 								}
 							/>
 						)}

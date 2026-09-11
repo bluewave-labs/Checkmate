@@ -5,6 +5,7 @@ import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { Notification } from "../../../src/domain/notifications/notification.type.ts";
 import type { MonitorStatusResponse } from "../../../src/types/network.ts";
 import type { MonitorActionDecision } from "../../../src/worker/worker.helper.ts";
+import type { EgressState } from "../../../src/domain/egress/egress.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -32,6 +33,7 @@ const createSettingsService = (clientHost = "https://app.example.com") => ({
 
 const createMessageBuilder = () => ({
 	buildMessage: jest.fn().mockReturnValue({ type: "monitor_down", content: { title: "Down" } }),
+	buildEgressRecoveredMessage: jest.fn().mockReturnValue({ type: "egress_recovered", content: { title: "Restored" } }),
 	extractThresholdBreaches: jest.fn(),
 });
 
@@ -130,6 +132,18 @@ const makeDecision = (overrides?: Partial<MonitorActionDecision>): MonitorAction
 });
 
 const makeStatusResponse = () => ({ monitorId: "mon-1", status: false, code: 500 }) as unknown as MonitorStatusResponse;
+
+const makeEgressState = (overrides?: Partial<EgressState>): EgressState => ({
+	id: "egress-1",
+	status: "ok",
+	degradedSince: "2026-01-01T10:00:00.000Z",
+	lastRecoveredAt: "2026-01-01T10:05:00.000Z",
+	lastProbeAt: "2026-01-01T10:05:00.000Z",
+	lastProbeResults: [],
+	createdAt: "2026-01-01T00:00:00.000Z",
+	updatedAt: "2026-01-01T10:05:00.000Z",
+	...overrides,
+});
 
 // ── Tests ────────────────────────────────────────────────────────────────────
 
@@ -308,6 +322,50 @@ describe("NotificationsService", () => {
 			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([makeNotification({ type: "email" })]);
 
 			const result = await service.testAllNotifications(["notif-1"]);
+			expect(result).toBe(false);
+		});
+	});
+
+	// ── sendEgressRecoveredNotification ──────────────────────────────────────
+
+	describe("sendEgressRecoveredNotification", () => {
+		it("builds one egress message and sends it to every resolved notification", async () => {
+			const { service, notificationsRepository, emailProvider, slackProvider, notificationMessageBuilder } = createService();
+			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([
+				makeNotification({ id: "notif-1", type: "email" }),
+				makeNotification({ id: "notif-2", type: "slack" }),
+			]);
+			const state = makeEgressState();
+
+			const result = await service.sendEgressRecoveredNotification(state, ["notif-1", "notif-2"]);
+
+			expect(result).toBe(true);
+			expect(notificationsRepository.findNotificationsByIds).toHaveBeenCalledWith(["notif-1", "notif-2"]);
+			expect(notificationMessageBuilder.buildEgressRecoveredMessage).toHaveBeenCalledTimes(1);
+			expect(notificationMessageBuilder.buildEgressRecoveredMessage).toHaveBeenCalledWith(state, "https://app.example.com");
+			const message = notificationMessageBuilder.buildEgressRecoveredMessage.mock.results[0]?.value;
+			expect(emailProvider.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ id: "notif-1" }), message);
+			expect(slackProvider.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ id: "notif-2" }), message);
+		});
+
+		it("returns true without building a message when no notifications are configured", async () => {
+			const { service, notificationsRepository, notificationMessageBuilder, logger } = createService();
+			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([]);
+
+			const result = await service.sendEgressRecoveredNotification(makeEgressState(), []);
+
+			expect(result).toBe(true);
+			expect(notificationMessageBuilder.buildEgressRecoveredMessage).not.toHaveBeenCalled();
+			expect(logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("no notification channels") }));
+		});
+
+		it("returns false when any provider fails", async () => {
+			const { service, notificationsRepository, emailProvider } = createService();
+			emailProvider.sendMessage.mockResolvedValue(false);
+			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([makeNotification({ type: "email" })]);
+
+			const result = await service.sendEgressRecoveredNotification(makeEgressState(), ["notif-1"]);
+
 			expect(result).toBe(false);
 		});
 	});

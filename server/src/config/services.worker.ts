@@ -27,6 +27,7 @@ import { IncidentReactor } from "@/worker/reactors/reactor.incident.js";
 import { ReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
 import { DBQueueWorker } from "@/worker/worker.db-queue.js";
 import { ProxyResolver } from "@/service/network/ProxyResolver.js";
+import { IEgressService, EgressService } from "@/domain/egress/egress.service.js";
 // Network providers
 import { PingProvider } from "@/service/network/PingProvider.js";
 import { HttpProvider } from "@/service/network/HttpProvider.js";
@@ -44,6 +45,7 @@ export interface WorkerServices {
 	networkService: INetworkService;
 	bufferService: IBufferService;
 	statusService: IStatusService;
+	egressService: IEgressService;
 }
 
 export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig): Promise<WorkerServices> => {
@@ -67,6 +69,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		teamsRepository,
 		maintenanceWindowsRepository,
 		proxiesRepository,
+		egressStateRepository,
 	} = shared;
 
 	// ***********************
@@ -100,6 +103,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	const bufferService = new BufferService(logger, checkService, geoChecksService, dockerLogsService, settingsService, jobsRepository);
 	const statusService = new StatusService(logger, monitorsRepository, monitorStatsRepository);
 	const monitorStatusPolicy = new MonitorStatusPolicy();
+	const egressService = new EgressService(settingsService, egressStateRepository, networkService, notificationsService, logger);
 
 	// ***********************
 	// Reactors and dispatcher
@@ -122,9 +126,10 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		proxyResolver,
 		bufferService,
 		dockerLogsService,
+		egressService,
 		logger
 	);
-	const checkEvaluator = new CheckEvaluator(statusService, monitorStatusPolicy);
+	const checkEvaluator = new CheckEvaluator(statusService, monitorStatusPolicy, logger);
 	const geoCheckPipeline = new GeoChecksPipeline(maintenanceWindowsRepository, geoChecksService, bufferService, logger);
 
 	// ***********************
@@ -164,5 +169,8 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		workerId,
 	});
 
-	return { worker, networkService, bufferService, statusService };
+	// Resume recovery polling if the instance was mid-episode when it last stopped
+	await egressService.init();
+
+	return { worker, networkService, bufferService, statusService, egressService };
 };

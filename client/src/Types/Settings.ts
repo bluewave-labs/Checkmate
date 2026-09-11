@@ -26,6 +26,10 @@ export interface Settings {
 	globalThresholds?: SettingsThresholds;
 	globalProxyEnabled: boolean;
 	globalProxyId?: string | null;
+	egressCheckEnabled: boolean;
+	egressCheckTargets: string[];
+	egressPollIntervalSeconds: number;
+	egressNotifications: string[];
 	createdAt: string;
 	updatedAt: string;
 }

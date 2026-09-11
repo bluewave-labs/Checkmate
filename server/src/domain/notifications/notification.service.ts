@@ -10,6 +10,7 @@ import type { ISettingsService } from "@/domain/app-settings/app-settings.servic
 import { ILogger } from "@/utils/logger.js";
 import type { INotificationMessageBuilder } from "@/domain/notifications/notification.message-builder.js";
 import type { NotificationChannel } from "@/domain/notifications/notification.type.js";
+import type { EgressState } from "@/domain/egress/egress.type.js";
 
 export type NotificationProviderRegistry = Record<NotificationChannel, INotificationProvider>;
 
@@ -20,6 +21,9 @@ export interface INotificationsService {
 	updateById(id: string, teamId: string, updateData: Partial<Notification>): Promise<Notification>;
 	deleteById: (id: string, teamId: string) => Promise<Notification>;
 	handleNotifications: (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => Promise<boolean>;
+
+	// Instance-level (not monitor-scoped): sent once when outbound connectivity returns after a degraded egress episode.
+	sendEgressRecoveredNotification: (state: EgressState, notificationIds: string[]) => Promise<boolean>;
 
 	sendTestNotification: (notification: Partial<Notification>) => Promise<boolean>;
 	testAllNotifications: (notificationIds: string[]) => Promise<boolean>;
@@ -60,13 +64,7 @@ export class NotificationsService implements INotificationsService {
 		this.notificationMessageBuilder = notificationMessageBuilder;
 	}
 
-	private send = async (
-		notification: Notification,
-		monitor: Monitor,
-		monitorStatusResponse: MonitorStatusResponse,
-		decision: MonitorActionDecision,
-		notificationMessage: NotificationMessage | undefined
-	): Promise<boolean> => {
+	private send = async (notification: Notification, notificationMessage: NotificationMessage | undefined): Promise<boolean> => {
 		if (!notificationMessage) {
 			this.logger.warn({
 				message: "Notification message not provided",
@@ -98,7 +96,11 @@ export class NotificationsService implements INotificationsService {
 		const clientHost = settings.clientHost || "Host not defined";
 		const notificationMessage = this.notificationMessageBuilder.buildMessage(monitor, monitorStatusResponse, decision, clientHost);
 
-		const tasks = notifications.map((notification) => this.send(notification, monitor, monitorStatusResponse, decision, notificationMessage));
+		return await this.sendToAll(notifications, notificationMessage, "sendNotifications");
+	};
+
+	private sendToAll = async (notifications: Notification[], notificationMessage: NotificationMessage | undefined, method: string) => {
+		const tasks = notifications.map((notification) => this.send(notification, notificationMessage));
 
 		const outcomes = await Promise.all(tasks);
 		const succeeded = outcomes.filter(Boolean).length;
@@ -107,11 +109,29 @@ export class NotificationsService implements INotificationsService {
 			this.logger.warn({
 				message: `Notification send completed with ${succeeded} success, ${failed} failure(s)`,
 				service: SERVICE_NAME,
-				method: "sendNotifications",
+				method,
 			});
 		}
 		// Return true if all notifications succeeded
 		return succeeded === notifications.length;
+	};
+
+	sendEgressRecoveredNotification = async (state: EgressState, notificationIds: string[]) => {
+		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds ?? []);
+		if (notifications.length === 0) {
+			this.logger.info({
+				message: "Egress recovered but no notification channels are configured for it",
+				service: SERVICE_NAME,
+				method: "sendEgressRecoveredNotification",
+			});
+			return true;
+		}
+
+		const settings = this.settingsService.getSettings();
+		const clientHost = settings.clientHost || "Host not defined";
+		const notificationMessage = this.notificationMessageBuilder.buildEgressRecoveredMessage(state, clientHost);
+
+		return await this.sendToAll(notifications, notificationMessage, "sendEgressRecoveredNotification");
 	};
 
 	handleNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {

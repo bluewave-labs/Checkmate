@@ -92,6 +92,8 @@ export class EmailProvider extends NotificationProvider {
 				return `Monitor ${message.monitor.name} threshold exceeded`;
 			case "threshold_resolved":
 				return `Monitor ${message.monitor.name} thresholds resolved`;
+			case "egress_recovered":
+				return "Checkmate outbound connectivity restored";
 			default:
 				return `Alert: ${message.monitor.name}`;
 		}

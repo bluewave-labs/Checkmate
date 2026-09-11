@@ -11,6 +11,7 @@ import { IMaintenanceWindowsRepository } from "@/domain/maintenance-windows/main
 import { isWindowActive } from "@/utils/maintenanceWindow.js";
 import { IProxyResolver } from "@/service/network/ProxyResolver.js";
 import { IDockerLogsService } from "@/domain/docker/docker-log.service.js";
+import { IEgressService } from "@/domain/egress/egress.service.js";
 
 export interface ICheckProducer {
 	produce(monitor: Monitor): Promise<{ status: MonitorStatusResponse; check: Check } | null>;
@@ -27,6 +28,7 @@ export class CheckProducer implements ICheckProducer {
 		private proxyResolver: IProxyResolver,
 		private bufferService: IBufferService,
 		private dockerLogsService: IDockerLogsService,
+		private egressService: IEgressService,
 		private logger: ILogger
 	) {}
 
@@ -66,6 +68,10 @@ export class CheckProducer implements ICheckProducer {
 			throw new Error("No network response");
 		}
 
+		// Step 1c: On failure, ask whether the instance itself can reach anything before blaming the target.
+		// Null means the egress check is disabled (or failed internally) and the check is treated as usual.
+		const egressStatus = status.status === false ? await this.egressService.assessAfterFailure() : null;
+
 		// ****************************
 		// Step 2: Record
 		// ****************************
@@ -80,6 +86,9 @@ export class CheckProducer implements ICheckProducer {
 				details: { code: status.code, message: status.message },
 			});
 			return null;
+		}
+		if (egressStatus !== null) {
+			check.egressStatus = egressStatus;
 		}
 		// Step 2b: Add to buffer
 		this.bufferService.addToBuffer(check);
