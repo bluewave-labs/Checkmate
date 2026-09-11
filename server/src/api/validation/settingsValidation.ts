@@ -1,5 +1,14 @@
 import { CHECK_TTL_SENTINEL } from "@/domain/checks/check.type.js";
+import { MAX_EGRESS_POLL_INTERVAL_SECONDS, MAX_EGRESS_TARGETS, MIN_EGRESS_POLL_INTERVAL_SECONDS } from "@/domain/egress/egress.type.js";
 import { z } from "zod";
+
+// A reliability target is a bare host/IP (ICMP ping), host:port (TCP connect) or an http(s) URL.
+const egressTargetValidation = z
+	.string()
+	.trim()
+	.min(1)
+	.max(253)
+	.regex(/^(https?:\/\/\S+|[A-Za-z0-9.\-:[\]]+)$/, "Invalid egress target");
 
 //****************************************
 // Settings Validations
@@ -42,6 +51,11 @@ export const updateAppSettingsBodyValidation = z
 			.optional(),
 		globalProxyEnabled: z.boolean().optional(),
 		globalProxyId: z.string().nullable().optional(),
+
+		egressCheckEnabled: z.boolean().optional(),
+		egressCheckTargets: z.array(egressTargetValidation).min(1).max(MAX_EGRESS_TARGETS).optional(),
+		egressPollIntervalSeconds: z.number().int().min(MIN_EGRESS_POLL_INTERVAL_SECONDS).max(MAX_EGRESS_POLL_INTERVAL_SECONDS).optional(),
+		egressNotifications: z.array(z.string().regex(/^[a-f\d]{24}$/i, "Invalid notification id")).optional(),
 	})
 	.strip()
 	.superRefine((body, ctx) => {

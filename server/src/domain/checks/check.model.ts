@@ -1,5 +1,6 @@
 import { Schema, model, Types } from "mongoose";
 import { MonitorTypes, type MonitorType } from "@/domain/monitors/monitor.type.js";
+import { EgressStatuses } from "@/domain/egress/egress.type.js";
 import type {
 	Check,
 	CheckAudits,
@@ -335,6 +336,11 @@ const CheckSchema = new Schema<CheckDocument>(
 		},
 		containerSummary: {
 			type: containerSummarySchema,
+			default: undefined,
+		},
+		egressStatus: {
+			type: String,
+			enum: EgressStatuses,
 			default: undefined,
 		},
 	},
