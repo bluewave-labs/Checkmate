@@ -25,7 +25,7 @@ import { AppError } from "@/utils/AppError.js";
 import Dockerode from "dockerode";
 import { timeRequest } from "@/service/network/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
-import { IEncryptionService } from "@/service/encryptionService.js";
+import { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import { DOCKER_TLS_URL, isDockerTlsUrl } from "@/utils/dockerHost.js";
 import { splitCertificateBundle } from "@/utils/pem.js";
 

@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import https from "node:https";
 import { DockerProvider } from "../../../../src/service/network/DockerProvider.ts";
-import type { IEncryptionService } from "../../../../src/service/encryptionService.ts";
+import type { IEncryptionService } from "../../../../src/service/encryption/encryptionService.ts";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
 import { NETWORK_ERROR } from "../../../../src/types/network.ts";
