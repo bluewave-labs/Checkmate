@@ -30,7 +30,6 @@ import { DOCKER_TLS_URL, isDockerTlsUrl } from "@/utils/dockerHost.js";
 import { splitCertificateBundle } from "@/utils/pem.js";
 
 type DockerodeType = typeof Dockerode;
-// @types/dockerode omits agent and connectionTimeout; docker-modem forwards both
 type DockerOptions = Dockerode.DockerOptions & { agent?: https.Agent; connectionTimeout?: number };
 type TlsCredentials = { ok: true; key: string } | { ok: false; message: string };
 

@@ -128,9 +128,9 @@ const dockerSchema = baseSchema.extend({
 	ignoreTlsErrors: z.boolean(),
 	dockerTlsCa: z.string(),
 	dockerTlsCert: z.string(),
-	// Never prefilled; blank on edit keeps the stored key.
+	// blank on edit keeps the stored key.
 	dockerTlsKey: z.string(),
-	// Read-only mirror of the server flag; stripped by the server on submit.
+	// Read only mirror of the server flag, stripped on submit
 	dockerTlsKeySet: z.boolean(),
 	dockerLogsEnabled: z.boolean().register(monitorStepRegistry, { step: 1 }),
 });
