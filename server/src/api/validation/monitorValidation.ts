@@ -15,6 +15,7 @@ import {
 import { DateRanges, SortOrders } from "@/types/query.js";
 import { DockerContainerStates, DockerHealthStatuses, DockerLogStreams, DockerPortProtocols } from "@/domain/docker/docker.type.js";
 import { DOCKER_LOG_PAGE_DEFAULT, DOCKER_LOG_PAGE_MAX } from "@/domain/docker/docker-log.type.js";
+import { isDockerSocketUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
@@ -120,15 +121,13 @@ const refineProxySelection = (body: { proxyMode?: string; proxyId?: string }, ct
 	}
 };
 
-const dockerUrlRegex = /^(?:unix:\/\/\/\S+|\/\S+)$/;
-
 const refineDockerUrl = (data: { type?: string; url?: string }, ctx: z.RefinementCtx) => {
 	if (data.type !== "docker" || data.url === undefined) return;
-	if (!dockerUrlRegex.test(data.url)) {
+	if (!isDockerSocketUrl(data.url) && !isDockerTlsUrl(data.url)) {
 		ctx.addIssue({
 			code: "custom",
 			path: ["url"],
-			message: "Docker host must be unix:///path or an absolute socket path",
+			message: "Docker host must be unix:///path, an absolute socket path, or tcp://host[:port]",
 		});
 	}
 };
@@ -170,6 +169,9 @@ export const createMonitorBodyValidation = z
 		geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 		geoCheckInterval: z.number().min(300000).optional(),
 		dockerLogsEnabled: z.boolean().optional(),
+		dockerTlsCa: z.union([z.string(), z.literal("")]).optional(),
+		dockerTlsCert: z.union([z.string(), z.literal("")]).optional(),
+		dockerTlsKey: z.union([z.string(), z.literal("")]).optional(),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 	})
@@ -215,6 +217,9 @@ export const editMonitorBodyValidation = z
 		geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 		geoCheckInterval: z.number().min(300000).optional(),
 		dockerLogsEnabled: z.boolean().optional(),
+		dockerTlsCa: z.union([z.string(), z.literal("")]).optional(),
+		dockerTlsCert: z.union([z.string(), z.literal("")]).optional(),
+		dockerTlsKey: z.union([z.string(), z.literal("")]).optional(),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 	})
@@ -291,7 +296,6 @@ const importedMonitorSchema = z
 		geoCheckLocations: z.array(z.enum(GeoContinents)).default([]),
 		geoCheckInterval: z.number().min(300000).default(300000),
 		dockerLogsEnabled: z.boolean().default(false),
-
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 		createdAt: z.string().optional(),
@@ -381,6 +385,9 @@ export const monitorResponseSchema = z
 		geoCheckLocations: z.array(z.enum(GeoContinents)),
 		geoCheckInterval: z.number(),
 		dockerLogsEnabled: z.boolean(),
+		dockerTlsCa: z.string().optional(),
+		dockerTlsCert: z.string().optional(),
+		dockerTlsKeySet: z.boolean().optional(),
 		dnsServer: z.string().optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 		teamId: z.string(),

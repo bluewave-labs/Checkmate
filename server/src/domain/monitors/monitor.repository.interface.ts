@@ -55,6 +55,11 @@ export interface IMonitorsRepository {
 	findMonitorCountByTeamIdAndType(teamId: string, config: TeamQueryConfig): Promise<number>;
 	findMonitorCountByProxyId(proxyId: string): Promise<number>;
 
+	// Docker TLS
+	findDockerTlsKeyById(monitorId: string): Promise<string | null>;
+	findAllDockerTlsKeys(): Promise<{ id: string; dockerTlsKey: string }[]>;
+	updateDockerTlsKey(monitorId: string, dockerTlsKey: string): Promise<void>; // Needed for worker to rotate keys, no teamId/userId
+
 	// other
 	findMonitorsSummaryByTeamId(teamId: string, config?: SummaryConfig): Promise<MonitorsSummary>;
 	removeNotificationFromMonitors(notificationId: string): Promise<void>;

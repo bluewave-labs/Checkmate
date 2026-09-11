@@ -1,5 +1,7 @@
+import https from "node:https";
+
 import { IStatusProvider } from "@/service/network/IStatusProvider.js";
-import { DockerStatusPayload, MonitorStatusResponse } from "@/types/network.js";
+import { CheckContext, DockerStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 
 import {
 	DOCKER_LOG_TAIL_LINES,
@@ -23,13 +25,20 @@ import { AppError } from "@/utils/AppError.js";
 import Dockerode from "dockerode";
 import { timeRequest } from "@/service/network/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
+import { IEncryptionService } from "@/service/encryption/encryptionService.js";
+import { DOCKER_TLS_URL, isDockerTlsUrl } from "@/utils/dockerHost.js";
+import { splitCertificateBundle } from "@/utils/pem.js";
+
 type DockerodeType = typeof Dockerode;
+type DockerOptions = Dockerode.DockerOptions & { agent?: https.Agent };
+type TlsCredentials = { ok: true; key: string } | { ok: false; message: string };
 
 const SERVICE_NAME = "DockerProvider";
 const STATS_CONCURRENCY = 5;
 const DOCKER_LOG_MAX_LINE_BYTES = 4096;
 const DOCKER_LOG_TRUNCATION_MARKER = " …[truncated]";
 const DOCKER_LOG_TS_REGEX = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{1,9}))?Z /;
+const DOCKER_TLS_DEFAULT_PORT = 2376;
 
 export interface DockerError extends Error {
 	statusCode?: number;
@@ -42,28 +51,72 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 
 	constructor(
 		private logger: ILogger,
-		private DockerLib: DockerodeType
+		private DockerLib: DockerodeType,
+		private encryptionService: IEncryptionService
 	) {}
 
 	supports(type: MonitorType): boolean {
 		return type === "docker";
 	}
 
+	private resolveTlsCredentials = (monitor: Monitor, ctx?: CheckContext): TlsCredentials | undefined => {
+		if (!isDockerTlsUrl(monitor.url)) return undefined;
+		if (!ctx?.dockerTlsKey) return { ok: false, message: "Docker TLS key is missing" };
+		try {
+			return { ok: true, key: this.encryptionService.decrypt(ctx.dockerTlsKey) };
+		} catch (error) {
+			if (error instanceof AppError) {
+				const keyId = typeof error.details?.keyId === "string" ? ` (key id ${error.details.keyId})` : "";
+				return { ok: false, message: `${error.message}${keyId}` };
+			}
+			return { ok: false, message: "Docker TLS key could not be decrypted" };
+		}
+	};
+
 	private isDockerError(error: unknown): error is DockerError {
 		return error instanceof Error && ("statusCode" in error || "reason" in error || "json" in error);
 	}
 
-	private toDockerOptions = (monitor: Monitor): Dockerode.DockerOptions => {
+	private splitCaBundle = (pem: string | undefined): string[] | undefined => {
+		const blocks = pem ? splitCertificateBundle(pem) : [];
+		return blocks.length > 0 ? blocks : undefined;
+	};
+
+	private invalidUrl = (message: string) => new AppError({ message, status: 422, service: SERVICE_NAME, method: "toDockerOptions" });
+
+	private toDockerOptions = (monitor: Monitor, credentials?: TlsCredentials): DockerOptions => {
 		const url = monitor.url?.trim();
-		if (!url) throw new AppError({ message: "Docker host URL is required", status: 422, service: SERVICE_NAME, method: "toDockerOptions" });
+		if (!url) throw this.invalidUrl("Docker host URL is required");
+
+		// Unix socket
 		if (url.startsWith("unix://")) {
 			const socketPath = url.slice("unix://".length);
-			if (!socketPath.startsWith("/"))
-				throw new AppError({ message: `Invalid Docker host URL: ${url}`, status: 422, service: SERVICE_NAME, method: "toDockerOptions" });
+			if (!socketPath.startsWith("/")) throw this.invalidUrl(`Invalid Docker host URL: ${url}`);
 			return { socketPath };
 		}
 		if (url.startsWith("/")) return { socketPath: url };
-		throw new AppError({ message: `Invalid Docker host URL: ${url}`, status: 422, service: SERVICE_NAME, method: "toDockerOptions" });
+
+		// Docker TLS
+		const match = DOCKER_TLS_URL.exec(url);
+		if (!match) throw this.invalidUrl(`Invalid Docker host URL: ${url}`);
+		if (!credentials?.ok) throw this.invalidUrl(credentials?.message ?? "Docker TLS key is missing");
+		const [, , host, port] = match;
+		const ca = monitor.ignoreTlsErrors ? undefined : this.splitCaBundle(monitor.dockerTlsCa);
+		const cert = monitor.dockerTlsCert;
+		const key = credentials.key;
+		return {
+			host,
+			port: port ? Number(port) : DOCKER_TLS_DEFAULT_PORT,
+			protocol: "https",
+			ca,
+			cert,
+			key,
+			agent: new https.Agent({ ca, cert, key, rejectUnauthorized: !monitor.ignoreTlsErrors }),
+			socketPath: undefined,
+			username: undefined,
+			sshOptions: undefined,
+			timeout: undefined,
+		};
 	};
 
 	private async mapWithConcurrency<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
@@ -260,9 +313,23 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 		return rawLogs.filter((log) => log !== null);
 	};
 
-	handle = async (monitor: Monitor): Promise<MonitorStatusResponse<DockerStatusPayload>> => {
+	private failed = (monitor: Monitor, code: number, message: string, responseTime: number): MonitorStatusResponse<DockerStatusPayload> => ({
+		monitorId: monitor.id,
+		teamId: monitor.teamId,
+		type: monitor.type,
+		status: false,
+		code,
+		message,
+		responseTime,
+		payload: null,
+	});
+
+	handle = async (monitor: Monitor, ctx?: CheckContext): Promise<MonitorStatusResponse<DockerStatusPayload>> => {
 		try {
-			const docker = new this.DockerLib(this.toDockerOptions(monitor));
+			const credentials = this.resolveTlsCredentials(monitor, ctx);
+			if (credentials && !credentials.ok) return this.failed(monitor, NETWORK_ERROR, credentials.message, 0);
+
+			const docker = new this.DockerLib(this.toDockerOptions(monitor, credentials));
 			// Host reachability is the monitor's status; ping latency is the responseTime
 			const { responseTime, error } = await timeRequest(() => docker.ping());
 			if (error) {
@@ -274,16 +341,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 				} else if (error instanceof Error) {
 					message = error.message;
 				}
-				return {
-					monitorId: monitor.id,
-					teamId: monitor.teamId,
-					type: monitor.type,
-					status: false,
-					code,
-					message,
-					responseTime,
-					payload: null,
-				};
+				return this.failed(monitor, code, message, responseTime);
 			}
 
 			const summaries = await docker.listContainers({ all: true });

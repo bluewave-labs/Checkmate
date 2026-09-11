@@ -1,5 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
+import https from "node:https";
 import { DockerProvider } from "../../../../src/service/network/DockerProvider.ts";
+import type { IEncryptionService } from "../../../../src/service/encryption/encryptionService.ts";
 import { testStatusProviderContract } from "../../../helpers/statusProviderContract.ts";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
 import { NETWORK_ERROR } from "../../../../src/types/network.ts";
@@ -8,6 +10,25 @@ import type { Monitor } from "../../../../src/domain/monitors/monitor.type.ts";
 import { DOCKER_LOG_TAIL_LINES } from "../../../../src/domain/docker/docker.type.ts";
 
 // ── Fixtures ─────────────────────────────────────────────────────────────────
+
+const CA_PEM = "-----BEGIN CERTIFICATE-----\nca-one\n-----END CERTIFICATE-----";
+const CA_BUNDLE_PEM = `${CA_PEM}\n-----BEGIN CERTIFICATE-----\nca-two\n-----END CERTIFICATE-----\n`;
+const CERT_PEM = "-----BEGIN CERTIFICATE-----\nclient\n-----END CERTIFICATE-----";
+const KEY_PEM = "-----BEGIN PRIVATE KEY-----\nstub\n-----END PRIVATE KEY-----";
+const KEY_CIPHERTEXT = "v1.abc123.iv.tag.data";
+
+const makeEncryptionService = (overrides?: Partial<IEncryptionService>): IEncryptionService => ({
+	isConfigured: jest.fn(() => true),
+	currentKeyId: jest.fn(() => "abc123"),
+	keyIdOf: jest.fn(() => "abc123"),
+	needsReencryption: jest.fn(() => false),
+	encrypt: jest.fn(() => KEY_CIPHERTEXT),
+	decrypt: jest.fn(() => KEY_PEM),
+	...overrides,
+});
+
+const makeTlsMonitor = (overrides?: Partial<Monitor>): Monitor =>
+	makeMonitor({ url: "tcp://host", dockerTlsCa: CA_PEM, dockerTlsCert: CERT_PEM, dockerTlsKeySet: true, ...overrides });
 
 const makeMonitor = (overrides?: Partial<Monitor>): Monitor =>
 	({
@@ -60,7 +81,17 @@ const makeLogFrame = (streamType: number, text: string): Buffer => {
 	return Buffer.concat([header, payload]);
 };
 
-const setup = (overrides: Partial<{ ping: any; listContainers: any; getContainer: any; inspect: any; stats: any; logs: any }> = {}) => {
+const setup = (
+	overrides: Partial<{
+		ping: any;
+		listContainers: any;
+		getContainer: any;
+		inspect: any;
+		stats: any;
+		logs: any;
+		encryptionService: IEncryptionService;
+	}> = {}
+) => {
 	const inspect = overrides.inspect ?? jest.fn().mockResolvedValue(makeInspect());
 	const stats = overrides.stats ?? jest.fn().mockResolvedValue(makeStats());
 	const logs = overrides.logs ?? jest.fn().mockResolvedValue(Buffer.alloc(0));
@@ -72,8 +103,20 @@ const setup = (overrides: Partial<{ ping: any; listContainers: any; getContainer
 	};
 	const DockerLib = jest.fn().mockReturnValue(instance) as any;
 	const logger = createMockLogger();
-	const provider = new DockerProvider(logger as any, DockerLib);
-	return { provider, logger, DockerLib, ping: instance.ping, listContainers: instance.listContainers, getContainer, inspect, stats, logs };
+	const encryptionService = overrides.encryptionService ?? makeEncryptionService();
+	const provider = new DockerProvider(logger as any, DockerLib, encryptionService);
+	return {
+		provider,
+		logger,
+		DockerLib,
+		encryptionService,
+		ping: instance.ping,
+		listContainers: instance.listContainers,
+		getContainer,
+		inspect,
+		stats,
+		logs,
+	};
 };
 
 // ── Contract ─────────────────────────────────────────────────────────────────
@@ -116,6 +159,121 @@ describe("DockerProvider", () => {
 		});
 	});
 
+	// ── TLS host urls ────────────────────────────────────────────────────
+
+	describe("tls host urls", () => {
+		const ctx = { dockerTlsKey: KEY_CIPHERTEXT };
+		const optionsPassedTo = (DockerLib: jest.Mock) => DockerLib.mock.calls[0]?.[0] as Record<string, unknown>;
+		const agentOf = (options: Record<string, unknown>) => options.agent as https.Agent & { options: Record<string, unknown> };
+
+		it("parses tcp:// into an https connection with the monitor's ca and cert and the decrypted key", async () => {
+			const { provider, DockerLib, encryptionService } = setup();
+
+			await provider.handle(makeTlsMonitor(), ctx);
+
+			expect(encryptionService.decrypt).toHaveBeenCalledWith(KEY_CIPHERTEXT);
+			const options = optionsPassedTo(DockerLib);
+			expect(options).toMatchObject({ host: "host", port: 2376, protocol: "https", ca: [CA_PEM], cert: CERT_PEM, key: KEY_PEM });
+			expect(agentOf(options)).toBeInstanceOf(https.Agent);
+			expect(agentOf(options).options).toMatchObject({ ca: [CA_PEM], cert: CERT_PEM, key: KEY_PEM, rejectUnauthorized: true });
+		});
+
+		it("parses https:// with an explicit port", async () => {
+			const { provider, DockerLib } = setup();
+
+			await provider.handle(makeTlsMonitor({ url: "https://host:2377" }), ctx);
+
+			expect(optionsPassedTo(DockerLib)).toMatchObject({ host: "host", port: 2377, protocol: "https" });
+		});
+
+		it("accepts a trailing slash", async () => {
+			const { provider, DockerLib } = setup();
+
+			await provider.handle(makeTlsMonitor({ url: "tcp://host:2376/" }), ctx);
+
+			expect(optionsPassedTo(DockerLib)).toMatchObject({ host: "host", port: 2376 });
+		});
+
+		it("splits a ca bundle into one entry per certificate on the options and the agent", async () => {
+			const { provider, DockerLib } = setup();
+
+			await provider.handle(makeTlsMonitor({ dockerTlsCa: CA_BUNDLE_PEM }), ctx);
+
+			const options = optionsPassedTo(DockerLib);
+			expect(options.ca).toHaveLength(2);
+			expect(agentOf(options).options.ca).toEqual(options.ca);
+		});
+
+		it("omits the ca and stops rejecting unauthorized certificates when ignoreTlsErrors is set", async () => {
+			const { provider, DockerLib } = setup();
+
+			await provider.handle(makeTlsMonitor({ ignoreTlsErrors: true }), ctx);
+
+			const options = optionsPassedTo(DockerLib);
+			expect(options.ca).toBeUndefined();
+			expect(agentOf(options).options).toMatchObject({ ca: undefined, rejectUnauthorized: false });
+		});
+
+		it("passes explicit undefined for every field docker-modem would otherwise fill from the environment", async () => {
+			const { provider, DockerLib } = setup();
+
+			await provider.handle(makeTlsMonitor(), ctx);
+
+			const options = optionsPassedTo(DockerLib);
+			for (const field of ["socketPath", "username", "sshOptions", "timeout"]) {
+				expect(options).toHaveProperty(field, undefined);
+			}
+		});
+
+		it("returns a down check and never constructs a client when the key is missing from the context", async () => {
+			const { provider, DockerLib, encryptionService } = setup();
+
+			const result = await provider.handle(makeTlsMonitor());
+
+			expect(result).toMatchObject({ status: false, code: NETWORK_ERROR, message: "Docker TLS key is missing", payload: null });
+			expect(encryptionService.decrypt).not.toHaveBeenCalled();
+			expect(DockerLib).not.toHaveBeenCalled();
+		});
+
+		it("returns a down check naming the key id when the stored key cannot be decrypted", async () => {
+			const decrypt = jest.fn(() => {
+				throw new AppError({
+					message: "No encryption key matches ciphertext",
+					status: 500,
+					service: "EncryptionService",
+					method: "decrypt",
+					details: { keyId: "abc123" },
+				});
+			});
+			const { provider, DockerLib } = setup({ encryptionService: makeEncryptionService({ decrypt }) });
+
+			const result = await provider.handle(makeTlsMonitor(), ctx);
+
+			expect(result).toMatchObject({ status: false, code: NETWORK_ERROR, message: "No encryption key matches ciphertext (key id abc123)" });
+			expect(DockerLib).not.toHaveBeenCalled();
+		});
+
+		it("returns a generic down check when decryption fails with a non-AppError", async () => {
+			const decrypt = jest.fn(() => {
+				throw new Error("boom");
+			});
+			const { provider, DockerLib } = setup({ encryptionService: makeEncryptionService({ decrypt }) });
+
+			const result = await provider.handle(makeTlsMonitor(), ctx);
+
+			expect(result).toMatchObject({ status: false, message: "Docker TLS key could not be decrypted" });
+			expect(DockerLib).not.toHaveBeenCalled();
+		});
+
+		it("does not touch the encryption service for socket monitors", async () => {
+			const { provider, encryptionService } = setup();
+
+			await provider.handle(makeMonitor(), ctx);
+
+			expect(encryptionService.decrypt).not.toHaveBeenCalled();
+		});
+	});
+
 	// ── Fail-loudly url validation ───────────────────────────────────────
 
 	describe("invalid host urls", () => {
@@ -125,8 +283,9 @@ describe("DockerProvider", () => {
 			["unix:// with a relative path", "unix://run/docker.sock", "Invalid Docker host URL"],
 			["garbage", "not-a-url", "Invalid Docker host URL"],
 			["a container name (old semantics)", "my-container", "Invalid Docker host URL"],
-			["tcp engine urls (unsupported)", "tcp://host:2375", "Invalid Docker host URL"],
-			["https engine urls (unsupported)", "https://host", "Invalid Docker host URL"],
+			["http engine urls (plaintext tcp is unsupported)", "http://host", "Invalid Docker host URL"],
+			["a bare host and port", "host:2376", "Invalid Docker host URL"],
+			["a tcp url with a path", "tcp://host/engine", "Invalid Docker host URL"],
 			["ssh engine urls (unsupported)", "ssh://deploy@host", "Invalid Docker host URL"],
 		];
 
