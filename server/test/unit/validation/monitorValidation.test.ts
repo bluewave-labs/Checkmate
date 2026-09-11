@@ -1,4 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
+import { readFileSync } from "node:fs";
 import {
 	createMonitorBodyValidation,
 	editMonitorBodyValidation,
@@ -621,8 +622,10 @@ describe("monitorValidation — Docker host url", () => {
 		});
 
 		it("accepts tcp:// and https:// engine urls with an optional port and trailing slash", () => {
+			const fixture = (name: string) => readFileSync(new URL(`../../fixtures/docker-tls/${name}`, import.meta.url), "utf8");
+			const tlsFields = { dockerTlsCa: fixture("ca.pem"), dockerTlsCert: fixture("client-cert.pem"), dockerTlsKey: fixture("client-key.pem") };
 			for (const url of ["tcp://host", "tcp://host:2376", "https://host:2377", "tcp://host/"]) {
-				expect(createMonitorBodyValidation.parse({ ...baseDockerBody, url }).url).toBe(url);
+				expect(createMonitorBodyValidation.parse({ ...baseDockerBody, ...tlsFields, url }).url).toBe(url);
 			}
 		});
 
@@ -670,6 +673,129 @@ describe("monitorValidation — Docker host url", () => {
 
 		it("rejects an imported docker monitor with a container-name url", () => {
 			expect(() => importMonitorsBodyValidation.parse({ monitors: [{ ...baseDockerBody, url: "my-container" }] })).toThrow();
+		});
+	});
+});
+
+describe("monitorValidation — Docker TLS credentials", () => {
+	const fixture = (name: string) => readFileSync(new URL(`../../fixtures/docker-tls/${name}`, import.meta.url), "utf8");
+	const CA = fixture("ca.pem");
+	const CLIENT_CERT = fixture("client-cert.pem");
+	const CLIENT_KEY = fixture("client-key.pem");
+	const OTHER_KEY = fixture("other-key.pem");
+	const ENCRYPTED_KEY = fixture("encrypted-key.pem");
+
+	const baseTlsBody = {
+		name: "Docker TLS check",
+		type: "docker" as const,
+		url: "tcp://host:2376",
+	};
+	const fullTlsBody = { ...baseTlsBody, dockerTlsCa: CA, dockerTlsCert: CLIENT_CERT, dockerTlsKey: CLIENT_KEY };
+
+	const issuesFor = (result: ReturnType<typeof createMonitorBodyValidation.safeParse>) =>
+		result.success ? [] : result.error.issues.map((issue) => ({ path: issue.path.join("."), message: issue.message }));
+
+	describe("createMonitorBodyValidation", () => {
+		it("accepts a CA, client certificate, and matching key", () => {
+			const parsed = createMonitorBodyValidation.parse(fullTlsBody);
+			expect(parsed.dockerTlsCa).toBe(CA);
+			expect(parsed.dockerTlsCert).toBe(CLIENT_CERT);
+			expect(parsed.dockerTlsKey).toBe(CLIENT_KEY);
+		});
+
+		it("does not require TLS fields for a socket url", () => {
+			expect(createMonitorBodyValidation.safeParse({ ...baseTlsBody, url: "unix:///var/run/docker.sock" }).success).toBe(true);
+		});
+
+		it("requires the client certificate, key, and CA for a TLS url", () => {
+			const issues = issuesFor(createMonitorBodyValidation.safeParse(baseTlsBody));
+			expect(issues).toEqual(
+				expect.arrayContaining([
+					{ path: "dockerTlsCert", message: "TLS certificate is required for a TLS Docker host" },
+					{ path: "dockerTlsKey", message: "TLS key is required for a TLS Docker host" },
+					{ path: "dockerTlsCa", message: "CA certificate is required unless TLS errors are ignored" },
+				])
+			);
+		});
+
+		it("makes the CA optional when TLS errors are ignored", () => {
+			const result = createMonitorBodyValidation.safeParse({
+				...baseTlsBody,
+				ignoreTlsErrors: true,
+				dockerTlsCert: CLIENT_CERT,
+				dockerTlsKey: CLIENT_KEY,
+			});
+			expect(result.success).toBe(true);
+		});
+
+		it("still requires the client certificate and key when TLS errors are ignored", () => {
+			const issues = issuesFor(createMonitorBodyValidation.safeParse({ ...baseTlsBody, ignoreTlsErrors: true }));
+			expect(issues.map((issue) => issue.path)).toEqual(expect.arrayContaining(["dockerTlsCert", "dockerTlsKey"]));
+			expect(issues.map((issue) => issue.path)).not.toContain("dockerTlsCa");
+		});
+
+		it("rejects a CA that is not a PEM certificate", () => {
+			const issues = issuesFor(createMonitorBodyValidation.safeParse({ ...fullTlsBody, dockerTlsCa: "not a certificate" }));
+			expect(issues).toEqual([{ path: "dockerTlsCa", message: "No certificate found; expected one or more PEM CERTIFICATE blocks" }]);
+		});
+
+		it("rejects a client certificate that is not a PEM certificate", () => {
+			const issues = issuesFor(createMonitorBodyValidation.safeParse({ ...fullTlsBody, dockerTlsCert: "not a certificate" }));
+			expect(issues).toEqual([{ path: "dockerTlsCert", message: "No certificate found; expected one or more PEM CERTIFICATE blocks" }]);
+		});
+
+		it("rejects a key that is not a PEM private key", () => {
+			const issues = issuesFor(createMonitorBodyValidation.safeParse({ ...fullTlsBody, dockerTlsKey: "not a key" }));
+			expect(issues).toEqual([{ path: "dockerTlsKey", message: "Private key is not valid PEM" }]);
+		});
+
+		it("rejects an encrypted private key", () => {
+			const issues = issuesFor(createMonitorBodyValidation.safeParse({ ...fullTlsBody, dockerTlsKey: ENCRYPTED_KEY }));
+			expect(issues).toEqual([{ path: "dockerTlsKey", message: "Encrypted private keys are not supported; remove the passphrase first" }]);
+		});
+
+		it("rejects a key that does not match the client certificate", () => {
+			const issues = issuesFor(createMonitorBodyValidation.safeParse({ ...fullTlsBody, dockerTlsKey: OTHER_KEY }));
+			expect(issues).toEqual([{ path: "dockerTlsKey", message: "Key does not match certificate" }]);
+		});
+
+		it("accepts a CA bundle with more than one certificate", () => {
+			const result = createMonitorBodyValidation.safeParse({ ...fullTlsBody, dockerTlsCa: `${CA}\n${CLIENT_CERT}` });
+			expect(result.success).toBe(true);
+		});
+	});
+
+	describe("editMonitorBodyValidation", () => {
+		it("accepts a TLS url without a key so a stored key is kept", () => {
+			const result = editMonitorBodyValidation.safeParse({ ...baseTlsBody, dockerTlsCa: CA, dockerTlsCert: CLIENT_CERT });
+			expect(result.success).toBe(true);
+		});
+
+		it("accepts a blank key so a stored key is kept", () => {
+			const result = editMonitorBodyValidation.safeParse({ ...baseTlsBody, dockerTlsCa: CA, dockerTlsCert: CLIENT_CERT, dockerTlsKey: "" });
+			expect(result.success).toBe(true);
+		});
+
+		it("still requires the client certificate and CA", () => {
+			const issues = issuesFor(editMonitorBodyValidation.safeParse(baseTlsBody));
+			expect(issues.map((issue) => issue.path)).toEqual(expect.arrayContaining(["dockerTlsCert", "dockerTlsCa"]));
+			expect(issues.map((issue) => issue.path)).not.toContain("dockerTlsKey");
+		});
+
+		it("validates a replacement key against the client certificate", () => {
+			const issues = issuesFor(
+				editMonitorBodyValidation.safeParse({ ...baseTlsBody, dockerTlsCa: CA, dockerTlsCert: CLIENT_CERT, dockerTlsKey: OTHER_KEY })
+			);
+			expect(issues).toEqual([{ path: "dockerTlsKey", message: "Key does not match certificate" }]);
+		});
+	});
+
+	describe("importMonitorsBodyValidation", () => {
+		it("strips TLS credentials from imported monitors instead of validating them", () => {
+			const parsed = importMonitorsBodyValidation.parse({ monitors: [fullTlsBody] });
+			expect(parsed.monitors[0]).not.toHaveProperty("dockerTlsCa");
+			expect(parsed.monitors[0]).not.toHaveProperty("dockerTlsCert");
+			expect(parsed.monitors[0]).not.toHaveProperty("dockerTlsKey");
 		});
 	});
 });

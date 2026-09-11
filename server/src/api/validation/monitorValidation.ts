@@ -16,6 +16,8 @@ import { DateRanges, SortOrders } from "@/types/query.js";
 import { DockerContainerStates, DockerHealthStatuses, DockerLogStreams, DockerPortProtocols } from "@/domain/docker/docker.type.js";
 import { DOCKER_LOG_PAGE_DEFAULT, DOCKER_LOG_PAGE_MAX } from "@/domain/docker/docker-log.type.js";
 import { isDockerSocketUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
+import { X509Certificate } from "node:crypto";
+import { keyMatchesCertificate, parseCertificates, parsePrivateKey } from "@/utils/pem.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
@@ -132,6 +134,49 @@ const refineDockerUrl = (data: { type?: string; url?: string }, ctx: z.Refinemen
 	}
 };
 
+type DockerTlsFields = {
+	type?: string;
+	url?: string;
+	ignoreTlsErrors?: boolean;
+	dockerTlsCa?: string;
+	dockerTlsCert?: string;
+	dockerTlsKey?: string;
+};
+
+const refineDockerTls = (mode: "create" | "edit") => (data: DockerTlsFields, ctx: z.RefinementCtx) => {
+	if (data.type !== "docker" || !isDockerTlsUrl(data.url)) return;
+	const issue = (path: string, message: string) => ctx.addIssue({ code: "custom", path: [path], message });
+
+	if (!data.dockerTlsCert) issue("dockerTlsCert", "TLS certificate is required for a TLS Docker host");
+
+	if (mode === "create" && !data.dockerTlsKey) issue("dockerTlsKey", "TLS key is required for a TLS Docker host");
+
+	if (!data.ignoreTlsErrors && !data.dockerTlsCa) issue("dockerTlsCa", "CA certificate is required unless TLS errors are ignored");
+
+	let certificate: X509Certificate | undefined;
+
+	try {
+		if (data.dockerTlsCa) parseCertificates(data.dockerTlsCa);
+	} catch (error: unknown) {
+		issue("dockerTlsCa", error instanceof Error ? error.message : "Docker TLS CA error");
+	}
+
+	try {
+		if (data.dockerTlsCert) [certificate] = parseCertificates(data.dockerTlsCert);
+	} catch (error) {
+		issue("dockerTlsCert", error instanceof Error ? error.message : "Docker TLS cert error");
+	}
+
+	try {
+		if (data.dockerTlsKey) {
+			const key = parsePrivateKey(data.dockerTlsKey);
+			if (certificate && !keyMatchesCertificate(key, certificate)) issue("dockerTlsKey", "Key does not match certificate");
+		}
+	} catch (error: unknown) {
+		issue("dockerTlsKey", error instanceof Error ? error.message : "Docker TLS key error");
+	}
+};
+
 export const createMonitorBodyValidation = z
 	.object({
 		_id: z.string().optional(),
@@ -180,7 +225,8 @@ export const createMonitorBodyValidation = z
 	.superRefine(refineHeadMatching)
 	.superRefine(refineRegexPattern)
 	.superRefine(refineProxySelection)
-	.superRefine(refineDockerUrl);
+	.superRefine(refineDockerUrl)
+	.superRefine(refineDockerTls("create"));
 
 export const editMonitorBodyValidation = z
 	.object({
@@ -228,7 +274,8 @@ export const editMonitorBodyValidation = z
 	.superRefine(refineHeadMatching)
 	.superRefine(refineRegexPattern)
 	.superRefine(refineProxySelection)
-	.superRefine(refineDockerUrl);
+	.superRefine(refineDockerUrl)
+	.superRefine(refineDockerTls("edit"));
 
 export const pauseMonitorParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
