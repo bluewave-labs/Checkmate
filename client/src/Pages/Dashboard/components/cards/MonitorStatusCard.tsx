@@ -7,20 +7,16 @@ import { typographyLevels } from "@/Utils/Theme/Palette";
 import { SPACING } from "@/Utils/Theme/constants";
 import { useTranslation } from "react-i18next";
 import type { MonitorsSummary } from "@/Types/Monitor";
-import type { DraggableSyntheticListeners } from "@dnd-kit/core";
-
 interface MonitorStatusCardProps {
 	summary: MonitorsSummary;
 	isLoading?: boolean;
 	error?: unknown;
-	dragHandleProps?: DraggableSyntheticListeners;
 }
 
 export const MonitorStatusCard = ({
 	summary,
 	isLoading,
 	error,
-	dragHandleProps,
 }: MonitorStatusCardProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
@@ -34,7 +30,6 @@ export const MonitorStatusCard = ({
 			title={t("pages.dashboard.cards.monitorStatus")}
 			isLoading={isLoading}
 			error={error}
-			dragHandleProps={dragHandleProps}
 		>
 			<Stack gap={theme.spacing(SPACING.SM)}>
 				<Stack

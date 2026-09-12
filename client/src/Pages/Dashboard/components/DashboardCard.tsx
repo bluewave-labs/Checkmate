@@ -3,9 +3,7 @@ import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
-import { GripVertical } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import type { DraggableSyntheticListeners } from "@dnd-kit/core";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 
@@ -14,7 +12,6 @@ interface DashboardCardProps {
 	topRight?: React.ReactNode;
 	isLoading?: boolean;
 	error?: unknown;
-	dragHandleProps?: DraggableSyntheticListeners;
 	children: React.ReactNode;
 }
 
@@ -23,7 +20,6 @@ export const DashboardCard = ({
 	topRight,
 	isLoading,
 	error,
-	dragHandleProps,
 	children,
 }: DashboardCardProps) => {
 	const theme = useTheme();
@@ -82,33 +78,14 @@ export const DashboardCard = ({
 				>
 					{title}
 				</Typography>
-				<Stack
-					direction="row"
-					alignItems="center"
-					gap={theme.spacing(LAYOUT.SM)}
-				>
-					{topRight && (
-						<Typography
-							fontSize={typographyLevels.s}
-							color={theme.palette.text.secondary}
-						>
-							{topRight}
-						</Typography>
-					)}
-					<Box
-						color={theme.palette.text.disabled}
-						display="flex"
-						alignItems="center"
-						{...(dragHandleProps ?? {})}
-						sx={{
-							cursor: dragHandleProps ? "grab" : "default",
-							"&:active": { cursor: dragHandleProps ? "grabbing" : "default" },
-							outline: "none",
-						}}
+				{topRight && (
+					<Typography
+						fontSize={typographyLevels.s}
+						color={theme.palette.text.secondary}
 					>
-						<GripVertical size={LAYOUT.XXL} />
-					</Box>
-				</Stack>
+						{topRight}
+					</Typography>
+				)}
 			</Stack>
 			{renderContent()}
 		</Box>
