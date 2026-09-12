@@ -23,6 +23,8 @@ export const registrationBodyValidation = z.object({
 	inviteToken: z.string().optional().default(""),
 });
 
+export const registerInviteTokenValidation = z.string().optional().default("");
+
 export const recoveryValidation = z.object({
 	email: z.email("Must be a valid email address"),
 });
