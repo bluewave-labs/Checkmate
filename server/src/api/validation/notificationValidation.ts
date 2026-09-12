@@ -50,14 +50,46 @@ export const createNotificationBodyValidation = z.discriminatedUnion("type", [
 		accessToken: z.union([z.string(), z.literal("")]).optional(),
 	}),
 	// Webhook notification
-	z.object({
-		notificationName: z.string().min(1, "Notification name is required"),
-		type: z.literal("webhook"),
-		address: z.url({ message: "Please enter a valid Webhook URL" }),
-		homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
-		roomId: z.union([z.string(), z.literal("")]).optional(),
-		accessToken: z.union([z.string(), z.literal("")]).optional(),
-	}),
+	z
+		.object({
+			notificationName: z.string().min(1, "Notification name is required"),
+			type: z.literal("webhook"),
+			address: z.url({ message: "Please enter a valid Webhook URL" }),
+			homeserverUrl: z.union([z.string(), z.literal("")]).optional(),
+			roomId: z.union([z.string(), z.literal("")]).optional(),
+			accessToken: z.union([z.string(), z.literal("")]).optional(),
+			webhookAuthType: z.enum(["none", "basic", "bearer"]).optional(),
+			webhookAuthUsername: z.union([z.string(), z.literal("")]).optional(),
+			webhookAuthPassword: z.union([z.string(), z.literal("")]).optional(),
+			webhookAuthToken: z.union([z.string(), z.literal("")]).optional(),
+		})
+		.superRefine((data, ctx) => {
+			if (data.webhookAuthType === "basic") {
+				if (!data.webhookAuthUsername) {
+					ctx.addIssue({
+						code: z.ZodIssueCode.custom,
+						message: "Username is required when auth type is Basic",
+						path: ["webhookAuthUsername"],
+					});
+				}
+				if (!data.webhookAuthPassword) {
+					ctx.addIssue({
+						code: z.ZodIssueCode.custom,
+						message: "Password is required when auth type is Basic",
+						path: ["webhookAuthPassword"],
+					});
+				}
+			}
+			if (data.webhookAuthType === "bearer") {
+				if (!data.webhookAuthToken) {
+					ctx.addIssue({
+						code: z.ZodIssueCode.custom,
+						message: "Token is required when auth type is Bearer",
+						path: ["webhookAuthToken"],
+					});
+				}
+			}
+		}),
 	// Rocket.Chat notification
 	z.object({
 		notificationName: z.string().min(1, "Notification name is required"),

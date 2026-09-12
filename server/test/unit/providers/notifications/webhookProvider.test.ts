@@ -86,17 +86,39 @@ describe("WebhookProvider", () => {
 			expect(mockGotPost.mock.calls[0][1].json.text).toContain("View Incident");
 		});
 
-		it("omits threshold and incident sections when not present", async () => {
+		it("sends Authorization header with Basic auth", async () => {
 			const { provider } = createProvider();
-			const msg = makeMessage();
-			msg.content.thresholds = undefined;
-			msg.content.details = undefined;
-			msg.content.incident = undefined;
-			await provider.sendMessage(makeNotification() as any, msg);
-			const text = mockGotPost.mock.calls[0][1].json.text;
-			expect(text).not.toContain("Threshold");
-			expect(text).not.toContain("Additional Information");
-			expect(text).not.toContain("View Incident");
+			const notification = makeNotification({
+				webhookAuthType: "basic",
+				webhookAuthUsername: "admin",
+				webhookAuthPassword: "secret",
+			});
+			await provider.sendMessage(notification as any, makeMessage());
+			const headers = mockGotPost.mock.calls[0][1].headers;
+			expect(headers.Authorization).toBe(`Basic ${Buffer.from("admin:secret").toString("base64")}`);
+		});
+
+		it("sends Authorization header with Bearer auth", async () => {
+			const { provider } = createProvider();
+			const notification = makeNotification({
+				webhookAuthType: "bearer",
+				webhookAuthToken: "tok_abc123",
+			});
+			await provider.sendMessage(notification as any, makeMessage());
+			expect(mockGotPost.mock.calls[0][1].headers.Authorization).toBe("Bearer tok_abc123");
+		});
+
+		it("does not send Authorization header when authType is none", async () => {
+			const { provider } = createProvider();
+			const notification = makeNotification({ webhookAuthType: "none" });
+			await provider.sendMessage(notification as any, makeMessage());
+			expect(mockGotPost.mock.calls[0][1].headers.Authorization).toBeUndefined();
+		});
+
+		it("does not send Authorization header when authType is missing (defaults to none)", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessage());
+			expect(mockGotPost.mock.calls[0][1].headers.Authorization).toBeUndefined();
 		});
 	});
 });

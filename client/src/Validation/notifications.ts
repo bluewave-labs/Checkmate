@@ -28,6 +28,10 @@ const discordSchema = baseSchema.extend({
 const webhookSchema = baseSchema.extend({
 	type: z.literal("webhook"),
 	address: z.string().min(1, "Webhook URL is required").url("Please enter a valid URL"),
+	webhookAuthType: z.enum(["none", "basic", "bearer"]).optional(),
+	webhookAuthUsername: z.union([z.string(), z.literal("")]).optional(),
+	webhookAuthPassword: z.union([z.string(), z.literal("")]).optional(),
+	webhookAuthToken: z.union([z.string(), z.literal("")]).optional(),
 });
 
 const rocketChatSchema = baseSchema.extend({
