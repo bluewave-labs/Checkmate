@@ -7,7 +7,6 @@ import { ITagsService, TagsService } from "@/domain/tags/tag.service.js";
 import { IUserService, UserService } from "@/domain/users/user.service.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";
 import { ProxiesService, IProxiesService } from "@/domain/proxies/proxy.service.js";
-import { DashboardService, IDashboardService } from "@/domain/dashboard/dashboard.service.js";
 import { SharedServices } from "@/config/services.shared.js";
 
 // Third-party
@@ -25,7 +24,6 @@ export interface ApiServices extends SharedServices {
 	tagsService: ITagsService;
 	diagnosticService: IDiagnosticService;
 	proxiesService: IProxiesService;
-	dashboardService: IDashboardService;
 }
 
 export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): ApiServices => {
@@ -101,7 +99,6 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 	const tagsService = new TagsService(tagsRepository, monitorsRepository);
 	const diagnosticService = new DiagnosticService(db);
 	const proxiesService = new ProxiesService(proxiesRepository, monitorsRepository, settingsService);
-	const dashboardService = new DashboardService(monitorsRepository);
 	return {
 		...shared,
 		worker: jobScheduler,
@@ -113,6 +110,5 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		tagsService,
 		diagnosticService,
 		proxiesService,
-		dashboardService,
 	};
 };

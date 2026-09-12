@@ -8,26 +8,16 @@ import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface MonitorsByTypeCardProps {
 	monitorsByType: DashboardTypeCount[];
-	isLoading?: boolean;
-	error?: unknown;
 }
 
-export const MonitorsByTypeCard = ({
-	monitorsByType,
-	isLoading,
-	error,
-}: MonitorsByTypeCardProps) => {
+export const MonitorsByTypeCard = ({ monitorsByType }: MonitorsByTypeCardProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 
 	const maxCount = monitorsByType[0]?.count ?? 1;
 
 	return (
-		<DashboardCard
-			title={t("pages.dashboard.cards.monitorsByType")}
-			isLoading={isLoading}
-			error={error}
-		>
+		<DashboardCard title={t("pages.dashboard.cards.monitorsByType")}>
 			<Stack gap={LAYOUT.SM}>
 				{monitorsByType.map(({ type, count }) => (
 					<BarRow

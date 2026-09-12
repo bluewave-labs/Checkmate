@@ -1887,7 +1887,6 @@
 			}
 		},
 		"dashboard": {
-			"error": "Failed to load data",
 			"monitorStatus": {
 				"ofUp": "of {{total}} up"
 			},

@@ -102,6 +102,7 @@ const uiSlice = createSlice({
 		setShowURL: (state, action: PayloadAction<boolean>) => {
 			state.showURL = action.payload;
 		},
+
 		setTimezone: (state, action: PayloadAction<{ timezone: string }>) => {
 			if (action.payload.timezone) {
 				state.timezone = action.payload.timezone;

@@ -7,17 +7,12 @@ import { typographyLevels } from "@/Utils/Theme/Palette";
 import { SPACING } from "@/Utils/Theme/constants";
 import { useTranslation } from "react-i18next";
 import type { MonitorsSummary } from "@/Types/Monitor";
+
 interface MonitorStatusCardProps {
 	summary: MonitorsSummary;
-	isLoading?: boolean;
-	error?: unknown;
 }
 
-export const MonitorStatusCard = ({
-	summary,
-	isLoading,
-	error,
-}: MonitorStatusCardProps) => {
+export const MonitorStatusCard = ({ summary }: MonitorStatusCardProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 
@@ -26,11 +21,7 @@ export const MonitorStatusCard = ({
 	const ratio = total > 0 ? up / total : 0;
 
 	return (
-		<DashboardCard
-			title={t("pages.dashboard.cards.monitorStatus")}
-			isLoading={isLoading}
-			error={error}
-		>
+		<DashboardCard title={t("pages.dashboard.cards.monitorStatus")}>
 			<Stack gap={theme.spacing(SPACING.SM)}>
 				<Stack
 					direction="row"

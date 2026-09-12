@@ -25,6 +25,7 @@ const persistConfig = {
 	storage,
 	whitelist: ["auth", "ui"],
 	transforms: [authTransform],
+	// Merge two levels deep on rehydrate so a slice key added in a new release keeps initial value
 	stateReconciler: autoMergeLevel2,
 };
 
