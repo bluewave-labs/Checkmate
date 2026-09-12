@@ -1,0 +1,3 @@
+# An explicit CLIENT_HOST must be a full http(s):// URL.
+secrets:
+  CLIENT_HOST: checkmate.example.com

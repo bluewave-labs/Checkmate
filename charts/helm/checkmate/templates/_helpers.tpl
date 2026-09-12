@@ -16,8 +16,10 @@ then reference `$api.*` instead of `.Values.api.*`.
 {{- end -}}
 
 {{- /*
-Resolve a full image reference from a repo + optional tag. `appVersion` is the single source of
-truth for tags: bumping Chart.appVersion moves every tier at once. Call as:
+Resolve a full image reference from a repo + optional tag. For *application* images `appVersion`
+is the single source of truth for tags: bumping Chart.appVersion moves the api and worker tiers
+at once. MongoDB is upstream `mongo` with an explicit `mongodb.tag` (e.g. "8.2.12") — its tag is
+independent of appVersion and the prechecks enforce that it is set. Call as:
   {{ include "checkmate.image" (dict "image" $repo "tag" $tag "root" $) }}
 
 If `image` already carries a tag (a ":" in its final path segment) it is used verbatim — this keeps
@@ -31,5 +33,27 @@ appended. Otherwise the tag is `tag` if set, else the chart's appVersion.
 {{- .image -}}
 {{- else -}}
 {{- printf "%s:%s" .image (.tag | default .root.Chart.AppVersion) -}}
+{{- end -}}
+{{- end -}}
+
+{{- /*
+Effective public URL for the app (CLIENT_HOST), consumed by the api and worker Deployments.
+Precedence:
+1. An explicit secrets.CLIENT_HOST that is set, non-empty and not the legacy "change_me"
+   placeholder (0.2.x values files carried CLIENT_HOST: change_me by default — treated as unset).
+2. api.protocol://api.ingress.host — the all-in-one server serves the SPA from the API origin,
+   so the public host IS the api ingress host.
+
+The server validates CLIENT_HOST as a URL on startup, and worker mode runs that same env
+validation before branching, so both deployments set it. Consume as:
+  {{ include "checkmate.clientHost" . | trim | quote }}
+*/}}
+{{- define "checkmate.clientHost" -}}
+{{- $api := include "checkmate.api" . | fromYaml -}}
+{{- $explicit := (.Values.secrets | default dict).CLIENT_HOST | default "" -}}
+{{- if and $explicit (ne $explicit "change_me") -}}
+{{- $explicit -}}
+{{- else -}}
+{{- printf "%s://%s" $api.protocol $api.ingress.host -}}
 {{- end -}}
 {{- end -}}
