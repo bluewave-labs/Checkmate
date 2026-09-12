@@ -24,10 +24,20 @@ const maintenanceWindowBaseSchema = z.object({
 	startTime: z.string().min(1, "Start time is required"),
 	duration: z.number().int().min(1, "Duration must be at least 1"),
 	durationUnit: z.string(),
-	monitors: z.array(z.string()).min(1, "At least one monitor is required"),
+	monitors: z.array(z.string()),
+	tags: z.array(z.string()),
 });
 
-export const maintenanceWindowSchema = maintenanceWindowBaseSchema.refine(
+// Monitors and tags are additive targets; a window needs at least one of either
+const maintenanceWindowTargetsSchema = maintenanceWindowBaseSchema.refine(
+	(data) => data.monitors.length > 0 || data.tags.length > 0,
+	{
+		message: "At least one monitor or tag is required",
+		path: ["monitors"],
+	}
+);
+
+export const maintenanceWindowSchema = maintenanceWindowTargetsSchema.refine(
 	(data) => {
 		const startDateTime = dayjs(data.startDate)
 			.set("hour", parseInt(data.startTime.split(":")[0], 10))
@@ -40,6 +50,6 @@ export const maintenanceWindowSchema = maintenanceWindowBaseSchema.refine(
 	}
 );
 
-export const maintenanceWindowEditSchema = maintenanceWindowBaseSchema;
+export const maintenanceWindowEditSchema = maintenanceWindowTargetsSchema;
 
 export type MaintenanceWindowFormData = z.infer<typeof maintenanceWindowSchema>;

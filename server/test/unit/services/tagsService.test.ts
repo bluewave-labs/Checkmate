@@ -16,17 +16,23 @@ const createMonitorsRepo = () => ({
 	removeTagFromMonitors: jest.fn(),
 });
 
+const createMaintenanceWindowsRepo = () => ({
+	removeTagFromWindows: jest.fn(),
+});
+
 const createService = (overrides?: Record<string, unknown>) => {
 	const tagsRepository = createTagsRepo();
 	const monitorsRepository = createMonitorsRepo();
+	const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
 
 	const defaults = {
 		tagsRepository,
 		monitorsRepository,
+		maintenanceWindowsRepository,
 		...overrides,
 	};
 
-	const service = new TagsService(defaults.tagsRepository as any, defaults.monitorsRepository as any);
+	const service = new TagsService(defaults.tagsRepository as any, defaults.monitorsRepository as any, defaults.maintenanceWindowsRepository as any);
 
 	return { service, ...defaults };
 };
@@ -108,6 +114,18 @@ describe("TagsService", () => {
 			expect(result).toBe(deleted);
 			expect(monitorsRepository.removeTagFromMonitors).toHaveBeenCalledWith("tag-1");
 			expect(tagsRepository.deleteById).toHaveBeenCalledWith("tag-1", "team-1");
+		});
+
+		it("removes the tag from maintenance windows so tag-based windows do not keep a dangling reference", async () => {
+			const { service, tagsRepository, maintenanceWindowsRepository } = createService();
+			(tagsRepository.deleteById as jest.Mock).mockResolvedValue(makeTag());
+
+			await service.deleteTag("tag-1", "team-1");
+
+			expect(maintenanceWindowsRepository.removeTagFromWindows).toHaveBeenCalledWith("tag-1");
+			const removeOrder = (maintenanceWindowsRepository.removeTagFromWindows as jest.Mock).mock.invocationCallOrder[0];
+			const deleteOrder = (tagsRepository.deleteById as jest.Mock).mock.invocationCallOrder[0];
+			expect(removeOrder).toBeLessThan(deleteOrder);
 		});
 
 		it("detaches the tag from monitors before deleting it", async () => {

@@ -34,6 +34,7 @@ export const useMaintenanceWindowForm = ({
 				duration: data.duration ?? 0,
 				durationUnit: data.durationUnit ?? "minutes",
 				monitors: data.monitorIds,
+				tags: data.tagIds ?? [],
 			};
 		} else {
 			const now = dayjs();
@@ -45,6 +46,7 @@ export const useMaintenanceWindowForm = ({
 				duration: 0,
 				durationUnit: "minutes",
 				monitors: [],
+				tags: [],
 			};
 		}
 

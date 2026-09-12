@@ -124,6 +124,38 @@ describe("createMaintenanceWindowBodyValidation", () => {
 		const result = createMaintenanceWindowBodyValidation.safeParse(withoutName);
 		expect(result.success).toBe(false);
 	});
+
+	it("accepts a window that targets only tags", () => {
+		jest.useFakeTimers().setSystemTime(FROZEN_NOW);
+		const result = createMaintenanceWindowBodyValidation.safeParse(baseCreateBody({ monitors: [], tags: ["tag-1"] }));
+		expect(result.success).toBe(true);
+	});
+
+	it("accepts a window that targets both monitors and tags", () => {
+		jest.useFakeTimers().setSystemTime(FROZEN_NOW);
+		const result = createMaintenanceWindowBodyValidation.safeParse(baseCreateBody({ monitors: ["mon-1"], tags: ["tag-1"] }));
+		expect(result.success).toBe(true);
+	});
+
+	it("defaults tags to an empty array when omitted", () => {
+		jest.useFakeTimers().setSystemTime(FROZEN_NOW);
+		const result = createMaintenanceWindowBodyValidation.safeParse(baseCreateBody());
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.data.tags).toEqual([]);
+		}
+	});
+
+	it("rejects a window with neither monitors nor tags", () => {
+		jest.useFakeTimers().setSystemTime(FROZEN_NOW);
+		const result = createMaintenanceWindowBodyValidation.safeParse(baseCreateBody({ monitors: [], tags: [] }));
+		expect(result.success).toBe(false);
+		if (!result.success) {
+			expect(result.error.issues).toEqual(
+				expect.arrayContaining([expect.objectContaining({ message: "At least one monitor or tag is required", path: ["monitors"] })])
+			);
+		}
+	});
 });
 
 describe("editMaintenanceByIdWindowBodyValidation", () => {
@@ -179,12 +211,22 @@ describe("editMaintenanceByIdWindowBodyValidation", () => {
 		expect(result.success).toBe(true);
 	});
 
-	it("rejects an empty monitors array", () => {
+	it("accepts an empty monitors array on its own (the window may still be covered by tags)", () => {
 		const result = editMaintenanceByIdWindowBodyValidation.safeParse({ monitors: [] });
+		expect(result.success).toBe(true);
+	});
+
+	it("accepts a body with one or more tags", () => {
+		const result = editMaintenanceByIdWindowBodyValidation.safeParse({ tags: ["tag-1"] });
+		expect(result.success).toBe(true);
+	});
+
+	it("rejects when monitors and tags are both provided and both empty", () => {
+		const result = editMaintenanceByIdWindowBodyValidation.safeParse({ monitors: [], tags: [] });
 		expect(result.success).toBe(false);
 		if (!result.success) {
 			expect(result.error.issues).toEqual(
-				expect.arrayContaining([expect.objectContaining({ message: "At least one monitor is required", path: ["monitors"] })])
+				expect.arrayContaining([expect.objectContaining({ message: "At least one monitor or tag is required", path: ["monitors"] })])
 			);
 		}
 	});

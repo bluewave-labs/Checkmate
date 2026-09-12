@@ -9,6 +9,7 @@ const makeMaintenanceWindow = (overrides?: Partial<MaintenanceWindow>): Maintena
 	return {
 		id: "mw-1",
 		monitorIds: ["mon-1"],
+		tagIds: [],
 		teamId: "team-1",
 		active: true,
 		name: "Test Maintenance",

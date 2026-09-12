@@ -26,3 +26,12 @@ export const isWindowActive = (window: MaintenanceWindow, now: Date = new Date()
 
 	return false;
 };
+
+// A window covers a monitor when the monitor is listed directly or carries any of the window's tags.
+// Both routes are additive, so a monitor that is selected directly and also matched by a tag stays covered.
+export const windowCoversMonitor = (window: MaintenanceWindow, monitorId: string, monitorTagIds: string[] = []): boolean => {
+	if (window.monitorIds.includes(monitorId)) {
+		return true;
+	}
+	return monitorTagIds.some((tagId) => window.tagIds.includes(tagId));
+};
