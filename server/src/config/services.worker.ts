@@ -16,7 +16,7 @@ import { SharedServices } from "@/config/services.shared.js";
 import { INetworkService, NetworkService } from "@/service/networkService.js";
 import { IBufferService, BufferService } from "@/service/bufferService.js";
 import { IStatusService, StatusService } from "@/service/statusService.js";
-import { ISecretsRotationService, SecretsRotationService } from "@/service/encryption/secretsRotationService.js";
+import { SecretsRotationService } from "@/service/encryption/secretsRotationService.js";
 import { IQueueWorker } from "@/worker/worker.interface.js";
 import { MonitorStatusPolicy } from "@/worker/worker.monitor-status-policy.js";
 import { WorkerHelper } from "@/worker/worker.helper.js";
