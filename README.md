@@ -132,6 +132,113 @@ Alternatively, you can also use [Coolify](https://coolify.io/), [Elestio](https:
 
 If you need to monitor internal HTTPS endpoints with certificates from private Certificate Authorities (like Smallstep), see our [Custom CA Trust Guide](./docs/custom-ca-trust.md) for Docker configuration options.
 
+### Docker monitors
+
+A Docker monitor connects to a Docker daemon and reports on every container it runs. The daemon's ping response decides whether the monitor is up or down and its latency is the response time. Each check also records every container's state, health, CPU and memory usage, restart count, published ports and mounts. Enabling **Collect container logs** additionally stores the latest 200 log lines per container on every check; logs are kept for 7 days.
+
+The **Docker host** field accepts two forms:
+
+| Host | Example | Notes |
+|---|---|---|
+| Local socket | `unix:///var/run/docker.sock` | Also accepts a bare absolute path such as `/var/run/docker.sock`. Use this for the daemon on the same machine Checkmate runs on. |
+| Remote daemon | `tcp://docker.example.com:2376` | Always uses mutual TLS; the port defaults to `2376`. Unencrypted daemons on `2375` are not supported. |
+
+**Monitoring the local socket.** The reference Compose file does not mount the socket, so add it and grant the container the host's `docker` group. The image runs as an unprivileged user and cannot read the socket otherwise. Find the group id with `stat -c %g /var/run/docker.sock`, then:
+
+```yaml
+services:
+  checkmate:
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    group_add:
+      - "989"   # the gid printed by stat
+```
+
+**Monitoring a remote daemon.** Set the host to `tcp://host:port` and fill in the **TLS credentials** section of the monitor form with the same PEM files you would pass to `docker --tlsverify`:
+
+- **CA certificate**: the CA that signed the daemon's server certificate. Required unless **Ignore TLS/SSL errors** is on, which skips verifying the daemon's identity.
+- **Client certificate**: the certificate the daemon uses to authenticate Checkmate.
+- **Client key**: the matching private key, unencrypted (no passphrase). Checkmate checks that it matches the certificate, encrypts it with `ENCRYPTION_KEY`, and never shows it again. Leave the field blank when editing to keep the stored key.
+
+TLS Docker monitors require `ENCRYPTION_KEY` to be set on the server (see [Configuration](#configuration)). Saving one without it fails with an error telling you so. If the key is ever removed or rotated incorrectly, affected checks fail with a decryption error until it is restored.
+
+If the daemon's certificate is signed by a private CA that you also want the rest of Checkmate to trust, see the [Custom CA Trust Guide](./docs/custom-ca-trust.md); for Docker monitors alone, the **CA certificate** field is enough.
+
+### Securing the Docker daemon with TLS
+
+The Docker daemon does not enable TLS by default. Follow these steps on the Docker host to generate a CA, a server certificate, and a client certificate for Checkmate. This is the procedure from [Docker's own guide](https://docs.docker.com/engine/security/protect-access/), condensed. Replace `docker.example.com` and `203.0.113.10` with your daemon's DNS name and IP.
+
+**1. Create a CA.** The CA key gets a passphrase; keep it offline once the certificates are issued.
+
+```bash
+openssl genrsa -aes256 -out ca-key.pem 4096
+openssl req -new -x509 -days 365 -key ca-key.pem -sha256 -subj "/CN=docker-ca" -out ca.pem
+```
+
+**2. Create the server certificate.** The subject alternative names must cover every name or address Checkmate will use to reach the daemon.
+
+```bash
+openssl genrsa -out server-key.pem 4096
+openssl req -subj "/CN=docker.example.com" -sha256 -new -key server-key.pem -out server.csr
+cat > server-ext.cnf <<EOF
+subjectAltName = DNS:docker.example.com,IP:203.0.113.10
+extendedKeyUsage = serverAuth
+EOF
+openssl x509 -req -days 365 -sha256 -in server.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial \
+  -out server-cert.pem -extfile server-ext.cnf
+```
+
+**3. Create the client certificate for Checkmate.** Do not add a passphrase to this key; Checkmate cannot use encrypted private keys.
+
+```bash
+openssl genrsa -out key.pem 4096
+openssl req -subj "/CN=checkmate" -new -key key.pem -out client.csr
+echo "extendedKeyUsage = clientAuth" > client-ext.cnf
+openssl x509 -req -days 365 -sha256 -in client.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial \
+  -out cert.pem -extfile client-ext.cnf
+rm client.csr server.csr server-ext.cnf client-ext.cnf
+chmod 0400 ca-key.pem key.pem server-key.pem
+chmod 0444 ca.pem server-cert.pem cert.pem
+```
+
+**4. Point the daemon at the certificates.** Move `ca.pem`, `server-cert.pem` and `server-key.pem` to `/etc/docker/certs/` and configure `/etc/docker/daemon.json`:
+
+```json
+{
+  "hosts": ["unix:///var/run/docker.sock", "tcp://0.0.0.0:2376"],
+  "tls": true,
+  "tlsverify": true,
+  "tlscacert": "/etc/docker/certs/ca.pem",
+  "tlscert": "/etc/docker/certs/server-cert.pem",
+  "tlskey": "/etc/docker/certs/server-key.pem"
+}
+```
+
+On distributions where the systemd unit already passes `-H fd://` (Debian, Ubuntu and derivatives), the daemon refuses to start with `hosts` set in both places. Remove the flag from the unit with an override, then restart:
+
+```bash
+sudo systemctl edit docker.service
+```
+
+```ini
+[Service]
+ExecStart=
+ExecStart=/usr/bin/dockerd
+```
+
+```bash
+sudo systemctl daemon-reload && sudo systemctl restart docker
+```
+
+Open port `2376` on the host firewall only to the machine running Checkmate.
+
+**5. Verify from the Checkmate host**, then paste `ca.pem`, `cert.pem` and `key.pem` into the monitor form:
+
+```bash
+docker --tlsverify --tlscacert=ca.pem --tlscert=cert.pem --tlskey=key.pem \
+  -H=docker.example.com:2376 version
+```
+
 For more documentation, see the [docs directory](./docs/).
 
 <a id="performance"></a>
