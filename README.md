@@ -92,7 +92,7 @@ JWT_SECRET="$(openssl rand -hex 32)" docker compose up -d
 Then open http://localhost:52345. If the app is reached at another origin (domain or LAN IP), set `CLIENT_HOST` accordingly. To build the image yourself, run `docker build -f docker/Dockerfile -t checkmate .` from a checkout. For TLS, put any reverse proxy (Caddy, Traefik, nginx) in front of port 52345.
 
 There are also 1-click installation options like [Repocloud](https://repocloud.io/details/Checkmate),
-[Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](../../charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) or [Cloudzy](https://cloudzy.com/marketplace/checkmate).
+[Pikapods](https://www.pikapods.com/), [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) or [Cloudzy](https://cloudzy.com/marketplace/checkmate). Note that the Helm chart has not yet been migrated to the all-in-one image: it still deploys the legacy `checkmate-client`, `checkmate-backend` and `checkmate-mongo` images, pinned at v3.8.1.
 
 
 ### Configuration
@@ -103,9 +103,16 @@ The image is configured entirely through environment variables on the server con
 |---|---|---|
 | `DB_CONNECTION_STRING` | Yes | MongoDB connection string, e.g. `mongodb://mongodb:27017/uptime_db` |
 | `JWT_SECRET` | Yes | Secret used to sign auth tokens; generate one with `openssl rand -hex 32` |
-| `ENCRYPTION_KEY` | No | Encrypts stored Docker TLS client keys at rest; generate one with `openssl rand -base64 32`. Comma-separated list: the first key encrypts, every key decrypts. Must be identical on the API and every worker. To rotate without downtime, deploy `OLD_KEY,NEW_KEY` everywhere, then `NEW_KEY,OLD_KEY` everywhere, wait for the worker to re-encrypt every row, then drop `OLD_KEY`. |
 | `CLIENT_HOST` | Yes | The URL users reach the app at, e.g. `https://checkmate.example.com`; used for CORS and for links in notifications and emails |
+| `ENCRYPTION_KEY` | No | Encrypts stored Docker TLS client keys at rest; generate one with `openssl rand -base64 32`. Comma-separated list: the first key encrypts, every key decrypts. Must be identical on the API and every worker. To rotate without downtime, deploy `OLD_KEY,NEW_KEY` everywhere, then `NEW_KEY,OLD_KEY` everywhere, wait for the worker to re-encrypt every row, then drop `OLD_KEY`. |
+| `PORT` | No | Port the API and web client are served on (default `52345`) |
+| `HEALTH_PORT` | No | Port for the `/livez`, `/readyz` and `/metrics` endpoints, served by any process that runs the job worker (default `52346`) |
+| `NODE_ENV` | No | `development`, `production` or `test` (default `development`). `development` disables the general API rate limiter; set `production` on real deployments |
 | `LOG_LEVEL` | No | Server log level: `error`, `warn`, `info`, or `debug` (default `debug`) |
+| `TOKEN_TTL` | No | Lifetime of issued auth tokens, e.g. `12h` or `7d` (default `99d`) |
+| `QUEUE_MODE` | No | `primary` (default) runs the API, the web client and the job scheduler; `worker` runs a job-processing worker only, with no API |
+| `QUEUE_PRIMARY_PROCESSES` | No | `true` (default) or `false`. Whether a `primary` node also processes monitoring jobs itself; set `false` when dedicated `worker` nodes handle all checks. Ignored in `worker` mode |
+| `STATUS_PAGE_THEMES_ENABLED` | No | `true` (default) or `false`. When `false`, status pages ignore theme settings and always render the default theme |
 
 The web client needs no configuration by default: it calls the API on the same origin it was served from (`/api/v1`). For setups where the defaults don't apply — for example, the API is reached through a different origin than the page — the server renders overrides into the client at runtime via these optional variables:
 
@@ -119,7 +126,7 @@ The web client needs no configuration by default: it calls the API on the same o
 
 See full installation instructions in the [Checkmate documentation portal](https://checkmate.so/docs). 
 
-Alternatively, you can also use [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md), [Sive Host](https://sive.host) (South Africa), [Cloudzy](https://cloudzy.com/marketplace/checkmate) or [Pikapods](https://www.pikapods.com/) to quickly spin off a Checkmate instance. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
+Alternatively, you can also use [Coolify](https://coolify.io/), [Elestio](https://elest.io/open-source/checkmate), [K8s](./charts/helm/checkmate/INSTALLATION.md) (legacy images, pinned at v3.8.1), [Sive Host](https://sive.host) (South Africa), [Cloudzy](https://cloudzy.com/marketplace/checkmate) or [Pikapods](https://www.pikapods.com/) to quickly spin off a Checkmate instance. If you would like to monitor your server infrastructure, you'll need [Capture agent](https://github.com/bluewave-labs/capture). Capture repository also contains the installation instructions.
 
 ### Using a Custom CA
 
@@ -134,7 +141,7 @@ Thanks to extensive optimizations, Checkmate operates with an exceptionally smal
 
 ![image](https://github.com/user-attachments/assets/37e04a75-d83a-488f-b25c-025511b492c9)
 
-You can see the memory footprint of MongoDB and Redis on the same server (398Mb and 15Mb) for the same amount of servers:
+You can see the memory footprint of MongoDB on the same server (398Mb) for the same amount of servers:
 
 ![image](https://github.com/user-attachments/assets/3b469e85-e675-4040-a162-3f24c1afc751)
 
@@ -152,16 +159,16 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 ## Features
 
 - Completely open source, deployable on your servers or home devices (e.g Raspberry Pi 4 or 5)
-- Several monitoring options: Uptime, Docker, Ping, SSL, Port, Game server
+- Several monitoring options: HTTP (with SSL certificate expiry), Ping, Port, DNS, Docker, gRPC, WebSocket, Game server
 - Page speed monitoring
 - Infrastructure monitoring (memory, disk usage, CPU performance, network etc) - requires [Capture](https://github.com/bluewave-labs/capture) agent
   - Selective disk monitoring with mountpoint selection
 - Incidents at a glance
-- Status pages with 4 beautiful themes
-- E-mail, Webhooks, Discord, Slack, PagerDuty, Matrix, Rocket.Chat, Microsoft Teams, Telegram, Pushover, Twilio (SMS) notifications
+- Status pages with 5 beautiful themes
+- E-mail, Webhooks, Discord, Slack, PagerDuty, Matrix, Rocket.Chat, Microsoft Teams, Telegram, Pushover, ntfy, SignalGrid, Twilio (SMS) notifications
 - Scheduled maintenance
 - JSON query monitoring
-- Multi-language support for Arabic, Chinese (Simplified), Chinese (Traditional, Taiwan), Czech, English, Finnish, French, German, Japanese, Portuguese (Brazil), Russian, Spanish, Thai, Turkish, Ukrainian, and Vietnamese
+- Multi-language support for Arabic, Catalan, Chinese (Simplified), Chinese (Traditional, Taiwan), Czech, English, Finnish, French, German, Italian, Japanese, Polish, Portuguese (Brazil), Russian, Spanish, Thai, Turkish, Ukrainian, and Vietnamese
 
 
 ## Monitor Lifecycle
@@ -214,7 +221,7 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 
 We are [Alex](http://github.com/ajhollid) (team lead), [Gorkem](http://github.com/gorkem-bwl/), [Aryaman](https://github.com/Br0wnHammer), [Malena](https://github.com/malenacaroline) and [Mert](https://github.com/mertssmnoglu) helping individuals and businesses monitor their infra and servers.
 
-We pride ourselves on building strong connections with contributors at every level. Despite being a young project, Checkmate has already earned almost 11K+ stars and attracted 150+ contributors from around the globe.
+We pride ourselves on building strong connections with contributors at every level. Despite being a young project, Checkmate has already earned almost 11K stars and attracted 150+ contributors from around the globe.
 
 Our repo is starred by employees from **Google, Microsoft, Intel, Cisco, Tencent, Electronic Arts, ByteDance, JP Morgan Chase, Deloitte, Accenture, Foxconn, Broadcom, China Telecom, Barclays, Capgemini, Wipro, Cloudflare, Dassault Systèmes and NEC**, so don’t hold back — jump in, contribute and learn with us!
 
