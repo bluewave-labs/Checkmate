@@ -70,6 +70,10 @@ const StatusPageSchema = new Schema<StatusPageDocument>(
 			lowercase: true,
 			trim: true,
 		},
+		embedAllowedOrigins: {
+			type: [String],
+			default: [],
+		},
 		timezone: {
 			type: String,
 		},

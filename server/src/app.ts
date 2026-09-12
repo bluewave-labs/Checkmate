@@ -16,6 +16,18 @@ import { isPublicStatusPageApiPath } from "@/api/middleware/statusPagePublicApiP
 import { createStatusPageDocumentCsp } from "@/api/middleware/statusPageDocumentCsp.js";
 import { ApiServices } from "@/config/services.api.js";
 
+// Origin of the API the client is configured to call, when it is absolute.
+// Relative values (the default) resolve to the serving origin, covered by 'self'.
+const resolveApiOrigin = (apiBaseUrl: string | undefined): string | undefined => {
+	if (!apiBaseUrl) return undefined;
+	try {
+		const { protocol, origin } = new URL(apiBaseUrl);
+		return protocol === "http:" || protocol === "https:" ? origin : undefined;
+	} catch {
+		return undefined;
+	}
+};
+
 export const createApp = ({
 	apiServices: services,
 	controllers,
@@ -30,6 +42,7 @@ export const createApp = ({
 	openApiSpec: JsonObject;
 }) => {
 	const allowedOrigin = envSettings.clientHost;
+	const apiOrigin = resolveApiOrigin(envSettings.clientConfig.apiBaseUrl);
 	const app = express();
 	const defaultCorsOptions: CorsOptions = {
 		origin: allowedOrigin,
@@ -50,7 +63,32 @@ export const createApp = ({
 		return cors(corsOptions)(req, res, next);
 	});
 
-	app.use(createStatusPageDocumentCsp(allowedOrigin));
+	// helmet sets the Content-Security-Policy header, replacing any value already
+	// present, so it must run before express.static (so documents served from the
+	// client build get a policy at all) and before statusPageDocumentCsp, which
+	// appends a second header that the browser intersects with this one.
+	app.use(
+		helmet({
+			hsts: false,
+			contentSecurityPolicy: {
+				useDefaults: true,
+				directives: {
+					upgradeInsecureRequests: null,
+					"script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+					"img-src": ["'self'", "data:", "blob:", "https://img.shields.io"],
+					"object-src": ["'none'"],
+					"base-uri": ["'self'"],
+					// The client defaults to the origin it is served from, but
+					// CLIENT_CONFIG_API_BASE_URL can point it at another origin.
+					"connect-src": apiOrigin ? ["'self'", apiOrigin] : ["'self'"],
+					// Emitted per request by statusPageDocumentCsp so status pages can allow configured embedding origins.
+					"frame-ancestors": null,
+				},
+			},
+		})
+	);
+
+	app.use(createStatusPageDocumentCsp(allowedOrigin, services.statusPagesRepository));
 
 	// Client runtime config; registered before express.static so it shadows the
 	// fallback config.js in the client build output
@@ -68,21 +106,6 @@ export const createApp = ({
 	app.use(sanitizeBody());
 	app.use(sanitizeQuery());
 
-	app.use(
-		helmet({
-			hsts: false,
-			contentSecurityPolicy: {
-				useDefaults: true,
-				directives: {
-					upgradeInsecureRequests: null,
-					"script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-					"img-src": ["'self'", "data:", "blob:", "https://img.shields.io"],
-					"object-src": ["'none'"],
-					"base-uri": ["'self'"],
-				},
-			},
-		})
-	);
 	app.use(
 		compression({
 			level: 6,
