@@ -298,6 +298,20 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return { monitors: this.mapDocuments(monitors), deletedCount };
 	};
 
+	findDockerTlsKeyById = async (monitorId: string): Promise<string | null> => {
+		const doc = await MonitorModel.findOne({ _id: monitorId }, { dockerTlsKey: 1 }).lean();
+		return doc?.dockerTlsKey ?? null;
+	};
+
+	findAllDockerTlsKeys = async (): Promise<{ id: string; dockerTlsKey: string }[]> => {
+		const docs = await MonitorModel.find({ dockerTlsKeySet: true }, { dockerTlsKey: 1 }).lean();
+		return docs.flatMap((doc) => (doc.dockerTlsKey ? [{ id: doc._id.toString(), dockerTlsKey: doc.dockerTlsKey }] : []));
+	};
+
+	updateDockerTlsKey = async (monitorId: string, dockerTlsKey: string): Promise<void> => {
+		await MonitorModel.updateOne({ _id: monitorId }, { $set: { dockerTlsKey } });
+	};
+
 	findMonitorsSummaryByTeamId = async (teamId: string, config: SummaryConfig): Promise<MonitorsSummary> => {
 		const match = this.queryBuilder(config, teamId);
 		const pipeline = [
@@ -453,6 +467,10 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			geoCheckEnabled: doc.geoCheckEnabled ?? false,
 			geoCheckLocations: doc.geoCheckLocations ?? [],
 			geoCheckInterval: doc.geoCheckInterval ?? 300000,
+			dockerLogsEnabled: doc.dockerLogsEnabled ?? false,
+			dockerTlsCa: doc.dockerTlsCa ?? undefined,
+			dockerTlsCert: doc.dockerTlsCert ?? undefined,
+			dockerTlsKeySet: doc.dockerTlsKeySet ?? false,
 			dnsServer: doc.dnsServer ?? undefined,
 			dnsRecordType: doc.dnsRecordType ?? undefined,
 			createdAt: toDateString(doc.createdAt),

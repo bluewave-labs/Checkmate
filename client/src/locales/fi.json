@@ -181,7 +181,13 @@
 				"statusPages": "Tilasivut",
 				"maintenance": "Huolto",
 				"logs": "Lokit",
-				"settings": "Asetukset"
+				"settings": "Asetukset",
+				"groups": {
+					"monitoring": "Valvonta",
+					"alerting": "Hälytykset",
+					"reporting": "Raportointi",
+					"configuration": "Määritykset"
+				}
 			},
 			"bottomMenu": {
 				"support": "Tuki",
@@ -1141,6 +1147,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Yleiset",
+				"monitoring": "Valvonta",
+				"email": "Sähköposti",
+				"integrations": "Integraatiot",
+				"data": "Tiedot"
+			},
 			"form": {
 				"timezone": {
 					"title": "Näytettävä aikavyöhyke",

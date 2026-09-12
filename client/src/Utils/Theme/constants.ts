@@ -18,6 +18,10 @@ export const LAYOUT = {
 	XXL: 16,
 } as const;
 
+export const INPUT_BASE_HEIGHT = 32; // Height for inputs/controls
+
 export const HOVER = {
 	DARKEN: 0.06, // This is a coefficient for darkening function
+	ROW: 0.025, // Overlay alpha for hoverable rows and cards
+	CONTROL: 0.05, // Stronger overlay for controls nested inside a hoverable row
 } as const;

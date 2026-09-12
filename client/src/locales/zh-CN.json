@@ -181,7 +181,13 @@
 				"statusPages": "状态页",
 				"maintenance": "维护",
 				"logs": "日志",
-				"settings": "设置"
+				"settings": "设置",
+				"groups": {
+					"monitoring": "监控",
+					"alerting": "告警",
+					"reporting": "报表",
+					"configuration": "配置"
+				}
 			},
 			"bottomMenu": {
 				"support": "支持",
@@ -1142,6 +1148,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "常规",
+				"monitoring": "监控",
+				"email": "邮件",
+				"integrations": "集成",
+				"data": "数据"
+			},
 			"form": {
 				"timezone": {
 					"title": "显示时区",

@@ -20,6 +20,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import type { Incident, IncidentsResponse, IncidentSummary } from "@/Types/Incident";
 import type { Monitor } from "@/Types/Monitor";
+import type { DateRange } from "@/Types/Query";
 import { useTheme } from "@mui/material";
 
 const IncidentsPage = () => {
@@ -30,7 +31,7 @@ const IncidentsPage = () => {
 	// Filter state
 	const [selectedMonitor, setSelectedMonitor] = useState(monitorId || "0");
 	const [filter, setFilter] = useState("all");
-	const [dateRange, setDateRange] = useState("recent");
+	const [dateRange, setDateRange] = useState<DateRange>("recent");
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const [activeIncidentsPage, setActiveIncidentsPage] = useState(0);

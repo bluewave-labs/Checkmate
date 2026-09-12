@@ -214,7 +214,13 @@
 				"settings": "Ustawienia",
 				"statusPages": "Strony statusu",
 				"tags": "Tagi",
-				"uptime": "Czas działania"
+				"uptime": "Czas działania",
+				"groups": {
+					"monitoring": "Monitorowanie",
+					"alerting": "Alerty",
+					"reporting": "Raporty",
+					"configuration": "Konfiguracja"
+				}
 			},
 			"starPrompt": {
 				"description": "Zobacz najnowsze wydania i pomóż rozwijać społeczność na GitHub",
@@ -1207,6 +1213,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Ogólne",
+				"monitoring": "Monitorowanie",
+				"email": "E-mail",
+				"integrations": "Integracje",
+				"data": "Dane"
+			},
 			"form": {
 				"about": {
 					"developedBy": "Opracowane przez Bluewave Labs",

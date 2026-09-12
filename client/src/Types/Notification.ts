@@ -9,6 +9,7 @@ export const NotificationChannels = [
 	"teams",
 	"telegram",
 	"pushover",
+	"signalgrid",
 	"twilio",
 	"ntfy",
 ] as const;

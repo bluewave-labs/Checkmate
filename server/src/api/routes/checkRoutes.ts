@@ -9,6 +9,6 @@ export const createCheckRoutes = (checkController: ICheckController): Router => 
 	router.get("/team", checkController.getChecksByTeam);
 	router.delete("/team", isAllowed(["admin", "superadmin"]), checkController.deleteChecksByTeamId);
 	router.get("/:monitorId", checkController.getChecksByMonitor);
-	router.delete("/:monitorId", checkController.deleteChecks);
+	router.delete("/:monitorId", isAllowed(["admin", "superadmin"]), checkController.deleteChecks);
 	return router;
 };

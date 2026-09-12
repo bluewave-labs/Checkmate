@@ -9,6 +9,7 @@ import type {
 	GotTimings,
 	ILighthouseAudit,
 } from "@/domain/checks/check.type.js";
+import { DockerContainerInfo, DockerContainerLogs, DockerContainerSummary } from "@/domain/docker/docker.type.js";
 import type { DnsRecordType, Monitor, MonitorMatchMethod, MonitorStatus, MonitorType } from "@/domain/monitors/monitor.type.js";
 
 import type { QueryResult } from "gamedig";
@@ -96,7 +97,13 @@ export interface HardwareStatusPayload {
 	[key: string]: unknown;
 }
 
-export type DockerStatusPayload = Record<string, unknown>;
+// Docker host monitoring
+
+export interface DockerStatusPayload {
+	containers: DockerContainerInfo[];
+	summary: DockerContainerSummary;
+	logs?: DockerContainerLogs[];
+}
 
 export interface PortStatusPayload {
 	success: boolean;
@@ -155,4 +162,5 @@ export type MonitorStatusResponseOverrides<T> = Partial<Omit<MonitorStatusRespon
 
 export type CheckContext = {
 	proxyUrl?: string;
+	dockerTlsKey?: string;
 };

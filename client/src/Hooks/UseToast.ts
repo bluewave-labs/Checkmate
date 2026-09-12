@@ -1,27 +1,30 @@
 import { toast, type ToastOptions } from "react-toastify";
+import { useMemo } from "react";
 
 export const useToast = () => {
-	const showToast = (message: string, options?: ToastOptions) => {
-		toast.dismiss();
-		const baseStyle: React.CSSProperties = {
-			whiteSpace: "nowrap",
-			overflow: "hidden",
-			textOverflow: "ellipsis",
+	return useMemo(() => {
+		const showToast = (message: string, options?: ToastOptions) => {
+			toast.dismiss();
+			const baseStyle: React.CSSProperties = {
+				whiteSpace: "nowrap",
+				overflow: "hidden",
+				textOverflow: "ellipsis",
+			};
+			toast(message, {
+				...options,
+				style: { ...baseStyle, ...(options?.style || {}) },
+			});
 		};
-		toast(message, {
-			...options,
-			style: { ...baseStyle, ...(options?.style || {}) },
-		});
-	};
 
-	const toastSuccess = (msg: string, opts?: ToastOptions) =>
-		showToast(msg, { ...opts, type: "success" });
-	const toastError = (msg: string, opts?: ToastOptions) =>
-		showToast(msg, { ...opts, type: "error" });
-	const toastInfo = (msg: string, opts?: ToastOptions) =>
-		showToast(msg, { ...opts, type: "info" });
-	const toastWarning = (msg: string, opts?: ToastOptions) =>
-		showToast(msg, { ...opts, type: "warning" });
+		const toastSuccess = (msg: string, opts?: ToastOptions) =>
+			showToast(msg, { ...opts, type: "success" });
+		const toastError = (msg: string, opts?: ToastOptions) =>
+			showToast(msg, { ...opts, type: "error" });
+		const toastInfo = (msg: string, opts?: ToastOptions) =>
+			showToast(msg, { ...opts, type: "info" });
+		const toastWarning = (msg: string, opts?: ToastOptions) =>
+			showToast(msg, { ...opts, type: "warning" });
 
-	return { showToast, toastSuccess, toastError, toastInfo, toastWarning };
+		return { showToast, toastSuccess, toastError, toastInfo, toastWarning };
+	}, []);
 };

@@ -6,6 +6,7 @@ import Stack from "@mui/material/Stack";
 import { FieldLabel } from "./FieldLabel";
 import { ChevronDown } from "lucide-react";
 import Typography from "@mui/material/Typography";
+import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
 
 interface SelectInputProps<T> extends Omit<SelectProps<T>, "label"> {
 	fieldLabel?: string;
@@ -71,7 +72,7 @@ const SelectInputInner = <T,>(
 				/>
 			)}
 			sx={{
-				height: "34px",
+				height: `${INPUT_BASE_HEIGHT}px`,
 				"& .MuiSelect-select": {
 					display: "flex",
 					alignItems: "center",
@@ -83,10 +84,6 @@ const SelectInputInner = <T,>(
 				},
 				"& .MuiOutlinedInput-notchedOutline": {
 					borderRadius: theme.shape.borderRadius,
-					borderColor: theme.palette.divider,
-				},
-				"&:hover .MuiOutlinedInput-notchedOutline": {
-					borderColor: theme.palette.divider,
 				},
 				...props.sx,
 			}}

@@ -463,6 +463,18 @@
 					"geoCheckInterval": {
 						"type": "number"
 					},
+					"dockerLogsEnabled": {
+						"type": "boolean"
+					},
+					"dockerTlsCa": {
+						"type": "string"
+					},
+					"dockerTlsCert": {
+						"type": "string"
+					},
+					"dockerTlsKeySet": {
+						"type": "boolean"
+					},
 					"dnsServer": {
 						"type": "string"
 					},
@@ -510,6 +522,7 @@
 					"geoCheckEnabled",
 					"geoCheckLocations",
 					"geoCheckInterval",
+					"dockerLogsEnabled",
 					"teamId",
 					"userId",
 					"createdAt",
@@ -678,6 +691,18 @@
 									"geoCheckInterval": {
 										"type": "number"
 									},
+									"dockerLogsEnabled": {
+										"type": "boolean"
+									},
+									"dockerTlsCa": {
+										"type": "string"
+									},
+									"dockerTlsCert": {
+										"type": "string"
+									},
+									"dockerTlsKeySet": {
+										"type": "boolean"
+									},
 									"dnsServer": {
 										"type": "string"
 									},
@@ -727,6 +752,7 @@
 									"geoCheckEnabled",
 									"geoCheckLocations",
 									"geoCheckInterval",
+									"dockerLogsEnabled",
 									"teamId",
 									"userId",
 									"createdAt",
@@ -924,6 +950,9 @@
 						"$ref": "#/components/schemas/PushoverNotification"
 					},
 					{
+						"$ref": "#/components/schemas/SignalgridNotification"
+					},
+					{
 						"$ref": "#/components/schemas/TwilioNotification"
 					},
 					{
@@ -943,6 +972,7 @@
 						"teams": "#/components/schemas/TeamsNotification",
 						"telegram": "#/components/schemas/TelegramNotification",
 						"pushover": "#/components/schemas/PushoverNotification",
+						"signalgrid": "#/components/schemas/SignalgridNotification",
 						"twilio": "#/components/schemas/TwilioNotification",
 						"ntfy": "#/components/schemas/NtfyNotification"
 					}
@@ -1374,6 +1404,34 @@
 					"accessToken": "a1234567890abcdef"
 				}
 			},
+			"SignalgridNotification": {
+				"type": "object",
+				"properties": {
+					"notificationName": {
+						"type": "string",
+						"minLength": 1
+					},
+					"type": {
+						"type": "string",
+						"enum": ["signalgrid"]
+					},
+					"address": {
+						"type": "string",
+						"minLength": 1
+					},
+					"accessToken": {
+						"type": "string",
+						"minLength": 1
+					}
+				},
+				"required": ["notificationName", "type", "address", "accessToken"],
+				"example": {
+					"notificationName": "Signalgrid",
+					"type": "signalgrid",
+					"address": "your-channel",
+					"accessToken": "your-client-key"
+				}
+			},
 			"TwilioNotification": {
 				"type": "object",
 				"properties": {
@@ -1648,6 +1706,24 @@
 											},
 											"performance": {
 												"type": "number"
+											},
+											"containerSummary": {
+												"type": "object",
+												"properties": {
+													"total": {
+														"type": "number"
+													},
+													"running": {
+														"type": "number"
+													},
+													"stopped": {
+														"type": "number"
+													},
+													"unhealthy": {
+														"type": "number"
+													}
+												},
+												"required": ["total", "running", "stopped", "unhealthy"]
 											}
 										},
 										"required": ["id", "status", "responseTime", "statusCode", "message", "createdAt"],
@@ -6936,6 +7012,1275 @@
 				}
 			}
 		},
+		"/monitors/docker/details/{monitorId}": {
+			"get": {
+				"tags": ["monitors"],
+				"summary": "Get Docker host details for a monitor",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "monitorId",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"enum": ["recent", "hour", "day", "week", "month", "all"]
+						},
+						"required": false,
+						"name": "dateRange",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"monitor": {
+													"type": "object",
+													"properties": {
+														"name": {
+															"type": "string"
+														},
+														"description": {
+															"type": "string"
+														},
+														"type": {
+															"type": "string",
+															"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+														},
+														"url": {
+															"type": "string"
+														},
+														"port": {
+															"type": "number"
+														},
+														"isActive": {
+															"type": "boolean"
+														},
+														"interval": {
+															"type": "number"
+														},
+														"status": {
+															"type": "string",
+															"enum": ["up", "down", "paused", "initializing", "maintenance", "breached"]
+														},
+														"statusWindowSize": {
+															"type": "number"
+														},
+														"statusWindowThreshold": {
+															"type": "number"
+														},
+														"ignoreTlsErrors": {
+															"type": "boolean"
+														},
+														"proxyMode": {
+															"type": "string",
+															"enum": ["inherit", "none", "custom"]
+														},
+														"proxyId": {
+															"type": "string"
+														},
+														"useAdvancedMatching": {
+															"type": "boolean"
+														},
+														"jsonPath": {
+															"type": "string"
+														},
+														"expectedValue": {
+															"type": "string"
+														},
+														"matchMethod": {
+															"type": "string",
+															"enum": ["equal", "include", "regex"]
+														},
+														"method": {
+															"type": "string",
+															"enum": ["GET", "HEAD"]
+														},
+														"notifications": {
+															"type": "array",
+															"items": {
+																"type": "string"
+															}
+														},
+														"tags": {
+															"type": "array",
+															"items": {
+																"type": "string"
+															}
+														},
+														"customUpCodes": {
+															"type": "array",
+															"items": {
+																"type": "number"
+															}
+														},
+														"secret": {
+															"type": "string"
+														},
+														"cpuAlertThreshold": {
+															"type": "number"
+														},
+														"memoryAlertThreshold": {
+															"type": "number"
+														},
+														"diskAlertThreshold": {
+															"type": "number"
+														},
+														"tempAlertThreshold": {
+															"type": "number"
+														},
+														"selectedDisks": {
+															"type": "array",
+															"items": {
+																"type": "string"
+															}
+														},
+														"gameId": {
+															"type": "string"
+														},
+														"grpcServiceName": {
+															"type": "string"
+														},
+														"group": {
+															"type": "string",
+															"nullable": true
+														},
+														"geoCheckEnabled": {
+															"type": "boolean"
+														},
+														"geoCheckLocations": {
+															"type": "array",
+															"items": {
+																"type": "string",
+																"enum": ["EU", "NA", "AS", "SA", "AF", "OC"]
+															}
+														},
+														"geoCheckInterval": {
+															"type": "number"
+														},
+														"dockerLogsEnabled": {
+															"type": "boolean"
+														},
+														"dockerTlsCa": {
+															"type": "string"
+														},
+														"dockerTlsCert": {
+															"type": "string"
+														},
+														"dockerTlsKeySet": {
+															"type": "boolean"
+														},
+														"dnsServer": {
+															"type": "string"
+														},
+														"dnsRecordType": {
+															"type": "string",
+															"enum": ["A", "AAAA", "CNAME", "MX", "TXT", "NS"]
+														},
+														"teamId": {
+															"type": "string"
+														},
+														"userId": {
+															"type": "string"
+														},
+														"createdAt": {
+															"type": "string"
+														},
+														"updatedAt": {
+															"type": "string"
+														},
+														"lastEvaluatedAt": {
+															"type": "number"
+														},
+														"id": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"name",
+														"type",
+														"url",
+														"isActive",
+														"interval",
+														"status",
+														"statusWindowSize",
+														"statusWindowThreshold",
+														"ignoreTlsErrors",
+														"proxyMode",
+														"useAdvancedMatching",
+														"method",
+														"notifications",
+														"tags",
+														"cpuAlertThreshold",
+														"memoryAlertThreshold",
+														"diskAlertThreshold",
+														"tempAlertThreshold",
+														"selectedDisks",
+														"geoCheckEnabled",
+														"geoCheckLocations",
+														"geoCheckInterval",
+														"dockerLogsEnabled",
+														"teamId",
+														"userId",
+														"createdAt",
+														"updatedAt",
+														"lastEvaluatedAt",
+														"id"
+													],
+													"additionalProperties": {
+														"nullable": true
+													}
+												},
+												"stats": {
+													"type": "object",
+													"properties": {
+														"aggregateData": {
+															"type": "object",
+															"properties": {
+																"totalChecks": {
+																	"type": "number"
+																}
+															},
+															"required": ["totalChecks"]
+														},
+														"upChecks": {
+															"type": "object",
+															"properties": {
+																"totalChecks": {
+																	"type": "number"
+																}
+															},
+															"required": ["totalChecks"]
+														},
+														"aggregate": {
+															"type": "array",
+															"items": {
+																"type": "object",
+																"properties": {
+																	"_id": {
+																		"type": "string"
+																	},
+																	"avgResponseTime": {
+																		"type": "number",
+																		"nullable": true
+																	},
+																	"upCount": {
+																		"type": "number"
+																	},
+																	"totalCount": {
+																		"type": "number"
+																	},
+																	"avgRunning": {
+																		"type": "number",
+																		"nullable": true
+																	},
+																	"avgTotal": {
+																		"type": "number",
+																		"nullable": true
+																	},
+																	"avgUnhealthy": {
+																		"type": "number",
+																		"nullable": true
+																	}
+																},
+																"required": ["_id", "avgResponseTime", "upCount", "totalCount", "avgRunning", "avgTotal", "avgUnhealthy"]
+															}
+														},
+														"latest": {
+															"type": "object",
+															"nullable": true,
+															"properties": {
+																"containers": {
+																	"type": "array",
+																	"items": {
+																		"type": "object",
+																		"properties": {
+																			"id": {
+																				"type": "string"
+																			},
+																			"name": {
+																				"type": "string"
+																			},
+																			"image": {
+																				"type": "string"
+																			},
+																			"state": {
+																				"type": "string",
+																				"enum": ["created", "running", "paused", "restarting", "removing", "exited", "dead"]
+																			},
+																			"status": {
+																				"type": "string"
+																			},
+																			"health": {
+																				"type": "string",
+																				"enum": ["healthy", "unhealthy", "starting", "none"]
+																			},
+																			"cpuPct": {
+																				"type": "number"
+																			},
+																			"memoryUsedBytes": {
+																				"type": "number"
+																			},
+																			"memoryLimitBytes": {
+																				"type": "number"
+																			},
+																			"memoryPct": {
+																				"type": "number"
+																			},
+																			"restartCount": {
+																				"type": "number"
+																			},
+																			"startedAt": {
+																				"type": "string"
+																			},
+																			"ports": {
+																				"type": "array",
+																				"items": {
+																					"type": "object",
+																					"properties": {
+																						"privatePort": {
+																							"type": "number"
+																						},
+																						"protocol": {
+																							"type": "string",
+																							"enum": ["tcp", "udp", "sctp"]
+																						},
+																						"publicPort": {
+																							"type": "number"
+																						},
+																						"hostIp": {
+																							"type": "string"
+																						}
+																					},
+																					"required": ["privatePort", "protocol"]
+																				}
+																			},
+																			"mounts": {
+																				"type": "array",
+																				"items": {
+																					"type": "object",
+																					"properties": {
+																						"type": {
+																							"type": "string"
+																						},
+																						"name": {
+																							"type": "string"
+																						},
+																						"source": {
+																							"type": "string"
+																						},
+																						"destination": {
+																							"type": "string"
+																						},
+																						"mode": {
+																							"type": "string"
+																						},
+																						"rw": {
+																							"type": "boolean"
+																						}
+																					},
+																					"required": ["type", "source", "destination", "mode", "rw"]
+																				}
+																			}
+																		},
+																		"required": ["id", "name", "image", "state", "status", "health"]
+																	}
+																},
+																"summary": {
+																	"type": "object",
+																	"properties": {
+																		"total": {
+																			"type": "number"
+																		},
+																		"running": {
+																			"type": "number"
+																		},
+																		"stopped": {
+																			"type": "number"
+																		},
+																		"unhealthy": {
+																			"type": "number"
+																		}
+																	},
+																	"required": ["total", "running", "stopped", "unhealthy"]
+																},
+																"checkedAt": {
+																	"type": "string"
+																}
+															},
+															"required": ["containers", "checkedAt"]
+														}
+													},
+													"required": ["aggregateData", "upChecks", "aggregate", "latest"]
+												},
+												"monitorStats": {
+													"type": "object",
+													"nullable": true,
+													"properties": {
+														"id": {
+															"type": "string"
+														},
+														"monitorId": {
+															"type": "string"
+														},
+														"avgResponseTime": {
+															"type": "number"
+														},
+														"maxResponseTime": {
+															"type": "number"
+														},
+														"totalChecks": {
+															"type": "number"
+														},
+														"totalUpChecks": {
+															"type": "number"
+														},
+														"totalDownChecks": {
+															"type": "number"
+														},
+														"uptimePercentage": {
+															"type": "number"
+														},
+														"lastCheckTimestamp": {
+															"type": "number"
+														},
+														"lastResponseTime": {
+															"type": "number"
+														},
+														"timeOfLastFailure": {
+															"type": "number"
+														},
+														"createdAt": {
+															"type": "string"
+														},
+														"updatedAt": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"id",
+														"monitorId",
+														"avgResponseTime",
+														"maxResponseTime",
+														"totalChecks",
+														"totalUpChecks",
+														"totalDownChecks",
+														"uptimePercentage",
+														"lastCheckTimestamp",
+														"lastResponseTime",
+														"createdAt",
+														"updatedAt"
+													]
+												}
+											},
+											"required": ["monitor", "stats", "monitorStats"]
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/monitors/docker/details/{monitorId}/containers/{containerName}": {
+			"get": {
+				"tags": ["monitors"],
+				"summary": "Get details for one container on a Docker host monitor",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "monitorId",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "containerName",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"enum": ["recent", "hour", "day", "week", "month", "all"]
+						},
+						"required": false,
+						"name": "dateRange",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"monitor": {
+													"type": "object",
+													"properties": {
+														"name": {
+															"type": "string"
+														},
+														"description": {
+															"type": "string"
+														},
+														"type": {
+															"type": "string",
+															"enum": ["http", "ping", "pagespeed", "hardware", "docker", "port", "game", "grpc", "websocket", "dns", "unknown"]
+														},
+														"url": {
+															"type": "string"
+														},
+														"port": {
+															"type": "number"
+														},
+														"isActive": {
+															"type": "boolean"
+														},
+														"interval": {
+															"type": "number"
+														},
+														"status": {
+															"type": "string",
+															"enum": ["up", "down", "paused", "initializing", "maintenance", "breached"]
+														},
+														"statusWindowSize": {
+															"type": "number"
+														},
+														"statusWindowThreshold": {
+															"type": "number"
+														},
+														"ignoreTlsErrors": {
+															"type": "boolean"
+														},
+														"proxyMode": {
+															"type": "string",
+															"enum": ["inherit", "none", "custom"]
+														},
+														"proxyId": {
+															"type": "string"
+														},
+														"useAdvancedMatching": {
+															"type": "boolean"
+														},
+														"jsonPath": {
+															"type": "string"
+														},
+														"expectedValue": {
+															"type": "string"
+														},
+														"matchMethod": {
+															"type": "string",
+															"enum": ["equal", "include", "regex"]
+														},
+														"method": {
+															"type": "string",
+															"enum": ["GET", "HEAD"]
+														},
+														"notifications": {
+															"type": "array",
+															"items": {
+																"type": "string"
+															}
+														},
+														"tags": {
+															"type": "array",
+															"items": {
+																"type": "string"
+															}
+														},
+														"customUpCodes": {
+															"type": "array",
+															"items": {
+																"type": "number"
+															}
+														},
+														"secret": {
+															"type": "string"
+														},
+														"cpuAlertThreshold": {
+															"type": "number"
+														},
+														"memoryAlertThreshold": {
+															"type": "number"
+														},
+														"diskAlertThreshold": {
+															"type": "number"
+														},
+														"tempAlertThreshold": {
+															"type": "number"
+														},
+														"selectedDisks": {
+															"type": "array",
+															"items": {
+																"type": "string"
+															}
+														},
+														"gameId": {
+															"type": "string"
+														},
+														"grpcServiceName": {
+															"type": "string"
+														},
+														"group": {
+															"type": "string",
+															"nullable": true
+														},
+														"geoCheckEnabled": {
+															"type": "boolean"
+														},
+														"geoCheckLocations": {
+															"type": "array",
+															"items": {
+																"type": "string",
+																"enum": ["EU", "NA", "AS", "SA", "AF", "OC"]
+															}
+														},
+														"geoCheckInterval": {
+															"type": "number"
+														},
+														"dockerLogsEnabled": {
+															"type": "boolean"
+														},
+														"dockerTlsCa": {
+															"type": "string"
+														},
+														"dockerTlsCert": {
+															"type": "string"
+														},
+														"dockerTlsKeySet": {
+															"type": "boolean"
+														},
+														"dnsServer": {
+															"type": "string"
+														},
+														"dnsRecordType": {
+															"type": "string",
+															"enum": ["A", "AAAA", "CNAME", "MX", "TXT", "NS"]
+														},
+														"teamId": {
+															"type": "string"
+														},
+														"userId": {
+															"type": "string"
+														},
+														"createdAt": {
+															"type": "string"
+														},
+														"updatedAt": {
+															"type": "string"
+														},
+														"lastEvaluatedAt": {
+															"type": "number"
+														},
+														"id": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"name",
+														"type",
+														"url",
+														"isActive",
+														"interval",
+														"status",
+														"statusWindowSize",
+														"statusWindowThreshold",
+														"ignoreTlsErrors",
+														"proxyMode",
+														"useAdvancedMatching",
+														"method",
+														"notifications",
+														"tags",
+														"cpuAlertThreshold",
+														"memoryAlertThreshold",
+														"diskAlertThreshold",
+														"tempAlertThreshold",
+														"selectedDisks",
+														"geoCheckEnabled",
+														"geoCheckLocations",
+														"geoCheckInterval",
+														"dockerLogsEnabled",
+														"teamId",
+														"userId",
+														"createdAt",
+														"updatedAt",
+														"lastEvaluatedAt",
+														"id"
+													],
+													"additionalProperties": {
+														"nullable": true
+													}
+												},
+												"stats": {
+													"type": "object",
+													"properties": {
+														"aggregate": {
+															"type": "array",
+															"items": {
+																"type": "object",
+																"properties": {
+																	"_id": {
+																		"type": "string"
+																	},
+																	"avgCpuPct": {
+																		"type": "number",
+																		"nullable": true
+																	},
+																	"avgMemoryUsedBytes": {
+																		"type": "number",
+																		"nullable": true
+																	},
+																	"avgMemoryPct": {
+																		"type": "number",
+																		"nullable": true
+																	},
+																	"minRestartCount": {
+																		"type": "number",
+																		"nullable": true
+																	},
+																	"maxRestartCount": {
+																		"type": "number",
+																		"nullable": true
+																	}
+																},
+																"required": ["_id", "avgCpuPct", "avgMemoryUsedBytes", "avgMemoryPct", "minRestartCount", "maxRestartCount"]
+															}
+														},
+														"restartsInRange": {
+															"type": "number"
+														},
+														"latest": {
+															"type": "object",
+															"nullable": true,
+															"properties": {
+																"container": {
+																	"type": "object",
+																	"properties": {
+																		"id": {
+																			"type": "string"
+																		},
+																		"name": {
+																			"type": "string"
+																		},
+																		"image": {
+																			"type": "string"
+																		},
+																		"state": {
+																			"type": "string",
+																			"enum": ["created", "running", "paused", "restarting", "removing", "exited", "dead"]
+																		},
+																		"status": {
+																			"type": "string"
+																		},
+																		"health": {
+																			"type": "string",
+																			"enum": ["healthy", "unhealthy", "starting", "none"]
+																		},
+																		"cpuPct": {
+																			"type": "number"
+																		},
+																		"memoryUsedBytes": {
+																			"type": "number"
+																		},
+																		"memoryLimitBytes": {
+																			"type": "number"
+																		},
+																		"memoryPct": {
+																			"type": "number"
+																		},
+																		"restartCount": {
+																			"type": "number"
+																		},
+																		"startedAt": {
+																			"type": "string"
+																		},
+																		"ports": {
+																			"type": "array",
+																			"items": {
+																				"type": "object",
+																				"properties": {
+																					"privatePort": {
+																						"type": "number"
+																					},
+																					"protocol": {
+																						"type": "string",
+																						"enum": ["tcp", "udp", "sctp"]
+																					},
+																					"publicPort": {
+																						"type": "number"
+																					},
+																					"hostIp": {
+																						"type": "string"
+																					}
+																				},
+																				"required": ["privatePort", "protocol"]
+																			}
+																		},
+																		"mounts": {
+																			"type": "array",
+																			"items": {
+																				"type": "object",
+																				"properties": {
+																					"type": {
+																						"type": "string"
+																					},
+																					"name": {
+																						"type": "string"
+																					},
+																					"source": {
+																						"type": "string"
+																					},
+																					"destination": {
+																						"type": "string"
+																					},
+																					"mode": {
+																						"type": "string"
+																					},
+																					"rw": {
+																						"type": "boolean"
+																					}
+																				},
+																				"required": ["type", "source", "destination", "mode", "rw"]
+																			}
+																		}
+																	},
+																	"required": ["id", "name", "image", "state", "status", "health"]
+																},
+																"checkedAt": {
+																	"type": "string"
+																}
+															},
+															"required": ["container", "checkedAt"]
+														}
+													},
+													"required": ["aggregate", "restartsInRange", "latest"]
+												}
+											},
+											"required": ["monitor", "stats"]
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/monitors/docker/details/{monitorId}/containers/{containerName}/logs": {
+			"get": {
+				"tags": ["monitors"],
+				"summary": "Get stored log lines for one container on a Docker host monitor, newest first",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "monitorId",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"minLength": 1
+						},
+						"required": true,
+						"name": "containerName",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"format": "date-time"
+						},
+						"required": false,
+						"name": "before",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"format": "date-time"
+						},
+						"required": false,
+						"name": "after",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "integer",
+							"minimum": 1,
+							"maximum": 50,
+							"default": 20
+						},
+						"required": false,
+						"name": "limit",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [true]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"logs": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"id": {
+																"type": "string"
+															},
+															"metadata": {
+																"type": "object",
+																"properties": {
+																	"monitorId": {
+																		"type": "string"
+																	},
+																	"teamId": {
+																		"type": "string"
+																	},
+																	"containerId": {
+																		"type": "string"
+																	},
+																	"containerName": {
+																		"type": "string"
+																	}
+																},
+																"required": ["monitorId", "teamId", "containerId", "containerName"]
+															},
+															"lines": {
+																"type": "array",
+																"items": {
+																	"type": "object",
+																	"properties": {
+																		"ts": {
+																			"type": "string"
+																		},
+																		"stream": {
+																			"type": "string",
+																			"enum": ["stdout", "stderr"]
+																		},
+																		"text": {
+																			"type": "string"
+																		}
+																	},
+																	"required": ["ts", "stream", "text"]
+																}
+															},
+															"gap": {
+																"type": "boolean"
+															},
+															"checkedAt": {
+																"type": "string"
+															},
+															"expiry": {
+																"type": "string"
+															},
+															"createdAt": {
+																"type": "string"
+															},
+															"updatedAt": {
+																"type": "string"
+															}
+														},
+														"required": ["id", "metadata", "lines", "gap", "checkedAt", "expiry", "createdAt", "updatedAt"]
+													}
+												},
+												"nextCursor": {
+													"type": "string",
+													"nullable": true
+												}
+											},
+											"required": ["logs", "nextCursor"]
+										}
+									},
+									"required": ["success", "msg", "data"]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean",
+											"enum": [false]
+										},
+										"msg": {
+											"type": "string"
+										},
+										"data": {
+											"nullable": true
+										}
+									},
+									"required": ["success", "msg"]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/monitors/pagespeed/details/{monitorId}": {
 			"get": {
 				"tags": ["monitors"],
@@ -7960,6 +9305,42 @@
 										"type": "number",
 										"minimum": 300000
 									},
+									"dockerLogsEnabled": {
+										"type": "boolean"
+									},
+									"dockerTlsCa": {
+										"anyOf": [
+											{
+												"type": "string"
+											},
+											{
+												"type": "string",
+												"enum": [""]
+											}
+										]
+									},
+									"dockerTlsCert": {
+										"anyOf": [
+											{
+												"type": "string"
+											},
+											{
+												"type": "string",
+												"enum": [""]
+											}
+										]
+									},
+									"dockerTlsKey": {
+										"anyOf": [
+											{
+												"type": "string"
+											},
+											{
+												"type": "string",
+												"enum": [""]
+											}
+										]
+									},
 									"dnsServer": {
 										"type": "string",
 										"minLength": 1
@@ -8648,6 +10029,10 @@
 													"minimum": 300000,
 													"default": 300000
 												},
+												"dockerLogsEnabled": {
+													"type": "boolean",
+													"default": false
+												},
 												"dnsServer": {
 													"type": "string",
 													"minLength": 1
@@ -9211,6 +10596,42 @@
 									"geoCheckInterval": {
 										"type": "number",
 										"minimum": 300000
+									},
+									"dockerLogsEnabled": {
+										"type": "boolean"
+									},
+									"dockerTlsCa": {
+										"anyOf": [
+											{
+												"type": "string"
+											},
+											{
+												"type": "string",
+												"enum": [""]
+											}
+										]
+									},
+									"dockerTlsCert": {
+										"anyOf": [
+											{
+												"type": "string"
+											},
+											{
+												"type": "string",
+												"enum": [""]
+											}
+										]
+									},
+									"dockerTlsKey": {
+										"anyOf": [
+											{
+												"type": "string"
+											},
+											{
+												"type": "string",
+												"enum": [""]
+											}
+										]
 									},
 									"dnsServer": {
 										"type": "string",

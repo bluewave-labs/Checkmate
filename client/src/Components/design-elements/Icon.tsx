@@ -8,7 +8,7 @@ interface IconProps {
 	color?: string;
 }
 
-const Icon = ({ icon: Icon, size = 20, strokeWidth = 1.5, color }: IconProps) => {
+const Icon = ({ icon: Icon, size = 16, strokeWidth = 1.5, color }: IconProps) => {
 	return (
 		<Icon
 			size={size}

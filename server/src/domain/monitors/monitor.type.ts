@@ -1,9 +1,11 @@
-import type { CheckSnapshot } from "@/domain/checks/check.type.js";
+import type { CheckSnapshot, DockerContainerStats, DockerStats } from "@/domain/checks/check.type.js";
 export type { CheckSnapshot } from "@/domain/checks/check.type.js";
 import type { GeoContinent, GroupedGeoCheck } from "@/domain/geo-checks/geo-check.type.js";
 export type { GeoContinent } from "@/domain/geo-checks/geo-check.type.js";
 import http from "node:http";
 import { HardwareStats } from "@/domain/checks/check.type.js";
+import { MonitorStats } from "@/domain/monitor-stats/monitor-stats.type.js";
+import { DockerLogPage } from "@/domain/docker/docker-log.type.js";
 
 export const HttpStatusCodes = [
 	...Object.keys(http.STATUS_CODES).map(Number),
@@ -44,16 +46,7 @@ export const supportsGeoCheck = (type: MonitorType): boolean => GeoCheckSupporte
 export const ProxyModes = ["inherit", "none", "custom"] as const;
 export type ProxyMode = (typeof ProxyModes)[number];
 
-export const UptimeDetailsSupportedTypes = [
-	"http",
-	"ping",
-	"docker",
-	"port",
-	"game",
-	"grpc",
-	"websocket",
-	"dns",
-] as const satisfies readonly MonitorType[];
+export const UptimeDetailsSupportedTypes = ["http", "ping", "port", "game", "grpc", "websocket", "dns"] as const satisfies readonly MonitorType[];
 export type UptimeDetailsSupportedType = (typeof UptimeDetailsSupportedTypes)[number];
 export const supportsUptimeDetails = (type: MonitorType): type is UptimeDetailsSupportedType => UptimeDetailsSupportedTypes.some((t) => t === type);
 
@@ -115,6 +108,12 @@ export interface Monitor {
 	geoCheckEnabled?: boolean;
 	geoCheckLocations?: GeoContinent[];
 	geoCheckInterval?: number;
+	dockerLogsEnabled?: boolean;
+	dockerTlsCa?: string;
+	dockerTlsCert?: string;
+	// EncryptionService ciphertext. Normally excluded
+	dockerTlsKey?: string;
+	dockerTlsKeySet?: boolean;
 	dnsServer?: string;
 	dnsRecordType?: DnsRecordType;
 	recentChecks: CheckSnapshot[];
@@ -161,6 +160,17 @@ export interface HardwareDetailsResult {
 	monitorStats: import("../monitor-stats/monitor-stats.type.js").MonitorStats | null;
 }
 
+export interface DockerDetailsResult {
+	monitor: Monitor;
+	stats: DockerStats;
+	monitorStats: MonitorStats | null;
+}
+
+export interface DockerContainerDetailsResult {
+	monitor: Monitor;
+	stats: DockerContainerStats;
+}
+
 export interface PageSpeedDetailsResult {
 	monitorData: {
 		monitor: Monitor;
@@ -185,3 +195,5 @@ export interface Game {
 export type GamesMap = Record<string, Game>;
 
 export type MonitorScheduleFields = Pick<Monitor, "id" | "type" | "isActive" | "interval" | "geoCheckEnabled" | "geoCheckInterval">;
+
+export type DockerContainerLogsResult = DockerLogPage;
