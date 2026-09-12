@@ -181,7 +181,13 @@
 				"statusPages": "Сторінки статусу",
 				"maintenance": "Обслуговування",
 				"logs": "Журнали",
-				"settings": "Налаштування"
+				"settings": "Налаштування",
+				"groups": {
+					"monitoring": "Моніторинг",
+					"alerting": "Сповіщення",
+					"reporting": "Звіти",
+					"configuration": "Конфігурація"
+				}
 			},
 			"bottomMenu": {
 				"support": "Підтримка",
@@ -1141,6 +1147,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Загальні",
+				"monitoring": "Моніторинг",
+				"email": "Електронна пошта",
+				"integrations": "Інтеграції",
+				"data": "Дані"
+			},
 			"form": {
 				"timezone": {
 					"title": "Часовий пояс відображення",

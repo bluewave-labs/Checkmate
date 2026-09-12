@@ -10,6 +10,7 @@ import { useGet } from "@/Hooks/UseApi";
 import type { HardwareDetailsResponse } from "@/Types/Monitor";
 import { useIsAdmin } from "@/Hooks/useIsAdmin";
 import { useTranslation } from "react-i18next";
+import type { DateRange } from "@/Types/Query";
 
 const InfrastructureDetails = () => {
 	const { t } = useTranslation();
@@ -17,7 +18,7 @@ const InfrastructureDetails = () => {
 
 	const { monitorId } = useParams<{ monitorId: string }>();
 
-	const [dateRange, setDateRange] = useState<string>("recent");
+	const [dateRange, setDateRange] = useState<DateRange>("recent");
 	const [selectedTab, setSelectedTab] = useState<number>(0);
 
 	const monitorDetailsUrl = useMemo(() => {

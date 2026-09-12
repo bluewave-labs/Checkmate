@@ -1,10 +1,12 @@
 import Box, { type BoxProps } from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
+import { forwardRef } from "react";
 
-export const BaseBox = ({ sx, ...rest }: BoxProps) => {
+export const BaseBox = forwardRef<HTMLDivElement, BoxProps>(({ sx, ...rest }, ref) => {
 	const theme = useTheme();
 	return (
 		<Box
+			ref={ref}
 			{...rest}
 			sx={{
 				backgroundColor: theme.palette.background.paper,
@@ -16,4 +18,6 @@ export const BaseBox = ({ sx, ...rest }: BoxProps) => {
 			}}
 		/>
 	);
-};
+});
+
+BaseBox.displayName = "BaseBox";

@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useToast } from "@/Hooks/UseToast";
 import { logger } from "@/Utils/logger";
 
-interface ApiResponse<T> {
+export interface ApiResponse<T> {
 	success: boolean;
 	msg: string;
 	data: T;

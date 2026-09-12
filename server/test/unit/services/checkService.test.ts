@@ -252,6 +252,33 @@ describe("CheckService", () => {
 				expect(check!.errors).toBeUndefined();
 			});
 		});
+
+		describe("docker type", () => {
+			it("extracts containers and containerSummary from payload", () => {
+				const payload = {
+					containers: [
+						{ id: "abc", name: "web", image: "nginx:latest", state: "running", status: "Up 3 hours", health: "healthy" },
+						{ id: "def", name: "db", image: "mongo:8.0", state: "exited", status: "Exited (0)", health: "none" },
+					],
+					summary: { total: 2, running: 1, stopped: 1, unhealthy: 0 },
+				} as any;
+				const { service } = createService();
+				const check = service.toCheck(makeStatusResponse({ type: "docker", payload } as any));
+
+				expect(check!.containers).toHaveLength(2);
+				expect(check!.containers![0]).toMatchObject({ id: "abc", state: "running", health: "healthy" });
+				expect(check!.containerSummary).toEqual({ total: 2, running: 1, stopped: 1, unhealthy: 0 });
+			});
+
+			it("handles a null payload gracefully (down check)", () => {
+				const { service } = createService();
+				const check = service.toCheck(makeStatusResponse({ type: "docker", payload: null } as any));
+
+				expect(check).toBeDefined();
+				expect(check!.containers).toBeUndefined();
+				expect(check!.containerSummary).toBeUndefined();
+			});
+		});
 	});
 
 	// ── toStatusResponse round-trip (Phase 2 §5 guard) ─────────────────────────

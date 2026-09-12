@@ -10,6 +10,7 @@ import type {
 	CheckMemoryInfo,
 	CheckMetadata,
 	CheckNetworkInterfaceInfo,
+	DockerContainerStats,
 	GotTimings,
 	HardwareCheckStats,
 } from "@/domain/checks/check.type.js";
@@ -24,6 +25,14 @@ import { getHardwareUpChecks, getHardwareStats, getHardwareTotalChecks } from "@
 import { CheckFilter, DateRange } from "@/types/query.js";
 import { AppError } from "@/utils/AppError.js";
 import { NETWORK_ERROR } from "@/types/network.js";
+import {
+	getDockerContainerLatestCheck,
+	getDockerContainerStats,
+	getDockerLatestCheck,
+	getDockerStats,
+	getDockerTotalChecks,
+	getDockerUpChecks,
+} from "@/domain/checks/check.docker.aggregation.js";
 
 const SERVICE_NAME = "ChecksRepository";
 
@@ -167,6 +176,8 @@ class MongoChecksRepository implements IChecksRepository {
 			seo: doc.seo,
 			performance: doc.performance,
 			audits: mapAudits(doc.audits),
+			containers: doc.containers,
+			containerSummary: doc.containerSummary,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
@@ -302,7 +313,34 @@ class MongoChecksRepository implements IChecksRepository {
 		if (options?.type === "pagespeed") {
 			return this.findPageSpeedDateRangeChecks(monitorObjectId, start, end, dateString);
 		}
+		if (options?.type === "docker") {
+			return this.findDockerDateRangeChecks(monitorObjectId, start, end, dateString);
+		}
 		return this.findUptimeDateRangeChecks(options?.type ?? "http", monitorObjectId, start, end, dateString);
+	};
+
+	findDockerContainerChecks = async (
+		monitorId: string,
+		containerName: string,
+		dateRange: DateRange
+	): Promise<Omit<DockerContainerStats, "restartsInRange">> => {
+		const dates = { start: getDateForRange(dateRange), end: new Date() };
+		const dateString = getDateFormat(dateRange);
+		const [aggregate, latestDoc] = await Promise.all([
+			getDockerContainerStats(monitorId, containerName, dates, dateString),
+			getDockerContainerLatestCheck(monitorId, containerName),
+		]);
+		const latestContainer = latestDoc?.containers?.find((c) => c.name === containerName);
+		return {
+			aggregate,
+			latest:
+				latestDoc && latestContainer
+					? {
+							container: latestContainer,
+							checkedAt: toDateString(latestDoc.createdAt),
+						}
+					: null,
+		};
 	};
 
 	findSummaryByTeamId = async (teamId: string, dateRange: DateRange) => {
@@ -412,7 +450,7 @@ class MongoChecksRepository implements IChecksRepository {
 		return totalDeleted;
 	};
 	private findUptimeDateRangeChecks = async (
-		monitorType: Exclude<MonitorType, "hardware" | "pagespeed">,
+		monitorType: Exclude<MonitorType, "hardware" | "pagespeed" | "docker">,
 		monitorObjectId: mongoose.Types.ObjectId,
 		startDate: Date,
 		endDate: Date,
@@ -626,6 +664,30 @@ class MongoChecksRepository implements IChecksRepository {
 		return {
 			monitorType: "pagespeed" as const,
 			groupedChecks: result?.groupedChecks ?? [],
+		};
+	};
+
+	private findDockerDateRangeChecks = async (monitorObjectId: mongoose.Types.ObjectId, startDate: Date, endDate: Date, dateString: string) => {
+		const monitorId = monitorObjectId.toHexString();
+		const dates = { start: startDate, end: endDate };
+		const [totalChecks, upChecks, aggregate, latestDoc] = await Promise.all([
+			getDockerTotalChecks(monitorId, dates),
+			getDockerUpChecks(monitorId, dates),
+			getDockerStats(monitorId, dates, dateString),
+			getDockerLatestCheck(monitorId),
+		]);
+		return {
+			monitorType: "docker" as const,
+			aggregateData: { totalChecks: totalChecks ?? 0 },
+			upChecks,
+			aggregate,
+			latest: latestDoc
+				? {
+						containers: latestDoc.containers ?? [],
+						summary: latestDoc.containerSummary,
+						checkedAt: toDateString(latestDoc.createdAt),
+					}
+				: null,
 		};
 	};
 }

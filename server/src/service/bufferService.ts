@@ -5,14 +5,18 @@ import type { ILogger } from "@/utils/logger.js";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import type { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import { ICheckService } from "../domain/checks/check.service.js";
+import { DockerLog } from "@/domain/docker/docker-log.type.js";
+import { IDockerLogsService } from "@/domain/docker/docker-log.service.js";
 const SERVICE_NAME = "BufferService";
 
 export interface IBufferService {
 	addToBuffer(check: Check): void;
 	addGeoCheckToBuffer(geoCheck: GeoCheck): void;
+	addDockerLogToBuffer(dockerLog: DockerLog): void;
 	scheduleNextFlush(): void;
 	flushBuffer(): Promise<void>;
 	flushGeoBuffer(): Promise<void>;
+	flushDockerLogsBuffer(): Promise<void>;
 	shutdown(): Promise<void>;
 }
 
@@ -23,15 +27,18 @@ export class BufferService implements IBufferService {
 	private SERVICE_NAME: string;
 	private buffer: Check[];
 	private geoBuffer: GeoCheck[];
+	private dockerLogBuffer: DockerLog[];
 	private bufferTimer: NodeJS.Timeout | null = null;
 	private checksService: ICheckService;
 	private geoChecksService: IGeoChecksService;
+	private dockerLogsService: IDockerLogsService;
 	private jobsRepository: IJobsRepository;
 
 	constructor(
 		logger: ILogger,
 		checkService: ICheckService,
 		geoChecksService: IGeoChecksService,
+		dockerLogsService: IDockerLogsService,
 		settingsService: ISettingsService,
 		jobsRepository: IJobsRepository
 	) {
@@ -39,10 +46,12 @@ export class BufferService implements IBufferService {
 		this.logger = logger;
 		this.checksService = checkService;
 		this.geoChecksService = geoChecksService;
+		this.dockerLogsService = dockerLogsService;
 		this.jobsRepository = jobsRepository;
 		this.SERVICE_NAME = SERVICE_NAME;
 		this.buffer = [];
 		this.geoBuffer = [];
+		this.dockerLogBuffer = [];
 		this.scheduleNextFlush();
 		this.logger.info({
 			message: `Buffer service initialized, flushing every ${this.BUFFER_TIMEOUT / 1000}s`,
@@ -77,6 +86,19 @@ export class BufferService implements IBufferService {
 		}
 	}
 
+	addDockerLogToBuffer(dockerLog: DockerLog): void {
+		try {
+			this.dockerLogBuffer.push(dockerLog);
+		} catch (error: unknown) {
+			this.logger.error({
+				message: error instanceof Error ? error.message : "Unknown error",
+				service: this.SERVICE_NAME,
+				method: "addDockerLogToBuffer",
+				stack: error instanceof Error ? error.stack : undefined,
+			});
+		}
+	}
+
 	scheduleNextFlush() {
 		if (this.bufferTimer) {
 			clearTimeout(this.bufferTimer);
@@ -85,6 +107,7 @@ export class BufferService implements IBufferService {
 			try {
 				await this.flushBuffer();
 				await this.flushGeoBuffer();
+				await this.flushDockerLogsBuffer();
 			} catch (error: unknown) {
 				this.logger.error({
 					message: error instanceof Error ? error.message : "Unknown error",
@@ -150,6 +173,30 @@ export class BufferService implements IBufferService {
 		}
 	}
 
+	async flushDockerLogsBuffer() {
+		if (this.dockerLogBuffer.length === 0) {
+			return;
+		}
+		// Take the batch first so a write that drains it can't be appended to mid-flush
+		const batch = this.dockerLogBuffer;
+		this.dockerLogBuffer = [];
+		try {
+			this.logger.debug({
+				message: `Flushing ${batch.length} docker logs to database`,
+				service: this.SERVICE_NAME,
+				method: "flushDockerLogsBuffer",
+			});
+			await this.dockerLogsService.createDockerLogs(batch);
+		} catch (error: unknown) {
+			this.logger.error({
+				message: error instanceof Error ? error.message : "Unknown error",
+				service: this.SERVICE_NAME,
+				method: "flushDockerLogsBuffer",
+				stack: error instanceof Error ? error.stack : undefined,
+			});
+		}
+	}
+
 	async shutdown() {
 		if (this.bufferTimer) {
 			clearTimeout(this.bufferTimer);
@@ -157,5 +204,6 @@ export class BufferService implements IBufferService {
 		}
 		await this.flushBuffer();
 		await this.flushGeoBuffer();
+		await this.flushDockerLogsBuffer();
 	}
 }

@@ -126,6 +126,7 @@ const NotificationsCreatePage = () => {
 				{watchedType !== "matrix" &&
 					watchedType !== "telegram" &&
 					watchedType !== "pushover" &&
+					watchedType !== "signalgrid" &&
 					watchedType !== "twilio" &&
 					watchedType !== "ntfy" && (
 						<ConfigBox
@@ -196,6 +197,31 @@ const NotificationsCreatePage = () => {
 									name="address"
 									fieldLabel={t("pages.notifications.form.pushover.optionUserKey")}
 									placeholder={t("pages.notifications.form.pushover.placeholderUserKey")}
+								/>
+							</Stack>
+						}
+					/>
+				)}
+				{watchedType === "signalgrid" && (
+					<ConfigBox
+						title={t("pages.notifications.form.signalgrid.title")}
+						subtitle={t("pages.notifications.form.signalgrid.description")}
+						rightContent={
+							<Stack spacing={theme.spacing(8)}>
+								<FormTextField
+									name="accessToken"
+									fieldLabel={t("pages.notifications.form.signalgrid.optionClientKey")}
+									placeholder={t(
+										"pages.notifications.form.signalgrid.placeholderClientKey"
+									)}
+								/>
+
+								<FormTextField
+									name="address"
+									fieldLabel={t("pages.notifications.form.signalgrid.optionChannel")}
+									placeholder={t(
+										"pages.notifications.form.signalgrid.placeholderChannel"
+									)}
 								/>
 							</Stack>
 						}

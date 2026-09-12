@@ -13,6 +13,11 @@ import {
 	ProxyModes,
 } from "@/domain/monitors/monitor.type.js";
 import { DateRanges, SortOrders } from "@/types/query.js";
+import { DockerContainerStates, DockerHealthStatuses, DockerLogStreams, DockerPortProtocols } from "@/domain/docker/docker.type.js";
+import { DOCKER_LOG_PAGE_DEFAULT, DOCKER_LOG_PAGE_MAX } from "@/domain/docker/docker-log.type.js";
+import { isDockerSocketUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
+import { X509Certificate } from "node:crypto";
+import { keyMatchesCertificate, parseCertificates, parsePrivateKey } from "@/utils/pem.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
 
@@ -118,6 +123,60 @@ const refineProxySelection = (body: { proxyMode?: string; proxyId?: string }, ct
 	}
 };
 
+const refineDockerUrl = (data: { type?: string; url?: string }, ctx: z.RefinementCtx) => {
+	if (data.type !== "docker" || data.url === undefined) return;
+	if (!isDockerSocketUrl(data.url) && !isDockerTlsUrl(data.url)) {
+		ctx.addIssue({
+			code: "custom",
+			path: ["url"],
+			message: "Docker host must be unix:///path, an absolute socket path, or tcp://host[:port]",
+		});
+	}
+};
+
+type DockerTlsFields = {
+	type?: string;
+	url?: string;
+	ignoreTlsErrors?: boolean;
+	dockerTlsCa?: string;
+	dockerTlsCert?: string;
+	dockerTlsKey?: string;
+};
+
+const refineDockerTls = (mode: "create" | "edit") => (data: DockerTlsFields, ctx: z.RefinementCtx) => {
+	if (data.type !== "docker" || !isDockerTlsUrl(data.url)) return;
+	const issue = (path: string, message: string) => ctx.addIssue({ code: "custom", path: [path], message });
+
+	if (!data.dockerTlsCert) issue("dockerTlsCert", "TLS certificate is required for a TLS Docker host");
+
+	if (mode === "create" && !data.dockerTlsKey) issue("dockerTlsKey", "TLS key is required for a TLS Docker host");
+
+	if (!data.ignoreTlsErrors && !data.dockerTlsCa) issue("dockerTlsCa", "CA certificate is required unless TLS errors are ignored");
+
+	let certificate: X509Certificate | undefined;
+
+	try {
+		if (data.dockerTlsCa) parseCertificates(data.dockerTlsCa);
+	} catch (error: unknown) {
+		issue("dockerTlsCa", error instanceof Error ? error.message : "Docker TLS CA error");
+	}
+
+	try {
+		if (data.dockerTlsCert) [certificate] = parseCertificates(data.dockerTlsCert);
+	} catch (error) {
+		issue("dockerTlsCert", error instanceof Error ? error.message : "Docker TLS cert error");
+	}
+
+	try {
+		if (data.dockerTlsKey) {
+			const key = parsePrivateKey(data.dockerTlsKey);
+			if (certificate && !keyMatchesCertificate(key, certificate)) issue("dockerTlsKey", "Key does not match certificate");
+		}
+	} catch (error: unknown) {
+		issue("dockerTlsKey", error instanceof Error ? error.message : "Docker TLS key error");
+	}
+};
+
 export const createMonitorBodyValidation = z
 	.object({
 		_id: z.string().optional(),
@@ -154,6 +213,10 @@ export const createMonitorBodyValidation = z
 		geoCheckEnabled: z.boolean().optional(),
 		geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 		geoCheckInterval: z.number().min(300000).optional(),
+		dockerLogsEnabled: z.boolean().optional(),
+		dockerTlsCa: z.union([z.string(), z.literal("")]).optional(),
+		dockerTlsCert: z.union([z.string(), z.literal("")]).optional(),
+		dockerTlsKey: z.union([z.string(), z.literal("")]).optional(),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 	})
@@ -161,7 +224,9 @@ export const createMonitorBodyValidation = z
 	.superRefine(refineStrategyType)
 	.superRefine(refineHeadMatching)
 	.superRefine(refineRegexPattern)
-	.superRefine(refineProxySelection);
+	.superRefine(refineProxySelection)
+	.superRefine(refineDockerUrl)
+	.superRefine(refineDockerTls("create"));
 
 export const editMonitorBodyValidation = z
 	.object({
@@ -197,6 +262,10 @@ export const editMonitorBodyValidation = z
 		geoCheckEnabled: z.boolean().optional(),
 		geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 		geoCheckInterval: z.number().min(300000).optional(),
+		dockerLogsEnabled: z.boolean().optional(),
+		dockerTlsCa: z.union([z.string(), z.literal("")]).optional(),
+		dockerTlsCert: z.union([z.string(), z.literal("")]).optional(),
+		dockerTlsKey: z.union([z.string(), z.literal("")]).optional(),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 	})
@@ -204,7 +273,9 @@ export const editMonitorBodyValidation = z
 	.superRefine(refineStrategyType)
 	.superRefine(refineHeadMatching)
 	.superRefine(refineRegexPattern)
-	.superRefine(refineProxySelection);
+	.superRefine(refineProxySelection)
+	.superRefine(refineDockerUrl)
+	.superRefine(refineDockerTls("edit"));
 
 export const pauseMonitorParamValidation = z.object({
 	monitorId: z.string().min(1, "Monitor ID is required"),
@@ -271,6 +342,7 @@ const importedMonitorSchema = z
 		geoCheckEnabled: z.boolean().default(false),
 		geoCheckLocations: z.array(z.enum(GeoContinents)).default([]),
 		geoCheckInterval: z.number().min(300000).default(300000),
+		dockerLogsEnabled: z.boolean().default(false),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 		createdAt: z.string().optional(),
@@ -280,7 +352,8 @@ const importedMonitorSchema = z
 	.superRefine(refineStrategyType)
 	.superRefine(refineHeadMatching)
 	.superRefine(refineRegexPattern)
-	.superRefine(refineProxySelection);
+	.superRefine(refineProxySelection)
+	.superRefine(refineDockerUrl);
 
 export const importMonitorsBodyValidation = z.object({
 	monitors: z.array(importedMonitorSchema).min(1, "At least one monitor is required"),
@@ -296,6 +369,30 @@ export const getHardwareDetailsByIdQueryValidation = z.object({
 	dateRange: z.enum(DateRanges).optional(),
 });
 
+export const getDockerDetailsByIdParamValidation = z.object({ monitorId: z.string().min(1, "Monitor ID is required") });
+export const getDockerDetailsByIdQueryValidation = z.object({ dateRange: z.enum(DateRanges).optional() });
+
+export const getDockerContainerNameParamValidation = z.object({
+	monitorId: z.string().min(1, "Monitor ID is required"),
+	containerName: z.string().min(1, "Container name is required"),
+});
+export const getDockerContainerByNameQueryValidation = z.object({ dateRange: z.enum(DateRanges).optional() });
+
+export const getDockerContainerLogsQueryValidation = z
+	.object({
+		before: z.iso.datetime().optional(),
+		after: z.iso.datetime().optional(),
+		limit: z.coerce.number().int().min(1).max(DOCKER_LOG_PAGE_MAX).default(DOCKER_LOG_PAGE_DEFAULT),
+	})
+	.superRefine((query, ctx) => {
+		if (query.before && query.after) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Specify either before or after, not both",
+				path: ["after"],
+			});
+		}
+	});
 // Canonical monitor shape returned by /monitors endpoints. Keep aligned with
 // what the controllers actually serialize.
 export const monitorResponseSchema = z
@@ -334,6 +431,10 @@ export const monitorResponseSchema = z
 		geoCheckEnabled: z.boolean(),
 		geoCheckLocations: z.array(z.enum(GeoContinents)),
 		geoCheckInterval: z.number(),
+		dockerLogsEnabled: z.boolean(),
+		dockerTlsCa: z.string().optional(),
+		dockerTlsCert: z.string().optional(),
+		dockerTlsKeySet: z.boolean().optional(),
 		dnsServer: z.string().optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 		teamId: z.string(),
@@ -391,4 +492,127 @@ export const uptimeDetailsResponseSchema = z.object({
 		groupedUptimePercentage: z.number(),
 	}),
 	monitorStats: monitorStatsResponseSchema.nullable(),
+});
+
+// Keep aligned with DockerContainerPort / DockerContainerMount in types/network.ts.
+export const dockerContainerPortResponseSchema = z.object({
+	privatePort: z.number(),
+	protocol: z.enum(DockerPortProtocols),
+	publicPort: z.number().optional(),
+	hostIp: z.string().optional(),
+});
+
+export const dockerContainerMountResponseSchema = z.object({
+	type: z.string(),
+	name: z.string().optional(),
+	source: z.string(),
+	destination: z.string(),
+	mode: z.string(),
+	rw: z.boolean(),
+});
+
+// Keep aligned with DockerContainerInfo / DockerContainerSummary in types/network.ts.
+export const dockerContainerResponseSchema = z.object({
+	id: z.string(),
+	name: z.string(),
+	image: z.string(),
+	state: z.enum(DockerContainerStates),
+	status: z.string(),
+	health: z.enum(DockerHealthStatuses),
+	cpuPct: z.number().optional(),
+	memoryUsedBytes: z.number().optional(),
+	memoryLimitBytes: z.number().optional(),
+	memoryPct: z.number().optional(),
+	restartCount: z.number().optional(),
+	startedAt: z.string().optional(),
+	ports: z.array(dockerContainerPortResponseSchema).optional(),
+	mounts: z.array(dockerContainerMountResponseSchema).optional(),
+});
+
+export const containerSummaryResponseSchema = z.object({
+	total: z.number(),
+	running: z.number(),
+	stopped: z.number(),
+	unhealthy: z.number(),
+});
+
+// Keep aligned with DockerStatsBucket in domain/checks/check.type.ts. The avg fields are
+// null for buckets with no values ($avg skips missing; down checks store no containerSummary).
+export const dockerStatsBucketResponseSchema = z.object({
+	_id: z.string(),
+	avgResponseTime: z.number().nullable(),
+	upCount: z.number(),
+	totalCount: z.number(),
+	avgRunning: z.number().nullable(),
+	avgTotal: z.number().nullable(),
+	avgUnhealthy: z.number().nullable(),
+});
+
+// Response of GET /monitors/docker/details/{monitorId}. Keep aligned with
+// DockerDetailsResult in domain/monitors/monitor.type.ts; the monitor here is the
+// repository's domain entity, which serializes `id` rather than `_id`.
+export const dockerDetailsResponseSchema = z.object({
+	monitor: monitorResponseSchema.omit({ _id: true }).extend({ id: z.string() }),
+	stats: z.object({
+		aggregateData: z.object({ totalChecks: z.number() }),
+		upChecks: z.object({ totalChecks: z.number() }),
+		aggregate: z.array(dockerStatsBucketResponseSchema),
+		latest: z
+			.object({
+				containers: z.array(dockerContainerResponseSchema),
+				summary: containerSummaryResponseSchema.optional(),
+				checkedAt: z.string(),
+			})
+			.nullable(),
+	}),
+	monitorStats: monitorStatsResponseSchema.nullable(),
+});
+
+// Keep aligned with DockerContainerStatsBucket in domain/checks/check.type.ts.
+export const dockerContainerStatsBucketResponseSchema = z.object({
+	_id: z.string(),
+	avgCpuPct: z.number().nullable(),
+	avgMemoryUsedBytes: z.number().nullable(),
+	avgMemoryPct: z.number().nullable(),
+	minRestartCount: z.number().nullable(),
+	maxRestartCount: z.number().nullable(),
+});
+
+// Response of GET /monitors/docker/details/{monitorId}/containers/{containerName}. Keep
+// aligned with DockerContainerDetailsResult in domain/monitors/monitor.type.ts.
+export const dockerContainerDetailsResponseSchema = z.object({
+	monitor: monitorResponseSchema.omit({ _id: true }).extend({ id: z.string() }),
+	stats: z.object({
+		aggregate: z.array(dockerContainerStatsBucketResponseSchema),
+		restartsInRange: z.number(),
+		latest: z
+			.object({
+				container: dockerContainerResponseSchema,
+				checkedAt: z.string(),
+			})
+			.nullable(),
+	}),
+});
+
+export const dockerLogLineResponseSchema = z.object({
+	ts: z.string(),
+	stream: z.enum(DockerLogStreams),
+	text: z.string(),
+});
+
+export const dockerLogResponseSchema = z.object({
+	id: z.string(),
+	metadata: z.object({ monitorId: z.string(), teamId: z.string(), containerId: z.string(), containerName: z.string() }),
+	lines: z.array(dockerLogLineResponseSchema),
+	gap: z.boolean(),
+	checkedAt: z.string(),
+	expiry: z.string(),
+	createdAt: z.string(),
+	updatedAt: z.string(),
+});
+
+// Response of GET /monitors/docker/details/{monitorId}/containers/{containerName}/logs.
+export const dockerContainerLogsResponseSchema = z.object({
+	logs: z.array(dockerLogResponseSchema),
+	nextCursor: z.string().nullable(),
 });

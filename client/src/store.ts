@@ -2,6 +2,7 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import authReducer from "@/Features/Auth/authSlice";
 import uiReducer from "@/Features/UI/uiSlice";
 import storage from "redux-persist/lib/storage";
+import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
 import {
 	persistReducer,
 	persistStore,
@@ -24,6 +25,8 @@ const persistConfig = {
 	storage,
 	whitelist: ["auth", "ui"],
 	transforms: [authTransform],
+	// Merge two levels deep on rehydrate so a slice key added in a new release keeps initial value
+	stateReconciler: autoMergeLevel2,
 };
 
 const rootReducer = combineReducers({

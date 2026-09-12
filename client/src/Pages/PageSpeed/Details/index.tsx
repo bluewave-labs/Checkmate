@@ -15,12 +15,13 @@ import { useGet } from "@/Hooks/UseApi";
 import { useParams } from "react-router-dom";
 import { useTheme } from "@mui/material";
 import { useState, useMemo } from "react";
+import type { DateRange } from "@/Types/Query";
 
 const PageSpeedDetails = () => {
 	const { monitorId } = useParams();
 	const isAdmin = useIsAdmin();
 	const theme = useTheme();
-	const [dateRange, setDateRange] = useState<string>("day");
+	const [dateRange, setDateRange] = useState<DateRange>("day");
 
 	const monitorDetailsUrl = useMemo(() => {
 		if (!monitorId) {

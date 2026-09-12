@@ -7,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import { FieldLabel } from "./FieldLabel";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
+import { INPUT_BASE_HEIGHT } from "@/Utils/Theme/constants";
 
 interface TimePickerComponentProps extends Omit<MobileTimePickerProps<Dayjs>, "label"> {
 	fieldLabel?: string;
@@ -33,7 +34,7 @@ export const TimePickerComponent = ({
 						sx: {
 							width: "fit-content",
 							"& input": {
-								minHeight: 34,
+								minHeight: INPUT_BASE_HEIGHT,
 								p: 0,
 								px: theme.spacing(5),
 							},

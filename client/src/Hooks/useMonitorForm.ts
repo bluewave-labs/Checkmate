@@ -77,6 +77,13 @@ export const getMonitorDefaults = (
 				...base,
 				type: "docker",
 				url: data?.url || "",
+				ignoreTlsErrors: data?.ignoreTlsErrors || false,
+				dockerTlsCa: data?.dockerTlsCa || "",
+				dockerTlsCert: data?.dockerTlsCert || "",
+				// The key is write-only; the API never returns it.
+				dockerTlsKey: "",
+				dockerTlsKeySet: data?.dockerTlsKeySet ?? false,
+				dockerLogsEnabled: data?.dockerLogsEnabled ?? false,
 			};
 			break;
 		case "game":
