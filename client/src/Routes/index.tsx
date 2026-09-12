@@ -8,6 +8,9 @@ import AuthRegister from "@/Pages/Auth/Register";
 import AuthForgotPassword from "@/Pages/Auth/Recovery";
 import AuthSetNewPassword from "@/Pages/Auth/SetNewPassword";
 
+// Dashboard
+import Dashboard from "@/Pages/Dashboard";
+
 // Uptime
 import Uptime from "@/Pages/Uptime/Monitors";
 import UptimeDetails from "@/Pages/Uptime/Details";
@@ -90,7 +93,11 @@ const Routes = () => {
 			>
 				<Route
 					path="/"
-					element={<Navigate to="/uptime" />}
+					element={<Navigate to="/dashboard" />}
+				/>
+				<Route
+					path="dashboard"
+					element={<Dashboard />}
 				/>
 				<Route
 					path="/uptime"

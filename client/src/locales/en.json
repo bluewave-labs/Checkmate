@@ -226,7 +226,8 @@
 					"alerting": "Alerting",
 					"reporting": "Reporting",
 					"configuration": "Configuration"
-				}
+				},
+				"dashboard": "Dashboard"
 			},
 			"bottomMenu": {
 				"support": "Support",
@@ -1906,6 +1907,19 @@
 			"header": {
 				"title": "Uptime monitors",
 				"description": "Watch HTTP endpoints, pings, containers, and ports — and get alerted the moment something goes down."
+			}
+		},
+		"dashboard": {
+			"monitorStatus": {
+				"ofUp": "of {{total}} up"
+			},
+			"cards": {
+				"monitorStatus": "Monitor status",
+				"monitorsByType": "Monitors by type"
+			},
+			"header": {
+				"title": "Dashboard",
+				"description": "See every monitor type in one place and spot what needs attention."
 			}
 		}
 	}

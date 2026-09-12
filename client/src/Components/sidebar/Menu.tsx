@@ -20,12 +20,18 @@ import {
 	Tag,
 	Waypoints,
 	Container,
+	LayoutDashboard,
 } from "lucide-react";
 export const getMenu = (t: Function) => {
 	return [
 		{
 			group: t("components.sidebar.menu.groups.monitoring"),
 			items: [
+				{
+					name: t("components.sidebar.menu.dashboard"),
+					path: "dashboard",
+					icon: <Icon icon={LayoutDashboard} />,
+				},
 				{
 					name: t("components.sidebar.menu.uptime"),
 					path: "uptime",
