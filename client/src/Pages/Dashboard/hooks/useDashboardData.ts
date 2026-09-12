@@ -25,11 +25,6 @@ export const useDashboardData = () => {
 		isLoading,
 		error,
 		summary: data?.summary ?? EMPTY_SUMMARY,
-		monitors: data?.monitors ?? [],
-		slowestMonitors: data?.slowestMonitors ?? [],
-		lowestUptimeMonitors: data?.lowestUptimeMonitors ?? [],
-		downMonitors: data?.downMonitors ?? [],
 		monitorsByType: data?.monitorsByType ?? [],
-		monitorsByGroup: data?.monitorsByGroup ?? [],
 	};
 };

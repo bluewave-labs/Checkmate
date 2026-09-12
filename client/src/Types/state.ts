@@ -1,6 +1,5 @@
 import type { ChartType } from "@/Features/UI/uiSlice";
 import type { User } from "./User";
-import type { DashboardCardId } from "@/Pages/Dashboard/dashboardCards";
 
 export interface AuthState {
 	isLoading: boolean;
@@ -40,8 +39,6 @@ export interface UIState {
 	language: string;
 	starPromptOpen: boolean;
 	chartType: ChartType;
-	dashboardCards: Record<DashboardCardId, boolean>;
-	dashboardCardOrder: DashboardCardId[];
 }
 
 export interface RootState {
