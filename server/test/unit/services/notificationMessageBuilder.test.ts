@@ -685,6 +685,22 @@ describe("NotificationMessageBuilder", () => {
 				expect(breaches.find((b) => b.metric === "temp")).toBeUndefined();
 			});
 
+			// A temperature exactly AT the threshold must not report a breach here, matching
+			// StatusService.computeHardwareStatus's own strict `>` comparison (cpu/memory/disk
+			// already agree with this file on `>`; temp alone used to diverge with `>=`, so an
+			// incident-driving check at exactly the threshold never fired but the notification
+			// content for a breach some OTHER metric triggered could still list temp as breaching).
+			it("does not report temperature breach when exactly at threshold", () => {
+				const monitor = makeMonitor({ type: "hardware", tempAlertThreshold: 80 });
+				const response = makeStatusResponse({
+					payload: makeHardwarePayload({ cpu: { usage_percent: 0.5, temperature: [80] } as any }),
+				} as any);
+
+				const breaches = builder.extractThresholdBreaches(monitor, response);
+
+				expect(breaches.find((b) => b.metric === "temp")).toBeUndefined();
+			});
+
 			it("skips temperature check when tempAlertThreshold is undefined", () => {
 				const monitor = makeMonitor({ type: "hardware", tempAlertThreshold: undefined });
 				const response = makeStatusResponse({
