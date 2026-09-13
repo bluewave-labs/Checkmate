@@ -21,7 +21,7 @@ export const MonitorStatBoxes = ({
 	domainExpiry,
 }: MonitorStatBoxesProps) => {
 	const theme = useTheme();
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	if (!monitorStats || !monitor) {
 		return null;
 	}
@@ -29,13 +29,16 @@ export const MonitorStatBoxes = ({
 	const timeOfLastFailure = monitorStats?.timeOfLastFailure || 0;
 	const timeSinceLastFailure = timeOfLastFailure > 0 ? Date.now() - timeOfLastFailure : 0;
 
-	// Determine time since last check
 	const timeOfLastCheck = monitorStats?.lastCheckTimestamp || 0;
-	const timeSinceLastCheck = Date.now() - timeOfLastCheck || 0;
 
 	const streakTime = formatDuration(timeSinceLastFailure);
-
-	const lastCheckTime = formatDuration(timeSinceLastCheck);
+	const lastCheckTime = timeOfLastCheck
+		? formatDuration(Date.now() - timeOfLastCheck, {
+				long: true,
+				relative: true,
+				locale: i18n.resolvedLanguage,
+			})
+		: t("common.labels.na");
 	const isActive =
 		monitor?.status === "up" ||
 		monitor?.status === "paused" ||
