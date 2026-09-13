@@ -128,6 +128,7 @@ const NotificationsCreatePage = () => {
 					watchedType !== "pushover" &&
 					watchedType !== "signalgrid" &&
 					watchedType !== "twilio" &&
+					watchedType !== "apprise" &&
 					watchedType !== "ntfy" && (
 						<ConfigBox
 							title={addressConfig.title}
@@ -156,6 +157,31 @@ const NotificationsCreatePage = () => {
 									name="topic"
 									fieldLabel={t("pages.notifications.form.ntfy.optionTopic")}
 									placeholder={t("pages.notifications.form.ntfy.placeholderTopic")}
+								/>
+							</Stack>
+						}
+					/>
+				)}
+				{watchedType === "apprise" && (
+					<ConfigBox
+						title={t("pages.notifications.form.apprise.title")}
+						subtitle={t("pages.notifications.form.apprise.description")}
+						rightContent={
+							<Stack spacing={theme.spacing(8)}>
+								<FormTextField
+									name="address"
+									fieldLabel={t("pages.notifications.form.apprise.optionServerUrl")}
+									placeholder={t("pages.notifications.form.apprise.placeholderServerUrl")}
+								/>
+								<FormTextField
+									name="topic"
+									fieldLabel={t("pages.notifications.form.apprise.optionConfigKey")}
+									placeholder={t("pages.notifications.form.apprise.placeholderConfigKey")}
+								/>
+								<FormTextField
+									name="appriseUrls"
+									fieldLabel={t("pages.notifications.form.apprise.optionUrls")}
+									placeholder={t("pages.notifications.form.apprise.placeholderUrls")}
 								/>
 							</Stack>
 						}

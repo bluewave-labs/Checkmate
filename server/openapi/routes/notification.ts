@@ -91,6 +91,16 @@ const notificationVariantMeta: Record<string, { component: string; example: Reco
 			accessToken: "tk_your-ntfy-access-token",
 		},
 	},
+	apprise: {
+		component: "AppriseNotification",
+		example: {
+			notificationName: "Apprise",
+			type: "apprise",
+			address: "https://apprise.example.com",
+			topic: "checkmate",
+			appriseUrls: "",
+		},
+	},
 };
 
 const decoratedVariants = createNotificationBodyValidation.options.map((variant) => {
