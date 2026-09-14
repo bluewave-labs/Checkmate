@@ -111,4 +111,38 @@ describe("MongoInvitesRepository", () => {
 			await expect(repo.updateExpiryById({ id: invite.id, teamId: makeId(), expiry: new Date() })).rejects.toThrow("Invite not found");
 		});
 	});
+	describe("deleteById", () => {
+		it("removes the invite so its token can no longer be redeemed", async () => {
+			const repo = new MongoInvitesRepository();
+			const teamId = makeId();
+			const invite = await repo.create({ email: "new@example.com", role: ["user"], teamId });
+
+			await repo.deleteById({ id: invite.id, teamId });
+
+			await expect(repo.findById({ id: invite.id, teamId })).rejects.toThrow("Invite not found");
+			await expect(repo.findByToken(invite.token)).rejects.toThrow();
+		});
+
+		it("throws 404 and leaves the invite intact when scoped to the wrong team", async () => {
+			const repo = new MongoInvitesRepository();
+			const teamId = makeId();
+			const invite = await repo.create({ email: "new@example.com", role: ["user"], teamId });
+
+			await expect(repo.deleteById({ id: invite.id, teamId: makeId() })).rejects.toThrow("Invite not found");
+
+			await expect(repo.findById({ id: invite.id, teamId })).resolves.toMatchObject({ email: "new@example.com" });
+		});
+
+		it("only removes the targeted invite, leaving the team's other invites alone", async () => {
+			const repo = new MongoInvitesRepository();
+			const teamId = makeId();
+			const target = await repo.create({ email: "target@example.com", role: ["user"], teamId });
+			await repo.create({ email: "keep@example.com", role: ["user"], teamId });
+
+			await repo.deleteById({ id: target.id, teamId });
+
+			const remaining = await repo.findByTeamId(teamId);
+			expect(remaining.map((invite) => invite.email)).toEqual(["keep@example.com"]);
+		});
+	});
 });

@@ -7,6 +7,7 @@ import { TeamTable } from "./components/TeamTable";
 import { PendingInvitesTable } from "./components/PendingInvitesTable";
 import { InviteTeamMemberDialog } from "./components/InviteTeamMemberDialog";
 import { ChangeInviteDurationDialog } from "./components/ChangeInviteDurationDialog";
+import { DeleteInviteDialog } from "./components/DeleteInviteDialog";
 import { AddTeamMemberDialog } from "./components/AddTeamMemberDialog";
 import { EmptyState } from "@/Components/design-elements";
 import { useGet } from "@/Hooks/UseApi";
@@ -23,6 +24,7 @@ export const TabTeam = () => {
 	const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 	const [addMemberDialogOpen, setAddMemberDialogOpen] = useState(false);
 	const [invitePendingDuration, setInvitePendingDuration] = useState<Invite | null>(null);
+	const [invitePendingDelete, setInvitePendingDelete] = useState<Invite | null>(null);
 
 	const { data: users, refetch } = useGet<User[]>("/auth/users");
 	const { data: invites, refetch: refetchInvites } = useGet<Invite[]>(
@@ -52,6 +54,8 @@ export const TabTeam = () => {
 
 	const handleCloseChangeDuration = () => setInvitePendingDuration(null);
 
+	const handleCloseDeleteInvite = () => setInvitePendingDelete(null);
+
 	const totalUsers = users?.length ?? 0;
 	const noUsers = users !== undefined && totalUsers === 0;
 	const pendingInvites = invites ?? [];
@@ -79,6 +83,7 @@ export const TabTeam = () => {
 					<PendingInvitesTable
 						invites={pendingInvites}
 						onChangeDuration={setInvitePendingDuration}
+						onDelete={setInvitePendingDelete}
 					/>
 				</Stack>
 			)}
@@ -95,6 +100,11 @@ export const TabTeam = () => {
 			<ChangeInviteDurationDialog
 				invite={invitePendingDuration}
 				onClose={handleCloseChangeDuration}
+				onSuccess={handleRefetchInvites}
+			/>
+			<DeleteInviteDialog
+				invite={invitePendingDelete}
+				onClose={handleCloseDeleteInvite}
 				onSuccess={handleRefetchInvites}
 			/>
 		</Stack>

@@ -1,4 +1,5 @@
 import Typography from "@mui/material/Typography";
+import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { Table, ValueLabel } from "@/Components/design-elements";
 import { Pagination } from "@/Components/design-elements/Table";
@@ -14,6 +15,7 @@ import { useSelector } from "react-redux";
 interface PendingInvitesTableProps {
 	invites: Invite[];
 	onChangeDuration: (invite: Invite) => void;
+	onDelete: (invite: Invite) => void;
 }
 
 const isExpiredInvite = (invite: Invite) =>
@@ -22,8 +24,10 @@ const isExpiredInvite = (invite: Invite) =>
 export const PendingInvitesTable = ({
 	invites,
 	onChangeDuration,
+	onDelete,
 }: PendingInvitesTableProps) => {
 	const { t } = useTranslation();
+	const theme = useTheme();
 	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 	const { pagedRows, paginationProps } = useClientPagination(invites);
 
@@ -76,6 +80,16 @@ export const PendingInvitesTable = ({
 						id: "change-duration",
 						label: t("pages.account.team.invites.actions.changeDuration"),
 						action: () => onChangeDuration(row),
+						closeMenu: true,
+					},
+					{
+						id: "delete",
+						label: (
+							<Typography color={theme.palette.error.main}>
+								{t("common.buttons.delete")}
+							</Typography>
+						),
+						action: () => onDelete(row),
 						closeMenu: true,
 					},
 				];

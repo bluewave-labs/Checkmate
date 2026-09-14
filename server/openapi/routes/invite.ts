@@ -72,3 +72,17 @@ registry.registerPath({
 	},
 	responses: { "200": okJson(inviteResponseSchema), "404": { description: "Not found", content: json(z.object({ success: z.literal(false), msg: z.string() })) }, ...standardErrors },
 });
+
+registry.registerPath({
+	method: "delete",
+	path: "/invite/{id}",
+	tags,
+	summary: "Revoke a pending invite (admin/superadmin)",
+	security: bearer,
+	request: { params: inviteIdParamValidation },
+	responses: {
+		"200": okJsonNoData(),
+		"404": { description: "Not found", content: json(z.object({ success: z.literal(false), msg: z.string() })) },
+		...standardErrors,
+	},
+});

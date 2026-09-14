@@ -62,6 +62,13 @@ class MongoInvitesRepository implements IInvitesRepository {
 		return invites.map(this.toEntity);
 	};
 
+	deleteById = async ({ id, teamId }: { id: string; teamId: string }) => {
+		const invite = await InviteModel.findOneAndDelete({ _id: id, teamId });
+		if (invite === null) {
+			throw new AppError({ message: "Invite not found", status: 404 });
+		}
+	};
+
 	updateExpiryById = async ({ id, teamId, expiry }: { id: string; teamId: string; expiry: Date }) => {
 		const invite = await InviteModel.findOneAndUpdate({ _id: id, teamId }, { expiry }, { new: true });
 		if (invite === null) {

@@ -15,6 +15,7 @@ export interface IInviteService {
 	verifyInviteToken(params: { inviteToken: string }): Promise<Invite>;
 	getInvites(params: { teamId: string }): Promise<InviteSummary[]>;
 	updateInviteExpiry(params: { id: string; teamId: string; expiresInHours: number; userRoles: UserRole[] }): Promise<InviteSummary>;
+	deleteInvite(params: { id: string; teamId: string; userRoles: UserRole[] }): Promise<void>;
 }
 
 export class InviteService implements IInviteService {
@@ -171,6 +172,27 @@ export class InviteService implements IInviteService {
 		const expiry = new Date(Date.now() + expiresInHours * HOUR_IN_MS);
 		const updated = await this.invitesRepository.updateExpiryById({ id, teamId, expiry });
 		return stripToken(updated);
+	};
+
+	// Revoking a pending invite is the only way to stop an already-sent token from being
+	// redeemed before it expires, so it is gated by the same role check as changing the
+	// duration: an actor may only revoke invites for roles they are allowed to manage.
+	deleteInvite = async ({ id, teamId, userRoles }: { id: string; teamId: string; userRoles: UserRole[] }) => {
+		const invite = await this.invitesRepository.findById({ id, teamId });
+
+		for (const targetRole of invite.role) {
+			const canManage = userRoles.some((actorRole) => canManageRole(actorRole, targetRole));
+			if (!canManage) {
+				throw new AppError({
+					message: "You do not have permission to delete this invite",
+					service: SERVICE_NAME,
+					method: "deleteInvite",
+					status: 403,
+				});
+			}
+		}
+
+		await this.invitesRepository.deleteById({ id, teamId });
 	};
 }
 

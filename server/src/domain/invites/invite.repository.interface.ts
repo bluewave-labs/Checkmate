@@ -11,5 +11,6 @@ export interface IInvitesRepository {
 	// update
 	updateExpiryById(params: { id: string; teamId: string; expiry: Date }): Promise<Invite>;
 	// delete
+	deleteById(params: { id: string; teamId: string }): Promise<void>;
 	// other
 }

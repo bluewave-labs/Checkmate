@@ -15,6 +15,7 @@ export interface IInviteController {
 	verifyInviteToken: RequestHandler;
 	getInvites: RequestHandler;
 	updateInviteExpiry: RequestHandler;
+	deleteInvite: RequestHandler;
 }
 
 class InviteController implements IInviteController {
@@ -92,6 +93,18 @@ class InviteController implements IInviteController {
 			success: true,
 			msg: "Invite duration updated successfully",
 			data: invite,
+		});
+	});
+
+	deleteInvite = catchAsync(async (req: Request, res: Response) => {
+		const teamId = requireTeamId(req.user?.teamId);
+		const userRoles = requireUserRoles(req.user?.role);
+		const { id } = inviteIdParamValidation.parse(req.params);
+
+		await this.inviteService.deleteInvite({ id, teamId, userRoles });
+		return res.status(200).json({
+			success: true,
+			msg: "Invite deleted successfully",
 		});
 	});
 }

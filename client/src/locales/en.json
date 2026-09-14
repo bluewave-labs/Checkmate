@@ -425,6 +425,10 @@
 					"changeDuration": {
 						"title": "Change invite duration",
 						"description": "Choose how much longer the invite for {{email}} should stay valid."
+					},
+					"delete": {
+						"title": "Delete invite",
+						"description": "The invite for {{email}} will be revoked and its link will stop working. This cannot be undone."
 					}
 				}
 			},

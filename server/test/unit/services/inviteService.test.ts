@@ -24,6 +24,7 @@ const createService = (overrides?: Record<string, unknown>) => {
 		findById: jest.fn().mockResolvedValue(makeInvite()),
 		findByTeamId: jest.fn().mockResolvedValue([makeInvite()]),
 		updateExpiryById: jest.fn().mockResolvedValue(makeInvite()),
+		deleteById: jest.fn().mockResolvedValue(undefined),
 	};
 	const settingsService = {
 		getSettings: jest.fn().mockReturnValue({ clientHost: "http://localhost:5173" }),
@@ -238,6 +239,38 @@ describe("InviteService", () => {
 			);
 
 			expect(invitesRepository.updateExpiryById).not.toHaveBeenCalled();
+		});
+	});
+	// ── deleteInvite ────────────────────────────────────────────────────────
+
+	describe("deleteInvite", () => {
+		it("looks the invite up in the caller's team, then deletes it", async () => {
+			const { service, invitesRepository } = createService();
+
+			await service.deleteInvite({ id: "inv-1", teamId: "team-1", userRoles: ["superadmin"] });
+
+			expect(invitesRepository.findById).toHaveBeenCalledWith({ id: "inv-1", teamId: "team-1" });
+			expect(invitesRepository.deleteById).toHaveBeenCalledWith({ id: "inv-1", teamId: "team-1" });
+		});
+
+		it("throws 403 and deletes nothing when actor cannot manage the invite's role", async () => {
+			const { service, invitesRepository } = createService();
+			invitesRepository.findById.mockResolvedValue(makeInvite({ role: ["superadmin"] }));
+
+			await expect(service.deleteInvite({ id: "inv-1", teamId: "team-1", userRoles: ["admin"] })).rejects.toThrow(
+				"You do not have permission to delete this invite"
+			);
+
+			expect(invitesRepository.deleteById).not.toHaveBeenCalled();
+		});
+
+		it("propagates the repository 404 for an invite in another team", async () => {
+			const { service, invitesRepository } = createService();
+			invitesRepository.findById.mockRejectedValue(new Error("Invite not found"));
+
+			await expect(service.deleteInvite({ id: "inv-1", teamId: "other-team", userRoles: ["superadmin"] })).rejects.toThrow("Invite not found");
+
+			expect(invitesRepository.deleteById).not.toHaveBeenCalled();
 		});
 	});
 });

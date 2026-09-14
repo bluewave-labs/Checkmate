@@ -9,5 +9,6 @@ export const createInviteRoutes = (inviteController: IInviteController, verifyJW
 	router.get("/", verifyJWT, isAllowed(["admin", "superadmin"]), inviteController.getInvites);
 	router.post("/", verifyJWT, isAllowed(["admin", "superadmin"]), inviteController.getInviteToken);
 	router.patch("/:id/expiry", verifyJWT, isAllowed(["admin", "superadmin"]), inviteController.updateInviteExpiry);
+	router.delete("/:id", verifyJWT, isAllowed(["admin", "superadmin"]), inviteController.deleteInvite);
 	return router;
 };
