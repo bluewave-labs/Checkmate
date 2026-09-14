@@ -5,6 +5,7 @@ import { requireTeamId, requireUserEmail, requireUserId, requireUserRoles } from
 
 import {
 	registrationBodyValidation,
+	registerInviteTokenValidation,
 	loginValidation,
 	recoveryValidation,
 	recoveryTokenBodyValidation,
@@ -48,7 +49,7 @@ class AuthController implements IAuthController {
 
 	registerUser = catchAsync(async (req: Request, res: Response) => {
 		const newUser = req.body.user;
-		const newUserToken = req.body.token;
+		const newUserToken = registerInviteTokenValidation.parse(req.body.token);
 		if (newUser?.email) {
 			const newUserEmail = requireUserEmail(newUser.email);
 			newUser.email = newUserEmail.toLowerCase();

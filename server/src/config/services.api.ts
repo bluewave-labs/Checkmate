@@ -80,6 +80,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		monitorStatsRepository,
 		statusPagesRepository,
 		incidentsRepository,
+		encryptionService: shared.encryptionService,
 	});
 
 	const maintenanceWindowService = new MaintenanceWindowService({

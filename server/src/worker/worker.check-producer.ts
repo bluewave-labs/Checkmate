@@ -36,6 +36,12 @@ export class CheckProducer implements ICheckProducer {
 		return windows.some((w) => isWindowActive(w, now));
 	}
 
+	private async resolveDockerTlsKey(monitor: Monitor): Promise<string | undefined> {
+		if (monitor.type !== "docker" || !monitor.dockerTlsKeySet || !monitor.id) return undefined;
+		const dockerTlsKey = await this.monitorsRepository.findDockerTlsKeyById(monitor.id);
+		return dockerTlsKey ?? undefined;
+	}
+
 	produce = async (monitor: Monitor) => {
 		if (!monitor.id) {
 			throw new AppError({ message: "No monitor id", service: SERVICE_NAME, method: "produce" });
@@ -61,7 +67,9 @@ export class CheckProducer implements ICheckProducer {
 
 		// Step 1b: Acquire status
 		const proxyUrl = await this.proxyResolver.resolve(monitor);
-		const status = await this.networkService.requestStatus(monitor, { proxyUrl });
+		const dockerTlsKey = await this.resolveDockerTlsKey(monitor);
+
+		const status = await this.networkService.requestStatus(monitor, { proxyUrl, dockerTlsKey });
 		if (!status) {
 			throw new Error("No network response");
 		}

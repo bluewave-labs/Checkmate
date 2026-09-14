@@ -1,7 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 import * as nodeCrypto from "node:crypto";
-import { EncryptionService } from "../../../src/service/encryptionService.ts";
-import type { EncryptionCryptoLib } from "../../../src/service/encryptionService.ts";
+import { EncryptionService } from "../../../src/service/encryption/encryptionService.ts";
+import type { EncryptionCryptoLib } from "../../../src/service/encryption/encryptionService.ts";
 import { AppError } from "../../../src/utils/AppError.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 

@@ -307,6 +307,20 @@ const MonitorSchema = new Schema<MonitorDocument>(
 			type: Boolean,
 			default: false,
 		},
+		dockerTlsCa: {
+			type: String,
+		},
+		dockerTlsCert: {
+			type: String,
+		},
+		dockerTlsKey: {
+			type: String,
+			select: false,
+		},
+		dockerTlsKeySet: {
+			type: Boolean,
+			default: false,
+		},
 		dnsServer: {
 			type: String,
 		},

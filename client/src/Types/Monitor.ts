@@ -160,6 +160,9 @@ export interface Monitor {
 	geoCheckLocations?: GeoContinent[];
 	geoCheckInterval?: number;
 	dockerLogsEnabled?: boolean;
+	dockerTlsCa?: string;
+	dockerTlsCert?: string;
+	dockerTlsKeySet?: boolean;
 	dnsServer?: string;
 	dnsRecordType?: DnsRecordType;
 	recentChecks: CheckSnapshot[];
