@@ -233,9 +233,9 @@ describe("InviteService", () => {
 			const { service, invitesRepository } = createService();
 			invitesRepository.findById.mockResolvedValue(makeInvite({ role: ["superadmin"] }));
 
-			await expect(
-				service.updateInviteExpiry({ id: "inv-1", teamId: "team-1", expiresInHours: 24, userRoles: ["admin"] })
-			).rejects.toThrow("You do not have permission to modify this invite");
+			await expect(service.updateInviteExpiry({ id: "inv-1", teamId: "team-1", expiresInHours: 24, userRoles: ["admin"] })).rejects.toThrow(
+				"You do not have permission to modify this invite"
+			);
 
 			expect(invitesRepository.updateExpiryById).not.toHaveBeenCalled();
 		});

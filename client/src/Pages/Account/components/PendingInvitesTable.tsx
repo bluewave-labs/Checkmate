@@ -8,16 +8,23 @@ import type { ActionMenuItem } from "@/Components/actions-menu";
 import { useClientPagination } from "@/Hooks/useClientPagination";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 import type { Invite } from "@/Types/Invite";
+import type { RootState } from "@/Types/state";
+import { useSelector } from "react-redux";
 
 interface PendingInvitesTableProps {
 	invites: Invite[];
 	onChangeDuration: (invite: Invite) => void;
 }
 
-const isExpiredInvite = (invite: Invite) => new Date(invite.expiry).getTime() <= Date.now();
+const isExpiredInvite = (invite: Invite) =>
+	new Date(invite.expiry).getTime() <= Date.now();
 
-export const PendingInvitesTable = ({ invites, onChangeDuration }: PendingInvitesTableProps) => {
+export const PendingInvitesTable = ({
+	invites,
+	onChangeDuration,
+}: PendingInvitesTableProps) => {
 	const { t } = useTranslation();
+	const uiTimezone = useSelector((state: RootState) => state.ui.timezone);
 	const { pagedRows, paginationProps } = useClientPagination(invites);
 
 	const headers: Header<Invite>[] = [
@@ -30,7 +37,9 @@ export const PendingInvitesTable = ({ invites, onChangeDuration }: PendingInvite
 			id: "role",
 			content: t("pages.account.team.table.headers.role"),
 			render: (row) => (
-				<Typography>{row.role.map((r) => t(`common.auth.roles.${r}`)).join(", ")}</Typography>
+				<Typography>
+					{row.role.map((r) => t(`common.auth.roles.${r}`)).join(", ")}
+				</Typography>
 			),
 		},
 		{
@@ -53,7 +62,9 @@ export const PendingInvitesTable = ({ invites, onChangeDuration }: PendingInvite
 			id: "expiry",
 			content: t("pages.account.team.invites.table.headers.expires"),
 			render: (row) => (
-				<Typography>{formatDateWithTz(row.expiry, "MMM D, YYYY h:mm A")}</Typography>
+				<Typography>
+					{formatDateWithTz(row.expiry, "MMM D, YYYY h:mm A", uiTimezone)}
+				</Typography>
 			),
 		},
 		{

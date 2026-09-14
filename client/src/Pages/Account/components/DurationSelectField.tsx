@@ -7,7 +7,10 @@ import { INVITE_DURATION_OPTIONS } from "@/Utils/inviteDurationOptions";
 
 export const DurationSelectField = () => {
 	const { t } = useTranslation();
-	const { field, fieldState } = useController<{ expiresInHours: number }, "expiresInHours">({
+	const { field, fieldState } = useController<
+		{ expiresInHours: number },
+		"expiresInHours"
+	>({
 		name: "expiresInHours",
 	});
 
@@ -29,7 +32,9 @@ export const DurationSelectField = () => {
 					</MenuItem>
 				))}
 			</Select>
-			{fieldState.error && <FormHelperText error>{fieldState.error.message}</FormHelperText>}
+			{fieldState.error && (
+				<FormHelperText error>{fieldState.error.message}</FormHelperText>
+			)}
 		</>
 	);
 };

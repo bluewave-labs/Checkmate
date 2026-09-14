@@ -75,9 +75,7 @@ export const TabTeam = () => {
 			)}
 			{isAdmin && (
 				<Stack gap={theme.spacing(LAYOUT.XS)}>
-					<Typography variant="h1">
-						{t("pages.account.team.invites.title")}
-					</Typography>
+					<Typography variant="h1">{t("pages.account.team.invites.title")}</Typography>
 					<PendingInvitesTable
 						invites={pendingInvites}
 						onChangeDuration={setInvitePendingDuration}

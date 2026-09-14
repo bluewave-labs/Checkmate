@@ -18,7 +18,9 @@ export const ChangeInviteDurationDialog = ({
 	onSuccess,
 }: ChangeInviteDurationDialogProps) => {
 	const { t } = useTranslation();
-	const [expiresInHours, setExpiresInHours] = useState<number>(INVITE_DURATION_OPTIONS[0].hours);
+	const [expiresInHours, setExpiresInHours] = useState<number>(
+		INVITE_DURATION_OPTIONS[0].hours
+	);
 	const { patch, loading } = usePatch<{ expiresInHours: number }, Invite>();
 
 	useEffect(() => {
