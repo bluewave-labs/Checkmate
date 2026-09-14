@@ -30,6 +30,7 @@ const SummaryItem = ({ icon, label, value }: SummaryItemProps) => {
 				direction="row"
 				alignItems="center"
 				gap={theme.spacing(2)}
+				sx={{ "& svg": { color: theme.palette.text.secondary } }}
 			>
 				{icon}
 				<Typography variant="body1">{label}</Typography>
@@ -143,7 +144,10 @@ const SummaryIncidentItem = ({ incident }: { incident: IncidentSummaryItem }) =>
 					gap: theme.spacing(2),
 				}}
 			>
-				<Icon icon={Globe} />
+				<Icon
+					icon={Globe}
+					color={theme.palette.text.secondary}
+				/>
 				<Typography
 					variant="body1"
 					fontWeight={500}

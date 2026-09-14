@@ -32,9 +32,9 @@ export const getMenu = (t: Function) => {
 					icon: <Icon icon={Globe} />,
 				},
 				{
-					name: t("components.sidebar.menu.pagespeed"),
-					path: "pagespeed",
-					icon: <Icon icon={Gauge} />,
+					name: t("components.sidebar.menu.docker"),
+					path: "docker",
+					icon: <Icon icon={Container} />,
 				},
 				{
 					name: t("components.sidebar.menu.infrastructure"),
@@ -42,9 +42,9 @@ export const getMenu = (t: Function) => {
 					icon: <Icon icon={Link} />,
 				},
 				{
-					name: t("components.sidebar.menu.docker"),
-					path: "docker",
-					icon: <Icon icon={Container} />,
+					name: t("components.sidebar.menu.pagespeed"),
+					path: "pagespeed",
+					icon: <Icon icon={Gauge} />,
 				},
 			],
 		},

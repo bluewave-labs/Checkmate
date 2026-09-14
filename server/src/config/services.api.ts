@@ -35,6 +35,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		monitorsRepository,
 		checksRepository,
 		geoChecksRepository,
+		dockerLogsRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
 		usersRepository,
@@ -75,9 +76,11 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		monitorsRepository,
 		checksRepository,
 		geoChecksRepository,
+		dockerLogsRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
 		incidentsRepository,
+		encryptionService: shared.encryptionService,
 	});
 
 	const maintenanceWindowService = new MaintenanceWindowService({

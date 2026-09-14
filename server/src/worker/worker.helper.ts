@@ -10,6 +10,7 @@ import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interf
 import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
 import { ILogger } from "@/utils/logger.js";
+import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
 
 export interface IWorkerHelper {
 	getCleanupOrphanedJob(): () => Promise<void>;
@@ -43,6 +44,7 @@ export class WorkerHelper implements IWorkerHelper {
 	private checksRepository: IChecksRepository;
 	private incidentsRepository: IIncidentsRepository;
 	private geoChecksRepository: IGeoChecksRepository;
+	private dockerLogsRepository: IDockerLogsRepository;
 
 	constructor(
 		logger: ILogger,
@@ -54,7 +56,8 @@ export class WorkerHelper implements IWorkerHelper {
 		monitorStatsRepository: IMonitorStatsRepository,
 		checksRepository: IChecksRepository,
 		incidentsRepository: IIncidentsRepository,
-		geoChecksRepository: IGeoChecksRepository
+		geoChecksRepository: IGeoChecksRepository,
+		dockerLogsRepository: IDockerLogsRepository
 	) {
 		this.logger = logger;
 		this.checkService = checkService;
@@ -66,6 +69,7 @@ export class WorkerHelper implements IWorkerHelper {
 		this.checksRepository = checksRepository;
 		this.incidentsRepository = incidentsRepository;
 		this.geoChecksRepository = geoChecksRepository;
+		this.dockerLogsRepository = dockerLogsRepository;
 	}
 
 	getCleanupOrphanedJob = () => {
@@ -137,6 +141,15 @@ export class WorkerHelper implements IWorkerHelper {
 				if (deletedGeoChecksCount > 0) {
 					this.logger.info({
 						message: `Deleted ${deletedGeoChecksCount} orphaned geo checks`,
+						service: SERVICE_NAME,
+						method: "getCleanupOrphanedJob",
+					});
+				}
+
+				const deletedDockerLogsCount = await this.dockerLogsRepository.deleteByMonitorIdsNotIn(allMonitorIds);
+				if (deletedDockerLogsCount > 0) {
+					this.logger.info({
+						message: `Deleted ${deletedDockerLogsCount} orphaned docker logs`,
 						service: SERVICE_NAME,
 						method: "getCleanupOrphanedJob",
 					});

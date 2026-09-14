@@ -69,8 +69,19 @@ const DockerDetailsPage = ({ open = "overview" }: DockerContainerDetailsProps) =
 				<Tab label={t("pages.docker.container.tabs.overview")} />
 				<Tab label={t("pages.docker.container.tabs.logs")} />
 			</Tabs>
-			{activeTab === 0 && <TabOverview stats={stats} />}
-			{activeTab === 1 && <TabLogs />}
+			{activeTab === 0 && (
+				<TabOverview
+					stats={stats}
+					range={dateRange}
+				/>
+			)}
+			{activeTab === 1 && (
+				<TabLogs
+					monitorId={monitorId}
+					containerName={containerName}
+					enabled={monitor.dockerLogsEnabled ?? false}
+				/>
+			)}
 		</BasePage>
 	);
 };

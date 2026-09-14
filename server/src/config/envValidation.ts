@@ -3,6 +3,39 @@ import { DbTypes, LogLevels, QueueModes } from "@/domain/app-settings/app-settin
 import { booleanCoercion } from "@/api/validation/shared.js";
 import { ILogger } from "@/utils/logger.js";
 
+// Padded standard base64 of exactly 32 bytes, as produced by `openssl rand -base64 32`
+const ENCRYPTION_KEY_ENTRY = /^[A-Za-z0-9+/]{43}=$/;
+
+export const encryptionKeyList = z
+	.string()
+	.optional()
+	.transform((raw, ctx) => {
+		if (raw === undefined) return [];
+		const entries = raw
+			.split(",")
+			.map((entry, index) => ({ entry: entry.trim(), slot: index + 1 }))
+			.filter(({ entry }) => entry.length > 0);
+		const seen = new Set<string>();
+		const keys: Buffer[] = [];
+		entries.forEach(({ entry, slot }) => {
+			if (!ENCRYPTION_KEY_ENTRY.test(entry)) {
+				ctx.addIssue({
+					code: "custom",
+					message: `ENCRYPTION_KEY entry ${slot} must be 32 bytes as padded standard base64 (openssl rand -base64 32)`,
+				});
+				return;
+			}
+			const decoded = Buffer.from(entry, "base64");
+			const fingerprint = decoded.toString("hex");
+			if (seen.has(fingerprint)) {
+				ctx.addIssue({ code: "custom", message: `ENCRYPTION_KEY entry ${slot} duplicates an earlier entry` });
+			}
+			seen.add(fingerprint);
+			keys.push(decoded);
+		});
+		return keys;
+	});
+
 const envSchema = z.object({
 	// Server Configuration
 	PORT: z.string().default("52345"),
@@ -36,6 +69,9 @@ const envSchema = z.object({
 
 	// Feature flags
 	STATUS_PAGE_THEMES_ENABLED: booleanCoercion.default(true),
+
+	// Encryption
+	ENCRYPTION_KEY: encryptionKeyList,
 });
 
 export type ValidatedEnv = z.infer<typeof envSchema>;

@@ -5,6 +5,7 @@ import type {
 	DailyCheckBucket,
 	DockerContainerInfo,
 	DockerContainerSummary,
+	DockerLog,
 } from "@/Types/Check";
 import type { PageSpeedGroupedCheck } from "@/Types/Check";
 import type { GeoContinent } from "@/Types/GeoCheck";
@@ -58,6 +59,8 @@ export const monitorTypeLabelKey: Record<SelectableMonitorType, string> &
 	hardware: "optionHardware",
 	pagespeed: "optionPagespeed",
 };
+
+export const MIN_MONITOR_INTERVAL_MS = 10000;
 
 export const MonitorIntervalOptions = [
 	{ value: 15000, labelKey: "fifteenSeconds" },
@@ -158,6 +161,10 @@ export interface Monitor {
 	geoCheckEnabled?: boolean;
 	geoCheckLocations?: GeoContinent[];
 	geoCheckInterval?: number;
+	dockerLogsEnabled?: boolean;
+	dockerTlsCa?: string;
+	dockerTlsCert?: string;
+	dockerTlsKeySet?: boolean;
 	dnsServer?: string;
 	dnsRecordType?: DnsRecordType;
 	recentChecks: CheckSnapshot[];
@@ -322,6 +329,10 @@ export interface DockerContainerResponse {
 	stats: DockerContainerStats;
 }
 
+export interface DockerContainerLogsResponse {
+	logs: DockerLog[];
+	nextCursor: string | null;
+}
 export interface Game {
 	name: string;
 	options?: {

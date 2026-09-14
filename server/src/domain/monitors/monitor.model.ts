@@ -235,9 +235,6 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		secret: {
 			type: String,
 		},
-		sshPrivateKey: {
-			type: String,
-		},
 		cpuAlertThreshold: {
 			type: Number,
 			default: 100,
@@ -305,6 +302,24 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		geoCheckInterval: {
 			type: Number,
 			default: 300000,
+		},
+		dockerLogsEnabled: {
+			type: Boolean,
+			default: false,
+		},
+		dockerTlsCa: {
+			type: String,
+		},
+		dockerTlsCert: {
+			type: String,
+		},
+		dockerTlsKey: {
+			type: String,
+			select: false,
+		},
+		dockerTlsKeySet: {
+			type: Boolean,
+			default: false,
 		},
 		dnsServer: {
 			type: String,

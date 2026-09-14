@@ -161,6 +161,31 @@ export interface DockerContainerMount {
 	rw: boolean;
 }
 
+export const DockerLogStreams = ["stdout", "stderr"] as const;
+export type DockerLogStream = (typeof DockerLogStreams)[number];
+
+export interface DockerLogLine {
+	ts: string;
+	stream: DockerLogStream;
+	text: string;
+}
+
+export interface DockerLog {
+	id: string;
+	metadata: {
+		monitorId: string;
+		teamId: string;
+		containerId: string;
+		containerName: string;
+	};
+	lines: DockerLogLine[];
+	gap: boolean;
+	checkedAt: string;
+	expiry: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
 export interface DockerContainerInfo {
 	id: string;
 	name: string;

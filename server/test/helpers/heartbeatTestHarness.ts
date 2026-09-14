@@ -128,6 +128,7 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 
 	const maintenanceWindowsRepo = { findByMonitorId: jest.fn().mockResolvedValue([]) };
 	const proxyResolver = { resolve: jest.fn().mockResolvedValue(undefined) };
+	const dockerLogsService = { buildDockerLogs: jest.fn().mockResolvedValue([]) };
 
 	const checkProducer = new CheckProducer(
 		monitorsRepo as any,
@@ -136,6 +137,7 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 		networkService as any,
 		proxyResolver as any,
 		bufferStub as any,
+		dockerLogsService as any,
 		logger
 	);
 	const checkEvaluator = new CheckEvaluator(statusService as any, new MonitorStatusPolicy());

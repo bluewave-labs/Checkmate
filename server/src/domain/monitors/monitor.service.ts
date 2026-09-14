@@ -9,6 +9,7 @@ import type {
 	GroupedGeoCheckResult,
 	DockerDetailsResult,
 	DockerContainerDetailsResult,
+	DockerContainerLogsResult,
 } from "@/domain/monitors/monitor.type.js";
 import { supportsGeoCheck, supportsUptimeDetails } from "@/domain/monitors/monitor.type.js";
 import type {
@@ -31,6 +32,9 @@ import type { ImportedMonitor } from "@/api/validation/monitorValidation.js";
 import { ILogger } from "@/utils/logger.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";
 import { DateRange } from "@/types/query.js";
+import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
+import { IEncryptionService } from "@/service/encryption/encryptionService.js";
+import { isDockerTlsUrl } from "@/utils/dockerHost.js";
 
 const SERVICE_NAME = "MonitorService";
 
@@ -58,7 +62,7 @@ const computeRestartsInRange = (aggregate: DockerContainerStatsBucket[]): number
 
 export interface IMonitorService {
 	// create
-	createMonitor(teamId: string, userId: string, body: Partial<Monitor>): Promise<void>;
+	createMonitor(teamId: string, userId: string, body: Partial<Monitor>): Promise<Monitor>;
 	createMonitors(monitors: Array<Monitor>): Promise<Monitor[] | null>;
 	addDemoMonitors(args: { userId: string; teamId: string }): Promise<Monitor[]>;
 
@@ -73,6 +77,14 @@ export interface IMonitorService {
 		containerName: string;
 		dateRange: DateRange;
 	}): Promise<DockerContainerDetailsResult>;
+	getDockerContainerLogs(args: {
+		teamId: string;
+		monitorId: string;
+		containerName: string;
+		before?: Date;
+		after?: Date;
+		limit: number;
+	}): Promise<DockerContainerLogsResult>;
 	getGeoChecksByMonitorId(args: {
 		teamId: string;
 		monitorId: string;
@@ -130,9 +142,11 @@ export class MonitorService implements IMonitorService {
 	private monitorsRepository: IMonitorsRepository;
 	private checksRepository: IChecksRepository;
 	private geoChecksRepository: IGeoChecksRepository;
+	private dockerLogsRepository: IDockerLogsRepository;
 	private monitorStatsRepository: IMonitorStatsRepository;
 	private statusPagesRepository: IStatusPagesRepository;
 	private incidentsRepository: IIncidentsRepository;
+	private encryptionService: IEncryptionService;
 
 	constructor({
 		scheduler,
@@ -141,9 +155,11 @@ export class MonitorService implements IMonitorService {
 		monitorsRepository,
 		checksRepository,
 		geoChecksRepository,
+		dockerLogsRepository,
 		monitorStatsRepository,
 		statusPagesRepository,
 		incidentsRepository,
+		encryptionService,
 	}: {
 		scheduler: IJobScheduler;
 		logger: ILogger;
@@ -151,9 +167,11 @@ export class MonitorService implements IMonitorService {
 		monitorsRepository: IMonitorsRepository;
 		checksRepository: IChecksRepository;
 		geoChecksRepository: IGeoChecksRepository;
+		dockerLogsRepository: IDockerLogsRepository;
 		monitorStatsRepository: IMonitorStatsRepository;
 		statusPagesRepository: IStatusPagesRepository;
 		incidentsRepository: IIncidentsRepository;
+		encryptionService: IEncryptionService;
 	}) {
 		this.scheduler = scheduler;
 		this.logger = logger;
@@ -161,22 +179,29 @@ export class MonitorService implements IMonitorService {
 		this.monitorsRepository = monitorsRepository;
 		this.checksRepository = checksRepository;
 		this.geoChecksRepository = geoChecksRepository;
+		this.dockerLogsRepository = dockerLogsRepository;
 		this.monitorStatsRepository = monitorStatsRepository;
 		this.statusPagesRepository = statusPagesRepository;
 		this.incidentsRepository = incidentsRepository;
+		this.encryptionService = encryptionService;
 	}
 
-	createMonitor = async (teamId: string, userId: string, body: Monitor): Promise<void> => {
+	createMonitor = async (teamId: string, userId: string, body: Monitor): Promise<Monitor> => {
 		// proxyId is only needed in custom mode
 		if (body.proxyMode !== "custom") {
 			delete body.proxyId;
 		}
+
+		// Encrypt docker TLS keys
+		this.encryptDockerTls(body, "create");
+
 		const monitor = await this.monitorsRepository.create(body, teamId, userId);
 		if (!monitor) {
 			throw new AppError({ message: "Failed to create monitor", status: 500, service: SERVICE_NAME, method: "createMonitor" });
 		}
 
 		this.scheduler.addJob(monitor.id, monitor);
+		return monitor;
 	};
 
 	createMonitors = async (monitors: Array<Monitor>): Promise<Monitor[] | null> => {
@@ -385,6 +410,41 @@ export class MonitorService implements IMonitorService {
 		};
 	};
 
+	getDockerContainerLogs = async ({
+		teamId,
+		monitorId,
+		containerName,
+		before,
+		after,
+		limit,
+	}: {
+		teamId: string;
+		monitorId: string;
+		containerName: string;
+		before?: Date;
+		after?: Date;
+		limit: number;
+	}): Promise<DockerContainerLogsResult> => {
+		const monitor = await this.monitorsRepository.findById(monitorId, teamId);
+		if (!monitor) {
+			throw new AppError({
+				message: `Monitor with ID ${monitorId} not found`,
+				status: 404,
+			});
+		}
+
+		if (monitor.type !== "docker") {
+			throw new AppError({
+				message: `${monitor.type} monitors are not supported for docker container logs`,
+				status: 400,
+			});
+		}
+
+		const logs = await this.dockerLogsRepository.findByContainerName({ monitorId, containerName, before, after, limit });
+		const nextCursor = !after && logs.length === limit ? (logs[logs.length - 1]?.checkedAt ?? null) : null;
+		return { logs, nextCursor };
+	};
+
 	getGeoChecksByMonitorId = async ({
 		teamId,
 		monitorId,
@@ -486,6 +546,20 @@ export class MonitorService implements IMonitorService {
 		const unsetProxyId = body.proxyMode !== undefined && body.proxyMode !== "custom";
 		if (unsetProxyId) {
 			delete body.proxyId;
+		}
+
+		// Handle Docker TLS
+		this.encryptDockerTls(body, "edit");
+		if (body.type === "docker" && isDockerTlsUrl(body.url) && body.dockerTlsKey === undefined) {
+			const stored = await this.monitorsRepository.findById(monitorId, teamId);
+			if (!stored.dockerTlsKeySet) {
+				throw new AppError({
+					message: "Key is required for a TLS Docker host",
+					status: 422,
+					service: SERVICE_NAME,
+					method: "editMonitor",
+				});
+			}
 		}
 		const editedMonitor = await this.monitorsRepository.updateById(monitorId, teamId, body, { unsetProxyId });
 		await this.scheduler.updateJob(editedMonitor);
@@ -593,6 +667,14 @@ export class MonitorService implements IMonitorService {
 			});
 		});
 
+		await this.dockerLogsRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
+			this.logger.warn({
+				message: `Error deleting docker logs for monitor ${monitor.id} with name ${monitor.name}`,
+				service: SERVICE_NAME,
+				stack: err instanceof Error ? err.stack : undefined,
+			});
+		});
+
 		await this.monitorStatsRepository.deleteByMonitorId(monitor.id).catch((err: unknown) => {
 			this.logger.warn({
 				message: `Error deleting monitor stats for monitor ${monitor.id} with name ${monitor.name}`,
@@ -665,5 +747,35 @@ export class MonitorService implements IMonitorService {
 		const createdMonitors = await this.createMonitors(cleanedMonitors);
 
 		return { imported: createdMonitors!.length, errors };
+	};
+
+	private encryptDockerTls = (body: Partial<Monitor>, mode: "create" | "edit") => {
+		if (body.type !== "docker" && mode === "create") return;
+
+		if (body.url !== undefined && !isDockerTlsUrl(body.url)) {
+			body.dockerTlsCa = undefined;
+			body.dockerTlsCert = undefined;
+			body.dockerTlsKey = undefined;
+			body.dockerTlsKeySet = false;
+			return;
+		}
+
+		if (!body.dockerTlsKey) {
+			delete body.dockerTlsKey; // empty field means keeps stored key
+			return;
+		}
+
+		if (!this.encryptionService.isConfigured()) {
+			throw new AppError({
+				message:
+					'Docker TLS credentials require ENCRYPTION_KEY to be set on the server. Generate one with "openssl rand -base64 32", set the same value for both the API and worker, and restart.',
+				status: 422,
+				service: SERVICE_NAME,
+				method: "encryptDockerTls",
+			});
+		}
+
+		body.dockerTlsKey = this.encryptionService.encrypt(body.dockerTlsKey);
+		body.dockerTlsKeySet = true;
 	};
 }

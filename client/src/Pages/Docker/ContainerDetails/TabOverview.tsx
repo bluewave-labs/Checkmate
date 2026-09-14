@@ -17,6 +17,7 @@ import { formatPercentage } from "@/Utils/FormatUtils";
 import prettyBytes from "pretty-bytes";
 import { BaseBox } from "@/Components/design-elements";
 import { dedupeDockerPorts, getDockerMountLabel } from "@/Utils/MonitorUtils";
+import type { DateRange } from "@/Types/Query";
 
 const getChartConfigs = (theme: Theme, t: TFunction, stats: DockerContainerStats) => [
 	{
@@ -24,20 +25,29 @@ const getChartConfigs = (theme: Theme, t: TFunction, stats: DockerContainerStats
 		key: "avgCpuPct",
 		color: theme.palette.success.main,
 		rightTitle: formatPercentage(stats?.latest?.container.cpuPct || 0),
+		formatter: formatPercentage,
+		labelKey: "common.charts.histogram.avgCpuUsage",
 	},
 	{
 		title: t("common.charts.labels.memoryUsage"),
 		key: "avgMemoryUsedBytes",
 		color: theme.palette.primary.main,
 		rightTitle: prettyBytes(stats?.latest?.container.memoryUsedBytes || 0),
+		formatter: prettyBytes,
+		labelKey: "common.charts.histogram.avgMemoryUsage",
 	},
 ];
 
-export const TabOverview = ({ stats }: { stats: DockerContainerStats }) => {
+export const TabOverview = ({
+	stats,
+	range,
+}: {
+	stats: DockerContainerStats;
+	range: DateRange;
+}) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
-
 	const { ports, mounts } = stats?.latest?.container ?? {};
 	const dedupedPorts = dedupeDockerPorts(ports ?? []);
 	return (
@@ -58,6 +68,9 @@ export const TabOverview = ({ stats }: { stats: DockerContainerStats }) => {
 							dataKey={config.key}
 							strokeColor={config.color}
 							gradientStartColor={config.color}
+							range={range}
+							formatter={config.formatter}
+							labelKey={config.labelKey}
 						/>
 					</Grid>
 				);

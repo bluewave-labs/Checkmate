@@ -45,7 +45,7 @@ const startApp = async () => {
 	// ***********************
 	// Build shared services
 	// ***********************
-	const shared = await buildShared({ logger, envSettings, settingsService });
+	const shared = await buildShared({ logger, envSettings, settingsService, encryptionKeys: env.ENCRYPTION_KEY });
 
 	// ***********************
 	// Worker node path, don't need API
