@@ -1,6 +1,7 @@
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
 import { DockerContainerInfo, DockerContainerSummary } from "@/domain/docker/docker.type.js";
 import type { Response } from "got";
+import type { EgressStatus } from "@/domain/egress/egress.type.js";
 
 export const CHECK_TTL_SENTINEL = 366;
 
@@ -116,6 +117,9 @@ export interface Check {
 	seo?: number;
 	performance?: number;
 	audits?: CheckAudits;
+	// Set only on checks produced while the reliability probe ran (a failing check).
+	// "degraded" means every reliability target was unreachable, so the failure is not attributable to the monitored target.
+	egressStatus?: EgressStatus;
 	createdAt: string;
 	updatedAt: string;
 }

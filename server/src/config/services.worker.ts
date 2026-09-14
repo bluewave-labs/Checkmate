@@ -129,9 +129,10 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		proxyResolver,
 		bufferService,
 		dockerLogsService,
+		egressService,
 		logger
 	);
-	const checkEvaluator = new CheckEvaluator(statusService, monitorStatusPolicy);
+	const checkEvaluator = new CheckEvaluator(statusService, monitorStatusPolicy, logger);
 	const geoCheckPipeline = new GeoChecksPipeline(maintenanceWindowsRepository, geoChecksService, bufferService, logger);
 
 	// ***********************

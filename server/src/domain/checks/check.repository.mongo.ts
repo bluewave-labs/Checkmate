@@ -15,7 +15,7 @@ import type {
 	HardwareCheckStats,
 } from "@/domain/checks/check.type.js";
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
-import { CheckModel, type CheckDocument } from "@/domain/checks/check.model.js";
+import { CheckModel, EXCLUDE_DEGRADED_EGRESS_MATCH, type CheckDocument } from "@/domain/checks/check.model.js";
 import mongoose from "mongoose";
 import { getDateFormat, getDateForRange } from "@/utils/dataUtils.js";
 import { ILogger } from "@/utils/logger.js";
@@ -179,6 +179,7 @@ class MongoChecksRepository implements IChecksRepository {
 			audits: mapAudits(doc.audits),
 			containers: doc.containers,
 			containerSummary: doc.containerSummary,
+			...(doc.egressStatus !== undefined && { egressStatus: doc.egressStatus }),
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
@@ -348,6 +349,7 @@ class MongoChecksRepository implements IChecksRepository {
 		const baseMatch = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
 			createdAt: { $gte: getDateForRange(dateRange) },
+			...EXCLUDE_DEGRADED_EGRESS_MATCH,
 		};
 
 		const [totalResult, downResult] = await Promise.all([
@@ -393,6 +395,7 @@ class MongoChecksRepository implements IChecksRepository {
 				$match: {
 					"metadata.monitorId": { $in: objectIds },
 					createdAt: { $gte: windowStart },
+					...EXCLUDE_DEGRADED_EGRESS_MATCH,
 				},
 			},
 			{
@@ -480,6 +483,8 @@ class MongoChecksRepository implements IChecksRepository {
 			{
 				$facet: {
 					uptimePercentage: [
+						// Response-time series (groupedUpChecks / groupedDownChecks) deliberately keep degraded checks so they still show as failures on the graph.
+						{ $match: EXCLUDE_DEGRADED_EGRESS_MATCH },
 						{
 							$group: {
 								_id: null,
