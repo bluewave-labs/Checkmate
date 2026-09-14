@@ -104,9 +104,52 @@ export const formatMs = (ms: number, hasSpace: boolean = true): string => {
 	return formatted;
 };
 
-export const formatDuration = (ms: number, verbose: boolean = false, hasSpace = true) => {
-	if (verbose) {
-		return prettyMilliseconds(ms, { verbose: true });
+type DurationUnit = "day" | "hour" | "minute" | "second";
+
+interface FormatDurationOptions {
+	long?: boolean;
+	relative?: boolean;
+	hasSpace?: boolean;
+	locale?: string;
+}
+
+const DURATION_UNITS: Array<{ unit: DurationUnit; milliseconds: number }> = [
+	{ unit: "day", milliseconds: MS_PER_DAY },
+	{ unit: "hour", milliseconds: MS_PER_HOUR },
+	{ unit: "minute", milliseconds: MS_PER_MINUTE },
+	{ unit: "second", milliseconds: MS_PER_SECOND },
+];
+
+const FALLBACK_DURATION_UNIT = DURATION_UNITS[DURATION_UNITS.length - 1];
+
+const getDurationUnit = (ms: number) =>
+	DURATION_UNITS.find(({ milliseconds }) => Math.abs(ms) >= milliseconds) ??
+	FALLBACK_DURATION_UNIT;
+
+const getExactDurationUnit = (ms: number) =>
+	DURATION_UNITS.find(({ milliseconds }) => ms !== 0 && ms % milliseconds === 0) ??
+	FALLBACK_DURATION_UNIT;
+
+export const formatDuration = (
+	ms: number,
+	{ long = false, relative = false, hasSpace = true, locale }: FormatDurationOptions = {}
+): string => {
+	if (relative) {
+		const { unit, milliseconds } = getDurationUnit(ms);
+		const value = Math.sign(ms) * Math.floor(Math.abs(ms) / milliseconds);
+		return new Intl.RelativeTimeFormat(locale, {
+			numeric: "always",
+			style: long ? "long" : "narrow",
+		}).format(-value, unit);
+	}
+
+	if (long) {
+		const { unit, milliseconds } = getExactDurationUnit(ms);
+		return new Intl.NumberFormat(locale, {
+			style: "unit",
+			unit,
+			unitDisplay: "long",
+		}).format(ms / milliseconds);
 	}
 
 	const formatted = prettyMilliseconds(ms, {

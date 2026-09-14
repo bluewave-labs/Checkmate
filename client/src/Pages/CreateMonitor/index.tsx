@@ -87,14 +87,18 @@ interface IntervalOption extends AutocompleteOption {
 
 const INTERVAL_UNIT_MULTIPLIERS = [1000, 60000, 3600000, 86400000] as const;
 
-const toIntervalOption = (intervalMs: number): IntervalOption => ({
+const toIntervalOption = (
+	intervalMs: number,
+	locale: string | undefined
+): IntervalOption => ({
 	id: intervalMs,
-	name: formatDuration(intervalMs, true),
+	name: formatDuration(intervalMs, { long: true, locale }),
 });
 
 const filterIntervalOptions = (
 	options: IntervalOption[],
-	inputValue: string
+	inputValue: string,
+	locale: string | undefined
 ): IntervalOption[] => {
 	const input = inputValue.trim();
 	if (input === "" || options.some((option) => option.name === input)) {
@@ -108,7 +112,7 @@ const filterIntervalOptions = (
 
 	return INTERVAL_UNIT_MULTIPLIERS.map((multiplier) => amount * multiplier)
 		.filter(Number.isSafeInteger)
-		.map(toIntervalOption);
+		.map((ms) => toIntervalOption(ms, locale));
 };
 
 interface GeneralSettingsConfig {
@@ -288,7 +292,7 @@ const getGeneralSettingsConfig = (
 
 const CreateMonitorPage = () => {
 	const theme = useTheme();
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const { monitorId } = useParams();
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -509,15 +513,17 @@ const CreateMonitorPage = () => {
 	);
 
 	const intervalOptions = useMemo(() => {
-		const options = MonitorIntervalOptions.map(({ value }) => toIntervalOption(value));
+		const options = MonitorIntervalOptions.map(({ value }) =>
+			toIntervalOption(value, i18n.resolvedLanguage)
+		);
 		if (
 			typeof watchedInterval === "number" &&
 			!options.some((option) => option.id === watchedInterval)
 		) {
-			options.push(toIntervalOption(watchedInterval));
+			options.push(toIntervalOption(watchedInterval, i18n.resolvedLanguage));
 		}
 		return options;
-	}, [watchedInterval]);
+	}, [watchedInterval, i18n.resolvedLanguage]);
 
 	const matchMethodOptions = useMemo(
 		() =>
@@ -808,7 +814,7 @@ const CreateMonitorPage = () => {
 								)}
 								options={intervalOptions}
 								filterOptions={(options, { inputValue }) =>
-									filterIntervalOptions(options, inputValue)
+									filterIntervalOptions(options, inputValue, i18n.resolvedLanguage)
 								}
 								getOptionDisabled={(option) => option.id < MIN_MONITOR_INTERVAL_MS}
 								disableClearable
