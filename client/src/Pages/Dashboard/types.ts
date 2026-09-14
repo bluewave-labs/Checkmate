@@ -1,4 +1,6 @@
+import type { MonitorType } from "@/Types/Monitor";
+
 export interface DashboardTypeCount {
-	type: string;
+	type: MonitorType;
 	count: number;
 }

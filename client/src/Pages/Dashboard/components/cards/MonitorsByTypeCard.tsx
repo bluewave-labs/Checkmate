@@ -4,6 +4,7 @@ import { BarRow } from "@/Pages/Dashboard/components/cards/BarRow";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import type { DashboardTypeCount } from "@/Pages/Dashboard/types";
+import { getMonitorTypeLabel } from "@/Types/Monitor";
 import { LAYOUT } from "@/Utils/Theme/constants";
 
 interface MonitorsByTypeCardProps {
@@ -18,11 +19,11 @@ export const MonitorsByTypeCard = ({ monitorsByType }: MonitorsByTypeCardProps) 
 
 	return (
 		<DashboardCard title={t("pages.dashboard.cards.monitorsByType")}>
-			<Stack gap={LAYOUT.SM}>
+			<Stack gap={theme.spacing(LAYOUT.SM)}>
 				{monitorsByType.map(({ type, count }) => (
 					<BarRow
 						key={type}
-						label={type}
+						label={getMonitorTypeLabel(type, t)}
 						value={String(count)}
 						fillRatio={count / maxCount}
 						valueColor={theme.palette.text.primary}

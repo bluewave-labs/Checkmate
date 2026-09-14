@@ -3,7 +3,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { typographyLevels } from "@/Utils/Theme/Palette";
-import { SPACING } from "@/Utils/Theme/constants";
+import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
 
 interface BarRowProps {
 	label: string;
@@ -38,15 +38,15 @@ export const BarRow = ({ label, value, fillRatio, valueColor }: BarRowProps) => 
 				</Typography>
 			</Stack>
 			<Box
-				height={4}
-				borderRadius={2}
+				height={theme.spacing(LAYOUT.XS)}
+				borderRadius={theme.shape.borderRadius}
 				bgcolor={theme.palette.action.disabledBackground}
 				overflow="hidden"
 			>
 				<Box
 					height="100%"
 					width={`${clampedRatio * 100}%`}
-					borderRadius={2}
+					borderRadius={theme.shape.borderRadius}
 					bgcolor={theme.palette.primary.main}
 				/>
 			</Box>

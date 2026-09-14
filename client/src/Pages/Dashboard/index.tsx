@@ -1,6 +1,5 @@
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
 
 import { BasePage } from "@/Components/design-elements/BasePage";
 import { LAYOUT } from "@/Utils/Theme/constants";
@@ -28,13 +27,12 @@ const MOCK_MONITORS_BY_TYPE: DashboardTypeCount[] = [
 
 const Dashboard = () => {
 	const theme = useTheme();
-	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 
 	return (
 		<BasePage headerKey="dashboard">
 			<Box
 				display="grid"
-				gridTemplateColumns={isSmall ? "1fr" : "1fr 1fr"}
+				gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }}
 				gap={theme.spacing(LAYOUT.MD)}
 			>
 				<MonitorStatusCard summary={MOCK_SUMMARY} />

@@ -93,7 +93,7 @@ const Routes = () => {
 			>
 				<Route
 					path="/"
-					element={<Navigate to="/dashboard" />}
+					element={<Navigate to="/uptime" />}
 				/>
 				<Route
 					path="dashboard"
