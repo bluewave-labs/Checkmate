@@ -273,8 +273,8 @@ class MongoJobsRepository implements IJobsRepository {
 		return res.deletedCount > 0;
 	};
 
-	deleteByIdAndType = async (refId: string, type: JobType) => {
-		const res = await JobModel.deleteOne({ refId, type }); // Delete a single typed row, e.g. just the geo row
+	deleteByIdAndType = async (refId: string | null, type: JobType) => {
+		const res = await JobModel.deleteOne({ refId, type }); // Delete a single typed row, e.g. just the geo row or the global egress row
 		return res.deletedCount > 0;
 	};
 

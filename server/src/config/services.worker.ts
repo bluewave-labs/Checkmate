@@ -106,7 +106,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	const bufferService = new BufferService(logger, checkService, geoChecksService, dockerLogsService, settingsService, jobsRepository);
 	const statusService = new StatusService(logger, monitorsRepository, monitorStatsRepository);
 	const monitorStatusPolicy = new MonitorStatusPolicy();
-	const egressService = new EgressService(settingsService, egressStateRepository, networkService, logger);
+	const egressService = new EgressService(settingsService, egressStateRepository, jobsRepository, networkService, logger);
 
 	// ***********************
 	// Reactors and dispatcher
@@ -165,6 +165,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		geoCheckPipeline,
 		dispatcher: reactorDispatcher,
 		helper: workerHelper,
+		egressService,
 		queueWorkersRepository,
 		queueMode: envSettings.queueMode,
 		queuePrimaryProcesses: envSettings.queuePrimaryProcesses,
@@ -188,9 +189,6 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 			details: { ...(error instanceof AppError ? error.details : {}) },
 		});
 	}
-
-	// Resume recovery polling if the instance was mid-episode when it last stopped
-	await egressService.init();
 
 	return { worker, networkService, bufferService, statusService, egressService };
 };

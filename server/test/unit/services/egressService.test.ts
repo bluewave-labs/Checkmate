@@ -46,6 +46,10 @@ const createService = (overrides?: Record<string, any>) => {
 			markDegraded: jest.fn().mockResolvedValue(makeState({ status: "degraded", degradedSince: "2026-01-01T10:00:00.000Z" })),
 			markRecovered: jest.fn().mockResolvedValue(makeState({ lastRecoveredAt: "2026-01-01T10:05:00.000Z" })),
 		},
+		jobsRepository: {
+			upsertJob: jest.fn().mockResolvedValue(true),
+			deleteByIdAndType: jest.fn().mockResolvedValue(true),
+		},
 		networkService: { requestStatus: statusFor(["1.1.1.1", "8.8.8.8"]) },
 		logger: createMockLogger(),
 		...overrides,
@@ -53,17 +57,20 @@ const createService = (overrides?: Record<string, any>) => {
 	const service = new EgressService(
 		defaults.settingsService as any,
 		defaults.egressStateRepository as any,
+		defaults.jobsRepository as any,
 		defaults.networkService as any,
 		defaults.logger as any
 	);
 	return { service, defaults };
 };
 
-// Lets the setTimeout chain in startRecoveryPolling settle (settings read, then timer armed) before advancing time.
-const runOneTick = async (intervalMs: number) => {
-	await jest.advanceTimersByTimeAsync(0);
-	await jest.advanceTimersByTimeAsync(intervalMs);
-};
+const degradedRepository = (overrides?: Record<string, any>) => ({
+	findSingleton: jest.fn().mockResolvedValue(makeState({ status: "degraded", degradedSince: "2026-01-01T10:00:00.000Z" })),
+	recordProbe: jest.fn().mockResolvedValue(makeState({ status: "degraded" })),
+	markDegraded: jest.fn().mockResolvedValue(null),
+	markRecovered: jest.fn().mockResolvedValue(makeState({ lastRecoveredAt: "2026-01-01T10:05:00.000Z", degradedSince: "2026-01-01T10:00:00.000Z" })),
+	...overrides,
+});
 
 // ── Tests ────────────────────────────────────────────────────────────────────
 
@@ -149,8 +156,7 @@ describe("EgressService", () => {
 			expect(defaults.egressStateRepository.markDegraded).not.toHaveBeenCalled();
 		});
 
-		it("marks degraded, warns and returns degraded when every target is unreachable", async () => {
-			jest.useFakeTimers();
+		it("marks degraded, warns, inserts the recovery job and returns degraded when every target is unreachable", async () => {
 			const { service, defaults } = createService({ networkService: { requestStatus: statusFor([]) } });
 
 			const result = await service.assessAfterFailure();
@@ -162,20 +168,18 @@ describe("EgressService", () => {
 			);
 			expect(defaults.egressStateRepository.recordProbe).not.toHaveBeenCalled();
 			expect(defaults.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("egress degraded") }));
-			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: "Starting egress recovery polling" }));
-			service.stop();
+			expect(defaults.jobsRepository.upsertJob).toHaveBeenCalledWith({
+				id: "egress",
+				type: "egress",
+				refId: null,
+				isActive: true,
+				nextScheduledAt: expect.any(Number),
+				intervalMs: 30_000,
+			});
 		});
 
-		it("returns degraded without probing when the persisted state is already degraded", async () => {
-			jest.useFakeTimers();
-			const { service, defaults } = createService({
-				egressStateRepository: {
-					findSingleton: jest.fn().mockResolvedValue(makeState({ status: "degraded" })),
-					recordProbe: jest.fn(),
-					markDegraded: jest.fn(),
-					markRecovered: jest.fn(),
-				},
-			});
+		it("returns degraded without probing when the persisted state is already degraded, re-arming the recovery job", async () => {
+			const { service, defaults } = createService({ egressStateRepository: degradedRepository() });
 
 			const result = await service.assessAfterFailure();
 
@@ -183,7 +187,52 @@ describe("EgressService", () => {
 			expect(defaults.networkService.requestStatus).not.toHaveBeenCalled();
 			expect(defaults.egressStateRepository.markDegraded).not.toHaveBeenCalled();
 			expect(defaults.egressStateRepository.recordProbe).not.toHaveBeenCalled();
-			service.stop();
+			expect(defaults.jobsRepository.upsertJob).toHaveBeenCalledWith(expect.objectContaining({ id: "egress", intervalMs: 30_000 }));
+		});
+
+		it("uses the default poll interval for the recovery job when the setting is missing or invalid", async () => {
+			const { service, defaults } = createService({
+				settingsService: { getDBSettings: jest.fn().mockResolvedValue(makeSettings({ egressPollIntervalSeconds: undefined })) },
+				networkService: { requestStatus: statusFor([]) },
+			});
+
+			await service.assessAfterFailure();
+
+			expect(defaults.jobsRepository.upsertJob).toHaveBeenCalledWith(expect.objectContaining({ intervalMs: 30_000 }));
+		});
+
+		it("shares one probe between concurrent failures", async () => {
+			const { service, defaults } = createService({ networkService: { requestStatus: statusFor(["8.8.8.8"]) } });
+
+			const results = await Promise.all([service.assessAfterFailure(), service.assessAfterFailure(), service.assessAfterFailure()]);
+
+			expect(results).toEqual(["ok", "ok", "ok"]);
+			expect(defaults.settingsService.getDBSettings).toHaveBeenCalledTimes(1);
+			expect(defaults.networkService.requestStatus).toHaveBeenCalledTimes(2); // one call per target, once
+			expect(defaults.egressStateRepository.recordProbe).toHaveBeenCalledTimes(1);
+		});
+
+		it("reuses a settled assessment within the cache window and probes again after it", async () => {
+			jest.useFakeTimers();
+			const { service, defaults } = createService({ networkService: { requestStatus: statusFor(["8.8.8.8"]) } });
+
+			await service.assessAfterFailure();
+			await jest.advanceTimersByTimeAsync(1000);
+			await service.assessAfterFailure();
+			expect(defaults.egressStateRepository.recordProbe).toHaveBeenCalledTimes(1);
+
+			await jest.advanceTimersByTimeAsync(5000);
+			await service.assessAfterFailure();
+			expect(defaults.egressStateRepository.recordProbe).toHaveBeenCalledTimes(2);
+		});
+
+		it("does not cache an internal failure", async () => {
+			const getDBSettings = jest.fn().mockRejectedValueOnce(new Error("db down")).mockResolvedValue(makeSettings());
+			const { service, defaults } = createService({ settingsService: { getDBSettings } });
+
+			expect(await service.assessAfterFailure()).toBeNull();
+			expect(await service.assessAfterFailure()).toBe("ok");
+			expect(defaults.egressStateRepository.recordProbe).toHaveBeenCalledTimes(1);
 		});
 
 		it("falls back to the default targets when the configured list is empty", async () => {
@@ -209,196 +258,68 @@ describe("EgressService", () => {
 		});
 	});
 
-	// ── recovery polling ──────────────────────────────────────────────────────
+	// ── checkRecovery (the "egress" job) ──────────────────────────────────────
 
-	describe("recovery polling", () => {
-		it("marks recovered once and stops polling when a target becomes reachable", async () => {
-			jest.useFakeTimers();
-			const recovered = makeState({ lastRecoveredAt: "2026-01-01T10:05:00.000Z", degradedSince: "2026-01-01T10:00:00.000Z" });
+	describe("checkRecovery", () => {
+		it("marks recovered, removes the job and logs when a target becomes reachable", async () => {
 			const { service, defaults } = createService({
-				egressStateRepository: {
-					findSingleton: jest.fn().mockResolvedValue(makeState({ status: "degraded" })),
-					recordProbe: jest.fn(),
-					markDegraded: jest.fn(),
-					markRecovered: jest.fn().mockResolvedValue(recovered),
-				},
+				egressStateRepository: degradedRepository(),
 				networkService: { requestStatus: statusFor(["1.1.1.1"]) },
 			});
 
-			service.startRecoveryPolling();
-			await runOneTick(30_000);
+			await service.checkRecovery();
 
-			expect(defaults.egressStateRepository.markRecovered).toHaveBeenCalledTimes(1);
+			expect(defaults.egressStateRepository.markRecovered).toHaveBeenCalledWith(
+				[expect.objectContaining({ target: "1.1.1.1", reachable: true }), expect.objectContaining({ target: "8.8.8.8", reachable: false })],
+				expect.any(Date)
+			);
+			expect(defaults.jobsRepository.deleteByIdAndType).toHaveBeenCalledWith(null, "egress");
 			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Instance egress recovered") }));
-
-			// Loop has stopped: a further interval produces no more work
-			await runOneTick(30_000);
-			expect(defaults.egressStateRepository.markRecovered).toHaveBeenCalledTimes(1);
 		});
 
-		it("does not log a recovery when another process already recorded it", async () => {
-			jest.useFakeTimers();
+		it("removes the job but does not log a recovery when another process already recorded it", async () => {
 			const { service, defaults } = createService({
-				egressStateRepository: {
-					findSingleton: jest.fn().mockResolvedValue(makeState({ status: "degraded" })),
-					recordProbe: jest.fn(),
-					markDegraded: jest.fn(),
-					markRecovered: jest.fn().mockResolvedValue(null),
-				},
+				egressStateRepository: degradedRepository({ markRecovered: jest.fn().mockResolvedValue(null) }),
 				networkService: { requestStatus: statusFor(["1.1.1.1"]) },
 			});
 
-			service.startRecoveryPolling();
-			await runOneTick(30_000);
+			await service.checkRecovery();
 
-			expect(defaults.egressStateRepository.markRecovered).toHaveBeenCalledTimes(1);
+			expect(defaults.jobsRepository.deleteByIdAndType).toHaveBeenCalledWith(null, "egress");
 			expect(defaults.logger.info).not.toHaveBeenCalledWith(
 				expect.objectContaining({ message: expect.stringContaining("Instance egress recovered") })
 			);
 		});
 
-		it("records the probe and keeps polling while every target stays unreachable", async () => {
-			jest.useFakeTimers();
+		it("records the probe and keeps the job while every target stays unreachable", async () => {
 			const { service, defaults } = createService({
-				egressStateRepository: {
-					findSingleton: jest.fn().mockResolvedValue(makeState({ status: "degraded" })),
-					recordProbe: jest.fn().mockResolvedValue(makeState({ status: "degraded" })),
-					markDegraded: jest.fn(),
-					markRecovered: jest.fn(),
-				},
+				egressStateRepository: degradedRepository(),
 				networkService: { requestStatus: statusFor([]) },
 			});
 
-			service.startRecoveryPolling();
-			await runOneTick(30_000);
-			await runOneTick(30_000);
+			await service.checkRecovery();
 
-			expect(defaults.egressStateRepository.recordProbe).toHaveBeenCalledTimes(2);
+			expect(defaults.egressStateRepository.recordProbe).toHaveBeenCalledTimes(1);
 			expect(defaults.egressStateRepository.markRecovered).not.toHaveBeenCalled();
-			service.stop();
+			expect(defaults.jobsRepository.deleteByIdAndType).not.toHaveBeenCalled();
 		});
 
-		it("stops polling when the persisted state is no longer degraded", async () => {
-			jest.useFakeTimers();
-			const { service, defaults } = createService({
-				egressStateRepository: {
-					findSingleton: jest.fn().mockResolvedValue(makeState({ status: "ok" })),
-					recordProbe: jest.fn(),
-					markDegraded: jest.fn(),
-					markRecovered: jest.fn(),
-				},
-			});
-
-			service.startRecoveryPolling();
-			await runOneTick(30_000);
-
-			expect(defaults.networkService.requestStatus).not.toHaveBeenCalled();
-			await runOneTick(30_000);
-			expect(defaults.egressStateRepository.findSingleton).toHaveBeenCalledTimes(1);
-		});
-
-		it("survives a failing tick and reschedules", async () => {
-			jest.useFakeTimers();
-			const findSingleton = jest
-				.fn()
-				.mockRejectedValueOnce(new Error("db blip"))
-				.mockResolvedValue(makeState({ status: "degraded" }));
-			const { service, defaults } = createService({
-				egressStateRepository: {
-					findSingleton,
-					recordProbe: jest.fn().mockResolvedValue(makeState()),
-					markDegraded: jest.fn(),
-					markRecovered: jest.fn(),
-				},
-				networkService: { requestStatus: statusFor([]) },
-			});
-
-			service.startRecoveryPolling();
-			await runOneTick(30_000);
-			expect(defaults.logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "db blip", method: "tick" }));
-
-			await runOneTick(30_000);
-			expect(defaults.egressStateRepository.recordProbe).toHaveBeenCalledTimes(1);
-			service.stop();
-		});
-
-		it("re-reads the poll interval from settings on each tick", async () => {
-			jest.useFakeTimers();
-			const { service, defaults } = createService({
-				settingsService: { getDBSettings: jest.fn().mockResolvedValue(makeSettings({ egressPollIntervalSeconds: 5 })) },
-				egressStateRepository: {
-					findSingleton: jest.fn().mockResolvedValue(makeState({ status: "degraded" })),
-					recordProbe: jest.fn().mockResolvedValue(makeState({ status: "degraded" })),
-					markDegraded: jest.fn(),
-					markRecovered: jest.fn(),
-				},
-				networkService: { requestStatus: statusFor([]) },
-			});
-
-			service.startRecoveryPolling();
-			await runOneTick(5_000);
-
-			expect(defaults.egressStateRepository.recordProbe).toHaveBeenCalledTimes(1);
-			service.stop();
-		});
-
-		it("is idempotent: a second start does not arm a second loop", async () => {
-			jest.useFakeTimers();
-			const { service, defaults } = createService({
-				egressStateRepository: {
-					findSingleton: jest.fn().mockResolvedValue(makeState({ status: "degraded" })),
-					recordProbe: jest.fn().mockResolvedValue(makeState({ status: "degraded" })),
-					markDegraded: jest.fn(),
-					markRecovered: jest.fn(),
-				},
-				networkService: { requestStatus: statusFor([]) },
-			});
-
-			service.startRecoveryPolling();
-			service.startRecoveryPolling();
-			await runOneTick(30_000);
-
-			expect(defaults.egressStateRepository.recordProbe).toHaveBeenCalledTimes(1);
-			service.stop();
-		});
-	});
-
-	// ── init ──────────────────────────────────────────────────────────────────
-
-	describe("init", () => {
-		it("resumes polling when the feature is enabled and the persisted state is degraded", async () => {
-			jest.useFakeTimers();
-			const { service, defaults } = createService({
-				egressStateRepository: {
-					findSingleton: jest.fn().mockResolvedValue(makeState({ status: "degraded" })),
-					recordProbe: jest.fn(),
-					markDegraded: jest.fn(),
-					markRecovered: jest.fn().mockResolvedValue(makeState()),
-				},
-			});
-
-			await service.init();
-
-			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: "Starting egress recovery polling" }));
-			service.stop();
-		});
-
-		it("does nothing when the persisted state is ok", async () => {
+		it("removes the job without probing when the persisted state is no longer degraded", async () => {
 			const { service, defaults } = createService();
 
-			await service.init();
+			await service.checkRecovery();
 
-			expect(defaults.logger.info).not.toHaveBeenCalled();
+			expect(defaults.networkService.requestStatus).not.toHaveBeenCalled();
+			expect(defaults.egressStateRepository.markRecovered).not.toHaveBeenCalled();
+			expect(defaults.jobsRepository.deleteByIdAndType).toHaveBeenCalledWith(null, "egress");
 		});
 
-		it("does nothing when the feature is disabled", async () => {
-			const { service, defaults } = createService({
-				settingsService: { getDBSettings: jest.fn().mockResolvedValue(makeSettings({ egressCheckEnabled: false })) },
+		it("lets errors propagate so the queue records the failure and retries", async () => {
+			const { service } = createService({
+				egressStateRepository: degradedRepository({ findSingleton: jest.fn().mockRejectedValue(new Error("db down")) }),
 			});
 
-			await service.init();
-
-			expect(defaults.egressStateRepository.findSingleton).not.toHaveBeenCalled();
+			await expect(service.checkRecovery()).rejects.toThrow("db down");
 		});
 	});
 });

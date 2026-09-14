@@ -1,6 +1,8 @@
 import type { Monitor } from "@/domain/monitors/monitor.type.js";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import type { IEgressStateRepository } from "@/domain/egress/egress-state.repository.interface.js";
+import type { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
+import { jobId, type JobSeed } from "@/domain/jobs/job.type.js";
 import type { INetworkService } from "@/service/networkService.js";
 import type { ILogger } from "@/utils/logger.js";
 import {
@@ -13,6 +15,11 @@ import { timeRequest } from "@/service/network/utils.js";
 
 const SERVICE_NAME = "EgressService";
 const PROBE_TIMEOUT_MS = 5000;
+// When egress is down every monitor fails at once, so concurrent failures share one assessment
+// rather than each probing. Same in-flight cache shape as ProxyResolver.
+const ASSESSMENT_TTL_MS = PROBE_TIMEOUT_MS;
+// Global job row (refId null) that re-probes while degraded. Inserted when egress degrades, removed on recovery.
+const RECOVERY_JOB_ID = jobId("egress", null);
 
 // Synthetic identity stamped on the probe monitors so provider responses are recognisable in logs.
 const PROBE_MONITOR_ID = "egress-probe";
@@ -23,21 +30,21 @@ const HOST_PORT_PATTERN = /^(?:\[([^\]]+)\]|([^:/\s]+)):(\d{1,5})$/;
 
 export interface IEgressService {
 	probeTargets(targets: string[]): Promise<EgressProbeResult[]>;
+	// Called by the check producer when a check fails. Null when the feature is off or the assessment itself failed.
 	assessAfterFailure(): Promise<EgressStatus | null>;
-	startRecoveryPolling(): void;
-	stop(): void;
-	init(): Promise<void>;
+	// Handler for the "egress" job: re-probes while degraded and removes the job once egress is back.
+	checkRecovery(): Promise<void>;
 }
 
 export class EgressService implements IEgressService {
 	static SERVICE_NAME = SERVICE_NAME;
 
-	private polling = false;
-	private pollTimer: NodeJS.Timeout | null = null;
+	private assessment: { value: Promise<EgressStatus | null>; expiresAt: number } | null = null;
 
 	constructor(
 		private settingsService: ISettingsService,
 		private egressStateRepository: IEgressStateRepository,
+		private jobsRepository: IJobsRepository,
 		private networkService: INetworkService,
 		private logger: ILogger
 	) {}
@@ -111,11 +118,31 @@ export class EgressService implements IEgressService {
 		return targets.length > 0 ? targets : [...DEFAULT_EGRESS_TARGETS];
 	};
 
+	private toIntervalMs = (seconds: number | undefined): number => {
+		const valid = typeof seconds === "number" && Number.isFinite(seconds) && seconds > 0;
+		return (valid ? seconds : DEFAULT_EGRESS_POLL_INTERVAL_SECONDS) * 1000;
+	};
+
 	// ****************************
 	// Event-triggered assessment
 	// ****************************
 
-	assessAfterFailure = async (): Promise<EgressStatus | null> => {
+	assessAfterFailure = (): Promise<EgressStatus | null> => {
+		const now = Date.now();
+		if (this.assessment && this.assessment.expiresAt > now) {
+			return this.assessment.value;
+		}
+		// Cache the in-flight promise so concurrent failures share one probe
+		const value = this.assess();
+		this.assessment = { value, expiresAt: now + ASSESSMENT_TTL_MS };
+		// Don't cache an internal failure, so the next failing check retries
+		void value.then((status) => {
+			if (status === null && this.assessment?.value === value) this.assessment = null;
+		});
+		return value;
+	};
+
+	private assess = async (): Promise<EgressStatus | null> => {
 		try {
 			const settings = await this.settingsService.getDBSettings();
 			if (!settings.egressCheckEnabled) {
@@ -124,9 +151,8 @@ export class EgressService implements IEgressService {
 
 			const state = await this.egressStateRepository.findSingleton();
 			if (state.status === "degraded") {
-				// Recovery detection belongs to the poll loop. Make sure one is running in this process in case
-				// the worker that entered the degraded state is no longer around.
-				this.startRecoveryPolling();
+				// Recovery is detected by the scheduled job. Make sure it exists in case its row was lost.
+				await this.scheduleRecoveryCheck(settings.egressPollIntervalSeconds);
 				return "degraded";
 			}
 
@@ -147,7 +173,7 @@ export class EgressService implements IEgressService {
 				method: "assessAfterFailure",
 				details: { results },
 			});
-			this.startRecoveryPolling();
+			await this.scheduleRecoveryCheck(settings.egressPollIntervalSeconds);
 			return "degraded";
 		} catch (error: unknown) {
 			// The egress check must never break check production; treat an internal failure as "unknown" and carry on.
@@ -162,129 +188,58 @@ export class EgressService implements IEgressService {
 	};
 
 	// ****************************
-	// Recovery poll loop
+	// Recovery job
 	// ****************************
 
-	startRecoveryPolling = () => {
-		if (this.polling) {
-			return;
-		}
-		this.polling = true;
-		this.logger.info({ message: "Starting egress recovery polling", service: SERVICE_NAME, method: "startRecoveryPolling" });
-		void this.scheduleNextTick();
+	// upsertJob only sets nextScheduledAt on insert, so re-arming while degraded never pushes a pending run back.
+	private scheduleRecoveryCheck = async (pollIntervalSeconds: number | undefined) => {
+		const intervalMs = this.toIntervalMs(pollIntervalSeconds);
+		const seed: JobSeed = {
+			id: RECOVERY_JOB_ID,
+			type: "egress",
+			refId: null,
+			isActive: true,
+			nextScheduledAt: Date.now() + intervalMs,
+			intervalMs,
+		};
+		await this.jobsRepository.upsertJob(seed);
 	};
 
-	stop = () => {
-		this.polling = false;
-		if (this.pollTimer) {
-			clearTimeout(this.pollTimer);
-			this.pollTimer = null;
-		}
+	private removeRecoveryJob = async () => {
+		await this.jobsRepository.deleteByIdAndType(null, "egress");
 	};
 
-	private readPollIntervalMs = async () => {
-		try {
-			const settings = await this.settingsService.getDBSettings();
-			const seconds = settings.egressPollIntervalSeconds;
-			return (Number.isFinite(seconds) && seconds > 0 ? seconds : DEFAULT_EGRESS_POLL_INTERVAL_SECONDS) * 1000;
-		} catch (error: unknown) {
-			this.logger.warn({
-				message: `Could not read egress poll interval, using default: ${error instanceof Error ? error.message : String(error)}`,
-				service: SERVICE_NAME,
-				method: "readPollIntervalMs",
-			});
-			return DEFAULT_EGRESS_POLL_INTERVAL_SECONDS * 1000;
-		}
-	};
-
-	private scheduleNextTick = async () => {
-		if (!this.polling) {
-			return;
-		}
-		const intervalMs = await this.readPollIntervalMs();
-		if (!this.polling) {
-			return;
-		}
-		this.pollTimer = setTimeout(() => void this.tick(), intervalMs);
-		// Never hold the process open for this loop; the state is persisted and init() resumes it on restart.
-		this.pollTimer.unref();
-	};
-
-	private tick = async () => {
-		this.pollTimer = null;
-		if (!this.polling) {
+	// Runs on the queue at the configured interval while degraded. Errors propagate so the queue records
+	// the failure and retries with its usual backoff.
+	checkRecovery = async (): Promise<void> => {
+		const state = await this.egressStateRepository.findSingleton();
+		if (state.status !== "degraded") {
+			// Another worker recorded the recovery, or the state was reset; nothing left to poll for.
+			await this.removeRecoveryJob();
 			return;
 		}
 
-		try {
-			const state = await this.egressStateRepository.findSingleton();
-			if (state.status !== "degraded") {
-				this.logger.info({ message: "Egress no longer degraded, stopping recovery polling", service: SERVICE_NAME, method: "tick" });
-				this.stop();
-				return;
-			}
+		const settings = await this.settingsService.getDBSettings();
+		const results = await this.probeTargets(this.resolveTargets(settings.egressCheckTargets));
+		const now = new Date();
 
-			const settings = await this.settingsService.getDBSettings();
-			const results = await this.probeTargets(this.resolveTargets(settings.egressCheckTargets));
-			const now = new Date();
-
-			if (!results.some((result) => result.reachable)) {
-				await this.egressStateRepository.recordProbe(results, now);
-				return;
-			}
-
-			const recovered = await this.egressStateRepository.markRecovered(results, now);
-			this.stop();
-			if (!recovered) {
-				// Another process performed the transition.
-				return;
-			}
-
-			this.logger.info({
-				message: `Instance egress recovered (degraded since ${recovered.degradedSince ?? "unknown"})`,
-				service: SERVICE_NAME,
-				method: "tick",
-				details: { results },
-			});
-		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? error.message : String(error),
-				service: SERVICE_NAME,
-				method: "tick",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
-		} finally {
-			// No-op once stop() has been called; otherwise keep the loop alive through errors.
-			await this.scheduleNextTick();
+		if (!results.some((result) => result.reachable)) {
+			await this.egressStateRepository.recordProbe(results, now);
+			return;
 		}
-	};
 
-	// ****************************
-	// Lifecycle
-	// ****************************
-
-	init = async () => {
-		try {
-			const settings = await this.settingsService.getDBSettings();
-			if (!settings.egressCheckEnabled) {
-				return;
-			}
-			const state = await this.egressStateRepository.findSingleton();
-			if (state.status === "degraded") {
-				this.logger.warn({
-					message: `Instance egress was degraded at startup (since ${state.degradedSince ?? "unknown"}), resuming recovery polling`,
-					service: SERVICE_NAME,
-					method: "init",
-				});
-				this.startRecoveryPolling();
-			}
-		} catch (error: unknown) {
-			this.logger.error({
-				message: error instanceof Error ? error.message : String(error),
-				service: SERVICE_NAME,
-				method: "init",
-				stack: error instanceof Error ? error.stack : undefined,
-			});
+		const recovered = await this.egressStateRepository.markRecovered(results, now);
+		await this.removeRecoveryJob();
+		if (!recovered) {
+			// Another process performed the transition.
+			return;
 		}
+
+		this.logger.info({
+			message: `Instance egress recovered (degraded since ${recovered.degradedSince ?? "unknown"})`,
+			service: SERVICE_NAME,
+			method: "checkRecovery",
+			details: { results },
+		});
 	};
 }

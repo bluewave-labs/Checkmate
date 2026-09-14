@@ -58,8 +58,8 @@ export interface IJobsRepository {
 	// Delete, drop all rows
 	deleteById(refId: string): Promise<boolean>;
 
-	// Delete a single job of type
-	deleteByIdAndType(refId: string, type: JobType): Promise<boolean>;
+	// Delete a single job of type. refId null addresses a global row
+	deleteByIdAndType(refId: string | null, type: JobType): Promise<boolean>;
 
 	// Delete jobs that reference monitors that no longer exist
 	deleteByMonitorIdsNotIn(monitorIds: string[]): Promise<number>;
