@@ -13294,6 +13294,31 @@
 									"globalProxyId": {
 										"type": "string",
 										"nullable": true
+									},
+									"egressCheckEnabled": {
+										"type": "boolean"
+									},
+									"egressCheckTargets": {
+										"type": "array",
+										"items": {
+											"type": "string",
+											"minLength": 1,
+											"maxLength": 253,
+											"pattern": "^(https?:\\/\\/\\S+|[A-Za-z0-9.\\-:[\\]]+)$"
+										},
+										"maxItems": 10
+									},
+									"egressPollIntervalSeconds": {
+										"type": "integer",
+										"minimum": 5,
+										"maximum": 600
+									},
+									"egressNotifications": {
+										"type": "array",
+										"items": {
+											"type": "string",
+											"pattern": "^[a-f\\d]{24}$/i"
+										}
 									}
 								}
 							}

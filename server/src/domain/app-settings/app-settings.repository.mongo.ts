@@ -3,6 +3,7 @@ import { ISettingsRepository } from "@/domain/app-settings/app-settings-reposito
 import type { Settings, SettingsUpdate } from "@/domain/app-settings/app-settings.type.js";
 import { AppSettingsModel, type AppSettingsDocument } from "@/domain/app-settings/app-settings.model.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
+import { DEFAULT_EGRESS_POLL_INTERVAL_SECONDS, DEFAULT_EGRESS_TARGETS } from "@/domain/egress/egress.type.js";
 
 class MongoSettingsRepository implements ISettingsRepository {
 	private toEntity = (doc: AppSettingsDocument): Settings => {
@@ -30,6 +31,10 @@ class MongoSettingsRepository implements ISettingsRepository {
 			globalThresholds: doc.globalThresholds ?? undefined,
 			globalProxyEnabled: doc.globalProxyEnabled ?? false,
 			globalProxyId: doc.globalProxyId ?? undefined,
+			egressCheckEnabled: doc.egressCheckEnabled ?? false,
+			egressCheckTargets: doc.egressCheckTargets ?? [...DEFAULT_EGRESS_TARGETS],
+			egressPollIntervalSeconds: doc.egressPollIntervalSeconds ?? DEFAULT_EGRESS_POLL_INTERVAL_SECONDS,
+			egressNotifications: doc.egressNotifications ?? [],
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
