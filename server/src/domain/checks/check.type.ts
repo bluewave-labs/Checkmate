@@ -169,6 +169,7 @@ export interface UptimeChecksResult {
 export interface ChecksSummary {
 	totalChecks: number;
 	downChecks: number;
+	degradedChecks: number;
 }
 
 export interface HasResponseTime {
