@@ -60,13 +60,7 @@ export class NotificationsService implements INotificationsService {
 		this.notificationMessageBuilder = notificationMessageBuilder;
 	}
 
-	private send = async (
-		notification: Notification,
-		monitor: Monitor,
-		monitorStatusResponse: MonitorStatusResponse,
-		decision: MonitorActionDecision,
-		notificationMessage: NotificationMessage | undefined
-	): Promise<boolean> => {
+	private send = async (notification: Notification, notificationMessage: NotificationMessage | undefined): Promise<boolean> => {
 		if (!notificationMessage) {
 			this.logger.warn({
 				message: "Notification message not provided",
@@ -98,7 +92,11 @@ export class NotificationsService implements INotificationsService {
 		const clientHost = settings.clientHost || "Host not defined";
 		const notificationMessage = this.notificationMessageBuilder.buildMessage(monitor, monitorStatusResponse, decision, clientHost);
 
-		const tasks = notifications.map((notification) => this.send(notification, monitor, monitorStatusResponse, decision, notificationMessage));
+		return await this.sendToAll(notifications, notificationMessage, "sendNotifications");
+	};
+
+	private sendToAll = async (notifications: Notification[], notificationMessage: NotificationMessage | undefined, method: string) => {
+		const tasks = notifications.map((notification) => this.send(notification, notificationMessage));
 
 		const outcomes = await Promise.all(tasks);
 		const succeeded = outcomes.filter(Boolean).length;
@@ -107,7 +105,7 @@ export class NotificationsService implements INotificationsService {
 			this.logger.warn({
 				message: `Notification send completed with ${succeeded} success, ${failed} failure(s)`,
 				service: SERVICE_NAME,
-				method: "sendNotifications",
+				method,
 			});
 		}
 		// Return true if all notifications succeeded
