@@ -179,6 +179,9 @@ export class NotificationsService implements INotificationsService {
 	deleteById = async (id: string, teamId: string): Promise<Notification> => {
 		await this.monitorsRepository.removeNotificationFromMonitors(id);
 		const deleted = await this.notificationsRepository.deleteById(id, teamId);
+		// App settings hold notification ids for the egress recovered alert; drop the deleted one so it never dangles.
+		// After the team-scoped delete, so a request for another team's id (404 above) cannot touch instance settings.
+		await this.settingsService.removeEgressNotification(id);
 		return deleted;
 	};
 }

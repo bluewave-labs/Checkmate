@@ -61,6 +61,11 @@ export interface IJobsRepository {
 	// Delete a single job of type
 	deleteByIdAndType(refId: string, type: JobType): Promise<boolean>;
 
+	// Global rows (refId null) are addressed by their canonical _id, see jobId
+	deleteGlobalJob(type: JobType): Promise<boolean>;
+	// Delete a global row only if nobody has rescheduled it since it was claimed (nextScheduledAt unchanged)
+	deleteGlobalJobIfUnchanged(type: JobType, nextScheduledAt: number): Promise<boolean>;
+
 	// Delete jobs that reference monitors that no longer exist
 	deleteByMonitorIdsNotIn(monitorIds: string[]): Promise<number>;
 

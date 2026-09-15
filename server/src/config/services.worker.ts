@@ -28,6 +28,7 @@ import { IncidentReactor } from "@/worker/reactors/reactor.incident.js";
 import { ReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
 import { DBQueueWorker } from "@/worker/worker.db-queue.js";
 import { ProxyResolver } from "@/service/network/ProxyResolver.js";
+import { IEgressService, EgressService } from "@/domain/egress/egress.service.js";
 // Network providers
 import { PingProvider } from "@/service/network/PingProvider.js";
 import { HttpProvider } from "@/service/network/HttpProvider.js";
@@ -46,6 +47,7 @@ export interface WorkerServices {
 	networkService: INetworkService;
 	bufferService: IBufferService;
 	statusService: IStatusService;
+	egressService: IEgressService;
 }
 
 export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig): Promise<WorkerServices> => {
@@ -70,12 +72,13 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		teamsRepository,
 		maintenanceWindowsRepository,
 		proxiesRepository,
+		egressStateRepository,
 	} = shared;
 
 	// ***********************
 	// Network providers
 	// ***********************
-	const pingProvider = new PingProvider(ping);
+	const pingProvider = new PingProvider(ping, net);
 	const httpProvider = new HttpProvider(got, new AdvancedMatcher(jmespath));
 	const pageSpeedProvider = new PageSpeedProvider(httpProvider, settingsService, logger);
 	const hardwareProvider = new HardwareProvider(httpProvider);
@@ -103,6 +106,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	const bufferService = new BufferService(logger, checkService, geoChecksService, dockerLogsService, settingsService, jobsRepository);
 	const statusService = new StatusService(logger, monitorsRepository, monitorStatsRepository);
 	const monitorStatusPolicy = new MonitorStatusPolicy();
+	const egressService = new EgressService(settingsService, egressStateRepository, jobsRepository, networkService, proxyResolver, logger);
 
 	// ***********************
 	// Reactors and dispatcher
@@ -145,7 +149,8 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		checksRepository,
 		incidentsRepository,
 		geoChecksRepository,
-		dockerLogsRepository
+		dockerLogsRepository,
+		egressService
 	);
 
 	const worker = await DBQueueWorker.create({
@@ -185,5 +190,5 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		});
 	}
 
-	return { worker, networkService, bufferService, statusService };
+	return { worker, networkService, bufferService, statusService, egressService };
 };

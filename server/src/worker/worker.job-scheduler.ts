@@ -41,6 +41,7 @@ export class JobScheduler implements IJobScheduler {
 		evaluate: POLL_MS,
 		"cleanup-orphaned": POLL_MS,
 		"cleanup-retention": POLL_MS,
+		egress: POLL_MS,
 	};
 	// Helpers, builds job seeds. immediate=true runs on the next tick; otherwise jitter spreads the herd.
 	protected toCheckJob = (monitor: MonitorScheduleFields, now: number, immediate = false): JobSeed => ({
