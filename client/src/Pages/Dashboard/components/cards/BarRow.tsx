@@ -1,9 +1,9 @@
-import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { typographyLevels } from "@/Utils/Theme/Palette";
-import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
+import { SPACING } from "@/Utils/Theme/constants";
+import { ProgressBar } from "@/Pages/Dashboard/components/ProgressBar";
 
 interface BarRowProps {
 	label: string;
@@ -14,7 +14,6 @@ interface BarRowProps {
 
 export const BarRow = ({ label, value, fillRatio, valueColor }: BarRowProps) => {
 	const theme = useTheme();
-	const clampedRatio = Math.min(1, Math.max(0, fillRatio));
 
 	return (
 		<Stack gap={theme.spacing(SPACING.LG)}>
@@ -37,19 +36,7 @@ export const BarRow = ({ label, value, fillRatio, valueColor }: BarRowProps) => 
 					{value}
 				</Typography>
 			</Stack>
-			<Box
-				height={theme.spacing(LAYOUT.XS)}
-				borderRadius={theme.shape.borderRadius}
-				bgcolor={theme.palette.action.disabledBackground}
-				overflow="hidden"
-			>
-				<Box
-					height="100%"
-					width={`${clampedRatio * 100}%`}
-					borderRadius={theme.shape.borderRadius}
-					bgcolor={theme.palette.primary.main}
-				/>
-			</Box>
+			<ProgressBar fillRatio={fillRatio} />
 		</Stack>
 	);
 };

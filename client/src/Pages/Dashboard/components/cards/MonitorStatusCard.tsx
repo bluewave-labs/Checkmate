@@ -1,8 +1,8 @@
-import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { DashboardCard } from "@/Pages/Dashboard/components/DashboardCard";
+import { ProgressBar } from "@/Pages/Dashboard/components/ProgressBar";
 import { typographyLevels } from "@/Utils/Theme/Palette";
 import { SPACING } from "@/Utils/Theme/constants";
 import { useTranslation } from "react-i18next";
@@ -42,19 +42,7 @@ export const MonitorStatusCard = ({ summary }: MonitorStatusCardProps) => {
 						{t("pages.dashboard.monitorStatus.ofUp", { total })}
 					</Typography>
 				</Stack>
-				<Box
-					height={4}
-					borderRadius={2}
-					bgcolor={theme.palette.action.disabledBackground}
-					overflow="hidden"
-				>
-					<Box
-						height="100%"
-						width={`${ratio * 100}%`}
-						borderRadius={2}
-						bgcolor={theme.palette.primary.main}
-					/>
-				</Box>
+				<ProgressBar fillRatio={ratio} />
 			</Stack>
 		</DashboardCard>
 	);

@@ -20,7 +20,7 @@ import {
 	Tag,
 	Waypoints,
 	Container,
-	LayoutDashboard,
+	// LayoutDashboard,
 } from "lucide-react";
 export const getMenu = (t: Function) => {
 	return [
