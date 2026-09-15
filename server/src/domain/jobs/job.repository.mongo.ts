@@ -107,6 +107,8 @@ class MongoJobsRepository implements IJobsRepository {
 					lockedBy: null, // Remove lock
 					lockedUntil: null,
 					lastFinishedAt: now,
+					failCount: 0,
+					lastFailReason: null,
 				},
 				$inc: {
 					runCount: 1, // Increment run count
@@ -150,6 +152,8 @@ class MongoJobsRepository implements IJobsRepository {
 					lockedBy: null, // Remove lock
 					lockedUntil: null,
 					lastFinishedAt: now,
+					failCount: 0,
+					lastFailReason: null,
 				},
 				$inc: {
 					runCount: 1, // Increment run count
