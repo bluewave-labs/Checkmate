@@ -27,9 +27,21 @@ class MongoEgressStateRepository implements IEgressStateRepository {
 	};
 
 	findSingleton = async () => {
+		// Read first: with timestamps on, every findOneAndUpdate would $set updatedAt, so a read would write.
+		const existing = await EgressStateModel.findOne({ singleton: true }).lean<EgressStateDocument>();
+		if (existing) return this.toEntity(existing);
 		const doc = await EgressStateModel.findOneAndUpdate(
 			{ singleton: true },
 			{ $setOnInsert: { singleton: true, status: "ok" } },
+			{ upsert: true, new: true, setDefaultsOnInsert: true }
+		).lean<EgressStateDocument>();
+		return this.toEntity(doc);
+	};
+
+	reset = async () => {
+		const doc = await EgressStateModel.findOneAndUpdate(
+			{ singleton: true },
+			{ $set: { status: "ok", degradedSince: null, lastProbeAt: null, lastProbeResults: [] }, $setOnInsert: { singleton: true } },
 			{ upsert: true, new: true, setDefaultsOnInsert: true }
 		).lean<EgressStateDocument>();
 		return this.toEntity(doc);

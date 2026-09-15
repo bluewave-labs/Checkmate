@@ -11,10 +11,13 @@ import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
 import { ILogger } from "@/utils/logger.js";
 import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
+import { IEgressService } from "@/domain/egress/egress.service.js";
+import type { Job } from "@/domain/jobs/job.type.js";
 
 export interface IWorkerHelper {
 	getCleanupOrphanedJob(): () => Promise<void>;
 	getCleanupRetentionJob(): () => Promise<void>;
+	getEgressRecoveryJob(): (job: Job) => Promise<void>;
 }
 
 export interface MonitorActionDecision {
@@ -45,6 +48,7 @@ export class WorkerHelper implements IWorkerHelper {
 	private incidentsRepository: IIncidentsRepository;
 	private geoChecksRepository: IGeoChecksRepository;
 	private dockerLogsRepository: IDockerLogsRepository;
+	private egressService: IEgressService;
 
 	constructor(
 		logger: ILogger,
@@ -57,7 +61,8 @@ export class WorkerHelper implements IWorkerHelper {
 		checksRepository: IChecksRepository,
 		incidentsRepository: IIncidentsRepository,
 		geoChecksRepository: IGeoChecksRepository,
-		dockerLogsRepository: IDockerLogsRepository
+		dockerLogsRepository: IDockerLogsRepository,
+		egressService: IEgressService
 	) {
 		this.logger = logger;
 		this.checkService = checkService;
@@ -70,7 +75,16 @@ export class WorkerHelper implements IWorkerHelper {
 		this.incidentsRepository = incidentsRepository;
 		this.geoChecksRepository = geoChecksRepository;
 		this.dockerLogsRepository = dockerLogsRepository;
+		this.egressService = egressService;
 	}
+
+	// Runs while instance egress is degraded; the service removes the row once egress is back.
+	// Errors propagate so the queue records the failure and retries with its usual backoff.
+	getEgressRecoveryJob = () => {
+		return async (job: Job) => {
+			await this.egressService.checkRecovery(job);
+		};
+	};
 
 	getCleanupOrphanedJob = () => {
 		return async () => {

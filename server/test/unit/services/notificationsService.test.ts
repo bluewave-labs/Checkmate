@@ -26,8 +26,10 @@ const createMonitorsRepo = () => ({
 	removeNotificationFromMonitors: jest.fn(),
 });
 
-const createSettingsService = (clientHost = "https://app.example.com") => ({
+const createSettingsService = (clientHost = "https://app.example.com", egressNotifications: string[] = []) => ({
 	getSettings: jest.fn().mockReturnValue({ clientHost }),
+	getDBSettings: jest.fn().mockResolvedValue({ egressNotifications }),
+	updateDbSettings: jest.fn().mockResolvedValue({ egressNotifications: [] }),
 });
 
 const createMessageBuilder = () => ({
@@ -370,6 +372,26 @@ describe("NotificationsService", () => {
 
 			expect(result).toBe(deleted);
 			expect(monitorsRepository.removeNotificationFromMonitors).toHaveBeenCalledWith("notif-1");
+		});
+
+		it("removes the notification from the egress recovered recipients in app settings", async () => {
+			const settingsService = createSettingsService("https://app.example.com", ["notif-0", "notif-1"]);
+			const { service, notificationsRepository } = createService({ settingsService });
+			(notificationsRepository.deleteById as jest.Mock).mockResolvedValue(makeNotification());
+
+			await service.deleteById("notif-1", "team-1");
+
+			expect(settingsService.updateDbSettings).toHaveBeenCalledWith({ egressNotifications: ["notif-0"] });
+		});
+
+		it("leaves app settings alone when the notification is not an egress recipient", async () => {
+			const settingsService = createSettingsService("https://app.example.com", ["notif-0"]);
+			const { service, notificationsRepository } = createService({ settingsService });
+			(notificationsRepository.deleteById as jest.Mock).mockResolvedValue(makeNotification());
+
+			await service.deleteById("notif-1", "team-1");
+
+			expect(settingsService.updateDbSettings).not.toHaveBeenCalled();
 		});
 	});
 });

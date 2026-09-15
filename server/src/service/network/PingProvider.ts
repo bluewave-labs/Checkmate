@@ -4,6 +4,7 @@ import { MonitorType, Monitor } from "@/domain/monitors/monitor.type.js";
 import { MonitorStatusResponse } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import ping from "ping";
+import net from "net";
 import { timeRequest } from "@/service/network/utils.js";
 const SERVICE_NAME = "PingProvider";
 
@@ -19,10 +20,13 @@ export class PingProvider implements IStatusProvider<PingStatusPayload> {
 	}
 
 	private sanitizeHost(url: string): string {
-		return url
-			.replace(/^https?:\/\//, "")
-			.replace(/\/.*$/, "")
-			.replace(/:.*/, "");
+		const host = url.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+		// "[2001:db8::1]" or "[2001:db8::1]:53": the address is inside the brackets
+		const bracketed = /^\[([^\]]+)\](?::\d+)?$/.exec(host);
+		if (bracketed) return bracketed[1]!;
+		// A bare IPv6 address contains colons that are not a port separator
+		if (net.isIPv6(host)) return host;
+		return host.replace(/:.*/, "");
 	}
 
 	async handle(monitor: Monitor): Promise<MonitorStatusResponse<PingStatusPayload>> {

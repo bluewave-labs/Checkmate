@@ -10,7 +10,6 @@ import { ICheckEvaluator } from "@/worker/worker.check-evaluator.js";
 import { ICheckPipeline } from "@/worker/worker.check-pipeline.js";
 import { IReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
 import { IWorkerHelper } from "@/worker/worker.helper.js";
-import { IEgressService } from "@/domain/egress/egress.service.js";
 import { IQueueWorkersRepository } from "@/domain/queue-workers/queue-worker.repository.interface.js";
 import { WORKER_STALE_MS } from "@/domain/queue-workers/queue-worker.model.js";
 import { QueueMode } from "@/domain/app-settings/app-settings.type.js";
@@ -45,7 +44,6 @@ export interface DBQueueWorkerDependencies {
 	geoCheckPipeline: ICheckPipeline;
 	dispatcher: IReactorDispatcher;
 	helper: IWorkerHelper;
-	egressService: IEgressService;
 	queueWorkersRepository: IQueueWorkersRepository; // forwarded
 	queueMode: QueueMode; // forwarded
 	queuePrimaryProcesses: boolean; // consumed immediately
@@ -74,7 +72,6 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 	private dispatcher: IReactorDispatcher;
 	private geoCheckPipeline: ICheckPipeline;
 	private helper: IWorkerHelper;
-	private egressService: IEgressService;
 	private bufferService: IBufferService;
 	private isDbConnected: () => boolean;
 
@@ -95,7 +92,6 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 		this.dispatcher = dependencies.dispatcher;
 		this.geoCheckPipeline = dependencies.geoCheckPipeline;
 		this.helper = dependencies.helper;
-		this.egressService = dependencies.egressService;
 		this.bufferService = dependencies.bufferService;
 		this.isDbConnected = dependencies.isDbConnected;
 	}
@@ -182,7 +178,7 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 					await this.helper.getCleanupRetentionJob()(); // Get job and execute
 					break;
 				case "egress":
-					await this.egressService.checkRecovery(); // Re-probe while degraded; removes its own row on recovery
+					await this.helper.getEgressRecoveryJob()(job); // Re-probe while degraded; removes its own row on recovery
 					break;
 			}
 

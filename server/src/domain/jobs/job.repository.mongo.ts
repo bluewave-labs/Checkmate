@@ -278,6 +278,11 @@ class MongoJobsRepository implements IJobsRepository {
 		return res.deletedCount > 0;
 	};
 
+	deleteGlobalJobIfUnchanged = async (type: JobType, nextScheduledAt: number) => {
+		const res = await JobModel.deleteOne({ _id: jobId(type, null), nextScheduledAt });
+		return res.deletedCount > 0;
+	};
+
 	deleteByMonitorIdsNotIn = async (monitorIds: string[]): Promise<number> => {
 		// remove jobs who'se refId is not null (cleanup jobs) and not in the list of monitor IDs (orphaned monitor jobs)
 		const res = await JobModel.deleteMany({ refId: { $ne: null, $nin: monitorIds } });

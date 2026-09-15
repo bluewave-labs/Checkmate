@@ -106,7 +106,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	const bufferService = new BufferService(logger, checkService, geoChecksService, dockerLogsService, settingsService, jobsRepository);
 	const statusService = new StatusService(logger, monitorsRepository, monitorStatsRepository);
 	const monitorStatusPolicy = new MonitorStatusPolicy();
-	const egressService = new EgressService(settingsService, egressStateRepository, jobsRepository, networkService, logger);
+	const egressService = new EgressService(settingsService, egressStateRepository, jobsRepository, networkService, proxyResolver, logger);
 
 	// ***********************
 	// Reactors and dispatcher
@@ -149,7 +149,8 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		checksRepository,
 		incidentsRepository,
 		geoChecksRepository,
-		dockerLogsRepository
+		dockerLogsRepository,
+		egressService
 	);
 
 	const worker = await DBQueueWorker.create({
@@ -165,7 +166,6 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		geoCheckPipeline,
 		dispatcher: reactorDispatcher,
 		helper: workerHelper,
-		egressService,
 		queueWorkersRepository,
 		queueMode: envSettings.queueMode,
 		queuePrimaryProcesses: envSettings.queuePrimaryProcesses,

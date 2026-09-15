@@ -34,8 +34,30 @@ describe("settingsValidation", () => {
 			expect(() => updateAppSettingsBodyValidation.parse({ egressCheckTargets: targets })).toThrow();
 		});
 
+		it("accepts IPv6 targets, bare or bracketed with a port", () => {
+			const targets = ["2606:4700:4700::1111", "[2606:4700:4700::1111]", "[2606:4700:4700::1111]:53", "localhost", "localhost:8080"];
+			expect(updateAppSettingsBodyValidation.parse({ egressCheckTargets: targets }).egressCheckTargets).toEqual(targets);
+		});
+
 		it("rejects targets that are not a host, host:port or http(s) URL", () => {
-			for (const target of ["", "   ", "ftp://example.com", "bad host", "1.1.1.1;rm"]) {
+			for (const target of ["", "   ", "ftp://example.com", "bad host", "1.1.1.1;rm", "http://"]) {
+				expect(() => updateAppSettingsBodyValidation.parse({ egressCheckTargets: [target] })).toThrow();
+			}
+		});
+
+		it("rejects malformed addresses that the probe could never reach", () => {
+			for (const target of [
+				"[1.1.1.1",
+				"1.1.1.1]",
+				"[::1",
+				"::1]",
+				"[[::1]]",
+				"[not-an-address]:53",
+				"999.1.1.1",
+				"1.1.1.1:0",
+				"1.1.1.1:70000",
+				"[::1]:",
+			]) {
 				expect(() => updateAppSettingsBodyValidation.parse({ egressCheckTargets: [target] })).toThrow();
 			}
 		});
@@ -57,6 +79,11 @@ describe("settingsValidation", () => {
 
 		it("accepts an empty notification list", () => {
 			expect(updateAppSettingsBodyValidation.parse({ egressNotifications: [] }).egressNotifications).toEqual([]);
+		});
+
+		it("accepts upper-case hex notification ids", () => {
+			const id = "64B7F0C2A1D2E3F4A5B6C7D8";
+			expect(updateAppSettingsBodyValidation.parse({ egressNotifications: [id] }).egressNotifications).toEqual([id]);
 		});
 
 		it("rejects notification ids that are not 24-character hex", () => {

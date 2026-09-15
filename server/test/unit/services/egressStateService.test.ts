@@ -9,12 +9,18 @@ const createEgressStateRepo = () => ({
 	recordProbe: jest.fn(),
 	markDegraded: jest.fn(),
 	markRecovered: jest.fn(),
+	reset: jest.fn(),
+});
+
+const createJobsRepo = () => ({
+	deleteByIdAndType: jest.fn().mockResolvedValue(true),
 });
 
 const createService = () => {
 	const egressStateRepository = createEgressStateRepo();
-	const service = new EgressStateService(egressStateRepository as any);
-	return { service, egressStateRepository };
+	const jobsRepository = createJobsRepo();
+	const service = new EgressStateService(egressStateRepository as any, jobsRepository as any);
+	return { service, egressStateRepository, jobsRepository };
 };
 
 const makeState = (overrides?: Partial<EgressState>): EgressState => ({
@@ -65,6 +71,30 @@ describe("EgressStateService", () => {
 			(egressStateRepository.findSingleton as jest.Mock).mockRejectedValue(new Error("db down"));
 
 			await expect(service.getState()).rejects.toThrow("db down");
+		});
+	});
+
+	describe("reset", () => {
+		it("removes any pending recovery job and returns the state to ok", async () => {
+			const { service, egressStateRepository, jobsRepository } = createService();
+			const reset = makeState();
+			(egressStateRepository.reset as jest.Mock).mockResolvedValue(reset);
+
+			const result = await service.reset();
+
+			expect(jobsRepository.deleteByIdAndType).toHaveBeenCalledWith(null, "egress");
+			expect(egressStateRepository.reset).toHaveBeenCalledTimes(1);
+			expect(result).toEqual(reset);
+		});
+
+		it("does not touch the probe-driven transitions", async () => {
+			const { service, egressStateRepository } = createService();
+			(egressStateRepository.reset as jest.Mock).mockResolvedValue(makeState());
+
+			await service.reset();
+
+			expect(egressStateRepository.markDegraded).not.toHaveBeenCalled();
+			expect(egressStateRepository.markRecovered).not.toHaveBeenCalled();
 		});
 	});
 });

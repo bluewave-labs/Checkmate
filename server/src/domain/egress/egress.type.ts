@@ -3,6 +3,8 @@
 
 export const EgressStatuses = ["ok", "degraded"] as const;
 export type EgressStatus = (typeof EgressStatuses)[number];
+// Outcome of one assessment: a status, or "disabled" when the feature is switched off (distinct from an internal failure).
+export type EgressAssessment = EgressStatus | "disabled";
 
 // Sensible defaults for a fresh install. Bare hosts are ICMP-pinged, host:port is a TCP connect,
 // http(s):// URLs are fetched. Any one target being reachable means egress is fine.

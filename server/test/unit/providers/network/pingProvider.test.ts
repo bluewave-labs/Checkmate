@@ -110,6 +110,24 @@ describe("PingProvider", () => {
 		expect(mockPing.promise.probe).toHaveBeenCalledWith("example.com");
 	});
 
+	it("keeps a bare IPv6 address intact", async () => {
+		const mockPing = createMockPing();
+		const provider = new PingProvider(mockPing as any);
+
+		await provider.handle(makeMonitor({ url: "2606:4700:4700::1111" }));
+
+		expect(mockPing.promise.probe).toHaveBeenCalledWith("2606:4700:4700::1111");
+	});
+
+	it("unwraps a bracketed IPv6 address and drops its port", async () => {
+		const mockPing = createMockPing();
+		const provider = new PingProvider(mockPing as any);
+
+		await provider.handle(makeMonitor({ url: "[2606:4700:4700::1111]:53" }));
+
+		expect(mockPing.promise.probe).toHaveBeenCalledWith("2606:4700:4700::1111");
+	});
+
 	it("throws AppError when url is missing", async () => {
 		const provider = new PingProvider(createMockPing() as any);
 

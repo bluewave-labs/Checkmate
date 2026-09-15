@@ -113,8 +113,8 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 	const helper = {
 		getCleanupOrphanedJob: jest.fn<any>().mockReturnValue(jest.fn<any>().mockResolvedValue(undefined)),
 		getCleanupRetentionJob: jest.fn<any>().mockReturnValue(jest.fn<any>().mockResolvedValue(undefined)),
+		getEgressRecoveryJob: jest.fn<any>().mockReturnValue(jest.fn<any>().mockResolvedValue(undefined)),
 	};
-	const egressService = { checkRecovery: jest.fn<any>().mockResolvedValue(undefined) };
 	const queueWorkersRepository = {
 		upsert: jest.fn<any>().mockResolvedValue(undefined),
 		deleteById: jest.fn<any>().mockResolvedValue(undefined),
@@ -135,7 +135,6 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 		geoCheckPipeline,
 		dispatcher,
 		helper,
-		egressService,
 		queueWorkersRepository,
 		logger,
 		...overrides?.mocks,
@@ -442,11 +441,17 @@ describe("DBQueueWorker", () => {
 			expect(retentionFn).toHaveBeenCalled();
 		});
 
-		it("egress job runs the egress recovery check", async () => {
+		it("egress job runs the helper's egress recovery function with the claimed job", async () => {
 			const job = makeJob({ id: "egress", type: "egress", refId: null, intervalMs: 30000 });
-			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) } } });
+			const egressFn = jest.fn<any>().mockResolvedValue(undefined);
+			const helper = {
+				getCleanupOrphanedJob: jest.fn<any>().mockReturnValue(jest.fn<any>().mockResolvedValue(undefined)),
+				getCleanupRetentionJob: jest.fn<any>().mockReturnValue(jest.fn<any>().mockResolvedValue(undefined)),
+				getEgressRecoveryJob: jest.fn<any>().mockReturnValue(egressFn),
+			};
+			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) }, helper } });
 
-			expect(mocks.egressService.checkRecovery).toHaveBeenCalledTimes(1);
+			expect(egressFn).toHaveBeenCalledWith(expect.objectContaining({ id: "egress", type: "egress" }));
 			expect(mocks.jobsRepository.recordSuccess).toHaveBeenCalledWith(job.id, job.nextScheduledAt, job.intervalMs, expect.any(Number));
 		});
 
