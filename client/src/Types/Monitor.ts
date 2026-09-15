@@ -60,6 +60,13 @@ export const monitorTypeLabelKey: Record<SelectableMonitorType, string> &
 	pagespeed: "optionPagespeed",
 };
 
+export const getMonitorTypeLabel = (
+	type: MonitorType,
+	t: (key: string) => string
+): string => {
+	const monitorLabel = monitorTypeLabelKey[type];
+	return monitorLabel ? t(`pages.common.monitors.monitorTypes.${monitorLabel}`) : type;
+};
 export const MIN_MONITOR_INTERVAL_MS = 10000;
 
 export const MonitorIntervalOptions = [
