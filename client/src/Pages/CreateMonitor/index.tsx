@@ -38,6 +38,7 @@ import {
 	PageSpeedStrategies,
 	DnsRecordTypes,
 	MonitorIntervalOptions,
+	MIN_MONITOR_INTERVAL_MS,
 	DefaultMonitorMatchMethod,
 	MonitorMatchMethods,
 	GeoCheckIntervalOptions,
@@ -50,6 +51,7 @@ import type { AppSettingsResponse } from "@/Types/Settings";
 import {
 	stepFieldsFor,
 	monitorStepCount,
+	isDockerTlsUrl,
 	type MonitorFormData,
 } from "@/Validation/monitor";
 import { FormNumberField } from "@/Components/inputs/forms/FormNumberField";
@@ -57,14 +59,61 @@ import { FormTextField } from "@/Components/inputs/forms/FormTextField";
 import { FormRadioGroup } from "@/Components/inputs/forms/FormRadioGroupField";
 import { FormMultiSelectField } from "@/Components/inputs/forms/FormMultiSelectField";
 import { FormSelectField } from "@/Components/inputs/forms/FormSelectField";
+import {
+	FormAutocompleteField,
+	type AutocompleteOption,
+} from "@/Components/inputs/forms/FormAutoCompleteField";
 import { FormSliderField } from "@/Components/inputs/forms/FormSliderField";
 import { FormSwitchField } from "@/Components/inputs/forms/FormSwitchField";
 import type { ProxyResponse } from "@/Types/Proxy";
+import { formatDuration } from "@/Utils/TimeUtils";
 
 const httpMethodOptions = HttpMethods.map((method) => ({
 	value: method,
 	label: method,
 }));
+
+const PEM_FIELD_ROWS = 6;
+
+// Hides the pasted key while the field is not focused. Ignored by browsers
+// without -webkit-text-security, which then show the key as plain text.
+const maskedInputSx = {
+	"&:not(.Mui-focused) textarea": { WebkitTextSecurity: "disc" },
+};
+
+interface IntervalOption extends AutocompleteOption {
+	id: number;
+}
+
+const INTERVAL_UNIT_MULTIPLIERS = [1000, 60000, 3600000, 86400000] as const;
+
+const toIntervalOption = (
+	intervalMs: number,
+	locale: string | undefined
+): IntervalOption => ({
+	id: intervalMs,
+	name: formatDuration(intervalMs, { long: true, locale }),
+});
+
+const filterIntervalOptions = (
+	options: IntervalOption[],
+	inputValue: string,
+	locale: string | undefined
+): IntervalOption[] => {
+	const input = inputValue.trim();
+	if (input === "" || options.some((option) => option.name === input)) {
+		return options;
+	}
+
+	const amount = Number(input);
+	if (!Number.isFinite(amount) || amount <= 0) {
+		return [];
+	}
+
+	return INTERVAL_UNIT_MULTIPLIERS.map((multiplier) => amount * multiplier)
+		.filter(Number.isSafeInteger)
+		.map((ms) => toIntervalOption(ms, locale));
+};
 
 interface GeneralSettingsConfig {
 	urlLabel: string;
@@ -243,7 +292,7 @@ const getGeneralSettingsConfig = (
 
 const CreateMonitorPage = () => {
 	const theme = useTheme();
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const { monitorId } = useParams();
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -300,10 +349,12 @@ const CreateMonitorPage = () => {
 	const showStep = (step: number) => isEditMode || currentStep === step;
 
 	const watchedType = watch("type") as MonitorType;
+	const watchedUrl = watch("url") as string;
 	const watchedMethod = watch("method") as HttpMethod | undefined;
 	const watchedProxyMode = watch("proxyMode") as ProxyMode | undefined;
 	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
 	const watchGeoCheckEnabled = watch("geoCheckEnabled") as boolean;
+	const watchedInterval = watch("interval");
 
 	// Steps without an advanced section drop it, so the last step is the form's.
 	const totalSteps = monitorStepCount(watchedType);
@@ -333,6 +384,8 @@ const CreateMonitorPage = () => {
 		() => getGeneralSettingsConfig(watchedType, t),
 		[watchedType, t]
 	);
+
+	const pemInputSx = { fontFamily: theme.typography.fontFamilyMonospace };
 
 	const { post, loading: isCreating } = usePost<MonitorFormData, Monitor>();
 	const { patch, loading: isUpdating } = usePatch<MonitorFormData, Monitor>();
@@ -459,16 +512,18 @@ const CreateMonitorPage = () => {
 		[t]
 	);
 
-	const intervalOptions = useMemo(
-		() =>
-			MonitorIntervalOptions.map((option) => ({
-				value: option.value,
-				label: t(
-					`pages.createMonitor.form.frequency.option.frequency.value.${option.labelKey}`
-				),
-			})),
-		[t]
-	);
+	const intervalOptions = useMemo(() => {
+		const options = MonitorIntervalOptions.map(({ value }) =>
+			toIntervalOption(value, i18n.resolvedLanguage)
+		);
+		if (
+			typeof watchedInterval === "number" &&
+			!options.some((option) => option.id === watchedInterval)
+		) {
+			options.push(toIntervalOption(watchedInterval, i18n.resolvedLanguage));
+		}
+		return options;
+	}, [watchedInterval, i18n.resolvedLanguage]);
 
 	const matchMethodOptions = useMemo(
 		() =>
@@ -689,17 +744,80 @@ const CreateMonitorPage = () => {
 					/>
 				)}
 
+				{showStep(0) && watchedType === "docker" && isDockerTlsUrl(watchedUrl) && (
+					<ConfigBox
+						title={t("pages.createMonitor.form.dockerTls.title")}
+						subtitle={t("pages.createMonitor.form.dockerTls.description")}
+						rightContent={
+							<Stack spacing={theme.spacing(LAYOUT.MD)}>
+								<FormTextField
+									name="dockerTlsCa"
+									multiline
+									rows={PEM_FIELD_ROWS}
+									fieldLabel={t("pages.createMonitor.form.dockerTls.option.ca.label")}
+									placeholder={t(
+										"pages.createMonitor.form.dockerTls.option.ca.placeholder"
+									)}
+									slotProps={{ input: { sx: pemInputSx } }}
+								/>
+								<FormTextField
+									name="dockerTlsCert"
+									multiline
+									rows={PEM_FIELD_ROWS}
+									fieldLabel={t("pages.createMonitor.form.dockerTls.option.cert.label")}
+									placeholder={t(
+										"pages.createMonitor.form.dockerTls.option.cert.placeholder"
+									)}
+									slotProps={{ input: { sx: pemInputSx } }}
+								/>
+								<FormTextField
+									name="dockerTlsKey"
+									multiline
+									rows={PEM_FIELD_ROWS}
+									fieldLabel={t("pages.createMonitor.form.dockerTls.option.key.label")}
+									placeholder={t(
+										"pages.createMonitor.form.dockerTls.option.key.placeholder"
+									)}
+									helperText={
+										existingMonitor?.dockerTlsKeySet
+											? t("pages.createMonitor.form.dockerTls.option.key.stored")
+											: undefined
+									}
+									autoComplete="off"
+									slotProps={{ input: { sx: { ...pemInputSx, ...maskedInputSx } } }}
+								/>
+								<FormSwitchField
+									name="ignoreTlsErrors"
+									label={t("pages.createMonitor.form.dockerTls.option.ignoreTls.label")}
+								/>
+								<Typography
+									component="span"
+									color={theme.palette.text.secondary}
+									sx={{ opacity: 0.8 }}
+								>
+									{t("pages.createMonitor.form.dockerTls.option.ignoreTls.description")}
+								</Typography>
+							</Stack>
+						}
+					/>
+				)}
+
 				{showStep(1) && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.frequency.title")}
 						subtitle={t("pages.createMonitor.form.frequency.description")}
 						rightContent={
-							<FormSelectField
+							<FormAutocompleteField
 								name="interval"
 								fieldLabel={t(
 									"pages.createMonitor.form.frequency.option.frequency.label"
 								)}
 								options={intervalOptions}
+								filterOptions={(options, { inputValue }) =>
+									filterIntervalOptions(options, inputValue, i18n.resolvedLanguage)
+								}
+								getOptionDisabled={(option) => option.id < MIN_MONITOR_INTERVAL_MS}
+								disableClearable
 							/>
 						}
 					/>

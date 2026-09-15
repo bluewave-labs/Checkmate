@@ -36,7 +36,12 @@ export const initializeControllers = (apiServices: ApiServices): InitializedCont
 	return {
 		authController: new AuthController(apiServices.userService),
 		monitorController: new MonitorController(apiServices.monitorService, apiServices.notificationsService),
-		settingsController: new SettingsController(apiServices.settingsService, apiServices.emailService, apiServices.proxiesService),
+		settingsController: new SettingsController(
+			apiServices.settingsService,
+			apiServices.emailService,
+			apiServices.proxiesService,
+			apiServices.egressStateService
+		),
 		checkController: new CheckController(apiServices.checkService),
 		geoCheckController: new GeoCheckController(apiServices.geoChecksService),
 		inviteController: new InviteController(apiServices.inviteService),

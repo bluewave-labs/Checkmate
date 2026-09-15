@@ -9,7 +9,7 @@ import { createMockLogger } from "../../helpers/createMockLogger.ts";
 // ── Notes ──────────────────────────────────────────────────────────────────────
 //
 // DBQueueWorker is the orchestrator: it drives the polling loops, claims batches
-// sized to free capacity, runs jobs (check / evaluate / geo-check / cleanup) and
+// sized to free capacity, runs jobs (check / evaluate / geo-check / cleanup / egress) and
 // renews their locks, and registers itself in the worker heartbeat. The repository
 // claim/lock atomicity is covered in integration/jobsRepository.test.ts; here we
 // test only the orchestration around it, with the repository fully mocked.
@@ -113,6 +113,7 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 	const helper = {
 		getCleanupOrphanedJob: jest.fn<any>().mockReturnValue(jest.fn<any>().mockResolvedValue(undefined)),
 		getCleanupRetentionJob: jest.fn<any>().mockReturnValue(jest.fn<any>().mockResolvedValue(undefined)),
+		getEgressRecoveryJob: jest.fn<any>().mockReturnValue(jest.fn<any>().mockResolvedValue(undefined)),
 	};
 	const queueWorkersRepository = {
 		upsert: jest.fn<any>().mockResolvedValue(undefined),
@@ -226,7 +227,7 @@ describe("DBQueueWorker", () => {
 			const { mocks } = await start({ queueMode: "worker" });
 
 			const claimedTypes = mocks.jobsRepository.claimDueBatch.mock.calls.map((c: any[]) => c[0]);
-			expect(claimedTypes).toEqual(expect.arrayContaining(["check", "geo-check", "evaluate", "cleanup-orphaned", "cleanup-retention"]));
+			expect(claimedTypes).toEqual(expect.arrayContaining(["check", "geo-check", "evaluate", "cleanup-orphaned", "cleanup-retention", "egress"]));
 			expect(mocks.jobsRepository.claimDueBatch).toHaveBeenCalledWith("check", 500, expect.any(Number));
 			expect(mocks.jobsRepository.claimDueBatch).toHaveBeenCalledWith("evaluate", 20, expect.any(Number));
 			expect(mocks.jobsRepository.claimDueBatch).toHaveBeenCalledWith("cleanup-orphaned", 1, expect.any(Number));
@@ -438,6 +439,20 @@ describe("DBQueueWorker", () => {
 			await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) }, helper } });
 
 			expect(retentionFn).toHaveBeenCalled();
+		});
+
+		it("egress job runs the helper's egress recovery function with the claimed job", async () => {
+			const job = makeJob({ id: "egress", type: "egress", refId: null, intervalMs: 30000 });
+			const egressFn = jest.fn<any>().mockResolvedValue(undefined);
+			const helper = {
+				getCleanupOrphanedJob: jest.fn<any>().mockReturnValue(jest.fn<any>().mockResolvedValue(undefined)),
+				getCleanupRetentionJob: jest.fn<any>().mockReturnValue(jest.fn<any>().mockResolvedValue(undefined)),
+				getEgressRecoveryJob: jest.fn<any>().mockReturnValue(egressFn),
+			};
+			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) }, helper } });
+
+			expect(egressFn).toHaveBeenCalledWith(expect.objectContaining({ id: "egress", type: "egress" }));
+			expect(mocks.jobsRepository.recordSuccess).toHaveBeenCalledWith(job.id, job.nextScheduledAt, job.intervalMs, expect.any(Number));
 		});
 
 		it("geo-check job runs the geo pipeline (no evaluate handoff)", async () => {

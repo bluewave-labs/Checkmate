@@ -107,6 +107,8 @@ class MongoJobsRepository implements IJobsRepository {
 					lockedBy: null, // Remove lock
 					lockedUntil: null,
 					lastFinishedAt: now,
+					failCount: 0,
+					lastFailReason: null,
 				},
 				$inc: {
 					runCount: 1, // Increment run count
@@ -150,6 +152,8 @@ class MongoJobsRepository implements IJobsRepository {
 					lockedBy: null, // Remove lock
 					lockedUntil: null,
 					lastFinishedAt: now,
+					failCount: 0,
+					lastFailReason: null,
 				},
 				$inc: {
 					runCount: 1, // Increment run count
@@ -275,6 +279,16 @@ class MongoJobsRepository implements IJobsRepository {
 
 	deleteByIdAndType = async (refId: string, type: JobType) => {
 		const res = await JobModel.deleteOne({ refId, type }); // Delete a single typed row, e.g. just the geo row
+		return res.deletedCount > 0;
+	};
+
+	deleteGlobalJob = async (type: JobType) => {
+		const res = await JobModel.deleteOne({ _id: jobId(type, null) });
+		return res.deletedCount > 0;
+	};
+
+	deleteGlobalJobIfUnchanged = async (type: JobType, nextScheduledAt: number) => {
+		const res = await JobModel.deleteOne({ _id: jobId(type, null), nextScheduledAt });
 		return res.deletedCount > 0;
 	};
 

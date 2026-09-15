@@ -7,6 +7,7 @@ import { ITagsService, TagsService } from "@/domain/tags/tag.service.js";
 import { IUserService, UserService } from "@/domain/users/user.service.js";
 import { IJobScheduler } from "@/worker/worker.interface.js";
 import { ProxiesService, IProxiesService } from "@/domain/proxies/proxy.service.js";
+import { EgressStateService, IEgressStateService } from "@/domain/egress/egress-state.service.js";
 import { SharedServices } from "@/config/services.shared.js";
 
 // Third-party
@@ -24,6 +25,7 @@ export interface ApiServices extends SharedServices {
 	tagsService: ITagsService;
 	diagnosticService: IDiagnosticService;
 	proxiesService: IProxiesService;
+	egressStateService: IEgressStateService;
 }
 
 export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): ApiServices => {
@@ -48,6 +50,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		maintenanceWindowsRepository,
 		jobsRepository,
 		proxiesRepository,
+		egressStateRepository,
 	} = shared;
 
 	const userService = new UserService({
@@ -80,6 +83,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		monitorStatsRepository,
 		statusPagesRepository,
 		incidentsRepository,
+		encryptionService: shared.encryptionService,
 	});
 
 	const maintenanceWindowService = new MaintenanceWindowService({
@@ -99,6 +103,7 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 	const tagsService = new TagsService(tagsRepository, monitorsRepository);
 	const diagnosticService = new DiagnosticService(db);
 	const proxiesService = new ProxiesService(proxiesRepository, monitorsRepository, settingsService);
+	const egressStateService = new EgressStateService(egressStateRepository, jobsRepository);
 	return {
 		...shared,
 		worker: jobScheduler,
@@ -110,5 +115,6 @@ export const buildApi = (shared: SharedServices, jobScheduler: IJobScheduler): A
 		tagsService,
 		diagnosticService,
 		proxiesService,
+		egressStateService,
 	};
 };

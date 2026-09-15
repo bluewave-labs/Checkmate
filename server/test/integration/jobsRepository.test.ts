@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import MongoJobsRepository from "../../src/domain/jobs/job.repository.mongo.ts";
 import JobModel, { type JobDocument } from "../../src/domain/jobs/job.model.ts";
-import { BACKOFF_MS, LOCK_MS, type Job, type JobType } from "../../src/domain/jobs/job.type.ts";
+import { BACKOFF_MS, LOCK_MS, PARKED, type Job, type JobType } from "../../src/domain/jobs/job.type.ts";
 
 // ── Real-Mongo harness ─────────────────────────────────────────────────────────
 // The headline guarantee of the queue — "exactly one claimer wins" — IS MongoDB's
@@ -180,7 +180,7 @@ describe("MongoJobsRepository", () => {
 
 		it("does not release a lock owned by another worker (fenced no-op)", async () => {
 			// A worker whose lease expired and was reclaimed must not clobber the new owner's lock.
-			await seedJob({ lockedBy: "other-worker", lockedUntil: NOW + LOCK_MS, runCount: 7 });
+			await seedJob({ lockedBy: "other-worker", lockedUntil: NOW + LOCK_MS, runCount: 7, failCount: 2, lastFailReason: "timeout" });
 
 			const ok = await repo.recordSuccess("check:mon-1", NOW, 60_000, NOW + 1_000);
 
@@ -189,6 +189,55 @@ describe("MongoJobsRepository", () => {
 			expect(row?.lockedBy).toBe("other-worker"); // lock untouched
 			expect(row?.lockedUntil).toBe(NOW + LOCK_MS);
 			expect(row?.runCount).toBe(7); // not double-counted
+			expect(row?.failCount).toBe(2); // failure state untouched
+			expect(row?.lastFailReason).toBe("timeout");
+		});
+
+		it("clears the failure state so failCount counts consecutive failures", async () => {
+			await seedJob({ lockedBy: ownedBy(repo), lockedUntil: NOW + LOCK_MS, failCount: 3, lastFailReason: "connection refused" });
+
+			await repo.recordSuccess("check:mon-1", NOW, 60_000, NOW + 1_000);
+
+			const row = await readRow("check:mon-1");
+			expect(row?.failCount).toBe(0);
+			expect(row?.lastFailReason).toBeNull();
+		});
+	});
+
+	// ── recordOneShot (park after a single run) ─────────────────────────────────
+	describe("recordOneShot", () => {
+		it("parks the job, releases the lease, counts the run and clears the failure state", async () => {
+			await seedJob({
+				intervalMs: null,
+				lockedBy: ownedBy(repo),
+				lockedUntil: NOW + LOCK_MS,
+				runCount: 1,
+				failCount: 2,
+				lastFailReason: "connection refused",
+			});
+
+			const ok = await repo.recordOneShot("check:mon-1", NOW + 1_000);
+
+			expect(ok).toBe(true);
+			const row = await readRow("check:mon-1");
+			expect(row?.nextScheduledAt).toBe(PARKED);
+			expect(row?.lockedBy).toBeNull();
+			expect(row?.lockedUntil).toBeNull();
+			expect(row?.lastFinishedAt).toBe(NOW + 1_000);
+			expect(row?.runCount).toBe(2);
+			expect(row?.failCount).toBe(0);
+			expect(row?.lastFailReason).toBeNull();
+		});
+
+		it("does not touch a lock owned by another worker (fenced no-op)", async () => {
+			await seedJob({ intervalMs: null, lockedBy: "other-worker", lockedUntil: NOW + LOCK_MS, failCount: 2, lastFailReason: "timeout" });
+
+			expect(await repo.recordOneShot("check:mon-1", NOW + 1_000)).toBe(false);
+			const row = await readRow("check:mon-1");
+			expect(row?.nextScheduledAt).toBe(NOW); // not parked
+			expect(row?.lockedBy).toBe("other-worker");
+			expect(row?.failCount).toBe(2);
+			expect(row?.lastFailReason).toBe("timeout");
 		});
 	});
 
@@ -531,6 +580,49 @@ describe("MongoJobsRepository", () => {
 		it("returns 0 when nothing is due", async () => {
 			await seedJob({ nextScheduledAt: NOW + 10_000 });
 			expect(await repo.countDueBacklog(NOW)).toBe(0);
+		});
+	});
+
+	// ── global rows: egress recovery job ──────────────────────────────────────
+
+	describe("global rows", () => {
+		const repo = new MongoJobsRepository(WORKER_ID);
+		const egressRow = (nextScheduledAt: number) =>
+			seedJob({ _id: "egress", type: "egress" as JobType, refId: null, nextScheduledAt, intervalMs: 30_000 });
+
+		it("deleteGlobalJob removes the row by its canonical _id and leaves other global rows alone", async () => {
+			await egressRow(NOW);
+			await seedJob({ _id: "cleanup-orphaned", type: "cleanup-orphaned" as JobType, refId: null });
+
+			expect(await repo.deleteGlobalJob("egress")).toBe(true);
+
+			expect(await readRow("egress")).toBeNull();
+			expect(await readRow("cleanup-orphaned")).not.toBeNull();
+			expect(await repo.deleteGlobalJob("egress")).toBe(false);
+		});
+
+		it("deleteGlobalJobIfUnchanged removes the row only while nextScheduledAt matches the claimed value", async () => {
+			await egressRow(NOW);
+
+			// Another worker started a new episode and rescheduled the row after this run claimed it
+			await JobModel.updateOne({ _id: "egress" }, { $set: { nextScheduledAt: NOW + 30_000 } });
+			expect(await repo.deleteGlobalJobIfUnchanged("egress", NOW)).toBe(false);
+			expect(await readRow("egress")).not.toBeNull();
+
+			// Nobody touched it: the row goes
+			expect(await repo.deleteGlobalJobIfUnchanged("egress", NOW + 30_000)).toBe(true);
+			expect(await readRow("egress")).toBeNull();
+		});
+
+		it("recordSuccess after a refused conditional delete is a no-op once the lock has moved on", async () => {
+			await egressRow(NOW);
+			const [claimed] = await repo.claimDueBatch("egress", 1, NOW);
+			expect(claimed?.id).toBe("egress");
+
+			// Row deleted by the handler (recovered), then recordSuccess runs from the queue: nothing to update
+			expect(await repo.deleteGlobalJobIfUnchanged("egress", claimed!.nextScheduledAt)).toBe(true);
+			expect(await repo.recordSuccess("egress", claimed!.nextScheduledAt, 30_000, NOW + 1_000)).toBe(false);
+			expect(await readRow("egress")).toBeNull();
 		});
 	});
 });

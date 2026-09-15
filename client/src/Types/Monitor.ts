@@ -67,6 +67,7 @@ export const getMonitorTypeLabel = (
 	const monitorLabel = monitorTypeLabelKey[type];
 	return monitorLabel ? t(`pages.common.monitors.monitorTypes.${monitorLabel}`) : type;
 };
+export const MIN_MONITOR_INTERVAL_MS = 10000;
 
 export const MonitorIntervalOptions = [
 	{ value: 15000, labelKey: "fifteenSeconds" },
@@ -168,6 +169,9 @@ export interface Monitor {
 	geoCheckLocations?: GeoContinent[];
 	geoCheckInterval?: number;
 	dockerLogsEnabled?: boolean;
+	dockerTlsCa?: string;
+	dockerTlsCert?: string;
+	dockerTlsKeySet?: boolean;
 	dnsServer?: string;
 	dnsRecordType?: DnsRecordType;
 	recentChecks: CheckSnapshot[];

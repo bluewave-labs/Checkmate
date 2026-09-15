@@ -6,6 +6,7 @@ import {
 	HttpMethods,
 	PageSpeedStrategies,
 	ProxyModes,
+	MIN_MONITOR_INTERVAL_MS,
 	type MonitorType,
 } from "@/Types/Monitor";
 import { ALL_HTTP_STATUS_CODES } from "@/Utils/statusCode";
@@ -27,7 +28,8 @@ const baseSchema = z.object({
 	description: z.string().optional(),
 	interval: z
 		.number()
-		.min(15000, "Interval must be at least 15 seconds")
+		.int("Interval must be a whole number of milliseconds")
+		.min(MIN_MONITOR_INTERVAL_MS, "Interval must be at least 10 seconds")
 		.register(monitorStepRegistry, { step: 1 }),
 	notifications: z.array(z.string()).register(monitorStepRegistry, { step: 1 }),
 	tags: z.array(z.string()).register(monitorStepRegistry, { step: 1 }),
@@ -108,10 +110,30 @@ const portSchema = baseSchema.extend({
 		.max(65535, "Port must be at most 65535"),
 });
 
-// Docker monitor schema
+// Docker monitor schema. The url forms mirror DOCKER_TLS_URL and
+// DOCKER_SOCKET_URL in server/src/utils/dockerHost.ts.
+const dockerTlsUrlRegex = /^(tcp|https):\/\/([^/\s:]+)(?::(\d+))?\/?$/;
+const dockerSocketUrlRegex = /^(?:unix:\/\/\/\S+|\/\S+)$/;
+
+export const isDockerTlsUrl = (url: string | undefined): boolean =>
+	dockerTlsUrlRegex.test(url?.trim() ?? "");
+
 const dockerSchema = baseSchema.extend({
 	type: z.literal("docker"),
-	url: z.string().min(1, "Docker host URL is required"),
+	url: z
+		.string()
+		.min(1, "Docker host URL is required")
+		.refine(
+			(url) => dockerSocketUrlRegex.test(url.trim()) || isDockerTlsUrl(url),
+			"Docker host must be unix:///path, an absolute socket path, or tcp://host[:port]"
+		),
+	ignoreTlsErrors: z.boolean(),
+	dockerTlsCa: z.string(),
+	dockerTlsCert: z.string(),
+	// blank on edit keeps the stored key.
+	dockerTlsKey: z.string(),
+	// Read only mirror of the server flag, stripped on submit
+	dockerTlsKeySet: z.boolean(),
 	dockerLogsEnabled: z.boolean().register(monitorStepRegistry, { step: 1 }),
 });
 
@@ -217,7 +239,8 @@ const monitorSchemaUnion = z.discriminatedUnion("type", [
 	dnsSchema,
 ]);
 
-// Mirrors the server's refineProxySelection (monitorValidation.ts)
+// Mirrors the server's refineProxySelection and refineDockerTls
+// (monitorValidation.ts). PEM contents are only parsed on the server.
 export const monitorSchema = monitorSchemaUnion.superRefine((data, ctx) => {
 	if (data.type === "http" && data.proxyMode === "custom" && !data.proxyId) {
 		ctx.addIssue({
@@ -225,6 +248,30 @@ export const monitorSchema = monitorSchemaUnion.superRefine((data, ctx) => {
 			path: ["proxyId"],
 			message: "A proxy must be selected when proxy mode is custom",
 		});
+	}
+
+	if (data.type === "docker" && isDockerTlsUrl(data.url)) {
+		if (!data.dockerTlsCert.trim()) {
+			ctx.addIssue({
+				code: "custom",
+				path: ["dockerTlsCert"],
+				message: "Client certificate is required for a TLS Docker host",
+			});
+		}
+		if (!data.dockerTlsKeySet && !data.dockerTlsKey.trim()) {
+			ctx.addIssue({
+				code: "custom",
+				path: ["dockerTlsKey"],
+				message: "Client key is required for a TLS Docker host",
+			});
+		}
+		if (!data.ignoreTlsErrors && !data.dockerTlsCa.trim()) {
+			ctx.addIssue({
+				code: "custom",
+				path: ["dockerTlsCa"],
+				message: "CA certificate is required unless TLS errors are ignored",
+			});
+		}
 	}
 });
 
