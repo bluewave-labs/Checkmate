@@ -1,6 +1,7 @@
 import { Icon } from "@/Components/design-elements";
 
 import {
+	LayoutDashboard,
 	Globe,
 	Gauge,
 	Link,
@@ -26,6 +27,11 @@ export const getMenu = (t: Function) => {
 		{
 			group: t("components.sidebar.menu.groups.monitoring"),
 			items: [
+				{
+					name: t("components.sidebar.menu.dashboard"),
+					path: "dashboard",
+					icon: <Icon icon={LayoutDashboard} />,
+				},
 				{
 					name: t("components.sidebar.menu.uptime"),
 					path: "uptime",
