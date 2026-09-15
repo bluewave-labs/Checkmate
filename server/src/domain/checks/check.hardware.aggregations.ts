@@ -1,6 +1,7 @@
-import { CheckModel, EXCLUDE_DEGRADED_EGRESS_MATCH } from "@/domain/checks/check.model.js";
+import { CheckModel } from "@/domain/checks/check.model.js";
 import mongoose from "mongoose";
 import type { HardwareDiskStats, HardwareNetStats } from "@/domain/checks/check.type.js";
+import { EXCLUDE_DEGRADED_EGRESS_MATCH } from "@/domain/checks/check.query.js";
 
 type DateRange = { start: Date; end: Date };
 type HardwareUpChecks = { totalChecks: number };

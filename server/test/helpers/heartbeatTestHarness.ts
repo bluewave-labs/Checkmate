@@ -14,6 +14,7 @@ import type { Monitor } from "../../src/domain/monitors/monitor.type.ts";
 import type { MonitorStatusResponse } from "../../src/types/network.ts";
 import type { Check } from "../../src/domain/checks/check.type.ts";
 import type { MaintenanceWindow } from "../../src/domain/maintenance-windows/maintenance-window.type.ts";
+import type { EgressStatus } from "../../src/domain/egress/egress.type.ts";
 
 let checkCounter = 0;
 
@@ -79,9 +80,11 @@ export interface HeartbeatTestHarness {
 	bufferStub: { addToBuffer: jest.Mock; addGeoCheckToBuffer: jest.Mock; scheduleNextFlush: jest.Mock };
 	maintenanceWindowsRepo: { findByMonitorId: jest.Mock };
 	messageBuilder: { extractThresholdBreaches: jest.Mock };
+	egressService: { assessAfterFailure: jest.Mock };
 	heartbeatJob: (monitor: Monitor) => Promise<void>;
 	setNextResponse: (status: boolean, code: number) => void;
 	setNextResponseFull: (response: MonitorStatusResponse) => void;
+	setEgressStatus: (status: EgressStatus | null) => void;
 }
 
 export function createHeartbeatTestHarness(): HeartbeatTestHarness {
@@ -129,7 +132,12 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 	const maintenanceWindowsRepo = { findByMonitorId: jest.fn().mockResolvedValue([]) };
 	const proxyResolver = { resolve: jest.fn().mockResolvedValue(undefined) };
 	const dockerLogsService = { buildDockerLogs: jest.fn().mockResolvedValue([]) };
-	const egressService = { assessAfterFailure: jest.fn().mockResolvedValue(null) };
+	// Null mirrors the egress check being disabled, so the existing heartbeat suites run unchanged.
+	let nextEgressStatus: EgressStatus | null = null;
+	const egressService = { assessAfterFailure: jest.fn().mockImplementation(() => Promise.resolve(nextEgressStatus)) };
+	const setEgressStatus = (status: EgressStatus | null) => {
+		nextEgressStatus = status;
+	};
 
 	const checkProducer = new CheckProducer(
 		monitorsRepo as any,
@@ -169,8 +177,10 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 		bufferStub,
 		maintenanceWindowsRepo,
 		messageBuilder,
+		egressService,
 		heartbeatJob,
 		setNextResponse,
 		setNextResponseFull,
+		setEgressStatus,
 	};
 }

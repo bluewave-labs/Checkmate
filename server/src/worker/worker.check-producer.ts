@@ -11,7 +11,9 @@ import { IMaintenanceWindowsRepository } from "@/domain/maintenance-windows/main
 import { isWindowActive } from "@/utils/maintenanceWindow.js";
 import { IProxyResolver } from "@/service/network/ProxyResolver.js";
 import { IDockerLogsService } from "@/domain/docker/docker-log.service.js";
-import { IEgressService } from "@/domain/egress/egress.service.js";
+import { IEgressService, isHttpStatusCode } from "@/domain/egress/egress.service.js";
+import type { EgressStatus } from "@/domain/egress/egress.type.js";
+import { isEgressAttributable } from "@/domain/monitors/monitor.type.js";
 
 export interface ICheckProducer {
 	produce(monitor: Monitor): Promise<{ status: MonitorStatusResponse; check: Check } | null>;
@@ -42,6 +44,26 @@ export class CheckProducer implements ICheckProducer {
 		if (monitor.type !== "docker" || !monitor.dockerTlsKeySet || !monitor.id) return undefined;
 		const dockerTlsKey = await this.monitorsRepository.findDockerTlsKeyById(monitor.id);
 		return dockerTlsKey ?? undefined;
+	}
+
+	// Only a failure to reach the target at all can be the instance's own fault. Any HTTP response (4xx, 5xx,
+	// or a 200 with a content mismatch) proves the target was reached, and hardware/docker failures are local.
+	private isTransportFailure(monitor: Monitor, status: MonitorStatusResponse): boolean {
+		return status.status === false && isEgressAttributable(monitor.type) && !isHttpStatusCode(status.code);
+	}
+
+	// The egress check must never stop a check being recorded, so a rejection is logged and treated as unknown.
+	private async assessEgress(monitorId: string): Promise<EgressStatus | null> {
+		try {
+			return await this.egressService.assessAfterFailure();
+		} catch (error: unknown) {
+			this.logger.warn({
+				message: `Egress assessment failed for monitor ${monitorId}: ${error instanceof Error ? error.message : String(error)}`,
+				service: SERVICE_NAME,
+				method: "assessEgress",
+			});
+			return null;
+		}
 	}
 
 	produce = async (monitor: Monitor) => {
@@ -76,9 +98,9 @@ export class CheckProducer implements ICheckProducer {
 			throw new Error("No network response");
 		}
 
-		// Step 1c: On failure, ask whether the instance itself can reach anything before blaming the target.
+		// Step 1c: On a transport failure, ask whether the instance itself can reach anything before blaming the target.
 		// Null means the egress check is disabled (or failed internally) and the check is treated as usual.
-		const egressStatus = status.status === false ? await this.egressService.assessAfterFailure() : null;
+		const egressStatus = this.isTransportFailure(monitor, status) ? await this.assessEgress(monitor.id) : null;
 
 		// ****************************
 		// Step 2: Record

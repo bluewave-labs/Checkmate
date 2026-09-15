@@ -50,6 +50,21 @@ export const UptimeDetailsSupportedTypes = ["http", "ping", "port", "game", "grp
 export type UptimeDetailsSupportedType = (typeof UptimeDetailsSupportedTypes)[number];
 export const supportsUptimeDetails = (type: MonitorType): type is UptimeDetailsSupportedType => UptimeDetailsSupportedTypes.some((t) => t === type);
 
+// Types whose transport failure can be the instance's own loss of egress. Hardware (Capture agent) and docker
+// (local socket or host) failures are local, so they are never attributed to egress.
+export const EgressAttributableTypes = [
+	"http",
+	"ping",
+	"pagespeed",
+	"port",
+	"game",
+	"grpc",
+	"websocket",
+	"dns",
+] as const satisfies readonly MonitorType[];
+export type EgressAttributableType = (typeof EgressAttributableTypes)[number];
+export const isEgressAttributable = (type: MonitorType): type is EgressAttributableType => EgressAttributableTypes.some((t) => t === type);
+
 export const MonitorStatuses = ["up", "down", "paused", "initializing", "maintenance", "breached"] as const;
 export type MonitorStatus = (typeof MonitorStatuses)[number];
 

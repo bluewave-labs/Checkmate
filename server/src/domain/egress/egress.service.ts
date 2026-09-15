@@ -26,7 +26,7 @@ const RECOVERY_JOB_TYPE = "egress" as const;
 const RECOVERY_JOB_ID = jobId(RECOVERY_JOB_TYPE, null);
 
 // HttpProvider reports transport failures with NETWORK_ERROR (outside the HTTP range) and everything else with the real status code.
-const isHttpStatusCode = (code: unknown): boolean => typeof code === "number" && code >= 100 && code <= 599;
+export const isHttpStatusCode = (code: unknown): boolean => typeof code === "number" && code >= 100 && code <= 599;
 
 // Synthetic identity stamped on the probe monitors so provider responses are recognisable in logs.
 const PROBE_MONITOR_ID = "egress-probe";

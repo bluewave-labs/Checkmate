@@ -1,5 +1,6 @@
-import CheckModel, { EXCLUDE_DEGRADED_EGRESS_MATCH } from "@/domain/checks/check.model.js";
+import CheckModel from "@/domain/checks/check.model.js";
 import { DockerContainerStatsBucket, DockerStatsBucket } from "@/domain/checks/check.type.js";
+import { EXCLUDE_DEGRADED_EGRESS_MATCH, IS_NOT_DEGRADED_EGRESS_EXPR } from "@/domain/checks/check.query.js";
 import mongoose from "mongoose";
 
 type DateRange = { start: Date; end: Date };
@@ -35,8 +36,9 @@ export const getDockerStats = async (monitorId: string, dates: DateRange, dateSt
 			$group: {
 				_id: { $dateToString: { format: dateString, date: "$createdAt" } },
 				avgResponseTime: { $avg: "$responseTime" },
-				upCount: { $sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] } },
-				totalCount: { $sum: 1 },
+				// Counts exclude degraded-egress checks like aggregateData.totalChecks does; the response-time average keeps them.
+				upCount: { $sum: { $cond: [{ $and: [{ $eq: ["$status", true] }, IS_NOT_DEGRADED_EGRESS_EXPR] }, 1, 0] } },
+				totalCount: { $sum: { $cond: [IS_NOT_DEGRADED_EGRESS_EXPR, 1, 0] } },
 				avgRunning: { $avg: "$containerSummary.running" },
 				avgTotal: { $avg: "$containerSummary.total" },
 				avgUnhealthy: { $avg: "$containerSummary.unhealthy" },

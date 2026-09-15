@@ -78,7 +78,7 @@ describe("MongoChecksRepository degraded-egress exclusion", () => {
 
 		// The evaluator runs from this read, so the flag must survive persistence for the short-circuit to fire.
 		expect(checks.map((check) => check.egressStatus)).toEqual(["degraded", "ok", undefined]);
-		expect(checks[2]).not.toHaveProperty("egressStatus");
+		expect(checks[2].egressStatus).toBeUndefined();
 	});
 
 	it("rejects a value outside the EgressStatuses tuple", async () => {
@@ -95,8 +95,9 @@ describe("MongoChecksRepository degraded-egress exclusion", () => {
 
 		// 1 up of 2 attributable checks. Counting the degraded pair would give 25%.
 		expect(result.uptimePercentage).toBe(0.5);
-		// The graph still shows the degraded checks as failures.
-		expect(result.groupedChecks[0]).toMatchObject({ totalChecks: 4 });
+		// The graph still shows the degraded checks as failures, and their response times stay in the averages.
+		expect(result.avgResponseTime).toBe(200);
+		expect(result.groupedChecks[0]).toMatchObject({ totalChecks: 4, avgResponseTime: 200 });
 		expect(result.groupedDownChecks[0]).toMatchObject({ totalChecks: 3 });
 		expect(result.groupedUpChecks[0]).toMatchObject({ totalChecks: 1 });
 	});
@@ -120,7 +121,7 @@ describe("MongoChecksRepository degraded-egress exclusion", () => {
 		expect(summary).toEqual({ totalChecks: 2, downChecks: 1 });
 	});
 
-	it("excludes degraded checks from the daily status buckets and yields no row for a day of only degraded checks", async () => {
+	it("excludes degraded checks from the daily status bucket counts but keeps them in its response-time average", async () => {
 		const otherMonitor = new mongoose.Types.ObjectId();
 		await seedCheck();
 		await seedCheck({ status: false });
@@ -129,8 +130,10 @@ describe("MongoChecksRepository degraded-egress exclusion", () => {
 
 		const buckets = await repo.getDailyStatusBuckets([MONITOR_ID.toString(), otherMonitor.toString()], 7, "UTC");
 
+		// (100 + 100 + 300) / 3 = 167: the degraded check's response time counts, its failure does not.
+		// The other monitor saw only degraded checks that day, so it gets no row rather than a 0/0 bucket.
 		expect(buckets).toEqual([
-			{ monitorId: MONITOR_ID.toString(), date: utcDate(BUCKET_TIME), totalChecks: 2, upChecks: 1, downChecks: 1, avgResponseTime: 100 },
+			{ monitorId: MONITOR_ID.toString(), date: utcDate(BUCKET_TIME), totalChecks: 2, upChecks: 1, downChecks: 1, avgResponseTime: 167 },
 		]);
 	});
 
@@ -152,6 +155,19 @@ describe("MongoChecksRepository degraded-egress exclusion", () => {
 		expect(hardware.upChecks.totalChecks).toBe(1);
 		expect(docker.aggregateData.totalChecks).toBe(1);
 		expect(docker.upChecks.totalChecks).toBe(1);
+	});
+
+	it("excludes degraded checks from the docker bucket counts but keeps them in its response-time average", async () => {
+		const dockerMonitor = new mongoose.Types.ObjectId();
+		const dockerMeta = { monitorId: dockerMonitor, teamId: TEAM_ID, type: "docker" };
+
+		await seedCheck({ metadata: dockerMeta });
+		await seedDegradedFailure({ metadata: dockerMeta });
+
+		const docker = (await repo.findByDateRangeAndMonitorId(dockerMonitor.toString(), "day", { type: "docker" })) as DockerChecksResult;
+
+		expect(docker.aggregate).toHaveLength(1);
+		expect(docker.aggregate[0]).toMatchObject({ upCount: 1, totalCount: 1, avgResponseTime: 200 });
 	});
 
 	it("keeps degraded checks in the paginated listing so they can be shown as such", async () => {
