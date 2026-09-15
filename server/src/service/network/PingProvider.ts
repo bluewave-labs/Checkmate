@@ -4,16 +4,20 @@ import { MonitorType, Monitor } from "@/domain/monitors/monitor.type.js";
 import { MonitorStatusResponse } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import ping from "ping";
-import net from "net";
+import * as net from "net";
 import { timeRequest } from "@/service/network/utils.js";
 const SERVICE_NAME = "PingProvider";
 
 type Ping = typeof ping;
+type NetType = typeof net;
 
 export class PingProvider implements IStatusProvider<PingStatusPayload> {
 	readonly type = "ping";
 
-	constructor(private ping: Ping) {}
+	constructor(
+		private ping: Ping,
+		private net: NetType
+	) {}
 
 	supports(type: MonitorType): boolean {
 		return type === "ping";
@@ -25,7 +29,7 @@ export class PingProvider implements IStatusProvider<PingStatusPayload> {
 		const bracketed = /^\[([^\]]+)\](?::\d+)?$/.exec(host);
 		if (bracketed) return bracketed[1]!;
 		// A bare IPv6 address contains colons that are not a port separator
-		if (net.isIPv6(host)) return host;
+		if (this.net.isIPv6(host)) return host;
 		return host.replace(/:.*/, "");
 	}
 

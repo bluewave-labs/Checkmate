@@ -78,7 +78,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	// ***********************
 	// Network providers
 	// ***********************
-	const pingProvider = new PingProvider(ping);
+	const pingProvider = new PingProvider(ping, net);
 	const httpProvider = new HttpProvider(got, new AdvancedMatcher(jmespath));
 	const pageSpeedProvider = new PageSpeedProvider(httpProvider, settingsService, logger);
 	const hardwareProvider = new HardwareProvider(httpProvider);

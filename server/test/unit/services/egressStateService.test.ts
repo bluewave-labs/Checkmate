@@ -13,7 +13,7 @@ const createEgressStateRepo = () => ({
 });
 
 const createJobsRepo = () => ({
-	deleteByIdAndType: jest.fn().mockResolvedValue(true),
+	deleteGlobalJob: jest.fn().mockResolvedValue(true),
 });
 
 const createService = () => {
@@ -82,7 +82,7 @@ describe("EgressStateService", () => {
 
 			const result = await service.reset();
 
-			expect(jobsRepository.deleteByIdAndType).toHaveBeenCalledWith(null, "egress");
+			expect(jobsRepository.deleteGlobalJob).toHaveBeenCalledWith("egress");
 			expect(egressStateRepository.reset).toHaveBeenCalledTimes(1);
 			expect(result).toEqual(reset);
 		});

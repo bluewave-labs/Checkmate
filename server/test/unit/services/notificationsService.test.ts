@@ -26,10 +26,9 @@ const createMonitorsRepo = () => ({
 	removeNotificationFromMonitors: jest.fn(),
 });
 
-const createSettingsService = (clientHost = "https://app.example.com", egressNotifications: string[] = []) => ({
+const createSettingsService = (clientHost = "https://app.example.com") => ({
 	getSettings: jest.fn().mockReturnValue({ clientHost }),
-	getDBSettings: jest.fn().mockResolvedValue({ egressNotifications }),
-	updateDbSettings: jest.fn().mockResolvedValue({ egressNotifications: [] }),
+	removeEgressNotification: jest.fn().mockResolvedValue(undefined),
 });
 
 const createMessageBuilder = () => ({
@@ -374,24 +373,25 @@ describe("NotificationsService", () => {
 			expect(monitorsRepository.removeNotificationFromMonitors).toHaveBeenCalledWith("notif-1");
 		});
 
-		it("removes the notification from the egress recovered recipients in app settings", async () => {
-			const settingsService = createSettingsService("https://app.example.com", ["notif-0", "notif-1"]);
-			const { service, notificationsRepository } = createService({ settingsService });
+		it("removes the notification from the egress recovered recipients after the team-scoped delete succeeds", async () => {
+			const { service, notificationsRepository, settingsService } = createService();
 			(notificationsRepository.deleteById as jest.Mock).mockResolvedValue(makeNotification());
 
 			await service.deleteById("notif-1", "team-1");
 
-			expect(settingsService.updateDbSettings).toHaveBeenCalledWith({ egressNotifications: ["notif-0"] });
+			expect(settingsService.removeEgressNotification).toHaveBeenCalledWith("notif-1");
+			const deleteOrder = (notificationsRepository.deleteById as jest.Mock).mock.invocationCallOrder[0]!;
+			const cascadeOrder = (settingsService.removeEgressNotification as jest.Mock).mock.invocationCallOrder[0]!;
+			expect(deleteOrder).toBeLessThan(cascadeOrder);
 		});
 
-		it("leaves app settings alone when the notification is not an egress recipient", async () => {
-			const settingsService = createSettingsService("https://app.example.com", ["notif-0"]);
-			const { service, notificationsRepository } = createService({ settingsService });
-			(notificationsRepository.deleteById as jest.Mock).mockResolvedValue(makeNotification());
+		it("does not touch app settings when the delete is refused", async () => {
+			const { service, notificationsRepository, settingsService } = createService();
+			(notificationsRepository.deleteById as jest.Mock).mockRejectedValue(new Error("Notification not found"));
 
-			await service.deleteById("notif-1", "team-1");
+			await expect(service.deleteById("notif-1", "other-team")).rejects.toThrow("Notification not found");
 
-			expect(settingsService.updateDbSettings).not.toHaveBeenCalled();
+			expect(settingsService.removeEgressNotification).not.toHaveBeenCalled();
 		});
 	});
 });

@@ -43,6 +43,7 @@ const createSettingsRepo = () =>
 		create: jest.fn().mockResolvedValue(makeSettings()),
 		findSingleton: jest.fn().mockResolvedValue(makeSettings()),
 		update: jest.fn().mockResolvedValue(makeSettings()),
+		removeEgressNotification: jest.fn().mockResolvedValue(undefined),
 		deleteLegacy: jest.fn().mockResolvedValue(true),
 	}) as unknown as jest.Mocked<ISettingsRepository>;
 
@@ -190,6 +191,22 @@ describe("SettingsService", () => {
 			const service = new SettingsService(env);
 
 			await expect(service.updateDbSettings({ checkTTL: 60 })).rejects.toThrow("Settings repository not initialized");
+		});
+	});
+
+	describe("removeEgressNotification", () => {
+		it("delegates the pull to the repository", async () => {
+			const { service, settingsRepository } = createService();
+
+			await service.removeEgressNotification("notif-1");
+
+			expect(settingsRepository.removeEgressNotification).toHaveBeenCalledWith("notif-1");
+		});
+
+		it("throws when repository is not set", async () => {
+			const service = new SettingsService(makeEnv());
+
+			await expect(service.removeEgressNotification("notif-1")).rejects.toThrow("Settings repository not initialized");
 		});
 	});
 });

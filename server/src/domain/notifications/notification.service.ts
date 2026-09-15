@@ -178,18 +178,10 @@ export class NotificationsService implements INotificationsService {
 
 	deleteById = async (id: string, teamId: string): Promise<Notification> => {
 		await this.monitorsRepository.removeNotificationFromMonitors(id);
-		await this.removeFromEgressNotifications(id);
 		const deleted = await this.notificationsRepository.deleteById(id, teamId);
+		// App settings hold notification ids for the egress recovered alert; drop the deleted one so it never dangles.
+		// After the team-scoped delete, so a request for another team's id (404 above) cannot touch instance settings.
+		await this.settingsService.removeEgressNotification(id);
 		return deleted;
-	};
-
-	// App settings hold notification ids for the egress recovered alert; drop the deleted one so it never dangles
-	private removeFromEgressNotifications = async (id: string) => {
-		const settings = await this.settingsService.getDBSettings();
-		const current = settings.egressNotifications ?? [];
-		const remaining = current.filter((notificationId) => notificationId !== id);
-		if (remaining.length !== current.length) {
-			await this.settingsService.updateDbSettings({ egressNotifications: remaining });
-		}
 	};
 }

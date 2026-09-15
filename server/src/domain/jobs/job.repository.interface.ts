@@ -58,9 +58,11 @@ export interface IJobsRepository {
 	// Delete, drop all rows
 	deleteById(refId: string): Promise<boolean>;
 
-	// Delete a single job of type. refId null addresses a global row
-	deleteByIdAndType(refId: string | null, type: JobType): Promise<boolean>;
+	// Delete a single job of type
+	deleteByIdAndType(refId: string, type: JobType): Promise<boolean>;
 
+	// Global rows (refId null) are addressed by their canonical _id, see jobId
+	deleteGlobalJob(type: JobType): Promise<boolean>;
 	// Delete a global row only if nobody has rescheduled it since it was claimed (nextScheduledAt unchanged)
 	deleteGlobalJobIfUnchanged(type: JobType, nextScheduledAt: number): Promise<boolean>;
 

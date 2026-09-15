@@ -30,12 +30,21 @@ class MongoEgressStateRepository implements IEgressStateRepository {
 		// Read first: with timestamps on, every findOneAndUpdate would $set updatedAt, so a read would write.
 		const existing = await EgressStateModel.findOne({ singleton: true }).lean<EgressStateDocument>();
 		if (existing) return this.toEntity(existing);
-		const doc = await EgressStateModel.findOneAndUpdate(
-			{ singleton: true },
-			{ $setOnInsert: { singleton: true, status: "ok" } },
-			{ upsert: true, new: true, setDefaultsOnInsert: true }
-		).lean<EgressStateDocument>();
-		return this.toEntity(doc);
+		try {
+			const doc = await EgressStateModel.findOneAndUpdate(
+				{ singleton: true },
+				{ $setOnInsert: { singleton: true, status: "ok" } },
+				{ upsert: true, new: true, setDefaultsOnInsert: true }
+			).lean<EgressStateDocument>();
+			return this.toEntity(doc);
+		} catch (error: unknown) {
+			// Two processes can race the very first insert; the unique index rejects the loser, who reads the winner's row.
+			if ((error as { code?: number }).code === 11000) {
+				const doc = await EgressStateModel.findOne({ singleton: true }).lean<EgressStateDocument>();
+				if (doc) return this.toEntity(doc);
+			}
+			throw error;
+		}
 	};
 
 	reset = async () => {

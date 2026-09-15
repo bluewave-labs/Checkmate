@@ -84,6 +84,10 @@ class MongoSettingsRepository implements ISettingsRepository {
 		return this.toEntity(updatedSettings);
 	};
 
+	removeEgressNotification = async (notificationId: string) => {
+		await AppSettingsModel.updateMany({ egressNotifications: notificationId }, { $pull: { egressNotifications: notificationId } });
+	};
+
 	deleteLegacy = async () => {
 		const res = await AppSettingsModel.deleteMany({ version: { $exists: false } });
 		return res.deletedCount > 0;

@@ -533,4 +533,47 @@ describe("MongoJobsRepository", () => {
 			expect(await repo.countDueBacklog(NOW)).toBe(0);
 		});
 	});
+
+	// ── global rows: egress recovery job ──────────────────────────────────────
+
+	describe("global rows", () => {
+		const repo = new MongoJobsRepository(WORKER_ID);
+		const egressRow = (nextScheduledAt: number) =>
+			seedJob({ _id: "egress", type: "egress" as JobType, refId: null, nextScheduledAt, intervalMs: 30_000 });
+
+		it("deleteGlobalJob removes the row by its canonical _id and leaves other global rows alone", async () => {
+			await egressRow(NOW);
+			await seedJob({ _id: "cleanup-orphaned", type: "cleanup-orphaned" as JobType, refId: null });
+
+			expect(await repo.deleteGlobalJob("egress")).toBe(true);
+
+			expect(await readRow("egress")).toBeNull();
+			expect(await readRow("cleanup-orphaned")).not.toBeNull();
+			expect(await repo.deleteGlobalJob("egress")).toBe(false);
+		});
+
+		it("deleteGlobalJobIfUnchanged removes the row only while nextScheduledAt matches the claimed value", async () => {
+			await egressRow(NOW);
+
+			// Another worker started a new episode and rescheduled the row after this run claimed it
+			await JobModel.updateOne({ _id: "egress" }, { $set: { nextScheduledAt: NOW + 30_000 } });
+			expect(await repo.deleteGlobalJobIfUnchanged("egress", NOW)).toBe(false);
+			expect(await readRow("egress")).not.toBeNull();
+
+			// Nobody touched it: the row goes
+			expect(await repo.deleteGlobalJobIfUnchanged("egress", NOW + 30_000)).toBe(true);
+			expect(await readRow("egress")).toBeNull();
+		});
+
+		it("recordSuccess after a refused conditional delete is a no-op once the lock has moved on", async () => {
+			await egressRow(NOW);
+			const [claimed] = await repo.claimDueBatch("egress", 1, NOW);
+			expect(claimed?.id).toBe("egress");
+
+			// Row deleted by the handler (recovered), then recordSuccess runs from the queue: nothing to update
+			expect(await repo.deleteGlobalJobIfUnchanged("egress", claimed!.nextScheduledAt)).toBe(true);
+			expect(await repo.recordSuccess("egress", claimed!.nextScheduledAt, 30_000, NOW + 1_000)).toBe(false);
+			expect(await readRow("egress")).toBeNull();
+		});
+	});
 });

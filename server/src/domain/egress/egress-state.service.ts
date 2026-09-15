@@ -25,7 +25,7 @@ export class EgressStateService implements IEgressStateService {
 
 	// Called when the feature is switched on or off: drop any pending recovery job and start from "ok".
 	reset = async (): Promise<EgressState> => {
-		await this.jobsRepository.deleteByIdAndType(null, "egress");
+		await this.jobsRepository.deleteGlobalJob("egress");
 		return this.egressStateRepository.reset();
 	};
 }

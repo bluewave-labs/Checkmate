@@ -146,6 +146,27 @@ describe("EgressService", () => {
 			]);
 		});
 
+		it("treats any HTTP response, even 4xx/5xx, as reachable but a transport failure as unreachable", async () => {
+			const requestStatus = jest.fn().mockImplementation(async (monitor: any) => ({
+				monitorId: monitor.id,
+				teamId: monitor.teamId,
+				type: monitor.type,
+				status: false,
+				code: monitor.url.includes("maintenance") ? 503 : 5000, // 5000 is HttpProvider's NETWORK_ERROR
+				message: monitor.url.includes("maintenance") ? "Service Unavailable" : "ECONNREFUSED",
+				responseTime: 3,
+			}));
+			const { service } = createService({ networkService: { requestStatus } });
+
+			const results = await service.probeTargets(["https://example.com/maintenance", "https://example.com/refused", "8.8.8.8:53"]);
+
+			expect(results).toEqual([
+				expect.objectContaining({ target: "https://example.com/maintenance", reachable: true }),
+				expect.objectContaining({ target: "https://example.com/refused", reachable: false }),
+				expect.objectContaining({ target: "8.8.8.8:53", reachable: false }), // non-http: only status true counts
+			]);
+		});
+
 		it("counts an unparseable stored target as unreachable without probing", async () => {
 			const { service, defaults } = createService();
 
@@ -218,7 +239,6 @@ describe("EgressService", () => {
 			);
 			expect(defaults.egressStateRepository.recordProbe).not.toHaveBeenCalled();
 			expect(defaults.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("egress degraded") }));
-			// The worker that performed the transition sets the schedule
 			expect(defaults.jobsRepository.upsertCleanupJob).toHaveBeenCalledWith({
 				id: "egress",
 				type: "egress",
@@ -228,9 +248,13 @@ describe("EgressService", () => {
 				intervalMs: 30_000,
 			});
 			expect(defaults.jobsRepository.upsertJob).not.toHaveBeenCalled();
+			// Job first, transition second: a crash in between leaves a stray row, never an unpolled degraded state
+			const scheduleOrder = (defaults.jobsRepository.upsertCleanupJob as jest.Mock).mock.invocationCallOrder[0]!;
+			const transitionOrder = (defaults.egressStateRepository.markDegraded as jest.Mock).mock.invocationCallOrder[0]!;
+			expect(scheduleOrder).toBeLessThan(transitionOrder);
 		});
 
-		it("only makes sure the job row exists when another worker performed the transition", async () => {
+		it("still returns degraded and leaves the job scheduled when another worker performed the transition first", async () => {
 			const { service, defaults } = createService({
 				networkService: { requestStatus: statusFor([]) },
 				egressStateRepository: degradedRepository({
@@ -242,8 +266,22 @@ describe("EgressService", () => {
 			const result = await service.assessAfterFailure();
 
 			expect(result).toBe("degraded");
-			expect(defaults.jobsRepository.upsertJob).toHaveBeenCalledWith(expect.objectContaining({ id: "egress", intervalMs: 30_000 }));
-			expect(defaults.jobsRepository.upsertCleanupJob).not.toHaveBeenCalled();
+			expect(defaults.jobsRepository.upsertCleanupJob).toHaveBeenCalledWith(expect.objectContaining({ id: "egress", intervalMs: 30_000 }));
+			expect(defaults.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("already recorded") }));
+		});
+
+		it("does not mark degraded when the recovery job cannot be scheduled", async () => {
+			const { service, defaults } = createService({
+				networkService: { requestStatus: statusFor([]) },
+				jobsRepository: {
+					upsertJob: jest.fn(),
+					upsertCleanupJob: jest.fn().mockRejectedValue(new Error("db down")),
+					deleteGlobalJobIfUnchanged: jest.fn(),
+				},
+			});
+
+			expect(await service.assessAfterFailure()).toBeNull();
+			expect(defaults.egressStateRepository.markDegraded).not.toHaveBeenCalled();
 		});
 
 		it("returns degraded without probing when the persisted state is already degraded, without touching the job's schedule", async () => {

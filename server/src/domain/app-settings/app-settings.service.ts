@@ -24,6 +24,7 @@ export interface ISettingsService {
 	areStatusPageThemesEnabled(): boolean;
 	getDBSettings(): Promise<Settings>;
 	updateDbSettings(newSettings: SettingsUpdate): Promise<Settings>;
+	removeEgressNotification(notificationId: string): Promise<void>;
 }
 
 export class SettingsService implements ISettingsService {
@@ -76,6 +77,10 @@ export class SettingsService implements ISettingsService {
 
 	updateDbSettings = async (newSettings: SettingsUpdate) => {
 		return await this.getRepository().update(newSettings);
+	};
+
+	removeEgressNotification = async (notificationId: string) => {
+		await this.getRepository().removeEgressNotification(notificationId);
 	};
 
 	getDBSettings = async () => {

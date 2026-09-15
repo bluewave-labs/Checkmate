@@ -25,6 +25,9 @@ const ASSESSMENT_REUSE_MS = 5000;
 const RECOVERY_JOB_TYPE = "egress" as const;
 const RECOVERY_JOB_ID = jobId(RECOVERY_JOB_TYPE, null);
 
+// HttpProvider reports transport failures with NETWORK_ERROR (outside the HTTP range) and everything else with the real status code.
+const isHttpStatusCode = (code: unknown): boolean => typeof code === "number" && code >= 100 && code <= 599;
+
 // Synthetic identity stamped on the probe monitors so provider responses are recognisable in logs.
 const PROBE_MONITOR_ID = "egress-probe";
 const PROBE_TEAM_ID = "system";
@@ -115,7 +118,9 @@ export class EgressService implements IEgressService {
 
 		return {
 			target: raw,
-			reachable: response.status === true,
+			// Any HTTP response, including 4xx/5xx, proves the instance can reach the target; only a transport
+			// failure counts against egress. Ping and port providers have no such distinction.
+			reachable: response.status === true || (target.kind === "http" && isHttpStatusCode(response.code)),
 			responseTime: response.responseTime ?? responseTime,
 			message: response.message,
 		};
@@ -188,6 +193,9 @@ export class EgressService implements IEgressService {
 				return "ok";
 			}
 
+			// Schedule the recovery job before recording the transition: a crash between the two then leaves a stray row
+			// while ok, which the job's first run removes, rather than a degraded state that nothing is polling.
+			await this.scheduleRecoveryCheck(settings.egressPollIntervalSeconds, true);
 			const degraded = await this.egressStateRepository.markDegraded(results, now);
 			this.logger.warn({
 				message: degraded
@@ -197,8 +205,6 @@ export class EgressService implements IEgressService {
 				method: "assessAfterFailure",
 				details: { results },
 			});
-			// The worker that performed the transition owns the job's schedule; anyone else only makes sure the row exists.
-			await this.scheduleRecoveryCheck(settings.egressPollIntervalSeconds, degraded !== null);
 			return "degraded";
 		} catch (error: unknown) {
 			// The egress check must never break check production; treat an internal failure as "unknown" and carry on.
