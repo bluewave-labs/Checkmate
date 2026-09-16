@@ -142,6 +142,14 @@ export type DockerContainerState = (typeof DockerContainerStates)[number];
 export const DockerHealthStatuses = ["healthy", "unhealthy", "starting", "none"] as const;
 export type DockerHealthStatus = (typeof DockerHealthStatuses)[number];
 
+export const DockerRestartPolicies = [
+	"no",
+	"always",
+	"on-failure",
+	"unless-stopped",
+] as const;
+export type DockerRestartPolicy = (typeof DockerRestartPolicies)[number];
+
 export const DockerPortProtocols = ["tcp", "udp", "sctp"] as const;
 export type DockerPortProtocol = (typeof DockerPortProtocols)[number];
 
@@ -201,6 +209,9 @@ export interface DockerContainerInfo {
 	startedAt?: string;
 	ports?: DockerContainerPort[];
 	mounts?: DockerContainerMount[];
+	restartPolicy?: DockerRestartPolicy;
+	exitCode?: number;
+	oneOff?: boolean;
 }
 
 export interface Check {
