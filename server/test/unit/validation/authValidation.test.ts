@@ -25,9 +25,6 @@ describe("authValidation", () => {
 			expect(() => registerInviteTokenValidation.parse(["a", "b"])).toThrow();
 		});
 	});
-	// The bounds below are the only guard on how long an invite stays valid — the service
-	// layer re-checks nothing — so both the create path (optional) and the change-duration
-	// path (required) are pinned here, including the exact MIN/MAX boundary values.
 
 	describe("inviteBodyValidation expiresInHours", () => {
 		const validInvite = { email: "new@example.com", role: ["user"], teamId: "team-1" };

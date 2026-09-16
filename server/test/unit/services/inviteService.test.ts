@@ -3,8 +3,6 @@ import { InviteService } from "../../../src/domain/invites/invite.service.ts";
 import type { Invite } from "../../../src/domain/invites/invite.type.ts";
 import type { UserRole } from "../../../src/domain/users/user.type.ts";
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
-
 const makeInvite = (overrides?: Partial<Invite>): Invite => ({
 	id: "inv-1",
 	email: "invited@example.com",
@@ -40,11 +38,7 @@ const createService = (overrides?: Record<string, unknown>) => {
 	return { service, ...defaults };
 };
 
-// ── Tests ────────────────────────────────────────────────────────────────────
-
 describe("InviteService", () => {
-	// ── getInviteToken ──────────────────────────────────────────────────────
-
 	describe("getInviteToken", () => {
 		it("creates an invite with teamId assigned", async () => {
 			const { service, invitesRepository } = createService();
@@ -81,8 +75,6 @@ describe("InviteService", () => {
 			);
 		});
 	});
-
-	// ── sendInviteEmail ─────────────────────────────────────────────────────
 
 	describe("sendInviteEmail", () => {
 		it("creates invite, builds email, and sends it", async () => {
@@ -167,8 +159,6 @@ describe("InviteService", () => {
 		});
 	});
 
-	// ── verifyInviteToken ───────────────────────────────────────────────────
-
 	describe("verifyInviteToken", () => {
 		it("delegates to repository", async () => {
 			const { service, invitesRepository } = createService();
@@ -179,8 +169,6 @@ describe("InviteService", () => {
 			expect(result).toEqual(makeInvite());
 		});
 	});
-
-	// ── getInvites ──────────────────────────────────────────────────────────
 
 	describe("getInvites", () => {
 		it("delegates to repository, scoped by team", async () => {
@@ -201,8 +189,6 @@ describe("InviteService", () => {
 			expect(invite).not.toHaveProperty("token");
 		});
 	});
-
-	// ── updateInviteExpiry ──────────────────────────────────────────────────
 
 	describe("updateInviteExpiry", () => {
 		it("looks up the invite and updates its expiry to now + the requested hours", async () => {
@@ -241,7 +227,6 @@ describe("InviteService", () => {
 			expect(invitesRepository.updateExpiryById).not.toHaveBeenCalled();
 		});
 	});
-	// ── deleteInvite ────────────────────────────────────────────────────────
 
 	describe("deleteInvite", () => {
 		it("looks the invite up in the caller's team, then deletes it", async () => {

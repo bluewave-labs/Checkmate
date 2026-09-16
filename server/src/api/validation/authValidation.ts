@@ -43,8 +43,6 @@ export const newPasswordValidation = z.object({
 	confirm: z.string().optional(),
 });
 
-// Shared by invite creation (optional — falls back to DEFAULT_INVITE_EXPIRY_HOURS) and
-// the "change duration" update (required), so the bounds only live in one place.
 const expiresInHoursValidation = z
 	.number()
 	.int("Expiry duration must be a whole number of hours")

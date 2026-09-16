@@ -70,7 +70,11 @@ registry.registerPath({
 		params: inviteIdParamValidation,
 		body: { content: json(updateInviteExpiryBodyValidation) },
 	},
-	responses: { "200": okJson(inviteResponseSchema), "404": { description: "Not found", content: json(z.object({ success: z.literal(false), msg: z.string() })) }, ...standardErrors },
+	responses: {
+		"200": okJson(inviteResponseSchema),
+		"404": { description: "Not found", content: json(z.object({ success: z.literal(false), msg: z.string() })) },
+		...standardErrors,
+	},
 });
 
 registry.registerPath({

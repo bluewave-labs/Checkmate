@@ -5,12 +5,6 @@ import MongoInvitesRepository from "../../src/domain/invites/invite.repository.m
 import { InviteModel } from "../../src/domain/invites/invite.model.ts";
 import { DEFAULT_INVITE_EXPIRY_HOURS, HOUR_IN_MS } from "../../src/domain/invites/invite.constants.ts";
 
-// ── Real-Mongo harness ─────────────────────────────────────────────────────────
-// Invites now carry a per-document expiry (a TTL index with expireAfterSeconds: 0,
-// instead of the old fixed 1-hour-from-creation index), so this exercises the
-// repository against a live engine to confirm the stored expiry and the index shape
-// actually behave the way the schema intends rather than just asserting on mocks.
-
 let mongod: MongoMemoryServer;
 
 beforeAll(async () => {
@@ -143,6 +137,41 @@ describe("MongoInvitesRepository", () => {
 
 			const remaining = await repo.findByTeamId(teamId);
 			expect(remaining.map((invite) => invite.email)).toEqual(["keep@example.com"]);
+		});
+	});
+	describe("expired invites", () => {
+		const insertExpired = async (teamId: mongoose.Types.ObjectId | string, email = "expired@example.com") => {
+			const id = new mongoose.Types.ObjectId();
+			await InviteModel.collection.insertOne({
+				_id: id,
+				email,
+				teamId: new mongoose.Types.ObjectId(String(teamId)),
+				role: ["user"],
+				token: "expired-token",
+				expiry: new Date(Date.now() - HOUR_IN_MS),
+			});
+			return id.toString();
+		};
+
+		it("is not listed for the team", async () => {
+			const repo = new MongoInvitesRepository();
+			const teamId = makeId();
+			await insertExpired(teamId);
+			await repo.create({ email: "live@example.com", role: ["user"], teamId });
+
+			const invites = await repo.findByTeamId(teamId);
+
+			expect(invites.map((invite) => invite.email)).toEqual(["live@example.com"]);
+		});
+
+		it("cannot be fetched, extended or deleted by id", async () => {
+			const repo = new MongoInvitesRepository();
+			const teamId = makeId();
+			const id = await insertExpired(teamId);
+
+			await expect(repo.findById({ id, teamId })).rejects.toThrow("Invite not found");
+			await expect(repo.updateExpiryById({ id, teamId, expiry: new Date(Date.now() + HOUR_IN_MS) })).rejects.toThrow("Invite not found");
+			await expect(repo.deleteById({ id, teamId })).rejects.toThrow("Invite not found");
 		});
 	});
 });

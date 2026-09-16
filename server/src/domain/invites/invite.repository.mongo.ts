@@ -6,6 +6,8 @@ import { AppError } from "@/utils/AppError.js";
 import crypto from "crypto";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 
+const notExpired = () => ({ expiry: { $gt: new Date() } });
+
 class MongoInvitesRepository implements IInvitesRepository {
 	private toEntity = (doc: InviteDocument): Invite => {
 		return {
@@ -50,7 +52,7 @@ class MongoInvitesRepository implements IInvitesRepository {
 	};
 
 	findById = async ({ id, teamId }: { id: string; teamId: string }) => {
-		const invite = await InviteModel.findOne({ _id: id, teamId });
+		const invite = await InviteModel.findOne({ _id: id, teamId, ...notExpired() });
 		if (invite === null) {
 			throw new AppError({ message: "Invite not found", status: 404 });
 		}
@@ -58,19 +60,19 @@ class MongoInvitesRepository implements IInvitesRepository {
 	};
 
 	findByTeamId = async (teamId: string) => {
-		const invites = await InviteModel.find({ teamId }).sort({ createdAt: -1 });
+		const invites = await InviteModel.find({ teamId, ...notExpired() }).sort({ createdAt: -1 });
 		return invites.map(this.toEntity);
 	};
 
 	deleteById = async ({ id, teamId }: { id: string; teamId: string }) => {
-		const invite = await InviteModel.findOneAndDelete({ _id: id, teamId });
+		const invite = await InviteModel.findOneAndDelete({ _id: id, teamId, ...notExpired() });
 		if (invite === null) {
 			throw new AppError({ message: "Invite not found", status: 404 });
 		}
 	};
 
 	updateExpiryById = async ({ id, teamId, expiry }: { id: string; teamId: string; expiry: Date }) => {
-		const invite = await InviteModel.findOneAndUpdate({ _id: id, teamId }, { expiry }, { new: true });
+		const invite = await InviteModel.findOneAndUpdate({ _id: id, teamId, ...notExpired() }, { expiry }, { new: true });
 		if (invite === null) {
 			throw new AppError({ message: "Invite not found", status: 404 });
 		}

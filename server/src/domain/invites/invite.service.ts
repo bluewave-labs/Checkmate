@@ -137,8 +137,6 @@ export class InviteService implements IInviteService {
 		return await this.invitesRepository.findByToken(inviteToken);
 	};
 
-	// The invite token must never leave this endpoint (see InviteSummary) since it's a
-	// bearer credential for accepting the invite; strip it before returning.
 	getInvites = async ({ teamId }: { teamId: string }): Promise<InviteSummary[]> => {
 		const invites = await this.invitesRepository.findByTeamId(teamId);
 		return invites.map(stripToken);
@@ -174,9 +172,6 @@ export class InviteService implements IInviteService {
 		return stripToken(updated);
 	};
 
-	// Revoking a pending invite is the only way to stop an already-sent token from being
-	// redeemed before it expires, so it is gated by the same role check as changing the
-	// duration: an actor may only revoke invites for roles they are allowed to manage.
 	deleteInvite = async ({ id, teamId, userRoles }: { id: string; teamId: string; userRoles: UserRole[] }) => {
 		const invite = await this.invitesRepository.findById({ id, teamId });
 
