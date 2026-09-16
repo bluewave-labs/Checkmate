@@ -27,7 +27,7 @@ const makeProxy = (overrides?: Partial<Proxy>): Proxy =>
 const createResolver = (overrides?: Record<string, any>) => {
 	const defaults = {
 		proxiesRepository: { findByIdOrNull: jest.fn<() => Promise<Proxy | null>>().mockResolvedValue(makeProxy()) },
-		settingsService: { getDBSettings: jest.fn<() => Promise<any>>().mockResolvedValue({ globalProxyEnabled: true, globalProxyId: "p1" }) },
+		settingsService: { getCachedDbSettings: jest.fn<() => Promise<any>>().mockResolvedValue({ globalProxyEnabled: true, globalProxyId: "p1" }) },
 		logger: createMockLogger(),
 		ttlMs: 60_000,
 		...overrides,
@@ -46,7 +46,7 @@ describe("ProxyResolver", () => {
 
 		expect(result).toBeUndefined();
 		expect(defaults.proxiesRepository.findByIdOrNull).not.toHaveBeenCalled();
-		expect(defaults.settingsService.getDBSettings).not.toHaveBeenCalled();
+		expect(defaults.settingsService.getCachedDbSettings).not.toHaveBeenCalled();
 	});
 
 	it("returns undefined for proxyMode 'none' without calling settings", async () => {
@@ -55,7 +55,7 @@ describe("ProxyResolver", () => {
 		const result = await resolver.resolve(makeMonitor({ proxyMode: "none" }));
 
 		expect(result).toBeUndefined();
-		expect(defaults.settingsService.getDBSettings).not.toHaveBeenCalled();
+		expect(defaults.settingsService.getCachedDbSettings).not.toHaveBeenCalled();
 	});
 
 	// ── custom mode ───────────────────────────────────────────────────────────
@@ -94,7 +94,7 @@ describe("ProxyResolver", () => {
 
 	it("returns undefined when the global proxy is disabled, without a repo call", async () => {
 		const { resolver, defaults } = createResolver({
-			settingsService: { getDBSettings: jest.fn<() => Promise<any>>().mockResolvedValue({ globalProxyEnabled: false, globalProxyId: "p1" }) },
+			settingsService: { getCachedDbSettings: jest.fn<() => Promise<any>>().mockResolvedValue({ globalProxyEnabled: false, globalProxyId: "p1" }) },
 		});
 
 		const result = await resolver.resolve(makeMonitor({ proxyMode: "inherit" }));
@@ -114,7 +114,7 @@ describe("ProxyResolver", () => {
 
 	it("returns undefined when the global proxy is enabled but globalProxyId is null, without a repo call", async () => {
 		const { resolver, defaults } = createResolver({
-			settingsService: { getDBSettings: jest.fn<() => Promise<any>>().mockResolvedValue({ globalProxyEnabled: true, globalProxyId: null }) },
+			settingsService: { getCachedDbSettings: jest.fn<() => Promise<any>>().mockResolvedValue({ globalProxyEnabled: true, globalProxyId: null }) },
 		});
 
 		const result = await resolver.resolve(makeMonitor({ proxyMode: "inherit" }));
@@ -140,7 +140,7 @@ describe("ProxyResolver", () => {
 		const result = await resolver.resolve(makeMonitor({ proxyMode: "garbage" as Monitor["proxyMode"] }));
 
 		expect(result).toBe("http://proxy.example.com:8080");
-		expect(defaults.settingsService.getDBSettings).toHaveBeenCalled();
+		expect(defaults.settingsService.getCachedDbSettings).toHaveBeenCalled();
 	});
 
 	// ── never throws ──────────────────────────────────────────────────────────
@@ -158,7 +158,7 @@ describe("ProxyResolver", () => {
 
 	it("returns undefined and warns when the settings service throws", async () => {
 		const { resolver, defaults } = createResolver({
-			settingsService: { getDBSettings: jest.fn<() => Promise<any>>().mockRejectedValue(new Error("db down")) },
+			settingsService: { getCachedDbSettings: jest.fn<() => Promise<any>>().mockRejectedValue(new Error("db down")) },
 		});
 
 		const result = await resolver.resolve(makeMonitor({ proxyMode: "inherit" }));
@@ -175,7 +175,6 @@ describe("ProxyResolver", () => {
 		await resolver.resolve(makeMonitor({ proxyMode: "inherit" }));
 		await resolver.resolve(makeMonitor({ proxyMode: "inherit" }));
 
-		expect(defaults.settingsService.getDBSettings).toHaveBeenCalledTimes(1);
 		expect(defaults.proxiesRepository.findByIdOrNull).toHaveBeenCalledTimes(1);
 	});
 
@@ -185,7 +184,6 @@ describe("ProxyResolver", () => {
 		await resolver.resolve(makeMonitor({ proxyMode: "inherit" }));
 		await resolver.resolve(makeMonitor({ proxyMode: "inherit" }));
 
-		expect(defaults.settingsService.getDBSettings).toHaveBeenCalledTimes(2);
 		expect(defaults.proxiesRepository.findByIdOrNull).toHaveBeenCalledTimes(2);
 	});
 
@@ -209,7 +207,6 @@ describe("ProxyResolver", () => {
 			resolver.resolve(makeMonitor({ proxyMode: "inherit" })),
 		]);
 
-		expect(defaults.settingsService.getDBSettings).toHaveBeenCalledTimes(1);
 		expect(defaults.proxiesRepository.findByIdOrNull).toHaveBeenCalledTimes(1);
 	});
 

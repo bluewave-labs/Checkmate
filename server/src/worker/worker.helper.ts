@@ -199,7 +199,7 @@ export class WorkerHelper implements IWorkerHelper {
 	getCleanupRetentionJob = () => {
 		return async () => {
 			try {
-				const settings = await this.settingsService.getDBSettings();
+				const settings = await this.settingsService.getCachedDBSettings();
 
 				const checkTTL = settings.checkTTL; // Check TTL is in DAYS, not MS
 

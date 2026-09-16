@@ -22,7 +22,7 @@ export class PageSpeedProvider implements IStatusProvider<PageSpeedStatusPayload
 		const { url, strategy } = monitor;
 		try {
 			if (!url) throw new Error("URL is required for PageSpeed monitor");
-			const dbSettings = await this.settingsService.getDBSettings();
+			const dbSettings = await this.settingsService.getCachedDBSettings();
 			const apiKey = dbSettings?.pagespeedApiKey;
 			const resolvedStrategy = strategy ?? DefaultPageSpeedStrategy;
 			let pageSpeedUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(

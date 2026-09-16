@@ -23,16 +23,27 @@ export interface ISettingsService {
 	getSettings(): EnvConfig;
 	areStatusPageThemesEnabled(): boolean;
 	getDBSettings(): Promise<Settings>;
+	getCachedDBSettings(): Promise<Settings>;
 	updateDbSettings(newSettings: SettingsUpdate): Promise<Settings>;
 	removeEgressNotification(notificationId: string): Promise<void>;
 }
 
+const DB_SETTINGS_CACHE_TTL_MS = 60_000;
+
+type CachedSettings = {
+	value: Promise<Settings>;
+	expiresAt: number;
+};
 export class SettingsService implements ISettingsService {
 	static SERVICE_NAME = SERVICE_NAME;
 	private settings: EnvConfig;
 	private settingsRepository: ISettingsRepository | null = null;
+	private dbSettingsCache: CachedSettings | null = null;
 
-	constructor(env: ValidatedEnv) {
+	constructor(
+		env: ValidatedEnv,
+		private dbSettingsTTLMs: number = DB_SETTINGS_CACHE_TTL_MS
+	) {
 		this.settings = {
 			jwtSecret: env.JWT_SECRET,
 			jwtTTL: env.TOKEN_TTL as StringValue,
@@ -76,11 +87,14 @@ export class SettingsService implements ISettingsService {
 	}
 
 	updateDbSettings = async (newSettings: SettingsUpdate) => {
-		return await this.getRepository().update(newSettings);
+		const updated = await this.getRepository().update(newSettings);
+		this.dbSettingsCache = null;
+		return updated;
 	};
 
 	removeEgressNotification = async (notificationId: string) => {
 		await this.getRepository().removeEgressNotification(notificationId);
+		this.dbSettingsCache = null;
 	};
 
 	getDBSettings = async () => {
@@ -99,5 +113,18 @@ export class SettingsService implements ISettingsService {
 		}
 
 		return settings;
+	};
+
+	getCachedDBSettings = async () => {
+		const hit = this.dbSettingsCache;
+		if (hit && hit.expiresAt > Date.now()) {
+			return hit.value;
+		}
+		const entry: CachedSettings = { value: this.getDBSettings(), expiresAt: Date.now() + this.dbSettingsTTLMs };
+		this.dbSettingsCache = entry;
+		entry.value.catch(() => {
+			if (this.dbSettingsCache === entry) this.dbSettingsCache = null;
+		});
+		return entry.value;
 	};
 }

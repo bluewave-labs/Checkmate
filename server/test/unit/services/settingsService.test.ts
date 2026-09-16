@@ -47,9 +47,9 @@ const createSettingsRepo = () =>
 		deleteLegacy: jest.fn().mockResolvedValue(true),
 	}) as unknown as jest.Mocked<ISettingsRepository>;
 
-const createService = (envOverrides?: Partial<ValidatedEnv>) => {
+const createService = (envOverrides?: Partial<ValidatedEnv>, dbSettingsTTLMs?: number) => {
 	const env = makeEnv(envOverrides);
-	const service = new SettingsService(env);
+	const service = new SettingsService(env, dbSettingsTTLMs);
 	const settingsRepository = createSettingsRepo();
 	service.setRepository(settingsRepository);
 	return { service, settingsRepository, env };
@@ -169,6 +169,66 @@ describe("SettingsService", () => {
 			const service = new SettingsService(env);
 
 			await expect(service.getDBSettings()).rejects.toThrow("Settings repository not initialized");
+		});
+	});
+
+	// ── getCachedDbSettings ─────────────────────────────────────────────────
+
+	describe("getCachedDbSettings", () => {
+		it("serves a second call within the TTL from cache", async () => {
+			const { service, settingsRepository } = createService();
+
+			const first = await service.getCachedDbSettings();
+			const second = await service.getCachedDbSettings();
+
+			expect(second).toBe(first);
+			expect(settingsRepository.findSingleton).toHaveBeenCalledTimes(1);
+		});
+
+		it("refetches after the TTL expires", async () => {
+			const { service, settingsRepository } = createService(undefined, 0);
+
+			await service.getCachedDbSettings();
+			await service.getCachedDbSettings();
+
+			expect(settingsRepository.findSingleton).toHaveBeenCalledTimes(2);
+		});
+
+		it("shares one in-flight fetch between concurrent calls", async () => {
+			const { service, settingsRepository } = createService();
+
+			await Promise.all([service.getCachedDbSettings(), service.getCachedDbSettings(), service.getCachedDbSettings()]);
+
+			expect(settingsRepository.findSingleton).toHaveBeenCalledTimes(1);
+		});
+
+		it("does not cache a rejected fetch, the next call retries", async () => {
+			const { service, settingsRepository } = createService();
+			(settingsRepository.findSingleton as jest.Mock).mockRejectedValueOnce(new Error("db down")).mockResolvedValueOnce(makeSettings());
+
+			await expect(service.getCachedDbSettings()).rejects.toThrow("db down");
+			await expect(service.getCachedDbSettings()).resolves.toEqual(makeSettings());
+			expect(settingsRepository.findSingleton).toHaveBeenCalledTimes(2);
+		});
+
+		it("refetches after updateDbSettings so the write is visible immediately", async () => {
+			const { service, settingsRepository } = createService();
+
+			await service.getCachedDbSettings();
+			await service.updateDbSettings({ checkTTL: 60 });
+			await service.getCachedDbSettings();
+
+			expect(settingsRepository.findSingleton).toHaveBeenCalledTimes(2);
+		});
+
+		it("refetches after removeEgressNotification", async () => {
+			const { service, settingsRepository } = createService();
+
+			await service.getCachedDbSettings();
+			await service.removeEgressNotification("notif-1");
+			await service.getCachedDbSettings();
+
+			expect(settingsRepository.findSingleton).toHaveBeenCalledTimes(2);
 		});
 	});
 
