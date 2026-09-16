@@ -172,14 +172,14 @@ describe("SettingsService", () => {
 		});
 	});
 
-	// ── getCachedDbSettings ─────────────────────────────────────────────────
+	// ── getCachedDBSettings ─────────────────────────────────────────────────
 
-	describe("getCachedDbSettings", () => {
+	describe("getCachedDBSettings", () => {
 		it("serves a second call within the TTL from cache", async () => {
 			const { service, settingsRepository } = createService();
 
-			const first = await service.getCachedDbSettings();
-			const second = await service.getCachedDbSettings();
+			const first = await service.getCachedDBSettings();
+			const second = await service.getCachedDBSettings();
 
 			expect(second).toBe(first);
 			expect(settingsRepository.findSingleton).toHaveBeenCalledTimes(1);
@@ -188,8 +188,8 @@ describe("SettingsService", () => {
 		it("refetches after the TTL expires", async () => {
 			const { service, settingsRepository } = createService(undefined, 0);
 
-			await service.getCachedDbSettings();
-			await service.getCachedDbSettings();
+			await service.getCachedDBSettings();
+			await service.getCachedDBSettings();
 
 			expect(settingsRepository.findSingleton).toHaveBeenCalledTimes(2);
 		});
@@ -197,7 +197,7 @@ describe("SettingsService", () => {
 		it("shares one in-flight fetch between concurrent calls", async () => {
 			const { service, settingsRepository } = createService();
 
-			await Promise.all([service.getCachedDbSettings(), service.getCachedDbSettings(), service.getCachedDbSettings()]);
+			await Promise.all([service.getCachedDBSettings(), service.getCachedDBSettings(), service.getCachedDBSettings()]);
 
 			expect(settingsRepository.findSingleton).toHaveBeenCalledTimes(1);
 		});
@@ -206,17 +206,17 @@ describe("SettingsService", () => {
 			const { service, settingsRepository } = createService();
 			(settingsRepository.findSingleton as jest.Mock).mockRejectedValueOnce(new Error("db down")).mockResolvedValueOnce(makeSettings());
 
-			await expect(service.getCachedDbSettings()).rejects.toThrow("db down");
-			await expect(service.getCachedDbSettings()).resolves.toEqual(makeSettings());
+			await expect(service.getCachedDBSettings()).rejects.toThrow("db down");
+			await expect(service.getCachedDBSettings()).resolves.toEqual(makeSettings());
 			expect(settingsRepository.findSingleton).toHaveBeenCalledTimes(2);
 		});
 
 		it("refetches after updateDbSettings so the write is visible immediately", async () => {
 			const { service, settingsRepository } = createService();
 
-			await service.getCachedDbSettings();
+			await service.getCachedDBSettings();
 			await service.updateDbSettings({ checkTTL: 60 });
-			await service.getCachedDbSettings();
+			await service.getCachedDBSettings();
 
 			expect(settingsRepository.findSingleton).toHaveBeenCalledTimes(2);
 		});
@@ -224,9 +224,9 @@ describe("SettingsService", () => {
 		it("refetches after removeEgressNotification", async () => {
 			const { service, settingsRepository } = createService();
 
-			await service.getCachedDbSettings();
+			await service.getCachedDBSettings();
 			await service.removeEgressNotification("notif-1");
-			await service.getCachedDbSettings();
+			await service.getCachedDBSettings();
 
 			expect(settingsRepository.findSingleton).toHaveBeenCalledTimes(2);
 		});

@@ -66,7 +66,7 @@ const degradedRepository = (overrides?: Record<string, any>) => ({
 
 const createService = (overrides?: Record<string, any>) => {
 	const defaults = {
-		settingsService: { getDBSettings: jest.fn().mockResolvedValue(makeSettings()) },
+		settingsService: { getCachedDBSettings: jest.fn().mockResolvedValue(makeSettings()) },
 		egressStateRepository: {
 			findSingleton: jest.fn().mockResolvedValue(makeState()),
 			recordProbe: jest.fn().mockResolvedValue(makeState()),
@@ -201,7 +201,7 @@ describe("EgressService", () => {
 	describe("assessAfterFailure", () => {
 		it("returns null and does not probe or record when the feature is disabled", async () => {
 			const { service, defaults } = createService({
-				settingsService: { getDBSettings: jest.fn().mockResolvedValue(makeSettings({ egressCheckEnabled: false })) },
+				settingsService: { getCachedDBSettings: jest.fn().mockResolvedValue(makeSettings({ egressCheckEnabled: false })) },
 			});
 
 			const result = await service.assessAfterFailure();
@@ -299,7 +299,7 @@ describe("EgressService", () => {
 
 		it("uses the default poll interval for the recovery job when the setting is missing or invalid", async () => {
 			const { service, defaults } = createService({
-				settingsService: { getDBSettings: jest.fn().mockResolvedValue(makeSettings({ egressPollIntervalSeconds: undefined })) },
+				settingsService: { getCachedDBSettings: jest.fn().mockResolvedValue(makeSettings({ egressPollIntervalSeconds: undefined })) },
 				networkService: { requestStatus: statusFor([]) },
 			});
 
@@ -310,7 +310,7 @@ describe("EgressService", () => {
 
 		it("falls back to the default targets when the configured list is empty", async () => {
 			const { service, defaults } = createService({
-				settingsService: { getDBSettings: jest.fn().mockResolvedValue(makeSettings({ egressCheckTargets: [] })) },
+				settingsService: { getCachedDBSettings: jest.fn().mockResolvedValue(makeSettings({ egressCheckTargets: [] })) },
 			});
 
 			await service.assessAfterFailure();
@@ -320,7 +320,7 @@ describe("EgressService", () => {
 
 		it("returns null and logs when the assessment itself fails", async () => {
 			const { service, defaults } = createService({
-				settingsService: { getDBSettings: jest.fn().mockRejectedValue(new Error("db down")) },
+				settingsService: { getCachedDBSettings: jest.fn().mockRejectedValue(new Error("db down")) },
 			});
 
 			const result = await service.assessAfterFailure();
@@ -339,7 +339,7 @@ describe("EgressService", () => {
 			const results = await Promise.all([service.assessAfterFailure(), service.assessAfterFailure(), service.assessAfterFailure()]);
 
 			expect(results).toEqual(["ok", "ok", "ok"]);
-			expect(defaults.settingsService.getDBSettings).toHaveBeenCalledTimes(1);
+			expect(defaults.settingsService.getCachedDBSettings).toHaveBeenCalledTimes(1);
 			expect(defaults.networkService.requestStatus).toHaveBeenCalledTimes(2); // one call per target, once
 			expect(defaults.egressStateRepository.recordProbe).toHaveBeenCalledTimes(1);
 		});
@@ -372,18 +372,18 @@ describe("EgressService", () => {
 		});
 
 		it("reuses a disabled result instead of re-reading settings for every failure", async () => {
-			const getDBSettings = jest.fn().mockResolvedValue(makeSettings({ egressCheckEnabled: false }));
-			const { service } = createService({ settingsService: { getDBSettings } });
+			const getCachedDBSettings = jest.fn().mockResolvedValue(makeSettings({ egressCheckEnabled: false }));
+			const { service } = createService({ settingsService: { getCachedDBSettings } });
 
 			expect(await service.assessAfterFailure()).toBeNull();
 			expect(await service.assessAfterFailure()).toBeNull();
 
-			expect(getDBSettings).toHaveBeenCalledTimes(1);
+			expect(getCachedDBSettings).toHaveBeenCalledTimes(1);
 		});
 
 		it("does not cache an internal failure", async () => {
-			const getDBSettings = jest.fn().mockRejectedValueOnce(new Error("db down")).mockResolvedValue(makeSettings());
-			const { service, defaults } = createService({ settingsService: { getDBSettings } });
+			const getCachedDBSettings = jest.fn().mockRejectedValueOnce(new Error("db down")).mockResolvedValue(makeSettings());
+			const { service, defaults } = createService({ settingsService: { getCachedDBSettings } });
 
 			expect(await service.assessAfterFailure()).toBeNull();
 			expect(await service.assessAfterFailure()).toBe("ok");
@@ -451,7 +451,7 @@ describe("EgressService", () => {
 
 		it("releases the job without probing when the feature has been disabled mid-episode", async () => {
 			const { service, defaults } = createService({
-				settingsService: { getDBSettings: jest.fn().mockResolvedValue(makeSettings({ egressCheckEnabled: false })) },
+				settingsService: { getCachedDBSettings: jest.fn().mockResolvedValue(makeSettings({ egressCheckEnabled: false })) },
 				egressStateRepository: degradedRepository(),
 			});
 
