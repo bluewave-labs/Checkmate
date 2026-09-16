@@ -53,7 +53,8 @@ const makeContainer = (overrides?: Record<string, any>) => ({
 
 const makeInspect = (overrides?: Record<string, any>) => ({
 	RestartCount: 2,
-	State: { StartedAt: "2026-08-28T10:00:00.000Z", Health: { Status: "healthy" } },
+	State: { StartedAt: "2026-08-28T10:00:00.000Z", Health: { Status: "healthy" }, ExitCode: 0 },
+	HostConfig: { RestartPolicy: { Name: "always", MaximumRetryCount: 0 } },
 	...overrides,
 });
 
@@ -385,8 +386,51 @@ describe("DockerProvider", () => {
 					health: "healthy",
 					restartCount: 2,
 					startedAt: "2026-08-28T10:00:00.000Z",
+					restartPolicy: "always",
+					exitCode: 0,
+					oneOff: false,
 				})
 			);
+		});
+
+		it("maps the restart policy and exit code from inspect", async () => {
+			const inspect = jest
+				.fn()
+				.mockResolvedValue(makeInspect({ HostConfig: { RestartPolicy: { Name: "on-failure", MaximumRetryCount: 3 } }, State: { ExitCode: 137 } }));
+			const { provider } = setup({ inspect });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]?.restartPolicy).toBe("on-failure");
+			expect(result.payload?.containers[0]?.exitCode).toBe(137);
+		});
+
+		it('reads an unset or unknown restart policy as "no"', async () => {
+			const containers = [makeContainer({ Id: "a".repeat(64) }), makeContainer({ Id: "b".repeat(64) }), makeContainer({ Id: "c".repeat(64) })];
+			const inspect = jest
+				.fn()
+				.mockResolvedValueOnce(makeInspect({ HostConfig: { RestartPolicy: { Name: "" } } }))
+				.mockResolvedValueOnce(makeInspect({ HostConfig: { RestartPolicy: { Name: "sometimes" } } }))
+				.mockResolvedValueOnce(makeInspect({ HostConfig: {} }));
+			const { provider } = setup({ listContainers: jest.fn().mockResolvedValue(containers), inspect });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers.map((c) => c.restartPolicy)).toEqual(["no", "no", "no"]);
+		});
+
+		it("flags compose one-off containers from the list labels", async () => {
+			const containers = [
+				makeContainer({ Id: "a".repeat(64), Labels: { "com.docker.compose.oneoff": "True" } }),
+				makeContainer({ Id: "b".repeat(64), Labels: { "com.docker.compose.oneoff": "False" } }),
+				makeContainer({ Id: "c".repeat(64), Labels: {} }),
+				makeContainer({ Id: "d".repeat(64) }),
+			];
+			const { provider } = setup({ listContainers: jest.fn().mockResolvedValue(containers) });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers.map((c) => c.oneOff)).toEqual([true, false, false, false]);
 		});
 
 		it("counts running, stopped, and unhealthy states in the summary", async () => {
@@ -515,6 +559,9 @@ describe("DockerProvider", () => {
 			expect(result.payload?.containers).toHaveLength(1);
 			expect(result.payload?.containers[0]).toEqual(expect.objectContaining({ health: "none" }));
 			expect(result.payload?.containers[0]?.restartCount).toBeUndefined();
+			expect(result.payload?.containers[0]?.restartPolicy).toBeUndefined();
+			expect(result.payload?.containers[0]?.exitCode).toBeUndefined();
+			expect(result.payload?.containers[0]?.oneOff).toBe(false); // read from the list summary, not inspect
 			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Failed to inspect") }));
 		});
 

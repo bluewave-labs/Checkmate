@@ -22,6 +22,7 @@ import {
 	DockerContainerSummary,
 	DockerHealthStatuses,
 	DockerPortProtocols,
+	DockerRestartPolicies,
 } from "@/domain/docker/docker.type.js";
 
 type CheckMetadataDocument = Omit<CheckMetadata, "monitorId" | "teamId"> & {
@@ -219,6 +220,9 @@ const dockerContainerSchema = new Schema<DockerContainerInfo>(
 		startedAt: { type: String },
 		ports: { type: [dockerContainerPortSchema], default: undefined },
 		mounts: { type: [dockerContainerMountSchema], default: undefined },
+		restartPolicy: { type: String, enum: DockerRestartPolicies },
+		exitCode: { type: Number },
+		oneOff: { type: Boolean },
 	},
 	{ _id: false }
 );

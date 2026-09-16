@@ -13,7 +13,13 @@ import {
 	ProxyModes,
 } from "@/domain/monitors/monitor.type.js";
 import { DateRanges, SortOrders } from "@/types/query.js";
-import { DockerContainerStates, DockerHealthStatuses, DockerLogStreams, DockerPortProtocols } from "@/domain/docker/docker.type.js";
+import {
+	DockerContainerStates,
+	DockerHealthStatuses,
+	DockerLogStreams,
+	DockerPortProtocols,
+	DockerRestartPolicies,
+} from "@/domain/docker/docker.type.js";
 import { DOCKER_LOG_PAGE_DEFAULT, DOCKER_LOG_PAGE_MAX } from "@/domain/docker/docker-log.type.js";
 import { isDockerSocketUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
 import { X509Certificate } from "node:crypto";
@@ -527,6 +533,9 @@ export const dockerContainerResponseSchema = z.object({
 	startedAt: z.string().optional(),
 	ports: z.array(dockerContainerPortResponseSchema).optional(),
 	mounts: z.array(dockerContainerMountResponseSchema).optional(),
+	restartPolicy: z.enum(DockerRestartPolicies).optional(),
+	exitCode: z.number().optional(),
+	oneOff: z.boolean().optional(),
 });
 
 export const containerSummaryResponseSchema = z.object({

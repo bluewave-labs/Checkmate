@@ -18,6 +18,8 @@ import {
 	DockerLogStream,
 	DockerPortProtocol,
 	DockerPortProtocols,
+	DockerRestartPolicies,
+	DockerRestartPolicy,
 } from "@/domain/docker/docker.type.js";
 import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { ILogger } from "@/utils/logger.js";
@@ -161,6 +163,11 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 		return summary.Names?.[0]?.replace(/^\//, "") ?? summary.Id.slice(0, 12);
 	};
 
+	private toRestartPolicy(name: string | undefined): DockerRestartPolicy {
+		// Docker daemon reports an unset policy as "", convert to "no"
+		return name && (DockerRestartPolicies as readonly string[]).includes(name) ? (name as DockerRestartPolicy) : "no";
+	}
+
 	private async toContainerInfo(docker: Dockerode, summary: Dockerode.ContainerInfo): Promise<DockerContainerInfo> {
 		const info: DockerContainerInfo = {
 			id: summary.Id,
@@ -169,6 +176,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 			state: this.toContainerState(summary.State),
 			status: summary.Status,
 			health: "none",
+			oneOff: summary.Labels?.["com.docker.compose.oneoff"] === "True",
 		};
 
 		const container = docker.getContainer(summary.Id);
@@ -183,6 +191,8 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 			info.health = this.toHealthStatus(inspectResult.value.State?.Health?.Status);
 			info.ports = this.toPorts(inspectResult.value.NetworkSettings?.Ports);
 			info.mounts = this.toMounts(inspectResult.value.Mounts);
+			info.restartPolicy = this.toRestartPolicy(inspectResult.value.HostConfig?.RestartPolicy?.Name);
+			info.exitCode = inspectResult.value.State?.ExitCode;
 		} else {
 			this.logger.warn({
 				message: `Failed to inspect container ${info.name}`,

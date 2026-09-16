@@ -10,6 +10,9 @@ export type DockerPortProtocol = (typeof DockerPortProtocols)[number];
 export const DockerLogStreams = ["stdout", "stderr"] as const;
 export type DockerLogStream = (typeof DockerLogStreams)[number];
 
+export const DockerRestartPolicies = ["no", "always", "on-failure", "unless-stopped"] as const;
+export type DockerRestartPolicy = (typeof DockerRestartPolicies)[number];
+
 export const DOCKER_LOG_TAIL_LINES = 200;
 
 export interface DockerLogLine {
@@ -55,6 +58,9 @@ export interface DockerContainerInfo {
 	startedAt?: string; // ISO date
 	ports?: DockerContainerPort[];
 	mounts?: DockerContainerMount[];
+	restartPolicy?: DockerRestartPolicy;
+	exitCode?: number;
+	oneOff?: boolean;
 }
 
 export interface DockerContainerSummary {

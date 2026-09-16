@@ -7406,6 +7406,16 @@
 																					},
 																					"required": ["type", "source", "destination", "mode", "rw"]
 																				}
+																			},
+																			"restartPolicy": {
+																				"type": "string",
+																				"enum": ["no", "always", "on-failure", "unless-stopped"]
+																			},
+																			"exitCode": {
+																				"type": "number"
+																			},
+																			"oneOff": {
+																				"type": "boolean"
 																			}
 																		},
 																		"required": ["id", "name", "image", "state", "status", "health"]
@@ -7962,6 +7972,16 @@
 																				},
 																				"required": ["type", "source", "destination", "mode", "rw"]
 																			}
+																		},
+																		"restartPolicy": {
+																			"type": "string",
+																			"enum": ["no", "always", "on-failure", "unless-stopped"]
+																		},
+																		"exitCode": {
+																			"type": "number"
+																		},
+																		"oneOff": {
+																			"type": "boolean"
 																		}
 																	},
 																	"required": ["id", "name", "image", "state", "status", "health"]
