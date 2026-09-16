@@ -50,8 +50,9 @@ export const UptimeDetailsSupportedTypes = ["http", "ping", "port", "game", "grp
 export type UptimeDetailsSupportedType = (typeof UptimeDetailsSupportedTypes)[number];
 export const supportsUptimeDetails = (type: MonitorType): type is UptimeDetailsSupportedType => UptimeDetailsSupportedTypes.some((t) => t === type);
 
-// Types whose transport failure can be the instance's own loss of egress. Hardware (Capture agent) and docker
-// (local socket or host) failures are local, so they are never attributed to egress.
+// Types whose transport failure can be the instance's own loss of egress. Hardware and docker are left out:
+// a Capture agent or a docker socket is normally reached locally, and a docker monitor pointed at a remote
+// host over TCP is deliberately out of scope rather than assumed local.
 export const EgressAttributableTypes = [
 	"http",
 	"ping",

@@ -134,6 +134,30 @@ describe("Heartbeat job: degraded egress", () => {
 		expect(h.incidentsRepo.getAll()).toHaveLength(1);
 	});
 
+	it("leaves an open incident open when egress drops during it", async () => {
+		const monitor = makeMonitor();
+		h.monitorsRepo.seed(monitor);
+
+		// The target goes down first and is detected normally
+		h.setEgressStatus(null);
+		h.setNextResponse(false, NETWORK_ERROR);
+		for (let i = 0; i < 3; i++) {
+			await h.heartbeatJob(monitor);
+		}
+		expect((await h.monitorsRepo.findById("mon-1", "team-1")).status).toBe("down");
+		expect(h.incidentsRepo.getAll()).toHaveLength(1);
+
+		// Egress then drops. The monitor must stay down rather than be resolved by the silence.
+		h.setEgressStatus("degraded");
+		for (let i = 0; i < 3; i++) {
+			await h.heartbeatJob(monitor);
+		}
+
+		expect((await h.monitorsRepo.findById("mon-1", "team-1")).status).toBe("down");
+		expect(h.incidentsRepo.getAll()).toHaveLength(1);
+		expect(h.notificationsService.handleNotifications).toHaveBeenCalledTimes(1);
+	});
+
 	it("keeps counting real failures taken either side of a degraded spell", async () => {
 		const monitor = makeMonitor();
 		h.monitorsRepo.seed(monitor);

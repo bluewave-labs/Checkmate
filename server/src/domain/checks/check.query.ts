@@ -1,8 +1,7 @@
 import type { EgressStatus } from "@/domain/egress/egress.type.js";
 
-// Checks recorded while the instance's own egress was down cannot be attributed to the target, so they
-// are left out of every uptime percentage and up/down count. Response-time series keep them.
-// Spread this into the $match / filter of a query, or use the expression form inside a $group accumulator.
+// A check recorded while the instance's own egress was down says nothing about the target, so it is left out of
+// every aggregate: uptime percentages, up/down counts and the response-time series alike. A degraded episode
+// therefore reads as a gap in monitoring rather than as downtime or as a dip in response time.
+// Spread this into the $match or filter of any query that reports statistics. Check listings keep degraded checks.
 export const EXCLUDE_DEGRADED_EGRESS_MATCH = { egressStatus: { $ne: "degraded" satisfies EgressStatus } } as const;
-
-export const IS_NOT_DEGRADED_EGRESS_EXPR = { $ne: ["$egressStatus", "degraded" satisfies EgressStatus] } as const;

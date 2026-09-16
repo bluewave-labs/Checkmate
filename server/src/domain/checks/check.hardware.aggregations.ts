@@ -1,7 +1,6 @@
 import { CheckModel } from "@/domain/checks/check.model.js";
 import mongoose from "mongoose";
 import type { HardwareDiskStats, HardwareNetStats } from "@/domain/checks/check.type.js";
-import { EXCLUDE_DEGRADED_EGRESS_MATCH } from "@/domain/checks/check.query.js";
 
 type DateRange = { start: Date; end: Date };
 type HardwareUpChecks = { totalChecks: number };
@@ -71,7 +70,6 @@ export const getHardwareTotalChecks = async (monitorId: string, dates: DateRange
 		"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 		"metadata.type": "hardware",
 		createdAt: { $gte: dates.start, $lte: dates.end },
-		...EXCLUDE_DEGRADED_EGRESS_MATCH,
 	});
 };
 

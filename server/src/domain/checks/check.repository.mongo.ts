@@ -16,7 +16,7 @@ import type {
 } from "@/domain/checks/check.type.js";
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
 import { CheckModel, type CheckDocument } from "@/domain/checks/check.model.js";
-import { EXCLUDE_DEGRADED_EGRESS_MATCH, IS_NOT_DEGRADED_EGRESS_EXPR } from "@/domain/checks/check.query.js";
+import { EXCLUDE_DEGRADED_EGRESS_MATCH } from "@/domain/checks/check.query.js";
 import mongoose from "mongoose";
 import { getDateFormat, getDateForRange } from "@/utils/dataUtils.js";
 import { ILogger } from "@/utils/logger.js";
@@ -396,6 +396,7 @@ class MongoChecksRepository implements IChecksRepository {
 				$match: {
 					"metadata.monitorId": { $in: objectIds },
 					createdAt: { $gte: windowStart },
+					...EXCLUDE_DEGRADED_EGRESS_MATCH,
 				},
 			},
 			{
@@ -404,14 +405,11 @@ class MongoChecksRepository implements IChecksRepository {
 						monitorId: "$metadata.monitorId",
 						day: { $dateTrunc: { date: "$createdAt", unit: "day", timezone } },
 					},
-					// Counts exclude degraded-egress checks; the response-time average keeps them.
-					totalChecks: { $sum: { $cond: [IS_NOT_DEGRADED_EGRESS_EXPR, 1, 0] } },
-					upChecks: { $sum: { $cond: [{ $and: [{ $eq: ["$status", true] }, IS_NOT_DEGRADED_EGRESS_EXPR] }, 1, 0] } },
+					totalChecks: { $sum: 1 },
+					upChecks: { $sum: { $cond: [{ $eq: ["$status", true] }, 1, 0] } },
 					avgResponseTime: { $avg: "$responseTime" },
 				},
 			},
-			// A day with nothing attributable to the target renders as an empty bar; the client divides by totalChecks for the tooltip.
-			{ $match: { totalChecks: { $gt: 0 } } },
 			{ $sort: { "_id.day": 1 } },
 			{
 				$project: {
@@ -479,6 +477,7 @@ class MongoChecksRepository implements IChecksRepository {
 		const matchStage = {
 			"metadata.monitorId": monitorObjectId,
 			createdAt: { $gte: startDate, $lte: endDate },
+			...EXCLUDE_DEGRADED_EGRESS_MATCH,
 		};
 		const [result] = await CheckModel.aggregate([
 			{ $match: matchStage },
@@ -486,8 +485,6 @@ class MongoChecksRepository implements IChecksRepository {
 			{
 				$facet: {
 					uptimePercentage: [
-						// Response-time series (groupedUpChecks / groupedDownChecks) deliberately keep degraded checks so they still show as failures on the graph.
-						{ $match: EXCLUDE_DEGRADED_EGRESS_MATCH },
 						{
 							$group: {
 								_id: null,
@@ -646,6 +643,7 @@ class MongoChecksRepository implements IChecksRepository {
 		const matchStage = {
 			"metadata.monitorId": monitorObjectId,
 			createdAt: { $gte: startDate, $lte: endDate },
+			...EXCLUDE_DEGRADED_EGRESS_MATCH,
 		};
 
 		const [result] = await CheckModel.aggregate([

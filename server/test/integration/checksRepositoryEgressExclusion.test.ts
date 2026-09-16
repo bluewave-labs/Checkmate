@@ -3,14 +3,15 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import MongoChecksRepository from "../../src/domain/checks/check.repository.mongo.ts";
 import { CheckModel } from "../../src/domain/checks/check.model.ts";
-import type { Check, DockerChecksResult, HardwareChecksResult, UptimeChecksResult } from "../../src/domain/checks/check.type.ts";
+import type { Check, DockerChecksResult, PageSpeedChecksResult, UptimeChecksResult } from "../../src/domain/checks/check.type.ts";
+import { NETWORK_ERROR } from "../../src/types/network.ts";
 import type { ILogger } from "../../src/utils/logger.ts";
 import { createMockLogger } from "../helpers/createMockLogger.ts";
 
 // ── Real-Mongo harness ─────────────────────────────────────────────────────────
 // The guarantee under test — a check flagged egressStatus "degraded" is left out of
-// every uptime percentage and down-count while still appearing in listings and in
-// the response-time series — lives in $match stages spread into several aggregation
+// every aggregate, so a degraded episode reads as a gap in monitoring, while the check
+// still appears in listings — lives in $match stages spread into several aggregation
 // pipelines, so it can only be exercised against a live mongod.
 
 let mongod: MongoMemoryServer;
@@ -85,7 +86,7 @@ describe("MongoChecksRepository degraded-egress exclusion", () => {
 		await expect(seedCheck({ status: false, egressStatus: "unknown" })).rejects.toThrow(/egressStatus/);
 	});
 
-	it("excludes degraded checks from the uptime percentage but keeps them in the response-time series", async () => {
+	it("excludes degraded checks from the uptime percentage and from the response-time series alike", async () => {
 		await seedCheck(); // up
 		await seedCheck({ status: false }); // real failure
 		await seedDegradedFailure();
@@ -95,11 +96,31 @@ describe("MongoChecksRepository degraded-egress exclusion", () => {
 
 		// 1 up of 2 attributable checks. Counting the degraded pair would give 25%.
 		expect(result.uptimePercentage).toBe(0.5);
-		// The graph still shows the degraded checks as failures, and their response times stay in the averages.
-		expect(result.avgResponseTime).toBe(200);
-		expect(result.groupedChecks[0]).toMatchObject({ totalChecks: 4, avgResponseTime: 200 });
-		expect(result.groupedDownChecks[0]).toMatchObject({ totalChecks: 3 });
+		// Every series sees the same two checks, so the episode is a gap rather than a dip.
+		expect(result.avgResponseTime).toBe(100);
+		expect(result.groupedChecks[0]).toMatchObject({ totalChecks: 2, avgResponseTime: 100 });
+		expect(result.groupedDownChecks[0]).toMatchObject({ totalChecks: 1 });
 		expect(result.groupedUpChecks[0]).toMatchObject({ totalChecks: 1 });
+	});
+
+	it("leaves a bucket out of the response-time series entirely when every check in it was degraded", async () => {
+		await seedDegradedFailure();
+		await seedDegradedFailure();
+
+		const result = (await repo.findByDateRangeAndMonitorId(MONITOR_ID.toString(), "day", { type: "http" })) as UptimeChecksResult;
+
+		expect(result.groupedChecks).toEqual([]);
+		expect(result.groupedDownChecks).toEqual([]);
+		expect(result.uptimePercentage).toBe(0);
+	});
+
+	it("excludes degraded checks from the pagespeed series", async () => {
+		await seedCheck({ metadata: { monitorId: MONITOR_ID, teamId: TEAM_ID, type: "pagespeed" }, performance: 0.9 });
+		await seedDegradedFailure({ metadata: { monitorId: MONITOR_ID, teamId: TEAM_ID, type: "pagespeed" }, performance: 0.1 });
+
+		const result = (await repo.findByDateRangeAndMonitorId(MONITOR_ID.toString(), "day", { type: "pagespeed" })) as PageSpeedChecksResult;
+
+		expect(result.groupedChecks[0]).toMatchObject({ totalChecks: 1, performance: 0.9 });
 	});
 
 	it("does not flag a failure that carries egressStatus ok", async () => {
@@ -121,7 +142,7 @@ describe("MongoChecksRepository degraded-egress exclusion", () => {
 		expect(summary).toEqual({ totalChecks: 2, downChecks: 1 });
 	});
 
-	it("excludes degraded checks from the daily status bucket counts but keeps them in its response-time average", async () => {
+	it("excludes degraded checks from the daily status buckets, dropping a day that saw nothing else", async () => {
 		const otherMonitor = new mongoose.Types.ObjectId();
 		await seedCheck();
 		await seedCheck({ status: false });
@@ -130,44 +151,10 @@ describe("MongoChecksRepository degraded-egress exclusion", () => {
 
 		const buckets = await repo.getDailyStatusBuckets([MONITOR_ID.toString(), otherMonitor.toString()], 7, "UTC");
 
-		// (100 + 100 + 300) / 3 = 167: the degraded check's response time counts, its failure does not.
 		// The other monitor saw only degraded checks that day, so it gets no row rather than a 0/0 bucket.
 		expect(buckets).toEqual([
-			{ monitorId: MONITOR_ID.toString(), date: utcDate(BUCKET_TIME), totalChecks: 2, upChecks: 1, downChecks: 1, avgResponseTime: 167 },
+			{ monitorId: MONITOR_ID.toString(), date: utcDate(BUCKET_TIME), totalChecks: 2, upChecks: 1, downChecks: 1, avgResponseTime: 100 },
 		]);
-	});
-
-	it("excludes degraded checks from the hardware and docker totals", async () => {
-		const hardwareMonitor = new mongoose.Types.ObjectId();
-		const dockerMonitor = new mongoose.Types.ObjectId();
-		const hardwareMeta = { monitorId: hardwareMonitor, teamId: TEAM_ID, type: "hardware" };
-		const dockerMeta = { monitorId: dockerMonitor, teamId: TEAM_ID, type: "docker" };
-
-		await seedCheck({ metadata: hardwareMeta });
-		await seedDegradedFailure({ metadata: hardwareMeta });
-		await seedCheck({ metadata: dockerMeta });
-		await seedDegradedFailure({ metadata: dockerMeta });
-
-		const hardware = (await repo.findByDateRangeAndMonitorId(hardwareMonitor.toString(), "day", { type: "hardware" })) as HardwareChecksResult;
-		const docker = (await repo.findByDateRangeAndMonitorId(dockerMonitor.toString(), "day", { type: "docker" })) as DockerChecksResult;
-
-		expect(hardware.aggregateData.totalChecks).toBe(1);
-		expect(hardware.upChecks.totalChecks).toBe(1);
-		expect(docker.aggregateData.totalChecks).toBe(1);
-		expect(docker.upChecks.totalChecks).toBe(1);
-	});
-
-	it("excludes degraded checks from the docker bucket counts but keeps them in its response-time average", async () => {
-		const dockerMonitor = new mongoose.Types.ObjectId();
-		const dockerMeta = { monitorId: dockerMonitor, teamId: TEAM_ID, type: "docker" };
-
-		await seedCheck({ metadata: dockerMeta });
-		await seedDegradedFailure({ metadata: dockerMeta });
-
-		const docker = (await repo.findByDateRangeAndMonitorId(dockerMonitor.toString(), "day", { type: "docker" })) as DockerChecksResult;
-
-		expect(docker.aggregate).toHaveLength(1);
-		expect(docker.aggregate[0]).toMatchObject({ upCount: 1, totalCount: 1, avgResponseTime: 200 });
 	});
 
 	it("keeps degraded checks in the paginated listing so they can be shown as such", async () => {
@@ -178,5 +165,34 @@ describe("MongoChecksRepository degraded-egress exclusion", () => {
 
 		expect(checksCount).toBe(2);
 		expect(checks.map((check) => check.egressStatus).sort()).toEqual([undefined, "degraded"].sort());
+	});
+
+	it("keeps degraded checks in the team listing and under the resolve filter", async () => {
+		await seedCheck({ status: false, statusCode: NETWORK_ERROR });
+		await seedDegradedFailure({ statusCode: NETWORK_ERROR });
+
+		// The Checks page reads this listing when no single monitor is selected, and a degraded check has the
+		// same shape the resolve filter looks for, so neither may quietly drop it.
+		const team = await repo.findByTeamId("desc", "day", 0, 10, TEAM_ID.toString(), "down");
+		const resolve = await repo.findByTeamId("desc", "day", 0, 10, TEAM_ID.toString(), "resolve");
+
+		expect(team.checksCount).toBe(2);
+		expect(resolve.checksCount).toBe(2);
+		expect(resolve.checks.map((check) => check.egressStatus).sort()).toEqual([undefined, "degraded"].sort());
+	});
+
+	it("leaves the docker aggregates alone, since a docker check is never attributed to egress", async () => {
+		const dockerMonitor = new mongoose.Types.ObjectId();
+		const dockerMeta = { monitorId: dockerMonitor, teamId: TEAM_ID, type: "docker" };
+
+		// The schema accepts the field on any type, so this pins the scope decision rather than the schema:
+		// the producer never sets it for docker or hardware, so their aggregations must not filter on it.
+		await seedCheck({ metadata: dockerMeta });
+		await seedDegradedFailure({ metadata: dockerMeta });
+
+		const docker = (await repo.findByDateRangeAndMonitorId(dockerMonitor.toString(), "day", { type: "docker" })) as DockerChecksResult;
+
+		expect(docker.aggregateData.totalChecks).toBe(2);
+		expect(docker.aggregate[0]).toMatchObject({ upCount: 1, totalCount: 2 });
 	});
 });
