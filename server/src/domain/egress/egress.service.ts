@@ -173,7 +173,7 @@ export class EgressService implements IEgressService {
 
 	private assess = async (): Promise<EgressAssessment | null> => {
 		try {
-			const settings = await this.settingsService.getDBSettings();
+			const settings = await this.settingsService.getCachedDBSettings();
 			if (!settings.egressCheckEnabled) {
 				return "disabled";
 			}
@@ -250,7 +250,7 @@ export class EgressService implements IEgressService {
 	// Runs on the queue at the configured interval while degraded. Errors propagate so the queue records
 	// the failure and retries with its usual backoff.
 	checkRecovery = async (job: Job): Promise<void> => {
-		const settings = await this.settingsService.getDBSettings();
+		const settings = await this.settingsService.getCachedDBSettings();
 		const state = await this.egressStateRepository.findSingleton();
 		if (!settings.egressCheckEnabled || state.status !== "degraded") {
 			// Feature switched off, recovery recorded by another worker, or state reset: nothing left to poll for.

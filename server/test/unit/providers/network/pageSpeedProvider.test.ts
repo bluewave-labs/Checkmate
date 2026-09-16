@@ -33,7 +33,7 @@ const createMockHttpProvider = () =>
 
 const createMockSettingsService = (apiKey?: string) =>
 	({
-		getDBSettings: jest.fn().mockResolvedValue({ pagespeedApiKey: apiKey }),
+		getCachedDBSettings: jest.fn().mockResolvedValue({ pagespeedApiKey: apiKey }),
 	}) as unknown as jest.Mocked<ISettingsService>;
 
 const createProvider = (opts?: { apiKey?: string }) => {
@@ -154,7 +154,7 @@ describe("PageSpeedProvider", () => {
 		const logger = createMockLogger();
 		const httpProvider = createMockHttpProvider();
 		const settingsService = {
-			getDBSettings: jest.fn().mockResolvedValue(null),
+			getCachedDBSettings: jest.fn().mockResolvedValue(null),
 		} as unknown as jest.Mocked<ISettingsService>;
 		const provider = new PageSpeedProvider(httpProvider, settingsService, logger as any);
 
