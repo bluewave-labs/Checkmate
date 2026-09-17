@@ -83,12 +83,17 @@ export const Breadcrumb = ({
 	const basePage = segments[0] || t("common.breadcrumbs.home");
 
 	const secondSegment = segments[1];
+	const thirdSegment = segments[2];
 	const isActionPage = secondSegment && actionSegments.includes(secondSegment);
 	const isDetailsPage = secondSegment && isId(secondSegment);
-	const hasSubPage = isActionPage || isDetailsPage;
+	// page/section/:id routes such as docker/host/:monitorId
+	const isSectionDetailsPage = Boolean(
+		secondSegment && !isId(secondSegment) && thirdSegment && isId(thirdSegment)
+	);
+	const hasSubPage = isActionPage || isDetailsPage || isSectionDetailsPage;
 
 	const getSubPageLabel = (): string => {
-		if (isActionPage) {
+		if (isActionPage || isSectionDetailsPage) {
 			return secondSegment.charAt(0).toUpperCase() + secondSegment.slice(1);
 		}
 		return t("common.breadcrumbs.details");

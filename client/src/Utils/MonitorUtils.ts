@@ -1,6 +1,14 @@
 import type { MonitorStatus, MonitorType } from "@/Types/Monitor";
 import type { PaletteKey } from "@/Utils/Theme/Theme";
 import type { ValueType } from "@/Components/design-elements/StatusLabel";
+import {
+	DockerLogStreams,
+	type DockerContainerMount,
+	type DockerContainerPort,
+	type DockerContainerState,
+	type DockerLog,
+	type DockerLogLine,
+} from "@/Types/Check";
 
 export const getMonitorPath = (type: MonitorType): string => {
 	const pathMap: Record<MonitorType, string> = {
@@ -12,7 +20,7 @@ export const getMonitorPath = (type: MonitorType): string => {
 		websocket: "uptime",
 		dns: "uptime",
 		unknown: "uptime",
-		docker: "uptime",
+		docker: "docker",
 		hardware: "infrastructure",
 		pagespeed: "pagespeed",
 	};
@@ -32,6 +40,14 @@ export const getStatusPalette = (status: MonitorStatus): PaletteKey => {
 	return "warning";
 };
 
+export const getDockerPalette = (dockerState: DockerContainerState): PaletteKey => {
+	if (dockerState === "created") return "success";
+	if (dockerState === "running") return "success";
+	if (dockerState === "dead") return "error";
+	if (dockerState === "exited") return "error";
+	return "warning";
+};
+
 export const getValuePalette = (value: ValueType): PaletteKey => {
 	const paletteMap: Record<ValueType, PaletteKey> = {
 		positive: "success",
@@ -39,6 +55,19 @@ export const getValuePalette = (value: ValueType): PaletteKey => {
 		neutral: "warning",
 	};
 	return paletteMap[value];
+};
+
+export const getDockerStatePalette = (state: DockerContainerState): PaletteKey => {
+	const paletteMap: Record<DockerContainerState, PaletteKey> = {
+		paused: "warning",
+		created: "warning",
+		running: "success",
+		restarting: "warning",
+		removing: "warning",
+		exited: "error",
+		dead: "error",
+	};
+	return paletteMap[state];
 };
 
 export const getStatusColor = (status: MonitorStatus, theme: any): string => {
@@ -96,4 +125,65 @@ export const formatUrl = (url: string, maxLength: number = 55) => {
 	return strippedUrl.length > maxLength
 		? `${strippedUrl.slice(0, maxLength)}…`
 		: strippedUrl;
+};
+
+export const dedupeDockerPorts = (
+	ports: DockerContainerPort[]
+): DockerContainerPort[] => {
+	return ports.filter((port) => {
+		// Discard ipv6 wildcards
+		if (port.hostIp !== "::") return port;
+
+		const isDuplicate = ports.some((otherPort) => {
+			if (otherPort.hostIp !== "0.0.0.0") return false;
+
+			return (
+				otherPort.privatePort === port.privatePort &&
+				otherPort.protocol === port.protocol &&
+				otherPort.publicPort === port.publicPort
+			);
+		});
+		return !isDuplicate;
+	});
+};
+
+const isAnonymousVolumeName = (name: string): boolean => /^[0-9a-f]{64}$/.test(name);
+
+export const getDockerMountLabel = (mount: DockerContainerMount) => {
+	if (mount.type === "volume" && mount.name)
+		return isAnonymousVolumeName(mount.name) ? mount.name.slice(0, 12) : mount.name;
+	if (mount.source) return mount.source;
+	return mount.type;
+};
+
+export const DockerLogStreamFilters = ["all", ...DockerLogStreams] as const;
+export type DockerLogStreamFilter = (typeof DockerLogStreamFilters)[number];
+
+export interface DockerLogRow extends DockerLogLine {
+	key: string;
+	gapBefore: boolean; // This signifies lines skipped
+}
+
+export const flattenDockerLogs = (logs: DockerLog[]): DockerLogRow[] => {
+	const rows: DockerLogRow[] = [];
+	for (const log of [...logs].reverse()) {
+		log.lines.forEach((line: DockerLogLine, idx: number) => {
+			rows.push({ ...line, key: `${log.id}:${idx}`, gapBefore: idx === 0 && log.gap });
+		});
+	}
+	return rows;
+};
+
+export const filterDockerLogRows = (
+	rows: DockerLogRow[],
+	stream: DockerLogStreamFilter,
+	query: string
+): DockerLogRow[] => {
+	const normalizedQuery = query.trim().toLowerCase();
+	return rows.filter((row) => {
+		return (
+			(stream === "all" || row.stream === stream) &&
+			(normalizedQuery === "" || row.text.toLowerCase().includes(normalizedQuery))
+		);
+	});
 };

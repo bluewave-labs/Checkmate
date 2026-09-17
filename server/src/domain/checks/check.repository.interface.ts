@@ -3,6 +3,8 @@ import type {
 	ChecksQueryResult,
 	ChecksSummary,
 	DailyCheckBucket,
+	DockerChecksResult,
+	DockerContainerStats,
 	HardwareChecksResult,
 	PageSpeedChecksResult,
 	UptimeChecksResult,
@@ -38,7 +40,8 @@ export interface IChecksRepository {
 		monitorId: string,
 		dateRange: DateRange,
 		options?: { type?: MonitorType }
-	): Promise<UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult>;
+	): Promise<UptimeChecksResult | HardwareChecksResult | PageSpeedChecksResult | DockerChecksResult>;
+	findDockerContainerChecks(monitorId: string, containerName: string, dateRange: DateRange): Promise<Omit<DockerContainerStats, "restartsInRange">>;
 	findSummaryByTeamId(teamId: string, dateRange: DateRange): Promise<ChecksSummary>;
 	findUnevaluatedByMonitorId(monitorId: string, since: number): Promise<Check[]>;
 	getDailyStatusBuckets(monitorIds: string[], days: number, timezone: string): Promise<DailyCheckBucket[]>;

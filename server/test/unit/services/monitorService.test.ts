@@ -2,10 +2,13 @@ import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import { MonitorService } from "../../../src/domain/monitors/monitor.service.ts";
 import type { IChecksRepository } from "../../../src/domain/checks/check.repository.interface.ts";
 import type { IGeoChecksRepository } from "../../../src/domain/geo-checks/geo-check.repository.interface.ts";
+import type { IDockerLogsRepository } from "../../../src/domain/docker/docker-log.repository.interface.ts";
 import type { IIncidentsRepository } from "../../../src/domain/incidents/incident.repository.interface.ts";
 import type { IMonitorStatsRepository } from "../../../src/domain/monitor-stats/monitor-stats.repository.interface.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
 import type { IStatusPagesRepository } from "../../../src/domain/status-pages/status-page-repository.interface.ts";
+import type { IEncryptionService } from "../../../src/service/encryption/encryptionService.ts";
+import { AppError } from "../../../src/utils/AppError.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 
 const createMonitorsRepositoryMock = () =>
@@ -29,6 +32,7 @@ const createMonitorsRepositoryMock = () =>
 const createChecksRepositoryMock = () =>
 	({
 		findByDateRangeAndMonitorId: jest.fn(),
+		findDockerContainerChecks: jest.fn(),
 		deleteByMonitorId: jest.fn(),
 	}) as unknown as IChecksRepository;
 
@@ -49,6 +53,12 @@ const createGeoChecksRepositoryMock = () =>
 		deleteByMonitorId: jest.fn(),
 	}) as unknown as IGeoChecksRepository;
 
+const createDockerLogsRepositoryMock = () =>
+	({
+		findByContainerName: jest.fn(),
+		deleteByMonitorId: jest.fn().mockResolvedValue(0),
+	}) as unknown as IDockerLogsRepository;
+
 const createIncidentsRepositoryMock = () =>
 	({
 		deleteByMonitorId: jest.fn(),
@@ -61,6 +71,17 @@ const createJobQueueMock = () => ({
 	pauseJob: jest.fn(),
 	deleteJob: jest.fn(),
 });
+
+const createEncryptionServiceMock = (overrides: Partial<IEncryptionService> = {}) =>
+	({
+		isConfigured: jest.fn(() => true),
+		currentKeyId: jest.fn(() => "key-1"),
+		keyIdOf: jest.fn(() => "key-1"),
+		needsReencryption: jest.fn(() => false),
+		encrypt: jest.fn((plaintext: string) => `enc:${plaintext}`),
+		decrypt: jest.fn((ciphertext: string) => ciphertext.replace(/^enc:/, "")),
+		...overrides,
+	}) as unknown as IEncryptionService;
 
 const TEAM_ID = "team-1";
 const MONITOR_ID = "monitor-1";
@@ -88,7 +109,9 @@ const createService = (
 		monitorStatsRepository?: IMonitorStatsRepository;
 		statusPagesRepository?: IStatusPagesRepository;
 		geoChecksRepository?: IGeoChecksRepository;
+		dockerLogsRepository?: IDockerLogsRepository;
 		incidentsRepository?: IIncidentsRepository;
+		encryptionService?: IEncryptionService;
 		jobQueue?: ReturnType<typeof createJobQueueMock>;
 		logger?: ReturnType<typeof createMockLogger>;
 		games?: Record<string, unknown>;
@@ -103,25 +126,28 @@ const createService = (
 		monitorsRepository: overrides.monitorsRepository ?? createMonitorsRepositoryMock(),
 		checksRepository: overrides.checksRepository ?? createChecksRepositoryMock(),
 		geoChecksRepository: overrides.geoChecksRepository ?? createGeoChecksRepositoryMock(),
+		dockerLogsRepository: overrides.dockerLogsRepository ?? createDockerLogsRepositoryMock(),
 		monitorStatsRepository: overrides.monitorStatsRepository ?? createMonitorStatsRepositoryMock(),
 		statusPagesRepository: overrides.statusPagesRepository ?? createStatusPagesRepositoryMock(),
 		incidentsRepository: overrides.incidentsRepository ?? createIncidentsRepositoryMock(),
+		encryptionService: overrides.encryptionService ?? createEncryptionServiceMock(),
 	});
 	return { service, jobQueue, logger };
 };
 
 describe("MonitorService", () => {
 	describe("createMonitor", () => {
-		it("creates a monitor and adds a job", async () => {
+		it("creates a monitor, adds a job and returns the created document", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			const monitor = makeMonitor();
 			(monitorsRepository.create as jest.Mock).mockResolvedValue(monitor);
 			const { service, jobQueue } = createService({ monitorsRepository });
 
-			await service.createMonitor(TEAM_ID, USER_ID, monitor as any);
+			const result = await service.createMonitor(TEAM_ID, USER_ID, monitor as any);
 
 			expect(monitorsRepository.create).toHaveBeenCalledWith(monitor, TEAM_ID, USER_ID);
 			expect(jobQueue.addJob).toHaveBeenCalledWith(MONITOR_ID, monitor);
+			expect(result).toBe(monitor);
 		});
 
 		it("strips a stray proxyId when proxyMode is not custom", async () => {
@@ -237,8 +263,8 @@ describe("MonitorService", () => {
 			expect(result.monitorData.monitor).toMatchObject({ id: MONITOR_ID });
 		});
 
-		it("supports all uptime monitor types: ping, docker, port, game, grpc, websocket", async () => {
-			for (const monitorType of ["ping", "docker", "port", "game", "grpc", "websocket"] as const) {
+		it("supports all uptime monitor types: ping, port, game, grpc, websocket, dns", async () => {
+			for (const monitorType of ["ping", "port", "game", "grpc", "websocket", "dns"] as const) {
 				const monitorsRepository = createMonitorsRepositoryMock();
 				const checksRepository = createChecksRepositoryMock();
 				const monitorStatsRepository = createMonitorStatsRepositoryMock();
@@ -310,6 +336,27 @@ describe("MonitorService", () => {
 
 			const { service } = createService({ monitorsRepository, checksRepository, monitorStatsRepository });
 			await expect(service.getUptimeDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "week" })).rejects.toThrow(
+				"monitors are not supported for uptime details"
+			);
+		});
+
+		it("throws 400 for unsupported monitor type (docker)", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			const monitorStatsRepository = createMonitorStatsRepositoryMock();
+			const monitor = makeMonitor({ type: "docker" });
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(checksRepository.findByDateRangeAndMonitorId as jest.Mock).mockResolvedValue({
+				monitorType: "docker",
+				aggregateData: { totalChecks: 0 },
+				upChecks: { totalChecks: 0 },
+				aggregate: [],
+				latest: null,
+			});
+			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue(null);
+
+			const { service } = createService({ monitorsRepository, checksRepository, monitorStatsRepository });
+			await expect(service.getUptimeDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "recent" })).rejects.toThrow(
 				"monitors are not supported for uptime details"
 			);
 		});
@@ -395,6 +442,257 @@ describe("MonitorService", () => {
 			await expect(service.getHardwareDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "recent" })).rejects.toThrow(
 				"Unable to load hardware stats for this monitor"
 			);
+		});
+	});
+
+	describe("getDockerDetailsById", () => {
+		it("returns docker details for a docker monitor", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			const monitorStatsRepository = createMonitorStatsRepositoryMock();
+			const monitor = makeMonitor({ type: "docker" });
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(checksRepository.findByDateRangeAndMonitorId as jest.Mock).mockResolvedValue({
+				monitorType: "docker",
+				aggregateData: { totalChecks: 10 },
+				upChecks: { totalChecks: 9 },
+				aggregate: [{ _id: "2024-01-01T00:00:00Z", avgResponseTime: 12, upCount: 9, totalCount: 10, avgRunning: 3, avgTotal: 4, avgUnhealthy: 0 }],
+				latest: {
+					containers: [],
+					summary: { total: 4, running: 3, stopped: 1, unhealthy: 0 },
+					checkedAt: "2024-01-01T00:00:00Z",
+				},
+			});
+			(monitorStatsRepository.findByMonitorId as jest.Mock).mockResolvedValue({ monitorId: MONITOR_ID });
+
+			const { service } = createService({ monitorsRepository, checksRepository, monitorStatsRepository });
+			const result = await service.getDockerDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "recent" });
+
+			expect(result.monitor).toMatchObject({ id: MONITOR_ID });
+			expect(result.stats).toHaveProperty("aggregateData");
+			expect(result.stats).toHaveProperty("upChecks");
+			expect(result.stats).toHaveProperty("aggregate");
+			expect(result.stats).toHaveProperty("latest");
+			expect(result.stats.latest?.summary).toMatchObject({ total: 4, running: 3, stopped: 1, unhealthy: 0 });
+			expect(result.monitorStats).toMatchObject({ monitorId: MONITOR_ID });
+		});
+
+		it("throws 404 when monitor not found", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(null);
+			const { service } = createService({ monitorsRepository });
+
+			await expect(service.getDockerDetailsById({ teamId: TEAM_ID, monitorId: "missing", dateRange: "recent" })).rejects.toThrow(
+				"Monitor with ID missing not found."
+			);
+		});
+
+		it("throws 400 when monitor type is not docker", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const monitor = makeMonitor({ type: "http" });
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			const { service } = createService({ monitorsRepository });
+
+			await expect(service.getDockerDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "recent" })).rejects.toThrow(
+				"monitors are not supported for docker details"
+			);
+		});
+
+		it("throws 500 when checksData monitorType is not docker", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			const monitor = makeMonitor({ type: "docker" });
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(checksRepository.findByDateRangeAndMonitorId as jest.Mock).mockResolvedValue({ monitorType: "http" });
+			const { service } = createService({ monitorsRepository, checksRepository });
+
+			await expect(service.getDockerDetailsById({ teamId: TEAM_ID, monitorId: MONITOR_ID, dateRange: "recent" })).rejects.toThrow(
+				"Unable to load docker stats for this monitor"
+			);
+		});
+	});
+
+	describe("getDockerContainerByName", () => {
+		const makeBucket = (overrides: Partial<Record<string, number | string | null>> = {}) => ({
+			_id: "2024-01-01T00:00:00Z",
+			avgCpuPct: 12.5,
+			avgMemoryUsedBytes: 1024,
+			avgMemoryPct: 50,
+			minRestartCount: 0,
+			maxRestartCount: 0,
+			...overrides,
+		});
+
+		it("returns container details for a docker monitor", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			const monitor = makeMonitor({ type: "docker" });
+			const container = { id: "abc", name: "checkmate-mongo", image: "mongo:8.0", state: "running", status: "Up 3 hours", health: "healthy" };
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(checksRepository.findDockerContainerChecks as jest.Mock).mockResolvedValue({
+				aggregate: [makeBucket()],
+				latest: { container, checkedAt: "2024-01-01T00:00:00Z" },
+			});
+
+			const { service } = createService({ monitorsRepository, checksRepository });
+			const result = await service.getDockerContainerByName({
+				teamId: TEAM_ID,
+				monitorId: MONITOR_ID,
+				containerName: "checkmate-mongo",
+				dateRange: "recent",
+			});
+
+			expect(checksRepository.findDockerContainerChecks).toHaveBeenCalledWith(MONITOR_ID, "checkmate-mongo", "recent");
+			expect(result.monitor).toMatchObject({ id: MONITOR_ID });
+			expect(result.stats.latest?.container).toMatchObject({ name: "checkmate-mongo" });
+			expect(result.stats.restartsInRange).toBe(0);
+		});
+
+		it("sums restarts within and between buckets", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			(checksRepository.findDockerContainerChecks as jest.Mock).mockResolvedValue({
+				aggregate: [
+					makeBucket({ _id: "01", minRestartCount: 0, maxRestartCount: 2 }),
+					makeBucket({ _id: "02", minRestartCount: 3, maxRestartCount: 3 }),
+					makeBucket({ _id: "03", minRestartCount: null, maxRestartCount: null }),
+					makeBucket({ _id: "04", minRestartCount: 3, maxRestartCount: 4 }),
+				],
+				latest: null,
+			});
+
+			const { service } = createService({ monitorsRepository, checksRepository });
+			const result = await service.getDockerContainerByName({
+				teamId: TEAM_ID,
+				monitorId: MONITOR_ID,
+				containerName: "checkmate-mongo",
+				dateRange: "day",
+			});
+
+			// 2 within bucket 01, +1 between 01 and 02, +1 within 04 (null bucket skipped)
+			expect(result.stats.restartsInRange).toBe(4);
+		});
+
+		it("counts a restart-count drop as a recreate", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const checksRepository = createChecksRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			(checksRepository.findDockerContainerChecks as jest.Mock).mockResolvedValue({
+				aggregate: [
+					makeBucket({ _id: "01", minRestartCount: 5, maxRestartCount: 5 }),
+					makeBucket({ _id: "02", minRestartCount: 1, maxRestartCount: 1 }),
+				],
+				latest: null,
+			});
+
+			const { service } = createService({ monitorsRepository, checksRepository });
+			const result = await service.getDockerContainerByName({
+				teamId: TEAM_ID,
+				monitorId: MONITOR_ID,
+				containerName: "checkmate-mongo",
+				dateRange: "day",
+			});
+
+			// counter dropped 5 -> 1: the recreate itself plus the 1 restart the new counter shows
+			expect(result.stats.restartsInRange).toBe(2);
+		});
+
+		it("throws 404 when monitor not found", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(null);
+			const { service } = createService({ monitorsRepository });
+
+			await expect(
+				service.getDockerContainerByName({ teamId: TEAM_ID, monitorId: "missing", containerName: "checkmate-mongo", dateRange: "recent" })
+			).rejects.toThrow("Monitor with ID missing not found.");
+		});
+
+		it("throws 400 when monitor type is not docker", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "http" }));
+			const { service } = createService({ monitorsRepository });
+
+			await expect(
+				service.getDockerContainerByName({ teamId: TEAM_ID, monitorId: MONITOR_ID, containerName: "checkmate-mongo", dateRange: "recent" })
+			).rejects.toThrow("monitors are not supported for docker container details");
+		});
+	});
+
+	describe("getDockerContainerLogs", () => {
+		it("throws 404 when the monitor is not found", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(null);
+			const { service } = createService({ monitorsRepository });
+
+			await expect(service.getDockerContainerLogs({ teamId: TEAM_ID, monitorId: "missing", containerName: "web", limit: 20 })).rejects.toThrow(
+				"Monitor with ID missing not found"
+			);
+		});
+
+		it("throws 400 for a non-docker monitor", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "http" }));
+			const { service } = createService({ monitorsRepository });
+
+			await expect(service.getDockerContainerLogs({ teamId: TEAM_ID, monitorId: MONITOR_ID, containerName: "web", limit: 20 })).rejects.toThrow(
+				"monitors are not supported for docker container logs"
+			);
+		});
+
+		it("passes pagination through and returns the last checkedAt as a full-page cursor", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const dockerLogsRepository = createDockerLogsRepositoryMock();
+			const before = new Date("2026-01-02T00:00:00.000Z");
+			const logs = [{ checkedAt: "2026-01-01T02:00:00.000Z" }, { checkedAt: "2026-01-01T01:00:00.000Z" }];
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			(dockerLogsRepository.findByContainerName as jest.Mock).mockResolvedValue(logs);
+			const { service } = createService({ monitorsRepository, dockerLogsRepository });
+
+			const result = await service.getDockerContainerLogs({
+				teamId: TEAM_ID,
+				monitorId: MONITOR_ID,
+				containerName: "web",
+				before,
+				limit: 2,
+			});
+
+			expect(dockerLogsRepository.findByContainerName).toHaveBeenCalledWith({ monitorId: MONITOR_ID, containerName: "web", before, limit: 2 });
+			expect(result.nextCursor).toBe("2026-01-01T01:00:00.000Z");
+		});
+
+		it("returns a null cursor for a short page", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const dockerLogsRepository = createDockerLogsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			(dockerLogsRepository.findByContainerName as jest.Mock).mockResolvedValue([{ checkedAt: "2026-01-01T01:00:00.000Z" }]);
+			const { service } = createService({ monitorsRepository, dockerLogsRepository });
+
+			const result = await service.getDockerContainerLogs({ teamId: TEAM_ID, monitorId: MONITOR_ID, containerName: "web", limit: 2 });
+
+			expect(result.nextCursor).toBeNull();
+		});
+
+		it("passes after through and returns a null cursor even for a full page", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const dockerLogsRepository = createDockerLogsRepositoryMock();
+			const after = new Date("2026-01-01T00:00:00.000Z");
+			const logs = [{ checkedAt: "2026-01-01T02:00:00.000Z" }, { checkedAt: "2026-01-01T01:00:00.000Z" }];
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			(dockerLogsRepository.findByContainerName as jest.Mock).mockResolvedValue(logs);
+			const { service } = createService({ monitorsRepository, dockerLogsRepository });
+
+			const result = await service.getDockerContainerLogs({
+				teamId: TEAM_ID,
+				monitorId: MONITOR_ID,
+				containerName: "web",
+				after,
+				limit: 2,
+			});
+
+			expect(dockerLogsRepository.findByContainerName).toHaveBeenCalledWith({ monitorId: MONITOR_ID, containerName: "web", after, limit: 2 });
+			expect(result.logs).toBe(logs);
+			expect(result.nextCursor).toBeNull();
 		});
 	});
 
@@ -1606,9 +1904,11 @@ describe("MonitorService", () => {
 				monitorsRepository,
 				checksRepository,
 				geoChecksRepository,
+				dockerLogsRepository: createDockerLogsRepositoryMock(),
 				monitorStatsRepository,
 				statusPagesRepository,
 				incidentsRepository,
+				encryptionService: createEncryptionServiceMock(),
 			});
 
 			const result = await service.deleteAllMonitors({ teamId: TEAM_ID });
@@ -1694,6 +1994,170 @@ describe("MonitorService", () => {
 				createdAt: "",
 				updatedAt: "",
 			});
+		});
+	});
+});
+
+describe("MonitorService — Docker TLS credentials", () => {
+	const KEY_PEM = "-----BEGIN PRIVATE KEY-----\nkey\n-----END PRIVATE KEY-----";
+	const tlsBody = { type: "docker" as const, url: "tcp://host:2376", dockerTlsCa: "ca-pem", dockerTlsCert: "cert-pem", dockerTlsKey: KEY_PEM };
+
+	const expectAppError = async (fn: () => Promise<unknown>, status: number, message: string | RegExp) => {
+		let caught: unknown;
+		try {
+			await fn();
+		} catch (error) {
+			caught = error;
+		}
+		expect(caught).toBeInstanceOf(AppError);
+		expect((caught as AppError).status).toBe(status);
+		expect((caught as AppError).message).toMatch(message);
+	};
+
+	describe("createMonitor", () => {
+		it("encrypts the key and sets dockerTlsKeySet for a TLS url", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.create as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			const encryptionService = createEncryptionServiceMock();
+			const { service } = createService({ monitorsRepository, encryptionService });
+
+			await service.createMonitor(TEAM_ID, USER_ID, makeMonitor(tlsBody) as any);
+
+			expect(encryptionService.encrypt).toHaveBeenCalledWith(KEY_PEM);
+			expect(monitorsRepository.create).toHaveBeenCalledWith(
+				expect.objectContaining({ dockerTlsCa: "ca-pem", dockerTlsCert: "cert-pem", dockerTlsKey: `enc:${KEY_PEM}`, dockerTlsKeySet: true }),
+				TEAM_ID,
+				USER_ID
+			);
+		});
+
+		it("does not encrypt anything for a socket url and leaves dockerTlsKeySet false", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.create as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			const encryptionService = createEncryptionServiceMock();
+			const { service } = createService({ monitorsRepository, encryptionService });
+
+			await service.createMonitor(TEAM_ID, USER_ID, makeMonitor({ type: "docker", url: "unix:///var/run/docker.sock" }) as any);
+
+			expect(encryptionService.encrypt).not.toHaveBeenCalled();
+			const [created] = (monitorsRepository.create as jest.Mock).mock.calls[0] as [Record<string, unknown>];
+			expect(created.dockerTlsKeySet).toBe(false);
+			expect(created.dockerTlsKey).toBeUndefined();
+		});
+
+		it("ignores TLS fields on non-docker monitors", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.create as jest.Mock).mockResolvedValue(makeMonitor());
+			const encryptionService = createEncryptionServiceMock();
+			const { service } = createService({ monitorsRepository, encryptionService });
+
+			await service.createMonitor(TEAM_ID, USER_ID, makeMonitor({ dockerTlsKey: KEY_PEM }) as any);
+
+			expect(encryptionService.encrypt).not.toHaveBeenCalled();
+			expect(monitorsRepository.create).toHaveBeenCalledWith(expect.objectContaining({ dockerTlsKey: KEY_PEM }), TEAM_ID, USER_ID);
+		});
+
+		it("rejects with a 422 naming ENCRYPTION_KEY when encryption is not configured", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const encryptionService = createEncryptionServiceMock({ isConfigured: jest.fn(() => false) as any });
+			const { service } = createService({ monitorsRepository, encryptionService });
+
+			await expectAppError(() => service.createMonitor(TEAM_ID, USER_ID, makeMonitor(tlsBody) as any), 422, /ENCRYPTION_KEY/);
+			expect(encryptionService.encrypt).not.toHaveBeenCalled();
+			expect(monitorsRepository.create).not.toHaveBeenCalled();
+		});
+	});
+
+	describe("editMonitor", () => {
+		it("keeps the stored key when the key field is blank", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker", dockerTlsKeySet: true }));
+			(monitorsRepository.updateById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			const encryptionService = createEncryptionServiceMock();
+			const { service } = createService({ monitorsRepository, encryptionService });
+
+			await service.editMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID, body: { ...tlsBody, dockerTlsKey: "" } });
+
+			expect(encryptionService.encrypt).not.toHaveBeenCalled();
+			const [, , patch] = (monitorsRepository.updateById as jest.Mock).mock.calls[0] as [string, string, Record<string, unknown>];
+			expect(patch).not.toHaveProperty("dockerTlsKey");
+			expect(patch).not.toHaveProperty("dockerTlsKeySet");
+			expect(patch).toMatchObject({ dockerTlsCa: "ca-pem", dockerTlsCert: "cert-pem" });
+		});
+
+		it("rejects a blank key with a 422 when no key is stored", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker", dockerTlsKeySet: false }));
+			const { service } = createService({ monitorsRepository });
+
+			await expectAppError(
+				() => service.editMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID, body: { ...tlsBody, dockerTlsKey: "" } }),
+				422,
+				/required for a TLS Docker host/
+			);
+			expect(monitorsRepository.updateById).not.toHaveBeenCalled();
+		});
+
+		it("encrypts a replacement key without reading the stored monitor", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.updateById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			const encryptionService = createEncryptionServiceMock();
+			const { service } = createService({ monitorsRepository, encryptionService });
+
+			await service.editMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID, body: tlsBody });
+
+			expect(monitorsRepository.findById).not.toHaveBeenCalled();
+			expect(monitorsRepository.updateById).toHaveBeenCalledWith(
+				MONITOR_ID,
+				TEAM_ID,
+				expect.objectContaining({ dockerTlsKey: `enc:${KEY_PEM}`, dockerTlsKeySet: true }),
+				{ unsetProxyId: false }
+			);
+		});
+
+		it("encrypts a replacement key when the body omits the url", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.updateById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			const encryptionService = createEncryptionServiceMock();
+			const { service } = createService({ monitorsRepository, encryptionService });
+
+			await service.editMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID, body: { type: "docker", dockerTlsKey: KEY_PEM } });
+
+			expect(encryptionService.encrypt).toHaveBeenCalledWith(KEY_PEM);
+			expect(monitorsRepository.updateById).toHaveBeenCalledWith(
+				MONITOR_ID,
+				TEAM_ID,
+				expect.objectContaining({ dockerTlsKey: `enc:${KEY_PEM}`, dockerTlsKeySet: true }),
+				{ unsetProxyId: false }
+			);
+		});
+
+		it("clears dockerTlsKeySet when the url changes back to a socket", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.updateById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			const encryptionService = createEncryptionServiceMock();
+			const { service } = createService({ monitorsRepository, encryptionService });
+
+			await service.editMonitor({
+				teamId: TEAM_ID,
+				monitorId: MONITOR_ID,
+				body: { type: "docker", url: "unix:///var/run/docker.sock", dockerTlsKey: KEY_PEM },
+			});
+
+			expect(encryptionService.encrypt).not.toHaveBeenCalled();
+			expect(monitorsRepository.findById).not.toHaveBeenCalled();
+			const [, , patch] = (monitorsRepository.updateById as jest.Mock).mock.calls[0] as [string, string, Record<string, unknown>];
+			expect(patch.dockerTlsKeySet).toBe(false);
+			expect(patch.dockerTlsKey).toBeUndefined();
+		});
+
+		it("rejects with a 422 naming ENCRYPTION_KEY when encryption is not configured", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			const encryptionService = createEncryptionServiceMock({ isConfigured: jest.fn(() => false) as any });
+			const { service } = createService({ monitorsRepository, encryptionService });
+
+			await expectAppError(() => service.editMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID, body: tlsBody }), 422, /ENCRYPTION_KEY/);
+			expect(monitorsRepository.updateById).not.toHaveBeenCalled();
 		});
 	});
 });

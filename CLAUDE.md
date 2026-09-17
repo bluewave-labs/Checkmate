@@ -109,7 +109,7 @@ client/src/
 - **Data Fetching**: SWR + Axios
 - **Database**: MongoDB with Mongoose ODM
 - **Queue/Cache**: Redis + BullMQ + Pulse (cron scheduling)
-- **i18n**: i18next + react-i18next (translations via PoEditor)
+- **i18n**: i18next + react-i18next (non-English locales are machine translated, not managed through a translation service)
 
 ---
 

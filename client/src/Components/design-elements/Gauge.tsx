@@ -39,9 +39,9 @@ export const Gauge = forwardRef<HTMLDivElement, GaugeProps>(function Gauge(
 		() => ({
 			circumference: 2 * Math.PI * radius,
 			totalSize: radius * 2 + strokeWidth * 2,
-			strokeLength: (progress / 100) * (2 * Math.PI * radius),
+			strokeLength: (progressWithinRange / 100) * (2 * Math.PI * radius),
 		}),
-		[radius, strokeWidth, progress]
+		[radius, strokeWidth, progressWithinRange]
 	);
 
 	const [offset, setOffset] = useState(circumference);
@@ -52,7 +52,7 @@ export const Gauge = forwardRef<HTMLDivElement, GaugeProps>(function Gauge(
 		}, 100);
 
 		return () => clearTimeout(timer);
-	}, [progress, circumference, strokeLength]);
+	}, [circumference, strokeLength]);
 
 	const fillColor = getInfraGaugeColor(progressWithinRange, theme);
 
@@ -123,6 +123,7 @@ export const DetailGauge = ({
 	lowerLabel,
 	lowerValue,
 	maxWidth = 225,
+	flexBasis = "0%",
 }: {
 	title: string;
 	progress: number;
@@ -131,6 +132,7 @@ export const DetailGauge = ({
 	lowerLabel?: string;
 	lowerValue?: string | number;
 	maxWidth?: number;
+	flexBasis?: number | string;
 }) => {
 	const theme = useTheme();
 	return (
@@ -138,6 +140,7 @@ export const DetailGauge = ({
 			icon={null}
 			title={title}
 			maxWidth={maxWidth}
+			flexBasis={flexBasis}
 		>
 			<Stack
 				alignItems={"center"}

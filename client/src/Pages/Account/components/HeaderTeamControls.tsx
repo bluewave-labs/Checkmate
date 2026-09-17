@@ -59,7 +59,12 @@ export const HeaderTeamControls = ({
 				<Button
 					variant="contained"
 					color="primary"
-					startIcon={<Icon icon={Mail} />}
+					startIcon={
+						<Icon
+							icon={Mail}
+							size={16}
+						/>
+					}
 					onClick={onInviteClick}
 				>
 					{t("common.buttons.inviteMember")}
@@ -69,7 +74,12 @@ export const HeaderTeamControls = ({
 				<Button
 					variant="contained"
 					color="primary"
-					startIcon={<Icon icon={UserPlus} />}
+					startIcon={
+						<Icon
+							icon={UserPlus}
+							size={16}
+						/>
+					}
 					onClick={onAddMemberClick}
 				>
 					{t("common.buttons.addMember")}

@@ -8,6 +8,9 @@ import AuthRegister from "@/Pages/Auth/Register";
 import AuthForgotPassword from "@/Pages/Auth/Recovery";
 import AuthSetNewPassword from "@/Pages/Auth/SetNewPassword";
 
+// Dashboard
+import Dashboard from "@/Pages/Dashboard";
+
 // Uptime
 import Uptime from "@/Pages/Uptime/Monitors";
 import UptimeDetails from "@/Pages/Uptime/Details";
@@ -19,6 +22,11 @@ import PageSpeedDetails from "@/Pages/PageSpeed/Details/";
 // Infrastructure
 import Infrastructure from "@/Pages/Infrastructure/Monitors";
 import InfrastructureDetails from "@/Pages/Infrastructure/Details";
+
+// Docker
+import Docker from "@/Pages/Docker/Monitors";
+import DockerHostDetails from "@/Pages/Docker/HostDetails";
+import DockerDetails from "@/Pages/Docker/ContainerDetails";
 
 // Checks
 import Checks from "@/Pages/Checks";
@@ -88,6 +96,10 @@ const Routes = () => {
 					element={<Navigate to="/uptime" />}
 				/>
 				<Route
+					path="dashboard"
+					element={<Dashboard />}
+				/>
+				<Route
 					path="/uptime"
 					element={<Uptime />}
 				/>
@@ -138,6 +150,26 @@ const Routes = () => {
 				<Route
 					path="infrastructure/:monitorId"
 					element={<InfrastructureDetails />}
+				/>
+				<Route
+					path="docker"
+					element={<Docker />}
+				/>
+				<Route
+					path="docker/create"
+					element={<CreateMonitor />}
+				/>
+				<Route
+					path="/docker/configure/:monitorId"
+					element={<CreateMonitor />}
+				/>
+				<Route
+					path="docker/host/:monitorId/container/:containerName"
+					element={<DockerDetails />}
+				/>
+				<Route
+					path="docker/host/:monitorId"
+					element={<DockerHostDetails />}
 				/>
 				<Route
 					path="checks/:monitorId?"

@@ -6,6 +6,7 @@ export interface ISettingsRepository {
 	findSingleton(): Promise<Settings | null>;
 	// update
 	update(settings: SettingsUpdate): Promise<Settings>;
+	removeEgressNotification(notificationId: string): Promise<void>; // $pull, so it cannot race a concurrent settings update
 	// delete
 	deleteLegacy: () => Promise<boolean>;
 }

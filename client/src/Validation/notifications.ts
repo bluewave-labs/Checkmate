@@ -70,6 +70,12 @@ const pushoverSchema = baseSchema.extend({
 	accessToken: z.string().min(1, "App token is required"),
 });
 
+const signalgridSchema = baseSchema.extend({
+	type: z.literal("signalgrid"),
+	address: z.string().min(1, "Channel is required"),
+	accessToken: z.string().min(1, "Client key is required"),
+});
+
 const twilioSchema = baseSchema.extend({
 	type: z.literal("twilio"),
 	accountSid: z.string().min(1, "Account SID is required"),
@@ -95,6 +101,7 @@ export const notificationSchema = z.discriminatedUnion("type", [
 	teamsSchema,
 	telegramSchema,
 	pushoverSchema,
+	signalgridSchema,
 	twilioSchema,
 	ntfySchema,
 ]);

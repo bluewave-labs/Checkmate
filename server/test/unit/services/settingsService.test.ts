@@ -16,6 +16,7 @@ const makeEnv = (overrides?: Partial<ValidatedEnv>): ValidatedEnv =>
 		DB_CONNECTION_STRING: "mongodb://localhost:27017/test_db",
 		DB_TYPE: "mongodb",
 		STATUS_PAGE_THEMES_ENABLED: false,
+		ENCRYPTION_KEY: [],
 		...overrides,
 	}) as ValidatedEnv;
 
@@ -42,12 +43,13 @@ const createSettingsRepo = () =>
 		create: jest.fn().mockResolvedValue(makeSettings()),
 		findSingleton: jest.fn().mockResolvedValue(makeSettings()),
 		update: jest.fn().mockResolvedValue(makeSettings()),
+		removeEgressNotification: jest.fn().mockResolvedValue(undefined),
 		deleteLegacy: jest.fn().mockResolvedValue(true),
 	}) as unknown as jest.Mocked<ISettingsRepository>;
 
-const createService = (envOverrides?: Partial<ValidatedEnv>) => {
+const createService = (envOverrides?: Partial<ValidatedEnv>, dbSettingsTTLMs?: number) => {
 	const env = makeEnv(envOverrides);
-	const service = new SettingsService(env);
+	const service = new SettingsService(env, dbSettingsTTLMs);
 	const settingsRepository = createSettingsRepo();
 	service.setRepository(settingsRepository);
 	return { service, settingsRepository, env };
@@ -170,6 +172,66 @@ describe("SettingsService", () => {
 		});
 	});
 
+	// ── getCachedDBSettings ─────────────────────────────────────────────────
+
+	describe("getCachedDBSettings", () => {
+		it("serves a second call within the TTL from cache", async () => {
+			const { service, settingsRepository } = createService();
+
+			const first = await service.getCachedDBSettings();
+			const second = await service.getCachedDBSettings();
+
+			expect(second).toBe(first);
+			expect(settingsRepository.findSingleton).toHaveBeenCalledTimes(1);
+		});
+
+		it("refetches after the TTL expires", async () => {
+			const { service, settingsRepository } = createService(undefined, 0);
+
+			await service.getCachedDBSettings();
+			await service.getCachedDBSettings();
+
+			expect(settingsRepository.findSingleton).toHaveBeenCalledTimes(2);
+		});
+
+		it("shares one in-flight fetch between concurrent calls", async () => {
+			const { service, settingsRepository } = createService();
+
+			await Promise.all([service.getCachedDBSettings(), service.getCachedDBSettings(), service.getCachedDBSettings()]);
+
+			expect(settingsRepository.findSingleton).toHaveBeenCalledTimes(1);
+		});
+
+		it("does not cache a rejected fetch, the next call retries", async () => {
+			const { service, settingsRepository } = createService();
+			(settingsRepository.findSingleton as jest.Mock).mockRejectedValueOnce(new Error("db down")).mockResolvedValueOnce(makeSettings());
+
+			await expect(service.getCachedDBSettings()).rejects.toThrow("db down");
+			await expect(service.getCachedDBSettings()).resolves.toEqual(makeSettings());
+			expect(settingsRepository.findSingleton).toHaveBeenCalledTimes(2);
+		});
+
+		it("refetches after updateDbSettings so the write is visible immediately", async () => {
+			const { service, settingsRepository } = createService();
+
+			await service.getCachedDBSettings();
+			await service.updateDbSettings({ checkTTL: 60 });
+			await service.getCachedDBSettings();
+
+			expect(settingsRepository.findSingleton).toHaveBeenCalledTimes(2);
+		});
+
+		it("refetches after removeEgressNotification", async () => {
+			const { service, settingsRepository } = createService();
+
+			await service.getCachedDBSettings();
+			await service.removeEgressNotification("notif-1");
+			await service.getCachedDBSettings();
+
+			expect(settingsRepository.findSingleton).toHaveBeenCalledTimes(2);
+		});
+	});
+
 	// ── updateDbSettings ────────────────────────────────────────────────────
 
 	describe("updateDbSettings", () => {
@@ -189,6 +251,22 @@ describe("SettingsService", () => {
 			const service = new SettingsService(env);
 
 			await expect(service.updateDbSettings({ checkTTL: 60 })).rejects.toThrow("Settings repository not initialized");
+		});
+	});
+
+	describe("removeEgressNotification", () => {
+		it("delegates the pull to the repository", async () => {
+			const { service, settingsRepository } = createService();
+
+			await service.removeEgressNotification("notif-1");
+
+			expect(settingsRepository.removeEgressNotification).toHaveBeenCalledWith("notif-1");
+		});
+
+		it("throws when repository is not set", async () => {
+			const service = new SettingsService(makeEnv());
+
+			await expect(service.removeEgressNotification("notif-1")).rejects.toThrow("Settings repository not initialized");
 		});
 	});
 });

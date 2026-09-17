@@ -119,6 +119,90 @@ export interface CheckTimings {
 	};
 }
 
+// Mirrors DockerContainerSummary in server/src/types/network.ts.
+export interface DockerContainerSummary {
+	total: number;
+	running: number;
+	stopped: number;
+	unhealthy: number;
+}
+
+// Mirrors DockerContainerStates in server/src/types/network.ts.
+export const DockerContainerStates = [
+	"created",
+	"running",
+	"paused",
+	"restarting",
+	"removing",
+	"exited",
+	"dead",
+] as const;
+export type DockerContainerState = (typeof DockerContainerStates)[number];
+
+export const DockerHealthStatuses = ["healthy", "unhealthy", "starting", "none"] as const;
+export type DockerHealthStatus = (typeof DockerHealthStatuses)[number];
+
+export const DockerPortProtocols = ["tcp", "udp", "sctp"] as const;
+export type DockerPortProtocol = (typeof DockerPortProtocols)[number];
+
+export interface DockerContainerPort {
+	privatePort: number;
+	protocol: DockerPortProtocol;
+	publicPort?: number;
+	hostIp?: string;
+}
+
+export interface DockerContainerMount {
+	type: string;
+	name?: string;
+	source: string;
+	destination: string;
+	mode: string;
+	rw: boolean;
+}
+
+export const DockerLogStreams = ["stdout", "stderr"] as const;
+export type DockerLogStream = (typeof DockerLogStreams)[number];
+
+export interface DockerLogLine {
+	ts: string;
+	stream: DockerLogStream;
+	text: string;
+}
+
+export interface DockerLog {
+	id: string;
+	metadata: {
+		monitorId: string;
+		teamId: string;
+		containerId: string;
+		containerName: string;
+	};
+	lines: DockerLogLine[];
+	gap: boolean;
+	checkedAt: string;
+	expiry: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface DockerContainerInfo {
+	id: string;
+	name: string;
+	image: string;
+	state: DockerContainerState;
+	status: string;
+	health: DockerHealthStatus;
+	cpuPct?: number;
+	memoryUsedBytes?: number;
+	memoryLimitBytes?: number;
+	memoryPct?: number;
+	restartCount?: number;
+	startedAt?: string;
+	ports?: DockerContainerPort[];
+	mounts?: DockerContainerMount[];
+}
+
 export interface Check {
 	id: string;
 	metadata: CheckMetadata;
@@ -133,6 +217,7 @@ export interface Check {
 	host?: CheckHostInfo;
 	errors?: CheckErrorInfo[];
 	capture?: CheckCaptureInfo;
+	containerSummary?: DockerContainerSummary;
 	net?: CheckNetworkInterfaceInfo[];
 	accessibility?: number;
 	bestPractices?: number;
@@ -287,6 +372,7 @@ export type CheckSnapshot = Pick<
 	memory?: SnapshotMemoryInfo;
 	disk?: SnapshotDiskInfo[];
 	host?: SnapshotHostInfo;
+	containerSummary?: DockerContainerSummary;
 };
 export interface HasResponseTime {
 	responseTime: number;

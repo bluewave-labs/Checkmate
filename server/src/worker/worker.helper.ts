@@ -10,10 +10,14 @@ import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interf
 import { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
 import { ITeamsRepository } from "@/domain/teams/team.repository.interface.js";
 import { ILogger } from "@/utils/logger.js";
+import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
+import { IEgressService } from "@/domain/egress/egress.service.js";
+import type { Job } from "@/domain/jobs/job.type.js";
 
 export interface IWorkerHelper {
 	getCleanupOrphanedJob(): () => Promise<void>;
 	getCleanupRetentionJob(): () => Promise<void>;
+	getEgressRecoveryJob(): (job: Job) => Promise<void>;
 }
 
 export interface MonitorActionDecision {
@@ -43,6 +47,8 @@ export class WorkerHelper implements IWorkerHelper {
 	private checksRepository: IChecksRepository;
 	private incidentsRepository: IIncidentsRepository;
 	private geoChecksRepository: IGeoChecksRepository;
+	private dockerLogsRepository: IDockerLogsRepository;
+	private egressService: IEgressService;
 
 	constructor(
 		logger: ILogger,
@@ -54,7 +60,9 @@ export class WorkerHelper implements IWorkerHelper {
 		monitorStatsRepository: IMonitorStatsRepository,
 		checksRepository: IChecksRepository,
 		incidentsRepository: IIncidentsRepository,
-		geoChecksRepository: IGeoChecksRepository
+		geoChecksRepository: IGeoChecksRepository,
+		dockerLogsRepository: IDockerLogsRepository,
+		egressService: IEgressService
 	) {
 		this.logger = logger;
 		this.checkService = checkService;
@@ -66,7 +74,17 @@ export class WorkerHelper implements IWorkerHelper {
 		this.checksRepository = checksRepository;
 		this.incidentsRepository = incidentsRepository;
 		this.geoChecksRepository = geoChecksRepository;
+		this.dockerLogsRepository = dockerLogsRepository;
+		this.egressService = egressService;
 	}
+
+	// Runs while instance egress is degraded; the service removes the row once egress is back.
+	// Errors propagate so the queue records the failure and retries with its usual backoff.
+	getEgressRecoveryJob = () => {
+		return async (job: Job) => {
+			await this.egressService.checkRecovery(job);
+		};
+	};
 
 	getCleanupOrphanedJob = () => {
 		return async () => {
@@ -137,6 +155,15 @@ export class WorkerHelper implements IWorkerHelper {
 				if (deletedGeoChecksCount > 0) {
 					this.logger.info({
 						message: `Deleted ${deletedGeoChecksCount} orphaned geo checks`,
+						service: SERVICE_NAME,
+						method: "getCleanupOrphanedJob",
+					});
+				}
+
+				const deletedDockerLogsCount = await this.dockerLogsRepository.deleteByMonitorIdsNotIn(allMonitorIds);
+				if (deletedDockerLogsCount > 0) {
+					this.logger.info({
+						message: `Deleted ${deletedDockerLogsCount} orphaned docker logs`,
 						service: SERVICE_NAME,
 						method: "getCleanupOrphanedJob",
 					});

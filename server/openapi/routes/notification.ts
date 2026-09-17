@@ -65,6 +65,10 @@ const notificationVariantMeta: Record<string, { component: string; example: Reco
 		component: "PushoverNotification",
 		example: { notificationName: "Pushover personal", type: "pushover", address: "u1234567890abcdef", accessToken: "a1234567890abcdef" },
 	},
+	signalgrid: {
+		component: "SignalgridNotification",
+		example: { notificationName: "Signalgrid", type: "signalgrid", address: "your-channel", accessToken: "your-client-key" },
+	},
 	twilio: {
 		component: "TwilioNotification",
 		example: {

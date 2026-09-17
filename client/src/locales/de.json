@@ -181,7 +181,13 @@
 				"statusPages": "Statusseite",
 				"maintenance": "Wartung",
 				"logs": "Protokolle",
-				"settings": "Einstellungen"
+				"settings": "Einstellungen",
+				"groups": {
+					"monitoring": "Überwachung",
+					"alerting": "Benachrichtigungen",
+					"reporting": "Berichte",
+					"configuration": "Konfiguration"
+				}
 			},
 			"bottomMenu": {
 				"support": "Support",
@@ -442,6 +448,7 @@
 				},
 				"statBoxes": {
 					"activeFor": "Aktiv seit",
+					"checkingEvery": "Check alle {{interval}}",
 					"certificateExpiry": "Zertifikatablauf",
 					"lastCheck": "Letzter Check",
 					"lastResponseTime": "Letzte Antwortzeit",
@@ -1155,6 +1162,13 @@
 			}
 		},
 		"settings": {
+			"tabs": {
+				"general": "Allgemein",
+				"monitoring": "Überwachung",
+				"email": "E-Mail",
+				"integrations": "Integrationen",
+				"data": "Daten"
+			},
 			"form": {
 				"timezone": {
 					"title": "Anzeigesprache Zeitzone",

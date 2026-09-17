@@ -16,6 +16,7 @@ import { SharedServices } from "@/config/services.shared.js";
 import { INetworkService, NetworkService } from "@/service/networkService.js";
 import { IBufferService, BufferService } from "@/service/bufferService.js";
 import { IStatusService, StatusService } from "@/service/statusService.js";
+import { SecretsRotationService } from "@/service/encryption/secretsRotationService.js";
 import { IQueueWorker } from "@/worker/worker.interface.js";
 import { MonitorStatusPolicy } from "@/worker/worker.monitor-status-policy.js";
 import { WorkerHelper } from "@/worker/worker.helper.js";
@@ -27,6 +28,7 @@ import { IncidentReactor } from "@/worker/reactors/reactor.incident.js";
 import { ReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
 import { DBQueueWorker } from "@/worker/worker.db-queue.js";
 import { ProxyResolver } from "@/service/network/ProxyResolver.js";
+import { IEgressService, EgressService } from "@/domain/egress/egress.service.js";
 // Network providers
 import { PingProvider } from "@/service/network/PingProvider.js";
 import { HttpProvider } from "@/service/network/HttpProvider.js";
@@ -39,11 +41,13 @@ import { GameProvider } from "@/service/network/GameProvider.js";
 import { GrpcProvider } from "@/service/network/GrpcProvider.js";
 import { WebSocketProvider } from "@/service/network/WebSocketProvider.js";
 import { DNSProvider } from "@/service/network/DNSProvider.js";
+import { AppError } from "@/utils/AppError.js";
 export interface WorkerServices {
 	worker: IQueueWorker;
 	networkService: INetworkService;
 	bufferService: IBufferService;
 	statusService: IStatusService;
+	egressService: IEgressService;
 }
 
 export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig): Promise<WorkerServices> => {
@@ -52,29 +56,33 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		settingsService,
 		checkService,
 		geoChecksService,
+		dockerLogsService,
 		notificationsService,
 		incidentService,
 		workerId,
 		jobsRepository,
 		queueWorkersRepository,
 		monitorsRepository,
+		encryptionService,
 		checksRepository,
 		geoChecksRepository,
+		dockerLogsRepository,
 		monitorStatsRepository,
 		incidentsRepository,
 		teamsRepository,
 		maintenanceWindowsRepository,
 		proxiesRepository,
+		egressStateRepository,
 	} = shared;
 
 	// ***********************
 	// Network providers
 	// ***********************
-	const pingProvider = new PingProvider(ping);
+	const pingProvider = new PingProvider(ping, net);
 	const httpProvider = new HttpProvider(got, new AdvancedMatcher(jmespath));
 	const pageSpeedProvider = new PageSpeedProvider(httpProvider, settingsService, logger);
 	const hardwareProvider = new HardwareProvider(httpProvider);
-	const dockerProvider = new DockerProvider(logger, Docker);
+	const dockerProvider = new DockerProvider(logger, Docker, encryptionService);
 	const portProvider = new PortProvider(net);
 	const gameProvider = new GameProvider(logger, GameDig);
 	const grpcProvider = new GrpcProvider(grpc, protoLoader);
@@ -95,9 +103,10 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	]);
 
 	const proxyResolver = new ProxyResolver(proxiesRepository, settingsService, logger);
-	const bufferService = new BufferService(logger, checkService, geoChecksService, settingsService, jobsRepository);
+	const bufferService = new BufferService(logger, checkService, geoChecksService, dockerLogsService, settingsService, jobsRepository);
 	const statusService = new StatusService(logger, monitorsRepository, monitorStatsRepository);
 	const monitorStatusPolicy = new MonitorStatusPolicy();
+	const egressService = new EgressService(settingsService, egressStateRepository, jobsRepository, networkService, proxyResolver, logger);
 
 	// ***********************
 	// Reactors and dispatcher
@@ -119,6 +128,7 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		networkService,
 		proxyResolver,
 		bufferService,
+		dockerLogsService,
 		logger
 	);
 	const checkEvaluator = new CheckEvaluator(statusService, monitorStatusPolicy);
@@ -138,7 +148,9 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		monitorStatsRepository,
 		checksRepository,
 		incidentsRepository,
-		geoChecksRepository
+		geoChecksRepository,
+		dockerLogsRepository,
+		egressService
 	);
 
 	const worker = await DBQueueWorker.create({
@@ -160,5 +172,23 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		workerId,
 	});
 
-	return { worker, networkService, bufferService, statusService };
+	const secretsRotationService = new SecretsRotationService(monitorsRepository, encryptionService, logger);
+	try {
+		const result = await secretsRotationService.run();
+		logger.debug({
+			message: "Secrets rotation run successfully",
+			service: "WorkerServices",
+			method: "buildWorker",
+			details: { ...result },
+		});
+	} catch (error: unknown) {
+		logger.warn({
+			message: `Could not rotate Docker TLS secrets: ${error instanceof Error ? error.message : String(error)}`,
+			service: "WorkerServices",
+			method: "buildWorker",
+			details: { ...(error instanceof AppError ? error.details : {}) },
+		});
+	}
+
+	return { worker, networkService, bufferService, statusService, egressService };
 };

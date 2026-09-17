@@ -60,20 +60,22 @@ export const HeaderMonitorControls = ({
 				direction={{ xs: "column", md: "row" }}
 				gap={theme.spacing(2)}
 			>
-				<Button
-					variant="contained"
-					color="secondary"
-					loading={isPosting}
-					startIcon={<Icon icon={Mail} />}
-					onClick={async () => {
-						await post(`/notifications/test/all`, { monitorId: monitor.id });
-					}}
-					sx={{
-						whiteSpace: "nowrap",
-					}}
-				>
-					{t("common.buttons.testNotifications")}
-				</Button>
+				{isAdmin && (
+					<Button
+						variant="contained"
+						color="secondary"
+						loading={isPosting}
+						startIcon={<Icon icon={Mail} />}
+						onClick={async () => {
+							await post(`/notifications/test/all`, { monitorId: monitor.id });
+						}}
+						sx={{
+							whiteSpace: "nowrap",
+						}}
+					>
+						{t("common.buttons.testNotifications")}
+					</Button>
+				)}
 				<Button
 					variant="contained"
 					color="secondary"

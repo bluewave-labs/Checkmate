@@ -14,6 +14,15 @@ import type {
 	GotTimings,
 	ILighthouseAudit,
 } from "@/domain/checks/check.type.js";
+import {
+	DockerContainerInfo,
+	DockerContainerMount,
+	DockerContainerPort,
+	DockerContainerStates,
+	DockerContainerSummary,
+	DockerHealthStatuses,
+	DockerPortProtocols,
+} from "@/domain/docker/docker.type.js";
 
 type CheckMetadataDocument = Omit<CheckMetadata, "monitorId" | "teamId"> & {
 	monitorId: Types.ObjectId;
@@ -172,6 +181,58 @@ const auditsSchema = new Schema<CheckAudits>(
 	{ _id: false }
 );
 
+const dockerContainerPortSchema = new Schema<DockerContainerPort>(
+	{
+		privatePort: { type: Number, required: true },
+		protocol: { type: String, enum: DockerPortProtocols, default: "tcp" },
+		publicPort: { type: Number },
+		hostIp: { type: String },
+	},
+	{ _id: false }
+);
+
+const dockerContainerMountSchema = new Schema<DockerContainerMount>(
+	{
+		type: { type: String, default: "" },
+		name: { type: String },
+		source: { type: String, default: "" },
+		destination: { type: String, default: "" },
+		mode: { type: String, default: "" },
+		rw: { type: Boolean, default: true },
+	},
+	{ _id: false }
+);
+
+const dockerContainerSchema = new Schema<DockerContainerInfo>(
+	{
+		id: { type: String, required: true },
+		name: { type: String, default: "" },
+		image: { type: String, default: "" },
+		state: { type: String, enum: DockerContainerStates, default: "created" },
+		status: { type: String, default: "" },
+		health: { type: String, enum: DockerHealthStatuses, default: "none" },
+		cpuPct: { type: Number },
+		memoryUsedBytes: { type: Number },
+		memoryLimitBytes: { type: Number },
+		memoryPct: { type: Number },
+		restartCount: { type: Number },
+		startedAt: { type: String },
+		ports: { type: [dockerContainerPortSchema], default: undefined },
+		mounts: { type: [dockerContainerMountSchema], default: undefined },
+	},
+	{ _id: false }
+);
+
+const containerSummarySchema = new Schema<DockerContainerSummary>(
+	{
+		total: { type: Number, default: 0 },
+		running: { type: Number, default: 0 },
+		stopped: { type: Number, default: 0 },
+		unhealthy: { type: Number, default: 0 },
+	},
+	{ _id: false }
+);
+
 const metadataSchema = new Schema<CheckMetadataDocument>(
 	{
 		monitorId: {
@@ -268,6 +329,14 @@ const CheckSchema = new Schema<CheckDocument>(
 			type: auditsSchema,
 			default: undefined,
 		},
+		containers: {
+			type: [dockerContainerSchema],
+			default: undefined,
+		},
+		containerSummary: {
+			type: containerSummarySchema,
+			default: undefined,
+		},
 	},
 	{
 		timestamps: true,
@@ -291,5 +360,5 @@ CheckSchema.index({ "metadata.teamId": 1, status: 1, createdAt: -1 });
 const CheckModel = model<CheckDocument>("Check", CheckSchema);
 
 export type { CheckDocument, CheckMetadataDocument };
-export { CheckModel };
+export { CheckModel, containerSummarySchema };
 export default CheckModel;

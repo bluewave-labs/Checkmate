@@ -17,6 +17,11 @@ import {
 	getUptimeDetailsByIdQueryValidation,
 	importMonitorsBodyValidation,
 	bulkPauseMonitorBodyValidation,
+	getDockerDetailsByIdParamValidation,
+	getDockerDetailsByIdQueryValidation,
+	getDockerContainerNameParamValidation,
+	getDockerContainerByNameQueryValidation,
+	getDockerContainerLogsQueryValidation,
 } from "@/api/validation/monitorValidation.js";
 import sslChecker from "ssl-checker";
 import * as whoiser from "whoiser";
@@ -31,6 +36,9 @@ export interface IMonitorController {
 	getUptimeDetailsById: RequestHandler;
 	getHardwareDetailsById: RequestHandler;
 	getPageSpeedDetailsById: RequestHandler;
+	getDockerDetailsById: RequestHandler;
+	getDockerContainerByName: RequestHandler;
+	getDockerContainerLogs: RequestHandler;
 	getGeoChecksByMonitorId: RequestHandler;
 	getMonitorById: RequestHandler;
 	createMonitor: RequestHandler;
@@ -145,6 +153,73 @@ class MonitorController implements IMonitorController {
 		return res.status(200).json({
 			success: true,
 			msg: "Page speed details retrieved successfully",
+			data,
+		});
+	});
+
+	getDockerDetailsById = catchAsync(async (req: Request, res: Response) => {
+		const validatedParams = getDockerDetailsByIdParamValidation.parse(req.params);
+		const validatedQuery = getDockerDetailsByIdQueryValidation.parse(req.query);
+
+		const monitorId = validatedParams.monitorId;
+		const dateRange = validatedQuery.dateRange || "recent";
+		const teamId = requireTeamId(req.user?.teamId);
+
+		const data = await this.monitorService.getDockerDetailsById({
+			teamId,
+			monitorId,
+			dateRange,
+		});
+
+		return res.status(200).json({
+			success: true,
+			msg: "Docker details retrieved successfully",
+			data: data,
+		});
+	});
+
+	getDockerContainerByName = catchAsync(async (req: Request, res: Response) => {
+		const validatedParams = getDockerContainerNameParamValidation.parse(req.params);
+		const validatedQuery = getDockerContainerByNameQueryValidation.parse(req.query);
+
+		const { monitorId, containerName } = validatedParams;
+		const dateRange = validatedQuery.dateRange || "recent";
+		const teamId = requireTeamId(req.user?.teamId);
+
+		const data = await this.monitorService.getDockerContainerByName({
+			teamId,
+			monitorId,
+			containerName,
+			dateRange,
+		});
+
+		return res.status(200).json({
+			success: true,
+			msg: "Docker container retrieved successfully",
+			data,
+		});
+	});
+
+	getDockerContainerLogs = catchAsync(async (req: Request, res: Response) => {
+		const validatedParams = getDockerContainerNameParamValidation.parse(req.params);
+		const validatedQuery = getDockerContainerLogsQueryValidation.parse(req.query);
+
+		const { monitorId, containerName } = validatedParams;
+		const { before, after, limit } = validatedQuery;
+		const teamId = requireTeamId(req.user?.teamId);
+
+		const data = await this.monitorService.getDockerContainerLogs({
+			teamId,
+			monitorId,
+			containerName,
+			before: before ? new Date(before) : undefined,
+			after: after ? new Date(after) : undefined,
+			limit,
+		});
+
+		return res.status(200).json({
+			success: true,
+			msg: "Docker container logs retrieved successfully",
 			data,
 		});
 	});

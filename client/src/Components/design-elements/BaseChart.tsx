@@ -10,8 +10,10 @@ import { useTheme } from "@mui/material/styles";
 type BaseChartProps = React.PropsWithChildren<{
 	icon?: React.ReactNode;
 	title: string;
+	rightTitle?: string;
 	width?: number | string;
 	maxWidth?: number | string;
+	flexBasis?: number | string;
 	padding?: number | string | ResponsiveStyleValue<number | string>;
 	onClick?: () => void;
 }>;
@@ -19,8 +21,10 @@ type BaseChartProps = React.PropsWithChildren<{
 export const BaseChart = ({
 	children,
 	title,
+	rightTitle,
 	width = "100%",
 	maxWidth = "100%",
+	flexBasis = "0%",
 	padding,
 	onClick,
 }: BaseChartProps) => {
@@ -32,6 +36,7 @@ export const BaseChart = ({
 				padding: padding ?? theme.spacing(LAYOUT.MD),
 				display: "flex",
 				flex: 1,
+				flexBasis,
 				width: width,
 				maxWidth: maxWidth,
 				...(onClick && {
@@ -44,13 +49,27 @@ export const BaseChart = ({
 				gap={theme.spacing(LAYOUT.MD)}
 				flex={1}
 			>
-				<Typography
-					variant="eyebrow"
-					color="text.secondary"
-					sx={{ overflowWrap: "anywhere" }}
+				<Stack
+					direction="row"
+					justifyContent={"space-between"}
 				>
-					{title}
-				</Typography>
+					<Typography
+						variant="eyebrow"
+						color="text.secondary"
+						sx={{ overflowWrap: "anywhere" }}
+					>
+						{title}
+					</Typography>
+					{rightTitle && (
+						<Typography
+							variant="eyebrow"
+							color="text.secondary"
+							sx={{ overflowWrap: "anywhere" }}
+						>
+							{rightTitle}
+						</Typography>
+					)}
+				</Stack>
 				<Box flex={1}>{children}</Box>
 			</Stack>
 		</BaseBox>

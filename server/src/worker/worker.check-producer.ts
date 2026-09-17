@@ -1,6 +1,6 @@
 import { Monitor } from "@/domain/monitors/monitor.type.js";
 import { Check } from "@/domain/checks/check.type.js";
-import { MonitorStatusResponse } from "@/types/network.js";
+import { DockerStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 import { AppError } from "@/utils/AppError.js";
 import { ILogger } from "@/utils/logger.js";
 import { IBufferService } from "@/service/bufferService.js";
@@ -10,6 +10,7 @@ import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interf
 import { IMaintenanceWindowsRepository } from "@/domain/maintenance-windows/maintenance-window.repository.interface.js";
 import { isWindowActive } from "@/utils/maintenanceWindow.js";
 import { IProxyResolver } from "@/service/network/ProxyResolver.js";
+import { IDockerLogsService } from "@/domain/docker/docker-log.service.js";
 
 export interface ICheckProducer {
 	produce(monitor: Monitor): Promise<{ status: MonitorStatusResponse; check: Check } | null>;
@@ -25,6 +26,7 @@ export class CheckProducer implements ICheckProducer {
 		private networkService: INetworkService,
 		private proxyResolver: IProxyResolver,
 		private bufferService: IBufferService,
+		private dockerLogsService: IDockerLogsService,
 		private logger: ILogger
 	) {}
 
@@ -32,6 +34,12 @@ export class CheckProducer implements ICheckProducer {
 		const windows = await this.maintenanceWindowsRepository.findByMonitorId(monitorId, teamId);
 		const now = new Date();
 		return windows.some((w) => isWindowActive(w, now));
+	}
+
+	private async resolveDockerTlsKey(monitor: Monitor): Promise<string | undefined> {
+		if (monitor.type !== "docker" || !monitor.dockerTlsKeySet || !monitor.id) return undefined;
+		const dockerTlsKey = await this.monitorsRepository.findDockerTlsKeyById(monitor.id);
+		return dockerTlsKey ?? undefined;
 	}
 
 	produce = async (monitor: Monitor) => {
@@ -59,7 +67,9 @@ export class CheckProducer implements ICheckProducer {
 
 		// Step 1b: Acquire status
 		const proxyUrl = await this.proxyResolver.resolve(monitor);
-		const status = await this.networkService.requestStatus(monitor, { proxyUrl });
+		const dockerTlsKey = await this.resolveDockerTlsKey(monitor);
+
+		const status = await this.networkService.requestStatus(monitor, { proxyUrl, dockerTlsKey });
 		if (!status) {
 			throw new Error("No network response");
 		}
@@ -81,6 +91,14 @@ export class CheckProducer implements ICheckProducer {
 		}
 		// Step 2b: Add to buffer
 		this.bufferService.addToBuffer(check);
+
+		// Step 2c: Handle docker logs
+		if (status.type === "docker") {
+			const dockerLogs = await this.dockerLogsService.buildDockerLogs(status as MonitorStatusResponse<DockerStatusPayload>);
+			for (const dockerLog of dockerLogs) {
+				this.bufferService.addDockerLogToBuffer(dockerLog);
+			}
+		}
 		return { status, check };
 	};
 }

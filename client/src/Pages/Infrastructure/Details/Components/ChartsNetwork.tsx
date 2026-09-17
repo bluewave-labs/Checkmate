@@ -63,19 +63,42 @@ const getChartConfigs = (
 	return configs;
 };
 
-// Loopback / bridge names Capture sees when it can only observe the container's
-// own network namespace. When ALL reported interfaces match this set we assume
-// the "no real interfaces visible" case and surface the notice.
+// Loopback / bridge names Capture reports when it can only observe the
+// container's own network namespace.
 const CONTAINER_ONLY_IFACE_NAMES = new Set(["lo", "lo0", "docker0"]);
+
+// Below this, an interface is carrying no traffic worth charting. Real host
+// NICs sit orders of magnitude above it; a container's veth sits at or near
+// zero.
+const IDLE_INTERFACE_BYTES_PER_SECOND = 1024;
+
+const interfaceIsIdle = (checks: HardwareCheckStats[], name: string): boolean =>
+	checks.every((check) => {
+		const iface = check.net?.find((candidate) => candidate.name === name);
+		if (!iface) {
+			return true;
+		}
+		return (
+			(iface.bytesSentPerSecond || 0) < IDLE_INTERFACE_BYTES_PER_SECOND &&
+			(iface.deltaBytesRecv || 0) < IDLE_INTERFACE_BYTES_PER_SECOND
+		);
+	});
 
 const onlyContainerVisibleInterfaces = (checks: HardwareCheckStats[]): boolean => {
 	const named = new Set<string>();
 	checks.forEach((c) => c.net?.forEach((iface) => named.add(iface.name)));
-	if (named.size === 0) return false;
-	for (const name of named) {
-		if (!CONTAINER_ONLY_IFACE_NAMES.has(name)) return false;
+	if (named.size === 0) {
+		return false;
 	}
-	return true;
+
+	const names = [...named];
+	if (names.every((name) => CONTAINER_ONLY_IFACE_NAMES.has(name))) {
+		return true;
+	}
+	if (!names.some((name) => CONTAINER_ONLY_IFACE_NAMES.has(name))) {
+		return false;
+	}
+	return names.every((name) => interfaceIsIdle(checks, name));
 };
 
 export const InfraNetworkCharts = ({

@@ -25,7 +25,12 @@ export const HeaderConfigStatusControls = ({
 			<Button
 				variant="contained"
 				color="error"
-				startIcon={<Icon icon={Trash} />}
+				startIcon={
+					<Icon
+						icon={Trash}
+						size={16}
+					/>
+				}
 				onClick={onDelete}
 			>
 				{translate.t("common.buttons.delete")}

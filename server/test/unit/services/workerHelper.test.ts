@@ -32,11 +32,17 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 	const geoChecksRepository = {
 		deleteByMonitorIdsNotIn: jest.fn().mockResolvedValue(0),
 	};
+	const dockerLogsRepository = {
+		deleteByMonitorIdsNotIn: jest.fn().mockResolvedValue(0),
+	};
 	const settingsService = {
 		getDBSettings: jest.fn().mockResolvedValue({ checkTTL: 30 }),
 	};
 	const checkService = {
 		deleteOlderThan: jest.fn().mockResolvedValue(0),
+	};
+	const egressService = {
+		checkRecovery: jest.fn().mockResolvedValue(undefined),
 	};
 
 	const defaults = {
@@ -50,6 +56,8 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		checksRepository,
 		incidentsRepository,
 		geoChecksRepository,
+		dockerLogsRepository,
+		egressService,
 		...overrides,
 	};
 
@@ -63,7 +71,9 @@ const createHelper = (overrides?: Record<string, unknown>) => {
 		defaults.monitorStatsRepository as any,
 		defaults.checksRepository as any,
 		defaults.incidentsRepository as any,
-		defaults.geoChecksRepository as any
+		defaults.geoChecksRepository as any,
+		defaults.dockerLogsRepository as any,
+		defaults.egressService as any
 	);
 	return { helper, defaults };
 };
@@ -81,6 +91,7 @@ describe("WorkerHelper", () => {
 			(defaults.checksRepository.deleteByMonitorIdsNotIn as jest.Mock).mockResolvedValue(4);
 			(defaults.incidentsRepository.deleteByMonitorIdsNotIn as jest.Mock).mockResolvedValue(1);
 			(defaults.geoChecksRepository.deleteByMonitorIdsNotIn as jest.Mock).mockResolvedValue(5);
+			(defaults.dockerLogsRepository.deleteByMonitorIdsNotIn as jest.Mock).mockResolvedValue(7);
 			(defaults.jobsRepository.deleteByMonitorIdsNotIn as jest.Mock).mockResolvedValue(6);
 
 			const job = helper.getCleanupOrphanedJob();
@@ -93,12 +104,14 @@ describe("WorkerHelper", () => {
 			expect(defaults.checksRepository.deleteByMonitorIdsNotIn).toHaveBeenCalledWith(["m1"]);
 			expect(defaults.incidentsRepository.deleteByMonitorIdsNotIn).toHaveBeenCalledWith(["m1"]);
 			expect(defaults.geoChecksRepository.deleteByMonitorIdsNotIn).toHaveBeenCalledWith(["m1"]);
+			expect(defaults.dockerLogsRepository.deleteByMonitorIdsNotIn).toHaveBeenCalledWith(["m1"]);
 			expect(defaults.jobsRepository.deleteByMonitorIdsNotIn).toHaveBeenCalledWith(["m1"]);
 			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("2 orphaned monitors") }));
 			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("3 orphaned monitor stats") }));
 			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("4 orphaned checks") }));
 			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("1 orphaned incidents") }));
 			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("5 orphaned geo checks") }));
+			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("7 orphaned docker logs") }));
 			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("6 orphaned jobs") }));
 		});
 
@@ -174,6 +187,24 @@ describe("WorkerHelper", () => {
 			await job();
 
 			expect(defaults.logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: "Unknown error", stack: undefined }));
+		});
+	});
+
+	describe("getEgressRecoveryJob", () => {
+		it("returns a function that hands the claimed job to the egress service", async () => {
+			const { helper, defaults } = createHelper();
+			const job = { id: "egress", type: "egress", refId: null, nextScheduledAt: 1000 } as any;
+
+			await helper.getEgressRecoveryJob()(job);
+
+			expect(defaults.egressService.checkRecovery).toHaveBeenCalledWith(job);
+		});
+
+		it("lets the egress service's error propagate so the queue records the failure", async () => {
+			const { helper, defaults } = createHelper();
+			(defaults.egressService.checkRecovery as jest.Mock).mockRejectedValue(new Error("db down"));
+
+			await expect(helper.getEgressRecoveryJob()({ id: "egress" } as any)).rejects.toThrow("db down");
 		});
 	});
 });

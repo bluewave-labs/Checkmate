@@ -73,7 +73,7 @@ export class ProxyResolver implements IProxyResolver {
 	};
 
 	private resolveInherit = async (monitor: Monitor): Promise<string | undefined> => {
-		const settings = await this.getCached("settings", () => this.settingsService.getDBSettings());
+		const settings = await this.settingsService.getCachedDBSettings();
 		if (!settings.globalProxyEnabled) {
 			return undefined;
 		}
