@@ -46,10 +46,15 @@ export class CheckProducer implements ICheckProducer {
 		return dockerTlsKey ?? undefined;
 	}
 
-	// Only a failure to reach the target at all can be the instance's own fault. Any HTTP response (4xx, 5xx,
-	// or a 200 with a content mismatch) proves the target was reached, and hardware/docker failures are local.
+	// Only a failure to reach the target at all can be the instance's own fault. A provider that can tell the
+	// two apart says so outright; for the rest, any HTTP status code proves the target answered (a 4xx, a 5xx,
+	// or a 200 with a content mismatch).
+	private peerAnswered(status: MonitorStatusResponse): boolean {
+		return status.peerResponded ?? isHttpStatusCode(status.code);
+	}
+
 	private isTransportFailure(monitor: Monitor, status: MonitorStatusResponse): boolean {
-		return status.status === false && isEgressAttributable(monitor.type) && !isHttpStatusCode(status.code);
+		return status.status === false && isEgressAttributable(monitor) && !this.peerAnswered(status);
 	}
 
 	// The egress check must never stop a check being recorded, so a rejection is logged and treated as unknown.
@@ -89,6 +94,13 @@ export class CheckProducer implements ICheckProducer {
 			return null;
 		}
 
+		// Leaving the window is explicit rather than a side effect of evaluating the resulting check, which the
+		// degraded-egress short-circuit skips. "initializing" is resolved to up or down by the first check that is
+		// evaluated, so the monitor cannot sit in "maintenance" for the length of an egress outage.
+		if (monitor.status === "maintenance") {
+			monitor = await this.monitorsRepository.updateById(monitor.id, monitor.teamId, { status: "initializing" });
+		}
+
 		// Step 1b: Acquire status
 		const proxyUrl = await this.proxyResolver.resolve(monitor);
 		const dockerTlsKey = await this.resolveDockerTlsKey(monitor);
@@ -98,15 +110,12 @@ export class CheckProducer implements ICheckProducer {
 			throw new Error("No network response");
 		}
 
-		// Step 1c: On a transport failure, ask whether the instance itself can reach anything before blaming the target.
-		// Null means the egress check is disabled (or failed internally) and the check is treated as usual.
-		const egressStatus = this.isTransportFailure(monitor, status) ? await this.assessEgress(monitor.id) : null;
-
 		// ****************************
 		// Step 2: Record
 		// ****************************
 
-		// Step 2a:  Create & record a check, return null if fail
+		// Step 2a:  Create & record a check, return null if fail.
+		// Built before the egress assessment below so that the probe's duration stays out of `createdAt`.
 		const check = this.checkService.toCheck(status);
 		if (!check) {
 			this.logger.warn({
@@ -117,13 +126,17 @@ export class CheckProducer implements ICheckProducer {
 			});
 			return null;
 		}
+
+		// Step 2b: On a transport failure, ask whether the instance itself can reach anything before blaming the
+		// target. Null means the egress check is disabled (or failed internally) and the check is treated as usual.
+		const egressStatus = this.isTransportFailure(monitor, status) ? await this.assessEgress(monitor.id) : null;
 		if (egressStatus !== null) {
 			check.egressStatus = egressStatus;
 		}
-		// Step 2b: Add to buffer
+		// Step 2c: Add to buffer
 		this.bufferService.addToBuffer(check);
 
-		// Step 2c: Handle docker logs
+		// Step 2d: Handle docker logs
 		if (status.type === "docker") {
 			const dockerLogs = await this.dockerLogsService.buildDockerLogs(status as MonitorStatusResponse<DockerStatusPayload>);
 			for (const dockerLog of dockerLogs) {

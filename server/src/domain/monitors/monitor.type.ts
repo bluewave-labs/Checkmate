@@ -50,13 +50,15 @@ export const UptimeDetailsSupportedTypes = ["http", "ping", "port", "game", "grp
 export type UptimeDetailsSupportedType = (typeof UptimeDetailsSupportedTypes)[number];
 export const supportsUptimeDetails = (type: MonitorType): type is UptimeDetailsSupportedType => UptimeDetailsSupportedTypes.some((t) => t === type);
 
-// Types whose transport failure can be the instance's own loss of egress. Hardware and docker are left out:
-// a Capture agent or a docker socket is normally reached locally, and a docker monitor pointed at a remote
-// host over TCP is deliberately out of scope rather than assumed local.
+// Types whose check leaves the instance, and whose failure to reach the target can therefore be the instance's
+// own loss of egress. A hardware check is an ordinary outbound HTTP request to the Capture agent, so it counts
+// however far away the agent is. `unknown` is excluded because no request is made for it.
 export const EgressAttributableTypes = [
 	"http",
 	"ping",
 	"pagespeed",
+	"hardware",
+	"docker",
 	"port",
 	"game",
 	"grpc",
@@ -64,7 +66,14 @@ export const EgressAttributableTypes = [
 	"dns",
 ] as const satisfies readonly MonitorType[];
 export type EgressAttributableType = (typeof EgressAttributableTypes)[number];
-export const isEgressAttributable = (type: MonitorType): type is EgressAttributableType => EgressAttributableTypes.some((t) => t === type);
+
+// A Docker daemon reached over a unix socket is local IPC and cannot fail through egress; one reached over
+// TCP or TLS is as remote as any other target. The URL, not the type, settles it.
+const isLocalDockerSocket = (monitor: Pick<Monitor, "type" | "url">): boolean =>
+	monitor.type === "docker" && (monitor.url?.trim().startsWith("unix://") ?? false);
+
+export const isEgressAttributable = (monitor: Pick<Monitor, "type" | "url">): boolean =>
+	EgressAttributableTypes.some((t) => t === monitor.type) && !isLocalDockerSocket(monitor);
 
 export const MonitorStatuses = ["up", "down", "paused", "initializing", "maintenance", "breached"] as const;
 export type MonitorStatus = (typeof MonitorStatuses)[number];

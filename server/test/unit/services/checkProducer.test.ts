@@ -79,6 +79,31 @@ describe("CheckProducer", () => {
 		expect(defaults.monitorsRepository.updateById).not.toHaveBeenCalled();
 	});
 
+	it("moves a monitor out of maintenance explicitly once the window is over", async () => {
+		const monitor = makeMonitor({ status: "maintenance" });
+		const { producer, defaults } = createProducer({
+			monitorsRepository: {
+				updateById: jest.fn().mockResolvedValue({ ...monitor, status: "initializing" }),
+				findDockerTlsKeyById: jest.fn().mockResolvedValue(null),
+			},
+		});
+
+		await producer.produce(monitor);
+
+		// The exit used to be a side effect of evaluating the resulting check, which the degraded-egress
+		// short-circuit skips. Left implicit, a monitor could sit in "maintenance" for a whole egress outage.
+		expect(defaults.monitorsRepository.updateById).toHaveBeenCalledWith("m1", "team", { status: "initializing" });
+		expect(defaults.networkService.requestStatus).toHaveBeenCalled();
+	});
+
+	it("does not touch the status of a monitor that was not in maintenance", async () => {
+		const { producer, defaults } = createProducer();
+
+		await producer.produce(makeMonitor({ status: "up" }));
+
+		expect(defaults.monitorsRepository.updateById).not.toHaveBeenCalled();
+	});
+
 	it("proceeds with the check when the maintenance window is inactive", async () => {
 		const { producer, defaults } = createProducer({
 			maintenanceWindowsRepository: { findByMonitorId: jest.fn().mockResolvedValue([{ ...activeWindow(), active: false }]) },
@@ -265,21 +290,71 @@ describe("CheckProducer", () => {
 		expect(check.egressStatus).toBe("degraded");
 	});
 
-	it("never consults egress for a failing docker or hardware check", async () => {
-		for (const type of ["docker", "hardware"] as const) {
+	it("never consults egress for a docker daemon on a local socket", async () => {
+		const check: Record<string, unknown> = { id: "check-1" };
+		const { producer, defaults } = createProducer({
+			networkService: { requestStatus: jest.fn().mockResolvedValue({ ...failingStatus, type: "docker" }) },
+			checkService: { toCheck: jest.fn().mockReturnValue(check) },
+			egressService: { assessAfterFailure: jest.fn().mockResolvedValue("degraded") },
+		});
+
+		await producer.produce(makeMonitor({ type: "docker", url: "unix:///var/run/docker.sock" }));
+
+		// Local IPC never leaves the instance, so it cannot fail through egress.
+		expect(defaults.egressService.assessAfterFailure).not.toHaveBeenCalled();
+		expect(check).not.toHaveProperty("egressStatus");
+		expect(defaults.buffer.addToBuffer).toHaveBeenCalledWith(check);
+	});
+
+	it("consults egress for a hardware check and for a docker daemon reached over TCP", async () => {
+		for (const monitor of [
+			makeMonitor({ type: "hardware", url: "http://capture.example.com:59232/api/v1/metrics" }),
+			makeMonitor({ type: "docker", url: "tcp://docker.example.com:2376" }),
+		]) {
 			const check: Record<string, unknown> = { id: "check-1" };
 			const { producer, defaults } = createProducer({
-				networkService: { requestStatus: jest.fn().mockResolvedValue({ ...failingStatus, type }) },
+				networkService: { requestStatus: jest.fn().mockResolvedValue({ ...failingStatus, type: monitor.type }) },
 				checkService: { toCheck: jest.fn().mockReturnValue(check) },
 				egressService: { assessAfterFailure: jest.fn().mockResolvedValue("degraded") },
 			});
 
-			await producer.produce(makeMonitor({ type }));
+			await producer.produce(monitor);
 
-			expect(defaults.egressService.assessAfterFailure).not.toHaveBeenCalled();
-			expect(check).not.toHaveProperty("egressStatus");
-			expect(defaults.buffer.addToBuffer).toHaveBeenCalledWith(check);
+			// Both requests leave the instance, so our own loss of egress can be the cause.
+			expect(defaults.egressService.assessAfterFailure).toHaveBeenCalledTimes(1);
+			expect(check.egressStatus).toBe("degraded");
 		}
+	});
+
+	it("does not consult egress when the provider reports that the peer answered", async () => {
+		// gRPC NOT_SERVING and an authoritative DNS NXDOMAIN both carry NETWORK_ERROR, so only this flag separates
+		// them from a connection failure.
+		const check: Record<string, unknown> = { id: "check-1" };
+		const { producer, defaults } = createProducer({
+			networkService: { requestStatus: jest.fn().mockResolvedValue({ ...failingStatus, peerResponded: true }) },
+			checkService: { toCheck: jest.fn().mockReturnValue(check) },
+			egressService: { assessAfterFailure: jest.fn().mockResolvedValue("degraded") },
+		});
+
+		await producer.produce(makeMonitor({ type: "dns" }));
+
+		expect(defaults.egressService.assessAfterFailure).not.toHaveBeenCalled();
+		expect(check).not.toHaveProperty("egressStatus");
+	});
+
+	it("consults egress when the provider reports that nothing answered, despite an HTTP-shaped code", async () => {
+		const check: Record<string, unknown> = { id: "check-1" };
+		const { producer, defaults } = createProducer({
+			networkService: { requestStatus: jest.fn().mockResolvedValue({ ...failingStatus, code: 503, peerResponded: false }) },
+			checkService: { toCheck: jest.fn().mockReturnValue(check) },
+			egressService: { assessAfterFailure: jest.fn().mockResolvedValue("degraded") },
+		});
+
+		await producer.produce(makeMonitor({ type: "grpc" }));
+
+		// An explicit report from the provider outranks the HTTP-status heuristic.
+		expect(defaults.egressService.assessAfterFailure).toHaveBeenCalledTimes(1);
+		expect(check.egressStatus).toBe("degraded");
 	});
 
 	it("flags a failing check as degraded when the egress service reports degraded egress", async () => {
