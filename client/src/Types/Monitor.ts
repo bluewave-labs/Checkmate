@@ -192,6 +192,11 @@ export interface MonitorsSummary {
 	breachedMonitors: number;
 }
 
+export interface MonitorTypeCount {
+	type: MonitorType;
+	count: number;
+}
+
 export interface MonitorsWithChecksResponse {
 	count: number;
 	monitors: MonitorWithChecks[];

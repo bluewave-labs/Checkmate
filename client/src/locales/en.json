@@ -1911,6 +1911,7 @@
 			}
 		},
 		"dashboard": {
+			"noData": "No data available at this moment.",
 			"monitorStatus": {
 				"ofUp": "of {{total}} up"
 			},
