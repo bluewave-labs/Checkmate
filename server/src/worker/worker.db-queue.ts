@@ -135,14 +135,26 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 			const status = this.checkService.toStatusResponse(check);
 			const evaluation = await this.checkEvaluator.evaluate(status, check, current);
 			await this.dispatcher.dispatch(evaluation); // Handle incidents and notifications
-			await this.jobsRepository.pullEvaluated(job.id, [check.id]);
+			const leaseHeld = await this.jobsRepository.pullEvaluated(job.id, [check.id]);
+			if (!leaseHeld) {
+				// Another worker has claimed this row and is evaluating the remaining ids; stop here so nothing is applied twice
+				this.logger.warn({ message: `Lost lease on ${job.id} after check ${check.id}, stopping`, service: SERVICE_NAME, method: "runEvaluate" });
+				return;
+			}
 			current = evaluation.statusChange.monitor; // fresh statusWindow/status/counters for the next check
 		}
 
-		// Clean up ids potentially orphaned retention cleanup
+		// Ids whose check was not returned (deleted by retention cleanup) would otherwise sit on the row forever
 		const found = new Set(checks.map((check) => check.id));
 		const missing = pendingCheckIds.filter((checkId) => !found.has(checkId));
-		if (missing.length > 0) await this.jobsRepository.pullEvaluated(job.id, missing);
+		if (missing.length > 0) {
+			this.logger.warn({
+				message: `Dropping ${missing.length} pending checks with no stored check: ${missing.join(", ")}`,
+				service: SERVICE_NAME,
+				method: "runEvaluate",
+			});
+			await this.jobsRepository.pullEvaluated(job.id, missing);
+		}
 	};
 
 	private runGeoCheck = async (job: Job) => {

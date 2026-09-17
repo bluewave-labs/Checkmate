@@ -376,6 +376,14 @@ describe("MongoJobsRepository", () => {
 			expect(row?.nextScheduledAt).toBe(NOW);
 		});
 
+		it("never duplicates an entry when the same batch is armed twice (retry after a failed arm)", async () => {
+			await repo.upsertEvaluate("mon-1", pending("c1", "c2"), NOW);
+			await repo.upsertEvaluate("mon-1", pending("c1", "c2"), NOW + 1_000);
+
+			const row = await readRow("evaluate:mon-1");
+			expect(row?.pendingChecks).toEqual(pending("c1", "c2"));
+		});
+
 		it("accumulates ids across flushes so a late batch is never lost", async () => {
 			await repo.upsertEvaluate("mon-1", pending("c2"), NOW); // later check, flushed first
 			await repo.upsertEvaluate("mon-1", pending("c1"), NOW + 15_000); // earlier check, flushed later
@@ -445,6 +453,19 @@ describe("MongoJobsRepository", () => {
 			expect(row?.pendingChecks.map((entry) => entry.checkId)).toEqual(["c1"]);
 		});
 
+		it("reports the lease as held even when the ids were already pulled", async () => {
+			await seedJob({
+				_id: "evaluate:mon-1",
+				type: "evaluate",
+				intervalMs: null,
+				lockedBy: ownedBy(repo),
+				lockedUntil: NOW + LOCK_MS,
+				pendingChecks: [],
+			});
+
+			expect(await repo.pullEvaluated("evaluate:mon-1", ["c1"])).toBe(true);
+		});
+
 		it("is a no-op for an empty id list", async () => {
 			await seedJob({
 				_id: "evaluate:mon-1",
@@ -474,6 +495,7 @@ describe("MongoJobsRepository", () => {
 				intervalMs: 60_000,
 				lockedBy: null,
 				lockedUntil: null,
+				pendingChecks: [],
 				runCount: 0,
 				failCount: 0,
 				lastFinishedAt: null,
@@ -505,6 +527,7 @@ describe("MongoJobsRepository", () => {
 				intervalMs: 86_400_000,
 				lockedBy: null,
 				lockedUntil: null,
+				pendingChecks: [],
 				runCount: 0,
 				failCount: 0,
 				lastFinishedAt: null,

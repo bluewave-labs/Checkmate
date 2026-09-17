@@ -366,11 +366,17 @@ class MongoChecksRepository implements IChecksRepository {
 
 		const ids = pending.map((entry) => new mongoose.Types.ObjectId(entry.checkId));
 
-		const times = pending.map((entry) => entry.createdAt);
+		// Bound the query to the pending time range so the monitorId + createdAt index is used
+		let from = Number.POSITIVE_INFINITY;
+		let to = Number.NEGATIVE_INFINITY;
+		for (const entry of pending) {
+			if (entry.createdAt < from) from = entry.createdAt;
+			if (entry.createdAt > to) to = entry.createdAt;
+		}
 
 		const docs = await CheckModel.find({
 			"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
-			createdAt: { $gte: new Date(Math.min(...times)), $lte: new Date(Math.max(...times)) },
+			createdAt: { $gte: new Date(from), $lte: new Date(to) },
 			_id: { $in: ids },
 		})
 			.sort({ createdAt: 1 })

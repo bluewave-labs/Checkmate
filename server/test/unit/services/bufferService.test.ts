@@ -407,6 +407,24 @@ describe("BufferService", () => {
 			expect(jobsRepository.upsertEvaluate).toHaveBeenCalledWith("mon-2", [{ checkId: "c3", createdAt }], expect.any(Number));
 		});
 
+		it("retries a failed arm on the next flush without re-storing the checks", async () => {
+			const { service, checkService, jobsRepository, logger } = createService();
+			(jobsRepository.upsertEvaluate as jest.Mock).mockRejectedValueOnce(new Error("arm failed"));
+			service.addToBuffer(makeCheck({ id: "c1" }));
+
+			await service.flushBuffer();
+			expect(checkService.createChecks).toHaveBeenCalledTimes(1);
+			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ method: "ingestChecks" }));
+
+			await service.flushBuffer(); // buffer is empty, only the retry runs
+			expect(checkService.createChecks).toHaveBeenCalledTimes(1);
+			expect(jobsRepository.upsertEvaluate).toHaveBeenCalledTimes(2);
+			expect(jobsRepository.upsertEvaluate).toHaveBeenLastCalledWith("mon-1", [{ checkId: "c1", createdAt: expect.any(Number) }], expect.any(Number));
+
+			await service.flushBuffer(); // nothing left to retry
+			expect(jobsRepository.upsertEvaluate).toHaveBeenCalledTimes(2);
+		});
+
 		it("ingestChecks with an empty batch neither writes nor arms", async () => {
 			const { service, checkService, jobsRepository } = createService();
 

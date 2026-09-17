@@ -36,6 +36,9 @@ export class BufferService implements IBufferService {
 	private dockerLogsService: IDockerLogsService;
 	private jobsRepository: IJobsRepository;
 
+	// Checks that are stored but whose evaluate row could not be armed. Retried on the next flush so they are never unevaluated.
+	private unarmed: Map<string, PendingCheck[]> = new Map();
+
 	constructor(
 		logger: ILogger,
 		checkService: ICheckService,
@@ -102,20 +105,33 @@ export class BufferService implements IBufferService {
 	}
 
 	ingestChecks = async (checks: Check[]) => {
-		if (checks.length === 0) return;
-		await this.checksService.createChecks(checks);
+		if (checks.length > 0) await this.checksService.createChecks(checks);
 
-		const byMonitor = new Map<string, PendingCheck[]>();
+		// Group by monitor, starting from any entries a previous flush failed to arm
+		const byMonitor = this.unarmed;
+		this.unarmed = new Map();
 		for (const check of checks) {
 			const pending = byMonitor.get(check.metadata.monitorId) ?? [];
 			pending.push({ checkId: check.id, createdAt: new Date(check.createdAt).getTime() });
 			byMonitor.set(check.metadata.monitorId, pending);
 		}
+		if (byMonitor.size === 0) return;
 
 		const now = Date.now();
 		const ops: Promise<boolean>[] = [];
 		for (const [monitorId, pendingChecks] of byMonitor) {
-			ops.push(this.jobsRepository.upsertEvaluate(monitorId, pendingChecks, now));
+			ops.push(
+				this.jobsRepository.upsertEvaluate(monitorId, pendingChecks, now).catch((error: unknown) => {
+					// The checks are already stored, so a failed arm is retried on the next flush rather than dropped
+					this.unarmed.set(monitorId, pendingChecks);
+					this.logger.error({
+						message: `Could not arm evaluation for monitor ${monitorId}, retrying on next flush: ${error instanceof Error ? error.message : String(error)}`,
+						service: this.SERVICE_NAME,
+						method: "ingestChecks",
+					});
+					return false;
+				})
+			);
 		}
 		await Promise.all(ops);
 	};
@@ -144,7 +160,7 @@ export class BufferService implements IBufferService {
 	}
 
 	async flushBuffer() {
-		if (this.buffer.length === 0) {
+		if (this.buffer.length === 0 && this.unarmed.size === 0) {
 			return;
 		}
 		// Take the batch first so a write that drains it can't be appended to mid-flush

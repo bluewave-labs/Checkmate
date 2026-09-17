@@ -185,8 +185,8 @@ class MongoJobsRepository implements IJobsRepository {
 			$min: {
 				nextScheduledAt: now, // no op if there is already a pending evaluation that is older
 			},
-			$push: {
-				pendingChecks: { $each: pending }, // accumulate pending checks
+			$addToSet: {
+				pendingChecks: { $each: pending }, // accumulate pending checks; a retried arm never duplicates an entry
 			},
 		};
 		try {
@@ -203,6 +203,7 @@ class MongoJobsRepository implements IJobsRepository {
 		}
 	};
 
+	// Returns whether this worker still holds the lease. false means another worker has claimed the row and the caller must stop.
 	pullEvaluated = async (id: string, checkIds: string[]) => {
 		if (checkIds.length === 0) return true;
 
@@ -210,7 +211,7 @@ class MongoJobsRepository implements IJobsRepository {
 			{ _id: id, lockedBy: this.workerId }, // Only the worker that claimed can pull checks
 			{ $pull: { pendingChecks: { checkId: { $in: checkIds } } } }
 		);
-		return res.modifiedCount === 1;
+		return res.matchedCount === 1;
 	};
 
 	upsertJob = async (job: JobSeed) => {

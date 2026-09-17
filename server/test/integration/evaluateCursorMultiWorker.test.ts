@@ -17,20 +17,20 @@ import type { MonitorStatusResponse } from "../../src/types/network.ts";
 import type { ILogger } from "../../src/utils/logger.ts";
 
 // ── Real-Mongo harness ─────────────────────────────────────────────────────────
-// The evaluate step hands work from the check job to the evaluator through the database:
-// each worker's BufferService flushes its own in-memory batch on its own timer, then queues
-// one evaluate job per monitor. The evaluator reads checks with createdAt strictly after the
-// monitor's lastEvaluatedAt and advances that cursor to each check's createdAt.
+// Regression test for the dropped-check bug in the check-to-evaluate handoff.
 //
-// With two processing workers the flush timers are not aligned, so a later check produced on
-// worker B can be flushed and evaluated before an earlier check produced on worker A has
-// been flushed. When A's batch finally lands, its check is older than the cursor and the
-// evaluate query never returns it. The check exists in the collection but never reaches the
-// status window, stats, incidents or notifications.
+// The evaluate step used to be driven by a timestamp cursor: the evaluator read checks with
+// createdAt strictly after the monitor's lastEvaluatedAt and advanced that cursor to each
+// check's createdAt. Each worker's BufferService flushes its own in-memory batch on its own
+// timer, so with two processing workers a later check produced on worker B could be flushed and
+// evaluated before an earlier check produced on worker A had been flushed. When A's batch landed,
+// its check was older than the cursor and the evaluate query never returned it. The check existed
+// in the collection but never reached the status window, stats, incidents or notifications.
 //
-// This drives the real time-series query, the real jobs collection, the real buffer flush and
-// the real DBQueueWorker evaluate path against an in-process mongod, so the cursor semantics
-// under test are MongoDB's, not a mock's.
+// The evaluate row now carries the ids of every stored check, pushed at ingest and pulled as each
+// is applied, so a late batch is always evaluated. This drives the real time-series query, the
+// real jobs collection, the real buffer flush and the real DBQueueWorker evaluate path against an
+// in-process mongod, so the handoff semantics under test are MongoDB's, not a mock's.
 
 let mongod: MongoMemoryServer;
 

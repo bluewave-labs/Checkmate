@@ -421,6 +421,22 @@ describe("DBQueueWorker", () => {
 			expect(mocks.jobsRepository.pullEvaluated).toHaveBeenCalledWith(job.id, ["c1", "c2"]);
 		});
 
+		it("evaluate job stops applying checks once the lease is lost so a second claimer does not double-apply", async () => {
+			const job = makeEvaluateJob("c1", "c2", "c3");
+			const checksRepository = { findUnevaluatedByMonitorId: jest.fn<any>().mockResolvedValue([{ id: "c1" }, { id: "c2" }, { id: "c3" }]) };
+			const jobsRepository = {
+				...createWorker().mocks.jobsRepository,
+				claimDueBatch: claimOnce(job),
+				pullEvaluated: jest.fn<any>().mockResolvedValueOnce(true).mockResolvedValueOnce(false), // lease lost after c2
+			};
+			const { mocks } = await start({ mocks: { jobsRepository, checksRepository } });
+
+			expect(mocks.checkEvaluator.evaluate).toHaveBeenCalledTimes(2);
+			expect(mocks.dispatcher.dispatch).toHaveBeenCalledTimes(2);
+			expect(mocks.jobsRepository.pullEvaluated).toHaveBeenCalledTimes(2); // no trailing sweep either
+			expect(mocks.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ method: "runEvaluate" }));
+		});
+
 		it("evaluate job pulls ids whose check no longer exists so they do not sit on the row forever", async () => {
 			const job = makeEvaluateJob("c1", "c-gone");
 			const checksRepository = { findUnevaluatedByMonitorId: jest.fn<any>().mockResolvedValue([{ id: "c1" }]) }; // c-gone was cleaned up

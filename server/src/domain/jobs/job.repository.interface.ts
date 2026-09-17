@@ -36,7 +36,7 @@ export interface IJobsRepository {
 	// ********************
 	upsertEvaluate(monitorId: string, pending: PendingCheck[], now: number): Promise<boolean>;
 
-	// Removes processed checks from the evaluate row.
+	// Removes processed checks from the evaluate row. Returns false when this worker no longer holds the lease.
 	pullEvaluated(id: string, checkIds: string[]): Promise<boolean>;
 
 	// ********************
