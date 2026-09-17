@@ -79,9 +79,10 @@ describe("MongoChecksRepository degraded-egress exclusion", () => {
 	});
 
 	it("round-trips egressStatus through createChecks and the unevaluated-checks read, leaving it absent when unset", async () => {
-		await repo.createChecks([makeCheck({ egressStatus: "degraded" }), makeCheck({ egressStatus: "ok" }), makeCheck()]);
+		const created = await repo.createChecks([makeCheck({ egressStatus: "degraded" }), makeCheck({ egressStatus: "ok" }), makeCheck()]);
+		const pending = created.map((check) => ({ checkId: check.id as string, createdAt: new Date(check.createdAt as string).getTime() }));
 
-		const checks = await repo.findUnevaluatedByMonitorId(MONITOR_ID.toString(), BUCKET_TIME.getTime() - 1);
+		const checks = await repo.findUnevaluatedByMonitorId(MONITOR_ID.toString(), pending);
 
 		// The evaluator runs from this read, so the flag must survive persistence for the short-circuit to fire.
 		expect(checks.map((check) => check.egressStatus)).toEqual(["degraded", "ok", undefined]);
