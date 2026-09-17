@@ -1,6 +1,7 @@
 import { CheckModel } from "@/domain/checks/check.model.js";
 import mongoose from "mongoose";
 import type { HardwareDiskStats, HardwareNetStats } from "@/domain/checks/check.type.js";
+import { EXCLUDE_DEGRADED_EGRESS_MATCH } from "@/domain/checks/check.query.js";
 
 type DateRange = { start: Date; end: Date };
 type HardwareUpChecks = { totalChecks: number };
@@ -70,6 +71,7 @@ export const getHardwareTotalChecks = async (monitorId: string, dates: DateRange
 		"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 		"metadata.type": "hardware",
 		createdAt: { $gte: dates.start, $lte: dates.end },
+		...EXCLUDE_DEGRADED_EGRESS_MATCH,
 	});
 };
 
@@ -78,6 +80,7 @@ export const getHardwareUpChecks = async (monitorId: string, dates: DateRange): 
 		"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 		"metadata.type": "hardware",
 		createdAt: { $gte: dates.start, $lte: dates.end },
+		...EXCLUDE_DEGRADED_EGRESS_MATCH,
 		status: true,
 	});
 	return { totalChecks: count };
@@ -95,6 +98,7 @@ export const getHardwareStats = async (monitorId: string, dates: DateRange, date
 				"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
 				"metadata.type": "hardware",
 				createdAt: { $gte: dates.start, $lte: dates.end },
+				...EXCLUDE_DEGRADED_EGRESS_MATCH,
 			},
 		},
 		{ $sort: { createdAt: 1 } },

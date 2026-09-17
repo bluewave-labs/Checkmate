@@ -3,7 +3,13 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import MongoChecksRepository from "../../src/domain/checks/check.repository.mongo.ts";
 import { CheckModel } from "../../src/domain/checks/check.model.ts";
-import type { Check, DockerChecksResult, PageSpeedChecksResult, UptimeChecksResult } from "../../src/domain/checks/check.type.ts";
+import type {
+	Check,
+	DockerChecksResult,
+	HardwareChecksResult,
+	PageSpeedChecksResult,
+	UptimeChecksResult,
+} from "../../src/domain/checks/check.type.ts";
 import { NETWORK_ERROR } from "../../src/types/network.ts";
 import type { ILogger } from "../../src/utils/logger.ts";
 import { createMockLogger } from "../helpers/createMockLogger.ts";
@@ -181,18 +187,25 @@ describe("MongoChecksRepository degraded-egress exclusion", () => {
 		expect(resolve.checks.map((check) => check.egressStatus).sort()).toEqual([undefined, "degraded"].sort());
 	});
 
-	it("leaves the docker aggregates alone, since a docker check is never attributed to egress", async () => {
+	it("excludes degraded checks from the docker and hardware aggregates", async () => {
 		const dockerMonitor = new mongoose.Types.ObjectId();
+		const hardwareMonitor = new mongoose.Types.ObjectId();
 		const dockerMeta = { monitorId: dockerMonitor, teamId: TEAM_ID, type: "docker" };
+		const hardwareMeta = { monitorId: hardwareMonitor, teamId: TEAM_ID, type: "hardware" };
 
-		// The schema accepts the field on any type, so this pins the scope decision rather than the schema:
-		// the producer never sets it for docker or hardware, so their aggregations must not filter on it.
+		// A Capture agent is reached by an outbound HTTP request and a docker daemon can be reached over TCP,
+		// so both are egress attributable and their checks can carry the flag.
 		await seedCheck({ metadata: dockerMeta });
 		await seedDegradedFailure({ metadata: dockerMeta });
+		await seedCheck({ metadata: hardwareMeta });
+		await seedDegradedFailure({ metadata: hardwareMeta });
 
 		const docker = (await repo.findByDateRangeAndMonitorId(dockerMonitor.toString(), "day", { type: "docker" })) as DockerChecksResult;
+		const hardware = (await repo.findByDateRangeAndMonitorId(hardwareMonitor.toString(), "day", { type: "hardware" })) as HardwareChecksResult;
 
-		expect(docker.aggregateData.totalChecks).toBe(2);
-		expect(docker.aggregate[0]).toMatchObject({ upCount: 1, totalCount: 2 });
+		expect(docker.aggregateData.totalChecks).toBe(1);
+		expect(docker.aggregate[0]).toMatchObject({ upCount: 1, totalCount: 1 });
+		expect(hardware.aggregateData.totalChecks).toBe(1);
+		expect(hardware.upChecks.totalChecks).toBe(1);
 	});
 });
