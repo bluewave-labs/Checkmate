@@ -7,12 +7,14 @@ import type { IJobsRepository } from "@/domain/jobs/job.repository.interface.js"
 import { ICheckService } from "../domain/checks/check.service.js";
 import { DockerLog } from "@/domain/docker/docker-log.type.js";
 import { IDockerLogsService } from "@/domain/docker/docker-log.service.js";
+import { PendingCheck } from "@/domain/jobs/job.type.js";
 const SERVICE_NAME = "BufferService";
 
 export interface IBufferService {
 	addToBuffer(check: Check): void;
 	addGeoCheckToBuffer(geoCheck: GeoCheck): void;
 	addDockerLogToBuffer(dockerLog: DockerLog): void;
+	ingestChecks(checks: Check[]): Promise<void>;
 	scheduleNextFlush(): void;
 	flushBuffer(): Promise<void>;
 	flushGeoBuffer(): Promise<void>;
@@ -33,6 +35,9 @@ export class BufferService implements IBufferService {
 	private geoChecksService: IGeoChecksService;
 	private dockerLogsService: IDockerLogsService;
 	private jobsRepository: IJobsRepository;
+
+	// Checks that are stored but whose evaluate row could not be armed. Retried on the next flush so they are never unevaluated.
+	private unarmed: Map<string, PendingCheck[]> = new Map();
 
 	constructor(
 		logger: ILogger,
@@ -99,6 +104,38 @@ export class BufferService implements IBufferService {
 		}
 	}
 
+	ingestChecks = async (checks: Check[]) => {
+		if (checks.length > 0) await this.checksService.createChecks(checks);
+
+		// Group by monitor, starting from any entries a previous flush failed to arm
+		const byMonitor = this.unarmed;
+		this.unarmed = new Map();
+		for (const check of checks) {
+			const pending = byMonitor.get(check.metadata.monitorId) ?? [];
+			pending.push({ checkId: check.id, createdAt: new Date(check.createdAt).getTime() });
+			byMonitor.set(check.metadata.monitorId, pending);
+		}
+		if (byMonitor.size === 0) return;
+
+		const now = Date.now();
+		const ops: Promise<boolean>[] = [];
+		for (const [monitorId, pendingChecks] of byMonitor) {
+			ops.push(
+				this.jobsRepository.upsertEvaluate(monitorId, pendingChecks, now).catch((error: unknown) => {
+					// The checks are already stored, so a failed arm is retried on the next flush rather than dropped
+					this.unarmed.set(monitorId, pendingChecks);
+					this.logger.error({
+						message: `Could not arm evaluation for monitor ${monitorId}, retrying on next flush: ${error instanceof Error ? error.message : String(error)}`,
+						service: this.SERVICE_NAME,
+						method: "ingestChecks",
+					});
+					return false;
+				})
+			);
+		}
+		await Promise.all(ops);
+	};
+
 	scheduleNextFlush() {
 		if (this.bufferTimer) {
 			clearTimeout(this.bufferTimer);
@@ -121,8 +158,9 @@ export class BufferService implements IBufferService {
 			}
 		}, this.BUFFER_TIMEOUT);
 	}
+
 	async flushBuffer() {
-		if (this.buffer.length === 0) {
+		if (this.buffer.length === 0 && this.unarmed.size === 0) {
 			return;
 		}
 		// Take the batch first so a write that drains it can't be appended to mid-flush
@@ -134,11 +172,7 @@ export class BufferService implements IBufferService {
 				service: this.SERVICE_NAME,
 				method: "flushBuffer",
 			});
-			await this.checksService.createChecks(batch);
-			// Need to evaluate checks when they are flushed
-			const monitorIds = [...new Set(batch.map((check) => check.metadata.monitorId))];
-			const now = Date.now();
-			await Promise.all(monitorIds.map((monitorId) => this.jobsRepository.upsertEvaluate(monitorId, now)));
+			await this.ingestChecks(batch);
 		} catch (error: unknown) {
 			this.logger.error({
 				message: error instanceof Error ? error.message : "Unknown error",

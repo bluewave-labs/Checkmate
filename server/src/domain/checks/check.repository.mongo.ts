@@ -33,6 +33,7 @@ import {
 	getDockerTotalChecks,
 	getDockerUpChecks,
 } from "@/domain/checks/check.docker.aggregation.js";
+import { PendingCheck } from "@/domain/jobs/job.type.js";
 
 const SERVICE_NAME = "ChecksRepository";
 
@@ -360,10 +361,23 @@ class MongoChecksRepository implements IChecksRepository {
 		};
 	};
 
-	findUnevaluatedByMonitorId = async (monitorId: string, since: number) => {
+	findUnevaluatedByMonitorId = async (monitorId: string, pending: PendingCheck[]) => {
+		if (pending.length === 0) return [];
+
+		const ids = pending.map((entry) => new mongoose.Types.ObjectId(entry.checkId));
+
+		// Bound the query to the pending time range so the monitorId + createdAt index is used
+		let from = Number.POSITIVE_INFINITY;
+		let to = Number.NEGATIVE_INFINITY;
+		for (const entry of pending) {
+			if (entry.createdAt < from) from = entry.createdAt;
+			if (entry.createdAt > to) to = entry.createdAt;
+		}
+
 		const docs = await CheckModel.find({
 			"metadata.monitorId": new mongoose.Types.ObjectId(monitorId),
-			createdAt: { $gt: new Date(since) },
+			createdAt: { $gte: new Date(from), $lte: new Date(to) },
+			_id: { $in: ids },
 		})
 			.sort({ createdAt: 1 })
 			.lean<CheckDocument[]>();

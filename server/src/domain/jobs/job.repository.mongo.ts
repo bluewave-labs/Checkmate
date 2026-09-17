@@ -1,6 +1,6 @@
 import { IJobsRepository, JobPageQuery } from "@/domain/jobs/job.repository.interface.js";
 import JobModel, { JobDocument } from "@/domain/jobs/job.model.js";
-import { JobType, Job, JobSeed, BACKOFF_MS, LOCK_MS, PARKED, jobId } from "@/domain/jobs/job.type.js";
+import { JobType, Job, JobSeed, BACKOFF_MS, LOCK_MS, PARKED, jobId, PendingCheck } from "@/domain/jobs/job.type.js";
 
 // Cap for rearm interval, never want to wait more than 15s.
 const REARM_JITTER_MAX_MS = 15_000;
@@ -18,6 +18,7 @@ class MongoJobsRepository implements IJobsRepository {
 			intervalMs: doc.intervalMs,
 			lockedBy: doc.lockedBy,
 			lockedUntil: doc.lockedUntil,
+			pendingChecks: doc.pendingChecks ?? [],
 			runCount: doc.runCount,
 			failCount: doc.failCount,
 			lastFinishedAt: doc.lastFinishedAt,
@@ -146,24 +147,27 @@ class MongoJobsRepository implements IJobsRepository {
 				_id: id,
 				lockedBy: this.workerId, // Only the worker that claimed can record success
 			},
-			{
-				$set: {
-					nextScheduledAt: PARKED,
-					lockedBy: null, // Remove lock
-					lockedUntil: null,
-					lastFinishedAt: now,
-					failCount: 0,
-					lastFailReason: null,
+			[
+				{
+					$set: {
+						// Re-arm if more checks were pushed while this run held the lease; otherwise park
+						nextScheduledAt: {
+							$cond: [{ $gt: [{ $size: { $ifNull: ["$pendingChecks", []] } }, 0] }, now, PARKED],
+						},
+						lockedBy: null, // Remove lock
+						lockedUntil: null,
+						lastFinishedAt: now,
+						failCount: 0,
+						lastFailReason: null,
+						runCount: { $add: ["$runCount", 1] },
+					},
 				},
-				$inc: {
-					runCount: 1, // Increment run count
-				},
-			}
+			]
 		);
 		return res.modifiedCount === 1;
 	};
 
-	upsertEvaluate = async (monitorId: string, now: number) => {
+	upsertEvaluate = async (monitorId: string, pending: PendingCheck[], now: number) => {
 		const filter = { type: "evaluate", refId: monitorId };
 		const update = {
 			$setOnInsert: {
@@ -181,6 +185,9 @@ class MongoJobsRepository implements IJobsRepository {
 			$min: {
 				nextScheduledAt: now, // no op if there is already a pending evaluation that is older
 			},
+			$addToSet: {
+				pendingChecks: { $each: pending }, // accumulate pending checks; a retried arm never duplicates an entry
+			},
 		};
 		try {
 			const res = await JobModel.updateOne(filter, update, { upsert: true });
@@ -195,6 +202,18 @@ class MongoJobsRepository implements IJobsRepository {
 			throw error;
 		}
 	};
+
+	// Returns whether this worker still holds the lease. false means another worker has claimed the row and the caller must stop.
+	pullEvaluated = async (id: string, checkIds: string[]) => {
+		if (checkIds.length === 0) return true;
+
+		const res = await JobModel.updateOne(
+			{ _id: id, lockedBy: this.workerId }, // Only the worker that claimed can pull checks
+			{ $pull: { pendingChecks: { checkId: { $in: checkIds } } } }
+		);
+		return res.matchedCount === 1;
+	};
+
 	upsertJob = async (job: JobSeed) => {
 		const res = await JobModel.updateOne(
 			{ _id: job.id },
