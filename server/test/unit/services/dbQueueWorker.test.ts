@@ -56,6 +56,7 @@ const makeJob = (overrides?: Partial<Job>): Job => ({
 	intervalMs: 60000,
 	lockedBy: null,
 	lockedUntil: null,
+	pendingChecks: [],
 	runCount: 0,
 	failCount: 0,
 	lastFinishedAt: null,
@@ -63,12 +64,22 @@ const makeJob = (overrides?: Partial<Job>): Job => ({
 	...overrides,
 });
 
+// An evaluate row as ingest leaves it: one pending entry per stored check
+const makeEvaluateJob = (...checkIds: string[]): Job =>
+	makeJob({
+		id: "evaluate:m1",
+		type: "evaluate",
+		intervalMs: null,
+		pendingChecks: checkIds.map((checkId, i) => ({ checkId, createdAt: 1000 + i })),
+	});
+
 const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses?: boolean; mocks?: Record<string, any> }) => {
 	const jobsRepository = {
 		claimDueBatch: jest.fn<any>().mockResolvedValue([]),
 		upsertJob: jest.fn<any>().mockResolvedValue(true),
 		upsertCleanupJob: jest.fn<any>().mockResolvedValue(true),
 		upsertEvaluate: jest.fn<any>().mockResolvedValue(true),
+		pullEvaluated: jest.fn<any>().mockResolvedValue(true),
 		recordSuccess: jest.fn<any>().mockResolvedValue(true),
 		recordFailure: jest.fn<any>().mockResolvedValue(true),
 		recordOneShot: jest.fn<any>().mockResolvedValue(true),
@@ -92,7 +103,6 @@ const createWorker = (overrides?: { queueMode?: QueueMode; queuePrimaryProcesses
 	};
 	const checkService = {
 		toStatusResponse: jest.fn<any>().mockReturnValue({ status: "up" }),
-		toLastEvaluatedAt: jest.fn<any>().mockReturnValue(12345),
 	};
 	const bufferService = {
 		addToBuffer: jest.fn<any>(),
@@ -369,27 +379,62 @@ describe("DBQueueWorker", () => {
 		});
 
 		it("parks a one-shot job (intervalMs null) via recordOneShot instead of rescheduling", async () => {
-			const job = makeJob({ id: "evaluate:m1", type: "evaluate", intervalMs: null });
+			const job = makeEvaluateJob("c1");
 			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) } } });
 
 			expect(mocks.jobsRepository.recordOneShot).toHaveBeenCalledWith(job.id, expect.any(Number));
 			expect(mocks.jobsRepository.recordSuccess).not.toHaveBeenCalled();
 		});
 
-		it("evaluate job dispatches each unevaluated check and advances lastEvaluatedAt", async () => {
-			const job = makeJob({ id: "evaluate:m1", type: "evaluate", intervalMs: null });
+		it("evaluate job loads the row's pending checks, dispatches each, and pulls its id after dispatch", async () => {
+			const job = makeEvaluateJob("c1");
 			const checksRepository = { findUnevaluatedByMonitorId: jest.fn<any>().mockResolvedValue([{ id: "c1" }]) };
 			const { mocks } = await start({
 				mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) }, checksRepository },
 			});
 
+			expect(checksRepository.findUnevaluatedByMonitorId).toHaveBeenCalledWith("m1", job.pendingChecks);
 			expect(mocks.checkEvaluator.evaluate).toHaveBeenCalled();
 			expect(mocks.dispatcher.dispatch).toHaveBeenCalled();
-			expect(mocks.monitorsRepository.updateById).toHaveBeenCalledWith("m1", "team", { lastEvaluatedAt: 12345 });
+			expect(mocks.jobsRepository.pullEvaluated).toHaveBeenCalledWith(job.id, ["c1"]);
+			// The monitor cursor is gone: nothing writes lastEvaluatedAt
+			expect(mocks.monitorsRepository.updateById).not.toHaveBeenCalled();
+		});
+
+		it("evaluate job with no pending checks does nothing", async () => {
+			const job = makeEvaluateJob();
+			const { mocks } = await start({ mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) } } });
+
+			expect(mocks.monitorsRepository.findByIdLean).not.toHaveBeenCalled();
+			expect(mocks.checksRepository.findUnevaluatedByMonitorId).not.toHaveBeenCalled();
+			expect(mocks.jobsRepository.recordOneShot).toHaveBeenCalledWith(job.id, expect.any(Number));
+		});
+
+		it("evaluate job for a deleted monitor drops every pending id", async () => {
+			const job = makeEvaluateJob("c1", "c2");
+			const monitorsRepository = { findByIdLean: jest.fn<any>().mockResolvedValue(null), updateById: jest.fn<any>() };
+			const { mocks } = await start({
+				mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) }, monitorsRepository },
+			});
+
+			expect(mocks.checkEvaluator.evaluate).not.toHaveBeenCalled();
+			expect(mocks.jobsRepository.pullEvaluated).toHaveBeenCalledWith(job.id, ["c1", "c2"]);
+		});
+
+		it("evaluate job pulls ids whose check no longer exists so they do not sit on the row forever", async () => {
+			const job = makeEvaluateJob("c1", "c-gone");
+			const checksRepository = { findUnevaluatedByMonitorId: jest.fn<any>().mockResolvedValue([{ id: "c1" }]) }; // c-gone was cleaned up
+			const { mocks } = await start({
+				mocks: { jobsRepository: { ...createWorker().mocks.jobsRepository, claimDueBatch: claimOnce(job) }, checksRepository },
+			});
+
+			expect(mocks.checkEvaluator.evaluate).toHaveBeenCalledTimes(1);
+			expect(mocks.jobsRepository.pullEvaluated).toHaveBeenCalledWith(job.id, ["c1"]);
+			expect(mocks.jobsRepository.pullEvaluated).toHaveBeenCalledWith(job.id, ["c-gone"]);
 		});
 
 		it("evaluate job reads the monitor once and threads the post-write monitor across the backlog", async () => {
-			const job = makeJob({ id: "evaluate:m1", type: "evaluate", intervalMs: null });
+			const job = makeEvaluateJob("c1", "c2");
 			const initialMonitor = makeMonitor();
 			const postWriteMonitor = makeMonitor({ status: "down" }); // what updateStatusWindowAndChecks would return after check c1
 			const monitorsRepository = {

@@ -120,19 +120,29 @@ export class DBQueueWorker extends JobScheduler implements IQueueWorker {
 	// ********************
 
 	private runEvaluate = async (job: Job) => {
-		if (!job.refId) return;
+		if (!job.refId || job.pendingChecks.length === 0) return;
+		const pendingCheckIds = job.pendingChecks.map((entry) => entry.checkId);
+
 		const monitor = await this.monitorsRepository.findByIdLean(job.refId); // job row has no teamId
-		if (!monitor) return;
-		const checks = await this.checksRepository.findUnevaluatedByMonitorId(job.refId, monitor.lastEvaluatedAt);
+		if (!monitor) {
+			await this.jobsRepository.pullEvaluated(job.id, pendingCheckIds);
+			return;
+		}
+		const checks = await this.checksRepository.findUnevaluatedByMonitorId(job.refId, job.pendingChecks);
 
 		let current = monitor;
 		for (const check of checks) {
 			const status = this.checkService.toStatusResponse(check);
 			const evaluation = await this.checkEvaluator.evaluate(status, check, current);
 			await this.dispatcher.dispatch(evaluation); // Handle incidents and notifications
-			await this.monitorsRepository.updateById(job.refId, current.teamId, { lastEvaluatedAt: this.checkService.toLastEvaluatedAt(check) });
+			await this.jobsRepository.pullEvaluated(job.id, [check.id]);
 			current = evaluation.statusChange.monitor; // fresh statusWindow/status/counters for the next check
 		}
+
+		// Clean up ids potentially orphaned retention cleanup
+		const found = new Set(checks.map((check) => check.id));
+		const missing = pendingCheckIds.filter((checkId) => !found.has(checkId));
+		if (missing.length > 0) await this.jobsRepository.pullEvaluated(job.id, missing);
 	};
 
 	private runGeoCheck = async (job: Job) => {

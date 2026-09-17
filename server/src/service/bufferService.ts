@@ -7,12 +7,14 @@ import type { IJobsRepository } from "@/domain/jobs/job.repository.interface.js"
 import { ICheckService } from "../domain/checks/check.service.js";
 import { DockerLog } from "@/domain/docker/docker-log.type.js";
 import { IDockerLogsService } from "@/domain/docker/docker-log.service.js";
+import { PendingCheck } from "@/domain/jobs/job.type.js";
 const SERVICE_NAME = "BufferService";
 
 export interface IBufferService {
 	addToBuffer(check: Check): void;
 	addGeoCheckToBuffer(geoCheck: GeoCheck): void;
 	addDockerLogToBuffer(dockerLog: DockerLog): void;
+	ingestChecks(checks: Check[]): Promise<void>;
 	scheduleNextFlush(): void;
 	flushBuffer(): Promise<void>;
 	flushGeoBuffer(): Promise<void>;
@@ -99,6 +101,25 @@ export class BufferService implements IBufferService {
 		}
 	}
 
+	ingestChecks = async (checks: Check[]) => {
+		if (checks.length === 0) return;
+		await this.checksService.createChecks(checks);
+
+		const byMonitor = new Map<string, PendingCheck[]>();
+		for (const check of checks) {
+			const pending = byMonitor.get(check.metadata.monitorId) ?? [];
+			pending.push({ checkId: check.id, createdAt: new Date(check.createdAt).getTime() });
+			byMonitor.set(check.metadata.monitorId, pending);
+		}
+
+		const now = Date.now();
+		const ops: Promise<boolean>[] = [];
+		for (const [monitorId, pendingChecks] of byMonitor) {
+			ops.push(this.jobsRepository.upsertEvaluate(monitorId, pendingChecks, now));
+		}
+		await Promise.all(ops);
+	};
+
 	scheduleNextFlush() {
 		if (this.bufferTimer) {
 			clearTimeout(this.bufferTimer);
@@ -121,6 +142,7 @@ export class BufferService implements IBufferService {
 			}
 		}, this.BUFFER_TIMEOUT);
 	}
+
 	async flushBuffer() {
 		if (this.buffer.length === 0) {
 			return;
@@ -134,11 +156,7 @@ export class BufferService implements IBufferService {
 				service: this.SERVICE_NAME,
 				method: "flushBuffer",
 			});
-			await this.checksService.createChecks(batch);
-			// Need to evaluate checks when they are flushed
-			const monitorIds = [...new Set(batch.map((check) => check.metadata.monitorId))];
-			const now = Date.now();
-			await Promise.all(monitorIds.map((monitorId) => this.jobsRepository.upsertEvaluate(monitorId, now)));
+			await this.ingestChecks(batch);
 		} catch (error: unknown) {
 			this.logger.error({
 				message: error instanceof Error ? error.message : "Unknown error",

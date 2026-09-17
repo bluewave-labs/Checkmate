@@ -47,6 +47,18 @@ const JobSchema = new Schema<JobDocument>(
 			default: null,
 		},
 
+		// Pending checks, inserted but not yet evaluated
+		pendingChecks: {
+			type: [
+				{
+					checkId: { type: String, required: true },
+					createdAt: { type: Number, required: true },
+				},
+			],
+			default: [],
+			_id: false,
+		},
+
 		// Observability
 		runCount: {
 			type: Number,

@@ -45,6 +45,8 @@ const makeCheck = (overrides?: Partial<Check>): Check =>
 		statusCode: 200,
 		responseTime: 100,
 		message: "OK",
+		createdAt: "2026-01-01T00:00:00.000Z",
+		updatedAt: "2026-01-01T00:00:00.000Z",
 		...overrides,
 	}) as Check;
 
@@ -392,9 +394,26 @@ describe("BufferService", () => {
 
 			await service.flushBuffer();
 
+			const createdAt = Date.parse("2026-01-01T00:00:00.000Z");
 			expect(jobsRepository.upsertEvaluate).toHaveBeenCalledTimes(2);
-			expect(jobsRepository.upsertEvaluate).toHaveBeenCalledWith("mon-1", expect.any(Number));
-			expect(jobsRepository.upsertEvaluate).toHaveBeenCalledWith("mon-2", expect.any(Number));
+			expect(jobsRepository.upsertEvaluate).toHaveBeenCalledWith(
+				"mon-1",
+				[
+					{ checkId: "c1", createdAt },
+					{ checkId: "c2", createdAt },
+				],
+				expect.any(Number)
+			);
+			expect(jobsRepository.upsertEvaluate).toHaveBeenCalledWith("mon-2", [{ checkId: "c3", createdAt }], expect.any(Number));
+		});
+
+		it("ingestChecks with an empty batch neither writes nor arms", async () => {
+			const { service, checkService, jobsRepository } = createService();
+
+			await service.ingestChecks([]);
+
+			expect(checkService.createChecks).not.toHaveBeenCalled();
+			expect(jobsRepository.upsertEvaluate).not.toHaveBeenCalled();
 		});
 
 		it("does not arm the evaluate stage when the check write fails", async () => {
