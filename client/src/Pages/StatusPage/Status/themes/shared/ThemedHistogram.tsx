@@ -42,10 +42,7 @@ export const ThemedHistogram = ({
 	return (
 		<Stack gap={statsGap}>
 			<Box
-				sx={mergeSx(
-					containerSx,
-					{ gridTemplateColumns: `repeat(${cells.length}, 1fr)` }
-				)}
+				sx={mergeSx(containerSx, { gridTemplateColumns: `repeat(${cells.length}, 1fr)` })}
 			>
 				{cells.map((cell) => {
 					if (cell.barKind === "empty") {
