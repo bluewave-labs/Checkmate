@@ -16,6 +16,7 @@ interface Props {
 	barSx: (kind: BarKind, heightPct: number, severity?: number) => SxProps<Theme>;
 	statsSx: SxProps<Theme>;
 	statsGap?: number;
+	onCellClick?: (date: string) => void;
 }
 
 export const ThemedHistogram = ({
@@ -24,6 +25,7 @@ export const ThemedHistogram = ({
 	barSx,
 	statsSx,
 	statsGap = 1,
+	onCellClick,
 }: Props) => {
 	const { t } = useTranslation();
 
@@ -61,8 +63,16 @@ export const ThemedHistogram = ({
 							placement="top"
 						>
 							<Box
-								sx={barSx(cell.barKind, cell.heightPct, cell.severity)}
+								sx={[
+									barSx(cell.barKind, cell.heightPct, cell.severity),
+									!!cell.date && !!onCellClick && { cursor: "pointer" },
+								]}
 								aria-label={cell.ariaLabel}
+								onClick={() => {
+									if (cell.date && onCellClick) {
+										onCellClick(cell.date);
+									}
+								}}
 							/>
 						</Tooltip>
 					);
