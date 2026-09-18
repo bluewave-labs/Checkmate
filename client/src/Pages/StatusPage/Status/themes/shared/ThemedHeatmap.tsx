@@ -11,9 +11,10 @@ interface Props {
 	cells: ChartCell[];
 	containerSx: SxProps<Theme>;
 	cellSx: (kind: HeatCellKind, severity?: number) => SxProps<Theme>;
+	onCellClick?: (date: string) => void;
 }
 
-export const ThemedHeatmap = ({ cells, containerSx, cellSx }: Props) => {
+export const ThemedHeatmap = ({ cells, containerSx, cellSx, onCellClick }: Props) => {
 	const { t } = useTranslation();
 
 	return (
@@ -42,8 +43,16 @@ export const ThemedHeatmap = ({ cells, containerSx, cellSx }: Props) => {
 						placement="top"
 					>
 						<Box
-							sx={cellSx(cell.heatKind, cell.severity)}
+							sx={[
+								cellSx(cell.heatKind, cell.severity),
+								!!cell.date && !!onCellClick && { cursor: "pointer" },
+							]}
 							aria-label={cell.ariaLabel}
+							onClick={() => {
+								if (cell.date && onCellClick) {
+									onCellClick(cell.date);
+								}
+							}}
 						/>
 					</Tooltip>
 				);

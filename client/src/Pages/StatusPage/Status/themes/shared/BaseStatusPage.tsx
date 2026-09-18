@@ -14,6 +14,7 @@ import {
 import type { StatusPageThemeTokens } from "@/Pages/StatusPage/Status/themes/tokens";
 import { ThemedHeatmap } from "@/Pages/StatusPage/Status/themes/shared/ThemedHeatmap";
 import { ThemedHistogram } from "@/Pages/StatusPage/Status/themes/shared/ThemedHistogram";
+import { IncidentModal } from "@/Pages/StatusPage/Status/themes/shared/IncidentModal";
 import {
 	ThemedInfrastructure,
 	type GaugeFillLevel,
@@ -116,6 +117,8 @@ export const BaseStatusPage = ({
 		[config, tokens, mode]
 	);
 	const [chartMode, setChartMode] = useState<"heatmap" | "histogram">("heatmap");
+	const [selectedMonitorId, setSelectedMonitorId] = useState<string | null>(null);
+	const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
 	const overall = resolveOverallStatus(monitors, t, config.overallStatusOptions);
 	const logoSrc = statusPage.logo?.data
@@ -306,6 +309,10 @@ export const BaseStatusPage = ({
 										cells={cells}
 										containerSx={styles.heatmap}
 										cellSx={styles.heatmapCell}
+										onCellClick={(date) => {
+											setSelectedMonitorId(monitor.id);
+											setSelectedDate(date);
+										}}
 									/>
 								) : (
 									<ThemedHistogram
@@ -313,6 +320,10 @@ export const BaseStatusPage = ({
 										containerSx={styles.histogram}
 										barSx={styles.bar}
 										statsSx={styles.chartStats}
+										onCellClick={(date) => {
+											setSelectedMonitorId(monitor.id);
+											setSelectedDate(date);
+										}}
 									/>
 								))}
 						</Box>
@@ -333,6 +344,15 @@ export const BaseStatusPage = ({
 					Checkmate
 				</a>
 			</Box>
+			<IncidentModal
+				url={statusPage.url}
+				monitorId={selectedMonitorId}
+				date={selectedDate}
+				onClose={() => {
+					setSelectedMonitorId(null);
+					setSelectedDate(null);
+				}}
+			/>
 		</Box>
 	);
 };

@@ -4,6 +4,7 @@ import type { IStatusPagesRepository } from "../../../src/domain/status-pages/st
 import type { ISettingsService } from "../../../src/domain/app-settings/app-settings.service.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
 import type { IChecksRepository } from "../../../src/domain/checks/check.repository.interface.ts";
+import type { IIncidentsRepository } from "../../../src/domain/incidents/incident.repository.interface.ts";
 import type { CheckSnapshot } from "../../../src/domain/checks/check.type.ts";
 import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { StatusPage } from "../../../src/domain/status-pages/status-page.type.ts";
@@ -84,13 +85,19 @@ const createChecksRepo = () =>
 		getDailyStatusBuckets: jest.fn().mockResolvedValue([]),
 	}) as unknown as jest.Mocked<IChecksRepository>;
 
+const createIncidentsRepo = () =>
+	({
+		findByMonitorIdAndDate: jest.fn().mockResolvedValue([]),
+	}) as unknown as jest.Mocked<IIncidentsRepository>;
+
 const createService = (themesEnabled = true, clientHost = "http://localhost:5173", showURL = false) => {
 	const repo = createRepo();
 	const settingsService = createSettingsService(themesEnabled, clientHost, showURL);
 	const monitorsRepo = createMonitorsRepo();
 	const checksRepo = createChecksRepo();
-	const service = new StatusPageService(repo, settingsService, monitorsRepo, checksRepo);
-	return { service, repo, settingsService, monitorsRepo, checksRepo };
+	const incidentsRepo = createIncidentsRepo();
+	const service = new StatusPageService(repo, settingsService, monitorsRepo, checksRepo, incidentsRepo);
+	return { service, repo, settingsService, monitorsRepo, checksRepo, incidentsRepo };
 };
 
 // ── Tests ────────────────────────────────────────────────────────────────────
