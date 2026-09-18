@@ -64,7 +64,7 @@ export class GrpcProvider implements IStatusProvider<GrpcStatusPayload> {
 			const target = `${host}:${port}`;
 
 			const currentFilePath = fileURLToPath(import.meta.url);
-			const protoPath = path.join(path.dirname(currentFilePath), "protos", "health.proto");
+			const protoPath = path.join(path.dirname(currentFilePath), "..", "protos", "health.proto");
 			const packageDefinition = this.protoLoader.loadSync(protoPath, {
 				keepCase: true,
 				longs: String,
