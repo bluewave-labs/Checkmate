@@ -8,7 +8,6 @@ import { X as XIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useGet } from "@/Hooks/UseApi";
 
-
 interface Incident {
 	id: string;
 	message: string | null;
