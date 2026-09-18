@@ -54,18 +54,21 @@ export const IncidentModal = ({ url, monitorId, date, onClose }: IncidentModalPr
 			</DialogTitle>
 			<DialogContent>
 				{isLoading ? (
-					<Typography sx={{ mt: 1 }}>
+					<Typography mt={1}>
 						{t("pages.statusPages.monitorsList.incidents.loading")}
 					</Typography>
 				) : data?.incidents && data.incidents.length > 0 ? (
 					<Stack
 						gap={2}
-						sx={{ mt: 1 }}
+						mt={1}
 					>
 						{data.incidents.map((incident) => (
 							<Stack
 								key={incident.id}
-								sx={{ p: 2, border: 1, borderColor: "divider", borderRadius: 1 }}
+								p={2}
+								border={1}
+								borderColor="divider"
+								borderRadius={1}
 							>
 								<Typography
 									variant="subtitle2"
@@ -76,7 +79,7 @@ export const IncidentModal = ({ url, monitorId, date, onClose }: IncidentModalPr
 								</Typography>
 								<Typography
 									variant="body2"
-									color="text.secondary"
+									color={(theme) => theme.palette.text.secondary}
 								>
 									{new Date(incident.startTime).toLocaleTimeString()} -{" "}
 									{incident.endTime
@@ -87,7 +90,7 @@ export const IncidentModal = ({ url, monitorId, date, onClose }: IncidentModalPr
 						))}
 					</Stack>
 				) : (
-					<Typography sx={{ mt: 1 }}>
+					<Typography mt={1}>
 						{t("pages.statusPages.monitorsList.incidents.noIncidents")}
 					</Typography>
 				)}
