@@ -23,8 +23,9 @@ export const DockerContainerStatusBoxes = ({
 	if (!container) return null;
 
 	const { state, restartCount, health } = container;
-	const startedAt = container.startedAt ?? "0";
-	const runningFor = Date.now() - new Date(startedAt).getTime();
+	const runningFor = container.startedAt
+		? Date.now() - new Date(container.startedAt).getTime()
+		: undefined;
 	const palette = getDockerPalette(state);
 	return (
 		<Stack
@@ -39,11 +40,11 @@ export const DockerContainerStatusBoxes = ({
 			/>
 			<StatBox
 				title={t("common.labels.uptime")}
-				subtitle={formatDuration(runningFor)}
+				subtitle={runningFor === undefined ? "—" : formatDuration(runningFor)}
 			/>
 			<StatBox
 				title={t("common.labels.restarts")}
-				subtitle={String(restartCount ?? 0)}
+				subtitle={restartCount === undefined ? "—" : String(restartCount)}
 			/>
 			<StatBox
 				title={t("common.labels.health")}

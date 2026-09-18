@@ -134,14 +134,17 @@ If you need to monitor internal HTTPS endpoints with certificates from private C
 
 ### Docker monitors
 
-A Docker monitor connects to a Docker daemon and reports on every container it runs. The daemon's ping response decides whether the monitor is up or down and its latency is the response time. Each check also records every container's state, health, CPU and memory usage, restart count, published ports and mounts. Enabling **Collect container logs** additionally stores the latest 200 log lines per container on every check; logs are kept for 7 days.
+A Docker monitor reports on every container running on a host. It can connect to the Docker daemon directly or read container metrics from a Capture agent. Direct monitors use the daemon's ping response for availability and record container state, health, CPU and memory usage, restart count, published ports and mounts. Enabling **Collect container logs** additionally stores the latest 200 log lines per container on every direct check; logs are kept for 7 days.
 
-The **Docker host** field accepts two forms:
+The **Docker host** field accepts three forms:
 
 | Host | Example | Notes |
 |---|---|---|
 | Local socket | `unix:///var/run/docker.sock` | Also accepts a bare absolute path such as `/var/run/docker.sock`. Use this for the daemon on the same machine Checkmate runs on. |
 | Remote daemon | `tcp://docker.example.com:2376` | Always uses mutual TLS; the port defaults to `2376`. Unencrypted daemons on `2375` are not supported. |
+| Capture agent | `https://capture.example.com/api/v1/metrics/docker` | Enter the full endpoint ending in `/metrics/docker` and its authorization secret. Checkmate requests `all=true` so stopped containers are included. |
+
+Capture-backed monitors normalize Capture's container state, health, CPU, memory, start time and exposed ports into the same Docker pages. Capture does not currently provide restart counts, mounts, published host-port bindings or container logs, so those values are shown as unavailable.
 
 **Monitoring the local socket.** The reference Compose file does not mount the socket, so add it and grant the container the host's `docker` group. The image runs as an unprivileged user and cannot read the socket otherwise. Find the group id with `stat -c %g /var/run/docker.sock`, then:
 

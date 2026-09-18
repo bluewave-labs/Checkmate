@@ -629,6 +629,18 @@ describe("monitorValidation — Docker host url", () => {
 			}
 		});
 
+		it("accepts a Capture Docker metric endpoint with a secret", () => {
+			const url = "http://capture:59232/api/v1/metrics/docker";
+			const parsed = createMonitorBodyValidation.parse({ ...baseDockerBody, url, secret: "capture-secret" });
+			expect(parsed.url).toBe(url);
+		});
+
+		it("requires a secret for a Capture Docker endpoint", () => {
+			expect(() => createMonitorBodyValidation.parse({ ...baseDockerBody, url: "https://capture.example.com/api/v1/metrics/docker" })).toThrow(
+				"Capture API secret is required"
+			);
+		});
+
 		it("rejects container names and unsupported engine urls", () => {
 			for (const badUrl of [
 				"my-container",
@@ -669,6 +681,13 @@ describe("monitorValidation — Docker host url", () => {
 		it("accepts an imported docker monitor with a socket url", () => {
 			const parsed = importMonitorsBodyValidation.parse({ monitors: [baseDockerBody] });
 			expect(parsed.monitors[0].url).toBe("unix:///var/run/docker.sock");
+		});
+
+		it("accepts an imported Capture Docker monitor with a secret", () => {
+			const parsed = importMonitorsBodyValidation.parse({
+				monitors: [{ ...baseDockerBody, url: "http://capture:59232/api/v1/metrics/docker", secret: "capture-secret" }],
+			});
+			expect(parsed.monitors[0].secret).toBe("capture-secret");
 		});
 
 		it("rejects an imported docker monitor with a container-name url", () => {

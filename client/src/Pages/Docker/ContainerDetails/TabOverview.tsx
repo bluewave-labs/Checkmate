@@ -88,11 +88,17 @@ export const TabOverview = ({
 						Ports
 					</Typography>
 					<Stack>
-						{dedupedPorts?.map((port) => {
+						{dedupedPorts.length === 0 && <Typography>—</Typography>}
+						{dedupedPorts.map((port) => {
+							const containerPort = `${port.privatePort}/${port.protocol}`;
+							const label =
+								port.publicPort === undefined
+									? containerPort
+									: `${port.hostIp ?? "0.0.0.0"}:${port.publicPort} -> ${containerPort}`;
 							return (
-								<Typography
-									key={`${port.publicPort}/${port.privatePort}`}
-								>{`${port.hostIp}:${port.publicPort} -> ${port.privatePort}/${port.protocol}`}</Typography>
+								<Typography key={`${port.hostIp}/${port.publicPort}/${containerPort}`}>
+									{label}
+								</Typography>
 							);
 						})}
 					</Stack>
@@ -111,6 +117,7 @@ export const TabOverview = ({
 						Volumes
 					</Typography>
 					<Stack>
+						{!mounts?.length && <Typography>—</Typography>}
 						{mounts?.map((mount) => {
 							return (
 								<Typography key={`${mount.source}/${mount.destination}`}>

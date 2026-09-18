@@ -1,6 +1,7 @@
 import https from "node:https";
 
 import { IStatusProvider } from "@/service/network/IStatusProvider.js";
+import { HttpProvider } from "@/service/network/HttpProvider.js";
 import { CheckContext, DockerStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 
 import {
@@ -23,10 +24,11 @@ import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";
 import Dockerode from "dockerode";
+import { z } from "zod";
 import { timeRequest } from "@/service/network/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 import { IEncryptionService } from "@/service/encryption/encryptionService.js";
-import { DOCKER_TLS_URL, isDockerTlsUrl } from "@/utils/dockerHost.js";
+import { DOCKER_TLS_URL, isCaptureDockerUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
 import { splitCertificateBundle } from "@/utils/pem.js";
 
 type DockerodeType = typeof Dockerode;
@@ -40,6 +42,54 @@ const DOCKER_LOG_MAX_LINE_BYTES = 4096;
 const DOCKER_LOG_TRUNCATION_MARKER = " …[truncated]";
 const DOCKER_LOG_TS_REGEX = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{1,9}))?Z /;
 const DOCKER_TLS_DEFAULT_PORT = 2376;
+const CAPTURE_FATAL_ERROR_METRICS = new Set(["docker.client", "docker.container.list"]);
+
+const captureDockerResponseSchema = z.object({
+	data: z
+		.array(
+			z.object({
+				container_id: z.string(),
+				container_name: z.string(),
+				status: z.string(),
+				health: z
+					.object({
+						healthy: z.boolean(),
+						source: z.string(),
+					})
+					.nullish(),
+				running: z.boolean(),
+				base_image: z.string(),
+				exposed_ports: z
+					.array(
+						z.object({
+							port: z.string(),
+							protocol: z.string(),
+						})
+					)
+					.optional(),
+				started_at: z.number().optional(),
+				stats: z
+					.object({
+						cpu_percent: z.number(),
+						memory_usage: z.number(),
+						memory_limit: z.number(),
+						memory_percent: z.number(),
+					})
+					.nullish(),
+			})
+		)
+		.nullable(),
+	errors: z
+		.array(
+			z.object({
+				metric: z.array(z.string()),
+				err: z.string(),
+			})
+		)
+		.nullish(),
+});
+
+type CaptureContainer = NonNullable<z.infer<typeof captureDockerResponseSchema>["data"]>[number];
 
 export interface DockerError extends Error {
 	statusCode?: number;
@@ -53,7 +103,8 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 	constructor(
 		private logger: ILogger,
 		private DockerLib: DockerodeType,
-		private encryptionService: IEncryptionService
+		private encryptionService: IEncryptionService,
+		private httpProvider: HttpProvider
 	) {}
 
 	supports(type: MonitorType): boolean {
@@ -136,6 +187,83 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 	private toHealthStatus(status: string | undefined): DockerHealthStatus {
 		return status && (DockerHealthStatuses as readonly string[]).includes(status) ? (status as DockerHealthStatus) : "none";
 	}
+
+	private toContainerSummary(containers: DockerContainerInfo[]): DockerContainerSummary {
+		return {
+			total: containers.length,
+			running: containers.filter((container) => container.state === "running").length,
+			stopped: containers.filter((container) => container.state === "exited" || container.state === "dead").length,
+			unhealthy: containers.filter((container) => container.health === "unhealthy").length,
+		};
+	}
+
+	private toCaptureContainer(container: CaptureContainer): DockerContainerInfo {
+		const startedAt = container.started_at && container.started_at > 0 ? new Date(container.started_at * 1000).toISOString() : undefined;
+		const stats = container.stats
+			? {
+					cpuPct: container.stats.cpu_percent / 100,
+					memoryUsedBytes: container.stats.memory_usage,
+					memoryLimitBytes: container.stats.memory_limit,
+					memoryPct: container.stats.memory_percent / 100,
+				}
+			: {};
+		return {
+			id: container.container_id,
+			name: container.container_name || container.container_id.slice(0, 12),
+			image: container.base_image,
+			state: this.toContainerState(container.status),
+			status: container.status,
+			// Capture derives health from state when no Docker healthcheck exists.
+			// Keep Checkmate's `none` value in that case so summaries retain their existing semantics.
+			health: container.health?.source === "container_health_check" ? (container.health.healthy ? "healthy" : "unhealthy") : "none",
+			startedAt,
+			ports: (container.exposed_ports ?? []).flatMap((port) => {
+				const privatePort = Number(port.port);
+				return Number.isInteger(privatePort) ? [{ privatePort, protocol: this.toPortProtocol(port.protocol) }] : [];
+			}),
+			...stats,
+		};
+	}
+
+	private handleCapture = async (monitor: Monitor, ctx?: CheckContext): Promise<MonitorStatusResponse<DockerStatusPayload>> => {
+		const captureUrl = new URL(monitor.url.trim());
+		captureUrl.searchParams.set("all", "true");
+		const response = await this.httpProvider.handle<unknown>({ ...monitor, url: captureUrl.toString() }, ctx);
+		if (!response.status) return this.failed(monitor, response.code, response.message, response.responseTime ?? 0);
+
+		const parsed = captureDockerResponseSchema.safeParse(response.payload);
+		if (!parsed.success) {
+			this.logger.warn({
+				message: "Capture returned an invalid Docker metrics payload",
+				service: SERVICE_NAME,
+				method: "handleCapture",
+			});
+			return this.failed(monitor, NETWORK_ERROR, "Capture returned an invalid Docker metrics payload", response.responseTime ?? 0);
+		}
+
+		const errors = parsed.data.errors ?? [];
+		const fatalError = errors.find((error) => error.metric.some((metric) => CAPTURE_FATAL_ERROR_METRICS.has(metric)));
+		if (fatalError) return this.failed(monitor, NETWORK_ERROR, fatalError.err, response.responseTime ?? 0);
+		if (errors.length > 0) {
+			this.logger.warn({
+				message: `Capture returned ${errors.length} partial Docker collection error(s)`,
+				service: SERVICE_NAME,
+				method: "handleCapture",
+			});
+		}
+
+		const containers = (parsed.data.data ?? []).map((container) => this.toCaptureContainer(container));
+		return {
+			monitorId: monitor.id,
+			teamId: monitor.teamId,
+			type: monitor.type,
+			status: true,
+			code: response.code,
+			message: "Docker host is reachable through Capture",
+			responseTime: response.responseTime,
+			payload: { containers, summary: this.toContainerSummary(containers) },
+		};
+	};
 
 	private computeCpuPct(stats: Dockerode.ContainerStats): number {
 		const cpuDelta = stats.cpu_stats.cpu_usage.total_usage - stats.precpu_stats.cpu_usage.total_usage;
@@ -328,6 +456,8 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 
 	handle = async (monitor: Monitor, ctx?: CheckContext): Promise<MonitorStatusResponse<DockerStatusPayload>> => {
 		try {
+			if (isCaptureDockerUrl(monitor.url)) return await this.handleCapture(monitor, ctx);
+
 			const credentials = this.resolveTlsCredentials(monitor, ctx);
 			if (credentials && !credentials.ok) return this.failed(monitor, NETWORK_ERROR, credentials.message, 0);
 
@@ -350,12 +480,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 			const containers = await this.mapWithConcurrency(summaries, STATS_CONCURRENCY, (s) => this.toContainerInfo(docker, s));
 			const logs = monitor.dockerLogsEnabled ? await this.collectLogs(docker, summaries) : undefined;
 
-			const summary: DockerContainerSummary = {
-				total: containers.length,
-				running: containers.filter((c) => c.state === "running").length,
-				stopped: containers.filter((c) => c.state === "exited" || c.state === "dead").length,
-				unhealthy: containers.filter((c) => c.health === "unhealthy").length,
-			};
+			const summary = this.toContainerSummary(containers);
 			return {
 				monitorId: monitor.id,
 				teamId: monitor.teamId,
