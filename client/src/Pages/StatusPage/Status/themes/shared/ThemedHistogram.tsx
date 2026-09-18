@@ -51,7 +51,15 @@ export const ThemedHistogram = ({
 						return (
 							<Box
 								key={cell.key}
-								sx={barSx("empty", cell.heightPct)}
+								sx={[
+									barSx("empty", cell.heightPct),
+									!!cell.date && !!onCellClick && { cursor: "pointer" },
+								]}
+								onClick={() => {
+									if (cell.date && onCellClick) {
+										onCellClick(cell.date);
+									}
+								}}
 							/>
 						);
 					}

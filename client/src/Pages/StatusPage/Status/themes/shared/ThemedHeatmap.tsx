@@ -31,7 +31,15 @@ export const ThemedHeatmap = ({ cells, containerSx, cellSx, onCellClick }: Props
 					return (
 						<Box
 							key={cell.key}
-							sx={cellSx("empty")}
+							sx={[
+								cellSx("empty"),
+								!!cell.date && !!onCellClick && { cursor: "pointer" },
+							]}
+							onClick={() => {
+								if (cell.date && onCellClick) {
+									onCellClick(cell.date);
+								}
+							}}
 						/>
 					);
 				}
