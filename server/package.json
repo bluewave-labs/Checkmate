@@ -42,6 +42,7 @@
 		"compression": "1.8.1",
 		"cookie-parser": "^1.4.7",
 		"cors": "^2.8.5",
+		"dayjs": "^1.11.23",
 		"dockerode": "5.0.0",
 		"dotenv": "^16.4.5",
 		"express": "^4.19.2",
