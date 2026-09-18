@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { DOCKER_TLS_URL, isDockerSocketUrl, isDockerTlsUrl } from "../../../src/utils/dockerHost.ts";
+import { DOCKER_TLS_URL, isCaptureDockerUrl, isDockerSocketUrl, isDockerTlsUrl } from "../../../src/utils/dockerHost.ts";
 
 describe("isDockerTlsUrl", () => {
 	it.each(["tcp://host", "tcp://host:2376", "https://host", "https://host:2377", "tcp://host/", "tcp://10.0.0.1:2376", "  tcp://host  "])(
@@ -28,6 +28,22 @@ describe("isDockerTlsUrl", () => {
 	it("captures scheme, host and port for the provider", () => {
 		expect(DOCKER_TLS_URL.exec("https://host:2377")?.slice(1)).toEqual(["https", "host", "2377"]);
 		expect(DOCKER_TLS_URL.exec("tcp://host")?.slice(1)).toEqual(["tcp", "host", undefined]);
+	});
+});
+
+describe("isCaptureDockerUrl", () => {
+	it.each(["http://host:59232/api/v1/metrics/docker", "https://example.com/prefix/metrics/docker/?all=false"])("accepts %s", (url) => {
+		expect(isCaptureDockerUrl(url)).toBe(true);
+	});
+
+	it.each([
+		"https://host:2376",
+		"tcp://host:2376/api/v1/metrics/docker",
+		"https://example.com/api/v1/metrics/docker/containers",
+		"https://example.com/?path=/metrics/docker",
+		undefined,
+	])("rejects %s", (url) => {
+		expect(isCaptureDockerUrl(url)).toBe(false);
 	});
 });
 

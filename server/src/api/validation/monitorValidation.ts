@@ -15,7 +15,7 @@ import {
 import { DateRanges, SortOrders } from "@/types/query.js";
 import { DockerContainerStates, DockerHealthStatuses, DockerLogStreams, DockerPortProtocols } from "@/domain/docker/docker.type.js";
 import { DOCKER_LOG_PAGE_DEFAULT, DOCKER_LOG_PAGE_MAX } from "@/domain/docker/docker-log.type.js";
-import { isDockerSocketUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
+import { isCaptureDockerUrl, isDockerSocketUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
 import { X509Certificate } from "node:crypto";
 import { keyMatchesCertificate, parseCertificates, parsePrivateKey } from "@/utils/pem.js";
 
@@ -125,14 +125,24 @@ const refineProxySelection = (body: { proxyMode?: string; proxyId?: string }, ct
 
 const refineDockerUrl = (data: { type?: string; url?: string }, ctx: z.RefinementCtx) => {
 	if (data.type !== "docker" || data.url === undefined) return;
-	if (!isDockerSocketUrl(data.url) && !isDockerTlsUrl(data.url)) {
+	if (!isDockerSocketUrl(data.url) && !isDockerTlsUrl(data.url) && !isCaptureDockerUrl(data.url)) {
 		ctx.addIssue({
 			code: "custom",
 			path: ["url"],
-			message: "Docker host must be unix:///path, an absolute socket path, or tcp://host[:port]",
+			message: "Docker host must be a socket path, a TLS daemon URL, or a Capture /metrics/docker endpoint",
 		});
 	}
 };
+
+const refineCaptureDocker =
+	(mode: "create" | "edit") => (data: { type?: string; url?: string; secret?: string; dockerLogsEnabled?: boolean }, ctx: z.RefinementCtx) => {
+		if (data.type !== "docker" || !isCaptureDockerUrl(data.url)) return;
+		const secretMissing = mode === "create" ? !data.secret?.trim() : data.secret !== undefined && !data.secret.trim();
+		if (secretMissing) ctx.addIssue({ code: "custom", path: ["secret"], message: "Capture API secret is required" });
+		if (data.dockerLogsEnabled) {
+			ctx.addIssue({ code: "custom", path: ["dockerLogsEnabled"], message: "Capture-backed Docker monitors do not support container logs" });
+		}
+	};
 
 type DockerTlsFields = {
 	type?: string;
@@ -226,6 +236,7 @@ export const createMonitorBodyValidation = z
 	.superRefine(refineRegexPattern)
 	.superRefine(refineProxySelection)
 	.superRefine(refineDockerUrl)
+	.superRefine(refineCaptureDocker("create"))
 	.superRefine(refineDockerTls("create"));
 
 export const editMonitorBodyValidation = z
@@ -275,6 +286,7 @@ export const editMonitorBodyValidation = z
 	.superRefine(refineRegexPattern)
 	.superRefine(refineProxySelection)
 	.superRefine(refineDockerUrl)
+	.superRefine(refineCaptureDocker("edit"))
 	.superRefine(refineDockerTls("edit"));
 
 export const pauseMonitorParamValidation = z.object({
@@ -353,7 +365,8 @@ const importedMonitorSchema = z
 	.superRefine(refineHeadMatching)
 	.superRefine(refineRegexPattern)
 	.superRefine(refineProxySelection)
-	.superRefine(refineDockerUrl);
+	.superRefine(refineDockerUrl)
+	.superRefine(refineCaptureDocker("create"));
 
 export const importMonitorsBodyValidation = z.object({
 	monitors: z.array(importedMonitorSchema).min(1, "At least one monitor is required"),

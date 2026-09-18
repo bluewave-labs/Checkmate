@@ -77,6 +77,7 @@ export const getMonitorDefaults = (
 				...base,
 				type: "docker",
 				url: data?.url || "",
+				secret: data?.secret || "",
 				ignoreTlsErrors: data?.ignoreTlsErrors || false,
 				dockerTlsCa: data?.dockerTlsCa || "",
 				dockerTlsCert: data?.dockerTlsCert || "",

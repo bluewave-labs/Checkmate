@@ -51,6 +51,7 @@ import type { AppSettingsResponse } from "@/Types/Settings";
 import {
 	stepFieldsFor,
 	monitorStepCount,
+	isCaptureDockerUrl,
 	isDockerTlsUrl,
 	type MonitorFormData,
 } from "@/Validation/monitor";
@@ -709,14 +710,21 @@ const CreateMonitorPage = () => {
 									/>
 								)}
 
-								{/* Secret field - only for hardware type */}
-								{generalSettingsConfig.showSecret && (
+								{/* Capture API secret - used by hardware and Capture-backed Docker monitors */}
+								{(generalSettingsConfig.showSecret ||
+									(watchedType === "docker" && isCaptureDockerUrl(watchedUrl))) && (
 									<FormTextField
 										name="secret"
 										fieldLabel={t("pages.createMonitor.form.general.option.secret.label")}
 										placeholder={t(
 											"pages.createMonitor.form.general.option.secret.placeholder"
 										)}
+									/>
+								)}
+								{watchedType === "docker" && isCaptureDockerUrl(watchedUrl) && (
+									<FormSwitchField
+										name="ignoreTlsErrors"
+										label={t("pages.createMonitor.form.ignoreTls.option.tls.label")}
 									/>
 								)}
 								{generalSettingsConfig.showDnsServer && (
@@ -946,7 +954,7 @@ const CreateMonitorPage = () => {
 					/>
 				)}
 
-				{showStep(1) && watchedType === "docker" && (
+				{showStep(1) && watchedType === "docker" && !isCaptureDockerUrl(watchedUrl) && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.dockerLogs.title")}
 						subtitle={t("pages.createMonitor.form.dockerLogs.description")}
