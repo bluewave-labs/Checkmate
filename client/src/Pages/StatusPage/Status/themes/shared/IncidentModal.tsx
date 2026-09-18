@@ -8,6 +8,7 @@ import { X as XIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useGet } from "@/Hooks/UseApi";
 
+
 interface Incident {
 	id: string;
 	message: string | null;
@@ -79,7 +80,7 @@ export const IncidentModal = ({ url, monitorId, date, onClose }: IncidentModalPr
 								</Typography>
 								<Typography
 									variant="body2"
-									color={(theme) => theme.palette.text.secondary}
+									color="text.secondary"
 								>
 									{new Date(incident.startTime).toLocaleTimeString()} -{" "}
 									{incident.endTime

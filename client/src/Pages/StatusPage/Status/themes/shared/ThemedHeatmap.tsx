@@ -20,10 +20,7 @@ export const ThemedHeatmap = ({ cells, containerSx, cellSx, onCellClick }: Props
 
 	return (
 		<Box
-			sx={mergeSx(
-				containerSx,
-				{ gridTemplateColumns: `repeat(${cells.length}, 1fr)` }
-			)}
+			sx={mergeSx(containerSx, { gridTemplateColumns: `repeat(${cells.length}, 1fr)` })}
 			role="img"
 			aria-label={t("pages.statusPages.monitorsList.chart.heatmapAria")}
 		>
