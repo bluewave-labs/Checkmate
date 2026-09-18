@@ -259,7 +259,7 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 			const temps = Array.isArray(hardware.cpu.temperature) ? hardware.cpu.temperature : [hardware.cpu.temperature];
 			const maxTemp = Math.max(...temps.filter((t: number) => !isNaN(t)));
 			const threshold = monitor.tempAlertThreshold;
-			if (maxTemp >= threshold) {
+			if (maxTemp > threshold) {
 				breaches.push({
 					metric: "temp",
 					currentValue: maxTemp,
