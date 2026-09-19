@@ -30,8 +30,8 @@ export class CheckProducer implements ICheckProducer {
 		private logger: ILogger
 	) {}
 
-	private async isInMaintenanceWindow(monitorId: string, teamId: string) {
-		const windows = await this.maintenanceWindowsRepository.findByMonitorId(monitorId, teamId);
+	private async isInMaintenanceWindow(monitorId: string, teamId: string, tagIds: string[]) {
+		const windows = await this.maintenanceWindowsRepository.findByMonitorId(monitorId, teamId, tagIds);
 		const now = new Date();
 		return windows.some((w) => isWindowActive(w, now));
 	}
@@ -51,7 +51,7 @@ export class CheckProducer implements ICheckProducer {
 		// ****************************
 
 		// Step 1a:  Maintenance window gate - skip if in maintenance
-		const maintenanceWindowActive = await this.isInMaintenanceWindow(monitor.id, monitor.teamId);
+		const maintenanceWindowActive = await this.isInMaintenanceWindow(monitor.id, monitor.teamId, monitor.tags ?? []);
 		if (maintenanceWindowActive) {
 			this.logger.debug({
 				message: `Monitor ${monitor.id} is in maintenance window`,

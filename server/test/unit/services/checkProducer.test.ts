@@ -52,6 +52,14 @@ describe("CheckProducer", () => {
 
 	// ── maintenance gate ──────────────────────────────────────────────────────
 
+	it("passes the monitor's tags to the maintenance lookup so tag-based windows apply", async () => {
+		const { producer, defaults } = createProducer();
+
+		await producer.produce(makeMonitor({ tags: ["tag-1"] }));
+
+		expect(defaults.maintenanceWindowsRepository.findByMonitorId).toHaveBeenCalledWith("m1", "team", ["tag-1"]);
+	});
+
 	it("skips the check and flips status to 'maintenance' when in a maintenance window", async () => {
 		const { producer, defaults } = createProducer({
 			maintenanceWindowsRepository: { findByMonitorId: jest.fn().mockResolvedValue([activeWindow()]) },

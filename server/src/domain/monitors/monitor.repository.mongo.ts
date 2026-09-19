@@ -166,6 +166,14 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 		return documents.map((doc) => this.toEntity(doc));
 	};
 
+	findIdsByTagIds = async (tagIds: string[], teamId: string): Promise<string[]> => {
+		if (!tagIds.length) {
+			return [];
+		}
+		const documents = await MonitorModel.find({ teamId, tags: { $in: tagIds } }, { _id: 1 }).lean();
+		return documents.map((doc) => doc._id.toString());
+	};
+
 	findMonitorCountByTeamIdAndType = async (teamId: string, config: TeamQueryConfig): Promise<number> => {
 		const query = this.queryBuilder(config, teamId);
 		const count = await MonitorModel.countDocuments(query);

@@ -40,6 +40,11 @@ class MongoTagsRepository implements ITagsRepository {
 		return this.toEntity(tag);
 	}
 
+	async findByIds(tagIds: string[], teamId: string): Promise<Tag[]> {
+		const tags = await TagModel.find({ _id: { $in: tagIds }, teamId });
+		return tags.map(this.toEntity);
+	}
+
 	async findByTeamId(teamId: string): Promise<Tag[]> {
 		const tags = await TagModel.find({ teamId });
 		return tags.map(this.toEntity);

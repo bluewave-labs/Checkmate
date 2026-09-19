@@ -11,7 +11,8 @@ const dateToString = z.coerce.date().transform((d) => d.toISOString());
 
 export const createMaintenanceWindowBodyValidation = z
 	.object({
-		monitors: z.array(z.string()).min(1, "At least one monitor is required"),
+		monitors: z.array(z.string()).default([]),
+		tags: z.array(z.string()).default([]),
 		name: z.string().min(1, "Name is required"),
 		active: z.boolean().optional(),
 		duration: z.number().min(1, "Duration is required"),
@@ -23,6 +24,13 @@ export const createMaintenanceWindowBodyValidation = z
 	})
 	.strict()
 	.superRefine((data, ctx) => {
+		if (data.monitors.length === 0 && data.tags.length === 0) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "At least one monitor or tag is required",
+				path: ["monitors"],
+			});
+		}
 		const start = new Date(data.start).getTime();
 		const end = new Date(data.end).getTime();
 		if (end <= start) {
@@ -73,12 +81,20 @@ export const editMaintenanceByIdWindowBodyValidation = z
 		start: dateToString.optional(),
 		end: dateToString.optional(),
 		expiry: dateToString.optional(),
-		monitors: z.array(z.string()).min(1, "At least one monitor is required").optional(),
+		monitors: z.array(z.string()).optional(),
+		tags: z.array(z.string()).optional(),
 		duration: z.number().optional(),
 		durationUnit: z.enum(DurationUnits).optional(),
 	})
 	.strict()
 	.superRefine((data, ctx) => {
+		if (data.monitors !== undefined && data.tags !== undefined && data.monitors.length === 0 && data.tags.length === 0) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "At least one monitor or tag is required",
+				path: ["monitors"],
+			});
+		}
 		if (data.start && data.end) {
 			const start = new Date(data.start).getTime();
 			const end = new Date(data.end).getTime();

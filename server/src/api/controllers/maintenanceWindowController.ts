@@ -31,6 +31,7 @@ class MaintenanceWindowController implements IMaintenanceWindowController {
 		const teamId = requireTeamId(req?.user?.teamId);
 
 		const monitorIDs = validatedBody.monitors;
+		const tagIDs = validatedBody.tags;
 		const name = validatedBody.name;
 		const active = validatedBody.active ?? true;
 		const duration = validatedBody.duration;
@@ -39,7 +40,18 @@ class MaintenanceWindowController implements IMaintenanceWindowController {
 		const start = validatedBody.start;
 		const end = validatedBody.end;
 
-		await this.maintenanceWindowService.createMaintenanceWindow({ teamId, monitorIDs, name, active, duration, durationUnit, repeat, start, end });
+		await this.maintenanceWindowService.createMaintenanceWindow({
+			teamId,
+			monitorIDs,
+			tagIDs,
+			name,
+			active,
+			duration,
+			durationUnit,
+			repeat,
+			start,
+			end,
+		});
 
 		return res.status(200).json({
 			success: true,

@@ -5,6 +5,7 @@ export interface ITagsRepository {
 	create(tagData: Partial<Tag>): Promise<Tag>;
 	// read
 	findById(tagId: string, teamId: string): Promise<Tag>;
+	findByIds(tagIds: string[], teamId: string): Promise<Tag[]>;
 	findByTeamId(teamId: string): Promise<Tag[]>;
 	// update
 	updateById(tagId: string, teamId: string, patch: Partial<Tag>): Promise<Tag>;

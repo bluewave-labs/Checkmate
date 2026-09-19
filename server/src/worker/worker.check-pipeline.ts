@@ -22,8 +22,8 @@ export class GeoChecksPipeline implements ICheckPipeline {
 		private logger: ILogger
 	) {}
 
-	private async isInMaintenanceWindow(monitorId: string, teamId: string) {
-		const maintenanceWindows = await this.maintenanceWindowsRepository.findByMonitorId(monitorId, teamId);
+	private async isInMaintenanceWindow(monitorId: string, teamId: string, tagIds: string[]) {
+		const maintenanceWindows = await this.maintenanceWindowsRepository.findByMonitorId(monitorId, teamId, tagIds);
 		const now = new Date();
 		return maintenanceWindows.some((window) => isWindowActive(window, now));
 	}
@@ -61,7 +61,7 @@ export class GeoChecksPipeline implements ICheckPipeline {
 		}
 
 		// Step 1b: Maintenance window check
-		const maintenanceWindowActive = await this.isInMaintenanceWindow(monitor.id, monitor.teamId);
+		const maintenanceWindowActive = await this.isInMaintenanceWindow(monitor.id, monitor.teamId, monitor.tags ?? []);
 		if (maintenanceWindowActive) {
 			this.logger.debug({
 				message: `Monitor ${monitor.id} is in maintenance window, skipping geo check`,

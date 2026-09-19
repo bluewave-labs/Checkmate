@@ -3,6 +3,7 @@ import { MaintenanceWindowService } from "../../../src/domain/maintenance-window
 import type { IMaintenanceWindowsRepository } from "../../../src/domain/maintenance-windows/maintenance-window.repository.interface.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
 import type { IJobsRepository } from "../../../src/domain/jobs/job.repository.interface.ts";
+import type { ITagsRepository } from "../../../src/domain/tags/tag.repository.interface.ts";
 import type { IJobScheduler } from "../../../src/worker/worker.interface.ts";
 import type { MaintenanceWindow } from "../../../src/domain/maintenance-windows/maintenance-window.type.ts";
 
@@ -18,16 +19,24 @@ const createMaintenanceWindowsRepo = () =>
 		updateById: jest.fn().mockResolvedValue(makeWindow()),
 		deleteById: jest.fn().mockResolvedValue(makeWindow()),
 		countByTeamId: jest.fn().mockResolvedValue(1),
+		removeTagFromWindows: jest.fn().mockResolvedValue(undefined),
 	}) as unknown as jest.Mocked<IMaintenanceWindowsRepository>;
 
 const createMonitorsRepo = () =>
 	({
+		findById: jest.fn().mockResolvedValue({ id: "mon-1", teamId: "team-1", tags: ["tag-1"] }),
 		findByIds: jest.fn().mockResolvedValue([
 			{ id: "mon-1", teamId: "team-1" },
 			{ id: "mon-2", teamId: "team-1" },
 		]),
+		findIdsByTagIds: jest.fn().mockResolvedValue([]),
 		updateByIds: jest.fn().mockResolvedValue(0),
 	}) as unknown as jest.Mocked<IMonitorsRepository>;
+
+const createTagsRepo = () =>
+	({
+		findByIds: jest.fn().mockResolvedValue([{ id: "tag-1", teamId: "team-1" }]),
+	}) as unknown as jest.Mocked<ITagsRepository>;
 
 const createJobsRepo = () =>
 	({
@@ -42,20 +51,29 @@ const createWorker = () =>
 const createService = (overrides?: {
 	monitorsRepository?: ReturnType<typeof createMonitorsRepo>;
 	maintenanceWindowsRepository?: ReturnType<typeof createMaintenanceWindowsRepo>;
+	tagsRepository?: ReturnType<typeof createTagsRepo>;
 	jobsRepository?: ReturnType<typeof createJobsRepo>;
 	worker?: ReturnType<typeof createWorker>;
 }) => {
 	const monitorsRepository = overrides?.monitorsRepository ?? createMonitorsRepo();
 	const maintenanceWindowsRepository = overrides?.maintenanceWindowsRepository ?? createMaintenanceWindowsRepo();
+	const tagsRepository = overrides?.tagsRepository ?? createTagsRepo();
 	const jobsRepository = overrides?.jobsRepository ?? createJobsRepo();
 	const worker = overrides?.worker ?? createWorker();
-	const service = new MaintenanceWindowService({ monitorsRepository, maintenanceWindowsRepository, jobsRepository, scheduler: worker });
-	return { service, monitorsRepository, maintenanceWindowsRepository, jobsRepository, worker };
+	const service = new MaintenanceWindowService({
+		monitorsRepository,
+		maintenanceWindowsRepository,
+		tagsRepository,
+		jobsRepository,
+		scheduler: worker,
+	});
+	return { service, monitorsRepository, maintenanceWindowsRepository, tagsRepository, jobsRepository, worker };
 };
 
 const makeWindow = (overrides?: Partial<MaintenanceWindow>): MaintenanceWindow => ({
 	id: "mw-1",
 	monitorIds: ["mon-1"],
+	tagIds: [],
 	teamId: "team-1",
 	active: true,
 	name: "Scheduled Maintenance",
@@ -82,6 +100,7 @@ const makeActiveWindow = (overrides?: Partial<MaintenanceWindow>): MaintenanceWi
 const defaultCreateParams = {
 	teamId: "team-1",
 	monitorIDs: ["mon-1", "mon-2"],
+	tagIDs: [],
 	name: "Scheduled Maintenance",
 	active: true,
 	duration: 60,
@@ -107,6 +126,7 @@ describe("MaintenanceWindowService", () => {
 				expect.objectContaining({
 					teamId: "team-1",
 					monitorIds: ["mon-1", "mon-2"],
+					tagIds: [],
 					name: "Scheduled Maintenance",
 					active: true,
 					duration: 60,
@@ -174,6 +194,61 @@ describe("MaintenanceWindowService", () => {
 
 			expect(monitorsRepository.updateByIds).not.toHaveBeenCalled();
 		});
+
+		// ── tags ────────────────────────────────────────────────────────────
+
+		it("persists tagIds alongside monitorIds", async () => {
+			const { service, maintenanceWindowsRepository } = createService();
+
+			await service.createMaintenanceWindow({ ...defaultCreateParams, tagIDs: ["tag-1"] });
+
+			expect(maintenanceWindowsRepository.create).toHaveBeenCalledWith(
+				expect.objectContaining({ monitorIds: ["mon-1", "mon-2"], tagIds: ["tag-1"] })
+			);
+		});
+
+		it("allows a window that targets only tags", async () => {
+			const { service, maintenanceWindowsRepository, monitorsRepository } = createService();
+
+			await service.createMaintenanceWindow({ ...defaultCreateParams, monitorIDs: [], tagIDs: ["tag-1"] });
+
+			expect(monitorsRepository.findByIds).not.toHaveBeenCalled();
+			expect(maintenanceWindowsRepository.create).toHaveBeenCalledWith(expect.objectContaining({ monitorIds: [], tagIds: ["tag-1"] }));
+		});
+
+		it("verifies tag ownership via tagsRepository.findByIds", async () => {
+			const { service, tagsRepository } = createService();
+
+			await service.createMaintenanceWindow({ ...defaultCreateParams, tagIDs: ["tag-1"] });
+
+			expect(tagsRepository.findByIds).toHaveBeenCalledWith(["tag-1"], "team-1");
+		});
+
+		it("throws 403 when a tag is not found in the team", async () => {
+			const tagsRepository = createTagsRepo();
+			(tagsRepository.findByIds as jest.Mock).mockResolvedValue([]);
+			const { service, maintenanceWindowsRepository } = createService({ tagsRepository });
+
+			await expect(service.createMaintenanceWindow({ ...defaultCreateParams, tagIDs: ["tag-other"] })).rejects.toThrow(
+				"Unauthorized to create maintenance window for one or more tags"
+			);
+			expect(maintenanceWindowsRepository.create).not.toHaveBeenCalled();
+		});
+
+		it("flips tagged monitors and directly selected monitors to maintenance, deduplicating overlaps", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.create as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1"], tagIds: ["tag-1"] }));
+			const monitorsRepository = createMonitorsRepo();
+			// mon-1 is both selected directly and carries tag-1; it must be flipped exactly once
+			(monitorsRepository.findIdsByTagIds as jest.Mock).mockResolvedValue(["mon-1", "mon-3"]);
+			const { service } = createService({ maintenanceWindowsRepository, monitorsRepository });
+
+			await service.createMaintenanceWindow({ ...defaultCreateParams, monitorIDs: ["mon-1"], tagIDs: ["tag-1"] });
+
+			expect(monitorsRepository.findIdsByTagIds).toHaveBeenCalledWith(["tag-1"], "team-1");
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1", "mon-3"], "team-1", { status: "maintenance" }, ["paused"]);
+		});
 	});
 
 	// ── getMaintenanceWindowById ─────────────────────────────────────────────
@@ -233,15 +308,16 @@ describe("MaintenanceWindowService", () => {
 	// ── getMaintenanceWindowsByMonitorId ─────────────────────────────────────
 
 	describe("getMaintenanceWindowsByMonitorId", () => {
-		it("delegates to repository with monitorId and teamId", async () => {
+		it("looks up windows by the monitor id and the monitor's tags so tag-based windows are included", async () => {
 			const windows = [makeWindow()];
-			const { service, maintenanceWindowsRepository } = createService();
+			const { service, maintenanceWindowsRepository, monitorsRepository } = createService();
 			(maintenanceWindowsRepository.findByMonitorId as jest.Mock).mockResolvedValue(windows);
 
 			const result = await service.getMaintenanceWindowsByMonitorId({ monitorId: "mon-1", teamId: "team-1" });
 
 			expect(result).toBe(windows);
-			expect(maintenanceWindowsRepository.findByMonitorId).toHaveBeenCalledWith("mon-1", "team-1");
+			expect(monitorsRepository.findById).toHaveBeenCalledWith("mon-1", "team-1");
+			expect(maintenanceWindowsRepository.findByMonitorId).toHaveBeenCalledWith("mon-1", "team-1", ["tag-1"]);
 		});
 	});
 
@@ -302,7 +378,7 @@ describe("MaintenanceWindowService", () => {
 
 			await service.deleteMaintenanceWindow({ id: "mw-1", teamId: "team-1" });
 
-			expect(maintenanceWindowsRepository.findByMonitorIds).toHaveBeenCalledWith(["mon-1"], "team-1", "mw-1");
+			expect(maintenanceWindowsRepository.findByMonitorIds).toHaveBeenCalledWith(["mon-1"], "team-1", "mw-1", []);
 		});
 
 		it("does not flip a monitor still covered by another active window", async () => {
@@ -326,6 +402,42 @@ describe("MaintenanceWindowService", () => {
 
 			expect(maintenanceWindowsRepository.findByMonitorIds).not.toHaveBeenCalled();
 			expect(monitorsRepository.updateByIds).not.toHaveBeenCalled();
+		});
+
+		it("flips tag-covered monitors to initializing when a tag-based window is deleted", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.deleteById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: [], tagIds: ["tag-1"] }));
+			const monitorsRepository = createMonitorsRepo();
+			(monitorsRepository.findIdsByTagIds as jest.Mock).mockResolvedValue(["mon-1", "mon-2"]);
+			(monitorsRepository.findByIds as jest.Mock).mockResolvedValue([
+				{ id: "mon-1", teamId: "team-1", tags: ["tag-1"] },
+				{ id: "mon-2", teamId: "team-1", tags: ["tag-1"] },
+			]);
+			const { service } = createService({ maintenanceWindowsRepository, monitorsRepository });
+
+			await service.deleteMaintenanceWindow({ id: "mw-1", teamId: "team-1" });
+
+			expect(maintenanceWindowsRepository.findByMonitorIds).toHaveBeenCalledWith(["mon-1", "mon-2"], "team-1", "mw-1", ["tag-1"]);
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1", "mon-2"], "team-1", { status: "initializing" }, ["paused"]);
+		});
+
+		it("keeps a monitor in maintenance when another active window still covers it through a tag", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.deleteById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1", "mon-2"] }));
+			(maintenanceWindowsRepository.findByMonitorIds as jest.Mock).mockResolvedValue([
+				makeActiveWindow({ id: "mw-2", monitorIds: [], tagIds: ["tag-1"] }),
+			]);
+			const monitorsRepository = createMonitorsRepo();
+			(monitorsRepository.findByIds as jest.Mock).mockResolvedValue([
+				{ id: "mon-1", teamId: "team-1", tags: [] },
+				{ id: "mon-2", teamId: "team-1", tags: ["tag-1"] },
+			]);
+			const { service } = createService({ maintenanceWindowsRepository, monitorsRepository });
+
+			await service.deleteMaintenanceWindow({ id: "mw-1", teamId: "team-1" });
+
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1"], "team-1", { status: "initializing" }, ["paused"]);
 		});
 
 		it("ignores monitorIds in overlapping windows that are outside the leaving set", async () => {
@@ -560,7 +672,7 @@ describe("MaintenanceWindowService", () => {
 				body: { active: false },
 			});
 
-			expect(maintenanceWindowsRepository.findByMonitorIds).toHaveBeenCalledWith(["mon-1"], "team-1", "mw-1");
+			expect(maintenanceWindowsRepository.findByMonitorIds).toHaveBeenCalledWith(["mon-1"], "team-1", "mw-1", []);
 		});
 
 		it("flips a leaving monitor to initializing if other windows covering it are inactive", async () => {
@@ -579,6 +691,105 @@ describe("MaintenanceWindowService", () => {
 			});
 
 			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-1"], "team-1", { status: "initializing" }, ["paused"]);
+		});
+
+		// ── tags ────────────────────────────────────────────────────────────
+
+		it("maps the tags body field to tagIds when calling the repository", async () => {
+			const { service, maintenanceWindowsRepository, tagsRepository } = createService();
+
+			await service.editMaintenanceWindow({
+				id: "mw-1",
+				teamId: "team-1",
+				body: { tags: ["tag-1"] },
+			});
+
+			expect(tagsRepository.findByIds).toHaveBeenCalledWith(["tag-1"], "team-1");
+			expect(maintenanceWindowsRepository.updateById).toHaveBeenCalledWith("mw-1", "team-1", { tagIds: ["tag-1"] });
+		});
+
+		it("throws 403 when an edited tag is not found in the team", async () => {
+			const tagsRepository = createTagsRepo();
+			(tagsRepository.findByIds as jest.Mock).mockResolvedValue([]);
+			const { service, maintenanceWindowsRepository } = createService({ tagsRepository });
+
+			await expect(
+				service.editMaintenanceWindow({
+					id: "mw-1",
+					teamId: "team-1",
+					body: { tags: ["tag-other"] },
+				})
+			).rejects.toThrow("Unauthorized to edit maintenance window for one or more tags");
+			expect(maintenanceWindowsRepository.updateById).not.toHaveBeenCalled();
+		});
+
+		it("rejects an edit that would leave the window with neither monitors nor tags", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.findById as jest.Mock).mockResolvedValue(makeWindow({ monitorIds: ["mon-1"], tagIds: [] }));
+			const { service } = createService({ maintenanceWindowsRepository });
+
+			await expect(
+				service.editMaintenanceWindow({
+					id: "mw-1",
+					teamId: "team-1",
+					body: { monitors: [] },
+				})
+			).rejects.toThrow("At least one monitor or tag is required");
+			expect(maintenanceWindowsRepository.updateById).not.toHaveBeenCalled();
+		});
+
+		it("allows clearing monitors when the window still has tags", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.findById as jest.Mock).mockResolvedValue(makeWindow({ monitorIds: ["mon-1"], tagIds: ["tag-1"] }));
+			(maintenanceWindowsRepository.updateById as jest.Mock).mockResolvedValue(makeWindow({ monitorIds: [], tagIds: ["tag-1"] }));
+			const { service } = createService({ maintenanceWindowsRepository });
+
+			await service.editMaintenanceWindow({
+				id: "mw-1",
+				teamId: "team-1",
+				body: { monitors: [] },
+			});
+
+			expect(maintenanceWindowsRepository.updateById).toHaveBeenCalledWith("mw-1", "team-1", { monitorIds: [] });
+		});
+
+		it("flips monitors newly covered by an added tag to maintenance while the window is active", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.findById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1"], tagIds: [] }));
+			(maintenanceWindowsRepository.updateById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1"], tagIds: ["tag-1"] }));
+			const monitorsRepository = createMonitorsRepo();
+			// mon-1 overlaps (direct + tag); only mon-3 is genuinely new
+			(monitorsRepository.findIdsByTagIds as jest.Mock).mockImplementation(async (tagIds: string[]) => (tagIds.length ? ["mon-1", "mon-3"] : []));
+			const { service } = createService({ maintenanceWindowsRepository, monitorsRepository });
+
+			await service.editMaintenanceWindow({
+				id: "mw-1",
+				teamId: "team-1",
+				body: { tags: ["tag-1"] },
+			});
+
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-3"], "team-1", { status: "maintenance" }, ["paused"]);
+		});
+
+		it("flips monitors that lose tag coverage to initializing when a tag is removed from an active window", async () => {
+			const maintenanceWindowsRepository = createMaintenanceWindowsRepo();
+			(maintenanceWindowsRepository.findById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1"], tagIds: ["tag-1"] }));
+			(maintenanceWindowsRepository.updateById as jest.Mock).mockResolvedValue(makeActiveWindow({ monitorIds: ["mon-1"], tagIds: [] }));
+			const monitorsRepository = createMonitorsRepo();
+			(monitorsRepository.findIdsByTagIds as jest.Mock).mockImplementation(async (tagIds: string[]) => (tagIds.length ? ["mon-1", "mon-3"] : []));
+			(monitorsRepository.findByIds as jest.Mock).mockResolvedValue([{ id: "mon-3", teamId: "team-1", tags: ["tag-1"] }]);
+			const { service } = createService({ maintenanceWindowsRepository, monitorsRepository });
+
+			await service.editMaintenanceWindow({
+				id: "mw-1",
+				teamId: "team-1",
+				body: { tags: [] },
+			});
+
+			// mon-1 stays covered directly; only mon-3 leaves
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledTimes(1);
+			expect(monitorsRepository.updateByIds).toHaveBeenCalledWith(["mon-3"], "team-1", { status: "initializing" }, ["paused"]);
 		});
 	});
 });

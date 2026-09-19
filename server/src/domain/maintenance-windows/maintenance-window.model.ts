@@ -1,8 +1,12 @@
 import { Schema, model, type Types } from "mongoose";
 import { DurationUnits, type MaintenanceWindow } from "@/domain/maintenance-windows/maintenance-window.type.js";
 
-type MaintenanceWindowDocumentBase = Omit<MaintenanceWindow, "id" | "monitorIds" | "teamId" | "start" | "end" | "createdAt" | "updatedAt"> & {
+type MaintenanceWindowDocumentBase = Omit<
+	MaintenanceWindow,
+	"id" | "monitorIds" | "tagIds" | "teamId" | "start" | "end" | "createdAt" | "updatedAt"
+> & {
 	monitorIds: Types.ObjectId[];
+	tagIds: Types.ObjectId[];
 	teamId: Types.ObjectId;
 	start: Date;
 	end: Date;
@@ -21,6 +25,12 @@ const MaintenanceWindowSchema = new Schema<MaintenanceWindowDocument>(
 			type: [Schema.Types.ObjectId],
 			ref: "Monitor",
 			index: true,
+		},
+		tagIds: {
+			type: [Schema.Types.ObjectId],
+			ref: "Tag",
+			index: true,
+			default: [],
 		},
 		teamId: {
 			type: Schema.Types.ObjectId,

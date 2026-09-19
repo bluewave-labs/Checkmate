@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { isWindowActive } from "../../../src/utils/maintenanceWindow.ts";
+import { isWindowActive, windowCoversMonitor } from "../../../src/utils/maintenanceWindow.ts";
 import type { MaintenanceWindow } from "../../../src/domain/maintenance-windows/maintenance-window.type.ts";
 
 const makeWindow = (overrides?: Partial<MaintenanceWindow>): MaintenanceWindow => {
@@ -7,6 +7,7 @@ const makeWindow = (overrides?: Partial<MaintenanceWindow>): MaintenanceWindow =
 	return {
 		id: "mw-1",
 		monitorIds: ["mon-1"],
+		tagIds: [],
 		teamId: "team-1",
 		active: true,
 		name: "Scheduled Maintenance",
@@ -91,5 +92,27 @@ describe("isWindowActive", () => {
 		expect(isWindowActive(win, new Date("2026-01-15T12:00:00Z"))).toBe(true);
 		expect(isWindowActive(win, new Date("2026-01-15T14:00:00Z"))).toBe(false);
 		expect(isWindowActive(win, new Date("2026-01-15T10:00:00Z"))).toBe(false);
+	});
+});
+
+describe("windowCoversMonitor", () => {
+	it("covers a monitor listed directly in monitorIds", () => {
+		expect(windowCoversMonitor(makeWindow({ monitorIds: ["mon-1"] }), "mon-1", [])).toBe(true);
+	});
+
+	it("covers a monitor that carries one of the window's tags", () => {
+		expect(windowCoversMonitor(makeWindow({ monitorIds: [], tagIds: ["tag-1"] }), "mon-9", ["tag-1", "tag-2"])).toBe(true);
+	});
+
+	it("covers a monitor that is both listed directly and tagged (overlap is additive)", () => {
+		expect(windowCoversMonitor(makeWindow({ monitorIds: ["mon-1"], tagIds: ["tag-1"] }), "mon-1", ["tag-1"])).toBe(true);
+	});
+
+	it("does not cover a monitor that is neither listed nor tagged", () => {
+		expect(windowCoversMonitor(makeWindow({ monitorIds: ["mon-1"], tagIds: ["tag-1"] }), "mon-2", ["tag-2"])).toBe(false);
+	});
+
+	it("treats a missing monitor tag list as no tags", () => {
+		expect(windowCoversMonitor(makeWindow({ monitorIds: [], tagIds: ["tag-1"] }), "mon-2")).toBe(false);
 	});
 });

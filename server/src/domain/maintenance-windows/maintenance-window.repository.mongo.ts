@@ -16,6 +16,7 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 		return {
 			id: toStringId(doc._id),
 			monitorIds: doc.monitorIds.map(toStringId),
+			tagIds: (doc.tagIds ?? []).map(toStringId),
 			teamId: toStringId(doc.teamId),
 			active: doc.active,
 			name: doc.name,
@@ -51,9 +52,9 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 		return this.toEntity(maintenanceWindow);
 	};
 
-	findByMonitorIds = async (monitorIds: string[], teamId: string, excludeId?: string): Promise<MaintenanceWindow[]> => {
+	findByMonitorIds = async (monitorIds: string[], teamId: string, excludeId?: string, tagIds: string[] = []): Promise<MaintenanceWindow[]> => {
 		const query: Record<string, unknown> = {
-			monitorIds: { $in: monitorIds },
+			$or: [{ monitorIds: { $in: monitorIds } }, { tagIds: { $in: tagIds } }],
 			teamId,
 		};
 		if (excludeId) {
@@ -63,9 +64,9 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 		return this.mapDocuments(maintenanceWindows);
 	};
 
-	findByMonitorId = async (monitorId: string, teamId: string): Promise<MaintenanceWindow[]> => {
+	findByMonitorId = async (monitorId: string, teamId: string, tagIds: string[] = []): Promise<MaintenanceWindow[]> => {
 		const maintenanceWindows = await MaintenanceWindowModel.find({
-			monitorIds: monitorId,
+			$or: [{ monitorIds: monitorId }, { tagIds: { $in: tagIds } }],
 			teamId: teamId,
 		});
 		return this.mapDocuments(maintenanceWindows);
@@ -132,6 +133,10 @@ class MongoMaintenanceWindowsRepository implements IMaintenanceWindowsRepository
 		if (active !== undefined) maintenanceQuery.active = active;
 
 		return await MaintenanceWindowModel.countDocuments(maintenanceQuery);
+	};
+
+	removeTagFromWindows = async (tagId: string): Promise<void> => {
+		await MaintenanceWindowModel.updateMany({ tagIds: tagId }, { $pull: { tagIds: tagId } });
 	};
 }
 

@@ -1,6 +1,7 @@
 import { Tag } from "@/domain/tags/tag.type.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
 import { ITagsRepository } from "@/domain/tags/tag.repository.interface.js";
+import { IMaintenanceWindowsRepository } from "@/domain/maintenance-windows/maintenance-window.repository.interface.js";
 export interface ITagsService {
 	createTag(tag: Partial<Tag>, teamId: string): Promise<Tag>;
 	getTag(tagId: string, teamId: string): Promise<Tag>;
@@ -12,7 +13,8 @@ export interface ITagsService {
 export class TagsService implements ITagsService {
 	constructor(
 		private tagsRepository: ITagsRepository,
-		private monitorsRepository: IMonitorsRepository
+		private monitorsRepository: IMonitorsRepository,
+		private maintenanceWindowsRepository: IMaintenanceWindowsRepository
 	) {}
 
 	createTag = async (tagData: Partial<Tag>, teamId: string): Promise<Tag> => {
@@ -33,6 +35,7 @@ export class TagsService implements ITagsService {
 	};
 	deleteTag = async (tagId: string, teamId: string): Promise<Tag> => {
 		await this.monitorsRepository.removeTagFromMonitors(tagId);
+		await this.maintenanceWindowsRepository.removeTagFromWindows(tagId);
 		return await this.tagsRepository.deleteById(tagId, teamId);
 	};
 }
