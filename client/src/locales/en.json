@@ -1922,6 +1922,12 @@
 			"header": {
 				"title": "Dashboard",
 				"description": "See every monitor type in one place and spot what needs attention."
+			},
+			"editCards": "Edit cards",
+			"editCardsModal": {
+				"title": "Edit cards",
+				"description": "Select the cards to display on your dashboard.",
+				"done": "Done"
 			}
 		}
 	}
