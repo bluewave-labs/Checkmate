@@ -7,7 +7,7 @@ import type { INetworkService } from "@/service/networkService.js";
 import type { IProxyResolver } from "@/service/network/ProxyResolver.js";
 import type { ILogger } from "@/utils/logger.js";
 import {
-	DEFAULT_EGRESS_POLL_INTERVAL_SECONDS,
+	EGRESS_RECOVERY_POLL_SECONDS,
 	DEFAULT_EGRESS_TARGETS,
 	type EgressAssessment,
 	type EgressProbeResult,
@@ -26,7 +26,7 @@ const RECOVERY_JOB_TYPE = "egress" as const;
 const RECOVERY_JOB_ID = jobId(RECOVERY_JOB_TYPE, null);
 
 // HttpProvider reports transport failures with NETWORK_ERROR (outside the HTTP range) and everything else with the real status code.
-const isHttpStatusCode = (code: unknown): boolean => typeof code === "number" && code >= 100 && code <= 599;
+export const isHttpStatusCode = (code: unknown): boolean => typeof code === "number" && code >= 100 && code <= 599;
 
 // Synthetic identity stamped on the probe monitors so provider responses are recognisable in logs.
 const PROBE_MONITOR_ID = "egress-probe";
@@ -136,11 +136,6 @@ export class EgressService implements IEgressService {
 		return targets.length > 0 ? targets : [...DEFAULT_EGRESS_TARGETS];
 	};
 
-	private toIntervalMs = (seconds: number | undefined): number => {
-		const valid = typeof seconds === "number" && Number.isFinite(seconds) && seconds > 0;
-		return (valid ? seconds : DEFAULT_EGRESS_POLL_INTERVAL_SECONDS) * 1000;
-	};
-
 	// ****************************
 	// Event-triggered assessment
 	// ****************************
@@ -181,7 +176,7 @@ export class EgressService implements IEgressService {
 			const state = await this.egressStateRepository.findSingleton();
 			if (state.status === "degraded") {
 				// Recovery is detected by the scheduled job. Make sure the row exists without touching its schedule.
-				await this.scheduleRecoveryCheck(settings.egressPollIntervalSeconds, false);
+				await this.scheduleRecoveryCheck(false);
 				return "degraded";
 			}
 
@@ -195,7 +190,7 @@ export class EgressService implements IEgressService {
 
 			// Schedule the recovery job before recording the transition: a crash between the two then leaves a stray row
 			// while ok, which the job's first run removes, rather than a degraded state that nothing is polling.
-			await this.scheduleRecoveryCheck(settings.egressPollIntervalSeconds, true);
+			await this.scheduleRecoveryCheck(true);
 			const degraded = await this.egressStateRepository.markDegraded(results, now);
 			this.logger.warn({
 				message: degraded
@@ -224,8 +219,8 @@ export class EgressService implements IEgressService {
 
 	// reschedule=true sets nextScheduledAt (start of an episode); false only inserts the row if it is missing,
 	// so re-arming while degraded never pushes a pending run back.
-	private scheduleRecoveryCheck = async (pollIntervalSeconds: number | undefined, reschedule: boolean) => {
-		const intervalMs = this.toIntervalMs(pollIntervalSeconds);
+	private scheduleRecoveryCheck = async (reschedule: boolean) => {
+		const intervalMs = EGRESS_RECOVERY_POLL_SECONDS * 1000;
 		const seed: JobSeed = {
 			id: RECOVERY_JOB_ID,
 			type: RECOVERY_JOB_TYPE,

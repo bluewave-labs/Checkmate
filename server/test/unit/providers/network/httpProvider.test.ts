@@ -643,4 +643,92 @@ describe("HttpProvider", () => {
 			expect(result.message).toBe("Response code 500 (Internal Server Error)");
 		});
 	});
+
+	// ── Peer reachability ────────────────────────────────────────────────────
+	// Any HTTP status proves the target answered. Without one, only an errno that requires the peer's own stack
+	// to have replied counts — and never through a proxy, where the refusal may be the proxy's rather than the
+	// target's, which is the instance's own egress path failing.
+
+	describe("peer reachability", () => {
+		it("reports the peer as having answered on a successful response", async () => {
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.peerResponded).toBe(true);
+		});
+
+		it("reports the peer as having answered for a failing status code", async () => {
+			const err = new HTTPError("Not Found", { statusCode: 404, body: "", headers: {} }, { phases: { total: 12 } });
+			mockGot.mockRejectedValue(err);
+			const { provider } = createProvider();
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.status).toBe(false);
+			expect(result.code).toBe(404);
+			expect(result.peerResponded).toBe(true);
+		});
+
+		it.each([["ECONNREFUSED"], ["ECONNRESET"], ["CERT_HAS_EXPIRED"], ["DEPTH_ZERO_SELF_SIGNED_CERT"]])(
+			"reports the peer as having answered for %s with no response",
+			async (code) => {
+				const err = new RequestError("request failed");
+				(err as any).code = code;
+				mockGot.mockRejectedValue(err);
+				const { provider } = createProvider();
+
+				const result = await provider.handle(makeMonitor());
+
+				expect(result.code).toBe(NETWORK_ERROR);
+				expect(result.peerResponded).toBe(true);
+			}
+		);
+
+		it.each([["ETIMEDOUT"], ["ENOTFOUND"], ["EAI_AGAIN"], ["ENETUNREACH"]])("reports the peer as silent for %s", async (code) => {
+			const err = new RequestError("request failed");
+			(err as any).code = code;
+			mockGot.mockRejectedValue(err);
+			const { provider } = createProvider();
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.peerResponded).toBe(false);
+		});
+
+		it("reports the peer as silent when a proxy refuses the connection", async () => {
+			const err = new RequestError("connect ECONNREFUSED");
+			(err as any).code = "ECONNREFUSED";
+			mockGot.mockRejectedValue(err);
+			const { provider } = createProvider();
+
+			const result = await provider.handle(makeMonitor(), { proxyUrl: "http://proxy.example.com:8080" });
+
+			// The refusal came from the proxy, which is part of this instance's route out.
+			expect(result.peerResponded).toBe(false);
+		});
+
+		it("reports the peer as having answered through a proxy when a status code came back", async () => {
+			const err = new RequestError("Response code 500 (Internal Server Error)");
+			(err as any).code = "ECONNRESET";
+			(err as any).response = { statusCode: 500, body: "", headers: {} };
+			(err as any).timings = { phases: { total: 25 } };
+			mockGot.mockRejectedValue(err);
+			const { provider } = createProvider();
+
+			const result = await provider.handle(makeMonitor(), { proxyUrl: "http://proxy.example.com:8080" });
+
+			expect(result.peerResponded).toBe(true);
+		});
+
+		it("reports the peer as silent for a generic error carrying no code", async () => {
+			mockGot.mockRejectedValue(new Error("something broke"));
+			const { provider } = createProvider();
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.peerResponded).toBe(false);
+		});
+	});
 });

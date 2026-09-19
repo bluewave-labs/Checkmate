@@ -2,7 +2,7 @@ import { IStatusProvider } from "@/service/network/IStatusProvider.js";
 import { WebSocketStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { AppError } from "@/utils/AppError.js";
-import { timeRequest } from "@/service/network/utils.js";
+import { timeRequest, peerAnsweredFromError } from "@/service/network/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 import type WebSocket from "ws";
 
@@ -63,6 +63,9 @@ export class WebSocketProvider implements IStatusProvider<WebSocketStatusPayload
 					type: monitor.type,
 					status: false,
 					code: NETWORK_ERROR,
+					// `ws` rejects a non-101 handshake with a plain Error carrying only a message, so only the
+					// errno cases — a refusal or a reset — can be told apart from the instance losing egress.
+					peerResponded: peerAnsweredFromError(error),
 					message: errorMessage,
 					responseTime: responseTime,
 					timings: undefined,
@@ -76,6 +79,7 @@ export class WebSocketProvider implements IStatusProvider<WebSocketStatusPayload
 				type: monitor.type,
 				status: true,
 				code: 200,
+				peerResponded: true,
 				message: "WebSocket check successful",
 				responseTime: responseTime,
 				timings: undefined,

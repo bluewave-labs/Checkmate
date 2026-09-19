@@ -2,7 +2,7 @@ import { IStatusProvider } from "@/service/network/IStatusProvider.js";
 import { PortStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { AppError } from "@/utils/AppError.js";
-import { timeRequest } from "@/service/network/utils.js";
+import { timeRequest, peerAnsweredFromError } from "@/service/network/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 import * as net from "net";
 type NetType = typeof net;
@@ -59,6 +59,9 @@ export class PortProvider implements IStatusProvider<PortStatusPayload> {
 					type: monitor.type,
 					status: false,
 					code: NETWORK_ERROR,
+					// A refused or reset connection came from the host itself; a timeout or an unreachable
+					// network did not, and could equally be the instance's own loss of egress.
+					peerResponded: peerAnsweredFromError(error),
 					message: errorMessage,
 					responseTime: responseTime,
 					timings: undefined,
@@ -72,6 +75,7 @@ export class PortProvider implements IStatusProvider<PortStatusPayload> {
 				type: monitor.type,
 				status: true,
 				code: 200,
+				peerResponded: true,
 				message: "Port check successful",
 				responseTime: responseTime,
 				timings: undefined,

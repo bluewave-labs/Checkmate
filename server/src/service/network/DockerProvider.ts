@@ -23,7 +23,7 @@ import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
 import { ILogger } from "@/utils/logger.js";
 import { AppError } from "@/utils/AppError.js";
 import Dockerode from "dockerode";
-import { timeRequest } from "@/service/network/utils.js";
+import { timeRequest, peerAnsweredFromError } from "@/service/network/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 import { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import { DOCKER_TLS_URL, isDockerTlsUrl } from "@/utils/dockerHost.js";
@@ -315,12 +315,19 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 		return rawLogs.filter((log) => log !== null);
 	};
 
-	private failed = (monitor: Monitor, code: number, message: string, responseTime: number): MonitorStatusResponse<DockerStatusPayload> => ({
+	private failed = (
+		monitor: Monitor,
+		code: number,
+		message: string,
+		responseTime: number,
+		peerResponded = false
+	): MonitorStatusResponse<DockerStatusPayload> => ({
 		monitorId: monitor.id,
 		teamId: monitor.teamId,
 		type: monitor.type,
 		status: false,
 		code,
+		peerResponded,
 		message,
 		responseTime,
 		payload: null,
@@ -337,13 +344,17 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 			if (error) {
 				let message = "Docker host is unreachable";
 				let code = NETWORK_ERROR;
+				// A status code from the daemon is the daemon answering; otherwise only a refusal or a reset
+				// proves we reached the host, and anything else could be the instance's own loss of egress.
+				let peerResponded = peerAnsweredFromError(error);
 				if (this.isDockerError(error)) {
 					code = error.statusCode ?? NETWORK_ERROR;
 					message = error.json?.message ?? error.reason ?? error.message;
+					peerResponded = peerResponded || error.statusCode !== undefined;
 				} else if (error instanceof Error) {
 					message = error.message;
 				}
-				return this.failed(monitor, code, message, responseTime);
+				return this.failed(monitor, code, message, responseTime, peerResponded);
 			}
 
 			const summaries = await docker.listContainers({ all: true });
@@ -362,6 +373,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 				type: monitor.type,
 				status: true,
 				code: 200,
+				peerResponded: true,
 				message: "Docker host is reachable",
 				responseTime,
 				payload: { containers, summary, logs },

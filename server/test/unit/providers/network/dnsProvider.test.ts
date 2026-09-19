@@ -209,6 +209,49 @@ describe("DNSProvider", () => {
 		expect(mockResolverInstance.resolve4).toHaveBeenCalledWith("example.com");
 	});
 
+	// ── Peer reachability ────────────────────────────────────────────────────
+	// The egress check must only blame the instance's own connectivity when nothing answered. Every DNS failure
+	// carries NETWORK_ERROR, so `peerResponded` is the only thing separating an authoritative answer from silence.
+
+	it.each([
+		["ENOTFOUND", "NXDOMAIN: the server answered that the name does not exist"],
+		["ENODATA", "the server answered with no record of that type"],
+		["ESERVFAIL", "the server answered with a failure"],
+		["EREFUSED", "the server declined to answer"],
+		["EFORMERR", "the server rejected the query as malformed"],
+		["ENOTIMP", "the server does not implement the query"],
+		["EBADRESP", "the server replied, badly"],
+	])("reports the peer as having answered for %s", async (code) => {
+		const error = Object.assign(new Error("dns failure"), { code });
+		mockResolverInstance.resolve4.mockRejectedValueOnce(error);
+		const provider = new DNSProvider(createResolver);
+
+		const result = await provider.handle(makeMonitor());
+
+		expect(result.status).toBe(false);
+		expect(result.code).toBe(NETWORK_ERROR);
+		expect(result.peerResponded).toBe(true);
+	});
+
+	it.each([["ETIMEOUT"], ["ECONNREFUSED"], ["ECANCELLED"], [undefined]])("reports the peer as unreachable for %s", async (code) => {
+		const error = code ? Object.assign(new Error("dns failure"), { code }) : new Error("dns failure");
+		mockResolverInstance.resolve4.mockRejectedValueOnce(error);
+		const provider = new DNSProvider(createResolver);
+
+		const result = await provider.handle(makeMonitor());
+
+		expect(result.status).toBe(false);
+		expect(result.peerResponded).toBe(false);
+	});
+
+	it("reports the peer as having answered on success", async () => {
+		const provider = new DNSProvider(createResolver);
+
+		const result = await provider.handle(makeMonitor());
+
+		expect(result.peerResponded).toBe(true);
+	});
+
 	it("stringifies non-Error throws from outside timeRequest", async () => {
 		mockResolverInstance.setServers.mockImplementationOnce(() => {
 			throw 42;

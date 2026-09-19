@@ -362,6 +362,59 @@ describe("GrpcProvider", () => {
 			[99, "UNKNOWN"],
 		];
 
+		// ── Peer reachability ────────────────────────────────────────────────
+		// NOT_SERVING and a connection failure both report NETWORK_ERROR, and gRPC codes are not HTTP statuses,
+		// so `peerResponded` is what stops the egress check reading a server's answer as a transport failure.
+
+		it("reports the peer as having answered when the server replies NOT_SERVING", async () => {
+			const { provider } = createProvider({ behavior: "not-serving" });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.status).toBe(false);
+			expect(result.code).toBe(5000);
+			expect(result.peerResponded).toBe(true);
+		});
+
+		it.each([[5], [7], [12], [16], [2]])("reports the peer as having answered for gRPC code %i", async (code) => {
+			const client = {
+				Check: jest.fn((_r: any, _o: any, cb: Function) => cb({ code, details: "test" })),
+				close: jest.fn(),
+			};
+			const mocks = createMockGrpc(client as any);
+			const provider = new GrpcProvider(mocks.grpc as any, mocks.protoLoader as any);
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.peerResponded).toBe(true);
+		});
+
+		it.each([[4], [14]])("reports the peer as unreachable for gRPC code %i", async (code) => {
+			const client = {
+				Check: jest.fn((_r: any, _o: any, cb: Function) => cb({ code, details: "test" })),
+				close: jest.fn(),
+			};
+			const mocks = createMockGrpc(client as any);
+			const provider = new GrpcProvider(mocks.grpc as any, mocks.protoLoader as any);
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.peerResponded).toBe(false);
+		});
+
+		it("reports the peer as unreachable when the failure carries no gRPC code", async () => {
+			const client = {
+				Check: jest.fn((_r: any, _o: any, cb: Function) => cb({ message: "socket hang up" })),
+				close: jest.fn(),
+			};
+			const mocks = createMockGrpc(client as any);
+			const provider = new GrpcProvider(mocks.grpc as any, mocks.protoLoader as any);
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.peerResponded).toBe(false);
+		});
+
 		it.each(statusCodes)("maps gRPC code %i to %s", async (code, expectedName) => {
 			const client = {
 				Check: jest.fn((_r: any, _o: any, cb: Function) => cb({ code, details: "test" })),

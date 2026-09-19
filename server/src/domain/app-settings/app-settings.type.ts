@@ -54,7 +54,6 @@ export interface Settings {
 	// Egress self-check (see domain/egress)
 	egressCheckEnabled: boolean;
 	egressCheckTargets: string[];
-	egressPollIntervalSeconds: number; // recovery poll cadence while degraded, not a general schedule
 	egressNotifications: string[]; // Notification ids to receive the "egress recovered" alert
 	createdAt: string;
 	updatedAt: string;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { timeRequest, isStatusUp } from "../../../../src/service/network/utils.ts";
+import { timeRequest, isStatusUp, peerAnsweredFromError } from "../../../../src/service/network/utils.ts";
 import { NETWORK_ERROR } from "../../../../src/types/network.ts";
 
 describe("network utils", () => {
@@ -36,6 +36,40 @@ describe("network utils", () => {
 	describe("constants", () => {
 		it("NETWORK_ERROR is 5000", () => {
 			expect(NETWORK_ERROR).toBe(5000);
+		});
+	});
+
+	// The egress check blames the instance only when nothing answered, so this helper's `true` must never be a
+	// guess: every code in it requires the peer's own stack to have replied.
+	describe("peerAnsweredFromError", () => {
+		it.each([
+			["ECONNREFUSED", "the host refused the connection"],
+			["ECONNRESET", "the host reset an established connection"],
+			["EPIPE", "the host closed a connection we were writing to"],
+			["EPROTO", "a protocol error on a connection that was made"],
+			["CERT_HAS_EXPIRED", "the host presented a certificate"],
+			["DEPTH_ZERO_SELF_SIGNED_CERT", "the host presented a certificate"],
+			["SELF_SIGNED_CERT_IN_CHAIN", "the host presented a certificate"],
+			["UNABLE_TO_GET_ISSUER_CERT_LOCALLY", "the host presented a certificate"],
+			["UNABLE_TO_VERIFY_LEAF_SIGNATURE", "the host presented a certificate"],
+			["ERR_TLS_CERT_ALTNAME_INVALID", "the host presented a certificate"],
+			["CERT_NOT_YET_VALID", "the host presented a certificate"],
+			["ERR_SSL_WRONG_VERSION_NUMBER", "the host spoke back, badly"],
+		])("reports the peer as having answered for %s", (code) => {
+			expect(peerAnsweredFromError(Object.assign(new Error("failed"), { code }))).toBe(true);
+		});
+
+		it.each([["ETIMEDOUT"], ["ENOTFOUND"], ["EAI_AGAIN"], ["EHOSTUNREACH"], ["ENETUNREACH"], ["ECONNABORTED"], ["ENETDOWN"]])(
+			"reports the peer as silent for %s",
+			(code) => {
+				expect(peerAnsweredFromError(Object.assign(new Error("failed"), { code }))).toBe(false);
+			}
+		);
+
+		it("reports the peer as silent when the error carries no code", () => {
+			expect(peerAnsweredFromError(new Error("Connection timeout"))).toBe(false);
+			expect(peerAnsweredFromError(undefined)).toBe(false);
+			expect(peerAnsweredFromError("not an error")).toBe(false);
 		});
 	});
 

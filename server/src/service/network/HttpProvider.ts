@@ -6,7 +6,7 @@ import { MonitorStatusResponse } from "@/types/network.js";
 import { Agent as HttpsAgent } from "https";
 import { Agent as HttpAgent } from "http";
 import { Monitor, MonitorType } from "@/domain/monitors/monitor.type.js";
-import { isStatusUp } from "@/service/network/utils.js";
+import { isStatusUp, peerAnsweredFromError } from "@/service/network/utils.js";
 import { NETWORK_ERROR } from "@/types/network.js";
 import CacheableLookup from "cacheable-lookup";
 import { HttpProxyAgent, HttpsProxyAgent } from "hpagent";
@@ -107,6 +107,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 				type: monitor.type,
 				status: statusUp,
 				code: statusCode,
+				peerResponded: true,
 				message,
 				responseTime,
 				timings,
@@ -123,6 +124,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 				type: monitor.type,
 				status: false,
 				code: statusCode,
+				peerResponded: true,
 				message: "Response is not JSON",
 				responseTime,
 				timings,
@@ -149,6 +151,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 			type: monitor.type,
 			status: statusUp && matchResult.ok,
 			code: statusCode,
+			peerResponded: true,
 			message: matchResult.ok ? message : matchResult.message,
 			responseTime,
 			timings,
@@ -172,6 +175,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 					type: monitor.type,
 					status: false,
 					code: statusCode ?? NETWORK_ERROR,
+					peerResponded: statusCode !== undefined || (!ctx?.proxyUrl && peerAnsweredFromError(error)),
 					message: message,
 					responseTime,
 					timings: error.timings,
@@ -196,6 +200,7 @@ export class HttpProvider implements IStatusProvider<HttpStatusPayload> {
 			type: monitor.type,
 			status: false,
 			code: NETWORK_ERROR,
+			peerResponded: !ctx?.proxyUrl && peerAnsweredFromError(error),
 			message: error instanceof Error ? error.message : String(error),
 			responseTime: 0,
 			payload: null as T,

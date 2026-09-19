@@ -697,4 +697,43 @@ describe("DockerProvider", () => {
 			await expect(provider.handle(makeMonitor())).rejects.toThrow("Error performing Docker request");
 		});
 	});
+
+	// ── Peer reachability ────────────────────────────────────────────────────
+	// A daemon that answers with an error has been reached; only silence can be the instance's own egress.
+
+	describe("peer reachability", () => {
+		it("reports the peer as having answered when the daemon replies with a status code", async () => {
+			const dockerErr = Object.assign(new Error("base"), { statusCode: 500, json: { message: "engine exploded" } });
+			const { provider } = setup({ ping: jest.fn().mockRejectedValue(dockerErr) });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.status).toBe(false);
+			expect(result.peerResponded).toBe(true);
+		});
+
+		it.each([["ECONNREFUSED"], ["ECONNRESET"]])("reports the peer as having answered for %s", async (code) => {
+			const { provider } = setup({ ping: jest.fn().mockRejectedValue(Object.assign(new Error("connect failed"), { code })) });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.peerResponded).toBe(true);
+		});
+
+		it.each([["ETIMEDOUT"], ["EHOSTUNREACH"], ["ENOTFOUND"]])("reports the peer as silent for %s", async (code) => {
+			const { provider } = setup({ ping: jest.fn().mockRejectedValue(Object.assign(new Error("connect failed"), { code })) });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.peerResponded).toBe(false);
+		});
+
+		it("reports the peer as having answered when the daemon is reachable", async () => {
+			const { provider } = setup({});
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.peerResponded).toBe(true);
+		});
+	});
 });
