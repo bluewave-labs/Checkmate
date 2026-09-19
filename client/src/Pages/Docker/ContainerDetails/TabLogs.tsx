@@ -38,6 +38,7 @@ interface TabLogsProps {
 
 const SCROLL_PIN_THRESHOLD_PX = 8;
 const TAIL_POLL_MS = 10_000;
+const SCROLLBAR_SIZE = 16;
 
 const isScrolledToBottom = (el: HTMLElement) =>
 	el.scrollHeight - el.scrollTop - el.clientHeight <= SCROLL_PIN_THRESHOLD_PX;
@@ -213,7 +214,25 @@ export const TabLogs = ({ monitorId, containerName, enabled }: TabLogsProps) => 
 				maxHeight="50vh"
 				overflow="auto"
 				padding={LAYOUT.MD}
-				sx={{ overflowAnchor: "none" }}
+				sx={{
+					overflowAnchor: "none",
+					scrollbarWidth: "auto",
+					scrollbarColor: "#11715b rgba(0,0,0,0.15)",
+					"&::-webkit-scrollbar": {
+						display: "block",
+						width: `${SCROLLBAR_SIZE}px`,
+						height: `${SCROLLBAR_SIZE}px`,
+					},
+					"&::-webkit-scrollbar-track": {
+						background: "rgba(0,0,0,0.15)",
+						borderRadius: "2px",
+					},
+					"&::-webkit-scrollbar-thumb": {
+						background: "#11715b",
+						borderRadius: "2px",
+					},
+					"&::-webkit-scrollbar-button": { display: "none" },
+				}}
 			>
 				{rows.length > 0 && (
 					<Stack
