@@ -63,6 +63,78 @@ describe("createStatusPageBodyValidation", () => {
 	});
 });
 
+describe("createStatusPageBodyValidation embedAllowedOrigins", () => {
+	const parseOrigins = (embedAllowedOrigins: unknown) => createStatusPageBodyValidation.safeParse(baseCreateBody({ embedAllowedOrigins }));
+
+	it("accepts https, http with a port, and localhost origins", () => {
+		const result = parseOrigins(["https://a.example", "http://a.example:8080", "http://localhost:10001"]);
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.data.embedAllowedOrigins).toEqual(["https://a.example", "http://a.example:8080", "http://localhost:10001"]);
+		}
+	});
+
+	it("accepts IPv4 and bracketed IPv6 origins", () => {
+		const result = parseOrigins(["http://192.168.1.10:8080", "https://10.0.0.1", "http://[::1]:3000", "https://[2001:db8::1]"]);
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.data.embedAllowedOrigins).toEqual(["http://192.168.1.10:8080", "https://10.0.0.1", "http://[::1]:3000", "https://[2001:db8::1]"]);
+		}
+	});
+
+	it("trims, lowercases, and dedupes origins", () => {
+		const result = parseOrigins([" HTTPS://A.example ", "https://a.example", "", "https://b.example"]);
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.data.embedAllowedOrigins).toEqual(["https://a.example", "https://b.example"]);
+		}
+	});
+
+	it("accepts a single string as one origin", () => {
+		const result = parseOrigins("https://a.example");
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.data.embedAllowedOrigins).toEqual(["https://a.example"]);
+		}
+	});
+
+	it("leaves the field undefined when absent", () => {
+		const result = createStatusPageBodyValidation.safeParse(baseCreateBody());
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.data.embedAllowedOrigins).toBeUndefined();
+		}
+	});
+
+	it.each([
+		["https://a.example/path"],
+		["a.example"],
+		["javascript:alert(1)"],
+		["https://a.example/"],
+		["http://999.1.1.1"],
+		["http://[not-an-address]"],
+		["http://::1"],
+		["https://a.example:99999999"],
+	])("rejects %s", (origin) => {
+		const result = parseOrigins([origin]);
+		expect(result.success).toBe(false);
+		if (!result.success) {
+			expect(result.error.issues).toEqual(expect.arrayContaining([expect.objectContaining({ path: ["embedAllowedOrigins", 0] })]));
+		}
+	});
+
+	it("rejects more than 20 origins", () => {
+		const origins = Array.from({ length: 21 }, (_, i) => `https://site${i}.example`);
+		const result = parseOrigins(origins);
+		expect(result.success).toBe(false);
+		if (!result.success) {
+			expect(result.error.issues).toEqual(
+				expect.arrayContaining([expect.objectContaining({ message: "At most 20 embedding origins are allowed", path: ["embedAllowedOrigins"] })])
+			);
+		}
+	});
+});
+
 describe("getStatusPageQueryValidation", () => {
 	it("defaults range to latest when absent", () => {
 		const result = getStatusPageQueryValidation.safeParse({ type: "uptime" });

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { booleanCoercion, dnsHostnameRegex, timezoneValidation } from "./shared.js";
+import { booleanCoercion, dnsHostnameRegex, isEmbedOrigin, timezoneValidation } from "./shared.js";
 import {
 	StatusPageTypes,
 	StatusPageThemes,
@@ -9,6 +9,7 @@ import {
 } from "@/domain/status-pages/status-page.type.js";
 import { MonitorTypes, MonitorStatuses } from "@/domain/monitors/monitor.type.js";
 import { normalizeStatusPageDomain } from "@/utils/statusPageDomain.js";
+import { normalizeEmbedAllowedOrigins } from "@/utils/embedOrigins.js";
 import { cssReferencesExternalResource } from "@/utils/customCss.js";
 import { ImageMimeTypes } from "@/types/upload.js";
 
@@ -39,6 +40,16 @@ const customDomainValidation = z.preprocess(
 	z.union([z.string().regex(dnsHostnameRegex, "Enter a valid domain name (e.g. status.example.com)"), z.null()]).optional()
 );
 
+const MAX_EMBED_ALLOWED_ORIGINS = 20;
+
+const embedAllowedOriginsValidation = z.preprocess(
+	(val) => normalizeEmbedAllowedOrigins(val),
+	z
+		.array(z.string().refine(isEmbedOrigin, "Enter a valid origin with scheme and host only (e.g. https://www.example.com)"))
+		.max(MAX_EMBED_ALLOWED_ORIGINS, `At most ${MAX_EMBED_ALLOWED_ORIGINS} embedding origins are allowed`)
+		.optional()
+);
+
 export const createStatusPageBodyValidation = z
 	.object({
 		type: z.union([z.enum(StatusPageTypes), z.array(z.enum(StatusPageTypes))]).transform((val) => (Array.isArray(val) ? val : [val])),
@@ -47,6 +58,7 @@ export const createStatusPageBodyValidation = z
 			message: "URL can only contain letters, numbers, underscores, and hyphens",
 		}),
 		customDomain: customDomainValidation,
+		embedAllowedOrigins: embedAllowedOriginsValidation,
 		timezone: timezoneValidation.optional(),
 		color: z.string().optional(),
 		monitors: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Must be a valid monitor ID")).min(1, "At least one monitor is required"),
@@ -126,6 +138,7 @@ export const statusPageResponseSchema = z.object({
 	companyName: z.string(),
 	url: z.string(),
 	customDomain: z.string().nullable().optional(),
+	embedAllowedOrigins: z.array(z.string()).optional(),
 	timezone: z.string().optional(),
 	color: z.string(),
 	monitors: z.array(z.string()),
