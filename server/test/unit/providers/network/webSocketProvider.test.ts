@@ -191,4 +191,42 @@ describe("WebSocketProvider", () => {
 			);
 		});
 	});
+
+	// ── Peer reachability ────────────────────────────────────────────────────
+	// `ws` rejects a non-101 handshake with a plain Error, so only the errno cases can be told apart from the
+	// instance losing its egress. That leaves a server answering the handshake with an HTTP error indistinct.
+
+	const createErrorWS = (error: Error) =>
+		jest.fn().mockImplementation(() => ({
+			on: jest.fn((event: string, cb: Function) => {
+				if (event === "error") process.nextTick(() => cb(error));
+			}),
+			close: jest.fn(),
+		})) as any;
+
+	it.each([["ECONNREFUSED"], ["ECONNRESET"]])("reports the peer as having answered for %s", async (code) => {
+		const provider = new WebSocketProvider(createErrorWS(Object.assign(new Error("connect failed"), { code })));
+
+		const result = await provider.handle(makeMonitor());
+
+		expect(result.status).toBe(false);
+		expect(result.code).toBe(NETWORK_ERROR);
+		expect(result.peerResponded).toBe(true);
+	});
+
+	it.each([["ETIMEDOUT"], ["ENOTFOUND"], ["EHOSTUNREACH"]])("reports the peer as silent for %s", async (code) => {
+		const provider = new WebSocketProvider(createErrorWS(Object.assign(new Error("connect failed"), { code })));
+
+		const result = await provider.handle(makeMonitor());
+
+		expect(result.peerResponded).toBe(false);
+	});
+
+	it("reports the peer as having answered when the socket opens", async () => {
+		const provider = new WebSocketProvider(createMockWS("open"));
+
+		const result = await provider.handle(makeMonitor());
+
+		expect(result.peerResponded).toBe(true);
+	});
 });

@@ -43,6 +43,9 @@ export class GameProvider implements IStatusProvider<GameStatusPayload> {
 				});
 
 			if (!state) {
+				// gamedig reports a failed query the same way whichever leg failed, so `peerResponded` is left
+				// unset and a failure is put to the egress probe. A game server that stops answering during a
+				// spell is therefore recorded as degraded rather than down.
 				return {
 					monitorId: id,
 					teamId: teamId,
