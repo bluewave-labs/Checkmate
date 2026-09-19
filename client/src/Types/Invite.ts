@@ -1,14 +1,11 @@
-import type { UserRole } from "@/domain/users/user.type.js";
+import type { UserRole } from "@/Types/User";
 
 export interface Invite {
 	id: string;
 	email: string;
 	teamId: string;
 	role: UserRole[];
-	token: string;
 	expiry: string;
 	createdAt: string;
 	updatedAt: string;
 }
-
-export type InviteSummary = Omit<Invite, "token">;
