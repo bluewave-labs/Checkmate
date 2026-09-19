@@ -17,32 +17,39 @@ interface BulkActionsBarProps {
 	selectedCount: number;
 	onCancel: () => void;
 	children?: React.ReactNode;
+	hidden?: boolean;
 }
 
 export const BulkActionsBar = ({
 	selectedCount,
 	onCancel,
 	children,
+	hidden = false,
 }: BulkActionsBarProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const isOpen = selectedCount > 0;
+	const isOpen = selectedCount > 0 && !hidden;
 
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const { width, collapsedWidth, transition } = useSidebar();
 
+	const sidebarOffset = isSmall ? collapsedWidth : width;
+
 	return (
 		<Box
+			display="flex"
 			sx={{
 				position: "fixed",
 				bottom: theme.spacing(LAYOUT.XS),
-				left: isSmall ? collapsedWidth : width,
-				right: 0,
-				display: "flex",
+				left: sidebarOffset,
+				right: sidebarOffset,
 				justifyContent: "center",
 				pointerEvents: "none",
 				zIndex: theme.zIndex.snackbar,
-				transition: transition.replace("width", "left"),
+				transition:
+					transition.replace("width", "left") +
+					", " +
+					transition.replace("width", "right"),
 			}}
 		>
 			<Slide
@@ -51,18 +58,22 @@ export const BulkActionsBar = ({
 				mountOnEnter
 				unmountOnExit
 			>
-				<Paper
+				<Box
+					component={Paper as any}
 					elevation={6}
+					px={LAYOUT.MD}
+					py={LAYOUT.XS}
+					borderRadius={theme.shape.borderRadius}
+					bgcolor={theme.palette.background.paper}
+					border={`1px solid ${theme.palette.divider}`}
+					display="flex"
+					gap={LAYOUT.XS}
+					maxWidth={isSmall ? `calc(100vw - ${theme.spacing(LAYOUT.XS)})` : "none"}
 					sx={{
 						pointerEvents: "auto",
-						px: LAYOUT.MD,
-						py: LAYOUT.XS,
-						borderRadius: theme.shape.borderRadius,
-						backgroundColor: theme.palette.background.paper,
-						border: `1px solid ${theme.palette.divider}`,
-						display: "flex",
+						flexWrap: "wrap",
+						justifyContent: "center",
 						alignItems: "center",
-						gap: LAYOUT.XS,
 						boxShadow: theme.shadows[8],
 					}}
 				>
@@ -91,11 +102,13 @@ export const BulkActionsBar = ({
 					<Stack
 						direction="row"
 						alignItems="center"
+						justifyContent="center"
 						gap={LAYOUT.XXS}
+						flexWrap="wrap"
 					>
 						{children}
 					</Stack>
-				</Paper>
+				</Box>
 			</Slide>
 		</Box>
 	);
