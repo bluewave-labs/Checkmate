@@ -1,0 +1,4 @@
+# 0.2.x-era custom Mongo image (frozen at v3.9.2).
+mongodb:
+  image: ghcr.io/bluewave-labs/checkmate-mongo
+  tag: ""

@@ -1,0 +1,5 @@
+# With ingress disabled there is no host to derive CLIENT_HOST from — an explicit
+# http(s):// secrets.CLIENT_HOST is required.
+api:
+  ingress:
+    enabled: false

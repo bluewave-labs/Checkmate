@@ -1,0 +1,3 @@
+# mongodb.tag no longer defaults to Chart.appVersion — an explicit upstream tag is required.
+mongodb:
+  tag: ""
