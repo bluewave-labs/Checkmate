@@ -3,6 +3,7 @@ import { lightPalette, darkPalette, typographyLevels } from "@/Utils/Theme/Palet
 
 import type { Theme } from "@mui/material/styles";
 import type {} from "@mui/material/styles";
+import { SCROLLBAR_SIZE } from "@/Utils/Theme/constants";
 
 declare module "@mui/material/styles" {
 	interface TypographyVariants {
@@ -20,6 +21,7 @@ declare module "@mui/material/styles" {
 	}
 	interface Palette {
 		sidebar: { accent: string };
+		scrollbar: { track: string; thumb: string };
 		rowStatus: { running: string; paused: string };
 		chart: {
 			phases: {
@@ -34,6 +36,7 @@ declare module "@mui/material/styles" {
 	}
 	interface PaletteOptions {
 		sidebar?: { accent: string };
+		scrollbar?: { track: string; thumb: string };
 		rowStatus?: { running: string; paused: string };
 		chart?: {
 			phases: {
@@ -112,6 +115,27 @@ export const theme = (mode: string, palette: any) =>
 		},
 
 		components: {
+			MuiCssBaseline: {
+				styleOverrides: (theme) => ({
+					"*": {
+						scrollbarWidth: "auto",
+						scrollbarColor: `${theme.palette.scrollbar.thumb} ${theme.palette.scrollbar.track}`,
+					},
+					"*::-webkit-scrollbar": {
+						width: SCROLLBAR_SIZE,
+						height: SCROLLBAR_SIZE,
+					},
+					"*::-webkit-scrollbar-track": {
+						background: theme.palette.scrollbar.track,
+						borderRadius: theme.shape.borderRadius,
+					},
+					"*::-webkit-scrollbar-thumb": {
+						background: theme.palette.scrollbar.thumb,
+						borderRadius: theme.shape.borderRadius,
+					},
+					"*::-webkit-scrollbar-button": { display: "none" },
+				}),
+			},
 			MuiTouchRipple: {
 				styleOverrides: {
 					root: {
