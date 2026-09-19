@@ -373,6 +373,46 @@ describe("CheckProducer", () => {
 		expect(result?.check.egressStatus).toBe("degraded");
 	});
 
+	// ── status window across a spell ─────────────────────────────────────────
+	// Matching the maintenance gate: cleared once as the monitor stops being evaluated, so the results either
+	// side of a spell are never adjacent.
+
+	it("clears the status window on the first degraded check of a spell", async () => {
+		const { producer, defaults } = createProducer({
+			networkService: { requestStatus: jest.fn().mockResolvedValue(failingStatus) },
+			checkService: { toCheck: jest.fn().mockReturnValue({ id: "check-1" }) },
+			egressService: { assessAfterFailure: jest.fn().mockResolvedValue("degraded") },
+		});
+
+		await producer.produce(makeMonitor({ statusWindow: [true, true, true, false, false] }));
+
+		expect(defaults.monitorsRepository.updateById).toHaveBeenCalledWith("m1", "team", { statusWindow: [] });
+	});
+
+	it("does not re-write the status window for later degraded checks in the same spell", async () => {
+		const { producer, defaults } = createProducer({
+			networkService: { requestStatus: jest.fn().mockResolvedValue(failingStatus) },
+			checkService: { toCheck: jest.fn().mockReturnValue({ id: "check-1" }) },
+			egressService: { assessAfterFailure: jest.fn().mockResolvedValue("degraded") },
+		});
+
+		await producer.produce(makeMonitor({ statusWindow: [] }));
+
+		expect(defaults.monitorsRepository.updateById).not.toHaveBeenCalled();
+	});
+
+	it("leaves the status window alone when the probe found egress fine", async () => {
+		const { producer, defaults } = createProducer({
+			networkService: { requestStatus: jest.fn().mockResolvedValue(failingStatus) },
+			checkService: { toCheck: jest.fn().mockReturnValue({ id: "check-1" }) },
+			egressService: { assessAfterFailure: jest.fn().mockResolvedValue("ok") },
+		});
+
+		await producer.produce(makeMonitor({ statusWindow: [true, true, true, false, false] }));
+
+		expect(defaults.monitorsRepository.updateById).not.toHaveBeenCalled();
+	});
+
 	it("flags a failing check as ok when the probe found egress fine", async () => {
 		const check: Record<string, unknown> = { id: "check-1" };
 		const { producer } = createProducer({

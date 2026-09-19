@@ -33,7 +33,8 @@ describe("Heartbeat job: degraded egress", () => {
 		// Nothing downstream moved
 		const storedMonitor = await h.monitorsRepo.findById("mon-1", "team-1");
 		expect(storedMonitor.status).toBe("up");
-		expect(storedMonitor.statusWindow).toEqual([true, true, true, true, true]);
+		// The window is cleared once as the spell starts, as entering a maintenance window does.
+		expect(storedMonitor.statusWindow).toEqual([]);
 		expect(h.incidentsRepo.getAll()).toHaveLength(0);
 		expect(h.notificationsService.handleNotifications).not.toHaveBeenCalled();
 	});
@@ -158,7 +159,7 @@ describe("Heartbeat job: degraded egress", () => {
 		expect(h.notificationsService.handleNotifications).toHaveBeenCalledTimes(1);
 	});
 
-	it("keeps counting real failures taken either side of a degraded spell", async () => {
+	it("starts a fresh status window after a degraded spell", async () => {
 		const monitor = makeMonitor();
 		h.monitorsRepo.seed(monitor);
 
@@ -167,16 +168,22 @@ describe("Heartbeat job: degraded egress", () => {
 		await h.heartbeatJob(monitor);
 		await h.heartbeatJob(monitor);
 
-		// A degraded spell must not push the window over the threshold
 		h.setEgressStatus("degraded");
 		await h.heartbeatJob(monitor);
+		await h.heartbeatJob(monitor);
+		expect((await h.monitorsRepo.findById("mon-1", "team-1")).statusWindow).toEqual([]);
+
+		// A third real failure would have taken the old window to 60%. Against a window that starts again
+		// at the end of the spell it is one result, and the results either side are never adjacent.
+		h.setEgressStatus(null);
 		await h.heartbeatJob(monitor);
 		expect((await h.monitorsRepo.findById("mon-1", "team-1")).status).toBe("up");
 		expect(h.incidentsRepo.getAll()).toHaveLength(0);
 
-		// 3rd real failure: window [t, t, f, f, f] = 60% >= 60%
-		h.setEgressStatus(null);
-		await h.heartbeatJob(monitor);
+		// The monitor still goes down, once the rebuilt window holds enough real failures to cross.
+		for (let i = 0; i < 4; i++) {
+			await h.heartbeatJob(monitor);
+		}
 
 		expect((await h.monitorsRepo.findById("mon-1", "team-1")).status).toBe("down");
 		expect(h.incidentsRepo.getAll()).toHaveLength(1);

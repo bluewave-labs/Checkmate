@@ -133,10 +133,19 @@ export class CheckProducer implements ICheckProducer {
 		if (egressStatus !== null) {
 			check.egressStatus = egressStatus;
 		}
+
 		// Step 2c: Add to buffer
 		this.bufferService.addToBuffer(check);
 
-		// Step 2d: Handle docker logs
+		// Step 2d: As with the maintenance gate above, the window is cleared at the point the monitor stops
+		// being evaluated, so the results either side of a spell never end up adjacent and cross the threshold
+		// on stale data. The length guard keeps this to one write per spell rather than one per degraded check,
+		// and it runs after the check is buffered so that a failed write cannot cost us the check.
+		if (egressStatus === "degraded" && monitor.statusWindow?.length) {
+			await this.monitorsRepository.updateById(monitor.id, monitor.teamId, { statusWindow: [] });
+		}
+
+		// Step 2e: Handle docker logs
 		if (status.type === "docker") {
 			const dockerLogs = await this.dockerLogsService.buildDockerLogs(status as MonitorStatusResponse<DockerStatusPayload>);
 			for (const dockerLog of dockerLogs) {
