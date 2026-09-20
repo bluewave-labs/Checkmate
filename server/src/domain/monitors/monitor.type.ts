@@ -6,6 +6,7 @@ import http from "node:http";
 import { HardwareStats } from "@/domain/checks/check.type.js";
 import { MonitorStats } from "@/domain/monitor-stats/monitor-stats.type.js";
 import { DockerLogPage } from "@/domain/docker/docker-log.type.js";
+import { isDockerSocketUrl } from "@/utils/dockerHost.js";
 
 export const HttpStatusCodes = [
 	...Object.keys(http.STATUS_CODES).map(Number),
@@ -67,10 +68,9 @@ export const EgressAttributableTypes = [
 ] as const satisfies readonly MonitorType[];
 export type EgressAttributableType = (typeof EgressAttributableTypes)[number];
 
-// A Docker daemon reached over a unix socket is local IPC and cannot fail through egress; one reached over
-// TCP or TLS is as remote as any other target. The URL, not the type, settles it.
-const isLocalDockerSocket = (monitor: Pick<Monitor, "type" | "url">): boolean =>
-	monitor.type === "docker" && (monitor.url?.trim().startsWith("unix://") ?? false);
+// A Docker daemon reached over a unix socket (`unix:///path` or a bare absolute path) is local IPC and cannot
+// fail through egress; one reached over TCP or TLS is as remote as any other target. The URL, not the type, settles it.
+const isLocalDockerSocket = (monitor: Pick<Monitor, "type" | "url">): boolean => monitor.type === "docker" && isDockerSocketUrl(monitor.url);
 
 export const isEgressAttributable = (monitor: Pick<Monitor, "type" | "url">): boolean =>
 	EgressAttributableTypes.some((t) => t === monitor.type) && !isLocalDockerSocket(monitor);

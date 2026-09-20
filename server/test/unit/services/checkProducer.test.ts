@@ -291,19 +291,21 @@ describe("CheckProducer", () => {
 	});
 
 	it("never consults egress for a docker daemon on a local socket", async () => {
-		const check: Record<string, unknown> = { id: "check-1" };
-		const { producer, defaults } = createProducer({
-			networkService: { requestStatus: jest.fn().mockResolvedValue({ ...failingStatus, type: "docker" }) },
-			checkService: { toCheck: jest.fn().mockReturnValue(check) },
-			egressService: { assessAfterFailure: jest.fn().mockResolvedValue("degraded") },
-		});
+		for (const url of ["unix:///var/run/docker.sock", "/var/run/docker.sock"]) {
+			const check: Record<string, unknown> = { id: "check-1" };
+			const { producer, defaults } = createProducer({
+				networkService: { requestStatus: jest.fn().mockResolvedValue({ ...failingStatus, type: "docker" }) },
+				checkService: { toCheck: jest.fn().mockReturnValue(check) },
+				egressService: { assessAfterFailure: jest.fn().mockResolvedValue("degraded") },
+			});
 
-		await producer.produce(makeMonitor({ type: "docker", url: "unix:///var/run/docker.sock" }));
+			await producer.produce(makeMonitor({ type: "docker", url }));
 
-		// Local IPC never leaves the instance, so it cannot fail through egress.
-		expect(defaults.egressService.assessAfterFailure).not.toHaveBeenCalled();
-		expect(check).not.toHaveProperty("egressStatus");
-		expect(defaults.buffer.addToBuffer).toHaveBeenCalledWith(check);
+			// Local IPC never leaves the instance, so it cannot fail through egress.
+			expect(defaults.egressService.assessAfterFailure).not.toHaveBeenCalled();
+			expect(check).not.toHaveProperty("egressStatus");
+			expect(defaults.buffer.addToBuffer).toHaveBeenCalledWith(check);
+		}
 	});
 
 	it("consults egress for a hardware check and for a docker daemon reached over TCP", async () => {
