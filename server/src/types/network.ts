@@ -33,6 +33,12 @@ export interface MonitorStatusResponse<
 	status: boolean;
 	code: number;
 	message: string;
+	// Whether the peer answered, for failures where `code` alone cannot say. `code` carries an HTTP status for
+	// providers that speak HTTP, but DNS and gRPC report their own codes, and gRPC reuses NETWORK_ERROR for a
+	// server that replied NOT_SERVING. Providers that can tell the two apart set this; the rest leave it unset
+	// and the HTTP-status heuristic stands. Consumed by the egress check, which must only blame the instance's
+	// own connectivity when nothing answered.
+	peerResponded?: boolean;
 	responseTime?: number;
 	payload?: T | string | null;
 	timings?: GotTimings;

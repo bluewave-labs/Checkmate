@@ -267,4 +267,42 @@ describe("PortProvider", () => {
 
 		await expect(provider.handle(monitor)).rejects.toThrow("42");
 	});
+
+	// ── Peer reachability ────────────────────────────────────────────────────
+	// A check is only recorded as degraded when nothing answered, so a service on the local network that
+	// refuses connections has to stay distinguishable from the instance losing its own egress.
+
+	it.each([["ECONNREFUSED"], ["ECONNRESET"]])("reports the peer as having answered for %s", async (code) => {
+		const provider = new PortProvider(createErrorNet(Object.assign(new Error("connect failed"), { code })));
+
+		const result = await provider.handle(makeMonitor());
+
+		expect(result.status).toBe(false);
+		expect(result.code).toBe(NETWORK_ERROR);
+		expect(result.peerResponded).toBe(true);
+	});
+
+	it.each([["ETIMEDOUT"], ["EHOSTUNREACH"], ["ENETUNREACH"], ["ENOTFOUND"]])("reports the peer as silent for %s", async (code) => {
+		const provider = new PortProvider(createErrorNet(Object.assign(new Error("connect failed"), { code })));
+
+		const result = await provider.handle(makeMonitor());
+
+		expect(result.peerResponded).toBe(false);
+	});
+
+	it("reports the peer as silent on a connection timeout", async () => {
+		const provider = new PortProvider(createTimeoutNet());
+
+		const result = await provider.handle(makeMonitor());
+
+		expect(result.peerResponded).toBe(false);
+	});
+
+	it("reports the peer as having answered when the port accepts the connection", async () => {
+		const provider = new PortProvider(createSuccessNet());
+
+		const result = await provider.handle(makeMonitor());
+
+		expect(result.peerResponded).toBe(true);
+	});
 });

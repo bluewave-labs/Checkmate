@@ -155,4 +155,23 @@ describe("PingProvider", () => {
 
 		await expect(provider.handle(makeMonitor())).rejects.toThrow("42");
 	});
+
+	// ── Peer reachability ────────────────────────────────────────────────────
+
+	it("reports the peer as having answered when an echo reply comes back", async () => {
+		const provider = new PingProvider(createMockPing({ alive: true }) as any, net);
+
+		const result = await provider.handle(makeMonitor());
+
+		expect(result.peerResponded).toBe(true);
+	});
+
+	it("reports the peer as silent when no echo reply comes back", async () => {
+		// Silence is indistinguishable from the instance losing its egress, so the egress probe decides.
+		const provider = new PingProvider(createMockPing({ alive: false }) as any, net);
+
+		const result = await provider.handle(makeMonitor());
+
+		expect(result.peerResponded).toBe(false);
+	});
 });

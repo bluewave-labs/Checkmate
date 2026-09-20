@@ -21,7 +21,6 @@ const makeState = (overrides?: Partial<EgressState>): EgressState => ({
 const makeSettings = (overrides?: Record<string, unknown>) => ({
 	egressCheckEnabled: true,
 	egressCheckTargets: ["1.1.1.1", "8.8.8.8"],
-	egressPollIntervalSeconds: 30,
 	egressNotifications: ["notif-1"],
 	...overrides,
 });
@@ -33,7 +32,7 @@ const makeJob = (overrides?: Partial<Job>): Job => ({
 	refId: null,
 	isActive: true,
 	nextScheduledAt: 1_000,
-	intervalMs: 30_000,
+	intervalMs: 5_000,
 	lockedBy: "worker-1",
 	lockedUntil: 61_000,
 	runCount: 0,
@@ -245,7 +244,7 @@ describe("EgressService", () => {
 				refId: null,
 				isActive: true,
 				nextScheduledAt: expect.any(Number),
-				intervalMs: 30_000,
+				intervalMs: 5_000,
 			});
 			expect(defaults.jobsRepository.upsertJob).not.toHaveBeenCalled();
 			// Job first, transition second: a crash in between leaves a stray row, never an unpolled degraded state
@@ -266,7 +265,7 @@ describe("EgressService", () => {
 			const result = await service.assessAfterFailure();
 
 			expect(result).toBe("degraded");
-			expect(defaults.jobsRepository.upsertCleanupJob).toHaveBeenCalledWith(expect.objectContaining({ id: "egress", intervalMs: 30_000 }));
+			expect(defaults.jobsRepository.upsertCleanupJob).toHaveBeenCalledWith(expect.objectContaining({ id: "egress", intervalMs: 5_000 }));
 			expect(defaults.logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("already recorded") }));
 		});
 
@@ -293,19 +292,8 @@ describe("EgressService", () => {
 			expect(defaults.networkService.requestStatus).not.toHaveBeenCalled();
 			expect(defaults.egressStateRepository.markDegraded).not.toHaveBeenCalled();
 			expect(defaults.egressStateRepository.recordProbe).not.toHaveBeenCalled();
-			expect(defaults.jobsRepository.upsertJob).toHaveBeenCalledWith(expect.objectContaining({ id: "egress", intervalMs: 30_000 }));
+			expect(defaults.jobsRepository.upsertJob).toHaveBeenCalledWith(expect.objectContaining({ id: "egress", intervalMs: 5_000 }));
 			expect(defaults.jobsRepository.upsertCleanupJob).not.toHaveBeenCalled();
-		});
-
-		it("uses the default poll interval for the recovery job when the setting is missing or invalid", async () => {
-			const { service, defaults } = createService({
-				settingsService: { getCachedDBSettings: jest.fn().mockResolvedValue(makeSettings({ egressPollIntervalSeconds: undefined })) },
-				networkService: { requestStatus: statusFor([]) },
-			});
-
-			await service.assessAfterFailure();
-
-			expect(defaults.jobsRepository.upsertCleanupJob).toHaveBeenCalledWith(expect.objectContaining({ intervalMs: 30_000 }));
 		});
 
 		it("falls back to the default targets when the configured list is empty", async () => {

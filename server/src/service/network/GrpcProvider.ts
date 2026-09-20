@@ -25,6 +25,17 @@ export class GrpcProvider implements IStatusProvider<GrpcStatusPayload> {
 		return type === "grpc";
 	}
 
+	// gRPC codes that mean the call never reached a server. Everything else in 0-16 is the server's own answer,
+	// including NOT_SERVING, which shares NETWORK_ERROR with a connection failure and so cannot be read from `code`.
+	// A call that fails with no gRPC code at all never got as far as the protocol.
+	private peerAnswered(code: number | undefined): boolean {
+		const UNREACHABLE_GRPC_CODES: ReadonlySet<number> = new Set([
+			4, // DEADLINE_EXCEEDED
+			14, // UNAVAILABLE
+		]);
+		return typeof code === "number" && !UNREACHABLE_GRPC_CODES.has(code);
+	}
+
 	private getGrpcStatusName(code: number): string {
 		const statusNames: Record<number, string> = {
 			0: "OK",
@@ -148,6 +159,7 @@ export class GrpcProvider implements IStatusProvider<GrpcStatusPayload> {
 					type: type,
 					status: false,
 					code: grpcError.grpcCode ?? 5000,
+					peerResponded: this.peerAnswered(grpcError.grpcCode),
 					message: grpcError.message ?? "gRPC health check failed",
 					responseTime,
 					payload: payload ?? null,
@@ -163,6 +175,8 @@ export class GrpcProvider implements IStatusProvider<GrpcStatusPayload> {
 				type: type,
 				status: isServing,
 				code: isServing ? 200 : 5000,
+				// The server replied, whatever it said, so this failure is never the instance's own egress.
+				peerResponded: true,
 				message: isServing ? `gRPC service healthy (${grpcPayload.servingStatus})` : `gRPC service unhealthy (${grpcPayload.servingStatus})`,
 				responseTime,
 				payload: grpcPayload,

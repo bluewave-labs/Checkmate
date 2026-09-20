@@ -16,6 +16,7 @@ import type {
 } from "@/domain/checks/check.type.js";
 import type { MonitorType } from "@/domain/monitors/monitor.type.js";
 import { CheckModel, type CheckDocument } from "@/domain/checks/check.model.js";
+import { EXCLUDE_DEGRADED_EGRESS_MATCH } from "@/domain/checks/check.query.js";
 import mongoose from "mongoose";
 import { getDateFormat, getDateForRange } from "@/utils/dataUtils.js";
 import { ILogger } from "@/utils/logger.js";
@@ -179,6 +180,7 @@ class MongoChecksRepository implements IChecksRepository {
 			audits: mapAudits(doc.audits),
 			containers: doc.containers,
 			containerSummary: doc.containerSummary,
+			egressStatus: doc.egressStatus,
 			createdAt: toDateString(doc.createdAt),
 			updatedAt: toDateString(doc.updatedAt),
 		};
@@ -348,6 +350,7 @@ class MongoChecksRepository implements IChecksRepository {
 		const baseMatch = {
 			"metadata.teamId": new mongoose.Types.ObjectId(teamId),
 			createdAt: { $gte: getDateForRange(dateRange) },
+			...EXCLUDE_DEGRADED_EGRESS_MATCH,
 		};
 
 		const [totalResult, downResult] = await Promise.all([
@@ -393,6 +396,7 @@ class MongoChecksRepository implements IChecksRepository {
 				$match: {
 					"metadata.monitorId": { $in: objectIds },
 					createdAt: { $gte: windowStart },
+					...EXCLUDE_DEGRADED_EGRESS_MATCH,
 				},
 			},
 			{
@@ -473,6 +477,7 @@ class MongoChecksRepository implements IChecksRepository {
 		const matchStage = {
 			"metadata.monitorId": monitorObjectId,
 			createdAt: { $gte: startDate, $lte: endDate },
+			...EXCLUDE_DEGRADED_EGRESS_MATCH,
 		};
 		const [result] = await CheckModel.aggregate([
 			{ $match: matchStage },
@@ -638,6 +643,7 @@ class MongoChecksRepository implements IChecksRepository {
 		const matchStage = {
 			"metadata.monitorId": monitorObjectId,
 			createdAt: { $gte: startDate, $lte: endDate },
+			...EXCLUDE_DEGRADED_EGRESS_MATCH,
 		};
 
 		const [result] = await CheckModel.aggregate([

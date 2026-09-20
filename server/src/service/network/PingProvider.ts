@@ -58,6 +58,9 @@ export class PingProvider implements IStatusProvider<PingStatusPayload> {
 				type: monitor.type,
 				status: response.alive ?? false,
 				code: response.alive ? 200 : 5000,
+				// An echo reply is the host answering. Its absence is silence, which is indistinguishable
+				// from the instance having lost its egress, so the egress probe decides that case.
+				peerResponded: response.alive ?? false,
 				message: response.alive ? "Success" : "Ping failed",
 				responseTime,
 				payload: response,
