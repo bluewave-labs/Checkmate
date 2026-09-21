@@ -5,6 +5,7 @@ import Stack from "@mui/material/Stack";
 import type { SxProps, Theme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { formatMs } from "@/Utils/TimeUtils";
+import { mergeSx } from "@/Pages/StatusPage/Status/themes/shared/sx";
 
 import type {
 	BarKind,
@@ -42,17 +43,17 @@ export const ThemedHistogram = ({
 	return (
 		<Stack gap={statsGap}>
 			<Box
-				sx={[containerSx, { gridTemplateColumns: `repeat(${cells.length}, 1fr)` }]}
+				sx={mergeSx(containerSx, { gridTemplateColumns: `repeat(${cells.length}, 1fr)` })}
 			>
 				{cells.map((cell) => {
 					if (cell.barKind === "empty") {
 						return (
 							<Box
 								key={cell.key}
-								sx={[
+								sx={mergeSx(
 									barSx("empty", cell.heightPct),
 									!!cell.date && !!onCellClick ? { cursor: "pointer" } : undefined
-								]}
+								)}
 								onClick={() => {
 									if (cell.date && onCellClick) {
 										onCellClick(cell.date);
@@ -69,10 +70,10 @@ export const ThemedHistogram = ({
 							placement="top"
 						>
 							<Box
-								sx={[
+								sx={mergeSx(
 									barSx(cell.barKind, cell.heightPct, cell.severity),
 									!!cell.date && !!onCellClick ? { cursor: "pointer" } : undefined
-								]}
+								)}
 								aria-label={cell.ariaLabel}
 								onClick={() => {
 									if (cell.date && onCellClick) {

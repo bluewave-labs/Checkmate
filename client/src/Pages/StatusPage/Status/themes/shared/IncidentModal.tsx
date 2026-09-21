@@ -27,7 +27,13 @@ interface IncidentModalProps {
 	onClose: () => void;
 }
 
-export const IncidentModal = ({ url, monitorId, date, timezone, onClose }: IncidentModalProps) => {
+export const IncidentModal = ({
+	url,
+	monitorId,
+	date,
+	timezone,
+	onClose,
+}: IncidentModalProps) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
 	const open = Boolean(monitorId && date);

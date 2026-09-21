@@ -449,7 +449,7 @@ describe("StatusPageService", () => {
 		it("fetches and sanitizes incidents successfully", async () => {
 			const { service, repo, incidentsRepo } = createService();
 			(repo.findByUrl as jest.Mock).mockResolvedValue(publishedPage());
-			
+
 			const mockIncident = {
 				id: "inc-1",
 				monitorId: "mon-1",
@@ -466,7 +466,7 @@ describe("StatusPageService", () => {
 			(incidentsRepo.findByMonitorIdAndDate as jest.Mock).mockResolvedValue([mockIncident]);
 
 			const results = await service.getPublicMonitorIncidents("my-status-page", "mon-1", "2026-08-01");
-			
+
 			expect(incidentsRepo.findByMonitorIdAndDate).toHaveBeenCalled();
 			expect(results).toHaveLength(1);
 			expect(results[0]).toHaveProperty("id", "inc-1");

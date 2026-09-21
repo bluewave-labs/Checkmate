@@ -117,7 +117,6 @@ export class StatusPageService implements IStatusPageService {
 		createdAt: incident.createdAt,
 	});
 
-
 	createStatusPage = async (
 		userId: string,
 		teamId: string,
