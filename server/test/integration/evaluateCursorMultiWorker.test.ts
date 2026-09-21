@@ -8,6 +8,7 @@ import JobModel from "../../src/domain/jobs/job.model.ts";
 import { CheckService } from "../../src/domain/checks/check.service.ts";
 import { BufferService } from "../../src/service/bufferService.ts";
 import { DBQueueWorker } from "../../src/worker/worker.db-queue.ts";
+import { WorkerPipeline } from "../../src/worker/worker.pipeline.ts";
 import { InMemoryMonitorsRepository } from "../helpers/InMemoryMonitorsRepository.ts";
 import { createMockLogger } from "../helpers/createMockLogger.ts";
 import type { Job } from "../../src/domain/jobs/job.type.ts";
@@ -29,8 +30,9 @@ import type { ILogger } from "../../src/utils/logger.ts";
 //
 // The evaluate row now carries the ids of every stored check, pushed at ingest and pulled as each
 // is applied, so a late batch is always evaluated. This drives the real time-series query, the
-// real jobs collection, the real buffer flush and the real DBQueueWorker evaluate path against an
-// in-process mongod, so the handoff semantics under test are MongoDB's, not a mock's.
+// real jobs collection, the real buffer flush, the real pipeline ingest and evaluate stages and the
+// real DBQueueWorker job path against an in-process mongod, so the handoff semantics under test
+// are MongoDB's, not a mock's.
 
 let mongod: MongoMemoryServer;
 
@@ -105,16 +107,39 @@ describe("Evaluate cursor with more than one processing worker", () => {
 	let evaluator: DBQueueWorker;
 	let evaluatorJobsRepository: MongoJobsRepository;
 
-	// One BufferService per worker process, each flushing into the same collection and jobs table.
-	const createWorkerBuffer = (workerId: string) =>
-		new BufferService(
+	// One pipeline and BufferService per worker process, each flushing into the same collection and
+	// jobs table. Only stages 2 and 3 are exercised: the status service is stubbed to record which
+	// checks reached evaluation, and stage 1's network dependencies are never called.
+	const createWorkerPipeline = (workerId: string) => {
+		const jobsRepository = new MongoJobsRepository(workerId);
+		const bufferService = new BufferService(
 			logger,
-			checkService,
 			stubGeoChecksService as any,
 			stubDockerLogsService as any,
 			stubSettingsService as any,
-			new MongoJobsRepository(workerId)
+			(checks): Promise<void> => pipeline.ingestChecks(checks)
 		);
+		const pipeline = new WorkerPipeline({
+			logger,
+			monitorsRepository: monitorsRepository as any,
+			maintenanceWindowsRepository: { findByMonitorId: jest.fn<any>().mockResolvedValue([]) } as any,
+			checksRepository,
+			jobsRepository,
+			checkService,
+			networkService: { requestStatus: jest.fn<any>() } as any,
+			proxyResolver: { resolve: jest.fn<any>() } as any,
+			bufferService,
+			dockerLogsService: { buildDockerLogs: jest.fn<any>() } as any,
+			statusService: {
+				updateMonitorStatus: async (_status: MonitorStatusResponse, check: Check, monitor: Monitor) => {
+					evaluatedCheckIds.push(check.id);
+					return { monitor, statusChanged: false, prevStatus: monitor.status, code: 200, timestamp: 0 };
+				},
+			} as any,
+			dispatcher: { dispatch: jest.fn<any>().mockResolvedValue(undefined) } as any,
+		});
+		return { pipeline, bufferService, jobsRepository };
+	};
 
 	// Claim every due evaluate job and run it through the worker's real per-job path.
 	const runDueEvaluateJobs = async () => {
@@ -130,35 +155,28 @@ describe("Evaluate cursor with more than one processing worker", () => {
 		monitorsRepository.seed(makeMonitor());
 		checksRepository = new MongoChecksRepository(logger);
 		checkService = new CheckService(monitorsRepository, logger, checksRepository);
-		bufferA = createWorkerBuffer("worker-a");
-		bufferB = createWorkerBuffer("worker-b");
-
 		evaluatedCheckIds = [];
-		evaluatorJobsRepository = new MongoJobsRepository("worker-b");
+		const workerA = createWorkerPipeline("worker-a");
+		const workerB = createWorkerPipeline("worker-b");
+		bufferA = workerA.bufferService;
+		bufferB = workerB.bufferService;
+
+		const unused = jest.fn<any>().mockResolvedValue(undefined);
+		evaluatorJobsRepository = workerB.jobsRepository;
 		evaluator = new DBQueueWorker({
 			logger,
 			isDbConnected: () => true,
 			jobsRepository: evaluatorJobsRepository,
 			monitorsRepository,
-			checksRepository,
-			checkService,
 			bufferService: bufferB,
-			checkProducer: { produce: jest.fn<any>() },
-			checkEvaluator: {
-				evaluate: async (status: MonitorStatusResponse, check: Check, monitor: Monitor) => {
-					evaluatedCheckIds.push(check.id);
-					return {
-						monitor,
-						status,
-						check,
-						statusChange: { monitor, statusChanged: false, prevStatus: monitor.status, code: 200, timestamp: 0 },
-						decision: {},
-					};
-				},
-			} as any,
-			geoCheckPipeline: { run: jest.fn<any>() },
-			dispatcher: { dispatch: jest.fn<any>().mockResolvedValue(undefined) },
-			helper: {} as any,
+			handlers: {
+				check: unused,
+				evaluate: workerB.pipeline.handleEvaluate,
+				"geo-check": unused,
+				"cleanup-orphaned": unused,
+				"cleanup-retention": unused,
+				egress: unused,
+			},
 			queueWorkersRepository: {} as any,
 			queueMode: "worker",
 			queuePrimaryProcesses: true,

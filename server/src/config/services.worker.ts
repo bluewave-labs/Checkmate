@@ -17,12 +17,9 @@ import { INetworkService, NetworkService } from "@/service/networkService.js";
 import { IBufferService, BufferService } from "@/service/bufferService.js";
 import { IStatusService, StatusService } from "@/service/statusService.js";
 import { SecretsRotationService } from "@/service/encryption/secretsRotationService.js";
-import { IQueueWorker } from "@/worker/worker.interface.js";
-import { MonitorStatusPolicy } from "@/worker/worker.monitor-status-policy.js";
+import { IQueueWorker, JobHandlers } from "@/worker/worker.interface.js";
 import { WorkerHelper } from "@/worker/worker.helper.js";
-import { CheckProducer } from "@/worker/worker.check-producer.js";
-import { CheckEvaluator } from "@/worker/worker.check-evaluator.js";
-import { GeoChecksPipeline } from "@/worker/worker.check-pipeline.js";
+import { GeoChecksPipeline } from "@/worker/worker.geo-pipeline.js";
 import { NotificationReactor } from "@/worker/reactors/reactor.notification.js";
 import { IncidentReactor } from "@/worker/reactors/reactor.incident.js";
 import { ReactorDispatcher } from "@/worker/reactors/reactor.dispatcher.js";
@@ -42,6 +39,7 @@ import { GrpcProvider } from "@/service/network/GrpcProvider.js";
 import { WebSocketProvider } from "@/service/network/WebSocketProvider.js";
 import { DNSProvider } from "@/service/network/DNSProvider.js";
 import { AppError } from "@/utils/AppError.js";
+import { WorkerPipeline } from "@/worker/worker.pipeline.js";
 export interface WorkerServices {
 	worker: IQueueWorker;
 	networkService: INetworkService;
@@ -103,37 +101,33 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	]);
 
 	const proxyResolver = new ProxyResolver(proxiesRepository, settingsService, logger);
-	const bufferService = new BufferService(logger, checkService, geoChecksService, dockerLogsService, settingsService, jobsRepository);
+	const bufferService = new BufferService(logger, geoChecksService, dockerLogsService, settingsService, (checks): Promise<void> =>
+		pipeline.ingestChecks(checks)
+	);
 	const statusService = new StatusService(logger, monitorsRepository, monitorStatsRepository);
-	const monitorStatusPolicy = new MonitorStatusPolicy();
 	const egressService = new EgressService(settingsService, egressStateRepository, jobsRepository, networkService, proxyResolver, logger);
-
-	// ***********************
-	// Reactors and dispatcher
-	// Handles notifications and incidents
-	// ***********************
 
 	const notificationReactor = new NotificationReactor(notificationsService);
 	const incidentReactor = new IncidentReactor(incidentService);
 	const reactorDispatcher = new ReactorDispatcher(logger, [notificationReactor, incidentReactor]);
 
-	// ***********************
-	// Check producer/evaluator
-	// Handles creating and evaluatiog checks
-	// ***********************
-	const checkProducer = new CheckProducer(
+	const pipeline = new WorkerPipeline({
+		logger,
 		monitorsRepository,
 		maintenanceWindowsRepository,
+		checksRepository,
+		jobsRepository,
 		checkService,
 		networkService,
 		proxyResolver,
 		bufferService,
 		dockerLogsService,
 		egressService,
-		logger
-	);
-	const checkEvaluator = new CheckEvaluator(statusService, monitorStatusPolicy, logger);
-	const geoCheckPipeline = new GeoChecksPipeline(maintenanceWindowsRepository, geoChecksService, bufferService, logger);
+		statusService,
+		dispatcher: reactorDispatcher,
+	});
+
+	const geoCheckPipeline = new GeoChecksPipeline(monitorsRepository, maintenanceWindowsRepository, geoChecksService, bufferService, logger);
 
 	// ***********************
 	// Worker
@@ -154,19 +148,22 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 		egressService
 	);
 
+	const handlers: JobHandlers = {
+		check: pipeline.handleCheck,
+		evaluate: pipeline.handleEvaluate,
+		"geo-check": geoCheckPipeline.handle,
+		"cleanup-orphaned": workerHelper.getCleanupOrphanedJob(),
+		"cleanup-retention": workerHelper.getCleanupRetentionJob(),
+		egress: workerHelper.getEgressRecoveryJob(),
+	};
+
 	const worker = await DBQueueWorker.create({
 		logger,
 		isDbConnected: () => mongoose.connection.readyState === 1,
 		jobsRepository,
 		monitorsRepository,
-		checksRepository,
-		checkService,
 		bufferService,
-		checkProducer,
-		checkEvaluator,
-		geoCheckPipeline,
-		dispatcher: reactorDispatcher,
-		helper: workerHelper,
+		handlers,
 		queueWorkersRepository,
 		queueMode: envSettings.queueMode,
 		queuePrimaryProcesses: envSettings.queuePrimaryProcesses,
