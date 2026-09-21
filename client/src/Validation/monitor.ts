@@ -267,21 +267,12 @@ export const monitorSchema = monitorSchemaUnion.superRefine((data, ctx) => {
 		});
 	}
 
-	if (data.type === "docker" && isCaptureDockerUrl(data.url)) {
-		if (!data.secret.trim()) {
-			ctx.addIssue({
-				code: "custom",
-				path: ["secret"],
-				message: "Capture API secret is required",
-			});
-		}
-		if (data.dockerLogsEnabled) {
-			ctx.addIssue({
-				code: "custom",
-				path: ["dockerLogsEnabled"],
-				message: "Capture-backed Docker monitors do not support container logs",
-			});
-		}
+	if (data.type === "docker" && isCaptureDockerUrl(data.url) && !data.secret.trim()) {
+		ctx.addIssue({
+			code: "custom",
+			path: ["secret"],
+			message: "Capture API secret is required",
+		});
 	}
 
 	if (data.type === "docker" && isDockerTlsUrl(data.url)) {

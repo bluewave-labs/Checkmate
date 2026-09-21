@@ -351,6 +351,7 @@ const CreateMonitorPage = () => {
 
 	const watchedType = watch("type") as MonitorType;
 	const watchedUrl = watch("url") as string;
+	const isCaptureDocker = watchedType === "docker" && isCaptureDockerUrl(watchedUrl);
 	const watchedMethod = watch("method") as HttpMethod | undefined;
 	const watchedProxyMode = watch("proxyMode") as ProxyMode | undefined;
 	const watchedUseAdvancedMatching = watch("useAdvancedMatching") as boolean;
@@ -380,6 +381,13 @@ const CreateMonitorPage = () => {
 			clearErrors();
 		}
 	}, [watchedType, showTypeSelector, reset, clearErrors]);
+
+	// The logs switch is hidden for Capture hosts, so a value left over from a socket host must not be submitted.
+	useEffect(() => {
+		if (isCaptureDocker) {
+			setValue("dockerLogsEnabled", false);
+		}
+	}, [isCaptureDocker, setValue]);
 
 	const generalSettingsConfig = useMemo(
 		() => getGeneralSettingsConfig(watchedType, t),
@@ -711,8 +719,7 @@ const CreateMonitorPage = () => {
 								)}
 
 								{/* Capture API secret - used by hardware and Capture-backed Docker monitors */}
-								{(generalSettingsConfig.showSecret ||
-									(watchedType === "docker" && isCaptureDockerUrl(watchedUrl))) && (
+								{(generalSettingsConfig.showSecret || isCaptureDocker) && (
 									<FormTextField
 										name="secret"
 										fieldLabel={t("pages.createMonitor.form.general.option.secret.label")}
@@ -721,7 +728,7 @@ const CreateMonitorPage = () => {
 										)}
 									/>
 								)}
-								{watchedType === "docker" && isCaptureDockerUrl(watchedUrl) && (
+								{isCaptureDocker && (
 									<FormSwitchField
 										name="ignoreTlsErrors"
 										label={t("pages.createMonitor.form.ignoreTls.option.tls.label")}
@@ -954,7 +961,7 @@ const CreateMonitorPage = () => {
 					/>
 				)}
 
-				{showStep(1) && watchedType === "docker" && !isCaptureDockerUrl(watchedUrl) && (
+				{showStep(1) && watchedType === "docker" && !isCaptureDocker && (
 					<ConfigBox
 						title={t("pages.createMonitor.form.dockerLogs.title")}
 						subtitle={t("pages.createMonitor.form.dockerLogs.description")}

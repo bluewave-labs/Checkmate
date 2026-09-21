@@ -151,14 +151,16 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 
 	private toCaptureContainer(container: CaptureDockerContainer): DockerContainerInfo {
 		const startedAt = container.started_at && container.started_at > 0 ? new Date(container.started_at * 1000).toISOString() : undefined;
-		const stats = container.stats
-			? {
-					cpuPct: container.stats.cpu_percent / 100,
-					memoryUsedBytes: container.stats.memory_usage,
-					memoryLimitBytes: container.stats.memory_limit,
-					memoryPct: container.stats.memory_percent / 100,
-				}
-			: {};
+		// Capture reports zeroed stats for stopped containers; only running ones carry real metrics, matching toContainerInfo.
+		const stats =
+			container.status === "running" && container.stats
+				? {
+						cpuPct: container.stats.cpu_percent / 100,
+						memoryUsedBytes: container.stats.memory_usage,
+						memoryLimitBytes: container.stats.memory_limit,
+						memoryPct: container.stats.memory_percent / 100,
+					}
+				: {};
 		return {
 			id: container.container_id,
 			name: container.container_name || container.container_id.slice(0, 12),
@@ -177,6 +179,14 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 		};
 	}
 
+	private isCapturePayload = (payload: unknown): payload is CaptureDockerStatusPayload => {
+		if (!payload || typeof payload !== "object") return false;
+		const { data, errors } = payload as Partial<CaptureDockerStatusPayload>;
+		if (!Array.isArray(data) && data !== null) return false;
+		if (errors === undefined || errors === null) return true;
+		return Array.isArray(errors) && errors.every((error) => Array.isArray(error?.metric));
+	};
+
 	private handleCapture = async (monitor: Monitor, ctx?: CheckContext): Promise<MonitorStatusResponse<DockerStatusPayload>> => {
 		const captureUrl = new URL(monitor.url.trim());
 		captureUrl.searchParams.set("all", "true");
@@ -184,7 +194,7 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 		if (!response.status) return this.failed(monitor, response.code, response.message, response.responseTime ?? 0);
 
 		const payload = response.payload;
-		if (!payload || typeof payload === "string" || (!Array.isArray(payload.data) && payload.data !== null)) {
+		if (!this.isCapturePayload(payload)) {
 			this.logger.warn({
 				message: "Capture returned an invalid Docker metrics payload",
 				service: SERVICE_NAME,

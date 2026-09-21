@@ -10,6 +10,7 @@ import type { DockerContainerInfo } from "@/Types/Check";
 
 // Utils
 import { formatDuration } from "@/Utils/TimeUtils";
+import { PLACEHOLDER } from "@/Utils/FormatUtils";
 import { getDockerPalette } from "@/Utils/MonitorUtils";
 
 export const DockerContainerStatusBoxes = ({
@@ -40,11 +41,11 @@ export const DockerContainerStatusBoxes = ({
 			/>
 			<StatBox
 				title={t("common.labels.uptime")}
-				subtitle={runningFor === undefined ? "—" : formatDuration(runningFor)}
+				subtitle={runningFor === undefined ? PLACEHOLDER : formatDuration(runningFor)}
 			/>
 			<StatBox
 				title={t("common.labels.restarts")}
-				subtitle={restartCount === undefined ? "—" : String(restartCount)}
+				subtitle={restartCount === undefined ? PLACEHOLDER : String(restartCount)}
 			/>
 			<StatBox
 				title={t("common.labels.health")}

@@ -134,15 +134,11 @@ const refineDockerUrl = (data: { type?: string; url?: string }, ctx: z.Refinemen
 	}
 };
 
-const refineCaptureDocker =
-	(mode: "create" | "edit") => (data: { type?: string; url?: string; secret?: string; dockerLogsEnabled?: boolean }, ctx: z.RefinementCtx) => {
-		if (data.type !== "docker" || !isCaptureDockerUrl(data.url)) return;
-		const secretMissing = mode === "create" ? !data.secret?.trim() : data.secret !== undefined && !data.secret.trim();
-		if (secretMissing) ctx.addIssue({ code: "custom", path: ["secret"], message: "Capture API secret is required" });
-		if (data.dockerLogsEnabled) {
-			ctx.addIssue({ code: "custom", path: ["dockerLogsEnabled"], message: "Capture-backed Docker monitors do not support container logs" });
-		}
-	};
+// Edits are checked in the monitor service against the stored secret, since the body may omit either the url or the secret.
+const refineCaptureSecret = (data: { type?: string; url?: string; secret?: string }, ctx: z.RefinementCtx) => {
+	if (data.type !== "docker" || !isCaptureDockerUrl(data.url)) return;
+	if (!data.secret?.trim()) ctx.addIssue({ code: "custom", path: ["secret"], message: "Capture API secret is required" });
+};
 
 type DockerTlsFields = {
 	type?: string;
@@ -236,7 +232,7 @@ export const createMonitorBodyValidation = z
 	.superRefine(refineRegexPattern)
 	.superRefine(refineProxySelection)
 	.superRefine(refineDockerUrl)
-	.superRefine(refineCaptureDocker("create"))
+	.superRefine(refineCaptureSecret)
 	.superRefine(refineDockerTls("create"));
 
 export const editMonitorBodyValidation = z
@@ -286,7 +282,6 @@ export const editMonitorBodyValidation = z
 	.superRefine(refineRegexPattern)
 	.superRefine(refineProxySelection)
 	.superRefine(refineDockerUrl)
-	.superRefine(refineCaptureDocker("edit"))
 	.superRefine(refineDockerTls("edit"));
 
 export const pauseMonitorParamValidation = z.object({
@@ -366,7 +361,7 @@ const importedMonitorSchema = z
 	.superRefine(refineRegexPattern)
 	.superRefine(refineProxySelection)
 	.superRefine(refineDockerUrl)
-	.superRefine(refineCaptureDocker("create"));
+	.superRefine(refineCaptureSecret);
 
 export const importMonitorsBodyValidation = z.object({
 	monitors: z.array(importedMonitorSchema).min(1, "At least one monitor is required"),

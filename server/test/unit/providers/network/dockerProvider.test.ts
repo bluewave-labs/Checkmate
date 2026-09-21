@@ -289,6 +289,46 @@ describe("DockerProvider", () => {
 				message: "Capture returned an invalid Docker metrics payload",
 			});
 		});
+
+		it("rejects a malformed errors field as an invalid payload instead of throwing", async () => {
+			const httpHandle = jest.fn();
+			const { provider } = setup({ httpHandle });
+			const monitor = makeMonitor({ url: "http://capture:59232/api/v1/metrics/docker", secret: "secret" });
+
+			for (const errors of [{}, [{ err: "no metric" }], [{ metric: "docker.client", err: "x" }]]) {
+				httpHandle.mockResolvedValueOnce(makeCaptureResponse({ payload: { data: [], errors } }));
+				const result = await provider.handle(monitor);
+				expect(result).toMatchObject({
+					status: false,
+					code: NETWORK_ERROR,
+					message: "Capture returned an invalid Docker metrics payload",
+				});
+			}
+		});
+
+		it("records no stats for containers that are not running", async () => {
+			const response = makeCaptureResponse({
+				payload: {
+					data: [
+						makeCaptureContainer({
+							status: "exited",
+							running: false,
+							stats: { cpu_percent: 0, memory_usage: 0, memory_limit: 0, memory_percent: 0 },
+						}),
+					],
+					errors: [],
+				},
+			});
+			const { provider } = setup({ httpHandle: jest.fn().mockResolvedValue(response) });
+
+			const result = await provider.handle(makeMonitor({ url: "http://capture:59232/api/v1/metrics/docker", secret: "secret" }));
+
+			const [container] = result.payload!.containers;
+			expect(container.state).toBe("exited");
+			expect(container).not.toHaveProperty("cpuPct");
+			expect(container).not.toHaveProperty("memoryPct");
+			expect(container).not.toHaveProperty("memoryUsedBytes");
+		});
 	});
 
 	// ── TLS host urls ────────────────────────────────────────────────────

@@ -47,3 +47,6 @@ export const getPercentage = (value: number, total: number) => {
 	if (!value || !total) return 0;
 	return (value / total) * 100;
 };
+
+// Shown wherever a value is not available for the current data source.
+export const PLACEHOLDER = "—";

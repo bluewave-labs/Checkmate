@@ -13,7 +13,7 @@ import type { Theme } from "@mui/material";
 import type { TFunction } from "i18next";
 import type { DockerContainerStats } from "@/Types/Monitor";
 import { LAYOUT } from "@/Utils/Theme/constants";
-import { formatPercentage } from "@/Utils/FormatUtils";
+import { formatPercentage, PLACEHOLDER } from "@/Utils/FormatUtils";
 import prettyBytes from "pretty-bytes";
 import { BaseBox } from "@/Components/design-elements";
 import { dedupeDockerPorts, getDockerMountLabel } from "@/Utils/MonitorUtils";
@@ -88,7 +88,7 @@ export const TabOverview = ({
 						Ports
 					</Typography>
 					<Stack>
-						{dedupedPorts.length === 0 && <Typography>—</Typography>}
+						{dedupedPorts.length === 0 && <Typography>{PLACEHOLDER}</Typography>}
 						{dedupedPorts.map((port) => {
 							const containerPort = `${port.privatePort}/${port.protocol}`;
 							const label =
@@ -117,7 +117,7 @@ export const TabOverview = ({
 						Volumes
 					</Typography>
 					<Stack>
-						{!mounts?.length && <Typography>—</Typography>}
+						{!mounts?.length && <Typography>{PLACEHOLDER}</Typography>}
 						{mounts?.map((mount) => {
 							return (
 								<Typography key={`${mount.source}/${mount.destination}`}>
