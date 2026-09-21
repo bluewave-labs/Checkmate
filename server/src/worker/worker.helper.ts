@@ -79,7 +79,7 @@ export class WorkerHelper implements IWorkerHelper {
 	}
 
 	// Runs while instance egress is degraded; the service removes the row once egress is back.
-	// Errors propagate so the queue records the failure and retries with its usual backoff.
+	// Errors from the probe propagate so the queue records the failure and retries with its usual backoff.
 	getEgressRecoveryJob = () => {
 		return async (job: Job) => {
 			await this.egressService.checkRecovery(job);

@@ -5,6 +5,7 @@ import type { IJobsRepository } from "@/domain/jobs/job.repository.interface.js"
 import { jobId, type Job, type JobSeed } from "@/domain/jobs/job.type.js";
 import type { INetworkService } from "@/service/networkService.js";
 import type { IProxyResolver } from "@/service/network/ProxyResolver.js";
+import type { INotificationsService } from "@/domain/notifications/notification.service.js";
 import type { ILogger } from "@/utils/logger.js";
 import {
 	EGRESS_RECOVERY_POLL_SECONDS,
@@ -56,6 +57,7 @@ export class EgressService implements IEgressService {
 		private jobsRepository: IJobsRepository,
 		private networkService: INetworkService,
 		private proxyResolver: IProxyResolver,
+		private notificationsService: INotificationsService,
 		private logger: ILogger
 	) {}
 
@@ -242,8 +244,9 @@ export class EgressService implements IEgressService {
 		await this.jobsRepository.deleteGlobalJobIfUnchanged(RECOVERY_JOB_TYPE, job.nextScheduledAt);
 	};
 
-	// Runs on the queue at the configured interval while degraded. Errors propagate so the queue records
-	// the failure and retries with its usual backoff.
+	// Runs on the queue at the configured interval while degraded. Errors from the probe and the transition
+	// propagate so the queue records the failure and retries with its usual backoff. The notification is
+	// best effort once the transition is recorded: see the end of the method.
 	checkRecovery = async (job: Job): Promise<void> => {
 		const settings = await this.settingsService.getCachedDBSettings();
 		const state = await this.egressStateRepository.findSingleton();
@@ -264,7 +267,7 @@ export class EgressService implements IEgressService {
 		const recovered = await this.egressStateRepository.markRecovered(results, now);
 		await this.releaseRecoveryJob(job);
 		if (!recovered) {
-			// Another process performed the transition.
+			// Another process performed the transition and owns the notification.
 			return;
 		}
 
@@ -274,5 +277,19 @@ export class EgressService implements IEgressService {
 			method: "checkRecovery",
 			details: { results },
 		});
+		// The job row is already gone and the state already reads ok, so a failure here has nothing to retry
+		// against: a rerun would release and return without sending. Logged rather than thrown, so it does not
+		// surface as a generic queue failure for a job that has completed.
+		const notificationIds = settings.egressNotifications ?? [];
+		try {
+			await this.notificationsService.sendEgressRecoveredNotification(recovered, notificationIds);
+		} catch (error: unknown) {
+			this.logger.error({
+				message: `Egress recovered but the notification could not be sent: ${error instanceof Error ? error.message : String(error)}`,
+				service: SERVICE_NAME,
+				method: "checkRecovery",
+				details: { notificationIds },
+			});
+		}
 	};
 }

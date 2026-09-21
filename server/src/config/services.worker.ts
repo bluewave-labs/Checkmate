@@ -106,7 +106,15 @@ export const buildWorker = async (shared: SharedServices, envSettings: EnvConfig
 	const bufferService = new BufferService(logger, checkService, geoChecksService, dockerLogsService, settingsService, jobsRepository);
 	const statusService = new StatusService(logger, monitorsRepository, monitorStatsRepository);
 	const monitorStatusPolicy = new MonitorStatusPolicy();
-	const egressService = new EgressService(settingsService, egressStateRepository, jobsRepository, networkService, proxyResolver, logger);
+	const egressService = new EgressService(
+		settingsService,
+		egressStateRepository,
+		jobsRepository,
+		networkService,
+		proxyResolver,
+		notificationsService,
+		logger
+	);
 
 	// ***********************
 	// Reactors and dispatcher
