@@ -7,6 +7,9 @@ import IconButton from "@mui/material/IconButton";
 import { X as XIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useGet } from "@/Hooks/UseApi";
+import { useTheme } from "@mui/material";
+import { SPACING } from "@/Utils/Theme/constants";
+import { formatDateWithTz } from "@/Utils/TimeUtils";
 
 interface Incident {
 	id: string;
@@ -20,10 +23,12 @@ interface IncidentModalProps {
 	url: string;
 	monitorId: string | null;
 	date: string | null;
+	timezone: string;
 	onClose: () => void;
 }
 
-export const IncidentModal = ({ url, monitorId, date, onClose }: IncidentModalProps) => {
+export const IncidentModal = ({ url, monitorId, date, timezone, onClose }: IncidentModalProps) => {
+	const theme = useTheme();
 	const { t } = useTranslation();
 	const open = Boolean(monitorId && date);
 
@@ -43,7 +48,7 @@ export const IncidentModal = ({ url, monitorId, date, onClose }: IncidentModalPr
 			<DialogTitle
 				sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
 			>
-				{t("pages.statusPages.monitorsList.incidents.modalTitle", { date })}
+				{t("pages.statusPages.monitorsList.incidents.modalTitle", { date })} ({timezone})
 				<IconButton
 					onClick={onClose}
 					size="small"
@@ -54,21 +59,21 @@ export const IncidentModal = ({ url, monitorId, date, onClose }: IncidentModalPr
 			</DialogTitle>
 			<DialogContent>
 				{isLoading ? (
-					<Typography mt={1}>
+					<Typography mt={SPACING.SM}>
 						{t("pages.statusPages.monitorsList.incidents.loading")}
 					</Typography>
 				) : data?.incidents && data.incidents.length > 0 ? (
 					<Stack
-						gap={2}
-						mt={1}
+						gap={SPACING.LG}
+						mt={SPACING.SM}
 					>
 						{data.incidents.map((incident) => (
 							<Stack
 								key={incident.id}
-								p={2}
+								p={SPACING.LG}
 								border={1}
 								borderColor="divider"
-								borderRadius={1}
+								borderRadius={theme.shape.borderRadius}
 							>
 								<Typography
 									variant="subtitle2"
@@ -79,18 +84,18 @@ export const IncidentModal = ({ url, monitorId, date, onClose }: IncidentModalPr
 								</Typography>
 								<Typography
 									variant="body2"
-									color="text.secondary"
+									color={theme.palette.text.secondary}
 								>
-									{new Date(incident.startTime).toLocaleTimeString()} -{" "}
+									{formatDateWithTz(incident.startTime, "h:mm A", timezone)} -{" "}
 									{incident.endTime
-										? new Date(incident.endTime).toLocaleTimeString()
+										? formatDateWithTz(incident.endTime, "h:mm A", timezone)
 										: t("pages.statusPages.monitorsList.incidents.ongoing")}
 								</Typography>
 							</Stack>
 						))}
 					</Stack>
 				) : (
-					<Typography mt={1}>
+					<Typography mt={SPACING.SM}>
 						{t("pages.statusPages.monitorsList.incidents.noIncidents")}
 					</Typography>
 				)}

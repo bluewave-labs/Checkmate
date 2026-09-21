@@ -348,6 +348,7 @@ export const BaseStatusPage = ({
 				url={statusPage.url}
 				monitorId={selectedMonitorId}
 				date={selectedDate}
+				timezone={bucketTimezone}
 				onClose={() => {
 					setSelectedMonitorId(null);
 					setSelectedDate(null);

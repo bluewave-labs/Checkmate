@@ -431,6 +431,51 @@ describe("StatusPageService", () => {
 		});
 	});
 
+	describe("getPublicMonitorIncidents", () => {
+		const publishedPage = () => makeStatusPage({ isPublished: true, url: "my-status-page", monitors: ["mon-1"], teamId: "team-1" });
+
+		it("rejects an unpublished page (403)", async () => {
+			const { service, repo } = createService();
+			(repo.findByUrl as jest.Mock).mockResolvedValue(makeStatusPage({ isPublished: false }));
+			await expect(service.getPublicMonitorIncidents("my-status-page", "mon-1", "2026-08-01")).rejects.toMatchObject({ status: 403 });
+		});
+
+		it("rejects if monitor is not on the page (404)", async () => {
+			const { service, repo } = createService();
+			(repo.findByUrl as jest.Mock).mockResolvedValue(publishedPage());
+			await expect(service.getPublicMonitorIncidents("my-status-page", "mon-99", "2026-08-01")).rejects.toMatchObject({ status: 404 });
+		});
+
+		it("fetches and sanitizes incidents successfully", async () => {
+			const { service, repo, incidentsRepo } = createService();
+			(repo.findByUrl as jest.Mock).mockResolvedValue(publishedPage());
+			
+			const mockIncident = {
+				id: "inc-1",
+				monitorId: "mon-1",
+				teamId: "team-1",
+				resolvedBy: "user-99",
+				status: false,
+				startTime: "2026-08-01T10:00:00Z",
+				endTime: "2026-08-01T11:00:00Z",
+				resolutionType: "manual" as const,
+				message: "Test incident",
+				createdAt: "2026-08-01T10:00:00Z",
+				updatedAt: "2026-08-01T10:00:00Z",
+			};
+			(incidentsRepo.findByMonitorIdAndDate as jest.Mock).mockResolvedValue([mockIncident]);
+
+			const results = await service.getPublicMonitorIncidents("my-status-page", "mon-1", "2026-08-01");
+			
+			expect(incidentsRepo.findByMonitorIdAndDate).toHaveBeenCalled();
+			expect(results).toHaveLength(1);
+			expect(results[0]).toHaveProperty("id", "inc-1");
+			expect(results[0]).not.toHaveProperty("teamId");
+			expect(results[0]).not.toHaveProperty("resolvedBy");
+			expect(results[0]).not.toHaveProperty("updatedAt");
+		});
+	});
+
 	describe("deleteStatusPage", () => {
 		it("delegates to repository and returns deleted page", async () => {
 			const { service, repo } = createService(true);

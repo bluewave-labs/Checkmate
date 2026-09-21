@@ -1,5 +1,5 @@
 import { type IIncidentsRepository } from "@/domain/incidents/incident.repository.interface.js";
-import type { Incident } from "@/domain/incidents/incident.type.js";
+import type { Incident, PublicIncident } from "@/domain/incidents/incident.type.js";
 import { type IStatusPagesRepository } from "@/domain/status-pages/status-page-repository.interface.js";
 import { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
 import { IMonitorsRepository } from "@/domain/monitors/monitor.repository.interface.js";
@@ -29,7 +29,7 @@ export interface IStatusPageService {
 	getStatusPageByCustomDomain(customDomain: string): Promise<StatusPage>;
 	getStatusPagesByTeamId(teamId: string): Promise<StatusPage[]>;
 	getPublicStatusPagePayload(statusPage: StatusPage, requesterTeamId: string | undefined, range: StatusPageRange): Promise<PublicStatusPagePayload>;
-	getPublicMonitorIncidents(url: string, monitorId: string, date: string): Promise<Incident[]>;
+	getPublicMonitorIncidents(url: string, monitorId: string, date: string): Promise<PublicIncident[]>;
 	updateStatusPage(id: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage>;
 
 	deleteStatusPage(statusPageId: string, teamId: string): Promise<StatusPage>;
@@ -105,6 +105,19 @@ export class StatusPageService implements IStatusPageService {
 		return base;
 	};
 
+	private toPublicIncident = (incident: Incident): PublicIncident => ({
+		id: incident.id,
+		monitorId: incident.monitorId,
+		status: incident.status,
+		startTime: incident.startTime,
+		endTime: incident.endTime,
+		resolutionType: incident.resolutionType,
+		message: incident.message ?? null,
+		statusCode: incident.statusCode ?? null,
+		createdAt: incident.createdAt,
+	});
+
+
 	createStatusPage = async (
 		userId: string,
 		teamId: string,
@@ -177,7 +190,7 @@ export class StatusPageService implements IStatusPageService {
 		};
 	};
 
-	getPublicMonitorIncidents = async (url: string, monitorId: string, date: string): Promise<Incident[]> => {
+	getPublicMonitorIncidents = async (url: string, monitorId: string, date: string): Promise<PublicIncident[]> => {
 		const statusPage = await this.getStatusPageByUrl(url);
 
 		// Ensure the status page is public
@@ -194,7 +207,8 @@ export class StatusPageService implements IStatusPageService {
 		const dateStart = dayjs.tz(date, tz).startOf("day").toDate();
 		const dateEnd = dayjs.tz(date, tz).endOf("day").toDate();
 
-		return this.incidentsRepository.findByMonitorIdAndDate(monitorId, statusPage.teamId, dateStart, dateEnd);
+		const incidents = await this.incidentsRepository.findByMonitorIdAndDate(monitorId, statusPage.teamId, dateStart, dateEnd);
+		return incidents.map(this.toPublicIncident);
 	};
 
 	updateStatusPage = async (id: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage> => {

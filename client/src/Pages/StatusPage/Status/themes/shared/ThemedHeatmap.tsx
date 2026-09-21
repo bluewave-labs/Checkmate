@@ -2,7 +2,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
 import type { SxProps, Theme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import { mergeSx } from "@/Utils/mergeSx";
+
 import type {
 	ChartCell,
 	HeatCellKind,
@@ -20,7 +20,7 @@ export const ThemedHeatmap = ({ cells, containerSx, cellSx, onCellClick }: Props
 
 	return (
 		<Box
-			sx={mergeSx(containerSx, { gridTemplateColumns: `repeat(${cells.length}, 1fr)` })}
+			sx={[containerSx, { gridTemplateColumns: `repeat(${cells.length}, 1fr)` }]}
 			role="img"
 			aria-label={t("pages.statusPages.monitorsList.chart.heatmapAria")}
 		>
@@ -29,10 +29,10 @@ export const ThemedHeatmap = ({ cells, containerSx, cellSx, onCellClick }: Props
 					return (
 						<Box
 							key={cell.key}
-							sx={mergeSx(
+							sx={[
 								cellSx("empty"),
 								!!cell.date && !!onCellClick ? { cursor: "pointer" } : undefined
-							)}
+							]}
 							onClick={() => {
 								if (cell.date && onCellClick) {
 									onCellClick(cell.date);
@@ -49,10 +49,10 @@ export const ThemedHeatmap = ({ cells, containerSx, cellSx, onCellClick }: Props
 						placement="top"
 					>
 						<Box
-							sx={mergeSx(
+							sx={[
 								cellSx(cell.heatKind, cell.severity),
 								!!cell.date && !!onCellClick ? { cursor: "pointer" } : undefined
-							)}
+							]}
 							aria-label={cell.ariaLabel}
 							onClick={() => {
 								if (cell.date && onCellClick) {
