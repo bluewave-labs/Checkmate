@@ -144,7 +144,7 @@ The **Docker host** field accepts three forms:
 | Remote daemon | `tcp://docker.example.com:2376` | Always uses mutual TLS; the port defaults to `2376`. Unencrypted daemons on `2375` are not supported. |
 | Capture agent | `https://capture.example.com/api/v1/metrics/docker` | Enter the full endpoint ending in `/metrics/docker` and its authorization secret. Checkmate requests `all=true` so stopped containers are included. |
 
-Capture-backed monitors normalize Capture's container state, health, CPU, memory, start time and exposed ports into the same Docker pages. Capture does not currently provide restart counts, mounts, published host-port bindings or container logs, so those values are shown as unavailable.
+Capture-backed monitors normalize Capture's container state, health, CPU, memory, start time and exposed ports into the same Docker pages. Capture does not currently provide restart counts, mounts, published host-port bindings or container logs, so those values are shown as unavailable. Capture also reports a container whose health check is still starting as healthy, so the `starting` health state only appears on direct monitors, and stopped containers carry no CPU or memory metrics.
 
 **Monitoring the local socket.** The reference Compose file does not mount the socket, so add it and grant the container the host's `docker` group. The image runs as an unprivileged user and cannot read the socket otherwise. Find the group id with `stat -c %g /var/run/docker.sock`, then:
 

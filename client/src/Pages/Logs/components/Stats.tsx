@@ -6,12 +6,12 @@ import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import type { Diagnostics } from "@/Types/Diagnostics";
 import { formatDuration, formatMs } from "@/Utils/TimeUtils";
+import { PLACEHOLDER } from "@/Utils/FormatUtils";
 
 interface StatsProps {
 	diagnostics: Diagnostics | null;
 }
 
-const PLACEHOLDER = "—";
 
 export const Stats = ({ diagnostics }: StatsProps) => {
 	const { t } = useTranslation();

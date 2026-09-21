@@ -34,7 +34,7 @@ import { IJobScheduler } from "@/worker/worker.interface.js";
 import { DateRange } from "@/types/query.js";
 import { IDockerLogsRepository } from "@/domain/docker/docker-log.repository.interface.js";
 import { IEncryptionService } from "@/service/encryption/encryptionService.js";
-import { isDockerTlsUrl } from "@/utils/dockerHost.js";
+import { isCaptureDockerUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
 
 const SERVICE_NAME = "MonitorService";
 
@@ -194,6 +194,9 @@ export class MonitorService implements IMonitorService {
 
 		// Encrypt docker TLS keys
 		this.encryptDockerTls(body, "create");
+		if (body.type === "docker" && isCaptureDockerUrl(body.url)) {
+			body.dockerLogsEnabled = false;
+		}
 
 		const monitor = await this.monitorsRepository.create(body, teamId, userId);
 		if (!monitor) {
@@ -561,6 +564,7 @@ export class MonitorService implements IMonitorService {
 				});
 			}
 		}
+		await this.normalizeCaptureDocker(body, monitorId, teamId);
 		const editedMonitor = await this.monitorsRepository.updateById(monitorId, teamId, body, { unsetProxyId });
 		await this.scheduler.updateJob(editedMonitor);
 		return editedMonitor;
@@ -747,6 +751,26 @@ export class MonitorService implements IMonitorService {
 		const createdMonitors = await this.createMonitors(cleanedMonitors);
 
 		return { imported: createdMonitors!.length, errors };
+	};
+
+	// Capture-backed Docker monitors authenticate with the API secret and never collect logs; socket and TLS hosts have no secret.
+	private normalizeCaptureDocker = async (body: Partial<Monitor>, monitorId: string, teamId: string) => {
+		if (body.type !== "docker") return;
+
+		if (body.url !== undefined && !isCaptureDockerUrl(body.url)) {
+			body.secret = "";
+			return;
+		}
+		if (body.url === undefined && body.secret === undefined) return;
+
+		const stored = await this.monitorsRepository.findById(monitorId, teamId);
+		if (body.url === undefined && !isCaptureDockerUrl(stored.url)) return;
+
+		body.dockerLogsEnabled = false;
+		const secret = body.secret === undefined ? stored.secret : body.secret.trim();
+		if (!secret) {
+			throw new AppError({ message: "Capture API secret is required", status: 422, service: SERVICE_NAME, method: "editMonitor" });
+		}
 	};
 
 	private encryptDockerTls = (body: Partial<Monitor>, mode: "create" | "edit") => {
