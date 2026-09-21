@@ -3,18 +3,15 @@ import type { GeoCheck } from "@/domain/geo-checks/geo-check.type.js";
 import type { IGeoChecksService } from "../domain/geo-checks/geo-check.service.js";
 import type { ILogger } from "@/utils/logger.js";
 import type { ISettingsService } from "@/domain/app-settings/app-settings.service.js";
-import type { IJobsRepository } from "@/domain/jobs/job.repository.interface.js";
-import { ICheckService } from "../domain/checks/check.service.js";
 import { DockerLog } from "@/domain/docker/docker-log.type.js";
 import { IDockerLogsService } from "@/domain/docker/docker-log.service.js";
-import { PendingCheck } from "@/domain/jobs/job.type.js";
 const SERVICE_NAME = "BufferService";
 
+export type CheckIngest = (checks: Check[]) => Promise<void>;
 export interface IBufferService {
 	addToBuffer(check: Check): void;
 	addGeoCheckToBuffer(geoCheck: GeoCheck): void;
 	addDockerLogToBuffer(dockerLog: DockerLog): void;
-	ingestChecks(checks: Check[]): Promise<void>;
 	scheduleNextFlush(): void;
 	flushBuffer(): Promise<void>;
 	flushGeoBuffer(): Promise<void>;
@@ -31,28 +28,20 @@ export class BufferService implements IBufferService {
 	private geoBuffer: GeoCheck[];
 	private dockerLogBuffer: DockerLog[];
 	private bufferTimer: NodeJS.Timeout | null = null;
-	private checksService: ICheckService;
 	private geoChecksService: IGeoChecksService;
 	private dockerLogsService: IDockerLogsService;
-	private jobsRepository: IJobsRepository;
-
-	// Checks that are stored but whose evaluate row could not be armed. Retried on the next flush so they are never unevaluated.
-	private unarmed: Map<string, PendingCheck[]> = new Map();
 
 	constructor(
 		logger: ILogger,
-		checkService: ICheckService,
 		geoChecksService: IGeoChecksService,
 		dockerLogsService: IDockerLogsService,
 		settingsService: ISettingsService,
-		jobsRepository: IJobsRepository
+		private ingest: CheckIngest
 	) {
 		this.BUFFER_TIMEOUT = settingsService.getSettings().nodeEnv === "development" ? 1000 : 1000 * 60 * 1; // 1 minute
 		this.logger = logger;
-		this.checksService = checkService;
 		this.geoChecksService = geoChecksService;
 		this.dockerLogsService = dockerLogsService;
-		this.jobsRepository = jobsRepository;
 		this.SERVICE_NAME = SERVICE_NAME;
 		this.buffer = [];
 		this.geoBuffer = [];
@@ -104,38 +93,6 @@ export class BufferService implements IBufferService {
 		}
 	}
 
-	ingestChecks = async (checks: Check[]) => {
-		if (checks.length > 0) await this.checksService.createChecks(checks);
-
-		// Group by monitor, starting from any entries a previous flush failed to arm
-		const byMonitor = this.unarmed;
-		this.unarmed = new Map();
-		for (const check of checks) {
-			const pending = byMonitor.get(check.metadata.monitorId) ?? [];
-			pending.push({ checkId: check.id, createdAt: new Date(check.createdAt).getTime() });
-			byMonitor.set(check.metadata.monitorId, pending);
-		}
-		if (byMonitor.size === 0) return;
-
-		const now = Date.now();
-		const ops: Promise<boolean>[] = [];
-		for (const [monitorId, pendingChecks] of byMonitor) {
-			ops.push(
-				this.jobsRepository.upsertEvaluate(monitorId, pendingChecks, now).catch((error: unknown) => {
-					// The checks are already stored, so a failed arm is retried on the next flush rather than dropped
-					this.unarmed.set(monitorId, pendingChecks);
-					this.logger.error({
-						message: `Could not arm evaluation for monitor ${monitorId}, retrying on next flush: ${error instanceof Error ? error.message : String(error)}`,
-						service: this.SERVICE_NAME,
-						method: "ingestChecks",
-					});
-					return false;
-				})
-			);
-		}
-		await Promise.all(ops);
-	};
-
 	scheduleNextFlush() {
 		if (this.bufferTimer) {
 			clearTimeout(this.bufferTimer);
@@ -160,19 +117,14 @@ export class BufferService implements IBufferService {
 	}
 
 	async flushBuffer() {
-		if (this.buffer.length === 0 && this.unarmed.size === 0) {
-			return;
-		}
 		// Take the batch first so a write that drains it can't be appended to mid-flush
 		const batch = this.buffer;
 		this.buffer = [];
 		try {
-			this.logger.debug({
-				message: `Flushing ${batch.length} checks to database`,
-				service: this.SERVICE_NAME,
-				method: "flushBuffer",
-			});
-			await this.ingestChecks(batch);
+			if (batch.length > 0) {
+				this.logger.debug({ message: `Flushing ${batch.length} checks to database`, service: this.SERVICE_NAME, method: "flushBuffer" });
+			}
+			await this.ingest(batch);
 		} catch (error: unknown) {
 			this.logger.error({
 				message: error instanceof Error ? error.message : "Unknown error",

@@ -1,7 +1,5 @@
 import { jest } from "@jest/globals";
-import { MonitorStatusPolicy } from "../../src/worker/worker.monitor-status-policy.ts";
-import { CheckProducer } from "../../src/worker/worker.check-producer.ts";
-import { CheckEvaluator } from "../../src/worker/worker.check-evaluator.ts";
+import { WorkerPipeline } from "../../src/worker/worker.pipeline.ts";
 import { NotificationReactor } from "../../src/worker/reactors/reactor.notification.ts";
 import { IncidentReactor } from "../../src/worker/reactors/reactor.incident.ts";
 import { ReactorDispatcher } from "../../src/worker/reactors/reactor.dispatcher.ts";
@@ -139,31 +137,35 @@ export function createHeartbeatTestHarness(): HeartbeatTestHarness {
 		nextEgressStatus = status;
 	};
 
-	const checkProducer = new CheckProducer(
-		monitorsRepo as any,
-		maintenanceWindowsRepo as any,
-		checkService as any,
-		networkService as any,
-		proxyResolver as any,
-		bufferStub as any,
-		dockerLogsService as any,
-		egressService as any,
-		logger
-	);
-	const checkEvaluator = new CheckEvaluator(statusService as any, new MonitorStatusPolicy(), logger);
-
 	const notificationReactor = new NotificationReactor(notificationsService as any);
 	const incidentReactor = new IncidentReactor(incidentService as any);
 	const reactorDispatcher = new ReactorDispatcher(logger, [notificationReactor, incidentReactor]);
+
+	// The harness drives stages 1 and 3 directly, so the stage 2 repositories are never reached.
+	const pipeline = new WorkerPipeline({
+		logger,
+		monitorsRepository: monitorsRepo as any,
+		maintenanceWindowsRepository: maintenanceWindowsRepo as any,
+		checksRepository: { findUnevaluatedByMonitorId: jest.fn() } as any,
+		jobsRepository: { upsertEvaluate: jest.fn(), pullEvaluated: jest.fn() } as any,
+		checkService: checkService as any,
+		networkService: networkService as any,
+		proxyResolver: proxyResolver as any,
+		bufferService: bufferStub as any,
+		dockerLogsService: dockerLogsService as any,
+		egressService: egressService as any,
+		statusService,
+		dispatcher: reactorDispatcher,
+	});
 
 	// Mirror the production check→evaluate flow: read the monitor fresh each cycle (so the
 	// accumulated statusWindow is visible), produce a check, then evaluate against that monitor.
 	const heartbeatJob = async (seedMonitor: Monitor) => {
 		const monitor = await monitorsRepo.findByIdLean(seedMonitor.id);
 		if (!monitor) return;
-		const result = await checkProducer.produce(monitor);
+		const result = await pipeline.produce(monitor);
 		if (!result) return; // skipped (e.g. maintenance window)
-		const evaluation = await checkEvaluator.evaluate(result.status, result.check, monitor);
+		const evaluation = await pipeline.evaluateCheck(result.status, result.check, monitor);
 		await reactorDispatcher.dispatch(evaluation);
 	};
 

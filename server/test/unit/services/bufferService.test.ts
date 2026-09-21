@@ -1,21 +1,14 @@
 import { describe, expect, it, jest, beforeEach, afterEach } from "@jest/globals";
 import { BufferService } from "../../../src/service/bufferService.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
-import type { ICheckService } from "../../../src/domain/checks/check.service.ts";
 import type { IGeoChecksService } from "../../../src/domain/geo-checks/geo-check.service.ts";
 import type { ISettingsService } from "../../../src/domain/app-settings/app-settings.service.ts";
-import type { IJobsRepository } from "../../../src/domain/jobs/job.repository.interface.ts";
 import type { Check } from "../../../src/domain/checks/check.type.ts";
 import type { GeoCheck } from "../../../src/domain/geo-checks/geo-check.type.ts";
 import type { IDockerLogsService } from "../../../src/domain/docker/docker-log.service.ts";
 import type { DockerLog } from "../../../src/domain/docker/docker-log.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
-
-const createMockCheckService = () =>
-	({
-		createChecks: jest.fn().mockResolvedValue([]),
-	}) as unknown as jest.Mocked<ICheckService>;
 
 const createMockGeoChecksService = () =>
 	({
@@ -31,11 +24,6 @@ const createMockSettingsService = (nodeEnv: string = "development") =>
 	({
 		getSettings: jest.fn().mockReturnValue({ nodeEnv }),
 	}) as unknown as jest.Mocked<ISettingsService>;
-
-const createMockJobsRepository = () =>
-	({
-		upsertEvaluate: jest.fn().mockResolvedValue(true),
-	}) as unknown as jest.Mocked<IJobsRepository>;
 
 const makeCheck = (overrides?: Partial<Check>): Check =>
 	({
@@ -72,13 +60,12 @@ const makeDockerLog = (overrides?: Partial<DockerLog>): DockerLog =>
 
 const createService = (nodeEnv: string = "development") => {
 	const logger = createMockLogger();
-	const checkService = createMockCheckService();
+	const ingest = jest.fn<(checks: Check[]) => Promise<void>>().mockResolvedValue(undefined);
 	const geoChecksService = createMockGeoChecksService();
 	const dockerLogsService = createMockDockerLogsService();
 	const settingsService = createMockSettingsService(nodeEnv);
-	const jobsRepository = createMockJobsRepository();
-	const service = new BufferService(logger as any, checkService, geoChecksService, dockerLogsService, settingsService, jobsRepository);
-	return { service, logger, checkService, geoChecksService, dockerLogsService, jobsRepository };
+	const service = new BufferService(logger as any, geoChecksService, dockerLogsService, settingsService, ingest);
+	return { service, logger, ingest, geoChecksService, dockerLogsService };
 };
 
 // ── Tests ────────────────────────────────────────────────────────────────────
@@ -127,17 +114,17 @@ describe("BufferService", () => {
 
 	describe("addToBuffer", () => {
 		it("adds a check to the buffer", async () => {
-			const { service, checkService } = createService();
+			const { service, ingest } = createService();
 			const check = makeCheck();
 
 			service.addToBuffer(check);
 			await service.flushBuffer();
 
-			expect(checkService.createChecks).toHaveBeenCalledWith([check]);
+			expect(ingest).toHaveBeenCalledWith([check]);
 		});
 
 		it("adds multiple checks to the buffer", async () => {
-			const { service, checkService } = createService();
+			const { service, ingest } = createService();
 			const check1 = makeCheck({ id: "c1" });
 			const check2 = makeCheck({ id: "c2" });
 
@@ -145,7 +132,7 @@ describe("BufferService", () => {
 			service.addToBuffer(check2);
 			await service.flushBuffer();
 
-			expect(checkService.createChecks).toHaveBeenCalledWith([check1, check2]);
+			expect(ingest).toHaveBeenCalledWith([check1, check2]);
 		});
 
 		it("logs error if push throws", () => {
@@ -268,21 +255,20 @@ describe("BufferService", () => {
 		});
 
 		it("flushes all buffers when timer fires", async () => {
-			const { service, checkService, geoChecksService, dockerLogsService } = createService();
+			const { service, ingest, geoChecksService, dockerLogsService } = createService();
 			service.addToBuffer(makeCheck());
 			service.addGeoCheckToBuffer(makeGeoCheck());
 			service.addDockerLogToBuffer(makeDockerLog());
 
 			await jest.advanceTimersByTimeAsync(1000);
 
-			expect(checkService.createChecks).toHaveBeenCalled();
+			expect(ingest).toHaveBeenCalledWith([expect.objectContaining({ id: "check-1" })]);
 			expect(geoChecksService.createGeoChecks).toHaveBeenCalled();
 			expect(dockerLogsService.createDockerLogs).toHaveBeenCalled();
 		});
 
 		it("reschedules after flush completes", async () => {
-			const { service, checkService } = createService();
-			(checkService.createChecks as jest.Mock).mockResolvedValue([]);
+			const { service, ingest } = createService();
 
 			service.addToBuffer(makeCheck());
 			await jest.advanceTimersByTimeAsync(1000);
@@ -291,12 +277,12 @@ describe("BufferService", () => {
 			service.addToBuffer(makeCheck({ id: "c2" }));
 			await jest.advanceTimersByTimeAsync(1000);
 
-			expect(checkService.createChecks).toHaveBeenCalledTimes(2);
+			expect(ingest).toHaveBeenCalledTimes(2);
 		});
 
 		it("reschedules even when flush throws", async () => {
-			const { service, checkService, logger } = createService();
-			(checkService.createChecks as jest.Mock).mockRejectedValueOnce(new Error("DB down"));
+			const { service, ingest, logger } = createService();
+			ingest.mockRejectedValueOnce(new Error("DB down"));
 			service.addToBuffer(makeCheck());
 
 			await jest.advanceTimersByTimeAsync(1000);
@@ -309,11 +295,10 @@ describe("BufferService", () => {
 			);
 
 			// Should still reschedule — add another check and flush
-			(checkService.createChecks as jest.Mock).mockResolvedValue([]);
 			service.addToBuffer(makeCheck({ id: "c2" }));
 			await jest.advanceTimersByTimeAsync(1000);
 
-			expect(checkService.createChecks).toHaveBeenCalledTimes(2);
+			expect(ingest).toHaveBeenCalledTimes(2);
 		});
 
 		it("logs error and reschedules when flush throws past its own catch", async () => {
@@ -350,25 +335,26 @@ describe("BufferService", () => {
 	// ── flushBuffer ──────────────────────────────────────────────────────
 
 	describe("flushBuffer", () => {
-		it("does nothing when buffer is empty", async () => {
-			const { service, checkService } = createService();
+		it("hands an empty batch to ingest so the pipeline can retry anything it left unarmed", async () => {
+			const { service, ingest, logger } = createService();
 
 			await service.flushBuffer();
 
-			expect(checkService.createChecks).not.toHaveBeenCalled();
+			expect(ingest).toHaveBeenCalledWith([]);
+			expect(logger.debug).not.toHaveBeenCalled();
 		});
 
-		it("flushes checks to checksService and clears buffer", async () => {
-			const { service, checkService } = createService();
+		it("hands the batch to ingest and clears the buffer", async () => {
+			const { service, ingest } = createService();
 			const check = makeCheck();
 			service.addToBuffer(check);
 
 			await service.flushBuffer();
 
-			expect(checkService.createChecks).toHaveBeenCalledWith([check]);
+			expect(ingest).toHaveBeenNthCalledWith(1, [check]);
 			// Buffer should be empty now
 			await service.flushBuffer();
-			expect(checkService.createChecks).toHaveBeenCalledTimes(1);
+			expect(ingest).toHaveBeenNthCalledWith(2, []);
 		});
 
 		it("logs debug message before flushing", async () => {
@@ -386,68 +372,11 @@ describe("BufferService", () => {
 			);
 		});
 
-		it("arms the evaluate stage once per distinct monitor after the checks are stored", async () => {
-			const { service, jobsRepository } = createService();
-			service.addToBuffer(makeCheck({ id: "c1", metadata: { monitorId: "mon-1", teamId: "team-1", type: "http" } }));
-			service.addToBuffer(makeCheck({ id: "c2", metadata: { monitorId: "mon-1", teamId: "team-1", type: "http" } }));
-			service.addToBuffer(makeCheck({ id: "c3", metadata: { monitorId: "mon-2", teamId: "team-1", type: "http" } }));
-
-			await service.flushBuffer();
-
-			const createdAt = Date.parse("2026-01-01T00:00:00.000Z");
-			expect(jobsRepository.upsertEvaluate).toHaveBeenCalledTimes(2);
-			expect(jobsRepository.upsertEvaluate).toHaveBeenCalledWith(
-				"mon-1",
-				[
-					{ checkId: "c1", createdAt },
-					{ checkId: "c2", createdAt },
-				],
-				expect.any(Number)
-			);
-			expect(jobsRepository.upsertEvaluate).toHaveBeenCalledWith("mon-2", [{ checkId: "c3", createdAt }], expect.any(Number));
-		});
-
-		it("retries a failed arm on the next flush without re-storing the checks", async () => {
-			const { service, checkService, jobsRepository, logger } = createService();
-			(jobsRepository.upsertEvaluate as jest.Mock).mockRejectedValueOnce(new Error("arm failed"));
-			service.addToBuffer(makeCheck({ id: "c1" }));
-
-			await service.flushBuffer();
-			expect(checkService.createChecks).toHaveBeenCalledTimes(1);
-			expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ method: "ingestChecks" }));
-
-			await service.flushBuffer(); // buffer is empty, only the retry runs
-			expect(checkService.createChecks).toHaveBeenCalledTimes(1);
-			expect(jobsRepository.upsertEvaluate).toHaveBeenCalledTimes(2);
-			expect(jobsRepository.upsertEvaluate).toHaveBeenLastCalledWith("mon-1", [{ checkId: "c1", createdAt: expect.any(Number) }], expect.any(Number));
-
-			await service.flushBuffer(); // nothing left to retry
-			expect(jobsRepository.upsertEvaluate).toHaveBeenCalledTimes(2);
-		});
-
-		it("ingestChecks with an empty batch neither writes nor arms", async () => {
-			const { service, checkService, jobsRepository } = createService();
-
-			await service.ingestChecks([]);
-
-			expect(checkService.createChecks).not.toHaveBeenCalled();
-			expect(jobsRepository.upsertEvaluate).not.toHaveBeenCalled();
-		});
-
-		it("does not arm the evaluate stage when the check write fails", async () => {
-			const { service, checkService, jobsRepository } = createService();
-			(checkService.createChecks as jest.Mock).mockRejectedValue(new Error("DB write failed"));
-			service.addToBuffer(makeCheck());
-
-			await service.flushBuffer();
-
-			expect(jobsRepository.upsertEvaluate).not.toHaveBeenCalled();
-		});
-
 		it("clears buffer even on error to prevent infinite retries", async () => {
-			const { service, checkService, logger } = createService();
-			(checkService.createChecks as jest.Mock).mockRejectedValue(new Error("DB write failed"));
-			service.addToBuffer(makeCheck());
+			const { service, ingest, logger } = createService();
+			ingest.mockRejectedValueOnce(new Error("DB write failed"));
+			const check = makeCheck();
+			service.addToBuffer(check);
 
 			await service.flushBuffer();
 
@@ -457,14 +386,14 @@ describe("BufferService", () => {
 					method: "flushBuffer",
 				})
 			);
-			// Buffer should be cleared
+			// Buffer should be cleared: the failed batch is not handed over again
 			await service.flushBuffer();
-			expect(checkService.createChecks).toHaveBeenCalledTimes(1);
+			expect(ingest).toHaveBeenNthCalledWith(2, []);
 		});
 
 		it("logs 'Unknown error' for non-Error thrown values", async () => {
-			const { service, checkService, logger } = createService();
-			(checkService.createChecks as jest.Mock).mockRejectedValue(null);
+			const { service, ingest, logger } = createService();
+			ingest.mockRejectedValue(null);
 			service.addToBuffer(makeCheck());
 
 			await service.flushBuffer();
@@ -609,28 +538,28 @@ describe("BufferService", () => {
 
 	describe("shutdown", () => {
 		it("stops the flush timer and flushes all buffers", async () => {
-			const { service, checkService, geoChecksService, dockerLogsService } = createService();
+			const { service, ingest, geoChecksService, dockerLogsService } = createService();
 			service.addToBuffer(makeCheck());
 			service.addGeoCheckToBuffer(makeGeoCheck());
 			service.addDockerLogToBuffer(makeDockerLog());
 
 			await service.shutdown();
 
-			expect(checkService.createChecks).toHaveBeenCalledTimes(1);
+			expect(ingest).toHaveBeenCalledTimes(1);
 			expect(geoChecksService.createGeoChecks).toHaveBeenCalledTimes(1);
 			expect(dockerLogsService.createDockerLogs).toHaveBeenCalledTimes(1);
 
 			// Timer is cleared: advancing past the flush interval triggers no further flush.
 			await jest.advanceTimersByTimeAsync(60 * 1000);
-			expect(checkService.createChecks).toHaveBeenCalledTimes(1);
+			expect(ingest).toHaveBeenCalledTimes(1);
 		});
 
 		it("is safe to call with empty buffers", async () => {
-			const { service, checkService, geoChecksService, dockerLogsService } = createService();
+			const { service, ingest, geoChecksService, dockerLogsService } = createService();
 
 			await service.shutdown();
 
-			expect(checkService.createChecks).not.toHaveBeenCalled();
+			expect(ingest).toHaveBeenCalledWith([]);
 			expect(geoChecksService.createGeoChecks).not.toHaveBeenCalled();
 			expect(dockerLogsService.createDockerLogs).not.toHaveBeenCalled();
 		});
