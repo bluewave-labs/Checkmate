@@ -105,6 +105,34 @@ export interface HardwareStatusPayload {
 
 // Docker host monitoring
 
+export interface CaptureDockerContainer {
+	container_id: string;
+	container_name: string;
+	status: string;
+	health?: {
+		healthy: boolean;
+		source: string;
+	} | null;
+	running: boolean;
+	base_image: string;
+	exposed_ports?: Array<{
+		port: string;
+		protocol: string;
+	}>;
+	started_at?: number;
+	stats?: {
+		cpu_percent: number;
+		memory_usage: number;
+		memory_limit: number;
+		memory_percent: number;
+	} | null;
+}
+
+export interface CaptureDockerStatusPayload {
+	data: CaptureDockerContainer[] | null;
+	errors: CheckErrorInfo[] | null;
+}
+
 export interface DockerStatusPayload {
 	containers: DockerContainerInfo[];
 	summary: DockerContainerSummary;

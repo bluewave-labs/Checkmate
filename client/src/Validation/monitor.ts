@@ -110,13 +110,26 @@ const portSchema = baseSchema.extend({
 		.max(65535, "Port must be at most 65535"),
 });
 
-// Docker monitor schema. The url forms mirror DOCKER_TLS_URL and
-// DOCKER_SOCKET_URL in server/src/utils/dockerHost.ts.
+// Docker monitor schema. The URL forms mirror the Docker source helpers in
+// server/src/utils/dockerHost.ts.
 const dockerTlsUrlRegex = /^(tcp|https):\/\/([^/\s:]+)(?::(\d+))?\/?$/;
 const dockerSocketUrlRegex = /^(?:unix:\/\/\/\S+|\/\S+)$/;
 
 export const isDockerTlsUrl = (url: string | undefined): boolean =>
 	dockerTlsUrlRegex.test(url?.trim() ?? "");
+
+export const isCaptureDockerUrl = (url: string | undefined): boolean => {
+	try {
+		const parsed = new URL(url?.trim() ?? "");
+		const pathname = parsed.pathname.replace(/\/+$/, "");
+		return (
+			(parsed.protocol === "http:" || parsed.protocol === "https:") &&
+			pathname.endsWith("/metrics/docker")
+		);
+	} catch {
+		return false;
+	}
+};
 
 const dockerSchema = baseSchema.extend({
 	type: z.literal("docker"),
@@ -124,9 +137,13 @@ const dockerSchema = baseSchema.extend({
 		.string()
 		.min(1, "Docker host URL is required")
 		.refine(
-			(url) => dockerSocketUrlRegex.test(url.trim()) || isDockerTlsUrl(url),
-			"Docker host must be unix:///path, an absolute socket path, or tcp://host[:port]"
+			(url) =>
+				dockerSocketUrlRegex.test(url.trim()) ||
+				isDockerTlsUrl(url) ||
+				isCaptureDockerUrl(url),
+			"Docker host must be a socket path, a TLS daemon URL, or a Capture /metrics/docker endpoint"
 		),
+	secret: z.string(),
 	ignoreTlsErrors: z.boolean(),
 	dockerTlsCa: z.string(),
 	dockerTlsCert: z.string(),
@@ -248,6 +265,23 @@ export const monitorSchema = monitorSchemaUnion.superRefine((data, ctx) => {
 			path: ["proxyId"],
 			message: "A proxy must be selected when proxy mode is custom",
 		});
+	}
+
+	if (data.type === "docker" && isCaptureDockerUrl(data.url)) {
+		if (!data.secret.trim()) {
+			ctx.addIssue({
+				code: "custom",
+				path: ["secret"],
+				message: "Capture API secret is required",
+			});
+		}
+		if (data.dockerLogsEnabled) {
+			ctx.addIssue({
+				code: "custom",
+				path: ["dockerLogsEnabled"],
+				message: "Capture-backed Docker monitors do not support container logs",
+			});
+		}
 	}
 
 	if (data.type === "docker" && isDockerTlsUrl(data.url)) {
