@@ -80,6 +80,7 @@ const createService = (overrides?: Record<string, any>) => {
 		},
 		networkService: { requestStatus: statusFor(["1.1.1.1", "8.8.8.8"]) },
 		proxyResolver: { resolve: jest.fn().mockResolvedValue(undefined) },
+		notificationsService: { sendEgressRecoveredNotification: jest.fn().mockResolvedValue(true) },
 		logger: createMockLogger(),
 		...overrides,
 	};
@@ -89,6 +90,7 @@ const createService = (overrides?: Record<string, any>) => {
 		defaults.jobsRepository as any,
 		defaults.networkService as any,
 		defaults.proxyResolver as any,
+		defaults.notificationsService as any,
 		defaults.logger as any
 	);
 	return { service, defaults };
@@ -398,6 +400,26 @@ describe("EgressService", () => {
 			// Conditional on the schedule this run claimed, so a concurrent new episode keeps its job
 			expect(defaults.jobsRepository.deleteGlobalJobIfUnchanged).toHaveBeenCalledWith("egress", 123_456);
 			expect(defaults.logger.info).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Instance egress recovered") }));
+			expect(defaults.notificationsService.sendEgressRecoveredNotification).toHaveBeenCalledTimes(1);
+			expect(defaults.notificationsService.sendEgressRecoveredNotification).toHaveBeenCalledWith(
+				expect.objectContaining({ status: "ok", lastRecoveredAt: "2026-01-01T10:05:00.000Z" }),
+				["notif-1"]
+			);
+		});
+
+		it("logs and swallows a failed recovery notification once the transition is recorded", async () => {
+			const { service, defaults } = createService({
+				egressStateRepository: degradedRepository(),
+				networkService: { requestStatus: statusFor(["1.1.1.1"]) },
+				notificationsService: { sendEgressRecoveredNotification: jest.fn().mockRejectedValue(new Error("smtp down")) },
+			});
+
+			await expect(service.checkRecovery(makeJob())).resolves.toBeUndefined();
+
+			expect(defaults.jobsRepository.deleteGlobalJobIfUnchanged).toHaveBeenCalledWith("egress", 1_000);
+			expect(defaults.logger.error).toHaveBeenCalledWith(
+				expect.objectContaining({ message: expect.stringContaining("smtp down"), method: "checkRecovery", details: { notificationIds: ["notif-1"] } })
+			);
 		});
 
 		it("releases the job but does not log a recovery when another process already recorded it", async () => {
@@ -412,9 +434,10 @@ describe("EgressService", () => {
 			expect(defaults.logger.info).not.toHaveBeenCalledWith(
 				expect.objectContaining({ message: expect.stringContaining("Instance egress recovered") })
 			);
+			expect(defaults.notificationsService.sendEgressRecoveredNotification).not.toHaveBeenCalled();
 		});
 
-		it("records the probe and keeps the job while every target stays unreachable", async () => {
+		it("records the probe and keeps the job while every target stays unreachable, without notifying", async () => {
 			const { service, defaults } = createService({
 				egressStateRepository: degradedRepository(),
 				networkService: { requestStatus: statusFor([]) },
@@ -425,6 +448,7 @@ describe("EgressService", () => {
 			expect(defaults.egressStateRepository.recordProbe).toHaveBeenCalledTimes(1);
 			expect(defaults.egressStateRepository.markRecovered).not.toHaveBeenCalled();
 			expect(defaults.jobsRepository.deleteGlobalJobIfUnchanged).not.toHaveBeenCalled();
+			expect(defaults.notificationsService.sendEgressRecoveredNotification).not.toHaveBeenCalled();
 		});
 
 		it("releases the job without probing when the persisted state is no longer degraded", async () => {
