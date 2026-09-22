@@ -42,6 +42,23 @@ export const makeMessageWithThresholds = (): NotificationMessage =>
 		},
 	});
 
+export const makeMessageWithContainers = (): NotificationMessage =>
+	makeMessage({
+		type: "container_alert",
+		severity: "critical",
+		monitor: { id: "mon-1", name: "Docker Host", url: "unix:///var/run/docker.sock", type: "docker", status: "up" },
+		content: {
+			title: "Container Alert: Docker Host",
+			summary: '2 container(s) on "Docker Host" need attention: web, worker.',
+			details: ["URL: unix:///var/run/docker.sock", "Type: docker"],
+			containers: [
+				{ name: "web", kind: "stopped", summary: "stopped (Exited (137) 3 seconds ago)" },
+				{ name: "worker", kind: "unhealthy", summary: "unhealthy (was healthy)" },
+			],
+			timestamp: new Date("2025-01-01T00:00:00Z"),
+		},
+	});
+
 export const makeMessageWithIncident = (): NotificationMessage =>
 	makeMessage({
 		content: {

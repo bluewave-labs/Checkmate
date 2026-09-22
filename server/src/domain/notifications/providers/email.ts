@@ -92,6 +92,10 @@ export class EmailProvider extends NotificationProvider {
 				return `Monitor ${message.monitor.name} threshold exceeded`;
 			case "threshold_resolved":
 				return `Monitor ${message.monitor.name} thresholds resolved`;
+			case "container_alert":
+				return `Containers on ${message.monitor.name} need attention`;
+			case "container_recovered":
+				return `Containers on ${message.monitor.name} recovered`;
 			default:
 				return `Alert: ${message.monitor.name}`;
 		}
@@ -107,6 +111,7 @@ export class EmailProvider extends NotificationProvider {
 			monitorStatus: message.monitor.status,
 			headerColor: this.getColorForSeverity(message.severity),
 			thresholds: message.content.thresholds,
+			containers: message.content.containers,
 			details: message.content.details,
 			incidentUrl: message.content.incident?.url,
 		};

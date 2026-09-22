@@ -1,6 +1,12 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
-import { makeNotification, makeMessage, makeMessageWithThresholds, makeMessageWithIncident } from "../../../helpers/notificationMessage.ts";
+import {
+	makeNotification,
+	makeMessage,
+	makeMessageWithThresholds,
+	makeMessageWithIncident,
+	makeMessageWithContainers,
+} from "../../../helpers/notificationMessage.ts";
 import { testNotificationProviderContract } from "../../../helpers/notificationProviderContract.ts";
 
 const mockGotPut = jest.fn().mockResolvedValue({});
@@ -95,6 +101,28 @@ describe("MatrixProvider", () => {
 			const body = mockGotPut.mock.calls[0][1].json;
 			expect(body.body).toContain("CPU");
 			expect(body.formatted_body).toContain("CPU");
+		});
+
+		it("renders container events", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessageWithContainers());
+			const body = mockGotPut.mock.calls[0][1].json;
+			expect(body.body).toContain("## Containers\n- web: stopped (Exited (137) 3 seconds ago)\n- worker: unhealthy (was healthy)");
+			expect(body.formatted_body).toContain(
+				"<h3>Containers</h3><ul><li><strong>web:</strong> stopped (Exited (137) 3 seconds ago)</li><li><strong>worker:</strong> unhealthy (was healthy)</li></ul>"
+			);
+		});
+
+		it("escapes HTML special characters in container events", async () => {
+			const { provider } = createProvider();
+			const msg = makeMessageWithContainers();
+			msg.content.containers![0].name = "<web>";
+			msg.content.containers![0].summary = 'stopped (Exited (137) "3 seconds" ago)';
+			await provider.sendMessage(makeNotification() as any, msg);
+			const body = mockGotPut.mock.calls[0][1].json;
+			expect(body.body).toContain('- <web>: stopped (Exited (137) "3 seconds" ago)');
+			expect(body.formatted_body).not.toContain("<web>");
+			expect(body.formatted_body).toContain("<li><strong>&lt;web&gt;:</strong> stopped (Exited (137) &quot;3 seconds&quot; ago)</li>");
 		});
 
 		it("includes incident link", async () => {

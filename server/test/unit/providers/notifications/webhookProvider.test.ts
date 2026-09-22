@@ -1,6 +1,12 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
-import { makeNotification, makeMessage, makeMessageWithThresholds, makeMessageWithIncident } from "../../../helpers/notificationMessage.ts";
+import {
+	makeNotification,
+	makeMessage,
+	makeMessageWithThresholds,
+	makeMessageWithIncident,
+	makeMessageWithContainers,
+} from "../../../helpers/notificationMessage.ts";
 import { testNotificationProviderContract } from "../../../helpers/notificationProviderContract.ts";
 
 const mockGotPost = jest.fn().mockResolvedValue({});
@@ -78,6 +84,17 @@ describe("WebhookProvider", () => {
 			const { provider } = createProvider();
 			await provider.sendMessage(makeNotification() as any, makeMessageWithThresholds());
 			expect(mockGotPost.mock.calls[0][1].json.text).toContain("CPU");
+		});
+
+		it("renders container events", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessageWithContainers());
+			const payload = mockGotPost.mock.calls[0][1].json;
+			expect(payload.text).toContain("**Containers:**\n- web: stopped (Exited (137) 3 seconds ago)\n- worker: unhealthy (was healthy)");
+			expect(payload.containers).toEqual([
+				{ name: "web", kind: "stopped", summary: "stopped (Exited (137) 3 seconds ago)" },
+				{ name: "worker", kind: "unhealthy", summary: "unhealthy (was healthy)" },
+			]);
 		});
 
 		it("includes incident link in text", async () => {

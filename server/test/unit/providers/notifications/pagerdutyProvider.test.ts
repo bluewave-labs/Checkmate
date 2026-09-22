@@ -1,6 +1,6 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
-import { makeNotification, makeMessage, makeMessageWithThresholds } from "../../../helpers/notificationMessage.ts";
+import { makeNotification, makeMessage, makeMessageWithThresholds, makeMessageWithContainers } from "../../../helpers/notificationMessage.ts";
 import { testNotificationProviderContract } from "../../../helpers/notificationProviderContract.ts";
 
 const mockGotPost = jest.fn().mockResolvedValue({});
@@ -95,6 +95,49 @@ describe("PagerDutyProvider", () => {
 			const payload = mockGotPost.mock.calls[0][1].json;
 			expect(payload.payload.summary).toContain("CPU");
 			expect(payload.payload.custom_details.threshold_breaches).toBeDefined();
+		});
+
+		it("renders container events", async () => {
+			const { provider } = createProvider();
+			expect(await provider.sendMessage(makeNotification() as any, makeMessageWithContainers())).toBe(true);
+			expect(mockGotPost).toHaveBeenCalledTimes(2);
+
+			const [web, worker] = mockGotPost.mock.calls.map((call) => call[1].json);
+			expect(web.dedup_key).toBe("checkmate-mon-1-container-web");
+			expect(web.event_action).toBe("trigger");
+			expect(web.payload.summary).toBe("Docker Host / web: stopped (Exited (137) 3 seconds ago)");
+			expect(web.payload.custom_details.container).toEqual({ name: "web", event: "stopped", summary: "stopped (Exited (137) 3 seconds ago)" });
+
+			expect(worker.dedup_key).toBe("checkmate-mon-1-container-worker");
+			expect(worker.event_action).toBe("trigger");
+			expect(worker.payload.summary).toBe("Docker Host / worker: unhealthy (was healthy)");
+			expect(worker.payload.custom_details.container).toEqual({ name: "worker", event: "unhealthy", summary: "unhealthy (was healthy)" });
+		});
+
+		it("uses 'resolve' event_action for container_recovered", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(makeNotification() as any, { ...makeMessageWithContainers(), type: "container_recovered" });
+			expect(mockGotPost).toHaveBeenCalledTimes(2);
+			for (const call of mockGotPost.mock.calls) {
+				expect(call[1].json.event_action).toBe("resolve");
+			}
+		});
+
+		it("sends a single event keyed by monitor when no containers are present", async () => {
+			const { provider } = createProvider();
+			const msg = makeMessage();
+			msg.content.containers = undefined;
+			await provider.sendMessage(makeNotification() as any, msg);
+			expect(mockGotPost).toHaveBeenCalledTimes(1);
+			expect(mockGotPost.mock.calls[0][1].json.dedup_key).toBe("checkmate-mon-1");
+			expect(mockGotPost.mock.calls[0][1].json.payload.custom_details.container).toBeUndefined();
+		});
+
+		it("returns false when one container event fails to send", async () => {
+			mockGotPost.mockResolvedValueOnce({}).mockRejectedValueOnce(new Error("fail"));
+			const { provider, logger } = createProvider();
+			expect(await provider.sendMessage(makeNotification() as any, makeMessageWithContainers())).toBe(false);
+			expect(logger.warn).toHaveBeenCalled();
 		});
 
 		it("includes details in custom_details", async () => {

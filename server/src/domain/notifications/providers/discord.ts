@@ -115,6 +115,17 @@ export class DiscordProvider extends NotificationProvider {
 			});
 		}
 
+		// Add container events if present (docker monitors)
+		if (message.content.containers && message.content.containers.length > 0) {
+			const containerLines = message.content.containers.map((c) => `• **${c.name}**: ${c.summary}`).join("\n");
+
+			fields.push({
+				name: "Containers",
+				value: containerLines,
+				inline: false,
+			});
+		}
+
 		// Add details if present
 		if (message.content.details && message.content.details.length > 0) {
 			const detailsText = message.content.details.join("\n");

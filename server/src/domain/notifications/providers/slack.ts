@@ -136,6 +136,21 @@ export class SlackProvider extends NotificationProvider {
 			blocks.push({ type: "divider" });
 		}
 
+		// Container events (docker monitors)
+		if (message.content.containers && message.content.containers.length > 0) {
+			const containerText = message.content.containers.map((container) => `• *${container.name}:* ${container.summary}`).join("\n");
+
+			blocks.push({
+				type: "section",
+				text: {
+					type: "mrkdwn",
+					text: `*Containers:*\n${containerText}`,
+				},
+			});
+
+			blocks.push({ type: "divider" });
+		}
+
 		// Additional details (if any)
 		if (message.content.details && message.content.details.length > 0) {
 			const detailsText = message.content.details.map((detail) => `• ${detail}`).join("\n");

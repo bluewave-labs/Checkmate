@@ -2,7 +2,7 @@ const SERVICE_NAME = "PagerDutyProvider";
 import got from "got";
 import type { Notification } from "@/domain/notifications/notification.type.js";
 import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
-import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
+import type { ContainerEventInfo, NotificationMessage } from "@/domain/notifications/notification.type.js";
 import { getTestMessage } from "@/domain/notifications/providers/utils.js";
 import { AlertPagerDutyPayload } from "@/domain/notifications/notification.type.js";
 
@@ -50,11 +50,20 @@ export class PagerDutyProvider extends NotificationProvider {
 		}
 
 		try {
-			const payload = this.buildPagerDutyPayload(notification, message);
-			await got.post("https://events.pagerduty.com/v2/enqueue", {
-				json: payload,
-				...this.gotRequestOptions(),
-			});
+			// One event per container so a single recovery cannot resolve another container's incident
+			const containers = message.content.containers ?? [];
+			const payloads =
+				containers.length > 0
+					? containers.map((container) => this.buildPagerDutyPayload(notification, message, container))
+					: [this.buildPagerDutyPayload(notification, message)];
+			await Promise.all(
+				payloads.map((payload) =>
+					got.post("https://events.pagerduty.com/v2/enqueue", {
+						json: payload,
+						...this.gotRequestOptions(),
+					})
+				)
+			);
 			this.logger.info({
 				message: "[NEW] PagerDuty notification sent via sendMessage",
 				service: SERVICE_NAME,
@@ -73,9 +82,10 @@ export class PagerDutyProvider extends NotificationProvider {
 		}
 	}
 
-	private buildPagerDutyPayload(notification: Notification, message: NotificationMessage): AlertPagerDutyPayload {
+	private buildPagerDutyPayload(notification: Notification, message: NotificationMessage, container?: ContainerEventInfo): AlertPagerDutyPayload {
 		// Map our notification type to PagerDuty event_action
-		const eventAction = message.type === "monitor_up" || message.type === "threshold_resolved" ? "resolve" : "trigger";
+		const isResolve = message.type === "monitor_up" || message.type === "threshold_resolved" || message.type === "container_recovered";
+		const eventAction = isResolve ? "resolve" : "trigger";
 
 		// Map severity to PagerDuty severity levels
 		const severityMap: Record<string, string> = {
@@ -87,11 +97,13 @@ export class PagerDutyProvider extends NotificationProvider {
 
 		const severity = severityMap[message.severity] || "error";
 
-		// Build deduplication key based on monitor ID for event grouping
-		const dedupKey = `checkmate-${message.monitor.id}`;
+		// Build deduplication key based on monitor ID (and container name) for event grouping
+		const dedupKey = container ? `checkmate-${message.monitor.id}-container-${container.name}` : `checkmate-${message.monitor.id}`;
 
 		// Build summary
-		let summary = `${message.content.title} - ${message.content.summary}`;
+		let summary = container
+			? `${message.monitor.name} / ${container.name}: ${container.summary}`
+			: `${message.content.title} - ${message.content.summary}`;
 
 		// Add threshold details to summary if present
 		if (message.content.thresholds && message.content.thresholds.length > 0) {
@@ -120,6 +132,10 @@ export class PagerDutyProvider extends NotificationProvider {
 
 		if (message.content.details && message.content.details.length > 0) {
 			customDetails.details = message.content.details;
+		}
+
+		if (container) {
+			customDetails.container = { name: container.name, event: container.kind, summary: container.summary };
 		}
 
 		return {

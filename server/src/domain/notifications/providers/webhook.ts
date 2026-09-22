@@ -72,6 +72,13 @@ export class WebhookProvider extends NotificationProvider {
 			lines.push("");
 		}
 
+		// Container events (for docker monitors)
+		if (message.content.containers && message.content.containers.length > 0) {
+			lines.push("**Containers:**");
+			message.content.containers.forEach((container) => lines.push(`- ${container.name}: ${container.summary}`));
+			lines.push("");
+		}
+
 		// Incident link
 		if (message.content.incident) {
 			lines.push(`[View Incident](${message.clientHost}/infrastructure/${message.monitor.id})`);
@@ -82,6 +89,7 @@ export class WebhookProvider extends NotificationProvider {
 			text: lines.join("\n"),
 			severity: message.severity,
 			type: message.type,
+			containers: message.content.containers,
 			monitor: {
 				id: message.monitor.id,
 				name: message.monitor.name,

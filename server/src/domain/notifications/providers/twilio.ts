@@ -91,6 +91,12 @@ export class TwilioProvider extends NotificationProvider {
 			});
 		}
 
+		if (message.content.containers && message.content.containers.length > 0) {
+			message.content.containers.forEach((container) => {
+				lines.push(`${container.name}: ${container.summary}`);
+			});
+		}
+
 		return lines.join("\n");
 	}
 }

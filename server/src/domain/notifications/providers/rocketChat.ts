@@ -103,6 +103,16 @@ export class RocketChatProvider extends NotificationProvider {
 			);
 		}
 
+		if (message.content.containers?.length) {
+			fields.push(
+				...message.content.containers.map((container) => ({
+					title: container.name,
+					value: container.summary,
+					short: true,
+				}))
+			);
+		}
+
 		if (message.content.details?.length) {
 			fields.push({
 				title: "Details",

@@ -1,6 +1,12 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
-import { makeNotification, makeMessage, makeMessageWithThresholds, makeMessageWithIncident } from "../../../helpers/notificationMessage.ts";
+import {
+	makeNotification,
+	makeMessage,
+	makeMessageWithThresholds,
+	makeMessageWithIncident,
+	makeMessageWithContainers,
+} from "../../../helpers/notificationMessage.ts";
 import { testNotificationProviderContract } from "../../../helpers/notificationProviderContract.ts";
 
 const mockGotPost = jest.fn().mockResolvedValue({});
@@ -79,6 +85,15 @@ describe("SlackProvider", () => {
 			const blocks = mockGotPost.mock.calls[0][1].json.blocks;
 			const text = JSON.stringify(blocks);
 			expect(text).toContain("Threshold Breaches");
+		});
+
+		it("renders container events", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessageWithContainers());
+			const blocks = mockGotPost.mock.calls[0][1].json.blocks;
+			const section = blocks.find((b: any) => b.type === "section" && b.text?.text?.startsWith("*Containers:*"));
+			expect(section.text.type).toBe("mrkdwn");
+			expect(section.text.text).toBe("*Containers:*\n• *web:* stopped (Exited (137) 3 seconds ago)\n• *worker:* unhealthy (was healthy)");
 		});
 
 		it("includes incident button when incident present", async () => {

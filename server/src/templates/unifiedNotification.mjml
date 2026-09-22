@@ -63,6 +63,16 @@
 						{{/each}}
 					</ul>
 					{{/if}}
+					{{#if containers}}
+					<p><b>Containers:</b></p>
+					<ul>
+						{{#each containers}}
+						<li>
+							<b>{{ name }}:</b> {{ summary }}
+						</li>
+						{{/each}}
+					</ul>
+					{{/if}}
 					{{#if details}}
 					<p><b>Additional Details:</b></p>
 					<ul>

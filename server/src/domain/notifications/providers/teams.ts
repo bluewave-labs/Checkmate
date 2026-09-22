@@ -218,6 +218,26 @@ export class TeamsProvider extends NotificationProvider {
 			}
 		}
 
+		// Container events (docker monitors)
+		if (message.content.containers && message.content.containers.length > 0) {
+			body.push({
+				type: "TextBlock",
+				text: "**Containers**",
+				weight: "Bolder",
+				spacing: "Medium",
+				wrap: true,
+			});
+
+			for (const container of message.content.containers) {
+				body.push({
+					type: "TextBlock",
+					text: `• **${container.name}**: ${container.summary}`,
+					wrap: true,
+					spacing: "Small",
+				});
+			}
+		}
+
 		// Additional details
 		if (message.content.details && message.content.details.length > 0) {
 			body.push({

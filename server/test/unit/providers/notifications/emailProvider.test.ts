@@ -1,7 +1,12 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
+import fs from "node:fs";
+import path from "node:path";
+import handlebars from "handlebars";
+import mjml2html from "mjml";
 import { EmailProvider } from "../../../../src/domain/notifications/providers/email.ts";
+import { EmailService } from "../../../../src/service/emailService.ts";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
-import { makeNotification, makeMessage } from "../../../helpers/notificationMessage.ts";
+import { makeNotification, makeMessage, makeMessageWithContainers } from "../../../helpers/notificationMessage.ts";
 import { testNotificationProviderContract } from "../../../helpers/notificationProviderContract.ts";
 import type { IEmailService } from "../../../../src/service/emailService.ts";
 
@@ -18,6 +23,17 @@ const createProvider = () => {
 	const emailService = createMockEmailService();
 	const provider = new EmailProvider(emailService, logger as any);
 	return { provider, logger, emailService };
+};
+
+// Renders the real MJML templates; only the transport is mocked.
+const createRenderingProvider = () => {
+	const logger = createMockLogger();
+	const sendMail = jest.fn().mockResolvedValue({ messageId: "msg-123" });
+	const nodemailer = { createTransport: jest.fn().mockReturnValue({ verify: jest.fn().mockResolvedValue(true), sendMail }) } as any;
+	const settingsService = { getDBSettings: jest.fn().mockResolvedValue({}) } as any;
+	const emailService = new EmailService(settingsService, fs, path, handlebars.compile, mjml2html, nodemailer, logger as any);
+	const provider = new EmailProvider(emailService, logger as any);
+	return { provider, logger, sendMail };
 };
 
 testNotificationProviderContract("EmailProvider", {
@@ -113,6 +129,41 @@ describe("EmailProvider", () => {
 			const { provider, emailService } = createProvider();
 			await provider.sendMessage(makeNotification() as any, makeMessage({ type: "threshold_resolved" }));
 			expect(emailService.sendEmail).toHaveBeenCalledWith(expect.anything(), "Monitor Test Monitor thresholds resolved", expect.anything());
+		});
+
+		it("builds correct subject for container_alert", async () => {
+			const { provider, emailService } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessageWithContainers());
+			expect(emailService.sendEmail).toHaveBeenCalledWith(expect.anything(), "Containers on Docker Host need attention", expect.anything());
+		});
+
+		it("builds correct subject for container_recovered", async () => {
+			const { provider, emailService } = createProvider();
+			await provider.sendMessage(makeNotification() as any, { ...makeMessageWithContainers(), type: "container_recovered" });
+			expect(emailService.sendEmail).toHaveBeenCalledWith(expect.anything(), "Containers on Docker Host recovered", expect.anything());
+		});
+
+		it("renders container events", async () => {
+			const { provider, emailService } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessageWithContainers());
+			expect(emailService.buildEmail).toHaveBeenCalledWith(
+				"unifiedNotificationTemplate",
+				expect.objectContaining({
+					containers: [
+						{ name: "web", kind: "stopped", summary: "stopped (Exited (137) 3 seconds ago)" },
+						{ name: "worker", kind: "unhealthy", summary: "unhealthy (was healthy)" },
+					],
+				})
+			);
+		});
+
+		it("renders container events into the email template", async () => {
+			const { provider, sendMail } = createRenderingProvider();
+			expect(await provider.sendMessage(makeNotification() as any, makeMessageWithContainers())).toBe(true);
+			const html = sendMail.mock.calls[0][0].html;
+			expect(html).toContain("Containers:");
+			expect(html).toContain("<b>web:</b> stopped (Exited (137) 3 seconds ago)");
+			expect(html).toContain("<b>worker:</b> unhealthy (was healthy)");
 		});
 
 		it("builds default subject for unknown type", async () => {

@@ -1,6 +1,12 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
-import { makeNotification, makeMessage, makeMessageWithThresholds, makeMessageWithIncident } from "../../../helpers/notificationMessage.ts";
+import {
+	makeNotification,
+	makeMessage,
+	makeMessageWithThresholds,
+	makeMessageWithIncident,
+	makeMessageWithContainers,
+} from "../../../helpers/notificationMessage.ts";
 import { testNotificationProviderContract } from "../../../helpers/notificationProviderContract.ts";
 
 const mockGotPost = jest.fn().mockResolvedValue({});
@@ -92,6 +98,17 @@ describe("DiscordProvider", () => {
 			const payload = mockGotPost.mock.calls[0][1].json;
 			const fields = payload.embeds[0].fields;
 			expect(fields.some((f: any) => f.name === "Threshold Breaches")).toBe(true);
+		});
+
+		it("renders container events", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(makeNotification() as any, makeMessageWithContainers());
+			const fields = mockGotPost.mock.calls[0][1].json.embeds[0].fields;
+			expect(fields.find((f: any) => f.name === "Containers")).toEqual({
+				name: "Containers",
+				value: "• **web**: stopped (Exited (137) 3 seconds ago)\n• **worker**: unhealthy (was healthy)",
+				inline: false,
+			});
 		});
 
 		it("includes details in embed fields", async () => {

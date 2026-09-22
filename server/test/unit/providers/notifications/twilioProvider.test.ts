@@ -1,6 +1,12 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
-import { makeNotification, makeMessage, makeMessageWithThresholds, makeMessageWithIncident } from "../../../helpers/notificationMessage.ts";
+import {
+	makeNotification,
+	makeMessage,
+	makeMessageWithThresholds,
+	makeMessageWithIncident,
+	makeMessageWithContainers,
+} from "../../../helpers/notificationMessage.ts";
 import { testNotificationProviderContract } from "../../../helpers/notificationProviderContract.ts";
 
 const mockGotPost = jest.fn().mockResolvedValue({});
@@ -116,6 +122,12 @@ describe("TwilioProvider", () => {
 			const { provider } = createProvider();
 			await provider.sendMessage(makeTwilioNotification() as any, makeMessageWithThresholds());
 			expect(mockGotPost.mock.calls[0][1].form.Body).toContain("CPU");
+		});
+
+		it("renders container events", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(makeTwilioNotification() as any, makeMessageWithContainers());
+			expect(mockGotPost.mock.calls[0][1].form.Body).toContain("web: stopped (Exited (137) 3 seconds ago)\nworker: unhealthy (was healthy)");
 		});
 
 		it("includes monitor URL in text", async () => {

@@ -99,6 +99,14 @@ export class TelegramProvider extends NotificationProvider {
 			});
 		}
 
+		if (message.content.containers && message.content.containers.length > 0) {
+			lines.push("");
+			lines.push("<b>Containers:</b>");
+			message.content.containers.forEach((container) => {
+				lines.push(`• ${container.name}: ${container.summary}`);
+			});
+		}
+
 		if (message.content.incident) {
 			lines.push("");
 			lines.push(`<a href="${message.clientHost}/incidents/${message.monitor.id}">View Incident</a>`);

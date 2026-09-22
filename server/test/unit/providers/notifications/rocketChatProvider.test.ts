@@ -2,7 +2,13 @@ import { describe, expect, it, jest } from "@jest/globals";
 import type { MonitorType } from "../../../../src/domain/monitors/monitor.type.ts";
 import type { NotificationSeverity } from "../../../../src/domain/notifications/notification.type.ts";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
-import { makeMessage, makeMessageWithIncident, makeMessageWithThresholds, makeNotification } from "../../../helpers/notificationMessage.ts";
+import {
+	makeMessage,
+	makeMessageWithContainers,
+	makeMessageWithIncident,
+	makeMessageWithThresholds,
+	makeNotification,
+} from "../../../helpers/notificationMessage.ts";
 import { testNotificationProviderContract } from "../../../helpers/notificationProviderContract.ts";
 
 const mockGotPost = jest.fn().mockResolvedValue({});
@@ -184,6 +190,23 @@ describe("RocketChatProvider", () => {
 			{ title: "CPU", value: "90.0% (threshold: 80%)", short: true },
 			{ title: "MEMORY", value: "85.0% (threshold: 70%)", short: true },
 			{ title: "Details", value: "- URL: https://infra.example.com", short: false },
+		]);
+	});
+
+	it("renders container events", async () => {
+		const { provider } = createProvider();
+
+		await provider.sendMessage(makeNotification({ type: "rocket_chat" }), makeMessageWithContainers());
+
+		const fields = mockGotPost.mock.calls[0][1].json.attachments[0].fields;
+		expect(fields).toEqual([
+			{ title: "Monitor", value: "Docker Host", short: true },
+			{ title: "Type", value: "docker", short: true },
+			{ title: "Status", value: "up", short: true },
+			{ title: "URL", value: "unix:///var/run/docker.sock", short: false },
+			{ title: "web", value: "stopped (Exited (137) 3 seconds ago)", short: true },
+			{ title: "worker", value: "unhealthy (was healthy)", short: true },
+			{ title: "Details", value: "- URL: unix:///var/run/docker.sock\n- Type: docker", short: false },
 		]);
 	});
 

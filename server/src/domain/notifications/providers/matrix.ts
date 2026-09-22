@@ -155,6 +155,21 @@ export class MatrixProvider extends NotificationProvider {
 			htmlLines.push(`</ul>`);
 		}
 
+		// Container events (docker monitors)
+		if (message.content.containers && message.content.containers.length > 0) {
+			plainLines.push("");
+			plainLines.push("## Containers");
+			htmlLines.push(`<h3>Containers</h3>`);
+			htmlLines.push(`<ul>`);
+
+			message.content.containers.forEach((container) => {
+				plainLines.push(`- ${container.name}: ${container.summary}`);
+				htmlLines.push(`<li><strong>${this.escapeHtml(container.name)}:</strong> ${this.escapeHtml(container.summary)}</li>`);
+			});
+
+			htmlLines.push(`</ul>`);
+		}
+
 		// Additional details (if any)
 		if (message.content.details && message.content.details.length > 0) {
 			plainLines.push("");

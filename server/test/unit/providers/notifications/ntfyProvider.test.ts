@@ -1,6 +1,12 @@
 import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
-import { makeNotification, makeMessage, makeMessageWithThresholds, makeMessageWithIncident } from "../../../helpers/notificationMessage.ts";
+import {
+	makeNotification,
+	makeMessage,
+	makeMessageWithThresholds,
+	makeMessageWithIncident,
+	makeMessageWithContainers,
+} from "../../../helpers/notificationMessage.ts";
 import { testNotificationProviderContract } from "../../../helpers/notificationProviderContract.ts";
 
 const mockGotPost = jest.fn().mockResolvedValue({});
@@ -101,6 +107,14 @@ describe("NtfyProvider", () => {
 			const { provider } = createProvider();
 			await provider.sendMessage(makeNtfyNotification() as any, makeMessageWithThresholds());
 			expect(mockGotPost.mock.calls[0][1].body).toContain("CPU");
+		});
+
+		it("renders container events", async () => {
+			const { provider } = createProvider();
+			await provider.sendMessage(makeNtfyNotification() as any, makeMessageWithContainers());
+			expect(mockGotPost.mock.calls[0][1].body).toContain(
+				"Containers:\n- web: stopped (Exited (137) 3 seconds ago)\n- worker: unhealthy (was healthy)"
+			);
 		});
 
 		it("includes incident links in text", async () => {

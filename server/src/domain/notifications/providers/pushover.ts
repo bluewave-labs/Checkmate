@@ -99,6 +99,14 @@ export class PushoverProvider extends NotificationProvider {
 			});
 		}
 
+		if (message.content.containers && message.content.containers.length > 0) {
+			lines.push("");
+			lines.push("Containers:");
+			message.content.containers.forEach((container) => {
+				lines.push(`• ${container.name}: ${container.summary}`);
+			});
+		}
+
 		if (message.content.incident) {
 			lines.push("");
 			lines.push(`View Incident: ${message.clientHost}/incidents/${message.monitor.id}`);

@@ -2,6 +2,7 @@ import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 import type { Notification } from "../../../../src/domain/notifications/notification.type.ts";
 import type { NotificationMessage } from "../../../../src/domain/notifications/notification.type.ts";
 import { createMockLogger } from "../../../helpers/createMockLogger.ts";
+import { makeMessageWithContainers } from "../../../helpers/notificationMessage.ts";
 
 const mockPost = jest.fn();
 jest.unstable_mockModule("got", () => ({
@@ -211,6 +212,22 @@ describe("TeamsProvider", () => {
 			expect(cpuBlock).toBeDefined();
 			expect(cpuBlock.text).toContain("95%");
 			expect(cpuBlock.text).toContain("threshold: 80%");
+		});
+
+		it("renders container events", async () => {
+			await provider.sendMessage(createNotification(), makeMessageWithContainers());
+
+			const [, options] = mockPost.mock.calls[0] as [string, { json: any }];
+			const card = options.json.attachments[0].content;
+			const texts = card.body.filter((b: any) => b.type === "TextBlock").map((b: any) => b.text);
+
+			const headerIndex = texts.indexOf("**Containers**");
+			expect(headerIndex).toBeGreaterThan(-1);
+			expect(texts.slice(headerIndex, headerIndex + 3)).toEqual([
+				"**Containers**",
+				"• **web**: stopped (Exited (137) 3 seconds ago)",
+				"• **worker**: unhealthy (was healthy)",
+			]);
 		});
 
 		it("maps severity to correct Adaptive Card colors", async () => {
