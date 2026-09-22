@@ -20,6 +20,17 @@ import { X509Certificate } from "node:crypto";
 import { keyMatchesCertificate, parseCertificates, parsePrivateKey } from "@/utils/pem.js";
 
 const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), { message: "Must be a valid HTTP status code" });
+const dockerContainerStateSchema = z.enum(DockerContainerStates);
+const dockerHealthStatusSchema = z.enum(DockerHealthStatuses);
+
+// Keep aligned with DockerContainerAlertState in domain/docker/docker.type.ts.
+const dockerContainerAlertStateResponseSchema = z.object({
+	name: z.string(),
+	state: dockerContainerStateSchema,
+	health: dockerHealthStatusSchema,
+	missingChecks: z.number(),
+	alerted: z.boolean(),
+});
 
 // The client form submits proxyId: "" when no proxy is selected, set it to undefined
 const proxyIdValidation = z
@@ -220,6 +231,8 @@ export const createMonitorBodyValidation = z
 		geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 		geoCheckInterval: z.number().min(300000).optional(),
 		dockerLogsEnabled: z.boolean().optional(),
+		dockerAlertOnState: z.boolean().optional(),
+		dockerAlertOnHealth: z.boolean().optional(),
 		dockerTlsCa: z.union([z.string(), z.literal("")]).optional(),
 		dockerTlsCert: z.union([z.string(), z.literal("")]).optional(),
 		dockerTlsKey: z.union([z.string(), z.literal("")]).optional(),
@@ -270,6 +283,8 @@ export const editMonitorBodyValidation = z
 		geoCheckLocations: z.array(z.enum(GeoContinents)).optional(),
 		geoCheckInterval: z.number().min(300000).optional(),
 		dockerLogsEnabled: z.boolean().optional(),
+		dockerAlertOnState: z.boolean().optional(),
+		dockerAlertOnHealth: z.boolean().optional(),
 		dockerTlsCa: z.union([z.string(), z.literal("")]).optional(),
 		dockerTlsCert: z.union([z.string(), z.literal("")]).optional(),
 		dockerTlsKey: z.union([z.string(), z.literal("")]).optional(),
@@ -350,6 +365,8 @@ const importedMonitorSchema = z
 		geoCheckLocations: z.array(z.enum(GeoContinents)).default([]),
 		geoCheckInterval: z.number().min(300000).default(300000),
 		dockerLogsEnabled: z.boolean().default(false),
+		dockerAlertOnState: z.boolean().default(false),
+		dockerAlertOnHealth: z.boolean().default(false),
 		dnsServer: dnsServerValidation.optional(),
 		dnsRecordType: z.enum(DnsRecordTypes).optional(),
 		createdAt: z.string().optional(),
@@ -440,6 +457,9 @@ export const monitorResponseSchema = z
 		geoCheckLocations: z.array(z.enum(GeoContinents)),
 		geoCheckInterval: z.number(),
 		dockerLogsEnabled: z.boolean(),
+		dockerAlertOnState: z.boolean(),
+		dockerAlertOnHealth: z.boolean(),
+		dockerContainerStates: z.array(dockerContainerAlertStateResponseSchema),
 		dockerTlsCa: z.string().optional(),
 		dockerTlsCert: z.string().optional(),
 		dockerTlsKeySet: z.boolean().optional(),
@@ -524,9 +544,9 @@ export const dockerContainerResponseSchema = z.object({
 	id: z.string(),
 	name: z.string(),
 	image: z.string(),
-	state: z.enum(DockerContainerStates),
+	state: dockerContainerStateSchema,
 	status: z.string(),
-	health: z.enum(DockerHealthStatuses),
+	health: dockerHealthStatusSchema,
 	cpuPct: z.number().optional(),
 	memoryUsedBytes: z.number().optional(),
 	memoryLimitBytes: z.number().optional(),
@@ -535,6 +555,7 @@ export const dockerContainerResponseSchema = z.object({
 	startedAt: z.string().optional(),
 	ports: z.array(dockerContainerPortResponseSchema).optional(),
 	mounts: z.array(dockerContainerMountResponseSchema).optional(),
+	exitCode: z.number().optional(),
 });
 
 export const containerSummaryResponseSchema = z.object({

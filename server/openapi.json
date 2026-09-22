@@ -466,6 +466,38 @@
 					"dockerLogsEnabled": {
 						"type": "boolean"
 					},
+					"dockerAlertOnState": {
+						"type": "boolean"
+					},
+					"dockerAlertOnHealth": {
+						"type": "boolean"
+					},
+					"dockerContainerStates": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"name": {
+									"type": "string"
+								},
+								"state": {
+									"type": "string",
+									"enum": ["created", "running", "paused", "restarting", "removing", "exited", "dead"]
+								},
+								"health": {
+									"type": "string",
+									"enum": ["healthy", "unhealthy", "starting", "none"]
+								},
+								"missingChecks": {
+									"type": "number"
+								},
+								"alerted": {
+									"type": "boolean"
+								}
+							},
+							"required": ["name", "state", "health", "missingChecks", "alerted"]
+						}
+					},
 					"dockerTlsCa": {
 						"type": "string"
 					},
@@ -523,6 +555,9 @@
 					"geoCheckLocations",
 					"geoCheckInterval",
 					"dockerLogsEnabled",
+					"dockerAlertOnState",
+					"dockerAlertOnHealth",
+					"dockerContainerStates",
 					"teamId",
 					"userId",
 					"createdAt",
@@ -694,6 +729,38 @@
 									"dockerLogsEnabled": {
 										"type": "boolean"
 									},
+									"dockerAlertOnState": {
+										"type": "boolean"
+									},
+									"dockerAlertOnHealth": {
+										"type": "boolean"
+									},
+									"dockerContainerStates": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"name": {
+													"type": "string"
+												},
+												"state": {
+													"type": "string",
+													"enum": ["created", "running", "paused", "restarting", "removing", "exited", "dead"]
+												},
+												"health": {
+													"type": "string",
+													"enum": ["healthy", "unhealthy", "starting", "none"]
+												},
+												"missingChecks": {
+													"type": "number"
+												},
+												"alerted": {
+													"type": "boolean"
+												}
+											},
+											"required": ["name", "state", "health", "missingChecks", "alerted"]
+										}
+									},
 									"dockerTlsCa": {
 										"type": "string"
 									},
@@ -753,6 +820,9 @@
 									"geoCheckLocations",
 									"geoCheckInterval",
 									"dockerLogsEnabled",
+									"dockerAlertOnState",
+									"dockerAlertOnHealth",
+									"dockerContainerStates",
 									"teamId",
 									"userId",
 									"createdAt",
@@ -7186,6 +7256,38 @@
 														"dockerLogsEnabled": {
 															"type": "boolean"
 														},
+														"dockerAlertOnState": {
+															"type": "boolean"
+														},
+														"dockerAlertOnHealth": {
+															"type": "boolean"
+														},
+														"dockerContainerStates": {
+															"type": "array",
+															"items": {
+																"type": "object",
+																"properties": {
+																	"name": {
+																		"type": "string"
+																	},
+																	"state": {
+																		"type": "string",
+																		"enum": ["created", "running", "paused", "restarting", "removing", "exited", "dead"]
+																	},
+																	"health": {
+																		"type": "string",
+																		"enum": ["healthy", "unhealthy", "starting", "none"]
+																	},
+																	"missingChecks": {
+																		"type": "number"
+																	},
+																	"alerted": {
+																		"type": "boolean"
+																	}
+																},
+																"required": ["name", "state", "health", "missingChecks", "alerted"]
+															}
+														},
 														"dockerTlsCa": {
 															"type": "string"
 														},
@@ -7245,6 +7347,9 @@
 														"geoCheckLocations",
 														"geoCheckInterval",
 														"dockerLogsEnabled",
+														"dockerAlertOnState",
+														"dockerAlertOnHealth",
+														"dockerContainerStates",
 														"teamId",
 														"userId",
 														"createdAt",
@@ -7406,6 +7511,9 @@
 																					},
 																					"required": ["type", "source", "destination", "mode", "rw"]
 																				}
+																			},
+																			"exitCode": {
+																				"type": "number"
 																			}
 																		},
 																		"required": ["id", "name", "image", "state", "status", "health"]
@@ -7761,6 +7869,38 @@
 														"dockerLogsEnabled": {
 															"type": "boolean"
 														},
+														"dockerAlertOnState": {
+															"type": "boolean"
+														},
+														"dockerAlertOnHealth": {
+															"type": "boolean"
+														},
+														"dockerContainerStates": {
+															"type": "array",
+															"items": {
+																"type": "object",
+																"properties": {
+																	"name": {
+																		"type": "string"
+																	},
+																	"state": {
+																		"type": "string",
+																		"enum": ["created", "running", "paused", "restarting", "removing", "exited", "dead"]
+																	},
+																	"health": {
+																		"type": "string",
+																		"enum": ["healthy", "unhealthy", "starting", "none"]
+																	},
+																	"missingChecks": {
+																		"type": "number"
+																	},
+																	"alerted": {
+																		"type": "boolean"
+																	}
+																},
+																"required": ["name", "state", "health", "missingChecks", "alerted"]
+															}
+														},
 														"dockerTlsCa": {
 															"type": "string"
 														},
@@ -7820,6 +7960,9 @@
 														"geoCheckLocations",
 														"geoCheckInterval",
 														"dockerLogsEnabled",
+														"dockerAlertOnState",
+														"dockerAlertOnHealth",
+														"dockerContainerStates",
 														"teamId",
 														"userId",
 														"createdAt",
@@ -7962,6 +8105,9 @@
 																				},
 																				"required": ["type", "source", "destination", "mode", "rw"]
 																			}
+																		},
+																		"exitCode": {
+																			"type": "number"
 																		}
 																	},
 																	"required": ["id", "name", "image", "state", "status", "health"]
@@ -9308,6 +9454,12 @@
 									"dockerLogsEnabled": {
 										"type": "boolean"
 									},
+									"dockerAlertOnState": {
+										"type": "boolean"
+									},
+									"dockerAlertOnHealth": {
+										"type": "boolean"
+									},
 									"dockerTlsCa": {
 										"anyOf": [
 											{
@@ -10033,6 +10185,14 @@
 													"type": "boolean",
 													"default": false
 												},
+												"dockerAlertOnState": {
+													"type": "boolean",
+													"default": false
+												},
+												"dockerAlertOnHealth": {
+													"type": "boolean",
+													"default": false
+												},
 												"dnsServer": {
 													"type": "string",
 													"minLength": 1
@@ -10598,6 +10758,12 @@
 										"minimum": 300000
 									},
 									"dockerLogsEnabled": {
+										"type": "boolean"
+									},
+									"dockerAlertOnState": {
+										"type": "boolean"
+									},
+									"dockerAlertOnHealth": {
 										"type": "boolean"
 									},
 									"dockerTlsCa": {

@@ -144,13 +144,21 @@ export class CheckService implements ICheckService {
 			code: check.statusCode,
 			message: check.message,
 			responseTime: check.responseTime,
-			// re-nest hardware metrics so updateMonitorStatus / extractThresholdBreaches see payload.data
-			payload:
-				check.metadata.type === "hardware"
-					? ({ data: { cpu: check.cpu, memory: check.memory, disk: check.disk, host: check.host, net: check.net } } as HardwareStatusPayload)
-					: undefined,
+			// re-nest the type-specific payload so updateMonitorStatus and the reactors see the same shape as a live probe
+			payload: this.toPayload(check),
 		};
 		return statusResponse;
+	};
+
+	private toPayload = (check: Check): MonitorPayloadMap[keyof MonitorPayloadMap] | undefined => {
+		switch (check.metadata.type) {
+			case "hardware":
+				return { data: { cpu: check.cpu, memory: check.memory, disk: check.disk, host: check.host, net: check.net } } as HardwareStatusPayload;
+			case "docker":
+				return { containers: check.containers ?? [], summary: check.containerSummary } as DockerStatusPayload;
+			default:
+				return undefined;
+		}
 	};
 
 	getChecksByMonitor = async ({

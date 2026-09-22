@@ -818,3 +818,48 @@ describe("monitorValidation — Docker TLS credentials", () => {
 		});
 	});
 });
+
+describe("monitorValidation — Docker container alerts", () => {
+	const baseDockerBody = {
+		name: "Docker host check",
+		type: "docker" as const,
+		url: "unix:///var/run/docker.sock",
+	};
+
+	describe("createMonitorBodyValidation", () => {
+		it("accepts the two alert switches", () => {
+			const parsed = createMonitorBodyValidation.parse({ ...baseDockerBody, dockerAlertOnState: true, dockerAlertOnHealth: true });
+			expect(parsed.dockerAlertOnState).toBe(true);
+			expect(parsed.dockerAlertOnHealth).toBe(true);
+		});
+
+		it("strips dockerContainerStates from the body", () => {
+			const parsed = createMonitorBodyValidation.parse({
+				...baseDockerBody,
+				dockerContainerStates: [{ name: "web", state: "running", health: "none", missingChecks: 0, alerted: false }],
+			});
+			expect(parsed).not.toHaveProperty("dockerContainerStates");
+		});
+	});
+
+	describe("editMonitorBodyValidation", () => {
+		it("accepts the two alert switches", () => {
+			const parsed = editMonitorBodyValidation.parse({ ...baseDockerBody, dockerAlertOnState: false, dockerAlertOnHealth: true });
+			expect(parsed.dockerAlertOnState).toBe(false);
+			expect(parsed.dockerAlertOnHealth).toBe(true);
+		});
+
+		it("strips dockerContainerStates from the body", () => {
+			const parsed = editMonitorBodyValidation.parse({ ...baseDockerBody, dockerContainerStates: [] });
+			expect(parsed).not.toHaveProperty("dockerContainerStates");
+		});
+	});
+
+	describe("importMonitorsBodyValidation", () => {
+		it("defaults both alert switches to false on imported docker monitors", () => {
+			const parsed = importMonitorsBodyValidation.parse({ monitors: [baseDockerBody] });
+			expect(parsed.monitors[0].dockerAlertOnState).toBe(false);
+			expect(parsed.monitors[0].dockerAlertOnHealth).toBe(false);
+		});
+	});
+});

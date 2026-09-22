@@ -3,7 +3,7 @@ import { CheckService } from "../../../src/domain/checks/check.service.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 import type { IChecksRepository } from "../../../src/domain/checks/check.repository.interface.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
-import type { MonitorStatusResponse, HardwareStatusPayload, PageSpeedStatusPayload } from "../../../src/types/network.ts";
+import type { MonitorStatusResponse, HardwareStatusPayload, PageSpeedStatusPayload, DockerStatusPayload } from "../../../src/types/network.ts";
 import { NotificationMessageBuilder } from "../../../src/domain/notifications/notification.message-builder.ts";
 import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 
@@ -332,6 +332,24 @@ describe("CheckService", () => {
 			const roundtripped = rebuilt.payload as HardwareStatusPayload;
 			expect(roundtripped.data).toEqual(original.data);
 			expect(roundtripped.data.cpu!.usage_percent).toBe(0.92); // not rescaled to 92
+		});
+
+		it("docker: preserves payload.containers and summary so updateMonitorStatus can evaluate container events", () => {
+			const { service } = createService();
+			const payload: DockerStatusPayload = {
+				containers: [
+					{ id: "c1", name: "web", image: "nginx", state: "exited", status: "Exited (137) 3 seconds ago", health: "none", exitCode: 137 },
+					{ id: "c2", name: "db", image: "mongo", state: "running", status: "Up 3 hours", health: "healthy" },
+				],
+				summary: { total: 2, running: 1, stopped: 1, unhealthy: 0 },
+			};
+			const status = makeStatusResponse({ type: "docker", status: true, code: 200, message: "OK", responseTime: 12, payload } as any);
+
+			const rebuilt = service.toStatusResponse(service.toCheck(status)!);
+
+			const roundtripped = rebuilt.payload as DockerStatusPayload;
+			expect(roundtripped.containers).toEqual(payload.containers);
+			expect(roundtripped.summary).toEqual(payload.summary);
 		});
 
 		it("hardware: a real consumer (extractThresholdBreaches) behaves identically on raw vs round-tripped status", () => {
