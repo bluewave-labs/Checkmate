@@ -565,6 +565,10 @@ export class MonitorService implements IMonitorService {
 			}
 		}
 		await this.normalizeCaptureDocker(body, monitorId, teamId);
+		// Clear state if alerts are turned off
+		if (body.dockerAlertOnState === false && body.dockerAlertOnHealth === false) {
+			body.dockerContainerStates = [];
+		}
 		const editedMonitor = await this.monitorsRepository.updateById(monitorId, teamId, body, { unsetProxyId });
 		await this.scheduler.updateJob(editedMonitor);
 		return editedMonitor;

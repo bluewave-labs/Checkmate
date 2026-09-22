@@ -1084,6 +1084,36 @@ describe("MonitorService", () => {
 			expect(jobQueue.updateJob).toHaveBeenCalledWith(updatedMonitor);
 		});
 
+		it("clears container alert states when both docker alert switches are turned off", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.updateById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			const { service } = createService({ monitorsRepository });
+
+			await service.editMonitor({
+				teamId: TEAM_ID,
+				monitorId: MONITOR_ID,
+				body: { type: "docker", url: "unix:///var/run/docker.sock", dockerAlertOnState: false, dockerAlertOnHealth: false },
+			});
+
+			const [, , patch] = (monitorsRepository.updateById as jest.Mock).mock.calls[0] as [string, string, Record<string, unknown>];
+			expect(patch.dockerContainerStates).toEqual([]);
+		});
+
+		it("keeps container alert states while either docker alert switch stays on", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.updateById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			const { service } = createService({ monitorsRepository });
+
+			await service.editMonitor({
+				teamId: TEAM_ID,
+				monitorId: MONITOR_ID,
+				body: { type: "docker", url: "unix:///var/run/docker.sock", dockerAlertOnState: false, dockerAlertOnHealth: true },
+			});
+
+			const [, , patch] = (monitorsRepository.updateById as jest.Mock).mock.calls[0] as [string, string, Record<string, unknown>];
+			expect(patch).not.toHaveProperty("dockerContainerStates");
+		});
+
 		it("keeps proxyId and does not unset it when proxyMode is custom", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			(monitorsRepository.updateById as jest.Mock).mockResolvedValue(makeMonitor());
