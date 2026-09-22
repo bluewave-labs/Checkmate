@@ -1,2 +1,7 @@
-export const dashboardCardKeys = ["monitorStatus", "monitorsByType"] as const;
+export const dashboardCardKeys = [
+	"monitorStatus",
+	"currentlyDown",
+	"lowestUptime",
+	"monitorsByType",
+] as const;
 export type DashboardCardKey = (typeof dashboardCardKeys)[number];
