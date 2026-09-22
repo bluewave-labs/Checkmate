@@ -73,10 +73,7 @@ export const IncidentModal = ({
 						mt={SPACING.SM}
 						color="error"
 					>
-						{t(
-							"pages.statusPages.monitorsList.incidents.errorLoading",
-							"Failed to load incidents."
-						)}
+						{t("pages.statusPages.monitorsList.incidents.errorLoading")}
 					</Typography>
 				) : data?.incidents && data.incidents.length > 0 ? (
 					<Stack
