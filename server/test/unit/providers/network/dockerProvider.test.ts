@@ -613,6 +613,24 @@ describe("DockerProvider", () => {
 			expect(result.payload?.containers[0]?.exitCode).toBe(137);
 		});
 
+		it("parses health from Status when inspect rejects", async () => {
+			const cases: Array<[string, string]> = [
+				["Up 3 hours (unhealthy)", "unhealthy"],
+				["Up 3 hours (healthy)", "healthy"],
+				["Up 5 seconds (health: starting)", "starting"],
+				["Up 3 hours", "none"],
+			];
+			for (const [status, expected] of cases) {
+				const container = makeContainer({ State: "running", Status: status });
+				const inspect = jest.fn().mockRejectedValue(new Error("boom"));
+				const { provider } = setup({ listContainers: jest.fn().mockResolvedValue([container]), inspect });
+
+				const result = await provider.handle(makeMonitor());
+
+				expect(result.payload?.containers[0]?.health).toBe(expected);
+			}
+		});
+
 		it("leaves exitCode undefined when inspect rejects and Status is not an exit string", async () => {
 			const container = makeContainer({ Status: "Up 3 hours" });
 			const inspect = jest.fn().mockRejectedValue(new Error("boom"));
@@ -724,7 +742,8 @@ describe("DockerProvider", () => {
 
 			expect(result.status).toBe(true);
 			expect(result.payload?.containers).toHaveLength(1);
-			expect(result.payload?.containers[0]).toEqual(expect.objectContaining({ health: "none" }));
+			// Health comes from the list status string ("Up 3 hours (healthy)") rather than being lost with the failed inspect
+			expect(result.payload?.containers[0]).toEqual(expect.objectContaining({ health: "healthy" }));
 			expect(result.payload?.containers[0]?.restartCount).toBeUndefined();
 			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Failed to inspect") }));
 		});

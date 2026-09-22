@@ -165,6 +165,37 @@ describe("evaluateDockerContainers", () => {
 			expect(next[0].healthAlerted).toBe(true);
 		});
 
+		it("does not fire unhealthy for a container that was seeded unhealthy", () => {
+			const seeded = evaluateDockerContainers({ containers: [makeContainer({ health: "unhealthy" })], previous: [], config });
+			const again = evaluateDockerContainers({ containers: [makeContainer({ health: "unhealthy" })], previous: seeded.next, config });
+
+			expect(seeded.events).toEqual([]);
+			expect(again.events).toEqual([]);
+			expect(again.next[0].healthAlerted).toBe(false);
+		});
+
+		it("does not fire unhealthy again when a restart reads starting and then unhealthy while the alert is open", () => {
+			const restarting = evaluateDockerContainers({
+				containers: [makeContainer({ health: "starting" })],
+				previous: [makeState({ health: "unhealthy", healthAlerted: true })],
+				config,
+			});
+			const back = evaluateDockerContainers({ containers: [makeContainer({ health: "unhealthy" })], previous: restarting.next, config });
+
+			expect(restarting.events).toEqual([]);
+			expect(restarting.next[0]).toMatchObject({ health: "starting", healthAlerted: true });
+			expect(back.events).toEqual([]);
+			expect(back.next[0].healthAlerted).toBe(true);
+		});
+
+		it("recovers an open health alert when the health check is removed", () => {
+			const previous = [makeState({ health: "unhealthy", healthAlerted: true })];
+			const { next, events } = evaluateDockerContainers({ containers: [makeContainer({ health: "none" })], previous, config });
+
+			expect(events).toEqual([{ kind: "healthy", containerName: "web", containerId: "c1", from: "unhealthy", to: "none" }]);
+			expect(next[0].healthAlerted).toBe(false);
+		});
+
 		it("fires healthy after unhealthy", () => {
 			const previous = [makeState({ health: "unhealthy", healthAlerted: true })];
 
@@ -249,14 +280,25 @@ describe("evaluateDockerContainers", () => {
 			expect(next).toEqual([{ name: "web", state: "running", health: "none", missingChecks: 0, alerted: false, healthAlerted: false }]);
 		});
 
-		it("neither alerts nor marks a container already past the missing threshold when state alerts come on", () => {
+		it("alerts once, late, for a container already past the threshold when state alerts come on, then returns it", () => {
 			const absent = evaluateDockerContainers({ containers: [], previous: [makeState({ missingChecks: 5 })], config });
-			const back = evaluateDockerContainers({ containers: [makeContainer()], previous: absent.next, config });
+			const stillAbsent = evaluateDockerContainers({ containers: [], previous: absent.next, config });
+			const back = evaluateDockerContainers({ containers: [makeContainer()], previous: stillAbsent.next, config });
 
-			expect(absent.events).toEqual([]);
-			expect(absent.next[0]).toMatchObject({ missingChecks: 6, alerted: false });
-			expect(back.events).toEqual([]);
+			expect(absent.events).toEqual([{ kind: "missing", containerName: "web", containerId: "", from: "running" }]);
+			expect(absent.next[0]).toMatchObject({ missingChecks: 6, alerted: true });
+			expect(stillAbsent.events).toEqual([]);
+			expect(back.events).toEqual([{ kind: "returned", containerName: "web", containerId: "c1", to: "running" }]);
 			expect(back.next[0]).toMatchObject({ missingChecks: 0, alerted: false });
+		});
+
+		it("fires returned before stopped when a missing container comes back already exited", () => {
+			const previous = [makeState({ missingChecks: MISSING_CHECKS_BEFORE_ALERT, alerted: true })];
+			const containers = [makeContainer({ state: "exited", status: "Exited (1) 5 seconds ago", exitCode: 1 })];
+			const { next, events } = evaluateDockerContainers({ containers, previous, config });
+
+			expect(events.map((event) => event.kind)).toEqual(["returned", "stopped"]);
+			expect(next[0].alerted).toBe(true);
 		});
 
 		it("drops a container from next once it has been absent twenty times", () => {
@@ -372,12 +414,29 @@ describe("evaluateDockerContainers", () => {
 			expect(next).toEqual([{ name: "loud", state: "exited", health: "none", missingChecks: 1, alerted: true, healthAlerted: false }]);
 		});
 
-		it("never raises a missing alert on a reseed", () => {
+		it("never raises a missing alert on a reseed, but does on the next normal check", () => {
 			const previous = [makeState({ name: "sick", health: "unhealthy", healthAlerted: true, missingChecks: MISSING_CHECKS_BEFORE_ALERT - 1 })];
-			const { next, events } = evaluateDockerContainers({ containers: [], previous, config, reseed: true });
+			const reseeded = evaluateDockerContainers({ containers: [], previous, config, reseed: true });
+			const normal = evaluateDockerContainers({ containers: [], previous: reseeded.next, config });
 
-			expect(events).toEqual([]);
-			expect(next[0]).toMatchObject({ missingChecks: MISSING_CHECKS_BEFORE_ALERT, alerted: false, healthAlerted: true });
+			expect(reseeded.events).toEqual([]);
+			expect(reseeded.next[0]).toMatchObject({ missingChecks: MISSING_CHECKS_BEFORE_ALERT, alerted: false, healthAlerted: true });
+			expect(normal.events).toEqual([{ kind: "missing", containerName: "sick", containerId: "", from: "running" }]);
+			expect(normal.next[0].alerted).toBe(true);
+		});
+
+		it("stays silent for a container that is unhealthy across the outage", () => {
+			const reseeded = evaluateDockerContainers({
+				containers: [makeContainer({ health: "unhealthy" })],
+				previous: [makeState({ health: "healthy" })],
+				config,
+				reseed: true,
+			});
+			const normal = evaluateDockerContainers({ containers: [makeContainer({ health: "unhealthy" })], previous: reseeded.next, config });
+
+			expect(reseeded.events).toEqual([]);
+			expect(normal.events).toEqual([]);
+			expect(normal.next[0].healthAlerted).toBe(false);
 		});
 
 		it("drops open alerts whose switch is off", () => {

@@ -284,9 +284,11 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		const recoveries = events.filter((event) => DockerAlertRecoveryKinds.includes(event.kind));
 		const alerts = events.filter((event) => !DockerAlertRecoveryKinds.includes(event.kind));
 
+		// Recoveries first: a container can recover from one alert and raise another in the same check (returned but
+		// exited), and the resolve must reach PagerDuty before the new trigger on the same dedup key
 		const messages: NotificationMessage[] = [];
-		if (alerts.length > 0) messages.push(this.buildContainerMessage("container_alert", monitor, alerts, clientHost));
 		if (recoveries.length > 0) messages.push(this.buildContainerMessage("container_recovered", monitor, recoveries, clientHost));
+		if (alerts.length > 0) messages.push(this.buildContainerMessage("container_alert", monitor, alerts, clientHost));
 		return messages;
 	};
 
@@ -339,7 +341,7 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 			case "unhealthy":
 				return event.from && event.from !== "none" ? `unhealthy (was ${event.from})` : "unhealthy";
 			case "healthy":
-				return "healthy again";
+				return event.to === "none" ? "health check removed" : "healthy again";
 			case "missing":
 				return "missing from host";
 			case "returned":

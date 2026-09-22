@@ -32,10 +32,11 @@ export const DockerContainersTable = ({
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const navigate = useNavigate();
 	const alertStateByName = new Map(alertStates.map((state) => [state.name, state]));
-	const needsAttention = (name: string) => {
-		const state = alertStateByName.get(name);
-		return Boolean(
-			state && (state.alerted || state.healthAlerted || state.health === "unhealthy")
+	const needsAttention = (row: DockerContainerInfo) => {
+		const state = alertStateByName.get(row.name);
+		return (
+			row.health === "unhealthy" ||
+			Boolean(state && (state.alerted || state.healthAlerted))
 		);
 	};
 
@@ -65,7 +66,7 @@ export const DockerContainersTable = ({
 							state={row.state}
 							name={row.name}
 							image={row.image}
-							alerted={needsAttention(row.name)}
+							alerted={needsAttention(row)}
 						/>
 					);
 				},

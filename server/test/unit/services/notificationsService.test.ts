@@ -333,6 +333,33 @@ describe("NotificationsService", () => {
 			expect(emailProvider.sendMessage.mock.calls.length + slackProvider.sendMessage.mock.calls.length).toBe(4);
 		});
 
+		it("delivers each message to every channel before starting the next message", async () => {
+			const notificationMessageBuilder = createMessageBuilder();
+			notificationMessageBuilder.buildContainerMessages.mockReturnValue([containerRecoveredMessage, containerAlertMessage]);
+			const { service, notificationsRepository, emailProvider, slackProvider } = createService({ notificationMessageBuilder });
+			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([
+				makeNotification({ id: "n1", type: "email" }),
+				makeNotification({ id: "n2", type: "slack" }),
+			]);
+			const order: string[] = [];
+			emailProvider.sendMessage.mockImplementation(async (_n: unknown, message: { type: string }) => {
+				order.push(`email:${message.type}`);
+				return true;
+			});
+			slackProvider.sendMessage.mockImplementation(async (_n: unknown, message: { type: string }) => {
+				order.push(`slack:${message.type}`);
+				return true;
+			});
+
+			await service.handleNotifications(
+				makeMonitor({ type: "docker" }),
+				makeStatusResponse(),
+				makeDecision({ notificationReason: "container_events", containerEvents: [makeContainerEvent({ kind: "returned" }), makeContainerEvent()] })
+			);
+
+			expect(order).toEqual(["email:container_recovered", "slack:container_recovered", "email:container_alert", "slack:container_alert"]);
+		});
+
 		it("returns false when one of four container sends fails", async () => {
 			const notificationMessageBuilder = createMessageBuilder();
 			notificationMessageBuilder.buildContainerMessages.mockReturnValue([containerAlertMessage, containerRecoveredMessage]);

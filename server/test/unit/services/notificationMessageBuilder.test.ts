@@ -453,7 +453,7 @@ describe("NotificationMessageBuilder", () => {
 			expect(msg.content.containers).toEqual([{ name: "web", kind: "started", summary: "started" }]);
 		});
 
-		it("builds an alert message followed by a recovery message when both kinds coexist", () => {
+		it("builds a recovery message followed by an alert message when both kinds coexist", () => {
 			const monitor = makeMonitor({ type: "docker" });
 			const events = [
 				makeContainerEvent({ kind: "healthy", containerName: "cache" }),
@@ -464,10 +464,10 @@ describe("NotificationMessageBuilder", () => {
 			const messages = builder.buildContainerMessages(monitor, events, "");
 
 			expect(messages).toHaveLength(2);
-			expect(messages[0].type).toBe("container_alert");
-			expect(messages[0].content.containers!.map((c) => c.name)).toEqual(["web"]);
-			expect(messages[1].type).toBe("container_recovered");
-			expect(messages[1].content.containers!.map((c) => c.name)).toEqual(["cache", "worker"]);
+			expect(messages[0].type).toBe("container_recovered");
+			expect(messages[0].content.containers!.map((c) => c.name)).toEqual(["cache", "worker"]);
+			expect(messages[1].type).toBe("container_alert");
+			expect(messages[1].content.containers!.map((c) => c.name)).toEqual(["web"]);
 		});
 
 		it("returns no messages when there are no events", () => {
@@ -522,6 +522,10 @@ describe("NotificationMessageBuilder", () => {
 
 			it("describes healthy", () => {
 				expect(summaryFor(makeContainerEvent({ kind: "healthy", from: "unhealthy", to: "healthy" }))).toBe("healthy again");
+			});
+
+			it("describes healthy with the health check removed", () => {
+				expect(summaryFor(makeContainerEvent({ kind: "healthy", from: "unhealthy", to: "none" }))).toBe("health check removed");
 			});
 
 			it("describes missing", () => {

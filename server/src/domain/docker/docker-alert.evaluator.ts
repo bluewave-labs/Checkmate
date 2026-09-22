@@ -28,17 +28,19 @@ const diffContainer = (
 	container: DockerContainerInfo,
 	prev: DockerContainerAlertState,
 	config: DockerAlertConfig,
-	events: DockerContainerEvent[]
+	events: DockerContainerEvent[],
+	reseed: boolean
 ) => {
 	const push = (event: Omit<DockerContainerEvent, "containerName" | "containerId">) =>
 		events.push({ ...event, containerName: container.name, containerId: container.id });
 
-	// An open alert is only meaningful while its switch is on; nothing can recover it once the switch is off
+	// An open alert is only meaningful while its switch is on; nothing can recover it once the switch is off.
+	// On a reseed (first check after a failed one) nothing observed across the outage can be attributed, so no new
+	// alert is raised; open alerts are kept so that they can still recover.
 	let alerted = config.onState && prev.alerted;
 	let healthAlerted = config.onHealth && prev.healthAlerted;
 
 	if (config.onState) {
-		// Return after reported missing
 		if (alerted && prev.missingChecks >= MISSING_CHECKS_BEFORE_ALERT) {
 			push({ kind: "returned", to: container.state });
 			alerted = false;
@@ -47,7 +49,7 @@ const diffContainer = (
 		const wasStopped = isStopped(prev.state);
 		const nowStopped = isStopped(container.state);
 		const cleanExit = container.exitCode === 0;
-		if (!wasStopped && nowStopped && !cleanExit) {
+		if (!reseed && !wasStopped && nowStopped && !cleanExit) {
 			push({ kind: "stopped", from: prev.state, to: container.status });
 			alerted = true;
 		} else if (alerted && container.state === "running") {
@@ -58,41 +60,16 @@ const diffContainer = (
 	}
 
 	if (config.onHealth) {
-		if (!healthAlerted && container.health === "unhealthy") {
+		// Both a transition and no open alert: the transition keeps a container seeded or reseeded as unhealthy silent,
+		// the open alert stops a restart reading "starting" between two unhealthy observations from alerting twice
+		if (!reseed && !healthAlerted && prev.health !== "unhealthy" && container.health === "unhealthy") {
 			push({ kind: "unhealthy", from: prev.health, to: container.health });
 			healthAlerted = true;
-		} else if (healthAlerted && container.health === "healthy") {
-			// Same reasoning: "starting" may be observed between unhealthy and healthy
+		} else if (healthAlerted && (container.health === "healthy" || container.health === "none")) {
+			// "none" means the health check was removed; the alert cannot stay open for a check that no longer exists
 			push({ kind: "healthy", from: prev.health, to: container.health });
 			healthAlerted = false;
 		}
-	}
-
-	return { name: container.name, state: container.state, health: container.health, missingChecks: 0, alerted, healthAlerted };
-};
-
-const reseedContainer = (
-	container: DockerContainerInfo,
-	prev: DockerContainerAlertState,
-	config: DockerAlertConfig,
-	events: DockerContainerEvent[]
-) => {
-	const push = (event: Omit<DockerContainerEvent, "containerName" | "containerId">) =>
-		events.push({ ...event, containerName: container.name, containerId: container.id });
-
-	let alerted = config.onState && prev.alerted;
-	let healthAlerted = config.onHealth && prev.healthAlerted;
-
-	if (alerted && prev.missingChecks >= MISSING_CHECKS_BEFORE_ALERT) {
-		push({ kind: "returned", to: container.state });
-		alerted = false;
-	} else if (alerted && container.state === "running") {
-		push({ kind: "started", from: prev.state, to: container.state });
-		alerted = false;
-	}
-	if (healthAlerted && container.health === "healthy") {
-		push({ kind: "healthy", from: prev.health, to: container.health });
-		healthAlerted = false;
 	}
 
 	return { ...seed(container), alerted, healthAlerted };
@@ -114,8 +91,7 @@ export const evaluateDockerContainers = (params: {
 		if (seen.has(container.name)) continue; // Containers cannot have same name
 		seen.add(container.name);
 		const prev = previousByName.get(container.name);
-		if (!prev) next.push(seed(container));
-		else next.push(reseed ? reseedContainer(container, prev, config, events) : diffContainer(container, prev, config, events));
+		next.push(prev ? diffContainer(container, prev, config, events, reseed) : seed(container));
 	}
 
 	// Remembered containers not in this list. On a reseed only those with an open alert are kept, so the alert can still recover.
@@ -124,8 +100,9 @@ export const evaluateDockerContainers = (params: {
 		if (reseed && !prev.alerted && !prev.healthAlerted) continue;
 		const missingChecks = prev.missingChecks + 1;
 		if (missingChecks >= MISSING_CHECKS_BEFORE_FORGET) continue;
-		// A container that already has an open alert is not alerted again for disappearing, and a reseed raises no new alert
-		const fireMissing = config.onState && !reseed && !prev.alerted && missingChecks === MISSING_CHECKS_BEFORE_ALERT;
+		// Fires once, on the first eligible check at or past the threshold, so a switch that was off or a reseed at the
+		// exact threshold does not lose it. A container that already has an open alert is not alerted again for disappearing.
+		const fireMissing = config.onState && !reseed && !prev.alerted && missingChecks >= MISSING_CHECKS_BEFORE_ALERT;
 		if (fireMissing) {
 			events.push({ kind: "missing", containerName: prev.name, containerId: "", from: prev.state });
 		}

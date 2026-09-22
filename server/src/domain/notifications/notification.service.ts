@@ -106,11 +106,12 @@ export class NotificationsService implements INotificationsService {
 			messages.push(...this.notificationMessageBuilder.buildContainerMessages(monitor, decision.containerEvents, clientHost));
 		}
 
-		const tasks = messages.flatMap((message) =>
-			notifications.map((notification) => this.send(notification, monitor, monitorStatusResponse, decision, message))
-		);
-
-		const outcomes = await Promise.all(tasks);
+		// Messages go out in order so a recovery is delivered before an alert raised by the same check; channels run in parallel
+		const outcomes: boolean[] = [];
+		for (const message of messages) {
+			const sent = await Promise.all(notifications.map((notification) => this.send(notification, monitor, monitorStatusResponse, decision, message)));
+			outcomes.push(...sent);
+		}
 		const succeeded = outcomes.filter(Boolean).length;
 		const failed = outcomes.length - succeeded;
 		if (failed > 0) {
