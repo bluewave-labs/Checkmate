@@ -3,9 +3,7 @@ import Stack from "@mui/material/Stack";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { useTranslation } from "react-i18next";
 import { Checkbox, Dialog } from "@/Components/inputs";
-import { type DashboardCardKey, dashboardCardKeys } from "@/Features/UI/uiSlice";
-
-export type { DashboardCardKey };
+import { type DashboardCardKey, dashboardCardKeys } from "@/Types/Dashboard";
 
 interface EditCardsModalProps {
 	open: boolean;
@@ -52,7 +50,7 @@ export const EditCardsModal = ({
 			fullWidth
 		>
 			<Stack>
-				{dashboardCardKeys.map((key) => (
+				{dashboardCardKeys.map((key: DashboardCardKey) => (
 					<FormControlLabel
 						key={key}
 						label={t(`pages.dashboard.cards.${key}`)}

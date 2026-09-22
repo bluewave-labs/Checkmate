@@ -3,9 +3,6 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 type ThemeMode = "light" | "dark";
 type ChartType = "histogram" | "line";
 
-export const dashboardCardKeys = ["monitorStatus", "monitorsByType"] as const;
-export type DashboardCardKey = (typeof dashboardCardKeys)[number];
-
 type TableName =
 	| "monitors"
 	| "team"
