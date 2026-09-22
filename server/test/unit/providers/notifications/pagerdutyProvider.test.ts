@@ -103,12 +103,12 @@ describe("PagerDutyProvider", () => {
 			expect(mockGotPost).toHaveBeenCalledTimes(2);
 
 			const [web, worker] = mockGotPost.mock.calls.map((call) => call[1].json);
-			expect(web.dedup_key).toBe("checkmate-mon-1-container-web");
+			expect(web.dedup_key).toBe("checkmate-mon-1-container-web-state");
 			expect(web.event_action).toBe("trigger");
 			expect(web.payload.summary).toBe("Docker Host / web: stopped (Exited (137) 3 seconds ago)");
 			expect(web.payload.custom_details.container).toEqual({ name: "web", event: "stopped", summary: "stopped (Exited (137) 3 seconds ago)" });
 
-			expect(worker.dedup_key).toBe("checkmate-mon-1-container-worker");
+			expect(worker.dedup_key).toBe("checkmate-mon-1-container-worker-health");
 			expect(worker.event_action).toBe("trigger");
 			expect(worker.payload.summary).toBe("Docker Host / worker: unhealthy (was healthy)");
 			expect(worker.payload.custom_details.container).toEqual({ name: "worker", event: "unhealthy", summary: "unhealthy (was healthy)" });

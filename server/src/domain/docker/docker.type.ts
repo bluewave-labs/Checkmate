@@ -23,6 +23,7 @@ export const DockerAlertEventKinds = [
 export type DockerAlertEventKind = (typeof DockerAlertEventKinds)[number];
 
 export const DockerAlertRecoveryKinds: readonly DockerAlertEventKind[] = ["started", "healthy", "returned"];
+export const DockerAlertHealthKinds: readonly DockerAlertEventKind[] = ["unhealthy", "healthy"];
 
 export interface DockerContainerAlertState {
 	name: string;
@@ -30,6 +31,7 @@ export interface DockerContainerAlertState {
 	health: DockerHealthStatus;
 	missingChecks: number; // consecutive checks without this container
 	alerted: boolean; // a stop or missing alert is open for this container
+	healthAlerted: boolean; // an unhealthy alert is open for this container
 }
 
 export interface DockerContainerEvent {

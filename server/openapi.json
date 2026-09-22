@@ -493,9 +493,12 @@
 								},
 								"alerted": {
 									"type": "boolean"
+								},
+								"healthAlerted": {
+									"type": "boolean"
 								}
 							},
-							"required": ["name", "state", "health", "missingChecks", "alerted"]
+							"required": ["name", "state", "health", "missingChecks", "alerted", "healthAlerted"]
 						}
 					},
 					"dockerTlsCa": {
@@ -756,9 +759,12 @@
 												},
 												"alerted": {
 													"type": "boolean"
+												},
+												"healthAlerted": {
+													"type": "boolean"
 												}
 											},
-											"required": ["name", "state", "health", "missingChecks", "alerted"]
+											"required": ["name", "state", "health", "missingChecks", "alerted", "healthAlerted"]
 										}
 									},
 									"dockerTlsCa": {
@@ -7283,9 +7289,12 @@
 																	},
 																	"alerted": {
 																		"type": "boolean"
+																	},
+																	"healthAlerted": {
+																		"type": "boolean"
 																	}
 																},
-																"required": ["name", "state", "health", "missingChecks", "alerted"]
+																"required": ["name", "state", "health", "missingChecks", "alerted", "healthAlerted"]
 															}
 														},
 														"dockerTlsCa": {
@@ -7896,9 +7905,12 @@
 																	},
 																	"alerted": {
 																		"type": "boolean"
+																	},
+																	"healthAlerted": {
+																		"type": "boolean"
 																	}
 																},
-																"required": ["name", "state", "health", "missingChecks", "alerted"]
+																"required": ["name", "state", "health", "missingChecks", "alerted", "healthAlerted"]
 															}
 														},
 														"dockerTlsCa": {

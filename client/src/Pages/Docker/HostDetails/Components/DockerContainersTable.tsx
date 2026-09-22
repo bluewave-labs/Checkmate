@@ -34,7 +34,9 @@ export const DockerContainersTable = ({
 	const alertStateByName = new Map(alertStates.map((state) => [state.name, state]));
 	const needsAttention = (name: string) => {
 		const state = alertStateByName.get(name);
-		return Boolean(state && (state.alerted || state.health === "unhealthy"));
+		return Boolean(
+			state && (state.alerted || state.healthAlerted || state.health === "unhealthy")
+		);
 	};
 
 	const getHeaders = () => {

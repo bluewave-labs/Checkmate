@@ -479,6 +479,7 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 				health: state.health,
 				missingChecks: state.missingChecks ?? 0,
 				alerted: state.alerted ?? false,
+				healthAlerted: state.healthAlerted ?? false,
 			})),
 			dnsServer: doc.dnsServer ?? undefined,
 			dnsRecordType: doc.dnsRecordType ?? undefined,

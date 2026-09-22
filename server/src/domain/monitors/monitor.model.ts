@@ -128,6 +128,7 @@ const dockerContainerAlertStateSchema = new Schema<DockerContainerAlertState>(
 		health: { type: String, enum: DockerHealthStatuses, required: true },
 		missingChecks: { type: Number, default: 0 },
 		alerted: { type: Boolean, default: false },
+		healthAlerted: { type: Boolean, default: false },
 	},
 	{ _id: false }
 );

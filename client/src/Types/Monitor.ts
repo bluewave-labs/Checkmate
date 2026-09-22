@@ -330,6 +330,7 @@ export interface DockerContainerAlertState {
 	health: DockerHealthStatus;
 	missingChecks: number;
 	alerted: boolean;
+	healthAlerted: boolean;
 }
 
 export interface DockerContainerStatsBucket {

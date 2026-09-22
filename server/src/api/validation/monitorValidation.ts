@@ -30,6 +30,7 @@ const dockerContainerAlertStateResponseSchema = z.object({
 	health: dockerHealthStatusSchema,
 	missingChecks: z.number(),
 	alerted: z.boolean(),
+	healthAlerted: z.boolean(),
 });
 
 // The client form submits proxyId: "" when no proxy is selected, set it to undefined

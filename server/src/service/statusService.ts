@@ -218,7 +218,8 @@ export class StatusService implements IStatusService {
 				const previousCheckFailed = monitor.statusWindow?.at(-1) === false;
 				const evaluation = evaluateDockerContainers({
 					containers: dockerPayload.containers,
-					previous: previousCheckFailed ? [] : (monitor.dockerContainerStates ?? []),
+					previous: monitor.dockerContainerStates ?? [],
+					reseed: previousCheckFailed,
 					config: { onState: monitor.dockerAlertOnState ?? false, onHealth: monitor.dockerAlertOnHealth ?? false },
 				});
 				patch.dockerContainerStates = evaluation.next;

@@ -5,6 +5,7 @@ import { NotificationProvider } from "@/domain/notifications/providers/INotifica
 import type { ContainerEventInfo, NotificationMessage } from "@/domain/notifications/notification.type.js";
 import { getTestMessage } from "@/domain/notifications/providers/utils.js";
 import { AlertPagerDutyPayload } from "@/domain/notifications/notification.type.js";
+import { DockerAlertHealthKinds } from "@/domain/docker/docker.type.js";
 
 export class PagerDutyProvider extends NotificationProvider {
 	async sendTestAlert(notification: Partial<Notification>): Promise<boolean> {
@@ -97,8 +98,10 @@ export class PagerDutyProvider extends NotificationProvider {
 
 		const severity = severityMap[message.severity] || "error";
 
-		// Build deduplication key based on monitor ID (and container name) for event grouping
-		const dedupKey = container ? `checkmate-${message.monitor.id}-container-${container.name}` : `checkmate-${message.monitor.id}`;
+		// Build deduplication key based on monitor ID (and container name plus alert category) for event grouping.
+		// State and health alerts on the same container are separate incidents, so a recovery of one cannot resolve the other.
+		const category = container && DockerAlertHealthKinds.includes(container.kind) ? "health" : "state";
+		const dedupKey = container ? `checkmate-${message.monitor.id}-container-${container.name}-${category}` : `checkmate-${message.monitor.id}`;
 
 		// Build summary
 		let summary = container

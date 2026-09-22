@@ -1147,27 +1147,50 @@ describe("StatusService", () => {
 				expect(result.containerEvents).toBeUndefined();
 			});
 
-			it("reseeds state without events after a failed check", async () => {
+			it("reseeds state without new alerts after a failed check, keeping an open alert", async () => {
 				const monitor = makeDockerMonitor({
 					statusWindow: [true, false],
-					dockerContainerStates: [{ name: "web", state: "exited", health: "none", missingChecks: 0, alerted: true }],
+					dockerContainerStates: [
+						{ name: "web", state: "running", health: "none", missingChecks: 0, alerted: false, healthAlerted: false },
+						{ name: "db", state: "exited", health: "none", missingChecks: 0, alerted: true, healthAlerted: false },
+					],
 				});
 				const { service, monitorsRepository } = createService();
 				(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
 
-				const container = makeContainer({ state: "exited", status: "Exited (137) 2 minutes ago", exitCode: 137 });
-				const result = await service.updateMonitorStatus(makeDockerResponse([container]), makeCheck(), monitor);
+				const containers = [
+					makeContainer({ state: "exited", status: "Exited (137) 2 minutes ago", exitCode: 137 }),
+					makeContainer({ id: "db1", name: "db", state: "exited", status: "Exited (1) 10 minutes ago", exitCode: 1 }),
+				];
+				const result = await service.updateMonitorStatus(makeDockerResponse(containers), makeCheck(), monitor);
 
 				expect(result.containerEvents).toEqual([]);
 				expect(lastPatch(monitorsRepository).dockerContainerStates).toEqual([
-					{ name: "web", state: "exited", health: "none", missingChecks: 0, alerted: false },
+					{ name: "web", state: "exited", health: "none", missingChecks: 0, alerted: false, healthAlerted: false },
+					{ name: "db", state: "exited", health: "none", missingChecks: 0, alerted: true, healthAlerted: false },
+				]);
+			});
+
+			it("sends the recovery for an alert that was open before a failed check", async () => {
+				const monitor = makeDockerMonitor({
+					statusWindow: [true, false],
+					dockerContainerStates: [{ name: "web", state: "exited", health: "none", missingChecks: 0, alerted: true, healthAlerted: false }],
+				});
+				const { service, monitorsRepository } = createService();
+				(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+
+				const result = await service.updateMonitorStatus(makeDockerResponse([makeContainer()]), makeCheck(), monitor);
+
+				expect(result.containerEvents).toEqual([{ kind: "started", containerName: "web", containerId: "abc123", from: "exited", to: "running" }]);
+				expect(lastPatch(monitorsRepository).dockerContainerStates).toEqual([
+					{ name: "web", state: "running", health: "none", missingChecks: 0, alerted: false, healthAlerted: false },
 				]);
 			});
 
 			it("diffs against remembered state after a successful check", async () => {
 				const monitor = makeDockerMonitor({
 					statusWindow: [true, true],
-					dockerContainerStates: [{ name: "web", state: "running", health: "none", missingChecks: 0, alerted: false }],
+					dockerContainerStates: [{ name: "web", state: "running", health: "none", missingChecks: 0, alerted: false, healthAlerted: false }],
 				});
 				const { service, monitorsRepository } = createService();
 				(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
@@ -1179,7 +1202,7 @@ describe("StatusService", () => {
 					{ kind: "stopped", containerName: "web", containerId: "abc123", from: "running", to: "Exited (137) 2 minutes ago" },
 				]);
 				expect(lastPatch(monitorsRepository).dockerContainerStates).toEqual([
-					{ name: "web", state: "exited", health: "none", missingChecks: 0, alerted: true },
+					{ name: "web", state: "exited", health: "none", missingChecks: 0, alerted: true, healthAlerted: false },
 				]);
 			});
 
@@ -1191,7 +1214,7 @@ describe("StatusService", () => {
 				await service.updateMonitorStatus(makeDockerResponse([makeContainer()]), makeCheck(), monitor);
 
 				expect(lastPatch(monitorsRepository).dockerContainerStates).toEqual([
-					{ name: "web", state: "running", health: "none", missingChecks: 0, alerted: false },
+					{ name: "web", state: "running", health: "none", missingChecks: 0, alerted: false, healthAlerted: false },
 				]);
 			});
 
@@ -1203,13 +1226,13 @@ describe("StatusService", () => {
 				await service.updateMonitorStatus(makeDockerResponse([makeContainer()]), makeCheck(), monitor);
 
 				expect(lastPatch(monitorsRepository).dockerContainerStates).toEqual([
-					{ name: "web", state: "running", health: "none", missingChecks: 0, alerted: false },
+					{ name: "web", state: "running", health: "none", missingChecks: 0, alerted: false, healthAlerted: false },
 				]);
 			});
 
 			it("returns containerEvents on the status change result", async () => {
 				const monitor = makeDockerMonitor({
-					dockerContainerStates: [{ name: "web", state: "running", health: "healthy", missingChecks: 0, alerted: false }],
+					dockerContainerStates: [{ name: "web", state: "running", health: "healthy", missingChecks: 0, alerted: false, healthAlerted: false }],
 				});
 				const { service, monitorsRepository } = createService();
 				(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);

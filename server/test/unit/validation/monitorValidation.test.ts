@@ -836,7 +836,7 @@ describe("monitorValidation — Docker container alerts", () => {
 		it("strips dockerContainerStates from the body", () => {
 			const parsed = createMonitorBodyValidation.parse({
 				...baseDockerBody,
-				dockerContainerStates: [{ name: "web", state: "running", health: "none", missingChecks: 0, alerted: false }],
+				dockerContainerStates: [{ name: "web", state: "running", health: "none", missingChecks: 0, alerted: false, healthAlerted: false }],
 			});
 			expect(parsed).not.toHaveProperty("dockerContainerStates");
 		});
