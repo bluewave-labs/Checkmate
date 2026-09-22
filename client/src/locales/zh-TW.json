@@ -1377,6 +1377,9 @@
 					"maintenance": "維護中",
 					"paused": "已暫停",
 					"up": "運行中"
+				},
+				"incidents": {
+					"errorLoading": "無法載入事件。"
 				}
 			},
 			"statusBar": {

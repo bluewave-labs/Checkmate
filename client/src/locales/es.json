@@ -1377,6 +1377,9 @@
 					"maintenance": "Mantenimiento",
 					"paused": "Pausado",
 					"up": "Operativo"
+				},
+				"incidents": {
+					"errorLoading": "Error al cargar incidentes."
 				}
 			},
 			"statusBar": {

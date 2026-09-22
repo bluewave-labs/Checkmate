@@ -1378,6 +1378,9 @@
 					"maintenance": "Wartung",
 					"paused": "Pausiert",
 					"up": "Betriebsbereit"
+				},
+				"incidents": {
+					"errorLoading": "Vorfälle konnten nicht geladen werden."
 				}
 			},
 			"statusBar": {

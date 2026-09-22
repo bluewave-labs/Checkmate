@@ -1377,6 +1377,9 @@
 					"maintenance": "Údržba",
 					"paused": "Pozastaveno",
 					"up": "V provozu"
+				},
+				"incidents": {
+					"errorLoading": "Nepodařilo se načíst incidenty."
 				}
 			},
 			"statusBar": {

@@ -1377,6 +1377,9 @@
 					"maintenance": "Bảo trì",
 					"paused": "Tạm dừng",
 					"up": "Hoạt động"
+				},
+				"incidents": {
+					"errorLoading": "Không thể tải sự cố."
 				}
 			},
 			"statusBar": {

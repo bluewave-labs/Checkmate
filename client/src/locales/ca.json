@@ -1377,6 +1377,9 @@
 				"uptime": {
 					"title": "Temps en línia",
 					"responseTime": "Temps de resposta"
+				},
+				"incidents": {
+					"errorLoading": "No s'han pogut carregar les incidències."
 				}
 			},
 			"statusBar": {
