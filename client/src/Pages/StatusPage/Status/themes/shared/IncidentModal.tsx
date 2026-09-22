@@ -11,14 +11,7 @@ import { useTheme } from "@mui/material";
 import { SPACING } from "@/Utils/Theme/constants";
 import { formatDateWithTz } from "@/Utils/TimeUtils";
 
-interface Incident {
-	id: string;
-	message: string | null;
-	startTime: string;
-	endTime: string | null;
-	statusCode: number | null;
-}
-
+import type { Incident } from "@/Types/Incident";
 interface IncidentModalProps {
 	url: string;
 	monitorId: string | null;
