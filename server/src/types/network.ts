@@ -9,7 +9,7 @@ import type {
 	GotTimings,
 	ILighthouseAudit,
 } from "@/domain/checks/check.type.js";
-import { DockerContainerInfo, DockerContainerLogs, DockerContainerSummary } from "@/domain/docker/docker.type.js";
+import { DockerContainerEvent, DockerContainerInfo, DockerContainerLogs, DockerContainerSummary } from "@/domain/docker/docker.type.js";
 import type { DnsRecordType, Monitor, MonitorMatchMethod, MonitorStatus, MonitorType } from "@/domain/monitors/monitor.type.js";
 
 import type { QueryResult } from "gamedig";
@@ -190,6 +190,7 @@ export type StatusChangeResult = {
 		disk: boolean;
 		temp: boolean;
 	};
+	containerEvents?: DockerContainerEvent[];
 };
 
 export type MonitorStatusResponseOverrides<T> = Partial<Omit<MonitorStatusResponse<T>, "monitorId" | "teamId" | "type">>;

@@ -19,6 +19,8 @@ import { ILogger } from "@/utils/logger.js";
 import type { HardwareStatusMetrics } from "@/types/network.js";
 import { MAX_RECENT_CHECKS } from "@/domain/monitors/monitor.type.js";
 import { toCheckSnapshot } from "@/domain/checks/check.snapshot.js";
+import { evaluateDockerContainers } from "@/domain/docker/docker-alert.evaluator.js";
+import type { DockerContainerEvent } from "@/domain/docker/docker.type.js";
 
 const SERVICE_NAME = "StatusService";
 const HARDWARE_ALERT_COUNTER_START = 5;
@@ -206,6 +208,23 @@ export class StatusService implements IStatusService {
 				statusChanged = newStatus === "down";
 			}
 
+			// Evaluate container events (only for docker monitors with either alert switch on and a successful check).
+			// This runs before the short-window return because container events do not depend on reachability.
+			let containerEvents: DockerContainerEvent[] | undefined;
+			const dockerPayload = statusResponse.payload as DockerStatusPayload | undefined;
+			const dockerAlertsOn = monitor.dockerAlertOnState || monitor.dockerAlertOnHealth;
+			if (monitor.type === "docker" && dockerAlertsOn && status && dockerPayload?.containers) {
+				// Clean slate after an outage: the previous check's result is the last entry of the not-yet-updated status window
+				const previousCheckFailed = monitor.statusWindow?.at(-1) === false;
+				const evaluation = evaluateDockerContainers({
+					containers: dockerPayload.containers,
+					previous: previousCheckFailed ? [] : (monitor.dockerContainerStates ?? []),
+					config: { onState: monitor.dockerAlertOnState ?? false, onHealth: monitor.dockerAlertOnHealth ?? false },
+				});
+				patch.dockerContainerStates = evaluation.next;
+				containerEvents = evaluation.events;
+			}
+
 			// Not enough data points yet — record the check and return
 			if (projectedWindow.length < monitor.statusWindowSize) {
 				const updated = await this.monitorsRepository.updateStatusWindowAndChecks(
@@ -224,6 +243,7 @@ export class StatusService implements IStatusService {
 					prevStatus,
 					code,
 					timestamp: Date.now(),
+					containerEvents,
 				};
 			}
 
@@ -288,6 +308,7 @@ export class StatusService implements IStatusService {
 				code,
 				timestamp: new Date().getTime(),
 				thresholdBreaches,
+				containerEvents,
 			};
 		} catch (error: unknown) {
 			throw new AppError({
