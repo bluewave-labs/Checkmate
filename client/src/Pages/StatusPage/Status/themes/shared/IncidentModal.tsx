@@ -34,7 +34,7 @@ export const IncidentModal = ({
 	const { data, isLoading, error } = useGet<{ incidents: Incident[] }>(
 		open ? `/status-page/${url}/incidents/${monitorId}?date=${date}` : null,
 		{},
-		{ revalidateOnFocus: false }
+		{ revalidateOnFocus: false, keepPreviousData: true }
 	);
 
 	return (
