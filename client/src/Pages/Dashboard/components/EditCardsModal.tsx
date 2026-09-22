@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Stack from "@mui/material/Stack";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { useTranslation } from "react-i18next";
 import { Checkbox, Dialog } from "@/Components/inputs";
+import { type DashboardCardKey, dashboardCardKeys } from "@/Features/UI/uiSlice";
 
-export type DashboardCardKey = "monitorStatus" | "monitorsByType";
+export type { DashboardCardKey };
 
 interface EditCardsModalProps {
 	open: boolean;
@@ -12,8 +13,6 @@ interface EditCardsModalProps {
 	onClose: () => void;
 	onSave: (visibleCards: Set<DashboardCardKey>) => void;
 }
-
-const allCards: DashboardCardKey[] = ["monitorStatus", "monitorsByType"];
 
 export const EditCardsModal = ({
 	open,
@@ -24,9 +23,10 @@ export const EditCardsModal = ({
 	const { t } = useTranslation();
 	const [draft, setDraft] = useState<Set<DashboardCardKey>>(new Set(visibleCards));
 
-	useEffect(() => {
-		if (open) setDraft(new Set(visibleCards));
-	}, [open, visibleCards]);
+	const handleClose = () => {
+		setDraft(new Set(visibleCards));
+		onClose();
+	};
 
 	const handleToggle = (key: DashboardCardKey) => {
 		setDraft((prev) => {
@@ -45,14 +45,14 @@ export const EditCardsModal = ({
 			open={open}
 			title={t("pages.dashboard.editCardsModal.title")}
 			content={t("pages.dashboard.editCardsModal.description")}
-			onCancel={onClose}
+			onCancel={handleClose}
 			onConfirm={() => onSave(draft)}
 			confirmText={t("pages.dashboard.editCardsModal.done")}
 			maxWidth="xs"
 			fullWidth
 		>
 			<Stack>
-				{allCards.map((key) => (
+				{dashboardCardKeys.map((key) => (
 					<FormControlLabel
 						key={key}
 						label={t(`pages.dashboard.cards.${key}`)}

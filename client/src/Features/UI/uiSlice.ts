@@ -2,6 +2,10 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 type ThemeMode = "light" | "dark";
 type ChartType = "histogram" | "line";
+
+export const dashboardCardKeys = ["monitorStatus", "monitorsByType"] as const;
+export type DashboardCardKey = (typeof dashboardCardKeys)[number];
+
 type TableName =
 	| "monitors"
 	| "team"
@@ -35,6 +39,7 @@ interface UIState {
 	language: string;
 	starPromptOpen: boolean;
 	chartType: ChartType;
+	dashboardVisibleCards: DashboardCardKey[];
 }
 
 const initialMode: ThemeMode = window?.matchMedia?.("(prefers-color-scheme: dark)")
@@ -74,6 +79,7 @@ const initialState: UIState = {
 	language: "en",
 	starPromptOpen: true,
 	chartType: "histogram",
+	dashboardVisibleCards: [...dashboardCardKeys],
 };
 
 const uiSlice = createSlice({
@@ -117,6 +123,9 @@ const uiSlice = createSlice({
 		setChartType: (state, action: PayloadAction<ChartType>) => {
 			state.chartType = action.payload;
 		},
+		setDashboardVisibleCards: (state, action: PayloadAction<DashboardCardKey[]>) => {
+			state.dashboardVisibleCards = action.payload;
+		},
 	},
 });
 
@@ -133,4 +142,5 @@ export const {
 	setLanguage,
 	setStarPromptOpen,
 	setChartType,
+	setDashboardVisibleCards,
 } = uiSlice.actions;

@@ -1,29 +1,35 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
+import { useSelector, useDispatch } from "react-redux";
 
 import { BasePage } from "@/Components/design-elements/BasePage";
 import { Button } from "@/Components/inputs";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { useMonitorListController } from "@/Hooks/useMonitorListController";
 import { MonitorTypes, type MonitorTypeCount } from "@/Types/Monitor";
+import {
+	setDashboardVisibleCards,
+	dashboardCardKeys,
+	type DashboardCardKey,
+} from "@/Features/UI/uiSlice";
+import type { RootState, AppDispatch } from "@/store";
 
 import { MonitorStatusCard } from "@/Pages/Dashboard/components/cards/MonitorStatusCard";
 import { MonitorsByTypeCard } from "@/Pages/Dashboard/components/cards/MonitorsByTypeCard";
-import {
-	EditCardsModal,
-	type DashboardCardKey,
-} from "@/Pages/Dashboard/components/EditCardsModal";
-
-const allCards = new Set<DashboardCardKey>(["monitorStatus", "monitorsByType"]);
+import { EditCardsModal } from "@/Pages/Dashboard/components/EditCardsModal";
 
 const Dashboard = () => {
 	const theme = useTheme();
 	const { t } = useTranslation();
+	const dispatch = useDispatch<AppDispatch>();
 	const [editOpen, setEditOpen] = useState(false);
-	const [visibleCards, setVisibleCards] = useState<Set<DashboardCardKey>>(allCards);
+	const visibleCardsList = useSelector(
+		(state: RootState) => state.ui.dashboardVisibleCards
+	);
+	const visibleCards = useMemo(() => new Set(visibleCardsList), [visibleCardsList]);
 
 	const { monitors, summary } = useMonitorListController({
 		types: [...MonitorTypes],
@@ -42,6 +48,11 @@ const Dashboard = () => {
 			.map(([type, count]) => ({ type, count }))
 			.sort((a, b) => b.count - a.count);
 	}, [monitors]);
+
+	const cardComponents: Record<DashboardCardKey, ReactNode> = {
+		monitorStatus: <MonitorStatusCard summary={summary} />,
+		monitorsByType: <MonitorsByTypeCard monitorsByType={monitorsByType} />,
+	};
 
 	return (
 		<BasePage headerKey="dashboard">
@@ -64,10 +75,11 @@ const Dashboard = () => {
 					gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }}
 					gap={theme.spacing(LAYOUT.MD)}
 				>
-					{visibleCards.has("monitorStatus") && <MonitorStatusCard summary={summary} />}
-					{visibleCards.has("monitorsByType") && (
-						<MonitorsByTypeCard monitorsByType={monitorsByType} />
-					)}
+					{dashboardCardKeys
+						.filter((key) => visibleCards.has(key))
+						.map((key) => (
+							<div key={key}>{cardComponents[key]}</div>
+						))}
 				</Box>
 			</Stack>
 
@@ -76,7 +88,7 @@ const Dashboard = () => {
 				visibleCards={visibleCards}
 				onClose={() => setEditOpen(false)}
 				onSave={(next) => {
-					setVisibleCards(next);
+					dispatch(setDashboardVisibleCards([...next]));
 					setEditOpen(false);
 				}}
 			/>
