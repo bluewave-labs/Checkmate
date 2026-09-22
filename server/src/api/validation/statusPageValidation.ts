@@ -26,7 +26,7 @@ export const getPublicMonitorIncidentsParamValidation = z.object({
 });
 
 export const getPublicMonitorIncidentsQueryValidation = z.object({
-	date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
+	date: z.string().date("Date must be a valid calendar date in YYYY-MM-DD format"),
 });
 
 export const getStatusPageQueryValidation = z.object({
