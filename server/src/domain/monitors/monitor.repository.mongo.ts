@@ -8,7 +8,6 @@ import { AppError } from "@/utils/AppError.js";
 import { IMonitorsRepository, TeamQueryConfig, SummaryConfig, RecentChecksMode } from "@/domain/monitors/monitor.repository.interface.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 import { toCheckSnapshot } from "@/domain/checks/check.snapshot.js";
-import { DockerContainerState } from "@/domain/docker/docker.type.js";
 class MongoMonitorsRepository implements IMonitorsRepository {
 	create = async (monitor: Monitor, teamId: string, userId: string) => {
 		const monitorModel = new MonitorModel({ ...monitor, teamId, userId });

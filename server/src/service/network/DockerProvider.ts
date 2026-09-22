@@ -29,7 +29,6 @@ import { NETWORK_ERROR } from "@/types/network.js";
 import { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import { DOCKER_TLS_URL, isCaptureDockerUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
 import { splitCertificateBundle } from "@/utils/pem.js";
-import { inspect } from "node:util";
 
 type DockerodeType = typeof Dockerode;
 type DockerOptions = Dockerode.DockerOptions & { agent?: https.Agent; connectionTimeout?: number };
