@@ -1377,6 +1377,9 @@
 					"maintenance": "Huolto",
 					"paused": "Keskeytetty",
 					"up": "Toiminnassa"
+				},
+				"incidents": {
+					"errorLoading": "Häiriöiden lataaminen epäonnistui."
 				}
 			},
 			"statusBar": {

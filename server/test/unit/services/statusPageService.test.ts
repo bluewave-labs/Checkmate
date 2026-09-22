@@ -4,6 +4,7 @@ import type { IStatusPagesRepository } from "../../../src/domain/status-pages/st
 import type { ISettingsService } from "../../../src/domain/app-settings/app-settings.service.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
 import type { IChecksRepository } from "../../../src/domain/checks/check.repository.interface.ts";
+import type { IIncidentsRepository } from "../../../src/domain/incidents/incident.repository.interface.ts";
 import type { CheckSnapshot } from "../../../src/domain/checks/check.type.ts";
 import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { StatusPage } from "../../../src/domain/status-pages/status-page.type.ts";
@@ -84,13 +85,19 @@ const createChecksRepo = () =>
 		getDailyStatusBuckets: jest.fn().mockResolvedValue([]),
 	}) as unknown as jest.Mocked<IChecksRepository>;
 
+const createIncidentsRepo = () =>
+	({
+		findByMonitorIdAndDate: jest.fn().mockResolvedValue([]),
+	}) as unknown as jest.Mocked<IIncidentsRepository>;
+
 const createService = (themesEnabled = true, clientHost = "http://localhost:5173", showURL = false) => {
 	const repo = createRepo();
 	const settingsService = createSettingsService(themesEnabled, clientHost, showURL);
 	const monitorsRepo = createMonitorsRepo();
 	const checksRepo = createChecksRepo();
-	const service = new StatusPageService(repo, settingsService, monitorsRepo, checksRepo);
-	return { service, repo, settingsService, monitorsRepo, checksRepo };
+	const incidentsRepo = createIncidentsRepo();
+	const service = new StatusPageService(repo, settingsService, monitorsRepo, checksRepo, incidentsRepo);
+	return { service, repo, settingsService, monitorsRepo, checksRepo, incidentsRepo };
 };
 
 // ── Tests ────────────────────────────────────────────────────────────────────
@@ -421,6 +428,51 @@ describe("StatusPageService", () => {
 				await expect(service.getPublicStatusPagePayload(unpublished, undefined, "90d")).rejects.toMatchObject({ status: 403 });
 				expect(checksRepo.getDailyStatusBuckets).not.toHaveBeenCalled();
 			});
+		});
+	});
+
+	describe("getPublicMonitorIncidents", () => {
+		const publishedPage = () => makeStatusPage({ isPublished: true, url: "my-status-page", monitors: ["mon-1"], teamId: "team-1" });
+
+		it("rejects an unpublished page (403)", async () => {
+			const { service, repo } = createService();
+			(repo.findByUrl as jest.Mock).mockResolvedValue(makeStatusPage({ isPublished: false }));
+			await expect(service.getPublicMonitorIncidents("my-status-page", "mon-1", "2026-08-01")).rejects.toMatchObject({ status: 403 });
+		});
+
+		it("rejects if monitor is not on the page (404)", async () => {
+			const { service, repo } = createService();
+			(repo.findByUrl as jest.Mock).mockResolvedValue(publishedPage());
+			await expect(service.getPublicMonitorIncidents("my-status-page", "mon-99", "2026-08-01")).rejects.toMatchObject({ status: 404 });
+		});
+
+		it("fetches and sanitizes incidents successfully", async () => {
+			const { service, repo, incidentsRepo } = createService();
+			(repo.findByUrl as jest.Mock).mockResolvedValue(publishedPage());
+
+			const mockIncident = {
+				id: "inc-1",
+				monitorId: "mon-1",
+				teamId: "team-1",
+				resolvedBy: "user-99",
+				status: false,
+				startTime: "2026-08-01T10:00:00Z",
+				endTime: "2026-08-01T11:00:00Z",
+				resolutionType: "manual" as const,
+				message: "Test incident",
+				createdAt: "2026-08-01T10:00:00Z",
+				updatedAt: "2026-08-01T10:00:00Z",
+			};
+			(incidentsRepo.findByMonitorIdAndDate as jest.Mock).mockResolvedValue([mockIncident]);
+
+			const results = await service.getPublicMonitorIncidents("my-status-page", "mon-1", "2026-08-01");
+
+			expect(incidentsRepo.findByMonitorIdAndDate).toHaveBeenCalled();
+			expect(results).toHaveLength(1);
+			expect(results[0]).toHaveProperty("id", "inc-1");
+			expect(results[0]).not.toHaveProperty("teamId");
+			expect(results[0]).not.toHaveProperty("resolvedBy");
+			expect(results[0]).not.toHaveProperty("updatedAt");
 		});
 	});
 

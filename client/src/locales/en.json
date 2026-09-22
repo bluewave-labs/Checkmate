@@ -1712,6 +1712,13 @@
 				"uptime": {
 					"title": "Uptime",
 					"responseTime": "Response time"
+				},
+				"incidents": {
+					"modalTitle": "Incidents for {{date}}",
+					"loading": "Loading...",
+					"noIncidents": "No incidents reported for this day.",
+					"ongoing": "Ongoing",
+					"errorLoading": "Failed to load incidents."
 				}
 			},
 			"statusBar": {

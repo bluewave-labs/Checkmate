@@ -5,6 +5,8 @@ import Stack from "@mui/material/Stack";
 import type { SxProps, Theme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { formatMs } from "@/Utils/TimeUtils";
+import { mergeSx } from "@/Pages/StatusPage/Status/themes/shared/sx";
+
 import type {
 	BarKind,
 	ChartCell,
@@ -16,6 +18,7 @@ interface Props {
 	barSx: (kind: BarKind, heightPct: number, severity?: number) => SxProps<Theme>;
 	statsSx: SxProps<Theme>;
 	statsGap?: number;
+	onCellClick?: (date: string) => void;
 }
 
 export const ThemedHistogram = ({
@@ -24,6 +27,7 @@ export const ThemedHistogram = ({
 	barSx,
 	statsSx,
 	statsGap = 1,
+	onCellClick,
 }: Props) => {
 	const { t } = useTranslation();
 
@@ -39,17 +43,22 @@ export const ThemedHistogram = ({
 	return (
 		<Stack gap={statsGap}>
 			<Box
-				sx={[
-					...(Array.isArray(containerSx) ? containerSx : [containerSx]),
-					{ gridTemplateColumns: `repeat(${cells.length}, 1fr)` },
-				]}
+				sx={mergeSx(containerSx, { gridTemplateColumns: `repeat(${cells.length}, 1fr)` })}
 			>
 				{cells.map((cell) => {
 					if (cell.barKind === "empty") {
 						return (
 							<Box
 								key={cell.key}
-								sx={barSx("empty", cell.heightPct)}
+								sx={mergeSx(
+									barSx("empty", cell.heightPct),
+									!!cell.date && !!onCellClick ? { cursor: "pointer" } : undefined
+								)}
+								onClick={() => {
+									if (cell.date && onCellClick) {
+										onCellClick(cell.date);
+									}
+								}}
 							/>
 						);
 					}
@@ -61,8 +70,16 @@ export const ThemedHistogram = ({
 							placement="top"
 						>
 							<Box
-								sx={barSx(cell.barKind, cell.heightPct, cell.severity)}
+								sx={mergeSx(
+									barSx(cell.barKind, cell.heightPct, cell.severity),
+									!!cell.date && !!onCellClick ? { cursor: "pointer" } : undefined
+								)}
 								aria-label={cell.ariaLabel}
+								onClick={() => {
+									if (cell.date && onCellClick) {
+										onCellClick(cell.date);
+									}
+								}}
 							/>
 						</Tooltip>
 					);

@@ -1377,6 +1377,9 @@
 					"maintenance": "メンテナンス",
 					"paused": "一時停止中",
 					"up": "稼働中"
+				},
+				"incidents": {
+					"errorLoading": "インシデントの読み込みに失敗しました。"
 				}
 			},
 			"statusBar": {

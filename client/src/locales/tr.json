@@ -1377,6 +1377,9 @@
 					"maintenance": "Bakım",
 					"paused": "Duraklatıldı",
 					"up": "Çalışıyor"
+				},
+				"incidents": {
+					"errorLoading": "Olaylar yüklenemedi."
 				}
 			},
 			"statusBar": {

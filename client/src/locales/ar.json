@@ -1377,6 +1377,9 @@
 					"maintenance": "صيانة",
 					"paused": "متوقف مؤقتاً",
 					"up": "قيد التشغيل"
+				},
+				"incidents": {
+					"errorLoading": "فشل تحميل الحوادث."
 				}
 			},
 			"statusBar": {

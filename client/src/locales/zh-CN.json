@@ -1378,6 +1378,9 @@
 					"maintenance": "维护中",
 					"paused": "已暂停",
 					"up": "运行中"
+				},
+				"incidents": {
+					"errorLoading": "无法加载事件。"
 				}
 			},
 			"statusBar": {

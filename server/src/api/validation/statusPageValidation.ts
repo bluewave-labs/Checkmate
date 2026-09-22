@@ -20,6 +20,15 @@ export const getStatusPageParamValidation = z.object({
 	url: z.string().min(1, "URL is required"),
 });
 
+export const getPublicMonitorIncidentsParamValidation = z.object({
+	url: z.string().min(1, "URL is required"),
+	monitorId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Must be a valid monitor ID"),
+});
+
+export const getPublicMonitorIncidentsQueryValidation = z.object({
+	date: z.string().date("Date must be a valid calendar date in YYYY-MM-DD format"),
+});
+
 export const getStatusPageQueryValidation = z.object({
 	type: z.union([z.enum(StatusPageTypes), z.array(z.enum(StatusPageTypes))]).transform((val) => (Array.isArray(val) ? val : [val])),
 	range: z.enum(StatusPageRanges).optional().default("latest"),

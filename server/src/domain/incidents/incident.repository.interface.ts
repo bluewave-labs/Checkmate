@@ -17,6 +17,7 @@ export interface IIncidentsRepository {
 		monitorId?: string,
 		resolutionType?: string
 	): Promise<Incident[]>;
+	findByMonitorIdAndDate(monitorId: string, teamId: string, dateStart: Date, dateEnd: Date): Promise<Incident[]>;
 	findSummaryByTeamId(teamId: string, limit?: number): Promise<IncidentSummary>;
 	countByTeamId(teamId: string, startDate: Date | undefined, status?: boolean, monitorId?: string, resolutionType?: string): Promise<number>;
 

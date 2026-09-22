@@ -16,7 +16,15 @@ export const isPublicStatusPageApiPath = (method: string, path: string): boolean
 		return true;
 	}
 
-	if (!slug || slug === "team" || slug.includes("/")) {
+	if (!slug || slug === "team") {
+		return false;
+	}
+
+	if (slug.includes("/")) {
+		const parts = slug.split("/");
+		if (parts.length === 3 && parts[1] === "incidents") {
+			return true;
+		}
 		return false;
 	}
 

@@ -1584,6 +1584,9 @@
 				"uptime": {
 					"responseTime": "Czas odpowiedzi",
 					"title": "Czas pracy"
+				},
+				"incidents": {
+					"errorLoading": "Nie udało się załadować incydentów."
 				}
 			},
 			"preview": {
