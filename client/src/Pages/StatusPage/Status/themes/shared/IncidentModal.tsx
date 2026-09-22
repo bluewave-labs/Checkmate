@@ -38,7 +38,7 @@ export const IncidentModal = ({
 	const { t } = useTranslation();
 	const open = Boolean(monitorId && date);
 
-	const { data, isLoading } = useGet<{ incidents: Incident[] }>(
+	const { data, isLoading, error } = useGet<{ incidents: Incident[] }>(
 		open ? `/status-page/${url}/incidents/${monitorId}?date=${date}` : null,
 		{},
 		{ revalidateOnFocus: false }
@@ -67,6 +67,16 @@ export const IncidentModal = ({
 				{isLoading ? (
 					<Typography mt={SPACING.SM}>
 						{t("pages.statusPages.monitorsList.incidents.loading")}
+					</Typography>
+				) : error ? (
+					<Typography
+						mt={SPACING.SM}
+						color="error"
+					>
+						{t(
+							"pages.statusPages.monitorsList.incidents.errorLoading",
+							"Failed to load incidents."
+						)}
 					</Typography>
 				) : data?.incidents && data.incidents.length > 0 ? (
 					<Stack
