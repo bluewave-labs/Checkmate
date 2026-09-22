@@ -1,3 +1,5 @@
+import type { DockerAlertEventKind } from "@/domain/docker/docker.type.js";
+
 export const NotificationChannels = [
 	"email",
 	"slack",
@@ -71,7 +73,8 @@ export interface AlertDiscordPayload {
  * Part of notification system unification effort
  */
 
-export type NotificationType = "monitor_down" | "monitor_up" | "threshold_breach" | "threshold_resolved" | "test";
+export type NotificationType =
+	"monitor_down" | "monitor_up" | "threshold_breach" | "threshold_resolved" | "container_alert" | "container_recovered" | "test";
 
 export type NotificationSeverity = "critical" | "warning" | "info" | "success";
 
@@ -91,6 +94,12 @@ export interface ThresholdBreach {
 	formattedValue: string; // e.g., "85%" or "72°C"
 }
 
+export interface ContainerEventInfo {
+	name: string;
+	kind: DockerAlertEventKind;
+	summary: string;
+}
+
 export interface IncidentInfo {
 	id: string;
 	url: string;
@@ -104,6 +113,7 @@ export interface NotificationContent {
 	summary: string;
 	details?: string[];
 	thresholds?: ThresholdBreach[];
+	containers?: ContainerEventInfo[];
 	incident?: IncidentInfo;
 	timestamp: Date;
 }

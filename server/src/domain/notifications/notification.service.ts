@@ -93,12 +93,22 @@ export class NotificationsService implements INotificationsService {
 		const notificationIds = monitor.notifications ?? [];
 		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
 
-		// Build notification message once for all notifications
 		const settings = this.settingsService.getSettings();
 		const clientHost = settings.clientHost || "Host not defined";
-		const notificationMessage = this.notificationMessageBuilder.buildMessage(monitor, monitorStatusResponse, decision, clientHost);
 
-		const tasks = notifications.map((notification) => this.send(notification, monitor, monitorStatusResponse, decision, notificationMessage));
+		// A status change and container events can arrive on the same check; each gets its own message
+		const messages: NotificationMessage[] = [];
+		if (decision.notificationReason !== "container_events") {
+			messages.push(this.notificationMessageBuilder.buildMessage(monitor, monitorStatusResponse, decision, clientHost));
+		}
+
+		if (decision.containerEvents && decision.containerEvents.length > 0) {
+			messages.push(...this.notificationMessageBuilder.buildContainerMessages(monitor, decision.containerEvents, clientHost));
+		}
+
+		const tasks = messages.flatMap((message) =>
+			notifications.map((notification) => this.send(notification, monitor, monitorStatusResponse, decision, message))
+		);
 
 		const outcomes = await Promise.all(tasks);
 		const succeeded = outcomes.filter(Boolean).length;
@@ -110,16 +120,13 @@ export class NotificationsService implements INotificationsService {
 				method: "sendNotifications",
 			});
 		}
-		// Return true if all notifications succeeded
-		return succeeded === notifications.length;
+		return failed === 0;
 	};
 
 	handleNotifications = async (monitor: Monitor, monitorStatusResponse: MonitorStatusResponse, decision: MonitorActionDecision) => {
 		if (!decision.shouldSendNotification) {
 			return false;
 		}
-
-		// Send notifications based on decision
 		return await this.sendNotifications(monitor, monitorStatusResponse, decision);
 	};
 

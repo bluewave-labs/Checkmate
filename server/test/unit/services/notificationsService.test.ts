@@ -5,6 +5,7 @@ import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { Notification } from "../../../src/domain/notifications/notification.type.ts";
 import type { MonitorStatusResponse } from "../../../src/types/network.ts";
 import type { MonitorActionDecision } from "../../../src/worker/worker.interface.ts";
+import type { DockerContainerEvent } from "../../../src/domain/docker/docker.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -33,6 +34,7 @@ const createSettingsService = (clientHost = "https://app.example.com") => ({
 
 const createMessageBuilder = () => ({
 	buildMessage: jest.fn().mockReturnValue({ type: "monitor_down", content: { title: "Down" } }),
+	buildContainerMessages: jest.fn().mockReturnValue([]),
 	extractThresholdBreaches: jest.fn(),
 });
 
@@ -131,6 +133,16 @@ const makeDecision = (overrides?: Partial<MonitorActionDecision>): MonitorAction
 });
 
 const makeStatusResponse = () => ({ monitorId: "mon-1", status: false, code: 500 }) as unknown as MonitorStatusResponse;
+
+const makeContainerEvent = (overrides?: Partial<DockerContainerEvent>): DockerContainerEvent => ({
+	kind: "stopped",
+	containerName: "web",
+	containerId: "abc123",
+	...overrides,
+});
+
+const containerAlertMessage = { type: "container_alert", content: { title: "Container Alert" } };
+const containerRecoveredMessage = { type: "container_recovered", content: { title: "Container Recovered" } };
 
 // ── Tests ────────────────────────────────────────────────────────────────────
 
@@ -241,6 +253,106 @@ describe("NotificationsService", () => {
 				expect.anything(),
 				"Host not defined"
 			);
+		});
+
+		it("sends only the container messages for container_events and never builds a status message", async () => {
+			const notificationMessageBuilder = createMessageBuilder();
+			notificationMessageBuilder.buildContainerMessages.mockReturnValue([containerAlertMessage]);
+			const { service, notificationsRepository, emailProvider } = createService({ notificationMessageBuilder });
+			const notification = makeNotification({ type: "email" });
+			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([notification]);
+			const monitor = makeMonitor({ type: "docker" });
+			const containerEvents = [makeContainerEvent()];
+
+			const result = await service.handleNotifications(
+				monitor,
+				makeStatusResponse(),
+				makeDecision({ notificationReason: "container_events", containerEvents })
+			);
+
+			expect(result).toBe(true);
+			expect(notificationMessageBuilder.buildMessage).not.toHaveBeenCalled();
+			expect(notificationMessageBuilder.buildContainerMessages).toHaveBeenCalledWith(monitor, containerEvents, "https://app.example.com");
+			expect(emailProvider.sendMessage).toHaveBeenCalledTimes(1);
+			expect(emailProvider.sendMessage).toHaveBeenCalledWith(notification, containerAlertMessage);
+		});
+
+		it("sends the status message and the container messages to every channel on a status_change with container events", async () => {
+			const notificationMessageBuilder = createMessageBuilder();
+			notificationMessageBuilder.buildContainerMessages.mockReturnValue([containerAlertMessage]);
+			const { service, notificationsRepository, emailProvider, slackProvider } = createService({ notificationMessageBuilder });
+			const emailNotification = makeNotification({ id: "n1", type: "email" });
+			const slackNotification = makeNotification({ id: "n2", type: "slack" });
+			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([emailNotification, slackNotification]);
+			const statusMessage = notificationMessageBuilder.buildMessage();
+
+			const result = await service.handleNotifications(
+				makeMonitor({ type: "docker" }),
+				makeStatusResponse(),
+				makeDecision({ notificationReason: "status_change", containerEvents: [makeContainerEvent()] })
+			);
+
+			expect(result).toBe(true);
+			expect(notificationMessageBuilder.buildMessage).toHaveBeenCalled();
+			expect(emailProvider.sendMessage).toHaveBeenCalledTimes(2);
+			expect(emailProvider.sendMessage).toHaveBeenCalledWith(emailNotification, statusMessage);
+			expect(emailProvider.sendMessage).toHaveBeenCalledWith(emailNotification, containerAlertMessage);
+			expect(slackProvider.sendMessage).toHaveBeenCalledTimes(2);
+			expect(slackProvider.sendMessage).toHaveBeenCalledWith(slackNotification, statusMessage);
+			expect(slackProvider.sendMessage).toHaveBeenCalledWith(slackNotification, containerAlertMessage);
+		});
+
+		it("does not build container messages when containerEvents is empty", async () => {
+			const { service, notificationsRepository, notificationMessageBuilder, emailProvider } = createService();
+			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([makeNotification({ type: "email" })]);
+
+			await service.handleNotifications(makeMonitor(), makeStatusResponse(), makeDecision({ containerEvents: [] }));
+
+			expect(notificationMessageBuilder.buildContainerMessages).not.toHaveBeenCalled();
+			expect(emailProvider.sendMessage).toHaveBeenCalledTimes(1);
+		});
+
+		it("makes four sendMessage calls for two container messages across two channels", async () => {
+			const notificationMessageBuilder = createMessageBuilder();
+			notificationMessageBuilder.buildContainerMessages.mockReturnValue([containerAlertMessage, containerRecoveredMessage]);
+			const { service, notificationsRepository, emailProvider, slackProvider } = createService({ notificationMessageBuilder });
+			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([
+				makeNotification({ id: "n1", type: "email" }),
+				makeNotification({ id: "n2", type: "slack" }),
+			]);
+
+			const result = await service.handleNotifications(
+				makeMonitor({ type: "docker" }),
+				makeStatusResponse(),
+				makeDecision({ notificationReason: "container_events", containerEvents: [makeContainerEvent(), makeContainerEvent({ kind: "started" })] })
+			);
+
+			expect(result).toBe(true);
+			expect(emailProvider.sendMessage).toHaveBeenCalledTimes(2);
+			expect(slackProvider.sendMessage).toHaveBeenCalledTimes(2);
+			expect(emailProvider.sendMessage.mock.calls.length + slackProvider.sendMessage.mock.calls.length).toBe(4);
+		});
+
+		it("returns false when one of four container sends fails", async () => {
+			const notificationMessageBuilder = createMessageBuilder();
+			notificationMessageBuilder.buildContainerMessages.mockReturnValue([containerAlertMessage, containerRecoveredMessage]);
+			const { service, notificationsRepository, emailProvider, slackProvider, logger } = createService({ notificationMessageBuilder });
+			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([
+				makeNotification({ id: "n1", type: "email" }),
+				makeNotification({ id: "n2", type: "slack" }),
+			]);
+			slackProvider.sendMessage.mockResolvedValueOnce(true).mockResolvedValueOnce(false);
+
+			const result = await service.handleNotifications(
+				makeMonitor({ type: "docker" }),
+				makeStatusResponse(),
+				makeDecision({ notificationReason: "container_events", containerEvents: [makeContainerEvent(), makeContainerEvent({ kind: "started" })] })
+			);
+
+			expect(result).toBe(false);
+			expect(emailProvider.sendMessage).toHaveBeenCalledTimes(2);
+			expect(slackProvider.sendMessage).toHaveBeenCalledTimes(2);
+			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("3 success, 1 failure") }));
 		});
 	});
 

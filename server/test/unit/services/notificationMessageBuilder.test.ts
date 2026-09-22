@@ -3,6 +3,7 @@ import { NotificationMessageBuilder } from "../../../src/domain/notifications/no
 import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { MonitorStatusResponse, HardwareStatusPayload } from "../../../src/types/network.ts";
 import type { MonitorActionDecision } from "../../../src/worker/worker.interface.ts";
+import type { DockerContainerEvent } from "../../../src/domain/docker/docker.type.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -50,6 +51,13 @@ const makeHardwarePayload = (overrides?: Partial<HardwareStatusPayload["data"]>)
 			...overrides,
 		},
 	}) as HardwareStatusPayload;
+
+const makeContainerEvent = (overrides?: Partial<DockerContainerEvent>): DockerContainerEvent => ({
+	kind: "stopped",
+	containerName: "web",
+	containerId: "abc123",
+	...overrides,
+});
 
 // ── Tests ────────────────────────────────────────────────────────────────────
 
@@ -363,6 +371,166 @@ describe("NotificationMessageBuilder", () => {
 			expect(result.details).toContain("URL: https://example.com");
 			expect(result.details).toContain("Status: up");
 			expect(result.details).toContain("Type: http");
+		});
+	});
+
+	// ── buildContainerMessages ───────────────────────────────────────────
+
+	describe("buildContainerMessages", () => {
+		it("builds one critical container_alert message for stopped and unhealthy events", () => {
+			const monitor = makeMonitor({ type: "docker", status: "up" });
+			const events = [
+				makeContainerEvent({ kind: "stopped", containerName: "web", to: "Exited (1) 5 seconds ago" }),
+				makeContainerEvent({ kind: "unhealthy", containerName: "db", containerId: "def456", from: "healthy", to: "unhealthy" }),
+			];
+
+			const messages = builder.buildContainerMessages(monitor, events, "https://app.example.com");
+
+			expect(messages).toHaveLength(1);
+			const [msg] = messages;
+			expect(msg.type).toBe("container_alert");
+			expect(msg.severity).toBe("critical");
+			expect(msg.content.title).toBe("Container Alert: Test Monitor");
+			expect(msg.content.containers).toHaveLength(2);
+			expect(msg.content.containers!.map((c) => c.name)).toEqual(["web", "db"]);
+			expect(msg.content.containers!.map((c) => c.kind)).toEqual(["stopped", "unhealthy"]);
+			expect(msg.content.summary).toBe('2 container(s) on "Test Monitor" need attention: web, db.');
+			expect(msg.content.summary.match(/web/g)).toHaveLength(1);
+			expect(msg.content.summary.match(/db/g)).toHaveLength(1);
+			expect(msg.content.details).toEqual(["URL: https://example.com", "Type: docker"]);
+			expect(msg.monitor).toEqual({
+				id: "mon-1",
+				name: "Test Monitor",
+				url: "https://example.com",
+				type: "docker",
+				status: "up",
+			});
+			expect(msg.clientHost).toBe("https://app.example.com");
+		});
+
+		it("names a container once in the summary when it has several alert events", () => {
+			const monitor = makeMonitor({ type: "docker" });
+			const events = [makeContainerEvent({ kind: "stopped", containerName: "web" }), makeContainerEvent({ kind: "unhealthy", containerName: "web" })];
+
+			const [msg] = builder.buildContainerMessages(monitor, events, "");
+
+			expect(msg.content.containers).toHaveLength(2);
+			expect(msg.content.summary).toBe('1 container(s) on "Test Monitor" need attention: web.');
+		});
+
+		it("uses warning severity when the only alert is unhealthy", () => {
+			const monitor = makeMonitor({ type: "docker" });
+			const events = [makeContainerEvent({ kind: "unhealthy", from: "healthy", to: "unhealthy" })];
+
+			const messages = builder.buildContainerMessages(monitor, events, "");
+
+			expect(messages).toHaveLength(1);
+			expect(messages[0].type).toBe("container_alert");
+			expect(messages[0].severity).toBe("warning");
+		});
+
+		it("uses critical severity when a container is missing", () => {
+			const monitor = makeMonitor({ type: "docker" });
+			const events = [makeContainerEvent({ kind: "missing" })];
+
+			const [msg] = builder.buildContainerMessages(monitor, events, "");
+
+			expect(msg.severity).toBe("critical");
+		});
+
+		it("builds one success container_recovered message for a started event", () => {
+			const monitor = makeMonitor({ type: "docker" });
+			const events = [makeContainerEvent({ kind: "started", from: "exited", to: "running" })];
+
+			const messages = builder.buildContainerMessages(monitor, events, "");
+
+			expect(messages).toHaveLength(1);
+			const [msg] = messages;
+			expect(msg.type).toBe("container_recovered");
+			expect(msg.severity).toBe("success");
+			expect(msg.content.title).toBe("Container Recovered: Test Monitor");
+			expect(msg.content.summary).toBe('1 container(s) on "Test Monitor" recovered: web.');
+			expect(msg.content.containers).toEqual([{ name: "web", kind: "started", summary: "started" }]);
+		});
+
+		it("builds an alert message followed by a recovery message when both kinds coexist", () => {
+			const monitor = makeMonitor({ type: "docker" });
+			const events = [
+				makeContainerEvent({ kind: "healthy", containerName: "cache" }),
+				makeContainerEvent({ kind: "stopped", containerName: "web" }),
+				makeContainerEvent({ kind: "returned", containerName: "worker" }),
+			];
+
+			const messages = builder.buildContainerMessages(monitor, events, "");
+
+			expect(messages).toHaveLength(2);
+			expect(messages[0].type).toBe("container_alert");
+			expect(messages[0].content.containers!.map((c) => c.name)).toEqual(["web"]);
+			expect(messages[1].type).toBe("container_recovered");
+			expect(messages[1].content.containers!.map((c) => c.name)).toEqual(["cache", "worker"]);
+		});
+
+		it("returns no messages when there are no events", () => {
+			const messages = builder.buildContainerMessages(makeMonitor({ type: "docker" }), [], "");
+
+			expect(messages).toEqual([]);
+		});
+
+		it("sets notificationReason to container_events", () => {
+			const monitor = makeMonitor({ type: "docker" });
+			const events = [makeContainerEvent({ kind: "stopped" }), makeContainerEvent({ kind: "started" })];
+
+			const messages = builder.buildContainerMessages(monitor, events, "");
+
+			expect(messages).toHaveLength(2);
+			for (const msg of messages) {
+				expect(msg.metadata).toEqual({ teamId: "team-1", notificationReason: "container_events" });
+			}
+		});
+
+		// ── describeContainerEvent (via container summaries) ─────────────
+
+		describe("describeContainerEvent", () => {
+			const summaryFor = (event: DockerContainerEvent): string => {
+				const [msg] = builder.buildContainerMessages(makeMonitor({ type: "docker" }), [event], "");
+				return msg.content.containers![0].summary;
+			};
+
+			it("describes stopped with the new status when to is set", () => {
+				expect(summaryFor(makeContainerEvent({ kind: "stopped", to: "Exited (137) 2 seconds ago" }))).toBe("stopped (Exited (137) 2 seconds ago)");
+			});
+
+			it("describes stopped without a status when to is missing", () => {
+				expect(summaryFor(makeContainerEvent({ kind: "stopped" }))).toBe("stopped");
+			});
+
+			it("describes started", () => {
+				expect(summaryFor(makeContainerEvent({ kind: "started", from: "exited", to: "running" }))).toBe("started");
+			});
+
+			it("describes unhealthy with the previous health when from is healthy", () => {
+				expect(summaryFor(makeContainerEvent({ kind: "unhealthy", from: "healthy", to: "unhealthy" }))).toBe("unhealthy (was healthy)");
+			});
+
+			it("describes unhealthy without a was clause when from is none", () => {
+				expect(summaryFor(makeContainerEvent({ kind: "unhealthy", from: "none", to: "unhealthy" }))).toBe("unhealthy");
+			});
+
+			it("describes unhealthy without a was clause when from is missing", () => {
+				expect(summaryFor(makeContainerEvent({ kind: "unhealthy" }))).toBe("unhealthy");
+			});
+
+			it("describes healthy", () => {
+				expect(summaryFor(makeContainerEvent({ kind: "healthy", from: "unhealthy", to: "healthy" }))).toBe("healthy again");
+			});
+
+			it("describes missing", () => {
+				expect(summaryFor(makeContainerEvent({ kind: "missing" }))).toBe("missing from host");
+			});
+
+			it("describes returned", () => {
+				expect(summaryFor(makeContainerEvent({ kind: "returned" }))).toBe("back on host");
+			});
 		});
 	});
 

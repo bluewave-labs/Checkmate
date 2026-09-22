@@ -7,7 +7,9 @@ import type {
 	NotificationSeverity,
 	ThresholdBreach,
 	NotificationContent,
+	ContainerEventInfo,
 } from "@/domain/notifications/notification.type.js";
+import { DockerAlertRecoveryKinds, type DockerContainerEvent } from "@/domain/docker/docker.type.js";
 
 export interface INotificationMessageBuilder {
 	buildMessage(
@@ -16,6 +18,7 @@ export interface INotificationMessageBuilder {
 		decision: MonitorActionDecision,
 		clientHost: string
 	): NotificationMessage;
+	buildContainerMessages(monitor: Monitor, events: DockerContainerEvent[], clientHost: string): NotificationMessage[];
 	extractThresholdBreaches(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse): ThresholdBreach[];
 }
 
@@ -86,6 +89,10 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 				return "warning";
 			case "monitor_up":
 			case "threshold_resolved":
+				return "success";
+			case "container_alert":
+				return "warning";
+			case "container_recovered":
 				return "success";
 			case "test":
 				return "info";
@@ -271,5 +278,72 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		}
 
 		return breaches;
+	}
+
+	buildContainerMessages = (monitor: Monitor, events: DockerContainerEvent[], clientHost: string): NotificationMessage[] => {
+		const recoveries = events.filter((event) => DockerAlertRecoveryKinds.includes(event.kind));
+		const alerts = events.filter((event) => !DockerAlertRecoveryKinds.includes(event.kind));
+
+		const messages: NotificationMessage[] = [];
+		if (alerts.length > 0) messages.push(this.buildContainerMessage("container_alert", monitor, alerts, clientHost));
+		if (recoveries.length > 0) messages.push(this.buildContainerMessage("container_recovered", monitor, recoveries, clientHost));
+		return messages;
+	};
+
+	private buildContainerMessage = (
+		type: "container_alert" | "container_recovered",
+		monitor: Monitor,
+		events: DockerContainerEvent[],
+		clientHost: string
+	): NotificationMessage => {
+		const containers: ContainerEventInfo[] = events.map((event) => ({
+			name: event.containerName,
+			kind: event.kind,
+			summary: this.describeContainerEvent(event),
+		}));
+
+		const names = [...new Set(containers.map((container) => container.name))];
+		const isAlert = type === "container_alert";
+		const title = isAlert ? `Container Alert: ${monitor.name}` : `Container Recovered: ${monitor.name}`;
+		const summary = isAlert
+			? `${names.length} container(s) on "${monitor.name}" need attention: ${names.join(", ")}.`
+			: `${names.length} container(s) on "${monitor.name}" recovered: ${names.join(", ")}.`;
+		const severity: NotificationSeverity = isAlert
+			? events.some((event) => event.kind === "stopped" || event.kind === "missing")
+				? "critical"
+				: "warning"
+			: "success";
+
+		return {
+			type,
+			severity,
+			monitor: { id: monitor.id, name: monitor.name, url: monitor.url, type: monitor.type, status: monitor.status },
+			content: {
+				title,
+				summary,
+				details: [`URL: ${monitor.url}`, `Type: ${monitor.type}`],
+				containers,
+				timestamp: new Date(),
+			},
+			clientHost,
+			metadata: { teamId: monitor.teamId, notificationReason: "container_events" },
+		};
+	};
+
+	private describeContainerEvent(event: DockerContainerEvent): string {
+		switch (event.kind) {
+			case "stopped":
+				return event.to ? `stopped (${event.to})` : "stopped";
+			case "started":
+				return "started";
+			case "unhealthy":
+				return event.from && event.from !== "none" ? `unhealthy (was ${event.from})` : "unhealthy";
+			case "healthy":
+				return "healthy again";
+			case "missing":
+				return "missing from host";
+			case "returned":
+				return "back on host";
+		}
 	}
 }
