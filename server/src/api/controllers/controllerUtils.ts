@@ -10,7 +10,10 @@ type WhoisModule = typeof whoiser;
 export const fetchMonitorCertificate = async (checker: SSLCheckerType, monitor: Monitor): Promise<SSLDetails> => {
 	const monitorUrl = new URL(monitor.url);
 	const hostname = monitorUrl.hostname;
-	const cert = await checker(hostname);
+	// An explicit port in the URL is the most visible to the user, so it takes precedence over monitor.port.
+	const urlPort = monitorUrl.port ? Number(monitorUrl.port) : undefined;
+	const port = urlPort ?? monitor.port;
+	const cert = await checker(hostname, port !== undefined ? { port } : undefined);
 	if (cert?.validTo === null || cert?.validTo === undefined) {
 		throw new Error("Certificate not found");
 	}
