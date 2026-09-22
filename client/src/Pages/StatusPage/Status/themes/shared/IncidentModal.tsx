@@ -64,7 +64,7 @@ export const IncidentModal = ({
 				) : error ? (
 					<Typography
 						mt={SPACING.SM}
-						color="error"
+						color={theme.palette.error.main}
 					>
 						{t("pages.statusPages.monitorsList.incidents.errorLoading")}
 					</Typography>
