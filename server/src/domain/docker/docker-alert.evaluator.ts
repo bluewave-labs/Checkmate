@@ -58,7 +58,7 @@ const diffContainer = (
 	}
 
 	if (config.onHealth) {
-		if (prev.health !== "unhealthy" && container.health === "unhealthy") {
+		if (!healthAlerted && container.health === "unhealthy") {
 			push({ kind: "unhealthy", from: prev.health, to: container.health });
 			healthAlerted = true;
 		} else if (healthAlerted && container.health === "healthy") {
@@ -71,8 +71,6 @@ const diffContainer = (
 	return { name: container.name, state: container.state, health: container.health, missingChecks: 0, alerted, healthAlerted };
 };
 
-// After a failed check nothing observed during the outage can be attributed, so no new alert is raised and the
-// remembered state and health are replaced by what is seen now. Open alerts are kept so that they can still recover.
 const reseedContainer = (
 	container: DockerContainerInfo,
 	prev: DockerContainerAlertState,
@@ -126,7 +124,8 @@ export const evaluateDockerContainers = (params: {
 		if (reseed && !prev.alerted && !prev.healthAlerted) continue;
 		const missingChecks = prev.missingChecks + 1;
 		if (missingChecks >= MISSING_CHECKS_BEFORE_FORGET) continue;
-		const fireMissing = config.onState && missingChecks === MISSING_CHECKS_BEFORE_ALERT;
+		// A container that already has an open alert is not alerted again for disappearing, and a reseed raises no new alert
+		const fireMissing = config.onState && !reseed && !prev.alerted && missingChecks === MISSING_CHECKS_BEFORE_ALERT;
 		if (fireMissing) {
 			events.push({ kind: "missing", containerName: prev.name, containerId: "", from: prev.state });
 		}

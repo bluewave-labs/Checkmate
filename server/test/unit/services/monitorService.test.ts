@@ -1099,6 +1099,20 @@ describe("MonitorService", () => {
 			expect(patch.dockerContainerStates).toEqual([]);
 		});
 
+		it("clears container alert states when a partial edit turns off the last enabled switch", async () => {
+			const monitorsRepository = createMonitorsRepositoryMock();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(
+				makeMonitor({ type: "docker", dockerAlertOnState: true, dockerAlertOnHealth: false })
+			);
+			(monitorsRepository.updateById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));
+			const { service } = createService({ monitorsRepository });
+
+			await service.editMonitor({ teamId: TEAM_ID, monitorId: MONITOR_ID, body: { dockerAlertOnState: false } });
+
+			const [, , patch] = (monitorsRepository.updateById as jest.Mock).mock.calls[0] as [string, string, Record<string, unknown>];
+			expect(patch.dockerContainerStates).toEqual([]);
+		});
+
 		it("keeps container alert states while either docker alert switch stays on", async () => {
 			const monitorsRepository = createMonitorsRepositoryMock();
 			(monitorsRepository.updateById as jest.Mock).mockResolvedValue(makeMonitor({ type: "docker" }));

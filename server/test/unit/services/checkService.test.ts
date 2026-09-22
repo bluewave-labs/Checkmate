@@ -352,6 +352,15 @@ describe("CheckService", () => {
 			expect(roundtripped.summary).toEqual(payload.summary);
 		});
 
+		it("docker: rebuilds no payload when the stored check has no containers, so evaluation is skipped rather than seeing an empty host", () => {
+			const { service } = createService();
+			const status = makeStatusResponse({ type: "docker", status: true, code: 200, message: "OK", responseTime: 12, payload: undefined } as any);
+
+			const rebuilt = service.toStatusResponse(service.toCheck(status)!);
+
+			expect(rebuilt.payload).toBeUndefined();
+		});
+
 		it("hardware: a real consumer (extractThresholdBreaches) behaves identically on raw vs round-tripped status", () => {
 			const { service } = createService();
 			const builder = new NotificationMessageBuilder();

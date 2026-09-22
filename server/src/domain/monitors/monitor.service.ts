@@ -565,13 +565,21 @@ export class MonitorService implements IMonitorService {
 			}
 		}
 		await this.normalizeCaptureDocker(body, monitorId, teamId);
-		// Clear state if alerts are turned off
-		if (body.dockerAlertOnState === false && body.dockerAlertOnHealth === false) {
+		if (await this.shouldClearContainerStates(body, monitorId, teamId)) {
 			body.dockerContainerStates = [];
 		}
 		const editedMonitor = await this.monitorsRepository.updateById(monitorId, teamId, body, { unsetProxyId });
 		await this.scheduler.updateJob(editedMonitor);
 		return editedMonitor;
+	};
+
+	// Clear container state when alerts are turned off
+	private shouldClearContainerStates = async (body: Partial<Monitor>, monitorId: string, teamId: string): Promise<boolean> => {
+		if (body.dockerAlertOnState === undefined && body.dockerAlertOnHealth === undefined) return false;
+		const stored = await this.monitorsRepository.findById(monitorId, teamId);
+		const onState = body.dockerAlertOnState ?? stored?.dockerAlertOnState ?? false;
+		const onHealth = body.dockerAlertOnHealth ?? stored?.dockerAlertOnHealth ?? false;
+		return !onState && !onHealth;
 	};
 
 	updateNotifications = async ({

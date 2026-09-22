@@ -155,7 +155,7 @@ export class CheckService implements ICheckService {
 			case "hardware":
 				return { data: { cpu: check.cpu, memory: check.memory, disk: check.disk, host: check.host, net: check.net } } as HardwareStatusPayload;
 			case "docker":
-				return { containers: check.containers ?? [], summary: check.containerSummary } as DockerStatusPayload;
+				return check.containers ? ({ containers: check.containers, summary: check.containerSummary } as DockerStatusPayload) : undefined;
 			default:
 				return undefined;
 		}
