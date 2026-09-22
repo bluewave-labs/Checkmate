@@ -41,12 +41,15 @@ const diffContainer = (
 	let healthAlerted = config.onHealth && prev.healthAlerted;
 
 	if (config.onState) {
+		let returned = false;
 		if (alerted && prev.missingChecks >= MISSING_CHECKS_BEFORE_ALERT) {
 			push({ kind: "returned", to: container.state });
 			alerted = false;
+			returned = true;
 		}
 
-		const wasStopped = isStopped(prev.state);
+		// A container that has just returned is evaluated on what it is now not on the state it had before it went
+		const wasStopped = !returned && isStopped(prev.state);
 		const nowStopped = isStopped(container.state);
 		const cleanExit = container.exitCode === 0;
 		if (!reseed && !wasStopped && nowStopped && !cleanExit) {
@@ -60,8 +63,6 @@ const diffContainer = (
 	}
 
 	if (config.onHealth) {
-		// Both a transition and no open alert: the transition keeps a container seeded or reseeded as unhealthy silent,
-		// the open alert stops a restart reading "starting" between two unhealthy observations from alerting twice
 		if (!reseed && !healthAlerted && prev.health !== "unhealthy" && container.health === "unhealthy") {
 			push({ kind: "unhealthy", from: prev.health, to: container.health });
 			healthAlerted = true;
@@ -100,8 +101,7 @@ export const evaluateDockerContainers = (params: {
 		if (reseed && !prev.alerted && !prev.healthAlerted) continue;
 		const missingChecks = prev.missingChecks + 1;
 		if (missingChecks >= MISSING_CHECKS_BEFORE_FORGET) continue;
-		// Fires once, on the first eligible check at or past the threshold, so a switch that was off or a reseed at the
-		// exact threshold does not lose it. A container that already has an open alert is not alerted again for disappearing.
+
 		const fireMissing = config.onState && !reseed && !prev.alerted && missingChecks >= MISSING_CHECKS_BEFORE_ALERT;
 		if (fireMissing) {
 			events.push({ kind: "missing", containerName: prev.name, containerId: "", from: prev.state });

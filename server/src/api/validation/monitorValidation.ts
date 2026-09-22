@@ -13,7 +13,13 @@ import {
 	ProxyModes,
 } from "@/domain/monitors/monitor.type.js";
 import { DateRanges, SortOrders } from "@/types/query.js";
-import { DockerContainerStates, DockerHealthStatuses, DockerLogStreams, DockerPortProtocols } from "@/domain/docker/docker.type.js";
+import {
+	DockerContainerAlertState,
+	DockerContainerStates,
+	DockerHealthStatuses,
+	DockerLogStreams,
+	DockerPortProtocols,
+} from "@/domain/docker/docker.type.js";
 import { DOCKER_LOG_PAGE_DEFAULT, DOCKER_LOG_PAGE_MAX } from "@/domain/docker/docker-log.type.js";
 import { isCaptureDockerUrl, isDockerSocketUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
 import { X509Certificate } from "node:crypto";
@@ -23,7 +29,6 @@ const httpStatusCode = z.number().refine((code) => HttpStatusCodeSet.has(code), 
 const dockerContainerStateSchema = z.enum(DockerContainerStates);
 const dockerHealthStatusSchema = z.enum(DockerHealthStatuses);
 
-// Keep aligned with DockerContainerAlertState in domain/docker/docker.type.ts.
 const dockerContainerAlertStateResponseSchema = z.object({
 	name: z.string(),
 	state: dockerContainerStateSchema,
@@ -31,7 +36,7 @@ const dockerContainerAlertStateResponseSchema = z.object({
 	missingChecks: z.number(),
 	alerted: z.boolean(),
 	healthAlerted: z.boolean(),
-});
+}) satisfies z.ZodType<DockerContainerAlertState>;
 
 // The client form submits proxyId: "" when no proxy is selected, set it to undefined
 const proxyIdValidation = z

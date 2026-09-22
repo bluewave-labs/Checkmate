@@ -301,6 +301,24 @@ describe("evaluateDockerContainers", () => {
 			expect(next[0].alerted).toBe(true);
 		});
 
+		it("raises a fresh stop alert when a stop-alerted container that went missing is recreated and crashes on start", () => {
+			const previous = [makeState({ state: "exited", missingChecks: MISSING_CHECKS_BEFORE_ALERT, alerted: true })];
+			const containers = [makeContainer({ state: "exited", status: "Exited (1) 2 seconds ago", exitCode: 1 })];
+			const { next, events } = evaluateDockerContainers({ containers, previous, config });
+
+			expect(events.map((event) => event.kind)).toEqual(["returned", "stopped"]);
+			expect(next[0].alerted).toBe(true);
+		});
+
+		it("only returns a stop-alerted container that reappears after a clean exit", () => {
+			const previous = [makeState({ state: "exited", missingChecks: MISSING_CHECKS_BEFORE_ALERT, alerted: true })];
+			const containers = [makeContainer({ state: "exited", status: "Exited (0) 2 seconds ago", exitCode: 0 })];
+			const { next, events } = evaluateDockerContainers({ containers, previous, config });
+
+			expect(events.map((event) => event.kind)).toEqual(["returned"]);
+			expect(next[0].alerted).toBe(false);
+		});
+
 		it("drops a container from next once it has been absent twenty times", () => {
 			const previous = [makeState({ missingChecks: MISSING_CHECKS_BEFORE_FORGET - 1, alerted: true })];
 

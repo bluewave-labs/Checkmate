@@ -90,10 +90,6 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 			case "monitor_up":
 			case "threshold_resolved":
 				return "success";
-			case "container_alert":
-				return "warning";
-			case "container_recovered":
-				return "success";
 			case "test":
 				return "info";
 			default:
@@ -285,7 +281,8 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 		const alerts = events.filter((event) => !DockerAlertRecoveryKinds.includes(event.kind));
 
 		// Recoveries first: a container can recover from one alert and raise another in the same check (returned but
-		// exited), and the resolve must reach PagerDuty before the new trigger on the same dedup key
+		// exited), and the resolve must reach PagerDuty before the new trigger on the same dedup key. This orders the
+		// messages of one check; checks evaluated back to back after a worker outage are dispatched independently.
 		const messages: NotificationMessage[] = [];
 		if (recoveries.length > 0) messages.push(this.buildContainerMessage("container_recovered", monitor, recoveries, clientHost));
 		if (alerts.length > 0) messages.push(this.buildContainerMessage("container_alert", monitor, alerts, clientHost));
