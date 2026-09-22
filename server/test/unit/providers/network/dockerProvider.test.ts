@@ -592,6 +592,48 @@ describe("DockerProvider", () => {
 			expect(result.payload?.containers[0]?.state).toBe("created");
 			expect(result.payload?.containers[0]?.health).toBe("none");
 		});
+
+		it("takes exitCode from State.ExitCode when inspect succeeds", async () => {
+			const container = makeContainer({ State: "exited", Status: "Exited (137) 3 seconds ago" });
+			const inspect = jest.fn().mockResolvedValue(makeInspect({ State: { ExitCode: 137, StartedAt: "2026-08-28T10:00:00.000Z" } }));
+			const { provider } = setup({ listContainers: jest.fn().mockResolvedValue([container]), inspect });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]?.exitCode).toBe(137);
+		});
+
+		it("parses exitCode from Status when inspect rejects", async () => {
+			const container = makeContainer({ State: "exited", Status: "Exited (137) 3 seconds ago" });
+			const inspect = jest.fn().mockRejectedValue(new Error("boom"));
+			const { provider } = setup({ listContainers: jest.fn().mockResolvedValue([container]), inspect });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]?.exitCode).toBe(137);
+		});
+
+		it("leaves exitCode undefined when inspect rejects and Status is not an exit string", async () => {
+			const container = makeContainer({ Status: "Up 3 hours" });
+			const inspect = jest.fn().mockRejectedValue(new Error("boom"));
+			const { provider } = setup({ listContainers: jest.fn().mockResolvedValue([container]), inspect });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]?.exitCode).toBeUndefined();
+		});
+
+		it("never carries exitCode on Capture containers", async () => {
+			const response = makeCaptureResponse({
+				payload: { data: [makeCaptureContainer({ status: "exited", running: false })], errors: [] },
+			});
+			const { provider } = setup({ httpHandle: jest.fn().mockResolvedValue(response) });
+
+			const result = await provider.handle(makeMonitor({ url: "http://capture:59232/api/v1/metrics/docker", secret: "secret" }));
+
+			expect(result.payload?.containers[0]?.state).toBe("exited");
+			expect(result.payload?.containers[0]).not.toHaveProperty("exitCode");
+		});
 	});
 
 	describe("container logs", () => {

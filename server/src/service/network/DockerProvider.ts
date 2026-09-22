@@ -29,6 +29,7 @@ import { NETWORK_ERROR } from "@/types/network.js";
 import { IEncryptionService } from "@/service/encryption/encryptionService.js";
 import { DOCKER_TLS_URL, isCaptureDockerUrl, isDockerTlsUrl } from "@/utils/dockerHost.js";
 import { splitCertificateBundle } from "@/utils/pem.js";
+import { inspect } from "node:util";
 
 type DockerodeType = typeof Dockerode;
 type DockerOptions = Dockerode.DockerOptions & { agent?: https.Agent; connectionTimeout?: number };
@@ -42,6 +43,7 @@ const DOCKER_LOG_TRUNCATION_MARKER = " …[truncated]";
 const DOCKER_LOG_TS_REGEX = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{1,9}))?Z /;
 const DOCKER_TLS_DEFAULT_PORT = 2376;
 const CAPTURE_FATAL_ERROR_METRICS = new Set(["docker.client", "docker.container.list"]);
+const EXITED_STATUS = /^Exited \((\d+)\)/;
 
 export interface DockerError extends Error {
 	statusCode?: number;
@@ -62,6 +64,11 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 	supports(type: MonitorType): boolean {
 		return type === "docker";
 	}
+
+	private exitCodeFromStatus = (status: string): number | undefined => {
+		const match = EXITED_STATUS.exec(status);
+		return match ? Number(match[1]) : undefined;
+	};
 
 	private resolveTlsCredentials = (monitor: Monitor, ctx?: CheckContext): TlsCredentials | undefined => {
 		if (!isDockerTlsUrl(monitor.url)) return undefined;
@@ -273,7 +280,9 @@ export class DockerProvider implements IStatusProvider<DockerStatusPayload> {
 			info.health = this.toHealthStatus(inspectResult.value.State?.Health?.Status);
 			info.ports = this.toPorts(inspectResult.value.NetworkSettings?.Ports);
 			info.mounts = this.toMounts(inspectResult.value.Mounts);
+			info.exitCode = inspectResult.value.State?.ExitCode;
 		} else {
+			info.exitCode = this.exitCodeFromStatus(summary.Status);
 			this.logger.warn({
 				message: `Failed to inspect container ${info.name}`,
 				service: SERVICE_NAME,

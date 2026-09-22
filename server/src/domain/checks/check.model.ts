@@ -24,6 +24,7 @@ import {
 	DockerHealthStatuses,
 	DockerPortProtocols,
 } from "@/domain/docker/docker.type.js";
+import { number } from "zod";
 
 type CheckMetadataDocument = Omit<CheckMetadata, "monitorId" | "teamId"> & {
 	monitorId: Types.ObjectId;
@@ -220,6 +221,7 @@ const dockerContainerSchema = new Schema<DockerContainerInfo>(
 		startedAt: { type: String },
 		ports: { type: [dockerContainerPortSchema], default: undefined },
 		mounts: { type: [dockerContainerMountSchema], default: undefined },
+		exitCode: { type: Number },
 	},
 	{ _id: false }
 );
