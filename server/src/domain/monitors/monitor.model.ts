@@ -10,6 +10,7 @@ import type {
 	SnapshotMemoryInfo,
 } from "@/domain/checks/check.type.js";
 import { containerSummarySchema } from "@/domain/checks/check.model.js";
+import { DockerContainerAlertState, DockerContainerStates, DockerHealthStatuses } from "@/domain/docker/docker.type.js";
 
 type CheckSnapshotDocument = Omit<CheckSnapshot, "createdAt"> & { createdAt: Date };
 
@@ -118,6 +119,17 @@ const checkSnapshotSchema = new Schema<CheckSnapshotDocument>(
 		createdAt: { type: Date, required: true },
 	},
 	{ _id: false, suppressReservedKeysWarning: true }
+);
+
+const dockerContainerAlertStateSchema = new Schema<DockerContainerAlertState>(
+	{
+		name: { type: String, required: true },
+		state: { type: String, enum: DockerContainerStates, required: true },
+		health: { type: String, enum: DockerHealthStatuses, required: true },
+		missingChecks: { type: Number, default: 0 },
+		alerted: { type: Boolean, default: false },
+	},
+	{ _id: false }
 );
 
 const MonitorSchema = new Schema<MonitorDocument>(
@@ -320,6 +332,18 @@ const MonitorSchema = new Schema<MonitorDocument>(
 		dockerTlsKeySet: {
 			type: Boolean,
 			default: false,
+		},
+		dockerAlertOnState: {
+			type: Boolean,
+			default: false,
+		},
+		dockerAlertOnHealth: {
+			type: Boolean,
+			default: false,
+		},
+		dockerContainerStates: {
+			type: [dockerContainerAlertStateSchema],
+			default: [],
 		},
 		dnsServer: {
 			type: String,

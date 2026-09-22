@@ -8,6 +8,7 @@ import { AppError } from "@/utils/AppError.js";
 import { IMonitorsRepository, TeamQueryConfig, SummaryConfig, RecentChecksMode } from "@/domain/monitors/monitor.repository.interface.js";
 import { toStringId, toDateString } from "@/utils/mongoMappers.js";
 import { toCheckSnapshot } from "@/domain/checks/check.snapshot.js";
+import { DockerContainerState } from "@/domain/docker/docker.type.js";
 class MongoMonitorsRepository implements IMonitorsRepository {
 	create = async (monitor: Monitor, teamId: string, userId: string) => {
 		const monitorModel = new MonitorModel({ ...monitor, teamId, userId });
@@ -471,6 +472,15 @@ class MongoMonitorsRepository implements IMonitorsRepository {
 			dockerTlsCa: doc.dockerTlsCa ?? undefined,
 			dockerTlsCert: doc.dockerTlsCert ?? undefined,
 			dockerTlsKeySet: doc.dockerTlsKeySet ?? false,
+			dockerAlertOnState: doc.dockerAlertOnState ?? false,
+			dockerAlertOnHealth: doc.dockerAlertOnHealth ?? false,
+			dockerContainerStates: (doc.dockerContainerStates ?? []).map((state) => ({
+				name: state.name,
+				state: state.state,
+				health: state.health,
+				missingChecks: state.missingChecks ?? 0,
+				alerted: state.alerted ?? false,
+			})),
 			dnsServer: doc.dnsServer ?? undefined,
 			dnsRecordType: doc.dnsRecordType ?? undefined,
 			createdAt: toDateString(doc.createdAt),

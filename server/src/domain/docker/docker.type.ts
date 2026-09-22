@@ -12,6 +12,34 @@ export type DockerLogStream = (typeof DockerLogStreams)[number];
 
 export const DOCKER_LOG_TAIL_LINES = 200;
 
+export const DockerAlertEventKinds = [
+	"stopped", // running -> exited | dead, non-zero or unknown exit code
+	"started", // recovery for stopped
+	"unhealthy", // healthy -> unhealthy
+	"healthy", // recovery for unhealthy
+	"missing", // absent from the container list for MISSING_CHECKS_BEFORE_ALERT checks
+	"returned", // recovery for missing
+] as const;
+export type DockerAlertEventKind = (typeof DockerAlertEventKinds)[number];
+
+export const DockerAlertRecoveryKinds: readonly DockerAlertEventKind[] = ["started", "healthy", "returned"];
+
+export interface DockerContainerAlertState {
+	name: string;
+	state: DockerContainerState;
+	health: DockerHealthStatus;
+	missingChecks: number; // consecutive checks without this container
+	alerted: boolean; // a stop or missing alert is open for this container
+}
+
+export interface DockerContainerEvent {
+	kind: DockerAlertEventKind;
+	containerName: string;
+	containerId: string;
+	from?: string; // previous state or health
+	to?: string; // new state (Docker's status string for stops) or health
+}
+
 export interface DockerLogLine {
 	ts: string;
 	stream: DockerLogStream;
@@ -55,6 +83,7 @@ export interface DockerContainerInfo {
 	startedAt?: string; // ISO date
 	ports?: DockerContainerPort[];
 	mounts?: DockerContainerMount[];
+	exitCode?: number;
 }
 
 export interface DockerContainerSummary {

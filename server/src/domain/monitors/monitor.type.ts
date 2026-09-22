@@ -7,6 +7,7 @@ import { HardwareStats } from "@/domain/checks/check.type.js";
 import { MonitorStats } from "@/domain/monitor-stats/monitor-stats.type.js";
 import { DockerLogPage } from "@/domain/docker/docker-log.type.js";
 import { isDockerSocketUrl } from "@/utils/dockerHost.js";
+import { DockerContainerAlertState } from "@/domain/docker/docker.type.js";
 
 export const HttpStatusCodes = [
 	...Object.keys(http.STATUS_CODES).map(Number),
@@ -139,6 +140,9 @@ export interface Monitor {
 	// EncryptionService ciphertext. Normally excluded
 	dockerTlsKey?: string;
 	dockerTlsKeySet?: boolean;
+	dockerAlertOnState?: boolean;
+	dockerAlertOnHealth?: boolean;
+	dockerContainerStates?: DockerContainerAlertState[];
 	dnsServer?: string;
 	dnsRecordType?: DnsRecordType;
 	recentChecks: CheckSnapshot[];
