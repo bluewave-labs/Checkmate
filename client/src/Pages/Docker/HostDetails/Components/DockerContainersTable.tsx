@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 // Types
 import type { Header } from "@/Components/design-elements/Table";
 import type { DockerContainerInfo } from "@/Types/Check";
+import type { DockerContainerAlertState } from "@/Types/Monitor";
 
 // Utils
 import { formatPercentage, PLACEHOLDER } from "@/Utils/FormatUtils";
@@ -17,17 +18,24 @@ import { formatPercentage, PLACEHOLDER } from "@/Utils/FormatUtils";
 interface DockerContainersTableProps {
 	monitorId: string | undefined;
 	containers: DockerContainerInfo[];
+	alertStates?: DockerContainerAlertState[];
 	onRowClick?: (container: DockerContainerInfo) => void;
 }
 
 export const DockerContainersTable = ({
 	monitorId,
 	containers,
+	alertStates = [],
 }: DockerContainersTableProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const isSmall = useMediaQuery(theme.breakpoints.down("md"));
 	const navigate = useNavigate();
+	const alertStateByName = new Map(alertStates.map((state) => [state.name, state]));
+	const needsAttention = (name: string) => {
+		const state = alertStateByName.get(name);
+		return Boolean(state && (state.alerted || state.health === "unhealthy"));
+	};
 
 	const getHeaders = () => {
 		// const renderSortIcon = (isActive: boolean) => (
@@ -55,6 +63,7 @@ export const DockerContainersTable = ({
 							state={row.state}
 							name={row.name}
 							image={row.image}
+							alerted={needsAttention(row.name)}
 						/>
 					);
 				},

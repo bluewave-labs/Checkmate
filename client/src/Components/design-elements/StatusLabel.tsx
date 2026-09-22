@@ -2,6 +2,8 @@ import Box from "@mui/material/Box";
 import { BaseBox } from "@/Components/design-elements";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
+import Tooltip from "@mui/material/Tooltip";
+import { AlertTriangle } from "lucide-react";
 
 import type { MonitorStatus } from "@/Types/Monitor";
 import type { SxProps } from "@mui/material/styles";
@@ -122,13 +124,16 @@ export const DockerStateLabel = ({
 	state,
 	name,
 	image,
+	alerted = false,
 }: {
 	state: DockerContainerState;
 	name: string;
 	image: string;
+	alerted?: boolean;
 }) => {
 	const palette = getDockerStatePalette(state);
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	return (
 		<Stack
@@ -144,7 +149,27 @@ export const DockerStateLabel = ({
 				marginRight="5px"
 			/>
 			<Stack>
-				<Typography>{name}</Typography>
+				<Stack
+					direction="row"
+					gap={SPACING.SM}
+					alignItems="center"
+				>
+					<Typography>{name}</Typography>
+					{alerted && (
+						<Tooltip
+							title={t("pages.docker.host.table.needsAttention")}
+							placement="top"
+						>
+							<Box
+								display="inline-flex"
+								color={theme.palette.warning.main}
+								aria-label={t("pages.docker.host.table.needsAttention")}
+							>
+								<AlertTriangle size={14} />
+							</Box>
+						</Tooltip>
+					)}
+				</Stack>
 				<Typography variant="body2">{image}</Typography>
 			</Stack>
 		</Stack>

@@ -47,6 +47,7 @@ const DockerHostDetailsPage = () => {
 			<DockerContainersTable
 				monitorId={monitorId}
 				containers={containers}
+				alertStates={monitor?.dockerContainerStates}
 			/>
 		</BasePage>
 	);

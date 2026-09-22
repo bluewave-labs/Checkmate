@@ -1043,7 +1043,8 @@
 						"container": "Containers",
 						"cpu": "CPU",
 						"memory": "Memory"
-					}
+					},
+					"needsAttention": "Needs attention"
 				}
 			}
 		},
