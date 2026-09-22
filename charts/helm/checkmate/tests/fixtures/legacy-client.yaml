@@ -1,0 +1,6 @@
+# Leftover 0.2.x client block — chart 0.3.0 removed the client tier.
+client:
+  image: ghcr.io/bluewave-labs/checkmate-client
+  tag: ""
+  ingress:
+    host: app.example.com
