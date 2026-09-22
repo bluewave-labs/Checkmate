@@ -4,6 +4,7 @@ import { Job, JobType } from "@/domain/jobs/job.type.js";
 import { MonitorPayloadMap, MonitorStatusResponse, StatusChangeResult } from "@/types/network.js";
 import { QueueWorker } from "@/domain/queue-workers/queue-worker.type.js";
 import type { QueueMode } from "@/domain/app-settings/app-settings.type.js";
+import { DockerContainerEvent } from "@/domain/docker/docker.type.js";
 
 export type JobHandler = (job: Job) => Promise<void>;
 export type JobHandlers = Record<JobType, JobHandler>;
@@ -12,13 +13,14 @@ export interface MonitorActionDecision {
 	shouldResolveIncident: boolean;
 	shouldSendNotification: boolean;
 	incidentReason: "status_down" | "threshold_breach" | null;
-	notificationReason: "status_change" | "threshold_breach" | null;
+	notificationReason: "status_change" | "threshold_breach" | "container_events" | null;
 	thresholdBreaches?: {
 		cpu?: boolean;
 		memory?: boolean;
 		disk?: boolean;
 		temp?: boolean;
 	};
+	containerEvents?: DockerContainerEvent[];
 }
 
 export type MonitorEvaluation = {

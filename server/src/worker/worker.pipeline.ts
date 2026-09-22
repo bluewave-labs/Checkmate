@@ -306,7 +306,7 @@ export class WorkerPipeline implements IWorkerPipeline {
 	};
 
 	private decide = (statusChange: StatusChangeResult): MonitorActionDecision => {
-		const { monitor, statusChanged, prevStatus } = statusChange;
+		const { monitor, statusChanged, prevStatus, containerEvents } = statusChange;
 		const decision: MonitorActionDecision = {
 			shouldCreateIncident: false,
 			shouldResolveIncident: false,
@@ -314,6 +314,14 @@ export class WorkerPipeline implements IWorkerPipeline {
 			incidentReason: null,
 			notificationReason: null,
 		};
+
+		// Container events are independent of the monitor status
+		if (containerEvents && containerEvents.length > 0) {
+			decision.containerEvents = containerEvents;
+			decision.shouldSendNotification = true;
+			decision.notificationReason = "container_events";
+		}
+
 		if (!statusChanged) return decision;
 
 		if (monitor.status === "down") {

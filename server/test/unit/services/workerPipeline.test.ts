@@ -4,6 +4,7 @@ import type { Monitor } from "../../../src/domain/monitors/monitor.type.ts";
 import type { Job } from "../../../src/domain/jobs/job.type.ts";
 import type { Check } from "../../../src/domain/checks/check.type.ts";
 import type { StatusChangeResult } from "../../../src/types/network.ts";
+import type { DockerContainerEvent } from "../../../src/domain/docker/docker.type.ts";
 import { createMockLogger } from "../../helpers/createMockLogger.ts";
 import { NETWORK_ERROR } from "../../../src/types/network.ts";
 
@@ -869,6 +870,47 @@ describe("WorkerPipeline", () => {
 		it("does not create or resolve for unhandled status transitions", async () => {
 			const decision = await decide(makeStatusChange({ status: "paused", statusChanged: true, prevStatus: "up" }));
 			expect(decision).toMatchObject({ shouldCreateIncident: false, shouldResolveIncident: false, shouldSendNotification: false });
+		});
+
+		it("notifies on container events without a status change and opens no incident", async () => {
+			const containerEvents: DockerContainerEvent[] = [
+				{ kind: "stopped", containerName: "web", containerId: "abc123", from: "running", to: "Exited (137)" },
+			];
+			const decision = await decide(makeStatusChange({ status: "up", statusChanged: false, prevStatus: "up", containerEvents }));
+			expect(decision).toEqual({
+				shouldCreateIncident: false,
+				shouldResolveIncident: false,
+				shouldSendNotification: true,
+				incidentReason: null,
+				notificationReason: "container_events",
+				containerEvents,
+			});
+		});
+
+		it("keeps container events while a down transition sets the status change reason", async () => {
+			const containerEvents: DockerContainerEvent[] = [
+				{ kind: "unhealthy", containerName: "web", containerId: "abc123", from: "healthy", to: "unhealthy" },
+			];
+			const decision = await decide(makeStatusChange({ status: "down", statusChanged: true, prevStatus: "up", code: 500, containerEvents }));
+			expect(decision).toEqual({
+				shouldCreateIncident: true,
+				shouldResolveIncident: false,
+				shouldSendNotification: true,
+				incidentReason: "status_down",
+				notificationReason: "status_change",
+				containerEvents,
+			});
+		});
+
+		it("treats an empty container events array as no events", async () => {
+			const decision = await decide(makeStatusChange({ status: "up", statusChanged: false, prevStatus: "up", containerEvents: [] }));
+			expect(decision).toEqual({
+				shouldCreateIncident: false,
+				shouldResolveIncident: false,
+				shouldSendNotification: false,
+				incidentReason: null,
+				notificationReason: null,
+			});
 		});
 	});
 });
