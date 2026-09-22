@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { Fragment, useMemo, useState, type ReactNode } from "react";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
@@ -10,16 +10,13 @@ import { Button } from "@/Components/inputs";
 import { LAYOUT } from "@/Utils/Theme/constants";
 import { useMonitorListController } from "@/Hooks/useMonitorListController";
 import { MonitorTypes, type MonitorTypeCount } from "@/Types/Monitor";
-import {
-	setDashboardVisibleCards,
-	dashboardCardKeys,
-	type DashboardCardKey,
-} from "@/Features/UI/uiSlice";
+import { setDashboardVisibleCards } from "@/Features/UI/uiSlice";
 import type { RootState, AppDispatch } from "@/store";
 
 import { MonitorStatusCard } from "@/Pages/Dashboard/components/cards/MonitorStatusCard";
 import { MonitorsByTypeCard } from "@/Pages/Dashboard/components/cards/MonitorsByTypeCard";
 import { EditCardsModal } from "@/Pages/Dashboard/components/EditCardsModal";
+import { type DashboardCardKey, dashboardCardKeys } from "@/Types/Dashboard";
 
 const Dashboard = () => {
 	const theme = useTheme();
@@ -78,7 +75,7 @@ const Dashboard = () => {
 					{dashboardCardKeys
 						.filter((key) => visibleCards.has(key))
 						.map((key) => (
-							<div key={key}>{cardComponents[key]}</div>
+							<Fragment key={key}>{cardComponents[key]}</Fragment>
 						))}
 				</Box>
 			</Stack>
