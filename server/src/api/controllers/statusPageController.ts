@@ -92,7 +92,7 @@ class StatusPageController implements IStatusPageController {
 		const { url, monitorId } = getPublicMonitorIncidentsParamValidation.parse(req.params);
 		const { date } = getPublicMonitorIncidentsQueryValidation.parse(req.query);
 
-		const incidents = await this.statusPageService.getPublicMonitorIncidents(url, monitorId, date);
+		const incidents = await this.statusPageService.getPublicMonitorIncidents(url, monitorId, date, req.user?.teamId);
 
 		return res.status(200).json({
 			success: true,

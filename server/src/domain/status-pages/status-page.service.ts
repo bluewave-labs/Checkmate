@@ -29,7 +29,7 @@ export interface IStatusPageService {
 	getStatusPageByCustomDomain(customDomain: string): Promise<StatusPage>;
 	getStatusPagesByTeamId(teamId: string): Promise<StatusPage[]>;
 	getPublicStatusPagePayload(statusPage: StatusPage, requesterTeamId: string | undefined, range: StatusPageRange): Promise<PublicStatusPagePayload>;
-	getPublicMonitorIncidents(url: string, monitorId: string, date: string): Promise<PublicIncident[]>;
+	getPublicMonitorIncidents(url: string, monitorId: string, date: string, requesterTeamId?: string): Promise<PublicIncident[]>;
 	updateStatusPage(id: string, teamId: string, image: Express.Multer.File | undefined, data: Partial<StatusPage>): Promise<StatusPage>;
 
 	deleteStatusPage(statusPageId: string, teamId: string): Promise<StatusPage>;
@@ -189,12 +189,14 @@ export class StatusPageService implements IStatusPageService {
 		};
 	};
 
-	getPublicMonitorIncidents = async (url: string, monitorId: string, date: string): Promise<PublicIncident[]> => {
+	getPublicMonitorIncidents = async (url: string, monitorId: string, date: string, requesterTeamId?: string): Promise<PublicIncident[]> => {
 		const statusPage = await this.getStatusPageByUrl(url);
 
-		// Ensure the status page is public
+		// Ensure the status page is public or the requester is the owner
 		if (!statusPage.isPublished) {
-			throw new AppError({ message: "Forbidden", status: 403 });
+			if (!requesterTeamId || statusPage.teamId !== requesterTeamId) {
+				throw new AppError({ message: "Forbidden", status: 403 });
+			}
 		}
 
 		// Ensure the requested monitor actually belongs to this status page
