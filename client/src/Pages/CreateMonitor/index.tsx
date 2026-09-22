@@ -974,6 +974,25 @@ const CreateMonitorPage = () => {
 					/>
 				)}
 
+				{showStep(1) && watchedType === "docker" && (
+					<ConfigBox
+						title={t("pages.createMonitor.form.dockerAlerts.title")}
+						subtitle={t("pages.createMonitor.form.dockerAlerts.description")}
+						rightContent={
+							<Stack spacing={theme.spacing(LAYOUT.MD)}>
+								<FormSwitchField
+									name="dockerAlertOnState"
+									label={t("pages.createMonitor.form.dockerAlerts.option.onState.label")}
+								/>
+								<FormSwitchField
+									name="dockerAlertOnHealth"
+									label={t("pages.createMonitor.form.dockerAlerts.option.onHealth.label")}
+								/>
+							</Stack>
+						}
+					/>
+				)}
+
 				{showStep(2) &&
 					(watchedType === "http" ||
 						watchedType === "grpc" ||

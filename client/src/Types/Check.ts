@@ -201,6 +201,7 @@ export interface DockerContainerInfo {
 	startedAt?: string;
 	ports?: DockerContainerPort[];
 	mounts?: DockerContainerMount[];
+	exitCode?: number;
 }
 
 export interface Check {

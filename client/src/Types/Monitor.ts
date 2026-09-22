@@ -5,6 +5,8 @@ import type {
 	DailyCheckBucket,
 	DockerContainerInfo,
 	DockerContainerSummary,
+	DockerContainerState,
+	DockerHealthStatus,
 	DockerLog,
 } from "@/Types/Check";
 import type { PageSpeedGroupedCheck } from "@/Types/Check";
@@ -172,6 +174,9 @@ export interface Monitor {
 	dockerTlsCa?: string;
 	dockerTlsCert?: string;
 	dockerTlsKeySet?: boolean;
+	dockerAlertOnState?: boolean;
+	dockerAlertOnHealth?: boolean;
+	dockerContainerStates?: DockerContainerAlertState[];
 	dnsServer?: string;
 	dnsRecordType?: DnsRecordType;
 	recentChecks: CheckSnapshot[];
@@ -319,6 +324,14 @@ export interface DockerDetailsResponse {
 	stats: DockerStats;
 	monitorStats: MonitorStats | null;
 }
+export interface DockerContainerAlertState {
+	name: string;
+	state: DockerContainerState;
+	health: DockerHealthStatus;
+	missingChecks: number;
+	alerted: boolean;
+}
+
 export interface DockerContainerStatsBucket {
 	_id: string;
 	avgCpuPct: number | null;

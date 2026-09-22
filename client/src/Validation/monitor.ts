@@ -152,6 +152,8 @@ const dockerSchema = baseSchema.extend({
 	// Read only mirror of the server flag, stripped on submit
 	dockerTlsKeySet: z.boolean(),
 	dockerLogsEnabled: z.boolean().register(monitorStepRegistry, { step: 1 }),
+	dockerAlertOnState: z.boolean().register(monitorStepRegistry, { step: 1 }),
+	dockerAlertOnHealth: z.boolean().register(monitorStepRegistry, { step: 1 }),
 });
 
 // Game server monitor schema

@@ -827,6 +827,18 @@
 						}
 					}
 				},
+				"dockerAlerts": {
+					"title": "Container alerts",
+					"description": "Notify when individual containers on this host stop unexpectedly or their health check starts failing. Containers that exit with code 0 do not alert. On Capture hosts the exit code is not available, so every stop alerts.",
+					"option": {
+						"onState": {
+							"label": "Container stopped or missing"
+						},
+						"onHealth": {
+							"label": "Health check failing"
+						}
+					}
+				},
 				"stats": {
 					"title": "Monitor history",
 					"description": "Clear all monitoring history and statistics for your team. This action is irreversible.",
