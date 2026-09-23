@@ -1,6 +1,7 @@
 const SERVICE_NAME = "EmailProvider";
 import type { Notification } from "@/domain/notifications/notification.type.js";
 import { NotificationProvider } from "@/domain/notifications/providers/INotificationProvider.js";
+import { AppError } from "@/utils/AppError.js";
 import { buildTestEmail } from "@/domain/notifications/providers/utils.js";
 import type { NotificationMessage } from "@/domain/notifications/notification.type.js";
 import type { ILogger } from "@/utils/logger.js";
@@ -40,11 +41,13 @@ export class EmailProvider extends NotificationProvider {
 			return true;
 		} catch (error: unknown) {
 			this.logger.warn({
-				message: "Email test alert failed",
+				message: `Email test alert failed: ${error instanceof Error ? error.message : "Unknown error"}`,
 				service: SERVICE_NAME,
 				method: "sendTestAlert",
+				details: error instanceof AppError ? error.details : undefined,
 				stack: error instanceof Error ? error.stack : undefined,
 			});
+			if (error instanceof AppError) throw error;
 			return false;
 		}
 	}
@@ -73,9 +76,10 @@ export class EmailProvider extends NotificationProvider {
 			return true;
 		} catch (error: unknown) {
 			this.logger.warn({
-				message: "Email notification failed",
+				message: `Email notification failed: ${error instanceof Error ? error.message : "Unknown error"}`,
 				service: SERVICE_NAME,
 				method: "sendMessage",
+				details: error instanceof AppError ? error.details : undefined,
 				stack: error instanceof Error ? error.stack : undefined,
 			});
 			return false;

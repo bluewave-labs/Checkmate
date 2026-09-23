@@ -148,7 +148,17 @@ export class NotificationsService implements INotificationsService {
 
 	testAllNotifications = async (notificationIds: string[]) => {
 		const notifications = await this.notificationsRepository.findNotificationsByIds(notificationIds);
-		const tasks = notifications.map((notification) => this.sendTestNotification(notification));
+		const tasks = notifications.map((notification) =>
+			this.sendTestNotification(notification).catch((error: unknown) => {
+				this.logger.warn({
+					message: `Test notification failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+					service: SERVICE_NAME,
+					method: "testAllNotifications",
+					details: { notificationId: notification.id, type: notification.type },
+				});
+				return false;
+			})
+		);
 		const outcomes = await Promise.all(tasks);
 		const succeeded = outcomes.filter(Boolean).length;
 		const failed = outcomes.length - succeeded;

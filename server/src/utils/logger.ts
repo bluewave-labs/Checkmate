@@ -60,21 +60,18 @@ class Logger implements ILogger {
 			if (formattedDetails) msg += ` (details: ${formattedDetails})`;
 
 			if (typeof stack === "string") {
-				const stackTrace = stack
-					.split("\n")
-					.slice(1) // Remove first line (error message)
-					.map((line: string) => {
-						const match = line.match(/at\s+(.+?)\s+\((.+?):(\d+):(\d+)\)/);
-						if (match) {
-							return {
-								function: match[1],
-								file: match[2],
-								line: parseInt(match[3] ?? "0", 10),
-								column: parseInt(match[4] ?? "0", 10),
-							};
-						}
-						return line.trim();
-					});
+				const stackTrace = stack.split("\n").map((line: string) => {
+					const match = line.match(/at\s+(.+?)\s+\((.+?):(\d+):(\d+)\)/);
+					if (match) {
+						return {
+							function: match[1],
+							file: match[2],
+							line: parseInt(match[3] ?? "0", 10),
+							column: parseInt(match[4] ?? "0", 10),
+						};
+					}
+					return line.trim();
+				});
 				msg += ` (stack: ${JSON.stringify(stackTrace, null, 2)})`;
 			}
 
