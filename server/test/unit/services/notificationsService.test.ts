@@ -311,6 +311,23 @@ describe("NotificationsService", () => {
 			const result = await service.testAllNotifications(["notif-1"]);
 			expect(result).toBe(false);
 		});
+
+		it("counts a provider that throws as a failed test and still tests the others", async () => {
+			const { service, notificationsRepository, emailProvider, slackProvider, logger } = createService();
+			emailProvider.sendTestAlert.mockRejectedValue(new Error("Email is not configured. Set the system email host in settings."));
+			(notificationsRepository.findNotificationsByIds as jest.Mock).mockResolvedValue([
+				makeNotification({ type: "email" }),
+				makeNotification({ type: "slack" }),
+			]);
+
+			const result = await service.testAllNotifications(["notif-1", "notif-2"]);
+
+			expect(result).toBe(false);
+			expect(slackProvider.sendTestAlert).toHaveBeenCalled();
+			expect(logger.warn).toHaveBeenCalledWith(
+				expect.objectContaining({ message: "Test notification failed: Email is not configured. Set the system email host in settings." })
+			);
+		});
 	});
 
 	// ── CRUD operations ──────────────────────────────────────────────────────

@@ -12,6 +12,23 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const SERVICE_NAME = "EmailService";
+
+const SMTP_FAILURE_REASONS: Record<string, string> = {
+	EAUTH: "rejected the login. Check the user name and password",
+	ENOAUTH: "requires a login. Set the user name and password",
+	EDNS: "could not be resolved. Check the host name",
+	ECONNECTION: "refused the connection. Check the host and port",
+	ESOCKET: "refused the connection. Check the host and port",
+	ETIMEDOUT: "did not respond. Check the port and the secure setting",
+	ETLS: "failed the TLS handshake. Check the secure and TLS settings",
+	EPROTOCOL: "sent an invalid response. Check the port and the secure setting",
+};
+
+const describeSmtpFailure = (error: unknown, host: string, port: number): string => {
+	const code = typeof error === "object" && error !== null && "code" in error ? String((error as { code: unknown }).code) : undefined;
+	const reason = (code !== undefined && SMTP_FAILURE_REASONS[code]) || "failed verification";
+	return `SMTP host ${host}:${port} ${reason}.`;
+};
 type MjmlFn = typeof mjml2html;
 type FileSystem = typeof fs;
 type PathModule = typeof path;
@@ -123,6 +140,15 @@ export class EmailService implements IEmailService {
 			systemEmailRejectUnauthorized,
 		} = config;
 
+		if (!systemEmailHost) {
+			throw new AppError({
+				message: "Email is not configured. Set the system email host in settings.",
+				status: 400,
+				service: SERVICE_NAME,
+				method: "sendEmail",
+			});
+		}
+
 		const emailConfig = {
 			host: systemEmailHost,
 			port: Number(systemEmailPort),
@@ -146,17 +172,20 @@ export class EmailService implements IEmailService {
 		try {
 			await this.transporter.verify();
 		} catch (error: unknown) {
+			const cause = error instanceof Error ? error.message : "Unknown error";
 			this.logger.warn({
-				message: "Email transporter verification failed",
+				message: `Email transporter verification failed: ${cause}`,
 				service: SERVICE_NAME,
 				method: "verifyTransporter",
+				details: { host: systemEmailHost, port: emailConfig.port },
 				stack: error instanceof Error ? error.stack : undefined,
 			});
 			throw new AppError({
-				message: "Email transporter verification failed",
+				message: describeSmtpFailure(error, systemEmailHost, emailConfig.port),
+				status: 502,
 				service: SERVICE_NAME,
 				method: "sendEmail",
-				details: { cause: error instanceof Error ? error.message : "Unknown error" },
+				details: { cause },
 			});
 		}
 
@@ -180,6 +209,7 @@ export class EmailService implements IEmailService {
 			});
 			throw new AppError({
 				message: "Failed to send email",
+				status: 502,
 				service: SERVICE_NAME,
 				method: "sendEmail",
 				details: { cause: error instanceof Error ? error.message : "Unknown error" },

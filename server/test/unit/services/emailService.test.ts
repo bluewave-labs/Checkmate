@@ -335,14 +335,57 @@ describe("EmailService", () => {
 			const { service, logger } = createService({ nodemailer });
 
 			await expect(service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig())).rejects.toThrow(
-				"Email transporter verification failed"
+				"SMTP host smtp.example.com:587 failed verification."
 			);
 			expect(logger.warn).toHaveBeenCalledWith(
 				expect.objectContaining({
-					message: "Email transporter verification failed",
+					message: "Email transporter verification failed: SMTP auth failed",
 					service: "EmailService",
 					method: "verifyTransporter",
+					details: { host: "smtp.example.com", port: 587 },
 				})
+			);
+		});
+
+		it.each([
+			["EAUTH", "SMTP host smtp.example.com:587 rejected the login. Check the user name and password."],
+			["ETIMEDOUT", "SMTP host smtp.example.com:587 did not respond. Check the port and the secure setting."],
+			["EDNS", "SMTP host smtp.example.com:587 could not be resolved. Check the host name."],
+			["ECONNECTION", "SMTP host smtp.example.com:587 refused the connection. Check the host and port."],
+			["ETLS", "SMTP host smtp.example.com:587 failed the TLS handshake. Check the secure and TLS settings."],
+		])("describes a %s verification failure without the server's reply text", async (code, expected) => {
+			const transporter = createMockTransporter();
+			(transporter.verify as jest.Mock).mockRejectedValue(Object.assign(new Error("535-5.7.8 Username and Password not accepted"), { code }));
+			const nodemailer = createMockNodemailer(transporter);
+			const { service } = createService({ nodemailer });
+
+			await expect(service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig())).rejects.toMatchObject({
+				message: expected,
+				status: 502,
+				details: { cause: "535-5.7.8 Username and Password not accepted" },
+			});
+		});
+
+		it("throws a 400 without building a transport when the host is not configured", async () => {
+			const nodemailer = createMockNodemailer();
+			const { service } = createService({ nodemailer });
+
+			await expect(
+				service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig({ systemEmailHost: undefined }))
+			).rejects.toMatchObject({
+				status: 400,
+				message: "Email is not configured. Set the system email host in settings.",
+			});
+			expect(nodemailer.createTransport).not.toHaveBeenCalled();
+		});
+
+		it("treats an empty host as not configured", async () => {
+			const { service } = createService();
+
+			await expect(service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig({ systemEmailHost: "" }))).rejects.toMatchObject(
+				{
+					status: 400,
+				}
 			);
 		});
 
@@ -353,7 +396,7 @@ describe("EmailService", () => {
 			const { service } = createService({ nodemailer });
 
 			await expect(service.sendEmail("to@example.com", "Subject", "<p>body</p>", makeTransportConfig())).rejects.toMatchObject({
-				status: 500,
+				status: 502,
 				details: { cause: "SMTP auth failed" },
 			});
 		});
