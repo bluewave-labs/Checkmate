@@ -435,6 +435,49 @@ describe("HttpProvider", () => {
 		});
 	});
 
+	// ── request headers ──────────────────────────────────────────────────
+
+	describe("request headers", () => {
+		it("sends configured headers when there is no secret", async () => {
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor({ headers: [{ key: "X-Api-Key", value: "abc" }] }));
+
+			expect(mockGot).toHaveBeenCalledWith("https://example.com", expect.objectContaining({ headers: { "X-Api-Key": "abc" } }));
+		});
+
+		it("merges configured headers with the secret-derived Authorization header", async () => {
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor({ headers: [{ key: "X-Custom", value: "val" }], secret: "tok" }));
+
+			expect(mockGot).toHaveBeenCalledWith(
+				"https://example.com",
+				expect.objectContaining({ headers: { "X-Custom": "val", Authorization: "Bearer tok" } })
+			);
+		});
+
+		it("lets the secret win over a configured Authorization header", async () => {
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor({ headers: [{ key: "Authorization", value: "Bearer user-token" }], secret: "secret-token" }));
+
+			expect(mockGot).toHaveBeenCalledWith("https://example.com", expect.objectContaining({ headers: { Authorization: "Bearer secret-token" } }));
+		});
+
+		it("sends no headers when none are configured and there is no secret", async () => {
+			mockGot.mockResolvedValue(makeGotResponse());
+			const { provider } = createProvider();
+
+			await provider.handle(makeMonitor());
+
+			expect(mockGot).toHaveBeenCalledWith("https://example.com", expect.objectContaining({ headers: undefined }));
+		});
+	});
+
 	// ── HTTP method (GET / HEAD) ─────────────────────────────────────────
 
 	describe("request method", () => {
