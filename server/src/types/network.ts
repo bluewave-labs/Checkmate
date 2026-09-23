@@ -25,7 +25,8 @@ export interface MonitorStatusResponse<
 		| DockerStatusPayload
 		| GameStatusPayload
 		| GrpcStatusPayload
-		| WebSocketStatusPayload,
+		| WebSocketStatusPayload
+		| MySqlStatusPayload,
 > {
 	monitorId: string;
 	teamId: string;
@@ -156,6 +157,13 @@ export interface WebSocketStatusPayload {
 	connected: boolean;
 }
 
+export interface MySqlStatusPayload {
+	rowCount: number;
+	// First column of the first row, stringified. Feeds advanced matching so a monitor can
+	// assert on a value rather than only on the query succeeding.
+	value?: string | null;
+}
+
 export interface DNSStatusPayload {
 	hostname: string;
 	dnsServer: string;
@@ -175,6 +183,7 @@ export interface MonitorPayloadMap {
 	grpc: GrpcStatusPayload;
 	websocket: WebSocketStatusPayload;
 	dns: DNSStatusPayload;
+	mysql: MySqlStatusPayload;
 	unknown: unknown;
 }
 
