@@ -25,7 +25,7 @@ import type { RootState } from "@/Types/state";
 import { Checkbox } from "@/Components/inputs";
 import type { Tag } from "@/Types/Tag";
 import { SPACING } from "@/Utils/Theme/constants";
-import { getUptimePercentageColor } from "@/Utils/MonitorUtils";
+import { getNextMonitorSort, getUptimePercentageColor } from "@/Utils/MonitorUtils";
 import { formatPercentage } from "@/Utils/FormatUtils";
 
 interface MonitorTableProps {
@@ -91,13 +91,9 @@ export const MonitorTable = ({
 	const handleSort = (e: React.MouseEvent, field: string) => {
 		e.preventDefault();
 		e.stopPropagation();
-		if (sortField === field) {
-			const newOrder = sortOrder === "asc" ? "desc" : "asc";
-			setSortOrder(newOrder);
-		} else {
-			setSortField(field);
-			setSortOrder("asc");
-		}
+		const nextSort = getNextMonitorSort(field, sortField, sortOrder);
+		setSortField(nextSort.field);
+		setSortOrder(nextSort.order);
 		refetch();
 	};
 

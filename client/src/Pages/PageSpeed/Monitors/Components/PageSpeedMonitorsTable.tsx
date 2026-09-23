@@ -9,6 +9,7 @@ import {
 	ColoredLabel,
 } from "@/Components/design-elements";
 import { LAYOUT, SPACING } from "@/Utils/Theme/constants";
+import { getNextMonitorSort } from "@/Utils/MonitorUtils";
 import { HistogramPageSpeed } from "@/Components/monitors";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import type { Header } from "@/Components/design-elements/Table";
@@ -81,13 +82,9 @@ export const PageSpeedMonitorsTable = ({
 	const handleSort = (e: any, field: string) => {
 		e.preventDefault();
 		e.stopPropagation();
-		if (sortField === field) {
-			const newOrder = sortOrder === "asc" ? "desc" : "asc";
-			setSortOrder(newOrder);
-		} else {
-			setSortField(field);
-			setSortOrder("asc");
-		}
+		const nextSort = getNextMonitorSort(field, sortField, sortOrder);
+		setSortField(nextSort.field);
+		setSortOrder(nextSort.order);
 		refetch();
 	};
 

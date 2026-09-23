@@ -10,6 +10,16 @@ import {
 	type DockerLogLine,
 } from "@/Types/Check";
 
+export const getNextMonitorSort = (
+	field: string,
+	sortField: string,
+	sortOrder: "asc" | "desc"
+): { field: string; order: "asc" | "desc" } => {
+	if (field !== sortField) return { field, order: "asc" };
+	if (sortOrder === "asc") return { field, order: "desc" };
+	return { field: "", order: "asc" };
+};
+
 export const getMonitorPath = (type: MonitorType): string => {
 	const pathMap: Record<MonitorType, string> = {
 		http: "uptime",

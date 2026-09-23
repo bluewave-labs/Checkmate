@@ -9,6 +9,7 @@ import {
 	ColoredLabel,
 } from "@/Components/design-elements";
 import { SPACING } from "@/Utils/Theme/constants";
+import { getNextMonitorSort } from "@/Utils/MonitorUtils";
 import type { Header } from "@/Components/design-elements/Table";
 import { ActionsMenu, type ActionMenuItem } from "@/Components/actions-menu";
 import { ArrowUp, ArrowDown } from "lucide-react";
@@ -100,13 +101,9 @@ export const InfraMonitorsTable = ({
 	const handleSort = (e: React.MouseEvent, field: string) => {
 		e.preventDefault();
 		e.stopPropagation();
-		if (sortField === field) {
-			const newOrder = sortOrder === "asc" ? "desc" : "asc";
-			setSortOrder(newOrder);
-		} else {
-			setSortField(field);
-			setSortOrder("asc");
-		}
+		const nextSort = getNextMonitorSort(field, sortField, sortOrder);
+		setSortField(nextSort.field);
+		setSortOrder(nextSort.order);
 		refetch();
 	};
 
