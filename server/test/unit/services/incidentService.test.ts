@@ -175,6 +175,46 @@ describe("IncidentService", () => {
 			expect(incidentsRepository.create).toHaveBeenCalledWith(expect.objectContaining({ message: "Threshold breach detected" }));
 		});
 
+		it("builds the container list for docker threshold_breach incidents", async () => {
+			const created = makeIncident();
+			const { service, incidentsRepository, notificationMessageBuilder } = createService();
+			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(null);
+			(incidentsRepository.create as jest.Mock).mockResolvedValue(created);
+
+			const monitor = makeMonitor({ type: "docker", status: "breached", dockerAlertOnStopped: true, dockerAlertOnUnhealthy: true });
+			const response = {
+				monitorId: "mon-1",
+				payload: {
+					containers: [
+						{ id: "1", name: "db", image: "postgres", state: "exited", status: "Exited (1)", health: "none", exitCode: 1 },
+						{ id: "2", name: "api", image: "api", state: "running", status: "Up", health: "unhealthy" },
+						{ id: "3", name: "web", image: "nginx", state: "running", status: "Up", health: "healthy" },
+					],
+					summary: { total: 3, running: 2, stopped: 1, unhealthy: 1 },
+				},
+			} as any;
+			const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
+			await service.handleIncident(monitor, 200, decision, response);
+
+			expect(incidentsRepository.create).toHaveBeenCalledWith(
+				expect.objectContaining({ statusCode: 9999, message: "db: stopped (exit code 1), api: unhealthy" })
+			);
+			expect(notificationMessageBuilder.extractThresholdBreaches).not.toHaveBeenCalled();
+		});
+
+		it("uses the container fallback message for docker incidents with no response", async () => {
+			const created = makeIncident();
+			const { service, incidentsRepository } = createService();
+			(incidentsRepository.findActiveByMonitorId as jest.Mock).mockResolvedValue(null);
+			(incidentsRepository.create as jest.Mock).mockResolvedValue(created);
+
+			const monitor = makeMonitor({ type: "docker", status: "breached", dockerAlertOnStopped: true });
+			const decision = makeDecision({ shouldCreateIncident: true, incidentReason: "threshold_breach" });
+			await service.handleIncident(monitor, 200, decision, undefined);
+
+			expect(incidentsRepository.create).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 9999, message: "Container alert" }));
+		});
+
 		it("joins multiple threshold breaches with commas", async () => {
 			const created = makeIncident();
 			const { service, incidentsRepository, notificationMessageBuilder } = createService();

@@ -861,9 +861,14 @@ describe("WorkerPipeline", () => {
 			});
 		});
 
-		it("resolves incident when monitor recovers from breached", async () => {
+		it("resolves incident with threshold_resolved when monitor recovers from breached", async () => {
 			const decision = await decide(makeStatusChange({ status: "up", statusChanged: true, prevStatus: "breached" }));
-			expect(decision).toMatchObject({ shouldResolveIncident: true, shouldSendNotification: true });
+			expect(decision).toMatchObject({
+				shouldResolveIncident: true,
+				shouldSendNotification: true,
+				shouldCreateIncident: false,
+				notificationReason: "threshold_resolved",
+			});
 		});
 
 		it("does not create or resolve for unhandled status transitions", async () => {

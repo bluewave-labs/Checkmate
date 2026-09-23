@@ -229,6 +229,18 @@ describe("DockerProvider", () => {
 			});
 		});
 
+		it("leaves the exit code undefined for Capture containers", async () => {
+			const response = makeCaptureResponse({
+				payload: { data: [makeCaptureContainer({ status: "exited", running: false, stats: undefined })], errors: [] },
+			});
+			const { provider } = setup({ httpHandle: jest.fn().mockResolvedValue(response) });
+
+			const result = await provider.handle(makeMonitor({ url: "http://capture:59232/api/v1/metrics/docker", secret: "secret" }));
+
+			expect(result.payload?.containers[0]?.state).toBe("exited");
+			expect(result.payload?.containers[0]?.exitCode).toBeUndefined();
+		});
+
 		it("keeps state-derived Capture health separate from Docker healthchecks", async () => {
 			const response = makeCaptureResponse({
 				payload: {
@@ -558,6 +570,16 @@ describe("DockerProvider", () => {
 			);
 		});
 
+		it("reads the exit code from inspect", async () => {
+			const inspect = jest.fn().mockResolvedValue(makeInspect({ State: { StartedAt: "2026-08-28T10:00:00.000Z", ExitCode: 137 } }));
+			const listContainers = jest.fn().mockResolvedValue([makeContainer({ State: "exited", Status: "Exited (137) 2 minutes ago" })]);
+			const { provider } = setup({ inspect, listContainers });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]).toEqual(expect.objectContaining({ state: "exited", exitCode: 137, health: "none" }));
+		});
+
 		it("counts running, stopped, and unhealthy states in the summary", async () => {
 			const containers = [
 				makeContainer({ Id: "a".repeat(64) }),
@@ -682,9 +704,38 @@ describe("DockerProvider", () => {
 
 			expect(result.status).toBe(true);
 			expect(result.payload?.containers).toHaveLength(1);
-			expect(result.payload?.containers[0]).toEqual(expect.objectContaining({ health: "none" }));
 			expect(result.payload?.containers[0]?.restartCount).toBeUndefined();
 			expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("Failed to inspect") }));
+		});
+
+		it.each([
+			["Up 3 hours (healthy)", "healthy"],
+			["Up 3 hours (unhealthy)", "unhealthy"],
+			["Up 5 seconds (health: starting)", "starting"],
+			["Up 3 hours", "none"],
+			["Exited (1) 2 minutes ago", "none"],
+		])("reads health from the list status %s when inspect rejects", async (Status, health) => {
+			const inspect = jest.fn().mockRejectedValue(new Error("inspect failed"));
+			const listContainers = jest.fn().mockResolvedValue([makeContainer({ Status })]);
+			const { provider } = setup({ inspect, listContainers });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]?.health).toBe(health);
+		});
+
+		it.each([
+			["Exited (0) 2 minutes ago", 0],
+			["Exited (137) 2 minutes ago", 137],
+			["Up 3 hours", undefined],
+		])("reads the exit code from the list status %s when inspect rejects", async (Status, exitCode) => {
+			const inspect = jest.fn().mockRejectedValue(new Error("inspect failed"));
+			const listContainers = jest.fn().mockResolvedValue([makeContainer({ State: "exited", Status })]);
+			const { provider } = setup({ inspect, listContainers });
+
+			const result = await provider.handle(makeMonitor());
+
+			expect(result.payload?.containers[0]?.exitCode).toBe(exitCode);
 		});
 
 		it("keeps the container without metrics when stats rejects", async () => {

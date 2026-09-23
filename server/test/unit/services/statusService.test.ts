@@ -4,7 +4,7 @@ import { createMockLogger } from "../../helpers/createMockLogger.ts";
 import { MAX_RECENT_CHECKS } from "../../../src/domain/monitors/monitor.type.ts";
 import type { Monitor, MonitorStatus } from "../../../src/domain/monitors/monitor.type.ts";
 import type { Check } from "../../../src/domain/checks/check.type.ts";
-import type { MonitorStatusResponse, HardwareStatusPayload } from "../../../src/types/network.ts";
+import type { MonitorStatusResponse, HardwareStatusPayload, DockerStatusPayload } from "../../../src/types/network.ts";
 import type { IMonitorsRepository } from "../../../src/domain/monitors/monitor.repository.interface.ts";
 import type { IMonitorStatsRepository } from "../../../src/domain/monitor-stats/monitor-stats.repository.interface.ts";
 
@@ -1085,6 +1085,162 @@ describe("StatusService", () => {
 	// or logger mocks. The helpers are accessed via `service as any` because
 	// they're private implementation details; exposing them publicly would
 	// widen the API surface just for testability.
+
+	describe("docker container alerts", () => {
+		const makeDockerMonitor = (overrides?: Partial<Monitor>) =>
+			makeMonitor({
+				type: "docker",
+				url: "unix:///var/run/docker.sock",
+				statusWindow: [true, true, true, true],
+				statusWindowSize: 5,
+				status: "up",
+				dockerAlertOnStopped: true,
+				dockerAlertOnUnhealthy: true,
+				...overrides,
+			});
+
+		const makeContainers = (containers: Partial<DockerStatusPayload["containers"][number]>[]): DockerStatusPayload => ({
+			containers: containers.map((container, index) => ({
+				id: `container-${index}`,
+				name: `container-${index}`,
+				image: "nginx:latest",
+				state: "running",
+				status: "Up 3 hours",
+				health: "none",
+				...container,
+			})),
+			summary: { total: containers.length, running: 0, stopped: 0, unhealthy: 0 },
+		});
+
+		const makeDockerResponse = (payload: DockerStatusPayload | null, overrides?: Partial<MonitorStatusResponse<DockerStatusPayload>>) =>
+			makeStatusResponse({
+				type: "docker",
+				status: true,
+				payload,
+				...overrides,
+			} as any) as MonitorStatusResponse<DockerStatusPayload>;
+
+		const run = async (monitor: Monitor, response: MonitorStatusResponse<DockerStatusPayload>, check = makeCheck()) => {
+			const { service, monitorsRepository } = createService();
+			(monitorsRepository.findById as jest.Mock).mockResolvedValue(monitor);
+			(monitorsRepository.updateById as jest.Mock).mockImplementation((_id: unknown, _tid: unknown, m: unknown) => Promise.resolve(m));
+			const result = await service.updateMonitorStatus(response, check, monitor);
+			return { result, monitorsRepository };
+		};
+
+		const stopped = { name: "db", state: "exited" as const, exitCode: 1 };
+		const unhealthy = { name: "api", health: "unhealthy" as const };
+
+		it("goes to breached on the first check with a stopped container", async () => {
+			const { result } = await run(makeDockerMonitor(), makeDockerResponse(makeContainers([stopped])));
+
+			expect(result.statusChanged).toBe(true);
+			expect(result.monitor.status).toBe("breached");
+		});
+
+		it("goes to breached on the first check with an unhealthy container", async () => {
+			const { result } = await run(makeDockerMonitor(), makeDockerResponse(makeContainers([unhealthy])));
+
+			expect(result.statusChanged).toBe(true);
+			expect(result.monitor.status).toBe("breached");
+		});
+
+		it("stays up on a stopped container when both switches are off", async () => {
+			const monitor = makeDockerMonitor({ dockerAlertOnStopped: false, dockerAlertOnUnhealthy: false });
+			const { result } = await run(monitor, makeDockerResponse(makeContainers([stopped, unhealthy])));
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.monitor.status).toBe("up");
+		});
+
+		it("stays up on a stopped container when only the unhealthy switch is on", async () => {
+			const monitor = makeDockerMonitor({ dockerAlertOnStopped: false });
+			const { result } = await run(monitor, makeDockerResponse(makeContainers([stopped])));
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.monitor.status).toBe("up");
+		});
+
+		it("stays up on an exited container with code 0", async () => {
+			const { result } = await run(makeDockerMonitor(), makeDockerResponse(makeContainers([{ name: "job", state: "exited", exitCode: 0 }])));
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.monitor.status).toBe("up");
+		});
+
+		it("stays breached without a transition while a container is still down", async () => {
+			const { result } = await run(makeDockerMonitor({ status: "breached" }), makeDockerResponse(makeContainers([stopped])));
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.monitor.status).toBe("breached");
+		});
+
+		it("stays up without a transition while every container is clean", async () => {
+			const { result } = await run(makeDockerMonitor(), makeDockerResponse(makeContainers([{ name: "web" }])));
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.monitor.status).toBe("up");
+		});
+
+		it("recovers from breached to up on the first clean check", async () => {
+			const { result } = await run(makeDockerMonitor({ status: "breached" }), makeDockerResponse(makeContainers([{ name: "web" }])));
+
+			expect(result.statusChanged).toBe(true);
+			expect(result.prevStatus).toBe("breached");
+			expect(result.monitor.status).toBe("up");
+		});
+
+		it("recovers from breached to up when the breaching switch is turned off", async () => {
+			const monitor = makeDockerMonitor({ status: "breached", dockerAlertOnStopped: false });
+			const { result } = await run(monitor, makeDockerResponse(makeContainers([stopped])));
+
+			expect(result.statusChanged).toBe(true);
+			expect(result.monitor.status).toBe("up");
+		});
+
+		it("does not override down with breached when the host is unreachable", async () => {
+			const monitor = makeDockerMonitor({ statusWindow: [false, false, false, false], statusWindowThreshold: 80 });
+			const response = makeDockerResponse(null, { status: false, code: 5000 });
+			const { result } = await run(monitor, response, makeCheck({ status: false }));
+
+			expect(result.monitor.status).toBe("down");
+		});
+
+		it("transitions from breached to down when the reachability threshold trips", async () => {
+			const monitor = makeDockerMonitor({ status: "breached", statusWindow: [false, false, false, false], statusWindowThreshold: 80 });
+			const response = makeDockerResponse(null, { status: false, code: 5000 });
+			const { result } = await run(monitor, response, makeCheck({ status: false }));
+
+			expect(result.statusChanged).toBe(true);
+			expect(result.monitor.status).toBe("down");
+		});
+
+		it("does not evaluate containers while the status window is short", async () => {
+			const monitor = makeDockerMonitor({ statusWindow: [true], statusWindowSize: 5 });
+			const { result } = await run(monitor, makeDockerResponse(makeContainers([stopped])));
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.monitor.status).toBe("up");
+		});
+
+		it("does not evaluate a failed check with a null payload", async () => {
+			const monitor = makeDockerMonitor({ status: "breached" });
+			const response = makeDockerResponse(null, { status: false, code: 5000 });
+			const { result } = await run(monitor, response, makeCheck({ status: false }));
+
+			expect(result.statusChanged).toBe(false);
+			expect(result.monitor.status).toBe("breached");
+		});
+
+		it("does not touch the hardware counters or thresholdBreaches", async () => {
+			const { result, monitorsRepository } = await run(makeDockerMonitor(), makeDockerResponse(makeContainers([stopped])));
+
+			expect(result.thresholdBreaches).toBeUndefined();
+			const patch = (monitorsRepository.updateStatusWindowAndChecks as jest.Mock).mock.calls.at(-1)?.[6];
+			expect(patch.cpuAlertCounter).toBeUndefined();
+			expect(patch.status).toBe("breached");
+		});
+	});
 
 	describe("computeReachability (pure)", () => {
 		const reach = (currentStatus: MonitorStatus, window: boolean[], threshold = 80) => {
