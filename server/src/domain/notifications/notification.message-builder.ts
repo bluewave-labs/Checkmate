@@ -1,5 +1,5 @@
 import type { Monitor } from "@/domain/monitors/monitor.type.js";
-import type { HardwareStatusPayload, MonitorStatusResponse } from "@/types/network.js";
+import type { DockerStatusPayload, HardwareStatusPayload, MonitorStatusResponse } from "@/types/network.js";
 import type { MonitorActionDecision } from "@/worker/worker.interface.js";
 import type {
 	NotificationMessage,
@@ -8,6 +8,7 @@ import type {
 	ThresholdBreach,
 	NotificationContent,
 } from "@/domain/notifications/notification.type.js";
+import { describeContainerBreach, findContainerBreaches } from "@/domain/docker/docker-alert.js";
 
 export interface INotificationMessageBuilder {
 	buildMessage(
@@ -59,32 +60,29 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 			return "monitor_down";
 		}
 
-		// Threshold breach (only if not down)
-		if (decision.notificationReason === "threshold_breach") {
-			return "threshold_breach";
+		const isDocker = monitor.type === "docker";
+		switch (decision.notificationReason) {
+			case "threshold_breach":
+				return isDocker ? "container_breach" : "threshold_breach";
+			case "threshold_resolved":
+				return isDocker ? "container_resolved" : "threshold_resolved";
+			default:
+				return "monitor_up";
 		}
-
-		// Recovery from threshold breach (only for hardware monitors)
-		if (decision.notificationReason === "status_change" && monitor.status === "up" && monitor.type === "hardware") {
-			return "threshold_resolved";
-		}
-
-		// Standard recovery (up)
-		if (monitor.status === "up") {
-			return "monitor_up";
-		}
-
-		// Default to monitor_up for any other case
-		return "monitor_up";
 	}
 
 	private determineSeverity(type: NotificationType): NotificationSeverity {
 		switch (type) {
+			case "monitor_up":
+				return "success";
 			case "monitor_down":
 				return "critical";
+			case "container_breach":
+				return "warning";
 			case "threshold_breach":
 				return "warning";
-			case "monitor_up":
+			case "container_resolved":
+				return "success";
 			case "threshold_resolved":
 				return "success";
 			case "test":
@@ -104,6 +102,10 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 				return this.buildThresholdBreachContent(monitor, monitorStatusResponse as MonitorStatusResponse<HardwareStatusPayload>);
 			case "threshold_resolved":
 				return this.buildThresholdResolvedContent(monitor);
+			case "container_breach":
+				return this.buildContainerBreachContent(monitor, monitorStatusResponse as MonitorStatusResponse<DockerStatusPayload>);
+			case "container_resolved":
+				return this.buildContainersRecoveredContent(monitor);
 			default:
 				return this.buildDefaultContent(monitor);
 		}
@@ -172,6 +174,23 @@ export class NotificationMessageBuilder implements INotificationMessageBuilder {
 			details,
 			timestamp: new Date(),
 		};
+	}
+
+	private buildContainerBreachContent(monitor: Monitor, monitorStatusResponse: MonitorStatusResponse<DockerStatusPayload>): NotificationContent {
+		const payload = monitorStatusResponse.payload;
+		const containers = payload && typeof payload !== "string" ? payload.containers : [];
+		const breaches = findContainerBreaches(monitor, containers);
+		const title = `Container Alert: ${monitor.name}`;
+		const summary = `${breaches.length} container(s) on "${monitor.name}" need attention.`;
+		const details = [`URL: ${monitor.url}`, `Type: ${monitor.type}`, ...breaches.map(describeContainerBreach)];
+		return { title, summary, details, timestamp: new Date() };
+	}
+
+	private buildContainersRecoveredContent(monitor: Monitor): NotificationContent {
+		const title = `Containers Recovered: ${monitor.name}`;
+		const summary = `All containers on "${monitor.name}" are back to normal.`;
+		const details = [`URL: ${monitor.url}`, `Status: Up`, `Type: ${monitor.type}`];
+		return { title, summary, details, timestamp: new Date() };
 	}
 
 	private buildDefaultContent(monitor: Monitor): NotificationContent {
